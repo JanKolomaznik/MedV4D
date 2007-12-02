@@ -3,6 +3,9 @@
 // between client & server
 //////////////////////////////////////////////////
 
+// port at that server listens
+#define SERVER_PORT 44444
+
 // messages identifications
 typedef enum eMessageType {
 	MESS_DATA_REQUEST,		// client wants some data
@@ -11,7 +14,6 @@ typedef enum eMessageType {
 	MESS_PING,				// ping to see if server is alive
 	/* ... */
 } MessageType;
-
 
 // distinguish data requests
 typedef enum eRequestType {
