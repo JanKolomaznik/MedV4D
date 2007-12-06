@@ -1,7 +1,16 @@
+#ifndef TRANSPORT_DEFS_H
+#define TRANSPORT_DEFS_H
 //////////////////////////////////////////////////
 // Contains some common declarations for communicaton
 // between client & server
 //////////////////////////////////////////////////
+
+	// porting typedefs
+#ifdef OS_WIN
+	typedef M4D_SOCKET SOCKET;
+#elif OS_LINUX
+	typedef M4D_SOCKET SOCKET;
+#endif
 
 // port at that server listens
 #define SERVER_PORT 44444
@@ -17,7 +26,9 @@ typedef enum eMessageType {
 
 // distinguish data requests
 typedef enum eRequestType {
-	REQTYPE_BITMAP,
-	REQTYPE_TENSORMAP,
+	REQTYPE_BITMAP,			// data from DICOM pictures
+	REQTYPE_TENSORMAP,		// tensor map
 	/* ... */
 } RequestType;
+
+#endif

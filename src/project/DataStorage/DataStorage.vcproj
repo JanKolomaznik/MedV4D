@@ -183,6 +183,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\DataStorage\perConnThread.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\DataStorage\server.cpp"
 				>
 			</File>
@@ -197,11 +201,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\DataStorage\server.h"
+				RelativePath="..\..\include\M4DCommon.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\common\transportDefs.h"
+				RelativePath="..\..\include\M4DTransportDefs.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\DataStorage\perConnThread.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\DataStorage\server.h"
 				>
 			</File>
 		</Filter>
