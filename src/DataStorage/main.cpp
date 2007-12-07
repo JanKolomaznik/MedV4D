@@ -4,8 +4,16 @@
 // main.c
 /////////////////////////////////////////////////////
 
+#include "server.h"
+
+using namespace dataStorage;
 
 // entry point
-main( int argc, char *argv[ ], char *envp[ ] )
+int32 main( int argc, char *argv[ ], char *envp[ ] )
 {
+	Server server;
+
+	server.Start();
+
+	return 0;
 }

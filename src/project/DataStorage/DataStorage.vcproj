@@ -179,6 +179,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\common\M4DCrossPlatformSocket.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\DataStorage\M4DCrossPServerSock.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\DataStorage\main.cpp"
 				>
 			</File>
@@ -202,6 +210,14 @@
 			</File>
 			<File
 				RelativePath="..\..\include\M4DCommon.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\M4DCrossPlatformSocket.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\DataStorage\M4DCrossPServerSock.h"
 				>
 			</File>
 			<File

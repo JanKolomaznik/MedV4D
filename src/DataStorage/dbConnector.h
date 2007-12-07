@@ -1,9 +1,6 @@
 #ifndef DB_CONNECTOR_H
 #define DB_CONNECTOR_H
 
-
-#include <string>
-
 namespace DB {
 
 	/**
@@ -13,7 +10,7 @@ namespace DB {
 
 		bool ConnectToDB( void);
 		bool SendQuery( string query);
-	}
+	};
 }
 
 #endif

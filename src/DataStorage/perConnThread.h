@@ -3,12 +3,18 @@
 
 namespace dataStorage {
 
-	class PerConnectionThread {
-		M4D_SOCKET client;
+	class PerConnectionThread
+	{
+	public:
+		PerConnectionThread( void);
+		~PerConnectionThread( void);
+		
+		CrsPlatfrmServerSocket client;
 
-		public void Recieved( byte* data);
-		public void Send( byte* data);
-	}
+	public:
+		void Recieved( int8* data);
+		void Send( int8* data);
+	};
 
 }
 

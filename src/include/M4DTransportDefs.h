@@ -5,13 +5,6 @@
 // between client & server
 //////////////////////////////////////////////////
 
-	// porting typedefs
-#ifdef OS_WIN
-	typedef M4D_SOCKET SOCKET;
-#elif OS_LINUX
-	typedef M4D_SOCKET SOCKET;
-#endif
-
 // port at that server listens
 #define SERVER_PORT 44444
 

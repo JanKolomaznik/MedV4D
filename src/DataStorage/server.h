@@ -1,23 +1,26 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include "M4DCommon.h"
-#include "M4DTransportDefs.h"
+#include "M4DCrossPServerSock.h"
 
-namespace dataStorage {
+namespace dataStorage
+{
 
 	class Server
 	{
 		// listening socket
-		M4D_SOCKET recvSock;
+		CrsPlatfrmServerSocket recvSock;
 
-		Server();
+	public:
+		Server() {}
+		~Server( void) {}
 
-		public void Start();
+		void Start( void);
 		
 		// creates new thread that will communicate with client
-		private void AcceptConnection();
-	}
+	private:
+		void AcceptConnection( void);
+	};
 
 }
 
