@@ -60,7 +60,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="Ws2_32.lib Mswsock.lib Advapi32.lib"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;C:\Program Files\Microsoft Visual Studio 8\VC\PlatformSDK\Lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -179,6 +181,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\common\M4DCrossPClientSocket.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\common\M4DCrossPlatformSocket.cpp"
 				>
 			</File>
@@ -210,6 +216,10 @@
 			</File>
 			<File
 				RelativePath="..\..\include\M4DCommon.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\M4DCrossPClientSocket.h"
 				>
 			</File>
 			<File
