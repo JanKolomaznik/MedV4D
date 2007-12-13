@@ -2,7 +2,7 @@
 #define __DEBUG_H_
 
 /**
- * These symbols should be set at compilation time to turn on debuging prints.
+ * These symbols should be set at compilation time to turn on debugging prints.
  * DEBUG_LEVEL int
  * DEBUG_ADITIONAL_INFO
  */
@@ -32,7 +32,7 @@ extern std::ostream *pdout;
 //----------------------------------------------------------------------------
 #ifdef DEBUG_LEVEL
 #define ASSERT(EXPR) 	if ( (EXPR) == 0 ) { \
-			DOUT <<"Asserted at " <<__FILE__ \
+			DOUT <<"Assertion failed at " <<__FILE__ \
 			<<", on line " <<__LINE__<<", in function " \
 			<<__FUNCTION__<<std::endl; exit; }
 #else
@@ -54,6 +54,7 @@ extern std::ostream *pdout;
 #define	D_PRINT(ARG)
 #endif /*DEBUG_LEVEL*/
 
+//----------------------------------------------------------------------------
 #ifdef DEBUG_LEVEL
 #define DL_PRINT( LEVEL, ARG )	\
 	#if ( (DEBUG_LEVEL >= LEVEL) || (DEBUG_LEVEL == 0)) \
@@ -65,11 +66,12 @@ extern std::ostream *pdout;
 
 //----------------------------------------------------------------------------
 #ifdef DEBUG_LEVEL
-#define D_COMMAND( ARG )	(ARG)
+#define D_COMMAND( ARG )	ARG
 #else
 #define	D_COMMAND(ARG)
 #endif /*DEBUG_LEVEL*/
 
+//----------------------------------------------------------------------------
 #ifdef DEBUG_LEVEL
 #define DL_COMMAND( LEVEL, ARG )	\
 	#if ( (DEBUG_LEVEL >= LEVEL) || (DEBUG_LEVEL == 0)) \
