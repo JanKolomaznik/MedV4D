@@ -5,15 +5,20 @@ namespace dataStorage {
 
 	class PerConnectionThread
 	{
-	public:
-		PerConnectionThread( void);
-		~PerConnectionThread( void);
-		
-		CrsPlatfrmServerSocket client;
+	private:
+		CrsPlatfrmClientSocket clientSocket;
+		void OnRecievedCommand( int8 *data, size_t len);
+		void OnRecieveDataRequest( int8 *data, size_t len);
+		//SendResult( int8 *data, size_t len);
 
 	public:
-		void Recieved( int8* data);
-		void Send( int8* data);
+		PerConnectionThread();
+		~PerConnectionThread( void);		
+
+		void Start( void *threadData);	// thread function
+
+		inline
+		CrsPlatfrmClientSocket* GetClientSocket( void) { return &clientSocket; }
 	};
 
 }

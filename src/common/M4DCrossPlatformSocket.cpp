@@ -5,22 +5,40 @@
 
 int16 CrsPlatfrmSocket::instanceCounter = 0;
 
-ssize_t
-CrsPlatfrmSocket::recv( void *buffer, size_t length)
+size_t
+CrsPlatfrmSocket::sockRecv( void *buffer, size_t length)
+	// throws M4VDSockEx
 {
-	ssize_t retval = E_OK;
+	size_t retval = E_OK;
 	#ifdef OS_WIN
-		
+	retval = recv( this->sockDescriptor, (char *)buffer, (int) length, 0);
+	if ( retval == 0 || retval == WSAECONNRESET ) {
+      printf( "Connection Closed.\n");
+    }
 	#endif
 	return retval;
 }
 
-ssize_t
-CrsPlatfrmSocket::send( void *buffer, size_t length)
+size_t
+CrsPlatfrmSocket::sockSend( const void *buffer, size_t length)
+	//throw (const char *)
 {
-	ssize_t retval = E_OK;
+	size_t retval = E_OK;
 	#ifdef OS_WIN
-		
+		retval = send( this->sockDescriptor, (const char *)buffer, (int) length, 0);
+		if( retval == SOCKET_ERROR)
+		{
+			throw "Socket error!\n"; 
+			int moreSpecErr = WSAGetLastError();
+			switch( moreSpecErr)
+			{
+			case WSAETIMEDOUT:
+			case WSAECONNABORTED:
+			case WSAEHOSTUNREACH:
+			case WSAESHUTDOWN:
+				break;
+			}
+		}
 	#endif
 	return retval;
 }
@@ -42,21 +60,24 @@ CrsPlatfrmSocket::CrsPlatfrmSocket()
 	instanceCounter++;
 }
 
-CrsPlatfrmSocket::CrsPlatfrmSocket( SOCKET_T s)
-	 : sockDescriptor( s)
-{
-	// call CrsPlatfrmSocket() and how??
-}
-
 CrsPlatfrmSocket::~CrsPlatfrmSocket()
 {
-	instanceCounter--;
+#ifdef OS_WIN
+	// shutdown socket
+	if( shutdown( this->sockDescriptor, SD_SEND) == SOCKET_ERROR)
+	{
+        printf("shutdown failed: %d\n", WSAGetLastError());
+    }
 
-	#ifdef OS_WIN
+    // cleanup
+	closesocket( this->sockDescriptor);
+
+	// decrease instance counter
+	instanceCounter--;
 	if( instanceCounter == 0)
 	{
 		// deinit winsock
 		WSACleanup();
 	}
-	#endif
+#endif
 }

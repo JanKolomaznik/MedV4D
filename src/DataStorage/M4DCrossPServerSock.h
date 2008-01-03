@@ -2,6 +2,7 @@
 #define CROSS_PLATFORM_SERVER_SOCK_H
 
 #include "../include/M4DCrossPlatformSocket.h"
+#include "../include/M4DCrossPClientSocket.h"
 #include "../include/M4DTransportDefs.h"
 
 class CrsPlatfrmServerSocket : CrsPlatfrmSocket
@@ -12,10 +13,10 @@ public:
 
 	~CrsPlatfrmServerSocket( void) {}
 
-	retval_t create( std::string address, int16 port);
+	void create( void);
 
 	retval_t listenForConn( void);
-	CrsPlatfrmSocket *acceptConn( void);
+	void acceptConn( CrsPlatfrmClientSocket *clientSock);
 };
 
 #endif

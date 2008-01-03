@@ -16,21 +16,20 @@
 #endif
 
 /**
- * abstranct class for using sockets. Server & Client
+ * abstract class for using sockets. Server & Client
  * socket will derive it. It wraps OS native calls.
  */
 class CrsPlatfrmSocket
 {
 protected:
 	CrsPlatfrmSocket( void);
-	CrsPlatfrmSocket( SOCKET_T s);
 	~CrsPlatfrmSocket( void);
 	
 public:
-	ssize_t recv( void *buffer, size_t length);
-	ssize_t send( void *buffer, size_t length);
+	size_t sockRecv( void *buffer, size_t length);
+	size_t sockSend( const void *buffer, size_t length);
 
-	virtual retval_t create( std::string address, int16 port) = 0;
+	virtual void create( void) = 0;
 
 protected:	
 	SOCKET_T sockDescriptor;

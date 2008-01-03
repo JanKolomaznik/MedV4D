@@ -1,10 +1,10 @@
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "./M4DCrossPServerSock.h"
 
-retval_t
-CrsPlatfrmServerSocket::create( std::string address, int16 port)
+void
+CrsPlatfrmServerSocket::create( void)
 {
 #ifdef OS_WIN
 
@@ -22,12 +22,11 @@ CrsPlatfrmServerSocket::create( std::string address, int16 port)
 
 	// convert port number to string
 	char strPort[8];
-	_ltoa_s<8>( port, strPort, 10);
+	_ltoa_s<8>( SERVER_PORT, strPort, 10);
 
 	// Resolve the local address and port to be used by the server
 	if( getaddrinfo( NULL, strPort, &hints, &result) != 0 ) {
 		printf("getaddrinfo failed: \n");
-		return E_FAILED;
 	}
 
 	this->sockDescriptor = INVALID_SOCKET;
@@ -41,7 +40,6 @@ CrsPlatfrmServerSocket::create( std::string address, int16 port)
 	
 	if ( this->sockDescriptor == INVALID_SOCKET) {
 		printf("WSASocket call failed with error: %ld\n", WSAGetLastError());
-		return E_FAILED;
 	}
 
 	// bind the socket
@@ -50,11 +48,8 @@ CrsPlatfrmServerSocket::create( std::string address, int16 port)
 	freeaddrinfo( result);
 	if( iRetval == SOCKET_ERROR) {
         printf("bind failed: %d\n", WSAGetLastError());		
-		return E_FAILED;
 	}
 #endif
-
-	return E_OK;
 }
 
 retval_t
@@ -69,17 +64,14 @@ CrsPlatfrmServerSocket::listenForConn( void)
 #endif
 }
 
-CrsPlatfrmSocket *
-CrsPlatfrmServerSocket::acceptConn( void)
+void
+CrsPlatfrmServerSocket::acceptConn( CrsPlatfrmClientSocket *clientSock)
 {
-	CrsPlatfrmSocket *clientSocket = NULL;
 #ifdef OS_WIN
-	SOCKET_T clientSock = accept( this->sockDescriptor, NULL, NULL);
-    if ( clientSock == INVALID_SOCKET) {
+	SOCKET clientS = accept( this->sockDescriptor, NULL, NULL);
+    if ( clientS == INVALID_SOCKET) {
         printf("accept failed: %d\n", WSAGetLastError());
-		return NULL;
     }
-	// create new clent socket class
-	//clientSocket = new CrsPlatfrmClientSocket( clientSock);
+	clientSock->create( clientS);
 #endif
 }

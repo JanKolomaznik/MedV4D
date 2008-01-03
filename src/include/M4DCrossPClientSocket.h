@@ -11,7 +11,10 @@ public:
 
 	~CrsPlatfrmClientSocket( void) {}
 
-	retval_t create( std::string address, int16 port);
+	void create( void);
+	void create( SOCKET_T s);
+private:
+	std::string serverAddress;	// TODO
 };
 
 #endif

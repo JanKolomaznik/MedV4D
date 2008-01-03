@@ -177,22 +177,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\DataStorage\dbConnector.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\common\M4DCrossPClientSocket.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\common\M4DCrossPlatformSocket.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DataStorage\M4DCrossPServerSock.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\DataStorage\main.cpp"
 				>
 			</File>
@@ -204,36 +188,36 @@
 				RelativePath="..\..\DataStorage\server.cpp"
 				>
 			</File>
+			<Filter
+				Name="support"
+				>
+				<File
+					RelativePath="..\..\DataStorage\dbConnector.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\common\M4DByteConverter.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\common\M4DCrossPClientSocket.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\common\M4DCrossPlatformSocket.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DataStorage\M4DCrossPServerSock.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath="..\..\DataStorage\dbConnector.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\M4DCommon.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\M4DCrossPClientSocket.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\M4DCrossPlatformSocket.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DataStorage\M4DCrossPServerSock.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\M4DTransportDefs.h"
-				>
-			</File>
 			<File
 				RelativePath="..\..\DataStorage\perConnThread.h"
 				>
@@ -242,6 +226,38 @@
 				RelativePath="..\..\DataStorage\server.h"
 				>
 			</File>
+			<Filter
+				Name="support"
+				>
+				<File
+					RelativePath="..\..\DataStorage\dbConnector.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\M4DByteConverter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\M4DCommon.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\M4DCrossPClientSocket.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\M4DCrossPlatformSocket.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DataStorage\M4DCrossPServerSock.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\M4DTransportDefs.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"

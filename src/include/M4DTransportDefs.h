@@ -19,7 +19,7 @@ typedef enum eMessageType {
 
 // distinguish data requests
 typedef enum eRequestType {
-	REQTYPE_BITMAP,			// data from DICOM pictures
+	REQTYPE_BITMAP,			// data of DICOM pictures
 	REQTYPE_TENSORMAP,		// tensor map
 	/* ... */
 } RequestType;
