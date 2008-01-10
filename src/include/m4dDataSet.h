@@ -3,6 +3,9 @@
 
 #include <vtkGenericDataSet.h>
 
+namespace vtkIntegration
+{
+	
 class m4dCompatibilityAgregation;
 
 
@@ -187,6 +190,7 @@ private:
 };
 
 
+} /*namespace vtkIntegration*/
 
 #endif /*__M4D_DATA_SET_H_*/
 

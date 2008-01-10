@@ -3,6 +3,8 @@
 
 #include "m4dAbstractFilter.h"
 
+namespace vtkIntegration
+{
 
 class m4dAbstractReader: public m4dAbstractFilter
 {
@@ -14,4 +16,5 @@ private:
 
 };
 
+} /*namespace vtkIntegration*/
 #endif /*__M4D_ABSTRACT_READER_H_*/

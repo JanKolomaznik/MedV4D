@@ -3,6 +3,9 @@
 
 #include <vtkGenericDataSetAlgorithm.h>
 
+namespace vtkIntegration
+{
+	
 class m4dAbstractFilter: public vtkGenericDataSetAlgorithm
 {
 public:
@@ -99,4 +102,5 @@ private:
 	void operator=(const m4dAbstractFilter&);  // Not implemented.
 };
 
+} /*namespace vtkIntegration*/
 #endif /*__M4D_ABSTRACT_FILTER_H_*/
