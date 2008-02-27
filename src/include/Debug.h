@@ -41,13 +41,14 @@ extern std::ostream *pdout;
 
 //----------------------------------------------------------------------------
 #ifdef DEBUG_LEVEL
-#define D_PRINT( ARG )	\
-	#ifdef DEBUG_ADITIONAL_INFO\
-		DOUT <<"File: " <<__FILE__ \
-		<<"; Line: " <<__LINE__\
-		<<"\t"<<ARG;\
-	#else\
-		DOUT <<ARG;\
+	#ifdef DEBUG_ADITIONAL_INFO
+		#define D_PRINT( ARG )	\
+			DOUT <<"File: " <<__FILE__ \
+			<<"; Line: " <<__LINE__\
+			<<"\t"<<ARG;
+	#else
+		#define D_PRINT( ARG )	\
+			DOUT <<ARG;
 	#endif /*DEBUG_ADITIONAL_INFO*/
 
 #else
@@ -57,9 +58,9 @@ extern std::ostream *pdout;
 //----------------------------------------------------------------------------
 #ifdef DEBUG_LEVEL
 #define DL_PRINT( LEVEL, ARG )	\
-	#if ( (DEBUG_LEVEL >= LEVEL) || (DEBUG_LEVEL == 0)) \
+	if ( (DEBUG_LEVEL >= LEVEL) || (DEBUG_LEVEL == 0)){ \
 				D_PRINT( ARG );\
-	#endif /*(DEBUG_LEVEL >= LEVEL) || (DEBUG_LEVEL == 0)*/
+	}
 #else
 #define	DL_PRINT(ARG)
 #endif /*DEBUG_LEVEL*/
@@ -74,9 +75,9 @@ extern std::ostream *pdout;
 //----------------------------------------------------------------------------
 #ifdef DEBUG_LEVEL
 #define DL_COMMAND( LEVEL, ARG )	\
-	#if ( (DEBUG_LEVEL >= LEVEL) || (DEBUG_LEVEL == 0)) \
+	if ( (DEBUG_LEVEL >= LEVEL) || (DEBUG_LEVEL == 0)){ \
 				D_COMMAND( ARG );\
-	#endif /*(DEBUG_LEVEL >= LEVEL) || (DEBUG_LEVEL == 0)*/
+	}
 #else
 #define	DL_COMMAND(ARG)
 #endif /*DEBUG_LEVEL*/
