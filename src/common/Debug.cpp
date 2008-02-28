@@ -1,10 +1,10 @@
 #include "Debug.h"
 
-#include <ostream>
+#include <iostream>
 
-#ifdef DEBUGING_LEVEL
+#ifdef DEBUG_LEVEL
 
 std::ostream *pdout = &(std::cout);
 
-#endif /*DEBUGING_LEVEL*/
+#endif /*DEBUG_LEVEL*/
 

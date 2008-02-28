@@ -33,8 +33,8 @@ extern std::ostream *pdout;
 #ifdef DEBUG_LEVEL
 #define ASSERT(EXPR) 	if ( (EXPR) == 0 ) { \
 			DOUT <<"Assertion failed at " <<__FILE__ \
-			<<", on line " <<__LINE__<<", in function " \
-			<<__FUNCTION__<<std::endl; exit; }
+			<<", on line " <<__LINE__<<", in function \'" \
+			<<__FUNCTION__<<"\'."<<std::endl; exit; }
 #else
 #define ASSERT(EXPR)
 #endif /*DEBUG_LEVEL*/
@@ -45,7 +45,7 @@ extern std::ostream *pdout;
 		#define D_PRINT( ARG )	\
 			DOUT <<"File: " <<__FILE__ \
 			<<"; Line: " <<__LINE__\
-			<<"\t"<<ARG;
+			<<"\n"<<ARG;
 	#else
 		#define D_PRINT( ARG )	\
 			DOUT <<ARG;
