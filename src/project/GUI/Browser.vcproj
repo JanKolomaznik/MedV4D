@@ -44,7 +44,7 @@
         Name="VCCLCompilerTool"
         AdditionalOptions="-Zm200 -w34100 -w34189 -Zm200 -w34100 -w34189 -w34100 -w34189"
         Optimization="4"
-        AdditionalIncludeDirectories="&quot;#PATH#\include\QtCore&quot;,&quot;#PATH#\include\QtCore&quot;,&quot;#PATH#\include\QtGui&quot;,&quot;#PATH#\include\QtGui&quot;,&quot;#PATH#\include&quot;,&quot;.&quot;,&quot;#PATH#\include\ActiveQt&quot;,&quot;debug&quot;,&quot;.&quot;,#PATH#\mkspecs\win32-msvc2005"
+        AdditionalIncludeDirectories="..\..\include\qt\headers\QtCore;..\..\include\qt\headers\QtGui;..\..\include\qt\headers;.;.\debug;.\qt\win32-msvc2005"
         PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT"
         GeneratePreprocessedFile="0"
         ExceptionHandling="1"
@@ -72,10 +72,10 @@
       <Tool
         Name="VCLinkerTool"
         IgnoreImportLibrary="true"
-        AdditionalDependencies="#PATH#\lib\qtmaind.lib #PATH#\lib\QtGuid4.lib #PATH#\lib\QtCored4.lib"
+        AdditionalDependencies="..\..\lib\qt\qtmaind.lib ..\..\lib\qt\QtGuid4.lib ..\..\lib\qt\QtCored4.lib"
         OutputFile="debug\Browser.exe"
         SuppressStartupBanner="true"
-        AdditionalLibraryDirectories="#PATH#\lib"
+        AdditionalLibraryDirectories="..\..\lib\qt"
         GenerateDebugInformation="true"
         ProgramDatabaseFile=""
         SubSystem="2"
@@ -135,7 +135,7 @@
         Name="VCCLCompilerTool"
         AdditionalOptions="-Zm200 -w34100 -w34189 -Zm200 -w34100 -w34189 -w34100 -w34189"
         Optimization="2"
-        AdditionalIncludeDirectories="&quot;#PATH#\include\QtCore&quot;,&quot;#PATH#\include\QtCore&quot;,&quot;#PATH#\include\QtGui&quot;,&quot;#PATH#\include\QtGui&quot;,&quot;#PATH#\include&quot;,&quot;.&quot;,&quot;#PATH#\include\ActiveQt&quot;,&quot;release&quot;,&quot;.&quot;#PATH#\mkspecs\win32-msvc2005"
+        AdditionalIncludeDirectories="..\..\include\qt\headers\QtCore;..\..\include\qt\headers\QtGui;..\..\include\qt\headers;.;.\release;.\qt\win32-msvc2005"
         PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_NO_DEBUG,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT,NDEBUG"
         GeneratePreprocessedFile="0"
         ExceptionHandling="1"
@@ -163,11 +163,11 @@
       <Tool
         Name="VCLinkerTool"
         IgnoreImportLibrary="true"
-        AdditionalDependencies="#PATH#\lib\qtmain.lib #PATH#\lib\QtGui4.lib #PATH#\lib\QtCore4.lib"
+        AdditionalDependencies="..\..\lib\qt\qtmain.lib ..\..\lib\qt\QtGui4.lib ..\..\lib\qt\QtCore4.lib"
         OutputFile="release\Browser.exe"
         LinkIncremental="1"
         SuppressStartupBanner="true"
-        AdditionalLibraryDirectories="#PATH#\lib"
+        AdditionalLibraryDirectories="..\..\lib\qt"
         GenerateDebugInformation="false"
         ProgramDatabaseFile=""
         SubSystem="2"
@@ -236,8 +236,8 @@
           <Tool
             Name="VCCustomBuildTool"
             Description="UIC browser.ui"
-            CommandLine="#PATH#\bin\uic.exe browser.ui -o ui_browser.h&#x0D;&#x0A;"
-            AdditionalDependencies="#PATH#\bin\uic.exe;browser.ui"
+            CommandLine="..\..\bin\qt\uic.exe ..\..\GUI\browser.ui -o ..\..\GUI\ui_browser.h&#x0D;&#x0A;"
+            AdditionalDependencies="..\..\bin\qt\uic.exe;..\..\GUI\browser.ui"
             Outputs="ui_browser.h"
           />
         </FileConfiguration>
@@ -247,8 +247,8 @@
           <Tool
             Name="VCCustomBuildTool"
             Description="UIC browser.ui"
-            CommandLine="#PATH#\bin\uic.exe browser.ui -o ui_browser.h&#x0D;&#x0A;"
-            AdditionalDependencies="#PATH#\bin\uic.exe;browser.ui"
+            CommandLine="..\..\bin\qt\uic.exe ..\..\GUI\browser.ui -o ..\..\GUI\ui_browser.h&#x0D;&#x0A;"
+            AdditionalDependencies="..\..\bin\qt\uic.exe;..\..\GUI\browser.ui"
             Outputs="ui_browser.h"
           />
         </FileConfiguration>

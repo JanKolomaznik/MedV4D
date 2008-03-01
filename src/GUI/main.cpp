@@ -12,7 +12,7 @@ int main( int argc, char **argv )
   Ui::MainWindow ui;
   ui.setupUi( form );
 
-  ui.textBrowser->setSource( QUrl( "main.cpp" ) );
+  ui.textBrowser->setSource( QUrl( "..\\..\\GUI\\main.cpp" ) );
 
 
   form->show();
