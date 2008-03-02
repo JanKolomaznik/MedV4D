@@ -5,6 +5,7 @@
 #include "M4DDicomAssoc.h"
 #include "M4DDICOMServiceProvider.h"
 #include "AbstractService.h"
+#include "main.h"
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -63,7 +64,7 @@ M4DAbstractService::~M4DAbstractService()
 	/* is the counterpart of ASC_initializeNetwork(...) which was called above. */
 	if( ASC_dropNetwork(&m_net).bad() )
 	{
-		// TODO hlaska
+		D_PRINT( "Drop network failed!");
 	}
 
 }

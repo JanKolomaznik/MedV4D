@@ -7,6 +7,7 @@
 #include "AbstractService.h"
 #include "FindService.h"
 
+#include "main.h"
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -105,20 +106,12 @@ M4DFindService::FindSupport(
 	m_assocToServer->Request( m_net);
 
 	DIC_US msgId = m_assocToServer->GetAssociation()->nextMsgID++;
-    T_ASC_PresentationContextID presId;
     T_DIMSE_C_FindRQ req;
     T_DIMSE_C_FindRSP rsp;
     DcmDataset *statusDetail = NULL;
-    //MyCallbackInfo callbackData;
 
     /* figure out which of the accepted presentation contexts should be used */
-    presId = ASC_findAcceptedPresentationContextID(
-		m_assocToServer->GetAssociation(),
-		m_assocToServer->GetAssocAddress()->transferModel.c_str() );
-    if (presId == 0) {
-        //errmsg("No presentation context");
-        throw new bad_exception("No presentation context");
-    }
+	T_ASC_PresentationContextID presId = m_assocToServer->FindPresentationCtx();
 
     /* prepare the transmission of data */
     bzero((char*)&req, sizeof(req));
@@ -129,16 +122,12 @@ M4DFindService::FindSupport(
     req.Priority = DIMSE_PRIORITY_LOW;
 
     /* prepare the callback data */
+	//MyCallbackInfo callbackData;
     //callbackData.assoc = assoc;
     //callbackData.presId = presId;
 
-    /* if required, dump some more general information */
-    //if (opt_verbose) {
-        printf("Find SCU RQ: MsgID %d\n", msgId);
-        printf("REQUEST:\n");
-        queryDataSet.print(COUT);
-        printf("--------\n");
-    //}
+	LOG( "Find-SCU REQUEST");
+    queryDataSet.print(DOUT);
 
 #define FIND_OPER_TIMEOUT 0
 
@@ -150,26 +139,18 @@ M4DFindService::FindSupport(
 		DIMSE_BLOCKING, FIND_OPER_TIMEOUT,
 		&rsp, &statusDetail);
 
-
     /* dump some more general information */
     if (cond == EC_Normal) {
-        /*if (opt_verbose) {
-            DIMSE_printCFindRSP(stdout, &rsp);
-        } else {*/
-            if (rsp.DimseStatus != STATUS_Success) {
-                printf("Response: %s\n", DU_cfindStatusString(rsp.DimseStatus));
-            }
-        //}
+		LOG( "Response: " << DU_cfindStatusString(rsp.DimseStatus));
     } else {
-        printf("Find Failed, query keys:");
-        queryDataSet.print(COUT);
-        DimseCondition::dump(cond);
+        D_PRINT("Find Failed, query keys:");
+        queryDataSet.print(DOUT);
     }
 
     /* dump status detail information if there is some */
     if (statusDetail != NULL) {
-        printf("  Status Detail:\n");
-        statusDetail->print(COUT);
+        D_PRINT("Status Detail:");
+        statusDetail->print(DOUT);
         delete statusDetail;
     }
 

@@ -53,6 +53,8 @@ public:
 	
 	inline T_ASC_Association *GetAssociation( void)	{ return m_assoc; }
 	inline DICOMAddress *GetAssocAddress( void) { return m_assocAddr; }
+
+	T_ASC_PresentationContextID FindPresentationCtx( void) throw(...);
 };
 
 #endif

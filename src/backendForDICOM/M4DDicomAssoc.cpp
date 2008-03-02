@@ -3,8 +3,8 @@
 #include "dcmtk/dcmnet/diutil.h"
 
 #include "M4DDicomAssoc.h"
+
 #include "main.h"
-#include "Debug.h"
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -147,11 +147,13 @@ M4DDicomAssociation::M4DDicomAssociation( string assocAddrID)
 	DIC_NODENAME localHost;
     DIC_NODENAME peerHost;
 
-	OFCondition cond;
-
 	/* initialize asscociation parameters, i.e. create an instance of T_ASC_Parameters*. */
-    cond = ASC_createAssociationParameters(&m_assocParams, ASC_DEFAULTMAXPDU);
-    if (cond.bad())	throw new bad_exception("Assoc params could not be created!");
+    OFCondition cond = ASC_createAssociationParameters(&m_assocParams, ASC_DEFAULTMAXPDU);
+    if (cond.bad())	
+	{
+		D_PRINT( "Assoc params could not be created!");
+		throw new bad_exception();
+	}
 
     /* sets this application's title and the called application's title in the params */
     /* structure. The default values to be set here are "STORESCU" and "ANY-SCP". */
@@ -165,7 +167,11 @@ M4DDicomAssociation::M4DDicomAssociation( string assocAddrID)
     /* available the user is able to request an encrypted,secure connection. */
 #define SECURED false
     cond = ASC_setTransportLayerType(m_assocParams, SECURED);
-    if (cond.bad()) throw new bad_exception("Security policy setup failed!");
+    if (cond.bad())
+	{
+		D_PRINT( "Security policy setup failed!");
+		throw new bad_exception();
+	}
 
     /* Figure out the presentation addresses and copy the */
     /* corresponding values into the association parameters.*/
@@ -183,48 +189,39 @@ void
 M4DDicomAssociation::Request( T_ASC_Network *net) throw (...)
 {
 	/* dump presentation contexts if required */
-    //if (opt_debug) {
-        printf("Request Parameters:\n");
-        ASC_dumpParameters(m_assocParams, COUT);
-    //}
+    D_PRINT("Request Parameters");
+    ASC_dumpParameters(m_assocParams, DOUT);
 
     /* create association, i.e. try to establish a network connection to another */
     /* DICOM application. This call creates an instance of T_ASC_Association*. */
-    //if (opt_verbose)
-        printf("Requesting Association\n");
+	D_PRINT("Requesting Association");
 
 	OFCondition cond = ASC_requestAssociation(net, m_assocParams, &m_assoc);
     if (cond.bad()) {
         if (cond == DUL_ASSOCIATIONREJECTED) {
             T_ASC_RejectParameters rej;
             ASC_getRejectParameters(m_assocParams, &rej);
-            printf("Association Rejected:");
-            ASC_printRejectParameters(stderr, &rej);
+			D_PRINT("Association Rejected due this params:");
+            ASC_printRejectParameters(DOUT, &rej);
 			throw new bad_exception("Assotiation rejected!");
         } else {
-            printf("Association Request Failed:");
-            DimseCondition::dump(cond);
+            D_PRINT("Association Request Failed");
 			throw new bad_exception("Association Request Failed!");
         }
     }
 
-    /* dump the presentation contexts which have been accepted/refused */
-    //if (opt_debug) {
-        printf("Association Parameters Negotiated:\n");
-        ASC_dumpParameters(m_assocParams, COUT);
-    //}	
+    D_PRINT("Association Parameters Negotiated");
 
     /* count the presentation contexts which have been accepted by the SCP */
     /* If there are none, finish the execution */
     if (ASC_countAcceptedPresentationContexts(m_assocParams) == 0) {
+		D_PRINT("No Acceptable Presentation Contexts");
         throw new bad_exception("No Acceptable Presentation Contexts");
     }
 
-    /* dump general information concerning the establishment of the network connection if required */
-    //if (opt_verbose) {
-        printf("Association Accepted (Max Send PDV: %lu)\n",
-                m_assoc->sendPDVLength);
-    //}
+    /* dump general information concerning the establishment 
+	of the network connection if required */
+	LOG("Association Accepted (Max Send PDV: " << m_assoc->sendPDVLength << ")");
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -290,7 +287,10 @@ M4DDicomAssociation::AddPresentationContext(T_ASC_Parameters *params)
     if( ASC_addPresentationContext(
 		params, 1, m_assocAddr->transferModel.c_str(),
 		transferSyntaxes, numTransferSyntaxes).bad() )
+	{
+		D_PRINT("ASC_addPresentationContext failed!");
 		throw new bad_exception("ASC_addPresentationContext failed!");
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -298,11 +298,11 @@ M4DDicomAssociation::AddPresentationContext(T_ASC_Parameters *params)
 void
 M4DDicomAssociation::Abort(void) throw (...)
 {
-	//if (opt_verbose)
-        printf("Aborting Association\n");
+	LOG("Aborting Association");
+
 	if( ASC_abortAssociation( m_assoc).bad())
 	{
-        printf("Association Abort Failed:");
+        D_PRINT("Association Abort Failed");
 		throw new bad_exception("Association Abort Failed");
     }
 }
@@ -312,13 +312,29 @@ M4DDicomAssociation::Abort(void) throw (...)
 void
 M4DDicomAssociation::Release(void)
 {
-	//if (opt_verbose)
-        printf("Releasing Association\n");
+    LOG("Releasing Association");
+
 	if( ASC_releaseAssociation(m_assoc).bad())
 	{
-        printf("Association Release Failed:");
+        D_PRINT("Association Release Failed!");
         throw new bad_exception("Association Release Failed");
     }
+}
+
+///////////////////////////////////////////////////////////////////////
+
+T_ASC_PresentationContextID
+M4DDicomAssociation::FindPresentationCtx( void) throw(...)
+{
+	T_ASC_PresentationContextID presId = 
+		ASC_findAcceptedPresentationContextID(
+			m_assoc,
+			m_assocAddr->transferModel.c_str() );
+    if (presId == 0) {
+        D_PRINT( "No presentation context");
+        throw new bad_exception("No presentation ctx");
+    }
+	return presId;
 }
 
 ///////////////////////////////////////////////////////////////////////

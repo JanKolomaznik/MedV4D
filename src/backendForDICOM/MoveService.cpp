@@ -7,6 +7,7 @@
 #include "AbstractService.h"
 #include "MoveService.h"
 
+#include "main.h"
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -55,8 +56,7 @@ M4DMoveService::M4DMoveService()
 	OFCondition cond = ASC_initializeNetwork(
 		NET_ACCEPTORREQUESTOR, RECIEVE_PORT, TIME_OUT, &m_net);
 	if (cond.bad()) {
-		DimseCondition::dump(cond);
-		exit(1);
+		D_PRINT( "Init network failed!");
 	}
 
 	// create assotiation
@@ -119,13 +119,7 @@ M4DMoveService::MoveSupport( DcmDataset *query,
     DcmDataset          *statusDetail = NULL;
 
     /* figure out which of the accepted presentation contexts should be used */
-    presId = ASC_findAcceptedPresentationContextID(
-		m_assocToServer->GetAssociation(),
-		m_assocToServer->GetAssocAddress()->transferModel.c_str() );
-    if (presId == 0) {
-        //errmsg("No presentation context");
-        throw new bad_exception("No presentation context");
-    }
+	presId = m_assocToServer->FindPresentationCtx();\
 	
     //MyCallbackInfo      callbackData;
     //callbackData.assoc = assoc;
@@ -170,18 +164,17 @@ M4DMoveService::MoveSupport( DcmDataset *query,
 	}    
 
     if (cond == EC_Normal) {
-        DIMSE_printCMoveRSP(stdout, &rsp);
+		LOG( "Move response");
         if (rspIds != NULL) {
-            printf("Response Identifiers:\n");
-            rspIds->print(COUT);
+            D_PRINT("Response Identifiers:\n");
+            rspIds->print(DOUT);
         }
     } else {
-        printf("Move Failed:");
-        DimseCondition::dump(cond);
+        D_PRINT("Move Failed:");
     }
     if (statusDetail != NULL) {
-        printf("  Status Detail:\n");
-        statusDetail->print(COUT);
+        D_PRINT("  Status Detail:\n");
+        statusDetail->print(DOUT);
         delete statusDetail;
     }
 
@@ -313,7 +306,8 @@ M4DMoveService::AcceptSubAssoc(T_ASC_Network * aNet, T_ASC_Association ** assoc)
     }
     if (cond.good()) cond = ASC_acknowledgeAssociation(*assoc);
     if (cond.bad()) {
-        throw new bad_exception("No acceptable image trasfer sytaxes!");
+		D_PRINT( "No acceptable image trasfer sytaxes!");
+        throw new bad_exception();
     }
 }
 
@@ -343,23 +337,11 @@ M4DMoveService::StoreSCPCallback(
         rsp->DimseStatus = STATUS_STORE_Refused_OutOfResources;
         return;
     }*/
- 
-  switch (progress->state)
-  {
-    case DIMSE_StoreBegin:
-      printf("RECV:");
-      break;
-    case DIMSE_StoreEnd:
-      printf("\n");
-      break;
-    default:
-      putchar('.');
-      break;
-  }
 
     if (progress->state == DIMSE_StoreEnd)
     {
 		// image recieved !!! Huraaaaa !!!!
+		LOG("Image recieved");
 
 		// set loaded flag
 		M4DDcmProvider::DicomObj *result = 
@@ -378,7 +360,10 @@ M4DMoveService::SubTransferOperationSCP(
     T_ASC_PresentationContextID presID;
 
     if (!ASC_dataWaiting(*subAssoc, 0)) /* just in case */
-        throw new bad_exception("No data waiting!");
+	{
+		D_PRINT("No data waiting!");
+        throw new bad_exception();
+	}
 
 #define MOVE_OPER_TIMEOUT 30
 
@@ -429,8 +414,8 @@ M4DMoveService::SubTransferOperationSCP(
             break;
 
         default:
-			throw new bad_exception(
-				"Unknown command recieved on sub assotation!");
+			D_PRINT("Unknown command recieved on sub assotation!");
+			throw new bad_exception();
             break;
         }
     }
@@ -440,7 +425,8 @@ M4DMoveService::SubTransferOperationSCP(
 	{
 		if( ASC_acknowledgeRelease(*subAssoc).bad())
 		{
-			throw new bad_exception("Release ACK not sent!");
+			D_PRINT("Release ACK not sent!");
+			throw new bad_exception();
 		}
 		ASC_dropSCPAssociation(*subAssoc);
 		ASC_destroyAssociation(subAssoc);
@@ -450,8 +436,7 @@ M4DMoveService::SubTransferOperationSCP(
 	}
 	else if (cond != EC_Normal)
 	{
-		printf("DIMSE Failure (aborting sub-association):\n");
-		DimseCondition::dump(cond);
+		LOG("DIMSE Failure (aborting sub-association)");
 		/* some kind of error so abort the association */
 		cond = ASC_abortAssociation(*subAssoc);
 	}
@@ -523,8 +508,7 @@ M4DMoveService::MoveCallback( void *callbackData, T_DIMSE_C_MoveRQ *request,
 {
 	// there is nothing much to do.
 	// just logg it
-    printf("Move Response %d: ", responseCount);
-    //DIMSE_printCMoveRSP(stdout, response->);
+	LOG("Move Response, #" << responseCount);
 }
 
 ///////////////////////////////////////////////////////////////////////

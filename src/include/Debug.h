@@ -85,4 +85,11 @@ extern std::ostream *pdout;
 
 //----------------------------------------------------------------------------
 
+////////////////////// logging ////////////////////////////
+extern std::ostream *logStream;
+#define currTime "0:00:00"  // TODO
+
+#define LOG( ARGs )	\
+	(*logStream) << currTime << ARGs << "\n------------------\n";
+
 #endif /*__DEBUG_H_*/

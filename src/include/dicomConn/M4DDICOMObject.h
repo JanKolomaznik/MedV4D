@@ -14,8 +14,8 @@ public:
 	inline bool IsLoaded( void) { return m_loaded; }
 
 	// load & save
-	void Load( string path) throw (...);
-	void Save( string path)	throw (...);
+	void Load( const string &path) throw (...);
+	void Save( const string &path)	throw (...);
 
 	////////////////////////////////////////////////////////////
 	// simple methods that returns values of each tag

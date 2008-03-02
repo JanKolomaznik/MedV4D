@@ -40,12 +40,18 @@
 #include "MoveService.h"
 #include "FindService.h"
 
+#include "main.h"
+
 #ifdef WITH_OPENSSL
 #include "dcmtk/dcmtls/tlstrans.h"
 #include "dcmtk/dcmtls/tlslayer.h"
 #endif
 
 using namespace std;
+
+// set log & debug streams
+std::ostream *logStream = &std::cout;
+std::ostream *pdout = &std::cout;
 
 int
 main( void)
@@ -80,13 +86,15 @@ main( void)
 
 		int i=0;
 		char fileName[32];
+		string pok;
 		for( M4DDcmProvider::M4DDicomObjSet::iterator it = obj.begin();
 			it != obj.end();
 			it++)
 		{
+			pok = it->GetPatientName();
 			sprintf( fileName, "C:\\pok%d.dcm", i++);
 			it->Save( fileName );
-		} 
+		}
 
 
 	} catch( bad_exception *e) {
