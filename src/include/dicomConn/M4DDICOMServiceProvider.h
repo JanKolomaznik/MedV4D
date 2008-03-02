@@ -6,12 +6,12 @@
 
 using namespace std;
 
-#include "M4DDICOMObject.h"
-
 class M4DDicomServiceProvider
 {
 public:
 	// TYPEDEFS ///////////////////////////////////////////////////////////
+
+	class M4DDicomObj;
 
 	// represents one row in table that shows found results
 	typedef struct s_browserRow {
@@ -62,5 +62,7 @@ public:
 		string &serieID,
 		M4DDicomObjSet &result);
 };
+
+#include "M4DDICOMObject.h"
 
 #endif

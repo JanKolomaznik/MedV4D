@@ -1,7 +1,7 @@
 #ifndef M4D_DICOM_OBJECT
 #define M4D_DICOM_OBJECT
 
-class M4DDicomObj
+class M4DDicomServiceProvider::M4DDicomObj
 {
 private:
 	//friend class M4DMoveService;

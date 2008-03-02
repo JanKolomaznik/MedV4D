@@ -23,7 +23,8 @@ private :
 		const string *setID,
 		const string *imageID);
 
-	void MoveSupport( DcmDataset *query, void *data, enum eCallType type) throw (...);
+	void MoveSupport( DcmDataset *query, void *data,
+		enum eCallType type) throw (...);
 
 	static void
 	MoveCallback(void *callbackData, T_DIMSE_C_MoveRQ *request,
@@ -52,7 +53,8 @@ private :
 		void *callbackData,					/* in */
 		T_DIMSE_StoreProgress *progress,    /* progress state */
 		T_DIMSE_C_StoreRQ *req,             /* original store request */
-		char *imageFileName, DcmDataset **imageDataSet, /* being received into */
+		char *imageFileName, 
+		DcmDataset **imageDataSet, /* being received into */
 		/* out */
 		T_DIMSE_C_StoreRSP *rsp,            /* final store response */
 		DcmDataset **statusDetail);
@@ -66,7 +68,7 @@ public:
 		const string &studyID,
 		const string &setID,
 		const string &imageID,
-		M4DDicomObj &rs) throw (...);
+		M4DDicomServiceProvider::M4DDicomObj &rs) throw (...);
 
 	void MoveImageSet(
 		const string &patientID,

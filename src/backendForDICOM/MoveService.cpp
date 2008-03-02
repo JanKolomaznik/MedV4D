@@ -78,7 +78,7 @@ M4DMoveService::MoveImage(
 		const string &studyID,
 		const string &setID,
 		const string &imageID,
-		M4DDicomObj &rs) throw (...)
+		M4DDicomServiceProvider::M4DDicomObj &rs) throw (...)
 {
 	DcmDataset *query = NULL;
 	GetQuery( &query, &patientID, &studyID, &setID, &imageID);
@@ -362,7 +362,8 @@ M4DMoveService::StoreSCPCallback(
 		// image recieved !!! Huraaaaa !!!!
 
 		// set loaded flag
-		M4DDicomObj *result = static_cast<M4DDicomObj *>(callbackData);
+		M4DDicomServiceProvider::M4DDicomObj *result = 
+			static_cast<M4DDicomServiceProvider::M4DDicomObj *>(callbackData);
 		result->m_loaded = true;
 	}
 }
@@ -381,27 +382,22 @@ M4DMoveService::SubTransferOperationSCP(
 
 #define MOVE_OPER_TIMEOUT 30
 
-    OFCondition cond = DIMSE_receiveCommand(*subAssoc, DIMSE_NONBLOCKING, MOVE_OPER_TIMEOUT, &presID,
-            &msg, NULL);
+    OFCondition cond = DIMSE_receiveCommand(
+		*subAssoc, DIMSE_NONBLOCKING, MOVE_OPER_TIMEOUT, &presID,
+        &msg, NULL);
 
 	T_DIMSE_C_StoreRQ *req;
-	M4DDicomObj *result;
+	M4DDicomServiceProvider::M4DDicomObj *result = NULL;
 
 	M4DDicomServiceProvider::M4DDicomObjSet *set;
-	M4DDicomObj buddy;
+	M4DDicomServiceProvider::M4DDicomObj buddy;
 
     if (cond == EC_Normal) 
 	{
         switch (msg.CommandField) {
         case DIMSE_C_STORE_RQ:
 			cond = EC_Normal;
-			req = &msg.msg.CStoreRQ;
-
-			//StoreCallbackData callbackData;
-			//callbackData.assoc = assoc;
-			//callbackData.imageFileName = imageFileName;
-			//DcmFileFormat dcmff;
-			//callbackData.dcmff = &dcmff;			
+			req = &msg.msg.CStoreRQ;	
 
 			switch( type)
 			{
@@ -417,7 +413,8 @@ M4DMoveService::SubTransferOperationSCP(
 				break;
 
 			case eCallType::SINGLE_IMAGE:
-				result = static_cast<M4DDicomObj *>(data);
+				result = 
+					static_cast<M4DDicomServiceProvider::M4DDicomObj *>(data);
 				break;
 			}
 
@@ -432,7 +429,8 @@ M4DMoveService::SubTransferOperationSCP(
             break;
 
         default:
-			throw new bad_exception("Unknown command recieved on sub assotation!");
+			throw new bad_exception(
+				"Unknown command recieved on sub assotation!");
             break;
         }
     }

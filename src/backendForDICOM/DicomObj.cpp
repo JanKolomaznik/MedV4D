@@ -3,19 +3,20 @@
 
 using namespace std;
 
-#include "M4DDICOMObject.h"
+#include "M4DDICOMServiceProvider.h"
 
 #include "dcmtk/dcmdata/dcdeftag.h"
 #include "dcmtk/dcmdata/dcfilefo.h"
 
-M4DDicomObj::M4DDicomObj()
+M4DDicomServiceProvider::M4DDicomObj::M4DDicomObj()
 {
 	m_dataset = NULL;
 	m_loaded = false;
 }
 
 void
-M4DDicomObj::Save( string path)	throw (...)
+M4DDicomServiceProvider::M4DDicomObj::Save( string path)	
+	throw (...)
 {
 	if( m_dataset == NULL)
 		return;
