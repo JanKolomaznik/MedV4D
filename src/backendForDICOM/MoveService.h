@@ -12,8 +12,8 @@ class M4DMoveService : M4DAbstractService
 private :
 
 	enum eCallType {
-		SINGLE_IMAGE,		// only single image -> retype to M4DDICOMObj
-		IMAGE_SET			// retype to vector<M4DDICOMObj>
+		SINGLE_IMAGE,		// only single image -> retype to DicomObj
+		IMAGE_SET			// retype to vector<DicomObj>
 	};
 
 	void GetQuery( 
@@ -68,13 +68,13 @@ public:
 		const string &studyID,
 		const string &setID,
 		const string &imageID,
-		M4DDicomServiceProvider::M4DDicomObj &rs) throw (...);
+		M4DDcmProvider::DicomObj &rs) throw (...);
 
 	void MoveImageSet(
 		const string &patientID,
 		const string &studyID,
 		const string &serieID,
-		M4DDicomServiceProvider::M4DDicomObjSet &result) throw (...);
+		M4DDcmProvider::M4DDicomObjSet &result) throw (...);
 	
 };
 

@@ -50,9 +50,9 @@ using namespace std;
 int
 main( void)
 {
-	M4DDicomServiceProvider::ResultSet result;
-	M4DDicomServiceProvider::M4DStudyInfo studyInfo;
-	M4DDicomServiceProvider::M4DDicomObjSet obj;
+	M4DDcmProvider::ResultSet result;
+	M4DDcmProvider::StudyInfo studyInfo;
+	M4DDcmProvider::M4DDicomObjSet obj;
 
 	string patientName = "";
 	string patientID = "";
@@ -68,7 +68,7 @@ main( void)
 		findService.FindForFilter( 
 			result, patientName, patientID, modality, dateFrom, dateTo);
 
-		M4DDicomServiceProvider::M4DTableRow *row = &result[0];
+		M4DDcmProvider::TableRow *row = &result[0];
 
 		// find some info about selected study
 		findService.FindStudyInfo( row->patentID, row->studyID, studyInfo);
@@ -80,7 +80,7 @@ main( void)
 
 		int i=0;
 		char fileName[32];
-		for( M4DDicomServiceProvider::M4DDicomObjSet::iterator it = obj.begin();
+		for( M4DDcmProvider::M4DDicomObjSet::iterator it = obj.begin();
 			it != obj.end();
 			it++)
 		{

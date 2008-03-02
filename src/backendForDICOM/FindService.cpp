@@ -180,7 +180,7 @@ M4DFindService::FindSupport(
 
 void
 M4DFindService::FindStudiesAboutPatient( 
-		M4DDicomServiceProvider::ResultSet &result, 
+		M4DDcmProvider::ResultSet &result, 
 		string &patientID) throw (...)
 {
 	// create query
@@ -195,7 +195,7 @@ M4DFindService::FindStudiesAboutPatient(
 
 void
 M4DFindService::FindForFilter( 
-		M4DDicomServiceProvider::ResultSet &result, 
+		M4DDcmProvider::ResultSet &result, 
 		string &patientName,
 		string &patientID,
 		string &modality,
@@ -216,7 +216,7 @@ void
 M4DFindService::FindStudyInfo(
 		string &patientID,
 		string &studyID,
-		M4DDicomServiceProvider::M4DStudyInfo &info) throw (...)
+		M4DDcmProvider::StudyInfo &info) throw (...)
 {
 	// create query
 	DcmDataset *query = NULL;
@@ -257,7 +257,7 @@ M4DFindService::TableRowCallback(
 	//////////////////////////////////////////////////
 	// Parse the response
 	//////////////////////////////////////////////////
-	M4DDicomServiceProvider::M4DTableRow *row = new M4DDicomServiceProvider::M4DTableRow;
+	M4DDcmProvider::TableRow *row = new M4DDcmProvider::TableRow;
 
 	responseIdentifiers->findAndGetOFString( DCM_PatientsName, str);
 	row->patientName = str.c_str();
@@ -282,8 +282,8 @@ M4DFindService::TableRowCallback(
 	row->modality = str.c_str();
 
 	// finaly add the new row into result set. SYNCHRONIZED?
-	M4DDicomServiceProvider::ResultSet *rs = 
-		static_cast<M4DDicomServiceProvider::ResultSet *>(callbackData);
+	M4DDcmProvider::ResultSet *rs = 
+		static_cast<M4DDcmProvider::ResultSet *>(callbackData);
 
 	rs->push_back(*row);
 }
@@ -323,20 +323,20 @@ M4DFindService::StudyInfoCallback(
 	setID = str.c_str();
 
 	// get container that recieved values should go into
-	M4DDicomServiceProvider::M4DStudyInfo *setInfo = 
-		static_cast<M4DDicomServiceProvider::M4DStudyInfo*>(callbackData);
+	M4DDcmProvider::StudyInfo *setInfo = 
+		static_cast<M4DDcmProvider::StudyInfo*>(callbackData);
 
-	M4DDicomServiceProvider::M4DImageIDsInSet *setImages;
+	M4DDcmProvider::ImageIDsInSet *setImages;
 	// try to find if there is already just recieved setID within the container
-	M4DDicomServiceProvider::M4DStudyInfo::iterator it = 
+	M4DDcmProvider::StudyInfo::iterator it = 
 		setInfo->find( setID);
 	
 	if( it == setInfo->end() )
 	{
-		// create new M4DImageIDsInSet & insert it into setInfo
-		M4DDicomServiceProvider::M4DImageIDsInSet buddy;
+		// create new ImageIDsInSet & insert it into setInfo
+		M4DDcmProvider::ImageIDsInSet buddy;
 		setInfo->insert( 
-			M4DDicomServiceProvider::M4DStudyInfo::value_type( setID, buddy) );
+			M4DDcmProvider::StudyInfo::value_type( setID, buddy) );
 		setImages = &setInfo->find( setID)->second;
 	}	
 	else

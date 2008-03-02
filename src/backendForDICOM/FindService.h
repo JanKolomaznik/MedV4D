@@ -50,7 +50,7 @@ public:
 	~M4DFindService();
 
 	void FindForFilter( 
-		M4DDicomServiceProvider::ResultSet &result,
+		M4DDcmProvider::ResultSet &result,
 		string &patientName,
 		string &patientID,
 		string &modality,
@@ -58,13 +58,13 @@ public:
 		string &dateTo) throw (...);
 
 	void FindStudiesAboutPatient( 
-		M4DDicomServiceProvider::ResultSet &result, 
+		M4DDcmProvider::ResultSet &result, 
 		string &patientID) throw (...);
 
 	void FindStudyInfo(
 		string &patientID,
 		string &studyID,
-		M4DDicomServiceProvider::M4DStudyInfo &info) throw (...);
+		M4DDcmProvider::StudyInfo &info) throw (...);
 
 	
 };

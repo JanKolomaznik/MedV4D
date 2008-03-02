@@ -6,12 +6,12 @@
 
 using namespace std;
 
-class M4DDicomServiceProvider
+class M4DDcmProvider
 {
 public:
 	// TYPEDEFS ///////////////////////////////////////////////////////////
 
-	class M4DDicomObj;
+	class DicomObj;
 
 	// represents one row in table that shows found results
 	typedef struct s_browserRow {
@@ -22,17 +22,17 @@ public:
 		string studyID;
 		string studyDate;
 		string modality;
-	} M4DTableRow;
+	} TableRow;
 
-	typedef vector<M4DTableRow> ResultSet;
+	typedef vector<TableRow> ResultSet;
 	typedef vector<string> StringVector;
 
 	// vector of image IDs
-	typedef vector<string> M4DImageIDsInSet;
+	typedef vector<string> ImageIDsInSet;
 	// vector of M4DSetInfo
-	typedef map<string, M4DImageIDsInSet> M4DStudyInfo;
+	typedef map<string, ImageIDsInSet> StudyInfo;
 
-	typedef vector<M4DDicomObj> M4DDicomObjSet;
+	typedef vector<DicomObj> M4DDicomObjSet;
 
 	// METHODs ////////////////////////////////////////////////////////////
 
@@ -47,14 +47,14 @@ public:
 	void FindStudyInfo(
 		string &patientID,
 		string &studyID,
-		M4DStudyInfo &info);
+		StudyInfo &info);
 
 	void GetImage(
 		string &patientID,
 		string &studyID,
 		string &serieID,
 		string &imageID,
-		M4DDicomObj &object);
+		DicomObj &object);
 
 	void GetImageSet(
 		string &patientID,

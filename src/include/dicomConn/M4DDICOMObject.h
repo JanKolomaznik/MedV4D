@@ -1,7 +1,7 @@
 #ifndef M4D_DICOM_OBJECT
 #define M4D_DICOM_OBJECT
 
-class M4DDicomServiceProvider::M4DDicomObj
+class M4DDcmProvider::DicomObj
 {
 private:
 	//friend class M4DMoveService;
@@ -38,7 +38,7 @@ public:
 	
 	////////////////////////////////////////////////////////////
 
-	M4DDicomObj();
+	DicomObj();
 };
 
 #endif

@@ -8,14 +8,14 @@ using namespace std;
 #include "dcmtk/dcmdata/dcdeftag.h"
 #include "dcmtk/dcmdata/dcfilefo.h"
 
-M4DDicomServiceProvider::M4DDicomObj::M4DDicomObj()
+M4DDcmProvider::DicomObj::DicomObj()
 {
 	m_dataset = NULL;
 	m_loaded = false;
 }
 
 void
-M4DDicomServiceProvider::M4DDicomObj::Save( string path)	
+M4DDcmProvider::DicomObj::Save( string path)	
 	throw (...)
 {
 	if( m_dataset == NULL)

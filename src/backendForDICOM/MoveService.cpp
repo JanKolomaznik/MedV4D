@@ -78,7 +78,7 @@ M4DMoveService::MoveImage(
 		const string &studyID,
 		const string &setID,
 		const string &imageID,
-		M4DDicomServiceProvider::M4DDicomObj &rs) throw (...)
+		M4DDcmProvider::DicomObj &rs) throw (...)
 {
 	DcmDataset *query = NULL;
 	GetQuery( &query, &patientID, &studyID, &setID, &imageID);
@@ -93,7 +93,7 @@ M4DMoveService::MoveImageSet(
 		const string &patientID,
 		const string &studyID,
 		const string &serieID,
-		M4DDicomServiceProvider::M4DDicomObjSet &result)
+		M4DDcmProvider::M4DDicomObjSet &result)
 {
 	DcmDataset *query = NULL;
 	GetQuery( &query, &patientID, &studyID, &serieID, NULL);
@@ -362,8 +362,8 @@ M4DMoveService::StoreSCPCallback(
 		// image recieved !!! Huraaaaa !!!!
 
 		// set loaded flag
-		M4DDicomServiceProvider::M4DDicomObj *result = 
-			static_cast<M4DDicomServiceProvider::M4DDicomObj *>(callbackData);
+		M4DDcmProvider::DicomObj *result = 
+			static_cast<M4DDcmProvider::DicomObj *>(callbackData);
 		result->m_loaded = true;
 	}
 }
@@ -387,10 +387,10 @@ M4DMoveService::SubTransferOperationSCP(
         &msg, NULL);
 
 	T_DIMSE_C_StoreRQ *req;
-	M4DDicomServiceProvider::M4DDicomObj *result = NULL;
+	M4DDcmProvider::DicomObj *result = NULL;
 
-	M4DDicomServiceProvider::M4DDicomObjSet *set;
-	M4DDicomServiceProvider::M4DDicomObj buddy;
+	M4DDcmProvider::M4DDicomObjSet *set;
+	M4DDcmProvider::DicomObj buddy;
 
     if (cond == EC_Normal) 
 	{
@@ -404,7 +404,7 @@ M4DMoveService::SubTransferOperationSCP(
 			case eCallType::IMAGE_SET:
 				// insert new DICOMObj into container
 				set = static_cast<
-					M4DDicomServiceProvider::M4DDicomObjSet *>(data);
+					M4DDcmProvider::M4DDicomObjSet *>(data);
 
 				// SINCHRONIZE !!! ???
 				set->push_back( buddy);
@@ -414,7 +414,7 @@ M4DMoveService::SubTransferOperationSCP(
 
 			case eCallType::SINGLE_IMAGE:
 				result = 
-					static_cast<M4DDicomServiceProvider::M4DDicomObj *>(data);
+					static_cast<M4DDcmProvider::DicomObj *>(data);
 				break;
 			}
 
