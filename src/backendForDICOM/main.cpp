@@ -36,6 +36,8 @@
 
 #include "M4DDicomAssoc.h"
 #include "M4DDICOMServiceProvider.h"
+#include "AbstractService.h"
+#include "MoveService.h"
 #include "FindService.h"
 
 #ifdef WITH_OPENSSL
@@ -49,11 +51,38 @@ int
 main( void)
 {
 	M4DDicomServiceProvider::ResultSet result;
+	M4DDicomServiceProvider::M4DStudyInfo studyInfo;
+	M4DDicomObj obj;
+
+	string patientName = "";
+	string patientID = "";
+	string modality = "";
+	string dateFrom = "";
+	string dateTo = "";
 
 	try {
+		// create service objects
 		M4DFindService findService;
 
-		findService.Find( result);
+		// find some patient & studies info
+		findService.FindForFilter( 
+			result, patientName, patientID, modality, dateFrom, dateTo);
+
+		M4DDicomServiceProvider::M4DTableRow *row = &result[0];
+
+		// find some info about selected study
+		findService.FindStudyInfo( row->patentID, row->studyID, studyInfo);
+
+
+
+		M4DMoveService moveService;
+		// now get image
+		moveService.MoveImage( row->patentID, row->studyID,
+			studyInfo.begin()->first , studyInfo.begin()->second[0], obj);
+
+		int i = 0;
+
+
 	} catch( bad_exception *e) {
 		cout << e->what();
 		delete e;

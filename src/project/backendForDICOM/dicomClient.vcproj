@@ -193,7 +193,15 @@
 				Name="DICOMServices"
 				>
 				<File
+					RelativePath="..\..\backendForDICOM\AbstractService.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\backendForDICOM\FindService.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\backendForDICOM\MoveService.cpp"
 					>
 				</File>
 			</Filter>
@@ -227,7 +235,15 @@
 				Name="DICOMServices"
 				>
 				<File
+					RelativePath="..\..\backendForDICOM\AbstractService.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\backendForDICOM\FindService.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\backendForDICOM\MoveService.h"
 					>
 				</File>
 			</Filter>

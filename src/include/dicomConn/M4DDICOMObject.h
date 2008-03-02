@@ -4,9 +4,15 @@
 class M4DDicomObj
 {
 private:
-	void *m_dataset;
-
+	//friend class M4DMoveService;
+	
 public:
+	// TODO - make private
+	void *m_dataset;
+	bool m_loaded;
+
+	inline bool IsLoaded( void) { return m_loaded; }
+
 	// load & save
 	void Load( string path) throw (...);
 	void Save( string path)	throw (...);
@@ -31,6 +37,8 @@ public:
 	// ...
 	
 	////////////////////////////////////////////////////////////
+
+	M4DDicomObj();
 };
 
 #endif

@@ -134,7 +134,7 @@ M4DDicomAssociation::~M4DDicomAssociation( void)
 
 ///////////////////////////////////////////////////////////////////////
 
-M4DDicomAssociation::M4DDicomAssociation( T_ASC_Network *net, string assocAddrID)
+M4DDicomAssociation::M4DDicomAssociation( string assocAddrID)
 	throw (...)
 {
 	// check if we have loaded config file
@@ -144,19 +144,18 @@ M4DDicomAssociation::M4DDicomAssociation( T_ASC_Network *net, string assocAddrID
 	// get address from container
 	this->m_assocAddr = GetAddress( assocAddrID);
 
-	T_ASC_Parameters *params;
 	DIC_NODENAME localHost;
     DIC_NODENAME peerHost;
 
 	OFCondition cond;
 
 	/* initialize asscociation parameters, i.e. create an instance of T_ASC_Parameters*. */
-    cond = ASC_createAssociationParameters(&params, ASC_DEFAULTMAXPDU);
+    cond = ASC_createAssociationParameters(&m_assocParams, ASC_DEFAULTMAXPDU);
     if (cond.bad())	throw new bad_exception("Assoc params could not be created!");
 
     /* sets this application's title and the called application's title in the params */
     /* structure. The default values to be set here are "STORESCU" and "ANY-SCP". */
-	ASC_setAPTitles(params, 
+	ASC_setAPTitles(m_assocParams, 
 		m_assocAddr->callingAPTitle.c_str(),
 		m_assocAddr->calledDBName.c_str(),
 		NULL);
@@ -165,7 +164,7 @@ M4DDicomAssociation::M4DDicomAssociation( T_ASC_Network *net, string assocAddrID
     /* structure. The default is an insecure connection; where OpenSSL is  */
     /* available the user is able to request an encrypted,secure connection. */
 #define SECURED false
-    cond = ASC_setTransportLayerType(params, SECURED);
+    cond = ASC_setTransportLayerType(m_assocParams, SECURED);
     if (cond.bad()) throw new bad_exception("Security policy setup failed!");
 
     /* Figure out the presentation addresses and copy the */
@@ -173,16 +172,20 @@ M4DDicomAssociation::M4DDicomAssociation( T_ASC_Network *net, string assocAddrID
     gethostname(localHost, sizeof(localHost) - 1);
 	sprintf(peerHost, "%s:%d", 
 		m_assocAddr->calledServerName.c_str(), m_assocAddr->calledServerPort);
-    ASC_setPresentationAddresses(params, localHost, peerHost);
+    ASC_setPresentationAddresses(m_assocParams, localHost, peerHost);
 
     /* Set the presentation contexts which will be negotiated */
     /* when the network connection will be established */
-	AddPresentationContext( params);
+	AddPresentationContext( m_assocParams);
+}
 
-    /* dump presentation contexts if required */
+void
+M4DDicomAssociation::Request( T_ASC_Network *net) throw (...)
+{
+	/* dump presentation contexts if required */
     //if (opt_debug) {
         printf("Request Parameters:\n");
-        ASC_dumpParameters(params, COUT);
+        ASC_dumpParameters(m_assocParams, COUT);
     //}
 
     /* create association, i.e. try to establish a network connection to another */
@@ -190,11 +193,11 @@ M4DDicomAssociation::M4DDicomAssociation( T_ASC_Network *net, string assocAddrID
     //if (opt_verbose)
         printf("Requesting Association\n");
 
-	cond = ASC_requestAssociation(net, params, &m_assoc);
+	OFCondition cond = ASC_requestAssociation(net, m_assocParams, &m_assoc);
     if (cond.bad()) {
         if (cond == DUL_ASSOCIATIONREJECTED) {
             T_ASC_RejectParameters rej;
-            ASC_getRejectParameters(params, &rej);
+            ASC_getRejectParameters(m_assocParams, &rej);
             printf("Association Rejected:");
             ASC_printRejectParameters(stderr, &rej);
 			throw new bad_exception("Assotiation rejected!");
@@ -208,12 +211,12 @@ M4DDicomAssociation::M4DDicomAssociation( T_ASC_Network *net, string assocAddrID
     /* dump the presentation contexts which have been accepted/refused */
     //if (opt_debug) {
         printf("Association Parameters Negotiated:\n");
-        ASC_dumpParameters(params, COUT);
+        ASC_dumpParameters(m_assocParams, COUT);
     //}	
 
     /* count the presentation contexts which have been accepted by the SCP */
     /* If there are none, finish the execution */
-    if (ASC_countAcceptedPresentationContexts(params) == 0) {
+    if (ASC_countAcceptedPresentationContexts(m_assocParams) == 0) {
         throw new bad_exception("No Acceptable Presentation Contexts");
     }
 
