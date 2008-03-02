@@ -52,7 +52,7 @@ main( void)
 {
 	M4DDicomServiceProvider::ResultSet result;
 	M4DDicomServiceProvider::M4DStudyInfo studyInfo;
-	M4DDicomObj obj;
+	M4DDicomServiceProvider::M4DDicomObjSet obj;
 
 	string patientName = "";
 	string patientID = "";
@@ -73,14 +73,20 @@ main( void)
 		// find some info about selected study
 		findService.FindStudyInfo( row->patentID, row->studyID, studyInfo);
 
-
-
 		M4DMoveService moveService;
 		// now get image
-		moveService.MoveImage( row->patentID, row->studyID,
-			studyInfo.begin()->first , studyInfo.begin()->second[0], obj);
+		moveService.MoveImageSet( row->patentID, row->studyID,
+			studyInfo.begin()->first, obj);
 
-		int i = 0;
+		int i=0;
+		char fileName[32];
+		for( M4DDicomServiceProvider::M4DDicomObjSet::iterator it = obj.begin();
+			it != obj.end();
+			it++)
+		{
+			sprintf( fileName, "C:\\pok%d.dcm", i++);
+			it->Save( fileName );
+		} 
 
 
 	} catch( bad_exception *e) {

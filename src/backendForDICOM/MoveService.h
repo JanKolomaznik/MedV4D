@@ -16,11 +16,6 @@ private :
 		IMAGE_SET			// retype to vector<M4DDICOMObj>
 	};
 
-	typedef struct eCallbackData {
-		enum eCallType type,
-		void *data,
-	} CallbackData;
-
 	void GetQuery( 
 		DcmDataset **query,
 		const string *patientID,
@@ -28,21 +23,30 @@ private :
 		const string *setID,
 		const string *imageID);
 
-	void MoveSupport( DcmDataset *query, M4DDicomObj &rs) throw (...);
+	void MoveSupport( DcmDataset *query, void *data, enum eCallType type) throw (...);
 
 	static void
 	MoveCallback(void *callbackData, T_DIMSE_C_MoveRQ *request,
 		int responseCount, T_DIMSE_C_MoveRSP *response);
 
 	static void
-	SubAssocCallback(void * /*subOpCallbackData*/ ,
+	SubAssocCallback(void *subOpCallbackData,
+        T_ASC_Network *aNet, T_ASC_Association **subAssoc);
+
+	inline static void
+	SubAssocCallbackSupp(void *subOpCallbackData,
+        T_ASC_Network *aNet, T_ASC_Association **subAssoc, eCallType type);
+
+	static void
+	SubAssocCallbackWholeSet(void *subOpCallbackData,
         T_ASC_Network *aNet, T_ASC_Association **subAssoc);
 
 	static void AcceptSubAssoc(
 		T_ASC_Network * aNet, T_ASC_Association ** assoc) throw (...);
 
 	static void	SubTransferOperationSCP(
-		T_ASC_Association **subAssoc, void *dicomOBJRef) throw (...);
+		T_ASC_Association **subAssoc, 
+		void *dicomOBJRef, eCallType type) throw (...);
 
 	static void StoreSCPCallback(    
 		void *callbackData,					/* in */
@@ -67,8 +71,8 @@ public:
 	void MoveImageSet(
 		const string &patientID,
 		const string &studyID,
-		const string &serieID
-		M4DDicomObjSet &result) throw (...);
+		const string &serieID,
+		M4DDicomServiceProvider::M4DDicomObjSet &result) throw (...);
 	
 };
 

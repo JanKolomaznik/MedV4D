@@ -41,8 +41,7 @@ M4DMoveService::GetQuery(
 	// iamge info
 	if( imageID != NULL)
 	{
-		DU_putStringDOElement(*query, DCM_InstanceNumber, 
-			(imageID == NULL) ? NULL : imageID->c_str());
+		DU_putStringDOElement(*query, DCM_SOPInstanceUID, imageID->c_str());
 	}
 }
 
@@ -84,7 +83,7 @@ M4DMoveService::MoveImage(
 	DcmDataset *query = NULL;
 	GetQuery( &query, &patientID, &studyID, &setID, &imageID);
 
-	MoveSupport( query, rs);
+	MoveSupport( query, (void *)&rs, eCallType::SINGLE_IMAGE);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -93,25 +92,20 @@ void
 M4DMoveService::MoveImageSet(
 		const string &patientID,
 		const string &studyID,
-		const string &serieID
-		M4DDicomObjSet &result)
+		const string &serieID,
+		M4DDicomServiceProvider::M4DDicomObjSet &result)
 {
 	DcmDataset *query = NULL;
 	GetQuery( &query, &patientID, &studyID, &serieID, NULL);
 
-	// prepare data for callback
-	CallbackData *cd = new CallbackData;
-	cd->type = eCallType::IMAGE_SET;
-	cd->data = &result;
-
-	MoveSupport( query, cd);
+	MoveSupport( query, (void *)&result, eCallType::IMAGE_SET);
 }
 
 ///////////////////////////////////////////////////////////////////////
 
 void
 M4DMoveService::MoveSupport( DcmDataset *query,
-	M4DDicomObj &rs) throw (...)
+	void *data, enum eCallType type) throw (...)
 {
 	// request assoc to server
 	m_assocToServer->Request(m_net);
@@ -150,13 +144,30 @@ M4DMoveService::MoveSupport( DcmDataset *query,
 
 #define FIND_OPER_TIMEOUT 0
 
-    OFCondition cond = DIMSE_moveUser(
-		m_assocToServer->GetAssociation(),
-		presId, &req, query,
-        MoveCallback, NULL, 
-		DIMSE_BLOCKING, FIND_OPER_TIMEOUT,
-        m_net, SubAssocCallback, (void *)&rs,
-        &rsp, &statusDetail, &rspIds, false);
+	// do the work
+	OFCondition cond;
+	switch( type)
+	{
+	case eCallType::SINGLE_IMAGE:
+		cond = DIMSE_moveUser(
+			m_assocToServer->GetAssociation(),
+			presId, &req, query,
+			MoveCallback, NULL, 
+			DIMSE_BLOCKING, FIND_OPER_TIMEOUT,
+			m_net, SubAssocCallback, data,
+			&rsp, &statusDetail, &rspIds, false);
+		break;
+
+	case eCallType::IMAGE_SET:
+		cond = DIMSE_moveUser(
+			m_assocToServer->GetAssociation(),
+			presId, &req, query,
+			MoveCallback, NULL, 
+			DIMSE_BLOCKING, FIND_OPER_TIMEOUT,
+			m_net, SubAssocCallbackWholeSet, data,
+			&rsp, &statusDetail, &rspIds, false);
+		break;
+	}    
 
     if (cond == EC_Normal) {
         DIMSE_printCMoveRSP(stdout, &rsp);
@@ -360,7 +371,7 @@ M4DMoveService::StoreSCPCallback(
 
 void
 M4DMoveService::SubTransferOperationSCP(
-	T_ASC_Association **subAssoc, void *dicomOBJRef) throw (...)
+	T_ASC_Association **subAssoc, void *data, eCallType type) throw (...)
 {
     T_DIMSE_Message     msg;
     T_ASC_PresentationContextID presID;
@@ -376,6 +387,9 @@ M4DMoveService::SubTransferOperationSCP(
 	T_DIMSE_C_StoreRQ *req;
 	M4DDicomObj *result;
 
+	M4DDicomServiceProvider::M4DDicomObjSet *set;
+	M4DDicomObj buddy;
+
     if (cond == EC_Normal) 
 	{
         switch (msg.CommandField) {
@@ -387,9 +401,25 @@ M4DMoveService::SubTransferOperationSCP(
 			//callbackData.assoc = assoc;
 			//callbackData.imageFileName = imageFileName;
 			//DcmFileFormat dcmff;
-			//callbackData.dcmff = &dcmff;
+			//callbackData.dcmff = &dcmff;			
 
-			result = static_cast<M4DDicomObj *>(dicomOBJRef);
+			switch( type)
+			{
+			case eCallType::IMAGE_SET:
+				// insert new DICOMObj into container
+				set = static_cast<
+					M4DDicomServiceProvider::M4DDicomObjSet *>(data);
+
+				// SINCHRONIZE !!! ???
+				set->push_back( buddy);
+				result = &set->back();
+				// SINCHRONIZE !!! ???
+				break;
+
+			case eCallType::SINGLE_IMAGE:
+				result = static_cast<M4DDicomObj *>(data);
+				break;
+			}
 
 #define WRITE_METAHEADER false
 
@@ -397,36 +427,8 @@ M4DMoveService::SubTransferOperationSCP(
 				*subAssoc, presID, req, 
 				(char *)NULL, WRITE_METAHEADER,
 				(DcmDataset **)&result->m_dataset, 
-				StoreSCPCallback, dicomOBJRef,
+				StoreSCPCallback, (void *)result,
 				DIMSE_NONBLOCKING, MOVE_OPER_TIMEOUT);
-
-			/* clean up on association termination */
-			if (cond == DUL_PEERREQUESTEDRELEASE)
-			{
-				if( ASC_acknowledgeRelease(*subAssoc).bad())
-				{
-					throw new bad_exception("Release ACK not sent!");
-				}
-				ASC_dropSCPAssociation(*subAssoc);
-				ASC_destroyAssociation(subAssoc);
-			}
-			else if (cond == DUL_PEERABORTEDASSOCIATION)
-			{
-			}
-			else if (cond != EC_Normal)
-			{
-				printf("DIMSE Failure (aborting sub-association):\n");
-				DimseCondition::dump(cond);
-				/* some kind of error so abort the association */
-				cond = ASC_abortAssociation(*subAssoc);
-			}
-
-			if (cond != EC_Normal)
-			{
-				ASC_dropAssociation(*subAssoc);
-				ASC_destroyAssociation(subAssoc);
-			}
-
             break;
 
         default:
@@ -434,6 +436,33 @@ M4DMoveService::SubTransferOperationSCP(
             break;
         }
     }
+
+	/* clean up on association termination */
+	if (cond == DUL_PEERREQUESTEDRELEASE)
+	{
+		if( ASC_acknowledgeRelease(*subAssoc).bad())
+		{
+			throw new bad_exception("Release ACK not sent!");
+		}
+		ASC_dropSCPAssociation(*subAssoc);
+		ASC_destroyAssociation(subAssoc);
+	}
+	else if (cond == DUL_PEERABORTEDASSOCIATION)
+	{
+	}
+	else if (cond != EC_Normal)
+	{
+		printf("DIMSE Failure (aborting sub-association):\n");
+		DimseCondition::dump(cond);
+		/* some kind of error so abort the association */
+		cond = ASC_abortAssociation(*subAssoc);
+	}
+
+	if (cond != EC_Normal)
+	{
+		ASC_dropAssociation(*subAssoc);
+		ASC_destroyAssociation(subAssoc);
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -443,8 +472,36 @@ M4DMoveService::SubTransferOperationSCP(
  *	assotiation with us
  */
 void
-M4DMoveService::SubAssocCallback(void *subOpCallbackData ,
+M4DMoveService::SubAssocCallback(void *subOpCallbackData,
         T_ASC_Network *aNet, T_ASC_Association **subAssoc)
+{
+	SubAssocCallbackSupp( subOpCallbackData, aNet,
+		subAssoc, eCallType::SINGLE_IMAGE);
+}
+
+///////////////////////////////////////////////////////////////////////
+
+/**
+ *	Called when STORE-SCU on server side wants to establish transfer
+ *	assotiation with us
+ */
+void
+M4DMoveService::SubAssocCallbackWholeSet(void *subOpCallbackData,
+        T_ASC_Network *aNet, T_ASC_Association **subAssoc)
+{
+    SubAssocCallbackSupp( subOpCallbackData, aNet,
+		subAssoc, eCallType::IMAGE_SET);
+}
+
+///////////////////////////////////////////////////////////////////////
+
+/**
+ *	Called when STORE-SCU on server side wants to establish transfer
+ *	assotiation with us
+ */
+void
+M4DMoveService::SubAssocCallbackSupp(void *subOpCallbackData,
+        T_ASC_Network *aNet, T_ASC_Association **subAssoc, eCallType type)
 {
     if (aNet == NULL) return;   /* help no net ! */
 
@@ -453,7 +510,7 @@ M4DMoveService::SubAssocCallback(void *subOpCallbackData ,
         AcceptSubAssoc(aNet, subAssoc);
     } else {
         /* be a service class provider */
-        SubTransferOperationSCP( subAssoc, subOpCallbackData);
+        SubTransferOperationSCP( subAssoc, subOpCallbackData, type);
     }
 }
 
