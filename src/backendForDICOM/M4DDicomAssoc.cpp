@@ -2,9 +2,9 @@
 #include "dcmtk/dcmnet/dimse.h"
 #include "dcmtk/dcmnet/diutil.h"
 
-#include "M4DDicomAssoc.h"
-
 #include "main.h"
+
+#include "M4DDicomAssoc.h"
 
 ///////////////////////////////////////////////////////////////////////
 

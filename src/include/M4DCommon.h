@@ -27,14 +27,6 @@ typedef unsigned long long uint64;
 typedef float float32;
 typedef double float64;
 // others
-typedef int32 ssize_t;
-typedef int8 retval_t;
-
-/**
- * return values constants
- */
-#define E_OK			0
-#define E_FAILED		-1
-
+typedef uint32 size_t;
 
 #endif

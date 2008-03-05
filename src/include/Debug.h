@@ -43,9 +43,9 @@ extern std::ostream *pdout;
 #ifdef DEBUG_LEVEL
 	#ifdef DEBUG_ADITIONAL_INFO
 		#define D_PRINT( ARG )	\
-			DOUT <<"File: " <<__FILE__ \
-			<<"; Line: " <<__LINE__\
-			<<"\n"<<ARG;
+			DOUT << __FILE__ \
+			<< ":" << __LINE__ \
+			<< ":" << ARG << endl;
 	#else
 		#define D_PRINT( ARG )	\
 			DOUT <<ARG;

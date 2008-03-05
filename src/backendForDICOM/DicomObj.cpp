@@ -3,19 +3,18 @@
 
 using namespace std;
 
-#include "M4DDICOMServiceProvider.h"
-
 #include "dcmtk/dcmdata/dcdeftag.h"
 #include "dcmtk/dcmdata/dcfilefo.h"
 
 #include "main.h"
+#include "M4DDICOMServiceProvider.h"
 
 ///////////////////////////////////////////////////////////////////////
 
 M4DDcmProvider::DicomObj::DicomObj()
 {
 	m_dataset = NULL;
-	m_loaded = false;
+	m_status = Loading;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -75,3 +74,53 @@ M4DDcmProvider::DicomObj::GetPatientName( void) throw (...)
 }
 
 ///////////////////////////////////////////////////////////////////////
+
+void
+M4DDcmProvider::DicomObj::Init( void) throw (...)
+{
+	m_status = Loaded;
+
+	DcmDataset* dataSet = static_cast<DcmDataset *>(m_dataset);
+
+	if( dataSet == NULL)
+		throw new bad_exception("No data available!");
+
+	// get image with & height
+	dataSet->findAndGetUint16( DCM_Columns, m_width);
+	dataSet->findAndGetUint16( DCM_Rows, m_height);
+
+	// get pixel attribs
+	dataSet->findAndGetUint16( DCM_BitsStored, m_bitsStored);
+	dataSet->findAndGetUint16( DCM_BitsAllocated, m_bitsAllocated);
+	dataSet->findAndGetUint16( DCM_HighBit, m_highBit);
+
+	uint8 data[1024];
+	const uint8 *dataPtr = data;
+	unsigned long count = 10;
+
+	OFCondition cond = dataSet->findAndGetUint8Array( DCM_PixelData, dataPtr, &count);
+	if( cond.good() )
+	{
+		D_PRINT("DATA:::::::::::::::::");
+		for( int i = 0; i < count; i++)
+			if( *(dataPtr + i) != 0 && *(dataPtr + i) != 1)
+				D_PRINT( ((int)*(dataPtr + i)) << "|");
+		int j = 10;
+	}
+	else
+	{
+		int i = 11;
+	}
+}
+
+///////////////////////////////////////////////////////////////////////
+
+//void
+//EncodePixelValue( void *ptrToPixelData)
+//{
+//	// get (m_bitsAllocated / 8) bytes from buff
+//	uint8 *val = (uint8 *) ptrToPixelData;
+//
+//	int firstBit = m_highBit - m_bitsStored;
+//	
+//}

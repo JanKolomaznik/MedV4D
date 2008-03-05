@@ -2,12 +2,12 @@
 #include "dcmtk/dcmnet/diutil.h"
 #include "dcmtk/dcmdata/dcdeftag.h"
 
+#include "main.h"
+
 #include "M4DDicomAssoc.h"
 #include "M4DDICOMServiceProvider.h"
 #include "AbstractService.h"
 #include "FindService.h"
-
-#include "main.h"
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -17,11 +17,10 @@
 void
 M4DFindService::GetQuery( 
 	DcmDataset **query, 
-	string *patientName,
-	string *patientID,
-	string *modality,
-	string *dateFrom,
-	string *dateTo
+	const string *patientName,
+	const string *patientID,
+	const string *modality,
+	const string *date
 	)
 {
 	if (*query != NULL) delete *query;
@@ -36,7 +35,7 @@ M4DFindService::GetQuery(
 
 	// study info
     DU_putStringDOElement(*query, DCM_StudyInstanceUID, NULL);
-	DU_putStringDOElement(*query, DCM_StudyDate, dateFrom->c_str() );
+	DU_putStringDOElement(*query, DCM_StudyDate, date->c_str() );
 	DU_putStringDOElement(*query, DCM_Modality, modality->c_str() );
 
 	// serie info
@@ -49,8 +48,8 @@ M4DFindService::GetQuery(
 void
 M4DFindService::GetStudyInfoQuery( 
 	DcmDataset **query, 
-	string &patientID,
-	string &studyID)
+	const string &patientID,
+	const string &studyID)
 {
 	if (*query != NULL) delete *query;
     *query = new DcmDataset;
@@ -162,11 +161,11 @@ M4DFindService::FindSupport(
 void
 M4DFindService::FindStudiesAboutPatient( 
 		M4DDcmProvider::ResultSet &result, 
-		string &patientID) throw (...)
+		const string &patientID) throw (...)
 {
 	// create query
 	DcmDataset *query = NULL;
-	GetQuery( &query, NULL, &patientID, NULL, NULL, NULL);
+	GetQuery( &query, NULL, &patientID, NULL, NULL);
 
 	// issue it
 	FindSupport( *query, (void *)&result, M4DFindService::TableRowCallback);
@@ -177,15 +176,14 @@ M4DFindService::FindStudiesAboutPatient(
 void
 M4DFindService::FindForFilter( 
 		M4DDcmProvider::ResultSet &result, 
-		string &patientName,
-		string &patientID,
-		string &modality,
-		string &dateFrom,
-		string &dateTo) throw (...)
+		const string &patientName,
+		const string &patientID,
+		const string &modality,
+		const string &date) throw (...)
 {
 	// create query
 	DcmDataset *query = NULL;
-	GetQuery( &query, &patientName, &patientID, &modality, &dateFrom, &dateTo);
+	GetQuery( &query, &patientName, &patientID, &modality, &date);
 
 	// issue
 	FindSupport( *query, (void *)&result, M4DFindService::TableRowCallback);
@@ -195,8 +193,8 @@ M4DFindService::FindForFilter(
 
 void
 M4DFindService::FindStudyInfo(
-		string &patientID,
-		string &studyID,
+		const string &patientID,
+		const string &studyID,
 		M4DDcmProvider::StudyInfo &info) throw (...)
 {
 	// create query
@@ -212,9 +210,9 @@ M4DFindService::FindStudyInfo(
 void
 M4DFindService::TableRowCallback(
         void *callbackData,
-        T_DIMSE_C_FindRQ *request,
-        int responseCount,
-        T_DIMSE_C_FindRSP *rsp,
+        T_DIMSE_C_FindRQ * /*request*/,
+        int /*responseCount*/,
+        T_DIMSE_C_FindRSP * /*rsp*/,
         DcmDataset *responseIdentifiers
         )
     /*
@@ -231,8 +229,6 @@ M4DFindService::TableRowCallback(
      *                              mask of the C-FIND-RQ which was sent.
      */
 {
-
-	DcmElement *e = new DcmByteString( DCM_PatientsName);
 	OFString str;
 
 	//////////////////////////////////////////////////
@@ -274,9 +270,9 @@ M4DFindService::TableRowCallback(
 void
 M4DFindService::StudyInfoCallback(
         void *callbackData,
-        T_DIMSE_C_FindRQ *request,
-        int responseCount,
-        T_DIMSE_C_FindRSP *rsp,
+        T_DIMSE_C_FindRQ * /*request*/,
+        int /*responseCount*/,
+        T_DIMSE_C_FindRSP * /*rsp*/,
         DcmDataset *responseIdentifiers
         )
     /*

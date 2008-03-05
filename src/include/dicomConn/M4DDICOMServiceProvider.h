@@ -9,6 +9,7 @@ using namespace std;
 class M4DDcmProvider
 {
 public:
+
 	// TYPEDEFS ///////////////////////////////////////////////////////////
 
 	class DicomObj;
@@ -25,23 +26,36 @@ public:
 	} TableRow;
 
 	typedef vector<TableRow> ResultSet;
-	typedef vector<string> StringVector;
 
 	// vector of image IDs
 	typedef vector<string> ImageIDsInSet;
 	// vector of M4DSetInfo
 	typedef map<string, ImageIDsInSet> StudyInfo;
 
-	typedef vector<DicomObj> M4DDicomObjSet;
+	typedef vector<DicomObj> DicomObjSet;
 
 	// METHODs ////////////////////////////////////////////////////////////
 
 	// user inputs some values into seach form & wants a table to be filled
-	// with appropriate results
+	// with appropriate results.
+	/**
+	 *	@param result - reference to result set object
+	 *	@param patientName - reference to string containing ...
+	 *	@param patientID   -   - || -
+	 *	@param modalities  - reference to string containing set 
+	 *		of wanted modalities divided by '\' character
+	 *	@param date		   - ref. to string containing one of theese variants:
+	 *		<dateFrom>- = all items that has date >= than 'dateFrom'
+	 *		-<dateTo>	= all items thats' date <= than 'dateTo'
+	 *		<dateFrom>-<dateTo> = all items between that dates
+	 *		<dateX> = string with format YYYYMMDD
+	 */
 	void Find( 
-		string &patientName,
-		StringVector &modalities,
-		ResultSet &result);
+		M4DDcmProvider::ResultSet &result,
+		const string &patientName,
+		const string &patientID,
+		const string &modalities,
+		const string &date);
 
 	// user select any study and wants to get seriesInstanceUIDs & imageUDIs
 	void FindStudyInfo(
@@ -60,7 +74,7 @@ public:
 		string &patientID,
 		string &studyID,
 		string &serieID,
-		M4DDicomObjSet &result);
+		DicomObjSet &result);
 };
 
 #include "M4DDICOMObject.h"

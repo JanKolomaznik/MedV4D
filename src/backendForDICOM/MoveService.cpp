@@ -2,12 +2,12 @@
 #include "dcmtk/dcmnet/diutil.h"
 #include "dcmtk/dcmdata/dcdeftag.h"
 
+#include "main.h"
+
 #include "M4DDicomAssoc.h"
 #include "M4DDICOMServiceProvider.h"
 #include "AbstractService.h"
 #include "MoveService.h"
-
-#include "main.h"
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -93,7 +93,7 @@ M4DMoveService::MoveImageSet(
 		const string &patientID,
 		const string &studyID,
 		const string &serieID,
-		M4DDcmProvider::M4DDicomObjSet &result)
+		M4DDcmProvider::DicomObjSet &result)
 {
 	DcmDataset *query = NULL;
 	GetQuery( &query, &patientID, &studyID, &serieID, NULL);
@@ -321,8 +321,9 @@ M4DMoveService::StoreSCPCallback(
     /* in */
     void *callbackData,
     T_DIMSE_StoreProgress *progress,    /* progress state */
-    T_DIMSE_C_StoreRQ *req,             /* original store request */
-    char *imageFileName, DcmDataset **imageDataSet, /* being received into */
+    T_DIMSE_C_StoreRQ * /*req*/,             /* original store request */
+    char * /*imageFileName*/, 
+	DcmDataset ** /*imageDataSet*/, /* being received into */
     /* out */
     T_DIMSE_C_StoreRSP *rsp,            /* final store response */
     DcmDataset **statusDetail)
@@ -346,7 +347,7 @@ M4DMoveService::StoreSCPCallback(
 		// set loaded flag
 		M4DDcmProvider::DicomObj *result = 
 			static_cast<M4DDcmProvider::DicomObj *>(callbackData);
-		result->m_loaded = true;
+		result->Init();
 	}
 }
 
@@ -374,7 +375,7 @@ M4DMoveService::SubTransferOperationSCP(
 	T_DIMSE_C_StoreRQ *req;
 	M4DDcmProvider::DicomObj *result = NULL;
 
-	M4DDcmProvider::M4DDicomObjSet *set;
+	M4DDcmProvider::DicomObjSet *set;
 	M4DDcmProvider::DicomObj buddy;
 
     if (cond == EC_Normal) 
@@ -389,7 +390,7 @@ M4DMoveService::SubTransferOperationSCP(
 			case eCallType::IMAGE_SET:
 				// insert new DICOMObj into container
 				set = static_cast<
-					M4DDcmProvider::M4DDicomObjSet *>(data);
+					M4DDcmProvider::DicomObjSet *>(data);
 
 				// SINCHRONIZE !!! ???
 				set->push_back( buddy);
@@ -503,7 +504,8 @@ M4DMoveService::SubAssocCallbackSupp(void *subOpCallbackData,
  *	Called when QUERY/RETRIEVE SCP send response that another image was sent
  */
 void
-M4DMoveService::MoveCallback( void *callbackData, T_DIMSE_C_MoveRQ *request,
+M4DMoveService::MoveCallback( void * /*callbackData*/,
+	T_DIMSE_C_MoveRQ *request,
     int responseCount, T_DIMSE_C_MoveRSP *response)
 {
 	// there is nothing much to do.

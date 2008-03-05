@@ -4,14 +4,31 @@
 class M4DDcmProvider::DicomObj
 {
 private:
+
+	typedef enum eStatus {
+		Loaded,
+		Loading,
+		Failed,
+	} Status;
+
+	// image info
+	uint16 m_width, m_height;
+	uint16 m_bitsAllocated;
+	uint16 m_bitsStored;
+	uint16 m_highBit;
+
+	void *m_pixelData;
+	
 	//friend class M4DMoveService;
 	
-public:
-	// TODO - make private
-	void *m_dataset;
-	bool m_loaded;
+	Status m_status;
 
-	inline bool IsLoaded( void) { return m_loaded; }
+public:	
+	void *m_dataset;
+
+	void Init( void) throw (...);
+
+	inline bool IsLoaded( void) { return m_status == Loaded; }
 
 	// load & save
 	void Load( const string &path) throw (...);

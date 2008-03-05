@@ -2,10 +2,11 @@
 #include "dcmtk/dcmnet/diutil.h"
 #include "dcmtk/dcmdata/dcdeftag.h"
 
+#include "main.h"
+
 #include "M4DDicomAssoc.h"
 #include "M4DDICOMServiceProvider.h"
 #include "AbstractService.h"
-#include "main.h"
 
 ///////////////////////////////////////////////////////////////////////
 

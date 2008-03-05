@@ -14,16 +14,15 @@ private :
 
 	void GetQuery( 
 		DcmDataset **query, 
-		string *patientName,
-		string *patientID,
-		string *modality,
-		string *dateFrom,
-		string *dateTo );
+		const string *patientName,
+		const string *patientID,
+		const string *modality,
+		const string *dateFrom );
 
 	void GetStudyInfoQuery( 
 		DcmDataset **query,
-		string &patientID,
-		string &studyID);
+		const string &patientID,
+		const string &studyID);
 
 	void FindSupport( DcmDataset &queryDataSet,
 		void *data,
@@ -51,19 +50,18 @@ public:
 
 	void FindForFilter( 
 		M4DDcmProvider::ResultSet &result,
-		string &patientName,
-		string &patientID,
-		string &modality,
-		string &dateFrom,
-		string &dateTo) throw (...);
+		const string &patientName,
+		const string &patientID,
+		const string &modality,
+		const string &date) throw (...);
 
 	void FindStudiesAboutPatient( 
 		M4DDcmProvider::ResultSet &result, 
-		string &patientID) throw (...);
+		const string &patientID) throw (...);
 
 	void FindStudyInfo(
-		string &patientID,
-		string &studyID,
+		const string &patientID,
+		const string &studyID,
 		M4DDcmProvider::StudyInfo &info) throw (...);
 
 	

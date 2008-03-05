@@ -74,7 +74,7 @@ public:
 		const string &patientID,
 		const string &studyID,
 		const string &serieID,
-		M4DDcmProvider::M4DDicomObjSet &result) throw (...);
+		M4DDcmProvider::DicomObjSet &result) throw (...);
 	
 };
 

@@ -3,4 +3,5 @@
 #define DEBUG_ADITIONAL_INFO
 
 #include "Debug.h"
+#include "M4DCommon.h"
 
