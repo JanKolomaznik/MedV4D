@@ -1,6 +1,9 @@
 #include "Log.h"
 #include <iostream>
 #include <iomanip>
+#include <ctime>
+
+const unsigned TIME_BUFFER_MIN_LENGTH = 30;
 
 std::ostream *logStream = &std::cout;
 
@@ -18,4 +21,14 @@ LogDelimiter::Apply( std::ostream &stream ) const
 		stream << _delimiter;
 	}
 	stream << std::endl;
+}
+
+void
+LogCurrentTime::Apply( std::ostream &stream ) const
+{
+	std::time_t date;    
+
+	std::time( &date );
+
+	stream << std::ctime( &date );
 }

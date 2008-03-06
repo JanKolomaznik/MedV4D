@@ -38,7 +38,13 @@ protected:
 	unsigned	_length;
 };
 
-
+class LogCurrentTime: public LogFormater
+{
+public:
+	LogCurrentTime() {}
+	void
+	Apply( std::ostream &stream ) const;
+};
 
 #define LOG( ARGs )	\
 	(*logStream) << ARGs;
