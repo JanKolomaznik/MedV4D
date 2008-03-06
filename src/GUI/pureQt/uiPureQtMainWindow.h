@@ -1,14 +1,14 @@
 /********************************************************************************
-** Form generated from reading ui file 'browser.ui'
+** Form generated from reading ui file 'pureQtMainWindow.ui'
 **
-** Created: Sat Mar 1 19:24:14 2008
+** Created: Thu Mar 6 17:35:58 2008
 **      by: Qt User Interface Compiler version 4.3.3
 **
 ** WARNING! All changes made in this file will be lost when recompiling ui file!
 ********************************************************************************/
 
-#ifndef UI_BROWSER_H
-#define UI_BROWSER_H
+#ifndef UIPUREQTMAINWINDOW_H
+#define UIPUREQTMAINWINDOW_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -124,4 +124,4 @@ namespace Ui {
     class MainWindow: public Ui_MainWindow {};
 } // namespace Ui
 
-#endif // UI_BROWSER_H
+#endif // UIPUREQTMAINWINDOW_H

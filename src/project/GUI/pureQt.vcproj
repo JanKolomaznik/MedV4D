@@ -207,7 +207,7 @@
       UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
       >
       <File
-        RelativePath="..\..\GUI\main.cpp"
+        RelativePath="..\..\GUI\pureQt\main.cpp"
         >
       </File>
     </Filter>
@@ -217,7 +217,7 @@
       UniqueIdentifier="{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}"
       >
       <File
-        RelativePath="..\..\GUI\ui_browser.h"
+        RelativePath="..\..\GUI\pureQt\uiPureQtMainWindow.h"
         >
       </File>
     </Filter>
@@ -228,17 +228,17 @@
       ParseFiles="false"
       >
       <File
-        RelativePath="..\..\GUI\browser.ui"
+        RelativePath="..\..\GUI\pureQt\pureQtMainWindow.ui"
         >
         <FileConfiguration
           Name="Debug|Win32"
           >
           <Tool
             Name="VCCustomBuildTool"
-            Description="UIC browser.ui"
-            CommandLine="..\..\bin\qt\uic.exe ..\..\GUI\browser.ui -o ..\..\GUI\ui_browser.h&#x0D;&#x0A;"
-            AdditionalDependencies="..\..\bin\qt\uic.exe;..\..\GUI\browser.ui"
-            Outputs="ui_browser.h"
+            Description="UIC pureQtMainWindow.ui"
+            CommandLine="..\..\bin\qt\uic.exe ..\..\GUI\pureQt\pureQtMainWindow.ui -o ..\..\GUI\pureQt\uiPureQtMainWindow.h&#x0D;&#x0A;"
+            AdditionalDependencies="..\..\bin\qt\uic.exe;..\..\GUI\pureQt\pureQtMainWindow.ui"
+            Outputs="uiPureQtMainWindow.h"
           />
         </FileConfiguration>
         <FileConfiguration
@@ -246,10 +246,10 @@
           >
           <Tool
             Name="VCCustomBuildTool"
-            Description="UIC browser.ui"
-            CommandLine="..\..\bin\qt\uic.exe ..\..\GUI\browser.ui -o ..\..\GUI\ui_browser.h&#x0D;&#x0A;"
-            AdditionalDependencies="..\..\bin\qt\uic.exe;..\..\GUI\browser.ui"
-            Outputs="ui_browser.h"
+            Description="UIC pureQtMainWindow.ui"
+            CommandLine="..\..\bin\qt\uic.exe ..\..\GUI\pureQt\pureQtMainWindow.ui -o ..\..\GUI\pureQt\uiPureQtMainWindow.h&#x0D;&#x0A;"
+            AdditionalDependencies="..\..\bin\qt\uic.exe;..\..\GUI\pureQt\pureQtMainWindow.ui"
+            Outputs="uiPureQtMainWindow.h"
           />
         </FileConfiguration>
       </File>

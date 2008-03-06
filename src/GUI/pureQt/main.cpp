@@ -1,6 +1,6 @@
 #include <QtGui/QtGui>
 
-#include "ui_browser.h"
+#include "uiPureQtMainWindow.h"
 
 
 int main( int argc, char **argv ) 
@@ -12,7 +12,7 @@ int main( int argc, char **argv )
   Ui::MainWindow ui;
   ui.setupUi( form );
 
-  ui.textBrowser->setSource( QUrl( "..\\..\\GUI\\main.cpp" ) );
+  ui.textBrowser->setSource( QUrl( "..\\..\\GUI\\pureQt\\main.cpp" ) );
 
 
   form->show();
