@@ -2,7 +2,7 @@
 #include <iostream>
 #include <iomanip>
 
-std::ostream *plog = &std::cout;
+std::ostream *logStream = &std::cout;
 
 std::ostream &
 operator<<( std::ostream & stream, const LogFormater & logFormater )

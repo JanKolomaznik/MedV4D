@@ -3,8 +3,10 @@
 
 #include <ostream>
 
-extern std::ostream *plog;
-#define LOG	(*plog)
+/*extern std::ostream *plog;
+#define LOG	(*plog)*/
+
+extern std::ostream *logStream;
 
 class LogFormater;
 
@@ -36,5 +38,9 @@ protected:
 	unsigned	_length;
 };
 
+
+
+#define LOG( ARGs )	\
+	(*logStream) << ARGs;
 
 #endif /*__LOG_H_*/
