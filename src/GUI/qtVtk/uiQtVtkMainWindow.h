@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading ui file 'qtVtkMainWindow.ui'
 **
-** Created: Thu Mar 13 18:15:37 2008
+** Created: Sun Mar 30 21:52:45 2008
 **      by: Qt User Interface Compiler version 4.3.3
 **
 ** WARNING! All changes made in this file will be lost when recompiling ui file!

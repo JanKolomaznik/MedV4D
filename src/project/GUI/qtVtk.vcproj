@@ -42,10 +42,17 @@
       />
       <Tool
         Name="VCCLCompilerTool"
-        AdditionalOptions="-Zm200 -w34100 -w34189 -Zm200 -w34100 -w34189 -w34100 -w34189"
+        AdditionalOptions="-Zm200 -w34100 -w34189 -Zm200 -w34100 -w34189 -w34100
+                           -w34189"
         Optimization="4"
-        AdditionalIncludeDirectories="..\..\include\qt\headers\QtCore;..\..\include\qt\headers\QtGui;..\..\include\qt\headers;.;.\debug;.\qt\win32-msvc2005"
-        PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT"
+        AdditionalIncludeDirectories="..\..\include\qt\headers\QtCore;
+                                      ..\..\include\qt\headers\QtGui;
+                                      ..\..\include\qt\headers;.;.\debug;
+                                      .\qt\win32-msvc2005;
+                                      ..\..\include\vtk"
+        PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,
+                                 QT_DLL,QT_GUI_LIB,QT_CORE_LIB,
+                                 QT_THREAD_SUPPORT"
         GeneratePreprocessedFile="0"
         ExceptionHandling="1"
         RuntimeLibrary="3"
@@ -64,7 +71,9 @@
       />
       <Tool
         Name="VCResourceCompilerTool"
-        PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT,_DEBUG"
+        PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,
+                                QT_DLL,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT,
+                                _DEBUG"
       />
       <Tool
         Name="VCPreLinkEventTool"
@@ -72,7 +81,9 @@
       <Tool
         Name="VCLinkerTool"
         IgnoreImportLibrary="true"
-        AdditionalDependencies="..\..\lib\qt\qtmaind.lib ..\..\lib\qt\QtGuid4.lib ..\..\lib\qt\QtCored4.lib"
+        AdditionalDependencies="..\..\lib\qt\qtmaind.lib
+                                ..\..\lib\qt\QtGuid4.lib
+                                ..\..\lib\qt\QtCored4.lib"
         OutputFile="debug\QtVtk.exe"
         SuppressStartupBanner="true"
         AdditionalLibraryDirectories="..\..\lib\qt"
@@ -133,10 +144,18 @@
       />
       <Tool
         Name="VCCLCompilerTool"
-        AdditionalOptions="-Zm200 -w34100 -w34189 -Zm200 -w34100 -w34189 -w34100 -w34189"
+        AdditionalOptions="-Zm200 -w34100 -w34189 -Zm200 -w34100 -w34189 -w34100
+                           -w34189"
         Optimization="2"
-        AdditionalIncludeDirectories="..\..\include\qt\headers\QtCore;..\..\include\qt\headers\QtGui;..\..\include\qt\headers;.;.\release;.\qt\win32-msvc2005"
-        PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_NO_DEBUG,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT,NDEBUG"
+        AdditionalIncludeDirectories="..\..\include\qt\headers\QtCore;
+                                      ..\..\include\qt\headers\QtGui;
+                                      ..\..\include\qt\headers;.;.\release;
+                                      .\qt\win32-msvc2005;
+                                      ..\..\include\vtk"
+        PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,
+                                 QT_LARGEFILE_SUPPORT,QT_DLL,QT_NO_DEBUG,
+                                 QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT,
+                                 NDEBUG"
         GeneratePreprocessedFile="0"
         ExceptionHandling="1"
         RuntimeLibrary="2"
@@ -155,7 +174,9 @@
       />
       <Tool
         Name="VCResourceCompilerTool"
-        PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_NO_DEBUG,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT"
+        PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,
+                                 QT_LARGEFILE_SUPPORT,QT_DLL,QT_NO_DEBUG,
+                                 QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT"
       />
       <Tool
         Name="VCPreLinkEventTool"
@@ -163,7 +184,9 @@
       <Tool
         Name="VCLinkerTool"
         IgnoreImportLibrary="true"
-        AdditionalDependencies="..\..\lib\qt\qtmain.lib ..\..\lib\qt\QtGui4.lib ..\..\lib\qt\QtCore4.lib"
+        AdditionalDependencies="..\..\lib\qt\qtmain.lib
+                                ..\..\lib\qt\QtGui4.lib
+                                ..\..\lib\qt\QtCore4.lib"
         OutputFile="release\QtVtk.exe"
         LinkIncremental="1"
         SuppressStartupBanner="true"
@@ -236,8 +259,10 @@
           <Tool
             Name="VCCustomBuildTool"
             Description="UIC qtVtkMainWindow.ui"
-            CommandLine="..\..\bin\qt\uic.exe ..\..\GUI\qtVtk\qtVtkMainWindow.ui -o ..\..\GUI\qtVtk\uiQtVtkMainWindow.h&#x0D;&#x0A;"
-            AdditionalDependencies="..\..\bin\qt\uic.exe;..\..\GUI\qtVtk\qtVtkMainWindow.ui"
+            CommandLine="..\..\bin\qt\uic.exe ..\..\GUI\qtVtk\qtVtkMainWindow.ui
+                         -o ..\..\GUI\qtVtk\uiQtVtkMainWindow.h&#x0D;&#x0A;"
+            AdditionalDependencies="..\..\bin\qt\uic.exe;
+                                    ..\..\GUI\qtVtk\qtVtkMainWindow.ui"
             Outputs="uiQtVtkMainWindow.h"
           />
         </FileConfiguration>
@@ -247,8 +272,10 @@
           <Tool
             Name="VCCustomBuildTool"
             Description="UIC qtVtkMainWindow.ui"
-            CommandLine="..\..\bin\qt\uic.exe ..\..\GUI\qtVtk\qtVtkMainWindow.ui -o ..\..\GUI\qtVtk\uiQtVtkMainWindow.h&#x0D;&#x0A;"
-            AdditionalDependencies="..\..\bin\qt\uic.exe;..\..\GUI\qtVtk\qtVtkMainWindow.ui"
+            CommandLine="..\..\bin\qt\uic.exe ..\..\GUI\qtVtk\qtVtkMainWindow.ui
+                         -o ..\..\GUI\qtVtk\uiQtVtkMainWindow.h&#x0D;&#x0A;"
+            AdditionalDependencies="..\..\bin\qt\uic.exe;
+                                    ..\..\GUI\qtVtk\qtVtkMainWindow.ui"
             Outputs="uiQtVtkMainWindow.h"
           />
         </FileConfiguration>
