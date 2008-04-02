@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>520</width>
-    <height>358</height>
+    <width>556</width>
+    <height>418</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -19,9 +19,43 @@
     </item>
     <item>
      <layout class="QHBoxLayout" >
-      <property name="topMargin" >
-       <number>8</number>
-      </property>
+      <item>
+       <widget class="QRadioButton" name="SphereRadio" >
+        <property name="text" >
+         <string>Sphere</string>
+        </property>
+        <property name="checked" >
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="DicomRadio" >
+        <property name="text" >
+         <string>DICOM</string>
+        </property>
+        <property name="checked" >
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer>
+        <property name="orientation" >
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" >
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" >
       <item>
        <spacer>
         <property name="orientation" >
@@ -36,7 +70,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton" >
+       <widget class="QPushButton" name="CloseButton" >
         <property name="text" >
          <string>Close</string>
         </property>
@@ -54,7 +88,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>520</width>
+     <width>556</width>
      <height>21</height>
     </rect>
    </property>
@@ -71,18 +105,50 @@
  <resources/>
  <connections>
   <connection>
-   <sender>pushButton</sender>
+   <sender>CloseButton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel" >
-     <x>442</x>
-     <y>316</y>
+     <x>545</x>
+     <y>388</y>
     </hint>
     <hint type="destinationlabel" >
      <x>346</x>
      <y>316</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SphereRadio</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>qvtkWidget</receiver>
+   <slot>update()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>32</x>
+     <y>346</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>237</x>
+     <y>314</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>DicomRadio</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>qvtkWidget</receiver>
+   <slot>update()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>107</x>
+     <y>351</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>288</x>
+     <y>325</y>
     </hint>
    </hints>
   </connection>
