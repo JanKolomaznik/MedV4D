@@ -3,12 +3,15 @@
 
 #include <vtkGenericDataSet.h>
 
+#include "m4dCellIterator.h"
+
 namespace vtkIntegration
 {
 	
 class m4dCompatibilityAgregation;
 
 
+template < typename PixelType >
 class m4dDataSet: public vtkGenericDataSet
 {
 public:
@@ -189,8 +192,11 @@ private:
 	void operator=(const m4dDataSet&);    // Not implemented.
 };
 
-
 } /*namespace vtkIntegration*/
+
+//Include template implementation.
+#include "m4dDataSet.tcc"
+
 
 #endif /*__M4D_DATA_SET_H_*/
 

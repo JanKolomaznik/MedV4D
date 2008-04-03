@@ -3,9 +3,13 @@
 
 #include <vtkGenericCellIterator.h>
 
+
+#include "m4dCell.h"
+
 namespace vtkIntegration
 {
 
+template < typename PixelType >
 class m4dCellIterator: public vtkGenericCellIterator
 {
 public:
@@ -65,4 +69,8 @@ private:
 
 
 } /*namespace vtkIntegration*/
+
+//Include template implementation.
+#include "m4dCellIterator.tcc"
+
 #endif /*__M4D_CELL_ITERATOR_H_*/
