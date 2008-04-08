@@ -1,16 +1,6 @@
 
-
-#include "dcmtk/dcmnet/dimse.h"
-#include "dcmtk/dcmnet/diutil.h"
-#include "dcmtk/dcmdata/dcdeftag.h"
-
 #include "main.h"
-
-#include "M4DDicomAssoc.h"
 #include "M4DDICOMServiceProvider.h"
-#include "AbstractService.h"
-#include "MoveService.h"
-#include "FindService.h"
 
 #ifdef WITH_OPENSSL
 #include "dcmtk/dcmtls/tlstrans.h"
@@ -19,16 +9,12 @@
 
 using namespace std;
 
-// set log & debug streams
-std::ostream *logStream = &std::cout;
-std::ostream *pdout = &std::cout;
-
 int
 main( void)
 {
 	M4DDcmProvider::ResultSet result;
 	M4DDcmProvider::StudyInfo studyInfo;
-	M4DDcmProvider::DicomObjSet obj;
+	M4DDcmProvider::DicomObjSet obj;	
 
 	string patientName = "";
 	string patientID = "";
@@ -36,21 +22,20 @@ main( void)
 	string dateFrom = "";
 
 	try {
-		// create service objects
-		M4DFindService findService;
+		// provider object
+		M4DDcmProvider provider;
 
 		// find some patient & studies info
-		findService.FindForFilter( 
+		provider.Find( 
 			result, patientName, patientID, modality, dateFrom);
 
 		M4DDcmProvider::TableRow *row = &result[0];
 
 		// find some info about selected study
-		findService.FindStudyInfo( row->patentID, row->studyID, studyInfo);
+		provider.WholeFindStudyInfo( row->patentID, row->studyID, studyInfo);
 
-		M4DMoveService moveService;
 		// now get image
-		moveService.MoveImageSet( row->patentID, row->studyID,
+		provider.GetImageSet( row->patentID, row->studyID,
 			studyInfo.begin()->first, obj);
 
 		int i=0;
@@ -60,7 +45,7 @@ main( void)
 			it != obj.end();
 			it++)
 		{
-			pok = it->GetPatientName();
+			//pok = it->GetPatientName();
 			sprintf( fileName, "C:\\pok%d.dcm", i++);
 			it->Save( fileName );
 		}
@@ -70,7 +55,7 @@ main( void)
 
 
 	} catch( bad_exception *e) {
-		cout << e->what();
+		DOUT << e->what();
 		delete e;
 		return -1;
 	}

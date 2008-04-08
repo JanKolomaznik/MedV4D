@@ -8,6 +8,9 @@ using namespace std;
 
 class M4DDcmProvider
 {
+private:
+	void *findService;
+	void *moveService;
 public:
 
 	// TYPEDEFS ///////////////////////////////////////////////////////////
@@ -28,9 +31,9 @@ public:
 	typedef vector<TableRow> ResultSet;
 
 	// vector of image IDs
-	typedef vector<string> ImageIDsInSet;
+	typedef vector<string> StringVector;
 	// vector of M4DSetInfo
-	typedef map<string, ImageIDsInSet> StudyInfo;
+	typedef map<string, StringVector> StudyInfo;
 
 	typedef vector<DicomObj> DicomObjSet;
 
@@ -55,26 +58,40 @@ public:
 		const string &patientName,
 		const string &patientID,
 		const string &modalities,
-		const string &date);
+		const string &date) throw (...);
 
-	// user select any study and wants to get seriesInstanceUIDs & imageUDIs
+	// user select any study and wants to get seriesInstanceUIDs
 	void FindStudyInfo(
-		string &patientID,
-		string &studyID,
-		StudyInfo &info);
+		const string &patientID,
+		const string &studyID,
+		StringVector &info) throw (...);
+
+	// the same as FindStudyInfo but gets even imageIDs
+	void WholeFindStudyInfo(
+		const string &patientID,
+		const string &studyID,
+		StudyInfo &info) throw (...);
+
+	// finds all studies concerning given patient
+	void FindStudiesAboutPatient(  
+		const string &patientID,
+		ResultSet &result) throw (...);
 
 	void GetImage(
-		string &patientID,
-		string &studyID,
-		string &serieID,
-		string &imageID,
-		DicomObj &object);
+		const string &patientID,
+		const string &studyID,
+		const string &serieID,
+		const string &imageID,
+		DicomObj &object) throw (...);
 
 	void GetImageSet(
-		string &patientID,
-		string &studyID,
-		string &serieID,
-		DicomObjSet &result);
+		const string &patientID,
+		const string &studyID,
+		const string &serieID,
+		DicomObjSet &result) throw (...);
+
+	M4DDcmProvider();
+	~M4DDcmProvider();
 };
 
 #include "M4DDICOMObject.h"

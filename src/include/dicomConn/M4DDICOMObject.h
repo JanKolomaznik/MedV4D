@@ -13,20 +13,34 @@ private:
 
 	// image info
 	uint16 m_width, m_height;
-	uint16 m_bitsAllocated;
 	uint16 m_bitsStored;
-	uint16 m_highBit;
-
-	void *m_pixelData;
-	
-	//friend class M4DMoveService;
 	
 	Status m_status;
 
-public:	
+	void EncodePixelValue16Aligned( uint16 x, uint16 y, uint16 &val);
+
+public:
+
 	void *m_dataset;
 
-	void Init( void) throw (...);
+	// defines size of pixel in bits
+	typedef enum ePxlSz {
+		bit8,
+		bit16,
+		bit32,
+	} PixelSize;
+
+	// image information members
+	PixelSize GetPixelSize( void);
+	inline uint16 GetWidth( void) { return m_width; }
+	inline uint16 GetHeight( void) { return m_height; }
+
+	/**
+	 *	Should prepare data to be easily handled. Convert from special dicom
+	 *	data stream to steam of normal data types like uint16. See DICOM spec.
+	 *	08-05pu.pdf (AnnexD).
+	 */
+	void FlushIntoArray( const uint16 *dest) throw (...);
 
 	inline bool IsLoaded( void) { return m_status == Loaded; }
 
@@ -34,23 +48,23 @@ public:
 	void Load( const string &path) throw (...);
 	void Save( const string &path)	throw (...);
 
-	////////////////////////////////////////////////////////////
-	// simple methods that returns values of each tag
-	// patient level
-	string GetPatientName( void) throw (...);
-	bool	GetPatientSex( void) throw (...);
-	string GetPatientBirthDate( void) throw (...);
-	string GetPatientId( void) throw (...);
+	/**
+	 *	Called when image arrive
+	 */
+	void Init();
 
-	// study level
-	string GetStudyInstanceUID( void) throw (...);
-
-	// series level
-	string GetSeriesInstanceUID ( void) throw (...);
-	string GetModality( void) throw (...);
+	// methods to get value from data set container
+	void GetTagValue( uint16 group, uint16 tagNum, string &) throw (...);
+	void GetTagValue( uint16 group, uint16 tagNum, int32 &) throw (...);
+	void GetTagValue( uint16 group, uint16 tagNum, float &) throw (...);	
 
 	// image level
-	void * GetPixelData( void) throw (...);
+	/**
+	 *	Returns pointer to array that pixels of the image are stored.
+	 *	Array should be casted to the right type according value returned
+	 *	by GetPixelSize() method.
+	 */
+	void* GetPixelData( void) throw (...);
 	// ...
 	
 	////////////////////////////////////////////////////////////

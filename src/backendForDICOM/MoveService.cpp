@@ -119,7 +119,7 @@ M4DMoveService::MoveSupport( DcmDataset *query,
     DcmDataset          *statusDetail = NULL;
 
     /* figure out which of the accepted presentation contexts should be used */
-	presId = m_assocToServer->FindPresentationCtx();\
+	presId = m_assocToServer->FindPresentationCtx();
 	
     //MyCallbackInfo      callbackData;
     //callbackData.assoc = assoc;

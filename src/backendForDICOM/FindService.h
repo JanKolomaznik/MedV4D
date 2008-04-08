@@ -24,6 +24,11 @@ private :
 		const string &patientID,
 		const string &studyID);
 
+	void GetWholeStudyInfoQuery( 
+		DcmDataset **query,
+		const string &patientID,
+		const string &studyID);
+
 	void FindSupport( DcmDataset &queryDataSet,
 		void *data,
 		DIMSE_FindUserCallback callBack) throw (...);
@@ -35,6 +40,14 @@ private :
         int responseCount,
         T_DIMSE_C_FindRSP *rsp,
         DcmDataset *responseIdentifiers );
+
+	static void
+	WholeStudyInfoCallback(
+        void *callbackData,
+        T_DIMSE_C_FindRQ *request,
+        int responseCount,
+        T_DIMSE_C_FindRSP *rsp,
+        DcmDataset *responseIdentifiers );	
 
 	static void
 	StudyInfoCallback(
@@ -55,14 +68,19 @@ public:
 		const string &modality,
 		const string &date) throw (...);
 
-	void FindStudiesAboutPatient( 
-		M4DDcmProvider::ResultSet &result, 
-		const string &patientID) throw (...);
+	void FindStudiesAboutPatient(
+		const string &patientID,
+		M4DDcmProvider::ResultSet &result) throw (...);
+
+	void FindWholeStudyInfo(
+		const string &patientID,
+		const string &studyID,
+		M4DDcmProvider::StudyInfo &info) throw (...);
 
 	void FindStudyInfo(
 		const string &patientID,
 		const string &studyID,
-		M4DDcmProvider::StudyInfo &info) throw (...);
+		M4DDcmProvider::StringVector &seriesIDs) throw (...); 
 
 	
 };
