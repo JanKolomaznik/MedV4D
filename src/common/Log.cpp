@@ -3,8 +3,6 @@
 #include <iomanip>
 #include <ctime>
 
-const unsigned TIME_BUFFER_MIN_LENGTH = 30;
-
 std::ostream *logStream = &std::cout;
 
 std::ostream &

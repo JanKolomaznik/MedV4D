@@ -15,7 +15,18 @@ public:
 	/**
 	 * Method for custom empty image creation.
 	 **/
-	static AbstractImage::Ptr CreateEmptyImage( ... );
+	template< typename ElementType >
+	static AbstractImage::Ptr CreateEmptyImage2D( 
+			size_t		width, 
+			size_t		height
+			);
+
+	template< typename ElementType >
+	static AbstractImage::Ptr CreateEmptyImage3D( 
+			size_t		width, 
+			size_t		height, 
+			size_t		depth
+			);
 protected:
 
 private:
@@ -28,5 +39,8 @@ private:
 
 
 } /*namespace Images*/
+
+//Including template implementation
+#include "ImageFactory.tcc"
 
 #endif /*_IMAGE_FACTORY_H*/
