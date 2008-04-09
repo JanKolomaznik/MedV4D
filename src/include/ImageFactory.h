@@ -3,9 +3,11 @@
 
 #include "ImageDataTemplate.h"
 
-#include "dicomConn/M4DDICOMObject.h"
+//#include "dicomConn/M4DDICOMObject.h"
 
 
+namespace M4D
+{
 namespace Images
 {
 
@@ -39,6 +41,7 @@ private:
 
 
 } /*namespace Images*/
+} /*namespace M4D*/
 
 //Including template implementation
 #include "ImageFactory.tcc"

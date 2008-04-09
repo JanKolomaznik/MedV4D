@@ -5,6 +5,9 @@
 
 #include "AbstractImage.h"
 
+namespace M4D
+{
+
 namespace Images
 {
 
@@ -19,6 +22,14 @@ class ImageFactory;
 struct DimensionInformations
 {
 	/**
+	 * Method for setting atributes.
+	 * @param asize Value used for size setting.
+	 * @param astride Value used for stride setting.
+	 **/
+	void Set( size_t asize, uint32 astride )
+		{ size = asize; stride = astride; }
+
+	/**
 	 * Width of image in actual dimension.
 	 **/
 	size_t		size;
@@ -30,18 +41,21 @@ struct DimensionInformations
 
 
 template < typename ElementType >
-class ImageDataTemplate
+class ImageDataTemplate: public AbstractImage
 {
 public:
-	friend ImageFactory;
+	friend class ImageFactory;
 	typedef typename boost::shared_ptr< ImageDataTemplate< ElementType > > Ptr;
 
 	~ImageDataTemplate();	
 
-	ElementType	get( size_t index )const;
-	ElementType&	get( size_t index );
+	ElementType	Get( size_t index )const;
+	ElementType&	Get( size_t index );
 	
-	size_t		getDimension()const 
+	ElementType	operator[]( size_t index )const{ return Get( index ); }
+	ElementType&	operator[]( size_t index ){ return Get( index ); }
+
+	size_t		GetDimension()const 
 				{ return _dimension; }
 protected:
 	ImageDataTemplate( 
@@ -64,7 +78,7 @@ public:
 			: ErrorHandling::ExceptionBase( "Wrong index to image element." ), 
 			_wrongIndex( wrongIndex ) {}
 
-		size_t getIndex()const { return _wrongIndex; }
+		size_t GetIndex()const { return _wrongIndex; }
 	protected:
 		size_t		_wrongIndex;
 	};
@@ -73,6 +87,7 @@ public:
 
 
 } /*namespace Images*/
+} /*namespace M4D*/
 
 /*Include template implementation.*/
 #include "ImageDataTemplate.tcc"

@@ -1,9 +1,12 @@
 #ifndef _IMAGE_DATA_TEMPLATE_H
 #error File ImageDataTemplate.tcc cannot be included directly!
-#elif
+#else
 
+namespace M4D
+{
 namespace Images
 {
+
 template < typename ElementType >
 ImageDataTemplate< ElementType >::ImageDataTemplate( 
 			ElementType 		*data, 
@@ -11,8 +14,8 @@ ImageDataTemplate< ElementType >::ImageDataTemplate(
 			unsigned short		dimension,
 			size_t			elementCount
 			) 
-	: _data( data ), _parameters( parameters ), 
-	_dimension( dimension ), _elementCount( elementCount )
+	: _elementCount( elementCount ), _dimension( dimension ), 
+	_parameters( parameters ), _data( data ) 	
 {
 	if ( _data == NULL ) {
 		//TODO handle problem
@@ -41,7 +44,7 @@ ImageDataTemplate< ElementType >::~ImageDataTemplate()
 
 template < typename ElementType >
 ElementType
-ImageDataTemplate< ElementType >::get( size_t index )const
+ImageDataTemplate< ElementType >::Get( size_t index )const
 {
 	if ( index >= _elementCount ) {
 		throw EIndexOutOfBounds( index );
@@ -52,7 +55,7 @@ ImageDataTemplate< ElementType >::get( size_t index )const
 
 template < typename ElementType >
 ElementType&
-ImageDataTemplate< ElementType >::get( size_t index )
+ImageDataTemplate< ElementType >::Get( size_t index )
 {
 	if ( index >= _elementCount ) {
 		throw EIndexOutOfBounds( index );
@@ -62,5 +65,6 @@ ImageDataTemplate< ElementType >::get( size_t index )
 }
 
 } /*namespace Images*/
+} /*namespace M4D*/
 
 #endif /*_IMAGE_DATA_TEMPLATE_H*/
