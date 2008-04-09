@@ -2,30 +2,31 @@
 #define __LOG_H_
 
 #include <ostream>
+#include <iomanip>
 
 /*extern std::ostream *plog;
 #define LOG	(*plog)*/
 
 extern std::ostream *logStream;
 
-class LogFormater;
+class LogFormatter;
 
 std::ostream &
-operator<<( std::ostream & stream, const LogFormater & logFormater );
+operator<<( std::ostream & stream, const LogFormatter & logFormater );
 
 
 
-class LogFormater
+class LogFormatter
 {
 public:
 	virtual
-	~LogFormater() { }
+	~LogFormatter() { }
 
 	virtual void
 	Apply( std::ostream &stream ) const = 0;
 };
 
-class LogDelimiter: public LogFormater
+class LogDelimiter: public LogFormatter
 {
 public:
 	LogDelimiter( char delimiter = '-', unsigned length = 80 ) : 
@@ -38,7 +39,7 @@ protected:
 	unsigned	_length;
 };
 
-class LogCurrentTime: public LogFormater
+class LogCurrentTime: public LogFormatter
 {
 public:
 	LogCurrentTime() {}

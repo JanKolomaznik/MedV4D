@@ -5,6 +5,9 @@
 
 #include <boost/shared_ptr.hpp>
 
+namespace M4D
+{
+
 namespace Images
 {
 
@@ -22,5 +25,5 @@ public:
 
 
 } /*namespace Images*/
-
+} /*namespace M4D*/
 #endif /*_ABSTRACT_IMAGE_H*/

@@ -45,7 +45,7 @@ extern std::ostream *pdout;
 		#define D_PRINT( ARG )	\
 			DOUT << __FILE__ \
 			<< ":" << __LINE__ \
-			<< ":" << ARG << endl;
+			<< ":" << ARG << std::endl;
 	#else
 		#define D_PRINT( ARG )	\
 			DOUT <<ARG;
@@ -82,6 +82,10 @@ extern std::ostream *pdout;
 #define	DL_COMMAND(ARG)
 #endif /*DEBUG_LEVEL*/
 
+
+//----------------------------------------------------------------------------
+
+#define EXCEPTION_DEBUG_LEVEL	10
 
 //----------------------------------------------------------------------------
 

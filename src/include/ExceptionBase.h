@@ -4,6 +4,8 @@
 #include <exception>
 #include <ostream>
 
+namespace M4D
+{
 namespace ErrorHandling
 {
 
@@ -13,6 +15,8 @@ public:
 	ExceptionBase( char * name );
 
 	const char* what() { return _name; }	
+protected:
+	virtual void OnRaise();
 private:
 	char*	_name;
 };
@@ -20,5 +24,6 @@ private:
 std::ostream& operator<<( std::ostream &out, ExceptionBase &exception );
 
 } /*namespace ErrorHandling*/
+} /*namespace M4D*/
 
 #endif /*_EXCEPTION_BASE_H*/

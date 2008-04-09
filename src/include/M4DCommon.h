@@ -27,6 +27,6 @@ typedef unsigned long long uint64;
 typedef float float32;
 typedef double float64;
 // others
-typedef uint32 size_t;
+//typedef uint32 size_t;
 
 #endif
