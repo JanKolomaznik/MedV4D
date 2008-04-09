@@ -6,7 +6,7 @@
 std::ostream *logStream = &std::cout;
 
 std::ostream &
-operator<<( std::ostream & stream, const LogFormater & logFormater )
+operator<<( std::ostream & stream, const LogFormatter & logFormater )
 {
 	logFormater.Apply( stream );
 	return stream;
