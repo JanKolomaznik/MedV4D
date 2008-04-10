@@ -19,13 +19,9 @@
       UseOfMfc="0">
       <Tool
         Name="VCCLCompilerTool"
-        AdditionalIncludeDirectories="..\..\include\qt\headers\QtCore;
-                                      ..\..\include\qt\headers\QtGui;
-                                      ..\..\include\qt\headers;.;.\debug;
-                                      .\qt\win32-msvc2005;
-                                      ..\..\include\vtk"
-        AdditionalOptions="-Zm200 -w34100 -w34189 -Zm200 -w34100 -w34189 -w34100
-                           -w34189"
+        AdditionalIncludeDirectories="..\..\include\qt\headers\QtCore,..\..\include\qt\headers\QtGui,
+..\..\include\qt\headers,.,.\debug,.\qt\win32-msvc2005,..\..\include\vtk"
+        AdditionalOptions="-Zm200 -w34100 -w34189 -Zm200 -w34100 -w34189 -w34100 -w34189"
         AssemblerListingLocation="debug\"
         BufferSecurityCheck="false"
         DebugInformationFormat="3"
@@ -33,8 +29,8 @@
         GeneratePreprocessedFile="0"
         ObjectFile="debug\"
         Optimization ="4"
-        PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,
-                                QT_DLL,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT"
+        PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,
+QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT"
         ProgramDataBaseFileName=".\"
         RuntimeLibrary="3"
         RuntimeTypeInfo="true"
@@ -45,9 +41,7 @@
         Name="VCCustomBuildTool"/>
       <Tool
         Name="VCLinkerTool"
-        AdditionalDependencies="..\..\lib\qt\qtmaind.lib
-                                ..\..\lib\qt\QtGuid4.lib
-                                ..\..\lib\qt\QtCored4.lib"
+        AdditionalDependencies="qtmaind.lib QtGuid4.lib QtCored4.lib opengl32.lib glu32.lib"
         AdditionalLibraryDirectories="..\..\lib\qt"
         GenerateDebugInformation="true"
         IgnoreImportLibrary="true"
@@ -68,9 +62,8 @@
         Name="VCPreLinkEventTool"/>
       <Tool
         Name="VCResourceCompilerTool"
-        PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,
-                                 QT_DLL,QT_GUI_LIB,QT_CORE_LIB,
-                                 QT_THREAD_SUPPORT,_DEBUG"/>
+        PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,
+QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT,_DEBUG"/>
     </Configuration>
     <Configuration
       Name="Release|Win32"
@@ -81,13 +74,9 @@
       UseOfMfc="0">
       <Tool
         Name="VCCLCompilerTool"
-        AdditionalIncludeDirectories="..\..\include\qt\headers\QtCore;
-                                      ..\..\include\qt\headers\QtGui;
-                                      ..\..\include\qt\headers;.;.\release;
-                                      .\qt\win32-msvc2005;
-                                      ..\..\include\vtk"
-        AdditionalOptions="-Zm200 -w34100 -w34189 -Zm200 -w34100 -w34189 -w34100
-                           -w34189"
+        AdditionalIncludeDirectories="..\..\include\qt\headers\QtCore,..\..\include\qt\headers\QtGui,
+..\..\include\qt\headers,.,.\release,.\qt\win32-msvc2005,..\..\include\vtk"
+        AdditionalOptions="-Zm200 -w34100 -w34189 -Zm200 -w34100 -w34189 -w34100 -w34189"
         AssemblerListingLocation="release\"
         BufferSecurityCheck="false"
         DebugInformationFormat="0"
@@ -95,10 +84,8 @@
         GeneratePreprocessedFile="0"
         ObjectFile="release\"
         Optimization ="2"
-        PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,
-                                 QT_LARGEFILE_SUPPORT,QT_DLL,QT_NO_DEBUG,
-                                 QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT,
-                                 NDEBUG"
+        PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,
+QT_DLL,QT_NO_DEBUG,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT,NDEBUG"
         ProgramDataBaseFileName=".\"
         RuntimeLibrary="2"
         RuntimeTypeInfo="true"
@@ -109,9 +96,7 @@
         Name="VCCustomBuildTool"/>
       <Tool
         Name="VCLinkerTool"
-        AdditionalDependencies="..\..\lib\qt\qtmain.lib
-                                ..\..\lib\qt\QtGui4.lib
-                                ..\..\lib\qt\QtCore4.lib"
+        AdditionalDependencies="qtmain.lib QtGui4.lib QtCore4.lib opengl32.lib glu32.lib"
         AdditionalLibraryDirectories="..\..\lib\qt"
         GenerateDebugInformation="false"
         IgnoreImportLibrary="true"
@@ -133,9 +118,8 @@
         Name="VCPreLinkEventTool"/>
       <Tool
         Name="VCResourceCompilerTool"
-        PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,
-                                 QT_LARGEFILE_SUPPORT,QT_DLL,QT_NO_DEBUG,
-                                 QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT"/>
+        PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,
+QT_DLL,QT_NO_DEBUG,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT"/>
     </Configuration>
   </Configurations>
   <Files>
@@ -162,20 +146,10 @@
           Name="Debug|Win32">
           <Tool
             Name="VCCustomBuildTool"
-            AdditionalDependencies="..\..\bin\qt\moc.exe;
-                                    ..\..\GUI\qtVtk\qtVtkMainWindow.h"
-            CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32
-                         -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB
-                         -DQT_CORE_LIB -DQT_THREAD_SUPPORT
-                         -I..\..\include\qt\headers\QtCore;
-                         -I..\..\include\qt\headers\QtGui;
-                         -I..\..\include\qt\headers;
-                         -I.;
-                         -I.\debug;
-                         -I\qt\win32-msvc2005
-                         -D_MSC_VER=1400 -DWIN32
-                         ..\..\GUI\qtVtk\qtVtkMainWindow.h
-                         -o ..\..\GUI\qtVtk\moc_qtVtkMainWindow.cpp"
+            AdditionalDependencies="moc.exe,qtVtkMainWindow.h"
+            CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB
+-DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers;
+-I.; -I.\debug; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\GUI\qtVtk\qtVtkMainWindow.h -o ..\..\GUI\qtVtk\moc_qtVtkMainWindow.cpp"
             Description="MOC qtVtkMainWindow.h"
             Outputs="..\..\GUI\qtVtk\moc_qtVtkMainWindow.cpp"
             Path="..\..\bin\qt"/>
@@ -184,20 +158,11 @@
           Name="Release|Win32">
           <Tool
             Name="VCCustomBuildTool"
-            AdditionalDependencies="..\..\bin\qt\moc.exe;
-                                    ..\..\GUI\qtVtk\qtVtkMainWindow.h"
-            CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32
-                         -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG
-                         -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT
-                         -I..\..\include\qt\headers\QtCore;
-                         -I..\..\include\qt\headers\QtGui;
-                         -I..\..\include\qt\headers;
-                         -I.;
-                         -I.\release;
-                         -I\qt\win32-msvc2005
-                         -D_MSC_VER=1400 -DWIN32
-                         ..\..\GUI\qtVtk\qtVtkMainWindow.h
-                         -o ..\..\GUI\qtVtk\moc_qtVtkMainWindow.cpp"
+            AdditionalDependencies="moc.exe,qtVtkMainWindow.h"
+            CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG
+-DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui;
+-I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\GUI\qtVtk\qtVtkMainWindow.h
+-o ..\..\GUI\qtVtk\moc_qtVtkMainWindow.cpp"
             Description="MOC qtVtkMainWindow.h"
             Outputs="..\..\GUI\qtVtk\moc_qtVtkMainWindow.cpp"
             Path="..\..\bin\qt"/>
@@ -236,11 +201,9 @@
           Name="Debug|Win32">
           <Tool
             Name="VCCustomBuildTool"
-            AdditionalDependencies="..\..\bin\qt\uic.exe;
-                                    ..\..\include\vtk\QVTKWidget.h;
-                                    ..\..\GUI\qtVtk\qtVtkMainWindow.ui"
-            CommandLine="..\..\bin\qt\uic.exe ..\..\GUI\qtVtk\qtVtkMainWindow.ui
-                         -o ..\..\GUI\qtVtk\ui_qtVtkMainWindow.h"
+            AdditionalDependencies="uic.exe,QVTKWidget.h,
+..\..\GUI\qtVtk\qtVtkMainWindow.ui"
+            CommandLine="..\..\bin\qt\uic.exe ..\..\GUI\qtVtk\qtVtkMainWindow.ui -o ..\..\GUI\qtVtk\ui_qtVtkMainWindow.h"
             Description="UIC qtVtkMainWindow.ui"
             Outputs="..\..\GUI\qtVtk\ui_qtVtkMainWindow.h"
             Path="..\..\bin\qt"/>
@@ -249,11 +212,9 @@
           Name="Release|Win32">
           <Tool
             Name="VCCustomBuildTool"
-            AdditionalDependencies="..\..\bin\qt\uic.exe;
-                                    ..\..\include\vtk\QVTKWidget.h;
-                                    ..\..\GUI\qtVtk\qtVtkMainWindow.ui"
-            CommandLine="..\..\bin\qt\uic.exe ..\..\GUI\qtVtk\qtVtkMainWindow.ui
-                         -o ..\..\GUI\qtVtk\ui_qtVtkMainWindow.h"
+            AdditionalDependencies="uic.exe,QVTKWidget.h,
+..\..\GUI\qtVtk\qtVtkMainWindow.ui"
+            CommandLine="..\..\bin\qt\uic.exe ..\..\GUI\qtVtk\qtVtkMainWindow.ui -o ..\..\GUI\qtVtk\ui_qtVtkMainWindow.h"
             Description="UIC qtVtkMainWindow.ui"
             Outputs="..\..\GUI\qtVtk\ui_qtVtkMainWindow.h"
             Path="..\..\bin\qt"/>

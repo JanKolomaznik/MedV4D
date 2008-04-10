@@ -23,8 +23,6 @@
   #pragma comment(lib,"vtksys.lib")
   #pragma comment(lib,"vtktiff.lib")
   #pragma comment(lib,"vtkzlib.lib")
-  #pragma comment(lib,"opengl32.lib")
-  #pragma comment(lib,"glu32.lib")
   #pragma comment(lib,"QVTK.lib")
 
 #else // _RELEASE
@@ -49,8 +47,6 @@
   #pragma comment(lib,"vtksys.lib")
   #pragma comment(lib,"vtktiff.lib")
   #pragma comment(lib,"vtkzlib.lib")
-  #pragma comment(lib,"opengl32.lib")
-  #pragma comment(lib,"glu32.lib")
   #pragma comment(lib,"QVTK.lib")
 
 #endif
