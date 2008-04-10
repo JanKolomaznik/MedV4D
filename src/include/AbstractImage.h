@@ -17,7 +17,7 @@ public:
 	/**
 	 * Smart pointer type for accesing AbstractImage instance (child).
 	 **/
-	typedef boost::shared_ptr< AbstractImage > Ptr;
+	typedef boost::shared_ptr< AbstractImage > APtr;
 
 
 	virtual ~AbstractImage()=0;
@@ -26,4 +26,5 @@ public:
 
 } /*namespace Images*/
 } /*namespace M4D*/
+
 #endif /*_ABSTRACT_IMAGE_H*/

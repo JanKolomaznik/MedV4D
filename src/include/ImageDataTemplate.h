@@ -49,13 +49,21 @@ public:
 
 	~ImageDataTemplate();	
 
-	ElementType	Get( size_t index )const;
-	ElementType&	Get( size_t index );
-	
-	ElementType	operator[]( size_t index )const{ return Get( index ); }
-	ElementType&	operator[]( size_t index ){ return Get( index ); }
+	ElementType
+	Get( size_t index )const;
 
-	size_t		GetDimension()const 
+	ElementType&
+	Get( size_t index );
+	
+	ElementType
+	operator[]( size_t index )const
+				{ return Get( index ); }
+	ElementType&
+	operator[]( size_t index )
+				{ return Get( index ); }
+
+	size_t
+	GetDimension()const 
 				{ return _dimension; }
 protected:
 	ImageDataTemplate( 

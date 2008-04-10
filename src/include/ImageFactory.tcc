@@ -18,7 +18,7 @@ PrepareElementArray( size_t size )
 }
 
 template< typename ElementType >
-AbstractImage::Ptr 
+AbstractImage::APtr 
 ImageFactory::CreateEmptyImage2D( 
 			size_t		width, 
 			size_t		height
@@ -40,11 +40,11 @@ ImageFactory::CreateEmptyImage2D(
 		new ImageDataTemplate< ElementType >( array, info, 2, size );
 
 	//Returning smart pointer to abstract image class.
-	return AbstractImage::Ptr( newImage );
+	return AbstractImage::APtr( newImage );
 }
 
 template< typename ElementType >
-AbstractImage::Ptr 
+AbstractImage::APtr 
 ImageFactory::CreateEmptyImage3D( 
 			size_t		width, 
 			size_t		height, 
@@ -68,7 +68,7 @@ ImageFactory::CreateEmptyImage3D(
 		new ImageDataTemplate< ElementType >( array, info, 3, size );
 
 	//Returning smart pointer to abstract image class.
-	return AbstractImage::Ptr( newImage );
+	return AbstractImage::APtr( newImage );
 }
 
 } /*namespace Images*/

@@ -18,13 +18,15 @@ public:
 	 * Method for custom empty image creation.
 	 **/
 	template< typename ElementType >
-	static AbstractImage::Ptr CreateEmptyImage2D( 
+	static AbstractImage::APtr 
+	CreateEmptyImage2D( 
 			size_t		width, 
 			size_t		height
 			);
 
 	template< typename ElementType >
-	static AbstractImage::Ptr CreateEmptyImage3D( 
+	static AbstractImage::APtr 
+	CreateEmptyImage3D( 
 			size_t		width, 
 			size_t		height, 
 			size_t		depth

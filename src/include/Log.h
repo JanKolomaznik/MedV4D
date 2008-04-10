@@ -48,6 +48,6 @@ public:
 };
 
 #define LOG( ARGs )	\
-	(*logStream) << ARGs;
+	(*logStream) << ARGs << std::endl;
 
 #endif /*__LOG_H_*/
