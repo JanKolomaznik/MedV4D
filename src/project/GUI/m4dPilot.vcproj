@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding = "Windows-1252"?>
+<VisualStudioProject
+  ProjectType="Visual C++"
+  Version="8,00"
+  Name="m4dPilot"
+  ProjectGUID="{CAFBCE49-21C9-3A1D-995B-E6FFF641C6E6}"
+  Keyword="Qt4VSv1.0">
+  <Platforms>
+    <Platform
+      Name="Win32"/>
+  </Platforms>
+  <Configurations>
+    <Configuration
+      Name="Debug|Win32"
+      OutputDirectory="."
+      ATLMinimizesCRunTimeLibraryUsage="false"
+      ConfigurationType="1"
+      IntermediateDirectory="debug\"
+      UseOfMfc="0">
+      <Tool
+        Name="VCCLCompilerTool"
+        AdditionalIncludeDirectories="..\..\include\qt\headers\QtCore,..\..\include\qt\headers\QtGui,
+..\..\include\qt\headers,.,.\debug,.\qt\win32-msvc2005,..\..\include\vtk"
+        AdditionalOptions="-Zm200 -w34100 -w34189 -Zm200 -w34100 -w34189 -w34100 -w34189"
+        AssemblerListingLocation="debug\"
+        BufferSecurityCheck="false"
+        DebugInformationFormat="3"
+        ExceptionHandling="1"
+        GeneratePreprocessedFile="0"
+        ObjectFile="debug\"
+        Optimization ="4"
+        PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,
+QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT"
+        ProgramDataBaseFileName=".\"
+        RuntimeLibrary="3"
+        RuntimeTypeInfo="true"
+        SuppressStartupBanner="true"
+        TreatWChar_tAsBuiltInType="false"
+        WarningLevel="3"/>
+      <Tool
+        Name="VCCustomBuildTool"/>
+      <Tool
+        Name="VCLinkerTool"
+        AdditionalDependencies="qtmaind.lib QtGuid4.lib QtCored4.lib opengl32.lib glu32.lib"
+        AdditionalLibraryDirectories="..\..\lib\qt"
+        GenerateDebugInformation="true"
+        IgnoreImportLibrary="true"
+        OutputFile="debug\m4dPilot.exe"
+        ProgramDatabaseFile=""
+        SubSystem="2"
+        SuppressStartupBanner="true"/>
+      <Tool
+        Name="VCMIDLTool"
+        DefaultCharType="0"
+        EnableErrorChecks="1"
+        WarningLevel="0"/>
+      <Tool
+        Name="VCPostBuildEventTool"/>
+      <Tool
+        Name="VCPreBuildEventTool"/>
+      <Tool
+        Name="VCPreLinkEventTool"/>
+      <Tool
+        Name="VCResourceCompilerTool"
+        PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,
+QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT,_DEBUG"/>
+    </Configuration>
+    <Configuration
+      Name="Release|Win32"
+      OutputDirectory="."
+      ATLMinimizesCRunTimeLibraryUsage="false"
+      ConfigurationType="1"
+      IntermediateDirectory="release\"
+      UseOfMfc="0">
+      <Tool
+        Name="VCCLCompilerTool"
+        AdditionalIncludeDirectories="..\..\include\qt\headers\QtCore,..\..\include\qt\headers\QtGui,
+..\..\include\qt\headers,.,.\release,.\qt\win32-msvc2005,..\..\include\vtk"
+        AdditionalOptions="-Zm200 -w34100 -w34189 -Zm200 -w34100 -w34189 -w34100 -w34189"
+        AssemblerListingLocation="release\"
+        BufferSecurityCheck="false"
+        DebugInformationFormat="0"
+        ExceptionHandling="1"
+        GeneratePreprocessedFile="0"
+        ObjectFile="release\"
+        Optimization ="2"
+        PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,
+QT_DLL,QT_NO_DEBUG,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT,NDEBUG"
+        ProgramDataBaseFileName=".\"
+        RuntimeLibrary="2"
+        RuntimeTypeInfo="true"
+        SuppressStartupBanner="true"
+        TreatWChar_tAsBuiltInType="false"
+        WarningLevel="3"/>
+      <Tool
+        Name="VCCustomBuildTool"/>
+      <Tool
+        Name="VCLinkerTool"
+        AdditionalDependencies="qtmain.lib QtGui4.lib QtCore4.lib opengl32.lib glu32.lib"
+        AdditionalLibraryDirectories="..\..\lib\qt"
+        GenerateDebugInformation="false"
+        IgnoreImportLibrary="true"
+        LinkIncremental="1"
+        OutputFile="release\m4dPilot.exe"
+        ProgramDatabaseFile=""
+        SubSystem="2"
+        SuppressStartupBanner="true"/>
+      <Tool
+        Name="VCMIDLTool"
+        DefaultCharType="0"
+        EnableErrorChecks="1"
+        WarningLevel="0"/>
+      <Tool
+        Name="VCPostBuildEventTool"/>
+      <Tool
+        Name="VCPreBuildEventTool"/>
+      <Tool
+        Name="VCPreLinkEventTool"/>
+      <Tool
+        Name="VCResourceCompilerTool"
+        PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,
+QT_DLL,QT_NO_DEBUG,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT"/>
+    </Configuration>
+  </Configurations>
+  <Files>
+    <Filter
+      Name="Source Files"
+      Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
+      UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
+      <File
+        RelativePath="..\..\GUI\m4dPilot\main.cpp"/>
+      <File
+        RelativePath="..\..\GUI\widgets\m4dGUIMainWindow.cpp"/>
+      <File
+        RelativePath="..\..\GUI\widgets\m4dGUIVtkRenderWindowWidget.cpp"/>
+      <File
+        RelativePath="..\..\GUI\m4dPilot\renderWindowUtils.cpp"/>
+    </Filter>
+    <Filter
+      Name="Header Files"
+      Filter="h;hpp;hxx;hm;inl;inc;xsd"
+      UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+      <File
+        RelativePath="..\..\GUI\m4dPilot\projectConfig.h"/>
+      <File
+        RelativePath="..\..\GUI\widgets\m4dGUIMainWindow.h">
+        <FileConfiguration
+          Name="Debug|Win32">
+          <Tool
+            Name="VCCustomBuildTool"
+            AdditionalDependencies="moc.exe,m4dGUIMainWindow.h"
+            CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB
+-DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers;
+-I.; -I.\debug; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\GUI\widgets\m4dGUIMainWindow.h -o ..\..\GUI\m4dPilot\generated\moc_m4dGUIMainWindow.cpp"
+            Description="MOC m4dGUIMainWindow.h"
+            Outputs="..\..\GUI\m4dPilot\generated\moc_m4dGUIMainWindow.cpp"
+            Path="..\..\bin\qt"/>
+        </FileConfiguration>
+        <FileConfiguration
+          Name="Release|Win32">
+          <Tool
+            Name="VCCustomBuildTool"
+            AdditionalDependencies="moc.exe,m4dGUIMainWindow.h"
+            CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG
+-DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui;
+-I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\GUI\widgetst\m4dGUIMainWindow.h
+-o ..\..\GUI\m4dPilot\generated\moc_m4dGUIMainWindow.cpp"
+            Description="MOC m4dGUIMainWindow.h"
+            Outputs="..\..\GUI\m4dPilot\generated\moc_m4dGUIMainWindow.cpp"
+            Path="..\..\bin\qt"/>
+        </FileConfiguration>
+      </File>
+      <File
+        RelativePath="..\..\GUI\widgets\m4dGUIVtkRenderWindowWidget.h">
+        <FileConfiguration
+          Name="Debug|Win32">
+          <Tool
+            Name="VCCustomBuildTool"
+            AdditionalDependencies="moc.exe,m4dGUIVtkRenderWindowWidget.h"
+            CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB
+-DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers;
+-I.; -I.\debug; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\GUI\widgets\m4dGUIVtkRenderWindowWidget.h -o ..\..\GUI\m4dPilot\generated\moc_m4dGUIVtkRenderWindowWidget.cpp"
+            Description="MOC m4dGUIVtkRenderWindowWidget.h"
+            Outputs="..\..\GUI\m4dPilot\generated\moc_m4dGUIVtkRenderWindowWidget.cpp"
+            Path="..\..\bin\qt"/>
+        </FileConfiguration>
+        <FileConfiguration
+          Name="Release|Win32">
+          <Tool
+            Name="VCCustomBuildTool"
+            AdditionalDependencies="moc.exe,m4dGUIVtkRenderWindowWidget.h"
+            CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG
+-DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui;
+-I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\GUI\widgets\m4dGUIVtkRenderWindowWidget.h
+-o ..\..\GUI\m4dPilot\generated\moc_m4dGUIVtkRenderWindowWidget.cpp"
+            Description="MOC m4dGUIVtkRenderWindowWidget.h"
+            Outputs="..\..\GUI\m4dPilot\generated\moc_m4dGUIVtkRenderWindowWidget.cpp"
+            Path="..\..\bin\qt"/>
+        </FileConfiguration>
+      </File>
+      <File
+        RelativePath="..\..\GUI\m4dPilot\renderWindowUtils.h"/>
+    </Filter>
+    <Filter
+      Name="Generated Files"
+      Filter="cpp;c;cxx;moc;h;def;odl;idl;res;"
+      UniqueIdentifier="{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}">
+      <File
+        RelativePath="..\..\GUI\m4dPilot\generated\moc_m4dGUIMainWindow.cpp">
+        <FileConfiguration
+          Name="Release|Win32"
+          ExcludedFromBuild="true"/>
+      </File>
+      <File
+        RelativePath="..\..\GUI\m4dPilot\generated\moc_m4dGUIMainWindow.cpp">
+        <FileConfiguration
+          Name="Debug|Win32"
+          ExcludedFromBuild="true"/>
+      </File>
+      <File
+        RelativePath="..\..\GUI\m4dPilot\generated\moc_m4dGUIVtkRenderWindowWidget.cpp">
+        <FileConfiguration
+          Name="Release|Win32"
+          ExcludedFromBuild="true"/>
+      </File>
+      <File
+        RelativePath="..\..\GUI\m4dPilot\generated\moc_m4dGUIVtkRenderWindowWidget.cpp">
+        <FileConfiguration
+          Name="Debug|Win32"
+          ExcludedFromBuild="true"/>
+      </File>
+    </Filter>
+  </Files>
+  <Globals>
+  </Globals>
+</VisualStudioProject>
