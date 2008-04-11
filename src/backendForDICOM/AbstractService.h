@@ -5,9 +5,9 @@
  *  Implements C-FIND service to DICOM server
  */
 
-using namespace std;
+namespace M4DDicomInternal {
 
-class M4DAbstractService
+class AbstractService
 {
 protected :
 	static size_t m_numOfInstances;
@@ -19,9 +19,11 @@ protected :
 	DcmDataset *m_query;
 
 protected:
-	M4DAbstractService();
-	~M4DAbstractService();	
+	AbstractService();
+	~AbstractService();	
 	
 };
+
+} // namespace
 
 #endif

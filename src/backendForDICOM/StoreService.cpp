@@ -17,24 +17,26 @@
 #include "dcmtk/dcmdata/dcrleerg.h"  /* for DcmRLEEncoderRegistration */
 #endif
 
-///////////////////////////////////////////////////////////////////////
-
-uint16 M4DStoreService::seriesCounter = 0;
-uint16 M4DStoreService::imageCounter = 0;
-OFString M4DStoreService::seriesInstanceUID;
-OFString M4DStoreService::seriesNumber;
-OFString M4DStoreService::accessionNumber;
+namespace M4DDicomInternal {
 
 ///////////////////////////////////////////////////////////////////////
 
-M4DStoreService::M4DStoreService()
+uint16 StoreService::seriesCounter = 0;
+uint16 StoreService::imageCounter = 0;
+OFString StoreService::seriesInstanceUID;
+OFString StoreService::seriesNumber;
+OFString StoreService::accessionNumber;
+
+///////////////////////////////////////////////////////////////////////
+
+StoreService::StoreService()
 {
 	/* make sure data dictionary is loaded */
     if (!dcmDataDict.isDictionaryLoaded()) {
         D_PRINT(
 			"Warning: no data dictionary loaded, check environment variable:"
             << DCM_DICT_ENVIRONMENT_VARIABLE);
-		throw new bad_exception();
+		throw new ExceptionBase();
     }
 
 	/* initialize network, i.e. create an instance of T_ASC_Network*. */
@@ -67,7 +69,7 @@ M4DStoreService::M4DStoreService()
 
 ///////////////////////////////////////////////////////////////////////
 
-M4DStoreService::~M4DStoreService()
+StoreService::~StoreService()
 {
 #ifdef ON_THE_FLY_COMPRESSION
     // deregister JPEG codecs
@@ -85,7 +87,7 @@ M4DStoreService::~M4DStoreService()
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DStoreService::StoreSCP( DcmDataset *data) throw(...)
+StoreService::StoreSCP( DcmDataset *data) throw(...)
 {
 	DIC_US msgId = m_assocToServer->GetAssociation()->nextMsgID++;
     T_ASC_PresentationContextID presId;
@@ -100,7 +102,7 @@ M4DStoreService::StoreSCP( DcmDataset *data) throw(...)
         sopClass, sopInstance)) 
 	{
         LOG("No SOP Class & Instance UIDs in data set");
-        throw new bad_exception();
+        throw new ExceptionBase();
     }
 
     /* figure out which of the accepted presentation contexts should be used */
@@ -131,7 +133,7 @@ M4DStoreService::StoreSCP( DcmDataset *data) throw(...)
 		{
 			D_PRINT("No presentation context for: ("
 				<< modalityName << ")" << sopClass);
-			throw new bad_exception();
+			throw new ExceptionBase();
 		}
     }
 
@@ -171,13 +173,13 @@ M4DStoreService::StoreSCP( DcmDataset *data) throw(...)
 		DICOM_WARNING_STATUS(rsp.DimseStatus))) )
 	{
         LOG( "Image was not accepted!");
-		throw new bad_exception();
+		throw new ExceptionBase();
     }
 
 	if( cond != EC_Normal)
 	{
 		LOG( "C_STORE operation failed!");
-		throw new bad_exception();
+		throw new ExceptionBase();
 	}
 
     /* dump status detail information if there is some */
@@ -191,7 +193,7 @@ M4DStoreService::StoreSCP( DcmDataset *data) throw(...)
 ///////////////////////////////////////////////////////////////////////
 
 OFBool
-M4DStoreService::IsaListMember(OFList<OFString>& lst, OFString& s)
+StoreService::IsaListMember(OFList<OFString>& lst, OFString& s)
 {
     OFListIterator(OFString) cur = lst.begin();
     OFListIterator(OFString) end = lst.end();
@@ -211,7 +213,7 @@ M4DStoreService::IsaListMember(OFList<OFString>& lst, OFString& s)
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DStoreService::AddPresentationContext(T_ASC_Parameters *params,
+StoreService::AddPresentationContext(T_ASC_Parameters *params,
     T_ASC_PresentationContextID presentationContextId,
 	const OFString& abstractSyntax,
     const OFString& transferSyntax,
@@ -223,14 +225,14 @@ M4DStoreService::AddPresentationContext(T_ASC_Parameters *params,
 	if( cond.bad() )
 	{
 		D_PRINT( "Cannot add presentatoin ctx");
-		throw new bad_exception();
+		throw new ExceptionBase();
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DStoreService::AddPresentationContext(T_ASC_Parameters *params,
+StoreService::AddPresentationContext(T_ASC_Parameters *params,
     T_ASC_PresentationContextID presentationContextId,
 	const OFString& abstractSyntax,
     const OFList<OFString>& transferSyntaxList,
@@ -254,14 +256,14 @@ M4DStoreService::AddPresentationContext(T_ASC_Parameters *params,
 	if( cond.bad() )
 	{
 		D_PRINT( "Cannot add presentation ctxs");
-		throw new bad_exception();
+		throw new ExceptionBase();
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DStoreService::AddStoragePresentationContexts(
+StoreService::AddStoragePresentationContexts(
 	T_ASC_Parameters *params, OFList<OFString>& sopClasses) throw(...)
 {
     /*
@@ -357,7 +359,7 @@ M4DStoreService::AddStoragePresentationContexts(
 
         if (pid > 255) {
             D_PRINT("Too many presentation contexts");
-            throw new bad_exception();
+            throw new ExceptionBase();
         }
 
         if (opt_combineProposedTransferSyntaxes) {
@@ -372,7 +374,7 @@ M4DStoreService::AddStoragePresentationContexts(
             if (fallbackSyntaxes.size() > 0) {
                 if (pid > 255) {
                     D_PRINT("Too many presentation contexts");
-                    throw new bad_exception();
+                    throw new ExceptionBase();
                 }
 
                 // sop class with fallback transfer syntax
@@ -387,7 +389,7 @@ M4DStoreService::AddStoragePresentationContexts(
 ///////////////////////////////////////////////////////////////////////
 
 int
-M4DStoreService::SecondsSince1970()
+StoreService::SecondsSince1970()
 {
     time_t t = time(NULL);
     return (int)t;
@@ -396,7 +398,7 @@ M4DStoreService::SecondsSince1970()
 ///////////////////////////////////////////////////////////////////////
 
 OFString
-M4DStoreService::IntToString(int i)
+StoreService::IntToString(int i)
 {
     char numbuf[32];
     sprintf(numbuf, "%d", i);
@@ -406,7 +408,7 @@ M4DStoreService::IntToString(int i)
 ///////////////////////////////////////////////////////////////////////
 
 OFString
-M4DStoreService::MakeUID(OFString basePrefix, int counter)
+StoreService::MakeUID(OFString basePrefix, int counter)
 {
     OFString prefix = basePrefix + "." + IntToString(counter);
     char uidbuf[65];
@@ -417,7 +419,7 @@ M4DStoreService::MakeUID(OFString basePrefix, int counter)
 ///////////////////////////////////////////////////////////////////////
 
 OFBool
-M4DStoreService::UpdateStringAttributeValue(
+StoreService::UpdateStringAttributeValue(
 	DcmItem* dataset, const DcmTagKey& key, OFString& value)
 {
     DcmStack stack;
@@ -456,7 +458,7 @@ M4DStoreService::UpdateStringAttributeValue(
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DStoreService::ReplaceSOPInstanceInformation(DcmDataset* dataset)
+StoreService::ReplaceSOPInstanceInformation(DcmDataset* dataset)
 {
 #define STUDY_ID_PREFIX "SID_"		// StudyID is SH (maximum 16 chars)	
 	OFString studyIDPrefix(STUDY_ID_PREFIX);
@@ -497,7 +499,7 @@ M4DStoreService::ReplaceSOPInstanceInformation(DcmDataset* dataset)
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DStoreService::ProgressCallback(void * /*callbackData*/,
+StoreService::ProgressCallback(void * /*callbackData*/,
     T_DIMSE_StoreProgress *progress,
     T_DIMSE_C_StoreRQ * /*req*/)
 {
@@ -515,9 +517,9 @@ M4DStoreService::ProgressCallback(void * /*callbackData*/,
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DStoreService::StoreObject( 
-		const M4DDcmProvider::DicomObj &objectToCopyAttribsFrom,
-		M4DDcmProvider::DicomObj &objectToStore) throw(...)
+StoreService::StoreObject( 
+		const DcmProvider::DicomObj &objectToCopyAttribsFrom,
+		DcmProvider::DicomObj &objectToStore) throw(...)
 {
 	DcmDataset *dataSetToStore = (DcmDataset *) objectToStore.m_dataset;
 	DcmDataset *dataSetPattern = 
@@ -535,7 +537,7 @@ M4DStoreService::StoreObject(
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DStoreService::CopyNeccessaryAttribs( 
+StoreService::CopyNeccessaryAttribs( 
 					DcmDataset *source, DcmDataset *dest)
 {
 	char tmp[256];
@@ -553,3 +555,5 @@ M4DStoreService::CopyNeccessaryAttribs(
 	source->findAndGetString( DCM_StudyInstanceUID, tmpPtr);
 	dest->putAndInsertString( DCM_StudyInstanceUID, tmp);
 }
+
+} // namespace

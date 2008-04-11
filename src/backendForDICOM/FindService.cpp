@@ -9,13 +9,15 @@
 #include "AbstractService.h"
 #include "FindService.h"
 
+namespace M4DDicomInternal {
+
 ///////////////////////////////////////////////////////////////////////
 
 /**
  *  Creates DICOM data set containing all neccessary tags for query the server
  */
 void
-M4DFindService::GetQuery( 
+FindService::GetQuery( 
 	DcmDataset **query, 
 	const string *patientName,
 	const string *patientID,
@@ -46,7 +48,7 @@ M4DFindService::GetQuery(
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DFindService::GetWholeStudyInfoQuery( 
+FindService::GetWholeStudyInfoQuery( 
 	DcmDataset **query, 
 	const string &patientID,
 	const string &studyID)
@@ -71,7 +73,7 @@ M4DFindService::GetWholeStudyInfoQuery(
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DFindService::GetStudyInfoQuery( 
+FindService::GetStudyInfoQuery( 
 	DcmDataset **query, 
 	const string &patientID,
 	const string &studyID)
@@ -92,7 +94,7 @@ M4DFindService::GetStudyInfoQuery(
 
 ///////////////////////////////////////////////////////////////////////
 
-M4DFindService::M4DFindService()
+FindService::FindService()
 {
 	/* initialize network, i.e. create an instance of T_ASC_Network*. */
 	#define TIME_OUT 30
@@ -110,7 +112,7 @@ M4DFindService::M4DFindService()
 
 ///////////////////////////////////////////////////////////////////////
 
-M4DFindService::~M4DFindService()
+FindService::~FindService()
 {
 	delete m_assocToServer;
 }
@@ -118,7 +120,7 @@ M4DFindService::~M4DFindService()
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DFindService::FindSupport( 
+FindService::FindSupport( 
 	DcmDataset &queryDataSet,
 	void *data,
 	DIMSE_FindUserCallback callBack) throw (...)
@@ -181,23 +183,23 @@ M4DFindService::FindSupport(
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DFindService::FindStudiesAboutPatient( 
+FindService::FindStudiesAboutPatient( 
 		const string &patientID,
-		M4DDcmProvider::ResultSet &result) throw (...)
+		DcmProvider::ResultSet &result) throw (...)
 {
 	// create query
 	DcmDataset *query = NULL;
 	GetQuery( &query, NULL, &patientID, NULL, NULL);
 
 	// issue it
-	FindSupport( *query, (void *)&result, M4DFindService::TableRowCallback);
+	FindSupport( *query, (void *)&result, FindService::TableRowCallback);
 }
 
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DFindService::FindForFilter( 
-		M4DDcmProvider::ResultSet &result, 
+FindService::FindForFilter( 
+		DcmProvider::ResultSet &result, 
 		const string &patientName,
 		const string &patientID,
 		const string &modality,
@@ -208,45 +210,45 @@ M4DFindService::FindForFilter(
 	GetQuery( &query, &patientName, &patientID, &modality, &date);
 
 	// issue
-	FindSupport( *query, (void *)&result, M4DFindService::TableRowCallback);
+	FindSupport( *query, (void *)&result, FindService::TableRowCallback);
 }
 
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DFindService::FindWholeStudyInfo(
+FindService::FindWholeStudyInfo(
 		const string &patientID,
 		const string &studyID,
-		M4DDcmProvider::StudyInfo &info) throw (...)
+		DcmProvider::StudyInfo &info) throw (...)
 {
 	// create query
 	DcmDataset *query = NULL;
 	GetWholeStudyInfoQuery( &query, patientID, studyID);
 
 	// issue
-	FindSupport( *query, (void *)&info, M4DFindService::WholeStudyInfoCallback);
+	FindSupport( *query, (void *)&info, FindService::WholeStudyInfoCallback);
 }
 
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DFindService::FindStudyInfo(
+FindService::FindStudyInfo(
 		const string &patientID,
 		const string &studyID,
-		M4DDcmProvider::StringVector &seriesIDs) throw (...)
+		DcmProvider::StringVector &seriesIDs) throw (...)
 {
 	// create query
 	DcmDataset *query = NULL;
 	GetStudyInfoQuery( &query, patientID, studyID);
 
 	// issue
-	FindSupport( *query, (void *)&seriesIDs, M4DFindService::StudyInfoCallback);
+	FindSupport( *query, (void *)&seriesIDs, FindService::StudyInfoCallback);
 }
 
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DFindService::TableRowCallback(
+FindService::TableRowCallback(
         void *callbackData,
         T_DIMSE_C_FindRQ * /*request*/,
         int /*responseCount*/,
@@ -272,7 +274,7 @@ M4DFindService::TableRowCallback(
 	//////////////////////////////////////////////////
 	// Parse the response
 	//////////////////////////////////////////////////
-	M4DDcmProvider::TableRow *row = new M4DDcmProvider::TableRow;
+	DcmProvider::TableRow *row = new DcmProvider::TableRow;
 
 	responseIdentifiers->findAndGetOFString( DCM_PatientsName, str);
 	row->patientName = str.c_str();
@@ -297,8 +299,8 @@ M4DFindService::TableRowCallback(
 	row->modality = str.c_str();
 
 	// finaly add the new row into result set. SYNCHRONIZED?
-	M4DDcmProvider::ResultSet *rs = 
-		static_cast<M4DDcmProvider::ResultSet *>(callbackData);
+	DcmProvider::ResultSet *rs = 
+		static_cast<DcmProvider::ResultSet *>(callbackData);
 
 	rs->push_back(*row);
 }
@@ -306,7 +308,7 @@ M4DFindService::TableRowCallback(
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DFindService::WholeStudyInfoCallback(
+FindService::WholeStudyInfoCallback(
         void *callbackData,
         T_DIMSE_C_FindRQ * /*request*/,
         int /*responseCount*/,
@@ -338,20 +340,20 @@ M4DFindService::WholeStudyInfoCallback(
 	setID = str.c_str();
 
 	// get container that recieved values should go into
-	M4DDcmProvider::StudyInfo *setInfo = 
-		static_cast<M4DDcmProvider::StudyInfo*>(callbackData);
+	DcmProvider::StudyInfo *setInfo = 
+		static_cast<DcmProvider::StudyInfo*>(callbackData);
 
-	M4DDcmProvider::StringVector *setImages;
+	DcmProvider::StringVector *setImages;
 	// try to find if there is already just recieved setID within the container
-	M4DDcmProvider::StudyInfo::iterator it = 
+	DcmProvider::StudyInfo::iterator it = 
 		setInfo->find( setID);
 	
 	if( it == setInfo->end() )
 	{
 		// create new StringVector & insert it into setInfo
-		M4DDcmProvider::StringVector buddy;
+		DcmProvider::StringVector buddy;
 		setInfo->insert( 
-			M4DDcmProvider::StudyInfo::value_type( setID, buddy) );
+			DcmProvider::StudyInfo::value_type( setID, buddy) );
 		setImages = &setInfo->find( setID)->second;
 	}	
 	else
@@ -366,7 +368,7 @@ M4DFindService::WholeStudyInfoCallback(
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DFindService::StudyInfoCallback(
+FindService::StudyInfoCallback(
         void *callbackData,
         T_DIMSE_C_FindRQ * /*request*/,
         int /*responseCount*/,
@@ -395,8 +397,10 @@ M4DFindService::StudyInfoCallback(
 	setID = str.c_str();
 
 	// get container that recieved values should go into
-	M4DDcmProvider::StringVector *setInfo = 
-		static_cast<M4DDcmProvider::StringVector *>(callbackData);
+	DcmProvider::StringVector *setInfo = 
+		static_cast<DcmProvider::StringVector *>(callbackData);
 
 	setInfo->push_back( setID);
 }
+
+} // namespace

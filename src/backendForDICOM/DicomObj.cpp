@@ -1,17 +1,15 @@
 
-#include <string>
-
-using namespace std;
-
 #include "dcmtk/dcmdata/dcdeftag.h"
 #include "dcmtk/dcmdata/dcfilefo.h"
 
 #include "main.h"
 #include "M4DDICOMServiceProvider.h"
 
+namespace M4DDicom {
+
 ///////////////////////////////////////////////////////////////////////
 
-M4DDcmProvider::DicomObj::DicomObj()
+DcmProvider::DicomObj::DicomObj()
 {
 	m_dataset = NULL;
 	m_status = Loading;
@@ -20,7 +18,7 @@ M4DDcmProvider::DicomObj::DicomObj()
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DDcmProvider::DicomObj::Save( const string &path)	
+DcmProvider::DicomObj::Save( const string &path)	
 	throw (...)
 {
 	if( m_dataset == NULL)
@@ -40,14 +38,14 @@ M4DDcmProvider::DicomObj::Save( const string &path)
 	if (cond.bad())
 	{
 		LOG( "Cannot write file:" << path);
-		throw new bad_exception();
+		throw new ExceptionBase();
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DDcmProvider::DicomObj::Load( const string &path) throw (...)
+DcmProvider::DicomObj::Load( const string &path) throw (...)
 {
 	DcmDataset *dataSet = new DcmDataset();
 	OFCondition cond = dataSet->loadFile( path.c_str());
@@ -55,7 +53,7 @@ M4DDcmProvider::DicomObj::Load( const string &path) throw (...)
 	if (cond.bad())
 	{
 		LOG( "Cannot load the file: " << path);
-		throw new bad_exception();
+		throw new ExceptionBase();
 	}
 
 	m_dataset = (void *)dataSet;
@@ -64,7 +62,7 @@ M4DDcmProvider::DicomObj::Load( const string &path) throw (...)
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DDcmProvider::DicomObj::GetTagValue( 
+DcmProvider::DicomObj::GetTagValue( 
 	uint16 group, uint16 tagNum, string &s) throw (...)
 {
 	OFString str;
@@ -76,7 +74,7 @@ M4DDcmProvider::DicomObj::GetTagValue(
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DDcmProvider::DicomObj::GetTagValue(
+DcmProvider::DicomObj::GetTagValue(
 	uint16 group, uint16 tagNum, int32 &i) throw (...)
 {
 	static_cast<DcmDataset *>(m_dataset)->findAndGetSint32( 
@@ -86,7 +84,7 @@ M4DDcmProvider::DicomObj::GetTagValue(
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DDcmProvider::DicomObj::GetTagValue( 
+DcmProvider::DicomObj::GetTagValue( 
 	uint16 group, uint16 tagNum, float &f) throw (...)
 {
 	static_cast<DcmDataset *>(m_dataset)->findAndGetFloat32( 
@@ -95,8 +93,8 @@ M4DDcmProvider::DicomObj::GetTagValue(
 
 ///////////////////////////////////////////////////////////////////////
 
-M4DDcmProvider::DicomObj::PixelSize
-M4DDcmProvider::DicomObj::GetPixelSize( void)
+DcmProvider::DicomObj::PixelSize
+DcmProvider::DicomObj::GetPixelSize( void)
 {
 	if( m_bitsStored <= 8)
 		return PixelSize::bit8;
@@ -109,11 +107,11 @@ M4DDcmProvider::DicomObj::GetPixelSize( void)
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DDcmProvider::DicomObj::Init()
+DcmProvider::DicomObj::Init()
 {
 	DcmDataset* dataSet = static_cast<DcmDataset *>(m_dataset);
 	if( dataSet == NULL)
-		throw new bad_exception("No data available!");
+		throw new ExceptionBase("No data available!");
 
 	// get image with & height
 	dataSet->findAndGetUint16( DCM_Columns, m_width);
@@ -140,12 +138,12 @@ M4DDcmProvider::DicomObj::Init()
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DDcmProvider::DicomObj::FlushIntoArray( const uint16 *dest) throw (...)
+DcmProvider::DicomObj::FlushIntoArray( const uint16 *dest) throw (...)
 {
 	DcmDataset* dataSet = static_cast<DcmDataset *>(m_dataset);
 
 	if( dataSet == NULL)
-		throw new bad_exception("No data available!");
+		throw new ExceptionBase("No data available!");
 
 	uint16 bitsAllocated, highBit, pixelRepresentation;
 	// get other needed pixel attribs
@@ -160,7 +158,7 @@ M4DDcmProvider::DicomObj::FlushIntoArray( const uint16 *dest) throw (...)
 			DCM_PixelData, data, NULL);
 	if( cond.bad() )
 	{
-		throw new bad_exception( "Cannot obtain pixel data!");
+		throw new ExceptionBase( "Cannot obtain pixel data!");
 	}
 
 	if( pixelRepresentation == 0 &&
@@ -185,7 +183,7 @@ M4DDcmProvider::DicomObj::FlushIntoArray( const uint16 *dest) throw (...)
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DDcmProvider::DicomObj::EncodePixelValue16Aligned( 
+DcmProvider::DicomObj::EncodePixelValue16Aligned( 
 	uint16 x, uint16 y, uint16 &val)
 {
 	//// pixelCell if the image are stored in rows. 1st row, then 2nd ...
@@ -198,3 +196,5 @@ M4DDcmProvider::DicomObj::EncodePixelValue16Aligned(
 	//val = (*fingerToStream + (*(fingerToStream + 1) << 8)) >>
 	//	(m_highBit+1-m_bitsStored);	// align to begin in pixelCell
 }
+
+} // namespace

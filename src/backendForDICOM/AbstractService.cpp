@@ -8,18 +8,20 @@
 #include "M4DDICOMServiceProvider.h"
 #include "AbstractService.h"
 
+namespace M4DDicomInternal {
+
 ///////////////////////////////////////////////////////////////////////
 
 // static members definitions
 size_t 
-M4DAbstractService::m_numOfInstances;
+AbstractService::m_numOfInstances;
 
 const size_t
-M4DAbstractService::m_maxPDU = 16384;
+AbstractService::m_maxPDU = 16384;
 
 ///////////////////////////////////////////////////////////////////////
 
-M4DAbstractService::M4DAbstractService()
+AbstractService::AbstractService()
 {
 	// if it is the first instance let's init network
 	if( m_numOfInstances == 0)
@@ -49,7 +51,7 @@ M4DAbstractService::M4DAbstractService()
 
 ///////////////////////////////////////////////////////////////////////
 
-M4DAbstractService::~M4DAbstractService()
+AbstractService::~AbstractService()
 {
 	// if it is the last instance let's clean up network
 	if( m_numOfInstances == 1)
@@ -71,3 +73,5 @@ M4DAbstractService::~M4DAbstractService()
 }
 
 ///////////////////////////////////////////////////////////////////////
+
+} // namespace

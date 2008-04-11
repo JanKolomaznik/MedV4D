@@ -18,7 +18,7 @@ M4DDicomAssociation::GetAddress( string addressPointer) throw (...)
 {
 	AddressContainer::iterator it = addressContainer.find( addressPointer);
 	if( it == addressContainer.end())
-		throw new bad_exception("No such address in container!");
+		throw new ExceptionBase("No such address in container!");
 	else
 		return it->second;
 }
@@ -62,41 +62,41 @@ M4DDicomAssociation::LoadOneAddress( ifstream &f) throw (...)
 		
 		// read our AP Title
 		FindNonCommentLine( f, line);
-		if( f.eof() ) throw new bad_exception("Unexpected EOF!");
+		if( f.eof() ) throw new ExceptionBase("Unexpected EOF!");
 		addr->callingAPTitle = string( line);
 
 		// read called server name
 		FindNonCommentLine( f, line);
-		if( f.eof() ) throw new bad_exception("Unexpected EOF!");
+		if( f.eof() ) throw new ExceptionBase("Unexpected EOF!");
 		addr->calledServerName = string( line);
 
 		// read called server port
 		FindNonCommentLine( f, line);
-		if( f.eof() ) throw new bad_exception("Unexpected EOF!");
+		if( f.eof() ) throw new ExceptionBase("Unexpected EOF!");
 		sscanf( line.c_str(), "%d ", &addr->calledServerPort);
 		if( addr->calledServerPort < 0 ||
 			addr->calledServerPort > 65535)
-			throw new bad_exception("Port is not in normal range!");
+			throw new ExceptionBase("Port is not in normal range!");
 
 		// read called AT (DB name)
 		FindNonCommentLine( f, line);
-		if( f.eof() ) throw new bad_exception("Unexpected EOF!");
+		if( f.eof() ) throw new ExceptionBase("Unexpected EOF!");
 		addr->calledDBName = string( line);
 
 		// read desired transfer model
 		FindNonCommentLine( f, line);
-		if( f.eof() ) throw new bad_exception("Unexpected EOF!");
+		if( f.eof() ) throw new ExceptionBase("Unexpected EOF!");
 		addr->transferModel = string( line);
 
 		// read desired transfer syntax
 		FindNonCommentLine( f, line);
-		if( f.eof() ) throw new bad_exception("Unexpected EOF!");
+		if( f.eof() ) throw new ExceptionBase("Unexpected EOF!");
 		sscanf( line.c_str(), "%d ", (int *)&addr->transferSyntax);
 		if( (int) addr->transferSyntax < 0 ||
 			(int) addr->transferSyntax > 3)
-			throw new bad_exception("Transfer syntax is incorrect!");
+			throw new ExceptionBase("Transfer syntax is incorrect!");
 
-	} catch( bad_exception *) {
+	} catch( ExceptionBase *) {
 		delete addr;
 		throw;
 	}
@@ -112,7 +112,7 @@ M4DDicomAssociation::InitAddressContainer( void) throw (...)
 {
 	std::ifstream f("config.cfg");
 	if( f.fail() )
-		throw new bad_exception("config file not found!!");
+		throw new ExceptionBase("config file not found!!");
 
 	while( !f.eof())
 	{
@@ -152,7 +152,7 @@ M4DDicomAssociation::M4DDicomAssociation( string assocAddrID)
     if (cond.bad())	
 	{
 		D_PRINT( "Assoc params could not be created!");
-		throw new bad_exception();
+		throw new ExceptionBase();
 	}
 
     /* sets this application's title and the called application's title in the params */
@@ -170,7 +170,7 @@ M4DDicomAssociation::M4DDicomAssociation( string assocAddrID)
     if (cond.bad())
 	{
 		D_PRINT( "Security policy setup failed!");
-		throw new bad_exception();
+		throw new ExceptionBase();
 	}
 
     /* Figure out the presentation addresses and copy the */
@@ -203,10 +203,10 @@ M4DDicomAssociation::Request( T_ASC_Network *net) throw (...)
             ASC_getRejectParameters(m_assocParams, &rej);
 			D_PRINT("Association Rejected due this params:");
             ASC_printRejectParameters(DOUT, &rej);
-			throw new bad_exception("Assotiation rejected!");
+			throw new ExceptionBase("Assotiation rejected!");
         } else {
             D_PRINT("Association Request Failed");
-			throw new bad_exception("Association Request Failed!");
+			throw new ExceptionBase("Association Request Failed!");
         }
     }
 
@@ -216,7 +216,7 @@ M4DDicomAssociation::Request( T_ASC_Network *net) throw (...)
     /* If there are none, finish the execution */
     if (ASC_countAcceptedPresentationContexts(m_assocParams) == 0) {
 		D_PRINT("No Acceptable Presentation Contexts");
-        throw new bad_exception("No Acceptable Presentation Contexts");
+        throw new ExceptionBase("No Acceptable Presentation Contexts");
     }
 
     /* dump general information concerning the establishment 
@@ -289,7 +289,7 @@ M4DDicomAssociation::AddPresentationContext(T_ASC_Parameters *params)
 		transferSyntaxes, numTransferSyntaxes).bad() )
 	{
 		D_PRINT("ASC_addPresentationContext failed!");
-		throw new bad_exception("ASC_addPresentationContext failed!");
+		throw new ExceptionBase("ASC_addPresentationContext failed!");
 	}
 }
 
@@ -303,7 +303,7 @@ M4DDicomAssociation::Abort(void) throw (...)
 	if( ASC_abortAssociation( m_assoc).bad())
 	{
         D_PRINT("Association Abort Failed");
-		throw new bad_exception("Association Abort Failed");
+		throw new ExceptionBase("Association Abort Failed");
     }
 }
 
@@ -317,7 +317,7 @@ M4DDicomAssociation::Release(void)
 	if( ASC_releaseAssociation(m_assoc).bad())
 	{
         D_PRINT("Association Release Failed!");
-        throw new bad_exception("Association Release Failed");
+        throw new ExceptionBase("Association Release Failed");
     }
 }
 
@@ -332,7 +332,7 @@ M4DDicomAssociation::FindPresentationCtx( void) throw(...)
 			m_assocAddr->transferModel.c_str() );
     if (presId == 0) {
         D_PRINT( "No presentation context");
-        throw new bad_exception("No presentation ctx");
+        throw new ExceptionBase("No presentation ctx");
     }
 	return presId;
 }

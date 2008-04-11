@@ -1,4 +1,3 @@
-
 #include "dcmtk/dcmnet/dimse.h"
 #include "dcmtk/dcmnet/diutil.h"
 #include "dcmtk/dcmdata/dcdeftag.h"
@@ -11,26 +10,30 @@
 #include "MoveService.h"
 #include "FindService.h"
 
+using namespace M4DDicomInternal;
+
 // set log & debug streams
 std::ostream *logStream = &std::cout;
 std::ostream *pdout = &std::cout;
 
 // create service objects
 
-//M4DStoreService storeService;
+//StoreService storeService;
+
+namespace M4DDicom {
 
 ///////////////////////////////////////////////////////////////////////
 
-M4DDcmProvider::M4DDcmProvider()
+DcmProvider::DcmProvider()
 {
-	findService = new M4DFindService();
-	moveService = new M4DMoveService();
+	findService = new FindService();
+	moveService = new MoveService();
 }
 
-M4DDcmProvider::~M4DDcmProvider()
+DcmProvider::~DcmProvider()
 {
-	delete ( (M4DFindService *) findService);
-	delete ( (M4DMoveService *) moveService);
+	delete ( (FindService *) findService);
+	delete ( (MoveService *) moveService);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -38,77 +41,79 @@ M4DDcmProvider::~M4DDcmProvider()
 // of appropriate service objects
 
 void
-M4DDcmProvider::Find( 
-		M4DDcmProvider::ResultSet &result,
+DcmProvider::Find( 
+		DcmProvider::ResultSet &result,
 		const string &patientName,
 		const string &patientID,
 		const string &modalities,
 		const string &date) throw (...)
 {
-	static_cast<M4DFindService *>(findService)->FindForFilter( 
+	static_cast<FindService *>(findService)->FindForFilter( 
 		result, patientName, patientID, modalities, date);
 }
 
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DDcmProvider::FindStudyInfo(
+DcmProvider::FindStudyInfo(
 		const string &patientID,
 		const string &studyID,
 		StringVector &info) throw (...)
 {
-	static_cast<M4DFindService *>(findService)->FindStudyInfo(
+	static_cast<FindService *>(findService)->FindStudyInfo(
 		patientID, studyID, info);
 }
 
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DDcmProvider::WholeFindStudyInfo(
+DcmProvider::WholeFindStudyInfo(
 		const string &patientID,
 		const string &studyID,
 		StudyInfo &info) throw (...)
 {
-	static_cast<M4DFindService *>(findService)->FindWholeStudyInfo(
+	static_cast<FindService *>(findService)->FindWholeStudyInfo(
 		patientID, studyID, info);
 }
 
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DDcmProvider::FindStudiesAboutPatient(  
+DcmProvider::FindStudiesAboutPatient(  
 		const string &patientID,
 		ResultSet &result) throw (...)
 {
-	static_cast<M4DFindService *>(findService)->FindStudiesAboutPatient( 
+	static_cast<FindService *>(findService)->FindStudiesAboutPatient( 
 		patientID, result);
 }
 
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DDcmProvider::GetImage(
+DcmProvider::GetImage(
 		const string &patientID,
 		const string &studyID,
 		const string &serieID,
 		const string &imageID,
 		DicomObj &object) throw (...)
 {
-	static_cast<M4DMoveService *>(moveService)->MoveImage( 
+	static_cast<MoveService *>(moveService)->MoveImage( 
 		patientID, studyID, serieID, imageID, object);
 }
 
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DDcmProvider::GetImageSet(
+DcmProvider::GetImageSet(
 		const string &patientID,
 		const string &studyID,
 		const string &serieID,
 		DicomObjSet &result) throw (...)
 {
-	static_cast<M4DMoveService *>(moveService)->MoveImageSet( 
+	static_cast<MoveService *>(moveService)->MoveImageSet( 
 		patientID, studyID, serieID, result);
 }
 
 ///////////////////////////////////////////////////////////////////////
+
+} // namespace

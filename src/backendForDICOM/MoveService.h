@@ -5,9 +5,11 @@
  *  Implements C-MOVE service to DICOM server
  */
 
-using namespace std;
+using namespace M4DDicom;
 
-class M4DMoveService : M4DAbstractService
+namespace M4DDicomInternal {
+
+class MoveService : AbstractService
 {
 private :
 
@@ -60,22 +62,24 @@ private :
 		DcmDataset **statusDetail);
 
 public:
-	M4DMoveService();
-	~M4DMoveService();
+	MoveService();
+	~MoveService();
 
 	void MoveImage( 
 		const string &patientID,
 		const string &studyID,
 		const string &setID,
 		const string &imageID,
-		M4DDcmProvider::DicomObj &rs) throw (...);
+		DcmProvider::DicomObj &rs) throw (...);
 
 	void MoveImageSet(
 		const string &patientID,
 		const string &studyID,
 		const string &serieID,
-		M4DDcmProvider::DicomObjSet &result) throw (...);
+		DcmProvider::DicomObjSet &result) throw (...);
 	
 };
+
+} // namespace
 
 #endif

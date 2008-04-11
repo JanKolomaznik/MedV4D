@@ -5,61 +5,65 @@
  *  Implements C-FIND service to DICOM server
  */
 
-using namespace std;
+using namespace M4DDicom;
 
-class M4DStoreService : M4DAbstractService
-{
-private :
+namespace M4DDicomInternal {
 
-	static uint16 seriesCounter;
-	static uint16 imageCounter;
-	static OFString seriesInstanceUID;
-	static OFString seriesNumber;
-	static OFString accessionNumber;
+	class StoreService : AbstractService
+	{
+	private :
 
-	static void AddPresentationContext(T_ASC_Parameters *params,
-		T_ASC_PresentationContextID presentationContextId, 
-		const OFString& abstractSyntax,
-		const OFList<OFString>& transferSyntaxList,
-		T_ASC_SC_ROLE proposedRole) throw(...);
+		static uint16 seriesCounter;
+		static uint16 imageCounter;
+		static OFString seriesInstanceUID;
+		static OFString seriesNumber;
+		static OFString accessionNumber;
 
-	static void AddStoragePresentationContexts(
-		T_ASC_Parameters *params, OFList<OFString>& sopClasses) throw(...);
+		static void AddPresentationContext(T_ASC_Parameters *params,
+			T_ASC_PresentationContextID presentationContextId, 
+			const OFString& abstractSyntax,
+			const OFList<OFString>& transferSyntaxList,
+			T_ASC_SC_ROLE proposedRole) throw(...);
 
-	static void	AddPresentationContext(T_ASC_Parameters *params,
-		T_ASC_PresentationContextID presentationContextId,
-		const OFString& abstractSyntax,
-		const OFString& transferSyntax,
-		T_ASC_SC_ROLE proposedRole) throw(...);
+		static void AddStoragePresentationContexts(
+			T_ASC_Parameters *params, OFList<OFString>& sopClasses) throw(...);
 
-	static OFBool IsaListMember(OFList<OFString>& lst, OFString& s);
+		static void	AddPresentationContext(T_ASC_Parameters *params,
+			T_ASC_PresentationContextID presentationContextId,
+			const OFString& abstractSyntax,
+			const OFString& transferSyntax,
+			T_ASC_SC_ROLE proposedRole) throw(...);
 
-	static int SecondsSince1970( void);
+		static OFBool IsaListMember(OFList<OFString>& lst, OFString& s);
 
-	static OFString IntToString(int i);
+		static int SecondsSince1970( void);
 
-	static OFString MakeUID(OFString basePrefix, int counter);
+		static OFString IntToString(int i);
 
-	static OFBool UpdateStringAttributeValue(
-		DcmItem* dataset, const DcmTagKey& key, OFString& value);
+		static OFString MakeUID(OFString basePrefix, int counter);
 
-	static void ReplaceSOPInstanceInformation(DcmDataset* dataset);
+		static OFBool UpdateStringAttributeValue(
+			DcmItem* dataset, const DcmTagKey& key, OFString& value);
 
-	static void	ProgressCallback(void * /*callbackData*/,
-		T_DIMSE_StoreProgress *progress,
-		T_DIMSE_C_StoreRQ * /*req*/);
+		static void ReplaceSOPInstanceInformation(DcmDataset* dataset);
 
-	void StoreSCP(DcmDataset *data) throw(...);
+		static void	ProgressCallback(void * /*callbackData*/,
+			T_DIMSE_StoreProgress *progress,
+			T_DIMSE_C_StoreRQ * /*req*/);
 
-	void CopyNeccessaryAttribs( DcmDataset *source, DcmDataset *dest);
+		void StoreSCP(DcmDataset *data) throw(...);
 
-public:
-	M4DStoreService();
-	~M4DStoreService();
-	
-	void StoreObject( 
-		const M4DDcmProvider::DicomObj &objectToCopyAttribsFrom,
-		M4DDcmProvider::DicomObj &objectToStore) throw(...);
-};
+		void CopyNeccessaryAttribs( DcmDataset *source, DcmDataset *dest);
+
+	public:
+		StoreService();
+		~StoreService();
+		
+		void StoreObject( 
+			const DcmProvider::DicomObj &objectToCopyAttribsFrom,
+			DcmProvider::DicomObj &objectToStore) throw(...);
+	};
+
+}
 
 #endif

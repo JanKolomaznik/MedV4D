@@ -13,6 +13,7 @@ class ExceptionBase: public std::exception
 {
 public:
 	ExceptionBase( char * name );
+	ExceptionBase();
 
 	const char* what() { return _name; }	
 protected:

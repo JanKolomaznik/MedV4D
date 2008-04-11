@@ -6,92 +6,96 @@
 
 using namespace std;
 
-class M4DDcmProvider
-{
-private:
-	void *findService;
-	void *moveService;
-public:
+namespace M4DDicom {
 
-	// TYPEDEFS ///////////////////////////////////////////////////////////
+	class DcmProvider
+	{
+	private:
+		void *findService;
+		void *moveService;
+	public:
 
-	class DicomObj;
+		// TYPEDEFS ///////////////////////////////////////////////////////////
 
-	// represents one row in table that shows found results
-	typedef struct s_browserRow {
-		string patientName;
-		bool patientSex;
-		string patientBirthDate;
-		string patentID;
-		string studyID;
-		string studyDate;
-		string modality;
-	} TableRow;
+		class DicomObj;
 
-	typedef vector<TableRow> ResultSet;
+		// represents one row in table that shows found results
+		typedef struct s_browserRow {
+			string patientName;
+			bool patientSex;
+			string patientBirthDate;
+			string patentID;
+			string studyID;
+			string studyDate;
+			string modality;
+		} TableRow;
 
-	// vector of image IDs
-	typedef vector<string> StringVector;
-	// vector of M4DSetInfo
-	typedef map<string, StringVector> StudyInfo;
+		typedef vector<TableRow> ResultSet;
 
-	typedef vector<DicomObj> DicomObjSet;
+		// vector of image IDs
+		typedef vector<string> StringVector;
+		// vector of M4DSetInfo
+		typedef map<string, StringVector> StudyInfo;
 
-	// METHODs ////////////////////////////////////////////////////////////
+		typedef vector<DicomObj> DicomObjSet;
 
-	// user inputs some values into seach form & wants a table to be filled
-	// with appropriate results.
-	/**
-	 *	@param result - reference to result set object
-	 *	@param patientName - reference to string containing ...
-	 *	@param patientID   -   - || -
-	 *	@param modalities  - reference to string containing set 
-	 *		of wanted modalities divided by '\' character
-	 *	@param date		   - ref. to string containing one of theese variants:
-	 *		<dateFrom>- = all items that has date >= than 'dateFrom'
-	 *		-<dateTo>	= all items thats' date <= than 'dateTo'
-	 *		<dateFrom>-<dateTo> = all items between that dates
-	 *		<dateX> = string with format YYYYMMDD
-	 */
-	void Find( 
-		M4DDcmProvider::ResultSet &result,
-		const string &patientName,
-		const string &patientID,
-		const string &modalities,
-		const string &date) throw (...);
+		// METHODs ////////////////////////////////////////////////////////////
 
-	// user select any study and wants to get seriesInstanceUIDs
-	void FindStudyInfo(
-		const string &patientID,
-		const string &studyID,
-		StringVector &info) throw (...);
+		// user inputs some values into seach form & wants a table to be filled
+		// with appropriate results.
+		/**
+		 *	@param result - reference to result set object
+		 *	@param patientName - reference to string containing ...
+		 *	@param patientID   -   - || -
+		 *	@param modalities  - reference to string containing set 
+		 *		of wanted modalities divided by '\' character
+		 *	@param date		   - ref. to string containing one of theese variants:
+		 *		<dateFrom>- = all items that has date >= than 'dateFrom'
+		 *		-<dateTo>	= all items thats' date <= than 'dateTo'
+		 *		<dateFrom>-<dateTo> = all items between that dates
+		 *		<dateX> = string with format YYYYMMDD
+		 */
+		void Find( 
+			DcmProvider::ResultSet &result,
+			const string &patientName,
+			const string &patientID,
+			const string &modalities,
+			const string &date) throw (...);
 
-	// the same as FindStudyInfo but gets even imageIDs
-	void WholeFindStudyInfo(
-		const string &patientID,
-		const string &studyID,
-		StudyInfo &info) throw (...);
+		// user select any study and wants to get seriesInstanceUIDs
+		void FindStudyInfo(
+			const string &patientID,
+			const string &studyID,
+			StringVector &info) throw (...);
 
-	// finds all studies concerning given patient
-	void FindStudiesAboutPatient(  
-		const string &patientID,
-		ResultSet &result) throw (...);
+		// the same as FindStudyInfo but gets even imageIDs
+		void WholeFindStudyInfo(
+			const string &patientID,
+			const string &studyID,
+			StudyInfo &info) throw (...);
 
-	void GetImage(
-		const string &patientID,
-		const string &studyID,
-		const string &serieID,
-		const string &imageID,
-		DicomObj &object) throw (...);
+		// finds all studies concerning given patient
+		void FindStudiesAboutPatient(  
+			const string &patientID,
+			ResultSet &result) throw (...);
 
-	void GetImageSet(
-		const string &patientID,
-		const string &studyID,
-		const string &serieID,
-		DicomObjSet &result) throw (...);
+		void GetImage(
+			const string &patientID,
+			const string &studyID,
+			const string &serieID,
+			const string &imageID,
+			DicomObj &object) throw (...);
 
-	M4DDcmProvider();
-	~M4DDcmProvider();
+		void GetImageSet(
+			const string &patientID,
+			const string &studyID,
+			const string &serieID,
+			DicomObjSet &result) throw (...);
+
+		DcmProvider();
+		~DcmProvider();
+	};
+
 };
 
 #include "M4DDICOMObject.h"

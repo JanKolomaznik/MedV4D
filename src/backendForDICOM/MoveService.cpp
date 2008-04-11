@@ -9,10 +9,12 @@
 #include "AbstractService.h"
 #include "MoveService.h"
 
+namespace M4DDicomInternal {
+
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DMoveService::GetQuery( 
+MoveService::GetQuery( 
 		DcmDataset **query,
 		const string *patientID,
 		const string *studyID,
@@ -48,7 +50,7 @@ M4DMoveService::GetQuery(
 
 ///////////////////////////////////////////////////////////////////////
 
-M4DMoveService::M4DMoveService()
+MoveService::MoveService()
 {
 	/* initialize network, i.e. create an instance of T_ASC_Network*. */
 #define TIME_OUT 30
@@ -65,7 +67,7 @@ M4DMoveService::M4DMoveService()
 
 ///////////////////////////////////////////////////////////////////////
 
-M4DMoveService::~M4DMoveService()
+MoveService::~MoveService()
 {
 	delete m_assocToServer;
 }
@@ -73,12 +75,12 @@ M4DMoveService::~M4DMoveService()
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DMoveService::MoveImage( 
+MoveService::MoveImage( 
 		const string &patientID,
 		const string &studyID,
 		const string &setID,
 		const string &imageID,
-		M4DDcmProvider::DicomObj &rs) throw (...)
+		DcmProvider::DicomObj &rs) throw (...)
 {
 	DcmDataset *query = NULL;
 	GetQuery( &query, &patientID, &studyID, &setID, &imageID);
@@ -89,11 +91,11 @@ M4DMoveService::MoveImage(
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DMoveService::MoveImageSet(
+MoveService::MoveImageSet(
 		const string &patientID,
 		const string &studyID,
 		const string &serieID,
-		M4DDcmProvider::DicomObjSet &result)
+		DcmProvider::DicomObjSet &result)
 {
 	DcmDataset *query = NULL;
 	GetQuery( &query, &patientID, &studyID, &serieID, NULL);
@@ -104,7 +106,7 @@ M4DMoveService::MoveImageSet(
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DMoveService::MoveSupport( DcmDataset *query,
+MoveService::MoveSupport( DcmDataset *query,
 	void *data, enum eCallType type) throw (...)
 {
 	// request assoc to server
@@ -186,7 +188,7 @@ M4DMoveService::MoveSupport( DcmDataset *query,
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DMoveService::AcceptSubAssoc(T_ASC_Network * aNet, T_ASC_Association ** assoc)
+MoveService::AcceptSubAssoc(T_ASC_Network * aNet, T_ASC_Association ** assoc)
 	throw (...)
 {
 	// this is hardcoded ! Firstly -> no compression or some JPEGs
@@ -307,7 +309,7 @@ M4DMoveService::AcceptSubAssoc(T_ASC_Network * aNet, T_ASC_Association ** assoc)
     if (cond.good()) cond = ASC_acknowledgeAssociation(*assoc);
     if (cond.bad()) {
 		D_PRINT( "No acceptable image trasfer sytaxes!");
-        throw new bad_exception();
+		throw new ExceptionBase();
     }
 }
 
@@ -317,7 +319,7 @@ M4DMoveService::AcceptSubAssoc(T_ASC_Network * aNet, T_ASC_Association ** assoc)
  *	Call back called when image arrive
  */
 void
-M4DMoveService::StoreSCPCallback(
+MoveService::StoreSCPCallback(
     /* in */
     void *callbackData,
     T_DIMSE_StoreProgress *progress,    /* progress state */
@@ -345,8 +347,8 @@ M4DMoveService::StoreSCPCallback(
 		LOG("Image recieved");
 
 		// set loaded flag
-		M4DDcmProvider::DicomObj *result = 
-			static_cast<M4DDcmProvider::DicomObj *>(callbackData);
+		DcmProvider::DicomObj *result = 
+			static_cast<DcmProvider::DicomObj *>(callbackData);
 		result->Init();
 	}
 }
@@ -354,7 +356,7 @@ M4DMoveService::StoreSCPCallback(
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DMoveService::SubTransferOperationSCP(
+MoveService::SubTransferOperationSCP(
 	T_ASC_Association **subAssoc, void *data, eCallType type) throw (...)
 {
     T_DIMSE_Message     msg;
@@ -363,7 +365,7 @@ M4DMoveService::SubTransferOperationSCP(
     if (!ASC_dataWaiting(*subAssoc, 0)) /* just in case */
 	{
 		D_PRINT("No data waiting!");
-        throw new bad_exception();
+        throw new ExceptionBase();
 	}
 
 #define MOVE_OPER_TIMEOUT 30
@@ -373,10 +375,10 @@ M4DMoveService::SubTransferOperationSCP(
         &msg, NULL);
 
 	T_DIMSE_C_StoreRQ *req;
-	M4DDcmProvider::DicomObj *result = NULL;
+	DcmProvider::DicomObj *result = NULL;
 
-	M4DDcmProvider::DicomObjSet *set;
-	M4DDcmProvider::DicomObj buddy;
+	DcmProvider::DicomObjSet *set;
+	DcmProvider::DicomObj buddy;
 
     if (cond == EC_Normal) 
 	{
@@ -390,7 +392,7 @@ M4DMoveService::SubTransferOperationSCP(
 			case eCallType::IMAGE_SET:
 				// insert new DICOMObj into container
 				set = static_cast<
-					M4DDcmProvider::DicomObjSet *>(data);
+					DcmProvider::DicomObjSet *>(data);
 
 				// SINCHRONIZE !!! ???
 				set->push_back( buddy);
@@ -400,7 +402,7 @@ M4DMoveService::SubTransferOperationSCP(
 
 			case eCallType::SINGLE_IMAGE:
 				result = 
-					static_cast<M4DDcmProvider::DicomObj *>(data);
+					static_cast<DcmProvider::DicomObj *>(data);
 				break;
 			}
 
@@ -416,7 +418,7 @@ M4DMoveService::SubTransferOperationSCP(
 
         default:
 			D_PRINT("Unknown command recieved on sub assotation!");
-			throw new bad_exception();
+			throw new ExceptionBase();
             break;
         }
     }
@@ -427,7 +429,7 @@ M4DMoveService::SubTransferOperationSCP(
 		if( ASC_acknowledgeRelease(*subAssoc).bad())
 		{
 			D_PRINT("Release ACK not sent!");
-			throw new bad_exception();
+			throw new ExceptionBase();
 		}
 		ASC_dropSCPAssociation(*subAssoc);
 		ASC_destroyAssociation(subAssoc);
@@ -456,7 +458,7 @@ M4DMoveService::SubTransferOperationSCP(
  *	assotiation with us
  */
 void
-M4DMoveService::SubAssocCallback(void *subOpCallbackData,
+MoveService::SubAssocCallback(void *subOpCallbackData,
         T_ASC_Network *aNet, T_ASC_Association **subAssoc)
 {
 	SubAssocCallbackSupp( subOpCallbackData, aNet,
@@ -470,7 +472,7 @@ M4DMoveService::SubAssocCallback(void *subOpCallbackData,
  *	assotiation with us
  */
 void
-M4DMoveService::SubAssocCallbackWholeSet(void *subOpCallbackData,
+MoveService::SubAssocCallbackWholeSet(void *subOpCallbackData,
         T_ASC_Network *aNet, T_ASC_Association **subAssoc)
 {
     SubAssocCallbackSupp( subOpCallbackData, aNet,
@@ -484,7 +486,7 @@ M4DMoveService::SubAssocCallbackWholeSet(void *subOpCallbackData,
  *	assotiation with us
  */
 void
-M4DMoveService::SubAssocCallbackSupp(void *subOpCallbackData,
+MoveService::SubAssocCallbackSupp(void *subOpCallbackData,
         T_ASC_Network *aNet, T_ASC_Association **subAssoc, eCallType type)
 {
     if (aNet == NULL) return;   /* help no net ! */
@@ -504,7 +506,7 @@ M4DMoveService::SubAssocCallbackSupp(void *subOpCallbackData,
  *	Called when QUERY/RETRIEVE SCP send response that another image was sent
  */
 void
-M4DMoveService::MoveCallback( void * /*callbackData*/,
+MoveService::MoveCallback( void * /*callbackData*/,
 	T_DIMSE_C_MoveRQ *request,
     int responseCount, T_DIMSE_C_MoveRSP *response)
 {
@@ -514,3 +516,5 @@ M4DMoveService::MoveCallback( void * /*callbackData*/,
 }
 
 ///////////////////////////////////////////////////////////////////////
+
+} // namespace
