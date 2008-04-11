@@ -61,9 +61,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dicomClientWin.lib"
+				AdditionalDependencies="Ws2_32.lib Mswsock.lib NetAPI32.Lib ofstd.lib dcmdata.lib dcmnet.lib dicomClientWin.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\lib"
+				AdditionalLibraryDirectories="..\..\lib; ..\..\lib\dcmtkLibs; C:\Program Files\Microsoft Visual Studio 8\VC\PlatformSDK\Lib"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"

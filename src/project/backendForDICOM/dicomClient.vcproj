@@ -63,6 +63,9 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalDependencies="Ws2_32.lib Mswsock.lib NetAPI32.Lib ofstd.lib dcmdata.lib dcmnet.lib"
+				OutputFile="..\..\lib\$(ProjectName)$(PlatformName).lib"
+				AdditionalLibraryDirectories=" ..\..\lib\dcmtkLibs; C:\Program Files\Microsoft Visual Studio 8\VC\PlatformSDK\Lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
