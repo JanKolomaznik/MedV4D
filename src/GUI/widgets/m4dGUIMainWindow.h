@@ -15,6 +15,7 @@ class m4dGUIMainWindow: public QMainWindow
 
   private slots:
      void open ();
+     void search ();
 
   private:
      void createVtkRenderWindowWidget ();
@@ -24,6 +25,7 @@ class m4dGUIMainWindow: public QMainWindow
      QWidget *centralWidget;
      m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget;
   
+     QAction *searchAct;
      QAction *openAct;
      QAction *exitAct;
 

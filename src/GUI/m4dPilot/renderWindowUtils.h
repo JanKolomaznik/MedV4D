@@ -6,6 +6,7 @@
 #include "vtkActor.h"
 #include "vtkProperty.h"
 #include "vtkRenderer.h"
+#include "vtkRendererCollection.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
 #include "vtkDICOMImageReader.h"
@@ -20,6 +21,6 @@
 
 vtkRenderer *sphereToRenderWindow ();
 
-vtkRenderer *dicomToRenderWindow ();
+vtkRenderer *dicomToRenderWindow ( const char *dirName );
 
 #endif // RENDER_WINDOW_UTILS_H

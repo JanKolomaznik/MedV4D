@@ -30,10 +30,10 @@ vtkRenderer *sphereToRenderWindow ()
 
 
 // just for testing, won't be in real application
-vtkRenderer *dicomToRenderWindow ()
+vtkRenderer *dicomToRenderWindow ( const char *dirName )
 {
   vtkDICOMImageReader *reader = vtkDICOMImageReader::New();
-  reader->SetDirectoryName( "..\\..\\GUI\\qtVtk\\DICOM" ); 
+  reader->SetDirectoryName( dirName ); 
   reader->SetDataSpacing( 1.0, 1.0, 3.0 );
 
   vtkImageCast *icast = vtkImageCast::New(); 
@@ -68,7 +68,6 @@ vtkRenderer *dicomToRenderWindow ()
   volume->SetProperty( volumeProperty );
 
   vtkRenderer *renDicom = vtkRenderer::New();
-  // renDicom->SetBackground( 1, 1, 1 );	
   renDicom->AddViewProp( volume );
 
   return renDicom;
