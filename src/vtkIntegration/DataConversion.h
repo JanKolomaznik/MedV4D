@@ -128,14 +128,14 @@ CreateVTKImageDataFromImageData(
 		{
 			for(size_t idxX = 0; idxX < width; ++idxX)
 			{
-				//*iPtr = image[...];
+				*iPtr = image.Get( idxX, idxY, idxZ );
 				++iPtr;
 			}
 			iPtr += IncY;
 		}
 		iPtr += IncZ;
 	}
-	std::cout << IncX << ";  " << IncY << ";  " << IncZ << ";  " << std::endl;
+	//std::cout << IncX << ";  " << IncY << ";  " << IncZ << ";  " << std::endl;
 	return imageData;
 }
 

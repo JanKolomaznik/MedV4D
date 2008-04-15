@@ -12,7 +12,7 @@ main( void )
 	ImageDataTemplate<int>::Ptr p2;
 
 	LOG ( LogDelimiter( '=', 80 ) );
-	LOG ( "Creating 2D image with int elements... " << std::endl );
+	LOG ( "Creating 3D image with int elements... " << std::endl );
 
 	p = ImageFactory::CreateEmptyImage3D<int>( 100, 100, 30 );
 
@@ -23,7 +23,7 @@ main( void )
 	/*LOG ( (p.use_count()) );
 	LOG ( (p2.use_count()) );*/
 
-	p2->Get( 100 ) = 235;
+	p2->Get( 50, 50, 15 ) = 235;
 
 	vtkImageData *v = CreateVTKImageDataFromImageData<int>( *p2 );
 

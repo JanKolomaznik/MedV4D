@@ -50,15 +50,28 @@ public:
 	 **/
 	typedef typename boost::shared_ptr< ImageDataTemplate< ElementType > > Ptr;
 
-	typedef typename ElementType 	Type;
+	typedef ElementType 	Type;
 
 	~ImageDataTemplate();	
 
 	ElementType
 	Get( size_t index )const;
-
 	ElementType&
 	Get( size_t index );
+
+	/**
+	 * Access methods. 
+	 * DON'T CHECK BOUNDS!!!
+	 **/
+	ElementType
+	Get( size_t x, size_t y )const;
+	ElementType&
+	Get( size_t x, size_t y );
+
+	inline ElementType
+	Get( size_t x, size_t y, size_t z )const;
+	inline ElementType&
+	Get( size_t x, size_t y, size_t z );
 	
 	ElementType
 	operator[]( size_t index )const
@@ -73,6 +86,7 @@ public:
 
 	const DimensionInfo&
 	GetDimensionInfo( unsigned short dim )const;
+
 protected:
 	ImageDataTemplate( 
 			ElementType 		*data, 
