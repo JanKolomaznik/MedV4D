@@ -1,3 +1,13 @@
 kol3.kolej.mff.cuni.cz
 noem.kolej.mff.cuni.cz
 grofs4am.kolej.mff.cuni.cz
+
+// zaznamy na serveru
+grof            = (M4DMOVE, grofs4am.kolej.mff.cuni.cz, 51111)
+ulman          = (M4DMOVE, noem.kolej.mff.cuni.cz, 51111)
+kolomaznik      = (M4DMOVE, kol3.kolej.mff.cuni.cz, 51111)
+
+// z tohoto vyplyva:
+// server ocekava, ze se bude pripojovat aplikace jmenem M4DMOVE (default v konfiguraku)
+// na port 51111 (napevno v kodu). Toto nastaveni plati pro prenos obrazku (operace C-MOVE).
+// na operaci C-FIND (vyhledavani) toto neni treba
