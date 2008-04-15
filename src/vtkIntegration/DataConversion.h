@@ -3,7 +3,8 @@
 
 #include "ImageDataTemplate.h"
 
-#include <vtkImageData>
+#include "vtkImageData.h"
+#include "ExceptionBase.h"
 
 namespace M4D
 {
@@ -11,51 +12,130 @@ namespace M4D
 namespace vtkIntegration
 {
 
+class EImpossibleVTKConversion: public ErrorHandling::ExceptionBase
+{
+	//TODO implement
+};
+
 template< typename ElementType >
 void
-SetVTKImageDataScalarType( vtkImageData & );
+SetVTKImageDataScalarType( vtkImageData & dataset )
+{
+	throw EImpossibleVTKConversion();	
+}
 
+template<>
+void
+SetVTKImageDataScalarType<float>( vtkImageData & dataset )
+{
+	dataset.SetScalarTypeToFloat();
+}
+
+template<>
+void
+SetVTKImageDataScalarType<double>( vtkImageData & dataset )
+{
+	dataset.SetScalarTypeToDouble();
+}
+
+template<>
+void
+SetVTKImageDataScalarType<int>( vtkImageData & dataset )
+{
+	dataset.SetScalarTypeToInt();
+}
+
+template<>
+void
+SetVTKImageDataScalarType<unsigned int>( vtkImageData & dataset )
+{
+	dataset.SetScalarTypeToUnsignedInt();
+}
+
+template<>
+void
+SetVTKImageDataScalarType<long>( vtkImageData & dataset )
+{
+	dataset.SetScalarTypeToLong();
+}
+
+template<>
+void
+SetVTKImageDataScalarType<unsigned long>( vtkImageData & dataset )
+{
+	dataset.SetScalarTypeToUnsignedLong();
+}
+
+template<>
+void
+SetVTKImageDataScalarType<short>( vtkImageData & dataset )
+{
+	dataset.SetScalarTypeToShort();
+}
+
+template<>
+void
+SetVTKImageDataScalarType<unsigned short>( vtkImageData & dataset )
+{
+	dataset.SetScalarTypeToUnsignedShort();
+}
+
+template<>
+void
+SetVTKImageDataScalarType<signed char>( vtkImageData & dataset )
+{
+	dataset.SetScalarTypeToChar();
+}
+
+template<>
+void
+SetVTKImageDataScalarType<unsigned char>( vtkImageData & dataset )
+{
+	dataset.SetScalarTypeToUnsignedChar();
+}
 
 /**
  * Creates new instance of vtkImageData containing copy of image passed as argument.
  * @param image Instance of image, which should be converted to VTK representation.
- * @exception None
+ * @exception EImpossibleVTKConversion
  * @return New instance of vtkImageData.
  **/
 template< typename ElementType >
 vtkImageData*
-CreateVTKImageDataFromImageData( const Images::ImageDataTemplate< ElementType >& image )
+CreateVTKImageDataFromImageData( 
+		const Images::ImageDataTemplate< ElementType >& image )
 {
 	size_t width, height, depth;
 	vtkIdType IncX, IncY, IncZ;
 	vtkImageData* imageData = vtkImageData::New();
 
-	imageData->SetSpacing(voxelsize.x, voxelsize.y, voxelsize.z);
+	width	= image.GetDimensionInfo( 0 ).size;
+	height	= image.GetDimensionInfo( 1 ).size;
+	depth	= image.GetDimensionInfo( 2 ).size;	
+
+	//imageData->SetSpacing(voxelsize.x, voxelsize.y, voxelsize.z);
 	imageData->SetDimensions(width, height, depth);
 	//TODO Exception handling
-	SetVTKImageDataScalarType( *imageData );
+	SetVTKImageDataScalarType< ElementType >( *imageData );
 
 	imageData->GetIncrements(IncX, IncY, IncZ);
 
 	ElementType* iPtr = (ElementType*)imageData->GetScalarPointer();
 
-	for(int idxZ = 0; idxZ < d; idxZ++)
+	for(size_t idxZ = 0; idxZ < depth; ++idxZ)
 	{
-		for(int idxY = 0; idxY < h; idxY++)
+		for(size_t idxY = 0; idxY < height; ++idxY)
 		{
-			for(int idxX = 0; idxX < w; idxX++)
+			for(size_t idxX = 0; idxX < width; ++idxX)
 			{
-				TVector4 vox = voxel2data.Transform(idxX, idxY, idxZ).Normalize();
-				int x = ROUND(vox.x);
-				int y = ROUND(vox.y);
-				int z = ROUND(vox.z);
-				*iPtr = dataset->voxels.data[z][y][x];
-				iPtr++;
+				//*iPtr = image[...];
+				++iPtr;
 			}
 			iPtr += IncY;
 		}
 		iPtr += IncZ;
 	}
+	std::cout << IncX << ";  " << IncY << ";  " << IncZ << ";  " << std::endl;
 	return imageData;
 }
 

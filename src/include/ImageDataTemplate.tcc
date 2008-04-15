@@ -10,7 +10,7 @@ namespace Images
 template < typename ElementType >
 ImageDataTemplate< ElementType >::ImageDataTemplate( 
 			ElementType 		*data, 
-			DimensionInformations	*parameters,
+			DimensionInfo		*parameters,
 			unsigned short		dimension,
 			size_t			elementCount
 			) 
@@ -62,6 +62,17 @@ ImageDataTemplate< ElementType >::Get( size_t index )
 	}
 
 	return _data[ index ];
+}
+
+template < typename ElementType >
+const DimensionInfo&
+ImageDataTemplate< ElementType >::GetDimensionInfo( unsigned short dim )const
+{
+	if( dim >= _dimension ) {
+		throw EWrongDimension( dim, _dimension );
+	}
+
+	return _parameters[ dim ];
 }
 
 } /*namespace Images*/

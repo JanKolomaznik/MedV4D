@@ -19,7 +19,7 @@ class ImageFactory;
  * Structure containing information about image in one dimension. Each 
  * dimension is supposed to have its own informations structure.
  **/
-struct DimensionInformations
+struct DimensionInfo
 {
 	/**
 	 * Method for setting atributes.
@@ -45,7 +45,12 @@ class ImageDataTemplate: public AbstractImage
 {
 public:
 	friend class ImageFactory;
+	/**
+	 * Smart pointer to instance of this class.
+	 **/
 	typedef typename boost::shared_ptr< ImageDataTemplate< ElementType > > Ptr;
+
+	typedef typename ElementType 	Type;
 
 	~ImageDataTemplate();	
 
@@ -65,17 +70,20 @@ public:
 	size_t
 	GetDimension()const 
 				{ return _dimension; }
+
+	const DimensionInfo&
+	GetDimensionInfo( unsigned short dim )const;
 protected:
 	ImageDataTemplate( 
 			ElementType 		*data, 
-			DimensionInformations	*parameters,
+			DimensionInfo		*parameters,
 			unsigned short		dimension,
 			size_t			elementCount
 			);	
 private:
 	size_t			_elementCount;
 	unsigned short		_dimension;
-	DimensionInformations	*_parameters;
+	DimensionInfo		*_parameters;
 	ElementType		*_data;
 
 public:
@@ -86,9 +94,42 @@ public:
 			: ErrorHandling::ExceptionBase( "Wrong index to image element." ), 
 			_wrongIndex( wrongIndex ) {}
 
-		size_t GetIndex()const { return _wrongIndex; }
+		/**
+		 * @return Wrong index, which raised this exception.
+		 **/
+		size_t 
+		GetIndex()const { return _wrongIndex; }
 	protected:
 		size_t		_wrongIndex;
+	};
+
+	class EWrongDimension: public ErrorHandling::ExceptionBase
+	{
+	public:
+		/**
+		 * @param wrong Wrong dimension number, which raised 
+		 * this exception.
+		 * @param actual Number of dimensions image, which raised 
+		 * this exception.
+		 **/
+		EWrongDimension( unsigned short wrong, unsigned short actual )
+			: ErrorHandling::ExceptionBase( "Accesing image data in wrong dimension." ), 
+			_wrong( wrong ), _actual( actual ) {}
+		
+		/**
+		 * @return Dimension index, which raised this exception.
+		 **/
+		unsigned short 
+		GetWrong()const { return _wrong; }
+
+		/**
+		 * @return Dimension of image, which raised this exception.
+		 **/
+		unsigned short 
+		GetActual()const { return _actual; }
+	protected:
+		unsigned short	_wrong;	
+		unsigned short	_actual;	
 	};
 };
 

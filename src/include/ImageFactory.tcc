@@ -28,7 +28,7 @@ ImageFactory::CreateEmptyImage2D(
 	size_t size = width * height;
 	
 	//Preparing informations about dimensionality.
-	DimensionInformations *info = new DimensionInformations[ 2 ];
+	DimensionInfo *info = new DimensionInfo[ 2 ];
 	info[0].Set( width, 1 );
 	info[1].Set( height, width );
 
@@ -55,7 +55,7 @@ ImageFactory::CreateEmptyImage3D(
 	size_t size = width * height * depth;
 	
 	//Preparing informations about dimensionality.
-	DimensionInformations *info = new DimensionInformations[ 3 ];
+	DimensionInfo *info = new DimensionInfo[ 3 ];
 	info[0].Set( width, 1 );
 	info[1].Set( height, width );
 	info[2].Set( depth, width * height );

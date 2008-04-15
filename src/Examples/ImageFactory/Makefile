@@ -2,10 +2,14 @@
 CXX=g++
 LD=ld
 
-CXXFLAGS= -Wall -D DEBUG_LEVEL=20 -D DEBUG_ADITIONAL_INFO
 
-INCLUDES= ../../include
-CXXINCLUDES= -I$(INCLUDES)
+INCLUDES= ../../include ../../vtkIntegration /usr/include/vtk-5.0
+CXXINCLUDES= $(addprefix -I, $(INCLUDES) )
+LIBRARIES=vtkImaging
+CXXLIBRARIES= $(addprefix -l, $(LIBRARIES) )
+
+CXXFLAGS= -Wall -Wno-deprecated -D DEBUG_LEVEL=20 -D DEBUG_ADITIONAL_INFO
+
 COMMON_SRC= ../../common
 TMP=../../tmp
 IMAGING_SRC=../../Imaging
@@ -34,7 +38,7 @@ OBJECTFILES =	\
 .PHONY: clean
 
 all: 	$(OBJECTFILES) $(COMMON_OBJ_FILES) $(IMAGING_OBJ_FILES)
-	$(CXX) $(CXXFLAGS) $(OBJECTFILES) $(COMMON_OBJ_FILES) $(IMAGING_OBJ_FILES) -o $(OUTPUT)
+	$(CXX) $(CXXFLAGS) $(CXXLIBRARIES) $(OBJECTFILES) $(COMMON_OBJ_FILES) $(IMAGING_OBJ_FILES) -o $(OUTPUT)
 
 ./main.o:	./main.cpp
 		$(CXX) $(CXXFLAGS) $(CXXINCLUDES) -c $< -o $@
