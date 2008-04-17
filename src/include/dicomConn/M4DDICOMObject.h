@@ -11,11 +11,11 @@ namespace M4DDicom {
 	{
 	private:
 
-		typedef enum eStatus {
+		enum Status {
 			Loaded,
 			Loading,
 			Failed,
-		} Status;
+		};
 
 		// image info
 		uint16 m_width, m_height;
@@ -31,11 +31,11 @@ namespace M4DDicom {
 		void *m_dataset;
 
 		// defines size of pixel in bits
-		typedef enum ePxlSz {
+		enum PixelSize{
 			bit8,
 			bit16,
 			bit32,
-		} PixelSize;
+		};
 
 		// image information members
 		PixelSize GetPixelSize( void);

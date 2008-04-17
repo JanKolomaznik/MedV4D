@@ -37,6 +37,7 @@ namespace M4DDicom {
 		typedef std::map<std::string, StringVector> StudyInfo;
 
 		typedef std::vector<DicomObj> DicomObjSet;
+		typedef boost::shared_ptr< DicomObjSet > DicomObjSetPtr;
 
 		// METHODs ////////////////////////////////////////////////////////////
 
