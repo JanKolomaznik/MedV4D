@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <map>
+#include <string>
 
 namespace M4DDicom {
 
@@ -19,23 +20,23 @@ namespace M4DDicom {
 
 		// represents one row in table that shows found results
 		typedef struct s_browserRow {
-			string patientName;
+			std::string patientName;
 			bool patientSex;
-			string patientBirthDate;
-			string patentID;
-			string studyID;
-			string studyDate;
-			string modality;
+			std::string patientBirthDate;
+			std::string patentID;
+			std::string studyID;
+			std::string studyDate;
+			std::string modality;
 		} TableRow;
 
-		typedef vector<TableRow> ResultSet;
+		typedef std::vector<TableRow> ResultSet;
 
 		// vector of image IDs
-		typedef vector<string> StringVector;
+		typedef std::vector<std::string> StringVector;
 		// vector of M4DSetInfo
-		typedef map<string, StringVector> StudyInfo;
+		typedef std::map<std::string, StringVector> StudyInfo;
 
-		typedef vector<DicomObj> DicomObjSet;
+		typedef std::vector<DicomObj> DicomObjSet;
 
 		// METHODs ////////////////////////////////////////////////////////////
 
@@ -55,39 +56,39 @@ namespace M4DDicom {
 		 */
 		void Find( 
 			DcmProvider::ResultSet &result,
-			const string &patientName,
-			const string &patientID,
-			const string &modalities,
-			const string &date) ;
+			const std::string &patientName,
+			const std::string &patientID,
+			const std::string &modalities,
+			const std::string &date) ;
 
 		// user select any study and wants to get seriesInstanceUIDs
 		void FindStudyInfo(
-			const string &patientID,
-			const string &studyID,
+			const std::string &patientID,
+			const std::string &studyID,
 			StringVector &info) ;
 
 		// the same as FindStudyInfo but gets even imageIDs
 		void WholeFindStudyInfo(
-			const string &patientID,
-			const string &studyID,
+			const std::string &patientID,
+			const std::string &studyID,
 			StudyInfo &info) ;
 
 		// finds all studies concerning given patient
 		void FindStudiesAboutPatient(  
-			const string &patientID,
+			const std::string &patientID,
 			ResultSet &result) ;
 
 		void GetImage(
-			const string &patientID,
-			const string &studyID,
-			const string &serieID,
-			const string &imageID,
+			const std::string &patientID,
+			const std::string &studyID,
+			const std::string &serieID,
+			const std::string &imageID,
 			DicomObj &object) ;
 
 		void GetImageSet(
-			const string &patientID,
-			const string &studyID,
-			const string &serieID,
+			const std::string &patientID,
+			const std::string &studyID,
+			const std::string &serieID,
 			DicomObjSet &result) ;
 
 		DcmProvider();

@@ -61,7 +61,7 @@ public:
 
 	/**
 	 * Access methods. 
-	 * DON'T CHECK BOUNDS!!!
+	 * AREN'T CHECKING BOUNDS!!!
 	 **/
 	ElementType
 	Get( size_t x, size_t y )const;

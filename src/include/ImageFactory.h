@@ -3,7 +3,7 @@
 
 #include "ImageDataTemplate.h"
 
-//#include "dicomConn/M4DDICOMObject.h"
+#include "dicomConn/M4DDICOMServiceProvider.h"
 
 
 namespace M4D
@@ -31,6 +31,9 @@ public:
 			size_t		height, 
 			size_t		depth
 			);
+
+	static AbstractImage::APtr 
+	CreateImageFromDICOM( M4DDicom::DcmProvider::DicomObjSetPtr &dicomObjects );
 protected:
 
 private:
