@@ -47,14 +47,14 @@ namespace M4DDicom {
 		 *	data stream to steam of normal data types like uint16. See DICOM spec.
 		 *	08-05pu.pdf (AnnexD).
 		 */
-		void FlushIntoArray( const uint16 *dest) throw (...);
+		void FlushIntoArray( const uint16 *dest);
 
 		inline bool IsLoaded( void) { return m_status == Loaded; }
 		inline uint16 OrderInSet( void) { return m_orderInSet; }
 
 		// load & save
-		void Load( const string &path) throw (...);
-		void Save( const string &path)	throw (...);
+		void Load( const string &path);
+		void Save( const string &path)	;
 
 		/**
 		 *	Called when image arrive
@@ -62,9 +62,9 @@ namespace M4DDicom {
 		void Init();
 
 		// methods to get value from data set container
-		void GetTagValue( uint16 group, uint16 tagNum, string &) throw (...);
-		void GetTagValue( uint16 group, uint16 tagNum, int32 &) throw (...);
-		void GetTagValue( uint16 group, uint16 tagNum, float &) throw (...);	
+		void GetTagValue( uint16 group, uint16 tagNum, string &) ;
+		void GetTagValue( uint16 group, uint16 tagNum, int32 &) ;
+		void GetTagValue( uint16 group, uint16 tagNum, float &) ;	
 
 		// image level
 		/**
@@ -72,7 +72,7 @@ namespace M4DDicom {
 		 *	Array should be casted to the right type according value returned
 		 *	by GetPixelSize() method.
 		 */
-		void* GetPixelData( void) throw (...);
+		void* GetPixelData( void) ;
 		// ...
 		
 		////////////////////////////////////////////////////////////

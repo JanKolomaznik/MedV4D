@@ -19,7 +19,7 @@ DcmProvider::DicomObj::DicomObj()
 
 void
 DcmProvider::DicomObj::Save( const string &path)	
-	throw (...)
+	
 {
 	if( m_dataset == NULL)
 		return;
@@ -45,7 +45,7 @@ DcmProvider::DicomObj::Save( const string &path)
 ///////////////////////////////////////////////////////////////////////
 
 void
-DcmProvider::DicomObj::Load( const string &path) throw (...)
+DcmProvider::DicomObj::Load( const string &path) 
 {
 	DcmDataset *dataSet = new DcmDataset();
 	OFCondition cond = dataSet->loadFile( path.c_str());
@@ -63,7 +63,7 @@ DcmProvider::DicomObj::Load( const string &path) throw (...)
 
 void
 DcmProvider::DicomObj::GetTagValue( 
-	uint16 group, uint16 tagNum, string &s) throw (...)
+	uint16 group, uint16 tagNum, string &s) 
 {
 	OFString str;
 	static_cast<DcmDataset *>(m_dataset)->findAndGetOFString( 
@@ -75,7 +75,7 @@ DcmProvider::DicomObj::GetTagValue(
 
 void
 DcmProvider::DicomObj::GetTagValue(
-	uint16 group, uint16 tagNum, int32 &i) throw (...)
+	uint16 group, uint16 tagNum, int32 &i) 
 {
 	static_cast<DcmDataset *>(m_dataset)->findAndGetSint32( 
 		DcmTagKey( group, tagNum), (Sint32 &)i );
@@ -85,7 +85,7 @@ DcmProvider::DicomObj::GetTagValue(
 
 void
 DcmProvider::DicomObj::GetTagValue( 
-	uint16 group, uint16 tagNum, float &f) throw (...)
+	uint16 group, uint16 tagNum, float &f) 
 {
 	static_cast<DcmDataset *>(m_dataset)->findAndGetFloat32( 
 		DcmTagKey( group, tagNum), f );
@@ -138,7 +138,7 @@ DcmProvider::DicomObj::Init()
 ///////////////////////////////////////////////////////////////////////
 
 void
-DcmProvider::DicomObj::FlushIntoArray( const uint16 *dest) throw (...)
+DcmProvider::DicomObj::FlushIntoArray( const uint16 *dest) 
 {
 	DcmDataset* dataSet = static_cast<DcmDataset *>(m_dataset);
 

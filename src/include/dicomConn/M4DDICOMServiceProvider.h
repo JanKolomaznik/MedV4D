@@ -4,8 +4,6 @@
 #include <vector>
 #include <map>
 
-using namespace std;
-
 namespace M4DDicom {
 
 	class DcmProvider
@@ -60,37 +58,37 @@ namespace M4DDicom {
 			const string &patientName,
 			const string &patientID,
 			const string &modalities,
-			const string &date) throw (...);
+			const string &date) ;
 
 		// user select any study and wants to get seriesInstanceUIDs
 		void FindStudyInfo(
 			const string &patientID,
 			const string &studyID,
-			StringVector &info) throw (...);
+			StringVector &info) ;
 
 		// the same as FindStudyInfo but gets even imageIDs
 		void WholeFindStudyInfo(
 			const string &patientID,
 			const string &studyID,
-			StudyInfo &info) throw (...);
+			StudyInfo &info) ;
 
 		// finds all studies concerning given patient
 		void FindStudiesAboutPatient(  
 			const string &patientID,
-			ResultSet &result) throw (...);
+			ResultSet &result) ;
 
 		void GetImage(
 			const string &patientID,
 			const string &studyID,
 			const string &serieID,
 			const string &imageID,
-			DicomObj &object) throw (...);
+			DicomObj &object) ;
 
 		void GetImageSet(
 			const string &patientID,
 			const string &studyID,
 			const string &serieID,
-			DicomObjSet &result) throw (...);
+			DicomObjSet &result) ;
 
 		DcmProvider();
 		~DcmProvider();

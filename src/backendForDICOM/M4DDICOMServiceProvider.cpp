@@ -46,7 +46,7 @@ DcmProvider::Find(
 		const string &patientName,
 		const string &patientID,
 		const string &modalities,
-		const string &date) throw (...)
+		const string &date) 
 {
 	static_cast<FindService *>(findService)->FindForFilter( 
 		result, patientName, patientID, modalities, date);
@@ -58,7 +58,7 @@ void
 DcmProvider::FindStudyInfo(
 		const string &patientID,
 		const string &studyID,
-		StringVector &info) throw (...)
+		StringVector &info) 
 {
 	static_cast<FindService *>(findService)->FindStudyInfo(
 		patientID, studyID, info);
@@ -70,7 +70,7 @@ void
 DcmProvider::WholeFindStudyInfo(
 		const string &patientID,
 		const string &studyID,
-		StudyInfo &info) throw (...)
+		StudyInfo &info) 
 {
 	static_cast<FindService *>(findService)->FindWholeStudyInfo(
 		patientID, studyID, info);
@@ -81,7 +81,7 @@ DcmProvider::WholeFindStudyInfo(
 void
 DcmProvider::FindStudiesAboutPatient(  
 		const string &patientID,
-		ResultSet &result) throw (...)
+		ResultSet &result) 
 {
 	static_cast<FindService *>(findService)->FindStudiesAboutPatient( 
 		patientID, result);
@@ -95,7 +95,7 @@ DcmProvider::GetImage(
 		const string &studyID,
 		const string &serieID,
 		const string &imageID,
-		DicomObj &object) throw (...)
+		DicomObj &object) 
 {
 	static_cast<MoveService *>(moveService)->MoveImage( 
 		patientID, studyID, serieID, imageID, object);
@@ -108,7 +108,7 @@ DcmProvider::GetImageSet(
 		const string &patientID,
 		const string &studyID,
 		const string &serieID,
-		DicomObjSet &result) throw (...)
+		DicomObjSet &result) 
 {
 	static_cast<MoveService *>(moveService)->MoveImageSet( 
 		patientID, studyID, serieID, result);

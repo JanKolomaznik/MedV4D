@@ -80,7 +80,7 @@ MoveService::MoveImage(
 		const string &studyID,
 		const string &setID,
 		const string &imageID,
-		DcmProvider::DicomObj &rs) throw (...)
+		DcmProvider::DicomObj &rs) 
 {
 	DcmDataset *query = NULL;
 	GetQuery( &query, &patientID, &studyID, &setID, &imageID);
@@ -107,7 +107,7 @@ MoveService::MoveImageSet(
 
 void
 MoveService::MoveSupport( DcmDataset *query,
-	void *data, enum eCallType type) throw (...)
+	void *data, enum eCallType type) 
 {
 	// request assoc to server
 	m_assocToServer->Request(m_net);
@@ -189,7 +189,7 @@ MoveService::MoveSupport( DcmDataset *query,
 
 void
 MoveService::AcceptSubAssoc(T_ASC_Network * aNet, T_ASC_Association ** assoc)
-	throw (...)
+	
 {
 	// this is hardcoded ! Firstly -> no compression or some JPEGs
 	E_TransferSyntax prefferedTransferSyntax = EXS_LittleEndianImplicit;
@@ -357,7 +357,7 @@ MoveService::StoreSCPCallback(
 
 void
 MoveService::SubTransferOperationSCP(
-	T_ASC_Association **subAssoc, void *data, eCallType type) throw (...)
+	T_ASC_Association **subAssoc, void *data, eCallType type) 
 {
     T_DIMSE_Message     msg;
     T_ASC_PresentationContextID presID;

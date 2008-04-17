@@ -14,7 +14,7 @@ M4DDicomAssociation::AddressContainer M4DDicomAssociation::addressContainer;
 ///////////////////////////////////////////////////////////////////////
 
 M4DDicomAssociation::DICOMAddress *
-M4DDicomAssociation::GetAddress( string addressPointer) throw (...)
+M4DDicomAssociation::GetAddress( string addressPointer) 
 {
 	AddressContainer::iterator it = addressContainer.find( addressPointer);
 	if( it == addressContainer.end())
@@ -44,7 +44,7 @@ M4DDicomAssociation::FindNonCommentLine( ifstream &f, string &line)
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DDicomAssociation::LoadOneAddress( ifstream &f) throw (...)
+M4DDicomAssociation::LoadOneAddress( ifstream &f) 
 {
 	string line;
 
@@ -108,7 +108,7 @@ M4DDicomAssociation::LoadOneAddress( ifstream &f) throw (...)
 ///////////////////////////////////////////////////////////////////////
 
 void 
-M4DDicomAssociation::InitAddressContainer( void) throw (...)
+M4DDicomAssociation::InitAddressContainer( void) 
 {
 	std::ifstream f("config.cfg");
 	if( f.fail() )
@@ -135,7 +135,7 @@ M4DDicomAssociation::~M4DDicomAssociation( void)
 ///////////////////////////////////////////////////////////////////////
 
 M4DDicomAssociation::M4DDicomAssociation( string assocAddrID)
-	throw (...)
+	
 {
 	// check if we have loaded config file
 	if( addressContainer.empty() )
@@ -186,7 +186,7 @@ M4DDicomAssociation::M4DDicomAssociation( string assocAddrID)
 }
 
 void
-M4DDicomAssociation::Request( T_ASC_Network *net) throw (...)
+M4DDicomAssociation::Request( T_ASC_Network *net) 
 {
 	/* dump presentation contexts if required */
     D_PRINT("Request Parameters");
@@ -296,7 +296,7 @@ M4DDicomAssociation::AddPresentationContext(T_ASC_Parameters *params)
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DDicomAssociation::Abort(void) throw (...)
+M4DDicomAssociation::Abort(void) 
 {
 	LOG("Aborting Association");
 

@@ -35,7 +35,7 @@ private :
 
 	void FindSupport( DcmDataset &queryDataSet,
 		void *data,
-		DIMSE_FindUserCallback callBack) throw (...);
+		DIMSE_FindUserCallback callBack) ;
 
 	static void
 	TableRowCallback(
@@ -70,21 +70,21 @@ public:
 		const string &patientName,
 		const string &patientID,
 		const string &modality,
-		const string &date) throw (...);
+		const string &date) ;
 
 	void FindStudiesAboutPatient(
 		const string &patientID,
-		DcmProvider::ResultSet &result) throw (...);
+		DcmProvider::ResultSet &result) ;
 
 	void FindWholeStudyInfo(
 		const string &patientID,
 		const string &studyID,
-		DcmProvider::StudyInfo &info) throw (...);
+		DcmProvider::StudyInfo &info) ;
 
 	void FindStudyInfo(
 		const string &patientID,
 		const string &studyID,
-		DcmProvider::StringVector &seriesIDs) throw (...); 
+		DcmProvider::StringVector &seriesIDs) ; 
 
 	
 };

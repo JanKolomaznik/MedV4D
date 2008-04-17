@@ -26,7 +26,7 @@ private :
 		const string *imageID);
 
 	void MoveSupport( DcmDataset *query, void *data,
-		enum eCallType type) throw (...);
+		enum eCallType type) ;
 
 	static void
 	MoveCallback(void *callbackData, T_DIMSE_C_MoveRQ *request,
@@ -45,11 +45,11 @@ private :
         T_ASC_Network *aNet, T_ASC_Association **subAssoc);
 
 	static void AcceptSubAssoc(
-		T_ASC_Network * aNet, T_ASC_Association ** assoc) throw (...);
+		T_ASC_Network * aNet, T_ASC_Association ** assoc) ;
 
 	static void	SubTransferOperationSCP(
 		T_ASC_Association **subAssoc, 
-		void *dicomOBJRef, eCallType type) throw (...);
+		void *dicomOBJRef, eCallType type) ;
 
 	static void StoreSCPCallback(    
 		void *callbackData,					/* in */
@@ -70,13 +70,13 @@ public:
 		const string &studyID,
 		const string &setID,
 		const string &imageID,
-		DcmProvider::DicomObj &rs) throw (...);
+		DcmProvider::DicomObj &rs) ;
 
 	void MoveImageSet(
 		const string &patientID,
 		const string &studyID,
 		const string &serieID,
-		DcmProvider::DicomObjSet &result) throw (...);
+		DcmProvider::DicomObjSet &result) ;
 	
 };
 

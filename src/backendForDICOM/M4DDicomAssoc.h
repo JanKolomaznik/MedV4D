@@ -38,10 +38,10 @@ private:
 	// addresses stuff
 	static AddressContainer addressContainer;
 
-	static DICOMAddress *GetAddress( string addressPointer) throw (...);
+	static DICOMAddress *GetAddress( string addressPointer) ;
 	static void FindNonCommentLine( ifstream &f, string &line);
-	static void LoadOneAddress( ifstream &f) throw (...);
-	static void InitAddressContainer( void) throw (...);	// loads the config.cfg
+	static void LoadOneAddress( ifstream &f) ;
+	static void InitAddressContainer( void) ;	// loads the config.cfg
 
 public:
 	M4DDicomAssociation( string assocID);
@@ -49,7 +49,7 @@ public:
 
 	void Release( void);
 	void Abort( void);
-	void Request( T_ASC_Network *net) throw (...);
+	void Request( T_ASC_Network *net) ;
 	
 	inline T_ASC_Association *GetAssociation( void)	{ return m_assoc; }
 	inline DICOMAddress *GetAssocAddress( void) { return m_assocAddr; }

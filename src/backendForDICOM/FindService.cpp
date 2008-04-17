@@ -123,7 +123,7 @@ void
 FindService::FindSupport( 
 	DcmDataset &queryDataSet,
 	void *data,
-	DIMSE_FindUserCallback callBack) throw (...)
+	DIMSE_FindUserCallback callBack) 
 {
 	// request assoc to server
 	m_assocToServer->Request( m_net);
@@ -185,7 +185,7 @@ FindService::FindSupport(
 void
 FindService::FindStudiesAboutPatient( 
 		const string &patientID,
-		DcmProvider::ResultSet &result) throw (...)
+		DcmProvider::ResultSet &result) 
 {
 	// create query
 	DcmDataset *query = NULL;
@@ -203,7 +203,7 @@ FindService::FindForFilter(
 		const string &patientName,
 		const string &patientID,
 		const string &modality,
-		const string &date) throw (...)
+		const string &date) 
 {
 	// create query
 	DcmDataset *query = NULL;
@@ -219,7 +219,7 @@ void
 FindService::FindWholeStudyInfo(
 		const string &patientID,
 		const string &studyID,
-		DcmProvider::StudyInfo &info) throw (...)
+		DcmProvider::StudyInfo &info) 
 {
 	// create query
 	DcmDataset *query = NULL;
@@ -235,7 +235,7 @@ void
 FindService::FindStudyInfo(
 		const string &patientID,
 		const string &studyID,
-		DcmProvider::StringVector &seriesIDs) throw (...)
+		DcmProvider::StringVector &seriesIDs) 
 {
 	// create query
 	DcmDataset *query = NULL;

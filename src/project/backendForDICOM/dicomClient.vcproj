@@ -44,7 +44,6 @@
 				AdditionalIncludeDirectories="..\..\backendForDICOM\include;..\..\include\DICOMConn;..\..\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
-				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
@@ -191,6 +190,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="libHeaders"
+				>
+				<File
+					RelativePath="..\..\backendForDICOM\DicomObj.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\backendForDICOM\M4DDICOMServiceProvider.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -224,18 +235,6 @@
 					RelativePath="..\..\backendForDICOM\StoreService.h"
 					>
 				</File>
-				<Filter
-					Name="libHeaders"
-					>
-					<File
-						RelativePath="..\..\backendForDICOM\DicomObj.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\backendForDICOM\M4DDICOMServiceProvider.cpp"
-						>
-					</File>
-				</Filter>
 			</Filter>
 			<Filter
 				Name="libHeaders"
