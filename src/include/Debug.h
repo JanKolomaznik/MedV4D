@@ -34,7 +34,7 @@ extern std::ostream *pdout;
 #define ASSERT(EXPR) 	if ( (EXPR) == 0 ) { \
 			DOUT <<"Assertion failed at " <<__FILE__ \
 			<<", on line " <<__LINE__<<", in function \'" \
-			<<__FUNCTION__<<"\'."<<std::endl; exit; }
+			<<__FUNCTION__<<"\'."<<std::endl; exit(1); }
 #else
 #define ASSERT(EXPR)
 #endif /*DEBUG_LEVEL*/

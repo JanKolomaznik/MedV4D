@@ -8,14 +8,8 @@ namespace Images
 using namespace M4DDicom;
 
 
-/**
- * @param pixelSize Enum, which sais how many bits is used per pixel.
- * @param imageSize How many elements of size 'pixelSize' will be stored in array.
- * @param dataArray Output parameter - allocated array is returned in this.
- * @param elementSize Output parametr - sais how many bytes is used by one element.
- **/
-static void
-PrepareElementArrayFromPixelSize( 
+void
+ImageFactory::PrepareElementArrayFromPixelSize( 
 		DcmProvider::DicomObj::PixelSize 	pixelSize, 
 		size_t 					imageSize, 
 		uint8					*& dataArray, 
@@ -24,15 +18,15 @@ PrepareElementArrayFromPixelSize(
 {
 	switch ( pixelSize ) {
 		case DcmProvider::DicomObj::bit8 :
-			dataArray = static_cast< uint8* > PrepareElementArray< uint8 >( imageSize );
+			dataArray = (uint8 *) PrepareElementArray< uint8 >( imageSize );
 			elementSize = 1;
 			break;
 		case DcmProvider::DicomObj::bit16 :
-			dataArray = static_cast< uint8* > PrepareElementArray< uint16 >( imageSize );
+			dataArray = (uint8 *) PrepareElementArray< uint16 >( imageSize );
 			elementSize = 2;
 			break;
 		case DcmProvider::DicomObj::bit32 :
-			dataArray = static_cast< uint8* > PrepareElementArray< uint32 >( imageSize );
+			dataArray = (uint8 *) PrepareElementArray< uint32 >( imageSize );
 			elementSize = 4;
 			break;
 		default :
@@ -41,30 +35,24 @@ PrepareElementArrayFromPixelSize(
 	}
 }
 
-/**
- * @param pixelSize Enum, which sais how many bits is used per pixel.
- * @param imageSize How many elements of size 'pixelSize' will be stored in array.
- * @param dataArray Filled array of image elements.
- * @param info Filled dimension info array.
- **/
-static AbstractImage*
-CreateImageFromDataAndPixelType(
+AbstractImage*
+ImageFactory::CreateImageFromDataAndPixelType(
 		DcmProvider::DicomObj::PixelSize 	pixelSize, 
 		size_t 					imageSize, 
 		uint8					* dataArray, 
-		DimensionInfo				* info,
+		DimensionInfo				* info
 		)
 {
 	AbstractImage*	image;
 	switch ( pixelSize ) {
 		case DcmProvider::DicomObj::bit8 :
-			image = new ImageDataTemplate< uint8 >( dataArray, info, 3, imageSize ) 
+			image = new ImageDataTemplate< uint8 >( dataArray, info, 3, imageSize );
 			break;
 		case DcmProvider::DicomObj::bit16 :
-			image = new ImageDataTemplate< uint16 >( dataArray, info, 3, imageSize ) 
+			image = new ImageDataTemplate< uint16 >( (uint16*)dataArray, info, 3, imageSize ); 
 			break;
 		case DcmProvider::DicomObj::bit32 :
-			image = new ImageDataTemplate< uint32 >( dataArray, info, 3, imageSize ) 
+			image = new ImageDataTemplate< uint32 >( (uint32*)dataArray, info, 3, imageSize );
 			break;
 		default :
 			//Shouldn't reach this...
@@ -78,7 +66,7 @@ ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 {
 	//TODO better parameters checking.
 	if( !dicomObjects || dicomObjects->size() == 0 ) {
-		return AbstractImage::APtr( NULL );	
+		return AbstractImage::APtr();	
 	}
 	size_t	width = (*dicomObjects)[0].GetWidth();
 	size_t	height = (*dicomObjects)[0].GetHeight();
@@ -109,7 +97,8 @@ ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 		it != dicomObjects->end();
 		++it
 	   ) {
-		it->FlushIntoArray( dataArray + (sliceStride * it->OrderInSet()) );
+		//TODO check parameter type if it will stay unit16*.
+		it->FlushIntoArray( (uint16*)dataArray + (sliceStride * it->OrderInSet()) );
 	}
 	
 	//Preparing informations about dimensionality.
@@ -119,7 +108,7 @@ ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 	info[2].Set( depth, width * height );
 
 	//Finally build and return image object.
-	return AbstractImage::APtr( 
+	return AbstractImage::APtr( (AbstractImage*)
 			CreateImageFromDataAndPixelType( elementSizeType, imageSize, dataArray, info ) 
 			);
 }
