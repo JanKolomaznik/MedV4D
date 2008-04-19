@@ -1,12 +1,11 @@
 #ifndef M4D_GUI_VTK_RENDER_WINDOW_WIDGET_H
 #define M4D_GUI_VTK_RENDER_WINDOW_WIDGET_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include "QVTKWidget.h"
 
-
 // VTK includes
-#include "../m4dPilot/renderWindowUtils.h"
+#include "vtkRenderer.h"
 
 class m4dGUIVtkRenderWindowWidget: public QVTKWidget
 {
@@ -17,6 +16,10 @@ class m4dGUIVtkRenderWindowWidget: public QVTKWidget
 
     void addRenderer ( vtkRenderer *ren );
     void removeFirstRenderer ();
+
+    // just for testing purposes - won't be in final ver.
+    vtkRenderer *sphereToRenderWindow ();
+    vtkRenderer *dicomToRenderWindow ( const char *dirName );
 };
 
 #endif // M4D_GUI_VTK_RENDER_WINDOW_WIDGET_H
