@@ -18,8 +18,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="..\..\lib\"
+			IntermediateDirectory="..\..\tmp\$(ProjectName)$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
 			>
@@ -62,9 +62,8 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="Ws2_32.lib Mswsock.lib NetAPI32.Lib ofstd.lib dcmdata.lib dcmnet.lib"
-				OutputFile="..\..\lib\$(ProjectName)$(PlatformName).lib"
-				AdditionalLibraryDirectories=" ..\..\lib\dcmtkLibs; C:\Program Files\Microsoft Visual Studio 8\VC\PlatformSDK\Lib"
+				OutputFile="$(OutDir)\$(ProjectName)$(PlatformName)d.lib"
+				AdditionalLibraryDirectories=" "
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -84,8 +83,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="..\..\lib\"
+			IntermediateDirectory="..\..\tmp\$(ProjectName)$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
@@ -107,6 +106,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="..\..\backendForDICOM\include;..\..\include\DICOMConn;..\..\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -125,6 +125,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				OutputFile="$(OutDir)\$(ProjectName)$(PlatformName).lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"

@@ -2,12 +2,29 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Imaging", "Imaging\Imaging.vcproj", "{A5A68502-8A1D-44AC-AB98-199CE76FFB8A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D300E0F3-DB4D-4B1C-9473-830764C94644} = {D300E0F3-DB4D-4B1C-9473-830764C94644}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtkIntegration", "vtkIntegration\vtkIntegration.vcproj", "{2D198559-0E14-42E5-AB0B-3F0A5AE76EDF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D300E0F3-DB4D-4B1C-9473-830764C94644} = {D300E0F3-DB4D-4B1C-9473-830764C94644}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{6B843F12-E523-4ECB-AD29-7A8FCB8E5714}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dicomCLientSample", "dicomCLientSample\dicomCLientSample.vcproj", "{FC57ACB5-E3D1-48C0-A429-9A2E218A1CE0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B89B3652-5A1B-426F-8C42-9DD6C0964612} = {B89B3652-5A1B-426F-8C42-9DD6C0964612}
+		{D300E0F3-DB4D-4B1C-9473-830764C94644} = {D300E0F3-DB4D-4B1C-9473-830764C94644}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dicomClient", "backendForDICOM\dicomClient.vcproj", "{B89B3652-5A1B-426F-8C42-9DD6C0964612}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D300E0F3-DB4D-4B1C-9473-830764C94644} = {D300E0F3-DB4D-4B1C-9473-830764C94644}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "common\common.vcproj", "{D300E0F3-DB4D-4B1C-9473-830764C94644}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +44,14 @@ Global
 		{FC57ACB5-E3D1-48C0-A429-9A2E218A1CE0}.Debug|Win32.Build.0 = Debug|Win32
 		{FC57ACB5-E3D1-48C0-A429-9A2E218A1CE0}.Release|Win32.ActiveCfg = Release|Win32
 		{FC57ACB5-E3D1-48C0-A429-9A2E218A1CE0}.Release|Win32.Build.0 = Release|Win32
+		{B89B3652-5A1B-426F-8C42-9DD6C0964612}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B89B3652-5A1B-426F-8C42-9DD6C0964612}.Debug|Win32.Build.0 = Debug|Win32
+		{B89B3652-5A1B-426F-8C42-9DD6C0964612}.Release|Win32.ActiveCfg = Release|Win32
+		{B89B3652-5A1B-426F-8C42-9DD6C0964612}.Release|Win32.Build.0 = Release|Win32
+		{D300E0F3-DB4D-4B1C-9473-830764C94644}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D300E0F3-DB4D-4B1C-9473-830764C94644}.Debug|Win32.Build.0 = Debug|Win32
+		{D300E0F3-DB4D-4B1C-9473-830764C94644}.Release|Win32.ActiveCfg = Release|Win32
+		{D300E0F3-DB4D-4B1C-9473-830764C94644}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -34,5 +59,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{2D198559-0E14-42E5-AB0B-3F0A5AE76EDF} = {6B843F12-E523-4ECB-AD29-7A8FCB8E5714}
 		{A5A68502-8A1D-44AC-AB98-199CE76FFB8A} = {6B843F12-E523-4ECB-AD29-7A8FCB8E5714}
+		{D300E0F3-DB4D-4B1C-9473-830764C94644} = {6B843F12-E523-4ECB-AD29-7A8FCB8E5714}
 	EndGlobalSection
 EndGlobal

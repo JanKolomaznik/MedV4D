@@ -2,10 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="dicomCLientSample"
-	ProjectGUID="{FC57ACB5-E3D1-48C0-A429-9A2E218A1CE0}"
-	RootNamespace="dicomCLientSample"
-	Keyword="Win32Proj"
+	Name="common"
+	ProjectGUID="{D300E0F3-DB4D-4B1C-9473-830764C94644}"
 	>
 	<Platforms>
 		<Platform
@@ -17,10 +15,9 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(ProjectDir)\$(ConfigurationName)"
+			OutputDirectory="..\..\lib\"
 			IntermediateDirectory="..\..\tmp\$(ProjectName)$(ConfigurationName)"
-			ConfigurationType="1"
-			CharacterSet="1"
+			ConfigurationType="4"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -39,16 +36,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
-				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="4"
+				AdditionalIncludeDirectories="..\..\include\;..\..\common\"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -60,19 +48,11 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="Ws2_32.lib Mswsock.lib NetAPI32.Lib ofstd.lib dcmdata.lib dcmnet.lib dicomClientWin32d.lib commond.lib"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\lib;..\..\lib\dcmtkLibs;&quot;$(VCInstallDir)\PlatformSDK\Lib&quot;"
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				TargetMachine="1"
+				Name="VCLibrarianTool"
+				OutputFile="$(OutDir)\$(ProjectName)d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -82,12 +62,6 @@
 			/>
 			<Tool
 				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -95,11 +69,9 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			OutputDirectory="..\..\lib\"
 			IntermediateDirectory="..\..\tmp\$(ProjectName)$(ConfigurationName)"
-			ConfigurationType="1"
-			CharacterSet="1"
-			WholeProgramOptimization="1"
+			ConfigurationType="4"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -118,13 +90,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
-				RuntimeLibrary="2"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="3"
+				AdditionalIncludeDirectories="..\..\include\;..\..\common\"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -136,20 +102,11 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="Ws2_32.lib Mswsock.lib NetAPI32.Lib ofstd.lib dcmdata.lib dcmnet.lib dicomClientWin32.lib common.lib"
-				LinkIncremental="1"
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				TargetMachine="1"
+				Name="VCLibrarianTool"
+				OutputFile="$(OutDir)\$(ProjectName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -159,12 +116,6 @@
 			/>
 			<Tool
 				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -180,7 +131,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\main.cpp"
+				RelativePath="..\..\common\Debug.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\common\ExceptionBase.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\common\Log.cpp"
 				>
 			</File>
 		</Filter>
@@ -189,6 +148,22 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath="..\..\include\Debug.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\ExceptionBase.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\Log.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\M4DCommon.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
