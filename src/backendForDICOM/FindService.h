@@ -5,11 +5,11 @@
  *  Implements C-FIND service to DICOM server
  */
 #include <string>
-using namespace std;
+#include "M4DDICOMServiceProvider.h"
 
-using namespace M4DDicom;
-
-namespace M4DDicomInternal {
+namespace M4D
+{
+namespace DicomInternal {
 
 class FindService : AbstractService
 {
@@ -66,7 +66,7 @@ public:
 	~FindService();
 
 	void FindForFilter( 
-		DcmProvider::ResultSet &result,
+		Dicom::DcmProvider::ResultSet &result,
 		const string &patientName,
 		const string &patientID,
 		const string &modality,
@@ -74,21 +74,22 @@ public:
 
 	void FindStudiesAboutPatient(
 		const string &patientID,
-		DcmProvider::ResultSet &result) ;
+		Dicom::DcmProvider::ResultSet &result) ;
 
 	void FindWholeStudyInfo(
 		const string &patientID,
 		const string &studyID,
-		DcmProvider::StudyInfo &info) ;
+		Dicom::DcmProvider::StudyInfo &info) ;
 
 	void FindStudyInfo(
 		const string &patientID,
 		const string &studyID,
-		DcmProvider::StringVector &seriesIDs) ; 
+		Dicom::DcmProvider::StringVector &seriesIDs) ; 
 
 	
 };
 
 } // namespace
+}
 
 #endif

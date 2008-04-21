@@ -64,6 +64,8 @@
 				Name="VCLibrarianTool"
 				OutputFile="$(OutDir)\$(ProjectName)$(PlatformName)d.lib"
 				AdditionalLibraryDirectories=" "
+				IgnoreAllDefaultLibraries="true"
+				IgnoreDefaultLibraryNames=""
 			/>
 			<Tool
 				Name="VCALinkTool"

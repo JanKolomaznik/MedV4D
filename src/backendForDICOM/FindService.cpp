@@ -9,7 +9,11 @@
 #include "AbstractService.h"
 #include "FindService.h"
 
-namespace M4DDicomInternal {
+namespace M4D
+{
+using namespace Dicom;
+
+namespace DicomInternal {
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -404,3 +408,4 @@ FindService::StudyInfoCallback(
 }
 
 } // namespace
+}

@@ -38,6 +38,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\..\include\;..\..\Imaging\"
+				MinimalRebuild="true"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

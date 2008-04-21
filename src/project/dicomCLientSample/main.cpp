@@ -5,7 +5,7 @@
 #include "dicomConn/M4DDICOMServiceProvider.h"
 
 using namespace std;
-using namespace M4DDicom;
+using namespace M4D::Dicom;
 
 int
 main( void)

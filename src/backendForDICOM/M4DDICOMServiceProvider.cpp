@@ -10,7 +10,9 @@
 #include "MoveService.h"
 #include "FindService.h"
 
-using namespace M4DDicomInternal;
+namespace M4D
+{
+using namespace DicomInternal;
 
 // set log & debug streams
 std::ostream *logStream = &std::cout;
@@ -20,7 +22,7 @@ std::ostream *pdout = &std::cout;
 
 //StoreService storeService;
 
-namespace M4DDicom {
+namespace Dicom {
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -117,3 +119,4 @@ DcmProvider::GetImageSet(
 ///////////////////////////////////////////////////////////////////////
 
 } // namespace
+}

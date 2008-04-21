@@ -5,7 +5,11 @@
 #include "main.h"
 #include "M4DDICOMServiceProvider.h"
 
-namespace M4DDicom {
+namespace M4D
+{
+using namespace ErrorHandling;
+
+namespace Dicom {
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -97,11 +101,11 @@ DcmProvider::DicomObj::PixelSize
 DcmProvider::DicomObj::GetPixelSize( void)
 {
 	if( m_bitsStored <= 8)
-		return PixelSize::bit8;
+		return bit8;
 	else if( m_bitsStored > 8 && m_bitsStored <= 16)
-		return PixelSize::bit16;
+		return bit16;
 	else if( m_bitsStored > 16)
-		return PixelSize::bit32;
+		return bit32;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -198,3 +202,4 @@ DcmProvider::DicomObj::EncodePixelValue16Aligned(
 }
 
 } // namespace
+}

@@ -4,8 +4,9 @@
 /**
  *  Implements C-FIND service to DICOM server
  */
-
-namespace M4DDicomInternal {
+namespace M4D
+{
+namespace DicomInternal {
 
 class AbstractService
 {
@@ -25,5 +26,6 @@ protected:
 };
 
 } // namespace
+}/*namespace M4D*/
 
 #endif

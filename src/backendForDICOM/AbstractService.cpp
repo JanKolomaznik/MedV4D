@@ -8,7 +8,9 @@
 #include "M4DDICOMServiceProvider.h"
 #include "AbstractService.h"
 
-namespace M4DDicomInternal {
+namespace M4D
+{
+namespace DicomInternal {
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -75,3 +77,4 @@ AbstractService::~AbstractService()
 ///////////////////////////////////////////////////////////////////////
 
 } // namespace
+}

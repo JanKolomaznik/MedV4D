@@ -4,10 +4,13 @@
 /**
  *  Implements C-MOVE service to DICOM server
  */
+#include "M4DDICOMServiceProvider.h"
 
-using namespace M4DDicom;
+namespace M4D
+{
+using namespace Dicom;
 
-namespace M4DDicomInternal {
+namespace DicomInternal {
 
 class MoveService : AbstractService
 {
@@ -81,5 +84,6 @@ public:
 };
 
 } // namespace
+}
 
 #endif

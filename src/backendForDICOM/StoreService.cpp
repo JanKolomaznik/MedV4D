@@ -17,7 +17,12 @@
 #include "dcmtk/dcmdata/dcrleerg.h"  /* for DcmRLEEncoderRegistration */
 #endif
 
-namespace M4DDicomInternal {
+namespace M4D
+{
+using namespace ErrorHandling;
+using namespace Dicom;
+
+namespace DicomInternal {
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -557,3 +562,4 @@ StoreService::CopyNeccessaryAttribs(
 }
 
 } // namespace
+}

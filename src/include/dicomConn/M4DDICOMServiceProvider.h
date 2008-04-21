@@ -6,7 +6,9 @@
 #include <string>
 #include <boost/shared_ptr.hpp>
 
-namespace M4DDicom {
+namespace M4D
+{
+namespace Dicom {
 
 	class DcmProvider
 	{
@@ -98,7 +100,7 @@ namespace M4DDicom {
 	};
 
 };
-
+}
 #include "M4DDICOMObject.h"
 
 #endif

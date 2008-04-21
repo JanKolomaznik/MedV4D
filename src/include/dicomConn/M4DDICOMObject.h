@@ -3,9 +3,9 @@
 
 #include <string>
 
-using namespace std;
-
-namespace M4DDicom {
+namespace M4D
+{
+namespace Dicom {
 
 	class DcmProvider::DicomObj
 	{
@@ -53,8 +53,8 @@ namespace M4DDicom {
 		inline uint16 OrderInSet( void) { return m_orderInSet; }
 
 		// load & save
-		void Load( const string &path);
-		void Save( const string &path)	;
+		void Load( const std::string &path);
+		void Save( const std::string &path)	;
 
 		/**
 		 *	Called when image arrive
@@ -62,7 +62,7 @@ namespace M4DDicom {
 		void Init();
 
 		// methods to get value from data set container
-		void GetTagValue( uint16 group, uint16 tagNum, string &) ;
+		void GetTagValue( uint16 group, uint16 tagNum, std::string &) ;
 		void GetTagValue( uint16 group, uint16 tagNum, int32 &) ;
 		void GetTagValue( uint16 group, uint16 tagNum, float &) ;	
 
@@ -81,6 +81,6 @@ namespace M4DDicom {
 	};
 
 };
-
+}
 #endif
 

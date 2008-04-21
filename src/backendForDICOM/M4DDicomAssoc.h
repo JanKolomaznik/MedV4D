@@ -4,7 +4,8 @@
 #include <map>
 #include <fstream>
 
-using namespace std;
+namespace M4D
+{
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -57,4 +58,6 @@ public:
 	T_ASC_PresentationContextID FindPresentationCtx( void) throw(...);
 };
 
+
+}
 #endif

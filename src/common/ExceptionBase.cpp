@@ -15,6 +15,12 @@ ExceptionBase::ExceptionBase( char * name )
 	OnRaise();
 }
 
+ExceptionBase::ExceptionBase()
+	: std::exception(), _name( "General exception raised." ) 
+{ 
+	OnRaise();
+}
+
 void
 ExceptionBase::OnRaise()
 { 

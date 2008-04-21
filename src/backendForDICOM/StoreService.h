@@ -5,9 +5,11 @@
  *  Implements C-FIND service to DICOM server
  */
 
-using namespace M4DDicom;
+#include "M4DDICOMServiceProvider.h"
 
-namespace M4DDicomInternal {
+namespace M4D
+{
+namespace DicomInternal {
 
 	class StoreService : AbstractService
 	{
@@ -60,10 +62,11 @@ namespace M4DDicomInternal {
 		~StoreService();
 		
 		void StoreObject( 
-			const DcmProvider::DicomObj &objectToCopyAttribsFrom,
-			DcmProvider::DicomObj &objectToStore) throw(...);
+			const Dicom::DcmProvider::DicomObj &objectToCopyAttribsFrom,
+			Dicom::DcmProvider::DicomObj &objectToStore) throw(...);
 	};
 
+}
 }
 
 #endif

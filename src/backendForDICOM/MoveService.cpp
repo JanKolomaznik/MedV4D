@@ -9,7 +9,12 @@
 #include "AbstractService.h"
 #include "MoveService.h"
 
-namespace M4DDicomInternal {
+namespace M4D
+{
+
+using namespace ErrorHandling;
+
+namespace DicomInternal {
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -518,3 +523,4 @@ MoveService::MoveCallback( void * /*callbackData*/,
 ///////////////////////////////////////////////////////////////////////
 
 } // namespace
+}
