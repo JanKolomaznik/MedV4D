@@ -26,6 +26,7 @@ m4dGUIMainWindow::m4dGUIMainWindow ()
   centralWidget->setLayout( mainLayout );
 
   setWindowTitle( tr( "m4dPilot" ) ); 
+  setWindowIcon( QIcon( ":/icons/app.png" ) );
   resize( 800, 600 );
 }
 
@@ -45,6 +46,7 @@ void m4dGUIMainWindow::open ()
   } 
 }
 
+
 void m4dGUIMainWindow::search ()
 {
   studyManagerDialog->show();
@@ -60,7 +62,7 @@ void m4dGUIMainWindow::createStudyManagerDialog ()
 
   studyManagerDialog = new QDialog( this );
   studyManagerDialog->setWindowTitle( tr( "Study Manager" ) );
-  studyManagerDialog->setWindowIcon( QIcon(":/icons/search.png") );
+  studyManagerDialog->setWindowIcon( QIcon( ":/icons/search.png" ) );
   studyManagerDialog->setLayout( dialogLayout );
 }
 
@@ -73,8 +75,8 @@ void m4dGUIMainWindow::createVtkRenderWindowWidget ()
 
 void m4dGUIMainWindow::createActions ()
 {
-  searchAct = new QAction( QIcon( ":/icons/search.png" ), tr( "Se&arch" ), this );
-  searchAct->setShortcut( tr( "Ctrl+A" ) );
+  searchAct = new QAction( QIcon( ":/icons/search.png" ), tr( "&Search" ), this );
+  searchAct->setShortcut( tr( "Ctrl+S" ) );
   searchAct->setStatusTip( tr( "Search" ) );
   connect( searchAct, SIGNAL(triggered()), this, SLOT(search()) );
 
@@ -83,8 +85,8 @@ void m4dGUIMainWindow::createActions ()
   openAct->setStatusTip( tr( "Open an existing document" ) );
   connect( openAct, SIGNAL(triggered()), this, SLOT(open()) );
 
-  saveAct = new QAction( QIcon( ":/icons/save.png" ), tr( "&Save" ), this );
-  saveAct->setShortcut( tr( "Ctrl+S" ) );
+  saveAct = new QAction( QIcon( ":/icons/save.png" ), tr( "S&ave" ), this );
+  saveAct->setShortcut( tr( "Ctrl+A" ) );
   // saveAct->setStatusTip( tr( "Save the document to disk" ) );
   // connect( saveAct, SIGNAL(triggered()), this, SLOT(save()) );
   saveAct->setEnabled( false );
@@ -111,7 +113,6 @@ void m4dGUIMainWindow::createMenus ()
 void m4dGUIMainWindow::createToolBars ()
 {
   fileToolBar = addToolBar( tr( "File" ) );
-  // fileToolBar->addAction( newAct );
   fileToolBar->addAction( openAct );
   fileToolBar->addAction( saveAct );
 

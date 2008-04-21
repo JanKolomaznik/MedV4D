@@ -7,6 +7,7 @@
 // VTK includes
 #include "vtkRenderer.h"
 
+
 class m4dGUIVtkRenderWindowWidget: public QVTKWidget
 {
   Q_OBJECT
