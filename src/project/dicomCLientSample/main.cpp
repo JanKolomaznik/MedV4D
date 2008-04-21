@@ -5,13 +5,14 @@
 #include "dicomConn/M4DDICOMServiceProvider.h"
 
 using namespace std;
+using namespace M4DDicom;
 
 int
 main( void)
 {
-	M4DDcmProvider::ResultSet result;
-	M4DDcmProvider::StudyInfo studyInfo;
-	M4DDcmProvider::DicomObjSet obj;	
+	DcmProvider::ResultSet result;
+	DcmProvider::StudyInfo studyInfo;
+	DcmProvider::DicomObjSet obj;	
 
 	string patientName = "";
 	string patientID = "";
@@ -20,13 +21,13 @@ main( void)
 
 	try {
 		// provider object
-		M4DDcmProvider provider;
+		DcmProvider provider;
 
 		// find some patient & studies info
 		provider.Find( 
 			result, patientName, patientID, modality, dateFrom);
 
-		M4DDcmProvider::TableRow *row = &result[0];
+		DcmProvider::TableRow *row = &result[0];
 
 		// find some info about selected study
 		provider.WholeFindStudyInfo( row->patentID, row->studyID, studyInfo);
@@ -38,7 +39,7 @@ main( void)
 		int i=0;
 		char fileName[32];
 		string pok;
-		for( M4DDcmProvider::DicomObjSet::iterator it = obj.begin();
+		for( DcmProvider::DicomObjSet::iterator it = obj.begin();
 			it != obj.end();
 			it++)
 		{

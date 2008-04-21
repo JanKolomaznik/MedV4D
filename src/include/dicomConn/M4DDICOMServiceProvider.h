@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <boost/shared_ptr.hpp>
 
 namespace M4DDicom {
 
