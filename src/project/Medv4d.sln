@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Imaging", "Imaging\Imaging.vcproj", "{A5A68502-8A1D-44AC-AB98-199CE76FFB8A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtkIntegration", "vtkIntegration\vtkIntegration.vcproj", "{2D198559-0E14-42E5-AB0B-3F0A5AE76EDF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{6B843F12-E523-4ECB-AD29-7A8FCB8E5714}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A5A68502-8A1D-44AC-AB98-199CE76FFB8A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A5A68502-8A1D-44AC-AB98-199CE76FFB8A}.Debug|Win32.Build.0 = Debug|Win32
+		{A5A68502-8A1D-44AC-AB98-199CE76FFB8A}.Release|Win32.ActiveCfg = Release|Win32
+		{A5A68502-8A1D-44AC-AB98-199CE76FFB8A}.Release|Win32.Build.0 = Release|Win32
+		{2D198559-0E14-42E5-AB0B-3F0A5AE76EDF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2D198559-0E14-42E5-AB0B-3F0A5AE76EDF}.Debug|Win32.Build.0 = Debug|Win32
+		{2D198559-0E14-42E5-AB0B-3F0A5AE76EDF}.Release|Win32.ActiveCfg = Release|Win32
+		{2D198559-0E14-42E5-AB0B-3F0A5AE76EDF}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A5A68502-8A1D-44AC-AB98-199CE76FFB8A} = {6B843F12-E523-4ECB-AD29-7A8FCB8E5714}
+		{2D198559-0E14-42E5-AB0B-3F0A5AE76EDF} = {6B843F12-E523-4ECB-AD29-7A8FCB8E5714}
+	EndGlobalSection
+EndGlobal
