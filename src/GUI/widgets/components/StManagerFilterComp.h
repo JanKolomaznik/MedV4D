@@ -21,6 +21,7 @@ class StManagerFilterComp: public QWidget
 
     void fromCheck ();
     void toCheck ();
+    void modalityCheck ();
 
   private:
     QPushButton *createButton ( const QString &text, const char *member );

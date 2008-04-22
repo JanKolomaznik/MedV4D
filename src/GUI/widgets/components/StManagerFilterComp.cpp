@@ -51,9 +51,9 @@ StManagerFilterComp::StManagerFilterComp ( QWidget *parent )
   QCheckBox *fromDateCheckBox = createCheckBox( tr( "From:" ), SLOT(fromCheck()) );
   QCheckBox *toDateCheckBox   = createCheckBox( tr( "To:" ),   SLOT(toCheck())  );
 
-  fromDateDateEdit = new QDateEdit;
+  fromDateDateEdit = new QDateEdit( QDate::currentDate() );
   fromDateDateEdit->setCalendarPopup( true );
-  toDateDateEdit   = new QDateEdit;
+  toDateDateEdit   = new QDateEdit( QDate::currentDate() );
   toDateDateEdit->setCalendarPopup( true );
 
   QSpacerItem *vertRow23Spacer = new QSpacerItem( 2, 6, QSizePolicy::Minimum, 
@@ -107,8 +107,17 @@ StManagerFilterComp::StManagerFilterComp ( QWidget *parent )
 
 void StManagerFilterComp::search ()
 {
-  QString patientIDText = patientIDComboBox->currentText();
-  // provider.Find( result, patientName, patientIDText, modality, dateFrom);
+  QString patientNameText = firstNameComboBox->currentText() + " "
+                          + lastNameComboBox->currentText();
+
+  QString patientIDText   = patientIDComboBox->currentText();
+  QString fromDateText    = fromDateDateEdit->text();
+
+  QString message = "provider.Find( " + patientNameText + ", "
+                  + patientIDText + ", " + fromDateText + " )";
+
+  QMessageBox::about( this, tr( "Search" ), message );
+  // provider.Find( result, patientName, patientID, modality, dateFrom );
 }
 
 
@@ -127,6 +136,11 @@ void StManagerFilterComp::toCheck ()
     toDateDateEdit->setEnabled( false );
   else
     toDateDateEdit->setEnabled( true );
+}
+
+
+void StManagerFilterComp::modalityCheck ()
+{ 
 }
 
 

@@ -6,6 +6,8 @@
 m4dGUIStudyManagerWidget::m4dGUIStudyManagerWidget ( QWidget *parent )
   : QWidget( parent )
 {
+  Q_INIT_RESOURCE( m4dGUIStudyManagerWidget );
+
   createFilterGroupBox();
   createHangingProtocolsGroupBox();
   createStudyListGroupBox();

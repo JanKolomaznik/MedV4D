@@ -1,0 +1,6 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>icons/local.png</file>
+    <file>icons/remote.png</file>
+</qresource>
+</RCC>

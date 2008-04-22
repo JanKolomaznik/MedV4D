@@ -2,9 +2,7 @@
 <qresource>
     <file>icons/app.png</file>
     <file>icons/exit.png</file>
-    <file>icons/local.png</file>
     <file>icons/open.png</file>
-    <file>icons/remote.png</file>
     <file>icons/save.png</file>
     <file>icons/search.png</file>
 </qresource>
