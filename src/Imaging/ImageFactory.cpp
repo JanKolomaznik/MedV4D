@@ -5,7 +5,7 @@ namespace M4D
 {
 namespace Images
 {
-using namespace M4DDicom;
+using namespace Dicom;
 
 
 void
@@ -93,7 +93,7 @@ ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 
 	//Copy each slice into image to its place.
 	for(
-		M4DDicom::DcmProvider::DicomObjSet::iterator it = dicomObjects->begin();
+		Dicom::DcmProvider::DicomObjSet::iterator it = dicomObjects->begin();
 		it != dicomObjects->end();
 		++it
 	   ) {

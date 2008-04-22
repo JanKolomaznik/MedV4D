@@ -34,7 +34,7 @@ public:
 			);
 
 	static AbstractImage::APtr 
-	CreateImageFromDICOM( M4DDicom::DcmProvider::DicomObjSetPtr dicomObjects );
+	CreateImageFromDICOM( Dicom::DcmProvider::DicomObjSetPtr dicomObjects );
 protected:
 
 private:
@@ -51,7 +51,7 @@ private:
 	 **/
 	static void
 	PrepareElementArrayFromPixelSize( 
-		M4DDicom::DcmProvider::DicomObj::PixelSize 	pixelSize, 
+		Dicom::DcmProvider::DicomObj::PixelSize 	pixelSize, 
 		size_t 						imageSize, 
 		uint8						*& dataArray, 
 		unsigned short 					&  elementSize 
@@ -65,7 +65,7 @@ private:
 	 **/
 	static AbstractImage*
 	CreateImageFromDataAndPixelType(
-		M4DDicom::DcmProvider::DicomObj::PixelSize 	pixelSize, 
+		Dicom::DcmProvider::DicomObj::PixelSize 	pixelSize, 
 		size_t 						imageSize, 
 		uint8						* dataArray, 
 		DimensionInfo					* info
