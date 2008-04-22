@@ -43,7 +43,7 @@
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\backendForDICOM\include;..\..\include\DICOMConn;..\..\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
-				MinimalRebuild="true"
+				MinimalRebuild="false"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
@@ -65,7 +65,7 @@
 				OutputFile="$(OutDir)\$(ProjectName)$(PlatformName)d.lib"
 				AdditionalLibraryDirectories=" "
 				IgnoreAllDefaultLibraries="true"
-				IgnoreDefaultLibraryNames=""
+				IgnoreDefaultLibraryNames="libcpmtd.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -87,7 +87,7 @@
 			Name="Release|Win32"
 			OutputDirectory="..\..\lib\"
 			IntermediateDirectory="..\..\tmp\$(ProjectName)$(ConfigurationName)"
-			ConfigurationType="1"
+			ConfigurationType="4"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
@@ -126,20 +126,12 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLinkerTool"
+				Name="VCLibrarianTool"
 				OutputFile="$(OutDir)\$(ProjectName)$(PlatformName).lib"
-				LinkIncremental="1"
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				TargetMachine="1"
+				IgnoreAllDefaultLibraries="true"
 			/>
 			<Tool
 				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -149,12 +141,6 @@
 			/>
 			<Tool
 				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
