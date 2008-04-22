@@ -4,6 +4,7 @@
 	Version="8,00"
 	Name="common"
 	ProjectGUID="{D300E0F3-DB4D-4B1C-9473-830764C94644}"
+	RootNamespace="common"
 	>
 	<Platforms>
 		<Platform
@@ -37,6 +38,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\..\include\;..\..\common\"
+				PreprocessorDefinitions="&quot;DEBUG_LEVEL=10&quot;"
 				MinimalRebuild="false"
 				RuntimeLibrary="3"
 			/>

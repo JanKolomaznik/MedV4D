@@ -1,4 +1,3 @@
-#define DEBUG_LEVEL 2
 
 #include "Debug.h"
 #include "Log.h"
