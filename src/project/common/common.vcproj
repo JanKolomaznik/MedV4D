@@ -40,7 +40,7 @@
 				AdditionalIncludeDirectories="..\..\include\;..\..\common\"
 				PreprocessorDefinitions="&quot;DEBUG_LEVEL=10&quot;"
 				MinimalRebuild="false"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
