@@ -14,9 +14,6 @@ namespace M4D
 {
 using namespace DicomInternal;
 
-// set log & debug streams
-/*std::ostream *logStream = &std::cout;
-std::ostream *pdout = &std::cout;*/
 
 // create service objects
 

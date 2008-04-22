@@ -154,7 +154,7 @@ FindService::FindSupport(
     //callbackData.presId = presId;
 
 	LOG( "Find-SCU REQUEST");
-    queryDataSet.print(DOUT);
+    queryDataSet.print(LOUT);
 
 #define FIND_OPER_TIMEOUT 0
 
@@ -171,13 +171,13 @@ FindService::FindSupport(
 		LOG( "Response: " << DU_cfindStatusString(rsp.DimseStatus));
     } else {
         D_PRINT("Find Failed, query keys:");
-        queryDataSet.print(DOUT);
+        queryDataSet.print(LOUT);
     }
 
     /* dump status detail information if there is some */
     if (statusDetail != NULL) {
         D_PRINT("Status Detail:");
-        statusDetail->print(DOUT);
+        statusDetail->print(LOUT);
         delete statusDetail;
     }
 

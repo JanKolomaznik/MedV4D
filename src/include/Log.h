@@ -4,10 +4,10 @@
 #include <ostream>
 #include <iomanip>
 
-/*extern std::ostream *plog;
-#define LOG	(*plog)*/
 
 extern std::ostream *logStream;
+
+#define LOUT (*logStream)
 
 class LogFormatter;
 
@@ -48,6 +48,6 @@ public:
 };
 
 #define LOG( ARGs )	\
-	(*logStream) << ARGs << std::endl;
+	LOUT << ARGs << std::endl;
 
 #endif /*__LOG_H_*/

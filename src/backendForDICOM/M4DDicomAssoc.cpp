@@ -194,7 +194,7 @@ M4DDicomAssociation::Request( T_ASC_Network *net)
 {
 	/* dump presentation contexts if required */
     D_PRINT("Request Parameters");
-    ASC_dumpParameters(m_assocParams, DOUT);
+    ASC_dumpParameters(m_assocParams, LOUT);
 
     /* create association, i.e. try to establish a network connection to another */
     /* DICOM application. This call creates an instance of T_ASC_Association*. */
@@ -206,7 +206,7 @@ M4DDicomAssociation::Request( T_ASC_Network *net)
             T_ASC_RejectParameters rej;
             ASC_getRejectParameters(m_assocParams, &rej);
 			D_PRINT("Association Rejected due this params:");
-            ASC_printRejectParameters(DOUT, &rej);
+            ASC_printRejectParameters(LOUT, &rej);
 			throw new ExceptionBase("Assotiation rejected!");
         } else {
             D_PRINT("Association Request Failed");

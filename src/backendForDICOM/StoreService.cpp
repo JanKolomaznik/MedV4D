@@ -190,7 +190,7 @@ StoreService::StoreSCP( DcmDataset *data) throw(...)
     /* dump status detail information if there is some */
     if (statusDetail != NULL) {
         D_PRINT("Status Detail:");
-        statusDetail->print(DOUT);
+        statusDetail->print(LOUT);
         delete statusDetail;
     }
 }

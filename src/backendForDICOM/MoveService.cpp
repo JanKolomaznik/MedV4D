@@ -174,14 +174,14 @@ MoveService::MoveSupport( DcmDataset *query,
 		LOG( "Move response");
         if (rspIds != NULL) {
             D_PRINT("Response Identifiers:\n");
-            rspIds->print(DOUT);
+            rspIds->print(LOUT);
         }
     } else {
         D_PRINT("Move Failed:");
     }
     if (statusDetail != NULL) {
         D_PRINT("  Status Detail:\n");
-        statusDetail->print(DOUT);
+        statusDetail->print(LOUT);
         delete statusDetail;
     }
 
