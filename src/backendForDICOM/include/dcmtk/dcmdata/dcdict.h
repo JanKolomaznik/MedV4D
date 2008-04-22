@@ -85,14 +85,14 @@ public:
     int numberOfNormalTagEntries() const { return hashDict.size(); }
 
     /// returns the number of repeating tag entries
-    int numberOfRepeatingTagEntries() const { return repDict.size(); }
+    size_t numberOfRepeatingTagEntries() const { return repDict.size(); }
 
     /** returns the number of dictionary entries that were loaded
      *  either from file or from a built-in dictionary or both.
      */
     int numberOfEntries() const
         { return numberOfNormalTagEntries()
-              + numberOfRepeatingTagEntries() - skeletonCount; }
+              + (int) numberOfRepeatingTagEntries() - skeletonCount; }
 
     /** returns the number of skeleton entries. The skeleton is a collection
      *  of dictionary entries which are always present, even if neither internal

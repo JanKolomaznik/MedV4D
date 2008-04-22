@@ -41,7 +41,7 @@ StoreService::StoreService()
         D_PRINT(
 			"Warning: no data dictionary loaded, check environment variable:"
             << DCM_DICT_ENVIRONMENT_VARIABLE);
-		throw new ExceptionBase();
+		throw ExceptionBase();
     }
 
 	/* initialize network, i.e. create an instance of T_ASC_Network*. */
@@ -92,7 +92,7 @@ StoreService::~StoreService()
 ///////////////////////////////////////////////////////////////////////
 
 void
-StoreService::StoreSCP( DcmDataset *data) throw(...)
+StoreService::StoreSCP( DcmDataset *data) 
 {
 	DIC_US msgId = m_assocToServer->GetAssociation()->nextMsgID++;
     T_ASC_PresentationContextID presId;
@@ -107,7 +107,7 @@ StoreService::StoreSCP( DcmDataset *data) throw(...)
         sopClass, sopInstance)) 
 	{
         LOG("No SOP Class & Instance UIDs in data set");
-        throw new ExceptionBase();
+        throw ExceptionBase();
     }
 
     /* figure out which of the accepted presentation contexts should be used */
@@ -138,7 +138,7 @@ StoreService::StoreSCP( DcmDataset *data) throw(...)
 		{
 			D_PRINT("No presentation context for: ("
 				<< modalityName << ")" << sopClass);
-			throw new ExceptionBase();
+			throw ExceptionBase();
 		}
     }
 
@@ -178,13 +178,13 @@ StoreService::StoreSCP( DcmDataset *data) throw(...)
 		DICOM_WARNING_STATUS(rsp.DimseStatus))) )
 	{
         LOG( "Image was not accepted!");
-		throw new ExceptionBase();
+		throw ExceptionBase();
     }
 
 	if( cond != EC_Normal)
 	{
 		LOG( "C_STORE operation failed!");
-		throw new ExceptionBase();
+		throw ExceptionBase();
 	}
 
     /* dump status detail information if there is some */
@@ -222,7 +222,7 @@ StoreService::AddPresentationContext(T_ASC_Parameters *params,
     T_ASC_PresentationContextID presentationContextId,
 	const OFString& abstractSyntax,
     const OFString& transferSyntax,
-    T_ASC_SC_ROLE proposedRole = ASC_SC_ROLE_DEFAULT) throw(...)
+    T_ASC_SC_ROLE proposedRole = ASC_SC_ROLE_DEFAULT) 
 {
     const char* c_p = transferSyntax.c_str();
     OFCondition cond = ASC_addPresentationContext(params, presentationContextId,
@@ -230,7 +230,7 @@ StoreService::AddPresentationContext(T_ASC_Parameters *params,
 	if( cond.bad() )
 	{
 		D_PRINT( "Cannot add presentatoin ctx");
-		throw new ExceptionBase();
+		throw ExceptionBase();
 	}
 }
 
@@ -241,7 +241,7 @@ StoreService::AddPresentationContext(T_ASC_Parameters *params,
     T_ASC_PresentationContextID presentationContextId,
 	const OFString& abstractSyntax,
     const OFList<OFString>& transferSyntaxList,
-    T_ASC_SC_ROLE proposedRole = ASC_SC_ROLE_DEFAULT) throw(...)
+    T_ASC_SC_ROLE proposedRole = ASC_SC_ROLE_DEFAULT) 
 {
     // create an array of supported/possible transfer syntaxes
     const char** transferSyntaxes = new const char*[transferSyntaxList.size()];
@@ -261,7 +261,7 @@ StoreService::AddPresentationContext(T_ASC_Parameters *params,
 	if( cond.bad() )
 	{
 		D_PRINT( "Cannot add presentation ctxs");
-		throw new ExceptionBase();
+		throw ExceptionBase();
 	}
 }
 
@@ -269,7 +269,7 @@ StoreService::AddPresentationContext(T_ASC_Parameters *params,
 
 void
 StoreService::AddStoragePresentationContexts(
-	T_ASC_Parameters *params, OFList<OFString>& sopClasses) throw(...)
+	T_ASC_Parameters *params, OFList<OFString>& sopClasses) 
 {
     /*
      * Each SOP Class will be proposed in two presentation contexts (unless
@@ -364,7 +364,7 @@ StoreService::AddStoragePresentationContexts(
 
         if (pid > 255) {
             D_PRINT("Too many presentation contexts");
-            throw new ExceptionBase();
+            throw ExceptionBase();
         }
 
         if (opt_combineProposedTransferSyntaxes) {
@@ -379,7 +379,7 @@ StoreService::AddStoragePresentationContexts(
             if (fallbackSyntaxes.size() > 0) {
                 if (pid > 255) {
                     D_PRINT("Too many presentation contexts");
-                    throw new ExceptionBase();
+                    throw ExceptionBase();
                 }
 
                 // sop class with fallback transfer syntax
@@ -524,7 +524,7 @@ StoreService::ProgressCallback(void * /*callbackData*/,
 void
 StoreService::StoreObject( 
 		const DcmProvider::DicomObj &objectToCopyAttribsFrom,
-		DcmProvider::DicomObj &objectToStore) throw(...)
+		DcmProvider::DicomObj &objectToStore) 
 {
 	DcmDataset *dataSetToStore = (DcmDataset *) objectToStore.m_dataset;
 	DcmDataset *dataSetPattern = 

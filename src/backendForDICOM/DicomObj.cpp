@@ -42,7 +42,7 @@ DcmProvider::DicomObj::Save( const string &path)
 	if (cond.bad())
 	{
 		LOG( "Cannot write file:" << path);
-		throw new ExceptionBase();
+		throw ExceptionBase();
 	}
 }
 
@@ -57,7 +57,7 @@ DcmProvider::DicomObj::Load( const string &path)
 	if (cond.bad())
 	{
 		LOG( "Cannot load the file: " << path);
-		throw new ExceptionBase();
+		throw ExceptionBase();
 	}
 
 	m_dataset = (void *)dataSet;
@@ -106,6 +106,8 @@ DcmProvider::DicomObj::GetPixelSize( void)
 		return bit16;
 	else if( m_bitsStored > 16)
 		return bit32;
+	else
+		throw ExceptionBase( "Bad Pixel Size");
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -115,7 +117,7 @@ DcmProvider::DicomObj::Init()
 {
 	DcmDataset* dataSet = static_cast<DcmDataset *>(m_dataset);
 	if( dataSet == NULL)
-		throw new ExceptionBase("No data available!");
+		throw ExceptionBase("No data available!");
 
 	// get image with & height
 	dataSet->findAndGetUint16( DCM_Columns, m_width);
@@ -147,7 +149,7 @@ DcmProvider::DicomObj::FlushIntoArray( const uint16 *dest)
 	DcmDataset* dataSet = static_cast<DcmDataset *>(m_dataset);
 
 	if( dataSet == NULL)
-		throw new ExceptionBase("No data available!");
+		throw ExceptionBase("No data available!");
 
 	uint16 bitsAllocated, highBit, pixelRepresentation;
 	// get other needed pixel attribs
@@ -162,7 +164,7 @@ DcmProvider::DicomObj::FlushIntoArray( const uint16 *dest)
 			DCM_PixelData, data, NULL);
 	if( cond.bad() )
 	{
-		throw new ExceptionBase( "Cannot obtain pixel data!");
+		throw ExceptionBase( "Cannot obtain pixel data!");
 	}
 
 	if( pixelRepresentation == 0 &&
@@ -188,7 +190,7 @@ DcmProvider::DicomObj::FlushIntoArray( const uint16 *dest)
 
 void
 DcmProvider::DicomObj::EncodePixelValue16Aligned( 
-	uint16 x, uint16 y, uint16 &val)
+	uint16 , uint16 , uint16 &)
 {
 	//// pixelCell if the image are stored in rows. 1st row, then 2nd ...
 	//uint8 *fingerToStream = (uint8 *) ( m_pixelData) + ( 	// base

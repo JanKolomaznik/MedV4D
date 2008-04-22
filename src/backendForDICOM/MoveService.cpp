@@ -90,7 +90,7 @@ MoveService::MoveImage(
 	DcmDataset *query = NULL;
 	GetQuery( &query, &patientID, &studyID, &setID, &imageID);
 
-	MoveSupport( query, (void *)&rs, eCallType::SINGLE_IMAGE);
+	MoveSupport( query, (void *)&rs, SINGLE_IMAGE);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -105,7 +105,7 @@ MoveService::MoveImageSet(
 	DcmDataset *query = NULL;
 	GetQuery( &query, &patientID, &studyID, &serieID, NULL);
 
-	MoveSupport( query, (void *)&result, eCallType::IMAGE_SET);
+	MoveSupport( query, (void *)&result, IMAGE_SET);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -122,7 +122,7 @@ MoveService::MoveSupport( DcmDataset *query,
     T_DIMSE_C_MoveRSP   rsp;
 	DIC_US              msgId = m_assocToServer->GetAssociation()->nextMsgID++;
     DcmDataset          *rspIds = NULL;
-    const char          *sopClass;
+    //const char          *sopClass;
     DcmDataset          *statusDetail = NULL;
 
     /* figure out which of the accepted presentation contexts should be used */
@@ -149,7 +149,7 @@ MoveService::MoveSupport( DcmDataset *query,
 	OFCondition cond;
 	switch( type)
 	{
-	case eCallType::SINGLE_IMAGE:
+	case SINGLE_IMAGE:
 		cond = DIMSE_moveUser(
 			m_assocToServer->GetAssociation(),
 			presId, &req, query,
@@ -159,7 +159,7 @@ MoveService::MoveSupport( DcmDataset *query,
 			&rsp, &statusDetail, &rspIds, false);
 		break;
 
-	case eCallType::IMAGE_SET:
+	case IMAGE_SET:
 		cond = DIMSE_moveUser(
 			m_assocToServer->GetAssociation(),
 			presId, &req, query,
@@ -314,7 +314,7 @@ MoveService::AcceptSubAssoc(T_ASC_Network * aNet, T_ASC_Association ** assoc)
     if (cond.good()) cond = ASC_acknowledgeAssociation(*assoc);
     if (cond.bad()) {
 		D_PRINT( "No acceptable image trasfer sytaxes!");
-		throw new ExceptionBase();
+		throw ExceptionBase();
     }
 }
 
@@ -332,8 +332,8 @@ MoveService::StoreSCPCallback(
     char * /*imageFileName*/, 
 	DcmDataset ** /*imageDataSet*/, /* being received into */
     /* out */
-    T_DIMSE_C_StoreRSP *rsp,            /* final store response */
-    DcmDataset **statusDetail)
+    T_DIMSE_C_StoreRSP * /*rsp*/,            /* final store response */
+    DcmDataset ** /*statusDetail*/)
 {
 
     /*if ((opt_abortDuringStore && progress->state != DIMSE_StoreBegin) ||
@@ -369,8 +369,7 @@ MoveService::SubTransferOperationSCP(
 
     if (!ASC_dataWaiting(*subAssoc, 0)) /* just in case */
 	{
-		D_PRINT("No data waiting!");
-        throw new ExceptionBase();
+        throw ExceptionBase("No data waiting!");
 	}
 
 #define MOVE_OPER_TIMEOUT 30
@@ -394,7 +393,7 @@ MoveService::SubTransferOperationSCP(
 
 			switch( type)
 			{
-			case eCallType::IMAGE_SET:
+			case IMAGE_SET:
 				// insert new DICOMObj into container
 				set = static_cast<
 					DcmProvider::DicomObjSet *>(data);
@@ -405,7 +404,7 @@ MoveService::SubTransferOperationSCP(
 				// SINCHRONIZE !!! ???
 				break;
 
-			case eCallType::SINGLE_IMAGE:
+			case SINGLE_IMAGE:
 				result = 
 					static_cast<DcmProvider::DicomObj *>(data);
 				break;
@@ -423,7 +422,7 @@ MoveService::SubTransferOperationSCP(
 
         default:
 			D_PRINT("Unknown command recieved on sub assotation!");
-			throw new ExceptionBase();
+			throw ExceptionBase();
             break;
         }
     }
@@ -434,7 +433,7 @@ MoveService::SubTransferOperationSCP(
 		if( ASC_acknowledgeRelease(*subAssoc).bad())
 		{
 			D_PRINT("Release ACK not sent!");
-			throw new ExceptionBase();
+			throw ExceptionBase();
 		}
 		ASC_dropSCPAssociation(*subAssoc);
 		ASC_destroyAssociation(subAssoc);
@@ -467,7 +466,7 @@ MoveService::SubAssocCallback(void *subOpCallbackData,
         T_ASC_Network *aNet, T_ASC_Association **subAssoc)
 {
 	SubAssocCallbackSupp( subOpCallbackData, aNet,
-		subAssoc, eCallType::SINGLE_IMAGE);
+		subAssoc, SINGLE_IMAGE);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -481,7 +480,7 @@ MoveService::SubAssocCallbackWholeSet(void *subOpCallbackData,
         T_ASC_Network *aNet, T_ASC_Association **subAssoc)
 {
     SubAssocCallbackSupp( subOpCallbackData, aNet,
-		subAssoc, eCallType::IMAGE_SET);
+		subAssoc, IMAGE_SET);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -512,8 +511,8 @@ MoveService::SubAssocCallbackSupp(void *subOpCallbackData,
  */
 void
 MoveService::MoveCallback( void * /*callbackData*/,
-	T_DIMSE_C_MoveRQ *request,
-    int responseCount, T_DIMSE_C_MoveRSP *response)
+	T_DIMSE_C_MoveRQ * /*request*/,
+    int responseCount, T_DIMSE_C_MoveRSP * /*response*/)
 {
 	// there is nothing much to do.
 	// just logg it

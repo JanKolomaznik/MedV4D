@@ -25,16 +25,16 @@ namespace DicomInternal {
 			T_ASC_PresentationContextID presentationContextId, 
 			const OFString& abstractSyntax,
 			const OFList<OFString>& transferSyntaxList,
-			T_ASC_SC_ROLE proposedRole) throw(...);
+			T_ASC_SC_ROLE proposedRole) ;
 
 		static void AddStoragePresentationContexts(
-			T_ASC_Parameters *params, OFList<OFString>& sopClasses) throw(...);
+			T_ASC_Parameters *params, OFList<OFString>& sopClasses) ;
 
 		static void	AddPresentationContext(T_ASC_Parameters *params,
 			T_ASC_PresentationContextID presentationContextId,
 			const OFString& abstractSyntax,
 			const OFString& transferSyntax,
-			T_ASC_SC_ROLE proposedRole) throw(...);
+			T_ASC_SC_ROLE proposedRole);
 
 		static OFBool IsaListMember(OFList<OFString>& lst, OFString& s);
 
@@ -53,7 +53,7 @@ namespace DicomInternal {
 			T_DIMSE_StoreProgress *progress,
 			T_DIMSE_C_StoreRQ * /*req*/);
 
-		void StoreSCP(DcmDataset *data) throw(...);
+		void StoreSCP(DcmDataset *data);
 
 		void CopyNeccessaryAttribs( DcmDataset *source, DcmDataset *dest);
 
@@ -63,7 +63,7 @@ namespace DicomInternal {
 		
 		void StoreObject( 
 			const Dicom::DcmProvider::DicomObj &objectToCopyAttribsFrom,
-			Dicom::DcmProvider::DicomObj &objectToStore) throw(...);
+			Dicom::DcmProvider::DicomObj &objectToStore);
 	};
 
 }
