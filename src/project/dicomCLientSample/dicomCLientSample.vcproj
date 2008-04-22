@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="commond.lib Ws2_32.lib Mswsock.lib NetAPI32.Lib ofstd.lib dcmdata.lib dcmnet.lib dicomClientWin32d.lib"
+				AdditionalDependencies="commond.lib Ws2_32.lib Mswsock.lib NetAPI32.Lib ofstdd.lib dcmdatad.lib dcmnetd.lib dicomClientd.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\lib;..\..\lib\dcmtkLibs;&quot;$(VCInstallDir)\PlatformSDK\Lib&quot;"
 				IgnoreAllDefaultLibraries="false"
@@ -139,7 +139,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="common.lib Ws2_32.lib Mswsock.lib NetAPI32.Lib ofstd.lib dcmdata.lib dcmnet.lib dicomClientWin32.lib"
+				AdditionalDependencies="common.lib Ws2_32.lib Mswsock.lib NetAPI32.Lib ofstd.lib dcmdata.lib dcmnet.lib dicomClient.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\lib;..\..\lib\dcmtkLibs;&quot;$(VCInstallDir)\PlatformSDK\Lib&quot;"
 				GenerateDebugInformation="true"
