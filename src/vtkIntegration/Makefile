@@ -8,10 +8,10 @@ MKDIR=mkdir
 
 ########################################
 #Name of this project part
-NAME=		Imaging
+NAME=		vtkIntegration
 #Names of target sources
-TARGETS=	AbstractImage \
-		ImageFactory
+TARGETS=	\
+		DataConversion
 ########################################
 
 #Name of target
