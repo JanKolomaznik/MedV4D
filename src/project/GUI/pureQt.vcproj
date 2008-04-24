@@ -66,10 +66,10 @@
     </Configuration>
     <Configuration
       Name="Release|Win32"
-      OutputDirectory="."
+      OutputDirectory="..\..\executables\$(ProjectName)$(ConfigurationName)"
+      IntermediateDirectory="..\..\tmp\$(ProjectName)$(ConfigurationName)"
       ATLMinimizesCRunTimeLibraryUsage="false"
       ConfigurationType="1"
-      IntermediateDirectory="release\"
       UseOfMfc="0">
       <Tool
         Name="VCCLCompilerTool"
