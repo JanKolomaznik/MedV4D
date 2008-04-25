@@ -33,7 +33,7 @@
         GeneratePreprocessedFile="0"
         ObjectFile="$(IntDir)\"
         Optimization ="4"
-        PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT"
+        PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT;&quot;DEBUG_LEVEL=10&quot;"
         ProgramDataBaseFileName="$(IntDir)\"
         RuntimeLibrary="1"
         RuntimeTypeInfo="true"
@@ -44,8 +44,8 @@
         Name="VCCustomBuildTool"/>
       <Tool
         Name="VCLinkerTool"
-        AdditionalDependencies="opengl32.lib glu32.lib ..\..\lib\qt\qtmaind.lib ..\..\lib\qt\QtGuid.lib ..\..\lib\qt\QtCored.lib gdi32.lib comdlg32.lib oleaut32.lib imm32.lib winmm.lib winspool.lib ws2_32.lib ole32.lib user32.lib advapi32.lib msimg32.lib shell32.lib kernel32.lib uuid.lib"
-        AdditionalLibraryDirectories="..\..\lib\qt"
+        AdditionalDependencies="opengl32.lib glu32.lib ..\..\lib\qt\qtmaind.lib ..\..\lib\qt\QtGuid.lib ..\..\lib\qt\QtCored.lib gdi32.lib comdlg32.lib oleaut32.lib imm32.lib winmm.lib winspool.lib ws2_32.lib ole32.lib user32.lib advapi32.lib msimg32.lib shell32.lib kernel32.lib uuid.lib commond.lib dicomClientd.lib Imagingd.lib vtkIntegrationd.lib"
+        AdditionalLibraryDirectories="..\..\lib\;..\..\lib\qt;..\..\lib\vtk"
         GenerateDebugInformation="true"
         IgnoreImportLibrary="true"
         OutputFile="$(OutDir)\$(ProjectName).exe"
@@ -96,8 +96,8 @@
         Name="VCCustomBuildTool"/>
       <Tool
         Name="VCLinkerTool"
-        AdditionalDependencies="opengl32.lib glu32.lib ..\..\lib\qt\qtmain.lib ..\..\lib\qt\QtGui.lib ..\..\lib\qt\QtCore.lib gdi32.lib comdlg32.lib oleaut32.lib imm32.lib winmm.lib winspool.lib ws2_32.lib ole32.lib user32.lib advapi32.lib msimg32.lib shell32.lib kernel32.lib uuid.lib"
-        AdditionalLibraryDirectories="..\..\lib\qt"
+        AdditionalDependencies="opengl32.lib glu32.lib ..\..\lib\qt\qtmain.lib ..\..\lib\qt\QtGui.lib ..\..\lib\qt\QtCore.lib gdi32.lib comdlg32.lib oleaut32.lib imm32.lib winmm.lib winspool.lib ws2_32.lib ole32.lib user32.lib advapi32.lib msimg32.lib shell32.lib kernel32.lib uuid.lib common.lib dicomClient.lib Imaging.lib vtkIntegration.lib"
+        AdditionalLibraryDirectories="..\..\lib\;..\..\lib\qt;..\..\lib\vtk"
         GenerateDebugInformation="false"
         IgnoreImportLibrary="true"
         LinkIncremental="1"
