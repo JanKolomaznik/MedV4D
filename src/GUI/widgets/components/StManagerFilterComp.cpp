@@ -117,7 +117,6 @@ void StManagerFilterComp::search ()
                   + patientIDText + ", " + fromDateText + " )";
 
   QMessageBox::about( this, tr( "Search" ), message );
-  // provider.Find( result, patientName, patientID, modality, dateFrom );
 }
 
 

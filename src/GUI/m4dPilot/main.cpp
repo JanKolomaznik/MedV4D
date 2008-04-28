@@ -4,11 +4,6 @@
 
 #include "../../include/M4DCommon.h"
 
-// not a final solution
-#ifdef OS_WIN
-  #include "projectConfig.h"
-#endif
-
 
 int main ( int argc, char *argv[] )
 {
