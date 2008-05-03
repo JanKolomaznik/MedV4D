@@ -21,7 +21,7 @@ private :
 		const string *patientName,
 		const string *patientID,
 		const string *modality,
-		const string *dateFrom );
+		const string *date );
 
 	void GetStudyInfoQuery( 
 		DcmDataset **query,
@@ -69,8 +69,9 @@ public:
 		Dicom::DcmProvider::ResultSet &result,
 		const string &patientName,
 		const string &patientID,
-		const string &modality,
-		const string &date) ;
+		const Dicom::DcmProvider::StringVector &modalities,
+		const string &dateFrom,
+		const string &dateTo) ;
 
 	void FindStudiesAboutPatient(
 		const string &patientID,

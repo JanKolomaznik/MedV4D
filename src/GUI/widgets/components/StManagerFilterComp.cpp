@@ -129,15 +129,17 @@ void StManagerFilterComp::search ()
 	DcmProvider dcmProvider;
 	std::string patName = patientNameText.toStdString();
 	std::string patID = patientIDText.toStdString();
-	std::string modalities;
-	std::string dates;
+	DcmProvider::StringVector modalities;
+	std::string dateFrom;
+	std::string dateTo;
 
 	dcmProvider.Find(
-		resultSet,						// retval
-		patName,						// name
-		patID,							// patID
-		modalities,							// modalities
-		dates);							// dates
+		resultSet,
+		patName,
+		patID,
+		modalities,
+		dateFrom,
+		dateTo);							
   } catch( M4D::ErrorHandling::ExceptionBase &e) {
 	  std::string coToDo__je = e.what();
   } catch( std::exception &e) {

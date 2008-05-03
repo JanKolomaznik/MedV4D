@@ -62,8 +62,9 @@ namespace Dicom {
 			DcmProvider::ResultSet &result,
 			const std::string &patientName,
 			const std::string &patientID,
-			const std::string &modalities,
-			const std::string &date) ;
+			const StringVector &modalities,
+			const std::string &dateFrom,
+			const std::string &dateTo) ;
 
 		// user select any study and wants to get seriesInstanceUIDs
 		void FindStudyInfo(

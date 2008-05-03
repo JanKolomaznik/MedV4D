@@ -206,12 +206,33 @@ FindService::FindForFilter(
 		DcmProvider::ResultSet &result, 
 		const string &patientName,
 		const string &patientID,
-		const string &modality,
-		const string &date) 
+		const DcmProvider::StringVector &modalities,
+		const string &dateFrom,
+		const string & /*dateTo*/) 
 {
+	// TODO uprav date z tadeFrom a dateTo !!
+	// TODO to same s modalities
+	string modalitiesGrouped;
+
+	DcmProvider::StringVector::const_iterator it = modalities.begin();
+
+	if( it != modalities.end())
+	{
+		modalitiesGrouped.append( *it);
+		it++;
+	}
+
+	// append others
+	while( it != modalities.end())
+	{
+		modalitiesGrouped.append( (const char *) '/');
+		modalitiesGrouped.append( *it);		
+		it++;
+	}
+
 	// create query
 	DcmDataset *query = NULL;
-	GetQuery( &query, &patientName, &patientID, &modality, &date);
+	GetQuery( &query, &patientName, &patientID, &modalitiesGrouped, &dateFrom);
 
 	// issue
 	FindSupport( *query, (void *)&result, FindService::TableRowCallback);
