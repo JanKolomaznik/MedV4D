@@ -104,6 +104,12 @@ StManagerFilterComp::StManagerFilterComp ( QWidget *parent )
   setLayout( filterLayout );
 }
 
+  // TOREMOVE
+#include "Debug.h"
+#include "Log.h"
+#include "M4DCommon.h"
+#include "ExceptionBase.h"
+#include "dicomConn/M4DDICOMServiceProvider.h"
 
 void StManagerFilterComp::search ()
 {
@@ -115,6 +121,29 @@ void StManagerFilterComp::search ()
 
   QString message = "provider.Find( " + patientNameText + ", "
                   + patientIDText + ", " + fromDateText + " )";
+
+  // find usage example
+  using namespace M4D::Dicom;
+  M4D::Dicom::DcmProvider::ResultSet resultSet;
+  try {
+	DcmProvider dcmProvider;
+	std::string patName = patientNameText.toStdString();
+	std::string patID = patientIDText.toStdString();
+	std::string modalities;
+	std::string dates;
+
+	dcmProvider.Find(
+		resultSet,						// retval
+		patName,						// name
+		patID,							// patID
+		modalities,							// modalities
+		dates);							// dates
+  } catch( M4D::ErrorHandling::ExceptionBase &e) {
+	  std::string coToDo__je = e.what();
+  } catch( std::exception &e) {
+	  std::string generalEx = e.what();
+  }
+  
 
   QMessageBox::about( this, tr( "Search" ), message );
 }

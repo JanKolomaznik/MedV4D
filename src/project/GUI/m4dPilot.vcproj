@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="m4dPilot"
 	ProjectGUID="{CAFBCE49-21C9-3A1D-995B-E6FFF641C6E6}"
 	RootNamespace="m4dPilot"
@@ -73,10 +73,10 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				AdditionalDependencies="opengl32.lib glu32.lib ..\..\lib\qt\qtmaind.lib ..\..\lib\qt\QtGuid.lib ..\..\lib\qt\QtCored.lib gdi32.lib comdlg32.lib oleaut32.lib imm32.lib winmm.lib winspool.lib ws2_32.lib ole32.lib user32.lib advapi32.lib msimg32.lib shell32.lib kernel32.lib uuid.lib vtkCommond.lib vtkDICOMParserd.lib vtkFilteringd.lib vtkGenericFilteringd.lib vtkGraphicsd.lib vtkHybridd.lib vtkIOd.lib vtkImagingd.lib vtkNetCDFd.lib vtkRenderingd.lib vtkVolumeRenderingd.lib vtkWidgetsd.lib vtkexoIIcd.lib vtkexpatd.lib vtkfreetyped.lib vtkftgld.lib vtkjpegd.lib vtkpngd.lib vtksysd.lib vtktiffd.lib vtkzlibd.lib QVTKd.lib commond.lib dicomClientd.lib Imagingd.lib vtkIntegrationd.lib"
+				AdditionalDependencies="opengl32.lib glu32.lib ..\..\lib\qt\qtmaind.lib ..\..\lib\qt\QtGuid.lib ..\..\lib\qt\QtCored.lib gdi32.lib comdlg32.lib oleaut32.lib imm32.lib winmm.lib winspool.lib ws2_32.lib ole32.lib user32.lib advapi32.lib msimg32.lib shell32.lib kernel32.lib uuid.lib vtkCommond.lib vtkDICOMParserd.lib vtkFilteringd.lib vtkGenericFilteringd.lib vtkGraphicsd.lib vtkHybridd.lib vtkIOd.lib vtkImagingd.lib vtkNetCDFd.lib vtkRenderingd.lib vtkVolumeRenderingd.lib vtkWidgetsd.lib vtkexoIIcd.lib vtkexpatd.lib vtkfreetyped.lib vtkftgld.lib vtkjpegd.lib vtkpngd.lib vtksysd.lib vtktiffd.lib vtkzlibd.lib QVTKd.lib commond.lib dicomClientd.lib Imagingd.lib vtkIntegrationd.lib Mswsock.lib &quot;NetAPI32.Lib ofstdd.lib dcmdatad.lib dcmnetd.lib dicomClientd.lib"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\..\lib\;..\..\lib\qt;..\..\lib\vtk"
+				AdditionalLibraryDirectories="..\..\lib\;..\..\lib\qt;..\..\lib\vtk;..\..\lib\dcmtkLibs;&quot;$(VCInstallDir)\PlatformSDK\Lib&quot;"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=""
 				SubSystem="2"
@@ -407,7 +407,7 @@
 				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIMainWindow.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
+					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -419,19 +419,7 @@
 				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIMainWindow.cpp"
 				>
 				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIStudyManagerWidget.cpp"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
+					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -452,10 +440,10 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIVtkRenderWindowWidget.cpp"
+				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIStudyManagerWidget.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
+					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -476,10 +464,10 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="$(IntDir)\generated\moc\moc_StManagerFilterComp.cpp"
+				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIVtkRenderWindowWidget.cpp"
 				>
 				<FileConfiguration
-					Name="Release|Win32"
+					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -492,6 +480,18 @@
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="$(IntDir)\generated\moc\moc_StManagerFilterComp.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -527,7 +527,7 @@
 				RelativePath="$(IntDir)\generated\moc\moc_StManagerStudyListComp.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
+					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -539,18 +539,6 @@
 				RelativePath="$(IntDir)\generated\moc\moc_StManagerStudyListComp.cpp"
 				>
 				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="$(IntDir)\generated\rcc\qrc_m4dGUIMainWindow.cpp"
-				>
-				<FileConfiguration
 					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
@@ -572,7 +560,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="$(IntDir)\generated\rcc\qrc_m4dGUIStudyManagerWidget.cpp"
+				RelativePath="$(IntDir)\generated\rcc\qrc_m4dGUIMainWindow.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -588,6 +576,18 @@
 				>
 				<FileConfiguration
 					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="$(IntDir)\generated\rcc\qrc_m4dGUIStudyManagerWidget.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
