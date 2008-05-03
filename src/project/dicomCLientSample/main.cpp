@@ -2,6 +2,7 @@
 #include "Debug.h"
 #include "Log.h"
 #include "M4DCommon.h"
+#include "ExceptionBase.h"
 #include "dicomConn/M4DDICOMServiceProvider.h"
 
 using namespace std;
@@ -52,9 +53,8 @@ main( void)
 
 
 
-	} catch( bad_exception *e) {
-		string what = e->what();
-		delete e;
+	} catch( M4D::ErrorHandling::ExceptionBase &e) {
+		string what = e.what();
 		return -1;
 	}
 

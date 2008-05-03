@@ -130,7 +130,7 @@ M4DDicomAssociation::~M4DDicomAssociation( void)
 {
 	/* destroy the association, i.e. free memory of T_ASC_Association* structure. This */
     /* call is the counterpart of ASC_requestAssociation(...) which was called above. */
-    if( ASC_destroyAssociation( &m_assoc).bad() )
+    if( m_assoc != NULL && ASC_destroyAssociation( &m_assoc).bad() )
     {
         // TODO hlaska
     }
@@ -141,6 +141,8 @@ M4DDicomAssociation::~M4DDicomAssociation( void)
 M4DDicomAssociation::M4DDicomAssociation( string assocAddrID)
 	
 {
+	m_assoc = NULL;
+
 	// check if we have loaded config file
 	if( addressContainer.empty() )
 		InitAddressContainer();
