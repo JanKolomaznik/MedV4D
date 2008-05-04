@@ -168,7 +168,7 @@
         OutputFile="$(OutDir)\$(ProjectName).exe"
         LinkIncremental="1"
         SuppressStartupBanner="true"
-        AdditionalLibraryDirectories="..\..\lib\;..\..\lib\qt;..\..\lib\vtk"
+        AdditionalLibraryDirectories="..\..\lib\;..\..\lib\qt;..\..\lib\vtk;..\..\lib\dcmtkLibs;&quot;$(VCInstallDir)\PlatformSDK\Lib&quot;"
         GenerateDebugInformation="false"
         ProgramDatabaseFile=""
         SubSystem="2"
