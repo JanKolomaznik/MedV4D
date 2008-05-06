@@ -14,21 +14,12 @@ ImageDataTemplate< ElementType >::ImageDataTemplate(
 			unsigned short		dimension,
 			size_t			elementCount
 			) 
-	: _elementCount( elementCount ), _dimension( dimension ), 
-	_parameters( parameters ), _data( data ) 	
+	: AbstractImage( parameters, dimension, elementCount ), _data( data ) 	
 {
 	if ( _data == NULL ) {
 		//TODO handle problem
 	}
-	if ( _parameters == NULL ) {
-		//TODO handle problem
-	}
-	if ( _dimension == 0 ) {
-		//TODO handle problem
-	}
-	if ( elementCount == 0 ) {
-		//TODO handle problem
-	}
+	
 }
 
 template < typename ElementType >
@@ -111,16 +102,6 @@ ImageDataTemplate< ElementType >::Get( size_t x, size_t y, size_t z )
 	return Get( index );
 }
 //3D end--------------------------------------------
-template < typename ElementType >
-const DimensionInfo&
-ImageDataTemplate< ElementType >::GetDimensionInfo( unsigned short dim )const
-{
-	if( dim >= _dimension ) {
-		throw EWrongDimension( dim, _dimension );
-	}
-
-	return _parameters[ dim ];
-}
 
 } /*namespace Images*/
 } /*namespace M4D*/

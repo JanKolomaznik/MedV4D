@@ -39,7 +39,7 @@ protected:
 		);
 
 	Images::AbstractImage::APtr	_imageData;
-	int				_wholeExtent[6]
+	int				_wholeExtent[6];
 private:
 	m4dImageDataSource(const m4dImageDataSource&);  // Not implemented.
 	void operator=(const m4dImageDataSource&);  // Not implemented.
