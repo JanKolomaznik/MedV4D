@@ -8,6 +8,7 @@
 #include "Log.h"
 #include "Debug.h"
 #include "DataConversion.h"
+#include "ImageFactory.h"
 
 namespace M4D
 {
@@ -26,10 +27,14 @@ m4dImageDataSource::m4dImageDataSource()
 {
 	this->SetNumberOfInputPorts(0);
 
-	_wholeExtent[0] = 0;  _wholeExtent[1] = 0;
+	/*_wholeExtent[0] = 0;  _wholeExtent[1] = 0;
   	_wholeExtent[2] = 0;  _wholeExtent[3] = 0;
 	_wholeExtent[4] = 0;  _wholeExtent[5] = 0;
-	Modified();
+	Modified();*/
+
+	//Test version
+
+	SetImageData( Images::ImageFactory::CreateEmptyImage3D< unsigned char >( 30, 30, 30 ) );
 }
 
 m4dImageDataSource::~m4dImageDataSource()
