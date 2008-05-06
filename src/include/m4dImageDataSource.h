@@ -18,7 +18,6 @@ public:
 	static m4dImageDataSource *New();
 
 	vtkTypeRevisionMacro(m4dImageDataSource,vtkImageAlgorithm);
-	void PrintSelf(ostream& os, vtkIndent indent);
 
 	void
 	SetImageData( Images::AbstractImage::APtr imageData );
