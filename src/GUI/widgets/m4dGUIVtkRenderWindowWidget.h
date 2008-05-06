@@ -18,6 +18,8 @@ class m4dGUIVtkRenderWindowWidget: public QVTKWidget
     void addRenderer ( vtkRenderer *ren );
     void removeFirstRenderer ();
 
+    vtkRenderer *imageDataToRenderWindow ();
+
     // just for testing purposes - won't be in final ver.
     vtkRenderer *sphereToRenderWindow ();
     vtkRenderer *dicomToRenderWindow ( const char *dirName );
