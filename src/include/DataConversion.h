@@ -26,10 +26,15 @@ ConvertNumericTypeIDToVTKScalarType( int NumericTypeID );
 
 template< typename ElementType >
 int
-GetVTKScalarTypeIdentification();
+GetVTKScalarTypeIdentification()
+{
+	throw EImpossibleVTKConversion();
+}
+
 template<>
 int
 GetVTKScalarTypeIdentification<float>();
+
 template<>
 int
 GetVTKScalarTypeIdentification<double>();

@@ -48,7 +48,8 @@ enum NumericTypeIDs{
 
 
 template< typename NumericType >
-int GetNumericTypeID();
+int GetNumericTypeID()
+{ return NTID_VOID; }
 
 template<>
 int GetNumericTypeID<signed char>();

@@ -1,9 +1,5 @@
 #include "M4DCommon.h"
 
-template< typename NumericType >
-int GetNumericTypeID()
-{ return NTID_VOID; }
-
 template<>
 int GetNumericTypeID<signed char>()
 { return NTID_SIGNED_CHAR; }

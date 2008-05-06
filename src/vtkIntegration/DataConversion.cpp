@@ -28,12 +28,7 @@ ConvertNumericTypeIDToVTKScalarType( int NumericTypeID )
 
 }
 
-template< typename ElementType >
-int
-GetVTKScalarTypeIdentification()
-{
-	throw EImpossibleVTKConversion();
-}
+
 
 template<>
 int
