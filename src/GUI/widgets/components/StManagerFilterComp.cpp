@@ -1,10 +1,19 @@
-#include <QtGui>
-
 #include "StManagerFilterComp.h"
 
+#include <QtGui>
 
-StManagerFilterComp::StManagerFilterComp ( QWidget *parent )
-  : QWidget( parent )
+// DICOM includes:
+#include "M4DCommon.h"
+#include "ExceptionBase.h"
+#include "M4DDICOMServiceProvider.h"
+
+// DICOM namespace:
+using namespace M4D::Dicom;
+
+
+StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComponent, QWidget *parent )
+  : QWidget( parent ),
+    studyListComponent( studyListComponent )
 {
   // =-=-=-=-=-=-=-=- Buttons -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
@@ -52,8 +61,10 @@ StManagerFilterComp::StManagerFilterComp ( QWidget *parent )
   QCheckBox *toDateCheckBox   = createCheckBox( tr( "To:" ),   SLOT(toCheck())  );
 
   fromDateDateEdit = new QDateEdit( QDate::currentDate() );
+  fromDateDateEdit->setDisplayFormat( "d. M. yyyy" );
   fromDateDateEdit->setCalendarPopup( true );
   toDateDateEdit   = new QDateEdit( QDate::currentDate() );
+  toDateDateEdit->setDisplayFormat( "d. M. yyyy" );
   toDateDateEdit->setCalendarPopup( true );
 
   QSpacerItem *vertRow23Spacer = new QSpacerItem( 2, 6, QSizePolicy::Minimum, 
@@ -104,49 +115,78 @@ StManagerFilterComp::StManagerFilterComp ( QWidget *parent )
   setLayout( filterLayout );
 }
 
-  // TOREMOVE
-#include "Debug.h"
-#include "Log.h"
-#include "M4DCommon.h"
-#include "ExceptionBase.h"
-#include "dicomConn/M4DDICOMServiceProvider.h"
 
 void StManagerFilterComp::search ()
 {
   QString patientNameText = firstNameComboBox->currentText() + " "
                           + lastNameComboBox->currentText();
-
   QString patientIDText   = patientIDComboBox->currentText();
-  QString fromDateText    = fromDateDateEdit->text();
+    
+  QString fromDateText    = fromDateDateEdit->date().toString( "yyyyMMdd" );
+  QString toDateText      = toDateDateEdit->date().toString( "yyyyMMdd" );
 
-  QString message = "provider.Find( " + patientNameText + ", "
-                  + patientIDText + ", " + fromDateText + " )";
+  DcmProvider::ResultSet *resultSet     = new DcmProvider::ResultSet();
+  DcmProvider::StudyInfo *studyInfo     = new DcmProvider::StudyInfo();
+	DcmProvider::DicomObjSet *dicomObjSet = new DcmProvider::DicomObjSet();	
 
-  // find usage example
-  using namespace M4D::Dicom;
-  M4D::Dicom::DcmProvider::ResultSet resultSet;
   try {
-	DcmProvider dcmProvider;
-	std::string patName = patientNameText.toStdString();
-	std::string patID = patientIDText.toStdString();
-	DcmProvider::StringVector modalities;
-	std::string dateFrom;
-	std::string dateTo;
+	  DcmProvider dcmProvider;
+	  DcmProvider::StringVector modalities;
 
-	dcmProvider.Find(
-		resultSet,
-		patName,
-		patID,
-		modalities,
-		dateFrom,
-		dateTo);							
-  } catch( M4D::ErrorHandling::ExceptionBase &e) {
-	  std::string coToDo__je = e.what();
-  } catch( std::exception &e) {
-	  std::string generalEx = e.what();
+    dcmProvider.Find( *resultSet, patientNameText.toStdString(), 
+                      patientIDText.toStdString(), modalities,
+                      fromDateText.toStdString(), toDateText.toStdString() );	
+
+ 
+    std::vector<DcmProvider::TableRow> *r = new std::vector<DcmProvider::TableRow>();
+   
+    DcmProvider::TableRow t;
+    t.patientName = "John Doe";
+    t.modality = "MR";
+    t.patentID = "333";
+    t.patientBirthDate = "01011970";
+    t.patientSex = true;
+    t.studyDate = "01012008";
+    t.studyID = "888";
+
+    r->push_back( t );
+   
+    studyListComponent->addResultSetToStudyTable( r );
+    // ---------
+
+    if ( !resultSet->empty() )
+    {
+      DcmProvider::TableRow *row = &resultSet->at( 0 );
+
+      if ( studyListComponent ) {
+        studyListComponent->addResultSetToStudyTable( resultSet );
+      }
+
+      // -=-=-=-=-=- after clicking on the row.... -=-=-=-=-=-=-=-=-
+        
+      // find some info about selected study
+		  dcmProvider.WholeFindStudyInfo( row->patentID, row->studyID, *studyInfo );
+
+		  // now get image
+		  dcmProvider.GetImageSet( row->patentID, row->studyID, 
+                               studyInfo->begin()->first, *dicomObjSet );
+    }
+    else
+    {
+      QMessageBox::warning( this, tr( "No results" ), "No search results match your criteria" );
+    }
+  } 
+  catch ( M4D::ErrorHandling::ExceptionBase & e ) 
+  {
+	  QMessageBox::critical( this, tr( "Exception" ), e.what() );
+  } 
+  catch( std::exception &e ) 
+  {
+	  QMessageBox::critical( this, tr( "Exception" ), e.what() );
   }
   
-
+  QString message = "provider.Find( " + patientNameText + ", "
+                   + patientIDText + ", " + fromDateText + " )";
   QMessageBox::about( this, tr( "Search" ), message );
 }
 

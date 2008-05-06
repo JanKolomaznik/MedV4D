@@ -1,6 +1,6 @@
-#include <QtGui>
-
 #include "m4dGUIVtkRenderWindowWidget.h"
+
+#include <QtGui>
 
 // VTK includes - for sphereToRenderWindow and dicomToRenderWindow
 // for testing purposes only

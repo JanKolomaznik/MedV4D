@@ -1,6 +1,12 @@
+#include "StManagerStudyListComp.h"
+
 #include <QtGui>
 
-#include "StManagerStudyListComp.h"
+#include <vector>
+
+using namespace std;
+// DICOM namespace:
+using namespace M4D::Dicom;
 
 
 StManagerStudyListComp::StManagerStudyListComp ( QWidget *parent )
@@ -46,7 +52,7 @@ StManagerStudyListComp::StManagerStudyListComp ( QWidget *parent )
   remoteExamsTable = createStudyTable();
 
   studyListTab->addTab( localExamsTable, QIcon( ":/icons/local.png" ), tr( "Local Exams" ) );
-  studyListTab->addTab( remoteExamsTable,  QIcon( ":/icons/remote.png" ), tr( "Remote Exams" ) );
+  studyListTab->addTab( remoteExamsTable, QIcon( ":/icons/remote.png" ), tr( "Remote Exams" ) );
 
   // =-=-=-=-=-=-=-=- Study List -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -56,6 +62,16 @@ StManagerStudyListComp::StManagerStudyListComp ( QWidget *parent )
   studyListLayout->addWidget( studyListTab );
 
   setLayout( studyListLayout );
+}
+
+
+void StManagerStudyListComp::addResultSetToStudyTable ( const DcmProvider::ResultSet *resultSet )
+{
+  // there are more tables...we need to specify the desired one...
+
+  for ( unsigned rowNum = 0; rowNum < resultSet->size(); rowNum++ ) {
+    addRowToStudyTable( &resultSet->at( rowNum ) );
+  }
 }
 
 
@@ -74,6 +90,35 @@ QTableWidget *StManagerStudyListComp::createStudyTable ()
   table->setHorizontalHeaderLabels( labels );
 
   return table;
+}
+
+
+void StManagerStudyListComp::addRowToStudyTable ( const DcmProvider::TableRow *row )
+{
+  // there are more tables...we need to specify the desired one...
+ 
+  //int rowNum = localExamsTable->rowCount();
+  //localExamsTable->setRowCount( rowNum + 1 );
+
+  vector< QTableWidgetItem * > tableRowItems;
+  tableRowItems.push_back( new QTableWidgetItem( QString( row->patentID.c_str() ) ) );
+  tableRowItems.push_back( new QTableWidgetItem( QString( row->patientName.c_str() ) ) );
+  // Accesion:
+  tableRowItems.push_back( new QTableWidgetItem( QString( "" ) ) ); 
+  tableRowItems.push_back( new QTableWidgetItem( QString( row->modality.c_str() ) ) );
+  // Description:
+  tableRowItems.push_back( new QTableWidgetItem( QString( "" ) ) );
+  tableRowItems.push_back( new QTableWidgetItem( QString( row->studyDate.c_str() ) ) );
+  // Time:
+  tableRowItems.push_back( new QTableWidgetItem( QString( "" ) ) );
+  tableRowItems.push_back( new QTableWidgetItem( QString( row->studyID.c_str() ) ) );
+  tableRowItems.push_back( new QTableWidgetItem( QString( row->patientSex ) ) );
+  tableRowItems.push_back( new QTableWidgetItem( QString( row->patientBirthDate.c_str() ) ) );
+  // And the others....
+
+  for ( unsigned colNum = 0; colNum < tableRowItems.size(); colNum ++ ) {
+    //localExamsTable->setItem( 0, colNum, tableRowItems[colNum] );
+  }
 }
 
 

@@ -1,6 +1,6 @@
-#include <QtGui>
-
 #include "StManagerHProtocolsComp.h"
+
+#include <QtGui>
 
 
 StManagerHProtocolsComp::StManagerHProtocolsComp ( QWidget *parent )

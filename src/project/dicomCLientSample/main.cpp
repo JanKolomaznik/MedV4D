@@ -15,18 +15,24 @@ main( void)
 	DcmProvider::StudyInfo studyInfo;
 	DcmProvider::DicomObjSet obj;	
 
-	string patientName = "";
-	string patientID = "";
-	string modality = "";
-	string dateFrom = "";
+	std::string patName = "";
+	std::string patID = "";
+	DcmProvider::StringVector modalities;
+	std::string dateFrom;
+	std::string dateTo;
 
 	try {
 		// provider object
 		DcmProvider provider;
 
 		// find some patient & studies info
-		provider.Find( 
-			result, patientName, patientID, modality, dateFrom);
+		provider.Find(
+		result,
+		patName,
+		patID,
+		modalities,
+		dateFrom,
+		dateTo);							
 
 		DcmProvider::TableRow *row = &result[0];
 

@@ -1,6 +1,6 @@
-#include <QtGui>
-
 #include "m4dGUIMainWindow.h"
+
+#include <QtGui>
 
 
 m4dGUIMainWindow::m4dGUIMainWindow ()

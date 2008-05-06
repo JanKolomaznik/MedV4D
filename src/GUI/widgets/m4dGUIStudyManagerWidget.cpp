@@ -1,6 +1,6 @@
-#include <QtGui>
-
 #include "m4dGUIStudyManagerWidget.h"
+
+#include <QtGui>
 
 
 m4dGUIStudyManagerWidget::m4dGUIStudyManagerWidget ( QWidget *parent )
@@ -31,7 +31,7 @@ void m4dGUIStudyManagerWidget::createFilterGroupBox ()
 
   QVBoxLayout *filterGroupBoxLayout = new QVBoxLayout;
   filterGroupBoxLayout->setMargin( 0 );
-  filterComponent = new StManagerFilterComp;
+  filterComponent = new StManagerFilterComp( studyListComponent );
   filterGroupBoxLayout->addWidget( filterComponent );
 
   filterGroupBox->setLayout( filterGroupBoxLayout );
