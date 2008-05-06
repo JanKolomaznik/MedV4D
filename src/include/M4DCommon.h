@@ -48,60 +48,46 @@ enum NumericTypeIDs{
 
 
 template< typename NumericType >
-int GetNumericTypeID()
-{ return NTID_VOID; }
+int GetNumericTypeID();
 
 template<>
-int GetNumericTypeID<signed char>()
-{ return NTID_SIGNED_CHAR; }
+int GetNumericTypeID<signed char>();
 
 template<>
-int GetNumericTypeID<unsigned char>()
-{ return NTID_UNSIGNED_CHAR; }
+int GetNumericTypeID<unsigned char>();
 
 template<>
-int GetNumericTypeID<short>()
-{ return NTID_SHORT; }
+int GetNumericTypeID<short>();
 
 template<>
-int GetNumericTypeID<unsigned short>()
-{ return NTID_UNSIGNED_SHORT; }
+int GetNumericTypeID<unsigned short>();
 
 template<>
-int GetNumericTypeID<int>()
-{ return NTID_INT; }
+int GetNumericTypeID<int>();
 
 template<>
-int GetNumericTypeID<unsigned int>()
-{ return NTID_UNSIGNED_INT; }
+int GetNumericTypeID<unsigned int>();
 
 template<>
-int GetNumericTypeID<long>()
-{ return NTID_LONG; }
+int GetNumericTypeID<long>();
 
 template<>
-int GetNumericTypeID<unsigned long>()
-{ return NTID_UNSIGNED_LONG; }
+int GetNumericTypeID<unsigned long>();
 
 template<>
-int GetNumericTypeID<long long>()
-{ return NTID_LONG_LONG; }
+int GetNumericTypeID<long long>();
 
 template<>
-int GetNumericTypeID<unsigned long long>()
-{ return NTID_UNSIGNED_LONG_LONG; }
+int GetNumericTypeID<unsigned long long>();
 
 template<>
-int GetNumericTypeID<float>()
-{ return NTID_FLOAT; }
+int GetNumericTypeID<float>();
 
 template<>
-int GetNumericTypeID<double>()
-{ return NTID_DOUBLE; }
+int GetNumericTypeID<double>();
 
 template<>
-int GetNumericTypeID<bool>()
-{ return NTID_BOOL; }
+int GetNumericTypeID<bool>();
 
 
 #endif
