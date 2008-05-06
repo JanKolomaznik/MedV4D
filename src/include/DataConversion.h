@@ -26,80 +26,43 @@ ConvertNumericTypeIDToVTKScalarType( int NumericTypeID );
 
 template< typename ElementType >
 int
-GetVTKScalarTypeIdentification()
-{
-	throw EImpossibleVTKConversion();
-}
+GetVTKScalarTypeIdentification();
+template<>
+int
+GetVTKScalarTypeIdentification<float>();
+template<>
+int
+GetVTKScalarTypeIdentification<double>();
 
 template<>
 int
-GetVTKScalarTypeIdentification<float>()
-{
-	return VTK_FLOAT;
-}
+GetVTKScalarTypeIdentification<int>();
 
 template<>
 int
-GetVTKScalarTypeIdentification<double>()
-{
-	return VTK_DOUBLE;
-}
+GetVTKScalarTypeIdentification<unsigned int>();
 
 template<>
 int
-GetVTKScalarTypeIdentification<int>()
-{
-	return VTK_INT;
-}
+GetVTKScalarTypeIdentification<long>();
 
 template<>
 int
-GetVTKScalarTypeIdentification<unsigned int>()
-{
-	return VTK_UNSIGNED_INT;
-}
+GetVTKScalarTypeIdentification<unsigned long>();
 
 template<>
 int
-GetVTKScalarTypeIdentification<long>()
-{
-	return VTK_LONG;
-}
+GetVTKScalarTypeIdentification<short>();
+template<>
+int
+GetVTKScalarTypeIdentification<unsigned short>();
+template<>
+int
+GetVTKScalarTypeIdentification<signed char>();
 
 template<>
 int
-GetVTKScalarTypeIdentification<unsigned long>()
-{
-	return VTK_UNSIGNED_LONG;
-}
-
-template<>
-int
-GetVTKScalarTypeIdentification<short>()
-{
-	return VTK_SHORT;
-}
-
-template<>
-int
-GetVTKScalarTypeIdentification<unsigned short>()
-{
-	return VTK_UNSIGNED_SHORT;
-}
-
-template<>
-int
-GetVTKScalarTypeIdentification<signed char>()
-{
-	return VTK_SIGNED_CHAR;
-}
-
-template<>
-int
-GetVTKScalarTypeIdentification<unsigned char>()
-{
-	return VTK_UNSIGNED_CHAR;
-}
+GetVTKScalarTypeIdentification<unsigned char>();
 
 //*******************************************************************
 template< typename ElementType >

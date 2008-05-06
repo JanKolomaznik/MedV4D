@@ -28,5 +28,83 @@ ConvertNumericTypeIDToVTKScalarType( int NumericTypeID )
 
 }
 
+template< typename ElementType >
+int
+GetVTKScalarTypeIdentification()
+{
+	throw EImpossibleVTKConversion();
+}
+
+template<>
+int
+GetVTKScalarTypeIdentification<float>()
+{
+	return VTK_FLOAT;
+}
+
+template<>
+int
+GetVTKScalarTypeIdentification<double>()
+{
+	return VTK_DOUBLE;
+}
+
+template<>
+int
+GetVTKScalarTypeIdentification<int>()
+{
+	return VTK_INT;
+}
+
+template<>
+int
+GetVTKScalarTypeIdentification<unsigned int>()
+{
+	return VTK_UNSIGNED_INT;
+}
+
+template<>
+int
+GetVTKScalarTypeIdentification<long>()
+{
+	return VTK_LONG;
+}
+
+template<>
+int
+GetVTKScalarTypeIdentification<unsigned long>()
+{
+	return VTK_UNSIGNED_LONG;
+}
+
+template<>
+int
+GetVTKScalarTypeIdentification<short>()
+{
+	return VTK_SHORT;
+}
+
+template<>
+int
+GetVTKScalarTypeIdentification<unsigned short>()
+{
+	return VTK_UNSIGNED_SHORT;
+}
+
+template<>
+int
+GetVTKScalarTypeIdentification<signed char>()
+{
+	return VTK_SIGNED_CHAR;
+}
+
+template<>
+int
+GetVTKScalarTypeIdentification<unsigned char>()
+{
+	return VTK_UNSIGNED_CHAR;
+}
+
+
 }/*namespace vtkIntegration*/
 }/*namespace M4D*/

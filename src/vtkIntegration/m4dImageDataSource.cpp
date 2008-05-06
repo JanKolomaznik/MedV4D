@@ -13,6 +13,14 @@ namespace M4D
 namespace vtkIntegration
 {
 
+vtkCxxRevisionMacro(m4dImageDataSource, "$Revision: 1.00 $");
+
+m4dImageDataSource* 
+m4dImageDataSource::New()
+{
+	return new m4dImageDataSource; 
+}
+
 m4dImageDataSource::m4dImageDataSource()
 {
 	this->SetNumberOfInputPorts(0);

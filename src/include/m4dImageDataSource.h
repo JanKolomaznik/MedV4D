@@ -15,6 +15,8 @@ namespace vtkIntegration
 class m4dImageDataSource : public vtkImageAlgorithm
 {
 public:
+	static m4dImageDataSource *New();
+
 	vtkTypeRevisionMacro(m4dImageDataSource,vtkImageAlgorithm);
 	void PrintSelf(ostream& os, vtkIndent indent);
 
