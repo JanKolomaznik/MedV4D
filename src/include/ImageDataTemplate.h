@@ -59,6 +59,17 @@ public:
 	ElementType&
 	Get( size_t index );
 
+	int
+	GetElementTypeID()
+		{ return GetNumericTypeID<ElementType>(); }
+
+	size_t
+	GetSize() const
+		{ return _elementCount; }
+
+	size_t
+	GetElementCount()
+		{ return GetSize(); }
 	/**
 	 * Access methods. 
 	 * AREN'T CHECKING BOUNDS!!!

@@ -11,7 +11,8 @@ MKDIR=mkdir
 NAME=		vtkIntegration
 #Names of target sources
 TARGETS=	\
-		DataConversion
+		DataConversion\
+		m4dImageDataSource
 ########################################
 
 #Name of target
@@ -21,7 +22,7 @@ OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	../tmp/$(NAME)
 
 
-CCFLAGS=	-Wall
+CCFLAGS=	-Wall -Wno-deprecated
 #Dependecy file creation parameters
 DEP_FILE=	$(TMP_DIR)/depend
 CDEPFLAGS=	-MM 
@@ -29,7 +30,8 @@ CDEPFLAGS=	-MM
 LDFLAGS=
 ARFLAGS=	-r
 INCLUDES=	-I$(srcdir)\
-		-I../include
+		-I../include\
+		-I/usr/include/vtk-5.0
 
 
 

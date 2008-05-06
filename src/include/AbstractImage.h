@@ -21,6 +21,12 @@ public:
 
 
 	virtual ~AbstractImage()=0;
+
+	virtual int
+	GetElementTypeID()=0;
+
+	virtual size_t
+	GetElementCount()=0;
 };
 
 
