@@ -22,7 +22,10 @@ M4DDicomAssociation::GetAddress( string addressPointer)
 {
 	AddressContainer::iterator it = addressContainer.find( addressPointer);
 	if( it == addressContainer.end())
+  {
+    D_PRINT("No such address in container!");
 		throw ExceptionBase("No such address in container!");
+  }
 	else
 		return it->second;
 }
@@ -118,22 +121,27 @@ M4DDicomAssociation::InitAddressContainer( void)
 	if( f.fail() )
 		throw ExceptionBase("config file not found!!");
 
-	while( !f.eof())
-	{
-		LoadOneAddress( f);
-	}	
+  try {
+	  while( !f.eof())
+	  {
+		  LoadOneAddress( f);
+	  }	
+  } catch( ExceptionBase &e) {
+    LOG( "config.cfg malformed (" << e.what() << ")!" );
+    throw;
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////
 
 M4DDicomAssociation::~M4DDicomAssociation( void)
 {
-	/* destroy the association, i.e. free memory of T_ASC_Association* structure. This */
-    /* call is the counterpart of ASC_requestAssociation(...) which was called above. */
-    if( m_assoc != NULL && ASC_destroyAssociation( &m_assoc).bad() )
-    {
-        // TODO hlaska
-    }
+  /* destroy the association, i.e. free memory of T_ASC_Association* structure. This */
+  /* call is the counterpart of ASC_requestAssociation(...) which was called above. */
+  if( m_assoc != NULL && ASC_destroyAssociation( &m_assoc).bad() )
+  {
+    LOG( "Assotiation destry failed. And what?");
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -151,81 +159,86 @@ M4DDicomAssociation::M4DDicomAssociation( string assocAddrID)
 	this->m_assocAddr = GetAddress( assocAddrID);
 
 	DIC_NODENAME localHost;
-    DIC_NODENAME peerHost;
+  DIC_NODENAME peerHost;
 
 	/* initialize asscociation parameters, i.e. create an instance of T_ASC_Parameters*. */
-    OFCondition cond = ASC_createAssociationParameters(&m_assocParams, ASC_DEFAULTMAXPDU);
-    if (cond.bad())	
+  OFCondition cond = ASC_createAssociationParameters(&m_assocParams, ASC_DEFAULTMAXPDU);
+  if (cond.bad())	
 	{
 		D_PRINT( "Assoc params could not be created!");
-		throw ExceptionBase();
+		throw ExceptionBase("Assoc params could not be created!");
 	}
 
-    /* sets this application's title and the called application's title in the params */
-    /* structure. The default values to be set here are "STORESCU" and "ANY-SCP". */
+  /* sets this application's title and the called application's title in the params */
+  /* structure. The default values to be set here are "STORESCU" and "ANY-SCP". */
 	ASC_setAPTitles(m_assocParams, 
-		m_assocAddr->callingAPTitle.c_str(),
-		m_assocAddr->calledDBName.c_str(),
-		NULL);
+	m_assocAddr->callingAPTitle.c_str(),
+	m_assocAddr->calledDBName.c_str(),
+	NULL);
 
-    /* Set the transport layer type (type of network connection) in the params */
-    /* structure. The default is an insecure connection; where OpenSSL is  */
-    /* available the user is able to request an encrypted,secure connection. */
+  /* Set the transport layer type (type of network connection) in the params */
+  /* structure. The default is an insecure connection; where OpenSSL is  */
+  /* available the user is able to request an encrypted,secure connection. */
 #define SECURED false
-    cond = ASC_setTransportLayerType(m_assocParams, SECURED);
-    if (cond.bad())
+  cond = ASC_setTransportLayerType(m_assocParams, SECURED);
+  if (cond.bad())
 	{
 		D_PRINT( "Security policy setup failed!");
 		throw ExceptionBase();
 	}
 
-    /* Figure out the presentation addresses and copy the */
-    /* corresponding values into the association parameters.*/
-    gethostname(localHost, sizeof(localHost) - 1);
-	sprintf(peerHost, "%s:%d", 
-		m_assocAddr->calledServerName.c_str(), m_assocAddr->calledServerPort);
-    ASC_setPresentationAddresses(m_assocParams, localHost, peerHost);
+  /* Figure out the presentation addresses and copy the */
+  /* corresponding values into the association parameters.*/
+  gethostname(localHost, sizeof(localHost) - 1);
+  sprintf(peerHost, "%s:%d", 
+	  m_assocAddr->calledServerName.c_str(), m_assocAddr->calledServerPort);
+  ASC_setPresentationAddresses(m_assocParams, localHost, peerHost);
 
-    /* Set the presentation contexts which will be negotiated */
-    /* when the network connection will be established */
+  /* Set the presentation contexts which will be negotiated */
+  /* when the network connection will be established */
 	AddPresentationContext( m_assocParams);
 }
 
 void
 M4DDicomAssociation::Request( T_ASC_Network *net) 
 {
-	/* dump presentation contexts if required */
-    D_PRINT("Request Parameters");
-    ASC_dumpParameters(m_assocParams, LOUT);
+#ifdef _DEBUG
+  // dump presentation contexts if required
+  D_PRINT("Request Parameters");
+  ASC_dumpParameters(m_assocParams, DOUT);
+#endif
 
-    /* create association, i.e. try to establish a network connection to another */
-    /* DICOM application. This call creates an instance of T_ASC_Association*. */
+  /* create association, i.e. try to establish a network connection to another */
+  /* DICOM application. This call creates an instance of T_ASC_Association*. */
 	D_PRINT("Requesting Association");
 
 	OFCondition cond = ASC_requestAssociation(net, m_assocParams, &m_assoc);
-    if (cond.bad()) {
-        if (cond == DUL_ASSOCIATIONREJECTED) {
-            T_ASC_RejectParameters rej;
-            ASC_getRejectParameters(m_assocParams, &rej);
-			D_PRINT("Association Rejected due this params:");
-            ASC_printRejectParameters(LOUT, &rej);
-			throw ExceptionBase("Assotiation rejected!");
-        } else {
-            D_PRINT("Association Request Failed");
-			throw ExceptionBase("Association Request Failed!");
-        }
+  if (cond.bad()) 
+  {
+    if (cond == DUL_ASSOCIATIONREJECTED) 
+    {
+      T_ASC_RejectParameters rej;
+      ASC_getRejectParameters(m_assocParams, &rej);
+		  LOG("Association Rejected due this params:");
+      ASC_printRejectParameters(LOUT, &rej);
+		  throw ExceptionBase("Assotiation rejected!");
+    } else {
+      D_PRINT("Association Request Failed");
+		  throw ExceptionBase("Association Request Failed!");
     }
+  }
 
-    D_PRINT("Association Parameters Negotiated");
+  D_PRINT("Association Parameters Negotiated");
 
-    /* count the presentation contexts which have been accepted by the SCP */
-    /* If there are none, finish the execution */
-    if (ASC_countAcceptedPresentationContexts(m_assocParams) == 0) {
-		D_PRINT("No Acceptable Presentation Contexts");
-        throw ExceptionBase("No Acceptable Presentation Contexts");
-    }
+  /* count the presentation contexts which have been accepted by the SCP */
+  /* If there are none, finish the execution */
+  if (ASC_countAcceptedPresentationContexts(m_assocParams) == 0) 
+  {
+	  D_PRINT("No Acceptable Presentation Contexts");
+    throw ExceptionBase("No Acceptable Presentation Contexts");
+  }
 
-    /* dump general information concerning the establishment 
+  /* dump general information concerning the establishment 
 	of the network connection if required */
 	LOG("Association Accepted (Max Send PDV: " << m_assoc->sendPDVLength << ")");
 }
@@ -308,9 +321,9 @@ M4DDicomAssociation::Abort(void)
 
 	if( ASC_abortAssociation( m_assoc).bad())
 	{
-        D_PRINT("Association Abort Failed");
+    D_PRINT("Association Abort Failed");
 		throw ExceptionBase("Association Abort Failed");
-    }
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -318,13 +331,13 @@ M4DDicomAssociation::Abort(void)
 void
 M4DDicomAssociation::Release(void)
 {
-    LOG("Releasing Association");
+  LOG("Releasing Association" << std::endl << std::endl );
 
 	if( ASC_releaseAssociation(m_assoc).bad())
 	{
-        D_PRINT("Association Release Failed!");
-        throw ExceptionBase("Association Release Failed");
-    }
+    D_PRINT("Association Release Failed!");
+    throw ExceptionBase("Association Release Failed");
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -336,10 +349,11 @@ M4DDicomAssociation::FindPresentationCtx( void)
 		ASC_findAcceptedPresentationContextID(
 			m_assoc,
 			m_assocAddr->transferModel.c_str() );
-    if (presId == 0) {
-        D_PRINT( "No presentation context");
-        throw ExceptionBase("No presentation ctx");
-    }
+
+  if (presId == 0) {
+    D_PRINT( "No presentation context");
+    throw ExceptionBase("No presentation ctx");
+  }
 	return presId;
 }
 

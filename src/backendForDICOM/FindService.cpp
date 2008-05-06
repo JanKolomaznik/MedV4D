@@ -9,6 +9,8 @@
 #include "AbstractService.h"
 #include "FindService.h"
 
+using namespace M4D::ErrorHandling;
+
 namespace M4D
 {
 using namespace Dicom;
@@ -129,8 +131,13 @@ FindService::FindSupport(
 	void *data,
 	DIMSE_FindUserCallback callBack) 
 {
-	// request assoc to server
-	m_assocToServer->Request( m_net);
+  try {
+	  // request assoc to server
+	  m_assocToServer->Request( m_net);
+  } catch( ExceptionBase &e) {
+    LOG( "C-FIND operation: " << e.what());
+    throw;
+  }
 
 	DIC_US msgId = m_assocToServer->GetAssociation()->nextMsgID++;
     T_DIMSE_C_FindRQ req;
@@ -154,7 +161,12 @@ FindService::FindSupport(
     //callbackData.presId = presId;
 
 	LOG( "Find-SCU REQUEST");
-    queryDataSet.print(LOUT);
+
+#ifdef _DEBUG
+  D_PRINT( "Find-SCU REQUEST");
+  D_PRINT( "-------------------");
+  queryDataSet.print(LOUT);
+#endif
 
 #define FIND_OPER_TIMEOUT 0
 
@@ -166,20 +178,25 @@ FindService::FindSupport(
 		DIMSE_BLOCKING, FIND_OPER_TIMEOUT,
 		&rsp, &statusDetail);
 
-    /* dump some more general information */
-    if (cond == EC_Normal) {
-		LOG( "Response: " << DU_cfindStatusString(rsp.DimseStatus));
-    } else {
-        D_PRINT("Find Failed, query keys:");
-        queryDataSet.print(LOUT);
-    }
+  /* dump some more general information */
+  if (cond == EC_Normal) 
+  {
+	  LOG( "Response: " << DU_cfindStatusString(rsp.DimseStatus));
+  } else {
+    LOG("Find Failed, query keys:");
+    queryDataSet.print(LOUT);
+  }
 
-    /* dump status detail information if there is some */
-    if (statusDetail != NULL) {
-        D_PRINT("Status Detail:");
-        statusDetail->print(LOUT);
-        delete statusDetail;
-    }
+  /* dump status detail information if there is some */
+  if (statusDetail != NULL) 
+  {
+#ifdef _DEBUG
+    D_PRINT("Status Detail:");
+    statusDetail->print(LOUT);
+#endif
+    
+    delete statusDetail;
+  }
 
 	m_assocToServer->Release();
 }
@@ -328,6 +345,7 @@ FindService::TableRowCallback(
 		static_cast<DcmProvider::ResultSet *>(callbackData);
 
 	rs->push_back(*row);
+  D_PRINT( "Next patient record arrived ...");
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -388,6 +406,7 @@ FindService::WholeStudyInfoCallback(
 
 	// insert imageID
 	setImages->push_back( imageID);
+  D_PRINT( "Next record into study info arrived ...");
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -426,6 +445,7 @@ FindService::StudyInfoCallback(
 		static_cast<DcmProvider::StringVector *>(callbackData);
 
 	setInfo->push_back( setID);
+  D_PRINT( "Next record into study info arrived ...");
 }
 
 } // namespace

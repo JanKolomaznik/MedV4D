@@ -114,8 +114,13 @@ void
 MoveService::MoveSupport( DcmDataset *query,
 	void *data, enum eCallType type) 
 {
-	// request assoc to server
-	m_assocToServer->Request(m_net);
+  try {
+	  // request assoc to server
+	  m_assocToServer->Request(m_net);
+  } catch( ExceptionBase &e) {
+    LOG( "C-MOVE operation: " << e.what());
+    throw;
+  }
 
 	T_ASC_PresentationContextID presId;
     T_DIMSE_C_MoveRQ    req;
@@ -170,22 +175,27 @@ MoveService::MoveSupport( DcmDataset *query,
 		break;
 	}    
 
-    if (cond == EC_Normal) {
-		LOG( "Move response");
-        if (rspIds != NULL) {
-            D_PRINT("Response Identifiers:\n");
-            rspIds->print(LOUT);
-        }
-    } else {
-        D_PRINT("Move Failed:");
+  if (cond == EC_Normal) 
+  {
+	  LOG( "Move operation accepted ... image transmission pending ...");
+#ifdef _DEBUG
+    if (rspIds != NULL) 
+    {
+        D_PRINT("Response Identifiers:\n");
+        rspIds->print(LOUT);
     }
-    if (statusDetail != NULL) {
-        D_PRINT("  Status Detail:\n");
-        statusDetail->print(LOUT);
-        delete statusDetail;
-    }
+#endif
+  } else {
+    LOG("Move Failed ...");
+  }
+  if (statusDetail != NULL) 
+  {
+    LOG("  Status Detail:\n");
+    statusDetail->print(LOUT);
+    delete statusDetail;
+  }
 
-    if (rspIds != NULL) delete rspIds;
+  if (rspIds != NULL) delete rspIds;
 
 	m_assocToServer->Release();
 }

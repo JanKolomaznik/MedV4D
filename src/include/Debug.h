@@ -48,7 +48,7 @@ extern std::ostream *pdout;
 			<< ":" << ARG << std::endl;
 	#else
 		#define D_PRINT( ARG )	\
-			DOUT <<ARG;
+			DOUT << ARG << std::endl;
 	#endif /*DEBUG_ADITIONAL_INFO*/
 
 #else
