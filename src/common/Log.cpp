@@ -1,9 +1,13 @@
 #include "Log.h"
 #include <iostream>
+#include <fstream>
 #include <iomanip>
 #include <ctime>
 
-std::ostream *logStream = &std::cout;
+std::ofstream logFile( "Log.txt" );
+
+std::ostream *logStream = &logFile;
+//std::ostream *logStream = &std::cout;
 
 std::ostream &
 operator<<( std::ostream & stream, const LogFormatter & logFormater )

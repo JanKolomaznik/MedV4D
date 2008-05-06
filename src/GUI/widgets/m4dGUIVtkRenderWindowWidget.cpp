@@ -74,7 +74,7 @@ vtkRenderer *m4dGUIVtkRenderWindowWidget::imageDataToRenderWindow ()
   vtkVolumeProperty *volumeProperty = vtkVolumeProperty::New();
   volumeProperty->SetColor( colorTransferFunction );
   volumeProperty->SetScalarOpacity( opacityTransferFunction );
-  volumeProperty->ShadeOn(); 
+  //volumeProperty->ShadeOn(); 
   volumeProperty->SetInterpolationTypeToLinear();
 
   vtkVolumeRayCastMapper *volumeMapper = vtkVolumeRayCastMapper::New();

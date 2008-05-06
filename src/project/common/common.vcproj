@@ -38,7 +38,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\..\include\;..\..\common\"
-				PreprocessorDefinitions="&quot;DEBUG_LEVEL=10&quot;"
+				PreprocessorDefinitions="WINDOWS,_DEBUG,UNICODE,WIN32,&quot;DEBUG_LEVEL=10&quot;"
 				MinimalRebuild="false"
 				RuntimeLibrary="1"
 			/>

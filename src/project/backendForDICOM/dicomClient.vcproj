@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\backendForDICOM\include;..\..\include\DICOMConn;..\..\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;&quot;DEBUG_LEVEL=10&quot;"
+				PreprocessorDefinitions="WINDOWS,_DEBUG,UNICODE,WIN32,&quot;DEBUG_LEVEL=10&quot;"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="1"

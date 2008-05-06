@@ -28,7 +28,70 @@ ConvertNumericTypeIDToVTKScalarType( int NumericTypeID )
 
 }
 
+template< typename ElementType >
+void
+TryFillVTKImageFromM4DImage( vtkImageData *vtkImage, Images::AbstractImage::APtr m4dImage )
+{
+	Images::ImageDataTemplate<ElementType>* castedImage = 
+			dynamic_cast<Images::ImageDataTemplate<ElementType>*>( m4dImage.get() );
 
+	if( castedImage == NULL ) {
+		throw EImpossibleVTKConversion();
+	}
+	FillVTKImageDataFromImageData< ElementType >( vtkImage, *castedImage );
+}
+
+void
+FillVTKImageFromM4DImage( vtkImageData *vtkImage, Images::AbstractImage::APtr m4dImage )
+{
+	switch ( m4dImage->GetElementTypeID() ) {
+
+	case NTID_VOID:
+		throw EImpossibleVTKConversion();
+		break;
+	case NTID_SIGNED_CHAR:
+		TryFillVTKImageFromM4DImage< signed char >( vtkImage, m4dImage );
+		break;
+	case NTID_UNSIGNED_CHAR:
+		TryFillVTKImageFromM4DImage< unsigned char >( vtkImage, m4dImage );
+		break;
+	case NTID_SHORT:
+		TryFillVTKImageFromM4DImage< short >( vtkImage, m4dImage );
+		break;
+	case NTID_UNSIGNED_SHORT:
+		TryFillVTKImageFromM4DImage< unsigned short >( vtkImage, m4dImage );
+		break;
+	case NTID_INT:
+		TryFillVTKImageFromM4DImage< int >( vtkImage, m4dImage );
+		break;
+	case NTID_UNSIGNED_INT:
+		TryFillVTKImageFromM4DImage< unsigned int >( vtkImage, m4dImage );
+		break;
+	case NTID_LONG:
+		TryFillVTKImageFromM4DImage< long >( vtkImage, m4dImage );
+		break;
+	case NTID_UNSIGNED_LONG:
+		TryFillVTKImageFromM4DImage< unsigned long >( vtkImage, m4dImage );
+		break;
+	case NTID_LONG_LONG:
+		TryFillVTKImageFromM4DImage< long long >( vtkImage, m4dImage );
+		break;
+	case NTID_UNSIGNED_LONG_LONG:
+		TryFillVTKImageFromM4DImage< unsigned long long >( vtkImage, m4dImage );
+		break;
+	case NTID_FLOAT:
+		TryFillVTKImageFromM4DImage< float >( vtkImage, m4dImage );
+		break;
+	case NTID_DOUBLE:
+		TryFillVTKImageFromM4DImage< double >( vtkImage, m4dImage );
+		break;
+	default:
+		throw EImpossibleVTKConversion();
+		break;
+	}
+
+	return;
+}
 
 template<>
 int

@@ -2,6 +2,9 @@
 
 #include <QtGui>
 
+#include "Log.h"
+#include "Debug.h"
+
 
 m4dGUIMainWindow::m4dGUIMainWindow ()
 {

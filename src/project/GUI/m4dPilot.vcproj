@@ -46,11 +46,11 @@
 				AdditionalOptions="-Zm200 -w34100 -w34189 -Zm200 -w34100 -w34189 -w34100 -w34189"
 				Optimization="4"
 				AdditionalIncludeDirectories="$(IntDir)\generated\uic;$(IntDir)\generated\moc;..\..\include\qt\headers\QtCore;..\..\include\qt\headers\QtGui;..\..\include\qt\headers;.;.\debug;.\qt\win32-msvc2005;..\..\include;..\..\include\qt;..\..\include\vtk;..\..\include\dicomConn"
-				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT;&quot;DEBUG_LEVEL=10&quot;"
+				PreprocessorDefinitions="_WINDOWS,_DEBUG,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT;&quot;DEBUG_LEVEL=10&quot;"
 				GeneratePreprocessedFile="0"
 				ExceptionHandling="1"
 				RuntimeLibrary="1"
-				BufferSecurityCheck="false"
+				BufferSecurityCheck="true"
 				TreatWChar_tAsBuiltInType="false"
 				RuntimeTypeInfo="true"
 				AssemblerListingLocation="$(IntDir)\"
@@ -73,7 +73,8 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				AdditionalDependencies="opengl32.lib glu32.lib ..\..\lib\qt\qtmaind.lib ..\..\lib\qt\QtGuid.lib ..\..\lib\qt\QtCored.lib imm32.lib winmm.lib ws2_32.lib msimg32.lib vtkCommond.lib vtkDICOMParserd.lib vtkFilteringd.lib vtkGenericFilteringd.lib vtkGraphicsd.lib vtkHybridd.lib vtkIOd.lib vtkImagingd.lib vtkNetCDFd.lib vtkRenderingd.lib vtkVolumeRenderingd.lib vtkWidgetsd.lib vtkexoIIcd.lib vtkexpatd.lib vtkfreetyped.lib vtkftgld.lib vtkjpegd.lib vtkpngd.lib vtksysd.lib vtktiffd.lib vtkzlibd.lib QVTKd.lib commond.lib dicomClientd.lib Imagingd.lib vtkIntegrationd.lib Mswsock.lib NetAPI32.lib ofstdd.lib dcmdatad.lib dcmnetd.lib"
+				AdditionalOptions="/verbose"
+				AdditionalDependencies="opengl32.lib glu32.lib ..\..\lib\qt\qtmaind.lib ..\..\lib\qt\QtGuid.lib ..\..\lib\qt\QtCored.lib winmm.lib imm32.lib ws2_32.lib msimg32.lib vtkCommond.lib vtkDICOMParserd.lib vtkFilteringd.lib vtkGenericFilteringd.lib vtkGraphicsd.lib vtkHybridd.lib vtkIOd.lib vtkImagingd.lib vtkNetCDFd.lib vtkRenderingd.lib vtkVolumeRenderingd.lib vtkWidgetsd.lib vtkexoIIcd.lib vtkexpatd.lib vtkfreetyped.lib vtkftgld.lib vtkjpegd.lib vtkpngd.lib vtksysd.lib vtktiffd.lib vtkzlibd.lib QVTKd.lib commond.lib dicomClientd.lib Imagingd.lib vtkIntegrationd.lib Mswsock.lib NetAPI32.lib ofstdd.lib dcmdatad.lib dcmnetd.lib"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\lib\;..\..\lib\qt;..\..\lib\vtk;..\..\lib\dcmtkLibs;&quot;$(VCInstallDir)\PlatformSDK\Lib&quot;"
@@ -407,7 +408,7 @@
 				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIMainWindow.cpp"
 				>
 				<FileConfiguration
-					Name="Release|Win32"
+					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -419,19 +420,7 @@
 				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIMainWindow.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIStudyManagerWidget.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
+					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -452,10 +441,10 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIVtkRenderWindowWidget.cpp"
+				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIStudyManagerWidget.cpp"
 				>
 				<FileConfiguration
-					Name="Release|Win32"
+					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -476,10 +465,10 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="$(IntDir)\generated\moc\moc_StManagerFilterComp.cpp"
+				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIVtkRenderWindowWidget.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
+					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -492,6 +481,18 @@
 				>
 				<FileConfiguration
 					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="$(IntDir)\generated\moc\moc_StManagerFilterComp.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -527,7 +528,7 @@
 				RelativePath="$(IntDir)\generated\moc\moc_StManagerStudyListComp.cpp"
 				>
 				<FileConfiguration
-					Name="Release|Win32"
+					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -539,18 +540,6 @@
 				RelativePath="$(IntDir)\generated\moc\moc_StManagerStudyListComp.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="$(IntDir)\generated\rcc\qrc_m4dGUIMainWindow.cpp"
-				>
-				<FileConfiguration
 					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
@@ -572,7 +561,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="$(IntDir)\generated\rcc\qrc_m4dGUIStudyManagerWidget.cpp"
+				RelativePath="$(IntDir)\generated\rcc\qrc_m4dGUIMainWindow.cpp"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -588,6 +577,18 @@
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="$(IntDir)\generated\rcc\qrc_m4dGUIStudyManagerWidget.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool

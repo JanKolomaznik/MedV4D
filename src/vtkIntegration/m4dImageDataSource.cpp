@@ -5,7 +5,8 @@
 #include "vtkInformationVector.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
 
-
+#include "Log.h"
+#include "Debug.h"
 #include "DataConversion.h"
 
 namespace M4D
@@ -25,9 +26,9 @@ m4dImageDataSource::m4dImageDataSource()
 {
 	this->SetNumberOfInputPorts(0);
 
-	_wholeExtent[0] = 0;  _wholeExtent[1] = 200;
-  	_wholeExtent[2] = 0;  _wholeExtent[3] = 200;
-	_wholeExtent[4] = 0;  _wholeExtent[5] = 200;
+	_wholeExtent[0] = 0;  _wholeExtent[1] = 0;
+  	_wholeExtent[2] = 0;  _wholeExtent[3] = 0;
+	_wholeExtent[4] = 0;  _wholeExtent[5] = 0;
 	Modified();
 }
 
@@ -42,10 +43,15 @@ m4dImageDataSource::SetImageData( Images::AbstractImage::APtr imageData )
 	//TODO Check
 	_imageData = imageData;
 
-	_wholeExtent[0] = 0;  _wholeExtent[1] = _imageData->GetDimensionInfo( 0 ).size-1;
-  	_wholeExtent[2] = 0;  _wholeExtent[3] = _imageData->GetDimensionInfo( 1 ).size-1;
-	_wholeExtent[4] = 0;  _wholeExtent[5] = _imageData->GetDimensionInfo( 2 ).size-1;
-
+	if( !_imageData ) {
+		_wholeExtent[0] = 0;  _wholeExtent[1] = 0;
+  		_wholeExtent[2] = 0;  _wholeExtent[3] = 0;
+		_wholeExtent[4] = 0;  _wholeExtent[5] = 0;
+	} else {
+		_wholeExtent[0] = 0;  _wholeExtent[1] = _imageData->GetDimensionInfo( 0 ).size-1;
+  		_wholeExtent[2] = 0;  _wholeExtent[3] = _imageData->GetDimensionInfo( 1 ).size-1;
+		_wholeExtent[4] = 0;  _wholeExtent[5] = _imageData->GetDimensionInfo( 2 ).size-1;
+	}
 	Modified();
 }
 
@@ -58,9 +64,6 @@ m4dImageDataSource::RequestInformation (
 {
 	vtkInformation* outInfo = outputVector->GetInformationObject(0);
 	if( !_imageData ) {
-		/*outInfo->Set(vtkDataObject::SCALAR_TYPE(),VTK_DOUBLE);
-		outInfo->Set(vtkDataObject::SPACING(),spacing,3);
-		outInfo->Set(vtkDataObject::ORIGIN(),origin,3)*/
 		vtkDataObject::SetPointDataActiveScalarInfo(outInfo, VTK_DOUBLE, 1);
 		return 1;
 	}
@@ -70,14 +73,9 @@ m4dImageDataSource::RequestInformation (
 
 	vtkDataObject::SetPointDataActiveScalarInfo(
 			outInfo, 
-			VTK_UNSIGNED_SHORT,
-			1
-			);
-	/*vtkDataObject::SetPointDataActiveScalarInfo(
-			outInfo, 
 			ConvertNumericTypeIDToVTKScalarType( _imageData->GetElementTypeID() ), 
 			1
-			);*/
+			);
 	return 1;
 }	
 
@@ -101,27 +99,13 @@ m4dImageDataSource::RequestData(
 			);
 	output->AllocateScalars();
 
-	//TODO Fill data set
-
-
-	vtkIdType IncX, IncY, IncZ;
-	
-	output->GetIncrements(IncX, IncY, IncZ);
-	unsigned short *iPtr = (unsigned short*)output->GetScalarPointer();
-
-	for(size_t idxZ = 0; idxZ < _wholeExtent[5]; ++idxZ)
-	{
-		for(size_t idxY = 0; idxY < _wholeExtent[3]; ++idxY)
-		{
-			for(size_t idxX = 0; idxX < _wholeExtent[1]; ++idxX)
-			{
-				*iPtr = (idxZ + idxY + idxX)%255;
-				++iPtr;
-			}
-			iPtr += IncY;
-		}
-		iPtr += IncZ;
+	//We don't have data for convesion.
+	if( !_imageData ) {
+		return 1;
 	}
+
+	//Fill data set
+	FillVTKImageFromM4DImage( output, _imageData );
 
 	return 1;
 }

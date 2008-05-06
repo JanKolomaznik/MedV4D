@@ -24,6 +24,11 @@ class EImpossibleVTKConversion: public ErrorHandling::ExceptionBase
 int
 ConvertNumericTypeIDToVTKScalarType( int NumericTypeID );
 
+void
+FillVTKImageFromM4DImage( vtkImageData *vtkImage, Images::AbstractImage::APtr m4dImage );
+
+
+
 template< typename ElementType >
 int
 GetVTKScalarTypeIdentification()
@@ -90,21 +95,19 @@ FillVTKImageDataFromImageData(
 		const Images::ImageDataTemplate< ElementType >	&image 
 		)
 {
-	size_t width, height, depth;
+	size_t width	= image.GetDimensionInfo( 0 ).size;
+	size_t height	= image.GetDimensionInfo( 1 ).size;
+	size_t depth	= image.GetDimensionInfo( 2 ).size;	
+
 	vtkIdType IncX, IncY, IncZ;
+	
+	int	extent[6];
+	extent[0] = 0; extent[1] = width - 1;
+	extent[2] = 0; extent[3] = height - 1;
+	extent[4] = 0; extent[5] = depth - 1;
 
-	width	= image.GetDimensionInfo( 0 ).size;
-	height	= image.GetDimensionInfo( 1 ).size;
-	depth	= image.GetDimensionInfo( 2 ).size;	
-
-	//imageData->SetSpacing(voxelsize.x, voxelsize.y, voxelsize.z);
-	imageData->SetDimensions(width, height, depth);
-
-	SetVTKImageDataScalarType< ElementType >( *imageData );
-
-	imageData->GetIncrements(IncX, IncY, IncZ);
-
-	ElementType* iPtr = (ElementType*)imageData->GetScalarPointer();
+	imageData->GetContinuousIncrements( extent, IncX, IncY, IncZ );
+	ElementType *iPtr = (ElementType*)imageData->GetScalarPointer();
 
 	for(size_t idxZ = 0; idxZ < depth; ++idxZ)
 	{
@@ -119,8 +122,6 @@ FillVTKImageDataFromImageData(
 		}
 		iPtr += IncZ;
 	}
-	//std::cout << IncX << ";  " << IncY << ";  " << IncZ << ";  " << std::endl;
-
 }
 
 /**
@@ -137,10 +138,14 @@ CreateVTKImageDataFromImageData(
 	vtkImageData* imageData = vtkImageData::New();
 
 	try {	
+		SetVTKImageDataScalarType< ElementType >( *imageData );
+
+		//TODO - prepare DataSet
+
 		FillVTKImageDataFromImageData( imageData, image );
 	}
 	catch(...) {
-		//Free unused data and throw exception again.
+		//Unallocate unused data and throw exception again.
 		delete imageData;
 		throw;
 	}
