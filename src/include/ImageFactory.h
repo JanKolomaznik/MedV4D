@@ -1,6 +1,7 @@
 #ifndef _IMAGE_FACTORY_H
 #define _IMAGE_FACTORY_H
 
+#include "AbstractImage.h"
 #include "ImageDataTemplate.h"
 
 #include "dicomConn/M4DDICOMServiceProvider.h"
@@ -26,12 +27,29 @@ public:
 			);
 
 	template< typename ElementType >
+	static typename ImageDataTemplate< ElementType >::Ptr
+	CreateEmptyImage2DTyped( 
+			size_t		width, 
+			size_t		height
+			);
+
+	template< typename ElementType >
 	static AbstractImage::APtr 
 	CreateEmptyImage3D( 
 			size_t		width, 
 			size_t		height, 
 			size_t		depth
 			);
+
+	template< typename ElementType >
+	static typename ImageDataTemplate< ElementType >::Ptr 
+	CreateEmptyImage3DTyped( 
+			size_t		width, 
+			size_t		height, 
+			size_t		depth
+			);
+
+
 
 	static AbstractImage::APtr 
 	CreateImageFromDICOM( Dicom::DcmProvider::DicomObjSetPtr dicomObjects );

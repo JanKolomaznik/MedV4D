@@ -24,6 +24,23 @@ ImageFactory::CreateEmptyImage2D(
 			size_t		height
 			)
 {
+	ImageDataTemplate< ElementType >::Ptr ptr = 
+		ImageFactory::CreateEmptyImage2DTyped< ElementType >( width, height );
+
+	AbstractImage::APtr aptr = 
+		boost::static_pointer_cast
+		< AbstractImage, ImageDataTemplate<ElementType> >( ptr );
+
+	return aptr;
+}
+
+template< typename ElementType >
+static typename ImageDataTemplate< ElementType >::Ptr 
+ImageFactory::CreateEmptyImage2DTyped( 
+			size_t		width, 
+			size_t		height
+			)
+{
 	//TODO exception handling
 	size_t size = width * height;
 	
@@ -40,12 +57,31 @@ ImageFactory::CreateEmptyImage2D(
 		new ImageDataTemplate< ElementType >( array, info, 2, size );
 
 	//Returning smart pointer to abstract image class.
-	return AbstractImage::APtr( newImage );
+	return ImageDataTemplate< ElementType >::Ptr( newImage );
 }
 
 template< typename ElementType >
 AbstractImage::APtr 
 ImageFactory::CreateEmptyImage3D( 
+			size_t		width, 
+			size_t		height, 
+			size_t		depth
+			)
+{
+	ImageDataTemplate< ElementType >::Ptr ptr = 
+		ImageFactory::CreateEmptyImage3DTyped< ElementType >( width, height, depth );
+
+	AbstractImage::APtr aptr = 
+		boost::static_pointer_cast
+		< AbstractImage, ImageDataTemplate<ElementType> >( ptr );
+
+	return aptr;
+}
+
+
+template< typename ElementType >
+static typename ImageDataTemplate< ElementType >::Ptr 
+ImageFactory::CreateEmptyImage3DTyped( 
 			size_t		width, 
 			size_t		height, 
 			size_t		depth
@@ -68,7 +104,7 @@ ImageFactory::CreateEmptyImage3D(
 		new ImageDataTemplate< ElementType >( array, info, 3, size );
 
 	//Returning smart pointer to abstract image class.
-	return AbstractImage::APtr( newImage );
+	return ImageDataTemplate< ElementType >::Ptr( newImage );
 }
 
 } /*namespace Images*/

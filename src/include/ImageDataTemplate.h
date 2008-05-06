@@ -22,10 +22,12 @@ class ImageDataTemplate: public AbstractImage
 {
 public:
 	friend class ImageFactory;
+
+	typedef	typename ImageDataTemplate< ElementType > ThisClass;
 	/**
 	 * Smart pointer to instance of this class.
 	 **/
-	typedef typename boost::shared_ptr< ImageDataTemplate< ElementType > > Ptr;
+	typedef typename boost::shared_ptr< ThisClass > Ptr;
 
 	typedef ElementType 	Type;
 
