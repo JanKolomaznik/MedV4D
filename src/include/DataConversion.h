@@ -6,108 +6,124 @@
 #include "vtkImageData.h"
 #include "ExceptionBase.h"
 
+#include "M4DCommon.h"
+
 namespace M4D
 {
 
 namespace vtkIntegration
 {
 
+
+
 class EImpossibleVTKConversion: public ErrorHandling::ExceptionBase
 {
 	//TODO implement
 };
 
+int
+ConvertNumericTypeIDToVTKScalarType( int NumericTypeID );
+
+template< typename ElementType >
+int
+GetVTKScalarTypeIdentification()
+{
+	throw EImpossibleVTKConversion();
+}
+
+template<>
+int
+GetVTKScalarTypeIdentification<float>()
+{
+	return VTK_FLOAT;
+}
+
+template<>
+int
+GetVTKScalarTypeIdentification<double>()
+{
+	return VTK_DOUBLE;
+}
+
+template<>
+int
+GetVTKScalarTypeIdentification<int>()
+{
+	return VTK_INT;
+}
+
+template<>
+int
+GetVTKScalarTypeIdentification<unsigned int>()
+{
+	return VTK_UNSIGNED_INT;
+}
+
+template<>
+int
+GetVTKScalarTypeIdentification<long>()
+{
+	return VTK_LONG;
+}
+
+template<>
+int
+GetVTKScalarTypeIdentification<unsigned long>()
+{
+	return VTK_UNSIGNED_LONG;
+}
+
+template<>
+int
+GetVTKScalarTypeIdentification<short>()
+{
+	return VTK_SHORT;
+}
+
+template<>
+int
+GetVTKScalarTypeIdentification<unsigned short>()
+{
+	return VTK_UNSIGNED_SHORT;
+}
+
+template<>
+int
+GetVTKScalarTypeIdentification<signed char>()
+{
+	return VTK_SIGNED_CHAR;
+}
+
+template<>
+int
+GetVTKScalarTypeIdentification<unsigned char>()
+{
+	return VTK_UNSIGNED_CHAR;
+}
+
+//*******************************************************************
 template< typename ElementType >
 void
 SetVTKImageDataScalarType( vtkImageData & dataset )
 {
-	throw EImpossibleVTKConversion();	
-}
-
-template<>
-void
-SetVTKImageDataScalarType<float>( vtkImageData & dataset )
-{
-	dataset.SetScalarTypeToFloat();
-}
-
-template<>
-void
-SetVTKImageDataScalarType<double>( vtkImageData & dataset )
-{
-	dataset.SetScalarTypeToDouble();
-}
-
-template<>
-void
-SetVTKImageDataScalarType<int>( vtkImageData & dataset )
-{
-	dataset.SetScalarTypeToInt();
-}
-
-template<>
-void
-SetVTKImageDataScalarType<unsigned int>( vtkImageData & dataset )
-{
-	dataset.SetScalarTypeToUnsignedInt();
-}
-
-template<>
-void
-SetVTKImageDataScalarType<long>( vtkImageData & dataset )
-{
-	dataset.SetScalarTypeToLong();
-}
-
-template<>
-void
-SetVTKImageDataScalarType<unsigned long>( vtkImageData & dataset )
-{
-	dataset.SetScalarTypeToUnsignedLong();
-}
-
-template<>
-void
-SetVTKImageDataScalarType<short>( vtkImageData & dataset )
-{
-	dataset.SetScalarTypeToShort();
-}
-
-template<>
-void
-SetVTKImageDataScalarType<unsigned short>( vtkImageData & dataset )
-{
-	dataset.SetScalarTypeToUnsignedShort();
-}
-
-template<>
-void
-SetVTKImageDataScalarType<signed char>( vtkImageData & dataset )
-{
-	dataset.SetScalarTypeToChar();
-}
-
-template<>
-void
-SetVTKImageDataScalarType<unsigned char>( vtkImageData & dataset )
-{
-	dataset.SetScalarTypeToUnsignedChar();
+	dataset.SetScalarType( GetVTKScalarTypeIdentification< ElementType > );
 }
 
 /**
- * Creates new instance of vtkImageData containing copy of image passed as argument.
+ * Fill instance of vtkImageData with copy of image passed as argument.
+ * @param imageData Pointer to vtkImageData object. Must be valid!
  * @param image Instance of image, which should be converted to VTK representation.
  * @exception EImpossibleVTKConversion
- * @return New instance of vtkImageData.
  **/
 template< typename ElementType >
-vtkImageData*
-CreateVTKImageDataFromImageData( 
-		const Images::ImageDataTemplate< ElementType >& image )
+void
+FillVTKImageDataFromImageData( 
+		vtkImageData					*imageData,
+		const Images::ImageDataTemplate< ElementType >	&image 
+		)
 {
 	size_t width, height, depth;
 	vtkIdType IncX, IncY, IncZ;
-	vtkImageData* imageData = vtkImageData::New();
 
 	width	= image.GetDimensionInfo( 0 ).size;
 	height	= image.GetDimensionInfo( 1 ).size;
@@ -115,7 +131,7 @@ CreateVTKImageDataFromImageData(
 
 	//imageData->SetSpacing(voxelsize.x, voxelsize.y, voxelsize.z);
 	imageData->SetDimensions(width, height, depth);
-	//TODO Exception handling
+
 	SetVTKImageDataScalarType< ElementType >( *imageData );
 
 	imageData->GetIncrements(IncX, IncY, IncZ);
@@ -136,6 +152,31 @@ CreateVTKImageDataFromImageData(
 		iPtr += IncZ;
 	}
 	//std::cout << IncX << ";  " << IncY << ";  " << IncZ << ";  " << std::endl;
+
+}
+
+/**
+ * Creates new instance of vtkImageData containing copy of image passed as argument.
+ * @param image Instance of image, which should be converted to VTK representation.
+ * @exception EImpossibleVTKConversion
+ * @return New instance of vtkImageData.
+ **/
+template< typename ElementType >
+vtkImageData*
+CreateVTKImageDataFromImageData( 
+		const Images::ImageDataTemplate< ElementType >& image )
+{
+	vtkImageData* imageData = vtkImageData::New();
+
+	try {	
+		FillVTKImageDataFromImageData( imageData, image );
+	}
+	catch(...) {
+		//Free unused data and throw exception again.
+		delete imageData;
+		throw;
+	}
+
 	return imageData;
 }
 
