@@ -73,7 +73,6 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				AdditionalOptions="/verbose"
 				AdditionalDependencies="opengl32.lib glu32.lib ..\..\lib\qt\qtmaind.lib ..\..\lib\qt\QtGuid.lib ..\..\lib\qt\QtCored.lib winmm.lib imm32.lib ws2_32.lib msimg32.lib vtkCommond.lib vtkDICOMParserd.lib vtkFilteringd.lib vtkGenericFilteringd.lib vtkGraphicsd.lib vtkHybridd.lib vtkIOd.lib vtkImagingd.lib vtkNetCDFd.lib vtkRenderingd.lib vtkVolumeRenderingd.lib vtkWidgetsd.lib vtkexoIIcd.lib vtkexpatd.lib vtkfreetyped.lib vtkftgld.lib vtkjpegd.lib vtkpngd.lib vtksysd.lib vtktiffd.lib vtkzlibd.lib QVTKd.lib commond.lib dicomClientd.lib Imagingd.lib vtkIntegrationd.lib Mswsock.lib NetAPI32.lib ofstdd.lib dcmdatad.lib dcmnetd.lib"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				SuppressStartupBanner="true"

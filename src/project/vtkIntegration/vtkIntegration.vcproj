@@ -38,7 +38,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\..\include\;..\..\include\vtk;..\..\vtkIntegration\"
 				PreprocessorDefinitions="WINDOWS,_DEBUG,UNICODE,WIN32,&quot;DEBUG_LEVEL=10&quot;"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
