@@ -208,11 +208,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\GUI\m4dPilot\m4dGUIMainWindow.cpp"
+				RelativePath="..\..\Applications\m4dPilot\m4dGUIMainWindow.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\GUI\m4dPilot\main.cpp"
+				RelativePath="..\..\Applications\m4dPilot\main.cpp"
 				>
 			</File>
 		</Filter>
@@ -222,7 +222,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\GUI\m4dPilot\m4dGUIMainWindow.h"
+				RelativePath="..\..\Applications\m4dPilot\m4dGUIMainWindow.h"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -230,7 +230,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="MOC m4dGUIMainWindow.h"
-						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\debug; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\GUI\m4dPilot\m4dGUIMainWindow.h -o $(IntDir)\generated\moc\moc_m4dGUIMainWindow.cpp&#x0D;&#x0A;"
+						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\debug; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\Applications\m4dPilot\m4dGUIMainWindow.h -o $(IntDir)\generated\moc\moc_m4dGUIMainWindow.cpp&#x0D;&#x0A;"
 						AdditionalDependencies="moc.exe,m4dGUIMainWindow.h"
 						Outputs="$(IntDir)\generated\moc\moc_m4dGUIMainWindow.cpp"
 					/>
@@ -241,7 +241,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="MOC m4dGUIMainWindow.h"
-						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\GUI\m4dPilot\m4dGUIMainWindow.h -o $(IntDir)\generated\moc\moc_m4dGUIMainWindow.cpp&#x0D;&#x0A;"
+						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\Applications\m4dPilot\m4dGUIMainWindow.h -o $(IntDir)\generated\moc\moc_m4dGUIMainWindow.cpp&#x0D;&#x0A;"
 						AdditionalDependencies="moc.exe,m4dGUIMainWindow.h"
 						Outputs="$(IntDir)\generated\moc\moc_m4dGUIMainWindow.cpp"
 					/>
@@ -257,7 +257,7 @@
 				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIMainWindow.cpp"
 				>
 				<FileConfiguration
-					Name="Release|Win32"
+					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -269,18 +269,6 @@
 				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIMainWindow.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="$(IntDir)\generated\rcc\qrc_m4dGUIMainWindow.cpp"
-				>
-				<FileConfiguration
 					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
@@ -294,6 +282,18 @@
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="$(IntDir)\generated\rcc\qrc_m4dGUIMainWindow.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -309,7 +309,7 @@
 			ParseFiles="false"
 			>
 			<File
-				RelativePath="..\..\GUI\m4dPilot\m4dGUIMainWindow.qrc"
+				RelativePath="..\..\Applications\m4dPilot\m4dGUIMainWindow.qrc"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -317,7 +317,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="RCC m4dGUIMainWindow.qrc"
-						CommandLine="..\..\bin\qt\rcc.exe -name m4dGUIMainWindow ..\..\GUI\m4dPilot\m4dGUIMainWindow.qrc -o $(IntDir)\generated\rcc\qrc_m4dGUIMainWindow.cpp&#x0D;&#x0A;"
+						CommandLine="..\..\bin\qt\rcc.exe -name m4dGUIMainWindow ..\..\Applications\m4dPilot\m4dGUIMainWindow.qrc -o $(IntDir)\generated\rcc\qrc_m4dGUIMainWindow.cpp&#x0D;&#x0A;"
 						AdditionalDependencies="..\..\bin\qt\rcc.exe;m4dGUIMainWindow.qrc"
 						Outputs="$(IntDir)\generated\rcc\qrc_m4dGUIMainWindow.cpp"
 					/>
@@ -328,7 +328,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="RCC m4dGUIMainWindow.qrc"
-						CommandLine="..\..\bin\qt\rcc.exe -name m4dGUIMainWindow ..\..\GUI\m4dPilot\m4dGUIMainWindow.qrc -o $(IntDir)\generated\rcc\qrc_m4dGUIMainWindow.cpp&#x0D;&#x0A;"
+						CommandLine="..\..\bin\qt\rcc.exe -name m4dGUIMainWindow ..\..\Applications\m4dPilot\m4dGUIMainWindow.qrc -o $(IntDir)\generated\rcc\qrc_m4dGUIMainWindow.cpp&#x0D;&#x0A;"
 						AdditionalDependencies="..\..\bin\qt\rcc.exe;m4dGUIMainWindow.qrc"
 						Outputs="$(IntDir)\generated\rcc\qrc_m4dGUIMainWindow.cpp"
 					/>

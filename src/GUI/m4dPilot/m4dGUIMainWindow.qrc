@@ -1,9 +1,0 @@
-<!DOCTYPE RCC><RCC version="1.0">
-<qresource>
-    <file>../widgets/icons/app.png</file>
-    <file>../widgets/icons/exit.png</file>
-    <file>../widgets/icons/open.png</file>
-    <file>../widgets/icons/save.png</file>
-    <file>../widgets/icons/search.png</file>
-</qresource>
-</RCC>

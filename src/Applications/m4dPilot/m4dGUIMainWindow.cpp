@@ -30,7 +30,7 @@ m4dGUIMainWindow::m4dGUIMainWindow ()
   centralWidget->setLayout( mainLayout );
 
   setWindowTitle( tr( "m4dPilot" ) ); 
-  setWindowIcon( QIcon( ":/widgets/icons/app.png" ) );
+  setWindowIcon( QIcon( ":/GUI/icons/app.png" ) );
   resize( 800, 600 );
 }
 
@@ -66,7 +66,7 @@ void m4dGUIMainWindow::createStudyManagerDialog ()
 
   studyManagerDialog = new QDialog( this );
   studyManagerDialog->setWindowTitle( tr( "Study Manager" ) );
-  studyManagerDialog->setWindowIcon( QIcon( ":/widgets/icons/search.png" ) );
+  studyManagerDialog->setWindowIcon( QIcon( ":/GUI/icons/search.png" ) );
   studyManagerDialog->setLayout( dialogLayout );
 }
 
@@ -79,23 +79,23 @@ void m4dGUIMainWindow::createVtkRenderWindowWidget ()
 
 void m4dGUIMainWindow::createActions ()
 {
-  searchAct = new QAction( QIcon( ":/widgets/icons/search.png" ), tr( "&Search" ), this );
+  searchAct = new QAction( QIcon( ":/GUI/icons/search.png" ), tr( "&Search" ), this );
   searchAct->setShortcut( tr( "Ctrl+S" ) );
   searchAct->setStatusTip( tr( "Search" ) );
   connect( searchAct, SIGNAL(triggered()), this, SLOT(search()) );
 
-  openAct = new QAction( QIcon( ":/widgets/icons/open.png" ), tr( "&Open..." ), this );
+  openAct = new QAction( QIcon( ":/GUI/icons/open.png" ), tr( "&Open..." ), this );
   openAct->setShortcut( tr( "Ctrl+O" ) );
   openAct->setStatusTip( tr( "Open an existing document" ) );
   connect( openAct, SIGNAL(triggered()), this, SLOT(open()) );
 
-  saveAct = new QAction( QIcon( ":/widgets/icons/save.png" ), tr( "S&ave" ), this );
+  saveAct = new QAction( QIcon( ":/GUI/icons/save.png" ), tr( "S&ave" ), this );
   saveAct->setShortcut( tr( "Ctrl+A" ) );
   // saveAct->setStatusTip( tr( "Save the document to disk" ) );
   // connect( saveAct, SIGNAL(triggered()), this, SLOT(save()) );
   saveAct->setEnabled( false );
 
-  exitAct = new QAction( QIcon( ":/widgets/icons/exit.png" ), tr( "E&xit" ), this );
+  exitAct = new QAction( QIcon( ":/GUI/icons/exit.png" ), tr( "E&xit" ), this );
   exitAct->setShortcut( tr( "Ctrl+Q" ) );
   connect( exitAct, SIGNAL(triggered()), this, SLOT(close()) );
 }
