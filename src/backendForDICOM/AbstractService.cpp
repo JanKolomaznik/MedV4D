@@ -2,7 +2,7 @@
 #include "dcmtk/dcmnet/diutil.h"
 #include "dcmtk/dcmdata/dcdeftag.h"
 
-#include "main.h"
+#include "Common.h"
 
 #include "M4DDicomAssoc.h"
 #include "M4DDICOMServiceProvider.h"

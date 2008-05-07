@@ -3,7 +3,7 @@
 #include "dcmtk/dcmdata/dcdeftag.h"
 #include "dcmtk/dcmdata/dcdict.h"		// data dictionary
 
-#include "main.h"
+#include "Common.h"
 
 #include "M4DDicomAssoc.h"
 #include "M4DDICOMServiceProvider.h"

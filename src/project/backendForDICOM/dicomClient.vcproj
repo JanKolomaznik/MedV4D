@@ -201,10 +201,6 @@
 				RelativePath="..\..\backendForDICOM\M4DDicomAssoc.h"
 				>
 			</File>
-			<File
-				RelativePath="..\..\backendForDICOM\main.h"
-				>
-			</File>
 			<Filter
 				Name="DICOMServices"
 				>

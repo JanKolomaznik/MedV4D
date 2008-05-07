@@ -1,6 +1,4 @@
 
-#include "Debug.h"
-#include "Log.h"
 #include "Common.h"
 #include "ExceptionBase.h"
 #include "dicomConn/M4DDICOMServiceProvider.h"

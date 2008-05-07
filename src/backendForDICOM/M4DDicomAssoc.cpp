@@ -2,7 +2,7 @@
 #include "dcmtk/dcmnet/dimse.h"
 #include "dcmtk/dcmnet/diutil.h"
 
-#include "main.h"
+#include "Common.h"
 
 #include "M4DDicomAssoc.h"
 

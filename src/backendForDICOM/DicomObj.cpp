@@ -2,7 +2,7 @@
 #include "dcmtk/dcmdata/dcdeftag.h"
 #include "dcmtk/dcmdata/dcfilefo.h"
 
-#include "main.h"
+#include "Common.h"
 #include "M4DDICOMServiceProvider.h"
 
 namespace M4D
