@@ -90,5 +90,11 @@ int GetNumericTypeID<double>();
 template<>
 int GetNumericTypeID<bool>();
 
+// thees are used in every file so include them in one place
+// here because M4DCommon are used in every file as well
+#include "Debug.h"
+#include "Log.h"
+#include "ExceptionBase.h"
+using namespace M4D::ErrorHandling;
 
 #endif

@@ -203,8 +203,7 @@ MoveService::MoveSupport( DcmDataset *query,
 ///////////////////////////////////////////////////////////////////////
 
 void
-MoveService::AcceptSubAssoc(T_ASC_Network * aNet, T_ASC_Association ** assoc)
-	
+MoveService::AcceptSubAssoc(T_ASC_Network * aNet, T_ASC_Association ** assoc)	
 {
 	// this is hardcoded ! Firstly -> no compression or some JPEGs
 	E_TransferSyntax prefferedTransferSyntax = EXS_LittleEndianImplicit;
