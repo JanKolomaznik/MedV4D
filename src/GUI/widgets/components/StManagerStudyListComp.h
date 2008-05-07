@@ -4,7 +4,7 @@
 #include <QWidget>
 
 // DICOM includes:
-#include "M4DCommon.h"          // M4DDICOMServiceProvider.h needs it (FIXME?)
+#include "Common.h"          // M4DDICOMServiceProvider.h needs it (FIXME?)
 #include "M4DDICOMServiceProvider.h"
 
 

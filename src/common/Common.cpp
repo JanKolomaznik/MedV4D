@@ -1,4 +1,4 @@
-#include "M4DCommon.h"
+#include "Common.h"
 
 template<>
 int GetNumericTypeID<signed char>()
@@ -51,3 +51,6 @@ int GetNumericTypeID<double>()
 template<>
 int GetNumericTypeID<bool>()
 { return NTID_BOOL; }
+
+
+

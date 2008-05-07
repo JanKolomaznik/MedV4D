@@ -1,7 +1,7 @@
 #ifndef _ABSTRACT_IMAGE_H
 #define _ABSTRACT_IMAGE_H
 
-#include "M4DCommon.h"
+#include "Common.h"
 #include "ExceptionBase.h"
 
 #include <boost/shared_ptr.hpp>

@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "../include/M4DCommon.h"
+#include "Common.h"
 
 #ifdef OS_WIN
 	#include <winsock2.h>

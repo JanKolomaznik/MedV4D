@@ -6,7 +6,7 @@
 #include "vtkImageData.h"
 #include "ExceptionBase.h"
 
-#include "M4DCommon.h"
+#include "Common.h"
 
 namespace M4D
 {

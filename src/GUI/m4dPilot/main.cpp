@@ -2,7 +2,7 @@
 
 #include "../widgets/m4dGUIMainWindow.h"
 
-#include "../../include/M4DCommon.h"
+#include "Common.h"
 
 
 int main ( int argc, char *argv[] )

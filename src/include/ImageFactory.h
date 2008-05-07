@@ -6,7 +6,7 @@
 
 #include "dicomConn/M4DDICOMServiceProvider.h"
 
-#include "M4DCommon.h"
+#include "Common.h"
 
 namespace M4D
 {

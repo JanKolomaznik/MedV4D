@@ -1,6 +1,6 @@
 
-#include "../include/M4DCommon.h"
-#include "../include/M4DByteConverter.h"
+#include "Common.h"
+#include "M4DByteConverter.h"
 
 namespace M4DSupport
 {

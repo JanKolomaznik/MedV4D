@@ -3,7 +3,7 @@
 #include <QtGui>
 
 // DICOM includes:
-#include "M4DCommon.h"
+#include "Common.h"
 #include "ExceptionBase.h"
 #include "M4DDICOMServiceProvider.h"
 
