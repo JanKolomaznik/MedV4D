@@ -1,4 +1,4 @@
-#include "m4dGUIVtkRenderWindowWidget.h"
+#include "GUI/m4dGUIVtkRenderWindowWidget.h"
 
 #include <QtGui>
 

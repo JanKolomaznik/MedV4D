@@ -1,4 +1,4 @@
-#include "StManagerFilterComp.h"
+#include "GUI/StManagerFilterComp.h"
 
 #include <QtGui>
 

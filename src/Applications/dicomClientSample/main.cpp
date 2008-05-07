@@ -6,6 +6,8 @@
 using namespace std;
 using namespace M4D::Dicom;
 
+const unsigned FILENAME_BUFFER_SIZE = 32;
+
 int
 main( void)
 {
@@ -42,14 +44,14 @@ main( void)
 			studyInfo.begin()->first, obj);
 
 		int i=0;
-		char fileName[32];
+		char fileName[FILENAME_BUFFER_SIZE];
 		string pok;
 		for( DcmProvider::DicomObjSet::iterator it = obj.begin();
 			it != obj.end();
 			it++)
 		{
 			//pok = it->GetPatientName();
-			sprintf( fileName, "C:\\pok%d.dcm", i++);
+			sprintf_s( fileName, FILENAME_BUFFER_SIZE, "C:\\pok%d.dcm", i++);
 			it->Save( fileName );
 		}
 

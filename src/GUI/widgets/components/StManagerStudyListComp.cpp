@@ -1,4 +1,4 @@
-#include "StManagerStudyListComp.h"
+#include "GUI/StManagerStudyListComp.h"
 
 #include <QtGui>
 

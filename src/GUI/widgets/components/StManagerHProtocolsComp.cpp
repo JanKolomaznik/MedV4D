@@ -1,4 +1,4 @@
-#include "StManagerHProtocolsComp.h"
+#include "GUI/StManagerHProtocolsComp.h"
 
 #include <QtGui>
 

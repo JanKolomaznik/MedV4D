@@ -159,7 +159,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\GUI\widgets\m4dGUIStudyManagerWidget.h"
+				RelativePath="..\..\include\GUI\m4dGUIStudyManagerWidget.h"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -167,7 +167,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="MOC m4dGUIStudyManagerWidget.h"
-						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\debug; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\GUI\widgets\m4dGUIStudyManagerWidget.h -o $(IntDir)\generated\moc\moc_m4dGUIStudyManagerWidget.cpp&#x0D;&#x0A;"
+						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\debug; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\include\GUI\m4dGUIStudyManagerWidget.h -o $(IntDir)\generated\moc\moc_m4dGUIStudyManagerWidget.cpp&#x0D;&#x0A;"
 						AdditionalDependencies="moc.exe,m4dGUIStudyManagerWidget.h"
 						Outputs="$(IntDir)\generated\moc\moc_m4dGUIStudyManagerWidget.cpp"
 					/>
@@ -178,14 +178,14 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="MOC m4dGUIStudyManagerWidget.h"
-						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\GUI\widgets\m4dGUIStudyManagerWidget.h -o $(IntDir)\generated\moc\moc_m4dGUIStudyManagerWidget.cpp&#x0D;&#x0A;"
+						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\include\GUI\m4dGUIStudyManagerWidget.h -o $(IntDir)\generated\moc\moc_m4dGUIStudyManagerWidget.cpp&#x0D;&#x0A;"
 						AdditionalDependencies="moc.exe,m4dGUIStudyManagerWidget.h"
 						Outputs="$(IntDir)\generated\moc\moc_m4dGUIStudyManagerWidget.cpp"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\GUI\widgets\m4dGUIVtkRenderWindowWidget.h"
+				RelativePath="..\..\include\GUI\m4dGUIVtkRenderWindowWidget.h"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -193,7 +193,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="MOC m4dGUIVtkRenderWindowWidget.h"
-						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\debug; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\GUI\widgets\m4dGUIVtkRenderWindowWidget.h -o $(IntDir)\generated\moc\moc_m4dGUIVtkRenderWindowWidget.cpp&#x0D;&#x0A;"
+						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\debug; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\include\GUI\m4dGUIVtkRenderWindowWidget.h -o $(IntDir)\generated\moc\moc_m4dGUIVtkRenderWindowWidget.cpp&#x0D;&#x0A;"
 						AdditionalDependencies="moc.exe,m4dGUIVtkRenderWindowWidget.h"
 						Outputs="$(IntDir)\generated\moc\moc_m4dGUIVtkRenderWindowWidget.cpp"
 					/>
@@ -204,14 +204,14 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="MOC m4dGUIVtkRenderWindowWidget.h"
-						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\GUI\widgets\m4dGUIVtkRenderWindowWidget.h -o $(IntDir)\generated\moc\moc_m4dGUIVtkRenderWindowWidget.cpp&#x0D;&#x0A;"
+						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\include\GUI\m4dGUIVtkRenderWindowWidget.h -o $(IntDir)\generated\moc\moc_m4dGUIVtkRenderWindowWidget.cpp&#x0D;&#x0A;"
 						AdditionalDependencies="moc.exe,m4dGUIVtkRenderWindowWidget.h"
 						Outputs="$(IntDir)\generated\moc\moc_m4dGUIVtkRenderWindowWidget.cpp"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\GUI\widgets\components\StManagerFilterComp.h"
+				RelativePath="..\..\include\GUI\StManagerFilterComp.h"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -219,7 +219,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="MOC StManagerFilterComp.h"
-						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\debug; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\GUI\widgets\components\StManagerFilterComp.h -o $(IntDir)\generated\moc\moc_StManagerFilterComp.cpp&#x0D;&#x0A;"
+						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\debug; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\include\GUI\StManagerFilterComp.h -o $(IntDir)\generated\moc\moc_StManagerFilterComp.cpp&#x0D;&#x0A;"
 						AdditionalDependencies="moc.exe,StManagerFilterComp.h"
 						Outputs="$(IntDir)\generated\moc\moc_StManagerFilterComp.cpp"
 					/>
@@ -230,14 +230,14 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="MOC StManagerFilterComp.h"
-						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\GUI\widgets\components\StManagerFilterComp.h -o $(IntDir)\generated\moc\moc_StManagerFilterComp.cpp&#x0D;&#x0A;"
+						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\include\GUI\StManagerFilterComp.h -o $(IntDir)\generated\moc\moc_StManagerFilterComp.cpp&#x0D;&#x0A;"
 						AdditionalDependencies="moc.exe,StManagerFilterComp.h"
 						Outputs="$(IntDir)\generated\moc\moc_StManagerFilterComp.cpp"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\GUI\widgets\components\StManagerHProtocolsComp.h"
+				RelativePath="..\..\include\GUI\StManagerHProtocolsComp.h"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -245,7 +245,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="MOC StManagerHProtocolsComp.h"
-						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\debug; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\GUI\widgets\components\StManagerHProtocolsComp.h -o $(IntDir)\generated\moc\moc_StManagerHProtocolsComp.cpp&#x0D;&#x0A;"
+						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\debug; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\include\GUI\StManagerHProtocolsComp.h -o $(IntDir)\generated\moc\moc_StManagerHProtocolsComp.cpp&#x0D;&#x0A;"
 						AdditionalDependencies="moc.exe,StManagerHProtocolsComp.h"
 						Outputs="$(IntDir)\generated\moc\moc_StManagerHProtocolsComp.cpp"
 					/>
@@ -256,14 +256,14 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="MOC StManagerHProtocolsComp.h"
-						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\GUI\widgets\components\StManagerHProtocolsComp.h -o $(IntDir)\generated\moc\moc_StManagerHProtocolsComp.cpp&#x0D;&#x0A;"
+						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\include\GUI\StManagerHProtocolsComp.h -o $(IntDir)\generated\moc\moc_StManagerHProtocolsComp.cpp&#x0D;&#x0A;"
 						AdditionalDependencies="moc.exe,StManagerHProtocolsComp.h"
 						Outputs="$(IntDir)\generated\moc\moc_StManagerHProtocolsComp.cpp"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\GUI\widgets\components\StManagerStudyListComp.h"
+				RelativePath="..\..\include\GUI\StManagerStudyListComp.h"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -271,7 +271,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="MOC StManagerStudyListComp.h"
-						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\debug; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\GUI\widgets\components\StManagerStudyListComp.h -o $(IntDir)\generated\moc\moc_StManagerStudyListComp.cpp&#x0D;&#x0A;"
+						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\debug; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\include\GUI\StManagerStudyListComp.h -o $(IntDir)\generated\moc\moc_StManagerStudyListComp.cpp&#x0D;&#x0A;"
 						AdditionalDependencies="moc.exe,StManagerStudyListComp.h"
 						Outputs="$(IntDir)\generated\moc\moc_StManagerStudyListComp.cpp"
 					/>
@@ -282,7 +282,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="MOC StManagerStudyListComp.h"
-						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\GUI\widgets\components\StManagerStudyListComp.h -o $(IntDir)\generated\moc\moc_StManagerStudyListComp.cpp&#x0D;&#x0A;"
+						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\include\GUI\StManagerStudyListComp.h -o $(IntDir)\generated\moc\moc_StManagerStudyListComp.cpp&#x0D;&#x0A;"
 						AdditionalDependencies="moc.exe,StManagerStudyListComp.h"
 						Outputs="$(IntDir)\generated\moc\moc_StManagerStudyListComp.cpp"
 					/>

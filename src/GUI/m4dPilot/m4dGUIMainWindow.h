@@ -3,8 +3,8 @@
 
 #include <QMainWindow>
 
-#include "m4dGUIVtkRenderWindowWidget.h"
-#include "m4dGUIStudyManagerWidget.h"
+#include "GUI/m4dGUIVtkRenderWindowWidget.h"
+#include "GUI/m4dGUIStudyManagerWidget.h"
 
 
 class m4dGUIMainWindow: public QMainWindow

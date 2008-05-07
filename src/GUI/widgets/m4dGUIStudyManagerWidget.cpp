@@ -1,4 +1,4 @@
-#include "m4dGUIStudyManagerWidget.h"
+#include "GUI/m4dGUIStudyManagerWidget.h"
 
 #include <QtGui>
 

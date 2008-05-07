@@ -1,6 +1,6 @@
 #include <QApplication>
 
-#include "../widgets/m4dGUIMainWindow.h"
+#include "m4dGUIMainWindow.h"
 
 #include "Common.h"
 

@@ -62,7 +62,7 @@ extern std::ostream *pdout;
 				D_PRINT( ARG );\
 	}
 #else
-#define	DL_PRINT(ARG)
+#define	DL_PRINT( LEVEL, ARG)
 #endif /*DEBUG_LEVEL*/
 
 //----------------------------------------------------------------------------

@@ -4,8 +4,8 @@
 #include <QWidget>
 #include <QMainWindow>
 
-#include "./components/StManagerFilterComp.h"
-#include "./components/StManagerStudyListComp.h"
+#include "GUI/StManagerFilterComp.h"
+#include "GUI/StManagerStudyListComp.h"
 
 
 class QGroupBox;
