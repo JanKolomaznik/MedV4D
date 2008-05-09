@@ -177,7 +177,7 @@ MoveService::MoveSupport( DcmDataset *query,
 
   if (cond == EC_Normal) 
   {
-	  LOG( "Move operation accepted ... image transmission pending ...");
+	  LOG( "Move operation accepted...");
 #ifdef _DEBUG
     if (rspIds != NULL) 
     {
@@ -186,7 +186,7 @@ MoveService::MoveSupport( DcmDataset *query,
     }
 #endif
   } else {
-    LOG("Move Failed ...");
+    LOG("Move operation failed ...");
   }
   if (statusDetail != NULL) 
   {
