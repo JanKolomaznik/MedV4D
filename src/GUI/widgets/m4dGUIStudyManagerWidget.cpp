@@ -8,9 +8,10 @@ m4dGUIStudyManagerWidget::m4dGUIStudyManagerWidget ( QWidget *parent )
 {
   Q_INIT_RESOURCE( m4dGUIStudyManagerWidget );
 
+  // studyListGroupBox must go before filterGroupBox (it needs the studyList)
+  createStudyListGroupBox();
   createFilterGroupBox();
   createHangingProtocolsGroupBox();
-  createStudyListGroupBox();
 
   QGridLayout *mainLayout = new QGridLayout;
   mainLayout->addWidget( filterGroupBox, 0, 0 );

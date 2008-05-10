@@ -17,8 +17,8 @@ m4dGUIMainWindow::m4dGUIMainWindow ()
 
   createVtkRenderWindowWidget();
   // just for pilot implementation
-  //vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->sphereToRenderWindow() );
-  vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->imageDataToRenderWindow() );
+  vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->sphereToRenderWindow() );
+  // vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->imageDataToRenderWindow() );
 
   createActions();
   createMenus();

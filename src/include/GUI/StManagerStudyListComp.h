@@ -19,11 +19,15 @@ class StManagerStudyListComp: public QWidget
   public:
     StManagerStudyListComp ( QWidget *parent = 0 );
 
-    void addResultSetToStudyTable ( const M4D::Dicom::DcmProvider::ResultSet *resultSet );
+    void addResultSetToStudyTable ( const M4D::Dicom::DcmProvider::ResultSet *resultSet,
+                                    QTableWidget *table );
+
+    QTableWidget *getLocalExamsTable () const { return localExamsTable; }
 
   private:
     QTableWidget *createStudyTable ();
-    void          addRowToStudyTable ( const M4D::Dicom::DcmProvider::TableRow *row );
+    void          addRowToStudyTable ( const M4D::Dicom::DcmProvider::TableRow *row,
+                                       QTableWidget *table );
     QPushButton  *createButton ( const QString &text, const char *member );
 
     QPushButton  *viewButton;

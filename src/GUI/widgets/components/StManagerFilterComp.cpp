@@ -122,8 +122,10 @@ void StManagerFilterComp::search ()
                           + lastNameComboBox->currentText();
   QString patientIDText   = patientIDComboBox->currentText();
     
-  QString fromDateText    = fromDateDateEdit->date().toString( "yyyyMMdd" );
-  QString toDateText      = toDateDateEdit->date().toString( "yyyyMMdd" );
+  QString fromDateText    = fromDateDateEdit->isEnabled() ?
+                            fromDateDateEdit->date().toString( "yyyyMMdd" ) : "";
+  QString toDateText      = toDateDateEdit->isEnabled() ?
+                            toDateDateEdit->date().toString( "yyyyMMdd" ) : "";
 
   DcmProvider::ResultSet *resultSet     = new DcmProvider::ResultSet();
   DcmProvider::StudyInfo *studyInfo     = new DcmProvider::StudyInfo();
@@ -136,40 +138,23 @@ void StManagerFilterComp::search ()
     dcmProvider.Find( *resultSet, patientNameText.toStdString(), 
                       patientIDText.toStdString(), modalities,
                       fromDateText.toStdString(), toDateText.toStdString() );	
-
- 
-    std::vector<DcmProvider::TableRow> *r = new std::vector<DcmProvider::TableRow>();
-   
-    DcmProvider::TableRow t;
-    t.patientName = "John Doe";
-    t.modality = "MR";
-    t.patentID = "333";
-    t.patientBirthDate = "01011970";
-    t.patientSex = true;
-    t.studyDate = "01012008";
-    t.studyID = "888";
-
-    r->push_back( t );
-   
-    studyListComponent->addResultSetToStudyTable( r );
-    // ---------
-
+ 	
     if ( !resultSet->empty() )
     {
-      DcmProvider::TableRow *row = &resultSet->at( 0 );
+      // DcmProvider::TableRow *row = &resultSet->at( 0 );
 
       if ( studyListComponent ) {
-        studyListComponent->addResultSetToStudyTable( resultSet );
+        studyListComponent->addResultSetToStudyTable( resultSet, studyListComponent->getLocalExamsTable() );
       }
 
       // -=-=-=-=-=- after clicking on the row.... -=-=-=-=-=-=-=-=-
         
       // find some info about selected study
-		  dcmProvider.WholeFindStudyInfo( row->patentID, row->studyID, *studyInfo );
+		  // dcmProvider.WholeFindStudyInfo( row->patentID, row->studyID, *studyInfo );
 
 		  // now get image
-		  dcmProvider.GetImageSet( row->patentID, row->studyID, 
-                               studyInfo->begin()->first, *dicomObjSet );
+		  // dcmProvider.GetImageSet( row->patentID, row->studyID, 
+      //                          studyInfo->begin()->first, *dicomObjSet );
     }
     else
     {

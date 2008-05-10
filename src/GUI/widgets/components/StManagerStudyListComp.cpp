@@ -65,12 +65,14 @@ StManagerStudyListComp::StManagerStudyListComp ( QWidget *parent )
 }
 
 
-void StManagerStudyListComp::addResultSetToStudyTable ( const DcmProvider::ResultSet *resultSet )
+void StManagerStudyListComp::addResultSetToStudyTable ( const DcmProvider::ResultSet *resultSet,
+                                                        QTableWidget *table )
 {
-  // there are more tables...we need to specify the desired one...
+  table->clear();
+  table->setRowCount( 0 );
 
   for ( unsigned rowNum = 0; rowNum < resultSet->size(); rowNum++ ) {
-    addRowToStudyTable( &resultSet->at( rowNum ) );
+    addRowToStudyTable( &resultSet->at( rowNum ), table );
   }
 }
 
@@ -93,12 +95,11 @@ QTableWidget *StManagerStudyListComp::createStudyTable ()
 }
 
 
-void StManagerStudyListComp::addRowToStudyTable ( const DcmProvider::TableRow *row )
+void StManagerStudyListComp::addRowToStudyTable ( const DcmProvider::TableRow *row, 
+                                                  QTableWidget *table )
 {
-  // there are more tables...we need to specify the desired one...
- 
-  //int rowNum = localExamsTable->rowCount();
-  //localExamsTable->setRowCount( rowNum + 1 );
+  int rowNum = table->rowCount();
+  table->setRowCount( rowNum + 1 );
 
   vector< QTableWidgetItem * > tableRowItems;
   tableRowItems.push_back( new QTableWidgetItem( QString( row->patentID.c_str() ) ) );
@@ -112,12 +113,13 @@ void StManagerStudyListComp::addRowToStudyTable ( const DcmProvider::TableRow *r
   // Time:
   tableRowItems.push_back( new QTableWidgetItem( QString( "" ) ) );
   tableRowItems.push_back( new QTableWidgetItem( QString( row->studyID.c_str() ) ) );
-  tableRowItems.push_back( new QTableWidgetItem( QString( row->patientSex ) ) );
+  tableRowItems.push_back( new QTableWidgetItem( row->patientSex ? QString( tr( "male" ) ) : 
+                                                                   QString( tr( "female" ) ) ) );
   tableRowItems.push_back( new QTableWidgetItem( QString( row->patientBirthDate.c_str() ) ) );
   // And the others....
 
   for ( unsigned colNum = 0; colNum < tableRowItems.size(); colNum ++ ) {
-    //localExamsTable->setItem( 0, colNum, tableRowItems[colNum] );
+    table->setItem( rowNum, colNum, tableRowItems[colNum] );
   }
 }
 
