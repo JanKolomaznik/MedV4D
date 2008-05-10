@@ -4,9 +4,15 @@
 
 #include <vector>
 
-using namespace std;
+// DICOM includes:
+#include "Common.h"
+#include "ExceptionBase.h"
+#include "M4DDICOMServiceProvider.h"
+
 // DICOM namespace:
 using namespace M4D::Dicom;
+
+using namespace std;
 
 
 StManagerStudyListComp::StManagerStudyListComp ( QWidget *parent )
@@ -16,14 +22,14 @@ StManagerStudyListComp::StManagerStudyListComp ( QWidget *parent )
 
   QVBoxLayout *buttonLayout = new QVBoxLayout;
 
-  viewButton        = createButton( tr( "&View" ),          SLOT(search()) );
-  deleteButton      = createButton( tr( "&Delete" ),        SLOT(today()) );
-  sendButton        = createButton( tr( "S&end" ),          SLOT(yesterday()) );
-  queueFilterButton = createButton( tr( "&Queue" ),         SLOT(clearFilter()) );
-  burnToMediaButton = createButton( tr( "&Burn to Media" ), SLOT(options()) );
+  viewButton        = createButton( tr( "&View" ),          SLOT(view()) );
+  deleteButton      = createButton( tr( "&Delete" ),        SLOT(del()) );
+  sendButton        = createButton( tr( "S&end" ),          SLOT(send()) );
+  queueFilterButton = createButton( tr( "&Queue" ),         SLOT(queue()) );
+  burnToMediaButton = createButton( tr( "&Burn to Media" ), SLOT(burn()) );
 
+  // viewButton->setEnabled( false );
   // buttons not implemented yet:
-  viewButton->setEnabled( false );
   deleteButton->setEnabled( false );
   sendButton->setEnabled( false );
   queueFilterButton->setEnabled( false );
@@ -62,13 +68,42 @@ StManagerStudyListComp::StManagerStudyListComp ( QWidget *parent )
   studyListLayout->addWidget( studyListTab );
 
   setLayout( studyListLayout );
+
+  // DICOM initializations:
+  dcmProvider = new DcmProvider();
+  resultSet   = new DcmProvider::ResultSet();
 }
 
 
-void StManagerStudyListComp::addResultSetToStudyTable ( const DcmProvider::ResultSet *resultSet,
-                                                        QTableWidget *table )
+void StManagerStudyListComp::find ( const QString &patientName, const QString &patientID, 
+                                    const QString &fromDate, const QString &toDate )
 {
-  table->clear();
+  try {
+	  DcmProvider::StringVector modalities;
+
+    dcmProvider->Find( *resultSet, patientName.toStdString(), 
+                        patientID.toStdString(), modalities,
+                        fromDate.toStdString(), toDate.toStdString() );	
+ 	
+    if ( !resultSet->empty() ) {
+      addResultSetToStudyTable( localExamsTable );
+    }
+    else {
+      QMessageBox::warning( this, tr( "No results" ), "No search results match your criteria" );
+    }
+  } 
+  catch ( M4D::ErrorHandling::ExceptionBase & e ) {
+	  QMessageBox::critical( this, tr( "Exception" ), e.what() );
+  } 
+  catch( std::exception &e ) {
+	  QMessageBox::critical( this, tr( "Exception" ), e.what() );
+  }
+}
+
+
+void StManagerStudyListComp::addResultSetToStudyTable ( QTableWidget *table )
+{
+  table->clearContents();
   table->setRowCount( 0 );
 
   for ( unsigned rowNum = 0; rowNum < resultSet->size(); rowNum++ ) {
@@ -77,9 +112,31 @@ void StManagerStudyListComp::addResultSetToStudyTable ( const DcmProvider::Resul
 }
 
 
+void StManagerStudyListComp::view ()
+{
+  /*
+  DcmProvider::StudyInfo *studyInfo     = new DcmProvider::StudyInfo();
+	DcmProvider::DicomObjSet *dicomObjSet = new DcmProvider::DicomObjSet();	
+
+  DcmProvider::TableRow *row = &result[0];
+
+	// find some info about selected study
+	provider.WholeFindStudyInfo( row->patentID, row->studyID, studyInfo);
+
+	// now get image
+	provider.GetImageSet( row->patentID, row->studyID,
+	studyInfo.begin()->first, obj);
+  */
+}
+
+
 QTableWidget *StManagerStudyListComp::createStudyTable ()
 {
   QTableWidget *table  = new QTableWidget;
+
+  table->setSelectionBehavior( QAbstractItemView::SelectRows );
+  table->setSelectionMode( QAbstractItemView::SingleSelection );
+  table->setEditTriggers( QAbstractItemView::NoEditTriggers );
 
   QStringList labels;
   labels << tr( "Patient ID" ) << tr( "Name" ) << tr( "Accesion" )
@@ -118,7 +175,7 @@ void StManagerStudyListComp::addRowToStudyTable ( const DcmProvider::TableRow *r
   tableRowItems.push_back( new QTableWidgetItem( QString( row->patientBirthDate.c_str() ) ) );
   // And the others....
 
-  for ( unsigned colNum = 0; colNum < tableRowItems.size(); colNum ++ ) {
+  for ( unsigned colNum = 0; colNum < tableRowItems.size(); colNum ++ ) {  
     table->setItem( rowNum, colNum, tableRowItems[colNum] );
   }
 }

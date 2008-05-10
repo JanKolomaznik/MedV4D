@@ -2,14 +2,6 @@
 
 #include <QtGui>
 
-// DICOM includes:
-#include "Common.h"
-#include "ExceptionBase.h"
-#include "M4DDICOMServiceProvider.h"
-
-// DICOM namespace:
-using namespace M4D::Dicom;
-
 
 StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComponent, QWidget *parent )
   : QWidget( parent ),
@@ -127,52 +119,7 @@ void StManagerFilterComp::search ()
   QString toDateText      = toDateDateEdit->isEnabled() ?
                             toDateDateEdit->date().toString( "yyyyMMdd" ) : "";
 
-  DcmProvider::ResultSet *resultSet     = new DcmProvider::ResultSet();
-  DcmProvider::StudyInfo *studyInfo     = new DcmProvider::StudyInfo();
-	DcmProvider::DicomObjSet *dicomObjSet = new DcmProvider::DicomObjSet();	
-
-  try {
-	  DcmProvider dcmProvider;
-	  DcmProvider::StringVector modalities;
-
-    dcmProvider.Find( *resultSet, patientNameText.toStdString(), 
-                      patientIDText.toStdString(), modalities,
-                      fromDateText.toStdString(), toDateText.toStdString() );	
- 	
-    if ( !resultSet->empty() )
-    {
-      // DcmProvider::TableRow *row = &resultSet->at( 0 );
-
-      if ( studyListComponent ) {
-        studyListComponent->addResultSetToStudyTable( resultSet, studyListComponent->getLocalExamsTable() );
-      }
-
-      // -=-=-=-=-=- after clicking on the row.... -=-=-=-=-=-=-=-=-
-        
-      // find some info about selected study
-		  // dcmProvider.WholeFindStudyInfo( row->patentID, row->studyID, *studyInfo );
-
-		  // now get image
-		  // dcmProvider.GetImageSet( row->patentID, row->studyID, 
-      //                          studyInfo->begin()->first, *dicomObjSet );
-    }
-    else
-    {
-      QMessageBox::warning( this, tr( "No results" ), "No search results match your criteria" );
-    }
-  } 
-  catch ( M4D::ErrorHandling::ExceptionBase & e ) 
-  {
-	  QMessageBox::critical( this, tr( "Exception" ), e.what() );
-  } 
-  catch( std::exception &e ) 
-  {
-	  QMessageBox::critical( this, tr( "Exception" ), e.what() );
-  }
-  
-  QString message = "provider.Find( " + patientNameText + ", "
-                   + patientIDText + ", " + fromDateText + " )";
-  QMessageBox::about( this, tr( "Search" ), message );
+  studyListComponent->find( patientNameText, patientIDText, fromDateText, toDateText );	
 }
 
 

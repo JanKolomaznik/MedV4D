@@ -19,16 +19,19 @@ class StManagerStudyListComp: public QWidget
   public:
     StManagerStudyListComp ( QWidget *parent = 0 );
 
-    void addResultSetToStudyTable ( const M4D::Dicom::DcmProvider::ResultSet *resultSet,
-                                    QTableWidget *table );
+    void find ( const QString &patientName, const QString &patientID, 
+                const QString &fromDate, const QString &toDate );
 
-    QTableWidget *getLocalExamsTable () const { return localExamsTable; }
+  private slots:
+    void view ();
 
   private:
     QTableWidget *createStudyTable ();
+    QPushButton  *createButton ( const QString &text, const char *member );
+
+    void          addResultSetToStudyTable ( QTableWidget *table );
     void          addRowToStudyTable ( const M4D::Dicom::DcmProvider::TableRow *row,
                                        QTableWidget *table );
-    QPushButton  *createButton ( const QString &text, const char *member );
 
     QPushButton  *viewButton;
     QPushButton  *deleteButton;
@@ -38,6 +41,12 @@ class StManagerStudyListComp: public QWidget
     QTabWidget   *studyListTab;
     QTableWidget *localExamsTable;
     QTableWidget *remoteExamsTable;
+
+    /// The provider object.
+    M4D::Dicom::DcmProvider *dcmProvider;
+
+    /// ResultSet - vector of TableRows - result of Find operation.
+    M4D::Dicom::DcmProvider::ResultSet *resultSet;
 };
 
 #endif // S_MANAGER_STUDY_LIST_COMP_H
