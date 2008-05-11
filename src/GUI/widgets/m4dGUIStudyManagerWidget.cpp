@@ -3,13 +3,14 @@
 #include <QtGui>
 
 
-m4dGUIStudyManagerWidget::m4dGUIStudyManagerWidget ( QWidget *parent )
+m4dGUIStudyManagerWidget::m4dGUIStudyManagerWidget ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget,
+                                                     QWidget *parent )
   : QWidget( parent )
 {
   Q_INIT_RESOURCE( m4dGUIStudyManagerWidget );
 
   // studyListGroupBox must go before filterGroupBox (it needs the studyList)
-  createStudyListGroupBox();
+  createStudyListGroupBox( vtkRenderWindowWidget );
   createFilterGroupBox();
   createHangingProtocolsGroupBox();
 
@@ -45,13 +46,13 @@ void m4dGUIStudyManagerWidget::createHangingProtocolsGroupBox ()
 }
 
 
-void m4dGUIStudyManagerWidget::createStudyListGroupBox ()
+void m4dGUIStudyManagerWidget::createStudyListGroupBox ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget )
 {
   studyListGroupBox = new QGroupBox( tr( "Study List" ) );
 
   QVBoxLayout *studyListGroupBoxLayout = new QVBoxLayout;
   studyListGroupBoxLayout->setMargin( 0 );
-  studyListComponent = new StManagerStudyListComp;
+  studyListComponent = new StManagerStudyListComp( vtkRenderWindowWidget );
   studyListGroupBoxLayout->addWidget( studyListComponent );
 
   studyListGroupBox->setLayout( studyListGroupBoxLayout ); 

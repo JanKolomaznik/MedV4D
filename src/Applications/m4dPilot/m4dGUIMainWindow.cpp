@@ -10,8 +10,6 @@ m4dGUIMainWindow::m4dGUIMainWindow ()
 {
   Q_INIT_RESOURCE( m4dGUIMainWindow );
 
-  createStudyManagerDialog();
-
   centralWidget = new QWidget;
   setCentralWidget( centralWidget );
 
@@ -32,6 +30,9 @@ m4dGUIMainWindow::m4dGUIMainWindow ()
   setWindowTitle( tr( "m4dPilot" ) ); 
   setWindowIcon( QIcon( ":/GUI/icons/app.png" ) );
   resize( 800, 600 );
+
+  // everything is initialized, build the manager - it needs some of the previous steps.
+  createStudyManagerDialog();
 }
 
 
@@ -45,7 +46,6 @@ void m4dGUIMainWindow::open ()
     QFileInfo pathInfo( path );
     QString dirName( pathInfo.absolutePath() );
 
-    vtkRenderWindowWidget->removeFirstRenderer();
     vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->dicomToRenderWindow( dirName.toAscii() ) );
   } 
 }
@@ -59,7 +59,7 @@ void m4dGUIMainWindow::search ()
 
 void m4dGUIMainWindow::createStudyManagerDialog ()
 {
-  m4dGUIStudyManagerWidget *studyManagerWidget = new m4dGUIStudyManagerWidget;
+  m4dGUIStudyManagerWidget *studyManagerWidget = new m4dGUIStudyManagerWidget( vtkRenderWindowWidget );
 
   QVBoxLayout *dialogLayout = new QVBoxLayout;
   dialogLayout->addWidget( studyManagerWidget );

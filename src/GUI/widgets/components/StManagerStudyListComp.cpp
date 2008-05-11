@@ -3,6 +3,7 @@
 #include <QtGui>
 
 #include <vector>
+#include <sstream>
 
 // DICOM includes:
 #include "Common.h"
@@ -15,8 +16,10 @@ using namespace M4D::Dicom;
 using namespace std;
 
 
-StManagerStudyListComp::StManagerStudyListComp ( QWidget *parent )
-  : QWidget( parent )
+StManagerStudyListComp::StManagerStudyListComp ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget,
+                                                 QWidget *parent )
+  : QWidget( parent ),
+    vtkRenderWindowWidget( vtkRenderWindowWidget )
 {
   // =-=-=-=-=-=-=-=- Buttons -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
@@ -75,6 +78,13 @@ StManagerStudyListComp::StManagerStudyListComp ( QWidget *parent )
 }
 
 
+StManagerStudyListComp::~StManagerStudyListComp ()
+{
+  delete dcmProvider;
+  delete resultSet;
+}
+
+
 void StManagerStudyListComp::find ( const QString &patientName, const QString &patientID, 
                                     const QString &fromDate, const QString &toDate )
 {
@@ -114,19 +124,48 @@ void StManagerStudyListComp::addResultSetToStudyTable ( QTableWidget *table )
 
 void StManagerStudyListComp::view ()
 {
-  /*
-  DcmProvider::StudyInfo *studyInfo     = new DcmProvider::StudyInfo();
-	DcmProvider::DicomObjSet *dicomObjSet = new DcmProvider::DicomObjSet();	
+  // this test won't be necessary (view button enabled/disabled)
+  if ( !localExamsTable->selectedItems().empty() )
+  {
+    DcmProvider::StudyInfo *studyInfo     = new DcmProvider::StudyInfo();
+	  DcmProvider::DicomObjSet *dicomObjSet = new DcmProvider::DicomObjSet();	
 
-  DcmProvider::TableRow *row = &result[0];
+    // we are sure, there is exactly one selected
+    int selectedRow = localExamsTable->selectedItems()[0]->row();
+    DcmProvider::TableRow *row = &resultSet->at( selectedRow );
 
-	// find some info about selected study
-	provider.WholeFindStudyInfo( row->patentID, row->studyID, studyInfo);
+	  // find some info about selected study
+	  dcmProvider->WholeFindStudyInfo( row->patentID, row->studyID, *studyInfo );
 
-	// now get image
-	provider.GetImageSet( row->patentID, row->studyID,
-	studyInfo.begin()->first, obj);
-  */
+	  // now get image
+	  dcmProvider->GetImageSet( row->patentID, row->studyID, studyInfo->begin()->first, *dicomObjSet );
+
+    // just save the dcms and open them with vtkReader (like Open)...
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+    stringstream saveDirectory;
+    saveDirectory << QDir::current().path().toStdString() << QDir::separator().toAscii() << selectedRow;
+    QDir dir( saveDirectory.str().c_str() );
+    if ( !dir.exists() ) {
+      if ( !dir.mkdir( dir.path() ) ) {
+          QMessageBox::warning( this, "Cannot make directory", "Could not create directory " );
+      }
+    }
+
+    int i = 0;
+	  for ( DcmProvider::DicomObjSet::iterator it = dicomObjSet->begin(); it != dicomObjSet->end(); it++ )
+	  {
+      stringstream saveName;
+      saveName << dir.absolutePath().toStdString() << QDir::separator().toAscii() << 
+                  i++ << ".dcm";
+      it->Save( saveName.str() );
+	  }
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->dicomToRenderWindow( saveDirectory.str().c_str() ) );
+
+    delete studyInfo;
+    delete dicomObjSet;
+  }
 }
 
 
@@ -147,6 +186,10 @@ QTableWidget *StManagerStudyListComp::createStudyTable ()
   
   table->setColumnCount( labels.size() );
   table->setHorizontalHeaderLabels( labels );
+
+  connect( table, SIGNAL(update()), this, SLOT(!table->selectedItems().empty() ? 
+                                               viewButton->setEnabled( true ) :
+                                               viewButton->setEnabled( false )) );
 
   return table;
 }

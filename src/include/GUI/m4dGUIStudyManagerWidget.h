@@ -15,12 +15,13 @@ class m4dGUIStudyManagerWidget: public QWidget
   Q_OBJECT
 
   public:
-    m4dGUIStudyManagerWidget ( QWidget *parent = 0 );
+    m4dGUIStudyManagerWidget ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget,
+                               QWidget *parent = 0 );
 
   private:
     void createFilterGroupBox ();
     void createHangingProtocolsGroupBox ();
-    void createStudyListGroupBox ();
+    void createStudyListGroupBox ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget );
 
     QGroupBox           *filterGroupBox;
     StManagerFilterComp *filterComponent;

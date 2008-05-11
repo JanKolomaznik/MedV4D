@@ -34,19 +34,16 @@ void m4dGUIVtkRenderWindowWidget::addRenderer ( vtkRenderer *renderer )
 { 
   vtkRenderWindow *rWin;
   rWin = GetRenderWindow();
+
+  // remove previous one
+  rWin->RemoveRenderer( rWin->GetRenderers()->GetFirstRenderer() );
+
+  // add the actual
   rWin->AddRenderer( renderer );
 
   vtkRenderWindowInteractor *iren;
   iren = GetInteractor();
   iren->SetRenderWindow( rWin );
-}
-
-
-void m4dGUIVtkRenderWindowWidget::removeFirstRenderer ()
-{ 
-  vtkRenderWindow *rWin;
-  rWin = GetRenderWindow();
-  rWin->RemoveRenderer( rWin->GetRenderers()->GetFirstRenderer() );
 }
 
 

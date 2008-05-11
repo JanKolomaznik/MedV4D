@@ -16,7 +16,6 @@ class m4dGUIVtkRenderWindowWidget: public QVTKWidget
     m4dGUIVtkRenderWindowWidget ( QVTKWidget *parent = 0 );
 
     void addRenderer ( vtkRenderer *ren );
-    void removeFirstRenderer ();
 
     vtkRenderer *imageDataToRenderWindow ();
 

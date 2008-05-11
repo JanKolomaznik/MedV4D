@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+#include "m4dGUIVtkRenderWindowWidget.h"
+
 // DICOM includes:
 #include "Common.h"          // M4DDICOMServiceProvider.h needs it (FIXME?)
 #include "M4DDICOMServiceProvider.h"
@@ -17,7 +19,9 @@ class StManagerStudyListComp: public QWidget
   Q_OBJECT
 
   public:
-    StManagerStudyListComp ( QWidget *parent = 0 );
+    StManagerStudyListComp ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget,
+                             QWidget *parent = 0 );
+    ~StManagerStudyListComp ();
 
     void find ( const QString &patientName, const QString &patientID, 
                 const QString &fromDate, const QString &toDate );
@@ -32,6 +36,9 @@ class StManagerStudyListComp: public QWidget
     void          addResultSetToStudyTable ( QTableWidget *table );
     void          addRowToStudyTable ( const M4D::Dicom::DcmProvider::TableRow *row,
                                        QTableWidget *table );
+
+    /// Pointer to the VTK Render Window Widget - where to render image after clicking View. 
+    m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget;
 
     QPushButton  *viewButton;
     QPushButton  *deleteButton;
