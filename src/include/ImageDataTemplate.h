@@ -15,56 +15,153 @@ namespace Images
 class ImageFactory;
 
 
-
-
 template < typename ElementType >
 class ImageDataTemplate: public AbstractImage
 {
 public:
+	/**
+	 * ImageFactory needs to access private members, because its the
+	 * only way to create instance of ImageDataTemplate.
+	 **/
 	friend class ImageFactory;
 
+	/**
+	 * Type of this class - can be used in other templates.
+	 **/
 	typedef	typename ImageDataTemplate< ElementType > ThisClass;
+
 	/**
 	 * Smart pointer to instance of this class.
 	 **/
 	typedef typename boost::shared_ptr< ThisClass > Ptr;
 
+	/**
+	 * Type of elements contained in this dataset.
+	 **/
 	typedef ElementType 	Type;
 
 	~ImageDataTemplate();	
 
+	/**
+	 * Access method to data array of constant dataset. 
+	 *
+	 * We don't use idea of multidimensinal data (ignore strides).
+	 * @param index Index used to access element in array.
+	 * @return Copy of element on given position in array.
+	 * @exception EIndexOutOfBounds If given index is outside of array.
+	 **/
 	ElementType
 	Get( size_t index )const;
+	/**
+	 * Access method to data array. 
+	 *
+	 * We don't use idea of multidimensinal data (ignore strides).
+	 * @param index Index used to access element in array.
+	 * @return Reference to element on given position in array.
+	 * @exception EIndexOutOfBounds If given index is outside of array.
+	 **/
 	ElementType&
 	Get( size_t index );
 
+	/**
+	 * Method used for easy runtime type identification of 
+	 * elements types - working only on predefined types.
+	 * @return ID of numeric type defined in Common.h
+	 **/
 	int
 	GetElementTypeID()
 		{ return GetNumericTypeID<ElementType>(); }
 
 	/**
-	 * Access methods. 
-	 * AREN'T CHECKING BOUNDS!!!
+	 * Helper function to acces two dimensional data.
+	 * Function doesn't check if dataset is two dimensional and 
+	 * if given indices are in allowed interval. Only thing, that is 
+	 * checked is wheather final index to data array is valid. 
+	 *
+	 * As a result we always access valid memory (or catch exception), but 
+	 * we can obtain wrong element, if we didn't check bounds and dimension before.
+	 * @param x X coordinate.
+ 	 * @param y Y coordinate.
+	 * @return Copy of element on desired location.
+	 * @exception EIndexOutOfBounds If final index is outside of array.
 	 **/
-	ElementType
+	inline ElementType
 	Get( size_t x, size_t y )const;
-	ElementType&
+	/**
+	 * Helper function to acces two dimensional data.
+	 * Function doesn't check if dataset is two dimensional and 
+	 * if given indices are in allowed interval. Only thing, that is 
+	 * checked is wheather final index to data array is valid. 
+	 *
+	 * As a result we always access valid memory (or catch exception), but 
+	 * we can obtain wrong element, if we didn't check bounds and dimension before.
+	 * @param x X coordinate.
+ 	 * @param y Y coordinate.
+	 * @return Reference to element on desired location.
+	 * @exception EIndexOutOfBounds If final index is outside of array.
+	 **/
+	inline ElementType&
 	Get( size_t x, size_t y );
 
+	/**
+	 * Helper function to acces three dimensional data.
+	 * Function doesn't check if dataset is three dimensional and 
+	 * if given indices are in allowed interval. Only thing, that is 
+	 * checked is wheather final index to data array is valid. 
+	 *
+	 * As a result we always access valid memory (or catch exception), but 
+	 * we can obtain wrong element, if we didn't check bounds and dimension before.
+	 * @param x X coordinate.
+ 	 * @param y Y coordinate.
+ 	 * @param z Z coordinate.
+	 * @return Copy of element on desired location.
+	 * @exception EIndexOutOfBounds If final index is outside of array.
+	 **/
 	inline ElementType
 	Get( size_t x, size_t y, size_t z )const;
+	/**
+	 * Helper function to acces three dimensional data.
+	 * Function doesn't check if dataset is three dimensional and 
+	 * if given indices are in allowed interval. Only thing, that is 
+	 * checked is wheather final index to data array is valid. 
+	 *
+	 * As a result we always access valid memory (or catch exception), but 
+	 * we can obtain wrong element, if we didn't check bounds and dimension before.
+	 * @param x X coordinate.
+ 	 * @param y Y coordinate.
+ 	 * @param z Z coordinate.
+	 * @return Reference to element on desired location.
+	 * @exception EIndexOutOfBounds If final index is outside of array.
+	 **/
 	inline ElementType&
 	Get( size_t x, size_t y, size_t z );
-	
+
+	/**
+	 * Another way to access directly data array.
+	 * Same behavior as method Get.
+	 * @param index Index used to access element in array.
+	 * @return Copy of element on given position in array.
+	 * @exception EIndexOutOfBounds If given index is outside of array.
+	 **/
 	ElementType
 	operator[]( size_t index )const
 				{ return Get( index ); }
+	/**
+	 * Another way to access directly data array.
+	 * Same behavior as method Get.
+	 * @param index Index used to access element in array.
+	 * @return Reference to element on given position in array.
+	 * @exception EIndexOutOfBounds If given index is outside of array.
+	 **/
 	ElementType&
 	operator[]( size_t index )
 				{ return Get( index ); }
 
 
 protected:
+	/**
+	 * Protected constructor - used by ImageFactory.
+	 **/
 	ImageDataTemplate( 
 			ElementType 		*data, 
 			DimensionInfo		*parameters,
@@ -72,6 +169,7 @@ protected:
 			size_t			elementCount
 			);	
 private:
+	ImageDataTemplate();
 	ElementType		*_data;
 
 public:

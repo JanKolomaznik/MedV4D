@@ -13,11 +13,21 @@ namespace M4D
 namespace Images
 {
 
+/**
+ * Factory class which takes care of allocation of image 
+ * datasets. It is able to create empty image, or fill 
+ * it with DICOM data.
+ **/
 class ImageFactory
 {
 public:
 	/**
-	 * Method for custom empty image creation.
+	 * Method for custom empty 2D image creation.
+	 * @param ElementType Type of elements which will be contained 
+	 * in created dataset.
+	 * @param width Width of desided image.
+	 * @param height Height of desided image.
+	 * @return Smart pointer to abstract ancestor of created image.
 	 **/
 	template< typename ElementType >
 	static AbstractImage::APtr 
@@ -26,6 +36,15 @@ public:
 			size_t		height
 			);
 
+	/**
+	 * Method for custom empty 2D image creation. Difference from 
+	 * previous method is in return value.
+	 * @param ElementType Type of elements which will be contained 
+	 * in created dataset.
+	 * @param width Width of desided image.
+	 * @param height Height of desided image.
+	 * @return Smart pointer to created image.
+	 **/
 	template< typename ElementType >
 	static typename ImageDataTemplate< ElementType >::Ptr
 	CreateEmptyImage2DTyped( 
@@ -33,6 +52,15 @@ public:
 			size_t		height
 			);
 
+	/**
+	 * Method for custom empty 3D image creation.
+	 * @param ElementType Type of elements which will be contained 
+	 * in created dataset.
+	 * @param width Width of desided image.
+	 * @param height Height of desided image.
+	 * @param depth Depth of desided image.
+	 * @return Smart pointer to abstract ancestor of created image.
+	 **/
 	template< typename ElementType >
 	static AbstractImage::APtr 
 	CreateEmptyImage3D( 
@@ -41,6 +69,16 @@ public:
 			size_t		depth
 			);
 
+	/**
+	 * Method for custom empty 3D image creation. Difference from 
+	 * previous method is in return value.
+	 * @param ElementType Type of elements which will be contained 
+	 * in created dataset.
+	 * @param width Width of desided image.
+	 * @param height Height of desided image.
+	 * @param depth Depth of desided image.
+	 * @return Smart pointer to created image.
+	 **/
 	template< typename ElementType >
 	static typename ImageDataTemplate< ElementType >::Ptr 
 	CreateEmptyImage3DTyped( 
@@ -50,7 +88,11 @@ public:
 			);
 
 
-
+	/**
+	 * Creates image from given dicomObject set.
+	 * @param dicomObjects Given set of dicom objects.
+	 * @return Smart pointer to created image.
+	 **/
 	static AbstractImage::APtr 
 	CreateImageFromDICOM( Dicom::DcmProvider::DicomObjSetPtr dicomObjects );
 protected:
