@@ -164,7 +164,7 @@ void StManagerStudyListComp::view ()
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->dicomToRenderWindow( saveDirectory.str().c_str() ) );
     */
-	  D_PRINT( "DICOM OBJECT SET size = " << dicomObjSet->size() );
+	  
     vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->imageDataToRenderWindow( DcmProvider::DicomObjSetPtr( dicomObjSet ) ) );
 
     delete studyInfo;

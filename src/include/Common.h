@@ -95,6 +95,8 @@ int GetNumericTypeID<bool>();
 #include "Debug.h"
 #include "Log.h"
 #include "ExceptionBase.h"
+#include <iomanip>
+
 using namespace M4D::ErrorHandling;
 
 #endif

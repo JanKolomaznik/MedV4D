@@ -8,6 +8,8 @@
 
 #include "Common.h"
 
+#include <fstream>
+
 namespace M4D
 {
 
@@ -109,19 +111,30 @@ FillVTKImageDataFromImageData(
 	imageData->GetContinuousIncrements( extent, IncX, IncY, IncZ );
 	ElementType *iPtr = (ElementType*)imageData->GetScalarPointer();
 
+	//TODO delete
+	//std::ofstream pomFile( "dump.txt" );
+
 	for(size_t idxZ = 0; idxZ < depth; ++idxZ)
 	{
 		for(size_t idxY = 0; idxY < height; ++idxY)
 		{
 			for(size_t idxX = 0; idxX < width; ++idxX)
 			{
+				//TODO delete
+				//pomFile << image.Get( idxX, idxY, idxZ ) << " ";
+
 				*iPtr = image.Get( idxX, idxY, idxZ );
 				++iPtr;
 			}
 			iPtr += IncY;
+			
 		}
 		iPtr += IncZ;
+		//TODO delete
+		//pomFile << std::endl;
 	}
+	//TODO delete
+	//pomFile.close();
 }
 
 /**

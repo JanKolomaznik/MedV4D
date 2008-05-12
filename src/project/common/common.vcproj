@@ -157,6 +157,10 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath="..\..\include\Common.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\include\Debug.h"
 				>
 			</File>
@@ -166,10 +170,6 @@
 			</File>
 			<File
 				RelativePath="..\..\include\Log.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\M4DCommon.h"
 				>
 			</File>
 		</Filter>

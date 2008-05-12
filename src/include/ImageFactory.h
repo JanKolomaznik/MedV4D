@@ -21,6 +21,10 @@ namespace Images
 class ImageFactory
 {
 public:
+	class EWrongPointer;
+	class EEmptyDicomObjSet;
+
+
 	/**
 	 * Method for custom empty 2D image creation.
 	 * @param ElementType Type of elements which will be contained 
@@ -92,6 +96,8 @@ public:
 	 * Creates image from given dicomObject set.
 	 * @param dicomObjects Given set of dicom objects.
 	 * @return Smart pointer to created image.
+	 * @exception ImageFactory::EWrongPointer Thrown when passed pointer isn't valid.
+	 * @exception ImageFactory::EEmptyDicomObjSet Thrown when empty set passed.
 	 **/
 	static AbstractImage::APtr 
 	CreateImageFromDICOM( Dicom::DcmProvider::DicomObjSetPtr dicomObjects );
@@ -131,6 +137,28 @@ private:
 		DimensionInfo					* info
 		);
 
+};
+
+/**
+ * Exception class, which is thrown from CreateImageFromDICOM(), when
+ * wrong pointer was passed to function.
+ **/
+ class ImageFactory::EWrongPointer
+{
+public:
+	EWrongPointer(){}
+//TODO
+};
+
+/**
+ * Exception class, which is thrown from CreateImageFromDICOM(), when
+ * empty set of DICOM objects was passed to function.
+ **/
+class ImageFactory::EEmptyDicomObjSet
+{
+public:
+	EEmptyDicomObjSet(){}
+//TODO
 };
 
 

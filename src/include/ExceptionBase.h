@@ -3,6 +3,7 @@
 
 #include <exception>
 #include <ostream>
+#include <string>
 
 namespace M4D
 {
@@ -12,14 +13,22 @@ namespace ErrorHandling
 class ExceptionBase: public std::exception
 {
 public:
-	ExceptionBase( char * name );
+	ExceptionBase( std::string name );
 	ExceptionBase();
 
-	const char* what() { return _name; }	
+	const char* what() { return _name.data(); }	
 protected:
 	virtual void OnRaise();
 private:
-	char*	_name;
+	std::string	_name;
+};
+
+class ExceptionWrongPointer: public ExceptionBase
+{
+public:
+	ExceptionWrongPointer( std::string, void *pointer );
+private:
+	void	*_pointer;
 };
 
 std::ostream& operator<<( std::ostream &out, ExceptionBase &exception );

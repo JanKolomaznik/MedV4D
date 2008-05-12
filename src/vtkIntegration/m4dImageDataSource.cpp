@@ -10,6 +10,7 @@
 #include "DataConversion.h"
 #include "ImageFactory.h"
 
+
 namespace M4D
 {
 namespace vtkIntegration
@@ -27,14 +28,14 @@ m4dImageDataSource::m4dImageDataSource()
 {
 	this->SetNumberOfInputPorts(0);
 
-	/*_wholeExtent[0] = 0;  _wholeExtent[1] = 0;
+	_wholeExtent[0] = 0;  _wholeExtent[1] = 0;
   	_wholeExtent[2] = 0;  _wholeExtent[3] = 0;
 	_wholeExtent[4] = 0;  _wholeExtent[5] = 0;
-	Modified();*/
+	Modified();
 
 	//Test version
 
-	SetImageData( Images::ImageFactory::CreateEmptyImage3D< unsigned char >( 30, 30, 30 ) );
+	//SetImageData( Images::ImageFactory::CreateEmptyImage3D< unsigned char >( 30, 30, 30 ) );
 }
 
 m4dImageDataSource::~m4dImageDataSource()
@@ -45,19 +46,37 @@ m4dImageDataSource::~m4dImageDataSource()
 void
 m4dImageDataSource::SetImageData( Images::AbstractImage::APtr imageData )
 {
-	//TODO Check
-	_imageData = imageData;
+	D_PRINT( LogDelimiter( '*' ) );
+	D_PRINT( "-- Entering m4dImageDataSource::SetImageData()." );
+	
+	//TODO - check dimension	
+	size_t imageDimension = 3;
 
-	if( !_imageData ) {
-		_wholeExtent[0] = 0;  _wholeExtent[1] = 0;
-  		_wholeExtent[2] = 0;  _wholeExtent[3] = 0;
-		_wholeExtent[4] = 0;  _wholeExtent[5] = 0;
+	if( !imageData ) {
+		D_PRINT( "---- Obtained invalid image pointer." );
+		//Setting to NULL
+		_imageData = Images::AbstractImage::APtr();
+
+		for( size_t dim = 0; dim < imageDimension; ++dim ) {
+			_wholeExtent[2*dim]		= 0;  
+			_wholeExtent[2*dim + 1] = 0;
+		}
 	} else {
-		_wholeExtent[0] = 0;  _wholeExtent[1] = _imageData->GetDimensionInfo( 0 ).size-1;
-  		_wholeExtent[2] = 0;  _wholeExtent[3] = _imageData->GetDimensionInfo( 1 ).size-1;
-		_wholeExtent[4] = 0;  _wholeExtent[5] = _imageData->GetDimensionInfo( 2 ).size-1;
+		D_PRINT( "---- Obtained valid image pointer :" );
+		_imageData = imageData;
+
+		for( size_t dim = 0; dim < imageDimension; ++dim ) {
+			D_PRINT( "-------- Size in dimension " << dim << " = " 
+				<< _imageData->GetDimensionInfo( dim ).size );
+
+			_wholeExtent[2*dim]		= 0;  
+			_wholeExtent[2*dim + 1] = _imageData->GetDimensionInfo( dim ).size-1;  		
+		}
 	}
 	Modified();
+
+	D_PRINT( "-- Leaving m4dImageDataSource::SetImageData()." );
+	D_PRINT( LogDelimiter( '+' ) );
 }
 
 int 

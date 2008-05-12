@@ -9,7 +9,7 @@ namespace ErrorHandling
 {
 
 
-ExceptionBase::ExceptionBase( char * name )
+ExceptionBase::ExceptionBase( std::string name )
 		: std::exception(), _name( name ) 
 { 
 	OnRaise();
