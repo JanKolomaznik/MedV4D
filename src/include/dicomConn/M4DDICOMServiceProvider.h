@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include <boost/shared_ptr.hpp>
+#include "Common.h"
 
 namespace M4D
 {

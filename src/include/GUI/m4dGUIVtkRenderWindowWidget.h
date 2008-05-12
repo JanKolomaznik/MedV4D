@@ -7,6 +7,8 @@
 // VTK includes
 #include "vtkRenderer.h"
 
+#include "dicomConn/M4DDICOMServiceProvider.h"
+
 
 class m4dGUIVtkRenderWindowWidget: public QVTKWidget
 {
@@ -17,7 +19,7 @@ class m4dGUIVtkRenderWindowWidget: public QVTKWidget
 
     void addRenderer ( vtkRenderer *ren );
 
-    vtkRenderer *imageDataToRenderWindow ();
+	vtkRenderer *imageDataToRenderWindow ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects );
 
     // just for testing purposes - won't be in final ver.
     vtkRenderer *sphereToRenderWindow ();

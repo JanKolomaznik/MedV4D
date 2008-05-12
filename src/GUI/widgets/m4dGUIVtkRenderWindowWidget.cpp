@@ -21,6 +21,8 @@
 #include "vtkVolumeProperty.h"
 
 #include "m4dImageDataSource.h"
+#include "ImageFactory.h"
+
 
 using namespace M4D::vtkIntegration;
 
@@ -47,9 +49,10 @@ void m4dGUIVtkRenderWindowWidget::addRenderer ( vtkRenderer *renderer )
 }
 
 
-vtkRenderer *m4dGUIVtkRenderWindowWidget::imageDataToRenderWindow ()
+vtkRenderer *m4dGUIVtkRenderWindowWidget::imageDataToRenderWindow ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects )
 {
   m4dImageDataSource *imageData = m4dImageDataSource::New();
+  imageData->SetImageData( M4D::Images::ImageFactory::CreateImageFromDICOM( dicomObjects ) );
 
   vtkImageCast *icast = vtkImageCast::New(); 
   icast->SetOutputScalarTypeToUnsignedShort();
