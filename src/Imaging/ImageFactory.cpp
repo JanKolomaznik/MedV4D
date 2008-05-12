@@ -65,7 +65,12 @@ AbstractImage::APtr
 ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 {
 	//TODO better parameters checking.
-	if( !dicomObjects || dicomObjects->size() == 0 ) {
+	if( !dicomObjects  ) {
+		D_PRINT( "-----WRONG DICOM OBJECTS SET POINTER -> RETURNING NULL POINTER----" );
+		return AbstractImage::APtr();	
+	}
+	if( dicomObjects->empty() ) {
+		D_PRINT( "-----EMPTY DICOM OBJECTS SET -> RETURNING NULL POINTER----" );
 		return AbstractImage::APtr();	
 	}
 	size_t	width = (*dicomObjects)[0].GetWidth();
@@ -97,6 +102,7 @@ ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 		it != dicomObjects->end();
 		++it
 	   ) {
+		   DL_PRINT( 8, "DICOM object " << it->OrderInSet() << " is " << (it->IsLoaded()? " loaded.":  " not loaded.") );
 		//TODO check parameter type if it will stay unit16*.
 		it->FlushIntoArray( (uint16*)dataArray + (sliceStride * it->OrderInSet()) );
 	}
