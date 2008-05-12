@@ -21,8 +21,8 @@
 #include "vtkVolumeProperty.h"
 
 #include "m4dImageDataSource.h"
+// just for imageDataToRenderWindow ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects )
 #include "ImageFactory.h"
-
 
 using namespace M4D::vtkIntegration;
 
@@ -49,6 +49,49 @@ void m4dGUIVtkRenderWindowWidget::addRenderer ( vtkRenderer *renderer )
 }
 
 
+vtkRenderer *m4dGUIVtkRenderWindowWidget::imageDataToRenderWindow ()
+{
+  m4dImageDataSource *imageData = m4dImageDataSource::New();
+
+  vtkImageCast *icast = vtkImageCast::New(); 
+  icast->SetOutputScalarTypeToUnsignedShort();
+  icast->SetInputConnection( imageData->GetOutputPort() );
+
+  vtkPiecewiseFunction *opacityTransferFunction = vtkPiecewiseFunction::New();
+  opacityTransferFunction->AddPoint( 0,   0.0 ); 	
+  opacityTransferFunction->AddPoint( 169, 0.0 );
+  opacityTransferFunction->AddPoint( 170, 0.2 );	
+  opacityTransferFunction->AddPoint( 400, 0.2 );
+  opacityTransferFunction->AddPoint( 401, 0.0 );
+
+  vtkColorTransferFunction *colorTransferFunction = vtkColorTransferFunction::New();
+  colorTransferFunction->AddRGBPoint(    0.0, 0.0, 0.0, 0.0 ); 
+  colorTransferFunction->AddRGBPoint(  170.0, 1.0, 0.0, 0.0 );
+  colorTransferFunction->AddRGBPoint(  400.0, 0.8, 0.8, 0.8 );
+  colorTransferFunction->AddRGBPoint( 2000.0, 1.0, 1.0, 1.0 );
+  	
+  vtkVolumeProperty *volumeProperty = vtkVolumeProperty::New();
+  volumeProperty->SetColor( colorTransferFunction );
+  volumeProperty->SetScalarOpacity( opacityTransferFunction );
+  //volumeProperty->ShadeOn(); 
+  volumeProperty->SetInterpolationTypeToLinear();
+
+  vtkVolumeRayCastMapper *volumeMapper = vtkVolumeRayCastMapper::New();
+  volumeMapper->SetVolumeRayCastFunction( vtkVolumeRayCastCompositeFunction::New());
+  volumeMapper->SetInputConnection( icast->GetOutputPort() );
+
+  vtkVolume *volume = vtkVolume::New();
+  volume->SetMapper( volumeMapper ); 
+  volume->SetProperty( volumeProperty );
+
+  vtkRenderer *renImageData = vtkRenderer::New(); 
+  renImageData->AddViewProp( volume );
+
+  return renImageData;
+}
+
+
+// just for testing ImageFactory::CreateImageFromDICOM 
 vtkRenderer *m4dGUIVtkRenderWindowWidget::imageDataToRenderWindow ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects )
 {
   m4dImageDataSource *imageData = m4dImageDataSource::New();

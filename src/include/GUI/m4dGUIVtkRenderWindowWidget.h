@@ -7,7 +7,10 @@
 // VTK includes
 #include "vtkRenderer.h"
 
-#include "dicomConn/M4DDICOMServiceProvider.h"
+// just for imageDataToRenderWindow ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects )
+// DICOM includes:
+#include "Common.h"
+#include "M4DDICOMServiceProvider.h"
 
 
 class m4dGUIVtkRenderWindowWidget: public QVTKWidget
@@ -19,7 +22,10 @@ class m4dGUIVtkRenderWindowWidget: public QVTKWidget
 
     void addRenderer ( vtkRenderer *ren );
 
-	vtkRenderer *imageDataToRenderWindow ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects );
+    vtkRenderer *imageDataToRenderWindow ();
+
+    // just for testing ImageFactory::CreateImageFromDICOM 
+    vtkRenderer *imageDataToRenderWindow ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects );
 
     // just for testing purposes - won't be in final ver.
     vtkRenderer *sphereToRenderWindow ();
