@@ -50,6 +50,12 @@ namespace Dicom {
 		void FlushIntoArray( const uint16 *dest);
 
 		inline bool IsLoaded( void) { return m_status == Loaded; }
+
+    /**
+     *  Returns order number in set according that images can be sorted
+     *  in order thei were accuired by the mashine.
+     *  Currently InstanceNumber tag (0020,0013) is used.
+     */
 		inline uint16 OrderInSet( void) { return m_orderInSet; }
 
 		// load & save

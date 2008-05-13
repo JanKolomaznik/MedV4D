@@ -126,6 +126,9 @@ DcmProvider::DicomObj::Init()
 	// get bits stored to find out what data type will be used to hold data
 	dataSet->findAndGetUint16( DCM_BitsStored, m_bitsStored);
 
+  // get order in set
+  dataSet->findAndGetUint16( DCM_InstanceNumber, m_orderInSet);
+
 	// try to get data
 	const uint16 *data;
 
