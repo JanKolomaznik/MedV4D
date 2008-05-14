@@ -7,13 +7,29 @@ namespace M4D
 namespace Images
 {
 
+/**
+ * Function creating templated array of desired size.
+ * @param ElementType 
+ * @param size Size of required array.
+ * @exception EFailedArrayAllocation If array couldn't be allocated.
+ **/
 template< typename ElementType >
 ElementType*
 PrepareElementArray( size_t size )
 {
-	//TODO exception handling
-	ElementType *array = new ElementType[size];
+	ElementType *array = NULL;
+	try
+	{
+		 array = new ElementType[size];
+	}
+	catch( ... )
+	{
+		throw EFailedArrayAllocation();
+	}
 
+	//TODO remove
+	/*for( int i=0; i < 500; ++i )
+		array[i] = (ElementType)120;*/
 	return array;
 }
 
@@ -41,20 +57,27 @@ ImageFactory::CreateEmptyImage2DTyped(
 			size_t		height
 			)
 {
-	//TODO exception handling
-	size_t size = width * height;
-	
-	//Preparing informations about dimensionality.
-	DimensionInfo *info = new DimensionInfo[ 2 ];
-	info[0].Set( width, 1 );
-	info[1].Set( height, width );
+	try
+	{
+		size_t size = width * height;
+		
+		//Preparing informations about dimensionality.
+		DimensionInfo *info = new DimensionInfo[ 2 ];
+		info[0].Set( width, 1 );
+		info[1].Set( height, width );
 
-	//Creating place for data storage.
-	ElementType *array = PrepareElementArray< ElementType >( size );
-	
-	//Creating new image, which is using allocated data storage.
-	ImageDataTemplate< ElementType > *newImage = 
-		new ImageDataTemplate< ElementType >( array, info, 2, size );
+		//Creating place for data storage.
+		ElementType *array = PrepareElementArray< ElementType >( size );
+		
+		//Creating new image, which is using allocated data storage.
+		ImageDataTemplate< ElementType > *newImage = 
+			new ImageDataTemplate< ElementType >( array, info, 2, size );
+	}
+	catch( ... )
+	{
+		//TODO exception handling
+		throw;
+	}
 
 	//Returning smart pointer to abstract image class.
 	return ImageDataTemplate< ElementType >::Ptr( newImage );

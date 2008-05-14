@@ -113,7 +113,7 @@ FillVTKImageDataFromImageData(
 
 	//TODO delete
 	//std::ofstream pomFile( "dump.txt" );
-
+	//size_t i = 0;
 	for(size_t idxZ = 0; idxZ < depth; ++idxZ)
 	{
 		for(size_t idxY = 0; idxY < height; ++idxY)
@@ -121,8 +121,9 @@ FillVTKImageDataFromImageData(
 			for(size_t idxX = 0; idxX < width; ++idxX)
 			{
 				//TODO delete
-				//pomFile << image.Get( idxX, idxY, idxZ ) << " ";
-
+				//if( ++i < 2000 ) 
+				//	pomFile << image.Get( idxX, idxY, idxZ ) << " ";
+				
 				*iPtr = image.Get( idxX, idxY, idxZ );
 				++iPtr;
 			}
@@ -130,8 +131,6 @@ FillVTKImageDataFromImageData(
 			
 		}
 		iPtr += IncZ;
-		//TODO delete
-		//pomFile << std::endl;
 	}
 	//TODO delete
 	//pomFile.close();

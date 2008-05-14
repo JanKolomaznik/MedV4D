@@ -95,10 +95,15 @@ ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 	size_t	imageSize = sliceSize * depth;	//Count of elements in whole image.
 
 	DcmProvider::DicomObj::PixelSize elementSizeType = (*dicomObjects)[0].GetPixelSize();
-	unsigned short elementSize = 1; //in bytes
+	unsigned short elementSize = 1; //in bytes, will be set to right value later.
 	uint8*	dataArray = NULL;
+	
+	//How many bytes is needed to skip between two slices.
+	size_t sliceStride = elementSize * sliceSize;
 
 	D_PRINT( "---- Preparing memory for data." );
+	
+
 	//Create array for image elements.
 	PrepareElementArrayFromPixelSize( 
 			elementSizeType, 
@@ -107,22 +112,26 @@ ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 			elementSize	/*output*/
 		       	);
 
+	D_PRINT( "------ Image size		= " << imageSize );
+	D_PRINT( "------ Element size	= " << elementSize );
+	D_PRINT( "------ Slice stride	= " << sliceStride );
+	D_PRINT( "------ Width			= " << width );
+	D_PRINT( "------ Height			= " << height );
+	D_PRINT( "------ Depth			= " << depth );
 
-	//How many bytes is needed to skip between two slices.
-	size_t sliceStride = elementSize * sliceSize;	
+	
 
 	D_PRINT( "---- Flushing DObjects to array" );
 
-	size_t i = 0;//TOD -temporary - until OrderInSet() fixed 
 	//Copy each slice into image to its place.
 	for( 
 		Dicom::DcmProvider::DicomObjSet::iterator it = dicomObjects->begin();
 		it != dicomObjects->end();
-		++it, ++i
+		++it
 	   ) {
 		   DL_PRINT( 8, "-------- DICOM object " << it->OrderInSet() << " is flushed.");
 		//TODO check parameter type if it will stay unit16*.
-		it->FlushIntoArray( (uint16*)dataArray + (sliceStride * i/*it->OrderInSet()*/) );
+		it->FlushIntoArray( (uint16*)dataArray + (sliceStride * it->OrderInSet() ) );
 	}
 	
 	//Preparing informations about dimensionality.

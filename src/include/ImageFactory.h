@@ -162,6 +162,17 @@ public:
 };
 
 
+/**
+ * Exception class, which is thrown from PrepareElementArray<>(), when
+ * array couldn't be allocated ( not enough memory ).
+ **/
+class EFailedArrayAllocation
+{
+public:
+	EFailedArrayAllocation(){}
+//TODO
+};
+
 } /*namespace Images*/
 } /*namespace M4D*/
 
