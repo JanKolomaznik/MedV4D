@@ -19,7 +19,6 @@ ImageDataTemplate< ElementType >::ImageDataTemplate(
 	if ( _data == NULL ) {
 		//TODO handle problem
 	}
-	
 }
 
 template < typename ElementType >

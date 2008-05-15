@@ -44,8 +44,8 @@ TryFillVTKImageFromM4DImage( vtkImageData *vtkImage, Images::AbstractImage::APtr
 void
 FillVTKImageFromM4DImage( vtkImageData *vtkImage, Images::AbstractImage::APtr m4dImage )
 {
+	DL_PRINT( 8, "FillVTKImageFromM4DImage(), element ID " << m4dImage->GetElementTypeID() );
 	switch ( m4dImage->GetElementTypeID() ) {
-
 	case NTID_VOID:
 		throw EImpossibleVTKConversion();
 		break;

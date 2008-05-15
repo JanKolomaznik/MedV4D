@@ -97,6 +97,9 @@ int GetNumericTypeID<bool>();
 #include "ExceptionBase.h"
 #include <iomanip>
 
+//TODO test and move to better place
+#define MAKESTRING( S ) #S
+
 using namespace M4D::ErrorHandling;
 
 #endif

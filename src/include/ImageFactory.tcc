@@ -28,8 +28,8 @@ PrepareElementArray( size_t size )
 	}
 
 	//TODO remove
-	/*for( int i=0; i < 500; ++i )
-		array[i] = (ElementType)120;*/
+	/*for( int i=0; i < size; ++i )
+		array[i] = (ElementType)(i%50000);*/
 	return array;
 }
 

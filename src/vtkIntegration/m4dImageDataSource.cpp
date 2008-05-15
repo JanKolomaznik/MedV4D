@@ -74,6 +74,7 @@ m4dImageDataSource::SetImageData( Images::AbstractImage::APtr imageData )
 		}
 	}
 	Modified();
+	Update();
 
 	D_PRINT( "-- Leaving m4dImageDataSource::SetImageData()." );
 	D_PRINT( LogDelimiter( '+' ) );
@@ -110,6 +111,9 @@ m4dImageDataSource::RequestData(
 		vtkInformationVector* outputVector
 		)
 {
+	D_PRINT( LogDelimiter( '*' ) );
+	D_PRINT( "-- Entering m4dImageDataSource::RequestData()." );
+
 	// get the data object
 	vtkInformation *outInfo = outputVector->GetInformationObject(0);
 
@@ -125,11 +129,16 @@ m4dImageDataSource::RequestData(
 
 	//We don't have data for convesion.
 	if( !_imageData ) {
+		D_PRINT( "-- Leaving m4dImageDataSource::RequestData(). We didn't have data for conversion!" );
+		D_PRINT( LogDelimiter( '+' ) );
 		return 1;
 	}
-
+	D_PRINT( "---- Filling requested VTK image dataset." );
 	//Fill data set
 	FillVTKImageFromM4DImage( output, _imageData );
+
+	D_PRINT( "-- Leaving m4dImageDataSource::RequestData(). Everything OK" );
+	D_PRINT( LogDelimiter( '+' ) );
 
 	return 1;
 }

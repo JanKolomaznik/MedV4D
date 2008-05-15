@@ -124,14 +124,15 @@ ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 	D_PRINT( "---- Flushing DObjects to array" );
 
 	//Copy each slice into image to its place.
+	size_t i = 0;
 	for( 
 		Dicom::DcmProvider::DicomObjSet::iterator it = dicomObjects->begin();
 		it != dicomObjects->end();
-		++it
+		++it, ++i
 	   ) {
 		   DL_PRINT( 8, "-------- DICOM object " << it->OrderInSet() << " is flushed.");
 		//TODO check parameter type if it will stay unit16*.
-		it->FlushIntoArray( (uint16*)dataArray + (sliceStride * it->OrderInSet() ) );
+		it->FlushIntoArray( (uint16*)dataArray + (sliceStride * i /*it->OrderInSet()*/ ) );
 	}
 	
 	//Preparing informations about dimensionality.

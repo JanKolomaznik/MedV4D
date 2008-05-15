@@ -44,7 +44,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="-Zm200 -w34100 -w34189 -Zm200 -w34100 -w34189 -w34100 -w34189"
-				Optimization="4"
+				Optimization="0"
 				AdditionalIncludeDirectories="$(IntDir)\generated\uic;$(IntDir)\generated\moc;..\..\include\qt\headers\QtCore;..\..\include\qt\headers\QtGui;..\..\include\qt\headers;.;.\debug;.\qt\win32-msvc2005;..\..\include;..\..\include\qt;..\..\include\vtk;..\..\include\dicomConn"
 				PreprocessorDefinitions="_WINDOWS,_DEBUG,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT;&quot;DEBUG_LEVEL=10&quot;"
 				GeneratePreprocessedFile="0"
@@ -257,7 +257,7 @@
 				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIMainWindow.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
+					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -269,18 +269,6 @@
 				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIMainWindow.cpp"
 				>
 				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="$(IntDir)\generated\rcc\qrc_m4dGUIMainWindow.cpp"
-				>
-				<FileConfiguration
 					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
@@ -294,6 +282,18 @@
 				>
 				<FileConfiguration
 					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="$(IntDir)\generated\rcc\qrc_m4dGUIMainWindow.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
