@@ -23,6 +23,8 @@ class ImageFactory
 public:
 	class EWrongPointer;
 	class EEmptyDicomObjSet;
+	class EWrongArrayForFlush;
+	class EUnknowDataType;
 
 
 	/**
@@ -108,34 +110,53 @@ private:
 	 * Not implemented - cannot instantiate this class.
 	 **/
 	ImageFactory();
+	ImageFactory( const ImageFactory& );
+	void operator=( const ImageFactory& );
 
 	/**
-	 * @param pixelSize Enum, which sais how many bits is used per pixel.
+	 * @param typeId Id of type used for storing pixel value.
 	 * @param imageSize How many elements of size 'pixelSize' will be stored in array.
 	 * @param dataArray Output parameter - allocated array is returned in this.
-	 * @param elementSize Output parametr - sais how many bytes is used by one element.
 	 **/
 	static void
-	PrepareElementArrayFromPixelSize( 
-		Dicom::DcmProvider::DicomObj::PixelSize 	pixelSize, 
-		size_t 						imageSize, 
-		uint8						*& dataArray, 
-		unsigned short 					&  elementSize 
+	PrepareElementArrayFromTypeID( 
+		int 			typeId, 
+		size_t 			imageSize, 
+		uint8			*& dataArray  
 		);
 
 	/**
-	 * @param pixelSize Enum, which sais how many bits is used per pixel.
+	 * @param typeId Id of type used for storing pixel value.
 	 * @param imageSize How many elements of size 'pixelSize' will be stored in array.
 	 * @param dataArray Filled array of image elements.
 	 * @param info Filled dimension info array.
 	 **/
 	static AbstractImage*
-	CreateImageFromDataAndPixelType(
-		Dicom::DcmProvider::DicomObj::PixelSize 	pixelSize, 
-		size_t 						imageSize, 
-		uint8						* dataArray, 
-		DimensionInfo					* info
+	CreateImageFromDataAndTypeID(
+		int 			typeId,
+		size_t 			imageSize, 
+		uint8			* dataArray, 
+		DimensionInfo		* info
 		);
+
+	//TODO - make this function asynchronous. Add locking of array in image.
+	/**
+	 * @param pixelSize How many bytes is used per pixel.
+	 * @param imageSize How many elements of size 'pixelSize' can be stored in array.
+ 	 * @param stride Number of bytes used per one object flush (size of one layer in bytes).
+	 * @param dataArray Array to be filled from dicom objects. Must be allocated!!!
+	 * @exception EWrongArrayForFlush Thrown when NULL array passed, or imageSize is less than
+	 * space needed for flushing all dicom objects.
+	 **/
+	static void
+	FlushDicomObjects(
+		Dicom::DcmProvider::DicomObjSetPtr dicomObjects,
+		uint8 			pixelSize, 
+		size_t 			imageSize,
+		size_t			stride,
+		uint8			* dataArray
+		);
+	
 
 };
 
@@ -161,6 +182,27 @@ public:
 //TODO
 };
 
+/**
+ * Exception class, which is thrown from FlushDicomObjects(), when
+ * array passed to function is wrong - NULL or too small.
+ **/
+class ImageFactory::EWrongArrayForFlush
+{
+public:
+	EWrongArrayForFlush(){}
+//TODO
+};
+
+/**
+ * Exception class, which is thrown from CreateImageFromDICOM(), when
+ * no type exists for information obtained from dicom object.
+ **/
+class ImageFactory::EUnknowDataType
+{
+public:
+	EUnknowDataType( uint8 size, bool sign ){}
+//TODO
+};
 
 /**
  * Exception class, which is thrown from PrepareElementArray<>(), when

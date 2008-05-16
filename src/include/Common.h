@@ -46,6 +46,56 @@ enum NumericTypeIDs{
 	NTID_BOOL
 };
 
+//*****************************************************************************
+/**
+ * \defgroup TYPE_DEFINE_MACROS Macros defining type belonging 
+ * to numeric type ID.
+ **/
+#define NTID_VOID_TYPE_DEFINE_MACRO			void
+#define NTID_SIGNED_CHAR_TYPE_DEFINE_MACRO		signed char
+#define NTID_UNSIGNED_CHAR_TYPE_DEFINE_MACRO		unsigned char
+#define NTID_SHORT_TYPE_DEFINE_MACRO			short
+#define NTID_UNSIGNED_SHORT_TYPE_DEFINE_MACRO		unsigned short
+#define NTID_INT_TYPE_DEFINE_MACRO			int
+#define NTID_UNSIGNED_INT_TYPE_DEFINE_MACRO		unsigned int
+#define NTID_LONG_TYPE_DEFINE_MACRO			long
+#define NTID_UNSIGNED_LONG_TYPE_DEFINE_MACRO		unsigned long
+#define NTID_LONG_LONG_TYPE_DEFINE_MACRO		long long
+#define NTID_UNSIGNED_LONG_LONG_TYPE_DEFINE_MACRO	unsigned long long
+#define NTID_FLOAT_TYPE_DEFINE_MACRO			float
+#define NTID_DOUBLE_TYPE_DEFINE_MACRO			double
+#define NTID_BOOL_TYPE_DEFINE_MACRO			bool
+//*****************************************************************************
+#define TYPE_FROM_ID_MACRO( TYPE_ID )\
+	TYPE_ID##_TYPE_DEFINE_MACRO
+
+//*****************************************************************************
+/**
+ * Macro used in NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO() macro. DO NOT USE DIRECTLY!!!
+ * @param ID ID of numeric type.
+ **/
+#define NUMERIC_TYPE_TEMPLATE_CASE_MACRO( ID, TEMPLATE_EXP )\
+	case ID: { typedef TYPE_FROM_ID_MACRO( ID ) TTYPE;\
+			TEMPLATE_EXP; };\
+		break;
+//*****************************************************************************
+#define NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( SWITCH, TEMPLATE_EXP ) \
+	switch( SWITCH ) {\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_SIGNED_CHAR, TEMPLATE_EXP )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UNSIGNED_CHAR, TEMPLATE_EXP )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_SHORT, TEMPLATE_EXP )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UNSIGNED_SHORT, TEMPLATE_EXP )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_INT, TEMPLATE_EXP )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UNSIGNED_INT, TEMPLATE_EXP )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_LONG, TEMPLATE_EXP )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UNSIGNED_LONG, TEMPLATE_EXP )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_LONG_LONG, TEMPLATE_EXP )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UNSIGNED_LONG_LONG, TEMPLATE_EXP )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_FLOAT, TEMPLATE_EXP )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_DOUBLE TEMPLATE_EXP )\
+	}
+//*****************************************************************************
+
 template< typename NumericType >
 int GetNumericTypeID()
 { return NTID_VOID; }
@@ -88,6 +138,18 @@ int GetNumericTypeID<double>();
 
 template<>
 int GetNumericTypeID<bool>();
+
+
+//TODO - platform independend.
+/**
+ * Function used in conversions of integer values. 
+ * @param size Size of examined type.
+ * @param signed Wheather examined type is signed.
+ * @return ID of type with given characteristics if exists, otherwise
+ * NTID_VOID.
+ **/
+int
+GetNTIDFromSizeAndSign( uint8 size, bool sign );
 
 // thees are used in every file so include them in one place
 // here because M4DCommon are used in every file as well

@@ -1,5 +1,23 @@
 #include "Common.h"
 
+//TODO - platform independend.
+int
+GetNTIDFromSizeAndSign( uint8 size, bool sign )
+{
+	switch ( size ) {
+	case 1:
+		return ( sign ? NTID_SIGNED_CHAR : NTID_UNSIGNED_CHAR );
+	case 2:
+		return ( sign ? NTID_SHORT : NTID_UNSIGNED_SHORT );
+	case 4:
+		return ( sign ? NTID_INT : NTID_UNSIGNED_INT );
+	case 8:
+		return ( sign ? NTID_LONG_LONG : NTID_UNSIGNED_LONG_LONG );
+	default:
+		return NTID_VOID;
+	}
+}
+
 template<>
 int GetNumericTypeID<signed char>()
 { return NTID_SIGNED_CHAR; }
