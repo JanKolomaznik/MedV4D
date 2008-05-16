@@ -7,6 +7,9 @@ namespace M4D
 {
 namespace Dicom {
 
+  /**
+   *  VR (value representation): see DICOM doc ([ver]_05.pdf chapter 6.2)
+   */
 	class DcmProvider::DicomObj
 	{
 	private:
@@ -19,35 +22,31 @@ namespace Dicom {
 
 		// image info
 		uint16 m_width, m_height;
-		uint16 m_bitsStored;
+		uint8 m_pixelSize;
+    bool m_signed;
 		uint16 m_orderInSet;
-		
-		Status m_status;
 
-		void EncodePixelValue16Aligned( uint16 x, uint16 y, uint16 &val);
+		Status m_status;
 
 	public:
 
 		void *m_dataset;
 
-		// defines size of pixel in bits
-		enum PixelSize{
-			bit8,
-			bit16,
-			bit32,
-		};
-
 		// image information members
-		PixelSize GetPixelSize( void);
+    inline uint8 GetPixelSize( void) { return m_pixelSize; }
 		inline uint16 GetWidth( void) { return m_width; }
 		inline uint16 GetHeight( void) { return m_height; }
+    inline bool IsDataSigned( void) { return m_signed; }
 
 		/**
 		 *	Should prepare data to be easily handled. Convert from special dicom
 		 *	data stream to steam of normal data types like uint16. See DICOM spec.
 		 *	08-05pu.pdf (AnnexD).
+     *  Type T should corespond to size of pixel determined from GetPixelSize
+     *  method or exception will be thrown.
 		 */
-		void FlushIntoArray( const uint16 *dest);
+    template< typename T>
+		void FlushIntoArray( const T *dest);
 
 		inline bool IsLoaded( void) { return m_status == Loaded; }
 
@@ -86,7 +85,7 @@ namespace Dicom {
 		DicomObj();
 	};
 
-};
+}
 }
 #endif
 

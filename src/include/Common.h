@@ -46,7 +46,6 @@ enum NumericTypeIDs{
 	NTID_BOOL
 };
 
-
 template< typename NumericType >
 int GetNumericTypeID()
 { return NTID_VOID; }

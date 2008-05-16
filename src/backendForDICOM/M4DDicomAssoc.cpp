@@ -6,10 +6,7 @@
 
 #include "M4DDicomAssoc.h"
 
-namespace M4D
-{
-
-using namespace ErrorHandling;
+using namespace M4D::DicomInternal;
 ///////////////////////////////////////////////////////////////////////
 
 // shared address container
@@ -358,4 +355,3 @@ M4DDicomAssociation::FindPresentationCtx( void)
 }
 
 ///////////////////////////////////////////////////////////////////////
-}

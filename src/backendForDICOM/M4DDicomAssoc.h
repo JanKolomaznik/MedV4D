@@ -6,7 +6,7 @@
 
 namespace M4D
 {
-
+namespace DicomInternal {
 ///////////////////////////////////////////////////////////////////////////////
 
 class M4DDicomAssociation
@@ -58,6 +58,6 @@ public:
 	T_ASC_PresentationContextID FindPresentationCtx( void) ;
 };
 
-
+} // namespace
 }
 #endif

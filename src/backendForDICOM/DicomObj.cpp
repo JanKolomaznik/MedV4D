@@ -5,11 +5,10 @@
 #include "Common.h"
 #include "M4DDICOMServiceProvider.h"
 
-namespace M4D
-{
-using namespace ErrorHandling;
+#include "FromStreamConverter.h"
 
-namespace Dicom {
+using namespace M4D::Dicom;
+using namespace M4D::DicomInternal;
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -97,21 +96,6 @@ DcmProvider::DicomObj::GetTagValue(
 
 ///////////////////////////////////////////////////////////////////////
 
-DcmProvider::DicomObj::PixelSize
-DcmProvider::DicomObj::GetPixelSize( void)
-{
-	if( m_bitsStored <= 8)
-		return bit8;
-	else if( m_bitsStored > 8 && m_bitsStored <= 16)
-		return bit16;
-	else if( m_bitsStored > 16)
-		return bit32;
-	else
-		throw ExceptionBase( "Bad Pixel Size");
-}
-
-///////////////////////////////////////////////////////////////////////
-
 void
 DcmProvider::DicomObj::Init()
 {
@@ -123,11 +107,25 @@ DcmProvider::DicomObj::Init()
 	dataSet->findAndGetUint16( DCM_Columns, m_width);
 	dataSet->findAndGetUint16( DCM_Rows, m_height);
 
-	// get bits stored to find out what data type will be used to hold data
-	dataSet->findAndGetUint16( DCM_BitsStored, m_bitsStored);
+  {
+    uint16 bitsStored;
+    // get bits stored to find out what data type will be used to hold data
+	  dataSet->findAndGetUint16( DCM_BitsStored, bitsStored);
 
+    if( bitsStored <= 8)
+		  m_pixelSize = 1;
+	  else if( bitsStored > 8 && bitsStored <= 16)
+		  m_pixelSize = 2;
+	  else if( bitsStored > 16)
+		  m_pixelSize = 4;
+	  else
+		  throw ExceptionBase( "Bad Pixel Size");
+  }
+	
   // get order in set
-  dataSet->findAndGetUint16( DCM_InstanceNumber, m_orderInSet);
+  OFString str;
+  dataSet->findAndGetOFString( DCM_InstanceNumber, str);
+  m_orderInSet = (uint16)strtoul( str.c_str(), NULL, 10);
 
 	// try to get data
 	const uint16 *data;
@@ -146,19 +144,24 @@ DcmProvider::DicomObj::Init()
 
 ///////////////////////////////////////////////////////////////////////
 
+template <typename T>
 void
-DcmProvider::DicomObj::FlushIntoArray( const uint16 *dest) 
+DcmProvider::DicomObj::FlushIntoArray( const T *dest) 
 {
 	DcmDataset* dataSet = static_cast<DcmDataset *>(m_dataset);
 
 	if( dataSet == NULL)
 		throw ExceptionBase("No data available!");
 
-	uint16 bitsAllocated, highBit, pixelRepresentation;
+	uint16 bitsAllocated, highBit, pixelRepresentation, bitsStored;
 	// get other needed pixel attribs
+  dataSet->findAndGetUint16( DCM_BitsStored, bitsStored);
 	dataSet->findAndGetUint16( DCM_BitsAllocated, bitsAllocated);
 	dataSet->findAndGetUint16( DCM_HighBit, highBit);
 	dataSet->findAndGetUint16( DCM_PixelRepresentation, pixelRepresentation);
+
+  if( pixelRepresentation > 0)  m_signed = true;
+  else m_signed = false;
 
 	const uint16 *data;
 
@@ -170,12 +173,24 @@ DcmProvider::DicomObj::FlushIntoArray( const uint16 *dest)
 		throw ExceptionBase( "Cannot obtain pixel data!");
 	}
 
-	if( pixelRepresentation == 0 &&
+  if( bitsAllocated == 8 &&
+		highBit == 7 &&
+		bitsStored == 8)	
+  {
+    if( sizeof( T) != 2)
+      throw ExceptionBase( "Destination type is not corresponding with PixelSize!");
+  }
+
+	else if( //pixelRepresentation == 0 &&
 		bitsAllocated == 16 &&
 		highBit == 15 &&
-		m_bitsStored == 16)	
+		bitsStored == 16)	
 		// basic setting. TODO: rewrite to be able to accept others settings
 	{
+    // check if was passed right type
+    if( sizeof( T) != 2)
+      throw ExceptionBase( "Destination type is not corresponding with PixelSize!");
+
 		register uint16 i, j;
 		register uint16 *destIter = (uint16 *)dest;
 		register uint16 *srcIter = (uint16 *)data;
@@ -185,26 +200,49 @@ DcmProvider::DicomObj::FlushIntoArray( const uint16 *dest)
 			{
 				*destIter = *srcIter;
 				destIter++;	srcIter++;
-			}		
+			}
 	}
-}	
+
+  else if( bitsAllocated == 32 &&
+		highBit == 31 &&
+		bitsStored == 32)	
+  {
+    if( sizeof( T) != 4)
+      throw ExceptionBase( 
+        "Destination type is not corresponding with PixelSize!");
+  }
+
+  // none of above. Custom DICOM stream.
+  else
+  {
+    FromStreamConverter<T> conv(
+      bitsAllocated, highBit, bitsStored, (uint16 *)data);
+
+    register uint16 i, j;
+		register T *destIter = (T *)dest;
+		// copy that
+		for( i=0; i<GetHeight(); i++)
+			for( j=0; j<GetWidth(); j++)
+			{
+        *destIter = conv.GetItem();
+				destIter++;
+			}
+  }
+}
 
 ///////////////////////////////////////////////////////////////////////
 
-void
-DcmProvider::DicomObj::EncodePixelValue16Aligned( 
-	uint16 , uint16 , uint16 &)
-{
-	//// pixelCell if the image are stored in rows. 1st row, then 2nd ...
-	//uint8 *fingerToStream = (uint8 *) ( m_pixelData) + ( 	// base
-	//	((y-1) * m_width + (x-1)) *		// order of a cell in stream
-	//	(m_bitsAllocated << 3)			// size of a cell in bytes
-	//	);
-
-	//// little endian suposed
-	//val = (*fingerToStream + (*(fingerToStream + 1) << 8)) >>
-	//	(m_highBit+1-m_bitsStored);	// align to begin in pixelCell
-}
-
-} // namespace
-}
+//void
+//DcmProvider::DicomObj::EncodePixelValue16Aligned( 
+//	uint16 , uint16 , uint16 &)
+//{
+//	//// pixelCell if the image are stored in rows. 1st row, then 2nd ...
+//	//uint8 *fingerToStream = (uint8 *) ( m_pixelData) + ( 	// base
+//	//	((y-1) * m_width + (x-1)) *		// order of a cell in stream
+//	//	(m_bitsAllocated << 3)			// size of a cell in bytes
+//	//	);
+//
+//	//// little endian suposed
+//	//val = (*fingerToStream + (*(fingerToStream + 1) << 8)) >>
+//	//	(m_highBit+1-m_bitsStored);	// align to begin in pixelCell
+//}
