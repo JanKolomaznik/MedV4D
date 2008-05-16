@@ -30,6 +30,8 @@ ImageFactory::PrepareElementArrayFromTypeID(
 			D_PRINT( "Unhandled pixel size" );
 			ASSERT( false );
 	}*/
+
+	//We will generate switch over common numerical types. For more see Common.h
 	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( 
 		typeId, dataArray = (uint8 *) PrepareElementArray< TTYPE >( imageSize ) );
 }
@@ -58,6 +60,11 @@ ImageFactory::CreateImageFromDataAndTypeID(
 			D_PRINT( "Unhandled pixel size" );
 			ASSERT( false );
 	}*/
+
+	//We will generate switch over common numerical types. For more see Common.h
+	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( 
+		typeId, image = new ImageDataTemplate< TTYPE >( (TTYPE*)dataArray, info, 3, imageSize ) );
+
 	return image;
 }
 
@@ -65,22 +72,19 @@ ImageFactory::CreateImageFromDataAndTypeID(
 AbstractImage::APtr 
 ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 {
-	D_PRINT( LogDelimiter( '*' ) );
-	D_PRINT( "-- Entering CreateImageFromDICOM()" );
-
+		D_PRINT( LogDelimiter( '*' ) );
+		D_PRINT( "-- Entering CreateImageFromDICOM()" );
 	
 	//Do we have valid pointer to dicom object set??
 	if( !dicomObjects  ) {
 		D_PRINT( "-----WRONG DICOM OBJECTS SET POINTER -> THROWING EXCEPTION----" );
-		throw EWrongPointer();
-		//return AbstractImage::APtr();	
+		throw EWrongPointer();	
 	}
 
 	//We need something to work with, otherwise throw exception.
 	if( dicomObjects->empty() ) {
 		D_PRINT( "-----EMPTY DICOM OBJECTS SET -> THROWING EXCEPTION----" );
-		throw EEmptyDicomObjSet();
-		//return AbstractImage::APtr();	
+		throw EEmptyDicomObjSet();	
 	}
 
 	D_PRINT( "---- DICOM OBJECT SET size = " << dicomObjects->size() );
@@ -109,9 +113,7 @@ ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 	//How many bytes is needed to skip between two slices.
 	size_t sliceStride = elementSize * sliceSize;
 
-	D_PRINT( "---- Preparing memory for data." );
-	
-
+		D_PRINT( "---- Preparing memory for data." );
 	//Create array for image elements.
 	PrepareElementArrayFromTypeID( 
 			elementTypeID, 
@@ -119,12 +121,12 @@ ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 			dataArray	/*output*/ 
 		       	);
 
-	D_PRINT( "------ Image size		= " << imageSize );
-	D_PRINT( "------ Element size	= " << elementSize );
-	D_PRINT( "------ Slice stride	= " << sliceStride );
-	D_PRINT( "------ Width			= " << width );
-	D_PRINT( "------ Height			= " << height );
-	D_PRINT( "------ Depth			= " << depth );
+		D_PRINT( "------ Image size     = " << imageSize );
+		D_PRINT( "------ Element size	= " << elementSize );
+		D_PRINT( "------ Slice stride   = " << sliceStride );
+		D_PRINT( "------ Width          = " << width );
+		D_PRINT( "------ Height         = " << height );
+		D_PRINT( "------ Depth          = " << depth );
 
 	//Preparing informations about dimensionality.
 	DimensionInfo *info = new DimensionInfo[ 3 ];
@@ -132,8 +134,7 @@ ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 	info[1].Set( height, width );
 	info[2].Set( depth, width * height );
 
-	D_PRINT( "---- Creating resulting image." );
-
+		D_PRINT( "---- Creating resulting image." );
 	AbstractImage::APtr result( (AbstractImage*)
 				CreateImageFromDataAndTypeID( elementTypeID, imageSize, dataArray, info ) 
 				);
@@ -143,8 +144,20 @@ ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 	//TODO - will be asynchronous.
 	FlushDicomObjects( dicomObjects, elementTypeID, imageSize, sliceStride, dataArray );
 
-	/*D_PRINT( "---- Flushing DObjects to array" );
-
+		D_PRINT( "-- Leaving CreateImageFromDICOM() - everything OK" );
+		D_PRINT( LogDelimiter( '+' ) );
+	//Finally return image object.
+	return result;
+}
+template< typename ElementType >
+void
+FlushDicomObjectsHelper(
+		Dicom::DcmProvider::DicomObjSetPtr	&dicomObjects,
+		size_t 					imageSize,
+		size_t					stride,
+		uint8					* dataArray
+		)
+{
 	//Copy each slice into image to its place.
 	size_t i = 0;
 	for( 
@@ -153,28 +166,26 @@ ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 		++it, ++i
 	   ) {
 		   DL_PRINT( 8, "-------- DICOM object " << it->OrderInSet() << " is flushed.");
-		//TODO check parameter type if it will stay unit16*.
-		it->FlushIntoArray( (uint16*)dataArray + (sliceStride * i / *it->OrderInSet()* / ) );
-	}*/
-	
-
-
-	D_PRINT( "-- Leaving CreateImageFromDICOM() - everything OK" );
-	D_PRINT( LogDelimiter( '+' ) );
-	//Finally build and return image object.
-	return result;
+		//it->FlushIntoArray< ElementType >( (ElementType*)dataArray + (stride * i /*it->OrderInSet()*/ ) );
+		it->FlushIntoArrayNTID( (ElementType*)dataArray + (stride * i), GetNumericTypeID<ElementType>() );
+	}
 }
 
 void
 ImageFactory::FlushDicomObjects(
-		Dicom::DcmProvider::DicomObjSetPtr dicomObjects,
-		uint8 			pixelSize, 
-		size_t 			imageSize,
-		size_t			stride,
-		uint8			* dataArray
+		Dicom::DcmProvider::DicomObjSetPtr	&dicomObjects,
+		int 					elementTypeID, 
+		size_t 					imageSize,
+		size_t					stride,
+		uint8					* dataArray
 		)
 {
-
+		D_PRINT( "---- Flushing DObjects to array" );
+	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( 
+		elementTypeID, 
+		FlushDicomObjectsHelper< TTYPE >( 
+				dicomObjects, imageSize, stride, dataArray )
+	);
 }
 
 }/*namespace Images*/

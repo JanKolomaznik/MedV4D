@@ -150,11 +150,11 @@ private:
 	 **/
 	static void
 	FlushDicomObjects(
-		Dicom::DcmProvider::DicomObjSetPtr dicomObjects,
-		uint8 			pixelSize, 
-		size_t 			imageSize,
-		size_t			stride,
-		uint8			* dataArray
+		Dicom::DcmProvider::DicomObjSetPtr	&dicomObjects,
+		int		 			elementTypeID, 
+		size_t 					imageSize,
+		size_t					stride,
+		uint8					* dataArray
 		);
 	
 

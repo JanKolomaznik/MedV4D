@@ -45,8 +45,11 @@ namespace Dicom {
      *  Type T should corespond to size of pixel determined from GetPixelSize
      *  method or exception will be thrown.
 		 */
+
     template< typename T>
 		void FlushIntoArray( const T *dest);
+
+    void FlushIntoArrayNTID( void*dest, int elementTypeID );
 
 		inline bool IsLoaded( void) { return m_status == Loaded; }
 

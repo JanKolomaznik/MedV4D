@@ -230,6 +230,12 @@ DcmProvider::DicomObj::FlushIntoArray( const T *dest)
   }
 }
 
+void DcmProvider::DicomObj::FlushIntoArrayNTID( void*dest, int elementTypeID )
+{ 
+	INTEGER_TYPE_TEMPLATE_SWITCH_MACRO( 
+		elementTypeID, FlushIntoArray<TTYPE>( (const TTYPE*) dest ) ); 
+}
+
 ///////////////////////////////////////////////////////////////////////
 
 //void

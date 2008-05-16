@@ -79,6 +79,14 @@ enum NumericTypeIDs{
 			TEMPLATE_EXP; };\
 		break;
 //*****************************************************************************
+/**
+ * Macro for easy generic programing - mixing static and dynamic polymorhism.
+ * Create switch command with cases belonging to numerical types without bool and void.
+ * in case templated command is called with apropriete type.
+ * @param SWITCH Statement which will be placed in "switch( SWITCH )".
+ * @param TEMPLATE_EXP Templated command. Must contain TTYPE, which will be replaced by 
+ * apropriete type. Example : function_name< TTYPE >( TTYPE* arg )
+ **/
 #define NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( SWITCH, TEMPLATE_EXP ) \
 	switch( SWITCH ) {\
 	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_SIGNED_CHAR, TEMPLATE_EXP )\
@@ -93,6 +101,27 @@ enum NumericTypeIDs{
 	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UNSIGNED_LONG_LONG, TEMPLATE_EXP )\
 	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_FLOAT, TEMPLATE_EXP )\
 	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_DOUBLE, TEMPLATE_EXP )\
+	default: ASSERT( false );\
+	}
+/**
+ * Same as previous, but only for integer types.
+ * @param SWITCH Statement which will be placed in "switch( SWITCH )".
+ * @param TEMPLATE_EXP Templated command. Must contain TTYPE, which will be replaced by 
+ * apropriete type. Example : function_name< TTYPE >( TTYPE* arg )
+ **/
+#define INTEGER_TYPE_TEMPLATE_SWITCH_MACRO( SWITCH, TEMPLATE_EXP ) \
+	switch( SWITCH ) {\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_SIGNED_CHAR, TEMPLATE_EXP )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UNSIGNED_CHAR, TEMPLATE_EXP )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_SHORT, TEMPLATE_EXP )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UNSIGNED_SHORT, TEMPLATE_EXP )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_INT, TEMPLATE_EXP )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UNSIGNED_INT, TEMPLATE_EXP )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_LONG, TEMPLATE_EXP )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UNSIGNED_LONG, TEMPLATE_EXP )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_LONG_LONG, TEMPLATE_EXP )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UNSIGNED_LONG_LONG, TEMPLATE_EXP )\
+	default: ASSERT( false );\
 	}
 //*****************************************************************************
 
@@ -151,8 +180,8 @@ int GetNumericTypeID<bool>();
 int
 GetNTIDFromSizeAndSign( uint8 size, bool sign );
 
-// thees are used in every file so include them in one place
-// here because M4DCommon are used in every file as well
+// these are used in every file so include them in one place
+// here because Common are used in every file as well
 #include "Debug.h"
 #include "Log.h"
 #include "ExceptionBase.h"

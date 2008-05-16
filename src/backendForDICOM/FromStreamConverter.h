@@ -61,7 +61,7 @@ public:
     if( m_currBitsAvail < m_bitsAllocatedMask)
     {
       // load next item from stream
-      m_buf += ( ((uint32)*stream) << m_currBitsAvail);
+      m_buf += ( ((uint32)*m_stream) << m_currBitsAvail);
       m_currBitsAvail += 16;
     }
 
