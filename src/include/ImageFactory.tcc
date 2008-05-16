@@ -40,7 +40,7 @@ ImageFactory::CreateEmptyImage2D(
 			size_t		height
 			)
 {
-	ImageDataTemplate< ElementType >::Ptr ptr = 
+	typename ImageDataTemplate< ElementType >::Ptr ptr = 
 		ImageFactory::CreateEmptyImage2DTyped< ElementType >( width, height );
 
 	AbstractImage::APtr aptr = 
@@ -51,12 +51,13 @@ ImageFactory::CreateEmptyImage2D(
 }
 
 template< typename ElementType >
-static typename ImageDataTemplate< ElementType >::Ptr 
+typename ImageDataTemplate< ElementType >::Ptr 
 ImageFactory::CreateEmptyImage2DTyped( 
 			size_t		width, 
 			size_t		height
 			)
 {
+	ImageDataTemplate< ElementType > *newImage;
 	try
 	{
 		size_t size = width * height;
@@ -70,8 +71,7 @@ ImageFactory::CreateEmptyImage2DTyped(
 		ElementType *array = PrepareElementArray< ElementType >( size );
 		
 		//Creating new image, which is using allocated data storage.
-		ImageDataTemplate< ElementType > *newImage = 
-			new ImageDataTemplate< ElementType >( array, info, 2, size );
+		newImage = new ImageDataTemplate< ElementType >( array, info, 2, size );
 	}
 	catch( ... )
 	{
@@ -91,7 +91,7 @@ ImageFactory::CreateEmptyImage3D(
 			size_t		depth
 			)
 {
-	ImageDataTemplate< ElementType >::Ptr ptr = 
+	typename ImageDataTemplate< ElementType >::Ptr ptr = 
 		ImageFactory::CreateEmptyImage3DTyped< ElementType >( width, height, depth );
 
 	AbstractImage::APtr aptr = 
@@ -103,7 +103,7 @@ ImageFactory::CreateEmptyImage3D(
 
 
 template< typename ElementType >
-static typename ImageDataTemplate< ElementType >::Ptr 
+typename ImageDataTemplate< ElementType >::Ptr 
 ImageFactory::CreateEmptyImage3DTyped( 
 			size_t		width, 
 			size_t		height, 

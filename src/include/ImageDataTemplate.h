@@ -28,7 +28,7 @@ public:
 	/**
 	 * Type of this class - can be used in other templates.
 	 **/
-	typedef	typename ImageDataTemplate< ElementType > ThisClass;
+	typedef	ImageDataTemplate< ElementType > ThisClass;
 
 	/**
 	 * Smart pointer to instance of this class.

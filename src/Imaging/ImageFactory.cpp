@@ -30,8 +30,8 @@ ImageFactory::PrepareElementArrayFromTypeID(
 			D_PRINT( "Unhandled pixel size" );
 			ASSERT( false );
 	}*/
-	//NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( 
-	//	typeId, dataArray = (uint8 *) PrepareElementArray< TTYPE >( imageSize ) );
+	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( 
+		typeId, dataArray = (uint8 *) PrepareElementArray< TTYPE >( imageSize ) );
 }
 
 AbstractImage*
@@ -154,7 +154,7 @@ ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 	   ) {
 		   DL_PRINT( 8, "-------- DICOM object " << it->OrderInSet() << " is flushed.");
 		//TODO check parameter type if it will stay unit16*.
-		it->FlushIntoArray( (uint16*)dataArray + (sliceStride * i /*it->OrderInSet()* / ) );
+		it->FlushIntoArray( (uint16*)dataArray + (sliceStride * i / *it->OrderInSet()* / ) );
 	}*/
 	
 

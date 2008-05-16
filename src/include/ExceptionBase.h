@@ -13,10 +13,10 @@ namespace ErrorHandling
 class ExceptionBase: public std::exception
 {
 public:
-	ExceptionBase( std::string name );
-	ExceptionBase();
-
-	const char* what() { return _name.data(); }	
+	ExceptionBase( std::string name ) throw();
+	ExceptionBase() throw();
+	~ExceptionBase() throw(){}
+	const char* what() const  throw(){ return _name.data(); }	
 protected:
 	virtual void OnRaise();
 private:
