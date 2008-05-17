@@ -42,19 +42,38 @@ main( void)
 		// now get image
 		provider.GetImageSet( row->patentID, row->studyID,
 			studyInfo.begin()->first, obj);
-
+  
 		int i=0;
-		char fileName[FILENAME_BUFFER_SIZE];
+		char fileName[FILENAME_BUFFER_SIZE*8];
 		string pok;
 		for( DcmProvider::DicomObjSet::iterator it = obj.begin();
 			it != obj.end();
 			it++)
 		{
 			//pok = it->GetPatientName();
-			sprintf_s( fileName, FILENAME_BUFFER_SIZE, "C:\\pok%d.dcm", i++);
+			sprintf_s( fileName, FILENAME_BUFFER_SIZE*8, "C:\\dicomServer\\recievedImages\\pok%d.dcm", i++);
 			it->Save( fileName );
+  
 		}
 
+    //float thickness;
+    //float vertSpacing, horizSpacing;
+    //float slicePosition;
+
+    //DcmProvider::DicomObj obj;
+
+    //provider.GetImage(std::string("XXXXXXXX"),
+    //  std::string("1.3.12.2.1107.5.1.4.57132.30000006100305415862500000037"),
+    //  std::string("1.3.12.2.1107.5.1.4.57132.30000006100305432756200002333"),
+    //  std::string("1.3.12.2.1107.5.1.4.57132.30000006100305432756200002337"),
+    //  obj);
+
+    //obj.GetSliceThickness( thickness);
+    //obj.GetSliceLocation( slicePosition);
+    //obj.GetPixelSpacing( horizSpacing, vertSpacing);
+
+    //uint16 *arr = new uint16[obj.GetWidth()*obj.GetHeight()];
+    //obj.FlushIntoArray<uint16>(arr);
 		//M4DDcmProvider::DicomObj obj;
 
 
