@@ -11,7 +11,7 @@ namespace CellBE
   class CellClient
   {
   public:
-    typedef std::map<uint16, ServerConnection*> AvailServersMap;
+    typedef std::map<uint16, std::string> AvailServersMap;
 
     CellClient();
 
@@ -19,8 +19,10 @@ namespace CellBE
 
     inline AvailServersMap &GetAvailableServers(void) { return m_servers; }
 
+    boost::asio::io_service m_io_service;
+
   private:
-    AvailServersMap m_servers;
+    AvailServersMap m_servers;    
 
     void FindNonCommentLine( std::ifstream &f, std::string &line);
 

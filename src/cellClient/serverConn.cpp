@@ -10,32 +10,33 @@
 #include <iostream>
 
 #include "Common.h"
-#include "cellBE/commDefs.hpp"
-#include "ExceptionBase.h"
-#include "serverConn.h"
 #include <boost/serialization/vector.hpp>
+#include "cellBE/commDefs.h"
+#include "serverConn.h"
 
 using namespace M4D::CellBE;
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////////
 
-ServerConnection::ServerConnection( const std::string &address)
-  : m_address(address), m_connected(false)
+ServerConnection::ServerConnection( const std::string &address,
+  boost::asio::io_service &service)
+  : m_address(address), m_socket( service)
 {
+  Connect( service);
 }
 
 ///////////////////////////////////////////////////////////////////////
 
 void
-ServerConnection::Connect()
+ServerConnection::Connect( boost::asio::io_service &service)
 {
-  tcp::resolver resolver(m_io_service);
+  tcp::resolver resolver(service);
 
-  char portNumBuf[5];
+  char portNumBuf[6];
 
   try {
-    _itoa_s( M4D::CellBE::SERVER_PORT, portNumBuf, 5, 10);
+    _itoa_s<6>( M4D::CellBE::SERVER_PORT, portNumBuf, 10);
   } catch( ... ) {}
 
   tcp::resolver::query query(
@@ -46,77 +47,91 @@ ServerConnection::Connect()
   tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
   tcp::resolver::iterator end;
 
-  tcp::socket sock( m_io_service);
   boost::system::error_code error = boost::asio::error::host_not_found;
   while (error && endpoint_iterator != end)
   {
-    sock.close();
-    sock.connect(*endpoint_iterator++, error);
+    m_socket.close();
+    m_socket.connect(*endpoint_iterator++, error);
   }
   if (error)
     throw M4D::ErrorHandling::ExceptionBase(
       "Not able to connect to Cell sever");
-
-  m_socket = &sock;
 }
 
 ///////////////////////////////////////////////////////////////////////
 
 void
-ServerConnection::SendJob( Job &job)
+ServerConnection::SendJob( Job & job)
 {
   std::ostringstream s;
-  boost::archive::text_oarchive archive( s);
+  boost::archive::text_oarchive arch( s);
 
-  archive << job;
+  //s << job.m_filterID;
+  job.m_f1 = 3.12345f;
+  job.m_str = "predel";
 
-  /*m_socket->async_write_some(
-    boost::asio::buffer(str),
+  arch << (const Job &)job;
+
+  job.sendedMessage = s.str();
+
+  m_socket.async_write_some(
+    boost::asio::buffer( job.sendedMessage),
     boost::bind( &ServerConnection::OnJobWritten, this, 
       boost::asio::placeholders::error,
-      boost::asio::placeholders::bytes_transferred,
-      job) );*/
+      job) );
 }
 
 ///////////////////////////////////////////////////////////////////////
 
 void
 ServerConnection::OnJobWritten( 
-  const boost::system::error_code& e,
-  const uint16 bytesWritten,
-  const Job &j )
+  const boost::system::error_code& err,
+  Job &job )
 {
-  // now we have to wait for response of da server
-  /*m_socket->async_read_some( boost::asio::buffer(j.respHeader.data, 2),
-    boost::bind( &ServerConnection::OnJobResponseHeaderRead, this,
-      boost::asio::placeholders::error,
-      boost::asio::placeholders::bytes_transferred,
-      j) );*/
+  if( ! err)
+  {
+    // now we have to wait for response of da server
+    m_socket.async_read_some( boost::asio::buffer( m_pok),
+      boost::bind( &ServerConnection::OnJobResponseHeaderRead, this,
+        boost::asio::placeholders::error,
+        boost::asio::placeholders::bytes_transferred,
+        job) );
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////
 
 void
 ServerConnection::OnJobResponseHeaderRead( 
-    const boost::system::error_code& e,
-    const uint16 bytesRead, 
-    Job &j)
+    const boost::system::error_code& err,
+    const size_t bytesRead, 
+    Job &job)
 {
-  if( e)
+  if( err)
   {
-    j.state = Job::Failed;
+    job.state = Job::Failed;
     LOG( "OnJobResponseHeaderRead called with error code");
-    j.onComplete();
+    job.onComplete();
   }
   else
   {
     // now read response body
-    /*j.response.resize( 2);
-    m_socket->async_read_some( boost::asio::buffer(j.response),
+    std::istringstream stream( job.messageHeader.data);
+
+    char *c = m_pok.c_array();
+
+    uint16 messID;
+    stream >> messID;
+
+    uint16 messLen;
+    stream >> messLen;
+
+    job.response.resize( messLen);
+    m_socket.async_read_some( boost::asio::buffer(job.response),
       boost::bind( &ServerConnection::OnJobResponseBodyRead, this,
         boost::asio::placeholders::error,
         boost::asio::placeholders::bytes_transferred,
-        j) );*/
+        job) );
   }
 }
 
@@ -124,20 +139,20 @@ ServerConnection::OnJobResponseHeaderRead(
 
 void
 ServerConnection::OnJobResponseBodyRead( 
-    const boost::system::error_code& e,
-    const uint16 bytesRead, 
-    Job &j)
+    const boost::system::error_code& err,
+    const size_t bytesRead, 
+    Job &job)
 {
-  if( ! e)
+  if( ! err)
   {
-    j.state = Job::Complete;
+    job.state = Job::Complete;
   }
   else
   {
     LOG( "OnJobResponseBodyRead called with error code");
-    j.state = Job::Failed;
+    job.state = Job::Failed;
   }
 
   // call completition handler
-  j.onComplete();
+  job.onComplete();
 }

@@ -17,29 +17,27 @@ namespace CellBE
 class ServerConnection
 {
 public:
-  ServerConnection( const std::string &address);
+  ServerConnection( const std::string &address, boost::asio::io_service &service);
 
   inline const std::string Address(void) { return m_address; }
-  inline bool IsConnected(void) { return m_connected; }
-  void Connect( void);
 
   void SendJob( Job &job);
 
-private:
-  
-  boost::asio::io_service m_io_service;
-
-  boost::asio::ip::tcp::socket *m_socket;
+private: 
+  boost::asio::ip::tcp::socket m_socket;
   std::string m_address;
-  bool m_connected;
 
-  void OnJobWritten( const boost::system::error_code& e,
-    const uint16 bytesWritten, const Job &j);
+  boost::array<char, 8> m_pok;
+
+  void Connect( boost::asio::io_service &service);
+
+  void OnJobWritten( const boost::system::error_code& e, Job &j);
 
   void OnJobResponseHeaderRead( const boost::system::error_code& e,
-    const uint16 bytesWritten, Job &j);
+    const size_t bytesRead, Job &j);
+
   void OnJobResponseBodyRead( const boost::system::error_code& e,
-    const uint16 bytesWritten, Job &j);
+    const size_t bytesRead, Job &j);
 };
 
 } // CellBE namespace

@@ -23,7 +23,6 @@ CellClient::CellClient()
   }
 
   string line;
-  ServerConnection *conn;
   uint16 count = 0;
 
   try {
@@ -31,8 +30,7 @@ CellClient::CellClient()
       FindNonCommentLine( cfgFile, line);
       if( line.length() > 0)
       {
-        conn = new ServerConnection( line);
-        m_servers.insert( AvailServersMap::value_type(count, conn));
+        m_servers.insert( AvailServersMap::value_type(count, line));
         count++;
       }
     } while( ! cfgFile.eof() );
@@ -69,18 +67,10 @@ CellClient::SendJob( uint16 serverID, Job &job)
   if( i == m_servers.end() )
   {
     D_PRINT( "server ID not found!");
-    throw BaseException("server ID not found!");
+    throw ExceptionBase("server ID not found!");
   }
 
-  ServerConnection *conn = *i;
-  if( conn == NULL)
-  {
-    D_PRINT( "server address is NULL");
-    throw BaseException("server address is NULL");
-  }
-
-  if( ! conn->IsConnected())
-    conn->Connect();
+  ServerConnection *conn = new ServerConnection(i->second, m_io_service);
 
   // send the job
   conn->SendJob( job);
