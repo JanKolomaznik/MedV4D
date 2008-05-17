@@ -1,22 +1,30 @@
 #ifndef JOB_H
 #define JOB_H
 
+#include <vector>
+#include "messHeader.h"
+
 namespace M4D
 {
 namespace CellBE
 {
 
+#define MESSLEN 32
+
   class Job
   {
-    uint16 m_filterID;
+    
     void *m_data;
 
   public:
+    uint16 m_filterID;
 
-#define RESP_HEADER_LEN 2
-    struct ResponseHeader {
-      char data[RESP_HEADER_LEN];
-    };
+    float32 m_f1;
+    std::string m_str;
+
+
+    Job( uint16 filterID) : m_filterID(filterID) {}
+    Job( void) {}
 
     enum State {
       Complete,
@@ -25,10 +33,11 @@ namespace CellBE
     };
     State state;
 
-    ResponseHeader respHeader;
-
     std::vector<uint8> response;
     typedef void (*JobCompletitionCallback)(void);
+
+    MessageHeader messageHeader;
+    std::string sendedMessage;
 
     JobCompletitionCallback onComplete;
 
@@ -36,8 +45,12 @@ namespace CellBE
     void serialize(Archive& ar, const unsigned int version)
     {
       ar & m_filterID;
-      ar & m_data;
+      ar & m_f1;
+      ar & m_str;
+      //ar & m_data;
     }
+
+    static const int messLen = 32;
 
   };
 

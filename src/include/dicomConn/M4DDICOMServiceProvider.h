@@ -20,7 +20,8 @@ namespace Dicom {
 
 		// TYPEDEFS ///////////////////////////////////////////////////////////
 
-		class DicomObj;
+		//class DicomObj;
+    #include "M4DDICOMObject.h"
 
 		// represents one row in table that shows found results
 		typedef struct s_browserRow {
@@ -103,6 +104,6 @@ namespace Dicom {
 
 };
 }
-#include "M4DDICOMObject.h"
+
 
 #endif

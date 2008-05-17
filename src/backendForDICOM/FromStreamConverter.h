@@ -33,17 +33,17 @@ public:
     )
     : m_bitsAllocated( bitsAllocated),
     m_highBit( highBit),
-    m_bitsStored( m_bitsStored),
+    m_bitsStored( bitsStored),
     m_stream( stream)
   {
     m_bitsAllocatedMask = ((uint32)(-1) >> (32-bitsAllocated));
 
     // prepare pixel Cell mask
     {
-      m_pixelCellMask = ((T)(-1)) && m_bitsAllocatedMask;
+      m_pixelCellMask = ((T)(-1)) & m_bitsAllocatedMask;
 
       uint8 numZerosToRight = bitsAllocated - m_bitsStored - 
-         (m_bitsStored - highBit + 1);
+         (m_bitsStored - (highBit + 1) );
         
       m_pixelCellMask >>= numZerosToRight; // shift to right
       // shift back to get appropriate cnt of zeros
@@ -58,7 +58,7 @@ public:
 
   uint8 GetItem( void)
   {
-    if( m_currBitsAvail < m_bitsAllocatedMask)
+    if( m_currBitsAvail < m_bitsAllocated)
     {
       // load next item from stream
       m_buf += ( ((uint32)*m_stream) << m_currBitsAvail);
@@ -67,6 +67,7 @@ public:
 
     m_item = m_buf & m_bitsAllocatedMask;   // get the val
     m_buf >>= m_bitsAllocated;              // cut off the val from buf
+    m_currBitsAvail -= m_bitsAllocated;
 
     // get the pixel value from pixel cell
     return m_item & m_pixelCellMask;

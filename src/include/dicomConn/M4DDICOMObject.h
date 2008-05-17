@@ -3,14 +3,14 @@
 
 #include <string>
 
-namespace M4D
-{
-namespace Dicom {
+//namespace M4D
+//{
+//namespace Dicom {
 
   /**
    *  VR (value representation): see DICOM doc ([ver]_05.pdf chapter 6.2)
    */
-	class DcmProvider::DicomObj
+	class DicomObj
 	{
 	private:
 
@@ -37,6 +37,11 @@ namespace Dicom {
 		inline uint16 GetWidth( void) { return m_width; }
 		inline uint16 GetHeight( void) { return m_height; }
     inline bool IsDataSigned( void) { return m_signed; }
+    
+    void GetSliceThickness( float32 &f);
+    void GetPixelSpacing( float32 &horizSpacing, float32 &vertSpacing);
+    void GetSliceLocation( float32 &location);
+
 
 		/**
 		 *	Should prepare data to be easily handled. Convert from special dicom
@@ -71,8 +76,8 @@ namespace Dicom {
 
 		// methods to get value from data set container
 		void GetTagValue( uint16 group, uint16 tagNum, std::string &) ;
-		void GetTagValue( uint16 group, uint16 tagNum, int32 &) ;
-		void GetTagValue( uint16 group, uint16 tagNum, float &) ;	
+		void GetTagValue( uint16 group, uint16 tagNum, int32 &);
+		void GetTagValue( uint16 group, uint16 tagNum, float &);
 
 		// image level
 		/**
@@ -88,7 +93,7 @@ namespace Dicom {
 		DicomObj();
 	};
 
-}
-}
+//}
+//}
 #endif
 

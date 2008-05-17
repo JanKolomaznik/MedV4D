@@ -230,7 +230,8 @@ DcmProvider::DicomObj::FlushIntoArray( const T *dest)
   }
 }
 
-void DcmProvider::DicomObj::FlushIntoArrayNTID( void*dest, int elementTypeID )
+void 
+DcmProvider::DicomObj::FlushIntoArrayNTID( void*dest, int elementTypeID )
 { 
 	INTEGER_TYPE_TEMPLATE_SWITCH_MACRO( 
 		elementTypeID, FlushIntoArray<TTYPE>( (const TTYPE*) dest ) ); 
@@ -238,17 +239,53 @@ void DcmProvider::DicomObj::FlushIntoArrayNTID( void*dest, int elementTypeID )
 
 ///////////////////////////////////////////////////////////////////////
 
-//void
-//DcmProvider::DicomObj::EncodePixelValue16Aligned( 
-//	uint16 , uint16 , uint16 &)
-//{
-//	//// pixelCell if the image are stored in rows. 1st row, then 2nd ...
-//	//uint8 *fingerToStream = (uint8 *) ( m_pixelData) + ( 	// base
-//	//	((y-1) * m_width + (x-1)) *		// order of a cell in stream
-//	//	(m_bitsAllocated << 3)			// size of a cell in bytes
-//	//	);
-//
-//	//// little endian suposed
-//	//val = (*fingerToStream + (*(fingerToStream + 1) << 8)) >>
-//	//	(m_highBit+1-m_bitsStored);	// align to begin in pixelCell
-//}
+void
+DcmProvider::DicomObj::GetSliceThickness( float32 &f)
+{
+  DcmDataset* dataSet = static_cast<DcmDataset *>(m_dataset);
+
+	if( dataSet == NULL)
+		throw ExceptionBase("No data available!");
+
+  OFString str;
+  dataSet->findAndGetOFString( DCM_SliceThickness, str);
+  std::istringstream stream( str.c_str());
+  stream >> f;
+}
+
+///////////////////////////////////////////////////////////////////////
+
+void
+DcmProvider::DicomObj::GetPixelSpacing( float32 &horizSpacing, float32 &vertSpacing)
+{
+  DcmDataset* dataSet = static_cast<DcmDataset *>(m_dataset);
+
+	if( dataSet == NULL)
+		throw ExceptionBase("No data available!");
+
+  OFString s;
+  dataSet->findAndGetOFStringArray( DCM_PixelSpacing, s);
+
+  std::istringstream stream( s.c_str());
+  stream >> horizSpacing;
+  stream.seekg( stream.cur);
+  stream >> vertSpacing;
+}
+
+///////////////////////////////////////////////////////////////////////
+
+void
+DcmProvider::DicomObj::GetSliceLocation( float32 &location)
+{
+  DcmDataset* dataSet = static_cast<DcmDataset *>(m_dataset);
+
+	if( dataSet == NULL)
+		throw ExceptionBase("No data available!");
+
+  OFString str;
+  dataSet->findAndGetOFString( DCM_SliceLocation, str);
+  std::istringstream stream( str.c_str());
+  stream >> location;
+}
+
+///////////////////////////////////////////////////////////////////////
