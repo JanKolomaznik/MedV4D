@@ -5,7 +5,7 @@
 
 #include "Common.h"
 
-#include "M4DDicomAssoc.h"
+#include "DicomAssoc.h"
 
 using namespace M4D::DicomInternal;
 ///////////////////////////////////////////////////////////////////////

@@ -10,7 +10,7 @@
 // just for imageDataToRenderWindow ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects )
 // DICOM includes:
 #include "Common.h"
-#include "M4DDICOMServiceProvider.h"
+#include "dicomConn/DICOMServiceProvider.h"
 
 
 class m4dGUIVtkRenderWindowWidget: public QVTKWidget

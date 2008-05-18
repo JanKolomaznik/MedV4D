@@ -4,7 +4,7 @@
 #include "AbstractImage.h"
 #include "ImageDataTemplate.h"
 
-#include "dicomConn/M4DDICOMServiceProvider.h"
+#include "dicomConn/DICOMServiceProvider.h"
 
 #include "Common.h"
 

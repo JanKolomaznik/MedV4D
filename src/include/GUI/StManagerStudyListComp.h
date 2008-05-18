@@ -7,7 +7,7 @@
 
 // DICOM includes:
 #include "Common.h"          // M4DDICOMServiceProvider.h needs it (FIXME?)
-#include "M4DDICOMServiceProvider.h"
+#include "dicomConn/DICOMServiceProvider.h"
 
 
 class QTabWidget;

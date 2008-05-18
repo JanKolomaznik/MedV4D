@@ -8,7 +8,7 @@
 // DICOM includes:
 #include "Common.h"
 #include "ExceptionBase.h"
-#include "M4DDICOMServiceProvider.h"
+#include "dicomConn/DICOMServiceProvider.h"
 
 // DICOM namespace:
 using namespace M4D::Dicom;

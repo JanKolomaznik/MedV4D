@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\backendForDICOM\include;..\..\include\DICOMConn;..\..\include"
+				AdditionalIncludeDirectories="..\..\backendForDICOM\include;..\..\include"
 				PreprocessorDefinitions="WINDOWS,_DEBUG,UNICODE,WIN32,&quot;DEBUG_LEVEL=10&quot;"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
@@ -198,11 +198,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\backendForDICOM\FromStreamConverter.h"
+				RelativePath="..\..\backendForDICOM\DicomAssoc.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\backendForDICOM\M4DDicomAssoc.h"
+				RelativePath="..\..\backendForDICOM\FromStreamConverter.h"
 				>
 			</File>
 			<Filter
