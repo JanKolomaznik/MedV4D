@@ -100,6 +100,8 @@ public:
 	 * @return Smart pointer to created image.
 	 * @exception ImageFactory::EWrongPointer Thrown when passed pointer isn't valid.
 	 * @exception ImageFactory::EEmptyDicomObjSet Thrown when empty set passed.
+	 * @exception ImageFactory::EUnknowDataType Thrown when type for element with 
+	 * parameters from dicomObject doesn't exist.
 	 **/
 	static AbstractImage::APtr 
 	CreateImageFromDICOM( Dicom::DcmProvider::DicomObjSetPtr dicomObjects );

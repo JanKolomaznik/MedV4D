@@ -17,20 +17,17 @@ template< typename ElementType >
 ElementType*
 PrepareElementArray( size_t size )
 {
-	ElementType *array = NULL;
 	try
 	{
-		 array = new ElementType[size];
+		ElementType *array = NULL;
+		array = new ElementType[size];
+		 
+		return array;
 	}
 	catch( ... )
 	{
 		throw EFailedArrayAllocation();
 	}
-
-	//TODO remove
-	/*for( int i=0; i < size; ++i )
-		array[i] = (ElementType)(i%50000);*/
-	return array;
 }
 
 template< typename ElementType >
