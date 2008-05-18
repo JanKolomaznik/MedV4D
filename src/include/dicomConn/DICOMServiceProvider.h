@@ -21,7 +21,7 @@ namespace Dicom {
 		// TYPEDEFS ///////////////////////////////////////////////////////////
 
 		//class DicomObj;
-    #include "M4DDICOMObject.h"
+    #include "dicomConn/DICOMObject.h"
 
 		// represents one row in table that shows found results
 		typedef struct s_browserRow {

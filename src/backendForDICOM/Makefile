@@ -14,7 +14,7 @@ TARGETS=	AbstractService \
 		DicomObj \
 		FindService \
 		M4DDicomAssoc \
-		M4DDICOMServiceProvider \
+		DICOMServiceProvider \
 		MoveService \
 		StoreService
 ########################################

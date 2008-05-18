@@ -4,7 +4,7 @@
 #include <dcmtk/dcmdata/dcfilefo.h>
 
 #include "Common.h"
-#include "M4DDICOMServiceProvider.h"
+#include "dicomConn/DICOMServiceProvider.h"
 
 #include "FromStreamConverter.h"
 

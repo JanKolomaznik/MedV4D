@@ -156,7 +156,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\backendForDICOM\M4DDicomAssoc.cpp"
+				RelativePath="..\..\backendForDICOM\DicomAssoc.cpp"
 				>
 			</File>
 			<Filter
@@ -187,7 +187,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\backendForDICOM\M4DDICOMServiceProvider.cpp"
+					RelativePath="..\..\backendForDICOM\DICOMServiceProvider.cpp"
 					>
 				</File>
 			</Filter>
@@ -229,11 +229,11 @@
 				Name="libHeaders"
 				>
 				<File
-					RelativePath="..\..\include\dicomConn\M4DDICOMObject.h"
+					RelativePath="..\..\include\dicomConn\DICOMObject.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\include\dicomConn\M4DDICOMServiceProvider.h"
+					RelativePath="..\..\include\dicomConn\DICOMServiceProvider.h"
 					>
 				</File>
 			</Filter>
