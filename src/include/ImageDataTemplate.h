@@ -170,6 +170,10 @@ protected:
 			);	
 private:
 	ImageDataTemplate();
+	ImageDataTemplate( const ImageDataTemplate &);
+	ImageDataTemplate &operator=( const ImageDataTemplate &);
+
+
 	ElementType		*_data;
 
 public:

@@ -5,7 +5,7 @@
 
 #include "Common.h"
 
-#include "M4DDicomAssoc.h"
+#include "DicomAssoc.h"
 #include "dicomConn/DICOMServiceProvider.h"
 #include "AbstractService.h"
 #include "FindService.h"

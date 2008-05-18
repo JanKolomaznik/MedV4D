@@ -145,7 +145,7 @@ private:
 	/**
 	 * @param pixelSize How many bytes is used per pixel.
 	 * @param imageSize How many elements of size 'pixelSize' can be stored in array.
- 	 * @param stride Number of bytes used per one object flush (size of one layer in bytes).
+ 	 * @param stride Number of BYTES!!! used per one object flush (size of one layer in bytes).
 	 * @param dataArray Array to be filled from dicom objects. Must be allocated!!!
 	 * @exception EWrongArrayForFlush Thrown when NULL array passed, or imageSize is less than
 	 * space needed for flushing all dicom objects.

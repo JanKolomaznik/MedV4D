@@ -68,6 +68,10 @@ protected:
 	size_t			_elementCount;
 	unsigned short		_dimension;
 	DimensionInfo		*_parameters;
+private:
+	AbstractImage();
+	AbstractImage( const AbstractImage &);
+	AbstractImage &operator=( const AbstractImage &);
 
 public:
 	class EWrongDimension: public ErrorHandling::ExceptionBase

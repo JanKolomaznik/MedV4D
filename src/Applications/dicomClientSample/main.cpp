@@ -1,7 +1,7 @@
 
 #include "Common.h"
 #include "ExceptionBase.h"
-#include "dicomConn/M4DDICOMServiceProvider.h"
+#include "dicomConn/DICOMServiceProvider.h"
 
 using namespace std;
 using namespace M4D::Dicom;

@@ -126,6 +126,15 @@ ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 		throw;
 	}
 }
+
+//TODO - improve this function
+/** 
+ * @param imageSize How many elements of size 'pixelSize' can be stored in array.
+ * @param stride Number of BYTES!!! used per one object flush (size of one layer in bytes).
+ * @param dataArray Array to be filled from dicom objects. Must be allocated!!!
+ * @exception EWrongArrayForFlush Thrown when NULL array passed, or imageSize is less than
+ * space needed for flushing all dicom objects.
+ **/
 template< typename ElementType >
 void
 FlushDicomObjectsHelper(
@@ -143,8 +152,9 @@ FlushDicomObjectsHelper(
 		++it, ++i
 	   ) {
 		   DL_PRINT( 8, "-------- DICOM object " << it->OrderInSet() << " is flushed.");
+		uint8 *arrayPosition = dataArray + (stride * i);
 		//it->FlushIntoArray< ElementType >( (ElementType*)dataArray + (stride * i /*it->OrderInSet()*/ ) );
-		it->FlushIntoArrayNTID( (ElementType*)(dataArray + (stride * i)), GetNumericTypeID<ElementType>() );
+		it->FlushIntoArrayNTID( (void*)arrayPosition, GetNumericTypeID<ElementType>() );
 	}
 }
 
