@@ -1,6 +1,7 @@
 
-#include "dcmtk/dcmdata/dcdeftag.h"
-#include "dcmtk/dcmdata/dcfilefo.h"
+#include <dcmtk/config/osconfig.h>
+#include <dcmtk/dcmdata/dcdeftag.h>
+#include <dcmtk/dcmdata/dcfilefo.h>
 
 #include "Common.h"
 #include "M4DDICOMServiceProvider.h"

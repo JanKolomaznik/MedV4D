@@ -37,11 +37,13 @@ INCLUDES=	-I$(srcdir)\
 		-I../include
 
 
-
 DEBUG_DEFS=	-DDEBUG_LEVEL=10\
 		-DDEBUG_ADITIONAL_INFO
+		
 
-DEFS=		$(DEBUG_DEFS)
+DEFS=		-DHAVE_CONFIG_H\
+		-DHAVE_SSTREAM\
+		$(DEBUG_DEFS)
 
 
 SRC_FILES=	$(addsuffix .cpp, $(TARGETS))
@@ -61,7 +63,7 @@ build:		cleanall all
 
 .PHONY: dep
 dep:
-		$(CC) $(INCLUDES) $(CDEPFLAGS) $(SRC_FILES) | \
+		$(CC) $(INCLUDES) $(CDEPFLAGS) $(DEFS) $(SRC_FILES) | \
 		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
 
 $(TMP_DIR)/%.o:	%.cpp	

@@ -5,7 +5,7 @@
  *  Implements C-FIND service to DICOM server
  */
 
-#include "M4DDICOMServiceProvider.h"
+#include "dicomConn/DICOMServiceProvider.h"
 
 namespace M4D
 {

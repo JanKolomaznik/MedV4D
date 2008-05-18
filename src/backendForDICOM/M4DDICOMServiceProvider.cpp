@@ -1,11 +1,12 @@
-#include "dcmtk/dcmnet/dimse.h"
-#include "dcmtk/dcmnet/diutil.h"
-#include "dcmtk/dcmdata/dcdeftag.h"
+#include <dcmtk/config/osconfig.h>
+#include <dcmtk/dcmnet/dimse.h>
+#include <dcmtk/dcmnet/diutil.h>
+#include <dcmtk/dcmdata/dcdeftag.h>
 
 #include "Common.h"
 
 #include "M4DDicomAssoc.h"
-#include "M4DDICOMServiceProvider.h"
+#include "dicomConn/DICOMServiceProvider.h"
 #include "AbstractService.h"
 #include "MoveService.h"
 #include "FindService.h"

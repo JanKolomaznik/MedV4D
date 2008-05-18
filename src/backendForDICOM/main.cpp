@@ -1,10 +1,11 @@
 
 #include "main.h"
-#include "M4DDICOMServiceProvider.h"
+#include "dicomConn/DICOMServiceProvider.h"
 
 #ifdef WITH_OPENSSL
-#include "dcmtk/dcmtls/tlstrans.h"
-#include "dcmtk/dcmtls/tlslayer.h"
+#include <dcmtk/config/osconfig.h>
+#include <dcmtk/dcmtls/tlstrans.h>
+#include <dcmtk/dcmtls/tlslayer.h>
 #endif
 
 using namespace std;

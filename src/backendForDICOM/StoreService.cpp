@@ -1,20 +1,21 @@
-#include "dcmtk/dcmnet/dimse.h"
-#include "dcmtk/dcmnet/diutil.h"
-#include "dcmtk/dcmdata/dcdeftag.h"
-#include "dcmtk/dcmdata/dcdict.h"		// data dictionary
+#include <dcmtk/config/osconfig.h>
+#include <dcmtk/dcmnet/dimse.h>
+#include <dcmtk/dcmnet/diutil.h>
+#include <dcmtk/dcmdata/dcdeftag.h>
+#include <dcmtk/dcmdata/dcdict.h>		// data dictionary
 
 #include "Common.h"
 
 #include "M4DDicomAssoc.h"
-#include "M4DDICOMServiceProvider.h"
+#include "dicomConn/DICOMServiceProvider.h"
 #include "AbstractService.h"
 #include "StoreService.h"
 
 #ifdef ON_THE_FLY_COMPRESSION
-#include "dcmtk/dcmjpeg/djdecode.h"  /* for dcmjpeg decoders */
-#include "dcmtk/dcmjpeg/djencode.h"  /* for dcmjpeg encoders */
-#include "dcmtk/dcmdata/dcrledrg.h"  /* for DcmRLEDecoderRegistration */
-#include "dcmtk/dcmdata/dcrleerg.h"  /* for DcmRLEEncoderRegistration */
+#include <dcmtk/dcmjpeg/djdecode.h>  /* for dcmjpeg decoders */
+#include <dcmtk/dcmjpeg/djencode.h>  /* for dcmjpeg encoders */
+#include <dcmtk/dcmdata/dcrledrg.h>  /* for DcmRLEDecoderRegistration */
+#include <dcmtk/dcmdata/dcrleerg.h>  /* for DcmRLEEncoderRegistration */
 #endif
 
 namespace M4D
