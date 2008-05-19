@@ -1,20 +1,28 @@
-#include <QtGui/QtGui>
+#ifndef _ABSTRACT_PROCESSING_UNIT_H
+#define _ABSTRACT_PROCESSING_UNIT_H
 
-#include "uiPureQtMainWindow.h"
-
-
-int main( int argc, char **argv ) 
+namespace M4D
 {
-  QApplication app( argc, argv );
-  app.setQuitOnLastWindowClosed( true );
-
-  QMainWindow *form = new QMainWindow;
-  Ui::MainWindow ui;
-  ui.setupUi( form );
-
-  ui.textBrowser->setSource( QUrl( "..\\..\\GUI\\pureQt\\main.cpp" ) );
+namespace Imaging
+{
 
 
-  form->show();
-  return app.exec();
-}
+/**
+ *
+ **/
+class AbstractProcessingUnit
+{
+public:
+
+protected:
+
+private:
+
+};
+
+}/*namespace Imaging*/
+}/*namespace M4D*/
+
+
+#endif /*_ABSTRACT_PROCESSING_UNIT_H*/
+

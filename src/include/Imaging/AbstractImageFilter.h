@@ -1,20 +1,42 @@
-#include <QtGui/QtGui>
+#ifndef _ABSTRACT_IMAGE_FILTER_H
+#define _ABSTRACT_IMAGE_FILTER_H
 
-#include "uiPureQtMainWindow.h"
+#include "ExceptionBase.h"
 
+#include "Imaging/ImageDataTemplate.h"
+#include "Imaging/ImageFactory.h"
 
-int main( int argc, char **argv ) 
+namespace M4D
 {
-  QApplication app( argc, argv );
-  app.setQuitOnLastWindowClosed( true );
 
-  QMainWindow *form = new QMainWindow;
-  Ui::MainWindow ui;
-  ui.setupUi( form );
+namespace Imaging
+{
 
-  ui.textBrowser->setSource( QUrl( "..\\..\\GUI\\pureQt\\main.cpp" ) );
+/**
+ * Ancestor of all image filters.
+ **/
+class BaseFilter
+{
+
+};
 
 
-  form->show();
-  return app.exec();
-}
+/**
+ * Ancestor of filters with single input and single output.
+ **/
+template< typename InputElementType, typename OutputElementType >
+class AbstractImageDataFilter: public BaseFilter
+{
+public:
+
+protected:
+
+private:
+
+};
+
+} /*namespace Imaging*/
+} /*namespace M4D*/
+
+
+#endif /*_ABSTRACT_IMAGE_FILTER_H*/

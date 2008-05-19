@@ -102,6 +102,7 @@ ImageDataTemplate< ElementType >::Get( size_t x, size_t y, size_t z )
 }
 //3D end--------------------------------------------
 
+
 } /*namespace Imaging*/
 } /*namespace M4D*/
 

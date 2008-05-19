@@ -127,6 +127,7 @@ ImageFactory::CreateEmptyImage3DTyped(
 	return ImageDataTemplate< ElementType >::Ptr( newImage );
 }
 
+
 } /*namespace Imaging*/
 } /*namespace M4D*/
 
