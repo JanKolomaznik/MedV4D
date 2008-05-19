@@ -1,4 +1,4 @@
-#include "AbstractImageData.h"
+#include "Imaging/AbstractImageData.h"
 
 namespace M4D
 {

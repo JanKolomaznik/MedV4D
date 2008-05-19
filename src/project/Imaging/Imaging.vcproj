@@ -150,27 +150,27 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\include\AbstractImage.h"
+				RelativePath="..\..\include\Imaging\AbstractImage.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\AbstractImageFilter.h"
+				RelativePath="..\..\include\Imaging\AbstractImageFilter.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\ImageDataTemplate.h"
+				RelativePath="..\..\include\Imaging\ImageDataTemplate.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\ImageDataTemplate.tcc"
+				RelativePath="..\..\include\Imaging\ImageDataTemplate.tcc"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\ImageFactory.h"
+				RelativePath="..\..\include\Imaging\ImageFactory.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\ImageFactory.tcc"
+				RelativePath="..\..\include\Imaging\ImageFactory.tcc"
 				>
 			</File>
 		</Filter>
