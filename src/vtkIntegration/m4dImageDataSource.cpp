@@ -44,7 +44,7 @@ m4dImageDataSource::~m4dImageDataSource()
 }
 
 void
-m4dImageDataSource::SetImageData( Images::AbstractImage::APtr imageData )
+m4dImageDataSource::SetImageData( Images::AbstractImageData::APtr imageData )
 {
 	D_PRINT( LogDelimiter( '*' ) );
 	D_PRINT( "-- Entering m4dImageDataSource::SetImageData()." );
@@ -55,7 +55,7 @@ m4dImageDataSource::SetImageData( Images::AbstractImage::APtr imageData )
 	if( !imageData ) {
 		D_PRINT( "---- Obtained invalid image pointer." );
 		//Setting to NULL
-		_imageData = Images::AbstractImage::APtr();
+		_imageData = Images::AbstractImageData::APtr();
 
 		for( size_t dim = 0; dim < imageDimension; ++dim ) {
 			_wholeExtent[2*dim]		= 0;  

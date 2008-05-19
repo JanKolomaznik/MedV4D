@@ -31,7 +31,7 @@ PrepareElementArray( size_t size )
 }
 
 template< typename ElementType >
-AbstractImage::APtr 
+AbstractImageData::APtr 
 ImageFactory::CreateEmptyImage2D( 
 			size_t		width, 
 			size_t		height
@@ -40,9 +40,9 @@ ImageFactory::CreateEmptyImage2D(
 	typename ImageDataTemplate< ElementType >::Ptr ptr = 
 		ImageFactory::CreateEmptyImage2DTyped< ElementType >( width, height );
 
-	AbstractImage::APtr aptr = 
+	AbstractImageData::APtr aptr = 
 		boost::static_pointer_cast
-		< AbstractImage, ImageDataTemplate<ElementType> >( ptr );
+		< AbstractImageData, ImageDataTemplate<ElementType> >( ptr );
 
 	return aptr;
 }
@@ -81,7 +81,7 @@ ImageFactory::CreateEmptyImage2DTyped(
 }
 
 template< typename ElementType >
-AbstractImage::APtr 
+AbstractImageData::APtr 
 ImageFactory::CreateEmptyImage3D( 
 			size_t		width, 
 			size_t		height, 
@@ -91,9 +91,9 @@ ImageFactory::CreateEmptyImage3D(
 	typename ImageDataTemplate< ElementType >::Ptr ptr = 
 		ImageFactory::CreateEmptyImage3DTyped< ElementType >( width, height, depth );
 
-	AbstractImage::APtr aptr = 
+	AbstractImageData::APtr aptr = 
 		boost::static_pointer_cast
-		< AbstractImage, ImageDataTemplate<ElementType> >( ptr );
+		< AbstractImageData, ImageDataTemplate<ElementType> >( ptr );
 
 	return aptr;
 }

@@ -3,7 +3,7 @@
 
 #include "ExceptionBase.h"
 
-#include "AbstractImage.h"
+#include "AbstractImageData.h"
 
 namespace M4D
 {
@@ -16,7 +16,7 @@ class ImageFactory;
 
 
 template < typename ElementType >
-class ImageDataTemplate: public AbstractImage
+class ImageDataTemplate: public AbstractImageData
 {
 public:
 	/**

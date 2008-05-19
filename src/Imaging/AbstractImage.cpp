@@ -1,4 +1,4 @@
-#include "AbstractImage.h"
+#include "AbstractImageData.h"
 
 namespace M4D
 {
@@ -6,7 +6,7 @@ namespace M4D
 namespace Images
 {
 
-AbstractImage::AbstractImage( 
+AbstractImageData::AbstractImageData( 
 			DimensionInfo		*parameters,
 			unsigned short		dimension,
 			size_t			elementCount
@@ -28,13 +28,13 @@ AbstractImage::AbstractImage(
  * Destructor is pure virtual, but definition is needed to
  * avoid compile time errors.
  **/
-AbstractImage::~AbstractImage()
+AbstractImageData::~AbstractImageData()
 {
 }
 
 
 const DimensionInfo&
-AbstractImage::GetDimensionInfo( unsigned short dim )const
+AbstractImageData::GetDimensionInfo( unsigned short dim )const
 {
 	if( dim >= _dimension ) {
 		throw EWrongDimension( dim, _dimension );

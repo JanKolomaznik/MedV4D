@@ -25,7 +25,7 @@ class BaseFilter
  * Ancestor of filters with single input and single output.
  **/
 template< typename InputElementType, typename OutputElementType >
-class AbstractImageFilter: public BaseFilter
+class AbstractImageDataFilter: public BaseFilter
 {
 public:
 

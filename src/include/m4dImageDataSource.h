@@ -2,7 +2,7 @@
 #define _M4D_IMAGE_DATA_SOURCE_H
 
 #include "ExceptionBase.h"
-#include "AbstractImage.h"
+#include "AbstractImageData.h"
 #include "ImageDataTemplate.h"
 
 #include "vtkImageAlgorithm.h"
@@ -20,7 +20,7 @@ public:
 	vtkTypeRevisionMacro(m4dImageDataSource,vtkImageAlgorithm);
 
 	void
-	SetImageData( Images::AbstractImage::APtr imageData );
+	SetImageData( Images::AbstractImageData::APtr imageData );
 protected:
 	m4dImageDataSource();
 	~m4dImageDataSource();
@@ -39,7 +39,7 @@ protected:
 		vtkInformationVector *
 		);
 
-	Images::AbstractImage::APtr	_imageData;
+	Images::AbstractImageData::APtr	_imageData;
 	int				_wholeExtent[6];
 private:
 	m4dImageDataSource(const m4dImageDataSource&);  // Not implemented.

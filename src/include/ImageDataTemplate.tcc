@@ -14,7 +14,7 @@ ImageDataTemplate< ElementType >::ImageDataTemplate(
 			unsigned short		dimension,
 			size_t			elementCount
 			) 
-	: AbstractImage( parameters, dimension, elementCount ), _data( data ) 	
+	: AbstractImageData( parameters, dimension, elementCount ), _data( data ) 	
 {
 	if ( _data == NULL ) {
 		//TODO handle problem

@@ -20,7 +20,7 @@ ImageFactory::PrepareElementArrayFromTypeID(
 		typeId, dataArray = (uint8 *) PrepareElementArray< TTYPE >( imageSize ) );
 }
 
-AbstractImage*
+AbstractImageData*
 ImageFactory::CreateImageFromDataAndTypeID(
 		int 			typeId, 
 		size_t 			imageSize, 
@@ -28,7 +28,7 @@ ImageFactory::CreateImageFromDataAndTypeID(
 		DimensionInfo		* info
 		)
 {
-	AbstractImage*	image;
+	AbstractImageData*	image;
 
 	//We will generate switch over common numerical types. For more see Common.h
 	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( 
@@ -38,7 +38,7 @@ ImageFactory::CreateImageFromDataAndTypeID(
 }
 
 
-AbstractImage::APtr 
+AbstractImageData::APtr 
 ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 {
 		D_PRINT( LogDelimiter( '*' ) );
@@ -108,7 +108,7 @@ ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 		info[2].Set( depth, width * height );
 
 			D_PRINT( "---- Creating resulting image." );
-		AbstractImage::APtr result( (AbstractImage*)
+		AbstractImageData::APtr result( (AbstractImageData*)
 					CreateImageFromDataAndTypeID( elementTypeID, imageSize, dataArray, info ) 
 					);
 		

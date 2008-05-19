@@ -1,7 +1,7 @@
 #ifndef _IMAGE_FACTORY_H
 #define _IMAGE_FACTORY_H
 
-#include "AbstractImage.h"
+#include "AbstractImageData.h"
 #include "ImageDataTemplate.h"
 
 #include "dicomConn/DICOMServiceProvider.h"
@@ -36,7 +36,7 @@ public:
 	 * @return Smart pointer to abstract ancestor of created image.
 	 **/
 	template< typename ElementType >
-	static AbstractImage::APtr 
+	static AbstractImageData::APtr 
 	CreateEmptyImage2D( 
 			size_t		width, 
 			size_t		height
@@ -68,7 +68,7 @@ public:
 	 * @return Smart pointer to abstract ancestor of created image.
 	 **/
 	template< typename ElementType >
-	static AbstractImage::APtr 
+	static AbstractImageData::APtr 
 	CreateEmptyImage3D( 
 			size_t		width, 
 			size_t		height, 
@@ -103,7 +103,7 @@ public:
 	 * @exception ImageFactory::EUnknowDataType Thrown when type for element with 
 	 * parameters from dicomObject doesn't exist.
 	 **/
-	static AbstractImage::APtr 
+	static AbstractImageData::APtr 
 	CreateImageFromDICOM( Dicom::DcmProvider::DicomObjSetPtr dicomObjects );
 protected:
 
@@ -133,7 +133,7 @@ private:
 	 * @param dataArray Filled array of image elements.
 	 * @param info Filled dimension info array.
 	 **/
-	static AbstractImage*
+	static AbstractImageData*
 	CreateImageFromDataAndTypeID(
 		int 			typeId,
 		size_t 			imageSize, 

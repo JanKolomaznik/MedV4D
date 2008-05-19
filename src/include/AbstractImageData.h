@@ -36,21 +36,21 @@ struct DimensionInfo
 	uint32		stride;
 };
 
-class AbstractImage
+class AbstractImageData
 {
 public:
 	/**
-	 * Smart pointer type for accesing AbstractImage instance (child).
+	 * Smart pointer type for accesing AbstractImageData instance (child).
 	 **/
-	typedef boost::shared_ptr< AbstractImage > APtr;
+	typedef boost::shared_ptr< AbstractImageData > APtr;
 
-	AbstractImage( 
+	AbstractImageData( 
 			DimensionInfo		*parameters,
 			unsigned short		dimension,
 			size_t			elementCount
 			);
 
-	virtual ~AbstractImage()=0;
+	virtual ~AbstractImageData()=0;
 
 	virtual int
 	GetElementTypeID()=0;
@@ -69,9 +69,9 @@ protected:
 	unsigned short		_dimension;
 	DimensionInfo		*_parameters;
 private:
-	AbstractImage();
-	AbstractImage( const AbstractImage &);
-	AbstractImage &operator=( const AbstractImage &);
+	AbstractImageData();
+	AbstractImageData( const AbstractImageData &);
+	AbstractImageData &operator=( const AbstractImageData &);
 
 public:
 	class EWrongDimension: public ErrorHandling::ExceptionBase
