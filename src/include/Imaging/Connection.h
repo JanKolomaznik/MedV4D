@@ -2,6 +2,7 @@
 #define _CONNECTION_H
 
 
+
 namespace M4D
 {
 namespace Imaging

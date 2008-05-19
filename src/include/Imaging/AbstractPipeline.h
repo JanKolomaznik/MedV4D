@@ -5,6 +5,7 @@
 #include "Imaging/AbstractFilter.h"
 #include "Imaging/Connection.h"
 
+
 namespace M4D
 {
 namespace Imaging

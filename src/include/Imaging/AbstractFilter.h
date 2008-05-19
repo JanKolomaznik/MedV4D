@@ -1,6 +1,7 @@
 #ifndef _ABSTRACT_FILTER_H
 #define _ABSTRACT_FILTER_H
 
+#include "Imaging/AbstractProcessingUnit.h"
 
 namespace M4D
 {
