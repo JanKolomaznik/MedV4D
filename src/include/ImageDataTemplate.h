@@ -8,7 +8,7 @@
 namespace M4D
 {
 
-namespace Images
+namespace Imaging
 {
 
 //Forward declaration
@@ -197,7 +197,7 @@ public:
 
 
 
-} /*namespace Images*/
+} /*namespace Imaging*/
 } /*namespace M4D*/
 
 /*Include template implementation.*/

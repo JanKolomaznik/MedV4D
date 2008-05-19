@@ -9,7 +9,7 @@
 namespace M4D
 {
 
-namespace Images
+namespace Imaging
 {
 
 /**
@@ -35,7 +35,7 @@ private:
 
 };
 
-} /*namespace Images*/
+} /*namespace Imaging*/
 } /*namespace M4D*/
 
 

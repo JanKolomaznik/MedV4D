@@ -4,7 +4,7 @@
 
 namespace M4D
 {
-namespace Images
+namespace Imaging
 {
 
 /**
@@ -127,7 +127,7 @@ ImageFactory::CreateEmptyImage3DTyped(
 	return ImageDataTemplate< ElementType >::Ptr( newImage );
 }
 
-} /*namespace Images*/
+} /*namespace Imaging*/
 } /*namespace M4D*/
 
 #endif /*_IMAGE_FACTORY_H*/

@@ -27,7 +27,7 @@ int
 ConvertNumericTypeIDToVTKScalarType( int NumericTypeID );
 
 void
-FillVTKImageFromM4DImage( vtkImageData *vtkImage, Images::AbstractImageData::APtr m4dImage );
+FillVTKImageFromM4DImage( vtkImageData *vtkImage, Imaging::AbstractImageData::APtr m4dImage );
 
 
 
@@ -94,7 +94,7 @@ template< typename ElementType >
 void
 FillVTKImageDataFromImageData( 
 		vtkImageData					*imageData,
-		const Images::ImageDataTemplate< ElementType >	&image 
+		const Imaging::ImageDataTemplate< ElementType >	&image 
 		)
 {
 	size_t width	= image.GetDimensionInfo( 0 ).size;
@@ -145,7 +145,7 @@ FillVTKImageDataFromImageData(
 template< typename ElementType >
 vtkImageData*
 CreateVTKImageDataFromImageData( 
-		const Images::ImageDataTemplate< ElementType >& image )
+		const Imaging::ImageDataTemplate< ElementType >& image )
 {
 	vtkImageData* imageData = vtkImageData::New();
 

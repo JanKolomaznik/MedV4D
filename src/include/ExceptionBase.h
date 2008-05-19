@@ -26,7 +26,7 @@ private:
 class ExceptionWrongPointer: public ExceptionBase
 {
 public:
-	ExceptionWrongPointer( std::string, void *pointer );
+	ExceptionWrongPointer( std::string, void *pointer ) throw();
 private:
 	void	*_pointer;
 };

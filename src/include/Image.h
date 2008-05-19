@@ -9,6 +9,9 @@ namespace M4D
 namespace Imaging
 {
 
+/**
+ *
+ **/
 struct DimensionExtends
 {
 	DimensionExtends(){}
@@ -16,6 +19,9 @@ struct DimensionExtends
 	size_t	
 };
 
+/**
+ *
+ **/
 class AbstractImage
 {
 public:
@@ -31,6 +37,9 @@ private:
 
 };
 
+/**
+ *
+ **/
 template< ElementType, unsigned dim >
 class ImageDimensionalTemplate: public AbstractImage 
 {
@@ -51,6 +60,9 @@ private:
 
 };
 
+/**
+ *
+ **/
 template< ElementType >
 class Image2D: public ImageDimensionalTemplate< ElementType, 2 >
 {
@@ -69,6 +81,9 @@ private:
 };
 
 
+/**
+ *
+ **/
 template< ElementType >
 class Image3D: public ImageDimensionalTemplate< ElementType, 3 >
 {
@@ -86,6 +101,9 @@ private:
 
 };
 
+/**
+ *
+ **/
 template< ElementType >
 class Image4D: public ImageDimensionalTemplate< ElementType, 4 >
 {

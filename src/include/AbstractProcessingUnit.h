@@ -6,6 +6,9 @@ namespace M4D
 namespace Imaging
 {
 
+/**
+ *
+ **/
 class AbstractProcessingUnit
 {
 public:

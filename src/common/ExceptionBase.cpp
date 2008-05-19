@@ -9,13 +9,13 @@ namespace ErrorHandling
 {
 
 
-ExceptionBase::ExceptionBase( std::string name )
+ExceptionBase::ExceptionBase( std::string name ) throw()
 		: std::exception(), _name( name ) 
 { 
 	OnRaise();
 }
 
-ExceptionBase::ExceptionBase()
+ExceptionBase::ExceptionBase() throw()
 	: std::exception(), _name( "General exception raised." ) 
 { 
 	OnRaise();

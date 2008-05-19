@@ -4,7 +4,7 @@
 
 namespace M4D
 {
-namespace Images
+namespace Imaging
 {
 
 template < typename ElementType >
@@ -102,7 +102,7 @@ ImageDataTemplate< ElementType >::Get( size_t x, size_t y, size_t z )
 }
 //3D end--------------------------------------------
 
-} /*namespace Images*/
+} /*namespace Imaging*/
 } /*namespace M4D*/
 
 #endif /*_IMAGE_DATA_TEMPLATE_H*/

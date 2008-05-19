@@ -3,7 +3,7 @@
 
 namespace M4D
 {
-namespace Images
+namespace Imaging
 {
 using namespace Dicom;
 
@@ -174,5 +174,5 @@ ImageFactory::FlushDicomObjects(
 	);
 }
 
-}/*namespace Images*/
+}/*namespace Imaging*/
 }/*namespace M4D*/

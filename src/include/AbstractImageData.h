@@ -9,7 +9,7 @@
 namespace M4D
 {
 
-namespace Images
+namespace Imaging
 {
 	
 /**
@@ -105,7 +105,7 @@ public:
 };
 
 
-} /*namespace Images*/
+} /*namespace Imaging*/
 } /*namespace M4D*/
 
 #endif /*_ABSTRACT_IMAGE_H*/

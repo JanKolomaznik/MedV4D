@@ -67,7 +67,7 @@ extern std::ostream *pdout;
 
 //----------------------------------------------------------------------------
 #ifdef DEBUG_LEVEL
-#define D_COMMAND( ARG )	ARG
+#define D_COMMAND( ARG )	{ ARG }
 #else
 #define	D_COMMAND(ARG)
 #endif /*DEBUG_LEVEL*/
@@ -91,12 +91,5 @@ extern std::ostream *pdout;
 
 //----------------------------------------------------------------------------
 
-////////////////////// logging ////////////////////////////
-/*extern std::ostream *logStream;
-#define currTime "0:00:00"  // TODO
-
-#define LOG( ARGs )	\
-	(*logStream) << currTime << ARGs << "\n------------------\n";
-*/
 
 #endif /*__DEBUG_H_*/

@@ -10,7 +10,7 @@
 
 namespace M4D
 {
-namespace Images
+namespace Imaging
 {
 
 /**
@@ -217,7 +217,7 @@ public:
 //TODO
 };
 
-} /*namespace Images*/
+} /*namespace Imaging*/
 } /*namespace M4D*/
 
 //Including template implementation

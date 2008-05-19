@@ -3,7 +3,7 @@
 
 #include "DataConversion.h"
 
-using namespace M4D::Images;
+using namespace M4D::Imaging;
 using namespace M4D::vtkIntegration;
 int
 main( void )

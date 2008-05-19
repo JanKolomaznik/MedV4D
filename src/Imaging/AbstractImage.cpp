@@ -3,7 +3,7 @@
 namespace M4D
 {
 
-namespace Images
+namespace Imaging
 {
 
 AbstractImageData::AbstractImageData( 
@@ -43,5 +43,5 @@ AbstractImageData::GetDimensionInfo( unsigned short dim )const
 	return _parameters[ dim ];
 }
 
-}/*namespace Images*/
+}/*namespace Imaging*/
 } /*namespace M4D*/
