@@ -2,8 +2,8 @@
 #define _M4D_IMAGE_DATA_SOURCE_H
 
 #include "ExceptionBase.h"
-#include "AbstractImageData.h"
-#include "ImageDataTemplate.h"
+#include "Imaging/AbstractImageData.h"
+#include "Imaging/ImageDataTemplate.h"
 
 #include "vtkImageAlgorithm.h"
 

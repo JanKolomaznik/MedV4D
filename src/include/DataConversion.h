@@ -1,7 +1,7 @@
 #ifndef _DATA_CONVERSION_H
 #define _DATA_CONVERSION_H
 
-#include "ImageDataTemplate.h"
+#include "Imaging/ImageDataTemplate.h"
 
 #include "vtkImageData.h"
 #include "ExceptionBase.h"

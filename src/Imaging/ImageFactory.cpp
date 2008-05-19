@@ -1,4 +1,4 @@
-#include "ImageFactory.h"
+#include "Imaging/ImageFactory.h"
 #include "Debug.h"
 
 namespace M4D

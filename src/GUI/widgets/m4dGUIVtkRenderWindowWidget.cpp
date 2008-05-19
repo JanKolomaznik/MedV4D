@@ -22,7 +22,7 @@
 
 #include "m4dImageDataSource.h"
 // just for imageDataToRenderWindow ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects )
-#include "ImageFactory.h"
+#include "Imaging/ImageFactory.h"
 
 using namespace M4D::vtkIntegration;
 

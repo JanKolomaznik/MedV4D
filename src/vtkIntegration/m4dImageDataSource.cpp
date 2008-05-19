@@ -8,7 +8,7 @@
 #include "Log.h"
 #include "Debug.h"
 #include "DataConversion.h"
-#include "ImageFactory.h"
+#include "Imaging/ImageFactory.h"
 
 
 namespace M4D
