@@ -141,6 +141,10 @@ DcmProvider::DicomObj::Init()
 	}
 	else
 		m_status = Loaded;
+
+  // call loaded callback if any
+  if( m_loadedCallBack != NULL)
+    m_loadedCallBack();
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -178,8 +182,8 @@ DcmProvider::DicomObj::FlushIntoArray( const T *dest)
 		highBit == 7 &&
 		bitsStored == 8)	
   {
-    if( sizeof( T) != 2)
-      throw ExceptionBase( "Destination type is not corresponding with PixelSize!");
+    //if( sizeof( T) != 2)
+    //  throw ExceptionBase( "Destination type is not corresponding with PixelSize!");
   }
 
 	else if( //pixelRepresentation == 0 &&
@@ -189,8 +193,8 @@ DcmProvider::DicomObj::FlushIntoArray( const T *dest)
 		// basic setting. TODO: rewrite to be able to accept others settings
 	{
     // check if was passed right type
-    if( sizeof( T) != 2)
-      throw ExceptionBase( "Destination type is not corresponding with PixelSize!");
+    //if( sizeof(T) != 2)
+    //  throw ExceptionBase( "Destination type is not corresponding with PixelSize!");
 
 		register uint16 i, j;
 		register uint16 *destIter = (uint16 *)dest;
@@ -208,9 +212,9 @@ DcmProvider::DicomObj::FlushIntoArray( const T *dest)
 		highBit == 31 &&
 		bitsStored == 32)	
   {
-    if( sizeof( T) != 4)
-      throw ExceptionBase( 
-        "Destination type is not corresponding with PixelSize!");
+    //if( sizeof( T) != 4)
+    //  throw ExceptionBase( 
+    //    "Destination type is not corresponding with PixelSize!");
   }
 
   // none of above. Custom DICOM stream.

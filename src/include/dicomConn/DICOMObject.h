@@ -12,6 +12,8 @@
    */
 	class DicomObj
 	{
+    typedef void (*ImageLoadedCallback)(void);
+
 	private:
 
 		enum Status {
@@ -28,7 +30,12 @@
 
 		Status m_status;
 
+    ImageLoadedCallback m_loadedCallBack;
+
 	public:
+
+    inline void SetLoadedCallback( ImageLoadedCallback c) 
+      { m_loadedCallBack = c; }
 
 		void *m_dataset;
 
@@ -41,7 +48,6 @@
 		void GetSliceThickness( float32 &f);
 		void GetPixelSpacing( float32 &horizSpacing, float32 &vertSpacing);
 		void GetSliceLocation( float32 &location);
-
 
 		/**
 		 *	Should prepare data to be easily handled. Convert from special dicom
@@ -56,7 +62,7 @@
 
 		void FlushIntoArrayNTID( void*dest, int elementTypeID );
 
-		inline bool IsLoaded( void) { return m_status == Loaded; }
+		//inline bool IsLoaded( void) { return m_status == Loaded; }
 
 		/**
 		 *  Returns order number in set according that images can be sorted

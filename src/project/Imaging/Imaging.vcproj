@@ -42,6 +42,7 @@
 				PreprocessorDefinitions="WINDOWS,_DEBUG,UNICODE,WIN32,&quot;DEBUG_LEVEL=10&quot;"
 				MinimalRebuild="false"
 				RuntimeLibrary="1"
+				DebugInformationFormat="4"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
