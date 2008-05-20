@@ -4,6 +4,7 @@
 
 #include "Imaging/AbstractFilter.h"
 #include "Imaging/Connection.h"
+#include <boost/shared_ptr.hpp>
 
 
 namespace M4D

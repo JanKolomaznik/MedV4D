@@ -2,6 +2,7 @@
 #define _IMAGE__H
 
 #include "Imaging/ImageDataTemplate.h"
+#include <boost/shared_ptr.hpp>
 
 
 namespace M4D
@@ -22,10 +23,10 @@ struct DimensionExtends
 /**
  *
  **/
-class AbstractImage
+class AbstractImage : public AbstractDataSet
 {
 public:
-	typedef boost::shared_ptr< AbstractImage > APtr;
+	typedef boost::shared_ptr< AbstractImage > AImagePtr;
 
 	AbstractImage(){}
 	
@@ -67,12 +68,23 @@ template< ElementType >
 class Image2D: public ImageDimensionalTemplate< ElementType, 2 >
 {
 public:
-	typedef Image2D< ElementType >			ThisClass;
+	typedef Image2D< ElementType >		ThisClass;
 	typedef boost::shared_ptr< ThisClass >	Ptr;
 
 	Image2D( typename ImageDataTemplate< ElementType >::Ptr imageData );
 	Image2D( AbstractImageData::APtr imageData );
 	~Image2D();
+	
+	ElementType &
+	GetElement( size_t x, size_t y );
+
+	Image2D< ElementType >::Ptr
+	GetRestrictedImage2D( 
+			size_t x1, 
+			size_t y1, 
+			size_t x2, 
+			size_t y2 
+			);
 
 protected:
 
@@ -88,13 +100,35 @@ template< ElementType >
 class Image3D: public ImageDimensionalTemplate< ElementType, 3 >
 {
 public:
-	typedef Image3D< ElementType >			ThisClass;
+	typedef Image3D< ElementType >		ThisClass;
 	typedef boost::shared_ptr< ThisClass >	Ptr;
 
 	Image3D( typename ImageDataTemplate< ElementType >::Ptr imageData );
 	Image3D( AbstractImageData::APtr imageData );
 	~Image3D();
 
+	ElementType &
+	GetElement( size_t x, size_t y, size_t z );
+
+	Image2D< ElementType >::Ptr
+	GetRestrictedImage2D( 
+			size_t x1, 
+			size_t y1, 
+			size_t z1, 
+			size_t x2, 
+			size_t y2, 
+			size_t z2, 
+			);
+
+	Image3D< ElementType >::Ptr
+	GetRestrictedImage3D( 
+			size_t x1, 
+			size_t y1, 
+			size_t z1, 
+			size_t x2, 
+			size_t y2, 
+			size_t z2, 
+			);
 protected:
 
 private:

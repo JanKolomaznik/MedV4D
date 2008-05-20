@@ -12,20 +12,12 @@ namespace M4D
 namespace Imaging
 {
 
-/**
- * Ancestor of all image filters.
- **/
-class BaseFilter
-{
-
-};
-
 
 /**
  * Ancestor of filters with single input and single output.
  **/
 template< typename InputElementType, typename OutputElementType >
-class AbstractImageDataFilter: public BaseFilter
+class SimpleImageFilter: public AbstractFilter
 {
 public:
 
