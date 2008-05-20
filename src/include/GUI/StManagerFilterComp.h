@@ -20,11 +20,12 @@ class StManagerFilterComp: public QWidget
 
   private slots:
     void search ();
+    void today ();
+    void yesterday ();
 
-    void fromCheck ();
-    void toCheck ();
-    void modalityCheck ();
-
+    void from ();
+    void to ();
+ 
   private:
     QPushButton *createButton ( const QString &text, const char *member );
     QComboBox   *createComboBox ( const QString &text = QString() );
@@ -41,6 +42,8 @@ class StManagerFilterComp: public QWidget
     QComboBox   *patientIDComboBox;
     QComboBox   *lastNameComboBox;
     QComboBox   *firstNameComboBox;
+    QCheckBox   *fromDateCheckBox;
+    QCheckBox   *toDateCheckBox;
     QDateEdit   *fromDateDateEdit;
     QDateEdit   *toDateDateEdit;
     QComboBox   *accesionComboBox;

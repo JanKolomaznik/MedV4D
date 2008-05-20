@@ -31,7 +31,7 @@ StManagerStudyListComp::StManagerStudyListComp ( m4dGUIVtkRenderWindowWidget *vt
   queueFilterButton = createButton( tr( "&Queue" ),         SLOT(queue()) );
   burnToMediaButton = createButton( tr( "&Burn to Media" ), SLOT(burn()) );
 
-  // viewButton->setEnabled( false );
+  viewButton->setEnabled( false );
   // buttons not implemented yet:
   deleteButton->setEnabled( false );
   sendButton->setEnabled( false );
@@ -88,6 +88,8 @@ StManagerStudyListComp::~StManagerStudyListComp ()
 void StManagerStudyListComp::find ( const QString &patientName, const QString &patientID, 
                                     const QString &fromDate, const QString &toDate )
 {
+  resultSet->clear();
+
   try {
 	  DcmProvider::StringVector modalities;
 
@@ -124,7 +126,7 @@ void StManagerStudyListComp::addResultSetToStudyTable ( QTableWidget *table )
 
 void StManagerStudyListComp::view ()
 {
-  // this test won't be necessary (view button enabled/disabled)
+  // this test is not necessary (view button is disabled when no selection)
   if ( !localExamsTable->selectedItems().empty() )
   {
     DcmProvider::StudyInfo *studyInfo     = new DcmProvider::StudyInfo();
@@ -141,7 +143,7 @@ void StManagerStudyListComp::view ()
 	  dcmProvider->GetImageSet( row->patentID, row->studyID, studyInfo->begin()->first, *dicomObjSet );
 
     /*
-    // just save the dcms and open them with vtkReader (like Open)...
+    // just save the dcms and open them with vtkReader (like Open...)
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
     stringstream saveDirectory;
@@ -172,6 +174,14 @@ void StManagerStudyListComp::view ()
 }
 
 
+void StManagerStudyListComp::setEnabledView ()
+{
+  // it's now just for local table - it should be the parameter
+  !localExamsTable->selectedItems().empty() ? viewButton->setEnabled( true ) : 
+                                              viewButton->setEnabled( false );
+}
+
+
 QTableWidget *StManagerStudyListComp::createStudyTable ()
 {
   QTableWidget *table  = new QTableWidget;
@@ -190,9 +200,8 @@ QTableWidget *StManagerStudyListComp::createStudyTable ()
   table->setColumnCount( labels.size() );
   table->setHorizontalHeaderLabels( labels );
 
-  connect( table, SIGNAL(update()), this, SLOT(!table->selectedItems().empty() ? 
-                                               viewButton->setEnabled( true ) :
-                                               viewButton->setEnabled( false )) );
+
+  connect( table, SIGNAL(itemSelectionChanged()), this, SLOT(setEnabledView()) );
 
   return table;
 }

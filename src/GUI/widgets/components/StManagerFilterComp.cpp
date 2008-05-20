@@ -18,8 +18,6 @@ StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComp
   optionsButton     = createButton( tr( "&Options" ),      SLOT(options()) );
 
   // buttons not implemented yet:
-  todayButton->setEnabled( false );
-  yesterdayButton->setEnabled( false );
   clearFilterButton->setEnabled( false );
   optionsButton->setEnabled( false );
 
@@ -32,7 +30,7 @@ StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComp
   // =-=-=-=-=-=-=-=- Spacer -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
   QSpacerItem *horizontalSpacer = new QSpacerItem( 8, 2, QSizePolicy::Minimum, 
-                                                 QSizePolicy::Minimum );
+                                                   QSizePolicy::Minimum );
 
   // =-=-=-=-=-=-=-=- Inputs -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
   
@@ -49,8 +47,8 @@ StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComp
   QSpacerItem *vertRow12Spacer = new QSpacerItem( 2, 5, QSizePolicy::Minimum, 
                                                   QSizePolicy::Minimum );
 
-  QCheckBox *fromDateCheckBox = createCheckBox( tr( "From:" ), SLOT(fromCheck()) );
-  QCheckBox *toDateCheckBox   = createCheckBox( tr( "To:" ),   SLOT(toCheck())  );
+  fromDateCheckBox = createCheckBox( tr( "From:" ), SLOT(from()) );
+  toDateCheckBox   = createCheckBox( tr( "To:" ),   SLOT(to())  );
 
   fromDateDateEdit = new QDateEdit( QDate::currentDate() );
   fromDateDateEdit->setDisplayFormat( "d. M. yyyy" );
@@ -123,26 +121,54 @@ void StManagerFilterComp::search ()
 }
 
 
-void StManagerFilterComp::fromCheck ()
-{ 
-  if ( fromDateDateEdit->isEnabled() ) 
-    fromDateDateEdit->setEnabled( false );
-  else
-    fromDateDateEdit->setEnabled( true );
+/**
+ * today slot - for setting dateCombos to actual date by clicking on 'Today' button.
+ */
+void StManagerFilterComp::today ()
+{
+  // 'Today' clicked -> check 'from' dateCheckBox & enable 'from' dateEdit
+  fromDateDateEdit->setEnabled( true );
+  fromDateCheckBox->setChecked( true );
+  // 'Today' clicked -> check 'to' dateCheckBox & enable 'to' dateEdit
+  toDateDateEdit->setEnabled( true );
+  toDateCheckBox->setChecked( true );
+
+  QDate todayDate = QDate::currentDate();
+
+  fromDateDateEdit->setDate( todayDate );
+  toDateDateEdit->setDate( todayDate );
 }
 
 
-void StManagerFilterComp::toCheck ()
-{ 
-  if ( toDateDateEdit->isEnabled() ) 
-    toDateDateEdit->setEnabled( false );
-  else
-    toDateDateEdit->setEnabled( true );
+/**
+ * yesterday slot - for setting dateCombos to yesterday date by clicking on 'Yesterday' button.
+ */
+void StManagerFilterComp::yesterday ()
+{
+  // 'Yesterday' clicked -> check 'from' dateCheckBox & enable 'from' dateEdit
+  fromDateDateEdit->setEnabled( true );
+  fromDateCheckBox->setChecked( true );
+  // 'Yesterday' clicked -> check 'to' dateCheckBox & enable 'to' dateEdit
+  toDateDateEdit->setEnabled( true );
+  toDateCheckBox->setChecked( true );
+
+  // substracting 1 day -> yesterday
+  QDate yesterdayDate = QDate::currentDate().addDays( -1 );
+
+  fromDateDateEdit->setDate( yesterdayDate );
+  toDateDateEdit->setDate( yesterdayDate );
 }
 
 
-void StManagerFilterComp::modalityCheck ()
+void StManagerFilterComp::from ()
 { 
+  fromDateDateEdit->setEnabled( !fromDateDateEdit->isEnabled() );
+}
+
+
+void StManagerFilterComp::to ()
+{ 
+  toDateDateEdit->setEnabled( !toDateDateEdit->isEnabled() );
 }
 
 

@@ -28,6 +28,7 @@ class StManagerStudyListComp: public QWidget
 
   private slots:
     void view ();
+    void setEnabledView ();
 
   private:
     QTableWidget *createStudyTable ();
