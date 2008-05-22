@@ -17,6 +17,7 @@ DcmProvider::DicomObj::DicomObj()
 {
 	m_dataset = NULL;
 	m_status = Loading;
+  m_loadedCallBack = NULL;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -195,7 +196,7 @@ DcmProvider::DicomObj::FlushIntoArray( const T *dest)
     // check if was passed right type
     //if( sizeof(T) != 2)
     //  throw ExceptionBase( "Destination type is not corresponding with PixelSize!");
-
+// memcpy nebo memmove
 		register uint16 i, j;
 		register uint16 *destIter = (uint16 *)dest;
 		register uint16 *srcIter = (uint16 *)data;
@@ -220,8 +221,8 @@ DcmProvider::DicomObj::FlushIntoArray( const T *dest)
   // none of above. Custom DICOM stream.
   else
   {
-    FromStreamConverter<T> conv(
-      bitsAllocated, highBit, bitsStored, (uint16 *)data);
+    FromStreamConverter conv(
+      bitsAllocated, highBit, bitsStored, m_signed, (uint16 *)data);
 
     register uint16 i, j;
 		register T *destIter = (T *)dest;
@@ -229,7 +230,7 @@ DcmProvider::DicomObj::FlushIntoArray( const T *dest)
 		for( i=0; i<GetHeight(); i++)
 			for( j=0; j<GetWidth(); j++)
 			{
-        *destIter = conv.GetItem();
+        *destIter = conv.GetItem<T>();
 				destIter++;
 			}
   }
