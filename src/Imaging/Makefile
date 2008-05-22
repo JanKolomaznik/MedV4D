@@ -56,7 +56,7 @@ build:		cleanall all
 
 .PHONY: dep
 dep:
-		$(CC) $(INCLUDES) $(CDEPFLAGS) $(SRC_FILES) | \
+		$(CC) $(INCLUDES) $(CDEPFLAGS) $(DEFS) $(SRC_FILES) | \
 		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
 
 $(TMP_DIR)/%.o:	%.cpp	

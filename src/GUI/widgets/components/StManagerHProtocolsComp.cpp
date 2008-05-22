@@ -6,3 +6,4 @@
 StManagerHProtocolsComp::StManagerHProtocolsComp ( QWidget *parent )
   : QWidget( parent )
 {}
+

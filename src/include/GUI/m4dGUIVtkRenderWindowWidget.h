@@ -33,3 +33,4 @@ class m4dGUIVtkRenderWindowWidget: public QVTKWidget
 };
 
 #endif // M4D_GUI_VTK_RENDER_WINDOW_WIDGET_H
+

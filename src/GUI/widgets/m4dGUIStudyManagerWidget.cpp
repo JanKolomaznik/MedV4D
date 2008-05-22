@@ -57,3 +57,4 @@ void m4dGUIStudyManagerWidget::createStudyListGroupBox ( m4dGUIVtkRenderWindowWi
 
   studyListGroupBox->setLayout( studyListGroupBoxLayout ); 
 }
+

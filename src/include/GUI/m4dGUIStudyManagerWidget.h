@@ -33,3 +33,4 @@ class m4dGUIStudyManagerWidget: public QWidget
 };
 
 #endif // M4D_GUI_STUDY_MANAGER_WIDGET_H
+

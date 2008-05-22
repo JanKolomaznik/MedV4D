@@ -8,33 +8,66 @@ MKDIR=mkdir
 MOC=moc
 RCC=rcc
 
+
 ########################################
 #Name of this project part
 NAME=		m4dWidgets
 #Names of target sources
-TARGETS=	m4dGUIVtkRenderWindowWidget \
-		m4dGUIStudyManagerWidget
+TARGETS=	main\
+		m4dGUIMainWindow
 
-SUBDIR=		components
-TARGETS2=	StManagerFilterComp \
-		StManagerHProtocolsComp \
-		StManagerStudyListComp
+MOCINPUT=	m4dGUIMainWindow.h
 
-MOCINPUT=	m4dGUIStudyManagerWidget.h \
-		m4dGUIVtkRenderWindowWidget.h \
-		StManagerFilterComp.h \
-		StManagerHProtocolsComp.h \
-		StManagerStudyListComp.h
+RCCINPUT=	m4dGUIMainWindow.qrc
 
-RCCINPUT=	m4dGUIStudyManagerWidget.qrc
+M4DLIBS=	../../lib/libImaging.a\
+		../../lib/libcommon.a\
+		../../lib/libvtkIntegration.a\
+		../../lib/libbackendForDICOM.a\
+		../../lib/libm4dWidgets.a
+
+QTLIBS=		-lQtCore\
+		-lQtGui
+VTKLIBS=	-lvtkCommon\
+		-lvtkDICOMParser\
+		-lvtkexoIIc\
+		-lvtkFiltering\
+		-lvtkftgl\
+		-lvtkGenericFiltering\
+		-lvtkGraphics\
+		-lvtkHybrid\
+		-lvtkImaging\
+		-lvtkIO\
+		-lvtkNetCDF\
+		-lvtkRendering\
+		-lvtksys\
+		-lvtkVolumeRendering\
+		-lvtkWidgets\
+		-lQVTK\
+		-lwrap
+
+		#-lvtkexpat\
+		#-lvtkfreetype\
+		#-lvtkjpeg\
+		#-lvtkpng\
+		#-lvtktiff\
+		#-lvtkzlib
+
+DCMTKLIBS=	-lofstd\
+		-ldcmdata\
+		-ldcmnet
+
+LIBS=		$(M4DLIBS)\
+		$(QTLIBS)\
+		$(VTKLIBS)\
+		$(DCMTKLIBS)
 ########################################
 
 #Name of target
-OUTPUTNAME=	lib$(NAME).a
-OUTPUTDIR=	../../lib
+OUTPUTNAME=	$(NAME)
+OUTPUTDIR=	../../executables
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	../../tmp/$(NAME)
-
 
 CCFLAGS=	-Wall -Wno-deprecated
 #Dependecy file creation parameters
@@ -43,6 +76,7 @@ CDEPFLAGS=	-MM
 
 LDFLAGS=
 ARFLAGS=	-r
+LIBDIRS=	-L../../lib
 INCLUDES=	-I$(srcdir)\
 		-I../../include\
 		-I/usr/include/vtk-5.0\
@@ -60,8 +94,8 @@ DEBUG_DEFS=	-DDEBUG_LEVEL=10\
 DEFS=		$(DEBUG_DEFS)
 
 
-SRC_FILES=	$(addsuffix .cpp, $(TARGETS) $(addprefix $(SUBDIR)/, $(TARGETS2) ) ) 
-OBJ_FILES=	$(addprefix $(TMP_DIR)/,  $(addprefix moc_, $(MOCINPUT:.h=.o) )  $(addprefix rcc_, $(RCCINPUT:.qrc=.o ) )  $(addsuffix .o, $(TARGETS) $(TARGETS2) ) )
+SRC_FILES=	$(addsuffix .cpp, $(TARGETS) ) 
+OBJ_FILES=	$(addprefix $(TMP_DIR)/,   $(addprefix rcc_, $(RCCINPUT:.qrc=.o ) ) $(addprefix moc_, $(MOCINPUT:.h=.o) ) )
 
 
 .PHONY: all
@@ -80,16 +114,13 @@ dep:
 		$(CC) $(INCLUDES) $(CDEPFLAGS) $(SRC_FILES) | \
 		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
 
-$(TMP_DIR)/moc_%.cpp:	../../include/GUI/%.h
+$(TMP_DIR)/moc_%.cpp:	%.h
 		$(MOC) $< -o $@
 
 $(TMP_DIR)/rcc_%.cpp:	$(RCCINPUT)
-		$(RCC) -name m4dGUIStudyManagerWidget $< -o $@
+		$(RCC) -name m4dGUIMainWindow $< -o $@
 
 $(TMP_DIR)/%.o:	%.cpp	
-		$(CC) $(CCFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
-
-$(TMP_DIR)/%.o:	$(SUBDIR)/%.cpp	
 		$(CC) $(CCFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 $(TMP_DIR)/%.o:	$(TMP_DIR)/%.cpp
@@ -98,7 +129,7 @@ $(TMP_DIR)/%.o:	$(TMP_DIR)/%.cpp
 -include $(DEP_FILE)
 		
 $(OUTPUT):	$(OBJ_FILES)
-		$(AR) $(ARFLAGS) $(OUTPUT) $(OBJ_FILES)
+		$(CC) $(CCFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
 
 .PHONY: clean
 clean:

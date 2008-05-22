@@ -52,3 +52,4 @@ class StManagerFilterComp: public QWidget
 };
 
 #endif // S_MANAGER_FILTER_COMP_H
+

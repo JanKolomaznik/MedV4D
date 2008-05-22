@@ -13,3 +13,4 @@ class StManagerHProtocolsComp: public QWidget
 };
 
 #endif // S_MANAGER_H_PROTOCOLS_COMP_H
+

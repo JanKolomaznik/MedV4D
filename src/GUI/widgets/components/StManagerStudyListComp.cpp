@@ -243,3 +243,4 @@ QPushButton *StManagerStudyListComp::createButton ( const QString &text, const c
 
   return button;
 }
+
