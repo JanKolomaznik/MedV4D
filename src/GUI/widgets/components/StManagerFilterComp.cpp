@@ -2,6 +2,16 @@
 
 #include <QtGui>
 
+#include <vector>
+#include <string>
+
+using namespace std;
+
+/// Number of possible modalities - in filter - number of checkboxes
+#define MODALITIES_NUMBER   14
+
+const char *StManagerFilterComp::modalities[] = { "CR", "ES", "NM", "RF", "US", "CT", "MG", 
+                                                  "OT", "RT", "XA", "DX", "MR", "PT", "SC" };
 
 StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComponent, QWidget *parent )
   : QWidget( parent ),
@@ -29,8 +39,8 @@ StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComp
 
   // =-=-=-=-=-=-=-=- Spacer -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-  QSpacerItem *horizontalSpacer = new QSpacerItem( 8, 2, QSizePolicy::Minimum, 
-                                                   QSizePolicy::Minimum );
+  QSpacerItem *horSpacerButInp = new QSpacerItem( 8, 2, QSizePolicy::Minimum, 
+                                                  QSizePolicy::Minimum );
 
   // =-=-=-=-=-=-=-=- Inputs -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
   
@@ -44,11 +54,11 @@ StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComp
   lastNameComboBox  = createComboBox();
   firstNameComboBox = createComboBox();
 
-  QSpacerItem *vertRow12Spacer = new QSpacerItem( 2, 5, QSizePolicy::Minimum, 
-                                                  QSizePolicy::Minimum );
+  QSpacerItem *vertSpacerR1R2 = new QSpacerItem( 2, 5, QSizePolicy::Minimum, 
+                                                 QSizePolicy::Minimum );
 
-  fromDateCheckBox = createCheckBox( tr( "From:" ), SLOT(from()) );
-  toDateCheckBox   = createCheckBox( tr( "To:" ),   SLOT(to())  );
+  fromDateCheckBox = createCheckBox( tr( "From:" ), true, SLOT(from()) );
+  toDateCheckBox   = createCheckBox( tr( "To:" ), true, SLOT(to()) );
 
   fromDateDateEdit = new QDateEdit( QDate::currentDate() );
   fromDateDateEdit->setDisplayFormat( "d. M. yyyy" );
@@ -57,8 +67,8 @@ StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComp
   toDateDateEdit->setDisplayFormat( "d. M. yyyy" );
   toDateDateEdit->setCalendarPopup( true );
 
-  QSpacerItem *vertRow23Spacer = new QSpacerItem( 2, 6, QSizePolicy::Minimum, 
-                                                  QSizePolicy::Minimum );
+  QSpacerItem *vertSpacerR2R3 = new QSpacerItem( 2, 6, QSizePolicy::Minimum, 
+                                                 QSizePolicy::Minimum );
 
   QLabel *accesionLabel    = new QLabel( tr( "Accession#:" ) );
   QLabel *studyDescLabel   = new QLabel( tr( "Study Desc.:" ) );
@@ -75,14 +85,14 @@ StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComp
   inputLayout->addWidget( lastNameComboBox,  1, 1 );
   inputLayout->addWidget( firstNameComboBox, 1, 2 );
 
-  inputLayout->addItem( vertRow12Spacer, 2, 0, 1, 3 );
+  inputLayout->addItem( vertSpacerR1R2, 2, 0, 1, 3 );
   
   inputLayout->addWidget( fromDateCheckBox,  3, 0 );
   inputLayout->addWidget( toDateCheckBox,    3, 1 );
   inputLayout->addWidget( fromDateDateEdit,  4, 0 );
   inputLayout->addWidget( toDateDateEdit,    4, 1 );
 
-  inputLayout->addItem( vertRow23Spacer, 5, 0, 1, 3 );
+  inputLayout->addItem( vertSpacerR2R3, 5, 0, 1, 3 );
   
   inputLayout->addWidget( accesionLabel,       6, 0 );
   inputLayout->addWidget( studyDescLabel,      6, 1 );
@@ -91,16 +101,51 @@ StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComp
   inputLayout->addWidget( studyDescComboBox,   7, 1 );
   inputLayout->addWidget( referringMDComboBox, 7, 2 );
 
-  QSpacerItem *verticalSpacer = new QSpacerItem( 2, 2, QSizePolicy::Minimum, 
-                                                 QSizePolicy::Expanding );
-  inputLayout->addItem( verticalSpacer, 8, 0, 1, 3 );
+  QSpacerItem *vertSpacerBottom = new QSpacerItem( 2, 2, QSizePolicy::Minimum, 
+                                                   QSizePolicy::Expanding );
+  inputLayout->addItem( vertSpacerBottom, 8, 0, 1, 3 );
+
+  // =-=-=-=-=-=-=-=- Spacer -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+  QSpacerItem *horSpacerInpMod = new QSpacerItem( 8, 2, QSizePolicy::Minimum, 
+                                                  QSizePolicy::Minimum );
+
+  // =-=-=-=-=-=-=-=- Modalities -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+  modalitiesGroupBox = new QGroupBox( tr( "Modality" ) );
+
+  QVBoxLayout *modalitiesLayout = new QVBoxLayout;
+
+  allCheckBox = createCheckBox( tr( "All" ), false, SLOT(all()) );
+
+  // Spacer between All checkBox and other checkBoxes
+  QSpacerItem *vertSpacerAllMod = new QSpacerItem( 2, 20, QSizePolicy::Minimum, 
+                                                   QSizePolicy::Minimum );
+
+  QGridLayout *gridModalLayout = new QGridLayout;
+
+  modalityCheckBoxes = new QCheckBox *[MODALITIES_NUMBER];
+
+  for ( int i = 0; i < MODALITIES_NUMBER; i++ )
+  {
+    modalityCheckBoxes[i] = createCheckBox( tr( modalities[i] ), false, SLOT(modality()) );
+    gridModalLayout->addWidget( modalityCheckBoxes[i], i / 5, i % 5 );
+  }
+
+  modalitiesLayout->addWidget( allCheckBox );
+  modalitiesLayout->addItem( vertSpacerAllMod );
+  modalitiesLayout->addLayout( gridModalLayout );
+
+  modalitiesGroupBox->setLayout( modalitiesLayout );
 
   // =-=-=-=-=-=-=-=- Filter -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
   QHBoxLayout *filterLayout = new QHBoxLayout;
   filterLayout->addLayout( buttonLayout );
-  filterLayout->addItem( horizontalSpacer );
+  filterLayout->addItem( horSpacerButInp );
   filterLayout->addLayout( inputLayout );
+  filterLayout->addItem( horSpacerInpMod );
+  filterLayout->addWidget( modalitiesGroupBox );
 
   setLayout( filterLayout );
 }
@@ -116,8 +161,18 @@ void StManagerFilterComp::search ()
                             fromDateDateEdit->date().toString( "yyyyMMdd" ) : "";
   QString toDateText      = toDateDateEdit->isEnabled() ?
                             toDateDateEdit->date().toString( "yyyyMMdd" ) : "";
+  
+  // construct the modalities vector (from checked ones)
+  vector< string > modalitiesVect;
+  for ( int i = 0; i < MODALITIES_NUMBER; i++ ) 
+  {
+    if ( modalityCheckBoxes[i]->isChecked() ) {
+      modalitiesVect.push_back( StManagerFilterComp::modalities[i] );
+    }
+  }
 
-  studyListComponent->find( patientNameText, patientIDText, fromDateText, toDateText );	
+  studyListComponent->find( patientNameText.toStdString(), patientIDText.toStdString(), 
+                            fromDateText.toStdString(), toDateText.toStdString(), modalitiesVect );	
 }
 
 
@@ -172,6 +227,41 @@ void StManagerFilterComp::to ()
 }
 
 
+void StManagerFilterComp::all ()
+{ 
+  for ( int i = 0; i < MODALITIES_NUMBER; i++ ) {
+    modalityCheckBoxes[i]->setChecked( true );
+  }
+  allCheckBox->setEnabled( false );
+}
+
+
+void StManagerFilterComp::modality ()
+{ 
+  bool allChecked = true;
+
+  for ( int i = 0; i < MODALITIES_NUMBER; i++ ) 
+  {
+    if ( !modalityCheckBoxes[i]->isChecked() ) 
+    {
+      allChecked = false;
+      break;
+    }
+  }
+
+  if ( !allChecked ) 
+  {
+    allCheckBox->setChecked( false );
+    allCheckBox->setEnabled( true );
+  }
+  else
+  {
+    allCheckBox->setChecked( true );
+    allCheckBox->setEnabled( false );
+  }
+}
+
+
 QPushButton *StManagerFilterComp::createButton ( const QString &text, const char *member )
 {
   QPushButton *button = new QPushButton( text );
@@ -193,11 +283,11 @@ QComboBox *StManagerFilterComp::createComboBox ( const QString &text )
 }
 
 
-QCheckBox *StManagerFilterComp::createCheckBox ( const QString &text, const char *member )
+QCheckBox *StManagerFilterComp::createCheckBox ( const QString &text, bool value, const char *member )
 {
   QCheckBox *checkBox = new QCheckBox( text );
   connect( checkBox, SIGNAL(clicked()), this, member );
-  checkBox->setChecked( true );
+  checkBox->setChecked( value );
 
   return checkBox;
 }

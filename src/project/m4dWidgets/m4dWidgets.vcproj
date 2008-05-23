@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1250"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="m4dWidgets"
 	ProjectGUID="{E4C0EE3F-2176-47AD-97C4-CEF94A1B3378}"
 	RootNamespace="m4dWidgets"
@@ -216,28 +216,6 @@
 			<File
 				RelativePath="..\..\include\GUI\StManagerFilterComp.h"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="MOC StManagerFilterComp.h"
-						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\debug; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\include\GUI\StManagerFilterComp.h -o $(IntDir)\generated\moc\moc_StManagerFilterComp.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="moc.exe,StManagerFilterComp.h"
-						Outputs="$(IntDir)\generated\moc\moc_StManagerFilterComp.cpp"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="MOC StManagerFilterComp.h"
-						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\include\GUI\StManagerFilterComp.h -o $(IntDir)\generated\moc\moc_StManagerFilterComp.cpp&#x0D;&#x0A;"
-						AdditionalDependencies="moc.exe,StManagerFilterComp.h"
-						Outputs="$(IntDir)\generated\moc\moc_StManagerFilterComp.cpp"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\include\GUI\StManagerHProtocolsComp.h"
@@ -331,7 +309,7 @@
 				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIStudyManagerWidget.cpp"
 				>
 				<FileConfiguration
-					Name="Release|Win32"
+					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -343,19 +321,7 @@
 				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIStudyManagerWidget.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIVtkRenderWindowWidget.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
+					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -376,10 +342,10 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="$(IntDir)\generated\moc\moc_StManagerFilterComp.cpp"
+				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIVtkRenderWindowWidget.cpp"
 				>
 				<FileConfiguration
-					Name="Release|Win32"
+					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -392,6 +358,18 @@
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="$(IntDir)\generated\moc\moc_StManagerFilterComp.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -427,7 +405,7 @@
 				RelativePath="$(IntDir)\generated\moc\moc_StManagerStudyListComp.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
+					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -439,18 +417,6 @@
 				RelativePath="$(IntDir)\generated\moc\moc_StManagerStudyListComp.cpp"
 				>
 				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="$(IntDir)\generated\rcc\qrc_m4dGUIStudyManagerWidget.cpp"
-				>
-				<FileConfiguration
 					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
@@ -464,6 +430,18 @@
 				>
 				<FileConfiguration
 					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="$(IntDir)\generated\rcc\qrc_m4dGUIStudyManagerWidget.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool

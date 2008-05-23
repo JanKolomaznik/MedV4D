@@ -6,9 +6,7 @@
 #include <sstream>
 
 // DICOM includes:
-#include "Common.h"
 #include "ExceptionBase.h"
-#include "dicomConn/DICOMServiceProvider.h"
 
 // DICOM namespace:
 using namespace M4D::Dicom;
@@ -85,17 +83,15 @@ StManagerStudyListComp::~StManagerStudyListComp ()
 }
 
 
-void StManagerStudyListComp::find ( const QString &patientName, const QString &patientID, 
-                                    const QString &fromDate, const QString &toDate )
+void StManagerStudyListComp::find ( const string &patientName, const string &patientID, 
+                                    const string &fromDate, const string &toDate,
+                                    const DcmProvider::StringVector &modalitiesVect )
 {
   resultSet->clear();
 
   try {
-	  DcmProvider::StringVector modalities;
-
-    dcmProvider->Find( *resultSet, patientName.toStdString(), 
-                        patientID.toStdString(), modalities,
-                        fromDate.toStdString(), toDate.toStdString() );	
+    dcmProvider->Find( *resultSet, patientName, patientID, modalitiesVect,
+                        fromDate, toDate );	
  	
     if ( !resultSet->empty() ) {
       addResultSetToStudyTable( localExamsTable );

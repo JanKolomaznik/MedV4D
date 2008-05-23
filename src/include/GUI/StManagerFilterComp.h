@@ -10,6 +10,7 @@ class QPushButton;
 class QComboBox;
 class QCheckBox;
 class QDateEdit;
+class QGroupBox;
 
 class StManagerFilterComp: public QWidget
 {
@@ -25,20 +26,26 @@ class StManagerFilterComp: public QWidget
 
     void from ();
     void to ();
+    void all ();
+    void modality ();
  
   private:
     QPushButton *createButton ( const QString &text, const char *member );
     QComboBox   *createComboBox ( const QString &text = QString() );
-    QCheckBox   *createCheckBox ( const QString &text, const char *member );
+    QCheckBox   *createCheckBox ( const QString &text, bool value, const char *member );
 
     /// Pointer to the Study List - there will appear filtered results (in it's tables). 
     StManagerStudyListComp *studyListComponent;
 
+    static const char *modalities[];
+
+    // button  column
     QPushButton *searchButton;
     QPushButton *todayButton;
     QPushButton *yesterdayButton;
     QPushButton *clearFilterButton;
     QPushButton *optionsButton;
+    // input column
     QComboBox   *patientIDComboBox;
     QComboBox   *lastNameComboBox;
     QComboBox   *firstNameComboBox;
@@ -49,6 +56,10 @@ class StManagerFilterComp: public QWidget
     QComboBox   *accesionComboBox;
     QComboBox   *studyDescComboBox;
     QComboBox   *referringMDComboBox;
+    // modalities column
+    QGroupBox   *modalitiesGroupBox;
+    QCheckBox   *allCheckBox;
+    QCheckBox  **modalityCheckBoxes;
 };
 
 #endif // S_MANAGER_FILTER_COMP_H
