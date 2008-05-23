@@ -8,7 +8,7 @@ all:	libs Applications
 	#no command
 
 .PHONY:libs
-libs:	common backendForDicom Imaging GUI
+libs:	common backendForDicom Imaging GUI vtkIntegration
 	#no command
 
 .PHONY:clean-all
@@ -16,7 +16,7 @@ clean-all:	clean-libs clean-Applications
 	#no command
 
 .PHONY:clean-libs
-clean-libs:	clean-common clean-backendForDicom clean-Imaging clean-GUI
+clean-libs:	clean-common clean-backendForDicom clean-Imaging clean-GUI clean-vtkIntegration
 	#no command
 #------------------------------------------------------------------------------
 .PHONY:common

@@ -13,7 +13,7 @@ NAME=		backendForDICOM
 TARGETS=	AbstractService \
 		DicomObj \
 		FindService \
-		M4DDicomAssoc \
+		DicomAssoc \
 		DICOMServiceProvider \
 		MoveService \
 		StoreService

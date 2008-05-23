@@ -11,7 +11,7 @@ RCC=rcc
 
 ########################################
 #Name of this project part
-NAME=		m4dWidgets
+NAME=		m4dPilot
 #Names of target sources
 TARGETS=	main\
 		m4dGUIMainWindow
@@ -20,11 +20,11 @@ MOCINPUT=	m4dGUIMainWindow.h
 
 RCCINPUT=	m4dGUIMainWindow.qrc
 
-M4DLIBS=	../../lib/libImaging.a\
-		../../lib/libcommon.a\
+M4DLIBS=	../../lib/libm4dWidgets.a\
+		../../lib/libImaging.a\
 		../../lib/libvtkIntegration.a\
 		../../lib/libbackendForDICOM.a\
-		../../lib/libm4dWidgets.a
+		../../lib/libcommon.a
 
 QTLIBS=		-lQtCore\
 		-lQtGui
@@ -95,7 +95,7 @@ DEFS=		$(DEBUG_DEFS)
 
 
 SRC_FILES=	$(addsuffix .cpp, $(TARGETS) ) 
-OBJ_FILES=	$(addprefix $(TMP_DIR)/,   $(addprefix rcc_, $(RCCINPUT:.qrc=.o ) ) $(addprefix moc_, $(MOCINPUT:.h=.o) ) )
+OBJ_FILES=	$(addprefix $(TMP_DIR)/,   $(addprefix rcc_, $(RCCINPUT:.qrc=.o ) ) $(addprefix moc_, $(MOCINPUT:.h=.o) ) $(addsuffix .o, $(TARGETS) ) )
 
 
 .PHONY: all
