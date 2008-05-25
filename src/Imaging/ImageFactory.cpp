@@ -77,6 +77,12 @@ ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 		size_t	width	= (*dicomObjects)[0].GetWidth();
 		size_t	height	= (*dicomObjects)[0].GetHeight();
 		size_t	depth	= dicomObjects->size();
+		//Get extents of voxel.
+		float32 voxelWidth = 1.0;
+		float32 voxelHeight = 1.0;
+		float32 voxelDepth = 1.0;
+		(*dicomObjects)[0].GetPixelSpacing( voxelWidth, voxelHeight );
+		(*dicomObjects)[0].GetSliceThickness( voxelDepth );
 
 		size_t	sliceSize = width * height;	//Count of elements in one slice.
 		size_t	imageSize = sliceSize * depth;	//Count of elements in whole image.
@@ -103,9 +109,9 @@ ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 
 		//Preparing informations about dimensionality.
 		DimensionInfo *info = new DimensionInfo[ 3 ];
-		info[0].Set( width, 1 );
-		info[1].Set( height, width );
-		info[2].Set( depth, width * height );
+		info[0].Set( width, 1, voxelWidth);
+		info[1].Set( height, width, voxelHeight );
+		info[2].Set( depth, width * height, voxelDepth );
 
 			D_PRINT( "---- Creating resulting image." );
 		AbstractImageData::APtr result( (AbstractImageData*)

@@ -61,8 +61,8 @@ ImageFactory::CreateEmptyImage2DTyped(
 		
 		//Preparing informations about dimensionality.
 		DimensionInfo *info = new DimensionInfo[ 2 ];
-		info[0].Set( width, 1 );
-		info[1].Set( height, width );
+		info[0].Set( width, 1, 1.0 );
+		info[1].Set( height, width, 1.0 );
 
 		//Creating place for data storage.
 		ElementType *array = PrepareElementArray< ElementType >( size );
@@ -112,9 +112,9 @@ ImageFactory::CreateEmptyImage3DTyped(
 	
 	//Preparing informations about dimensionality.
 	DimensionInfo *info = new DimensionInfo[ 3 ];
-	info[0].Set( width, 1 );
-	info[1].Set( height, width );
-	info[2].Set( depth, width * height );
+	info[0].Set( width, 1, 1.0 );
+	info[1].Set( height, width, 1.0 );
+	info[2].Set( depth, width * height, 1.0 );
 
 	//Creating place for data storage.
 	ElementType *array = PrepareElementArray< ElementType >( size );

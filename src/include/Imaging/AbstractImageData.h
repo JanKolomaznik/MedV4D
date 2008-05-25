@@ -18,13 +18,18 @@ namespace Imaging
  **/
 struct DimensionInfo
 {
+	DimensionInfo()
+		:size(0), stride(0), elementExtent(1.0) {}
+
+	DimensionInfo( size_t asize, size_t astride, float32 aelementExtent = 1.0f )
+		:size(asize), stride(astride), elementExtent(aelementExtent) {}
 	/**
 	 * Method for setting atributes.
 	 * @param asize Value used for size setting.
 	 * @param astride Value used for stride setting.
 	 **/
-	void Set( size_t asize, uint32 astride )
-		{ size = asize; stride = astride; }
+	void Set( size_t asize, size_t astride, float32 aelementExtent = 1.0f )
+		{ size = asize; stride = astride; elementExtent = aelementExtent; }
 
 	/**
 	 * Width of image in actual dimension.
@@ -33,7 +38,9 @@ struct DimensionInfo
 	/**
 	 * Stride, which is used to increase coordinates in actual dimension.
 	 **/
-	uint32		stride;
+	size_t		stride;
+
+	float32		elementExtent;
 };
 
 class AbstractImageData

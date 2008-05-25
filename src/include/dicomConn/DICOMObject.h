@@ -30,12 +30,12 @@
 
 		Status m_status;
 
-    ImageLoadedCallback m_loadedCallBack;
+		ImageLoadedCallback m_loadedCallBack;
 
 	public:
 
-    inline void SetLoadedCallback( ImageLoadedCallback c) 
-      { m_loadedCallBack = c; }
+		inline void SetLoadedCallback( ImageLoadedCallback c) 
+			{ m_loadedCallBack = c; }
 
 		void *m_dataset;
 

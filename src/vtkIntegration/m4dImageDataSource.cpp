@@ -133,6 +133,18 @@ m4dImageDataSource::RequestData(
 		D_PRINT( LogDelimiter( '+' ) );
 		return 1;
 	}
+
+	//TODO - check wheather OK
+	D_PRINT( "---- Setting voxel size to : " << std::endl << "\t\tw = " << 	_imageData->GetDimensionInfo( 0 ).elementExtent <<
+			std::endl << "\t\th = " << _imageData->GetDimensionInfo( 1 ).elementExtent <<
+			std::endl << "\t\td = " << _imageData->GetDimensionInfo( 2 ).elementExtent );
+	//Set voxel size
+	output->SetSpacing( 
+			_imageData->GetDimensionInfo( 0 ).elementExtent,
+			_imageData->GetDimensionInfo( 1 ).elementExtent,
+			_imageData->GetDimensionInfo( 2 ).elementExtent
+			);
+
 	D_PRINT( "---- Filling requested VTK image dataset." );
 	//Fill data set
 	FillVTKImageFromM4DImage( output, _imageData );
