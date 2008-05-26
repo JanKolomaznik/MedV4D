@@ -16,6 +16,8 @@ class AbstractPipeline : public AbstractFilter
 {
 public:
 
+	virtual Connection &
+	MakeConnection( OutputPort& outPort InputPort& inPort )=0;
 protected:
 
 private:

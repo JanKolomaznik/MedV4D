@@ -2,6 +2,7 @@
 #define _ABSTRACT_FILTER_H
 
 #include "Imaging/AbstractProcessingUnit.h"
+#include "Imaging/Ports.h"
 #include "Imaging/Connection.h"
 #include <boost/shared_ptr.hpp>
 
@@ -19,31 +20,39 @@ public:
 	virtual
 	~AbstractFilter() {}
 
-	size_t
-	GetInputPortCount()const;
+	const InputPortList &
+	InputPort()const;
 
-	size_t
-	GetOutputPortCount()const;
-
-	virtual void
-	SetInputConnection( ConnectionPtr conn, unsigned portIndex )=0;
-
-	virtual void
-	SetOutputConnection( ConnectionPtr conn, unsigned portIndex )=0;
-
+	const OutputPortList &
+	OutputPort()const;
 	
+	/**
+	 * Start computing only on modified data.
+	 * Asynchronous method.
+	 **/
 	void
 	Execute();
 
+	/**
+	 * Start computing from scretch - recalculate output 
+	 * using all input data, even when no change was applied.
+	 * Asynchronous method.
+	 **/
+	void
+	ExecuteOnWhole();
+
+	/**
+	 * Stop execution of filter as soon as possible.
+	 * Asynchronous method.
+	 **/
 	void
 	StopExecution();
-
 
 	bool
 	IsUpToDate();
 protected:
 	/**
-	 * Method running in execution thread - this method wil be stopped, when
+	 * Method running in execution thread - this method will be stopped, when
 	 * StopExecution() is invoked.
 	 * In inherited class reimplementation of this method is easy way to 
 	 * implement new filter, and let all dirty work to ancestor class.
@@ -51,6 +60,9 @@ protected:
 	virtual void
 	ExecutionThreadMethod()=0;
 
+
+	InputPortList	_inputPorts;
+	OutputPortList	_outputPorts;
 private:
 
 };

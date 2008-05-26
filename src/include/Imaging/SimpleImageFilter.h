@@ -14,10 +14,42 @@ namespace Imaging
 
 
 /**
- * Ancestor of filters with single input and single output.
+ * Ancestor of filters with single input and single output. 
+ * Working on two dimensional data.
  **/
 template< typename InputElementType, typename OutputElementType >
-class SimpleImageFilter: public AbstractFilter
+class Simple2DImageFilter: public AbstractFilter
+{
+public:
+
+protected:
+
+private:
+
+};
+
+/**
+ * Ancestor of filters with single input and single output. 
+ * Working on three dimensional data.
+ **/
+template< typename InputElementType, typename OutputElementType >
+class Simple3DImageFilter: public AbstractFilter
+{
+public:
+
+protected:
+
+private:
+
+};
+
+/**
+ * Ancestor of filters with single input and single output. 
+ * Working on three dimensional data, but computation in different
+ * slices is independent.
+ **/
+template< typename InputElementType, typename OutputElementType >
+class SimpleSlicedImageFilter: public Simple3DImageFilter< InputElementType, OutputElementType >
 {
 public:
 

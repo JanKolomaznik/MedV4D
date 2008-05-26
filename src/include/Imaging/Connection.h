@@ -2,6 +2,7 @@
 #define _CONNECTION_H
 
 #include "Imaging/AbstractFilter.h"
+#include "Imaging/Ports.h"
 #include <boost/shared_ptr.hpp>
 
 namespace M4D
