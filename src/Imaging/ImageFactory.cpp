@@ -62,7 +62,7 @@ ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 	//TODO - check if all objects has same parameters.
 	//TODO - consider getting parameters from first one.
 
-	uint8 elementSize = (*dicomObjects)[0].GetPixelSize(); //in bytes
+	uint16 elementSize = (*dicomObjects)[0].GetPixelSize(); //in bytes
 	bool sign = (*dicomObjects)[0].IsDataSigned(); 
 
 	int elementTypeID = GetNTIDFromSizeAndSign( elementSize, sign );
@@ -106,6 +106,9 @@ ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 			D_PRINT( "------ Width          = " << width );
 			D_PRINT( "------ Height         = " << height );
 			D_PRINT( "------ Depth          = " << depth );
+			D_PRINT( "-------- Voxel width  = " << voxelWidth );
+			D_PRINT( "-------- Voxel height = " << voxelHeight );
+			D_PRINT( "-------- Voxel depth  = " << voxelDepth );
 
 		//Preparing informations about dimensionality.
 		DimensionInfo *info = new DimensionInfo[ 3 ];

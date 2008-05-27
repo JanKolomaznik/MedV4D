@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "StManagerStudyListComp.h"
+#include "GUI/StManagerStudyListComp.h"
 
 
 class QPushButton;
