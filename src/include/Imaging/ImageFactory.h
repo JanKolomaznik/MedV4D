@@ -104,7 +104,7 @@ public:
 	 * parameters from dicomObject doesn't exist.
 	 **/
 	static AbstractImageData::APtr 
-	CreateImageFromDICOM( Dicom::DcmProvider::DicomObjSetPtr dicomObjects );
+	CreateImageFromDICOM( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects );
 protected:
 
 private:
@@ -152,7 +152,7 @@ private:
 	 **/
 	static void
 	FlushDicomObjects(
-		Dicom::DcmProvider::DicomObjSetPtr	&dicomObjects,
+		M4D::Dicom::DcmProvider::DicomObjSetPtr	&dicomObjects,
 		int		 			elementTypeID, 
 		size_t 					imageSize,
 		size_t					stride,

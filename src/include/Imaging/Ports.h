@@ -51,25 +51,25 @@ private:
 };
 
 //******************************************************************************
-template< ElementType >
+template< typename ElementType >
 class Input2DImageFilter
 {
 
 };
 
-template< ElementType >
+template< typename ElementType >
 class Input3DImageFilter
 {
 
 };
 
-template< ElementType >
+template< typename ElementType >
 class Output2DImageFilter
 {
 
 };
 
-template< ElementType >
+template< typename ElementType >
 class Output3DImageFilter
 {
 
@@ -78,12 +78,20 @@ class Output3DImageFilter
 
 class InputPortList
 {
-
+private:
+	//Not implemented
+	InputPortList( const InputPortList& );
+	InputPortList&
+	operator=( const InputPortList& );
 };
 
 class OutputPortList
 {
-
+private:
+	//Not implemented
+	OutputPortList( const OutputPortList& );
+	OutputPortList&
+	operator=( const OutputPortList& );
 };
 
 //******************************************************************************

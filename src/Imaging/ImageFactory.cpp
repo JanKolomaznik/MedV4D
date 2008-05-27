@@ -39,7 +39,7 @@ ImageFactory::CreateImageFromDataAndTypeID(
 
 
 AbstractImageData::APtr 
-ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
+ImageFactory::CreateImageFromDICOM( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects )
 {
 		D_PRINT( LogDelimiter( '*' ) );
 		D_PRINT( "-- Entering CreateImageFromDICOM()" );
@@ -147,7 +147,7 @@ ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr dicomObjects )
 template< typename ElementType >
 void
 FlushDicomObjectsHelper(
-		Dicom::DcmProvider::DicomObjSetPtr	&dicomObjects,
+		M4D::Dicom::DcmProvider::DicomObjSetPtr	&dicomObjects,
 		size_t 					imageSize,
 		size_t					stride,
 		uint8					* dataArray
@@ -169,7 +169,7 @@ FlushDicomObjectsHelper(
 
 void
 ImageFactory::FlushDicomObjects(
-		Dicom::DcmProvider::DicomObjSetPtr	&dicomObjects,
+		M4D::Dicom::DcmProvider::DicomObjSetPtr	&dicomObjects,
 		int 					elementTypeID, 
 		size_t 					imageSize,
 		size_t					stride,

@@ -2,13 +2,14 @@
 #define _THREAD_H
 
 #include <boost/thread/thread.hpp>
+#include <boost/thread/mutex.hpp>
+
 
 namespace M4D
 {
 namespace Multithreading
 {
 
-typedef	boost::thread	Thread;
 	
 }/*namespace Multithreading*/
 }/*namespace M4D*/

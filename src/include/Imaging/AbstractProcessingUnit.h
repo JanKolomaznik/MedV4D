@@ -21,7 +21,7 @@ public:
 	virtual void
 	Execute()=0;
 
-	virtual void
+	virtual bool
 	StopExecution()=0;
 protected:
 

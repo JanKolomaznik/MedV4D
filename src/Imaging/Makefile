@@ -11,7 +11,8 @@ MKDIR=mkdir
 NAME=		Imaging
 #Names of target sources
 TARGETS=	AbstractImage \
-		ImageFactory
+		ImageFactory \
+		AbstractFilter
 ########################################
 
 #Name of target

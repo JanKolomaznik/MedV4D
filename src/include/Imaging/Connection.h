@@ -16,24 +16,26 @@ public:
 	typedef boost::shared_ptr< Connection > ConnectionPtr;
 
 	virtual 
-	Connection() {}
+	~Connection() {}
 
 	virtual void
-	ConnectOutFilter( AbstractFilter::AbstractFilterPtr filter )=0;
+	ConnectIn( OutputPort& outputPort )=0;
 
 	virtual void
-	ConnectInFilter( AbstractFilter::AbstractFilterPtr filter )=0;
+	ConnectOut( InputPort& inputPort )=0;
 
 	virtual void
 	DisconnectInFilter()=0;
 
 	virtual void
-	DisconnectOutFilter( AbstractFilter::AbstractFilterPtr filter )=0;
+	DisconnectOutFilter( InputPort& inputPort )=0;
 
 protected:
 
 private:
-
+	Connection( const Connection& );
+	Connection&
+	operator=( const Connection& );
 };
 
 }/*namespace Imaging*/
