@@ -4,10 +4,10 @@
 #include <iomanip>
 #include <ctime>
 
-std::ofstream logFile( "Log.txt" );
+//std::ofstream logFile( "Log.txt" );
 
-std::ostream *logStream = &logFile;
-//std::ostream *logStream = &std::cout;
+//std::ostream *logStream = &logFile;
+std::ostream *logStream = &std::cout;
 
 std::ostream &
 operator<<( std::ostream & stream, const LogFormatter & logFormater )

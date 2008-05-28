@@ -67,7 +67,7 @@ extern std::ostream *pdout;
 
 //----------------------------------------------------------------------------
 #ifdef DEBUG_LEVEL
-#define D_COMMAND( ARG )	{ ARG }
+#define D_COMMAND( ARG )	ARG
 #else
 #define	D_COMMAND(ARG)
 #endif /*DEBUG_LEVEL*/

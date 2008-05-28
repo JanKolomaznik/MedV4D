@@ -8,6 +8,7 @@
 extern std::ostream *logStream;
 
 #define LOUT (*logStream)
+#define SET_LOUT( N_OSTREAM )	(logStream = &(N_OSTREAM))
 
 class LogFormatter;
 
