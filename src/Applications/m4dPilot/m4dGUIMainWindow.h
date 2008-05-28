@@ -26,6 +26,7 @@ class m4dGUIMainWindow: public QMainWindow
     void createMenus ();
     void createToolBars ();
     void createStatusBar ();
+    void createDockWindows();
 
     QWidget *centralWidget;
     m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget;
@@ -41,6 +42,7 @@ class m4dGUIMainWindow: public QMainWindow
     QToolBar *searchToolBar;
    
     QMenu *fileMenu;
+    QMenu *viewMenu;
 };
 
 #endif // M4D_GUI_MAIN_WINDOW_H

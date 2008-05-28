@@ -22,6 +22,7 @@ m4dGUIMainWindow::m4dGUIMainWindow ()
   createMenus();
   createToolBars();
   createStatusBar();
+  createDockWindows();
 
   QVBoxLayout *mainLayout = new QVBoxLayout;
   mainLayout->addWidget( vtkRenderWindowWidget );
@@ -103,6 +104,7 @@ void m4dGUIMainWindow::createActions ()
 
 void m4dGUIMainWindow::createMenus ()
 {
+  // File Menu
   fileMenu = new QMenu( tr( "&File" ), this );
   fileMenu->addAction( searchAct );
   fileMenu->addAction( openAct );
@@ -111,6 +113,11 @@ void m4dGUIMainWindow::createMenus ()
   fileMenu->addAction( exitAct );
 
   menuBar()->addMenu( fileMenu );
+
+  // View Menu
+  viewMenu = new QMenu( tr( "&View" ), this );
+
+  menuBar()->addMenu( viewMenu );
 }
 
 
@@ -128,4 +135,33 @@ void m4dGUIMainWindow::createToolBars ()
 void m4dGUIMainWindow::createStatusBar()
 {
   statusBar()->showMessage( tr( "Ready" ) );
+}
+
+
+void m4dGUIMainWindow::createDockWindows ()
+{
+  QDockWidget *dock = new QDockWidget( tr( "DockWidget One" ), this );
+  dock->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
+  
+  QListWidget *listOne = new QListWidget( dock );
+  dock->setWidget( listOne );
+ 
+  addDockWidget( Qt::RightDockWidgetArea, dock );
+  viewMenu->addAction( dock->toggleViewAction() );
+
+  dock = new QDockWidget( tr( "DockWidget Two" ), this );
+  
+  QListWidget *listTwo = new QListWidget( dock );
+  dock->setWidget( listTwo );
+
+  addDockWidget( Qt::RightDockWidgetArea, dock );
+  viewMenu->addAction( dock->toggleViewAction() );
+
+  dock = new QDockWidget( tr( "DockWidget Three" ), this );
+  
+  QListWidget *listThree = new QListWidget( dock );
+  dock->setWidget( listThree );
+
+  addDockWidget( Qt::RightDockWidgetArea, dock );
+  viewMenu->addAction( dock->toggleViewAction() );
 }
