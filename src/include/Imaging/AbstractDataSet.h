@@ -9,6 +9,9 @@
 class AbstractDataSet
 {
 public:
+	/**
+	 * Smart pointer to AbstractDataSet.
+	 **/
 	typedef boost::shared_ptr< AbstractDataSet > ADataSetPtr;
 
 protected:

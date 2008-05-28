@@ -12,7 +12,8 @@ NAME=		Imaging
 #Names of target sources
 TARGETS=	AbstractImage \
 		ImageFactory \
-		AbstractFilter
+		AbstractFilter \
+		Ports
 ########################################
 
 #Name of target

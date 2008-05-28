@@ -6,6 +6,112 @@ namespace M4D
 namespace Imaging
 {
 
+bool
+FilterWorkingState::TrySetRunning()
+{
+	Multithreading::ScopedLock stateLock( _stateLock );
+	switch( _state ) {
+	case RUNNING:
+	case STOPPING:
+		return false;
+	case UP_TO_DATE:
+	case OUT_OF_DATE:
+		_state = RUNNING;
+		return true;
+	default:
+		//Shouldn't reach this.
+		ASSERT( false );
+	}
+	return false;
+}
+
+bool
+FilterWorkingState::TrySetStopping()
+{
+	Multithreading::ScopedLock stateLock( _stateLock );
+	switch( _state ) {
+	case RUNNING:
+		_state = STOPPING;
+	case STOPPING:
+		return true;
+	case UP_TO_DATE:
+	case OUT_OF_DATE:
+		return false;
+	default:
+		//Shouldn't reach this.
+		ASSERT( false );
+	}
+	return false;
+}
+
+bool
+FilterWorkingState::TrySetUpToDate()
+{
+	Multithreading::ScopedLock stateLock( _stateLock );
+	switch( _state ) {
+	case RUNNING:
+	case STOPPING:
+		return false;
+	case UP_TO_DATE:
+	case OUT_OF_DATE:
+		_state = UP_TO_DATE;
+		return true;
+	default:
+		//Shouldn't reach this.
+		ASSERT( false );
+	}
+	return false;
+}
+
+bool
+FilterWorkingState::TrySetOutOfDate()
+{
+	Multithreading::ScopedLock stateLock( _stateLock );
+	switch( _state ) {
+	case RUNNING:
+	case STOPPING:
+		return false;
+	case UP_TO_DATE:
+	case OUT_OF_DATE:
+		_state = OUT_OF_DATE;
+		return true;
+	default:
+		//Shouldn't reach this.
+		ASSERT( false );
+	}
+	return false;
+}
+
+
+
+void
+FilterWorkingState::SetRunning()
+{
+	Multithreading::ScopedLock stateLock( _stateLock );
+	_state = RUNNING;
+}
+
+void
+FilterWorkingState::SetStopping()
+{
+	Multithreading::ScopedLock stateLock( _stateLock );
+	_state = STOPPING;
+}
+
+void
+FilterWorkingState::SetUpToDate()
+{
+	Multithreading::ScopedLock stateLock( _stateLock );
+	_state = UP_TO_DATE;
+}
+
+void
+FilterWorkingState::SetOutOfDate()
+{
+	Multithreading::ScopedLock stateLock( _stateLock );
+	_state = OUT_OF_DATE;
+}
+
 //******************************************************************************
 struct MainExecutionThread
 {
@@ -62,7 +168,7 @@ AbstractFilter::Execute()
 	}
 
 	_executionThread =  
-		new boost::thread( MainExecutionThread( this, ADAPTIVE_CALCULATION ) );
+		new Multithreading::Thread( MainExecutionThread( this, ADAPTIVE_CALCULATION ) );
 }
 
 void
@@ -75,7 +181,7 @@ AbstractFilter::ExecuteOnWhole()
 		return;
 	}
 	_executionThread = 
-		new boost::thread( MainExecutionThread( this, RECALCULATION ) );
+		new Multithreading::Thread( MainExecutionThread( this, RECALCULATION ) );
 }
 
 bool
@@ -83,14 +189,14 @@ AbstractFilter::StopExecution()
 {
 	//TODO
 	
-	return _workState.TryStop();
+	return _workState.TrySetStopping();
 }
 
 bool
 AbstractFilter::CanContinue()
 {
 	//TODO
-	return true;
+	return _workState.IsRunning();
 }
 
 void

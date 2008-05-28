@@ -17,7 +17,7 @@ struct DimensionExtends
 {
 	DimensionExtends(){}
 
-	size_t	
+//	size_t
 };
 
 /**
@@ -41,7 +41,7 @@ private:
 /**
  *
  **/
-template< ElementType, unsigned dim >
+template< typename ElementType, unsigned dim >
 class ImageDimensionalTemplate: public AbstractImage 
 {
 public:
@@ -64,7 +64,7 @@ private:
 /**
  *
  **/
-template< ElementType >
+template< typename ElementType >
 class Image2D: public ImageDimensionalTemplate< ElementType, 2 >
 {
 public:
@@ -78,7 +78,7 @@ public:
 	ElementType &
 	GetElement( size_t x, size_t y );
 
-	Image2D< ElementType >::Ptr
+	Ptr
 	GetRestrictedImage2D( 
 			size_t x1, 
 			size_t y1, 
@@ -96,7 +96,7 @@ private:
 /**
  *
  **/
-template< ElementType >
+template< typename ElementType >
 class Image3D: public ImageDimensionalTemplate< ElementType, 3 >
 {
 public:
@@ -110,24 +110,24 @@ public:
 	ElementType &
 	GetElement( size_t x, size_t y, size_t z );
 
-	Image2D< ElementType >::Ptr
+	typename Image2D< ElementType >::Ptr
 	GetRestrictedImage2D( 
 			size_t x1, 
 			size_t y1, 
 			size_t z1, 
 			size_t x2, 
 			size_t y2, 
-			size_t z2, 
+			size_t z2 
 			);
 
-	Image3D< ElementType >::Ptr
+	Ptr
 	GetRestrictedImage3D( 
 			size_t x1, 
 			size_t y1, 
 			size_t z1, 
 			size_t x2, 
 			size_t y2, 
-			size_t z2, 
+			size_t z2 
 			);
 protected:
 
@@ -138,7 +138,7 @@ private:
 /**
  *
  **/
-template< ElementType >
+template< typename ElementType >
 class Image4D: public ImageDimensionalTemplate< ElementType, 4 >
 {
 public:

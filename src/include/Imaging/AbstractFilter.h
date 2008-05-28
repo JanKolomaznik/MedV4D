@@ -9,6 +9,7 @@
 #include "Thread.h"
 
 
+#include <iostream>
 namespace M4D
 {
 namespace Imaging
@@ -20,6 +21,8 @@ namespace Imaging
 struct FilterWorkingState
 {
 public:
+	FilterWorkingState():_state( UP_TO_DATE ) {}
+
 	bool
 	TrySetRunning();
 	bool
@@ -28,9 +31,6 @@ public:
 	TrySetUpToDate();
 	bool
 	TrySetOutOfDate();
-
-	bool
-	TryStop();
 
 	void
 	SetRunning();
@@ -42,12 +42,13 @@ public:
 	SetOutOfDate();
 
 	bool
-	IsRunning();
+	IsRunning()const
+		{ return _state == RUNNING; }
 private:
 	enum FILTER_STATE{ RUNNING, STOPPING, UP_TO_DATE, OUT_OF_DATE };
 
-	FILTER_STATE	_state;
-	boost::mutex	_stateLock;
+	FILTER_STATE		_state;
+	Multithreading::Mutex	_stateLock;
 };
 
 /**
@@ -61,6 +62,8 @@ public:
 	 * Smart pointer to filter with this interface.
 	 **/
 	typedef boost::shared_ptr< AbstractFilter > AbstractFilterPtr;
+
+	AbstractFilter(){}
 
 	virtual
 	~AbstractFilter() {}
@@ -91,7 +94,7 @@ public:
 	 * using all input data, even when no change was applied.
 	 * Asynchronous method.
 	 **/
-	void
+	virtual void
 	ExecuteOnWhole();
 
 	/**
@@ -139,15 +142,29 @@ protected:
 	bool
 	CanContinue();
 
+	/**
+	 * Method used for clean after successful run of execution thread.
+	 * It will first detach thread and than set _workState to UP_TO_DATE.
+	 * Because execution thread is detached, new execution thread can be 
+	 * started. The old one will only finish - after this call it doesn't
+	 * change internal state of filter.
+	 **/
 	void
 	CleanAfterSuccessfulRun();
 
+	/**
+	 * Method used for clean after stopped run of execution thread.
+	 * It will first detach thread and than set _workState to OUT_OF_DATE.
+	 * Because execution thread is detached, new execution thread can be 
+	 * started. The old one will only finish - after this call it doesn't
+	 * change internal state of filter.
+	 **/
 	void
 	CleanAfterStoppedRun();
 	
 	InputPortList		_inputPorts;
 	OutputPortList		_outputPorts;
-	boost::thread		*_executionThread;
+	Multithreading::Thread	*_executionThread;
 	FilterWorkingState	_workState;
 private:
 	//Not implemented
@@ -157,6 +174,41 @@ private:
 
 };
 
+
+class TEST_FILTER: public AbstractFilter
+{
+public:
+
+	TEST_FILTER(){}
+protected:
+	bool
+	ExecutionThreadMethod()
+	{ return ExecutionOnWholeThreadMethod(); }
+
+	bool
+	ExecutionOnWholeThreadMethod()
+	{
+		for( int i=0; i < 100; ++i ) {
+			if( !CanContinue() ) {
+				LOG( "---- STOPPED" );
+				return false;
+			}
+			LOG( "NEXT ITERATION" );
+			for( int j=0; j < 80; ++j ) {
+				std::cout << '.';
+				std::cout.flush();	
+				//Multithreading::yield();
+				Multithreading::sleep( 3000 );
+			}
+			std::cout << '\n';
+		}
+
+		LOG( "---- OK FINISH" );
+		return true;
+	}
+
+
+};
 
 }/*namespace Imaging*/
 }/*namespace M4D*/

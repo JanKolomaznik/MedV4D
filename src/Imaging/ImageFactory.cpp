@@ -138,6 +138,7 @@ ImageFactory::CreateImageFromDICOM( M4D::Dicom::DcmProvider::DicomObjSetPtr dico
 
 //TODO - improve this function
 /** 
+ * @param dicomObjects Set of DICOM objects which are flushed into the array.
  * @param imageSize How many elements of size 'pixelSize' can be stored in array.
  * @param stride Number of BYTES!!! used per one object flush (size of one layer in bytes).
  * @param dataArray Array to be filled from dicom objects. Must be allocated!!!
