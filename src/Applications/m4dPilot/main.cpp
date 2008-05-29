@@ -11,7 +11,7 @@ int main ( int argc, char *argv[] )
 	SET_LOUT( logFile );
 
 	D_COMMAND( std::ofstream debugFile( "Debug.txt" ); );
-	SET_DOUT( logFile );
+	SET_DOUT( debugFile );
 
   QApplication app( argc, argv );
   app.setQuitOnLastWindowClosed( true );

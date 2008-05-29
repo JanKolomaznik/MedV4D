@@ -136,11 +136,23 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\Imaging\AbstractImage.cpp"
+				RelativePath="..\..\Imaging\AbstractFilter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\AbstractImageData.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\Imaging\ImageFactory.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\Ports.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\SimpleImageFilter.cpp"
 				>
 			</File>
 		</Filter>
@@ -150,11 +162,39 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath="..\..\include\Imaging\AbstractDataSet.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\Imaging\AbstractFilter.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\include\Imaging\AbstractImageData.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\AbstractImageFilter.h"
+				RelativePath="..\..\include\Imaging\AbstractPipeline.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\Imaging\AbstractProcessingUnit.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\Imaging\Connection.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\Imaging\Connection.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\Imaging\Image.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\Imaging\Image.tcc"
 				>
 			</File>
 			<File
@@ -171,6 +211,18 @@
 			</File>
 			<File
 				RelativePath="..\..\include\Imaging\ImageFactory.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\Imaging\Ports.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\Imaging\SimpleImageFilter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\Imaging\SimpleImageFilter.tcc"
 				>
 			</File>
 		</Filter>

@@ -19,9 +19,9 @@ template< typename InputImageType, typename OutputImageType >
 class SimpleImageFilter: public AbstractPipeFilter
 {
 public:
-	typedef typename M4D::Imaging::InputPortImageFilter< InputImageType >
+	typedef typename InputPortImageFilter< InputImageType >
 		InputPortType;
-	typedef typename M4D::Imaging::OutputPortImageFilter< OutputImageType >	
+	typedef typename OutputPortImageFilter< OutputImageType >	
 		OutputPortType;
 
 	SimpleImageFilter();

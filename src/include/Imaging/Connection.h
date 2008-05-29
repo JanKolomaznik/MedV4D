@@ -87,11 +87,10 @@ private:
 	PROHIBIT_COPYING_OF_OBJECT_MACRO( ImageFilterConnection );
 };
 
-//Include implementation
-#include "Imaging/Connection.tcc"
-
 }/*namespace Imaging*/
 }/*namespace M4D*/
 
+//Include implementation
+#include "Imaging/Connection.tcc"
 
 #endif /*_CONNECTION_H*/
