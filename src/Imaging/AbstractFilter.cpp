@@ -37,7 +37,7 @@ FilterWorkingState::TrySetStopping()
 	case UP_TO_DATE:
 	case OUT_OF_DATE:
 		return false;
-	default:
+	default:		
 		//Shouldn't reach this.
 		ASSERT( false );
 	}

@@ -10,7 +10,7 @@ MKDIR=mkdir
 #Name of this project part
 NAME=		Imaging
 #Names of target sources
-TARGETS=	AbstractImage \
+TARGETS=	AbstractImageData \
 		ImageFactory \
 		AbstractFilter \
 		Ports \

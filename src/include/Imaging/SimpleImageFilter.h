@@ -44,44 +44,7 @@ private:
 	PROHIBIT_COPYING_OF_OBJECT_MACRO( SimpleImageFilter );
 };
 
-/**
- * Ancestor of filters with single input and single output. 
- * Working on two dimensional data.
- ** /
-template< typename InputElementType, typename OutputElementType >
-class Simple2DImageFilter: public AbstractFilter
-{
-public:
-	Simple2DImageFilter();
-protected:
-	bool
-	ExecutionThreadMethod();
 
-	bool
-	ExecutionOnWholeThreadMethod();
-private:
-
-};
-
-/**
- * Ancestor of filters with single input and single output. 
- * Working on three dimensional data.
- ** /
-template< typename InputElementType, typename OutputElementType >
-class Simple3DImageFilter: public AbstractFilter
-{
-public:
-	Simple3DImageFilter();
-protected:
-	bool
-	ExecutionThreadMethod();
-
-	bool
-	ExecutionOnWholeThreadMethod();
-
-private:
-
-};
 
 /**
  * Ancestor of filters with single input and single output. 
