@@ -20,18 +20,18 @@ class PipelineMessage
 class Port
 {
 public:
+	typedef	uint64 PortID;
+
 	virtual
 	~Port() {}
 		
 protected:
-
+	static PortID
+	GenerateUniqueID();
 private:
 
 };
 
-/**
- *
- **/
 class InputPort
 {
 public:
@@ -44,9 +44,6 @@ private:
 
 };
 
-/**
- *
- **/
 class OutputPort
 {
 public:
@@ -60,29 +57,24 @@ private:
 };
 
 //******************************************************************************
-template< typename ElementType >
-class InputPort2DImageFilter
+template< typename ImageType >
+class InputPortImageFilter
 {
+public:
+	const ImageType&
+	GetImage()const;
+};
+
+template< typename ImageType >
+class OutputPortImageFilter
+{
+public:
+	//TODO - check const modifier
+	ImageType&
+	GetImage()const;
 
 };
 
-template< typename ElementType >
-class InputPort3DImageFilter
-{
-
-};
-
-template< typename ElementType >
-class OutputPort2DImageFilter
-{
-
-};
-
-template< typename ElementType >
-class OutputPort3DImageFilter
-{
-
-};
 //******************************************************************************
 
 class PortList
@@ -91,13 +83,13 @@ class PortList
 public:
 	PortList(): _size( 0 ) {}
 
-	virtual
-	~PortList() {}
 
 	size_t
 	Size()
 	{ return _size; }
 protected:
+	~PortList() {}
+
 	size_t	_size;
 private:
 	//Not implemented
@@ -114,7 +106,7 @@ public:
 	~InputPortList();
 
 	size_t
-	AddPort( InputPort* );
+	AddPort( InputPort* port );
 
 	InputPort &
 	GetPort( size_t idx )const;
@@ -140,7 +132,7 @@ private:
 	std::vector< InputPort* >	_ports;
 };
 
-class OutputPortList
+class OutputPortList: public PortList
 {
 public:
 	OutputPortList() {}
@@ -148,7 +140,7 @@ public:
 	~OutputPortList();
 
 	size_t
-	AddPort( OutputPort* );
+	AddPort( OutputPort* port );
 
 	OutputPort &
 	GetPort( size_t idx )const;

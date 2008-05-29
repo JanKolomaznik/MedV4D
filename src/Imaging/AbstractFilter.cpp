@@ -113,36 +113,53 @@ FilterWorkingState::SetOutOfDate()
 }
 
 //******************************************************************************
+/**
+ * Functor used in execution thread of filter - it's friend of AbstractPipeFilter.
+ **/
 struct MainExecutionThread
 {
+	/**
+	 * @param filter Pointer to filter which executed thread with this 
+	 * functor. MUST BE VALID!.
+	 * @param updateType Which execution method of the filter will be invoked.
+	 **/
 	MainExecutionThread( 
-		AbstractFilter			*filter, 
-		AbstractFilter::UPDATE_TYPE	updateType 
+		AbstractPipeFilter		*filter, 
+		AbstractPipeFilter::UPDATE_TYPE	updateType 
 		)
 		: _filter( filter ), _updateType( updateType ) 
 	{ /*empty*/ }
 
+	/**
+	 * Method executed by thread, which has copy of this object.
+	 **/
 	void
 	operator()();
 private:
-	AbstractFilter			*_filter;
-	AbstractFilter::UPDATE_TYPE	_updateType;
+	/**
+	 * Filter which executed thread with this functor.
+	 **/
+	AbstractPipeFilter		*_filter;
+	/**
+	 * Type of execution method, which will be invoked.
+	 **/
+	AbstractPipeFilter::UPDATE_TYPE	_updateType;
 };
 
 void
 MainExecutionThread::operator()()
 {
 	switch( _updateType ) {
-	case AbstractFilter::RECALCULATION:
-		//Decide how execution method finished its job.
+	case AbstractPipeFilter::RECALCULATION:
+		//Check how execution method finished its job.
 		if( _filter->ExecutionOnWholeThreadMethod() ) {
 			_filter->CleanAfterSuccessfulRun();
 		} else {
 			_filter->CleanAfterStoppedRun();
 		}
 		break;
-	case AbstractFilter::ADAPTIVE_CALCULATION:
-		//Decide how execution method finished its job.
+	case AbstractPipeFilter::ADAPTIVE_CALCULATION:
+		//Check how execution method finished its job.
 		if( _filter->ExecutionThreadMethod() ) {
 			_filter->CleanAfterSuccessfulRun();
 		} else {
@@ -158,7 +175,7 @@ MainExecutionThread::operator()()
 }
 //******************************************************************************
 void
-AbstractFilter::Execute()
+AbstractPipeFilter::Execute()
 {
 	//TODO
 	
@@ -172,7 +189,7 @@ AbstractFilter::Execute()
 }
 
 void
-AbstractFilter::ExecuteOnWhole()
+AbstractPipeFilter::ExecuteOnWhole()
 {
 	//TODO
 
@@ -185,7 +202,7 @@ AbstractFilter::ExecuteOnWhole()
 }
 
 bool
-AbstractFilter::StopExecution()
+AbstractPipeFilter::StopExecution()
 {
 	//TODO
 	
@@ -193,14 +210,14 @@ AbstractFilter::StopExecution()
 }
 
 bool
-AbstractFilter::CanContinue()
+AbstractPipeFilter::CanContinue()
 {
 	//TODO
 	return _workState.IsRunning();
 }
 
 void
-AbstractFilter::CleanAfterSuccessfulRun()
+AbstractPipeFilter::CleanAfterSuccessfulRun()
 {
 	//We delete execution thread structure - thread will be detached.
 	//Another execution thread can be created.
@@ -211,7 +228,7 @@ AbstractFilter::CleanAfterSuccessfulRun()
 }
 
 void
-AbstractFilter::CleanAfterStoppedRun()
+AbstractPipeFilter::CleanAfterStoppedRun()
 {
 	//We delete execution thread structure - thread will be detached.
 	//Another execution thread can be created.
@@ -223,3 +240,4 @@ AbstractFilter::CleanAfterStoppedRun()
 
 }/*namespace Imaging*/
 }/*namespace M4D*/
+

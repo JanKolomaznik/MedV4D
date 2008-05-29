@@ -13,7 +13,8 @@ NAME=		common
 TARGETS=	Common \
 		Debug \
 		ExceptionBase \
-		Log
+		Log \
+		Functors
 ########################################
 
 #Name of target

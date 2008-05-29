@@ -14,7 +14,7 @@ namespace M4D
 {
 namespace Imaging
 {
-
+ 
 /**
  * Structure synchronizing access to filter state informations.
  **/
@@ -57,16 +57,72 @@ private:
 class AbstractFilter : public AbstractProcessingUnit
 {
 public:
-	enum UPDATE_TYPE{ RECALCULATION, ADAPTIVE_CALCULATION };
 	/**
 	 * Smart pointer to filter with this interface.
 	 **/
 	typedef boost::shared_ptr< AbstractFilter > AbstractFilterPtr;
 
+	/**
+	 * Default constructor.
+	 **/
 	AbstractFilter(){}
 
-	virtual
+	/**
+	 * Destructor - virtual - can be polymrphically destroyed.
+	 **/
 	~AbstractFilter() {}
+	
+	/**
+	 * Start computing only on modified data.
+	 * Asynchronous method.
+	 **/
+	virtual void
+	Execute() = 0;
+
+	/**
+	 * Start computing from scretch - recalculate output 
+	 * using all input data, even when no change was applied.
+	 * Asynchronous method.
+	 **/
+	virtual void
+	ExecuteOnWhole() = 0;
+
+	/**
+	 * Stop execution of filter as soon as possible.
+	 * Asynchronous method.
+	 * \return True if stopping call was successful - it means that 
+	 * filter will stop its execution. Otherwise some problem occured - 
+	 * filter couldn't be stopped.
+	 **/
+	virtual bool
+	StopExecution() = 0;
+
+protected:
+	
+private:
+	/**
+	 * Prohibition of copying.
+	 **/
+	PROHIBIT_COPYING_OF_OBJECT_MACRO( AbstractFilter );
+
+};
+
+/**
+ * Ancestor of all filters with basic execution logic.
+ **/
+class AbstractPipeFilter : public AbstractFilter
+{
+public:
+	enum UPDATE_TYPE{ RECALCULATION, ADAPTIVE_CALCULATION };
+	/**
+	 * Smart pointer to filter with this interface.
+	 **/
+	typedef boost::shared_ptr< AbstractPipeFilter > AbstractPipeFilterPtr;
+
+	AbstractPipeFilter(){}
+
+	virtual
+	~AbstractPipeFilter() {}
 
 	/**
 	 * \return Returns list of all available input ports.
@@ -134,7 +190,7 @@ protected:
 	ExecutionOnWholeThreadMethod()=0;
 
 	/**
-	 * Method used for checking wheather execution can continue.
+	 * Method used for checking whether execution can continue.
 	 * Execution threads should call this method often to ensure that 
 	 * StopExecution() method wasn't called.
 	 * \return True if computing can continue, false otherwise.
@@ -167,15 +223,13 @@ protected:
 	Multithreading::Thread	*_executionThread;
 	FilterWorkingState	_workState;
 private:
-	//Not implemented
-	AbstractFilter( const AbstractFilter& );
-	AbstractFilter&
-	operator=( const AbstractFilter& );
-
+	/**
+	 * Prohibition of copying.
+	 **/
+	PROHIBIT_COPYING_OF_OBJECT_MACRO( AbstractPipeFilter );
 };
 
-
-class TEST_FILTER: public AbstractFilter
+class TEST_FILTER: public AbstractPipeFilter
 {
 public:
 

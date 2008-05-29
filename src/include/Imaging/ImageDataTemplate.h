@@ -76,7 +76,7 @@ public:
 	 * Helper function to acces two dimensional data.
 	 * Function doesn't check if dataset is two dimensional and 
 	 * if given indices are in allowed interval. Only thing, that is 
-	 * checked is wheather final index to data array is valid. 
+	 * checked is whether final index to data array is valid. 
 	 *
 	 * As a result we always access valid memory (or catch exception), but 
 	 * we can obtain wrong element, if we didn't check bounds and dimension before.
@@ -91,7 +91,7 @@ public:
 	 * Helper function to acces two dimensional data.
 	 * Function doesn't check if dataset is two dimensional and 
 	 * if given indices are in allowed interval. Only thing, that is 
-	 * checked is wheather final index to data array is valid. 
+	 * checked is whether final index to data array is valid. 
 	 *
 	 * As a result we always access valid memory (or catch exception), but 
 	 * we can obtain wrong element, if we didn't check bounds and dimension before.
@@ -107,7 +107,7 @@ public:
 	 * Helper function to acces three dimensional data.
 	 * Function doesn't check if dataset is three dimensional and 
 	 * if given indices are in allowed interval. Only thing, that is 
-	 * checked is wheather final index to data array is valid. 
+	 * checked is whether final index to data array is valid. 
 	 *
 	 * As a result we always access valid memory (or catch exception), but 
 	 * we can obtain wrong element, if we didn't check bounds and dimension before.
@@ -123,7 +123,7 @@ public:
 	 * Helper function to acces three dimensional data.
 	 * Function doesn't check if dataset is three dimensional and 
 	 * if given indices are in allowed interval. Only thing, that is 
-	 * checked is wheather final index to data array is valid. 
+	 * checked is whether final index to data array is valid. 
 	 *
 	 * As a result we always access valid memory (or catch exception), but 
 	 * we can obtain wrong element, if we didn't check bounds and dimension before.

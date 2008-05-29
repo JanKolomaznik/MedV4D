@@ -180,6 +180,14 @@ int GetNumericTypeID<bool>();
 int
 GetNTIDFromSizeAndSign( uint8 size, bool sign );
 
+
+//TODO - move
+#define PROHIBIT_COPYING_OF_OBJECT_MACRO( ClassName ) \
+	ClassName( const ClassName& ); \
+	ClassName& \
+	operator=( const ClassName& ); 
+
+
 // these are used in every file so include them in one place
 // here because Common are used in every file as well
 #include "Debug.h"

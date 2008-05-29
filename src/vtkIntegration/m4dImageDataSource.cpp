@@ -134,7 +134,7 @@ m4dImageDataSource::RequestData(
 		return 1;
 	}
 
-	//TODO - check wheather OK
+	//TODO - check whether OK
 	D_PRINT( "---- Setting voxel size to : " << std::endl << "\t\tw = " << 	_imageData->GetDimensionInfo( 0 ).elementExtent <<
 			std::endl << "\t\th = " << _imageData->GetDimensionInfo( 1 ).elementExtent <<
 			std::endl << "\t\td = " << _imageData->GetDimensionInfo( 2 ).elementExtent );

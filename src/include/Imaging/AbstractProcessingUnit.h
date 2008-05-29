@@ -18,11 +18,6 @@ public:
 	virtual
 	~AbstractProcessingUnit() {}
 
-	virtual void
-	Execute()=0;
-
-	virtual bool
-	StopExecution()=0;
 protected:
 
 private:

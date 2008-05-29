@@ -13,7 +13,8 @@ NAME=		Imaging
 TARGETS=	AbstractImage \
 		ImageFactory \
 		AbstractFilter \
-		Ports
+		Ports \
+		SimpleImageFilter
 ########################################
 
 #Name of target

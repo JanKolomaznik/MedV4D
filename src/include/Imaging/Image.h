@@ -42,29 +42,101 @@ private:
  *
  **/
 template< typename ElementType, unsigned dim >
-class ImageDimensionalTemplate: public AbstractImage 
+class Image;/*: public AbstractImage 
 {
 public:
-	typedef ElementType		Element;
+	typedef Image< ElementType, dim >	ThisClass;
+	typedef boost::shared_ptr< ThisClass >	Ptr;
+	typedef ElementType			Element;
 
-	ImageDimensionalTemplate( typename ImageDataTemplate< ElementType >::Ptr imageData );
-	ImageDimensionalTemplate( AbstractImageData::APtr imageData );
-	~ImageDimensionalTemplate();
+	Image( 
+		typename ImageDataTemplate< ElementType >::Ptr imageData 
+		);
+	Image( AbstractImageData::APtr imageData );
+	~Image();
 
 	const DimensionExtends &
 	GetExtends( unsigned dimension );
 protected:
 	
 	ImageDataTemplate< ElementType >	_imageData;
-	DimensionExtends					_extends[ dim ];	
+	DimensionExtends			_extends[ dim ];	
 private:
+
+};*/
+
+template< typename ElementType >
+class Image< ElementType, 2 >: public AbstractImage
+{
+public:
+	typedef Image< ElementType, 2 >		ThisClass;
+	typedef boost::shared_ptr< ThisClass >	Ptr;
+	typedef ElementType			Element;
+
+	Image( typename ImageDataTemplate< ElementType >::Ptr imageData );
+	Image( AbstractImageData::APtr imageData );
+	~Image();
+	
+	ElementType &
+	GetElement( size_t x, size_t y );
+
+	Ptr
+	GetRestricted2DImage( 
+			size_t x1, 
+			size_t y1, 
+			size_t x2, 
+			size_t y2 
+			);
+
+protected:
+
+private:
+
 
 };
 
-/**
- *
- **/
 template< typename ElementType >
+class Image< ElementType, 3 >: public AbstractImage
+{
+public:
+	typedef Image< ElementType, 3 >		ThisClass;
+	typedef boost::shared_ptr< ThisClass >	Ptr;
+	typedef ElementType			Element;
+
+	Image( typename ImageDataTemplate< ElementType >::Ptr imageData );
+	Image( AbstractImageData::APtr imageData );
+	~Image();
+	
+	ElementType &
+	GetElement( size_t x, size_t y, size_t z );
+
+	typename Image< ElementType, 2 >::Ptr
+	GetRestricted2DImage( 
+			size_t x1, 
+			size_t y1, 
+			size_t z1, 
+			size_t x2, 
+			size_t y2, 
+			size_t z2 
+			);
+
+	Ptr
+	GetRestricted3DImage( 
+			size_t x1, 
+			size_t y1, 
+			size_t z1, 
+			size_t x2, 
+			size_t y2, 
+			size_t z2 
+			);
+protected:
+
+private:
+
+
+};
+
+/*template< typename ElementType >
 class Image2D: public ImageDimensionalTemplate< ElementType, 2 >
 {
 public:
@@ -93,9 +165,6 @@ private:
 };
 
 
-/**
- *
- **/
 template< typename ElementType >
 class Image3D: public ImageDimensionalTemplate< ElementType, 3 >
 {
@@ -135,9 +204,6 @@ private:
 
 };
 
-/**
- *
- **/
 template< typename ElementType >
 class Image4D: public ImageDimensionalTemplate< ElementType, 4 >
 {
@@ -154,9 +220,12 @@ protected:
 private:
 
 };
-
+*/
 
 }/*namespace Imaging*/
 }/*namespace M4D*/
+
+//include implementation
+#include "Imaging/Image.tcc"
 
 #endif /*_IMAGE__H*/

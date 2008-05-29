@@ -12,7 +12,7 @@ namespace M4D
 namespace Imaging
 {
 
-class AbstractPipeline : public AbstractFilter
+class AbstractPipeline : public AbstractPipeFilter
 {
 public:
 

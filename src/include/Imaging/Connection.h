@@ -15,6 +15,8 @@ class Connection
 public:
 	typedef boost::shared_ptr< Connection > ConnectionPtr;
 
+	Connection() {}
+
 	virtual 
 	~Connection() {}
 
@@ -33,10 +35,44 @@ public:
 protected:
 
 private:
-	Connection( const Connection& );
-	Connection&
-	operator=( const Connection& );
+	/**
+	 * Prohibition of copying.
+	 **/
+	PROHIBIT_COPYING_OF_OBJECT_MACRO( Connection );
 };
+
+//template< 
+//class Connection
+//{
+//public:
+//	typedef boost::shared_ptr< Connection > ConnectionPtr;
+//
+//	Connection() {}
+//
+//	virtual 
+//	~Connection() {}
+//
+//	virtual void
+//	ConnectIn( OutputPort& outputPort )=0;
+//
+//	virtual void
+//	ConnectOut( InputPort& inputPort )=0;
+//
+//	virtual void
+//	DisconnectInFilter()=0;
+//
+//	virtual void
+//	DisconnectOutFilter( InputPort& inputPort )=0;
+//
+//protected:
+//
+//private:
+//	/**
+//	 * Prohibition of copying.
+//	 **/
+//	PROHIBIT_COPYING_OF_OBJECT_MACRO( Connection );
+//};
+
 
 }/*namespace Imaging*/
 }/*namespace M4D*/
