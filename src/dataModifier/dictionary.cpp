@@ -170,8 +170,8 @@ Dictionary::GetBornNumber(std::string &bornNum)
   std::stringstream stream;
 	  
   stream << (int) (1970 + ( rand() % (2008 - 1970)) );  // year
-  stream << setfill('0') << setw(2) << (int) (rand() % 12);  // month
-  stream << setw(2) << (int) (rand() % 28);  // day
+  stream << setfill('0') << setw(2) << (int) (1 + (rand() % 12));  // month
+  stream << setw(2) << (int) (1 + (rand() % 28));  // day
 
   bornNum = stream.str();
 }
@@ -208,6 +208,8 @@ Dictionary::GetDateBetween(
 
   date = outStream.str();
 }
+
+///////////////////////////////////////////////////////////////////////
 
 void
 Dictionary::LoadDate( const std::string &date, 
