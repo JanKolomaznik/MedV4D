@@ -16,8 +16,13 @@ class AbstractPipeline : public AbstractPipeFilter
 {
 public:
 
+	/**
+	 * Connect two compatible ports if possible.
+	 * @param outPort Reference to output port of some filter.
+	 * @param inPort Reference to input port of some filter.
+	 **/
 	virtual Connection &
-	MakeConnection( OutputPort& outPort InputPort& inPort )=0;
+	MakeConnection( OutputPort& outPort, InputPort& inPort )=0;
 protected:
 
 private:

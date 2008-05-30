@@ -15,6 +15,9 @@ namespace Imaging
 class AbstractProcessingUnit
 {
 public:
+	/**
+	 * Virtual destructor - to allow polymorphical destruction of successors.
+	 **/
 	virtual
 	~AbstractProcessingUnit() {}
 

@@ -21,33 +21,87 @@ namespace Imaging
 struct FilterWorkingState
 {
 public:
+	/**
+	 * Construct state object in UP_TO_DATE state.
+	 **/
 	FilterWorkingState():_state( UP_TO_DATE ) {}
 
+	/**
+	 * Try set state to RUNNING - only possible when in state 
+	 * UP_TO_DATE or OUT_OF_DATE.
+	 * @return Whether set was successful.
+	 **/
 	bool
 	TrySetRunning();
+
+	/**
+	 * Try set state to STOPPING - only possible when in state 
+	 * RUNNING or already STOPPING.
+	 * @return Whether set was successful.
+	 **/
 	bool
 	TrySetStopping();
+
+	/**
+	 * Try set state to UP_TO_DATE - only possible when in state 
+	 * OUT_OF_DATE or already UP_TO_DATE.
+	 * @return Whether set was successful.
+	 **/
 	bool
 	TrySetUpToDate();
+	
+	/**
+	 * Try set state to OUT_OF_DATE - only possible when in state 
+	 * UP_TO_DATE or already OUT_OF_DATE.
+	 * @return Whether set was successful.
+	 **/
 	bool
 	TrySetOutOfDate();
 
+	/**
+	 * Change state unconditionaly.
+	 **/
 	void
 	SetRunning();
+
+	/**
+	 * Change state unconditionaly.
+	 **/
 	void
 	SetStopping();
+
+	/**
+	 * Change state unconditionaly.
+	 **/
 	void
 	SetUpToDate();
+
+	/**
+	 * Change state unconditionaly.
+	 **/
 	void
 	SetOutOfDate();
 
+	/**
+	 * @return True if is in state RUNNING.
+	 **/
 	bool
 	IsRunning()const
 		{ return _state == RUNNING; }
 private:
+	/**
+	 * Enumeration of all possible states.
+	 **/
 	enum FILTER_STATE{ RUNNING, STOPPING, UP_TO_DATE, OUT_OF_DATE };
 
+	/**
+	 * Actual state.
+	 **/
 	FILTER_STATE		_state;
+
+	/**
+	 * Mutex for locking when changing state.
+	 **/
 	Multithreading::Mutex	_stateLock;
 };
 
@@ -68,7 +122,7 @@ public:
 	AbstractFilter(){}
 
 	/**
-	 * Destructor - virtual - can be polymrphically destroyed.
+	 * Destructor - virtual - can be polymorphically destroyed.
 	 **/
 	~AbstractFilter() {}
 	
@@ -113,26 +167,34 @@ private:
 class AbstractPipeFilter : public AbstractFilter
 {
 public:
+	/**
+	 * Types of possible execution methods - used by execution thread functor.
+	 **/
 	enum UPDATE_TYPE{ RECALCULATION, ADAPTIVE_CALCULATION };
 	/**
 	 * Smart pointer to filter with this interface.
 	 **/
 	typedef boost::shared_ptr< AbstractPipeFilter > AbstractPipeFilterPtr;
 
+	/**
+	 * Default constructor.
+	 **/
 	AbstractPipeFilter(){}
 
-	virtual
+	/**
+	 * Destructor - virtual - can be polymorphically destroyed.
+	 **/
 	~AbstractPipeFilter() {}
 
 	/**
-	 * \return Returns list of all available input ports.
+	 * @return Returns list of all available input ports.
 	 **/
 	const InputPortList &
 	InputPort()const
 		{ return _inputPorts; }
 
 	/**
-	 * \return Returns list of all available output ports.
+	 * @return Returns list of all available output ports.
 	 **/
 	const OutputPortList &
 	OutputPort()const
@@ -163,6 +225,9 @@ public:
 	bool
 	StopExecution();
 
+	/**
+	 * @return True if all computations are done or don't have input data.
+	 **/
 	bool
 	IsUpToDate();
 protected:
@@ -218,9 +283,25 @@ protected:
 	void
 	CleanAfterStoppedRun();
 	
+	/**
+	 * Container for input ports - polymorphic interfaces.
+	 **/
 	InputPortList		_inputPorts;
+
+	/**
+	 * Container for output ports - polymorphic interfaces.
+	 **/
 	OutputPortList		_outputPorts;
+
+	/**
+	 * Main filter thread - computation is executed in this thread, 
+	 * or its child threads.
+	 **/
 	Multithreading::Thread	*_executionThread;
+
+	/**
+	 * Internal state of filter.
+	 **/
 	FilterWorkingState	_workState;
 private:
 	/**
