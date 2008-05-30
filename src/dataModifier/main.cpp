@@ -109,7 +109,6 @@ main( int argc, char** argv)
   }
 
   // flush info
-  if( entryCont.infoOnly)
   {
     ofstream o("output.txt");
     entryCont.FlushMaps( o);
