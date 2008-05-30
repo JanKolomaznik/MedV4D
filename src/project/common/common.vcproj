@@ -42,6 +42,7 @@
 				PreprocessorDefinitions="WINDOWS,_DEBUG,UNICODE,WIN32,&quot;DEBUG_LEVEL=10&quot;"
 				MinimalRebuild="false"
 				RuntimeLibrary="1"
+				DebugInformationFormat="4"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -148,6 +149,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\common\Functors.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\common\Log.cpp"
 				>
 			</File>
@@ -170,7 +175,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\include\Functors.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\include\Log.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\Thread.h"
 				>
 			</File>
 		</Filter>

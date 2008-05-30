@@ -31,6 +31,7 @@ m4dImageDataSource::m4dImageDataSource()
 	_wholeExtent[0] = 0;  _wholeExtent[1] = 0;
   	_wholeExtent[2] = 0;  _wholeExtent[3] = 0;
 	_wholeExtent[4] = 0;  _wholeExtent[5] = 0;
+	_spacing[0] = _spacing[1] = _spacing[2] = 1.0;
 	Modified();
 
 	//Test version
@@ -60,17 +61,21 @@ m4dImageDataSource::SetImageData( Imaging::AbstractImageData::APtr imageData )
 		for( size_t dim = 0; dim < imageDimension; ++dim ) {
 			_wholeExtent[2*dim]		= 0;  
 			_wholeExtent[2*dim + 1] = 0;
+			_spacing[dim] = 1.0;
 		}
 	} else {
 		D_PRINT( "---- Obtained valid image pointer :" );
 		_imageData = imageData;
-
+		
 		for( size_t dim = 0; dim < imageDimension; ++dim ) {
-			D_PRINT( "-------- Size in dimension " << dim << " = " 
-				<< _imageData->GetDimensionInfo( dim ).size );
-
+			const Imaging::DimensionInfo &dimInfo = _imageData->GetDimensionInfo( dim );
+			
+				D_PRINT( "-------- Size in dimension " << dim << " = " << dimInfo.size );
+			
 			_wholeExtent[2*dim]		= 0;  
-			_wholeExtent[2*dim + 1] = _imageData->GetDimensionInfo( dim ).size-1;  		
+			_wholeExtent[2*dim + 1] = dimInfo.size-1; 
+			
+			_spacing[dim] = dimInfo.elementExtent;
 		}
 	}
 	Modified();
@@ -95,6 +100,8 @@ m4dImageDataSource::RequestInformation (
 
 	outInfo->Set(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT(),
                this->_wholeExtent,6);
+
+	outInfo->Set(vtkDataObject::SPACING(), this->_spacing, 3);
 
 	vtkDataObject::SetPointDataActiveScalarInfo(
 			outInfo, 
@@ -125,6 +132,9 @@ m4dImageDataSource::RequestData(
 	output->SetExtent(
 			outInfo->Get(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT())
 			);
+	//Set voxel size
+	output->SetSpacing( _spacing );
+
 	output->AllocateScalars();
 
 	//We don't have data for convesion.
@@ -138,12 +148,6 @@ m4dImageDataSource::RequestData(
 	D_PRINT( "---- Setting voxel size to : " << std::endl << "\t\tw = " << 	_imageData->GetDimensionInfo( 0 ).elementExtent <<
 			std::endl << "\t\th = " << _imageData->GetDimensionInfo( 1 ).elementExtent <<
 			std::endl << "\t\td = " << _imageData->GetDimensionInfo( 2 ).elementExtent );
-	//Set voxel size
-	output->SetSpacing( 
-			_imageData->GetDimensionInfo( 0 ).elementExtent,
-			_imageData->GetDimensionInfo( 1 ).elementExtent,
-			_imageData->GetDimensionInfo( 2 ).elementExtent
-			);
 
 	D_PRINT( "---- Filling requested VTK image dataset." );
 	//Fill data set

@@ -41,6 +41,7 @@ protected:
 
 	Imaging::AbstractImageData::APtr	_imageData;
 	int				_wholeExtent[6];
+	double				_spacing[3];
 private:
 	m4dImageDataSource(const m4dImageDataSource&);  // Not implemented.
 	void operator=(const m4dImageDataSource&);  // Not implemented.
