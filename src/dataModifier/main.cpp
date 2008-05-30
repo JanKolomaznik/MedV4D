@@ -4,8 +4,8 @@
 #include "boost/progress.hpp"
 #include <iostream>
 
-#include "entryContainer.h"
 #include "Common.h"
+#include "entryContainer.h"
 
 namespace fs = boost::filesystem;
 using namespace std;
@@ -63,10 +63,23 @@ main( int argc, char** argv)
     PrintUsage();
 
   // specification of hi, low date of studies
-  if( argc > 3)
+  if( argc > 2)
   {
-    entryCont.dateFrom = argv[2];
-    entryCont.dateTo = argv[3];
+    string s(argv[2]);
+    if( s.compare( "--info") == 0 )
+    {
+      entryCont.infoOnly = true;
+    }
+    else
+    {
+      if( argc > 3)
+      {
+        entryCont.dateFrom = argv[2];
+        entryCont.dateTo = argv[3];
+      }
+      else
+        PrintUsage();
+    }
   }
 
   // recursively (through queue) go through all files in subtree
@@ -93,6 +106,14 @@ main( int argc, char** argv)
     
   } catch( std::exception &ex) {
     LOG( ex.what());
+  }
+
+  // flush info
+  if( entryCont.infoOnly)
+  {
+    ofstream o("output.txt");
+    entryCont.FlushMaps( o);
+    o.close();
   }
   
   return 0;

@@ -30,7 +30,10 @@ struct PatientEntry
     if( res)
       return res > 0;
     else
-      return path.compare( b.path) > 0;
+    {
+      res = path.compare( b.path);
+      return res > 0;
+    }
   }
 };
 
@@ -48,7 +51,14 @@ public:
   // opens file, find accod
   void SolveFile( const std::string &name, const std::string &path);
 
+  void FlushMaps( std::ofstream &out);
+
   std::string dateFrom, dateTo;
+  bool infoOnly;  // dont modify the files but inly read info and than flush
+
+  EntryContainer() 
+    : infoOnly( false) 
+  {}
 };
 
 }

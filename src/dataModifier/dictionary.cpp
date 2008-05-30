@@ -106,17 +106,32 @@ Dictionary::FillPatientInfo( PatientInfo &info)
 }
 
 ///////////////////////////////////////////////////////////////////////
+#define MAX_GENERATION_TRIES 10
 
 void
 Dictionary::GetFemaleName( string &name)
 {
-	int pos = (int) (rand() % m_femaleForeNames.size());
-  name.append( m_femaleForeNames[pos]);
+	uint16 foreNamePos, sureNamePos;  
+  bool alreadyGenerated = true;
+  uint16 tries = 0;
 
+  do {
+    foreNamePos = (uint16) (rand() % m_femaleForeNames.size());
+    sureNamePos = (uint16) (rand() % m_femaleSureNames.size());
+    tries ++;
+
+    // look if this pair was already generated  
+    alreadyGenerated = IsAlreadyGenerated( foreNamePos, 
+      sureNamePos, m_femalesGenrated);
+
+  } while( tries < MAX_GENERATION_TRIES && alreadyGenerated );
+
+  if( tries == MAX_GENERATION_TRIES)
+    LOG( "Max count of tries was reached. Means too little dictionary !!!!");
+
+  name.append( m_femaleForeNames[foreNamePos]);
   name.append("_");
-
-  pos = (int) (rand() % m_femaleSureNames.size());
-  name.append( m_femaleSureNames[pos]);
+  name.append( m_femaleSureNames[sureNamePos]);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -124,13 +139,27 @@ Dictionary::GetFemaleName( string &name)
 void
 Dictionary::GetMaleName( string &name)
 {
-	int pos = (int) (rand() % m_maleForeNames.size());
-  name.append( m_maleForeNames[pos]);
+	uint16 foreNamePos, sureNamePos;  
+  bool alreadyGenerated = true;
+  uint16 tries = 0;
 
+  do {
+    foreNamePos = (uint16) (rand() % m_maleForeNames.size());
+    sureNamePos = (uint16) (rand() % m_maleSureNames.size());
+    tries ++;
+
+    // look if this pair was already generated  
+    alreadyGenerated = IsAlreadyGenerated( foreNamePos, 
+      sureNamePos, m_malesGenrated);
+
+  } while( tries < MAX_GENERATION_TRIES && alreadyGenerated );
+
+  if( tries == MAX_GENERATION_TRIES)
+    LOG( "Max count of tries was reached. Means too little dictionary !!!!");
+
+  name.append( m_maleForeNames[foreNamePos]);
   name.append("_");
-
-  pos = (int) (rand() % m_maleSureNames.size());
-  name.append( m_maleSureNames[pos]);
+  name.append( m_maleSureNames[sureNamePos]);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -139,10 +168,10 @@ void
 Dictionary::GetBornNumber(std::string &bornNum)
 {
   std::stringstream stream;
-	
-  stream << (int) (rand() % 28);  // day
-  stream << (int) (rand() % 12);  // month
+	  
   stream << (int) (1970 + ( rand() % (2008 - 1970)) );  // year
+  stream << setfill('0') << setw(2) << (int) (rand() % 12);  // month
+  stream << setw(2) << (int) (rand() % 28);  // day
 
   bornNum = stream.str();
 }
@@ -204,4 +233,31 @@ Dictionary::LoadDate( const std::string &date,
   buf[2] = 0;
   tmpStr << buf;
   tmpStr >> day;
+}
+
+bool
+Dictionary::IsAlreadyGenerated( uint16 foreNamePos, uint16 sureNamePos,
+                               SurnameContainer &cont)
+{
+  SurnameContainer::iterator it = cont.find( sureNamePos);
+  if( it == cont.end() )
+  {
+    FornamesSet fornames;
+    fornames.insert( foreNamePos);
+
+    cont.insert( SurnameContainer::value_type(
+      sureNamePos, fornames) );
+    return false;
+  }
+  else
+  {
+    FornamesSet::iterator fit = it->second.find( foreNamePos);
+    if( fit == it->second.end() )
+    {
+      it->second.insert( foreNamePos);
+      return false;
+    }
+    else
+      return true;
+  }
 }

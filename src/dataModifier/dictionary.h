@@ -2,6 +2,8 @@
 #define DICTIONARY_H
 
 #include <vector>
+#include <set>
+#include <map>
 #include "entities.h"
 
 /**
@@ -11,7 +13,13 @@ namespace M4D {
 namespace DataModifier {
 
 class Dictionary
-{
+{  
+  typedef std::set<uint16> FornamesSet;
+  typedef std::map<uint16, FornamesSet> SurnameContainer;
+
+  SurnameContainer m_malesGenrated;
+  SurnameContainer m_femalesGenrated;
+
   typedef std::vector<std::string> NameVector;
 
   NameVector m_femaleForeNames;
@@ -28,6 +36,11 @@ class Dictionary
     NameVector &females, NameVector &males, std::ifstream &file);
 
   void LoadDate( const std::string &date, int &day, int &month, int &year);
+
+  bool IsAlreadyGenerated( 
+    uint16 foreNamePos, 
+    uint16 sureNamePos, 
+    SurnameContainer &cont);
 
 public:
   Dictionary();
