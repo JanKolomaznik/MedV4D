@@ -9,26 +9,42 @@ namespace Imaging
 
 template< typename ElementType, unsigned dimension >
 void
-ImageFilterConnection< Image< ElementType, dimension > >
+InImageConnection< Image< ElementType, dimension > >
 ::ConnectIn( OutputPort& outputPort )
 {
-
+	OutputImagePort *port = 
+		dynamic_cast< OutputImagePort * >( &outputPort );
+	if( port ) {
+		ConnectIn( *port );
+	} else {
+		//TODO - throw exception
+	}
 }
 
 template< typename ElementType, unsigned dimension >
 void
-ImageFilterConnection< Image< ElementType, dimension > >
+OutImageConnection< Image< ElementType, dimension > >
 ::ConnectOut( InputPort& inputPort )
 {
-
+	InputImagePort *port = dynamic_cast< InputImagePort * >( &inputPort );
+	if( port ) {
+		ConnectOut( *port );
+	} else {
+		//TODO - throw exception
+	}
 }
 
 template< typename ElementType, unsigned dimension >
 void
-ImageFilterConnection< Image< ElementType, dimension > >
+OutImageConnection< Image< ElementType, dimension > >
 ::DisconnectOut( InputPort& inputPort )
 {
-
+	InputImagePort *port = dynamic_cast< InputImagePort * >( &inputPort );
+	if( port ) {
+		DisconnectOut( *port );
+	} else {
+		//TODO - throw exception
+	}
 }
 
 } /*namespace Imaging*/

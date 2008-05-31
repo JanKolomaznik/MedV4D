@@ -1,7 +1,7 @@
 #ifndef _SIMPLE_IMAGE_FILTER_H
 #define _SIMPLE_IMAGE_FILTER_H
 
-#include "ExceptionBase.h"
+#include "Common.h"
 
 #include "Imaging/Ports.h"
 #include "Imaging/ImageDataTemplate.h"

@@ -1,9 +1,9 @@
 #ifndef _CONNECTION_H
 #define _CONNECTION_H
 
+#include "Imaging/Image.h"
 #include "Imaging/AbstractFilter.h"
 #include "Imaging/Ports.h"
-#include <boost/shared_ptr.hpp>
 #include "Common.h"
 
 namespace M4D
@@ -16,19 +16,19 @@ namespace Imaging
  * input ports of filters. !!!See that output from connection 
  * is input to connected filter!!!
  **/
-class InConnectionInterface
+class OutConnectionInterface
 {
 public:
 	/**
 	 * Default constructor
 	 **/
-	InConnectionInterface() {}
+	OutConnectionInterface() {}
 	
 	/**
 	 * Virtual destructor.
 	 **/
 	virtual
-	~InConnectionInterface() {}
+	~OutConnectionInterface() {}
 
 	/**
 	 * Handle input port of some filter. 
@@ -52,19 +52,19 @@ public:
  * output ports of filters. !!!See that input to connection 
  * is output from connected filter!!!
  **/
-class OutConnectionInterface
+class InConnectionInterface
 {
 public:
 	/**
 	 * Default constructor
 	 **/
-	OutConnectionInterface() {}
+	InConnectionInterface() {}
 	
 	/**
 	 * Virtual destructor.
 	 **/
 	virtual
-	~OutConnectionInterface() {}
+	~InConnectionInterface() {}
 
 	/**
 	 * Handle input port of some filter. 
@@ -114,34 +114,44 @@ private:
 
 //We prohibit general usage - only specialized templates used.
 template<  typename ImageTemplate >
-class ImageFilterInConnection;
+class InImageConnection;
 
 //We prohibit general usage - only specialized templates used.
 template<  typename ImageTemplate >
-class ImageFilterOutConnection;
+class OutImageConnection;
 
 
 template< typename ElementType, unsigned dimension >
-class ImageFilterInConnection< Image< ElementType, dimension > >
+class OutImageConnection< Image< ElementType, dimension > >
+	: public OutConnectionInterface
 {
 public:
 	typedef typename M4D::Imaging::Image< ElementType, dimension > Image;
 	typedef typename M4D::Imaging::InputPortImageFilter< Image > InputImagePort;
 
+	void
+	ConnectOut( InputPort& inputPort );
+
 	virtual void
 	ConnectOut( InputImagePort& inputPort ) = 0; 
 
+	void
+	DisconnectOut( InputPort& inputPort );
+
 	virtual void
 	DisconnectOut( InputImagePort& inputPort ) = 0; 
-
 };
 
 template< typename ElementType, unsigned dimension >
-class ImageFilterOutConnection< Image< ElementType, dimension > >
+class InImageConnection< Image< ElementType, dimension > >
+	: public InConnectionInterface
 {
 public:
 	typedef typename M4D::Imaging::Image< ElementType, dimension > Image;
 	typedef typename M4D::Imaging::OutputPortImageFilter< Image > OutputImagePort;
+
+	void
+	ConnectIn( OutputPort& outputPort );
 
 	virtual void
 	ConnectIn( OutputImagePort& outputPort ) = 0; 
@@ -150,29 +160,24 @@ public:
 
 //We prohibit general usage - only specialized templates used.
 template< typename ImageTemplate >
-class ImageFilterConnection;
+class ImageConnection;
 
 
 template< typename ElementType, unsigned dimension >
-class ImageFilterConnection< Image< ElementType, dimension > >
+class ImageConnection< Image< ElementType, dimension > >
 	: public Connection,
-	public ImageFilterInConnection< Image< ElementType, dimension > >,
-	public ImageFilterOutConnection< Image< ElementType, dimension > >
+	public InImageConnection< Image< ElementType, dimension > >,
+	public OutImageConnection< Image< ElementType, dimension > >
 {
 public:
 
-	ImageFilterConnection() {}
+	ImageConnection() {}
 
-	~ImageFilterConnection() {}
+	~ImageConnection() {}
 
-	void
-	ConnectIn( OutputPort& outputPort );
+	
 
-	void
-	ConnectOut( InputPort& inputPort );
-
-	void
-	DisconnectOut( InputPort& inputPort );
+	
 
 protected:
 
@@ -180,7 +185,7 @@ private:
 	/**
 	 * Prohibition of copying.
 	 **/
-	PROHIBIT_COPYING_OF_OBJECT_MACRO( ImageFilterConnection );
+	PROHIBIT_COPYING_OF_OBJECT_MACRO( ImageConnection );
 };
 
 }/*namespace Imaging*/

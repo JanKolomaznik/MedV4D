@@ -11,6 +11,17 @@ namespace M4D
 namespace Imaging
 {
 
+//Forward declarations *****************
+class OutConnectionInterface;
+class InConnectionInterface;
+
+template<  typename ImageTemplate >
+class InImageConnection;
+
+template<  typename ImageTemplate >
+class OutImageConnection;
+//**************************************
+
 class PipelineMessage
 {
 
@@ -23,8 +34,14 @@ public:
 	typedef	uint64 PortID;
 
 	virtual
-	~Port() {}
+	~Port() { UnPlug(); }
+
+	virtual	bool
+	IsPlugged()const = 0;
 		
+	virtual void
+	UnPlug() = 0;
+
 protected:
 	static PortID
 	GenerateUniqueID();
@@ -38,8 +55,11 @@ public:
 	virtual
 	~InputPort() {}
 
+	virtual void
+	Plug( OutConnectionInterface & connection ) = 0;
 protected:
-
+	virtual void
+	SetPlug( OutConnectionInterface & connection ) = 0;
 private:
 
 };
@@ -50,7 +70,11 @@ public:
 	virtual
 	~OutputPort() {}
 
+	virtual void
+	Plug( InConnectionInterface & connection ) = 0;
 protected:
+	virtual void
+	SetPlug( InConnectionInterface & connection ) = 0;
 
 private:
 
@@ -58,21 +82,58 @@ private:
 
 //******************************************************************************
 template< typename ImageType >
-class InputPortImageFilter
+class InputPortImageFilter;
+
+template< typename ElementType, unsigned dimension >
+class InputPortImageFilter< Image< ElementType, dimension > >
 {
 public:
+	typedef typename M4D::Imaging::Image< ElementType, dimension > ImageType;
+
 	const ImageType&
 	GetImage()const;
+	
+	void
+	UnPlug();
+
+	void
+	Plug( OutConnectionInterface & connection );
+
+	void
+	Plug( OutImageConnection< ImageType > & connection );
+	
+protected:
+	void
+	SetPlug( OutConnectionInterface & connection );
+	void
+	SetPlug( OutImageConnection< ImageType > & connection );
+	
 };
 
 template< typename ImageType >
-class OutputPortImageFilter
+class OutputPortImageFilter;
+
+template< typename ElementType, unsigned dimension >
+class OutputPortImageFilter< Image< ElementType, dimension > >
 {
 public:
+	typedef typename M4D::Imaging::Image< ElementType, dimension > ImageType;
+
 	//TODO - check const modifier
 	ImageType&
 	GetImage()const;
 
+	void
+	Plug( InConnectionInterface & connection );
+
+	void
+	Plug( InImageConnection< ImageType > & connection );
+	
+protected:
+	void
+	SetPlug( InConnectionInterface & connection );
+	void
+	SetPlug( InImageConnection< ImageType > & connection );	
 };
 
 //******************************************************************************
@@ -166,39 +227,13 @@ private:
 	std::vector< OutputPort* >	_ports;
 };
 
-template< typename PortType >
-PortType&
-InputPortList::GetPortTyped( size_t idx )const
-{
-	return static_cast< PortType& >( GetPort( idx ) );
-}
-
-template< typename PortType >
-PortType*
-InputPortList::GetPortTypedSafe( size_t idx )const
-{
-	return dynamic_cast< PortType* >( &(GetPort( idx )) );
-}
-
-template< typename PortType >
-PortType&
-OutputPortList::GetPortTyped( size_t idx )const
-{
-	return static_cast< PortType& >( GetPort( idx ) );
-}
-
-template< typename PortType >
-PortType*
-OutputPortList::GetPortTypedSafe( size_t idx )const
-{
-	return dynamic_cast< PortType* >( &(GetPort( idx )) );
-}
 
 //******************************************************************************
 
 }/*namespace Imaging*/
 }/*namespace M4D*/
 
+#include "Imaging/Ports.tcc"
 
 #endif /*_PORTS_H*/
 
