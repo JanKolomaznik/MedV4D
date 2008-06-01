@@ -85,7 +85,7 @@ template< typename ImageType >
 class InputPortImageFilter;
 
 template< typename ElementType, unsigned dimension >
-class InputPortImageFilter< Image< ElementType, dimension > >
+class InputPortImageFilter< Image< ElementType, dimension > >: public InputPort
 {
 public:
 	typedef typename M4D::Imaging::Image< ElementType, dimension > ImageType;
@@ -114,7 +114,7 @@ template< typename ImageType >
 class OutputPortImageFilter;
 
 template< typename ElementType, unsigned dimension >
-class OutputPortImageFilter< Image< ElementType, dimension > >
+class OutputPortImageFilter< Image< ElementType, dimension > >: public OutputPort
 {
 public:
 	typedef typename M4D::Imaging::Image< ElementType, dimension > ImageType;

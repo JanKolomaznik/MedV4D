@@ -16,7 +16,7 @@ namespace Imaging
 {
 
 template< typename InputImageType, typename OutputImageType >
-class SimpleImageFilter: public AbstractPipeFilter
+class ImageFilter: public AbstractPipeFilter
 {
 public:
 	typedef typename M4D::Imaging::InputPortImageFilter< InputImageType >
@@ -24,13 +24,15 @@ public:
 	typedef typename M4D::Imaging::OutputPortImageFilter< OutputImageType >	
 		OutputPortType;
 
-	SimpleImageFilter();
+	ImageFilter();
+	~ImageFilter() {}
 protected:
+	/* Must be reimplemented in successor.
 	bool
 	ExecutionThreadMethod();
 
 	bool
-	ExecutionOnWholeThreadMethod();
+	ExecutionOnWholeThreadMethod();*/
 
 	const InputImageType&
 	GetInputImage()const;
@@ -41,7 +43,7 @@ private:
 	/**
 	 * Prohibition of copying.
 	 **/
-	PROHIBIT_COPYING_OF_OBJECT_MACRO( SimpleImageFilter );
+	PROHIBIT_COPYING_OF_OBJECT_MACRO( ImageFilter );
 };
 
 
@@ -67,6 +69,6 @@ private:
 } /*namespace M4D*/
 
 //include implementation
-#include "Imaging/SimpleImageFilter.h"
+#include "Imaging/SimpleImageFilter.tcc"
 
 #endif /*_SIMPLE_IMAGE_FILTER_H*/

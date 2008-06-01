@@ -15,7 +15,25 @@ namespace M4D
 namespace Imaging
 {
 
+template< typename InputImageType, typename OutputImageType >
+class CopyImageFilter: public ImageFilter< InputImageType, OutputImageType >
+{
+public:
+	CopyImageFilter();
+	~CopyImageFilter(){}
+protected:
+	bool
+	ExecutionThreadMethod();
 
+	bool
+	ExecutionOnWholeThreadMethod();
+
+private:
+	/**
+	 * Prohibition of copying.
+	 **/
+	PROHIBIT_COPYING_OF_OBJECT_MACRO( CopyImageFilter );
+};
 
 
 } /*namespace Imaging*/

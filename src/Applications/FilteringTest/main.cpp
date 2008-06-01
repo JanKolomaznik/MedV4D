@@ -1,6 +1,6 @@
 
 #include "Common.h"
-#include "Imaging/AbstractFilter.h"
+#include "Imaging/BasicImageFilters.h"
 #include "Imaging/DefaultConnection.h"
 #include <iostream>
 
@@ -9,14 +9,15 @@ using namespace M4D::Imaging;
 using namespace std;
 
 
-typedef OutImageConnectionSimple< Image< int16, 3 > > OutConn;
-typedef InImageConnectionSimple< Image< int16, 3 > > InConn;
+typedef Image< int16, 3 > ImageType;
+typedef OutImageConnectionSimple< ImageType > OutConn;
+typedef InImageConnectionSimple< ImageType > InConn;
 
 int
 main( int argc, char** argv )
 {
 	LOG( "** STARTING FILTERING TESTS **" );
-	TEST_FILTER	filter;
+	CopyImageFilter< ImageType, ImageType > filter;
 	OutConn	oconn;
 	InConn iconn;
 
