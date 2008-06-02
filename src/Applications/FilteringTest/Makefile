@@ -1,7 +1,7 @@
 
 srcdir = .
 
-CC=g++
+CXX=g++
 AR=ar
 RM=rm -f
 MKDIR=mkdir
@@ -58,7 +58,9 @@ OUTPUTDIR=	../../executables
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	../../tmp/$(NAME)
 
-CCFLAGS=	-Wall -Wno-deprecated
+CXXDEBUG_OPTIONS= -ggdb
+
+CXXFLAGS= -Wall -Wno-deprecated $(CXXDEBUG_OPTIONS)
 #Dependecy file creation parameters
 DEP_FILE=	$(TMP_DIR)/depend
 CDEPFLAGS=	-MM 
@@ -92,21 +94,18 @@ build:		cleanall all
 
 .PHONY: dep
 dep:		
-		$(CC) $(INCLUDES) $(CDEPFLAGS) $(SRC_FILES) | \
+		$(CXX) $(INCLUDES) $(CDEPFLAGS) $(SRC_FILES) | \
 		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
 
 $(TMP_DIR)/%.o:	%.cpp	
-		$(CC) $(CCFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
+		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 -include $(DEP_FILE)
 		
 $(OUTPUT):	$(OBJ_FILES)
-		$(CC) $(CCFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
+		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
 
 .PHONY: clean
 clean:
 		$(RM) $(OBJ_FILES) $(DEP_FILE)
-
-.PHONY: cleanall
-cleanall:	clean
 		$(RM) $(OUTPUT)

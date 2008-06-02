@@ -19,30 +19,6 @@ ImageFilter< InputImageType, OutputImageType >::ImageFilter()
 	_outputPorts.AddPort( out );
 }
 
-/*template< typename InputImageType, typename OutputImageType >
-bool
-SimpleImageFilter::ExecutionThreadMethod();
-{
-	//TODO
-	
-	if( !CanContinue() ) {
-		return false;
-	}
-	return true;
-}
-
-template< typename InputImageType, typename OutputImageType >
-bool
-SimpleImageFilter::ExecutionOnWholeThreadMethod()
-{
-	//TODO
-	
-	if( !CanContinue() ) {
-		return false;
-	}
-	return true;
-}*/
-
 template< typename InputImageType, typename OutputImageType >
 const InputImageType&
 ImageFilter< InputImageType, OutputImageType >::GetInputImage()const

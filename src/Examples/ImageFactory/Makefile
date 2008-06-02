@@ -8,7 +8,9 @@ CXXINCLUDES= $(addprefix -I, $(INCLUDES) )
 LIBRARIES=vtkImaging
 CXXLIBRARIES= $(addprefix -l, $(LIBRARIES) )
 
-CXXFLAGS= -Wall -Wno-deprecated -D DEBUG_LEVEL=20 -D DEBUG_ADITIONAL_INFO
+CXXDEBUG_OPTIONS= -ggdb -D DEBUG_LEVEL=20 -D DEBUG_ADITIONAL_INFO
+
+CXXFLAGS= -Wall -Wno-deprecated $(CXXDEBUG_OPTIONS)
 
 COMMON_SRC= ../../common
 TMP=../../tmp

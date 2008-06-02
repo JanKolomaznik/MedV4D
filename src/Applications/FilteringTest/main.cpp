@@ -21,6 +21,9 @@ main( int argc, char** argv )
 	OutConn	oconn;
 	InConn iconn;
 
+	oconn.ConnectOut( filter.InputPort()[0] );
+	iconn.ConnectIn( filter.OutputPort()[0] );
+
 	filter.Execute();
 
 	char option = '\0';
