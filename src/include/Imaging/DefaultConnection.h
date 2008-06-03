@@ -12,21 +12,21 @@ namespace M4D
 namespace Imaging
 {
 
-template<  typename ImageTemplate >
+template< typename ImageTemplate >
 class OutImageConnectionSimple;
 
 template< typename ElementType, unsigned dimension >
-class OutImageConnectionSimple< Image< ElementType, dimension > >
-: public OutImageConnection< Image< ElementType, dimension > >
+class OutImageConnectionSimple< M4D::Imaging::Image< ElementType, dimension > >
+: public OutImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 {
 public:
 	void
-	ConnectOut( typename OutImageConnection< Image< ElementType, dimension > >
+	ConnectOut( typename OutImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 			::InputImagePort& inputPort 
 		);
 
 	void
-	DisconnectOut( typename OutImageConnection< Image< ElementType, dimension > >
+	DisconnectOut( typename OutImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 			::InputImagePort& inputPort 
 		);
 };
@@ -35,12 +35,12 @@ template<  typename ImageTemplate >
 class InImageConnectionSimple;
 
 template< typename ElementType, unsigned dimension >
-class InImageConnectionSimple< Image< ElementType, dimension > >
-: public InImageConnection< Image< ElementType, dimension > >
+class InImageConnectionSimple< M4D::Imaging::Image< ElementType, dimension > >
+: public InImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 {
 public:
 	void
-	ConnectIn( typename InImageConnection< Image< ElementType, dimension > >
+	ConnectIn( typename InImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 			::OutputImagePort& outputPort 
 		); 
 
@@ -53,22 +53,22 @@ template<  typename ImageTemplate >
 class ImageConnectionSimple;
 
 template< typename ElementType, unsigned dimension >
-class ImageConnectionSimple< Image< ElementType, dimension > >
-: public ImageConnection< Image< ElementType, dimension > >
+class ImageConnectionSimple< M4D::Imaging::Image< ElementType, dimension > >
+: public ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 {
 public:
 	void
-	ConnectOut( typename OutImageConnection< Image< ElementType, dimension > >
+	ConnectOut( typename OutImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 			::InputImagePort& inputPort 
 		); 
 
 	void
-	DisconnectOut( typename OutImageConnection< Image< ElementType, dimension > >
+	DisconnectOut( typename OutImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 			::InputImagePort& inputPort 
 		);
 
 	void
-	ConnectIn( typename InImageConnection< Image< ElementType, dimension > >
+	ConnectIn( typename InImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 			::OutputImagePort& outputPort 
 		); 
 	

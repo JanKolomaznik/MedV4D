@@ -10,7 +10,7 @@ namespace Imaging
 template< typename ElementType, unsigned dimension >
 void
 OutImageConnectionSimple< Image< ElementType, dimension > >
-::ConnectOut( typename OutImageConnection< Image< ElementType, dimension > >
+::ConnectOut( typename OutImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 		::InputImagePort& inputPort 
 	)
 {
@@ -20,7 +20,7 @@ OutImageConnectionSimple< Image< ElementType, dimension > >
 template< typename ElementType, unsigned dimension >
 void
 OutImageConnectionSimple< Image< ElementType, dimension > >
-::DisconnectOut( typename OutImageConnection< Image< ElementType, dimension > >
+::DisconnectOut( typename OutImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 		::InputImagePort& inputPort 
 	)
 {
@@ -32,7 +32,7 @@ OutImageConnectionSimple< Image< ElementType, dimension > >
 template< typename ElementType, unsigned dimension >
 void
 InImageConnectionSimple< Image< ElementType, dimension > >
-::ConnectIn( typename InImageConnection< Image< ElementType, dimension > >
+::ConnectIn( typename InImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 			::OutputImagePort &outputPort 
 	)
 {
@@ -41,7 +41,8 @@ InImageConnectionSimple< Image< ElementType, dimension > >
 
 template< typename ElementType, unsigned dimension >
 void
-InImageConnectionSimple< Image< ElementType, dimension > >::DisconnectIn()
+InImageConnectionSimple< M4D::Imaging::Image< ElementType, dimension > >
+::DisconnectIn()
 {
 
 }
@@ -50,8 +51,8 @@ InImageConnectionSimple< Image< ElementType, dimension > >::DisconnectIn()
 
 template< typename ElementType, unsigned dimension >
 void
-ImageConnectionSimple< Image< ElementType, dimension > >
-::ConnectOut( typename OutImageConnection< Image< ElementType, dimension > >
+ImageConnectionSimple< M4D::Imaging::Image< ElementType, dimension > >
+::ConnectOut( typename OutImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 		::InputImagePort& inputPort 
 	)
 {
@@ -60,8 +61,8 @@ ImageConnectionSimple< Image< ElementType, dimension > >
 
 template< typename ElementType, unsigned dimension >
 void
-ImageConnectionSimple< Image< ElementType, dimension > >
-::DisconnectOut( typename OutImageConnection< Image< ElementType, dimension > >
+ImageConnectionSimple< M4D::Imaging::Image< ElementType, dimension > >
+::DisconnectOut( typename OutImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 		::InputImagePort& inputPort 
 	)
 {
@@ -70,8 +71,8 @@ ImageConnectionSimple< Image< ElementType, dimension > >
 
 template< typename ElementType, unsigned dimension >
 void
-ImageConnectionSimple< Image< ElementType, dimension > >
-::ConnectIn( typename InImageConnection< Image< ElementType, dimension > >
+ImageConnectionSimple< M4D::Imaging::Image< ElementType, dimension > >
+::ConnectIn( typename InImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 			::OutputImagePort &outputPort 
 	)
 {
@@ -80,7 +81,7 @@ ImageConnectionSimple< Image< ElementType, dimension > >
 
 template< typename ElementType, unsigned dimension >
 void
-ImageConnectionSimple< Image< ElementType, dimension > >::DisconnectIn()
+ImageConnectionSimple< M4D::Imaging::Image< ElementType, dimension > >::DisconnectIn()
 {
 
 }

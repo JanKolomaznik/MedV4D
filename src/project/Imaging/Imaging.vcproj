@@ -182,11 +182,27 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\include\Imaging\BasicImageFilters.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\Imaging\BasicImageFilters.tcc"
+				>
+			</File>
+			<File
 				RelativePath="..\..\include\Imaging\Connection.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\include\Imaging\Connection.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\Imaging\DefaultConnection.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\Imaging\DefaultConnection.tcc"
 				>
 			</File>
 			<File
@@ -215,6 +231,10 @@
 			</File>
 			<File
 				RelativePath="..\..\include\Imaging\Ports.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\Imaging\Ports.tcc"
 				>
 			</File>
 			<File
