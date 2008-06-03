@@ -20,7 +20,7 @@ class StManagerStudyListComp: public QWidget
 
   public:
     StManagerStudyListComp ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget,
-                             QWidget *parent = 0 );
+                             QDialog *studyManagerDialog, QWidget *parent = 0 );
     ~StManagerStudyListComp ();
 
     void find ( const std::string &patientName, const std::string &patientID, 
@@ -41,6 +41,8 @@ class StManagerStudyListComp: public QWidget
 
     /// Pointer to the VTK Render Window Widget - where to render image after clicking View. 
     m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget;
+    /// pointer to the Study Manager Dialog - to close it after clicking View
+    QDialog *studyManagerDialog;
 
     QPushButton  *viewButton;
     QPushButton  *deleteButton;

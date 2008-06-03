@@ -15,9 +15,9 @@ using namespace std;
 
 
 StManagerStudyListComp::StManagerStudyListComp ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget,
-                                                 QWidget *parent )
+                                                 QDialog *studyManagerDialog, QWidget *parent )
   : QWidget( parent ),
-    vtkRenderWindowWidget( vtkRenderWindowWidget )
+    vtkRenderWindowWidget( vtkRenderWindowWidget ), studyManagerDialog( studyManagerDialog )
 {
   // =-=-=-=-=-=-=-=- Buttons -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
@@ -120,6 +120,7 @@ void StManagerStudyListComp::addResultSetToStudyTable ( QTableWidget *table )
 }
 
 
+// progessBar needed...
 void StManagerStudyListComp::view ()
 {
   // this test is not necessary (view button is disabled when no selection)
@@ -166,6 +167,8 @@ void StManagerStudyListComp::view ()
     vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->imageDataToRenderWindow( DcmProvider::DicomObjSetPtr( dicomObjSet ) ) );
 
     delete studyInfo;
+
+    studyManagerDialog->close();
   }
 }
 
@@ -186,6 +189,8 @@ QTableWidget *StManagerStudyListComp::createStudyTable ()
   table->setSelectionMode( QAbstractItemView::SingleSelection );
   table->setEditTriggers( QAbstractItemView::NoEditTriggers );
 
+  table->setSortingEnabled( true );
+
   QStringList labels;
   labels << tr( "Patient ID" ) << tr( "Name" ) << tr( "Accesion" )
          << tr( "Modality" ) << tr( "Description" ) << tr( "Date" )
@@ -195,7 +200,6 @@ QTableWidget *StManagerStudyListComp::createStudyTable ()
   
   table->setColumnCount( labels.size() );
   table->setHorizontalHeaderLabels( labels );
-
 
   connect( table, SIGNAL(itemSelectionChanged()), this, SLOT(setEnabledView()) );
 
@@ -229,6 +233,7 @@ void StManagerStudyListComp::addRowToStudyTable ( const DcmProvider::TableRow *r
   for ( unsigned colNum = 0; colNum < tableRowItems.size(); colNum ++ ) {  
     table->setItem( rowNum, colNum, tableRowItems[colNum] );
   }
+  table->setRowHeight( rowNum, 23 );
 }
 
 

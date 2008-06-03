@@ -4,13 +4,13 @@
 
 
 m4dGUIStudyManagerWidget::m4dGUIStudyManagerWidget ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget,
-                                                     QWidget *parent )
+                                                     QDialog *studyManagerDialog, QWidget *parent )
   : QWidget( parent )
 {
   Q_INIT_RESOURCE( m4dGUIStudyManagerWidget );
 
   // studyListGroupBox must go before filterGroupBox (it needs the studyList)
-  createStudyListGroupBox( vtkRenderWindowWidget );
+  createStudyListGroupBox( vtkRenderWindowWidget, studyManagerDialog );
   createFilterGroupBox();
   createHangingProtocolsGroupBox();
 
@@ -46,13 +46,14 @@ void m4dGUIStudyManagerWidget::createHangingProtocolsGroupBox ()
 }
 
 
-void m4dGUIStudyManagerWidget::createStudyListGroupBox ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget )
+void m4dGUIStudyManagerWidget::createStudyListGroupBox ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget,
+                                                         QDialog *studyManagerDialog )
 {
   studyListGroupBox = new QGroupBox( tr( "Study List" ) );
 
   QVBoxLayout *studyListGroupBoxLayout = new QVBoxLayout;
   studyListGroupBoxLayout->setMargin( 0 );
-  studyListComponent = new StManagerStudyListComp( vtkRenderWindowWidget );
+  studyListComponent = new StManagerStudyListComp( vtkRenderWindowWidget, studyManagerDialog );
   studyListGroupBoxLayout->addWidget( studyListComponent );
 
   studyListGroupBox->setLayout( studyListGroupBoxLayout ); 

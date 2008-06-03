@@ -30,7 +30,8 @@ m4dGUIMainWindow::m4dGUIMainWindow ()
 
   setWindowTitle( tr( "m4dPilot" ) ); 
   setWindowIcon( QIcon( ":/GUI/icons/app.png" ) );
-  resize( 800, 600 );
+  // resize( 800, 600 );
+  showMaximized();
 
   // everything is initialized, build the manager - it needs some of the previous steps.
   createStudyManagerDialog();
@@ -60,12 +61,14 @@ void m4dGUIMainWindow::search ()
 
 void m4dGUIMainWindow::createStudyManagerDialog ()
 {
-  m4dGUIStudyManagerWidget *studyManagerWidget = new m4dGUIStudyManagerWidget( vtkRenderWindowWidget );
+  studyManagerDialog = new QDialog( this );
+
+  m4dGUIStudyManagerWidget *studyManagerWidget = new m4dGUIStudyManagerWidget( vtkRenderWindowWidget,
+                                                                               studyManagerDialog );
 
   QVBoxLayout *dialogLayout = new QVBoxLayout;
   dialogLayout->addWidget( studyManagerWidget );
 
-  studyManagerDialog = new QDialog( this );
   studyManagerDialog->setWindowTitle( tr( "Study Manager" ) );
   studyManagerDialog->setWindowIcon( QIcon( ":/GUI/icons/search.png" ) );
   studyManagerDialog->setLayout( dialogLayout );
