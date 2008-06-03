@@ -63,7 +63,7 @@ FindService::GetWholeStudyInfoQuery(
 	if (*query != NULL) delete *query;
     *query = new DcmDataset;
 
-    DU_putStringDOElement(*query, DCM_QueryRetrieveLevel, "IMAGES");
+  DU_putStringDOElement(*query, DCM_QueryRetrieveLevel, "IMAGES");
 	// patient info
 	DU_putStringDOElement(*query, DCM_PatientID, patientID.c_str() );
 
