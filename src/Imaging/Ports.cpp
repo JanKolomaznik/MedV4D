@@ -1,8 +1,8 @@
-#include "Imaging/Ports.h"
 #include <algorithm>
-#include "Functors.h"
-#include "Thread.h"
 
+#include "Thread.h"
+#include "Functors.h"
+#include "Imaging/Ports.h"
 
 namespace M4D
 {
