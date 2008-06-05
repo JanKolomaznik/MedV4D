@@ -109,17 +109,6 @@ void StManagerStudyListComp::find ( const string &patientName, const string &pat
 }
 
 
-void StManagerStudyListComp::addResultSetToStudyTable ( QTableWidget *table )
-{
-  table->clearContents();
-  table->setRowCount( 0 );
-
-  for ( unsigned rowNum = 0; rowNum < resultSet->size(); rowNum++ ) {
-    addRowToStudyTable( &resultSet->at( rowNum ), table );
-  }
-}
-
-
 // progessBar needed...
 void StManagerStudyListComp::view ()
 {
@@ -181,29 +170,14 @@ void StManagerStudyListComp::setEnabledView ()
 }
 
 
-QTableWidget *StManagerStudyListComp::createStudyTable ()
+void StManagerStudyListComp::addResultSetToStudyTable ( QTableWidget *table )
 {
-  QTableWidget *table  = new QTableWidget;
+  table->clearContents();
+  table->setRowCount( 0 );
 
-  table->setSelectionBehavior( QAbstractItemView::SelectRows );
-  table->setSelectionMode( QAbstractItemView::SingleSelection );
-  table->setEditTriggers( QAbstractItemView::NoEditTriggers );
-
-  table->setSortingEnabled( true );
-
-  QStringList labels;
-  labels << tr( "Patient ID" ) << tr( "Name" ) << tr( "Accesion" )
-         << tr( "Modality" ) << tr( "Description" ) << tr( "Date" )
-         << tr( "Time" ) << tr( "Study ID" ) << tr( "Sex" )
-         << tr( "Birthdate" ) << tr( "Referring MD" ) << tr( "Institution" )
-         << tr( "Location" ) << tr( "Server" );
-  
-  table->setColumnCount( labels.size() );
-  table->setHorizontalHeaderLabels( labels );
-
-  connect( table, SIGNAL(itemSelectionChanged()), this, SLOT(setEnabledView()) );
-
-  return table;
+  for ( unsigned rowNum = 0; rowNum < resultSet->size(); rowNum++ ) {
+    addRowToStudyTable( &resultSet->at( rowNum ), table );
+  }
 }
 
 
@@ -234,6 +208,32 @@ void StManagerStudyListComp::addRowToStudyTable ( const DcmProvider::TableRow *r
     table->setItem( rowNum, colNum, tableRowItems[colNum] );
   }
   table->setRowHeight( rowNum, 23 );
+}
+
+
+QTableWidget *StManagerStudyListComp::createStudyTable ()
+{
+  QTableWidget *table  = new QTableWidget;
+
+  table->setSelectionBehavior( QAbstractItemView::SelectRows );
+  table->setSelectionMode( QAbstractItemView::SingleSelection );
+  table->setEditTriggers( QAbstractItemView::NoEditTriggers );
+
+  table->setSortingEnabled( true );
+
+  QStringList labels;
+  labels << tr( "Patient ID" ) << tr( "Name" ) << tr( "Accesion" )
+         << tr( "Modality" ) << tr( "Description" ) << tr( "Date" )
+         << tr( "Time" ) << tr( "Study ID" ) << tr( "Sex" )
+         << tr( "Birthdate" ) << tr( "Referring MD" ) << tr( "Institution" )
+         << tr( "Location" ) << tr( "Server" );
+  
+  table->setColumnCount( labels.size() );
+  table->setHorizontalHeaderLabels( labels );
+
+  connect( table, SIGNAL(itemSelectionChanged()), this, SLOT(setEnabledView()) );
+
+  return table;
 }
 
 

@@ -2,7 +2,6 @@
 #define M4D_GUI_STUDY_MANAGER_WIDGET_H
 
 #include <QWidget>
-#include <QMainWindow>
 
 #include "GUI/StManagerFilterComp.h"
 #include "GUI/StManagerStudyListComp.h"
@@ -28,17 +27,13 @@ class m4dGUIStudyManagerWidget: public QWidget
                                QDialog *studyManagerDialog, QWidget *parent = 0 );
 
   private:
-    void createFilterGroupBox ();
-    void createHangingProtocolsGroupBox ();
-    void createStudyListGroupBox ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget,
-                                   QDialog *studyManagerDialog );
+    QGroupBox *createFilterGroupBox ();
+    QGroupBox *createHangingProtocolsGroupBox ();
+    QGroupBox *createStudyListGroupBox ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget,
+                                         QDialog *studyManagerDialog );
 
-    QGroupBox           *filterGroupBox;
     StManagerFilterComp *filterComponent;
 
-    QGroupBox   *hangingProtocolsGroupBox;
-
-    QGroupBox              *studyListGroupBox;
     StManagerStudyListComp *studyListComponent;
 };
 

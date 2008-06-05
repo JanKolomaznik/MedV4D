@@ -7,6 +7,7 @@
 
 using namespace std;
 
+
 /// Number of possible modalities - in filter - number of checkboxes
 #define MODALITIES_NUMBER   14
 

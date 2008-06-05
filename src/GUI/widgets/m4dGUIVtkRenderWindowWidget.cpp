@@ -162,7 +162,7 @@ vtkRenderer *m4dGUIVtkRenderWindowWidget::sphereToRenderWindow ()
   vtkRenderer *renSphere = vtkRenderer::New();
   // add the actor to the scene
   renSphere->AddActor( aSphere );
-  renSphere->SetBackground( 1, 1, 1 );				// background color white
+  renSphere->SetBackground( 0, 0, 0 );				// background color black
 
   return renSphere;
 }

@@ -5,6 +5,9 @@
 #include "Log.h"
 #include "Debug.h"
 
+#include "GUI/m4dGUIStudyManagerWidget.h"
+#include "GUI/m4dGUIScreenLayoutWidget.h"
+
 
 m4dGUIMainWindow::m4dGUIMainWindow ()
 {
@@ -35,6 +38,14 @@ m4dGUIMainWindow::m4dGUIMainWindow ()
 
   // everything is initialized, build the manager - it needs some of the previous steps.
   createStudyManagerDialog();
+  // and the other dialogs
+  createScreenLayoutDialog();
+}
+
+
+void m4dGUIMainWindow::search ()
+{
+  studyManagerDialog->show();
 }
 
 
@@ -53,15 +64,22 @@ void m4dGUIMainWindow::open ()
 }
 
 
-void m4dGUIMainWindow::search ()
+void m4dGUIMainWindow::layout ()
 {
-  studyManagerDialog->show();
+  screenLayoutDialog->show();
+}
+
+
+void m4dGUIMainWindow::createVtkRenderWindowWidget ()
+{
+  vtkRenderWindowWidget = new m4dGUIVtkRenderWindowWidget;
 }
 
 
 void m4dGUIMainWindow::createStudyManagerDialog ()
 {
-  studyManagerDialog = new QDialog( this );
+  // new dialog for Study Manager Widget - without What's This button in the title bar
+  studyManagerDialog = new QDialog( this, Qt::WindowTitleHint | Qt::WindowSystemMenuHint );
 
   m4dGUIStudyManagerWidget *studyManagerWidget = new m4dGUIStudyManagerWidget( vtkRenderWindowWidget,
                                                                                studyManagerDialog );
@@ -75,9 +93,20 @@ void m4dGUIMainWindow::createStudyManagerDialog ()
 }
 
 
-void m4dGUIMainWindow::createVtkRenderWindowWidget ()
+void m4dGUIMainWindow::createScreenLayoutDialog ()
 {
-  vtkRenderWindowWidget = new m4dGUIVtkRenderWindowWidget;
+  // new dialog for Screen Layout Widget - without What's This button in the title bar and resize
+  screenLayoutDialog = new QDialog( this, Qt::WindowTitleHint | Qt::WindowSystemMenuHint );
+
+  m4dGUIScreenLayoutWidget *screenLayoutWidget = new m4dGUIScreenLayoutWidget( vtkRenderWindowWidget,
+                                                                               screenLayoutDialog );
+
+  QVBoxLayout *dialogLayout = new QVBoxLayout;
+  dialogLayout->addWidget( screenLayoutWidget );
+
+  screenLayoutDialog->setWindowTitle( tr( "Screen Layout" ) );
+  screenLayoutDialog->setWindowIcon( QIcon( ":/GUI/icons/layout.png" ) );
+  screenLayoutDialog->setLayout( dialogLayout );
 }
 
 
@@ -85,23 +114,34 @@ void m4dGUIMainWindow::createActions ()
 {
   searchAct = new QAction( QIcon( ":/GUI/icons/search.png" ), tr( "&Search" ), this );
   searchAct->setShortcut( tr( "Ctrl+S" ) );
-  searchAct->setStatusTip( tr( "Search" ) );
+  searchAct->setStatusTip( tr( "Search for patient studies available for viewing" ) );
   connect( searchAct, SIGNAL(triggered()), this, SLOT(search()) );
 
   openAct = new QAction( QIcon( ":/GUI/icons/open.png" ), tr( "&Open..." ), this );
   openAct->setShortcut( tr( "Ctrl+O" ) );
-  openAct->setStatusTip( tr( "Open an existing document" ) );
+  openAct->setStatusTip( tr( "Open an existing document from disk or network file system" ) );
   connect( openAct, SIGNAL(triggered()), this, SLOT(open()) );
 
   saveAct = new QAction( QIcon( ":/GUI/icons/save.png" ), tr( "S&ave" ), this );
   saveAct->setShortcut( tr( "Ctrl+A" ) );
-  // saveAct->setStatusTip( tr( "Save the document to disk" ) );
-  // connect( saveAct, SIGNAL(triggered()), this, SLOT(save()) );
+  saveAct->setStatusTip( tr( "Save the document to disk" ) );
+  connect( saveAct, SIGNAL(triggered()), this, SLOT(save()) );
   saveAct->setEnabled( false );
 
   exitAct = new QAction( QIcon( ":/GUI/icons/exit.png" ), tr( "E&xit" ), this );
   exitAct->setShortcut( tr( "Ctrl+Q" ) );
   connect( exitAct, SIGNAL(triggered()), this, SLOT(close()) );
+
+  layoutAct = new QAction( QIcon( ":/GUI/icons/layout.png" ), tr( "S&creen Layout" ), this );
+  layoutAct->setShortcut( tr( "Ctrl+C" ) );
+  layoutAct->setStatusTip( tr( "Redisplay series and images in various layouts" ) );
+  connect( layoutAct, SIGNAL(triggered()), this, SLOT(layout()) );
+
+  overlayAct = new QAction( QIcon( ":/GUI/icons/info.png" ), tr( "&Toggle Overlay" ), this );
+  overlayAct->setShortcut( tr( "Ctrl+T" ) );
+  overlayAct->setStatusTip( tr( "Hide or displays the study information" ) );
+  connect( overlayAct, SIGNAL(triggered()), this, SLOT(overlay()) );
+  overlayAct->setEnabled( false );
 }
 
 
@@ -126,12 +166,16 @@ void m4dGUIMainWindow::createMenus ()
 
 void m4dGUIMainWindow::createToolBars ()
 {
+  searchToolBar = addToolBar( tr( "Search" ) );
+  searchToolBar->addAction( searchAct );
+
   fileToolBar = addToolBar( tr( "File" ) );
   fileToolBar->addAction( openAct );
   fileToolBar->addAction( saveAct );
 
-  searchToolBar = addToolBar( tr( "Search" ) );
-  searchToolBar->addAction( searchAct );
+  viewToolBar = addToolBar( tr( "View" ) );
+  viewToolBar->addAction( layoutAct );
+  viewToolBar->addAction( overlayAct );
 }
 
 

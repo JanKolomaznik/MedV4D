@@ -32,12 +32,12 @@ class StManagerStudyListComp: public QWidget
     void setEnabledView ();
 
   private:
+    void addResultSetToStudyTable ( QTableWidget *table );
+    void addRowToStudyTable ( const M4D::Dicom::DcmProvider::TableRow *row,
+                              QTableWidget *table );
+
     QTableWidget *createStudyTable ();
     QPushButton  *createButton ( const QString &text, const char *member );
-
-    void          addResultSetToStudyTable ( QTableWidget *table );
-    void          addRowToStudyTable ( const M4D::Dicom::DcmProvider::TableRow *row,
-                                       QTableWidget *table );
 
     /// Pointer to the VTK Render Window Widget - where to render image after clicking View. 
     m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget;

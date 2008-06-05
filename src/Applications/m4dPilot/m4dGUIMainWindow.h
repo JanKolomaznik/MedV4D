@@ -4,7 +4,6 @@
 #include <QMainWindow>
 
 #include "GUI/m4dGUIVtkRenderWindowWidget.h"
-#include "GUI/m4dGUIStudyManagerWidget.h"
 
 
 class m4dGUIMainWindow: public QMainWindow
@@ -15,13 +14,15 @@ class m4dGUIMainWindow: public QMainWindow
     m4dGUIMainWindow ();
 
   private slots:
-    void open ();
     void search ();
+    void open ();
+    void layout ();
 
   private:
-    void createStudyManagerDialog ();
     void createVtkRenderWindowWidget ();
-    
+    void createStudyManagerDialog ();
+    void createScreenLayoutDialog ();
+        
     void createActions ();
     void createMenus ();
     void createToolBars ();
@@ -32,17 +33,21 @@ class m4dGUIMainWindow: public QMainWindow
     m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget;
 
     QDialog *studyManagerDialog;
+    QDialog *screenLayoutDialog;
   
     QAction *searchAct;
     QAction *openAct;
     QAction *saveAct;
     QAction *exitAct;
-
-    QToolBar *fileToolBar;
+    QAction *layoutAct;
+    QAction *overlayAct;
+    
     QToolBar *searchToolBar;
+    QToolBar *fileToolBar;
+    QToolBar *viewToolBar;
    
     QMenu *fileMenu;
-    QMenu *viewMenu;
+    QMenu *viewMenu;  // name coll.
 };
 
 #endif // M4D_GUI_MAIN_WINDOW_H
