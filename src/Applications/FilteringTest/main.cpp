@@ -24,13 +24,16 @@ main( int argc, char** argv )
 	oconn.ConnectOut( filter.InputPort()[0] );
 	iconn.ConnectIn( filter.OutputPort()[0] );
 
-	filter.Execute();
+	
 
 	char option = '\0';
 	cin >> option;
 	while ( option != 'q' && option != 'Q' ) {
 		switch( option ) {
-
+		case 'e':
+		case 'E':
+			filter.Execute();
+			break;
 		case 's':
 		case 'S':
 			LOG( "STOP CALLED" );

@@ -36,9 +36,12 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="0"
 				AdditionalIncludeDirectories="..\..\include\qt\headers\QtCore;..\..\include\qt\headers\QtGui;..\..\include\qt\headers;.;&quot;.\qt\win32-msvc2005&quot;;..\..\include;..\..\include\qt;..\..\include\vtk"
 				PreprocessorDefinitions="_WINDOWS,_DEBUG,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT;&quot;DEBUG_LEVEL=10&quot;"
+				RuntimeLibrary="1"
 				WarningLevel="3"
+				DebugInformationFormat="4"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

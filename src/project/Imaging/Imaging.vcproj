@@ -230,6 +230,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\include\Imaging\ModificationManager.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\Imaging\PipelineMessages.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\include\Imaging\Ports.h"
 				>
 			</File>

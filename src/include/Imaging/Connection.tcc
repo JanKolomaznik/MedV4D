@@ -15,7 +15,7 @@ ImageConnection< Image< ElementType, dimension > >
 	OutputImagePort *port = 
 		dynamic_cast< OutputImagePort * >( &outputPort );
 	if( port ) {
-		ConnectIn( *port );
+		ConnectInTyped( *port );
 	} else {
 		//TODO - throw exception
 	}
@@ -28,7 +28,7 @@ ImageConnection< Image< ElementType, dimension > >
 {
 	InputImagePort *port = dynamic_cast< InputImagePort * >( &inputPort );
 	if( port ) {
-		ConnectOut( *port );
+		ConnectOutTyped( *port );
 	} else {
 		//TODO - throw exception
 	}
