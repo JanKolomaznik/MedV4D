@@ -217,6 +217,21 @@ AbstractPipeFilter::CanContinue()
 }
 
 void
+AbstractPipeFilter::ReceiveMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle,
+		FlowDirection				direction
+		)
+{
+	//TODO
+	/*switch ( sendStyle ) {
+
+
+
+	}*/	
+}
+
+void
 AbstractPipeFilter::CleanAfterSuccessfulRun()
 {
 	//We delete execution thread structure - thread will be detached.

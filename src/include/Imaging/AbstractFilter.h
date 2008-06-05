@@ -7,7 +7,7 @@
 #include "Imaging/Connection.h"
 #include <boost/shared_ptr.hpp>
 #include "Thread.h"
-
+#include "Imaging/PipelineMessages.h"
 
 #include <iostream>
 namespace M4D
@@ -164,7 +164,7 @@ private:
 /**
  * Ancestor of all filters with basic execution logic.
  **/
-class AbstractPipeFilter : public AbstractFilter
+class AbstractPipeFilter : public AbstractFilter, public MessageReceiverInterface
 {
 public:
 	/**
@@ -230,6 +230,20 @@ public:
 	 **/
 	bool
 	IsUpToDate();
+
+	/**
+	 * Method for receiving messages - called by sender.
+	 * \param msg Smart pointer to message object - we don't have 
+	 * to worry about deallocation.
+	 * \param sendStyle How treat incoming message.
+	 **/
+	void
+	ReceiveMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle,
+		FlowDirection				direction
+		);
+
 protected:
 	friend struct MainExecutionThread;
 	/**

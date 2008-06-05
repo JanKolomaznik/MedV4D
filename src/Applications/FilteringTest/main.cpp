@@ -1,4 +1,4 @@
-/*
+
 #include "Common.h"
 #include "Imaging/BasicImageFilters.h"
 #include "Imaging/DefaultConnection.h"
@@ -10,19 +10,19 @@ using namespace std;
 
 
 typedef Image< int16, 3 > ImageType;
-typedef OutImageConnectionSimple< ImageType > OutConn;
-typedef InImageConnectionSimple< ImageType > InConn;
-*/
+typedef ImageConnectionSimple< ImageType > Conn;
+typedef ImageConnectionSimple< ImageType > Conn;
+
 int
 main( int argc, char** argv )
 {
-/*	LOG( "** STARTING FILTERING TESTS **" );
+	LOG( "** STARTING FILTERING TESTS **" );
 	CopyImageFilter< ImageType, ImageType > filter;
-	OutConn	oconn;
-	InConn iconn;
+	Conn	oconn;
+	Conn iconn;
 
-	((OutConnectionInterface*)&oconn)->ConnectOut( filter.InputPort()[0] );
-	((InConnectionInterface*)&iconn)->ConnectIn( filter.OutputPort()[0] );
+	oconn.ConnectOut( filter.InputPort()[0] );
+	iconn.ConnectIn( filter.OutputPort()[0] );
 
 	filter.Execute();
 
@@ -46,6 +46,6 @@ main( int argc, char** argv )
 
 	LOG( "** FILTERING TESTS FINISHED **" )
 
-	*/
+	
 	return 0;
 }

@@ -15,16 +15,12 @@ const Image< ElementType, dimension >&
 InputPortImageFilter< Image< ElementType, dimension > >
 ::GetImage()const
 {
-
+	if( !this->IsPlugged() ) {
+		throw EDisconnected( this->_id );
+	}
+	return _imageConnection->GetImageReadOnly();
 }
 
-template< typename ElementType, unsigned dimension >
-void
-InputPortImageFilter< Image< ElementType, dimension > >
-::UnPlug()
-{
-
-}
 
 template< typename ElementType, unsigned dimension >
 void
@@ -37,9 +33,17 @@ InputPortImageFilter< Image< ElementType, dimension > >
 template< typename ElementType, unsigned dimension >
 void
 InputPortImageFilter< Image< ElementType, dimension > >
-::Plug( OutImageConnection< Image< ElementType, dimension > > & connection )
+::Plug( ImageConnection< Image< ElementType, dimension > > & connection )
 {
 
+}
+
+template< typename ElementType, unsigned dimension >
+void
+InputPortImageFilter< Image< ElementType, dimension > >
+::UnPlug()
+{
+	//TODO
 }
 
 template< typename ElementType, unsigned dimension >
@@ -53,11 +57,37 @@ InputPortImageFilter< Image< ElementType, dimension > >
 template< typename ElementType, unsigned dimension >
 void
 InputPortImageFilter< Image< ElementType, dimension > >
-::SetPlug( OutImageConnection< Image< ElementType, dimension > > & connection )
+::SetPlug( ImageConnection< Image< ElementType, dimension > > & connection )
 {
 
 }
 	
+template< typename ElementType, unsigned dimension >
+void
+InputPortImageFilter< Image< ElementType, dimension > >
+::SendMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle 
+		)
+{
+	if( this->IsPlugged() ) {
+		_imageConnection->RouteMessage( msg, sendStyle, FD_AGAINST_FLOW );
+		
+	}
+}
+
+template< typename ElementType, unsigned dimension >
+void
+InputPortImageFilter< Image< ElementType, dimension > >
+::ReceiveMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle, 
+		FlowDirection				direction
+		)
+{
+	//TODO
+}
+
 //******************************************************************************
 
 template< typename ElementType, unsigned dimension >
@@ -65,7 +95,11 @@ Image< ElementType, dimension >&
 OutputPortImageFilter< Image< ElementType, dimension > >
 ::GetImage()const
 {
+	if( !this->IsPlugged() ) {
+		throw EDisconnected( this->_id );
+	}
 
+	return _imageConnection->GetImage();
 }
 
 template< typename ElementType, unsigned dimension >
@@ -79,9 +113,17 @@ OutputPortImageFilter< Image< ElementType, dimension > >
 template< typename ElementType, unsigned dimension >
 void
 OutputPortImageFilter< Image< ElementType, dimension > >
-::Plug( InImageConnection< Image< ElementType, dimension > > & connection )
+::Plug( ImageConnection< Image< ElementType, dimension > > & connection )
 {
 
+}
+
+template< typename ElementType, unsigned dimension >
+void
+OutputPortImageFilter< Image< ElementType, dimension > >
+::UnPlug()
+{
+	//TODO
 }
 
 template< typename ElementType, unsigned dimension >
@@ -95,11 +137,36 @@ OutputPortImageFilter< Image< ElementType, dimension > >
 template< typename ElementType, unsigned dimension >
 void
 OutputPortImageFilter< Image< ElementType, dimension > >
-::SetPlug( InImageConnection< Image< ElementType, dimension > > & connection )
+::SetPlug( ImageConnection< Image< ElementType, dimension > > & connection )
 {
 
 }
 
+template< typename ElementType, unsigned dimension >
+void
+OutputPortImageFilter< Image< ElementType, dimension > >
+::SendMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle 
+		)
+{
+	if( this->IsPlugged() ) {
+		_imageConnection->RouteMessage( msg, sendStyle, FD_IN_FLOW );
+		
+	}
+}
+
+template< typename ElementType, unsigned dimension >
+void
+OutputPortImageFilter< Image< ElementType, dimension > >
+::ReceiveMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle, 
+		FlowDirection				direction
+		)
+{
+	//TODO
+}
 
 //******************************************************************************
 

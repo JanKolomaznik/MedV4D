@@ -9,7 +9,7 @@ namespace Imaging
 
 template< typename ElementType, unsigned dimension >
 void
-InImageConnection< Image< ElementType, dimension > >
+ImageConnection< Image< ElementType, dimension > >
 ::ConnectIn( OutputPort& outputPort )
 {
 	OutputImagePort *port = 
@@ -23,7 +23,7 @@ InImageConnection< Image< ElementType, dimension > >
 
 template< typename ElementType, unsigned dimension >
 void
-OutImageConnection< Image< ElementType, dimension > >
+ImageConnection< Image< ElementType, dimension > >
 ::ConnectOut( InputPort& inputPort )
 {
 	InputImagePort *port = dynamic_cast< InputImagePort * >( &inputPort );
@@ -36,7 +36,7 @@ OutImageConnection< Image< ElementType, dimension > >
 
 template< typename ElementType, unsigned dimension >
 void
-OutImageConnection< Image< ElementType, dimension > >
+ImageConnection< Image< ElementType, dimension > >
 ::DisconnectOut( InputPort& inputPort )
 {
 	InputImagePort *port = dynamic_cast< InputImagePort * >( &inputPort );
@@ -45,6 +45,18 @@ OutImageConnection< Image< ElementType, dimension > >
 	} else {
 		//TODO - throw exception
 	}
+}
+
+template< typename ElementType, unsigned dimension >
+void
+ImageConnection< Image< ElementType, dimension > >
+::RouteMessage( 
+	PipelineMessage::Ptr 			msg, 
+	PipelineMessage::MessageSendStyle 	sendStyle, 
+	FlowDirection				direction
+	)
+{
+	//TODO
 }
 
 } /*namespace Imaging*/

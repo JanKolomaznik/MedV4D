@@ -5,6 +5,7 @@
 #include "Imaging/AbstractDataSet.h"
 #include "Imaging/Image.h"
 #include <vector>
+#include "Imaging/PipelineMessages.h"
 
 namespace M4D
 {
@@ -15,41 +16,83 @@ namespace Imaging
 class OutConnectionInterface;
 class InConnectionInterface;
 
-template<  typename ImageTemplate >
-class InImageConnection;
+template< typename ImageTemplate >
+class ImageConnection;
 
-template<  typename ImageTemplate >
-class OutImageConnection;
 //**************************************
 
-class PipelineMessage
-{
-
-
-};
-
-class Port
+class Port: public MessageOperatorInterface
 {
 public:
+	/** 
+	 * Type of ports identification number. 
+	 **/
 	typedef	uint64 PortID;
 
-	virtual
-	~Port() { UnPlug(); }
+	/**
+	 * Exception which is thrown in situations, when port isn't
+	 * connected and method need port to be connected for succesful
+	 * execution.
+	 **/
+	class EDisconnected;
 
+	/**
+	 * Default constructor - port obtain unique ID.
+	 **/
+	Port() { _id = GenerateUniqueID(); }
+
+	/**
+	 * Virtual destructor - class can be (and will be) disposed polymorphicaly.
+	 **/
+	virtual
+	~Port() { }
+
+	/**
+	 * return True if port is plugged to connection object.
+	 **/
 	virtual	bool
 	IsPlugged()const = 0;
-		
+	
+	/**
+	 * Method to unplug port from connection object - if already 
+	 * disconnected do nothing.
+	 **/
 	virtual void
 	UnPlug() = 0;
 
+	
 protected:
+	/**
+	 * Method for unique port ID generation - thread safe.
+	 **/
 	static PortID
 	GenerateUniqueID();
+
+	PortID	_id;
 private:
 
 };
 
-class InputPort
+/**
+ * Exception which is thrown in situations, when port isn't
+ * connected and method need port to be connected for succesful
+ * execution.
+ **/
+class Port::EDisconnected
+{
+public:
+	EDisconnected( Port::PortID port ) : _port( port ) {}
+	//TODO
+protected:
+	/**
+	 * ID of port which caused this exception.
+	 **/
+	Port::PortID _port;
+};
+
+
+
+class InputPort: public Port
 {
 public:
 	virtual
@@ -64,7 +107,7 @@ private:
 
 };
 
-class OutputPort
+class OutputPort: public Port
 {
 public:
 	virtual
@@ -90,24 +133,44 @@ class InputPortImageFilter< Image< ElementType, dimension > >: public InputPort
 public:
 	typedef typename M4D::Imaging::Image< ElementType, dimension > ImageType;
 
+	InputPortImageFilter(): _imageConnection( NULL ) {}
+
 	const ImageType&
 	GetImage()const;
 	
 	void
-	UnPlug();
-
-	void
 	Plug( OutConnectionInterface & connection );
 
 	void
-	Plug( OutImageConnection< ImageType > & connection );
-	
+	Plug( ImageConnection< ImageType > & connection );
+
+	void
+	UnPlug();
+
+	bool
+	IsPlugged()const
+		{ return _imageConnection != NULL; }
+
+	void
+	SendMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle 
+		);
+
+	void
+	ReceiveMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle, 
+		FlowDirection				direction
+		);
+
 protected:
 	void
 	SetPlug( OutConnectionInterface & connection );
 	void
-	SetPlug( OutImageConnection< ImageType > & connection );
+	SetPlug( ImageConnection< ImageType > & connection );
 	
+	ImageConnection< ImageType >	*_imageConnection;
 };
 
 template< typename ImageType >
@@ -119,6 +182,8 @@ class OutputPortImageFilter< Image< ElementType, dimension > >: public OutputPor
 public:
 	typedef typename M4D::Imaging::Image< ElementType, dimension > ImageType;
 
+	OutputPortImageFilter(): _imageConnection( NULL ) {}
+
 	//TODO - check const modifier
 	ImageType&
 	GetImage()const;
@@ -127,13 +192,35 @@ public:
 	Plug( InConnectionInterface & connection );
 
 	void
-	Plug( InImageConnection< ImageType > & connection );
+	Plug( ImageConnection< ImageType > & connection );
 	
+	void
+	UnPlug();
+
+	bool
+	IsPlugged()const
+		{ return _imageConnection != NULL; }
+
+	void
+	SendMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle 
+		);
+
+	void
+	ReceiveMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle, 
+		FlowDirection				direction
+		);
+
 protected:
 	void
 	SetPlug( InConnectionInterface & connection );
 	void
-	SetPlug( InImageConnection< ImageType > & connection );	
+	SetPlug( ImageConnection< ImageType > & connection );	
+
+	ImageConnection< ImageType >	*_imageConnection;
 };
 
 //******************************************************************************

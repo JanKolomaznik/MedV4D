@@ -85,8 +85,9 @@ public:
  * Connection object inheriting from interfaces for 
  * input connection and output connection.
  **/
-class Connection : public InConnectionInterface, public OutConnectionInterface
-{
+class Connection : public InConnectionInterface, public OutConnectionInterface, 
+	public MessageRouterInterface
+{//TODO - remove two ancestor classes
 public:
 	/**
 	 * Default constructor
@@ -98,6 +99,12 @@ public:
 	 **/
 	virtual 
 	~Connection() {}
+
+	void
+	SendMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle 
+		){ /*empty*/ }
 
 protected:
 
@@ -111,17 +118,17 @@ private:
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-
+/*
 //We prohibit general usage - only specialized templates used.
 template<  typename ImageTemplate >
 class InImageConnection;
 
 //We prohibit general usage - only specialized templates used.
 template<  typename ImageTemplate >
-class OutImageConnection;
+class OutImageConnection;*/
 
 
-template< typename ElementType, unsigned dimension >
+/*template< typename ElementType, unsigned dimension >
 class OutImageConnection< Image< ElementType, dimension > >
 	: public OutConnectionInterface
 {
@@ -133,13 +140,13 @@ public:
 	ConnectOut( InputPort& inputPort );
 
 	virtual void
-	ConnectOut( InputImagePort& inputPort ) = 0; 
+	ConnectOutTyped( InputImagePort& inputPort ) = 0; 
 
 	void
 	DisconnectOut( InputPort& inputPort );
 
 	virtual void
-	DisconnectOut( InputImagePort& inputPort ) = 0; 
+	DisconnectOutTyped( InputImagePort& inputPort ) = 0; 
 };
 
 template< typename ElementType, unsigned dimension >
@@ -154,9 +161,10 @@ public:
 	ConnectIn( OutputPort& outputPort );
 
 	virtual void
-	ConnectIn( OutputImagePort& outputPort ) = 0; 
+	ConnectInTyped( OutputImagePort& outputPort ) = 0; 
 
 };
+*/
 
 //We prohibit general usage - only specialized templates used.
 template< typename ImageTemplate >
@@ -165,28 +173,80 @@ class ImageConnection;
 
 template< typename ElementType, unsigned dimension >
 class ImageConnection< Image< ElementType, dimension > >
-	: public Connection,
-	public InImageConnection< Image< ElementType, dimension > >,
-	public OutImageConnection< Image< ElementType, dimension > >
+	: public Connection
 {
 public:
+	typedef typename M4D::Imaging::Image< ElementType, dimension > Image;
+	typedef typename M4D::Imaging::InputPortImageFilter< Image > InputImagePort;
+	typedef typename M4D::Imaging::OutputPortImageFilter< Image > OutputImagePort;
+
+	
+
 
 	ImageConnection() {}
 
 	~ImageConnection() {}
 
 	
+	void
+	ConnectOut( InputPort& inputPort );
 
+	virtual void
+	ConnectOutTyped( InputImagePort& inputPort ) = 0; 
+
+	void
+	DisconnectOut( InputPort& inputPort );
+
+	virtual void
+	DisconnectOutTyped( InputImagePort& inputPort ) = 0; 
 	
+
+	void
+	ConnectIn( OutputPort& outputPort );
+
+	virtual void
+	ConnectInTyped( OutputImagePort& outputPort ) = 0; 
+
+	Image &
+	GetImage() 
+		{ if( !_image ) { throw ENoImageAssociated(); }
+			return *_image;
+		}
+
+	const Image &
+	GetImageReadOnly()const
+		{ if( !_image ) { throw ENoImageAssociated(); }
+			return *_image;
+		}
+	
+	void
+	RouteMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle,
+		FlowDirection				direction
+		);
 
 protected:
 
+	 typename Image::Ptr	_image;
 private:
 	/**
 	 * Prohibition of copying.
 	 **/
 	PROHIBIT_COPYING_OF_OBJECT_MACRO( ImageConnection );
+
+public:
+	/**
+	 * Exception thrown when requiring image object and none 
+	 * is available.
+	 **/
+	class ENoImageAssociated
+	{
+		//TODO
+	};
 };
+
+
 
 }/*namespace Imaging*/
 }/*namespace M4D*/

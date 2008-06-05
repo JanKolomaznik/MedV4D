@@ -119,6 +119,7 @@ public:
 			size_t z2 
 			);
 protected:
+	ImageDataTemplate< ElementType >	_data;
 
 private:
 
