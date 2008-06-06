@@ -195,13 +195,15 @@ void StManagerStudyListComp::addRowToStudyTable ( const DcmProvider::TableRow *r
   tableRowItems.push_back( new QTableWidgetItem( QString( row->modality.c_str() ) ) );
   // Description:
   tableRowItems.push_back( new QTableWidgetItem( QString( "" ) ) );
-  tableRowItems.push_back( new QTableWidgetItem( QString( row->studyDate.c_str() ) ) );
+  QDate studyDate = QDate::fromString( QString( row->studyDate.c_str() ), "yyyyMMdd" );
+  tableRowItems.push_back( new QTableWidgetItem( studyDate.toString( "dd. MM. yyyy" ) ) );
   // Time:
   tableRowItems.push_back( new QTableWidgetItem( QString( "" ) ) );
   tableRowItems.push_back( new QTableWidgetItem( QString( row->studyID.c_str() ) ) );
   tableRowItems.push_back( new QTableWidgetItem( row->patientSex ? QString( tr( "male" ) ) : 
                                                                    QString( tr( "female" ) ) ) );
-  tableRowItems.push_back( new QTableWidgetItem( QString( row->patientBirthDate.c_str() ) ) );
+  QDate patientBirthDate = QDate::fromString( QString( row->patientBirthDate.c_str() ), "yyyyMMdd" );
+  tableRowItems.push_back( new QTableWidgetItem( patientBirthDate.toString( "dd. MM. yyyy" ) ) );
   // And the others....
 
   for ( unsigned colNum = 0; colNum < tableRowItems.size(); colNum ++ ) {  

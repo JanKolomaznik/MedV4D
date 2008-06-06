@@ -5,6 +5,9 @@
     <file>../icons/layout-1x2.png</file>
     <file>../icons/layout-2x2.png</file>
     <file>../icons/layout-4x2.png</file>
+    <file>../icons/layout-2x4.png</file>
     <file>../icons/layout-4x4.png</file>
+    <file>../icons/layout-6x4.png</file>
+    <file>../icons/layout-8x4.png</file>
 </qresource>
 </RCC>

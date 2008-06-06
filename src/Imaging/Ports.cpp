@@ -9,10 +9,10 @@ namespace M4D
 namespace Imaging
 {
 
-Port::PortID
+/* Port::PortID */ uint64
 Port::GenerateUniqueID()
 {
-	static PortID lastID = 0;
+	static /* PortID */ uint64 lastID = 0;
 	static Multithreading::Mutex genMutex;
 
 	{	//We must synchronize to avoid multiple generation of one ID.
