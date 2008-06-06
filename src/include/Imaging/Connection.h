@@ -5,6 +5,7 @@
 #include "Imaging/AbstractFilter.h"
 #include "Imaging/Ports.h"
 #include "Common.h"
+#include <map>
 
 namespace M4D
 {
@@ -12,24 +13,25 @@ namespace Imaging
 {
 
 /**
- * Base interface of connection objects. Methods to connect 
- * input ports of filters. !!!See that output from connection 
- * is input to connected filter!!!
+ * Connection object inheriting from interfaces for 
+ * input connection and output connection.
  **/
-class OutConnectionInterface
-{
+class ConnectionInterface : public MessageRouterInterface
+{//TODO - remove two ancestor classes
 public:
+	class EMismatchPortType;
+	class EConnectionOccupied;
 	/**
 	 * Default constructor
 	 **/
-	OutConnectionInterface() {}
-	
+	ConnectionInterface() {}
+
 	/**
 	 * Virtual destructor.
 	 **/
-	virtual
-	~OutConnectionInterface() {}
-
+	virtual 
+	~ConnectionInterface() {}
+	
 	/**
 	 * Handle input port of some filter. 
 	 * !!!Output of this connection!!!
@@ -45,27 +47,6 @@ public:
 	virtual void
 	DisconnectOut( InputPort& inputPort )=0;
 
-};
-
-/**
- * Base interface of connection objects. Methods to connect 
- * output ports of filters. !!!See that input to connection 
- * is output from connected filter!!!
- **/
-class InConnectionInterface
-{
-public:
-	/**
-	 * Default constructor
-	 **/
-	InConnectionInterface() {}
-	
-	/**
-	 * Virtual destructor.
-	 **/
-	virtual
-	~InConnectionInterface() {}
-
 	/**
 	 * Handle input port of some filter. 
 	 * !!!Output of this connection!!!
@@ -79,26 +60,9 @@ public:
 	 **/
 	virtual void
 	DisconnectIn()=0;
-};
 
-/**
- * Connection object inheriting from interfaces for 
- * input connection and output connection.
- **/
-class Connection : public InConnectionInterface, public OutConnectionInterface, 
-	public MessageRouterInterface
-{//TODO - remove two ancestor classes
-public:
-	/**
-	 * Default constructor
-	 **/
-	Connection() {}
-
-	/**
-	 * Virtual destructor.
-	 **/
-	virtual 
-	~Connection() {}
+	virtual void 
+	DisconnectAll()=0;
 
 	void
 	SendMessage( 
@@ -112,59 +76,25 @@ private:
 	/**
 	 * Prohibition of copying.
 	 **/
-	PROHIBIT_COPYING_OF_OBJECT_MACRO( Connection );
+	PROHIBIT_COPYING_OF_OBJECT_MACRO( ConnectionInterface );
 };
 
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
-/*
-//We prohibit general usage - only specialized templates used.
-template<  typename ImageTemplate >
-class InImageConnection;
-
-//We prohibit general usage - only specialized templates used.
-template<  typename ImageTemplate >
-class OutImageConnection;*/
-
-
-/*template< typename ElementType, unsigned dimension >
-class OutImageConnection< Image< ElementType, dimension > >
-	: public OutConnectionInterface
+class ConnectionInterface::EMismatchPortType
 {
 public:
-	typedef typename M4D::Imaging::Image< ElementType, dimension > Image;
-	typedef typename M4D::Imaging::InputPortImageFilter< Image > InputImagePort;
-
-	void
-	ConnectOut( InputPort& inputPort );
-
-	virtual void
-	ConnectOutTyped( InputImagePort& inputPort ) = 0; 
-
-	void
-	DisconnectOut( InputPort& inputPort );
-
-	virtual void
-	DisconnectOutTyped( InputImagePort& inputPort ) = 0; 
+	//TODO
 };
 
-template< typename ElementType, unsigned dimension >
-class InImageConnection< Image< ElementType, dimension > >
-	: public InConnectionInterface
+class ConnectionInterface::EConnectionOccupied
 {
 public:
-	typedef typename M4D::Imaging::Image< ElementType, dimension > Image;
-	typedef typename M4D::Imaging::OutputPortImageFilter< Image > OutputImagePort;
-
-	void
-	ConnectIn( OutputPort& outputPort );
-
-	virtual void
-	ConnectInTyped( OutputImagePort& outputPort ) = 0; 
-
+	//TODO
 };
-*/
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+
 
 //We prohibit general usage - only specialized templates used.
 template< typename ImageTemplate >
@@ -173,18 +103,13 @@ class ImageConnection;
 
 template< typename ElementType, unsigned dimension >
 class ImageConnection< Image< ElementType, dimension > >
-	: public Connection
+	: public ConnectionInterface
 {
 public:
 	typedef typename M4D::Imaging::Image< ElementType, dimension > Image;
 	typedef typename M4D::Imaging::InputPortImageFilter< Image > InputImagePort;
 	typedef typename M4D::Imaging::OutputPortImageFilter< Image > OutputImagePort;
-
 	
-
-
-	ImageConnection() {}
-
 	~ImageConnection() {}
 
 	
@@ -192,20 +117,25 @@ public:
 	ConnectOut( InputPort& inputPort );
 
 	virtual void
-	ConnectOutTyped( InputImagePort& inputPort ) = 0; 
-
-	void
-	DisconnectOut( InputPort& inputPort );
-
-	virtual void
-	DisconnectOutTyped( InputImagePort& inputPort ) = 0; 
-	
+	ConnectOutTyped( InputImagePort& inputPort ); 
 
 	void
 	ConnectIn( OutputPort& outputPort );
 
 	virtual void
-	ConnectInTyped( OutputImagePort& outputPort ) = 0; 
+	ConnectInTyped( OutputImagePort& outputPort ); 
+	
+	void
+	DisconnectOut( InputPort& inputPort );
+
+	virtual void
+	DisconnectOutTyped( InputImagePort& inputPort ); 
+
+	void
+	DisconnectIn();
+
+	void 
+	DisconnectAll();
 
 	Image &
 	GetImage() 
@@ -227,8 +157,15 @@ public:
 		);
 
 protected:
+	/**
+	 * Hidden default constructor - we don't allow direct
+	 * construction of object of this class.
+	 **/
+	ImageConnection() {}
 
-	 typename Image::Ptr	_image;
+	typename Image::Ptr			_image;
+	OutputImagePort				*_input;
+	std::map< uint64, InputImagePort* >	_outputs;
 private:
 	/**
 	 * Prohibition of copying.

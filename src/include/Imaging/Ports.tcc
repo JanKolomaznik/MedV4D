@@ -25,17 +25,24 @@ InputPortImageFilter< Image< ElementType, dimension > >
 template< typename ElementType, unsigned dimension >
 void
 InputPortImageFilter< Image< ElementType, dimension > >
-::Plug( OutConnectionInterface & connection )
+::Plug( ConnectionInterface & connection )
 {
-
+	ImageConnection< ImageType > *conn = 
+		dynamic_cast< ImageConnection< ImageType > * >( &connection );
+	if( conn ) {
+		PlugTyped( *conn );
+	} else {
+		throw Port::EMismatchConnectionType();
+	}
 }
 
 template< typename ElementType, unsigned dimension >
 void
 InputPortImageFilter< Image< ElementType, dimension > >
-::Plug( ImageConnection< Image< ElementType, dimension > > & connection )
+::PlugTyped( ImageConnection< Image< ElementType, dimension > > & connection )
 {
 
+	//TODO
 }
 
 template< typename ElementType, unsigned dimension >
@@ -49,31 +56,17 @@ InputPortImageFilter< Image< ElementType, dimension > >
 template< typename ElementType, unsigned dimension >
 void
 InputPortImageFilter< Image< ElementType, dimension > >
-::SetPlug( OutConnectionInterface & connection )
-{
-
-}
-
-template< typename ElementType, unsigned dimension >
-void
-InputPortImageFilter< Image< ElementType, dimension > >
-::SetPlug( ImageConnection< Image< ElementType, dimension > > & connection )
-{
-
-}
-	
-template< typename ElementType, unsigned dimension >
-void
-InputPortImageFilter< Image< ElementType, dimension > >
 ::SendMessage( 
 		PipelineMessage::Ptr 			msg, 
 		PipelineMessage::MessageSendStyle 	sendStyle 
 		)
 {
 	if( this->IsPlugged() ) {
+		msg->_senderID = this->GetID();
 		_imageConnection->RouteMessage( msg, sendStyle, FD_AGAINST_FLOW );
 		
 	}
+	//TODO
 }
 
 template< typename ElementType, unsigned dimension >
@@ -105,17 +98,24 @@ OutputPortImageFilter< Image< ElementType, dimension > >
 template< typename ElementType, unsigned dimension >
 void
 OutputPortImageFilter< Image< ElementType, dimension > >
-::Plug( InConnectionInterface & connection )
+::Plug( ConnectionInterface & connection )
 {
-
+	ImageConnection< ImageType > *conn = 
+		dynamic_cast< ImageConnection< ImageType > * >( &connection );
+	if( conn ) {
+		PlugTyped( *conn );
+	} else {
+		throw Port::EMismatchConnectionType();
+	}
 }
 
 template< typename ElementType, unsigned dimension >
 void
 OutputPortImageFilter< Image< ElementType, dimension > >
-::Plug( ImageConnection< Image< ElementType, dimension > > & connection )
+::PlugTyped( ImageConnection< Image< ElementType, dimension > > & connection )
 {
 
+	//TODO
 }
 
 template< typename ElementType, unsigned dimension >
@@ -129,31 +129,16 @@ OutputPortImageFilter< Image< ElementType, dimension > >
 template< typename ElementType, unsigned dimension >
 void
 OutputPortImageFilter< Image< ElementType, dimension > >
-::SetPlug( InConnectionInterface & connection )
-{
-
-}
-
-template< typename ElementType, unsigned dimension >
-void
-OutputPortImageFilter< Image< ElementType, dimension > >
-::SetPlug( ImageConnection< Image< ElementType, dimension > > & connection )
-{
-
-}
-
-template< typename ElementType, unsigned dimension >
-void
-OutputPortImageFilter< Image< ElementType, dimension > >
 ::SendMessage( 
 		PipelineMessage::Ptr 			msg, 
 		PipelineMessage::MessageSendStyle 	sendStyle 
 		)
 {
 	if( this->IsPlugged() ) {
+		msg->_senderID = this->GetID();
 		_imageConnection->RouteMessage( msg, sendStyle, FD_IN_FLOW );
-		
 	}
+	//TODO
 }
 
 template< typename ElementType, unsigned dimension >

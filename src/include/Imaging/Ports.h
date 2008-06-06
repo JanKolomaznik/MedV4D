@@ -13,8 +13,7 @@ namespace Imaging
 {
 
 //Forward declarations *****************
-class OutConnectionInterface;
-class InConnectionInterface;
+class ConnectionInterface;
 
 template< typename ImageTemplate >
 class ImageConnection;
@@ -24,10 +23,6 @@ class ImageConnection;
 class Port: public MessageOperatorInterface
 {
 public:
-	/** 
-	 * Type of ports identification number. 
-	 **/
-	typedef	uint64 PortID;
 
 	/**
 	 * Exception which is thrown in situations, when port isn't
@@ -35,6 +30,7 @@ public:
 	 * execution.
 	 **/
 	class EDisconnected;
+	class EMismatchConnectionType;
 
 	/**
 	 * Default constructor - port obtain unique ID.
@@ -53,6 +49,8 @@ public:
 	virtual	bool
 	IsPlugged()const = 0;
 	
+	virtual void
+	Plug( ConnectionInterface & connection ) = 0;	
 	/**
 	 * Method to unplug port from connection object - if already 
 	 * disconnected do nothing.
@@ -60,19 +58,26 @@ public:
 	virtual void
 	UnPlug() = 0;
 
-	
+	uint64
+	GetID()const
+		{ return _id; }	
 protected:
 	/**
 	 * Method for unique port ID generation - thread safe.
 	 **/
-	static PortID
+
+private:
+	static uint64
 	GenerateUniqueID();
 
-	PortID	_id;
-private:
+	uint64	_id;
 
 };
-
+class Port::EMismatchConnectionType
+{
+public:
+	//TODO
+};
 /**
  * Exception which is thrown in situations, when port isn't
  * connected and method need port to be connected for succesful
@@ -81,13 +86,13 @@ private:
 class Port::EDisconnected
 {
 public:
-	EDisconnected( Port::PortID port ) : _port( port ) {}
+	EDisconnected( uint64 port ) : _port( port ) {}
 	//TODO
 protected:
 	/**
 	 * ID of port which caused this exception.
 	 **/
-	Port::PortID _port;
+	uint64  _port;
 };
 
 
@@ -98,11 +103,9 @@ public:
 	virtual
 	~InputPort() {}
 
-	virtual void
-	Plug( OutConnectionInterface & connection ) = 0;
+	
 protected:
-	virtual void
-	SetPlug( OutConnectionInterface & connection ) = 0;
+
 private:
 
 };
@@ -113,11 +116,7 @@ public:
 	virtual
 	~OutputPort() {}
 
-	virtual void
-	Plug( InConnectionInterface & connection ) = 0;
 protected:
-	virtual void
-	SetPlug( InConnectionInterface & connection ) = 0;
 
 private:
 
@@ -139,10 +138,10 @@ public:
 	GetImage()const;
 	
 	void
-	Plug( OutConnectionInterface & connection );
+	Plug( ConnectionInterface & connection );
 
 	void
-	Plug( ImageConnection< ImageType > & connection );
+	PlugTyped( ImageConnection< ImageType > & connection );
 
 	void
 	UnPlug();
@@ -165,10 +164,6 @@ public:
 		);
 
 protected:
-	void
-	SetPlug( OutConnectionInterface & connection );
-	void
-	SetPlug( ImageConnection< ImageType > & connection );
 	
 	ImageConnection< ImageType >	*_imageConnection;
 };
@@ -189,10 +184,10 @@ public:
 	GetImage()const;
 
 	void
-	Plug( InConnectionInterface & connection );
+	Plug( ConnectionInterface & connection );
 
 	void
-	Plug( ImageConnection< ImageType > & connection );
+	PlugTyped( ImageConnection< ImageType > & connection );
 	
 	void
 	UnPlug();
@@ -215,10 +210,6 @@ public:
 		);
 
 protected:
-	void
-	SetPlug( InConnectionInterface & connection );
-	void
-	SetPlug( ImageConnection< ImageType > & connection );	
 
 	ImageConnection< ImageType >	*_imageConnection;
 };

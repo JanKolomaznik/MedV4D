@@ -17,7 +17,7 @@ ImageConnection< Image< ElementType, dimension > >
 	if( port ) {
 		ConnectInTyped( *port );
 	} else {
-		//TODO - throw exception
+		throw ConnectionInterface::EMismatchPortType();
 	}
 }
 
@@ -30,7 +30,7 @@ ImageConnection< Image< ElementType, dimension > >
 	if( port ) {
 		ConnectOutTyped( *port );
 	} else {
-		//TODO - throw exception
+		throw ConnectionInterface::EMismatchPortType();
 	}
 }
 
@@ -43,8 +43,54 @@ ImageConnection< Image< ElementType, dimension > >
 	if( port ) {
 		DisconnectOut( *port );
 	} else {
-		//TODO - throw exception
+		throw ConnectionInterface::EMismatchPortType();
 	}
+}
+
+template< typename ElementType, unsigned dimension >
+void
+ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
+::ConnectOutTyped( typename ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
+		::InputImagePort& inputPort 
+	)
+{
+
+}
+
+template< typename ElementType, unsigned dimension >
+void
+ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
+::DisconnectOutTyped( typename ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
+		::InputImagePort& inputPort 
+	)
+{
+
+}
+
+template< typename ElementType, unsigned dimension >
+void
+ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
+::ConnectInTyped( typename ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
+			::OutputImagePort &outputPort 
+	)
+{
+
+}
+
+template< typename ElementType, unsigned dimension >
+void
+ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
+::DisconnectIn()
+{
+
+}
+
+template< typename ElementType, unsigned dimension >
+void
+ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
+::DisconnectAll()
+{
+
 }
 
 template< typename ElementType, unsigned dimension >

@@ -20,10 +20,12 @@ public:
 
 	typedef boost::shared_ptr< PipelineMessage > Ptr;
 
-	PipelineMessage();
+	PipelineMessage(): _senderID( 0 ) {}
 
 	virtual
 	~PipelineMessage();
+
+	uint64	_senderID;
 
 };
 
