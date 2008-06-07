@@ -63,10 +63,13 @@ QGroupBox *m4dGUIScreenLayoutWidget::createSeriesGroupBox ()
 
   seriesLayoutToolButtons = new QToolButton *[LAYOUT_NUMBER];
 
-  for ( int i = 0; i < LAYOUT_NUMBER; i++ ) 
+  unsigned layoutIdx = 0;
+  for ( ; layoutIdx < LAYOUT_NUMBER; layoutIdx++ ) 
   {
-    seriesLayoutToolButtons[i] = createToolButton( QIcon( QString( ":/icons/" ).append( layoutIconNames[i] ) ) );
-    seriesGroupBoxLayout->addWidget( seriesLayoutToolButtons[i], i / LAYOUTS_IN_ROW, i % LAYOUTS_IN_ROW );
+    QString fileName = QString( ":/icons/" ).append( layoutIconNames[layoutIdx] );
+    seriesLayoutToolButtons[layoutIdx] = createToolButton( QIcon( fileName ) );
+    seriesGroupBoxLayout->addWidget( seriesLayoutToolButtons[layoutIdx], 
+                                     layoutIdx / LAYOUTS_IN_ROW, layoutIdx % LAYOUTS_IN_ROW );
   }
 
   if ( LAYOUT_NUMBER > 0 ) {
@@ -90,7 +93,8 @@ QGroupBox *m4dGUIScreenLayoutWidget::createSeriesGroupBox ()
   customSeriesGroupBox->setLayout( customSeriesGroupBoxLayout );
   // --------------------------------------------------------------------------
 
-  seriesGroupBoxLayout->addWidget( customSeriesGroupBox, i / LAYOUTS_IN_ROW, 0, 1, LAYOUTS_IN_ROW );
+  seriesGroupBoxLayout->addWidget( customSeriesGroupBox, layoutIdx / LAYOUTS_IN_ROW, 
+                                   0, 1, LAYOUTS_IN_ROW );
 
   seriesGroupBox->setLayout( seriesGroupBoxLayout );
 
@@ -109,10 +113,13 @@ QGroupBox *m4dGUIScreenLayoutWidget::createImageGroupBox ()
 
   imageLayoutToolButtons = new QToolButton *[LAYOUT_NUMBER];
 
-  for ( int i = 0; i < LAYOUT_NUMBER; i++ ) 
+  unsigned layoutIdx = 0;
+  for ( ; layoutIdx < LAYOUT_NUMBER; layoutIdx++ ) 
   {
-    imageLayoutToolButtons[i] = createToolButton( QIcon( QString( ":/icons/" ).append( layoutIconNames[i] ) ) );
-    imageGroupBoxLayout->addWidget( imageLayoutToolButtons[i], i / LAYOUTS_IN_ROW, i % LAYOUTS_IN_ROW );
+    QString fileName = QString( ":/icons/" ).append( layoutIconNames[layoutIdx] );
+    imageLayoutToolButtons[layoutIdx] = createToolButton( QIcon( fileName ) );
+    imageGroupBoxLayout->addWidget( imageLayoutToolButtons[layoutIdx], 
+                                    layoutIdx / LAYOUTS_IN_ROW, layoutIdx % LAYOUTS_IN_ROW );
   }
 
   if ( LAYOUT_NUMBER > 0 ) {
@@ -136,7 +143,8 @@ QGroupBox *m4dGUIScreenLayoutWidget::createImageGroupBox ()
   customImageGroupBox->setLayout( customImageGroupBoxLayout );
   // --------------------------------------------------------------------------
 
-  imageGroupBoxLayout->addWidget( customImageGroupBox, i / LAYOUTS_IN_ROW, 0, 1, LAYOUTS_IN_ROW );
+  imageGroupBoxLayout->addWidget( customImageGroupBox, layoutIdx / LAYOUTS_IN_ROW, 
+                                  0, 1, LAYOUTS_IN_ROW );
 
   imageGroupBox->setLayout( imageGroupBoxLayout );
 
