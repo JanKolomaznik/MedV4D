@@ -16,7 +16,7 @@ InputPortImageFilter< Image< ElementType, dimension > >
 ::GetImage()const
 {
 	if( !this->IsPlugged() ) {
-		throw EDisconnected( this->_id );
+		throw EDisconnected( this->GetID() );
 	}
 	return _imageConnection->GetImageReadOnly();
 }
@@ -89,7 +89,7 @@ OutputPortImageFilter< Image< ElementType, dimension > >
 ::GetImage()const
 {
 	if( !this->IsPlugged() ) {
-		throw EDisconnected( this->_id );
+		throw EDisconnected( this->GetID() );
 	}
 
 	return _imageConnection->GetImage();

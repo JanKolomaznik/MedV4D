@@ -13,11 +13,14 @@ namespace Imaging
 /**
  *
  **/
-struct DimensionExtends
+struct DimensionExtents
 {
-	DimensionExtends(){}
+	DimensionExtents():minimum(0),maximum(0),elementExtent(1.0f){}
 
-//	size_t
+	size_t	minimum;
+	size_t	maximum;
+	float	elementExtent;
+
 };
 
 /**
@@ -32,6 +35,9 @@ public:
 	
 	virtual
 	~AbstractImage()=0;
+
+	const DimensionExtents &
+	GetDimensionExtents( unsigned dimension );
 protected:
 
 private:

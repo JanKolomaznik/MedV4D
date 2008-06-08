@@ -13,7 +13,8 @@ RCC=rcc
 NAME=		m4dWidgets
 #Names of target sources
 TARGETS=	m4dGUIVtkRenderWindowWidget \
-		m4dGUIStudyManagerWidget
+		m4dGUIStudyManagerWidget \
+		m4dGUIScreenLayoutWidget
 
 SUBDIR=		components
 TARGETS2=	StManagerFilterComp \
@@ -22,11 +23,13 @@ TARGETS2=	StManagerFilterComp \
 
 MOCINPUT=	m4dGUIStudyManagerWidget.h \
 		m4dGUIVtkRenderWindowWidget.h \
+		m4dGUIScreenLayoutWidget.h \
 		StManagerFilterComp.h \
 		StManagerHProtocolsComp.h \
 		StManagerStudyListComp.h
 
-RCCINPUT=	m4dGUIStudyManagerWidget.qrc
+RCCINPUT=	m4dGUIStudyManagerWidget.qrc \
+		m4dGUIScreenLayoutWidget.qrc
 ########################################
 
 #Name of target
@@ -84,7 +87,7 @@ $(TMP_DIR)/moc_%.cpp:	../../include/GUI/%.h
 		$(MOC) $< -o $@
 
 $(TMP_DIR)/rcc_%.cpp:	$(RCCINPUT)
-		$(RCC) -name m4dGUIStudyManagerWidget $< -o $@
+		$(RCC) -name $(*F) $< -o $@
 
 $(TMP_DIR)/%.o:	%.cpp	
 		$(CC) $(CCFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@

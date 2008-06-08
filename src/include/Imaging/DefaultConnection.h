@@ -35,8 +35,7 @@ class ImageConnectionImOwner< M4D::Imaging::Image< ElementType, dimension > >
 {
 public:
 
-	void
-	DisconnectIn();
+	//TODO
 
 };
 

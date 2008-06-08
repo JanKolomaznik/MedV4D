@@ -17,14 +17,15 @@ template< typename InputImageType, typename OutputImageType >
 bool
 CopyImageFilter< InputImageType, OutputImageType >::ExecutionThreadMethod()
 {
-	//TODO
-//	const InputImageType &inImage = this->GetInputImage();
-//	OutputImageType &outImage = this->GetOutputImage();
+	return ExecutionOnWholeThreadMethod();
+	/*//TODO
+	const InputImageType &inImage = this->GetInputImage();
+	OutputImageType &outImage = this->GetOutputImage();
 
 	if( !this->CanContinue() ) {
 		return false;
 	}
-	return true;
+	return true;*/
 }
 
 template< typename InputImageType, typename OutputImageType >
@@ -32,12 +33,19 @@ bool
 CopyImageFilter< InputImageType, OutputImageType >::ExecutionOnWholeThreadMethod()
 {
 	//TODO
-//	const InputImageType &inImage = this->GetInputImage();
-//	OutputImageType &outImage = this->GetOutputImage();
+	const InputImageType &inImage = this->GetInputImage();
+	OutputImageType &outImage = this->GetOutputImage();
 	
 	if( !this->CanContinue() ) {
 		return false;
 	}
+	/*for( int i; i= ; ++i ) {
+		for( int j; j= ; ++j ) {
+			for( int k; k= ; ++k ) {
+				
+			}
+		}
+	}*/
 	return true;
 }
 

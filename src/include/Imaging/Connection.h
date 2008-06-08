@@ -17,7 +17,7 @@ namespace Imaging
  * input connection and output connection.
  **/
 class ConnectionInterface : public MessageRouterInterface
-{//TODO - remove two ancestor classes
+{
 public:
 	class EMismatchPortType;
 	class EConnectionOccupied;

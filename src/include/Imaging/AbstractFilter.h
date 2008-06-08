@@ -167,6 +167,12 @@ private:
 class AbstractPipeFilter : public AbstractFilter, public MessageReceiverInterface
 {
 public:
+	enum UpdateInvocationStyle {
+		UIS_ON_DEMAND,
+		UIS_ON_CHANGE_BEGIN,
+		UIS_ON_CHANGE_END		
+	};
+
 	/**
 	 * Types of possible execution methods - used by execution thread functor.
 	 **/
@@ -230,6 +236,15 @@ public:
 	 **/
 	bool
 	IsUpToDate();
+
+	unsigned
+	SetParallelization( unsigned threadCount );
+
+	unsigned
+	GetParallelization()const;
+
+	void
+	SetUpdateInvocationStyle( UpdateInvocationStyle style );
 
 	/**
 	 * Method for receiving messages - called by sender.
