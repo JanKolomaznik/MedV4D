@@ -10,24 +10,59 @@ namespace M4D
 namespace Imaging
 {
 
-struct ModificationRecordRectangle
-{
-	Common::TimeStamp	_modificationTime;
+enum ModificationState{ 
+	MS_DIRTY,
+	MS_MODIFIED,
+	MS_CANCELED
 };
 
-struct ModificationRecordSlice
+class ModificationBBox
 {
-	Common::TimeStamp	_modificationTime;
+public:
+
+	bool
+	IsDirty()const;
+
+	bool
+	IsModified()const;
+
+	ModificationState
+	GetState()const;
+
+	const Common::TimeStamp &
+	GetTimeStamp()const;
+
+	void
+	SetState( ModificationState );
+
+	void
+	SetModified();
+
 };
 
-struct ModificationRecordBox
+class ModificationBBox2D: public ModificationBBox
 {
-	Common::TimeStamp	_modificationTime;
+
 };
+
+class ModificationBBox3D: public ModificationBBox2D
+{
+
+};
+
+class ModificationBBox4D: public ModificationBBox3D
+{
+
+};
+
 
 class ModificationManager
 {
 public:
+	ModificationManager(){}
+	
+	~ModificationManager(){}
+
 	void
 	Reset();
 private:

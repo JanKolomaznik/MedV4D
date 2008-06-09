@@ -14,11 +14,11 @@ class TimeStamp
 public:
 	TimeStamp();
 
-	Timestamp( const TimeStamp& );
+	TimeStamp( const TimeStamp& );
 
 	~TimeStamp();
 
-	const Timestamp&
+	const TimeStamp&
 	operator=( const TimeStamp& );
 
 	void

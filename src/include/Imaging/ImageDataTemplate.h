@@ -4,6 +4,7 @@
 #include "ExceptionBase.h"
 
 #include "Imaging/AbstractImageData.h"
+#include "Imaging/ModificationManager.h"
 
 namespace M4D
 {
@@ -168,6 +169,9 @@ protected:
 			unsigned short		dimension,
 			size_t			elementCount
 			);	
+
+
+	ModificationManager	_modificationManager;
 private:
 	ImageDataTemplate();
 	ImageDataTemplate( const ImageDataTemplate &);
