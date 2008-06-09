@@ -40,7 +40,7 @@ bool m4dDICOMSliceInteractorStyle::initRenderer( const char* dir )
   if ( ren )
   {
     currentDirectory = new char[ strlen(dir) + 1 ];
-    strncpy(currentDirectory,dir,strlen(dir));
+    strncpy(currentDirectory,dir,strlen(dir) + 1);
     if ( currentRenderer ) GetInteractor()->GetRenderWindow()->RemoveRenderer(currentRenderer);
     currentRenderer = ren;
     GetInteractor()->GetRenderWindow()->AddRenderer(currentRenderer);
