@@ -15,7 +15,8 @@ main( void)
 	DcmProvider::StudyInfo studyInfo;
 	DcmProvider::DicomObjSet obj;	
 
-	std::string patName = "";
+	std::string patForeName = "";
+  std::string patSureName = "";
 	std::string patID = "";
 	DcmProvider::StringVector modalities;
 	std::string dateFrom;
@@ -28,7 +29,8 @@ main( void)
 		// find some patient & studies info
 		provider.Find(
 		result,
-		patName,
+		patForeName,
+    patSureName,
 		patID,
 		modalities,
 		dateFrom,
