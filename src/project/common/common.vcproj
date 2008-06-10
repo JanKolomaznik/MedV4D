@@ -156,6 +156,10 @@
 				RelativePath="..\..\common\Log.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\..\common\TimeStamp.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -184,6 +188,10 @@
 			</File>
 			<File
 				RelativePath="..\..\include\Thread.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\TimeStamp.h"
 				>
 			</File>
 		</Filter>

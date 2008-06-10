@@ -144,15 +144,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\AbstractImageFilters.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\Image.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\ImageFactory.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\Imaging\Ports.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\SimpleImageFilter.cpp"
 				>
 			</File>
 		</Filter>
@@ -171,6 +175,14 @@
 			</File>
 			<File
 				RelativePath="..\..\include\Imaging\AbstractImageData.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\Imaging\AbstractImageFilters.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\Imaging\AbstractImageFilters.tcc"
 				>
 			</File>
 			<File
@@ -243,14 +255,6 @@
 			</File>
 			<File
 				RelativePath="..\..\include\Imaging\Ports.tcc"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\Imaging\SimpleImageFilter.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\Imaging\SimpleImageFilter.tcc"
 				>
 			</File>
 		</Filter>
