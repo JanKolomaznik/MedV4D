@@ -38,6 +38,10 @@ public:
 	void
 	SetModified();
 
+	bool
+	WaitUntilModified();
+protected:
+	ModificationState	_state;
 };
 
 class ModificationBBox2D: public ModificationBBox

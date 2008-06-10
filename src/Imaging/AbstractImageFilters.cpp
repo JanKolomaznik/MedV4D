@@ -1,4 +1,4 @@
-#include "Imaging/SimpleImageFilter.h"
+#include "Imaging/AbstractImageFilters.h"
 
 
 namespace M4D

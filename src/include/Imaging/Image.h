@@ -62,15 +62,22 @@ public:
 	/**
 	 * Type of "this" class.
 	 **/
-	typedef Image< ElementType, 2 >		ThisClass;
+	typedef Image< ElementType, 2 >			ThisClass;
+
+	/**
+	 * Dataset contained in this class.
+	 **/
+	typedef ImageDataTemplate< ElementType >	DataSet;
+
 	/**
 	 * Smart pointer type for this class.
 	 **/
-	typedef boost::shared_ptr< ThisClass >	Ptr;
+	typedef boost::shared_ptr< ThisClass >		Ptr;
+
 	/**
 	 * Type of elements stored in this image.
 	 **/
-	typedef ElementType			Element;
+	typedef ElementType				Element;
 
 	/**
 	 * Constructor from AbstractImageData - if not possible from some
@@ -137,8 +144,24 @@ template< typename ElementType >
 class Image< ElementType, 3 >: public AbstractImage
 {
 public:
+	/**
+	 * Type of "this" class.
+	 **/
 	typedef Image< ElementType, 3 >		ThisClass;
+
+	/**
+	 * Dataset contained in this class.
+	 **/
+	typedef ImageDataTemplate< ElementType >	DataSet;
+
+	/**
+	 * Smart pointer type for this class.
+	 **/
 	typedef boost::shared_ptr< ThisClass >	Ptr;
+
+	/**
+	 * Type of elements stored in this image.
+	 **/
 	typedef ElementType			Element;
 
 	Image( AbstractImageData::APtr imageData );
@@ -198,8 +221,24 @@ template< typename ElementType >
 class Image< ElementType, 4 >: public AbstractImage
 {
 public:
+	/**
+	 * Type of "this" class.
+	 **/
 	typedef Image< ElementType, 4 >		ThisClass;
+
+	/**
+	 * Dataset contained in this class.
+	 **/
+	typedef ImageDataTemplate< ElementType >	DataSet;
+
+	/**
+	 * Smart pointer type for this class.
+	 **/
 	typedef boost::shared_ptr< ThisClass >	Ptr;
+
+	/**
+	 * Type of elements stored in this image.
+	 **/
 	typedef ElementType			Element;
 
 	Image( AbstractImageData::APtr imageData );

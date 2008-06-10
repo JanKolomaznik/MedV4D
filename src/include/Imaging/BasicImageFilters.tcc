@@ -14,40 +14,21 @@ CopyImageFilter< InputImageType, OutputImageType >::CopyImageFilter()
 }
 
 template< typename InputImageType, typename OutputImageType >
-bool
-CopyImageFilter< InputImageType, OutputImageType >::ExecutionThreadMethod()
-{
-	return ExecutionOnWholeThreadMethod();
-	/*//TODO
-	const InputImageType &inImage = this->GetInputImage();
-	OutputImageType &outImage = this->GetOutputImage();
-
-	if( !this->CanContinue() ) {
-		return false;
-	}
-	return true;*/
-}
-
-template< typename InputImageType, typename OutputImageType >
-bool
-CopyImageFilter< InputImageType, OutputImageType >::ExecutionOnWholeThreadMethod()
+void
+CopyImageFilter< InputImageType, OutputImageType >
+::ProcessSlice(
+			const InputImageType 	&in,
+			OutputImageType		&out,
+			size_t			x1,	
+			size_t			y1,	
+			size_t			x2,	
+			size_t			y2,	
+			size_t			slice
+		    )
 {
 	//TODO
-	const InputImageType &inImage = this->GetInputImage();
-	OutputImageType &outImage = this->GetOutputImage();
-	
-	if( !this->CanContinue() ) {
-		return false;
-	}
-	/*for( int i; i= ; ++i ) {
-		for( int j; j= ; ++j ) {
-			for( int k; k= ; ++k ) {
-				
-			}
-		}
-	}*/
-	return true;
 }
+
 
 } /*namespace Imaging*/
 } /*namespace M4D*/

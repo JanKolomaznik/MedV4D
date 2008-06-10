@@ -6,7 +6,7 @@
 #include "Imaging/Ports.h"
 #include "Imaging/ImageDataTemplate.h"
 #include "Imaging/ImageFactory.h"
-#include "Imaging/SimpleImageFilter.h"
+#include "Imaging/AbstractImageFilters.h"
 
 
 namespace M4D
@@ -16,17 +16,22 @@ namespace Imaging
 {
 
 template< typename InputImageType, typename OutputImageType >
-class CopyImageFilter: public ImageFilter< InputImageType, OutputImageType >
+class CopyImageFilter: public ImageSliceFilter< InputImageType, OutputImageType >
 {
 public:
 	CopyImageFilter();
 	~CopyImageFilter(){}
 protected:
-	bool
-	ExecutionThreadMethod();
-
-	bool
-	ExecutionOnWholeThreadMethod();
+	void
+	ProcessSlice(
+			const InputImageType 	&in,
+			OutputImageType		&out,
+			size_t			x1,	
+			size_t			y1,	
+			size_t			x2,	
+			size_t			y2,	
+			size_t			slice
+		    );
 
 private:
 	/**

@@ -1,5 +1,5 @@
-#ifndef _SIMPLE_IMAGE_FILTER_H
-#error File Image.tcc cannot be included directly!
+#ifndef _ABSTRACT_IMAGE_FILTERS_H
+#error File AbstractImageFilters.tcc cannot be included directly!
 #else
 
 namespace M4D
@@ -35,6 +35,31 @@ ImageFilter< InputImageType, OutputImageType >::GetOutputImage()const
 //******************************************************************************
 //******************************************************************************
 
+template< typename InputElementType, typename OutputImageType >
+bool
+ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
+::ExecutionThreadMethod()
+{
+	//TODO
+	return true;
+}
+
+template< typename InputElementType, typename OutputImageType >
+bool
+ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
+::ExecutionOnWholeThreadMethod()
+{
+	//TODO
+	return true;
+}
+
+template< typename InputElementType, typename OutputImageType >
+void
+ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
+::PrepareOutputDatasets()
+{
+	//TODO
+}
 
 } /*namespace Imaging*/
 } /*namespace M4D*/

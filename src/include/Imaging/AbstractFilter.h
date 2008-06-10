@@ -247,6 +247,13 @@ public:
 	SetUpdateInvocationStyle( UpdateInvocationStyle style );
 
 	/**
+	 * Method which will prepare datasets connected by output ports.
+	 * Set their extents, etc.
+	 **/
+	virtual void
+	PrepareOutputDatasets() = 0;
+
+	/**
 	 * Method for receiving messages - called by sender.
 	 * \param msg Smart pointer to message object - we don't have 
 	 * to worry about deallocation.
