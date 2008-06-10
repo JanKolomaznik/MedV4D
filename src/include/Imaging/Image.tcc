@@ -9,12 +9,14 @@ namespace Imaging
 
 template< typename ElementType >
 Image< ElementType, 2 >::Image( AbstractImageData::APtr imageData )
+: AbstractImage( 2, this->_dimExtents )
 {
 
 }
 
 template< typename ElementType >
 Image< ElementType, 2 >::Image( typename ImageDataTemplate< ElementType >::Ptr imageData )
+: AbstractImage( 2, this->_dimExtents )
 {
 
 }
@@ -29,14 +31,36 @@ template< typename ElementType >
 ElementType &
 Image< ElementType, 2 >::GetElement( size_t x, size_t y )
 {
-
+	if( 	x < GetDimensionExtents( 0 ).minimum || 
+		x > GetDimensionExtents( 0 ).maximum 	) 
+	{
+		//TODO throw exception
+	}
+	if( 	y < GetDimensionExtents( 1 ).minimum || 
+		y > GetDimensionExtents( 1 ).maximum 	) 
+	{
+		//TODO throw exception
+	}
+	
+	return _imageData->Get( x, y );
 }
 
 template< typename ElementType >
 const ElementType &
 Image< ElementType, 2 >::GetElement( size_t x, size_t y )const
 {
-
+	if( 	x < GetDimensionExtents( 0 ).minimum || 
+		x > GetDimensionExtents( 0 ).maximum 	) 
+	{
+		//TODO throw exception
+	}
+	if( 	y < GetDimensionExtents( 1 ).minimum || 
+		y > GetDimensionExtents( 1 ).maximum 	) 
+	{
+		//TODO throw exception
+	}
+	
+	return _imageData->Get( x, y );
 }
 
 template< typename ElementType >
@@ -55,12 +79,14 @@ Image< ElementType, 2 >::GetRestricted2DImage(
 
 template< typename ElementType >
 Image< ElementType, 3 >::Image( AbstractImageData::APtr imageData )
+: AbstractImage( 3, this->_dimExtents )
 {
 
 }
 
 template< typename ElementType >
 Image< ElementType, 3 >::Image( typename ImageDataTemplate< ElementType >::Ptr imageData )
+: AbstractImage( 3, this->_dimExtents )
 {
 
 }
@@ -75,14 +101,46 @@ template< typename ElementType >
 ElementType &
 Image< ElementType, 3 >::GetElement( size_t x, size_t y, size_t z )
 {
+	if( 	x < GetDimensionExtents( 0 ).minimum || 
+		x > GetDimensionExtents( 0 ).maximum 	) 
+	{
+		//TODO throw exception
+	}
+	if( 	y < GetDimensionExtents( 1 ).minimum || 
+		y > GetDimensionExtents( 1 ).maximum 	) 
+	{
+		//TODO throw exception
+	}
+	if( 	z < GetDimensionExtents( 2 ).minimum || 
+		z > GetDimensionExtents( 2 ).maximum 	) 
+	{
+		//TODO throw exception
+	}
 
+	return _imageData->Get( x, y, z );
 }
 
 template< typename ElementType >
 const ElementType &
 Image< ElementType, 3 >::GetElement( size_t x, size_t y, size_t z )const
 {
+	if( 	x < GetDimensionExtents( 0 ).minimum || 
+		x > GetDimensionExtents( 0 ).maximum 	) 
+	{
+		//TODO throw exception
+	}
+	if( 	y < GetDimensionExtents( 1 ).minimum || 
+		y > GetDimensionExtents( 1 ).maximum 	) 
+	{
+		//TODO throw exception
+	}
+	if( 	z < GetDimensionExtents( 2 ).minimum || 
+		z > GetDimensionExtents( 2 ).maximum 	) 
+	{
+		//TODO throw exception
+	}
 
+	return _imageData->Get( x, y, z );
 }
 
 template< typename ElementType >

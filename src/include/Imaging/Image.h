@@ -4,7 +4,7 @@
 #include "Imaging/ImageDataTemplate.h"
 #include <boost/shared_ptr.hpp>
 #include "Imaging/ModificationManager.h"
-
+#include "Imaging/AbstractDataSet.h"
 
 namespace M4D
 {
@@ -36,15 +36,16 @@ public:
 	 **/
 	typedef boost::shared_ptr< AbstractImage > AImagePtr;
 
-	AbstractImage(){}
+	AbstractImage( unsigned dim, DimensionExtents *dimExtents );
 	
 	virtual
 	~AbstractImage()=0;
 
 	const DimensionExtents &
-	GetDimensionExtents( unsigned dimension );
+	GetDimensionExtents( unsigned dimension )const;
 protected:
-
+	unsigned		_dimCount;
+	DimensionExtents	*_dimensionExtents;
 private:
 
 };
@@ -131,7 +132,9 @@ public:
 			size_t y2 
 			);
 protected:
+	typename ImageDataTemplate< ElementType >::Ptr	_imageData;
 
+	DimensionExtents	_dimExtents[2];
 private:
 
 
@@ -207,8 +210,9 @@ public:
 			);
 
 protected:
-	ImageDataTemplate< ElementType >	_data;
+	typename ImageDataTemplate< ElementType >::Ptr	_imageData;
 
+	DimensionExtents	_dimExtents[3];
 private:
 
 
@@ -300,7 +304,9 @@ public:
 			size_t t2
 			);
 protected:
+	typename ImageDataTemplate< ElementType >::Ptr	_imageData;
 
+	DimensionExtents	_dimExtents[4];
 private:
 
 

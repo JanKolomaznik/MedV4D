@@ -7,18 +7,19 @@ namespace M4D
 namespace Imaging
 {
 
-template< typename InputImageType, typename OutputImageType >
-CopyImageFilter< InputImageType, OutputImageType >::CopyImageFilter()
+template< typename InputElementType, typename OutputElementType >
+CopyImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
+::CopyImageFilter()
 {
 
 }
 
-template< typename InputImageType, typename OutputImageType >
+template< typename InputElementType, typename OutputElementType >
 void
-CopyImageFilter< InputImageType, OutputImageType >
+CopyImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 ::ProcessSlice(
-			const InputImageType 	&in,
-			OutputImageType		&out,
+			const Image< InputElementType, 3 > 	&in,
+			Image< OutputElementType, 3 >		&out,
 			size_t			x1,	
 			size_t			y1,	
 			size_t			x2,	
@@ -26,7 +27,11 @@ CopyImageFilter< InputImageType, OutputImageType >
 			size_t			slice
 		    )
 {
-	//TODO
+	for( size_t i = x1; i <= x2; ++i ) {
+		for( size_t j = y1; j <= y2; ++j ) {
+			out.GetElement( i, j, slice ) = in.GetElement( i, j, slice );
+		}
+	}
 }
 
 

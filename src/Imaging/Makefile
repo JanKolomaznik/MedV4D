@@ -14,7 +14,8 @@ TARGETS=	AbstractImageData \
 		ImageFactory \
 		AbstractFilter \
 		Ports \
-		AbstractImageFilters
+		AbstractImageFilters \
+		Image
 ########################################
 
 #Name of target

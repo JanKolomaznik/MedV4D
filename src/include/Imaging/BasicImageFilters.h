@@ -16,7 +16,11 @@ namespace Imaging
 {
 
 template< typename InputImageType, typename OutputImageType >
-class CopyImageFilter: public ImageSliceFilter< InputImageType, OutputImageType >
+class CopyImageFilter;
+
+template< typename InputElementType, typename OutputElementType >
+class CopyImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
+: public ImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 {
 public:
 	CopyImageFilter();
@@ -24,8 +28,8 @@ public:
 protected:
 	void
 	ProcessSlice(
-			const InputImageType 	&in,
-			OutputImageType		&out,
+			const Image< InputElementType, 3 > 	&in,
+			Image< OutputElementType, 3 >		&out,
 			size_t			x1,	
 			size_t			y1,	
 			size_t			x2,	

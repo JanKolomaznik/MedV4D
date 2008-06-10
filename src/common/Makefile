@@ -14,7 +14,8 @@ TARGETS=	Common \
 		Debug \
 		ExceptionBase \
 		Log \
-		Functors
+		Functors \
+		TimeStamp
 ########################################
 
 #Name of target

@@ -60,7 +60,8 @@ DCMTKLIBS=	-lofstd\
 LIBS=		$(M4DLIBS)\
 		$(QTLIBS)\
 		$(VTKLIBS)\
-		$(DCMTKLIBS)
+		$(DCMTKLIBS)\
+		-lboost_thread-d
 ########################################
 
 #Name of target

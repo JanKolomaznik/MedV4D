@@ -51,3 +51,5 @@ class m4dGUIMainWindow: public QMainWindow
 };
 
 #endif // M4D_GUI_MAIN_WINDOW_H
+
+

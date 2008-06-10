@@ -36,11 +36,19 @@ ImageFilter< InputImageType, OutputImageType >::GetOutputImage()const
 //******************************************************************************
 
 template< typename InputElementType, typename OutputImageType >
+ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
+::ImageSliceFilter()
+{
+
+}
+
+template< typename InputElementType, typename OutputImageType >
 bool
 ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 ::ExecutionThreadMethod()
 {
 	//TODO
+	ExecutionOnWholeThreadMethod();
 	return true;
 }
 
@@ -49,7 +57,24 @@ bool
 ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 ::ExecutionOnWholeThreadMethod()
 {
-	//TODO
+	const Image< InputElementType, 3 > &in = this->GetInputImage();
+	OutputImageType &out = this->GetOutputImage();
+	//TODO - better implementation	
+	for( 
+		size_t i = in.GetDimensionExtents( 2 ).minimum; 
+		i <= in.GetDimensionExtents( 2 ).maximum;
+		++i
+	) {
+		ProcessSlice( 	in, 
+				out,
+				in.GetDimensionExtents( 0 ).minimum,
+				in.GetDimensionExtents( 0 ).maximum,
+				in.GetDimensionExtents( 1 ).minimum,
+				in.GetDimensionExtents( 1 ).maximum,
+				i 
+				);
+
+	}
 	return true;
 }
 
