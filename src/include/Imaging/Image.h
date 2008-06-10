@@ -136,7 +136,8 @@ protected:
 
 	DimensionExtents	_dimExtents[2];
 private:
-
+	void
+	FillDimensionInfo();
 
 };
 
@@ -214,7 +215,8 @@ protected:
 
 	DimensionExtents	_dimExtents[3];
 private:
-
+	void
+	FillDimensionInfo();
 
 };
 
@@ -308,7 +310,8 @@ protected:
 
 	DimensionExtents	_dimExtents[4];
 private:
-
+	void
+	FillDimensionInfo();
 
 };
 

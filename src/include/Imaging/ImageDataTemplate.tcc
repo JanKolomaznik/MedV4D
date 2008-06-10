@@ -102,6 +102,43 @@ ImageDataTemplate< ElementType >::Get( size_t x, size_t y, size_t z )
 }
 //3D end--------------------------------------------
 
+//4D------------------------------------------------
+template < typename ElementType >
+inline ElementType
+ImageDataTemplate< ElementType >::Get( size_t x, size_t y, size_t z, size_t t )const
+{
+	size_t index;
+
+	index = x * _parameters[0].stride +
+		y * _parameters[1].stride +
+		z * _parameters[2].stride +
+		t * _parameters[3].stride;
+	return Get( index );
+}
+
+template < typename ElementType >
+inline ElementType&
+ImageDataTemplate< ElementType >::Get( size_t x, size_t y, size_t z, size_t t )
+{
+	size_t index;
+
+	index = x * _parameters[0].stride +
+		y * _parameters[1].stride +
+		z * _parameters[2].stride +
+		t * _parameters[3].stride;
+	return Get( index );
+}
+//4D end--------------------------------------------
+template < typename ElementType >
+typename ImageDataTemplate< ElementType >::Ptr
+ImageDataTemplate< ElementType >::CastAbstractPointer( AbstractImageData::APtr aptr )
+{
+	if( dynamic_cast< ImageDataTemplate< ElementType > * >( aptr.get() ) == NULL ) {
+		//TODO throw exception
+	}
+
+	return boost::static_pointer_cast< ImageDataTemplate< ElementType > >( aptr );
+}
 
 } /*namespace Imaging*/
 } /*namespace M4D*/

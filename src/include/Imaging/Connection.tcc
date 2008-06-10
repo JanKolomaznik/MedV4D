@@ -23,6 +23,25 @@ ImageConnection< Image< ElementType, dimension > >
 
 template< typename ElementType, unsigned dimension >
 void
+ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
+::ConnectInTyped( typename ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
+			::OutputImagePort &outputPort 
+	)
+{
+	outputPort.PlugTyped( *this );
+	_input = &outputPort;
+}
+
+template< typename ElementType, unsigned dimension >
+void
+ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
+::DisconnectIn()
+{
+	//TODO
+}
+
+template< typename ElementType, unsigned dimension >
+void
 ImageConnection< Image< ElementType, dimension > >
 ::ConnectOut( InputPort& inputPort )
 {
@@ -55,6 +74,13 @@ ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 	)
 {
 
+	if( _outputs.find( inputPort.GetID() )== _outputs.end() ) {
+		inputPort.PlugTyped( *this );
+		_outputs[ inputPort.GetID() ] = &inputPort;
+	} else {
+		//TODO throw exception
+	}
+
 }
 
 template< typename ElementType, unsigned dimension >
@@ -65,25 +91,9 @@ ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 	)
 {
 
+	//TODO
 }
 
-template< typename ElementType, unsigned dimension >
-void
-ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
-::ConnectInTyped( typename ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
-			::OutputImagePort &outputPort 
-	)
-{
-
-}
-
-template< typename ElementType, unsigned dimension >
-void
-ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
-::DisconnectIn()
-{
-
-}
 
 template< typename ElementType, unsigned dimension >
 void
@@ -91,6 +101,7 @@ ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 ::DisconnectAll()
 {
 
+	//TODO
 }
 
 template< typename ElementType, unsigned dimension >

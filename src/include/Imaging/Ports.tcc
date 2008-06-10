@@ -41,7 +41,7 @@ void
 InputPortImageFilter< Image< ElementType, dimension > >
 ::PlugTyped( ImageConnection< Image< ElementType, dimension > > & connection )
 {
-
+	_imageConnection = &connection;
 	//TODO
 }
 
@@ -114,7 +114,7 @@ void
 OutputPortImageFilter< Image< ElementType, dimension > >
 ::PlugTyped( ImageConnection< Image< ElementType, dimension > > & connection )
 {
-
+	_imageConnection = &connection;
 	//TODO
 }
 

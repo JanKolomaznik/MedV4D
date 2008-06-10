@@ -138,6 +138,40 @@ public:
 	Get( size_t x, size_t y, size_t z );
 
 	/**
+	 * Helper function to acces four dimensional data.
+	 * Function doesn't check if dataset is four dimensional and 
+	 * if given indices are in allowed interval. Only thing, that is 
+	 * checked is whether final index to data array is valid. 
+	 *
+	 * As a result we always access valid memory (or catch exception), but 
+	 * we can obtain wrong element, if we didn't check bounds and dimension before.
+	 * @param x X coordinate.
+ 	 * @param y Y coordinate.
+ 	 * @param z Z coordinate.
+ 	 * @param t T coordinate.
+	 * @return Copy of element on desired location.
+	 * @exception EIndexOutOfBounds If final index is outside of array.
+	 **/
+	inline ElementType
+	Get( size_t x, size_t y, size_t z, size_t t )const;
+	/**
+	 * Helper function to acces four dimensional data.
+	 * Function doesn't check if dataset is four dimensional and 
+	 * if given indices are in allowed interval. Only thing, that is 
+	 * checked is whether final index to data array is valid. 
+	 *
+	 * As a result we always access valid memory (or catch exception), but 
+	 * we can obtain wrong element, if we didn't check bounds and dimension before.
+	 * @param x X coordinate.
+ 	 * @param y Y coordinate.
+ 	 * @param z Z coordinate.
+ 	 * @param t T coordinate.
+	 * @return Reference to element on desired location.
+	 * @exception EIndexOutOfBounds If final index is outside of array.
+	 **/
+	inline ElementType&
+	Get( size_t x, size_t y, size_t z, size_t t );
+	/**
 	 * Another way to access directly data array.
 	 * Same behavior as method Get.
 	 * @param index Index used to access element in array.
@@ -158,6 +192,8 @@ public:
 	operator[]( size_t index )
 				{ return Get( index ); }
 
+	static Ptr
+	CastAbstractPointer(  AbstractImageData::APtr aptr );
 
 protected:
 	/**
