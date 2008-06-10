@@ -83,14 +83,15 @@ StManagerStudyListComp::~StManagerStudyListComp ()
 }
 
 
-void StManagerStudyListComp::find ( const string &patientName, const string &patientID, 
+void StManagerStudyListComp::find ( const string &patientForeName, const string &patientSureName,
+                                    const string &patientID, 
                                     const string &fromDate, const string &toDate,
                                     const DcmProvider::StringVector &modalitiesVect )
 {
   resultSet->clear();
 
   try {
-    dcmProvider->Find( *resultSet, patientName, patientID, modalitiesVect,
+    dcmProvider->Find( *resultSet, patientForeName, patientSureName, patientID, modalitiesVect,
                         fromDate, toDate );	
  	
     if ( !resultSet->empty() ) {

@@ -154,8 +154,9 @@ StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComp
 
 void StManagerFilterComp::search ()
 {
-  QString patientNameText = firstNameComboBox->currentText() + " "
-                          + lastNameComboBox->currentText();
+  QString patientForeNameText = firstNameComboBox->currentText();
+  QString patientSureNameText = lastNameComboBox->currentText();
+
   QString patientIDText   = patientIDComboBox->currentText();
     
   QString fromDateText    = fromDateDateEdit->isEnabled() ?
@@ -172,8 +173,13 @@ void StManagerFilterComp::search ()
     }
   }
 
-  studyListComponent->find( patientNameText.toStdString(), patientIDText.toStdString(), 
-                            fromDateText.toStdString(), toDateText.toStdString(), modalitiesVect );	
+  studyListComponent->find( 
+    patientForeNameText.toStdString(), 
+    patientSureNameText.toStdString(),
+    patientIDText.toStdString(), 
+    fromDateText.toStdString(),
+    toDateText.toStdString(),
+    modalitiesVect );	
 }
 
 

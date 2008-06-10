@@ -43,14 +43,16 @@ DcmProvider::~DcmProvider()
 void
 DcmProvider::Find( 
 		DcmProvider::ResultSet &result,
-		const string &patientName,
+		const string &patientForeName,
+    const string &patientSureName,
 		const string &patientID,
 		const StringVector &modalities,
 		const string &dateFrom,
 		const string &dateTo) 
 {
 	static_cast<FindService *>(findService)->FindForFilter( 
-		result, patientName, patientID, modalities, dateFrom, dateTo);
+		result, patientForeName, patientSureName, 
+    patientID, modalities, dateFrom, dateTo);
 }
 
 ///////////////////////////////////////////////////////////////////////

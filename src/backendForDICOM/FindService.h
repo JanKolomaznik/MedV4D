@@ -67,7 +67,8 @@ public:
 
 	void FindForFilter( 
 		Dicom::DcmProvider::ResultSet &result,
-		const string &patientName,
+		const string &patientForeName,
+    const string &patientSureName,
 		const string &patientID,
 		const Dicom::DcmProvider::StringVector &modalities,
 		const string &dateFrom,

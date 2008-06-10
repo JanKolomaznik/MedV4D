@@ -72,7 +72,8 @@ namespace Dicom {
 		 */
 		void Find( 
 			DcmProvider::ResultSet &result,
-			const std::string &patientName,
+      const std::string &patientForeName,
+      const std::string &patientSureName,
 			const std::string &patientID,
 			const StringVector &modalities,
 			const std::string &dateFrom,

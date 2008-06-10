@@ -23,7 +23,8 @@ class StManagerStudyListComp: public QWidget
                              QDialog *studyManagerDialog, QWidget *parent = 0 );
     ~StManagerStudyListComp ();
 
-    void find ( const std::string &patientName, const std::string &patientID, 
+    void find ( const std::string &patientForeName, const std::string &patientSureName, 
+                const std::string &patientID, 
                 const std::string &fromDate, const std::string &toDate,
                 const M4D::Dicom::DcmProvider::StringVector &modalitiesVect );
 

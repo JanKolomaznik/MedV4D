@@ -222,16 +222,20 @@ FindService::FindStudiesAboutPatient(
 void
 FindService::FindForFilter( 
 		DcmProvider::ResultSet &result, 
-		const string &patientName,
+		const string &patientForeName,
+    const string &patientSureName,
 		const string &patientID,
 		const DcmProvider::StringVector &modalities,
 		const string &dateFrom,
-		const string & /*dateTo*/) 
+		const string &dateTo) 
 {
-	// TODO uprav date z tadeFrom a dateTo !!
-	// TODO to same s modalities
-	string modalitiesGrouped;
+  // create range match date string
+  string dateRange(dateFrom);
+  dateRange.append("-");  // range matching character '-'
+  dateRange.append(dateTo);
 
+	// create list matching for modalities. single items are delimited by '\'.
+	string modalitiesGrouped;
 	DcmProvider::StringVector::const_iterator it = modalities.begin();
 
 	if( it != modalities.end())
@@ -248,9 +252,13 @@ FindService::FindForFilter(
 		it++;
 	}
 
+  stringstream s;
+  s << "*" << patientForeName << "*_*" << patientSureName << "*";
+  string patienName = s.str();
+
 	// create query
 	DcmDataset *query = NULL;
-	GetQuery( &query, &patientName, &patientID, &modalitiesGrouped, &dateFrom);
+  GetQuery( &query, &patienName, &patientID, &modalitiesGrouped, &dateRange);
 
 	// issue
 	FindSupport( *query, (void *)&result, FindService::TableRowCallback);
