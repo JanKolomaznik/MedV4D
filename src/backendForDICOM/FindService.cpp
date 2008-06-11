@@ -32,10 +32,25 @@ FindService::GetQuery(
 	const string *date
 	)
 {
-	if (*query != NULL) delete *query;
-    *query = new DcmDataset;
+	if (*query != NULL) 
+    delete *query;
+  *query = new DcmDataset;
 
+  /**
+   *  Because there is no way to filter data based on patient/study 
+   *  level info && series info (modality) so we have to distiguish
+   *  between 2 cases:
+   *  1)  none from patient/study info was not specified so series
+   *      info level can be specified.
+   *  2)  else we have to specify study level info specified to have
+   *      ability to filter based on patient info. In that case we have
+   *      to do filtering based on series info manualy.
+   */
+  if( patientName->empty() && date->empty() )
+    DU_putStringDOElement(*query, DCM_QueryRetrieveLevel, "SERIES");
+  else
     DU_putStringDOElement(*query, DCM_QueryRetrieveLevel, "STUDY");
+
 	// patient info
 	DU_putStringDOElement(*query, DCM_PatientID, patientID->c_str() );
 	DU_putStringDOElement(*query, DCM_PatientsName, patientName->c_str() );
@@ -43,7 +58,7 @@ FindService::GetQuery(
 	DU_putStringDOElement(*query, DCM_PatientsBirthDate, NULL);
 
 	// study info
-    DU_putStringDOElement(*query, DCM_StudyInstanceUID, NULL);
+  DU_putStringDOElement(*query, DCM_StudyInstanceUID, NULL);
 	DU_putStringDOElement(*query, DCM_StudyDate, date->c_str() );
 	DU_putStringDOElement(*query, DCM_Modality, modality->c_str() );
 
@@ -71,7 +86,7 @@ FindService::GetWholeStudyInfoQuery(
 	DU_putStringDOElement(*query, DCM_StudyInstanceUID, studyID.c_str());
 
 	// serie info
-    DU_putStringDOElement(*query, DCM_SeriesInstanceUID, NULL);
+  DU_putStringDOElement(*query, DCM_SeriesInstanceUID, NULL);
 
 	// image info
 	DU_putStringDOElement(*query, DCM_SOPInstanceUID, NULL);
@@ -88,7 +103,7 @@ FindService::GetStudyInfoQuery(
 	if (*query != NULL) delete *query;
     *query = new DcmDataset;
 
-    DU_putStringDOElement(*query, DCM_QueryRetrieveLevel, "SERIES");
+  DU_putStringDOElement(*query, DCM_QueryRetrieveLevel, "SERIES");
 	// patient info
 	DU_putStringDOElement(*query, DCM_PatientID, patientID.c_str() );
 
@@ -229,36 +244,54 @@ FindService::FindForFilter(
 		const string &dateFrom,
 		const string &dateTo) 
 {
-  // create range match date string
-  string dateRange(dateFrom);
-  dateRange.append("-");  // range matching character '-'
-  dateRange.append(dateTo);
+  // create range match date string. Range matching character '-'
+  string dateRange;
+  {
+    stringstream dateStream;
+    if( ! dateFrom.empty() && ! dateTo.empty() )
+      dateStream << dateFrom << "-" << dateTo;
+    else if( ! dateFrom.empty() )
+      dateStream << dateFrom << "-";
+    else if( ! dateTo.empty() )
+      dateStream << "-" << dateTo;
+    dateRange = dateStream.str();
+  }
 
 	// create list matching for modalities. single items are delimited by '\'.
-	string modalitiesGrouped;
-	DcmProvider::StringVector::const_iterator it = modalities.begin();
+  string modalityMatch;
+  {
+	  stringstream modalitiesStram;
+	  DcmProvider::StringVector::const_iterator it = modalities.begin();
 
-	if( it != modalities.end())
-	{
-		modalitiesGrouped.append( *it);
-		it++;
-	}
+	  if( it != modalities.end())
+	  {
+		  modalitiesStram << *it;
+		  it++;
+	  }
 
-	// append others
-	while( it != modalities.end())
-	{
-		modalitiesGrouped.append( (const char *) '/');
-		modalitiesGrouped.append( *it);		
-		it++;
-	}
+	  // append others
+	  while( it != modalities.end())
+	  {
+		  modalitiesStram << "\\" << *it;	
+		  it++;
+	  }
+    modalityMatch = modalitiesStram.str();
+  }
 
-  stringstream s;
-  s << "*" << patientForeName << "*_*" << patientSureName << "*";
-  string patienName = s.str();
+  // create wild card math for patient name
+  string patienName;
+  {
+    stringstream s;
+    if( ! patientForeName.empty())
+      s << "*" << patientForeName << "*";
+    if( ! patientSureName.empty() )
+      s << "*" << patientSureName << "*";
+    patienName = s.str();
+  }
 
 	// create query
 	DcmDataset *query = NULL;
-  GetQuery( &query, &patienName, &patientID, &modalitiesGrouped, &dateRange);
+  GetQuery( &query, &patienName, &patientID, &modalityMatch, &dateRange);
 
 	// issue
 	FindSupport( *query, (void *)&result, FindService::TableRowCallback);
