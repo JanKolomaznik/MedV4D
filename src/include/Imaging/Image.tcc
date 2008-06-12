@@ -39,14 +39,14 @@ template< typename ElementType >
 void
 Image< ElementType, 2 >::FillDimensionInfo()
 {
-	if( _imageData->GetDimension != 2 ) {
+	if( _imageData->GetDimension() != 2 ) {
 			//TODO throw exception
 	}
 		
 	for( unsigned i = 0; i < 2; ++i ) {
 		_dimExtents[i].minimum = 0;
-		_dimExtents[i].maximum = _imageData.GetDimensionInfo( i ).size - 1;
-		_dimExtents[i].elementExtent = _imageData.GetDimensionInfo( i ).elementExtent;
+		_dimExtents[i].maximum = _imageData->GetDimensionInfo( i ).size - 1;
+		_dimExtents[i].elementExtent = _imageData->GetDimensionInfo( i ).elementExtent;
 	}
 }
 
@@ -138,14 +138,14 @@ template< typename ElementType >
 void
 Image< ElementType, 3 >::FillDimensionInfo()
 {
-	if( _imageData->GetDimension != 3 ) {
+	if( _imageData->GetDimension() != 3 ) {
 			//TODO throw exception
 	}
 		
 	for( unsigned i = 0; i < 3; ++i ) {
 		_dimExtents[i].minimum = 0;
-		_dimExtents[i].maximum = _imageData.GetDimensionInfo( i ).size - 1;
-		_dimExtents[i].elementExtent = _imageData.GetDimensionInfo( i ).elementExtent;
+		_dimExtents[i].maximum = _imageData->GetDimensionInfo( i ).size - 1;
+		_dimExtents[i].elementExtent = _imageData->GetDimensionInfo( i ).elementExtent;
 	}
 }
 

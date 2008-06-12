@@ -7,6 +7,7 @@ namespace M4D
 namespace Imaging
 {
 
+
 /**
  * Function creating templated array of desired size.
  * @param ElementType 
@@ -30,15 +31,86 @@ PrepareElementArray( size_t size )
 	}
 }
 
+
 template< typename ElementType >
-AbstractImageData::APtr 
+AbstractImage::AImagePtr 
 ImageFactory::CreateEmptyImage2D( 
 			size_t		width, 
 			size_t		height
 			)
 {
-	typename ImageDataTemplate< ElementType >::Ptr ptr = 
+	//TODO exceptions
+	typename Image< ElementType, 2 >::Ptr ptr = 
 		ImageFactory::CreateEmptyImage2DTyped< ElementType >( width, height );
+
+	AbstractImage::AImagePtr aptr = 
+		boost::static_pointer_cast
+		< AbstractImage, Image<ElementType, 2 > >( ptr );
+	return aptr; 
+}
+
+template< typename ElementType >
+typename Image< ElementType, 2 >::Ptr 
+ImageFactory::CreateEmptyImage2DTyped( 
+			size_t		width, 
+			size_t		height
+			)
+{
+	//TODO exceptions
+	typename ImageDataTemplate< ElementType >::Ptr ptr = 
+		ImageFactory::CreateEmptyImageData2DTyped< ElementType >( width, height );
+
+	Image< ElementType, 2 > *img = new Image< ElementType, 2 >( ptr );
+
+	return typename Image< ElementType, 2 >::Ptr( img );
+}
+
+template< typename ElementType >
+AbstractImage::AImagePtr 
+ImageFactory::CreateEmptyImage3D( 
+			size_t		width, 
+			size_t		height,
+			size_t		depth
+			)
+{
+	//TODO exceptions
+	typename Image< ElementType, 3 >::Ptr ptr = 
+		ImageFactory::CreateEmptyImage3DTyped< ElementType >( width, height, depth );
+
+	AbstractImage::AImagePtr aptr = 
+		boost::static_pointer_cast
+		< AbstractImage, Image<ElementType, 3 > >( ptr );
+	return aptr; 
+}
+
+template< typename ElementType >
+typename Image< ElementType, 3 >::Ptr 
+ImageFactory::CreateEmptyImage3DTyped( 
+			size_t		width, 
+			size_t		height,
+			size_t		depth
+			)
+{
+	//TODO exceptions
+	typename ImageDataTemplate< ElementType >::Ptr ptr = 
+		ImageFactory::CreateEmptyImageData3DTyped< ElementType >( width, height, depth );
+
+	Image< ElementType, 3 > *img = new Image< ElementType, 3 >( ptr );
+
+	return typename Image< ElementType, 3 >::Ptr( img );
+}
+
+//**********************************************************************
+
+template< typename ElementType >
+AbstractImageData::APtr 
+ImageFactory::CreateEmptyImageData2D( 
+			size_t		width, 
+			size_t		height
+			)
+{
+	typename ImageDataTemplate< ElementType >::Ptr ptr = 
+		ImageFactory::CreateEmptyImageData2DTyped< ElementType >( width, height );
 
 	AbstractImageData::APtr aptr = 
 		boost::static_pointer_cast
@@ -49,7 +121,7 @@ ImageFactory::CreateEmptyImage2D(
 
 template< typename ElementType >
 typename ImageDataTemplate< ElementType >::Ptr 
-ImageFactory::CreateEmptyImage2DTyped( 
+ImageFactory::CreateEmptyImageData2DTyped( 
 			size_t		width, 
 			size_t		height
 			)
@@ -77,19 +149,19 @@ ImageFactory::CreateEmptyImage2DTyped(
 	}
 
 	//Returning smart pointer to abstract image class.
-	return ImageDataTemplate< ElementType >::Ptr( newImage );
+	return typename ImageDataTemplate< ElementType >::Ptr( newImage );
 }
 
 template< typename ElementType >
 AbstractImageData::APtr 
-ImageFactory::CreateEmptyImage3D( 
+ImageFactory::CreateEmptyImageData3D( 
 			size_t		width, 
 			size_t		height, 
 			size_t		depth
 			)
 {
 	typename ImageDataTemplate< ElementType >::Ptr ptr = 
-		ImageFactory::CreateEmptyImage3DTyped< ElementType >( width, height, depth );
+		ImageFactory::CreateEmptyImageData3DTyped< ElementType >( width, height, depth );
 
 	AbstractImageData::APtr aptr = 
 		boost::static_pointer_cast
@@ -101,7 +173,7 @@ ImageFactory::CreateEmptyImage3D(
 
 template< typename ElementType >
 typename ImageDataTemplate< ElementType >::Ptr 
-ImageFactory::CreateEmptyImage3DTyped( 
+ImageFactory::CreateEmptyImageData3DTyped( 
 			size_t		width, 
 			size_t		height, 
 			size_t		depth
@@ -124,7 +196,7 @@ ImageFactory::CreateEmptyImage3DTyped(
 		new ImageDataTemplate< ElementType >( array, info, 3, size );
 
 	//Returning smart pointer to abstract image class.
-	return ImageDataTemplate< ElementType >::Ptr( newImage );
+	return typename ImageDataTemplate< ElementType >::Ptr( newImage );
 }
 
 

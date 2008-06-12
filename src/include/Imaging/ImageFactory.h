@@ -3,6 +3,7 @@
 
 #include "Imaging/AbstractImageData.h"
 #include "Imaging/ImageDataTemplate.h"
+#include "Imaging/Image.h"
 
 #include "dicomConn/DICOMServiceProvider.h"
 
@@ -12,6 +13,8 @@ namespace M4D
 {
 namespace Imaging
 {
+
+//TODO check comments
 
 /**
  * Factory class which takes care of allocation of image 
@@ -26,7 +29,6 @@ public:
 	class EWrongArrayForFlush;
 	class EUnknowDataType;
 
-
 	/**
 	 * Method for custom empty 2D image creation.
 	 * @param ElementType Type of elements which will be contained 
@@ -36,7 +38,7 @@ public:
 	 * @return Smart pointer to abstract ancestor of created image.
 	 **/
 	template< typename ElementType >
-	static AbstractImageData::APtr 
+	static AbstractImage::AImagePtr 
 	CreateEmptyImage2D( 
 			size_t		width, 
 			size_t		height
@@ -52,7 +54,7 @@ public:
 	 * @return Smart pointer to created image.
 	 **/
 	template< typename ElementType >
-	static typename ImageDataTemplate< ElementType >::Ptr
+	static typename Image< ElementType, 2 >::Ptr
 	CreateEmptyImage2DTyped( 
 			size_t		width, 
 			size_t		height
@@ -68,7 +70,7 @@ public:
 	 * @return Smart pointer to abstract ancestor of created image.
 	 **/
 	template< typename ElementType >
-	static AbstractImageData::APtr 
+	static AbstractImage::AImagePtr 
 	CreateEmptyImage3D( 
 			size_t		width, 
 			size_t		height, 
@@ -86,13 +88,90 @@ public:
 	 * @return Smart pointer to created image.
 	 **/
 	template< typename ElementType >
-	static typename ImageDataTemplate< ElementType >::Ptr 
+	static typename Image< ElementType, 3 >::Ptr 
 	CreateEmptyImage3DTyped( 
 			size_t		width, 
 			size_t		height, 
 			size_t		depth
 			);
 
+	/**
+	 * Method for custom empty 2D image buffer creation.
+	 * @param ElementType Type of elements which will be contained 
+	 * in created dataset.
+	 * @param width Width of desided image.
+	 * @param height Height of desided image.
+	 * @return Smart pointer to abstract ancestor of created image buffer.
+	 **/
+	template< typename ElementType >
+	static AbstractImageData::APtr 
+	CreateEmptyImageData2D( 
+			size_t		width, 
+			size_t		height
+			);
+
+	/**
+	 * Method for custom empty 2D image creation. Difference from 
+	 * previous method is in return value.
+	 * @param ElementType Type of elements which will be contained 
+	 * in created dataset.
+	 * @param width Width of desided image.
+	 * @param height Height of desided image.
+	 * @return Smart pointer to created image.
+	 **/
+	template< typename ElementType >
+	static typename ImageDataTemplate< ElementType >::Ptr
+	CreateEmptyImageData2DTyped( 
+			size_t		width, 
+			size_t		height
+			);
+
+	/**
+	 * Method for custom empty 3D image creation.
+	 * @param ElementType Type of elements which will be contained 
+	 * in created dataset.
+	 * @param width Width of desided image.
+	 * @param height Height of desided image.
+	 * @param depth Depth of desided image.
+	 * @return Smart pointer to abstract ancestor of created image.
+	 **/
+	template< typename ElementType >
+	static AbstractImageData::APtr 
+	CreateEmptyImageData3D( 
+			size_t		width, 
+			size_t		height, 
+			size_t		depth
+			);
+
+	/**
+	 * Method for custom empty 3D image creation. Difference from 
+	 * previous method is in return value.
+	 * @param ElementType Type of elements which will be contained 
+	 * in created dataset.
+	 * @param width Width of desided image.
+	 * @param height Height of desided image.
+	 * @param depth Depth of desided image.
+	 * @return Smart pointer to created image.
+	 **/
+	template< typename ElementType >
+	static typename ImageDataTemplate< ElementType >::Ptr 
+	CreateEmptyImageData3DTyped( 
+			size_t		width, 
+			size_t		height, 
+			size_t		depth
+			);
+
+	/**
+	 * Creates image from given dicomObject set.
+	 * @param dicomObjects Given set of dicom objects.
+	 * @return Smart pointer to created image.
+	 * @exception ImageFactory::EWrongPointer Thrown when passed pointer isn't valid.
+	 * @exception ImageFactory::EEmptyDicomObjSet Thrown when empty set passed.
+	 * @exception ImageFactory::EUnknowDataType Thrown when type for element with 
+	 * parameters from dicomObject doesn't exist.
+	 **/
+	static AbstractImage::AImagePtr 
+	CreateImageFromDICOM( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects );
 
 	/**
 	 * Creates image from given dicomObject set.
@@ -104,7 +183,7 @@ public:
 	 * parameters from dicomObject doesn't exist.
 	 **/
 	static AbstractImageData::APtr 
-	CreateImageFromDICOM( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects );
+	CreateImageDataFromDICOM( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects );
 protected:
 
 private:

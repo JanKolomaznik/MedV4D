@@ -12,6 +12,11 @@ AbstractImage::AbstractImage( unsigned dim, DimensionExtents *dimExtents )
 
 }
 
+AbstractImage::~AbstractImage()
+{
+
+}
+
 const DimensionExtents &
 AbstractImage::GetDimensionExtents( unsigned dimension )const
 {

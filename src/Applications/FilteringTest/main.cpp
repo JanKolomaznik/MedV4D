@@ -2,6 +2,7 @@
 #include "Common.h"
 #include "Imaging/BasicImageFilters.h"
 #include "Imaging/DefaultConnection.h"
+#include "Imaging/ImageFactory.h"
 #include <iostream>
 
 
@@ -21,9 +22,14 @@ main( int argc, char** argv )
 	Conn	oconn;
 	Conn iconn;
 
+	ImageType::Ptr inputImage = ImageFactory::CreateEmptyImage3DTyped< int16 >( 50,50,50 );
+	ImageType::Ptr outputImage = ImageFactory::CreateEmptyImage3DTyped< int16 >( 50,50,50 );
+
 	oconn.ConnectOut( filter.InputPort()[0] );
 	iconn.ConnectIn( filter.OutputPort()[0] );
 
+	oconn.PutImage( inputImage );
+	iconn.PutImage( outputImage );
 	
 
 	char option = '\0';

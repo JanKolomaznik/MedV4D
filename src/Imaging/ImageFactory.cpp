@@ -37,9 +37,21 @@ ImageFactory::CreateImageFromDataAndTypeID(
 	return image;
 }
 
+AbstractImage::AImagePtr 
+ImageFactory::CreateImageFromDICOM( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects )
+{
+	//TODO exceptions
+	AbstractImageData::APtr data = ImageFactory::CreateImageDataFromDICOM( dicomObjects );
+
+	AbstractImage *imagePtr = NULL;
+	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
+			data->GetElementTypeID(), imagePtr = new Image< TTYPE, 3 >( data ) );
+
+	return AbstractImage::AImagePtr( imagePtr );
+}
 
 AbstractImageData::APtr 
-ImageFactory::CreateImageFromDICOM( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects )
+ImageFactory::CreateImageDataFromDICOM( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects )
 {
 		D_PRINT( LogDelimiter( '*' ) );
 		D_PRINT( "-- Entering CreateImageFromDICOM()" );

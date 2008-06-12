@@ -74,7 +74,7 @@ enum NumericTypeIDs{
  * Macro used in NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO() macro. DO NOT USE DIRECTLY!!!
  * @param ID ID of numeric type.
  **/
-#define NUMERIC_TYPE_TEMPLATE_CASE_MACRO( ID, TEMPLATE_EXP )\
+#define NUMERIC_TYPE_TEMPLATE_CASE_MACRO( ID, TEMPLATE_EXP... )\
 	case ID: { typedef TYPE_FROM_ID_MACRO( ID ) TTYPE;\
 			TEMPLATE_EXP; };\
 		break;
@@ -87,7 +87,7 @@ enum NumericTypeIDs{
  * @param TEMPLATE_EXP Templated command. Must contain TTYPE, which will be replaced by 
  * apropriete type. Example : function_name< TTYPE >( TTYPE* arg )
  **/
-#define NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( SWITCH, TEMPLATE_EXP ) \
+#define NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( SWITCH, TEMPLATE_EXP... ) \
 	switch( SWITCH ) {\
 	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_SIGNED_CHAR, TEMPLATE_EXP )\
 	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UNSIGNED_CHAR, TEMPLATE_EXP )\
@@ -109,7 +109,7 @@ enum NumericTypeIDs{
  * @param TEMPLATE_EXP Templated command. Must contain TTYPE, which will be replaced by 
  * apropriete type. Example : function_name< TTYPE >( TTYPE* arg )
  **/
-#define INTEGER_TYPE_TEMPLATE_SWITCH_MACRO( SWITCH, TEMPLATE_EXP ) \
+#define INTEGER_TYPE_TEMPLATE_SWITCH_MACRO( SWITCH, TEMPLATE_EXP... ) \
 	switch( SWITCH ) {\
 	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_SIGNED_CHAR, TEMPLATE_EXP )\
 	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UNSIGNED_CHAR, TEMPLATE_EXP )\
