@@ -95,7 +95,7 @@ vtkRenderer *m4dGUIVtkRenderWindowWidget::imageDataToRenderWindow ()
 vtkRenderer *m4dGUIVtkRenderWindowWidget::imageDataToRenderWindow ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects )
 {
   m4dImageDataSource *imageData = m4dImageDataSource::New();
-  M4D::Imaging::AbstractImageData::APtr visualizedImage = 
+  M4D::Imaging::AbstractImage::AImagePtr visualizedImage = 
 				M4D::Imaging::ImageFactory::CreateImageFromDICOM( dicomObjects );
 
   D_COMMAND( if( !visualizedImage ){ D_PRINT( "INVALID IMAGE POINTER" );} );

@@ -30,10 +30,10 @@ ConvertNumericTypeIDToVTKScalarType( int NumericTypeID )
 
 template< typename ElementType >
 void
-TryFillVTKImageFromM4DImage( vtkImageData *vtkImage, Imaging::AbstractImageData::APtr m4dImage )
+TryFillVTKImageFromM4DImage( vtkImageData *vtkImage, Imaging::AbstractImage::AImagePtr m4dImage )
 {
-	Imaging::ImageDataTemplate<ElementType>* castedImage = 
-			dynamic_cast<Imaging::ImageDataTemplate<ElementType>*>( m4dImage.get() );
+	Imaging::Image<ElementType, 3>* castedImage = 
+			dynamic_cast<Imaging::Image<ElementType,3>*>( m4dImage.get() );
 
 	if( castedImage == NULL ) {
 		throw EImpossibleVTKConversion();
@@ -42,7 +42,7 @@ TryFillVTKImageFromM4DImage( vtkImageData *vtkImage, Imaging::AbstractImageData:
 }
 
 void
-FillVTKImageFromM4DImage( vtkImageData *vtkImage, Imaging::AbstractImageData::APtr m4dImage )
+FillVTKImageFromM4DImage( vtkImageData *vtkImage, Imaging::AbstractImage::AImagePtr m4dImage )
 {
 	DL_PRINT( 8, "FillVTKImageFromM4DImage(), element ID " << m4dImage->GetElementTypeID() );
 	switch ( m4dImage->GetElementTypeID() ) {

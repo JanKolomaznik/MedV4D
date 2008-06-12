@@ -45,7 +45,7 @@ m4dImageDataSource::~m4dImageDataSource()
 }
 
 void
-m4dImageDataSource::SetImageData( Imaging::AbstractImageData::APtr imageData )
+m4dImageDataSource::SetImageData( Imaging::AbstractImage::AImagePtr imageData )
 {
 	D_PRINT( LogDelimiter( '*' ) );
 	D_PRINT( "-- Entering m4dImageDataSource::SetImageData()." );
@@ -56,7 +56,7 @@ m4dImageDataSource::SetImageData( Imaging::AbstractImageData::APtr imageData )
 	if( !imageData ) {
 		D_PRINT( "---- Obtained invalid image pointer." );
 		//Setting to NULL
-		_imageData = Imaging::AbstractImageData::APtr();
+		_imageData = Imaging::AbstractImage::AImagePtr();
 
 		for( size_t dim = 0; dim < imageDimension; ++dim ) {
 			_wholeExtent[2*dim]		= 0;  
@@ -68,14 +68,14 @@ m4dImageDataSource::SetImageData( Imaging::AbstractImageData::APtr imageData )
 		_imageData = imageData;
 		
 		for( size_t dim = 0; dim < imageDimension; ++dim ) {
-			const Imaging::DimensionInfo &dimInfo = _imageData->GetDimensionInfo( dim );
+			const Imaging::DimensionExtents &dimExtents = _imageData->GetDimensionExtents( dim );
 			
-				D_PRINT( "-------- Size in dimension " << dim << " = " << dimInfo.size );
+				D_PRINT( "-------- Size in dimension " << dim << " = " << dimExtents.maximum - dimExtents.minimum );
 			
-			_wholeExtent[2*dim]		= 0;  
-			_wholeExtent[2*dim + 1] = dimInfo.size-1; 
+			_wholeExtent[2*dim]	= dimExtents.minimum;  
+			_wholeExtent[2*dim + 1] = dimExtents.maximum; 
 			
-			_spacing[dim] = dimInfo.elementExtent;
+			_spacing[dim] = dimExtents.elementExtent;
 		}
 	}
 	Modified();
@@ -145,9 +145,9 @@ m4dImageDataSource::RequestData(
 	}
 
 	//TODO - check whether OK
-	D_PRINT( "---- Setting voxel size to : " << std::endl << "\t\tw = " << 	_imageData->GetDimensionInfo( 0 ).elementExtent <<
-			std::endl << "\t\th = " << _imageData->GetDimensionInfo( 1 ).elementExtent <<
-			std::endl << "\t\td = " << _imageData->GetDimensionInfo( 2 ).elementExtent );
+	D_PRINT( "---- Setting voxel size to : " << std::endl << "\t\tw = " << 	_imageData->GetDimensionExtents( 0 ).elementExtent <<
+			std::endl << "\t\th = " << _imageData->GetDimensionExtents( 1 ).elementExtent <<
+			std::endl << "\t\td = " << _imageData->GetDimensionExtents( 2 ).elementExtent );
 
 	D_PRINT( "---- Filling requested VTK image dataset." );
 	//Fill data set

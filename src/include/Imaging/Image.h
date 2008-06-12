@@ -43,6 +43,12 @@ public:
 
 	const DimensionExtents &
 	GetDimensionExtents( unsigned dimension )const;
+
+	/**
+	 * @return ID of element type.
+	 **/
+	virtual int
+	GetElementTypeID()const=0;
 protected:
 	unsigned		_dimCount;
 	DimensionExtents	*_dimensionExtents;
@@ -98,6 +104,15 @@ public:
 	
 	~Image();
 	
+	/**
+	 * Method used for easy runtime type identification of 
+	 * elements types - working only on predefined types.
+	 * @return ID of numeric type defined in Common.h
+	 **/
+	int
+	GetElementTypeID()const
+		{ return GetNumericTypeID<ElementType>(); }
+
 	/**
 	 * Access method to data - checking boundaries.
 	 * \param x X coordinate.
@@ -173,7 +188,16 @@ public:
 	Image( typename ImageDataTemplate< ElementType >::Ptr imageData );
 
 	~Image();
-	
+
+	/**
+	 * Method used for easy runtime type identification of 
+	 * elements types - working only on predefined types.
+	 * @return ID of numeric type defined in Common.h
+	 **/
+	int
+	GetElementTypeID()const
+		{ return GetNumericTypeID<ElementType>(); }
+
 	ElementType &
 	GetElement( size_t x, size_t y, size_t z );
 
@@ -253,6 +277,15 @@ public:
 	
 	~Image();
 	
+	/**
+	 * Method used for easy runtime type identification of 
+	 * elements types - working only on predefined types.
+	 * @return ID of numeric type defined in Common.h
+	 **/
+	int
+	GetElementTypeID()const
+		{ return GetNumericTypeID<ElementType>(); }
+
 	ElementType &
 	GetElement( size_t x, size_t y, size_t z, size_t t );
 

@@ -3,7 +3,7 @@
 
 #include "ExceptionBase.h"
 #include "Imaging/AbstractImageData.h"
-#include "Imaging/ImageDataTemplate.h"
+#include "Imaging/Image.h"
 
 #include "vtkImageAlgorithm.h"
 
@@ -20,7 +20,7 @@ public:
 	vtkTypeRevisionMacro(m4dImageDataSource,vtkImageAlgorithm);
 
 	void
-	SetImageData( Imaging::AbstractImageData::APtr imageData );
+	SetImageData( Imaging::AbstractImage::AImagePtr imageData );
 protected:
 	m4dImageDataSource();
 	~m4dImageDataSource();
@@ -39,7 +39,7 @@ protected:
 		vtkInformationVector *
 		);
 
-	Imaging::AbstractImageData::APtr	_imageData;
+	Imaging::AbstractImage::AImagePtr	_imageData;
 	int				_wholeExtent[6];
 	double				_spacing[3];
 private:

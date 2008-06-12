@@ -70,7 +70,7 @@ public:
 	 * @return ID of numeric type defined in Common.h
 	 **/
 	int
-	GetElementTypeID()
+	GetElementTypeID()const
 		{ return GetNumericTypeID<ElementType>(); }
 
 	/**

@@ -83,7 +83,7 @@ public:
 	 * @return ID of element type.
 	 **/
 	virtual int
-	GetElementTypeID()=0;
+	GetElementTypeID()const=0;
 
 	/**
 	 * @return Number of elements contained in image.

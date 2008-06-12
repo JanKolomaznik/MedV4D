@@ -1,7 +1,7 @@
 #ifndef _DATA_CONVERSION_H
 #define _DATA_CONVERSION_H
 
-#include "Imaging/ImageDataTemplate.h"
+#include "Imaging/Image.h"
 
 #include "vtkImageData.h"
 #include "ExceptionBase.h"
@@ -27,7 +27,7 @@ int
 ConvertNumericTypeIDToVTKScalarType( int NumericTypeID );
 
 void
-FillVTKImageFromM4DImage( vtkImageData *vtkImage, Imaging::AbstractImageData::APtr m4dImage );
+FillVTKImageFromM4DImage( vtkImageData *vtkImage, Imaging::AbstractImage::AImagePtr m4dImage );
 
 
 
@@ -94,19 +94,24 @@ template< typename ElementType >
 void
 FillVTKImageDataFromImageData( 
 		vtkImageData					*imageData,
-		const Imaging::ImageDataTemplate< ElementType >	&image 
+		const Imaging::Image< ElementType, 3 >	&image 
 		)
 {
-	size_t width	= image.GetDimensionInfo( 0 ).size;
+	/*size_t width	= image.GetDimensionInfo( 0 ).size;
 	size_t height	= image.GetDimensionInfo( 1 ).size;
-	size_t depth	= image.GetDimensionInfo( 2 ).size;	
+	size_t depth	= image.GetDimensionInfo( 2 ).size;*/	
+
+	int	extent[6];
+	for( size_t dim = 0; dim < 3; ++dim ) {
+		const Imaging::DimensionExtents &dimExtents = image.GetDimensionExtents( dim );
+		
+		extent[2*dim]	= dimExtents.minimum;  
+		extent[2*dim + 1] = dimExtents.maximum; 
+		
+		//_spacing[dim] = dimExtents.elementExtent;
+	}
 
 	vtkIdType IncX, IncY, IncZ;
-	
-	int	extent[6];
-	extent[0] = 0; extent[1] = width - 1;
-	extent[2] = 0; extent[3] = height - 1;
-	extent[4] = 0; extent[5] = depth - 1;
 
 	imageData->GetContinuousIncrements( extent, IncX, IncY, IncZ );
 	ElementType *iPtr = (ElementType*)imageData->GetScalarPointer();
@@ -114,17 +119,17 @@ FillVTKImageDataFromImageData(
 	//TODO delete
 	//std::ofstream pomFile( "dump.txt" );
 	//size_t i = 0;
-	for(size_t idxZ = 0; idxZ < depth; ++idxZ)
+	for(int idxZ = extent[4]; idxZ <= extent[5]; ++idxZ)
 	{
-		for(size_t idxY = 0; idxY < height; ++idxY)
+		for(int idxY = extent[2]; idxY <= extent[3]; ++idxY)
 		{
-			for(size_t idxX = 0; idxX < width; ++idxX)
+			for(int idxX = extent[0]; idxX <= extent[1]; ++idxX)
 			{
 				//TODO delete
 				//if( ++i < 2000 ) 
 				//	pomFile << image.Get( idxX, idxY, idxZ ) << " ";
 				
-				*iPtr = image.Get( idxX, idxY, idxZ );
+				*iPtr = image.GetElement( idxX, idxY, idxZ );
 				++iPtr;
 			}
 			iPtr += IncY;
@@ -145,7 +150,7 @@ FillVTKImageDataFromImageData(
 template< typename ElementType >
 vtkImageData*
 CreateVTKImageDataFromImageData( 
-		const Imaging::ImageDataTemplate< ElementType >& image )
+		const Imaging::Image< ElementType, 3 >& image )
 {
 	vtkImageData* imageData = vtkImageData::New();
 
