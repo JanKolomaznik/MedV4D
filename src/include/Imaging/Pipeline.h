@@ -1,36 +1,39 @@
-#ifndef _ABSTRACT_PIPELINE_H
-#define _ABSTRACT_PIPELINE_H
+#ifndef _PIPELINE_H
+#define _PIPELINE_H
 
 
 #include "Imaging/AbstractFilter.h"
+#include "Imaging/AbstractPipeline.h"
 #include "Imaging/Connection.h"
 #include <boost/shared_ptr.hpp>
-
+#include <vector>
 
 namespace M4D
 {
 namespace Imaging
 {
 
-class AbstractPipeline : public AbstractPipeFilter
+class Pipeline : public AbstractPipeline
 {
 public:
 	
-	virtual void
-	AddFilter( AbstractPipeFilter *filter ) = 0;
+	void
+	AddFilter( AbstractPipeFilter *filter );
 
-	virtual void
-	FillingFinished() = 0;
+	void
+	FillingFinished();
 
 	/**
 	 * Connect two compatible ports if possible.
 	 * @param outPort Reference to output port of some filter.
 	 * @param inPort Reference to input port of some filter.
 	 **/
-	virtual Connection &
-	MakeConnection( OutputPort& outPort, InputPort& inPort )=0;
+	Connection &
+	MakeConnection( OutputPort& outPort, InputPort& inPort );
 protected:
+	typedef std::vector< AbstractPipeFilter * > FilterVector;
 
+	FilterVector	_filters;
 private:
 
 };
@@ -39,4 +42,5 @@ private:
 }/*namespace M4D*/
 
 
-#endif /*_ABSTRACT_PIPELINE_H*/
+#endif /*_PIPELINE_H*/
+
