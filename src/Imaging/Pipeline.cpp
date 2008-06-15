@@ -8,6 +8,7 @@ namespace Imaging
 
 Pipeline()
 {
+		//TODO
 
 }
 
@@ -39,12 +40,13 @@ void
 Pipeline::FillingFinished()
 {
 
+		//TODO
 }
 
 Connection &
 Pipeline::MakeConnection( OutputPort& outPort, InputPort& inPort )
 {
-	//if inPort occupied -error. Connection concept is designed one to many.
+	//if inPort occupied - error. Connection concept is designed only one to many.
 	if( inPort.IsPlugged() ) {
 		//TODO throw exception
 	}
@@ -52,9 +54,10 @@ Pipeline::MakeConnection( OutputPort& outPort, InputPort& inPort )
 	//if outPort is connected, we use already created Conncetion, otherwise we 
 	//have to create new one.
 	if( outPort.IsPlugged() ) {
-
+		//TODO
 	} else {
 
+		//TODO
 	}
 }
 

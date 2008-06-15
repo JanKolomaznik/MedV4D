@@ -102,6 +102,86 @@ private:
 };
 
 
+/**
+ * We disallow general usage of template - only specializations.
+ **/
+template< typename InputImageType, typename OutputImageType >
+class ImageVolumeFilter;
+
+template< typename InputElementType, typename OutputImageType >
+class ImageVolumeFilter< Image< InputElementType, 3 >, OutputImageType >
+	 : public ImageFilter< Image< InputElementType, 3 >, OutputImageType >
+{
+public:
+
+	ImageVolumeFilter();
+	~ImageVolumeFilter() {}
+protected:
+	virtual void
+	ProcessVolume(
+			const Image< InputElementType, 3 > 	&in,
+			OutputImageType				&out,
+			size_t					x1,
+			size_t					y1,
+			size_t					z1,
+			size_t					x2,
+			size_t					y2,
+			size_t					z2
+		    ) = 0;
+
+	bool
+	ExecutionThreadMethod();
+
+	bool
+	ExecutionOnWholeThreadMethod();
+	
+	void
+	PrepareOutputDatasets();
+
+private:
+	/**
+	 * Prohibition of copying.
+	 **/
+	PROHIBIT_COPYING_OF_OBJECT_MACRO( ImageVolumeFilter );
+};
+
+template< typename InputElementType, typename OutputImageType >
+class ImageVolumeFilter< Image< InputElementType, 4 >, OutputImageType >
+	 : public ImageFilter< Image< InputElementType, 4 >, OutputImageType >
+{
+public:
+
+	ImageVolumeFilter();
+	~ImageVolumeFilter() {}
+protected:
+	virtual void
+	ProcessVolume(
+			const Image< InputElementType, 4 > 	&in,
+			OutputImageType				&out,
+			size_t					x1,
+			size_t					y1,
+			size_t					z1,
+			size_t					x2,
+			size_t					y2,
+			size_t					z2,
+			size_t					t
+		    ) = 0;
+
+	bool
+	ExecutionThreadMethod();
+
+	bool
+	ExecutionOnWholeThreadMethod();
+	
+	void
+	PrepareOutputDatasets();
+
+private:
+	/**
+	 * Prohibition of copying.
+	 **/
+	PROHIBIT_COPYING_OF_OBJECT_MACRO( ImageVolumeFilter );
+};
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
