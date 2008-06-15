@@ -27,20 +27,17 @@ StManagerStudyListComp::StManagerStudyListComp ( m4dGUIVtkRenderWindowWidget *vt
   deleteButton      = createButton( tr( "&Delete" ),        SLOT(del()) );
   sendButton        = createButton( tr( "S&end" ),          SLOT(send()) );
   queueFilterButton = createButton( tr( "&Queue" ),         SLOT(queue()) );
-  burnToMediaButton = createButton( tr( "&Burn to Media" ), SLOT(burn()) );
 
   viewButton->setEnabled( false );
   // buttons not implemented yet:
   deleteButton->setEnabled( false );
   sendButton->setEnabled( false );
   queueFilterButton->setEnabled( false );
-  burnToMediaButton->setEnabled( false );
 
   buttonLayout->addWidget( viewButton );
   buttonLayout->addWidget( deleteButton );
   buttonLayout->addWidget( sendButton );
   buttonLayout->addWidget( queueFilterButton );
-  buttonLayout->addWidget( burnToMediaButton );
 
   QSpacerItem *verticalSpacer = new QSpacerItem( 2, 2, QSizePolicy::Minimum, 
                                                  QSizePolicy::Expanding );
@@ -83,7 +80,7 @@ StManagerStudyListComp::~StManagerStudyListComp ()
 }
 
 
-void StManagerStudyListComp::find ( const string &patientForeName, const string &patientSureName,
+void StManagerStudyListComp::find ( const string &firstName, const string &lastName,
                                     const string &patientID, 
                                     const string &fromDate, const string &toDate,
                                     const DcmProvider::StringVector &modalitiesVect )
@@ -91,13 +88,13 @@ void StManagerStudyListComp::find ( const string &patientForeName, const string 
   resultSet->clear();
 
   try {
-    dcmProvider->Find( *resultSet, patientForeName, patientSureName, patientID, modalitiesVect,
+    dcmProvider->Find( *resultSet, firstName, lastName, patientID, modalitiesVect,
                         fromDate, toDate );	
  	
-    if ( !resultSet->empty() ) {
-      addResultSetToStudyTable( localExamsTable );
-    }
-    else {
+    // it can handle empty resultSet
+    addResultSetToStudyTable( localExamsTable );
+
+    if ( resultSet->empty() ) {
       QMessageBox::warning( this, tr( "No results" ), "No search results match your criteria" );
     }
   } 
@@ -173,12 +170,18 @@ void StManagerStudyListComp::setEnabledView ()
 
 void StManagerStudyListComp::addResultSetToStudyTable ( QTableWidget *table )
 {
+  // for correct inserting sorting must be disabled
+  table->setSortingEnabled( false );
+
   table->clearContents();
   table->setRowCount( 0 );
 
   for ( unsigned rowNum = 0; rowNum < resultSet->size(); rowNum++ ) {
     addRowToStudyTable( &resultSet->at( rowNum ), table );
   }
+
+  // sorting must be enabled AFTER populating table with items
+  table->setSortingEnabled( true );
 }
 
 
@@ -221,8 +224,6 @@ QTableWidget *StManagerStudyListComp::createStudyTable ()
   table->setSelectionBehavior( QAbstractItemView::SelectRows );
   table->setSelectionMode( QAbstractItemView::SingleSelection );
   table->setEditTriggers( QAbstractItemView::NoEditTriggers );
-
-  table->setSortingEnabled( true );
 
   QStringList labels;
   labels << tr( "Patient ID" ) << tr( "Name" ) << tr( "Accesion" )

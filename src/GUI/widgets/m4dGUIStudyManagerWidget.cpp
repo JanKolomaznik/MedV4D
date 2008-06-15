@@ -16,8 +16,8 @@ m4dGUIStudyManagerWidget::m4dGUIStudyManagerWidget ( m4dGUIVtkRenderWindowWidget
 
   QGridLayout *mainLayout = new QGridLayout;
   mainLayout->addWidget( filterGroupBox, 0, 0 );
-  mainLayout->addWidget( hangingProtocolsGroupBox, 0, 1 );
-  mainLayout->addWidget( studyListGroupBox, 1, 0, 1, 2 );
+  // mainLayout->addWidget( hangingProtocolsGroupBox, 0, 1 );
+  mainLayout->addWidget( studyListGroupBox, 1, 0 );
   setLayout( mainLayout );
 }
 

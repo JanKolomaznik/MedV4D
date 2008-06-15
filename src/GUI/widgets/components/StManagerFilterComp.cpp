@@ -154,8 +154,8 @@ StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComp
 
 void StManagerFilterComp::search ()
 {
-  QString patientForeNameText = firstNameComboBox->currentText();
-  QString patientSureNameText = lastNameComboBox->currentText();
+  QString firstNameText = firstNameComboBox->currentText();
+  QString lastNameText  = lastNameComboBox->currentText();
 
   QString patientIDText   = patientIDComboBox->currentText();
     
@@ -173,13 +173,9 @@ void StManagerFilterComp::search ()
     }
   }
 
-  studyListComponent->find( 
-    patientForeNameText.toStdString(), 
-    patientSureNameText.toStdString(),
-    patientIDText.toStdString(), 
-    fromDateText.toStdString(),
-    toDateText.toStdString(),
-    modalitiesVect );	
+  studyListComponent->find( firstNameText.toStdString(), lastNameText.toStdString(),
+                            patientIDText.toStdString(), fromDateText.toStdString(),
+                            toDateText.toStdString(), modalitiesVect );	
 }
 
 
