@@ -17,6 +17,10 @@ class Pipeline : public AbstractPipeline
 {
 public:
 	
+	Pipeline();
+
+	~Pipeline();
+
 	void
 	AddFilter( AbstractPipeFilter *filter );
 
@@ -32,8 +36,11 @@ public:
 	MakeConnection( OutputPort& outPort, InputPort& inPort );
 protected:
 	typedef std::vector< AbstractPipeFilter * > FilterVector;
+	typedef std::vector< Connection * > ConnectionVector;
 
-	FilterVector	_filters;
+	FilterVector		_filters;
+	ConnectionVector	_connections;
+
 private:
 
 };
