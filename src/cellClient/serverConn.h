@@ -6,7 +6,7 @@
 
 #include <boost/asio.hpp>
 
-#include "cellBE/job.h"
+#include "clientJob.h"
 
 namespace M4D
 {
@@ -19,25 +19,31 @@ class ServerConnection
 public:
   ServerConnection( const std::string &address, boost::asio::io_service &service);
 
-  inline const std::string Address(void) { return m_address; }
-
-  void SendJob( Job &job);
+  void SendJob( ClientJob *job);
+  void Resend( ClientJob *job);
+  void QuitJob( ClientJob *job);
 
 private: 
   boost::asio::ip::tcp::socket m_socket;
   std::string m_address;
 
-  boost::array<char, 8> m_pok;
+  //////////////////////////////////////////////
+  void SendData( ClientJob *j);
+  void ReadResponseHeader( ClientJob *job);
+  //////////////////////////////////////////////
 
   void Connect( boost::asio::io_service &service);
 
-  void OnJobWritten( const boost::system::error_code& e, Job &j);
+  // send callbacks
+  void EndSendJobHeader( const boost::system::error_code& e, ClientJob *j);
+  void EndSendData( const boost::system::error_code& e, ClientJob *j);
 
   void OnJobResponseHeaderRead( const boost::system::error_code& e,
-    const size_t bytesRead, Job &j);
+    const size_t bytesRead, ClientJob *j);
 
   void OnJobResponseBodyRead( const boost::system::error_code& e,
-    const size_t bytesRead, Job &j);
+    const size_t bytesRead, ClientJob *j);
+
 };
 
 } // CellBE namespace

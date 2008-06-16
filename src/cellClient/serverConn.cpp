@@ -11,7 +11,7 @@
 
 #include "Common.h"
 #include <boost/serialization/vector.hpp>
-#include "cellBE/commDefs.h"
+#include "cellBE/netCommons.h"
 #include "serverConn.h"
 
 using namespace M4D::CellBE;
@@ -61,42 +61,51 @@ ServerConnection::Connect( boost::asio::io_service &service)
 ///////////////////////////////////////////////////////////////////////
 
 void
-ServerConnection::SendJob( Job & job)
+ServerConnection::SendJob( ClientJob *job)
 {
-  std::ostringstream s;
-  boost::archive::text_oarchive arch( s);
+  // prepare serialization of filters & settings
+  job->SerializeFiltersSetting();
 
-  //s << job.m_filterID;
-  job.m_f1 = 3.12345f;
-  job.m_str = "predel";
+  job->suppSerializer.SerializePrimMessHeader( &job->primHeader);
 
-  arch << (const Job &)job;
+  job->suppSerializer.SerializeSecMessHeader( &job->secHeader);
 
-  job.sendedMessage = s.str();
+  // create vector of serialized information to pass to sigle send operation
+  vector<boost::asio::const_buffer> buffers;
+  buffers.push_back( 
+    boost::asio::buffer( (uint8*)&job->primHeader, sizeof(PrimaryJobHeader)) );
+  buffers.push_back( 
+    boost::asio::buffer( (uint8*)&job->secHeader, sizeof(SecondaryJobHeader)) );
+  buffers.push_back( 
+    boost::asio::buffer( 
+      &job->filterSettingsSerialized[0], job->filterSettingsSerialized.size() ));
 
-  m_socket.async_write_some(
-    boost::asio::buffer( job.sendedMessage),
-    boost::bind( &ServerConnection::OnJobWritten, this, 
-      boost::asio::placeholders::error,
-      job) );
+  // send the buffer vector
+  m_socket.async_write_some( 
+    buffers, 
+    boost::bind( &ServerConnection::EndSendJobHeader, 
+      this, boost::asio::placeholders::error, job)
+  );
+
+  //SendData( job);
 }
 
 ///////////////////////////////////////////////////////////////////////
 
 void
-ServerConnection::OnJobWritten( 
-  const boost::system::error_code& err,
-  Job &job )
+ServerConnection::Resend( ClientJob *job)
 {
-  if( ! err)
-  {
-    // now we have to wait for response of da server
-    m_socket.async_read_some( boost::asio::buffer( m_pok),
-      boost::bind( &ServerConnection::OnJobResponseHeaderRead, this,
-        boost::asio::placeholders::error,
-        boost::asio::placeholders::bytes_transferred,
-        job) );
-  }
+  if( ! job->m_isPersistent)
+    throw ExceptionBase("Job is not persistent");
+}
+
+///////////////////////////////////////////////////////////////////////
+
+void
+ServerConnection::QuitJob( ClientJob *job)
+{
+  if( ! job->m_isPersistent)
+    throw ExceptionBase("Job is not persistent");
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -105,33 +114,33 @@ void
 ServerConnection::OnJobResponseHeaderRead( 
     const boost::system::error_code& err,
     const size_t bytesRead, 
-    Job &job)
+    ClientJob *job)
 {
   if( err)
   {
-    job.state = Job::Failed;
+    job->state = ClientJob::Failed;
     LOG( "OnJobResponseHeaderRead called with error code");
-    job.onComplete();
+    job->onComplete();
   }
   else
   {
     // now read response body
-    std::istringstream stream( job.messageHeader.data);
+    //std::istringstream stream( job.messageHeader.data);
 
-    char *c = m_pok.c_array();
+    //char *c = m_pok.c_array();
 
-    uint16 messID;
-    stream >> messID;
+    //uint16 messID;
+    //stream >> messID;
 
-    uint16 messLen;
-    stream >> messLen;
+    //uint16 messLen;
+    //stream >> messLen;
 
-    job.response.resize( messLen);
-    m_socket.async_read_some( boost::asio::buffer(job.response),
-      boost::bind( &ServerConnection::OnJobResponseBodyRead, this,
-        boost::asio::placeholders::error,
-        boost::asio::placeholders::bytes_transferred,
-        job) );
+    //job.response.resize( messLen);
+    //m_socket.async_read_some( boost::asio::buffer(job.response),
+    //  boost::bind( &ServerConnection::OnJobResponseBodyRead, this,
+    //    boost::asio::placeholders::error,
+    //    boost::asio::placeholders::bytes_transferred,
+    //    job) );
   }
 }
 
@@ -141,18 +150,87 @@ void
 ServerConnection::OnJobResponseBodyRead( 
     const boost::system::error_code& err,
     const size_t bytesRead, 
-    Job &job)
+    ClientJob *job)
 {
   if( ! err)
   {
-    job.state = Job::Complete;
+    job->state = ClientJob::Complete;
   }
   else
   {
     LOG( "OnJobResponseBodyRead called with error code");
-    job.state = Job::Failed;
+    job->state = ClientJob::Failed;
   }
 
   // call completition handler
-  job.onComplete();
+  if( job->onComplete) job->onComplete();
 }
+
+///////////////////////////////////////////////////////////////////////
+
+void
+ServerConnection::SendData( ClientJob *j)
+{
+  // iterate over data and create scatter buffer container
+  // containing pointers to data and pass it to network
+
+  //TODO
+  //m_socket.async_write_some(
+  //  boost::asio::buffer( j.),
+  //  boost::bind( &ServerConnection::EndSendData, this, 
+  //    boost::asio::placeholders::error,
+  //    j) );
+}
+
+///////////////////////////////////////////////////////////////////////
+
+void
+ServerConnection::EndSendJobHeader( 
+  const boost::system::error_code& e, ClientJob *j)
+{
+  if( e)
+  {
+    if( j->onError != NULL)
+      j->onError();
+  }
+  else
+    ReadResponseHeader( j);
+}
+
+///////////////////////////////////////////////////////////////////////
+
+void
+ServerConnection::EndSendData(
+  const boost::system::error_code& e, ClientJob *j)
+{
+  if( e)
+  {
+    if( j->onError != NULL)
+      j->onError();
+  }
+  else
+  {
+    // now we have to wait for response of da server
+
+    //TODO
+    //m_socket.async_read_some( boost::asio::buffer( m_pok),
+    //  boost::bind( &ServerConnection::OnJobResponseHeaderRead, this,
+    //    boost::asio::placeholders::error,
+    //    boost::asio::placeholders::bytes_transferred,
+    //    job) );
+  }
+}
+
+///////////////////////////////////////////////////////////////////////
+
+void
+ServerConnection::ReadResponseHeader( ClientJob *job)
+{
+  m_socket.async_read_some( boost::asio::buffer((uint8*)&job->primHeader, sizeof(PrimaryJobHeader) ),
+    boost::bind( &ServerConnection::OnJobResponseBodyRead, this,
+      boost::asio::placeholders::error,
+      boost::asio::placeholders::bytes_transferred,
+      job) );
+}
+
+///////////////////////////////////////////////////////////////////////

@@ -33,7 +33,10 @@ LocalService::Find(
 			Dicom::DcmProvider::ResultSet &result,
       const std::string &path)
 {
-  fs::path full_path( fs::initial_path<fs::path>() );
+  // save search dir
+  m_lastSearchDir = path;
+
+  fs::path full_path = fs::system_complete( fs::path( path) );
   // recursively (through queue) go through all files in subtree
   // of specified directory specified
 
@@ -97,7 +100,7 @@ LocalService::SolveDir( fs::path & dirName,
     }
     else
     {
-      //SolveFile( dir_itr->string(), dirName.string() );
+      SolveFile( dir_itr->string(), dirName.string(), result );
     }
   }
 }

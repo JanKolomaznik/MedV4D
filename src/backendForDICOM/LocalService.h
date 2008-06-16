@@ -29,7 +29,6 @@ class LocalService
       return (
         patID.compare( b.patID) < 0
         || studyID.compare( b.studyID) < 0
-        //|| setID.equal( b.setID) < 0
         );
     }
   };
@@ -38,6 +37,8 @@ class LocalService
   SetOfEntries m_setOfEntries;
 
   std::queue<boost::filesystem::path> m_mainQueue;
+
+  std::string m_lastSearchDir;
 
 	void Find( 
 			DcmProvider::ResultSet &result,

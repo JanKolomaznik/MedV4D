@@ -182,11 +182,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\main.cpp"
+				RelativePath="..\..\cellClient\clientJob.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\common\cellBE\job.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\cellClient\serverConn.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\testMain.cpp"
 				>
 			</File>
 		</Filter>
@@ -196,7 +204,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\cellClient\CellClient.hpp"
+				RelativePath="..\..\include\cellBE\cellClient.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\cellClient\clientJob.h"
 				>
 			</File>
 			<File

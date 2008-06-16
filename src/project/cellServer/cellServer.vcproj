@@ -185,6 +185,10 @@
 				RelativePath="..\..\cellServer\server.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\..\cellServer\serverJob.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -193,6 +197,10 @@
 			>
 			<File
 				RelativePath="..\..\cellServer\server.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\cellServer\serverJob.h"
 				>
 			</File>
 		</Filter>

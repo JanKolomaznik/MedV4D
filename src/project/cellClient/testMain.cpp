@@ -1,5 +1,5 @@
 //
-// server.cpp
+// client.cpp kokoda
 // ~~~~~~~~~~
 //
 // Copyright (c) 2003-2008 Christopher M. Kohlhoff (chris at kohlhoff dot com)
@@ -8,32 +8,34 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#include "cellBE/netCommons.h"
-#include "server.h"
+#include "Common.h"
+#include "clientJob.h"
+#include "cellBE/CellClient.h"
 
 using namespace M4D::CellBE;
 
-struct pok {
-  uint32 p;
-  uint8 j;
-  uint8 k;
-};
-
-int main( void)
+int main()
 {
   try
   {
-    boost::asio::io_service io_service;
 
-    pok p;
-    int i = sizeof(p);
+    ClientJob job(false);
 
-    Server server(io_service, SERVER_PORT);
-    io_service.run();
+    ThresholdingSetting *s = new ThresholdingSetting();
+    s->threshold = 3.14f;
+
+    job.AddFilter( "thresh", s);
+
+    CellClient c;
+
+    c.SendJob(job);
+
+    c.m_io_service.run();
   }
   catch (std::exception& e)
   {
     std::cerr << e.what() << std::endl;
+    return -1;
   }
 
   return 0;

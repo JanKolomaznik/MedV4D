@@ -1,58 +1,58 @@
-#ifndef JOB_H
-#define JOB_H
+#ifndef JOBBASE_H
+#define JOBBASE_H
 
 #include <vector>
-#include "messHeader.h"
+#include <map>
+//#include "Imaging/Image.h"
+#include "filterProperties.h"
+#include "messageHeaders.h"
 
 namespace M4D
 {
 namespace CellBE
 {
 
-#define MESSLEN 32
+//template<typename elemType>
+class Job
+  : public iSerializable
+{  
+protected:
+  //M4D::Imaging::Image<elemType, dimension> &image;
 
-  class Job
-  {
-    
-    void *m_data;
+  friend class Server;
 
-  public:
-    uint16 m_filterID;
+  typedef std::map<std::string, FilterSetting *> FilterMap;
+  FilterMap m_filters;
 
-    float32 m_f1;
-    std::string m_str;
+  bool m_isPersistent;
 
+  PrimaryJobHeader primHeader;
+  SecondaryJobHeader secHeader;
 
-    Job( uint16 filterID) : m_filterID(filterID) {}
-    Job( void) {}
+  MessHeaderSerializer suppSerializer;
 
-    enum State {
-      Complete,
-      Incomplete,
-      Failed,
-    };
-    State state;
+  virtual void Serialize( NetStream &s) = 0;
+  virtual void DeSerialize( NetStream &s) = 0;
 
-    std::vector<uint8> response;
-    typedef void (*JobCompletitionCallback)(void);
+public:
+  uint32 jobID; 
 
-    MessageHeader messageHeader;
-    std::string sendedMessage;
-
-    JobCompletitionCallback onComplete;
-
-    template <typename Archive>
-    void serialize(Archive& ar, const unsigned int version)
-    {
-      ar & m_filterID;
-      ar & m_f1;
-      ar & m_str;
-      //ar & m_data;
-    }
-
-    static const int messLen = 32;
-
+  enum Action {
+    CREATE,
+    REEXEC,
+    DESTROY
   };
+
+  /**
+  *  Job header, filters setting, data header preparation
+  */
+
+  /////////////////////////////////////////////////////////
+  // Client methodes
+  /////////////////////////////////////////////////////////
+  // prepares job header for network transmission
+
+};
 
 } // CellBE namespace
 } // M4D namespace

@@ -15,9 +15,7 @@ namespace CellBE
 
     CellClient();
 
-    void SendJob( uint16 serverID, Job &job);
-
-    inline AvailServersMap &GetAvailableServers(void) { return m_servers; }
+    void SendJob( ClientJob &job);
 
     boost::asio::io_service m_io_service;
 
@@ -25,6 +23,12 @@ namespace CellBE
     AvailServersMap m_servers;    
 
     void FindNonCommentLine( std::ifstream &f, std::string &line);
+
+	/**
+	 *	Returns string reference containing address of least loaded available
+	 *	server able doing specified job
+	 */
+	const std::string & FindAvailableServer( const ClientJob &job);
 
   };
 

@@ -5,9 +5,10 @@
 #define _WIN32_WINNT 0x0501   // win ver
 
 #include <vector>
+#include <map>
 #include <boost/asio.hpp>
 
-#include "cellBE/job.h"
+#include "serverJob.h"
 
 namespace M4D
 {
@@ -25,13 +26,19 @@ namespace CellBE
   private:
     void Accept();
 
-    void onAccepted( tcp::socket *clientSock,
+    void EndAccepted( tcp::socket *clientSock,
         const boost::system::error_code& error);
 
-    void onHeaderRead( tcp::socket *clientSock, MessageHeader *header,
+    void EndPrimaryHeaderRead( tcp::socket *clientSock, ServerJob *job,
         const boost::system::error_code& error);
 
-    void onPingMessageWritten( tcp::socket *clientSock,
+    void EndSecondaryHeaderRead( tcp::socket *clientSock, ServerJob *job,
+        const boost::system::error_code& error);
+
+    void EndJobSettingsRead( tcp::socket *clientSock, ServerJob *job,
+        const boost::system::error_code& error);
+
+    void EndPingMessageWritten( tcp::socket *clientSock,
         const boost::system::error_code& error);
 
     // writes ping message. Address & server info
@@ -43,7 +50,18 @@ namespace CellBE
     SockPool m_socketPool;*/
     std::string m_pingMessage;
 
-    char inbound[MESSLEN];
+    typedef std::map<uint32, ServerJob *> JobMap;
+    JobMap m_persistentJobs;
+
+    inline ServerJob *findPersistendJob( uint32 id)
+    {
+      JobMap::iterator it = m_persistentJobs.find(id);
+      if( it == m_persistentJobs.end() )
+        throw ExceptionBase("Job not found");
+      else
+        return it->second;
+    }
+    
   };
 
 } // CellBE namespace
