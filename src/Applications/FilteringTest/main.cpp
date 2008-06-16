@@ -1,6 +1,6 @@
 
 #include "Common.h"
-#include "Imaging/BasicImageFilters.h"
+#include "Imaging/ExampleImageFilters.h"
 #include "Imaging/DefaultConnection.h"
 #include "Imaging/ImageFactory.h"
 #include <iostream>

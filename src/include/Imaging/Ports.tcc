@@ -98,6 +98,22 @@ OutputPortImageFilter< Image< ElementType, dimension > >
 template< typename ElementType, unsigned dimension >
 void
 OutputPortImageFilter< Image< ElementType, dimension > >
+::SetImageSize( 
+		size_t 		minimums[ dimension ], 
+		size_t 		maximums[ dimension ], 
+		float32		elementExtents[ dimension ]
+	    )
+{
+	if( !this->IsPlugged() ) {
+		throw EDisconnected( this->GetID() );
+	}
+
+	_imageConnection->SetImageSize( minimums, maximums, elementExtents );	
+}
+
+template< typename ElementType, unsigned dimension >
+void
+OutputPortImageFilter< Image< ElementType, dimension > >
 ::Plug( ConnectionInterface & connection )
 {
 	ImageConnection< ImageType > *conn = 

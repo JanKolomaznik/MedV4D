@@ -34,7 +34,7 @@ class ImageConnectionImOwner< M4D::Imaging::Image< ElementType, dimension > >
 : public ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 {
 public:
-
+	ImageConnectionImOwner();
 	//TODO
 
 };

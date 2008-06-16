@@ -106,6 +106,18 @@ ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 
 template< typename ElementType, unsigned dimension >
 void
+ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
+::SetImageSize( 
+		size_t 		minimums[ dimension ], 
+		size_t 		maximums[ dimension ], 
+		float32		elementExtents[ dimension ]
+	    )
+{
+	//TODO
+}
+
+template< typename ElementType, unsigned dimension >
+void
 ImageConnection< Image< ElementType, dimension > >
 ::RouteMessage( 
 	PipelineMessage::Ptr 			msg, 

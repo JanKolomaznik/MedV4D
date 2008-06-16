@@ -41,6 +41,13 @@ protected:
 
 	OutputImageType&
 	GetOutputImage()const;
+
+	void
+	SetOutputImageSize( 
+			size_t 		minimums[ OutputImageType::Dimension ], 
+			size_t 		maximums[ OutputImageType::Dimension ], 
+			float32		elementExtents[ OutputImageType::Dimension ]
+		    );
 private:
 	/**
 	 * Prohibition of copying.

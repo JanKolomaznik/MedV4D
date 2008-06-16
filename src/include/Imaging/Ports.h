@@ -184,6 +184,13 @@ public:
 	GetImage()const;
 
 	void
+	SetImageSize( 
+			size_t 		minimums[ dimension ], 
+			size_t 		maximums[ dimension ], 
+			float32		elementExtents[ dimension ]
+		    );
+
+	void
 	Plug( ConnectionInterface & connection );
 
 	void

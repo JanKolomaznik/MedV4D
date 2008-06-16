@@ -148,7 +148,14 @@ public:
 		{ if( !_image ) { throw ENoImageAssociated(); }
 			return *_image;
 		}
-	
+
+	void
+	SetImageSize( 
+			size_t 		minimums[ dimension ], 
+			size_t 		maximums[ dimension ], 
+			float32		elementExtents[ dimension ]
+		    );
+
 	void
 	RouteMessage( 
 		PipelineMessage::Ptr 			msg, 
@@ -162,6 +169,9 @@ protected:
 	 * construction of object of this class.
 	 **/
 	ImageConnection() {}
+	
+	ImageConnection( typename Image::Ptr image ) 
+		: _image( image ) {}
 
 	typename Image::Ptr			_image;
 	OutputImagePort				*_input;

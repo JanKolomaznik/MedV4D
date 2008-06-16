@@ -86,6 +86,11 @@ public:
 	 **/
 	typedef ElementType				Element;
 
+	static const unsigned	Dimension = 2;
+
+
+	Image();
+
 	/**
 	 * Constructor from AbstractImageData - if not possible from some
 	 * reason, throwing exception.
@@ -130,6 +135,14 @@ public:
 	 **/
 	const ElementType &
 	GetElement( size_t x, size_t y )const;
+
+	ElementType *
+	GetPointer( 
+			size_t &width,
+			size_t &height,
+			size_t &xStride,
+			size_t &yStride
+		  );
 
 	Ptr
 	GetRestricted2DImage( 
@@ -183,6 +196,10 @@ public:
 	 **/
 	typedef ElementType			Element;
 
+	static const unsigned	Dimension = 3;
+
+	Image();
+
 	Image( AbstractImageData::APtr imageData );
 
 	Image( typename ImageDataTemplate< ElementType >::Ptr imageData );
@@ -203,6 +220,16 @@ public:
 
 	const ElementType &
 	GetElement( size_t x, size_t y, size_t z )const;
+
+	ElementType *
+	GetPointer( 
+			size_t &width,
+			size_t &height,
+			size_t &depth,
+			size_t &xStride,
+			size_t &yStride,
+			size_t &zStride
+		  );
 
 	typename Image< ElementType, 2 >::Ptr
 	GetRestricted2DImage( 
@@ -271,6 +298,10 @@ public:
 	 **/
 	typedef ElementType			Element;
 
+	static const unsigned	Dimension = 4;
+
+	Image();
+
 	Image( AbstractImageData::APtr imageData );
 
 	Image( typename ImageDataTemplate< ElementType >::Ptr imageData );
@@ -291,6 +322,18 @@ public:
 
 	const ElementType &
 	GetElement( size_t x, size_t y, size_t z, size_t t )const;
+
+	ElementType *
+	GetPointer( 
+			size_t &width,
+			size_t &height,
+			size_t &depth,
+			size_t &time,
+			size_t &xStride,
+			size_t &yStride,
+			size_t &zStride,
+			size_t &tStride
+		  );
 
 	typename Image< ElementType, 2 >::Ptr
 	GetRestricted2DImage( 

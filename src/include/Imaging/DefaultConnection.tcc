@@ -19,6 +19,15 @@ ImageConnectionSimple< M4D::Imaging::Image< ElementType, dimension > >
 	this->_image = image;
 }
 
+template< typename ElementType, unsigned dimension >
+ImageConnectionImOwner< M4D::Imaging::Image< ElementType, dimension > >
+::ImageConnectionImOwner()
+{
+	this->_image = typename M4D::Imaging::Image< ElementType, dimension >::Ptr( 
+			new M4D::Imaging::Image< ElementType, dimension >() 
+			);
+}
+
 } /*namespace Imaging*/
 } /*namespace M4D*/
 

@@ -106,7 +106,4 @@ $(OUTPUT):	$(OBJ_FILES)
 .PHONY: clean
 clean:
 		$(RM) $(OBJ_FILES) $(MOCOUTPUT) $(addprefix $(TMP_DIR)/rcc_, $(RCCINPUT:.qrc=.cpp ) ) $(DEP_FILE)
-
-.PHONY: cleanall
-cleanall:	clean
 		$(RM) $(OUTPUT)

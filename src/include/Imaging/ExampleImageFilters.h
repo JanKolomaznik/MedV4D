@@ -1,5 +1,5 @@
-#ifndef _BASIC_IMAGE_FILTERS_H
-#define _BASIC_IMAGE_FILTERS_H
+#ifndef _EXAMPLE_IMAGE_FILTERS_H
+#define _EXAMPLE_IMAGE_FILTERS_H
 
 #include "Common.h"
 
@@ -36,6 +36,8 @@ protected:
 			size_t			y2,	
 			size_t			slice
 		    );
+	void
+	PrepareOutputDatasets();
 
 private:
 	/**
@@ -44,11 +46,42 @@ private:
 	PROHIBIT_COPYING_OF_OBJECT_MACRO( CopyImageFilter );
 };
 
+template< typename InputImageType, typename OutputImageType >
+class ColumnMaxImageFilter;
+
+template< typename ElementType >
+class ColumnMaxImageFilter< Image< ElementType, 3 >, Image< ElementType, 2 > >
+: public ImageVolumeFilter< Image< ElementType, 3 >, Image< ElementType, 2 > >
+{
+public:
+	ColumnMaxImageFilter();
+	~ColumnMaxImageFilter(){}
+protected:
+	void
+	ProcessVolume(
+			const Image< ElementType, 3 > 		&in,
+			Image< ElementType, 2 >			&out,
+			size_t					x1,
+			size_t					y1,
+			size_t					z1,
+			size_t					x2,
+			size_t					y2,
+			size_t					z2
+		    );
+	void
+	PrepareOutputDatasets();
+
+private:
+	/**
+	 * Prohibition of copying.
+	 **/
+	PROHIBIT_COPYING_OF_OBJECT_MACRO( ColumnMaxImageFilter );
+};
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
 
 //include implementation
-#include "Imaging/BasicImageFilters.tcc"
+#include "Imaging/ExampleImageFilters.tcc"
 
-#endif /*_BASIC_IMAGE_FILTERS_H*/
+#endif /*_EXAMPLE_IMAGE_FILTERS_H*/

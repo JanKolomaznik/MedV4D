@@ -32,6 +32,19 @@ ImageFilter< InputImageType, OutputImageType >::GetOutputImage()const
 {
 	return _outputPorts.GetPortTyped< OutputPortType >( 0 ).GetImage();
 }
+
+template< typename InputImageType, typename OutputImageType >
+void
+ImageFilter< InputImageType, OutputImageType >
+::SetOutputImageSize( 
+		size_t 		minimums[ OutputImageType::Dimension ], 
+		size_t 		maximums[ OutputImageType::Dimension ], 
+		float32		elementExtents[ OutputImageType::Dimension ]
+	    )
+{
+	_outputPorts.GetPortTyped< OutputPortType >( 0 ).SetImageSize( minimums, maximums, elementExtents );
+}
+
 //******************************************************************************
 //******************************************************************************
 
@@ -68,8 +81,8 @@ ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 		ProcessSlice( 	in, 
 				out,
 				in.GetDimensionExtents( 0 ).minimum,
-				in.GetDimensionExtents( 0 ).maximum,
 				in.GetDimensionExtents( 1 ).minimum,
+				in.GetDimensionExtents( 0 ).maximum,
 				in.GetDimensionExtents( 1 ).maximum,
 				i 
 				);
@@ -85,6 +98,116 @@ ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 {
 	//TODO
 }
+
+//******************************************************************************
+//******************************************************************************
+
+template< typename InputElementType, typename OutputImageType >
+ImageVolumeFilter< Image< InputElementType, 3 >, OutputImageType >
+::ImageVolumeFilter()
+{
+
+}
+
+template< typename InputElementType, typename OutputImageType >
+bool
+ImageVolumeFilter< Image< InputElementType, 3 >, OutputImageType >
+::ExecutionThreadMethod()
+{
+	//TODO
+	ExecutionOnWholeThreadMethod();
+	return true;
+}
+
+template< typename InputElementType, typename OutputImageType >
+bool
+ImageVolumeFilter< Image< InputElementType, 3 >, OutputImageType >
+::ExecutionOnWholeThreadMethod()
+{
+	const Image< InputElementType, 3 > &in = this->GetInputImage();
+	OutputImageType &out = this->GetOutputImage();
+	//TODO - better implementation	
+	
+	ProcessVolume( 
+			in,
+			out,
+			in.GetDimensionExtents( 0 ).minimum,
+			in.GetDimensionExtents( 1 ).minimum,
+			in.GetDimensionExtents( 2 ).minimum,
+			in.GetDimensionExtents( 0 ).maximum,
+			in.GetDimensionExtents( 1 ).maximum,
+			in.GetDimensionExtents( 2 ).maximum
+		     );
+
+	return true;
+}
+
+template< typename InputElementType, typename OutputImageType >
+void
+ImageVolumeFilter< Image< InputElementType, 3 >, OutputImageType >
+::PrepareOutputDatasets()
+{
+	//TODO
+}
+
+//******************************************************************************
+//******************************************************************************
+
+template< typename InputElementType, typename OutputImageType >
+ImageVolumeFilter< Image< InputElementType, 4 >, OutputImageType >
+::ImageVolumeFilter()
+{
+
+}
+
+template< typename InputElementType, typename OutputImageType >
+bool
+ImageVolumeFilter< Image< InputElementType, 4 >, OutputImageType >
+::ExecutionThreadMethod()
+{
+	//TODO
+	ExecutionOnWholeThreadMethod();
+	return true;
+}
+
+template< typename InputElementType, typename OutputImageType >
+bool
+ImageVolumeFilter< Image< InputElementType, 4 >, OutputImageType >
+::ExecutionOnWholeThreadMethod()
+{
+	const Image< InputElementType, 4 > &in = this->GetInputImage();
+	OutputImageType &out = this->GetOutputImage();
+	//TODO - better implementation	
+	for( 
+		size_t i = in.GetDimensionExtents( 3 ).minimum; 
+		i <= in.GetDimensionExtents( 3 ).maximum;
+		++i
+	) {
+		ProcessVolume( 
+			in,
+			out,
+			in.GetDimensionExtents( 0 ).minimum,
+			in.GetDimensionExtents( 1 ).minimum,
+			in.GetDimensionExtents( 2 ).minimum,
+			in.GetDimensionExtents( 0 ).maximum,
+			in.GetDimensionExtents( 1 ).maximum,
+			in.GetDimensionExtents( 2 ).maximum,
+			i
+		     );
+		
+
+	}
+	return true;
+}
+
+template< typename InputElementType, typename OutputImageType >
+void
+ImageVolumeFilter< Image< InputElementType, 4 >, OutputImageType >
+::PrepareOutputDatasets()
+{
+	//TODO
+}
+
 
 } /*namespace Imaging*/
 } /*namespace M4D*/

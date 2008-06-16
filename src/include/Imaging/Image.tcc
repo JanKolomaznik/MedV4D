@@ -8,6 +8,12 @@ namespace Imaging
 {
 
 template< typename ElementType >
+Image< ElementType, 2 >::Image()
+{
+	_imageData = ImageDataTemplate< ElementType >::Ptr();
+}
+
+template< typename ElementType >
 Image< ElementType, 2 >::Image( AbstractImageData::APtr imageData )
 : AbstractImage( 2, this->_dimExtents )
 {
@@ -105,6 +111,12 @@ Image< ElementType, 2 >::GetRestricted2DImage(
 }
 
 //*****************************************************************************
+
+template< typename ElementType >
+Image< ElementType, 3 >::Image()
+{
+	_imageData = ImageDataTemplate< ElementType >::Ptr();
+}
 
 template< typename ElementType >
 Image< ElementType, 3 >::Image( AbstractImageData::APtr imageData )
@@ -230,6 +242,13 @@ Image< ElementType, 3 >::GetRestricted3DImage(
 }
 
 //*****************************************************************************
+
+
+template< typename ElementType >
+Image< ElementType, 4 >::Image()
+{
+	_imageData = ImageDataTemplate< ElementType >::Ptr();
+}
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
