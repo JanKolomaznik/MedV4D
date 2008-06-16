@@ -143,7 +143,7 @@ Server::EndPrimaryHeaderRead( tcp::socket *clientSock, ServerJob *job,
         const boost::system::error_code& error)
 {
   // parse primary job header
-  job->suppSerializer.DeSerializePrimMessHeader( &job->primHeader);
+  PrimaryJobHeader::Deserialize( &job->primHeader);
 
   ServerJob *existing;
 
@@ -201,7 +201,7 @@ Server::EndSecondaryHeaderRead( tcp::socket *clientSock, ServerJob *job,
     return;
   }
 
-  job->suppSerializer.DeSerializeSecMessHeader(&job->secHeader);
+  SecondaryJobHeader::Deserialize(&job->secHeader);
 
   // create Image, prepare data
 

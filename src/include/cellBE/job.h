@@ -29,8 +29,6 @@ protected:
   PrimaryJobHeader primHeader;
   SecondaryJobHeader secHeader;
 
-  MessHeaderSerializer suppSerializer;
-
   virtual void Serialize( NetStream &s) = 0;
   virtual void DeSerialize( NetStream &s) = 0;
 

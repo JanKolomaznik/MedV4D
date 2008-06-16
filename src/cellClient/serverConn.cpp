@@ -66,9 +66,9 @@ ServerConnection::SendJob( ClientJob *job)
   // prepare serialization of filters & settings
   job->SerializeFiltersSetting();
 
-  job->suppSerializer.SerializePrimMessHeader( &job->primHeader);
+  PrimaryJobHeader::Serialize( &job->primHeader);
 
-  job->suppSerializer.SerializeSecMessHeader( &job->secHeader);
+  SecondaryJobHeader::Serialize( &job->secHeader);
 
   // create vector of serialized information to pass to sigle send operation
   vector<boost::asio::const_buffer> buffers;
