@@ -4,7 +4,8 @@
 /**
  *  Implements C-MOVE service to DICOM server
  */
-#include "dicomConn/DICOMServiceProvider.h"
+
+using namespace M4D::Dicom;
 
 namespace M4D
 {
@@ -14,7 +15,9 @@ namespace DicomInternal {
 
 class MoveService : AbstractService
 {
-private :
+private:
+
+  friend class DcmProvider;
 
 	enum eCallType {
 		SINGLE_IMAGE,		// only single image -> retype to DicomObj
@@ -64,7 +67,6 @@ private :
 		T_DIMSE_C_StoreRSP *rsp,            /* final store response */
 		DcmDataset **statusDetail);
 
-public:
 	MoveService();
 	~MoveService();
 

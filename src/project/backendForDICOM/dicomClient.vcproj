@@ -171,6 +171,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\backendForDICOM\LocalService.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\backendForDICOM\MoveService.cpp"
 					>
 				</File>
@@ -202,6 +206,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\backendForDICOM\DICOMSupport.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\backendForDICOM\FromStreamConverter.h"
 				>
 			</File>
@@ -214,6 +222,10 @@
 				</File>
 				<File
 					RelativePath="..\..\backendForDICOM\FindService.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\backendForDICOM\LocalService.h"
 					>
 				</File>
 				<File

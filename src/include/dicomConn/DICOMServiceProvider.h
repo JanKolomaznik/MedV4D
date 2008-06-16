@@ -5,7 +5,6 @@
 #include <map>
 #include <string>
 #include <boost/shared_ptr.hpp>
-#include "Common.h"
 
 /**
  *	This class is gate to DICOM world. DICOM is a standard describing creating, storing, manipulating and many more actions taken on medical data. For more informations see (http://www.dclunie.com/dicom-status/status.html).
@@ -23,8 +22,9 @@ namespace Dicom {
 	  // pointers to particular service instances. void pointers are used
 	  // to eliminate includes of lower level library headers. They are 
 	  // casted in place of usage to rigth type.
-		void *findService;
-		void *moveService;
+		void *m_findService;
+		void *m_moveService;
+    void *m_localService;
 
 	public:
 
@@ -34,7 +34,8 @@ namespace Dicom {
     #include "dicomConn/DICOMObject.h"
 
 		// represents one row in table that shows found results
-		typedef struct s_browserRow {
+		struct TableRow 
+    {
 			std::string patientName;
 			bool patientSex;
 			std::string patientBirthDate;
@@ -42,7 +43,7 @@ namespace Dicom {
 			std::string studyID;
 			std::string studyDate;
 			std::string modality;
-		} TableRow;
+		};
 
 		typedef std::vector<TableRow> ResultSet;
 
@@ -79,6 +80,10 @@ namespace Dicom {
 			const std::string &dateFrom,
 			const std::string &dateTo) ;
 
+    void FindInFolder( 
+			DcmProvider::ResultSet &result,
+      const std::string &path);
+
 		// user select any study and wants to get seriesInstanceUIDs
 		void FindStudyInfo(
 			const std::string &patientID,
@@ -108,6 +113,12 @@ namespace Dicom {
 			const std::string &studyID,
 			const std::string &serieID,
 			DicomObjSet &result) ;
+
+    void GetLocalImageSet(
+      const std::string &patientID,
+			const std::string &studyID,
+			const std::string &serieID,
+			DicomObjSet &result);
 
 		DcmProvider();
 		~DcmProvider();

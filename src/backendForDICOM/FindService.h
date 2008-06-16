@@ -5,15 +5,18 @@
  *  Implements C-FIND service to DICOM server
  */
 #include <string>
-#include "dicomConn/DICOMServiceProvider.h"
+
+using namespace M4D::Dicom;
 
 namespace M4D
 {
-namespace DicomInternal {
+namespace DicomInternal 
+{
 
 class FindService : AbstractService
 {
-private :
+  friend class DcmProvider;
+
 	DcmDataset *queryForFilterTable;
 
 	void GetQuery( 
@@ -61,7 +64,6 @@ private :
         T_DIMSE_C_FindRSP *rsp,
         DcmDataset *responseIdentifiers );	
 
-public:
 	FindService();
 	~FindService();
 

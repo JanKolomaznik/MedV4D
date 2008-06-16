@@ -18,12 +18,12 @@
 #include <dcmtk/dcmdata/dcrleerg.h>  /* for DcmRLEEncoderRegistration */
 #endif
 
+using namespace M4D::ErrorHandling;
+
 namespace M4D
 {
-using namespace ErrorHandling;
-using namespace Dicom;
-
-namespace DicomInternal {
+namespace DicomInternal 
+{
 
 ///////////////////////////////////////////////////////////////////////
 

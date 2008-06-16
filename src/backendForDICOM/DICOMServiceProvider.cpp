@@ -1,7 +1,11 @@
+#include <queue>
+
 #include <dcmtk/config/osconfig.h>
 #include <dcmtk/dcmnet/dimse.h>
 #include <dcmtk/dcmnet/diutil.h>
 #include <dcmtk/dcmdata/dcdeftag.h>
+
+#include "boost/filesystem/path.hpp"
 
 #include "Common.h"
 
@@ -10,6 +14,7 @@
 #include "AbstractService.h"
 #include "MoveService.h"
 #include "FindService.h"
+#include "LocalService.h"
 
 namespace M4D
 {
@@ -26,14 +31,16 @@ namespace Dicom {
 
 DcmProvider::DcmProvider()
 {
-	findService = new FindService();
-	moveService = new MoveService();
+	m_findService = new FindService();
+	m_moveService = new MoveService();
+  m_localService = new LocalService();
 }
 
 DcmProvider::~DcmProvider()
 {
-	delete ( (FindService *) findService);
-	delete ( (MoveService *) moveService);
+	delete ( (FindService *) m_findService);
+	delete ( (MoveService *) m_moveService);
+  delete ( (LocalService *) m_localService);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -50,9 +57,32 @@ DcmProvider::Find(
 		const string &dateFrom,
 		const string &dateTo) 
 {
-	static_cast<FindService *>(findService)->FindForFilter( 
+	static_cast<FindService *>(m_findService)->FindForFilter( 
 		result, patientForeName, patientSureName, 
     patientID, modalities, dateFrom, dateTo);
+}
+
+///////////////////////////////////////////////////////////////////////
+
+void
+DcmProvider::FindInFolder( 
+			DcmProvider::ResultSet &result,
+      const std::string &path)
+{
+  static_cast<LocalService *>(m_localService)->Find( result, path);
+}
+
+///////////////////////////////////////////////////////////////////////
+
+void
+DcmProvider::GetLocalImageSet(
+      const std::string &patientID,
+			const std::string &studyID,
+			const std::string &serieID,
+			DicomObjSet &result)
+{
+  static_cast<LocalService *>(m_localService)->GetImageSet( 
+    patientID, studyID, serieID, result);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -63,7 +93,7 @@ DcmProvider::FindStudyInfo(
 		const string &studyID,
 		StringVector &info) 
 {
-	static_cast<FindService *>(findService)->FindStudyInfo(
+	static_cast<FindService *>(m_findService)->FindStudyInfo(
 		patientID, studyID, info);
 }
 
@@ -75,7 +105,7 @@ DcmProvider::WholeFindStudyInfo(
 		const string &studyID,
 		StudyInfo &info) 
 {
-	static_cast<FindService *>(findService)->FindWholeStudyInfo(
+	static_cast<FindService *>(m_findService)->FindWholeStudyInfo(
 		patientID, studyID, info);
 }
 
@@ -86,7 +116,7 @@ DcmProvider::FindStudiesAboutPatient(
 		const string &patientID,
 		ResultSet &result) 
 {
-	static_cast<FindService *>(findService)->FindStudiesAboutPatient( 
+	static_cast<FindService *>(m_findService)->FindStudiesAboutPatient( 
 		patientID, result);
 }
 
@@ -100,7 +130,7 @@ DcmProvider::GetImage(
 		const string &imageID,
 		DicomObj &object) 
 {
-	static_cast<MoveService *>(moveService)->MoveImage( 
+	static_cast<MoveService *>(m_moveService)->MoveImage( 
 		patientID, studyID, serieID, imageID, object);
 }
 
@@ -113,7 +143,7 @@ DcmProvider::GetImageSet(
 		const string &serieID,
 		DicomObjSet &result) 
 {
-	static_cast<MoveService *>(moveService)->MoveImageSet( 
+	static_cast<MoveService *>(m_moveService)->MoveImageSet( 
 		patientID, studyID, serieID, result);
 }
 

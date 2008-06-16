@@ -4,19 +4,20 @@
 #include <dcmtk/dcmdata/dcdeftag.h>
 
 #include "Common.h"
+#include "dicomConn/DICOMServiceProvider.h"
 
 #include "DicomAssoc.h"
-#include "dicomConn/DICOMServiceProvider.h"
 #include "AbstractService.h"
 #include "FindService.h"
+
+#include "DICOMSupport.h"
 
 using namespace M4D::ErrorHandling;
 
 namespace M4D
 {
-using namespace Dicom;
-
-namespace DicomInternal {
+namespace DicomInternal 
+{
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -353,34 +354,12 @@ FindService::TableRowCallback(
      *                              mask of the C-FIND-RQ which was sent.
      */
 {
-	OFString str;
+  DcmProvider::TableRow *row = new DcmProvider::TableRow;
 
 	//////////////////////////////////////////////////
 	// Parse the response
 	//////////////////////////////////////////////////
-	DcmProvider::TableRow *row = new DcmProvider::TableRow;
-
-	responseIdentifiers->findAndGetOFString( DCM_PatientsName, str);
-	row->patientName = str.c_str();
-
-	responseIdentifiers->findAndGetOFString( DCM_PatientID, str);
-	row->patentID = str.c_str();
-
-	responseIdentifiers->findAndGetOFString( DCM_PatientsBirthDate, str);
-	row->patientBirthDate = str.c_str();
-
-	responseIdentifiers->findAndGetOFString( DCM_PatientsSex, str);
-	row->patientSex = (str == "M");	// M = true
-
-	// study info
-	responseIdentifiers->findAndGetOFString( DCM_StudyInstanceUID, str);
-	row->studyID = str.c_str();
-
-	responseIdentifiers->findAndGetOFString( DCM_StudyDate, str);
-	row->studyDate = str.c_str();
-
-	responseIdentifiers->findAndGetOFString( DCM_Modality, str);
-	row->modality = str.c_str();
+	GetTableRowFromDataSet( responseIdentifiers, row);  
 
 	// finaly add the new row into result set. SYNCHRONIZED?
 	DcmProvider::ResultSet *rs = 

@@ -5,7 +5,7 @@
  *  Implements C-FIND service to DICOM server
  */
 
-#include "dicomConn/DICOMServiceProvider.h"
+using namespace M4D::Dicom;
 
 namespace M4D
 {
@@ -13,7 +13,7 @@ namespace DicomInternal {
 
 	class StoreService : AbstractService
 	{
-	private :
+    friend class DcmProvider;
 
 		static uint16 seriesCounter;
 		static uint16 imageCounter;
@@ -57,7 +57,6 @@ namespace DicomInternal {
 
 		void CopyNeccessaryAttribs( DcmDataset *source, DcmDataset *dest);
 
-	public:
 		StoreService();
 		~StoreService();
 		
