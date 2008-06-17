@@ -52,11 +52,47 @@ StManagerStudyListComp::StManagerStudyListComp ( m4dGUIVtkRenderWindowWidget *vt
   
   studyListTab = new QTabWidget;
 
-  localExamsTable  = createStudyTable();
-  remoteExamsTable = createStudyTable();
+  // Local Exams tab
+  QHBoxLayout *localExamsLayout = new QHBoxLayout;
+  
+  localExamsTable = createStudyTable();
+  localExamsLayout->addWidget( localExamsTable );
+  
+  QWidget *localExamsPane = new QWidget;
+  localExamsPane->setLayout( localExamsLayout );
+  studyListTab->addTab( localExamsPane, QIcon( ":/icons/local.png" ), tr( "Local Exams" ) );
 
-  studyListTab->addTab( localExamsTable, QIcon( ":/icons/local.png" ), tr( "Local Exams" ) );
-  studyListTab->addTab( remoteExamsTable, QIcon( ":/icons/remote.png" ), tr( "Remote Exams" ) );
+  // Remote Exams tab
+  QHBoxLayout *remoteExamsLayout = new QHBoxLayout;
+  
+  remoteExamsTable = createStudyTable();
+  remoteExamsLayout->addWidget( remoteExamsTable );
+  
+  QWidget *remoteExamsPane = new QWidget;
+  remoteExamsPane->setLayout( remoteExamsLayout );
+  studyListTab->addTab( remoteExamsPane, QIcon( ":/icons/remote.png" ), tr( "Remote Exams" ) );
+
+  // DICOMDIR tab
+  QHBoxLayout *DICOMDIRLayout = new QHBoxLayout;
+  
+  DICOMDIRTable = createStudyTable();
+  DICOMDIRLayout->addWidget( DICOMDIRTable );
+
+  directoryTree = new QTreeView;
+  directoryTree->setFixedWidth( 280 );
+  QDirModel *model = new QDirModel;
+  model->setFilter( QDir::Dirs | QDir::NoDotAndDotDot | QDir::Drives );
+  directoryTree->setModel( model );
+  directoryTree->setColumnWidth( 0, 150 );
+  // hide size and type in filesystem tree view
+  directoryTree->setColumnHidden( 1, true );
+  directoryTree->setColumnHidden( 2, true );
+  // directoryTree->header()->hide();
+  DICOMDIRLayout->addWidget( directoryTree );
+
+  QWidget *DICOMDIRPane = new QWidget;
+  DICOMDIRPane->setLayout( DICOMDIRLayout );
+  studyListTab->addTab( DICOMDIRPane, QIcon( ":/icons/dicomdir.png" ), tr( "DICOMDIR" ) );
 
   // =-=-=-=-=-=-=-=- Study List -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 

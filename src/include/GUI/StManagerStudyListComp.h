@@ -10,9 +10,10 @@
 #include "dicomConn/DICOMServiceProvider.h"
 
 
+class QPushButton;
 class QTabWidget;
 class QTableWidget;
-class QPushButton;
+class QTreeView;
 
 class StManagerStudyListComp: public QWidget
 {
@@ -52,6 +53,8 @@ class StManagerStudyListComp: public QWidget
     QTabWidget   *studyListTab;
     QTableWidget *localExamsTable;
     QTableWidget *remoteExamsTable;
+    QTableWidget *DICOMDIRTable;
+    QTreeView    *directoryTree;
 
     /// The provider object.
     M4D::Dicom::DcmProvider *dcmProvider;
