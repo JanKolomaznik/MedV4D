@@ -60,6 +60,14 @@ public:
 			size_t		height
 			);
 
+	template< typename ElementType >
+	static void
+	ReallocateImage2DData(
+			Image< ElementType, 2 >	&image,
+			size_t			width, 
+			size_t			height
+			);
+
 	/**
 	 * Method for custom empty 3D image creation.
 	 * @param ElementType Type of elements which will be contained 
@@ -93,6 +101,15 @@ public:
 			size_t		width, 
 			size_t		height, 
 			size_t		depth
+			);
+
+	template< typename ElementType >
+	static void
+	ReallocateImage3DData(
+			Image< ElementType, 3 >	&image,
+			size_t			width, 
+			size_t			height,
+			size_t			depth
 			);
 
 	/**

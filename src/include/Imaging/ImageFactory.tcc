@@ -66,6 +66,21 @@ ImageFactory::CreateEmptyImage2DTyped(
 }
 
 template< typename ElementType >
+void
+ImageFactory::ReallocateImage2DData(
+		Image< ElementType, 2 >	&image,
+		size_t			width, 
+		size_t			height
+		)
+{
+	//TODO exceptions
+	typename ImageDataTemplate< ElementType >::Ptr ptr = 
+		ImageFactory::CreateEmptyImageData2DTyped< ElementType >( width, height );
+
+	image.ReallocateData( ptr );
+}
+
+template< typename ElementType >
 AbstractImage::AImagePtr 
 ImageFactory::CreateEmptyImage3D( 
 			size_t		width, 
@@ -98,6 +113,22 @@ ImageFactory::CreateEmptyImage3DTyped(
 	Image< ElementType, 3 > *img = new Image< ElementType, 3 >( ptr );
 
 	return typename Image< ElementType, 3 >::Ptr( img );
+}
+
+template< typename ElementType >
+void
+ImageFactory::ReallocateImage3DData(
+		Image< ElementType, 3 >	&image,
+		size_t			width, 
+		size_t			height,
+		size_t			depth
+		)
+{
+	//TODO exceptions
+	typename ImageDataTemplate< ElementType >::Ptr ptr = 
+		ImageFactory::CreateEmptyImageData3DTyped< ElementType >( width, height, depth );
+
+	image.ReallocateData( ptr );
 }
 
 //**********************************************************************

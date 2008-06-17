@@ -66,6 +66,7 @@ template< typename ElementType >
 class Image< ElementType, 2 >: public AbstractImage
 {
 public:
+	friend class ImageFactory;
 	/**
 	 * Type of "this" class.
 	 **/
@@ -162,10 +163,13 @@ public:
 protected:
 	typename ImageDataTemplate< ElementType >::Ptr	_imageData;
 
-	DimensionExtents	_dimExtents[2];
+	DimensionExtents	_dimExtents[Dimension];
 private:
 	void
 	FillDimensionInfo();
+
+	void
+	ReallocateData( typename ImageDataTemplate< ElementType >::Ptr imageData );
 
 };
 
@@ -176,6 +180,7 @@ template< typename ElementType >
 class Image< ElementType, 3 >: public AbstractImage
 {
 public:
+	friend class ImageFactory;
 	/**
 	 * Type of "this" class.
 	 **/
@@ -264,11 +269,13 @@ public:
 protected:
 	typename ImageDataTemplate< ElementType >::Ptr	_imageData;
 
-	DimensionExtents	_dimExtents[3];
+	DimensionExtents	_dimExtents[Dimension];
 private:
 	void
 	FillDimensionInfo();
 
+	void
+	ReallocateData( typename ImageDataTemplate< ElementType >::Ptr imageData );
 };
 
 /**
@@ -278,6 +285,7 @@ template< typename ElementType >
 class Image< ElementType, 4 >: public AbstractImage
 {
 public:
+	friend class ImageFactory;
 	/**
 	 * Type of "this" class.
 	 **/
@@ -384,11 +392,13 @@ public:
 protected:
 	typename ImageDataTemplate< ElementType >::Ptr	_imageData;
 
-	DimensionExtents	_dimExtents[4];
+	DimensionExtents	_dimExtents[Dimension];
 private:
 	void
 	FillDimensionInfo();
 
+	void
+	ReallocateData( typename ImageDataTemplate< ElementType >::Ptr imageData );
 };
 
 

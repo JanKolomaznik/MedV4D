@@ -7,6 +7,32 @@ namespace M4D
 namespace Imaging
 {
 
+template< typename ElementType >
+void 
+CallImageFactoryRealloc( 
+			Image< ElementType, 2 > &image,  
+			size_t 		minimums[ 2 ], 
+			size_t 		maximums[ 2 ], 
+			float32		elementExtents[ 2 ]
+	    )
+{
+	ImageFactory::ReallocateImage2DData< ElementType >( image, maximums[0]-minimums[0], maximums[1]-minimums[1] );
+}
+
+template< typename ElementType >
+void 
+CallImageFactoryRealloc( 
+			Image< ElementType, 3 > &image,  
+			size_t 		minimums[ 3 ], 
+			size_t 		maximums[ 3 ], 
+			float32		elementExtents[ 3 ]
+	    )
+{
+	ImageFactory::ReallocateImage3DData< ElementType >( image, maximums[0]-minimums[0], maximums[1]-minimums[1], maximums[2]-minimums[2] );
+}
+
+//*****************************************************************************
+
 template< typename ElementType, unsigned dimension >
 void
 ImageConnection< Image< ElementType, dimension > >
@@ -113,7 +139,11 @@ ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 		float32		elementExtents[ dimension ]
 	    )
 {
+	if( !_image ) {
+		//TODO throw exception
+	}
 	//TODO
+	CallImageFactoryRealloc( *_image, minimums, maximums );
 }
 
 template< typename ElementType, unsigned dimension >

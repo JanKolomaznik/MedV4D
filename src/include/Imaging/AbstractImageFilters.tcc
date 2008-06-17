@@ -37,9 +37,9 @@ template< typename InputImageType, typename OutputImageType >
 void
 ImageFilter< InputImageType, OutputImageType >
 ::SetOutputImageSize( 
-		size_t 		minimums[ OutputImageType::Dimension ], 
-		size_t 		maximums[ OutputImageType::Dimension ], 
-		float32		elementExtents[ OutputImageType::Dimension ]
+		size_t 		minimums[ ], 
+		size_t 		maximums[ ], 
+		float32		elementExtents[ ]
 	    )
 {
 	_outputPorts.GetPortTyped< OutputPortType >( 0 ).SetImageSize( minimums, maximums, elementExtents );

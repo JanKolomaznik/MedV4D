@@ -44,9 +44,9 @@ protected:
 
 	void
 	SetOutputImageSize( 
-			size_t 		minimums[ OutputImageType::Dimension ], 
-			size_t 		maximums[ OutputImageType::Dimension ], 
-			float32		elementExtents[ OutputImageType::Dimension ]
+			size_t 		minimums[], 
+			size_t 		maximums[], 
+			float32		elementExtents[]
 		    );
 private:
 	/**
