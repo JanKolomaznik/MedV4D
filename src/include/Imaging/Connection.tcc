@@ -143,7 +143,7 @@ ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 		//TODO throw exception
 	}
 	//TODO
-	CallImageFactoryRealloc( *_image, minimums, maximums );
+	CallImageFactoryRealloc( *_image, minimums, maximums, elementExtents );
 }
 
 template< typename ElementType, unsigned dimension >
