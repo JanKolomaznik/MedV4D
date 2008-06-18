@@ -36,12 +36,12 @@ CallImageFactoryRealloc(
 template< typename ElementType, unsigned dimension >
 void
 ImageConnection< Image< ElementType, dimension > >
-::ConnectIn( OutputPort& outputPort )
+::ConnectProducer( OutputPort& outputPort )
 {
 	OutputImagePort *port = 
 		dynamic_cast< OutputImagePort * >( &outputPort );
 	if( port ) {
-		ConnectInTyped( *port );
+		ConnectProducerTyped( *port );
 	} else {
 		throw ConnectionInterface::EMismatchPortType();
 	}
@@ -50,7 +50,7 @@ ImageConnection< Image< ElementType, dimension > >
 template< typename ElementType, unsigned dimension >
 void
 ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
-::ConnectInTyped( typename ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
+::ConnectProducerTyped( typename ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 			::OutputImagePort &outputPort 
 	)
 {
@@ -69,11 +69,11 @@ ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 template< typename ElementType, unsigned dimension >
 void
 ImageConnection< Image< ElementType, dimension > >
-::ConnectOut( InputPort& inputPort )
+::ConnectConsumer( InputPort& inputPort )
 {
 	InputImagePort *port = dynamic_cast< InputImagePort * >( &inputPort );
 	if( port ) {
-		ConnectOutTyped( *port );
+		ConnectConsumerTyped( *port );
 	} else {
 		throw ConnectionInterface::EMismatchPortType();
 	}
@@ -95,7 +95,7 @@ ImageConnection< Image< ElementType, dimension > >
 template< typename ElementType, unsigned dimension >
 void
 ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
-::ConnectOutTyped( typename ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
+::ConnectConsumerTyped( typename ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 		::InputImagePort& inputPort 
 	)
 {

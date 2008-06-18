@@ -174,6 +174,12 @@ MainExecutionThread::operator()()
 
 }
 //******************************************************************************
+AbstractPipeFilter::AbstractPipeFilter()
+	: _inputPorts( this ), _outputPorts( this )
+{
+
+}
+
 void
 AbstractPipeFilter::Execute()
 {

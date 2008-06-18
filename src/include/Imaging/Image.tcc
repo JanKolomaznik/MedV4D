@@ -9,13 +9,19 @@ namespace Imaging
 
 template< typename ElementType >
 Image< ElementType, 2 >::Image()
+: AbstractImage( Dimension, this->_dimExtents )
 {
-	_imageData = ImageDataTemplate< ElementType >::Ptr();
+	for( unsigned i = 0; i < Dimension; ++i ) {
+		_dimExtents[i].minimum = 0;
+		_dimExtents[i].maximum = 0;
+		_dimExtents[i].elementExtent = 1.0f;
+	}
+	_imageData = typename ImageDataTemplate< ElementType >::Ptr();
 }
 
 template< typename ElementType >
 Image< ElementType, 2 >::Image( AbstractImageData::APtr imageData )
-: AbstractImage( 2, this->_dimExtents )
+: AbstractImage( Dimension, this->_dimExtents )
 {
 	try 
 	{
@@ -33,7 +39,7 @@ Image< ElementType, 2 >::Image( AbstractImageData::APtr imageData )
 
 template< typename ElementType >
 Image< ElementType, 2 >::Image( typename ImageDataTemplate< ElementType >::Ptr imageData )
-: AbstractImage( 2, this->_dimExtents )
+: AbstractImage( Dimension, this->_dimExtents )
 {
 	_imageData = imageData;
 	
@@ -51,7 +57,7 @@ Image< ElementType, 2 >::FillDimensionInfo()
 		
 	for( unsigned i = 0; i < Dimension; ++i ) {
 		_dimExtents[i].minimum = 0;
-		_dimExtents[i].maximum = _imageData->GetDimensionInfo( i ).size - 1;
+		_dimExtents[i].maximum = _imageData->GetDimensionInfo( i ).size;
 		_dimExtents[i].elementExtent = _imageData->GetDimensionInfo( i ).elementExtent;
 	}
 }
@@ -80,12 +86,12 @@ ElementType &
 Image< ElementType, 2 >::GetElement( size_t x, size_t y )
 {
 	if( 	x < GetDimensionExtents( 0 ).minimum || 
-		x > GetDimensionExtents( 0 ).maximum 	) 
+		x >= GetDimensionExtents( 0 ).maximum 	) 
 	{
 		//TODO throw exception
 	}
 	if( 	y < GetDimensionExtents( 1 ).minimum || 
-		y > GetDimensionExtents( 1 ).maximum 	) 
+		y >= GetDimensionExtents( 1 ).maximum 	) 
 	{
 		//TODO throw exception
 	}
@@ -98,12 +104,12 @@ const ElementType &
 Image< ElementType, 2 >::GetElement( size_t x, size_t y )const
 {
 	if( 	x < GetDimensionExtents( 0 ).minimum || 
-		x > GetDimensionExtents( 0 ).maximum 	) 
+		x >= GetDimensionExtents( 0 ).maximum 	) 
 	{
 		//TODO throw exception
 	}
 	if( 	y < GetDimensionExtents( 1 ).minimum || 
-		y > GetDimensionExtents( 1 ).maximum 	) 
+		y >= GetDimensionExtents( 1 ).maximum 	) 
 	{
 		//TODO throw exception
 	}
@@ -127,8 +133,14 @@ Image< ElementType, 2 >::GetRestricted2DImage(
 
 template< typename ElementType >
 Image< ElementType, 3 >::Image()
+: AbstractImage( Dimension, this->_dimExtents )
 {
-	_imageData = ImageDataTemplate< ElementType >::Ptr();
+	for( unsigned i = 0; i < Dimension; ++i ) {
+		_dimExtents[i].minimum = 0;
+		_dimExtents[i].maximum = 0;
+		_dimExtents[i].elementExtent = 1.0f;
+	}
+	_imageData = typename ImageDataTemplate< ElementType >::Ptr();
 }
 
 template< typename ElementType >
@@ -169,7 +181,7 @@ Image< ElementType, 3 >::FillDimensionInfo()
 		
 	for( unsigned i = 0; i < Dimension; ++i ) {
 		_dimExtents[i].minimum = 0;
-		_dimExtents[i].maximum = _imageData->GetDimensionInfo( i ).size - 1;
+		_dimExtents[i].maximum = _imageData->GetDimensionInfo( i ).size;
 		_dimExtents[i].elementExtent = _imageData->GetDimensionInfo( i ).elementExtent;
 	}
 }
@@ -198,17 +210,17 @@ ElementType &
 Image< ElementType, 3 >::GetElement( size_t x, size_t y, size_t z )
 {
 	if( 	x < GetDimensionExtents( 0 ).minimum || 
-		x > GetDimensionExtents( 0 ).maximum 	) 
+		x >= GetDimensionExtents( 0 ).maximum 	) 
 	{
 		//TODO throw exception
 	}
 	if( 	y < GetDimensionExtents( 1 ).minimum || 
-		y > GetDimensionExtents( 1 ).maximum 	) 
+		y >= GetDimensionExtents( 1 ).maximum 	) 
 	{
 		//TODO throw exception
 	}
 	if( 	z < GetDimensionExtents( 2 ).minimum || 
-		z > GetDimensionExtents( 2 ).maximum 	) 
+		z >= GetDimensionExtents( 2 ).maximum 	) 
 	{
 		//TODO throw exception
 	}
@@ -221,17 +233,17 @@ const ElementType &
 Image< ElementType, 3 >::GetElement( size_t x, size_t y, size_t z )const
 {
 	if( 	x < GetDimensionExtents( 0 ).minimum || 
-		x > GetDimensionExtents( 0 ).maximum 	) 
+		x >= GetDimensionExtents( 0 ).maximum 	) 
 	{
 		//TODO throw exception
 	}
 	if( 	y < GetDimensionExtents( 1 ).minimum || 
-		y > GetDimensionExtents( 1 ).maximum 	) 
+		y >= GetDimensionExtents( 1 ).maximum 	) 
 	{
 		//TODO throw exception
 	}
 	if( 	z < GetDimensionExtents( 2 ).minimum || 
-		z > GetDimensionExtents( 2 ).maximum 	) 
+		z >= GetDimensionExtents( 2 ).maximum 	) 
 	{
 		//TODO throw exception
 	}

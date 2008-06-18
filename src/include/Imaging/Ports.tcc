@@ -69,17 +69,6 @@ InputPortImageFilter< Image< ElementType, dimension > >
 	//TODO
 }
 
-template< typename ElementType, unsigned dimension >
-void
-InputPortImageFilter< Image< ElementType, dimension > >
-::ReceiveMessage( 
-		PipelineMessage::Ptr 			msg, 
-		PipelineMessage::MessageSendStyle 	sendStyle, 
-		FlowDirection				direction
-		)
-{
-	//TODO
-}
 
 //******************************************************************************
 
@@ -154,18 +143,6 @@ OutputPortImageFilter< Image< ElementType, dimension > >
 		msg->_senderID = this->GetID();
 		_imageConnection->RouteMessage( msg, sendStyle, FD_IN_FLOW );
 	}
-	//TODO
-}
-
-template< typename ElementType, unsigned dimension >
-void
-OutputPortImageFilter< Image< ElementType, dimension > >
-::ReceiveMessage( 
-		PipelineMessage::Ptr 			msg, 
-		PipelineMessage::MessageSendStyle 	sendStyle, 
-		FlowDirection				direction
-		)
-{
 	//TODO
 }
 

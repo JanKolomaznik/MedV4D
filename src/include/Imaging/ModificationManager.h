@@ -16,9 +16,16 @@ enum ModificationState{
 	MS_CANCELED
 };
 
+class ModificationManager;
+
 class ModificationBBox
 {
 public:
+	ModificationBBox( ModificationManager* manager )
+		: _manager( manager ) { }
+
+	virtual
+	~ModificationBBox() {}
 
 	bool
 	IsDirty()const;
@@ -42,23 +49,48 @@ public:
 	WaitUntilModified();
 protected:
 	ModificationState	_state;
+
+	ModificationManager	*_manager;
 };
 
-class ModificationBBox2D: public ModificationBBox
+class ModBBox2D: public ModificationBBox
 {
+public:
+	ModBBox2D( ModificationManager* manager ) 
+		: ModificationBBox( manager ) { }
 
 };
 
-class ModificationBBox3D: public ModificationBBox2D
+class ModBBox3D: public ModBBox2D
 {
+public:
+	ModBBox3D( ModificationManager* manager ) 
+		: ModBBox2D( manager ) { }
 
 };
 
-class ModificationBBox4D: public ModificationBBox3D
+class ModBBox4D: public ModBBox3D
 {
+public:
+	ModBBox4D( ModificationManager* manager ) 
+		: ModBBox3D( manager ) { }
 
 };
 
+class ModBBoxWholeDataset: public ModificationBBox
+{
+public:
+	ModBBoxWholeDataset( ModificationManager* manager ) 
+		: ModificationBBox( manager ) { }
+	void
+	ReadLock();
+
+	void
+	ReadUnlock();
+
+	/*void
+	ReadTryLock();*/
+};
 
 class ModificationManager
 {
@@ -67,12 +99,17 @@ public:
 	
 	~ModificationManager(){}
 
+	ModBBoxWholeDataset&
+	GetWholeDatasetBBox();
+
 	void
 	Reset();
 private:
 	Common::TimeStamp	_actualTimestamp;
 
 	Common::TimeStamp	_lastStoredTimestamp;
+
+
 };
 
 

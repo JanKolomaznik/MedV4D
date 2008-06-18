@@ -73,7 +73,7 @@ m4dImageDataSource::SetImageData( Imaging::AbstractImage::AImagePtr imageData )
 				D_PRINT( "-------- Size in dimension " << dim << " = " << dimExtents.maximum - dimExtents.minimum );
 			
 			_wholeExtent[2*dim]	= dimExtents.minimum;  
-			_wholeExtent[2*dim + 1] = dimExtents.maximum; 
+			_wholeExtent[2*dim + 1] = dimExtents.maximum-1; 
 			
 			_spacing[dim] = dimExtents.elementExtent;
 		}

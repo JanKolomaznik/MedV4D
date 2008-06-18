@@ -185,7 +185,7 @@ public:
 	/**
 	 * Default constructor.
 	 **/
-	AbstractPipeFilter(){}
+	AbstractPipeFilter();
 
 	/**
 	 * Destructor - virtual - can be polymorphically destroyed.

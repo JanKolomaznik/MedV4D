@@ -27,8 +27,8 @@ CopyImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 			size_t			slice
 		    )
 {
-	for( size_t i = x1; i <= x2; ++i ) {
-		for( size_t j = y1; j <= y2; ++j ) {
+	for( size_t i = x1; i < x2; ++i ) {
+		for( size_t j = y1; j < y2; ++j ) {
 			out.GetElement( i, j, slice ) = in.GetElement( i, j, slice );
 		}
 	}
@@ -59,7 +59,7 @@ CopyImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 //*****************************************************************************
 
 template< typename ElementType >
-ColumnMaxImageFilter< Image< ElementType, 3 >, Image< ElementType, 2 > >
+ColumnMaxImageFilter< ElementType >
 ::ColumnMaxImageFilter()
 {
 
@@ -67,7 +67,7 @@ ColumnMaxImageFilter< Image< ElementType, 3 >, Image< ElementType, 2 > >
 
 template< typename ElementType >
 void
-ColumnMaxImageFilter< Image< ElementType, 3 >, Image< ElementType, 2 > >
+ColumnMaxImageFilter< ElementType >
 ::ProcessVolume(
 			const Image< ElementType, 3 > 		&in,
 			Image< ElementType, 2 >			&out,
@@ -79,10 +79,10 @@ ColumnMaxImageFilter< Image< ElementType, 3 >, Image< ElementType, 2 > >
 			size_t					z2
 		    )
 {
-	for( size_t i = x1; i <= x2; ++i ) {
-		for( size_t j = y1; j <= y2; ++j ) {
+	for( size_t i = x1; i < x2; ++i ) {
+		for( size_t j = y1; j < y2; ++j ) {
 			ElementType max = in.GetElement( i, j, z1 );
-			for( size_t k = z1+1; k <= z2; ++k ) {
+			for( size_t k = z1+1; k < z2; ++k ) {
 				if( in.GetElement( i, j, k ) > max ) {
 					max = in.GetElement( i, j, k );
 				}
@@ -94,7 +94,7 @@ ColumnMaxImageFilter< Image< ElementType, 3 >, Image< ElementType, 2 > >
 
 template< typename ElementType >
 void
-ColumnMaxImageFilter< Image< ElementType, 3 >, Image< ElementType, 2 > >
+ColumnMaxImageFilter< ElementType >
 ::PrepareOutputDatasets()
 {
 	//TODO - improve

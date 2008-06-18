@@ -11,12 +11,13 @@ MKDIR=mkdir
 NAME=		backendForDICOM
 #Names of target sources
 TARGETS=	AbstractService \
-		DicomObj \
-		FindService \
 		DicomAssoc \
+		DicomObj \
 		DICOMServiceProvider \
+		FindService \
+		LocalService \
 		MoveService \
-		StoreService
+		StoreService 
 ########################################
 
 #Name of target

@@ -75,7 +75,7 @@ ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 	//TODO - better implementation	
 	for( 
 		size_t i = in.GetDimensionExtents( 2 ).minimum; 
-		i <= in.GetDimensionExtents( 2 ).maximum;
+		i < in.GetDimensionExtents( 2 ).maximum;
 		++i
 	) {
 		ProcessSlice( 	in, 
@@ -180,7 +180,7 @@ ImageVolumeFilter< Image< InputElementType, 4 >, OutputImageType >
 	//TODO - better implementation	
 	for( 
 		size_t i = in.GetDimensionExtents( 3 ).minimum; 
-		i <= in.GetDimensionExtents( 3 ).maximum;
+		i < in.GetDimensionExtents( 3 ).maximum;
 		++i
 	) {
 		ProcessVolume( 

@@ -25,6 +25,10 @@ class CopyImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3
 public:
 	CopyImageFilter();
 	~CopyImageFilter(){}
+
+	void
+	PrepareOutputDatasets();
+
 protected:
 	void
 	ProcessSlice(
@@ -36,9 +40,6 @@ protected:
 			size_t			y2,	
 			size_t			slice
 		    );
-	void
-	PrepareOutputDatasets();
-
 private:
 	/**
 	 * Prohibition of copying.
@@ -46,16 +47,17 @@ private:
 	PROHIBIT_COPYING_OF_OBJECT_MACRO( CopyImageFilter );
 };
 
-template< typename InputImageType, typename OutputImageType >
-class ColumnMaxImageFilter;
-
 template< typename ElementType >
-class ColumnMaxImageFilter< Image< ElementType, 3 >, Image< ElementType, 2 > >
+class ColumnMaxImageFilter
 : public ImageVolumeFilter< Image< ElementType, 3 >, Image< ElementType, 2 > >
 {
 public:
 	ColumnMaxImageFilter();
 	~ColumnMaxImageFilter(){}
+
+	void
+	PrepareOutputDatasets();
+
 protected:
 	void
 	ProcessVolume(
@@ -68,9 +70,6 @@ protected:
 			size_t					y2,
 			size_t					z2
 		    );
-	void
-	PrepareOutputDatasets();
-
 private:
 	/**
 	 * Prohibition of copying.

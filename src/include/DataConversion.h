@@ -119,11 +119,11 @@ FillVTKImageDataFromImageData(
 	//TODO delete
 	//std::ofstream pomFile( "dump.txt" );
 	//size_t i = 0;
-	for(int idxZ = extent[4]; idxZ <= extent[5]; ++idxZ)
+	for(int idxZ = extent[4]; idxZ < extent[5]; ++idxZ)
 	{
-		for(int idxY = extent[2]; idxY <= extent[3]; ++idxY)
+		for(int idxY = extent[2]; idxY < extent[3]; ++idxY)
 		{
-			for(int idxX = extent[0]; idxX <= extent[1]; ++idxX)
+			for(int idxX = extent[0]; idxX < extent[1]; ++idxX)
 			{
 				//TODO delete
 				//if( ++i < 2000 ) 

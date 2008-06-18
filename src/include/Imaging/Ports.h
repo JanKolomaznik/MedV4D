@@ -61,6 +61,21 @@ public:
 	uint64
 	GetID()const
 		{ return _id; }	
+
+	MessageReceiverInterface *
+	GetReceiver()
+		{ return _msgReceiver; }
+
+	void
+	SetReceiver( MessageReceiverInterface	*msgReceiver )
+		{ _msgReceiver = msgReceiver; }
+
+	void
+	ReceiveMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle, 
+		FlowDirection				direction
+		);
 protected:
 	/**
 	 * Method for unique port ID generation - thread safe.
@@ -72,6 +87,7 @@ private:
 
 	uint64	_id;
 
+	MessageReceiverInterface	*_msgReceiver;	
 };
 class Port::EMismatchConnectionType
 {
@@ -156,12 +172,6 @@ public:
 		PipelineMessage::MessageSendStyle 	sendStyle 
 		);
 
-	void
-	ReceiveMessage( 
-		PipelineMessage::Ptr 			msg, 
-		PipelineMessage::MessageSendStyle 	sendStyle, 
-		FlowDirection				direction
-		);
 
 protected:
 	
@@ -209,13 +219,6 @@ public:
 		PipelineMessage::MessageSendStyle 	sendStyle 
 		);
 
-	void
-	ReceiveMessage( 
-		PipelineMessage::Ptr 			msg, 
-		PipelineMessage::MessageSendStyle 	sendStyle, 
-		FlowDirection				direction
-		);
-
 protected:
 
 	ImageConnection< ImageType >	*_imageConnection;
@@ -247,7 +250,9 @@ private:
 class InputPortList: public PortList
 {
 public:
-	InputPortList() {}
+	InputPortList( MessageReceiverInterface *msgReceiver ) 
+		: _msgReceiver( msgReceiver )
+       		{ /*TODO check pointer*/ }
 
 	~InputPortList();
 
@@ -276,12 +281,16 @@ private:
 
 
 	std::vector< InputPort* >	_ports;
+
+	MessageReceiverInterface	*_msgReceiver;	
 };
 
 class OutputPortList: public PortList
 {
 public:
-	OutputPortList() {}
+	OutputPortList( MessageReceiverInterface *msgReceiver ) 
+		: _msgReceiver( msgReceiver )
+       		{ /*TODO check pointer*/ }
 
 	~OutputPortList();
 
@@ -310,6 +319,8 @@ private:
 
 
 	std::vector< OutputPort* >	_ports;
+
+	MessageReceiverInterface	*_msgReceiver;	
 };
 
 

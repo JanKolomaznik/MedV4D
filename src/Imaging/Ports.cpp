@@ -22,6 +22,19 @@ Port::GenerateUniqueID()
 }
 //******************************************************************************
 	
+void
+Port::ReceiveMessage( 
+	PipelineMessage::Ptr 			msg, 
+	PipelineMessage::MessageSendStyle 	sendStyle, 
+	FlowDirection				direction
+	)
+{
+	//TODO handle special situations - messages for port, etc.
+	if( _msgReceiver ) {
+		_msgReceiver->ReceiveMessage( msg, sendStyle, direction );
+	}
+}
+//******************************************************************************
 
 InputPortList::~InputPortList()
 {
@@ -40,6 +53,7 @@ InputPortList::AddPort( InputPort* port )
 		return static_cast< size_t >( -1 );
 	}
 	_ports.push_back( port );
+	port->SetReceiver( _msgReceiver );
 	return _size++;
 }
 
@@ -68,6 +82,7 @@ OutputPortList::AddPort( OutputPort* port )
 		return static_cast< size_t >( -1 );
 	}
 	_ports.push_back( port );
+	port->SetReceiver( _msgReceiver );
 	return _size++;
 }
 

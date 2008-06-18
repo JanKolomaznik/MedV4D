@@ -153,7 +153,7 @@ public:
 			size_t y2 
 			);
 
-	ModificationBBox2D &
+	ModBBox2D &
 	SetDirtyBBox( 
 			size_t x1, 
 			size_t y1, 
@@ -256,7 +256,7 @@ public:
 			size_t z2 
 			);
 
-	ModificationBBox3D &
+	ModBBox3D &
 	SetDirtyBBox( 
 			size_t x1, 
 			size_t y1, 
@@ -378,7 +378,7 @@ public:
 			size_t t2
 			);
 
-	ModificationBBox3D &
+	ModBBox4D &
 	SetDirtyBBox( 
 			size_t x1, 
 			size_t y1, 

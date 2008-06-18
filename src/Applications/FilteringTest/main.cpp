@@ -10,26 +10,32 @@ using namespace M4D::Imaging;
 using namespace std;
 
 
-typedef Image< int16, 3 > ImageType;
-typedef ImageConnectionSimple< ImageType > Conn;
-typedef ImageConnectionSimple< ImageType > Conn;
+typedef Image< int16, 3 > Image3DType;
+typedef Image< int16, 2 > Image2DType;
+typedef ImageConnectionSimple< Image3DType > ProducerConn;
+typedef ImageConnectionSimple< Image2DType > ConsumerConn;
+typedef ImageConnectionImOwner< Image3DType > InterConn;
 
 int
 main( int argc, char** argv )
 {
 	LOG( "** STARTING FILTERING TESTS **" );
-	CopyImageFilter< ImageType, ImageType > filter;
-	Conn	oconn;
-	Conn iconn;
+	CopyImageFilter< Image3DType, Image3DType > copyfilter;
+	ColumnMaxImageFilter< int16 > maxfilter;
+	ProducerConn prodconn;
+	ConsumerConn consconn;
+	InterConn interconn;
 
-	ImageType::Ptr inputImage = ImageFactory::CreateEmptyImage3DTyped< int16 >( 50,50,50 );
-	ImageType::Ptr outputImage = ImageFactory::CreateEmptyImage3DTyped< int16 >( 50,50,50 );
+	Image3DType::Ptr inputImage = ImageFactory::CreateEmptyImage3DTyped< int16 >( 50,50,50 );
+	Image2DType::Ptr outputImage = ImageFactory::CreateEmptyImage2DTyped< int16 >( 10,10 );
 
-	oconn.ConnectOut( filter.InputPort()[0] );
-	iconn.ConnectIn( filter.OutputPort()[0] );
+	prodconn.ConnectConsumer( copyfilter.InputPort()[0] );
+	interconn.ConnectProducer( copyfilter.OutputPort()[0] );
+	interconn.ConnectConsumer( maxfilter.InputPort()[0] );
+	consconn.ConnectProducer( maxfilter.OutputPort()[0] );
 
-	oconn.PutImage( inputImage );
-	iconn.PutImage( outputImage );
+	prodconn.PutImage( inputImage );
+	consconn.PutImage( outputImage );
 	
 
 	char option = '\0';
@@ -38,12 +44,12 @@ main( int argc, char** argv )
 		switch( option ) {
 		case 'e':
 		case 'E':
-			filter.Execute();
+			copyfilter.Execute();
 			break;
 		case 's':
 		case 'S':
 			LOG( "STOP CALLED" );
-			filter.StopExecution();
+			copyfilter.StopExecution();
 			break;
 
 		default:

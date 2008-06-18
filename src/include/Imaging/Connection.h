@@ -39,7 +39,7 @@ public:
 	 * @param inputPort Abstract reference to input port of some filter.
 	 **/
 	virtual void
-	ConnectOut( InputPort& inputPort )=0;
+	ConnectConsumer( InputPort& inputPort )=0;
 
 	/**
 	 * Disconnect chosen filter if possible.
@@ -54,7 +54,7 @@ public:
 	 * @param outputPort Abstract reference to input port of some filter.
 	 **/
 	virtual void
-	ConnectIn( OutputPort& outputPort )=0;
+	ConnectProducer( OutputPort& outputPort )=0;
 
 	/**
 	 * Disconnect input port. !!!Output port of some filter!!!
@@ -115,16 +115,16 @@ public:
 
 	
 	void
-	ConnectOut( InputPort& inputPort );
+	ConnectConsumer( InputPort& inputPort );
 
 	virtual void
-	ConnectOutTyped( InputImagePort& inputPort ); 
+	ConnectConsumerTyped( InputImagePort& inputPort ); 
 
 	void
-	ConnectIn( OutputPort& outputPort );
+	ConnectProducer( OutputPort& outputPort );
 
 	virtual void
-	ConnectInTyped( OutputImagePort& outputPort ); 
+	ConnectProducerTyped( OutputImagePort& outputPort ); 
 	
 	void
 	DisconnectOut( InputPort& inputPort );

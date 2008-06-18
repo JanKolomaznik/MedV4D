@@ -69,6 +69,9 @@ public:
 
 	ImageSliceFilter();
 	~ImageSliceFilter() {}
+
+	void
+	PrepareOutputDatasets();
 protected:
 	/**
 	 * This method should be overridden in successor. It is supposed to
@@ -98,8 +101,6 @@ protected:
 	bool
 	ExecutionOnWholeThreadMethod();
 	
-	void
-	PrepareOutputDatasets();
 
 private:
 	/**
@@ -123,6 +124,9 @@ public:
 
 	ImageVolumeFilter();
 	~ImageVolumeFilter() {}
+	
+	void
+	PrepareOutputDatasets();
 protected:
 	virtual void
 	ProcessVolume(
@@ -141,9 +145,6 @@ protected:
 
 	bool
 	ExecutionOnWholeThreadMethod();
-	
-	void
-	PrepareOutputDatasets();
 
 private:
 	/**
@@ -160,6 +161,10 @@ public:
 
 	ImageVolumeFilter();
 	~ImageVolumeFilter() {}
+
+	void
+	PrepareOutputDatasets();
+
 protected:
 	virtual void
 	ProcessVolume(
@@ -180,9 +185,6 @@ protected:
 	bool
 	ExecutionOnWholeThreadMethod();
 	
-	void
-	PrepareOutputDatasets();
-
 private:
 	/**
 	 * Prohibition of copying.
