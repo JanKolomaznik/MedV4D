@@ -156,6 +156,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\ModificationManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\Ports.cpp"
 				>
 			</File>
