@@ -15,7 +15,7 @@ namespace DicomInternal
 
 class FindService : AbstractService
 {
-  friend class DcmProvider;
+  friend class M4D::Dicom::DcmProvider;
 
 	DcmDataset *queryForFilterTable;
 

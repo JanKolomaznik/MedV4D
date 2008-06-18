@@ -32,13 +32,13 @@ public:
     bool dataSigned,
     uint16 *stream
     )
-    : m_bitsAllocated( (uint32)bitsAllocated),
+    : m_currBitsAvail(0),
+    m_buf( 0),
+    m_bitsAllocated( (uint32)bitsAllocated),
     m_highBit( (uint32)highBit),
     m_bitsStored( (uint32)bitsStored),
-    m_stream( stream),
     m_isDataSigned( dataSigned),
-    m_currBitsAvail(0),
-    m_buf( 0)
+    m_stream( stream)
   {
     m_bitsAllocatedMask = ((uint32)(-1) >> (32-bitsAllocated));
 
@@ -85,3 +85,4 @@ public:
 } // namespace
 }
 #endif
+

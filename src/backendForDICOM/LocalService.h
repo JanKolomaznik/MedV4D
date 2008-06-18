@@ -16,7 +16,7 @@ namespace DicomInternal
 
 class LocalService
 {
-	friend class DcmProvider;
+	friend class M4D::Dicom::DcmProvider;
 
   struct Entry
   {

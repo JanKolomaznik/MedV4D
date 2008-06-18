@@ -17,7 +17,7 @@ class MoveService : AbstractService
 {
 private:
 
-  friend class DcmProvider;
+  friend class M4D::Dicom::DcmProvider;
 
 	enum eCallType {
 		SINGLE_IMAGE,		// only single image -> retype to DicomObj
