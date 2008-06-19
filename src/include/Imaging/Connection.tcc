@@ -2,6 +2,7 @@
 #error File Connection.tcc cannot be included directly!
 #else
 
+
 namespace M4D
 {
 namespace Imaging
@@ -100,9 +101,9 @@ ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 	)
 {
 
-	if( _outputs.find( inputPort.GetID() )== _outputs.end() ) {
+	if( _consumers.find( inputPort.GetID() )== _consumers.end() ) {
 		inputPort.PlugTyped( *this );
-		_outputs[ inputPort.GetID() ] = &inputPort;
+		_consumers[ inputPort.GetID() ] = &inputPort;
 	} else {
 		//TODO throw exception
 	}
@@ -146,6 +147,9 @@ ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 	CallImageFactoryRealloc( *_image, minimums, maximums, elementExtents );
 }
 
+
+
+
 template< typename ElementType, unsigned dimension >
 void
 ImageConnection< Image< ElementType, dimension > >
@@ -155,7 +159,12 @@ ImageConnection< Image< ElementType, dimension > >
 	FlowDirection				direction
 	)
 {
-	//TODO
+	//TODO REWRITE !!!
+	typename ConsumersMap::iterator it;
+	for( it = _consumers.begin(); it != _consumers.end(); ++it ) {
+		it->second->ReceiveMessage( msg, sendStyle, direction );
+	}
+
 }
 
 } /*namespace Imaging*/

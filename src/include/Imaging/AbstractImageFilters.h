@@ -83,8 +83,9 @@ protected:
 	 * \param x2 X coordinate of second point defining handled rectangle.
 	 * \param y2 Y coordinate of second point defining handled rectangle.
 	 * \param slice Number of handled slice.
+	 * \return True, if method finished its job without interrupting.
 	 **/
-	virtual void
+	virtual bool
 	ProcessSlice(
 			const Image< InputElementType, 3 > 	&in,
 			OutputImageType				&out,
@@ -128,7 +129,7 @@ public:
 	void
 	PrepareOutputDatasets();
 protected:
-	virtual void
+	virtual bool
 	ProcessVolume(
 			const Image< InputElementType, 3 > 	&in,
 			OutputImageType				&out,
@@ -166,7 +167,7 @@ public:
 	PrepareOutputDatasets();
 
 protected:
-	virtual void
+	virtual bool
 	ProcessVolume(
 			const Image< InputElementType, 4 > 	&in,
 			OutputImageType				&out,

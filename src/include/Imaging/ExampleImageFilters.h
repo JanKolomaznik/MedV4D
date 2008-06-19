@@ -30,7 +30,7 @@ public:
 	PrepareOutputDatasets();
 
 protected:
-	void
+	bool
 	ProcessSlice(
 			const Image< InputElementType, 3 > 	&in,
 			Image< OutputElementType, 3 >		&out,
@@ -59,7 +59,7 @@ public:
 	PrepareOutputDatasets();
 
 protected:
-	void
+	bool
 	ProcessVolume(
 			const Image< ElementType, 3 > 		&in,
 			Image< ElementType, 2 >			&out,

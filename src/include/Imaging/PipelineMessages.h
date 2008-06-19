@@ -8,11 +8,26 @@ namespace Imaging
 
 enum FlowDirection{ FD_IN_FLOW, FD_AGAINST_FLOW };
 
+enum PipelineMsgID
+{
+	PMI_FILTER_UPDATED,
+
+	PMI_END_SYSMSG = 1000
+};
+
+
 class PipelineMessage
 {
 public:
 	enum MessageSendStyle{ 
+		/**
+		 * Message will be used by receiver, if he can handle it, 
+		 * otherwise hi will resend it to followers.
+		 **/
 		MSS_NORMAL, 
+		/**
+		 * Receiver will not resend message even when he can't handle it.
+		 **/
 		MSS_DONTRESEND, 
 		MSS_BACKWARDS, 
 		MSS_BROADCAST 
@@ -20,14 +35,32 @@ public:
 
 	typedef boost::shared_ptr< PipelineMessage > Ptr;
 
-	PipelineMessage(): _senderID( 0 ) {}
+	PipelineMessage( PipelineMsgID messageID )
+		: senderID( 0 ), msgID( messageID ) {}
 
 	virtual
-	~PipelineMessage();
+	~PipelineMessage(){};
 
-	uint64	_senderID;
+	uint64	senderID;
+
+	const PipelineMsgID	msgID;
 
 };
+
+class MsgFilterUpdated: public PipelineMessage
+{
+public:
+	MsgFilterUpdated(): PipelineMessage( PMI_FILTER_UPDATED ) 
+		{ /*empty*/ }
+
+	static PipelineMessage::Ptr
+	CreateMsg()
+	{
+		//TODO improve
+		return PipelineMessage::Ptr( new MsgFilterUpdated() );
+	}
+};
+
 
 class MessageSenderInterface
 {
@@ -96,6 +129,44 @@ public:
 
 };
 
+
+template< typename SenderTypePointer >
+struct MessageSenderFunctor
+{
+	MessageSenderFunctor( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle
+		) : _msg( msg ), _sendStyle( sendStyle ) {}
+
+	void
+	operator()( SenderTypePointer sender )
+	{
+		sender->SendMessage( _msg, _sendStyle );
+	}
+protected:
+	PipelineMessage::Ptr 			_msg;
+	PipelineMessage::MessageSendStyle 	_sendStyle;
+};
+
+template< typename ReceiverTypePointer >
+struct MessageReceiverFunctor
+{
+	MessageReceiverFunctor( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle,
+		FlowDirection				direction
+		) : _msg( msg ), _sendStyle( sendStyle ), _direction( direction ) {}
+
+	void
+	operator()( ReceiverTypePointer receiver )
+	{
+		receiver->ReceiveMessage( _msg, _sendStyle, _direction );
+	}
+protected:
+	PipelineMessage::Ptr 			_msg;
+	PipelineMessage::MessageSendStyle 	_sendStyle;
+	FlowDirection				_direction;
+};
 
 }/*namespace Imaging*/
 }/*namespace M4D*/

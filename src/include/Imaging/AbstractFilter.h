@@ -170,7 +170,7 @@ public:
 	enum UpdateInvocationStyle {
 		UIS_ON_DEMAND,
 		UIS_ON_CHANGE_BEGIN,
-		UIS_ON_CHANGE_END		
+		UIS_ON_UPDATE_FINISHED		
 	};
 
 	/**
@@ -243,8 +243,13 @@ public:
 	unsigned
 	GetParallelization()const;
 
+	/**
+	 * Sets ivocation style of filter - when it will be executed.
+	 * \param style Style to be set.
+	 **/
 	void
-	SetUpdateInvocationStyle( UpdateInvocationStyle style );
+	SetUpdateInvocationStyle( UpdateInvocationStyle style )
+		{ _invocationStyle = style; }
 
 	/**
 	 * Method which will prepare datasets connected by output ports.
@@ -318,6 +323,9 @@ protected:
 	 **/
 	void
 	CleanAfterStoppedRun();
+
+	void
+	InputDatasetUpdatedMsgHandler( MsgFilterUpdated *msg );
 	
 	/**
 	 * Container for input ports - polymorphic interfaces.
@@ -339,6 +347,11 @@ protected:
 	 * Internal state of filter.
 	 **/
 	FilterWorkingState	_workState;
+
+	/**
+	 * Invocation style of filter - see comments for possible values.
+	 **/
+	UpdateInvocationStyle 	_invocationStyle;
 private:
 	/**
 	 * Prohibition of copying.

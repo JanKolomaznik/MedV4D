@@ -15,7 +15,7 @@ CopyImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 }
 
 template< typename InputElementType, typename OutputElementType >
-void
+bool
 CopyImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 ::ProcessSlice(
 			const Image< InputElementType, 3 > 	&in,
@@ -27,11 +27,15 @@ CopyImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 			size_t			slice
 		    )
 {
+	if( !this->CanContinue() ) { //Someone wants filter to stop.
+			return false;
+	}
 	for( size_t i = x1; i < x2; ++i ) {
 		for( size_t j = y1; j < y2; ++j ) {
 			out.GetElement( i, j, slice ) = in.GetElement( i, j, slice );
 		}
 	}
+	return true;
 }
 
 template< typename InputElementType, typename OutputElementType >
@@ -66,7 +70,7 @@ ColumnMaxImageFilter< ElementType >
 }
 
 template< typename ElementType >
-void
+bool
 ColumnMaxImageFilter< ElementType >
 ::ProcessVolume(
 			const Image< ElementType, 3 > 		&in,
@@ -80,6 +84,9 @@ ColumnMaxImageFilter< ElementType >
 		    )
 {
 	for( size_t i = x1; i < x2; ++i ) {
+		if( !this->CanContinue() ) { //Someone wants filter to stop.
+			return false;
+		}
 		for( size_t j = y1; j < y2; ++j ) {
 			ElementType max = in.GetElement( i, j, z1 );
 			for( size_t k = z1+1; k < z2; ++k ) {
@@ -90,6 +97,8 @@ ColumnMaxImageFilter< ElementType >
 			out.GetElement( i, j ) = max;
 		}
 	}
+
+	return true;
 }
 
 template< typename ElementType >

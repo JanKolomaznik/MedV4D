@@ -64,6 +64,18 @@ InputPortList::GetPort( size_t idx )const
 	return *_ports[ idx ];
 }
 
+void
+InputPortList::SendMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle
+		)
+{
+	std::for_each( 
+		_ports.begin(), 
+		_ports.end(), 
+		MessageSenderFunctor< InputPort* >( msg, sendStyle )
+		);
+}
 
 OutputPortList::~OutputPortList()
 {
@@ -93,6 +105,18 @@ OutputPortList::GetPort( size_t idx )const
 	return *_ports[ idx ];
 }
 
+void
+OutputPortList::SendMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle
+		)
+{
+	std::for_each( 
+		_ports.begin(), 
+		_ports.end(), 
+		MessageSenderFunctor< OutputPort* >( msg, sendStyle )
+		);
+}
 
 }/*namespace Imaging*/
 }/*namespace M4D*/

@@ -226,7 +226,7 @@ protected:
 
 //******************************************************************************
 
-class PortList
+class PortList: public MessageSenderInterface
 {
 
 public:
@@ -273,6 +273,12 @@ public:
 	InputPort &
 	operator[]( size_t idx )const
 	{ return GetPort( idx ); }
+
+	void
+	SendMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle
+		);
 private:
 	//Not implemented
 	InputPortList( const InputPortList& );
@@ -311,6 +317,12 @@ public:
 	OutputPort &
 	operator[]( size_t idx )const
 	{ return GetPort( idx ); }
+
+	void
+	SendMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle
+		);
 private:
 	//Not implemented
 	OutputPortList( const OutputPortList& );

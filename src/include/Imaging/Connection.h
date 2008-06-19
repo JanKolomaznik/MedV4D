@@ -7,6 +7,7 @@
 #include "Imaging/Ports.h"
 #include "Common.h"
 #include <map>
+#include <algorithm>
 
 namespace M4D
 {
@@ -165,6 +166,8 @@ public:
 		);
 
 protected:
+	typedef std::map< uint64, InputImagePort* > ConsumersMap;
+
 	/**
 	 * Hidden default constructor - we don't allow direct
 	 * construction of object of this class.
@@ -176,7 +179,7 @@ protected:
 
 	typename Image::Ptr			_image;
 	OutputImagePort				*_input;
-	std::map< uint64, InputImagePort* >	_outputs;
+	ConsumersMap				_consumers;
 private:
 	/**
 	 * Prohibition of copying.

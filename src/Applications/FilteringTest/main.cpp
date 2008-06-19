@@ -22,6 +22,8 @@ main( int argc, char** argv )
 	LOG( "** STARTING FILTERING TESTS **" );
 	CopyImageFilter< Image3DType, Image3DType > copyfilter;
 	ColumnMaxImageFilter< int16 > maxfilter;
+	maxfilter.SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_UPDATE_FINISHED );
+
 	ProducerConn prodconn;
 	ConsumerConn consconn;
 	InterConn interconn;
@@ -36,7 +38,8 @@ main( int argc, char** argv )
 
 	prodconn.PutImage( inputImage );
 	consconn.PutImage( outputImage );
-	
+
+	cout << "E : Execute pipeline\nS : Stop execution\nQ : Quit\n";
 
 	char option = '\0';
 	cin >> option;

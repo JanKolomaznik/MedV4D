@@ -149,6 +149,7 @@ private:
 void
 MainExecutionThread::operator()()
 {
+	D_BLOCK_COMMENT( "++++ Entering MainExecutionThread()", "----- Leaving MainExecutionThread()" );
 	switch( _updateType ) {
 	case AbstractPipeFilter::RECALCULATION:
 		//Check how execution method finished its job.
@@ -175,7 +176,7 @@ MainExecutionThread::operator()()
 }
 //******************************************************************************
 AbstractPipeFilter::AbstractPipeFilter()
-	: _inputPorts( this ), _outputPorts( this )
+	: _inputPorts( this ), _outputPorts( this ), _invocationStyle( UIS_ON_DEMAND )
 {
 
 }
@@ -184,6 +185,7 @@ void
 AbstractPipeFilter::Execute()
 {
 	//TODO
+	/*TODO Call only when needed*/PrepareOutputDatasets();
 	
 	if( !_workState.TrySetRunning() ) {
 		//TODO - handle
@@ -198,6 +200,7 @@ void
 AbstractPipeFilter::ExecuteOnWhole()
 {
 	//TODO
+	/*TODO Call only when needed*/PrepareOutputDatasets();
 
 	if( !_workState.TrySetRunning() ) {
 		//TODO - handle
@@ -231,15 +234,33 @@ AbstractPipeFilter::ReceiveMessage(
 {
 	//TODO
 	/*switch ( sendStyle ) {
-
-
-
 	}*/	
+	switch( msg->msgID ) {
+	case PMI_FILTER_UPDATED:
+		InputDatasetUpdatedMsgHandler( static_cast< MsgFilterUpdated * >( msg.get() ) );
+		break;
+
+	default:
+		//TODO	
+		break;
+	}
+}
+void
+AbstractPipeFilter::InputDatasetUpdatedMsgHandler( MsgFilterUpdated *msg )
+{
+	//TODO - improve
+	if( _invocationStyle == UIS_ON_UPDATE_FINISHED )
+	{
+		Execute();
+	}
 }
 
 void
 AbstractPipeFilter::CleanAfterSuccessfulRun()
 {
+	//TODO
+	_outputPorts.SendMessage( MsgFilterUpdated::CreateMsg(), PipelineMessage::MSS_NORMAL );
+
 	//We delete execution thread structure - thread will be detached.
 	//Another execution thread can be created.
 	delete _executionThread;

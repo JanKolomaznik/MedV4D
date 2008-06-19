@@ -82,8 +82,31 @@ extern std::ostream *pdout;
 #define	DL_COMMAND(ARG)
 #endif /*DEBUG_LEVEL*/
 
-
 //----------------------------------------------------------------------------
+class DebugCommentObject
+{
+public:
+	DebugCommentObject( std::string enter, std::string leave )
+		: _leave( leave )
+	{
+		D_PRINT( enter );
+	}
+	~DebugCommentObject()
+	{
+		D_PRINT( _leave );
+	}
+private:
+	std::string	_leave;
+};
+
+
+#ifdef DEBUG_LEVEL
+#define D_BLOCK_COMMENT( ENTER_TEXT, LEAVE_TEXT ) DebugCommentObject ____DEBUG_BLOCK_OBJ##__LINE__ = DebugCommentObject( ENTER_TEXT, LEAVE_TEXT );
+#else
+#define D_BLOCK_COMMENT( ENTER_TEXT, LEAVE_TEXT )
+#endif /*DEBUG_LEVEL*/
+//----------------------------------------------------------------------------
+
 /**
  * Value used in exception debug prints.
  **/
