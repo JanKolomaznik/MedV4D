@@ -9,6 +9,8 @@
 
 
 #ifdef DEBUG_LEVEL
+#include <iostream>
+#include <string>
 #include <iomanip>
 /**
  * Do not use pdout explicitely in your code.
@@ -87,16 +89,17 @@ class DebugCommentObject
 {
 public:
 	DebugCommentObject( std::string enter, std::string leave )
-		: _leave( leave )
+		: _leaveText( leave )
 	{
 		D_PRINT( enter );
 	}
+
 	~DebugCommentObject()
 	{
-		D_PRINT( _leave );
+		D_PRINT( _leaveText );
 	}
 private:
-	std::string	_leave;
+	std::string	_leaveText;
 };
 
 
