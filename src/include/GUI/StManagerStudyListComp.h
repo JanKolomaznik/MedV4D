@@ -32,6 +32,7 @@ class StManagerStudyListComp: public QWidget
   private slots:
     void view ();
     void setEnabledView ();
+    void activeTabChanged ();
 
   private:
     void addResultSetToStudyTable ( QTableWidget *table );
@@ -51,16 +52,23 @@ class StManagerStudyListComp: public QWidget
     QPushButton  *sendButton;
     QPushButton  *queueFilterButton;
     QTabWidget   *studyListTab;
-    QTableWidget *localExamsTable;
+    QTableWidget *recentExamsTable;
     QTableWidget *remoteExamsTable;
     QTableWidget *DICOMDIRTable;
+    QTableWidget *activeExamTable;
     QTreeView    *directoryTree;
 
     /// The provider object.
     M4D::Dicom::DcmProvider *dcmProvider;
 
-    /// ResultSet - vector of TableRows - result of Find operation.
-    M4D::Dicom::DcmProvider::ResultSet *resultSet;
+    /// Pointer to vector of TableRows - result of the Find operation in Recent Exams mode.
+    M4D::Dicom::DcmProvider::ResultSet *recentResultSet;
+    /// Pointer to vector of TableRows - result of the Find operation in Remote Exams mode.
+    M4D::Dicom::DcmProvider::ResultSet *remoteResultSet;
+    /// Pointer to vector of TableRows - result of the Find operation in DICOMDIR mode.
+    M4D::Dicom::DcmProvider::ResultSet *DICOMDIRResultSet;
+    /// Pointer to vector of TableRows - pointing to active ResultSet.
+    M4D::Dicom::DcmProvider::ResultSet *activeResultSet;
 };
 
 #endif // S_MANAGER_STUDY_LIST_COMP_H

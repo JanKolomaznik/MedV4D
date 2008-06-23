@@ -23,10 +23,10 @@ StManagerStudyListComp::StManagerStudyListComp ( m4dGUIVtkRenderWindowWidget *vt
 
   QVBoxLayout *buttonLayout = new QVBoxLayout;
 
-  viewButton        = createButton( tr( "&View" ),          SLOT(view()) );
-  deleteButton      = createButton( tr( "&Delete" ),        SLOT(del()) );
-  sendButton        = createButton( tr( "S&end" ),          SLOT(send()) );
-  queueFilterButton = createButton( tr( "&Queue" ),         SLOT(queue()) );
+  viewButton        = createButton( tr( "&View" ),   SLOT(view()) );
+  deleteButton      = createButton( tr( "&Delete" ), SLOT(del()) );
+  sendButton        = createButton( tr( "S&end" ),   SLOT(send()) );
+  queueFilterButton = createButton( tr( "&Queue" ),  SLOT(queue()) );
 
   viewButton->setEnabled( false );
   // buttons not implemented yet:
@@ -51,16 +51,19 @@ StManagerStudyListComp::StManagerStudyListComp ( m4dGUIVtkRenderWindowWidget *vt
   // =-=-=-=-=-=-=-=- Tabs -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
   
   studyListTab = new QTabWidget;
+  connect( studyListTab, SIGNAL(currentChanged(int)), this, SLOT(activeTabChanged()) );
+  connect( studyListTab, SIGNAL(currentChanged(int)), this, SLOT(setEnabledView()) );
 
-  // Local Exams tab
-  QHBoxLayout *localExamsLayout = new QHBoxLayout;
+  // Recent Exams tab
+  QHBoxLayout *recentExamsLayout = new QHBoxLayout;
   
-  localExamsTable = createStudyTable();
-  localExamsLayout->addWidget( localExamsTable );
+  recentExamsTable = createStudyTable();
+  activeExamTable  = recentExamsTable;
+  recentExamsLayout->addWidget( recentExamsTable );
   
-  QWidget *localExamsPane = new QWidget;
-  localExamsPane->setLayout( localExamsLayout );
-  studyListTab->addTab( localExamsPane, QIcon( ":/icons/local.png" ), tr( "Local Exams" ) );
+  QWidget *recentExamsPane = new QWidget;
+  recentExamsPane->setLayout( recentExamsLayout );
+  studyListTab->addTab( recentExamsPane, QIcon( ":/icons/recent.png" ), tr( "Recent Exams" ) );
 
   // Remote Exams tab
   QHBoxLayout *remoteExamsLayout = new QHBoxLayout;
@@ -105,14 +108,21 @@ StManagerStudyListComp::StManagerStudyListComp ( m4dGUIVtkRenderWindowWidget *vt
 
   // DICOM initializations:
   dcmProvider = new DcmProvider();
-  resultSet   = new DcmProvider::ResultSet();
+
+  recentResultSet   = new DcmProvider::ResultSet();
+  remoteResultSet   = new DcmProvider::ResultSet();
+  DICOMDIRResultSet = new DcmProvider::ResultSet();
+  
+  activeResultSet = recentResultSet;
 }
 
 
 StManagerStudyListComp::~StManagerStudyListComp ()
 {
   delete dcmProvider;
-  delete resultSet;
+  delete recentResultSet;
+  delete remoteResultSet;
+  delete DICOMDIRResultSet;
 }
 
 
@@ -121,18 +131,56 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
                                     const string &fromDate, const string &toDate,
                                     const DcmProvider::StringVector &modalitiesVect )
 {
-  resultSet->clear();
-
   try {
-    dcmProvider->Find( *resultSet, firstName, lastName, patientID, modalitiesVect,
-                        fromDate, toDate );	
- 	
-    // it can handle empty resultSet
-    addResultSetToStudyTable( localExamsTable );
 
-    if ( resultSet->empty() ) {
-      QMessageBox::warning( this, tr( "No results" ), "No search results match your criteria" );
+    switch ( studyListTab->currentIndex() )
+    {
+      case 0:
+        // Recent Exams tab active
+        recentResultSet->clear();
+
+        if ( recentResultSet->empty() ) {
+          QMessageBox::warning( this, tr( "No results" ), 
+                                "Recent Exams - No search results match your criteria" );
+        }
+        break;
+
+      case 1:
+        // Remote Exams tab active
+        remoteResultSet->clear();
+        
+        dcmProvider->Find( *remoteResultSet, firstName, lastName, patientID, modalitiesVect,
+                            fromDate, toDate );	
+ 	  
+        // it can handle empty resultSet
+        addResultSetToStudyTable( remoteExamsTable );
+        
+        if ( remoteResultSet->empty() ) {
+          QMessageBox::warning( this, tr( "No results" ), 
+                                "Remote Exams - No search results match your criteria" );
+        }
+        break;
+
+      case 2:
+        // DICOMDIR tab active
+        DICOMDIRResultSet->clear();
+        
+        if ( DICOMDIRResultSet->empty() ) {
+          QMessageBox::warning( this, tr( "No results" ), 
+                                "DICOMDIR - No search results match your criteria" );
+        }
+        break;
+
+      default:
+        recentResultSet->clear();
+
+        if ( recentResultSet->empty() ) {
+          QMessageBox::warning( this, tr( "No results" ), 
+                                "Recent Exams - No search results match your criteria" );
+        }
+        break;
     }
+
   } 
   catch ( M4D::ErrorHandling::ExceptionBase & e ) {
 	  QMessageBox::critical( this, tr( "Exception" ), e.what() );
@@ -147,14 +195,14 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
 void StManagerStudyListComp::view ()
 {
   // this test is not necessary (view button is disabled when no selection)
-  if ( !localExamsTable->selectedItems().empty() )
+  if ( !activeExamTable->selectedItems().empty() )
   {
     DcmProvider::StudyInfo *studyInfo     = new DcmProvider::StudyInfo();
 	  DcmProvider::DicomObjSet *dicomObjSet = new DcmProvider::DicomObjSet();	
 
     // we are sure, there is exactly one selected
-    int selectedRow = localExamsTable->selectedItems()[0]->row();
-    DcmProvider::TableRow *row = &resultSet->at( selectedRow );
+    int selectedRow = activeExamTable->selectedItems()[0]->row();
+    DcmProvider::TableRow *row = &activeResultSet->at( selectedRow );
 
 	  // find some info about selected study
 	  dcmProvider->WholeFindStudyInfo( row->patentID, row->studyID, *studyInfo );
@@ -162,31 +210,6 @@ void StManagerStudyListComp::view ()
 	  // now get image
 	  dcmProvider->GetImageSet( row->patentID, row->studyID, studyInfo->begin()->first, *dicomObjSet );
 
-    /*
-    // just save the dcms and open them with vtkReader (like Open...)
-    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
-    stringstream saveDirectory;
-    saveDirectory << QDir::current().path().toStdString() << QDir::separator().toAscii() << selectedRow;
-    QDir dir( saveDirectory.str().c_str() );
-    if ( !dir.exists() ) {
-      if ( !dir.mkdir( dir.path() ) ) {
-          QMessageBox::warning( this, "Cannot make directory", "Could not create directory " );
-      }
-    }
-
-    int i = 0;
-	  for ( DcmProvider::DicomObjSet::iterator it = dicomObjSet->begin(); it != dicomObjSet->end(); it++ )
-	  {
-      stringstream saveName;
-      saveName << dir.absolutePath().toStdString() << QDir::separator().toAscii() << 
-                  i++ << ".dcm";
-      it->Save( saveName.str() );
-	  }
-    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-    vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->dicomToRenderWindow( saveDirectory.str().c_str() ) );
-    */
-	  
     vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->imageDataToRenderWindow( DcmProvider::DicomObjSetPtr( dicomObjSet ) ) );
 
     delete studyInfo;
@@ -198,9 +221,38 @@ void StManagerStudyListComp::view ()
 
 void StManagerStudyListComp::setEnabledView ()
 {
-  // it's now just for local table - it should be the parameter
-  !localExamsTable->selectedItems().empty() ? viewButton->setEnabled( true ) : 
+  !activeExamTable->selectedItems().empty() ? viewButton->setEnabled( true ) : 
                                               viewButton->setEnabled( false );
+}
+
+
+void StManagerStudyListComp::activeTabChanged ()
+{
+  switch ( studyListTab->currentIndex() )
+  {
+      case 0:
+        // Recent Exams tab active
+        activeExamTable = recentExamsTable;
+        activeResultSet = recentResultSet;
+        break;
+
+      case 1:
+        // Remote Exams tab active
+        activeExamTable = remoteExamsTable;
+        activeResultSet = remoteResultSet;
+        break;
+
+      case 2:
+        // DICOMDIR tab active
+        activeExamTable = DICOMDIRTable;
+        activeResultSet = DICOMDIRResultSet;
+        break;
+
+      default:
+        activeExamTable = recentExamsTable;
+        activeResultSet = recentResultSet;
+        break;
+  }
 }
 
 
@@ -212,8 +264,8 @@ void StManagerStudyListComp::addResultSetToStudyTable ( QTableWidget *table )
   table->clearContents();
   table->setRowCount( 0 );
 
-  for ( unsigned rowNum = 0; rowNum < resultSet->size(); rowNum++ ) {
-    addRowToStudyTable( &resultSet->at( rowNum ), table );
+  for ( unsigned rowNum = 0; rowNum < activeResultSet->size(); rowNum++ ) {
+    addRowToStudyTable( &activeResultSet->at( rowNum ), table );
   }
 
   // sorting must be enabled AFTER populating table with items
