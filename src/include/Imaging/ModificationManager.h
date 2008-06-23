@@ -46,7 +46,7 @@ public:
 	SetModified();
 
 	bool
-	WaitUntilModified();
+	WaitUntilDirty();
 protected:
 	ModificationState	_state;
 
@@ -101,6 +101,17 @@ public:
 
 	ModBBoxWholeDataset&
 	GetWholeDatasetBBox();
+
+	ModBBox3D &
+	AddMod3D( 
+		size_t x1, 
+		size_t y1, 
+		size_t z1, 
+		size_t x2, 
+		size_t y2, 
+		size_t z2 
+		);
+	
 
 	void
 	Reset();

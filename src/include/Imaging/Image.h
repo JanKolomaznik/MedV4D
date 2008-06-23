@@ -44,6 +44,10 @@ public:
 	const DimensionExtents &
 	GetDimensionExtents( unsigned dimension )const;
 
+	unsigned 
+	GetDimension()const
+		{ return _dimCount; }
+
 	/**
 	 * @return ID of element type.
 	 **/
@@ -110,6 +114,12 @@ public:
 	
 	~Image();
 	
+	static Image< ElementType, 2 > &
+	CastAbstractImage( AbstractImage & image );
+
+	static typename Image< ElementType, 2 >::Ptr 
+	CastAbstractImage( AbstractImage::AImagePtr & image );
+
 	/**
 	 * Method used for easy runtime type identification of 
 	 * elements types - working only on predefined types.
@@ -210,6 +220,12 @@ public:
 	Image( typename ImageDataTemplate< ElementType >::Ptr imageData );
 
 	~Image();
+
+	static Image< ElementType, 3 > &
+	CastAbstractImage( AbstractImage & image );
+
+	static typename Image< ElementType, 3 >::Ptr 
+	CastAbstractImage( AbstractImage::AImagePtr & image );
 
 	/**
 	 * Method used for easy runtime type identification of 
@@ -316,6 +332,13 @@ public:
 	
 	~Image();
 	
+
+	static Image< ElementType, 4 > &
+	CastAbstractImage( AbstractImage & image );
+
+	static typename Image< ElementType, 4 >::Ptr 
+	CastAbstractImage( AbstractImage::AImagePtr & image );
+
 	/**
 	 * Method used for easy runtime type identification of 
 	 * elements types - working only on predefined types.

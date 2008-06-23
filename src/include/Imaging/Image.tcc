@@ -82,6 +82,28 @@ Image< ElementType, 2 >::~Image()
 }
 
 template< typename ElementType >
+Image< ElementType, 2 > &
+Image< ElementType, 2 >::CastAbstractImage( AbstractImage & image )
+{
+	if( dynamic_cast< Image< ElementType, Dimension > * >( &image ) == NULL ) {
+		//TODO throw exception
+	}
+
+	return static_cast< Image< ElementType, Dimension > & >( image );
+}
+
+template< typename ElementType >
+typename Image< ElementType, 2 >::Ptr 
+Image< ElementType, 2 >::CastAbstractImage( AbstractImage::AImagePtr & image )
+{
+	if( dynamic_cast< Image< ElementType, Dimension > * >( image.get() ) == NULL ) {
+		//TODO throw exception
+	}
+
+	return boost::static_pointer_cast< Image< ElementType, Dimension > >( image );
+}
+
+template< typename ElementType >
 ElementType &
 Image< ElementType, 2 >::GetElement( size_t x, size_t y )
 {
@@ -203,6 +225,28 @@ template< typename ElementType >
 Image< ElementType, 3 >::~Image()
 {
 
+}
+
+template< typename ElementType >
+Image< ElementType, 3 > &
+Image< ElementType, 3 >::CastAbstractImage( AbstractImage & image )
+{
+	if( dynamic_cast< Image< ElementType, Dimension > * >( &image ) == NULL ) {
+		//TODO throw exception
+	}
+
+	return static_cast< Image< ElementType, Dimension > & >( image );
+}
+
+template< typename ElementType >
+typename Image< ElementType, 3 >::Ptr 
+Image< ElementType, 3 >::CastAbstractImage( AbstractImage::AImagePtr & image )
+{
+	if( dynamic_cast< Image< ElementType, Dimension > * >( image.get() ) == NULL ) {
+		//TODO throw exception
+	}
+
+	return boost::static_pointer_cast< Image< ElementType, Dimension > >( image );
 }
 
 template< typename ElementType >
