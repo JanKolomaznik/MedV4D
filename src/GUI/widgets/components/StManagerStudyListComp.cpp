@@ -83,7 +83,7 @@ StManagerStudyListComp::StManagerStudyListComp ( m4dGUIVtkRenderWindowWidget *vt
 
   directoryTree = new QTreeView;
   directoryTree->setFixedWidth( 280 );
-  QDirModel *model = new QDirModel;
+  QDirModel *model = new QDirModel();
   model->setFilter( QDir::Dirs | QDir::NoDotAndDotDot | QDir::Drives );
   directoryTree->setModel( model );
   directoryTree->setColumnWidth( 0, 150 );
@@ -133,6 +133,9 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
 {
   try {
 
+    QString DICOMDIRPath;
+    QModelIndex qm;
+
     switch ( studyListTab->currentIndex() )
     {
       case 0:
@@ -164,6 +167,23 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
       case 2:
         // DICOMDIR tab active
         DICOMDIRResultSet->clear();
+
+        if ( !directoryTree->selectionModel()->selectedIndexes().empty() )
+        {
+          qm = directoryTree->selectionModel()->selectedIndexes()[0];
+          DICOMDIRPath = ((QDirModel *)directoryTree->model())->filePath( qm );
+          QMessageBox::warning( this, tr( "Path" ), DICOMDIRPath );
+        }
+        else 
+        {
+          DICOMDIRPath = QDir::currentPath();
+          QMessageBox::warning( this, tr( "Path" ), DICOMDIRPath );
+        }
+
+        dcmProvider->FindInFolder( *DICOMDIRResultSet, DICOMDIRPath.toStdString() );
+
+        // it can handle empty resultSet
+        addResultSetToStudyTable( DICOMDIRTable );
         
         if ( DICOMDIRResultSet->empty() ) {
           QMessageBox::warning( this, tr( "No results" ), 
