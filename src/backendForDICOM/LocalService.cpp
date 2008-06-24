@@ -67,13 +67,54 @@ LocalService::Find(
 ///////////////////////////////////////////////////////////////////////
 
 void
+LocalService::FindStudyInfo( 
+    DcmProvider::StringVector &result,
+      const std::string &patientID,
+			const std::string &studyID)
+{
+  Entry e;
+  e.patID = patientID;
+  e.studyID = studyID;
+
+  SetOfEntries::iterator found = m_setOfEntries.find( e);
+  if( found == m_setOfEntries.end())
+  {
+  }
+  else
+  {
+    // copy content of found set into result
+    SetIDsInStudy *setIDs = &found->second;
+    for( SetIDsInStudy::iterator i=setIDs->begin(); i != setIDs->end(); i++)
+      result.push_back( *i);
+  }
+}
+
+///////////////////////////////////////////////////////////////////////
+
+void
 LocalService::GetImageSet(
       const std::string &patientID,
 			const std::string &studyID,
 			const std::string &serieID,
 			Dicom::DcmProvider::DicomObjSet &result)
 {
-  
+  fs::path full_path = fs::system_complete( fs::path( m_lastSearchDir) );
+
+  try {
+    SolveDirGET( full_path, patientID, studyID, serieID, result);
+
+    fs::path currPath;
+    while( ! m_mainQueue.empty() )
+    {
+      currPath = m_mainQueue.front();
+      m_mainQueue.pop();
+
+      SolveDirGET( currPath, patientID, studyID, serieID, result);
+    }
+    
+  } catch( std::exception &ex) {
+    LOG( ex.what());
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -109,7 +150,7 @@ LocalService::SolveDir( fs::path & dirName,
 
 void
 LocalService::SolveFile( 
-  const std::string & fileName, const std::string & dirName,
+  const std::string & fileName, const std::string &/* dirName */,
   Dicom::DcmProvider::ResultSet &result)
 {
   OFString ofStr;
@@ -124,6 +165,7 @@ LocalService::SolveFile(
 
   DcmDataset *dataSet = dfile.getDataset();
 
+  string setID;
   Entry entry;
   // get info about this file
   {
@@ -133,8 +175,8 @@ LocalService::SolveFile(
     dataSet->findAndGetOFString( DCM_StudyInstanceUID, ofStr);
     entry.studyID.append( ofStr.c_str() );
 
-    //dataSet->findAndGetOFString( DCM_SeriesInstanceUID, ofStr);
-    //entry.setID.append( ofStr.c_str() );
+    dataSet->findAndGetOFString( DCM_SeriesInstanceUID, ofStr);
+    setID.append( ofStr.c_str() );
   }
 
   // look if it is already in result set
@@ -147,7 +189,105 @@ LocalService::SolveFile(
     result.push_back( row);
 
     // put entry into set
-    m_setOfEntries.insert( SetOfEntries::value_type( entry) );
+    SetIDsInStudy buddy;
+    buddy.insert( SetIDsInStudy::value_type( setID) );
+
+    m_setOfEntries.insert( SetOfEntries::value_type( entry, buddy) );
+  }
+  else
+  {
+    // check if setID is already in found record
+    SetIDsInStudy *foundRecSetIDs = &found->second;
+    SetIDsInStudy::iterator stud = foundRecSetIDs->find(setID);
+    
+    if( stud == foundRecSetIDs->end() )
+    {
+      // if not, insert it
+      foundRecSetIDs->insert( SetIDsInStudy::value_type( setID) );
+    }
+  }
+}
+
+///////////////////////////////////////////////////////////////////////
+
+void
+LocalService::SolveDirGET( boost::filesystem::path & dirName,
+  const std::string &patientID,
+	const std::string &studyID,
+	const std::string &serieID,
+  DcmProvider::DicomObjSet &result)
+{
+  // Get all files in this dir
+  // loop through them
+  LOG( "Entering DIRECTORY: " << dirName);
+
+  fs::directory_iterator end_iter;
+
+  for ( fs::directory_iterator dir_itr( dirName );
+        dir_itr != end_iter;
+        ++dir_itr )
+  {
+    
+    // if it is subdir, call itself on subdir
+    if ( fs::is_directory( dir_itr->status() ) )
+    {
+      m_mainQueue.push( *dir_itr);
+    }
+    else
+    {
+      SolveFileGET( dir_itr->string(), patientID, studyID, serieID, result );
+    }
+  }
+}
+
+///////////////////////////////////////////////////////////////////////
+
+void
+LocalService::SolveFileGET( const std::string & fileName,
+  const std::string &patientID,
+	const std::string &studyID,
+	const std::string &serieID,
+  DcmProvider::DicomObjSet &result)
+{
+  OFString ofStr;
+
+  DcmFileFormat dfile;
+  OFCondition cond = dfile.loadFile( fileName.c_str());
+  if (! cond.good())
+  {
+    LOG( "Loading of " << fileName << " failed. ("  << cond.text() << ")" );
+    return;
+  }
+
+  DcmDataset *dataSet = dfile.getDataset();
+
+  Entry entry;
+  string setID;
+  // get info about this file
+  {
+    dataSet->findAndGetOFString( DCM_PatientID, ofStr);
+    entry.patID.append( ofStr.c_str() );
+
+    dataSet->findAndGetOFString( DCM_StudyInstanceUID, ofStr);
+    entry.studyID.append( ofStr.c_str() );
+
+    //dataSet->findAndGetOFString( DCM_SeriesInstanceUID, ofStr);
+    setID.append( ofStr.c_str() );
+  }
+
+  // compare with wantend ones
+  if( entry.patID == patientID
+    && entry.studyID == studyID
+    && setID == serieID)
+  {
+    // if it mathes, insert new image into result
+    Dicom::DcmProvider::DicomObj buddy;
+    result.push_back( buddy);
+
+    // copy dataset reference & init
+    DcmProvider::DicomObj *newOne = &result.back();
+    newOne->m_dataset = dfile.getDataset();
+    newOne->Init();
   }
 }
 

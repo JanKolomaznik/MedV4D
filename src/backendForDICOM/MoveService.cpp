@@ -394,7 +394,7 @@ MoveService::SubTransferOperationSCP(
 	DcmProvider::DicomObjSet *set;
 	DcmProvider::DicomObj buddy;
 
-    if (cond == EC_Normal) 
+  if (cond == EC_Normal) 
 	{
         switch (msg.CommandField) {
         case DIMSE_C_STORE_RQ:

@@ -65,7 +65,7 @@ DcmProvider::Find(
 ///////////////////////////////////////////////////////////////////////
 
 void
-DcmProvider::FindInFolder( 
+DcmProvider::LocalFind( 
 			DcmProvider::ResultSet &result,
       const std::string &path)
 {
@@ -75,7 +75,19 @@ DcmProvider::FindInFolder(
 ///////////////////////////////////////////////////////////////////////
 
 void
-DcmProvider::GetLocalImageSet(
+DcmProvider::LocalFindStudyInfo( 
+      const std::string &patientID,
+			const std::string &studyID,
+      StringVector &info)
+{
+  static_cast<LocalService *>(m_localService)->FindStudyInfo( 
+    info, patientID, studyID);
+}
+
+///////////////////////////////////////////////////////////////////////
+
+void
+DcmProvider::LocalGetImageSet(
       const std::string &patientID,
 			const std::string &studyID,
 			const std::string &serieID,
@@ -100,7 +112,7 @@ DcmProvider::FindStudyInfo(
 ///////////////////////////////////////////////////////////////////////
 
 void
-DcmProvider::WholeFindStudyInfo(
+DcmProvider::FindStudyAndImageInfo(
 		const string &patientID,
 		const string &studyID,
 		StudyInfo &info) 
@@ -112,7 +124,7 @@ DcmProvider::WholeFindStudyInfo(
 ///////////////////////////////////////////////////////////////////////
 
 void
-DcmProvider::FindStudiesAboutPatient(  
+DcmProvider::FindAllPatientStudies(  
 		const string &patientID,
 		ResultSet &result) 
 {

@@ -180,7 +180,7 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
           QMessageBox::warning( this, tr( "Path" ), DICOMDIRPath );
         }
 
-        dcmProvider->FindInFolder( *DICOMDIRResultSet, DICOMDIRPath.toStdString() );
+        dcmProvider->LocalFind( *DICOMDIRResultSet, DICOMDIRPath.toStdString() );
 
         // it can handle empty resultSet
         addResultSetToStudyTable( DICOMDIRTable );
@@ -217,22 +217,48 @@ void StManagerStudyListComp::view ()
   // this test is not necessary (view button is disabled when no selection)
   if ( !activeExamTable->selectedItems().empty() )
   {
-    DcmProvider::StudyInfo *studyInfo     = new DcmProvider::StudyInfo();
+    DcmProvider::StringVector studyInfo;
 	  DcmProvider::DicomObjSet *dicomObjSet = new DcmProvider::DicomObjSet();	
 
     // we are sure, there is exactly one selected
     int selectedRow = activeExamTable->selectedItems()[0]->row();
     DcmProvider::TableRow *row = &activeResultSet->at( selectedRow );
 
-	  // find some info about selected study
-	  dcmProvider->WholeFindStudyInfo( row->patentID, row->studyID, *studyInfo );
+    switch ( studyListTab->currentIndex() )
+    {
+      case 0:
+        // Recent Exams tab active
+// ?????????????? same as 1?
+        break;
 
-	  // now get image
-	  dcmProvider->GetImageSet( row->patentID, row->studyID, studyInfo->begin()->first, *dicomObjSet );
+      case 1:
+        // Remote Exams tab active
+
+        // find some info about selected study
+	      dcmProvider->FindStudyInfo( row->patentID, row->studyID, studyInfo );
+
+        // if( studyInfo.size() > 1) showSomeChoosingDialog()
+        // now get image
+	      dcmProvider->GetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjSet );
+        break;
+
+      case 2:
+        // DICOMDIR tab active
+        
+        // find some info about selected study
+        dcmProvider->LocalFindStudyInfo( row->patentID, row->studyID, studyInfo );
+
+        // if( studyInfo.size() > 1) showSomeChoosingDialog()
+        // now get image
+        dcmProvider->LocalGetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjSet );
+        break;
+    }
+
+	  
+
+	  
 
     vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->imageDataToRenderWindow( DcmProvider::DicomObjSetPtr( dicomObjSet ) ) );
-
-    delete studyInfo;
 
     studyManagerDialog->close();
   }
