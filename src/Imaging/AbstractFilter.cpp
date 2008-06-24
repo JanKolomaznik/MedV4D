@@ -150,8 +150,16 @@ void
 MainExecutionThread::operator()()
 {
 	D_BLOCK_COMMENT( "++++ Entering MainExecutionThread()", "----- Leaving MainExecutionThread()" );
+
+	//We want to do some steps before actual computing
+	_filter->PreparationForComputing( _updateType );
+	//TODO
+	_filter->_outputPorts.SendMessage( MsgFilterStartModification::CreateMsg(), PipelineMessage::MSS_NORMAL );
+
+
 	switch( _updateType ) {
 	case AbstractPipeFilter::RECALCULATION:
+		
 		//Check how execution method finished its job.
 		if( _filter->ExecutionOnWholeThreadMethod() ) {
 			_filter->CleanAfterSuccessfulRun();
@@ -160,6 +168,7 @@ MainExecutionThread::operator()()
 		}
 		break;
 	case AbstractPipeFilter::ADAPTIVE_CALCULATION:
+		
 		//Check how execution method finished its job.
 		if( _filter->ExecutionThreadMethod() ) {
 			_filter->CleanAfterSuccessfulRun();
@@ -239,17 +248,30 @@ AbstractPipeFilter::ReceiveMessage(
 	case PMI_FILTER_UPDATED:
 		InputDatasetUpdatedMsgHandler( static_cast< MsgFilterUpdated * >( msg.get() ) );
 		break;
-
+	case PMI_FILTER_START_MODIFICATION:
+		InputDatasetStartModificationMsgHandler( static_cast< MsgFilterStartModification * >( msg.get() ) );
+		break;
 	default:
 		//TODO	
 		break;
 	}
 }
+
 void
 AbstractPipeFilter::InputDatasetUpdatedMsgHandler( MsgFilterUpdated *msg )
 {
 	//TODO - improve
 	if( _invocationStyle == UIS_ON_UPDATE_FINISHED )
+	{
+		Execute();
+	}
+}
+
+void
+AbstractPipeFilter::InputDatasetStartModificationMsgHandler( MsgFilterStartModification *msg )
+{
+	//TODO - improve
+	if( _invocationStyle == UIS_ON_CHANGE_BEGIN )
 	{
 		Execute();
 	}

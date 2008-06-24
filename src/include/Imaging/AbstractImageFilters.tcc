@@ -50,7 +50,7 @@ ImageFilter< InputImageType, OutputImageType >
 
 template< typename InputElementType, typename OutputImageType >
 ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
-::ImageSliceFilter()
+::ImageSliceFilter() : _sliceComputationNeighbourCount( 0 )
 {
 
 }
@@ -95,6 +95,14 @@ template< typename InputElementType, typename OutputImageType >
 void
 ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 ::PrepareOutputDatasets()
+{
+	//TODO
+}
+
+template< typename InputElementType, typename OutputImageType >
+void
+ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
+::PreparationForComputing( AbstractPipeFilter::UPDATE_TYPE )
 {
 	//TODO
 }
@@ -146,6 +154,14 @@ template< typename InputElementType, typename OutputImageType >
 void
 ImageVolumeFilter< Image< InputElementType, 3 >, OutputImageType >
 ::PrepareOutputDatasets()
+{
+	//TODO
+}
+
+template< typename InputElementType, typename OutputImageType >
+void
+ImageVolumeFilter< Image< InputElementType, 3 >, OutputImageType >
+::PreparationForComputing( AbstractPipeFilter::UPDATE_TYPE utype )
 {
 	//TODO
 }
@@ -204,6 +220,14 @@ template< typename InputElementType, typename OutputImageType >
 void
 ImageVolumeFilter< Image< InputElementType, 4 >, OutputImageType >
 ::PrepareOutputDatasets()
+{
+	//TODO
+}
+
+template< typename InputElementType, typename OutputImageType >
+void
+ImageVolumeFilter< Image< InputElementType, 4 >, OutputImageType >
+::PreparationForComputing( AbstractPipeFilter::UPDATE_TYPE utype )
 {
 	//TODO
 }

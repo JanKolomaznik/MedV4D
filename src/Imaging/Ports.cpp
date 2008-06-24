@@ -34,6 +34,64 @@ Port::ReceiveMessage(
 		_msgReceiver->ReceiveMessage( msg, sendStyle, direction );
 	}
 }
+
+//******************************************************************************
+
+const AbstractImage &
+InputPortAbstractImage
+::GetAbstractImage()const
+{
+	if( !this->IsPlugged() ) {
+		throw EDisconnected( this->GetID() );
+	}
+	return _abstractImageConnection->GetAbstractImageReadOnly();
+}
+
+
+void
+InputPortAbstractImage
+::Plug( ConnectionInterface & connection )
+{
+	AbstractImageConnection *conn = 
+		dynamic_cast< AbstractImageConnection * >( &connection );
+	if( conn ) {
+		_abstractImageConnection = conn;
+	} else {
+		throw Port::EConnectionTypeMismatch();
+	}
+}
+
+/*void
+InputPortImageFilter
+::PlugTyped( AbstractImageConnection & connection )
+{
+	_abstractImageConnection = &connection;
+	//TODO
+}*/
+
+void
+InputPortAbstractImage
+::UnPlug()
+{
+	_abstractImageConnection = NULL;//TODO
+}
+
+void
+InputPortAbstractImage
+::SendMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle 
+		)
+{
+	if( this->IsPlugged() ) {
+		msg->senderID = this->GetID();
+		_abstractImageConnection->RouteMessage( msg, sendStyle, FD_AGAINST_FLOW );
+		
+	}
+	//TODO
+}
+
+
 //******************************************************************************
 
 InputPortList::~InputPortList()

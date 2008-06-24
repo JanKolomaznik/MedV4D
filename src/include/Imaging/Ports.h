@@ -14,6 +14,7 @@ namespace Imaging
 
 //Forward declarations *****************
 class ConnectionInterface;
+class AbstractImageConnection;
 
 template< typename ImageTemplate >
 class ImageConnection;
@@ -30,7 +31,7 @@ public:
 	 * execution.
 	 **/
 	class EDisconnected;
-	class EMismatchConnectionType;
+	class EConnectionTypeMismatch;
 
 	/**
 	 * Default constructor - port obtain unique ID.
@@ -89,7 +90,7 @@ private:
 
 	MessageReceiverInterface	*_msgReceiver;	
 };
-class Port::EMismatchConnectionType
+class Port::EConnectionTypeMismatch
 {
 public:
 	//TODO
@@ -139,11 +140,48 @@ private:
 };
 
 //******************************************************************************
+class InputPortAbstractImage: public InputPort
+{
+public:
+	const AbstractImage&
+	GetAbstractImage()const;
+
+	void
+	Plug( ConnectionInterface & connection );
+
+	/*void
+	PlugTyped( AbstractImageConnection & connection );*/
+
+	void
+	UnPlug();
+
+	bool
+	IsPlugged()const
+		{ return _abstractImageConnection != NULL; }
+
+	void
+	SendMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle 
+		);
+protected:
+	AbstractImageConnection	*_abstractImageConnection;
+
+};
+
+/*
+class OutputPortAbstractImage: public OutputPort
+{
+public:
+	AbstractImage&
+	GetImage()const;
+};*/
+//******************************************************************************
 template< typename ImageType >
 class InputPortImageFilter;
 
 template< typename ElementType, unsigned dimension >
-class InputPortImageFilter< Image< ElementType, dimension > >: public InputPort
+class InputPortImageFilter< Image< ElementType, dimension > >: public InputPortAbstractImage
 {
 public:
 	typedef typename M4D::Imaging::Image< ElementType, dimension > ImageType;
@@ -156,8 +194,8 @@ public:
 	void
 	Plug( ConnectionInterface & connection );
 
-	void
-	PlugTyped( ImageConnection< ImageType > & connection );
+	/*void
+	PlugTyped( ImageConnection< ImageType > & connection );*/
 
 	void
 	UnPlug();
@@ -203,8 +241,8 @@ public:
 	void
 	Plug( ConnectionInterface & connection );
 
-	void
-	PlugTyped( ImageConnection< ImageType > & connection );
+	/*void
+	PlugTyped( ImageConnection< ImageType > & connection );*/
 	
 	void
 	UnPlug();

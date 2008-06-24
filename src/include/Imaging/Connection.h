@@ -47,7 +47,7 @@ public:
 	 * @param inputPort Port to be disconnected.
 	 **/
 	virtual void
-	DisconnectOut( InputPort& inputPort )=0;
+	DisconnectConsumer( InputPort& inputPort )=0;
 
 	/**
 	 * Handle input port of some filter. 
@@ -61,7 +61,7 @@ public:
 	 * Disconnect input port. !!!Output port of some filter!!!
 	 **/
 	virtual void
-	DisconnectIn()=0;
+	DisconnectProducer()=0;
 
 	virtual void 
 	DisconnectAll()=0;
@@ -97,6 +97,26 @@ public:
 //******************************************************************************
 //******************************************************************************
 
+/**
+ * Not supposed to instantiate - use only as substitution for typed images connections.
+ **/
+class AbstractImageConnection : public ConnectionInterface
+{
+public:
+
+	virtual const AbstractImage &
+	GetAbstractImageReadOnly()const = 0;
+
+	/*virtual void
+	ConnectAImageConsumer( InputPortAbstractImage &inputPort );*/
+protected:
+	typedef std::map< uint64, InputPortAbstractImage* > ConsumersMap;
+
+	void
+	PushConsumer( InputPortAbstractImage& consumer );
+	
+	ConsumersMap				_consumers;
+};
 
 //We prohibit general usage - only specialized templates used.
 template< typename ImageTemplate >
@@ -105,7 +125,7 @@ class ImageConnection;
 
 template< typename ElementType, unsigned dimension >
 class ImageConnection< Image< ElementType, dimension > >
-	: public ConnectionInterface
+	: public AbstractImageConnection
 {
 public:
 	typedef typename M4D::Imaging::Image< ElementType, dimension > Image;
@@ -118,23 +138,23 @@ public:
 	void
 	ConnectConsumer( InputPort& inputPort );
 
-	virtual void
-	ConnectConsumerTyped( InputImagePort& inputPort ); 
+	/*virtual void
+	ConnectConsumerTyped( InputImagePort& inputPort ); */
 
 	void
 	ConnectProducer( OutputPort& outputPort );
 
-	virtual void
-	ConnectProducerTyped( OutputImagePort& outputPort ); 
+	/*virtual void
+	ConnectProducerTyped( OutputImagePort& outputPort ); */
 	
 	void
-	DisconnectOut( InputPort& inputPort );
+	DisconnectConsumer( InputPort& inputPort );
 
 	virtual void
-	DisconnectOutTyped( InputImagePort& inputPort ); 
+	DisconnectConsumerTyped( InputImagePort& inputPort ); 
 
 	void
-	DisconnectIn();
+	DisconnectProducer();
 
 	void 
 	DisconnectAll();
@@ -149,6 +169,12 @@ public:
 	GetImageReadOnly()const
 		{ if( !_image ) { throw ENoImageAssociated(); }
 			return *_image;
+		}
+
+	const AbstractImage &
+	GetAbstractImageReadOnly()const
+		{
+			return GetImageReadOnly();
 		}
 
 	void
@@ -166,7 +192,6 @@ public:
 		);
 
 protected:
-	typedef std::map< uint64, InputImagePort* > ConsumersMap;
 
 	/**
 	 * Hidden default constructor - we don't allow direct
@@ -179,7 +204,6 @@ protected:
 
 	typename Image::Ptr			_image;
 	OutputImagePort				*_input;
-	ConsumersMap				_consumers;
 private:
 	/**
 	 * Prohibition of copying.

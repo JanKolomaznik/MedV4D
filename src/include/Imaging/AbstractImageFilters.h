@@ -72,6 +72,14 @@ public:
 
 	void
 	PrepareOutputDatasets();
+
+	void
+	SetComputationNeighbourhood( unsigned count )
+		{ _sliceComputationNeighbourCount = count; }
+
+	unsigned
+	GetComputationNeighbourhood()
+		{ return _sliceComputationNeighbourCount; }
 protected:
 	/**
 	 * This method should be overridden in successor. It is supposed to
@@ -102,6 +110,14 @@ protected:
 	bool
 	ExecutionOnWholeThreadMethod();
 	
+	void
+	PreparationForComputing( AbstractPipeFilter::UPDATE_TYPE utype );
+
+	/**
+	 * How many slices to up and down are needed for computation.
+	 * This information is needed when waiting for input update.
+	 **/
+	unsigned	_sliceComputationNeighbourCount;
 
 private:
 	/**
@@ -147,6 +163,8 @@ protected:
 	bool
 	ExecutionOnWholeThreadMethod();
 
+	void
+	PreparationForComputing( AbstractPipeFilter::UPDATE_TYPE utype );
 private:
 	/**
 	 * Prohibition of copying.
@@ -166,6 +184,8 @@ public:
 	void
 	PrepareOutputDatasets();
 
+	void
+	PreparationForComputing( AbstractPipeFilter::UPDATE_TYPE utype );
 protected:
 	virtual bool
 	ProcessVolume(

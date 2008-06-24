@@ -9,6 +9,7 @@ namespace M4D
 namespace Imaging
 {
 
+//******************************************************************************
 
 template< typename ElementType, unsigned dimension >
 const Image< ElementType, dimension >&
@@ -30,26 +31,29 @@ InputPortImageFilter< Image< ElementType, dimension > >
 	ImageConnection< ImageType > *conn = 
 		dynamic_cast< ImageConnection< ImageType > * >( &connection );
 	if( conn ) {
-		PlugTyped( *conn );
+		_imageConnection = conn;
+		this->_abstractImageConnection = static_cast< AbstractImageConnection * >( &connection );
 	} else {
-		throw Port::EMismatchConnectionType();
+		throw Port::EConnectionTypeMismatch();
 	}
 }
 
-template< typename ElementType, unsigned dimension >
+/*template< typename ElementType, unsigned dimension >
 void
 InputPortImageFilter< Image< ElementType, dimension > >
 ::PlugTyped( ImageConnection< Image< ElementType, dimension > > & connection )
 {
 	_imageConnection = &connection;
 	//TODO
-}
+}*/
 
 template< typename ElementType, unsigned dimension >
 void
 InputPortImageFilter< Image< ElementType, dimension > >
 ::UnPlug()
 {
+	_imageConnection = NULL;
+	_abstractImageConnection = NULL;//TODO
 	//TODO
 }
 
@@ -108,20 +112,20 @@ OutputPortImageFilter< Image< ElementType, dimension > >
 	ImageConnection< ImageType > *conn = 
 		dynamic_cast< ImageConnection< ImageType > * >( &connection );
 	if( conn ) {
-		PlugTyped( *conn );
+		_imageConnection = conn;
 	} else {
-		throw Port::EMismatchConnectionType();
+		throw Port::EConnectionTypeMismatch();
 	}
 }
 
-template< typename ElementType, unsigned dimension >
+/*template< typename ElementType, unsigned dimension >
 void
 OutputPortImageFilter< Image< ElementType, dimension > >
 ::PlugTyped( ImageConnection< Image< ElementType, dimension > > & connection )
 {
 	_imageConnection = &connection;
 	//TODO
-}
+}*/
 
 template< typename ElementType, unsigned dimension >
 void

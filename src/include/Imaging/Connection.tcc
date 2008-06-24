@@ -32,6 +32,8 @@ CallImageFactoryRealloc(
 	ImageFactory::ReallocateImage3DData< ElementType >( image, maximums[0]-minimums[0], maximums[1]-minimums[1], maximums[2]-minimums[2] );
 }
 
+
+
 //*****************************************************************************
 
 template< typename ElementType, unsigned dimension >
@@ -42,13 +44,13 @@ ImageConnection< Image< ElementType, dimension > >
 	OutputImagePort *port = 
 		dynamic_cast< OutputImagePort * >( &outputPort );
 	if( port ) {
-		ConnectProducerTyped( *port );
+		port->Plug( *this ); //TODO check if ok
 	} else {
 		throw ConnectionInterface::EMismatchPortType();
 	}
 }
 
-template< typename ElementType, unsigned dimension >
+/*template< typename ElementType, unsigned dimension >
 void
 ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 ::ConnectProducerTyped( typename ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
@@ -57,12 +59,12 @@ ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 {
 	outputPort.PlugTyped( *this );
 	_input = &outputPort;
-}
+}*/
 
 template< typename ElementType, unsigned dimension >
 void
 ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
-::DisconnectIn()
+::DisconnectProducer()
 {
 	//TODO
 }
@@ -72,9 +74,12 @@ void
 ImageConnection< Image< ElementType, dimension > >
 ::ConnectConsumer( InputPort& inputPort )
 {
-	InputImagePort *port = dynamic_cast< InputImagePort * >( &inputPort );
-	if( port ) {
-		ConnectConsumerTyped( *port );
+	//We allow only ports of exact type or generic port - nothing more!!!
+	if( typeid(inputPort) == typeid( InputImagePort &) ||
+		typeid(inputPort) == typeid( InputPortAbstractImage &)
+	  )
+	{
+		this->PushConsumer( static_cast<InputPortAbstractImage &>( inputPort ) );
 	} else {
 		throw ConnectionInterface::EMismatchPortType();
 	}
@@ -83,17 +88,17 @@ ImageConnection< Image< ElementType, dimension > >
 template< typename ElementType, unsigned dimension >
 void
 ImageConnection< Image< ElementType, dimension > >
-::DisconnectOut( InputPort& inputPort )
+::DisconnectConsumer( InputPort& inputPort )
 {
 	InputImagePort *port = dynamic_cast< InputImagePort * >( &inputPort );
 	if( port ) {
-		DisconnectOut( *port );
+		DisconnectConsumer( *port );
 	} else {
 		throw ConnectionInterface::EMismatchPortType();
 	}
 }
 
-template< typename ElementType, unsigned dimension >
+/*template< typename ElementType, unsigned dimension >
 void
 ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 ::ConnectConsumerTyped( typename ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
@@ -109,11 +114,12 @@ ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 	}
 
 }
+*/
 
 template< typename ElementType, unsigned dimension >
 void
 ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
-::DisconnectOutTyped( typename ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
+::DisconnectConsumerTyped( typename ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 		::InputImagePort& inputPort 
 	)
 {

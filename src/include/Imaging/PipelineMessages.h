@@ -11,6 +11,7 @@ enum FlowDirection{ FD_IN_FLOW, FD_AGAINST_FLOW };
 enum PipelineMsgID
 {
 	PMI_FILTER_UPDATED,
+	PMI_FILTER_START_MODIFICATION,
 
 	PMI_END_SYSMSG = 1000
 };
@@ -61,6 +62,19 @@ public:
 	}
 };
 
+class MsgFilterStartModification: public PipelineMessage
+{
+public:
+	MsgFilterStartModification(): PipelineMessage( PMI_FILTER_START_MODIFICATION ) 
+		{ /*empty*/ }
+
+	static PipelineMessage::Ptr
+	CreateMsg()
+	{
+		//TODO improve
+		return PipelineMessage::Ptr( new MsgFilterStartModification() );
+	}
+};
 
 class MessageSenderInterface
 {

@@ -324,8 +324,18 @@ protected:
 	void
 	CleanAfterStoppedRun();
 
+	/**
+	 * Method called in execution methods before actual computation.
+	 * Marking datasets parts as dirty, etc.
+	 **/
+	virtual void
+	PreparationForComputing( AbstractPipeFilter::UPDATE_TYPE utype ) = 0;
+
 	void
 	InputDatasetUpdatedMsgHandler( MsgFilterUpdated *msg );
+
+	void
+	InputDatasetStartModificationMsgHandler( MsgFilterStartModification *msg );
 	
 	/**
 	 * Container for input ports - polymorphic interfaces.
