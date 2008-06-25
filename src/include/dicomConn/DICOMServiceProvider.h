@@ -57,19 +57,16 @@ namespace Dicom {
 
 		// METHODs ////////////////////////////////////////////////////////////
 
-		// user inputs some values into seach form & wants a table to be filled
-		// with appropriate results.
 		/**
+     *  Send C-FIND request to DICOM server based on given filter params:
 		 *	@param result - reference to result set object
-		 *	@param patientName - reference to string containing ...
-		 *	@param patientID   -   - || -
-		 *	@param modalities  - reference to string containing set 
-		 *		of wanted modalities divided by '\' character
-		 *	@param date		   - ref. to string containing one of theese variants:
-		 *		<dateFrom>- = all items that has date >= than 'dateFrom'
-		 *		-<dateTo>	= all items thats' date <= than 'dateTo'
-		 *		<dateFrom>-<dateTo> = all items between that dates
-		 *		<dateX> = string with format YYYYMMDD
+		 *	@param patientForeName - reference to string containing fore name
+     *  @param patientSureName - same with sure name
+		 *	@param patientID   -   patient ID search mask
+		 *	@param modalities  - reference to vector of strings containing set 
+		 *		of wanted modalities
+		 *	@param dateFrom		 - ref. to string containing date in yyyyMMdd format
+     *  $param dateTo     - the same for to
 		 */
 		void Find( 
 			DcmProvider::ResultSet &result,
@@ -80,7 +77,12 @@ namespace Dicom {
 			const std::string &dateFrom,
 			const std::string &dateTo) ;
 
-    void FindInFolder( 
+    /**
+     *  Search given path recursively.
+     *  @param result - result set containing results
+     *  @param path   - given path
+     */
+    void LocalFind( 
 			DcmProvider::ResultSet &result,
       const std::string &path);
 
@@ -90,17 +92,27 @@ namespace Dicom {
 			const std::string &studyID,
 			StringVector &info) ;
 
+    // user select any study and wants to get seriesInstanceUIDs
+		void LocalFindStudyInfo(
+			const std::string &patientID,
+			const std::string &studyID,
+			StringVector &info) ;
+
 		// the same as FindStudyInfo but gets even imageIDs
-		void WholeFindStudyInfo(
+		void FindStudyAndImageInfo(
 			const std::string &patientID,
 			const std::string &studyID,
 			StudyInfo &info) ;
 
 		// finds all studies concerning given patient
-		void FindStudiesAboutPatient(  
+		void FindAllPatientStudies(  
 			const std::string &patientID,
 			ResultSet &result) ;
 
+    /**
+     *  Send C-MOVE request to DICOM server to retrieve specified image.
+     *  Image has to be specified through all level of IDs (patient, study, set, image)
+     */
 		void GetImage(
 			const std::string &patientID,
 			const std::string &studyID,
@@ -108,13 +120,20 @@ namespace Dicom {
 			const std::string &imageID,
 			DicomObj &object) ;
 
+    /**
+     *  Send C-MOVE request to retrieve all images in set. 
+     */
 		void GetImageSet(
 			const std::string &patientID,
 			const std::string &studyID,
 			const std::string &serieID,
 			DicomObjSet &result) ;
 
-    void GetLocalImageSet(
+    /**
+     *  Retrieve images from local filesystem.
+     *  @param 
+     */
+    void LocalGetImageSet(
       const std::string &patientID,
 			const std::string &studyID,
 			const std::string &serieID,
