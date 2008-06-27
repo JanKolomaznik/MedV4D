@@ -23,21 +23,14 @@ StManagerStudyListComp::StManagerStudyListComp ( m4dGUIVtkRenderWindowWidget *vt
 
   QVBoxLayout *buttonLayout = new QVBoxLayout;
 
-  viewButton        = createButton( tr( "&View" ),   SLOT(view()) );
-  deleteButton      = createButton( tr( "&Delete" ), SLOT(del()) );
-  sendButton        = createButton( tr( "S&end" ),   SLOT(send()) );
-  queueFilterButton = createButton( tr( "&Queue" ),  SLOT(queue()) );
+  viewButton = createButton( tr( "&View" ), SLOT(view()) );
+  pathButton = createButton( tr( "&Path" ), SLOT(path()) );
 
   viewButton->setEnabled( false );
-  // buttons not implemented yet:
-  deleteButton->setEnabled( false );
-  sendButton->setEnabled( false );
-  queueFilterButton->setEnabled( false );
+  pathButton->hide();
 
   buttonLayout->addWidget( viewButton );
-  buttonLayout->addWidget( deleteButton );
-  buttonLayout->addWidget( sendButton );
-  buttonLayout->addWidget( queueFilterButton );
+  buttonLayout->addWidget( pathButton );
 
   QSpacerItem *verticalSpacer = new QSpacerItem( 2, 2, QSizePolicy::Minimum, 
                                                  QSizePolicy::Expanding );
@@ -78,20 +71,15 @@ StManagerStudyListComp::StManagerStudyListComp ( m4dGUIVtkRenderWindowWidget *vt
   // DICOMDIR tab
   QHBoxLayout *DICOMDIRLayout = new QHBoxLayout;
   
-  DICOMDIRTable = createStudyTable();
-  DICOMDIRLayout->addWidget( DICOMDIRTable );
+  QSplitter *DICOMDIRsplitter = new QSplitter();
 
-  directoryTree = new QTreeView;
-  directoryTree->setFixedWidth( 280 );
-  QDirModel *model = new QDirModel();
-  model->setFilter( QDir::Dirs | QDir::NoDotAndDotDot | QDir::Drives );
-  directoryTree->setModel( model );
-  directoryTree->setColumnWidth( 0, 150 );
-  // hide size and type in filesystem tree view
-  directoryTree->setColumnHidden( 1, true );
-  directoryTree->setColumnHidden( 2, true );
-  // directoryTree->header()->hide();
-  DICOMDIRLayout->addWidget( directoryTree );
+  DICOMDIRTable = createStudyTable();
+  DICOMDIRsplitter->addWidget( DICOMDIRTable );
+
+  directoryTree = createDirectoryTreeView();
+  DICOMDIRsplitter->addWidget( directoryTree );
+
+  DICOMDIRLayout->addWidget( DICOMDIRsplitter );
 
   QWidget *DICOMDIRPane = new QWidget;
   DICOMDIRPane->setLayout( DICOMDIRLayout );
@@ -133,76 +121,54 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
 {
   try {
 
-    QSettings settings( "dd", "ss" );
+    // for Recent exams
+    QSettings settings;
     
+    // for DICOMDIR
     QString DICOMDIRPath;
     QModelIndex qm;
+
+    activeResultSet->clear();
 
     switch ( studyListTab->currentIndex() )
     {
       case 0:
         // Recent Exams tab active
-        recentResultSet->clear();
-
         QMessageBox::warning( this, tr( "Settings" ), settings.value( "firstName" ).toString() ); 
-
-        if ( recentResultSet->empty() ) {
-          QMessageBox::warning( this, tr( "No results" ), 
-                                "Recent Exams - No search results match your criteria" );
-        }
         break;
 
       case 1:
         // Remote Exams tab active
-        remoteResultSet->clear();
-        
         dcmProvider->Find( *remoteResultSet, firstName, lastName, patientID, modalitiesVect,
                             fromDate, toDate );	
- 	  
-        // it can handle empty resultSet
-        addResultSetToStudyTable( remoteExamsTable );
-
-        if ( remoteResultSet->empty() ) {
-          QMessageBox::warning( this, tr( "No results" ), 
-                                "Remote Exams - No search results match your criteria" );
-        }
         break;
 
       case 2:
         // DICOMDIR tab active
-        DICOMDIRResultSet->clear();
-
         if ( !directoryTree->selectionModel()->selectedIndexes().empty() )
         {
           qm = directoryTree->selectionModel()->selectedIndexes()[0];
           DICOMDIRPath = ((QDirModel *)directoryTree->model())->filePath( qm );
-          QMessageBox::warning( this, tr( "Path" ), DICOMDIRPath );
         }
         else 
         {
           DICOMDIRPath = QDir::currentPath();
-          QMessageBox::warning( this, tr( "Path" ), DICOMDIRPath );
         }
+        QMessageBox::warning( this, tr( "Path" ), DICOMDIRPath );
 
-        dcmProvider->FindInFolder( *DICOMDIRResultSet, DICOMDIRPath.toStdString() );
-
-        // it can handle empty resultSet
-        addResultSetToStudyTable( DICOMDIRTable );
-        
-        if ( DICOMDIRResultSet->empty() ) {
-          QMessageBox::warning( this, tr( "No results" ), 
-                                "DICOMDIR - No search results match your criteria" );
-        }
+        dcmProvider->LocalFind( *DICOMDIRResultSet, DICOMDIRPath.toStdString() );
         break;
 
       default:
-        recentResultSet->clear();
 
-        if ( recentResultSet->empty() ) {
-          QMessageBox::warning( this, tr( "No results" ), 
-                                "Recent Exams - No search results match your criteria" );
-        }
         break;
+    }
+
+    // it can handle empty resultSet
+    addResultSetToStudyTable( activeResultSet, activeExamTable );
+
+    if ( activeResultSet->empty() ) {
+      QMessageBox::warning( this, tr( "No results" ), "No search results match your criteria" );
     }
 
   } 
@@ -221,26 +187,53 @@ void StManagerStudyListComp::view ()
   // this test is not necessary (view button is disabled when no selection)
   if ( !activeExamTable->selectedItems().empty() )
   {
-    DcmProvider::StudyInfo *studyInfo     = new DcmProvider::StudyInfo();
+    DcmProvider::StringVector studyInfo;
 	  DcmProvider::DicomObjSet *dicomObjSet = new DcmProvider::DicomObjSet();	
 
     // we are sure, there is exactly one selected
     int selectedRow = activeExamTable->selectedItems()[0]->row();
     DcmProvider::TableRow *row = &activeResultSet->at( selectedRow );
 
-	  // find some info about selected study
-	  dcmProvider->WholeFindStudyInfo( row->patentID, row->studyID, *studyInfo );
+    // different FindStudyInfo and GetImageSet calls
+    switch ( studyListTab->currentIndex() )
+    {
+      case 0:
+        // Recent Exams tab active
 
-	  // now get image
-	  dcmProvider->GetImageSet( row->patentID, row->studyID, studyInfo->begin()->first, *dicomObjSet );
+        break;
 
-    vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->imageDataToRenderWindow( DcmProvider::DicomObjSetPtr( dicomObjSet ) ) );
+      case 1:
+        // Remote Exams tab active
+
+        // find some info about selected study
+	      dcmProvider->FindStudyInfo( row->patentID, row->studyID, studyInfo );
+
+        // if( studyInfo.size() > 1) showSomeChoosingDialog()
+        // now get image
+	      dcmProvider->GetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjSet );
+        break;
+
+      case 2:
+        // DICOMDIR tab active
+        
+        // find some info about selected study
+        dcmProvider->LocalFindStudyInfo( row->patentID, row->studyID, studyInfo );
+
+        // if( studyInfo.size() > 1) showSomeChoosingDialog()
+        // now get image
+        dcmProvider->LocalGetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjSet );
+        break;
+      
+      default:
+
+        break;
+    }
+
+	  vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->imageDataToRenderWindow( DcmProvider::DicomObjSetPtr( dicomObjSet ) ) );
 
     // add to Recent Exams
-    QSettings settings( "dd", "ss" );
+    QSettings settings;
     settings.setValue( "firstName", QString( row->patientName.c_str() ) );
-
-    delete studyInfo;
 
     studyManagerDialog->close();
   }
@@ -256,6 +249,8 @@ void StManagerStudyListComp::setEnabledView ()
 
 void StManagerStudyListComp::activeTabChanged ()
 {
+  pathButton->hide();
+
   switch ( studyListTab->currentIndex() )
   {
       case 0:
@@ -274,6 +269,7 @@ void StManagerStudyListComp::activeTabChanged ()
         // DICOMDIR tab active
         activeExamTable = DICOMDIRTable;
         activeResultSet = DICOMDIRResultSet;
+        pathButton->show();
         break;
 
       default:
@@ -284,7 +280,14 @@ void StManagerStudyListComp::activeTabChanged ()
 }
 
 
-void StManagerStudyListComp::addResultSetToStudyTable ( QTableWidget *table )
+void StManagerStudyListComp::path ()
+{
+  directoryTree->isHidden() ? directoryTree->show() : directoryTree->hide();
+}
+ 
+
+void StManagerStudyListComp::addResultSetToStudyTable ( const DcmProvider::ResultSet *resultSet,
+                                                        QTableWidget *table )
 {
   // for correct inserting sorting must be disabled
   table->setSortingEnabled( false );
@@ -293,7 +296,7 @@ void StManagerStudyListComp::addResultSetToStudyTable ( QTableWidget *table )
   table->setRowCount( 0 );
 
   for ( unsigned rowNum = 0; rowNum < activeResultSet->size(); rowNum++ ) {
-    addRowToStudyTable( &activeResultSet->at( rowNum ), table );
+    addRowToStudyTable( &resultSet->at( rowNum ), table );
   }
 
   // sorting must be enabled AFTER populating table with items
@@ -352,8 +355,28 @@ QTableWidget *StManagerStudyListComp::createStudyTable ()
   table->setHorizontalHeaderLabels( labels );
 
   connect( table, SIGNAL(itemSelectionChanged()), this, SLOT(setEnabledView()) );
+  connect( table, SIGNAL(itemDoubleClicked(QTableWidgetItem *)), this, SLOT(view()) );
 
   return table;
+}
+
+
+QTreeView *StManagerStudyListComp::createDirectoryTreeView ()
+{
+  QTreeView *directoryTree = new QTreeView;
+
+  // directoryTree->setFixedWidth( 220 );
+
+  QDirModel *model = new QDirModel();
+  model->setFilter( QDir::Dirs | QDir::NoDotAndDotDot | QDir::Drives );
+
+  directoryTree->setModel( model );
+  directoryTree->setColumnWidth( 0, 150 );
+  // hide size and type in filesystem tree view
+  directoryTree->setColumnHidden( 1, true );
+  directoryTree->setColumnHidden( 2, true );
+
+  return directoryTree;
 }
 
 
