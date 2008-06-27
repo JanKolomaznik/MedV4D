@@ -133,6 +133,8 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
 {
   try {
 
+    QSettings settings( "dd", "ss" );
+    
     QString DICOMDIRPath;
     QModelIndex qm;
 
@@ -141,6 +143,8 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
       case 0:
         // Recent Exams tab active
         recentResultSet->clear();
+
+        QMessageBox::warning( this, tr( "Settings" ), settings.value( "firstName" ).toString() ); 
 
         if ( recentResultSet->empty() ) {
           QMessageBox::warning( this, tr( "No results" ), 
@@ -157,7 +161,7 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
  	  
         // it can handle empty resultSet
         addResultSetToStudyTable( remoteExamsTable );
-        
+
         if ( remoteResultSet->empty() ) {
           QMessageBox::warning( this, tr( "No results" ), 
                                 "Remote Exams - No search results match your criteria" );
@@ -180,7 +184,7 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
           QMessageBox::warning( this, tr( "Path" ), DICOMDIRPath );
         }
 
-        dcmProvider->LocalFind( *DICOMDIRResultSet, DICOMDIRPath.toStdString() );
+        dcmProvider->FindInFolder( *DICOMDIRResultSet, DICOMDIRPath.toStdString() );
 
         // it can handle empty resultSet
         addResultSetToStudyTable( DICOMDIRTable );
@@ -217,48 +221,26 @@ void StManagerStudyListComp::view ()
   // this test is not necessary (view button is disabled when no selection)
   if ( !activeExamTable->selectedItems().empty() )
   {
-    DcmProvider::StringVector studyInfo;
+    DcmProvider::StudyInfo *studyInfo     = new DcmProvider::StudyInfo();
 	  DcmProvider::DicomObjSet *dicomObjSet = new DcmProvider::DicomObjSet();	
 
     // we are sure, there is exactly one selected
     int selectedRow = activeExamTable->selectedItems()[0]->row();
     DcmProvider::TableRow *row = &activeResultSet->at( selectedRow );
 
-    switch ( studyListTab->currentIndex() )
-    {
-      case 0:
-        // Recent Exams tab active
-// ?????????????? same as 1?
-        break;
+	  // find some info about selected study
+	  dcmProvider->WholeFindStudyInfo( row->patentID, row->studyID, *studyInfo );
 
-      case 1:
-        // Remote Exams tab active
-
-        // find some info about selected study
-	      dcmProvider->FindStudyInfo( row->patentID, row->studyID, studyInfo );
-
-        // if( studyInfo.size() > 1) showSomeChoosingDialog()
-        // now get image
-	      dcmProvider->GetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjSet );
-        break;
-
-      case 2:
-        // DICOMDIR tab active
-        
-        // find some info about selected study
-        dcmProvider->LocalFindStudyInfo( row->patentID, row->studyID, studyInfo );
-
-        // if( studyInfo.size() > 1) showSomeChoosingDialog()
-        // now get image
-        dcmProvider->LocalGetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjSet );
-        break;
-    }
-
-	  
-
-	  
+	  // now get image
+	  dcmProvider->GetImageSet( row->patentID, row->studyID, studyInfo->begin()->first, *dicomObjSet );
 
     vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->imageDataToRenderWindow( DcmProvider::DicomObjSetPtr( dicomObjSet ) ) );
+
+    // add to Recent Exams
+    QSettings settings( "dd", "ss" );
+    settings.setValue( "firstName", QString( row->patientName.c_str() ) );
+
+    delete studyInfo;
 
     studyManagerDialog->close();
   }

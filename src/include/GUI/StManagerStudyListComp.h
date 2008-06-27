@@ -33,13 +33,16 @@ class StManagerStudyListComp: public QWidget
     void view ();
     void setEnabledView ();
     void activeTabChanged ();
+    void path ();
 
   private:
-    void addResultSetToStudyTable ( QTableWidget *table );
+    void addResultSetToStudyTable ( const M4D::Dicom::DcmProvider::ResultSet *resultSet, 
+                                    QTableWidget *table );
     void addRowToStudyTable ( const M4D::Dicom::DcmProvider::TableRow *row,
                               QTableWidget *table );
 
     QTableWidget *createStudyTable ();
+    QTreeView    *createDirectoryTreeView ();
     QPushButton  *createButton ( const QString &text, const char *member );
 
     /// Pointer to the VTK Render Window Widget - where to render image after clicking View. 
@@ -48,9 +51,7 @@ class StManagerStudyListComp: public QWidget
     QDialog *studyManagerDialog;
 
     QPushButton  *viewButton;
-    QPushButton  *deleteButton;
-    QPushButton  *sendButton;
-    QPushButton  *queueFilterButton;
+    QPushButton  *pathButton;
     QTabWidget   *studyListTab;
     QTableWidget *recentExamsTable;
     QTableWidget *remoteExamsTable;
