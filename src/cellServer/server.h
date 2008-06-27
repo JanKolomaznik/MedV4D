@@ -5,7 +5,7 @@
 #include <map>
 
 #include "serverJob.h"
-#include "jobManager.h"
+//#include "jobManager.h"
 
 namespace M4D
 {

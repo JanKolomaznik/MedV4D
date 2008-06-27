@@ -6,6 +6,12 @@
 
 using namespace M4D::CellBE;
 
+#ifdef MESSAGE_HEADERS_H
+int i=10;
+#else
+int i=20;
+#endif
+
 ///////////////////////////////////////////////////////////////////////
 
 Server::Server(boost::asio::io_service &io_service)
