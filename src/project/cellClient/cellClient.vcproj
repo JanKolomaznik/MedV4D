@@ -186,11 +186,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\common\cellBE\job.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\cellClient\serverConn.cpp"
+				RelativePath="..\..\cellClient\clientSocket.cpp"
 				>
 			</File>
 			<File
@@ -204,19 +200,23 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath="..\..\include\cellBE\basicJob.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cellBE\basicSocket.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\include\cellBE\cellClient.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\cellClient\clientJob.h"
+				RelativePath="..\..\include\cellBE\clientJob.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\cellBE\job.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\cellClient\serverConn.h"
+				RelativePath="..\..\include\cellBE\clientSocket.h"
 				>
 			</File>
 		</Filter>

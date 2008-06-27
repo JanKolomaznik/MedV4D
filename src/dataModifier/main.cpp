@@ -1,8 +1,26 @@
-
+/**
+ *  <h1> Data modifier( support utility) <h1> 
+ *  <p>
+ *  Its purpouse is to modify annonimized patient information in DICOM
+ *  files with dictionary generated ones. 
+ *  </p>
+ *  <p>It iterates over DICOM files 
+ *  in specified directory (and its subdirs), load them and build list of
+ *  patient & studies within that files based on patientID and path.
+ *  In each loaded file modify the patient's name and born date generated
+ *  based on dictionary loaded from cfg file, as well as study date 
+ *  (based on time span defined in params. Then save the changes to same file.
+ *  </p>
+ *  <p>
+ *  When 2nd parameter is --info, no changes are made in loaded files and 
+ *  only the build list is printed to std::cout.
+ *  </p>
+ */
 #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem/path.hpp"
 #include "boost/progress.hpp"
 #include <iostream>
+#include <queue>
 
 #include "Common.h"
 #include "entryContainer.h"
@@ -11,11 +29,13 @@ namespace fs = boost::filesystem;
 using namespace std;
 using namespace M4D::DataModifier;
 
-typedef vector<fs::path> Paths;
+typedef std::queue<fs::path> Paths;
 
 Paths paths;
 
 EntryContainer entryCont;
+
+///////////////////////////////////////////////////////////////////////
 
 void SolveDir( fs::path & dirName)
 {
@@ -33,7 +53,7 @@ void SolveDir( fs::path & dirName)
     // if it is subdir, call itself on subdir
     if ( fs::is_directory( dir_itr->status() ) )
     {
-      paths.push_back( *dir_itr);
+      paths.push( *dir_itr);
     }
     else
     {
@@ -47,7 +67,9 @@ void SolveDir( fs::path & dirName)
 void PrintUsage( void)
 {
   cout << "Usage:" << endl;
-  cout << "dataModifier <path to images>" << endl;
+  cout << "dataModifier <path to images> [--info] || [dateFrom dateTo]" << endl;
+  cout << "dateFrom & dateTO: strings in format yyyyMMdd. TimeSpan to which "
+    << "study dates are modified";
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -88,7 +110,7 @@ main( int argc, char** argv)
   try {
     if ( fs::is_directory( full_path ) )
     {
-      paths.push_back( full_path);
+      paths.push( full_path);
     }
     else // must be a file
     {
@@ -98,10 +120,9 @@ main( int argc, char** argv)
     fs::path currPath;
     while( ! paths.empty() )
     {
-      currPath = paths.back();
-      paths.pop_back(); // remove this dir from queue
-
+      currPath = paths.front();
       SolveDir( currPath);
+      paths.pop(); // remove this dir from queue
     }
     
   } catch( std::exception &ex) {

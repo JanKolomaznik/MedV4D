@@ -1,15 +1,7 @@
-//
-// client.cpp kokoda
-// ~~~~~~~~~~
-//
-// Copyright (c) 2003-2008 Christopher M. Kohlhoff (chris at kohlhoff dot com)
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-//
+// testing main for cell client
 
 #include "Common.h"
-#include "clientJob.h"
+#include "cellBE/clientJob.h"
 #include "cellBE/CellClient.h"
 
 using namespace M4D::CellBE;
@@ -18,19 +10,23 @@ int main()
 {
   try
   {
+    CellClient client;
 
-    ClientJob job(false);
+    ClientJob::FilterVector filters;
 
     ThresholdingSetting *s = new ThresholdingSetting();
     s->threshold = 3.14f;
 
-    job.AddFilter( "thresh", s);
+    filters.push_back( s);
 
-    CellClient c;
+    Image3DProperties props;
+    props.x = props.y = props.z = 233;
 
-    c.SendJob(job);
+    ClientJob *job = client.CreateJob( filters, props);
 
-    c.m_io_service.run();
+    job->
+
+    client.Run();
   }
   catch (std::exception& e)
   {

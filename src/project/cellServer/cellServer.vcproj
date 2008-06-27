@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include;..\..\cellServer"
+				AdditionalIncludeDirectories="..\..\include;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -178,7 +178,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\main.cpp"
+				RelativePath="..\..\cellServer\main.cpp"
 				>
 			</File>
 			<File
@@ -195,6 +195,18 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath="..\..\include\cellBE\basicJob.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cellBE\basicSocket.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\cellServer\jobManager.h"
+				>
+			</File>
 			<File
 				RelativePath="..\..\cellServer\server.h"
 				>

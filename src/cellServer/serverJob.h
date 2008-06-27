@@ -1,16 +1,15 @@
 #ifndef SERVERJOB_H
 #define SERVERJOB_H
 
-#include "cellBE/job.h"
+#include "cellBE/basicJob.h"
 
 namespace M4D
 {
 namespace CellBE
 {
 
-//template<typename elemType, uint8 dimension>
 class ServerJob
-  : public Job
+  : public BasicJob
 {
   friend class Server;
   
@@ -18,8 +17,13 @@ private:
   std::vector<uint8> m_filterSettingContent;
   std::vector<FilterSetting *> filters;
 
-  void Serialize( NetStream &s);
-  void DeSerialize( NetStream &s);
+  void DeserializeFilterSettings( void);
+
+  void ReadSecondaryHeader( void);
+
+  void EndSecondaryHeaderRead( const boost::system::error_code& error);
+  void EndJobSettingsRead( const boost::system::error_code& error);
+
 };
 
 } // CellBE namespace

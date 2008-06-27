@@ -6,14 +6,19 @@
 #include <map>
 #include "entities.h"
 
-/**
- * Dictionary of names
- */
 namespace M4D {
 namespace DataModifier {
 
+/**
+ *  <h1> Dictionary of names loaded from cfg files </h1>
+ *  <p>
+ *  Loads the cfg files. Contains methodes for generation
+ *  of names (males & females) and born dates.
+ *  </p>
+ */
 class Dictionary
-{  
+{
+  // containers typedefs for already generated indexes
   typedef std::set<uint16> FornamesSet;
   typedef std::map<uint16, FornamesSet> SurnameContainer;
 

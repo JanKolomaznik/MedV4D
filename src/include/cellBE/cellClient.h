@@ -1,36 +1,36 @@
 #ifndef CELLCLIENT_HPP
 #define CELLCLIENT_HPP
 
-#include "serverConn.h"
-
 namespace M4D
 {
 namespace CellBE
 {
 
-  class CellClient
-  {
-  public:
-    typedef std::map<uint16, std::string> AvailServersMap;
+class CellClient
+{
+public:
+  CellClient();
 
-    CellClient();
+  ClientJob *
+    CreateJob(ClientJob::FilterVector &filters, DataSetProperties *props);
 
-    void SendJob( ClientJob &job);
+  inline void Run( void) { m_io_service.run(); }
 
-    boost::asio::io_service m_io_service;
+private:
+  typedef std::map<uint16, std::string> AvailServersMap;
+  AvailServersMap m_servers;
 
-  private:
-    AvailServersMap m_servers;    
+  boost::asio::io_service m_io_service;
 
-    void FindNonCommentLine( std::ifstream &f, std::string &line);
+  void FindNonCommentLine( std::ifstream &f, std::string &line);
 
-	/**
-	 *	Returns string reference containing address of least loaded available
-	 *	server able doing specified job
-	 */
-	const std::string & FindAvailableServer( const ClientJob &job);
+  /**
+   *	Returns string reference containing address of least loaded available
+   *	server able doing specified job
+   */
+  const std::string & FindAvailableServer( const Job::FilterVector &filters);
 
-  };
+};
 
 } // CellBE namespace
 } // M4D namespace

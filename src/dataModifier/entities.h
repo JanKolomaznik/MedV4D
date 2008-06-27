@@ -2,7 +2,7 @@
 #define ENTITIES_H
 
 /**
- * Dictionary of names
+ * Structures for patient & Study informations.
  */
 namespace M4D {
 namespace DataModifier {

@@ -1,16 +1,23 @@
 #ifndef ENTRY_CONTAINER_H
 #define ENTRY_CONTAINER_H
 
+/**
+ *  <p>
+ *  Class encapsulating containers (info maps) containing information about
+ *  found patients and studies.
+ *  </p>
+ */
+
 #include <map>
 #include "entities.h"
 #include "dictionary.h"
 
-/**
- * Dictionary of names
- */
 namespace M4D {
 namespace DataModifier {
 
+/**
+ *  Patient entry - key element for patient map.
+ */
 struct PatientEntry 
 {
   std::string patID;
@@ -37,24 +44,32 @@ struct PatientEntry
   }
 };
 
+///////////////////////////////////////////////////////////////////////
+
 class EntryContainer
 {
+  // Patient map.
   typedef std::map<PatientEntry, PatientInfo> PatientInfoMap;
+  // Study map. Key - studyInstanceUID
   typedef std::map<std::string, StudyInfo> StudyInfoMap;
 
   PatientInfoMap m_patients;
   StudyInfoMap m_studies;
 
-  Dictionary m_dict;
+  Dictionary m_dict; // name dictionary
 
 public:
-  // opens file, find accod
+  // opens file, find & and modify the information, save
   void SolveFile( const std::string &name, const std::string &path);
 
+  // prints info map to specified stram
   void FlushMaps( std::ofstream &out);
 
+  // time span for generation of study date
   std::string dateFrom, dateTo;
-  bool infoOnly;  // dont modify the files but inly read info and than flush
+
+  // flag. Don't modify the files but inly read info and than flush
+  bool infoOnly;
 
   EntryContainer() 
     : infoOnly( false) 

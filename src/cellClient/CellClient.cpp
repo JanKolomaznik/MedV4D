@@ -5,6 +5,7 @@
 #include <map>
 
 #include "Common.h"
+
 #include "cellBE/CellClient.h"
 
 using namespace M4D::CellBE;
@@ -59,20 +60,21 @@ CellClient::FindNonCommentLine( ifstream &f, string &line)
 
 ///////////////////////////////////////////////////////////////////////
 
-void
-CellClient::SendJob( ClientJob &job)
+ClientJob *
+CellClient::CreateJob( ClientJob::FilterVector &filters,
+                       DataSetProperties *props)
 {
-  ServerConnection *conn = 
-	  new ServerConnection( FindAvailableServer( job), m_io_service);
-
-  // send the job
-  conn->SendJob( &job);  
+  ClientJob *newJob = new ClientJob(
+    filters,
+    props,
+    FindAvailableServer( filters),
+    m_io_service);
 }
 
 ///////////////////////////////////////////////////////////////////////
 
 const string &
-CellClient::FindAvailableServer( const ClientJob &job)
+CellClient::FindAvailableServer( const Job::FilterVector &filters)
 {
 	// find available server with least load (load balancing)
 	return m_servers[0];
