@@ -3,6 +3,8 @@
 
 #include <QGLWidget>
 #include "Imaging/Image.h"
+#include "Common.h"
+#include "ExceptionBase.h"
 
 namespace M4D
 {
@@ -14,11 +16,10 @@ class m4dSliceViewerWidget : public QGLWidget
     Q_OBJECT
 
 public:
-    m4dSliceViewerWidget( Imaging::Image<unsigned, 3>::Ptr img, QWidget *parent = 0);
+    m4dSliceViewerWidget( Imaging::Image<int16, 3>::Ptr img, QWidget *parent = 0);
     ~m4dSliceViewerWidget();
 
 protected:
-    void initializeGL();
     void paintGL();
     void resizeGL(int winW, int winH);
     void mousePressEvent(QMouseEvent *event);
@@ -32,7 +33,7 @@ protected:
 
 private:
     
-    Imaging::Image<unsigned, 3>::Ptr _image;
+    Imaging::Image<int16, 3>::Ptr _image;
     
     QPoint _lastPos;
     QPoint _offset;
