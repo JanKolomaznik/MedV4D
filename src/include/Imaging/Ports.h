@@ -71,6 +71,7 @@ public:
 	SetReceiver( MessageReceiverInterface	*msgReceiver )
 		{ _msgReceiver = msgReceiver; }
 
+
 	void
 	ReceiveMessage( 
 		PipelineMessage::Ptr 			msg, 
@@ -120,6 +121,22 @@ public:
 	virtual
 	~InputPort() {}
 
+	/**
+	 * Method called when someone wants to obtain dataset, accessible
+	 * through port. It doesn't actualy lock data stored inside dataset,
+	 * only disallow to change internal structure - release or reallocate 
+	 * buffer, etc.
+	 * \return True if lock was successful, false otherwise.
+	 **/
+	virtual bool 
+	GetDatasetReadLock();
+
+	//TODO - if store, wheather this port already locked dataset - unlock during destruction ...
+	/**
+	 * Release dataset lock, which was locked by previous method.
+	 **/
+	virtual void 
+	ReleaseDatasetLock();
 	
 protected:
 
@@ -133,6 +150,15 @@ public:
 	virtual
 	~OutputPort() {}
 
+	virtual bool 
+	GetDatasetWriteLock();
+
+	//TODO - if store, wheather this port already locked dataset - unlock during destruction ...
+	/**
+	 * Release dataset lock, which was locked by previous method.
+	 **/
+	virtual void 
+	ReleaseDatasetLock();
 protected:
 
 private:

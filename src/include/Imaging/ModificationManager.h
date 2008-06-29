@@ -18,6 +18,36 @@ enum ModificationState{
 
 class ModificationManager;
 
+class ReaderInterface
+{
+	bool
+	IsDirty()const;
+
+	bool
+	IsModified()const;
+
+	ModificationState
+	GetState()const;
+
+	const Common::TimeStamp &
+	GetTimeStamp()const;
+
+	bool
+	WaitWhileDirty();
+};
+
+class WriterInterface
+{
+	void
+	SetState( ModificationState );
+
+	void
+	SetModified();
+
+
+};
+
+
 class ModificationBBox
 {
 public:
@@ -77,6 +107,8 @@ public:
 
 };
 
+
+/*
 class ModBBoxWholeDataset: public ModificationBBox
 {
 public:
@@ -88,8 +120,19 @@ public:
 	void
 	ReadUnlock();
 
-	/*void
-	ReadTryLock();*/
+	/ *void
+	ReadTryLock();* /
+};
+*/
+
+/*class ModBBox3D
+{
+
+};
+*/
+class ReadBBox3D
+{
+
 };
 
 class ModificationManager
@@ -99,8 +142,8 @@ public:
 	
 	~ModificationManager(){}
 
-	ModBBoxWholeDataset&
-	GetWholeDatasetBBox();
+	//ModBBoxWholeDataset&
+	//GetWholeDatasetBBox();
 
 	ModBBox3D &
 	AddMod3D( 
@@ -112,6 +155,15 @@ public:
 		size_t z2 
 		);
 	
+	ReadBBox3D &
+	GetMod3D( 
+		size_t x1, 
+		size_t y1, 
+		size_t z1, 
+		size_t x2, 
+		size_t y2, 
+		size_t z2 
+		);
 
 	void
 	Reset();

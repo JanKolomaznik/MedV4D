@@ -285,7 +285,11 @@ AbstractPipeFilter::CleanAfterSuccessfulRun()
 
 	//We delete execution thread structure - thread will be detached.
 	//Another execution thread can be created.
-	delete _executionThread;
+
+	//TODO - check if right
+	//delete _executionThread;
+	_executionThread = NULL;
+
 	//After this call no other changes to filter members are applied 
 	//from this thread.
 	_workState.SetUpToDate();
@@ -296,7 +300,11 @@ AbstractPipeFilter::CleanAfterStoppedRun()
 {
 	//We delete execution thread structure - thread will be detached.
 	//Another execution thread can be created.
-	delete _executionThread;
+	
+	//TODO - check if right
+	//delete _executionThread;
+	_executionThread = NULL;
+
 	//After this call no other changes to filter members are applied 
 	//from this thread.
 	_workState.SetOutOfDate();

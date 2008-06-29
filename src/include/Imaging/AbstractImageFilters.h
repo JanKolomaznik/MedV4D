@@ -39,8 +39,14 @@ protected:
 	const InputImageType&
 	GetInputImage()const;
 
+	void
+	ReleaseInputImage()const;
+
 	OutputImageType&
 	GetOutputImage()const;
+
+	void
+	ReleaseOutputImage()const;
 
 	void
 	SetOutputImageSize( 

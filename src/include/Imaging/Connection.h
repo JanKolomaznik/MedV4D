@@ -72,6 +72,11 @@ public:
 		PipelineMessage::MessageSendStyle 	sendStyle 
 		){ /*empty*/ }
 
+	bool 
+	LockDataset();
+
+	void
+	UnlockDataset();
 protected:
 
 private:

@@ -27,6 +27,20 @@ ImageFilter< InputImageType, OutputImageType >::GetInputImage()const
 }
 
 template< typename InputImageType, typename OutputImageType >
+void
+ImageFilter< InputImageType, OutputImageType >::ReleaseInputImage()const
+{
+	//TODO
+}
+
+template< typename InputImageType, typename OutputImageType >
+void
+ImageFilter< InputImageType, OutputImageType >::ReleaseOutputImage()const
+{
+	//TODO
+}
+
+template< typename InputImageType, typename OutputImageType >
 OutputImageType&
 ImageFilter< InputImageType, OutputImageType >::GetOutputImage()const
 {

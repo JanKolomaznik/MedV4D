@@ -34,6 +34,33 @@ Port::ReceiveMessage(
 		_msgReceiver->ReceiveMessage( msg, sendStyle, direction );
 	}
 }
+//******************************************************************************
+
+bool 
+InputPort::GetDatasetReadLock()
+{
+
+}
+
+void 
+InputPort::ReleaseDatasetLock()
+{
+
+}
+
+//******************************************************************************
+
+bool 
+OutputPort::GetDatasetWriteLock()
+{
+
+}
+
+void
+OutputPort::ReleaseDatasetLock()
+{
+
+}
 
 //******************************************************************************
 
