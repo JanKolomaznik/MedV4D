@@ -11,8 +11,10 @@
 
 
 class QPushButton;
+class QToolButton;
 class QTabWidget;
 class QTableWidget;
+class QSettings;
 class QTreeView;
 
 class StManagerStudyListComp: public QWidget
@@ -40,18 +42,28 @@ class StManagerStudyListComp: public QWidget
                                     QTableWidget *table );
     void addRowToStudyTable ( const M4D::Dicom::DcmProvider::TableRow *row,
                               QTableWidget *table );
+    void updateRecentExams ( const M4D::Dicom::DcmProvider::TableRow *row, const QString &prefix );
+    void loadRecentExams ( M4D::Dicom::DcmProvider::ResultSet &resultSet, const QString &prefix );
+    void updateRecentRow ( const M4D::Dicom::DcmProvider::TableRow *row, QSettings &settings );
+    void loadRecentRow ( M4D::Dicom::DcmProvider::TableRow &row, const QSettings &settings );
 
     QTableWidget *createStudyTable ();
     QTreeView    *createDirectoryTreeView ();
     QPushButton  *createButton ( const QString &text, const char *member );
+    QToolButton  *createToolButton ( const QIcon &icon );
 
     /// Pointer to the VTK Render Window Widget - where to render image after clicking View. 
     m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget;
     /// Pointer to the Study Manager Dialog - to close it after clicking View.
     QDialog *studyManagerDialog;
 
+    /// Names of the exam/image attributes
+    static const char *attributeNames[];
+
     QPushButton  *viewButton;
     QPushButton  *pathButton;
+    QToolButton  *recentRemoteButton;
+    QToolButton  *recentDICOMDIRButton;
     QTabWidget   *studyListTab;
     QTableWidget *recentExamsTable;
     QTableWidget *remoteExamsTable;
@@ -62,7 +74,7 @@ class StManagerStudyListComp: public QWidget
     /// The provider object.
     M4D::Dicom::DcmProvider *dcmProvider;
 
-    /// Pointer to vector of TableRows - result of the Find operation in Recent Exams mode.
+    /// Pointer to vector of TableRows - result of the Find operation in Recent Exams (remote) mode.
     M4D::Dicom::DcmProvider::ResultSet *recentResultSet;
     /// Pointer to vector of TableRows - result of the Find operation in Remote Exams mode.
     M4D::Dicom::DcmProvider::ResultSet *remoteResultSet;

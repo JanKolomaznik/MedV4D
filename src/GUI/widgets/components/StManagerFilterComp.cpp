@@ -9,7 +9,7 @@ using namespace std;
 
 
 /// Number of possible modalities - in filter - number of checkboxes
-#define MODALITIES_NUMBER   14
+#define MODALITY_NUMBER   14
 
 const char *StManagerFilterComp::modalities[] = { "CR", "ES", "NM", "RF", "US", "CT", "MG", 
                                                   "OT", "RT", "XA", "DX", "MR", "PT", "SC" };
@@ -125,9 +125,9 @@ StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComp
 
   QGridLayout *gridModalLayout = new QGridLayout;
 
-  modalityCheckBoxes = new QCheckBox *[MODALITIES_NUMBER];
+  modalityCheckBoxes = new QCheckBox *[MODALITY_NUMBER];
 
-  for ( int i = 0; i < MODALITIES_NUMBER; i++ )
+  for ( int i = 0; i < MODALITY_NUMBER; i++ )
   {
     modalityCheckBoxes[i] = createCheckBox( tr( modalities[i] ), false, SLOT(modality()) );
     gridModalLayout->addWidget( modalityCheckBoxes[i], i / 5, i % 5 );
@@ -166,7 +166,7 @@ void StManagerFilterComp::search ()
   
   // construct the modalities vector (from checked ones)
   vector< string > modalitiesVect;
-  for ( int i = 0; i < MODALITIES_NUMBER; i++ ) 
+  for ( int i = 0; i < MODALITY_NUMBER; i++ ) 
   {
     if ( modalityCheckBoxes[i]->isChecked() ) {
       modalitiesVect.push_back( StManagerFilterComp::modalities[i] );
@@ -232,7 +232,7 @@ void StManagerFilterComp::to ()
 
 void StManagerFilterComp::all ()
 { 
-  for ( int i = 0; i < MODALITIES_NUMBER; i++ ) {
+  for ( int i = 0; i < MODALITY_NUMBER; i++ ) {
     modalityCheckBoxes[i]->setChecked( true );
   }
   allCheckBox->setEnabled( false );
@@ -243,7 +243,7 @@ void StManagerFilterComp::modality ()
 { 
   bool allChecked = true;
 
-  for ( int i = 0; i < MODALITIES_NUMBER; i++ ) 
+  for ( int i = 0; i < MODALITY_NUMBER; i++ ) 
   {
     if ( !modalityCheckBoxes[i]->isChecked() ) 
     {

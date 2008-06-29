@@ -14,6 +14,20 @@ using namespace M4D::Dicom;
 using namespace std;
 
 
+/// Number of exam/image attributes (e.g in study tables)
+#define ATTRIBUTE_NUMBER   14
+
+const char *StManagerStudyListComp::attributeNames[] = { "Patient ID", "Name", "Accesion", "Modality",
+                                                         "Description", "Date", "Time", "Study ID", "Sex",
+                                                         "Birthdate", "Referring MD", "Institution",
+                                                         "Location", "Server" };
+/// Name of the array in QSettings - for saving recent remote exams
+#define RECENT_REMOTE_EXAMS_SETTINGS_NAME   "recentRemoteExams"
+/// Name of the array in QSettings - for saving recent DICOMDIR
+#define RECENT_DICOMDIR_SETTINGS_NAME       "recentDICOMDIR"
+/// Number of recent exams to remember
+#define RECENT_EXAMS_NUMBER                 20
+
 StManagerStudyListComp::StManagerStudyListComp ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget,
                                                  QDialog *studyManagerDialog, QWidget *parent )
   : QWidget( parent ),
@@ -21,20 +35,30 @@ StManagerStudyListComp::StManagerStudyListComp ( m4dGUIVtkRenderWindowWidget *vt
 {
   // =-=-=-=-=-=-=-=- Buttons -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-  QVBoxLayout *buttonLayout = new QVBoxLayout;
+  QGridLayout *buttonLayout = new QGridLayout;
 
   viewButton = createButton( tr( "&View" ), SLOT(view()) );
-  pathButton = createButton( tr( "&Path" ), SLOT(path()) );
-
   viewButton->setEnabled( false );
-  pathButton->hide();
+  buttonLayout->addWidget( viewButton, 0, 0, 1, 2 );
 
-  buttonLayout->addWidget( viewButton );
-  buttonLayout->addWidget( pathButton );
+  QSpacerItem *horSpacerViewOther = new QSpacerItem( 2, 28, QSizePolicy::Minimum, 
+                                                     QSizePolicy::Minimum );
+  buttonLayout->addItem( horSpacerViewOther, 1, 0, 1, 2 );
+
+  pathButton = createButton( tr( "&Path" ), SLOT(path()) );
+  pathButton->hide();
+  buttonLayout->addWidget( pathButton, 2, 0, 1, 2 );
+
+  recentRemoteButton = createToolButton( QIcon( ":/icons/remote.png" ) );
+  recentRemoteButton->setChecked( true );
+  buttonLayout->addWidget( recentRemoteButton, 3, 0 );
+
+  recentDICOMDIRButton = createToolButton( QIcon( ":/icons/dicomdir.png" ) );
+  buttonLayout->addWidget( recentDICOMDIRButton, 3, 1 );
 
   QSpacerItem *verticalSpacer = new QSpacerItem( 2, 2, QSizePolicy::Minimum, 
                                                  QSizePolicy::Expanding );
-  buttonLayout->addItem( verticalSpacer );
+  buttonLayout->addItem( verticalSpacer, 4, 0, 1, 2 );
 
   // =-=-=-=-=-=-=-=- Spacer -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -121,7 +145,7 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
 {
   try {
 
-    // for Recent exams
+    // for recent exams
     QSettings settings;
     
     // for DICOMDIR
@@ -134,12 +158,17 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
     {
       case 0:
         // Recent Exams tab active
-        QMessageBox::warning( this, tr( "Settings" ), settings.value( "firstName" ).toString() ); 
+        if ( recentRemoteButton->isChecked() ) {
+          loadRecentExams( *activeResultSet, RECENT_REMOTE_EXAMS_SETTINGS_NAME );
+        } else {
+          loadRecentExams( *activeResultSet, RECENT_DICOMDIR_SETTINGS_NAME );
+        }
+        reverse( activeResultSet->begin(), activeResultSet->end() );
         break;
 
       case 1:
         // Remote Exams tab active
-        dcmProvider->Find( *remoteResultSet, firstName, lastName, patientID, modalitiesVect,
+        dcmProvider->Find( *activeResultSet, firstName, lastName, patientID, modalitiesVect,
                             fromDate, toDate );	
         break;
 
@@ -156,10 +185,16 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
         }
         QMessageBox::warning( this, tr( "Path" ), DICOMDIRPath );
 
-        dcmProvider->LocalFind( *DICOMDIRResultSet, DICOMDIRPath.toStdString() );
+        dcmProvider->LocalFind( *activeResultSet, DICOMDIRPath.toStdString() );
         break;
 
       default:
+        if ( recentRemoteButton->isChecked() ) {
+          loadRecentExams( *activeResultSet, RECENT_REMOTE_EXAMS_SETTINGS_NAME );
+        } else {
+          loadRecentExams( *activeResultSet, RECENT_DICOMDIR_SETTINGS_NAME );
+        }
+        reverse( activeResultSet->begin(), activeResultSet->end() );
 
         break;
     }
@@ -194,17 +229,37 @@ void StManagerStudyListComp::view ()
     int selectedRow = activeExamTable->selectedItems()[0]->row();
     DcmProvider::TableRow *row = &activeResultSet->at( selectedRow );
 
+    const char *recentTypePrefix = RECENT_REMOTE_EXAMS_SETTINGS_NAME;
+
     // different FindStudyInfo and GetImageSet calls
     switch ( studyListTab->currentIndex() )
     {
       case 0:
         // Recent Exams tab active
+        if ( recentRemoteButton->isChecked() )
+        {
+          // find some info about selected study
+	        dcmProvider->FindStudyInfo( row->patentID, row->studyID, studyInfo );
 
+          // if( studyInfo.size() > 1) showSomeChoosingDialog()
+          // now get image
+	        dcmProvider->GetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjSet );  
+        }
+        else
+        {
+          // find some info about selected study
+          dcmProvider->LocalFindStudyInfo( row->patentID, row->studyID, studyInfo );
+
+          // if( studyInfo.size() > 1) showSomeChoosingDialog()
+          // now get image
+          dcmProvider->LocalGetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjSet );
+
+          recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
+        }
         break;
 
       case 1:
         // Remote Exams tab active
-
         // find some info about selected study
 	      dcmProvider->FindStudyInfo( row->patentID, row->studyID, studyInfo );
 
@@ -215,25 +270,44 @@ void StManagerStudyListComp::view ()
 
       case 2:
         // DICOMDIR tab active
-        
         // find some info about selected study
         dcmProvider->LocalFindStudyInfo( row->patentID, row->studyID, studyInfo );
 
         // if( studyInfo.size() > 1) showSomeChoosingDialog()
         // now get image
         dcmProvider->LocalGetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjSet );
+
+        recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
         break;
       
       default:
+        if ( recentRemoteButton->isChecked() )
+        {
+          // find some info about selected study
+	        dcmProvider->FindStudyInfo( row->patentID, row->studyID, studyInfo );
 
+          // if( studyInfo.size() > 1) showSomeChoosingDialog()
+          // now get image
+	        dcmProvider->GetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjSet );  
+        }
+        else
+        {
+          // find some info about selected study
+          dcmProvider->LocalFindStudyInfo( row->patentID, row->studyID, studyInfo );
+
+          // if( studyInfo.size() > 1) showSomeChoosingDialog()
+          // now get image
+          dcmProvider->LocalGetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjSet );
+
+          recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
+        }
         break;
     }
 
 	  vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->imageDataToRenderWindow( DcmProvider::DicomObjSetPtr( dicomObjSet ) ) );
 
     // add to Recent Exams
-    QSettings settings;
-    settings.setValue( "firstName", QString( row->patientName.c_str() ) );
+    updateRecentExams( row, recentTypePrefix );
 
     studyManagerDialog->close();
   }
@@ -250,6 +324,8 @@ void StManagerStudyListComp::setEnabledView ()
 void StManagerStudyListComp::activeTabChanged ()
 {
   pathButton->hide();
+  recentRemoteButton->hide();
+  recentDICOMDIRButton->hide();
 
   switch ( studyListTab->currentIndex() )
   {
@@ -257,6 +333,8 @@ void StManagerStudyListComp::activeTabChanged ()
         // Recent Exams tab active
         activeExamTable = recentExamsTable;
         activeResultSet = recentResultSet;
+        recentRemoteButton->show();
+        recentDICOMDIRButton->show();
         break;
 
       case 1:
@@ -275,6 +353,8 @@ void StManagerStudyListComp::activeTabChanged ()
       default:
         activeExamTable = recentExamsTable;
         activeResultSet = recentResultSet;
+        recentRemoteButton->show();
+        recentDICOMDIRButton->show();
         break;
   }
 }
@@ -284,7 +364,7 @@ void StManagerStudyListComp::path ()
 {
   directoryTree->isHidden() ? directoryTree->show() : directoryTree->hide();
 }
- 
+
 
 void StManagerStudyListComp::addResultSetToStudyTable ( const DcmProvider::ResultSet *resultSet,
                                                         QTableWidget *table )
@@ -336,6 +416,73 @@ void StManagerStudyListComp::addRowToStudyTable ( const DcmProvider::TableRow *r
 }
 
 
+void StManagerStudyListComp::updateRecentExams ( const DcmProvider::TableRow *row, const QString &prefix )
+{
+  DcmProvider::ResultSet resultSet;
+  loadRecentExams( resultSet, prefix );
+
+  resultSet.push_back( *row ); 
+  if ( resultSet.size() > RECENT_EXAMS_NUMBER ) {
+    resultSet.erase( resultSet.begin() );
+  }
+
+  QSettings settings;
+  settings.beginWriteArray( prefix );
+  
+  for ( int i = 0; i < resultSet.size(); i++ )
+  {
+    settings.setArrayIndex( i );
+    updateRecentRow ( &resultSet[i], settings );  
+  }
+
+  settings.endArray();
+}
+
+
+void StManagerStudyListComp::loadRecentExams ( DcmProvider::ResultSet &resultSet, const QString &prefix )
+{
+  QSettings settings;
+  int size = settings.beginReadArray( prefix );
+ 
+  for ( int i = 0; i < size; i++ )
+  {
+    DcmProvider::TableRow row;
+
+    settings.setArrayIndex( i );
+    loadRecentRow( row, settings );
+    
+    resultSet.push_back( row );
+  }
+
+  settings.endArray();
+}
+
+
+void StManagerStudyListComp::updateRecentRow ( const DcmProvider::TableRow *row, QSettings &settings )
+{
+  // some are missing....
+  settings.setValue( attributeNames[0], row->patentID.c_str() );
+  settings.setValue( attributeNames[1], row->patientName.c_str() );
+  settings.setValue( attributeNames[3], row->modality.c_str() );
+  settings.setValue( attributeNames[5], row->studyDate.c_str() );
+  settings.setValue( attributeNames[7], row->studyID.c_str() );
+  settings.setValue( attributeNames[8], row->patientSex );
+  settings.setValue( attributeNames[9], row->patientBirthDate.c_str() );
+}
+
+
+void StManagerStudyListComp::loadRecentRow ( DcmProvider::TableRow &row, const QSettings &settings )
+{
+  row.patentID         = settings.value( attributeNames[0] ).toString().toStdString();
+  row.patientName      = settings.value( attributeNames[1] ).toString().toStdString();
+  row.modality         = settings.value( attributeNames[3] ).toString().toStdString();
+  row.studyDate        = settings.value( attributeNames[5] ).toString().toStdString();
+  row.studyID          = settings.value( attributeNames[7] ).toString().toStdString();
+  row.patientSex       = settings.value( attributeNames[8] ).toBool();
+  row.patientBirthDate = settings.value( attributeNames[9] ).toString().toStdString();
+}
+
+
 QTableWidget *StManagerStudyListComp::createStudyTable ()
 {
   QTableWidget *table  = new QTableWidget;
@@ -345,11 +492,9 @@ QTableWidget *StManagerStudyListComp::createStudyTable ()
   table->setEditTriggers( QAbstractItemView::NoEditTriggers );
 
   QStringList labels;
-  labels << tr( "Patient ID" ) << tr( "Name" ) << tr( "Accesion" )
-         << tr( "Modality" ) << tr( "Description" ) << tr( "Date" )
-         << tr( "Time" ) << tr( "Study ID" ) << tr( "Sex" )
-         << tr( "Birthdate" ) << tr( "Referring MD" ) << tr( "Institution" )
-         << tr( "Location" ) << tr( "Server" );
+  for ( int i = 0; i < ATTRIBUTE_NUMBER; i++ ) {
+    labels << tr( attributeNames[i] );
+  }
   
   table->setColumnCount( labels.size() );
   table->setHorizontalHeaderLabels( labels );
@@ -364,8 +509,6 @@ QTableWidget *StManagerStudyListComp::createStudyTable ()
 QTreeView *StManagerStudyListComp::createDirectoryTreeView ()
 {
   QTreeView *directoryTree = new QTreeView;
-
-  // directoryTree->setFixedWidth( 220 );
 
   QDirModel *model = new QDirModel();
   model->setFilter( QDir::Dirs | QDir::NoDotAndDotDot | QDir::Drives );
@@ -386,5 +529,18 @@ QPushButton *StManagerStudyListComp::createButton ( const QString &text, const c
   connect( button, SIGNAL(clicked()), this, member );
 
   return button;
+}
+
+
+QToolButton *StManagerStudyListComp::createToolButton ( const QIcon &icon )
+{
+  QToolButton *toolButton = new QToolButton();
+  toolButton->setCheckable( true );
+  toolButton->setAutoExclusive( true );
+
+  toolButton->setIconSize( QSize( 27, 27 ) );
+  toolButton->setIcon( icon );
+
+  return toolButton;
 }
 
