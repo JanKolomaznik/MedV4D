@@ -160,7 +160,7 @@ Image< ElementType, 2 >::GetPointer(
 	xStride = _imageData->GetDimensionInfo( 0 ).stride;
 	yStride = _imageData->GetDimensionInfo( 1 ).stride;
 
-	return & GetElement( _dimExtents[0].minimum, _dimExtents[1].minimum );
+	return _imageData->Get( _dimExtents[0].minimum, _dimExtents[1].minimum );
 }
 
 
@@ -358,7 +358,7 @@ Image< ElementType, 3 >::GetPointer(
 	yStride = _imageData->GetDimensionInfo( 1 ).stride;
 	zStride = _imageData->GetDimensionInfo( 2 ).stride;
 
-	return & GetElement( _dimExtents[0].minimum, _dimExtents[1].minimum, _dimExtents[2].minimum );
+	return &_imageData->Get( _dimExtents[0].minimum, _dimExtents[1].minimum, _dimExtents[2].minimum );
 }
 
 template< typename ElementType >
