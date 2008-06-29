@@ -85,12 +85,18 @@ template< typename ElementType >
 Image< ElementType, 2 > &
 Image< ElementType, 2 >::CastAbstractImage( AbstractImage & image )
 {
-	if( dynamic_cast< Image< ElementType, Dimension > * >( &image ) == NULL ) {
-		//TODO throw exception
-	}
-
-	return static_cast< Image< ElementType, Dimension > & >( image );
+	//TODO - handle exception well
+	return dynamic_cast< Image< ElementType, Dimension > & >( image );
 }
+
+template< typename ElementType >
+const Image< ElementType, 2 > &
+Image< ElementType, 2 >::CastAbstractImage( const AbstractImage & image )
+{
+	//TODO - handle exception well
+	return dynamic_cast< const Image< ElementType, Dimension > & >( image );
+}
+
 
 template< typename ElementType >
 typename Image< ElementType, 2 >::Ptr 
@@ -138,6 +144,25 @@ Image< ElementType, 2 >::GetElement( size_t x, size_t y )const
 	
 	return _imageData->Get( x, y );
 }
+
+template< typename ElementType >
+ElementType *
+Image< ElementType, 2 >::GetPointer( 
+			size_t &width,
+			size_t &height,
+			int &xStride,
+			int &yStride
+		  )const
+{
+	width = _dimExtents[0].maximum - _dimExtents[0].minimum;
+	height = _dimExtents[1].maximum - _dimExtents[1].minimum;
+
+	xStride = _imageData->GetDimensionInfo( 0 ).stride;
+	yStride = _imageData->GetDimensionInfo( 1 ).stride;
+
+	return & GetElement( _dimExtents[0].minimum, _dimExtents[1].minimum );
+}
+
 
 template< typename ElementType >
 typename Image< ElementType, 2 >::Ptr
@@ -231,11 +256,16 @@ template< typename ElementType >
 Image< ElementType, 3 > &
 Image< ElementType, 3 >::CastAbstractImage( AbstractImage & image )
 {
-	if( dynamic_cast< Image< ElementType, Dimension > * >( &image ) == NULL ) {
-		//TODO throw exception
-	}
+	//TODO - handle exception well
+	return dynamic_cast< Image< ElementType, Dimension > & >( image );
+}
 
-	return static_cast< Image< ElementType, Dimension > & >( image );
+template< typename ElementType >
+const Image< ElementType, 3 > &
+Image< ElementType, 3 >::CastAbstractImage( const AbstractImage & image )
+{
+	//TODO - handle exception well
+	return dynamic_cast< const Image< ElementType, Dimension > & >( image );
 }
 
 template< typename ElementType >
@@ -310,6 +340,28 @@ Image< ElementType, 3 >::GetRestricted2DImage(
 }
 
 template< typename ElementType >
+ElementType *
+Image< ElementType, 3 >::GetPointer( 
+			size_t &width,
+			size_t &height,
+			size_t &depth,
+			int &xStride,
+			int &yStride,
+			int &zStride
+		  )const
+{
+	width = _dimExtents[0].maximum - _dimExtents[0].minimum;
+	height = _dimExtents[1].maximum - _dimExtents[1].minimum;
+	depth = _dimExtents[2].maximum - _dimExtents[2].minimum;
+
+	xStride = _imageData->GetDimensionInfo( 0 ).stride;
+	yStride = _imageData->GetDimensionInfo( 1 ).stride;
+	zStride = _imageData->GetDimensionInfo( 2 ).stride;
+
+	return & GetElement( _dimExtents[0].minimum, _dimExtents[1].minimum, _dimExtents[2].minimum );
+}
+
+template< typename ElementType >
 typename Image< ElementType, 3 >::Ptr
 Image< ElementType, 3 >::GetRestricted3DImage( 
 		size_t x1, 
@@ -320,7 +372,6 @@ Image< ElementType, 3 >::GetRestricted3DImage(
 		size_t z2 
 		)
 {
-
 }
 
 //*****************************************************************************

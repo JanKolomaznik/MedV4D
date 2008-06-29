@@ -14,7 +14,8 @@ NAME=		m4dWidgets
 #Names of target sources
 TARGETS=	m4dGUIVtkRenderWindowWidget \
 		m4dGUIStudyManagerWidget \
-		m4dGUIScreenLayoutWidget
+		m4dGUIScreenLayoutWidget \
+		m4dSliceViewerWidget
 
 SUBDIR=		components
 TARGETS2=	StManagerFilterComp \
@@ -24,6 +25,7 @@ TARGETS2=	StManagerFilterComp \
 MOCINPUT=	m4dGUIStudyManagerWidget.h \
 		m4dGUIVtkRenderWindowWidget.h \
 		m4dGUIScreenLayoutWidget.h \
+		m4dSliceViewerWidget.h \
 		StManagerFilterComp.h \
 		StManagerHProtocolsComp.h \
 		StManagerStudyListComp.h

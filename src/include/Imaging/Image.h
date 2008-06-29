@@ -117,6 +117,9 @@ public:
 	static Image< ElementType, 2 > &
 	CastAbstractImage( AbstractImage & image );
 
+	static const Image< ElementType, 2 > &
+	CastAbstractImage( const AbstractImage & image );
+
 	static typename Image< ElementType, 2 >::Ptr 
 	CastAbstractImage( AbstractImage::AImagePtr & image );
 
@@ -151,9 +154,9 @@ public:
 	GetPointer( 
 			size_t &width,
 			size_t &height,
-			size_t &xStride,
-			size_t &yStride
-		  );
+			int &xStride,
+			int &yStride
+		  )const;
 
 	Ptr
 	GetRestricted2DImage( 
@@ -224,6 +227,9 @@ public:
 	static Image< ElementType, 3 > &
 	CastAbstractImage( AbstractImage & image );
 
+	static const Image< ElementType, 3 > &
+	CastAbstractImage( const AbstractImage & image );
+
 	static typename Image< ElementType, 3 >::Ptr 
 	CastAbstractImage( AbstractImage::AImagePtr & image );
 
@@ -247,10 +253,10 @@ public:
 			size_t &width,
 			size_t &height,
 			size_t &depth,
-			size_t &xStride,
-			size_t &yStride,
-			size_t &zStride
-		  );
+			int &xStride,
+			int &yStride,
+			int &zStride
+		  )const;
 
 	typename Image< ElementType, 2 >::Ptr
 	GetRestricted2DImage( 
@@ -336,6 +342,9 @@ public:
 	static Image< ElementType, 4 > &
 	CastAbstractImage( AbstractImage & image );
 
+	static const Image< ElementType, 4 > &
+	CastAbstractImage( const AbstractImage & image );
+
 	static typename Image< ElementType, 4 >::Ptr 
 	CastAbstractImage( AbstractImage::AImagePtr & image );
 
@@ -360,11 +369,11 @@ public:
 			size_t &height,
 			size_t &depth,
 			size_t &time,
-			size_t &xStride,
-			size_t &yStride,
-			size_t &zStride,
-			size_t &tStride
-		  );
+			int &xStride,
+			int &yStride,
+			int &zStride,
+			int &tStride
+		  )const;
 
 	typename Image< ElementType, 2 >::Ptr
 	GetRestricted2DImage( 
