@@ -8,13 +8,11 @@ namespace M4D
 namespace Viewer
 {
 
-m4dSliceViewerWidget::m4dSliceViewerWidget( Imaging::Image< int16, 3 >::Ptr img, QWidget *parent)
+m4dSliceViewerWidget::m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< int16, 3 > >& conn, QWidget *parent)
     : QGLWidget(parent)
 {
-    _image = img;
-    //conn.ConnectConsumer( _inPort );
-    //Imaging::AbstractImage aImage = _inPort.GetAbstractImage();
-    _sliceNum = _image->GetDimensionExtents(2).minimum; //Imaging::Image< int16, 3 >::CastAbstractImage(aImage).GetDimensionExtents(2).minimum;
+    conn.ConnectConsumer( _inPort );
+    _sliceNum = Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(2).minimum;
     _offset.setX(0);
     _offset.setY(0);
     _lastPos.setX(-1);
@@ -33,20 +31,16 @@ m4dSliceViewerWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_ACCUM_BUFFER_BIT);
     glLoadIdentity();
     size_t i, j;
-    int16 pixel;
-    for ( i = _image->GetDimensionExtents(0).minimum; //Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(0).minimum;
-    	  i < _image->GetDimensionExtents(0).maximum; //Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(0).maximum;
-	  ++i )
-        for ( j = _image->GetDimensionExtents(1).minimum; //Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(1).minimum;
-	      j < _image->GetDimensionExtents(1).maximum; //Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(1).maximum;
-	      ++j )
-	{
-            glRasterPos2i( i - _image->GetDimensionExtents(0).minimum, //Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(0).minimum,
-	    		   j - _image->GetDimensionExtents(1).minimum ); //Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(1).minimum );
-	    pixel = _image->GetElement( i, j, _sliceNum ); //Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetElement( i, j, _sliceNum );
-	    glDrawPixels( 1, 1, GL_LUMINANCE, GL_SHORT, &pixel );
-	    glFlush();
-	}
+    glRasterPos2i( 0, 0 );
+    size_t height, width, depth;
+    int stride;
+    const int16* pixel = Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
+    pixel += ( _sliceNum - Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(2).minimum ) * height * width;
+    glDrawPixels( width, height, GL_LUMINANCE, GL_UNSIGNED_SHORT, pixel );
+    glPixelZoom( _zoomRate, _zoomRate );
+    glTranslatef( _offset.x(), _offset.y(), 0 );
+    glTranslatef( -( _zoomRate - 1.0 ) * width, -( _zoomRate - 1.0 ) * height, 0 );
+    glFlush();
 }
 
 void
@@ -76,7 +70,7 @@ m4dSliceViewerWidget::mouseMoveEvent(QMouseEvent *event)
     if ( ( event->buttons() & Qt::LeftButton ) &&
          ( event->buttons() & Qt::RightButton ) )
     {
-        zoomImage( dy );
+        zoomImage( -dy );
     }
     else if (event->buttons() & Qt::LeftButton)
     {
@@ -96,8 +90,7 @@ m4dSliceViewerWidget::mouseMoveEvent(QMouseEvent *event)
 void
 m4dSliceViewerWidget::zoomImage( int amount )
 {
-    _zoomRate += 0.1 * amount;
-    updateGL();
+    _zoomRate += 0.01 * amount;
 }
 
 void
@@ -120,10 +113,10 @@ m4dSliceViewerWidget::wheelEvent(QWheelEvent *event)
 void
 m4dSliceViewerWidget::setSliceNum( size_t num )
 {
-    if ( num < _image->GetDimensionExtents(2).minimum || //Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(2).minimum ||
-         num >= _image->GetDimensionExtents(2).maximum ) //Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(2).maximum )
+    if ( num < Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(2).minimum ||
+         num >= Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(2).maximum )
     {
-    	throw ErrorHandling::ExceptionBase( "Wrong index." );
+    	throw ErrorHandling::ExceptionBase( "Index out of bounds." );
     }
     _sliceNum = num;
 }

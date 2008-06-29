@@ -5,6 +5,8 @@
 #include "Imaging/Image.h"
 #include "Common.h"
 #include "ExceptionBase.h"
+#include "Imaging/Ports.h"
+#include "Imaging/DefaultConnection.h"
 
 namespace M4D
 {
@@ -16,8 +18,9 @@ class m4dSliceViewerWidget : public QGLWidget
     Q_OBJECT
 
 public:
-    m4dSliceViewerWidget( Imaging::Image<int16, 3>::Ptr img, QWidget *parent = 0);
+    m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< int16, 3 > >& conn, QWidget *parent = 0 );
     ~m4dSliceViewerWidget();
+    Imaging::InputPortAbstractImage& GetInputPort();
 
 protected:
     void paintGL();
@@ -33,8 +36,8 @@ protected:
 
 private:
     
-    Imaging::Image<int16, 3>::Ptr _image;
-    
+    Imaging::InputPortAbstractImage _inPort;
+
     QPoint _lastPos;
     QPoint _offset;
     int _sliceNum;
