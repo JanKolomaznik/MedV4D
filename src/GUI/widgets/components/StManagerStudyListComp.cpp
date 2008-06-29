@@ -183,7 +183,6 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
         {
           DICOMDIRPath = QDir::currentPath();
         }
-        QMessageBox::warning( this, tr( "Path" ), DICOMDIRPath );
 
         dcmProvider->LocalFind( *activeResultSet, DICOMDIRPath.toStdString() );
         break;
@@ -227,7 +226,8 @@ void StManagerStudyListComp::view ()
 
     // we are sure, there is exactly one selected
     int selectedRow = activeExamTable->selectedItems()[0]->row();
-    DcmProvider::TableRow *row = &activeResultSet->at( selectedRow );
+    int idx = activeExamTable->item( selectedRow, ATTRIBUTE_NUMBER )->text().toInt();
+    DcmProvider::TableRow *row = &activeResultSet->at( idx );
 
     const char *recentTypePrefix = RECENT_REMOTE_EXAMS_SETTINGS_NAME;
 
@@ -412,6 +412,10 @@ void StManagerStudyListComp::addRowToStudyTable ( const DcmProvider::TableRow *r
   for ( unsigned colNum = 0; colNum < tableRowItems.size(); colNum ++ ) {  
     table->setItem( rowNum, colNum, tableRowItems[colNum] );
   }
+
+  QString idx;
+  table->setItem( rowNum, ATTRIBUTE_NUMBER, new QTableWidgetItem( idx.setNum( rowNum ) ) );
+
   table->setRowHeight( rowNum, 23 );
 }
 
@@ -496,8 +500,9 @@ QTableWidget *StManagerStudyListComp::createStudyTable ()
     labels << tr( attributeNames[i] );
   }
   
-  table->setColumnCount( labels.size() );
+  table->setColumnCount( labels.size() + 1 );
   table->setHorizontalHeaderLabels( labels );
+  table->setColumnHidden( ATTRIBUTE_NUMBER, true );
 
   connect( table, SIGNAL(itemSelectionChanged()), this, SLOT(setEnabledView()) );
   connect( table, SIGNAL(itemDoubleClicked(QTableWidgetItem *)), this, SLOT(view()) );
