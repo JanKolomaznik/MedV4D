@@ -42,6 +42,8 @@ private:
     QPoint _offset;
     int _sliceNum;
     double _zoomRate;
+    GLfloat _brightnessRate;
+    GLfloat _contrastRate;
 };
 
 } /*namespace Viewer*/

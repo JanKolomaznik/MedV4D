@@ -2,6 +2,7 @@
 
 #include <QtGui>
 #include <QtOpenGL>
+#include <string.h>
 
 namespace M4D
 {
@@ -18,6 +19,8 @@ m4dSliceViewerWidget::m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::I
     _lastPos.setX(-1);
     _lastPos.setY(-1);
     _zoomRate = 1.0;
+    _brightnessRate = 0.0;
+    _contrastRate = 0.0;
 }
 
 m4dSliceViewerWidget::~m4dSliceViewerWidget()
@@ -30,16 +33,31 @@ m4dSliceViewerWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_ACCUM_BUFFER_BIT);
     glLoadIdentity();
-    size_t i, j;
+    unsigned i;
+    //glRasterPos2i( _offset.x()>0?_offset.x():0, _offset.y()>0?_offset.y():0 );
+    //glTranslatef( _offset.x(), _offset.y(), 0 );
     glRasterPos2i( 0, 0 );
     size_t height, width, depth;
     int stride;
     const int16* pixel = Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
     pixel += ( _sliceNum - Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(2).minimum ) * height * width;
+    unsigned short* black = new unsigned short[ height * width ];
+    memset( black, 0, height * width * sizeof(unsigned short) );
+    unsigned short* avgLum = new unsigned short[ height * width ];
+    GLfloat avg = 0.0;
+    for ( i = 0; i < height * width; ++i ) avg += pixel[i]/65535.;
+    avg = avg * 65535. / (float)(width * height);
+    for ( i = 0; i < height * width; ++i ) avgLum[i] = avg;
+    glDrawPixels( width, height, GL_LUMINANCE, GL_UNSIGNED_SHORT, avgLum );
+    glAccum( GL_ACCUM, _contrastRate );
+    glDrawPixels( width, height, GL_LUMINANCE, GL_UNSIGNED_SHORT, black );
+    glAccum( GL_ACCUM, _brightnessRate );
     glDrawPixels( width, height, GL_LUMINANCE, GL_UNSIGNED_SHORT, pixel );
+    glAccum( GL_ACCUM, 1.0 - ( _brightnessRate + _contrastRate ) );
+    glAccum( GL_RETURN, 1.0 );
+    delete[] black;
+    delete[] avgLum;
     glPixelZoom( _zoomRate, _zoomRate );
-    glTranslatef( _offset.x(), _offset.y(), 0 );
-    glTranslatef( -( _zoomRate - 1.0 ) * width, -( _zoomRate - 1.0 ) * height, 0 );
     glFlush();
 }
 
@@ -74,11 +92,11 @@ m4dSliceViewerWidget::mouseMoveEvent(QMouseEvent *event)
     }
     else if (event->buttons() & Qt::LeftButton)
     {
-        moveImage( QPoint( dx, dy ) );
+        moveImage( QPoint( dx, -dy ) );
     }
     else if (event->buttons() & Qt::RightButton)
     {
-        adjustContrast(  dx );
+        adjustContrast(  -dx );
 	adjustBrightness( dy );
     }
 
@@ -91,6 +109,12 @@ void
 m4dSliceViewerWidget::zoomImage( int amount )
 {
     _zoomRate += 0.01 * amount;
+    //_offset.setX( _offset.x() - 
+    //		  (int)( amount * ( Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(0).maximum -
+    //		  		    Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(0).minimum ) * 0.005 ) );
+    //_offset.setY( _offset.y() - 
+    //		  (int)( amount * ( Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(1).maximum -
+    //		  		    Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(1).minimum ) * 0.005 ) );
 }
 
 void
@@ -132,13 +156,13 @@ m4dSliceViewerWidget::moveImage( QPoint diff )
 void
 m4dSliceViewerWidget::adjustBrightness( int amount )
 {
-    //TODO
+    _brightnessRate += ((GLfloat)amount)/((GLfloat)height()/2.0);
 }
 
 void
 m4dSliceViewerWidget::adjustContrast( int amount )
 {
-    //TODO
+    _contrastRate += ((GLfloat)amount)/((GLfloat)width()/2.0);
 }
 
 } /*namespace Viewer*/
