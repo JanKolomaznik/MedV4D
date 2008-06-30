@@ -3,10 +3,10 @@ MAKE=make
 
 
 .PHONY:all
-all:	m4dPilot FilteringTest
+all:	m4dPilot FilteringTest ViewerTest
 
 .PHONY:clean-all
-clean-all:	clean-m4dPilot clean-FilteringTest
+clean-all:	clean-m4dPilot clean-FilteringTest clean-ViewerTest
 #------------------------------------------------------------------------------
 .PHONY:m4dPilot
 m4dPilot:
@@ -14,6 +14,10 @@ m4dPilot:
 
 .PHONY:FilteringTest
 FilteringTest:
+	 $(MAKE) --directory=$@
+
+.PHONY:ViewerTest
+ViewerTest:
 	 $(MAKE) --directory=$@
 #------------------------------------------------------------------------------
 
@@ -25,4 +29,8 @@ clean-m4dPilot:
 .PHONY:clean-FilteringTest
 clean-FilteringTest:
 	 $(MAKE) --directory=FilteringTest clean
+
+.PHONY:clean-ViewerTest
+clean-ViewerTest:
+	 $(MAKE) --directory=ViewerTest clean
 #------------------------------------------------------------------------------
