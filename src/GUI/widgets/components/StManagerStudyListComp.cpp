@@ -3,7 +3,6 @@
 #include <QtGui>
 
 #include <vector>
-#include <sstream>
 
 // DICOM includes:
 #include "ExceptionBase.h"
@@ -60,11 +59,6 @@ StManagerStudyListComp::StManagerStudyListComp ( m4dGUIVtkRenderWindowWidget *vt
                                                  QSizePolicy::Expanding );
   buttonLayout->addItem( verticalSpacer, 4, 0, 1, 2 );
 
-  // =-=-=-=-=-=-=-=- Spacer -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-  QSpacerItem *horizontalSpacer = new QSpacerItem( 8, 2, QSizePolicy::Minimum, 
-                                                 QSizePolicy::Minimum );
-
   // =-=-=-=-=-=-=-=- Tabs -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
   
   studyListTab = new QTabWidget;
@@ -113,10 +107,14 @@ StManagerStudyListComp::StManagerStudyListComp ( m4dGUIVtkRenderWindowWidget *vt
 
   QHBoxLayout *studyListLayout = new QHBoxLayout;
   studyListLayout->addLayout( buttonLayout );
+  QSpacerItem *horizontalSpacer = new QSpacerItem( 8, 2, QSizePolicy::Minimum, 
+                                                   QSizePolicy::Minimum );
   studyListLayout->addItem( horizontalSpacer );
   studyListLayout->addWidget( studyListTab );
 
   setLayout( studyListLayout );
+
+  // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
   // DICOM initializations:
   dcmProvider = new DcmProvider();
@@ -179,8 +177,7 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
           qm = directoryTree->selectionModel()->selectedIndexes()[0];
           DICOMDIRPath = ((QDirModel *)directoryTree->model())->filePath( qm );
         }
-        else 
-        {
+        else {
           DICOMDIRPath = QDir::currentPath();
         }
 
@@ -215,7 +212,6 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
 }
 
 
-// progessBar needed...
 void StManagerStudyListComp::view ()
 {
   // this test is not necessary (view button is disabled when no selection)
@@ -323,7 +319,9 @@ void StManagerStudyListComp::setEnabledView ()
 
 void StManagerStudyListComp::activeTabChanged ()
 {
+  // shown only in DICOMDIR mode
   pathButton->hide();
+  // shown only in recent mode
   recentRemoteButton->hide();
   recentDICOMDIRButton->hide();
 
@@ -413,6 +411,7 @@ void StManagerStudyListComp::addRowToStudyTable ( const DcmProvider::TableRow *r
     table->setItem( rowNum, colNum, tableRowItems[colNum] );
   }
 
+  // save original position to hidden column
   QString idx;
   table->setItem( rowNum, ATTRIBUTE_NUMBER, new QTableWidgetItem( idx.setNum( rowNum ) ) );
 

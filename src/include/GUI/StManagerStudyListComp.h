@@ -17,40 +17,153 @@ class QTableWidget;
 class QSettings;
 class QTreeView;
 
+/**
+ * @class StManagerStudyListComp StManagerStudyListComp.h
+ * Class representing one of the base components of Study Manager Widget.
+ * It manages the uniform search result viewing and manipulation - Recent Exams (remote and DICOMDIR), 
+ * Remote Exams, DICOMDIR. 
+ */
 class StManagerStudyListComp: public QWidget
 {
   Q_OBJECT
 
   public:
+
+    /** 
+     * Study Manager Study List Component constructor.
+     *
+     * @param vtkRenderWindowWidget pointer to the VTK Render Window Widget - where to
+     *        render image after clicking View
+     * @param studyManagerDialog pointer to the Study Manager Dialog - to close it after
+     *        clicking View
+     * @param parent pointer to the parent widget - default is 0
+     */
     StManagerStudyListComp ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget,
                              QDialog *studyManagerDialog, QWidget *parent = 0 );
+    
+    /** 
+     * Study Manager Study List Component destructor.
+     */
     ~StManagerStudyListComp ();
 
+    /** 
+     * Find called from Filter Component - depending on mode it's performing different searching actions.
+     * 
+     * @param firstName reference to string containing first name of the patient
+     * @param lastName reference to string containing last name of the patient
+     * @param patientID patient ID search mask
+     * @param fromDate reference to string containing date (from) in yyyyMMdd format
+     * @param toDate reference to string containing date (to) in yyyyMMdd format 
+     * @param reference to vector of strings containing set of wanted modalities
+     * @throws ExceptionBase, exception -> TOWRITE
+     */
     void find ( const std::string &firstName, const std::string &lastName, 
                 const std::string &patientID, 
                 const std::string &fromDate, const std::string &toDate,
                 const M4D::Dicom::DcmProvider::StringVector &modalitiesVect );
 
   private slots:
+
+    /**
+     * Slot for View button - view the selected exam (depending on mode - recent, remote, DICOMDIR).
+     */
     void view ();
+
+    /**
+     * Slot for managing View button - when to enable it.
+     */
     void setEnabledView ();
+
+    /**
+     * Slot for managing tabchange - to switch some buttons and variables.
+     */
     void activeTabChanged ();
+
+    /**
+     * Slot for directory tree behavior - to hide or show it.
+     */
     void path ();
 
   private:
+
+    /** 
+     * Adds result of Find - ResultSet - to Study Table - depending on searching mode.
+     * 
+     * @param resultSet pointer to ResultSet to be added
+     * @param table pointer to table where to display results
+     */
     void addResultSetToStudyTable ( const M4D::Dicom::DcmProvider::ResultSet *resultSet, 
                                     QTableWidget *table );
+
+    /** 
+     * Adds result (one row) of Find - TableRow - to Study Table - depending on searching mode.
+     * 
+     * @param row pointer to TableRow to be added
+     * @param table pointer to table where to display results
+     */
     void addRowToStudyTable ( const M4D::Dicom::DcmProvider::TableRow *row,
                               QTableWidget *table );
+
+    /** 
+     * Updates Recent Exams by currently viewed one - saves it using Settings mechanism of Qt -
+     * depending on type of the exam - remote, DICOMDIR.
+     * 
+     * @param row pointer to TableRow to be added - currently viewed
+     * @param prefix prefix for group of settings (to identify them) - same for one type of exam
+     */
     void updateRecentExams ( const M4D::Dicom::DcmProvider::TableRow *row, const QString &prefix );
+
+    /** 
+     * Loads Recent Exams to ResultSet - it's using Settings mechanism of Qt -
+     * depending on type of the exam - remote, DICOMDIR.
+     * 
+     * @param resultSet reference to ResultSet - the result of the load
+     * @param prefix prefix for group of settings (to identify them) - same for one type of exam
+     */
     void loadRecentExams ( M4D::Dicom::DcmProvider::ResultSet &resultSet, const QString &prefix );
+
+    /** 
+     * Saves a given TableRow to specific QSettings.
+     * 
+     * @param row pointer to TableRow to be saved
+     * @param settings reference to settings - where to save the row
+     */
     void updateRecentRow ( const M4D::Dicom::DcmProvider::TableRow *row, QSettings &settings );
+
+    /** 
+     * Loads a TableRow from specific QSettings
+     * 
+     * @param row reference to TableRow - the result of the load
+     * @param settings reference to settings - where is the wanted row
+     */
     void loadRecentRow ( M4D::Dicom::DcmProvider::TableRow &row, const QSettings &settings );
 
+
+    /** 
+     * Creates a StudyTable and configures it.
+     */
     QTableWidget *createStudyTable ();
+
+    /** 
+     * Creates a DirectoryTreeView and configures it.
+     */
     QTreeView    *createDirectoryTreeView ();
+
+    /** 
+     * Creates a Button and connects it with given member.
+     *
+     * @param text reference to caption string
+     * @param member other side of the connection
+     */
     QPushButton  *createButton ( const QString &text, const char *member );
+
+    /** 
+     * Creates a ToolButton and and configures it.
+     *
+     * @param icon reference to icon of the button
+     */
     QToolButton  *createToolButton ( const QIcon &icon );
+
 
     /// Pointer to the VTK Render Window Widget - where to render image after clicking View. 
     m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget;
@@ -60,18 +173,22 @@ class StManagerStudyListComp: public QWidget
     /// Names of the exam/image attributes
     static const char *attributeNames[];
 
+    /// Buttons for viewing, switching between modes, hiding config. parts
     QPushButton  *viewButton;
     QPushButton  *pathButton;
     QToolButton  *recentRemoteButton;
     QToolButton  *recentDICOMDIRButton;
+    /// Tabs for different searching modes
     QTabWidget   *studyListTab;
+    /// Result tables for different searching modes
     QTableWidget *recentExamsTable;
     QTableWidget *remoteExamsTable;
     QTableWidget *DICOMDIRTable;
     QTableWidget *activeExamTable;
+    /// Directory tree for browsing in DICOMDIR mode
     QTreeView    *directoryTree;
 
-    /// The provider object.
+    /// The provider object - communication with DICOM layer.
     M4D::Dicom::DcmProvider *dcmProvider;
 
     /// Pointer to vector of TableRows - result of the Find operation in Recent Exams (remote) mode.
