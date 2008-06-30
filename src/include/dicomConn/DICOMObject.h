@@ -36,6 +36,8 @@ public:
 
 	void *m_dataset;
 
+  void *m_fileFormat;   // support for loading & saving
+  
 	// image information members
 	inline uint8 GetPixelSize( void) { return m_pixelSize; }
 	inline uint16 GetWidth( void) { return m_width; }

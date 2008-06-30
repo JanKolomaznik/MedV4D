@@ -271,7 +271,7 @@ LocalService::SolveFileGET( const std::string & fileName,
     dataSet->findAndGetOFString( DCM_StudyInstanceUID, ofStr);
     entry.studyID.append( ofStr.c_str() );
 
-    //dataSet->findAndGetOFString( DCM_SeriesInstanceUID, ofStr);
+    dataSet->findAndGetOFString( DCM_SeriesInstanceUID, ofStr);
     setID.append( ofStr.c_str() );
   }
 
@@ -286,7 +286,7 @@ LocalService::SolveFileGET( const std::string & fileName,
 
     // copy dataset reference & init
     DcmProvider::DicomObj *newOne = &result.back();
-    newOne->m_dataset = dfile.getDataset();
+    newOne->Load( fileName);
     newOne->Init();
   }
 }

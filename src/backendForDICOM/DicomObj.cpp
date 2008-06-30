@@ -40,7 +40,7 @@ DcmProvider::DicomObj::Save( const string &path)
 	//OFBool            opt_useMetaheader = OFTrue;
 
 	OFCondition cond = dataSet->saveFile( path.c_str());
-	if (cond.bad())
+	if (! cond.good())
 	{
 		LOG( "Cannot write file:" << path);
 		throw ExceptionBase();
@@ -52,16 +52,17 @@ DcmProvider::DicomObj::Save( const string &path)
 void
 DcmProvider::DicomObj::Load( const string &path) 
 {
-	DcmDataset *dataSet = new DcmDataset();
-	OFCondition cond = dataSet->loadFile( path.c_str());
+  DcmFileFormat *dfile = new DcmFileFormat();
+  m_fileFormat = dfile;
 
-	if (cond.bad())
+	OFCondition cond = dfile->loadFile( path.c_str());
+	if (! cond.good())
 	{
 		LOG( "Cannot load the file: " << path);
 		throw ExceptionBase();
 	}
 
-	m_dataset = (void *)dataSet;
+  m_dataset = (void *) dfile->getDataset();
 }
 
 ///////////////////////////////////////////////////////////////////////
