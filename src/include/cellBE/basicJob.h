@@ -17,6 +17,13 @@ namespace CellBE
 class BasicJob
   : public BasicSocket
 {
+  friend class Server;
+
+public:
+  typedef std::vector<FilterSetting *> FilterVector;
+
+  PrimaryJobHeader primHeader;
+  SecondaryJobHeader secHeader;
 
 protected:
   BasicJob(boost::asio::io_service &service) : BasicSocket(service) {}
@@ -28,11 +35,7 @@ protected:
     PING
   };
 
-  typedef std::vector<FilterSetting *> FilterVector;
   FilterVector m_filters;
-
-  PrimaryJobHeader primHeader;
-  SecondaryJobHeader secHeader;
 
   // data buffer to send
   template< class T>

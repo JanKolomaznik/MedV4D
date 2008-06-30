@@ -51,7 +51,7 @@ ClientJob::EndSend( const boost::system::error_code& e)
 void
 ClientJob::GenerateJobID( void)
 {
-  NetStreamArrayBuf s( primHeader.id, IDLEN);
+  NetStreamArrayBuf s( primHeader.id.id, IDLEN);
 
   s << ++lastID;
   //s << m_soc  // random based on host name

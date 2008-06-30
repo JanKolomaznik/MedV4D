@@ -4,34 +4,36 @@
 #include "Common.h"
 #include "server.h"
 
-using namespace M4D::CellBE;
+#include "cellBE/netCommons.h"
+#include "cellBE/netstream.h"
 
-#ifdef MESSAGE_HEADERS_H
-int i=10;
-#else
-int i=20;
-#endif
+using namespace M4D::CellBE;
+using boost::asio::ip::tcp;
 
 ///////////////////////////////////////////////////////////////////////
 
 Server::Server(boost::asio::io_service &io_service)
-  : m_acceptor(io_service, tcp::endpoint(tcp::v4(), (uint16) SERVER_PORT))
+  : m_acceptor(io_service, tcp::endpoint(tcp::v4(), (uint16) SERVER_PORT) )
 {
   // prepare ping message content
 #define PING_MESSAGE_CONTENT "Hi.This is cell server."
   {
-    NetStreamVect s;
+    std::stringstream s;
     s << PING_MESSAGE_CONTENT;
     s << "(IP: " << m_acceptor.local_endpoint().address() << ", port:";
     s << m_acceptor.local_endpoint().port() << ")";
+    std::string str = s.str();
 
-    m_pingStream << (uint16) s.length();
-    m_pingStream << s;
+    m_pingStream << (uint16) str.size();
+
+    // copy ping message string content to m_pingStream
+    for( std::string::iterator it=str.begin(); it != str.end(); it++)
+      m_pingStream << (uint8) *it;
   }
 
   // free headers are all
   for( uint32 i=0; i < HEADER_POOL_SIZE; i++)
-    m_freeHeaders.push_back( &m_freeHeaders[i]);
+    m_freeHeaders.push_back( m_freeHeaders[i]);
 
   // start server accepting
   Accept();
@@ -45,7 +47,7 @@ Server::Accept( void)
   // create new instance of OneClientConnection
   //OneClientConnection *newConnection = 
   //  new OneClientConnection(m_acceptor.io_service());
-  tcp::socket *sock = new tcp::socket(m_acceptor.io_service());
+  tcp::socket *sock = new tcp::socket( m_acceptor.io_service());
 
   // and start accepting
   m_acceptor.async_accept(
@@ -62,7 +64,7 @@ Server::EndAccepted( tcp::socket *clientSock,
 {
   try {
 
-    HandleErrors( error);
+    BasicSocket::HandleErrors( error);
 
     PrimaryJobHeader *freeHeader = m_freeHeaders.back();
     m_freeHeaders.pop_back();
@@ -91,43 +93,43 @@ Server::EndPrimaryHeaderRead( tcp::socket *clientSock, PrimaryJobHeader *header,
         const boost::system::error_code& error)
 {
   try {
-    HandleErrors( error);
+    BasicSocket::HandleErrors( error);
 
     // parse primary job header
     PrimaryJobHeader::Deserialize( header);
 
     ServerJob *existing;
 
-    switch( (Job::Action) header->action)
+    switch( (BasicJob::Action) header->action)
     {
-    case Job::CREATE:
-      existing = new ServerJob();
+    case BasicJob::CREATE:
+      existing = new ServerJob( clientSock->get_io_service());
       existing->primHeader.id = header->id;
       existing->primHeader.endian = header->endian;
       existing->primHeader.dataSetType = header->dataSetType;
 
-      m_jobManager.add( existing);
+      m_jobManager.AddJob( existing);
 
       existing->ReadSecondaryHeader();
       break;
 
-    case Job::REEXEC:
-      existing = m_jobManager.find( header.id);
+    case BasicJob::REEXEC:
+      existing = m_jobManager.FindJob( header->id);
       existing->ReadSecondaryHeader();
       break;
 
-    case Job::DESTROY:
+    case BasicJob::DESTROY:
       try {
-        existing = m_jobManager.find( header.id);
-      } catch( ExceptionBase &e) {
-        LOG( "Job not found" << header.id);
+        existing = m_jobManager.FindJob( header->id);
+      } catch( ExceptionBase &) {
+        LOG( "Job not found" << header->id);
       }
-      m_jobManager.remove( header.id );
+      m_jobManager.RemoveJob( header->id );
 
       // TODO send ack?
       return;
 
-    case Job::PING:
+    case BasicJob::PING:
       WritePingMessage( clientSock);
       break;
 
@@ -139,7 +141,7 @@ Server::EndPrimaryHeaderRead( tcp::socket *clientSock, PrimaryJobHeader *header,
     //return header into free ones
     m_freeHeaders.push_back( header);
 
-  }catch( ExceptionBase &) {
+  } catch( ExceptionBase &) {
   }
 
 }
@@ -151,7 +153,7 @@ Server::EndWritePingMessage( tcp::socket *clientSock,
         const boost::system::error_code& error)
 {
   try {
-    HandleErrors( error);
+    BasicSocket::HandleErrors( error);
   } catch( NetException &) {
     // nothing to do
   }
@@ -167,7 +169,7 @@ Server::WritePingMessage( tcp::socket *clientSock)
   // write ping message
   clientSock->async_write_some(
     boost::asio::buffer( m_pingMessage),
-    boost::bind( &Server::EndPingMessageWritten, this, clientSock,
+    boost::bind( &Server::EndWritePingMessage, this, clientSock,
       boost::asio::placeholders::error)
     );
 }

@@ -26,13 +26,15 @@ public :
 //////////////////////////////////////////////////
 class BasicSocket
 {
+  friend class Server;
+
 protected:
   boost::asio::ip::tcp::socket m_socket;
 
   BasicSocket(boost::asio::io_service &service) : m_socket(service) {}
 
   // unified handling network errors.
-  void HandleErrors( boost::system::error_code error)
+  static void HandleErrors( boost::system::error_code error)
   {
     if( error)
     {

@@ -14,6 +14,8 @@ class ServerJob
   friend class Server;
   
 private:
+  ServerJob(boost::asio::io_service &service) : BasicJob(service) {}
+
   std::vector<uint8> m_filterSettingContent;
   std::vector<FilterSetting *> filters;
 

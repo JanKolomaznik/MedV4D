@@ -1,8 +1,7 @@
 // testing main for cell client
 
 #include "Common.h"
-#include "cellBE/clientJob.h"
-#include "cellBE/CellClient.h"
+#include "cellBE/cellClient.h"
 
 using namespace M4D::CellBE;
 
@@ -22,9 +21,7 @@ int main()
     Image3DProperties props;
     props.x = props.y = props.z = 233;
 
-    ClientJob *job = client.CreateJob( filters, props);
-
-    job->
+    ClientJob *job = client.CreateJob( filters, &props);
 
     client.Run();
   }

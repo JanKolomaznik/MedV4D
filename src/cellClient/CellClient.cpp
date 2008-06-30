@@ -69,12 +69,14 @@ CellClient::CreateJob( ClientJob::FilterVector &filters,
     props,
     FindAvailableServer( filters),
     m_io_service);
+
+  return newJob;
 }
 
 ///////////////////////////////////////////////////////////////////////
 
 const string &
-CellClient::FindAvailableServer( const Job::FilterVector &filters)
+CellClient::FindAvailableServer( const ClientJob::FilterVector &filters)
 {
 	// find available server with least load (load balancing)
 	return m_servers[0];

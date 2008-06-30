@@ -9,11 +9,55 @@ namespace CellBE
 {
   
 #define IDLEN 12
-typedef uint8* JobID;
+struct JobID
+{
+  uint8 id[IDLEN];
+
+  JobID() {}
+  inline JobID(const JobID &b)
+  {
+    for( int i=0; i<IDLEN; i++)
+      id[i] =  b.id[i];
+  }
+
+  bool operator < ( const JobID &b) const
+  {
+    for( int i=0; i<IDLEN; i++)
+    {
+      if( id[i] < b.id[i])
+        return false;
+    }
+    return false;
+  }
+
+};
+
+inline NetStream &operator<<( NetStream &s, const JobID &id)
+{
+  for( int i=0; i < IDLEN; i++)
+    s << id.id[i];
+  return s;
+}
+
+inline NetStream &operator>>( NetStream &s, JobID &id)
+{
+  for( int i=0; i < IDLEN; i++)
+    s >> (uint8) id.id[i];
+  return s;
+}
+
+inline std::ostream &operator<<( std::ostream &s, JobID &id)
+{
+  for( int i=0; i < IDLEN; i++)
+    s << (char) id.id[i];
+  return s;
+}
+
+///////////////////////////////////////////////////////////////////////
 
 struct PrimaryJobHeader
 {
-  uint8 id[IDLEN];
+  JobID id;
   
   uint8 action;
 
@@ -25,9 +69,7 @@ struct PrimaryJobHeader
   {
     NetStreamArrayBuf s( (uint8 *)h, sizeof( PrimaryJobHeader) );
 
-    for( int i=0; i < IDLEN; i++)
-      s << h->id[i];
-    s << h->action << h->dataSetType;
+    s << h->action << h->id << h->dataSetType;
 #ifdef LITTLE_ENDIAN
     s << (uint8) 0;
 #else
@@ -39,11 +81,11 @@ struct PrimaryJobHeader
   {
     NetStreamArrayBuf s( (uint8 *)h, sizeof( PrimaryJobHeader) );
 
-    for( int i=0; i < IDLEN; i++)
-      s >> h->id[i];
-    s >> h->action;
+    s >> h->action >> h->id >> h->dataSetType;
   }
 };
+
+///////////////////////////////////////////////////////////////////////
 
 struct SecondaryJobHeader
 {

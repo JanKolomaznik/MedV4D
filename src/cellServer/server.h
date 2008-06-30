@@ -5,7 +5,7 @@
 #include <map>
 
 #include "serverJob.h"
-//#include "jobManager.h"
+#include "jobManager.h"
 
 namespace M4D
 {
@@ -21,18 +21,19 @@ class Server
   private:
     void Accept();
 
-    void EndAccepted( tcp::socket *clientSock,
+    void EndAccepted( boost::asio::ip::tcp::socket *clientSock,
         const boost::system::error_code& error);
 
-    void EndPrimaryHeaderRead( tcp::socket *clientSock, ServerJob *job,
+    void EndPrimaryHeaderRead( boost::asio::ip::tcp::socket *clientSock,
+        PrimaryJobHeader *header,
         const boost::system::error_code& error);
 
     // writes ping message. Address & server info
-    void WritePingMessage( tcp::socket *clientSock);
-    void EndWritePingMessage( tcp::socket *clientSock,
+    void WritePingMessage( boost::asio::ip::tcp::socket *clientSock);
+    void EndWritePingMessage( boost::asio::ip::tcp::socket *clientSock,
         const boost::system::error_code& error);
 
-    tcp::acceptor m_acceptor;
+    boost::asio::ip::tcp::acceptor m_acceptor;
 
     JobManager m_jobManager;
 
@@ -42,8 +43,7 @@ class Server
 
     NetStreamVector m_pingStream;
 
-#define HEADER_POOL_SIZE 32;
-
+#define HEADER_POOL_SIZE 32
     PrimaryJobHeader m_headerPool[ HEADER_POOL_SIZE];
 
     typedef std::vector< PrimaryJobHeader *> HeaderVect;

@@ -1,6 +1,8 @@
 #ifndef CELLCLIENT_HPP
 #define CELLCLIENT_HPP
 
+#include "cellBE/clientJob.h"
+
 namespace M4D
 {
 namespace CellBE
@@ -28,7 +30,7 @@ private:
    *	Returns string reference containing address of least loaded available
    *	server able doing specified job
    */
-  const std::string & FindAvailableServer( const Job::FilterVector &filters);
+  const std::string & FindAvailableServer( const ClientJob::FilterVector &filters);
 
 };
 

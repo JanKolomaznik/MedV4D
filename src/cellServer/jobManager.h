@@ -10,10 +10,12 @@ namespace CellBE
 
 class JobManager
 {
+public:
+
   typedef std::map<JobID, ServerJob *> JobMap;
   JobMap m_jobs;
 
-  inline ServerJob *findJob( JobID id)
+  inline ServerJob *FindJob( JobID id)
   {
     JobMap::iterator it = m_jobs.find(id);
     if( it == m_jobs.end() )
@@ -24,7 +26,7 @@ class JobManager
 
   inline void AddJob( ServerJob *j)
   {
-    m_jobs.insert( JobMap::value_type(j->primheader.id, j) );
+    m_jobs.insert( JobMap::value_type(j->primHeader.id, j) );
   }
 
   inline void RemoveJob( JobID id)
@@ -35,6 +37,7 @@ class JobManager
     else
       m_jobs.erase( found);
   }
+
 };
 
 }}
