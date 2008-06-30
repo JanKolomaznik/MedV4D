@@ -12,6 +12,17 @@ namespace Viewer
 m4dSliceViewerWidget::m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< int16, 3 > >& conn, QWidget *parent)
     : QGLWidget(parent)
 {
+    SetInputPort( conn );
+}
+
+m4dSliceViewerWidget::~m4dSliceViewerWidget()
+{
+
+}
+
+void
+m4dSliceViewerWidget::SetInputPort( Imaging::ImageConnection< Imaging::Image< int16, 3 > >& conn )
+{
     conn.ConnectConsumer( _inPort );
     _sliceNum = Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(2).minimum;
     _offset.setX(0);
@@ -21,12 +32,46 @@ m4dSliceViewerWidget::m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::I
     _zoomRate = 1.0;
     _brightnessRate = 0.0;
     _contrastRate = 0.0;
+    ButtonHandlers bh[] = { NONE, ZOOM, MOVE_H, MOVE_V, ADJUST_C, ADJUST_B };
+    SetButtonHandlers( bh );
 }
 
-m4dSliceViewerWidget::~m4dSliceViewerWidget()
+void
+m4dSliceViewerWidget::SetButtonHandlers( ButtonHandlers* hnd )
 {
+    unsigned i;
+    for ( i = 0; i < 6; i++ )
+    {
+        switch (hnd[i])
+        {
+            case NONE:
+	    _buttonMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::none;
+	    break;
 
+	    case ZOOM:
+	    _buttonMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::zoomImage;
+	    break;
+
+	    case MOVE_H:
+	    _buttonMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::moveImageH;
+	    break;
+
+	    case MOVE_V:
+	    _buttonMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::moveImageV;
+	    break;
+
+	    case ADJUST_C:
+	    _buttonMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::adjustContrast;
+	    break;
+
+	    case ADJUST_B:
+	    _buttonMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::adjustBrightness;
+	    break;
+	}
+    }
 }
+
+
 
 void
 m4dSliceViewerWidget::paintGL()
@@ -34,7 +79,6 @@ m4dSliceViewerWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_ACCUM_BUFFER_BIT);
     glLoadIdentity();
     unsigned i;
-    //glRasterPos2i( _offset.x()>0?_offset.x():0, _offset.y()>0?_offset.y():0 );
     //glTranslatef( _offset.x(), _offset.y(), 0 );
     glRasterPos2i( 0, 0 );
     size_t height, width, depth;
@@ -47,7 +91,7 @@ m4dSliceViewerWidget::paintGL()
     GLfloat avg = 0.0;
     for ( i = 0; i < height * width; ++i ) avg += pixel[i]/65535.;
     avg = avg * 65535. / (float)(width * height);
-    for ( i = 0; i < height * width; ++i ) avgLum[i] = avg;
+    for ( i = 0; i < height * width; ++i ) avgLum[i] = (unsigned short)avg;
     glDrawPixels( width, height, GL_LUMINANCE, GL_UNSIGNED_SHORT, avgLum );
     glAccum( GL_ACCUM, _contrastRate );
     glDrawPixels( width, height, GL_LUMINANCE, GL_UNSIGNED_SHORT, black );
@@ -88,16 +132,18 @@ m4dSliceViewerWidget::mouseMoveEvent(QMouseEvent *event)
     if ( ( event->buttons() & Qt::LeftButton ) &&
          ( event->buttons() & Qt::RightButton ) )
     {
-        zoomImage( -dy );
+	(this->*_buttonMethods[0][0])(dx);
+	(this->*_buttonMethods[0][1])(dy);
     }
     else if (event->buttons() & Qt::LeftButton)
     {
-        moveImage( QPoint( dx, -dy ) );
+	(this->*_buttonMethods[1][0])(dx);
+	(this->*_buttonMethods[1][1])(dy);
     }
     else if (event->buttons() & Qt::RightButton)
     {
-        adjustContrast(  -dx );
-	adjustBrightness( dy );
+	(this->*_buttonMethods[2][0])(dx);
+	(this->*_buttonMethods[2][1])(dy);
     }
 
     updateGL();
@@ -108,7 +154,7 @@ m4dSliceViewerWidget::mouseMoveEvent(QMouseEvent *event)
 void
 m4dSliceViewerWidget::zoomImage( int amount )
 {
-    _zoomRate += 0.01 * amount;
+    _zoomRate -= 0.01 * amount;
     //_offset.setX( _offset.x() - 
     //		  (int)( amount * ( Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(0).maximum -
     //		  		    Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(0).minimum ) * 0.005 ) );
@@ -146,11 +192,15 @@ m4dSliceViewerWidget::setSliceNum( size_t num )
 }
 
 void
-m4dSliceViewerWidget::moveImage( QPoint diff )
+m4dSliceViewerWidget::moveImageH( int amount )
 {
-    _offset += diff;
-    updateGL();
+    _offset.setX( _offset.x() + amount );
+}
 
+void
+m4dSliceViewerWidget::moveImageV( int amount )
+{
+    _offset.setY( _offset.y() - amount );
 }
 
 void
@@ -162,7 +212,13 @@ m4dSliceViewerWidget::adjustBrightness( int amount )
 void
 m4dSliceViewerWidget::adjustContrast( int amount )
 {
-    _contrastRate += ((GLfloat)amount)/((GLfloat)width()/2.0);
+    _contrastRate -= ((GLfloat)amount)/((GLfloat)width()/2.0);
+}
+
+void
+m4dSliceViewerWidget::none( int amount )
+{
+
 }
 
 } /*namespace Viewer*/

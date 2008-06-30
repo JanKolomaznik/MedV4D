@@ -21,6 +21,11 @@ public:
     m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< int16, 3 > >& conn, QWidget *parent = 0 );
     ~m4dSliceViewerWidget();
     Imaging::InputPortAbstractImage& GetInputPort();
+    void SetInputPort( Imaging::ImageConnection< Imaging::Image< int16, 3 > >& conn );
+
+    typedef enum { NONE, ZOOM, MOVE_H, MOVE_V, ADJUST_B, ADJUST_C } ButtonHandlers;
+
+    void SetButtonHandlers( ButtonHandlers* hnd );
 
 protected:
     void paintGL();
@@ -30,11 +35,15 @@ protected:
     void wheelEvent(QWheelEvent *event);
     void setSliceNum( size_t num );
     void zoomImage( int amount );
-    void moveImage( QPoint diff );
+    void moveImageH( int amount );
+    void moveImageV( int amount );
     void adjustBrightness( int amount );
     void adjustContrast( int amount );
+    void none( int amount );
 
 private:
+
+    typedef void (M4D::Viewer::m4dSliceViewerWidget::*ButtonMethods)( int amount );
     
     Imaging::InputPortAbstractImage _inPort;
 
@@ -44,6 +53,7 @@ private:
     double _zoomRate;
     GLfloat _brightnessRate;
     GLfloat _contrastRate;
+    ButtonMethods _buttonMethods[3][2];
 };
 
 } /*namespace Viewer*/
