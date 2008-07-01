@@ -13,12 +13,7 @@ RCC=rcc
 #Name of this project part
 NAME=		m4dPilot
 #Names of target sources
-TARGETS=	main\
-		m4dGUIMainWindow
-
-MOCINPUT=	m4dGUIMainWindow.h
-
-RCCINPUT=	m4dGUIMainWindow.qrc
+TARGETS=	main
 
 M4DLIBS=	../../lib/libm4dWidgets.a\
 		../../lib/libImaging.a\
@@ -61,8 +56,8 @@ LIBS=		$(M4DLIBS)\
 		$(QTLIBS)\
 		$(VTKLIBS)\
 		$(DCMTKLIBS)\
-		-lboost_thread-d \
-		-lboost_filesystem-d
+		-lboost_thread \
+		-lboost_filesystem
 ########################################
 
 #Name of target
@@ -80,7 +75,9 @@ CDEPFLAGS=	-MM
 
 LDFLAGS=
 ARFLAGS=	-r
-LIBDIRS=	-L../../lib
+LIBDIRS=	-L../../lib\
+		-L/usr/lib/qt4\
+		-L/usr/local/dicom/lib
 INCLUDES=	-I$(srcdir)\
 		-I../../include\
 		-I/usr/include/vtk-5.0\
@@ -89,8 +86,6 @@ INCLUDES=	-I$(srcdir)\
 		-I/usr/include/qt4/QtCore\
 		-I/usr/include/qt4/QtGui
 
-
-MOCOUTPUT=	$(addprefix $(TMP_DIR)/moc_, $(MOCINPUT:.h=.cpp) )
 
 DEBUG_DEFS=	-DDEBUG_LEVEL=10\
 		-DDEBUG_ADITIONAL_INFO
@@ -117,12 +112,6 @@ build:		cleanall all
 dep:		
 		$(CXX) $(INCLUDES) $(CDEPFLAGS) $(SRC_FILES) | \
 		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
-
-$(TMP_DIR)/moc_%.cpp:	%.h
-		$(MOC) $< -o $@
-
-$(TMP_DIR)/rcc_%.cpp:	$(RCCINPUT)
-		$(RCC) -name m4dGUIMainWindow $< -o $@
 
 $(TMP_DIR)/%.o:	%.cpp	
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
