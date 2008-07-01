@@ -1,6 +1,8 @@
 #ifndef _m4dSelection_h
 #define _m4dSelection_h
 
+#include <list>
+
 namespace M4D
 {
 
@@ -22,7 +24,7 @@ public:
     m4dPoint( ElementType x, ElementType y, ElementType z, ElementType t );
 
 
-    unsigned
+    size_t
     GetDimension();
     
 
@@ -30,27 +32,25 @@ public:
     GetAllValues();
     
     void
-    SetAllValues( ElementType* v );
+    SetAllValues( ElementType* v, size_t dim );
 
 
     ElementType&
-    GetParticularValue( unsigned i ) const;
+    GetParticularValue( size_t i ) const;
     
     ElementType&
-    GetParticularValue( unsigned i );
+    GetParticularValue( size_t i );
 
 private:
     
-    unsigned _dim;
+    size_t _dim;
     
     ElementType* _pointValue;
 
 };
 
-typedef m4dPoint m4dVector;
-
 template< typename ElementType >
-class m4dLine
+class m4dSegment
 {
 
 public:
@@ -58,69 +58,61 @@ public:
     m4dLine( m4dPoint< ElementType >& p1, m4dPoint< ElementType >& p2 );
 
     m4dPoint< ElementType >&
-    GetHoldingPoint();
+    GetSegmentStartPoint();
 
     m4dPoint< ElementType >&
-    GetHoldingPoint() const;
+    GetSegmentStartPoint() const;
 
-    m4dVector< ElementType >&
-    GetDirectionVector();
+    m4dPoint< ElementType >&
+    GetSegmentEndPoint();
 
-    m4dVector< ElementType>&
-    GetDirectionVector() const;
+    m4dPoint< ElementType >&
+    GetSegmentEndPoint() const;
 
     bool
-    PointLiesOnLine( m4dPoint< ElementType >& p );
+    PointLiesInsideSegment( m4dPoint< ElementType >& p );
 
 private:
 
-    m4dPoint< ElementType >  _HoldingPoint;
-    m4dVector< ElementType > _DirectionVector;
+    m4dPoint< ElementType > _startPoint;
+    m4dPoint< ElementType > _endPoint;
     
 };
 
 template< typename ElementType >
-class m4dPlane
+class m4dShape
 {
 
 public:
 
-    m4dPlane( m4dPoint< ElementType >& p1, m4dPoint< ElementType >& p2, m4dPoint< ElementType >& p3 );
-    
-    m4dPlane( m4dPoint< ElementType >& p, m4dLine< ElementType >& l );
+    m4dShape();
 
-    m4dPoint< ElementType >&
-    GetHoldingPoint();
-    
-    m4dPoint< ElementType >&
-    GetHoldingPoint() const;
-    
-    m4dVector< ElementType >&
-    GetFirstDirectionVector();
-    
-    m4dVector< ElementType >&
-    GetFirstDirectionVector() const;
-    
-    m4dVector< ElementType >&
-    GetSecondDirectionVector();
-    
-    m4dVector< ElementType >&
-    GetSecondDirectionVector() const;
+    void
+    addPoint( m4dPoint< ElementType > );
 
-    bool
-    PointLiesOnPlane( m4dPoint< ElementType >& p );
+    void
+    addAllPoints( m4dShape< ElementType > );
 
-    bool
-    LineLiesOnPlane( m4dLine< ElementType >& l );
+    const list< m4dPoint< ElementType > >&
+    ShapeElements() const;
+
+    list< m4Point< ElementType > >&
+    ShapeElements();
+
+    void
+    closeShape();
+
+    void
+    openShape();
 
 private:
-    m4dPoint< ElementType >  _HoldingPoint;
-    m4dVector< ElementType > _FirstDirectionVector;
-    m4dVector< ElementType > _SecondDirectionVector;
-    
+
+    list< m4dPoint< ElementType > >	_shapePoints;
+    bool				_closed;
+
 };
 
-}
-}
+}/* namespace Selection */
+}/* namespace M4D	*/
 
 #endif
