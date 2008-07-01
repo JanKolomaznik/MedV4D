@@ -15,7 +15,7 @@ using namespace std;
 
 /// Number of exam/image attributes (e.g in study tables)
 #define ATTRIBUTE_NUMBER   14
-
+/// Names of exam/image attributes (e.g in study tables)
 const char *StManagerStudyListComp::attributeNames[] = { "Patient ID", "Name", "Accesion", "Modality",
                                                          "Description", "Date", "Time", "Study ID", "Sex",
                                                          "Birthdate", "Referring MD", "Institution",
@@ -203,7 +203,7 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
     }
 
   } 
-  catch ( M4D::ErrorHandling::ExceptionBase & e ) {
+  catch ( M4D::ErrorHandling::ExceptionBase &e ) {
 	  QMessageBox::critical( this, tr( "Exception" ), e.what() );
   } 
   catch( std::exception &e ) {

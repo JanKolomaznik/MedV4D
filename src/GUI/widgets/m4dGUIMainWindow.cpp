@@ -1,4 +1,4 @@
-#include "m4dGUIMainWindow.h"
+#include "GUI/m4dGUIMainWindow.h"
 
 #include <QtGui>
 
@@ -32,7 +32,7 @@ m4dGUIMainWindow::m4dGUIMainWindow ()
   centralWidget->setLayout( mainLayout );
 
   setWindowTitle( tr( "m4dPilot" ) ); 
-  setWindowIcon( QIcon( ":/GUI/icons/app.png" ) );
+  setWindowIcon( QIcon( ":/icons/app.png" ) );
   // resize( 800, 600 );
   showMaximized();
 
@@ -88,7 +88,7 @@ void m4dGUIMainWindow::createStudyManagerDialog ()
   dialogLayout->addWidget( studyManagerWidget );
 
   studyManagerDialog->setWindowTitle( tr( "Study Manager" ) );
-  studyManagerDialog->setWindowIcon( QIcon( ":/GUI/icons/search.png" ) );
+  studyManagerDialog->setWindowIcon( QIcon( ":/icons/search.png" ) );
   studyManagerDialog->setLayout( dialogLayout );
 }
 
@@ -105,39 +105,39 @@ void m4dGUIMainWindow::createScreenLayoutDialog ()
   dialogLayout->addWidget( screenLayoutWidget );
 
   screenLayoutDialog->setWindowTitle( tr( "Screen Layout" ) );
-  screenLayoutDialog->setWindowIcon( QIcon( ":/GUI/icons/layout.png" ) );
+  screenLayoutDialog->setWindowIcon( QIcon( ":/icons/layout.png" ) );
   screenLayoutDialog->setLayout( dialogLayout );
 }
 
 
 void m4dGUIMainWindow::createActions ()
 {
-  searchAct = new QAction( QIcon( ":/GUI/icons/search.png" ), tr( "&Search" ), this );
+  searchAct = new QAction( QIcon( ":/icons/search.png" ), tr( "&Search" ), this );
   searchAct->setShortcut( tr( "Ctrl+S" ) );
   searchAct->setStatusTip( tr( "Search for patient studies available for viewing" ) );
   connect( searchAct, SIGNAL(triggered()), this, SLOT(search()) );
 
-  openAct = new QAction( QIcon( ":/GUI/icons/open.png" ), tr( "&Open..." ), this );
+  openAct = new QAction( QIcon( ":/icons/open.png" ), tr( "&Open..." ), this );
   openAct->setShortcut( tr( "Ctrl+O" ) );
   openAct->setStatusTip( tr( "Open an existing document from disk or network file system" ) );
   connect( openAct, SIGNAL(triggered()), this, SLOT(open()) );
 
-  saveAct = new QAction( QIcon( ":/GUI/icons/save.png" ), tr( "S&ave" ), this );
+  saveAct = new QAction( QIcon( ":/icons/save.png" ), tr( "S&ave" ), this );
   saveAct->setShortcut( tr( "Ctrl+A" ) );
   saveAct->setStatusTip( tr( "Save the document to disk" ) );
   connect( saveAct, SIGNAL(triggered()), this, SLOT(save()) );
   saveAct->setEnabled( false );
 
-  exitAct = new QAction( QIcon( ":/GUI/icons/exit.png" ), tr( "E&xit" ), this );
+  exitAct = new QAction( QIcon( ":/icons/exit.png" ), tr( "E&xit" ), this );
   exitAct->setShortcut( tr( "Ctrl+Q" ) );
   connect( exitAct, SIGNAL(triggered()), this, SLOT(close()) );
 
-  layoutAct = new QAction( QIcon( ":/GUI/icons/layout.png" ), tr( "S&creen Layout" ), this );
+  layoutAct = new QAction( QIcon( ":/icons/layout.png" ), tr( "S&creen Layout" ), this );
   layoutAct->setShortcut( tr( "Ctrl+C" ) );
   layoutAct->setStatusTip( tr( "Redisplay series and images in various layouts" ) );
   connect( layoutAct, SIGNAL(triggered()), this, SLOT(layout()) );
 
-  overlayAct = new QAction( QIcon( ":/GUI/icons/info.png" ), tr( "&Toggle Overlay" ), this );
+  overlayAct = new QAction( QIcon( ":/icons/info.png" ), tr( "&Toggle Overlay" ), this );
   overlayAct->setShortcut( tr( "Ctrl+T" ) );
   overlayAct->setStatusTip( tr( "Hide or displays the study information" ) );
   connect( overlayAct, SIGNAL(triggered()), this, SLOT(overlay()) );

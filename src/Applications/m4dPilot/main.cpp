@@ -1,6 +1,6 @@
 #include <QApplication>
 
-#include "m4dGUIMainWindow.h"
+#include "GUI/m4dGUIMainWindow.h"
 
 #include "Common.h"
 #include <fstream>

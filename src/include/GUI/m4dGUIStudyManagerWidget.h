@@ -14,6 +14,7 @@ class m4dGUIStudyManagerWidget: public QWidget
   Q_OBJECT
 
   public:
+
     /**
      * Constructor of m4dGUIStudyManagerWidget.
      *
@@ -21,7 +22,7 @@ class m4dGUIStudyManagerWidget: public QWidget
      * - where to render image after clicking View
      * @param studyManagerDialog pointer to the Study Manager Dialog - to close it after 
      * clicking View
-     * @ param parent parent of this widget - default is 0
+     * @ param parent pointer to the parent of this widget - default is 0
      */
     m4dGUIStudyManagerWidget ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget,
                                QDialog *studyManagerDialog, QWidget *parent = 0 );
