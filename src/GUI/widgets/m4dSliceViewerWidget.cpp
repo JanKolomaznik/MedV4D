@@ -133,28 +133,98 @@ m4dSliceViewerWidget::paintGL()
     glLoadIdentity();
     unsigned i;
     //glTranslatef( _offset.x(), _offset.y(), 0 );
+    glScalef( _zoomRate, _zoomRate, 0. );
     glRasterPos2i( 0, 0 );
     size_t height, width, depth;
+    double maxvalue;
     int stride;
-    //switch ( _colorMode )
-    const uint16* pixel = Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
-    pixel += ( _sliceNum - Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(2).minimum ) * height * width;
-    uint16* black = new uint16[ height * width ];
-    memset( black, 0, height * width * sizeof(uint16) );
-    uint16* avgLum = new uint16[ height * width ];
     GLfloat avg = 0.0;
-    for ( i = 0; i < height * width; ++i ) avg += pixel[i]/65535.;
-    avg = avg * 65535. / (float)(width * height);
-    for ( i = 0; i < height * width; ++i ) avgLum[i] = (uint16)avg;
-    glDrawPixels( width, height, GL_LUMINANCE, GL_UNSIGNED_SHORT, avgLum );
-    glAccum( GL_ACCUM, _contrastRate );
-    glDrawPixels( width, height, GL_LUMINANCE, GL_UNSIGNED_SHORT, black );
-    glAccum( GL_ACCUM, _brightnessRate );
-    glDrawPixels( width, height, GL_LUMINANCE, GL_UNSIGNED_SHORT, pixel );
-    glAccum( GL_ACCUM, 1.0 - ( _brightnessRate + _contrastRate ) );
-    glAccum( GL_RETURN, 1.0 );
-    delete[] black;
-    delete[] avgLum;
+    switch ( _colorMode )
+    {
+        case RGBA_UNSIGNED_BYTE:
+	{
+	    maxvalue = 255.;
+	    const uint8* pixel = (const uint8*)Imaging::Image< uint32, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
+	    pixel += ( _sliceNum - _inPort.GetAbstractImage().GetDimensionExtents(2).minimum ) * height * width * 4;
+	    uint8* black = new uint8[ 4 * height * width ];
+	    memset( black, 0, height * width * sizeof(uint32) );
+	    uint8* avgLum = new uint8[ height * width * 4 ];
+	    memset( avgLum, 0, height * width * sizeof(uint32) );
+	    for ( i = 0; i < height * width; ++i )
+	        avg += ( (float)pixel[4*i]*RW + (float)pixel[4*i + 1]*GW + (float)pixel[4*i + 2]*BW ) / maxvalue;
+            avg = avg * maxvalue / (float)( width * height );
+	    for ( i = 0; i < height * width; ++i )
+	        avgLum[4*i] = avgLum[4*i + 1] = avgLum[4*i + 2] = (uint8)avg;
+	    glDrawPixels( width, height, GL_RGBA, GL_UNSIGNED_BYTE, avgLum );
+	    glAccum( GL_ACCUM, _contrastRate );
+	    glDrawPixels( width, height, GL_RGBA, GL_UNSIGNED_BYTE, black );
+	    glAccum( GL_ACCUM, _brightnessRate );
+	    glDrawPixels( width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixel );
+	    glAccum( GL_ACCUM, 1.0 - ( _brightnessRate + _contrastRate ) );
+	    glAccum( GL_RETURN, 1.0 );
+	    delete[] black;
+	    delete[] avgLum;
+	    /*glColor3f(1., 1., 1.);
+	    glBegin(GL_LINES);
+	        glVertex2i( 5, 5 );
+		glVertex2i( 60, 60 );
+	    glEnd();*/
+	}
+	break;
+
+        case GRAYSCALE_UNSIGNED_BYTE:
+	{    
+	    maxvalue = 255.;
+	    const uint8* pixel = Imaging::Image< uint8, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
+	    pixel += ( _sliceNum - _inPort.GetAbstractImage().GetDimensionExtents(2).minimum ) * height * width;
+	    uint8* black = new uint8[ height * width ];
+	    memset( black, 0, height * width * sizeof(uint8) );
+	    uint8* avgLum = new uint8[ height * width ];
+	    memset( avgLum, 0, height * width * sizeof(uint8) );
+	    for ( i = 0; i < height * width; ++i )
+	        avg += (float)pixel[i] / maxvalue;
+            avg = avg * maxvalue / (float)( width * height );
+	    for ( i = 0; i < height * width; ++i )
+	        avgLum[i] = (uint8)avg;
+	    glDrawPixels( width, height, GL_LUMINANCE, GL_UNSIGNED_BYTE, avgLum );
+	    glAccum( GL_ACCUM, _contrastRate );
+	    glDrawPixels( width, height, GL_LUMINANCE, GL_UNSIGNED_BYTE, black );
+	    glAccum( GL_ACCUM, _brightnessRate );
+	    glDrawPixels( width, height, GL_LUMINANCE, GL_UNSIGNED_BYTE, pixel );
+	    glAccum( GL_ACCUM, 1.0 - ( _brightnessRate + _contrastRate ) );
+	    glAccum( GL_RETURN, 1.0 );
+	    delete[] black;
+	    delete[] avgLum;
+	}
+	break;
+
+        case GRAYSCALE_UNSIGNED_SHORT:
+	{
+	    maxvalue = 65535.;
+	    const uint16* pixel = Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
+	    pixel += ( _sliceNum - _inPort.GetAbstractImage().GetDimensionExtents(2).minimum ) * height * width;
+	    uint16* black = new uint16[ height * width ];
+	    memset( black, 0, height * width * sizeof(uint16) );
+	    uint16* avgLum = new uint16[ height * width ];
+	    memset( avgLum, 0, height * width * sizeof(uint16) );
+	    for ( i = 0; i < height * width; ++i )
+	        avg += (float)pixel[i] / maxvalue;
+            avg = avg * maxvalue / (float)( width * height );
+	    for ( i = 0; i < height * width; ++i )
+	        avgLum[i] = (uint16)avg;
+	    glDrawPixels( width, height, GL_LUMINANCE, GL_UNSIGNED_SHORT, avgLum );
+	    glAccum( GL_ACCUM, _contrastRate );
+	    glDrawPixels( width, height, GL_LUMINANCE, GL_UNSIGNED_SHORT, black );
+	    glAccum( GL_ACCUM, _brightnessRate );
+	    glDrawPixels( width, height, GL_LUMINANCE, GL_UNSIGNED_SHORT, pixel );
+	    glAccum( GL_ACCUM, 1.0 - ( _brightnessRate + _contrastRate ) );
+	    glAccum( GL_RETURN, 1.0 );
+	    delete[] black;
+	    delete[] avgLum;
+	}
+	break;
+
+    }
     glPixelZoom( _zoomRate, _zoomRate );
     glFlush();
 }
@@ -210,11 +280,11 @@ m4dSliceViewerWidget::zoomImage( int amount )
 {
     _zoomRate -= 0.01 * amount;
     //_offset.setX( _offset.x() - 
-    //		  (int)( amount * ( Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(0).maximum -
-    //		  		    Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(0).minimum ) * 0.005 ) );
+    //		  (int)( amount * ( _inPort.GetAbstractImage().GetDimensionExtents(0).maximum -
+    //		  		    _inPort.GetAbstractImage().GetDimensionExtents(0).minimum ) * 0.005 ) );
     //_offset.setY( _offset.y() - 
-    //		  (int)( amount * ( Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(1).maximum -
-    //		  		    Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(1).minimum ) * 0.005 ) );
+    //		  (int)( amount * ( _inPort.GetAbstractImage().GetDimensionExtents(1).maximum -
+    //		  		    _inPort.GetAbstractImage().GetDimensionExtents(1).minimum ) * 0.005 ) );
 }
 
 void
@@ -237,8 +307,8 @@ m4dSliceViewerWidget::wheelEvent(QWheelEvent *event)
 void
 m4dSliceViewerWidget::setSliceNum( size_t num )
 {
-    if ( num < Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(2).minimum ||
-         num >= Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(2).maximum )
+    if ( num < _inPort.GetAbstractImage().GetDimensionExtents(2).minimum ||
+         num >= _inPort.GetAbstractImage().GetDimensionExtents(2).maximum )
     {
     	throw ErrorHandling::ExceptionBase( "Index out of bounds." );
     }
