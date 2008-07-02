@@ -33,7 +33,7 @@ Server::Server(boost::asio::io_service &io_service)
 
   // free headers are all
   for( uint32 i=0; i < HEADER_POOL_SIZE; i++)
-    m_freeHeaders.push_back( m_freeHeaders[i]);
+    m_freeHeaders.push_back( & m_headerPool[i]);
 
   // start server accepting
   Accept();

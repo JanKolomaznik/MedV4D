@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../include;"
+				AdditionalIncludeDirectories="../../include; ../include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE; DEBUG_LEVEL=1"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -177,6 +177,10 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
+			<File
+				RelativePath="..\..\common\BasicJob.cpp"
+				>
+			</File>
 			<File
 				RelativePath="..\..\cellClient\CellClient.cpp"
 				>

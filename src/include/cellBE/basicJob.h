@@ -5,6 +5,7 @@
 #include "filterProperties.h"
 #include "messageHeaders.h"
 #include "dataSetProperties.h"
+#include "resourcePool.h"
 
 #include "basicSocket.h"
 
@@ -12,7 +13,6 @@ namespace M4D
 {
 namespace CellBE
 {
-
 
 class BasicJob
   : public BasicSocket
@@ -26,7 +26,7 @@ public:
   SecondaryJobHeader secHeader;
 
 protected:
-  BasicJob(boost::asio::io_service &service) : BasicSocket(service) {}
+  BasicJob(boost::asio::io_service &service);
 
   enum Action {
     CREATE,
@@ -37,34 +37,57 @@ protected:
 
   FilterVector m_filters;
 
+  void EndSend( const boost::system::error_code& e);
+
+  // pool for dataPeice headers //////////////////////////////////
+  Pool< DataPieceHeader, 32> freeHeaders;
+//#define MAX_PIECE_HEADERS 32
+//  static DataPieceHeader p_pieceHeaders[MAX_PIECE_HEADERS];
+//  typedef std::vector< DataPieceHeader *> FreeDataPieceVect;
+//  static FreeDataPieceVect p_freeDPHeaders;
+//
+//  static void InitDataPieceHeaders( void)
+//  {
+//    for( int i=0; i<MAX_PIECE_HEADERS; i++)
+//      p_freeDPHeaders.push_back( &p_pieceHeaders[i]);
+//  }
+  ////////////////////////////////////////////////////////////////
+
+public:
+
   // data buffer to send
-  template< class T>
+  //template< class T>
   struct DataBuff {
-    T *data;
+    void *data;
     size_t len;
   };
 
-public:
   // vector of databuffers to be send in one turn
-  template< class T>
-  class DataBuffs : public std::vector< DataBuff<T> >
+  //template< class T>
+  class DataBuffs : public std::vector< DataBuff >
   {
   };
 
   // Serialization
-  template<class T>
-  void PutDataPiece( DataBuffs<T> &bufs) = 0;
+  //template<class T>
+  void PutDataPiece( const DataBuffs &bufs);
 
-  template<class T>
-  void PutDataPiece( DataBuff<T> &buf) = 0;
+  //template<class T>
+  void PutDataPiece( const DataBuff &buf);
 
   // Deserialization
-  template<class T>
-  void GetDataPiece( DataBuffs<T> &bufs) = 0;
+  //template<class T>
+  void GetDataPiece( DataBuffs &bufs);
 
-  template<class T>
-  void GetDataPiece( DataBuff<T> &buf) = 0;
-  
+  //template<class T>
+  void GetDataPiece( DataBuff &buf);  
+
+  // callback def
+  typedef void (*JobCallback)(void);
+
+  // events
+  JobCallback onComplete;
+  JobCallback onError;
 
 };
 

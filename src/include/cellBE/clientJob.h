@@ -29,7 +29,7 @@ class ClientJob
   NetStreamVector filterSettingsSerialized;
   void SerializeFiltersSetting( void);
 
-  void EndSend( const boost::system::error_code& e);
+  NetStreamVector m_dataSetPropsSerialized;
 
   void SendHeaders( void);
 
@@ -54,13 +54,10 @@ public:
   };
   State state;
 
-  // callback def
-  typedef void (*JobCallback)(void);
-
-  // events
-  JobCallback onComplete;
-  JobCallback onError;
+  void Submit(void);
 };
+
+///////////////////////////////////////////////////////////////////////
 
 }
 }

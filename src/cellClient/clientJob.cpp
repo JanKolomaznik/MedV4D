@@ -1,11 +1,12 @@
 
 #include <string>
+#include <cstdlib>
+#include <ctime>
 
 #include "cellBE/clientJob.h"
 
 using namespace M4D::CellBE;
 using namespace std;
-using boost::asio::ip::tcp;
 
 uint32 ClientJob::lastID;
 
@@ -17,11 +18,12 @@ ClientJob::ClientJob(
                      const std::string &address,
                      boost::asio::io_service &service) 
   : ClientSocket( address, service)
-  , onComplete( NULL)
-  , onError(NULL)
 {
   GenerateJobID();
   primHeader.action = (uint8) CREATE;
+  primHeader.dataSetType = 77;
+
+  PrimaryJobHeader::Serialize( &primHeader);
 
   // copy pointers to filter settings to this job
   for( FilterVector::iterator it = filters.begin();
@@ -29,21 +31,21 @@ ClientJob::ClientJob(
     it++)
   {
     m_filters.push_back( *it);
-  }  
-  
+  }
+
+  // serialize dataset settings
+  props->Serialize( m_dataSetPropsSerialized);
+  secHeader.dataSetPropertiesLen = (uint16) m_dataSetPropsSerialized.size();
+
+  SendHeaders();
 }
 
 ///////////////////////////////////////////////////////////////////////
 
-void 
-ClientJob::EndSend( const boost::system::error_code& e)
+void
+ClientJob::Submit(void)
 {
-  try {
-    HandleErrors( e);
-  } catch( ExceptionBase &) {
-    if( onError != NULL)
-      onError();
-  }
+
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -54,8 +56,23 @@ ClientJob::GenerateJobID( void)
   NetStreamArrayBuf s( primHeader.id.id, IDLEN);
 
   s << ++lastID;
-  //s << m_soc  // random based on host name
-  //s <<        // random based on time
+
+  // random based on host name
+  boost::asio::ip::address_v4::bytes_type bytes;
+  bytes = m_socket.local_endpoint().address().to_v4().to_bytes();
+  uint32 seed = bytes[0];
+  for( int i=1; i<4; i++)
+  {
+    seed <<= 8;
+    seed += bytes[i];
+  }
+
+  srand( seed);
+  s << (uint32) rand();  
+  
+  // random based on time
+  srand( (uint32) time(0));  
+  s << (uint32) rand();
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -66,7 +83,6 @@ ClientJob::SendHeaders( void)
   // prepare serialization of filters & settings
   SerializeFiltersSetting();
 
-  PrimaryJobHeader::Serialize( &primHeader);
   SecondaryJobHeader::Serialize( &secHeader);
 
   // create vector of serialized information to pass to sigle send operation

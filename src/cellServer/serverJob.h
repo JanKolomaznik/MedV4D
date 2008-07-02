@@ -22,9 +22,18 @@ private:
   void DeserializeFilterSettings( void);
 
   void ReadSecondaryHeader( void);
+  void ReadDataPeiceHeader( void);
 
   void EndSecondaryHeaderRead( const boost::system::error_code& error);
   void EndJobSettingsRead( const boost::system::error_code& error);
+  void EndReadDataPeiceHeader( const boost::system::error_code& error,
+    DataPieceHeader *header);
+
+
+  void PutDataPiece( const DataBuffs &bufs);
+  void PutDataPiece( const DataBuff &buf);
+  void GetDataPiece( DataBuffs &bufs);
+  void GetDataPiece( DataBuff &buf);
 
 };
 
