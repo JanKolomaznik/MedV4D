@@ -9,7 +9,19 @@ namespace M4D
 namespace Viewer
 {
 
-m4dSliceViewerWidget::m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< int16, 3 > >& conn, QWidget *parent)
+m4dSliceViewerWidget::m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint32, 3 > >& conn, QWidget *parent)
+    : QGLWidget(parent)
+{
+    SetInputPort( conn );
+}
+
+m4dSliceViewerWidget::m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint16, 3 > >& conn, QWidget *parent)
+    : QGLWidget(parent)
+{
+    SetInputPort( conn );
+}
+
+m4dSliceViewerWidget::m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint8, 3 > >& conn, QWidget *parent)
     : QGLWidget(parent)
 {
     SetInputPort( conn );
@@ -21,10 +33,51 @@ m4dSliceViewerWidget::~m4dSliceViewerWidget()
 }
 
 void
-m4dSliceViewerWidget::SetInputPort( Imaging::ImageConnection< Imaging::Image< int16, 3 > >& conn )
+m4dSliceViewerWidget::SetColorMode( ColorMode cm )
+{
+    _colorMode = cm;
+}
+
+void
+m4dSliceViewerWidget::SetSelectionMode( bool mode )
+{
+    _selectionMode = mode;
+}
+
+bool
+m4dSliceViewerWidget::GetSelectionMode()
+{
+    return _selectionMode;
+}
+
+void
+m4dSliceViewerWidget::SetInputPort( Imaging::ImageConnection< Imaging::Image< uint32, 3 > >& conn )
 {
     conn.ConnectConsumer( _inPort );
-    _sliceNum = Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(2).minimum;
+    SetColorMode( RGBA_UNSIGNED_BYTE );
+    SetParameters();
+}
+
+void
+m4dSliceViewerWidget::SetInputPort( Imaging::ImageConnection< Imaging::Image< uint16, 3 > >& conn )
+{
+    conn.ConnectConsumer( _inPort );
+    SetColorMode( GRAYSCALE_UNSIGNED_SHORT );
+    SetParameters();
+}
+
+void
+m4dSliceViewerWidget::SetInputPort( Imaging::ImageConnection< Imaging::Image< uint8, 3 > >& conn )
+{
+    conn.ConnectConsumer( _inPort );
+    SetColorMode( GRAYSCALE_UNSIGNED_BYTE );
+    SetParameters();
+}
+
+void
+m4dSliceViewerWidget::SetParameters()
+{
+    _sliceNum = _inPort.GetAbstractImage().GetDimensionExtents(2).minimum;
     _offset.setX(0);
     _offset.setY(0);
     _lastPos.setX(-1);
@@ -83,15 +136,16 @@ m4dSliceViewerWidget::paintGL()
     glRasterPos2i( 0, 0 );
     size_t height, width, depth;
     int stride;
-    const int16* pixel = Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
-    pixel += ( _sliceNum - Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(2).minimum ) * height * width;
-    unsigned short* black = new unsigned short[ height * width ];
-    memset( black, 0, height * width * sizeof(unsigned short) );
-    unsigned short* avgLum = new unsigned short[ height * width ];
+    //switch ( _colorMode )
+    const uint16* pixel = Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
+    pixel += ( _sliceNum - Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(2).minimum ) * height * width;
+    uint16* black = new uint16[ height * width ];
+    memset( black, 0, height * width * sizeof(uint16) );
+    uint16* avgLum = new uint16[ height * width ];
     GLfloat avg = 0.0;
     for ( i = 0; i < height * width; ++i ) avg += pixel[i]/65535.;
     avg = avg * 65535. / (float)(width * height);
-    for ( i = 0; i < height * width; ++i ) avgLum[i] = (unsigned short)avg;
+    for ( i = 0; i < height * width; ++i ) avgLum[i] = (uint16)avg;
     glDrawPixels( width, height, GL_LUMINANCE, GL_UNSIGNED_SHORT, avgLum );
     glAccum( GL_ACCUM, _contrastRate );
     glDrawPixels( width, height, GL_LUMINANCE, GL_UNSIGNED_SHORT, black );
@@ -156,11 +210,11 @@ m4dSliceViewerWidget::zoomImage( int amount )
 {
     _zoomRate -= 0.01 * amount;
     //_offset.setX( _offset.x() - 
-    //		  (int)( amount * ( Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(0).maximum -
-    //		  		    Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(0).minimum ) * 0.005 ) );
+    //		  (int)( amount * ( Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(0).maximum -
+    //		  		    Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(0).minimum ) * 0.005 ) );
     //_offset.setY( _offset.y() - 
-    //		  (int)( amount * ( Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(1).maximum -
-    //		  		    Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(1).minimum ) * 0.005 ) );
+    //		  (int)( amount * ( Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(1).maximum -
+    //		  		    Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(1).minimum ) * 0.005 ) );
 }
 
 void
@@ -183,8 +237,8 @@ m4dSliceViewerWidget::wheelEvent(QWheelEvent *event)
 void
 m4dSliceViewerWidget::setSliceNum( size_t num )
 {
-    if ( num < Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(2).minimum ||
-         num >= Imaging::Image< int16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(2).maximum )
+    if ( num < Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(2).minimum ||
+         num >= Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetDimensionExtents(2).maximum )
     {
     	throw ErrorHandling::ExceptionBase( "Index out of bounds." );
     }
