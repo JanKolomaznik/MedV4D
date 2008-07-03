@@ -53,36 +53,6 @@ private:
 };
 
 template< typename ElementType >
-class m4dSegment
-{
-
-public:
-    
-    m4dLine( m4dPoint< ElementType >& p1, m4dPoint< ElementType >& p2 );
-
-    m4dPoint< ElementType >&
-    GetSegmentStartPoint();
-
-    m4dPoint< ElementType >&
-    GetSegmentStartPoint() const;
-
-    m4dPoint< ElementType >&
-    GetSegmentEndPoint();
-
-    m4dPoint< ElementType >&
-    GetSegmentEndPoint() const;
-
-    bool
-    PointLiesInsideSegment( m4dPoint< ElementType >& p );
-
-private:
-
-    m4dPoint< ElementType > _startPoint;
-    m4dPoint< ElementType > _endPoint;
-    
-};
-
-template< typename ElementType >
 class m4dShape
 {
 
