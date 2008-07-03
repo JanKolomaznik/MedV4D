@@ -28,18 +28,21 @@ public:
     GetDimension();
     
 
-    ElementType*
-    GetAllValues();
+    const ElementType*
+    GetAllValues() const;
     
     void
     SetAllValues( ElementType* v, size_t dim );
 
 
-    ElementType&
+    const ElementType&
     GetParticularValue( size_t i ) const;
     
     ElementType&
     GetParticularValue( size_t i );
+
+    static float
+    Distance( m4dPoint< ElementType >& p1, m4dPoint< ElementType >& p2 );
 
 private:
     
@@ -88,10 +91,10 @@ public:
     m4dShape();
 
     void
-    addPoint( m4dPoint< ElementType > );
+    addPoint( m4dPoint< ElementType >& p );
 
     void
-    addAllPoints( m4dShape< ElementType > );
+    addAllPoints( m4dShape< ElementType >& s);
 
     const list< m4dPoint< ElementType > >&
     ShapeElements() const;
@@ -105,6 +108,9 @@ public:
     void
     openShape();
 
+    bool
+    shapeClosed();
+
 private:
 
     list< m4dPoint< ElementType > >	_shapePoints;
@@ -114,5 +120,7 @@ private:
 
 }/* namespace Selection */
 }/* namespace M4D	*/
+
+#include "m4dSelection.tcc" /* template sources */
 
 #endif
