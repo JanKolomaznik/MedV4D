@@ -7,6 +7,7 @@
 #include "ExceptionBase.h"
 #include "Imaging/Ports.h"
 #include "Imaging/DefaultConnection.h"
+#include "GUI/m4dSelection.h"
 
 #define RW 0.3086
 #define GW 0.6094
@@ -59,17 +60,20 @@ private:
 
     typedef void (M4D::Viewer::m4dSliceViewerWidget::*ButtonMethods)( int amount );
     
-    Imaging::InputPortAbstractImage	_inPort;
+    Imaging::InputPortAbstractImage		_inPort;
 
-    bool				_selectionMode;
-    ColorMode				_colorMode;
-    QPoint				_lastPos;
-    QPoint				_offset;
-    int					_sliceNum;
-    double				_zoomRate;
-    GLfloat				_brightnessRate;
-    GLfloat				_contrastRate;
-    ButtonMethods			_buttonMethods[3][2];
+    std::list<Selection::m4dShape<int> >	_shapes;
+    m4dShape<int>				_currentShape;
+
+    bool					_selectionMode;
+    ColorMode					_colorMode;
+    QPoint					_lastPos;
+    QPoint					_offset;
+    int						_sliceNum;
+    double					_zoomRate;
+    GLfloat					_brightnessRate;
+    GLfloat					_contrastRate;
+    ButtonMethods				_buttonMethods[3][2];
 };
 
 } /*namespace Viewer*/

@@ -23,6 +23,13 @@ public:
     
     m4dPoint( ElementType x, ElementType y, ElementType z, ElementType t );
 
+    m4dPoint( const m4dPoint< ElementType >& m );
+
+    ~m4dPoint();
+
+    m4dPoint&
+    operator=( const m4dPoint< ElementType >& m );
+
 
     size_t
     GetDimension();
@@ -66,11 +73,17 @@ public:
     void
     addAllPoints( m4dShape< ElementType >& s);
 
-    const list< m4dPoint< ElementType > >&
+    const std::list< m4dPoint< ElementType > >&
     ShapeElements() const;
 
-    list< m4Point< ElementType > >&
+    std::list< m4dPoint< ElementType > >&
     ShapeElements();
+
+    void
+    Clear();
+
+    void
+    DeleteLast();
 
     void
     closeShape();
@@ -83,8 +96,8 @@ public:
 
 private:
 
-    list< m4dPoint< ElementType > >	_shapePoints;
-    bool				_closed;
+    std::list< m4dPoint< ElementType > >	_shapePoints;
+    bool					_closed;
 
 };
 

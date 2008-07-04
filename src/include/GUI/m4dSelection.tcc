@@ -11,51 +11,85 @@ namespace Selection
 {
 
 template< typename ElementType >
-    
-template< typename ElementType >
 m4dPoint< ElementType >::m4dPoint( ElementType x )
 {
     _dim = 1;
-    _pointValue = new ElementType[ _dim ]{ x };
+    _pointValue = new ElementType[ _dim ];
+    _pointValue[0] =  x;
 }
     
 template< typename ElementType >
 m4dPoint< ElementType >::m4dPoint( ElementType x, ElementType y )
 {
     _dim = 2;
-    _pointValue = new ElementType[ _dim ]{ x, y };
+    _pointValue = new ElementType[ _dim ];
+    _pointValue[0] = x;
+    _pointValue[1] = y;
 }
 
 template< typename ElementType >
 m4dPoint< ElementType >::m4dPoint( ElementType x, ElementType y, ElementType z )
 {
     _dim = 3;
-    _pointValue = new ElementType[ _dim ]{ x, y, z };
+    _pointValue = new ElementType[ _dim ];
+    _pointValue[0] = x;
+    _pointValue[1] = y;
+    _pointValue[2] = z;
 }
     
 template< typename ElementType >
 m4dPoint< ElementType >::m4dPoint( ElementType x, ElementType y, ElementType z, ElementType t )
 {
     _dim = 4;
-    _pointValue = new ElementType[ _dim ]{ x, y, z, t };
+    _pointValue = new ElementType[ _dim ];
+    _pointValue[0] = x;
+    _pointValue[1] = y;
+    _pointValue[2] = z;
+    _pointValue[3] = t;
 }
 
+template< typename ElementType >
+m4dPoint< ElementType >::m4dPoint( const m4dPoint< ElementType >& m )
+{
+    _dim = m._dim;
+    _pointValue = new ElementType[ _dim ];
+    size_t i;
+    for ( i = 0; i < _dim; ++i ) _pointValue[i] = m._pointValue[i];
+}
+
+template< typename ElementType >
+m4dPoint< ElementType >::~m4dPoint()
+{
+    delete[] _pointValue;
+}
+
+template< typename ElementType >
+m4dPoint< ElementType >&
+m4dPoint< ElementType >::operator=( const m4dPoint< ElementType >& m )
+{
+    _dim = m._dim;
+    _pointValue = new ElementType[ _dim ];
+    size_t i;
+    for ( i = 0; i < _dim; ++i ) _pointValue[i] = m._pointValue[i];
+}
+
+template< typename ElementType >
 size_t
-m4dPoint::GetDimension()
+m4dPoint< ElementType >::GetDimension()
 {
     return _dim;
 }
     
 template< typename ElementType >
 const ElementType*
-m4dSelection< ElementType >::GetAllValues() const
+m4dPoint< ElementType >::GetAllValues() const
 {
     return _pointValue;
 }
     
 template< typename ElementType >
 void
-m4dSelection< ElementType >::SetAllValues( ElementType* v, size_t dim )
+m4dPoint< ElementType >::SetAllValues( ElementType* v, size_t dim )
 {
     ElementType* tmp = new ElementType[ dim ];
     size_t i;
@@ -111,38 +145,55 @@ template< typename ElementType >
 void
 m4dShape< ElementType >::addAllPoints( m4dShape< ElementType >& s )
 {
-    for ( list< m4dPoint< ElementType > >::iterator i = s._shapePoints.begin(); i != s._shapePoints.end(); ++i )
-        _shapePoints.push_back( *i );
+    for ( typename std::list< m4dPoint< ElementType > >::iterator it = s._shapePoints.begin(); it != s._shapePoints.end(); ++it )
+        _shapePoints.push_back( *it );
 }
 
 template< typename ElementType >
-const list< m4dPoint< ElementType > >&
+const std::list< m4dPoint< ElementType > >&
 m4dShape< ElementType >::ShapeElements() const
 {
     return _shapePoints;
 }
 
 template< typename ElementType >
-list< m4Point< ElementType > >&
+std::list< m4dPoint< ElementType > >&
 m4dShape< ElementType >::ShapeElements()
 {
     return _shapePoints;
 }
 
+template< typename ElementType >
 void
-m4dShape::closeShape()
+m4dShape< ElementType >::Clear()
+{
+    _shapePoints.clear();
+}
+
+template< typename ElementType >
+void
+m4dShape< ElementType >::DeleteLast()
+{
+    _shapePoints.pop_back();
+}
+
+template< typename ElementType >
+void
+m4dShape< ElementType >::closeShape()
 {
     _closed = true;
 }
 
+template< typename ElementType >
 void
-m4dShape::openShape()
+m4dShape< ElementType >::openShape()
 {
     _closed = false;
 }
 
+template< typename ElementType >
 bool
-m4dShape::shapeClosed()
+m4dShape< ElementType >::shapeClosed()
 {
     return _closed;
 }
