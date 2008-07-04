@@ -75,21 +75,21 @@ m4dPoint< ElementType >::operator=( const m4dPoint< ElementType >& m )
 
 template< typename ElementType >
 size_t
-m4dPoint< ElementType >::GetDimension()
+m4dPoint< ElementType >::getDimension()
 {
     return _dim;
 }
     
 template< typename ElementType >
 const ElementType*
-m4dPoint< ElementType >::GetAllValues() const
+m4dPoint< ElementType >::getAllValues() const
 {
     return _pointValue;
 }
     
 template< typename ElementType >
 void
-m4dPoint< ElementType >::SetAllValues( ElementType* v, size_t dim )
+m4dPoint< ElementType >::setAllValues( ElementType* v, size_t dim )
 {
     ElementType* tmp = new ElementType[ dim ];
     size_t i;
@@ -103,7 +103,7 @@ m4dPoint< ElementType >::SetAllValues( ElementType* v, size_t dim )
 
 template< typename ElementType >
 const ElementType&
-m4dPoint< ElementType >::GetParticularValue( size_t i ) const
+m4dPoint< ElementType >::getParticularValue( size_t i ) const
 {
     return _pointValue[i];
 }
@@ -111,20 +111,20 @@ m4dPoint< ElementType >::GetParticularValue( size_t i ) const
     
 template< typename ElementType >
 ElementType&
-m4dPoint< ElementType >::GetParticularValue( size_t i )
+m4dPoint< ElementType >::getParticularValue( size_t i )
 {
     return _pointValue[i];
 }
 
 template< typename ElementType >
 float
-m4dPoint< ElementType >::Distance( m4dPoint< ElementType >& p1, m4dPoint< ElementType >& p2 )
+m4dPoint< ElementType >::distance( m4dPoint< ElementType >& p1, m4dPoint< ElementType >& p2 )
 {
-    if ( p1.GetDimension() != p2.GetDimension() ) throw ErrorHandling::ExceptionBase( "Dimension mismatch." );
+    if ( p1.getDimension() != p2.getDimension() ) throw ErrorHandling::ExceptionBase( "Dimension mismatch." );
 
     size_t i;
     float dist = 0;
-    for ( i = 0; i < p1.GetDimension(); ++i ) dist += ( p1.GetParticularValue( i ) - p2.GetParticularValue( i ) ) * ( p1.GetParticularValue( i ) - p2.GetParticularValue( i ) );
+    for ( i = 0; i < p1.getDimension(); ++i ) dist += ( p1.getParticularValue( i ) - p2.getParticularValue( i ) ) * ( p1.getParticularValue( i ) - p2.getParticularValue( i ) );
     return sqrt( dist );
 }
 
@@ -151,28 +151,28 @@ m4dShape< ElementType >::addAllPoints( m4dShape< ElementType >& s )
 
 template< typename ElementType >
 const std::list< m4dPoint< ElementType > >&
-m4dShape< ElementType >::ShapeElements() const
+m4dShape< ElementType >::shapeElements() const
 {
     return _shapePoints;
 }
 
 template< typename ElementType >
 std::list< m4dPoint< ElementType > >&
-m4dShape< ElementType >::ShapeElements()
+m4dShape< ElementType >::shapeElements()
 {
     return _shapePoints;
 }
 
 template< typename ElementType >
 void
-m4dShape< ElementType >::Clear()
+m4dShape< ElementType >::clear()
 {
     _shapePoints.clear();
 }
 
 template< typename ElementType >
 void
-m4dShape< ElementType >::DeleteLast()
+m4dShape< ElementType >::deleteLast()
 {
     _shapePoints.pop_back();
 }

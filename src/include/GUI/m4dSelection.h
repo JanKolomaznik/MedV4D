@@ -32,24 +32,24 @@ public:
 
 
     size_t
-    GetDimension();
+    getDimension();
     
 
     const ElementType*
-    GetAllValues() const;
+    getAllValues() const;
     
     void
-    SetAllValues( ElementType* v, size_t dim );
+    setAllValues( ElementType* v, size_t dim );
 
 
     const ElementType&
-    GetParticularValue( size_t i ) const;
+    getParticularValue( size_t i ) const;
     
     ElementType&
-    GetParticularValue( size_t i );
+    getParticularValue( size_t i );
 
     static float
-    Distance( m4dPoint< ElementType >& p1, m4dPoint< ElementType >& p2 );
+    distance( m4dPoint< ElementType >& p1, m4dPoint< ElementType >& p2 );
 
 private:
     
@@ -74,16 +74,16 @@ public:
     addAllPoints( m4dShape< ElementType >& s);
 
     const std::list< m4dPoint< ElementType > >&
-    ShapeElements() const;
+    shapeElements() const;
 
     std::list< m4dPoint< ElementType > >&
-    ShapeElements();
+    shapeElements();
 
     void
-    Clear();
+    clear();
 
     void
-    DeleteLast();
+    deleteLast();
 
     void
     closeShape();
