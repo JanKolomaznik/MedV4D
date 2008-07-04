@@ -4,6 +4,8 @@
 #include <QtOpenGL>
 #include <string.h>
 
+#define MINIMUM_SELECT_DISTANCE 5
+
 namespace M4D
 {
 namespace Viewer
@@ -299,9 +301,26 @@ m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last )
 {
     if ( last ) glColor3f( 1., 0., 0. );
     else glColor3f( 0., 0., 1. );
+    if ( s.shapeClosed() && s.shapeElements().size() > 1 )
+    {
+        glBegin(GL_LINES);
+	    glVertex2i(   s.shapeElements().begin()->getParticularValue( 0 ),   s.shapeElements().begin()->getParticularValue( 1 ) );
+	    glVertex2i( (--s.shapeElements().end())->getParticularValue( 0 ), (--s.shapeElements().end())->getParticularValue( 1 ) );
+	glEnd();
+    }
     for ( std::list< Selection::m4dPoint<int> >::iterator it = s.shapeElements().begin(); it != s.shapeElements().end(); ++it )
         if  ( it->getParticularValue( 2 ) == _sliceNum )
         {
+	    if ( it != --s.shapeElements().end() )
+	    {
+	        std::list< Selection::m4dPoint<int> >::iterator tmp = it;
+		++tmp;
+	        glBegin(GL_LINES);
+		    glVertex2i(  it->getParticularValue( 0 ),  it->getParticularValue( 1 ) );
+		    glVertex2i( tmp->getParticularValue( 0 ), tmp->getParticularValue( 1 ) );
+		glEnd();
+	    }
+	    if ( last && it == --s.shapeElements().end() ) glColor3f( 1., 0., 1. );
             glBegin(GL_QUADS);
 	        glVertex2i( it->getParticularValue( 0 ) - 3, it->getParticularValue( 1 ) - 3 );
 	        glVertex2i( it->getParticularValue( 0 ) + 3, it->getParticularValue( 1 ) - 3 );
@@ -482,8 +501,15 @@ m4dSliceViewerWidget::newPoint( int x, int y, int z )
     if ( _shapes.empty() ) newShape( x, y, z );
     else
     {
-        Selection::m4dPoint<int> p( x, y, z );
-        _shapes.back().addPoint( p );
+        if ( !_shapes.back().shapeElements().empty() &&
+	     abs( x - _shapes.back().shapeElements().front().getParticularValue( 0 ) ) < MINIMUM_SELECT_DISTANCE &&
+             abs( y - _shapes.back().shapeElements().front().getParticularValue( 1 ) ) < MINIMUM_SELECT_DISTANCE &&
+                  z == _shapes.back().shapeElements().front().getParticularValue( 2 ) ) _shapes.back().closeShape();
+	else
+	{
+            Selection::m4dPoint<int> p( x, y, z );
+            _shapes.back().addPoint( p );
+	}
     }
 }
 
@@ -505,8 +531,12 @@ m4dSliceViewerWidget::deletePoint( int x, int y, int z )
 {
     if ( _shapes.empty() ) return;
     
-    _shapes.back().deleteLast();
-    if ( _shapes.back().shapeElements().empty() ) deleteShape( x, y, z );
+    if ( _shapes.back().shapeClosed() ) _shapes.back().openShape();
+    else
+    {
+        _shapes.back().deleteLast();
+        if ( _shapes.back().shapeElements().empty() ) deleteShape( x, y, z );
+    }
 }
 
 void
