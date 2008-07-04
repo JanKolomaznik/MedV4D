@@ -63,7 +63,7 @@ private:
     Imaging::InputPortAbstractImage		_inPort;
 
     std::list<Selection::m4dShape<int> >	_shapes;
-    m4dShape<int>				_currentShape;
+    Selection::m4dShape<int>			_currentShape;
 
     bool					_selectionMode;
     ColorMode					_colorMode;
