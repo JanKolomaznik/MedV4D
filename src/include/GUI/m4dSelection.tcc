@@ -11,6 +11,13 @@ namespace Selection
 {
 
 template< typename ElementType >
+m4dPoint< ElementType >::m4dPoint()
+{
+    _dim = 0;
+    _pointValue = 0;
+}
+
+template< typename ElementType >
 m4dPoint< ElementType >::m4dPoint( ElementType x )
 {
     _dim = 1;
@@ -52,9 +59,13 @@ template< typename ElementType >
 m4dPoint< ElementType >::m4dPoint( const m4dPoint< ElementType >& m )
 {
     _dim = m._dim;
-    _pointValue = new ElementType[ _dim ];
-    size_t i;
-    for ( i = 0; i < _dim; ++i ) _pointValue[i] = m._pointValue[i];
+    if ( _dim > 0 )
+    {
+        _pointValue = new ElementType[ _dim ];
+        size_t i;
+        for ( i = 0; i < _dim; ++i ) _pointValue[i] = m._pointValue[i];
+    }
+    else _pointValue = 0;
 }
 
 template< typename ElementType >
@@ -68,9 +79,13 @@ m4dPoint< ElementType >&
 m4dPoint< ElementType >::operator=( const m4dPoint< ElementType >& m )
 {
     _dim = m._dim;
-    _pointValue = new ElementType[ _dim ];
-    size_t i;
-    for ( i = 0; i < _dim; ++i ) _pointValue[i] = m._pointValue[i];
+    if ( _dim > 0 )
+    {
+        _pointValue = new ElementType[ _dim ];
+        size_t i;
+        for ( i = 0; i < _dim; ++i ) _pointValue[i] = m._pointValue[i];
+    }
+    else _pointValue = 0;
 }
 
 template< typename ElementType >
@@ -91,13 +106,18 @@ template< typename ElementType >
 void
 m4dPoint< ElementType >::setAllValues( ElementType* v, size_t dim )
 {
-    ElementType* tmp = new ElementType[ dim ];
-    size_t i;
-    for ( i = 0; i < dim; i++ ) tmp[i] = v[i];
+    ElementType* tmp;
+    if ( dim > 0 )
+    {
+        tmp = new ElementType[ dim ];
+        size_t i;
+        for ( i = 0; i < dim; i++ ) tmp[i] = v[i];
+    }
+    else tmp = 0; 
     v = _pointValue;
     _pointValue = tmp;
     _dim = dim;
-    delete[] v;
+    if ( v ) delete[] v;
 }
 
 
@@ -105,7 +125,8 @@ template< typename ElementType >
 const ElementType&
 m4dPoint< ElementType >::getParticularValue( size_t i ) const
 {
-    return _pointValue[i];
+    if ( i < _dim ) return _pointValue[i];
+    else throw ErrorHandling::ExceptionBase( "Index out of bounds." );
 }
 
     
@@ -113,7 +134,8 @@ template< typename ElementType >
 ElementType&
 m4dPoint< ElementType >::getParticularValue( size_t i )
 {
-    return _pointValue[i];
+    if ( i < _dim ) return _pointValue[i];
+    else throw ErrorHandling::ExceptionBase( "Index out of bounds." );
 }
 
 template< typename ElementType >
@@ -129,24 +151,33 @@ m4dPoint< ElementType >::distance( m4dPoint< ElementType >& p1, m4dPoint< Elemen
 }
 
 template< typename ElementType >
-m4dShape< ElementType >::m4dShape()
+m4dShape< ElementType >::m4dShape( size_t dim )
 {
-    _closed = false;
+    _dim      = dim;
+    _area     = 0.;
+    _centroid = m4dPoint< ElementType >();
+    closeShape();
 }
 
 template< typename ElementType >
 void
 m4dShape< ElementType >::addPoint( m4dPoint< ElementType >& p )
 {
-    _shapePoints.push_back( p );
+    if ( p.getDimension() != _dim ) throw ErrorHandling::ExceptionBase( "Dimension mismatch." );
+    else
+    {
+        if ( _shapePoints.size() > 1 ) _segmentLengths.push_back( m4dPoint< ElementType >::distance( _shapePoints.back(), p ) );
+        _shapePoints.push_back( p );
+    }
 }
 
 template< typename ElementType >
 void
 m4dShape< ElementType >::addAllPoints( m4dShape< ElementType >& s )
 {
-    for ( typename std::list< m4dPoint< ElementType > >::iterator it = s._shapePoints.begin(); it != s._shapePoints.end(); ++it )
-        _shapePoints.push_back( *it );
+    if ( s.getDimension() != _dim ) throw ErrorHandling::ExceptionBase( "Index out of bounds." );
+    else for ( typename std::list< m4dPoint< ElementType > >::iterator it = s._shapePoints.begin(); it != s._shapePoints.end(); ++it )
+        addPoint( *it );
 }
 
 template< typename ElementType >
@@ -164,6 +195,20 @@ m4dShape< ElementType >::shapeElements()
 }
 
 template< typename ElementType >
+const std::list< float >&
+m4dShape< ElementType >::segmentLengths() const
+{
+    return _segmentLengths;
+}
+
+template< typename ElementType >
+std::list< float >&
+m4dShape< ElementType >::segmentLengths()
+{
+    return _segmentLengths;
+}
+
+template< typename ElementType >
 void
 m4dShape< ElementType >::clear()
 {
@@ -175,6 +220,7 @@ void
 m4dShape< ElementType >::deleteLast()
 {
     _shapePoints.pop_back();
+    _segmentLengths.pop_back();
 }
 
 template< typename ElementType >
@@ -188,7 +234,7 @@ template< typename ElementType >
 void
 m4dShape< ElementType >::openShape()
 {
-    _closed = false;
+    _closed   = false;
 }
 
 template< typename ElementType >
@@ -196,6 +242,27 @@ bool
 m4dShape< ElementType >::shapeClosed()
 {
     return _closed;
+}
+
+template< typename ElementType >
+size_t
+m4dShape< ElementType >::getDimension()
+{
+    return _dim;
+}
+
+template< typename ElementType >
+const m4dPoint< ElementType >&
+m4dShape< ElementType >::getCentroid() const
+{
+    return _centroid;
+}
+
+template< typename ElementType >
+float
+m4dShape< ElementType >::getArea() const
+{
+    return _area;
 }
 
 }/* namespace Selection */

@@ -301,17 +301,19 @@ m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last )
 {
     if ( last ) glColor3f( 1., 0., 0. );
     else glColor3f( 0., 0., 1. );
-    if ( s.shapeClosed() && s.shapeElements().size() > 1 )
+    if ( s.shapeClosed() && s.shapeElements().size() > 1 &&
+         s.shapeElements().front().getParticularValue( 2 ) == _sliceNum &&
+	  s.shapeElements().back().getParticularValue( 2 ) == _sliceNum )
     {
         glBegin(GL_LINES);
-	    glVertex2i(   s.shapeElements().begin()->getParticularValue( 0 ),   s.shapeElements().begin()->getParticularValue( 1 ) );
-	    glVertex2i( (--s.shapeElements().end())->getParticularValue( 0 ), (--s.shapeElements().end())->getParticularValue( 1 ) );
+	    glVertex2i( s.shapeElements().front().getParticularValue( 0 ), s.shapeElements().front().getParticularValue( 1 ) );
+	    glVertex2i(  s.shapeElements().back().getParticularValue( 0 ),  s.shapeElements().back().getParticularValue( 1 ) );
 	glEnd();
     }
     for ( std::list< Selection::m4dPoint<int> >::iterator it = s.shapeElements().begin(); it != s.shapeElements().end(); ++it )
         if  ( it->getParticularValue( 2 ) == _sliceNum )
         {
-	    if ( it != --s.shapeElements().end() )
+	    if ( &(*it) != &(s.shapeElements().back()) )
 	    {
 	        std::list< Selection::m4dPoint<int> >::iterator tmp = it;
 		++tmp;
@@ -320,7 +322,7 @@ m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last )
 		    glVertex2i( tmp->getParticularValue( 0 ), tmp->getParticularValue( 1 ) );
 		glEnd();
 	    }
-	    if ( last && it == --s.shapeElements().end() ) glColor3f( 1., 0., 1. );
+	    if ( last && &(*it) == &(s.shapeElements().back()) ) glColor3f( 1., 0., 1. );
             glBegin(GL_QUADS);
 	        glVertex2i( it->getParticularValue( 0 ) - 3, it->getParticularValue( 1 ) - 3 );
 	        glVertex2i( it->getParticularValue( 0 ) + 3, it->getParticularValue( 1 ) - 3 );
@@ -521,7 +523,7 @@ m4dSliceViewerWidget::newShape( int x, int y, int z )
          y >= (int)( _inPort.GetAbstractImage().GetDimensionExtents(1).maximum - _inPort.GetAbstractImage().GetDimensionExtents(1).minimum ) )
 	     return;
 
-    Selection::m4dShape<int> s;
+    Selection::m4dShape<int> s( 3 );
     _shapes.push_back( s );
     newPoint( x, y, z );
 }

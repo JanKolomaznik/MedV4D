@@ -73,7 +73,7 @@ private:
     
     Imaging::InputPortAbstractImage		_inPort;
 
-    std::list<Selection::m4dShape<int> >	_shapes;
+    std::list< Selection::m4dShape<int> >	_shapes;
 
     bool					_selectionMode;
     bool					_printShapeData;

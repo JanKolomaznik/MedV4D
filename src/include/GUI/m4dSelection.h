@@ -15,6 +15,8 @@ class m4dPoint
 
 public:
     
+    m4dPoint();
+    
     m4dPoint( ElementType x );
     
     m4dPoint( ElementType x, ElementType y );
@@ -65,7 +67,7 @@ class m4dShape
 
 public:
 
-    m4dShape();
+    m4dShape( size_t dim );
 
     void
     addPoint( m4dPoint< ElementType >& p );
@@ -78,6 +80,12 @@ public:
 
     std::list< m4dPoint< ElementType > >&
     shapeElements();
+
+    const std::list< float >&
+    segmentLengths() const;
+
+    std::list< float >&
+    segmentLengths();
 
     void
     clear();
@@ -94,10 +102,23 @@ public:
     bool
     shapeClosed();
 
+    size_t
+    getDimension();
+
+    const m4dPoint< ElementType >&
+    getCentroid() const;
+
+    float
+    getArea() const;
+
 private:
 
     std::list< m4dPoint< ElementType > >	_shapePoints;
+    std::list< float >				_segmentLengths;
+    m4dPoint< ElementType >			_centroid;
+    float					_area;
     bool					_closed;
+    size_t					_dim;
 
 };
 
