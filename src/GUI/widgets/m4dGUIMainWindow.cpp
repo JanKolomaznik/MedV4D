@@ -9,7 +9,7 @@
 using namespace M4D::Dicom;
 
 
-m4dGUIMainWindow::m4dGUIMainWindow ()
+m4dGUIMainWindow::m4dGUIMainWindow ( const char *title, const QIcon &icon )
 {
   Q_INIT_RESOURCE( m4dGUIMainWindow );
 
@@ -31,9 +31,8 @@ m4dGUIMainWindow::m4dGUIMainWindow ()
   mainLayout->addWidget( vtkRenderWindowWidget );
   centralWidget->setLayout( mainLayout );
 
-  setWindowTitle( tr( "m4dPilot" ) ); 
-  setWindowIcon( QIcon( ":/icons/app.png" ) );
-  // resize( 800, 600 );
+  setWindowTitle( tr( title ) ); 
+  setWindowIcon( icon );
   showMaximized();
 
   // everything is initialized, build the manager - it needs some of the previous steps.

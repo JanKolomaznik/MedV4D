@@ -2,6 +2,7 @@
 #define M4D_GUI_MAIN_WINDOW_H
 
 #include <QMainWindow>
+#include <QtGui>
 
 #include "GUI/m4dGUIVtkRenderWindowWidget.h"
 #include "GUI/m4dGUIStudyManagerWidget.h"
@@ -13,7 +14,7 @@ class m4dGUIMainWindow: public QMainWindow
   Q_OBJECT
 
   public:
-    m4dGUIMainWindow ();
+    m4dGUIMainWindow ( const char *title, const QIcon &icon = QIcon( ":/icons/app.png" ) );
 
   private slots:
     void search ();
