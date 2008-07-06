@@ -25,12 +25,9 @@ class LocalService
     std::string studyID;
     //std::string setID;
 
-    bool operator< (const Entry &b) const
+    inline bool operator< (const Entry &b) const
     {
-      return (
-        patID.compare( b.patID) < 0
-        || studyID.compare( b.studyID) < 0
-        );
+      return (patID + studyID).compare( b.patID + b.studyID) < 0;
     }
   };
 
