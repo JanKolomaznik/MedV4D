@@ -1,6 +1,6 @@
 #include <QApplication>
 
-#include "GUI/m4dGUIMainWindow.h"
+#include "mainWindow.h"
 
 #include "Common.h"
 #include <fstream>
@@ -23,7 +23,7 @@ int main ( int argc, char *argv[] )
   QCoreApplication::setOrganizationName( ORGANIZATION_NAME );
   QCoreApplication::setApplicationName( APPLICATION_NAME );
 
-  m4dGUIMainWindow mainWindow;
+  mainWindow mainWindow;
   mainWindow.show();
 
   return app.exec();

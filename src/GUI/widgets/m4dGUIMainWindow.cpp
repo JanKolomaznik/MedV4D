@@ -13,7 +13,7 @@ m4dGUIMainWindow::m4dGUIMainWindow ()
 {
   Q_INIT_RESOURCE( m4dGUIMainWindow );
 
-  centralWidget = new QWidget;
+  QWidget *centralWidget = new QWidget;
   setCentralWidget( centralWidget );
 
   createVtkRenderWindowWidget();

@@ -33,11 +33,12 @@ class m4dGUIMainWindow: public QMainWindow
 
     virtual void view ( M4D::Dicom::DcmProvider::DicomObjSet *dicomObjSet );
 
-    QWidget *centralWidget;
+  protected:
     m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget;
     m4dGUIStudyManagerWidget *studyManagerWidget;
     m4dGUIScreenLayoutWidget *screenLayoutWidget;
-
+  
+  private:
     QDialog *studyManagerDialog;
     QDialog *screenLayoutDialog;
   
