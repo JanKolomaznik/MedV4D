@@ -214,99 +214,98 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
 
 void StManagerStudyListComp::view ()
 {
-  // this test is not necessary (view button is disabled when no selection)
-  if ( !activeExamTable->selectedItems().empty() )
+  // no selection (not necessary test, view button is disabled) or no allocated space for dicomObjSet
+  if ( activeExamTable->selectedItems().empty() || 
+       sizeof( *dicomObjectSet ) != sizeof( DcmProvider::DicomObjSet ) ) {
+    return;
+  }
+
+  DcmProvider::StringVector studyInfo;
+
+  // we are sure, there is exactly one selected
+  int selectedRow = activeExamTable->selectedItems()[0]->row();
+  int idx = activeExamTable->item( selectedRow, ATTRIBUTE_NUMBER )->text().toInt();
+  DcmProvider::TableRow *row = &activeResultSet->at( idx );
+
+  const char *recentTypePrefix = RECENT_REMOTE_EXAMS_SETTINGS_NAME;
+
+  // different FindStudyInfo and GetImageSet calls
+  switch ( studyListTab->currentIndex() )
   {
-    DcmProvider::StringVector studyInfo;
-	  DcmProvider::DicomObjSet *dicomObjSet = new DcmProvider::DicomObjSet();	
-
-    // we are sure, there is exactly one selected
-    int selectedRow = activeExamTable->selectedItems()[0]->row();
-    int idx = activeExamTable->item( selectedRow, ATTRIBUTE_NUMBER )->text().toInt();
-    DcmProvider::TableRow *row = &activeResultSet->at( idx );
-
-    const char *recentTypePrefix = RECENT_REMOTE_EXAMS_SETTINGS_NAME;
-
-    // different FindStudyInfo and GetImageSet calls
-    switch ( studyListTab->currentIndex() )
-    {
-      case 0:
-        // Recent Exams tab active
-        if ( recentRemoteButton->isChecked() )
-        {
-          // find some info about selected study
-	        dcmProvider->FindStudyInfo( row->patentID, row->studyID, studyInfo );
-
-          // if( studyInfo.size() > 1) showSomeChoosingDialog()
-          // now get image
-	        dcmProvider->GetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjSet );  
-        }
-        else
-        {
-          // find some info about selected study
-          dcmProvider->LocalFindStudyInfo( row->patentID, row->studyID, studyInfo );
-
-          // if( studyInfo.size() > 1) showSomeChoosingDialog()
-          // now get image
-          dcmProvider->LocalGetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjSet );
-
-          recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
-        }
-        break;
-
-      case 1:
-        // Remote Exams tab active
+    case 0:
+      // Recent Exams tab active
+      if ( recentRemoteButton->isChecked() )
+      {
         // find some info about selected study
-	      dcmProvider->FindStudyInfo( row->patentID, row->studyID, studyInfo );
+        dcmProvider->FindStudyInfo( row->patentID, row->studyID, studyInfo );
 
         // if( studyInfo.size() > 1) showSomeChoosingDialog()
         // now get image
-	      dcmProvider->GetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjSet );
-        break;
-
-      case 2:
-        // DICOMDIR tab active
+        dcmProvider->GetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjectSet );  
+      }
+      else
+      {
         // find some info about selected study
         dcmProvider->LocalFindStudyInfo( row->patentID, row->studyID, studyInfo );
 
         // if( studyInfo.size() > 1) showSomeChoosingDialog()
         // now get image
-        dcmProvider->LocalGetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjSet );
+        dcmProvider->LocalGetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjectSet );
 
         recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
-        break;
+      }
+      break;
+
+    case 1:
+      // Remote Exams tab active
+      // find some info about selected study
+      dcmProvider->FindStudyInfo( row->patentID, row->studyID, studyInfo );
+
+      // if( studyInfo.size() > 1) showSomeChoosingDialog()
+      // now get image
+      dcmProvider->GetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjectSet );
+      break;
+
+    case 2:
+      // DICOMDIR tab active
+      // find some info about selected study
+      dcmProvider->LocalFindStudyInfo( row->patentID, row->studyID, studyInfo );
+
+      // if( studyInfo.size() > 1) showSomeChoosingDialog()
+      // now get image
+      dcmProvider->LocalGetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjectSet );
+
+      recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
+      break;
       
-      default:
-        if ( recentRemoteButton->isChecked() )
-        {
-          // find some info about selected study
-	        dcmProvider->FindStudyInfo( row->patentID, row->studyID, studyInfo );
+    default:
+      if ( recentRemoteButton->isChecked() )
+      {
+        // find some info about selected study
+        dcmProvider->FindStudyInfo( row->patentID, row->studyID, studyInfo );
 
-          // if( studyInfo.size() > 1) showSomeChoosingDialog()
-          // now get image
-	        dcmProvider->GetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjSet );  
-        }
-        else
-        {
-          // find some info about selected study
-          dcmProvider->LocalFindStudyInfo( row->patentID, row->studyID, studyInfo );
+        // if( studyInfo.size() > 1) showSomeChoosingDialog()
+        // now get image
+        dcmProvider->GetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjectSet );  
+      }
+      else
+      {
+        // find some info about selected study
+        dcmProvider->LocalFindStudyInfo( row->patentID, row->studyID, studyInfo );
 
-          // if( studyInfo.size() > 1) showSomeChoosingDialog()
-          // now get image
-          dcmProvider->LocalGetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjSet );
+        // if( studyInfo.size() > 1) showSomeChoosingDialog()
+        // now get image
+        dcmProvider->LocalGetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjectSet );
 
-          recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
-        }
-        break;
-    }
-
-	  vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->imageDataToRenderWindow( DcmProvider::DicomObjSetPtr( dicomObjSet ) ) );
-
-    // add to Recent Exams
-    updateRecentExams( row, recentTypePrefix );
-
-    studyManagerDialog->close();
+        recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
+      }
+      break;
   }
+
+  // add to Recent Exams
+  updateRecentExams( row, recentTypePrefix );
+
+  studyManagerDialog->accept();
 }
 
 

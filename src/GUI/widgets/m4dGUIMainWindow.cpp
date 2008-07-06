@@ -5,8 +5,8 @@
 #include "Log.h"
 #include "Debug.h"
 
-#include "GUI/m4dGUIStudyManagerWidget.h"
-#include "GUI/m4dGUIScreenLayoutWidget.h"
+// DICOM namespace:
+using namespace M4D::Dicom;
 
 
 m4dGUIMainWindow::m4dGUIMainWindow ()
@@ -45,7 +45,13 @@ m4dGUIMainWindow::m4dGUIMainWindow ()
 
 void m4dGUIMainWindow::search ()
 {
-  studyManagerDialog->show();
+  DcmProvider::DicomObjSet *dicomObjSet = new DcmProvider::DicomObjSet();	
+  studyManagerWidget->getStudyListComponent()->setDicomObjectSet( dicomObjSet );
+
+  // Study Manager Dialog - this will fill the dicomObjSet
+  if ( studyManagerDialog->exec() ) {
+    view( dicomObjSet );
+  }
 }
 
 
@@ -81,8 +87,7 @@ void m4dGUIMainWindow::createStudyManagerDialog ()
   // new dialog for Study Manager Widget - without What's This button in the title bar
   studyManagerDialog = new QDialog( this, Qt::WindowTitleHint | Qt::WindowSystemMenuHint );
 
-  m4dGUIStudyManagerWidget *studyManagerWidget = new m4dGUIStudyManagerWidget( vtkRenderWindowWidget,
-                                                                               studyManagerDialog );
+  studyManagerWidget = new m4dGUIStudyManagerWidget( vtkRenderWindowWidget, studyManagerDialog );
 
   QVBoxLayout *dialogLayout = new QVBoxLayout;
   dialogLayout->addWidget( studyManagerWidget );
@@ -98,7 +103,7 @@ void m4dGUIMainWindow::createScreenLayoutDialog ()
   // new dialog for Screen Layout Widget - without What's This button in the title bar and resize
   screenLayoutDialog = new QDialog( this, Qt::WindowTitleHint | Qt::WindowSystemMenuHint );
 
-  m4dGUIScreenLayoutWidget *screenLayoutWidget = new m4dGUIScreenLayoutWidget( vtkRenderWindowWidget,
+  screenLayoutWidget = new m4dGUIScreenLayoutWidget( vtkRenderWindowWidget,
                                                                                screenLayoutDialog );
 
   QVBoxLayout *dialogLayout = new QVBoxLayout;
@@ -211,4 +216,10 @@ void m4dGUIMainWindow::createDockWindows ()
 
   addDockWidget( Qt::RightDockWidgetArea, dock );
   viewMenu->addAction( dock->toggleViewAction() );
+}
+
+
+void m4dGUIMainWindow::view ( DcmProvider::DicomObjSet *dicomObjSet )
+{
+  vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->imageDataToRenderWindow( DcmProvider::DicomObjSetPtr( dicomObjSet ) ) );
 }

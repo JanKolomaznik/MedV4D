@@ -4,6 +4,8 @@
 #include <QMainWindow>
 
 #include "GUI/m4dGUIVtkRenderWindowWidget.h"
+#include "GUI/m4dGUIStudyManagerWidget.h"
+#include "GUI/m4dGUIScreenLayoutWidget.h"
 
 
 class m4dGUIMainWindow: public QMainWindow
@@ -27,10 +29,14 @@ class m4dGUIMainWindow: public QMainWindow
     void createMenus ();
     void createToolBars ();
     void createStatusBar ();
-    void createDockWindows();
+    void createDockWindows ();
+
+    virtual void view ( M4D::Dicom::DcmProvider::DicomObjSet *dicomObjSet );
 
     QWidget *centralWidget;
     m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget;
+    m4dGUIStudyManagerWidget *studyManagerWidget;
+    m4dGUIScreenLayoutWidget *screenLayoutWidget;
 
     QDialog *studyManagerDialog;
     QDialog *screenLayoutDialog;

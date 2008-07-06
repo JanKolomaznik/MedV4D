@@ -62,6 +62,11 @@ class StManagerStudyListComp: public QWidget
                 const std::string &fromDate, const std::string &toDate,
                 const M4D::Dicom::DcmProvider::StringVector &modalitiesVect );
 
+    void setDicomObjectSet ( M4D::Dicom::DcmProvider::DicomObjSet *dcmObjSet )
+    {
+      dicomObjectSet = dcmObjSet;  
+    }
+ 
   private slots:
 
     /**
@@ -199,6 +204,8 @@ class StManagerStudyListComp: public QWidget
     M4D::Dicom::DcmProvider::ResultSet *DICOMDIRResultSet;
     /// Pointer to vector of TableRows - pointing to active ResultSet.
     M4D::Dicom::DcmProvider::ResultSet *activeResultSet;
+
+    M4D::Dicom::DcmProvider::DicomObjSet *dicomObjectSet;	
 };
 
 #endif // S_MANAGER_STUDY_LIST_COMP_H
