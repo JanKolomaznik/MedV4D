@@ -13,7 +13,10 @@ RCC=rcc
 #Name of this project part
 NAME=		m4dPilot
 #Names of target sources
-TARGETS=	main
+TARGETS=	main\
+		mainWindow
+
+MOCINPUT=	mainWindow.h
 
 M4DLIBS=	../../lib/libm4dWidgets.a\
 		../../lib/libImaging.a\
@@ -87,6 +90,8 @@ INCLUDES=	-I$(srcdir)\
 		-I/usr/include/qt4/QtGui
 
 
+MOCOUTPUT=      $(addprefix $(TMP_DIR)/moc_, $(MOCINPUT:.h=.cpp) )
+
 DEBUG_DEFS=	-DDEBUG_LEVEL=10\
 		-DDEBUG_ADITIONAL_INFO
 
@@ -112,6 +117,9 @@ build:		cleanall all
 dep:		
 		$(CXX) $(INCLUDES) $(CDEPFLAGS) $(SRC_FILES) | \
 		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
+
+$(TMP_DIR)/moc_%.cpp:   %.h
+		$(MOC) $< -o $@
 
 $(TMP_DIR)/%.o:	%.cpp	
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
