@@ -109,9 +109,6 @@ bool
 ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 ::ExecutionOnWholeThreadMethod()
 {
-	//const Image< InputElementType, 3 > &in = this->GetInputImage();
-	//OutputImageType &out = this->GetOutputImage();
-	
 	//TODO - better implementation	
 	for( 
 		size_t i = this->in->GetDimensionExtents( 2 ).minimum; 
@@ -173,9 +170,6 @@ bool
 ImageVolumeFilter< Image< InputElementType, 3 >, OutputImageType >
 ::ExecutionOnWholeThreadMethod()
 {
-	//const Image< InputElementType, 3 > &in = this->GetInputImage();
-	//OutputImageType &out = this->GetOutputImage();
-
 	//TODO - better implementation	
 	
 	ProcessVolume( 
@@ -234,9 +228,6 @@ bool
 ImageVolumeFilter< Image< InputElementType, 4 >, OutputImageType >
 ::ExecutionOnWholeThreadMethod()
 {
-	//const Image< InputElementType, 4 > &in = this->GetInputImage();
-	//OutputImageType &out = this->GetOutputImage();
-	
 	//TODO - better implementation	
 	for( 
 		size_t i = this->in->GetDimensionExtents( 3 ).minimum; 

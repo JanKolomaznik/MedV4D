@@ -99,21 +99,22 @@ ModificationManager::GetMod3D(
 	return ReaderBBoxInterface::Ptr( changeProxy );
 }
 
+//Predicate used in find_if algorithm
+struct ChangeTimestampComparator
+{
+	ChangeTimestampComparator( const Common::TimeStamp & changeStamp ):
+		_changeStamp( changeStamp ) {}
+	
+	bool
+	operator()( WriterBBoxInterface * change )
+	{ return change->GetTimeStamp() >= _changeStamp; }
+
+	const Common::TimeStamp & _changeStamp;
+};
+
 ModificationManager::ChangeIterator 
 ModificationManager::GetChangeBBox( const Common::TimeStamp & changeStamp )
 {
-	//Predicate used in find_if algorithm
-	struct ChangeTimestampComparator
-	{
-		ChangeTimestampComparator(  const Common::TimeStamp & changeStamp ):
-			_changeStamp( changeStamp ) {}
-		
-		bool
-		operator()( WriterBBoxInterface * change )
-		{ return change->GetTimeStamp() >= _changeStamp; }
-
-		const Common::TimeStamp & _changeStamp;
-	};
 
 	//TODO
 	Multithreading::ScopedLock lock( _accessLock );
