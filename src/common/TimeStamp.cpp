@@ -25,9 +25,11 @@ TimeStamp::~TimeStamp()
 
 }
 
-const TimeStamp&
+TimeStamp
 TimeStamp::operator=( const TimeStamp& b )
 {
+	Multithreading::ScopedLock lock( _accessLock );
+
 	_uniqueID = b._uniqueID;
 	_timeStamp = b._timeStamp;
 	return *this;
@@ -42,19 +44,24 @@ TimeStamp::Increase()
 bool
 TimeStamp::IdenticalID( const TimeStamp &b )
 {
+	Multithreading::ScopedLock lock( _accessLock );
+
 	return this->_uniqueID == b._uniqueID;
 }
 
-const TimeStamp&
+TimeStamp
 TimeStamp::operator++()
 {
+	Multithreading::ScopedLock lock( _accessLock );
+
 	++(this->_timeStamp);
 	return *this;
 }
 
-const TimeStamp
+TimeStamp
 TimeStamp::operator++(int)
 {
+	//TODO check locking
 	TimeStamp copy = *this;
 	
 	++(this->_timeStamp);
@@ -63,15 +70,18 @@ TimeStamp::operator++(int)
 }
 
 bool
-TimeStamp::operator<( const TimeStamp& b )
+TimeStamp::operator>( const TimeStamp& b )const
 {
-	return this->_timeStamp < b._timeStamp;
+	//TODO - check if locking needed
+	return this->_timeStamp > b._timeStamp;
 }
 
 bool
-TimeStamp::operator<=( const TimeStamp& b )
+TimeStamp::operator>=( const TimeStamp& b )const
 {
-	return this->_timeStamp <= b._timeStamp;
+
+	//TODO - check if locking needed
+	return this->_timeStamp >= b._timeStamp;
 }
 
 uint64

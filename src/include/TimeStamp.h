@@ -2,6 +2,7 @@
 #define _TIME_STAMP_H
 
 #include "Common.h"
+#include "Thread.h"
 
 namespace M4D
 {
@@ -17,7 +18,7 @@ public:
 
 	~TimeStamp();
 
-	const TimeStamp&
+	TimeStamp
 	operator=( const TimeStamp& b );
 
 	void
@@ -26,17 +27,17 @@ public:
 	bool
 	IdenticalID( const TimeStamp& b );
 
-	const TimeStamp&
+	TimeStamp
 	operator++();
 
-	const TimeStamp
+	TimeStamp
 	operator++(int);
 
 	bool
-	operator<( const TimeStamp& b );
+	operator>( const TimeStamp& b )const;
 
 	bool
-	operator<=( const TimeStamp& b );
+	operator>=( const TimeStamp& b )const;
 private:
 	static uint64
 	GenerateUniqueID();
@@ -44,6 +45,7 @@ private:
 	uint64 _uniqueID;
 	long _timeStamp;
 
+	Multithreading::Mutex	_accessLock;
 };
 
 
