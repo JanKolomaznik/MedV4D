@@ -2,6 +2,7 @@
 
 #include <QtGui>
 #include <QtOpenGL>
+#include <GL/glut.h>
 #include <string.h>
 
 #define MINIMUM_SELECT_DISTANCE 5
@@ -167,11 +168,9 @@ m4dSliceViewerWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_ACCUM_BUFFER_BIT);
     glLoadIdentity();
     unsigned i, offsetx = _offset.x()<0?-_offset.x():0, offsety = _offset.y()<0?-_offset.y():0;
-    glTranslatef( _offset.x()>0?_offset.x():0, _offset.y()>0?_offset.y():0, 0 );
-    glPixelStorei( GL_UNPACK_SKIP_PIXELS, offsetx );
-    glPixelStorei( GL_UNPACK_SKIP_ROWS, offsety );
-    glScalef( _zoomRate, _zoomRate, 0. );
-    glRasterPos2i( 0, 0 );
+    glRasterPos2i( _offset.x()>0?_offset.x():0, _offset.y()>0?_offset.y():0 );
+    glPixelStorei( GL_UNPACK_SKIP_PIXELS, (GLint)( offsetx / _zoomRate ) );
+    glPixelStorei( GL_UNPACK_SKIP_ROWS, (GLint)( offsety / _zoomRate ) );
     size_t height, width, depth;
     double maxvalue;
     int stride;
@@ -193,11 +192,11 @@ m4dSliceViewerWidget::paintGL()
             avg = avg * maxvalue / (float)( width * height );
 	    for ( i = 0; i < height * width; ++i )
 	        avgLum[4*i] = avgLum[4*i + 1] = avgLum[4*i + 2] = (uint8)avg;
-	    glDrawPixels( width - offsetx, height - offsety, GL_RGBA, GL_UNSIGNED_BYTE, avgLum );
+	    glDrawPixels( width - (GLint)( offsetx / _zoomRate ), height - (GLint)( offsety / _zoomRate ), GL_RGBA, GL_UNSIGNED_BYTE, avgLum );
 	    glAccum( GL_ACCUM, _contrastRate );
-	    glDrawPixels( width - offsetx, height - offsety, GL_RGBA, GL_UNSIGNED_BYTE, black );
+	    glDrawPixels( width - (GLint)( offsetx / _zoomRate ), height - (GLint)( offsety / _zoomRate ), GL_RGBA, GL_UNSIGNED_BYTE, black );
 	    glAccum( GL_ACCUM, _brightnessRate );
-	    glDrawPixels( width - offsetx, height - offsety, GL_RGBA, GL_UNSIGNED_BYTE, pixel );
+	    glDrawPixels( width - (GLint)( offsetx / _zoomRate ), height - (GLint)( offsety / _zoomRate ), GL_RGBA, GL_UNSIGNED_BYTE, pixel );
 	    glAccum( GL_ACCUM, 1.0 - ( _brightnessRate + _contrastRate ) );
 	    glAccum( GL_RETURN, 1.0 );
 	    delete[] black;
@@ -220,11 +219,11 @@ m4dSliceViewerWidget::paintGL()
             avg = avg * maxvalue / (float)( width * height );
 	    for ( i = 0; i < height * width; ++i )
 	        avgLum[i] = (uint8)avg;
-	    glDrawPixels( width - offsetx, height - offsety, GL_LUMINANCE, GL_UNSIGNED_BYTE, avgLum );
+	    glDrawPixels( width - (GLint)( offsetx / _zoomRate ), height - (GLint)( offsety / _zoomRate ), GL_LUMINANCE, GL_UNSIGNED_BYTE, avgLum );
 	    glAccum( GL_ACCUM, _contrastRate );
-	    glDrawPixels( width - offsetx, height - offsety, GL_LUMINANCE, GL_UNSIGNED_BYTE, black );
+	    glDrawPixels( width - (GLint)( offsetx / _zoomRate ), height - (GLint)( offsety / _zoomRate ), GL_LUMINANCE, GL_UNSIGNED_BYTE, black );
 	    glAccum( GL_ACCUM, _brightnessRate );
-	    glDrawPixels( width - offsetx, height - offsety, GL_LUMINANCE, GL_UNSIGNED_BYTE, pixel );
+	    glDrawPixels( width - (GLint)( offsetx / _zoomRate ), height - (GLint)( offsety / _zoomRate ), GL_LUMINANCE, GL_UNSIGNED_BYTE, pixel );
 	    glAccum( GL_ACCUM, 1.0 - ( _brightnessRate + _contrastRate ) );
 	    glAccum( GL_RETURN, 1.0 );
 	    delete[] black;
@@ -247,11 +246,11 @@ m4dSliceViewerWidget::paintGL()
             avg = avg * maxvalue / (float)( width * height );
 	    for ( i = 0; i < height * width; ++i )
 	        avgLum[i] = (uint16)avg;
-	    glDrawPixels( width - offsetx, height - offsety, GL_LUMINANCE, GL_UNSIGNED_SHORT, avgLum );
+	    glDrawPixels( width - (GLint)( offsetx / _zoomRate ), height - (GLint)( offsety / _zoomRate ), GL_LUMINANCE, GL_UNSIGNED_SHORT, avgLum );
 	    glAccum( GL_ACCUM, _contrastRate );
-	    glDrawPixels( width - offsetx, height - offsety, GL_LUMINANCE, GL_UNSIGNED_SHORT, black );
+	    glDrawPixels( width - (GLint)( offsetx / _zoomRate ), height - (GLint)( offsety / _zoomRate ), GL_LUMINANCE, GL_UNSIGNED_SHORT, black );
 	    glAccum( GL_ACCUM, _brightnessRate );
-	    glDrawPixels( width - offsetx, height - offsety, GL_LUMINANCE, GL_UNSIGNED_SHORT, pixel );
+	    glDrawPixels( width - (GLint)( offsetx / _zoomRate ), height - (GLint)( offsety / _zoomRate ), GL_LUMINANCE, GL_UNSIGNED_SHORT, pixel );
 	    glAccum( GL_ACCUM, 1.0 - ( _brightnessRate + _contrastRate ) );
 	    glAccum( GL_RETURN, 1.0 );
 	    delete[] black;
@@ -261,7 +260,8 @@ m4dSliceViewerWidget::paintGL()
 
     }
     glPixelZoom( _zoomRate, _zoomRate );
-    glTranslatef( _offset.x()<0?_offset.x():0, _offset.y()<0?_offset.y():0, 0 );
+    glTranslatef( _offset.x(), _offset.y(), 0 );
+    glScalef( _zoomRate, _zoomRate, 0. );
     if ( _selectionMode ) drawBorder();
     for ( std::list< Selection::m4dShape<int> >::iterator it = _shapes.begin(); it != --(_shapes.end()); ++it )
         drawShape( *it, false );
@@ -302,14 +302,24 @@ m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last )
     if ( last ) glColor3f( 1., 0., 0. );
     else glColor3f( 0., 0., 1. );
     if ( s.shapeClosed() && s.shapeElements().size() > 1 &&
-         s.shapeElements().front().getParticularValue( 2 ) == _sliceNum &&
 	  s.shapeElements().back().getParticularValue( 2 ) == _sliceNum )
     {
         glBegin(GL_LINES);
 	    glVertex2i( s.shapeElements().front().getParticularValue( 0 ), s.shapeElements().front().getParticularValue( 1 ) );
 	    glVertex2i(  s.shapeElements().back().getParticularValue( 0 ),  s.shapeElements().back().getParticularValue( 1 ) );
 	glEnd();
+        if ( last ) glColor3f( 1., 1., 0. );
+        else glColor3f( 0., 1., 1. );
+	Selection::m4dPoint< int > mid = Selection::m4dPoint< int >::midpoint( s.shapeElements().front(), s.shapeElements().back() );
+	char dist[20];
+	snprintf( dist, 19, "%f", Selection::m4dPoint< int >::distance( s.shapeElements().front(), s.shapeElements().back() ) );
+	dist[19] = 0;
+	glRasterPos2i( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
+	unsigned i;
+	for ( i = 0; i < strlen(dist); ++i ) glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, dist[i] );
     }
+    if ( last ) glColor3f( 1., 0., 0. );
+    else glColor3f( 0., 0., 1. );
     for ( std::list< Selection::m4dPoint<int> >::iterator it = s.shapeElements().begin(); it != s.shapeElements().end(); ++it )
         if  ( it->getParticularValue( 2 ) == _sliceNum )
         {
@@ -351,16 +361,16 @@ m4dSliceViewerWidget::mousePressEvent(QMouseEvent *event)
         if ( event->modifiers() & Qt::ControlModifier )
 	{
 	    if ( event->buttons() & Qt::LeftButton )
-	        (this->*_selectMethods[1][0])( (int)(( event->x() - _offset.x() ) / _zoomRate), (int)(( this->height() - event->y() - _offset.y() ) / _zoomRate), _sliceNum );
+	        (this->*_selectMethods[1][0])( (int)( ( event->x() - _offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - _offset.y() ) / _zoomRate ), _sliceNum );
 	    else if ( event->buttons() & Qt::RightButton )
-	        (this->*_selectMethods[1][1])( (int)(( event->x() - _offset.x() ) / _zoomRate), (int)(( this->height() - event->y() - _offset.y() ) / _zoomRate), _sliceNum );
+	        (this->*_selectMethods[1][1])( (int)( ( event->x() - _offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - _offset.y() ) / _zoomRate ), _sliceNum );
 	}
 	else
 	{
 	    if ( event->buttons() & Qt::LeftButton )
-	        (this->*_selectMethods[0][0])( (int)(( event->x() - _offset.x() ) / _zoomRate), (int)(( this->height() - event->y() - _offset.y() ) / _zoomRate), _sliceNum );
+	        (this->*_selectMethods[0][0])( (int)( ( event->x() - _offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - _offset.y() ) / _zoomRate ), _sliceNum );
 	    else if ( event->buttons() & Qt::RightButton )
-	        (this->*_selectMethods[0][1])( (int)(( event->x() - _offset.x() ) / _zoomRate), (int)(( this->height() - event->y() - _offset.y() ) / _zoomRate), _sliceNum );
+	        (this->*_selectMethods[0][1])( (int)( ( event->x() - _offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - _offset.y() ) / _zoomRate ), _sliceNum );
 	}
     }
 

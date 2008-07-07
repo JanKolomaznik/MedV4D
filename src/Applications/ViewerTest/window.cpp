@@ -38,7 +38,7 @@
 
 #include "window.h"
 
-mywindow::mywindow(M4D::Imaging::ImageConnection< M4D::Imaging::Image<int16, 3> >& conn)
+mywindow::mywindow(M4D::Imaging::ImageConnection< M4D::Imaging::Image<uint32, 3> >& conn)
 {
     glWidget = new M4D::Viewer::m4dSliceViewerWidget(conn);
 

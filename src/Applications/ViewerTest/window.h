@@ -49,7 +49,7 @@ class mywindow : public QWidget
     Q_OBJECT
 
 public:
-    mywindow(M4D::Imaging::ImageConnection< M4D::Imaging::Image<int16, 3> >& conn);
+    mywindow(M4D::Imaging::ImageConnection< M4D::Imaging::Image<uint32, 3> >& conn);
 
 private:
     

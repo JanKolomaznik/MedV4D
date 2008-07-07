@@ -7,6 +7,7 @@
 #include <iostream>
 #include <QApplication>
 #include "window.h"
+#include <GL/glut.h>
 
 
 using namespace M4D::Imaging;
@@ -14,22 +15,31 @@ using namespace M4D::Viewer;
 using namespace std;
 
 
-typedef Image< int16, 3 > Image3DType;
+typedef Image< uint32, 3 > Image3DType;
 typedef ImageConnectionSimple< Image3DType > ProducerConn;
 
 int
 main( int argc, char** argv )
 {
 
+	glutInit( &argc, argv );
+
 	ProducerConn prodconn;
 
-	Image3DType::Ptr inputImage = ImageFactory::CreateEmptyImage3DTyped< int16 >( 512,512,50 );
+	Image3DType::Ptr inputImage = ImageFactory::CreateEmptyImage3DTyped< uint32 >( 512,512,50 );
 
-	int i, j, k;
+	size_t i, j, k;
+	uint8* p;
 	for ( i = inputImage->GetDimensionExtents(0).minimum; i < inputImage->GetDimensionExtents(2).maximum; ++i )
 		for ( j = inputImage->GetDimensionExtents(1).minimum; j < inputImage->GetDimensionExtents(0).maximum; ++j )
 			for ( k = inputImage->GetDimensionExtents(2).minimum; k < inputImage->GetDimensionExtents(1).maximum; ++k )
-				inputImage->GetElement( j, k, i ) = ( i * j * k ) % 32000;
+			{
+				p = (uint8*) &inputImage->GetElement( j, k, i );// = ( i * j * k ) % 32000;
+				p[0] = i * j % 256;
+				p[1] = j * k % 256;
+				p[2] = i * k % 256;
+				p[3] = 0;
+			}
 
 
 	prodconn.PutImage( inputImage );

@@ -45,6 +45,12 @@ public:
 
 
     const ElementType&
+    operator[]( size_t i ) const;
+    
+    ElementType&
+    operator[]( size_t i );
+
+    const ElementType&
     getParticularValue( size_t i ) const;
     
     ElementType&
@@ -52,6 +58,9 @@ public:
 
     static float
     distance( m4dPoint< ElementType >& p1, m4dPoint< ElementType >& p2 );
+
+    static m4dPoint< ElementType >
+    midpoint( m4dPoint< ElementType >& p1, m4dPoint< ElementType >& p2 );
 
 private:
     
