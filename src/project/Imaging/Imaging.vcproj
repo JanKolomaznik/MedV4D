@@ -148,6 +148,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\Connection.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\Image.cpp"
 				>
 			</File>

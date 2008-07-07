@@ -39,7 +39,8 @@ Port::ReceiveMessage(
 bool 
 InputPort::GetDatasetReadLock()
 {
-
+	//TODO
+	return false;
 }
 
 void 
@@ -53,7 +54,8 @@ InputPort::ReleaseDatasetLock()
 bool 
 OutputPort::GetDatasetWriteLock()
 {
-
+	//TODO
+	return false;
 }
 
 void
