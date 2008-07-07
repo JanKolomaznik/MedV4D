@@ -18,6 +18,8 @@ TARGETS=	main\
 
 MOCINPUT=	mainWindow.h
 
+RCCINPUT=	mainWindow.qrc
+
 M4DLIBS=	../../lib/libm4dWidgets.a\
 		../../lib/libImaging.a\
 		../../lib/libvtkIntegration.a\
@@ -120,6 +122,9 @@ dep:
 
 $(TMP_DIR)/moc_%.cpp:   %.h
 		$(MOC) $< -o $@
+
+$(TMP_DIR)/rcc_%.cpp:   $(RCCINPUT)
+		$(RCC) -name $(*F) $< -o $@
 
 $(TMP_DIR)/%.o:	%.cpp	
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
