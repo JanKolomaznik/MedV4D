@@ -164,7 +164,8 @@ m4dPoint< ElementType >::distance( m4dPoint< ElementType >& p1, m4dPoint< Elemen
 
     size_t i;
     float dist = 0;
-    for ( i = 0; i < p1.getDimension(); ++i ) dist += ( p1.getParticularValue( i ) - p2.getParticularValue( i ) ) * ( p1.getParticularValue( i ) - p2.getParticularValue( i ) );
+    for ( i = 0; i < p1.getDimension(); ++i ) dist += ( p1.getParticularValue( i ) - p2.getParticularValue( i ) ) *
+    						      ( p1.getParticularValue( i ) - p2.getParticularValue( i ) );
     return sqrt( dist );
 }
 
@@ -200,6 +201,7 @@ m4dShape< ElementType >::addPoint( m4dPoint< ElementType >& p )
         if ( _shapePoints.size() > 1 ) _segmentLengths.push_back( m4dPoint< ElementType >::distance( _shapePoints.back(), p ) );
         _shapePoints.push_back( p );
     }
+    calculateCentroid();
 }
 
 template< typename ElementType >
@@ -209,6 +211,7 @@ m4dShape< ElementType >::addAllPoints( m4dShape< ElementType >& s )
     if ( s.getDimension() != _dim ) throw ErrorHandling::ExceptionBase( "Index out of bounds." );
     else for ( typename std::list< m4dPoint< ElementType > >::iterator it = s._shapePoints.begin(); it != s._shapePoints.end(); ++it )
         addPoint( *it );
+    calculateCentroid();
 }
 
 template< typename ElementType >
@@ -252,6 +255,7 @@ m4dShape< ElementType >::deleteLast()
 {
     if ( ! _shapePoints.empty() )    _shapePoints.pop_back();
     if ( ! _segmentLengths.empty() ) _segmentLengths.pop_back();
+    calculateCentroid();
 }
 
 template< typename ElementType >
@@ -259,15 +263,15 @@ void
 m4dShape< ElementType >::closeShape()
 {
     _closed = true;
+    calculateCentroid();
 }
 
 template< typename ElementType >
 void
 m4dShape< ElementType >::openShape()
 {
-    _area     = 0.;
-    _centroid = m4dPoint< ElementType >();
-    _closed   = false;
+    _closed = false;
+    calculateCentroid();
 }
 
 template< typename ElementType >
@@ -292,10 +296,57 @@ m4dShape< ElementType >::getCentroid() const
 }
 
 template< typename ElementType >
-float
+long double
 m4dShape< ElementType >::getArea() const
 {
     return _area;
+}
+
+template< typename ElementType >
+void
+m4dShape< ElementType >::calculateCentroid()
+{
+    _centroid = m4dPoint< ElementType >();
+    calculateArea();
+    if ( !_closed || _shapePoints.size() < 3 || !_area ) return;
+    ElementType x, y, z;
+    x = 0;
+    y = 0;
+    z = _shapePoints.front().getParticularValue( 2 );
+    m4dPoint< ElementType > p2, p1 = _shapePoints.back();
+    for ( typename std::list< m4dPoint< ElementType > >::iterator it = _shapePoints.begin(); it != _shapePoints.end(); ++it )
+    {
+        p2 = *it;
+	x += (ElementType)(( p1.getParticularValue( 0 ) + p2.getParticularValue( 0 ) ) * ( p1.getParticularValue( 0 ) * p2.getParticularValue( 1 ) - p2.getParticularValue( 0 ) * p1.getParticularValue( 1 ) ) / ( 6. * _area ));
+	y += (ElementType)(( p1.getParticularValue( 1 ) + p2.getParticularValue( 1 ) ) * ( p1.getParticularValue( 0 ) * p2.getParticularValue( 1 ) - p2.getParticularValue( 0 ) * p1.getParticularValue( 1 ) ) / ( 6. * _area ));
+	p1 = p2;
+    }
+    x = ( x<0 ? -x : x );
+    y = ( y<0 ? -y : y );
+    _centroid = m4dPoint< ElementType >( x, y, z );
+}
+
+template< typename ElementType >
+void
+m4dShape< ElementType >::calculateArea()
+{
+    _area = 0.;
+    if ( !_closed || _shapePoints.size() < 3 || _shapePoints.front().getDimension() < 3 ) return;
+    m4dPoint< ElementType > p2, p1 = _shapePoints.back();
+    for ( typename std::list< m4dPoint< ElementType > >::iterator it = _shapePoints.begin(); it != _shapePoints.end(); ++it )
+    {
+        p2 = *it;
+	if ( p2.getParticularValue( 2 ) != p1.getParticularValue( 2 ) )
+	{
+	    _area = 0.;
+	    return;
+	}
+	_area += p1.getParticularValue( 0 ) * p2.getParticularValue( 1 );
+	_area -= p1.getParticularValue( 1 ) * p2.getParticularValue( 0 );
+	p1 = p2;
+    }
+    _area /= 2.;
+    _area = ( _area < 0 ? -_area : _area );
 }
 
 }/* namespace Selection */

@@ -117,15 +117,21 @@ public:
     const m4dPoint< ElementType >&
     getCentroid() const;
 
-    float
+    long double
     getArea() const;
+
+    void
+    calculateCentroid();
+
+    void
+    calculateArea();
 
 private:
 
     std::list< m4dPoint< ElementType > >	_shapePoints;
     std::list< float >				_segmentLengths;
     m4dPoint< ElementType >			_centroid;
-    float					_area;
+    long double					_area;
     bool					_closed;
     size_t					_dim;
 

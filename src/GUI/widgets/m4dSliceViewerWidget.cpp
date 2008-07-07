@@ -308,18 +308,45 @@ m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last )
 	    glVertex2i( s.shapeElements().front().getParticularValue( 0 ), s.shapeElements().front().getParticularValue( 1 ) );
 	    glVertex2i(  s.shapeElements().back().getParticularValue( 0 ),  s.shapeElements().back().getParticularValue( 1 ) );
 	glEnd();
-        if ( last ) glColor3f( 1., 1., 0. );
-        else glColor3f( 0., 1., 1. );
-	Selection::m4dPoint< int > mid = Selection::m4dPoint< int >::midpoint( s.shapeElements().front(), s.shapeElements().back() );
-	char dist[20];
-	snprintf( dist, 19, "%f", Selection::m4dPoint< int >::distance( s.shapeElements().front(), s.shapeElements().back() ) );
-	dist[19] = 0;
-	glRasterPos2i( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
-	unsigned i;
-	for ( i = 0; i < strlen(dist); ++i ) glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, dist[i] );
+        if ( _printShapeData )
+	{
+	    if ( last ) glColor3f( 1., 1., 0. );
+            else glColor3f( 0., 1., 1. );
+	    Selection::m4dPoint< int > mid = Selection::m4dPoint< int >::midpoint( s.shapeElements().front(), s.shapeElements().back() );
+	    char dist[20];
+	    snprintf( dist, 19, "%f", Selection::m4dPoint< int >::distance( s.shapeElements().front(), s.shapeElements().back() ) );
+	    dist[19] = 0;
+	    glRasterPos2i( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
+	    unsigned i;
+	    for ( i = 0; i < strlen(dist); ++i ) glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, dist[i] );
+            if ( last ) glColor3f( 1., 0., 0. );
+            else glColor3f( 0., 0., 1. );
+	}
     }
-    if ( last ) glColor3f( 1., 0., 0. );
-    else glColor3f( 0., 0., 1. );
+    if ( _printShapeData )
+    {
+        Selection::m4dPoint< int > c = s.getCentroid();
+	float a = s.getArea();
+	if ( a > 0 && _sliceNum == c.getParticularValue( 2 ) )
+	{
+	    if ( last ) glColor3f( 1., 0.5, 0. );
+	    else glColor3f( 0., 0.5, 1. );
+            glBegin(GL_QUADS);
+	        glVertex2i( c.getParticularValue( 0 ) - 3, c.getParticularValue( 1 ) - 3 );
+	        glVertex2i( c.getParticularValue( 0 ) + 3, c.getParticularValue( 1 ) - 3 );
+	        glVertex2i( c.getParticularValue( 0 ) + 3, c.getParticularValue( 1 ) + 3 );
+	        glVertex2i( c.getParticularValue( 0 ) - 3, c.getParticularValue( 1 ) + 3 );
+	    glEnd();
+	    char area[20];
+	    snprintf( area, 19, "%f", a );
+	    area[19] = 0;
+	    glRasterPos2i( c.getParticularValue( 0 ) - 5, c.getParticularValue( 1 ) + 5 );
+	    unsigned i;
+	    for ( i = 0; i < strlen(area); ++i ) glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, area[i] );
+	    if ( last ) glColor3f( 1., 0., 0. );
+	    else glColor3f( 0., 0., 1. );
+	}
+    }
     for ( std::list< Selection::m4dPoint<int> >::iterator it = s.shapeElements().begin(); it != s.shapeElements().end(); ++it )
         if  ( it->getParticularValue( 2 ) == _sliceNum )
         {
@@ -331,6 +358,20 @@ m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last )
 		    glVertex2i(  it->getParticularValue( 0 ),  it->getParticularValue( 1 ) );
 		    glVertex2i( tmp->getParticularValue( 0 ), tmp->getParticularValue( 1 ) );
 		glEnd();
+                if ( _printShapeData )
+	        {
+	            if ( last ) glColor3f( 1., 1., 0. );
+                    else glColor3f( 0., 1., 1. );
+	            Selection::m4dPoint< int > mid = Selection::m4dPoint< int >::midpoint( *it, *tmp );
+	            char dist[20];
+	            snprintf( dist, 19, "%f", Selection::m4dPoint< int >::distance( *it, *tmp ) );
+	            dist[19] = 0;
+	            glRasterPos2i( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
+	            unsigned i;
+	            for ( i = 0; i < strlen(dist); ++i ) glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, dist[i] );
+                    if ( last ) glColor3f( 1., 0., 0. );
+                    else glColor3f( 0., 0., 1. );
+	        }
 	    }
 	    if ( last && &(*it) == &(s.shapeElements().back()) ) glColor3f( 1., 0., 1. );
             glBegin(GL_QUADS);
@@ -428,8 +469,6 @@ m4dSliceViewerWidget::zoomImage( int amount )
 void
 m4dSliceViewerWidget::wheelEvent(QWheelEvent *event)
 {
-    if ( _selectionMode ) _selectionMode = false;
-
     if ( event->buttons() & Qt::LeftButton )
     {
         _selectionMode = _selectionMode?false:true;
@@ -440,6 +479,8 @@ m4dSliceViewerWidget::wheelEvent(QWheelEvent *event)
     }
     else
     {
+        if ( _selectionMode ) _selectionMode = false;
+
         int numDegrees = event->delta() / 8;
         int numSteps = numDegrees / 15;
         try
