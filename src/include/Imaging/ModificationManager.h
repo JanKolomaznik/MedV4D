@@ -4,6 +4,8 @@
 #include "Common.h"
 #include "Thread.h"
 #include "TimeStamp.h"
+#include <boost/shared_ptr.hpp>
+#include <list>
 
 namespace M4D
 {
@@ -18,8 +20,14 @@ enum ModificationState{
 
 class ModificationManager;
 
-class ReaderInterface
+class ReaderBBoxInterface
 {
+public:
+	typedef boost::shared_ptr< ReaderBBoxInterface > Ptr;
+
+
+	ReaderBBoxInterface( Common::TimeStamp timestamp ): _changeTimestamp( timestamp ) {}
+
 	bool
 	IsDirty()const;
 
@@ -30,14 +38,21 @@ class ReaderInterface
 	GetState()const;
 
 	const Common::TimeStamp &
-	GetTimeStamp()const;
+	GetTimeStamp()const
+		{ return _changeTimestamp; }
 
 	bool
 	WaitWhileDirty();
+
+protected:
+	Common::TimeStamp _changeTimestamp;
 };
 
-class WriterInterface
+class WriterBBoxInterface : public ReaderBBoxInterface
 {
+public:
+	WriterBBoxInterface( Common::TimeStamp timestamp ): ReaderBBoxInterface( timestamp ) {}
+
 	void
 	SetState( ModificationState );
 
@@ -138,14 +153,32 @@ class ReadBBox3D
 class ModificationManager
 {
 public:
-	ModificationManager(){}
+	typedef std::list< WriterBBoxInterface * > 	ChangeQueue;
+	typedef ChangeQueue::iterator			ChangeIterator;
+
+	ModificationManager();
 	
-	~ModificationManager(){}
+	~ModificationManager();
 
 	//ModBBoxWholeDataset&
 	//GetWholeDatasetBBox();
+	WriterBBoxInterface &
+	AddMod2D( 
+		size_t x1, 
+		size_t y1, 
+		size_t x2, 
+		size_t y2 
+		);
+	
+	ReaderBBoxInterface::Ptr
+	GetMod2D( 
+		size_t x1, 
+		size_t y1, 
+		size_t x2, 
+		size_t y2 
+		);
 
-	ModBBox3D &
+	WriterBBoxInterface &
 	AddMod3D( 
 		size_t x1, 
 		size_t y1, 
@@ -155,7 +188,7 @@ public:
 		size_t z2 
 		);
 	
-	ReadBBox3D &
+	ReaderBBoxInterface::Ptr
 	GetMod3D( 
 		size_t x1, 
 		size_t y1, 
@@ -165,6 +198,15 @@ public:
 		size_t z2 
 		);
 
+	ChangeIterator 
+	GetChangeBBox( const Common::TimeStamp & changeStamp );
+
+	ChangeIterator 
+	ChangesBegin();
+
+	ChangeIterator 
+	ChangesEnd();
+
 	void
 	Reset();
 private:
@@ -172,7 +214,9 @@ private:
 
 	Common::TimeStamp	_lastStoredTimestamp;
 
+	ChangeQueue		_changes;
 
+	Multithreading::Mutex	_accessLock;
 };
 
 
