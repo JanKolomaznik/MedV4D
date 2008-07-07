@@ -13,7 +13,8 @@
  *  </p>
  *  <p>
  *  When 2nd parameter is --info, no changes are made in loaded files and 
- *  only the build list is printed to std::cout.
+ *  only the build list is printed to std::cout to see what patients are contained
+ *  in DICOM files in specified directory and subdirs.
  *  </p>
  */
 #include "boost/filesystem/operations.hpp"

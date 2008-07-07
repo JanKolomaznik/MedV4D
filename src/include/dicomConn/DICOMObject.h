@@ -1,3 +1,8 @@
+
+#ifndef M4D_DICOM_SERVICE_PROVIDER
+#error You cannot include this file directly
+#endif
+
 #ifndef M4D_DICOM_OBJECT
 #define M4D_DICOM_OBJECT
 
@@ -8,28 +13,10 @@
 */
 class DicomObj
 {
-typedef void (*ImageLoadedCallback)(void);
-
-private:
-
-	enum Status {
-		Loaded,
-		Loading,
-		Failed,
-	};
-
-	// image info (basic set of information retrieved from data set.
-	// others are to be retrieved via GetTagValue method
-	uint16 m_width, m_height;
-	uint8 m_pixelSize;
-	bool m_signed;
-	uint16 m_orderInSet;
-
-	Status m_status;
-
-	ImageLoadedCallback m_loadedCallBack;
 
 public:
+
+  typedef void (*ImageLoadedCallback)(void);
 
 	inline void SetLoadedCallback( ImageLoadedCallback c) 
 		{ m_loadedCallBack = c; }
@@ -93,6 +80,25 @@ public:
 	////////////////////////////////////////////////////////////
 
 	DicomObj();
+
+private:
+
+	enum Status {
+		Loaded,
+		Loading,
+		Failed,
+	};
+
+	// image info (basic set of information retrieved from data set.
+	// others are to be retrieved via GetTagValue method
+	uint16 m_width, m_height;
+	uint8 m_pixelSize;
+	bool m_signed;
+	uint16 m_orderInSet;
+
+	Status m_status;
+
+	ImageLoadedCallback m_loadedCallBack;
 };
 	
 #endif

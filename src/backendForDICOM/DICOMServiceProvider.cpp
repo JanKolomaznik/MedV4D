@@ -153,10 +153,11 @@ DcmProvider::GetImageSet(
 		const string &patientID,
 		const string &studyID,
 		const string &serieID,
-		DicomObjSet &result) 
+		DicomObjSet &result,
+    DicomObj::ImageLoadedCallback on_loaded) 
 {
 	static_cast<MoveService *>(m_moveService)->MoveImageSet( 
-		patientID, studyID, serieID, result);
+		patientID, studyID, serieID, result, on_loaded);
 }
 
 ///////////////////////////////////////////////////////////////////////

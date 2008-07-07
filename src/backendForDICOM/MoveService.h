@@ -24,6 +24,26 @@ private:
 		IMAGE_SET			// retype to vector<DicomObj>
 	};
 
+  struct ImageSetData 
+  {
+    ImageSetData(
+      DcmProvider::DicomObjSet *result_,
+      DcmProvider::DicomObj::ImageLoadedCallback on_loaded_)
+      : result(result_)
+      , on_loaded( on_loaded_)
+    {
+    }
+
+    //ImageSetData( const ImageSetData &b)
+    //{
+    //  result = b.result;
+    //  on_loaded = b.on_loaded;
+    //}
+
+    DcmProvider::DicomObjSet *result;
+    DcmProvider::DicomObj::ImageLoadedCallback on_loaded;
+  };
+
 	void GetQuery( 
 		DcmDataset **query,
 		const string *patientID,
@@ -75,13 +95,14 @@ private:
 		const string &studyID,
 		const string &setID,
 		const string &imageID,
-		DcmProvider::DicomObj &rs) ;
+		DcmProvider::DicomObj &rs);
 
 	void MoveImageSet(
 		const string &patientID,
 		const string &studyID,
 		const string &serieID,
-		DcmProvider::DicomObjSet &result) ;
+		DcmProvider::DicomObjSet &result,
+    DcmProvider::DicomObj::ImageLoadedCallback on_loaded);
 	
 };
 

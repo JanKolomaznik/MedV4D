@@ -101,12 +101,16 @@ MoveService::MoveImageSet(
 		const string &patientID,
 		const string &studyID,
 		const string &serieID,
-		DcmProvider::DicomObjSet &result)
+		DcmProvider::DicomObjSet &result,
+    DcmProvider::DicomObj::ImageLoadedCallback on_loaded)
 {
 	DcmDataset *query = NULL;
 	GetQuery( &query, &patientID, &studyID, &serieID, NULL);
 
-	MoveSupport( query, (void *)&result, IMAGE_SET);
+  // prepare data structure
+  ImageSetData *data = new ImageSetData( &result, on_loaded);
+
+	MoveSupport( query, (void *)data, IMAGE_SET);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -391,27 +395,30 @@ MoveService::SubTransferOperationSCP(
 	T_DIMSE_C_StoreRQ *req;
 	DcmProvider::DicomObj *result = NULL;
 
-	DcmProvider::DicomObjSet *set;
+  ImageSetData *dataStruct;
 	DcmProvider::DicomObj buddy;
 
   if (cond == EC_Normal) 
 	{
-        switch (msg.CommandField) {
-        case DIMSE_C_STORE_RQ:
+    switch (msg.CommandField) 
+    {
+    case DIMSE_C_STORE_RQ:
 			cond = EC_Normal;
-			req = &msg.msg.CStoreRQ;	
+			req = &msg.msg.CStoreRQ;
 
 			switch( type)
 			{
 			case IMAGE_SET:
 				// insert new DICOMObj into container
-				set = static_cast<
-					DcmProvider::DicomObjSet *>(data);
+        dataStruct = static_cast<ImageSetData *>(data);
 
 				// SINCHRONIZE !!! ???
-				set->push_back( buddy);
-				result = &set->back();
+				dataStruct->result->push_back( buddy);
+				result = &dataStruct->result->back();
 				// SINCHRONIZE !!! ???
+
+        // set on_load callback
+        result->SetLoadedCallback( dataStruct->on_loaded);
 				break;
 
 			case SINGLE_IMAGE:
