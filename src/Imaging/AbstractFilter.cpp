@@ -152,34 +152,37 @@ MainExecutionThread::operator()()
 	D_BLOCK_COMMENT( "++++ Entering MainExecutionThread()", "----- Leaving MainExecutionThread()" );
 
 	//We want to do some steps before actual computing
-	_filter->PreparationForComputing( _updateType );
-	//TODO
+	_filter->BeforeComputation( _updateType );
+	
 	_filter->_outputPorts.SendMessage( MsgFilterStartModification::CreateMsg(), PipelineMessage::MSS_NORMAL );
 
 
+	//Computation
+	bool successful = false;
 	switch( _updateType ) {
 	case AbstractPipeFilter::RECALCULATION:
-		
-		//Check how execution method finished its job.
-		if( _filter->ExecutionOnWholeThreadMethod() ) {
-			_filter->CleanAfterSuccessfulRun();
-		} else {
-			_filter->CleanAfterStoppedRun();
-		}
+		successful = _filter->ExecutionOnWholeThreadMethod();
 		break;
 	case AbstractPipeFilter::ADAPTIVE_CALCULATION:
-		
-		//Check how execution method finished its job.
-		if( _filter->ExecutionThreadMethod() ) {
-			_filter->CleanAfterSuccessfulRun();
-		} else {
-			_filter->CleanAfterStoppedRun();
-		}
+		successful = _filter->ExecutionThreadMethod();
 		break;
 	default:
 		//Shouldn't reach this.
 		ASSERT( false );
 		break;
+	}
+
+
+	if( successful ) {
+		//Send message about finished job	
+		_filter->_outputPorts.SendMessage( MsgFilterUpdated::CreateMsg(), PipelineMessage::MSS_NORMAL );
+
+		_filter->AfterComputation( true );
+		_filter->CleanAfterSuccessfulRun();
+	} else {
+		_filter->AfterComputation( false );
+
+		_filter->CleanAfterStoppedRun();
 	}
 
 }
@@ -194,7 +197,6 @@ void
 AbstractPipeFilter::Execute()
 {
 	//TODO
-	/*TODO Call only when needed*/PrepareOutputDatasets();
 	
 	if( !_workState.TrySetRunning() ) {
 		//TODO - handle
@@ -209,7 +211,6 @@ void
 AbstractPipeFilter::ExecuteOnWhole()
 {
 	//TODO
-	/*TODO Call only when needed*/PrepareOutputDatasets();
 
 	if( !_workState.TrySetRunning() ) {
 		//TODO - handle
@@ -277,11 +278,16 @@ AbstractPipeFilter::InputDatasetStartModificationMsgHandler( MsgFilterStartModif
 	}
 }
 
+ void
+AbstractPipeFilter::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
+{
+	//TODO - call only when needed
+	PrepareOutputDatasets();
+}
+
 void
 AbstractPipeFilter::CleanAfterSuccessfulRun()
 {
-	//TODO
-	_outputPorts.SendMessage( MsgFilterUpdated::CreateMsg(), PipelineMessage::MSS_NORMAL );
 
 	//We delete execution thread structure - thread will be detached.
 	//Another execution thread can be created.

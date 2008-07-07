@@ -166,8 +166,16 @@ public:
 			size_t y2 
 			);
 
-	ModBBox2D &
+	WriterBBoxInterface &
 	SetDirtyBBox( 
+			size_t x1, 
+			size_t y1, 
+			size_t x2, 
+			size_t y2 
+			);
+
+	ReaderBBoxInterface::Ptr
+	GetDirtyBBox( 
 			size_t x1, 
 			size_t y1, 
 			size_t x2, 
@@ -278,7 +286,7 @@ public:
 			size_t z2 
 			);
 
-	ModBBox3D &
+	WriterBBoxInterface &
 	SetDirtyBBox( 
 			size_t x1, 
 			size_t y1, 
@@ -287,6 +295,17 @@ public:
 			size_t y2, 
 			size_t z2 
 			);
+
+	ReaderBBoxInterface::Ptr
+	GetDirtyBBox( 
+			size_t x1, 
+			size_t y1, 
+			size_t z1, 
+			size_t x2, 
+			size_t y2, 
+			size_t z2 
+			);
+
 
 protected:
 	typename ImageDataTemplate< ElementType >::Ptr	_imageData;
@@ -410,8 +429,20 @@ public:
 			size_t t2
 			);
 
-	ModBBox4D &
+	WriterBBoxInterface &
 	SetDirtyBBox( 
+			size_t x1, 
+			size_t y1, 
+			size_t z1, 
+			size_t t1,
+			size_t x2, 
+			size_t y2, 
+			size_t z2,
+			size_t t2
+			);
+
+	ReaderBBoxInterface::Ptr
+	GetDirtyBBox( 
 			size_t x1, 
 			size_t y1, 
 			size_t z1, 

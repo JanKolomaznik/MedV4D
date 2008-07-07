@@ -31,6 +31,7 @@ void
 ImageFilter< InputImageType, OutputImageType >::ReleaseInputImage()const
 {
 	//TODO
+	_inputPorts.GetPortTyped< InputPortType >( 0 ).ReleaseDatasetLock();
 }
 
 template< typename InputImageType, typename OutputImageType >
@@ -38,6 +39,7 @@ void
 ImageFilter< InputImageType, OutputImageType >::ReleaseOutputImage()const
 {
 	//TODO
+	_outputPorts.GetPortTyped< OutputPortType >( 0 ).ReleaseDatasetLock();
 }
 
 template< typename InputImageType, typename OutputImageType >
@@ -59,6 +61,29 @@ ImageFilter< InputImageType, OutputImageType >
 	_outputPorts.GetPortTyped< OutputPortType >( 0 ).SetImageSize( minimums, maximums, elementExtents );
 }
 
+template< typename InputImageType, typename OutputImageType >
+void
+ImageFilter< InputImageType, OutputImageType >
+::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
+{
+	//TODO
+	PredecessorType::BeforeComputation( utype );	
+
+	in = &( this->GetInputImage() );
+	out = &( this->GetOutputImage() );
+}
+
+template< typename InputImageType, typename OutputImageType >
+void
+ImageFilter< InputImageType, OutputImageType >
+::AfterComputation( bool successful )
+{
+	this->ReleaseInputImage();
+	this->ReleaseOutputImage();
+
+	//TODO
+	PredecessorType::AfterComputation( successful );	
+}
 //******************************************************************************
 //******************************************************************************
 
@@ -84,20 +109,21 @@ bool
 ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 ::ExecutionOnWholeThreadMethod()
 {
-	const Image< InputElementType, 3 > &in = this->GetInputImage();
-	OutputImageType &out = this->GetOutputImage();
+	//const Image< InputElementType, 3 > &in = this->GetInputImage();
+	//OutputImageType &out = this->GetOutputImage();
+	
 	//TODO - better implementation	
 	for( 
-		size_t i = in.GetDimensionExtents( 2 ).minimum; 
-		i < in.GetDimensionExtents( 2 ).maximum;
+		size_t i = this->in->GetDimensionExtents( 2 ).minimum; 
+		i < this->in->GetDimensionExtents( 2 ).maximum;
 		++i
 	) {
-		ProcessSlice( 	in, 
-				out,
-				in.GetDimensionExtents( 0 ).minimum,
-				in.GetDimensionExtents( 1 ).minimum,
-				in.GetDimensionExtents( 0 ).maximum,
-				in.GetDimensionExtents( 1 ).maximum,
+		ProcessSlice( 	*(this->in), 
+				*(this->out),
+				this->in->GetDimensionExtents( 0 ).minimum,
+				this->in->GetDimensionExtents( 1 ).minimum,
+				this->in->GetDimensionExtents( 0 ).maximum,
+				this->in->GetDimensionExtents( 1 ).maximum,
 				i 
 				);
 
@@ -116,9 +142,10 @@ ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 template< typename InputElementType, typename OutputImageType >
 void
 ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
-::PreparationForComputing( AbstractPipeFilter::UPDATE_TYPE )
+::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
 {
 	//TODO
+	PredecessorType::BeforeComputation( utype );	
 }
 
 //******************************************************************************
@@ -146,19 +173,20 @@ bool
 ImageVolumeFilter< Image< InputElementType, 3 >, OutputImageType >
 ::ExecutionOnWholeThreadMethod()
 {
-	const Image< InputElementType, 3 > &in = this->GetInputImage();
-	OutputImageType &out = this->GetOutputImage();
+	//const Image< InputElementType, 3 > &in = this->GetInputImage();
+	//OutputImageType &out = this->GetOutputImage();
+
 	//TODO - better implementation	
 	
 	ProcessVolume( 
-			in,
-			out,
-			in.GetDimensionExtents( 0 ).minimum,
-			in.GetDimensionExtents( 1 ).minimum,
-			in.GetDimensionExtents( 2 ).minimum,
-			in.GetDimensionExtents( 0 ).maximum,
-			in.GetDimensionExtents( 1 ).maximum,
-			in.GetDimensionExtents( 2 ).maximum
+			*(this->in),
+			*(this->out),
+			this->in->GetDimensionExtents( 0 ).minimum,
+			this->in->GetDimensionExtents( 1 ).minimum,
+			this->in->GetDimensionExtents( 2 ).minimum,
+			this->in->GetDimensionExtents( 0 ).maximum,
+			this->in->GetDimensionExtents( 1 ).maximum,
+			this->in->GetDimensionExtents( 2 ).maximum
 		     );
 
 	return true;
@@ -175,9 +203,10 @@ ImageVolumeFilter< Image< InputElementType, 3 >, OutputImageType >
 template< typename InputElementType, typename OutputImageType >
 void
 ImageVolumeFilter< Image< InputElementType, 3 >, OutputImageType >
-::PreparationForComputing( AbstractPipeFilter::UPDATE_TYPE utype )
+::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
 {
 	//TODO
+	PredecessorType::BeforeComputation( utype );	
 }
 
 //******************************************************************************
@@ -205,28 +234,30 @@ bool
 ImageVolumeFilter< Image< InputElementType, 4 >, OutputImageType >
 ::ExecutionOnWholeThreadMethod()
 {
-	const Image< InputElementType, 4 > &in = this->GetInputImage();
-	OutputImageType &out = this->GetOutputImage();
+	//const Image< InputElementType, 4 > &in = this->GetInputImage();
+	//OutputImageType &out = this->GetOutputImage();
+	
 	//TODO - better implementation	
 	for( 
-		size_t i = in.GetDimensionExtents( 3 ).minimum; 
-		i < in.GetDimensionExtents( 3 ).maximum;
+		size_t i = this->in->GetDimensionExtents( 3 ).minimum; 
+		i < this->in->GetDimensionExtents( 3 ).maximum;
 		++i
 	) {
 		ProcessVolume( 
-			in,
-			out,
-			in.GetDimensionExtents( 0 ).minimum,
-			in.GetDimensionExtents( 1 ).minimum,
-			in.GetDimensionExtents( 2 ).minimum,
-			in.GetDimensionExtents( 0 ).maximum,
-			in.GetDimensionExtents( 1 ).maximum,
-			in.GetDimensionExtents( 2 ).maximum,
+			*(this->in),
+			*(this->out),
+			this->in->GetDimensionExtents( 0 ).minimum,
+			this->in->GetDimensionExtents( 1 ).minimum,
+			this->in->GetDimensionExtents( 2 ).minimum,
+			this->in->GetDimensionExtents( 0 ).maximum,
+			this->in->GetDimensionExtents( 1 ).maximum,
+			this->in->GetDimensionExtents( 2 ).maximum,
 			i
 		     );
 		
 
 	}
+
 	return true;
 }
 
@@ -241,9 +272,10 @@ ImageVolumeFilter< Image< InputElementType, 4 >, OutputImageType >
 template< typename InputElementType, typename OutputImageType >
 void
 ImageVolumeFilter< Image< InputElementType, 4 >, OutputImageType >
-::PreparationForComputing( AbstractPipeFilter::UPDATE_TYPE utype )
+::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
 {
 	//TODO
+	PredecessorType::BeforeComputation( utype );	
 }
 
 

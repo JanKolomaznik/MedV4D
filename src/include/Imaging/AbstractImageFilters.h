@@ -19,6 +19,8 @@ template< typename InputImageType, typename OutputImageType >
 class ImageFilter: public AbstractPipeFilter
 {
 public:
+	typedef AbstractPipeFilter	PredecessorType;
+
 	typedef typename M4D::Imaging::InputPortImageFilter< InputImageType >
 		InputPortType;
 	typedef typename M4D::Imaging::OutputPortImageFilter< OutputImageType >	
@@ -54,6 +56,16 @@ protected:
 			size_t 		maximums[], 
 			float32		elementExtents[]
 		    );
+
+	void
+	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
+
+	void
+	AfterComputation( bool successful );
+
+
+	const InputImage	*in;
+	OutputImage		*out;
 private:
 	/**
 	 * Prohibition of copying.
@@ -72,6 +84,7 @@ class ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 	 : public ImageFilter< Image< InputElementType, 3 >, OutputImageType >
 {
 public:
+	typedef typename Imaging::ImageFilter< Image< InputElementType, 3 >, OutputImageType >	PredecessorType;
 
 	ImageSliceFilter();
 	~ImageSliceFilter() {}
@@ -117,7 +130,7 @@ protected:
 	ExecutionOnWholeThreadMethod();
 	
 	void
-	PreparationForComputing( AbstractPipeFilter::UPDATE_TYPE utype );
+	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
 
 	/**
 	 * How many slices to up and down are needed for computation.
@@ -144,6 +157,7 @@ class ImageVolumeFilter< Image< InputElementType, 3 >, OutputImageType >
 	 : public ImageFilter< Image< InputElementType, 3 >, OutputImageType >
 {
 public:
+	typedef typename Imaging::ImageFilter< Image< InputElementType, 3 >, OutputImageType >	PredecessorType;
 
 	ImageVolumeFilter();
 	~ImageVolumeFilter() {}
@@ -170,7 +184,7 @@ protected:
 	ExecutionOnWholeThreadMethod();
 
 	void
-	PreparationForComputing( AbstractPipeFilter::UPDATE_TYPE utype );
+	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
 private:
 	/**
 	 * Prohibition of copying.
@@ -183,6 +197,7 @@ class ImageVolumeFilter< Image< InputElementType, 4 >, OutputImageType >
 	 : public ImageFilter< Image< InputElementType, 4 >, OutputImageType >
 {
 public:
+	typedef typename Imaging::ImageFilter< Image< InputElementType, 4 >, OutputImageType >	PredecessorType;
 
 	ImageVolumeFilter();
 	~ImageVolumeFilter() {}
@@ -191,7 +206,7 @@ public:
 	PrepareOutputDatasets();
 
 	void
-	PreparationForComputing( AbstractPipeFilter::UPDATE_TYPE utype );
+	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
 protected:
 	virtual bool
 	ProcessVolume(

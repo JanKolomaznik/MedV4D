@@ -16,7 +16,8 @@ TARGETS=	AbstractImageData \
 		Ports \
 		AbstractImageFilters \
 		Image \
-		Connection
+		Connection \
+		ModificationManager
 ########################################
 
 #Name of target

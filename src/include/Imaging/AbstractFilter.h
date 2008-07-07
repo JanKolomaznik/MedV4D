@@ -251,12 +251,6 @@ public:
 	SetUpdateInvocationStyle( UpdateInvocationStyle style )
 		{ _invocationStyle = style; }
 
-	/**
-	 * Method which will prepare datasets connected by output ports.
-	 * Set their extents, etc.
-	 **/
-	virtual void
-	PrepareOutputDatasets() = 0;
 
 	/**
 	 * Method for receiving messages - called by sender.
@@ -325,11 +319,23 @@ protected:
 	CleanAfterStoppedRun();
 
 	/**
-	 * Method called in execution methods before actual computation.
-	 * Marking datasets parts as dirty, etc.
+	 * Method which will prepare datasets connected by output ports.
+	 * Set their extents, etc.
 	 **/
 	virtual void
-	PreparationForComputing( AbstractPipeFilter::UPDATE_TYPE utype ) = 0;
+	PrepareOutputDatasets() = 0;
+
+	/**
+	 * Method called in execution methods before actual computation.
+	 * When overriding in successors predecessor implementation must be called first.
+	 * \param utype Input/output parameter choosing desired update method. If 
+	 * desired update method can't be used - right type is put as output value.
+	 **/
+	virtual void
+	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype ) = 0;
+
+	virtual void
+	AfterComputation( bool successful ){ /*empty*/ };
 
 	void
 	InputDatasetUpdatedMsgHandler( MsgFilterUpdated *msg );

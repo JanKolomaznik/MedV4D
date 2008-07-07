@@ -373,6 +373,52 @@ Image< ElementType, 3 >::GetRestricted3DImage(
 		)
 {
 }
+ 
+template< typename ElementType >
+WriterBBoxInterface &
+Image< ElementType, 3 >::SetDirtyBBox( 
+		size_t x1, 
+		size_t y1, 
+		size_t z1, 
+		size_t x2, 
+		size_t y2, 
+		size_t z2 
+		)
+{
+	ModificationManager & modManager = _imageData->GetModificationManager();
+
+	return modManager.AddMod3D( 
+				x1,
+				y1,
+				z1,
+				x2,
+				y2,
+				z2
+			);
+}
+
+template< typename ElementType >
+ReaderBBoxInterface::Ptr
+Image< ElementType, 3 >::GetDirtyBBox( 
+		size_t x1, 
+		size_t y1, 
+		size_t z1, 
+		size_t x2, 
+		size_t y2, 
+		size_t z2 
+		)
+{
+	ModificationManager & modManager = _imageData->GetModificationManager();
+
+	return modManager.GetMod3D( 
+				x1,
+				y1,
+				z1,
+				x2,
+				y2,
+				z2
+			);
+}
 
 //*****************************************************************************
 

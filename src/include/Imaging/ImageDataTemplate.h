@@ -195,6 +195,9 @@ public:
 	static Ptr
 	CastAbstractPointer(  AbstractImageData::APtr aptr );
 
+	ModificationManager &
+	GetModificationManager()const
+		{ return _modificationManager; }
 protected:
 	/**
 	 * Protected constructor - used by ImageFactory.
@@ -205,7 +208,6 @@ protected:
 			unsigned short		dimension,
 			size_t			elementCount
 			);	
-
 
 	ModificationManager	_modificationManager;
 private:
