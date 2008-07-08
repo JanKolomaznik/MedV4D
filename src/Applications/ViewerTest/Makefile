@@ -43,7 +43,8 @@ VTKLIBS=	-lvtkCommon\
 		-lvtkVolumeRendering\
 		-lvtkWidgets\
 		-lQVTK\
-		-lwrap
+		-lwrap\
+		-lglut
 
 		#-lvtkexpat\
 		#-lvtkfreetype\
@@ -131,7 +132,7 @@ $(TMP_DIR)/%.o:	$(TMP_DIR)/%.cpp
 
 -include $(DEP_FILE)
 		
-$(OUTPUT):	$(OBJ_FILES)
+$(OUTPUT):	$(OBJ_FILES) $(M4DLIBS)
 		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
 
 .PHONY: clean
