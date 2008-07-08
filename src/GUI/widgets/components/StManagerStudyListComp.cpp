@@ -53,11 +53,11 @@ StManagerStudyListComp::StManagerStudyListComp ( m4dGUIVtkRenderWindowWidget *vt
   pathButton->hide();
   buttonLayout->addWidget( pathButton, 2, 0, 1, 2 );
 
-  recentRemoteButton = createToolButton( QIcon( ":/icons/remote.png" ) );
+  recentRemoteButton = createToolButton( QIcon( ":/icons/remote.png" ), SLOT(recentChanged()) );
   recentRemoteButton->setChecked( true );
   buttonLayout->addWidget( recentRemoteButton, 3, 0 );
 
-  recentDICOMDIRButton = createToolButton( QIcon( ":/icons/dicomdir.png" ) );
+  recentDICOMDIRButton = createToolButton( QIcon( ":/icons/dicomdir.png" ), SLOT(recentChanged()) );
   buttonLayout->addWidget( recentDICOMDIRButton, 3, 1 );
 
   QSpacerItem *verticalSpacer = new QSpacerItem( 2, 2, QSizePolicy::Minimum, 
@@ -408,6 +408,18 @@ void StManagerStudyListComp::activeTabChanged ()
 }
 
 
+void StManagerStudyListComp::recentChanged ()
+{
+  activeResultSet->clear();
+  // clear the table, reinitialize variables
+  addResultSetToStudyTable( activeResultSet, activeExamTable );
+
+  const char *dialogTitle = ( recentRemoteButton->isChecked() ? RECENT_REMOTE_EXAMS_NAME : RECENT_DICOMDIR_NAME );
+  studyManagerDialog->setWindowTitle( studyManagerDialogTitle + QString( " - " ) + QString( "0" ) +                                    
+                                      tr( " studies found on " ) + tr( dialogTitle ) );
+}
+
+
 void StManagerStudyListComp::path ()
 {
   directoryTree->isHidden() ? directoryTree->show() : directoryTree->hide();
@@ -586,7 +598,7 @@ QPushButton *StManagerStudyListComp::createButton ( const QString &text, const c
 }
 
 
-QToolButton *StManagerStudyListComp::createToolButton ( const QIcon &icon )
+QToolButton *StManagerStudyListComp::createToolButton ( const QIcon &icon, const char *member )
 {
   QToolButton *toolButton = new QToolButton();
   toolButton->setCheckable( true );
@@ -594,6 +606,8 @@ QToolButton *StManagerStudyListComp::createToolButton ( const QIcon &icon )
 
   toolButton->setIconSize( QSize( 27, 27 ) );
   toolButton->setIcon( icon );
+
+  connect( toolButton, SIGNAL(clicked()), this, member );
 
   return toolButton;
 }

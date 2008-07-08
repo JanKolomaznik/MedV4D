@@ -85,6 +85,11 @@ class StManagerStudyListComp: public QWidget
     void activeTabChanged ();
 
     /**
+     * Slot for managing Recent Exams mode change - to clear tables and variables.
+     */
+    void recentChanged ();
+
+    /**
      * Slot for directory tree behavior - to hide or show it.
      */
     void path ();
@@ -167,7 +172,7 @@ class StManagerStudyListComp: public QWidget
      *
      * @param icon reference to icon of the button
      */
-    QToolButton  *createToolButton ( const QIcon &icon );
+    QToolButton  *createToolButton ( const QIcon &icon, const char *member );
 
 
     /// Pointer to the VTK Render Window Widget - where to render image after clicking View. 
