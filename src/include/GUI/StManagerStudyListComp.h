@@ -174,6 +174,7 @@ class StManagerStudyListComp: public QWidget
     m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget;
     /// Pointer to the Study Manager Dialog - to close it after clicking View.
     QDialog *studyManagerDialog;
+    QString studyManagerDialogTitle;
 
     /// Names of the exam/image attributes
     static const char *attributeNames[];

@@ -85,14 +85,14 @@ void m4dGUIMainWindow::createStudyManagerDialog ()
 {
   // new dialog for Study Manager Widget - without What's This button in the title bar
   studyManagerDialog = new QDialog( this, Qt::WindowTitleHint | Qt::WindowSystemMenuHint );
+  studyManagerDialog->setWindowTitle( tr( "Study Manager" ) );
+  studyManagerDialog->setWindowIcon( QIcon( ":/icons/search.png" ) );
 
   studyManagerWidget = new m4dGUIStudyManagerWidget( vtkRenderWindowWidget, studyManagerDialog );
 
   QVBoxLayout *dialogLayout = new QVBoxLayout;
   dialogLayout->addWidget( studyManagerWidget );
-
-  studyManagerDialog->setWindowTitle( tr( "Study Manager" ) );
-  studyManagerDialog->setWindowIcon( QIcon( ":/icons/search.png" ) );
+  
   studyManagerDialog->setLayout( dialogLayout );
 }
 

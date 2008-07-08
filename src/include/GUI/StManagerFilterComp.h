@@ -23,6 +23,7 @@ class StManagerFilterComp: public QWidget
     void search ();
     void today ();
     void yesterday ();
+    void clear ();
 
     void from ();
     void to ();

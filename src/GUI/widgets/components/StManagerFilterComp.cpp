@@ -25,11 +25,10 @@ StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComp
   searchButton      = createButton( tr( "&Search" ),       SLOT(search()) );
   todayButton       = createButton( tr( "&Today" ),        SLOT(today()) );
   yesterdayButton   = createButton( tr( "&Yesterday" ),    SLOT(yesterday()) );
-  clearFilterButton = createButton( tr( "&Clear Filter" ), SLOT(clearFilter()) );
+  clearFilterButton = createButton( tr( "&Clear Filter" ), SLOT(clear()) );
   optionsButton     = createButton( tr( "&Options" ),      SLOT(options()) );
 
-  // buttons not implemented yet:
-  clearFilterButton->setEnabled( false );
+  // button not implemented yet:
   optionsButton->setEnabled( false );
 
   buttonLayout->addWidget( searchButton );
@@ -58,15 +57,18 @@ StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComp
   QSpacerItem *vertSpacerR1R2 = new QSpacerItem( 2, 5, QSizePolicy::Minimum, 
                                                  QSizePolicy::Minimum );
 
-  fromDateCheckBox = createCheckBox( tr( "From:" ), true, SLOT(from()) );
-  toDateCheckBox   = createCheckBox( tr( "To:" ), true, SLOT(to()) );
+  fromDateCheckBox = createCheckBox( tr( "From:" ), false, SLOT(from()) );
+  toDateCheckBox   = createCheckBox( tr( "To:" ), false, SLOT(to()) );
 
   fromDateDateEdit = new QDateEdit( QDate::currentDate() );
   fromDateDateEdit->setDisplayFormat( "d. M. yyyy" );
   fromDateDateEdit->setCalendarPopup( true );
-  toDateDateEdit   = new QDateEdit( QDate::currentDate() );
+  fromDateDateEdit->setEnabled( false );
+
+  toDateDateEdit = new QDateEdit( QDate::currentDate() );
   toDateDateEdit->setDisplayFormat( "d. M. yyyy" );
   toDateDateEdit->setCalendarPopup( true );
+  toDateDateEdit->setEnabled( false );
 
   QSpacerItem *vertSpacerR2R3 = new QSpacerItem( 2, 6, QSizePolicy::Minimum, 
                                                  QSizePolicy::Minimum );
@@ -117,7 +119,7 @@ StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComp
 
   QVBoxLayout *modalitiesLayout = new QVBoxLayout;
 
-  allCheckBox = createCheckBox( tr( "All" ), false, SLOT(all()) );
+  allCheckBox = createCheckBox( tr( "All" ), true, SLOT(all()) );
 
   // Spacer between All checkBox and other checkBoxes
   QSpacerItem *vertSpacerAllMod = new QSpacerItem( 2, 20, QSizePolicy::Minimum, 
@@ -129,7 +131,7 @@ StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComp
 
   for ( int i = 0; i < MODALITY_NUMBER; i++ )
   {
-    modalityCheckBoxes[i] = createCheckBox( tr( modalities[i] ), false, SLOT(modality()) );
+    modalityCheckBoxes[i] = createCheckBox( tr( modalities[i] ), true, SLOT(modality()) );
     gridModalLayout->addWidget( modalityCheckBoxes[i], i / 5, i % 5 );
   }
 
@@ -218,6 +220,35 @@ void StManagerFilterComp::yesterday ()
 }
 
 
+/**
+ * clear slot - for clearing inputs, checkBoxes, dateCombos - filtering settings.
+ */
+void StManagerFilterComp::clear ()
+{
+  patientIDComboBox->setEditText( "" );
+  lastNameComboBox->setEditText( "" );
+  firstNameComboBox->setEditText( "" );
+
+  if ( fromDateCheckBox->isChecked() ) {
+    fromDateCheckBox->click();
+  }
+  if ( toDateCheckBox->isChecked() ) {
+    toDateCheckBox->click();
+  }
+
+  accesionComboBox->setEditText( "" );
+  studyDescComboBox->setEditText( "" );
+  referringMDComboBox->setEditText( "" );
+
+  allCheckBox->setEnabled( true );
+  allCheckBox->setChecked( true );
+  for ( int i = 0; i < MODALITY_NUMBER; i++ ) {
+    modalityCheckBoxes[i]->setChecked( true );
+  }
+}
+
+
+
 void StManagerFilterComp::from ()
 { 
   fromDateDateEdit->setEnabled( !fromDateDateEdit->isEnabled() );
@@ -233,28 +264,25 @@ void StManagerFilterComp::to ()
 void StManagerFilterComp::all ()
 { 
   for ( int i = 0; i < MODALITY_NUMBER; i++ ) {
-    modalityCheckBoxes[i]->setChecked( true );
+    modalityCheckBoxes[i]->setChecked( allCheckBox->isChecked() );
   }
-  allCheckBox->setEnabled( false );
 }
 
 
 void StManagerFilterComp::modality ()
 { 
-  bool allChecked = true;
+  int checkedNum = 0;
 
   for ( int i = 0; i < MODALITY_NUMBER; i++ ) 
   {
-    if ( !modalityCheckBoxes[i]->isChecked() ) 
-    {
-      allChecked = false;
-      break;
+    if ( modalityCheckBoxes[i]->isChecked() ) {
+      checkedNum++;
     }
   }
 
-  if ( !allChecked ) 
+  if ( checkedNum == MODALITY_NUMBER || checkedNum == 0 ) 
   {
-    allCheckBox->setChecked( false );
+    allCheckBox->setChecked( checkedNum );
     allCheckBox->setEnabled( true );
   }
   else

@@ -13,6 +13,11 @@ using namespace M4D::Dicom;
 using namespace std;
 
 
+#define RECENT_REMOTE_EXAMS_NAME            "Recent Remote Exams"
+#define RECENT_DICOMDIR_NAME                "Recent DICOMDIR"
+#define REMOTE_EXAMS_NAME                   "Remote Exams"
+#define DICOMDIR_NAME                       "DICOMDIR"
+
 /// Number of exam/image attributes (e.g in study tables)
 #define ATTRIBUTE_NUMBER   14
 /// Names of exam/image attributes (e.g in study tables)
@@ -114,6 +119,11 @@ StManagerStudyListComp::StManagerStudyListComp ( m4dGUIVtkRenderWindowWidget *vt
 
   setLayout( studyListLayout );
 
+  studyManagerDialogTitle = QString( studyManagerDialog->windowTitle() );
+  studyManagerDialog->setWindowTitle( studyManagerDialogTitle + QString( " - " ) +                                      
+                                      QString( "0" ) + tr( " studies found on " ) +
+                                      tr( RECENT_REMOTE_EXAMS_NAME ) );
+
   // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
   // DICOM initializations:
@@ -150,6 +160,8 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
     QString DICOMDIRPath;
     QModelIndex qm;
 
+    const char *dialogTitle = RECENT_REMOTE_EXAMS_NAME;
+
     activeResultSet->clear();
 
     switch ( studyListTab->currentIndex() )
@@ -158,8 +170,12 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
         // Recent Exams tab active
         if ( recentRemoteButton->isChecked() ) {
           loadRecentExams( *activeResultSet, RECENT_REMOTE_EXAMS_SETTINGS_NAME );
-        } else {
+        } 
+        else 
+        {
           loadRecentExams( *activeResultSet, RECENT_DICOMDIR_SETTINGS_NAME );
+
+          dialogTitle = RECENT_DICOMDIR_NAME;
         }
         reverse( activeResultSet->begin(), activeResultSet->end() );
         break;
@@ -168,6 +184,8 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
         // Remote Exams tab active
         dcmProvider->Find( *activeResultSet, firstName, lastName, patientID, modalitiesVect,
                             fromDate, toDate );	
+
+        dialogTitle = REMOTE_EXAMS_NAME;
         break;
 
       case 2:
@@ -182,18 +200,29 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
         }
 
         dcmProvider->LocalFind( *activeResultSet, DICOMDIRPath.toStdString() );
+
+        dialogTitle = DICOMDIR_NAME;
         break;
 
       default:
         if ( recentRemoteButton->isChecked() ) {
           loadRecentExams( *activeResultSet, RECENT_REMOTE_EXAMS_SETTINGS_NAME );
-        } else {
+        }
+        else
+        {
           loadRecentExams( *activeResultSet, RECENT_DICOMDIR_SETTINGS_NAME );
+
+          dialogTitle = RECENT_DICOMDIR_NAME;
         }
         reverse( activeResultSet->begin(), activeResultSet->end() );
 
         break;
     }
+
+    QString resNum;
+    studyManagerDialog->setWindowTitle( studyManagerDialogTitle + QString( " - " ) +                                      
+                                        resNum.setNum( activeResultSet->size() ) + 
+                                        tr( " studies found on " ) + tr( dialogTitle ) );
 
     // it can handle empty resultSet
     addResultSetToStudyTable( activeResultSet, activeExamTable );
@@ -324,36 +353,58 @@ void StManagerStudyListComp::activeTabChanged ()
   recentRemoteButton->hide();
   recentDICOMDIRButton->hide();
 
+  const char *dialogTitle = RECENT_REMOTE_EXAMS_NAME;
+
   switch ( studyListTab->currentIndex() )
   {
       case 0:
         // Recent Exams tab active
         activeExamTable = recentExamsTable;
         activeResultSet = recentResultSet;
+
         recentRemoteButton->show();
         recentDICOMDIRButton->show();
+
+        if ( !recentRemoteButton->isChecked() ) {
+          dialogTitle = RECENT_DICOMDIR_NAME;
+        }
         break;
 
       case 1:
         // Remote Exams tab active
         activeExamTable = remoteExamsTable;
         activeResultSet = remoteResultSet;
+
+        dialogTitle = REMOTE_EXAMS_NAME;
         break;
 
       case 2:
         // DICOMDIR tab active
         activeExamTable = DICOMDIRTable;
         activeResultSet = DICOMDIRResultSet;
+
         pathButton->show();
+
+        dialogTitle = DICOMDIR_NAME;
         break;
 
       default:
         activeExamTable = recentExamsTable;
         activeResultSet = recentResultSet;
+
         recentRemoteButton->show();
         recentDICOMDIRButton->show();
+
+        if ( !recentRemoteButton->isChecked() ) {
+          dialogTitle = RECENT_DICOMDIR_NAME;
+        }
         break;
   }
+
+  QString resNum;
+  studyManagerDialog->setWindowTitle( studyManagerDialogTitle + QString( " - " ) +                                      
+                                      resNum.setNum( activeResultSet->size() ) + 
+                                      tr( " studies found on " ) + tr( dialogTitle ) );
 }
 
 
