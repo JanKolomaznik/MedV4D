@@ -153,10 +153,6 @@ public:
 
 protected:
 
-	bool
-	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
-
-	
 	void
 	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
 

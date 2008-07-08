@@ -18,6 +18,7 @@ enum ModificationState{
 	MS_CANCELED
 };
 
+class ModificationBBox;
 class ModificationManager;
 
 class ReaderBBoxInterface
@@ -26,11 +27,11 @@ public:
 	typedef boost::shared_ptr< ReaderBBoxInterface > Ptr;
 
 
-	ReaderBBoxInterface( Common::TimeStamp timestamp, ModificationManager* manager )
-		: _changeTimestamp( timestamp ),  _manager( manager ) {}
+	ReaderBBoxInterface( Common::TimeStamp timestamp, ModificationManager* manager, ModificationBBox* boundingBox )
+		: _changeTimestamp( timestamp ),  _manager( manager ), _boundingBox( boundingBox ) {}
 
 	virtual
-	~ReaderBBoxInterface() {}
+	~ReaderBBoxInterface();
 
 	bool
 	IsDirty()const;
@@ -54,12 +55,15 @@ protected:
 	ModificationState	_state;
 
 	ModificationManager	*_manager;
+
+	ModificationBBox	*_boundingBox;
 };
 
 class WriterBBoxInterface : public ReaderBBoxInterface
 {
 public:
-	WriterBBoxInterface( Common::TimeStamp timestamp, ModificationManager* manager ): ReaderBBoxInterface( timestamp, manager ) {}
+	WriterBBoxInterface( Common::TimeStamp timestamp, ModificationManager* manager, ModificationBBox* boundingBox )
+		: ReaderBBoxInterface( timestamp, manager, boundingBox ) {}
 
 	void
 	SetState( ModificationState );
@@ -74,37 +78,54 @@ public:
 class ModificationBBox
 {
 public:
+	ModificationBBox( 
+		int32 x1, 
+		int32 y1, 
+		int32 x2, 
+		int32 y2 
+		);
 
-	virtual 
-	~ModificationBBox() {}
+	ModificationBBox( 
+		int32 x1, 
+		int32 y1, 
+		int32 z1, 
+		int32 x2, 
+		int32 y2, 
+		int32 z2 
+		);
+
+	ModificationBBox( 
+		int32 x1, 
+		int32 y1, 
+		int32 z1, 
+		int32 t1, 
+		int32 x2, 
+		int32 y2, 
+		int32 z2, 
+		int32 t2 
+		);
+
+	~ModificationBBox() { delete [] _first;  delete [] _second; }
+
+	void
+	GetInterval( unsigned dim, int32 &first, int32 &second )
+		{ 
+			if( dim >= _dimension )	{ 
+				/*TODO exception*/ 
+			} 
+
+			first = _first[ dim ]; second = _second[ dim ]; 
+		}
+
 protected:
 	ModificationBBox( unsigned dim, int *first, int *second )
 		:_dimension( dim ), _first( first ), _second( second ) {}
 
 	unsigned	_dimension;
 
-	int 		*_first;
-	int 		*_second;
+	int32 		*_first;
+	int32 		*_second;
 };
-
-class BBox2D: public ModificationBBox
-{
-public:
-
-};
-
-class BBox3D: public BBox2D
-{
-public:
-
-};
-
-class BBox4D: public BBox3D
-{
-public:
-
-};
-
 
 class ModificationManager
 {
@@ -152,6 +173,28 @@ public:
 		size_t x2, 
 		size_t y2, 
 		size_t z2 
+		);
+
+	WriterBBoxInterface &
+	AddMod4D( 
+		size_t x1, 
+		size_t y1, 
+		size_t z1, 
+		size_t x2, 
+		size_t y2, 
+		size_t z2 
+		);
+	
+	ReaderBBoxInterface::Ptr
+	GetMod4D( 
+		size_t x1, 
+		size_t y1, 
+		size_t z1, 
+		size_t t1, 
+		size_t x2, 
+		size_t y2, 
+		size_t z2, 
+		size_t t2 
 		);
 
 	ChangeIterator 

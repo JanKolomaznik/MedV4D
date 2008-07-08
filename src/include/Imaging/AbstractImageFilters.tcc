@@ -138,30 +138,6 @@ IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputEle
 }
 
 template< typename InputElementType, typename OutputElementType >
-bool
-IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
-::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
-{
-	//TODO - better implementation	
-	for( 
-		size_t i = this->in->GetDimensionExtents( 2 ).minimum; 
-		i < this->in->GetDimensionExtents( 2 ).maximum;
-		++i
-	) {
-		ProcessSlice( 	*(this->in), 
-				*(this->out),
-				this->in->GetDimensionExtents( 0 ).minimum,
-				this->in->GetDimensionExtents( 1 ).minimum,
-				this->in->GetDimensionExtents( 0 ).maximum,
-				this->in->GetDimensionExtents( 1 ).maximum,
-				i 
-				);
-
-	}
-	return true;
-}
-
-template< typename InputElementType, typename OutputElementType >
 void
 IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 ::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )

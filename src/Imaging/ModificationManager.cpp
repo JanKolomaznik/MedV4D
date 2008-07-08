@@ -8,6 +8,83 @@ namespace M4D
 namespace Imaging
 {
 
+	
+ReaderBBoxInterface::~ReaderBBoxInterface()
+{ 
+	delete _boundingBox; 
+}
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+
+ModificationBBox::ModificationBBox( 
+		int32 x1, 
+		int32 y1, 
+		int32 x2, 
+		int32 y2 
+		) 
+{
+	_dimension = 2;
+	_first = new int32[_dimension];
+	_first[0] = x1;
+	_first[1] = y1;
+
+	_second = new int32[_dimension];
+	_second[0] = x2;
+	_second[1] = y2;
+}
+
+ModificationBBox::ModificationBBox( 
+		int32 x1, 
+		int32 y1, 
+		int32 z1, 
+		int32 x2, 
+		int32 y2, 
+		int32 z2 
+		)
+{
+	_dimension = 3;
+	_first = new int32[_dimension];
+	_first[0] = x1;
+	_first[1] = y1;
+	_first[2] = z1;
+
+	_second = new int32[_dimension];
+	_second[0] = x2;
+	_second[1] = y2;
+	_second[2] = z2;
+}
+
+ModificationBBox::ModificationBBox( 
+		int32 x1, 
+		int32 y1, 
+		int32 z1, 
+		int32 t1, 
+		int32 x2, 
+		int32 y2, 
+		int32 z2, 
+		int32 t2 
+		)
+{
+	_dimension = 4;
+	_first = new int32[_dimension];
+	_first[0] = x1;
+	_first[1] = y1;
+	_first[2] = z1;
+	_first[3] = t1;
+
+	_second = new int32[_dimension];
+	_second[0] = x2;
+	_second[1] = y2;
+	_second[2] = z2;
+	_second[3] = t2;
+}
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+
 ModificationManager::ModificationManager()
 	: _actualTimestamp(), _lastStoredTimestamp( _actualTimestamp )
 {
@@ -35,7 +112,7 @@ ModificationManager::AddMod2D(
 
 	_actualTimestamp.Increase();
 	//TODO - construction of right object
-	WriterBBoxInterface *change = new WriterBBoxInterface( _actualTimestamp, this );
+	WriterBBoxInterface *change = new WriterBBoxInterface( _actualTimestamp, this, new ModificationBBox( x1, y1, x2, y2 ) );
 	
 	_changes.push_back( change );
 
@@ -54,7 +131,7 @@ ModificationManager::GetMod2D(
 	Multithreading::ScopedLock lock( _accessLock );
 
 	//TODO - construction of right object
-	ReaderBBoxInterface *changeProxy = new ReaderBBoxInterface( _actualTimestamp, this );
+	ReaderBBoxInterface *changeProxy = new ReaderBBoxInterface( _actualTimestamp, this, new ModificationBBox( x1, y1, x2, y2 ) );
 
 	return ReaderBBoxInterface::Ptr( changeProxy );
 }
@@ -73,7 +150,7 @@ ModificationManager::AddMod3D(
 
 	_actualTimestamp.Increase();
 	//TODO - construction of right object
-	WriterBBoxInterface *change = new WriterBBoxInterface( _actualTimestamp, this );
+	WriterBBoxInterface *change = new WriterBBoxInterface( _actualTimestamp, this, new ModificationBBox( x1, y1, z1, x2, y2, z2 ) );
 	
 	_changes.push_back( change );
 
@@ -94,7 +171,7 @@ ModificationManager::GetMod3D(
 	Multithreading::ScopedLock lock( _accessLock );
 
 	//TODO - construction of right object
-	ReaderBBoxInterface *changeProxy = new ReaderBBoxInterface( _actualTimestamp, this );
+	ReaderBBoxInterface *changeProxy = new ReaderBBoxInterface( _actualTimestamp, this, new ModificationBBox( x1, y1, z1, x2, y2, z2 ) );
 
 	return ReaderBBoxInterface::Ptr( changeProxy );
 }
