@@ -35,7 +35,7 @@ ModificationManager::AddMod2D(
 
 	_actualTimestamp.Increase();
 	//TODO - construction of right object
-	WriterBBoxInterface *change = new WriterBBoxInterface( _actualTimestamp );
+	WriterBBoxInterface *change = new WriterBBoxInterface( _actualTimestamp, this );
 	
 	_changes.push_back( change );
 
@@ -54,7 +54,7 @@ ModificationManager::GetMod2D(
 	Multithreading::ScopedLock lock( _accessLock );
 
 	//TODO - construction of right object
-	ReaderBBoxInterface *changeProxy = new ReaderBBoxInterface( _actualTimestamp );
+	ReaderBBoxInterface *changeProxy = new ReaderBBoxInterface( _actualTimestamp, this );
 
 	return ReaderBBoxInterface::Ptr( changeProxy );
 }
@@ -73,7 +73,7 @@ ModificationManager::AddMod3D(
 
 	_actualTimestamp.Increase();
 	//TODO - construction of right object
-	WriterBBoxInterface *change = new WriterBBoxInterface( _actualTimestamp );
+	WriterBBoxInterface *change = new WriterBBoxInterface( _actualTimestamp, this );
 	
 	_changes.push_back( change );
 
@@ -94,7 +94,7 @@ ModificationManager::GetMod3D(
 	Multithreading::ScopedLock lock( _accessLock );
 
 	//TODO - construction of right object
-	ReaderBBoxInterface *changeProxy = new ReaderBBoxInterface( _actualTimestamp );
+	ReaderBBoxInterface *changeProxy = new ReaderBBoxInterface( _actualTimestamp, this );
 
 	return ReaderBBoxInterface::Ptr( changeProxy );
 }

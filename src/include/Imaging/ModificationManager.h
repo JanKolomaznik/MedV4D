@@ -26,7 +26,11 @@ public:
 	typedef boost::shared_ptr< ReaderBBoxInterface > Ptr;
 
 
-	ReaderBBoxInterface( Common::TimeStamp timestamp ): _changeTimestamp( timestamp ) {}
+	ReaderBBoxInterface( Common::TimeStamp timestamp, ModificationManager* manager )
+		: _changeTimestamp( timestamp ),  _manager( manager ) {}
+
+	virtual
+	~ReaderBBoxInterface() {}
 
 	bool
 	IsDirty()const;
@@ -46,12 +50,16 @@ public:
 
 protected:
 	Common::TimeStamp _changeTimestamp;
+
+	ModificationState	_state;
+
+	ModificationManager	*_manager;
 };
 
 class WriterBBoxInterface : public ReaderBBoxInterface
 {
 public:
-	WriterBBoxInterface( Common::TimeStamp timestamp ): ReaderBBoxInterface( timestamp ) {}
+	WriterBBoxInterface( Common::TimeStamp timestamp, ModificationManager* manager ): ReaderBBoxInterface( timestamp, manager ) {}
 
 	void
 	SetState( ModificationState );
@@ -66,89 +74,37 @@ public:
 class ModificationBBox
 {
 public:
-	ModificationBBox( ModificationManager* manager )
-		: _manager( manager ) { }
 
-	virtual
+	virtual 
 	~ModificationBBox() {}
-
-	bool
-	IsDirty()const;
-
-	bool
-	IsModified()const;
-
-	ModificationState
-	GetState()const;
-
-	const Common::TimeStamp &
-	GetTimeStamp()const;
-
-	void
-	SetState( ModificationState );
-
-	void
-	SetModified();
-
-	bool
-	WaitUntilDirty();
 protected:
-	ModificationState	_state;
+	ModificationBBox( unsigned dim, int *first, int *second )
+		:_dimension( dim ), _first( first ), _second( second ) {}
 
-	ModificationManager	*_manager;
+	unsigned	_dimension;
+
+	int 		*_first;
+	int 		*_second;
 };
 
-class ModBBox2D: public ModificationBBox
+class BBox2D: public ModificationBBox
 {
 public:
-	ModBBox2D( ModificationManager* manager ) 
-		: ModificationBBox( manager ) { }
 
 };
 
-class ModBBox3D: public ModBBox2D
+class BBox3D: public BBox2D
 {
 public:
-	ModBBox3D( ModificationManager* manager ) 
-		: ModBBox2D( manager ) { }
 
 };
 
-class ModBBox4D: public ModBBox3D
+class BBox4D: public BBox3D
 {
 public:
-	ModBBox4D( ModificationManager* manager ) 
-		: ModBBox3D( manager ) { }
 
 };
 
-
-/*
-class ModBBoxWholeDataset: public ModificationBBox
-{
-public:
-	ModBBoxWholeDataset( ModificationManager* manager ) 
-		: ModificationBBox( manager ) { }
-	void
-	ReadLock();
-
-	void
-	ReadUnlock();
-
-	/ *void
-	ReadTryLock();* /
-};
-*/
-
-/*class ModBBox3D
-{
-
-};
-*/
-class ReadBBox3D
-{
-
-};
 
 class ModificationManager
 {

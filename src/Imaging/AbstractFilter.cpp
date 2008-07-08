@@ -158,7 +158,7 @@ MainExecutionThread::operator()()
 
 
 	//Computation
-	bool successful = false;
+	/*bool successful = false;
 	switch( _updateType ) {
 	case AbstractPipeFilter::RECALCULATION:
 		successful = _filter->ExecutionOnWholeThreadMethod();
@@ -170,10 +170,10 @@ MainExecutionThread::operator()()
 		//Shouldn't reach this.
 		ASSERT( false );
 		break;
-	}
+	}*/
 
 
-	if( successful ) {
+	if( _filter->ExecutionThreadMethod( _updateType ) ) {
 		//Send message about finished job	
 		_filter->_outputPorts.SendMessage( MsgFilterUpdated::CreateMsg(), PipelineMessage::MSS_NORMAL );
 

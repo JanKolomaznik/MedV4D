@@ -268,15 +268,14 @@ public:
 protected:
 	friend struct MainExecutionThread;
 	/**
-	 * Method running in execution thread - this method or 
-	 * ExecutionOnWholeThreadMethod() will be stopped, when
-	 * StopExecution() is invoked.
+	 * Method running in execution thread - this method will be 
+	 * stopped, when StopExecution() is invoked.
 	 * In inherited class reimplementation of this method is easy way to 
 	 * implement new filter, and let all dirty work to ancestor class.
 	 * \return True if execution wasn't stopped, false otherwise.
 	 **/
 	virtual bool
-	ExecutionThreadMethod()=0;
+	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )=0;
 
 	/**
 	 * Method running in execution thread if ExecuteOnWhole() was called - 
@@ -286,8 +285,10 @@ protected:
 	 * implement new filter, and let all dirty work to ancestor class.
 	 * \return True if execution wasn't stopped, false otherwise.
 	 **/
-	virtual bool
+	/*virtual bool
 	ExecutionOnWholeThreadMethod()=0;
+	*/
+
 
 	/**
 	 * Method used for checking whether execution can continue.

@@ -31,12 +31,6 @@ public:
 	ImageFilter();
 	~ImageFilter() {}
 protected:
-	/* Must be reimplemented in successor.
-	bool
-	ExecutionThreadMethod();
-
-	bool
-	ExecutionOnWholeThreadMethod();*/
 
 	const InputImageType&
 	GetInputImage()const;
@@ -90,9 +84,6 @@ public:
 	~ImageSliceFilter() {}
 
 	void
-	PrepareOutputDatasets();
-
-	void
 	SetComputationNeighbourhood( unsigned count )
 		{ _sliceComputationNeighbourCount = count; }
 
@@ -124,10 +115,8 @@ protected:
 		    ) = 0;
 
 	bool
-	ExecutionThreadMethod();
+	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
 
-	bool
-	ExecutionOnWholeThreadMethod();
 	
 	void
 	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
@@ -143,6 +132,42 @@ private:
 	 * Prohibition of copying.
 	 **/
 	PROHIBIT_COPYING_OF_OBJECT_MACRO( ImageSliceFilter );
+};
+
+
+/**
+ * We disallow general usage of template - only specializations.
+ **/
+template< typename InputImageType, typename OutputImageType >
+class IdenticalExtentsImageSliceFilter;
+
+template< typename InputElementType, typename OutputElementType >
+class IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
+	 : public ImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
+{
+public:
+	typedef typename Imaging::ImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >	PredecessorType;
+
+	IdenticalExtentsImageSliceFilter();
+	~IdenticalExtentsImageSliceFilter() {}
+
+protected:
+
+	bool
+	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
+
+	
+	void
+	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
+
+	void
+	PrepareOutputDatasets();
+
+private:
+	/**
+	 * Prohibition of copying.
+	 **/
+	PROHIBIT_COPYING_OF_OBJECT_MACRO( IdenticalExtentsImageSliceFilter );
 };
 
 
@@ -178,10 +203,8 @@ protected:
 		    ) = 0;
 
 	bool
-	ExecutionThreadMethod();
+	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
 
-	bool
-	ExecutionOnWholeThreadMethod();
 
 	void
 	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
@@ -203,9 +226,6 @@ public:
 	~ImageVolumeFilter() {}
 
 	void
-	PrepareOutputDatasets();
-
-	void
 	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
 protected:
 	virtual bool
@@ -222,10 +242,11 @@ protected:
 		    ) = 0;
 
 	bool
-	ExecutionThreadMethod();
+	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
 
-	bool
-	ExecutionOnWholeThreadMethod();
+	void
+	PrepareOutputDatasets();
+
 	
 private:
 	/**

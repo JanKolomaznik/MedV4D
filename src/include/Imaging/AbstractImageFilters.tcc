@@ -97,17 +97,7 @@ ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 template< typename InputElementType, typename OutputImageType >
 bool
 ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
-::ExecutionThreadMethod()
-{
-	//TODO
-	ExecutionOnWholeThreadMethod();
-	return true;
-}
-
-template< typename InputElementType, typename OutputImageType >
-bool
-ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
-::ExecutionOnWholeThreadMethod()
+::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
 {
 	//TODO - better implementation	
 	for( 
@@ -131,18 +121,74 @@ ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 template< typename InputElementType, typename OutputImageType >
 void
 ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
-::PrepareOutputDatasets()
-{
-	//TODO
-}
-
-template< typename InputElementType, typename OutputImageType >
-void
-ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 ::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
 {
 	//TODO
 	PredecessorType::BeforeComputation( utype );	
+}
+
+//******************************************************************************
+//******************************************************************************
+
+template< typename InputElementType, typename OutputElementType >
+IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
+::IdenticalExtentsImageSliceFilter() 
+{
+
+}
+
+template< typename InputElementType, typename OutputElementType >
+bool
+IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
+::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
+{
+	//TODO - better implementation	
+	for( 
+		size_t i = this->in->GetDimensionExtents( 2 ).minimum; 
+		i < this->in->GetDimensionExtents( 2 ).maximum;
+		++i
+	) {
+		ProcessSlice( 	*(this->in), 
+				*(this->out),
+				this->in->GetDimensionExtents( 0 ).minimum,
+				this->in->GetDimensionExtents( 1 ).minimum,
+				this->in->GetDimensionExtents( 0 ).maximum,
+				this->in->GetDimensionExtents( 1 ).maximum,
+				i 
+				);
+
+	}
+	return true;
+}
+
+template< typename InputElementType, typename OutputElementType >
+void
+IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
+::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
+{
+	//TODO
+	PredecessorType::BeforeComputation( utype );	
+}
+
+template< typename InputElementType, typename OutputElementType >
+void
+IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
+::PrepareOutputDatasets()
+{
+	//TODO - improve
+	const Image< InputElementType, 3 > &in = this->GetInputImage();
+	size_t minimums[3];
+	size_t maximums[3];
+	float32 voxelExtents[3];
+
+	for( unsigned i=0; i < 3; ++i ) {
+		const DimensionExtents & dimExt = in.GetDimensionExtents( i );
+
+		minimums[i] = dimExt.minimum;
+		maximums[i] = dimExt.maximum;
+		voxelExtents[i] = dimExt.elementExtent;
+	}
+	this->SetOutputImageSize( minimums, maximums, voxelExtents );
 }
 
 //******************************************************************************
@@ -158,17 +204,7 @@ ImageVolumeFilter< Image< InputElementType, 3 >, OutputImageType >
 template< typename InputElementType, typename OutputImageType >
 bool
 ImageVolumeFilter< Image< InputElementType, 3 >, OutputImageType >
-::ExecutionThreadMethod()
-{
-	//TODO
-	ExecutionOnWholeThreadMethod();
-	return true;
-}
-
-template< typename InputElementType, typename OutputImageType >
-bool
-ImageVolumeFilter< Image< InputElementType, 3 >, OutputImageType >
-::ExecutionOnWholeThreadMethod()
+::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
 {
 	//TODO - better implementation	
 	
@@ -216,17 +252,7 @@ ImageVolumeFilter< Image< InputElementType, 4 >, OutputImageType >
 template< typename InputElementType, typename OutputImageType >
 bool
 ImageVolumeFilter< Image< InputElementType, 4 >, OutputImageType >
-::ExecutionThreadMethod()
-{
-	//TODO
-	ExecutionOnWholeThreadMethod();
-	return true;
-}
-
-template< typename InputElementType, typename OutputImageType >
-bool
-ImageVolumeFilter< Image< InputElementType, 4 >, OutputImageType >
-::ExecutionOnWholeThreadMethod()
+::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
 {
 	//TODO - better implementation	
 	for( 
