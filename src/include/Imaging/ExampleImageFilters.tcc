@@ -38,27 +38,6 @@ CopyImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 	return true;
 }
 
-template< typename InputElementType, typename OutputElementType >
-void
-CopyImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
-::PrepareOutputDatasets()
-{
-	//TODO - improve
-	const Image< InputElementType, 3 > &in = this->GetInputImage();
-	size_t minimums[3];
-	size_t maximums[3];
-	float32 voxelExtents[3];
-
-	for( unsigned i=0; i < 3; ++i ) {
-		const DimensionExtents & dimExt = in.GetDimensionExtents( i );
-
-		minimums[i] = dimExt.minimum;
-		maximums[i] = dimExt.maximum;
-		voxelExtents[i] = dimExt.elementExtent;
-	}
-	this->SetOutputImageSize( minimums, maximums, voxelExtents );
-}
-
 //*****************************************************************************
 //*****************************************************************************
 
@@ -120,6 +99,75 @@ ColumnMaxImageFilter< ElementType >
 		pixelExtents[i] = dimExt.elementExtent;
 	}
 	this->SetOutputImageSize( minimums, maximums, pixelExtents );
+}
+
+
+//*****************************************************************************
+//*****************************************************************************
+
+template< typename InputElementType >
+SimpleThresholdingImageFilter< Image< InputElementType, 3 > >
+::SimpleThresholdingImageFilter()
+{
+
+}
+
+template< typename InputElementType >
+bool
+SimpleThresholdingImageFilter< Image< InputElementType, 3 > >
+::ProcessSlice(
+			const Image< InputElementType, 3 > 	&in,
+			Image< InputElementType, 3 >		&out,
+			size_t			x1,	
+			size_t			y1,	
+			size_t			x2,	
+			size_t			y2,	
+			size_t			slice
+		    )
+{
+	if( !this->CanContinue() ) { //Someone wants filter to stop.
+			return false;
+	}
+	for( size_t i = x1; i < x2; ++i ) {
+		for( size_t j = y1; j < y2; ++j ) {
+			out.GetElement( i, j, slice ) = in.GetElement( i, j, slice );
+		}
+	}
+	return true;
+}
+
+//*****************************************************************************
+//*****************************************************************************
+
+template< typename InputElementType >
+SimpleConvolutionImageFilter< Image< InputElementType, 3 > >
+::SimpleConvolutionImageFilter()
+{
+
+}
+
+template< typename InputElementType >
+bool
+SimpleConvolutionImageFilter< Image< InputElementType, 3 > >
+::ProcessSlice(
+			const Image< InputElementType, 3 > 	&in,
+			Image< InputElementType, 3 >		&out,
+			size_t			x1,	
+			size_t			y1,	
+			size_t			x2,	
+			size_t			y2,	
+			size_t			slice
+		    )
+{
+	if( !this->CanContinue() ) { //Someone wants filter to stop.
+			return false;
+	}
+	for( size_t i = x1; i < x2; ++i ) {
+		for( size_t j = y1; j < y2; ++j ) {
+			out.GetElement( i, j, slice ) = in.GetElement( i, j, slice );
+		}
+	}
+	return true;
 }
 
 } /*namespace Imaging*/
