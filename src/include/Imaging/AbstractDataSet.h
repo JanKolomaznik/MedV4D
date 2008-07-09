@@ -22,7 +22,7 @@ public:
 	GetStructureTimestamp()const
 		{ return _structureTimestamp; }
 
-	template< typename DatasetType >
+	/*template< typename DatasetType >
 	static AbstractDataSet &
 	CastDataSet(  DatasetType & dataset )
 	{
@@ -36,7 +36,7 @@ public:
 	{
 		//TODO - handle exception well
 		return dynamic_cast< const AbstractDataSet & >( dataset );
-	}
+	}*/
 
 	template< typename DatasetType >
 	static typename AbstractDataSet::ADataSetPtr
