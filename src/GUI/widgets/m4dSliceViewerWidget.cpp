@@ -88,10 +88,17 @@ m4dSliceViewerWidget::setParameters()
     _contrastRate = 0.0;
     _selectionMode = false;
     _printShapeData = false;
+    _availableSlots = SETBUTTONHANDLERS | SETSELECTHANDLERS | SETSELECTIONMODE | SETCOLORMODE | SETSLICENUM | ZOOM | MOVEH | MOVEV | ADJUSTBRIGHTNESS | ADJUSTCONTRAST | NEWPOINT | NEWSHAPE | DELETEPOINT | DELETESHAPE;
     ButtonHandlers bh[] = { NONE_BUTTON, ZOOM, MOVE_H, MOVE_V, ADJUST_C, ADJUST_B };
     setButtonHandlers( bh );
     SelectHandlers ch[] = { NEW_POINT, DELETE_POINT, NEW_SHAPE, DELETE_SHAPE };
     setSelectHandlers( ch );
+}
+
+m4dSliceViewerWidget::AvailableSlots
+m4dSliceViewerWidget::getAvailableSlots()
+{
+    return _availableSlots;
 }
 
 void
@@ -598,6 +605,90 @@ m4dSliceViewerWidget::deleteShape( int x, int y, int z )
     if ( _shapes.empty() ) return;
     
     _shapes.pop_back();
+}
+
+void
+m4dSliceViewerWidget::slotSetButtonHandlers( ButtonHandlers* hnd )
+{
+    setButtonHandlers( hnd );
+}
+
+void
+m4dSliceViewerWidget::slotSetSelectHandlers( SelectHandlers* hnd )
+{
+    setSelectHandlers( SelectHandlers* hnd );
+}
+
+void
+m4dSliceViewerWidget::slotSetSelectionMode( bool mode )
+{
+    setSelectionMode( mode );
+}
+
+void
+m4dSliceViewerWidget::slotSetColorMode( ColorMode cm )
+{
+    setColorMode( cm );
+}
+
+void
+m4dSliceViewerWidget::slotSetSliceNum( size_t num )
+{
+    setSliceNum( num );
+}
+
+void
+m4dSliceViewerWidget::slotZoom( int amount )
+{
+    zoomImage( amount );
+}
+
+void
+m4dSliceViewerWidget::slotMoveH( int amount )
+{
+    moveImageH( amount );
+}
+
+void
+m4dSliceViewerWidget::slotMoveV( int amount )
+{
+    moveImageV( amount );
+}
+
+void
+m4dSliceViewerWidget::slotAdjustBrightness( int amount )
+{
+    adjustBrightness( amount );
+}
+
+void
+m4dSliceViewerWidget::slotAdjustContrast( int amount )
+{
+    adjustContrast( amount );
+}
+
+void
+m4dSliceViewerWidget::slotNewPoint( int x, int y, int z )
+{
+    newPoint( x, y, z );
+}
+
+void
+m4dSliceViewerWidget::slotNewShape( int x, int y, int z )
+{
+    newShape( x, y, z );
+}
+
+void
+m4dSliceViewerWidget::slotDeletePoint()
+{
+    deletePoint( 0, 0, 0 );
+}
+
+void
+m4dSliceViewerWidget::slotDeleteShape()
+{
+    deleteShape( 0, 0, 0 );
 }
 
 } /*namespace Viewer*/

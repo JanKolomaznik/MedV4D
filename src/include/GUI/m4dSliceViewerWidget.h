@@ -8,6 +8,7 @@
 #include "Imaging/Ports.h"
 #include "Imaging/DefaultConnection.h"
 #include "GUI/m4dSelection.h"
+#include "GUI/m4dAbstractViewerWidget.h"
 
 #define RW 0.3086
 #define GW 0.6094
@@ -18,7 +19,7 @@ namespace M4D
 namespace Viewer
 {
 
-class m4dSliceViewerWidget : public QGLWidget
+class m4dSliceViewerWidget : public m4dAbstractViewerWidget, QGLWidget
 {
     Q_OBJECT
 
@@ -32,14 +33,50 @@ public:
     void setInputPort( Imaging::ImageConnection< Imaging::Image< uint16, 3 > >& conn );
     void setInputPort( Imaging::ImageConnection< Imaging::Image< uint8, 3 > >& conn );
 
-    typedef enum { NONE_BUTTON, ZOOM, MOVE_H, MOVE_V, ADJUST_B, ADJUST_C } ButtonHandlers;
-    typedef enum { NONE_SELECT, NEW_POINT, NEW_SHAPE, DELETE_POINT, DELETE_SHAPE } SelectHandlers;
-    typedef enum { RGBA_UNSIGNED_BYTE, 	GRAYSCALE_UNSIGNED_BYTE, GRAYSCALE_UNSIGNED_SHORT } ColorMode;
-
     void setButtonHandlers( ButtonHandlers* hnd );
     void setSelectHandlers( SelectHandlers* hnd );
     void setSelectionMode( bool mode );
     bool getSelectionMode();
+
+    virtual AvailableSlots getAvailableSlots();
+
+public slots:
+    virtual void slotSetButtonHandlers( ButtonHandlers* hnd );
+    virtual void slotSetSelectHandlers( SelectHandlers* hnd );
+    virtual void slotSetSelectionMode( bool mode );
+    virtual void slotSetColorMode( ColorMode cm );
+    virtual void slotSetSliceNum( size_t num );
+    virtual void slotZoom( int amount );
+    virtual void slotMoveH( int amount );
+    virtual void slotMoveV( int amount );
+    virtual void slotAdjustBrightness( int amount );
+    virtual void slotAdjustContrast( int amount );
+    virtual void slotNewPoint( int x, int y, int z );
+    virtual void slotNewShape( int x, int y, int z );
+    virtual void slotDeletePoint();
+    virtual void slotDeleteShape();
+    virtual void slotRotateAxisX( int x );
+    virtual void slotRotateAxisY( int y );
+    virtual void slotRotateAxisZ( int z );
+
+signals:
+    void slotSetButtonHandlers( ButtonHandlers* hnd );
+    void slotSetSelectHandlers( SelectHandlers* hnd );
+    void slotSetSelectionMode( bool mode );
+    void slotSetColorMode( ColorMode cm );
+    void slotSetSliceNum( size_t num );
+    void slotZoom( int amount );
+    void slotMoveH( int amount );
+    void slotMoveV( int amount );
+    void slotAdjustBrightness( int amount );
+    void slotAdjustContrast( int amount );
+    void slotNewPoint( int x, int y, int z );
+    void slotNewShape( int x, int y, int z );
+    void slotDeletePoint( int x, int y, int z );
+    void slotDeleteShape( int x, int y, int z );
+    void slotRotateAxisX( int x );
+    void slotRotateAxisY( int y );
+    void slotRotateAxisZ( int z );
 
 protected:
     void setColorMode( ColorMode cm );
@@ -86,6 +123,7 @@ private:
     GLfloat					_contrastRate;
     ButtonMethods				_buttonMethods[3][2];
     SelectMethods				_selectMethods[2][2];
+    AvailableSlots				_availableSlots;
 };
 
 } /*namespace Viewer*/
