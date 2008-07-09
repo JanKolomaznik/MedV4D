@@ -8,6 +8,7 @@
 #include <boost/shared_ptr.hpp>
 #include "Thread.h"
 #include "Imaging/PipelineMessages.h"
+#include "Imaging/filterProperties.h"
 
 #include <iostream>
 namespace M4D
@@ -152,6 +153,17 @@ public:
 	StopExecution() = 0;
 
 protected:
+  /**
+   *  Filter's settings. Used to sending to server.
+   *  This is pointer to base abstract settings class.
+   *  !!! Each new filter derived from this class
+   *  should declare new settings type derived from 
+   *  FilterSettingTemplate class (filterProperties.h) 
+   *  with template param of type FilterID (FilterIDEnums.h).
+   *  This new enum item should be also added to enum with a new
+   *  data set class !!!
+   */
+  AbstractFilterSetting *_setting;
 	
 private:
 	/**

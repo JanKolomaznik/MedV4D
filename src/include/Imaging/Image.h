@@ -93,7 +93,6 @@ public:
 
 	static const unsigned	Dimension = 2;
 
-
 	Image();
 
 	/**

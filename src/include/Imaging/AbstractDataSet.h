@@ -3,6 +3,8 @@
 
 #include <boost/shared_ptr.hpp>
 #include "TimeStamp.h"
+#include "dataSetProperties.h"
+#include "../cellBE/basicJob.h"
 
 namespace M4D
 {
@@ -48,6 +50,27 @@ public:
 
 		return boost::static_pointer_cast< AbstractDataSet >( dataset );
 	}
+
+  /**
+   *  Properties of dataset. Used to sending to server.
+   *  This is pointer to base abstract properties class.
+   *  !!! Each new type of dataSet derived from this class
+   *  should declare new properties type derived from 
+   *  DataSetPropertiesTemplate class (dataSetProperties.h) 
+   *  with template param of type DataSetType(dataSetTypeEnums.h).
+   *  This new enum type should be also added to enum with a new
+   *  data set class !!!
+   */
+  DataSetPropertiesAbstract *_properties;
+
+  /**
+   *  Each special succesor should implement this functions in
+   *  its own manner.
+   */
+  virtual void Serialize( M4D::CellBE::BasicJob *job) = 0;
+  virtual void DeSerialize( M4D::CellBE::BasicJob *job) = 0;
+
+
 protected:
 	/**
 	 * Increase structure timestamp - only helper function for successors.
