@@ -3,7 +3,7 @@
 #include <QtGui>
 
 
-/// Number of various layouts - in one groupBox
+/// Number of various layouts (in one groupBox)
 #define LAYOUT_NUMBER   9
 /// Number of layouts in one row (in one groupBox)
 #define LAYOUTS_IN_ROW  3
@@ -22,13 +22,14 @@ m4dGUIScreenLayoutWidget::m4dGUIScreenLayoutWidget ( m4dGUIVtkRenderWindowWidget
   Q_INIT_RESOURCE( m4dGUIScreenLayoutWidget );
 
   // creating Series groupBox
-  QGroupBox *seriesGroupBox = createSeriesGroupBox();
+  QGroupBox *seriesGroupBox = createLayoutGroupBox( tr( "Series" ), seriesLayoutToolButtons, seriesRowSpinBox,
+                                                    seriesColumnSpinBox, 1, 2 );
   // creating Image groupBox
-  QGroupBox *imageGroupBox = createImageGroupBox();
+  QGroupBox *imageGroupBox = createLayoutGroupBox( tr( "Image" ), imageLayoutToolButtons, imageRowSpinBox,
+                                                    imageColumnSpinBox, 1, 1 );
   // creating OK Cancel dialogButtonBox
-  QDialogButtonBox *dialogButtonBox = new QDialogButtonBox( QDialogButtonBox::Ok | QDialogButtonBox::Cancel );
+  QDialogButtonBox *dialogButtonBox = new QDialogButtonBox( QDialogButtonBox::Ok );
   connect( dialogButtonBox, SIGNAL(accepted()), this, SLOT(accept()) );
-  connect( dialogButtonBox, SIGNAL(rejected()), this, SLOT(reject()) );
 
   // building layout
   QGridLayout *mainLayout = new QGridLayout;
@@ -46,109 +47,54 @@ void m4dGUIScreenLayoutWidget::accept ()
 }
 
 
-void m4dGUIScreenLayoutWidget::reject ()
-{ 
-  screenLayoutDialog->close();
-}
-
-
-/**
- * Creates Series groupBox - with buttons for various layouts and custom settings.
- */
-QGroupBox *m4dGUIScreenLayoutWidget::createSeriesGroupBox ()
+QGroupBox *m4dGUIScreenLayoutWidget::createLayoutGroupBox ( const QString &title, QToolButton **toolButtons,
+                                                            QSpinBox *rowSpinBox, QSpinBox *columnSpinBox,
+                                                            const int rowValue, const int columnValue )
 {
-  QGroupBox *seriesGroupBox = new QGroupBox( tr( "Series" ) );
+  QGroupBox *layoutGroupBox = new QGroupBox( title );
 
-  QGridLayout *seriesGroupBoxLayout = new QGridLayout;
+  QGridLayout *layoutGroupBoxLayout = new QGridLayout;
 
-  seriesLayoutToolButtons = new QToolButton *[LAYOUT_NUMBER];
+  toolButtons = new QToolButton *[LAYOUT_NUMBER];
 
   unsigned layoutIdx = 0;
   for ( ; layoutIdx < LAYOUT_NUMBER; layoutIdx++ ) 
   {
     QString fileName = QString( ":/icons/" ).append( layoutIconNames[layoutIdx] );
-    seriesLayoutToolButtons[layoutIdx] = createToolButton( QIcon( fileName ) );
-    seriesGroupBoxLayout->addWidget( seriesLayoutToolButtons[layoutIdx], 
+    toolButtons[layoutIdx] = createToolButton( QIcon( fileName ) );
+    layoutGroupBoxLayout->addWidget( toolButtons[layoutIdx], 
                                      layoutIdx / LAYOUTS_IN_ROW, layoutIdx % LAYOUTS_IN_ROW );
   }
 
   if ( LAYOUT_NUMBER > 0 ) {
-    seriesLayoutToolButtons[0]->setChecked( true );  
+    toolButtons[0]->setChecked( true );  
   }
 
-  // creating Custom groupBox - within Series groupBox
+  // creating Custom GroupBox - within given GroupBox
   // --------------------------------------------------------------------------
-  QGroupBox *customSeriesGroupBox = new QGroupBox( tr( "Custom" ) );
+  QGroupBox *customLayoutGroupBox = new QGroupBox( tr( "Custom" ) );
 
-  QGridLayout *customSeriesGroupBoxLayout = new QGridLayout;
-  customSeriesGroupBoxLayout->setContentsMargins( 30, 10, 30, 10 );
+  QGridLayout *customLayoutGroupBoxLayout = new QGridLayout;
+  customLayoutGroupBoxLayout->setContentsMargins( 30, 10, 30, 10 );
 
-  customSeriesGroupBoxLayout->addWidget( new QLabel( tr( "Rows:" ) ), 0, 0 );
-  customSeriesGroupBoxLayout->addWidget( new QLabel( tr( "Columns:" ) ), 0, 1 );
-  seriesRowSpinBox = createSpinBox( 1 );
-  customSeriesGroupBoxLayout->addWidget( seriesRowSpinBox, 1, 0 );
-  seriesColumnSpinBox = createSpinBox( 2 );
-  customSeriesGroupBoxLayout->addWidget( seriesColumnSpinBox, 1, 1 );
+  customLayoutGroupBoxLayout->addWidget( new QLabel( tr( "Rows:" ) ), 0, 0 );
+  customLayoutGroupBoxLayout->addWidget( new QLabel( tr( "Columns:" ) ), 0, 1 );
+  rowSpinBox = createSpinBox( rowValue );
+  customLayoutGroupBoxLayout->addWidget( rowSpinBox, 1, 0 );
+  columnSpinBox = createSpinBox( columnValue );
+  customLayoutGroupBoxLayout->addWidget( columnSpinBox, 1, 1 );
+  QPushButton *applyButton = new QPushButton( tr( "Apply Custom" ) );
+  customLayoutGroupBoxLayout->addWidget( applyButton, 2, 0, 1, 2 );
 
-  customSeriesGroupBox->setLayout( customSeriesGroupBoxLayout );
+  customLayoutGroupBox->setLayout( customLayoutGroupBoxLayout );
   // --------------------------------------------------------------------------
 
-  seriesGroupBoxLayout->addWidget( customSeriesGroupBox, layoutIdx / LAYOUTS_IN_ROW, 
+  layoutGroupBoxLayout->addWidget( customLayoutGroupBox, layoutIdx / LAYOUTS_IN_ROW, 
                                    0, 1, LAYOUTS_IN_ROW );
 
-  seriesGroupBox->setLayout( seriesGroupBoxLayout );
+  layoutGroupBox->setLayout( layoutGroupBoxLayout );
 
-  return seriesGroupBox;
-}
-
-
-/**
- * Creates Image groupBox - with buttons for various layouts and custom settings.
- */
-QGroupBox *m4dGUIScreenLayoutWidget::createImageGroupBox ()
-{
-  QGroupBox *imageGroupBox  = new QGroupBox( tr( "Image" ) );
-
-  QGridLayout *imageGroupBoxLayout = new QGridLayout;
-
-  imageLayoutToolButtons = new QToolButton *[LAYOUT_NUMBER];
-
-  unsigned layoutIdx = 0;
-  for ( ; layoutIdx < LAYOUT_NUMBER; layoutIdx++ ) 
-  {
-    QString fileName = QString( ":/icons/" ).append( layoutIconNames[layoutIdx] );
-    imageLayoutToolButtons[layoutIdx] = createToolButton( QIcon( fileName ) );
-    imageGroupBoxLayout->addWidget( imageLayoutToolButtons[layoutIdx], 
-                                    layoutIdx / LAYOUTS_IN_ROW, layoutIdx % LAYOUTS_IN_ROW );
-  }
-
-  if ( LAYOUT_NUMBER > 0 ) {
-    imageLayoutToolButtons[0]->setChecked( true );  
-  }
-
-  // creating Custom groupBox - within Image groupBox
-  // --------------------------------------------------------------------------
-  QGroupBox *customImageGroupBox = new QGroupBox( tr( "Custom" ) );
-
-  QGridLayout *customImageGroupBoxLayout = new QGridLayout;
-  customImageGroupBoxLayout->setContentsMargins( 30, 10, 30, 10 );
-
-  customImageGroupBoxLayout->addWidget( new QLabel( tr( "Rows:" ) ), 0, 0 );
-  customImageGroupBoxLayout->addWidget( new QLabel( tr( "Columns:" ) ), 0, 1 );
-  imageRowSpinBox = createSpinBox( 1 );
-  customImageGroupBoxLayout->addWidget( imageRowSpinBox, 1, 0 );
-  imageColumnSpinBox = createSpinBox( 1 );
-  customImageGroupBoxLayout->addWidget( imageColumnSpinBox, 1, 1 );
-
-  customImageGroupBox->setLayout( customImageGroupBoxLayout );
-  // --------------------------------------------------------------------------
-
-  imageGroupBoxLayout->addWidget( customImageGroupBox, layoutIdx / LAYOUTS_IN_ROW, 
-                                  0, 1, LAYOUTS_IN_ROW );
-
-  imageGroupBox->setLayout( imageGroupBoxLayout );
-
-  return imageGroupBox;
+  return layoutGroupBox;
 }
 
 

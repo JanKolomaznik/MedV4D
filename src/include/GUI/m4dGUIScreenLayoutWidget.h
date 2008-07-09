@@ -21,7 +21,7 @@ class m4dGUIScreenLayoutWidget: public QWidget
      * @param vtkRenderWindowWidget pointer to the VTK Render Window Widget
      * - where to manage layout
      * @param screenLayoutDialog pointer to the Screen Layout Dialog - to close it after 
-     * clicking Ok, Cancel
+     * clicking Ok
      * @ param parent parent of this widget - default is 0
      */
     m4dGUIScreenLayoutWidget ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget,
@@ -29,23 +29,20 @@ class m4dGUIScreenLayoutWidget: public QWidget
 
   private slots:
     void accept ();
-    void reject ();
 
   private:
     /**
-     * Creates Series groupBox - with buttons for various layouts and custom settings.
+     * Creates Layout GroupBox - with buttons for various layouts and custom settings.
+     * ...
      */
-    QGroupBox *createSeriesGroupBox ();
-
-    /**
-     * Creates Image groupBox - with buttons for various layouts and custom settings.
-     */
-    QGroupBox *createImageGroupBox ();
+    QGroupBox *createLayoutGroupBox ( const QString &title, QToolButton **toolButtons,
+                                      QSpinBox *rowSpinBox, QSpinBox *columnSpinBox,
+                                      const int rowValue, const int columnValue );
 
     QToolButton *createToolButton ( const QIcon &icon );
     QSpinBox    *createSpinBox ( const int value );
 
-    /// pointer to the Screen Layout Dialog - to close it after clicking Ok, Cancel
+    /// pointer to the Screen Layout Dialog - to close it after clicking Ok
     QDialog *screenLayoutDialog;
 
     static const char *layoutIconNames[];

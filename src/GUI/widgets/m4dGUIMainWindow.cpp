@@ -100,16 +100,15 @@ void m4dGUIMainWindow::createStudyManagerDialog ()
 void m4dGUIMainWindow::createScreenLayoutDialog ()
 {
   // new dialog for Screen Layout Widget - without What's This button in the title bar and resize
-  screenLayoutDialog = new QDialog( this, Qt::WindowTitleHint | Qt::WindowSystemMenuHint );
+  screenLayoutDialog = new QDialog( this, Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::MSWindowsFixedSizeDialogHint );
+  screenLayoutDialog->setWindowTitle( tr( "Screen Layout" ) );
+  screenLayoutDialog->setWindowIcon( QIcon( ":/icons/layout.png" ) );
 
-  screenLayoutWidget = new m4dGUIScreenLayoutWidget( vtkRenderWindowWidget,
-                                                                               screenLayoutDialog );
+  screenLayoutWidget = new m4dGUIScreenLayoutWidget( vtkRenderWindowWidget, screenLayoutDialog );
 
   QVBoxLayout *dialogLayout = new QVBoxLayout;
   dialogLayout->addWidget( screenLayoutWidget );
 
-  screenLayoutDialog->setWindowTitle( tr( "Screen Layout" ) );
-  screenLayoutDialog->setWindowIcon( QIcon( ":/icons/layout.png" ) );
   screenLayoutDialog->setLayout( dialogLayout );
 }
 
