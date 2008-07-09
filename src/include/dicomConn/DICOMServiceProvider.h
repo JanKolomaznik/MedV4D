@@ -31,9 +31,10 @@ public:
 
 	// TYPEDEFS ///////////////////////////////////////////////////////////
 
-	//class DicomObj;
-  class DicomObj;
-  #include "dicomConn/DICOMObject.h"
+	class DicomObj;
+
+  // typedef for callbacks for events
+  typedef void (*ImageLoadedCallback)(void);
 
 	// represents one row in table that shows found results
 	struct TableRow 
@@ -88,25 +89,34 @@ public:
 		DcmProvider::ResultSet &result,
     const std::string &path);
 
-	// user select any study and wants to get seriesInstanceUIDs
+	/**
+   *  Find provides informations about patient and study. But there can be more series in one study. So this member returns ID of all series of given study (seriesInstanceUIDs). There is normally only one.
+   */
 	void FindStudyInfo(
 		const std::string &patientID,
 		const std::string &studyID,
 		StringVector &info) ;
 
-  // user select any study and wants to get seriesInstanceUIDs
+  /**
+   *  The same as FindStudyInfo. Works with local filesystem.
+   */
 	void LocalFindStudyInfo(
 		const std::string &patientID,
 		const std::string &studyID,
 		StringVector &info) ;
 
-	// the same as FindStudyInfo but gets even imageIDs
+	/**
+   *  The same as FindStudyInfo but gets even imageIDs. Rarely used.
+   */
 	void FindStudyAndImageInfo(
 		const std::string &patientID,
 		const std::string &studyID,
 		StudyInfo &info) ;
 
-	// finds all studies concerning given patient
+	/**
+   *  Finds all studies concerning given patient. Construct special query
+   *  to DICOM server to retrieve all patient's studies.
+   */
 	void FindAllPatientStudies(  
 		const std::string &patientID,
 		ResultSet &result) ;
@@ -123,18 +133,17 @@ public:
 		DicomObj &object) ;
 
   /**
-   *  Send C-MOVE request to retrieve all images in set. 
+   *  Send C-MOVE request to retrieve all images in set.
    */
 	void GetImageSet(
 		const std::string &patientID,
 		const std::string &studyID,
 		const std::string &serieID,
 		DicomObjSet &result,
-    DicomObj::ImageLoadedCallback on_loaded = NULL) ;
+    ImageLoadedCallback on_loaded = NULL);
 
   /**
    *  Retrieve images from local filesystem.
-   *  @param 
    */
   void LocalGetImageSet(
     const std::string &patientID,
@@ -142,9 +151,12 @@ public:
 		const std::string &serieID,
 		DicomObjSet &result);
 
+  // ctor, dtor
 	DcmProvider();
 	~DcmProvider();
 };
+
+#include "dicomConn/DICOMObject.h"
 
 }
 }

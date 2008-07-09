@@ -8,24 +8,42 @@
 
 #include <string>
 
+ /*
+  *  
+  */
+
 /**
-*  VR (value representation): see DICOM doc ([ver]_05.pdf chapter 6.2)
-*/
-class DicomObj
+ *  This represents a DICOM file. DICOM file is structured file. Elements
+ *  of that structure are pair of <tag id, tag value> ( for tags definitions see DICOM doc ([ver]_05.pdf chapter 6.2) ). Each tag has defined also it value representation (VR : see DICOM doc ([ver]_05.pdf chapter 6.2)) that is actualy data type of an tag. Whole set of an pairs (data elements) is called dataSet. In each data set is normally (but can be more) data element that stores actual data of the file. That element's data has a special format and must be specialy encoded (see DICOM doc ([ver]_05.pdf section 8). That special format is called DICOM stream.
+ DicomObj can be retrieved from DICOM server,
+ *  or loaded from local filesystem (disc, networkplace). Both ways through DcmProvider methodes. When it is being 
+ *  retrieved, Init function is called. This cause some basic information
+ *  to be loaded from dataSet and OnLoaded callback is called.
+ */
+class DcmProvider::DicomObj
 {
 
 public:
 
+  // typedef for callbacks for events
   typedef void (*ImageLoadedCallback)(void);
 
 	inline void SetLoadedCallback( ImageLoadedCallback c) 
 		{ m_loadedCallBack = c; }
 
+  /**
+   *  Pointer to actual dataset container. Void is used because of unimportance
+   *  of files that use (and include) this file to know something about dataSet
+   *  that is defined in DCMTK libraries that are quite bad organized and large.
+   */
 	void *m_dataset;
 
-  void *m_fileFormat;   // support for loading & saving
+  // support for loading & saving
+  void *m_fileFormat;
   
-	// image information members
+	/**
+   *  Basic image information members.
+   */
 	inline uint8 GetPixelSize( void) { return m_pixelSize; }
 	inline uint16 GetWidth( void) { return m_width; }
 	inline uint16 GetHeight( void) { return m_height; }
@@ -41,6 +59,7 @@ public:
 	 *	08-05pu.pdf (AnnexD).
 	 *  Type T should corespond to size of pixel determined from GetPixelSize
 	 *  method or exception will be thrown.
+   *  @param dest = destination buffer where to unpack the DICOM data stream.
 	 **/
 	template< typename T>
 	void FlushIntoArray( const T *dest);
@@ -59,14 +78,17 @@ public:
 	void Save( const std::string &path)	;
 
 	/**
-	 *	Called when image arrive
+	 *	Called when image arrive. Inits basic info to member variables.
+   *  These are returned via basic image information members.
 	 */
 	void Init();
 
-	// methods to get value from data set container
+	/**
+   *  Methods to get values (other that the basic) from data set container
+   */
 	void GetTagValue( uint16 group, uint16 tagNum, std::string &) ;
 	void GetTagValue( uint16 group, uint16 tagNum, int32 &);
-	void GetTagValue( uint16 group, uint16 tagNum, float &);
+	void GetTagValue( uint16 group, uint16 tagNum, float32 &);
 
 	// image level
 	/**
@@ -74,7 +96,7 @@ public:
 	 *	Array should be casted to the right type according value returned
 	 *	by GetPixelSize() method.
 	 */
-	void* GetPixelData( void) ;
+	//void* GetPixelData( void) ;
 	// ...
 	
 	////////////////////////////////////////////////////////////
@@ -98,6 +120,7 @@ private:
 
 	Status m_status;
 
+  // on loaded event callback
 	ImageLoadedCallback m_loadedCallBack;
 };
 	

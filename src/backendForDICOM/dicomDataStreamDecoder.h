@@ -1,13 +1,16 @@
-#ifndef M4D_FROMSTREAMCONVERTER
-#define M4D_FROMSTREAMCONVERTER
+#ifndef M4D_DICOM_STREAM_DECODER
+#define M4D_DICOM_STREAM_DECODER
 
 namespace M4D
 {
-namespace DicomInternal {
+namespace DicomInternal 
+{
+
 /**
- *  Convertor from DICOM data stream. See DICOM doc( [ver]_5 AnnexD)
+ *  Decodes data from DICOM data stream. See DICOM doc( [ver]_5 AnnexD) for details
+ *  about DICOM data stream decoding.
  */
-class FromStreamConverter
+class DicomDataStreamDecoder
 {
 private:
   uint32 m_currBitsAvail;
@@ -25,7 +28,8 @@ private:
 
   uint16 *m_stream;
 public:
-  FromStreamConverter( 
+
+  DicomDataStreamDecoder( 
     uint16 bitsAllocated,
     uint16 highBit,
     uint16 bitsStored,

@@ -1,21 +1,22 @@
-#ifndef M4DDICOMASSOC
-#define M4DDICOMASSOC
+#ifndef M4DDICOMASSOC_H
+#define M4DDICOMASSOC_H
 
 #include <map>
 #include <fstream>
 
 namespace M4D
 {
-namespace DicomInternal {
+namespace DicomInternal 
+{
 ///////////////////////////////////////////////////////////////////////////////
 
 class M4DDicomAssociation
 {
 private:
 
-	/** 
+ /** 
 	* represents all neccessary informations for DICOM
-	* network association
+	* network association establishing
 	*/
 	typedef struct s_DICOMAddress {
 		string callingAPTitle;
@@ -25,6 +26,7 @@ private:
 		string transferModel;
 		E_TransferSyntax transferSyntax;
 	} DICOMAddress;
+
 
 	typedef map<string, DICOMAddress *> AddressContainer;
 
@@ -39,12 +41,15 @@ private:
 	// addresses stuff
 	static AddressContainer addressContainer;
 
+  // supports for loading config.cfg file that contain addresses
+  // to server connections
 	static DICOMAddress *GetAddress( string addressPointer) ;
 	static void FindNonCommentLine( ifstream &f, string &line);
 	static void LoadOneAddress( ifstream &f) ;
 	static void InitAddressContainer( void) ;	// loads the config.cfg
 
 public:
+  // ctor, dtor
 	M4DDicomAssociation( string assocID);
 	~M4DDicomAssociation( void);
 

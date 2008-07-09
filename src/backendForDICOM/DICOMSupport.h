@@ -4,6 +4,9 @@
 // NOTE: dicomConn/DICOMServiceProvider.h has to be already included when used
 // as well as DCMToolkit dataset headers
 
+/**
+ * Retrive data that are displayed in searching table from dataSet
+ */
 static void GetTableRowFromDataSet( 
    DcmDataset *ds, DcmProvider::TableRow *row)
 {

@@ -6,7 +6,7 @@
 #include "Common.h"
 #include "dicomConn/DICOMServiceProvider.h"
 
-#include "FromStreamConverter.h"
+#include "dicomDataStreamDecoder.h"
 
 using namespace M4D::Dicom;
 using namespace M4D::DicomInternal;
@@ -222,7 +222,7 @@ DcmProvider::DicomObj::FlushIntoArray( const T *dest)
   // none of above. Custom DICOM stream.
   else
   {
-    FromStreamConverter conv(
+    DicomDataStreamDecoder decoder(
       bitsAllocated, highBit, bitsStored, m_signed, (uint16 *)data);
 
     register uint16 i, j;
@@ -231,7 +231,7 @@ DcmProvider::DicomObj::FlushIntoArray( const T *dest)
 		for( i=0; i<GetHeight(); i++)
 			for( j=0; j<GetWidth(); j++)
 			{
-        *destIter = conv.GetItem<T>();
+        *destIter = decoder.GetItem<T>();
 				destIter++;
 			}
   }
