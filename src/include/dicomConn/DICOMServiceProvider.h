@@ -9,7 +9,7 @@
 /**
  *	This class is gate to DICOM world. DICOM is a standard describing creating, storing, manipulating and many more actions taken on medical data. For more informations see (http://www.dclunie.com/dicom-status/status.html).
  *
- *	This class provides following DICOM services to upper layers: C-FIND, C-MOVE, C-STORE through function members that reflect most commonly taken tasks.
+ *	This class provides following DICOM operations to upper layers: C-FIND, C-MOVE, C-STORE through function members that reflect most commonly taken tasks.
  */
 
 namespace M4D

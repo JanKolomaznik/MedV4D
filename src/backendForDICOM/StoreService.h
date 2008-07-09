@@ -2,7 +2,8 @@
 #define M4DDICOM_STORE_SERVICE
 
 /**
- *  Implements C-FIND service to DICOM server
+ *  Implements service that performs C-STORE operatoin to DICOM server. It has generate unique IDs and send new data to server.
+ *  For more informations see DICOM doc ([ver]_08.pdf chapter 9.1.1) and coresponding annexes).
  */
 
 using namespace M4D::Dicom;

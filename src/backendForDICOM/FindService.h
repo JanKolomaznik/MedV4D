@@ -2,7 +2,8 @@
 #define M4DDICOMFINDSERVICE
 
 /**
- *  Implements C-FIND service to DICOM server
+ *  Implements C-FIND service to DICOM server. This class plays SCU role. Assotiation is established and query dataSet send. Server process query dataSet and send back results.
+ see DICOM doc ([ver]_08.pdf chapter 9.1.2) and coresponding annexes).
  */
 #include <string>
 

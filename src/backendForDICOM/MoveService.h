@@ -3,6 +3,7 @@
 
 /**
  *  Implements C-MOVE service to DICOM server
+ see DICOM doc ([ver]_08.pdf chapter 9.1.4) and coresponding annexes).
  */
 
 using namespace M4D::Dicom;
