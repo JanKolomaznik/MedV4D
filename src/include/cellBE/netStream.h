@@ -1,6 +1,10 @@
 #ifndef NETSTREAM_HPP
 #define NETSTREAM_HPP
 
+#ifdef __unix__
+#include <arpa/inet.h>
+#endif
+
 #include <vector>
 
 namespace M4D
