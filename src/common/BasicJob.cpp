@@ -1,10 +1,12 @@
 
 #include <vector>
-
+#include "Common.h"
 #include "cellBE/basicJob.h"
 
 using namespace M4D::CellBE;
 using namespace std;
+
+Pool< DataPieceHeader, 32> BasicJob::freeHeaders;
 
 ///////////////////////////////////////////////////////////////////////
 

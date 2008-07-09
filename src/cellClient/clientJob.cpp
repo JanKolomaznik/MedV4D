@@ -3,9 +3,11 @@
 #include <cstdlib>
 #include <ctime>
 
+#include "Common.h"
 #include "cellBE/clientJob.h"
 
 using namespace M4D::CellBE;
+using namespace M4D::Imaging;
 using namespace std;
 
 uint32 ClientJob::lastID;
@@ -14,14 +16,15 @@ uint32 ClientJob::lastID;
 
 ClientJob::ClientJob(
                      FilterVector &filters,
-                     DataSetProperties *props,
+                     M4D::Imaging::AbstractDataSet *dataSet,
                      const std::string &address,
                      boost::asio::io_service &service) 
   : ClientSocket( address, service)
+  , m_dataSet( dataSet)
 {
   GenerateJobID();
   primHeader.action = (uint8) CREATE;
-  primHeader.dataSetType = 77;
+  primHeader.dataSetType = m_dataSet->_properties->GetType();
 
   PrimaryJobHeader::Serialize( &primHeader);
 
@@ -34,18 +37,13 @@ ClientJob::ClientJob(
   }
 
   // serialize dataset settings
-  props->Serialize( m_dataSetPropsSerialized);
+  m_dataSet->_properties->SerializeIntoStream( m_dataSetPropsSerialized);
   secHeader.dataSetPropertiesLen = (uint16) m_dataSetPropsSerialized.size();
 
   SendHeaders();
-}
 
-///////////////////////////////////////////////////////////////////////
-
-void
-ClientJob::Submit(void)
-{
-
+  // serialize dataSet using this job
+  m_dataSet->Serialize( this);
 }
 
 ///////////////////////////////////////////////////////////////////////

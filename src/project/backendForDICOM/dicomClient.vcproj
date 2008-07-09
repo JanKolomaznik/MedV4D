@@ -206,11 +206,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\backendForDICOM\DICOMSupport.h"
+				RelativePath="..\..\backendForDICOM\dicomDataStreamDecoder.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\backendForDICOM\FromStreamConverter.h"
+				RelativePath="..\..\backendForDICOM\DICOMSupport.h"
 				>
 			</File>
 			<Filter

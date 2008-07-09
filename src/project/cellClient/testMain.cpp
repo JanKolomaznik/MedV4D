@@ -2,8 +2,10 @@
 
 #include "Common.h"
 #include "cellBE/cellClient.h"
+#include "Imaging/ImageFactory.h"
 
 using namespace M4D::CellBE;
+using namespace M4D::Imaging;
 
 int main()
 {
@@ -11,17 +13,16 @@ int main()
   {
     CellClient client;
 
-    ClientJob::FilterVector filters;
-
+    // prepare filters (pipeline)
+    FilterVector filters;
     ThresholdingSetting *s = new ThresholdingSetting();
     s->threshold = 3.14f;
-
     filters.push_back( s);
 
-    Image3DProperties props;
-    props.x = props.y = props.z = 233;
+    // prepare dataSet
+    Image<uint16, 3>::Ptr image = ImageFactory::CreateEmptyImage3DTyped<uint16>(15, 15, 15);
 
-    ClientJob *job = client.CreateJob( filters, &props);
+    ClientJob *job = client.CreateJob( filters, (AbstractDataSet *) image );
 
     client.Run();
   }

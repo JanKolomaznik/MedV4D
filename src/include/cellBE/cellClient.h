@@ -13,8 +13,9 @@ class CellClient
 public:
   CellClient();
 
-  ClientJob *
-    CreateJob(ClientJob::FilterVector &filters, DataSetProperties *props);
+  ClientJob *CreateJob(
+    M4D::Imaging::FilterVector &filters, 
+    M4D::Imaging::AbstractDataSet *dataSet);
 
   inline void Run( void) { m_io_service.run(); }
 
@@ -30,7 +31,7 @@ private:
    *	Returns string reference containing address of least loaded available
    *	server able doing specified job
    */
-  const std::string & FindAvailableServer( const ClientJob::FilterVector &filters);
+  const std::string & FindAvailableServer( const M4D::Imaging::FilterVector &filters);
 
 };
 

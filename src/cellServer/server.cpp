@@ -10,6 +10,8 @@
 using namespace M4D::CellBE;
 using boost::asio::ip::tcp;
 
+Pool<PrimaryJobHeader, 32> Server::m_headerPool;
+
 ///////////////////////////////////////////////////////////////////////
 
 Server::Server(boost::asio::io_service &io_service)
@@ -30,10 +32,6 @@ Server::Server(boost::asio::io_service &io_service)
     for( std::string::iterator it=str.begin(); it != str.end(); it++)
       m_pingStream << (uint8) *it;
   }
-
-  // free headers are all
-  for( uint32 i=0; i < HEADER_POOL_SIZE; i++)
-    m_freeHeaders.push_back( & m_headerPool[i]);
 
   // start server accepting
   Accept();
@@ -66,8 +64,7 @@ Server::EndAccepted( tcp::socket *clientSock,
 
     BasicSocket::HandleErrors( error);
 
-    PrimaryJobHeader *freeHeader = m_freeHeaders.back();
-    m_freeHeaders.pop_back();
+    PrimaryJobHeader *freeHeader = m_headerPool.GetFreeItem();
 
     clientSock->async_read_some(
       boost::asio::buffer( (uint8*)freeHeader, sizeof(PrimaryJobHeader) ),
@@ -139,7 +136,7 @@ Server::EndPrimaryHeaderRead( tcp::socket *clientSock, PrimaryJobHeader *header,
     }
 
     //return header into free ones
-    m_freeHeaders.push_back( header);
+    m_headerPool.PutFreeItem( header);
 
   } catch( ExceptionBase &) {
   }

@@ -6,6 +6,7 @@
 
 #include "serverJob.h"
 #include "jobManager.h"
+#include "cellBE/resourcePool.h"
 
 namespace M4D
 {
@@ -43,11 +44,7 @@ class Server
 
     NetStreamVector m_pingStream;
 
-#define HEADER_POOL_SIZE 32
-    PrimaryJobHeader m_headerPool[ HEADER_POOL_SIZE];
-
-    typedef std::vector< PrimaryJobHeader *> HeaderVect;
-    HeaderVect m_freeHeaders;
+    static Pool<PrimaryJobHeader, 32> m_headerPool;
     
 };
 

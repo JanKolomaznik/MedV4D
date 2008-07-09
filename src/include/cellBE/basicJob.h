@@ -2,12 +2,12 @@
 #define JOBBASE_H
 
 #include <vector>
-#include "filterProperties.h"
+#include "basicSocket.h"
+
+#include "../Imaging/filterProperties.h"
 #include "messageHeaders.h"
-#include "dataSetProperties.h"
 #include "resourcePool.h"
 
-#include "basicSocket.h"
 
 namespace M4D
 {
@@ -20,7 +20,6 @@ class BasicJob
   friend class Server;
 
 public:
-  typedef std::vector<FilterSetting *> FilterVector;
 
   PrimaryJobHeader primHeader;
   SecondaryJobHeader secHeader;
@@ -35,23 +34,12 @@ protected:
     PING
   };
 
-  FilterVector m_filters;
+  M4D::Imaging::FilterVector m_filters;
 
   void EndSend( const boost::system::error_code& e);
 
-  // pool for dataPeice headers //////////////////////////////////
-  Pool< DataPieceHeader, 32> freeHeaders;
-//#define MAX_PIECE_HEADERS 32
-//  static DataPieceHeader p_pieceHeaders[MAX_PIECE_HEADERS];
-//  typedef std::vector< DataPieceHeader *> FreeDataPieceVect;
-//  static FreeDataPieceVect p_freeDPHeaders;
-//
-//  static void InitDataPieceHeaders( void)
-//  {
-//    for( int i=0; i<MAX_PIECE_HEADERS; i++)
-//      p_freeDPHeaders.push_back( &p_pieceHeaders[i]);
-//  }
-  ////////////////////////////////////////////////////////////////
+  // pool for dataPeice headers
+  static Pool< DataPieceHeader, 32> freeHeaders;
 
 public:
 
@@ -80,7 +68,7 @@ public:
   void GetDataPiece( DataBuffs &bufs);
 
   //template<class T>
-  void GetDataPiece( DataBuff &buf);  
+  void GetDataPiece( DataBuff &buf);
 
   // callback def
   typedef void (*JobCallback)(void);

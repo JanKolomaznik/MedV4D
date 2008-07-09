@@ -17,7 +17,6 @@ private:
   ServerJob(boost::asio::io_service &service) : BasicJob(service) {}
 
   std::vector<uint8> m_filterSettingContent;
-  std::vector<FilterSetting *> filters;
 
   void DeserializeFilterSettings( void);
 
@@ -28,12 +27,6 @@ private:
   void EndJobSettingsRead( const boost::system::error_code& error);
   void EndReadDataPeiceHeader( const boost::system::error_code& error,
     DataPieceHeader *header);
-
-
-  void PutDataPiece( const DataBuffs &bufs);
-  void PutDataPiece( const DataBuff &buf);
-  void GetDataPiece( DataBuffs &bufs);
-  void GetDataPiece( DataBuff &buf);
 
 };
 

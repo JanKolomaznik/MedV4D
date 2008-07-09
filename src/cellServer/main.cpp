@@ -1,4 +1,5 @@
 
+#include "Common.h"
 #include "server.h"
 
 using namespace M4D::CellBE;

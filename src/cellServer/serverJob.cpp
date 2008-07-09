@@ -1,8 +1,9 @@
 
-
+#include "Common.h"
 #include "serverJob.h"
 
 using namespace M4D::CellBE;
+using namespace M4D::Imaging;
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -10,7 +11,7 @@ void
 ServerJob::DeserializeFilterSettings( void)
 {
   uint8 filterID;
-  FilterSetting *fs;
+  AbstractFilterSetting *fs;
 
   NetStreamArrayBuf s( &m_filterSettingContent[0], 
     m_filterSettingContent.size());
@@ -24,7 +25,7 @@ ServerJob::DeserializeFilterSettings( void)
       case Thresholding:
         fs = new ThresholdingSetting();
         fs->DeSerialize(s);
-        filters.push_back( fs);
+        m_filters.push_back( fs);
         break;
 
       default:
