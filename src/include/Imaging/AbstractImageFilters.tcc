@@ -69,9 +69,16 @@ ImageFilter< InputImageType, OutputImageType >
 	//TODO
 	PredecessorType::BeforeComputation( utype );	
 
-	in = &( this->GetInputImage() );
-	out = &( this->GetOutputImage() );
 }
+
+template< typename InputImageType, typename OutputImageType >
+void
+ImageFilter< InputImageType, OutputImageType >
+::PrepareOutputDatasets()
+{
+	PredecessorType::PrepareOutputDatasets();
+}
+
 
 template< typename InputImageType, typename OutputImageType >
 void
@@ -151,14 +158,14 @@ void
 IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 ::PrepareOutputDatasets()
 {
-	//TODO - improve
-	const Image< InputElementType, 3 > &in = this->GetInputImage();
+	PredecessorType::PrepareOutputDatasets();
+
 	size_t minimums[3];
 	size_t maximums[3];
 	float32 voxelExtents[3];
 
 	for( unsigned i=0; i < 3; ++i ) {
-		const DimensionExtents & dimExt = in.GetDimensionExtents( i );
+		const DimensionExtents & dimExt = this->in->GetDimensionExtents( i );
 
 		minimums[i] = dimExt.minimum;
 		maximums[i] = dimExt.maximum;
@@ -203,7 +210,7 @@ void
 ImageVolumeFilter< Image< InputElementType, 3 >, OutputImageType >
 ::PrepareOutputDatasets()
 {
-	//TODO
+	PredecessorType::PrepareOutputDatasets();
 }
 
 template< typename InputElementType, typename OutputImageType >
@@ -259,7 +266,7 @@ void
 ImageVolumeFilter< Image< InputElementType, 4 >, OutputImageType >
 ::PrepareOutputDatasets()
 {
-	//TODO
+	PredecessorType::PrepareOutputDatasets();
 }
 
 template< typename InputElementType, typename OutputImageType >

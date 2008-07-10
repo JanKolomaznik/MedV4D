@@ -1,8 +1,8 @@
 #ifndef DATASET_PROPERTIES_ABSTRACT_H
 #define DATASET_PROPERTIES_ABSTRACT_H
 
-#include "../cellBE/iSerializable.h"
-#include "dataSetTypeEnums.h"
+#include "cellBE/iSerializable.h"
+#include "Imaging/dataSetTypeEnums.h"
 
 namespace M4D
 {
@@ -73,3 +73,4 @@ struct Image3DProperties : public DataSetPropertiesTemplate<DATSET_IMAGE3D>
 }}
 
 #endif
+

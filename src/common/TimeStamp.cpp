@@ -6,7 +6,7 @@ namespace M4D
 namespace Common
 {
 
-//TODO locking
+const TimeStamp	DefaultTimeStamp;
 
 TimeStamp::TimeStamp()
 : _uniqueID( TimeStamp::GenerateUniqueID() ), _timeStamp( 1 )

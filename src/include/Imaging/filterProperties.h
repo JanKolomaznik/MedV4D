@@ -2,8 +2,8 @@
 #define FILTERID_HPP
 
 #include <vector>
-#include "../cellBE/iSerializable.h"
-#include "filterIDEnums.h"
+#include "cellBE/iSerializable.h"
+#include "Imaging/filterIDEnums.h"
 
 namespace M4D
 {
@@ -63,3 +63,4 @@ struct ThresholdingSetting : public FilterSettingTemplate<Thresholding>
 }
 }
 #endif
+

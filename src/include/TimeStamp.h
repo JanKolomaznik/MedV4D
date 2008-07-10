@@ -9,6 +9,8 @@ namespace M4D
 namespace Common
 {
 
+
+//TODO mutable
 class TimeStamp
 {
 public:
@@ -48,6 +50,7 @@ private:
 	Multithreading::Mutex	_accessLock;
 };
 
+extern const TimeStamp	DefaultTimeStamp;
 
 }/*namespace Common*/
 }/*namespace M4D*/

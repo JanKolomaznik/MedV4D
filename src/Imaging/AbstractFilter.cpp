@@ -154,7 +154,10 @@ MainExecutionThread::operator()()
 	//We want to do some steps before actual computing
 	_filter->BeforeComputation( _updateType );
 	
-	_filter->_outputPorts.SendMessage( MsgFilterStartModification::CreateMsg(), PipelineMessage::MSS_NORMAL );
+	_filter->_outputPorts.SendMessage( 
+			MsgFilterStartModification::CreateMsg( _updateType == AbstractPipeFilter::RECALCULATION ), 
+			PipelineMessage::MSS_NORMAL 
+			);
 
 
 	//Computation
@@ -175,11 +178,20 @@ MainExecutionThread::operator()()
 
 	if( _filter->ExecutionThreadMethod( _updateType ) ) {
 		//Send message about finished job	
-		_filter->_outputPorts.SendMessage( MsgFilterUpdated::CreateMsg(), PipelineMessage::MSS_NORMAL );
+		_filter->_outputPorts.SendMessage( 
+				MsgFilterUpdated::CreateMsg( _updateType == AbstractPipeFilter::RECALCULATION ), 
+				PipelineMessage::MSS_NORMAL 
+				);
 
 		_filter->AfterComputation( true );
 		_filter->CleanAfterSuccessfulRun();
 	} else {
+		//Send message about canceled job	
+		_filter->_outputPorts.SendMessage( 
+				MsgFilterExecutionCanceled::CreateMsg(), 
+				PipelineMessage::MSS_NORMAL 
+				);
+		
 		_filter->AfterComputation( false );
 
 		_filter->CleanAfterStoppedRun();
@@ -252,6 +264,8 @@ AbstractPipeFilter::ReceiveMessage(
 	case PMI_FILTER_START_MODIFICATION:
 		InputDatasetStartModificationMsgHandler( static_cast< MsgFilterStartModification * >( msg.get() ) );
 		break;
+	case PMI_FILTER_CANCELED:
+		InputDatasetComputationCanceledMsgHandler( static_cast< MsgFilterExecutionCanceled * >( msg.get() ) );
 	default:
 		//TODO	
 		break;
@@ -264,8 +278,19 @@ AbstractPipeFilter::InputDatasetUpdatedMsgHandler( MsgFilterUpdated *msg )
 	//TODO - improve
 	if( _invocationStyle == UIS_ON_UPDATE_FINISHED )
 	{
-		Execute();
+		if( msg->IsUpdatedWhole() ) {
+			ExecuteOnWhole();
+		} else {
+			Execute();
+		}
 	}
+}
+
+void
+AbstractPipeFilter::InputDatasetComputationCanceledMsgHandler( MsgFilterExecutionCanceled *msg )
+{
+	//TODO
+	StopExecution();
 }
 
 void
@@ -274,14 +299,17 @@ AbstractPipeFilter::InputDatasetStartModificationMsgHandler( MsgFilterStartModif
 	//TODO - improve
 	if( _invocationStyle == UIS_ON_CHANGE_BEGIN )
 	{
-		Execute();
+		if( msg->IsUpdatedWhole() ) {
+			ExecuteOnWhole();
+		} else {
+			Execute();
+		}
 	}
 }
 
  void
 AbstractPipeFilter::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
 {
-	//TODO - call only when needed
 	PrepareOutputDatasets();
 }
 

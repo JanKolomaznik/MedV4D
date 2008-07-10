@@ -39,14 +39,18 @@ public:
 	bool
 	IsModified()const;
 
-	ModificationState
+	virtual ModificationState
 	GetState()const;
 
-	const Common::TimeStamp &
+	Common::TimeStamp
 	GetTimeStamp()const
 		{ return _changeTimestamp; }
 
-	bool
+	const ModificationBBox &
+	GetBoundingBox()const
+		{ return *_boundingBox; }
+
+	virtual ModificationState
 	WaitWhileDirty();
 
 protected:
@@ -57,6 +61,8 @@ protected:
 	ModificationManager	*_manager;
 
 	ModificationBBox	*_boundingBox;
+	
+	mutable Multithreading::Mutex	_accessLock;
 };
 
 class WriterBBoxInterface : public ReaderBBoxInterface
@@ -66,7 +72,7 @@ public:
 		: ReaderBBoxInterface( timestamp, manager, boundingBox ) {}
 
 	void
-	SetState( ModificationState );
+	SetState( ModificationState state );
 
 	void
 	SetModified();
@@ -117,6 +123,9 @@ public:
 			first = _first[ dim ]; second = _second[ dim ]; 
 		}
 
+	bool
+	Incident( const ModificationBBox & bbox )const;
+
 protected:
 	ModificationBBox( unsigned dim, int *first, int *second )
 		:_dimension( dim ), _first( first ), _second( second ) {}
@@ -132,6 +141,7 @@ class ModificationManager
 public:
 	typedef std::list< WriterBBoxInterface * > 	ChangeQueue;
 	typedef ChangeQueue::iterator			ChangeIterator;
+	typedef ChangeQueue::reverse_iterator		ChangeReverseIterator;
 
 	ModificationManager();
 	
@@ -206,6 +216,12 @@ public:
 	ChangeIterator 
 	ChangesEnd();
 
+	ChangeReverseIterator 
+	ChangesReverseBegin();
+
+	ChangeReverseIterator 
+	ChangesReverseEnd();
+
 	void
 	Reset();
 private:
@@ -216,6 +232,20 @@ private:
 	ChangeQueue		_changes;
 
 	Multithreading::Mutex	_accessLock;
+};
+
+class ProxyReaderBBox: public ReaderBBoxInterface
+{
+public:
+	ProxyReaderBBox( Common::TimeStamp timestamp, ModificationManager* manager, ModificationBBox* boundingBox );
+
+	ModificationState
+	GetState()const;
+
+	ModificationState
+	WaitWhileDirty();
+protected:
+	ModificationManager::ChangeReverseIterator _changeIterator;
 };
 
 

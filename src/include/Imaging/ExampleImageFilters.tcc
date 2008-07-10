@@ -85,14 +85,14 @@ void
 ColumnMaxImageFilter< ElementType >
 ::PrepareOutputDatasets()
 {
-	//TODO - improve
-	const Image< ElementType, 3 > &in = this->GetInputImage();
+	PredecessorType::PrepareOutputDatasets();
+
 	size_t minimums[2];
 	size_t maximums[2];
 	float32 pixelExtents[2];
 
 	for( unsigned i=0; i < 2; ++i ) {
-		const DimensionExtents & dimExt = in.GetDimensionExtents( i );
+		const DimensionExtents & dimExt = this->in->GetDimensionExtents( i );
 
 		minimums[i] = dimExt.minimum;
 		maximums[i] = dimExt.maximum;
@@ -109,7 +109,9 @@ template< typename InputElementType >
 SimpleThresholdingImageFilter< Image< InputElementType, 3 > >
 ::SimpleThresholdingImageFilter()
 {
-
+	_intervalTop = 0;
+	_intervalBottom = 0;
+	_defaultValue = 0;
 }
 
 template< typename InputElementType >
@@ -130,7 +132,10 @@ SimpleThresholdingImageFilter< Image< InputElementType, 3 > >
 	}
 	for( size_t i = x1; i < x2; ++i ) {
 		for( size_t j = y1; j < y2; ++j ) {
-			out.GetElement( i, j, slice ) = in.GetElement( i, j, slice );
+			InputElementType val = in.GetElement( i, j, slice );
+			if( val > _intervalTop || val < _intervalBottom )
+				val = _defaultValue;
+			out.GetElement( i, j, slice ) = val;
 		}
 	}
 	return true;
@@ -143,7 +148,12 @@ template< typename InputElementType >
 SimpleConvolutionImageFilter< Image< InputElementType, 3 > >
 ::SimpleConvolutionImageFilter()
 {
+	_side = 5;
+	_matrix = new float[ _side * _side ];
 
+	for( unsigned i=0; i< _side*_side; ++i ) {
+		_matrix[i] = 1.0/( _side*_side );
+	}
 }
 
 template< typename InputElementType >
@@ -162,9 +172,17 @@ SimpleConvolutionImageFilter< Image< InputElementType, 3 > >
 	if( !this->CanContinue() ) { //Someone wants filter to stop.
 			return false;
 	}
-	for( size_t i = x1; i < x2; ++i ) {
-		for( size_t j = y1; j < y2; ++j ) {
-			out.GetElement( i, j, slice ) = in.GetElement( i, j, slice );
+	int hside = _side/2;
+	for( size_t i = x1 + hside; i < x2 - hside; ++i ) {
+		for( size_t j = y1 + hside; j < y2 - hside; ++j ) {
+			InputElementType pom = 0;
+			for( int mi = -hside; mi <= hside; ++ mi ) {
+				for( int mj = -hside; mj <= hside; ++ mj ) {
+					pom +=  in.GetElement( i+mi, j+mj, slice ) * 1.0/25.0/*_matrix[ (mi + hside)* _side + mj + hside ]*/;
+				}
+			}
+
+			out.GetElement( i, j, slice ) = pom;
 		}
 	}
 	return true;

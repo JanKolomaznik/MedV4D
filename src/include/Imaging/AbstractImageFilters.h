@@ -55,6 +55,9 @@ protected:
 	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
 
 	void
+	PrepareOutputDatasets();
+
+	void
 	AfterComputation( bool successful );
 
 

@@ -12,6 +12,7 @@ enum PipelineMsgID
 {
 	PMI_FILTER_UPDATED,
 	PMI_FILTER_START_MODIFICATION,
+	PMI_FILTER_CANCELED,
 
 	PMI_END_SYSMSG = 1000
 };
@@ -48,32 +49,59 @@ public:
 
 };
 
-class MsgFilterUpdated: public PipelineMessage
+class MsgFilterExecutionCanceled: public PipelineMessage
 {
 public:
-	MsgFilterUpdated(): PipelineMessage( PMI_FILTER_UPDATED ) 
+	MsgFilterExecutionCanceled(): PipelineMessage( PMI_FILTER_CANCELED )
 		{ /*empty*/ }
 
 	static PipelineMessage::Ptr
 	CreateMsg()
 	{
 		//TODO improve
-		return PipelineMessage::Ptr( new MsgFilterUpdated() );
+		return PipelineMessage::Ptr( new MsgFilterExecutionCanceled() );
 	}
+
+};
+
+class MsgFilterUpdated: public PipelineMessage
+{
+public:
+	MsgFilterUpdated( bool whole ): PipelineMessage( PMI_FILTER_UPDATED ), _whole( whole ) 
+		{ /*empty*/ }
+
+	static PipelineMessage::Ptr
+	CreateMsg( bool whole )
+	{
+		//TODO improve
+		return PipelineMessage::Ptr( new MsgFilterUpdated( whole ) );
+	}
+
+	bool
+	IsUpdatedWhole()const
+	{ return _whole; }
+protected:
+	bool	_whole;
 };
 
 class MsgFilterStartModification: public PipelineMessage
 {
 public:
-	MsgFilterStartModification(): PipelineMessage( PMI_FILTER_START_MODIFICATION ) 
+	MsgFilterStartModification( bool whole ): PipelineMessage( PMI_FILTER_START_MODIFICATION ), _whole( whole ) 
 		{ /*empty*/ }
 
 	static PipelineMessage::Ptr
-	CreateMsg()
+	CreateMsg( bool whole )
 	{
 		//TODO improve
-		return PipelineMessage::Ptr( new MsgFilterStartModification() );
+		return PipelineMessage::Ptr( new MsgFilterStartModification( whole ) );
 	}
+
+	bool
+	IsUpdatedWhole()const
+	{ return _whole; }
+protected:
+	bool	_whole;
 };
 
 class MessageSenderInterface

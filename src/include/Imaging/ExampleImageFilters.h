@@ -23,6 +23,8 @@ class CopyImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3
 : public IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 {
 public:
+	typedef typename  Imaging::IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > > PredecessorType;
+
 	CopyImageFilter();
 	~CopyImageFilter(){}
 
@@ -49,6 +51,8 @@ class ColumnMaxImageFilter
 : public ImageVolumeFilter< Image< ElementType, 3 >, Image< ElementType, 2 > >
 {
 public:
+	typedef typename Imaging::ImageVolumeFilter< Image< ElementType, 3 >, Image< ElementType, 2 > > PredecessorType;
+
 	ColumnMaxImageFilter();
 	~ColumnMaxImageFilter(){}
 
@@ -82,8 +86,11 @@ class SimpleThresholdingImageFilter< Image< InputElementType, 3 > >
 : public IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
 {
 public:
+	typedef typename Imaging::IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
+
 	SimpleThresholdingImageFilter();
 	~SimpleThresholdingImageFilter(){}
+	
 
 protected:
 	bool
@@ -96,6 +103,10 @@ protected:
 			size_t			y2,	
 			size_t			slice
 		    );
+
+	InputElementType	_intervalBottom;
+	InputElementType	_intervalTop;
+	InputElementType	_defaultValue;
 private:
 	/**
 	 * Prohibition of copying.
@@ -111,8 +122,10 @@ class SimpleConvolutionImageFilter< Image< InputElementType, 3 > >
 : public IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
 {
 public:
+	typedef typename Imaging::IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
+
 	SimpleConvolutionImageFilter();
-	~SimpleConvolutionImageFilter(){}
+	~SimpleConvolutionImageFilter(){ delete _matrix; }
 
 protected:
 	bool
@@ -125,6 +138,10 @@ protected:
 			size_t			y2,	
 			size_t			slice
 		    );
+
+	
+	float		*_matrix;
+	unsigned	_side;
 private:
 	/**
 	 * Prohibition of copying.

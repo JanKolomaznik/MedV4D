@@ -2,6 +2,9 @@
 
 #include "Functors.h"
 #include <algorithm>
+#include <cstdlib>
+
+using namespace std;
 
 namespace M4D
 {
@@ -12,6 +15,88 @@ namespace Imaging
 ReaderBBoxInterface::~ReaderBBoxInterface()
 { 
 	delete _boundingBox; 
+}
+
+bool
+ReaderBBoxInterface::IsDirty()const
+{
+	return GetState() == MS_DIRTY;
+}
+
+bool
+ReaderBBoxInterface::IsModified()const
+{
+	return GetState() == MS_MODIFIED;
+}
+
+ModificationState
+ReaderBBoxInterface::GetState()const
+{
+	return _state;
+}
+
+ModificationState
+ReaderBBoxInterface::WaitWhileDirty()
+{
+	while( 1 ){
+		Multithreading::ScopedLock lock( _accessLock );
+		if( _state == MS_DIRTY ) {
+		//TODO - sleep
+
+		} else {
+			return _state;
+		}
+	}
+}
+
+ProxyReaderBBox::ProxyReaderBBox( Common::TimeStamp timestamp, ModificationManager* manager, ModificationBBox* boundingBox )
+	: ReaderBBoxInterface( timestamp, manager, boundingBox ) 
+{
+	_changeIterator = _manager->ChangesReverseBegin();
+}
+
+ModificationState
+ProxyReaderBBox::GetState()const
+{
+	while( _changeIterator != _manager->ChangesReverseEnd() 
+		&& (*_changeIterator)->GetTimeStamp() >= _changeTimestamp ) 
+	{
+		ModificationState state = (*_changeIterator)->GetState();
+		if( state != MS_MODIFIED 
+			&& _boundingBox->Incident( (*_changeIterator)->GetBoundingBox() ) )
+		{
+			return state;
+		}
+		
+	}
+	return MS_MODIFIED;
+}
+
+ModificationState
+ProxyReaderBBox::WaitWhileDirty()
+{
+	ModificationState state = MS_MODIFIED;
+	//We check if previous wait - finished in MS_MODIFIED state (not in canceled), and
+	//actual bounding box has state dirty.
+	while( ( state == MS_MODIFIED ) && ( ( state = GetState() ) == MS_DIRTY ) ) {
+		state = (*_changeIterator)->WaitWhileDirty();
+	}
+	return state;
+}
+
+
+void
+WriterBBoxInterface::SetState( ModificationState state )
+{
+	Multithreading::ScopedLock lock( _accessLock );
+
+	_state = state;
+}
+
+void
+WriterBBoxInterface::SetModified()
+{
+	SetState( MS_MODIFIED );
 }
 
 //******************************************************************************
@@ -81,6 +166,20 @@ ModificationBBox::ModificationBBox(
 	_second[3] = t2;
 }
 
+bool
+ModificationBBox::Incident( const ModificationBBox & bbox )const
+{
+	//We compare only in dimensions available for both boxes
+	unsigned dim = min( _dimension, bbox._dimension );
+	bool result = true;
+
+	for( unsigned d = 0; d < dim; ++d ) {
+		result = result && ( min( _first[d], _second[d] ) < max( bbox._first[d], bbox._second[d] ) ) 
+			&& ( max( _first[d], _second[d] ) > min( bbox._first[d], bbox._second[d] ) );
+	}
+
+	return result;
+}
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
@@ -216,6 +315,24 @@ ModificationManager::ChangesEnd()
 	Multithreading::ScopedLock lock( _accessLock );
 
 	return _changes.end();
+}
+
+ModificationManager::ChangeReverseIterator 
+ModificationManager::ChangesReverseBegin()
+{
+	//TODO
+	Multithreading::ScopedLock lock( _accessLock );
+
+	return _changes.rbegin();
+}
+
+ModificationManager::ChangeReverseIterator 
+ModificationManager::ChangesReverseEnd()
+{
+	//TODO
+	Multithreading::ScopedLock lock( _accessLock );
+
+	return _changes.rend();
 }
 
 void

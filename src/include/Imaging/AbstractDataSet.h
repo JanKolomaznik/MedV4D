@@ -3,8 +3,8 @@
 
 #include <boost/shared_ptr.hpp>
 #include "TimeStamp.h"
-#include "dataSetProperties.h"
-#include "../cellBE/basicJob.h"
+#include "Imaging/dataSetProperties.h"
+#include "cellBE/basicJob.h"
 
 namespace M4D
 {
