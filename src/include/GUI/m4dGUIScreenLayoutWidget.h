@@ -28,6 +28,10 @@ class m4dGUIScreenLayoutWidget: public QWidget
                                QDialog *screenLayoutDialog, QWidget *parent = 0 );
 
   private slots:
+    void seriesLayoutChanged ();
+    void imageLayoutChanged ();
+    void seriesApply ();
+    void imageApply ();
     void accept ();
 
   private:
@@ -35,17 +39,19 @@ class m4dGUIScreenLayoutWidget: public QWidget
      * Creates Layout GroupBox - with buttons for various layouts and custom settings.
      * ...
      */
-    QGroupBox *createLayoutGroupBox ( const QString &title, QToolButton **toolButtons,
-                                      QSpinBox *rowSpinBox, QSpinBox *columnSpinBox,
-                                      const int rowValue, const int columnValue );
+    QGroupBox *createLayoutGroupBox ( const QString &title, QToolButton ***toolButtons,
+                                      QSpinBox **rowSpinBox, QSpinBox **columnSpinBox,
+                                      const int rowValue, const int columnValue,
+                                      const char *layoutChangedMember, const char *applyMember );
 
-    QToolButton *createToolButton ( const QIcon &icon );
+    QToolButton *createToolButton ( const QIcon &icon, const char *member );
     QSpinBox    *createSpinBox ( const int value );
 
     /// pointer to the Screen Layout Dialog - to close it after clicking Ok
     QDialog *screenLayoutDialog;
 
     static const char *layoutIconNames[];
+    static const int layoutDimensions[][2];
 
     // layout buttons
     QToolButton **seriesLayoutToolButtons;
