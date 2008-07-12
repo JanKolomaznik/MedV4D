@@ -23,6 +23,13 @@ private:
 	std::string	_name;
 };
 
+class ENotFinished: public ExceptionBase
+{
+public:
+	ENotFinished( std::string name ) throw() : ExceptionBase( name ) {}
+};
+
+
 class ExceptionWrongPointer: public ExceptionBase
 {
 public:

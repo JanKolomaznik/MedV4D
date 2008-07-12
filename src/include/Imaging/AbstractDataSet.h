@@ -51,6 +51,34 @@ public:
 		return boost::static_pointer_cast< AbstractDataSet >( dataset );
 	}
 
+	bool 
+	TryLockDataset();
+
+	void
+	UnlockDataset();
+
+	/**
+	 * If user already has normal lock - he can ask for upgrade to Exclusive lock.
+	 **/
+	void
+	UpgradeToExclusiveLock();
+
+	/**
+	 * User can downgrade exclusive lock to normal lock without worrying that
+	 * someone else will get exclusive access first.
+	 **/
+	void
+	DowngradeFromExclusiveLock();
+
+	bool
+	TryExclusiveLockDataset();
+
+	void
+	ExclusiveLockDataset();
+
+	void
+	ExclusiveUnlockDataset();
+
   /**
    *  Properties of dataset. Used to sending to server.
    *  This is pointer to base abstract properties class.

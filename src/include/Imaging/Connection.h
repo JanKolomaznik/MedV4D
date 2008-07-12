@@ -72,11 +72,34 @@ public:
 		PipelineMessage::MessageSendStyle 	sendStyle 
 		){ /*empty*/ }
 
-	bool 
-	LockDataset();
 
-	void
-	UnlockDataset();
+	/**
+	 * Method, which try to lock dataset controled by this connection for 
+	 * reading or editing information contained in it - this lock synchronize only
+	 * with structure editing. 
+	 * Only situation when this method fail (return false) is, when dataset
+	 * is locked for structure edit.
+	 * \return False if unsuccessfull.
+	 **/
+	virtual bool 
+	TryLockDataset() = 0;
+
+	/**
+	 * Method which remove one lock from dataset.
+	 **/
+	virtual void
+	UnlockDataset() = 0;
+
+	/**
+	 * Method try to lock dataset exclusively - TryLockDataset() will fail.
+	 * \return False if unsuccessfull.
+	 **/
+	virtual bool
+	TryExclusiveLockDataset() = 0;
+
+	virtual void
+	ExclusiveUnlockDataset() = 0;
+
 protected:
 
 private:

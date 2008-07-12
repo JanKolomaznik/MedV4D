@@ -6,6 +6,12 @@ namespace M4D
 namespace Imaging
 {
 
+ConnectionInterface *CreateConnectionObjectFromPorts( outPort, inPort )
+{
+	//TODO
+	return NULL;
+}
+
 Pipeline()
 {
 		//TODO
@@ -51,14 +57,20 @@ Pipeline::MakeConnection( OutputPort& outPort, InputPort& inPort )
 		//TODO throw exception
 	}
 
+	ConnectionInterface *connection = NULL;
 	//if outPort is connected, we use already created Conncetion, otherwise we 
 	//have to create new one.
 	if( outPort.IsPlugged() ) {
-		//TODO
+		//TODO -check
+		connection = outPort.GetConnection();
 	} else {
 
 		//TODO
+		connection = CreateConnectionObjectFromPorts( outPort, inPort );
 	}
+
+	connection->ConnectConsumer( inPort );
+	connection->ConnectProducer( outPort );
 }
 
 

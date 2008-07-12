@@ -52,6 +52,7 @@ public:
 	
 	virtual void
 	Plug( ConnectionInterface & connection ) = 0;	
+
 	/**
 	 * Method to unplug port from connection object - if already 
 	 * disconnected do nothing.
@@ -88,7 +89,9 @@ private:
 	GenerateUniqueID();
 
 	uint64	_id;
-
+	/**
+	 * Pointer to object which will obtain messages received by port.
+	 **/
 	MessageReceiverInterface	*_msgReceiver;	
 };
 class Port::EConnectionTypeMismatch
@@ -149,6 +152,9 @@ class OutputPort: public Port
 public:
 	virtual
 	~OutputPort() {}
+
+	virtual ConnectionInterface *
+	GetConnection()const = 0;
 
 	virtual bool 
 	GetDatasetWriteLock();
@@ -266,6 +272,10 @@ public:
 
 	void
 	Plug( ConnectionInterface & connection );
+
+	ConnectionInterface *
+	GetConnection()const
+		{ return _imageConnection; }
 
 	/*void
 	PlugTyped( ImageConnection< ImageType > & connection );*/
