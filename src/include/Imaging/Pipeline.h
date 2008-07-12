@@ -36,7 +36,7 @@ public:
 	MakeConnection( OutputPort& outPort, InputPort& inPort );
 protected:
 	typedef std::vector< AbstractPipeFilter * > FilterVector;
-	typedef std::vector< Connection * > ConnectionVector;
+	typedef std::vector< ConnectionInterface * > ConnectionVector;
 
 	FilterVector		_filters;
 	ConnectionVector	_connections;

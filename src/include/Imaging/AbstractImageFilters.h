@@ -8,6 +8,7 @@
 #include "Imaging/ImageFactory.h"
 #include "Imaging/AbstractFilter.h"
 
+#include <vector>
 
 namespace M4D
 {
@@ -83,7 +84,7 @@ class ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 public:
 	typedef typename Imaging::ImageFilter< Image< InputElementType, 3 >, OutputImageType >	PredecessorType;
 
-	ImageSliceFilter();
+	ImageSliceFilter( unsigned neighbourCount, unsigned grouping );
 	~ImageSliceFilter() {}
 
 	void
@@ -93,7 +94,31 @@ public:
 	unsigned
 	GetComputationNeighbourhood()
 		{ return _sliceComputationNeighbourCount; }
+
+	void
+	SetComputationGrouping( unsigned count )
+		{ 
+			if( count > 0 ) {
+				_computationGrouping = count; 
+			}else {
+		       		//TODO - exception
+			}	
+		}
+
+	unsigned
+	GetComputationGrouping()
+		{ return _computationGrouping; }
 protected:
+	struct ComputationRecord
+	{
+		ReaderBBoxInterface::Ptr	inputBBox;
+		WriterBBoxInterface		*writerBBox;
+		int32				firstSlice;
+		int32				lastSlice;
+	};
+
+	typedef std::vector< ComputationRecord >	ComputationGroupList;
+
 	/**
 	 * This method should be overridden in successor. It is supposed to
 	 * do calculation over one slice of input.
@@ -117,6 +142,9 @@ protected:
 			size_t					slice
 		    ) = 0;
 
+	virtual WriterBBoxInterface *
+	GetComputationGroupWriterBBox( ComputationRecord & record ) = 0;
+
 	bool
 	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
 
@@ -130,6 +158,14 @@ protected:
 	 **/
 	unsigned	_sliceComputationNeighbourCount;
 
+	/**
+	 * How many slices will be put into one computation sequence.
+	 **/
+	unsigned	_computationGrouping;
+
+	
+
+	ComputationGroupList		_actualComputationGroups;
 private:
 	/**
 	 * Prohibition of copying.
@@ -151,7 +187,7 @@ class IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< Out
 public:
 	typedef typename Imaging::ImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >	PredecessorType;
 
-	IdenticalExtentsImageSliceFilter();
+	IdenticalExtentsImageSliceFilter( unsigned neighbourCount, unsigned grouping );
 	~IdenticalExtentsImageSliceFilter() {}
 
 protected:

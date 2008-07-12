@@ -23,7 +23,7 @@ Pipeline()
 	std::for_each(
 		_connections.begin(), 
 		_connections.end(), 
-		M4D::Functors::Deletor< Connection* > 
+		M4D::Functors::Deletor< ConnectionInterface* > 
 		);
 
 	std::for_each(
@@ -67,6 +67,8 @@ Pipeline::MakeConnection( OutputPort& outPort, InputPort& inPort )
 
 		//TODO
 		connection = CreateConnectionObjectFromPorts( outPort, inPort );
+		//Newly created connection will be stored.
+		_connections.push_back( connection );
 	}
 
 	connection->ConnectConsumer( inPort );
