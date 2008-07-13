@@ -75,8 +75,8 @@ signals:
     virtual void signalAdjustContrast( int amount );
     virtual void signalNewPoint( int x, int y, int z );
     virtual void signalNewShape( int x, int y, int z );
-    virtual void signalDeletePoint( int x, int y, int z );
-    virtual void signalDeleteShape( int x, int y, int z );
+    virtual void signalDeletePoint();
+    virtual void signalDeleteShape();
     virtual void signalRotateAxisX( int x );
     virtual void signalRotateAxisY( int y );
     virtual void signalRotateAxisZ( int z );
