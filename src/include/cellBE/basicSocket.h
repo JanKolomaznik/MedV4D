@@ -24,6 +24,9 @@ public :
 };
 
 //////////////////////////////////////////////////
+/**
+ *  Base class containing network functionality. Used BOOST::Asio for asynchronous networking and scatter gather.
+ */
 class BasicSocket
 {
   friend class Server;
@@ -33,7 +36,9 @@ protected:
 
   BasicSocket(boost::asio::io_service &service) : m_socket(service) {}
 
-  // unified handling network errors.
+  /**
+   *  Unified handling of network errors.
+   */
   static void HandleErrors( boost::system::error_code error)
   {
     if( error)

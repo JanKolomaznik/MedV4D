@@ -21,29 +21,31 @@ private:
 
  /** 
 	* Represents all neccessary informations for DICOM
-	* network association establishing
+	* network association establishing.
 	*/
-	typedef struct s_DICOMAddress {
-		string callingAPTitle;
-		string calledDBName;
-		string calledServerName;
-		int calledServerPort;
-		string transferModel;
+	struct DICOMAddress 
+  {
+		string callingAPTitle;    /// our AE Title
+		string calledDBName;      /// DB whose data we want to retrieve 
+		string calledServerName;  /// DNS name (or IP)
+		int calledServerPort;     /// port where server runs
+		string transferModel;     /// transfer model of transmission
+    /// trasfer syntax (data format) little/big endian, JPEG formatted, ...
 		E_TransferSyntax transferSyntax;
-	} DICOMAddress;
-
+	};
 
 	typedef map<string, DICOMAddress *> AddressContainer;
 
 	//-----------------------------------
 
+  // pointer to DCMTK objects
 	T_ASC_Association *m_assoc;
 	DICOMAddress *m_assocAddr;
 	T_ASC_Parameters *m_assocParams;
 
 	void AddPresentationContext(T_ASC_Parameters *params);
 	
-	// addresses stuff
+	// addresses stuff. Shared between all instances
 	static AddressContainer addressContainer;
 
   // supports for loading config.cfg file that contain addresses

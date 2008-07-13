@@ -5,7 +5,8 @@
 // as well as DCMToolkit dataset headers
 
 /**
- * Retrive data that are displayed in searching table from dataSet
+ * Retrive data that are displayed in searching table from dataSet. 
+ * Called from search services to fill table row.
  */
 static void GetTableRowFromDataSet( 
    DcmDataset *ds, DcmProvider::TableRow *row)

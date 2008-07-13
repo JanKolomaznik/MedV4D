@@ -8,6 +8,9 @@ namespace M4D
 namespace CellBE
 {
 
+/**
+ *  Advances BasicSocket functionality for connecting ability
+ */
 class ClientSocket
   : public BasicJob
 {

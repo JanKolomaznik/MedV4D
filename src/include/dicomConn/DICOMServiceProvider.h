@@ -7,8 +7,8 @@
 #include <boost/shared_ptr.hpp>
 
 /**
- *	This class is gate to DICOM world. DICOM is a standard describing creating, storing, manipulating and many more actions taken on medical data. For more informations see (http://www.dclunie.com/dicom-status/status.html).
- *
+ *	This class is gate to DICOM world. DICOM is a standard describing creating, storing, manipulating and many more actions taken on medical data. For full description informations see (http://www.dclunie.com/dicom-status/status.html).
+ *  That data are normally stored on DICOM server. There are many implementations of that server. Most common is PACS server. DICOM server implements searching, moving, storing functionalities. 
  *	This class provides following DICOM operations to upper layers: C-FIND, C-MOVE, C-STORE through function members that reflect most commonly taken tasks.
  */
 

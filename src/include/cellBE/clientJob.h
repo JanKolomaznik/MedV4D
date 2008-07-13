@@ -9,6 +9,9 @@ namespace M4D
 namespace CellBE
 {
 
+/**
+ *  Client side job class. Advances functionality for ID generation.
+ */
 class ClientJob
   : public ClientSocket
 {

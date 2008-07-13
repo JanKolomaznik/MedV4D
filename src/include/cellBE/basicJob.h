@@ -13,7 +13,9 @@ namespace M4D
 {
 namespace CellBE
 {
-
+/**
+ *  Base class for job. Contains common parts for client side even server side. 
+ */
 class BasicJob
   : public BasicSocket
 {
@@ -21,12 +23,17 @@ class BasicJob
 
 public:
 
+  // header struct used for sending headers
   PrimaryJobHeader primHeader;
   SecondaryJobHeader secHeader;
 
 protected:
+  // ctor
   BasicJob(boost::asio::io_service &service);
 
+  /**
+   *  Definition of basic action IDs.
+   */
   enum Action {
     CREATE,
     REEXEC,
@@ -34,6 +41,7 @@ protected:
     PING
   };
 
+  // filter setting vector
   M4D::Imaging::FilterVector m_filters;
 
   void EndSend( const boost::system::error_code& e);
