@@ -32,8 +32,8 @@ public:
 	 * @param outPort Reference to output port of some filter.
 	 * @param inPort Reference to input port of some filter.
 	 **/
-	Connection &
-	MakeConnection( OutputPort& outPort, InputPort& inPort );
+	ConnectionInterface &
+	MakeConnection( M4D::Imaging::OutputPort& outPort, M4D::Imaging::InputPort& inPort );
 protected:
 	typedef std::vector< AbstractPipeFilter * > FilterVector;
 	typedef std::vector< ConnectionInterface * > ConnectionVector;

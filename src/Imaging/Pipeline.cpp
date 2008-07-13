@@ -1,35 +1,37 @@
 #include "Imaging/Pipeline.h"
 #include <algorithm>
+#include "Functors.h"
 
 namespace M4D
 {
 namespace Imaging
 {
 
-ConnectionInterface *CreateConnectionObjectFromPorts( outPort, inPort )
+ConnectionInterface *
+CreateConnectionObjectFromPorts( OutputPort& outPort, InputPort& inPort )
 {
 	//TODO
 	return NULL;
 }
 
-Pipeline()
+Pipeline::Pipeline()
 {
 		//TODO
 
 }
 
-~Pipeline()
+Pipeline::~Pipeline()
 {
 	std::for_each(
 		_connections.begin(), 
 		_connections.end(), 
-		M4D::Functors::Deletor< ConnectionInterface* > 
+		M4D::Functors::Deletor< ConnectionInterface* >() 
 		);
 
 	std::for_each(
 		_filters.begin(), 
 		_filters.end(), 
-		M4D::Functors::Deletor< AbstractPipeFilter* > 
+		M4D::Functors::Deletor< AbstractPipeFilter* >() 
 		);
 }
 
@@ -49,8 +51,8 @@ Pipeline::FillingFinished()
 		//TODO
 }
 
-Connection &
-Pipeline::MakeConnection( OutputPort& outPort, InputPort& inPort )
+ConnectionInterface &
+Pipeline::MakeConnection( M4D::Imaging::OutputPort& outPort, M4D::Imaging::InputPort& inPort )
 {
 	//if inPort occupied - error. Connection concept is designed only one to many.
 	if( inPort.IsPlugged() ) {
@@ -73,6 +75,8 @@ Pipeline::MakeConnection( OutputPort& outPort, InputPort& inPort )
 
 	connection->ConnectConsumer( inPort );
 	connection->ConnectProducer( outPort );
+
+	return *connection;
 }
 
 

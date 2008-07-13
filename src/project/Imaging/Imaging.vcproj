@@ -136,6 +136,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\..\Imaging\AbstractDataSet.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\AbstractFilter.cpp"
 				>
 			</File>
@@ -161,6 +165,10 @@
 			</File>
 			<File
 				RelativePath="..\..\Imaging\ModificationManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\Pipeline.cpp"
 				>
 			</File>
 			<File
@@ -251,6 +259,10 @@
 			</File>
 			<File
 				RelativePath="..\..\include\Imaging\ModificationManager.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\Imaging\Pipeline.h"
 				>
 			</File>
 			<File
