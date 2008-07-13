@@ -57,7 +57,7 @@ void
 m4dSliceViewerWidget::setInputPort( Imaging::ImageConnection< Imaging::Image< uint32, 3 > >& conn )
 {
     conn.ConnectConsumer( _inPort );
-    setColorMode( RGBA_UNSIGNED_BYTE );
+    setColorMode( rgba_unsigned_byte );
     setParameters();
 }
 
@@ -65,7 +65,7 @@ void
 m4dSliceViewerWidget::setInputPort( Imaging::ImageConnection< Imaging::Image< uint16, 3 > >& conn )
 {
     conn.ConnectConsumer( _inPort );
-    setColorMode( GRAYSCALE_UNSIGNED_SHORT );
+    setColorMode( grayscale_unsigned_short );
     setParameters();
 }
 
@@ -73,7 +73,7 @@ void
 m4dSliceViewerWidget::setInputPort( Imaging::ImageConnection< Imaging::Image< uint8, 3 > >& conn )
 {
     conn.ConnectConsumer( _inPort );
-    setColorMode( GRAYSCALE_UNSIGNED_BYTE );
+    setColorMode( grayscale_unsigned_byte );
     setParameters();
 }
 
@@ -89,9 +89,9 @@ m4dSliceViewerWidget::setParameters()
     _selectionMode = false;
     _printShapeData = false;
     _availableSlots = SETBUTTONHANDLERS | SETSELECTHANDLERS | SETSELECTIONMODE | SETCOLORMODE | SETSLICENUM | ZOOM | MOVEH | MOVEV | ADJUSTBRIGHTNESS | ADJUSTCONTRAST | NEWPOINT | NEWSHAPE | DELETEPOINT | DELETESHAPE;
-    ButtonHandlers bh[] = { NONE_BUTTON, ZOOM, MOVE_H, MOVE_V, ADJUST_C, ADJUST_B };
+    ButtonHandlers bh[] = { none_button, zoom, move_h, move_v, adjust_c, adjust_b };
     setButtonHandlers( bh );
-    SelectHandlers ch[] = { NEW_POINT, DELETE_POINT, NEW_SHAPE, DELETE_SHAPE };
+    SelectHandlers ch[] = { new_point, delete_point, new_shape, delete_shape };
     setSelectHandlers( ch );
 }
 
@@ -109,27 +109,27 @@ m4dSliceViewerWidget::setButtonHandlers( ButtonHandlers* hnd )
     {
         switch (hnd[i])
         {
-            case NONE_BUTTON:
+            case none_button:
 	    _buttonMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::none;
 	    break;
 
-	    case ZOOM:
+	    case zoom:
 	    _buttonMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::zoomImage;
 	    break;
 
-	    case MOVE_H:
+	    case move_h:
 	    _buttonMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::moveImageH;
 	    break;
 
-	    case MOVE_V:
+	    case move_v:
 	    _buttonMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::moveImageV;
 	    break;
 
-	    case ADJUST_C:
+	    case adjust_c:
 	    _buttonMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::adjustContrast;
 	    break;
 
-	    case ADJUST_B:
+	    case adjust_b:
 	    _buttonMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::adjustBrightness;
 	    break;
 	}
@@ -144,23 +144,23 @@ m4dSliceViewerWidget::setSelectHandlers( SelectHandlers* hnd )
     {
         switch (hnd[i])
         {
-            case NONE_SELECT:
+            case none_select:
 	    _selectMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::nonePos;
 	    break;
 
-	    case NEW_POINT:
+	    case new_point:
 	    _selectMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::newPoint;
 	    break;
 
-	    case NEW_SHAPE:
+	    case new_shape:
 	    _selectMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::newShape;
 	    break;
 
-	    case DELETE_POINT:
+	    case delete_point:
 	    _selectMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::deletePoint;
 	    break;
 
-	    case DELETE_SHAPE:
+	    case delete_shape:
 	    _selectMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::deleteShape;
 	    break;
 	}
@@ -184,7 +184,7 @@ m4dSliceViewerWidget::paintGL()
     GLfloat avg = 0.0;
     switch ( _colorMode )
     {
-        case RGBA_UNSIGNED_BYTE:
+        case rgba_unsigned_byte:
 	{
 	    maxvalue = 255.;
 	    const uint8* pixel = (const uint8*)Imaging::Image< uint32, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
@@ -211,7 +211,7 @@ m4dSliceViewerWidget::paintGL()
 	}
 	break;
 
-        case GRAYSCALE_UNSIGNED_BYTE:
+        case grayscale_unsigned_byte:
 	{    
 	    maxvalue = 255.;
 	    const uint8* pixel = Imaging::Image< uint8, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
@@ -238,7 +238,7 @@ m4dSliceViewerWidget::paintGL()
 	}
 	break;
 
-        case GRAYSCALE_UNSIGNED_SHORT:
+        case grayscale_unsigned_short:
 	{
 	    maxvalue = 65535.;
 	    const uint16* pixel = Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
@@ -616,7 +616,7 @@ m4dSliceViewerWidget::slotSetButtonHandlers( ButtonHandlers* hnd )
 void
 m4dSliceViewerWidget::slotSetSelectHandlers( SelectHandlers* hnd )
 {
-    setSelectHandlers( SelectHandlers* hnd );
+    setSelectHandlers( hnd );
 }
 
 void
@@ -689,6 +689,21 @@ void
 m4dSliceViewerWidget::slotDeleteShape()
 {
     deleteShape( 0, 0, 0 );
+}
+
+void
+m4dSliceViewerWidget::slotRotateAxisX( int x )
+{
+}
+
+void
+m4dSliceViewerWidget::slotRotateAxisY( int y )
+{
+}
+
+void
+m4dSliceViewerWidget::slotRotateAxisZ( int z )
+{
 }
 
 } /*namespace Viewer*/

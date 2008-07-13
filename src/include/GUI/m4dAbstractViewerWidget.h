@@ -1,6 +1,9 @@
 #ifndef _M4DABSTRACTVIEWERWIDGET_H
 #define _M4DABSTRACTVIEWERWIDGET_H
 
+#include "Common.h"
+#include <QObject>
+
 #define  SETBUTTONHANDLERS	1
 #define  SETSELECTHANDLERS	2
 #define  SETSELECTIONMODE	4
@@ -24,16 +27,19 @@ namespace M4D
 namespace Viewer
 {
 
-class m4dAbstractViewerWidget
+class m4dAbstractViewerWidget : public QObject
 {
     Q_OBJECT
 
 public:
-    typedef enum { NONE_BUTTON, ZOOM, MOVE_H, MOVE_V, ADJUST_B, ADJUST_C } ButtonHandlers;
-    typedef enum { NONE_SELECT, NEW_POINT, NEW_SHAPE, DELETE_POINT, DELETE_SHAPE } SelectHandlers;
-    typedef enum { RGBA_UNSIGNED_BYTE, 	GRAYSCALE_UNSIGNED_BYTE, GRAYSCALE_UNSIGNED_SHORT } ColorMode;
+    m4dAbstractViewerWidget() { }
+    virtual ~m4dAbstractViewerWidget() { }
+    
+    typedef enum { none_button, zoom, move_h, move_v, adjust_b, adjust_c } ButtonHandlers;
+    typedef enum { none_select, new_point, new_shape, delete_point, delete_shape } SelectHandlers;
+    typedef enum { rgba_unsigned_byte, grayscale_unsigned_byte, grayscale_unsigned_short } ColorMode;
 
-    typedef AvailableSlots uint64;
+    typedef long int AvailableSlots;
 
     virtual AvailableSlots getAvailableSlots()=0;
 
@@ -57,23 +63,23 @@ public slots:
     virtual void slotRotateAxisZ( int z )=0;
 
 signals:
-    void slotSetButtonHandlers( ButtonHandlers* hnd );
-    void slotSetSelectHandlers( SelectHandlers* hnd );
-    void slotSetSelectionMode( bool mode );
-    void slotSetColorMode( ColorMode cm );
-    void slotSetSliceNum( size_t num );
-    void slotZoom( int amount );
-    void slotMoveH( int amount );
-    void slotMoveV( int amount );
-    void slotAdjustBrightness( int amount );
-    void slotAdjustContrast( int amount );
-    void slotNewPoint( int x, int y, int z );
-    void slotNewShape( int x, int y, int z );
-    void slotDeletePoint( int x, int y, int z );
-    void slotDeleteShape( int x, int y, int z );
-    void slotRotateAxisX( int x );
-    void slotRotateAxisY( int y );
-    void slotRotateAxisZ( int z );
+    virtual void signalSetButtonHandlers( ButtonHandlers* hnd );
+    virtual void signalSetSelectHandlers( SelectHandlers* hnd );
+    virtual void signalSetSelectionMode( bool mode );
+    virtual void signalSetColorMode( ColorMode cm );
+    virtual void signalSetSliceNum( size_t num );
+    virtual void signalZoom( int amount );
+    virtual void signalMoveH( int amount );
+    virtual void signalMoveV( int amount );
+    virtual void signalAdjustBrightness( int amount );
+    virtual void signalAdjustContrast( int amount );
+    virtual void signalNewPoint( int x, int y, int z );
+    virtual void signalNewShape( int x, int y, int z );
+    virtual void signalDeletePoint( int x, int y, int z );
+    virtual void signalDeleteShape( int x, int y, int z );
+    virtual void signalRotateAxisX( int x );
+    virtual void signalRotateAxisY( int y );
+    virtual void signalRotateAxisZ( int z );
 
 };
 

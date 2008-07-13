@@ -19,7 +19,7 @@ namespace M4D
 namespace Viewer
 {
 
-class m4dSliceViewerWidget : public m4dAbstractViewerWidget, QGLWidget
+class m4dSliceViewerWidget : public m4dAbstractViewerWidget, public QGLWidget
 {
     Q_OBJECT
 
@@ -58,25 +58,6 @@ public slots:
     virtual void slotRotateAxisX( int x );
     virtual void slotRotateAxisY( int y );
     virtual void slotRotateAxisZ( int z );
-
-signals:
-    void slotSetButtonHandlers( ButtonHandlers* hnd );
-    void slotSetSelectHandlers( SelectHandlers* hnd );
-    void slotSetSelectionMode( bool mode );
-    void slotSetColorMode( ColorMode cm );
-    void slotSetSliceNum( size_t num );
-    void slotZoom( int amount );
-    void slotMoveH( int amount );
-    void slotMoveV( int amount );
-    void slotAdjustBrightness( int amount );
-    void slotAdjustContrast( int amount );
-    void slotNewPoint( int x, int y, int z );
-    void slotNewShape( int x, int y, int z );
-    void slotDeletePoint( int x, int y, int z );
-    void slotDeleteShape( int x, int y, int z );
-    void slotRotateAxisX( int x );
-    void slotRotateAxisY( int y );
-    void slotRotateAxisZ( int z );
 
 protected:
     void setColorMode( ColorMode cm );
