@@ -1,7 +1,7 @@
 #ifndef _M4DSLICEVIEWERWIDGET_H
 #define _M4DSLICEVIEWERWIDGET_H
 
-#include <QGLWidget>
+#include <QtOpenGL>
 #include "Imaging/Image.h"
 #include "Common.h"
 #include "ExceptionBase.h"
@@ -37,6 +37,8 @@ public:
     void setSelectHandlers( SelectHandlers* hnd );
     void setSelectionMode( bool mode );
     bool getSelectionMode();
+    void setSelected( bool selected );
+    bool getSelected();
 
     virtual AvailableSlots getAvailableSlots();
 
@@ -44,6 +46,7 @@ public slots:
     virtual void slotSetButtonHandlers( ButtonHandlers* hnd );
     virtual void slotSetSelectHandlers( SelectHandlers* hnd );
     virtual void slotSetSelectionMode( bool mode );
+    virtual void slotSetSelected( bool selected );
     virtual void slotSetColorMode( ColorMode cm );
     virtual void slotSetSliceNum( size_t num );
     virtual void slotZoom( int amount );
@@ -83,7 +86,8 @@ protected:
 private:
 
     void setParameters();
-    void drawBorder();
+    void drawSelectionModeBorder();
+    void drawSelectedBorder();
     void drawShape( Selection::m4dShape<int>& s, bool last );
 
     typedef void (M4D::Viewer::m4dSliceViewerWidget::*ButtonMethods)( int amount );
@@ -95,10 +99,13 @@ private:
 
     bool					_selectionMode;
     bool					_printShapeData;
+    bool					_oneSliceMode;
+    bool					_selected;
     ColorMode					_colorMode;
     QPoint					_lastPos;
     QPoint					_offset;
     int						_sliceNum;
+    unsigned					_slicesPerRow;
     double					_zoomRate;
     GLfloat					_brightnessRate;
     GLfloat					_contrastRate;

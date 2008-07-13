@@ -1,7 +1,6 @@
 #include "GUI/m4dSliceViewerWidget.h"
 
 #include <QtGui>
-#include <QtOpenGL>
 #include <GL/glut.h>
 #include <string.h>
 
@@ -56,6 +55,19 @@ m4dSliceViewerWidget::getSelectionMode()
 }
 
 void
+m4dSliceViewerWidget::setSelected( bool selected )
+{
+    _selected = selected;
+    emit signalSetSelected( selected );
+}
+
+bool
+m4dSliceViewerWidget::getSelected()
+{
+    return _selected;
+}
+
+void
 m4dSliceViewerWidget::setInputPort( Imaging::ImageConnection< Imaging::Image< uint32, 3 > >& conn )
 {
     conn.ConnectConsumer( _inPort );
@@ -90,6 +102,9 @@ m4dSliceViewerWidget::setParameters()
     _contrastRate = 0.0;
     _selectionMode = false;
     _printShapeData = false;
+    _oneSliceMode = true;
+    _selected = true;
+    _slicesPerRow = 1;
     _availableSlots = SETBUTTONHANDLERS | SETSELECTHANDLERS | SETSELECTIONMODE | SETCOLORMODE | SETSLICENUM | ZOOM | MOVEH | MOVEV | ADJUSTBRIGHTNESS | ADJUSTCONTRAST | NEWPOINT | NEWSHAPE | DELETEPOINT | DELETESHAPE;
     ButtonHandlers bh[] = { none_button, zoom, move_h, move_v, adjust_c, adjust_b };
     setButtonHandlers( bh );
@@ -273,15 +288,16 @@ m4dSliceViewerWidget::paintGL()
     glPixelZoom( _zoomRate, _zoomRate );
     glTranslatef( _offset.x(), _offset.y(), 0 );
     glScalef( _zoomRate, _zoomRate, 0. );
-    if ( _selectionMode ) drawBorder();
     for ( std::list< Selection::m4dShape<int> >::iterator it = _shapes.begin(); it != --(_shapes.end()); ++it )
         drawShape( *it, false );
     if ( !_shapes.empty() ) drawShape( *(--(_shapes.end())), true );
+    if ( _selectionMode ) drawSelectionModeBorder();
+    if ( _selected ) drawSelectedBorder();
     glFlush();
 }
 
 void
-m4dSliceViewerWidget::drawBorder()
+m4dSliceViewerWidget::drawSelectionModeBorder()
 {
     glPushMatrix();
     glLoadIdentity();
@@ -303,6 +319,25 @@ m4dSliceViewerWidget::drawBorder()
 	glVertex2i( this->width() - 2, 1 );
 	glVertex2i( this->width() - 2, 1 );
 	glVertex2i( 1, 1 );
+    glEnd();
+    glPopMatrix();
+}
+
+void
+m4dSliceViewerWidget::drawSelectedBorder()
+{
+    glPushMatrix();
+    glLoadIdentity();
+    glColor3f(0., 1., 0.);
+    glBegin(GL_LINES);
+        glVertex2i( 3, 3 );
+	glVertex2i( 3, this->height() - 4 );
+	glVertex2i( 3, this->height() - 4 );
+	glVertex2i( this->width() - 4, this->height() - 4 );
+	glVertex2i( this->width() - 4, this->height() - 4 );
+	glVertex2i( this->width() - 4, 3 );
+	glVertex2i( this->width() - 4, 3 );
+	glVertex2i( 3, 3 );
     glEnd();
     glPopMatrix();
 }
@@ -703,6 +738,12 @@ void
 m4dSliceViewerWidget::slotDeleteShape()
 {
     deleteShape( 0, 0, 0 );
+}
+
+void
+m4dSliceViewerWidget::slotSetSelected( bool selected )
+{
+    setSelected( selected );
 }
 
 void

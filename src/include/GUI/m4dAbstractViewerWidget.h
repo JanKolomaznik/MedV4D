@@ -47,6 +47,7 @@ public slots:
     virtual void slotSetButtonHandlers( ButtonHandlers* hnd )=0;
     virtual void slotSetSelectHandlers( SelectHandlers* hnd )=0;
     virtual void slotSetSelectionMode( bool mode )=0;
+    virtual void slotSetSelected( bool selected )=0;
     virtual void slotSetColorMode( ColorMode cm )=0;
     virtual void slotSetSliceNum( size_t num )=0;
     virtual void slotZoom( int amount )=0;
@@ -66,6 +67,7 @@ signals:
     virtual void signalSetButtonHandlers( ButtonHandlers* hnd );
     virtual void signalSetSelectHandlers( SelectHandlers* hnd );
     virtual void signalSetSelectionMode( bool mode );
+    virtual void signalSetSelected( bool selected );
     virtual void signalSetColorMode( ColorMode cm );
     virtual void signalSetSliceNum( size_t num );
     virtual void signalZoom( int amount );
