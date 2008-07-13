@@ -81,8 +81,7 @@ CDEPFLAGS=	-MM
 LDFLAGS=
 ARFLAGS=	-r
 LIBDIRS=	-L../../lib\
-		-L/usr/lib/qt4\
-		-L/usr/local/dicom/lib
+		-L/usr/lib/qt4
 INCLUDES=	-I$(srcdir)\
 		-I../../include\
 		-I/usr/include/vtk-5.0\
