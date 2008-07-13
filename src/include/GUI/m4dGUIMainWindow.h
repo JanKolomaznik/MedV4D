@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QtGui>
 
-#include "GUI/m4dGUIVtkRenderWindowWidget.h"
+#include "GUI/m4dGUIMainViewerDesktopWidget.h"
 #include "GUI/m4dGUIStudyManagerWidget.h"
 #include "GUI/m4dGUIScreenLayoutWidget.h"
 
@@ -22,7 +22,7 @@ class m4dGUIMainWindow: public QMainWindow
     void layout ();
 
   private:
-    void createVtkRenderWindowWidget ();
+    void createMainViewerDesktop ();
     void createStudyManagerDialog ();
     void createScreenLayoutDialog ();
         
@@ -35,7 +35,7 @@ class m4dGUIMainWindow: public QMainWindow
     virtual void view ( M4D::Dicom::DcmProvider::DicomObjSet *dicomObjSet );
 
   protected:
-    m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget;
+    m4dGUIMainViewerDesktopWidget *mainViewerDesktop;
     m4dGUIStudyManagerWidget *studyManagerWidget;
     m4dGUIScreenLayoutWidget *screenLayoutWidget;
   

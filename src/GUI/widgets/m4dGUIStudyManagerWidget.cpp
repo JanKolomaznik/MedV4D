@@ -3,14 +3,13 @@
 #include <QtGui>
 
 
-m4dGUIStudyManagerWidget::m4dGUIStudyManagerWidget ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget,
-                                                     QDialog *studyManagerDialog, QWidget *parent )
+m4dGUIStudyManagerWidget::m4dGUIStudyManagerWidget ( QDialog *studyManagerDialog, QWidget *parent )
   : QWidget( parent )
 {
   Q_INIT_RESOURCE( m4dGUIStudyManagerWidget );
 
   // studyListGroupBox must go before filterGroupBox (it needs the studyList)
-  QGroupBox *studyListGroupBox = createStudyListGroupBox( vtkRenderWindowWidget, studyManagerDialog );
+  QGroupBox *studyListGroupBox = createStudyListGroupBox( studyManagerDialog );
   QGroupBox *filterGroupBox = createFilterGroupBox();
   QGroupBox *hangingProtocolsGroupBox = createHangingProtocolsGroupBox();
 
@@ -48,14 +47,13 @@ QGroupBox *m4dGUIStudyManagerWidget::createHangingProtocolsGroupBox ()
 }
 
 
-QGroupBox *m4dGUIStudyManagerWidget::createStudyListGroupBox ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget,
-                                                               QDialog *studyManagerDialog )
+QGroupBox *m4dGUIStudyManagerWidget::createStudyListGroupBox ( QDialog *studyManagerDialog )
 {
   QGroupBox *studyListGroupBox = new QGroupBox( tr( "Study List" ) );
 
   QVBoxLayout *studyListGroupBoxLayout = new QVBoxLayout;
   studyListGroupBoxLayout->setMargin( 0 );
-  studyListComponent = new StManagerStudyListComp( vtkRenderWindowWidget, studyManagerDialog );
+  studyListComponent = new StManagerStudyListComp( studyManagerDialog );
   studyListGroupBoxLayout->addWidget( studyListComponent );
 
   studyListGroupBox->setLayout( studyListGroupBoxLayout ); 

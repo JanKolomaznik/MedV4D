@@ -16,19 +16,18 @@ m4dGUIMainWindow::m4dGUIMainWindow ( const char *title, const QIcon &icon )
   QWidget *centralWidget = new QWidget;
   setCentralWidget( centralWidget );
 
-  createVtkRenderWindowWidget();
-  // just for pilot implementation
-  vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->sphereToRenderWindow() );
-  // vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->imageDataToRenderWindow() );
+  createMainViewerDesktop();
 
   createActions();
   createMenus();
   createToolBars();
   createStatusBar();
-  createDockWindows();
+  // will be needed
+  // createDockWindows();
 
   QVBoxLayout *mainLayout = new QVBoxLayout;
-  mainLayout->addWidget( vtkRenderWindowWidget );
+  mainLayout->setContentsMargins( 0, 0, 0, 0 );
+  mainLayout->addWidget( mainViewerDesktop );
   centralWidget->setLayout( mainLayout );
 
   setWindowTitle( tr( title ) ); 
@@ -64,7 +63,7 @@ void m4dGUIMainWindow::open ()
     QFileInfo pathInfo( path );
     QString dirName( pathInfo.absolutePath() );
 
-    vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->dicomToRenderWindow( dirName.toAscii() ) );
+    mainViewerDesktop->getVtkRenderWindowWidget()->addRenderer( mainViewerDesktop->getVtkRenderWindowWidget()->dicomToRenderWindow( dirName.toAscii() ) );
   } 
 }
 
@@ -75,9 +74,9 @@ void m4dGUIMainWindow::layout ()
 }
 
 
-void m4dGUIMainWindow::createVtkRenderWindowWidget ()
+void m4dGUIMainWindow::createMainViewerDesktop ()
 {
-  vtkRenderWindowWidget = new m4dGUIVtkRenderWindowWidget;
+  mainViewerDesktop = new m4dGUIMainViewerDesktopWidget;
 }
 
 
@@ -88,7 +87,7 @@ void m4dGUIMainWindow::createStudyManagerDialog ()
   studyManagerDialog->setWindowTitle( tr( "Study Manager" ) );
   studyManagerDialog->setWindowIcon( QIcon( ":/icons/search.png" ) );
 
-  studyManagerWidget = new m4dGUIStudyManagerWidget( vtkRenderWindowWidget, studyManagerDialog );
+  studyManagerWidget = new m4dGUIStudyManagerWidget( studyManagerDialog );
 
   QVBoxLayout *dialogLayout = new QVBoxLayout;
   dialogLayout->addWidget( studyManagerWidget );
@@ -104,7 +103,7 @@ void m4dGUIMainWindow::createScreenLayoutDialog ()
   screenLayoutDialog->setWindowTitle( tr( "Screen Layout" ) );
   screenLayoutDialog->setWindowIcon( QIcon( ":/icons/layout.png" ) );
 
-  screenLayoutWidget = new m4dGUIScreenLayoutWidget( vtkRenderWindowWidget, screenLayoutDialog );
+  screenLayoutWidget = new m4dGUIScreenLayoutWidget( mainViewerDesktop, screenLayoutDialog );
 
   QVBoxLayout *dialogLayout = new QVBoxLayout;
   dialogLayout->addWidget( screenLayoutWidget );
@@ -161,9 +160,10 @@ void m4dGUIMainWindow::createMenus ()
   menuBar()->addMenu( fileMenu );
 
   // View Menu
-  viewMenu = new QMenu( tr( "&View" ), this );
+  // will be needed
+  // viewMenu = new QMenu( tr( "&View" ), this );
 
-  menuBar()->addMenu( viewMenu );
+  // menuBar()->addMenu( viewMenu );
 }
 
 
@@ -219,5 +219,5 @@ void m4dGUIMainWindow::createDockWindows ()
 
 void m4dGUIMainWindow::view ( DcmProvider::DicomObjSet *dicomObjSet )
 {
-  vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->imageDataToRenderWindow( DcmProvider::DicomObjSetPtr( dicomObjSet ) ) );
+  mainViewerDesktop->getVtkRenderWindowWidget()->addRenderer( mainViewerDesktop->getVtkRenderWindowWidget()->imageDataToRenderWindow( DcmProvider::DicomObjSetPtr( dicomObjSet ) ) );
 }

@@ -32,10 +32,9 @@ const char *StManagerStudyListComp::attributeNames[] = { "Patient ID", "Name", "
 /// Number of recent exams to remember
 #define RECENT_EXAMS_NUMBER                 20
 
-StManagerStudyListComp::StManagerStudyListComp ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget,
-                                                 QDialog *studyManagerDialog, QWidget *parent )
+StManagerStudyListComp::StManagerStudyListComp ( QDialog *studyManagerDialog, QWidget *parent )
   : QWidget( parent ),
-    vtkRenderWindowWidget( vtkRenderWindowWidget ), studyManagerDialog( studyManagerDialog )
+    studyManagerDialog( studyManagerDialog )
 {
   // =-=-=-=-=-=-=-=- Buttons -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 

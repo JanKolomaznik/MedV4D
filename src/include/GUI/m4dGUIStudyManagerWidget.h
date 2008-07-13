@@ -18,22 +18,18 @@ class m4dGUIStudyManagerWidget: public QWidget
     /**
      * Constructor of m4dGUIStudyManagerWidget.
      *
-     * @param vtkRenderWindowWidget pointer to the VTK Render Window Widget
-     * - where to render image after clicking View
      * @param studyManagerDialog pointer to the Study Manager Dialog - to close it after 
      * clicking View
      * @ param parent pointer to the parent of this widget - default is 0
      */
-    m4dGUIStudyManagerWidget ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget,
-                               QDialog *studyManagerDialog, QWidget *parent = 0 );
+    m4dGUIStudyManagerWidget ( QDialog *studyManagerDialog, QWidget *parent = 0 );
 
     StManagerStudyListComp *getStudyListComponent () { return studyListComponent; }
 
   private:
     QGroupBox *createFilterGroupBox ();
     QGroupBox *createHangingProtocolsGroupBox ();
-    QGroupBox *createStudyListGroupBox ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget,
-                                         QDialog *studyManagerDialog );
+    QGroupBox *createStudyListGroupBox ( QDialog *studyManagerDialog );
 
     StManagerFilterComp *filterComponent;
 

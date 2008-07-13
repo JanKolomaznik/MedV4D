@@ -136,6 +136,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\..\GUI\widgets\m4dGUIMainViewerDesktopWidget.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\GUI\widgets\m4dGUIMainWindow.cpp"
 				>
 			</File>
@@ -169,6 +173,32 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath="..\..\include\GUI\m4dGUIMainViewerDesktopWidget.h"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="MOC m4dGUIMainViewerDesktopWidget.h"
+						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\debug; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 $(InputPath) -o $(IntDir)\generated\moc\moc_$(InputName).cpp&#x0D;&#x0A;"
+						AdditionalDependencies="moc.exe,$(InputFileName)"
+						Outputs="$(IntDir)\generated\moc\moc_$(InputName).cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="MOC m4dGUIMainViewerDesktopWidget.h"
+						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 $(InputPath) -o $(IntDir)\generated\moc\moc_$(InputName).cpp&#x0D;&#x0A;"
+						AdditionalDependencies="moc.exe,$(InputFileName)"
+						Outputs="$(IntDir)\generated\moc\moc_$(InputName).cpp"
+					/>
+				</FileConfiguration>
+			</File>
 			<File
 				RelativePath="..\..\include\GUI\m4dGUIMainWindow.h"
 				>
@@ -437,6 +467,30 @@
 		<Filter
 			Name="Generated Files"
 			>
+			<File
+				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIMainViewerDesktopWidget.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIMainViewerDesktopWidget.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
 			<File
 				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIMainWindow.cpp"
 				>

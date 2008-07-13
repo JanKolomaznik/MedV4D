@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "GUI/m4dGUIVtkRenderWindowWidget.h"
+#include "GUI/m4dGUIMainViewerDesktopWidget.h"
 
 
 class QToolButton;
@@ -24,7 +24,7 @@ class m4dGUIScreenLayoutWidget: public QWidget
      * clicking Ok
      * @ param parent parent of this widget - default is 0
      */
-    m4dGUIScreenLayoutWidget ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget,
+    m4dGUIScreenLayoutWidget ( m4dGUIMainViewerDesktopWidget *mainViewerDesktop,
                                QDialog *screenLayoutDialog, QWidget *parent = 0 );
 
   private slots:
@@ -47,7 +47,9 @@ class m4dGUIScreenLayoutWidget: public QWidget
     QToolButton *createToolButton ( const QIcon &icon, const char *member );
     QSpinBox    *createSpinBox ( const int value );
 
-    /// pointer to the Screen Layout Dialog - to close it after clicking Ok
+    /// Pointer to the Main Viewer Desktop - to manage it.
+    m4dGUIMainViewerDesktopWidget *mainViewerDesktop;
+    /// Pointer to the Screen Layout Dialog - to close it after clicking Ok.
     QDialog *screenLayoutDialog;
 
     static const char *layoutIconNames[];

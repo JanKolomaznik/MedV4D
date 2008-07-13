@@ -32,14 +32,11 @@ class StManagerStudyListComp: public QWidget
     /** 
      * Study Manager Study List Component constructor.
      *
-     * @param vtkRenderWindowWidget pointer to the VTK Render Window Widget - where to
-     *        render image after clicking View
      * @param studyManagerDialog pointer to the Study Manager Dialog - to close it after
      *        clicking View
      * @param parent pointer to the parent widget - default is 0
      */
-    StManagerStudyListComp ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget,
-                             QDialog *studyManagerDialog, QWidget *parent = 0 );
+    StManagerStudyListComp ( QDialog *studyManagerDialog, QWidget *parent = 0 );
     
     /** 
      * Study Manager Study List Component destructor.
@@ -175,28 +172,26 @@ class StManagerStudyListComp: public QWidget
     QToolButton  *createToolButton ( const QIcon &icon, const char *member );
 
 
-    /// Pointer to the VTK Render Window Widget - where to render image after clicking View. 
-    m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget;
     /// Pointer to the Study Manager Dialog - to close it after clicking View.
     QDialog *studyManagerDialog;
     QString studyManagerDialogTitle;
 
-    /// Names of the exam/image attributes
+    /// Names of the exam/image attributes.
     static const char *attributeNames[];
 
-    /// Buttons for viewing, switching between modes, hiding config. parts
+    /// Buttons for viewing, switching between modes, hiding config. parts.
     QPushButton  *viewButton;
     QPushButton  *pathButton;
     QToolButton  *recentRemoteButton;
     QToolButton  *recentDICOMDIRButton;
-    /// Tabs for different searching modes
+    /// Tabs for different searching modes.
     QTabWidget   *studyListTab;
-    /// Result tables for different searching modes
+    /// Result tables for different searching modes.
     QTableWidget *recentExamsTable;
     QTableWidget *remoteExamsTable;
     QTableWidget *DICOMDIRTable;
     QTableWidget *activeExamTable;
-    /// Directory tree for browsing in DICOMDIR mode
+    /// Directory tree for browsing in DICOMDIR mode.
     QTreeView    *directoryTree;
 
     /// The provider object - communication with DICOM layer.

@@ -17,10 +17,10 @@ const int m4dGUIScreenLayoutWidget::layoutDimensions[][2] = { {1, 1}, {1, 2}, {2
                                                               {2, 4}, {4, 2}, {4, 4}, {4, 6},   
                                                               {4, 8} };
 
-m4dGUIScreenLayoutWidget::m4dGUIScreenLayoutWidget ( m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget,
+m4dGUIScreenLayoutWidget::m4dGUIScreenLayoutWidget ( m4dGUIMainViewerDesktopWidget *mainViewerDesktop,
                                                      QDialog *screenLayoutDialog, QWidget *parent )
   : QWidget( parent ),
-    screenLayoutDialog( screenLayoutDialog )
+    mainViewerDesktop( mainViewerDesktop ), screenLayoutDialog( screenLayoutDialog )
 {
   Q_INIT_RESOURCE( m4dGUIScreenLayoutWidget );
 
@@ -59,7 +59,8 @@ void m4dGUIScreenLayoutWidget::seriesLayoutChanged ()
   seriesRowSpinBox->setValue( layoutDimensions[layoutIdx][0] );
   seriesColumnSpinBox->setValue( layoutDimensions[layoutIdx][1] );
 
-  // update renderWindow
+  mainViewerDesktop->setDesktopLayout( layoutDimensions[layoutIdx][0],
+                                       layoutDimensions[layoutIdx][1] );
 }
 
 
@@ -76,25 +77,20 @@ void m4dGUIScreenLayoutWidget::imageLayoutChanged ()
   imageRowSpinBox->setValue( layoutDimensions[layoutIdx][0] );
   imageColumnSpinBox->setValue( layoutDimensions[layoutIdx][1] );
 
-  // update renderWindow
+  mainViewerDesktop->setDesktopLayout( layoutDimensions[layoutIdx][0],
+                                       layoutDimensions[layoutIdx][1] );
 }
 
 
 void m4dGUIScreenLayoutWidget::seriesApply ()
 {
-  seriesRowSpinBox->value();
-  seriesColumnSpinBox->value();
-
-  // update renderWindow
+  mainViewerDesktop->setDesktopLayout( seriesRowSpinBox->value(), seriesColumnSpinBox->value() );
 }
 
 
 void m4dGUIScreenLayoutWidget::imageApply ()
 { 
-  imageRowSpinBox->value();
-  imageColumnSpinBox->value();
 
-  // update renderWindow
 }
 
 
