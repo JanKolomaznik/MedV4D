@@ -7,6 +7,7 @@
 #include "../Imaging/filterProperties.h"
 #include "messageHeaders.h"
 #include "resourcePool.h"
+#include "iPublicJob.h"
 
 
 namespace M4D
@@ -17,7 +18,7 @@ namespace CellBE
  *  Base class for job. Contains common parts for client side even server side. 
  */
 class BasicJob
-  : public BasicSocket
+  : public BasicSocket, public iPublicJob
 {
   friend class Server;
 
@@ -48,42 +49,19 @@ protected:
 
   // pool for dataPeice headers
   static Pool< DataPieceHeader, 32> freeHeaders;
-
+  
 public:
-
-  // data buffer to send
-  //template< class T>
-  struct DataBuff {
-    void *data;
-    size_t len;
-  };
-
-  // vector of databuffers to be send in one turn
-  //template< class T>
-  class DataBuffs : public std::vector< DataBuff >
-  {
-  };
-
-  // Serialization
-  //template<class T>
-  void PutDataPiece( const DataBuffs &bufs);
-
-  //template<class T>
-  void PutDataPiece( const DataBuff &buf);
-
-  // Deserialization
-  //template<class T>
-  void GetDataPiece( DataBuffs &bufs);
-
-  //template<class T>
-  void GetDataPiece( DataBuff &buf);
-
   // callback def
   typedef void (*JobCallback)(void);
 
   // events
   JobCallback onComplete;
   JobCallback onError;
+
+  void PutDataPiece( const DataBuffs &bufs);
+  void PutDataPiece( const DataBuff &buf);
+  void GetDataPiece( DataBuffs &bufs);
+  void GetDataPiece( DataBuff &buf);
 
 };
 

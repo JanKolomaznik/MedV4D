@@ -1,7 +1,7 @@
 #ifndef MESSAGE_HEADERS_H
 #define MESSAGE_HEADERS_H
 
-#include "netStream.h"
+#include "netStreamImpl.h"
 
 namespace M4D
 {

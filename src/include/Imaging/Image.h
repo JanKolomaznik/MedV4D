@@ -93,6 +93,9 @@ public:
 
 	static const unsigned	Dimension = 2;
 
+  void Serialize( M4D::CellBE::iPublicJob *job) {};
+  void DeSerialize( M4D::CellBE::iPublicJob *job) {};
+
 	Image();
 
 	/**
@@ -222,6 +225,9 @@ public:
 	typedef ElementType			Element;
 
 	static const unsigned	Dimension = 3;
+
+  void Serialize( M4D::CellBE::iPublicJob *job) {};
+  void DeSerialize( M4D::CellBE::iPublicJob *job) {};
 
 	Image();
 

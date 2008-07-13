@@ -4,7 +4,7 @@
 #include <boost/shared_ptr.hpp>
 #include "TimeStamp.h"
 #include "Imaging/dataSetProperties.h"
-#include "cellBE/basicJob.h"
+#include "cellBE/iPublicJob.h"
 
 namespace M4D
 {
@@ -95,8 +95,8 @@ public:
    *  Each special succesor should implement this functions in
    *  its own manner.
    */
-  virtual void Serialize( M4D::CellBE::BasicJob *job) = 0;
-  virtual void DeSerialize( M4D::CellBE::BasicJob *job) = 0;
+  virtual void Serialize( M4D::CellBE::iPublicJob *job) = 0;
+  virtual void DeSerialize( M4D::CellBE::iPublicJob *job) = 0;
 
 
 protected:
