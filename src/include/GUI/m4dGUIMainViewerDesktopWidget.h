@@ -40,3 +40,4 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
 };
 
 #endif // M4D_GUI_MAIN_VIEWER_DESKTOP_H
+

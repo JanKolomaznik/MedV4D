@@ -13,6 +13,7 @@ NAME=		Imaging
 TARGETS=	AbstractImageData \
 		ImageFactory \
 		AbstractFilter \
+		AbstractDataSet \
 		Ports \
 		AbstractImageFilters \
 		Image \

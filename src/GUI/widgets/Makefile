@@ -13,6 +13,7 @@ RCC=rcc
 NAME=		m4dWidgets
 #Names of target sources
 TARGETS=	m4dGUIMainWindow \
+		m4dGUIMainViewerDesktopWidget \
 		m4dGUIVtkRenderWindowWidget \
 		m4dGUIStudyManagerWidget \
 		m4dGUIScreenLayoutWidget \
@@ -23,14 +24,17 @@ TARGETS2=	StManagerFilterComp \
 		StManagerHProtocolsComp \
 		StManagerStudyListComp
 
-MOCINPUT=	m4dGUIMainWindow.h \
+MOCINPUT=	m4dAbstractViewerWidget.h \
+		m4dGUIMainWindow.h \
+		m4dGUIScreenLayoutWidget.h \
 		m4dGUIStudyManagerWidget.h \
 		m4dGUIVtkRenderWindowWidget.h \
-		m4dGUIScreenLayoutWidget.h \
 		m4dSliceViewerWidget.h \
 		StManagerFilterComp.h \
 		StManagerHProtocolsComp.h \
 		StManagerStudyListComp.h
+
+		#m4dGUIMainViewerDesktopWidget.h \
 
 RCCINPUT=	m4dGUIMainWindow.qrc \
 		m4dGUIStudyManagerWidget.qrc \

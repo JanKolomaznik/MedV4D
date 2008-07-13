@@ -1,6 +1,7 @@
 #ifndef I_PUBLICJOB_H
 #define I_PUBLICJOB_H
 
+#include <vector>
 namespace M4D
 {
 namespace CellBE

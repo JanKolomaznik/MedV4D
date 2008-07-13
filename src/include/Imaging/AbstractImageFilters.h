@@ -7,6 +7,7 @@
 #include "Imaging/ImageDataTemplate.h"
 #include "Imaging/ImageFactory.h"
 #include "Imaging/AbstractFilter.h"
+#include "Imaging/ModificationManager.h"
 
 #include <vector>
 
@@ -71,6 +72,14 @@ private:
 	PROHIBIT_COPYING_OF_OBJECT_MACRO( ImageFilter );
 };
 
+struct SliceComputationRecord
+{
+	ReaderBBoxInterface::Ptr	inputBBox;
+	WriterBBoxInterface		*writerBBox;
+	int32				firstSlice;
+	int32				lastSlice;
+};
+
 /**
  * We disallow general usage of template - only specializations.
  **/
@@ -109,15 +118,8 @@ public:
 	GetComputationGrouping()
 		{ return _computationGrouping; }
 protected:
-	struct ComputationRecord
-	{
-		ReaderBBoxInterface::Ptr	inputBBox;
-		WriterBBoxInterface		*writerBBox;
-		int32				firstSlice;
-		int32				lastSlice;
-	};
 
-	typedef std::vector< ComputationRecord >	ComputationGroupList;
+	typedef std::vector< SliceComputationRecord >	ComputationGroupList;
 
 	/**
 	 * This method should be overridden in successor. It is supposed to
@@ -142,8 +144,8 @@ protected:
 			size_t					slice
 		    ) = 0;
 
-	virtual WriterBBoxInterface *
-	GetComputationGroupWriterBBox( ComputationRecord & record ) = 0;
+	virtual WriterBBoxInterface &
+	GetComputationGroupWriterBBox( SliceComputationRecord & record ) = 0;
 
 	bool
 	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
@@ -194,6 +196,9 @@ protected:
 
 	void
 	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
+
+	WriterBBoxInterface &
+	GetComputationGroupWriterBBox( SliceComputationRecord & record );
 
 	void
 	PrepareOutputDatasets();

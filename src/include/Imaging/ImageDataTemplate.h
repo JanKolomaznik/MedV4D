@@ -209,7 +209,7 @@ protected:
 			size_t			elementCount
 			);	
 
-	ModificationManager	_modificationManager;
+	mutable ModificationManager	_modificationManager;
 private:
 	ImageDataTemplate();
 	ImageDataTemplate( const ImageDataTemplate &);

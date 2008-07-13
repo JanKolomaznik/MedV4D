@@ -72,6 +72,11 @@ public:
 		PipelineMessage::MessageSendStyle 	sendStyle 
 		){ /*empty*/ }
 
+	virtual AbstractDataSet &
+	GetDataset() = 0;
+
+	virtual const AbstractDataSet &
+	GetDatasetReadOnly() = 0;
 
 	/**
 	 * Method, which try to lock dataset controled by this connection for 
@@ -81,24 +86,24 @@ public:
 	 * is locked for structure edit.
 	 * \return False if unsuccessfull.
 	 **/
-	virtual bool 
-	TryLockDataset() = 0;
+	//virtual bool 
+	//TryLockDataset() = 0;
 
 	/**
 	 * Method which remove one lock from dataset.
 	 **/
-	virtual void
-	UnlockDataset() = 0;
+	//virtual void
+	//UnlockDataset() = 0;
 
 	/**
 	 * Method try to lock dataset exclusively - TryLockDataset() will fail.
 	 * \return False if unsuccessfull.
 	 **/
-	virtual bool
-	TryExclusiveLockDataset() = 0;
+	//virtual bool
+	//TryExclusiveLockDataset() = 0;
 
-	virtual void
-	ExclusiveUnlockDataset() = 0;
+	//virtual void
+	//ExclusiveUnlockDataset() = 0;
 
 protected:
 
@@ -134,6 +139,12 @@ public:
 
 	virtual const AbstractImage &
 	GetAbstractImageReadOnly()const = 0;
+
+	const AbstractDataSet &
+	GetDatasetReadOnly()
+		{ 
+			return GetAbstractImageReadOnly();
+		}
 
 	/*virtual void
 	ConnectAImageConsumer( InputPortAbstractImage &inputPort );*/
@@ -197,6 +208,18 @@ public:
 	GetImageReadOnly()const
 		{ if( !_image ) { throw ENoImageAssociated(); }
 			return *_image;
+		}
+
+	AbstractDataSet &
+	GetDataset()
+		{ 
+			return GetImage();
+		}
+
+	const AbstractDataSet &
+	GetDatasetReadOnly()
+		{ 
+			return GetImageReadOnly();
 		}
 
 	const AbstractImage &

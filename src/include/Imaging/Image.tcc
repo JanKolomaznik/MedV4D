@@ -406,7 +406,7 @@ Image< ElementType, 3 >::GetDirtyBBox(
 		size_t x2, 
 		size_t y2, 
 		size_t z2 
-		)
+		)const
 {
 	ModificationManager & modManager = _imageData->GetModificationManager();
 

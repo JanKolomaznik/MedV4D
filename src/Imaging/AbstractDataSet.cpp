@@ -7,45 +7,51 @@ namespace Imaging
 {
 
 bool 
-class AbstractDataSet::TryLockDataset()
+AbstractDataSet::TryLockDataset()
 {
 	//TODO
 	return false;
 }
 
 void
-class AbstractDataSet::UnlockDataset()
+AbstractDataSet::LockDataset()
 {
 
 }
 
 void
-class AbstractDataSet::UpgradeToExclusiveLock()
+AbstractDataSet::UnlockDataset()
 {
 
 }
 
 void
-class AbstractDataSet::DowngradeFromExclusiveLock()
+AbstractDataSet::UpgradeToExclusiveLock()
+{
+
+}
+
+void
+AbstractDataSet::DowngradeFromExclusiveLock()
 {
 
 }
 
 bool
-class AbstractDataSet::TryExclusiveLockDataset()
+AbstractDataSet::TryExclusiveLockDataset()
 {
 	//TODO
 	return false;
 }
 
 void
-class AbstractDataSet::ExclusiveLockDataset()
+AbstractDataSet::ExclusiveLockDataset()
 {
 
 }
 
 void
-class AbstractDataSet::ExclusiveUnlockDataset()
+AbstractDataSet::ExclusiveUnlockDataset()
 {
 
 }

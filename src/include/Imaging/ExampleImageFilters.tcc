@@ -9,7 +9,7 @@ namespace Imaging
 
 template< typename InputElementType, typename OutputElementType >
 CopyImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
-::CopyImageFilter()
+::CopyImageFilter(): PredecessorType( 0, 10 )
 {
 
 }

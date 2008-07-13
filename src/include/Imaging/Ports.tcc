@@ -31,7 +31,8 @@ InputPortImageFilter< Image< ElementType, dimension > >
 	ImageConnection< ImageType > *conn = 
 		dynamic_cast< ImageConnection< ImageType > * >( &connection );
 	if( conn ) {
-		_imageConnection = conn;
+		this->_connection = conn;
+		this->_imageConnection = conn;
 		this->_abstractImageConnection = static_cast< AbstractImageConnection * >( &connection );
 	} else {
 		throw Port::EConnectionTypeMismatch();
@@ -112,7 +113,8 @@ OutputPortImageFilter< Image< ElementType, dimension > >
 	ImageConnection< ImageType > *conn = 
 		dynamic_cast< ImageConnection< ImageType > * >( &connection );
 	if( conn ) {
-		_imageConnection = conn;
+		this->_connection = conn;
+		this->_imageConnection = conn;
 	} else {
 		throw Port::EConnectionTypeMismatch();
 	}

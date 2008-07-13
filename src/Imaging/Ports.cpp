@@ -42,20 +42,37 @@ Port::ReceiveMessage(
 //******************************************************************************
 
 bool 
-InputPort::GetDatasetReadLock()
+Port::TryDatasetLock()
 {
-	//TODO
-	return false;
+	if( !this->IsPlugged() ) {
+		throw EDisconnected( this->GetID() );
+	} 
+
+	return _connection->GetDataset().TryLockDataset();
+}
+
+void
+Port::DatasetLock()
+{
+	if( !this->IsPlugged() ) {
+		throw EDisconnected( this->GetID() );
+	} 
+
+	_connection->GetDataset().LockDataset();
 }
 
 void 
-InputPort::ReleaseDatasetLock()
+Port::ReleaseDatasetLock()
 {
+	if( !this->IsPlugged() ) {
+		throw EDisconnected( this->GetID() );
+	} 
 
+	_connection->GetDataset().UnlockDataset();
 }
 
 //******************************************************************************
-
+/*
 bool 
 OutputPort::GetDatasetWriteLock()
 {
@@ -68,7 +85,7 @@ OutputPort::ReleaseDatasetLock()
 {
 
 }
-
+*/
 //******************************************************************************
 
 const AbstractImage &
@@ -89,7 +106,8 @@ InputPortAbstractImage
 	AbstractImageConnection *conn = 
 		dynamic_cast< AbstractImageConnection * >( &connection );
 	if( conn ) {
-		_abstractImageConnection = conn;
+		this->_connection = conn;
+		this->_abstractImageConnection = conn;
 	} else {
 		throw Port::EConnectionTypeMismatch();
 	}

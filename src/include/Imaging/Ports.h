@@ -36,7 +36,8 @@ public:
 	/**
 	 * Default constructor - port obtain unique ID.
 	 **/
-	Port() { _id = GenerateUniqueID(); }
+	Port(): _connection( NULL )
+		{ _id = GenerateUniqueID(); }
 
 	/**
 	 * Virtual destructor - class can be (and will be) disposed polymorphicaly.
@@ -47,11 +48,16 @@ public:
 	/**
 	 * return True if port is plugged to connection object.
 	 **/
-	virtual	bool
-	IsPlugged()const = 0;
+	bool
+	IsPlugged()const
+		{ return _connection != NULL; }
 	
 	virtual void
 	Plug( ConnectionInterface & connection ) = 0;	
+
+	ConnectionInterface *
+	GetConnection()const
+		{ return _connection; }
 
 	/**
 	 * Method to unplug port from connection object - if already 
@@ -79,12 +85,34 @@ public:
 		PipelineMessage::MessageSendStyle 	sendStyle, 
 		FlowDirection				direction
 		);
+
+	/**
+	 * Method called when someone wants to obtain dataset, accessible
+	 * through port. It doesn't actualy lock data stored inside dataset,
+	 * only disallow to change internal structure - release or reallocate 
+	 * buffer, etc.
+	 * \return True if lock was successful, false otherwise.
+	 **/
+	virtual bool 
+	TryDatasetLock();
+
+	virtual void
+	DatasetLock();
+
+	//TODO - if store, wheather this port already locked dataset - unlock during destruction ...
+	/**
+	 * Release dataset lock, which was locked by previous method.
+	 **/
+	void 
+	ReleaseDatasetLock();
+					
 protected:
+
+	ConnectionInterface *_connection;
+private:
 	/**
 	 * Method for unique port ID generation - thread safe.
 	 **/
-
-private:
 	static uint64
 	GenerateUniqueID();
 
@@ -94,6 +122,7 @@ private:
 	 **/
 	MessageReceiverInterface	*_msgReceiver;	
 };
+
 class Port::EConnectionTypeMismatch
 {
 public:
@@ -124,22 +153,6 @@ public:
 	virtual
 	~InputPort() {}
 
-	/**
-	 * Method called when someone wants to obtain dataset, accessible
-	 * through port. It doesn't actualy lock data stored inside dataset,
-	 * only disallow to change internal structure - release or reallocate 
-	 * buffer, etc.
-	 * \return True if lock was successful, false otherwise.
-	 **/
-	virtual bool 
-	GetDatasetReadLock();
-
-	//TODO - if store, wheather this port already locked dataset - unlock during destruction ...
-	/**
-	 * Release dataset lock, which was locked by previous method.
-	 **/
-	virtual void 
-	ReleaseDatasetLock();
 	
 protected:
 
@@ -153,18 +166,18 @@ public:
 	virtual
 	~OutputPort() {}
 
-	virtual ConnectionInterface *
-	GetConnection()const = 0;
+	/*virtual bool 
+	TryDatasetExclusiveLock();
 
-	virtual bool 
-	GetDatasetWriteLock();
+	virtual void 
+	DatasetExclusiveLock();*/
 
 	//TODO - if store, wheather this port already locked dataset - unlock during destruction ...
 	/**
 	 * Release dataset lock, which was locked by previous method.
 	 **/
-	virtual void 
-	ReleaseDatasetLock();
+/*	virtual void 
+	ReleaseExclusiveDatasetLock();*/
 protected:
 
 private:
@@ -186,10 +199,6 @@ public:
 
 	void
 	UnPlug();
-
-	bool
-	IsPlugged()const
-		{ return _abstractImageConnection != NULL; }
 
 	void
 	SendMessage( 
@@ -232,10 +241,6 @@ public:
 	void
 	UnPlug();
 
-	bool
-	IsPlugged()const
-		{ return _imageConnection != NULL; }
-
 	void
 	SendMessage( 
 		PipelineMessage::Ptr 			msg, 
@@ -273,19 +278,11 @@ public:
 	void
 	Plug( ConnectionInterface & connection );
 
-	ConnectionInterface *
-	GetConnection()const
-		{ return _imageConnection; }
-
 	/*void
 	PlugTyped( ImageConnection< ImageType > & connection );*/
 	
 	void
 	UnPlug();
-
-	bool
-	IsPlugged()const
-		{ return _imageConnection != NULL; }
 
 	void
 	SendMessage( 

@@ -97,7 +97,7 @@ ImageFilter< InputImageType, OutputImageType >
 template< typename InputElementType, typename OutputImageType >
 ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 ::ImageSliceFilter( unsigned neighbourCount, unsigned grouping ) 
-	: _sliceComputationNeighbourCount( neighbourCount ), _computationGrouping( grouping );
+	: _sliceComputationNeighbourCount( neighbourCount ), _computationGrouping( grouping )
 {
 	//TODO - check intervals of parameters - throw exceptions
 }
@@ -109,7 +109,7 @@ ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 {
 	for( size_t i = 0; i < _actualComputationGroups.size(); ++i )
 	{
-		ComputationRecord & record = _actualComputationGroups[ i ];
+		SliceComputationRecord & record = _actualComputationGroups[ i ];
 
 		//Wait until input area is ready
 		if ( !record.inputBBox->WaitWhileDirty() ) {
@@ -163,15 +163,31 @@ ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 
 	switch ( utype ) {
 	case AbstractPipeFilter::RECALCULATION:
+		{
+			DL_PRINT( 5, "SliceFilter recalculation" );
 
-		DL_PRINT( 5, "SliceFilter recalculation" );
+			const DimensionExtents & dimExtents = this->in->GetDimensionExtents( 2 );
+			unsigned groupCount = ( dimExtents.maximum - dimExtents.minimum ) / _computationGrouping;
+			for( unsigned i = 0; i < groupCount; ++i ) {
+				SliceComputationRecord record;
+				record.firstSlice = dimExtents.minimum + (i*_computationGrouping);
+				record.lastSlice = dimExtents.minimum + ((i+1)*_computationGrouping) - 1;
+				record.inputBBox = this->in->GetDirtyBBox( 
+					this->in->GetDimensionExtents( 0 ).minimum,
+					this->in->GetDimensionExtents( 1 ).minimum,
+					this->in->GetDimensionExtents( 0 ).maximum,
+					this->in->GetDimensionExtents( 1 ).maximum,
+					record.firstSlice - _sliceComputationNeighbourCount,
+					record.lastSlice + _sliceComputationNeighbourCount
+					);
+				record.writerBBox = &( GetComputationGroupWriterBBox( record ) );
 
-		const DimensionExtents & dimExtents = this->in->GetDimensionExtents( 2 );
-		unsigned groupCount = ( dimExtents.maximum - dimExtents.minimum ) / _computationGrouping;
-		for( unsigned i = 0; i < groupCount; ++i ) {
-			ComputationRecord record;
-			record.firstSlice = dimExtents.minimum + (i*_computationGrouping);
-			record.lastSlice = dimExtents.minimum + ((i+1)*_computationGrouping) - 1;
+				_actualComputationGroups.push_back( record );
+			}
+
+			SliceComputationRecord record;
+			record.firstSlice = dimExtents.minimum + (groupCount*_computationGrouping) - _sliceComputationNeighbourCount;
+			record.lastSlice = dimExtents.maximum - 1;
 			record.inputBBox = this->in->GetDirtyBBox( 
 				this->in->GetDimensionExtents( 0 ).minimum,
 				this->in->GetDimensionExtents( 1 ).minimum,
@@ -180,26 +196,10 @@ ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 				record.firstSlice - _sliceComputationNeighbourCount,
 				record.lastSlice + _sliceComputationNeighbourCount
 				);
-			record.writerBBox = GetComputationGroupWriterBBox( record );
+			record.writerBBox = &( GetComputationGroupWriterBBox( record ) );
 
 			_actualComputationGroups.push_back( record );
 		}
-
-		ComputationRecord record;
-		record.firstSlice = dimExtents.minimum + (groupCount*_computationGrouping) - _sliceComputationNeighbourCount;
-		record.lastSlice = dimExtents.maximum - 1;
-		record.inputBBox = this->in->GetDirtyBBox( 
-			this->in->GetDimensionExtents( 0 ).minimum,
-			this->in->GetDimensionExtents( 1 ).minimum,
-			this->in->GetDimensionExtents( 0 ).maximum,
-			this->in->GetDimensionExtents( 1 ).maximum,
-			record.firstSlice - _sliceComputationNeighbourCount,
-			record.lastSlice + _sliceComputationNeighbourCount
-			);
-		record.writerBBox = GetComputationGroupWriterBBox( record );
-
-		_actualComputationGroups.push_back( record );
-
 		break;
 
 	case AbstractPipeFilter::ADAPTIVE_CALCULATION:
@@ -230,9 +230,10 @@ IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputEle
 	PredecessorType::BeforeComputation( utype );	
 }
 
-WriterBBoxInterface *
+template< typename InputElementType, typename OutputElementType >
+WriterBBoxInterface &
 IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
-::GetComputationGroupWriterBBox( ComputationRecord & record )
+::GetComputationGroupWriterBBox(  SliceComputationRecord & record )
 {
 	return this->out->SetDirtyBBox( this->in->GetDimensionExtents( 0 ).minimum,
 			this->in->GetDimensionExtents( 1 ).minimum,

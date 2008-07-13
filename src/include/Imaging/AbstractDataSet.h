@@ -54,6 +54,9 @@ public:
 	bool 
 	TryLockDataset();
 
+	void 
+	LockDataset();
+
 	void
 	UnlockDataset();
 
