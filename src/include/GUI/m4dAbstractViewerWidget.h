@@ -21,6 +21,9 @@
 #define  ROTATEAXISX		16384
 #define  ROTATEAXISY		32768
 #define  ROTATEAXISZ		65536
+#define  SETSELECTED		131072
+#define  SETONESLICEMODE	262144
+#define  SETMORESLICEMODE	524288
 
 namespace M4D
 {
@@ -50,6 +53,8 @@ public slots:
     virtual void slotSetSelected( bool selected )=0;
     virtual void slotSetColorMode( ColorMode cm )=0;
     virtual void slotSetSliceNum( size_t num )=0;
+    virtual void slotSetOneSliceMode()=0;
+    virtual void slotSetMoreSliceMode( unsigned slicesPerRow )=0;
     virtual void slotZoom( int amount )=0;
     virtual void slotMoveH( int amount )=0;
     virtual void slotMoveV( int amount )=0;
@@ -70,6 +75,8 @@ signals:
     virtual void signalSetSelected( bool selected );
     virtual void signalSetColorMode( ColorMode cm );
     virtual void signalSetSliceNum( size_t num );
+    virtual void signalSetOneSliceMode();
+    virtual void signalSetMoreSliceMode( unsigned slicesPerRow );
     virtual void signalZoom( int amount );
     virtual void signalMoveH( int amount );
     virtual void signalMoveV( int amount );

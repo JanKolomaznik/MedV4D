@@ -102,10 +102,10 @@ m4dSliceViewerWidget::setParameters()
     _contrastRate = 0.0;
     _selectionMode = false;
     _printShapeData = false;
-    _oneSliceMode = true;
-    _selected = true;
-    _slicesPerRow = 1;
-    _availableSlots = SETBUTTONHANDLERS | SETSELECTHANDLERS | SETSELECTIONMODE | SETCOLORMODE | SETSLICENUM | ZOOM | MOVEH | MOVEV | ADJUSTBRIGHTNESS | ADJUSTCONTRAST | NEWPOINT | NEWSHAPE | DELETEPOINT | DELETESHAPE;
+    _oneSliceMode = false;
+    _selected = false;
+    _slicesPerRow = 3;
+    _availableSlots = SETBUTTONHANDLERS | SETSELECTHANDLERS | SETSELECTIONMODE | SETCOLORMODE | SETSLICENUM | ZOOM | MOVEH | MOVEV | ADJUSTBRIGHTNESS | ADJUSTCONTRAST | NEWPOINT | NEWSHAPE | DELETEPOINT | DELETESHAPE | SETSELECTED | SETONESLICEMODE | SETMORESLICEMODE;
     ButtonHandlers bh[] = { none_button, zoom, move_h, move_v, adjust_c, adjust_b };
     setButtonHandlers( bh );
     SelectHandlers ch[] = { new_point, delete_point, new_shape, delete_shape };
@@ -186,17 +186,50 @@ m4dSliceViewerWidget::setSelectHandlers( SelectHandlers* hnd )
     emit signalSetSelectHandlers( hnd );
 }
 
+void
+m4dSliceViewerWidget::setOneSliceMode()
+{
+    _slicesPerRow = 1;
+    _oneSliceMode = true;
+    emit signalSetOneSliceMode();
+}
 
+void
+m4dSliceViewerWidget::setMoreSliceMode( unsigned slicesPerRow )
+{
+    _slicesPerRow = slicesPerRow;
+    _oneSliceMode = false;
+    emit signalSetMoreSliceMode( slicesPerRow );
+}
 
 void
 m4dSliceViewerWidget::paintGL()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_ACCUM_BUFFER_BIT);
+    glClear( GL_COLOR_BUFFER_BIT );
+    unsigned i;
+    if ( _oneSliceMode ) drawSlice( _sliceNum, _zoomRate, _offset );
+    else for ( i = 0; i < _slicesPerRow * _slicesPerRow; ++i ) drawSlice( _sliceNum + i, 1./(double)_slicesPerRow,
+    									  QPoint( (i % _slicesPerRow) * ( height() / _slicesPerRow ) , ( i / _slicesPerRow ) * ( width() / _slicesPerRow ) ) );
+    if ( _selectionMode ) drawSelectionModeBorder();
+    if ( _selected ) drawSelectedBorder();
+    glFlush();
+}
+
+void
+m4dSliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset )
+{
+    if ( sliceNum < (int)_inPort.GetAbstractImage().GetDimensionExtents(2).minimum ||
+         sliceNum >= (int)_inPort.GetAbstractImage().GetDimensionExtents(2).maximum )
+        return;
+    glClear( GL_ACCUM_BUFFER_BIT );
     glLoadIdentity();
-    unsigned i, offsetx = _offset.x()<0?-_offset.x():0, offsety = _offset.y()<0?-_offset.y():0;
-    glRasterPos2i( _offset.x()>0?_offset.x():0, _offset.y()>0?_offset.y():0 );
-    glPixelStorei( GL_UNPACK_SKIP_PIXELS, (GLint)( offsetx / _zoomRate ) );
-    glPixelStorei( GL_UNPACK_SKIP_ROWS, (GLint)( offsety / _zoomRate ) );
+    unsigned i, offsetx = offset.x()<0?-offset.x():0, offsety = offset.y()<0?-offset.y():0;
+    glRasterPos2i( offset.x()>0?offset.x():0, offset.y()>0?offset.y():0 );
+    if ( _oneSliceMode )
+    {
+        glPixelStorei( GL_UNPACK_SKIP_PIXELS, (GLint)( offsetx / zoomRate ) );
+        glPixelStorei( GL_UNPACK_SKIP_ROWS, (GLint)( offsety / zoomRate ) );
+    }
     size_t height, width, depth;
     double maxvalue;
     int stride;
@@ -207,8 +240,8 @@ m4dSliceViewerWidget::paintGL()
 	{
 	    maxvalue = 255.;
 	    const uint8* pixel = (const uint8*)Imaging::Image< uint32, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
-	    pixel += ( _sliceNum - _inPort.GetAbstractImage().GetDimensionExtents(2).minimum ) * height * width * 4;
-    	    glPixelStorei( GL_UNPACK_ROW_LENGTH, width );
+	    pixel += ( sliceNum - _inPort.GetAbstractImage().GetDimensionExtents(2).minimum ) * height * width * 4;
+    	    if ( _oneSliceMode ) glPixelStorei( GL_UNPACK_ROW_LENGTH, width );
 	    uint8* black = new uint8[ 4 * height * width ];
 	    memset( black, 0, height * width * sizeof(uint32) );
 	    uint8* avgLum = new uint8[ height * width * 4 ];
@@ -218,11 +251,11 @@ m4dSliceViewerWidget::paintGL()
             avg = avg * maxvalue / (float)( width * height );
 	    for ( i = 0; i < height * width; ++i )
 	        avgLum[4*i] = avgLum[4*i + 1] = avgLum[4*i + 2] = (uint8)avg;
-	    glDrawPixels( width - (GLint)( offsetx / _zoomRate ), height - (GLint)( offsety / _zoomRate ), GL_RGBA, GL_UNSIGNED_BYTE, avgLum );
+	    glDrawPixels( width - (GLint)( offsetx / zoomRate ), height - (GLint)( offsety / zoomRate ), GL_RGBA, GL_UNSIGNED_BYTE, avgLum );
 	    glAccum( GL_ACCUM, _contrastRate );
-	    glDrawPixels( width - (GLint)( offsetx / _zoomRate ), height - (GLint)( offsety / _zoomRate ), GL_RGBA, GL_UNSIGNED_BYTE, black );
+	    glDrawPixels( width - (GLint)( offsetx / zoomRate ), height - (GLint)( offsety / zoomRate ), GL_RGBA, GL_UNSIGNED_BYTE, black );
 	    glAccum( GL_ACCUM, _brightnessRate );
-	    glDrawPixels( width - (GLint)( offsetx / _zoomRate ), height - (GLint)( offsety / _zoomRate ), GL_RGBA, GL_UNSIGNED_BYTE, pixel );
+	    glDrawPixels( width - (GLint)( offsetx / zoomRate ), height - (GLint)( offsety / zoomRate ), GL_RGBA, GL_UNSIGNED_BYTE, pixel );
 	    glAccum( GL_ACCUM, 1.0 - ( _brightnessRate + _contrastRate ) );
 	    glAccum( GL_RETURN, 1.0 );
 	    delete[] black;
@@ -234,8 +267,8 @@ m4dSliceViewerWidget::paintGL()
 	{    
 	    maxvalue = 255.;
 	    const uint8* pixel = Imaging::Image< uint8, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
-	    pixel += ( _sliceNum - _inPort.GetAbstractImage().GetDimensionExtents(2).minimum ) * height * width;
-    	    glPixelStorei( GL_UNPACK_ROW_LENGTH, width );
+	    pixel += ( sliceNum - _inPort.GetAbstractImage().GetDimensionExtents(2).minimum ) * height * width;
+    	    if ( _oneSliceMode ) glPixelStorei( GL_UNPACK_ROW_LENGTH, width );
 	    uint8* black = new uint8[ height * width ];
 	    memset( black, 0, height * width * sizeof(uint8) );
 	    uint8* avgLum = new uint8[ height * width ];
@@ -245,11 +278,11 @@ m4dSliceViewerWidget::paintGL()
             avg = avg * maxvalue / (float)( width * height );
 	    for ( i = 0; i < height * width; ++i )
 	        avgLum[i] = (uint8)avg;
-	    glDrawPixels( width - (GLint)( offsetx / _zoomRate ), height - (GLint)( offsety / _zoomRate ), GL_LUMINANCE, GL_UNSIGNED_BYTE, avgLum );
+	    glDrawPixels( width - (GLint)( offsetx / zoomRate ), height - (GLint)( offsety / zoomRate ), GL_LUMINANCE, GL_UNSIGNED_BYTE, avgLum );
 	    glAccum( GL_ACCUM, _contrastRate );
-	    glDrawPixels( width - (GLint)( offsetx / _zoomRate ), height - (GLint)( offsety / _zoomRate ), GL_LUMINANCE, GL_UNSIGNED_BYTE, black );
+	    glDrawPixels( width - (GLint)( offsetx / zoomRate ), height - (GLint)( offsety / zoomRate ), GL_LUMINANCE, GL_UNSIGNED_BYTE, black );
 	    glAccum( GL_ACCUM, _brightnessRate );
-	    glDrawPixels( width - (GLint)( offsetx / _zoomRate ), height - (GLint)( offsety / _zoomRate ), GL_LUMINANCE, GL_UNSIGNED_BYTE, pixel );
+	    glDrawPixels( width - (GLint)( offsetx / zoomRate ), height - (GLint)( offsety / zoomRate ), GL_LUMINANCE, GL_UNSIGNED_BYTE, pixel );
 	    glAccum( GL_ACCUM, 1.0 - ( _brightnessRate + _contrastRate ) );
 	    glAccum( GL_RETURN, 1.0 );
 	    delete[] black;
@@ -261,8 +294,8 @@ m4dSliceViewerWidget::paintGL()
 	{
 	    maxvalue = 65535.;
 	    const uint16* pixel = Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort.GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
-	    pixel += ( _sliceNum - _inPort.GetAbstractImage().GetDimensionExtents(2).minimum ) * height * width;
-    	    glPixelStorei( GL_UNPACK_ROW_LENGTH, width );
+	    pixel += ( sliceNum - _inPort.GetAbstractImage().GetDimensionExtents(2).minimum ) * height * width;
+    	    if ( _oneSliceMode ) glPixelStorei( GL_UNPACK_ROW_LENGTH, width );
 	    uint16* black = new uint16[ height * width ];
 	    memset( black, 0, height * width * sizeof(uint16) );
 	    uint16* avgLum = new uint16[ height * width ];
@@ -272,11 +305,11 @@ m4dSliceViewerWidget::paintGL()
             avg = avg * maxvalue / (float)( width * height );
 	    for ( i = 0; i < height * width; ++i )
 	        avgLum[i] = (uint16)avg;
-	    glDrawPixels( width - (GLint)( offsetx / _zoomRate ), height - (GLint)( offsety / _zoomRate ), GL_LUMINANCE, GL_UNSIGNED_SHORT, avgLum );
+	    glDrawPixels( width - (GLint)( offsetx / zoomRate ), height - (GLint)( offsety / zoomRate ), GL_LUMINANCE, GL_UNSIGNED_SHORT, avgLum );
 	    glAccum( GL_ACCUM, _contrastRate );
-	    glDrawPixels( width - (GLint)( offsetx / _zoomRate ), height - (GLint)( offsety / _zoomRate ), GL_LUMINANCE, GL_UNSIGNED_SHORT, black );
+	    glDrawPixels( width - (GLint)( offsetx / zoomRate ), height - (GLint)( offsety / zoomRate ), GL_LUMINANCE, GL_UNSIGNED_SHORT, black );
 	    glAccum( GL_ACCUM, _brightnessRate );
-	    glDrawPixels( width - (GLint)( offsetx / _zoomRate ), height - (GLint)( offsety / _zoomRate ), GL_LUMINANCE, GL_UNSIGNED_SHORT, pixel );
+	    glDrawPixels( width - (GLint)( offsetx / zoomRate ), height - (GLint)( offsety / zoomRate ), GL_LUMINANCE, GL_UNSIGNED_SHORT, pixel );
 	    glAccum( GL_ACCUM, 1.0 - ( _brightnessRate + _contrastRate ) );
 	    glAccum( GL_RETURN, 1.0 );
 	    delete[] black;
@@ -285,15 +318,12 @@ m4dSliceViewerWidget::paintGL()
 	break;
 
     }
-    glPixelZoom( _zoomRate, _zoomRate );
-    glTranslatef( _offset.x(), _offset.y(), 0 );
-    glScalef( _zoomRate, _zoomRate, 0. );
+    glPixelZoom( zoomRate, zoomRate );
+    glTranslatef( offset.x(), offset.y(), 0 );
+    glScalef( zoomRate, zoomRate, 0. );
     for ( std::list< Selection::m4dShape<int> >::iterator it = _shapes.begin(); it != --(_shapes.end()); ++it )
-        drawShape( *it, false );
-    if ( !_shapes.empty() ) drawShape( *(--(_shapes.end())), true );
-    if ( _selectionMode ) drawSelectionModeBorder();
-    if ( _selected ) drawSelectedBorder();
-    glFlush();
+        drawShape( *it, false, sliceNum );
+    if ( !_shapes.empty() ) drawShape( *(--(_shapes.end())), true, sliceNum );
 }
 
 void
@@ -343,12 +373,12 @@ m4dSliceViewerWidget::drawSelectedBorder()
 }
 
 void
-m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last )
+m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int sliceNum )
 {
     if ( last ) glColor3f( 1., 0., 0. );
     else glColor3f( 0., 0., 1. );
     if ( s.shapeClosed() && s.shapeElements().size() > 1 &&
-	  s.shapeElements().back().getParticularValue( 2 ) == _sliceNum )
+	  s.shapeElements().back().getParticularValue( 2 ) == sliceNum )
     {
         glBegin(GL_LINES);
 	    glVertex2i( s.shapeElements().front().getParticularValue( 0 ), s.shapeElements().front().getParticularValue( 1 ) );
@@ -373,7 +403,7 @@ m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last )
     {
         Selection::m4dPoint< int > c = s.getCentroid();
 	float a = s.getArea();
-	if ( a > 0 && _sliceNum == c.getParticularValue( 2 ) )
+	if ( a > 0 && sliceNum == c.getParticularValue( 2 ) )
 	{
 	    if ( last ) glColor3f( 1., 0.5, 0. );
 	    else glColor3f( 0., 0.5, 1. );
@@ -394,7 +424,7 @@ m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last )
 	}
     }
     for ( std::list< Selection::m4dPoint<int> >::iterator it = s.shapeElements().begin(); it != s.shapeElements().end(); ++it )
-        if  ( it->getParticularValue( 2 ) == _sliceNum )
+        if  ( it->getParticularValue( 2 ) == sliceNum )
         {
 	    if ( &(*it) != &(s.shapeElements().back()) )
 	    {
@@ -448,16 +478,36 @@ m4dSliceViewerWidget::mousePressEvent(QMouseEvent *event)
         if ( event->modifiers() & Qt::ControlModifier )
 	{
 	    if ( event->buttons() & Qt::LeftButton )
-	        (this->*_selectMethods[1][0])( (int)( ( event->x() - _offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - _offset.y() ) / _zoomRate ), _sliceNum );
+	    {
+	        if ( _oneSliceMode ) (this->*_selectMethods[1][0])( (int)( ( event->x() - _offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - _offset.y() ) / _zoomRate ), _sliceNum );
+		else (this->*_selectMethods[1][0])( (int)( ( event->x() % ( width() / _slicesPerRow ) ) * _slicesPerRow ),
+						    (int)( ( ( this->height() - event->y() ) % ( height() / _slicesPerRow ) ) * _slicesPerRow ),
+						    _sliceNum + event->x() / (int)( width() / _slicesPerRow ) + _slicesPerRow * ( ( this->height() - event->y() ) / (int)( height() / _slicesPerRow ) ) );
+	    }
 	    else if ( event->buttons() & Qt::RightButton )
-	        (this->*_selectMethods[1][1])( (int)( ( event->x() - _offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - _offset.y() ) / _zoomRate ), _sliceNum );
+	    {
+	        if ( _oneSliceMode ) (this->*_selectMethods[1][1])( (int)( ( event->x() - _offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - _offset.y() ) / _zoomRate ), _sliceNum );
+		else (this->*_selectMethods[1][1])( (int)( ( event->x() % ( width() / _slicesPerRow ) ) * _slicesPerRow ),
+						    (int)( ( ( this->height() - event->y() ) % ( height() / _slicesPerRow ) ) * _slicesPerRow ),
+						    _sliceNum + event->x() / (int)( width() / _slicesPerRow ) + _slicesPerRow * ( ( this->height() - event->y() ) / (int)( height() / _slicesPerRow ) ) );
+	    }
 	}
 	else
 	{
 	    if ( event->buttons() & Qt::LeftButton )
-	        (this->*_selectMethods[0][0])( (int)( ( event->x() - _offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - _offset.y() ) / _zoomRate ), _sliceNum );
+	    {
+	        if ( _oneSliceMode ) (this->*_selectMethods[0][0])( (int)( ( event->x() - _offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - _offset.y() ) / _zoomRate ), _sliceNum );
+		else (this->*_selectMethods[0][0])( (int)( ( event->x() % ( width() / _slicesPerRow ) ) * _slicesPerRow ),
+						    (int)( ( ( this->height() - event->y() ) % ( height() / _slicesPerRow ) ) * _slicesPerRow ),
+						    _sliceNum + event->x() / (int)( width() / _slicesPerRow ) + _slicesPerRow * ( ( this->height() - event->y() ) / (int)( height() / _slicesPerRow ) ) );
+	    }
 	    else if ( event->buttons() & Qt::RightButton )
-	        (this->*_selectMethods[0][1])( (int)( ( event->x() - _offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - _offset.y() ) / _zoomRate ), _sliceNum );
+	    {
+	        if ( _oneSliceMode ) (this->*_selectMethods[0][1])( (int)( ( event->x() - _offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - _offset.y() ) / _zoomRate ), _sliceNum );
+		else (this->*_selectMethods[0][1])( (int)( ( event->x() % ( width() / _slicesPerRow ) ) * _slicesPerRow ),
+						    (int)( ( ( this->height() - event->y() ) % ( height() / _slicesPerRow ) ) * _slicesPerRow ),
+						    _sliceNum + event->x() / (int)( width() / _slicesPerRow ) + _slicesPerRow * ( ( this->height() - event->y() ) / (int)( height() / _slicesPerRow ) ) );
+	    }
 	}
     }
 
@@ -532,7 +582,7 @@ m4dSliceViewerWidget::wheelEvent(QWheelEvent *event)
         int numSteps = numDegrees / 15;
         try
         {
-            setSliceNum( _sliceNum + numSteps );
+            setSliceNum( _sliceNum + numSteps * _slicesPerRow );
         }
         catch (...)
         {
@@ -744,6 +794,18 @@ void
 m4dSliceViewerWidget::slotSetSelected( bool selected )
 {
     setSelected( selected );
+}
+
+void
+m4dSliceViewerWidget::slotSetOneSliceMode()
+{
+    setOneSliceMode();
+}
+
+void
+m4dSliceViewerWidget::slotSetMoreSliceMode( unsigned slicesPerRow )
+{
+    setMoreSliceMode( slicesPerRow );
 }
 
 void

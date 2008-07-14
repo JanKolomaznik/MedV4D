@@ -49,6 +49,8 @@ public slots:
     virtual void slotSetSelected( bool selected );
     virtual void slotSetColorMode( ColorMode cm );
     virtual void slotSetSliceNum( size_t num );
+    virtual void slotSetOneSliceMode();
+    virtual void slotSetMoreSliceMode( unsigned slicesPerRow );
     virtual void slotZoom( int amount );
     virtual void slotMoveH( int amount );
     virtual void slotMoveV( int amount );
@@ -63,6 +65,8 @@ public slots:
     virtual void slotRotateAxisZ( int z );
 
 protected:
+    void setOneSliceMode();
+    void setMoreSliceMode( unsigned slicesPerRow );
     void setColorMode( ColorMode cm );
     void paintGL();
     void resizeGL(int winW, int winH);
@@ -88,7 +92,8 @@ private:
     void setParameters();
     void drawSelectionModeBorder();
     void drawSelectedBorder();
-    void drawShape( Selection::m4dShape<int>& s, bool last );
+    void drawSlice( int sliceNum, double zoomRate, QPoint offset );
+    void drawShape( Selection::m4dShape<int>& s, bool last, int sliceNum );
 
     typedef void (M4D::Viewer::m4dSliceViewerWidget::*ButtonMethods)( int amount );
     typedef void (M4D::Viewer::m4dSliceViewerWidget::*SelectMethods)( int x, int y, int z );
