@@ -7,7 +7,6 @@
 #include <iostream>
 #include <QApplication>
 #include "window.h"
-#include <GL/glut.h>
 
 
 using namespace M4D::Imaging;
@@ -21,8 +20,6 @@ typedef ImageConnectionSimple< Image3DType > ProducerConn;
 int
 main( int argc, char** argv )
 {
-
-	glutInit( &argc, argv );
 
 	ProducerConn prodconn;
 
