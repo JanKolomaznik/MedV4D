@@ -12,8 +12,9 @@
 #ifndef _FONTS_H
 #define _FONTS_H
 
-#include "GUI/ogl/base.h"
-#include "GUI/ogl/vector.h"
+#define SINGLE(x)   (static_cast<float>(x))
+
+typedef unsigned char  unsigned8;
 
 //--- bitmap fonts drawing -------------------------------
 
