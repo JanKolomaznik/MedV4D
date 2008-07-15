@@ -12,8 +12,8 @@
 #ifndef _FONTS_H
 #define _FONTS_H
 
-#include "base.h"
-#include "vector.h"
+#include "GUI/ogl/base.h"
+#include "GUI/ogl/vector.h"
 
 //--- bitmap fonts drawing -------------------------------
 
