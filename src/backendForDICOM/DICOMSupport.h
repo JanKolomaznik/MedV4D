@@ -13,23 +13,23 @@ static void GetTableRowFromDataSet(
 {
   OFString str;
 	ds->findAndGetOFString( DCM_PatientsName, str);
-	row->patientName = str.c_str();
+	row->name = str.c_str();
 
 	ds->findAndGetOFString( DCM_PatientID, str);
-	row->patentID = str.c_str();
+	row->patientID = str.c_str();
 
 	ds->findAndGetOFString( DCM_PatientsBirthDate, str);
-	row->patientBirthDate = str.c_str();
+	row->birthDate = str.c_str();
 
 	ds->findAndGetOFString( DCM_PatientsSex, str);
-	row->patientSex = (str == "M");	// M = true
+	row->sex = (str == "M");	// M = true
 
 	// study info
 	ds->findAndGetOFString( DCM_StudyInstanceUID, str);
 	row->studyID = str.c_str();
 
 	ds->findAndGetOFString( DCM_StudyDate, str);
-	row->studyDate = str.c_str();
+	row->date = str.c_str();
 
 	ds->findAndGetOFString( DCM_Modality, str);
 	row->modality = str.c_str();

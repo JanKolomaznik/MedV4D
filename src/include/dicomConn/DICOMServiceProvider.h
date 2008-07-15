@@ -39,13 +39,23 @@ public:
 	// represents one row in table that shows found results
 	struct TableRow 
   {
-		std::string patientName;
-		bool patientSex;
-		std::string patientBirthDate;
-		std::string patentID;
+    std::string patientID;
+		std::string name;
+    std::string accesion;
+    std::string modality;
+    std::string description;
+		std::string date;
+    std::string time;
 		std::string studyID;
-		std::string studyDate;
-		std::string modality;
+		bool sex;
+		std::string birthDate;
+    std::string referringMD;
+    std::string institution;
+    std::string location;
+    std::string server;
+    std::string availability;
+    std::string status;
+    std::string user;
 	};
 
 	typedef std::vector<TableRow> ResultSet;

@@ -19,12 +19,13 @@ using namespace std;
 #define DICOMDIR_NAME                       "DICOMDIR"
 
 /// Number of exam/image attributes (e.g in study tables)
-#define ATTRIBUTE_NUMBER   14
+#define ATTRIBUTE_NUMBER   17
 /// Names of exam/image attributes (e.g in study tables)
 const char *StManagerStudyListComp::attributeNames[] = { "Patient ID", "Name", "Accesion", "Modality",
                                                          "Description", "Date", "Time", "Study ID", "Sex",
                                                          "Birthdate", "Referring MD", "Institution",
-                                                         "Location", "Server" };
+                                                         "Location", "Server", "Availability", "Status",
+                                                         "User" };
 /// Name of the array in QSettings - for saving recent remote exams
 #define RECENT_REMOTE_EXAMS_SETTINGS_NAME   "recentRemoteExams"
 /// Name of the array in QSettings - for saving recent DICOMDIR
@@ -265,20 +266,20 @@ void StManagerStudyListComp::view ()
       if ( recentRemoteButton->isChecked() )
       {
         // find some info about selected study
-        dcmProvider->FindStudyInfo( row->patentID, row->studyID, studyInfo );
+        dcmProvider->FindStudyInfo( row->patientID, row->studyID, studyInfo );
 
         // if( studyInfo.size() > 1) showSomeChoosingDialog()
         // now get image
-        dcmProvider->GetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjectSet );  
+        dcmProvider->GetImageSet( row->patientID, row->studyID, studyInfo[0], *dicomObjectSet );  
       }
       else
       {
         // find some info about selected study
-        dcmProvider->LocalFindStudyInfo( row->patentID, row->studyID, studyInfo );
+        dcmProvider->LocalFindStudyInfo( row->patientID, row->studyID, studyInfo );
 
         // if( studyInfo.size() > 1) showSomeChoosingDialog()
         // now get image
-        dcmProvider->LocalGetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjectSet );
+        dcmProvider->LocalGetImageSet( row->patientID, row->studyID, studyInfo[0], *dicomObjectSet );
 
         recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
       }
@@ -287,21 +288,21 @@ void StManagerStudyListComp::view ()
     case 1:
       // Remote Exams tab active
       // find some info about selected study
-      dcmProvider->FindStudyInfo( row->patentID, row->studyID, studyInfo );
+      dcmProvider->FindStudyInfo( row->patientID, row->studyID, studyInfo );
 
       // if( studyInfo.size() > 1) showSomeChoosingDialog()
       // now get image
-      dcmProvider->GetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjectSet );
+      dcmProvider->GetImageSet( row->patientID, row->studyID, studyInfo[0], *dicomObjectSet );
       break;
 
     case 2:
       // DICOMDIR tab active
       // find some info about selected study
-      dcmProvider->LocalFindStudyInfo( row->patentID, row->studyID, studyInfo );
+      dcmProvider->LocalFindStudyInfo( row->patientID, row->studyID, studyInfo );
 
       // if( studyInfo.size() > 1) showSomeChoosingDialog()
       // now get image
-      dcmProvider->LocalGetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjectSet );
+      dcmProvider->LocalGetImageSet( row->patientID, row->studyID, studyInfo[0], *dicomObjectSet );
 
       recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
       break;
@@ -310,20 +311,20 @@ void StManagerStudyListComp::view ()
       if ( recentRemoteButton->isChecked() )
       {
         // find some info about selected study
-        dcmProvider->FindStudyInfo( row->patentID, row->studyID, studyInfo );
+        dcmProvider->FindStudyInfo( row->patientID, row->studyID, studyInfo );
 
         // if( studyInfo.size() > 1) showSomeChoosingDialog()
         // now get image
-        dcmProvider->GetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjectSet );  
+        dcmProvider->GetImageSet( row->patientID, row->studyID, studyInfo[0], *dicomObjectSet );  
       }
       else
       {
         // find some info about selected study
-        dcmProvider->LocalFindStudyInfo( row->patentID, row->studyID, studyInfo );
+        dcmProvider->LocalFindStudyInfo( row->patientID, row->studyID, studyInfo );
 
         // if( studyInfo.size() > 1) showSomeChoosingDialog()
         // now get image
-        dcmProvider->LocalGetImageSet( row->patentID, row->studyID, studyInfo[0], *dicomObjectSet );
+        dcmProvider->LocalGetImageSet( row->patientID, row->studyID, studyInfo[0], *dicomObjectSet );
 
         recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
       }
@@ -450,21 +451,21 @@ void StManagerStudyListComp::addRowToStudyTable ( const DcmProvider::TableRow *r
   table->setRowCount( rowNum + 1 );
 
   vector< QTableWidgetItem * > tableRowItems;
-  tableRowItems.push_back( new QTableWidgetItem( QString( row->patentID.c_str() ) ) );
-  tableRowItems.push_back( new QTableWidgetItem( QString( row->patientName.c_str() ) ) );
+  tableRowItems.push_back( new QTableWidgetItem( QString( row->patientID.c_str() ) ) );
+  tableRowItems.push_back( new QTableWidgetItem( QString( row->name.c_str() ) ) );
   // Accesion:
   tableRowItems.push_back( new QTableWidgetItem( QString( "" ) ) ); 
   tableRowItems.push_back( new QTableWidgetItem( QString( row->modality.c_str() ) ) );
   // Description:
   tableRowItems.push_back( new QTableWidgetItem( QString( "" ) ) );
-  QDate studyDate = QDate::fromString( QString( row->studyDate.c_str() ), "yyyyMMdd" );
+  QDate studyDate = QDate::fromString( QString( row->date.c_str() ), "yyyyMMdd" );
   tableRowItems.push_back( new QTableWidgetItem( studyDate.toString( "dd. MM. yyyy" ) ) );
   // Time:
   tableRowItems.push_back( new QTableWidgetItem( QString( "" ) ) );
   tableRowItems.push_back( new QTableWidgetItem( QString( row->studyID.c_str() ) ) );
-  tableRowItems.push_back( new QTableWidgetItem( row->patientSex ? QString( tr( "male" ) ) : 
+  tableRowItems.push_back( new QTableWidgetItem( row->sex ? QString( tr( "male" ) ) : 
                                                                    QString( tr( "female" ) ) ) );
-  QDate patientBirthDate = QDate::fromString( QString( row->patientBirthDate.c_str() ), "yyyyMMdd" );
+  QDate patientBirthDate = QDate::fromString( QString( row->birthDate.c_str() ), "yyyyMMdd" );
   tableRowItems.push_back( new QTableWidgetItem( patientBirthDate.toString( "dd. MM. yyyy" ) ) );
   // And the others....
 
@@ -525,25 +526,25 @@ void StManagerStudyListComp::loadRecentExams ( DcmProvider::ResultSet &resultSet
 void StManagerStudyListComp::updateRecentRow ( const DcmProvider::TableRow *row, QSettings &settings )
 {
   // some are missing....
-  settings.setValue( attributeNames[0], row->patentID.c_str() );
-  settings.setValue( attributeNames[1], row->patientName.c_str() );
+  settings.setValue( attributeNames[0], row->patientID.c_str() );
+  settings.setValue( attributeNames[1], row->name.c_str() );
   settings.setValue( attributeNames[3], row->modality.c_str() );
-  settings.setValue( attributeNames[5], row->studyDate.c_str() );
+  settings.setValue( attributeNames[5], row->date.c_str() );
   settings.setValue( attributeNames[7], row->studyID.c_str() );
-  settings.setValue( attributeNames[8], row->patientSex );
-  settings.setValue( attributeNames[9], row->patientBirthDate.c_str() );
+  settings.setValue( attributeNames[8], row->sex );
+  settings.setValue( attributeNames[9], row->birthDate.c_str() );
 }
 
 
 void StManagerStudyListComp::loadRecentRow ( DcmProvider::TableRow &row, const QSettings &settings )
 {
-  row.patentID         = settings.value( attributeNames[0] ).toString().toStdString();
-  row.patientName      = settings.value( attributeNames[1] ).toString().toStdString();
-  row.modality         = settings.value( attributeNames[3] ).toString().toStdString();
-  row.studyDate        = settings.value( attributeNames[5] ).toString().toStdString();
-  row.studyID          = settings.value( attributeNames[7] ).toString().toStdString();
-  row.patientSex       = settings.value( attributeNames[8] ).toBool();
-  row.patientBirthDate = settings.value( attributeNames[9] ).toString().toStdString();
+  row.patientID = settings.value( attributeNames[0] ).toString().toStdString();
+  row.name      = settings.value( attributeNames[1] ).toString().toStdString();
+  row.modality  = settings.value( attributeNames[3] ).toString().toStdString();
+  row.date      = settings.value( attributeNames[5] ).toString().toStdString();
+  row.studyID   = settings.value( attributeNames[7] ).toString().toStdString();
+  row.sex       = settings.value( attributeNames[8] ).toBool();
+  row.birthDate = settings.value( attributeNames[9] ).toString().toStdString();
 }
 
 
