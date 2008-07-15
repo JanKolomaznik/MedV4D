@@ -93,7 +93,7 @@ private:
     void drawSelectionModeBorder();
     void drawSelectedBorder();
     void drawSlice( int sliceNum, double zoomRate, QPoint offset );
-    void drawShape( Selection::m4dShape<int>& s, bool last, int sliceNum );
+    void drawShape( Selection::m4dShape<int>& s, bool last, int sliceNum, float zoomRate );
 
     typedef void (M4D::Viewer::m4dSliceViewerWidget::*ButtonMethods)( int amount );
     typedef void (M4D::Viewer::m4dSliceViewerWidget::*SelectMethods)( int x, int y, int z );

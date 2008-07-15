@@ -1,7 +1,7 @@
 #include "GUI/m4dSliceViewerWidget.h"
 
 #include <QtGui>
-#include <GL/glut.h>
+#include "GUI/ogl/fonts.h"
 #include <string.h>
 
 #define MINIMUM_SELECT_DISTANCE 5
@@ -102,9 +102,9 @@ m4dSliceViewerWidget::setParameters()
     _contrastRate = 0.0;
     _selectionMode = false;
     _printShapeData = false;
-    _oneSliceMode = false;
+    _oneSliceMode = true;
     _selected = false;
-    _slicesPerRow = 3;
+    _slicesPerRow = 1;
     _availableSlots = SETBUTTONHANDLERS | SETSELECTHANDLERS | SETSELECTIONMODE | SETCOLORMODE | SETSLICENUM | ZOOM | MOVEH | MOVEV | ADJUSTBRIGHTNESS | ADJUSTCONTRAST | NEWPOINT | NEWSHAPE | DELETEPOINT | DELETESHAPE | SETSELECTED | SETONESLICEMODE | SETMORESLICEMODE;
     ButtonHandlers bh[] = { none_button, zoom, move_h, move_v, adjust_c, adjust_b };
     setButtonHandlers( bh );
@@ -322,8 +322,8 @@ m4dSliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset )
     glTranslatef( offset.x(), offset.y(), 0 );
     glScalef( zoomRate, zoomRate, 0. );
     for ( std::list< Selection::m4dShape<int> >::iterator it = _shapes.begin(); it != --(_shapes.end()); ++it )
-        drawShape( *it, false, sliceNum );
-    if ( !_shapes.empty() ) drawShape( *(--(_shapes.end())), true, sliceNum );
+        drawShape( *it, false, sliceNum, zoomRate );
+    if ( !_shapes.empty() ) drawShape( *(--(_shapes.end())), true, sliceNum, zoomRate );
 }
 
 void
@@ -373,7 +373,7 @@ m4dSliceViewerWidget::drawSelectedBorder()
 }
 
 void
-m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int sliceNum )
+m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int sliceNum, float zoomRate )
 {
     if ( last ) glColor3f( 1., 0., 0. );
     else glColor3f( 0., 0., 1. );
@@ -392,10 +392,11 @@ m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int sli
 	    char dist[20];
 	    snprintf( dist, 19, "%f", Selection::m4dPoint< int >::distance( s.shapeElements().front(), s.shapeElements().back() ) );
 	    dist[19] = 0;
-	    glRasterPos2i( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
-	    unsigned i;
-	    for ( i = 0; i < strlen(dist); ++i ) glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, dist[i] );
-            if ( last ) glColor3f( 1., 0., 0. );
+	    setTextPosition( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
+	    setTextCoords( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
+            drawText( dist );
+	    unsetTextCoords();
+	    if ( last ) glColor3f( 1., 0., 0. );
             else glColor3f( 0., 0., 1. );
 	}
     }
@@ -416,9 +417,10 @@ m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int sli
 	    char area[20];
 	    snprintf( area, 19, "%f", a );
 	    area[19] = 0;
-	    glRasterPos2i( c.getParticularValue( 0 ) - 5, c.getParticularValue( 1 ) + 5 );
-	    unsigned i;
-	    for ( i = 0; i < strlen(area); ++i ) glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, area[i] );
+	    setTextPosition( c.getParticularValue( 0 ) - 5, c.getParticularValue( 1 ) + 5 );
+	    setTextCoords( c.getParticularValue( 0 ) - 5, c.getParticularValue( 1 ) + 5 );
+	    drawText( area );
+	    unsetTextCoords();
 	    if ( last ) glColor3f( 1., 0., 0. );
 	    else glColor3f( 0., 0., 1. );
 	}
@@ -442,9 +444,10 @@ m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int sli
 	            char dist[20];
 	            snprintf( dist, 19, "%f", Selection::m4dPoint< int >::distance( *it, *tmp ) );
 	            dist[19] = 0;
-	            glRasterPos2i( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
-	            unsigned i;
-	            for ( i = 0; i < strlen(dist); ++i ) glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, dist[i] );
+		    setTextPosition( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
+		    setTextCoords( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
+	            drawText( dist );
+		    unsetTextCoords();
                     if ( last ) glColor3f( 1., 0., 0. );
                     else glColor3f( 0., 0., 1. );
 	        }
