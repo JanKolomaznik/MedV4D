@@ -24,11 +24,13 @@ class m4dSliceViewerWidget : public m4dAbstractViewerWidget, public QGLWidget
     Q_OBJECT
 
 public:
+    m4dSliceViewerWidget( QWidget *parent = 0 );
     m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint32, 3 > >& conn, QWidget *parent = 0 );
     m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint16, 3 > >& conn, QWidget *parent = 0 );
     m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint8, 3 > >& conn, QWidget *parent = 0 );
     ~m4dSliceViewerWidget();
     Imaging::InputPortAbstractImage& getInputPort();
+    void setInputPort();
     void setInputPort( Imaging::ImageConnection< Imaging::Image< uint32, 3 > >& conn );
     void setInputPort( Imaging::ImageConnection< Imaging::Image< uint16, 3 > >& conn );
     void setInputPort( Imaging::ImageConnection< Imaging::Image< uint8, 3 > >& conn );
