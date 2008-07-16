@@ -68,7 +68,7 @@ LocalService::Find(
 
 void
 LocalService::FindStudyInfo( 
-    DcmProvider::StringVector &result,
+      DcmProvider::SerieInfoVector &result,
       const std::string &patientID,
 			const std::string &studyID)
 {
@@ -83,8 +83,8 @@ LocalService::FindStudyInfo(
   else
   {
     // copy content of found set into result
-    SetIDsInStudy *setIDs = &found->second;
-    for( SetIDsInStudy::iterator i=setIDs->begin(); i != setIDs->end(); i++)
+    SeriesInStudy *info = &found->second;
+    for( SeriesInStudy::iterator i=info->begin(); i != info->end(); i++)
       result.push_back( *i);
   }
 }
@@ -188,22 +188,28 @@ LocalService::SolveFile(
     GetTableRowFromDataSet( dataSet, &row);
     result.push_back( row);
 
+    SeriesInStudy::value_type item;
+    GetSeriesInfo( dataSet, &item);
+
     // put entry into set
-    SetIDsInStudy buddy;
-    buddy.insert( SetIDsInStudy::value_type( setID) );
+    SeriesInStudy buddy;
+    buddy.insert( SeriesInStudy::value_type( item) );
 
     m_setOfEntries.insert( SetOfEntries::value_type( entry, buddy) );
   }
   else
   {
+    SeriesInStudy::value_type item;
+    GetSeriesInfo( dataSet, &item);
+
     // check if setID is already in found record
-    SetIDsInStudy *foundRecSetIDs = &found->second;
-    SetIDsInStudy::iterator stud = foundRecSetIDs->find(setID);
+    SeriesInStudy *foundRecSetIDs = &found->second;
+    SeriesInStudy::iterator stud = foundRecSetIDs->find( item);
     
     if( stud == foundRecSetIDs->end() )
     {
       // if not, insert it
-      foundRecSetIDs->insert( SetIDsInStudy::value_type( setID) );
+      foundRecSetIDs->insert( SeriesInStudy::value_type( item) );
     }
   }
 }

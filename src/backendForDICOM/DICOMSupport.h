@@ -34,6 +34,20 @@ static void GetTableRowFromDataSet(
 	ds->findAndGetOFString( DCM_Modality, str);
 	row->modality = str.c_str();
 }
+
+/**
+ * Retrive data for DcmProvider::SerieInfo from given dataSet
+ */
+static void GetSeriesInfo( DcmDataset *ds, DcmProvider::SerieInfo *sInfo)
+{
+  OFString str;
+	// Parse the response
+	ds->findAndGetOFString( DCM_SeriesInstanceUID, str);
+  sInfo->id = str.c_str();
+
+  ds->findAndGetOFString( DCM_SeriesDescription, str);
+  sInfo->description = str.c_str();
+}
 	
 #endif
 

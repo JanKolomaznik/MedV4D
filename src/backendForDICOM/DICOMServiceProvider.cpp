@@ -78,7 +78,7 @@ void
 DcmProvider::LocalFindStudyInfo( 
       const std::string &patientID,
 			const std::string &studyID,
-      StringVector &info)
+      SerieInfoVector &info)
 {
   static_cast<LocalService *>(m_localService)->FindStudyInfo( 
     info, patientID, studyID);
@@ -103,7 +103,7 @@ void
 DcmProvider::FindStudyInfo(
 		const string &patientID,
 		const string &studyID,
-		StringVector &info) 
+		SerieInfoVector &info) 
 {
 	static_cast<FindService *>(m_findService)->FindStudyInfo(
 		patientID, studyID, info);

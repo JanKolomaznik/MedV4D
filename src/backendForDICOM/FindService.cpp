@@ -320,7 +320,7 @@ void
 FindService::FindStudyInfo(
 		const string &patientID,
 		const string &studyID,
-		DcmProvider::StringVector &seriesIDs) 
+    DcmProvider::SerieInfoVector &seriesIDs) 
 {
 	// create query
 	DcmDataset *query = NULL;
@@ -454,18 +454,15 @@ FindService::StudyInfoCallback(
      *                              mask of the C-FIND-RQ which was sent.
      */
 {
-	OFString str;
-	string setID;
-
-	// Parse the response
-	responseIdentifiers->findAndGetOFString( DCM_SeriesInstanceUID, str);
-	setID = str.c_str();
+  DcmProvider::SerieInfo seriesInfo;
+  
+  GetSeriesInfo( responseIdentifiers, &seriesInfo);
 
 	// get container that recieved values should go into
-	DcmProvider::StringVector *setInfo = 
-		static_cast<DcmProvider::StringVector *>(callbackData);
+  DcmProvider::SerieInfoVector *setInfo = 
+		static_cast<DcmProvider::SerieInfoVector *>(callbackData);
 
-	setInfo->push_back( setID);
+	setInfo->push_back( seriesInfo);
   D_PRINT( "Next record into study info arrived ...");
 }
 

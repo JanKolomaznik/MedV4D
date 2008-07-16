@@ -109,7 +109,7 @@ class FindService : AbstractService
 	void FindStudyInfo(
 		const string &patientID,
 		const string &studyID,
-		Dicom::DcmProvider::StringVector &seriesIDs); 
+    Dicom::DcmProvider::SerieInfoVector &seriesIDs); 
 
 	
 };

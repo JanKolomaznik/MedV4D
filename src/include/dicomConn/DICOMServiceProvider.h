@@ -41,31 +41,45 @@ public:
   {
     std::string patientID;
 		std::string name;
+    std::string birthDate;
+    bool sex;
     std::string accesion;
     std::string modality;
     std::string description;
-		std::string date;
     std::string time;
+		std::string date;
 		std::string studyID;
-		bool sex;
-		std::string birthDate;
     std::string referringMD;
-    std::string institution;
-    std::string location;
-    std::string server;
-    std::string availability;
-    std::string status;
-    std::string user;
+    //std::string institution;
+    //std::string location;
+    //std::string server;
+    //std::string availability;
+    //std::string status;
+    //std::string user;
 	};
 
+  /// type for result set. It is vector of table rows
 	typedef std::vector<TableRow> ResultSet;
 
-	// vector of image IDs
-	typedef std::vector<std::string> StringVector;
+  struct SerieInfo
+  {
+    std::string id;
+    std::string description;
+
+    bool operator <( const SerieInfo &b) const
+    {
+      return (id + description).compare( b.id + b.description) < 0;
+    }
+  };
+  typedef std::vector<SerieInfo> SerieInfoVector;
+
 	// vector of M4DSetInfo
+  typedef std::vector<std::string> StringVector;
 	typedef std::map<std::string, StringVector> StudyInfo;
 
+  // container for one series of images
 	typedef std::vector<DicomObj> DicomObjSet;
+  // shared pointer to DicomObjSet
 	typedef boost::shared_ptr< DicomObjSet > DicomObjSetPtr;
 
 	// METHODs ////////////////////////////////////////////////////////////
@@ -105,7 +119,7 @@ public:
 	void FindStudyInfo(
 		const std::string &patientID,
 		const std::string &studyID,
-		StringVector &info) ;
+		SerieInfoVector &info) ;
 
   /**
    *  The same as FindStudyInfo. Works with local filesystem.
@@ -113,7 +127,7 @@ public:
 	void LocalFindStudyInfo(
 		const std::string &patientID,
 		const std::string &studyID,
-		StringVector &info) ;
+		SerieInfoVector &info) ;
 
 	/**
    *  The same as FindStudyInfo but gets even imageIDs. Rarely used.

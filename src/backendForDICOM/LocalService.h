@@ -40,8 +40,8 @@ class LocalService
 
 
   // informations structure containers definitions
-  typedef std::set<std::string> SetIDsInStudy;
-  typedef std::map<Entry, SetIDsInStudy> SetOfEntries;
+  typedef std::set<DcmProvider::SerieInfo> SeriesInStudy;
+  typedef std::map<Entry, SeriesInStudy> SetOfEntries;
 
   // actual structure instance
   SetOfEntries m_setOfEntries;
@@ -59,7 +59,7 @@ class LocalService
 
   // returns serie info based on build info structure
   void FindStudyInfo( 
-    DcmProvider::StringVector &result,
+    DcmProvider::SerieInfoVector &result,
       const std::string &patientID,
 			const std::string &studyID);
 
