@@ -13,19 +13,18 @@ using namespace M4D::Dicom;
 using namespace std;
 
 
+#define RECENT_EXAMS_NAME                   "Recent Exams"
 #define RECENT_REMOTE_EXAMS_NAME            "Recent Remote Exams"
 #define RECENT_DICOMDIR_NAME                "Recent DICOMDIR"
 #define REMOTE_EXAMS_NAME                   "Remote Exams"
 #define DICOMDIR_NAME                       "DICOMDIR"
 
 /// Number of exam/image attributes (e.g in study tables)
-#define ATTRIBUTE_NUMBER   17
+#define ATTRIBUTE_NUMBER   10
 /// Names of exam/image attributes (e.g in study tables)
-const char *StManagerStudyListComp::attributeNames[] = { "Patient ID", "Name", "Accesion", "Modality",
-                                                         "Description", "Date", "Time", "Study ID", "Sex",
-                                                         "Birthdate", "Referring MD", "Institution",
-                                                         "Location", "Server", "Availability", "Status",
-                                                         "User" };
+const char *StManagerStudyListComp::attributeNames[] = { "Patient ID", "Name", "Modality", "Description", 
+                                                         "Date", "Time", "Study ID", "Sex",
+                                                         "Birthdate", "Referring MD" };
 /// Name of the array in QSettings - for saving recent remote exams
 #define RECENT_REMOTE_EXAMS_SETTINGS_NAME   "recentRemoteExams"
 /// Name of the array in QSettings - for saving recent DICOMDIR
@@ -79,7 +78,7 @@ StManagerStudyListComp::StManagerStudyListComp ( QDialog *studyManagerDialog, QW
   
   QWidget *recentExamsPane = new QWidget;
   recentExamsPane->setLayout( recentExamsLayout );
-  studyListTab->addTab( recentExamsPane, QIcon( ":/icons/recent.png" ), tr( "Recent Exams" ) );
+  studyListTab->addTab( recentExamsPane, QIcon( ":/icons/recent.png" ), tr( RECENT_EXAMS_NAME ) );
 
   // Remote Exams tab
   QHBoxLayout *remoteExamsLayout = new QHBoxLayout;
@@ -89,7 +88,7 @@ StManagerStudyListComp::StManagerStudyListComp ( QDialog *studyManagerDialog, QW
   
   QWidget *remoteExamsPane = new QWidget;
   remoteExamsPane->setLayout( remoteExamsLayout );
-  studyListTab->addTab( remoteExamsPane, QIcon( ":/icons/remote.png" ), tr( "Remote Exams" ) );
+  studyListTab->addTab( remoteExamsPane, QIcon( ":/icons/remote.png" ), tr( REMOTE_EXAMS_NAME ) );
 
   // DICOMDIR tab
   QHBoxLayout *DICOMDIRLayout = new QHBoxLayout;
@@ -106,7 +105,7 @@ StManagerStudyListComp::StManagerStudyListComp ( QDialog *studyManagerDialog, QW
 
   QWidget *DICOMDIRPane = new QWidget;
   DICOMDIRPane->setLayout( DICOMDIRLayout );
-  studyListTab->addTab( DICOMDIRPane, QIcon( ":/icons/dicomdir.png" ), tr( "DICOMDIR" ) );
+  studyListTab->addTab( DICOMDIRPane, QIcon( ":/icons/dicomdir.png" ), tr( DICOMDIR_NAME ) );
 
   // =-=-=-=-=-=-=-=- Study List -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -228,7 +227,7 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
     addResultSetToStudyTable( activeResultSet, activeExamTable );
 
     if ( activeResultSet->empty() ) {
-      QMessageBox::warning( this, tr( "No results" ), "No search results match your criteria" );
+      QMessageBox::warning( this, tr( "No results" ), tr( "No search results match your criteria" ) );
     }
 
   } 
@@ -466,13 +465,16 @@ void StManagerStudyListComp::loadRecentExams ( DcmProvider::ResultSet &resultSet
 
 void StManagerStudyListComp::loadRecentRow ( DcmProvider::TableRow &row, const QSettings &settings )
 {
-  row.patientID = settings.value( attributeNames[0] ).toString().toStdString();
-  row.name      = settings.value( attributeNames[1] ).toString().toStdString();
-  row.modality  = settings.value( attributeNames[3] ).toString().toStdString();
-  row.date      = settings.value( attributeNames[5] ).toString().toStdString();
-  row.studyID   = settings.value( attributeNames[7] ).toString().toStdString();
-  row.sex       = settings.value( attributeNames[8] ).toBool();
-  row.birthDate = settings.value( attributeNames[9] ).toString().toStdString();
+  row.patientID   = settings.value( attributeNames[0] ).toString().toStdString();
+  row.name        = settings.value( attributeNames[1] ).toString().toStdString();
+  row.modality    = settings.value( attributeNames[2] ).toString().toStdString();
+  row.description = settings.value( attributeNames[3] ).toString().toStdString();
+  row.date        = settings.value( attributeNames[4] ).toString().toStdString();
+  row.time        = settings.value( attributeNames[5] ).toString().toStdString();
+  row.studyID     = settings.value( attributeNames[6] ).toString().toStdString();
+  row.sex         = settings.value( attributeNames[7] ).toBool();
+  row.birthDate   = settings.value( attributeNames[8] ).toString().toStdString();
+  row.referringMD = settings.value( attributeNames[9] ).toString().toStdString();
 }
 
 
@@ -503,21 +505,19 @@ void StManagerStudyListComp::addRowToStudyTable ( const DcmProvider::TableRow *r
   vector< QTableWidgetItem * > tableRowItems;
   tableRowItems.push_back( new QTableWidgetItem( QString( row->patientID.c_str() ) ) );
   tableRowItems.push_back( new QTableWidgetItem( QString( row->name.c_str() ) ) );
-  // Accesion:
-  tableRowItems.push_back( new QTableWidgetItem( QString( "" ) ) ); 
   tableRowItems.push_back( new QTableWidgetItem( QString( row->modality.c_str() ) ) );
-  // Description:
-  tableRowItems.push_back( new QTableWidgetItem( QString( "" ) ) );
-  QDate studyDate = QDate::fromString( QString( row->date.c_str() ), "yyyyMMdd" );
-  tableRowItems.push_back( new QTableWidgetItem( studyDate.toString( "dd. MM. yyyy" ) ) );
-  // Time:
-  tableRowItems.push_back( new QTableWidgetItem( QString( "" ) ) );
+  tableRowItems.push_back( new QTableWidgetItem( QString( row->description.c_str() ) ) );
+  QDate date = QDate::fromString( QString( row->date.c_str() ), "yyyyMMdd" );
+  tableRowItems.push_back( new QTableWidgetItem( date.toString( "dd. MM. yyyy" ) ) );
+  string reducedTime = row->time.substr( 0, 6 );
+  QTime time = QTime::fromString( QString( reducedTime.c_str() ), "hhmmss" );
+  tableRowItems.push_back( new QTableWidgetItem( time.toString( "hh:mm:ss" ) ) );
   tableRowItems.push_back( new QTableWidgetItem( QString( row->studyID.c_str() ) ) );
   tableRowItems.push_back( new QTableWidgetItem( row->sex ? QString( tr( "male" ) ) : 
-                                                                   QString( tr( "female" ) ) ) );
-  QDate patientBirthDate = QDate::fromString( QString( row->birthDate.c_str() ), "yyyyMMdd" );
-  tableRowItems.push_back( new QTableWidgetItem( patientBirthDate.toString( "dd. MM. yyyy" ) ) );
-  // And the others....
+                                                            QString( tr( "female" ) ) ) );
+  QDate birthDate = QDate::fromString( QString( row->birthDate.c_str() ), "yyyyMMdd" );
+  tableRowItems.push_back( new QTableWidgetItem( birthDate.toString( "dd. MM. yyyy" ) ) );
+  tableRowItems.push_back( new QTableWidgetItem( QString( row->referringMD.c_str() ) ) );
 
   for ( unsigned colNum = 0; colNum < tableRowItems.size(); colNum ++ ) {  
     table->setItem( rowNum, colNum, tableRowItems[colNum] );
@@ -585,14 +585,16 @@ void StManagerStudyListComp::updateRecentExams ( const DcmProvider::TableRow *ro
 
 void StManagerStudyListComp::updateRecentRow ( const DcmProvider::TableRow *row, QSettings &settings )
 {
-  // some are missing....
   settings.setValue( attributeNames[0], row->patientID.c_str() );
   settings.setValue( attributeNames[1], row->name.c_str() );
-  settings.setValue( attributeNames[3], row->modality.c_str() );
-  settings.setValue( attributeNames[5], row->date.c_str() );
-  settings.setValue( attributeNames[7], row->studyID.c_str() );
-  settings.setValue( attributeNames[8], row->sex );
-  settings.setValue( attributeNames[9], row->birthDate.c_str() );
+  settings.setValue( attributeNames[2], row->modality.c_str() );
+  settings.setValue( attributeNames[3], row->description.c_str() );
+  settings.setValue( attributeNames[4], row->date.c_str() );
+  settings.setValue( attributeNames[5], row->time.c_str() );
+  settings.setValue( attributeNames[6], row->studyID.c_str() );
+  settings.setValue( attributeNames[7], row->sex );
+  settings.setValue( attributeNames[8], row->birthDate.c_str() );
+  settings.setValue( attributeNames[9], row->referringMD.c_str() );
 }
 
 
