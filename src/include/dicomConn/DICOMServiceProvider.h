@@ -43,12 +43,12 @@ public:
 		std::string name;
     std::string birthDate;
     bool sex;
-    std::string accesion;
+    //std::string accesion;
+    std::string studyID;
+    std::string date;	
+    std::string time;			
     std::string modality;
-    std::string description;
-    std::string time;
-		std::string date;
-		std::string studyID;
+    std::string description;    
     std::string referringMD;
     //std::string institution;
     //std::string location;

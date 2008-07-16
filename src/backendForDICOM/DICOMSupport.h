@@ -12,11 +12,12 @@ static void GetTableRowFromDataSet(
    DcmDataset *ds, DcmProvider::TableRow *row)
 {
   OFString str;
+  // patient info
+  ds->findAndGetOFString( DCM_PatientID, str);
+	row->patientID = str.c_str();
+
 	ds->findAndGetOFString( DCM_PatientsName, str);
 	row->name = str.c_str();
-
-	ds->findAndGetOFString( DCM_PatientID, str);
-	row->patientID = str.c_str();
 
 	ds->findAndGetOFString( DCM_PatientsBirthDate, str);
 	row->birthDate = str.c_str();
@@ -31,8 +32,17 @@ static void GetTableRowFromDataSet(
 	ds->findAndGetOFString( DCM_StudyDate, str);
 	row->date = str.c_str();
 
+  ds->findAndGetOFString( DCM_StudyTime, str);
+  row->time = str.c_str();
+
 	ds->findAndGetOFString( DCM_Modality, str);
 	row->modality = str.c_str();
+
+  ds->findAndGetOFString( DCM_StudyDescription, str);
+	row->description = str.c_str();
+
+  ds->findAndGetOFString( DCM_ReferringPhysiciansName, str);
+  row->referringMD = str.c_str();
 }
 
 /**
