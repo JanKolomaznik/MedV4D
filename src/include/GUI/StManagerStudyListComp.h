@@ -94,6 +94,23 @@ class StManagerStudyListComp: public QWidget
   private:
 
     /** 
+     * Loads Recent Exams to ResultSet - it's using Settings mechanism of Qt -
+     * depending on type of the exam - remote, DICOMDIR.
+     * 
+     * @param resultSet reference to ResultSet - the result of the load
+     * @param prefix prefix for group of settings (to identify them) - same for one type of exam
+     */
+    void loadRecentExams ( M4D::Dicom::DcmProvider::ResultSet &resultSet, const QString &prefix );
+    
+    /** 
+     * Loads a TableRow from specific QSettings
+     * 
+     * @param row reference to TableRow - the result of the load
+     * @param settings reference to settings - where is the wanted row
+     */
+    void loadRecentRow ( M4D::Dicom::DcmProvider::TableRow &row, const QSettings &settings );
+
+    /** 
      * Adds result of Find - ResultSet - to Study Table - depending on searching mode.
      * 
      * @param resultSet pointer to ResultSet to be added
@@ -112,6 +129,15 @@ class StManagerStudyListComp: public QWidget
                               QTableWidget *table );
 
     /** 
+     * Gets index of selected series - creates modal dialog according to SerieInfoVector
+     * to choose from if there are more than one series in the study.
+     * 
+     * @param info SerieInfoVector from which is the dialog created (descriptions of studies)
+     * @return the index of selected series 
+     */
+    unsigned getSeriesIndex( const M4D::Dicom::DcmProvider::SerieInfoVector info );
+
+    /** 
      * Updates Recent Exams by currently viewed one - saves it using Settings mechanism of Qt -
      * depending on type of the exam - remote, DICOMDIR.
      * 
@@ -121,29 +147,12 @@ class StManagerStudyListComp: public QWidget
     void updateRecentExams ( const M4D::Dicom::DcmProvider::TableRow *row, const QString &prefix );
 
     /** 
-     * Loads Recent Exams to ResultSet - it's using Settings mechanism of Qt -
-     * depending on type of the exam - remote, DICOMDIR.
-     * 
-     * @param resultSet reference to ResultSet - the result of the load
-     * @param prefix prefix for group of settings (to identify them) - same for one type of exam
-     */
-    void loadRecentExams ( M4D::Dicom::DcmProvider::ResultSet &resultSet, const QString &prefix );
-
-    /** 
      * Saves a given TableRow to specific QSettings.
      * 
      * @param row pointer to TableRow to be saved
      * @param settings reference to settings - where to save the row
      */
     void updateRecentRow ( const M4D::Dicom::DcmProvider::TableRow *row, QSettings &settings );
-
-    /** 
-     * Loads a TableRow from specific QSettings
-     * 
-     * @param row reference to TableRow - the result of the load
-     * @param settings reference to settings - where is the wanted row
-     */
-    void loadRecentRow ( M4D::Dicom::DcmProvider::TableRow &row, const QSettings &settings );
 
 
     /** 
@@ -155,6 +164,8 @@ class StManagerStudyListComp: public QWidget
      * Creates a DirectoryTreeView and configures it.
      */
     QTreeView    *createDirectoryTreeView ();
+
+    QTableWidget *createSeriesSelectionTable ();
 
     /** 
      * Creates a Button and connects it with given member.

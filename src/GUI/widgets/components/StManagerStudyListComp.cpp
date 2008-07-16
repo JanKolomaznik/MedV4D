@@ -250,6 +250,7 @@ void StManagerStudyListComp::view ()
   }
 
   DcmProvider::SerieInfoVector info;
+  unsigned seriesIndex = 0;
 
   // we are sure, there is exactly one selected
   int selectedRow = activeExamTable->selectedItems()[0]->row();
@@ -268,18 +269,24 @@ void StManagerStudyListComp::view ()
         // find some info about selected study
         dcmProvider->FindStudyInfo( row->patientID, row->studyID, info );
 
-        // if( studyInfo.size() > 1) showSomeChoosingDialog()
+        if ( info.size() > 1) {
+          seriesIndex = getSeriesIndex( info );
+        }
+
         // now get image
-        dcmProvider->GetImageSet( row->patientID, row->studyID, info[0].id, *dicomObjectSet );  
+        dcmProvider->GetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );  
       }
       else
       {
         // find some info about selected study
         dcmProvider->LocalFindStudyInfo( row->patientID, row->studyID, info );
 
-        // if( studyInfo.size() > 1) showSomeChoosingDialog()
+        if ( info.size() > 1) {
+          seriesIndex = getSeriesIndex( info );  
+        }
+
         // now get image
-        dcmProvider->LocalGetImageSet( row->patientID, row->studyID, info[0].id, *dicomObjectSet );
+        dcmProvider->LocalGetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
 
         recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
       }
@@ -290,9 +297,12 @@ void StManagerStudyListComp::view ()
       // find some info about selected study
       dcmProvider->FindStudyInfo( row->patientID, row->studyID, info );
 
-      // if( studyInfo.size() > 1) showSomeChoosingDialog()
+      if ( info.size() > 1) {
+        seriesIndex = getSeriesIndex( info );
+      } 
+
       // now get image
-      dcmProvider->GetImageSet( row->patientID, row->studyID, info[0].id, *dicomObjectSet );
+      dcmProvider->GetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
       break;
 
     case 2:
@@ -300,9 +310,12 @@ void StManagerStudyListComp::view ()
       // find some info about selected study
       dcmProvider->LocalFindStudyInfo( row->patientID, row->studyID, info );
 
-      // if( studyInfo.size() > 1) showSomeChoosingDialog()
+      if ( info.size() > 1) {
+        seriesIndex = getSeriesIndex( info );  
+      }
+
       // now get image
-      dcmProvider->LocalGetImageSet( row->patientID, row->studyID, info[0].id, *dicomObjectSet );
+      dcmProvider->LocalGetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
 
       recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
       break;
@@ -313,18 +326,24 @@ void StManagerStudyListComp::view ()
         // find some info about selected study
         dcmProvider->FindStudyInfo( row->patientID, row->studyID, info );
 
-        // if( studyInfo.size() > 1) showSomeChoosingDialog()
+        if ( info.size() > 1) {
+          seriesIndex = getSeriesIndex( info );
+        }
+
         // now get image
-        dcmProvider->GetImageSet( row->patientID, row->studyID, info[0].id, *dicomObjectSet );  
+        dcmProvider->GetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );  
       }
       else
       {
         // find some info about selected study
         dcmProvider->LocalFindStudyInfo( row->patientID, row->studyID, info );
 
-        // if( studyInfo.size() > 1) showSomeChoosingDialog()
+        if ( info.size() > 1) {
+          seriesIndex = getSeriesIndex( info );  
+        }
+
         // now get image
-        dcmProvider->LocalGetImageSet( row->patientID, row->studyID, info[0].id, *dicomObjectSet );
+        dcmProvider->LocalGetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
 
         recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
       }
@@ -426,6 +445,37 @@ void StManagerStudyListComp::path ()
 }
 
 
+void StManagerStudyListComp::loadRecentExams ( DcmProvider::ResultSet &resultSet, const QString &prefix )
+{
+  QSettings settings;
+  int size = settings.beginReadArray( prefix );
+ 
+  for ( int i = 0; i < size; i++ )
+  {
+    DcmProvider::TableRow row;
+
+    settings.setArrayIndex( i );
+    loadRecentRow( row, settings );
+    
+    resultSet.push_back( row );
+  }
+
+  settings.endArray();
+}
+
+
+void StManagerStudyListComp::loadRecentRow ( DcmProvider::TableRow &row, const QSettings &settings )
+{
+  row.patientID = settings.value( attributeNames[0] ).toString().toStdString();
+  row.name      = settings.value( attributeNames[1] ).toString().toStdString();
+  row.modality  = settings.value( attributeNames[3] ).toString().toStdString();
+  row.date      = settings.value( attributeNames[5] ).toString().toStdString();
+  row.studyID   = settings.value( attributeNames[7] ).toString().toStdString();
+  row.sex       = settings.value( attributeNames[8] ).toBool();
+  row.birthDate = settings.value( attributeNames[9] ).toString().toStdString();
+}
+
+
 void StManagerStudyListComp::addResultSetToStudyTable ( const DcmProvider::ResultSet *resultSet,
                                                         QTableWidget *table )
 {
@@ -481,6 +531,35 @@ void StManagerStudyListComp::addRowToStudyTable ( const DcmProvider::TableRow *r
 }
 
 
+unsigned StManagerStudyListComp::getSeriesIndex( const DcmProvider::SerieInfoVector info )
+{
+  // no resize, just exit button - reject, result code is 0 -> returned value will be 0
+  QDialog *seriesSelectorDialog = new QDialog( this, Qt::WindowTitleHint | Qt::WindowSystemMenuHint| Qt::MSWindowsFixedSizeDialogHint );
+  seriesSelectorDialog->setWindowTitle( tr( "Series Selector" ) );
+
+  QVBoxLayout *mainLayout = new QVBoxLayout;
+
+  QLabel *seriesLabel = new QLabel( tr( "Series in selected study:" ) );
+  mainLayout->addWidget( seriesLabel );
+
+  QSpacerItem *verticalSpacer = new QSpacerItem( 2, 10, QSizePolicy::Minimum, 
+                                                 QSizePolicy::Minimum );
+  mainLayout->addItem( verticalSpacer );
+
+  QTableWidget *seriesTable = createSeriesSelectionTable();
+  seriesTable->setRowCount( info.size() );
+  for ( unsigned i = 0; i < info.size(); i++ ) {
+    seriesTable->setItem( i, 0, new QTableWidgetItem( QString( info[i].description.c_str() ) ) );
+  }
+  connect( seriesTable, SIGNAL(cellClicked( int, int )), seriesSelectorDialog, SLOT(done( int )) );
+  mainLayout->addWidget( seriesTable );
+
+  seriesSelectorDialog->setLayout( mainLayout );
+
+  return seriesSelectorDialog->exec();
+}
+
+
 void StManagerStudyListComp::updateRecentExams ( const DcmProvider::TableRow *row, const QString &prefix )
 {
   DcmProvider::ResultSet resultSet;
@@ -504,25 +583,6 @@ void StManagerStudyListComp::updateRecentExams ( const DcmProvider::TableRow *ro
 }
 
 
-void StManagerStudyListComp::loadRecentExams ( DcmProvider::ResultSet &resultSet, const QString &prefix )
-{
-  QSettings settings;
-  int size = settings.beginReadArray( prefix );
- 
-  for ( int i = 0; i < size; i++ )
-  {
-    DcmProvider::TableRow row;
-
-    settings.setArrayIndex( i );
-    loadRecentRow( row, settings );
-    
-    resultSet.push_back( row );
-  }
-
-  settings.endArray();
-}
-
-
 void StManagerStudyListComp::updateRecentRow ( const DcmProvider::TableRow *row, QSettings &settings )
 {
   // some are missing....
@@ -533,18 +593,6 @@ void StManagerStudyListComp::updateRecentRow ( const DcmProvider::TableRow *row,
   settings.setValue( attributeNames[7], row->studyID.c_str() );
   settings.setValue( attributeNames[8], row->sex );
   settings.setValue( attributeNames[9], row->birthDate.c_str() );
-}
-
-
-void StManagerStudyListComp::loadRecentRow ( DcmProvider::TableRow &row, const QSettings &settings )
-{
-  row.patientID = settings.value( attributeNames[0] ).toString().toStdString();
-  row.name      = settings.value( attributeNames[1] ).toString().toStdString();
-  row.modality  = settings.value( attributeNames[3] ).toString().toStdString();
-  row.date      = settings.value( attributeNames[5] ).toString().toStdString();
-  row.studyID   = settings.value( attributeNames[7] ).toString().toStdString();
-  row.sex       = settings.value( attributeNames[8] ).toBool();
-  row.birthDate = settings.value( attributeNames[9] ).toString().toStdString();
 }
 
 
@@ -586,6 +634,20 @@ QTreeView *StManagerStudyListComp::createDirectoryTreeView ()
   directoryTree->setColumnHidden( 2, true );
 
   return directoryTree;
+}
+
+
+QTableWidget *StManagerStudyListComp::createSeriesSelectionTable ()
+{
+  QTableWidget *seriesTable = new QTableWidget;
+
+  seriesTable->setSelectionMode( QAbstractItemView::SingleSelection );
+  seriesTable->setEditTriggers( QAbstractItemView::NoEditTriggers );
+  seriesTable->setColumnCount( 1 );
+  seriesTable->horizontalHeader()->setResizeMode( QHeaderView::Stretch );
+  seriesTable->horizontalHeader()->hide();
+
+  return seriesTable;
 }
 
 
