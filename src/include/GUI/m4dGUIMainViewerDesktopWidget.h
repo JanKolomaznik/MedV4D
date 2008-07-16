@@ -3,13 +3,15 @@
 
 #include <QtGui>
 
+#include "GUI/m4dAbstractViewerWidget.h"
+#include "GUI/m4dSliceViewerWidget.h"
 #include "GUI/m4dGUIVtkRenderWindowWidget.h"
 
 
 /**
  * @class m4dGUIMainViewerDesktopWidget m4dGUIMainViewerDesktopWidget.h
  * Class representing the Main Viewer Desktop - containing abstract viewers.
- * It can manages its own layout, with selection of specific viewer - it causes
+ * It can manage its own layout, with selection of specific viewer - it causes
  * changes in toolBars and controls depending on the type of the viewer.
  */
 class m4dGUIMainViewerDesktopWidget: public QWidget
@@ -37,6 +39,9 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
 
   private:
     m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget;
+    M4D::Viewer::m4dSliceViewerWidget *glWidget;
+
+    std::vector< M4D::Viewer::m4dAbstractViewerWidget * > viewers;
 };
 
 #endif // M4D_GUI_MAIN_VIEWER_DESKTOP_H
