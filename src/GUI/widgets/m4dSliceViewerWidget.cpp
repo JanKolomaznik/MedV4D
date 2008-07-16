@@ -106,8 +106,7 @@ m4dSliceViewerWidget::setInputPort( Imaging::ImageConnection< Imaging::Image< ui
 void
 m4dSliceViewerWidget::setParameters()
 {
-    if ( !_inPort.IsPlugged() ) return;
-    _sliceNum = _inPort.GetAbstractImage().GetDimensionExtents(2).minimum;
+    if ( _inPort.IsPlugged() ) _sliceNum = _inPort.GetAbstractImage().GetDimensionExtents(2).minimum;
     _offset = QPoint( 0, 0 );
     _lastPos = QPoint( -1, -1 );
     _zoomRate = 1.0;
@@ -134,7 +133,6 @@ m4dSliceViewerWidget::getAvailableSlots()
 void
 m4dSliceViewerWidget::setButtonHandlers( ButtonHandlers* hnd )
 {
-    if ( !_inPort.IsPlugged() ) return;
     unsigned i;
     for ( i = 0; i < 6; i++ )
     {
@@ -171,7 +169,6 @@ m4dSliceViewerWidget::setButtonHandlers( ButtonHandlers* hnd )
 void
 m4dSliceViewerWidget::setSelectHandlers( SelectHandlers* hnd )
 {
-    if ( !_inPort.IsPlugged() ) return;
     unsigned i;
     for ( i = 0; i < 4; i++ )
     {
@@ -204,7 +201,6 @@ m4dSliceViewerWidget::setSelectHandlers( SelectHandlers* hnd )
 void
 m4dSliceViewerWidget::setOneSliceMode()
 {
-    if ( !_inPort.IsPlugged() ) return;
     _slicesPerRow = 1;
     _oneSliceMode = true;
     emit signalSetOneSliceMode();
@@ -213,7 +209,6 @@ m4dSliceViewerWidget::setOneSliceMode()
 void
 m4dSliceViewerWidget::setMoreSliceMode( unsigned slicesPerRow )
 {
-    if ( !_inPort.IsPlugged() ) return;
     _slicesPerRow = slicesPerRow;
     _oneSliceMode = false;
     emit signalSetMoreSliceMode( slicesPerRow );
@@ -223,12 +218,14 @@ void
 m4dSliceViewerWidget::paintGL()
 {
     glClear( GL_COLOR_BUFFER_BIT | GL_ACCUM_BUFFER_BIT );
-    if ( !_inPort.IsPlugged() ) return;
-    unsigned i;
-    if ( _oneSliceMode ) drawSlice( _sliceNum, _zoomRate, _offset );
-    else for ( i = 0; i < _slicesPerRow * _slicesPerRow; ++i ) drawSlice( _sliceNum + i, 1./(double)_slicesPerRow,
-    									  QPoint( (i % _slicesPerRow) * ( height() / _slicesPerRow ) , ( i / _slicesPerRow ) * ( width() / _slicesPerRow ) ) );
-    if ( _selectionMode ) drawSelectionModeBorder();
+    if ( _inPort.IsPlugged() )
+    {
+        unsigned i;
+        if ( _oneSliceMode ) drawSlice( _sliceNum, _zoomRate, _offset );
+        else for ( i = 0; i < _slicesPerRow * _slicesPerRow; ++i ) drawSlice( _sliceNum + i, 1./(double)_slicesPerRow,
+        								      QPoint( (i % _slicesPerRow) * ( height() / _slicesPerRow ) , ( i / _slicesPerRow ) * ( width() / _slicesPerRow ) ) );
+        if ( _selectionMode ) drawSelectionModeBorder();
+    }
     if ( _selected ) drawSelectedBorder();
     glFlush();
 }
@@ -348,7 +345,6 @@ m4dSliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset )
 void
 m4dSliceViewerWidget::drawSelectionModeBorder()
 {
-    if ( !_inPort.IsPlugged() ) return;
     glPushMatrix();
     glLoadIdentity();
     glColor3f(1., 0., 0.);
@@ -376,7 +372,6 @@ m4dSliceViewerWidget::drawSelectionModeBorder()
 void
 m4dSliceViewerWidget::drawSelectedBorder()
 {
-    if ( !_inPort.IsPlugged() ) return;
     glPushMatrix();
     glLoadIdentity();
     glColor3f(0., 1., 0.);
@@ -396,7 +391,6 @@ m4dSliceViewerWidget::drawSelectedBorder()
 void
 m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int sliceNum, float zoomRate )
 {
-    if ( !_inPort.IsPlugged() ) return;
     if ( last ) glColor3f( 1., 0., 0. );
     else glColor3f( 0., 0., 1. );
     if ( s.shapeClosed() && s.shapeElements().size() > 1 &&
@@ -543,7 +537,6 @@ m4dSliceViewerWidget::mousePressEvent(QMouseEvent *event)
 void
 m4dSliceViewerWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-    if ( !_inPort.IsPlugged() ) return;
     _lastPos = QPoint( -1, -1 );
 }
 
@@ -583,7 +576,6 @@ m4dSliceViewerWidget::mouseMoveEvent(QMouseEvent *event)
 void
 m4dSliceViewerWidget::zoomImage( int amount )
 {
-    if ( !_inPort.IsPlugged() ) return;
     _zoomRate += 0.01 * amount;
     /*size_t   width  = _inPort.GetAbstractImage().GetDimensionExtents(0).maximum - _inPort.GetAbstractImage().GetDimensionExtents(0).minimum,
     	     height = _inPort.GetAbstractImage().GetDimensionExtents(1).maximum - _inPort.GetAbstractImage().GetDimensionExtents(1).minimum;
@@ -639,7 +631,6 @@ m4dSliceViewerWidget::setSliceNum( size_t num )
 void
 m4dSliceViewerWidget::moveImageH( int amount )
 {
-    if ( !_inPort.IsPlugged() ) return;
     _offset.setX( _offset.x() + amount );
     emit signalMoveH( amount );
 }
@@ -647,7 +638,6 @@ m4dSliceViewerWidget::moveImageH( int amount )
 void
 m4dSliceViewerWidget::moveImageV( int amount )
 {
-    if ( !_inPort.IsPlugged() ) return;
     _offset.setY( _offset.y() + amount );
     emit signalMoveV( amount );
 }
@@ -655,7 +645,6 @@ m4dSliceViewerWidget::moveImageV( int amount )
 void
 m4dSliceViewerWidget::adjustBrightness( int amount )
 {
-    if ( !_inPort.IsPlugged() ) return;
     _brightnessRate -= ((GLfloat)amount)/((GLfloat)height()/2.0);
     emit signalAdjustBrightness( amount );
 }
@@ -663,7 +652,6 @@ m4dSliceViewerWidget::adjustBrightness( int amount )
 void
 m4dSliceViewerWidget::adjustContrast( int amount )
 {
-    if ( !_inPort.IsPlugged() ) return;
     _contrastRate -= ((GLfloat)amount)/((GLfloat)width()/2.0);
     emit signalAdjustContrast( amount );
 }
@@ -723,7 +711,6 @@ m4dSliceViewerWidget::newShape( int x, int y, int z )
 void
 m4dSliceViewerWidget::deletePoint( int x, int y, int z )
 {
-    if ( !_inPort.IsPlugged() ) return;
     if ( _shapes.empty() ) return;
     
     if ( _shapes.back().shapeClosed() ) _shapes.back().openShape();
@@ -738,7 +725,6 @@ m4dSliceViewerWidget::deletePoint( int x, int y, int z )
 void
 m4dSliceViewerWidget::deleteShape( int x, int y, int z )
 {
-    if ( !_inPort.IsPlugged() ) return;
     if ( _shapes.empty() ) return;
     
     _shapes.pop_back();
