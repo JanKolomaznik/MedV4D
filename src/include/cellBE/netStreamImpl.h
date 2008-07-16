@@ -14,6 +14,12 @@ namespace M4D
 namespace CellBE
 {
 
+  /**
+   *  Actual implementation of NetStream interface. In this class are 
+   *  serializing and deserializing operators of some common data types
+   *  implemented. Also contains pure virtual functions for byte 
+   *  putting and retrival alowing different implementation in successors.
+   */
 class NetStreamBaseImpl : public NetStream
 {
 protected:
@@ -63,8 +69,6 @@ public:
     return *this;
   }
 
-  /////////////////////////////////////////
-
   NetStream & operator>>( uint8 &what)
   {
     what = GetByte();
@@ -112,6 +116,10 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////
 
+/**
+ *  NetStream based on memory buffer. It manages underlaying buffer
+ *  interpreted as an array of bytes.
+ */
 class NetStreamArrayBuf : public NetStreamBaseImpl
 {
   uint8 *begin; // underlaying buf
@@ -148,6 +156,9 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////
 
+/**
+ *  NetStream based on underlaying std::vector of bytes.
+ */
 class NetStreamVector 
   : public std::vector<uint8>, public NetStreamBaseImpl
 {

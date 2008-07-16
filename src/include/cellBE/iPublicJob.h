@@ -7,6 +7,12 @@ namespace M4D
 namespace CellBE
 {
 
+/**
+ *  Interface that is given to Imaging library user as an abstraction of Job.
+ *  It has sending and retrival ability in scatter gather manner.
+ *  Used to send and read dataSets.
+ */
+
 class iPublicJob
 {
 public:

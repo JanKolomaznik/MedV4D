@@ -6,6 +6,10 @@ namespace M4D
 namespace CellBE
 {
 
+/**
+ *  Interface that is given to user of Imaging library. Through virtual
+ *  function is actual implementation hidden in CellBE library.
+ */
 class NetStream
 {
 

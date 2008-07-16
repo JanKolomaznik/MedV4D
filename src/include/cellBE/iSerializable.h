@@ -8,6 +8,10 @@ namespace M4D
 namespace CellBE
 {
 
+/**
+ *  Serializable interface. 2 main function prototypes is within:
+ *  Serialize put data into stream and DeSerialize retrieve and construct the data
+ */
 class iSerializable
 {
 public:

@@ -15,7 +15,7 @@ namespace M4D
 namespace CellBE
 {
 /**
- *  Base class for job. Contains common parts for client side even server side. 
+ *  Base class for job. Contains common parts for client side and server side.
  */
 class BasicJob
   : public BasicSocket, public iPublicJob
