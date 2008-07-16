@@ -249,7 +249,7 @@ void StManagerStudyListComp::view ()
     return;
   }
 
-  DcmProvider::StringVector studyInfo;
+  DcmProvider::SerieInfoVector info;
 
   // we are sure, there is exactly one selected
   int selectedRow = activeExamTable->selectedItems()[0]->row();
@@ -266,20 +266,20 @@ void StManagerStudyListComp::view ()
       if ( recentRemoteButton->isChecked() )
       {
         // find some info about selected study
-        dcmProvider->FindStudyInfo( row->patientID, row->studyID, studyInfo );
+        dcmProvider->FindStudyInfo( row->patientID, row->studyID, info );
 
         // if( studyInfo.size() > 1) showSomeChoosingDialog()
         // now get image
-        dcmProvider->GetImageSet( row->patientID, row->studyID, studyInfo[0], *dicomObjectSet );  
+        dcmProvider->GetImageSet( row->patientID, row->studyID, info[0].id, *dicomObjectSet );  
       }
       else
       {
         // find some info about selected study
-        dcmProvider->LocalFindStudyInfo( row->patientID, row->studyID, studyInfo );
+        dcmProvider->LocalFindStudyInfo( row->patientID, row->studyID, info );
 
         // if( studyInfo.size() > 1) showSomeChoosingDialog()
         // now get image
-        dcmProvider->LocalGetImageSet( row->patientID, row->studyID, studyInfo[0], *dicomObjectSet );
+        dcmProvider->LocalGetImageSet( row->patientID, row->studyID, info[0].id, *dicomObjectSet );
 
         recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
       }
@@ -288,21 +288,21 @@ void StManagerStudyListComp::view ()
     case 1:
       // Remote Exams tab active
       // find some info about selected study
-      dcmProvider->FindStudyInfo( row->patientID, row->studyID, studyInfo );
+      dcmProvider->FindStudyInfo( row->patientID, row->studyID, info );
 
       // if( studyInfo.size() > 1) showSomeChoosingDialog()
       // now get image
-      dcmProvider->GetImageSet( row->patientID, row->studyID, studyInfo[0], *dicomObjectSet );
+      dcmProvider->GetImageSet( row->patientID, row->studyID, info[0].id, *dicomObjectSet );
       break;
 
     case 2:
       // DICOMDIR tab active
       // find some info about selected study
-      dcmProvider->LocalFindStudyInfo( row->patientID, row->studyID, studyInfo );
+      dcmProvider->LocalFindStudyInfo( row->patientID, row->studyID, info );
 
       // if( studyInfo.size() > 1) showSomeChoosingDialog()
       // now get image
-      dcmProvider->LocalGetImageSet( row->patientID, row->studyID, studyInfo[0], *dicomObjectSet );
+      dcmProvider->LocalGetImageSet( row->patientID, row->studyID, info[0].id, *dicomObjectSet );
 
       recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
       break;
@@ -311,20 +311,20 @@ void StManagerStudyListComp::view ()
       if ( recentRemoteButton->isChecked() )
       {
         // find some info about selected study
-        dcmProvider->FindStudyInfo( row->patientID, row->studyID, studyInfo );
+        dcmProvider->FindStudyInfo( row->patientID, row->studyID, info );
 
         // if( studyInfo.size() > 1) showSomeChoosingDialog()
         // now get image
-        dcmProvider->GetImageSet( row->patientID, row->studyID, studyInfo[0], *dicomObjectSet );  
+        dcmProvider->GetImageSet( row->patientID, row->studyID, info[0].id, *dicomObjectSet );  
       }
       else
       {
         // find some info about selected study
-        dcmProvider->LocalFindStudyInfo( row->patientID, row->studyID, studyInfo );
+        dcmProvider->LocalFindStudyInfo( row->patientID, row->studyID, info );
 
         // if( studyInfo.size() > 1) showSomeChoosingDialog()
         // now get image
-        dcmProvider->LocalGetImageSet( row->patientID, row->studyID, studyInfo[0], *dicomObjectSet );
+        dcmProvider->LocalGetImageSet( row->patientID, row->studyID, info[0].id, *dicomObjectSet );
 
         recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
       }
