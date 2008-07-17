@@ -67,6 +67,13 @@ m4dSliceViewerWidget::setSelected( bool selected )
     emit signalSetSelected( selected );
 }
 
+void
+m4dSliceViewerWidget::setSelected()
+{
+    _selected = true;
+    emit signalSetSelected( false );
+}
+
 bool
 m4dSliceViewerWidget::getSelected()
 {
@@ -499,6 +506,12 @@ m4dSliceViewerWidget::mousePressEvent(QMouseEvent *event)
 {
     if ( !_inPort.IsPlugged() ) return;
     _lastPos = event->pos();
+    if ( !_selected )
+    {
+        setSelected();
+	updateGL();
+	return;
+    }
     if ( _selectionMode )
     {
         if ( event->modifiers() & Qt::ControlModifier )
@@ -594,6 +607,7 @@ m4dSliceViewerWidget::zoomImage( int amount )
 void
 m4dSliceViewerWidget::wheelEvent(QWheelEvent *event)
 {
+    if ( !_selected ) setSelected();
     if ( !_inPort.IsPlugged() ) return;
     if ( event->buttons() & Qt::LeftButton )
     {

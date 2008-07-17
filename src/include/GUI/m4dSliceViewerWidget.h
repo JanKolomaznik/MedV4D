@@ -94,6 +94,7 @@ protected:
 private:
 
     void setParameters();
+    void setSelected();
     void drawSelectionModeBorder();
     void drawSelectedBorder();
     void drawSlice( int sliceNum, double zoomRate, QPoint offset );
