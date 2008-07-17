@@ -11,27 +11,31 @@ namespace M4D
 namespace Viewer
 {
 
-m4dSliceViewerWidget::m4dSliceViewerWidget( QWidget *parent)
+m4dSliceViewerWidget::m4dSliceViewerWidget( unsigned index, QWidget *parent)
     : QGLWidget(parent)
 {
+    _index = index;
     setInputPort( );
 }
 
-m4dSliceViewerWidget::m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint32, 3 > >& conn, QWidget *parent)
+m4dSliceViewerWidget::m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint32, 3 > >& conn, unsigned index, QWidget *parent)
     : QGLWidget(parent)
 {
+    _index = index;
     setInputPort( conn );
 }
 
-m4dSliceViewerWidget::m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint16, 3 > >& conn, QWidget *parent)
+m4dSliceViewerWidget::m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint16, 3 > >& conn, unsigned index, QWidget *parent)
     : QGLWidget(parent)
 {
+    _index = index;
     setInputPort( conn );
 }
 
-m4dSliceViewerWidget::m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint8, 3 > >& conn, QWidget *parent)
+m4dSliceViewerWidget::m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint8, 3 > >& conn, unsigned index, QWidget *parent)
     : QGLWidget(parent)
 {
+    _index = index;
     setInputPort( conn );
 }
 
@@ -44,14 +48,14 @@ void
 m4dSliceViewerWidget::setColorMode( ColorMode cm )
 {
     _colorMode = cm;
-    emit signalSetColorMode( cm );
+    emit signalSetColorMode( _index, cm );
 }
 
 void
 m4dSliceViewerWidget::setSelectionMode( bool mode )
 {
     _selectionMode = mode;
-    emit signalSetSelectionMode( mode );
+    emit signalSetSelectionMode( _index, mode );
 }
 
 bool
@@ -64,14 +68,14 @@ void
 m4dSliceViewerWidget::setSelected( bool selected )
 {
     _selected = selected;
-    emit signalSetSelected( selected );
+    emit signalSetSelected( _index, selected );
 }
 
 void
 m4dSliceViewerWidget::setSelected()
 {
     _selected = true;
-    emit signalSetSelected( false );
+    emit signalSetSelected( _index, false );
 }
 
 bool
@@ -176,7 +180,7 @@ m4dSliceViewerWidget::setButtonHandlers( ButtonHandlers* hnd )
 	    break;
 	}
     }
-    emit signalSetButtonHandlers( hnd );
+    emit signalSetButtonHandlers( _index, hnd );
 }
 
 void
@@ -208,7 +212,7 @@ m4dSliceViewerWidget::setSelectHandlers( SelectHandlers* hnd )
 	    break;
 	}
     }
-    emit signalSetSelectHandlers( hnd );
+    emit signalSetSelectHandlers( _index, hnd );
 }
 
 void
@@ -216,7 +220,7 @@ m4dSliceViewerWidget::setOneSliceMode()
 {
     _slicesPerRow = 1;
     _oneSliceMode = true;
-    emit signalSetOneSliceMode();
+    emit signalSetOneSliceMode( _index );
 }
 
 void
@@ -224,12 +228,13 @@ m4dSliceViewerWidget::setMoreSliceMode( unsigned slicesPerRow )
 {
     _slicesPerRow = slicesPerRow;
     _oneSliceMode = false;
-    emit signalSetMoreSliceMode( slicesPerRow );
+    emit signalSetMoreSliceMode( _index, slicesPerRow );
 }
 
 void
 m4dSliceViewerWidget::paintGL()
 {
+    QGLWidget::paintGL();
     glClear( GL_COLOR_BUFFER_BIT | GL_ACCUM_BUFFER_BIT );
     if ( _inPort.IsPlugged() )
     {
@@ -494,11 +499,20 @@ m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int sli
 void
 m4dSliceViewerWidget::resizeGL(int winW, int winH)
 {
+    QGLWidget::resizeGL( winW, winH );
     glViewport(0, 0, width(), height());
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0.0, (double)winW, 0.0, (double)winH, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW); 
+    glMatrixMode(GL_MODELVIEW);
+    if ( _inPort.IsPlugged() )
+    {
+        size_t   w = _inPort.GetAbstractImage().GetDimensionExtents(0).maximum - _inPort.GetAbstractImage().GetDimensionExtents(0).minimum,
+    	         h = _inPort.GetAbstractImage().GetDimensionExtents(1).maximum - _inPort.GetAbstractImage().GetDimensionExtents(1).minimum;
+        _offset.setX( ( width() - (int)w ) / 2 );
+        _offset.setY( ( height() - (int)h ) / 2 );
+	_zoomRate = 1.;
+    }
 }
 
 void
@@ -597,11 +611,7 @@ m4dSliceViewerWidget::zoomImage( int amount )
 {
     _zoomRate += 0.001 * amount;
     if ( _zoomRate < 0. ) _zoomRate = 0.;
-    /*size_t   width  = _inPort.GetAbstractImage().GetDimensionExtents(0).maximum - _inPort.GetAbstractImage().GetDimensionExtents(0).minimum,
-    	     height = _inPort.GetAbstractImage().GetDimensionExtents(1).maximum - _inPort.GetAbstractImage().GetDimensionExtents(1).minimum;
-    _offset.setX( _offset.x() - (int)( amount * (int)width  * 0.005 ) );
-    _offset.setY( _offset.y() - (int)( amount * (int)height * 0.005 ) );*/
-    emit signalZoom( amount );
+    emit signalZoom( _index, amount );
 }
 
 void
@@ -646,47 +656,47 @@ m4dSliceViewerWidget::setSliceNum( size_t num )
     	throw ErrorHandling::ExceptionBase( "Index out of bounds." );
     }
     _sliceNum = num;
-    emit signalSetSliceNum( num );
+    emit signalSetSliceNum( _index, num );
 }
 
 void
 m4dSliceViewerWidget::moveImageH( int amount )
 {
     _offset.setX( _offset.x() + amount );
-    emit signalMoveH( amount );
+    emit signalMoveH( _index, amount );
 }
 
 void
 m4dSliceViewerWidget::moveImageV( int amount )
 {
     _offset.setY( _offset.y() + amount );
-    emit signalMoveV( amount );
+    emit signalMoveV( _index, amount );
 }
 
 void
 m4dSliceViewerWidget::adjustBrightness( int amount )
 {
     _brightnessRate -= ((GLfloat)amount)/((GLfloat)height()/2.0);
-    emit signalAdjustBrightness( amount );
+    emit signalAdjustBrightness( _index, amount );
 }
 
 void
 m4dSliceViewerWidget::adjustContrast( int amount )
 {
     _contrastRate -= ((GLfloat)amount)/((GLfloat)width()/2.0);
-    emit signalAdjustContrast( amount );
+    emit signalAdjustContrast( _index, amount );
 }
 
 void
 m4dSliceViewerWidget::none( int amount )
 {
-    /* auxiliary function to handle function pointers correctly. Does nothing. */
+    // auxiliary function to handle function pointers correctly. Does nothing.
 }
 
 void
 m4dSliceViewerWidget::nonePos( int x, int y, int z )
 {
-    /* auxiliary function to handle function pointers correctly. Does nothing. */
+    // auxiliary function to handle function pointers correctly. Does nothing.
 }
 
 void
@@ -711,7 +721,7 @@ m4dSliceViewerWidget::newPoint( int x, int y, int z )
             _shapes.back().addPoint( p );
 	}
     }
-    emit signalNewPoint( x, y, z );
+    emit signalNewPoint( _index, x, y, z );
 }
 
 void
@@ -726,7 +736,7 @@ m4dSliceViewerWidget::newShape( int x, int y, int z )
     Selection::m4dShape<int> s( 3 );
     _shapes.push_back( s );
     newPoint( x, y, z );
-    emit signalNewShape( x, y, z );
+    emit signalNewShape( _index, x, y, z );
 }
 
 void
@@ -740,7 +750,7 @@ m4dSliceViewerWidget::deletePoint( int x, int y, int z )
         _shapes.back().deleteLast();
         if ( _shapes.back().shapeElements().empty() ) deleteShape( x, y, z );
     }
-    emit signalDeletePoint();
+    emit signalDeletePoint( _index );
 }
 
 void
@@ -749,7 +759,7 @@ m4dSliceViewerWidget::deleteShape( int x, int y, int z )
     if ( _shapes.empty() ) return;
     
     _shapes.pop_back();
-    emit signalDeleteShape();
+    emit signalDeleteShape( _index );
 }
 
 void

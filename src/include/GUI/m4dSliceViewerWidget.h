@@ -24,10 +24,10 @@ class m4dSliceViewerWidget : public m4dAbstractViewerWidget, public QGLWidget
     Q_OBJECT
 
 public:
-    m4dSliceViewerWidget( QWidget *parent = 0 );
-    m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint32, 3 > >& conn, QWidget *parent = 0 );
-    m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint16, 3 > >& conn, QWidget *parent = 0 );
-    m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint8, 3 > >& conn, QWidget *parent = 0 );
+    m4dSliceViewerWidget( unsigned index, QWidget *parent = 0 );
+    m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint32, 3 > >& conn, unsigned index, QWidget *parent = 0 );
+    m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint16, 3 > >& conn, unsigned index, QWidget *parent = 0 );
+    m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint8, 3 > >& conn, unsigned index, QWidget *parent = 0 );
     ~m4dSliceViewerWidget();
     Imaging::InputPortAbstractImage& getInputPort();
     void setInputPort();
@@ -107,6 +107,8 @@ private:
 
     std::list< Selection::m4dShape<int> >	_shapes;
 
+    unsigned					_index;
+    
     bool					_selectionMode;
     bool					_printShapeData;
     bool					_oneSliceMode;

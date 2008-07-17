@@ -4,6 +4,7 @@
 #include "Common.h"
 #include <QWidget>
 
+
 #define  SETBUTTONHANDLERS	1
 #define  SETSELECTHANDLERS	2
 #define  SETSELECTIONMODE	4
@@ -70,26 +71,26 @@ public slots:
     virtual void slotRotateAxisZ( int z )=0;
 
 signals:
-    virtual void signalSetButtonHandlers( ButtonHandlers* hnd );
-    virtual void signalSetSelectHandlers( SelectHandlers* hnd );
-    virtual void signalSetSelectionMode( bool mode );
-    virtual void signalSetSelected( bool selected );
-    virtual void signalSetColorMode( ColorMode cm );
-    virtual void signalSetSliceNum( size_t num );
-    virtual void signalSetOneSliceMode();
-    virtual void signalSetMoreSliceMode( unsigned slicesPerRow );
-    virtual void signalZoom( int amount );
-    virtual void signalMoveH( int amount );
-    virtual void signalMoveV( int amount );
-    virtual void signalAdjustBrightness( int amount );
-    virtual void signalAdjustContrast( int amount );
-    virtual void signalNewPoint( int x, int y, int z );
-    virtual void signalNewShape( int x, int y, int z );
-    virtual void signalDeletePoint();
-    virtual void signalDeleteShape();
-    virtual void signalRotateAxisX( int x );
-    virtual void signalRotateAxisY( int y );
-    virtual void signalRotateAxisZ( int z );
+    void signalSetButtonHandlers( unsigned index, ButtonHandlers* hnd );
+    void signalSetSelectHandlers( unsigned index, SelectHandlers* hnd );
+    void signalSetSelectionMode( unsigned index, bool mode );
+    void signalSetSelected( unsigned index, bool selected );
+    void signalSetColorMode( unsigned index, ColorMode cm );
+    void signalSetSliceNum( unsigned index, size_t num );
+    void signalSetOneSliceMode( unsigned index );
+    void signalSetMoreSliceMode( unsigned index, unsigned slicesPerRow );
+    void signalZoom( unsigned index, int amount );
+    void signalMoveH( unsigned index, int amount );
+    void signalMoveV( unsigned index, int amount );
+    void signalAdjustBrightness( unsigned index, int amount );
+    void signalAdjustContrast( unsigned index, int amount );
+    void signalNewPoint( unsigned index, int x, int y, int z );
+    void signalNewShape( unsigned index, int x, int y, int z );
+    void signalDeletePoint( unsigned index );
+    void signalDeleteShape( unsigned index );
+    void signalRotateAxisX( unsigned index, int x );
+    void signalRotateAxisY( unsigned index, int y );
+    void signalRotateAxisZ( unsigned index, int z );
 
 };
 

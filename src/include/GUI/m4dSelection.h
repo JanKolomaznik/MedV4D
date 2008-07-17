@@ -170,61 +170,143 @@ public:
      */
     m4dShape( size_t dim );
 
+    /** addPoint()
+     *  adds a new point to the shape
+     *   @param p reference to the new point
+     */
     void
     addPoint( m4dPoint< ElementType >& p );
 
+    /** addAllPoints()
+     *  adds all points of another shape to this one
+     *   @param s reference to the other shape
+     */
     void
     addAllPoints( m4dShape< ElementType >& s);
 
+    /** shapeElements()
+     *  get a constant list of all the points of the shape
+     *   @return const list of the points
+     */
     const std::list< m4dPoint< ElementType > >&
     shapeElements() const;
 
+    /** shapeElements()
+     *  get a list of all the points of the shape
+     *   @return list of the points
+     */
     std::list< m4dPoint< ElementType > >&
     shapeElements();
 
+    /** segmentLengths()
+     *  get a constant list of the lengths of the segments of the shape
+     *   @return const list of lengths
+     */
     const std::list< float >&
     segmentLengths() const;
 
+    /** segmentLengths()
+     *  get a list of the lengths of the segments of the shape
+     *   @return list of lengths
+     */
     std::list< float >&
     segmentLengths();
 
+    /** clear()
+     *  clear the shape - erase all its points
+     */
     void
     clear();
 
+    /** deleteLast()
+     *  deletes the point that was last added to the shape
+     */
     void
     deleteLast();
 
+    /** closeShape()
+     *  closes the shape ( the first and last points will be the same )
+     */
     void
     closeShape();
 
+    /** openShape()
+     *  opens the shape ( the first and last points will be different )
+     */
     void
     openShape();
 
+    /** shapeClosed()
+     *  checks if the shape is closed
+     *   @return true if the shape is closed, false otherwise
+     */
     bool
     shapeClosed();
 
+    /** getDimension()
+     *  get the number of dimensions of the euclidean space that the shape lies in
+     *   @return the dimension number
+     */
     size_t
     getDimension();
 
+    /** getCentroid()
+     *  get the centroid of the shape
+     *   @return the centroid point
+     */
     const m4dPoint< ElementType >&
     getCentroid() const;
 
+    /** getArea()
+     *  get the area size of the shape
+     *   @return the size of the area
+     */
     long double
     getArea() const;
 
+private:
+    
+    /** calculateCentroid()
+     *  (re-)calculate the centroid of the shape
+     */
     void
     calculateCentroid();
 
+    /** calculateArea()
+     *  (re-)calculate the area size of the shape
+     */
     void
     calculateArea();
 
-private:
 
+    /** _shapePoints
+     *  list of points of the shape
+     */
     std::list< m4dPoint< ElementType > >	_shapePoints;
+    
+    /** _segmentLengths
+     *  list of segment lengths of the shape
+     */
     std::list< float >				_segmentLengths;
+    
+    /** _centroid
+     *  centroid point of the shape ( undefined if shape is open )
+     */
     m4dPoint< ElementType >			_centroid;
+    
+    /** _area
+     *  area size of the shape ( 0 if shape is open )
+     */
     long double					_area;
+
+    /** _closed
+     *  true if shape is closed, false otherwise
+     */
     bool					_closed;
+    
+    /** _dim
+     *  the number of dimensions of the points of the shape
+     */
     size_t					_dim;
 
 };
