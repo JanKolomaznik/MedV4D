@@ -130,6 +130,12 @@ m4dSliceViewerWidget::getAvailableSlots()
     return _availableSlots;
 }
 
+QWidget*
+m4dSliceViewerWidget::operator()()
+{
+    return (QWidget*)((QGLWidget*)this);
+}
+
 void
 m4dSliceViewerWidget::setButtonHandlers( ButtonHandlers* hnd )
 {
@@ -576,7 +582,8 @@ m4dSliceViewerWidget::mouseMoveEvent(QMouseEvent *event)
 void
 m4dSliceViewerWidget::zoomImage( int amount )
 {
-    _zoomRate += 0.01 * amount;
+    _zoomRate += 0.001 * amount;
+    if ( _zoomRate < 0. ) _zoomRate = 0.;
     /*size_t   width  = _inPort.GetAbstractImage().GetDimensionExtents(0).maximum - _inPort.GetAbstractImage().GetDimensionExtents(0).minimum,
     	     height = _inPort.GetAbstractImage().GetDimensionExtents(1).maximum - _inPort.GetAbstractImage().GetDimensionExtents(1).minimum;
     _offset.setX( _offset.x() - (int)( amount * (int)width  * 0.005 ) );

@@ -44,6 +44,8 @@ public:
 
     virtual AvailableSlots getAvailableSlots();
 
+    virtual QWidget* operator()();
+
 public slots:
     virtual void slotSetButtonHandlers( ButtonHandlers* hnd );
     virtual void slotSetSelectHandlers( SelectHandlers* hnd );

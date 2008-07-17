@@ -2,7 +2,7 @@
 #define _M4DABSTRACTVIEWERWIDGET_H
 
 #include "Common.h"
-#include <QObject>
+#include <QWidget>
 
 #define  SETBUTTONHANDLERS	1
 #define  SETSELECTHANDLERS	2
@@ -45,6 +45,7 @@ public:
     typedef long int AvailableSlots;
 
     virtual AvailableSlots getAvailableSlots()=0;
+    virtual QWidget* operator()()=0;
 
 public slots:
     virtual void slotSetButtonHandlers( ButtonHandlers* hnd )=0;
