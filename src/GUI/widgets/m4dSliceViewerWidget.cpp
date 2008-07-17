@@ -2,7 +2,7 @@
 
 #include <QtGui>
 #include "GUI/ogl/fonts.h"
-#include <string.h>
+#include <sstream>
 
 #define MINIMUM_SELECT_DISTANCE 5
 
@@ -68,12 +68,14 @@ void
 m4dSliceViewerWidget::setUnSelected()
 {
     _selected = false;
+    updateGL();
 }
 
 void
 m4dSliceViewerWidget::setSelected()
 {
     _selected = true;
+    updateGL();
     emit signalSetSelected( _index, false );
 }
 
@@ -423,12 +425,11 @@ m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int sli
 	    if ( last ) glColor3f( 1., 1., 0. );
             else glColor3f( 0., 1., 1. );
 	    Selection::m4dPoint< int > mid = Selection::m4dPoint< int >::midpoint( s.shapeElements().front(), s.shapeElements().back() );
-	    char dist[20];
-	    snprintf( dist, 19, "%f", Selection::m4dPoint< int >::distance( s.shapeElements().front(), s.shapeElements().back() ) );
-	    dist[19] = 0;
+	    std::ostringstream dist;
+	    dist << Selection::m4dPoint< int >::distance( s.shapeElements().front(), s.shapeElements().back() );
 	    setTextPosition( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
 	    setTextCoords( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
-            drawText( dist );
+            drawText( dist.str().c_str() );
 	    unsetTextCoords();
 	    if ( last ) glColor3f( 1., 0., 0. );
             else glColor3f( 0., 0., 1. );
@@ -448,12 +449,11 @@ m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int sli
 	        glVertex2i( c.getParticularValue( 0 ) + 3, c.getParticularValue( 1 ) + 3 );
 	        glVertex2i( c.getParticularValue( 0 ) - 3, c.getParticularValue( 1 ) + 3 );
 	    glEnd();
-	    char area[20];
-	    snprintf( area, 19, "%f", a );
-	    area[19] = 0;
+	    std::ostringstream area;
+	    area << a;
 	    setTextPosition( c.getParticularValue( 0 ) - 5, c.getParticularValue( 1 ) + 5 );
 	    setTextCoords( c.getParticularValue( 0 ) - 5, c.getParticularValue( 1 ) + 5 );
-	    drawText( area );
+	    drawText( area.str().c_str() );
 	    unsetTextCoords();
 	    if ( last ) glColor3f( 1., 0., 0. );
 	    else glColor3f( 0., 0., 1. );
@@ -475,12 +475,11 @@ m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int sli
 	            if ( last ) glColor3f( 1., 1., 0. );
                     else glColor3f( 0., 1., 1. );
 	            Selection::m4dPoint< int > mid = Selection::m4dPoint< int >::midpoint( *it, *tmp );
-	            char dist[20];
-	            snprintf( dist, 19, "%f", Selection::m4dPoint< int >::distance( *it, *tmp ) );
-	            dist[19] = 0;
+	            std::ostringstream dist;
+	            dist << Selection::m4dPoint< int >::distance( *it, *tmp );
 		    setTextPosition( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
 		    setTextCoords( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
-	            drawText( dist );
+	            drawText( dist.str().c_str() );
 		    unsetTextCoords();
                     if ( last ) glColor3f( 1., 0., 0. );
                     else glColor3f( 0., 0., 1. );
@@ -521,7 +520,6 @@ m4dSliceViewerWidget::mousePressEvent(QMouseEvent *event)
     if ( !_selected )
     {
         setSelected();
-	updateGL();
 	return;
     }
     if ( !_inPort.IsPlugged() ) return;
