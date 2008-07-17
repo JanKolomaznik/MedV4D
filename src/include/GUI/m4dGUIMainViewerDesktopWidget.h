@@ -16,7 +16,7 @@
  */
 class m4dGUIMainViewerDesktopWidget: public QWidget
 {
-  // Q_OBJECT
+  Q_OBJECT
 
   public:
 
@@ -37,7 +37,14 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
 
     m4dGUIVtkRenderWindowWidget *getVtkRenderWindowWidget() { return vtkRenderWindowWidget; }
 
+  private slots:
+    void selectedChanged ( unsigned index );
+
   private:
+
+    void propagateFeatures ( M4D::Viewer::m4dAbstractViewerWidget *viewer );
+
+
     m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget;
     M4D::Viewer::m4dSliceViewerWidget *glWidget;
 
@@ -45,6 +52,7 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
     M4D::Imaging::ImageConnectionSimple< M4D::Imaging::Image< uint32, 3 > > prodconn;
 
     std::vector< M4D::Viewer::m4dAbstractViewerWidget * > viewers;
+    M4D::Viewer::m4dAbstractViewerWidget *selectedViewer;
 };
 
 #endif // M4D_GUI_MAIN_VIEWER_DESKTOP_H

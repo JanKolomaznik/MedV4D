@@ -44,7 +44,7 @@ m4dGUIMainViewerDesktopWidget::m4dGUIMainViewerDesktopWidget ( QWidget *parent )
 
 	prodconn.PutImage( inputImage );
 
-  glWidget = new m4dSliceViewerWidget();
+  glWidget = new m4dSliceViewerWidget( 1 );
   
   splitter->addWidget( glWidget );
 
@@ -53,26 +53,34 @@ m4dGUIMainViewerDesktopWidget::m4dGUIMainViewerDesktopWidget ( QWidget *parent )
   mainLayout->addWidget( splitter );
 
   // setLayout( mainLayout ); 
+  setDesktopLayout( 1, 2 );
+
+  selectedViewer = viewers[1];
+  viewers[0]->slotSetSelected( true );
 }
 
 
 void m4dGUIMainViewerDesktopWidget::setDesktopLayout( const int rows, const int columns )
 {
-  unsigned size = rows * columns;
-  int difference = size - viewers.size();
+  unsigned newSize = rows * columns;
+  unsigned viewersSize = viewers.size();
+  int difference = newSize - viewersSize;
 
   if ( difference > 0 )
   {
-    for ( unsigned i = 0; i < difference; i++ ) {
-      viewers.push_back( new m4dSliceViewerWidget() );
+    for ( unsigned i = 0; i < difference; i++ ) 
+    {
+      m4dSliceViewerWidget *widget = new m4dSliceViewerWidget( viewersSize + i );
+      connect( (m4dAbstractViewerWidget *)widget, SIGNAL(signalSetSelected( unsigned, bool )), this, SLOT(selectedChanged( unsigned )) );
+      viewers.push_back( widget );
     }
   }
   else
   {
-    for ( unsigned i = size; i < viewers.size(); i++ ) {
+    for ( unsigned i = newSize; i < viewersSize; i++ ) {
       delete viewers[i];
     }
-    viewers.resize( size );
+    viewers.resize( newSize );
   }
 
   QGridLayout *mainLayout = new QGridLayout;
@@ -86,8 +94,8 @@ void m4dGUIMainViewerDesktopWidget::setDesktopLayout( const int rows, const int 
     for ( unsigned j = 0; j < columns; j++ )
     {   
       QWidget *widget = (*viewers[i * columns + j])();
-      widget->setMinimumSize( QSize( 100, 100 ) );
-      splitter->addWidget( new QGLWidget() );
+      widget->resize( widget->sizeHint() );
+      splitter->addWidget( widget );
     }
     mainSplitter->addWidget( splitter );
   }
@@ -96,4 +104,19 @@ void m4dGUIMainViewerDesktopWidget::setDesktopLayout( const int rows, const int 
 
   delete layout();
   setLayout( mainLayout );
+}
+
+
+void m4dGUIMainViewerDesktopWidget::selectedChanged ( unsigned index )
+{
+  selectedViewer->slotSetSelected( false );
+  selectedViewer = viewers[index];
+
+  propagateFeatures( selectedViewer ); 
+}
+
+
+void m4dGUIMainViewerDesktopWidget::propagateFeatures ( m4dAbstractViewerWidget *viewer )
+{
+
 }
