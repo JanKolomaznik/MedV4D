@@ -99,10 +99,10 @@ public:
 		DcmProvider::ResultSet &result,
     const std::string &patientForeName,
     const std::string &patientSureName,
-		const std::string &patientID,
-		const StringVector &modalities,
 		const std::string &dateFrom,
-		const std::string &dateTo) ;
+		const std::string &dateTo,
+    const std::string &referringMD,
+    const std::string &description) ;
 
   /**
    *  Search given path recursively.

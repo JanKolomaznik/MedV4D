@@ -50,16 +50,16 @@ DcmProvider::~DcmProvider()
 void
 DcmProvider::Find( 
 		DcmProvider::ResultSet &result,
-		const string &patientForeName,
-    const string &patientSureName,
-		const string &patientID,
-		const StringVector &modalities,
-		const string &dateFrom,
-		const string &dateTo) 
+    const std::string &patientForeName,
+    const std::string &patientSureName,
+		const std::string &dateFrom,
+		const std::string &dateTo,
+    const std::string &referringMD,
+    const std::string &description) 
 {
 	static_cast<FindService *>(m_findService)->FindForFilter( 
 		result, patientForeName, patientSureName, 
-    patientID, modalities, dateFrom, dateTo);
+    dateFrom, dateTo, referringMD, description);
 }
 
 ///////////////////////////////////////////////////////////////////////

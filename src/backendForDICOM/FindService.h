@@ -26,8 +26,9 @@ class FindService : AbstractService
 		DcmDataset **query, 
 		const string *patientName,
 		const string *patientID,
-		const string *modality,
-		const string *date );
+	  const string *date,
+    const string *referringMD,
+    const string *description );
   // ...
 	void GetStudyInfoQuery( 
 		DcmDataset **query,
@@ -81,10 +82,10 @@ class FindService : AbstractService
 		Dicom::DcmProvider::ResultSet &result,
 		const string &patientForeName,
     const string &patientSureName,
-		const string &patientID,
-		const Dicom::DcmProvider::StringVector &modalities,
 		const string &dateFrom,
-		const string &dateTo);
+		const string &dateTo,
+    const string &referringMD,
+    const string &description);
 
   /**
    *  Send find request to server with appropriate query dataSet based on parameters of this functions (filter).
