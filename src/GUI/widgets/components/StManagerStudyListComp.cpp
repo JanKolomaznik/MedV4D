@@ -181,8 +181,7 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
 
       case 1:
         // Remote Exams tab active
-        dcmProvider->Find( *activeResultSet, firstName, lastName, patientID, modalitiesVect,
-                            fromDate, toDate );	
+        dcmProvider->Find( *activeResultSet, firstName, lastName, patientID, fromDate, toDate, "", "" );
 
         dialogTitle = REMOTE_EXAMS_NAME;
         break;
