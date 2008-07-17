@@ -41,6 +41,9 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
     m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget;
     M4D::Viewer::m4dSliceViewerWidget *glWidget;
 
+    M4D::Imaging::Image< uint32, 3 >::Ptr inputImage;
+    M4D::Imaging::ImageConnectionSimple< M4D::Imaging::Image< uint32, 3 > > prodconn;
+
     std::vector< M4D::Viewer::m4dAbstractViewerWidget * > viewers;
 };
 
