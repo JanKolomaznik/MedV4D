@@ -82,6 +82,7 @@ class FindService : AbstractService
 		Dicom::DcmProvider::ResultSet &result,
 		const string &patientForeName,
     const string &patientSureName,
+    const string &patID,
 		const string &dateFrom,
 		const string &dateTo,
     const string &referringMD,

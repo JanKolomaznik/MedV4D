@@ -99,6 +99,7 @@ public:
 		DcmProvider::ResultSet &result,
     const std::string &patientForeName,
     const std::string &patientSureName,
+    const std::string &patientID,
 		const std::string &dateFrom,
 		const std::string &dateTo,
     const std::string &referringMD,

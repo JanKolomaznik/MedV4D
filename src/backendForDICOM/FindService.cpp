@@ -233,6 +233,7 @@ FindService::FindForFilter(
 		DcmProvider::ResultSet &result, 
 		const string &patientForeName,
     const string &patientSureName,
+    const string &patID,
 		const string &dateFrom,
 		const string &dateTo,
     const string &referringMD,
@@ -304,7 +305,7 @@ FindService::FindForFilter(
 
 	// create query
 	DcmDataset *query = NULL;
-  GetQuery( &query, &patienName, NULL, &dateRange, &referringMDName, &descr);
+  GetQuery( &query, &patienName, &patID, &dateRange, &referringMDName, &descr);
 
 	// issue
 	FindSupport( *query, (void *)&result, FindService::TableRowCallback);

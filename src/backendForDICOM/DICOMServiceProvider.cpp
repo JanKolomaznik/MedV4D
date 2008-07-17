@@ -52,13 +52,14 @@ DcmProvider::Find(
 		DcmProvider::ResultSet &result,
     const std::string &patientForeName,
     const std::string &patientSureName,
+    const std::string &patientID,
 		const std::string &dateFrom,
 		const std::string &dateTo,
     const std::string &referringMD,
     const std::string &description) 
 {
 	static_cast<FindService *>(m_findService)->FindForFilter( 
-		result, patientForeName, patientSureName, 
+    result, patientForeName, patientSureName, patientID,
     dateFrom, dateTo, referringMD, description);
 }
 
