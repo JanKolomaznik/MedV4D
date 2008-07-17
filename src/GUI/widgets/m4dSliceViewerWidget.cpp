@@ -615,7 +615,6 @@ m4dSliceViewerWidget::zoomImage( int amount )
 void
 m4dSliceViewerWidget::wheelEvent(QWheelEvent *event)
 {
-    if ( !_selected ) setSelected();
     if ( !_inPort.IsPlugged() ) return;
     if ( event->buttons() & Qt::LeftButton )
     {
