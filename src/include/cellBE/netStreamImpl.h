@@ -182,6 +182,194 @@ public:
 
 };
 
+///////////////////////////////////////////////////////////////////////////////
+
+/**
+ *  Base class for Serailizing netstream given to user through iPublicJob
+ *  interface to be able to serialize some structured data. It serialize
+ *  data in endian of the mashine thet performs the serialization (source).
+ *  Because that endian goes with the data, right byte ordering is preformed
+ *  on destination mashine throuh <<operators in deriving classes.
+ */  
+class UserSerializingNetStreamBase : public NetStream
+{
+protected:
+  uint8 *begin; // underlaying buf
+  uint8 *curr;
+  uint8 *end;
+
+  uint16 supp16;
+  uint32 supp32;
+
+  uint8 *ptr8;
+
+  inline void AddByte( uint8 what)
+  {
+    if( curr != end)
+    {
+      *curr = what;
+      curr++;
+    }
+  }
+
+  inline uint8 GetByte( void)
+  {
+    if( curr != end)
+      return *curr++;
+    else
+      throw ExceptionBase("Already on end of stream");
+  }  
+
+  UserSerializingNetStreamBase() : begin(NULL), end(NULL), curr(NULL) {}
+
+public:
+  inline void SetBuffer( uint8 *buff, size_t size)
+  {
+    begin = curr = buff;
+    end = begin + size;
+  }
+
+  NetStream & operator<< (const uint8 what)
+  {
+    AddByte( what);
+    return *this;
+  }
+
+  NetStream & operator>>( uint8 &what)
+  {
+    what = GetByte();
+    return *this;
+  }
+
+  NetStream & operator<< (const uint16 what)
+  {
+    supp16 = what;
+
+    AddByte( ((uint8*)&supp16)[0] );
+    AddByte( ((uint8*)&supp16)[1] );
+    return *this;
+  }
+
+  NetStream & operator<< (const uint32 what)
+  {
+    supp32 = what;
+
+    AddByte( ((uint8*)&supp32)[0] );
+    AddByte( ((uint8*)&supp32)[1] );
+    AddByte( ((uint8*)&supp32)[2] );
+    AddByte( ((uint8*)&supp32)[3] );
+    return *this;
+  }
+
+  NetStream & operator<< (const float32 what)
+  {
+    supp32 = *((uint32*)&what);
+
+    AddByte( ((uint8*)&supp32)[0] );
+    AddByte( ((uint8*)&supp32)[1] );
+    AddByte( ((uint8*)&supp32)[2] );
+    AddByte( ((uint8*)&supp32)[3] );
+    return *this;
+  }
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
+/**
+ *  Retrieves data and DOES NOT swap them
+ */
+class UserSerializingNetStreamNotSwapping : public UserSerializingNetStreamBase
+{
+public:
+
+  NetStream & operator>>( uint16 &what)
+  {
+    ptr8 = (uint8*)&supp16;
+
+    ptr8[0] = GetByte();
+    ptr8[1] = GetByte();
+    what = supp16;
+
+    return *this;
+  }
+
+  NetStream & operator>>( uint32 &what)
+  {
+    ptr8 = (uint8*)&supp32;
+    ptr8[0] = GetByte();
+    ptr8[1] = GetByte();
+    ptr8[2] = GetByte();
+    ptr8[3] = GetByte();
+
+    what = supp32;
+    
+    return *this;
+  }
+
+  NetStream & operator>>( float32 &what)
+  {
+    ptr8 = (uint8*)&supp32;
+    ptr8[0] = GetByte();
+    ptr8[1] = GetByte();
+    ptr8[2] = GetByte();
+    ptr8[3] = GetByte();
+
+    supp32 = *((uint32*)&supp32);
+    what = *( (float32*)&supp32);
+
+    return *this;
+  }
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
+/**
+ *  Automatically swaps bytes when retrieving data
+ */
+class UserSerializingNetStreamSwapping : public UserSerializingNetStreamBase
+{
+public:
+
+  NetStream & operator>>( uint16 &what)
+  {
+    ptr8 = (uint8*)&supp16;
+
+    ptr8[1] = GetByte();
+    ptr8[0] = GetByte();
+    what = supp16;
+
+    return *this;
+  }
+
+  NetStream & operator>>( uint32 &what)
+  {
+    ptr8 = (uint8*)&supp32;
+    ptr8[3] = GetByte();
+    ptr8[2] = GetByte();
+    ptr8[1] = GetByte();
+    ptr8[0] = GetByte();
+
+    what = supp32;
+    
+    return *this;
+  }
+
+  NetStream & operator>>( float32 &what)
+  {
+    ptr8 = (uint8*)&supp32;
+    ptr8[3] = GetByte();
+    ptr8[2] = GetByte();
+    ptr8[1] = GetByte();
+    ptr8[0] = GetByte();
+
+    supp32 = *((uint32*)&supp32);
+    what = *( (float32*)&supp32);
+
+    return *this;
+  }
+};
+
 }
 }
 

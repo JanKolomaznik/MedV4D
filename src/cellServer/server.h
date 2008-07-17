@@ -38,8 +38,6 @@ class Server
 
     JobManager m_jobManager;
 
-    /*typedef vector<boost::asio::ip::tcp::socket> SockPool;
-    SockPool m_socketPool;*/
     std::string m_pingMessage;
 
     NetStreamVector m_pingStream;

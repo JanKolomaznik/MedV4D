@@ -2,10 +2,13 @@
 #include "Common.h"
 #include "serverJob.h"
 
+#include "Imaging/dataSetProperties.h"
+#include "Imaging/ImageFactory.h"
+
 using namespace M4D::CellBE;
 using namespace M4D::Imaging;
 
-///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 void
 ServerJob::DeserializeFilterSettings( void)
@@ -39,7 +42,7 @@ ServerJob::DeserializeFilterSettings( void)
   }
 }
 
-///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 void
 ServerJob::ReadSecondaryHeader()
@@ -51,7 +54,7 @@ ServerJob::ReadSecondaryHeader()
       );
 }
 
-///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 void
 ServerJob::ReadDataPeiceHeader( void)
@@ -65,7 +68,7 @@ ServerJob::ReadDataPeiceHeader( void)
       );
 }
 
-///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 void
 ServerJob::EndSecondaryHeaderRead( const boost::system::error_code& error)
@@ -86,7 +89,7 @@ ServerJob::EndSecondaryHeaderRead( const boost::system::error_code& error)
 
 }
 
-///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 void
 ServerJob::EndJobSettingsRead( const boost::system::error_code& error)
@@ -95,11 +98,31 @@ ServerJob::EndJobSettingsRead( const boost::system::error_code& error)
     HandleErrors( error);
     DeserializeFilterSettings();
 
+    // build the pipeline according filterSettingsVector
+    BuildThePipeLine();
+    // create appropriate dataSet according secHeader.dataSetType
+    CreateDataSet();
+
+    // read the dataSet properties
+    m_socket.async_read_some(
+      boost::asio::buffer( (void*) &dataSet->_properties, secHeader.dataSetPropertiesLen),
+      boost::bind( &ServerJob::EndDataSetPropertiesRead, this,
+        boost::asio::placeholders::error)
+      );
+
   } catch( ExceptionBase &) {
   }
 }
 
-///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ServerJob::EndDataSetPropertiesRead( const boost::system::error_code& error)
+{
+  // dataSet->DeSerialize( this);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 void
 ServerJob::EndReadDataPeiceHeader( const boost::system::error_code& error,
@@ -113,49 +136,31 @@ ServerJob::EndReadDataPeiceHeader( const boost::system::error_code& error,
   }
 }
 
-///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-//void
-//ClientJob::PutDataPiece( const M4D::CellBE::BasicJob::DataBuff &buf)
-//{
-//  DataBuffs bufs;
-//  bufs.push_back( buf);
-//  PutDataPiece( bufs);
-//}
-//
-/////////////////////////////////////////////////////////////////////////
-//
-//void
-//ClientJob::PutDataPiece( const M4D::CellBE::BasicJob::DataBuffs &bufs)
-//{
-//  // count total length of all buffers
-//  size_t totalLen = 0;
-//
-//  DataPieceHeader *header = p_freeDPHeaders.back();
-//  p_freeDPHeaders.pop_back();
-//
-//  vector<boost::asio::const_buffer> buffers;
-//
-//  // push header of all dataPiece
-//  buffers.push_back( boost::asio::buffer( header, sizeof( DataPieceHeader)) );
-//
-//  // push rest of bufs
-//  const DataBuff *buf;
-//  for( DataBuffs::const_iterator it=bufs.begin(); it != bufs.end(); it++)
-//  {
-//    buf = (DataBuff*) & it;
-//    buffers.push_back( boost::asio::const_buffer( buf->data, buf->len) );
-//    totalLen += buf->len;
-//  }
-//
-//  header->pieceSize = (uint32) totalLen;
-//  DataPieceHeader::Serialize( header);
-//
-//  // get free dataPieceHeader
-//  m_socket.async_write_some(
-//    buffers, 
-//    boost::bind( & ClientJob::EndSend, this, boost::asio::placeholders::error)
-//    );
-//}
+void
+ServerJob::CreateDataSet( void)
+{
+  // create the dataSet instance
+  switch( (DataSetType) secHeader.dataSetType)
+  {
+  case DATSET_IMAGE2D:
+    //ImageFactory::Create
+    break;
 
-///////////////////////////////////////////////////////////////////////
+  case DATSET_IMAGE3D:
+    break;
+
+  case DATSET_IMAGE4D:
+    break;
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ServerJob::BuildThePipeLine( void)
+{
+}
+
+///////////////////////////////////////////////////////////////////////////////

@@ -195,6 +195,10 @@
 				RelativePath="..\..\include\cellBE\clientSocket.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\include\cellBE\iPublicJob.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

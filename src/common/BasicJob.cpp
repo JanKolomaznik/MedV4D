@@ -8,7 +8,7 @@ using namespace std;
 
 Pool< DataPieceHeader, 32> BasicJob::freeHeaders;
 
-///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 BasicJob::BasicJob(boost::asio::io_service &service)  
     : BasicSocket(service)
@@ -17,7 +17,7 @@ BasicJob::BasicJob(boost::asio::io_service &service)
 {
 }
 
-///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 void
 BasicJob::PutDataPiece( const M4D::CellBE::BasicJob::DataBuff &buf)
@@ -27,7 +27,7 @@ BasicJob::PutDataPiece( const M4D::CellBE::BasicJob::DataBuff &buf)
   PutDataPiece( bufs);
 }
 
-///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 void
 BasicJob::PutDataPiece( const M4D::CellBE::BasicJob::DataBuffs &bufs)
@@ -61,7 +61,39 @@ BasicJob::PutDataPiece( const M4D::CellBE::BasicJob::DataBuffs &bufs)
     );
 }
 
-///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+void
+BasicJob::GetDataPiece( M4D::CellBE::BasicJob::DataBuff &buf)
+{
+  DataBuffs bufs;
+  bufs.push_back( buf);
+  GetDataPiece( bufs);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+BasicJob::GetDataPiece( M4D::CellBE::BasicJob::DataBuffs &bufs)
+{
+  vector<boost::asio::mutable_buffer> buffers;
+
+  // create asio buffer vector
+  DataBuff *buf;
+  for( DataBuffs::iterator it=bufs.begin(); it != bufs.end(); it++)
+  {
+    buf = (DataBuff*) & it;
+    buffers.push_back( boost::asio::mutable_buffer( buf->data, buf->len) );
+  }
+
+  // read 'em
+  m_socket.async_read_some(
+    buffers, 
+    boost::bind( & BasicJob::EndSend, this, boost::asio::placeholders::error)
+    );
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 void 
 BasicJob::EndSend( const boost::system::error_code& e)
@@ -74,4 +106,22 @@ BasicJob::EndSend( const boost::system::error_code& e)
   }
 }
 
-///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+NetStream *
+BasicJob::GetNetStream( void)
+{
+  uint8 sourceEndian = secHeader.endian;
+#ifdef LITTLE_ENDIAN
+  uint8 destEndian = 0;
+#else
+  uint8 destEndian = 1;
+#endif
+  // we return NetStream instance based on source and target mashine endians
+  if( sourceEndian != destEndian)
+    return new UserSerializingNetStreamSwapping();
+  else
+    return new UserSerializingNetStreamNotSwapping();
+}
+
+///////////////////////////////////////////////////////////////////////////////

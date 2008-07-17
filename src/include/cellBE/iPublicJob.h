@@ -44,6 +44,21 @@ public:
   //template<class T>
   virtual void GetDataPiece( DataBuff &buf) = 0;
 
+  /**
+   *  Returns NetStream pointer. When the stream is created endian of the
+   *  arrived data is taken into account as well as endian of the mashine
+   *  this code is run onto (host). So the data got from the stream will be 
+   *  in right byte order respect to the host mashine.
+   *  Remember to call SetBuffer before you start useing the NetStream !!!
+   */
+  virtual NetStream * GetNetStream( void) = 0;
+
+  /**
+   *  Each no longer used netstream should be returned back or it will remain
+   *  inaccesable to next usage.
+   */
+  //virtual void ReturnNetStream( NetStream &ns) = 0;
+
 };
 
 }

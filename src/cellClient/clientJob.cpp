@@ -23,8 +23,7 @@ ClientJob::ClientJob(
   , m_dataSet( dataSet)
 {
   GenerateJobID();
-  primHeader.action = (uint8) CREATE;
-  primHeader.dataSetType = m_dataSet->_properties->GetType();
+  primHeader.action = (uint8) CREATE;  
 
   PrimaryJobHeader::Serialize( &primHeader);
 
@@ -39,6 +38,8 @@ ClientJob::ClientJob(
   // serialize dataset settings
   m_dataSet->_properties->SerializeIntoStream( m_dataSetPropsSerialized);
   secHeader.dataSetPropertiesLen = (uint16) m_dataSetPropsSerialized.size();
+  secHeader.dataSetType = m_dataSet->_properties->GetType();
+  secHeader.dataElementID = 0;  // TODO IDs of dataTypes?
 
   SendHeaders();
 

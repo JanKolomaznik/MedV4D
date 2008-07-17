@@ -58,10 +58,12 @@ public:
   JobCallback onComplete;
   JobCallback onError;
 
+  // iPublicJob interface implementations
   void PutDataPiece( const DataBuffs &bufs);
   void PutDataPiece( const DataBuff &buf);
   void GetDataPiece( DataBuffs &bufs);
   void GetDataPiece( DataBuff &buf);
+  NetStream * GetNetStream( void);
 
 };
 
