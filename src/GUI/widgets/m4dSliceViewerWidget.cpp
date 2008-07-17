@@ -65,10 +65,9 @@ m4dSliceViewerWidget::getSelectionMode()
 }
 
 void
-m4dSliceViewerWidget::setSelected( bool selected )
+m4dSliceViewerWidget::setUnSelected()
 {
-    _selected = selected;
-    emit signalSetSelected( _index, selected );
+    _selected = false;
 }
 
 void
@@ -88,6 +87,7 @@ void
 m4dSliceViewerWidget::setInputPort( )
 {
     _inPort.UnPlug();
+    setParameters();
 }
 
 void
@@ -144,7 +144,7 @@ m4dSliceViewerWidget::getAvailableSlots()
 QWidget*
 m4dSliceViewerWidget::operator()()
 {
-    return (QWidget*)((QGLWidget*)this);
+    return (QGLWidget*)this;
 }
 
 void
@@ -518,14 +518,14 @@ m4dSliceViewerWidget::resizeGL(int winW, int winH)
 void
 m4dSliceViewerWidget::mousePressEvent(QMouseEvent *event)
 {
-    if ( !_inPort.IsPlugged() ) return;
-    _lastPos = event->pos();
     if ( !_selected )
     {
         setSelected();
 	updateGL();
 	return;
     }
+    if ( !_inPort.IsPlugged() ) return;
+    _lastPos = event->pos();
     if ( _selectionMode )
     {
         if ( event->modifiers() & Qt::ControlModifier )
@@ -849,7 +849,8 @@ m4dSliceViewerWidget::slotDeleteShape()
 void
 m4dSliceViewerWidget::slotSetSelected( bool selected )
 {
-    setSelected( selected );
+    if ( selected ) setSelected();
+    else setUnSelected();
 }
 
 void

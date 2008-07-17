@@ -39,7 +39,8 @@ public:
     void setSelectHandlers( SelectHandlers* hnd );
     void setSelectionMode( bool mode );
     bool getSelectionMode();
-    void setSelected( bool selected );
+    void setUnSelected();
+    void setSelected();
     bool getSelected();
 
     virtual AvailableSlots getAvailableSlots();
@@ -94,7 +95,6 @@ protected:
 private:
 
     void setParameters();
-    void setSelected();
     void drawSelectionModeBorder();
     void drawSelectedBorder();
     void drawSlice( int sliceNum, double zoomRate, QPoint offset );
