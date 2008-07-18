@@ -165,6 +165,9 @@ void StManagerFilterComp::search ()
                             fromDateDateEdit->date().toString( "yyyyMMdd" ) : "";
   QString toDateText      = toDateDateEdit->isEnabled() ?
                             toDateDateEdit->date().toString( "yyyyMMdd" ) : "";
+  QString desc            = studyDescComboBox->currentText();
+  QString referringMD     = referringMDComboBox->currentText();
+
   
   // construct the modalities vector (from checked ones)
   vector< string > modalitiesVect;
@@ -177,7 +180,7 @@ void StManagerFilterComp::search ()
 
   studyListComponent->find( firstNameText.toStdString(), lastNameText.toStdString(),
                             patientIDText.toStdString(), fromDateText.toStdString(),
-                            toDateText.toStdString(), modalitiesVect );	
+                            toDateText.toStdString(), modalitiesVect, desc.toStdString(), referringMD.toStdString() );	
 }
 
 

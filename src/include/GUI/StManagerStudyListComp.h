@@ -57,7 +57,8 @@ class StManagerStudyListComp: public QWidget
     void find ( const std::string &firstName, const std::string &lastName, 
                 const std::string &patientID, 
                 const std::string &fromDate, const std::string &toDate,
-                const M4D::Dicom::DcmProvider::StringVector &modalitiesVect );
+                const M4D::Dicom::DcmProvider::StringVector &modalitiesVect,
+                const std::string &desc, const std::string &referringMD);
 
     void setDicomObjectSet ( M4D::Dicom::DcmProvider::DicomObjSet *dcmObjSet )
     {
