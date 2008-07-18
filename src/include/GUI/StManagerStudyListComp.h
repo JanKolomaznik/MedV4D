@@ -52,13 +52,15 @@ class StManagerStudyListComp: public QWidget
      * @param fromDate reference to string containing date (from) in yyyyMMdd format
      * @param toDate reference to string containing date (to) in yyyyMMdd format 
      * @param reference to vector of strings containing set of wanted modalities
+     * ....
+     * ....
      * @throws ExceptionBase, exception -> TOWRITE
      */
     void find ( const std::string &firstName, const std::string &lastName, 
                 const std::string &patientID, 
                 const std::string &fromDate, const std::string &toDate,
                 const M4D::Dicom::DcmProvider::StringVector &modalitiesVect,
-                const std::string &desc, const std::string &referringMD);
+                const std::string &referringMD, const std::string &description );
 
     void setDicomObjectSet ( M4D::Dicom::DcmProvider::DicomObjSet *dcmObjSet )
     {

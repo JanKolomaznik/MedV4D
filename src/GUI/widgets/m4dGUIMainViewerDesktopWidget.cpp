@@ -77,6 +77,7 @@ void m4dGUIMainViewerDesktopWidget::setDesktopLayout( const int rows, const int 
   }
   else
   {
+    viewers[newSize - 1]->slotSetSelected( true );
     for ( unsigned i = newSize; i < viewersSize; i++ ) {
       delete viewers[i];
     }

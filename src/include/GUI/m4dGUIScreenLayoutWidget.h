@@ -41,8 +41,8 @@ class m4dGUIScreenLayoutWidget: public QWidget
      */
     QGroupBox *createLayoutGroupBox ( const QString &title, QToolButton ***toolButtons,
                                       QSpinBox **rowSpinBox, QSpinBox **columnSpinBox,
-                                      const int rowValue, const int columnValue,
-                                      const char *layoutChangedMember, const char *applyMember );
+                                      const unsigned dimensionsIdx, const char *layoutChangedMember,
+                                      const char *applyMember );
 
     QToolButton *createToolButton ( const QIcon &icon, const char *member );
     QSpinBox    *createSpinBox ( const int value );

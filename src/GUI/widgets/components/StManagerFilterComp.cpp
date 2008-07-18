@@ -159,15 +159,12 @@ void StManagerFilterComp::search ()
   QString firstNameText = firstNameComboBox->currentText();
   QString lastNameText  = lastNameComboBox->currentText();
 
-  QString patientIDText   = patientIDComboBox->currentText();
+  QString patientIDText = patientIDComboBox->currentText();
     
-  QString fromDateText    = fromDateDateEdit->isEnabled() ?
+  QString fromDateText  = fromDateDateEdit->isEnabled() ?
                             fromDateDateEdit->date().toString( "yyyyMMdd" ) : "";
-  QString toDateText      = toDateDateEdit->isEnabled() ?
+  QString toDateText    = toDateDateEdit->isEnabled() ?
                             toDateDateEdit->date().toString( "yyyyMMdd" ) : "";
-  QString desc            = studyDescComboBox->currentText();
-  QString referringMD     = referringMDComboBox->currentText();
-
   
   // construct the modalities vector (from checked ones)
   vector< string > modalitiesVect;
@@ -177,10 +174,14 @@ void StManagerFilterComp::search ()
       modalitiesVect.push_back( StManagerFilterComp::modalities[i] );
     }
   }
+ 
+  QString referringMD = referringMDComboBox->currentText();
+  QString description = studyDescComboBox->currentText();
 
   studyListComponent->find( firstNameText.toStdString(), lastNameText.toStdString(),
                             patientIDText.toStdString(), fromDateText.toStdString(),
-                            toDateText.toStdString(), modalitiesVect, desc.toStdString(), referringMD.toStdString() );	
+                            toDateText.toStdString(), modalitiesVect, referringMD.toStdString(), 
+                            description.toStdString() );	
 }
 
 

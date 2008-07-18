@@ -9,6 +9,19 @@
 using namespace M4D::Dicom;
 
 
+/// Number of abstract viewer's actions (toolBar buttons)
+#define VIEWER_ACTIONS_NUMBER       2
+
+const char *m4dGUIMainWindow::actionIconNames[] = { "info.png", "zoom.png"  };
+
+const char *m4dGUIMainWindow::actionTexts[] = { "&Toggle Overlay", "---"  };
+
+const char *m4dGUIMainWindow::actionShortCuts[] = { "Ctrl+T", "---"  };
+
+const char *m4dGUIMainWindow::actionStatusTips[] = { "Hide or displays the study information", "---"  };
+
+const char *m4dGUIMainWindow::actionSlots[] = { SLOT(overlay()), SLOT(overlay()) };
+
 m4dGUIMainWindow::m4dGUIMainWindow ( const char *title, const QIcon &icon )
 {
   Q_INIT_RESOURCE( m4dGUIMainWindow );
@@ -139,11 +152,16 @@ void m4dGUIMainWindow::createActions ()
   layoutAct->setStatusTip( tr( "Redisplay series and images in various layouts" ) );
   connect( layoutAct, SIGNAL(triggered()), this, SLOT(layout()) );
 
-  overlayAct = new QAction( QIcon( ":/icons/info.png" ), tr( "&Toggle Overlay" ), this );
-  overlayAct->setShortcut( tr( "Ctrl+T" ) );
-  overlayAct->setStatusTip( tr( "Hide or displays the study information" ) );
-  connect( overlayAct, SIGNAL(triggered()), this, SLOT(overlay()) );
-  overlayAct->setEnabled( false );
+  viewerActs = new QAction *[VIEWER_ACTIONS_NUMBER];
+  for ( unsigned i = 0; i < VIEWER_ACTIONS_NUMBER; i++ ) 
+  {
+    QString fileName = QString( ":/icons/" ).append( actionIconNames[i] );
+    viewerActs[i] = new QAction( QIcon( fileName ), tr( actionTexts[i] ), this );
+    viewerActs[i]->setShortcut( tr( actionShortCuts[i] ) );
+    viewerActs[i]->setStatusTip( tr( actionStatusTips[i] ) );
+    connect( viewerActs[i], SIGNAL(triggered()), this, actionSlots[i] );
+    viewerActs[i]->setEnabled( false );
+  }
 }
 
 
@@ -176,9 +194,13 @@ void m4dGUIMainWindow::createToolBars ()
   fileToolBar->addAction( openAct );
   fileToolBar->addAction( saveAct );
 
-  viewToolBar = addToolBar( tr( "View" ) );
-  viewToolBar->addAction( layoutAct );
-  viewToolBar->addAction( overlayAct );
+  layoutToolBar = addToolBar( tr( "Layout" ) );
+  layoutToolBar->addAction( layoutAct );
+
+  viewerToolBar = addToolBar( tr( "Viewer" ) );
+  for ( unsigned i = 0; i < VIEWER_ACTIONS_NUMBER; i++ ) {
+    viewerToolBar->addAction( viewerActs[i] );
+  }
 }
 
 

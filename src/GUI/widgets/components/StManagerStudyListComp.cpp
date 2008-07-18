@@ -149,7 +149,7 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
                                     const string &patientID, 
                                     const string &fromDate, const string &toDate,
                                     const DcmProvider::StringVector &modalitiesVect,
-                                    const std::string &desc, const std::string &referringMD)
+                                    const string &referringMD, const string &description )
 {
   try {
 
@@ -182,7 +182,8 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
 
       case 1:
         // Remote Exams tab active
-        dcmProvider->Find( *activeResultSet, firstName, lastName, patientID, fromDate, toDate, referringMD, desc );
+        dcmProvider->Find( *activeResultSet, firstName, lastName, patientID, fromDate, toDate, 
+                            referringMD, description );
 
         dialogTitle = REMOTE_EXAMS_NAME;
         break;

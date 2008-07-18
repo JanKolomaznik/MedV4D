@@ -40,6 +40,12 @@ class m4dGUIMainWindow: public QMainWindow
     m4dGUIScreenLayoutWidget *screenLayoutWidget;
   
   private:
+    static const char *actionIconNames[];
+    static const char *actionTexts[];
+    static const char *actionShortCuts[];
+    static const char *actionStatusTips[];
+    static const char *actionSlots[];
+  
     QDialog *studyManagerDialog;
     QDialog *screenLayoutDialog;
   
@@ -48,11 +54,12 @@ class m4dGUIMainWindow: public QMainWindow
     QAction *saveAct;
     QAction *exitAct;
     QAction *layoutAct;
-    QAction *overlayAct;
+    QAction **viewerActs;
     
     QToolBar *searchToolBar;
     QToolBar *fileToolBar;
-    QToolBar *viewToolBar;
+    QToolBar *layoutToolBar;
+    QToolBar *viewerToolBar;
    
     QMenu *fileMenu;
     QMenu *viewMenu;  // name coll.

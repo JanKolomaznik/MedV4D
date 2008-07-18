@@ -26,11 +26,11 @@ m4dGUIScreenLayoutWidget::m4dGUIScreenLayoutWidget ( m4dGUIMainViewerDesktopWidg
 
   // creating Series groupBox
   QGroupBox *seriesGroupBox = createLayoutGroupBox( tr( "Series" ), &seriesLayoutToolButtons, &seriesRowSpinBox,
-                                                    &seriesColumnSpinBox, 1, 2, SLOT(seriesLayoutChanged()),
+                                                    &seriesColumnSpinBox, 1, SLOT(seriesLayoutChanged()),
                                                     SLOT(seriesApply()) );
   // creating Image groupBox
   QGroupBox *imageGroupBox = createLayoutGroupBox( tr( "Image" ), &imageLayoutToolButtons, &imageRowSpinBox,
-                                                   &imageColumnSpinBox, 1, 1, SLOT(imageLayoutChanged()),
+                                                   &imageColumnSpinBox, 0, SLOT(imageLayoutChanged()),
                                                    SLOT(imageApply()) );
   // creating OK Cancel dialogButtonBox
   QDialogButtonBox *dialogButtonBox = new QDialogButtonBox( QDialogButtonBox::Ok );
@@ -102,8 +102,8 @@ void m4dGUIScreenLayoutWidget::accept ()
 
 QGroupBox *m4dGUIScreenLayoutWidget::createLayoutGroupBox ( const QString &title, QToolButton ***toolButtons,
                                                             QSpinBox **rowSpinBox, QSpinBox **columnSpinBox,
-                                                            const int rowValue, const int columnValue, 
-                                                            const char *layoutChangedMember, const char *applyMember )
+                                                            const unsigned dimensionsIdx, const char *layoutChangedMember,
+                                                            const char *applyMember )
 {
   QGroupBox *layoutGroupBox = new QGroupBox( title );
 
@@ -121,7 +121,7 @@ QGroupBox *m4dGUIScreenLayoutWidget::createLayoutGroupBox ( const QString &title
   }
 
   if ( LAYOUT_NUMBER > 0 ) {
-    (*toolButtons)[0]->setChecked( true );  
+    (*toolButtons)[dimensionsIdx]->setChecked( true );  
   }
 
   // creating Custom GroupBox - within given GroupBox
@@ -134,9 +134,9 @@ QGroupBox *m4dGUIScreenLayoutWidget::createLayoutGroupBox ( const QString &title
   customLayoutGroupBoxLayout->addWidget( new QLabel( tr( "Rows:" ) ), 0, 0 );
   customLayoutGroupBoxLayout->addWidget( new QLabel( tr( "Columns:" ) ), 0, 1 );
 
-  *rowSpinBox = createSpinBox( rowValue );
+  *rowSpinBox = createSpinBox( layoutDimensions[dimensionsIdx][0] );
   customLayoutGroupBoxLayout->addWidget( *rowSpinBox, 1, 0 );
-  *columnSpinBox = createSpinBox( columnValue );
+  *columnSpinBox = createSpinBox( layoutDimensions[dimensionsIdx][1] );
   customLayoutGroupBoxLayout->addWidget( *columnSpinBox, 1, 1 );
 
   QPushButton *applyButton = new QPushButton( tr( "Apply Custom" ) );
