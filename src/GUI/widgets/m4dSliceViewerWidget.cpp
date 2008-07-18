@@ -560,7 +560,12 @@ m4dSliceViewerWidget::mousePressEvent(QMouseEvent *event)
     }
     if ( !_inPort.IsPlugged() ) return;
     _lastPos = event->pos();
-    if ( _selectionMode )
+    if ( event->modifiers() & Qt::ShiftModifier )
+    {
+        if ( event->buttons() & Qt::LeftButton ) toggleFlipHorizontal();
+	if ( event->buttons() & Qt::RightButton ) toggleFlipVertical();
+    }
+    else if ( _selectionMode )
     {
         if ( event->modifiers() & Qt::ControlModifier )
 	{
@@ -736,14 +741,16 @@ void
 m4dSliceViewerWidget::newPoint( int x, int y, int z )
 {
     if ( !_inPort.IsPlugged() ) return;
-    if ( x < 0 || y < 0 ||
-         x >= (int)( _inPort.GetAbstractImage().GetDimensionExtents(0).maximum - _inPort.GetAbstractImage().GetDimensionExtents(0).minimum ) ||
-         y >= (int)( _inPort.GetAbstractImage().GetDimensionExtents(1).maximum - _inPort.GetAbstractImage().GetDimensionExtents(1).minimum ) )
-	     return;
-
     if ( _shapes.empty() ) newShape( x, y, z );
     else
     {
+        if ( _flipH < 0 ) x = - ( x - (int)( _inPort.GetAbstractImage().GetDimensionExtents(0).maximum - _inPort.GetAbstractImage().GetDimensionExtents(0).minimum ));
+        if ( _flipV < 0 ) y = - ( y - (int)( _inPort.GetAbstractImage().GetDimensionExtents(1).maximum - _inPort.GetAbstractImage().GetDimensionExtents(1).minimum ));
+        if ( x < 0 || y < 0 ||
+             x >= (int)( _inPort.GetAbstractImage().GetDimensionExtents(0).maximum - _inPort.GetAbstractImage().GetDimensionExtents(0).minimum ) ||
+             y >= (int)( _inPort.GetAbstractImage().GetDimensionExtents(1).maximum - _inPort.GetAbstractImage().GetDimensionExtents(1).minimum ) )
+	         return;
+
         if ( !_shapes.back().shapeElements().empty() &&
 	     abs( x - _shapes.back().shapeElements().front().getParticularValue( 0 ) ) < MINIMUM_SELECT_DISTANCE &&
              abs( y - _shapes.back().shapeElements().front().getParticularValue( 1 ) ) < MINIMUM_SELECT_DISTANCE &&
@@ -753,8 +760,8 @@ m4dSliceViewerWidget::newPoint( int x, int y, int z )
             Selection::m4dPoint<int> p( x, y, z );
             _shapes.back().addPoint( p );
 	}
+        emit signalNewPoint( _index, x, y, z );
     }
-    emit signalNewPoint( _index, x, y, z );
 }
 
 void
@@ -769,6 +776,8 @@ m4dSliceViewerWidget::newShape( int x, int y, int z )
     Selection::m4dShape<int> s( 3 );
     _shapes.push_back( s );
     newPoint( x, y, z );
+    if ( _flipH < 0 ) x = - ( x - (int)( _inPort.GetAbstractImage().GetDimensionExtents(0).maximum - _inPort.GetAbstractImage().GetDimensionExtents(0).minimum ));
+    if ( _flipV < 0 ) y = - ( y - (int)( _inPort.GetAbstractImage().GetDimensionExtents(1).maximum - _inPort.GetAbstractImage().GetDimensionExtents(1).minimum ));
     emit signalNewShape( _index, x, y, z );
 }
 
