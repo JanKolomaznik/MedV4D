@@ -6,6 +6,9 @@
 
 #define MINIMUM_SELECT_DISTANCE 5
 
+#define FONT_WIDTH   8
+#define FONT_HEIGHT 16
+
 namespace M4D
 {
 namespace Viewer
@@ -127,9 +130,10 @@ m4dSliceViewerWidget::setParameters()
     _contrastRate = 0.0;
     _selectionMode = false;
     _printShapeData = false;
-    _oneSliceMode = true;
+    _printData = true;
     _selected = false;
-    _slicesPerRow = 1;
+    _oneSliceMode = false;
+    _slicesPerRow = 3;
     _flipH = _flipV = 1;
     _availableSlots.clear();
     _availableSlots.push_back( SETBUTTONHANDLERS );
@@ -151,6 +155,8 @@ m4dSliceViewerWidget::setParameters()
     _availableSlots.push_back( SETMORESLICEMODE );
     _availableSlots.push_back( VERTICALFLIP );
     _availableSlots.push_back( HORIZONTALFLIP );
+    _leftSideData.clear();
+    _rightSideData.clear();
     ButtonHandlers bh[] = { none_button, zoom, move_h, move_v, adjust_c, adjust_b };
     setButtonHandlers( bh );
     SelectHandlers ch[] = { new_point, delete_point, new_shape, delete_shape };
@@ -270,15 +276,74 @@ m4dSliceViewerWidget::toggleFlipVertical()
 }
 
 void
+m4dSliceViewerWidget::addLeftSideData( std::string type, std::string data )
+{
+    _leftSideData[type] = data;
+    emit signalAddLeftSideData( type, data );
+    if ( _printData ) updateGL();
+}
+
+void
+m4dSliceViewerWidget::addRightSideData( std::string type, std::string data )
+{
+    _rightSideData[type] = data;
+    emit signalAddRightSideData( type, data );
+    if ( _printData ) updateGL();
+}
+
+void
+m4dSliceViewerWidget::eraseLeftSideData( std::string type )
+{
+    _leftSideData.erase( type );
+    emit signalEraseLeftSideData( type );
+    if ( _printData ) updateGL();
+}
+
+void
+m4dSliceViewerWidget::eraseRightSideData( std::string type )
+{
+    _rightSideData.erase( type );
+    emit signalEraseRightSideData( type );
+    if ( _printData ) updateGL();
+}
+
+void
+m4dSliceViewerWidget::clearLeftSideData()
+{
+    _leftSideData.clear();
+    emit signalClearLeftSideData();
+    if ( _printData ) updateGL();
+}
+
+void
+m4dSliceViewerWidget::clearRightSideData()
+{
+    _rightSideData.clear();
+    emit signalClearRightSideData();
+    if ( _printData ) updateGL();
+}
+
+void
+m4dSliceViewerWidget::togglePrintData()
+{
+    _printData = _printData?false:true;
+    emit signalTogglePrintData();
+    updateGL();
+}
+
+void
 m4dSliceViewerWidget::paintGL()
 {
     glClear( GL_COLOR_BUFFER_BIT | GL_ACCUM_BUFFER_BIT );
     if ( _inPort.IsPlugged() )
     {
         unsigned i;
+        int   w = (int)_inPort.GetAbstractImage().GetDimensionExtents(0).maximum - _inPort.GetAbstractImage().GetDimensionExtents(0).minimum,
+              h = (int)_inPort.GetAbstractImage().GetDimensionExtents(1).maximum - _inPort.GetAbstractImage().GetDimensionExtents(1).minimum;
         if ( _oneSliceMode ) drawSlice( _sliceNum, _zoomRate, _offset );
-        else for ( i = 0; i < _slicesPerRow * _slicesPerRow; ++i ) drawSlice( _sliceNum + i, 1./(double)_slicesPerRow,
-        								      QPoint( (i % _slicesPerRow) * ( height() / _slicesPerRow ) , ( i / _slicesPerRow ) * ( width() / _slicesPerRow ) ) );
+        else for ( i = 0; (int)( i / _slicesPerRow ) * (int)( ( width() - 1 ) / _slicesPerRow ) * ( h / w ) < ( height() - 1 ); ++i )
+	         drawSlice( _sliceNum + i, (double)( width() - 1 )/( (double)w * (double)_slicesPerRow ),
+        								      QPoint( (i % _slicesPerRow) * ( ( width() - 1 ) / _slicesPerRow ) , ( i / _slicesPerRow ) * ( ( width() - 1 ) / _slicesPerRow ) * ( h / w ) ) );
         if ( _selectionMode ) drawSelectionModeBorder();
     }
     if ( _selected ) drawSelectedBorder();
@@ -296,8 +361,8 @@ m4dSliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset )
     glLoadIdentity();
     int   w = (int)_inPort.GetAbstractImage().GetDimensionExtents(0).maximum - _inPort.GetAbstractImage().GetDimensionExtents(0).minimum,
           h = (int)_inPort.GetAbstractImage().GetDimensionExtents(1).maximum - _inPort.GetAbstractImage().GetDimensionExtents(1).minimum;
-    if ( _flipH < 0 ) offset.setX( offset.x() + (int)( _zoomRate * w ) );
-    if ( _flipV < 0 ) offset.setY( offset.y() + (int)( _zoomRate * h ) );
+    if ( _flipH < 0 ) offset.setX( offset.x() + (int)( zoomRate * w ) );
+    if ( _flipV < 0 ) offset.setY( offset.y() + (int)( zoomRate * h ) );
     unsigned i, offsetx = offset.x()<0?-offset.x():0, offsety = offset.y()<0?-offset.y():0;
     if ( _flipH < 0 ) offsetx = offset.x()>(width() - 1)?offset.x()-width()+1:0;
     if ( _flipV < 0 ) offsety = offset.y()>(height() - 1)?offset.y()-height()+1:0;
@@ -404,6 +469,9 @@ m4dSliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset )
     for ( std::list< Selection::m4dShape<int> >::iterator it = _shapes.begin(); it != --(_shapes.end()); ++it )
         drawShape( *it, false, sliceNum, zoomRate );
     if ( !_shapes.empty() ) drawShape( *(--(_shapes.end())), true, sliceNum, zoomRate );
+    if ( _flipH < 0 ) offset.setX( offset.x() - (int)( zoomRate * w ) );
+    if ( _flipV < 0 ) offset.setY( offset.y() - (int)( zoomRate * h ) );
+    if ( _printData ) drawData( zoomRate, offset );
     glFlush();
 }
 
@@ -528,6 +596,69 @@ m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int sli
 	        glVertex2i( it->getParticularValue( 0 ) - 3, it->getParticularValue( 1 ) + 3 );
 	    glEnd();
         }
+}
+
+void
+m4dSliceViewerWidget::drawData( double zoomRate, QPoint offset )
+{
+    glPushMatrix();
+    glLoadIdentity();
+    glColor3f( 1., 1., 1. );
+    std::map< std::string, std::string >::iterator it;
+    int   w = (int)_inPort.GetAbstractImage().GetDimensionExtents(0).maximum - _inPort.GetAbstractImage().GetDimensionExtents(0).minimum,
+          h = (int)_inPort.GetAbstractImage().GetDimensionExtents(1).maximum - _inPort.GetAbstractImage().GetDimensionExtents(1).minimum;
+    int i, o_x, o_y, w_o;
+    if ( _oneSliceMode )
+    {
+        i = height() - 5 - FONT_HEIGHT;
+	o_x = 4;
+	o_y = 5;
+	w_o = width() - 8;
+    }
+    else
+    {
+        i =  offset.y() + (unsigned)( h * zoomRate ) - 1 - FONT_HEIGHT;
+	o_x = offset.x();
+	o_y = offset.y();
+	w_o = (int)( w * zoomRate );
+    }
+    for ( it = _leftSideData.begin(); it != _leftSideData.end() && i >= o_y; ++it, i -= FONT_HEIGHT )
+    {
+        if ( ( (int)( it->first + " : " + it->second ).length() * FONT_WIDTH ) < w_o )
+	{
+            setTextPosition( o_x, i );
+            setTextCoords( o_x + ( (int)( it->first + " : " + it->second ).length() * FONT_WIDTH ), i + FONT_HEIGHT );
+            drawText( ( it->first + " : " + it->second ).c_str() );
+            unsetTextCoords();
+	    glPixelStorei( GL_UNPACK_ROW_LENGTH,  0 );
+        }
+    }
+    if ( _oneSliceMode )
+    {
+        i = height() - 5 - FONT_HEIGHT;
+	w_o = width() - 8;
+	o_y = 5;
+    }
+    else
+    {
+        i =  offset.y() + (unsigned)( h * zoomRate ) - 1 - FONT_HEIGHT;
+	w_o = (int)( w * zoomRate );
+	o_y = offset.y();
+    }
+    for ( it = _rightSideData.begin(); it != _rightSideData.end() && i >= o_y; ++it, i -= FONT_HEIGHT )
+    {
+        if ( ( (int)( it->first + " : " + it->second ).length() * FONT_WIDTH ) < w_o )
+	{
+	    o_x = w_o - (int)( it->first + " : " + it->second ).length() * FONT_WIDTH;
+	    if ( !_oneSliceMode ) o_x += offset.x();
+            setTextPosition( o_x, i );
+            setTextCoords( o_x + ( (int)( it->first + " : " + it->second ).length() * FONT_WIDTH ), i + FONT_HEIGHT );
+            drawText( ( it->first + " : " + it->second ).c_str() );
+            unsetTextCoords();
+	    glPixelStorei( GL_UNPACK_ROW_LENGTH,  0 );
+        }
+    }
+    glPopMatrix();
 }
 
 void
@@ -832,6 +963,48 @@ void
 m4dSliceViewerWidget::slotToggleFlipVertical()
 {
     toggleFlipVertical();
+}
+
+void
+m4dSliceViewerWidget::slotAddLeftSideData( std::string type, std::string data )
+{
+    addLeftSideData( type, data );
+}
+
+void
+m4dSliceViewerWidget::slotAddRightSideData( std::string type, std::string data )
+{
+    addRightSideData( type, data );
+}
+
+void
+m4dSliceViewerWidget::slotEraseLeftSideData( std::string type )
+{
+    eraseLeftSideData( type );
+}
+
+void
+m4dSliceViewerWidget::slotEraseRightSideData( std::string type )
+{
+    eraseRightSideData( type );
+}
+
+void
+m4dSliceViewerWidget::slotClearLeftSideData()
+{
+    clearLeftSideData();
+}
+
+void
+m4dSliceViewerWidget::slotClearRightSideData()
+{
+    clearRightSideData();
+}
+
+void
+m4dSliceViewerWidget::slotTogglePrintData()
+{
+    togglePrintData();
 }
 
 void

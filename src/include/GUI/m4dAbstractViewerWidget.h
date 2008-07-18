@@ -61,6 +61,13 @@ public slots:
     virtual void slotSetMoreSliceMode( unsigned slicesPerRow )=0;
     virtual void slotToggleFlipVertical()=0;
     virtual void slotToggleFlipHorizontal()=0;
+    virtual void slotAddLeftSideData( std::string type, std::string data )=0;
+    virtual void slotAddRightSideData( std::string type, std::string data )=0;
+    virtual void slotEraseLeftSideData( std::string type )=0;
+    virtual void slotEraseRightSideData( std::string type )=0;
+    virtual void slotClearLeftSideData()=0;
+    virtual void slotClearRightSideData()=0;
+    virtual void slotTogglePrintData()=0;
     virtual void slotZoom( int amount )=0;
     virtual void slotMoveH( int amount )=0;
     virtual void slotMoveV( int amount )=0;
@@ -85,6 +92,13 @@ signals:
     void signalSetMoreSliceMode( unsigned index, unsigned slicesPerRow );
     void signalToggleFlipVertical();
     void signalToggleFlipHorizontal();
+    void signalAddLeftSideData( std::string type, std::string data );
+    void signalAddRightSideData( std::string type, std::string data );
+    void signalEraseLeftSideData( std::string type );
+    void signalEraseRightSideData( std::string type );
+    void signalClearLeftSideData();
+    void signalClearRightSideData();
+    void signalTogglePrintData();
     void signalZoom( unsigned index, int amount );
     void signalMoveH( unsigned index, int amount );
     void signalMoveV( unsigned index, int amount );

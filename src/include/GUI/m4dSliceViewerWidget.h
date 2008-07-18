@@ -2,6 +2,9 @@
 #define _M4DSLICEVIEWERWIDGET_H
 
 #include <QtOpenGL>
+#include <list>
+#include <string>
+#include <map>
 #include "Imaging/Image.h"
 #include "Common.h"
 #include "ExceptionBase.h"
@@ -58,6 +61,13 @@ public slots:
     virtual void slotSetMoreSliceMode( unsigned slicesPerRow );
     virtual void slotToggleFlipVertical();
     virtual void slotToggleFlipHorizontal();
+    virtual void slotAddLeftSideData( std::string type, std::string data );
+    virtual void slotAddRightSideData( std::string type, std::string data );
+    virtual void slotEraseLeftSideData( std::string type );
+    virtual void slotEraseRightSideData( std::string type );
+    virtual void slotClearLeftSideData();
+    virtual void slotClearRightSideData();
+    virtual void slotTogglePrintData();
     virtual void slotZoom( int amount );
     virtual void slotMoveH( int amount );
     virtual void slotMoveV( int amount );
@@ -77,6 +87,13 @@ protected:
     void setColorMode( ColorMode cm );
     void toggleFlipHorizontal();
     void toggleFlipVertical();
+    void addLeftSideData( std::string type, std::string data );
+    void addRightSideData( std::string type, std::string data );
+    void eraseLeftSideData( std::string type );
+    void eraseRightSideData( std::string type );
+    void clearLeftSideData();
+    void clearRightSideData();
+    void togglePrintData();
     void paintGL();
     void resizeGL(int winW, int winH);
     void mousePressEvent(QMouseEvent *event);
@@ -101,6 +118,7 @@ private:
     void setParameters();
     void drawSelectionModeBorder();
     void drawSelectedBorder();
+    void drawData( double zoomRate, QPoint offset );
     void drawSlice( int sliceNum, double zoomRate, QPoint offset );
     void drawShape( Selection::m4dShape<int>& s, bool last, int sliceNum, float zoomRate );
 
@@ -111,11 +129,15 @@ private:
 
     std::list< Selection::m4dShape<int> >	_shapes;
 
+    std::map< std::string, std::string >	_leftSideData;
+    std::map< std::string, std::string >	_rightSideData;
+
     unsigned					_index;
 
     short					_flipH;
     short					_flipV;
     
+    bool					_printData;
     bool					_selectionMode;
     bool					_printShapeData;
     bool					_oneSliceMode;
