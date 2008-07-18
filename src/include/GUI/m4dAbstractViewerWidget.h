@@ -5,26 +5,28 @@
 #include <QWidget>
 
 
-#define  SETBUTTONHANDLERS	1
-#define  SETSELECTHANDLERS	2
-#define  SETSELECTIONMODE	4
-#define  SETCOLORMODE		8
-#define  SETSLICENUM		16
-#define  ZOOM			32
-#define  MOVEH			64
-#define  MOVEV			128
-#define  ADJUSTBRIGHTNESS	256
-#define  ADJUSTCONTRAST		512
-#define  NEWPOINT		1024
-#define  NEWSHAPE		2048
-#define  DELETEPOINT		4096
-#define  DELETESHAPE		8192
-#define  ROTATEAXISX		16384
-#define  ROTATEAXISY		32768
-#define  ROTATEAXISZ		65536
-#define  SETSELECTED		131072
-#define  SETONESLICEMODE	262144
-#define  SETMORESLICEMODE	524288
+#define  SETBUTTONHANDLERS	0
+#define  SETSELECTHANDLERS	1
+#define  SETSELECTIONMODE	2
+#define  SETCOLORMODE		3
+#define  SETSLICENUM		4
+#define  ZOOM			5
+#define  MOVEH			6
+#define  MOVEV			7
+#define  ADJUSTBRIGHTNESS	8
+#define  ADJUSTCONTRAST		9
+#define  NEWPOINT		10
+#define  NEWSHAPE		11
+#define  DELETEPOINT		12
+#define  DELETESHAPE		13
+#define  ROTATEAXISX		14
+#define  ROTATEAXISY		15
+#define  ROTATEAXISZ		16
+#define  SETSELECTED		17
+#define  SETONESLICEMODE	18
+#define  SETMORESLICEMODE	19
+#define  VERTICALFLIP		20
+#define  HORIZONTALFLIP		21
 
 namespace M4D
 {
@@ -43,7 +45,7 @@ public:
     typedef enum { none_select, new_point, new_shape, delete_point, delete_shape } SelectHandlers;
     typedef enum { rgba_unsigned_byte, grayscale_unsigned_byte, grayscale_unsigned_short } ColorMode;
 
-    typedef long int AvailableSlots;
+    typedef std::list< unsigned > AvailableSlots;
 
     virtual AvailableSlots getAvailableSlots()=0;
     virtual QWidget* operator()()=0;
@@ -57,6 +59,8 @@ public slots:
     virtual void slotSetSliceNum( size_t num )=0;
     virtual void slotSetOneSliceMode()=0;
     virtual void slotSetMoreSliceMode( unsigned slicesPerRow )=0;
+    virtual void slotToggleFlipVertical()=0;
+    virtual void slotToggleFlipHorizontal()=0;
     virtual void slotZoom( int amount )=0;
     virtual void slotMoveH( int amount )=0;
     virtual void slotMoveV( int amount )=0;
@@ -79,6 +83,8 @@ signals:
     void signalSetSliceNum( unsigned index, size_t num );
     void signalSetOneSliceMode( unsigned index );
     void signalSetMoreSliceMode( unsigned index, unsigned slicesPerRow );
+    void signalToggleFlipVertical();
+    void signalToggleFlipHorizontal();
     void signalZoom( unsigned index, int amount );
     void signalMoveH( unsigned index, int amount );
     void signalMoveV( unsigned index, int amount );

@@ -56,6 +56,8 @@ public slots:
     virtual void slotSetSliceNum( size_t num );
     virtual void slotSetOneSliceMode();
     virtual void slotSetMoreSliceMode( unsigned slicesPerRow );
+    virtual void slotToggleFlipVertical();
+    virtual void slotToggleFlipHorizontal();
     virtual void slotZoom( int amount );
     virtual void slotMoveH( int amount );
     virtual void slotMoveV( int amount );
@@ -73,6 +75,8 @@ protected:
     void setOneSliceMode();
     void setMoreSliceMode( unsigned slicesPerRow );
     void setColorMode( ColorMode cm );
+    void toggleFlipHorizontal();
+    void toggleFlipVertical();
     void paintGL();
     void resizeGL(int winW, int winH);
     void mousePressEvent(QMouseEvent *event);
@@ -108,6 +112,9 @@ private:
     std::list< Selection::m4dShape<int> >	_shapes;
 
     unsigned					_index;
+
+    short					_flipH;
+    short					_flipV;
     
     bool					_selectionMode;
     bool					_printShapeData;

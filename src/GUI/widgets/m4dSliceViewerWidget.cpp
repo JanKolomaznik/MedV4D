@@ -130,7 +130,27 @@ m4dSliceViewerWidget::setParameters()
     _oneSliceMode = true;
     _selected = false;
     _slicesPerRow = 1;
-    _availableSlots = SETBUTTONHANDLERS | SETSELECTHANDLERS | SETSELECTIONMODE | SETCOLORMODE | SETSLICENUM | ZOOM | MOVEH | MOVEV | ADJUSTBRIGHTNESS | ADJUSTCONTRAST | NEWPOINT | NEWSHAPE | DELETEPOINT | DELETESHAPE | SETSELECTED | SETONESLICEMODE | SETMORESLICEMODE;
+    _flipH = _flipV = 1;
+    _availableSlots.clear();
+    _availableSlots.push_back( SETBUTTONHANDLERS );
+    _availableSlots.push_back( SETSELECTHANDLERS );
+    _availableSlots.push_back( SETSELECTIONMODE );
+    _availableSlots.push_back( SETCOLORMODE );
+    _availableSlots.push_back( SETSLICENUM );
+    _availableSlots.push_back( ZOOM );
+    _availableSlots.push_back( MOVEH );
+    _availableSlots.push_back( MOVEV );
+    _availableSlots.push_back( ADJUSTBRIGHTNESS );
+    _availableSlots.push_back( ADJUSTCONTRAST );
+    _availableSlots.push_back( NEWPOINT );
+    _availableSlots.push_back( NEWSHAPE );
+    _availableSlots.push_back( DELETEPOINT );
+    _availableSlots.push_back( DELETESHAPE );
+    _availableSlots.push_back( SETSELECTED );
+    _availableSlots.push_back( SETONESLICEMODE );
+    _availableSlots.push_back( SETMORESLICEMODE );
+    _availableSlots.push_back( VERTICALFLIP );
+    _availableSlots.push_back( HORIZONTALFLIP );
     ButtonHandlers bh[] = { none_button, zoom, move_h, move_v, adjust_c, adjust_b };
     setButtonHandlers( bh );
     SelectHandlers ch[] = { new_point, delete_point, new_shape, delete_shape };
@@ -234,9 +254,24 @@ m4dSliceViewerWidget::setMoreSliceMode( unsigned slicesPerRow )
 }
 
 void
+m4dSliceViewerWidget::toggleFlipHorizontal()
+{
+    _flipH *= -1;
+    emit signalToggleFlipVertical();
+    updateGL();
+}
+
+void
+m4dSliceViewerWidget::toggleFlipVertical()
+{
+    _flipV *= -1;
+    emit signalToggleFlipVertical();
+    updateGL();
+}
+
+void
 m4dSliceViewerWidget::paintGL()
 {
-    QGLWidget::paintGL();
     glClear( GL_COLOR_BUFFER_BIT | GL_ACCUM_BUFFER_BIT );
     if ( _inPort.IsPlugged() )
     {
@@ -259,8 +294,17 @@ m4dSliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset )
         return;
     glClear( GL_ACCUM_BUFFER_BIT );
     glLoadIdentity();
+    int   w = (int)_inPort.GetAbstractImage().GetDimensionExtents(0).maximum - _inPort.GetAbstractImage().GetDimensionExtents(0).minimum,
+          h = (int)_inPort.GetAbstractImage().GetDimensionExtents(1).maximum - _inPort.GetAbstractImage().GetDimensionExtents(1).minimum;
+    if ( _flipH < 0 ) offset.setX( offset.x() + (int)( _zoomRate * w ) );
+    if ( _flipV < 0 ) offset.setY( offset.y() + (int)( _zoomRate * h ) );
     unsigned i, offsetx = offset.x()<0?-offset.x():0, offsety = offset.y()<0?-offset.y():0;
-    glRasterPos2i( offset.x()>0?offset.x():0, offset.y()>0?offset.y():0 );
+    if ( _flipH < 0 ) offsetx = offset.x()>(width() - 1)?offset.x()-width()+1:0;
+    if ( _flipV < 0 ) offsety = offset.y()>(height() - 1)?offset.y()-height()+1:0;
+    unsigned o_x = offset.x()>0?offset.x():0, o_y = offset.y()>0?offset.y():0;
+    if ( _flipH < 0 ) o_x = offset.x()<(width() - 1)?offset.x():(width()-1);
+    if ( _flipV < 0 ) o_y = offset.y()<(height() - 1)?offset.y():(height()-1);
+    glRasterPos2i( o_x, o_y );
     if ( _oneSliceMode )
     {
         glPixelStorei( GL_UNPACK_SKIP_PIXELS, (GLint)( offsetx / zoomRate ) );
@@ -354,12 +398,13 @@ m4dSliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset )
 	break;
 
     }
-    glPixelZoom( zoomRate, zoomRate );
+    glPixelZoom( _flipH * zoomRate, _flipV * zoomRate );
     glTranslatef( offset.x(), offset.y(), 0 );
-    glScalef( zoomRate, zoomRate, 0. );
+    glScalef( _flipH * zoomRate, _flipV * zoomRate, 0. );
     for ( std::list< Selection::m4dShape<int> >::iterator it = _shapes.begin(); it != --(_shapes.end()); ++it )
         drawShape( *it, false, sliceNum, zoomRate );
     if ( !_shapes.empty() ) drawShape( *(--(_shapes.end())), true, sliceNum, zoomRate );
+    glFlush();
 }
 
 void
@@ -488,7 +533,6 @@ m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int sli
 void
 m4dSliceViewerWidget::resizeGL(int winW, int winH)
 {
-    QGLWidget::resizeGL( winW, winH );
     glViewport(0, 0, width(), height());
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -767,6 +811,18 @@ void
 m4dSliceViewerWidget::slotSetSelectionMode( bool mode )
 {
     setSelectionMode( mode );
+}
+
+void
+m4dSliceViewerWidget::slotToggleFlipHorizontal()
+{
+    toggleFlipHorizontal();
+}
+
+void
+m4dSliceViewerWidget::slotToggleFlipVertical()
+{
+    toggleFlipVertical();
 }
 
 void
