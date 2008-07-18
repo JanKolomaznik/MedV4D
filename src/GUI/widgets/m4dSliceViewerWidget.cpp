@@ -368,23 +368,17 @@ m4dSliceViewerWidget::drawSelectionModeBorder()
     glPushMatrix();
     glLoadIdentity();
     glColor3f(1., 0., 0.);
-    glBegin(GL_LINES);
+    glBegin(GL_LINE_LOOP);
         glVertex2i( 0, 0 );
-	glVertex2i( 0, this->height() - 1 );
 	glVertex2i( 0, this->height() - 1);
 	glVertex2i( this->width() - 1, this->height() - 1 );
-	glVertex2i( this->width() - 1, this->height() - 1 );
 	glVertex2i( this->width() - 1, 0 );
-	glVertex2i( this->width() - 1, 0 );
-	glVertex2i( 0, 0 );
-        glVertex2i( 1, 1 );
-	glVertex2i( 1, this->height() - 2 );
-	glVertex2i( 1, this->height() - 2 );
-	glVertex2i( this->width() - 2, this->height() - 2 );
-	glVertex2i( this->width() - 2, this->height() - 2 );
-	glVertex2i( this->width() - 2, 1 );
-	glVertex2i( this->width() - 2, 1 );
+    glEnd();
+    glBegin(GL_LINE_LOOP);
 	glVertex2i( 1, 1 );
+	glVertex2i( 1, this->height() - 2 );
+	glVertex2i( this->width() - 2, this->height() - 2 );
+	glVertex2i( this->width() - 2, 1 );
     glEnd();
     glPopMatrix();
 }
@@ -395,15 +389,11 @@ m4dSliceViewerWidget::drawSelectedBorder()
     glPushMatrix();
     glLoadIdentity();
     glColor3f(0., 1., 0.);
-    glBegin(GL_LINES);
+    glBegin(GL_LINE_LOOP);
         glVertex2i( 3, 3 );
 	glVertex2i( 3, this->height() - 4 );
-	glVertex2i( 3, this->height() - 4 );
-	glVertex2i( this->width() - 4, this->height() - 4 );
 	glVertex2i( this->width() - 4, this->height() - 4 );
 	glVertex2i( this->width() - 4, 3 );
-	glVertex2i( this->width() - 4, 3 );
-	glVertex2i( 3, 3 );
     glEnd();
     glPopMatrix();
 }
@@ -506,12 +496,14 @@ m4dSliceViewerWidget::resizeGL(int winW, int winH)
     glMatrixMode(GL_MODELVIEW);
     if ( _inPort.IsPlugged() )
     {
-        size_t   w = _inPort.GetAbstractImage().GetDimensionExtents(0).maximum - _inPort.GetAbstractImage().GetDimensionExtents(0).minimum,
-    	         h = _inPort.GetAbstractImage().GetDimensionExtents(1).maximum - _inPort.GetAbstractImage().GetDimensionExtents(1).minimum;
-        _offset.setX( ( width() - (int)w ) / 2 );
-        _offset.setY( ( height() - (int)h ) / 2 );
-	_zoomRate = 1.;
+        int   w = (int)_inPort.GetAbstractImage().GetDimensionExtents(0).maximum - _inPort.GetAbstractImage().GetDimensionExtents(0).minimum,
+    	      h = (int)_inPort.GetAbstractImage().GetDimensionExtents(1).maximum - _inPort.GetAbstractImage().GetDimensionExtents(1).minimum;
+        if ( (double)width() / (double)w < (double)height() / (double)h ) _zoomRate = (double)width() / (double)w;
+	else _zoomRate = (double)height() / (double)h;
+	_offset.setX( ( width() - (int)( w * _zoomRate ) ) / 2 );
+        _offset.setY( ( height() - (int)( h * _zoomRate ) ) / 2 );
     }
+    updateGL();
 }
 
 void

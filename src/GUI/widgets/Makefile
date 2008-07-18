@@ -20,12 +20,16 @@ TARGETS=	m4dGUIMainWindow \
 		m4dSliceViewerWidget
 
 SUBDIR=		components
+SUBDIR2=	ogl
 TARGETS2=	StManagerFilterComp \
 		StManagerHProtocolsComp \
 		StManagerStudyListComp
+		
+TARGETS3=	fonts
 
 MOCINPUT=	m4dAbstractViewerWidget.h \
 		m4dGUIMainWindow.h \
+		m4dGUIMainViewerDesktopWidget.h \
 		m4dGUIScreenLayoutWidget.h \
 		m4dGUIStudyManagerWidget.h \
 		m4dGUIVtkRenderWindowWidget.h \
@@ -34,7 +38,6 @@ MOCINPUT=	m4dAbstractViewerWidget.h \
 		StManagerHProtocolsComp.h \
 		StManagerStudyListComp.h
 
-		#m4dGUIMainViewerDesktopWidget.h \
 
 RCCINPUT=	m4dGUIMainWindow.qrc \
 		m4dGUIStudyManagerWidget.qrc \
@@ -73,8 +76,8 @@ DEBUG_DEFS=	-DDEBUG_LEVEL=10\
 DEFS=		$(DEBUG_DEFS)
 
 
-SRC_FILES=	$(addsuffix .cpp, $(TARGETS) $(addprefix $(SUBDIR)/, $(TARGETS2) ) ) 
-OBJ_FILES=	$(addprefix $(TMP_DIR)/,  $(addprefix moc_, $(MOCINPUT:.h=.o) )  $(addprefix rcc_, $(RCCINPUT:.qrc=.o ) )  $(addsuffix .o, $(TARGETS) $(TARGETS2) ) )
+SRC_FILES=	$(addsuffix .cpp, $(TARGETS) $(addprefix $(SUBDIR)/, $(TARGETS2) ) $(addprefix $(SUBDIR2)/, $(TARGETS3) ) )
+OBJ_FILES=	$(addprefix $(TMP_DIR)/,  $(addprefix moc_, $(MOCINPUT:.h=.o) )  $(addprefix rcc_, $(RCCINPUT:.qrc=.o ) )  $(addsuffix .o, $(TARGETS) $(TARGETS2) $(TARGETS3) ) )
 
 
 .PHONY: all
@@ -96,13 +99,16 @@ dep:
 $(TMP_DIR)/moc_%.cpp:	../../include/GUI/%.h
 		$(MOC) $< -o $@
 
-$(TMP_DIR)/rcc_%.cpp:	$(RCCINPUT)
+$(TMP_DIR)/rcc_%.cpp:	%.qrc
 		$(RCC) -name $(*F) $< -o $@
 
 $(TMP_DIR)/%.o:	%.cpp	
 		$(CC) $(CCFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 $(TMP_DIR)/%.o:	$(SUBDIR)/%.cpp	
+		$(CC) $(CCFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
+
+$(TMP_DIR)/%.o:	$(SUBDIR2)/%.cpp	
 		$(CC) $(CCFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 $(TMP_DIR)/%.o:	$(TMP_DIR)/%.cpp

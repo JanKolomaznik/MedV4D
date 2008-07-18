@@ -49,7 +49,7 @@ LIBS=		$(M4DLIBS)\
 		$(QTLIBS)\
 		$(VTKLIBS)\
 		$(DCMTKLIBS)\
-		-lboost_thread-d
+		-lboost_thread
 ########################################
 
 #Name of target
@@ -67,7 +67,8 @@ CDEPFLAGS=	-MM
 
 LDFLAGS=
 ARFLAGS=	-r
-LIBDIRS=	-L../../lib
+LIBDIRS=	-L../../lib\
+		-L/usr/lib/qt4
 INCLUDES=	-I$(srcdir)\
 		-I../../include
 

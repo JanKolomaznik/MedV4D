@@ -44,7 +44,6 @@ VTKLIBS=	-lvtkCommon\
 		-lvtkWidgets\
 		-lQVTK\
 		-lwrap\
-		-lglut
 
 		#-lvtkexpat\
 		#-lvtkfreetype\
