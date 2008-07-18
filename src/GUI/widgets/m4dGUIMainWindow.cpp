@@ -18,6 +18,8 @@ const char *m4dGUIMainWindow::actionIconNames[] = { "empty.png", "window-level.p
 const char *m4dGUIMainWindow::actionTexts[] = { "No Action", "&Window/Level (Right Mouse)", "&Zoom (Right Mouse)", 
                                                 "&Toggle Overlay"  };
 
+const bool  m4dGUIMainWindow::actionCheckables[] = { false, true, true, false };
+
 const char *m4dGUIMainWindow::actionShortCuts[] = { "", "Ctrl+W", "Ctrl+Z", "Ctrl+T"  };
 
 const char *m4dGUIMainWindow::actionStatusTips[] = { "Action for all unplugget available slots", 
@@ -28,8 +30,10 @@ const char *m4dGUIMainWindow::actionStatusTips[] = { "Action for all unplugget a
 const char *m4dGUIMainWindow::actionSlots[] = { SLOT(empty()), SLOT(slotWindowLevel()), SLOT(slotZoom()), 
                                                 SLOT(slotOverlay()) };
 
+const bool  m4dGUIMainWindow::actionRightButtons[] = { false, true, true, false };
+
 const int   m4dGUIMainWindow::slotsToActions[] = { 0, 0, 0, 0, 0, 2, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
-                                                   0, 0, 0, 0, 0, 0, 3 };
+                                                   0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3 };
 
 m4dGUIMainWindow::m4dGUIMainWindow ( const char *title, const QIcon &icon )
 {
@@ -175,18 +179,32 @@ void m4dGUIMainWindow::createActions ()
   layoutAct->setStatusTip( tr( "Redisplay series and images in various layouts" ) );
   connect( layoutAct, SIGNAL(triggered()), this, SLOT(layout()) );
 
+  QActionGroup *leftButtonGroup  = new QActionGroup( this );
+  QActionGroup *rightButtonGroup = new QActionGroup( this );
+
   viewerActs = new QAction *[VIEWER_ACTIONS_NUMBER];
   for ( unsigned i = 0; i < VIEWER_ACTIONS_NUMBER; i++ ) 
   {
     QString fileName = QString( ":/icons/" ).append( actionIconNames[i] );
     viewerActs[i] = new QAction( QIcon( fileName ), tr( actionTexts[i] ), this );
+    viewerActs[i]->setCheckable( actionCheckables[i] );
     viewerActs[i]->setShortcut( tr( actionShortCuts[i] ) );
     viewerActs[i]->setStatusTip( tr( actionStatusTips[i] ) );
+    
     connect( viewerActs[i], SIGNAL(triggered()), mainViewerDesktop->getSelectedViewer(), actionSlots[i] );
+    
     viewerActs[i]->setEnabled( false );
+    
+    actionRightButtons[i] && actionCheckables[i] ? rightButtonGroup->addAction( viewerActs[i] ) :
+                                                   leftButtonGroup->addAction( viewerActs[i] );
   }
   // update availability of features (according to selected viewer - first one is init.)
   features();
+
+  swapAct = new QAction( QIcon( ":/icons/swap.png" ), tr( "Swa&p Viewers" ), this );
+  swapAct->setShortcut( tr( "Ctrl+P" ) );
+  swapAct->setStatusTip( tr( "Swap selected viewer" ) );
+  connect( layoutAct, SIGNAL(triggered()), this, SLOT(swap()) );
 }
 
 
@@ -213,6 +231,7 @@ void m4dGUIMainWindow::createMenus ()
 void m4dGUIMainWindow::createToolBars ()
 {
   searchToolBar = addToolBar( tr( "Search" ) );
+  // searchToolBar->setIconSize( QSize( 34, 34 ) );
   searchToolBar->addAction( searchAct );
 
   fileToolBar = addToolBar( tr( "File" ) );
@@ -226,6 +245,9 @@ void m4dGUIMainWindow::createToolBars ()
   for ( unsigned i = 1; i < VIEWER_ACTIONS_NUMBER; i++ ) {
     viewerToolBar->addAction( viewerActs[i] );
   }
+
+  swapToolBar = addToolBar( tr( "Swap" ) );
+  swapToolBar->addAction( swapAct );
 }
 
 

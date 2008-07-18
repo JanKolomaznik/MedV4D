@@ -8,6 +8,7 @@
     <file>../icons/open.png</file>
     <file>../icons/save.png</file>
     <file>../icons/search.png</file>
+    <file>../icons/swap.png</file>
     <file>../icons/window-level.png</file>
     <file>../icons/zoom.png</file>
 </qresource>
