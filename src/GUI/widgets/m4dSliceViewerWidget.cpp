@@ -155,6 +155,13 @@ m4dSliceViewerWidget::setParameters()
     _availableSlots.push_back( SETMORESLICEMODE );
     _availableSlots.push_back( VERTICALFLIP );
     _availableSlots.push_back( HORIZONTALFLIP );
+    _availableSlots.push_back( ADDLEFTSIDEDATA );
+    _availableSlots.push_back( ADDRIGHTSIDEDATA );
+    _availableSlots.push_back( ERASELEFTSIDEDATA );
+    _availableSlots.push_back( ERASERIGHTSIDEDATA );
+    _availableSlots.push_back( CLEARLEFTSIDEDATA );
+    _availableSlots.push_back( CLEARRIGHTSIDEDATA );
+    _availableSlots.push_back( TOGGLEPRINTDATA );
     _leftSideData.clear();
     _rightSideData.clear();
     ButtonHandlers bh[] = { none_button, zoom, move_h, move_v, adjust_c, adjust_b };
