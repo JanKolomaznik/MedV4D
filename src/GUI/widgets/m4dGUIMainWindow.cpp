@@ -7,20 +7,29 @@
 
 // DICOM namespace:
 using namespace M4D::Dicom;
+using namespace M4D::Viewer;
 
 
-/// Number of abstract viewer's actions (toolBar buttons)
-#define VIEWER_ACTIONS_NUMBER       2
+/// Number of abstract viewer's actions (toolBar buttons) - first is for all unplugged slots (it's not in toolBar)
+#define VIEWER_ACTIONS_NUMBER       4
 
-const char *m4dGUIMainWindow::actionIconNames[] = { "info.png", "zoom.png"  };
+const char *m4dGUIMainWindow::actionIconNames[] = { "empty.png", "window-level.png", "zoom.png", "info.png"  };
 
-const char *m4dGUIMainWindow::actionTexts[] = { "&Toggle Overlay", "---"  };
+const char *m4dGUIMainWindow::actionTexts[] = { "No Action", "&Window/Level (Right Mouse)", "&Zoom (Right Mouse)", 
+                                                "&Toggle Overlay"  };
 
-const char *m4dGUIMainWindow::actionShortCuts[] = { "Ctrl+T", "---"  };
+const char *m4dGUIMainWindow::actionShortCuts[] = { "", "Ctrl+W", "Ctrl+Z", "Ctrl+T"  };
 
-const char *m4dGUIMainWindow::actionStatusTips[] = { "Hide or displays the study information", "---"  };
+const char *m4dGUIMainWindow::actionStatusTips[] = { "Action for all unplugget available slots", 
+                                                     "Adjust the brightness and/or contrast of the image", 
+                                                     "Increase or decrease the image's field of view",
+                                                     "Hide or displays the study information"  };
 
-const char *m4dGUIMainWindow::actionSlots[] = { SLOT(overlay()), SLOT(overlay()) };
+const char *m4dGUIMainWindow::actionSlots[] = { SLOT(empty()), SLOT(slotWindowLevel()), SLOT(slotZoom()), 
+                                                SLOT(slotOverlay()) };
+
+const int   m4dGUIMainWindow::slotsToActions[] = { 0, 0, 0, 0, 0, 2, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
+                                                   0, 0, 0, 0, 0, 0, 3 };
 
 m4dGUIMainWindow::m4dGUIMainWindow ( const char *title, const QIcon &icon )
 {
@@ -87,9 +96,23 @@ void m4dGUIMainWindow::layout ()
 }
 
 
+void m4dGUIMainWindow::features ()
+{
+  m4dAbstractViewerWidget *viewer = mainViewerDesktop->getSelectedViewer();
+  m4dAbstractViewerWidget::AvailableSlots availableFeatures = viewer->getAvailableSlots();
+
+  for ( m4dAbstractViewerWidget::AvailableSlots::iterator it = availableFeatures.begin(); 
+        it != availableFeatures.end(); 
+        it++ ) {
+    viewerActs[slotsToActions[*it]]->setEnabled( true ); 
+  }
+}
+
+
 void m4dGUIMainWindow::createMainViewerDesktop ()
 {
   mainViewerDesktop = new m4dGUIMainViewerDesktopWidget;
+  connect( mainViewerDesktop, SIGNAL(propagateFeatures()), this, SLOT(features()) );
 }
 
 
@@ -159,9 +182,11 @@ void m4dGUIMainWindow::createActions ()
     viewerActs[i] = new QAction( QIcon( fileName ), tr( actionTexts[i] ), this );
     viewerActs[i]->setShortcut( tr( actionShortCuts[i] ) );
     viewerActs[i]->setStatusTip( tr( actionStatusTips[i] ) );
-    connect( viewerActs[i], SIGNAL(triggered()), this, actionSlots[i] );
+    connect( viewerActs[i], SIGNAL(triggered()), mainViewerDesktop->getSelectedViewer(), actionSlots[i] );
     viewerActs[i]->setEnabled( false );
   }
+  // update availability of features (according to selected viewer - first one is init.)
+  features();
 }
 
 
@@ -198,7 +223,7 @@ void m4dGUIMainWindow::createToolBars ()
   layoutToolBar->addAction( layoutAct );
 
   viewerToolBar = addToolBar( tr( "Viewer" ) );
-  for ( unsigned i = 0; i < VIEWER_ACTIONS_NUMBER; i++ ) {
+  for ( unsigned i = 1; i < VIEWER_ACTIONS_NUMBER; i++ ) {
     viewerToolBar->addAction( viewerActs[i] );
   }
 }

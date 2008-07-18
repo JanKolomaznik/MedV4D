@@ -35,15 +35,18 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
      */
     void setDesktopLayout( const int rows, const int columns );
 
+    M4D::Viewer::m4dAbstractViewerWidget *getSelectedViewer() { return selectedViewer; }
+
+
     m4dGUIVtkRenderWindowWidget *getVtkRenderWindowWidget() { return vtkRenderWindowWidget; }
 
   private slots:
     void selectedChanged ( unsigned index );
 
+  signals:
+    void propagateFeatures ();
+
   private:
-
-    void propagateFeatures ( M4D::Viewer::m4dAbstractViewerWidget *viewer );
-
 
     m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget;
     M4D::Viewer::m4dSliceViewerWidget *glWidget;

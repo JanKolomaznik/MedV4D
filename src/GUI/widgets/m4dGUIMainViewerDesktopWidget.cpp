@@ -113,11 +113,5 @@ void m4dGUIMainViewerDesktopWidget::selectedChanged ( unsigned index )
   selectedViewer->slotSetSelected( false );
   selectedViewer = viewers[index];
 
-  propagateFeatures( selectedViewer ); 
-}
-
-
-void m4dGUIMainViewerDesktopWidget::propagateFeatures ( m4dAbstractViewerWidget *viewer )
-{
-
+  emit propagateFeatures(); 
 }

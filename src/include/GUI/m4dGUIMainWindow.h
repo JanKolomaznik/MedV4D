@@ -20,6 +20,7 @@ class m4dGUIMainWindow: public QMainWindow
     void search ();
     void open ();
     void layout ();
+    void features ();
 
   private:
     void createMainViewerDesktop ();
@@ -45,6 +46,7 @@ class m4dGUIMainWindow: public QMainWindow
     static const char *actionShortCuts[];
     static const char *actionStatusTips[];
     static const char *actionSlots[];
+    static const int   slotsToActions[]; 
   
     QDialog *studyManagerDialog;
     QDialog *screenLayoutDialog;
