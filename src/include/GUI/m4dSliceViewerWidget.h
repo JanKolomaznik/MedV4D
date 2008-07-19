@@ -38,24 +38,13 @@ public:
     void setInputPort( Imaging::ImageConnection< Imaging::Image< uint16, 3 > >& conn );
     void setInputPort( Imaging::ImageConnection< Imaging::Image< uint8, 3 > >& conn );
 
-    void setButtonHandlers( ButtonHandlers* hnd );
-    void setSelectHandlers( SelectHandlers* hnd );
-    void setSelectionMode( bool mode );
-    bool getSelectionMode();
-    void setUnSelected();
-    void setSelected();
-    bool getSelected();
-
     virtual AvailableSlots getAvailableSlots();
 
     virtual QWidget* operator()();
 
 public slots:
-    virtual void slotSetButtonHandlers( ButtonHandlers* hnd );
-    virtual void slotSetSelectHandlers( SelectHandlers* hnd );
-    virtual void slotSetSelectionMode( bool mode );
+    virtual void slotSetButtonHandler( ButtonHandler hnd, MouseButton btn );
     virtual void slotSetSelected( bool selected );
-    virtual void slotSetColorMode( ColorMode cm );
     virtual void slotSetSliceNum( size_t num );
     virtual void slotSetOneSliceMode();
     virtual void slotSetMoreSliceMode( unsigned slicesPerRow );
@@ -69,10 +58,8 @@ public slots:
     virtual void slotClearRightSideData();
     virtual void slotTogglePrintData();
     virtual void slotZoom( int amount );
-    virtual void slotMoveH( int amount );
-    virtual void slotMoveV( int amount );
-    virtual void slotAdjustBrightness( int amount );
-    virtual void slotAdjustContrast( int amount );
+    virtual void slotMove( int amountH, int amountV );
+    virtual void slotAdjustContrastBrightness( int amountB, int amountC );
     virtual void slotNewPoint( int x, int y, int z );
     virtual void slotNewShape( int x, int y, int z );
     virtual void slotDeletePoint();
@@ -82,6 +69,10 @@ public slots:
     virtual void slotRotateAxisZ( int z );
 
 protected:
+    void setButtonHandler( ButtonHandler hnd, MouseButton btn );
+    void setUnSelected();
+    void setSelected();
+    bool getSelected();
     void setOneSliceMode();
     void setMoreSliceMode( unsigned slicesPerRow );
     void setColorMode( ColorMode cm );
@@ -101,13 +92,9 @@ protected:
     void mouseMoveEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);
     void setSliceNum( size_t num );
-    void zoomImage( int amount );
-    void moveImageH( int amount );
-    void moveImageV( int amount );
-    void adjustBrightness( int amount );
-    void adjustContrast( int amount );
-    void none( int amount );
-    void nonePos( int x, int y, int z );
+    void zoomImage( int dummy, int amount );
+    void moveImage( int amountH, int amountV );
+    void adjustContrastBrightness( int amountB, int amountC );
     void newPoint( int x, int y, int z );
     void newShape( int x, int y, int z );
     void deletePoint( int x, int y, int z );
@@ -122,7 +109,7 @@ private:
     void drawSlice( int sliceNum, double zoomRate, QPoint offset );
     void drawShape( Selection::m4dShape<int>& s, bool last, int sliceNum, float zoomRate );
 
-    typedef void (M4D::Viewer::m4dSliceViewerWidget::*ButtonMethods)( int amount );
+    typedef void (M4D::Viewer::m4dSliceViewerWidget::*ButtonMethods)( int amount1, int amount2 );
     typedef void (M4D::Viewer::m4dSliceViewerWidget::*SelectMethods)( int x, int y, int z );
     
     Imaging::InputPortAbstractImage		_inPort;
@@ -138,7 +125,6 @@ private:
     short					_flipV;
     
     bool					_printData;
-    bool					_selectionMode;
     bool					_printShapeData;
     bool					_oneSliceMode;
     bool					_selected;
@@ -150,8 +136,9 @@ private:
     double					_zoomRate;
     GLfloat					_brightnessRate;
     GLfloat					_contrastRate;
-    ButtonMethods				_buttonMethods[3][2];
-    SelectMethods				_selectMethods[2][2];
+    ButtonMethods				_buttonMethods[2];
+    SelectMethods				_selectMethods[2];
+    bool					_selectionMode[2];
     AvailableSlots				_availableSlots;
 };
 

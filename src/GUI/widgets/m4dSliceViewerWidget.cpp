@@ -51,20 +51,6 @@ void
 m4dSliceViewerWidget::setColorMode( ColorMode cm )
 {
     _colorMode = cm;
-    emit signalSetColorMode( _index, cm );
-}
-
-void
-m4dSliceViewerWidget::setSelectionMode( bool mode )
-{
-    _selectionMode = mode;
-    emit signalSetSelectionMode( _index, mode );
-}
-
-bool
-m4dSliceViewerWidget::getSelectionMode()
-{
-    return _selectionMode;
 }
 
 void
@@ -128,33 +114,22 @@ m4dSliceViewerWidget::setParameters()
     _zoomRate = 1.0;
     _brightnessRate = 0.0;
     _contrastRate = 0.0;
-    _selectionMode = false;
+    setButtonHandler( moveI, left );
+    setButtonHandler( zoomI, right );
     _printShapeData = false;
     _printData = true;
     _selected = false;
-    _oneSliceMode = false;
-    _slicesPerRow = 3;
+    _oneSliceMode = true;
+    _slicesPerRow = 1;
     _flipH = _flipV = 1;
     _availableSlots.clear();
-    _availableSlots.push_back( SETBUTTONHANDLERS );
-    _availableSlots.push_back( SETSELECTHANDLERS );
-    _availableSlots.push_back( SETSELECTIONMODE );
-    _availableSlots.push_back( SETCOLORMODE );
-    _availableSlots.push_back( SETSLICENUM );
-    _availableSlots.push_back( ZOOM );
-    _availableSlots.push_back( MOVEH );
-    _availableSlots.push_back( MOVEV );
-    _availableSlots.push_back( ADJUSTBRIGHTNESS );
-    _availableSlots.push_back( ADJUSTCONTRAST );
-    _availableSlots.push_back( NEWPOINT );
-    _availableSlots.push_back( NEWSHAPE );
-    _availableSlots.push_back( DELETEPOINT );
-    _availableSlots.push_back( DELETESHAPE );
+    _availableSlots.push_back( SETBUTTONHANDLER );
     _availableSlots.push_back( SETSELECTED );
+    _availableSlots.push_back( SETSLICENUM );
     _availableSlots.push_back( SETONESLICEMODE );
     _availableSlots.push_back( SETMORESLICEMODE );
-    _availableSlots.push_back( VERTICALFLIP );
-    _availableSlots.push_back( HORIZONTALFLIP );
+    _availableSlots.push_back( TOGGLEFLIPVERTICAL );
+    _availableSlots.push_back( TOGGLEFLIPHORIZONTAL );
     _availableSlots.push_back( ADDLEFTSIDEDATA );
     _availableSlots.push_back( ADDRIGHTSIDEDATA );
     _availableSlots.push_back( ERASELEFTSIDEDATA );
@@ -162,12 +137,15 @@ m4dSliceViewerWidget::setParameters()
     _availableSlots.push_back( CLEARLEFTSIDEDATA );
     _availableSlots.push_back( CLEARRIGHTSIDEDATA );
     _availableSlots.push_back( TOGGLEPRINTDATA );
+    _availableSlots.push_back( ZOOM );
+    _availableSlots.push_back( MOVE );
+    _availableSlots.push_back( CONTRASTBRIGHTNESS );
+    _availableSlots.push_back( NEWPOINT );
+    _availableSlots.push_back( NEWSHAPE );
+    _availableSlots.push_back( DELETEPOINT );
+    _availableSlots.push_back( DELETESHAPE );
     _leftSideData.clear();
     _rightSideData.clear();
-    ButtonHandlers bh[] = { none_button, zoom, move_h, move_v, adjust_c, adjust_b };
-    setButtonHandlers( bh );
-    SelectHandlers ch[] = { new_point, delete_point, new_shape, delete_shape };
-    setSelectHandlers( ch );
 }
 
 m4dSliceViewerWidget::AvailableSlots
@@ -183,71 +161,46 @@ m4dSliceViewerWidget::operator()()
 }
 
 void
-m4dSliceViewerWidget::setButtonHandlers( ButtonHandlers* hnd )
+m4dSliceViewerWidget::setButtonHandler( ButtonHandler hnd, MouseButton btn )
 {
-    unsigned i;
-    for ( i = 0; i < 6; i++ )
+    switch (hnd)
     {
-        switch (hnd[i])
-        {
-            case none_button:
-	    _buttonMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::none;
-	    break;
+	case zoomI:
+	_buttonMethods[btn] = &M4D::Viewer::m4dSliceViewerWidget::zoomImage;
+	_selectionMode[btn] = false;
+	break;
 
-	    case zoom:
-	    _buttonMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::zoomImage;
-	    break;
+	case moveI:
+	_buttonMethods[btn] = &M4D::Viewer::m4dSliceViewerWidget::moveImage;
+	_selectionMode[btn] = false;
+	break;
 
-	    case move_h:
-	    _buttonMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::moveImageH;
-	    break;
+	case adjust_bc:
+	_buttonMethods[btn] = &M4D::Viewer::m4dSliceViewerWidget::adjustContrastBrightness;
+	_selectionMode[btn] = false;
+	break;
 
-	    case move_v:
-	    _buttonMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::moveImageV;
-	    break;
+	case new_point:
+	_selectMethods[btn] = &M4D::Viewer::m4dSliceViewerWidget::newPoint;
+	_selectionMode[btn] = true;
+	break;
 
-	    case adjust_c:
-	    _buttonMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::adjustContrast;
-	    break;
+	case new_shape:
+	_selectMethods[btn] = &M4D::Viewer::m4dSliceViewerWidget::newShape;
+	_selectionMode[btn] = true;
+	break;
 
-	    case adjust_b:
-	    _buttonMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::adjustBrightness;
-	    break;
-	}
+	case delete_point:
+	_selectMethods[btn] = &M4D::Viewer::m4dSliceViewerWidget::deletePoint;
+	_selectionMode[btn] = true;
+	break;
+
+	case delete_shape:
+	_selectMethods[btn] = &M4D::Viewer::m4dSliceViewerWidget::deleteShape;
+	_selectionMode[btn] = true;
+	break;
     }
-    emit signalSetButtonHandlers( _index, hnd );
-}
-
-void
-m4dSliceViewerWidget::setSelectHandlers( SelectHandlers* hnd )
-{
-    unsigned i;
-    for ( i = 0; i < 4; i++ )
-    {
-        switch (hnd[i])
-        {
-            case none_select:
-	    _selectMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::nonePos;
-	    break;
-
-	    case new_point:
-	    _selectMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::newPoint;
-	    break;
-
-	    case new_shape:
-	    _selectMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::newShape;
-	    break;
-
-	    case delete_point:
-	    _selectMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::deletePoint;
-	    break;
-
-	    case delete_shape:
-	    _selectMethods[i/2][i%2] = &M4D::Viewer::m4dSliceViewerWidget::deleteShape;
-	    break;
-	}
-    }
-    emit signalSetSelectHandlers( _index, hnd );
+    emit signalSetButtonHandler( _index, hnd, btn );
 }
 
 void
@@ -345,13 +298,19 @@ m4dSliceViewerWidget::paintGL()
     if ( _inPort.IsPlugged() )
     {
         unsigned i;
-        int   w = (int)_inPort.GetAbstractImage().GetDimensionExtents(0).maximum - _inPort.GetAbstractImage().GetDimensionExtents(0).minimum,
-              h = (int)_inPort.GetAbstractImage().GetDimensionExtents(1).maximum - _inPort.GetAbstractImage().GetDimensionExtents(1).minimum;
-        if ( _oneSliceMode ) drawSlice( _sliceNum, _zoomRate, _offset );
+        double   w = (double)_inPort.GetAbstractImage().GetDimensionExtents(0).maximum - _inPort.GetAbstractImage().GetDimensionExtents(0).minimum,
+                 h = (double)_inPort.GetAbstractImage().GetDimensionExtents(1).maximum - _inPort.GetAbstractImage().GetDimensionExtents(1).minimum;
+        if ( _oneSliceMode )
+	{
+	    QPoint offset;
+	    offset.setX( (int)floor( (double)_offset.x() - ( _zoomRate - (double)width()/w ) * 0.5 * w ) );
+	    offset.setY( (int)floor( (double)_offset.y() - ( _zoomRate - (double)height()/h ) * 0.5 * h ) );
+	    drawSlice( _sliceNum, _zoomRate, offset );
+	}
         else for ( i = 0; (int)( i / _slicesPerRow ) * (int)( ( width() - 1 ) / _slicesPerRow ) * ( h / w ) < ( height() - 1 ); ++i )
 	         drawSlice( _sliceNum + i, (double)( width() - 1 )/( (double)w * (double)_slicesPerRow ),
-        								      QPoint( (i % _slicesPerRow) * ( ( width() - 1 ) / _slicesPerRow ) , ( i / _slicesPerRow ) * ( ( width() - 1 ) / _slicesPerRow ) * ( h / w ) ) );
-        if ( _selectionMode ) drawSelectionModeBorder();
+        								      QPoint( (i % _slicesPerRow) * ( ( width() - 1 ) / _slicesPerRow ) , (int)( ( i / _slicesPerRow ) * ( ( width() - 1 ) / _slicesPerRow ) * ( h / w ) ) ) );
+        if ( _selectionMode[ left ] || _selectionMode[ right ] ) drawSelectionModeBorder();
     }
     if ( _selected ) drawSelectedBorder();
     glFlush();
@@ -541,6 +500,7 @@ m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int sli
 	    setTextCoords( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
             drawText( dist.str().c_str() );
 	    unsetTextCoords();
+	    glPixelStorei( GL_UNPACK_ROW_LENGTH,  0 );
 	    if ( last ) glColor3f( 1., 0., 0. );
             else glColor3f( 0., 0., 1. );
 	}
@@ -565,6 +525,7 @@ m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int sli
 	    setTextCoords( c.getParticularValue( 0 ) - 5, c.getParticularValue( 1 ) + 5 );
 	    drawText( area.str().c_str() );
 	    unsetTextCoords();
+	    glPixelStorei( GL_UNPACK_ROW_LENGTH,  0 );
 	    if ( last ) glColor3f( 1., 0., 0. );
 	    else glColor3f( 0., 0., 1. );
 	}
@@ -591,6 +552,7 @@ m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int sli
 		    setTextCoords( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
 	            drawText( dist.str().c_str() );
 		    unsetTextCoords();
+	    	    glPixelStorei( GL_UNPACK_ROW_LENGTH,  0 );
                     if ( last ) glColor3f( 1., 0., 0. );
                     else glColor3f( 0., 0., 1. );
 	        }
@@ -682,8 +644,6 @@ m4dSliceViewerWidget::resizeGL(int winW, int winH)
     	      h = (int)_inPort.GetAbstractImage().GetDimensionExtents(1).maximum - _inPort.GetAbstractImage().GetDimensionExtents(1).minimum;
         if ( (double)width() / (double)w < (double)height() / (double)h ) _zoomRate = (double)width() / (double)w;
 	else _zoomRate = (double)height() / (double)h;
-	_offset.setX( ( width() - (int)( w * _zoomRate ) ) / 2 );
-        _offset.setY( ( height() - (int)( h * _zoomRate ) ) / 2 );
     }
     updateGL();
 }
@@ -698,47 +658,21 @@ m4dSliceViewerWidget::mousePressEvent(QMouseEvent *event)
     }
     if ( !_inPort.IsPlugged() ) return;
     _lastPos = event->pos();
-    if ( event->modifiers() & Qt::ShiftModifier )
+    int   w = (int)_inPort.GetAbstractImage().GetDimensionExtents(0).maximum - _inPort.GetAbstractImage().GetDimensionExtents(0).minimum,
+          h = (int)_inPort.GetAbstractImage().GetDimensionExtents(1).maximum - _inPort.GetAbstractImage().GetDimensionExtents(1).minimum;
+    if ( ( event->buttons() & Qt::LeftButton ) && _selectionMode[ left ] )
     {
-        if ( event->buttons() & Qt::LeftButton ) toggleFlipHorizontal();
-	if ( event->buttons() & Qt::RightButton ) toggleFlipVertical();
+        if ( _oneSliceMode ) (this->*_selectMethods[ left ])( (int)( ( event->x() - _offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - _offset.y() ) / _zoomRate ), _sliceNum );
+        else (this->*_selectMethods[ left ])( (int)( ( event->x() % ( ( width() - 1 ) / _slicesPerRow ) ) * _slicesPerRow * w / ( width() - 1 ) ),
+   					    (int)( ( ( this->height() - event->y() ) % ( ( h / w ) * ( width() - 1 ) / _slicesPerRow ) ) * _slicesPerRow * w / ( width() - 1 ) ),
+					    _sliceNum + event->x() / (int)( ( width() - 1 ) / _slicesPerRow ) + _slicesPerRow * ( ( this->height() - event->y() ) / (int)( ( h / w ) * ( width() - 1 ) / _slicesPerRow ) ) );
     }
-    else if ( _selectionMode )
+    else if ( event->buttons() & Qt::RightButton && _selectionMode[ right ] )
     {
-        if ( event->modifiers() & Qt::ControlModifier )
-	{
-	    if ( event->buttons() & Qt::LeftButton )
-	    {
-	        if ( _oneSliceMode ) (this->*_selectMethods[1][0])( (int)( ( event->x() - _offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - _offset.y() ) / _zoomRate ), _sliceNum );
-		else (this->*_selectMethods[1][0])( (int)( ( event->x() % ( width() / _slicesPerRow ) ) * _slicesPerRow ),
-						    (int)( ( ( this->height() - event->y() ) % ( height() / _slicesPerRow ) ) * _slicesPerRow ),
-						    _sliceNum + event->x() / (int)( width() / _slicesPerRow ) + _slicesPerRow * ( ( this->height() - event->y() ) / (int)( height() / _slicesPerRow ) ) );
-	    }
-	    else if ( event->buttons() & Qt::RightButton )
-	    {
-	        if ( _oneSliceMode ) (this->*_selectMethods[1][1])( (int)( ( event->x() - _offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - _offset.y() ) / _zoomRate ), _sliceNum );
-		else (this->*_selectMethods[1][1])( (int)( ( event->x() % ( width() / _slicesPerRow ) ) * _slicesPerRow ),
-						    (int)( ( ( this->height() - event->y() ) % ( height() / _slicesPerRow ) ) * _slicesPerRow ),
-						    _sliceNum + event->x() / (int)( width() / _slicesPerRow ) + _slicesPerRow * ( ( this->height() - event->y() ) / (int)( height() / _slicesPerRow ) ) );
-	    }
-	}
-	else
-	{
-	    if ( event->buttons() & Qt::LeftButton )
-	    {
-	        if ( _oneSliceMode ) (this->*_selectMethods[0][0])( (int)( ( event->x() - _offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - _offset.y() ) / _zoomRate ), _sliceNum );
-		else (this->*_selectMethods[0][0])( (int)( ( event->x() % ( width() / _slicesPerRow ) ) * _slicesPerRow ),
-						    (int)( ( ( this->height() - event->y() ) % ( height() / _slicesPerRow ) ) * _slicesPerRow ),
-						    _sliceNum + event->x() / (int)( width() / _slicesPerRow ) + _slicesPerRow * ( ( this->height() - event->y() ) / (int)( height() / _slicesPerRow ) ) );
-	    }
-	    else if ( event->buttons() & Qt::RightButton )
-	    {
-	        if ( _oneSliceMode ) (this->*_selectMethods[0][1])( (int)( ( event->x() - _offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - _offset.y() ) / _zoomRate ), _sliceNum );
-		else (this->*_selectMethods[0][1])( (int)( ( event->x() % ( width() / _slicesPerRow ) ) * _slicesPerRow ),
-						    (int)( ( ( this->height() - event->y() ) % ( height() / _slicesPerRow ) ) * _slicesPerRow ),
-						    _sliceNum + event->x() / (int)( width() / _slicesPerRow ) + _slicesPerRow * ( ( this->height() - event->y() ) / (int)( height() / _slicesPerRow ) ) );
-	    }
-	}
+        if ( _oneSliceMode ) (this->*_selectMethods[ right ])( (int)( ( event->x() - _offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - _offset.y() ) / _zoomRate ), _sliceNum );
+        else (this->*_selectMethods[ right ])( (int)( ( event->x() % ( ( width() - 1 ) / _slicesPerRow ) ) * _slicesPerRow * w / ( width() - 1 ) ),
+   					     (int)( ( ( this->height() - event->y() ) % ( ( h / w ) * ( width() - 1 ) / _slicesPerRow ) ) * _slicesPerRow * w / ( width() - 1 ) ),
+					     _sliceNum + event->x() / (int)( ( width() - 1 ) / _slicesPerRow ) + _slicesPerRow * ( ( this->height() - event->y() ) / (int)( ( h / w ) * ( width() - 1 ) / _slicesPerRow ) ) );
     }
 
     updateGL();
@@ -755,27 +689,19 @@ m4dSliceViewerWidget::mouseMoveEvent(QMouseEvent *event)
 {
     if ( !_inPort.IsPlugged() ) return;
 
-    if ( _selectionMode || _lastPos.x() == -1 || _lastPos.y() == -1 ) return;
+    if ( _lastPos.x() == -1 || _lastPos.y() == -1 ) return;
     
 
     int dx = event->x() - _lastPos.x();
     int dy = event->y() - _lastPos.y();
 
-    if ( ( event->buttons() & Qt::LeftButton ) &&
-         ( event->buttons() & Qt::RightButton ) )
+    if ( ( event->buttons() & Qt::LeftButton ) && !_selectionMode[ left ] )
     {
-	(this->*_buttonMethods[0][0])( dx);
-	(this->*_buttonMethods[0][1])(-dy);
+        (this->*_buttonMethods[ left ])( dx, -dy );
     }
-    else if (event->buttons() & Qt::LeftButton)
+    else if ( ( event->buttons() & Qt::RightButton ) && !_selectionMode[ right ] )
     {
-	(this->*_buttonMethods[1][0])( dx);
-	(this->*_buttonMethods[1][1])(-dy);
-    }
-    else if (event->buttons() & Qt::RightButton)
-    {
-	(this->*_buttonMethods[2][0])( dx);
-	(this->*_buttonMethods[2][1])(-dy);
+        (this->*_buttonMethods[ right ])( dx, -dy );
     }
     _lastPos = event->pos();
 
@@ -784,7 +710,7 @@ m4dSliceViewerWidget::mouseMoveEvent(QMouseEvent *event)
 }
 
 void
-m4dSliceViewerWidget::zoomImage( int amount )
+m4dSliceViewerWidget::zoomImage( int dummy, int amount )
 {
     _zoomRate += 0.001 * amount;
     if ( _zoomRate < 0. ) _zoomRate = 0.;
@@ -795,28 +721,16 @@ void
 m4dSliceViewerWidget::wheelEvent(QWheelEvent *event)
 {
     if ( !_inPort.IsPlugged() ) return;
-    if ( event->buttons() & Qt::LeftButton )
-    {
-        _selectionMode = _selectionMode?false:true;
-    }
-    else if ( event->buttons() & Qt::RightButton )
-    {
-        _printShapeData = _printShapeData?false:true;
-    }
-    else
-    {
-        if ( _selectionMode ) _selectionMode = false;
 
-        int numDegrees = event->delta() / 8;
-        int numSteps = numDegrees / 15;
-        try
-        {
-            setSliceNum( _sliceNum + numSteps * _slicesPerRow );
-        }
-        catch (...)
-        {
-            //TODO handle
-        }
+    int numDegrees = event->delta() / 8;
+    int numSteps = numDegrees / 15;
+    try
+    {
+        setSliceNum( _sliceNum + numSteps * _slicesPerRow );
+    }
+    catch (...)
+    {
+        //TODO handle
     }
     updateGL();
 
@@ -836,43 +750,19 @@ m4dSliceViewerWidget::setSliceNum( size_t num )
 }
 
 void
-m4dSliceViewerWidget::moveImageH( int amount )
+m4dSliceViewerWidget::moveImage( int amountH, int amountV )
 {
-    _offset.setX( _offset.x() + amount );
-    emit signalMoveH( _index, amount );
+    _offset.setX( _offset.x() + amountH );
+    _offset.setY( _offset.y() + amountV );
+    emit signalMove( _index, amountH, amountV );
 }
 
 void
-m4dSliceViewerWidget::moveImageV( int amount )
+m4dSliceViewerWidget::adjustContrastBrightness( int amountC, int amountB )
 {
-    _offset.setY( _offset.y() + amount );
-    emit signalMoveV( _index, amount );
-}
-
-void
-m4dSliceViewerWidget::adjustBrightness( int amount )
-{
-    _brightnessRate -= ((GLfloat)amount)/((GLfloat)height()/2.0);
-    emit signalAdjustBrightness( _index, amount );
-}
-
-void
-m4dSliceViewerWidget::adjustContrast( int amount )
-{
-    _contrastRate -= ((GLfloat)amount)/((GLfloat)width()/2.0);
-    emit signalAdjustContrast( _index, amount );
-}
-
-void
-m4dSliceViewerWidget::none( int amount )
-{
-    // auxiliary function to handle function pointers correctly. Does nothing.
-}
-
-void
-m4dSliceViewerWidget::nonePos( int x, int y, int z )
-{
-    // auxiliary function to handle function pointers correctly. Does nothing.
+    _brightnessRate -= ((GLfloat)amountB)/((GLfloat)height()/2.0);
+    _contrastRate -= ((GLfloat)amountC)/((GLfloat)width()/2.0);
+    emit signalAdjustContrastBrightness( _index, amountC, amountB );
 }
 
 void
@@ -943,21 +833,9 @@ m4dSliceViewerWidget::deleteShape( int x, int y, int z )
 }
 
 void
-m4dSliceViewerWidget::slotSetButtonHandlers( ButtonHandlers* hnd )
+m4dSliceViewerWidget::slotSetButtonHandler( ButtonHandler hnd, MouseButton btn )
 {
-    setButtonHandlers( hnd );
-}
-
-void
-m4dSliceViewerWidget::slotSetSelectHandlers( SelectHandlers* hnd )
-{
-    setSelectHandlers( hnd );
-}
-
-void
-m4dSliceViewerWidget::slotSetSelectionMode( bool mode )
-{
-    setSelectionMode( mode );
+    setButtonHandler( hnd, btn );
 }
 
 void
@@ -1015,12 +893,6 @@ m4dSliceViewerWidget::slotTogglePrintData()
 }
 
 void
-m4dSliceViewerWidget::slotSetColorMode( ColorMode cm )
-{
-    setColorMode( cm );
-}
-
-void
 m4dSliceViewerWidget::slotSetSliceNum( size_t num )
 {
     setSliceNum( num );
@@ -1029,31 +901,19 @@ m4dSliceViewerWidget::slotSetSliceNum( size_t num )
 void
 m4dSliceViewerWidget::slotZoom( int amount )
 {
-    zoomImage( amount );
+    zoomImage( 0, amount );
 }
 
 void
-m4dSliceViewerWidget::slotMoveH( int amount )
+m4dSliceViewerWidget::slotMove( int amountH, int amountV )
 {
-    moveImageH( amount );
+    moveImage( amountH, amountV );
 }
 
 void
-m4dSliceViewerWidget::slotMoveV( int amount )
+m4dSliceViewerWidget::slotAdjustContrastBrightness( int amountC, int amountB )
 {
-    moveImageV( amount );
-}
-
-void
-m4dSliceViewerWidget::slotAdjustBrightness( int amount )
-{
-    adjustBrightness( amount );
-}
-
-void
-m4dSliceViewerWidget::slotAdjustContrast( int amount )
-{
-    adjustContrast( amount );
+    adjustContrastBrightness( amountC, amountB );
 }
 
 void

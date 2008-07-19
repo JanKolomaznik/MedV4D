@@ -5,35 +5,30 @@
 #include <QWidget>
 
 
-#define  SETBUTTONHANDLERS	0
-#define  SETSELECTHANDLERS	1
-#define  SETSELECTIONMODE	2
-#define  SETCOLORMODE		3
-#define  SETSLICENUM		4
-#define  ZOOM			5
-#define  MOVEH			6
-#define  MOVEV			7
-#define  ADJUSTBRIGHTNESS	8
-#define  ADJUSTCONTRAST		9
-#define  NEWPOINT		10
-#define  NEWSHAPE		11
-#define  DELETEPOINT		12
-#define  DELETESHAPE		13
-#define  ROTATEAXISX		14
-#define  ROTATEAXISY		15
-#define  ROTATEAXISZ		16
-#define  SETSELECTED		17
-#define  SETONESLICEMODE	18
-#define  SETMORESLICEMODE	19
-#define  VERTICALFLIP		20
-#define  HORIZONTALFLIP		21
-#define  ADDLEFTSIDEDATA	22
-#define  ADDRIGHTSIDEDATA	23
-#define  ERASELEFTSIDEDATA	24
-#define  ERASERIGHTSIDEDATA	25
-#define  CLEARLEFTSIDEDATA	26
-#define  CLEARRIGHTSIDEDATA	27
-#define  TOGGLEPRINTDATA	28
+#define SETBUTTONHANDLER	0
+#define SETSELECTED		1
+#define SETSLICENUM		2
+#define SETONESLICEMODE		3
+#define SETMORESLICEMODE	4
+#define TOGGLEFLIPVERTICAL	5
+#define TOGGLEFLIPHORIZONTAL	6
+#define ADDLEFTSIDEDATA		7
+#define ADDRIGHTSIDEDATA	8
+#define ERASELEFTSIDEDATA	9
+#define ERASERIGHTSIDEDATA	10
+#define CLEARLEFTSIDEDATA	11
+#define CLEARRIGHTSIDEDATA	12
+#define TOGGLEPRINTDATA		13
+#define ZOOM			14
+#define MOVE			15
+#define CONTRASTBRIGHTNESS	16
+#define NEWPOINT		17
+#define NEWSHAPE		18
+#define DELETEPOINT		19
+#define DELETESHAPE		20
+#define ROTATEAXISX		21
+#define ROTATEAXISY		22
+#define ROTATEAXISZ		23
 
 namespace M4D
 {
@@ -48,9 +43,9 @@ public:
     m4dAbstractViewerWidget() { }
     virtual ~m4dAbstractViewerWidget() { }
     
-    typedef enum { none_button, zoom, move_h, move_v, adjust_b, adjust_c } ButtonHandlers;
-    typedef enum { none_select, new_point, new_shape, delete_point, delete_shape } SelectHandlers;
+    typedef enum { zoomI, moveI, adjust_bc, new_point, new_shape, delete_point, delete_shape } ButtonHandler;
     typedef enum { rgba_unsigned_byte, grayscale_unsigned_byte, grayscale_unsigned_short } ColorMode;
+    typedef enum { left = 0, right = 1 } MouseButton;
 
     typedef std::list< unsigned > AvailableSlots;
 
@@ -58,11 +53,8 @@ public:
     virtual QWidget* operator()()=0;
 
 public slots:
-    virtual void slotSetButtonHandlers( ButtonHandlers* hnd )=0;
-    virtual void slotSetSelectHandlers( SelectHandlers* hnd )=0;
-    virtual void slotSetSelectionMode( bool mode )=0;
+    virtual void slotSetButtonHandler( ButtonHandler hnd, MouseButton btn )=0;
     virtual void slotSetSelected( bool selected )=0;
-    virtual void slotSetColorMode( ColorMode cm )=0;
     virtual void slotSetSliceNum( size_t num )=0;
     virtual void slotSetOneSliceMode()=0;
     virtual void slotSetMoreSliceMode( unsigned slicesPerRow )=0;
@@ -76,10 +68,8 @@ public slots:
     virtual void slotClearRightSideData()=0;
     virtual void slotTogglePrintData()=0;
     virtual void slotZoom( int amount )=0;
-    virtual void slotMoveH( int amount )=0;
-    virtual void slotMoveV( int amount )=0;
-    virtual void slotAdjustBrightness( int amount )=0;
-    virtual void slotAdjustContrast( int amount )=0;
+    virtual void slotMove( int amountH, int amountV )=0;
+    virtual void slotAdjustContrastBrightness( int amountB, int amountC )=0;
     virtual void slotNewPoint( int x, int y, int z )=0;
     virtual void slotNewShape( int x, int y, int z )=0;
     virtual void slotDeletePoint()=0;
@@ -89,11 +79,8 @@ public slots:
     virtual void slotRotateAxisZ( int z )=0;
 
 signals:
-    void signalSetButtonHandlers( unsigned index, ButtonHandlers* hnd );
-    void signalSetSelectHandlers( unsigned index, SelectHandlers* hnd );
-    void signalSetSelectionMode( unsigned index, bool mode );
+    void signalSetButtonHandler( unsigned index, ButtonHandler hnd, MouseButton btn );
     void signalSetSelected( unsigned index, bool selected );
-    void signalSetColorMode( unsigned index, ColorMode cm );
     void signalSetSliceNum( unsigned index, size_t num );
     void signalSetOneSliceMode( unsigned index );
     void signalSetMoreSliceMode( unsigned index, unsigned slicesPerRow );
@@ -107,10 +94,8 @@ signals:
     void signalClearRightSideData();
     void signalTogglePrintData();
     void signalZoom( unsigned index, int amount );
-    void signalMoveH( unsigned index, int amount );
-    void signalMoveV( unsigned index, int amount );
-    void signalAdjustBrightness( unsigned index, int amount );
-    void signalAdjustContrast( unsigned index, int amount );
+    void signalMove( unsigned index, int amountH, int amountV );
+    void signalAdjustContrastBrightness( unsigned index, int amountB, int amountC );
     void signalNewPoint( unsigned index, int x, int y, int z );
     void signalNewShape( unsigned index, int x, int y, int z );
     void signalDeletePoint( unsigned index );
