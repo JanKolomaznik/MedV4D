@@ -115,7 +115,7 @@ m4dSliceViewerWidget::setParameters()
     _brightnessRate = 0.0;
     _contrastRate = 0.0;
     setButtonHandler( moveI, left );
-    setButtonHandler( zoomI, right );
+    setButtonHandler( switch_slice, right );
     _printShapeData = false;
     _printData = true;
     _selected = false;
@@ -180,6 +180,11 @@ m4dSliceViewerWidget::setButtonHandler( ButtonHandler hnd, MouseButton btn )
 	_selectionMode[btn] = false;
 	break;
 
+	case switch_slice:
+	_buttonMethods[btn] = &M4D::Viewer::m4dSliceViewerWidget::switchSlice;
+	_selectionMode[btn] = false;
+	break;
+
 	case new_point:
 	_selectMethods[btn] = &M4D::Viewer::m4dSliceViewerWidget::newPoint;
 	_selectionMode[btn] = true;
@@ -189,17 +194,8 @@ m4dSliceViewerWidget::setButtonHandler( ButtonHandler hnd, MouseButton btn )
 	_selectMethods[btn] = &M4D::Viewer::m4dSliceViewerWidget::newShape;
 	_selectionMode[btn] = true;
 	break;
-
-	case delete_point:
-	_selectMethods[btn] = &M4D::Viewer::m4dSliceViewerWidget::deletePoint;
-	_selectionMode[btn] = true;
-	break;
-
-	case delete_shape:
-	_selectMethods[btn] = &M4D::Viewer::m4dSliceViewerWidget::deleteShape;
-	_selectionMode[btn] = true;
-	break;
     }
+
     emit signalSetButtonHandler( _index, hnd, btn );
 }
 
@@ -737,6 +733,19 @@ m4dSliceViewerWidget::wheelEvent(QWheelEvent *event)
 }
 
 void
+m4dSliceViewerWidget::switchSlice( int dummy, int amount )
+{
+    try
+    {
+        setSliceNum( _sliceNum + amount );
+    }
+    catch (...)
+    {
+        //TODO handle
+    }
+}
+
+void
 m4dSliceViewerWidget::setSliceNum( size_t num )
 {
     if ( !_inPort.IsPlugged() ) return;
@@ -810,7 +819,7 @@ m4dSliceViewerWidget::newShape( int x, int y, int z )
 }
 
 void
-m4dSliceViewerWidget::deletePoint( int x, int y, int z )
+m4dSliceViewerWidget::deletePoint()
 {
     if ( _shapes.empty() ) return;
     
@@ -818,18 +827,25 @@ m4dSliceViewerWidget::deletePoint( int x, int y, int z )
     else
     {
         _shapes.back().deleteLast();
-        if ( _shapes.back().shapeElements().empty() ) deleteShape( x, y, z );
+        if ( _shapes.back().shapeElements().empty() ) deleteShape();
     }
     emit signalDeletePoint( _index );
 }
 
 void
-m4dSliceViewerWidget::deleteShape( int x, int y, int z )
+m4dSliceViewerWidget::deleteShape()
 {
     if ( _shapes.empty() ) return;
     
     _shapes.pop_back();
     emit signalDeleteShape( _index );
+}
+
+void
+m4dSliceViewerWidget::deleteAll()
+{
+    while ( !_shapes.empty() ) deleteShape();
+    emit signalDeleteAll( _index );
 }
 
 void
@@ -931,13 +947,19 @@ m4dSliceViewerWidget::slotNewShape( int x, int y, int z )
 void
 m4dSliceViewerWidget::slotDeletePoint()
 {
-    deletePoint( 0, 0, 0 );
+    deletePoint();
 }
 
 void
 m4dSliceViewerWidget::slotDeleteShape()
 {
-    deleteShape( 0, 0, 0 );
+    deleteShape();
+}
+
+void
+m4dSliceViewerWidget::slotDeleteAll()
+{
+    deleteAll();
 }
 
 void

@@ -64,6 +64,7 @@ public slots:
     virtual void slotNewShape( int x, int y, int z );
     virtual void slotDeletePoint();
     virtual void slotDeleteShape();
+    virtual void slotDeleteAll();
     virtual void slotRotateAxisX( int x );
     virtual void slotRotateAxisY( int y );
     virtual void slotRotateAxisZ( int z );
@@ -75,6 +76,7 @@ protected:
     bool getSelected();
     void setOneSliceMode();
     void setMoreSliceMode( unsigned slicesPerRow );
+    void switchSlice( int dummy, int amount );
     void setColorMode( ColorMode cm );
     void toggleFlipHorizontal();
     void toggleFlipVertical();
@@ -97,8 +99,9 @@ protected:
     void adjustContrastBrightness( int amountB, int amountC );
     void newPoint( int x, int y, int z );
     void newShape( int x, int y, int z );
-    void deletePoint( int x, int y, int z );
-    void deleteShape( int x, int y, int z );
+    void deletePoint();
+    void deleteShape();
+    void deleteAll();
 
 private:
 

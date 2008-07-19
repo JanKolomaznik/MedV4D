@@ -43,7 +43,7 @@ public:
     m4dAbstractViewerWidget() { }
     virtual ~m4dAbstractViewerWidget() { }
     
-    typedef enum { zoomI, moveI, adjust_bc, new_point, new_shape, delete_point, delete_shape } ButtonHandler;
+    typedef enum { zoomI, moveI, adjust_bc, switch_slice, new_point, new_shape } ButtonHandler;
     typedef enum { rgba_unsigned_byte, grayscale_unsigned_byte, grayscale_unsigned_short } ColorMode;
     typedef enum { left = 0, right = 1 } MouseButton;
 
@@ -74,6 +74,7 @@ public slots:
     virtual void slotNewShape( int x, int y, int z )=0;
     virtual void slotDeletePoint()=0;
     virtual void slotDeleteShape()=0;
+    virtual void slotDeleteAll()=0;
     virtual void slotRotateAxisX( int x )=0;
     virtual void slotRotateAxisY( int y )=0;
     virtual void slotRotateAxisZ( int z )=0;
@@ -100,6 +101,7 @@ signals:
     void signalNewShape( unsigned index, int x, int y, int z );
     void signalDeletePoint( unsigned index );
     void signalDeleteShape( unsigned index );
+    void signalDeleteAll( unsigned index );
     void signalRotateAxisX( unsigned index, int x );
     void signalRotateAxisY( unsigned index, int y );
     void signalRotateAxisZ( unsigned index, int z );
