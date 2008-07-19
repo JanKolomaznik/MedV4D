@@ -19,6 +19,8 @@ class m4dGUIMainWindow: public QMainWindow
   private slots:
     void search ();
     void open ();
+    void size ();
+    void status ();
     void layout ();
     void features ();
 
@@ -44,10 +46,10 @@ class m4dGUIMainWindow: public QMainWindow
     static const char *actionIconNames[];
     static const char *actionTexts[];
     static const bool  actionCheckables[];
+    static const bool  actionRightButtons[];
     static const char *actionShortCuts[];
     static const char *actionStatusTips[];
     static const char *actionSlots[];
-    static const bool  actionRightButtons[];
     static const int   slotsToActions[]; 
   
     QDialog *studyManagerDialog;
@@ -57,8 +59,12 @@ class m4dGUIMainWindow: public QMainWindow
     QAction *openAct;
     QAction *saveAct;
     QAction *exitAct;
-    QAction *layoutAct;
+    QAction *smallAct;
+    QAction *mediumAct;
+    QAction *largeAct;
+    QAction *statusAct;
     QAction **viewerActs;
+    QAction *layoutAct;
     QAction *swapAct;
     
     QToolBar *searchToolBar;
@@ -68,6 +74,8 @@ class m4dGUIMainWindow: public QMainWindow
     QToolBar *swapToolBar;
    
     QMenu *fileMenu;
+    QMenu *toolBarsMenu;
+    QMenu *toolsMenu;
     QMenu *viewMenu;  // name coll.
 };
 
