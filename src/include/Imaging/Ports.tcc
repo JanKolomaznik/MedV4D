@@ -67,6 +67,7 @@ InputPortImageFilter< Image< ElementType, dimension > >
 		)
 {
 	if( this->IsPlugged() ) {
+		DL_PRINT( 5, "Sending message " << msg->msgID );
 		msg->senderID = this->GetID();
 		_imageConnection->RouteMessage( msg, sendStyle, FD_AGAINST_FLOW );
 		
@@ -146,6 +147,7 @@ OutputPortImageFilter< Image< ElementType, dimension > >
 		)
 {
 	if( this->IsPlugged() ) {
+		DL_PRINT( 5, "Sending message " << msg->msgID );
 		msg->senderID = this->GetID();
 		_imageConnection->RouteMessage( msg, sendStyle, FD_IN_FLOW );
 	}

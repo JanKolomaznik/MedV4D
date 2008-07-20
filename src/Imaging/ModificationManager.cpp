@@ -193,7 +193,7 @@ ModificationManager::ModificationManager()
 ModificationManager::~ModificationManager()
 {
 	{
-		Multithreading::ScopedLock lock( _accessLock );
+		Multithreading::RecursiveScopedLock lock( _accessLock );
 
 		std::for_each( _changes.begin(), _changes.end(), M4D::Functors::Deletor< WriterBBoxInterface *>() );
 	}
@@ -207,7 +207,7 @@ ModificationManager::AddMod2D(
 	size_t y2 
 	)
 {
-	Multithreading::ScopedLock lock( _accessLock );
+	Multithreading::RecursiveScopedLock lock( _accessLock );
 
 	_actualTimestamp.Increase();
 	//TODO - construction of right object
@@ -227,10 +227,10 @@ ModificationManager::GetMod2D(
 	)
 {
 	//TODO
-	Multithreading::ScopedLock lock( _accessLock );
+	Multithreading::RecursiveScopedLock lock( _accessLock );
 
 	//TODO - construction of right object
-	ReaderBBoxInterface *changeProxy = new ReaderBBoxInterface( _actualTimestamp, this, new ModificationBBox( x1, y1, x2, y2 ) );
+	ReaderBBoxInterface *changeProxy = new ProxyReaderBBox( _actualTimestamp, this, new ModificationBBox( x1, y1, x2, y2 ) );
 
 	return ReaderBBoxInterface::Ptr( changeProxy );
 }
@@ -245,7 +245,7 @@ ModificationManager::AddMod3D(
 	size_t z2 
 	)
 {
-	Multithreading::ScopedLock lock( _accessLock );
+	Multithreading::RecursiveScopedLock lock( _accessLock );
 
 	_actualTimestamp.Increase();
 	//TODO - construction of right object
@@ -267,10 +267,10 @@ ModificationManager::GetMod3D(
 	)
 {
 	//TODO
-	Multithreading::ScopedLock lock( _accessLock );
+	Multithreading::RecursiveScopedLock lock( _accessLock );
 
 	//TODO - construction of right object
-	ReaderBBoxInterface *changeProxy = new ReaderBBoxInterface( _actualTimestamp, this, new ModificationBBox( x1, y1, z1, x2, y2, z2 ) );
+	ReaderBBoxInterface *changeProxy = new ProxyReaderBBox( _actualTimestamp, this, new ModificationBBox( x1, y1, z1, x2, y2, z2 ) );
 
 	return ReaderBBoxInterface::Ptr( changeProxy );
 }
@@ -293,7 +293,7 @@ ModificationManager::GetChangeBBox( const Common::TimeStamp & changeStamp )
 {
 
 	//TODO
-	Multithreading::ScopedLock lock( _accessLock );
+	Multithreading::RecursiveScopedLock lock( _accessLock );
 
 	return std::find_if( _changes.begin(), _changes.end(), ChangeTimestampComparator( changeStamp ) );
 }
@@ -303,7 +303,7 @@ ModificationManager::ChangeIterator
 ModificationManager::ChangesBegin()
 {
 	//TODO
-	Multithreading::ScopedLock lock( _accessLock );
+	Multithreading::RecursiveScopedLock lock( _accessLock );
 
 	return _changes.begin();
 }
@@ -312,7 +312,7 @@ ModificationManager::ChangeIterator
 ModificationManager::ChangesEnd()
 {
 	//TODO
-	Multithreading::ScopedLock lock( _accessLock );
+	Multithreading::RecursiveScopedLock lock( _accessLock );
 
 	return _changes.end();
 }
@@ -321,7 +321,7 @@ ModificationManager::ChangeReverseIterator
 ModificationManager::ChangesReverseBegin()
 {
 	//TODO
-	Multithreading::ScopedLock lock( _accessLock );
+	Multithreading::RecursiveScopedLock lock( _accessLock );
 
 	return _changes.rbegin();
 }
@@ -330,7 +330,7 @@ ModificationManager::ChangeReverseIterator
 ModificationManager::ChangesReverseEnd()
 {
 	//TODO
-	Multithreading::ScopedLock lock( _accessLock );
+	Multithreading::RecursiveScopedLock lock( _accessLock );
 
 	return _changes.rend();
 }
@@ -339,7 +339,7 @@ void
 ModificationManager::Reset()
 {
 	//TODO
-	Multithreading::ScopedLock lock( _accessLock );
+	Multithreading::RecursiveScopedLock lock( _accessLock );
 
 	_lastStoredTimestamp = ++_actualTimestamp;
 }

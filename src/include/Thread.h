@@ -3,6 +3,7 @@
 
 #include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
+#include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread/xtime.hpp>
 
 
@@ -16,6 +17,10 @@ typedef boost::thread	Thread;
 typedef boost::mutex	Mutex;
 
 typedef boost::mutex::scoped_lock	ScopedLock;
+
+typedef boost::recursive_mutex	RecursiveMutex;
+
+typedef boost::recursive_mutex::scoped_lock	RecursiveScopedLock;
 
 inline void
 yield()

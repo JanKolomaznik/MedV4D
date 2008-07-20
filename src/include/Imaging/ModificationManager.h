@@ -28,7 +28,7 @@ public:
 
 
 	ReaderBBoxInterface( Common::TimeStamp timestamp, ModificationManager* manager, ModificationBBox* boundingBox )
-		: _changeTimestamp( timestamp ),  _manager( manager ), _boundingBox( boundingBox ) {}
+		: _changeTimestamp( timestamp ),  _state( MS_MODIFIED ), _manager( manager ), _boundingBox( boundingBox ) {}
 
 	virtual
 	~ReaderBBoxInterface();
@@ -231,7 +231,7 @@ private:
 
 	ChangeQueue		_changes;
 
-	Multithreading::Mutex	_accessLock;
+	Multithreading::RecursiveMutex	_accessLock;
 };
 
 class ProxyReaderBBox: public ReaderBBoxInterface
