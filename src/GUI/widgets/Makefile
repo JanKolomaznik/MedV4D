@@ -14,7 +14,7 @@ NAME=		m4dWidgets
 #Names of target sources
 TARGETS=	m4dGUIMainWindow \
 		m4dGUIMainViewerDesktopWidget \
-		m4dGUIVtkRenderWindowWidget \
+		m4dGUIVtkViewerWidget \
 		m4dGUIStudyManagerWidget \
 		m4dGUIScreenLayoutWidget \
 		m4dGUISliceViewerWidget
@@ -32,7 +32,7 @@ MOCINPUT=	m4dGUIAbstractViewerWidget.h \
 		m4dGUIMainViewerDesktopWidget.h \
 		m4dGUIScreenLayoutWidget.h \
 		m4dGUIStudyManagerWidget.h \
-		m4dGUIVtkRenderWindowWidget.h \
+		m4dGUIVtkViewerWidget.h \
 		m4dGUISliceViewerWidget.h \
 		StManagerFilterComp.h \
 		StManagerHProtocolsComp.h \

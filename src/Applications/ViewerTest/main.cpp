@@ -3,7 +3,7 @@
 #include "Imaging/ExampleImageFilters.h"
 #include "Imaging/DefaultConnection.h"
 #include "Imaging/ImageFactory.h"
-#include "GUI/m4dSliceViewerWidget.h"
+#include "GUI/m4dGUISliceViewerWidget.h"
 #include <iostream>
 #include <QApplication>
 #include "window.h"

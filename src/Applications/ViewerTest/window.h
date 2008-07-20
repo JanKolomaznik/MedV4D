@@ -38,7 +38,7 @@
 #define WINDOW_H
 
 #include <QWidget>
-#include "GUI/m4dSliceViewerWidget.h"
+#include "GUI/m4dGUISliceViewerWidget.h"
 #include "Imaging/Connection.h"
 #include "Imaging/Image.h"
 #include "Common.h"
@@ -53,7 +53,7 @@ public:
 
 private:
     
-    M4D::Viewer::m4dSliceViewerWidget *glWidget;
+    M4D::Viewer::m4dGUIAbstractViewerWidget *glWidget;
 };
 
 #endif
