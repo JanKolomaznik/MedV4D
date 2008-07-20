@@ -1,4 +1,4 @@
-#include "GUI/m4dSliceViewerWidget.h"
+#include "GUI/m4dGUISliceViewerWidget.h"
 
 #include <QtGui>
 #include "GUI/ogl/fonts.h"
@@ -14,54 +14,54 @@ namespace M4D
 namespace Viewer
 {
 
-m4dSliceViewerWidget::m4dSliceViewerWidget( unsigned index, QWidget *parent)
+m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( unsigned index, QWidget *parent)
     : QGLWidget(parent)
 {
     _index = index;
     setInputPort( );
 }
 
-m4dSliceViewerWidget::m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint32, 3 > >& conn, unsigned index, QWidget *parent)
+m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint32, 3 > >& conn, unsigned index, QWidget *parent)
     : QGLWidget(parent)
 {
     _index = index;
     setInputPort( conn );
 }
 
-m4dSliceViewerWidget::m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint16, 3 > >& conn, unsigned index, QWidget *parent)
+m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint16, 3 > >& conn, unsigned index, QWidget *parent)
     : QGLWidget(parent)
 {
     _index = index;
     setInputPort( conn );
 }
 
-m4dSliceViewerWidget::m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint8, 3 > >& conn, unsigned index, QWidget *parent)
+m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint8, 3 > >& conn, unsigned index, QWidget *parent)
     : QGLWidget(parent)
 {
     _index = index;
     setInputPort( conn );
 }
 
-m4dSliceViewerWidget::~m4dSliceViewerWidget()
+m4dGUISliceViewerWidget::~m4dGUISliceViewerWidget()
 {
 
 }
 
 void
-m4dSliceViewerWidget::setColorMode( ColorMode cm )
+m4dGUISliceViewerWidget::setColorMode( ColorMode cm )
 {
     _colorMode = cm;
 }
 
 void
-m4dSliceViewerWidget::setUnSelected()
+m4dGUISliceViewerWidget::setUnSelected()
 {
     _selected = false;
     updateGL();
 }
 
 void
-m4dSliceViewerWidget::setSelected()
+m4dGUISliceViewerWidget::setSelected()
 {
     _selected = true;
     updateGL();
@@ -69,20 +69,20 @@ m4dSliceViewerWidget::setSelected()
 }
 
 bool
-m4dSliceViewerWidget::getSelected()
+m4dGUISliceViewerWidget::getSelected()
 {
     return _selected;
 }
 
 void
-m4dSliceViewerWidget::setInputPort( )
+m4dGUISliceViewerWidget::setInputPort( )
 {
     _inPort.UnPlug();
     setParameters();
 }
 
 void
-m4dSliceViewerWidget::setInputPort( Imaging::ImageConnection< Imaging::Image< uint32, 3 > >& conn )
+m4dGUISliceViewerWidget::setInputPort( Imaging::ImageConnection< Imaging::Image< uint32, 3 > >& conn )
 {
     conn.ConnectConsumer( _inPort );
     setColorMode( rgba_unsigned_byte );
@@ -90,7 +90,7 @@ m4dSliceViewerWidget::setInputPort( Imaging::ImageConnection< Imaging::Image< ui
 }
 
 void
-m4dSliceViewerWidget::setInputPort( Imaging::ImageConnection< Imaging::Image< uint16, 3 > >& conn )
+m4dGUISliceViewerWidget::setInputPort( Imaging::ImageConnection< Imaging::Image< uint16, 3 > >& conn )
 {
     conn.ConnectConsumer( _inPort );
     setColorMode( grayscale_unsigned_short );
@@ -98,7 +98,7 @@ m4dSliceViewerWidget::setInputPort( Imaging::ImageConnection< Imaging::Image< ui
 }
 
 void
-m4dSliceViewerWidget::setInputPort( Imaging::ImageConnection< Imaging::Image< uint8, 3 > >& conn )
+m4dGUISliceViewerWidget::setInputPort( Imaging::ImageConnection< Imaging::Image< uint8, 3 > >& conn )
 {
     conn.ConnectConsumer( _inPort );
     setColorMode( grayscale_unsigned_byte );
@@ -106,7 +106,7 @@ m4dSliceViewerWidget::setInputPort( Imaging::ImageConnection< Imaging::Image< ui
 }
 
 void
-m4dSliceViewerWidget::setParameters()
+m4dGUISliceViewerWidget::setParameters()
 {
     if ( _inPort.IsPlugged() ) _sliceNum = _inPort.GetAbstractImage().GetDimensionExtents(2).minimum;
     _offset = QPoint( 0, 0 );
@@ -148,50 +148,50 @@ m4dSliceViewerWidget::setParameters()
     _rightSideData.clear();
 }
 
-m4dSliceViewerWidget::AvailableSlots
-m4dSliceViewerWidget::getAvailableSlots()
+m4dGUISliceViewerWidget::AvailableSlots
+m4dGUISliceViewerWidget::getAvailableSlots()
 {
     return _availableSlots;
 }
 
 QWidget*
-m4dSliceViewerWidget::operator()()
+m4dGUISliceViewerWidget::operator()()
 {
     return (QGLWidget*)this;
 }
 
 void
-m4dSliceViewerWidget::setButtonHandler( ButtonHandler hnd, MouseButton btn )
+m4dGUISliceViewerWidget::setButtonHandler( ButtonHandler hnd, MouseButton btn )
 {
     switch (hnd)
     {
 	case zoomI:
-	_buttonMethods[btn] = &M4D::Viewer::m4dSliceViewerWidget::zoomImage;
+	_buttonMethods[btn] = &M4D::Viewer::m4dGUISliceViewerWidget::zoomImage;
 	_selectionMode[btn] = false;
 	break;
 
 	case moveI:
-	_buttonMethods[btn] = &M4D::Viewer::m4dSliceViewerWidget::moveImage;
+	_buttonMethods[btn] = &M4D::Viewer::m4dGUISliceViewerWidget::moveImage;
 	_selectionMode[btn] = false;
 	break;
 
 	case adjust_bc:
-	_buttonMethods[btn] = &M4D::Viewer::m4dSliceViewerWidget::adjustContrastBrightness;
+	_buttonMethods[btn] = &M4D::Viewer::m4dGUISliceViewerWidget::adjustContrastBrightness;
 	_selectionMode[btn] = false;
 	break;
 
 	case switch_slice:
-	_buttonMethods[btn] = &M4D::Viewer::m4dSliceViewerWidget::switchSlice;
+	_buttonMethods[btn] = &M4D::Viewer::m4dGUISliceViewerWidget::switchSlice;
 	_selectionMode[btn] = false;
 	break;
 
 	case new_point:
-	_selectMethods[btn] = &M4D::Viewer::m4dSliceViewerWidget::newPoint;
+	_selectMethods[btn] = &M4D::Viewer::m4dGUISliceViewerWidget::newPoint;
 	_selectionMode[btn] = true;
 	break;
 
 	case new_shape:
-	_selectMethods[btn] = &M4D::Viewer::m4dSliceViewerWidget::newShape;
+	_selectMethods[btn] = &M4D::Viewer::m4dGUISliceViewerWidget::newShape;
 	_selectionMode[btn] = true;
 	break;
     }
@@ -200,7 +200,7 @@ m4dSliceViewerWidget::setButtonHandler( ButtonHandler hnd, MouseButton btn )
 }
 
 void
-m4dSliceViewerWidget::setOneSliceMode()
+m4dGUISliceViewerWidget::setOneSliceMode()
 {
     _slicesPerRow = 1;
     _oneSliceMode = true;
@@ -208,7 +208,7 @@ m4dSliceViewerWidget::setOneSliceMode()
 }
 
 void
-m4dSliceViewerWidget::setMoreSliceMode( unsigned slicesPerRow )
+m4dGUISliceViewerWidget::setMoreSliceMode( unsigned slicesPerRow )
 {
     _slicesPerRow = slicesPerRow;
     _oneSliceMode = false;
@@ -216,7 +216,7 @@ m4dSliceViewerWidget::setMoreSliceMode( unsigned slicesPerRow )
 }
 
 void
-m4dSliceViewerWidget::toggleFlipHorizontal()
+m4dGUISliceViewerWidget::toggleFlipHorizontal()
 {
     _flipH *= -1;
     emit signalToggleFlipVertical();
@@ -224,7 +224,7 @@ m4dSliceViewerWidget::toggleFlipHorizontal()
 }
 
 void
-m4dSliceViewerWidget::toggleFlipVertical()
+m4dGUISliceViewerWidget::toggleFlipVertical()
 {
     _flipV *= -1;
     emit signalToggleFlipVertical();
@@ -232,7 +232,7 @@ m4dSliceViewerWidget::toggleFlipVertical()
 }
 
 void
-m4dSliceViewerWidget::addLeftSideData( std::string type, std::string data )
+m4dGUISliceViewerWidget::addLeftSideData( std::string type, std::string data )
 {
     _leftSideData[type] = data;
     emit signalAddLeftSideData( type, data );
@@ -240,7 +240,7 @@ m4dSliceViewerWidget::addLeftSideData( std::string type, std::string data )
 }
 
 void
-m4dSliceViewerWidget::addRightSideData( std::string type, std::string data )
+m4dGUISliceViewerWidget::addRightSideData( std::string type, std::string data )
 {
     _rightSideData[type] = data;
     emit signalAddRightSideData( type, data );
@@ -248,7 +248,7 @@ m4dSliceViewerWidget::addRightSideData( std::string type, std::string data )
 }
 
 void
-m4dSliceViewerWidget::eraseLeftSideData( std::string type )
+m4dGUISliceViewerWidget::eraseLeftSideData( std::string type )
 {
     _leftSideData.erase( type );
     emit signalEraseLeftSideData( type );
@@ -256,7 +256,7 @@ m4dSliceViewerWidget::eraseLeftSideData( std::string type )
 }
 
 void
-m4dSliceViewerWidget::eraseRightSideData( std::string type )
+m4dGUISliceViewerWidget::eraseRightSideData( std::string type )
 {
     _rightSideData.erase( type );
     emit signalEraseRightSideData( type );
@@ -264,7 +264,7 @@ m4dSliceViewerWidget::eraseRightSideData( std::string type )
 }
 
 void
-m4dSliceViewerWidget::clearLeftSideData()
+m4dGUISliceViewerWidget::clearLeftSideData()
 {
     _leftSideData.clear();
     emit signalClearLeftSideData();
@@ -272,7 +272,7 @@ m4dSliceViewerWidget::clearLeftSideData()
 }
 
 void
-m4dSliceViewerWidget::clearRightSideData()
+m4dGUISliceViewerWidget::clearRightSideData()
 {
     _rightSideData.clear();
     emit signalClearRightSideData();
@@ -280,7 +280,7 @@ m4dSliceViewerWidget::clearRightSideData()
 }
 
 void
-m4dSliceViewerWidget::togglePrintData()
+m4dGUISliceViewerWidget::togglePrintData()
 {
     _printData = _printData?false:true;
     emit signalTogglePrintData();
@@ -288,7 +288,7 @@ m4dSliceViewerWidget::togglePrintData()
 }
 
 void
-m4dSliceViewerWidget::paintGL()
+m4dGUISliceViewerWidget::paintGL()
 {
     glClear( GL_COLOR_BUFFER_BIT | GL_ACCUM_BUFFER_BIT );
     if ( _inPort.IsPlugged() )
@@ -313,7 +313,7 @@ m4dSliceViewerWidget::paintGL()
 }
 
 void
-m4dSliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset )
+m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset )
 {
     if ( !_inPort.IsPlugged() ) return;
     if ( sliceNum < (int)_inPort.GetAbstractImage().GetDimensionExtents(2).minimum ||
@@ -438,7 +438,7 @@ m4dSliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset )
 }
 
 void
-m4dSliceViewerWidget::drawSelectionModeBorder()
+m4dGUISliceViewerWidget::drawSelectionModeBorder()
 {
     glPushMatrix();
     glLoadIdentity();
@@ -459,7 +459,7 @@ m4dSliceViewerWidget::drawSelectionModeBorder()
 }
 
 void
-m4dSliceViewerWidget::drawSelectedBorder()
+m4dGUISliceViewerWidget::drawSelectedBorder()
 {
     glPushMatrix();
     glLoadIdentity();
@@ -474,7 +474,7 @@ m4dSliceViewerWidget::drawSelectedBorder()
 }
 
 void
-m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int sliceNum, float zoomRate )
+m4dGUISliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int sliceNum, float zoomRate )
 {
     if ( last ) glColor3f( 1., 0., 0. );
     else glColor3f( 0., 0., 1. );
@@ -564,7 +564,7 @@ m4dSliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int sli
 }
 
 void
-m4dSliceViewerWidget::drawData( double zoomRate, QPoint offset )
+m4dGUISliceViewerWidget::drawData( double zoomRate, QPoint offset )
 {
     glPushMatrix();
     glLoadIdentity();
@@ -627,7 +627,7 @@ m4dSliceViewerWidget::drawData( double zoomRate, QPoint offset )
 }
 
 void
-m4dSliceViewerWidget::resizeGL(int winW, int winH)
+m4dGUISliceViewerWidget::resizeGL(int winW, int winH)
 {
     glViewport(0, 0, width(), height());
     glMatrixMode(GL_PROJECTION);
@@ -645,7 +645,7 @@ m4dSliceViewerWidget::resizeGL(int winW, int winH)
 }
 
 void
-m4dSliceViewerWidget::mousePressEvent(QMouseEvent *event)
+m4dGUISliceViewerWidget::mousePressEvent(QMouseEvent *event)
 {
     if ( !_selected )
     {
@@ -675,13 +675,13 @@ m4dSliceViewerWidget::mousePressEvent(QMouseEvent *event)
 }
 
 void
-m4dSliceViewerWidget::mouseReleaseEvent(QMouseEvent *event)
+m4dGUISliceViewerWidget::mouseReleaseEvent(QMouseEvent *event)
 {
     _lastPos = QPoint( -1, -1 );
 }
 
 void
-m4dSliceViewerWidget::mouseMoveEvent(QMouseEvent *event)
+m4dGUISliceViewerWidget::mouseMoveEvent(QMouseEvent *event)
 {
     if ( !_inPort.IsPlugged() ) return;
 
@@ -706,7 +706,7 @@ m4dSliceViewerWidget::mouseMoveEvent(QMouseEvent *event)
 }
 
 void
-m4dSliceViewerWidget::zoomImage( int dummy, int amount )
+m4dGUISliceViewerWidget::zoomImage( int dummy, int amount )
 {
     _zoomRate += 0.001 * amount;
     if ( _zoomRate < 0. ) _zoomRate = 0.;
@@ -714,7 +714,7 @@ m4dSliceViewerWidget::zoomImage( int dummy, int amount )
 }
 
 void
-m4dSliceViewerWidget::wheelEvent(QWheelEvent *event)
+m4dGUISliceViewerWidget::wheelEvent(QWheelEvent *event)
 {
     if ( !_inPort.IsPlugged() ) return;
 
@@ -733,7 +733,7 @@ m4dSliceViewerWidget::wheelEvent(QWheelEvent *event)
 }
 
 void
-m4dSliceViewerWidget::switchSlice( int dummy, int amount )
+m4dGUISliceViewerWidget::switchSlice( int dummy, int amount )
 {
     try
     {
@@ -746,7 +746,7 @@ m4dSliceViewerWidget::switchSlice( int dummy, int amount )
 }
 
 void
-m4dSliceViewerWidget::setSliceNum( size_t num )
+m4dGUISliceViewerWidget::setSliceNum( size_t num )
 {
     if ( !_inPort.IsPlugged() ) return;
     if ( num < _inPort.GetAbstractImage().GetDimensionExtents(2).minimum ||
@@ -759,7 +759,7 @@ m4dSliceViewerWidget::setSliceNum( size_t num )
 }
 
 void
-m4dSliceViewerWidget::moveImage( int amountH, int amountV )
+m4dGUISliceViewerWidget::moveImage( int amountH, int amountV )
 {
     _offset.setX( _offset.x() + amountH );
     _offset.setY( _offset.y() + amountV );
@@ -767,7 +767,7 @@ m4dSliceViewerWidget::moveImage( int amountH, int amountV )
 }
 
 void
-m4dSliceViewerWidget::adjustContrastBrightness( int amountC, int amountB )
+m4dGUISliceViewerWidget::adjustContrastBrightness( int amountC, int amountB )
 {
     _brightnessRate -= ((GLfloat)amountB)/((GLfloat)height()/2.0);
     _contrastRate -= ((GLfloat)amountC)/((GLfloat)width()/2.0);
@@ -775,7 +775,7 @@ m4dSliceViewerWidget::adjustContrastBrightness( int amountC, int amountB )
 }
 
 void
-m4dSliceViewerWidget::newPoint( int x, int y, int z )
+m4dGUISliceViewerWidget::newPoint( int x, int y, int z )
 {
     if ( !_inPort.IsPlugged() ) return;
     if ( _shapes.empty() ) newShape( x, y, z );
@@ -802,7 +802,7 @@ m4dSliceViewerWidget::newPoint( int x, int y, int z )
 }
 
 void
-m4dSliceViewerWidget::newShape( int x, int y, int z )
+m4dGUISliceViewerWidget::newShape( int x, int y, int z )
 {
     if ( !_inPort.IsPlugged() ) return;
     if ( x < 0 || y < 0 ||
@@ -819,7 +819,7 @@ m4dSliceViewerWidget::newShape( int x, int y, int z )
 }
 
 void
-m4dSliceViewerWidget::deletePoint()
+m4dGUISliceViewerWidget::deletePoint()
 {
     if ( _shapes.empty() ) return;
     
@@ -833,7 +833,7 @@ m4dSliceViewerWidget::deletePoint()
 }
 
 void
-m4dSliceViewerWidget::deleteShape()
+m4dGUISliceViewerWidget::deleteShape()
 {
     if ( _shapes.empty() ) return;
     
@@ -842,157 +842,157 @@ m4dSliceViewerWidget::deleteShape()
 }
 
 void
-m4dSliceViewerWidget::deleteAll()
+m4dGUISliceViewerWidget::deleteAll()
 {
     while ( !_shapes.empty() ) deleteShape();
     emit signalDeleteAll( _index );
 }
 
 void
-m4dSliceViewerWidget::slotSetButtonHandler( ButtonHandler hnd, MouseButton btn )
+m4dGUISliceViewerWidget::slotSetButtonHandler( ButtonHandler hnd, MouseButton btn )
 {
     setButtonHandler( hnd, btn );
 }
 
 void
-m4dSliceViewerWidget::slotToggleFlipHorizontal()
+m4dGUISliceViewerWidget::slotToggleFlipHorizontal()
 {
     toggleFlipHorizontal();
 }
 
 void
-m4dSliceViewerWidget::slotToggleFlipVertical()
+m4dGUISliceViewerWidget::slotToggleFlipVertical()
 {
     toggleFlipVertical();
 }
 
 void
-m4dSliceViewerWidget::slotAddLeftSideData( std::string type, std::string data )
+m4dGUISliceViewerWidget::slotAddLeftSideData( std::string type, std::string data )
 {
     addLeftSideData( type, data );
 }
 
 void
-m4dSliceViewerWidget::slotAddRightSideData( std::string type, std::string data )
+m4dGUISliceViewerWidget::slotAddRightSideData( std::string type, std::string data )
 {
     addRightSideData( type, data );
 }
 
 void
-m4dSliceViewerWidget::slotEraseLeftSideData( std::string type )
+m4dGUISliceViewerWidget::slotEraseLeftSideData( std::string type )
 {
     eraseLeftSideData( type );
 }
 
 void
-m4dSliceViewerWidget::slotEraseRightSideData( std::string type )
+m4dGUISliceViewerWidget::slotEraseRightSideData( std::string type )
 {
     eraseRightSideData( type );
 }
 
 void
-m4dSliceViewerWidget::slotClearLeftSideData()
+m4dGUISliceViewerWidget::slotClearLeftSideData()
 {
     clearLeftSideData();
 }
 
 void
-m4dSliceViewerWidget::slotClearRightSideData()
+m4dGUISliceViewerWidget::slotClearRightSideData()
 {
     clearRightSideData();
 }
 
 void
-m4dSliceViewerWidget::slotTogglePrintData()
+m4dGUISliceViewerWidget::slotTogglePrintData()
 {
     togglePrintData();
 }
 
 void
-m4dSliceViewerWidget::slotSetSliceNum( size_t num )
+m4dGUISliceViewerWidget::slotSetSliceNum( size_t num )
 {
     setSliceNum( num );
 }
 
 void
-m4dSliceViewerWidget::slotZoom( int amount )
+m4dGUISliceViewerWidget::slotZoom( int amount )
 {
     zoomImage( 0, amount );
 }
 
 void
-m4dSliceViewerWidget::slotMove( int amountH, int amountV )
+m4dGUISliceViewerWidget::slotMove( int amountH, int amountV )
 {
     moveImage( amountH, amountV );
 }
 
 void
-m4dSliceViewerWidget::slotAdjustContrastBrightness( int amountC, int amountB )
+m4dGUISliceViewerWidget::slotAdjustContrastBrightness( int amountC, int amountB )
 {
     adjustContrastBrightness( amountC, amountB );
 }
 
 void
-m4dSliceViewerWidget::slotNewPoint( int x, int y, int z )
+m4dGUISliceViewerWidget::slotNewPoint( int x, int y, int z )
 {
     newPoint( x, y, z );
 }
 
 void
-m4dSliceViewerWidget::slotNewShape( int x, int y, int z )
+m4dGUISliceViewerWidget::slotNewShape( int x, int y, int z )
 {
     newShape( x, y, z );
 }
 
 void
-m4dSliceViewerWidget::slotDeletePoint()
+m4dGUISliceViewerWidget::slotDeletePoint()
 {
     deletePoint();
 }
 
 void
-m4dSliceViewerWidget::slotDeleteShape()
+m4dGUISliceViewerWidget::slotDeleteShape()
 {
     deleteShape();
 }
 
 void
-m4dSliceViewerWidget::slotDeleteAll()
+m4dGUISliceViewerWidget::slotDeleteAll()
 {
     deleteAll();
 }
 
 void
-m4dSliceViewerWidget::slotSetSelected( bool selected )
+m4dGUISliceViewerWidget::slotSetSelected( bool selected )
 {
     if ( selected ) setSelected();
     else setUnSelected();
 }
 
 void
-m4dSliceViewerWidget::slotSetOneSliceMode()
+m4dGUISliceViewerWidget::slotSetOneSliceMode()
 {
     setOneSliceMode();
 }
 
 void
-m4dSliceViewerWidget::slotSetMoreSliceMode( unsigned slicesPerRow )
+m4dGUISliceViewerWidget::slotSetMoreSliceMode( unsigned slicesPerRow )
 {
     setMoreSliceMode( slicesPerRow );
 }
 
 void
-m4dSliceViewerWidget::slotRotateAxisX( int x )
+m4dGUISliceViewerWidget::slotRotateAxisX( int x )
 {
 }
 
 void
-m4dSliceViewerWidget::slotRotateAxisY( int y )
+m4dGUISliceViewerWidget::slotRotateAxisY( int y )
 {
 }
 
 void
-m4dSliceViewerWidget::slotRotateAxisZ( int z )
+m4dGUISliceViewerWidget::slotRotateAxisZ( int z )
 {
 }
 

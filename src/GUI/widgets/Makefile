@@ -17,7 +17,7 @@ TARGETS=	m4dGUIMainWindow \
 		m4dGUIVtkRenderWindowWidget \
 		m4dGUIStudyManagerWidget \
 		m4dGUIScreenLayoutWidget \
-		m4dSliceViewerWidget
+		m4dGUISliceViewerWidget
 
 SUBDIR=		components
 SUBDIR2=	ogl
@@ -27,13 +27,13 @@ TARGETS2=	StManagerFilterComp \
 		
 TARGETS3=	fonts
 
-MOCINPUT=	m4dAbstractViewerWidget.h \
+MOCINPUT=	m4dGUIAbstractViewerWidget.h \
 		m4dGUIMainWindow.h \
 		m4dGUIMainViewerDesktopWidget.h \
 		m4dGUIScreenLayoutWidget.h \
 		m4dGUIStudyManagerWidget.h \
 		m4dGUIVtkRenderWindowWidget.h \
-		m4dSliceViewerWidget.h \
+		m4dGUISliceViewerWidget.h \
 		StManagerFilterComp.h \
 		StManagerHProtocolsComp.h \
 		StManagerStudyListComp.h

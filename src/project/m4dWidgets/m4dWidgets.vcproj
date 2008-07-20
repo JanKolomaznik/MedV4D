@@ -156,11 +156,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\GUI\widgets\m4dGUIVtkRenderWindowWidget.cpp"
+				RelativePath="..\..\GUI\widgets\m4dGUIVtkViewerWidget.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\GUI\widgets\m4dSliceViewerWidget.cpp"
+				RelativePath="..\..\GUI\widgets\m4dGUISliceViewerWidget.cpp"
 				>
 			</File>
 			<File
@@ -182,14 +182,14 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\include\GUI\m4dAbstractViewerWidget.h"
+				RelativePath="..\..\include\GUI\m4dGUIAbstractViewerWidget.h"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						Description="MOC m4dAbstractViewerWidget.h"
+						Description="MOC m4dGUIAbstractViewerWidget.h"
 						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\debug; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 $(InputPath) -o $(IntDir)\generated\moc\moc_$(InputName).cpp&#x0D;&#x0A;"
 						AdditionalDependencies="moc.exe,$(InputFileName)"
 						Outputs="$(IntDir)\generated\moc\moc_$(InputName).cpp"
@@ -200,7 +200,7 @@
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						Description="MOC m4dAbstractViewerWidget.h"
+						Description="MOC m4dGUIAbstractViewerWidget.h"
 						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 $(InputPath) -o $(IntDir)\generated\moc\moc_$(InputName).cpp&#x0D;&#x0A;"
 						AdditionalDependencies="moc.exe,$(InputFileName)"
 						Outputs="$(IntDir)\generated\moc\moc_$(InputName).cpp"
@@ -312,17 +312,17 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\include\GUI\m4dGUIVtkRenderWindowWidget.h"
+				RelativePath="..\..\include\GUI\m4dGUIVtkViewerWidget.h"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						Description="MOC m4dGUIVtkRenderWindowWidget.h"
+						Description="MOC m4dGUIVtkViewerWidget.h"
 						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\debug; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 $(InputPath) -o $(IntDir)\generated\moc\moc_$(InputName).cpp&#x0D;&#x0A;"
 						AdditionalDependencies="moc.exe,$(InputFileName)"
-						Outputs="$(IntDir)\generated\moc\moc_m4dGUIVtkRenderWindowWidget.cpp"
+						Outputs="$(IntDir)\generated\moc\moc_m4dGUIVtkViewerWidget.cpp"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -330,22 +330,22 @@
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						Description="MOC m4dGUIVtkRenderWindowWidget.h"
+						Description="MOC m4dGUIVtkViewerWidget.h"
 						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 $(InputPath) -o $(IntDir)\generated\moc\moc_$(InputName).cpp&#x0D;&#x0A;"
 						AdditionalDependencies="moc.exe,$(InputFileName)"
-						Outputs="$(IntDir)\generated\moc\moc_m4dGUIVtkRenderWindowWidget.cpp"
+						Outputs="$(IntDir)\generated\moc\moc_m4dGUIVtkViewerWidget.cpp"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\include\GUI\m4dSliceViewerWidget.h"
+				RelativePath="..\..\include\GUI\m4dGUISliceViewerWidget.h"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						Description="MOC m4dSliceViewerWidget.h"
+						Description="MOC m4dGUISliceViewerWidget.h"
 						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\debug; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 $(InputPath) -o $(IntDir)\generated\moc\moc_$(InputName).cpp&#x0D;&#x0A;"
 						AdditionalDependencies="moc.exe,$(InputFileName)"
 						Outputs="$(IntDir)\generated\moc\moc_$(InputName).cpp"
@@ -356,7 +356,7 @@
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						Description="MOC m4dSliceViewerWidget.h"
+						Description="MOC m4dGUISliceViewerWidget.h"
 						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 $(InputPath) -o $(IntDir)\generated\moc\moc_$(InputName).cpp&#x0D;&#x0A;"
 						AdditionalDependencies="moc.exe,$(InputFileName)"
 						Outputs="$(IntDir)\generated\moc\moc_$(InputName).cpp"
@@ -528,7 +528,7 @@
 			Name="Generated Files"
 			>
 			<File
-				RelativePath="$(IntDir)\generated\moc\moc_m4dAbstractViewerWidget.cpp"
+				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIAbstractViewerWidget.cpp"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -540,7 +540,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="$(IntDir)\generated\moc\moc_m4dAbstractViewerWidget.cpp"
+				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIAbstractViewerWidget.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -648,7 +648,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIVtkRenderWindowWidget.cpp"
+				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIVtkViewerWidget.cpp"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -660,7 +660,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIVtkRenderWindowWidget.cpp"
+				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIVtkViewerWidget.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -672,7 +672,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="$(IntDir)\generated\moc\moc_m4dSliceViewerWidget.cpp"
+				RelativePath="$(IntDir)\generated\moc\moc_m4dGUISliceViewerWidget.cpp"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -684,7 +684,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="$(IntDir)\generated\moc\moc_m4dSliceViewerWidget.cpp"
+				RelativePath="$(IntDir)\generated\moc\moc_m4dGUISliceViewerWidget.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"

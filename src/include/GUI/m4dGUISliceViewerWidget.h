@@ -1,5 +1,5 @@
-#ifndef _M4DSLICEVIEWERWIDGET_H
-#define _M4DSLICEVIEWERWIDGET_H
+#ifndef _M4DGUISLICEVIEWERWIDGET_H
+#define _M4DGUISLICEVIEWERWIDGET_H
 
 #include <QtOpenGL>
 #include <list>
@@ -11,7 +11,7 @@
 #include "Imaging/Ports.h"
 #include "Imaging/DefaultConnection.h"
 #include "GUI/m4dSelection.h"
-#include "GUI/m4dAbstractViewerWidget.h"
+#include "GUI/m4dGUIAbstractViewerWidget.h"
 
 #define RW 0.3086
 #define GW 0.6094
@@ -22,16 +22,16 @@ namespace M4D
 namespace Viewer
 {
 
-class m4dSliceViewerWidget : public m4dAbstractViewerWidget, public QGLWidget
+class m4dGUISliceViewerWidget : public m4dGUIAbstractViewerWidget, public QGLWidget
 {
     Q_OBJECT
 
 public:
-    m4dSliceViewerWidget( unsigned index, QWidget *parent = 0 );
-    m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint32, 3 > >& conn, unsigned index, QWidget *parent = 0 );
-    m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint16, 3 > >& conn, unsigned index, QWidget *parent = 0 );
-    m4dSliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint8, 3 > >& conn, unsigned index, QWidget *parent = 0 );
-    ~m4dSliceViewerWidget();
+    m4dGUISliceViewerWidget( unsigned index, QWidget *parent = 0 );
+    m4dGUISliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint32, 3 > >& conn, unsigned index, QWidget *parent = 0 );
+    m4dGUISliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint16, 3 > >& conn, unsigned index, QWidget *parent = 0 );
+    m4dGUISliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint8, 3 > >& conn, unsigned index, QWidget *parent = 0 );
+    ~m4dGUISliceViewerWidget();
     Imaging::InputPortAbstractImage& getInputPort();
     void setInputPort();
     void setInputPort( Imaging::ImageConnection< Imaging::Image< uint32, 3 > >& conn );
@@ -112,8 +112,8 @@ private:
     void drawSlice( int sliceNum, double zoomRate, QPoint offset );
     void drawShape( Selection::m4dShape<int>& s, bool last, int sliceNum, float zoomRate );
 
-    typedef void (M4D::Viewer::m4dSliceViewerWidget::*ButtonMethods)( int amount1, int amount2 );
-    typedef void (M4D::Viewer::m4dSliceViewerWidget::*SelectMethods)( int x, int y, int z );
+    typedef void (M4D::Viewer::m4dGUISliceViewerWidget::*ButtonMethods)( int amount1, int amount2 );
+    typedef void (M4D::Viewer::m4dGUISliceViewerWidget::*SelectMethods)( int x, int y, int z );
     
     Imaging::InputPortAbstractImage		_inPort;
 

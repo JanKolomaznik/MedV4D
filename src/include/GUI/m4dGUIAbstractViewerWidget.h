@@ -1,5 +1,5 @@
-#ifndef _M4DABSTRACTVIEWERWIDGET_H
-#define _M4DABSTRACTVIEWERWIDGET_H
+#ifndef _M4DGUIABSTRACTVIEWERWIDGET_H
+#define _M4DGUIABSTRACTVIEWERWIDGET_H
 
 #include "Common.h"
 #include <QWidget>
@@ -35,13 +35,13 @@ namespace M4D
 namespace Viewer
 {
 
-class m4dAbstractViewerWidget : public QObject
+class m4dGUIAbstractViewerWidget : public QObject
 {
     Q_OBJECT
 
 public:
-    m4dAbstractViewerWidget() { }
-    virtual ~m4dAbstractViewerWidget() { }
+    m4dGUIAbstractViewerWidget() { }
+    virtual ~m4dGUIAbstractViewerWidget() { }
     
     typedef enum { zoomI, moveI, adjust_bc, switch_slice, new_point, new_shape } ButtonHandler;
     typedef enum { rgba_unsigned_byte, grayscale_unsigned_byte, grayscale_unsigned_short } ColorMode;

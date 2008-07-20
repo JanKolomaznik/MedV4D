@@ -1,5 +1,5 @@
-#ifndef M4D_GUI_VTK_RENDER_WINDOW_WIDGET_H
-#define M4D_GUI_VTK_RENDER_WINDOW_WIDGET_H
+#ifndef M4D_GUI_VTK_VIEWER_WIDGET_H
+#define M4D_GUI_VTK_VIEWER_WIDGET_H
 
 #include <QWidget>
 #include "QVTKWidget.h"
@@ -13,12 +13,12 @@
 #include "dicomConn/DICOMServiceProvider.h"
 
 
-class m4dGUIVtkRenderWindowWidget: public QVTKWidget
+class m4dGUIVtkViewerWidget: public QVTKWidget
 {
   Q_OBJECT
 
   public:
-    m4dGUIVtkRenderWindowWidget ( QVTKWidget *parent = 0 );
+    m4dGUIVtkViewerWidget ( QVTKWidget *parent = 0 );
 
     void addRenderer ( vtkRenderer *ren );
 
@@ -32,5 +32,5 @@ class m4dGUIVtkRenderWindowWidget: public QVTKWidget
     vtkRenderer *dicomToRenderWindow ( const char *dirName );
 };
 
-#endif // M4D_GUI_VTK_RENDER_WINDOW_WIDGET_H
+#endif // M4D_GUI_VTK_VIEWER_WIDGET_H
 

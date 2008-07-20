@@ -1,4 +1,4 @@
-#include "GUI/m4dGUIVtkRenderWindowWidget.h"
+#include "GUI/m4dGUIVtkViewerWidget.h"
 
 #include <QtGui>
 
@@ -27,12 +27,12 @@
 using namespace M4D::vtkIntegration;
 
 
-m4dGUIVtkRenderWindowWidget::m4dGUIVtkRenderWindowWidget ( QVTKWidget *parent )
+m4dGUIVtkViewerWidget::m4dGUIVtkViewerWidget ( QVTKWidget *parent )
   : QVTKWidget( parent )
 {}
 
 
-void m4dGUIVtkRenderWindowWidget::addRenderer ( vtkRenderer *renderer )
+void m4dGUIVtkViewerWidget::addRenderer ( vtkRenderer *renderer )
 { 
   vtkRenderWindow *rWin;
   rWin = GetRenderWindow();
@@ -49,7 +49,7 @@ void m4dGUIVtkRenderWindowWidget::addRenderer ( vtkRenderer *renderer )
 }
 
 
-vtkRenderer *m4dGUIVtkRenderWindowWidget::imageDataToRenderWindow ()
+vtkRenderer *m4dGUIVtkViewerWidget::imageDataToRenderWindow ()
 {
   m4dImageDataSource *imageData = m4dImageDataSource::New();
 
@@ -92,7 +92,7 @@ vtkRenderer *m4dGUIVtkRenderWindowWidget::imageDataToRenderWindow ()
 
 
 // just for testing ImageFactory::CreateImageFromDICOM 
-vtkRenderer *m4dGUIVtkRenderWindowWidget::imageDataToRenderWindow ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects )
+vtkRenderer *m4dGUIVtkViewerWidget::imageDataToRenderWindow ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects )
 {
   m4dImageDataSource *imageData = m4dImageDataSource::New();
   M4D::Imaging::AbstractImage::AImagePtr visualizedImage = 
@@ -141,7 +141,7 @@ vtkRenderer *m4dGUIVtkRenderWindowWidget::imageDataToRenderWindow ( M4D::Dicom::
 
 
 // just for testing, won't be in real application
-vtkRenderer *m4dGUIVtkRenderWindowWidget::sphereToRenderWindow ()
+vtkRenderer *m4dGUIVtkViewerWidget::sphereToRenderWindow ()
 {
   // create sphere geometry
   vtkSphereSource *sphere = vtkSphereSource::New();
@@ -169,7 +169,7 @@ vtkRenderer *m4dGUIVtkRenderWindowWidget::sphereToRenderWindow ()
 
 
 // just for testing, won't be in real application
-vtkRenderer *m4dGUIVtkRenderWindowWidget::dicomToRenderWindow ( const char *dirName )
+vtkRenderer *m4dGUIVtkViewerWidget::dicomToRenderWindow ( const char *dirName )
 {
   vtkDICOMImageReader *reader = vtkDICOMImageReader::New();
   reader->SetDirectoryName( dirName ); 
