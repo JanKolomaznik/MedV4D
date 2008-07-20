@@ -11,29 +11,37 @@ using namespace M4D::Viewer;
 
 
 /// Number of abstract viewer's actions (toolBar buttons) - first is for all unplugged slots (it's not in toolBar)
-#define VIEWER_ACTIONS_NUMBER       4
+#define VIEWER_ACTIONS_NUMBER       8
 
-const char *m4dGUIMainWindow::actionIconNames[] = { "empty.png", "window-level.png", "zoom.png", "info.png"  };
+const char *m4dGUIMainWindow::actionIconNames[] = { "empty.png", "window-level.png", "empty.png", "zoom.png", 
+                                                    "stack.png", "info.png", "point.png", "shape.png"  };
 
-const char *m4dGUIMainWindow::actionTexts[] = { "No Action", "Window/Level (Right Mouse)", "Zoom (Right Mouse)", 
-                                                "Toggle Overlay"  };
+const char *m4dGUIMainWindow::actionTexts[] = { "No Action", "Window/Level (Right Mouse)", "Pan (Left Mouse)", 
+                                                "Zoom (Right Mouse)", "Stack (Right Mouse)", "Toggle Overlay",
+                                                "New Point (Left Mouse)", "New Shape (Left Mouse)" };
 
-const bool  m4dGUIMainWindow::actionCheckables[] = { false, true, true, false };
+const bool  m4dGUIMainWindow::actionCheckables[] = { false, true, true, true, true, false, true, true };
 
-const bool  m4dGUIMainWindow::actionRightButtons[] = { false, true, true, false };
+const bool  m4dGUIMainWindow::actionRightButtons[] = { false, true, false, true, true, false, false, false };
 
-const char *m4dGUIMainWindow::actionShortCuts[] = { "", "Ctrl+W", "Ctrl+Z", "Ctrl+T"  };
+const char *m4dGUIMainWindow::actionShortCuts[] = { "", "Ctrl+W", "Ctrl+P", "Ctrl+Z", "Ctrl+A", "Ctrl+T",
+                                                    "Ctrl+I", "Ctrl+H" };
 
 const char *m4dGUIMainWindow::actionStatusTips[] = { "Action for all unplugget available slots", 
                                                      "Adjust the brightness and/or contrast of the image", 
+                                                     "Reposition the images in the window",
                                                      "Increase or decrease the image's field of view",
-                                                     "Hide or display the study information"  };
+                                                     "Scroll through images within a series",
+                                                     "Hide or display the study information",
+                                                     "Create a new point",
+                                                     "Start a new shape (end the previous one)" };
 
-const char *m4dGUIMainWindow::actionSlots[] = { SLOT(empty()), SLOT(slotWindowLevel()), SLOT(slotZoom()), 
-                                                SLOT(slotOverlay()) };
+const char *m4dGUIMainWindow::actionSlots[] = { SLOT(empty()), SLOT(slotWindowLevel()), SLOT(slotPan()),
+                                                SLOT(slotZoom()), SLOT(slotStack()), SLOT(slotOverlay()),
+                                                SLOT(slotNewPoint()), SLOT(slotNewShape()) };
 
-const int   m4dGUIMainWindow::slotsToActions[] = { 0, 0, 0, 0, 0, 2, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
-                                                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3 };
+const int   m4dGUIMainWindow::slotsToActions[] = { 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 3, 2,
+                                                   1, 6, 7, 0, 0, 0, 0, 0 };
 
 m4dGUIMainWindow::m4dGUIMainWindow ( const char *title, const QIcon &icon )
 {
@@ -126,10 +134,10 @@ void m4dGUIMainWindow::layout ()
 
 void m4dGUIMainWindow::features ()
 {
-  m4dAbstractViewerWidget *viewer = mainViewerDesktop->getSelectedViewer();
-  m4dAbstractViewerWidget::AvailableSlots availableFeatures = viewer->getAvailableSlots();
+  m4dGUIAbstractViewerWidget *viewer = mainViewerDesktop->getSelectedViewer();
+  m4dGUIAbstractViewerWidget::AvailableSlots availableFeatures = viewer->getAvailableSlots();
 
-  for ( m4dAbstractViewerWidget::AvailableSlots::iterator it = availableFeatures.begin(); 
+  for ( m4dGUIAbstractViewerWidget::AvailableSlots::iterator it = availableFeatures.begin(); 
         it != availableFeatures.end(); 
         it++ ) {
     viewerActs[slotsToActions[*it]]->setEnabled( true ); 
@@ -241,8 +249,10 @@ void m4dGUIMainWindow::createActions ()
     
     viewerActs[i]->setEnabled( false );
     
-    actionRightButtons[i] && actionCheckables[i] ? rightButtonGroup->addAction( viewerActs[i] ) :
-                                                   leftButtonGroup->addAction( viewerActs[i] );
+    if ( actionCheckables[i] ) {
+      actionRightButtons[i] ? rightButtonGroup->addAction( viewerActs[i] ) :
+                              leftButtonGroup->addAction( viewerActs[i] );
+    }
   }
   // update availability of features (according to selected viewer - first one is init.)
   features();

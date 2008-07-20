@@ -3,8 +3,6 @@
 
 #include <QWidget>
 
-#include "GUI/m4dGUIVtkRenderWindowWidget.h"
-
 // DICOM includes:
 #include "Common.h"          // M4DDICOMServiceProvider.h needs it (FIXME?)
 #include "dicomConn/DICOMServiceProvider.h"

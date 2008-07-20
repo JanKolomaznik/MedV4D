@@ -3,9 +3,9 @@
 
 #include <QtGui>
 
-#include "GUI/m4dAbstractViewerWidget.h"
-#include "GUI/m4dSliceViewerWidget.h"
-#include "GUI/m4dGUIVtkRenderWindowWidget.h"
+#include "GUI/m4dGUIAbstractViewerWidget.h"
+#include "GUI/m4dGUISliceViewerWidget.h"
+#include "GUI/m4dGUIVtkViewerWidget.h"
 
 
 /**
@@ -35,10 +35,10 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
      */
     void setDesktopLayout( const int rows, const int columns );
 
-    M4D::Viewer::m4dAbstractViewerWidget *getSelectedViewer() { return selectedViewer; }
+    M4D::Viewer::m4dGUIAbstractViewerWidget *getSelectedViewer() { return selectedViewer; }
 
 
-    m4dGUIVtkRenderWindowWidget *getVtkRenderWindowWidget() { return vtkRenderWindowWidget; }
+    m4dGUIVtkViewerWidget *getVtkRenderWindowWidget() { return vtkRenderWindowWidget; }
 
   private slots:
     void selectedChanged ( unsigned index );
@@ -48,14 +48,14 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
 
   private:
 
-    m4dGUIVtkRenderWindowWidget *vtkRenderWindowWidget;
-    M4D::Viewer::m4dSliceViewerWidget *glWidget;
+    m4dGUIVtkViewerWidget *vtkRenderWindowWidget;
+    M4D::Viewer::m4dGUISliceViewerWidget *glWidget;
 
     M4D::Imaging::Image< uint32, 3 >::Ptr inputImage;
     M4D::Imaging::ImageConnectionSimple< M4D::Imaging::Image< uint32, 3 > > prodconn;
 
-    std::vector< M4D::Viewer::m4dAbstractViewerWidget * > viewers;
-    M4D::Viewer::m4dAbstractViewerWidget *selectedViewer;
+    std::vector< M4D::Viewer::m4dGUIAbstractViewerWidget * > viewers;
+    M4D::Viewer::m4dGUIAbstractViewerWidget *selectedViewer;
 };
 
 #endif // M4D_GUI_MAIN_VIEWER_DESKTOP_H

@@ -20,7 +20,7 @@ m4dGUIMainViewerDesktopWidget::m4dGUIMainViewerDesktopWidget ( QWidget *parent )
 
   QSplitter *splitter = new QSplitter();
 
-  vtkRenderWindowWidget = new m4dGUIVtkRenderWindowWidget;
+  vtkRenderWindowWidget = new m4dGUIVtkViewerWidget;
   vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->sphereToRenderWindow() );
   splitter->addWidget( vtkRenderWindowWidget );
 
@@ -44,7 +44,7 @@ m4dGUIMainViewerDesktopWidget::m4dGUIMainViewerDesktopWidget ( QWidget *parent )
 
 	prodconn.PutImage( inputImage );
 
-  glWidget = new m4dSliceViewerWidget( 1 );
+  glWidget = new m4dGUISliceViewerWidget( 1 );
   
   splitter->addWidget( glWidget );
 
@@ -70,8 +70,8 @@ void m4dGUIMainViewerDesktopWidget::setDesktopLayout( const int rows, const int 
   {
     for ( unsigned i = 0; i < difference; i++ ) 
     {
-      m4dSliceViewerWidget *widget = new m4dSliceViewerWidget( viewersSize + i );
-      connect( (m4dAbstractViewerWidget *)widget, SIGNAL(signalSetSelected( unsigned, bool )), this, SLOT(selectedChanged( unsigned )) );
+      m4dGUISliceViewerWidget *widget = new m4dGUISliceViewerWidget( viewersSize + i );
+      connect( (m4dGUIAbstractViewerWidget *)widget, SIGNAL(signalSetSelected( unsigned, bool )), this, SLOT(selectedChanged( unsigned )) );
       viewers.push_back( widget );
     }
   }
