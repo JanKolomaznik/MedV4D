@@ -15,12 +15,13 @@ NAME=		FilteringTest
 #Names of target sources
 TARGETS=	main
 
-M4DLIBS=	../../lib/libm4dWidgets.a\
-		../../lib/libImaging.a\
-		../../lib/libvtkIntegration.a\
-		../../lib/libbackendForDICOM.a\
+M4DLIBS=	../../lib/libImaging.a\
 		../../lib/libcommon.a
 
+	#../../lib/libm4dWidgets.a\
+		../../lib/libvtkIntegration.a\
+		../../lib/libbackendForDICOM.a\
+	
 QTLIBS=		-lQtCore\
 		-lQtGui
 VTKLIBS=	-lvtkCommon\

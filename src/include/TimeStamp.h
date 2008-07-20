@@ -40,6 +40,12 @@ public:
 
 	bool
 	operator>=( const TimeStamp& b )const;
+
+	bool
+	operator==( const TimeStamp& b )const;
+
+	bool
+	operator!=( const TimeStamp& b )const;
 private:
 	static uint64
 	GenerateUniqueID();

@@ -192,7 +192,7 @@ Image< ElementType, 3 >::Image()
 
 template< typename ElementType >
 Image< ElementType, 3 >::Image( AbstractImageData::APtr imageData )
-: AbstractImage( 3, _dimExtents )
+: AbstractImage( Dimension, _dimExtents )
 {
 	try 
 	{
@@ -210,7 +210,7 @@ Image< ElementType, 3 >::Image( AbstractImageData::APtr imageData )
 
 template< typename ElementType >
 Image< ElementType, 3 >::Image( typename ImageDataTemplate< ElementType >::Ptr imageData )
-: AbstractImage( 3, _dimExtents )
+: AbstractImage( Dimension, _dimExtents )
 {
 	_imageData = imageData;
 	

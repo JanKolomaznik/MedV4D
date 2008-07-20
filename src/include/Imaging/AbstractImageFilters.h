@@ -64,7 +64,12 @@ protected:
 
 
 	const InputImage	*in;
+	Common::TimeStamp	_inTimestamp;
+
 	OutputImage		*out;
+	Common::TimeStamp	_outTimestamp;
+
+	
 private:
 	/**
 	 * Prohibition of copying.

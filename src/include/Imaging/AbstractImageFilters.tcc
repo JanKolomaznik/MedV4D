@@ -10,13 +10,14 @@ namespace Imaging
 
 template< typename InputImageType, typename OutputImageType >
 ImageFilter< InputImageType, OutputImageType >::ImageFilter()
+: in( NULL ), _inTimestamp( Common::DefaultTimeStamp ), out( NULL ), _outTimestamp( Common::DefaultTimeStamp )
 {
-	M4D::Imaging::InputPort *in = new InputPortType();
-	M4D::Imaging::OutputPort *out = new OutputPortType();
+	M4D::Imaging::InputPort *inPort = new InputPortType();
+	M4D::Imaging::OutputPort *outPort = new OutputPortType();
 
 	//TODO - check whether OK
-	_inputPorts.AddPort( in );
-	_outputPorts.AddPort( out );
+	_inputPorts.AddPort( inPort );
+	_outputPorts.AddPort( outPort );
 }
 
 template< typename InputImageType, typename OutputImageType >
@@ -68,7 +69,28 @@ ImageFilter< InputImageType, OutputImageType >
 {
 	//TODO
 	PredecessorType::BeforeComputation( utype );	
+	
+	//TODO - check
+	this->in = &(this->GetInputImage());
+	this->out = &(this->GetOutputImage());
 
+	D_PRINT( "Input Image : " << this->in );
+	D_PRINT( "Output Image : " << this->out );
+
+	Common::TimeStamp inTS = in->GetStructureTimestamp();
+	Common::TimeStamp outTS = in->GetStructureTimestamp();
+
+	if ( 
+		!inTS.IdenticalID( _inTimestamp ) ||
+		inTS != _inTimestamp ||
+		!outTS.IdenticalID( _outTimestamp ) ||
+		outTS != _outTimestamp 
+	) {
+		utype = AbstractPipeFilter::RECALCULATION;
+		_inTimestamp = inTS;
+		_outTimestamp = outTS;
+		PrepareOutputDatasets();
+	}
 }
 
 template< typename InputImageType, typename OutputImageType >
@@ -77,6 +99,7 @@ ImageFilter< InputImageType, OutputImageType >
 ::PrepareOutputDatasets()
 {
 	PredecessorType::PrepareOutputDatasets();
+
 }
 
 

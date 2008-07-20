@@ -84,6 +84,22 @@ TimeStamp::operator>=( const TimeStamp& b )const
 	return this->_timeStamp >= b._timeStamp;
 }
 
+bool
+TimeStamp::operator==( const TimeStamp& b )const
+{
+
+	//TODO - check if locking needed
+	return this->_timeStamp == b._timeStamp;
+}
+
+bool
+TimeStamp::operator!=( const TimeStamp& b )const
+{
+
+	//TODO - check if locking needed
+	return this->_timeStamp != b._timeStamp;
+}
+
 uint64
 TimeStamp::GenerateUniqueID()
 {

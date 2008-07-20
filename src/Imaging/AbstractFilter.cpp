@@ -310,7 +310,7 @@ AbstractPipeFilter::InputDatasetStartModificationMsgHandler( MsgFilterStartModif
  void
 AbstractPipeFilter::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
 {
-	PrepareOutputDatasets();
+	//PrepareOutputDatasets();
 }
 
 void

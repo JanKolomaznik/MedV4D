@@ -248,7 +248,7 @@ protected:
 	 * Hidden default constructor - we don't allow direct
 	 * construction of object of this class.
 	 **/
-	ImageConnection() {}
+	ImageConnection() {};
 	
 	ImageConnection( typename Image::Ptr image ) 
 		: _image( image ) {}

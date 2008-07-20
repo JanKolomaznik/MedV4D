@@ -146,7 +146,7 @@ SimpleThresholdingImageFilter< Image< InputElementType, 3 > >
 
 template< typename InputElementType >
 SimpleConvolutionImageFilter< Image< InputElementType, 3 > >
-::SimpleConvolutionImageFilter()
+::SimpleConvolutionImageFilter() : PredecessorType( 0, 5 ) //TODO - constructor
 {
 	_side = 5;
 	_matrix = new float[ _side * _side ];

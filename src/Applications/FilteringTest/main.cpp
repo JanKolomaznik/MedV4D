@@ -12,29 +12,33 @@ using namespace std;
 
 typedef Image< int16, 3 > Image3DType;
 typedef Image< int16, 2 > Image2DType;
-typedef ImageConnectionSimple< Image3DType > ProducerConn;
-typedef ImageConnectionSimple< Image2DType > ConsumerConn;
-typedef ImageConnectionImOwner< Image3DType > InterConn;
+typedef ImageConnectionSimple< Image3DType > Conn3D;
+typedef ImageConnectionSimple< Image2DType > Conn2D;
+typedef ImageConnectionImOwner< Image3DType > InterConn3D;
 
 int
 main( int argc, char** argv )
 {
 	LOG( "** STARTING FILTERING TESTS **" );
 	CopyImageFilter< Image3DType, Image3DType > copyfilter;
-	ColumnMaxImageFilter< int16 > maxfilter;
-	maxfilter.SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_UPDATE_FINISHED );
+	//ColumnMaxImageFilter< int16 > maxfilter;
+	//maxfilter.SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_UPDATE_FINISHED );
+	SimpleConvolutionImageFilter< Image3DType > convolution;
+	convolution.SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_UPDATE_FINISHED );
 
-	ProducerConn prodconn;
-	ConsumerConn consconn;
-	InterConn interconn;
+	Conn3D prodconn;
+	//Conn2D consconn;
+	Conn3D consconn;
+	InterConn3D interconn;
 
 	Image3DType::Ptr inputImage = ImageFactory::CreateEmptyImage3DTyped< int16 >( 50,50,50 );
-	Image2DType::Ptr outputImage = ImageFactory::CreateEmptyImage2DTyped< int16 >( 10,10 );
+	//Image2DType::Ptr outputImage = ImageFactory::CreateEmptyImage2DTyped< int16 >( 10,10 );
+	Image3DType::Ptr outputImage = ImageFactory::CreateEmptyImage3DTyped< int16 >( 10,10, 10 );
 
 	prodconn.ConnectConsumer( copyfilter.InputPort()[0] );
 	interconn.ConnectProducer( copyfilter.OutputPort()[0] );
-	interconn.ConnectConsumer( maxfilter.InputPort()[0] );
-	consconn.ConnectProducer( maxfilter.OutputPort()[0] );
+	interconn.ConnectConsumer( convolution.InputPort()[0] );
+	consconn.ConnectProducer( convolution.OutputPort()[0] );
 
 	prodconn.PutImage( inputImage );
 	consconn.PutImage( outputImage );
