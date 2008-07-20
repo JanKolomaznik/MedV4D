@@ -26,9 +26,10 @@
 #define NEWSHAPE		18
 #define DELETEPOINT		19
 #define DELETESHAPE		20
-#define ROTATEAXISX		21
-#define ROTATEAXISY		22
-#define ROTATEAXISZ		23
+#define DELETEALL		21
+#define ROTATEAXISX		22
+#define ROTATEAXISY		23
+#define ROTATEAXISZ		24
 
 namespace M4D
 {
