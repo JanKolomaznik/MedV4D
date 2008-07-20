@@ -1,8 +1,13 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
     <file>../icons/app.png</file>
+    <file>../icons/clear-point.png</file>
+    <file>../icons/clear-shape.png</file>
+    <file>../icons/clear-all.png</file>
     <file>../icons/empty.png</file>
     <file>../icons/exit.png</file>
+    <file>../icons/flip-hor.png</file>
+    <file>../icons/flip-vert.png</file>
     <file>../icons/info.png</file>
     <file>../icons/layout.png</file>
     <file>../icons/open.png</file>

@@ -11,22 +11,28 @@ using namespace M4D::Viewer;
 
 
 /// Number of abstract viewer's actions (toolBar buttons) - first is for all unplugged slots (it's not in toolBar)
-#define VIEWER_ACTIONS_NUMBER       8
-
+#define VIEWER_ACTIONS_NUMBER       13
 
 const char *m4dGUIMainWindow::actionIconNames[] = { "empty.png", "window-level.png", "empty.png", "zoom.png", 
-                                                    "stack.png", "info.png", "point.png", "shape.png"  };
+                                                    "stack.png", "info.png", "point.png", "shape.png", "clear-point.png",
+                                                    "clear-shape.png", "clear-all.png", "flip-hor.png", "flip-vert.png" };
 
 const char *m4dGUIMainWindow::actionTexts[] = { "No Action", "Window/Level (Right Mouse)", "Pan (Left Mouse)", 
                                                 "Zoom (Right Mouse)", "Stack (Right Mouse)", "Toggle Overlay",
-                                                "New Point (Left Mouse)", "New Shape (Left Mouse)" };
+                                                "New Point (Left Mouse)", "New Shape (Left Mouse)", "Clear Point",
+                                                "Clear Shape", "Clear All Points/Shapes", "Flip Horizontal", "Flip Vertical"};
 
-const bool  m4dGUIMainWindow::actionCheckables[] = { false, true, true, true, true, false, true, true };
+// information also used for weather the connection is direct to the viewer
+const bool  m4dGUIMainWindow::actionCheckables[] = { false, true, true, true, true, false, true, true, false, 
+                                                     false, false, false, false };
 
-const bool  m4dGUIMainWindow::actionRightButtons[] = { false, true, false, true, true, false, false, false };
+const bool  m4dGUIMainWindow::actionRightButtons[] = { false, true, false, true, true, false, false, false, false,
+                                                       false, false, false, false };
 
+/* ?? */
 const char *m4dGUIMainWindow::actionShortCuts[] = { "", "Ctrl+W", "Ctrl+P", "Ctrl+Z", "Ctrl+A", "Ctrl+T",
-                                                    "Ctrl+I", "Ctrl+H" };
+                                                    "Ctrl+I", "Ctrl+H", "Ctrl+N", "Ctrl+E", "Ctrl+A",
+                                                    "Ctrl+R", "Ctrl+V" };
 
 const char *m4dGUIMainWindow::actionStatusTips[] = { "Action for all unplugget available slots", 
                                                      "Adjust the brightness and/or contrast of the image", 
@@ -35,14 +41,21 @@ const char *m4dGUIMainWindow::actionStatusTips[] = { "Action for all unplugget a
                                                      "Scroll through images within a series",
                                                      "Hide or display the study information",
                                                      "Create a new point",
-                                                     "Start a new shape (end the previous one)" };
+                                                     "Start a new shape (end the previous one)",
+                                                     "Clear last created point",
+                                                     "Clear last created shape",
+                                                     "Clear all selections (points, shapes)",
+                                                     "Flip the selected image from left to right about the vertical axis",
+                                                     "Flip the selected image from top to bottom about the horizontal axis" };
 
-const char *m4dGUIMainWindow::actionSlots[] = { SLOT(empty()), SLOT(slotWindowLevel()), SLOT(slotPan()),
-                                                SLOT(slotZoom()), SLOT(slotStack()), SLOT(slotOverlay()),
-                                                SLOT(slotNewPoint()), SLOT(slotNewShape()) };
+const char *m4dGUIMainWindow::actionSlots[] = { SLOT(empty()), SLOT(viewerWindowLevel()), SLOT(viewerPan()),
+                                                SLOT(viewerZoom()), SLOT(viewerStack()), SLOT(slotTogglePrintData()),
+                                                SLOT(viewerNewPoint()), SLOT(viewerNewShape()), SLOT(slotDeletePoint()),
+                                                SLOT(slotDeleteShape()), SLOT(slotDeleteAll()), SLOT(slotToggleFlipHorizontal()),
+                                                SLOT(slotToggleFlipVertical()) };
 
-const int   m4dGUIMainWindow::slotsToActions[] = { 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 3, 2,
-                                                   1, 6, 7, 0, 0, 0, 0, 0 };
+const int   m4dGUIMainWindow::slotsToActions[] = { 0, 0, 4, 0, 0, 12, 11, 0, 0, 0, 0, 0, 0, 5, 3, 2,
+                                                   1, 6, 7, 8, 9, 10, 0, 0, 0 };
 
 m4dGUIMainWindow::m4dGUIMainWindow ( const char *title, const QIcon &icon )
 {
@@ -52,6 +65,10 @@ m4dGUIMainWindow::m4dGUIMainWindow ( const char *title, const QIcon &icon )
   setCentralWidget( centralWidget );
 
   createMainViewerDesktop();
+  connect( this, 
+           SIGNAL(toolChanged( m4dGUIAbstractViewerWidget::ButtonHandler, m4dGUIAbstractViewerWidget::MouseButton )), 
+           mainViewerDesktop->getSelectedViewer(),
+           SLOT(slotSetButtonHandler( m4dGUIAbstractViewerWidget::ButtonHandler, m4dGUIAbstractViewerWidget::MouseButton )) );
 
   createActions();
   createMenus();
@@ -127,9 +144,45 @@ void m4dGUIMainWindow::status ()
 }
 
 
-void m4dGUIMainWindow::layout ()
+void m4dGUIMainWindow::viewerWindowLevel ()
 {
-  screenLayoutDialog->show();
+  emit toolChanged( m4dGUIAbstractViewerWidget::adjust_bc,
+                    m4dGUIAbstractViewerWidget::right );
+}
+
+
+void m4dGUIMainWindow::viewerPan ()
+{
+  emit toolChanged( m4dGUIAbstractViewerWidget::moveI,
+                    m4dGUIAbstractViewerWidget::left );
+}
+
+
+void m4dGUIMainWindow::viewerZoom ()
+{
+  emit toolChanged( m4dGUIAbstractViewerWidget::zoomI,
+                    m4dGUIAbstractViewerWidget::right );
+}
+
+
+void m4dGUIMainWindow::viewerStack ()
+{
+  emit toolChanged( m4dGUIAbstractViewerWidget::switch_slice,
+                    m4dGUIAbstractViewerWidget::right );
+}
+
+
+void m4dGUIMainWindow::viewerNewPoint ()
+{
+  emit toolChanged( m4dGUIAbstractViewerWidget::new_point,
+                    m4dGUIAbstractViewerWidget::left );
+}
+
+
+void m4dGUIMainWindow::viewerNewShape ()
+{
+  emit toolChanged( m4dGUIAbstractViewerWidget::new_shape,
+                    m4dGUIAbstractViewerWidget::left );
 }
 
 
@@ -143,6 +196,18 @@ void m4dGUIMainWindow::features ()
         it++ ) {
     viewerActs[slotsToActions[*it]]->setEnabled( true ); 
   }
+}
+
+
+void m4dGUIMainWindow::layout ()
+{
+  screenLayoutDialog->show();
+}
+
+
+void m4dGUIMainWindow::swap ()
+{
+  // mainViewerDesktop->getSelectedViewer(); 
 }
 
 
@@ -246,7 +311,12 @@ void m4dGUIMainWindow::createActions ()
     viewerActs[i]->setShortcut( tr( actionShortCuts[i] ) );
     viewerActs[i]->setStatusTip( tr( actionStatusTips[i] ) );
     
-    connect( viewerActs[i], SIGNAL(triggered()), mainViewerDesktop->getSelectedViewer(), actionSlots[i] );
+    if ( actionCheckables[i] ) {
+      connect( viewerActs[i], SIGNAL(triggered()), this, actionSlots[i] );
+    }
+    else {
+      connect( viewerActs[i], SIGNAL(triggered()), mainViewerDesktop->getSelectedViewer(), actionSlots[i] );
+    }
     
     viewerActs[i]->setEnabled( false );
     

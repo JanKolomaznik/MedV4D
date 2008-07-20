@@ -38,8 +38,19 @@ class m4dGUIMainWindow: public QMainWindow
     void open ();
     void size ();
     void status ();
-    void layout ();
+    void viewerWindowLevel ();
+    void viewerPan ();
+    void viewerZoom ();
+    void viewerStack ();
+    void viewerNewPoint ();
+    void viewerNewShape ();
     void features ();
+    void layout (); 
+    void swap ();
+
+  signals:
+    void toolChanged ( M4D::Viewer::m4dGUIAbstractViewerWidget::ButtonHandler, 
+                       M4D::Viewer::m4dGUIAbstractViewerWidget::MouseButton );
 
   private:
 
