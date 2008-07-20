@@ -9,14 +9,31 @@
 #include "GUI/m4dGUIScreenLayoutWidget.h"
 
 
+/**
+ * @class m4dGUIMainWindow m4dGUIMainWindow.h
+ * Class representing the Main Window - containing all basic dialogs, viewer desktop
+ * with various viewers and layout managing, adaptive toolBars, menus - all with uniform look.
+ *
+ * Specific applications should derive from this class and reimplement it's methods (e.g. view) 
+ * or extend it's functionality (e.g. add new widgets).
+ */
 class m4dGUIMainWindow: public QMainWindow
 {
   Q_OBJECT
 
   public:
+
+    /** 
+     * Main Window constructor.
+     *
+     * @param title title of the main window, application
+     * @param icon reference to the icon of the main window, application - default
+     * is universal app.png from incons directory
+     */
     m4dGUIMainWindow ( const char *title, const QIcon &icon = QIcon( ":/icons/app.png" ) );
 
   private slots:
+
     void search ();
     void open ();
     void size ();
@@ -25,6 +42,7 @@ class m4dGUIMainWindow: public QMainWindow
     void features ();
 
   private:
+
     void createMainViewerDesktop ();
     void createStudyManagerDialog ();
     void createScreenLayoutDialog ();
@@ -38,11 +56,13 @@ class m4dGUIMainWindow: public QMainWindow
     virtual void view ( M4D::Dicom::DcmProvider::DicomObjSet *dicomObjSet );
 
   protected:
+
     m4dGUIMainViewerDesktopWidget *mainViewerDesktop;
     m4dGUIStudyManagerWidget *studyManagerWidget;
     m4dGUIScreenLayoutWidget *screenLayoutWidget;
   
   private:
+
     static const char *actionIconNames[];
     static const char *actionTexts[];
     static const bool  actionCheckables[];
@@ -76,7 +96,7 @@ class m4dGUIMainWindow: public QMainWindow
     QMenu *fileMenu;
     QMenu *toolBarsMenu;
     QMenu *toolsMenu;
-    QMenu *viewMenu;  // name coll.
+    QMenu *viewMenu;
 };
 
 #endif // M4D_GUI_MAIN_WINDOW_H

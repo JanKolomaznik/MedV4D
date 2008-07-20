@@ -13,6 +13,7 @@ using namespace M4D::Viewer;
 /// Number of abstract viewer's actions (toolBar buttons) - first is for all unplugged slots (it's not in toolBar)
 #define VIEWER_ACTIONS_NUMBER       8
 
+
 const char *m4dGUIMainWindow::actionIconNames[] = { "empty.png", "window-level.png", "empty.png", "zoom.png", 
                                                     "stack.png", "info.png", "point.png", "shape.png"  };
 
