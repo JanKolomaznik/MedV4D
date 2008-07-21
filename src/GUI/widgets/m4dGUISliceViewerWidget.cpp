@@ -42,11 +42,6 @@ m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( Imaging::ImageConnection< Imag
     setInputPort( conn );
 }
 
-m4dGUISliceViewerWidget::~m4dGUISliceViewerWidget()
-{
-
-}
-
 void
 m4dGUISliceViewerWidget::setColorMode( ColorMode cm )
 {
@@ -222,6 +217,7 @@ m4dGUISliceViewerWidget::toggleFlipHorizontal()
     _flipH *= -1;
     emit signalToggleFlipVertical();
     updateGL();
+    updateGL();
 }
 
 void
@@ -229,6 +225,7 @@ m4dGUISliceViewerWidget::toggleFlipVertical()
 {
     _flipV *= -1;
     emit signalToggleFlipVertical();
+    updateGL();
     updateGL();
 }
 
