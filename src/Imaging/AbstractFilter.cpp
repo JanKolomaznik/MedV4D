@@ -150,6 +150,7 @@ void
 MainExecutionThread::operator()()
 {
 	D_BLOCK_COMMENT( "++++ Entering MainExecutionThread()", "----- Leaving MainExecutionThread()" );
+	D_PRINT( "++++ Filter = " << _filter ); 
 
 	//We want to do some steps before actual computing
 	_filter->BeforeComputation( _updateType );

@@ -67,6 +67,7 @@ ProxyReaderBBox::GetState()const
 		{
 			return state;
 		}
+		++_changeIterator;
 		
 	}
 	return MS_MODIFIED;

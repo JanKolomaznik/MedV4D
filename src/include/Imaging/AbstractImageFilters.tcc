@@ -249,8 +249,7 @@ ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 				++iterator 
 			){
 				D_PRINT( "xxxxxxxx" );
-				ReaderBBoxInterface &reader = **iterator;
-				if ( reader.GetTimeStamp() < this->_inEditTimestamp ) {
+				if ( this->_inEditTimestamp >= (**iterator).GetTimeStamp() ) {
 					break;
 				}
 			}
