@@ -65,9 +65,12 @@ protected:
 
 	const InputImage	*in;
 	Common::TimeStamp	_inTimestamp;
+	Common::TimeStamp	_inEditTimestamp;
+
 
 	OutputImage		*out;
 	Common::TimeStamp	_outTimestamp;
+	Common::TimeStamp	_outEditTimestamp;
 
 	
 private:

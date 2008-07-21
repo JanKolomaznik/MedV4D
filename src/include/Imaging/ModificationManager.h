@@ -51,7 +51,7 @@ public:
 		{ return *_boundingBox; }
 
 	virtual ModificationState
-	WaitWhileDirty();
+	WaitWhileDirty()const;
 
 protected:
 	Common::TimeStamp _changeTimestamp;
@@ -142,6 +142,8 @@ public:
 	typedef std::list< WriterBBoxInterface * > 	ChangeQueue;
 	typedef ChangeQueue::iterator			ChangeIterator;
 	typedef ChangeQueue::reverse_iterator		ChangeReverseIterator;
+	typedef ChangeQueue::const_iterator		ConstChangeIterator;
+	typedef ChangeQueue::const_reverse_iterator	ConstChangeReverseIterator;
 
 	ModificationManager();
 	
@@ -213,14 +215,34 @@ public:
 	ChangeIterator 
 	ChangesBegin();
 
+	ConstChangeIterator 
+	ChangesBegin()const;
+
 	ChangeIterator 
 	ChangesEnd();
+
+	ConstChangeIterator 
+	ChangesEnd()const;
 
 	ChangeReverseIterator 
 	ChangesReverseBegin();
 
+	ConstChangeReverseIterator 
+	ChangesReverseBegin()const;
+
 	ChangeReverseIterator 
 	ChangesReverseEnd();
+
+	ConstChangeReverseIterator 
+	ChangesReverseEnd()const;
+
+	Common::TimeStamp
+	GetLastStoredTimestamp()const
+		{ return _lastStoredTimestamp; }
+
+	Common::TimeStamp
+	GetActualTimestamp()const
+		{ return _actualTimestamp; }
 
 	void
 	Reset();
@@ -231,7 +253,7 @@ private:
 
 	ChangeQueue		_changes;
 
-	Multithreading::RecursiveMutex	_accessLock;
+	mutable Multithreading::RecursiveMutex	_accessLock;
 };
 
 class ProxyReaderBBox: public ReaderBBoxInterface
@@ -243,9 +265,9 @@ public:
 	GetState()const;
 
 	ModificationState
-	WaitWhileDirty();
+	WaitWhileDirty()const;
 protected:
-	ModificationManager::ChangeReverseIterator _changeIterator;
+	mutable ModificationManager::ChangeReverseIterator _changeIterator;
 };
 
 

@@ -10,7 +10,8 @@ namespace Imaging
 
 template< typename InputImageType, typename OutputImageType >
 ImageFilter< InputImageType, OutputImageType >::ImageFilter()
-: in( NULL ), _inTimestamp( Common::DefaultTimeStamp ), out( NULL ), _outTimestamp( Common::DefaultTimeStamp )
+:	in( NULL ), _inTimestamp( Common::DefaultTimeStamp ), _inEditTimestamp( Common::DefaultTimeStamp ), 
+	out( NULL ), _outTimestamp( Common::DefaultTimeStamp ), _outEditTimestamp( Common::DefaultTimeStamp )
 {
 	M4D::Imaging::InputPort *inPort = new InputPortType();
 	M4D::Imaging::OutputPort *outPort = new OutputPortType();
@@ -78,18 +79,31 @@ ImageFilter< InputImageType, OutputImageType >
 	D_PRINT( "Output Image : " << this->out );
 
 	Common::TimeStamp inTS = in->GetStructureTimestamp();
-	Common::TimeStamp outTS = in->GetStructureTimestamp();
+	Common::TimeStamp outTS = out->GetStructureTimestamp();
 
+	//Check whether structure of images changed
 	if ( 
-		!inTS.IdenticalID( _inTimestamp ) ||
-		inTS != _inTimestamp ||
-		!outTS.IdenticalID( _outTimestamp ) ||
-		outTS != _outTimestamp 
+		!inTS.IdenticalID( _inTimestamp )
+		|| inTS != _inTimestamp
+		|| !outTS.IdenticalID( _outTimestamp )
+		|| outTS != _outTimestamp 
 	) {
 		utype = AbstractPipeFilter::RECALCULATION;
 		_inTimestamp = inTS;
 		_outTimestamp = outTS;
 		PrepareOutputDatasets();
+	}
+	if( utype == AbstractPipeFilter::ADAPTIVE_CALCULATION ) {
+		Common::TimeStamp inEditTS = in->GetModificationManager().GetLastStoredTimestamp();
+		Common::TimeStamp outEditTS = out->GetModificationManager().GetActualTimestamp();
+		if( 
+			!inEditTS.IdenticalID( _inEditTimestamp ) 
+			|| !outEditTS.IdenticalID( _outEditTimestamp )
+			|| inEditTS > _inEditTimestamp 
+			|| outEditTS != _outEditTimestamp
+		) {
+			utype = AbstractPipeFilter::RECALCULATION;
+		}
 	}
 }
 
@@ -226,7 +240,17 @@ ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 		break;
 
 	case AbstractPipeFilter::ADAPTIVE_CALCULATION:
-		DL_PRINT( 5, "SliceFilter adaptive calculation" );
+		{
+			DL_PRINT( 5, "SliceFilter adaptive calculation" );
+			const ModificationManager &manager = this->in->GetModificationManager();
+			ModificationManager::ConstChangeReverseIterator iterator; 
+			for( 	iterator = manager.ChangesReverseBegin(); 
+				iterator != manager.ChangesReverseEnd() && ((*iterator)->GetTimeStamp()) < this->_inEditTimestamp; 
+				++iterator 
+			){
+				D_PRINT( "xxxxxxxx" );
+			}
+		}
 		break;
 	default:
 		ASSERT( false );

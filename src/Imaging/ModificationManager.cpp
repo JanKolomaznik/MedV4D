@@ -36,7 +36,7 @@ ReaderBBoxInterface::GetState()const
 }
 
 ModificationState
-ReaderBBoxInterface::WaitWhileDirty()
+ReaderBBoxInterface::WaitWhileDirty()const
 {
 	while( 1 ){
 		Multithreading::ScopedLock lock( _accessLock );
@@ -73,7 +73,7 @@ ProxyReaderBBox::GetState()const
 }
 
 ModificationState
-ProxyReaderBBox::WaitWhileDirty()
+ProxyReaderBBox::WaitWhileDirty()const
 {
 	ModificationState state = MS_MODIFIED;
 	//We check if previous wait - finished in MS_MODIFIED state (not in canceled), and
@@ -308,8 +308,26 @@ ModificationManager::ChangesBegin()
 	return _changes.begin();
 }
 
+ModificationManager::ConstChangeIterator 
+ModificationManager::ChangesBegin()const
+{
+	//TODO
+	Multithreading::RecursiveScopedLock lock( _accessLock );
+
+	return _changes.begin();
+}
+
 ModificationManager::ChangeIterator 
 ModificationManager::ChangesEnd()
+{
+	//TODO
+	Multithreading::RecursiveScopedLock lock( _accessLock );
+
+	return _changes.end();
+}
+
+ModificationManager::ConstChangeIterator 
+ModificationManager::ChangesEnd()const
 {
 	//TODO
 	Multithreading::RecursiveScopedLock lock( _accessLock );
@@ -326,6 +344,15 @@ ModificationManager::ChangesReverseBegin()
 	return _changes.rbegin();
 }
 
+ModificationManager::ConstChangeReverseIterator 
+ModificationManager::ChangesReverseBegin()const
+{
+	//TODO
+	Multithreading::RecursiveScopedLock lock( _accessLock );
+
+	return _changes.rbegin();
+}
+
 ModificationManager::ChangeReverseIterator 
 ModificationManager::ChangesReverseEnd()
 {
@@ -334,6 +361,16 @@ ModificationManager::ChangesReverseEnd()
 
 	return _changes.rend();
 }
+
+ModificationManager::ConstChangeReverseIterator 
+ModificationManager::ChangesReverseEnd()const
+{
+	//TODO
+	Multithreading::RecursiveScopedLock lock( _accessLock );
+
+	return _changes.rend();
+}
+
 
 void
 ModificationManager::Reset()

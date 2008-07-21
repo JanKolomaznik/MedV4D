@@ -189,6 +189,10 @@ public:
 			size_t x2, 
 			size_t y2 
 			)const;
+
+	const ModificationManager &
+	GetModificationManager()const;
+
 protected:
 	typename ImageDataTemplate< ElementType >::Ptr	_imageData;
 
@@ -316,6 +320,10 @@ public:
 			size_t y2, 
 			size_t z2 
 			)const;
+
+
+	const ModificationManager &
+	GetModificationManager()const;
 
 
 protected:
@@ -463,6 +471,10 @@ public:
 			size_t z2,
 			size_t t2
 			)const;
+
+	const ModificationManager &
+	GetModificationManager()const;
+
 protected:
 	typename ImageDataTemplate< ElementType >::Ptr	_imageData;
 

@@ -175,6 +175,51 @@ Image< ElementType, 2 >::GetRestricted2DImage(
 {
 
 }
+template< typename ElementType >
+WriterBBoxInterface &
+Image< ElementType, 2 >::SetDirtyBBox( 
+		size_t x1, 
+		size_t y1, 
+		size_t x2, 
+		size_t y2 
+		)
+{
+	ModificationManager & modManager = _imageData->GetModificationManager();
+
+	return modManager.AddMod2D( 
+				x1,
+				y1,
+				x2,
+				y2
+			);
+}
+
+template< typename ElementType >
+ReaderBBoxInterface::Ptr
+Image< ElementType, 2 >::GetDirtyBBox( 
+		size_t x1, 
+		size_t y1, 
+		size_t x2, 
+		size_t y2 
+		)const
+{
+	ModificationManager & modManager = _imageData->GetModificationManager();
+
+	return modManager.GetMod2D( 
+				x1,
+				y1,
+				x2,
+				y2
+			);
+}
+
+template< typename ElementType >
+const ModificationManager &
+Image< ElementType, 2 >::GetModificationManager()const
+{
+	return _imageData->GetModificationManager();
+}
+
 
 //*****************************************************************************
 
@@ -420,6 +465,14 @@ Image< ElementType, 3 >::GetDirtyBBox(
 			);
 }
 
+template< typename ElementType >
+const ModificationManager &
+Image< ElementType, 3 >::GetModificationManager()const
+{
+	return _imageData->GetModificationManager();
+}
+
+
 //*****************************************************************************
 
 
@@ -427,6 +480,13 @@ template< typename ElementType >
 Image< ElementType, 4 >::Image()
 {
 	_imageData = ImageDataTemplate< ElementType >::Ptr();
+}
+
+template< typename ElementType >
+const ModificationManager &
+Image< ElementType, 4 >::GetModificationManager()const
+{
+	return _imageData->GetModificationManager();
 }
 
 } /*namespace Imaging*/
