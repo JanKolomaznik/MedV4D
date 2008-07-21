@@ -49,6 +49,7 @@ class m4dGUIMainWindow: public QMainWindow
     void swap ();
 
   signals:
+    // clickable (left, right - exl.) tools changed -> change the handlers, buttons accordingly
     void toolChanged ( M4D::Viewer::m4dGUIAbstractViewerWidget::ButtonHandler, 
                        M4D::Viewer::m4dGUIAbstractViewerWidget::MouseButton );
 

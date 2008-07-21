@@ -111,6 +111,7 @@ void m4dGUIMainViewerDesktopWidget::setDesktopLayout( const int rows, const int 
 void m4dGUIMainViewerDesktopWidget::selectedChanged ( unsigned index )
 {
   selectedViewer->slotSetSelected( false );
+  prevSelectedViewer = selectedViewer;
   selectedViewer = viewers[index];
 
   emit propagateFeatures(); 

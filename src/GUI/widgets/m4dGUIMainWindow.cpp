@@ -65,11 +65,7 @@ m4dGUIMainWindow::m4dGUIMainWindow ( const char *title, const QIcon &icon )
   setCentralWidget( centralWidget );
 
   createMainViewerDesktop();
-  connect( this, 
-           SIGNAL(toolChanged( m4dGUIAbstractViewerWidget::ButtonHandler, m4dGUIAbstractViewerWidget::MouseButton )), 
-           mainViewerDesktop->getSelectedViewer(),
-           SLOT(slotSetButtonHandler( m4dGUIAbstractViewerWidget::ButtonHandler, m4dGUIAbstractViewerWidget::MouseButton )) );
-
+  
   createActions();
   createMenus();
   createToolBars();
@@ -188,6 +184,25 @@ void m4dGUIMainWindow::viewerNewShape ()
 
 void m4dGUIMainWindow::features ()
 {
+  disconnect( this, 
+              SIGNAL(toolChanged( m4dGUIAbstractViewerWidget::ButtonHandler, m4dGUIAbstractViewerWidget::MouseButton )), 
+              mainViewerDesktop->getPrevSelectedViewer(),
+              SLOT(slotSetButtonHandler( m4dGUIAbstractViewerWidget::ButtonHandler, m4dGUIAbstractViewerWidget::MouseButton )) );
+
+  connect( this, 
+           SIGNAL(toolChanged( m4dGUIAbstractViewerWidget::ButtonHandler, m4dGUIAbstractViewerWidget::MouseButton )), 
+           mainViewerDesktop->getSelectedViewer(),
+           SLOT(slotSetButtonHandler( m4dGUIAbstractViewerWidget::ButtonHandler, m4dGUIAbstractViewerWidget::MouseButton )) );
+
+  for ( unsigned i = 0; i < VIEWER_ACTIONS_NUMBER; i++ ) 
+  {
+    if ( !actionCheckables[i] )
+    {
+      disconnect( viewerActs[i], SIGNAL(triggered()), mainViewerDesktop->getPrevSelectedViewer(), actionSlots[i] );
+      connect( viewerActs[i], SIGNAL(triggered()), mainViewerDesktop->getSelectedViewer(), actionSlots[i] );
+    }
+  }
+
   m4dGUIAbstractViewerWidget *viewer = mainViewerDesktop->getSelectedViewer();
   m4dGUIAbstractViewerWidget::AvailableSlots availableFeatures = viewer->getAvailableSlots();
 
@@ -311,14 +326,11 @@ void m4dGUIMainWindow::createActions ()
     viewerActs[i]->setShortcut( tr( actionShortCuts[i] ) );
     viewerActs[i]->setStatusTip( tr( actionStatusTips[i] ) );
     
+    viewerActs[i]->setEnabled( false );
+
     if ( actionCheckables[i] ) {
       connect( viewerActs[i], SIGNAL(triggered()), this, actionSlots[i] );
     }
-    else {
-      connect( viewerActs[i], SIGNAL(triggered()), mainViewerDesktop->getSelectedViewer(), actionSlots[i] );
-    }
-    
-    viewerActs[i]->setEnabled( false );
     
     if ( actionCheckables[i] ) {
       actionRightButtons[i] ? rightButtonGroup->addAction( viewerActs[i] ) :

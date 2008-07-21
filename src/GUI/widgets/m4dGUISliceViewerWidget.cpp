@@ -144,6 +144,7 @@ m4dGUISliceViewerWidget::setParameters()
     _availableSlots.push_back( NEWSHAPE );
     _availableSlots.push_back( DELETEPOINT );
     _availableSlots.push_back( DELETESHAPE );
+    _availableSlots.push_back( DELETEALL );
     _leftSideData.clear();
     _rightSideData.clear();
 }

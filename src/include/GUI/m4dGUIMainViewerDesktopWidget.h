@@ -36,7 +36,7 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
     void setDesktopLayout( const int rows, const int columns );
 
     M4D::Viewer::m4dGUIAbstractViewerWidget *getSelectedViewer() { return selectedViewer; }
-
+    M4D::Viewer::m4dGUIAbstractViewerWidget *getPrevSelectedViewer() { return prevSelectedViewer; }
 
     m4dGUIVtkViewerWidget *getVtkRenderWindowWidget() { return vtkRenderWindowWidget; }
 
@@ -56,6 +56,7 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
 
     std::vector< M4D::Viewer::m4dGUIAbstractViewerWidget * > viewers;
     M4D::Viewer::m4dGUIAbstractViewerWidget *selectedViewer;
+    M4D::Viewer::m4dGUIAbstractViewerWidget *prevSelectedViewer;
 };
 
 #endif // M4D_GUI_MAIN_VIEWER_DESKTOP_H
