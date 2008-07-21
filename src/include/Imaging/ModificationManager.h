@@ -114,7 +114,7 @@ public:
 	~ModificationBBox() { delete [] _first;  delete [] _second; }
 
 	void
-	GetInterval( unsigned dim, int32 &first, int32 &second )
+	GetInterval( unsigned dim, int32 &first, int32 &second )const
 		{ 
 			if( dim >= _dimension )	{ 
 				/*TODO exception*/ 

@@ -122,6 +122,10 @@ void
 ImageFilter< InputImageType, OutputImageType >
 ::AfterComputation( bool successful )
 {
+	//We store actual timestamps of input and output - for next execution
+	_inEditTimestamp = in->GetModificationManager().GetActualTimestamp();
+	_outEditTimestamp = out->GetModificationManager().GetActualTimestamp();
+
 	this->ReleaseInputImage();
 	this->ReleaseOutputImage();
 
@@ -170,23 +174,6 @@ ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 
 	_actualComputationGroups.clear();
 
-	/*
-	//TODO - better implementation	
-	for( 
-		size_t i = this->in->GetDimensionExtents( 2 ).minimum; 
-		i < this->in->GetDimensionExtents( 2 ).maximum;
-		++i
-	) {
-		ProcessSlice( 	*(this->in), 
-				*(this->out),
-				this->in->GetDimensionExtents( 0 ).minimum,
-				this->in->GetDimensionExtents( 1 ).minimum,
-				this->in->GetDimensionExtents( 0 ).maximum,
-				this->in->GetDimensionExtents( 1 ).maximum,
-				i 
-				);
-
-	}*/
 	return true;
 }
 
@@ -248,10 +235,26 @@ ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 				iterator != manager.ChangesReverseEnd() /*&& ((*iterator)->GetTimeStamp()) < this->_inEditTimestamp*/; 
 				++iterator 
 			){
-				D_PRINT( "xxxxxxxx" );
 				if ( this->_inEditTimestamp >= (**iterator).GetTimeStamp() ) {
 					break;
 				}
+
+				const ModificationBBox & BBox = (**iterator).GetBoundingBox();
+				SliceComputationRecord record;
+				
+				BBox.GetInterval( 3, record.firstSlice, record.lastSlice );
+
+				record.inputBBox = this->in->GetDirtyBBox( 
+					this->in->GetDimensionExtents( 0 ).minimum,
+					this->in->GetDimensionExtents( 1 ).minimum,
+					this->in->GetDimensionExtents( 0 ).maximum,
+					this->in->GetDimensionExtents( 1 ).maximum,
+					record.firstSlice - _sliceComputationNeighbourCount,
+					record.lastSlice + _sliceComputationNeighbourCount
+					);
+				record.writerBBox = &( GetComputationGroupWriterBBox( record ) );
+
+				_actualComputationGroups.push_back( record );
 			}
 		}
 		break;

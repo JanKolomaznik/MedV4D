@@ -345,7 +345,7 @@ protected:
 	 * desired update method can't be used - right type is put as output value.
 	 **/
 	virtual void
-	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype ) = 0;
+	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
 
 	virtual void
 	AfterComputation( bool successful ){ /*empty*/ };
