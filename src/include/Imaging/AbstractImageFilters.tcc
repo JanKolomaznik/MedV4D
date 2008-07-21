@@ -245,10 +245,14 @@ ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 			const ModificationManager &manager = this->in->GetModificationManager();
 			ModificationManager::ConstChangeReverseIterator iterator; 
 			for( 	iterator = manager.ChangesReverseBegin(); 
-				iterator != manager.ChangesReverseEnd() && ((*iterator)->GetTimeStamp()) < this->_inEditTimestamp; 
+				iterator != manager.ChangesReverseEnd() /*&& ((*iterator)->GetTimeStamp()) < this->_inEditTimestamp*/; 
 				++iterator 
 			){
 				D_PRINT( "xxxxxxxx" );
+				ReaderBBoxInterface &reader = **iterator;
+				if ( reader.GetTimeStamp() < this->_inEditTimestamp ) {
+					break;
+				}
 			}
 		}
 		break;
