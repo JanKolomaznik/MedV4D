@@ -2,212 +2,208 @@
 
 #include <QtGui>
 
-// VTK includes - for sphereToRenderWindow and dicomToRenderWindow
-// for testing purposes only
-#include "vtkSphereSource.h"
-#include "vtkPolyDataMapper.h"
-#include "vtkActor.h"
-#include "vtkProperty.h"
-#include "vtkRendererCollection.h"
-#include "vtkRenderWindow.h"
-#include "vtkRenderWindowInteractor.h"
-#include "vtkDICOMImageReader.h"
-#include "vtkVolume.h"
-#include "vtkVolumeRayCastMapper.h"
-#include "vtkVolumeRayCastCompositeFunction.h"
-#include "vtkImageCast.h"
-#include "vtkPiecewiseFunction.h"
-#include "vtkColorTransferFunction.h"
-#include "vtkVolumeProperty.h"
+namespace M4D
+{
+namespace Viewer
+{
 
-#include "m4dImageDataSource.h"
-// just for imageDataToRenderWindow ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects )
-#include "Imaging/ImageFactory.h"
+m4dGUIVtkViewerWidget::m4dGUIVtkViewerWidget( Imaging::AbstractImageConnection& conn, unsigned index, QWidget *parent )
+    : QVTKWidget( parent )
+{
+    _index = index;
+    setParameters();
+    _inPort = new Imaging::InputPortAbstractImage();
+    _inputPorts.AddPort( _inPort );
+    setInputPort( conn );
+}
 
-using namespace M4D::vtkIntegration;
+m4dGUIVtkViewerWidget::m4dGUIVtkViewerWidget( unsigned index, QWidget *parent )
+    : QVTKWidget( parent )
+{
+    _index = index;
+    setParameters();
+    _inPort = new Imaging::InputPortAbstractImage();
+    _inputPorts.AddPort( _inPort );
+    setInputPort( );
+}
 
+m4dGUIVtkViewerWidget::~m4dGUIVtkViewerWidget()
+{
+    _imageData->Delete();
+    _iCast->Delete();
+    _opacityTransferFunction->Delete();
+    _colorTransferFunction->Delete();
+    _volumeProperty->Delete();
+    _volumeMapper->Delete();
+    _volume->Delete();
+    _renImageData->Delete();
+}
 
-m4dGUIVtkViewerWidget::m4dGUIVtkViewerWidget ( QVTKWidget *parent )
-  : QVTKWidget( parent )
-{}
+void
+m4dGUIVtkViewerWidget::setInputPort( Imaging::AbstractImageConnection& conn )
+{
+    conn.ConnectConsumer( *_inPort );
+    M4D::Imaging::AbstractImage::AImagePtr visualizedImage( (M4D::Imaging::AbstractImage*)0 );//&_inPort->GetAbstractImage() );
+    _imageData->SetImageData( visualizedImage );
+}
 
+void
+m4dGUIVtkViewerWidget::setInputPort()
+{
+    _inPort->UnPlug();
+    M4D::Imaging::AbstractImage::AImagePtr visualizedImage( (M4D::Imaging::AbstractImage*)0 );
+    _imageData->SetImageData( visualizedImage );
+}
 
-void m4dGUIVtkViewerWidget::addRenderer ( vtkRenderer *renderer )
-{ 
+void
+m4dGUIVtkViewerWidget::setParameters()
+{
+  _imageData = vtkIntegration::m4dImageDataSource::New();
+
+  _iCast = vtkImageCast::New(); 
+  _iCast->SetOutputScalarTypeToUnsignedShort();
+  _iCast->SetInputConnection( _imageData->GetOutputPort() );
+
+  _opacityTransferFunction = vtkPiecewiseFunction::New();
+  _opacityTransferFunction->AddPoint( 0,   0.0 ); 	
+  _opacityTransferFunction->AddPoint( 169, 0.0 );
+  _opacityTransferFunction->AddPoint( 170, 0.2 );	
+  _opacityTransferFunction->AddPoint( 400, 0.2 );
+  _opacityTransferFunction->AddPoint( 401, 0.0 );
+
+  _colorTransferFunction = vtkColorTransferFunction::New();
+  _colorTransferFunction->AddRGBPoint(    0.0, 0.0, 0.0, 0.0 ); 
+  _colorTransferFunction->AddRGBPoint(  170.0, 1.0, 0.0, 0.0 );
+  _colorTransferFunction->AddRGBPoint(  400.0, 0.8, 0.8, 0.8 );
+  _colorTransferFunction->AddRGBPoint( 2000.0, 1.0, 1.0, 1.0 );
+  	
+  _volumeProperty = vtkVolumeProperty::New();
+  _volumeProperty->SetColor( _colorTransferFunction );
+  _volumeProperty->SetScalarOpacity( _opacityTransferFunction );
+  //volumeProperty->ShadeOn(); 
+  _volumeProperty->SetInterpolationTypeToLinear();
+
+  _volumeMapper = vtkVolumeRayCastMapper::New();
+  _volumeMapper->SetVolumeRayCastFunction( vtkVolumeRayCastCompositeFunction::New());
+  _volumeMapper->SetInputConnection( _iCast->GetOutputPort() );
+
+  _volume = vtkVolume::New();
+  _volume->SetMapper( _volumeMapper ); 
+  _volume->SetProperty( _volumeProperty );
+
+  _renImageData = vtkRenderer::New(); 
+  _renImageData->AddViewProp( _volume );
+
   vtkRenderWindow *rWin;
   rWin = GetRenderWindow();
 
-  // remove previous one
-  rWin->RemoveRenderer( rWin->GetRenderers()->GetFirstRenderer() );
-
-  // add the actual
-  rWin->AddRenderer( renderer );
+  rWin->AddRenderer( _renImageData );
 
   vtkRenderWindowInteractor *iren;
   iren = GetInteractor();
   iren->SetRenderWindow( rWin );
 }
 
-
-vtkRenderer *m4dGUIVtkViewerWidget::imageDataToRenderWindow ()
+m4dGUIVtkViewerWidget::AvailableSlots
+m4dGUIVtkViewerWidget::getAvailableSlots()
 {
-  m4dImageDataSource *imageData = m4dImageDataSource::New();
-
-  vtkImageCast *icast = vtkImageCast::New(); 
-  icast->SetOutputScalarTypeToUnsignedShort();
-  icast->SetInputConnection( imageData->GetOutputPort() );
-
-  vtkPiecewiseFunction *opacityTransferFunction = vtkPiecewiseFunction::New();
-  opacityTransferFunction->AddPoint( 0,   0.0 ); 	
-  opacityTransferFunction->AddPoint( 169, 0.0 );
-  opacityTransferFunction->AddPoint( 170, 0.2 );	
-  opacityTransferFunction->AddPoint( 400, 0.2 );
-  opacityTransferFunction->AddPoint( 401, 0.0 );
-
-  vtkColorTransferFunction *colorTransferFunction = vtkColorTransferFunction::New();
-  colorTransferFunction->AddRGBPoint(    0.0, 0.0, 0.0, 0.0 ); 
-  colorTransferFunction->AddRGBPoint(  170.0, 1.0, 0.0, 0.0 );
-  colorTransferFunction->AddRGBPoint(  400.0, 0.8, 0.8, 0.8 );
-  colorTransferFunction->AddRGBPoint( 2000.0, 1.0, 1.0, 1.0 );
-  	
-  vtkVolumeProperty *volumeProperty = vtkVolumeProperty::New();
-  volumeProperty->SetColor( colorTransferFunction );
-  volumeProperty->SetScalarOpacity( opacityTransferFunction );
-  //volumeProperty->ShadeOn(); 
-  volumeProperty->SetInterpolationTypeToLinear();
-
-  vtkVolumeRayCastMapper *volumeMapper = vtkVolumeRayCastMapper::New();
-  volumeMapper->SetVolumeRayCastFunction( vtkVolumeRayCastCompositeFunction::New());
-  volumeMapper->SetInputConnection( icast->GetOutputPort() );
-
-  vtkVolume *volume = vtkVolume::New();
-  volume->SetMapper( volumeMapper ); 
-  volume->SetProperty( volumeProperty );
-
-  vtkRenderer *renImageData = vtkRenderer::New(); 
-  renImageData->AddViewProp( volume );
-
-  return renImageData;
+    return _availableSlots;
 }
 
-
-// just for testing ImageFactory::CreateImageFromDICOM 
-vtkRenderer *m4dGUIVtkViewerWidget::imageDataToRenderWindow ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects )
+QWidget*
+m4dGUIVtkViewerWidget::operator()()
 {
-  m4dImageDataSource *imageData = m4dImageDataSource::New();
-  M4D::Imaging::AbstractImage::AImagePtr visualizedImage = 
-				M4D::Imaging::ImageFactory::CreateImageFromDICOM( dicomObjects );
-
-  D_COMMAND( if( !visualizedImage ){ D_PRINT( "INVALID IMAGE POINTER" );} );
-
-  imageData->SetImageData( visualizedImage );
-
-  vtkImageCast *icast = vtkImageCast::New(); 
-  icast->SetOutputScalarTypeToUnsignedShort();
-  icast->SetInputConnection( imageData->GetOutputPort() );
-
-  vtkPiecewiseFunction *opacityTransferFunction = vtkPiecewiseFunction::New();
-  opacityTransferFunction->AddPoint( 0,   0.0 ); 	
-  opacityTransferFunction->AddPoint( 169, 0.0 );
-  opacityTransferFunction->AddPoint( 170, 0.2 );	
-  opacityTransferFunction->AddPoint( 400, 0.2 );
-  opacityTransferFunction->AddPoint( 401, 0.0 );
-
-  vtkColorTransferFunction *colorTransferFunction = vtkColorTransferFunction::New();
-  colorTransferFunction->AddRGBPoint(    0.0, 0.0, 0.0, 0.0 ); 
-  colorTransferFunction->AddRGBPoint(  170.0, 1.0, 0.0, 0.0 );
-  colorTransferFunction->AddRGBPoint(  400.0, 0.8, 0.8, 0.8 );
-  colorTransferFunction->AddRGBPoint( 2000.0, 1.0, 1.0, 1.0 );
-  	
-  vtkVolumeProperty *volumeProperty = vtkVolumeProperty::New();
-  volumeProperty->SetColor( colorTransferFunction );
-  volumeProperty->SetScalarOpacity( opacityTransferFunction );
-  //volumeProperty->ShadeOn(); 
-  volumeProperty->SetInterpolationTypeToLinear();
-
-  vtkVolumeRayCastMapper *volumeMapper = vtkVolumeRayCastMapper::New();
-  volumeMapper->SetVolumeRayCastFunction( vtkVolumeRayCastCompositeFunction::New());
-  volumeMapper->SetInputConnection( icast->GetOutputPort() );
-
-  vtkVolume *volume = vtkVolume::New();
-  volume->SetMapper( volumeMapper ); 
-  volume->SetProperty( volumeProperty );
-
-  vtkRenderer *renImageData = vtkRenderer::New(); 
-  renImageData->AddViewProp( volume );
-
-  return renImageData;
+    return (QVTKWidget*)this;
 }
 
-
-// just for testing, won't be in real application
-vtkRenderer *m4dGUIVtkViewerWidget::sphereToRenderWindow ()
+void
+m4dGUIVtkViewerWidget::ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imaging::PipelineMessage::MessageSendStyle sendStyle, Imaging::FlowDirection direction )
 {
-  // create sphere geometry
-  vtkSphereSource *sphere = vtkSphereSource::New();
-  sphere->SetRadius( 1.0 );
-  sphere->SetThetaResolution( 8 );
-  sphere->SetPhiResolution( 8 );
+    switch( msg->msgID )
+    {
+	case Imaging::PMI_FILTER_UPDATED:
+	//updateGL();
+	break;
 
-  // map to graphics library
-  vtkPolyDataMapper *map = vtkPolyDataMapper::New();
-  map->SetInput( sphere->GetOutput() );
-
-  // actor coordinates geometry, properties, transformation
-  vtkActor *aSphere = vtkActor::New();
-  aSphere->SetMapper( map );
-  aSphere->GetProperty()->SetColor( 1, 0, 0 );	// sphere color blue
-
-  // a renderer and render window
-  vtkRenderer *renSphere = vtkRenderer::New();
-  // add the actor to the scene
-  renSphere->AddActor( aSphere );
-  renSphere->SetBackground( 0, 0, 0 );				// background color black
-
-  return renSphere;
+	default:
+	break;
+    }
 }
 
+void
+m4dGUIVtkViewerWidget::slotSetButtonHandler( ButtonHandler hnd, MouseButton btn ) {}
 
-// just for testing, won't be in real application
-vtkRenderer *m4dGUIVtkViewerWidget::dicomToRenderWindow ( const char *dirName )
-{
-  vtkDICOMImageReader *reader = vtkDICOMImageReader::New();
-  reader->SetDirectoryName( dirName ); 
-  reader->SetDataSpacing( 1.0, 1.0, 3.0 );
+void
+m4dGUIVtkViewerWidget::slotSetSelected( bool selected ) {}
 
-  vtkImageCast *icast = vtkImageCast::New(); 
-  icast->SetOutputScalarTypeToUnsignedShort();
-  icast->SetInputConnection( reader->GetOutputPort() );
+void
+m4dGUIVtkViewerWidget::slotSetSliceNum( size_t num ) {}
 
-  vtkPiecewiseFunction *opacityTransferFunction = vtkPiecewiseFunction::New();
-  opacityTransferFunction->AddPoint( 0,   0.0 ); 	
-  opacityTransferFunction->AddPoint( 169, 0.0 );
-  opacityTransferFunction->AddPoint( 170, 0.2 );	
-  opacityTransferFunction->AddPoint( 400, 0.2 );
-  opacityTransferFunction->AddPoint( 401, 0.0 );
+void
+m4dGUIVtkViewerWidget::slotSetOneSliceMode() {}
 
-  vtkColorTransferFunction *colorTransferFunction = vtkColorTransferFunction::New();
-  colorTransferFunction->AddRGBPoint(    0.0, 0.0, 0.0, 0.0 ); 
-  colorTransferFunction->AddRGBPoint(  170.0, 1.0, 0.0, 0.0 );
-  colorTransferFunction->AddRGBPoint(  400.0, 0.8, 0.8, 0.8 );
-  colorTransferFunction->AddRGBPoint( 2000.0, 1.0, 1.0, 1.0 );
-  	
-  vtkVolumeProperty *volumeProperty = vtkVolumeProperty::New();
-  volumeProperty->SetColor( colorTransferFunction );
-  volumeProperty->SetScalarOpacity( opacityTransferFunction );
-  volumeProperty->ShadeOn(); 
-  volumeProperty->SetInterpolationTypeToLinear();
+void
+m4dGUIVtkViewerWidget::slotSetMoreSliceMode( unsigned slicesPerRow ) {}
 
-  vtkVolumeRayCastMapper *volumeMapper = vtkVolumeRayCastMapper::New();
-  volumeMapper->SetVolumeRayCastFunction( vtkVolumeRayCastCompositeFunction::New());
-  volumeMapper->SetInputConnection( icast->GetOutputPort() );
+void
+m4dGUIVtkViewerWidget::slotToggleFlipVertical() {}
 
-  vtkVolume *volume = vtkVolume::New();
-  volume->SetMapper( volumeMapper ); 
-  volume->SetProperty( volumeProperty );
+void
+m4dGUIVtkViewerWidget::slotToggleFlipHorizontal() {}
 
-  vtkRenderer *renDicom = vtkRenderer::New();
-  renDicom->AddViewProp( volume );
+void
+m4dGUIVtkViewerWidget::slotAddLeftSideData( std::string type, std::string data ) {}
 
-  return renDicom;
-}
+void
+m4dGUIVtkViewerWidget::slotAddRightSideData( std::string type, std::string data ) {}
+
+void
+m4dGUIVtkViewerWidget::slotEraseLeftSideData( std::string type ) {}
+
+void
+m4dGUIVtkViewerWidget::slotEraseRightSideData( std::string type ) {}
+
+void
+m4dGUIVtkViewerWidget::slotClearLeftSideData() {}
+
+void
+m4dGUIVtkViewerWidget::slotClearRightSideData() {}
+
+void
+m4dGUIVtkViewerWidget::slotTogglePrintData() {}
+
+void
+m4dGUIVtkViewerWidget::slotZoom( int amount ) {}
+
+void
+m4dGUIVtkViewerWidget::slotMove( int amountH, int amountV ) {}
+
+void
+m4dGUIVtkViewerWidget::slotAdjustContrastBrightness( int amountB, int amountC ) {}
+
+void
+m4dGUIVtkViewerWidget::slotNewPoint( int x, int y, int z ) {}
+
+void
+m4dGUIVtkViewerWidget::slotNewShape( int x, int y, int z ) {}
+
+void
+m4dGUIVtkViewerWidget::slotDeletePoint() {}
+
+void
+m4dGUIVtkViewerWidget::slotDeleteShape() {}
+
+void
+m4dGUIVtkViewerWidget::slotDeleteAll() {}
+
+void
+m4dGUIVtkViewerWidget::slotRotateAxisX( int x ) {}
+
+void
+m4dGUIVtkViewerWidget::slotRotateAxisY( int y ) {}
+
+void
+m4dGUIVtkViewerWidget::slotRotateAxisZ( int z ) {}
+
+} /* namespace Viewer */
+} /* namespace M4D */

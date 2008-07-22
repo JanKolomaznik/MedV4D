@@ -2,6 +2,8 @@
 #define _M4DGUIABSTRACTVIEWERWIDGET_H
 
 #include "Common.h"
+#include "Imaging/PipelineMessages.h"
+#include "Imaging/Ports.h"
 #include <QWidget>
 
 
@@ -36,22 +38,28 @@ namespace M4D
 namespace Viewer
 {
 
-class m4dGUIAbstractViewerWidget : public QObject
+class m4dGUIAbstractViewerWidget : public QObject, public Imaging::MessageReceiverInterface
 {
     Q_OBJECT
 
 public:
-    m4dGUIAbstractViewerWidget() { }
-    virtual ~m4dGUIAbstractViewerWidget() { }
-    
     typedef enum { zoomI, moveI, adjust_bc, switch_slice, new_point, new_shape } ButtonHandler;
-    typedef enum { rgba_unsigned_byte, grayscale_unsigned_byte, grayscale_unsigned_short } ColorMode;
     typedef enum { left = 0, right = 1 } MouseButton;
 
     typedef std::list< unsigned > AvailableSlots;
 
+    m4dGUIAbstractViewerWidget() : _inputPorts( this ) {}
+    virtual ~m4dGUIAbstractViewerWidget() {}
+
     virtual AvailableSlots getAvailableSlots()=0;
     virtual QWidget* operator()()=0;
+
+    const Imaging::InputPortList &
+    InputPort()const
+    	{ return _inputPorts; }
+
+protected:
+    Imaging::InputPortList	_inputPorts;
 
 public slots:
     virtual void slotSetButtonHandler( ButtonHandler hnd, MouseButton btn )=0;

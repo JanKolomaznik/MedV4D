@@ -28,19 +28,15 @@ class m4dGUISliceViewerWidget : public m4dGUIAbstractViewerWidget, public QGLWid
 
 public:
     m4dGUISliceViewerWidget( unsigned index, QWidget *parent = 0 );
-    m4dGUISliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint32, 3 > >& conn, unsigned index, QWidget *parent = 0 );
-    m4dGUISliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint16, 3 > >& conn, unsigned index, QWidget *parent = 0 );
-    m4dGUISliceViewerWidget( Imaging::ImageConnection< Imaging::Image< uint8, 3 > >& conn, unsigned index, QWidget *parent = 0 );
-    ~m4dGUISliceViewerWidget();
-    Imaging::InputPortAbstractImage& getInputPort();
+    m4dGUISliceViewerWidget( Imaging::AbstractImageConnection& conn, unsigned index, QWidget *parent = 0 );
     void setInputPort();
-    void setInputPort( Imaging::ImageConnection< Imaging::Image< uint32, 3 > >& conn );
-    void setInputPort( Imaging::ImageConnection< Imaging::Image< uint16, 3 > >& conn );
-    void setInputPort( Imaging::ImageConnection< Imaging::Image< uint8, 3 > >& conn );
+    void setInputPort( Imaging::AbstractImageConnection& conn );
 
     virtual AvailableSlots getAvailableSlots();
 
     virtual QWidget* operator()();
+
+    virtual void ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imaging::PipelineMessage::MessageSendStyle sendStyle, Imaging::FlowDirection direction );
 
 public slots:
     virtual void slotSetButtonHandler( ButtonHandler hnd, MouseButton btn );
@@ -77,7 +73,6 @@ protected:
     void setOneSliceMode();
     void setMoreSliceMode( unsigned slicesPerRow );
     void switchSlice( int dummy, int amount );
-    void setColorMode( ColorMode cm );
     void toggleFlipHorizontal();
     void toggleFlipVertical();
     void addLeftSideData( std::string type, std::string data );
@@ -115,7 +110,7 @@ private:
     typedef void (M4D::Viewer::m4dGUISliceViewerWidget::*ButtonMethods)( int amount1, int amount2 );
     typedef void (M4D::Viewer::m4dGUISliceViewerWidget::*SelectMethods)( int x, int y, int z );
     
-    Imaging::InputPortAbstractImage		_inPort;
+    Imaging::InputPortAbstractImage*		_inPort;
 
     std::list< Selection::m4dShape<int> >	_shapes;
 
@@ -127,11 +122,11 @@ private:
     short					_flipH;
     short					_flipV;
     
+    //bool					_ready;
     bool					_printData;
     bool					_printShapeData;
     bool					_oneSliceMode;
     bool					_selected;
-    ColorMode					_colorMode;
     QPoint					_lastPos;
     QPoint					_offset;
     int						_sliceNum;

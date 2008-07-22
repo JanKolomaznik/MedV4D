@@ -6,31 +6,91 @@
 
 // VTK includes
 #include "vtkRenderer.h"
+#include "vtkRenderWindow.h"
+#include "vtkRenderWindowInteractor.h"
+#include "vtkVolume.h"
+#include "vtkVolumeRayCastMapper.h"
+#include "vtkVolumeRayCastCompositeFunction.h"
+#include "vtkImageCast.h"
+#include "vtkPiecewiseFunction.h"
+#include "vtkColorTransferFunction.h"
+#include "vtkVolumeProperty.h"
 
-// just for imageDataToRenderWindow ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects )
-// DICOM includes:
+#include "m4dImageDataSource.h"
+
 #include "Common.h"
-#include "dicomConn/DICOMServiceProvider.h"
+#include "Imaging/Image.h"
+#include "Imaging/DefaultConnection.h"
+#include "Imaging/Ports.h"
+#include "GUI/m4dGUIAbstractViewerWidget.h"
 
-
-class m4dGUIVtkViewerWidget: public QVTKWidget
+namespace M4D
 {
-  Q_OBJECT
+namespace Viewer
+{
 
-  public:
-    m4dGUIVtkViewerWidget ( QVTKWidget *parent = 0 );
+class m4dGUIVtkViewerWidget: public m4dGUIAbstractViewerWidget, public QVTKWidget
+{
+    Q_OBJECT
 
-    void addRenderer ( vtkRenderer *ren );
+public:
+    m4dGUIVtkViewerWidget( Imaging::AbstractImageConnection& conn, unsigned index, QWidget *parent = 0 );
+    m4dGUIVtkViewerWidget( unsigned index, QWidget *parent = 0 );
+    ~m4dGUIVtkViewerWidget();
 
-    vtkRenderer *imageDataToRenderWindow ();
+    void setInputPort();
+    void setInputPort( Imaging::AbstractImageConnection& conn );
 
-    // just for testing ImageFactory::CreateImageFromDICOM 
-    vtkRenderer *imageDataToRenderWindow ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects );
+    virtual AvailableSlots getAvailableSlots();
 
-    // just for testing purposes - won't be in final ver.
-    vtkRenderer *sphereToRenderWindow ();
-    vtkRenderer *dicomToRenderWindow ( const char *dirName );
+    virtual QWidget* operator()();
+
+    virtual void ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imaging::PipelineMessage::MessageSendStyle sendStyle, Imaging::FlowDirection direction );
+
+public slots:
+    virtual void slotSetButtonHandler( ButtonHandler hnd, MouseButton btn );
+    virtual void slotSetSelected( bool selected );
+    virtual void slotSetSliceNum( size_t num );
+    virtual void slotSetOneSliceMode();
+    virtual void slotSetMoreSliceMode( unsigned slicesPerRow );
+    virtual void slotToggleFlipVertical();
+    virtual void slotToggleFlipHorizontal();
+    virtual void slotAddLeftSideData( std::string type, std::string data );
+    virtual void slotAddRightSideData( std::string type, std::string data );
+    virtual void slotEraseLeftSideData( std::string type );
+    virtual void slotEraseRightSideData( std::string type );
+    virtual void slotClearLeftSideData();
+    virtual void slotClearRightSideData();
+    virtual void slotTogglePrintData();
+    virtual void slotZoom( int amount );
+    virtual void slotMove( int amountH, int amountV );
+    virtual void slotAdjustContrastBrightness( int amountB, int amountC );
+    virtual void slotNewPoint( int x, int y, int z );
+    virtual void slotNewShape( int x, int y, int z );
+    virtual void slotDeletePoint();
+    virtual void slotDeleteShape();
+    virtual void slotDeleteAll();
+    virtual void slotRotateAxisX( int x );
+    virtual void slotRotateAxisY( int y );
+    virtual void slotRotateAxisZ( int z );
+
+private:
+    void setParameters();
+
+    Imaging::InputPortAbstractImage*		_inPort;
+    vtkIntegration::m4dImageDataSource*		_imageData;
+    vtkImageCast*				_iCast;
+    vtkPiecewiseFunction*			_opacityTransferFunction;
+    vtkColorTransferFunction*			_colorTransferFunction;
+    vtkVolumeProperty*				_volumeProperty;
+    vtkVolumeRayCastMapper*			_volumeMapper;
+    vtkVolume*					_volume;
+    vtkRenderer*				_renImageData;
+    AvailableSlots				_availableSlots;
+    unsigned					_index;
 };
 
-#endif // M4D_GUI_VTK_VIEWER_WIDGET_H
+} /* namespace Viewer */
+} /* namespace M4D */
 
+#endif // M4D_GUI_VTK_VIEWER_WIDGET_H
