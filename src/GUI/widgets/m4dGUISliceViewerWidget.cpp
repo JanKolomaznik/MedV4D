@@ -408,9 +408,12 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
     glPixelZoom( _flipH * zoomRate, _flipV * zoomRate );
     glTranslatef( offset.x(), offset.y(), 0 );
     glScalef( _flipH * zoomRate, _flipV * zoomRate, 0. );
-    for ( std::list< Selection::m4dShape<int> >::iterator it = _shapes.begin(); it != --(_shapes.end()); ++it )
-        drawShape( *it, false, sliceNum, zoomRate );
-    if ( !_shapes.empty() ) drawShape( *(--(_shapes.end())), true, sliceNum, zoomRate );
+    if ( !_shapes.empty() )
+    {
+        for ( std::list< Selection::m4dShape<int> >::iterator it = _shapes.begin(); it != --(_shapes.end()); ++it )
+            drawShape( *it, false, sliceNum, zoomRate );
+        drawShape( *(--(_shapes.end())), true, sliceNum, zoomRate );
+    }
     if ( _flipH < 0 ) offset.setX( offset.x() - (int)( zoomRate * w ) );
     if ( _flipV < 0 ) offset.setY( offset.y() - (int)( zoomRate * h ) );
     if ( _printData ) drawData( zoomRate, offset );
