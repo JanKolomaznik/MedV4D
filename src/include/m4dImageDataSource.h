@@ -21,6 +21,12 @@ public:
 
 	void
 	SetImageData( Imaging::AbstractImage::AImagePtr imageData );
+
+	void
+	TemporarySetImageData( const Imaging::AbstractImage & imageData );
+
+	void
+	TemporaryUnsetImageData();
 protected:
 	m4dImageDataSource();
 	~m4dImageDataSource();
@@ -40,6 +46,8 @@ protected:
 		);
 
 	Imaging::AbstractImage::AImagePtr	_imageData;
+	const Imaging::AbstractImage		*_tmpImageData;
+
 	int				_wholeExtent[6];
 	double				_spacing[3];
 private:
