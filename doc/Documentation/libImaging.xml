@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='utf-8'?>
+<chapter>
+<title>Library Imaging</title>
+
+
+
+<section>
+	<title>Compilation</title>
+	
+	<para>aaaaaaa</para>
+</section>
+
+<section>
+<title>Architecture</title>
+	
+	<section>
+	<title>Datasets</title>
+		
+	<para>aaaaaaa</para>
+	</section>
+
+	<section>
+	<title>Filters</title>
+		
+	<para>aaaaaaa</para>
+	</section>
+</section>
+
+<section>
+<title>Usage</title>
+	
+	<section>
+	<title>Adding new filter</title>
+		
+	<para>aaaaaaa</para>
+	</section>
+
+	<section>
+	<title>Defining new dataset type</title>
+		
+	<para>aaaaaaa</para>
+	</section>
+</section>
+
+</chapter>

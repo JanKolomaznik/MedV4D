@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE book PUBLIC '-//OASIS//DTD DocBook XML V4.5//EN'
+               'http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd' [
+<!ENTITY libCommon SYSTEM "libCommon.xml">
+<!ENTITY libImaging SYSTEM "libImaging.xml">
+]>
+<book lang="en" >
+	<!--<bookinfo>
+		<title>Medv4D project documentation</title>
+		<subtitle></subtitle>
+	</bookinfo>
+	<preface>
+		<title>Medv4D project documentation</title>
+		<para></para>
+	</preface>-->
+
+	&libCommon;
+	&libImaging;
+
+</book>
