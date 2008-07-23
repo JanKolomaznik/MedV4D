@@ -70,7 +70,19 @@ m4dGUISliceViewerWidget::setInputPort( Imaging::AbstractImageConnection& conn )
 void
 m4dGUISliceViewerWidget::setParameters()
 {
-    if ( _inPort->IsPlugged() ) _sliceNum = _inPort->GetAbstractImage().GetDimensionExtents(2).minimum;
+    if ( _inPort->IsPlugged() )
+    {
+        if ( _inPort->TryLockDataset() )
+	{
+            _sliceNum = _inPort->GetAbstractImage().GetDimensionExtents(2).minimum;
+	    _inPort->ReleaseDatasetLock();
+	}
+	else
+	{
+	    _ready = false;
+	    return;
+	}
+    }
     _offset = QPoint( 0, 0 );
     _lastPos = QPoint( -1, -1 );
     _zoomRate = 1.0;
@@ -109,6 +121,7 @@ m4dGUISliceViewerWidget::setParameters()
     _availableSlots.push_back( DELETEALL );
     _leftSideData.clear();
     _rightSideData.clear();
+    _ready = true;
 }
 
 m4dGUISliceViewerWidget::AvailableSlots
@@ -270,11 +283,26 @@ void
 m4dGUISliceViewerWidget::paintGL()
 {
     glClear( GL_COLOR_BUFFER_BIT | GL_ACCUM_BUFFER_BIT );
+    if ( !_ready )
+    {
+        setParameters();
+	if ( !_ready ) return;
+    }
     if ( _inPort->IsPlugged() )
     {
         unsigned i;
-        double   w = (double)_inPort->GetAbstractImage().GetDimensionExtents(0).maximum - _inPort->GetAbstractImage().GetDimensionExtents(0).minimum,
-                 h = (double)_inPort->GetAbstractImage().GetDimensionExtents(1).maximum - _inPort->GetAbstractImage().GetDimensionExtents(1).minimum;
+	double w, h;
+	if ( _inPort->TryLockDataset() )
+	{
+            w = (double)_inPort->GetAbstractImage().GetDimensionExtents(0).maximum - _inPort->GetAbstractImage().GetDimensionExtents(0).minimum,
+            h = (double)_inPort->GetAbstractImage().GetDimensionExtents(1).maximum - _inPort->GetAbstractImage().GetDimensionExtents(1).minimum;
+	    _inPort->ReleaseDatasetLock();
+        }
+	else
+	{
+	    _ready = false;
+	    return;
+	}
         if ( _oneSliceMode )
 	{
 	    QPoint offset;
@@ -294,14 +322,32 @@ m4dGUISliceViewerWidget::paintGL()
 void
 m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset )
 {
+    if ( !_ready ) return;
     if ( !_inPort->IsPlugged() ) return;
-    if ( sliceNum < (int)_inPort->GetAbstractImage().GetDimensionExtents(2).minimum ||
-         sliceNum >= (int)_inPort->GetAbstractImage().GetDimensionExtents(2).maximum )
-        return;
+    int w, h, imageID;
+    if ( _inPort->TryLockDataset() )
+    {
+        if ( sliceNum < (int)_inPort->GetAbstractImage().GetDimensionExtents(2).minimum ||
+             sliceNum >= (int)_inPort->GetAbstractImage().GetDimensionExtents(2).maximum )
+	{
+	    _inPort->ReleaseDatasetLock();
+            return;
+	}
+	else
+	{
+            w = (int)_inPort->GetAbstractImage().GetDimensionExtents(0).maximum - _inPort->GetAbstractImage().GetDimensionExtents(0).minimum,
+            h = (int)_inPort->GetAbstractImage().GetDimensionExtents(1).maximum - _inPort->GetAbstractImage().GetDimensionExtents(1).minimum;
+            imageID = _inPort->GetAbstractImage().GetElementTypeID();
+	    _inPort->ReleaseDatasetLock();
+	}
+    }
+    else
+    {
+        _ready = false;
+	return;
+    }
     glClear( GL_ACCUM_BUFFER_BIT );
     glLoadIdentity();
-    int   w = (int)_inPort->GetAbstractImage().GetDimensionExtents(0).maximum - _inPort->GetAbstractImage().GetDimensionExtents(0).minimum,
-          h = (int)_inPort->GetAbstractImage().GetDimensionExtents(1).maximum - _inPort->GetAbstractImage().GetDimensionExtents(1).minimum;
     if ( _flipH < 0 ) offset.setX( offset.x() + (int)( zoomRate * w ) );
     if ( _flipV < 0 ) offset.setY( offset.y() + (int)( zoomRate * h ) );
     unsigned i, offsetx = offset.x()<0?-offset.x():0, offsety = offset.y()<0?-offset.y():0;
@@ -320,14 +366,23 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
     double maxvalue;
     int stride;
     GLfloat avg = 0.0;
-    int imageID = _inPort->GetAbstractImage().GetElementTypeID();
     switch ( imageID )
     {
         case NTID_UNSIGNED_INT:
 	{
 	    maxvalue = 255.;
-	    const uint8* pixel = (const uint8*)Imaging::Image< uint32, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
-	    pixel += ( sliceNum - _inPort->GetAbstractImage().GetDimensionExtents(2).minimum ) * height * width * 4;
+	    const uint8* pixel;
+	    if ( _inPort->TryLockDataset() )
+	    {
+	        pixel = (const uint8*)Imaging::Image< uint32, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
+	        pixel += ( sliceNum - _inPort->GetAbstractImage().GetDimensionExtents(2).minimum ) * height * width * 4;
+		_inPort->ReleaseDatasetLock();
+	    }
+	    else
+	    {
+	        _ready = false;
+		return;
+	    }
     	    if ( _oneSliceMode ) glPixelStorei( GL_UNPACK_ROW_LENGTH, width );
 	    uint8* black = new uint8[ 4 * height * width ];
 	    memset( black, 0, height * width * sizeof(uint32) );
@@ -353,8 +408,18 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
         case NTID_UNSIGNED_CHAR:
 	{    
 	    maxvalue = 255.;
-	    const uint8* pixel = Imaging::Image< uint8, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
-	    pixel += ( sliceNum - _inPort->GetAbstractImage().GetDimensionExtents(2).minimum ) * height * width;
+	    const uint8* pixel;
+	    if ( _inPort->TryLockDataset() )
+	    {
+	        pixel = Imaging::Image< uint8, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
+	        pixel += ( sliceNum - _inPort->GetAbstractImage().GetDimensionExtents(2).minimum ) * height * width;
+		_inPort->ReleaseDatasetLock();
+	    }
+	    else
+	    {
+	        _ready = false;
+		return;
+	    }
     	    if ( _oneSliceMode ) glPixelStorei( GL_UNPACK_ROW_LENGTH, width );
 	    uint8* black = new uint8[ height * width ];
 	    memset( black, 0, height * width * sizeof(uint8) );
@@ -380,8 +445,18 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
         case NTID_UNSIGNED_SHORT:
 	{
 	    maxvalue = 65535.;
-	    const uint16* pixel = Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
-	    pixel += ( sliceNum - _inPort->GetAbstractImage().GetDimensionExtents(2).minimum ) * height * width;
+	    const uint16* pixel;
+	    if ( _inPort->TryLockDataset() )
+	    {
+	        pixel = Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
+	        pixel += ( sliceNum - _inPort->GetAbstractImage().GetDimensionExtents(2).minimum ) * height * width;
+		_inPort->ReleaseDatasetLock();
+	    }
+	    else
+	    {
+	        _ready = false;
+		return;
+	    }
     	    if ( _oneSliceMode ) glPixelStorei( GL_UNPACK_ROW_LENGTH, width );
 	    uint16* black = new uint16[ height * width ];
 	    memset( black, 0, height * width * sizeof(uint16) );
@@ -553,8 +628,18 @@ m4dGUISliceViewerWidget::drawData( double zoomRate, QPoint offset )
     glLoadIdentity();
     glColor3f( 1., 1., 1. );
     std::map< std::string, std::string >::iterator it;
-    int   w = (int)_inPort->GetAbstractImage().GetDimensionExtents(0).maximum - _inPort->GetAbstractImage().GetDimensionExtents(0).minimum,
-          h = (int)_inPort->GetAbstractImage().GetDimensionExtents(1).maximum - _inPort->GetAbstractImage().GetDimensionExtents(1).minimum;
+    int w, h;
+    if ( _inPort->TryLockDataset() )
+    {
+        w = (int)_inPort->GetAbstractImage().GetDimensionExtents(0).maximum - _inPort->GetAbstractImage().GetDimensionExtents(0).minimum,
+        h = (int)_inPort->GetAbstractImage().GetDimensionExtents(1).maximum - _inPort->GetAbstractImage().GetDimensionExtents(1).minimum;
+	_inPort->ReleaseDatasetLock();
+    }
+    else
+    {
+        _ready = false;
+	return;
+    }
     int i, o_x, o_y, w_o;
     if ( _oneSliceMode )
     {
@@ -617,10 +702,25 @@ m4dGUISliceViewerWidget::resizeGL(int winW, int winH)
     glLoadIdentity();
     glOrtho(0.0, (double)winW, 0.0, (double)winH, -1.0, 1.0);
     glMatrixMode(GL_MODELVIEW);
+    if ( !_ready )
+    {
+        setParameters();
+	if ( !_ready ) return;
+    }
     if ( _inPort->IsPlugged() )
     {
-        int   w = (int)_inPort->GetAbstractImage().GetDimensionExtents(0).maximum - _inPort->GetAbstractImage().GetDimensionExtents(0).minimum,
-    	      h = (int)_inPort->GetAbstractImage().GetDimensionExtents(1).maximum - _inPort->GetAbstractImage().GetDimensionExtents(1).minimum;
+        int w, h;
+        if ( _inPort->TryLockDataset() )
+	{
+	    w = (int)_inPort->GetAbstractImage().GetDimensionExtents(0).maximum - _inPort->GetAbstractImage().GetDimensionExtents(0).minimum,
+    	    h = (int)_inPort->GetAbstractImage().GetDimensionExtents(1).maximum - _inPort->GetAbstractImage().GetDimensionExtents(1).minimum;
+	    _inPort->ReleaseDatasetLock();
+	}
+	else
+	{
+	    _ready = false;
+	    return;
+	}
         if ( (double)width() / (double)w < (double)height() / (double)h ) _zoomRate = (double)width() / (double)w;
 	else _zoomRate = (double)height() / (double)h;
     }
@@ -636,9 +736,24 @@ m4dGUISliceViewerWidget::mousePressEvent(QMouseEvent *event)
 	return;
     }
     if ( !_inPort->IsPlugged() ) return;
+    if ( !_ready )
+    {
+        setParameters();
+	if ( !_ready ) return;
+    }
     _lastPos = event->pos();
-    int   w = (int)_inPort->GetAbstractImage().GetDimensionExtents(0).maximum - _inPort->GetAbstractImage().GetDimensionExtents(0).minimum,
-          h = (int)_inPort->GetAbstractImage().GetDimensionExtents(1).maximum - _inPort->GetAbstractImage().GetDimensionExtents(1).minimum;
+    int w, h;
+    if ( _inPort->TryLockDataset() )
+    {
+        w = (int)_inPort->GetAbstractImage().GetDimensionExtents(0).maximum - _inPort->GetAbstractImage().GetDimensionExtents(0).minimum,
+        h = (int)_inPort->GetAbstractImage().GetDimensionExtents(1).maximum - _inPort->GetAbstractImage().GetDimensionExtents(1).minimum;
+	_inPort->ReleaseDatasetLock();
+    }
+    else
+    {
+        _ready = false;
+	return;
+    }
     if ( ( event->buttons() & Qt::LeftButton ) && _selectionMode[ left ] )
     {
         if ( _oneSliceMode ) (this->*_selectMethods[ left ])( (int)( ( event->x() - _offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - _offset.y() ) / _zoomRate ), _sliceNum );
@@ -732,10 +847,20 @@ void
 m4dGUISliceViewerWidget::setSliceNum( size_t num )
 {
     if ( !_inPort->IsPlugged() ) return;
-    if ( num < _inPort->GetAbstractImage().GetDimensionExtents(2).minimum ||
-         num >= _inPort->GetAbstractImage().GetDimensionExtents(2).maximum )
+    if ( _inPort->TryLockDataset() )
     {
-    	throw ErrorHandling::ExceptionBase( "Index out of bounds." );
+        if ( num < _inPort->GetAbstractImage().GetDimensionExtents(2).minimum ||
+             num >= _inPort->GetAbstractImage().GetDimensionExtents(2).maximum )
+        {
+	    _inPort->ReleaseDatasetLock();
+    	    throw ErrorHandling::ExceptionBase( "Index out of bounds." );
+        }
+	else _inPort->ReleaseDatasetLock();
+    }
+    else
+    {
+        _ready = false;
+	return;
     }
     _sliceNum = num;
     emit signalSetSliceNum( _index, num );
@@ -764,13 +889,25 @@ m4dGUISliceViewerWidget::newPoint( int x, int y, int z )
     if ( _shapes.empty() ) newShape( x, y, z );
     else
     {
-        if ( _flipH < 0 ) x = - ( x - (int)( _inPort->GetAbstractImage().GetDimensionExtents(0).maximum - _inPort->GetAbstractImage().GetDimensionExtents(0).minimum ));
-        if ( _flipV < 0 ) y = - ( y - (int)( _inPort->GetAbstractImage().GetDimensionExtents(1).maximum - _inPort->GetAbstractImage().GetDimensionExtents(1).minimum ));
-        if ( x < 0 || y < 0 ||
-             x >= (int)( _inPort->GetAbstractImage().GetDimensionExtents(0).maximum - _inPort->GetAbstractImage().GetDimensionExtents(0).minimum ) ||
-             y >= (int)( _inPort->GetAbstractImage().GetDimensionExtents(1).maximum - _inPort->GetAbstractImage().GetDimensionExtents(1).minimum ) )
-	         return;
-
+        if ( _inPort->TryLockDataset() )
+	{
+	    if ( _flipH < 0 ) x = - ( x - (int)( _inPort->GetAbstractImage().GetDimensionExtents(0).maximum - _inPort->GetAbstractImage().GetDimensionExtents(0).minimum ));
+            if ( _flipV < 0 ) y = - ( y - (int)( _inPort->GetAbstractImage().GetDimensionExtents(1).maximum - _inPort->GetAbstractImage().GetDimensionExtents(1).minimum ));
+            if ( x < 0 || y < 0 ||
+                 x >= (int)( _inPort->GetAbstractImage().GetDimensionExtents(0).maximum - _inPort->GetAbstractImage().GetDimensionExtents(0).minimum ) ||
+                 y >= (int)( _inPort->GetAbstractImage().GetDimensionExtents(1).maximum - _inPort->GetAbstractImage().GetDimensionExtents(1).minimum ) )
+		 {
+		     _inPort->ReleaseDatasetLock();
+	             return;
+		 }
+            else
+		_inPort->ReleaseDatasetLock();
+	}
+	else
+	{
+	    _ready = false;
+	    return;
+	}
         if ( !_shapes.back().shapeElements().empty() &&
 	     abs( x - _shapes.back().shapeElements().front().getParticularValue( 0 ) ) < MINIMUM_SELECT_DISTANCE &&
              abs( y - _shapes.back().shapeElements().front().getParticularValue( 1 ) ) < MINIMUM_SELECT_DISTANCE &&
@@ -788,17 +925,29 @@ void
 m4dGUISliceViewerWidget::newShape( int x, int y, int z )
 {
     if ( !_inPort->IsPlugged() ) return;
-    if ( x < 0 || y < 0 ||
-         x >= (int)( _inPort->GetAbstractImage().GetDimensionExtents(0).maximum - _inPort->GetAbstractImage().GetDimensionExtents(0).minimum ) ||
-         y >= (int)( _inPort->GetAbstractImage().GetDimensionExtents(1).maximum - _inPort->GetAbstractImage().GetDimensionExtents(1).minimum ) )
-	     return;
+    if ( _inPort->TryLockDataset() )
+    {
+        if ( x < 0 || y < 0 ||
+             x >= (int)( _inPort->GetAbstractImage().GetDimensionExtents(0).maximum - _inPort->GetAbstractImage().GetDimensionExtents(0).minimum ) ||
+             y >= (int)( _inPort->GetAbstractImage().GetDimensionExtents(1).maximum - _inPort->GetAbstractImage().GetDimensionExtents(1).minimum ) )
+	     {
+	         _inPort->ReleaseDatasetLock();
+	         return;
+	     }
 
-    Selection::m4dShape<int> s( 3 );
-    _shapes.push_back( s );
-    newPoint( x, y, z );
-    if ( _flipH < 0 ) x = - ( x - (int)( _inPort->GetAbstractImage().GetDimensionExtents(0).maximum - _inPort->GetAbstractImage().GetDimensionExtents(0).minimum ));
-    if ( _flipV < 0 ) y = - ( y - (int)( _inPort->GetAbstractImage().GetDimensionExtents(1).maximum - _inPort->GetAbstractImage().GetDimensionExtents(1).minimum ));
-    emit signalNewShape( _index, x, y, z );
+        Selection::m4dShape<int> s( 3 );
+        _shapes.push_back( s );
+        newPoint( x, y, z );
+        if ( _flipH < 0 ) x = - ( x - (int)( _inPort->GetAbstractImage().GetDimensionExtents(0).maximum - _inPort->GetAbstractImage().GetDimensionExtents(0).minimum ));
+        if ( _flipV < 0 ) y = - ( y - (int)( _inPort->GetAbstractImage().GetDimensionExtents(1).maximum - _inPort->GetAbstractImage().GetDimensionExtents(1).minimum ));
+	_inPort->ReleaseDatasetLock();
+        emit signalNewShape( _index, x, y, z );
+    }
+    else
+    {
+        _ready = false;
+	return;
+    }
 }
 
 void

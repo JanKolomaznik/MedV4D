@@ -122,7 +122,7 @@ private:
     short					_flipH;
     short					_flipV;
     
-    //bool					_ready;
+    bool					_ready;
     bool					_printData;
     bool					_printShapeData;
     bool					_oneSliceMode;
