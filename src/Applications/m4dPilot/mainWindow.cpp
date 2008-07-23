@@ -19,6 +19,7 @@ mainWindow::mainWindow ()
 // reimplemented view method
 void mainWindow::view ( DcmProvider::DicomObjSet *dicomObjSet )
 {
-  mainViewerDesktop->getVtkRenderWindowWidget()->addRenderer( mainViewerDesktop->getVtkRenderWindowWidget()->imageDataToRenderWindow( DcmProvider::DicomObjSetPtr( dicomObjSet ) ) );
+  // TODO
+  // mainViewerDesktop->getVtkRenderWindowWidget()->addRenderer( mainViewerDesktop->getVtkRenderWindowWidget()->imageDataToRenderWindow( DcmProvider::DicomObjSetPtr( dicomObjSet ) ) );
 }
 

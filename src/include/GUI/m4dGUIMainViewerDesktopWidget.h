@@ -38,17 +38,19 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
     M4D::Viewer::m4dGUIAbstractViewerWidget *getSelectedViewer() { return selectedViewer; }
     M4D::Viewer::m4dGUIAbstractViewerWidget *getPrevSelectedViewer() { return prevSelectedViewer; }
 
-    m4dGUIVtkViewerWidget *getVtkRenderWindowWidget() { return vtkRenderWindowWidget; }
+    M4D::Viewer::m4dGUIVtkViewerWidget *getVtkRenderWindowWidget() { return vtkRenderWindowWidget; }
 
   private slots:
+
     void selectedChanged ( unsigned index );
 
   signals:
+
     void propagateFeatures ();
 
   private:
 
-    m4dGUIVtkViewerWidget *vtkRenderWindowWidget;
+    M4D::Viewer::m4dGUIVtkViewerWidget *vtkRenderWindowWidget;
     M4D::Viewer::m4dGUISliceViewerWidget *glWidget;
 
     M4D::Imaging::Image< uint32, 3 >::Ptr inputImage;

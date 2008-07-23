@@ -20,8 +20,10 @@ m4dGUIMainViewerDesktopWidget::m4dGUIMainViewerDesktopWidget ( QWidget *parent )
 
   QSplitter *splitter = new QSplitter();
 
-  vtkRenderWindowWidget = new m4dGUIVtkViewerWidget;
-  vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->sphereToRenderWindow() );
+  // TODO
+  // vtkRenderWindowWidget = new m4dGUIVtkViewerWidget;
+  // vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->sphereToRenderWindow() );
+  vtkRenderWindowWidget = new m4dGUIVtkViewerWidget( 0 );
   splitter->addWidget( vtkRenderWindowWidget );
 
   // TESTING viewer
@@ -70,7 +72,7 @@ void m4dGUIMainViewerDesktopWidget::setDesktopLayout( const int rows, const int 
   {
     for ( unsigned i = 0; i < difference; i++ ) 
     {
-      m4dGUISliceViewerWidget *widget = new m4dGUISliceViewerWidget( viewersSize + i );
+      m4dGUISliceViewerWidget *widget = new m4dGUISliceViewerWidget( prodconn, viewersSize + i );
       connect( (m4dGUIAbstractViewerWidget *)widget, SIGNAL(signalSetSelected( unsigned, bool )), this, SLOT(selectedChanged( unsigned )) );
       viewers.push_back( widget );
     }

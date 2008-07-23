@@ -269,19 +269,19 @@ void StManagerStudyListComp::view ()
         // find some info about selected study
         dcmProvider->FindStudyInfo( row->patientID, row->studyID, info );
 
-        if ( info.size() > 1) {
+        if ( info.size() > 1 ) {
           seriesIndex = getSeriesIndex( info );
         }
 
         // now get image
-        dcmProvider->GetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );  
+        dcmProvider->GetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
       }
       else
       {
         // find some info about selected study
         dcmProvider->LocalFindStudyInfo( row->patientID, row->studyID, info );
 
-        if ( info.size() > 1) {
+        if ( info.size() > 1 ) {
           seriesIndex = getSeriesIndex( info );  
         }
 
@@ -297,7 +297,7 @@ void StManagerStudyListComp::view ()
       // find some info about selected study
       dcmProvider->FindStudyInfo( row->patientID, row->studyID, info );
 
-      if ( info.size() > 1) {
+      if ( info.size() > 1 ) {
         seriesIndex = getSeriesIndex( info );
       } 
 
@@ -310,7 +310,7 @@ void StManagerStudyListComp::view ()
       // find some info about selected study
       dcmProvider->LocalFindStudyInfo( row->patientID, row->studyID, info );
 
-      if ( info.size() > 1) {
+      if ( info.size() > 1 ) {
         seriesIndex = getSeriesIndex( info );  
       }
 
@@ -326,7 +326,7 @@ void StManagerStudyListComp::view ()
         // find some info about selected study
         dcmProvider->FindStudyInfo( row->patientID, row->studyID, info );
 
-        if ( info.size() > 1) {
+        if ( info.size() > 1 ) {
           seriesIndex = getSeriesIndex( info );
         }
 
@@ -338,7 +338,7 @@ void StManagerStudyListComp::view ()
         // find some info about selected study
         dcmProvider->LocalFindStudyInfo( row->patientID, row->studyID, info );
 
-        if ( info.size() > 1) {
+        if ( info.size() > 1 ) {
           seriesIndex = getSeriesIndex( info );  
         }
 

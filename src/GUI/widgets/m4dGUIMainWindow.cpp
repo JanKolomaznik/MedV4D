@@ -111,7 +111,8 @@ void m4dGUIMainWindow::open ()
     QFileInfo pathInfo( path );
     QString dirName( pathInfo.absolutePath() );
 
-    mainViewerDesktop->getVtkRenderWindowWidget()->addRenderer( mainViewerDesktop->getVtkRenderWindowWidget()->dicomToRenderWindow( dirName.toAscii() ) );
+    // TODO
+    // mainViewerDesktop->getVtkRenderWindowWidget()->addRenderer( mainViewerDesktop->getVtkRenderWindowWidget()->dicomToRenderWindow( dirName.toAscii() ) );
   } 
 }
 
@@ -328,11 +329,10 @@ void m4dGUIMainWindow::createActions ()
     
     viewerActs[i]->setEnabled( false );
 
-    if ( actionCheckables[i] ) {
+    if ( actionCheckables[i] ) 
+    {
       connect( viewerActs[i], SIGNAL(triggered()), this, actionSlots[i] );
-    }
-    
-    if ( actionCheckables[i] ) {
+
       actionRightButtons[i] ? rightButtonGroup->addAction( viewerActs[i] ) :
                               leftButtonGroup->addAction( viewerActs[i] );
     }
@@ -449,5 +449,6 @@ void m4dGUIMainWindow::createDockWindows ()
 
 void m4dGUIMainWindow::view ( DcmProvider::DicomObjSet *dicomObjSet )
 {
-  mainViewerDesktop->getVtkRenderWindowWidget()->addRenderer( mainViewerDesktop->getVtkRenderWindowWidget()->imageDataToRenderWindow( DcmProvider::DicomObjSetPtr( dicomObjSet ) ) );
+  // TODO
+  // mainViewerDesktop->getVtkRenderWindowWidget()->addRenderer( mainViewerDesktop->getVtkRenderWindowWidget()->imageDataToRenderWindow( DcmProvider::DicomObjSetPtr( dicomObjSet ) ) );
 }
