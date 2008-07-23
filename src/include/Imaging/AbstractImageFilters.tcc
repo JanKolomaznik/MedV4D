@@ -25,6 +25,8 @@ template< typename InputImageType, typename OutputImageType >
 const InputImageType&
 ImageFilter< InputImageType, OutputImageType >::GetInputImage()const
 {
+	//TODO - exceptions
+	_inputPorts.GetPortTyped< InputPortType >( 0 ).LockDataset();
 	return _inputPorts.GetPortTyped< InputPortType >( 0 ).GetImage();
 }
 
@@ -48,6 +50,8 @@ template< typename InputImageType, typename OutputImageType >
 OutputImageType&
 ImageFilter< InputImageType, OutputImageType >::GetOutputImage()const
 {
+	//TODO - exceptions
+	_outputPorts.GetPortTyped< OutputPortType >( 0 ).LockDataset();
 	return _outputPorts.GetPortTyped< OutputPortType >( 0 ).GetImage();
 }
 

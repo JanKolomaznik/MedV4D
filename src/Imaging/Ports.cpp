@@ -42,7 +42,7 @@ Port::ReceiveMessage(
 //******************************************************************************
 
 bool 
-Port::TryDatasetLock()
+Port::TryLockDataset()
 {
 	if( !this->IsPlugged() ) {
 		throw EDisconnected( this->GetID() );
@@ -52,7 +52,7 @@ Port::TryDatasetLock()
 }
 
 void
-Port::DatasetLock()
+Port::LockDataset()
 {
 	if( !this->IsPlugged() ) {
 		throw EDisconnected( this->GetID() );

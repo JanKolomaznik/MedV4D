@@ -11,6 +11,41 @@ namespace M4D
 namespace Imaging
 {
 
+class ReadWriteLock
+{
+public:
+	ReadWriteLock():
+		_canReaderAccess( true ), _readerCount( 0 ) 
+		{ }
+
+	bool 
+	TryLockDataset();
+
+	void 
+	LockDataset();
+
+	void
+	UnlockDataset();
+
+	void
+	UpgradeToExclusiveLock();
+
+	void
+	DowngradeFromExclusiveLock();
+
+	bool
+	TryExclusiveLockDataset();
+
+	void
+	ExclusiveLockDataset();
+
+	void
+	ExclusiveUnlockDataset();
+private:
+	bool	_canReaderAccess;
+	int	_readerCount;
+
+};
 
 class AbstractDataSet
 {
@@ -52,35 +87,35 @@ public:
 	}
 
 	bool 
-	TryLockDataset();
+	TryLockDataset()const;
 
 	void 
-	LockDataset();
+	LockDataset()const;
 
 	void
-	UnlockDataset();
+	UnlockDataset()const;
 
 	/**
 	 * If user already has normal lock - he can ask for upgrade to Exclusive lock.
 	 **/
 	void
-	UpgradeToExclusiveLock();
+	UpgradeToExclusiveLock()const;
 
 	/**
 	 * User can downgrade exclusive lock to normal lock without worrying that
 	 * someone else will get exclusive access first.
 	 **/
 	void
-	DowngradeFromExclusiveLock();
+	DowngradeFromExclusiveLock()const;
 
 	bool
-	TryExclusiveLockDataset();
+	TryExclusiveLockDataset()const;
 
 	void
-	ExclusiveLockDataset();
+	ExclusiveLockDataset()const;
 
 	void
-	ExclusiveUnlockDataset();
+	ExclusiveUnlockDataset()const;
 
   /**
    *  Properties of dataset. Used to sending to server.
@@ -115,6 +150,8 @@ protected:
 	 * changed (reallocation of buffers, etc.) timestamp is increased.
 	 **/
 	M4D::Common::TimeStamp	_structureTimestamp;
+
+	mutable ReadWriteLock	_structureLock;
 private:
 
 };

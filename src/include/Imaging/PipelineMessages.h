@@ -1,6 +1,8 @@
 #ifndef _PIPELINE_MESSAGES_H
 #define _PIPELINE_MESSAGES_H
 
+#include <boost/shared_ptr.hpp>
+
 namespace M4D
 {
 namespace Imaging

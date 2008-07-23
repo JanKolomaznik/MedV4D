@@ -94,10 +94,10 @@ public:
 	 * \return True if lock was successful, false otherwise.
 	 **/
 	virtual bool 
-	TryDatasetLock();
+	TryLockDataset();
 
 	virtual void
-	DatasetLock();
+	LockDataset();
 
 	//TODO - if store, wheather this port already locked dataset - unlock during destruction ...
 	/**

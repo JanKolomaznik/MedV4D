@@ -6,54 +6,120 @@ namespace M4D
 namespace Imaging
 {
 
+	//TODO synchronization
 bool 
-AbstractDataSet::TryLockDataset()
+ReadWriteLock::TryLockDataset()
 {
-	//TODO
-	return false;
+	if( !_canReaderAccess ) { 
+		return false;
+	}
+
+	++_readerCount;
+	return true;
+}
+
+void 
+ReadWriteLock::LockDataset()
+{
+	while( true ) {
+		if( !_canReaderAccess ) {
+		//TODO wait		
+		} else {
+			++_readerCount;
+			return;
+		}
+	} 
 }
 
 void
-AbstractDataSet::LockDataset()
+ReadWriteLock::UnlockDataset()
+{
+	//TODO - check and exception
+	--_readerCount;
+}
+
+void
+ReadWriteLock::UpgradeToExclusiveLock()
 {
 
 }
 
 void
-AbstractDataSet::UnlockDataset()
-{
-
-}
-
-void
-AbstractDataSet::UpgradeToExclusiveLock()
-{
-
-}
-
-void
-AbstractDataSet::DowngradeFromExclusiveLock()
+ReadWriteLock::DowngradeFromExclusiveLock()
 {
 
 }
 
 bool
-AbstractDataSet::TryExclusiveLockDataset()
+ReadWriteLock::TryExclusiveLockDataset()
 {
-	//TODO
 	return false;
 }
 
 void
-AbstractDataSet::ExclusiveLockDataset()
+ReadWriteLock::ExclusiveLockDataset()
 {
 
 }
 
 void
-AbstractDataSet::ExclusiveUnlockDataset()
+ReadWriteLock::ExclusiveUnlockDataset()
 {
 
+}
+
+//******************************************************************************
+//******************************************************************************
+
+
+
+
+bool 
+AbstractDataSet::TryLockDataset()const
+{
+	return _structureLock.TryLockDataset();
+}
+
+void
+AbstractDataSet::LockDataset()const
+{
+	_structureLock.LockDataset();
+}
+
+void
+AbstractDataSet::UnlockDataset()const
+{
+	_structureLock.UnlockDataset();
+}
+
+void
+AbstractDataSet::UpgradeToExclusiveLock()const
+{
+	_structureLock.UpgradeToExclusiveLock();
+}
+
+void
+AbstractDataSet::DowngradeFromExclusiveLock()const
+{
+	_structureLock.DowngradeFromExclusiveLock();
+}
+
+bool
+AbstractDataSet::TryExclusiveLockDataset()const
+{
+	return 	_structureLock.TryExclusiveLockDataset();
+}
+
+void
+AbstractDataSet::ExclusiveLockDataset()const
+{
+	_structureLock.ExclusiveLockDataset();
+}
+
+void
+AbstractDataSet::ExclusiveUnlockDataset()const
+{
+	_structureLock.ExclusiveUnlockDataset();
 }
 
 }/*namespace Imaging*/
