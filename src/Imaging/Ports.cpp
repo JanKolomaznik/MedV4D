@@ -2,9 +2,10 @@
 
 #include "Thread.h"
 
-# if defined(_WINSOCKAPI_) && !defined(_WINSOCK2API_)
+/*# if defined(_WINSOCKAPI_) && !defined(_WINSOCK2API_)
 #  error WinSock.h has already been included. Jak to????!!!!!
 # endif // defined(_WINSOCKAPI_) && !defined(_WINSOCK2API_)
+*/
 
 #include "Functors.h"
 #include "Imaging/Ports.h"

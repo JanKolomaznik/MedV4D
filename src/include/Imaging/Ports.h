@@ -308,7 +308,7 @@ public:
 	Size()
 	{ return _size; }
 protected:
-	~PortList() {}
+	virtual ~PortList() {}
 
 	size_t	_size;
 private:

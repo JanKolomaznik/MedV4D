@@ -4,7 +4,11 @@
 #include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/recursive_mutex.hpp>
-#include <boost/thread/xtime.hpp>
+
+#undef AddPort
+#undef GetMessage
+#undef SendMessage
+
 
 
 namespace M4D
@@ -23,19 +27,10 @@ typedef boost::recursive_mutex	RecursiveMutex;
 typedef boost::recursive_mutex::scoped_lock	RecursiveScopedLock;
 
 inline void
-yield()
-{
-	boost::thread::yield();
-}
+yield();
 
 inline void
-sleep( int duration )
-{
-	boost::xtime sleepTime;
-	boost::xtime_get(&sleepTime, boost::TIME_UTC);
-	sleepTime.nsec += duration;
-	boost::thread::sleep(sleepTime);
-}
+sleep( int duration );
 
 }/*namespace Multithreading*/
 }/*namespace M4D*/

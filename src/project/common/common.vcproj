@@ -157,6 +157,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\common\Thread.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\common\TimeStamp.cpp"
 				>
 			</File>
