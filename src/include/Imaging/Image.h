@@ -488,6 +488,23 @@ private:
 };
 
 
+//Typedefs :
+
+typedef Image< int8, 2 > 	Image2DSigned8b;
+typedef Image< uint8, 2 > 	Image2DUnsigned8b;
+typedef Image< int16, 2 > 	Image2DSigned16b;
+typedef Image< uint16, 2 > 	Image2DUnsigned16b;
+typedef Image< int32, 2 > 	Image2DSigned32b;
+typedef Image< uint32, 2 > 	Image2DUnsigned32b;
+
+typedef Image< int8, 3 > 	Image3DSigned8b;
+typedef Image< uint8, 3 > 	Image3DUnsigned8b;
+typedef Image< int16, 3 > 	Image3DSigned16b;
+typedef Image< uint16, 3 > 	Image3DUnsigned16b;
+typedef Image< int32, 3 > 	Image3DSigned32b;
+typedef Image< uint32, 3 > 	Image3DUnsigned32b;
+
+
 }/*namespace Imaging*/
 }/*namespace M4D*/
 

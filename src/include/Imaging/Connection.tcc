@@ -149,8 +149,12 @@ ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 	if( !_image ) {
 		//TODO throw exception
 	}
-	//TODO
+	//TODO - check if locking should be done here
+	_image->UpgradeToExclusiveLock();
+
 	CallImageFactoryRealloc( *_image, minimums, maximums, elementExtents );
+
+	_image->DowngradeFromExclusiveLock();
 }
 
 

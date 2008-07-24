@@ -10,6 +10,8 @@ namespace Imaging
 bool 
 ReadWriteLock::TryLockDataset()
 {
+	Multithreading::ScopedLock lock( _accessLock );
+
 	if( !_canReaderAccess ) { 
 		return false;
 	}
@@ -22,8 +24,10 @@ void
 ReadWriteLock::LockDataset()
 {
 	while( true ) {
+		Multithreading::ScopedLock lock( _accessLock );
 		if( !_canReaderAccess ) {
-		//TODO wait		
+			lock.unlock();
+			//TODO wait		
 		} else {
 			++_readerCount;
 			return;
@@ -34,6 +38,9 @@ ReadWriteLock::LockDataset()
 void
 ReadWriteLock::UnlockDataset()
 {
+	Multithreading::ScopedLock lock( _accessLock );
+
+	ASSERT( _readerCount > 0 );
 	//TODO - check and exception
 	--_readerCount;
 }
@@ -41,30 +48,86 @@ ReadWriteLock::UnlockDataset()
 void
 ReadWriteLock::UpgradeToExclusiveLock()
 {
+	while( true ) {
+		Multithreading::ScopedLock lock( _accessLock );
 
+		ASSERT( _readerCount > 0 );
+
+		_canReaderAccess = false;
+
+
+		if( _readerCount > 1 ) {
+			lock.unlock();
+			//TODO wait		
+		} else {
+			_exclusiveLock = true;
+			return;
+		}
+	} 
 }
 
 void
 ReadWriteLock::DowngradeFromExclusiveLock()
 {
+	Multithreading::ScopedLock lock( _accessLock );
+	
+	_exclusiveLock = false;
 
+	if( _exclusiveWaitingCount == 0 ) {
+		_canReaderAccess = true;
+	}
 }
 
 bool
 ReadWriteLock::TryExclusiveLockDataset()
 {
-	return false;
+	Multithreading::ScopedLock lock( _accessLock );
+	
+	if( !_exclusiveLock && _readerCount == 0 ) {
+		_canReaderAccess = false;
+		_exclusiveLock = true;
+		return true;
+	} else {
+		return false;
+	}
 }
 
 void
 ReadWriteLock::ExclusiveLockDataset()
 {
+	Multithreading::ScopedLock tmplock( _accessLock );
+	
+	++_exclusiveWaitingCount;
+	
+	tmplock.unlock();
 
+	while( true ) {
+		Multithreading::ScopedLock lock( _accessLock );
+
+		_canReaderAccess = false;
+
+
+		if( _exclusiveLock || _readerCount > 0 ) {
+			lock.unlock();
+			//TODO wait		
+		} else {
+			--_exclusiveWaitingCount;
+			_exclusiveLock = true;
+			return;
+		}
+	} 
 }
 
 void
 ReadWriteLock::ExclusiveUnlockDataset()
 {
+	Multithreading::ScopedLock lock( _accessLock );
+
+	_exclusiveLock = false;
+
+	if( _exclusiveWaitingCount == 0 ) {
+		_canReaderAccess = true;
+	}
 
 }
 

@@ -64,6 +64,7 @@ ImageFilter< InputImageType, OutputImageType >
 		float32		elementExtents[ ]
 	    )
 {
+	//TODO - locking
 	_outputPorts.GetPortTyped< OutputPortType >( 0 ).SetImageSize( minimums, maximums, elementExtents );
 }
 

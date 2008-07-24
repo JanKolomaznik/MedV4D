@@ -4,6 +4,8 @@
 #include <boost/shared_ptr.hpp>
 #include "TimeStamp.h"
 #include "Imaging/dataSetProperties.h"
+#include "Thread.h"
+
 #include "cellBE/iPublicJob.h"
 
 namespace M4D
@@ -15,7 +17,7 @@ class ReadWriteLock
 {
 public:
 	ReadWriteLock():
-		_canReaderAccess( true ), _readerCount( 0 ) 
+		_canReaderAccess( true ), _exclusiveLock( false ), _readerCount( 0 ), _exclusiveWaitingCount( 0 ) 
 		{ }
 
 	bool 
@@ -43,7 +45,11 @@ public:
 	ExclusiveUnlockDataset();
 private:
 	bool	_canReaderAccess;
+	bool	_exclusiveLock;
+
 	int	_readerCount;
+	int	_exclusiveWaitingCount;
+	Multithreading::Mutex _accessLock;
 
 };
 
