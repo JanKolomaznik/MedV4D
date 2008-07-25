@@ -43,16 +43,14 @@ void
 m4dGUIVtkViewerWidget::setInputPort( Imaging::AbstractImageConnection& conn )
 {
     conn.ConnectConsumer( *_inPort );
-    M4D::Imaging::AbstractImage::AImagePtr visualizedImage( (M4D::Imaging::AbstractImage*)0 );//&_inPort->GetAbstractImage() );
-    _imageData->SetImageData( visualizedImage );
+    _imageData->TemporarySetImageData( _inPort->GetAbstractImage() );
 }
 
 void
 m4dGUIVtkViewerWidget::setInputPort()
 {
     _inPort->UnPlug();
-    M4D::Imaging::AbstractImage::AImagePtr visualizedImage( (M4D::Imaging::AbstractImage*)0 );
-    _imageData->SetImageData( visualizedImage );
+    _imageData->TemporaryUnsetImageData();
 }
 
 void
