@@ -20,6 +20,14 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
 
   public:
 
+    struct Viewer {
+      M4D::Viewer::m4dGUIAbstractViewerWidget *viewerWidget;
+      /// checked tool (index) for given viewer - for left mouse button - (unchecked is -1)
+      unsigned checkedLeftButtonTool;
+      /// checked tool (index) for given viewer - for right mouse button - (unchecked is -1)
+      unsigned checkedRightButtonTool;
+    };
+
     /** 
      * Main Viewer Desktop constructor.
      *
@@ -35,8 +43,12 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
      */
     void setDesktopLayout( const int rows, const int columns );
 
-    M4D::Viewer::m4dGUIAbstractViewerWidget *getSelectedViewer() { return selectedViewer; }
-    M4D::Viewer::m4dGUIAbstractViewerWidget *getPrevSelectedViewer() { return prevSelectedViewer; }
+    M4D::Viewer::m4dGUIAbstractViewerWidget *getSelectedViewerWidget () { return selectedViewer->viewerWidget; }
+    M4D::Viewer::m4dGUIAbstractViewerWidget *getPrevSelectedViewerWidget () { return prevSelectedViewer->viewerWidget; }
+    unsigned getSelectedCheckedLeftButtonTool () { return selectedViewer->checkedLeftButtonTool; }
+    unsigned getSelectedCheckedRightButtonTool () { return selectedViewer->checkedRightButtonTool; }
+    void setSelectedCheckedLeftButtonTool ( unsigned value ) { selectedViewer->checkedLeftButtonTool = value; }
+    void setSelectedCheckedRightButtonTool ( unsigned value ) { selectedViewer->checkedRightButtonTool = value; }
 
     M4D::Viewer::m4dGUIVtkViewerWidget *getVtkRenderWindowWidget() { return vtkRenderWindowWidget; }
 
@@ -56,9 +68,9 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
     M4D::Imaging::Image< uint32, 3 >::Ptr inputImage;
     M4D::Imaging::ImageConnectionSimple< M4D::Imaging::Image< uint32, 3 > > prodconn;
 
-    std::vector< M4D::Viewer::m4dGUIAbstractViewerWidget * > viewers;
-    M4D::Viewer::m4dGUIAbstractViewerWidget *selectedViewer;
-    M4D::Viewer::m4dGUIAbstractViewerWidget *prevSelectedViewer;
+    std::vector< Viewer * > viewers;
+    Viewer *selectedViewer;
+    Viewer *prevSelectedViewer;
 };
 
 #endif // M4D_GUI_MAIN_VIEWER_DESKTOP_H

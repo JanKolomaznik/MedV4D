@@ -1,5 +1,7 @@
 #include "GUI/m4dGUIMainViewerDesktopWidget.h"
 
+#include "GUI/m4dGUIMainWindow.h"
+
 #include "Common.h"
 #include "Imaging/ExampleImageFilters.h"
 #include "Imaging/DefaultConnection.h"
@@ -58,7 +60,7 @@ m4dGUIMainViewerDesktopWidget::m4dGUIMainViewerDesktopWidget ( QWidget *parent )
   setDesktopLayout( 1, 2 );
 
   selectedViewer = viewers[1];
-  viewers[0]->slotSetSelected( true );
+  viewers[0]->viewerWidget->slotSetSelected( true );
 }
 
 
@@ -72,14 +74,18 @@ void m4dGUIMainViewerDesktopWidget::setDesktopLayout( const int rows, const int 
   {
     for ( unsigned i = 0; i < difference; i++ ) 
     {
+      Viewer *viewer = new Viewer;
       m4dGUISliceViewerWidget *widget = new m4dGUISliceViewerWidget( prodconn, viewersSize + i );
       connect( (m4dGUIAbstractViewerWidget *)widget, SIGNAL(signalSetSelected( unsigned, bool )), this, SLOT(selectedChanged( unsigned )) );
-      viewers.push_back( widget );
+      viewer->viewerWidget = widget;
+      viewer->checkedLeftButtonTool = ACTION_PAN;
+      viewer->checkedRightButtonTool = ACTION_WINDOW_LEVEL;
+      viewers.push_back( viewer );
     }
   }
   else
   {
-    viewers[newSize - 1]->slotSetSelected( true );
+    viewers[newSize - 1]->viewerWidget->slotSetSelected( true );
     for ( unsigned i = newSize; i < viewersSize; i++ ) {
       delete viewers[i];
     }
@@ -96,7 +102,7 @@ void m4dGUIMainViewerDesktopWidget::setDesktopLayout( const int rows, const int 
     QSplitter *splitter = new QSplitter();
     for ( unsigned j = 0; j < columns; j++ )
     {   
-      QWidget *widget = (*viewers[i * columns + j])();
+      QWidget *widget = (*viewers[i * columns + j]->viewerWidget)();
       widget->resize( widget->sizeHint() );
       splitter->addWidget( widget );
     }
@@ -112,7 +118,7 @@ void m4dGUIMainViewerDesktopWidget::setDesktopLayout( const int rows, const int 
 
 void m4dGUIMainViewerDesktopWidget::selectedChanged ( unsigned index )
 {
-  selectedViewer->slotSetSelected( false );
+  selectedViewer->viewerWidget->slotSetSelected( false );
   prevSelectedViewer = selectedViewer;
   selectedViewer = viewers[index];
 
