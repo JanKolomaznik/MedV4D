@@ -8,13 +8,13 @@ namespace M4D
 namespace Multithreading
 {
 
-inline void
+void
 yield()
 {
 	boost::thread::yield();
 }
 
-inline void
+void
 sleep( int duration )
 {
 	boost::xtime sleepTime;

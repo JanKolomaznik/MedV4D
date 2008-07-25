@@ -431,5 +431,5 @@ ImageVolumeFilter< Image< InputElementType, 4 >, OutputImageType >
 } /*namespace Imaging*/
 } /*namespace M4D*/
 
-#endif /*_SIMPLE_IMAGE_FILTER_H*/
+#endif /*_ABSTRACT_IMAGE_FILTERS_H*/
 

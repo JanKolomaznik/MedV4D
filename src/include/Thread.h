@@ -26,10 +26,10 @@ typedef boost::recursive_mutex	RecursiveMutex;
 
 typedef boost::recursive_mutex::scoped_lock	RecursiveScopedLock;
 
-inline void
+void
 yield();
 
-inline void
+void
 sleep( int duration );
 
 }/*namespace Multithreading*/

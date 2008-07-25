@@ -120,7 +120,7 @@ public:
 	/**
 	 * Default constructor.
 	 **/
-	AbstractFilter(){}
+	AbstractFilter() : _settings( NULL ){}
 
 	/**
 	 * Destructor - virtual - can be polymorphically destroyed.
@@ -163,7 +163,7 @@ protected:
 	*  This new enum item should be also added to enum with a new
 	*  data set class !!!
 	*/
-	AbstractFilterSetting *_setting;
+	AbstractFilterSettings *_settings;
 	
 private:
 	/**

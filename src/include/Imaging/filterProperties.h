@@ -17,35 +17,41 @@ namespace Imaging
  *  implement new class derived from this one
  */
 
-class AbstractFilterSetting 
+typedef FilterID	uint32;
+
+class AbstractFilterSettings 
   : public M4D::CellBE::iSerializable
 {
+public:
+	virtual FilterID
+	GetFilterID() const = 0;
+	
 protected:
-  uint8 filterID;
 
-  void SerializeIntoStream( M4D::CellBE::NetStream &stream)
-  {
-    stream << filterID;
-    Serialize( stream);
-  }
+	void 
+	SerializeIntoStream( M4D::CellBE::NetStream &stream)
+	{
+		stream << this->GetFilterID();
+		Serialize( stream);
+	}
 
-  AbstractFilterSetting( FilterID fid) : filterID( fid) {}
+	virtual void 
+	Serialize( M4D::CellBE::NetStream &s) = 0;
+
+	virtual void 
+	DeSerialize( M4D::CellBE::NetStream &s) = 0;
+
+	AbstractFilterSettings() {}
 };
 
-typedef std::vector<AbstractFilterSetting *> FilterVector;
+typedef std::vector<AbstractFilterSettings *> FilterVector;
 
 ///////////////////////////////////////////////////////////////////////
 
-template< FilterID fid>
-class FilterSettingTemplate : public AbstractFilterSetting
-{
-protected:
-  FilterSettingTemplate() : AbstractFilterSetting( fid) {}
-};
 
 ///////////////////////////////////////////////////////////////////////
 
-struct ThresholdingSetting : public FilterSettingTemplate<Thresholding>
+/*struct ThresholdingSetting : public FilterSettingTemplate<Thresholding>
 {
   float threshold;
 
@@ -58,7 +64,7 @@ struct ThresholdingSetting : public FilterSettingTemplate<Thresholding>
   {
     s >> threshold;
   }
-};
+};*/
 
 }
 }
