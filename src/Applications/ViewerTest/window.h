@@ -38,7 +38,7 @@
 #define WINDOW_H
 
 #include <QWidget>
-#include "GUI/m4dGUISliceViewerWidget.h"
+#include "GUI/m4dGUIVtkViewerWidget.h"
 #include "Imaging/Connection.h"
 #include "Imaging/Image.h"
 #include "Common.h"
