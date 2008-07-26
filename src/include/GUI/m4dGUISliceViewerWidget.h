@@ -129,7 +129,7 @@ private:
     int						_sliceNum;
     unsigned					_slicesPerRow;
     double					_zoomRate;
-    GLfloat					_brightnessRate;
+    GLint					_brightnessRate;
     GLfloat					_contrastRate;
     ButtonMethods				_buttonMethods[2];
     SelectMethods				_selectMethods[2];

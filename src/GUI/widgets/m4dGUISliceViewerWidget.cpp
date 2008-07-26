@@ -80,8 +80,8 @@ m4dGUISliceViewerWidget::setParameters()
     _offset = QPoint( 0, 0 );
     _lastPos = QPoint( -1, -1 );
     _zoomRate = 1.0;
-    _brightnessRate = 0.0;
-    _contrastRate = 0.0;
+    _brightnessRate = 0;
+    _contrastRate = 1.0;
     slotSetButtonHandler( moveI, left );
     slotSetButtonHandler( switch_slice, right );
     _printShapeData = false;
@@ -180,6 +180,7 @@ m4dGUISliceViewerWidget::setButtonHandler( ButtonHandler hnd, MouseButton btn )
 	break;
     }
 
+    updateGL();
     emit signalSetButtonHandler( _index, hnd, btn );
 }
 
@@ -340,36 +341,37 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
         _ready = false;
 	return;
     }
-    glClear( GL_ACCUM_BUFFER_BIT );
     glLoadIdentity();
     if ( _flipH < 0 ) offset.setX( offset.x() + (int)( zoomRate * w ) );
     if ( _flipV < 0 ) offset.setY( offset.y() + (int)( zoomRate * h ) );
-    unsigned i, offsetx = offset.x()<0?-offset.x():0, offsety = offset.y()<0?-offset.y():0;
-    if ( _flipH < 0 ) offsetx = offset.x()>(width() - 1)?offset.x()-width()+1:0;
-    if ( _flipV < 0 ) offsety = offset.y()>(height() - 1)?offset.y()-height()+1:0;
-    unsigned o_x = offset.x()>0?offset.x():0, o_y = offset.y()>0?offset.y():0;
-    if ( _flipH < 0 ) o_x = offset.x()<(width() - 1)?offset.x():(width()-1);
-    if ( _flipV < 0 ) o_y = offset.y()<(height() - 1)?offset.y():(height()-1);
-    glRasterPos2i( o_x, o_y );
-    if ( _oneSliceMode )
-    {
-        glPixelStorei( GL_UNPACK_SKIP_PIXELS, (GLint)( offsetx / zoomRate ) );
-        glPixelStorei( GL_UNPACK_SKIP_ROWS, (GLint)( offsety / zoomRate ) );
-    }
     size_t height, width, depth;
     double maxvalue;
     int stride;
-    GLfloat avg = 0.0;
+    GLuint texName;
+
+    glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
+    glGenTextures( 1, &texName );
+
+    glBindTexture ( GL_TEXTURE_2D, texName );
+    glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+
+    glTranslatef( offset.x(), offset.y(), 0 );
+    glScalef( _flipH * zoomRate, _flipV * zoomRate, 0. );
     switch ( imageID )
     {
         case NTID_UNSIGNED_INT:
 	{
 	    maxvalue = 255.;
-	    const uint8* pixel;
+	    uint8* pixel, *original;
 	    if ( _inPort->TryLockDataset() )
 	    {
-	        pixel = (const uint8*)Imaging::Image< uint32, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
-	        pixel += ( sliceNum - _inPort->GetAbstractImage().GetDimensionExtents(2).minimum ) * height * width * 4;
+	        original = (uint8*)Imaging::Image< uint32, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
+	        original += ( sliceNum - _inPort->GetAbstractImage().GetDimensionExtents(2).minimum ) * height * width * 4;
 		_inPort->ReleaseDatasetLock();
 	    }
 	    else
@@ -377,36 +379,37 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	        _ready = false;
 		return;
 	    }
-    	    if ( _oneSliceMode ) glPixelStorei( GL_UNPACK_ROW_LENGTH, width );
-	    uint8* black = new uint8[ 4 * height * width ];
-	    memset( black, 0, height * width * sizeof(uint32) );
-	    uint8* avgLum = new uint8[ height * width * 4 ];
-	    memset( avgLum, 0, height * width * sizeof(uint32) );
-	    for ( i = 0; i < height * width; ++i )
-	        avg += ( (float)pixel[4*i]*RW + (float)pixel[4*i + 1]*GW + (float)pixel[4*i + 2]*BW ) / maxvalue;
-            avg = avg * maxvalue / (float)( width * height );
-	    for ( i = 0; i < height * width; ++i )
-	        avgLum[4*i] = avgLum[4*i + 1] = avgLum[4*i + 2] = (uint8)avg;
-	    glDrawPixels( width - (GLint)( offsetx / zoomRate ), height - (GLint)( offsety / zoomRate ), GL_RGBA, GL_UNSIGNED_BYTE, avgLum );
-	    glAccum( GL_ACCUM, _contrastRate );
-	    glDrawPixels( width - (GLint)( offsetx / zoomRate ), height - (GLint)( offsety / zoomRate ), GL_RGBA, GL_UNSIGNED_BYTE, black );
-	    glAccum( GL_ACCUM, _brightnessRate );
-	    glDrawPixels( width - (GLint)( offsetx / zoomRate ), height - (GLint)( offsety / zoomRate ), GL_RGBA, GL_UNSIGNED_BYTE, pixel );
-	    glAccum( GL_ACCUM, 1.0 - ( _brightnessRate + _contrastRate ) );
-	    glAccum( GL_RETURN, 1.0 );
-	    delete[] black;
-	    delete[] avgLum;
+
+	    pixel = new uint8[ height * width * 4 ];
+	    unsigned i;
+	    for ( i = 0; i < width * height * 4; i += 4 )
+	    {
+	        if ( ( _contrastRate *   ( original[i]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. ) > maxvalue ) pixel[i] = (uint8)maxvalue;
+		else if ( ( _contrastRate *   ( original[i]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. ) < 0. ) pixel[i] = 0;
+		else pixel[i] = (uint8)( _contrastRate *   ( original[i]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. );
+	        if ( ( _contrastRate *   ( original[i+1]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. ) > maxvalue ) pixel[i+1] = (uint8)maxvalue;
+		else if ( ( _contrastRate *   ( original[i+1]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. ) < 0. ) pixel[i+1] = 0;
+		else pixel[i+1] = (uint8)( _contrastRate *   ( original[i+1]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. );
+	        if ( ( _contrastRate *   ( original[i+2]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. ) > maxvalue ) pixel[i+2] = (uint8)maxvalue;
+		else if ( ( _contrastRate *   ( original[i+2]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. ) < 0. ) pixel[i+2] = 0;
+		else pixel[i+2] = (uint8)( _contrastRate *   ( original[i+2]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. );
+		pixel[i+3] = original[i+3];
+	    }
+	    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
+	                  GL_RGBA, GL_UNSIGNED_BYTE, pixel );
+	    delete[] pixel;
+	    
 	}
 	break;
 
         case NTID_UNSIGNED_CHAR:
 	{    
 	    maxvalue = 255.;
-	    const uint8* pixel;
+	    uint8* pixel, *original;
 	    if ( _inPort->TryLockDataset() )
 	    {
-	        pixel = Imaging::Image< uint8, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
-	        pixel += ( sliceNum - _inPort->GetAbstractImage().GetDimensionExtents(2).minimum ) * height * width;
+	        original = Imaging::Image< uint8, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
+	        original += ( sliceNum - _inPort->GetAbstractImage().GetDimensionExtents(2).minimum ) * height * width;
 		_inPort->ReleaseDatasetLock();
 	    }
 	    else
@@ -414,36 +417,30 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	        _ready = false;
 		return;
 	    }
-    	    if ( _oneSliceMode ) glPixelStorei( GL_UNPACK_ROW_LENGTH, width );
-	    uint8* black = new uint8[ height * width ];
-	    memset( black, 0, height * width * sizeof(uint8) );
-	    uint8* avgLum = new uint8[ height * width ];
-	    memset( avgLum, 0, height * width * sizeof(uint8) );
-	    for ( i = 0; i < height * width; ++i )
-	        avg += (float)pixel[i] / maxvalue;
-            avg = avg * maxvalue / (float)( width * height );
-	    for ( i = 0; i < height * width; ++i )
-	        avgLum[i] = (uint8)avg;
-	    glDrawPixels( width - (GLint)( offsetx / zoomRate ), height - (GLint)( offsety / zoomRate ), GL_LUMINANCE, GL_UNSIGNED_BYTE, avgLum );
-	    glAccum( GL_ACCUM, _contrastRate );
-	    glDrawPixels( width - (GLint)( offsetx / zoomRate ), height - (GLint)( offsety / zoomRate ), GL_LUMINANCE, GL_UNSIGNED_BYTE, black );
-	    glAccum( GL_ACCUM, _brightnessRate );
-	    glDrawPixels( width - (GLint)( offsetx / zoomRate ), height - (GLint)( offsety / zoomRate ), GL_LUMINANCE, GL_UNSIGNED_BYTE, pixel );
-	    glAccum( GL_ACCUM, 1.0 - ( _brightnessRate + _contrastRate ) );
-	    glAccum( GL_RETURN, 1.0 );
-	    delete[] black;
-	    delete[] avgLum;
+
+	    pixel = new uint8[ height * width ];
+	    unsigned i;
+	    for ( i = 0; i < width * height; ++i )
+	    {
+	        if ( ( _contrastRate *   ( original[i]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. ) > maxvalue ) pixel[i] = (uint8)maxvalue;
+		else if ( ( _contrastRate *   ( original[i]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. ) < 0. ) pixel[i] = 0;
+		else pixel[i] = (uint8)( _contrastRate *   ( original[i]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. );
+	    }
+	    glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
+	                  GL_LUMINANCE, GL_UNSIGNED_BYTE, pixel );
+	    delete[] pixel;
+	    
 	}
 	break;
 
         case NTID_UNSIGNED_SHORT:
 	{
 	    maxvalue = 65535.;
-	    const uint16* pixel;
+	    uint16* pixel, *original;
 	    if ( _inPort->TryLockDataset() )
 	    {
-	        pixel = Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
-	        pixel += ( sliceNum - _inPort->GetAbstractImage().GetDimensionExtents(2).minimum ) * height * width;
+	        original = Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
+	        original += ( sliceNum - _inPort->GetAbstractImage().GetDimensionExtents(2).minimum ) * height * width;
 		_inPort->ReleaseDatasetLock();
 	    }
 	    else
@@ -451,32 +448,37 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	        _ready = false;
 		return;
 	    }
-    	    if ( _oneSliceMode ) glPixelStorei( GL_UNPACK_ROW_LENGTH, width );
-	    uint16* black = new uint16[ height * width ];
-	    memset( black, 0, height * width * sizeof(uint16) );
-	    uint16* avgLum = new uint16[ height * width ];
-	    memset( avgLum, 0, height * width * sizeof(uint16) );
-	    for ( i = 0; i < height * width; ++i )
-	        avg += (float)pixel[i] / maxvalue;
-            avg = avg * maxvalue / (float)( width * height );
-	    for ( i = 0; i < height * width; ++i )
-	        avgLum[i] = (uint16)avg;
-	    glDrawPixels( width - (GLint)( offsetx / zoomRate ), height - (GLint)( offsety / zoomRate ), GL_LUMINANCE, GL_UNSIGNED_SHORT, avgLum );
-	    glAccum( GL_ACCUM, _contrastRate );
-	    glDrawPixels( width - (GLint)( offsetx / zoomRate ), height - (GLint)( offsety / zoomRate ), GL_LUMINANCE, GL_UNSIGNED_SHORT, black );
-	    glAccum( GL_ACCUM, _brightnessRate );
-	    glDrawPixels( width - (GLint)( offsetx / zoomRate ), height - (GLint)( offsety / zoomRate ), GL_LUMINANCE, GL_UNSIGNED_SHORT, pixel );
-	    glAccum( GL_ACCUM, 1.0 - ( _brightnessRate + _contrastRate ) );
-	    glAccum( GL_RETURN, 1.0 );
-	    delete[] black;
-	    delete[] avgLum;
+
+	    pixel = new uint16[ height * width ];
+	    unsigned i;
+	    for ( i = 0; i < width * height; ++i )
+	    {
+	        if ( ( _contrastRate *   ( original[i]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. ) > maxvalue ) pixel[i] = (uint16)maxvalue;
+		else if ( ( _contrastRate *   ( original[i]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. ) < 0. ) pixel[i] = 0;
+		else pixel[i] = (uint16)( _contrastRate *   ( original[i]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. );
+	    }
+	    glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
+	                  GL_LUMINANCE, GL_UNSIGNED_SHORT, pixel );
+	    delete[] pixel;
+	    
 	}
 	break;
 
+	default:
+	break;
+
     }
-    glPixelZoom( _flipH * zoomRate, _flipV * zoomRate );
-    glTranslatef( offset.x(), offset.y(), 0 );
-    glScalef( _flipH * zoomRate, _flipV * zoomRate, 0. );
+    glEnable( GL_TEXTURE_2D );
+    glBindTexture( GL_TEXTURE_2D, texName );
+
+    glBegin( GL_QUADS );
+        glTexCoord2d(0.0,0.0); glVertex2d(  0.0,   0.0);
+        glTexCoord2d(1.0,0.0); glVertex2d(width,   0.0);
+        glTexCoord2d(1.0,1.0); glVertex2d(width,height);
+        glTexCoord2d(0.0,1.0); glVertex2d(  0.0,height);
+        glEnd();
+    glDeleteTextures( 1, &texName );
+    
     if ( !_shapes.empty() )
     {
         for ( std::list< Selection::m4dShape<int> >::iterator it = _shapes.begin(); it != --(_shapes.end()); ++it )
@@ -874,8 +876,8 @@ m4dGUISliceViewerWidget::moveImage( int amountH, int amountV )
 void
 m4dGUISliceViewerWidget::adjustContrastBrightness( int amountC, int amountB )
 {
-    _brightnessRate -= ((GLfloat)amountB)/((GLfloat)height()/2.0);
-    _contrastRate -= ((GLfloat)amountC)/((GLfloat)width()/2.0);
+    _brightnessRate += amountB;
+    _contrastRate += ((GLfloat)amountC)/((GLfloat)width()/2.0);
     emit signalAdjustContrastBrightness( _index, amountC, amountB );
 }
 
