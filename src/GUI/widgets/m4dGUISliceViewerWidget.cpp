@@ -180,7 +180,7 @@ m4dGUISliceViewerWidget::setButtonHandler( ButtonHandler hnd, MouseButton btn )
 	break;
     }
 
-    updateGL();
+    if ( _ready ) updateGL();
     emit signalSetButtonHandler( _index, hnd, btn );
 }
 
@@ -206,7 +206,6 @@ m4dGUISliceViewerWidget::toggleFlipHorizontal()
     _flipH *= -1;
     emit signalToggleFlipVertical();
     updateGL();
-    updateGL();
 }
 
 void
@@ -214,7 +213,6 @@ m4dGUISliceViewerWidget::toggleFlipVertical()
 {
     _flipV *= -1;
     emit signalToggleFlipVertical();
-    updateGL();
     updateGL();
 }
 
@@ -277,7 +275,7 @@ m4dGUISliceViewerWidget::togglePrintData()
 void
 m4dGUISliceViewerWidget::paintGL()
 {
-    glClear( GL_COLOR_BUFFER_BIT | GL_ACCUM_BUFFER_BIT );
+    glClear( GL_COLOR_BUFFER_BIT );
     if ( !_ready )
     {
         setParameters();
