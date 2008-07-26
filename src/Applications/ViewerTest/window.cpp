@@ -40,7 +40,7 @@
 
 mywindow::mywindow(M4D::Imaging::ImageConnection< M4D::Imaging::Image<uint32, 3> >& conn)
 {
-    glWidget = new M4D::Viewer::m4dGUIVtkViewerWidget( conn, 0 );
+    glWidget = new M4D::Viewer::m4dGUIVtkViewerWidget( &conn, 0 );
     //glWidget->setSelected( true );
 
     QHBoxLayout *mainLayout = new QHBoxLayout;
