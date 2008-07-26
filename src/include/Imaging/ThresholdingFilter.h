@@ -11,9 +11,43 @@ namespace Imaging
 {
 
 template< typename InputElementType >
-struct ThresholdingOptions
+struct ThresholdingFilterOptions
 {
+	InputElementType	bottom;	
+	InputElementType	top;
 	
+	InputElementType	outValue;
+};
+
+template< typename InputImageType >
+class ThresholdingFilter;
+
+template< typename InputElementType >
+class ThresholdingFilter< Image< InputElementType, 2 >
+{
+	//TODO
+};
+
+template< typename InputElementType >
+class ThresholdingFilter< Image< InputElementType, 3 > 
+	: public IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
+{
+public:
+	typedef ThresholdingFilterOptions< InputElementType >	Settings;
+	ThresholdingFilter();
+protected:
+	typedef typename  Imaging::IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
+
+	bool
+	ProcessSlice(
+			const Image< InputElementType, 3 > 	&in,
+			Image< InputElementType, 3 >		&out,
+			size_t			x1,	
+			size_t			y1,	
+			size_t			x2,	
+			size_t			y2,	
+			size_t			slice
+		    );
 
 };
 

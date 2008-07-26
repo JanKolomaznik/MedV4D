@@ -73,10 +73,10 @@ public:
 		){ /*empty*/ }
 
 	virtual AbstractDataSet &
-	GetDataset() = 0;
+	GetDataset()const = 0;
 
 	virtual const AbstractDataSet &
-	GetDatasetReadOnly() = 0;
+	GetDatasetReadOnly()const = 0;
 
 	/**
 	 * Method, which try to lock dataset controled by this connection for 
@@ -140,10 +140,19 @@ public:
 	virtual const AbstractImage &
 	GetAbstractImageReadOnly()const = 0;
 
+	virtual AbstractImage &
+	GetAbstractImage()const = 0;
+
 	const AbstractDataSet &
-	GetDatasetReadOnly()
+	GetDatasetReadOnly()const
 		{ 
 			return GetAbstractImageReadOnly();
+		}
+	
+	AbstractDataSet &
+	GetDataset()const
+		{
+			return GetAbstractImage();
 		}
 
 	/*virtual void
@@ -199,7 +208,7 @@ public:
 	DisconnectAll();
 
 	Image &
-	GetImage() 
+	GetImage()const 
 		{ if( !_image ) { throw ENoImageAssociated(); }
 			return *_image;
 		}
@@ -211,13 +220,13 @@ public:
 		}
 
 	AbstractDataSet &
-	GetDataset()
+	GetDataset()const
 		{ 
 			return GetImage();
 		}
 
 	const AbstractDataSet &
-	GetDatasetReadOnly()
+	GetDatasetReadOnly()const
 		{ 
 			return GetImageReadOnly();
 		}
@@ -226,6 +235,12 @@ public:
 	GetAbstractImageReadOnly()const
 		{
 			return GetImageReadOnly();
+		}
+
+	AbstractImage &
+	GetAbstractImage()const
+		{
+			return GetImage();
 		}
 
 	void

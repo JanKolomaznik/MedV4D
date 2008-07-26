@@ -19,7 +19,7 @@ InputPortImageFilter< Image< ElementType, dimension > >
 	if( !this->IsPlugged() ) {
 		throw EDisconnected( this->GetID() );
 	}
-	return _imageConnection->GetImageReadOnly();
+	return static_cast<ConnectionType*>( _connection )->GetImageReadOnly();
 }
 
 
@@ -32,32 +32,13 @@ InputPortImageFilter< Image< ElementType, dimension > >
 		dynamic_cast< ImageConnection< ImageType > * >( &connection );
 	if( conn ) {
 		this->_connection = conn;
-		this->_imageConnection = conn;
-		this->_abstractImageConnection = static_cast< AbstractImageConnection * >( &connection );
 	} else {
 		throw Port::EConnectionTypeMismatch();
 	}
 }
 
-/*template< typename ElementType, unsigned dimension >
-void
-InputPortImageFilter< Image< ElementType, dimension > >
-::PlugTyped( ImageConnection< Image< ElementType, dimension > > & connection )
-{
-	_imageConnection = &connection;
-	//TODO
-}*/
 
-template< typename ElementType, unsigned dimension >
-void
-InputPortImageFilter< Image< ElementType, dimension > >
-::UnPlug()
-{
-	_imageConnection = NULL;
-	_abstractImageConnection = NULL;//TODO
-	//TODO
-}
-
+/*
 template< typename ElementType, unsigned dimension >
 void
 InputPortImageFilter< Image< ElementType, dimension > >
@@ -69,12 +50,12 @@ InputPortImageFilter< Image< ElementType, dimension > >
 	if( this->IsPlugged() ) {
 		DL_PRINT( 5, "Sending message " << msg->msgID );
 		msg->senderID = this->GetID();
-		_imageConnection->RouteMessage( msg, sendStyle, FD_AGAINST_FLOW );
+		static_cast<ConnectionType*>( _connection )->RouteMessage( msg, sendStyle, FD_AGAINST_FLOW );
 		
 	}
 	//TODO
 }
-
+*/
 
 //******************************************************************************
 
@@ -87,7 +68,7 @@ OutputPortImageFilter< Image< ElementType, dimension > >
 		throw EDisconnected( this->GetID() );
 	}
 
-	return _imageConnection->GetImage();
+	return static_cast<ConnectionType*>( _connection )->GetImage();
 }
 
 template< typename ElementType, unsigned dimension >
@@ -103,7 +84,7 @@ OutputPortImageFilter< Image< ElementType, dimension > >
 		throw EDisconnected( this->GetID() );
 	}
 
-	_imageConnection->SetImageSize( minimums, maximums, elementExtents );	
+	static_cast<ConnectionType*>( _connection )->SetImageSize( minimums, maximums, elementExtents );	
 }
 
 template< typename ElementType, unsigned dimension >
@@ -115,29 +96,13 @@ OutputPortImageFilter< Image< ElementType, dimension > >
 		dynamic_cast< ImageConnection< ImageType > * >( &connection );
 	if( conn ) {
 		this->_connection = conn;
-		this->_imageConnection = conn;
 	} else {
 		throw Port::EConnectionTypeMismatch();
 	}
 }
 
-/*template< typename ElementType, unsigned dimension >
-void
-OutputPortImageFilter< Image< ElementType, dimension > >
-::PlugTyped( ImageConnection< Image< ElementType, dimension > > & connection )
-{
-	_imageConnection = &connection;
-	//TODO
-}*/
 
-template< typename ElementType, unsigned dimension >
-void
-OutputPortImageFilter< Image< ElementType, dimension > >
-::UnPlug()
-{
-	//TODO
-}
-
+/*
 template< typename ElementType, unsigned dimension >
 void
 OutputPortImageFilter< Image< ElementType, dimension > >
@@ -149,10 +114,10 @@ OutputPortImageFilter< Image< ElementType, dimension > >
 	if( this->IsPlugged() ) {
 		DL_PRINT( 5, "Sending message " << msg->msgID );
 		msg->senderID = this->GetID();
-		_imageConnection->RouteMessage( msg, sendStyle, FD_IN_FLOW );
+		static_cast<ConnectionType*>( _connection )->RouteMessage( msg, sendStyle, FD_IN_FLOW );
 	}
 	//TODO
-}
+}*/
 
 //******************************************************************************
 

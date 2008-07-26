@@ -64,7 +64,7 @@ public:
 	 * disconnected do nothing.
 	 **/
 	virtual void
-	UnPlug() = 0;
+	UnPlug();
 
 	uint64
 	GetID()const
@@ -153,6 +153,11 @@ public:
 	virtual
 	~InputPort() {}
 
+	void
+	SendMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle 
+		);
 	
 protected:
 
@@ -165,19 +170,12 @@ class OutputPort: public Port
 public:
 	virtual
 	~OutputPort() {}
-
-	/*virtual bool 
-	TryDatasetExclusiveLock();
-
-	virtual void 
-	DatasetExclusiveLock();*/
-
-	//TODO - if store, wheather this port already locked dataset - unlock during destruction ...
-	/**
-	 * Release dataset lock, which was locked by previous method.
-	 **/
-/*	virtual void 
-	ReleaseExclusiveDatasetLock();*/
+	
+	void
+	SendMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle 
+		);
 protected:
 
 private:
@@ -188,35 +186,29 @@ private:
 class InputPortAbstractImage: public InputPort
 {
 public:
+	typedef AbstractImageConnection ConnectionType;
+
 	const AbstractImage&
 	GetAbstractImage()const;
 
 	void
 	Plug( ConnectionInterface & connection );
 
-	/*void
-	PlugTyped( AbstractImageConnection & connection );*/
-
-	void
-	UnPlug();
-
-	void
-	SendMessage( 
-		PipelineMessage::Ptr 			msg, 
-		PipelineMessage::MessageSendStyle 	sendStyle 
-		);
 protected:
-	AbstractImageConnection	*_abstractImageConnection;
-
 };
 
-/*
+
 class OutputPortAbstractImage: public OutputPort
 {
 public:
+	typedef AbstractImageConnection ConnectionType;
+
 	AbstractImage&
-	GetImage()const;
-};*/
+	GetAbstractImage()const;
+
+	void
+	Plug( ConnectionInterface & connection );
+};
 //******************************************************************************
 template< typename ImageType >
 class InputPortImageFilter;
@@ -226,8 +218,9 @@ class InputPortImageFilter< Image< ElementType, dimension > >: public InputPortA
 {
 public:
 	typedef typename M4D::Imaging::Image< ElementType, dimension > ImageType;
+	typedef typename M4D::Imaging::ImageConnection< ImageType > ConnectionType;
 
-	InputPortImageFilter(): _imageConnection( NULL ) {}
+	InputPortImageFilter() {}
 
 	const ImageType&
 	GetImage()const;
@@ -236,33 +229,27 @@ public:
 	Plug( ConnectionInterface & connection );
 
 	/*void
-	PlugTyped( ImageConnection< ImageType > & connection );*/
-
-	void
-	UnPlug();
-
-	void
 	SendMessage( 
 		PipelineMessage::Ptr 			msg, 
 		PipelineMessage::MessageSendStyle 	sendStyle 
-		);
+		);*/
 
 
 protected:
 	
-	ImageConnection< ImageType >	*_imageConnection;
 };
 
 template< typename ImageType >
 class OutputPortImageFilter;
 
 template< typename ElementType, unsigned dimension >
-class OutputPortImageFilter< Image< ElementType, dimension > >: public OutputPort
+class OutputPortImageFilter< Image< ElementType, dimension > >: public OutputPortAbstractImage
 {
 public:
 	typedef typename M4D::Imaging::Image< ElementType, dimension > ImageType;
+	typedef typename M4D::Imaging::ImageConnection< ImageType > ConnectionType;
 
-	OutputPortImageFilter(): _imageConnection( NULL ) {}
+	OutputPortImageFilter() {}
 
 	//TODO - check const modifier
 	ImageType&
@@ -281,18 +268,14 @@ public:
 	/*void
 	PlugTyped( ImageConnection< ImageType > & connection );*/
 	
-	void
-	UnPlug();
-
-	void
+	/*void
 	SendMessage( 
 		PipelineMessage::Ptr 			msg, 
 		PipelineMessage::MessageSendStyle 	sendStyle 
-		);
+		);*/
 
 protected:
 
-	ImageConnection< ImageType >	*_imageConnection;
 };
 
 //******************************************************************************

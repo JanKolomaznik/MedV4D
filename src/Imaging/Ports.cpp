@@ -2,11 +2,6 @@
 
 #include "Thread.h"
 
-/*# if defined(_WINSOCKAPI_) && !defined(_WINSOCK2API_)
-#  error WinSock.h has already been included. Jak to????!!!!!
-# endif // defined(_WINSOCKAPI_) && !defined(_WINSOCK2API_)
-*/
-
 #include "Functors.h"
 #include "Imaging/Ports.h"
 
@@ -39,6 +34,12 @@ Port::ReceiveMessage(
 	if( _msgReceiver ) {
 		_msgReceiver->ReceiveMessage( msg, sendStyle, direction );
 	}
+}
+
+void
+Port::UnPlug()
+{
+	_connection = NULL;
 }
 //******************************************************************************
 
@@ -73,20 +74,33 @@ Port::ReleaseDatasetLock()
 }
 
 //******************************************************************************
-/*
-bool 
-OutputPort::GetDatasetWriteLock()
+void
+InputPort
+::SendMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle 
+		)
 {
+	if( this->IsPlugged() ) {
+		msg->senderID = this->GetID();
+		_connection->RouteMessage( msg, sendStyle, FD_AGAINST_FLOW );
+	}
 	//TODO
-	return false;
 }
 
 void
-OutputPort::ReleaseDatasetLock()
+OutputPort::SendMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle 
+		)
 {
-
+	if( this->IsPlugged() ) {
+		msg->senderID = this->GetID();
+		_connection->RouteMessage( msg, sendStyle, FD_IN_FLOW );
+	}
+	//TODO
 }
-*/
+//
 //******************************************************************************
 
 const AbstractImage &
@@ -96,7 +110,7 @@ InputPortAbstractImage
 	if( !this->IsPlugged() ) {
 		throw EDisconnected( this->GetID() );
 	}
-	return _abstractImageConnection->GetAbstractImageReadOnly();
+	return static_cast<ConnectionType*>( _connection )->GetAbstractImageReadOnly();
 }
 
 
@@ -108,42 +122,36 @@ InputPortAbstractImage
 		dynamic_cast< AbstractImageConnection * >( &connection );
 	if( conn ) {
 		this->_connection = conn;
-		this->_abstractImageConnection = conn;
 	} else {
 		throw Port::EConnectionTypeMismatch();
 	}
 }
 
-/*void
-InputPortImageFilter
-::PlugTyped( AbstractImageConnection & connection )
-{
-	_abstractImageConnection = &connection;
-	//TODO
-}*/
+//******************************************************************************
 
-void
-InputPortAbstractImage
-::UnPlug()
+AbstractImage &
+OutputPortAbstractImage
+::GetAbstractImage()const
 {
-	_abstractImageConnection = NULL;//TODO
-}
-
-void
-InputPortAbstractImage
-::SendMessage( 
-		PipelineMessage::Ptr 			msg, 
-		PipelineMessage::MessageSendStyle 	sendStyle 
-		)
-{
-	if( this->IsPlugged() ) {
-		msg->senderID = this->GetID();
-		_abstractImageConnection->RouteMessage( msg, sendStyle, FD_AGAINST_FLOW );
-		
+	if( !this->IsPlugged() ) {
+		throw EDisconnected( this->GetID() );
 	}
-	//TODO
+	return static_cast<ConnectionType*>( _connection )->GetAbstractImage();
 }
 
+
+void
+OutputPortAbstractImage
+::Plug( ConnectionInterface & connection )
+{
+	AbstractImageConnection *conn = 
+		dynamic_cast< AbstractImageConnection * >( &connection );
+	if( conn ) {
+		this->_connection = conn;
+	} else {
+		throw Port::EConnectionTypeMismatch();
+	}
+}
 
 //******************************************************************************
 
