@@ -23,7 +23,7 @@ m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( unsigned index, QWidget *paren
     setInputPort( );
 }
 
-m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( Imaging::AbstractImageConnection& conn, unsigned index, QWidget *parent)
+m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( Imaging::ConnectionInterface* conn, unsigned index, QWidget *parent)
     : QGLWidget(parent)
 {
     _index = index;
@@ -47,12 +47,6 @@ m4dGUISliceViewerWidget::setSelected()
     emit signalSetSelected( _index, false );
 }
 
-bool
-m4dGUISliceViewerWidget::getSelected()
-{
-    return _selected;
-}
-
 void
 m4dGUISliceViewerWidget::setInputPort( )
 {
@@ -61,9 +55,9 @@ m4dGUISliceViewerWidget::setInputPort( )
 }
 
 void
-m4dGUISliceViewerWidget::setInputPort( Imaging::AbstractImageConnection& conn )
+m4dGUISliceViewerWidget::setInputPort( Imaging::ConnectionInterface* conn )
 {
-    conn.ConnectConsumer( *_inPort );
+    conn->ConnectConsumer( *_inPort );
     setParameters();
 }
 
@@ -743,10 +737,13 @@ m4dGUISliceViewerWidget::mousePressEvent(QMouseEvent *event)
     }
     _lastPos = event->pos();
     int w, h;
+    QPoint offset;
     if ( _inPort->TryLockDataset() )
     {
         w = (int)_inPort->GetAbstractImage().GetDimensionExtents(0).maximum - _inPort->GetAbstractImage().GetDimensionExtents(0).minimum,
         h = (int)_inPort->GetAbstractImage().GetDimensionExtents(1).maximum - _inPort->GetAbstractImage().GetDimensionExtents(1).minimum;
+	offset.setX( (int)floor( (double)_offset.x() - ( _zoomRate - (double)width()/w ) * 0.5 * w ) );
+	offset.setY( (int)floor( (double)_offset.y() - ( _zoomRate - (double)height()/h ) * 0.5 * h ) );
 	_inPort->ReleaseDatasetLock();
     }
     else
@@ -756,14 +753,14 @@ m4dGUISliceViewerWidget::mousePressEvent(QMouseEvent *event)
     }
     if ( ( event->buttons() & Qt::LeftButton ) && _selectionMode[ left ] )
     {
-        if ( _oneSliceMode ) (this->*_selectMethods[ left ])( (int)( ( event->x() - _offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - _offset.y() ) / _zoomRate ), _sliceNum );
+        if ( _oneSliceMode ) (this->*_selectMethods[ left ])( (int)( ( event->x() - offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - offset.y() ) / _zoomRate ), _sliceNum );
         else (this->*_selectMethods[ left ])( (int)( ( event->x() % ( ( width() - 1 ) / _slicesPerRow ) ) * _slicesPerRow * w / ( width() - 1 ) ),
    					    (int)( ( ( this->height() - event->y() ) % ( ( h / w ) * ( width() - 1 ) / _slicesPerRow ) ) * _slicesPerRow * w / ( width() - 1 ) ),
 					    _sliceNum + event->x() / (int)( ( width() - 1 ) / _slicesPerRow ) + _slicesPerRow * ( ( this->height() - event->y() ) / (int)( ( h / w ) * ( width() - 1 ) / _slicesPerRow ) ) );
     }
     else if ( event->buttons() & Qt::RightButton && _selectionMode[ right ] )
     {
-        if ( _oneSliceMode ) (this->*_selectMethods[ right ])( (int)( ( event->x() - _offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - _offset.y() ) / _zoomRate ), _sliceNum );
+        if ( _oneSliceMode ) (this->*_selectMethods[ right ])( (int)( ( event->x() - offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - offset.y() ) / _zoomRate ), _sliceNum );
         else (this->*_selectMethods[ right ])( (int)( ( event->x() % ( ( width() - 1 ) / _slicesPerRow ) ) * _slicesPerRow * w / ( width() - 1 ) ),
    					     (int)( ( ( this->height() - event->y() ) % ( ( h / w ) * ( width() - 1 ) / _slicesPerRow ) ) * _slicesPerRow * w / ( width() - 1 ) ),
 					     _sliceNum + event->x() / (int)( ( width() - 1 ) / _slicesPerRow ) + _slicesPerRow * ( ( this->height() - event->y() ) / (int)( ( h / w ) * ( width() - 1 ) / _slicesPerRow ) ) );
@@ -1080,18 +1077,21 @@ void
 m4dGUISliceViewerWidget::slotDeletePoint()
 {
     deletePoint();
+    updateGL();
 }
 
 void
 m4dGUISliceViewerWidget::slotDeleteShape()
 {
     deleteShape();
+    updateGL();
 }
 
 void
 m4dGUISliceViewerWidget::slotDeleteAll()
 {
     deleteAll();
+    updateGL();
 }
 
 void

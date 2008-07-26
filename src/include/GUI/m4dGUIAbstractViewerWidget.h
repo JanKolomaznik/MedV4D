@@ -51,6 +51,18 @@ public:
     m4dGUIAbstractViewerWidget() : _inputPorts( this ) {}
     virtual ~m4dGUIAbstractViewerWidget() {}
 
+    virtual void setInputPort()=0;
+    virtual void setInputPort( Imaging::ConnectionInterface* conn )=0;
+    Imaging::ConnectionInterface* getInputPort()
+    	{ return _inputPorts[0].GetConnection(); }
+
+    bool getSelected()
+	{ return _selected; }
+    virtual void setUnSelected()
+        { _selected = false; }
+    virtual void setSelected()
+    	{ _selected = true; }
+
     virtual AvailableSlots getAvailableSlots()=0;
     virtual QWidget* operator()()=0;
 
@@ -58,8 +70,13 @@ public:
     InputPort()const
     	{ return _inputPorts; }
 
+    unsigned getIndex()
+    	{ return _index; }
+
 protected:
     Imaging::InputPortList	_inputPorts;
+    bool			_selected;
+    unsigned			_index;
 
 public slots:
     virtual void slotSetButtonHandler( ButtonHandler hnd, MouseButton btn )=0;

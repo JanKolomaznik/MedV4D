@@ -28,9 +28,12 @@ class m4dGUISliceViewerWidget : public m4dGUIAbstractViewerWidget, public QGLWid
 
 public:
     m4dGUISliceViewerWidget( unsigned index, QWidget *parent = 0 );
-    m4dGUISliceViewerWidget( Imaging::AbstractImageConnection& conn, unsigned index, QWidget *parent = 0 );
-    void setInputPort();
-    void setInputPort( Imaging::AbstractImageConnection& conn );
+    m4dGUISliceViewerWidget( Imaging::ConnectionInterface* conn, unsigned index, QWidget *parent = 0 );
+    virtual void setInputPort();
+    virtual void setInputPort( Imaging::ConnectionInterface* conn );
+
+    virtual void setUnSelected();
+    virtual void setSelected();
 
     virtual AvailableSlots getAvailableSlots();
 
@@ -67,9 +70,6 @@ public slots:
 
 protected:
     void setButtonHandler( ButtonHandler hnd, MouseButton btn );
-    void setUnSelected();
-    void setSelected();
-    bool getSelected();
     void setOneSliceMode();
     void setMoreSliceMode( unsigned slicesPerRow );
     void switchSlice( int dummy, int amount );
@@ -117,8 +117,6 @@ private:
     std::map< std::string, std::string >	_leftSideData;
     std::map< std::string, std::string >	_rightSideData;
 
-    unsigned					_index;
-
     short					_flipH;
     short					_flipV;
     
@@ -126,7 +124,6 @@ private:
     bool					_printData;
     bool					_printShapeData;
     bool					_oneSliceMode;
-    bool					_selected;
     QPoint					_lastPos;
     QPoint					_offset;
     int						_sliceNum;

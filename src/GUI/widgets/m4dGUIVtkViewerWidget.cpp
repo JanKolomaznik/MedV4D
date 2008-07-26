@@ -7,7 +7,7 @@ namespace M4D
 namespace Viewer
 {
 
-m4dGUIVtkViewerWidget::m4dGUIVtkViewerWidget( Imaging::AbstractImageConnection& conn, unsigned index, QWidget *parent )
+m4dGUIVtkViewerWidget::m4dGUIVtkViewerWidget( Imaging::ConnectionInterface* conn, unsigned index, QWidget *parent )
     : QVTKWidget( parent )
 {
     _index = index;
@@ -40,9 +40,9 @@ m4dGUIVtkViewerWidget::~m4dGUIVtkViewerWidget()
 }
 
 void
-m4dGUIVtkViewerWidget::setInputPort( Imaging::AbstractImageConnection& conn )
+m4dGUIVtkViewerWidget::setInputPort( Imaging::ConnectionInterface* conn )
 {
-    conn.ConnectConsumer( *_inPort );
+    conn->ConnectConsumer( *_inPort );
     _imageData->TemporarySetImageData( _inPort->GetAbstractImage() );
 }
 

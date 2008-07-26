@@ -34,12 +34,12 @@ class m4dGUIVtkViewerWidget: public m4dGUIAbstractViewerWidget, public QVTKWidge
     Q_OBJECT
 
 public:
-    m4dGUIVtkViewerWidget( Imaging::AbstractImageConnection& conn, unsigned index, QWidget *parent = 0 );
+    m4dGUIVtkViewerWidget( Imaging::ConnectionInterface* conn, unsigned index, QWidget *parent = 0 );
     m4dGUIVtkViewerWidget( unsigned index, QWidget *parent = 0 );
     ~m4dGUIVtkViewerWidget();
 
-    void setInputPort();
-    void setInputPort( Imaging::AbstractImageConnection& conn );
+    virtual void setInputPort();
+    virtual void setInputPort( Imaging::ConnectionInterface* conn );
 
     virtual AvailableSlots getAvailableSlots();
 
@@ -87,7 +87,6 @@ private:
     vtkVolume*					_volume;
     vtkRenderer*				_renImageData;
     AvailableSlots				_availableSlots;
-    unsigned					_index;
 };
 
 } /* namespace Viewer */
