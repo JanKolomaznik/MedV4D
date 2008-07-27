@@ -168,6 +168,9 @@ class m4dGUIMainWindow: public QMainWindow
     QMenu *toolBarsMenu;
     QMenu *toolsMenu;
     QMenu *viewMenu;
+
+
+    // M4D::Imaging::AbstractImageData::APtr inputImage;
 };
 
 #endif // M4D_GUI_MAIN_WINDOW_H

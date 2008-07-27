@@ -8,6 +8,7 @@
 // DICOM namespace:
 using namespace M4D::Dicom;
 using namespace M4D::Viewer;
+using namespace M4D::Imaging;
 
 
 /// Number of abstract viewer's actions (toolBar buttons) - first is for all unplugged slots (it's not in toolBar)
@@ -358,8 +359,6 @@ void m4dGUIMainWindow::createActions ()
                                              leftButtonGroup->addAction( viewerActs[i] );
     }
   }
-  // update availability of features (according to selected viewer - first one is init.)
-  features();
 
   layoutAct = new QAction( QIcon( ":/icons/layout.png" ), tr( "S&creen Layout" ), this );
   layoutAct->setShortcut( tr( "Ctrl+C" ) );
@@ -371,6 +370,9 @@ void m4dGUIMainWindow::createActions ()
   replaceAct->setShortcut( tr( "Ctrl+L" ) );
   replaceAct->setStatusTip( tr( "Replace selected viewer (slice viewer/3D viewer)" ) );
   connect( replaceAct, SIGNAL(triggered()), this, SLOT(replace()) );
+
+  // update availability of features (according to selected viewer - first one is init.)
+  features();
 }
 
 
@@ -492,10 +494,10 @@ void m4dGUIMainWindow::delegateAction ( unsigned actionIdx, m4dGUIAbstractViewer
 }
 
 
-
 void m4dGUIMainWindow::view ( DcmProvider::DicomObjSet *dicomObjSet )
 {
-  // TODO
-  // mainViewerDesktop->getVtkRenderWindowWidget()->addRenderer( mainViewerDesktop->getVtkRenderWindowWidget()->imageDataToRenderWindow( DcmProvider::DicomObjSetPtr( dicomObjSet ) ) );
-  // mainViewerDesktop->getSelectedViewer()->setInputPort();
+  // inputImage = ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr( dicomObjSet ) );
+
+  // conn.PutImage( inputImage );
+  // mainViewerDesktop->getSelectedViewerWidget()->setInputPort( &conn );
 }
