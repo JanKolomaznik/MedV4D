@@ -20,11 +20,14 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
 
   public:
 
+    typedef enum { SLICE_VIEWER, VTK_VIEWER } ViewerType;
+
     struct Viewer {
+      ViewerType type;
       M4D::Viewer::m4dGUIAbstractViewerWidget *viewerWidget;
-      /// checked tool (index) for given viewer - for left mouse button - (unchecked is -1)
+      /// checked tool (index) for given viewer - for left mouse button
       unsigned checkedLeftButtonTool;
-      /// checked tool (index) for given viewer - for right mouse button - (unchecked is -1)
+      /// checked tool (index) for given viewer - for right mouse button
       unsigned checkedRightButtonTool;
     };
 
@@ -41,16 +44,18 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
      * @param rows number of rows in the new layout
      * @param columns number of columns in the new layout
      */
-    void setDesktopLayout( const int rows, const int columns );
+    void setDesktopLayout ( const int rows, const int columns );
 
-    M4D::Viewer::m4dGUIAbstractViewerWidget *getSelectedViewerWidget () { return selectedViewer->viewerWidget; }
-    M4D::Viewer::m4dGUIAbstractViewerWidget *getPrevSelectedViewerWidget () { return prevSelectedViewer->viewerWidget; }
-    unsigned getSelectedCheckedLeftButtonTool () { return selectedViewer->checkedLeftButtonTool; }
-    unsigned getSelectedCheckedRightButtonTool () { return selectedViewer->checkedRightButtonTool; }
+    M4D::Viewer::m4dGUIAbstractViewerWidget *getSelectedViewerWidget () const { return selectedViewer->viewerWidget; }
+    void replaceSelectedViewerWidget ( ViewerType type, M4D::Viewer::m4dGUIAbstractViewerWidget *replacedViewer );
+    M4D::Viewer::m4dGUIAbstractViewerWidget *getPrevSelectedViewerWidget () const { return prevSelectedViewer->viewerWidget; }
+
+    ViewerType getSelectedViewerType () const { return selectedViewer->type; }
+
+    unsigned getSelectedCheckedLeftButtonTool () const { return selectedViewer->checkedLeftButtonTool; }
+    unsigned getSelectedCheckedRightButtonTool () const { return selectedViewer->checkedRightButtonTool; }
     void setSelectedCheckedLeftButtonTool ( unsigned value ) { selectedViewer->checkedLeftButtonTool = value; }
     void setSelectedCheckedRightButtonTool ( unsigned value ) { selectedViewer->checkedRightButtonTool = value; }
-
-    M4D::Viewer::m4dGUIVtkViewerWidget *getVtkRenderWindowWidget() { return vtkRenderWindowWidget; }
 
   private slots:
 
@@ -62,15 +67,14 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
 
   private:
 
-    M4D::Viewer::m4dGUIVtkViewerWidget *vtkRenderWindowWidget;
-    M4D::Viewer::m4dGUISliceViewerWidget *glWidget;
-
     M4D::Imaging::Image< uint32, 3 >::Ptr inputImage;
     M4D::Imaging::ImageConnectionSimple< M4D::Imaging::Image< uint32, 3 > > prodconn;
 
     std::vector< Viewer * > viewers;
     Viewer *selectedViewer;
     Viewer *prevSelectedViewer;
+
+    unsigned layoutRows, layoutColumns;
 };
 
 #endif // M4D_GUI_MAIN_VIEWER_DESKTOP_H

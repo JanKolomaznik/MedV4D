@@ -2,35 +2,13 @@
 
 #include "GUI/m4dGUIMainWindow.h"
 
-#include "Common.h"
-#include "Imaging/ExampleImageFilters.h"
-#include "Imaging/DefaultConnection.h"
-#include "Imaging/ImageFactory.h"
-
 using namespace M4D::Imaging;
 using namespace M4D::Viewer;
-
-// TESTING viewer
-typedef Image< uint32, 3 > Image3DType;
-typedef ImageConnectionSimple< Image3DType > ProducerConn;
 
 
 m4dGUIMainViewerDesktopWidget::m4dGUIMainViewerDesktopWidget ( QWidget *parent )
   : QWidget( parent )
 {
-  QHBoxLayout *mainLayout = new QHBoxLayout;
-
-  QSplitter *splitter = new QSplitter();
-
-  // TODO
-  // vtkRenderWindowWidget = new m4dGUIVtkViewerWidget;
-  // vtkRenderWindowWidget->addRenderer( vtkRenderWindowWidget->sphereToRenderWindow() );
-  vtkRenderWindowWidget = new m4dGUIVtkViewerWidget( 0 );
-  splitter->addWidget( vtkRenderWindowWidget );
-
-  // TESTING viewer
-  // ------------------------------
-
 	inputImage = ImageFactory::CreateEmptyImage3DTyped< uint32 >( 512, 512, 50 );
 
 	size_t i, j, k;
@@ -48,15 +26,8 @@ m4dGUIMainViewerDesktopWidget::m4dGUIMainViewerDesktopWidget ( QWidget *parent )
 
 	prodconn.PutImage( inputImage );
 
-  glWidget = new m4dGUISliceViewerWidget( 1 );
-  
-  splitter->addWidget( glWidget );
+  // ==========================================================================
 
-  // ------------------------------
-
-  mainLayout->addWidget( splitter );
-
-  // setLayout( mainLayout ); 
   setDesktopLayout( 1, 2 );
 
   selectedViewer = viewers[1];
@@ -75,17 +46,20 @@ void m4dGUIMainViewerDesktopWidget::setDesktopLayout( const int rows, const int 
     for ( unsigned i = 0; i < difference; i++ ) 
     {
       Viewer *viewer = new Viewer;
-      m4dGUISliceViewerWidget *widget = new m4dGUISliceViewerWidget( prodconn, viewersSize + i );
-      connect( (m4dGUIAbstractViewerWidget *)widget, SIGNAL(signalSetSelected( unsigned, bool )), this, SLOT(selectedChanged( unsigned )) );
+      m4dGUIAbstractViewerWidget *widget = new m4dGUISliceViewerWidget( &prodconn, viewersSize + i );
+      connect( widget, SIGNAL(signalSetSelected( unsigned, bool )), this, SLOT(selectedChanged( unsigned )) );
       viewer->viewerWidget = widget;
-      viewer->checkedLeftButtonTool = ACTION_PAN;
+      viewer->type = SLICE_VIEWER;
+      viewer->checkedLeftButtonTool  = ACTION_PAN;
       viewer->checkedRightButtonTool = ACTION_WINDOW_LEVEL;
       viewers.push_back( viewer );
     }
   }
   else
   {
-    viewers[newSize - 1]->viewerWidget->slotSetSelected( true );
+    if ( !viewers[newSize - 1]->viewerWidget->getSelected() ) {
+      viewers[newSize - 1]->viewerWidget->slotSetSelected( true );
+    }
     for ( unsigned i = newSize; i < viewersSize; i++ ) {
       delete viewers[i];
     }
@@ -113,14 +87,61 @@ void m4dGUIMainViewerDesktopWidget::setDesktopLayout( const int rows, const int 
 
   delete layout();
   setLayout( mainLayout );
+
+  layoutRows = rows;
+  layoutColumns = columns;
+}
+
+
+void m4dGUIMainViewerDesktopWidget::replaceSelectedViewerWidget ( ViewerType type, 
+                                                                  m4dGUIAbstractViewerWidget *replacedViewer ) 
+{
+  ConnectionInterface *conn = replacedViewer->getInputPort();
+  unsigned idx = replacedViewer->getIndex();
+
+  m4dGUIAbstractViewerWidget *widget = 0;
+
+  switch ( type )
+  {
+    case SLICE_VIEWER:
+      widget = new m4dGUISliceViewerWidget( conn, idx );
+      break;
+
+    case VTK_VIEWER:
+      widget = new m4dGUIVtkViewerWidget( conn, idx );
+      break;
+
+    default:
+      widget = new m4dGUISliceViewerWidget( conn, idx );
+  }
+
+  connect( widget, SIGNAL(signalSetSelected( unsigned, bool )), this, SLOT(selectedChanged( unsigned )) );
+  widget->slotSetSelected( true );
+
+  selectedViewer->type = type;
+  selectedViewer->viewerWidget = widget;
+  selectedViewer->checkedLeftButtonTool  = ACTION_PAN;
+  selectedViewer->checkedRightButtonTool = ACTION_WINDOW_LEVEL;
+
+  QLayoutItem *li = layout()->itemAt( 0 );
+  QSplitter *mainSplitter = (QSplitter *)(li->widget());
+  QSplitter *innerSplitter = (QSplitter *)(mainSplitter->widget( idx / layoutColumns ));
+
+  QWidget *resizedWidget = (*widget)();
+  resizedWidget->resize( resizedWidget->sizeHint() );
+  
+  // delete old - directly before inserting the new one 
+  delete replacedViewer;
+  innerSplitter->insertWidget( idx % layoutColumns, resizedWidget );
 }
 
 
 void m4dGUIMainViewerDesktopWidget::selectedChanged ( unsigned index )
 {
-  selectedViewer->viewerWidget->slotSetSelected( false );
   prevSelectedViewer = selectedViewer;
   selectedViewer = viewers[index];
+
+  prevSelectedViewer->viewerWidget->slotSetSelected( false );
 
   emit propagateFeatures(); 
 }

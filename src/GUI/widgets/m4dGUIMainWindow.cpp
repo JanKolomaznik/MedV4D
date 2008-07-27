@@ -215,13 +215,14 @@ void m4dGUIMainWindow::features ()
   }
 
   // trigger previously checked tools for newly selected viewer
-  unsigned left = mainViewerDesktop->getSelectedCheckedLeftButtonTool();
-  if ( left != -1 ) {
-    viewerActs[left]->trigger();
+  viewerActs[mainViewerDesktop->getSelectedCheckedLeftButtonTool()]->trigger();
+  viewerActs[mainViewerDesktop->getSelectedCheckedRightButtonTool()]->trigger();
+
+  if ( mainViewerDesktop->getSelectedViewerType() == m4dGUIMainViewerDesktopWidget::VTK_VIEWER ) {
+    replaceAct->setChecked( true );
   }
-  unsigned right = mainViewerDesktop->getSelectedCheckedRightButtonTool();
-  if ( right != -1 ) {
-    viewerActs[right]->trigger();
+  else {
+    replaceAct->setChecked( false );
   }
 }
 
@@ -234,7 +235,16 @@ void m4dGUIMainWindow::layout ()
 
 void m4dGUIMainWindow::replace ()
 {
-  // mainViewerDesktop->getSelectedViewer(); 
+  m4dGUIAbstractViewerWidget *replacedViewer = mainViewerDesktop->getSelectedViewerWidget();
+  
+  if ( !replaceAct->isChecked() ) {
+    mainViewerDesktop->replaceSelectedViewerWidget( m4dGUIMainViewerDesktopWidget::SLICE_VIEWER,
+                                                    replacedViewer );
+  }
+  else {
+    mainViewerDesktop->replaceSelectedViewerWidget( m4dGUIMainViewerDesktopWidget::VTK_VIEWER,
+                                                    replacedViewer );
+  }
 }
 
 
@@ -357,8 +367,9 @@ void m4dGUIMainWindow::createActions ()
   connect( layoutAct, SIGNAL(triggered()), this, SLOT(layout()) );
 
   replaceAct = new QAction( QIcon( ":/icons/swap.png" ), tr( "Rep&lace Viewer" ), this );
+  replaceAct->setCheckable( true );
   replaceAct->setShortcut( tr( "Ctrl+L" ) );
-  replaceAct->setStatusTip( tr( "Replace selected viewer (toggle 3D viewer)" ) );
+  replaceAct->setStatusTip( tr( "Replace selected viewer (slice viewer/3D viewer)" ) );
   connect( replaceAct, SIGNAL(triggered()), this, SLOT(replace()) );
 }
 
