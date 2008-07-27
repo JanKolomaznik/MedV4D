@@ -61,20 +61,28 @@ m4dGUIVtkViewerWidget::setInputPort()
 void
 m4dGUIVtkViewerWidget::setUnSelected()
 {
-    if ( _selected ) _renImageData->RemoveViewProp( _actor2D );
+    if ( _selected )
+    {
+        _renImageData->RemoveViewProp( _actor2D );
+    }
     _selected = false;
 }
 
 void
 m4dGUIVtkViewerWidget::setSelected()
 {
-    if ( !_selected ) _renImageData->AddViewProp( _actor2D );
+    if ( !_selected )
+    {
+        _renImageData->AddViewProp( _actor2D );
+    }
     _selected = true;
+    emit signalSetSelected( _index, false );
 }
 
 void
 m4dGUIVtkViewerWidget::resizeEvent( QResizeEvent* event )
 {
+  QVTKWidget::resizeEvent( event );
   _points->SetNumberOfPoints( 5 );
   _points->SetPoint(0,           3,            3, 0 );
   _points->SetPoint(1,           3, height() - 4, 0 );
@@ -187,7 +195,6 @@ m4dGUIVtkViewerWidget::slotSetSelected( bool selected )
 {
     if ( selected ) setSelected();
     else setUnSelected();
-    emit signalSetSelected( _index, selected );
 }
 
 void
