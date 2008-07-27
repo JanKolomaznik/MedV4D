@@ -37,6 +37,11 @@ m4dGUIVtkViewerWidget::~m4dGUIVtkViewerWidget()
     _volumeMapper->Delete();
     _volume->Delete();
     _renImageData->Delete();
+    _actor2D->Delete();
+    _points->Delete();
+    _pointsData->Delete();
+    _pointsDataMapper->Delete();
+    _cells->Delete();
 }
 
 void
@@ -54,8 +59,43 @@ m4dGUIVtkViewerWidget::setInputPort()
 }
 
 void
+m4dGUIVtkViewerWidget::setUnSelected()
+{
+    if ( _selected ) _renImageData->RemoveViewProp( _actor2D );
+    _selected = false;
+}
+
+void
+m4dGUIVtkViewerWidget::setSelected()
+{
+    if ( !_selected ) _renImageData->AddViewProp( _actor2D );
+    _selected = true;
+}
+
+void
+m4dGUIVtkViewerWidget::resizeEvent( QResizeEvent* event )
+{
+  _points->SetNumberOfPoints( 5 );
+  _points->SetPoint(0,           3,            3, 0 );
+  _points->SetPoint(1,           3, height() - 4, 0 );
+  _points->SetPoint(2, width() - 4, height() - 4, 0 );
+  _points->SetPoint(3, width() - 4,            3, 0 );
+  _points->SetPoint(4,           3,            3, 0 );
+  _cells->Reset();
+  _cells->InsertNextCell(5);
+  _cells->InsertCellPoint(0);
+  _cells->InsertCellPoint(1);
+  _cells->InsertCellPoint(2);
+  _cells->InsertCellPoint(3);
+  _cells->InsertCellPoint(4);
+}
+
+void
 m4dGUIVtkViewerWidget::setParameters()
 {
+  
+  _selected = false;
+
   _imageData = vtkIntegration::m4dImageDataSource::New();
 
   _iCast = vtkImageCast::New(); 
@@ -88,6 +128,17 @@ m4dGUIVtkViewerWidget::setParameters()
   _volume = vtkVolume::New();
   _volume->SetMapper( _volumeMapper ); 
   _volume->SetProperty( _volumeProperty );
+
+  _actor2D = vtkActor2D::New();
+  _points = vtkPoints::New();
+  _pointsData = vtkPolyData::New();
+  _pointsDataMapper = vtkPolyDataMapper2D::New();
+  _actor2D->GetProperty()->SetColor( 0., 1., 0. );
+  _pointsDataMapper->SetInput(_pointsData);
+  _pointsData->SetPoints(_points);
+  _actor2D->SetMapper(_pointsDataMapper);
+  _cells = vtkCellArray::New();
+  _pointsData->SetLines(_cells);
 
   _renImageData = vtkRenderer::New(); 
   _renImageData->AddViewProp( _volume );
@@ -132,7 +183,12 @@ void
 m4dGUIVtkViewerWidget::slotSetButtonHandler( ButtonHandler hnd, MouseButton btn ) {}
 
 void
-m4dGUIVtkViewerWidget::slotSetSelected( bool selected ) {}
+m4dGUIVtkViewerWidget::slotSetSelected( bool selected )
+{
+    if ( selected ) setSelected();
+    else setUnSelected();
+    emit signalSetSelected( _index, selected );
+}
 
 void
 m4dGUIVtkViewerWidget::slotSetSliceNum( size_t num ) {}

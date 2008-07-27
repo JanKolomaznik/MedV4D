@@ -64,6 +64,7 @@ m4dGUISliceViewerWidget::setInputPort( Imaging::ConnectionInterface* conn )
 void
 m4dGUISliceViewerWidget::setParameters()
 {
+    _ready = false;
     if ( _inPort->IsPlugged() )
     {
         if ( _inPort->TryLockDataset() )
@@ -72,10 +73,7 @@ m4dGUISliceViewerWidget::setParameters()
 	    _inPort->ReleaseDatasetLock();
 	}
 	else
-	{
-	    _ready = false;
 	    return;
-	}
     }
     _offset = QPoint( 0, 0 );
     _lastPos = QPoint( -1, -1 );

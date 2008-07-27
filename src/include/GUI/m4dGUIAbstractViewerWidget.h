@@ -58,10 +58,8 @@ public:
 
     bool getSelected()
 	{ return _selected; }
-    virtual void setUnSelected()
-        { _selected = false; }
-    virtual void setSelected()
-    	{ _selected = true; }
+    virtual void setUnSelected()=0;
+    virtual void setSelected()=0;
 
     virtual AvailableSlots getAvailableSlots()=0;
     virtual QWidget* operator()()=0;

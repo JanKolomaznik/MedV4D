@@ -9,6 +9,12 @@
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
 #include "vtkVolume.h"
+#include "vtkActor2D.h"
+#include "vtkPolyDataMapper2D.h"
+#include "vtkProperty2D.h"
+#include "vtkCellArray.h"
+#include "vtkPolyData.h"
+#include "vtkPoints.h"
 #include "vtkVolumeRayCastMapper.h"
 #include "vtkVolumeRayCastCompositeFunction.h"
 #include "vtkImageCast.h"
@@ -74,6 +80,11 @@ public slots:
     virtual void slotRotateAxisY( int y );
     virtual void slotRotateAxisZ( int z );
 
+protected:
+    virtual void resizeEvent( QResizeEvent* event );
+    virtual void setUnSelected();
+    virtual void setSelected();
+
 private:
     void setParameters();
 
@@ -85,6 +96,11 @@ private:
     vtkVolumeProperty*				_volumeProperty;
     vtkVolumeRayCastMapper*			_volumeMapper;
     vtkVolume*					_volume;
+    vtkActor2D*					_actor2D;
+    vtkPoints*					_points;
+    vtkPolyData*				_pointsData;
+    vtkPolyDataMapper2D*			_pointsDataMapper;
+    vtkCellArray*				_cells;
     vtkRenderer*				_renImageData;
     AvailableSlots				_availableSlots;
 };
