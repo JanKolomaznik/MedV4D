@@ -64,6 +64,7 @@ m4dGUIVtkViewerWidget::setUnSelected()
     if ( _selected )
     {
         _renImageData->RemoveViewProp( _actor2D );
+	GetRenderWindow()->Render();
     }
     _selected = false;
 }
@@ -74,6 +75,7 @@ m4dGUIVtkViewerWidget::setSelected()
     if ( !_selected )
     {
         _renImageData->AddViewProp( _actor2D );
+	GetRenderWindow()->Render();
     }
     _selected = true;
     emit signalSetSelected( _index, false );
@@ -96,6 +98,20 @@ m4dGUIVtkViewerWidget::resizeEvent( QResizeEvent* event )
   _cells->InsertCellPoint(2);
   _cells->InsertCellPoint(3);
   _cells->InsertCellPoint(4);
+  GetRenderWindow()->Render();
+}
+
+void
+m4dGUIVtkViewerWidget::mousePressEvent(QMouseEvent *event)
+{
+    if ( !_selected )
+    {
+        setSelected();
+    }
+    else
+    {
+        QVTKWidget::mousePressEvent( event );
+    }
 }
 
 void
@@ -159,6 +175,9 @@ m4dGUIVtkViewerWidget::setParameters()
   vtkRenderWindowInteractor *iren;
   iren = GetInteractor();
   iren->SetRenderWindow( rWin );
+
+  _availableSlots.clear();
+  _availableSlots.push_back( SETSELECTED );
 }
 
 m4dGUIVtkViewerWidget::AvailableSlots

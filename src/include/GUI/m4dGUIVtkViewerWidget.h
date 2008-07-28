@@ -82,6 +82,7 @@ public slots:
 
 protected:
     virtual void resizeEvent( QResizeEvent* event );
+    virtual void mousePressEvent(QMouseEvent *event);
     virtual void setUnSelected();
     virtual void setSelected();
 
