@@ -13,13 +13,8 @@ mainWindow::mainWindow ()
 
   QCoreApplication::setOrganizationName( ORGANIZATION_NAME );
   QCoreApplication::setApplicationName( APPLICATION_NAME );
-}
 
-
-// reimplemented view method
-void mainWindow::view ( DcmProvider::DicomObjSet *dicomObjSet )
-{
-  // TODO
-  // mainViewerDesktop->getVtkRenderWindowWidget()->addRenderer( mainViewerDesktop->getVtkRenderWindowWidget()->imageDataToRenderWindow( DcmProvider::DicomObjSetPtr( dicomObjSet ) ) );
+  // createPipeline();
+  // tell mainWindow about possible connections - can be during creating the pipeline (connections)
 }
 

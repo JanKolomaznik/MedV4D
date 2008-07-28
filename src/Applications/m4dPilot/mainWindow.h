@@ -17,7 +17,6 @@ class mainWindow: public m4dGUIMainWindow
 
   private:
 
-    void view ( M4D::Dicom::DcmProvider::DicomObjSet *dicomObjSet );
 };
 
 

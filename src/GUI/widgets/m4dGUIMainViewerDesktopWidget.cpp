@@ -50,8 +50,7 @@ void m4dGUIMainViewerDesktopWidget::setDesktopLayout( const int rows, const int 
       connect( widget, SIGNAL(signalSetSelected( unsigned, bool )), this, SLOT(selectedChanged( unsigned )) );
       viewer->viewerWidget = widget;
       viewer->type = SLICE_VIEWER;
-      viewer->checkedLeftButtonTool  = ACTION_PAN;
-      viewer->checkedRightButtonTool = ACTION_WINDOW_LEVEL;
+      viewer->checkedLeftButtonTool = viewer->checkedRightButtonTool = ACTION_EMPTY;
       viewers.push_back( viewer );
     }
   }
@@ -120,8 +119,7 @@ void m4dGUIMainViewerDesktopWidget::replaceSelectedViewerWidget ( ViewerType typ
 
   selectedViewer->type = type;
   selectedViewer->viewerWidget = widget;
-  selectedViewer->checkedLeftButtonTool  = ACTION_PAN;
-  selectedViewer->checkedRightButtonTool = ACTION_WINDOW_LEVEL;
+  selectedViewer->checkedLeftButtonTool = selectedViewer->checkedRightButtonTool = ACTION_EMPTY;
 
   QLayoutItem *li = layout()->itemAt( 0 );
   QSplitter *mainSplitter = (QSplitter *)(li->widget());

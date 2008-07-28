@@ -24,7 +24,7 @@ const char *m4dGUIMainWindow::actionTexts[] = { "No Action", "Window/Level (Righ
                                                 "Clear Shape", "Clear All Points/Shapes", "Flip Horizontal", "Flip Vertical"};
 
 // information also used for weather the connection is direct to the viewer
-const m4dGUIMainWindow::ToolType m4dGUIMainWindow::actionToolTypes[] = { TOGGLE_TOOL, CHECKABLE_TOOL, CHECKABLE_TOOL, 
+const m4dGUIMainWindow::ToolType m4dGUIMainWindow::actionToolTypes[] = { CHECKABLE_TOOL, CHECKABLE_TOOL, CHECKABLE_TOOL, 
                                                     CHECKABLE_TOOL, CHECKABLE_TOOL, TOGGLE_TOOL, CHECKABLE_TOOL, 
                                                     CHECKABLE_TOOL, TOGGLE_TOOL, TOGGLE_TOOL, TOGGLE_TOOL, 
                                                     TOGGLE_TOOL, TOGGLE_TOOL };
@@ -200,6 +200,8 @@ void m4dGUIMainWindow::features ()
 
   for ( unsigned i = 0; i < VIEWER_ACTIONS_NUMBER; i++ ) 
   {
+    viewerActs[i]->setEnabled( false ); 
+
     if ( actionToolTypes[i] == TOGGLE_TOOL )
     {
       disconnect( viewerActs[i], SIGNAL(triggered()), prevViewer, actionSlots[i] );
@@ -246,6 +248,7 @@ void m4dGUIMainWindow::replace ()
     mainViewerDesktop->replaceSelectedViewerWidget( m4dGUIMainViewerDesktopWidget::VTK_VIEWER,
                                                     replacedViewer );
   }
+  features();
 }
 
 
@@ -359,6 +362,8 @@ void m4dGUIMainWindow::createActions ()
                                              leftButtonGroup->addAction( viewerActs[i] );
     }
   }
+  // add empty action also to right group (triggering it will uncheck tools in both groups)
+  rightButtonGroup->addAction( viewerActs[ACTION_EMPTY] );
 
   layoutAct = new QAction( QIcon( ":/icons/layout.png" ), tr( "S&creen Layout" ), this );
   layoutAct->setShortcut( tr( "Ctrl+C" ) );
