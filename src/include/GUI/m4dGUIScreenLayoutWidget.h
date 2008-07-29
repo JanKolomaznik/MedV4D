@@ -10,6 +10,9 @@ class QToolButton;
 class QGroupBox;
 class QSpinBox;
 
+namespace M4D {
+namespace GUI {
+
 class m4dGUIScreenLayoutWidget: public QWidget
 {
   Q_OBJECT
@@ -18,14 +21,11 @@ class m4dGUIScreenLayoutWidget: public QWidget
     /**
      * Constructor of m4dGUIScreenLayoutWidget.
      *
-     * @param vtkRenderWindowWidget pointer to the VTK Render Window Widget
-     * - where to manage layout
      * @param screenLayoutDialog pointer to the Screen Layout Dialog - to close it after 
      * clicking Ok
      * @ param parent parent of this widget - default is 0
      */
-    m4dGUIScreenLayoutWidget ( m4dGUIMainViewerDesktopWidget *mainViewerDesktop,
-                               QDialog *screenLayoutDialog, QWidget *parent = 0 );
+    m4dGUIScreenLayoutWidget ( QDialog *screenLayoutDialog, QWidget *parent = 0 );
 
   private slots:
     void seriesLayoutChanged ();
@@ -33,6 +33,11 @@ class m4dGUIScreenLayoutWidget: public QWidget
     void seriesApply ();
     void imageApply ();
     void accept ();
+
+  signals:
+    void seriesLayout ( const unsigned rows, const unsigned columns );
+    void imageLayout ( const unsigned columns );
+
 
   private:
     /**
@@ -47,13 +52,11 @@ class m4dGUIScreenLayoutWidget: public QWidget
     QToolButton *createToolButton ( const QIcon &icon, const char *member );
     QSpinBox    *createSpinBox ( const int value );
 
-    /// Pointer to the Main Viewer Desktop - to manage it.
-    m4dGUIMainViewerDesktopWidget *mainViewerDesktop;
     /// Pointer to the Screen Layout Dialog - to close it after clicking Ok.
     QDialog *screenLayoutDialog;
 
     static const char *layoutIconNames[];
-    static const int layoutDimensions[][2];
+    static const unsigned layoutDimensions[][2];
 
     // layout buttons
     QToolButton **seriesLayoutToolButtons;
@@ -64,6 +67,9 @@ class m4dGUIScreenLayoutWidget: public QWidget
     QSpinBox *imageRowSpinBox;
     QSpinBox *imageColumnSpinBox;
 };
+
+} // namespace GUI
+} // namespace M4D
 
 #endif // M4D_GUI_SCREEN_LAYOUT_WIDGET_H
 

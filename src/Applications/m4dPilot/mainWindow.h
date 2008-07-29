@@ -7,7 +7,7 @@
 #define APPLICATION_NAME      "m4dPilot"
 
 
-class mainWindow: public m4dGUIMainWindow
+class mainWindow: public M4D::GUI::m4dGUIMainWindow
 {
   Q_OBJECT
 

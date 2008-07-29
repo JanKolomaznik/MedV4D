@@ -9,6 +9,9 @@
 #include "GUI/m4dGUIScreenLayoutWidget.h"
 
 
+namespace M4D {
+namespace GUI {
+
 /// ID of actions and also ordering in their array
 #define ACTION_EMPTY             0
 #define ACTION_WINDOW_LEVEL      1
@@ -172,6 +175,9 @@ class m4dGUIMainWindow: public QMainWindow
 
     // M4D::Imaging::AbstractImageData::APtr inputImage;
 };
+
+} // namespace GUI
+} // namespace M4D
 
 #endif // M4D_GUI_MAIN_WINDOW_H
 

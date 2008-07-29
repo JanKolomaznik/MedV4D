@@ -3,6 +3,9 @@
 #include <QtGui>
 
 
+namespace M4D {
+namespace GUI {
+
 m4dGUIStudyManagerWidget::m4dGUIStudyManagerWidget ( QDialog *studyManagerDialog, QWidget *parent )
   : QWidget( parent )
 {
@@ -60,4 +63,7 @@ QGroupBox *m4dGUIStudyManagerWidget::createStudyListGroupBox ( QDialog *studyMan
 
   return studyListGroupBox;
 }
+
+} // namespace GUI
+} // namespace M4D
 

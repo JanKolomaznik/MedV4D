@@ -12,6 +12,9 @@ class QCheckBox;
 class QDateEdit;
 class QGroupBox;
 
+namespace M4D {
+namespace GUI {
+
 class StManagerFilterComp: public QWidget
 {
   Q_OBJECT
@@ -62,6 +65,9 @@ class StManagerFilterComp: public QWidget
     QCheckBox   *allCheckBox;
     QCheckBox  **modalityCheckBoxes;
 };
+
+} // namespace GUI
+} // namespace M4D
 
 #endif // S_MANAGER_FILTER_COMP_H
 

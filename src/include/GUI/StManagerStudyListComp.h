@@ -4,7 +4,7 @@
 #include <QWidget>
 
 // DICOM includes:
-#include "Common.h"          // M4DDICOMServiceProvider.h needs it (FIXME?)
+#include "Common.h"
 #include "dicomConn/DICOMServiceProvider.h"
 
 
@@ -14,6 +14,9 @@ class QTabWidget;
 class QTableWidget;
 class QSettings;
 class QTreeView;
+
+namespace M4D {
+namespace GUI {
 
 /**
  * @class StManagerStudyListComp StManagerStudyListComp.h
@@ -220,5 +223,8 @@ class StManagerStudyListComp: public QWidget
 
     M4D::Dicom::DcmProvider::DicomObjSet *dicomObjectSet;	
 };
+
+} // namespace GUI
+} // namespace M4D
 
 #endif // S_MANAGER_STUDY_LIST_COMP_H

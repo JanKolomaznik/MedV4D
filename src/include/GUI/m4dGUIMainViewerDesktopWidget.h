@@ -8,6 +8,9 @@
 #include "GUI/m4dGUIVtkViewerWidget.h"
 
 
+namespace M4D {
+namespace GUI {
+
 /**
  * @class m4dGUIMainViewerDesktopWidget m4dGUIMainViewerDesktopWidget.h
  * Class representing the Main Viewer Desktop - containing abstract viewers.
@@ -38,14 +41,6 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
      */
     m4dGUIMainViewerDesktopWidget ( QWidget *parent = 0 );
 
-    /** 
-     * Changes the Desktop's layout.
-     *
-     * @param rows number of rows in the new layout
-     * @param columns number of columns in the new layout
-     */
-    void setDesktopLayout ( const int rows, const int columns );
-
     M4D::Viewer::m4dGUIAbstractViewerWidget *getSelectedViewerWidget () const { return selectedViewer->viewerWidget; }
     void replaceSelectedViewerWidget ( ViewerType type, M4D::Viewer::m4dGUIAbstractViewerWidget *replacedViewer );
     M4D::Viewer::m4dGUIAbstractViewerWidget *getPrevSelectedViewerWidget () const { return prevSelectedViewer->viewerWidget; }
@@ -58,6 +53,14 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
     void setSelectedCheckedRightButtonTool ( unsigned value ) { selectedViewer->checkedRightButtonTool = value; }
 
   private slots:
+
+    /** 
+     * Slot for changing the Desktop's layout.
+     *
+     * @param rows number of rows in the new layout
+     * @param columns number of columns in the new layout
+     */
+    void setDesktopLayout ( const unsigned rows, const unsigned columns );
 
     void selectedChanged ( unsigned index );
 
@@ -76,6 +79,9 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
 
     unsigned layoutRows, layoutColumns;
 };
+
+} // namespace GUI
+} // namespace M4D
 
 #endif // M4D_GUI_MAIN_VIEWER_DESKTOP_H
 

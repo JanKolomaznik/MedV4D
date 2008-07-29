@@ -9,6 +9,9 @@
 
 class QGroupBox;
 
+namespace M4D {
+namespace GUI {
+
 class m4dGUIStudyManagerWidget: public QWidget
 {
   Q_OBJECT
@@ -35,6 +38,9 @@ class m4dGUIStudyManagerWidget: public QWidget
 
     StManagerStudyListComp *studyListComponent;
 };
+
+} // namespace GUI
+} // namespace M4D
 
 #endif // M4D_GUI_STUDY_MANAGER_WIDGET_H
 

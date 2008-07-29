@@ -8,6 +8,9 @@
 using namespace std;
 
 
+namespace M4D {
+namespace GUI {
+
 /// Number of possible modalities - in filter - number of checkboxes
 #define MODALITY_NUMBER   14
 
@@ -326,3 +329,6 @@ QCheckBox *StManagerFilterComp::createCheckBox ( const QString &text, bool value
 
   return checkBox;
 }
+
+} // namespace GUI
+} // namespace M4D

@@ -11,6 +11,9 @@ using namespace M4D::Viewer;
 using namespace M4D::Imaging;
 
 
+namespace M4D {
+namespace GUI {
+
 /// Number of abstract viewer's actions (toolBar buttons) - first is for all unplugged slots (it's not in toolBar)
 #define VIEWER_ACTIONS_NUMBER       13
 
@@ -93,6 +96,9 @@ m4dGUIMainWindow::m4dGUIMainWindow ( const char *title, const QIcon &icon )
   createStudyManagerDialog();
   // and the other dialogs
   createScreenLayoutDialog();
+
+  // update availability of features (according to selected viewer - first one is init.)
+  features();
 }
 
 
@@ -209,6 +215,9 @@ void m4dGUIMainWindow::features ()
     }
   }
 
+  disconnect( screenLayoutWidget, SIGNAL(imageLayout( const unsigned )), prevViewer, SLOT(slotSetMoreSliceMode( unsigned )) );
+  connect( screenLayoutWidget, SIGNAL(imageLayout( const unsigned )), actViewer, SLOT(slotSetMoreSliceMode( unsigned )) );
+
   m4dGUIAbstractViewerWidget::AvailableSlots availableFeatures = actViewer->getAvailableSlots();
 
   for ( m4dGUIAbstractViewerWidget::AvailableSlots::iterator it = availableFeatures.begin(); 
@@ -282,7 +291,9 @@ void m4dGUIMainWindow::createScreenLayoutDialog ()
   screenLayoutDialog->setWindowTitle( tr( "Screen Layout" ) );
   screenLayoutDialog->setWindowIcon( QIcon( ":/icons/layout.png" ) );
 
-  screenLayoutWidget = new m4dGUIScreenLayoutWidget( mainViewerDesktop, screenLayoutDialog );
+  screenLayoutWidget = new m4dGUIScreenLayoutWidget( screenLayoutDialog );
+  connect( screenLayoutWidget, SIGNAL(seriesLayout( const unsigned, const unsigned )), 
+           mainViewerDesktop, SLOT(setDesktopLayout( const unsigned, const unsigned )) );
 
   QVBoxLayout *dialogLayout = new QVBoxLayout;
   dialogLayout->addWidget( screenLayoutWidget );
@@ -375,9 +386,6 @@ void m4dGUIMainWindow::createActions ()
   replaceAct->setShortcut( tr( "Ctrl+L" ) );
   replaceAct->setStatusTip( tr( "Replace selected viewer (slice viewer/3D viewer)" ) );
   connect( replaceAct, SIGNAL(triggered()), this, SLOT(replace()) );
-
-  // update availability of features (according to selected viewer - first one is init.)
-  features();
 }
 
 
@@ -438,6 +446,8 @@ void m4dGUIMainWindow::createToolBars ()
 
   replaceToolBar = addToolBar( tr( "Replace" ) );
   replaceToolBar->addAction( replaceAct );
+  // QComboBox *cb = new QComboBox;
+  // replaceToolBar->addWidget( cb );
 }
 
 
@@ -506,3 +516,6 @@ void m4dGUIMainWindow::view ( DcmProvider::DicomObjSet *dicomObjSet )
   // conn.PutImage( inputImage );
   // mainViewerDesktop->getSelectedViewerWidget()->setInputPort( &conn );
 }
+
+} // namespace GUI
+} // namespace M4D

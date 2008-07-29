@@ -1,8 +1,5 @@
 #include "mainWindow.h"
 
-// DICOM namespace:
-using namespace M4D::Dicom;
-
 using namespace std;
 
 

@@ -13,6 +13,9 @@ using namespace M4D::Dicom;
 using namespace std;
 
 
+namespace M4D {
+namespace GUI {
+
 #define RECENT_EXAMS_NAME                   "Recent Exams"
 #define RECENT_REMOTE_EXAMS_NAME            "Recent Remote Exams"
 #define RECENT_DICOMDIR_NAME                "Recent DICOMDIR"
@@ -677,3 +680,5 @@ QToolButton *StManagerStudyListComp::createToolButton ( const QIcon &icon, const
   return toolButton;
 }
 
+} // namespace GUI
+} // namespace M4D

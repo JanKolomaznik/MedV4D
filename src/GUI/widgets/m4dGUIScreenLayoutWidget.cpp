@@ -3,6 +3,9 @@
 #include <QtGui>
 
 
+namespace M4D {
+namespace GUI {
+
 /// Number of various layouts (in one groupBox)
 #define LAYOUT_NUMBER   9
 /// Number of layouts in one row (in one groupBox)
@@ -13,14 +16,12 @@ const char *m4dGUIScreenLayoutWidget::layoutIconNames[] = { "layout-1x1.png", "l
                                                             "layout-2x4.png", "layout-4x2.png",
                                                             "layout-4x4.png", "layout-4x6.png", 
                                                             "layout-4x8.png" };
-const int m4dGUIScreenLayoutWidget::layoutDimensions[][2] = { {1, 1}, {1, 2}, {2, 1}, {2, 2},
-                                                              {2, 4}, {4, 2}, {4, 4}, {4, 6},   
-                                                              {4, 8} };
+const unsigned m4dGUIScreenLayoutWidget::layoutDimensions[][2] = { {1, 1}, {1, 2}, {2, 1}, {2, 2},
+                                                                   {2, 4}, {4, 2}, {4, 4}, {4, 6},   
+                                                                   {4, 8} };
 
-m4dGUIScreenLayoutWidget::m4dGUIScreenLayoutWidget ( m4dGUIMainViewerDesktopWidget *mainViewerDesktop,
-                                                     QDialog *screenLayoutDialog, QWidget *parent )
-  : QWidget( parent ),
-    mainViewerDesktop( mainViewerDesktop ), screenLayoutDialog( screenLayoutDialog )
+m4dGUIScreenLayoutWidget::m4dGUIScreenLayoutWidget ( QDialog *screenLayoutDialog, QWidget *parent )
+  : QWidget( parent ), screenLayoutDialog( screenLayoutDialog )
 {
   Q_INIT_RESOURCE( m4dGUIScreenLayoutWidget );
 
@@ -32,6 +33,9 @@ m4dGUIScreenLayoutWidget::m4dGUIScreenLayoutWidget ( m4dGUIMainViewerDesktopWidg
   QGroupBox *imageGroupBox = createLayoutGroupBox( tr( "Image" ), &imageLayoutToolButtons, &imageRowSpinBox,
                                                    &imageColumnSpinBox, 0, SLOT(imageLayoutChanged()),
                                                    SLOT(imageApply()) );
+  // disable image row number spinBox - viewers don't support it 
+  imageRowSpinBox->setEnabled( false );
+
   // creating OK Cancel dialogButtonBox
   QDialogButtonBox *dialogButtonBox = new QDialogButtonBox( QDialogButtonBox::Ok );
   connect( dialogButtonBox, SIGNAL(accepted()), this, SLOT(accept()) );
@@ -59,8 +63,7 @@ void m4dGUIScreenLayoutWidget::seriesLayoutChanged ()
   seriesRowSpinBox->setValue( layoutDimensions[layoutIdx][0] );
   seriesColumnSpinBox->setValue( layoutDimensions[layoutIdx][1] );
 
-  mainViewerDesktop->setDesktopLayout( layoutDimensions[layoutIdx][0],
-                                       layoutDimensions[layoutIdx][1] );
+  emit seriesLayout( layoutDimensions[layoutIdx][0], layoutDimensions[layoutIdx][1] );
 }
 
 
@@ -77,20 +80,19 @@ void m4dGUIScreenLayoutWidget::imageLayoutChanged ()
   imageRowSpinBox->setValue( layoutDimensions[layoutIdx][0] );
   imageColumnSpinBox->setValue( layoutDimensions[layoutIdx][1] );
 
-  mainViewerDesktop->setDesktopLayout( layoutDimensions[layoutIdx][0],
-                                       layoutDimensions[layoutIdx][1] );
+  emit imageLayout( layoutDimensions[layoutIdx][1] );
 }
 
 
 void m4dGUIScreenLayoutWidget::seriesApply ()
 {
-  mainViewerDesktop->setDesktopLayout( seriesRowSpinBox->value(), seriesColumnSpinBox->value() );
+  emit seriesLayout( seriesRowSpinBox->value(), seriesColumnSpinBox->value() );
 }
 
 
 void m4dGUIScreenLayoutWidget::imageApply ()
 { 
-
+  emit imageLayout( seriesColumnSpinBox->value() );
 }
 
 
@@ -180,4 +182,7 @@ QSpinBox *m4dGUIScreenLayoutWidget::createSpinBox ( const int value )
 
   return spinBox;
 }
+
+} // namespace GUI
+} // namespace M4D
 
