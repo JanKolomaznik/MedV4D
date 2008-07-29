@@ -64,9 +64,9 @@ public slots:
     virtual void slotDeletePoint();
     virtual void slotDeleteShape();
     virtual void slotDeleteAll();
-    virtual void slotRotateAxisX( int x );
-    virtual void slotRotateAxisY( int y );
-    virtual void slotRotateAxisZ( int z );
+    virtual void slotRotateAxisX( double x );
+    virtual void slotRotateAxisY( double y );
+    virtual void slotRotateAxisZ( double z );
 
 protected:
     void setButtonHandler( ButtonHandler hnd, MouseButton btn );

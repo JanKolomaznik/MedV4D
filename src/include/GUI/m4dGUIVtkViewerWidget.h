@@ -15,6 +15,7 @@
 #include "vtkCellArray.h"
 #include "vtkPolyData.h"
 #include "vtkPoints.h"
+#include "vtkCamera.h"
 #include "vtkVolumeRayCastMapper.h"
 #include "vtkVolumeRayCastCompositeFunction.h"
 #include "vtkImageCast.h"
@@ -76,9 +77,9 @@ public slots:
     virtual void slotDeletePoint();
     virtual void slotDeleteShape();
     virtual void slotDeleteAll();
-    virtual void slotRotateAxisX( int x );
-    virtual void slotRotateAxisY( int y );
-    virtual void slotRotateAxisZ( int z );
+    virtual void slotRotateAxisX( double x );
+    virtual void slotRotateAxisY( double y );
+    virtual void slotRotateAxisZ( double z );
 
 protected:
     virtual void resizeEvent( QResizeEvent* event );

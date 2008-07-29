@@ -103,7 +103,6 @@ m4dGUISliceViewerWidget::setParameters()
     _availableSlots.push_back( CLEARLEFTSIDEDATA );
     _availableSlots.push_back( CLEARRIGHTSIDEDATA );
     _availableSlots.push_back( TOGGLEPRINTDATA );
-    _availableSlots.push_back( ZOOM );
     _availableSlots.push_back( MOVE );
     _availableSlots.push_back( CONTRASTBRIGHTNESS );
     _availableSlots.push_back( NEWPOINT );
@@ -111,6 +110,7 @@ m4dGUISliceViewerWidget::setParameters()
     _availableSlots.push_back( DELETEPOINT );
     _availableSlots.push_back( DELETESHAPE );
     _availableSlots.push_back( DELETEALL );
+    _availableSlots.push_back( ZOOM );
     _leftSideData.clear();
     _rightSideData.clear();
     _ready = true;
@@ -187,6 +187,7 @@ m4dGUISliceViewerWidget::setOneSliceMode()
 {
     _slicesPerRow = 1;
     _oneSliceMode = true;
+    if ( _availableSlots.back() != ZOOM ) _availableSlots.push_back( ZOOM );
     emit signalSetOneSliceMode( _index );
 }
 
@@ -195,6 +196,7 @@ m4dGUISliceViewerWidget::setMoreSliceMode( unsigned slicesPerRow )
 {
     _slicesPerRow = slicesPerRow;
     _oneSliceMode = false;
+    if ( _availableSlots.back() == ZOOM ) _availableSlots.pop_back();
     emit signalSetMoreSliceMode( _index, slicesPerRow );
 }
 
@@ -1112,17 +1114,17 @@ m4dGUISliceViewerWidget::slotSetMoreSliceMode( unsigned slicesPerRow )
 }
 
 void
-m4dGUISliceViewerWidget::slotRotateAxisX( int x )
+m4dGUISliceViewerWidget::slotRotateAxisX( double x )
 {
 }
 
 void
-m4dGUISliceViewerWidget::slotRotateAxisY( int y )
+m4dGUISliceViewerWidget::slotRotateAxisY( double y )
 {
 }
 
 void
-m4dGUISliceViewerWidget::slotRotateAxisZ( int z )
+m4dGUISliceViewerWidget::slotRotateAxisZ( double z )
 {
 }
 

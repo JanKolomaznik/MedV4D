@@ -99,9 +99,9 @@ public slots:
     virtual void slotDeletePoint()=0;
     virtual void slotDeleteShape()=0;
     virtual void slotDeleteAll()=0;
-    virtual void slotRotateAxisX( int x )=0;
-    virtual void slotRotateAxisY( int y )=0;
-    virtual void slotRotateAxisZ( int z )=0;
+    virtual void slotRotateAxisX( double x )=0;
+    virtual void slotRotateAxisY( double y )=0;
+    virtual void slotRotateAxisZ( double z )=0;
 
 signals:
     void signalSetButtonHandler( unsigned index, ButtonHandler hnd, MouseButton btn );
@@ -126,9 +126,9 @@ signals:
     void signalDeletePoint( unsigned index );
     void signalDeleteShape( unsigned index );
     void signalDeleteAll( unsigned index );
-    void signalRotateAxisX( unsigned index, int x );
-    void signalRotateAxisY( unsigned index, int y );
-    void signalRotateAxisZ( unsigned index, int z );
+    void signalRotateAxisX( unsigned index, double x );
+    void signalRotateAxisY( unsigned index, double y );
+    void signalRotateAxisZ( unsigned index, double z );
 
 };
 

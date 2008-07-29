@@ -178,6 +178,10 @@ m4dGUIVtkViewerWidget::setParameters()
 
   _availableSlots.clear();
   _availableSlots.push_back( SETSELECTED );
+  _availableSlots.push_back( ZOOM );
+  _availableSlots.push_back( ROTATEAXISX );
+  _availableSlots.push_back( ROTATEAXISY );
+  _availableSlots.push_back( ROTATEAXISZ );
 }
 
 m4dGUIVtkViewerWidget::AvailableSlots
@@ -253,7 +257,10 @@ void
 m4dGUIVtkViewerWidget::slotTogglePrintData() {}
 
 void
-m4dGUIVtkViewerWidget::slotZoom( int amount ) {}
+m4dGUIVtkViewerWidget::slotZoom( int amount )
+{
+    _renImageData->GetActiveCamera()->Zoom( ((double)amount)/10. );
+}
 
 void
 m4dGUIVtkViewerWidget::slotMove( int amountH, int amountV ) {}
@@ -277,13 +284,22 @@ void
 m4dGUIVtkViewerWidget::slotDeleteAll() {}
 
 void
-m4dGUIVtkViewerWidget::slotRotateAxisX( int x ) {}
+m4dGUIVtkViewerWidget::slotRotateAxisX( double x )
+{
+    _renImageData->GetActiveCamera()->Elevation( x );
+}
 
 void
-m4dGUIVtkViewerWidget::slotRotateAxisY( int y ) {}
+m4dGUIVtkViewerWidget::slotRotateAxisY( double y )
+{
+    _renImageData->GetActiveCamera()->Azimuth( y );
+}
 
 void
-m4dGUIVtkViewerWidget::slotRotateAxisZ( int z ) {}
+m4dGUIVtkViewerWidget::slotRotateAxisZ( double z )
+{
+    _renImageData->GetActiveCamera()->Roll( z );
+}
 
 } /* namespace Viewer */
 } /* namespace M4D */
