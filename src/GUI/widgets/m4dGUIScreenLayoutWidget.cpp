@@ -3,6 +3,9 @@
 #include <QtGui>
 
 
+// Q_INIT_RESOURCE macro cannot be used in a namespace
+inline void initScreenLayoutWidgetResource () { Q_INIT_RESOURCE( m4dGUIScreenLayoutWidget ); }
+
 namespace M4D {
 namespace GUI {
 
@@ -23,7 +26,7 @@ const unsigned m4dGUIScreenLayoutWidget::layoutDimensions[][2] = { {1, 1}, {1, 2
 m4dGUIScreenLayoutWidget::m4dGUIScreenLayoutWidget ( QDialog *screenLayoutDialog, QWidget *parent )
   : QWidget( parent ), screenLayoutDialog( screenLayoutDialog )
 {
-  Q_INIT_RESOURCE( m4dGUIScreenLayoutWidget );
+  initScreenLayoutWidgetResource();
 
   // creating Series groupBox
   QGroupBox *seriesGroupBox = createLayoutGroupBox( tr( "Series" ), &seriesLayoutToolButtons, &seriesRowSpinBox,

@@ -11,6 +11,9 @@ using namespace M4D::Viewer;
 using namespace M4D::Imaging;
 
 
+// Q_INIT_RESOURCE macro cannot be used in a namespace
+inline void initMainWindowResource () { Q_INIT_RESOURCE( m4dGUIMainWindow ); }
+
 namespace M4D {
 namespace GUI {
 
@@ -69,7 +72,7 @@ const int m4dGUIMainWindow::slotsToActions[] = { ACTION_EMPTY, ACTION_EMPTY, ACT
 
 m4dGUIMainWindow::m4dGUIMainWindow ( const char *title, const QIcon &icon )
 {
-  Q_INIT_RESOURCE( m4dGUIMainWindow );
+  initMainWindowResource();
 
   QWidget *centralWidget = new QWidget;
   setCentralWidget( centralWidget );

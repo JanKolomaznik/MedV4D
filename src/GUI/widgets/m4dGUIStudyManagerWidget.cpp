@@ -3,13 +3,16 @@
 #include <QtGui>
 
 
+// Q_INIT_RESOURCE macro cannot be used in a namespace
+inline void initStudyManagerWidgetResource () { Q_INIT_RESOURCE( m4dGUIStudyManagerWidget ); }
+
 namespace M4D {
 namespace GUI {
 
 m4dGUIStudyManagerWidget::m4dGUIStudyManagerWidget ( QDialog *studyManagerDialog, QWidget *parent )
   : QWidget( parent )
 {
-  Q_INIT_RESOURCE( m4dGUIStudyManagerWidget );
+  initStudyManagerWidgetResource();
 
   // studyListGroupBox must go before filterGroupBox (it needs the studyList)
   QGroupBox *studyListGroupBox = createStudyListGroupBox( studyManagerDialog );
