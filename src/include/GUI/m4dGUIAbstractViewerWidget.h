@@ -21,17 +21,18 @@
 #define CLEARLEFTSIDEDATA	11
 #define CLEARRIGHTSIDEDATA	12
 #define TOGGLEPRINTDATA		13
-#define ZOOM			14
-#define MOVE			15
-#define CONTRASTBRIGHTNESS	16
-#define NEWPOINT		17
-#define NEWSHAPE		18
-#define DELETEPOINT		19
-#define DELETESHAPE		20
-#define DELETEALL		21
-#define ROTATEAXISX		22
-#define ROTATEAXISY		23
-#define ROTATEAXISZ		24
+#define TOGGLEPRINTSHAPEDATA	14
+#define ZOOM			15
+#define MOVE			16
+#define CONTRASTBRIGHTNESS	17
+#define NEWPOINT		18
+#define NEWSHAPE		19
+#define DELETEPOINT		20
+#define DELETESHAPE		21
+#define DELETEALL		22
+#define ROTATEAXISX		23
+#define ROTATEAXISY		24
+#define ROTATEAXISZ		25
 
 namespace M4D
 {
@@ -91,6 +92,7 @@ public slots:
     virtual void slotClearLeftSideData()=0;
     virtual void slotClearRightSideData()=0;
     virtual void slotTogglePrintData()=0;
+    virtual void slotTogglePrintShapeData()=0;
     virtual void slotZoom( int amount )=0;
     virtual void slotMove( int amountH, int amountV )=0;
     virtual void slotAdjustContrastBrightness( int amountB, int amountC )=0;
@@ -118,6 +120,7 @@ signals:
     void signalClearLeftSideData();
     void signalClearRightSideData();
     void signalTogglePrintData();
+    void signalTogglePrintShapeData();
     void signalZoom( unsigned index, int amount );
     void signalMove( unsigned index, int amountH, int amountV );
     void signalAdjustContrastBrightness( unsigned index, int amountB, int amountC );

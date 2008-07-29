@@ -82,7 +82,7 @@ m4dGUISliceViewerWidget::setParameters()
     _contrastRate = 1.0;
     slotSetButtonHandler( moveI, left );
     slotSetButtonHandler( switch_slice, right );
-    _printShapeData = false;
+    _printShapeData = true;
     _printData = true;
     _selected = false;
     _oneSliceMode = true;
@@ -1037,6 +1037,15 @@ void
 m4dGUISliceViewerWidget::slotTogglePrintData()
 {
     togglePrintData();
+}
+
+void
+m4dGUISliceViewerWidget::slotTogglePrintShapeData()
+{
+    if ( !_printShapeData ) _printShapeData = true;
+    else _printShapeData = false;
+    updateGL();
+    emit signalTogglePrintShapeData();
 }
 
 void

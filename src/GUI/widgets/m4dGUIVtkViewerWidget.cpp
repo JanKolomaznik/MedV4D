@@ -257,6 +257,9 @@ void
 m4dGUIVtkViewerWidget::slotTogglePrintData() {}
 
 void
+m4dGUIVtkViewerWidget::slotTogglePrintShapeData() {}
+
+void
 m4dGUIVtkViewerWidget::slotZoom( int amount )
 {
     _renImageData->GetActiveCamera()->Zoom( ((double)amount)/10. );

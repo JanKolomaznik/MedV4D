@@ -69,6 +69,7 @@ public slots:
     virtual void slotClearLeftSideData();
     virtual void slotClearRightSideData();
     virtual void slotTogglePrintData();
+    virtual void slotTogglePrintShapeData();
     virtual void slotZoom( int amount );
     virtual void slotMove( int amountH, int amountV );
     virtual void slotAdjustContrastBrightness( int amountB, int amountC );
