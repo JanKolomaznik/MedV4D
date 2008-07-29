@@ -66,7 +66,7 @@ const char *m4dGUIMainWindow::actionSlots[] = { SLOT(empty()), SLOT(viewerWindow
 const int m4dGUIMainWindow::slotsToActions[] = { ACTION_EMPTY, ACTION_EMPTY, ACTION_STACK, ACTION_EMPTY, ACTION_EMPTY, 
                                                  ACTION_FLIP_VERTICAL, ACTION_FLIP_HORIZONTAL, ACTION_EMPTY, ACTION_EMPTY,
                                                  ACTION_EMPTY, ACTION_EMPTY, ACTION_EMPTY, ACTION_EMPTY, ACTION_OVERLAY, 
-                                                 ACTION_ZOOM, ACTION_PAN, ACTION_WINDOW_LEVEL, ACTION_NEW_POINT, 
+                                                 ACTION_EMPTY, ACTION_ZOOM, ACTION_PAN, ACTION_WINDOW_LEVEL, ACTION_NEW_POINT, 
                                                  ACTION_NEW_SHAPE, ACTION_CLEAR_POINT, ACTION_CLEAR_SHAPE, ACTION_CLEAR_ALL, 
                                                  ACTION_EMPTY, ACTION_EMPTY, ACTION_EMPTY };
 
