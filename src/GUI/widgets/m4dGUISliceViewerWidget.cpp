@@ -188,6 +188,7 @@ m4dGUISliceViewerWidget::setOneSliceMode()
     _slicesPerRow = 1;
     _oneSliceMode = true;
     if ( _availableSlots.back() != ZOOM ) _availableSlots.push_back( ZOOM );
+    updateGL();
     emit signalSetOneSliceMode( _index );
 }
 
@@ -197,6 +198,7 @@ m4dGUISliceViewerWidget::setMoreSliceMode( unsigned slicesPerRow )
     _slicesPerRow = slicesPerRow;
     _oneSliceMode = false;
     if ( _availableSlots.back() == ZOOM ) _availableSlots.pop_back();
+    updateGL();
     emit signalSetMoreSliceMode( _index, slicesPerRow );
 }
 
