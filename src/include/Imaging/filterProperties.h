@@ -17,13 +17,11 @@ namespace Imaging
  *  implement new class derived from this one
  */
 
-typedef FilterID	uint32;
-
 class AbstractFilterSettings 
   : public M4D::CellBE::iSerializable
 {
 public:
-	virtual FilterID
+	virtual uint32
 	GetFilterID() const = 0;
 	
 protected:
@@ -35,6 +33,7 @@ protected:
 		Serialize( stream);
 	}
 
+public:
 	virtual void 
 	Serialize( M4D::CellBE::NetStream &s) = 0;
 
