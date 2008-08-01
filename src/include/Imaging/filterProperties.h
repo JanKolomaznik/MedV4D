@@ -29,7 +29,7 @@ protected:
 	void 
 	SerializeIntoStream( M4D::CellBE::NetStream &stream)
 	{
-		stream << this->GetFilterID();
+	//	stream << this->GetFilterID();
 		Serialize( stream);
 	}
 

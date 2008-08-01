@@ -11,6 +11,14 @@ ConnectionInterface *
 CreateConnectionObjectFromPorts( OutputPort& outPort, InputPort& inPort )
 {
 	//TODO
+	
+	//checking if we have image ports
+	if( dynamic_cast< OutputPortAbstractImage * > ( &outputPort ) 
+	  && dynamic_cast< InputPortAbstractImage * > ( &inputPort ) ) {
+
+
+	}
+
 	return NULL;
 }
 

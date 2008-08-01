@@ -347,6 +347,11 @@ protected:
 	virtual void
 	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
 
+	/**
+	 * Method called in execution methods after computation.
+	 * When overriding in successors, predecessor implementation must be called as last.
+	 * \param successful Information, whether computation proceeded without problems.
+	 **/
 	virtual void
 	AfterComputation( bool successful ){ /*empty*/ };
 

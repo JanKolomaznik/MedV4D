@@ -161,22 +161,6 @@ MainExecutionThread::operator()()
 			);
 
 
-	//Computation
-	/*bool successful = false;
-	switch( _updateType ) {
-	case AbstractPipeFilter::RECALCULATION:
-		successful = _filter->ExecutionOnWholeThreadMethod();
-		break;
-	case AbstractPipeFilter::ADAPTIVE_CALCULATION:
-		successful = _filter->ExecutionThreadMethod();
-		break;
-	default:
-		//Shouldn't reach this.
-		ASSERT( false );
-		break;
-	}*/
-
-
 	if( _filter->ExecutionThreadMethod( _updateType ) ) {
 		//Send message about finished job	
 		_filter->_outputPorts.SendMessage( 
