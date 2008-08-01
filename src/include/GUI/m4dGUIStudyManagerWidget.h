@@ -21,8 +21,7 @@ class m4dGUIStudyManagerWidget: public QWidget
     /**
      * Constructor of m4dGUIStudyManagerWidget.
      *
-     * @param studyManagerDialog pointer to the Study Manager Dialog - to close it after 
-     * clicking View
+     * @param studyManagerDialog pointer to the Study Manager Dialog - to change its title
      * @ param parent pointer to the parent of this widget - default is 0
      */
     m4dGUIStudyManagerWidget ( QDialog *studyManagerDialog, QWidget *parent = 0 );

@@ -34,6 +34,12 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
       unsigned checkedRightButtonTool;
     };
 
+    struct Connection {
+      M4D::Imaging::ConnectionInterface *conn;
+      std::string pipelineDescription;
+      std::string connectionDescription;
+    };
+
     /** 
      * Main Viewer Desktop constructor.
      *
@@ -41,16 +47,19 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
      */
     m4dGUIMainViewerDesktopWidget ( QWidget *parent = 0 );
 
+    ViewerType getSelectedViewerType () const { return selectedViewer->type; }
     M4D::Viewer::m4dGUIAbstractViewerWidget *getSelectedViewerWidget () const { return selectedViewer->viewerWidget; }
+    unsigned getSelectedViewerLeftTool () const { return selectedViewer->checkedLeftButtonTool; }
+    unsigned getSelectedViewerRightTool () const { return selectedViewer->checkedRightButtonTool; }
+    
     void replaceSelectedViewerWidget ( ViewerType type, M4D::Viewer::m4dGUIAbstractViewerWidget *replacedViewer );
+    void setSelectedViewerLeftTool ( unsigned value ) { selectedViewer->checkedLeftButtonTool = value; }
+    void setSelectedViewerRightTool ( unsigned value ) { selectedViewer->checkedRightButtonTool = value; }
+
     M4D::Viewer::m4dGUIAbstractViewerWidget *getPrevSelectedViewerWidget () const { return prevSelectedViewer->viewerWidget; }
 
-    ViewerType getSelectedViewerType () const { return selectedViewer->type; }
-
-    unsigned getSelectedCheckedLeftButtonTool () const { return selectedViewer->checkedLeftButtonTool; }
-    unsigned getSelectedCheckedRightButtonTool () const { return selectedViewer->checkedRightButtonTool; }
-    void setSelectedCheckedLeftButtonTool ( unsigned value ) { selectedViewer->checkedLeftButtonTool = value; }
-    void setSelectedCheckedRightButtonTool ( unsigned value ) { selectedViewer->checkedRightButtonTool = value; }
+    void addSource ( M4D::Imaging::ConnectionInterface *conn, const std::string &pipelineDescription,
+                     const std::string &connectionDescription );
 
   private slots:
 
@@ -67,6 +76,7 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
   signals:
 
     void propagateFeatures ();
+    void sourceAdded ( const QString &pipelineDescription, const QString &connectionDescription );
 
   private:
 
@@ -76,6 +86,8 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
     std::vector< Viewer * > viewers;
     Viewer *selectedViewer;
     Viewer *prevSelectedViewer;
+
+    std::vector< Connection * > sources;
 
     unsigned layoutRows, layoutColumns;
 };

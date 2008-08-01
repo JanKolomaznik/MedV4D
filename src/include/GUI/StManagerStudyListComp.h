@@ -1,5 +1,5 @@
-#ifndef S_MANAGER_STUDY_LIST_COMP_H
-#define S_MANAGER_STUDY_LIST_COMP_H
+#ifndef ST_MANAGER_STUDY_LIST_COMP_H
+#define ST_MANAGER_STUDY_LIST_COMP_H
 
 #include <QWidget>
 
@@ -19,7 +19,6 @@ namespace M4D {
 namespace GUI {
 
 /**
- * @class StManagerStudyListComp StManagerStudyListComp.h
  * Class representing one of the base components of Study Manager Widget.
  * It manages the uniform search result viewing and manipulation - Recent Exams (remote and DICOMDIR), 
  * Remote Exams, DICOMDIR. 
@@ -33,8 +32,7 @@ class StManagerStudyListComp: public QWidget
     /** 
      * Study Manager Study List Component constructor.
      *
-     * @param studyManagerDialog pointer to the Study Manager Dialog - to close it after
-     *        clicking View
+     * @param studyManagerDialog pointer to the Study Manager Dialog - to change its title
      * @param parent pointer to the parent widget - default is 0
      */
     StManagerStudyListComp ( QDialog *studyManagerDialog, QWidget *parent = 0 );
@@ -52,9 +50,9 @@ class StManagerStudyListComp: public QWidget
      * @param patientID patient ID search mask
      * @param fromDate reference to string containing date (from) in yyyyMMdd format
      * @param toDate reference to string containing date (to) in yyyyMMdd format 
-     * @param reference to vector of strings containing set of wanted modalities
-     * ....
-     * ....
+     * @param modalitiesVect reference to vector of strings containing set of wanted modalities
+     * @param referringMD reference to string containing referring MD
+     * @param description reference to string containing description of the study
      * @throws ExceptionBase, exception -> TOWRITE
      */
     void find ( const std::string &firstName, const std::string &lastName, 
@@ -63,6 +61,11 @@ class StManagerStudyListComp: public QWidget
                 const M4D::Dicom::DcmProvider::StringVector &modalitiesVect,
                 const std::string &referringMD, const std::string &description );
 
+    /** 
+     * Sets pointer to DicomObjSet - result of the Study Manager appears there.
+     * 
+     * @param dcmObjSet DicomObjSet to fill
+     */
     void setDicomObjectSet ( M4D::Dicom::DcmProvider::DicomObjSet *dcmObjSet )
     {
       dicomObjectSet = dcmObjSet;  
@@ -94,6 +97,13 @@ class StManagerStudyListComp: public QWidget
      * Slot for directory tree behavior - to hide or show it.
      */
     void path ();
+
+  signals:
+
+    /**
+     * Signal for indicating wheather the view button was pushed - to clese the dialog.
+     */
+    void ready ();
 
   private:
 
@@ -187,8 +197,9 @@ class StManagerStudyListComp: public QWidget
     QToolButton  *createToolButton ( const QIcon &icon, const char *member );
 
 
-    /// Pointer to the Study Manager Dialog - to close it after clicking View.
+    /// Pointer to the Study Manager Dialog - to change its title.
     QDialog *studyManagerDialog;
+    /// Title of the Study Manager Dialog - depending on searching mode and find results.
     QString studyManagerDialogTitle;
 
     /// Names of the exam/image attributes.
@@ -227,4 +238,4 @@ class StManagerStudyListComp: public QWidget
 } // namespace GUI
 } // namespace M4D
 
-#endif // S_MANAGER_STUDY_LIST_COMP_H
+#endif // ST_MANAGER_STUDY_LIST_COMP_H

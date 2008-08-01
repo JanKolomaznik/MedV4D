@@ -5,6 +5,8 @@
 using namespace M4D::Imaging;
 using namespace M4D::Viewer;
 
+using namespace std;
+
 
 namespace M4D {
 namespace GUI {
@@ -12,6 +14,8 @@ namespace GUI {
 m4dGUIMainViewerDesktopWidget::m4dGUIMainViewerDesktopWidget ( QWidget *parent )
   : QWidget( parent )
 {
+  // ==========================================================================
+
 	inputImage = ImageFactory::CreateEmptyImage3DTyped< uint32 >( 512, 512, 50 );
 
 	size_t i, j, k;
@@ -77,6 +81,22 @@ void m4dGUIMainViewerDesktopWidget::replaceSelectedViewerWidget ( ViewerType typ
   // delete old - directly before inserting the new one 
   delete replacedViewer;
   innerSplitter->insertWidget( idx % layoutColumns, resizedWidget );
+}
+
+
+void m4dGUIMainViewerDesktopWidget::addSource ( ConnectionInterface *conn, const string &pipelineDescription,
+                                                const string &connectionDescription )
+{
+  Connection *source = new Connection;
+  
+  source->conn = conn;
+  source->pipelineDescription   = pipelineDescription;
+  source->connectionDescription = connectionDescription;
+
+  sources.push_back( source );
+
+  emit sourceAdded ( QString( source->pipelineDescription.c_str() ), 
+                     QString( source->connectionDescription.c_str() ) );
 }
 
 

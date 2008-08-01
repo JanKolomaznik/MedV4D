@@ -5,7 +5,6 @@
 #include "Log.h"
 #include "Debug.h"
 
-// DICOM namespace:
 using namespace M4D::Dicom;
 using namespace M4D::Viewer;
 using namespace M4D::Imaging;
@@ -18,30 +17,33 @@ namespace M4D {
 namespace GUI {
 
 /// Number of abstract viewer's actions (toolBar buttons) - first is for all unplugged slots (it's not in toolBar)
-#define VIEWER_ACTIONS_NUMBER       13
+#define VIEWER_ACTIONS_NUMBER       14
 
 const char *m4dGUIMainWindow::actionIconNames[] = { "empty.png", "window-level.png", "empty.png", "zoom.png", 
                                                     "stack.png", "info.png", "point.png", "shape.png", "clear-point.png",
-                                                    "clear-shape.png", "clear-all.png", "flip-hor.png", "flip-vert.png" };
+                                                    "clear-shape.png", "clear-all.png", "flip-hor.png", "flip-vert.png",
+                                                    "empty.png" };
 
 const char *m4dGUIMainWindow::actionTexts[] = { "No Action", "Window/Level (Right Mouse)", "Pan (Left Mouse)", 
                                                 "Zoom (Right Mouse)", "Stack (Right Mouse)", "Toggle Overlay",
                                                 "New Point (Left Mouse)", "New Shape (Left Mouse)", "Clear Point",
-                                                "Clear Shape", "Clear All Points/Shapes", "Flip Horizontal", "Flip Vertical"};
+                                                "Clear Shape", "Clear All Points/Shapes", "Flip Horizontal", "Flip Vertical",
+                                                "Rotate Volume (Left Mouse)" };
 
 // information also used for weather the connection is direct to the viewer
 const m4dGUIMainWindow::ToolType m4dGUIMainWindow::actionToolTypes[] = { CHECKABLE_TOOL, CHECKABLE_TOOL, CHECKABLE_TOOL, 
                                                     CHECKABLE_TOOL, CHECKABLE_TOOL, TOGGLE_TOOL, CHECKABLE_TOOL, 
                                                     CHECKABLE_TOOL, TOGGLE_TOOL, TOGGLE_TOOL, TOGGLE_TOOL, 
-                                                    TOGGLE_TOOL, TOGGLE_TOOL };
+                                                    TOGGLE_TOOL, TOGGLE_TOOL, CHECKABLE_TOOL };
 
 const m4dGUIMainWindow::ButtonType m4dGUIMainWindow::actionButtonTypes[] = { LEFT_BUTTON, RIGHT_BUTTON, LEFT_BUTTON, 
                                                     RIGHT_BUTTON, RIGHT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON,
-                                                    LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON };
+                                                    LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON,
+                                                    LEFT_BUTTON };
 
 const char *m4dGUIMainWindow::actionShortCuts[] = { "", "Ctrl+W", "Ctrl+P", "Ctrl+Z", "Ctrl+A", "Ctrl+T",
                                                     "Ctrl+I", "Ctrl+H", "Ctrl+N", "Ctrl+E", "Ctrl+A",
-                                                    "Ctrl+R", "Ctrl+V" };
+                                                    "Ctrl+R", "Ctrl+V", "Ctrl+U" };
 
 const char *m4dGUIMainWindow::actionStatusTips[] = { "Action for all unplugged available slots", 
                                                      "Adjust the brightness and/or contrast of the image", 
@@ -55,20 +57,21 @@ const char *m4dGUIMainWindow::actionStatusTips[] = { "Action for all unplugged a
                                                      "Clear last created shape",
                                                      "Clear all selections (points, shapes)",
                                                      "Flip the selected image from left to right about the vertical axis",
-                                                     "Flip the selected image from top to bottom about the horizontal axis" };
+                                                     "Flip the selected image from top to bottom about the horizontal axis",
+                                                     "Rotates the volume about the three axes" };
 
 const char *m4dGUIMainWindow::actionSlots[] = { SLOT(empty()), SLOT(viewerWindowLevel()), SLOT(viewerPan()),
                                                 SLOT(viewerZoom()), SLOT(viewerStack()), SLOT(slotTogglePrintData()),
                                                 SLOT(viewerNewPoint()), SLOT(viewerNewShape()), SLOT(slotDeletePoint()),
                                                 SLOT(slotDeleteShape()), SLOT(slotDeleteAll()), SLOT(slotToggleFlipHorizontal()),
-                                                SLOT(slotToggleFlipVertical()) };
+                                                SLOT(slotToggleFlipVertical()), SLOT(viewerRotate()) };
 
 const int m4dGUIMainWindow::slotsToActions[] = { ACTION_EMPTY, ACTION_EMPTY, ACTION_STACK, ACTION_EMPTY, ACTION_EMPTY, 
                                                  ACTION_FLIP_VERTICAL, ACTION_FLIP_HORIZONTAL, ACTION_EMPTY, ACTION_EMPTY,
                                                  ACTION_EMPTY, ACTION_EMPTY, ACTION_EMPTY, ACTION_EMPTY, ACTION_OVERLAY, 
                                                  ACTION_EMPTY, ACTION_ZOOM, ACTION_PAN, ACTION_WINDOW_LEVEL, ACTION_NEW_POINT, 
                                                  ACTION_NEW_SHAPE, ACTION_CLEAR_POINT, ACTION_CLEAR_SHAPE, ACTION_CLEAR_ALL, 
-                                                 ACTION_EMPTY, ACTION_EMPTY, ACTION_EMPTY };
+                                                 ACTION_ROTATE_3D, ACTION_ROTATE_3D, ACTION_ROTATE_3D };
 
 m4dGUIMainWindow::m4dGUIMainWindow ( const char *title, const QIcon &icon )
 {
@@ -193,6 +196,12 @@ void m4dGUIMainWindow::viewerNewShape ()
 }
 
 
+void m4dGUIMainWindow::viewerRotate ()
+{
+  // delegateAction( ACTION_ROTATE_3D, m4dGUIAbstractViewerWidget::rotate_3D );
+}
+
+
 void m4dGUIMainWindow::features ()
 {
   m4dGUIAbstractViewerWidget *prevViewer = mainViewerDesktop->getPrevSelectedViewerWidget();
@@ -217,6 +226,11 @@ void m4dGUIMainWindow::features ()
       connect( viewerActs[i], SIGNAL(triggered()), actViewer, actionSlots[i] );
     }
   }
+  // new point/shape behavior
+  disconnect( prevViewer, SIGNAL(signalNewShape( unsigned, int, int, int )), 
+              viewerActs[ACTION_NEW_POINT], SLOT(trigger()) );
+  connect( actViewer, SIGNAL(signalNewShape( unsigned, int, int, int )), 
+           viewerActs[ACTION_NEW_POINT], SLOT(trigger()) );
 
   disconnect( screenLayoutWidget, SIGNAL(imageLayout( const unsigned )), prevViewer, SLOT(slotSetMoreSliceMode( unsigned )) );
   connect( screenLayoutWidget, SIGNAL(imageLayout( const unsigned )), actViewer, SLOT(slotSetMoreSliceMode( unsigned )) );
@@ -230,8 +244,8 @@ void m4dGUIMainWindow::features ()
   }
 
   // trigger previously checked tools for newly selected viewer
-  viewerActs[mainViewerDesktop->getSelectedCheckedLeftButtonTool()]->trigger();
-  viewerActs[mainViewerDesktop->getSelectedCheckedRightButtonTool()]->trigger();
+  viewerActs[mainViewerDesktop->getSelectedViewerLeftTool()]->trigger();
+  viewerActs[mainViewerDesktop->getSelectedViewerRightTool()]->trigger();
 
   if ( mainViewerDesktop->getSelectedViewerType() == m4dGUIMainViewerDesktopWidget::VTK_VIEWER ) {
     replaceAct->setChecked( true );
@@ -264,10 +278,23 @@ void m4dGUIMainWindow::replace ()
 }
 
 
+void m4dGUIMainWindow::sources( const QString &pipelineDescription, const QString &connectionDescription )
+{
+  QString source( pipelineDescription + " - " + connectionDescription );
+
+  sourcesComboBox->addItem( source );
+
+  sourcesToolBar->show();
+}
+
+
+
 void m4dGUIMainWindow::createMainViewerDesktop ()
 {
   mainViewerDesktop = new m4dGUIMainViewerDesktopWidget;
   connect( mainViewerDesktop, SIGNAL(propagateFeatures()), this, SLOT(features()) );
+  connect( mainViewerDesktop, SIGNAL(sourceAdded( const QString &, const QString & )), 
+           this, SLOT(sources( const QString &, const QString & )) );
 }
 
 
@@ -279,6 +306,7 @@ void m4dGUIMainWindow::createStudyManagerDialog ()
   studyManagerDialog->setWindowIcon( QIcon( ":/icons/search.png" ) );
 
   studyManagerWidget = new m4dGUIStudyManagerWidget( studyManagerDialog );
+  connect( studyManagerWidget->getStudyListComponent(), SIGNAL(ready()), studyManagerDialog, SLOT(close()) );
 
   QVBoxLayout *dialogLayout = new QVBoxLayout;
   dialogLayout->addWidget( studyManagerWidget );
@@ -294,9 +322,10 @@ void m4dGUIMainWindow::createScreenLayoutDialog ()
   screenLayoutDialog->setWindowTitle( tr( "Screen Layout" ) );
   screenLayoutDialog->setWindowIcon( QIcon( ":/icons/layout.png" ) );
 
-  screenLayoutWidget = new m4dGUIScreenLayoutWidget( screenLayoutDialog );
+  screenLayoutWidget = new m4dGUIScreenLayoutWidget;
   connect( screenLayoutWidget, SIGNAL(seriesLayout( const unsigned, const unsigned )), 
            mainViewerDesktop, SLOT(setDesktopLayout( const unsigned, const unsigned )) );
+  connect( screenLayoutWidget, SIGNAL(ready()), screenLayoutDialog, SLOT(close()) );
 
   QVBoxLayout *dialogLayout = new QVBoxLayout;
   dialogLayout->addWidget( screenLayoutWidget );
@@ -449,8 +478,14 @@ void m4dGUIMainWindow::createToolBars ()
 
   replaceToolBar = addToolBar( tr( "Replace" ) );
   replaceToolBar->addAction( replaceAct );
-  // QComboBox *cb = new QComboBox;
-  // replaceToolBar->addWidget( cb );
+
+  addToolBarBreak(); 
+
+  sourcesToolBar = addToolBar( tr( "Sources" ) );
+  sourcesComboBox = new QComboBox;
+  sourcesComboBox->setSizeAdjustPolicy( QComboBox::AdjustToContents );
+  sourcesToolBar->addWidget( sourcesComboBox );
+  sourcesToolBar->hide();
 }
 
 
@@ -500,12 +535,12 @@ void m4dGUIMainWindow::delegateAction ( unsigned actionIdx, m4dGUIAbstractViewer
   if ( actionButtonTypes[actionIdx] == RIGHT_BUTTON )
   {
     btn = m4dGUIAbstractViewerWidget::right;
-    mainViewerDesktop->setSelectedCheckedRightButtonTool( actionIdx );
+    mainViewerDesktop->setSelectedViewerRightTool( actionIdx );
   }
   else
   {
     btn = m4dGUIAbstractViewerWidget::left;
-    mainViewerDesktop->setSelectedCheckedLeftButtonTool( actionIdx );
+    mainViewerDesktop->setSelectedViewerLeftTool( actionIdx );
   }
 
   mainViewerDesktop->getSelectedViewerWidget()->slotSetButtonHandler( hnd, btn );

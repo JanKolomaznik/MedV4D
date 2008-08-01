@@ -356,7 +356,7 @@ void StManagerStudyListComp::view ()
   // add to Recent Exams
   updateRecentExams( row, recentTypePrefix );
 
-  studyManagerDialog->accept();
+  emit ready();
 }
 
 

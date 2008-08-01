@@ -26,6 +26,7 @@ namespace GUI {
 #define ACTION_CLEAR_ALL         10
 #define ACTION_FLIP_HORIZONTAL   11
 #define ACTION_FLIP_VERTICAL     12
+#define ACTION_ROTATE_3D         13
 
 /**
  * Class representing the Main Window - containing all basic dialogs, viewer desktop
@@ -85,6 +86,7 @@ class m4dGUIMainWindow: public QMainWindow
     void viewerStack ();
     void viewerNewPoint ();
     void viewerNewShape ();
+    void viewerRotate ();
 
     /**
      * Slot for managing adaptive toolBars depending on the type of the selected viewer.
@@ -100,6 +102,8 @@ class m4dGUIMainWindow: public QMainWindow
      * Slot for replacing selected viewers (toggle VTK viewer)
      */
     void replace ();
+
+    void sources ( const QString &pipelineDescription, const QString &connectionDescription );
 
   signals:
     // clickable (left, right - exl.) tools changed -> change the handlers, buttons accordingly
@@ -166,14 +170,14 @@ class m4dGUIMainWindow: public QMainWindow
     QToolBar *layoutToolBar;
     QToolBar *viewerToolBar;
     QToolBar *replaceToolBar;
+    QToolBar *sourcesToolBar;
+
+    QComboBox *sourcesComboBox;
    
     QMenu *fileMenu;
     QMenu *toolBarsMenu;
     QMenu *toolsMenu;
     QMenu *viewMenu;
-
-
-    // M4D::Imaging::AbstractImageData::APtr inputImage;
 };
 
 } // namespace GUI

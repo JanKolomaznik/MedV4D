@@ -1,5 +1,5 @@
-#ifndef S_MANAGER_H_PROTOCOLS_COMP_H
-#define S_MANAGER_H_PROTOCOLS_COMP_H
+#ifndef ST_MANAGER_H_PROTOCOLS_COMP_H
+#define ST_MANAGER_H_PROTOCOLS_COMP_H
 
 #include <QWidget>
 
@@ -18,5 +18,5 @@ class StManagerHProtocolsComp: public QWidget
 } // namespace GUI
 } // namespace M4D
 
-#endif // S_MANAGER_H_PROTOCOLS_COMP_H
+#endif // ST_MANAGER_H_PROTOCOLS_COMP_H
 

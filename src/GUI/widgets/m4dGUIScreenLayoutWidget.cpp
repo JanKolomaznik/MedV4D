@@ -23,8 +23,8 @@ const unsigned m4dGUIScreenLayoutWidget::layoutDimensions[][2] = { {1, 1}, {1, 2
                                                                    {2, 4}, {4, 2}, {4, 4}, {4, 6},   
                                                                    {4, 8} };
 
-m4dGUIScreenLayoutWidget::m4dGUIScreenLayoutWidget ( QDialog *screenLayoutDialog, QWidget *parent )
-  : QWidget( parent ), screenLayoutDialog( screenLayoutDialog )
+m4dGUIScreenLayoutWidget::m4dGUIScreenLayoutWidget ( QWidget *parent )
+  : QWidget( parent )
 {
   initScreenLayoutWidgetResource();
 
@@ -101,7 +101,7 @@ void m4dGUIScreenLayoutWidget::imageApply ()
 
 void m4dGUIScreenLayoutWidget::accept ()
 { 
-  screenLayoutDialog->close();
+  emit ready();
 }
 
 

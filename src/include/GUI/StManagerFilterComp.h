@@ -1,5 +1,5 @@
-#ifndef S_MANAGER_FILTER_COMP_H
-#define S_MANAGER_FILTER_COMP_H
+#ifndef ST_MANAGER_FILTER_COMP_H
+#define ST_MANAGER_FILTER_COMP_H
 
 #include <QWidget>
 
@@ -69,5 +69,5 @@ class StManagerFilterComp: public QWidget
 } // namespace GUI
 } // namespace M4D
 
-#endif // S_MANAGER_FILTER_COMP_H
+#endif // ST_MANAGER_FILTER_COMP_H
 
