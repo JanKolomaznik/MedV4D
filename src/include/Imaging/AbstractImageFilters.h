@@ -100,7 +100,7 @@ class ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 {
 public:
 	typedef typename Imaging::ImageFilter< Image< InputElementType, 3 >, OutputImageType >	PredecessorType;
-
+	
 	ImageSliceFilter( unsigned neighbourCount, unsigned grouping );
 	~ImageSliceFilter() {}
 
@@ -118,7 +118,7 @@ public:
 			if( count > 0 ) {
 				_computationGrouping = count; 
 			}else {
-		       		//TODO - exception
+		       		throw ErrorHandling::ExceptionBadParameter< unsigned >( count );
 			}	
 		}
 

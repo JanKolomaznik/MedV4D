@@ -47,7 +47,7 @@ public:
 	 * @param inputPort Port to be disconnected.
 	 **/
 	virtual void
-	DisconnectConsumer( InputPort& inputPort )=0;
+	DisconnectConsumer( InputPort& inputPort );
 
 	/**
 	 * Handle input port of some filter. 
@@ -61,10 +61,10 @@ public:
 	 * Disconnect input port. !!!Output port of some filter!!!
 	 **/
 	virtual void
-	DisconnectProducer()=0;
+	DisconnectProducer();
 
 	virtual void 
-	DisconnectAll()=0;
+	DisconnectAll();
 
 	void
 	SendMessage( 
@@ -106,7 +106,14 @@ public:
 	//ExclusiveUnlockDataset() = 0;
 
 protected:
+	typedef std::map< uint64, InputPort* > ConsumersMap;
 
+	void
+	PushConsumer( InputPort& consumer );
+	
+	ConsumersMap				_consumers;
+
+	OutputPort				*_producer;
 private:
 	/**
 	 * Prohibition of copying.
@@ -158,12 +165,7 @@ public:
 	/*virtual void
 	ConnectAImageConsumer( InputPortAbstractImage &inputPort );*/
 protected:
-	typedef std::map< uint64, InputPortAbstractImage* > ConsumersMap;
 
-	void
-	PushConsumer( InputPortAbstractImage& consumer );
-	
-	ConsumersMap				_consumers;
 };
 
 //We prohibit general usage - only specialized templates used.
@@ -186,26 +188,17 @@ public:
 	void
 	ConnectConsumer( InputPort& inputPort );
 
-	/*virtual void
-	ConnectConsumerTyped( InputImagePort& inputPort ); */
-
 	void
 	ConnectProducer( OutputPort& outputPort );
-
-	/*virtual void
-	ConnectProducerTyped( OutputImagePort& outputPort ); */
 	
-	void
-	DisconnectConsumer( InputPort& inputPort );
+	/*void
+	DisconnectConsumer( InputPort& inputPort );*/
 
-	virtual void
-	DisconnectConsumerTyped( InputImagePort& inputPort ); 
+	/*void
+	DisconnectProducer();*/
 
-	void
-	DisconnectProducer();
-
-	void 
-	DisconnectAll();
+	/*void 
+	DisconnectAll();*/
 
 	Image &
 	GetImage()const 

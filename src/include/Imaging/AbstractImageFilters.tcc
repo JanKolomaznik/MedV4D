@@ -16,7 +16,7 @@ ImageFilter< InputImageType, OutputImageType >::ImageFilter()
 	M4D::Imaging::InputPort *inPort = new InputPortType();
 	M4D::Imaging::OutputPort *outPort = new OutputPortType();
 
-	//TODO - check whether OK
+	//TODO check if OK
 	_inputPorts.AddPort( inPort );
 	_outputPorts.AddPort( outPort );
 }
@@ -25,7 +25,6 @@ template< typename InputImageType, typename OutputImageType >
 const InputImageType&
 ImageFilter< InputImageType, OutputImageType >::GetInputImage()const
 {
-	//TODO - exceptions
 	_inputPorts.GetPortTyped< InputPortType >( 0 ).LockDataset();
 	return _inputPorts.GetPortTyped< InputPortType >( 0 ).GetImage();
 }
@@ -34,7 +33,6 @@ template< typename InputImageType, typename OutputImageType >
 void
 ImageFilter< InputImageType, OutputImageType >::ReleaseInputImage()const
 {
-	//TODO
 	_inputPorts.GetPortTyped< InputPortType >( 0 ).ReleaseDatasetLock();
 }
 
@@ -42,7 +40,6 @@ template< typename InputImageType, typename OutputImageType >
 void
 ImageFilter< InputImageType, OutputImageType >::ReleaseOutputImage()const
 {
-	//TODO
 	_outputPorts.GetPortTyped< OutputPortType >( 0 ).ReleaseDatasetLock();
 }
 
@@ -50,7 +47,6 @@ template< typename InputImageType, typename OutputImageType >
 OutputImageType&
 ImageFilter< InputImageType, OutputImageType >::GetOutputImage()const
 {
-	//TODO - exceptions
 	_outputPorts.GetPortTyped< OutputPortType >( 0 ).LockDataset();
 	return _outputPorts.GetPortTyped< OutputPortType >( 0 ).GetImage();
 }
@@ -64,7 +60,6 @@ ImageFilter< InputImageType, OutputImageType >
 		float32		elementExtents[ ]
 	    )
 {
-	//TODO - locking
 	_outputPorts.GetPortTyped< OutputPortType >( 0 ).SetImageSize( minimums, maximums, elementExtents );
 }
 
@@ -73,10 +68,8 @@ void
 ImageFilter< InputImageType, OutputImageType >
 ::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
 {
-	//TODO
 	PredecessorType::BeforeComputation( utype );	
 	
-	//TODO - check
 	this->in = &(this->GetInputImage());
 	this->out = &(this->GetOutputImage());
 
@@ -134,7 +127,6 @@ ImageFilter< InputImageType, OutputImageType >
 	this->ReleaseInputImage();
 	this->ReleaseOutputImage();
 
-	//TODO
 	PredecessorType::AfterComputation( successful );	
 }
 //******************************************************************************

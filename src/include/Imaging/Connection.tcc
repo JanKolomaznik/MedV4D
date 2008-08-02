@@ -44,29 +44,11 @@ ImageConnection< Image< ElementType, dimension > >
 	OutputImagePort *port = 
 		dynamic_cast< OutputImagePort * >( &outputPort );
 	if( port ) {
-		port->Plug( *this ); //TODO check if ok
+			port->Plug( *this );
+			_producer = port;
 	} else {
 		throw ConnectionInterface::EMismatchPortType();
 	}
-}
-
-/*template< typename ElementType, unsigned dimension >
-void
-ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
-::ConnectProducerTyped( typename ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
-			::OutputImagePort &outputPort 
-	)
-{
-	outputPort.PlugTyped( *this );
-	_input = &outputPort;
-}*/
-
-template< typename ElementType, unsigned dimension >
-void
-ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
-::DisconnectProducer()
-{
-	//TODO
 }
 
 template< typename ElementType, unsigned dimension >
@@ -79,13 +61,13 @@ ImageConnection< Image< ElementType, dimension > >
 		typeid(inputPort) == typeid( InputPortAbstractImage &)
 	  )
 	{
-		this->PushConsumer( static_cast<InputPortAbstractImage &>( inputPort ) );
+		this->PushConsumer( inputPort );
 	} else {
 		throw ConnectionInterface::EMismatchPortType();
 	}
 }
 
-template< typename ElementType, unsigned dimension >
+/*template< typename ElementType, unsigned dimension >
 void
 ImageConnection< Image< ElementType, dimension > >
 ::DisconnectConsumer( InputPort& inputPort )
@@ -96,46 +78,7 @@ ImageConnection< Image< ElementType, dimension > >
 	} else {
 		throw ConnectionInterface::EMismatchPortType();
 	}
-}
-
-/*template< typename ElementType, unsigned dimension >
-void
-ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
-::ConnectConsumerTyped( typename ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
-		::InputImagePort& inputPort 
-	)
-{
-
-	if( _consumers.find( inputPort.GetID() )== _consumers.end() ) {
-		inputPort.PlugTyped( *this );
-		_consumers[ inputPort.GetID() ] = &inputPort;
-	} else {
-		//TODO throw exception
-	}
-
-}
-*/
-
-template< typename ElementType, unsigned dimension >
-void
-ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
-::DisconnectConsumerTyped( typename ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
-		::InputImagePort& inputPort 
-	)
-{
-
-	//TODO
-}
-
-
-template< typename ElementType, unsigned dimension >
-void
-ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
-::DisconnectAll()
-{
-
-	//TODO
-}
+}*/
 
 template< typename ElementType, unsigned dimension >
 void
@@ -147,7 +90,7 @@ ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 	    )
 {
 	if( !_image ) {
-		//TODO throw exception
+		throw ENoImageAssociated();
 	}
 	//TODO - check if locking should be done here
 	_image->UpgradeToExclusiveLock();
@@ -169,7 +112,6 @@ ImageConnection< Image< ElementType, dimension > >
 	FlowDirection				direction
 	)
 {
-	//TODO REWRITE !!!
 	typename ConsumersMap::iterator it;
 	for( it = _consumers.begin(); it != _consumers.end(); ++it ) {
 		it->second->ReceiveMessage( msg, sendStyle, direction );

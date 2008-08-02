@@ -23,6 +23,28 @@ private:
 	std::string	_name;
 };
 
+class ExceptionCastProblem : public ExceptionBase
+{
+public:
+	ExceptionCastProblem( std::string name ) throw() : ExceptionBase( name ) {}
+	~ExceptionCastProblem() throw(){}
+};
+
+template< typename ParamType >
+class ExceptionBadParameter : public ExceptionBase
+{
+public:
+	ExceptionBadParameter( ParamType param ) throw() : ExceptionBase( "Bad parameter value." ), _param( param ) {}
+	ExceptionBadParameter( ParamType param, std::string name ) throw() : ExceptionBase( name ), _param( param ) {}
+	~ExceptionBadParameter() throw(){}
+
+	ParamType
+	GetParamValue()const
+		{ return _param; }
+protected:
+	ParamType	_param;
+};
+
 class ENotFinished: public ExceptionBase
 {
 public:

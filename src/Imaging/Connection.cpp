@@ -8,7 +8,36 @@ namespace Imaging
 //*****************************************************************************
 
 void
-AbstractImageConnection::PushConsumer( InputPortAbstractImage& consumer )
+ConnectionInterface::DisconnectConsumer( InputPort& inputPort )
+{
+	ConsumersMap::iterator it = _consumers.find( inputPort.GetID() );
+	if( it != _consumers.end() ) {
+		inputPort.UnPlug();
+		_consumers.erase( it );
+	} else {
+		//TODO throw exception
+	}
+}
+
+void
+ConnectionInterface::DisconnectProducer()
+{
+	if( _producer ) {
+		_producer->UnPlug();
+		_producer = NULL;
+	} else {
+		//TODO throw exception
+	}
+}
+
+void
+ConnectionInterface::DisconnectAll()
+{
+	//TODO
+}
+
+void
+ConnectionInterface::PushConsumer( InputPort& consumer )
 {
 	if( _consumers.find( consumer.GetID() )== _consumers.end() ) {
 		consumer.Plug( *this );
@@ -17,6 +46,7 @@ AbstractImageConnection::PushConsumer( InputPortAbstractImage& consumer )
 		//TODO throw exception
 	}
 }
+
 
 //*****************************************************************************
 
