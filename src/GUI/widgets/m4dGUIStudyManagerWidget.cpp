@@ -17,7 +17,7 @@ m4dGUIStudyManagerWidget::m4dGUIStudyManagerWidget ( QDialog *studyManagerDialog
   // studyListGroupBox must go before filterGroupBox (it needs the studyList)
   QGroupBox *studyListGroupBox = createStudyListGroupBox( studyManagerDialog );
   QGroupBox *filterGroupBox = createFilterGroupBox();
-  QGroupBox *hangingProtocolsGroupBox = createHangingProtocolsGroupBox();
+  // QGroupBox *hangingProtocolsGroupBox = createHangingProtocolsGroupBox();
 
   QGridLayout *mainLayout = new QGridLayout;
   mainLayout->addWidget( filterGroupBox, 0, 0 );

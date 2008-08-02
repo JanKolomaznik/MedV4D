@@ -108,7 +108,7 @@ void m4dGUIMainViewerDesktopWidget::setDesktopLayout( const unsigned rows, const
 
   if ( difference > 0 )
   {
-    for ( unsigned i = 0; i < difference; i++ ) 
+    for ( int i = 0; i < difference; i++ ) 
     {
       Viewer *viewer = new Viewer;
       m4dGUIAbstractViewerWidget *widget = new m4dGUISliceViewerWidget( &prodconn, viewersSize + i );

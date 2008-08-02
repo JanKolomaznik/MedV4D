@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "GUI/StudyFilter.h"
 // DICOM includes:
 #include "ExceptionBase.h"
 
@@ -180,6 +181,11 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
 
           dialogTitle = RECENT_DICOMDIR_NAME;
         }
+
+        StudyFilter::filterAll( activeResultSet, firstName, lastName, patientID, 
+                                fromDate, toDate, modalitiesVect, referringMD, 
+                                description );
+
         reverse( activeResultSet->begin(), activeResultSet->end() );
         break;
 
@@ -187,6 +193,7 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
         // Remote Exams tab active
         dcmProvider->Find( *activeResultSet, firstName, lastName, patientID, fromDate, toDate, 
                             referringMD, description );
+        StudyFilter::filterModalities( activeResultSet, modalitiesVect );
 
         dialogTitle = REMOTE_EXAMS_NAME;
         break;
@@ -203,6 +210,9 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
         }
 
         dcmProvider->LocalFind( *activeResultSet, DICOMDIRPath.toStdString() );
+        StudyFilter::filterAll( activeResultSet, firstName, lastName, patientID, 
+                                fromDate, toDate, modalitiesVect, referringMD, 
+                                description );
 
         dialogTitle = DICOMDIR_NAME;
         break;
@@ -217,6 +227,11 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
 
           dialogTitle = RECENT_DICOMDIR_NAME;
         }
+
+        StudyFilter::filterAll( activeResultSet, firstName, lastName, patientID, 
+                                fromDate, toDate, modalitiesVect, referringMD, 
+                                description );
+
         reverse( activeResultSet->begin(), activeResultSet->end() );
 
         break;
@@ -577,7 +592,7 @@ void StManagerStudyListComp::updateRecentExams ( const DcmProvider::TableRow *ro
   QSettings settings;
   settings.beginWriteArray( prefix );
   
-  for ( int i = 0; i < resultSet.size(); i++ )
+  for ( unsigned i = 0; i < resultSet.size(); i++ )
   {
     settings.setArrayIndex( i );
     updateRecentRow ( &resultSet[i], settings );  
