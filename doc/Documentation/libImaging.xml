@@ -18,6 +18,13 @@
 
 <section>
 <title>Architecture</title>
+
+	
+	<para>Main goal of this library is effective implementation of pipeline computation on input datasets. 
+		Whole computation should be as parallel as possible in order to utilize resources available in modern processors, etc. 
+		Design of interfaces and class hierarchies is aimed to extensibility.
+	</para>
+	<para></para>
 	
 	<section>
 	<title>Datasets</title>
@@ -30,13 +37,32 @@
 		
 	<para>aaaaaaa</para>
 	</section>
+
+	<section>
+	<title>Connections</title>
+		
+	<para>aaaaaaa</para>
+	</section>
+
+	<section>
+	<title>Ports</title>
+		
+	<para>aaaaaaa</para>
+	</section>
+
 </section>
 
 <section>
 <title>Usage</title>
-	
+
 	<section>
-	<title>Adding new filter</title>
+	<title>Building pipeline</title>
+		
+	<para>aaaaaaa</para>
+	</section>
+
+	<section>
+	<title>Creating new filter</title>
 		
 	<para>aaaaaaa</para>
 	</section>
