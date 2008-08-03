@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='utf-8'?>
+<chapter>
+<title>Library Imaging</title>
+
+
+
+<section>
+<title>Compilation</title>
+	
+	<section>
+	<title>Dependencies</title>
+		
+		<para>aaaaaaa</para>
+	</section>
+
+</section>
+
+<section>
+<title>Architecture</title>
+
+	
+	<para>
+	Main goal of this library is effective implementation of pipeline computation on input datasets. 
+	Whole computation should be as parallel as possible in order to utilize resources available in modern processors, etc. 
+	</para>
+	
+	<para>
+	Design of interfaces and class hierarchies is aimed to extensibility and code reusability.
+	</para>
+
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="figures/PipelineScheme.eps" format="EPS"/>
+		</imageobject>
+		<imageobject>
+		<imagedata fileref="figures/PipelineScheme.png" format="PNG"/>
+		</imageobject>
+	</mediaobject>
+
+	<para>
+	Pipeline should be built from objects of certain types, which we will now discuss.
+	</para>
+	
+	<section>
+	<title>Datasets</title>
+	
+		<para>
+		Actual data are stored in proper descendants of class <code>AbstractDataSet</code>. Its hierarchy is shown in <!--TODO -->. Purpose of these 
+		classes is to provide access methods for reading and writing informations of certain type and optional synchronization. 
+		</para>
+
+		<para>
+		By optional synchronization is meant set of synchronization methods, which are not called by access methods in class. And user should
+		use these methods only in situations requiring synchronization. This less comfortable though, but more effective.
+		</para>
+
+	</section>
+
+	<section>
+	<title>Filters</title>
+		
+	<para>aaaaaaa</para>
+	</section>
+
+	<section>
+	<title>Connections</title>
+		
+	<para>aaaaaaa</para>
+	</section>
+
+	<section>
+	<title>Ports</title>
+		
+	<para>aaaaaaa</para>
+	</section>
+
+</section>
+
+<section>
+<title>Usage</title>
+
+	<section>
+	<title>Building pipeline</title>
+		
+	<para>aaaaaaa</para>
+	</section>
+
+	<section>
+	<title>Creating new filter</title>
+		
+	<para>aaaaaaa</para>
+	</section>
+
+	<section>
+	<title>Defining new dataset type</title>
+		
+	<para>aaaaaaa</para>
+	</section>
+</section>
+
+</chapter>
