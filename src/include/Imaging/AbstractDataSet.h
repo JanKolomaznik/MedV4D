@@ -3,9 +3,11 @@
 
 #include <boost/shared_ptr.hpp>
 #include "TimeStamp.h"
-#include "Imaging/dataSetProperties.h"
+//#include "Imaging/dataSetProperties.h"
 #include "Thread.h"
 
+#include "Imaging/dataSetTypeEnums.h"
+#include "cellBE/netStream.h"
 #include "cellBE/iPublicJob.h"
 
 namespace M4D
@@ -56,6 +58,18 @@ private:
 class AbstractDataSet
 {
 public:
+  /**
+   *  Identification of particular AbstractDataSet sucessor. Each new one has 
+   *  return value that is added to enumeration in dataSetTypeEnums.h header.
+   */
+  virtual DataSetType GetID(void) = 0;
+
+  /**
+   *
+   */
+  virtual void SerializeProperties( M4D::CellBE::NetStream &s) = 0;
+  virtual void DeSerializeProperties( M4D::CellBE::NetStream &s) = 0;
+
 	/**
 	 * Smart pointer to AbstractDataSet.
 	 **/
@@ -141,7 +155,7 @@ public:
 	 * This new enum type should be also added to enum with a new
 	 * data set class !!!
 	 **/
-	DataSetPropertiesAbstract *_properties;
+	//DataSetPropertiesAbstract *_properties;
 
 	/**
 	 * Each special succesor should implement this functions in

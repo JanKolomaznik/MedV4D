@@ -102,6 +102,13 @@ public:
   void Serialize( M4D::CellBE::iPublicJob *job) {};
   void DeSerialize( M4D::CellBE::iPublicJob *job) {};
 
+  // serialize functions for dataSet properties
+  void SerializeProperties( M4D::CellBE::NetStream &s) {};
+  void DeSerializeProperties( M4D::CellBE::NetStream &s) {};
+
+  // identification
+  DataSetType GetID(void) { return DATSET_IMAGE2D; }
+
 	Image();
 
 	/**
@@ -245,8 +252,16 @@ public:
 
 	static const unsigned	Dimension = 3;
 
+  // used to serialize the actual data set
   void Serialize( M4D::CellBE::iPublicJob *job) {};
   void DeSerialize( M4D::CellBE::iPublicJob *job) {};
+
+  // serialize functions for dataSet properties
+  void SerializeProperties( M4D::CellBE::NetStream &s) {};
+  void DeSerializeProperties( M4D::CellBE::NetStream &s) {};
+
+  // identification
+  DataSetType GetID(void) { return DATSET_IMAGE3D; }
 
 	Image();
 

@@ -8,7 +8,10 @@
 #include <boost/shared_ptr.hpp>
 #include "Thread.h"
 #include "Imaging/PipelineMessages.h"
-#include "Imaging/filterProperties.h"
+
+#include "Imaging/filterIDEnums.h"
+#include "cellBE/netStream.h"
+//#include "Imaging/filterProperties.h"
 
 #include <iostream>
 namespace M4D
@@ -109,9 +112,22 @@ private:
 /**
  * Ancestor of all filters with basic execution logic.
  **/
-class AbstractFilter : public AbstractProcessingUnit
+class AbstractFilter 
+  : public AbstractProcessingUnit
 {
 public:
+  /**
+   *  Identification of particular AbstractFilter sucessor. Each new one has 
+   *  return value that is added to enumeration in filterIDEnums.h header.
+   */
+  virtual DataSetType GetID(void) = 0;
+
+  /**
+   *
+   */
+  virtual void SerializeProperties( M4D::CellBE::NetStream &s) = 0;
+  virtual void DeSerializeProperties( M4D::CellBE::NetStream &s) = 0;
+
 	/**
 	 * Smart pointer to filter with this interface.
 	 **/
@@ -120,7 +136,7 @@ public:
 	/**
 	 * Default constructor.
 	 **/
-	AbstractFilter() : _settings( NULL ){}
+  AbstractFilter() {}// : _settings( NULL ){}
 
 	/**
 	 * Destructor - virtual - can be polymorphically destroyed.
@@ -163,7 +179,8 @@ protected:
 	*  This new enum item should be also added to enum with a new
 	*  data set class !!!
 	*/
-	AbstractFilterSettings *_settings;
+	//AbstractFilterSettings *_settings;
+
 	
 private:
 	/**
