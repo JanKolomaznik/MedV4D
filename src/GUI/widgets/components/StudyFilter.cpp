@@ -2,6 +2,8 @@
 
 using namespace M4D::Dicom;
 
+using namespace std;
+
 
 namespace M4D {
 namespace GUI {
@@ -9,7 +11,7 @@ namespace GUI {
 void StudyFilter::filterModalities ( DcmProvider::ResultSet *resultSet,
                                      const DcmProvider::StringVector &modalitiesVect )
 {
-  if ( resultSet->empty() ) {
+  if ( resultSet == 0 ) {
     return;
   }
 
@@ -31,7 +33,7 @@ void StudyFilter::filterAll ( M4D::Dicom::DcmProvider::ResultSet *resultSet,
                               const M4D::Dicom::DcmProvider::StringVector &modalitiesVect,
                               const std::string &referringMD, const std::string &description )
 {
-  if ( resultSet->empty() ) {
+  if ( resultSet == 0 ) {
     return;
   }
 
@@ -40,8 +42,16 @@ void StudyFilter::filterAll ( M4D::Dicom::DcmProvider::ResultSet *resultSet,
     DcmProvider::TableRow row = resultSet->at( i );
 
     bool nameMatched = false;
-    if ( firstName != "" && lastName == "" ) {
-      nameMatched = firstName == row.name;
+    if ( firstName != "" && lastName == "" ) 
+    {
+      size_t found;
+      found = row.name.find( "_" );
+      if ( found == string::npos ) {
+        nameMatched = firstName == row.name;
+      }
+      else {
+
+      }
     }
     else if ( firstName == "" && lastName != "" ) {
       nameMatched = lastName == row.name;
@@ -63,6 +73,29 @@ void StudyFilter::filterAll ( M4D::Dicom::DcmProvider::ResultSet *resultSet,
 
     if ( !nameMatched || !patientIDMatched || !fromDateMatched || !toDateMatched ||
          !modalityMatched || !referringMDMatched || !descriptionMatched ) 
+    {
+      resultSet->erase( resultSet->begin() + i );
+      i--;
+    }
+  }
+}
+
+
+void StudyFilter::filterDuplicates ( M4D::Dicom::DcmProvider::ResultSet *resultSet, 
+                                     const M4D::Dicom::DcmProvider::TableRow *row )
+{
+  if ( resultSet == 0 ) {
+    return;
+  }
+
+  string patientID = row->patientID;
+  string studyID   = row->studyID;
+
+  for ( unsigned i = 0; i < resultSet->size(); i++ )
+  {
+    DcmProvider::TableRow currentRow = resultSet->at( i );
+
+    if ( patientID == currentRow.patientID && studyID == currentRow.studyID ) 
     {
       resultSet->erase( resultSet->begin() + i );
       i--;

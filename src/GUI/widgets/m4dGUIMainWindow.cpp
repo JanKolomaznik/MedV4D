@@ -549,7 +549,10 @@ void m4dGUIMainWindow::delegateAction ( unsigned actionIdx, m4dGUIAbstractViewer
 
 void m4dGUIMainWindow::view ( DcmProvider::DicomObjSet *dicomObjSet )
 {
-  // inputImage = ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr( dicomObjSet ) );
+  inputImage = ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr( dicomObjSet ) );
+
+  unsigned dim = inputImage->GetDimension(); 
+  int type     = inputImage->GetElementTypeID();
 
   // conn.PutImage( inputImage );
   // mainViewerDesktop->getSelectedViewerWidget()->setInputPort( &conn );

@@ -46,6 +46,16 @@ class StudyFilter {
                             const std::string &fromDate, const std::string &toDate,
                             const M4D::Dicom::DcmProvider::StringVector &modalitiesVect,
                             const std::string &referringMD, const std::string &description ); 
+
+    /** 
+     * Filters ResultSet (TableRows) - in ResultSet remains only unique TableRows - all different 
+     * from given (currently inserted) one (differs in patientID and studyID - unique key).
+     * 
+     * @param resultSet ResultSet to filter
+     * @param row given TableRow - all TableRows in ResultSet will be different from this
+     */
+    static void filterDuplicates ( M4D::Dicom::DcmProvider::ResultSet *resultSet, 
+                                   const M4D::Dicom::DcmProvider::TableRow *row );
 };
 
 } // namespace GUI

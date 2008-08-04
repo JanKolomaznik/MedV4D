@@ -178,6 +178,8 @@ class m4dGUIMainWindow: public QMainWindow
     QMenu *toolBarsMenu;
     QMenu *toolsMenu;
     QMenu *viewMenu;
+
+    M4D::Imaging::AbstractImage::AImagePtr inputImage;
 };
 
 } // namespace GUI

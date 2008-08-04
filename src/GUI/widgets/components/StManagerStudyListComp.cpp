@@ -584,6 +584,8 @@ void StManagerStudyListComp::updateRecentExams ( const DcmProvider::TableRow *ro
   DcmProvider::ResultSet resultSet;
   loadRecentExams( resultSet, prefix );
 
+  StudyFilter::filterDuplicates( &resultSet, row );
+
   resultSet.push_back( *row ); 
   if ( resultSet.size() > RECENT_EXAMS_NUMBER ) {
     resultSet.erase( resultSet.begin() );
