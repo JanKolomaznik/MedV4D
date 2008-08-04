@@ -150,12 +150,18 @@ ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 		SliceComputationRecord & record = _actualComputationGroups[ i ];
 
 		//Wait until input area is ready
-		if ( !record.inputBBox->WaitWhileDirty() ) {
-			//TODO - exit
+		if ( !(record.inputBBox->WaitWhileDirty() == MS_MODIFIED ) ) {
+			for( size_t j = i; j < _actualComputationGroups.size(); ++j )
+			{
+				_actualComputationGroups[ i ].writerBBox->SetState( MS_CANCELED );
+			}
+			//TODO clear _actualComputationGroups
+			return false;
 		}
 
 		for( int32 slice = record.firstSlice; slice <= record.lastSlice; ++slice )
 		{
+			//TODO check result
 			ProcessSlice( 	*(this->in), 
 					*(this->out),
 					this->in->GetDimensionExtents( 0 ).minimum,
@@ -417,6 +423,169 @@ ImageVolumeFilter< Image< InputElementType, 4 >, OutputImageType >
 {
 	//TODO
 	PredecessorType::BeforeComputation( utype );	
+}
+
+//******************************************************************************
+//******************************************************************************
+
+template< typename InputImageType, typename OutputImageType >
+ImageFilterWholeAtOnce< InputImageType, OutputImageType >::ImageFilterWholeAtOnce()
+{
+
+}
+
+
+template< typename InputImageType, typename OutputImageType >
+bool
+ImageFilterWholeAtOnce< InputImageType, OutputImageType >
+::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
+{
+	if ( !( _readerBBox->WaitWhileDirty() == MS_MODIFIED ) ) {
+		_writerBBox->SetState( MS_CANCELED );
+		return false;
+	}
+
+	if( ProcessImage( *(this->in), *(this->out) ) ) {
+		_writerBBox->SetModified();
+		return true;
+	} else {
+		_writerBBox->SetState( MS_CANCELED );
+		return false;
+	}
+}
+
+template< typename InputImageType, typename OutputImageType >
+void
+ImageFilterWholeAtOnce< InputImageType, OutputImageType >
+::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
+{
+	PredecessorType::BeforeComputation( utype );
+	
+	//This kind of filter computes always on whole dataset
+	utype = AbstractPipeFilter::RECALCULATION;
+
+	_readerBBox = ApplyReaderBBox( *(this->in) );
+	_writerBBox = ApplyWriterBBox( *(this->out) );
+	
+}
+
+template< typename InputImageType, typename OutputImageType >
+void
+ImageFilterWholeAtOnce< InputImageType, OutputImageType >
+::AfterComputation( bool successful )
+{
+	_readerBBox = ReaderBBoxInterface::Ptr();
+	_writerBBox = NULL;
+
+	PredecessorType::AfterComputation( successful );
+}
+//*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+template< typename ElementType, unsigned dim >
+ReaderBBoxInterface::Ptr
+ApplyReaderBBox(  const Image< ElementType, dim > &in );
+
+template< typename ElementType, unsigned dim >
+ReaderBBoxInterface::Ptr
+ApplyReaderBBoxFunc(  const Image< ElementType, 2 > &in )
+{
+	return in.GetDirtyBBox( 
+				in.GetDimensionExtents( 0 ).minimum,
+				in.GetDimensionExtents( 1 ).minimum,
+				in.GetDimensionExtents( 0 ).maximum,
+				in.GetDimensionExtents( 1 ).maximum
+			);
+}
+
+template< typename ElementType, unsigned dim >
+ReaderBBoxInterface::Ptr
+ApplyReaderBBoxFunc(  const Image< ElementType, 3 > &in )
+{
+	return in.GetDirtyBBox( 
+				in.GetDimensionExtents( 0 ).minimum,
+				in.GetDimensionExtents( 1 ).minimum,
+				in.GetDimensionExtents( 2 ).minimum,
+				in.GetDimensionExtents( 0 ).maximum,
+				in.GetDimensionExtents( 1 ).maximum,
+				in.GetDimensionExtents( 2 ).maximum
+			);
+}
+
+template< typename ElementType, unsigned dim >
+ReaderBBoxInterface::Ptr
+ApplyReaderBBoxFunc(  const Image< ElementType, 4 > &in )
+{
+	return in.GetDirtyBBox( 
+				in.GetDimensionExtents( 0 ).minimum,
+				in.GetDimensionExtents( 1 ).minimum,
+				in.GetDimensionExtents( 2 ).minimum,
+				in.GetDimensionExtents( 3 ).minimum,
+				in.GetDimensionExtents( 0 ).maximum,
+				in.GetDimensionExtents( 1 ).maximum,
+				in.GetDimensionExtents( 2 ).maximum,
+				in.GetDimensionExtents( 3 ).maximum
+			);
+}
+
+template< typename ElementType, unsigned dim >
+WriterBBoxInterface *
+ApplyWriterBBoxFunc(  const Image< ElementType, dim > &out );
+
+template< typename ElementType, unsigned dim >
+WriterBBoxInterface *
+ApplyWriterBBoxFunc(  const Image< ElementType, 2 > &out )
+{
+	return out.SetDirtyBBox( 
+				out.GetDimensionExtents( 0 ).minimum,
+				out.GetDimensionExtents( 1 ).minimum,
+				out.GetDimensionExtents( 0 ).maximum,
+				out.GetDimensionExtents( 1 ).maximum
+			);
+}
+
+template< typename ElementType, unsigned dim >
+WriterBBoxInterface *
+ApplyWriterBBoxFunc(  const Image< ElementType, 3 > &out )
+{
+	return out.SetDirtyBBox( 
+				out.GetDimensionExtents( 0 ).minimum,
+				out.GetDimensionExtents( 1 ).minimum,
+				out.GetDimensionExtents( 2 ).minimum,
+				out.GetDimensionExtents( 0 ).maximum,
+				out.GetDimensionExtents( 1 ).maximum,
+				out.GetDimensionExtents( 2 ).maximum
+			);
+}
+
+template< typename ElementType, unsigned dim >
+WriterBBoxInterface *
+ApplyWriterBBoxFunc(  const Image< ElementType, 4 > &out )
+{
+	return out.SetDirtyBBox( 
+				out.GetDimensionExtents( 0 ).minimum,
+				out.GetDimensionExtents( 1 ).minimum,
+				out.GetDimensionExtents( 2 ).minimum,
+				out.GetDimensionExtents( 3 ).minimum,
+				out.GetDimensionExtents( 0 ).maximum,
+				out.GetDimensionExtents( 1 ).maximum,
+				out.GetDimensionExtents( 2 ).maximum,
+				out.GetDimensionExtents( 3 ).maximum
+			);
+}
+//*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+template< typename InputImageType, typename OutputImageType >
+ReaderBBoxInterface::Ptr
+ImageFilterWholeAtOnce< InputImageType, OutputImageType >
+::ApplyReaderBBox( const InputImageType &in )
+{
+	return ApplyReaderBBoxFunc< InputImageType::Element, InputImageType::Dimension >( in );
+}
+
+template< typename InputImageType, typename OutputImageType >
+WriterBBoxInterface *
+ImageFilterWholeAtOnce< InputImageType, OutputImageType >
+::ApplyWriterBBox( OutputImageType &out )
+{
+	return ApplyWriterBBoxFunc< OutputImageType::Element, OutputImageType::Dimension >( out );
 }
 
 

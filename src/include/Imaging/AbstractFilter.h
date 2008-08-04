@@ -9,7 +9,7 @@
 #include "Thread.h"
 #include "Imaging/PipelineMessages.h"
 
-//#include "Imaging/filterProperties.h"
+#include "Imaging/filterProperties.h"
 
 #include <iostream>
 namespace M4D
@@ -166,7 +166,7 @@ protected:
 	*  This new enum item should be also added to enum with a new
 	*  data set class !!!
 	*/
-	//AbstractFilterSettings *_settings;
+	AbstractFilterSettings *_settings;
 
 	
 private:
@@ -292,19 +292,6 @@ protected:
 	 **/
 	virtual bool
 	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )=0;
-
-	/**
-	 * Method running in execution thread if ExecuteOnWhole() was called - 
-	 * this method or ExecutionThreadMethod() will be stopped, when 
-	 * StopExecution() is invoked.
-	 * In inherited class reimplementation of this method is easy way to 
-	 * implement new filter, and let all dirty work to ancestor class.
-	 * \return True if execution wasn't stopped, false otherwise.
-	 **/
-	/*virtual bool
-	ExecutionOnWholeThreadMethod()=0;
-	*/
-
 
 	/**
 	 * Method used for checking whether execution can continue.
