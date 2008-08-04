@@ -306,7 +306,7 @@ void m4dGUIMainWindow::createStudyManagerDialog ()
   studyManagerDialog->setWindowIcon( QIcon( ":/icons/search.png" ) );
 
   studyManagerWidget = new m4dGUIStudyManagerWidget( studyManagerDialog );
-  connect( studyManagerWidget->getStudyListComponent(), SIGNAL(ready()), studyManagerDialog, SLOT(close()) );
+  connect( studyManagerWidget->getStudyListComponent(), SIGNAL(ready()), studyManagerDialog, SLOT(accept()) );
 
   QVBoxLayout *dialogLayout = new QVBoxLayout;
   dialogLayout->addWidget( studyManagerWidget );
@@ -549,13 +549,20 @@ void m4dGUIMainWindow::delegateAction ( unsigned actionIdx, m4dGUIAbstractViewer
 
 void m4dGUIMainWindow::view ( DcmProvider::DicomObjSet *dicomObjSet )
 {
-  inputImage = ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr( dicomObjSet ) );
+	inputImage = ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr( dicomObjSet ) );
 
-  unsigned dim = inputImage->GetDimension(); 
-  int type     = inputImage->GetElementTypeID();
+	unsigned dim = inputImage->GetDimension(); 
+	int type     = inputImage->GetElementTypeID();
 
-  // conn.PutImage( inputImage );
-  // mainViewerDesktop->getSelectedViewerWidget()->setInputPort( &conn );
+	if( dim != 3 || type != NTID_UNSIGNED_SHORT ) {
+		//TODO throw exception
+	}
+
+	ImageConnectionSimple< Image<unsigned short, 3 > > *conn = new ImageConnectionSimple< Image<unsigned short, 3 > >();
+	conn->PutImage( inputImage );
+	conn->ConnectConsumer( 
+		mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0]
+		);
 }
 
 } // namespace GUI

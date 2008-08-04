@@ -24,6 +24,9 @@ public:
 
 	void
 	PutImage( typename M4D::Imaging::Image< ElementType, dimension >::Ptr image );
+
+	void
+	PutImage( M4D::Imaging::AbstractImage::AImagePtr image );
 };
 
 template<  typename ImageTemplate >

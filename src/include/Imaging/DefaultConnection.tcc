@@ -20,6 +20,18 @@ ImageConnectionSimple< M4D::Imaging::Image< ElementType, dimension > >
 }
 
 template< typename ElementType, unsigned dimension >
+void
+ImageConnectionSimple< M4D::Imaging::Image< ElementType, dimension > >
+::PutImage( M4D::Imaging::AbstractImage::AImagePtr image )
+{
+	typename M4D::Imaging::Image< ElementType, dimension >::Ptr typedImage = 
+		M4D::Imaging::Image< ElementType, dimension >::CastAbstractImage( image );
+
+	PutImage( typedImage );
+}
+
+
+template< typename ElementType, unsigned dimension >
 ImageConnectionImOwner< M4D::Imaging::Image< ElementType, dimension > >
 ::ImageConnectionImOwner()
 {

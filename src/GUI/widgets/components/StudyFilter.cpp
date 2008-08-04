@@ -105,3 +105,4 @@ void StudyFilter::filterDuplicates ( M4D::Dicom::DcmProvider::ResultSet *resultS
 
 } // namespace GUI
 } // namespace M4D
+

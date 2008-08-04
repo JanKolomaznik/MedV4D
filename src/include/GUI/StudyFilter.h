@@ -62,3 +62,4 @@ class StudyFilter {
 } // namespace M4D
 
 #endif // STUDY_FILTER_H
+

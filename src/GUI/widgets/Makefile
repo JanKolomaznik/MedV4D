@@ -23,7 +23,8 @@ SUBDIR=		components
 SUBDIR2=	ogl
 TARGETS2=	StManagerFilterComp \
 		StManagerHProtocolsComp \
-		StManagerStudyListComp
+		StManagerStudyListComp \
+		StudyFilter 
 		
 TARGETS3=	fonts
 

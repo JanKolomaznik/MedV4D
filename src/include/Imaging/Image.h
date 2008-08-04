@@ -121,13 +121,22 @@ public:
 	Image( typename ImageDataTemplate< ElementType >::Ptr imageData );
 	
 	~Image();
-	
+
+	/**
+	 * \exception ExceptionCastProblem When casting impossible.
+	 **/	
 	static Image< ElementType, 2 > &
 	CastAbstractImage( AbstractImage & image );
 
+	/**
+	 * \exception ExceptionCastProblem When casting impossible.
+	 **/	
 	static const Image< ElementType, 2 > &
 	CastAbstractImage( const AbstractImage & image );
 
+	/**
+	 * \exception ExceptionCastProblem When casting impossible.
+	 **/	
 	static typename Image< ElementType, 2 >::Ptr 
 	CastAbstractImage( AbstractImage::AImagePtr & image );
 
@@ -247,12 +256,21 @@ public:
 
 	~Image();
 
+	/**
+	 * \exception ExceptionCastProblem When casting impossible.
+	 **/	
 	static Image< ElementType, 3 > &
 	CastAbstractImage( AbstractImage & image );
 
+	/**
+	 * \exception ExceptionCastProblem When casting impossible.
+	 **/	
 	static const Image< ElementType, 3 > &
 	CastAbstractImage( const AbstractImage & image );
 
+	/**
+	 * \exception ExceptionCastProblem When casting impossible.
+	 **/	
 	static typename Image< ElementType, 3 >::Ptr 
 	CastAbstractImage( AbstractImage::AImagePtr & image );
 
@@ -377,12 +395,21 @@ public:
 	~Image();
 	
 
+	/**
+	 * \exception ExceptionCastProblem When casting impossible.
+	 **/	
 	static Image< ElementType, 4 > &
 	CastAbstractImage( AbstractImage & image );
 
+	/**
+	 * \exception ExceptionCastProblem When casting impossible.
+	 **/	
 	static const Image< ElementType, 4 > &
 	CastAbstractImage( const AbstractImage & image );
 
+	/**
+	 * \exception ExceptionCastProblem When casting impossible.
+	 **/	
 	static typename Image< ElementType, 4 >::Ptr 
 	CastAbstractImage( AbstractImage::AImagePtr & image );
 

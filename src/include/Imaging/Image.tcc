@@ -301,16 +301,24 @@ template< typename ElementType >
 Image< ElementType, 3 > &
 Image< ElementType, 3 >::CastAbstractImage( AbstractImage & image )
 {
-	//TODO - handle exception well
-	return dynamic_cast< Image< ElementType, Dimension > & >( image );
+	try {
+		return dynamic_cast< Image< ElementType, Dimension > & >( image );
+	}
+	catch( ... ) {
+		throw ErrorHandling::ExceptionCastProblem( "Cannot cast abstract image to this type." );
+	}
 }
 
 template< typename ElementType >
 const Image< ElementType, 3 > &
 Image< ElementType, 3 >::CastAbstractImage( const AbstractImage & image )
 {
-	//TODO - handle exception well
-	return dynamic_cast< const Image< ElementType, Dimension > & >( image );
+	try {
+		return dynamic_cast< const Image< ElementType, Dimension > & >( image );
+	}
+	catch( ... ) {
+		throw ErrorHandling::ExceptionCastProblem( "Cannot cast abstract image to this type." );
+	}
 }
 
 template< typename ElementType >
@@ -318,7 +326,7 @@ typename Image< ElementType, 3 >::Ptr
 Image< ElementType, 3 >::CastAbstractImage( AbstractImage::AImagePtr & image )
 {
 	if( dynamic_cast< Image< ElementType, Dimension > * >( image.get() ) == NULL ) {
-		//TODO throw exception
+		throw ErrorHandling::ExceptionCastProblem( "Cannot cast abstract image to this type." );
 	}
 
 	return boost::static_pointer_cast< Image< ElementType, Dimension > >( image );
