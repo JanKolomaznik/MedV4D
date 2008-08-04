@@ -1,9 +1,7 @@
-#ifndef FILTERID_HPP
-#define FILTERID_HPP
+#ifndef FILTER_PROPS_H
+#define FILTER_PROPS_H
 
 #include <vector>
-#include "cellBE/iSerializable.h"
-#include "Imaging/filterIDEnums.h"
 
 namespace M4D
 {
@@ -17,53 +15,14 @@ namespace Imaging
  *  implement new class derived from this one
  */
 
-class AbstractFilterSettings 
-  : public M4D::CellBE::iSerializable
+class AbstractFilterSettings
 {
 public:
-	virtual uint32
-	GetFilterID() const = 0;
-	
-protected:
-
-	void 
-	SerializeIntoStream( M4D::CellBE::NetStream &stream)
-	{
-	//	stream << this->GetFilterID();
-		Serialize( stream);
-	}
-
-public:
-	virtual void 
-	Serialize( M4D::CellBE::NetStream &s) = 0;
-
-	virtual void 
-	DeSerialize( M4D::CellBE::NetStream &s) = 0;
 
 	AbstractFilterSettings() {}
 };
 
 typedef std::vector<AbstractFilterSettings *> FilterVector;
-
-///////////////////////////////////////////////////////////////////////
-
-
-///////////////////////////////////////////////////////////////////////
-
-/*struct ThresholdingSetting : public FilterSettingTemplate<Thresholding>
-{
-  float threshold;
-
-  void Serialize( M4D::CellBE::NetStream &s)
-  {    
-    s << threshold;
-  }
-
-  void DeSerialize( M4D::CellBE::NetStream &s)
-  {
-    s >> threshold;
-  }
-};*/
 
 }
 }

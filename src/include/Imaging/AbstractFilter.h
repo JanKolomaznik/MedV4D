@@ -9,8 +9,6 @@
 #include "Thread.h"
 #include "Imaging/PipelineMessages.h"
 
-#include "Imaging/filterIDEnums.h"
-#include "cellBE/netStream.h"
 //#include "Imaging/filterProperties.h"
 
 #include <iostream>
@@ -116,18 +114,7 @@ class AbstractFilter
   : public AbstractProcessingUnit
 {
 public:
-  /**
-   *  Identification of particular AbstractFilter sucessor. Each new one has 
-   *  return value that is added to enumeration in filterIDEnums.h header.
-   */
-  virtual DataSetType GetID(void) = 0;
-
-  /**
-   *
-   */
-  virtual void SerializeProperties( M4D::CellBE::NetStream &s) = 0;
-  virtual void DeSerializeProperties( M4D::CellBE::NetStream &s) = 0;
-
+  
 	/**
 	 * Smart pointer to filter with this interface.
 	 **/

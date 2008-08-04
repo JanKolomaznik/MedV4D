@@ -3,12 +3,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include "TimeStamp.h"
-//#include "Imaging/dataSetProperties.h"
 #include "Thread.h"
-
-#include "Imaging/dataSetTypeEnums.h"
-#include "cellBE/netStream.h"
-#include "cellBE/iPublicJob.h"
 
 namespace M4D
 {
@@ -58,18 +53,7 @@ private:
 class AbstractDataSet
 {
 public:
-  /**
-   *  Identification of particular AbstractDataSet sucessor. Each new one has 
-   *  return value that is added to enumeration in dataSetTypeEnums.h header.
-   */
-  virtual DataSetType GetID(void) = 0;
-
-  /**
-   *
-   */
-  virtual void SerializeProperties( M4D::CellBE::NetStream &s) = 0;
-  virtual void DeSerializeProperties( M4D::CellBE::NetStream &s) = 0;
-
+  
 	/**
 	 * Smart pointer to AbstractDataSet.
 	 **/
@@ -144,26 +128,6 @@ public:
 
 	void
 	ExclusiveUnlockDataset()const;
-
-	/**
-	 * Properties of dataset. Used to sending to server.
-	 * This is pointer to base abstract properties class.
-	 * !!! Each new type of dataSet derived from this class
-	 * should declare new properties type derived from 
-	 * DataSetPropertiesTemplate class (dataSetProperties.h) 
-	 * with template param of type DataSetType(dataSetTypeEnums.h).
-	 * This new enum type should be also added to enum with a new
-	 * data set class !!!
-	 **/
-	//DataSetPropertiesAbstract *_properties;
-
-	/**
-	 * Each special succesor should implement this functions in
-	 * its own manner.
-	 **/
-	virtual void Serialize( M4D::CellBE::iPublicJob *job) = 0;
-	virtual void DeSerialize( M4D::CellBE::iPublicJob *job) = 0;
-
 
 protected:
 	/**
