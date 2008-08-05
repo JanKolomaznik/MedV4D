@@ -161,5 +161,11 @@ void m4dGUIMainViewerDesktopWidget::selectedChanged ( unsigned index )
   emit propagateFeatures(); 
 }
 
+
+void m4dGUIMainViewerDesktopWidget::sourceSelected ( int index )
+{
+  selectedViewer->viewerWidget->setInputPort( sources[index] );
+}
+
 } // namespace GUI
 } // namespace M4D

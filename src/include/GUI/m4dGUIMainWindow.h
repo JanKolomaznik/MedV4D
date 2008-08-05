@@ -107,7 +107,7 @@ class m4dGUIMainWindow: public QMainWindow
      */
     void replace ();
 
-    void sources ( const QString &pipelineDescription, const QString &connectionDescription );
+    void source ( const QString &pipelineDescription, const QString &connectionDescription );
 
   signals:
     // clickable (left, right - exl.) tools changed -> change the handlers, buttons accordingly
@@ -175,6 +175,10 @@ class m4dGUIMainWindow: public QMainWindow
     QToolBar *replaceToolBar;
     QToolBar *sourcesToolBar;
 
+    /**
+     * ComboBox in toolBar for selecting from registered sources - possible connections, where can
+     * be plugged a viewer. It's visible only if there is registered at least one connection.
+     */
     QComboBox *sourcesComboBox;
    
     QMenu *fileMenu;

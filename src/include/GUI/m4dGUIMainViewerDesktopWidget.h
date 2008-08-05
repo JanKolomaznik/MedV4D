@@ -67,6 +67,14 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
 
     void selectedChanged ( unsigned index );
 
+    /** 
+     * Slot for Source comboBox activity - should be connected to it's activated( int ) signal - it's
+     * setting input port for selected viewer widget.
+     *
+     * @param index index of selected source (in comboBox and also in sources vector)
+     */
+    void sourceSelected ( int index );
+
   signals:
 
     void propagateFeatures ();
@@ -81,6 +89,10 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
     Viewer *selectedViewer;
     Viewer *prevSelectedViewer;
 
+    /**
+     * Vector of registered sources - possible connections, where can be plugged a viewer. Can be selected
+     * through comboBox in toolBar. 
+     */ 
     std::vector< M4D::Imaging::ConnectionInterface * > sources;
 
     unsigned layoutRows, layoutColumns;

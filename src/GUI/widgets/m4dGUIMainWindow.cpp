@@ -297,7 +297,7 @@ void m4dGUIMainWindow::replace ()
 }
 
 
-void m4dGUIMainWindow::sources( const QString &pipelineDescription, const QString &connectionDescription )
+void m4dGUIMainWindow::source ( const QString &pipelineDescription, const QString &connectionDescription )
 {
   sourcesComboBox->addItem( pipelineDescription + " - " + connectionDescription );
 
@@ -305,13 +305,12 @@ void m4dGUIMainWindow::sources( const QString &pipelineDescription, const QStrin
 }
 
 
-
 void m4dGUIMainWindow::createMainViewerDesktop ()
 {
   mainViewerDesktop = new m4dGUIMainViewerDesktopWidget;
   connect( mainViewerDesktop, SIGNAL(propagateFeatures()), this, SLOT(features()) );
   connect( mainViewerDesktop, SIGNAL(sourceAdded( const QString &, const QString & )), 
-           this, SLOT(sources( const QString &, const QString & )) );
+           this, SLOT(source( const QString &, const QString & )) );
 }
 
 
@@ -498,6 +497,8 @@ void m4dGUIMainWindow::createToolBars ()
   sourcesToolBar = addToolBar( tr( "Sources" ) );
   sourcesComboBox = new QComboBox;
   sourcesComboBox->setSizeAdjustPolicy( QComboBox::AdjustToContents );
+  connect( sourcesComboBox, SIGNAL(activated( int )), 
+           mainViewerDesktop, SLOT(sourceSelected( int )) );
   sourcesToolBar->addWidget( sourcesComboBox );
   sourcesToolBar->hide();
 }
