@@ -85,6 +85,7 @@ extern std::ostream *pdout;
 #endif /*DEBUG_LEVEL*/
 
 //----------------------------------------------------------------------------
+#ifdef DEBUG_LEVEL
 class DebugCommentObject
 {
 public:
@@ -101,7 +102,7 @@ public:
 private:
 	std::string	_leaveText;
 };
-
+#endif /*DEBUG_LEVEL*/
 
 #ifdef DEBUG_LEVEL
 #define D_BLOCK_COMMENT( ENTER_TEXT, LEAVE_TEXT ) DebugCommentObject ____DEBUG_BLOCK_OBJ##__LINE__ = DebugCommentObject( ENTER_TEXT, LEAVE_TEXT );
