@@ -86,8 +86,6 @@ m4dGUIMainWindow::m4dGUIMainWindow ( const char *title, const QIcon &icon )
   createMenus();
   createToolBars();
   createStatusBar();
-  // will be needed
-  // createDockWindows();
 
   QVBoxLayout *mainLayout = new QVBoxLayout;
   mainLayout->setContentsMargins( 0, 0, 0, 0 );
@@ -105,6 +103,27 @@ m4dGUIMainWindow::m4dGUIMainWindow ( const char *title, const QIcon &icon )
 
   // update availability of features (according to selected viewer - first one is init.)
   features();
+}
+
+
+void m4dGUIMainWindow::addSource ( ConnectionInterface *conn, const char *pipelineDescription,
+                                   const char *connectionDescription )
+{
+  mainViewerDesktop->addSource( conn, pipelineDescription, connectionDescription );
+}
+
+
+void m4dGUIMainWindow::addDockWindow ( const char *title, QWidget *widget )
+{
+  QDockWidget *dock = new QDockWidget( tr( title ), this );
+
+  dock->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
+  dock->setWidget( widget );
+ 
+  addDockWidget( Qt::RightDockWidgetArea, dock );
+  viewMenu->addAction( dock->toggleViewAction() );
+
+  menuBar()->addMenu( viewMenu );
 }
 
 
@@ -280,9 +299,7 @@ void m4dGUIMainWindow::replace ()
 
 void m4dGUIMainWindow::sources( const QString &pipelineDescription, const QString &connectionDescription )
 {
-  QString source( pipelineDescription + " - " + connectionDescription );
-
-  sourcesComboBox->addItem( source );
+  sourcesComboBox->addItem( pipelineDescription + " - " + connectionDescription );
 
   sourcesToolBar->show();
 }
@@ -452,10 +469,7 @@ void m4dGUIMainWindow::createMenus ()
   menuBar()->addMenu( toolsMenu );
 
   // View Menu
-  // will be needed
-  // viewMenu = new QMenu( tr( "&View" ), this );
-
-  // menuBar()->addMenu( viewMenu );
+  viewMenu = new QMenu( tr( "&View" ), this );
 }
 
 
@@ -495,35 +509,6 @@ void m4dGUIMainWindow::createStatusBar()
 }
 
 
-void m4dGUIMainWindow::createDockWindows ()
-{
-  QDockWidget *dock = new QDockWidget( tr( "DockWidget One" ), this );
-  dock->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
-  
-  QListWidget *listOne = new QListWidget( dock );
-  dock->setWidget( listOne );
- 
-  addDockWidget( Qt::RightDockWidgetArea, dock );
-  viewMenu->addAction( dock->toggleViewAction() );
-
-  dock = new QDockWidget( tr( "DockWidget Two" ), this );
-  
-  QListWidget *listTwo = new QListWidget( dock );
-  dock->setWidget( listTwo );
-
-  addDockWidget( Qt::RightDockWidgetArea, dock );
-  viewMenu->addAction( dock->toggleViewAction() );
-
-  dock = new QDockWidget( tr( "DockWidget Three" ), this );
-  
-  QListWidget *listThree = new QListWidget( dock );
-  dock->setWidget( listThree );
-
-  addDockWidget( Qt::RightDockWidgetArea, dock );
-  viewMenu->addAction( dock->toggleViewAction() );
-}
-
-
 void m4dGUIMainWindow::delegateAction ( unsigned actionIdx, m4dGUIAbstractViewerWidget::ButtonHandler hnd )
 {
   /*
@@ -549,20 +534,21 @@ void m4dGUIMainWindow::delegateAction ( unsigned actionIdx, m4dGUIAbstractViewer
 
 void m4dGUIMainWindow::view ( DcmProvider::DicomObjSet *dicomObjSet )
 {
-	inputImage = ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr( dicomObjSet ) );
+	AbstractImage::AImagePtr inputImage = ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr( dicomObjSet ) );
 
 	unsigned dim = inputImage->GetDimension(); 
 	int type     = inputImage->GetElementTypeID();
 
-	if( dim != 3 || type != NTID_UNSIGNED_SHORT ) {
+	if ( dim != 3 || type != NTID_UNSIGNED_SHORT ) {
 		//TODO throw exception
+
+    QMessageBox::critical( this, tr( "Exception" ), tr( "Bad type" ) );
+    return;
 	}
 
-	ImageConnectionSimple< Image<unsigned short, 3 > > *conn = new ImageConnectionSimple< Image<unsigned short, 3 > >();
+	ImageConnectionSimple< Image< unsigned short, 3 > > *conn = new ImageConnectionSimple< Image< unsigned short, 3 > >();
 	conn->PutImage( inputImage );
-	conn->ConnectConsumer( 
-		mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0]
-		);
+	conn->ConnectConsumer( mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 }
 
 } // namespace GUI

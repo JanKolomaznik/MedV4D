@@ -34,12 +34,6 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
       unsigned checkedRightButtonTool;
     };
 
-    struct Connection {
-      M4D::Imaging::ConnectionInterface *conn;
-      std::string pipelineDescription;
-      std::string connectionDescription;
-    };
-
     /** 
      * Main Viewer Desktop constructor.
      *
@@ -58,8 +52,8 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
 
     M4D::Viewer::m4dGUIAbstractViewerWidget *getPrevSelectedViewerWidget () const { return prevSelectedViewer->viewerWidget; }
 
-    void addSource ( M4D::Imaging::ConnectionInterface *conn, const std::string &pipelineDescription,
-                     const std::string &connectionDescription );
+    void addSource ( M4D::Imaging::ConnectionInterface *conn, const char *pipelineDescription,
+                     const char *connectionDescription );
 
   private slots:
 
@@ -87,7 +81,7 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
     Viewer *selectedViewer;
     Viewer *prevSelectedViewer;
 
-    std::vector< Connection * > sources;
+    std::vector< M4D::Imaging::ConnectionInterface * > sources;
 
     unsigned layoutRows, layoutColumns;
 };

@@ -50,11 +50,19 @@ void StudyFilter::filterAll ( M4D::Dicom::DcmProvider::ResultSet *resultSet,
         nameMatched = firstName == row.name;
       }
       else {
-
+        nameMatched = firstName == row.name.substr( 0, found );
       }
     }
-    else if ( firstName == "" && lastName != "" ) {
-      nameMatched = lastName == row.name;
+    else if ( firstName == "" && lastName != "" ) 
+    {
+      size_t found;
+      found = row.name.find( "_" );
+      if ( found == string::npos ) {
+        nameMatched = lastName == row.name;
+      }
+      else {
+        nameMatched = lastName == row.name.substr( found + 1 );
+      }
     } 
     else if ( firstName != "" && lastName != "" ) {
       nameMatched = (firstName + "_" + lastName) == row.name;

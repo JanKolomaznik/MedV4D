@@ -53,6 +53,10 @@ class m4dGUIMainWindow: public QMainWindow
      */
     m4dGUIMainWindow ( const char *title, const QIcon &icon = QIcon( ":/icons/app.png" ) );
 
+    void addSource ( M4D::Imaging::ConnectionInterface *conn, const char *pipelineDescription,
+                     const char *connectionDescription );
+    void addDockWindow ( const char *title, QWidget *widget );
+
   private slots:
 
     /**
@@ -120,7 +124,6 @@ class m4dGUIMainWindow: public QMainWindow
     void createMenus ();
     void createToolBars ();
     void createStatusBar ();
-    void createDockWindows ();
 
     /** 
      * Connects to specific slot of the selected viewer - to set controls and handlers for tools.
@@ -179,7 +182,7 @@ class m4dGUIMainWindow: public QMainWindow
     QMenu *toolsMenu;
     QMenu *viewMenu;
 
-    M4D::Imaging::AbstractImage::AImagePtr inputImage;
+    
 };
 
 } // namespace GUI

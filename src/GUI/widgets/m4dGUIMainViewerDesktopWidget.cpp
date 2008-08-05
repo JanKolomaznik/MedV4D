@@ -84,19 +84,13 @@ void m4dGUIMainViewerDesktopWidget::replaceSelectedViewerWidget ( ViewerType typ
 }
 
 
-void m4dGUIMainViewerDesktopWidget::addSource ( ConnectionInterface *conn, const string &pipelineDescription,
-                                                const string &connectionDescription )
+void m4dGUIMainViewerDesktopWidget::addSource ( ConnectionInterface *conn, const char *pipelineDescription,
+                                                const char *connectionDescription )
 {
-  Connection *source = new Connection;
-  
-  source->conn = conn;
-  source->pipelineDescription   = pipelineDescription;
-  source->connectionDescription = connectionDescription;
+  sources.push_back( conn );
 
-  sources.push_back( source );
-
-  emit sourceAdded ( QString( source->pipelineDescription.c_str() ), 
-                     QString( source->connectionDescription.c_str() ) );
+  emit sourceAdded ( QString( pipelineDescription ), 
+                     QString( connectionDescription ) );
 }
 
 
