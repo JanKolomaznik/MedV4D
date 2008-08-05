@@ -3,6 +3,8 @@
 
 #include "netStreamImpl.h"
 
+extern int endianess;
+
 namespace M4D
 {
 namespace CellBE
@@ -95,15 +97,7 @@ struct SecondaryJobHeader
     NetStreamArrayBuf s( (uint8 *)h, sizeof( SecondaryJobHeader) );
 
     s << h->filterSettStreamLen << h->dataSetPropertiesLen;
-
-#ifdef LITTLE_ENDIAN
-    s << (uint8) 0;
-#else
-    s << (uint8) 1;
-#endif
-
-    s << h->dataSetType << h->dataElementID;
-
+    s << (uint8) endianess << h->dataSetType << h->dataElementID;
   }
   static void Deserialize( SecondaryJobHeader *h)
   {

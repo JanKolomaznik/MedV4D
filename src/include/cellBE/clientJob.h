@@ -2,7 +2,7 @@
 #define CLIENT_JOB_H
 
 #include "cellBE/clientSocket.h"
-#include "../Imaging/AbstractDataSet.h"
+#include "AbstractDataSetSerializer.h"
 
 namespace M4D
 {

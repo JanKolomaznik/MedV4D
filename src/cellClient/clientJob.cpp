@@ -12,7 +12,7 @@ using namespace std;
 
 uint32 ClientJob::lastID;
 
-///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 ClientJob::ClientJob(
                      FilterVector &filters,
@@ -23,7 +23,7 @@ ClientJob::ClientJob(
   , m_dataSet( dataSet)
 {
   GenerateJobID();
-  primHeader.action = (uint8) CREATE;  
+  primHeader.action = (uint8) CREATE;
 
   PrimaryJobHeader::Serialize( &primHeader);
 

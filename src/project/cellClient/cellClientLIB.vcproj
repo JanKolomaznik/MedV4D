@@ -169,12 +169,28 @@
 				RelativePath="..\..\cellClient\clientSocket.cpp"
 				>
 			</File>
+			<Filter
+				Name="dataSetSerializers"
+				>
+				<File
+					RelativePath="..\..\include\cellBE\dataSetSerializers\ImageSerializer.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath="..\..\include\cellBE\AbstractDataSetSerializer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cellBE\AbstractFilterSerializer.h"
+				>
+			</File>
 			<File
 				RelativePath="..\..\include\cellBE\basicJob.h"
 				>
@@ -199,6 +215,14 @@
 				RelativePath="..\..\include\cellBE\iPublicJob.h"
 				>
 			</File>
+			<Filter
+				Name="dataSetSerializers"
+				>
+				<File
+					RelativePath="..\..\include\cellBE\dataSetSerializers\ImageSerializer.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
