@@ -3,7 +3,7 @@
 
 #include "Imaging/AbstractFilter.h"
 #include "Imaging/Ports.h"
-#include "Imaging/Connection.h"
+#include "Imaging/ImageConnection.h"
 #include "Common.h"
 
 

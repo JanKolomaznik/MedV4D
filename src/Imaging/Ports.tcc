@@ -2,7 +2,8 @@
 #error File Ports.tcc cannot be included directly!
 #else
 
-#include "Imaging/Connection.h"
+#include "Imaging/ConnectionInterface.h"
+#include "Imaging/ImageConnection.h"
 
 namespace M4D
 {
@@ -28,6 +29,10 @@ void
 InputPortImageFilter< Image< ElementType, dimension > >
 ::Plug( ConnectionInterface & connection )
 {
+	if( this->IsPlugged() ) {
+		throw Port::EPortAlreadyConnected();
+	}
+
 	ImageConnection< ImageType > *conn = 
 		dynamic_cast< ImageConnection< ImageType > * >( &connection );
 	if( conn ) {
@@ -92,6 +97,10 @@ void
 OutputPortImageFilter< Image< ElementType, dimension > >
 ::Plug( ConnectionInterface & connection )
 {
+	if( this->IsPlugged() ) {
+		throw Port::EPortAlreadyConnected();
+	}
+
 	ImageConnection< ImageType > *conn = 
 		dynamic_cast< ImageConnection< ImageType > * >( &connection );
 	if( conn ) {

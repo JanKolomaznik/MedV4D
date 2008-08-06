@@ -118,6 +118,10 @@ void
 InputPortAbstractImage
 ::Plug( ConnectionInterface & connection )
 {
+	if( this->IsPlugged() ) {
+		throw Port::EPortAlreadyConnected();
+	}
+
 	AbstractImageConnection *conn = 
 		dynamic_cast< AbstractImageConnection * >( &connection );
 	if( conn ) {

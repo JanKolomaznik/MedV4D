@@ -4,7 +4,8 @@
 #include "Common.h"
 #include "Imaging/AbstractProcessingUnit.h"
 #include "Imaging/Ports.h"
-#include "Imaging/Connection.h"
+#include "Imaging/ConnectionInterface.h"
+#include "Imaging/ImageConnection.h"
 #include <boost/shared_ptr.hpp>
 #include "Thread.h"
 #include "Imaging/PipelineMessages.h"

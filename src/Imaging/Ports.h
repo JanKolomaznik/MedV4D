@@ -32,6 +32,7 @@ public:
 	 **/
 	class EDisconnected;
 	class EConnectionTypeMismatch;
+	class EPortAlreadyConnected;
 
 	/**
 	 * Default constructor - port obtain unique ID.
@@ -145,7 +146,11 @@ protected:
 	uint64  _port;
 };
 
-
+class Port::EPortAlreadyConnected
+{
+public:
+	//TODO
+};
 
 class InputPort: public Port
 {

@@ -1,4 +1,4 @@
-#include "Imaging/Connection.h"
+#include "Imaging/ConnectionInterface.h"
 
 namespace M4D
 {
