@@ -14,6 +14,7 @@ class QTabWidget;
 class QTableWidget;
 class QSettings;
 class QTreeView;
+class QComboBox;
 
 namespace M4D {
 namespace GUI {
@@ -179,6 +180,8 @@ class StManagerStudyListComp: public QWidget
      */
     QTreeView    *createDirectoryTreeView ();
 
+    QComboBox    *createDirectoryComboBox ( const QString &text = QString() );
+
     QTableWidget *createSeriesSelectionTable ();
 
     /** 
@@ -219,6 +222,7 @@ class StManagerStudyListComp: public QWidget
     QTableWidget *activeExamTable;
     /// Directory tree for browsing in DICOMDIR mode.
     QTreeView    *directoryTree;
+    QComboBox    *directoryComboBox;
 
     /// The provider object - communication with DICOM layer.
     M4D::Dicom::DcmProvider *dcmProvider;

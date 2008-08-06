@@ -102,8 +102,13 @@ StManagerStudyListComp::StManagerStudyListComp ( QDialog *studyManagerDialog, QW
   DICOMDIRTable = createStudyTable();
   DICOMDIRsplitter->addWidget( DICOMDIRTable );
 
+  QSplitter *DICOMDIRDirectorySplitter = new QSplitter;
+  DICOMDIRDirectorySplitter->setOrientation( Qt::Vertical );
   directoryTree = createDirectoryTreeView();
-  DICOMDIRsplitter->addWidget( directoryTree );
+  DICOMDIRDirectorySplitter->addWidget( directoryTree );
+  directoryComboBox = createDirectoryComboBox();
+  DICOMDIRDirectorySplitter->addWidget( directoryComboBox );
+  DICOMDIRsplitter->addWidget( DICOMDIRDirectorySplitter );
 
   DICOMDIRLayout->addWidget( DICOMDIRsplitter );
 
@@ -200,13 +205,21 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
 
       case 2:
         // DICOMDIR tab active
-        if ( !directoryTree->selectionModel()->selectedIndexes().empty() )
-        {
-          qm = directoryTree->selectionModel()->selectedIndexes()[0];
-          DICOMDIRPath = ((QDirModel *)directoryTree->model())->filePath( qm );
+        // first check the comboBox - if not empty, use it's value
+        if ( directoryComboBox->currentText() != "" ) {
+          DICOMDIRPath = directoryComboBox->currentText();
         }
-        else {
-          DICOMDIRPath = QDir::currentPath();
+        else
+        {
+          // directory comboBox is empty -> take the path from tree
+          if ( !directoryTree->selectionModel()->selectedIndexes().empty() )
+          {
+            qm = directoryTree->selectionModel()->selectedIndexes()[0];
+            DICOMDIRPath = ((QDirModel *)directoryTree->model())->filePath( qm );
+          }
+          else {
+            DICOMDIRPath = QDir::currentPath();
+          }
         }
 
         dcmProvider->LocalFind( *activeResultSet, DICOMDIRPath.toStdString() );
@@ -459,7 +472,16 @@ void StManagerStudyListComp::recentChanged ()
 
 void StManagerStudyListComp::path ()
 {
-  directoryTree->isHidden() ? directoryTree->show() : directoryTree->hide();
+  if ( directoryTree->isHidden() )
+  {
+    directoryTree->show();
+    directoryComboBox->show();
+  }
+  else 
+  {
+    directoryTree->hide();
+    directoryComboBox->hide();
+  }
 }
 
 
@@ -660,6 +682,17 @@ QTreeView *StManagerStudyListComp::createDirectoryTreeView ()
 }
 
 
+QComboBox *StManagerStudyListComp::createDirectoryComboBox ( const QString &text )
+{
+  QComboBox *comboBox = new QComboBox;
+  
+  comboBox->setEditable( true );
+  comboBox->setEditText( text );
+
+  return comboBox;
+}
+
+
 QTableWidget *StManagerStudyListComp::createSeriesSelectionTable ()
 {
   QTableWidget *seriesTable = new QTableWidget;
@@ -677,6 +710,7 @@ QTableWidget *StManagerStudyListComp::createSeriesSelectionTable ()
 QPushButton *StManagerStudyListComp::createButton ( const QString &text, const char *member )
 {
   QPushButton *button = new QPushButton( text );
+
   connect( button, SIGNAL(clicked()), this, member );
 
   return button;
