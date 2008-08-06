@@ -1,18 +1,17 @@
 #ifndef _IMAGE_CONNECTION_H
 #define _IMAGE_CONNECTION_H
 
+#include "Imaging/ConnectionInterface.h"
+#include "Imaging/ImageConnection.h"
 #include "Imaging/Image.h"
 #include "Imaging/ImageFactory.h"
 #include "Imaging/AbstractFilter.h"
-#include "Imaging/ConnectionInterface.h"
-#include "Common.h"
-#include <map>
-#include <algorithm>
 
 namespace M4D
 {
 namespace Imaging
 {
+
 
 /**
  * Not supposed to instantiate - use only as substitution for typed images connections.
@@ -39,8 +38,6 @@ public:
 			return GetAbstractImage();
 		}
 
-	/*virtual void
-	ConnectAImageConsumer( InputPortAbstractImage &inputPort );*/
 protected:
 
 };

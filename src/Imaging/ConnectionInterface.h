@@ -1,11 +1,10 @@
 #ifndef _CONNECTION_INTERFACE_H
 #define _CONNECTION_INTERFACE_H
 
-#include "Imaging/Image.h"
-#include "Imaging/ImageFactory.h"
+#include "Common.h"
 #include "Imaging/AbstractFilter.h"
 #include "Imaging/Ports.h"
-#include "Common.h"
+
 #include <map>
 #include <algorithm>
 

@@ -164,6 +164,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\src\ImagePorts.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\src\ModificationManager.cpp"
 				>
 			</File>
@@ -250,6 +254,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\ImageConnection.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\ImageConnection.tcc"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\ImageDataTemplate.h"
 				>
 			</File>
@@ -263,6 +275,14 @@
 			</File>
 			<File
 				RelativePath="..\..\Imaging\ImageFactory.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\ImagePorts.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\ImagePorts.tcc"
 				>
 			</File>
 			<File
