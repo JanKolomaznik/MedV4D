@@ -15,36 +15,15 @@ uint32 ClientJob::lastID;
 ///////////////////////////////////////////////////////////////////////////////
 
 ClientJob::ClientJob(
-                     FilterVector &filters,
+                     FilterPropsVector &filters,
                      M4D::Imaging::AbstractDataSet *dataSet,
                      const std::string &address,
                      boost::asio::io_service &service) 
   : ClientSocket( address, service)
-  , m_dataSet( dataSet)
+  , m_dataSet( dataSet) // copy dataSet pointer
 {
-  GenerateJobID();
-  primHeader.action = (uint8) CREATE;
-
-  PrimaryJobHeader::Serialize( &primHeader);
-
-  // copy pointers to filter settings to this job
-  for( FilterVector::iterator it = filters.begin();
-    it != filters.end();
-    it++)
-  {
-    m_filters.push_back( *it);
-  }
-
-  // serialize dataset settings
-  m_dataSet->_properties->SerializeIntoStream( m_dataSetPropsSerialized);
-  secHeader.dataSetPropertiesLen = (uint16) m_dataSetPropsSerialized.size();
-  secHeader.dataSetType = m_dataSet->_properties->GetType();
-  secHeader.dataElementID = 0;  // TODO IDs of dataTypes?
-
-  SendHeaders();
-
-  // serialize dataSet using this job
-  m_dataSet->Serialize( this);
+  m_filters = filters;  // copy filters definitions
+  SendCreate();
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -77,19 +56,31 @@ ClientJob::GenerateJobID( void)
 ///////////////////////////////////////////////////////////////////////
 
 void
-ClientJob::SendHeaders( void)
+ClientJob::SendCreate( void)
 {
+  primHeader.action = (uint8) CREATE;  
+  GenerateJobID();
+
   // prepare serialization of filters & settings
   SerializeFiltersSetting();
+  primHeader.filterSettStreamLen = (uint16) filterSettingsSerialized.size();
 
-  SecondaryJobHeader::Serialize( &secHeader);
+  // serialize dataset settings
+  AbstractDataSetSerializer::SerializeProperties( 
+    m_dataSet, 
+    m_dataSetPropsSerialized);
+
+  primHeader.dataSetPropertiesLen = (uint16) m_dataSetPropsSerialized.size();
+
+  PrimaryJobHeader::Serialize( &primHeader);
 
   // create vector of serialized information to pass to sigle send operation
   vector<boost::asio::const_buffer> buffers;
   buffers.push_back( 
     boost::asio::buffer( (uint8*)&primHeader, sizeof(PrimaryJobHeader)) );
   buffers.push_back( 
-    boost::asio::buffer( (uint8*)&secHeader, sizeof(SecondaryJobHeader)) );
+    boost::asio::buffer( 
+      &m_dataSetPropsSerialized[0], m_dataSetPropsSerialized.size() ));
   buffers.push_back( 
     boost::asio::buffer( 
       &filterSettingsSerialized[0], filterSettingsSerialized.size() ));
@@ -100,6 +91,11 @@ ClientJob::SendHeaders( void)
     boost::bind( &ClientJob::EndSend, this,
       boost::asio::placeholders::error)
   );
+
+  // serialize dataSet using this job
+  AbstractDataSetSerializer::SerializeDataSet( m_dataSet, this);
+
+  // send EndingTag telling no more data will come
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -113,13 +109,21 @@ ClientJob::SerializeFiltersSetting( void)
     throw ExceptionBase( "Empty filter vector. Add some filter into job!");
   }
 
-  for( FilterVector::iterator it = m_filters.begin();
+  NetStreamVector tmp;
+
+  for( FilterPropsVector::iterator it = m_filters.begin();
     it != m_filters.end(); it++)
   {
-    (*it)->Serialize( filterSettingsSerialized);
-  }
+    filterSettingsSerialized << (uint16) (*it)->GetID();  // insert filterID
+    (*it)->SerializeProperties( tmp); // serialize it into tmp stream
 
-  secHeader.filterSettStreamLen = (uint16) filterSettingsSerialized.size();
+    // put size of the serialization
+    filterSettingsSerialized << (uint16) tmp.size();
+
+    // copy actual serialization into final stream from tmp
+    filterSettingsSerialized.insert( 
+      filterSettingsSerialized.end(), tmp.begin(), tmp.end() );
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////

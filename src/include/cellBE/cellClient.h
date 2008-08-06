@@ -23,7 +23,7 @@ public:
 
   // creates job
   ClientJob *CreateJob(
-    M4D::Imaging::FilterVector &filters, 
+    FilterPropsVector &filters, 
     M4D::Imaging::AbstractDataSet *dataSet);
 
   inline void Run( void) { m_io_service.run(); }
@@ -41,7 +41,7 @@ private:
    *	Returns string reference containing address of least loaded available
    *	server able doing specified job. Here can be implemented some load balancing functionality.
    */
-  const std::string & FindAvailableServer( const M4D::Imaging::FilterVector &filters);
+  const std::string & FindAvailableServer( const FilterPropsVector &filters);
 
 };
 

@@ -111,7 +111,7 @@ BasicJob::EndSend( const boost::system::error_code& e)
 NetStream *
 BasicJob::GetNetStream( void)
 {
-  uint8 sourceEndian = secHeader.endian;
+  uint8 sourceEndian = primHeader.endian;
 #ifdef LITTLE_ENDIAN
   uint8 destEndian = 0;
 #else

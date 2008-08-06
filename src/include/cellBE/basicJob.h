@@ -8,6 +8,8 @@
 #include "messageHeaders.h"
 #include "resourcePool.h"
 #include "iPublicJob.h"
+#include "AbstractDataSetSerializer.h"
+#include "AbstractFilterSerializer.h"
 
 
 namespace M4D
@@ -26,7 +28,6 @@ public:
 
   // header struct used for sending headers
   PrimaryJobHeader primHeader;
-  SecondaryJobHeader secHeader;
 
 protected:
   // ctor
@@ -43,7 +44,7 @@ protected:
   };
 
   // filter setting vector
-  M4D::Imaging::FilterVector m_filters;
+  FilterPropsVector m_filters;
 
   void EndSend( const boost::system::error_code& e);
 

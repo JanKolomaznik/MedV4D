@@ -62,50 +62,28 @@ struct PrimaryJobHeader
   uint8 action;
 
   JobID id;
+
+  uint8 endian;
+
+  uint16 filterSettStreamLen;
+
+  uint16 dataSetPropertiesLen;
   
   static void Serialize( PrimaryJobHeader *h)
   {
     NetStreamArrayBuf s( (uint8 *)h, sizeof( PrimaryJobHeader) );
 
-    s << h->action << h->id;
+    s << h->action << h->id << (uint8) endianess << h->filterSettStreamLen
+      << h->dataSetPropertiesLen;
   }
 
   static void Deserialize( PrimaryJobHeader *h)
   {
     NetStreamArrayBuf s( (uint8 *)h, sizeof( PrimaryJobHeader) );
 
-    s >> h->action >> h->id;
+    s >> h->action >> h->id >> h->endian >> h->filterSettStreamLen
+      >> h->dataSetPropertiesLen;
   }
-};
-
-///////////////////////////////////////////////////////////////////////
-
-struct SecondaryJobHeader
-{
-  uint16 filterSettStreamLen;
-
-  uint16 dataSetPropertiesLen;
-
-  uint8 endian;
-
-  uint8 dataSetType;
-
-  uint8 dataElementID;
-  
-  static void Serialize( SecondaryJobHeader *h)
-  {
-    NetStreamArrayBuf s( (uint8 *)h, sizeof( SecondaryJobHeader) );
-
-    s << h->filterSettStreamLen << h->dataSetPropertiesLen;
-    s << (uint8) endianess << h->dataSetType << h->dataElementID;
-  }
-  static void Deserialize( SecondaryJobHeader *h)
-  {
-    NetStreamArrayBuf s( (uint8 *)h, sizeof( SecondaryJobHeader) );
-
-    s >> h->filterSettStreamLen >> h->dataSetPropertiesLen >> h->endian;
-    s >> h->dataSetType >> h->dataElementID;
-  }  
 };
 
 ///////////////////////////////////////////////////////////////////////
@@ -125,7 +103,7 @@ struct DataPieceHeader
     NetStreamArrayBuf s( (uint8 *)h, sizeof( DataPieceHeader) );
 
     s >> h->pieceSize;
-  }  
+  }
 };
 
   

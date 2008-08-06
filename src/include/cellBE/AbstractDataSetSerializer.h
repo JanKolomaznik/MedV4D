@@ -59,6 +59,14 @@ public:
 	virtual void Serialize( M4D::CellBE::iPublicJob *job) = 0;
 	virtual void DeSerialize( M4D::CellBE::iPublicJob *job) = 0;
 
+  static void SerializeProperties( 
+    M4D::Imaging::AbstractDataSet *dataSet,
+    M4D::CellBE::NetStream &s);
+
+  static void SerializeDataSet( 
+    M4D::Imaging::AbstractDataSet *dataSet,
+    M4D::CellBE::iPublicJob *j);
+
 };
 
 }

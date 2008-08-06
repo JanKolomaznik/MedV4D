@@ -17,31 +17,21 @@ class iPublicJob
 {
 public:
 
-  // data buffer to send
-  //template< class T>
   struct DataBuff {
     void *data;
     size_t len;
   };
 
-  // vector of databuffers to be send in one turn
-  //template< class T>
   class DataBuffs : public std::vector< DataBuff >
   {
   };
 
   // Serialization
-  //template<class T>
   virtual void PutDataPiece( const DataBuffs &bufs) = 0;
-
-  //template<class T>
   virtual void PutDataPiece( const DataBuff &buf) = 0;
 
   // Deserialization
-  //template<class T>
   virtual void GetDataPiece( DataBuffs &bufs) = 0;
-
-  //template<class T>
   virtual void GetDataPiece( DataBuff &buf) = 0;
 
   /**
@@ -52,12 +42,6 @@ public:
    *  Remember to call SetBuffer before you start useing the NetStream !!!
    */
   virtual NetStream * GetNetStream( void) = 0;
-
-  /**
-   *  Each no longer used netstream should be returned back or it will remain
-   *  inaccesable to next usage.
-   */
-  //virtual void ReturnNetStream( NetStream &ns) = 0;
 
 };
 

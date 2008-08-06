@@ -154,6 +154,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\..\common\AbstractDataSetSerializer.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\common\BasicJob.cpp"
 				>
 			</File>
@@ -176,6 +180,10 @@
 					RelativePath="..\..\include\cellBE\dataSetSerializers\ImageSerializer.cpp"
 					>
 				</File>
+			</Filter>
+			<Filter
+				Name="filterSerializers"
+				>
 			</Filter>
 		</Filter>
 		<Filter
@@ -220,6 +228,14 @@
 				>
 				<File
 					RelativePath="..\..\include\cellBE\dataSetSerializers\ImageSerializer.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="filterSerializers"
+				>
+				<File
+					RelativePath="..\..\include\cellBE\filterSerializers\ThresholdingSerializer.h"
 					>
 				</File>
 			</Filter>

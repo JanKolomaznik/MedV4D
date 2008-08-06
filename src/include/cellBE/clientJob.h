@@ -2,7 +2,6 @@
 #define CLIENT_JOB_H
 
 #include "cellBE/clientSocket.h"
-#include "AbstractDataSetSerializer.h"
 
 namespace M4D
 {
@@ -35,14 +34,14 @@ class ClientJob
 
   NetStreamVector m_dataSetPropsSerialized;
 
-  void SendHeaders( void);
+  void SendCreate( void);
 
   void Serialize( NetStream &s);
   void DeSerialize( NetStream &s);
 
   // only CellClient can construct instances through CreateJob members
   ClientJob(
-    M4D::Imaging::FilterVector &filters
+    FilterPropsVector &filters
     , M4D::Imaging::AbstractDataSet *dataSet
     , const std::string &address
     , boost::asio::io_service &service);

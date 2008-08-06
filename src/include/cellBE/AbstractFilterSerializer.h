@@ -1,8 +1,10 @@
 #ifndef ABSTRACT_FILTER_SERIALIZER_H
 #define ABSTRACT_FILTER_SERIALIZER_H
 
-#include "Imaging/filterIDEnums.h"
+#include "filterIDEnums.h"
 #include "cellBE/netStream.h"
+
+#include <vector>
 
 namespace M4D
 {
@@ -37,6 +39,8 @@ public:
 
   
 };
+
+typedef std::vector<AbstractFilterSerializer *> FilterPropsVector;
 
 }
 }
