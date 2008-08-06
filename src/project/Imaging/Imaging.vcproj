@@ -152,7 +152,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\src\Connection.cpp"
+				RelativePath="..\..\Imaging\src\ConnectionInterface.cpp"
 				>
 			</File>
 			<File
@@ -169,6 +169,10 @@
 			</File>
 			<File
 				RelativePath="..\..\Imaging\src\Pipeline.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\src\PipelineContainer.cpp"
 				>
 			</File>
 			<File
@@ -210,11 +214,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\Connection.h"
+				RelativePath="..\..\Imaging\ConnectionInterface.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\Connection.tcc"
+				RelativePath="..\..\Imaging\dataSetClassEnum.h"
 				>
 			</File>
 			<File
@@ -231,6 +235,10 @@
 			</File>
 			<File
 				RelativePath="..\..\Imaging\ExampleImageFilters.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filterProperties.h"
 				>
 			</File>
 			<File
@@ -266,6 +274,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\PipelineContainer.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\PipelineMessages.h"
 				>
 			</File>
@@ -279,10 +291,32 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
+			Name="Filters"
 			>
+			<File
+				RelativePath="..\..\Imaging\filters\ConvolutionFilter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\ConvolutionFilter.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\RemoteFilter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\RemoteFilter.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\ThresholdingFilter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\ThresholdingFilter.tcc"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
