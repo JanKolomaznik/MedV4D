@@ -70,7 +70,8 @@ LDFLAGS=
 ARFLAGS=	-r
 LIBDIRS=	-L../../lib\
 		-L/usr/lib/qt4
-INCLUDES=	-I$(srcdir)\
+INCLUDES=	-I../.. \
+		-I$(srcdir)\
 		-I../../include
 
 DEBUG_DEFS=	-DDEBUG_LEVEL=10\

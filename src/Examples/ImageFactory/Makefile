@@ -3,7 +3,7 @@ CXX=g++
 LD=ld
 
 
-INCLUDES= ../../include ../../vtkIntegration /usr/include/vtk-5.0
+INCLUDES= ../../ ../../include ../../vtkIntegration /usr/include/vtk-5.0
 CXXINCLUDES= $(addprefix -I, $(INCLUDES) )
 LIBRARIES=vtkImaging
 CXXLIBRARIES= $(addprefix -l, $(LIBRARIES) )

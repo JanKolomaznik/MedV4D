@@ -59,7 +59,8 @@ CDEPFLAGS=	-MM
 
 LDFLAGS=
 ARFLAGS=	-r
-INCLUDES=	-I$(srcdir)\
+INCLUDES=	-I../.. \
+		-I$(srcdir)\
 		-I../../include\
 		-I/usr/include/vtk-5.0\
 		-I/usr/include/qt4\

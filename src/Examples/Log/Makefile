@@ -4,7 +4,7 @@ LD=ld
 
 CXXFLAGS= -Wall -D DEBUG_LEVEL=3 -D DEBUG_ADITIONAL_INFO
 
-INCLUDES= ../../include
+INCLUDES= ../../ ../../include
 CXXINCLUDES= -I$(INCLUDES)
 COMMON_SRC= ../../common
 OUTPUT=./main

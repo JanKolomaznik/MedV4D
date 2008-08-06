@@ -26,6 +26,7 @@ OUTPUTNAME=	lib$(NAME).a
 OUTPUTDIR=	../lib
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	../tmp/$(NAME)
+SRC_DIR=	./src
 
 CXXDEBUG_OPTIONS= -ggdb 
 
@@ -36,7 +37,7 @@ CDEPFLAGS=	-MM
 
 LDFLAGS=
 ARFLAGS=	-r
-INCLUDES=	-I$(srcdir)\
+INCLUDES=	-I.. \
 		-I../include
 
 
@@ -47,7 +48,7 @@ DEBUG_DEFS=	-DDEBUG_LEVEL=10\
 DEFS=		$(DEBUG_DEFS)
 
 
-SRC_FILES=	$(addsuffix .cpp, $(TARGETS))
+SRC_FILES=	$(addprefix $(SRC_DIR)/, $(addsuffix .cpp, $(TARGETS)) )
 OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )
 
 
@@ -67,7 +68,7 @@ dep:
 		$(CXX) $(INCLUDES) $(CDEPFLAGS) $(DEFS) $(SRC_FILES) | \
 		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
 
-$(TMP_DIR)/%.o:	%.cpp	
+$(TMP_DIR)/%.o:	$(SRC_DIR)/%.cpp	
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 -include $(DEP_FILE)

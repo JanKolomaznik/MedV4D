@@ -36,7 +36,8 @@ CDEPFLAGS=	-MM
 
 LDFLAGS=
 ARFLAGS=	-r
-INCLUDES=	-I$(srcdir)\
+INCLUDES=	-I.. \
+		-I$(srcdir)\
 		-I../include
 
 
