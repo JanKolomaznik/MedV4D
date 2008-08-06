@@ -298,8 +298,17 @@ public:
 class ImageFactory::EUnknowDataType
 {
 public:
-	EUnknowDataType( uint8 size, bool sign ){}
-//TODO
+	EUnknowDataType( uint8 size, bool sign ): _size( size ), _sign( sign ) {}
+
+	uint8
+	GetSize()const 
+		{ return _size; }
+	uint8
+	GetSign()const 
+		{ return _sign; }
+private:
+	uint8 _size;
+	bool _sign;
 };
 
 /**

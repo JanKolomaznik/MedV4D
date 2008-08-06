@@ -3,6 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Imaging", "Imaging\Imaging.vcproj", "{A5A68502-8A1D-44AC-AB98-199CE76FFB8A}"
 	ProjectSection(ProjectDependencies) = postProject
+		{B89B3652-5A1B-426F-8C42-9DD6C0964612} = {B89B3652-5A1B-426F-8C42-9DD6C0964612}
 		{D300E0F3-DB4D-4B1C-9473-830764C94644} = {D300E0F3-DB4D-4B1C-9473-830764C94644}
 	EndProjectSection
 EndProject
@@ -17,8 +18,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dicomClient", "backendForDICOM\dicomClient.vcproj", "{B89B3652-5A1B-426F-8C42-9DD6C0964612}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D300E0F3-DB4D-4B1C-9473-830764C94644} = {D300E0F3-DB4D-4B1C-9473-830764C94644}
-		{2D198559-0E14-42E5-AB0B-3F0A5AE76EDF} = {2D198559-0E14-42E5-AB0B-3F0A5AE76EDF}
-		{A5A68502-8A1D-44AC-AB98-199CE76FFB8A} = {A5A68502-8A1D-44AC-AB98-199CE76FFB8A}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "common\common.vcproj", "{D300E0F3-DB4D-4B1C-9473-830764C94644}"
@@ -47,6 +46,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FilteringTest", "FilteringT
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cellClientLIB", "cellClient\cellClientLIB.vcproj", "{0FA63D67-93DD-469D-8C26-534FBF702988}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A5A68502-8A1D-44AC-AB98-199CE76FFB8A} = {A5A68502-8A1D-44AC-AB98-199CE76FFB8A}
+		{D300E0F3-DB4D-4B1C-9473-830764C94644} = {D300E0F3-DB4D-4B1C-9473-830764C94644}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

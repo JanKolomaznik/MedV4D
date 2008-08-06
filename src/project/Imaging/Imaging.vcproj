@@ -38,7 +38,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include\;..\..\Imaging\"
+				AdditionalIncludeDirectories="..\..\include\;..\..\"
 				PreprocessorDefinitions="WINDOWS,_DEBUG,UNICODE,WIN32,&quot;DEBUG_LEVEL=10&quot;; WIN32_LEAN_AND_MEAN"
 				MinimalRebuild="false"
 				RuntimeLibrary="1"
@@ -96,7 +96,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\include\;..\..\Imaging\"
+				AdditionalIncludeDirectories="..\..\include\;..\..\"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -136,43 +136,43 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\Imaging\AbstractDataSet.cpp"
+				RelativePath="..\..\Imaging\src\AbstractDataSet.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\AbstractFilter.cpp"
+				RelativePath="..\..\Imaging\src\AbstractFilter.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\AbstractImageData.cpp"
+				RelativePath="..\..\Imaging\src\AbstractImageData.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\AbstractImageFilters.cpp"
+				RelativePath="..\..\Imaging\src\AbstractImageFilters.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\Connection.cpp"
+				RelativePath="..\..\Imaging\src\Connection.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\Image.cpp"
+				RelativePath="..\..\Imaging\src\Image.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\ImageFactory.cpp"
+				RelativePath="..\..\Imaging\src\ImageFactory.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\ModificationManager.cpp"
+				RelativePath="..\..\Imaging\src\ModificationManager.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\Pipeline.cpp"
+				RelativePath="..\..\Imaging\src\Pipeline.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\Ports.cpp"
+				RelativePath="..\..\Imaging\src\Ports.cpp"
 				>
 			</File>
 		</Filter>
@@ -182,99 +182,99 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\include\Imaging\AbstractDataSet.h"
+				RelativePath="..\..\Imaging\AbstractDataSet.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\AbstractFilter.h"
+				RelativePath="..\..\Imaging\AbstractFilter.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\AbstractImageData.h"
+				RelativePath="..\..\Imaging\AbstractImageData.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\AbstractImageFilters.h"
+				RelativePath="..\..\Imaging\AbstractImageFilters.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\AbstractImageFilters.tcc"
+				RelativePath="..\..\Imaging\AbstractImageFilters.tcc"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\AbstractPipeline.h"
+				RelativePath="..\..\Imaging\AbstractPipeline.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\AbstractProcessingUnit.h"
+				RelativePath="..\..\Imaging\AbstractProcessingUnit.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\Connection.h"
+				RelativePath="..\..\Imaging\Connection.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\Connection.tcc"
+				RelativePath="..\..\Imaging\Connection.tcc"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\DefaultConnection.h"
+				RelativePath="..\..\Imaging\DefaultConnection.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\DefaultConnection.tcc"
+				RelativePath="..\..\Imaging\DefaultConnection.tcc"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\ExampleImageFilters.h"
+				RelativePath="..\..\Imaging\ExampleImageFilters.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\ExampleImageFilters.tcc"
+				RelativePath="..\..\Imaging\ExampleImageFilters.tcc"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\Image.h"
+				RelativePath="..\..\Imaging\Image.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\Image.tcc"
+				RelativePath="..\..\Imaging\Image.tcc"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\ImageDataTemplate.h"
+				RelativePath="..\..\Imaging\ImageDataTemplate.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\ImageDataTemplate.tcc"
+				RelativePath="..\..\Imaging\ImageDataTemplate.tcc"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\ImageFactory.h"
+				RelativePath="..\..\Imaging\ImageFactory.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\ImageFactory.tcc"
+				RelativePath="..\..\Imaging\ImageFactory.tcc"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\ModificationManager.h"
+				RelativePath="..\..\Imaging\ModificationManager.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\Pipeline.h"
+				RelativePath="..\..\Imaging\Pipeline.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\PipelineMessages.h"
+				RelativePath="..\..\Imaging\PipelineMessages.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\Ports.h"
+				RelativePath="..\..\Imaging\Ports.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\Imaging\Ports.tcc"
+				RelativePath="..\..\Imaging\Ports.tcc"
 				>
 			</File>
 		</Filter>
