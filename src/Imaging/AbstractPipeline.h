@@ -1,10 +1,9 @@
 #ifndef _ABSTRACT_PIPELINE_H
 #define _ABSTRACT_PIPELINE_H
 
-#include "Imaging/Ports.h"
 #include "Imaging/AbstractFilter.h"
 #include "Imaging/ConnectionInterface.h"
-#include "Imaging/ImageConnection.h"
+#include "Imaging/Ports.h"
 #include <boost/shared_ptr.hpp>
 
 

@@ -4,6 +4,7 @@
 #include "Common.h"
 
 #include "Imaging/Ports.h"
+#include "Imaging/ImagePorts.h"
 #include "Imaging/ImageDataTemplate.h"
 #include "Imaging/ImageFactory.h"
 #include "Imaging/AbstractFilter.h"

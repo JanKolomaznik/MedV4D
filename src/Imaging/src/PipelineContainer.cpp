@@ -15,12 +15,11 @@ PipelineContainer::PipelineContainer()
 
 }
 
-virtual
 PipelineContainer::~PipelineContainer()
 {
-	stl::for_each( _connections.begin(), _connections.end(), Functors::Deletor< ConnectionInterface *>() );
+	std::for_each( _connections.begin(), _connections.end(), Functors::Deletor< ConnectionInterface *>() );
 
-	stl::for_each( _filters.begin(), _filters.end(), Functors::Deletor< AbstractPipeFilter *>() );
+	std::for_each( _filters.begin(), _filters.end(), Functors::Deletor< AbstractPipeFilter *>() );
 }
 
 void
@@ -43,7 +42,7 @@ PipelineContainer::AddConnection( ConnectionInterface *connection )
 	_connections.push_back( connection );
 }
 
-ConnectionInterface &
+/*ConnectionInterface &
 PipelineContainer::MakeConnection( M4D::Imaging::OutputPort& outPort, M4D::Imaging::InputPort& inPort )
 {
 
@@ -54,7 +53,7 @@ PipelineContainer::MakeConnection( M4D::Imaging::AbstractPipeFilter& producer, u
 		M4D::Imaging::AbstractPipeFilter& consumer, unsigned consumerPortNumber )
 {
 
-}
+}*/
 
 }/*namespace Imaging*/
 }/*namespace M4D*/

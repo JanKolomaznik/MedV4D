@@ -2,8 +2,9 @@
 #define _CONNECTION_INTERFACE_H
 
 #include "Common.h"
-#include "Imaging/AbstractFilter.h"
-#include "Imaging/Ports.h"
+//#include "Imaging/Ports.h"
+#include "Imaging/PipelineMessages.h"
+#include "Imaging/AbstractDataSet.h"
 
 #include <map>
 #include <algorithm>
@@ -12,6 +13,9 @@ namespace M4D
 {
 namespace Imaging
 {
+
+class InputPort;
+class OutputPort;
 
 /**
  * Connection object inheriting from interfaces for 

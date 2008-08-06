@@ -1,5 +1,7 @@
 #include "Imaging/ConnectionInterface.h"
 
+#include "Imaging/Ports.h"
+
 namespace M4D
 {
 namespace Imaging

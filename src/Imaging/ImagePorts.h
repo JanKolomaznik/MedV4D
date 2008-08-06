@@ -14,10 +14,10 @@ namespace Imaging
 {
 
 //Forward declarations *****************
-//class AbstractImageConnection;
+class AbstractImageConnection;
 
-//template< typename ImageTemplate >
-//class ImageConnection;
+template< typename ImageTemplate >
+class ImageConnection;
 
 //**************************************
 

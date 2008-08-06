@@ -3,10 +3,9 @@
 
 #include <boost/shared_ptr.hpp>
 #include "Imaging/AbstractDataSet.h"
-#include "Imaging/Image.h"
 #include <vector>
 #include "Imaging/PipelineMessages.h"
-#include "Imaging/ConnectionInterface.h"
+//#include "Imaging/ConnectionInterface.h"
 
 namespace M4D
 {
@@ -14,7 +13,7 @@ namespace Imaging
 {
 
 //Forward declarations *****************
-//class ConnectionInterface;
+class ConnectionInterface;
 
 
 //**************************************

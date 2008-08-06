@@ -10,15 +10,18 @@ MKDIR=mkdir
 #Name of this project part
 NAME=		Imaging
 #Names of target sources
-TARGETS=	AbstractImageData \
-		ImageFactory \
+TARGETS=	AbstractDataSet \
 		AbstractFilter \
-		AbstractDataSet \
-		Ports \
+		AbstractImageData \
 		AbstractImageFilters \
-		Image \
 		ConnectionInterface \
-		ModificationManager
+		Image \
+		ImageFactory \
+		ImagePorts \
+		ModificationManager \
+		PipelineContainer \
+		Pipeline \
+		Ports
 ########################################
 
 #Name of target

@@ -2,6 +2,9 @@
 #include <algorithm>
 #include "Functors.h"
 
+#include "Imaging/ImagePorts.h"
+#include "Imaging/ImageConnection.h"
+
 namespace M4D
 {
 namespace Imaging

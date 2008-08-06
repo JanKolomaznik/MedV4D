@@ -2,7 +2,7 @@
 #define _DEFAULT_CONNECTION_H
 
 #include "Imaging/AbstractFilter.h"
-#include "Imaging/Ports.h"
+#include "Imaging/ImagePorts.h"
 #include "Imaging/ImageConnection.h"
 #include "Common.h"
 

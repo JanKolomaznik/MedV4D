@@ -3,7 +3,6 @@
 #else
 
 #include "Imaging/ConnectionInterface.h"
-#include "Imaging/ImageConnection.h"
 
 namespace M4D
 {

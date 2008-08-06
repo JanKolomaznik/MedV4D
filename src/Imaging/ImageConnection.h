@@ -2,7 +2,6 @@
 #define _IMAGE_CONNECTION_H
 
 #include "Imaging/ConnectionInterface.h"
-#include "Imaging/ImageConnection.h"
 #include "Imaging/Image.h"
 #include "Imaging/ImageFactory.h"
 #include "Imaging/AbstractFilter.h"

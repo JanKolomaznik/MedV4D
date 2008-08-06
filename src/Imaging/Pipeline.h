@@ -2,10 +2,8 @@
 #define _PIPELINE_H
 
 
-#include "Imaging/AbstractFilter.h"
 #include "Imaging/AbstractPipeline.h"
 #include "Imaging/ConnectionInterface.h"
-#include "Imaging/ImageConnection.h"
 #include <boost/shared_ptr.hpp>
 #include <vector>
 
