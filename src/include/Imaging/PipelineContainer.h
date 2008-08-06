@@ -16,16 +16,16 @@ class PipelineContainer
 {
 public:
 	
-	PipelineContainer(){}
+	PipelineContainer();
 
 	virtual
-	~PipelineContainer(){}
+	~PipelineContainer();
 
 	void
 	AddFilter( AbstractPipeFilter *filter );
 
 	void
-	FillingFinished();
+	AddConnection( ConnectionInterface *connection );
 
 	/**
 	 * Connect two compatible ports if possible.
@@ -34,6 +34,10 @@ public:
 	 **/
 	ConnectionInterface &
 	MakeConnection( M4D::Imaging::OutputPort& outPort, M4D::Imaging::InputPort& inPort );
+
+	ConnectionInterface &
+	MakeConnection( M4D::Imaging::AbstractPipeFilter& producer, unsigned producerPortNumber, 
+			M4D::Imaging::AbstractPipeFilter& consumer, unsigned consumerPortNumber );
 protected:
 	typedef std::vector< AbstractPipeFilter * > FilterVector;
 	typedef std::vector< ConnectionInterface * > ConnectionVector;

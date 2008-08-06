@@ -30,6 +30,14 @@ public:
 	~ExceptionCastProblem() throw(){}
 };
 
+class ENULLPointer : public ExceptionBase
+{
+public:
+	ENULLPointer( std::string name ) throw() : ExceptionBase( name ) {}
+	ENULLPointer() throw() : ExceptionBase( "Obtained NULL pointer." ) {}
+	~ENULLPointer() throw(){}
+};
+
 template< typename ParamType >
 class ExceptionBadParameter : public ExceptionBase
 {
