@@ -8,4 +8,6 @@
 
 #define SERVER_PORT 44433
 
+#define ENDING_PECESIZE ((uint32)-1)
+
 #endif

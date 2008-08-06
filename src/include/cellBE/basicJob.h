@@ -1,15 +1,15 @@
 #ifndef JOBBASE_H
 #define JOBBASE_H
 
-#include <vector>
 #include "basicSocket.h"
 
-#include "../Imaging/filterProperties.h"
 #include "messageHeaders.h"
 #include "resourcePool.h"
 #include "iPublicJob.h"
-#include "AbstractDataSetSerializer.h"
-#include "AbstractFilterSerializer.h"
+#include "GeneralDataSetSerializer.h"
+#include "GeneralFilterSerializer.h"
+
+#include "Imaging/AbstractDataSet.h"
 
 
 namespace M4D
@@ -29,6 +29,9 @@ public:
   // header struct used for sending headers
   PrimaryJobHeader primHeader;
 
+private:
+  DataBuffs m_dataBufs;
+
 protected:
   // ctor
   BasicJob(boost::asio::io_service &service);
@@ -43,13 +46,28 @@ protected:
     PING
   };
 
+  static DataPieceHeader endHeader;   // data header saying noMoreData
+
   // filter setting vector
   FilterPropsVector m_filters;
+  
+  // vector for sending & retrieving filterSettings & dataSetProperties data
+  NetStreamVector filterSettingsSerialized;
+  NetStreamVector m_dataSetPropsSerialized;
 
   void EndSend( const boost::system::error_code& e);
 
   // pool for dataPeice headers
   static Pool< DataPieceHeader, 32> freeHeaders;
+
+  void GetDataPiece( DataBuffs &bufs, AbstractDataSetSerializer *dataSetSerializer);
+
+  void ReadDataPeiceHeader( AbstractDataSetSerializer *dataSetSerializer);
+  void EndReadDataPeiceHeader( const boost::system::error_code& error,
+    DataPieceHeader *header, AbstractDataSetSerializer *dataSetSerializer);
+  void EndReadDataPeice( const boost::system::error_code& error
+    , AbstractDataSetSerializer *dataSetSerializer);
+
   
 public:
   // callback def
@@ -62,8 +80,7 @@ public:
   // iPublicJob interface implementations
   void PutDataPiece( const DataBuffs &bufs);
   void PutDataPiece( const DataBuff &buf);
-  void GetDataPiece( DataBuffs &bufs);
-  void GetDataPiece( DataBuff &buf);
+  
   NetStream * GetNetStream( void);
 
 };

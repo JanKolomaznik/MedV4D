@@ -6,6 +6,7 @@
 
 #include "cellBE/netStream.h"
 #include "cellBE/iPublicJob.h"
+#include "cellBE/dataPieceHeader.h"
 
 namespace M4D
 {
@@ -57,16 +58,19 @@ public:
 	 * its own manner.
 	 **/
 	virtual void Serialize( M4D::CellBE::iPublicJob *job) = 0;
-	virtual void DeSerialize( M4D::CellBE::iPublicJob *job) = 0;
 
-  static void SerializeProperties( 
-    M4D::Imaging::AbstractDataSet *dataSet,
-    M4D::CellBE::NetStream &s);
+  /**
+   *  This method is called when dataPieceHeader arrive.
+   *  The bufs should be filled with buffer where incomming data
+   *  that corresponds with the header should be placed.
+   */
+  virtual void OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs) = 0;
 
-  static void SerializeDataSet( 
-    M4D::Imaging::AbstractDataSet *dataSet,
-    M4D::CellBE::iPublicJob *j);
-
+  /**
+   *  This is called when no more data is going to be arrive (special ending
+   *  header is recieved).
+   */
+  virtual void OnDataSetEndRead( void) = 0;
 };
 
 }

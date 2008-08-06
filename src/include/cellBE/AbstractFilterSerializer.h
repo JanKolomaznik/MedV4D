@@ -18,7 +18,7 @@ public:
    *  Identification of particular AbstractFilter sucessor. Each new one has 
    *  return value that is added to enumeration in filterIDEnums.h header.
    */
-  virtual DataSetType GetID(void) = 0;
+  virtual FilterID GetID(void) = 0;
 
   /**
    *  Each final sucessor has to implement this functions to allow
@@ -35,9 +35,7 @@ public:
 	*  data set class !!!
 	*/
   virtual void SerializeProperties( M4D::CellBE::NetStream &s) = 0;
-  virtual void DeSerializeProperties( M4D::CellBE::NetStream &s) = 0;
-
-  
+  virtual void DeSerializeProperties( M4D::CellBE::NetStream &s) = 0;  
 };
 
 typedef std::vector<AbstractFilterSerializer *> FilterPropsVector;

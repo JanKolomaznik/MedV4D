@@ -9,6 +9,8 @@
 #include <boost/bind.hpp>
 #include <vector>
 
+#include "netCommons.h"
+
 namespace M4D
 {
 namespace CellBE

@@ -62,11 +62,11 @@ ClientJob::SendCreate( void)
   GenerateJobID();
 
   // prepare serialization of filters & settings
-  SerializeFiltersSetting();
+  SerializeFiltersProperties();
   primHeader.filterSettStreamLen = (uint16) filterSettingsSerialized.size();
 
   // serialize dataset settings
-  AbstractDataSetSerializer::SerializeProperties( 
+  GeneralDataSetSerializer::SerializeDataSetProperties( 
     m_dataSet, 
     m_dataSetPropsSerialized);
 
@@ -93,15 +93,21 @@ ClientJob::SendCreate( void)
   );
 
   // serialize dataSet using this job
-  AbstractDataSetSerializer::SerializeDataSet( m_dataSet, this);
+  GeneralDataSetSerializer::SerializeDataSet( m_dataSet, this);
 
   // send EndingTag telling no more data will come
+  m_socket.async_write_some( 
+    boost::asio::buffer(
+      (uint8*)&endHeader, sizeof( DataPieceHeader) ),
+    boost::bind( &ClientJob::EndSend, this,
+      boost::asio::placeholders::error)
+  );
 }
 
 ///////////////////////////////////////////////////////////////////////
 
 void
-ClientJob::SerializeFiltersSetting( void)
+ClientJob::SerializeFiltersProperties( void)
 {
   if( m_filters.empty() )
   {

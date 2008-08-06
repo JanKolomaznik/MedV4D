@@ -19,20 +19,7 @@ class ClientJob
   static uint32 lastID;
   void GenerateJobID( void);
 
-  enum InnerState
-  {
-    CREATED,  // after constructor
-    DATASET_SPECIFIED,  // after 
-    SUBMITED, // after
-    SENT,
-    AWAITING_REQUEST,
-    IDLE
-  };
-
-  NetStreamVector filterSettingsSerialized;
-  void SerializeFiltersSetting( void);
-
-  NetStreamVector m_dataSetPropsSerialized;
+  void SerializeFiltersProperties( void);
 
   void SendCreate( void);
 
@@ -49,15 +36,6 @@ class ClientJob
   M4D::Imaging::AbstractDataSet *m_dataSet;
 
 public:
-
-  // state
-  enum State
-  {
-    Complete,
-    Incomplete,
-    Failed,
-  };
-  State state;
 
 };
 

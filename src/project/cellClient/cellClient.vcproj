@@ -197,6 +197,14 @@
 				RelativePath=".\testMain.cpp"
 				>
 			</File>
+			<Filter
+				Name="dataSetSerializers"
+				>
+				<File
+					RelativePath="..\..\include\cellBE\dataSetSerializers\GeneralDataSetSerializer.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"

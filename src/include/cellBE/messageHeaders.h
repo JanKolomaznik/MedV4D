@@ -88,24 +88,23 @@ struct PrimaryJobHeader
 
 ///////////////////////////////////////////////////////////////////////
 
-struct DataPieceHeader
+#include "dataPieceHeader.h"
+
+static void
+DataPieceHeaderSerialize( DataPieceHeader *h)
 {
-  uint32 pieceSize;
+  NetStreamArrayBuf s( (uint8 *)h, sizeof( DataPieceHeader) );
 
-  static void Serialize( DataPieceHeader *h)
-  {
-    NetStreamArrayBuf s( (uint8 *)h, sizeof( DataPieceHeader) );
+  s << h->pieceSize;
+}
 
-    s << h->pieceSize;
-  }
-  static void Deserialize( DataPieceHeader *h)
-  {
-    NetStreamArrayBuf s( (uint8 *)h, sizeof( DataPieceHeader) );
+static void
+DataPieceHeaderDeserialize( DataPieceHeader *h)
+{
+  NetStreamArrayBuf s( (uint8 *)h, sizeof( DataPieceHeader) );
 
-    s >> h->pieceSize;
-  }
-};
-
+  s >> h->pieceSize;
+}
   
 }}
 #endif

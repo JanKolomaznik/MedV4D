@@ -105,12 +105,13 @@ Server::EndPrimaryHeaderRead( tcp::socket *clientSock, PrimaryJobHeader *header,
 
       m_jobManager.AddJob( existing);
 
-      existing->ReadSecondaryHeader();
+      // continue in job directing with read filterProperties
+      existing->ReadFilters();
       break;
 
     case BasicJob::REEXEC:
       existing = m_jobManager.FindJob( header->id);
-      existing->ReadSecondaryHeader();
+      existing->ReadFilters();
       break;
 
     case BasicJob::DESTROY:
@@ -120,8 +121,6 @@ Server::EndPrimaryHeaderRead( tcp::socket *clientSock, PrimaryJobHeader *header,
         LOG( "Job not found" << header->id);
       }
       m_jobManager.RemoveJob( header->id );
-
-      // TODO send ack?
       return;
 
     case BasicJob::PING:

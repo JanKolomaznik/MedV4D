@@ -58,7 +58,7 @@ ClientSocket::Connect( boost::asio::io_service &service)
 //ClientSocket::SendJob( ClientJob *job)
 //{
 //  // prepare serialization of filters & settings
-//  job->SerializeFiltersSetting();
+//  job->SerializeFiltersProperties();
 //
 //  PrimaryJobHeader::Serialize( &job->primHeader);
 //

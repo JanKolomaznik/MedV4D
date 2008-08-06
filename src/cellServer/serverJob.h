@@ -2,7 +2,7 @@
 #define SERVERJOB_H
 
 #include "cellBE/basicJob.h"
-#include "Imaging/AbstractDataSet.h"
+#include "Imaging/PipelineContainer.h"
 
 namespace M4D
 {
@@ -19,21 +19,19 @@ private:
 
   std::vector<uint8> m_filterSettingContent;
 
-  M4D::Imaging::AbstractDataSet *dataSet;
+  M4D::Imaging::PipelineContainer m_pipeLine;
+  M4D::Imaging::AbstractDataSet *m_dataSet;
 
-  void DeserializeFilterSettings( void);
+  void DeserializeFilterProperties( void);
 
   void BuildThePipeLine( void);  // TODO
   void CreateDataSet( void);     // TODO
 
-  void ReadSecondaryHeader( void);
-  void ReadDataPeiceHeader( void);
-
-  void EndSecondaryHeaderRead( const boost::system::error_code& error);
-  void EndJobSettingsRead( const boost::system::error_code& error);
+  
+  void ReadFilters( void);
+  void EndFiltersRead( const boost::system::error_code& error);
   void EndDataSetPropertiesRead( const boost::system::error_code& error);
-  void EndReadDataPeiceHeader( const boost::system::error_code& error,
-    DataPieceHeader *header);
+  
 
 };
 

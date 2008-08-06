@@ -7,6 +7,7 @@ using namespace M4D::CellBE;
 using namespace std;
 
 Pool< DataPieceHeader, 32> BasicJob::freeHeaders;
+DataPieceHeader BasicJob::endHeader((uint32) -1);
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -20,7 +21,7 @@ BasicJob::BasicJob(boost::asio::io_service &service)
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-BasicJob::PutDataPiece( const M4D::CellBE::BasicJob::DataBuff &buf)
+BasicJob::PutDataPiece( const M4D::CellBE::DataBuff &buf)
 {
   DataBuffs bufs;
   bufs.push_back( buf);
@@ -30,7 +31,7 @@ BasicJob::PutDataPiece( const M4D::CellBE::BasicJob::DataBuff &buf)
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-BasicJob::PutDataPiece( const M4D::CellBE::BasicJob::DataBuffs &bufs)
+BasicJob::PutDataPiece( const M4D::CellBE::DataBuffs &bufs)
 {
   // count total length of all buffers
   size_t totalLen = 0;
@@ -52,7 +53,7 @@ BasicJob::PutDataPiece( const M4D::CellBE::BasicJob::DataBuffs &bufs)
   }
 
   header->pieceSize = (uint32) totalLen;
-  DataPieceHeader::Serialize( header);
+  DataPieceHeaderSerialize( header);
 
   // get free dataPieceHeader
   m_socket.async_write_some(
@@ -64,17 +65,8 @@ BasicJob::PutDataPiece( const M4D::CellBE::BasicJob::DataBuffs &bufs)
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-BasicJob::GetDataPiece( M4D::CellBE::BasicJob::DataBuff &buf)
-{
-  DataBuffs bufs;
-  bufs.push_back( buf);
-  GetDataPiece( bufs);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void
-BasicJob::GetDataPiece( M4D::CellBE::BasicJob::DataBuffs &bufs)
+BasicJob::GetDataPiece( M4D::CellBE::DataBuffs &bufs
+                       , AbstractDataSetSerializer *dataSetSerializer)
 {
   vector<boost::asio::mutable_buffer> buffers;
 
@@ -89,9 +81,65 @@ BasicJob::GetDataPiece( M4D::CellBE::BasicJob::DataBuffs &bufs)
   // read 'em
   m_socket.async_read_some(
     buffers, 
-    boost::bind( & BasicJob::EndSend, this, boost::asio::placeholders::error)
+    boost::bind( & BasicJob::EndReadDataPeice, this
+      , boost::asio::placeholders::error
+      , dataSetSerializer)
     );
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+BasicJob::ReadDataPeiceHeader( AbstractDataSetSerializer *dataSetSerializer)
+{
+  DataPieceHeader *header = freeHeaders.GetFreeItem();
+
+  m_socket.async_read_some(
+      boost::asio::buffer( (uint8*)header, sizeof( DataPieceHeader) ),
+      boost::bind( &BasicJob::EndReadDataPeiceHeader, this, 
+        boost::asio::placeholders::error, header, dataSetSerializer)
+      );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+BasicJob::EndReadDataPeiceHeader( const boost::system::error_code& error,
+                                  DataPieceHeader *header,
+                                  AbstractDataSetSerializer *dataSetSerializer)
+{
+  try {
+    HandleErrors( error);
+    DataPieceHeaderDeserialize( header);
+
+    if( header->pieceSize == ENDING_PECESIZE)
+      dataSetSerializer->OnDataSetEndRead();
+    else
+    {
+      dataSetSerializer->OnDataPieceReadRequest( header, m_dataBufs);
+      freeHeaders.PutFreeItem( header); // return used header back to pool
+      GetDataPiece( m_dataBufs, dataSetSerializer);
+    }
+
+  } catch( ExceptionBase &) {
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+BasicJob::EndReadDataPeice( const boost::system::error_code& error
+                           ,AbstractDataSetSerializer *dataSetSerializer)
+{
+  try {
+    HandleErrors( error);
+
+    ReadDataPeiceHeader( dataSetSerializer);
+
+  } catch( ExceptionBase &) {
+  }
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 

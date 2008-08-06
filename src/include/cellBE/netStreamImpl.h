@@ -24,6 +24,7 @@ class NetStreamBaseImpl : public NetStream
 {
 protected:
   void virtual AddByte( uint8) = 0;
+  bool virtual HasNext( void) = 0;    // tels true if there are more data
   uint8 virtual GetByte(void) = 0;
 
   uint16 supp16;
@@ -128,6 +129,11 @@ class NetStreamArrayBuf : public NetStreamBaseImpl
 
 public:
 
+  bool HasNext( void)
+  {
+    return curr != end;
+  }
+
   NetStreamArrayBuf( uint8 *buf, size_t size)
   {
     begin = buf;
@@ -164,6 +170,11 @@ class NetStreamVector
 {
   size_t curr;
 public:
+
+  bool HasNext( void)
+  {
+    return curr < size();
+  }
 
   NetStreamVector() : curr(0) {}
 

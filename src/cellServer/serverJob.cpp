@@ -2,7 +2,6 @@
 #include "Common.h"
 #include "serverJob.h"
 
-#include "Imaging/dataSetProperties.h"
 #include "Imaging/ImageFactory.h"
 
 using namespace M4D::CellBE;
@@ -11,30 +10,17 @@ using namespace M4D::Imaging;
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-ServerJob::DeserializeFilterSettings( void)
+ServerJob::DeserializeFilterProperties( void)
 {
-  uint8 filterID;
-  AbstractFilterSetting *fs;
-
   NetStreamArrayBuf s( &m_filterSettingContent[0], 
     m_filterSettingContent.size());
 
+  // create filter instances according filter properties instream
+  AbstractFilter *filter;
   try {
-    while(1)  // it's breaked by exception when reading behind stream
+    while(s.HasNext())
     {
-      s >> filterID;
-      switch( (FilterID) filterID)
-      {
-      case Thresholding:
-        fs = new ThresholdingSetting();
-        fs->DeSerialize(s);
-        m_filters.push_back( fs);
-        break;
-
-      default:
-        LOG( "Unrecognized filter");
-        throw ExceptionBase("Unrecognized filter");
-      }
+      filter = GeneralFilterSerializer::DeSerialize( s);  // TODO
     }
   } catch( ExceptionBase) {
     // do nothing. Just continue
@@ -45,67 +31,34 @@ ServerJob::DeserializeFilterSettings( void)
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-ServerJob::ReadSecondaryHeader()
+ServerJob::ReadFilters( void)
 {
+  m_filterSettingContent.resize( primHeader.filterSettStreamLen);
   m_socket.async_read_some(
-      boost::asio::buffer( (uint8*)&secHeader, sizeof( SecondaryJobHeader) ),
-      boost::bind( &ServerJob::EndSecondaryHeaderRead, this, 
-        boost::asio::placeholders::error)
-      );
+    boost::asio::buffer( m_filterSettingContent),
+    boost::bind( &ServerJob::EndFiltersRead, this,
+      boost::asio::placeholders::error)
+    );
 }
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-ServerJob::ReadDataPeiceHeader( void)
-{
-  DataPieceHeader *header = freeHeaders.GetFreeItem();
-
-  m_socket.async_read_some(
-      boost::asio::buffer( (uint8*)header, sizeof( DataPieceHeader) ),
-      boost::bind( &ServerJob::EndReadDataPeiceHeader, this, 
-        boost::asio::placeholders::error, header)
-      );
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void
-ServerJob::EndSecondaryHeaderRead( const boost::system::error_code& error)
+ServerJob::EndFiltersRead( const boost::system::error_code& error)
 {
   try {
     HandleErrors( error);
-
-    SecondaryJobHeader::Deserialize(&secHeader);
-
-    m_filterSettingContent.resize( secHeader.filterSettStreamLen);
-    m_socket.async_read_some(
-      boost::asio::buffer( m_filterSettingContent),
-      boost::bind( &ServerJob::EndJobSettingsRead, this,
-        boost::asio::placeholders::error)
-      );
-  } catch( ExceptionBase &) {
-  }
-
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void
-ServerJob::EndJobSettingsRead( const boost::system::error_code& error)
-{
-  try {
-    HandleErrors( error);
-    DeserializeFilterSettings();
+    DeserializeFilterProperties();
 
     // build the pipeline according filterSettingsVector
     BuildThePipeLine();
-    // create appropriate dataSet according secHeader.dataSetType
-    CreateDataSet();
 
     // read the dataSet properties
+    m_filterSettingContent.resize( primHeader.dataSetPropertiesLen);
     m_socket.async_read_some(
-      boost::asio::buffer( (void*) &dataSet->_properties, secHeader.dataSetPropertiesLen),
+      boost::asio::buffer( m_filterSettingContent),
       boost::bind( &ServerJob::EndDataSetPropertiesRead, this,
         boost::asio::placeholders::error)
       );
@@ -119,41 +72,24 @@ ServerJob::EndJobSettingsRead( const boost::system::error_code& error)
 void
 ServerJob::EndDataSetPropertiesRead( const boost::system::error_code& error)
 {
-  // dataSet->DeSerialize( this);
+  // create appropriate dataSet according
+  CreateDataSet();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-void
-ServerJob::EndReadDataPeiceHeader( const boost::system::error_code& error,
-                                  DataPieceHeader *header)
-{
-  try {
-    HandleErrors( error);
-    DataPieceHeader::Deserialize( header);
-
-  } catch( ExceptionBase &) {
-  }
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void
 ServerJob::CreateDataSet( void)
 {
-  // create the dataSet instance
-  switch( (DataSetType) secHeader.dataSetType)
-  {
-  case DATSET_IMAGE2D:
-    //ImageFactory::Create
-    break;
+  NetStreamArrayBuf s( &m_filterSettingContent[0], 
+    m_filterSettingContent.size());
 
-  case DATSET_IMAGE3D:
-    break;
+  GeneralDataSetSerializer::DeSerializeDataSetProperties(
+    m_dataSet, s);
 
-  case DATSET_IMAGE4D:
-    break;
-  }
+  // now start recieving actual data
+  
 }
 
 ///////////////////////////////////////////////////////////////////////////////
