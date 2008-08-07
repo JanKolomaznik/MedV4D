@@ -100,6 +100,6 @@ protected:
 } /*namespace M4D*/
 
 //include implementation
-#include "Imaging/ConvolutionFilter.tcc"
+#include "Imaging/filters/ConvolutionFilter.tcc"
 
 #endif /*_THRESHOLDING_FILTER_H*/

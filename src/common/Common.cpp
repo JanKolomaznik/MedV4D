@@ -14,7 +14,7 @@ GetNTIDFromSizeAndSign( uint8 size, bool sign )
 	case 8:
 		return ( sign ? NTID_LONG_LONG : NTID_UNSIGNED_LONG_LONG );
 	default:
-		return NTID_VOID;
+		return NTID_UNKNOWN;
 	}
 }
 

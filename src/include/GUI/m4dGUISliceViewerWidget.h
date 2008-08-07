@@ -9,7 +9,7 @@
 #include "Common.h"
 #include "ExceptionBase.h"
 #include "Imaging/Ports.h"
-#include "Imaging/DefaultConnection.h"
+#include "Imaging/ImageConnection.h"
 #include "GUI/m4dSelection.h"
 #include "GUI/m4dGUIAbstractViewerWidget.h"
 

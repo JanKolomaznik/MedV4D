@@ -30,6 +30,7 @@ typedef double float64;
 //typedef uint32 size_t;
 
 enum NumericTypeIDs{ 
+	NTID_UNKNOWN,
 	NTID_VOID, 
 	NTID_SIGNED_CHAR,
 	NTID_UNSIGNED_CHAR,
@@ -124,10 +125,26 @@ enum NumericTypeIDs{
 	default: ASSERT( false );\
 	}
 //*****************************************************************************
+/**
+ * Macro for easy generic programing - mixing static and dynamic polymorhism.
+ * Create switch command with cases over dimension numbers.
+ * @param SWITCH Statement which will be placed in "switch( SWITCH )".
+ * @param ... Templated command. Must contain DIM, which will be replaced by 
+ * apropriete value. Example : function_name< DIM >( DIM + 1 )
+ **/
+#define DIMENSION_TEMPLATE_SWITCH_MACRO( SWITCH, ... ) \
+	switch( SWITCH ) {\
+	case 2:{ const unsigned DIM = 2; __VA_ARGS__ ; } break;\
+	case 3:{ const unsigned DIM = 3; __VA_ARGS__ ; } break;\
+	default: ASSERT( false );\
+	}
+	//TODO
+	/*case 4:{ const unsigned DIM = 4; __VA_ARGS__ ; } break;\*/
+
 
 template< typename NumericType >
 int GetNumericTypeID()
-{ return NTID_VOID; }
+{ return NTID_UNKNOWN; }
 
 template<>
 int GetNumericTypeID<signed char>();
@@ -175,7 +192,7 @@ int GetNumericTypeID<bool>();
  * @param size Size of examined type.
  * @param signed Wheather examined type is signed.
  * @return ID of type with given characteristics if exists, otherwise
- * NTID_VOID.
+ * NTID_UNKNOWN.
  **/
 int
 GetNTIDFromSizeAndSign( uint8 size, bool sign );

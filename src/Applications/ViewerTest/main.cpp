@@ -1,7 +1,7 @@
 
 #include "Common.h"
 #include "Imaging/ExampleImageFilters.h"
-#include "Imaging/DefaultConnection.h"
+#include "Imaging/ImageConnection.h"
 #include "Imaging/ImageFactory.h"
 #include "GUI/m4dGUISliceViewerWidget.h"
 #include <iostream>
@@ -15,13 +15,13 @@ using namespace std;
 
 
 typedef Image< uint32, 3 > Image3DType;
-typedef ImageConnectionSimple< Image3DType > ProducerConn;
+typedef ImageConnection< Image3DType > ProducerConn;
 
 int
 main( int argc, char** argv )
 {
 
-	ProducerConn prodconn;
+	ProducerConn prodconn( false );
 
 	Image3DType::Ptr inputImage = ImageFactory::CreateEmptyImage3DTyped< uint32 >( 512,512,50 );
 

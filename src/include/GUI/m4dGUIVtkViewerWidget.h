@@ -27,8 +27,8 @@
 
 #include "Common.h"
 #include "Imaging/Image.h"
-#include "Imaging/DefaultConnection.h"
 #include "Imaging/Ports.h"
+#include "Imaging/ImageConnection.h"
 #include "GUI/m4dGUIAbstractViewerWidget.h"
 
 namespace M4D

@@ -83,7 +83,7 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
   private:
 
     M4D::Imaging::Image< uint32, 3 >::Ptr inputImage;
-    M4D::Imaging::ImageConnectionSimple< M4D::Imaging::Image< uint32, 3 > > prodconn;
+    M4D::Imaging::ImageConnection< M4D::Imaging::Image< uint32, 3 > > prodconn;
 
     std::vector< Viewer * > viewers;
     Viewer *selectedViewer;

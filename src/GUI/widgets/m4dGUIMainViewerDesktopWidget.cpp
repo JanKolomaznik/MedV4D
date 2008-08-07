@@ -12,7 +12,7 @@ namespace M4D {
 namespace GUI {
 
 m4dGUIMainViewerDesktopWidget::m4dGUIMainViewerDesktopWidget ( QWidget *parent )
-  : QWidget( parent )
+  : QWidget( parent ), prodconn( false )
 {
   // ==========================================================================
 

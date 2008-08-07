@@ -2,11 +2,11 @@
 #define _IMAGE_PORTS_H
 
 #include <boost/shared_ptr.hpp>
+#include "Imaging/Ports.h"
+#include "Imaging/PipelineMessages.h"
 #include "Imaging/AbstractDataSet.h"
 #include "Imaging/Image.h"
 #include <vector>
-#include "Imaging/PipelineMessages.h"
-#include "Imaging/Ports.h"
 
 namespace M4D
 {
@@ -33,7 +33,15 @@ public:
 	void
 	Plug( ConnectionInterface & connection );
 
-protected:
+
+	virtual unsigned 
+	ImageGetDimension()const
+		{ return 0; }
+
+	virtual int
+	ImageGetElementTypeID()const
+		{ return NTID_UNKNOWN; }
+
 };
 
 
@@ -47,6 +55,14 @@ public:
 
 	void
 	Plug( ConnectionInterface & connection );
+
+	virtual unsigned 
+	ImageGetDimension()const
+		{ return 0; }
+
+	virtual int
+	ImageGetElementTypeID()const
+		{ return NTID_UNKNOWN; }
 };
 //******************************************************************************
 template< typename ImageType >
@@ -67,12 +83,13 @@ public:
 	void
 	Plug( ConnectionInterface & connection );
 
-	/*void
-	SendMessage( 
-		PipelineMessage::Ptr 			msg, 
-		PipelineMessage::MessageSendStyle 	sendStyle 
-		);*/
+	virtual unsigned 
+	ImageGetDimension()const
+		{ return dimension; }
 
+	virtual int
+	ImageGetElementTypeID()const
+		{ return GetNumericTypeID< ElementType >(); }
 
 protected:
 	
@@ -104,14 +121,13 @@ public:
 	void
 	Plug( ConnectionInterface & connection );
 
-	/*void
-	PlugTyped( ImageConnection< ImageType > & connection );*/
-	
-	/*void
-	SendMessage( 
-		PipelineMessage::Ptr 			msg, 
-		PipelineMessage::MessageSendStyle 	sendStyle 
-		);*/
+	virtual unsigned 
+	ImageGetDimension()const
+		{ return dimension; }
+
+	virtual int
+	ImageGetElementTypeID()const
+		{ return GetNumericTypeID< ElementType >(); }
 
 protected:
 

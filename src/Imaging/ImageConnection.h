@@ -5,6 +5,7 @@
 #include "Imaging/Image.h"
 #include "Imaging/ImageFactory.h"
 #include "Imaging/AbstractFilter.h"
+#include "Imaging/ImagePorts.h"
 
 namespace M4D
 {
@@ -55,6 +56,7 @@ public:
 	typedef typename M4D::Imaging::InputPortImageFilter< Image > InputImagePort;
 	typedef typename M4D::Imaging::OutputPortImageFilter< Image > OutputImagePort;
 	
+	ImageConnection( bool ownsDataset ); 
 	~ImageConnection() {}
 
 	
@@ -64,14 +66,13 @@ public:
 	void
 	ConnectProducer( OutputPort& outputPort );
 	
-	/*void
-	DisconnectConsumer( InputPort& inputPort );*/
 
-	/*void
-	DisconnectProducer();*/
+		void
+	PutImage( typename M4D::Imaging::Image< ElementType, dimension >::Ptr image );
 
-	/*void 
-	DisconnectAll();*/
+	void
+	PutImage( M4D::Imaging::AbstractImage::AImagePtr image );
+
 
 	Image &
 	GetImage()const 
@@ -148,6 +149,10 @@ public:
 	 * is available.
 	 **/
 	class ENoImageAssociated
+	{
+		//TODO
+	};
+	class EInvalidImage
 	{
 		//TODO
 	};

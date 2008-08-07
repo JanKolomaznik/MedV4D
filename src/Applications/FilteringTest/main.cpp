@@ -1,7 +1,7 @@
 
 #include "Common.h"
 #include "Imaging/ExampleImageFilters.h"
-#include "Imaging/DefaultConnection.h"
+#include "Imaging/ImageConnection.h"
 #include "Imaging/ImageFactory.h"
 #include <iostream>
 
@@ -12,9 +12,8 @@ using namespace std;
 
 typedef Image< int16, 3 > Image3DType;
 typedef Image< int16, 2 > Image2DType;
-typedef ImageConnectionSimple< Image3DType > Conn3D;
-typedef ImageConnectionSimple< Image2DType > Conn2D;
-typedef ImageConnectionImOwner< Image3DType > InterConn3D;
+typedef ImageConnection< Image3DType > Conn3D;
+typedef ImageConnection< Image2DType > Conn2D;
 
 int
 main( int argc, char** argv )
@@ -26,10 +25,10 @@ main( int argc, char** argv )
 	SimpleConvolutionImageFilter< Image3DType > convolution;
 	convolution.SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_UPDATE_FINISHED );
 
-	Conn3D prodconn;
+	Conn3D prodconn( false );
 	//Conn2D consconn;
-	Conn3D consconn;
-	InterConn3D interconn;
+	Conn3D consconn( false );
+	Conn3D interconn( true );
 
 	Image3DType::Ptr inputImage = ImageFactory::CreateEmptyImage3DTyped< int16 >( 50,50,50 );
 	//Image2DType::Ptr outputImage = ImageFactory::CreateEmptyImage2DTyped< int16 >( 10,10 );

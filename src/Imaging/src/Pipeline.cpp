@@ -10,20 +10,7 @@ namespace M4D
 namespace Imaging
 {
 
-ConnectionInterface *
-CreateConnectionObjectFromPorts( OutputPort& outPort, InputPort& inPort )
-{
-	//TODO
-	
-	//checking if we have image ports
-	if( dynamic_cast< OutputPortAbstractImage * > ( &outPort ) 
-	  && dynamic_cast< InputPortAbstractImage * > ( &inPort ) ) {
 
-
-	}
-
-	return NULL;
-}
 
 Pipeline::Pipeline()
 {
@@ -79,14 +66,14 @@ Pipeline::MakeConnection( M4D::Imaging::OutputPort& outPort, M4D::Imaging::Input
 	} else {
 
 		//TODO
-		connection = CreateConnectionObjectFromPorts( outPort, inPort );
+		//connection = CreateConnectionObjectFromPorts( outPort, inPort );
 		//Newly created connection will be stored.
 		_connections.push_back( connection );
 	}
 
 	connection->ConnectConsumer( inPort );
 	connection->ConnectProducer( outPort );
-
+	
 	return *connection;
 }
 

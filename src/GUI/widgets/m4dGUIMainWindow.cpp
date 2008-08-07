@@ -547,7 +547,7 @@ void m4dGUIMainWindow::view ( DcmProvider::DicomObjSet *dicomObjSet )
     return;
 	}
 
-	ImageConnectionSimple< Image< unsigned short, 3 > > *conn = new ImageConnectionSimple< Image< unsigned short, 3 > >();
+	ImageConnection< Image< unsigned short, 3 > > *conn = new ImageConnection< Image< unsigned short, 3 > >( false );
 	conn->PutImage( inputImage );
 	conn->ConnectConsumer( mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 }

@@ -45,6 +45,6 @@ protected:
 } /*namespace M4D*/
 
 //include implementation
-#include "Imaging/RemoteFilter.tcc"
+#include "Imaging/filters/RemoteFilter.tcc"
 
 #endif /*_REMOTE_FILTER_H*/

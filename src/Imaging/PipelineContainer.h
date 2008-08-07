@@ -15,7 +15,6 @@ namespace Imaging
 class PipelineContainer
 {
 public:
-	
 	PipelineContainer();
 
 	virtual
@@ -47,6 +46,11 @@ protected:
 
 private:
 
+};
+
+class EAutoConnectingFailed
+{
+	//TODO
 };
 
 }/*namespace Imaging*/

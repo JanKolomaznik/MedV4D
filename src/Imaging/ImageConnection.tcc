@@ -35,6 +35,16 @@ CallImageFactoryRealloc(
 
 
 //*****************************************************************************
+template< typename ElementType, unsigned dimension >
+ImageConnection< Image< ElementType, dimension > >
+::ImageConnection( bool ownsDataset )
+{
+	if( ownsDataset ) {
+		this->_image = typename M4D::Imaging::Image< ElementType, dimension >::Ptr( 
+			new M4D::Imaging::Image< ElementType, dimension >() 
+			);
+	}
+}
 
 template< typename ElementType, unsigned dimension >
 void
@@ -67,18 +77,27 @@ ImageConnection< Image< ElementType, dimension > >
 	}
 }
 
-/*template< typename ElementType, unsigned dimension >
+template< typename ElementType, unsigned dimension >
 void
 ImageConnection< Image< ElementType, dimension > >
-::DisconnectConsumer( InputPort& inputPort )
+::PutImage( typename M4D::Imaging::Image< ElementType, dimension >::Ptr image )
 {
-	InputImagePort *port = dynamic_cast< InputImagePort * >( &inputPort );
-	if( port ) {
-		DisconnectConsumer( *port );
-	} else {
-		throw ConnectionInterface::EMismatchPortType();
+	if( !image ) {
+		throw EInvalidImage();
 	}
-}*/
+	this->_image = image;
+}
+
+template< typename ElementType, unsigned dimension >
+void
+ImageConnection< Image< ElementType, dimension > >
+::PutImage( M4D::Imaging::AbstractImage::AImagePtr image )
+{
+	typename M4D::Imaging::Image< ElementType, dimension >::Ptr typedImage = 
+		M4D::Imaging::Image< ElementType, dimension >::CastAbstractImage( image );
+
+	PutImage( typedImage );
+}
 
 template< typename ElementType, unsigned dimension >
 void
