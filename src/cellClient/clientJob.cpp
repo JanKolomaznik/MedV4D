@@ -15,18 +15,22 @@ uint32 ClientJob::lastID;
 ///////////////////////////////////////////////////////////////////////////////
 
 ClientJob::ClientJob(
-                     FilterPropsVector &filters,
-                     M4D::Imaging::AbstractDataSet *dataSet,
-                     const std::string &address,
-                     boost::asio::io_service &service) 
+                     FilterPropsVector &filters
+                     , M4D::Imaging::AbstractDataSet *inDataSet
+                     , M4D::Imaging::AbstractDataSet *outdataSet
+                     , const std::string &address
+                     , boost::asio::io_service &service) 
   : ClientSocket( address, service)
-  , m_dataSet( dataSet) // copy dataSet pointer
 {
+  // copy dataSet pointers
+  m_inDataSet = inDataSet;
+  m_outDataSet = outdataSet;
+
   m_filters = filters;  // copy filters definitions
   SendCreate();
 }
 
-///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 void
 ClientJob::GenerateJobID( void)
@@ -53,7 +57,7 @@ ClientJob::GenerateJobID( void)
   s << (uint32) rand();
 }
 
-///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 void
 ClientJob::SendCreate( void)
@@ -67,7 +71,7 @@ ClientJob::SendCreate( void)
 
   // serialize dataset settings
   GeneralDataSetSerializer::SerializeDataSetProperties( 
-    m_dataSet, 
+    m_inDataSet, 
     m_dataSetPropsSerialized);
 
   primHeader.dataSetPropertiesLen = (uint16) m_dataSetPropsSerialized.size();
@@ -93,18 +97,25 @@ ClientJob::SendCreate( void)
   );
 
   // serialize dataSet using this job
-  GeneralDataSetSerializer::SerializeDataSet( m_dataSet, this);
+  GeneralDataSetSerializer::SerializeDataSet( m_inDataSet, this);
 
-  // send EndingTag telling no more data will come
-  m_socket.async_write_some( 
-    boost::asio::buffer(
-      (uint8*)&endHeader, sizeof( DataPieceHeader) ),
-    boost::bind( &ClientJob::EndSend, this,
-      boost::asio::placeholders::error)
-  );
+  SendEndOfDataSetTag();
+
+  // now everything is sent, so we have to wait for response
+  {
+    // get free header
+    ResponseHeader *h = m_freeResponseHeaders.GetFreeItem();
+
+    // read into it
+    m_socket.async_read_some( 
+      boost::asio::buffer( (uint8*)h, sizeof( ResponseHeader) )
+      , boost::bind( &ClientJob::OnResponseRecieved, this,
+        boost::asio::placeholders::error, h)
+    );
+  }
 }
 
-///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 void
 ClientJob::SerializeFiltersProperties( void)
@@ -132,4 +143,67 @@ ClientJob::SerializeFiltersProperties( void)
   }
 }
 
-///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ClientJob::OnResponseRecieved( const boost::system::error_code& error
+                              , ResponseHeader *header)
+{
+  // now we recieved response header
+  try {
+    HandleErrors( error);
+    ResponseHeader::Deserialize( header);
+
+    switch( (ResponseID) header->result)
+    {
+    case RESPONSE_OK:
+      // everything was fine, so continue reading resulting dataSet
+      ReadDataPeiceHeader( 
+        GeneralDataSetSerializer::GetDataSetSerializer( m_outDataSet));
+      break;
+
+    case RESPONSE_ERROR_IN_EXECUTION:
+    case RESPONSE_ERROR_IN_INPUT:
+      if( this->onError != NULL)  // call error handler
+        onError();
+      break;
+    }
+
+  } catch( ExceptionBase &) {
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+ClientJob::~ClientJob()
+{
+  // just send destroy message to server
+  SendDestroy();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ClientJob::SendDestroy( void)
+{
+  primHeader.action = (uint8) DESTROY;
+  PrimaryJobHeader::Serialize( &primHeader);
+
+  m_socket.async_write_some(
+    boost::asio::buffer( (uint8*) &primHeader, sizeof( PrimaryJobHeader) )
+    , boost::bind( & ClientJob::EndSend, this, boost::asio::placeholders::error)
+    );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ClientJob::Reexecute( void)
+{
+  primHeader.action = (uint8) REEXEC;
+  PrimaryJobHeader::Serialize( &primHeader);
+
+
+}
+
+///////////////////////////////////////////////////////////////////////////////

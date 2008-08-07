@@ -7,7 +7,8 @@ using namespace M4D::CellBE;
 using namespace std;
 
 Pool< DataPieceHeader, 32> BasicJob::freeHeaders;
-DataPieceHeader BasicJob::endHeader((uint32) -1);
+Pool< ResponseHeader, 32> BasicJob::m_freeResponseHeaders;
+DataPieceHeader BasicJob::endHeader(ENDING_PECESIZE);
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -113,7 +114,11 @@ BasicJob::EndReadDataPeiceHeader( const boost::system::error_code& error,
     DataPieceHeaderDeserialize( header);
 
     if( header->pieceSize == ENDING_PECESIZE)
+    {
       dataSetSerializer->OnDataSetEndRead();
+      if( this->onComplete != NULL)
+        onComplete();                 // call completition callback
+    }
     else
     {
       dataSetSerializer->OnDataPieceReadRequest( header, m_dataBufs);
@@ -126,7 +131,6 @@ BasicJob::EndReadDataPeiceHeader( const boost::system::error_code& error,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
 void
 BasicJob::EndReadDataPeice( const boost::system::error_code& error
                            ,AbstractDataSetSerializer *dataSetSerializer)
@@ -173,3 +177,15 @@ BasicJob::GetNetStream( void)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+void
+BasicJob::SendEndOfDataSetTag( void)
+{
+  // send EndingTag telling no more data will come
+  m_socket.async_write_some( 
+    boost::asio::buffer(
+      (uint8*)&endHeader, sizeof( DataPieceHeader) ),
+    boost::bind( &BasicJob::EndSend, this,
+      boost::asio::placeholders::error)
+  );
+}

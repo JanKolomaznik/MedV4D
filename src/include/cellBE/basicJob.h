@@ -59,6 +59,7 @@ protected:
 
   // pool for dataPeice headers
   static Pool< DataPieceHeader, 32> freeHeaders;
+  static Pool< ResponseHeader, 32> m_freeResponseHeaders;
 
   void GetDataPiece( DataBuffs &bufs, AbstractDataSetSerializer *dataSetSerializer);
 
@@ -68,6 +69,11 @@ protected:
   void EndReadDataPeice( const boost::system::error_code& error
     , AbstractDataSetSerializer *dataSetSerializer);
 
+  // send EndingTag telling no more data will come
+  void SendEndOfDataSetTag( void);
+
+  M4D::Imaging::AbstractDataSet *m_inDataSet;
+  M4D::Imaging::AbstractDataSet *m_outDataSet;
   
 public:
   // callback def

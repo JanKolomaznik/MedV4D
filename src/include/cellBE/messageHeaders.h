@@ -9,6 +9,8 @@ namespace M4D
 {
 namespace CellBE
 {
+
+///////////////////////////////////////////////////////////////////////////////
   
 #define IDLEN 12
 struct JobID
@@ -55,7 +57,7 @@ inline std::ostream &operator<<( std::ostream &s, JobID &id)
   return s;
 }
 
-///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 struct PrimaryJobHeader
 {
@@ -86,7 +88,7 @@ struct PrimaryJobHeader
   }
 };
 
-///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 #include "dataPieceHeader.h"
 
@@ -105,6 +107,36 @@ DataPieceHeaderDeserialize( DataPieceHeader *h)
 
   s >> h->pieceSize;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+enum ResponseID
+{
+  RESPONSE_OK,
+  RESPONSE_ERROR_IN_EXECUTION,
+  RESPONSE_ERROR_IN_INPUT
+};
+
+struct ResponseHeader
+{
+  uint8 result;
+
+  static void Serialize( ResponseHeader *h)
+  {
+    NetStreamArrayBuf s( (uint8 *)h, sizeof( ResponseHeader) );
+
+    s << h->result;
+  }
+  
+  static void Deserialize( ResponseHeader *h)
+  {
+    NetStreamArrayBuf s( (uint8 *)h, sizeof( ResponseHeader) );
+
+    s >> h->result;
+  }
+};
+
+///////////////////////////////////////////////////////////////////////////////
   
 }}
 #endif

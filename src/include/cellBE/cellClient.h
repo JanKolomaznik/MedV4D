@@ -24,7 +24,8 @@ public:
   // creates job
   ClientJob *CreateJob(
     FilterPropsVector &filters, 
-    M4D::Imaging::AbstractDataSet *dataSet);
+    M4D::Imaging::AbstractDataSet *inDataSet,
+    M4D::Imaging::AbstractDataSet *outDataSet);
 
   inline void Run( void) { m_io_service.run(); }
 

@@ -20,19 +20,21 @@ private:
   std::vector<uint8> m_filterSettingContent;
 
   M4D::Imaging::PipelineContainer m_pipeLine;
-  M4D::Imaging::AbstractDataSet *m_dataSet;
 
   void DeserializeFilterProperties( void);
 
   void BuildThePipeLine( void);  // TODO
-  void CreateDataSet( void);     // TODO
 
   
   void ReadFilters( void);
   void EndFiltersRead( const boost::system::error_code& error);
   void EndDataSetPropertiesRead( const boost::system::error_code& error);
   
-
+  /**
+   *  If everything went right resulting dataSet is sent back to client
+   *  along with responseHeader with OK result
+   */
+  void SendTheResultBack( void);
 };
 
 } // CellBE namespace

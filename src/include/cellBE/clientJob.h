@@ -22,24 +22,28 @@ class ClientJob
   void SerializeFiltersProperties( void);
 
   void SendCreate( void);
+  void Reexecute( void);
+  void SendDestroy( void);
 
   void Serialize( NetStream &s);
   void DeSerialize( NetStream &s);
 
+  void OnResponseRecieved( const boost::system::error_code& error
+    , ResponseHeader *header);    
+
   // only CellClient can construct instances through CreateJob members
   ClientJob(
     FilterPropsVector &filters
-    , M4D::Imaging::AbstractDataSet *dataSet
+    , M4D::Imaging::AbstractDataSet *inDataSet
+    , M4D::Imaging::AbstractDataSet *outdataSet
     , const std::string &address
     , boost::asio::io_service &service);
 
-  M4D::Imaging::AbstractDataSet *m_dataSet;
-
-public:
+  ~ClientJob();
 
 };
 
-///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 }
 }

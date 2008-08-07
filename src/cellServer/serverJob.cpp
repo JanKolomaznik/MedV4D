@@ -72,24 +72,23 @@ ServerJob::EndFiltersRead( const boost::system::error_code& error)
 void
 ServerJob::EndDataSetPropertiesRead( const boost::system::error_code& error)
 {
-  // create appropriate dataSet according
-  CreateDataSet();
-}
+  try {
+    HandleErrors( error);
 
-
-///////////////////////////////////////////////////////////////////////////////
-
-void
-ServerJob::CreateDataSet( void)
-{
-  NetStreamArrayBuf s( &m_filterSettingContent[0], 
+    NetStreamArrayBuf s( &m_filterSettingContent[0], 
     m_filterSettingContent.size());
 
-  GeneralDataSetSerializer::DeSerializeDataSetProperties(
-    m_dataSet, s);
+    m_inDataSet = GeneralDataSetSerializer::DeSerializeDataSetProperties(s);
 
-  // now start recieving actual data
-  
+    // get right dataSet serializer according just created dataSet
+    AbstractDataSetSerializer *dsSerializer = 
+      GeneralDataSetSerializer::GetDataSetSerializer( m_inDataSet);
+
+    // now start recieving actual data using the retrieved serializer
+    ReadDataPeiceHeader( dsSerializer);
+
+  } catch( ExceptionBase &) {
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -97,6 +96,17 @@ ServerJob::CreateDataSet( void)
 void
 ServerJob::BuildThePipeLine( void)
 {
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ServerJob::SendTheResultBack( void)
+{
+  ResponseHeader *h = m_freeResponseHeaders.GetFreeItem();
+  h->result = (uint8) RESPONSE_OK;
+
+  
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -14,7 +14,7 @@ int main()
     CellClient client;
 
     // prepare filters (pipeline)
-    FilterVector filters;
+    FilterPropsVector filters;
     ThresholdingSetting *s = new ThresholdingSetting();
     s->threshold = 3.14f;
     filters.push_back( s);
@@ -28,7 +28,7 @@ int main()
   }
   catch (std::exception& e)
   {
-    std::cerr << e.what() << std::endl;
+    std::cout << e.what() << std::endl;
     return -1;
   }
 
