@@ -164,7 +164,7 @@ MoveService::MoveSupport( DcmDataset *query,
 			m_assocToServer->GetAssociation(),
 			presId, &req, query,
 			MoveCallback, NULL, 
-			DIMSE_BLOCKING, FIND_OPER_TIMEOUT,
+			m_mode, FIND_OPER_TIMEOUT,
 			m_net, SubAssocCallback, data,
 			&rsp, &statusDetail, &rspIds, false);
 		break;
@@ -174,7 +174,7 @@ MoveService::MoveSupport( DcmDataset *query,
 			m_assocToServer->GetAssociation(),
 			presId, &req, query,
 			MoveCallback, NULL, 
-			DIMSE_BLOCKING, FIND_OPER_TIMEOUT,
+			m_mode, FIND_OPER_TIMEOUT,
 			m_net, SubAssocCallbackWholeSet, data,
 			&rsp, &statusDetail, &rspIds, false);
 		break;
@@ -389,7 +389,7 @@ MoveService::SubTransferOperationSCP(
 #define MOVE_OPER_TIMEOUT 30
 
     OFCondition cond = DIMSE_receiveCommand(
-		*subAssoc, DIMSE_NONBLOCKING, MOVE_OPER_TIMEOUT, &presID,
+		*subAssoc, m_mode, MOVE_OPER_TIMEOUT, &presID,
         &msg, NULL);
 
 	T_DIMSE_C_StoreRQ *req;
@@ -434,7 +434,7 @@ MoveService::SubTransferOperationSCP(
 				(char *)NULL, WRITE_METAHEADER,
 				(DcmDataset **)&result->m_dataset, 
 				StoreSCPCallback, (void *)result,
-				DIMSE_NONBLOCKING, MOVE_OPER_TIMEOUT);
+				m_mode, MOVE_OPER_TIMEOUT);
             break;
 
         default:

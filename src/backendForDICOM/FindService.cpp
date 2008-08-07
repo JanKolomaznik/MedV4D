@@ -185,7 +185,7 @@ FindService::FindSupport(
 		m_assocToServer->GetAssociation(),
 		presId, &req, &queryDataSet,
 		callBack, data,
-		DIMSE_BLOCKING, FIND_OPER_TIMEOUT,
+		m_mode, FIND_OPER_TIMEOUT,
 		&rsp, &statusDetail);
 
   /* dump some more general information */

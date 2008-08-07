@@ -168,7 +168,7 @@ StoreService::StoreSCP( DcmDataset *data)
 	OFCondition cond = DIMSE_storeUser(
 		m_assocToServer->GetAssociation(), presId, &req,
         NULL, data, ProgressCallback, NULL,
-        DIMSE_NONBLOCKING, TIMEOUT,
+        m_mode, TIMEOUT,
 		&rsp, &statusDetail, NULL, data->getLength());
 
     /*

@@ -50,6 +50,8 @@ AbstractService::AbstractService()
 	}
 
 	m_numOfInstances++;
+
+  m_mode = DIMSE_BLOCKING;
 }
 
 ///////////////////////////////////////////////////////////////////////

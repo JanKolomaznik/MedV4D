@@ -29,6 +29,15 @@ namespace Dicom {
 
 ///////////////////////////////////////////////////////////////////////
 
+DcmProvider::DcmProvider( bool blocking)
+{
+  m_findService = new FindService();
+  ((FindService *)m_findService)->SetMode( blocking);
+
+	m_moveService = new MoveService();
+  ((MoveService *)m_moveService)->SetMode( blocking);
+}
+
 DcmProvider::DcmProvider()
 {
 	m_findService = new FindService();

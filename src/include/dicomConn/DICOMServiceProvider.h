@@ -178,6 +178,11 @@ public:
 
   // ctor, dtor
 	DcmProvider();
+  /**
+   *  If blocking param is true (default ctor behaviour), all methodes
+   *  using dicom server will be blocking. False means nonblocking.
+   */
+  DcmProvider( bool blocking);
 	~DcmProvider();
 };
 

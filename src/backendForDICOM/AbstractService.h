@@ -24,9 +24,20 @@ protected :
 	
 	DcmDataset *m_query;
 
+  static T_DIMSE_BlockingMode m_mode;
+
 protected:
 	AbstractService();
-	~AbstractService();	
+	~AbstractService();
+
+public:
+  void SetMode( bool blocking) 
+  {
+    if( blocking)
+      m_mode = DIMSE_BLOCKING;
+    else
+      m_mode = DIMSE_NONBLOCKING;
+  }
 	
 };
 
