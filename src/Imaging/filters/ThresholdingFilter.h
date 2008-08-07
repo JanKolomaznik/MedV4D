@@ -2,6 +2,7 @@
 #define _THRESHOLDING_FILTER_H
 
 #include "Common.h"
+#include "Imaging/AbstractSliceFilter.h"
 
 
 namespace M4D

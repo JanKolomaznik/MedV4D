@@ -2,6 +2,7 @@
 #define _REMOTE_FILTER_H
 
 #include "Common.h"
+#include "Imaging/AbstractImageFilterWholeAtOnce.h"
 
 
 namespace M4D
@@ -11,24 +12,24 @@ namespace Imaging
 {
 
 
-struct RemoteFilterOptions : public AbstractFilterSettings
-{
 
-};
 
 
 
 template< typename InputImageType, typename OutputImageType >
 class RemoteFilter 
-	: public ImageFilterWholeAtOnce< InputImageType, OutputImageType >
+	: public AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
 {
 public:
-	typedef RemoteFilterOptions	Settings;
+	typedef typename  Imaging::AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType > PredecessorType;
+	struct Properties : public PredecessorType::Properties
+	{
+
+	};
 
 	RemoteFilter();
 	~RemoteFilter();
 protected:
-	typedef typename  Imaging::ImageFilterWholeAtOnce< InputImageType, OutputImageType > PredecessorType;
 
 	bool
 	ProcessImage(
