@@ -31,9 +31,14 @@ public:
 	typedef InputImageType	InputImage;
 	typedef OutputImageType OutputImage;
 
-	ImageFilter();
+	struct Properties : public AbstractPipeFilter::Properties
+	{
+
+	};
+
 	~ImageFilter() {}
 protected:
+	ImageFilter( Properties * prop );
 
 	const InputImageType&
 	GetInputImage()const;
@@ -102,22 +107,36 @@ class ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 public:
 	typedef typename Imaging::ImageFilter< Image< InputElementType, 3 >, OutputImageType >	PredecessorType;
 	
-	ImageSliceFilter( unsigned neighbourCount, unsigned grouping );
+	struct Properties : public PredecessorType::Properties
+	{
+		/**
+		 * How many slices to up and down are needed for computation.
+		 * This information is needed when waiting for input update.
+		 **/
+		unsigned	_sliceComputationNeighbourCount;
+
+		/**
+		 * How many slices will be put into one computation sequence.
+		 **/
+		unsigned	_computationGrouping;
+	};
+	
+	ImageSliceFilter( Properties *prop );
 	~ImageSliceFilter() {}
 
 	void
 	SetComputationNeighbourhood( unsigned count )
-		{ _sliceComputationNeighbourCount = count; }
+		{ static_cast<Properties*>(this->_properties)->_sliceComputationNeighbourCount = count; }
 
 	unsigned
 	GetComputationNeighbourhood()
-		{ return _sliceComputationNeighbourCount; }
+		{ return static_cast<Properties*>(this->_properties)->_sliceComputationNeighbourCount; }
 
 	void
 	SetComputationGrouping( unsigned count )
 		{ 
 			if( count > 0 ) {
-				_computationGrouping = count; 
+				static_cast<Properties*>(this->_properties)->_computationGrouping = count; 
 			}else {
 		       		throw ErrorHandling::ExceptionBadParameter< unsigned >( count );
 			}	
@@ -125,7 +144,7 @@ public:
 
 	unsigned
 	GetComputationGrouping()
-		{ return _computationGrouping; }
+		{ return static_cast<Properties*>(this->_properties)->_computationGrouping; }
 protected:
 
 	typedef std::vector< SliceComputationRecord >	ComputationGroupList;
@@ -163,16 +182,7 @@ protected:
 	void
 	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
 
-	/**
-	 * How many slices to up and down are needed for computation.
-	 * This information is needed when waiting for input update.
-	 **/
-	unsigned	_sliceComputationNeighbourCount;
-
-	/**
-	 * How many slices will be put into one computation sequence.
-	 **/
-	unsigned	_computationGrouping;
+	
 
 	
 
@@ -197,8 +207,13 @@ class IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< Out
 {
 public:
 	typedef typename Imaging::ImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >	PredecessorType;
+	
+	struct Properties : public PredecessorType::Properties
+	{
 
-	IdenticalExtentsImageSliceFilter( unsigned neighbourCount, unsigned grouping );
+	};
+
+	IdenticalExtentsImageSliceFilter( Properties *prop );
 	~IdenticalExtentsImageSliceFilter() {}
 
 protected:
@@ -309,9 +324,11 @@ class ImageFilterWholeAtOnce
 	: public ImageFilter< InputImageType, OutputImageType >
 {
 public:
-	ImageFilterWholeAtOnce();
+	typedef ImageFilter< InputImageType, OutputImageType >	PredecessorType;
+	typedef typename PredecessorType::Properties		Properties;
+
+	ImageFilterWholeAtOnce( Properties *prop );
 protected:
-	typedef typename  Imaging::ImageFilter< InputImageType, OutputImageType > PredecessorType;
 
 	virtual bool
 	ProcessImage(

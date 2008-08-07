@@ -15,7 +15,13 @@ namespace Imaging
 class AbstractPipeline : public AbstractPipeFilter
 {
 public:
-	
+	struct Properties : public AbstractPipeFilter::Properties
+	{
+
+	};
+	//TODO
+	AbstractPipeline(): AbstractPipeFilter( new Properties ) {}
+
 	virtual void
 	AddFilter( AbstractPipeFilter *filter ) = 0;
 

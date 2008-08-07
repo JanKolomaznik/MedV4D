@@ -10,7 +10,15 @@ namespace Imaging
 
 template< typename InputElementType, typename MatrixElement >
 ConvolutionFilter2D< Image< InputElementType, 3 >, MatrixElement >
-::ConvolutionFilter2D() : public PredecessorType( 0, 15 )
+::ConvolutionFilter2D() : PredecessorType( new Properties() )
+{
+
+}
+
+template< typename InputElementType, typename MatrixElement >
+ConvolutionFilter2D< Image< InputElementType, 3 >, MatrixElement >
+::ConvolutionFilter2D( ConvolutionFilter2D< Image< InputElementType, 3 >, MatrixElement >::Properties *prop ) 
+: PredecessorType( prop ), 
 {
 
 }

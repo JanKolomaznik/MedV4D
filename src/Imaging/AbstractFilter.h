@@ -114,6 +114,12 @@ class AbstractFilter
   : public AbstractProcessingUnit
 {
 public:
+	struct Properties
+	{
+		virtual 
+		~Properties(){}
+
+	};
   
 	/**
 	 * Smart pointer to filter with this interface.
@@ -121,14 +127,9 @@ public:
 	typedef boost::shared_ptr< AbstractFilter > AbstractFilterPtr;
 
 	/**
-	 * Default constructor.
-	 **/
-  AbstractFilter() {}// : _settings( NULL ){}
-
-	/**
 	 * Destructor - virtual - can be polymorphically destroyed.
 	 **/
-	~AbstractFilter() {}
+	~AbstractFilter() { delete _properties; }
 	
 	/**
 	 * Start computing only on modified data.
@@ -155,7 +156,13 @@ public:
 	virtual bool
 	StopExecution() = 0;
 
+	const Properties &
+	GetProperties()const
+		{ return *_properties; }
 protected:
+
+  	AbstractFilter( Properties * prop ): _properties( prop ) {}
+
 	/**
 	*  Filter's settings. Used to sending to server.
 	*  This is pointer to base abstract settings class.
@@ -166,7 +173,7 @@ protected:
 	*  This new enum item should be also added to enum with a new
 	*  data set class !!!
 	*/
-	AbstractFilterSettings *_settings;
+	Properties *_properties;
 
 	
 private:
@@ -174,7 +181,6 @@ private:
 	 * Prohibition of copying.
 	 **/
 	PROHIBIT_COPYING_OF_OBJECT_MACRO( AbstractFilter );
-
 };
 
 /**
@@ -183,6 +189,13 @@ private:
 class AbstractPipeFilter : public AbstractFilter, public MessageReceiverInterface
 {
 public:
+	typedef AbstractFilter	PredecessorType;
+
+	struct Properties: public PredecessorType::Properties
+	{
+
+	};
+
 	enum UpdateInvocationStyle {
 		UIS_ON_DEMAND,
 		UIS_ON_CHANGE_BEGIN,
@@ -198,10 +211,6 @@ public:
 	 **/
 	typedef boost::shared_ptr< AbstractPipeFilter > AbstractPipeFilterPtr;
 
-	/**
-	 * Default constructor.
-	 **/
-	AbstractPipeFilter();
 
 	/**
 	 * Destructor - virtual - can be polymorphically destroyed.
@@ -280,9 +289,13 @@ public:
 		PipelineMessage::MessageSendStyle 	sendStyle,
 		FlowDirection				direction
 		);
-
+	
 protected:
 	friend struct MainExecutionThread;
+
+
+	AbstractPipeFilter( Properties *prop );
+	
 	/**
 	 * Method running in execution thread - this method will be 
 	 * stopped, when StopExecution() is invoked.
@@ -385,40 +398,6 @@ private:
 	 * Prohibition of copying.
 	 **/
 	PROHIBIT_COPYING_OF_OBJECT_MACRO( AbstractPipeFilter );
-};
-
-class TEST_FILTER: public AbstractPipeFilter
-{
-public:
-
-	TEST_FILTER(){}
-protected:
-	bool
-	ExecutionThreadMethod()
-	{ return ExecutionOnWholeThreadMethod(); }
-
-	bool
-	ExecutionOnWholeThreadMethod()
-	{
-		for( int i=0; i < 100; ++i ) {
-			if( !CanContinue() ) {
-				LOG( "---- STOPPED" );
-				return false;
-			}
-			LOG( "NEXT ITERATION" );
-			for( int j=0; j < 80; ++j ) {
-				std::cout << '.';
-				std::cout.flush();	
-				//Multithreading::yield();
-				Multithreading::sleep( 3000 );
-			}
-			std::cout << '\n';
-		}
-
-		LOG( "---- OK FINISH" );
-		return true;
-	}
-
 
 };
 

@@ -9,8 +9,9 @@ namespace Imaging
 
 
 template< typename InputImageType, typename OutputImageType >
-ImageFilter< InputImageType, OutputImageType >::ImageFilter()
-:	in( NULL ), _inTimestamp( Common::DefaultTimeStamp ), _inEditTimestamp( Common::DefaultTimeStamp ), 
+ImageFilter< InputImageType, OutputImageType >::ImageFilter( ImageFilter< InputImageType, OutputImageType >::Properties * prop )
+:	AbstractPipeFilter( prop ), 
+	in( NULL ), _inTimestamp( Common::DefaultTimeStamp ), _inEditTimestamp( Common::DefaultTimeStamp ), 
 	out( NULL ), _outTimestamp( Common::DefaultTimeStamp ), _outEditTimestamp( Common::DefaultTimeStamp )
 {
 	M4D::Imaging::InputPort *inPort = new InputPortType();
@@ -134,8 +135,8 @@ ImageFilter< InputImageType, OutputImageType >
 
 template< typename InputElementType, typename OutputImageType >
 ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
-::ImageSliceFilter( unsigned neighbourCount, unsigned grouping ) 
-	: _sliceComputationNeighbourCount( neighbourCount ), _computationGrouping( grouping )
+::ImageSliceFilter( ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >::Properties *prop ) 
+	: PredecessorType( prop )
 {
 	//TODO - check intervals of parameters - throw exceptions
 }
@@ -188,24 +189,27 @@ ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 	//TODO
 	PredecessorType::BeforeComputation( utype );	
 
+	unsigned computationGrouping = static_cast<Properties*>(this->_properties)->_computationGrouping;
+	unsigned sliceComputationNeighbourCount = static_cast<Properties*>(this->_properties)->_sliceComputationNeighbourCount;
+
 	switch ( utype ) {
 	case AbstractPipeFilter::RECALCULATION:
 		{
 			DL_PRINT( 5, "SliceFilter recalculation" );
 
 			const DimensionExtents & dimExtents = this->in->GetDimensionExtents( 2 );
-			unsigned groupCount = ( dimExtents.maximum - dimExtents.minimum ) / _computationGrouping;
+			unsigned groupCount = ( dimExtents.maximum - dimExtents.minimum ) / computationGrouping;
 			for( unsigned i = 0; i < groupCount; ++i ) {
 				SliceComputationRecord record;
-				record.firstSlice = dimExtents.minimum + (i*_computationGrouping);
-				record.lastSlice = dimExtents.minimum + ((i+1)*_computationGrouping) - 1;
+				record.firstSlice = dimExtents.minimum + (i*computationGrouping);
+				record.lastSlice = dimExtents.minimum + ((i+1)*computationGrouping) - 1;
 				record.inputBBox = this->in->GetDirtyBBox( 
 					this->in->GetDimensionExtents( 0 ).minimum,
 					this->in->GetDimensionExtents( 1 ).minimum,
 					this->in->GetDimensionExtents( 0 ).maximum,
 					this->in->GetDimensionExtents( 1 ).maximum,
-					record.firstSlice - _sliceComputationNeighbourCount,
-					record.lastSlice + _sliceComputationNeighbourCount
+					record.firstSlice - sliceComputationNeighbourCount,
+					record.lastSlice + sliceComputationNeighbourCount
 					);
 				record.writerBBox = &( GetComputationGroupWriterBBox( record ) );
 
@@ -213,15 +217,15 @@ ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 			}
 
 			SliceComputationRecord record;
-			record.firstSlice = dimExtents.minimum + (groupCount*_computationGrouping) - _sliceComputationNeighbourCount;
+			record.firstSlice = dimExtents.minimum + (groupCount*computationGrouping) - sliceComputationNeighbourCount;
 			record.lastSlice = dimExtents.maximum - 1;
 			record.inputBBox = this->in->GetDirtyBBox( 
 				this->in->GetDimensionExtents( 0 ).minimum,
 				this->in->GetDimensionExtents( 1 ).minimum,
 				this->in->GetDimensionExtents( 0 ).maximum,
 				this->in->GetDimensionExtents( 1 ).maximum,
-				record.firstSlice - _sliceComputationNeighbourCount,
-				record.lastSlice + _sliceComputationNeighbourCount
+				record.firstSlice - sliceComputationNeighbourCount,
+				record.lastSlice + sliceComputationNeighbourCount
 				);
 			record.writerBBox = &( GetComputationGroupWriterBBox( record ) );
 
@@ -252,8 +256,8 @@ ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 					this->in->GetDimensionExtents( 1 ).minimum,
 					this->in->GetDimensionExtents( 0 ).maximum,
 					this->in->GetDimensionExtents( 1 ).maximum,
-					record.firstSlice - _sliceComputationNeighbourCount,
-					record.lastSlice + _sliceComputationNeighbourCount
+					record.firstSlice - sliceComputationNeighbourCount,
+					record.lastSlice + sliceComputationNeighbourCount
 					);
 				record.writerBBox = &( GetComputationGroupWriterBBox( record ) );
 
@@ -271,8 +275,8 @@ ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 
 template< typename InputElementType, typename OutputElementType >
 IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
-::IdenticalExtentsImageSliceFilter( unsigned neighbourCount, unsigned grouping ) 
-	: PredecessorType( neighbourCount, grouping )
+::IdenticalExtentsImageSliceFilter( IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >::Properties *prop ) 
+	: PredecessorType( prop )
 {
 
 }
@@ -429,7 +433,9 @@ ImageVolumeFilter< Image< InputElementType, 4 >, OutputImageType >
 //******************************************************************************
 
 template< typename InputImageType, typename OutputImageType >
-ImageFilterWholeAtOnce< InputImageType, OutputImageType >::ImageFilterWholeAtOnce()
+ImageFilterWholeAtOnce< InputImageType, OutputImageType >
+::ImageFilterWholeAtOnce( ImageFilterWholeAtOnce< InputImageType, OutputImageType >::Properties *prop ) 
+	: PredecessorType( prop )
 {
 
 }

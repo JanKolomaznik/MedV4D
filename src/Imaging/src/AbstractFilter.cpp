@@ -184,8 +184,8 @@ MainExecutionThread::operator()()
 
 }
 //******************************************************************************
-AbstractPipeFilter::AbstractPipeFilter()
-	: _inputPorts( this ), _outputPorts( this ), _invocationStyle( UIS_ON_DEMAND )
+AbstractPipeFilter::AbstractPipeFilter( AbstractPipeFilter::Properties *prop )
+	: PredecessorType( prop ), _inputPorts( this ), _outputPorts( this ), _invocationStyle( UIS_ON_DEMAND )
 {
 
 }

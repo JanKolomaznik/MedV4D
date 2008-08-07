@@ -33,7 +33,8 @@ class ConvolutionFilter2D< Image< InputElementType, 3 >, MatrixElement >
 	: public IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
 {
 public:
-	typedef ThresholdingFilterOptions< MatrixElement >	Settings;
+
+	ConvolutionFilter2D( Properties * prop );
 	ConvolutionFilter2D();
 protected:
 	typedef typename  Imaging::IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
@@ -48,7 +49,14 @@ protected:
 			size_t			y2,	
 			size_t			slice
 		    );
+public:
+	struct Properties : public PredecessorType::Properties
+	{
+		MatrixElement *matrix; //length = width*height
 
+		size_t	width;
+		size_t	height;
+	};
 };
 
 //******************************************************************************
