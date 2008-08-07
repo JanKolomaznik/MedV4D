@@ -10,15 +10,6 @@ namespace M4D
 namespace Imaging
 {
 
-template< typename MatrixElement >
-struct ConvolutionFilter2DOptions
-{
-	MatrixElement *matrix; //length = width*height
-
-	size_t	width;
-	size_t	height;
-};
-
 template< typename InputImageType, typename MatrixElement >
 class ConvolutionFilter2D;
 
@@ -32,7 +23,14 @@ template< typename InputElementType, typename MatrixElement >
 class ConvolutionFilter2D< Image< InputElementType, 3 >, MatrixElement > 
 	: public IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
 {
-public:
+public:	
+	struct Properties : public PredecessorType::Properties
+	{
+		MatrixElement *matrix; //length = width*height
+
+		size_t	width;
+		size_t	height;
+	};
 
 	ConvolutionFilter2D( Properties * prop );
 	ConvolutionFilter2D();
@@ -49,27 +47,13 @@ protected:
 			size_t			y2,	
 			size_t			slice
 		    );
-public:
-	struct Properties : public PredecessorType::Properties
-	{
-		MatrixElement *matrix; //length = width*height
 
-		size_t	width;
-		size_t	height;
-	};
 };
 
 //******************************************************************************
 //******************************************************************************
 
-template< typename InputElementType >
-struct ConvolutionFilter3DOptions
-{
-	InputElementType	bottom;	
-	InputElementType	top;
-	
-	InputElementType	outValue;
-};
+
 
 template< typename InputImageType >
 class ConvolutionFilter3D;
@@ -85,7 +69,15 @@ class ConvolutionFilter3D< Image< InputElementType, 3 >
 	: public IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
 {
 public:
-	typedef ConvolutionFilter3D< InputElementType >	Settings;
+	struct Properties : public PredecessorType::Properties
+	{
+		MatrixElement *matrix; //length = width*height*depth
+
+		size_t	width;
+		size_t	height;
+		size_t	depth;
+	};
+
 	ConvolutionFilter3D();
 protected:
 	typedef typename  Imaging::IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;

@@ -4,6 +4,7 @@
 
 #include "Imaging/AbstractFilter.h"
 #include "Imaging/ConnectionInterface.h"
+#include "Imaging/AbstractDataSet.h"
 #include <boost/shared_ptr.hpp>
 #include <vector>
 
@@ -37,6 +38,18 @@ public:
 	ConnectionInterface &
 	MakeConnection( M4D::Imaging::AbstractPipeFilter& producer, unsigned producerPortNumber, 
 			M4D::Imaging::AbstractPipeFilter& consumer, unsigned consumerPortNumber );
+
+	ConnectionInterface &
+	MakeInputConnection( M4D::Imaging::InputPort& inPort, bool ownsDataset );
+
+	ConnectionInterface &
+	MakeInputConnection( M4D::Imaging::AbstractPipeFilter& consumer, unsigned consumerPortNumber, bool ownsDataset );
+
+	ConnectionInterface &
+	MakeOutputConnection( M4D::Imaging::OutputPort& outPort, bool ownsDataset );
+
+	ConnectionInterface &
+	MakeOutputConnection( M4D::Imaging::AbstractPipeFilter& producer, unsigned producerPortNumber, bool ownsDataset );
 protected:
 	typedef std::vector< AbstractPipeFilter * > FilterVector;
 	typedef std::vector< ConnectionInterface * > ConnectionVector;

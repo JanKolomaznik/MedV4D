@@ -11,7 +11,7 @@ namespace Imaging
 {
 
 ConnectionInterface *
-CreateConnectionObjectFromPorts( OutputPort& outPort, InputPort& inPort )
+CreateConnectionObjectFromPorts( OutputPort& outPort, InputPort& inPort, bool ownsDataset )
 {
 	//TODO better exceptions
 	ConnectionInterface *connection = NULL;
@@ -31,7 +31,7 @@ CreateConnectionObjectFromPorts( OutputPort& outPort, InputPort& inPort )
 		}
 		
 		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( typeID, 
-				DIMENSION_TEMPLATE_SWITCH_MACRO( dim, connection = new ImageConnection< Image< TTYPE, DIM > >( true ); ) );
+				DIMENSION_TEMPLATE_SWITCH_MACRO( dim, connection = new ImageConnection< Image< TTYPE, DIM > >( ownsDataset ); ) );
 
 	}	
 	catch ( ... ) {
@@ -40,6 +40,58 @@ CreateConnectionObjectFromPorts( OutputPort& outPort, InputPort& inPort )
 
 	return connection;
 }
+
+ConnectionInterface *
+CreateConnectionObjectFromInputPort( InputPort& inPort, bool ownsDataset )
+{
+	ConnectionInterface *connection = NULL;
+	try {
+		InputPortAbstractImage & iPort = dynamic_cast< InputPortAbstractImage &> ( inPort ); 
+		
+		int typeID = iPort.ImageGetElementTypeID();
+		unsigned dim = iPort.ImageGetDimension();
+
+		if( dim == 0 || typeID == NTID_UNKNOWN ) 
+		{
+			throw EAutoConnectingFailed();
+		}
+		
+		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( typeID, 
+				DIMENSION_TEMPLATE_SWITCH_MACRO( dim, connection = new ImageConnection< Image< TTYPE, DIM > >( ownsDataset ); ) );
+
+	}	
+	catch ( ... ) {
+		throw EAutoConnectingFailed();
+	}
+	return connection;
+}
+
+ConnectionInterface *
+CreateConnectionObjectFromOutputPort( OutputPort& outPort, bool ownsDataset )
+{
+	ConnectionInterface *connection = NULL;
+	try {
+		OutputPortAbstractImage & oPort = dynamic_cast< OutputPortAbstractImage &> ( outPort );
+		
+		int typeID = oPort.ImageGetElementTypeID();
+		unsigned dim = oPort.ImageGetDimension();
+
+		if( dim == 0 || typeID == NTID_UNKNOWN ) 
+		{
+			throw EAutoConnectingFailed();
+		}
+		
+		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( typeID, 
+				DIMENSION_TEMPLATE_SWITCH_MACRO( dim, connection = new ImageConnection< Image< TTYPE, DIM > >( ownsDataset ); ) );
+
+	}	
+	catch ( ... ) {
+		throw EAutoConnectingFailed();
+	}
+	return connection;
+}
+
+//*********************************************************
 
 PipelineContainer::PipelineContainer()
 {
@@ -90,7 +142,7 @@ PipelineContainer::MakeConnection( M4D::Imaging::OutputPort& outPort, M4D::Imagi
 	} else {
 
 		//TODO
-		connection = CreateConnectionObjectFromPorts( outPort, inPort );
+		connection = CreateConnectionObjectFromPorts( outPort, inPort, true );
 		//Newly created connection will be stored.
 		_connections.push_back( connection );
 	}
@@ -108,6 +160,51 @@ PipelineContainer::MakeConnection( M4D::Imaging::AbstractPipeFilter& producer, u
 {
 	return MakeConnection( producer.OutputPort()[ producerPortNumber ], consumer.InputPort()[ consumerPortNumber ] );
 }
+
+ConnectionInterface &
+PipelineContainer::MakeInputConnection( M4D::Imaging::InputPort& inPort, bool ownsDataset )
+{
+	if( inPort.IsPlugged() ) {
+		throw Port::EPortAlreadyConnected();
+	}
+
+	ConnectionInterface *connection = NULL;
+
+	connection = CreateConnectionObjectFromInputPort( inPort, ownsDataset );
+	connection->ConnectConsumer( inPort );
+
+	_connections.push_back( connection );
+	return *connection;
+}
+
+ConnectionInterface &
+PipelineContainer::MakeInputConnection(  M4D::Imaging::AbstractPipeFilter& consumer, unsigned consumerPortNumber, bool ownsDataset )
+{
+	return MakeInputConnection( consumer.InputPort()[ consumerPortNumber ], ownsDataset );
+}
+
+ConnectionInterface &
+PipelineContainer::MakeOutputConnection( M4D::Imaging::OutputPort& outPort, bool ownsDataset )
+{
+	if( outPort.IsPlugged() ) {
+		throw Port::EPortAlreadyConnected();
+	}
+
+	ConnectionInterface *connection = NULL;
+
+	connection = CreateConnectionObjectFromOutputPort( outPort, ownsDataset );
+	connection->ConnectProducer( outPort );
+
+	_connections.push_back( connection );
+	return *connection;
+}
+
+ConnectionInterface &
+PipelineContainer::MakeOutputConnection( M4D::Imaging::AbstractPipeFilter& producer, unsigned producerPortNumber, bool ownsDataset )
+{
+	return MakeOutputConnection( producer.OutputPort()[ producerPortNumber ], ownsDataset );
+}
+
 
 }/*namespace Imaging*/
 }/*namespace M4D*/
