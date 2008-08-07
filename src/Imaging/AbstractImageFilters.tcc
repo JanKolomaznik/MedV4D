@@ -9,7 +9,7 @@ namespace Imaging
 
 
 template< typename InputImageType, typename OutputImageType >
-ImageFilter< InputImageType, OutputImageType >::ImageFilter( ImageFilter< InputImageType, OutputImageType >::Properties * prop )
+ImageFilter< InputImageType, OutputImageType >::ImageFilter( typename ImageFilter< InputImageType, OutputImageType >::Properties * prop )
 :	AbstractPipeFilter( prop ), 
 	in( NULL ), _inTimestamp( Common::DefaultTimeStamp ), _inEditTimestamp( Common::DefaultTimeStamp ), 
 	out( NULL ), _outTimestamp( Common::DefaultTimeStamp ), _outEditTimestamp( Common::DefaultTimeStamp )
@@ -135,7 +135,7 @@ ImageFilter< InputImageType, OutputImageType >
 
 template< typename InputElementType, typename OutputImageType >
 ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
-::ImageSliceFilter( ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >::Properties *prop ) 
+::ImageSliceFilter( typename ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >::Properties *prop ) 
 	: PredecessorType( prop )
 {
 	//TODO - check intervals of parameters - throw exceptions
@@ -275,7 +275,7 @@ ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 
 template< typename InputElementType, typename OutputElementType >
 IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
-::IdenticalExtentsImageSliceFilter( IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >::Properties *prop ) 
+::IdenticalExtentsImageSliceFilter( typename IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >::Properties *prop ) 
 	: PredecessorType( prop )
 {
 
@@ -434,7 +434,7 @@ ImageVolumeFilter< Image< InputElementType, 4 >, OutputImageType >
 
 template< typename InputImageType, typename OutputImageType >
 ImageFilterWholeAtOnce< InputImageType, OutputImageType >
-::ImageFilterWholeAtOnce( ImageFilterWholeAtOnce< InputImageType, OutputImageType >::Properties *prop ) 
+::ImageFilterWholeAtOnce( typename ImageFilterWholeAtOnce< InputImageType, OutputImageType >::Properties *prop ) 
 	: PredecessorType( prop )
 {
 

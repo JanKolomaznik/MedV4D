@@ -31,7 +31,7 @@ public:
 	typedef InputImageType	InputImage;
 	typedef OutputImageType OutputImage;
 
-	struct Properties : public AbstractPipeFilter::Properties
+	struct Properties : public PredecessorType::Properties
 	{
 
 	};

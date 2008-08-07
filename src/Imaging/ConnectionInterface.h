@@ -70,11 +70,11 @@ public:
 	virtual void 
 	DisconnectAll();
 
-	void
+	/*void
 	SendMessage( 
 		PipelineMessage::Ptr 			msg, 
 		PipelineMessage::MessageSendStyle 	sendStyle 
-		){ /*empty*/ }
+		);*/
 
 	virtual AbstractDataSet &
 	GetDataset()const = 0;
