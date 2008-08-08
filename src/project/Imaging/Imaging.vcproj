@@ -148,7 +148,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\src\AbstractImageFilters.cpp"
+				RelativePath="..\..\Imaging\src\AbstractImageFilter.cpp"
 				>
 			</File>
 			<File

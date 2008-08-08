@@ -19,6 +19,9 @@ namespace DicomInternal {
 size_t 
 AbstractService::m_numOfInstances;
 
+T_DIMSE_BlockingMode
+AbstractService::m_mode;
+
 const size_t
 AbstractService::m_maxPDU = 16384;
 
