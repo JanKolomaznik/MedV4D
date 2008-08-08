@@ -81,7 +81,8 @@ public:
 	GetDatasetReadOnly()const = 0;
 
 	void
-	SetMessageHook( MessageReceiverInterface::Ptr hook );
+	SetMessageHook( MessageReceiverInterface::Ptr hook )
+		{ _messageHook = hook; }
 
 	void
 	RouteMessage( 
