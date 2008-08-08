@@ -1,0 +1,213 @@
+<?xml version='1.0' encoding='utf-8'?>
+<chapter>
+<title>User Manual</title>
+
+
+
+<section>
+  <title>Getting Started</title>
+
+  <para>
+    ...an application used for viewing and manipulating medical images. Digital
+    images and data from various sources (including CT, MR, US units, computed
+    and digital radiographic devices, secondary capture devices...
+  </para>
+
+  <section>
+    <title>System requirements</title>
+
+    <para>..........</para>
+  </section>
+
+  <section>
+    <title>Installing the application</title>
+
+    <para>..........</para>
+  </section>
+
+  <section>
+    <title>Starting the application</title>
+
+    <para>..........</para>
+  </section>
+</section>
+
+<section>
+  <title>Using the application</title>
+
+  <section>
+    <title>Application window</title>
+
+    <para>
+      The main application window is a workspace where you can view and work on
+      retrieved images.
+    </para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="figures/userManual/shots/main-window.png" format="PNG"/>
+      </imageobject>
+    </mediaobject>
+
+    <para>
+      This window can contain more than one image at a time, each in a separate
+      pane arranged in a grid. The menu bar appears at the top of the window,
+      and the status bar will appear at the bottom (if enabled). By default,
+      the tool bar appears at the top of the window directly beneath the menu
+      bar, but you can move it to the bottom, left, or right of the window in
+      order to accommodate your preferences - by dragging it to a new location.
+    </para>
+  </section>
+
+  <section>
+    <title>Using the toolbar</title>
+
+    <para>
+      Tools in the toolbar are displayed based on the toolbar settings <!--TODO -->
+      and activated according to the selected viewer type.
+    </para>
+
+    <para>
+      To view the description of a tool, hold the cursor over its icon. Full
+      descriptions of the tools can be found in <xref linkend="Using tools"/>.
+    </para>
+
+    <section>
+      <title>Moving the toolbar</title>
+
+      <para>
+        The toolbar does not have to remain at the top of the window. It can be
+        moved to the bottom, left, or right of the window in order to accommodate
+        your preferences - by dragging it to a new location.
+      </para>
+    </section>
+
+    <section>
+      <title>Customizing the toolbar</title>
+
+      <para>
+        If you do not wish to view all of the tools in the toolbar, you can
+        customize which tools will be displayed in the toolbar by right-clicking
+        on the toolbar region and selecting wanted groups of tools.
+      </para>
+
+      <para>
+        Icon size <!--TODO -->
+      </para>
+
+      <para>
+        Assigning shortcut keys, Assigning mouse buttons, etc. <!--TODO -->
+      </para>
+    </section>
+  </section>
+
+  <section>
+    <title id="Using tools">Using tools</title>
+
+    <section>
+      <title>Main tools</title>
+
+      <para>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figures/userManual/tools/xxxx.png" format="PNG"/>
+          </imageobject>
+        </mediaobject>
+      </para>
+
+      <para>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figures/userManual/tools/xxxx.png" format="PNG"/>
+          </imageobject>
+        </mediaobject>
+      </para>
+
+      <para>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figures/userManual/tools/xxxx.png" format="PNG"/>
+          </imageobject>
+        </mediaobject>
+      </para>
+    </section>
+
+    <section>
+      <title>Common tools</title>
+    </section>
+
+    <section>
+      <title>Measurement tools</title>
+    </section>
+
+    <section>
+      <title>Image Manipulation tools</title>
+    </section>
+
+    <section>
+      <title>Volume tools</title>
+    </section>
+  </section>
+</section>
+
+<section>
+  <title>Retrieving and Viewing Images</title>
+
+  <para>
+    ...A study is a set of related images which can be displayed and
+    manipulated in ...
+  </para>
+
+  <section>
+    <title>Using the Study Manager</title>
+
+    <para>..........</para>
+  </section>
+
+  <section>
+    <title>Viewing studies</title>
+
+    <para>..........</para>
+  </section>
+</section>
+
+<section>
+  <title>Annotating and Measuring Images</title>
+
+  <para>
+    ......
+  </para>
+
+  <section>
+    <title>Overlaying text</title>
+
+    <para>..........</para>
+  </section>
+
+  <section>
+    <title>Annotating images</title>
+
+    <para>..........</para>
+  </section>
+
+  <section>
+    <title>Making measurements</title>
+
+    <para>..........</para>
+  </section>
+
+  <section>
+    <title>Probing images</title>
+
+    <para>..........</para>
+  </section>
+
+  <section>
+    <title>Clearing measurements</title>
+
+    <para>..........</para>
+  </section>
+</section>
+
+
+</chapter>
