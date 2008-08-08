@@ -19,7 +19,18 @@ namespace Imaging
 class AbstractImageConnection : public ConnectionInterface
 {
 public:
+	void
+	PutDataset( AbstractDataSet::ADataSetPtr dataset ) 
+		{
+			if( dynamic_cast<  M4D::Imaging::AbstractImage* >( dataset.get() ) == NULL ){
+				//TODO exception
+			}	
+			PutImage( boost::static_pointer_cast< AbstractImage >( dataset ) );
+		}
 
+	virtual void
+	PutImage( M4D::Imaging::AbstractImage::AImagePtr image )=0;
+	
 	virtual const AbstractImage &
 	GetAbstractImageReadOnly()const = 0;
 
@@ -67,12 +78,11 @@ public:
 	ConnectProducer( OutputPort& outputPort );
 	
 
-		void
+	void
 	PutImage( typename M4D::Imaging::Image< ElementType, dimension >::Ptr image );
-
+	
 	void
 	PutImage( M4D::Imaging::AbstractImage::AImagePtr image );
-
 
 	Image &
 	GetImage()const 

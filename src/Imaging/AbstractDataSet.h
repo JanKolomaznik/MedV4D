@@ -66,6 +66,8 @@ public:
 			: ErrorHandling::ExceptionCastProblem( "Cast to AbstractDataSet impossible." ) {}
 	};
 
+	virtual
+	~AbstractDataSet(){ }
 
 	const M4D::Common::TimeStamp&
 	GetStructureTimestamp()const

@@ -46,10 +46,16 @@ public:
 	MakeInputConnection( M4D::Imaging::AbstractPipeFilter& consumer, unsigned consumerPortNumber, bool ownsDataset );
 
 	ConnectionInterface &
+	MakeInputConnection( M4D::Imaging::AbstractPipeFilter& consumer, unsigned consumerPortNumber, AbstractDataSet::ADataSetPtr dataset );
+
+	ConnectionInterface &
 	MakeOutputConnection( M4D::Imaging::OutputPort& outPort, bool ownsDataset );
 
 	ConnectionInterface &
 	MakeOutputConnection( M4D::Imaging::AbstractPipeFilter& producer, unsigned producerPortNumber, bool ownsDataset );
+
+	ConnectionInterface &
+	MakeOutputConnection( M4D::Imaging::AbstractPipeFilter& producer, unsigned producerPortNumber, AbstractDataSet::ADataSetPtr dataset );
 protected:
 	typedef std::vector< AbstractPipeFilter * > FilterVector;
 	typedef std::vector< ConnectionInterface * > ConnectionVector;

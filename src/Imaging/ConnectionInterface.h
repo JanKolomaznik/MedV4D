@@ -76,6 +76,9 @@ public:
 		PipelineMessage::MessageSendStyle 	sendStyle 
 		);*/
 
+	virtual void
+	PutDataset( AbstractDataSet::ADataSetPtr dataset )=0;
+
 	virtual AbstractDataSet &
 	GetDataset()const = 0;
 
