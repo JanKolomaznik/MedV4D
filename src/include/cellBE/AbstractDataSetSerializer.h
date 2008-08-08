@@ -7,6 +7,7 @@
 #include "cellBE/netStream.h"
 #include "cellBE/iPublicJob.h"
 #include "cellBE/dataPieceHeader.h"
+#include "Common.h"
 
 namespace M4D
 {
@@ -71,6 +72,11 @@ public:
    *  header is recieved).
    */
   virtual void OnDataSetEndRead( void) = 0;
+};
+
+class WrongDSetException
+  : public ExceptionBase
+{
 };
 
 }

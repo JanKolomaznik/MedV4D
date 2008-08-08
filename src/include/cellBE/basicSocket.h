@@ -17,15 +17,6 @@ namespace CellBE
 {
 
 //////////////////////////////////////////////////
-class NetException
-  : public M4D::ErrorHandling::ExceptionBase
-{
-public :
-  NetException( const std::string &s)
-    : ExceptionBase( s) {}
-};
-
-//////////////////////////////////////////////////
 /**
  *  Base class containing network functionality. Used BOOST::Asio for asynchronous networking and scatter gather.
  */

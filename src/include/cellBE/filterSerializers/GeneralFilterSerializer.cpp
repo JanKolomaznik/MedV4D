@@ -9,7 +9,7 @@ using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-AbstractFilter* 
+AbstractPipeFilter * 
 GeneralFilterSerializer::DeSerialize( M4D::CellBE::NetStream &s)
 {
   //switch( (FilterID) filterID)

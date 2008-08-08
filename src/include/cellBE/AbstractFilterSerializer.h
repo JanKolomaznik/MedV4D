@@ -3,6 +3,7 @@
 
 #include "filterIDEnums.h"
 #include "cellBE/netStream.h"
+#include "Common.h"
 
 #include <vector>
 
@@ -39,6 +40,12 @@ public:
 };
 
 typedef std::vector<AbstractFilterSerializer *> FilterPropsVector;
+
+
+class WrongFilterException
+  : public ExceptionBase
+{
+};
 
 }
 }

@@ -21,20 +21,24 @@ private:
 
   M4D::Imaging::PipelineContainer m_pipeLine;
 
-  void DeserializeFilterProperties( void);
+  M4D::Imaging::AbstractPipeFilter *m_pipelineBegin, *m_pipelineEnd;
 
-  void BuildThePipeLine( void);  // TODO
-
+  void DeserializeFilterPropertiesAndBuildPipeline( void);
   
   void ReadFilters( void);
   void EndFiltersRead( const boost::system::error_code& error);
   void EndDataSetPropertiesRead( const boost::system::error_code& error);
   
   /**
-   *  If everything went right resulting dataSet is sent back to client
-   *  along with responseHeader with OK result
+   *  Sends result message back to client. Within the method is switch
+   *  according result param. If OK, resulting dataSet is then send.
+   *  Else just apropriate ResponseID is sent defining the error with
+   *  no other data on the tail. Also resultPropertiesLen item of ResultHeader
+   *  is not used.
    */
-  void SendTheResultBack( void);
+  void SendResultBack( ResponseID result);
+  void OnResultHeaderSent( const boost::system::error_code& error
+    , ResponseHeader *h);
 };
 
 } // CellBE namespace

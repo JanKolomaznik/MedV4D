@@ -41,8 +41,7 @@ public:
   /**
    *  Reads dataSet type and according it will use appropriate
    *  dataSetSerializer that can instantiate dataSet according
-   *  recieved dataSetProperties. The serializer is returned through
-   *  second param to be used later to read actual dataSet data.
+   *  recieved dataSetProperties.
    */
   static M4D::Imaging::AbstractDataSet *
     DeSerializeDataSetProperties( 
@@ -53,6 +52,9 @@ public:
     M4D::Imaging::AbstractDataSet *dataSet,
     M4D::CellBE::iPublicJob *j);
 
+  /**
+   *  The apropriate serializer to given dataSet is returned
+   */
   static AbstractDataSetSerializer *GetDataSetSerializer( 
     M4D::Imaging::AbstractDataSet *dataSet);
 

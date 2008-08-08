@@ -157,7 +157,7 @@ ClientJob::OnResponseRecieved( const boost::system::error_code& error
     switch( (ResponseID) header->result)
     {
     case RESPONSE_OK:
-      // everything was fine, so continue reading resulting dataSet
+      // everything was fine, so continue reading dataSetProperties
       ReadDataPeiceHeader( 
         GeneralDataSetSerializer::GetDataSetSerializer( m_outDataSet));
       break;

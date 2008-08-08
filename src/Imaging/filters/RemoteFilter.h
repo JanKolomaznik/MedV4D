@@ -15,7 +15,6 @@ namespace Imaging
 
 
 
-
 template< typename InputImageType, typename OutputImageType >
 class RemoteFilter 
 	: public AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >

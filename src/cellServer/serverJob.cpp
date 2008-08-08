@@ -3,29 +3,39 @@
 #include "serverJob.h"
 
 #include "Imaging/ImageFactory.h"
+#include <vector>
 
 using namespace M4D::CellBE;
 using namespace M4D::Imaging;
+using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-ServerJob::DeserializeFilterProperties( void)
+ServerJob::DeserializeFilterPropertiesAndBuildPipeline( void)
 {
   NetStreamArrayBuf s( &m_filterSettingContent[0], 
     m_filterSettingContent.size());
 
-  // create filter instances according filter properties instream
-  AbstractFilter *filter;
-  try {
-    while(s.HasNext())
-    {
-      filter = GeneralFilterSerializer::DeSerialize( s);  // TODO
-    }
-  } catch( ExceptionBase) {
-    // do nothing. Just continue
-    return;
+  // create filter instances according filter properties in stream
+  // and add them into pipeline
+  AbstractPipeFilter *producer, *consumer;
+  if( s.HasNext() )   // add the first
+  {
+    producer = GeneralFilterSerializer::DeSerialize( s);
+    m_pipelineBegin = producer;
+    m_pipeLine.AddFilter( producer);
   }
+
+  // now for each remaining create & connect with predecessing
+  while(s.HasNext())
+  {
+    consumer = GeneralFilterSerializer::DeSerialize( s);
+    m_pipeLine.AddFilter( consumer);
+    m_pipeLine.MakeConnection( *producer, 0, *consumer, 0);
+  }
+
+  m_pipelineEnd = consumer;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -41,8 +51,6 @@ ServerJob::ReadFilters( void)
     );
 }
 
-
-
 ///////////////////////////////////////////////////////////////////////////////
 
 void
@@ -50,10 +58,7 @@ ServerJob::EndFiltersRead( const boost::system::error_code& error)
 {
   try {
     HandleErrors( error);
-    DeserializeFilterProperties();
-
-    // build the pipeline according filterSettingsVector
-    BuildThePipeLine();
+    DeserializeFilterPropertiesAndBuildPipeline();
 
     // read the dataSet properties
     m_filterSettingContent.resize( primHeader.dataSetPropertiesLen);
@@ -63,6 +68,8 @@ ServerJob::EndFiltersRead( const boost::system::error_code& error)
         boost::asio::placeholders::error)
       );
 
+  } catch( WrongFilterException &) {
+    SendResultBack( RESPONSE_ERROR_IN_INPUT);
   } catch( ExceptionBase &) {
   }
 }
@@ -78,15 +85,26 @@ ServerJob::EndDataSetPropertiesRead( const boost::system::error_code& error)
     NetStreamArrayBuf s( &m_filterSettingContent[0], 
     m_filterSettingContent.size());
 
-    m_inDataSet = GeneralDataSetSerializer::DeSerializeDataSetProperties(s);
+    // create the dataSet
+    m_inDataSet = GeneralDataSetSerializer::DeSerializeDataSetProperties( s);
 
-    // get right dataSet serializer according just created dataSet
+    // connect it to pipeline
+    m_pipeLine.MakeInputConnection( 
+      *m_pipelineBegin, 0, AbstractDataSet::ADataSetPtr( m_inDataSet) );
+
+    // create and connect output dataSet
+    ConnectionInterface &conn = m_pipeLine.MakeOutputConnection( *m_pipelineEnd, 0, true);
+    m_outDataSet = &conn.GetDataset();
+
+    // get apropriate serializer
     AbstractDataSetSerializer *dsSerializer = 
       GeneralDataSetSerializer::GetDataSetSerializer( m_inDataSet);
-
     // now start recieving actual data using the retrieved serializer
     ReadDataPeiceHeader( dsSerializer);
-
+  
+  } catch( NetException &) {
+  } catch( WrongDSetException &) {
+    SendResultBack( RESPONSE_ERROR_IN_INPUT);
   } catch( ExceptionBase &) {
   }
 }
@@ -94,19 +112,62 @@ ServerJob::EndDataSetPropertiesRead( const boost::system::error_code& error)
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-ServerJob::BuildThePipeLine( void)
+ServerJob::SendResultBack( ResponseID result)
 {
+  ResponseHeader *h = m_freeResponseHeaders.GetFreeItem();
+  h->result = (uint8) result;
+
+  vector<boost::asio::const_buffer> buffers;
+  buffers.push_back( 
+      boost::asio::buffer( (uint8*)h, sizeof(ResponseHeader)) );
+
+  switch( result)
+  {
+  case RESPONSE_OK:
+    // serialize dataset settings
+    GeneralDataSetSerializer::SerializeDataSetProperties( 
+      m_outDataSet, 
+      m_dataSetPropsSerialized);
+
+    h->resultPropertiesLen = (uint16) m_dataSetPropsSerialized.size();
+    ResponseHeader::Serialize( h);
+    
+    buffers.push_back( 
+      boost::asio::buffer( 
+        &m_dataSetPropsSerialized[0], m_dataSetPropsSerialized.size() ));    
+    break;
+
+  case RESPONSE_ERROR_IN_EXECUTION:    
+  case RESPONSE_ERROR_IN_INPUT:
+    ResponseHeader::Serialize( h);
+    break;
+  }
+
+  // send the buffer vector
+  m_socket.async_write_some( 
+    buffers, 
+    boost::bind( &ServerJob::OnResultHeaderSent, this,
+      boost::asio::placeholders::error, h)
+      );
+
+  // start sending dataSet if OK
+  if( result == RESPONSE_OK)
+    GeneralDataSetSerializer::SerializeDataSet( m_outDataSet, this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-ServerJob::SendTheResultBack( void)
+ServerJob::OnResultHeaderSent( const boost::system::error_code& error
+    , ResponseHeader *h)
 {
-  ResponseHeader *h = m_freeResponseHeaders.GetFreeItem();
-  h->result = (uint8) RESPONSE_OK;
+  try {
+    HandleErrors( error);
 
-  
+    m_freeResponseHeaders.PutFreeItem( h);  // return the header to pool
+
+  } catch( NetException &) {
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

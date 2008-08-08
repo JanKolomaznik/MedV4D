@@ -120,19 +120,20 @@ enum ResponseID
 struct ResponseHeader
 {
   uint8 result;
+  uint16 resultPropertiesLen;
 
   static void Serialize( ResponseHeader *h)
   {
     NetStreamArrayBuf s( (uint8 *)h, sizeof( ResponseHeader) );
 
-    s << h->result;
+    s << h->result << h->resultPropertiesLen;
   }
   
   static void Deserialize( ResponseHeader *h)
   {
     NetStreamArrayBuf s( (uint8 *)h, sizeof( ResponseHeader) );
 
-    s >> h->result;
+    s >> h->result >> h->resultPropertiesLen;
   }
 };
 

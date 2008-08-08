@@ -18,10 +18,12 @@ namespace CellBE
 class GeneralFilterSerializer
 {
 public:
-  static M4D::Imaging::AbstractFilter *
+  static M4D::Imaging::AbstractPipeFilter *
   DeSerialize( M4D::CellBE::NetStream &s);
   
 };
+
+
 
 }
 }
