@@ -11,14 +11,6 @@ namespace M4D
 namespace Imaging
 {
 
-template< typename InputElementType >
-struct ThresholdingFilterOptions
-{
-	InputElementType	bottom;	
-	InputElementType	top;
-	
-	InputElementType	outValue;
-};
 
 template< typename InputImageType >
 class ThresholdingFilter;

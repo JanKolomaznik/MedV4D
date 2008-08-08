@@ -67,19 +67,37 @@ public:
 	 **/
 	virtual void
 	DisconnectProducer();
-
+	
+	/**
+	 * Disconnect all ports.
+	 **/
 	virtual void 
 	DisconnectAll();
 
+	/**
+	 * Method used to put dataset to connection. 
+	 * Connection gets ownership over dataset - old one will be released
+	 * \param dataset Smart pointer to dataset - must be valid.
+	 **/
 	virtual void
 	PutDataset( AbstractDataSet::ADataSetPtr dataset )=0;
 
+	/**
+	 * \return Reference to dataset under control.
+	 **/
 	virtual AbstractDataSet &
 	GetDataset()const = 0;
 
+	/**
+	 * \return Constant reference to dataset under control.
+	 **/
 	virtual const AbstractDataSet &
 	GetDatasetReadOnly()const = 0;
 
+	/**
+	 * Sets object, which will be listening messages going through
+	 * connection. Other listeners are untouched and gets messages too.
+	 **/
 	void
 	SetMessageHook( MessageReceiverInterface::Ptr hook )
 		{ _messageHook = hook; }
@@ -123,9 +141,15 @@ protected:
 
 	void
 	PushConsumer( InputPort& consumer );
-	
+
+	/**
+	 * Container for all consumers ( input ports ).
+	 **/	
 	ConsumersMap				_consumers;
 
+	/**
+	 * Single producer - output port.
+	 **/
 	OutputPort				*_producer;
 
 	MessageReceiverInterface::Ptr		_messageHook;
