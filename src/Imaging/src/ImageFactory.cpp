@@ -136,6 +136,7 @@ ImageFactory::CreateImageDataFromDICOM( M4D::Dicom::DcmProvider::DicomObjSetPtr 
 
 		//We now copy data from dicom objects to prepared array. 
 		//TODO - will be asynchronous.
+	 		D_PRINT( "---- Array start = " << (unsigned int*)dataArray << " array end = " << (unsigned int*)(dataArray + imageSize*elementSize) );
 		FlushDicomObjects( dicomObjects, elementTypeID, imageSize, sliceStride, dataArray );
 
 			D_PRINT( "-- Leaving CreateImageFromDICOM() - everything OK" );
@@ -173,9 +174,12 @@ FlushDicomObjectsHelper(
 		it != dicomObjects->end();
 		++it, ++i
 	   ) {
-		   DL_PRINT( 8, "-------- DICOM object " << it->OrderInSet() << " is flushed.");
-		uint8 *arrayPosition = dataArray + (stride * i);
+		//uint8 *arrayPosition = dataArray + (stride * i);
+		uint8 *arrayPosition = dataArray + (stride * (it->OrderInSet()-1));
 		//it->FlushIntoArray< ElementType >( (ElementType*)dataArray + (stride * i /*it->OrderInSet()*/ ) );
+
+		   DL_PRINT( 8, "-------- DICOM object " << it->OrderInSet() << " flushing to : " << (unsigned int*)arrayPosition );
+
 		it->FlushIntoArrayNTID( (void*)arrayPosition, GetNumericTypeID<ElementType>() );
 	}
 }

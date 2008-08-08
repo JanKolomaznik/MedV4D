@@ -142,7 +142,7 @@ public:
 	Execute() = 0;
 
 	/**
-	 * Start computing from scretch - recalculate output 
+	 * Start computing from scratch - recalculate output 
 	 * using all input data, even when no change was applied.
 	 * Asynchronous method.
 	 **/

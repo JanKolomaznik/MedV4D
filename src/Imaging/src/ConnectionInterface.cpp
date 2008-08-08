@@ -39,7 +39,7 @@ ConnectionInterface::DisconnectConsumer( InputPort& inputPort )
 {
 	ConsumersMap::iterator it = _consumers.find( inputPort.GetID() );
 	if( it != _consumers.end() ) {
-		inputPort.UnPlug();
+		inputPort.UnPlug( true );
 		_consumers.erase( it );
 	} else {
 		//TODO throw exception
@@ -50,7 +50,7 @@ void
 ConnectionInterface::DisconnectProducer()
 {
 	if( _producer ) {
-		_producer->UnPlug();
+		_producer->UnPlug( true );
 		_producer = NULL;
 	} else {
 		//TODO throw exception

@@ -546,10 +546,15 @@ void m4dGUIMainWindow::view ( DcmProvider::DicomObjSet *dicomObjSet )
     QMessageBox::critical( this, tr( "Exception" ), tr( "Bad type" ) );
     return;
 	}
-
-	ImageConnection< Image< unsigned short, 3 > > *conn = new ImageConnection< Image< unsigned short, 3 > >( false );
-	conn->PutImage( inputImage );
-	conn->ConnectConsumer( mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
+	try {
+		ImageConnection< Image< unsigned short, 3 > > *conn = new ImageConnection< Image< unsigned short, 3 > >( false );
+		conn->PutImage( inputImage );
+		mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
+		conn->ConnectConsumer( mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
+	} 
+	catch( ... ) {
+		QMessageBox::critical( this, tr( "Exception" ), tr( "Some exception" ) );
+	}
 }
 
 } // namespace GUI

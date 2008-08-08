@@ -62,7 +62,7 @@ public:
 	 * disconnected do nothing.
 	 **/
 	virtual void
-	UnPlug();
+	UnPlug( bool onlyYourself = false ) = 0;
 
 	uint64
 	GetID()const
@@ -155,6 +155,13 @@ public:
 	virtual
 	~InputPort() {}
 
+	/**
+	 * Method to unplug port from connection object - if already 
+	 * disconnected do nothing.
+	 **/
+	void
+	UnPlug( bool onlyYourself = false );
+
 	void
 	SendMessage( 
 		PipelineMessage::Ptr 			msg, 
@@ -172,6 +179,13 @@ class OutputPort: public Port
 public:
 	virtual
 	~OutputPort() {}
+
+	/**
+	 * Method to unplug port from connection object - if already 
+	 * disconnected do nothing.
+	 **/
+	void
+	UnPlug( bool onlyYourself = false );
 	
 	void
 	SendMessage( 

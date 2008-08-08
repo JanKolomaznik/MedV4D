@@ -37,11 +37,6 @@ Port::ReceiveMessage(
 	}
 }
 
-void
-Port::UnPlug()
-{
-	_connection = NULL;
-}
 //******************************************************************************
 
 bool 
@@ -76,6 +71,23 @@ Port::ReleaseDatasetLock()
 
 //******************************************************************************
 void
+InputPort::
+UnPlug( bool onlyYourself )
+{
+	if( _connection == NULL ) {
+		return;
+	}
+
+	//if should unplug only yourself, otherwise disconect connection.
+	if( onlyYourself ) {
+		_connection = NULL;
+	} else {
+		_connection->DisconnectConsumer( *this );
+		_connection = NULL;
+	}
+}
+
+void
 InputPort
 ::SendMessage( 
 		PipelineMessage::Ptr 			msg, 
@@ -87,6 +99,25 @@ InputPort
 		_connection->RouteMessage( msg, sendStyle, FD_AGAINST_FLOW );
 	}
 	//TODO
+}
+
+//******************************************************************************
+
+void
+OutputPort::
+UnPlug( bool onlyYourself )
+{
+	if( _connection == NULL ) {
+		return;
+	}
+
+	//if should unplug only yourself, otherwise disconect connection.
+	if( onlyYourself ) {
+		_connection = NULL;
+	} else {
+		_connection->DisconnectProducer();
+		_connection = NULL;
+	}
 }
 
 void
@@ -101,7 +132,6 @@ OutputPort::SendMessage(
 	}
 	//TODO
 }
-//
 
 
 //******************************************************************************
