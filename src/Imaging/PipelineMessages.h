@@ -149,6 +149,8 @@ public:
 class MessageReceiverInterface
 {
 public:
+	typedef boost::shared_ptr< MessageReceiverInterface > Ptr;
+
 	virtual
 	~MessageReceiverInterface(){}
 	/**

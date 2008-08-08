@@ -39,6 +39,8 @@ protected:
 
 	void
 	PrepareOutputDatasets();
+private:
+	GET_PROPERTIES_DEFINITION_MACRO;
 
 };
 

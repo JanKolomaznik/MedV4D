@@ -122,21 +122,6 @@ ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 
 
 
-template< typename ElementType, unsigned dimension >
-void
-ImageConnection< Image< ElementType, dimension > >
-::RouteMessage( 
-	PipelineMessage::Ptr 			msg, 
-	PipelineMessage::MessageSendStyle 	sendStyle, 
-	FlowDirection				direction
-	)
-{
-	typename ConsumersMap::iterator it;
-	for( it = _consumers.begin(); it != _consumers.end(); ++it ) {
-		it->second->ReceiveMessage( msg, sendStyle, direction );
-	}
-
-}
 
 } /*namespace Imaging*/
 } /*namespace M4D*/

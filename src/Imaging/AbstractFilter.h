@@ -17,6 +17,9 @@ namespace M4D
 namespace Imaging
 {
  
+#define GET_PROPERTIES_DEFINITION_MACRO \
+	Properties & GetProperties(){ return *(static_cast<Properties*>( _properties ) ); }
+
 /**
  * Structure synchronizing access to filter state informations.
  **/
@@ -156,9 +159,6 @@ public:
 	virtual bool
 	StopExecution() = 0;
 
-	const Properties &
-	GetProperties()const
-		{ return *_properties; }
 protected:
 
   	AbstractFilter( Properties * prop ): _properties( prop ) {}

@@ -34,7 +34,15 @@ class ThresholdingFilter< Image< InputElementType, 3 >
 	: public IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
 {
 public:
-	typedef ThresholdingFilterOptions< InputElementType >	Settings;
+	struct Properties
+	{
+		InputElementType	bottom;	
+		InputElementType	top;
+		
+		InputElementType	outValue;
+	};
+
+	ThresholdingFilter( Properties  * prop );
 	ThresholdingFilter();
 protected:
 	typedef typename  Imaging::IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
@@ -49,6 +57,8 @@ protected:
 			size_t			y2,	
 			size_t			slice
 		    );
+private:
+	GET_PROPERTIES_DEFINITION_MACRO;
 
 };
 
@@ -96,6 +106,8 @@ protected:
 			size_t			slice
 		    );
 
+private:
+	GET_PROPERTIES_DEFINITION_MACRO;
 };
 	
 } /*namespace Imaging*/

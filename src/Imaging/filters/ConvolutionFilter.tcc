@@ -36,17 +36,16 @@ ConvolutionFilter2D< Image< InputElementType, 3 >, MatrixElement >
 			size_t			slice
 		    )
 {
-	Settings &settings = static_cast< Settings >( *_settings );
-	int hwidth = settings.width / 2;
-	int hheight = settings.height / 2;
+	int hwidth = GetProperties().width / 2;
+	int hheight = GetProperties().height / 2;
 
 	//TODO check
-	for( size_t i = x1 + hwidth; i < ( x2 - settings.width + hwidth ); ++i ) {
-		for( size_t j = y1 + hheight; j < ( y2 - settings.height + hheight ); ++j ) {
+	for( size_t i = x1 + hwidth; i < ( x2 - GetProperties().width + hwidth ); ++i ) {
+		for( size_t j = y1 + hheight; j < ( y2 - GetProperties().height + hheight ); ++j ) {
 			MatrixElement tmp = 0.0;	
-			for( size_t ii = 0; ii < settings.width; ++ii ) {
-				for( size_t jj = 0; jj < settings.height; ++jj ) {
-					tmp += settings.matrix[ settings.width * jj + ii ] 
+			for( size_t ii = 0; ii < GetProperties().width; ++ii ) {
+				for( size_t jj = 0; jj < GetProperties().height; ++jj ) {
+					tmp += GetProperties().matrix[ GetProperties().width * jj + ii ] 
 						* in.GetElement( i + ii - hwidth, j + jj - hheight, slice );
 				}
 			}
@@ -79,15 +78,13 @@ ConvolutionFilter3D< Image< InputElementType, 3 > >
 			size_t			slice
 		    )
 {
-	Settings &settings = static_cast< Settings >( *_settings );
-
 	for( size_t i = x1; i < x2; ++i ) {
 		for( size_t j = y1; j < y2; ++j ) {
 			InputElementType value = in.GetElement( i, j, slice );
-			if( settings.bottom <= value && settings.top >= value ) {
+			if( GetProperties().bottom <= value && GetProperties().top >= value ) {
 				//unchanged
 			} else {
-				out.GetElement( i, j, value ) = settings.outValue;
+				out.GetElement( i, j, value ) = GetProperties().outValue;
 			}
 		}
 	}

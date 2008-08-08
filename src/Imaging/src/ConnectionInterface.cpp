@@ -10,6 +10,31 @@ namespace Imaging
 //*****************************************************************************
 
 void
+ConnectionInterface::RouteMessage( 
+	PipelineMessage::Ptr 			msg, 
+	PipelineMessage::MessageSendStyle 	sendStyle, 
+	FlowDirection				direction
+	)
+{
+	if( _messageHook ) {
+		_messageHook->ReceiveMessage( msg, sendStyle, direction );
+	}
+
+	if( direction == FD_IN_FLOW ) {
+		ConsumersMap::iterator it;
+		for( it = _consumers.begin(); it != _consumers.end(); ++it ) {
+			it->second->ReceiveMessage( msg, sendStyle, direction );
+		}
+	} else {
+		if( _producer ) {
+			_producer->ReceiveMessage( msg, sendStyle, direction );
+		}
+
+	}
+
+}
+
+void
 ConnectionInterface::DisconnectConsumer( InputPort& inputPort )
 {
 	ConsumersMap::iterator it = _consumers.find( inputPort.GetID() );

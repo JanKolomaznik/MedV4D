@@ -10,7 +10,14 @@ namespace Imaging
 
 template< typename InputElementType >
 ThresholdingFilterMask< Image< InputElementType, 3 > >
-::ThresholdingFilter() : public PredecessorType( 0, 15 )
+::ThresholdingFilter() : public PredecessorType( new Properties() )
+{
+
+}
+
+template< typename InputElementType >
+ThresholdingFilterMask< Image< InputElementType, 3 > >
+::ThresholdingFilter( typename ThresholdingFilterMask< Image< InputElementType, 3 > >::Properties *prop ) : public PredecessorType( prop )
 {
 
 }
@@ -28,15 +35,13 @@ ThresholdingFilter< Image< InputElementType, 3 > >
 			size_t			slice
 		    )
 {
-	Settings &settings = static_cast< Settings >( *_settings );
-
 	for( size_t i = x1; i < x2; ++i ) {
 		for( size_t j = y1; j < y2; ++j ) {
 			InputElementType value = in.GetElement( i, j, slice );
-			if( settings.bottom <= value && settings.top >= value ) {
+			if( GetProperties().bottom <= value && GetProperties().top >= value ) {
 				//unchanged
 			} else {
-				out.GetElement( i, j, value ) = settings.outValue;
+				out.GetElement( i, j, value ) = GetProperties().outValue;
 			}
 		}
 	}
@@ -65,15 +70,13 @@ ThresholdingFilterMask< Image< InputElementType, 3 > >
 			size_t			slice
 		    )
 {
-	Settings &settings = static_cast< Settings >( *_settings );
-
 	for( size_t i = x1; i < x2; ++i ) {
 		for( size_t j = y1; j < y2; ++j ) {
 			InputElementType value = in.GetElement( i, j, slice );
-			if( settings.bottom <= value && settings.top >= value ) {
-				out.GetElement( i, j, value ) = settings.inValue;
+			if( GetProperties().bottom <= value && GetProperties().top >= value ) {
+				out.GetElement( i, j, value ) = GetProperties().inValue;
 			} else {
-				out.GetElement( i, j, value ) = settings.outValue;
+				out.GetElement( i, j, value ) = GetProperties().outValue;
 			}
 		}
 	}

@@ -3,6 +3,7 @@
 
 #include "Common.h"
 #include "Imaging/AbstractImageSliceFilter.h"
+#include <boost/shared_array.hpp>
 
 namespace M4D
 {
@@ -26,7 +27,7 @@ class ConvolutionFilter2D< Image< InputElementType, 3 >, MatrixElement >
 public:	
 	struct Properties : public PredecessorType::Properties
 	{
-		MatrixElement *matrix; //length = width*height
+		boost::shared_array<MatrixElement> matrix; //length = width*height
 
 		size_t	width;
 		size_t	height;
@@ -47,6 +48,8 @@ protected:
 			size_t			y2,	
 			size_t			slice
 		    );
+private:
+	GET_PROPERTIES_DEFINITION_MACRO;
 
 };
 
@@ -71,7 +74,7 @@ class ConvolutionFilter3D< Image< InputElementType, 3 >
 public:
 	struct Properties : public PredecessorType::Properties
 	{
-		MatrixElement *matrix; //length = width*height*depth
+		boost::shared_array<MatrixElement> matrix; //length = width*height*depth
 
 		size_t	width;
 		size_t	height;
@@ -92,6 +95,8 @@ protected:
 			size_t			y2,	
 			size_t			slice
 		    );
+private:
+	GET_PROPERTIES_DEFINITION_MACRO;
 
 };
 

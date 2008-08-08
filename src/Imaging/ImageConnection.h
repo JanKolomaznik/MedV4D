@@ -127,13 +127,6 @@ public:
 			float32		elementExtents[ dimension ]
 		    );
 
-	void
-	RouteMessage( 
-		PipelineMessage::Ptr 			msg, 
-		PipelineMessage::MessageSendStyle 	sendStyle,
-		FlowDirection				direction
-		);
-
 protected:
 
 	/**

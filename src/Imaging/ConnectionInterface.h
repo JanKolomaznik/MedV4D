@@ -17,6 +17,7 @@ namespace Imaging
 class InputPort;
 class OutputPort;
 
+
 /**
  * Connection object inheriting from interfaces for 
  * input connection and output connection.
@@ -70,12 +71,6 @@ public:
 	virtual void 
 	DisconnectAll();
 
-	/*void
-	SendMessage( 
-		PipelineMessage::Ptr 			msg, 
-		PipelineMessage::MessageSendStyle 	sendStyle 
-		);*/
-
 	virtual void
 	PutDataset( AbstractDataSet::ADataSetPtr dataset )=0;
 
@@ -84,6 +79,16 @@ public:
 
 	virtual const AbstractDataSet &
 	GetDatasetReadOnly()const = 0;
+
+	void
+	SetMessageHook( MessageReceiverInterface::Ptr hook );
+
+	void
+	RouteMessage( 
+		PipelineMessage::Ptr 			msg, 
+		PipelineMessage::MessageSendStyle 	sendStyle, 
+		FlowDirection				direction
+		);
 
 	/**
 	 * Method, which try to lock dataset controled by this connection for 
@@ -121,6 +126,8 @@ protected:
 	ConsumersMap				_consumers;
 
 	OutputPort				*_producer;
+
+	MessageReceiverInterface::Ptr		_messageHook;
 private:
 	/**
 	 * Prohibition of copying.
