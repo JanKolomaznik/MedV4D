@@ -116,7 +116,7 @@ private:
 	/**
 	 * Prohibition of copying.
 	 **/
-	PROHIBIT_COPYING_OF_OBJECT_MACRO( ImageSliceFilter );
+	PROHIBIT_COPYING_OF_OBJECT_MACRO( AbstractImageSliceFilter );
 };
 
 

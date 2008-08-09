@@ -9,7 +9,7 @@ namespace Imaging
 
 template< typename InputElementType, typename OutputImageType >
 AbstractImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
-::AbstractImageSliceFilter( typename ImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >::Properties *prop ) 
+::AbstractImageSliceFilter( typename AbstractImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >::Properties *prop ) 
 	: PredecessorType( prop )
 {
 	//TODO - check intervals of parameters - throw exceptions

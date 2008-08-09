@@ -18,7 +18,7 @@ namespace Imaging
 {
  
 #define GET_PROPERTIES_DEFINITION_MACRO \
-	Properties & GetProperties(){ return *(static_cast<Properties*>( _properties ) ); }
+	Properties & GetProperties(){ return *(static_cast<Properties*>( this->_properties ) ); }
 
 /**
  * Structure synchronizing access to filter state informations.

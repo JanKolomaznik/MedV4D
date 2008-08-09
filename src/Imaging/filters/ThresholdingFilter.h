@@ -16,17 +16,19 @@ template< typename InputImageType >
 class ThresholdingFilter;
 
 template< typename InputElementType >
-class ThresholdingFilter< Image< InputElementType, 2 >
+class ThresholdingFilter< Image< InputElementType, 2 > >
 {
 	//TODO
 };
 
 template< typename InputElementType >
-class ThresholdingFilter< Image< InputElementType, 3 > 
+class ThresholdingFilter< Image< InputElementType, 3 > >
 	: public IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
 {
 public:
-	struct Properties
+	typedef typename  Imaging::IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
+
+	struct Properties : public PredecessorType::Properties
 	{
 		InputElementType	bottom;	
 		InputElementType	top;
@@ -37,7 +39,6 @@ public:
 	ThresholdingFilter( Properties  * prop );
 	ThresholdingFilter();
 protected:
-	typedef typename  Imaging::IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
 
 	bool
 	ProcessSlice(
@@ -72,20 +73,30 @@ template< typename InputImageType >
 class ThresholdingFilterMask;
 
 template< typename InputElementType >
-class ThresholdingFilterMask< Image< InputElementType, 2 >
+class ThresholdingFilterMask< Image< InputElementType, 2 > >
 {
 	//TODO
 };
 
 template< typename InputElementType >
-class ThresholdingFilterMask< Image< InputElementType, 3 > 
+class ThresholdingFilterMask< Image< InputElementType, 3 > >
 	: public IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image3DUnsigned8b >
 {
 public:
-	typedef ThresholdingFilterMaskOptions< InputElementType >	Settings;
+	typedef typename  Imaging::IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image3DUnsigned8b > PredecessorType;
+
+	struct Properties : public PredecessorType::Properties
+	{
+	InputElementType	bottom;	
+	InputElementType	top;
+
+	uint8			inValue;
+	uint8			outValue;	
+
+	};
+
 	ThresholdingFilterMask();
 protected:
-	typedef typename  Imaging::IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image3DUnsigned8b > PredecessorType;
 
 	bool
 	ProcessSlice(

@@ -9,15 +9,15 @@ namespace Imaging
 {
 
 template< typename InputElementType >
-ThresholdingFilterMask< Image< InputElementType, 3 > >
-::ThresholdingFilter() : public PredecessorType( new Properties() )
+ThresholdingFilter< Image< InputElementType, 3 > >
+::ThresholdingFilter() : PredecessorType( new Properties() )
 {
 
 }
 
 template< typename InputElementType >
-ThresholdingFilterMask< Image< InputElementType, 3 > >
-::ThresholdingFilter( typename ThresholdingFilterMask< Image< InputElementType, 3 > >::Properties *prop ) : public PredecessorType( prop )
+ThresholdingFilter< Image< InputElementType, 3 > >
+::ThresholdingFilter( typename ThresholdingFilter< Image< InputElementType, 3 > >::Properties *prop ) : PredecessorType( prop )
 {
 
 }
@@ -35,6 +35,9 @@ ThresholdingFilter< Image< InputElementType, 3 > >
 			size_t			slice
 		    )
 {
+	if( !this->CanContinue() ) {
+		return false;
+	}
 	for( size_t i = x1; i < x2; ++i ) {
 		for( size_t j = y1; j < y2; ++j ) {
 			InputElementType value = in.GetElement( i, j, slice );
@@ -45,6 +48,7 @@ ThresholdingFilter< Image< InputElementType, 3 > >
 			}
 		}
 	}
+	return true;
 }
 
 //******************************************************************************
@@ -52,7 +56,7 @@ ThresholdingFilter< Image< InputElementType, 3 > >
 
 template< typename InputElementType >
 ThresholdingFilterMask< Image< InputElementType, 3 > >
-::ThresholdingFilterMask() : public PredecessorType( 0, 15 )
+::ThresholdingFilterMask() : PredecessorType( 0, 15 )
 {
 
 }
@@ -70,6 +74,9 @@ ThresholdingFilterMask< Image< InputElementType, 3 > >
 			size_t			slice
 		    )
 {
+	if( !this->CanContinue() ) {
+		return false;
+	}
 	for( size_t i = x1; i < x2; ++i ) {
 		for( size_t j = y1; j < y2; ++j ) {
 			InputElementType value = in.GetElement( i, j, slice );
@@ -80,6 +87,7 @@ ThresholdingFilterMask< Image< InputElementType, 3 > >
 			}
 		}
 	}
+	return true;
 }
 
 } /*namespace Imaging*/
