@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../include; ../include; ../../"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE; DEBUG_LEVEL=1"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE; DEBUG_LEVEL=1; WIN32_LEAN_AND_MEAN"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -194,6 +194,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\backendForDICOM\remoteFilterBase.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\testMain.cpp"
 				>
 			</File>
@@ -276,6 +280,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\include\cellBE\RemoteFilter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cellBE\RemoteFilterBase.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\include\cellBE\resourcePool.h"
 				>
 			</File>
@@ -292,6 +304,18 @@
 				>
 				<File
 					RelativePath="..\..\include\cellBE\filterSerializers\ThresholdingSerializer.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="remoteFilters"
+				>
+				<File
+					RelativePath="..\..\include\cellBE\remoteFilters\BoneSegmentationRemote.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\cellBE\remoteFilters\BoneSegmentationRemote.tcc"
 					>
 				</File>
 			</Filter>

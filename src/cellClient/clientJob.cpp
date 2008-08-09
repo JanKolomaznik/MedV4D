@@ -200,7 +200,7 @@ ClientJob::SendDestroy( void)
 void
 ClientJob::Reexecute( void)
 {
-  primHeader.action = (uint8) REEXEC;
+  primHeader.action = (uint8) EXEC;
   PrimaryJobHeader::Serialize( &primHeader);
 
 

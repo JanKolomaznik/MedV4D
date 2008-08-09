@@ -41,7 +41,7 @@ protected:
    */
   enum Action {
     CREATE,
-    REEXEC,
+    EXEC,
     DESTROY,
     PING
   };

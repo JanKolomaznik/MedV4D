@@ -7,10 +7,8 @@
 
 namespace M4D
 {
-
 namespace Imaging
 {
-
 
 
 template< typename InputImageType, typename OutputImageType >
