@@ -278,6 +278,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\include\cellBE\RemoteFilter.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\include\cellBE\resourcePool.h"
 				>
 			</File>
@@ -294,6 +298,18 @@
 				>
 				<File
 					RelativePath="..\..\include\cellBE\filterSerializers\ThresholdingSerializer.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="remoteFilters"
+				>
+				<File
+					RelativePath="..\..\include\cellBE\remoteFilters\BoneSegmentationRemote.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\cellBE\remoteFilters\BoneSegmentationRemote.tcc"
 					>
 				</File>
 			</Filter>

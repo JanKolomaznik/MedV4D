@@ -11,6 +11,13 @@ using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 
+ServerJob::ServerJob(boost::asio::io_service &service)
+    : BasicJob(service)
+{
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 void
 ServerJob::DeserializeFilterPropertiesAndBuildPipeline( void)
 {
@@ -93,8 +100,12 @@ ServerJob::EndDataSetPropertiesRead( const boost::system::error_code& error)
       *m_pipelineBegin, 0, AbstractDataSet::ADataSetPtr( m_inDataSet) );
 
     // create and connect output dataSet
-    ConnectionInterface &conn = m_pipeLine.MakeOutputConnection( *m_pipelineEnd, 0, true);
+    ConnectionInterface &conn = 
+m_pipeLine.MakeOutputConnection( *m_pipelineEnd, 0, true);
     m_outDataSet = &conn.GetDataset();
+    // add message listener to be able catch execution done or failed messages
+    conn.SetMessageHook( 
+      MessageReceiverInterface::Ptr( new ExecutionDoneCallback(this) ) );
 
     // get apropriate serializer
     AbstractDataSetSerializer *dsSerializer = 
@@ -168,6 +179,22 @@ ServerJob::OnResultHeaderSent( const boost::system::error_code& error
 
   } catch( NetException &) {
   }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ServerJob::OnExecutionDone( void)
+{
+  SendResultBack( RESPONSE_OK);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ServerJob::OnExecutionFailed( void)
+{
+  SendResultBack( RESPONSE_ERROR_IN_EXECUTION);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

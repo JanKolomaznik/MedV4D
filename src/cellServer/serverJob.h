@@ -3,6 +3,7 @@
 
 #include "cellBE/basicJob.h"
 #include "Imaging/PipelineContainer.h"
+#include "Imaging/PipelineMessages.h"
 
 namespace M4D
 {
@@ -13,9 +14,10 @@ class ServerJob
   : public BasicJob
 {
   friend class Server;
+  friend class ExecutionDoneCallback;
   
 private:
-  ServerJob(boost::asio::io_service &service) : BasicJob(service) {}
+  ServerJob(boost::asio::io_service &service);
 
   std::vector<uint8> m_filterSettingContent;
 
@@ -39,6 +41,39 @@ private:
   void SendResultBack( ResponseID result);
   void OnResultHeaderSent( const boost::system::error_code& error
     , ResponseHeader *h);
+
+  void OnExecutionDone( void);
+  void OnExecutionFailed( void);
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
+class ExecutionDoneCallback 
+  : public M4D::Imaging::MessageReceiverInterface
+{
+  ServerJob *m_job;
+public:
+  ExecutionDoneCallback( ServerJob *job)
+    : m_job( job)
+  {
+  }
+
+  void ReceiveMessage( 
+    M4D::Imaging::PipelineMessage::Ptr    msg, 
+    M4D::Imaging::PipelineMessage::MessageSendStyle  sendStyle, 
+    M4D::Imaging::FlowDirection    direction
+    ) 
+  {
+   switch( msg->msgID)
+   {
+   case M4D::Imaging::PMI_FILTER_CANCELED:
+     m_job->OnExecutionFailed();
+     break;
+   case M4D::Imaging::PMI_FILTER_UPDATED:
+     m_job->OnExecutionDone();
+     break;
+   }
+  }
 };
 
 } // CellBE namespace
