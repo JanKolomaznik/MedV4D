@@ -17,6 +17,7 @@ using namespace std;
 namespace M4D {
 namespace GUI {
 
+/// Names of different modes
 #define RECENT_EXAMS_NAME                   "Recent Exams"
 #define RECENT_REMOTE_EXAMS_NAME            "Recent Remote Exams"
 #define RECENT_DICOMDIR_NAME                "Recent DICOMDIR"
@@ -246,7 +247,6 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
                                 description );
 
         reverse( activeResultSet->begin(), activeResultSet->end() );
-
         break;
     }
 
@@ -544,6 +544,7 @@ void StManagerStudyListComp::addRowToStudyTable ( const DcmProvider::TableRow *r
   table->setRowCount( rowNum + 1 );
 
   vector< QTableWidgetItem * > tableRowItems;
+
   tableRowItems.push_back( new QTableWidgetItem( QString( row->patientID.c_str() ) ) );
   tableRowItems.push_back( new QTableWidgetItem( QString( row->name.c_str() ) ) );
   tableRowItems.push_back( new QTableWidgetItem( QString( row->modality.c_str() ) ) );
@@ -659,7 +660,7 @@ QTableWidget *StManagerStudyListComp::createStudyTable ()
   table->setColumnHidden( ATTRIBUTE_NUMBER, true );
 
   connect( table, SIGNAL(itemSelectionChanged()), this, SLOT(setEnabledView()) );
-  connect( table, SIGNAL(itemDoubleClicked(QTableWidgetItem *)), this, SLOT(view()) );
+  connect( table, SIGNAL(itemDoubleClicked( QTableWidgetItem * )), this, SLOT(view()) );
 
   return table;
 }
@@ -720,6 +721,7 @@ QPushButton *StManagerStudyListComp::createButton ( const QString &text, const c
 QToolButton *StManagerStudyListComp::createToolButton ( const QIcon &icon, const char *member )
 {
   QToolButton *toolButton = new QToolButton();
+
   toolButton->setCheckable( true );
   toolButton->setAutoExclusive( true );
 

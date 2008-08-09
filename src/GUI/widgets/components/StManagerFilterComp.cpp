@@ -147,6 +147,7 @@ StManagerFilterComp::StManagerFilterComp ( StManagerStudyListComp *studyListComp
   // =-=-=-=-=-=-=-=- Filter -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
   QHBoxLayout *filterLayout = new QHBoxLayout;
+
   filterLayout->addLayout( buttonLayout );
   filterLayout->addItem( horSpacerButInp );
   filterLayout->addLayout( inputLayout );
@@ -188,9 +189,6 @@ void StManagerFilterComp::search ()
 }
 
 
-/**
- * today slot - for setting dateCombos to actual date by clicking on 'Today' button.
- */
 void StManagerFilterComp::today ()
 {
   // 'Today' clicked -> check 'from' dateCheckBox & enable 'from' dateEdit
@@ -207,9 +205,6 @@ void StManagerFilterComp::today ()
 }
 
 
-/**
- * yesterday slot - for setting dateCombos to yesterday date by clicking on 'Yesterday' button.
- */
 void StManagerFilterComp::yesterday ()
 {
   // 'Yesterday' clicked -> check 'from' dateCheckBox & enable 'from' dateEdit
@@ -227,9 +222,6 @@ void StManagerFilterComp::yesterday ()
 }
 
 
-/**
- * clear slot - for clearing inputs, checkBoxes, dateCombos - filtering settings.
- */
 void StManagerFilterComp::clear ()
 {
   patientIDComboBox->setEditText( "" );
@@ -303,6 +295,7 @@ void StManagerFilterComp::modality ()
 QPushButton *StManagerFilterComp::createButton ( const QString &text, const char *member )
 {
   QPushButton *button = new QPushButton( text );
+
   connect( button, SIGNAL(clicked()), this, member );
 
   return button;
@@ -312,6 +305,7 @@ QPushButton *StManagerFilterComp::createButton ( const QString &text, const char
 QComboBox *StManagerFilterComp::createComboBox ( const QString &text )
 {
   QComboBox *comboBox = new QComboBox;
+
   comboBox->setEditable( true );
   comboBox->addItem( text );
   comboBox->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
@@ -324,6 +318,7 @@ QComboBox *StManagerFilterComp::createComboBox ( const QString &text )
 QCheckBox *StManagerFilterComp::createCheckBox ( const QString &text, bool value, const char *member )
 {
   QCheckBox *checkBox = new QCheckBox( text );
+
   connect( checkBox, SIGNAL(clicked()), this, member );
   checkBox->setChecked( value );
 

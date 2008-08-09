@@ -22,7 +22,7 @@ namespace GUI {
 /**
  * Class representing one of the base components of Study Manager Widget.
  * It manages the uniform search result viewing and manipulation - Recent Exams (remote and DICOMDIR), 
- * Remote Exams, DICOMDIR. 
+ * Remote Exams, DICOMDIR modes. 
  */
 class StManagerStudyListComp: public QWidget
 {
@@ -102,7 +102,7 @@ class StManagerStudyListComp: public QWidget
   signals:
 
     /**
-     * Signal for indicating wheather the view button was pushed - to clese the dialog.
+     * Signal for indicating wheather the view button was pushed - to close the dialog.
      */
     void ready ();
 
@@ -171,17 +171,34 @@ class StManagerStudyListComp: public QWidget
 
 
     /** 
-     * Creates a StudyTable and configures it.
+     * Creates a StudyTable and configures it - specific selection modes, hidden columns, connections.
+     *
+     * @return pointer to the created and configured table 
      */
     QTableWidget *createStudyTable ();
 
     /** 
-     * Creates a DirectoryTreeView and configures it.
+     * Creates a Directory TreeView and configures it - with filters and specific columns.
+     *
+     * @return pointer to the created and configured Directory TreeView
      */
     QTreeView    *createDirectoryTreeView ();
 
+    /** 
+     * Creates a Directory ComboBox and configures it.
+     *
+     * @param text reference to string with init. edit text value - default is empty string
+     * @return pointer to the created and configured Directory ComboBox
+     */
     QComboBox    *createDirectoryComboBox ( const QString &text = QString() );
 
+    /** 
+     * Creates a Series Selector Table and configures it - for selecting
+     * from series if there are more than one in the study - it's the main component of 
+     * the Series Selector Dialog.
+     *
+     * @return pointer to the created and configured Series Selector Table
+     */
     QTableWidget *createSeriesSelectionTable ();
 
     /** 
@@ -189,13 +206,16 @@ class StManagerStudyListComp: public QWidget
      *
      * @param text reference to caption string
      * @param member other side of the connection
+     * @return pointer to the created and configured Button
      */
     QPushButton  *createButton ( const QString &text, const char *member );
 
     /** 
-     * Creates a ToolButton and and configures it.
+     * Creates a ToolButton, connects and configures it.
      *
      * @param icon reference to icon of the button
+     * @param member other side of the connection
+     * @return pointer to the created and configured ToolButton
      */
     QToolButton  *createToolButton ( const QIcon &icon, const char *member );
 
@@ -222,6 +242,7 @@ class StManagerStudyListComp: public QWidget
     QTableWidget *activeExamTable;
     /// Directory tree for browsing in DICOMDIR mode.
     QTreeView    *directoryTree;
+    /// ComboBox for direct setting of the directory path in DICOMDIR mode
     QComboBox    *directoryComboBox;
 
     /// The provider object - communication with DICOM layer.
@@ -236,6 +257,7 @@ class StManagerStudyListComp: public QWidget
     /// Pointer to vector of TableRows - pointing to active ResultSet.
     M4D::Dicom::DcmProvider::ResultSet *activeResultSet;
 
+    /// Pointer to DicomObjSet - result of the Study Manager appears there (after clicking View).
     M4D::Dicom::DcmProvider::DicomObjSet *dicomObjectSet;	
 };
 

@@ -105,6 +105,7 @@ void StudyFilter::filterDuplicates ( M4D::Dicom::DcmProvider::ResultSet *resultS
 
     if ( patientID == currentRow.patientID && studyID == currentRow.studyID ) 
     {
+      // duplicate
       resultSet->erase( resultSet->begin() + i );
       i--;
     }
