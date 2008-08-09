@@ -30,9 +30,9 @@ mainWindow::mainWindow ()
 }
 
 void 
-mainWindow::view ( M4D::Dicom::DcmProvider::DicomObjSet *dicomObjSet )
+mainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
 {
-	AbstractImage::AImagePtr inputImage = ImageFactory::CreateImageFromDICOM( M4D::Dicom::DcmProvider::DicomObjSetPtr( dicomObjSet ) );
+	AbstractImage::AImagePtr inputImage = ImageFactory::CreateImageFromDICOM( dicomObjSet );
 
 	unsigned dim = inputImage->GetDimension(); 
 	int type     = inputImage->GetElementTypeID();
@@ -63,6 +63,9 @@ mainWindow::CreatePipeline()
 	_pipeline.AddFilter( filter );
 	_inConnection = dynamic_cast<AbstractImageConnection*>( &_pipeline.MakeInputConnection( *filter, 0, false ) );
 	_outConnection = dynamic_cast<AbstractImageConnection*>( &_pipeline.MakeOutputConnection( *filter, 0, true ) );
+
+	addSource( _inConnection, "Bone segmentation", "Stage #1" );
+	addSource( _outConnection, "Bone segmentation", "Result" );
 
 	if( _inConnection == NULL || _outConnection == NULL ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Pipeline error" ) );

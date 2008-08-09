@@ -19,7 +19,7 @@ public:
 
 protected:
 	void
-	view( M4D::Dicom::DcmProvider::DicomObjSet *dicomObjSet );
+	process( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet );
 
 	void
 	CreatePipeline();

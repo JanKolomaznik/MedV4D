@@ -17,7 +17,8 @@ TARGETS=	m4dGUIMainWindow \
 		m4dGUIVtkViewerWidget \
 		m4dGUIStudyManagerWidget \
 		m4dGUIScreenLayoutWidget \
-		m4dGUISliceViewerWidget
+		m4dGUISliceViewerWidget \
+		m4dGUIToolBarCustomizerWidget
 
 SUBDIR=		components
 SUBDIR2=	ogl
@@ -35,6 +36,7 @@ MOCINPUT=	m4dGUIAbstractViewerWidget.h \
 		m4dGUIStudyManagerWidget.h \
 		m4dGUIVtkViewerWidget.h \
 		m4dGUISliceViewerWidget.h \
+		m4dGUIToolBarCustomizerWidget.h \
 		StManagerFilterComp.h \
 		StManagerHProtocolsComp.h \
 		StManagerStudyListComp.h
@@ -42,7 +44,8 @@ MOCINPUT=	m4dGUIAbstractViewerWidget.h \
 
 RCCINPUT=	m4dGUIMainWindow.qrc \
 		m4dGUIStudyManagerWidget.qrc \
-		m4dGUIScreenLayoutWidget.qrc
+		m4dGUIScreenLayoutWidget.qrc \
+		m4dGUIToolBarCustomizerWidget.qrc
 ########################################
 
 #Name of target

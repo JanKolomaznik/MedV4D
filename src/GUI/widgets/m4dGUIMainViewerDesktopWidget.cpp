@@ -164,8 +164,10 @@ void m4dGUIMainViewerDesktopWidget::selectedChanged ( unsigned index )
 
 void m4dGUIMainViewerDesktopWidget::sourceSelected ( int index )
 {
-  selectedViewer->viewerWidget->setInputPort();
-  selectedViewer->viewerWidget->setInputPort( sources[index] );
+  //selectedViewer->viewerWidget->setInputPort();
+  //selectedViewer->viewerWidget->setInputPort( sources[index] );
+  selectedViewer->viewerWidget->InputPort()[0].UnPlug();
+  sources[index]->ConnectConsumer( selectedViewer->viewerWidget->InputPort()[0] );
 }
 
 } // namespace GUI
