@@ -100,6 +100,7 @@ m4dGUIMainWindow::m4dGUIMainWindow ( const char *title, const QIcon &icon )
   createStudyManagerDialog();
   // and the other dialogs
   createScreenLayoutDialog();
+  createToolBarCustomizerDialog();
 
   // update availability of features (according to selected viewer - first one is init.)
   features();
@@ -134,7 +135,7 @@ void m4dGUIMainWindow::search ()
 
   // Study Manager Dialog - this will fill the dicomObjSet
   if ( studyManagerDialog->exec() ) {
-    view( dicomObjSet );
+    process( DcmProvider::DicomObjSetPtr( dicomObjSet ) );
   }
 }
 
@@ -153,6 +154,13 @@ void m4dGUIMainWindow::open ()
     // mainViewerDesktop->getVtkRenderWindowWidget()->addRenderer( mainViewerDesktop->getVtkRenderWindowWidget()->dicomToRenderWindow( dirName.toAscii() ) );
   } 
 }
+
+
+void m4dGUIMainWindow::customize ()
+{
+  toolBarCustomizerDialog->show();
+}
+
 
 void m4dGUIMainWindow::size ()
 {
@@ -331,6 +339,22 @@ void m4dGUIMainWindow::createStudyManagerDialog ()
 }
 
 
+void m4dGUIMainWindow::createToolBarCustomizerDialog ()
+{
+  // new dialog for ToolBar Customizer Widget - without What's This button in the title bar
+  toolBarCustomizerDialog = new QDialog( this, Qt::WindowTitleHint | Qt::WindowSystemMenuHint );
+  toolBarCustomizerDialog->setWindowTitle( tr( "Toolbar Property" ) );
+
+  toolBarCustomizerWidget = new m4dGUIToolBarCustomizerWidget;
+  // connect( studyManagerWidget->getStudyListComponent(), SIGNAL(ready()), studyManagerDialog, SLOT(accept()) );
+
+  QVBoxLayout *dialogLayout = new QVBoxLayout;
+  dialogLayout->addWidget( toolBarCustomizerWidget );
+  
+  toolBarCustomizerDialog->setLayout( dialogLayout );
+}
+
+
 void m4dGUIMainWindow::createScreenLayoutDialog ()
 {
   // new dialog for Screen Layout Widget - without What's This button in the title bar and resize
@@ -371,6 +395,11 @@ void m4dGUIMainWindow::createActions ()
   exitAct = new QAction( QIcon( ":/icons/exit.png" ), tr( "E&xit" ), this );
   exitAct->setShortcut( tr( "Ctrl+Q" ) );
   connect( exitAct, SIGNAL(triggered()), this, SLOT(close()) );
+
+  customizeAct = new QAction( tr( "Customize" ), this );
+  // customizeAct->setShortcut( tr( "Ctrl+C" ) );
+  // customizeAct->setStatusTip( tr( "Customize the toolbar" ) );
+  connect( customizeAct, SIGNAL(triggered()), this, SLOT(customize()) );
 
   QActionGroup *toolBarSizeGroup  = new QActionGroup( this );
 
@@ -451,6 +480,8 @@ void m4dGUIMainWindow::createMenus ()
 
   // ToolBars Menu
   toolBarsMenu = new QMenu( tr( "T&oolBars" ), this );
+  toolBarsMenu->addAction( customizeAct );
+  toolBarsMenu->addSeparator();
   toolBarsMenu->addAction( smallAct );
   toolBarsMenu->addAction( mediumAct );
   toolBarsMenu->addAction( largeAct );
@@ -533,9 +564,9 @@ void m4dGUIMainWindow::delegateAction ( unsigned actionIdx, m4dGUIAbstractViewer
 }
 
 
-void m4dGUIMainWindow::view ( DcmProvider::DicomObjSet *dicomObjSet )
+void m4dGUIMainWindow::process ( DcmProvider::DicomObjSetPtr dicomObjSet )
 {
-	AbstractImage::AImagePtr inputImage = ImageFactory::CreateImageFromDICOM( DcmProvider::DicomObjSetPtr( dicomObjSet ) );
+	AbstractImage::AImagePtr inputImage = ImageFactory::CreateImageFromDICOM( dicomObjSet );
 
 	unsigned dim = inputImage->GetDimension(); 
 	int type     = inputImage->GetElementTypeID();

@@ -19,7 +19,7 @@ class m4dGUIScreenLayoutWidget: public QWidget
 
   public:
     /**
-     * Constructor of m4dGUIScreenLayoutWidget.
+     * Screen Layout Widget constructor.
      *
      * @ param parent parent of this widget - default is 0
      */

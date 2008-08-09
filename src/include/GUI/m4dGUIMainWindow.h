@@ -6,6 +6,7 @@
 
 #include "GUI/m4dGUIMainViewerDesktopWidget.h"
 #include "GUI/m4dGUIStudyManagerWidget.h"
+#include "GUI/m4dGUIToolBarCustomizerWidget.h"
 #include "GUI/m4dGUIScreenLayoutWidget.h"
 
 
@@ -70,6 +71,8 @@ class m4dGUIMainWindow: public QMainWindow
      */
     void open ();
 
+    void customize ();
+
     /**
      * Slot for managing ToolBar sizes.
      */
@@ -118,6 +121,7 @@ class m4dGUIMainWindow: public QMainWindow
 
     void createMainViewerDesktop ();
     void createStudyManagerDialog ();
+    void createToolBarCustomizerDialog ();
     void createScreenLayoutDialog ();
         
     void createActions ();
@@ -134,12 +138,13 @@ class m4dGUIMainWindow: public QMainWindow
      */
     void delegateAction ( unsigned actionIdx, M4D::Viewer::m4dGUIAbstractViewerWidget::ButtonHandler hnd );
 
-    virtual void view ( M4D::Dicom::DcmProvider::DicomObjSet *dicomObjSet );
-
   protected:
+
+    virtual void process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet );
 
     m4dGUIMainViewerDesktopWidget *mainViewerDesktop;
     m4dGUIStudyManagerWidget *studyManagerWidget;
+    m4dGUIToolBarCustomizerWidget *toolBarCustomizerWidget;
     m4dGUIScreenLayoutWidget *screenLayoutWidget;
   
   private:
@@ -154,12 +159,14 @@ class m4dGUIMainWindow: public QMainWindow
     static const int   slotsToActions[]; 
   
     QDialog *studyManagerDialog;
+    QDialog *toolBarCustomizerDialog;
     QDialog *screenLayoutDialog;
   
     QAction *searchAct;
     QAction *openAct;
     QAction *saveAct;
     QAction *exitAct;
+    QAction *customizeAct;
     QAction *smallAct;
     QAction *mediumAct;
     QAction *largeAct;

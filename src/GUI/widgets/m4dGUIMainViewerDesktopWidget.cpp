@@ -164,6 +164,7 @@ void m4dGUIMainViewerDesktopWidget::selectedChanged ( unsigned index )
 
 void m4dGUIMainViewerDesktopWidget::sourceSelected ( int index )
 {
+  selectedViewer->viewerWidget->setInputPort();
   selectedViewer->viewerWidget->setInputPort( sources[index] );
 }
 
