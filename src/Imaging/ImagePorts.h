@@ -14,7 +14,7 @@ namespace Imaging
 {
 
 //Forward declarations *****************
-class AbstractImageConnection;
+class AbstractImageConnectionInterface;
 
 template< typename ImageTemplate >
 class ImageConnection;
@@ -25,7 +25,7 @@ class ImageConnection;
 class InputPortAbstractImage: public InputPort
 {
 public:
-	typedef AbstractImageConnection ConnectionType;
+	typedef AbstractImageConnectionInterface ConnectionType;
 
 	const AbstractImage&
 	GetAbstractImage()const;
@@ -48,7 +48,7 @@ public:
 class OutputPortAbstractImage: public OutputPort
 {
 public:
-	typedef AbstractImageConnection ConnectionType;
+	typedef AbstractImageConnectionInterface ConnectionType;
 
 	AbstractImage&
 	GetAbstractImage()const;

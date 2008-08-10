@@ -16,7 +16,7 @@ namespace Imaging
 /**
  * Not supposed to instantiate - use only as substitution for typed images connections.
  **/
-class AbstractImageConnection : public ConnectionInterface
+class AbstractImageConnectionInterface : public ConnectionInterface
 {
 public:
 	void
@@ -50,7 +50,31 @@ public:
 		}
 
 protected:
+	class ENoImageAssociated
+	{
+		//TODO
+	};
+	class EInvalidImage
+	{
+		//TODO
+	};
 
+};
+
+class AbstractImageConnection : public AbstractImageConnectionInterface
+{
+public:
+	void
+	PutImage( M4D::Imaging::AbstractImage::AImagePtr image );
+	
+	virtual const AbstractImage &
+	GetAbstractImageReadOnly()const;
+
+	virtual AbstractImage &
+	GetAbstractImage()const;
+
+protected:
+	AbstractImage::AImagePtr _image;
 };
 
 //We prohibit general usage - only specialized templates used.
@@ -60,7 +84,7 @@ class ImageConnection;
 
 template< typename ElementType, unsigned dimension >
 class ImageConnection< Image< ElementType, dimension > >
-	: public AbstractImageConnection
+	: public AbstractImageConnectionInterface
 {
 public:
 	typedef typename M4D::Imaging::Image< ElementType, dimension > Image;
@@ -86,13 +110,13 @@ public:
 
 	Image &
 	GetImage()const 
-		{ if( !_image ) { throw ENoImageAssociated(); }
+		{ if( !_image ) { throw AbstractImageConnectionInterface::ENoImageAssociated(); }
 			return *_image;
 		}
 
 	const Image &
 	GetImageReadOnly()const
-		{ if( !_image ) { throw ENoImageAssociated(); }
+		{ if( !_image ) { throw AbstractImageConnectionInterface::ENoImageAssociated(); }
 			return *_image;
 		}
 
@@ -139,7 +163,6 @@ protected:
 		: _image( image ) {}
 
 	typename Image::Ptr			_image;
-	OutputImagePort				*_input;
 private:
 	/**
 	 * Prohibition of copying.
@@ -151,14 +174,6 @@ public:
 	 * Exception thrown when requiring image object and none 
 	 * is available.
 	 **/
-	class ENoImageAssociated
-	{
-		//TODO
-	};
-	class EInvalidImage
-	{
-		//TODO
-	};
 };
 
 

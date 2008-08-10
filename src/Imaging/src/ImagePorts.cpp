@@ -26,8 +26,8 @@ InputPortAbstractImage
 		throw Port::EPortAlreadyConnected();
 	}
 
-	AbstractImageConnection *conn = 
-		dynamic_cast< AbstractImageConnection * >( &connection );
+	AbstractImageConnectionInterface *conn = 
+		dynamic_cast< AbstractImageConnectionInterface * >( &connection );
 	if( conn ) {
 		this->_connection = conn;
 	} else {
@@ -52,8 +52,8 @@ void
 OutputPortAbstractImage
 ::Plug( ConnectionInterface & connection )
 {
-	AbstractImageConnection *conn = 
-		dynamic_cast< AbstractImageConnection * >( &connection );
+	AbstractImageConnectionInterface *conn = 
+		dynamic_cast< AbstractImageConnectionInterface * >( &connection );
 	if( conn ) {
 		this->_connection = conn;
 	} else {

@@ -83,7 +83,7 @@ ImageConnection< Image< ElementType, dimension > >
 ::PutImage( typename M4D::Imaging::Image< ElementType, dimension >::Ptr image )
 {
 	if( !image ) {
-		throw EInvalidImage();
+		throw AbstractImageConnectionInterface::EInvalidImage();
 	}
 	this->_image = image;
 }

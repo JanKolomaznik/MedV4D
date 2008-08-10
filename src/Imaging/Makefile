@@ -18,6 +18,7 @@ TARGETS=	AbstractDataSet \
 		Image \
 		ImageFactory \
 		ImagePorts \
+		ImageConnection \
 		ModificationManager \
 		PipelineContainer \
 		Pipeline \
