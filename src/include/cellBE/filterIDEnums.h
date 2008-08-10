@@ -12,15 +12,14 @@ enum FilterID {
 };
 
 //*******************************************************
-template< typename PropertiesType >
+/*template< typename PropertiesType >
 FilterID
-GetFilterID( PropertiesType & prop );
+GetFilterID( PropertiesType & prop );*/
 //*******************************************************
 
 template< typename InputImageType >
 FilterID
-GetFilterID< M4D::Imaging::ThresholdingFilter< InputImageType >::Properties >
-	( typename M4D::Imaging::ThresholdingFilter< InputImageType >::Properties &prop )
+GetFilterID( typename M4D::Imaging::ThresholdingFilter< InputImageType >::Properties &prop )
 { 
   return Thresholding; 
 }
