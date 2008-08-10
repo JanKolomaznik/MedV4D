@@ -27,7 +27,10 @@ class ConvolutionFilter2D< Image< InputElementType, 3 >, MatrixElement >
 public:	
 	struct Properties : public PredecessorType::Properties
 	{
-		boost::shared_array<MatrixElement> matrix; //length = width*height
+		typedef boost::shared_array<MatrixElement> MatrixPtr;
+		Properties();
+
+		MatrixPtr matrix; //length = width*height
 
 		size_t	width;
 		size_t	height;
@@ -58,23 +61,25 @@ private:
 
 
 
-template< typename InputImageType >
+template< typename InputImageType, typename MatrixElement >
 class ConvolutionFilter3D;
 
-template< typename InputElementType >
-class ConvolutionFilter3D< Image< InputElementType, 2 >
+template< typename InputElementType, typename MatrixElement >
+class ConvolutionFilter3D< Image< InputElementType, 2 >, MatrixElement >
 {
 	//TODO
 };
 
-template< typename InputElementType >
-class ConvolutionFilter3D< Image< InputElementType, 3 > 
+template< typename InputElementType, typename MatrixElement >
+class ConvolutionFilter3D< Image< InputElementType, 3 >, MatrixElement > 
 	: public IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
 {
 public:
 	struct Properties : public PredecessorType::Properties
 	{
-		boost::shared_array<MatrixElement> matrix; //length = width*height*depth
+		typedef boost::shared_array<MatrixElement> MatrixPtr;
+		Properties();
+		MatrixPtr	matrix; //length = width*height*depth
 
 		size_t	width;
 		size_t	height;

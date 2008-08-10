@@ -46,6 +46,11 @@ mainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
 	try {
 		_inConnection->PutImage( inputImage );
 
+		/*_inConnection->RouteMessage( MsgFilterUpdated::CreateMsg( true ), 
+				PipelineMessage::MSS_NORMAL,
+				FD_IN_FLOW
+				);*/
+
 		//mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
 		//conn->ConnectConsumer( mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 	} 

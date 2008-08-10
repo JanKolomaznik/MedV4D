@@ -34,6 +34,8 @@ public:
 	
 	struct Properties : public PredecessorType::Properties
 	{
+		Properties( unsigned sliceNeighbourCount, unsigned computationGrouping ) 
+			: _sliceComputationNeighbourCount( sliceNeighbourCount ), _computationGrouping( computationGrouping ) {}
 		/**
 		 * How many slices to up and down are needed for computation.
 		 * This information is needed when waiting for input update.
@@ -135,6 +137,8 @@ public:
 	
 	struct Properties : public PredecessorType::Properties
 	{
+		Properties( unsigned sliceNeighbourCount, unsigned computationGrouping ) 
+			: PredecessorType::Properties( sliceNeighbourCount, computationGrouping ) {}
 
 	};
 

@@ -8,6 +8,15 @@ namespace M4D
 namespace Imaging
 {
 
+template< typename InputImageType, typename MatrixElement >
+ConvolutionFilter2D< InputImageType, MatrixElement >::Properties
+::Properties() : PredecessorType::Properties( 0, 10 ), width( 1 ), height( 1 )
+{
+	matrix = MatrixPtr( new MatrixElement[1] );
+
+	matrix[0] = 1;
+}
+
 template< typename InputElementType, typename MatrixElement >
 ConvolutionFilter2D< Image< InputElementType, 3 >, MatrixElement >
 ::ConvolutionFilter2D() : PredecessorType( new Properties() )
@@ -57,6 +66,14 @@ ConvolutionFilter2D< Image< InputElementType, 3 >, MatrixElement >
 //******************************************************************************
 //******************************************************************************
 
+template< typename InputImageType, typename MatrixElement >
+ConvolutionFilter3D< InputImageType, MatrixElement >::Properties
+::Properties() : PredecessorType::Properties( 0, 10 ), width( 1 ), height( 1 ), depth( 1 )
+{
+	matrix = MatrixPtr( new MatrixElement[1] );
+
+	matrix[0] = 1;
+}
 
 template< typename InputElementType >
 ConvolutionFilter3D< Image< InputElementType, 3 > >
