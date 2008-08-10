@@ -23,7 +23,7 @@ void
 AbstractImageConnection
 ::ConnectProducer( OutputPort& outputPort )
 {
-	OutputImagePort *port = 
+	OutputPortAbstractImage *port = 
 		dynamic_cast< OutputPortAbstractImage * >( &outputPort );
 	if( port ) {
 			port->Plug( *this );

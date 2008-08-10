@@ -1,8 +1,8 @@
-#ifndef _IMAGE_CONVERTOR_H
-#define _IMAGE_CONVERTOR_H
+#ifndef _ABSTRACT_GENERIC_IMAGE_FILTER_H
+#define _ABSTRACT_GENERIC_IMAGE_FILTER_H
 
 #include "Common.h"
-#include "Imaging/AbstractGenericImageFilter.h"
+#include "Imaging/AbstractFilter.h"
 
 
 namespace M4D
@@ -11,34 +11,15 @@ namespace M4D
 namespace Imaging
 {
 
-class DefaultConvertor
-{
-public:
-	template< typename InputType, typename OutputType >
-	void
-	operator()( const InputType &input, OutputType &output )
-		{
-			output = (OutputType)input;
-		}
-};
 
-template< typename OutputImageType, typename Convertor = DefaultConvertor >
-class ImageConvertor;
-
-template< typename OutputElementType, typename Convertor >
-class ImageConvertor< Image< OutputElementType, 2 > >
-{
-	//TODO
-};
-
-template< typename InputElementType >
-class ImageConvertor< Image< InputElementType, 3 > >
+template< typename OutputImageType >
+class AbstractGenericImageFilter
 	: public AbstractPipeFilter
 {
 public:
-	typedef AbstractPipeFilter 	PredecessorType;
-	typedef Image< InputElementType, 3 > OutputType;
-	typedef ImagePort< OutputType > OutputPortType;
+	typedef AbstractPipeFilter 		PredecessorType;
+	typedef AbstractImagePort		InputPortType;
+	typedef ImagePort< OutputImageType > 	OutputPortType;
 
 	struct Properties : public PredecessorType::Properties
 	{
@@ -46,8 +27,7 @@ public:
 
 	};
 
-	ImageConvertor( Properties  * prop );
-	ImageConvertor();
+	AbstractGenericImageFilter( Properties  * prop );
 protected:
 	bool
 	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
@@ -76,7 +56,13 @@ protected:
 	void
 	AfterComputation( bool successful );
 	
+	const AbstractImage	*in;
+	Common::TimeStamp	_inTimestamp;
+	Common::TimeStamp	_inEditTimestamp;
 
+	OutputImageType		*out;
+	Common::TimeStamp	_outTimestamp;
+	Common::TimeStamp	_outEditTimestamp;
 private:
 	GET_PROPERTIES_DEFINITION_MACRO;
 
@@ -87,6 +73,6 @@ private:
 } /*namespace M4D*/
 
 //include implementation
-#include "Imaging/filters/ImageConvertor.tcc"
+#include "Imaging/AbstractGenericImageFilter.tcc"
 
-#endif /*_IMAGE_CONVERTOR_H*/
+#endif /*_ABSTRACT_GENERIC_IMAGE_FILTER_H*/

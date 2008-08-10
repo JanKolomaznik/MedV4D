@@ -65,6 +65,12 @@ class AbstractImageConnection : public AbstractImageConnectionInterface
 {
 public:
 	void
+	ConnectConsumer( InputPort& inputPort );
+
+	void
+	ConnectProducer( OutputPort& outputPort );
+	
+	void
 	PutImage( M4D::Imaging::AbstractImage::AImagePtr image );
 	
 	virtual const AbstractImage &
