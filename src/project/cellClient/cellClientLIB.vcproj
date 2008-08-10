@@ -169,6 +169,10 @@
 				RelativePath="..\..\cellClient\clientSocket.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\..\cellClient\remoteFilterBase.cpp"
+				>
+			</File>
 			<Filter
 				Name="dataSetSerializers"
 				>

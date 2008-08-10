@@ -17,11 +17,13 @@ FilterID
 GetFilterID( PropertiesType & prop );
 //*******************************************************
 
-template< typename InputImage >
+template< typename PropertiesType >
 FilterID
-GetFilterID< M4D::Imaging::ThresholdingFilter< InputImageType >::Properties >
-	( M4D::Imaging::ThresholdingFilter< InputImageType >::Properties &prop )
-{ return Thresholding; }
+GetFilterID< M4D::Imaging::ThresholdingFilter< PropertiesType >::Properties >
+	( M4D::Imaging::ThresholdingFilter< PropertiesType >::Properties &prop )
+{ 
+  return Thresholding; 
+}
 
 //*******************************************************
 /*template< typename PropertiesType >

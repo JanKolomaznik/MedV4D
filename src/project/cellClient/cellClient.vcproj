@@ -194,7 +194,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\backendForDICOM\remoteFilterBase.cpp"
+				RelativePath="..\..\cellClient\remoteFilterBase.cpp"
 				>
 			</File>
 			<File

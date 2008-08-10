@@ -6,14 +6,14 @@
 namespace M4D
 {
 
-namespace cellBE
+namespace CellBE
 {
 
 class RemoteFilterBase
 {
 protected:
   // gate to remote computing. Shared instance of cell client.
-  static M4D::CellBE::CellClient s_cellClient;
+  static CellClient s_cellClient;
 
 };
 
