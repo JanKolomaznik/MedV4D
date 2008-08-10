@@ -13,10 +13,10 @@ namespace Imaging
 
 template< typename InputImageType, typename OutputImageType >
 class AbstractImageFilterWholeAtOnce 
-	: public ImageFilter< InputImageType, OutputImageType >
+	: public AbstractImageFilter< InputImageType, OutputImageType >
 {
 public:
-	typedef ImageFilter< InputImageType, OutputImageType >	PredecessorType;
+	typedef AbstractImageFilter< InputImageType, OutputImageType >	PredecessorType;
 	typedef typename PredecessorType::Properties		Properties;
 
 	AbstractImageFilterWholeAtOnce( Properties *prop );
