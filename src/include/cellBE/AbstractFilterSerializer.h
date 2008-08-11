@@ -12,33 +12,46 @@ namespace M4D
 namespace CellBE
 {
 
+/**
+ *  This base class defines interface for sucessing filterSerializers
+ *  that have to implement it. Each filter template must have its own
+ *  filterSerializer.
+ */
 class AbstractFilterSerializer
 {
+private:
+  FilterID m_id;
+
 public:
-  /**
-   *  Identification of particular AbstractFilter sucessor. Each new one has 
-   *  return value that is added to enumeration in filterIDEnums.h header.
-   */
-  virtual FilterID GetID(void) = 0;
+  AbstractFilterSerializer( FilterID id)
+    : m_id( id)
+  {
+  }
+
+  // Identification of particular AbstractFilter sucessor.
+  FilterID GetID(void) { return m_id; }
 
   /**
    *  Each final sucessor has to implement this functions to allow
    *  sending all properties of that particular sucessor to server.
    */
+  
   /**
-	*  Filter's settings. Used to sending to server.
-	*  This is pointer to base abstract settings class.
-	*  !!! Each new filter derived from this class
-	*  should declare new settings type derived from 
-	*  FilterSettingTemplate class (filterProperties.h) 
-	*  with template param of type FilterID (FilterIDEnums.h).
-	*  This new enum item should be also added to enum with a new
-	*  data set class !!!
-	*/
+   *  Each filter has its own set of attributes (we call them 
+   *  filterProperties). SerializeProperties method has to put
+   *  all the filterProperties to stream while DeSerializeProperties
+   *  method has to retrieve them from the stream exactly in the same
+   *  order that the SerializeProperties method has put them there.
+   */
   virtual void SerializeProperties( M4D::CellBE::NetStream &s) = 0;
   virtual void DeSerializeProperties( M4D::CellBE::NetStream &s) = 0;  
 };
 
+/**
+ *  Vector of FilterSettings. This vector is passed in param
+ *  while creation of a new job. It defines actual remote pipeline
+ *  that the created job represents.
+ */
 typedef std::vector<AbstractFilterSerializer *> FilterPropsVector;
 
 

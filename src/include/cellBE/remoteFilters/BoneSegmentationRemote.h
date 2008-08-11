@@ -3,6 +3,15 @@
 
 #include "cellBE/RemoteFilter.h"
 
+/**
+ *  This is the firs exemplar of remote filter. It contains specification
+ *  of an remote pipeline, that contains few filters that should perform
+ *  bone segmentaion.
+ *  This is example how remote filter currntly works and another remote
+ *  filter should be written in this manner.
+ *  Basic rule is to inherit from RemoteFilter templated class.
+ */
+
 // include needed filters ...
 #include "Imaging/filters/ThresholdingFilter.h"
 
@@ -23,12 +32,12 @@ public:
 
 	/////////////////// To customize /////////////////////
 	// puting options available to outer world to be able to specify it ....
-	typedef typename ThresholdingFilterMaskOptions<InType> ThresholdingOptsType;
+	typedef typename ThresholdingFilterMask<InType>::Properties ThresholdingOptsType;
 	
-	ThresholdingOptsType *GetThreshholdingOptions( void)
-		{
-			return &m_thresholdingOptions;
-		}
+	ThresholdingOptsType *GetThreshholdingOptions( void)	
+  {
+		return &m_thresholdingOptions;
+	}
 
 private:
 	GET_PROPERTIES_DEFINITION_MACRO;
@@ -40,7 +49,7 @@ private:
 	 * retrieving public members, that will provide ability to change
 	 * the filter options from outer world.
 	 **/
-	typename ThresholdingFilterMask<InType>::Properties m_thresholdingOptions;
+	ThresholdingOptsType m_thresholdingOptions;
 	// ...
 
 	ClientJob *m_job;

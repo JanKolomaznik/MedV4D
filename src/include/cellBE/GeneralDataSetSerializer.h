@@ -9,20 +9,26 @@ namespace CellBE
 {
 
 /**
- *  Interface that is given to Imaging library user as an abstraction of Job.
- *  It has sending and retrival ability in scatter gather manner.
- *  Used to send and read dataSets.
+ *  General datSet serializer is some kind of recognizer of dataSet
+ *  types. For given AbstractDataSet instance is able to recognize
+ *  its type (based on template) and return appropriate dataSetSerializer.
  */
 
 class GeneralDataSetSerializer
 {
 
-public:  
+public:
+  /**
+   *  The apropriate serializer to given dataSet is returned
+   */
+  static AbstractDataSetSerializer *GetDataSetSerializer( 
+    M4D::Imaging::AbstractDataSet *dataSet);
   
   /**
    *  According given dataSet type uses appropriate dataSet
    *  serializer that writes all properties about given dataset needed for
-   *  recreation the same instance on the other network side
+   *  recreation the same instance on the other network side.
+   *  Uses GetDataSetSerializer function (see above) internaly.
    */
   static void SerializeDataSetProperties( 
     M4D::Imaging::AbstractDataSet *dataSet,
@@ -33,6 +39,7 @@ public:
    *  serializer taht writes the whole content of given dataSet
    *  to the network through PutDataPiece methodes of iPuplicJob
    *  interface.
+   *  Uses GetDataSetSerializer function (see above) internaly.
    */
   static void SerializeDataSet( 
     M4D::Imaging::AbstractDataSet *dataSet,
@@ -48,16 +55,11 @@ public:
       //AbstractDataSetSerializer **dataSetSerializer,
       M4D::CellBE::NetStream &s);
 
-  static void DeSerializeDataSet( 
-    M4D::Imaging::AbstractDataSet *dataSet,
-    M4D::CellBE::iPublicJob *j);
+  //static void DeSerializeDataSet( 
+  //  M4D::Imaging::AbstractDataSet *dataSet,
+  //  M4D::CellBE::iPublicJob *j);
 
-  /**
-   *  The apropriate serializer to given dataSet is returned
-   */
-  static AbstractDataSetSerializer *GetDataSetSerializer( 
-    M4D::Imaging::AbstractDataSet *dataSet);
-
+  
 };
 
 }

@@ -221,6 +221,10 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="remoteFilters"
+				>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -253,6 +257,10 @@
 			</File>
 			<File
 				RelativePath="..\..\include\cellBE\clientSocket.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cellBE\filterIDEnums.h"
 				>
 			</File>
 			<File

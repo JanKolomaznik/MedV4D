@@ -15,11 +15,11 @@ namespace CellBE
 {
 
 /**
- *  Interface that is given to Imaging library user as an abstraction of Job.
- *  It has sending and retrival ability in scatter gather manner.
- *  Used to send and read dataSets.
+ *  Abstract class for all DataSet serializers. Purpouse of dataSet
+ *  serializer is serialize dataSet properties and actual dataSet.
+ *  Each AbstractDataSet sucessor has to have its own serializer to
+ *  be able to be transmited over network.
  */
-
 class AbstractDataSetSerializer
 {
 protected:
