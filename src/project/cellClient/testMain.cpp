@@ -23,7 +23,7 @@ int main()
 
     BoneSegmentationRemote< Image<uint8, 3,>, Image<uint8, 3>> remFilter;
 
-    client.Run();
+    //client.Run();
   }
   catch (std::exception& e)
   {

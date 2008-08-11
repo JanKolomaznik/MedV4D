@@ -1,16 +1,17 @@
 #ifndef BONE_SEGMENTATION_FILTER_H
 #define BONE_SEGMENTATION_FILTER_H
 
+#include "cellBE/RemoteFilter.h"
+
 // include needed filters ...
 #include "Imaging/filters/ThresholdingFilter.h"
 
 namespace M4D
 {
-
 namespace Imaging
 {
 
-template< class InType, class OutType>
+template< typename InType, typename OutType>
 class BoneSegmentationRemote
   : public RemoteFilter<InType, OutType>
 {
@@ -24,7 +25,7 @@ private:
    *  retrieving public members, that will provide ability to change
    *  the filter options from outer world.
    */
-  ThresholdingFilterMaskOptions<InType> m_thresholdingOptions;
+  ThresholdingFilterMask<InType>::Properties m_thresholdingOptions;
   // ...
 
   ClientJob *m_job;

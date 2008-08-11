@@ -286,6 +286,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\include\cellBE\RemoteFilterBase.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\include\cellBE\resourcePool.h"
 				>
 			</File>

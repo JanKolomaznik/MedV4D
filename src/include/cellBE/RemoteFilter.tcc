@@ -7,9 +7,9 @@ namespace M4D
 namespace Imaging
 {
 
+/*
 template< typename InputImageType, typename OutputImageType >
-RemoteFilter
-::RemoteFilter()
+RemoteFilter<InputImageType, OutputImageType>::RemoteFilter()
 {
 	//TODO
 }
@@ -44,7 +44,7 @@ RemoteFilter
 
 	//TODO
 }
-
+*/
 
 } /*namespace Imaging*/
 } /*namespace M4D*/

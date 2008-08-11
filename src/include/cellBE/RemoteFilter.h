@@ -13,6 +13,7 @@ namespace Imaging
 template< typename InputImageType, typename OutputImageType >
 class RemoteFilter 
 	: public AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
+  , public M4D::CellBE::RemoteFilterBase
 {
 public:
 	typedef typename  Imaging::AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType > PredecessorType;
@@ -35,9 +36,6 @@ protected:
 	PrepareOutputDatasets();
 private:
 	GET_PROPERTIES_DEFINITION_MACRO;
-
-  // gate to remote computing. Shared instance of cell client.
-  static M4D::CellBE::CellClient s_cellClient;
 
 };
 

@@ -7,7 +7,7 @@ namespace M4D
 namespace Imaging
 {
 
-template< class InType, class OutType>
+template< typename InType, typename OutType>
 BoneSegmentationRemote::BoneSegmentationRemote()
 {
   // create job
@@ -15,3 +15,5 @@ BoneSegmentationRemote::BoneSegmentationRemote()
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
+
+#endif
