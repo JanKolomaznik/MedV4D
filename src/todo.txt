@@ -6,3 +6,12 @@ Vasek Klec.:
 - implementace serializatoru
 - ladeni
 - dokumentovani
+
+
+/////////////////////////////
+Jan Kolomaznik:
+/////////////////////////////
+- dokumentovani
+- refaktorizace a ladeni
+- psani abstraktnich filtru (specialni pripady) a konkretni implementace.
+- ukazkove aplikace

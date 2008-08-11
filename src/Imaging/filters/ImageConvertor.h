@@ -2,7 +2,7 @@
 #define _IMAGE_CONVERTOR_H
 
 #include "Common.h"
-#include "Imaging/AbstractGenericImageFilter.h"
+#include "Imaging/AbstractImageFilter.h"
 
 
 namespace M4D
@@ -23,22 +23,12 @@ public:
 };
 
 template< typename OutputImageType, typename Convertor = DefaultConvertor >
-class ImageConvertor;
-
-template< typename OutputElementType, typename Convertor >
-class ImageConvertor< Image< OutputElementType, 2 > >
-{
-	//TODO
-};
-
-template< typename InputElementType >
-class ImageConvertor< Image< InputElementType, 3 > >
-	: public AbstractPipeFilter
+class ImageConvertor
+	: public AbstractImageFilter< AbstractImage, OutputImageType >
 {
 public:
-	typedef AbstractPipeFilter 	PredecessorType;
-	typedef Image< InputElementType, 3 > OutputType;
-	typedef ImagePort< OutputType > OutputPortType;
+	typedef AbstractImageFilter< AbstractImage, OutputImageType > 	PredecessorType;
+	typedef ImagePort< OutputImageType > 				OutputPortType;
 
 	struct Properties : public PredecessorType::Properties
 	{

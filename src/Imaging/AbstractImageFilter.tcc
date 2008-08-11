@@ -22,16 +22,42 @@ AbstractImageFilter< InputImageType, OutputImageType >::AbstractImageFilter( typ
 	_outputPorts.AddPort( outPort );
 }
 
+const AbstractImage&
+GetInputImageFromPort( InputPortAbstractImage &port )
+{
+	return port.GetAbstractImage();
+}
+
+template< typename ImageType >
+const ImageType&
+GetInputImageFromPort( InputPortImageFilter< ImageType > &port )
+{
+	return port.GetImage();
+}	
+
+AbstractImage&
+GetOutputImageFromPort( OutputPortAbstractImage &port )
+{
+	return port.GetAbstractImage();
+}
+
+template< typename ImageType >
+ImageType&
+GetOutputImageFromPort( OutputPortImageFilter< ImageType > &port )
+{
+	return port.GetImage();
+}	
+
 template< typename InputImageType, typename OutputImageType >
 const InputImageType&
 AbstractImageFilter< InputImageType, OutputImageType >::GetInputImage()const
 {
 	_inputPorts.GetPortTyped< InputPortType >( 0 ).LockDataset();
-	return _inputPorts.GetPortTyped< InputPortType >( 0 ).GetImage();
+	return GetInputImageFromPort( _inputPorts.GetPortTyped< InputPortType >( 0 ) );
 }
 
 template< typename InputImageType, typename OutputImageType >
-void
+void 
 AbstractImageFilter< InputImageType, OutputImageType >::ReleaseInputImage()const
 {
 	_inputPorts.GetPortTyped< InputPortType >( 0 ).ReleaseDatasetLock();
@@ -49,7 +75,7 @@ OutputImageType&
 AbstractImageFilter< InputImageType, OutputImageType >::GetOutputImage()const
 {
 	_outputPorts.GetPortTyped< OutputPortType >( 0 ).LockDataset();
-	return _outputPorts.GetPortTyped< OutputPortType >( 0 ).GetImage();
+	return GetOutputImageFromPort( _outputPorts.GetPortTyped< OutputPortType >( 0 ) );
 }
 
 template< typename InputImageType, typename OutputImageType >

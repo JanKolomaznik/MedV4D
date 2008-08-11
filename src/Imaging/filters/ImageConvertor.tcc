@@ -8,60 +8,52 @@ namespace M4D
 namespace Imaging
 {
 
-template< typename InputElementType >
-ImageConvertor< Image< InputElementType, 3 > >
-::ImageConvertor( Properties  * prop )
+template< typename OutputImageType, typename Convertor = DefaultConvertor >
+ImageConvertor< OutputImageType >
+::ImageConvertor( ImageConvertor< OutputImageType >::Properties  * prop )
+	: PredecessorType( prop )
 {
-	M4D::Imaging::InputPort *inPort = new InputPortAbstractImage();
-	M4D::Imaging::OutputPort *outPort = new OutputPortType();
 
-	//TODO check if OK
-	this->_inputPorts.AddPort( inPort );
-	this->_outputPorts.AddPort( outPort );
 }
 
-template< typename InputElementType >
-ImageConvertor< Image< InputElementType, 3 > >
+template< typename OutputImageType, typename Convertor = DefaultConvertor >
+ImageConvertor
 ::ImageConvertor()
+	: PredecessorType( new Properties() )
 {
-	M4D::Imaging::InputPort *inPort = new InputPortAbstractImage();
-	M4D::Imaging::OutputPort *outPort = new OutputPortType();
-
-	//TODO check if OK
-	this->_inputPorts.AddPort( inPort );
-	this->_outputPorts.AddPort( outPort );
+	
 }
 
-template< typename InputElementType >
+template< typename OutputImageType, typename Convertor = DefaultConvertor >
 bool
-ImageConvertor< Image< InputElementType, 3 > >
+ImageConvertor
 ::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
 {
 
 }
 
-template< typename InputElementType >
+template< typename OutputImageType, typename Convertor = DefaultConvertor >
 void
-ImageConvertor< Image< InputElementType, 3 > >
+ImageConvertor
 ::PrepareOutputDatasets()
 {
-
+	PredecessorType::PrepareOutputDatasets();
 }
 
-template< typename InputElementType >
+template< typename OutputImageType, typename Convertor = DefaultConvertor >
 void
-ImageConvertor< Image< InputElementType, 3 > >
+ImageConvertor
 ::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
 {
-
+	PredecessorType::BeforeComputation( utype );
 }
 
-template< typename InputElementType >
+template< typename OutputImageType, typename Convertor = DefaultConvertor >
 void
-ImageConvertor< Image< InputElementType, 3 > >
+ImageConvertor
 ::AfterComputation( bool successful )
 {
-
+	PredecessorType::AfterComputation( successful );
 }
 
 

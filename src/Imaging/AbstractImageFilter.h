@@ -9,6 +9,7 @@
 #include "Imaging/ImageFactory.h"
 #include "Imaging/AbstractFilter.h"
 #include "Imaging/ModificationManager.h"
+#include "Imaging/ImageTraits.h"
 
 #include <vector>
 
@@ -24,9 +25,9 @@ class AbstractImageFilter: public AbstractPipeFilter
 public:
 	typedef AbstractPipeFilter	PredecessorType;
 
-	typedef typename M4D::Imaging::InputPortImageFilter< InputImageType >
+	typedef typename M4D::Imaging::ImageTraits< InputImageType >::InputPort
 		InputPortType;
-	typedef typename M4D::Imaging::OutputPortImageFilter< OutputImageType >	
+	typedef typename M4D::Imaging::ImageTraits< OutputImageType >::OutputPort
 		OutputPortType;
 	typedef InputImageType	InputImage;
 	typedef OutputImageType OutputImage;
