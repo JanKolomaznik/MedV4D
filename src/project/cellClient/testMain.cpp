@@ -21,7 +21,7 @@ int main()
     Image<uint8, 3>::Ptr outImage = 
       ImageFactory::CreateEmptyImage3DTyped<uint8>(15, 15, 15);
 
-    BoneSegmentationRemote< Image<uint8, 3,>, Image<uint8, 3>> remFilter;
+    BoneSegmentationRemote< Image<uint8, 3>, Image<uint8, 3> > remFilter;
 
     //client.Run();
   }
