@@ -1,0 +1,8 @@
+
+
+/////////////////////////////
+Vasek Klec.:
+/////////////////////////////
+- implementace serializatoru
+- ladeni
+- dokumentovani
