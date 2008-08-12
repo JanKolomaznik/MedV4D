@@ -134,6 +134,18 @@ m4dGUISliceViewerWidget::ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imag
     switch( msg->msgID )
     {
         case Imaging::PMI_FILTER_UPDATED:
+	_ready = false;
+	if ( _inPort->IsPlugged() )
+	{
+	    if ( _inPort->TryLockDataset() )
+	    {
+		_sliceNum = _inPort->GetAbstractImage().GetDimensionExtents(2).minimum;
+		_inPort->ReleaseDatasetLock();
+		_ready = true;
+	    }
+	    else
+		return;
+	}
 	updateGL();
 	break;
 	
