@@ -52,6 +52,7 @@ m4dGUISliceViewerWidget::setInputPort( )
 {
     _inPort->UnPlug();
     setParameters();
+    updateGL();
 }
 
 void
@@ -59,6 +60,7 @@ m4dGUISliceViewerWidget::setInputPort( Imaging::ConnectionInterface* conn )
 {
     conn->ConnectConsumer( *_inPort );
     setParameters();
+    updateGL();
 }
 
 void
@@ -135,19 +137,19 @@ m4dGUISliceViewerWidget::ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imag
     {
         case Imaging::PMI_FILTER_UPDATED:
         case Imaging::PMI_PORT_PLUGGED:
-	_ready = false;
-	if ( _inPort->IsPlugged() )
 	{
-	    if ( _inPort->TryLockDataset() )
+	    _ready = false;
+	    if ( _inPort->IsPlugged() )
 	    {
-		_sliceNum = _inPort->GetAbstractImage().GetDimensionExtents(2).minimum;
-		_inPort->ReleaseDatasetLock();
-		_ready = true;
+	        if ( _inPort->TryLockDataset() )
+	        {
+		    _sliceNum = _inPort->GetAbstractImage().GetDimensionExtents(2).minimum;
+		    _inPort->ReleaseDatasetLock();
+		    _ready = true;
+	        }
 	    }
-	    else
-		return;
+	    updateGL();
 	}
-	updateGL();
 	break;
 	
 	default:
