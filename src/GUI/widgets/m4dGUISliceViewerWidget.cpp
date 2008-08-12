@@ -414,6 +414,37 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	}
 	break;
 
+        case NTID_SIGNED_CHAR:
+	{    
+	    maxvalue = 127.;
+	    int8* pixel, *original;
+	    if ( _inPort->TryLockDataset() )
+	    {
+	        original = Imaging::Image< int8, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
+	        original += ( sliceNum - _inPort->GetAbstractImage().GetDimensionExtents(2).minimum ) * height * width;
+		_inPort->ReleaseDatasetLock();
+	    }
+	    else
+	    {
+	        _ready = false;
+		return;
+	    }
+
+	    pixel = new int8[ height * width ];
+	    unsigned i;
+	    for ( i = 0; i < width * height; ++i )
+	    {
+	        if ( ( _contrastRate *   ( original[i]+ _brightnessRate ) ) > maxvalue ) pixel[i] = (int8)maxvalue;
+		else if ( ( _contrastRate *   ( original[i] + _brightnessRate ) ) < -maxvalue ) pixel[i] = (int8)(-maxvalue);
+		else pixel[i] = (uint8)( _contrastRate *   ( original[i] + _brightnessRate ) );
+	    }
+	    glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
+	                  GL_LUMINANCE, GL_UNSIGNED_BYTE, pixel );
+	    delete[] pixel;
+	    
+	}
+	break;
+
         case NTID_UNSIGNED_CHAR:
 	{    
 	    maxvalue = 255.;
@@ -471,6 +502,36 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	    }
 	    glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
 	                  GL_LUMINANCE, GL_UNSIGNED_SHORT, pixel );
+	    delete[] pixel;
+	    
+	}
+	break;
+        case NTID_SHORT:
+	{
+	    maxvalue = 32767.;
+	    int16* pixel, *original;
+	    if ( _inPort->TryLockDataset() )
+	    {
+	        original = Imaging::Image< int16, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
+	        original += ( sliceNum - _inPort->GetAbstractImage().GetDimensionExtents(2).minimum ) * height * width;
+		_inPort->ReleaseDatasetLock();
+	    }
+	    else
+	    {
+	        _ready = false;
+		return;
+	    }
+
+	    pixel = new int16[ height * width ];
+	    unsigned i;
+	    for ( i = 0; i < width * height; ++i )
+	    {
+	        if ( ( _contrastRate *   ( original[i] + _brightnessRate ) ) > maxvalue ) pixel[i] = (int16)maxvalue;
+		else if ( ( _contrastRate *   ( original[i] + _brightnessRate ) ) < -maxvalue ) pixel[i] = (int16)(-maxvalue);
+		else pixel[i] = (int16)( _contrastRate *   ( original[i] + _brightnessRate ) );
+	    }
+	    glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
+	                  GL_LUMINANCE, GL_SHORT, pixel );
 	    delete[] pixel;
 	    
 	}
