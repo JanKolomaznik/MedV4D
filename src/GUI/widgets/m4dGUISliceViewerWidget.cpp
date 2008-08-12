@@ -134,6 +134,7 @@ m4dGUISliceViewerWidget::ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imag
     switch( msg->msgID )
     {
         case Imaging::PMI_FILTER_UPDATED:
+        case Imaging::PMI_PORT_PLUGGED:
 	_ready = false;
 	if ( _inPort->IsPlugged() )
 	{
