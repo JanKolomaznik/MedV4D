@@ -8,7 +8,11 @@ namespace M4D
 namespace Imaging
 {
 
-enum FlowDirection{ FD_IN_FLOW, FD_AGAINST_FLOW };
+enum FlowDirection{ 
+			FD_IN_FLOW 		= 1, 
+			FD_AGAINST_FLOW		= 1 << 1, 
+			FD_BOTH 		= ( 1 | (1 << 1) ) 
+		};
 
 enum PipelineMsgID
 {

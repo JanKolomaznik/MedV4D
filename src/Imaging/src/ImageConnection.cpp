@@ -41,6 +41,12 @@ AbstractImageConnection
 		throw AbstractImageConnectionInterface::EInvalidImage();
 	}
 	this->_image = image;
+
+	RouteMessage( 
+			MsgFilterUpdated::CreateMsg( true ), 
+			PipelineMessage::MSS_NORMAL,
+			FD_BOTH	
+		);
 }
 
 const AbstractImage &

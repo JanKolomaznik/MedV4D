@@ -31,7 +31,7 @@ public:
 	/**
 	 * Default constructor
 	 **/
-	ConnectionInterface() {}
+	ConnectionInterface():	_producer( NULL ) {}
 
 	/**
 	 * Virtual destructor.
