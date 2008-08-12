@@ -99,11 +99,11 @@ ApplyReaderBBoxFunc( const Image< ElementType, 4 > &in )
 }
 
 template< typename ElementType, unsigned dim >
-WriterBBoxInterface *
+WriterBBoxInterface &
 ApplyWriterBBoxFunc( Image< ElementType, dim > &out );
 
 template< typename ElementType, unsigned dim >
-WriterBBoxInterface *
+WriterBBoxInterface &
 ApplyWriterBBoxFunc( Image< ElementType, 2 > &out )
 {
 	return out.SetDirtyBBox( 
@@ -115,7 +115,7 @@ ApplyWriterBBoxFunc( Image< ElementType, 2 > &out )
 }
 
 template< typename ElementType, unsigned dim >
-WriterBBoxInterface *
+WriterBBoxInterface &
 ApplyWriterBBoxFunc( Image< ElementType, 3 > &out )
 {
 	return out.SetDirtyBBox( 
@@ -129,7 +129,7 @@ ApplyWriterBBoxFunc( Image< ElementType, 3 > &out )
 }
 
 template< typename ElementType, unsigned dim >
-WriterBBoxInterface *
+WriterBBoxInterface &
 ApplyWriterBBoxFunc( Image< ElementType, 4 > &out )
 {
 	return out.SetDirtyBBox( 
