@@ -37,7 +37,7 @@ AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
 	utype = AbstractPipeFilter::RECALCULATION;
 
 	_readerBBox = ApplyReaderBBox( *(this->in) );
-	_writerBBox = ApplyWriterBBox( *(this->out) );
+	_writerBBox = &(ApplyWriterBBox( *(this->out) ) );
 	
 }
 
@@ -153,7 +153,7 @@ AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
 }
 
 template< typename InputImageType, typename OutputImageType >
-WriterBBoxInterface *
+WriterBBoxInterface &
 AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
 ::ApplyWriterBBox( OutputImageType &out )
 {
