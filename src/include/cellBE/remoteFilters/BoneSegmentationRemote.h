@@ -52,7 +52,7 @@ private:
 	ThresholdingOptsType m_thresholdingOptions;
 	// ...
 
-	ClientJob *m_job;
+  M4D::CellBE::ClientJob *m_job;
 
 protected:
 

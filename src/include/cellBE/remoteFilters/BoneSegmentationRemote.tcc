@@ -8,7 +8,7 @@ namespace Imaging
 {
 
 template< typename InType, typename OutType>
-BoneSegmentationRemote::BoneSegmentationRemote()
+BoneSegmentationRemote<InType, OutType>::BoneSegmentationRemote()
 {
   // create job
 }
