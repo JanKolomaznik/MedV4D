@@ -13,5 +13,7 @@ Jan Kolomaznik:
 /////////////////////////////
 - dokumentovani
 - refaktorizace a ladeni
-- psani abstraktnich filtru (specialni pripady) a konkretni implementace.
+
+Toto se da kdykoliv prerusit - co bude hotovo to bude hotovo.
+- psani abstraktnich filtru (specialni pripady) a konkretni implementace. 
 - ukazkove aplikace
