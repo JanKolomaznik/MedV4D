@@ -25,8 +25,8 @@ protected:
 	CreatePipeline();
 
 	M4D::Imaging::PipelineContainer	_pipeline;
-	M4D::Imaging::AbstractImageConnection *_inConnection;
-	M4D::Imaging::AbstractImageConnection *_outConnection;
+	M4D::Imaging::AbstractImageConnectionInterface *_inConnection;
+	M4D::Imaging::AbstractImageConnectionInterface *_outConnection;
 
 private:
 

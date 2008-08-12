@@ -9,7 +9,7 @@ typedef ThresholdingFilter< ImageType > Thresholding;
 typedef ImageConnection< ImageType > InConnection;
 
 mainWindow::mainWindow ()
-  : m4dGUIMainWindow( APPLICATION_NAME )
+  : m4dGUIMainWindow( APPLICATION_NAME ), _inConnection( NULL ), _outConnection( NULL )
 {
 	Q_INIT_RESOURCE( mainWindow ); 
 
@@ -26,13 +26,14 @@ mainWindow::mainWindow ()
 
 	// add your own settings widgets
 
-	addDockWindow( "Bone Segmentation", new QListWidget );
+	//addDockWindow( "Bone Segmentation", new QListWidget );
 }
 
 void 
 mainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
 {
 	AbstractImage::AImagePtr inputImage = ImageFactory::CreateImageFromDICOM( dicomObjSet );
+
 
 	unsigned dim = inputImage->GetDimension(); 
 	int type     = inputImage->GetElementTypeID();
@@ -66,8 +67,8 @@ mainWindow::CreatePipeline()
 	Thresholding *filter = new Thresholding();
 
 	_pipeline.AddFilter( filter );
-	_inConnection = dynamic_cast<AbstractImageConnection*>( &_pipeline.MakeInputConnection( *filter, 0, false ) );
-	_outConnection = dynamic_cast<AbstractImageConnection*>( &_pipeline.MakeOutputConnection( *filter, 0, true ) );
+	_inConnection = dynamic_cast<AbstractImageConnectionInterface*>( &_pipeline.MakeInputConnection( *filter, 0, false ) );
+	_outConnection = dynamic_cast<AbstractImageConnectionInterface*>( &_pipeline.MakeOutputConnection( *filter, 0, true ) );
 
 	addSource( _inConnection, "Bone segmentation", "Stage #1" );
 	addSource( _outConnection, "Bone segmentation", "Result" );
