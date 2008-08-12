@@ -152,6 +152,9 @@ MainExecutionThread::operator()()
 	D_BLOCK_COMMENT( "++++ Entering MainExecutionThread()", "----- Leaving MainExecutionThread()" );
 	D_PRINT( "++++ Filter = " << _filter ); 
 
+	//We check properties before we use them.
+	_filter->_properties->CheckProperties();
+
 	//We want to do some steps before actual computing
 	_filter->BeforeComputation( _updateType );
 	

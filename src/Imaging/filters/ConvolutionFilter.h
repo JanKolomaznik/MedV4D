@@ -79,11 +79,17 @@ public:
 	{
 		typedef boost::shared_array<MatrixElement> MatrixPtr;
 		Properties();
+		
+		void
+		CheckProperties() 
+			{ _sliceComputationNeighbourCount = depth / 2; }
+
 		MatrixPtr	matrix; //length = width*height*depth
 
 		size_t	width;
 		size_t	height;
 		size_t	depth;
+	
 	};
 
 	ConvolutionFilter3D();

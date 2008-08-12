@@ -121,7 +121,8 @@ public:
 	{
 		virtual 
 		~Properties(){}
-
+		virtual void
+		CheckProperties() {}
 	};
   
 	/**

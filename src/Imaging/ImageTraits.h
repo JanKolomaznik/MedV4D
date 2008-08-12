@@ -26,6 +26,20 @@ public:
 	typedef boost::shared_ptr< AbstractImage >	Ptr;
 };
 
+template< unsigned Dim >
+class ImageTraits< AbstractImageDim< Dim > >
+{
+public:
+	typedef void	ElementType;
+
+	static const unsigned	Dimension = Dim;
+
+	typedef AbstractImageConnection					Connection;
+	typedef InputPortAbstractImage 					InputPort;
+	typedef OutputPortAbstractImage 				OutputPort;
+	typedef typename boost::shared_ptr< AbstractImageDim< Dim > >	Ptr;
+};
+
 template< typename EType, unsigned Dim > 
 class ImageTraits< Image< EType, Dim > >
 {

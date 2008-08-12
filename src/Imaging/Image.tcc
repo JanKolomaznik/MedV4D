@@ -9,7 +9,7 @@ namespace Imaging
 
 template< typename ElementType >
 Image< ElementType, 2 >::Image()
-: AbstractImage2D( this->_dimExtents )
+: AbstractImageDim< 2 >( this->_dimExtents )
 {
 	for( unsigned i = 0; i < Dimension; ++i ) {
 		_dimExtents[i].minimum = 0;
@@ -21,7 +21,7 @@ Image< ElementType, 2 >::Image()
 
 template< typename ElementType >
 Image< ElementType, 2 >::Image( AbstractImageData::APtr imageData )
-: AbstractImage2D( this->_dimExtents )
+: AbstractImageDim< 2 >( this->_dimExtents )
 {
 	try 
 	{
@@ -39,7 +39,7 @@ Image< ElementType, 2 >::Image( AbstractImageData::APtr imageData )
 
 template< typename ElementType >
 Image< ElementType, 2 >::Image( typename ImageDataTemplate< ElementType >::Ptr imageData )
-: AbstractImage2D( this->_dimExtents )
+: AbstractImageDim< 2 >( this->_dimExtents )
 {
 	_imageData = imageData;
 	
@@ -225,7 +225,7 @@ Image< ElementType, 2 >::GetModificationManager()const
 
 template< typename ElementType >
 Image< ElementType, 3 >::Image()
-: AbstractImage3D( this->_dimExtents )
+: AbstractImageDim< 3 >( this->_dimExtents )
 {
 	for( unsigned i = 0; i < Dimension; ++i ) {
 		_dimExtents[i].minimum = 0;
@@ -237,7 +237,7 @@ Image< ElementType, 3 >::Image()
 
 template< typename ElementType >
 Image< ElementType, 3 >::Image( AbstractImageData::APtr imageData )
-: AbstractImage3D( _dimExtents )
+: AbstractImageDim< 3 >( _dimExtents )
 {
 	try 
 	{
@@ -255,7 +255,7 @@ Image< ElementType, 3 >::Image( AbstractImageData::APtr imageData )
 
 template< typename ElementType >
 Image< ElementType, 3 >::Image( typename ImageDataTemplate< ElementType >::Ptr imageData )
-: AbstractImage3D( _dimExtents )
+: AbstractImageDim< 3 >( _dimExtents )
 {
 	_imageData = imageData;
 	

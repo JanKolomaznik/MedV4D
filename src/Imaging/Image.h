@@ -66,24 +66,29 @@ class AbstractImage::EWrongDimension
 	//TODO
 };
 
+template< unsigned dim >
+class AbstractImageDim;
 
-class AbstractImage2D : public AbstractImage
+template<>
+class AbstractImageDim< 2 > : public AbstractImage
 {
 public:
-	AbstractImage2D( DimensionExtents *dimExtents ): AbstractImage( 2, dimExtents ) {}
+	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( 2, dimExtents ) {}
 };
 
-class AbstractImage3D : public AbstractImage
+template<>
+class AbstractImageDim< 3 > : public AbstractImage
 {
 public:
-	AbstractImage3D( DimensionExtents *dimExtents ): AbstractImage( 3, dimExtents ) {}
+	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( 3, dimExtents ) {}
 
 };
 
-class AbstractImage4D : public AbstractImage
+template<>
+class AbstractImageDim< 4 > : public AbstractImage
 {
 public:
-	AbstractImage4D( DimensionExtents *dimExtents ): AbstractImage( 4, dimExtents ) {}
+	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( 4, dimExtents ) {}
 
 };
 
@@ -94,7 +99,7 @@ class Image;
  * Partial specialization of image template for two dimensional case.
  **/
 template< typename ElementType >
-class Image< ElementType, 2 >: public AbstractImage2D
+class Image< ElementType, 2 >: public AbstractImageDim< 2 >
 {
 public:
 	friend class ImageFactory;
@@ -237,7 +242,7 @@ private:
  * Partial specialization of image template for three dimensional case.
  **/
 template< typename ElementType >
-class Image< ElementType, 3 >: public AbstractImage3D
+class Image< ElementType, 3 >: public AbstractImageDim< 3 >
 {
 public:
 	friend class ImageFactory;
@@ -375,7 +380,7 @@ private:
  * Partial specialization of image template for four dimensional case.
  **/
 template< typename ElementType >
-class Image< ElementType, 4 >: public AbstractImage4D
+class Image< ElementType, 4 >: public AbstractImageDim< 4 >
 {
 public:
 	friend class ImageFactory;
