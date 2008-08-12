@@ -19,6 +19,7 @@ enum PipelineMsgID
 	PMI_FILTER_UPDATED,
 	PMI_FILTER_START_MODIFICATION,
 	PMI_FILTER_CANCELED,
+	PMI_PORT_PLUGGED,
 
 	PMI_END_SYSMSG = 1000
 };
@@ -109,6 +110,23 @@ public:
 protected:
 	bool	_whole;
 };
+
+class MsgPortPlugged: public PipelineMessage
+{
+public:
+	MsgPortPlugged(): PipelineMessage( PMI_PORT_PLUGGED )
+		{ /*empty*/ }
+
+	static PipelineMessage::Ptr
+	CreateMsg()
+	{
+		//TODO improve
+		return PipelineMessage::Ptr( new MsgPortPlugged() );
+	}
+
+};
+
+//*****************************************************************************
 
 class MessageSenderInterface
 {

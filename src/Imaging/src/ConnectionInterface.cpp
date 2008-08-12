@@ -20,14 +20,15 @@ ConnectionInterface::RouteMessage(
 		_messageHook->ReceiveMessage( msg, sendStyle, direction );
 	}
 
-	if( direction == FD_IN_FLOW ) {
+	if( direction & FD_IN_FLOW ) {
 		ConsumersMap::iterator it;
 		for( it = _consumers.begin(); it != _consumers.end(); ++it ) {
-			it->second->ReceiveMessage( msg, sendStyle, direction );
+			it->second->ReceiveMessage( msg, sendStyle, FD_IN_FLOW );
 		}
-	} else {
+	}
+	if( direction & FD_AGAINST_FLOW ) {
 		if( _producer ) {
-			_producer->ReceiveMessage( msg, sendStyle, direction );
+			_producer->ReceiveMessage( msg, sendStyle, FD_AGAINST_FLOW );
 		}
 
 	}

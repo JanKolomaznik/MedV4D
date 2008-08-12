@@ -106,6 +106,7 @@ public:
 					
 protected:
 
+
 	ConnectionInterface *_connection;
 private:
 	/**
@@ -169,7 +170,12 @@ public:
 		);
 	
 protected:
-
+	void
+	PortPluggedMsg()
+		{ ReceiveMessage( MsgPortPlugged::CreateMsg(), 
+			PipelineMessage::MSS_NORMAL,
+			FD_IN_FLOW );
+		};
 private:
 
 };
@@ -193,6 +199,12 @@ public:
 		PipelineMessage::MessageSendStyle 	sendStyle 
 		);
 protected:
+	void
+	PortPluggedMsg()
+		{ ReceiveMessage( MsgPortPlugged::CreateMsg(), 
+			PipelineMessage::MSS_NORMAL,
+			FD_AGAINST_FLOW	);
+		};
 
 private:
 
