@@ -45,7 +45,7 @@ private:
 	ReaderBBoxInterface::Ptr
 	ApplyReaderBBox( const InputImageType &in );
 
-	WriterBBoxInterface *
+	WriterBBoxInterface &
 	ApplyWriterBBox( OutputImageType &out );
 
 };

@@ -78,7 +78,7 @@ public:
 
 	struct Properties : public PredecessorType::Properties
 	{
-		Properties(): bottom( 0 ), top( 0 ), inValue( 0 ), outValue( 0 ) {}
+		Properties(): PredecessorType::Properties( 0, 10 ), bottom( 0 ), top( 0 ), inValue( 0 ), outValue( 0 ) {}
 
 		InputElementType	bottom;	
 		InputElementType	top;
