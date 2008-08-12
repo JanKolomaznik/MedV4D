@@ -9,13 +9,18 @@
 
 class mainWindow: public M4D::GUI::m4dGUIMainWindow
 {
-  Q_OBJECT
+	Q_OBJECT
 
-  public:
+public:
 
-    mainWindow ();
+	mainWindow ();
 
-  private:
+protected:
+	void
+	process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet );
+
+	M4D::Imaging::AbstractImageConnection _conn;
+private:
 
 };
 

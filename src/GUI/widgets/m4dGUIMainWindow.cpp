@@ -566,26 +566,17 @@ void m4dGUIMainWindow::delegateAction ( unsigned actionIdx, m4dGUIAbstractViewer
 
 void m4dGUIMainWindow::process ( DcmProvider::DicomObjSetPtr dicomObjSet )
 {
-	AbstractImage::AImagePtr inputImage = ImageFactory::CreateImageFromDICOM( dicomObjSet );
+	/*AbstractImage::AImagePtr inputImage = ImageFactory::CreateImageFromDICOM( dicomObjSet );
 
-	unsigned dim = inputImage->GetDimension(); 
-	int type     = inputImage->GetElementTypeID();
-
-	if ( dim != 3 || type != NTID_UNSIGNED_SHORT ) {
-		//TODO throw exception
-
-    QMessageBox::critical( this, tr( "Exception" ), tr( "Bad type" ) );
-    return;
-	}
 	try {
-		ImageConnection< Image< unsigned short, 3 > > *conn = new ImageConnection< Image< unsigned short, 3 > >( false );
+		AbstractImageConnection *conn = new AbstractImageConnection();
 		conn->PutImage( inputImage );
 		mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
 		conn->ConnectConsumer( mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 	} 
 	catch( ... ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Some exception" ) );
-	}
+	}*/
 }
 
 } // namespace GUI
