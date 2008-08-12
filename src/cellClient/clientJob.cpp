@@ -15,7 +15,7 @@ uint32 ClientJob::lastID;
 ///////////////////////////////////////////////////////////////////////////////
 
 ClientJob::ClientJob(
-                     FilterPropsVector &filters
+                     FilterSerializerVector &filters
                      , M4D::Imaging::AbstractDataSet *inDataSet
                      , M4D::Imaging::AbstractDataSet *outdataSet
                      , const std::string &address
@@ -128,7 +128,7 @@ ClientJob::SerializeFiltersProperties( void)
 
   NetStreamVector tmp;
 
-  for( FilterPropsVector::iterator it = m_filters.begin();
+  for( FilterSerializerVector::iterator it = m_filters.begin();
     it != m_filters.end(); it++)
   {
     filterSettingsSerialized << (uint16) (*it)->GetID();  // insert filterID

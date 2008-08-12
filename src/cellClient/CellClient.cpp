@@ -61,7 +61,7 @@ CellClient::FindNonCommentLine( ifstream &f, string &line)
 ///////////////////////////////////////////////////////////////////////////////
 
 ClientJob *
-CellClient::CreateJob( FilterPropsVector &filters,
+CellClient::CreateJob( FilterSerializerVector &filters,
                        M4D::Imaging::AbstractDataSet *inDataSet,
                        M4D::Imaging::AbstractDataSet *outDataSet)
 {
@@ -78,7 +78,7 @@ CellClient::CreateJob( FilterPropsVector &filters,
 ///////////////////////////////////////////////////////////////////////////////
 
 const string &
-CellClient::FindAvailableServer( const FilterPropsVector &filters)
+CellClient::FindAvailableServer( const FilterSerializerVector &filters)
 {
 	// find available server with least load (load balancing)
 	return m_servers[0];

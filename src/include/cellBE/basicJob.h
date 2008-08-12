@@ -49,7 +49,7 @@ protected:
   static DataPieceHeader endHeader;   // data header saying noMoreData
 
   // filter setting vector
-  FilterPropsVector m_filters;
+  FilterSerializerVector m_filters;
   
   // vector for sending & retrieving filterSettings & dataSetProperties data
   NetStreamVector filterSettingsSerialized;

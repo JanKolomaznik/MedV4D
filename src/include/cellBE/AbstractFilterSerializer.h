@@ -52,7 +52,7 @@ public:
  *  while creation of a new job. It defines actual remote pipeline
  *  that the created job represents.
  */
-typedef std::vector<AbstractFilterSerializer *> FilterPropsVector;
+typedef std::vector<AbstractFilterSerializer *> FilterSerializerVector;
 
 
 class WrongFilterException

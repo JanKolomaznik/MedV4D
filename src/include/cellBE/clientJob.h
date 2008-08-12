@@ -33,7 +33,7 @@ class ClientJob
 
   // only CellClient can construct instances through CreateJob members
   ClientJob(
-    FilterPropsVector &filters
+    FilterSerializerVector &filters
     , M4D::Imaging::AbstractDataSet *inDataSet
     , M4D::Imaging::AbstractDataSet *outdataSet
     , const std::string &address

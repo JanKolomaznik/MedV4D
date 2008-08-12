@@ -23,7 +23,7 @@ public:
 
   // creates job
   ClientJob *CreateJob(
-    FilterPropsVector &filters, 
+    FilterSerializerVector &filters, 
     M4D::Imaging::AbstractDataSet *inDataSet,
     M4D::Imaging::AbstractDataSet *outDataSet);
 
@@ -42,7 +42,7 @@ private:
    *	Returns string reference containing address of least loaded available
    *	server able doing specified job. Here can be implemented some load balancing functionality.
    */
-  const std::string & FindAvailableServer( const FilterPropsVector &filters);
+  const std::string & FindAvailableServer( const FilterSerializerVector &filters);
 
 };
 

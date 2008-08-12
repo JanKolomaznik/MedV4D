@@ -32,8 +32,16 @@ protected:
 			OutputImageType		&out
 		    );
 
-	void
-	PrepareOutputDatasets();
+  /**
+   *  This method should count output image size based on filters
+   *  that are in remote pipeline through SetImageSize() method
+   *  of output ports.
+   */
+	virtual void PrepareOutputDatasets() = 0;
+
+  // filter serializer vector that will define actual remote pipeline
+  FilterSerializerVector m_filterSerializers;
+
 private:
 	GET_PROPERTIES_DEFINITION_MACRO;
 

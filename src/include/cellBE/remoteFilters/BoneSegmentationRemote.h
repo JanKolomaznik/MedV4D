@@ -28,11 +28,11 @@ public:
 	typedef typename RemoteFilter<InType, OutType> PredecessorType;
 
 	BoneSegmentationRemote();
-
+  void PrepareOutputDatasets();
 
 	/////////////////// To customize /////////////////////
 	// puting options available to outer world to be able to specify it ....
-	typedef typename ThresholdingFilterMask<InType>::Properties ThresholdingOptsType;
+	typedef typename ThresholdingFilter<InType>::Properties ThresholdingOptsType;
 	
 	ThresholdingOptsType *GetThreshholdingOptions( void)	
   {
