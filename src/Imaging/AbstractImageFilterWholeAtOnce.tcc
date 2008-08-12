@@ -54,11 +54,11 @@ AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
 //*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 template< typename ElementType, unsigned dim >
 ReaderBBoxInterface::Ptr
-ApplyReaderBBox(  const Image< ElementType, dim > &in );
+ApplyReaderBBox( const Image< ElementType, dim > &in );
 
 template< typename ElementType, unsigned dim >
 ReaderBBoxInterface::Ptr
-ApplyReaderBBoxFunc(  const Image< ElementType, 2 > &in )
+ApplyReaderBBoxFunc( const Image< ElementType, 2 > &in )
 {
 	return in.GetDirtyBBox( 
 				in.GetDimensionExtents( 0 ).minimum,
@@ -70,7 +70,7 @@ ApplyReaderBBoxFunc(  const Image< ElementType, 2 > &in )
 
 template< typename ElementType, unsigned dim >
 ReaderBBoxInterface::Ptr
-ApplyReaderBBoxFunc(  const Image< ElementType, 3 > &in )
+ApplyReaderBBoxFunc( const Image< ElementType, 3 > &in )
 {
 	return in.GetDirtyBBox( 
 				in.GetDimensionExtents( 0 ).minimum,
@@ -84,7 +84,7 @@ ApplyReaderBBoxFunc(  const Image< ElementType, 3 > &in )
 
 template< typename ElementType, unsigned dim >
 ReaderBBoxInterface::Ptr
-ApplyReaderBBoxFunc(  const Image< ElementType, 4 > &in )
+ApplyReaderBBoxFunc( const Image< ElementType, 4 > &in )
 {
 	return in.GetDirtyBBox( 
 				in.GetDimensionExtents( 0 ).minimum,
@@ -100,11 +100,11 @@ ApplyReaderBBoxFunc(  const Image< ElementType, 4 > &in )
 
 template< typename ElementType, unsigned dim >
 WriterBBoxInterface *
-ApplyWriterBBoxFunc(  const Image< ElementType, dim > &out );
+ApplyWriterBBoxFunc( Image< ElementType, dim > &out );
 
 template< typename ElementType, unsigned dim >
 WriterBBoxInterface *
-ApplyWriterBBoxFunc(  const Image< ElementType, 2 > &out )
+ApplyWriterBBoxFunc( Image< ElementType, 2 > &out )
 {
 	return out.SetDirtyBBox( 
 				out.GetDimensionExtents( 0 ).minimum,
@@ -116,7 +116,7 @@ ApplyWriterBBoxFunc(  const Image< ElementType, 2 > &out )
 
 template< typename ElementType, unsigned dim >
 WriterBBoxInterface *
-ApplyWriterBBoxFunc(  const Image< ElementType, 3 > &out )
+ApplyWriterBBoxFunc( Image< ElementType, 3 > &out )
 {
 	return out.SetDirtyBBox( 
 				out.GetDimensionExtents( 0 ).minimum,
@@ -130,7 +130,7 @@ ApplyWriterBBoxFunc(  const Image< ElementType, 3 > &out )
 
 template< typename ElementType, unsigned dim >
 WriterBBoxInterface *
-ApplyWriterBBoxFunc(  const Image< ElementType, 4 > &out )
+ApplyWriterBBoxFunc( Image< ElementType, 4 > &out )
 {
 	return out.SetDirtyBBox( 
 				out.GetDimensionExtents( 0 ).minimum,

@@ -160,6 +160,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\src\ImageConnection.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\src\ImageFactory.cpp"
 				>
 			</File>
@@ -210,6 +214,22 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\AbstractImageFilterWholeAtOnce.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\AbstractImageFilterWholeAtOnce.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\AbstractImageSliceFilter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\AbstractImageSliceFilter.tcc"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\AbstractPipeline.h"
 				>
 			</File>
@@ -223,14 +243,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Imaging\dataSetClassEnum.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\DefaultConnection.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\DefaultConnection.tcc"
 				>
 			</File>
 			<File
@@ -286,6 +298,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\ImageTraits.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\ModificationManager.h"
 				>
 			</File>
@@ -319,14 +335,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Imaging\filters\ConvolutionFilter.tcc"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\filters\RemoteFilter.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\filters\RemoteFilter.tcc"
 				>
 			</File>
 			<File
