@@ -120,6 +120,9 @@ private:
 
     short					_flipH;
     short					_flipV;
+    size_t					_minimum[3];
+    size_t					_maximum[3];
+    int						_imageID;
     
     bool					_ready;
     bool					_printData;
