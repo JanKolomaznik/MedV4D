@@ -13,10 +13,12 @@ RCC=rcc
 #Name of this project part
 NAME=		BoneSegmentation
 #Names of target sources
-TARGETS=	main\
-		mainWindow
+TARGETS=	main \
+		mainWindow \
+		SettingsBox
 
-MOCINPUT=	mainWindow.h
+MOCINPUT=	mainWindow.h \
+		SettingsBox.h
 
 RCCINPUT=	mainWindow.qrc
 

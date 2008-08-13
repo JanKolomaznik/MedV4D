@@ -1,5 +1,6 @@
 #include "mainWindow.h"
 #include "Imaging/filters/ThresholdingFilter.h"
+#include "SettingsBox.h"
 
 using namespace std;
 using namespace M4D::Imaging;
@@ -26,7 +27,7 @@ mainWindow::mainWindow ()
 
 	// add your own settings widgets
 
-	//addDockWindow( "Bone Segmentation", new QListWidget );
+	addDockWindow( "Bone Segmentation", new SettingsBox( NULL ) );
 }
 
 void 

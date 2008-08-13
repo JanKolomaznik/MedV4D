@@ -23,10 +23,7 @@ AbstractImageFilter< InputImageType, OutputImageType >::AbstractImageFilter( typ
 }
 
 const AbstractImage&
-GetInputImageFromPort( InputPortAbstractImage &port )
-{
-	return port.GetAbstractImage();
-}
+GetInputImageFromPort( InputPortAbstractImage &port ); //definition in .cpp
 
 template< typename ImageType >
 const ImageType&
@@ -36,10 +33,7 @@ GetInputImageFromPort( InputPortImageFilter< ImageType > &port )
 }	
 
 AbstractImage&
-GetOutputImageFromPort( OutputPortAbstractImage &port )
-{
-	return port.GetAbstractImage();
-}
+GetOutputImageFromPort( OutputPortAbstractImage &port ); //definition in .cpp
 
 template< typename ImageType >
 ImageType&
