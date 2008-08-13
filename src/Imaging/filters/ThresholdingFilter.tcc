@@ -12,7 +12,7 @@ template< typename InputElementType >
 ThresholdingFilter< Image< InputElementType, 3 > >
 ::ThresholdingFilter() : PredecessorType( new Properties() )
 {
-
+	
 }
 
 template< typename InputElementType >
@@ -44,7 +44,7 @@ ThresholdingFilter< Image< InputElementType, 3 > >
 			if( GetProperties().bottom <= value && GetProperties().top >= value ) {
 				//unchanged
 			} else {
-				out.GetElement( i, j, value ) = GetProperties().outValue;
+				out.GetElement( i, j, slice ) = GetProperties().outValue;
 			}
 		}
 	}

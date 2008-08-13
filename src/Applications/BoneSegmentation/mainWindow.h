@@ -4,10 +4,14 @@
 #include "GUI/m4dGUIMainWindow.h"
 #include "Imaging/PipelineContainer.h"
 #include "Imaging/ImageFactory.h"
+#include "Imaging/filters/ThresholdingFilter.h"
 
 #define ORGANIZATION_NAME     "MFF"
 #define APPLICATION_NAME      "BoneSegmentation"
 
+typedef M4D::Imaging::Image< uint16, 3 > ImageType;
+typedef M4D::Imaging::ThresholdingFilter< ImageType > Thresholding;
+typedef M4D::Imaging::ImageConnection< ImageType > InConnection;
 
 class mainWindow: public M4D::GUI::m4dGUIMainWindow
 {
@@ -25,6 +29,7 @@ protected:
 	CreatePipeline();
 
 	M4D::Imaging::PipelineContainer	_pipeline;
+	M4D::Imaging::AbstractPipeFilter	*_filter;
 	M4D::Imaging::AbstractImageConnectionInterface *_inConnection;
 	M4D::Imaging::AbstractImageConnectionInterface *_outConnection;
 

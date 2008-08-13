@@ -40,6 +40,10 @@ public:
 
 	ThresholdingFilter( Properties  * prop );
 	ThresholdingFilter();
+
+	GET_SET_PROPERTY_METHOD_MACRO( InputElementType, Bottom, bottom );
+	GET_SET_PROPERTY_METHOD_MACRO( InputElementType, Top, top );
+	GET_SET_PROPERTY_METHOD_MACRO( InputElementType, OutValue, outValue );
 protected:
 
 	bool

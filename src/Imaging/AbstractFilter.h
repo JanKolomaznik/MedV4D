@@ -20,6 +20,15 @@ namespace Imaging
 #define GET_PROPERTIES_DEFINITION_MACRO \
 	Properties & GetProperties(){ return *(static_cast<Properties*>( this->_properties ) ); }
 
+#define GET_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME ) \
+	TYPE Get##NAME ()const{ return (static_cast<Properties*>( this->_properties ) )->PROPERTY_NAME ; }
+
+#define SET_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME ) \
+	void Set##NAME ( TYPE value ){ (static_cast<Properties*>( this->_properties ) )->PROPERTY_NAME = value; }
+
+#define GET_SET_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME ) \
+	GET_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME ) \
+	SET_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME ) 
 /**
  * Structure synchronizing access to filter state informations.
  **/
