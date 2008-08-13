@@ -14,9 +14,21 @@ BoneSegmentationRemote<InType, OutType>::BoneSegmentationRemote()
 {
   AbstractFilterSerializer *ser;  
 
+  // filter serializer vector that will define actual remote pipeline
+  FilterSerializerVector m_filterSerializers;
+
   // put into the vector serializers instances in order that is in remote pipe
-  //ser = GeneralFilterSerializer::CreateSerializer<ThresholdingOptsType>()
+  ser = GeneralFilterSerializer::GetFilterSerializer<ThresholdingOptsType>()
   m_filterSerializers.push_back( ser);
+
+  // create dataSetSerializers
+  AbstractDataSetSerializer *inSerializer = NULL;
+  AbstractDataSetSerializer *outerializer = NULL;
+  GeneralDataSetSerializer::GetSerializer<InType>(getInput().GetDataSet());
+  GeneralDataSetSerializer::GetSerializer<OutType>(getOutPut().GetDataSet());
+
+  // create job
+  m_job = m_cellClient.CreateJob( m_filterSerializers, inSerializer, outSerializer);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -25,12 +37,13 @@ template< typename InType, typename OutType>
 void 
 BoneSegmentationRemote<InType, OutType>::PrepareOutputDatasets()
 {
+  AbstractDataSet *in, *out;
+
   // count output dataSet size according inner filters and set it
   int size = 0;
   getOutPort().SetImageSize( size);
 
-  // create job
-  m_job = m_cellClient.CreateJob( m_filterSerializers, getInput().GetDataSet());
+  m_job->SetDataSets( in, out);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

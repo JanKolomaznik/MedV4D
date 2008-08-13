@@ -20,26 +20,36 @@ class ClientJob
   void GenerateJobID( void);
 
   void SerializeFiltersProperties( void);
+  void SendPrimaryHeader( void);
 
   void SendCreate( void);
-  void Reexecute( void);
+  void SendDataSet( void);
+  void SendFilterProperties( void);
+  void SendExecute( void);
   void SendDestroy( void);
 
   void Serialize( NetStream &s);
   void DeSerialize( NetStream &s);
 
   void OnResponseRecieved( const boost::system::error_code& error
-    , ResponseHeader *header);    
+    , ResponseHeader *header);
 
   // only CellClient can construct instances through CreateJob members
   ClientJob(
     FilterSerializerVector &filters
-    , M4D::Imaging::AbstractDataSet *inDataSet
-    , M4D::Imaging::AbstractDataSet *outdataSet
+    , AbstractDataSetSerializer *inDataSetSeralizer
+    , AbstractDataSetSerializer *outDataSetSerializer
     , const std::string &address
     , boost::asio::io_service &service);
 
   ~ClientJob();
+
+  AbstractDataSetSerializer *m_inDataSetSeralizer;
+  AbstractDataSetSerializer *m_outDataSetSerializer;
+
+public:
+  void SetDataSets( M4D::Imaging::AbstractDataSet *inDataSet
+                  , M4D::Imaging::AbstractDataSet *outdataSet);
 
 };
 

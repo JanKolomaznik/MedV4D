@@ -50,7 +50,7 @@ ServerJob::DeserializeFilterPropertiesAndBuildPipeline( void)
 void
 ServerJob::ReadFilters( void)
 {
-  m_filterSettingContent.resize( primHeader.filterSettStreamLen);
+  m_filterSettingContent.resize( primHeader.nexPartLength);
   m_socket.async_read_some(
     boost::asio::buffer( m_filterSettingContent),
     boost::bind( &ServerJob::EndFiltersRead, this,
@@ -61,19 +61,33 @@ ServerJob::ReadFilters( void)
 ///////////////////////////////////////////////////////////////////////////////
 
 void
+ServerJob::ReadDataSet( void)
+{
+  // read the dataSet properties
+  m_filterSettingContent.resize( primHeader.nexPartLength);
+  m_socket.async_read_some(
+    boost::asio::buffer( m_filterSettingContent),
+    boost::bind( &ServerJob::EndDataSetPropertiesRead, this,
+      boost::asio::placeholders::error)
+    );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ServerJob::Execute( void)
+{
+  // m_pipeLine.run();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
 ServerJob::EndFiltersRead( const boost::system::error_code& error)
 {
   try {
     HandleErrors( error);
     DeserializeFilterPropertiesAndBuildPipeline();
-
-    // read the dataSet properties
-    m_filterSettingContent.resize( primHeader.dataSetPropertiesLen);
-    m_socket.async_read_some(
-      boost::asio::buffer( m_filterSettingContent),
-      boost::bind( &ServerJob::EndDataSetPropertiesRead, this,
-        boost::asio::placeholders::error)
-      );
 
   } catch( WrongFilterException &) {
     SendResultBack( RESPONSE_ERROR_IN_INPUT);
@@ -93,6 +107,7 @@ ServerJob::EndDataSetPropertiesRead( const boost::system::error_code& error)
     m_filterSettingContent.size());
 
     // create the dataSet
+    // TODO destroy old dataSEt ..
     m_inDataSet = GeneralDataSetSerializer::DeSerializeDataSetProperties( s);
 
     // connect it to pipeline
@@ -101,7 +116,7 @@ ServerJob::EndDataSetPropertiesRead( const boost::system::error_code& error)
 
     // create and connect output dataSet
     ConnectionInterface &conn = 
-m_pipeLine.MakeOutputConnection( *m_pipelineEnd, 0, true);
+      m_pipeLine.MakeOutputConnection( *m_pipelineEnd, 0, true);
     m_outDataSet = &conn.GetDataset();
     // add message listener to be able catch execution done or failed messages
     conn.SetMessageHook( 

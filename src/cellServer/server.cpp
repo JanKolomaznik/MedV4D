@@ -104,14 +104,21 @@ Server::EndPrimaryHeaderRead( tcp::socket *clientSock, PrimaryJobHeader *header,
       existing->primHeader.id = header->id;
 
       m_jobManager.AddJob( existing);
+      break;
 
-      // continue in job directing with read filterProperties
+    case BasicJob::DATASET:
+      existing = m_jobManager.FindJob( header->id);
+      existing->ReadDataSet();
+      break;
+
+    case BasicJob::FILTERS:
+      existing = m_jobManager.FindJob( header->id);
       existing->ReadFilters();
       break;
 
-    case BasicJob::REEXEC:
+    case BasicJob::EXEC:
       existing = m_jobManager.FindJob( header->id);
-      existing->ReadFilters();
+      existing->Execute();
       break;
 
     case BasicJob::DESTROY:

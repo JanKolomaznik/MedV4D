@@ -52,19 +52,6 @@ private:
 	ThresholdingOptsType m_thresholdingOptions;
 	// ...
 
-  M4D::CellBE::ClientJob *m_job;
-
-protected:
-
-	//bool
-	//ProcessImage(
-	//		const InputImageType 	&in,
-	//		OutputImageType		&out
-	//	    );
-
-	//void
-	//PrepareOutputDatasets();
-
 
 	//////////////////////////////////////////////////////
 

@@ -40,10 +40,12 @@ protected:
    *  Definition of basic action IDs.
    */
   enum Action {
-    CREATE,
-    EXEC,
-    DESTROY,
-    PING
+    CREATE,       // request for job create
+    EXEC,         // request for job execute
+    DESTROY,      // request for job destroy
+    DATASET,      // sending job's dataSet
+    FILTERS,      // sending job's filters settings
+    PING          // ping message
   };
 
   static DataPieceHeader endHeader;   // data header saying noMoreData

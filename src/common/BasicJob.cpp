@@ -16,6 +16,8 @@ BasicJob::BasicJob(boost::asio::io_service &service)
     : BasicSocket(service)
     , onComplete( NULL)
     , onError(NULL)
+    , m_inDataSet( NULL)
+    , m_outDataSet( NULL)
 {
 }
 

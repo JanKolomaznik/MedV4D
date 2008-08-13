@@ -7,19 +7,12 @@ namespace M4D
 namespace Imaging
 {
 
-/*
-template< typename InputImageType, typename OutputImageType >
-RemoteFilter<InputImageType, OutputImageType>::RemoteFilter()
-{
-	//TODO
-}
-
 template< typename InputImageType, typename OutputImageType >
 RemoteFilter
 ::~RemoteFilter()
 {
-
-	//TODO
+  if( m_job != NULL)
+    delete m_job;
 }
 
 template< typename InputImageType, typename OutputImageType >
@@ -30,21 +23,9 @@ RemoteFilter
 		OutputImageType		&out
 		)
 {
-	//TODO
-	return false;
+  m_job->SendExecute();
+	return true;
 }
-
-template< typename InputImageType, typename OutputImageType >
-void
-RemoteFilter
-::PrepareOutputDatasets()
-{
-	const InputImageType 	&in = *(this->in);
-	OutputImageType		&out = *(this->out);
-
-	//TODO
-}
-*/
 
 } /*namespace Imaging*/
 } /*namespace M4D*/

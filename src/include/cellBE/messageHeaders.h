@@ -67,24 +67,20 @@ struct PrimaryJobHeader
 
   uint8 endian;
 
-  uint16 filterSettStreamLen;
-
-  uint16 dataSetPropertiesLen;
+  uint16 nexPartLength;
   
   static void Serialize( PrimaryJobHeader *h)
   {
     NetStreamArrayBuf s( (uint8 *)h, sizeof( PrimaryJobHeader) );
 
-    s << h->action << h->id << (uint8) endianess << h->filterSettStreamLen
-      << h->dataSetPropertiesLen;
+    s << h->action << h->id << (uint8) endianess << h->nexPartLength;
   }
 
   static void Deserialize( PrimaryJobHeader *h)
   {
     NetStreamArrayBuf s( (uint8 *)h, sizeof( PrimaryJobHeader) );
 
-    s >> h->action >> h->id >> h->endian >> h->filterSettStreamLen
-      >> h->dataSetPropertiesLen;
+    s >> h->action >> h->id >> h->endian >> h->nexPartLength;
   }
 };
 

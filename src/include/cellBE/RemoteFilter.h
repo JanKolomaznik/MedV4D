@@ -39,8 +39,8 @@ protected:
    */
 	virtual void PrepareOutputDatasets() = 0;
 
-  // filter serializer vector that will define actual remote pipeline
-  FilterSerializerVector m_filterSerializers;
+  // actual job responsible for actual work
+  M4D::CellBE::ClientJob *m_job;
 
 private:
 	GET_PROPERTIES_DEFINITION_MACRO;

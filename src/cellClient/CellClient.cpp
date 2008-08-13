@@ -61,14 +61,14 @@ CellClient::FindNonCommentLine( ifstream &f, string &line)
 ///////////////////////////////////////////////////////////////////////////////
 
 ClientJob *
-CellClient::CreateJob( FilterSerializerVector &filters,
-                       M4D::Imaging::AbstractDataSet *inDataSet,
-                       M4D::Imaging::AbstractDataSet *outDataSet)
+CellClient::CreateJob( FilterSerializerVector &filters
+                     , AbstractDataSetSerializer *inDataSetSeralizer
+                     , AbstractDataSetSerializer *outDataSetSerializer)
 {
   ClientJob *newJob = new ClientJob(
     filters,
-    inDataSet,
-    outDataSet,
+    inDataSetSeralizer,
+    outDataSetSerializer,
     FindAvailableServer( filters),
     m_io_service);
 

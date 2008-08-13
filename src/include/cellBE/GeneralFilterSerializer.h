@@ -4,6 +4,8 @@
 #include "AbstractFilterSerializer.h"
 #include "Imaging/AbstractFilter.h"
 
+#include <map>
+
 namespace M4D
 {
 namespace CellBE
@@ -15,7 +17,13 @@ namespace CellBE
  */
 class GeneralFilterSerializer
 {
+private:
+  typedef std::map<FilterID, AbstractFilterSerializer *> FilterSerializers;
+  static FilterSerializers m_filterSerializers;
+
 public:
+  GeneralFilterSerializer();
+
   /**
    *  Read filterID from stream. Base on read filterID it instantiate
    *  appropriate FilterSerializer that performs actual deserialization
@@ -24,11 +32,15 @@ public:
   static M4D::Imaging::AbstractPipeFilter *
   DeSerialize( M4D::CellBE::NetStream &s)
   {
-	unsigned filterID;
-	s >> filterID;
-	return _serializers[ filterID ].DeSerializeProperties( s );
-  }
+	  FilterID filterID;
+	  s >> ((uint8 &) filterID);
 
+    FilterSerializers::iterator it = m_filterSerializers.find( filterID);
+    if( it != m_filterSerializers.end() )
+      return it->second->DeSerializeProperties( s );
+    else
+      throw WrongFilterException();
+  }
 
   /**
    *  Returns pointer to filterSerializer based on given FilterProperties
@@ -37,91 +49,12 @@ public:
    */
   template< typename FilterProperties >
   static AbstractFilterSerializer *
-  GetFilterSerializer( FilterProperties *props );
+  GetFilterSerializer( FilterProperties *props )
 	{
 		return new FilterSerializer< FilterProperties >( props );
 	}
 
 };
-
-
-
-//****************************************************************
-
-//Empty declaration - we allow only partial specializations
-template< typename FilterProperties >
-class FilterSerializer;
-
-template< typename ElementType, unsigned Dim >
-M4D::Imaging::AbstractPipeFilter *
-CreateThresholdingFilter( M4D::CellBE::NetStream &s )
-{
-	typedef typename M4D::Imaging::Image< ElementType, Dim > ImageType;
-	typedef typename M4D::Imaging::ThresholdingFilter< ImageType > Filter;
-	
-	ElementType	bottom;	
-	ElementType	top;
-	ElementType	outValue;	
-
-	Filter::Properties *prop = new Filter::Properties();
-
-	s >> prop->bottom;
-	s >> prop->top;
-	s >> prop->outValue;
-
-	return new Filter( prop );
-}
-
-template< typename InputImageType >
-class FilterSerializer< M4D::Imaging::ThresholdingFilter< InputImageType >::Properties > 
-	: public AbstractFilterSerializer
-{
-public:
-	typedef typename M4D::Imaging::ThresholdingFilter< InputImageType >::Properties Properties;
-	
-	FilterSerializer( Properties * props) 
-		: AbstractFilterSerializer( GetFilterID( *props ) ), _properties( props ) {}
-
-	~FilterSerializer() { delete _properties; }
-
-	void 
-	SerializeProperties( M4D::CellBE::NetStream &s)
-	{
-		s << this->GetID();
-
-		s << ImageTraits< InputImageType >::Dimension;
-
-		s << GetNumericTypeID< ImageTraits< InputImageType >::ElementType >;
-		
-		s << _properties->bottom;
-
-		s << _properties->top;
-
-		s << _properties->outValue;
-	}
-
-	M4D::Imaging::AbstractPipeFilter *
-	DeSerializeProperties( M4D::CellBE::NetStream &s )
-	{
-		unsigned dim;
-		unsigned typeID;
-		
-		s >> dim;
-
-		s >> typeID;
-		
-		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( typeID, 
-			DIMENSION_TEMPLATE_SWITCH_MACRO( dim, return CreateThresholdingFilter<TTYPE, DIM >( s ) )
-		);
-
-	}
-	
-	
-protected:
-	Properties	*_properties;
-};
-
-typedef FilterSerializer< M4D::Imaging::ThresholdingFilter< Image3DUnsigned8b >::Properties ThresholdingSerializer;
 
 
 }

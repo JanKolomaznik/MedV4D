@@ -23,9 +23,9 @@ public:
 
   // creates job
   ClientJob *CreateJob(
-    FilterSerializerVector &filters, 
-    M4D::Imaging::AbstractDataSet *inDataSet,
-    M4D::Imaging::AbstractDataSet *outDataSet);
+    FilterSerializerVector &filters
+  , AbstractDataSetSerializer *inDataSetSeralizer
+  , AbstractDataSetSerializer *outDataSetSerializer);
 
   inline void Run( void) { m_io_service.run(); }
 

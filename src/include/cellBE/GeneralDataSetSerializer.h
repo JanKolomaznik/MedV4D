@@ -21,8 +21,9 @@ public:
   /**
    *  The apropriate serializer to given dataSet is returned
    */
+  template< typename DataSetType>
   static AbstractDataSetSerializer *GetDataSetSerializer( 
-    M4D::Imaging::AbstractDataSet *dataSet);
+    DataSetType *dataSet);
   
   /**
    *  According given dataSet type uses appropriate dataSet
@@ -30,9 +31,9 @@ public:
    *  recreation the same instance on the other network side.
    *  Uses GetDataSetSerializer function (see above) internaly.
    */
-  static void SerializeDataSetProperties( 
-    M4D::Imaging::AbstractDataSet *dataSet,
-    M4D::CellBE::NetStream &s);
+  //static void SerializeDataSetProperties( 
+  //  M4D::Imaging::AbstractDataSet *dataSet,
+  //  M4D::CellBE::NetStream &s);
 
   /**
    *  According given dataSet type uses appropriate dataSet
@@ -41,19 +42,20 @@ public:
    *  interface.
    *  Uses GetDataSetSerializer function (see above) internaly.
    */
-  static void SerializeDataSet( 
-    M4D::Imaging::AbstractDataSet *dataSet,
-    M4D::CellBE::iPublicJob *j);
+  //static void SerializeDataSet( 
+  //  M4D::Imaging::AbstractDataSet *dataSet,
+  //  M4D::CellBE::iPublicJob *j);
 
   /**
    *  Reads dataSet type and according it will use appropriate
    *  dataSetSerializer that can instantiate dataSet according
    *  recieved dataSetProperties.
    */
-  static M4D::Imaging::AbstractDataSet *
-    DeSerializeDataSetProperties( 
-      //AbstractDataSetSerializer **dataSetSerializer,
-      M4D::CellBE::NetStream &s);
+  static 
+  void DeSerializeDataSetProperties( 
+      AbstractDataSetSerializer **dataSetSerializer
+      , M4D::Imaging::AbstractDataSet **returnedDataSet
+      , M4D::CellBE::NetStream &s);
 
   //static void DeSerializeDataSet( 
   //  M4D::Imaging::AbstractDataSet *dataSet,

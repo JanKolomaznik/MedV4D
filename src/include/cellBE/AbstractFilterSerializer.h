@@ -44,7 +44,8 @@ public:
    *  order that the SerializeProperties method has put them there.
    */
   virtual void SerializeProperties( M4D::CellBE::NetStream &s) = 0;
-  virtual void DeSerializeProperties( M4D::CellBE::NetStream &s) = 0;  
+  virtual M4D::Imaging::AbstractPipeFilter *
+    DeSerializeProperties( M4D::CellBE::NetStream &s) = 0;
 };
 
 /**
@@ -59,6 +60,13 @@ class WrongFilterException
   : public ExceptionBase
 {
 };
+
+/**
+ *  Empty declaration - we allow only partial specializations. These are
+ *  in filterSerializers folder
+ */
+template< typename FilterProperties >
+class FilterSerializer;
 
 }
 }
