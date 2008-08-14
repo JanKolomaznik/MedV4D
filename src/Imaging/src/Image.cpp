@@ -7,7 +7,7 @@ namespace Imaging
 {
 
 AbstractImage::AbstractImage( unsigned dim, DimensionExtents *dimExtents )
-: _dimCount( dim ), _dimensionExtents( dimExtents )
+: AbstractDataSet( DATASET_IMAGE ), _dimCount( dim ), _dimensionExtents( dimExtents )
 {
 
 }

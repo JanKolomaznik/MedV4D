@@ -1,11 +1,18 @@
 #ifndef DATASET_CLASS_ENUM_H
 #define DATASET_CLASS_ENUM_H
 
+namespace M4D
+{
+namespace Imaging
+{
+
 enum DataSetType
 {
-  DATSET_IMAGE,
-  DATSET_TRIANGLE_MESH
+  DATASET_IMAGE,
+  DATASET_TRIANGLE_MESH
 };
 
-#endif
+}//namespace M4D
+}//namespace Imaging
 
+#endif /*DATASET_CLASS_ENUM_H*/

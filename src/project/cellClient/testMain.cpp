@@ -3,27 +3,35 @@
 #include "Common.h"
 #include "cellBE/cellClient.h"
 #include "Imaging/ImageFactory.h"
+#include "Imaging/PipelineContainer.h"
 #include "cellBE/remoteFilters/BoneSegmentationRemote.h"
 
 using namespace M4D::CellBE;
 using namespace M4D::Imaging;
 
+typedef Image<uint16, 3> ImageType;
 int main()
 {
   try
   {
-    CellClient client;
+	CellClient client;
+	PipelineContainer pipeline;
 
-    // prepare dataSet
-    Image<uint16, 3>::Ptr inImage = 
-      ImageFactory::CreateEmptyImage3DTyped<uint16>(15, 15, 15);
+	AbstractPipeFilter *filter = new BoneSegmentationRemote< ImageType >();
 
-    Image<uint8, 3>::Ptr outImage = 
-      ImageFactory::CreateEmptyImage3DTyped<uint8>(15, 15, 15);
+	pipeline.AddFilter( filter );
+	AbstractImageConnectionInterface *inConnection = 
+		dynamic_cast<AbstractImageConnectionInterface*>( &_pipeline.MakeInputConnection( *filter, 0, false ) );
+	AbstractImageConnectionInterface *outConnection = 
+		dynamic_cast<AbstractImageConnectionInterface*>( &_pipeline.MakeOutputConnection( *filter, 0, true ) );
 
-    BoneSegmentationRemote< Image<uint8, 3> > remFilter;
+	// prepare dataSet
+	AbstractImage::AImagePtr inImage = 
+		ImageFactory::CreateEmptyImage3D<uint16>(15, 15, 15);
 
-    //client.Run();
+	inConnection.PutImage( inImage );
+
+//client.Run();
   }
   catch (std::exception& e)
   {

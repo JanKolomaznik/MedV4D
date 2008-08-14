@@ -4,6 +4,7 @@
 #include <boost/shared_ptr.hpp>
 #include "TimeStamp.h"
 #include "Thread.h"
+#include "Imaging/dataSetClassEnum.h"
 
 namespace M4D
 {
@@ -73,6 +74,10 @@ public:
 	GetStructureTimestamp()const
 		{ return _structureTimestamp; }
 
+	DataSetType
+	GetDatasetType()const
+		{ return _datasetType; }
+
 	/*template< typename DatasetType >
 	static AbstractDataSet &
 	CastDataSet(  DatasetType & dataset )
@@ -132,6 +137,9 @@ public:
 	ExclusiveUnlockDataset()const;
 
 protected:
+	AbstractDataSet( DataSetType datasetType ): _datasetType( datasetType ) {}
+
+
 	/**
 	 * Increase structure timestamp - only helper function for successors.
 	 **/
@@ -147,6 +155,7 @@ protected:
 
 	mutable ReadWriteLock	_structureLock;
 private:
+	DataSetType	_datasetType;
 
 };
 
