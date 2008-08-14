@@ -20,27 +20,30 @@ namespace M4D
 namespace Imaging
 {
 
-template< typename InType, typename OutType>
+template< typename ImageType >
 class BoneSegmentationRemote
-  : public RemoteFilter<InType, OutType>
+  : public RemoteFilter<ImageType, ImageType>
 {
 public:
-	typedef typename RemoteFilter<InType, OutType> PredecessorType;
+	typedef typename RemoteFilter<ImageType, ImageType> PredecessorType;
 
 	BoneSegmentationRemote();
-  void PrepareOutputDatasets();
+  
 
 	/////////////////// To customize /////////////////////
 	// puting options available to outer world to be able to specify it ....
-	typedef typename ThresholdingFilter<InType>::Properties ThresholdingOptsType;
+	typedef typename ThresholdingFilter<ImageType>::Properties ThresholdingOptsType;
 	
 	ThresholdingOptsType *GetThreshholdingOptions( void)	
   {
 		return &m_thresholdingOptions;
 	}
 
+protected:
+	void PrepareOutputDatasets();
+
 private:
-	GET_PROPERTIES_DEFINITION_MACRO;
+	//GET_PROPERTIES_DEFINITION_MACRO;
 
 	/**
 	 * Here should be added members of  filter options type that will

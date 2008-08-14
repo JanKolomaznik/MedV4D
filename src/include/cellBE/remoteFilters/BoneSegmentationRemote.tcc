@@ -9,8 +9,8 @@ namespace Imaging
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template< typename InType, typename OutType>
-BoneSegmentationRemote<InType, OutType>::BoneSegmentationRemote()
+template< typename ImageType>
+BoneSegmentationRemote<ImageType>::BoneSegmentationRemote()
 {
   AbstractFilterSerializer *ser;  
 
@@ -18,14 +18,14 @@ BoneSegmentationRemote<InType, OutType>::BoneSegmentationRemote()
   FilterSerializerVector m_filterSerializers;
 
   // put into the vector serializers instances in order that is in remote pipe
-  ser = GeneralFilterSerializer::GetFilterSerializer<ThresholdingOptsType>()
+  ser = GeneralFilterSerializer::GetFilterSerializer( &m_thresholdingOptions );
   m_filterSerializers.push_back( ser);
 
   // create dataSetSerializers
   AbstractDataSetSerializer *inSerializer = NULL;
   AbstractDataSetSerializer *outerializer = NULL;
-  GeneralDataSetSerializer::GetSerializer<InType>(getInput().GetDataSet());
-  GeneralDataSetSerializer::GetSerializer<OutType>(getOutPut().GetDataSet());
+  GeneralDataSetSerializer::GetSerializer<ImageType>(getInput().GetDataSet());
+  GeneralDataSetSerializer::GetSerializer<ImageType>(getOutPut().GetDataSet());
 
   // create job
   m_job = m_cellClient.CreateJob( m_filterSerializers, inSerializer, outSerializer);
@@ -33,17 +33,24 @@ BoneSegmentationRemote<InType, OutType>::BoneSegmentationRemote()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template< typename InType, typename OutType>
+template< typename ImageType >
 void 
-BoneSegmentationRemote<InType, OutType>::PrepareOutputDatasets()
+BoneSegmentationRemote<ImageType>::PrepareOutputDatasets()
 {
-  AbstractDataSet *in, *out;
+	PredecessorType::PrepareOutputDatasets();
 
-  // count output dataSet size according inner filters and set it
-  int size = 0;
-  getOutPort().SetImageSize( size);
+	size_t minimums[M4D::Imaging::ImageTraits<ImageType>::Dimension];
+	size_t maximums[M4D::Imaging::ImageTraits<ImageType>::Dimension];
+	float32 voxelExtents[M4D::Imaging::ImageTraits<ImageType>::Dimension];
 
-  m_job->SetDataSets( in, out);
+	for( unsigned i=0; i < M4D::Imaging::ImageTraits<ImageType>::Dimension; ++i ) {
+		const DimensionExtents & dimExt = this->in->GetDimensionExtents( i );
+
+		minimums[i] = dimExt.minimum;
+		maximums[i] = dimExt.maximum;
+		voxelExtents[i] = dimExt.elementExtent;
+	}
+	this->SetOutputImageSize( minimums, maximums, voxelExtents );
 }
 
 ///////////////////////////////////////////////////////////////////////////////

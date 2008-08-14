@@ -2,6 +2,7 @@
 #define THRESHOLDING_SERIALIZER_H
 
 #include "cellBE/AbstractFilterSerializer.h"
+#include "Imaging/filters/ThresholdingFilter.h"
 
 namespace M4D
 {
@@ -33,15 +34,14 @@ CreateThresholdingFilter( M4D::CellBE::NetStream &s )
  *  ThresholdingFilterSerializer.
  */
 template< typename InputImageType >
-class FilterSerializer< M4D::Imaging::ThresholdingFilter< InputImageType >::Properties > 
+class FilterSerializer< typename M4D::Imaging::ThresholdingFilter< InputImageType >::Properties > 
 	: public AbstractFilterSerializer
 {
 public:
 	typedef typename M4D::Imaging::ThresholdingFilter< InputImageType >::Properties Properties;
 	
 	FilterSerializer( Properties * props) 
-		: AbstractFilterSerializer( GetFilterID( *props ) )
-    , _properties( props ) 
+		: AbstractFilterSerializer( GetFilterID( *props ) ), _properties( props ) 
   {}
 
 	void 

@@ -18,7 +18,30 @@ class ThresholdingFilter;
 template< typename InputElementType >
 class ThresholdingFilter< Image< InputElementType, 2 > >
 {
+public:
+	typedef typename AbstractPipeFilter  PredecessorType;
+
+	struct Properties : public PredecessorType::Properties
+	{
+		Properties(): bottom( 0 ), top( 0 ), outValue( 0 ) {}
+
+		InputElementType	bottom;	
+		InputElementType	top;
+		
+		InputElementType	outValue;
+	};
+
+	ThresholdingFilter( Properties  * prop );
+	ThresholdingFilter();
+
+	GET_SET_PROPERTY_METHOD_MACRO( InputElementType, Bottom, bottom );
+	GET_SET_PROPERTY_METHOD_MACRO( InputElementType, Top, top );
+	GET_SET_PROPERTY_METHOD_MACRO( InputElementType, OutValue, outValue );
+protected:
+
 	//TODO
+private:
+	GET_PROPERTIES_DEFINITION_MACRO;
 };
 
 template< typename InputElementType >

@@ -8,7 +8,7 @@ namespace Imaging
 {
 
 template< typename InputImageType, typename OutputImageType >
-RemoteFilter
+RemoteFilter< InputImageType, OutputImageType >
 ::~RemoteFilter()
 {
   if( m_job != NULL)
@@ -17,7 +17,7 @@ RemoteFilter
 
 template< typename InputImageType, typename OutputImageType >
 bool
-RemoteFilter
+RemoteFilter< InputImageType, OutputImageType >
 ::ProcessImage(
 		const InputImageType 	&in,
 		OutputImageType		&out

@@ -37,7 +37,7 @@ protected:
    *  that are in remote pipeline through SetImageSize() method
    *  of output ports.
    */
-	virtual void PrepareOutputDatasets() = 0;
+	//virtual void PrepareOutputDatasets() = 0;
 
   // actual job responsible for actual work
   M4D::CellBE::ClientJob *m_job;
