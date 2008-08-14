@@ -33,7 +33,8 @@ public:
    *  Identification of particular AbstractDataSet sucessor. Each new one has 
    *  return value that is added to enumeration in dataSetTypeEnums.h header.
    */
-  virtual DataSetType GetID(void) = 0;
+	virtual M4D::Imaging::DataSetType 
+	GetID(void) = 0;
 
   /**
    *  Each final sucessor has to implement this functions to allow

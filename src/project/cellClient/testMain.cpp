@@ -21,15 +21,15 @@ int main()
 
 	pipeline.AddFilter( filter );
 	AbstractImageConnectionInterface *inConnection = 
-		dynamic_cast<AbstractImageConnectionInterface*>( &_pipeline.MakeInputConnection( *filter, 0, false ) );
+		dynamic_cast<AbstractImageConnectionInterface*>( &pipeline.MakeInputConnection( *filter, 0, false ) );
 	AbstractImageConnectionInterface *outConnection = 
-		dynamic_cast<AbstractImageConnectionInterface*>( &_pipeline.MakeOutputConnection( *filter, 0, true ) );
+		dynamic_cast<AbstractImageConnectionInterface*>( &pipeline.MakeOutputConnection( *filter, 0, true ) );
 
 	// prepare dataSet
 	AbstractImage::AImagePtr inImage = 
 		ImageFactory::CreateEmptyImage3D<uint16>(15, 15, 15);
 
-	inConnection.PutImage( inImage );
+	inConnection->PutImage( inImage );
 
 //client.Run();
   }
