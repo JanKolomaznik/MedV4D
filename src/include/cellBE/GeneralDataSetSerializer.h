@@ -20,10 +20,11 @@ class GeneralDataSetSerializer
 public:
   /**
    *  The apropriate serializer to given dataSet is returned
+   *  based on GetDatasetType() returned value identifiing type
+   *  of dataSet.
    */
-  template< typename DataSetType>
   static AbstractDataSetSerializer *GetDataSetSerializer( 
-    DataSetType *dataSet);
+    M4D::Imaging::AbstractDataSet *dataSet);
   
   /**
    *  According given dataSet type uses appropriate dataSet

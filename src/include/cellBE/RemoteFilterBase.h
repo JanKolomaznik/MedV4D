@@ -9,6 +9,12 @@ namespace M4D
 namespace CellBE
 {
 
+/**
+ *  Used as base class for every remote filters. Contains CellClient
+ *  static object that is used for job creation in derived classes.
+ *  All needed CellClients methodes are thread safe so no other
+ *  synchronization is needed while the cellClient is static.
+ */
 class RemoteFilterBase
 {
 protected:

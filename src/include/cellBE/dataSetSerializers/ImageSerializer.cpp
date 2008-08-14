@@ -31,9 +31,10 @@ ImageSerializer::SerializeProperties(M4D::CellBE::NetStream &s)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void
+M4D::Imaging::AbstractDataSet *
 ImageSerializer::DeSerializeProperties(M4D::CellBE::NetStream &s)
 {
+
   uint8 dim, elemType;
   s >> dim >> elemType;   // get common properties
 
@@ -49,6 +50,24 @@ ImageSerializer::DeSerializeProperties(M4D::CellBE::NetStream &s)
   case 4:
     break;
   }
+
+  return m_dataSet; // TODO initialize
+
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ImageSerializer::OnDataPieceReadRequest( 
+                                      DataPieceHeader *header, DataBuffs &bufs)
+{
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ImageSerializer::OnDataSetEndRead( void)
+{
 }
 
 ///////////////////////////////////////////////////////////////////////////////

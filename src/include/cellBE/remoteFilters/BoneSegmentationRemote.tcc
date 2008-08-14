@@ -14,21 +14,29 @@ BoneSegmentationRemote<ImageType>::BoneSegmentationRemote()
 {
   AbstractFilterSerializer *ser;  
 
-  // filter serializer vector that will define actual remote pipeline
+  // definig vector that will define actual remote pipeline
   FilterSerializerVector m_filterSerializers;
 
   // put into the vector serializers instances in order that is in remote pipe
-  ser = GeneralFilterSerializer::GetFilterSerializer( &m_thresholdingOptions );
-  m_filterSerializers.push_back( ser);
+  {
+    ser = GeneralFilterSerializer::GetFilterSerializer( 
+      &m_thresholdingOptions );
+    m_filterSerializers.push_back( ser);
+  
+    // ... for other possible members definig remote pipe filters
+  }
 
-  // create dataSetSerializers
-  AbstractDataSetSerializer *inSerializer = NULL;
-  AbstractDataSetSerializer *outerializer = NULL;
-  GeneralDataSetSerializer::GetSerializer<ImageType>(getInput().GetDataSet());
-  GeneralDataSetSerializer::GetSerializer<ImageType>(getOutPut().GetDataSet());
+  // create dataSetSerializers for input & output dataSets
+  {
+  m_inSerializer = GeneralDataSetSerializer::GetDataSetSerializer<ImageType>(
+    getInput().GetDataSet());
+  m_outSerializer = GeneralDataSetSerializer::GetDataSetSerializer<ImageType>(
+    getOutPut().GetDataSet());  
+  }
 
   // create job
-  m_job = m_cellClient.CreateJob( m_filterSerializers, inSerializer, outSerializer);
+  m_job = m_cellClient.CreateJob( 
+    m_filterSerializers, inSerializer, outSerializer);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

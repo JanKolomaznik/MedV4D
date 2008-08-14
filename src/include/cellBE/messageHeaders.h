@@ -12,6 +12,11 @@ namespace CellBE
 
 ///////////////////////////////////////////////////////////////////////////////
   
+  /**
+   *  This structures represents ID of a job. It consists of two main parts.
+   *  The first 
+   *  For details see ClinetJob::GenerateJobID method implementation.
+   */
 #define IDLEN 12
 struct JobID
 {
