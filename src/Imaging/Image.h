@@ -194,8 +194,8 @@ public:
 	GetPointer( 
 			size_t &width,
 			size_t &height,
-			int &xStride,
-			int &yStride
+			int32 &xStride,
+			int32 &yStride
 		  )const;
 
 	Ptr
@@ -314,9 +314,9 @@ public:
 			size_t &width,
 			size_t &height,
 			size_t &depth,
-			int &xStride,
-			int &yStride,
-			int &zStride
+			int32 &xStride,
+			int32 &yStride,
+			int32 &zStride
 		  )const;
 
 	typename Image< ElementType, 2 >::Ptr
@@ -454,10 +454,10 @@ public:
 			size_t &height,
 			size_t &depth,
 			size_t &time,
-			int &xStride,
-			int &yStride,
-			int &zStride,
-			int &tStride
+			int32 &xStride,
+			int32 &yStride,
+			int32 &zStride,
+			int32 &tStride
 		  )const;
 
 	typename Image< ElementType, 2 >::Ptr

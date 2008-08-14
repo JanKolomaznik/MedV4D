@@ -150,8 +150,8 @@ ElementType *
 Image< ElementType, 2 >::GetPointer( 
 			size_t &width,
 			size_t &height,
-			int &xStride,
-			int &yStride
+			int32 &xStride,
+			int32 &yStride
 		  )const
 {
 	width = _dimExtents[0].maximum - _dimExtents[0].minimum;
@@ -398,9 +398,9 @@ Image< ElementType, 3 >::GetPointer(
 			size_t &width,
 			size_t &height,
 			size_t &depth,
-			int &xStride,
-			int &yStride,
-			int &zStride
+			int32 &xStride,
+			int32 &yStride,
+			int32 &zStride
 		  )const
 {
 	width = _dimExtents[0].maximum - _dimExtents[0].minimum;

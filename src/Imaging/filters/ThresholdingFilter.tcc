@@ -38,7 +38,24 @@ ThresholdingFilter< Image< InputElementType, 3 > >
 	if( !this->CanContinue() ) {
 		return false;
 	}
+
+	size_t width;
+	size_t height;
+	size_t depth;
+	int32 xStride;
+	int32 yStride;
+	int32 zStride;
+	InputElementType *pointer = in.GetPointer( width, height, depth, xStride, yStride, zStride );
+
+	pointer += x1 * xStride + y1 * yStride + slice * zStride;
 	for( size_t i = x1; i < x2; ++i ) {
+		for( size_t j = y1; j < y2; ++j ) {
+			if( GetProperties().bottom > *pointer || GetProperties().top < *pointer ) {
+				*pointer = GetProperties().outValue;
+			}
+		}
+	}
+	/*for( size_t i = x1; i < x2; ++i ) {
 		for( size_t j = y1; j < y2; ++j ) {
 			InputElementType value = in.GetElement( i, j, slice );
 			if( GetProperties().bottom <= value && GetProperties().top >= value ) {
@@ -47,7 +64,7 @@ ThresholdingFilter< Image< InputElementType, 3 > >
 				out.GetElement( i, j, slice ) = GetProperties().outValue;
 			}
 		}
-	}
+	}*/
 	return true;
 }
 

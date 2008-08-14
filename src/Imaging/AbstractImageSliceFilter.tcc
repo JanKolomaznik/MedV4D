@@ -20,24 +20,20 @@ bool
 AbstractImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 ::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
 {
-	for( size_t i = 0; i < _actualComputationGroups.size(); ++i )
+	size_t i = 0;
+	for( i = 0; i < _actualComputationGroups.size(); ++i )
 	{
 		SliceComputationRecord & record = _actualComputationGroups[ i ];
 
 		//Wait until input area is ready
 		if ( !(record.inputBBox->WaitWhileDirty() == MS_MODIFIED ) ) {
-			for( size_t j = i; j < _actualComputationGroups.size(); ++j )
-			{
-				_actualComputationGroups[ i ].writerBBox->SetState( MS_CANCELED );
-			}
-			//TODO clear _actualComputationGroups
-			return false;
+			goto cleanup;
 		}
 
 		for( int32 slice = record.firstSlice; slice <= record.lastSlice; ++slice )
 		{
-			//TODO check result
-			ProcessSlice( 	*(this->in), 
+			bool result = ProcessSlice( 	
+					*(this->in), 
 					*(this->out),
 					this->in->GetDimensionExtents( 0 ).minimum,
 					this->in->GetDimensionExtents( 1 ).minimum,
@@ -45,6 +41,9 @@ AbstractImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 					this->in->GetDimensionExtents( 1 ).maximum,
 					slice 
 					);
+			if( !result ){
+				goto cleanup;
+			}
 		}
 
 		record.writerBBox->SetModified();
@@ -53,6 +52,14 @@ AbstractImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 	_actualComputationGroups.clear();
 
 	return true;
+
+cleanup:
+	for( size_t j = i; j < _actualComputationGroups.size(); ++j )
+	{
+		_actualComputationGroups[ j ].writerBBox->SetState( MS_CANCELED );
+	}
+	_actualComputationGroups.clear();
+	return false;
 }
 
 template< typename InputElementType, typename OutputImageType >

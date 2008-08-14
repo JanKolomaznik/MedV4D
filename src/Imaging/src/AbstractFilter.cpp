@@ -152,6 +152,8 @@ MainExecutionThread::operator()()
 	D_BLOCK_COMMENT( "++++ Entering MainExecutionThread()", "----- Leaving MainExecutionThread()" );
 	D_PRINT( "++++ Filter = " << _filter ); 
 
+	//TODO - handle exceptions
+
 	//We check properties before we use them.
 	_filter->_properties->CheckProperties();
 
@@ -163,8 +165,9 @@ MainExecutionThread::operator()()
 			PipelineMessage::MSS_NORMAL 
 			);
 
+	bool result = _filter->ExecutionThreadMethod( _updateType );
 
-	if( _filter->ExecutionThreadMethod( _updateType ) ) {
+	if( result ) {
 		//Send message about finished job	
 		_filter->_outputPorts.SendMessage( 
 				MsgFilterUpdated::CreateMsg( _updateType == AbstractPipeFilter::RECALCULATION ), 

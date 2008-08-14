@@ -135,12 +135,7 @@ class IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< Out
 public:
 	typedef typename Imaging::AbstractImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >	PredecessorType;
 	
-	struct Properties : public PredecessorType::Properties
-	{
-		Properties( unsigned sliceNeighbourCount, unsigned computationGrouping ) 
-			: PredecessorType::Properties( sliceNeighbourCount, computationGrouping ) {}
-
-	};
+	typedef typename PredecessorType::Properties	Properties;
 
 	IdenticalExtentsImageSliceFilter( Properties *prop );
 	~IdenticalExtentsImageSliceFilter() {}
