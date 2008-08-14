@@ -45,7 +45,7 @@
 	<title>Datasets</title>
 	
 		<para>
-		Actual data are stored in proper descendants of class <code>AbstractDataSet</code>. Its hierarchy is shown in <!--TODO -->. Purpose of these 
+		Actual data are stored in proper descendants of class <classname>AbstractDataSet</classname>. Its hierarchy is shown in <!--TODO -->. Purpose of these 
 		classes is to provide access methods for reading and writing informations of certain type and optional synchronization. 
 		</para>
 
