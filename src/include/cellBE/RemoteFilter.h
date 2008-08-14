@@ -65,8 +65,8 @@ protected:
   // actual job responsible for actual work
   M4D::CellBE::ClientJob *m_job;
 
-  AbstractDataSetSerializer *m_inSerializer;
-  AbstractDataSetSerializer *m_outSerializer;
+  M4D::CellBE::AbstractDataSetSerializer *m_inSerializer;
+  M4D::CellBE::AbstractDataSetSerializer *m_outSerializer;
 
 private:
 	GET_PROPERTIES_DEFINITION_MACRO;

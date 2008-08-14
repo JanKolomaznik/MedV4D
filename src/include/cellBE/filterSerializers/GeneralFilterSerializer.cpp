@@ -18,9 +18,8 @@ GeneralFilterSerializer::GeneralFilterSerializer()
 {
   // here is to be put each new filterSerializer instance
   m_filterSerializers.insert( FilterSerializers::value_type(
-    Thresholding, 
-    new FilterSerializer< typename ThresholdingFilter< Image<uint8, 3> >::Properties >(
-      NULL )
+    FID_Thresholding, 
+    new FilterSerializer< typename ThresholdingFilter< Image<uint8, 3> > >( NULL )
     ) );
   // ...
 }

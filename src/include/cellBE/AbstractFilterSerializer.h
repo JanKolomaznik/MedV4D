@@ -65,7 +65,7 @@ class WrongFilterException
  *  Empty declaration - we allow only partial specializations. These are
  *  in filterSerializers folder
  */
-template< typename FilterProperties >
+template< typename FilterType >
 class FilterSerializer;
 
 }

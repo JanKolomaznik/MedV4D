@@ -8,7 +8,7 @@
  *	new filter is written
  */
 enum FilterID {
-  Thresholding,
+  FID_Thresholding,
 };
 
 //*******************************************************
@@ -16,13 +16,19 @@ enum FilterID {
 FilterID
 GetFilterID( PropertiesType & prop );*/
 //*******************************************************
+/*template< typename InputImageType >
+FilterID
+GetFilterID< M4D::Imaging::ThresholdingFilter< InputImageType > >()
+{ 
+  return Thresholding; 
+}*/
 
-template< typename InputImageType >
+/*template< typename InputImageType >
 FilterID
 GetFilterID( typename M4D::Imaging::ThresholdingFilter< InputImageType >::Properties &prop )
 { 
   return Thresholding; 
-}
+}*/
 
 //*******************************************************
 /*template< typename PropertiesType >

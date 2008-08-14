@@ -34,14 +34,15 @@ CreateThresholdingFilter( M4D::CellBE::NetStream &s )
  *  ThresholdingFilterSerializer.
  */
 template< typename InputImageType >
-class FilterSerializer< M4D::Imaging::ThresholdingFilter< InputImageType >::Properties > 
+class FilterSerializer< M4D::Imaging::ThresholdingFilter< InputImageType > > 
 	: public AbstractFilterSerializer
 {
 public:
 	typedef typename M4D::Imaging::ThresholdingFilter< InputImageType >::Properties Properties;
 	
 	FilterSerializer( Properties * props) 
-		: AbstractFilterSerializer( GetFilterID( *props ) ), _properties( props ) 
+		: AbstractFilterSerializer( FID_Thresholding )
+		, _properties( props ) 
   {}
 
 	void 
