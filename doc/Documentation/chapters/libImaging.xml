@@ -2,6 +2,14 @@
 <chapter>
 <title>Library Imaging</title>
 
+	<para>
+	Main goal of this library is effective implementation of pipeline computation on input datasets. 
+	Whole computation should be as parallel as possible in order to utilize resources available in modern processors, etc. 
+	</para>
+	
+	<para>
+	Design of interfaces and class hierarchies is aimed to extensibility and code reusability. Centra
+	</para>
 
 
 <section>
@@ -18,14 +26,9 @@
 <section>
 <title>Architecture</title>
 
-	
 	<para>
-	Main goal of this library is effective implementation of pipeline computation on input datasets. 
-	Whole computation should be as parallel as possible in order to utilize resources available in modern processors, etc. 
-	</para>
-	
-	<para>
-	Design of interfaces and class hierarchies is aimed to extensibility and code reusability.
+	All declarations are in namespace <code>M4D::Imaging</code>.
+	Whole design of class hierarchies is 
 	</para>
 
 	<mediaobject>
@@ -80,9 +83,26 @@
 <title>Usage</title>
 
 	<section>
-	<title>Building pipeline</title>
-		
-	<para>aaaaaaa</para>
+	<title>How to build a pipeline</title>
+	
+		<para>
+		First thing we should know, is how to create filtering pipeline with supposed behaviour using prepared filters. 
+		How to extend functionality we discuss later.
+		</para>
+
+		<para>
+		Before we start construction, we must decide if we want handle storing and deallocation of all objects, because there is 
+		prepared container for all pipeline objects, which handle deallocation of stored objects and can semiautomatically connect filters, and 
+		other objects with ports used as communication channel. 
+
+		<para>
+		Actual pipeline construction should proceed in three basic steps:
+		</para>
+		<list>
+			<item>Allocation of filters</item>
+			<item>Establishing connections</item>
+			<item>Passing input datasets</item>
+		</list>
 	</section>
 
 	<section>
