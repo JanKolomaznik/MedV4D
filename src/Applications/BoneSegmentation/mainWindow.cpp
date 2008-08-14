@@ -37,7 +37,7 @@ mainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
 	unsigned dim = inputImage->GetDimension(); 
 	int type     = inputImage->GetElementTypeID();
 
-	if ( dim != 3 || type != NTID_UNSIGNED_SHORT ) {
+	if ( dim != 3 || type != GetNumericTypeID<ElementType>() ) {
 		//TODO throw exception
 
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Bad type" ) );
