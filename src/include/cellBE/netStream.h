@@ -15,12 +15,44 @@ class NetStream
 
 public:
   virtual NetStream & operator<< (const uint8 what) = 0;
+  NetStream & operator<< (const int8 what)
+  {
+    return operator<<( (const uint8) what);
+  }
+
   virtual NetStream & operator<< (const uint16 what) = 0;
+  NetStream & operator<< (const int16 what)
+  {
+    return operator<<( (const uint16) what);
+  }
+
   virtual NetStream & operator<< (const uint32 what) = 0;
+  NetStream & operator<< (const int32 what)
+  {
+    return operator<<( (const uint32) what);
+  }
+
   virtual NetStream & operator<< (const float32 what) = 0;
+
+  ////////
   virtual NetStream & operator>>( uint8 &what) = 0;
+  NetStream & operator>>( int8 &what)
+  {
+    return operator>>( (uint8 &) what);
+  }
+
   virtual NetStream & operator>>( uint16 &what) = 0;
+  NetStream & operator>>( int16 &what)
+  {
+    return operator>>( (uint16 &) what);
+  }
+
   virtual NetStream & operator>>( uint32 &what) = 0;
+  NetStream & operator>>( int32 &what)
+  {
+    return operator>>( (uint32 &) what);
+  }
+
   virtual NetStream & operator>>( float32 &what) = 0;
 };
 
