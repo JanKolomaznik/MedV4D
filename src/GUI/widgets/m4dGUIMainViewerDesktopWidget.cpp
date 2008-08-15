@@ -18,7 +18,7 @@ m4dGUIMainViewerDesktopWidget::m4dGUIMainViewerDesktopWidget ( QWidget *parent )
 
 	inputImage = ImageFactory::CreateEmptyImage3DTyped< uint32 >( 512, 512, 50 );
 
-	size_t i, j, k;
+	int32 i, j, k;
 	uint8* p;
 	for ( i = inputImage->GetDimensionExtents( 0 ).minimum; i < inputImage->GetDimensionExtents( 2 ).maximum; ++i )
 		for ( j = inputImage->GetDimensionExtents( 1 ).minimum; j < inputImage->GetDimensionExtents( 0 ).maximum; ++j )

@@ -291,6 +291,8 @@ public:
 	 * \param msg Smart pointer to message object - we don't have 
 	 * to worry about deallocation.
 	 * \param sendStyle How treat incoming message.
+	 * \param direction In what direction was this message sent - 
+	 * in flow or against flow of a pipeline.
 	 **/
 	void
 	ReceiveMessage( 
@@ -366,7 +368,7 @@ protected:
 	 * \param successful Information, whether computation proceeded without problems.
 	 **/
 	virtual void
-	AfterComputation( bool /*successful*/ ){ /*empty*/ };
+	AfterComputation( bool successful ){ /*empty*/ };
 
 	void
 	InputDatasetUpdatedMsgHandler( MsgFilterUpdated *msg );

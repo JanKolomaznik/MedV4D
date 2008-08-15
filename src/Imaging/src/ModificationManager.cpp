@@ -202,10 +202,10 @@ ModificationManager::~ModificationManager()
 
 WriterBBoxInterface &
 ModificationManager::AddMod2D( 
-	size_t x1, 
-	size_t y1, 
-	size_t x2, 
-	size_t y2 
+	int32 x1, 
+	int32 y1, 
+	int32 x2, 
+	int32 y2 
 	)
 {
 	Multithreading::RecursiveScopedLock lock( _accessLock );
@@ -221,10 +221,10 @@ ModificationManager::AddMod2D(
 
 ReaderBBoxInterface::Ptr
 ModificationManager::GetMod2D( 
-	size_t x1, 
-	size_t y1, 
-	size_t x2, 
-	size_t y2 
+	int32 x1, 
+	int32 y1, 
+	int32 x2, 
+	int32 y2 
 	)
 {
 	//TODO
@@ -238,12 +238,12 @@ ModificationManager::GetMod2D(
 
 WriterBBoxInterface &
 ModificationManager::AddMod3D( 
-	size_t x1, 
-	size_t y1, 
-	size_t z1, 
-	size_t x2, 
-	size_t y2, 
-	size_t z2 
+	int32 x1, 
+	int32 y1, 
+	int32 z1, 
+	int32 x2, 
+	int32 y2, 
+	int32 z2 
 	)
 {
 	Multithreading::RecursiveScopedLock lock( _accessLock );
@@ -259,12 +259,12 @@ ModificationManager::AddMod3D(
 
 ReaderBBoxInterface::Ptr
 ModificationManager::GetMod3D( 
-	size_t x1, 
-	size_t y1, 
-	size_t z1, 
-	size_t x2, 
-	size_t y2, 
-	size_t z2 
+	int32 x1, 
+	int32 y1, 
+	int32 z1, 
+	int32 x2, 
+	int32 y2, 
+	int32 z2 
 	)
 {
 	//TODO

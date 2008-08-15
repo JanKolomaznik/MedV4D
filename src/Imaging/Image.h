@@ -131,7 +131,6 @@ public:
 	 * Constructor from AbstractImageData - if not possible from some
 	 * reason, throwing exception.
 	 * \param imageData Dataset storing image data.
-	 * \exception
 	 **/
 	Image( AbstractImageData::APtr imageData );
 
@@ -139,25 +138,27 @@ public:
 	 * Constructor from typed ImageData - if not possible from some
 	 * reason, throwing exception.
 	 * \param imageData Dataset storing image data.
-	 * \exception
 	 **/
 	Image( typename ImageDataTemplate< ElementType >::Ptr imageData );
 	
 	~Image();
 
 	/**
+	 * \param image Refence to abstract image - predecessor of this class.
 	 * \exception ExceptionCastProblem When casting impossible.
 	 **/	
 	static Image< ElementType, 2 > &
 	CastAbstractImage( AbstractImage & image );
 
 	/**
+	 * \param image Constant refence to abstract image - predecessor of this class.
 	 * \exception ExceptionCastProblem When casting impossible.
 	 **/	
 	static const Image< ElementType, 2 > &
 	CastAbstractImage( const AbstractImage & image );
 
 	/**
+	 * \param image Smart pointer to abstract image - predecessor of this class.
 	 * \exception ExceptionCastProblem When casting impossible.
 	 **/	
 	static typename Image< ElementType, 2 >::Ptr 
@@ -179,7 +180,7 @@ public:
 	 * \exception
 	 **/
 	ElementType &
-	GetElement( size_t x, size_t y );
+	GetElement( int32 x, int32 y );
 
 	/**
 	 * Access method to data for constant image- checking boundaries.
@@ -188,38 +189,38 @@ public:
 	 * \exception
 	 **/
 	const ElementType &
-	GetElement( size_t x, size_t y )const;
+	GetElement( int32 x, int32 y )const;
 
 	ElementType *
 	GetPointer( 
-			size_t &width,
-			size_t &height,
+			uint32 &width,
+			uint32 &height,
 			int32 &xStride,
 			int32 &yStride
 		  )const;
 
 	Ptr
 	GetRestricted2DImage( 
-			size_t x1, 
-			size_t y1, 
-			size_t x2, 
-			size_t y2 
+			int32 x1, 
+			int32 y1, 
+			int32 x2, 
+			int32 y2 
 			);
 
 	WriterBBoxInterface &
 	SetDirtyBBox( 
-			size_t x1, 
-			size_t y1, 
-			size_t x2, 
-			size_t y2 
+			int32 x1, 
+			int32 y1, 
+			int32 x2, 
+			int32 y2 
 			);
 
 	ReaderBBoxInterface::Ptr
 	GetDirtyBBox( 
-			size_t x1, 
-			size_t y1, 
-			size_t x2, 
-			size_t y2 
+			int32 x1, 
+			int32 y1, 
+			int32 x2, 
+			int32 y2 
 			)const;
 
 	const ModificationManager &
@@ -304,16 +305,16 @@ public:
 		{ return GetNumericTypeID<ElementType>(); }
 
 	ElementType &
-	GetElement( size_t x, size_t y, size_t z );
+	GetElement( int32 x, int32 y, int32 z );
 
 	const ElementType &
-	GetElement( size_t x, size_t y, size_t z )const;
+	GetElement( int32 x, int32 y, int32 z )const;
 
 	ElementType *
 	GetPointer( 
-			size_t &width,
-			size_t &height,
-			size_t &depth,
+			uint32 &width,
+			uint32 &height,
+			uint32 &depth,
 			int32 &xStride,
 			int32 &yStride,
 			int32 &zStride
@@ -321,42 +322,42 @@ public:
 
 	typename Image< ElementType, 2 >::Ptr
 	GetRestricted2DImage( 
-			size_t x1, 
-			size_t y1, 
-			size_t z1, 
-			size_t x2, 
-			size_t y2, 
-			size_t z2 
+			int32 x1, 
+			int32 y1, 
+			int32 z1, 
+			int32 x2, 
+			int32 y2, 
+			int32 z2 
 			);
 
 	Ptr
 	GetRestricted3DImage( 
-			size_t x1, 
-			size_t y1, 
-			size_t z1, 
-			size_t x2, 
-			size_t y2, 
-			size_t z2 
+			int32 x1, 
+			int32 y1, 
+			int32 z1, 
+			int32 x2, 
+			int32 y2, 
+			int32 z2 
 			);
 
 	WriterBBoxInterface &
 	SetDirtyBBox( 
-			size_t x1, 
-			size_t y1, 
-			size_t z1, 
-			size_t x2, 
-			size_t y2, 
-			size_t z2 
+			int32 x1, 
+			int32 y1, 
+			int32 z1, 
+			int32 x2, 
+			int32 y2, 
+			int32 z2 
 			);
 
 	ReaderBBoxInterface::Ptr
 	GetDirtyBBox( 
-			size_t x1, 
-			size_t y1, 
-			size_t z1, 
-			size_t x2, 
-			size_t y2, 
-			size_t z2 
+			int32 x1, 
+			int32 y1, 
+			int32 z1, 
+			int32 x2, 
+			int32 y2, 
+			int32 z2 
 			)const;
 
 
@@ -443,17 +444,17 @@ public:
 		{ return GetNumericTypeID<ElementType>(); }
 
 	ElementType &
-	GetElement( size_t x, size_t y, size_t z, size_t t );
+	GetElement( int32 x, int32 y, int32 z, int32 t );
 
 	const ElementType &
-	GetElement( size_t x, size_t y, size_t z, size_t t )const;
+	GetElement( int32 x, int32 y, int32 z, int32 t )const;
 
 	ElementType *
 	GetPointer( 
-			size_t &width,
-			size_t &height,
-			size_t &depth,
-			size_t &time,
+			uint32 &width,
+			uint32 &height,
+			uint32 &depth,
+			uint32 &time,
 			int32 &xStride,
 			int32 &yStride,
 			int32 &zStride,
@@ -462,61 +463,61 @@ public:
 
 	typename Image< ElementType, 2 >::Ptr
 	GetRestricted2DImage( 
-			size_t x1, 
-			size_t y1, 
-			size_t z1, 
-			size_t t1,
-			size_t x2, 
-			size_t y2, 
-			size_t z2,
-			size_t t2
+			int32 x1, 
+			int32 y1, 
+			int32 z1, 
+			int32 t1,
+			int32 x2, 
+			int32 y2, 
+			int32 z2,
+			int32 t2
 			);
 
 	typename Image< ElementType, 3 >::Ptr
 	GetRestricted3DImage( 
-			size_t x1, 
-			size_t y1, 
-			size_t z1, 
-			size_t t1,
-			size_t x2, 
-			size_t y2, 
-			size_t z2,
-			size_t t2
+			int32 x1, 
+			int32 y1, 
+			int32 z1, 
+			int32 t1,
+			int32 x2, 
+			int32 y2, 
+			int32 z2,
+			int32 t2
 			);
 	Ptr
 	GetRestricted4DImage( 
-			size_t x1, 
-			size_t y1, 
-			size_t z1, 
-			size_t t1,
-			size_t x2, 
-			size_t y2, 
-			size_t z2,
-			size_t t2
+			int32 x1, 
+			int32 y1, 
+			int32 z1, 
+			int32 t1,
+			int32 x2, 
+			int32 y2, 
+			int32 z2,
+			int32 t2
 			);
 
 	WriterBBoxInterface &
 	SetDirtyBBox( 
-			size_t x1, 
-			size_t y1, 
-			size_t z1, 
-			size_t t1,
-			size_t x2, 
-			size_t y2, 
-			size_t z2,
-			size_t t2
+			int32 x1, 
+			int32 y1, 
+			int32 z1, 
+			int32 t1,
+			int32 x2, 
+			int32 y2, 
+			int32 z2,
+			int32 t2
 			);
 
 	ReaderBBoxInterface::Ptr
 	GetDirtyBBox( 
-			size_t x1, 
-			size_t y1, 
-			size_t z1, 
-			size_t t1,
-			size_t x2, 
-			size_t y2, 
-			size_t z2,
-			size_t t2
+			int32 x1, 
+			int32 y1, 
+			int32 z1, 
+			int32 t1,
+			int32 x2, 
+			int32 y2, 
+			int32 z2,
+			int32 t2
 			)const;
 
 	const ModificationManager &

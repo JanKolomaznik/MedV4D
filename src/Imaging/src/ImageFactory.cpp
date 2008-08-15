@@ -11,7 +11,7 @@ using namespace Dicom;
 void
 ImageFactory::PrepareElementArrayFromTypeID( 
 		int 		typeId, 
-		size_t 		imageSize, 
+		uint32 		imageSize, 
 		uint8		*& dataArray 
 		)
 {
@@ -23,7 +23,7 @@ ImageFactory::PrepareElementArrayFromTypeID(
 AbstractImageData*
 ImageFactory::CreateImageFromDataAndTypeID(
 		int 			typeId, 
-		size_t 			imageSize, 
+		uint32 			imageSize, 
 		uint8			* dataArray, 
 		DimensionInfo		* info
 		)
@@ -86,9 +86,9 @@ ImageFactory::CreateImageDataFromDICOM( M4D::Dicom::DcmProvider::DicomObjSetPtr 
 	try 
 	{
 		//Get parameters of final image.
-		size_t	width	= (*dicomObjects)[0].GetWidth();
-		size_t	height	= (*dicomObjects)[0].GetHeight();
-		size_t	depth	= dicomObjects->size();
+		uint32	width	= (*dicomObjects)[0].GetWidth();
+		uint32	height	= (*dicomObjects)[0].GetHeight();
+		uint32	depth	= dicomObjects->size();
 		//Get extents of voxel.
 		float32 voxelWidth = 1.0;
 		float32 voxelHeight = 1.0;
@@ -96,13 +96,13 @@ ImageFactory::CreateImageDataFromDICOM( M4D::Dicom::DcmProvider::DicomObjSetPtr 
 		(*dicomObjects)[0].GetPixelSpacing( voxelWidth, voxelHeight );
 		(*dicomObjects)[0].GetSliceThickness( voxelDepth );
 
-		size_t	sliceSize = width * height;	//Count of elements in one slice.
-		size_t	imageSize = sliceSize * depth;	//Count of elements in whole image.
+		uint32	sliceSize = width * height;	//Count of elements in one slice.
+		uint32	imageSize = sliceSize * depth;	//Count of elements in whole image.
 
 		uint8*	dataArray = NULL;
 		
 		//How many bytes is needed to skip between two slices.
-		size_t sliceStride = elementSize * sliceSize;
+		uint32 sliceStride = elementSize * sliceSize;
 
 			D_PRINT( "---- Preparing memory for data." );
 		//Create array for image elements.
@@ -162,13 +162,13 @@ template< typename ElementType >
 void
 FlushDicomObjectsHelper(
 		M4D::Dicom::DcmProvider::DicomObjSetPtr	&dicomObjects,
-		size_t 					imageSize,
-		size_t					stride,
+		uint32 					imageSize,
+		uint32					stride,
 		uint8					* dataArray
 		)
 {
 	//Copy each slice into image to its place.
-	size_t i = 0;
+	uint32 i = 0;
 	for( 
 		Dicom::DcmProvider::DicomObjSet::iterator it = dicomObjects->begin();
 		it != dicomObjects->end();
@@ -188,8 +188,8 @@ void
 ImageFactory::FlushDicomObjects(
 		M4D::Dicom::DcmProvider::DicomObjSetPtr	&dicomObjects,
 		int 					elementTypeID, 
-		size_t 					imageSize,
-		size_t					stride,
+		uint32 					imageSize,
+		uint32					stride,
 		uint8					* dataArray
 		)
 {

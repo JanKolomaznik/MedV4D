@@ -87,22 +87,27 @@
 	
 		<para>
 		First thing we should know, is how to create filtering pipeline with supposed behaviour using prepared filters. 
-		How to extend functionality we discuss later.
+		This section will be brief tutorial to pipeline construction. We show possible usage on example class, which will have all desired
+		abilities, which are normaly distributed across application.
 		</para>
 
 		<para>
 		Before we start construction, we must decide if we want handle storing and deallocation of all objects, because there is 
 		prepared container for all pipeline objects, which handle deallocation of stored objects and can semiautomatically connect filters, and 
-		other objects with ports used as communication channel. 
+		other objects with ports used as communication channel. For our example we use this <code>PipelineContainer</code>, for manual control and construction
+		see its source code.
+		</para>
 
 		<para>
 		Actual pipeline construction should proceed in three basic steps:
 		</para>
-		<list>
-			<item>Allocation of filters</item>
-			<item>Establishing connections</item>
-			<item>Passing input datasets</item>
-		</list>
+
+		<itemizedlist>
+			<listitem><para>Allocation of filters</para></listitem>
+			<listitem><para>Establishing connections</para></listitem>
+			<listitem><para>Passing input datasets</para></listitem>
+		</itemizedlist>
+
 	</section>
 
 	<section>

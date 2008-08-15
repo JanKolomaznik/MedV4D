@@ -153,60 +153,60 @@ public:
 	//GetWholeDatasetBBox();
 	WriterBBoxInterface &
 	AddMod2D( 
-		size_t x1, 
-		size_t y1, 
-		size_t x2, 
-		size_t y2 
+		int32 x1, 
+		int32 y1, 
+		int32 x2, 
+		int32 y2 
 		);
 	
 	ReaderBBoxInterface::Ptr
 	GetMod2D( 
-		size_t x1, 
-		size_t y1, 
-		size_t x2, 
-		size_t y2 
+		int32 x1, 
+		int32 y1, 
+		int32 x2, 
+		int32 y2 
 		);
 
 	WriterBBoxInterface &
 	AddMod3D( 
-		size_t x1, 
-		size_t y1, 
-		size_t z1, 
-		size_t x2, 
-		size_t y2, 
-		size_t z2 
+		int32 x1, 
+		int32 y1, 
+		int32 z1, 
+		int32 x2, 
+		int32 y2, 
+		int32 z2 
 		);
 	
 	ReaderBBoxInterface::Ptr
 	GetMod3D( 
-		size_t x1, 
-		size_t y1, 
-		size_t z1, 
-		size_t x2, 
-		size_t y2, 
-		size_t z2 
+		int32 x1, 
+		int32 y1, 
+		int32 z1, 
+		int32 x2, 
+		int32 y2, 
+		int32 z2 
 		);
 
 	WriterBBoxInterface &
 	AddMod4D( 
-		size_t x1, 
-		size_t y1, 
-		size_t z1, 
-		size_t x2, 
-		size_t y2, 
-		size_t z2 
+		int32 x1, 
+		int32 y1, 
+		int32 z1, 
+		int32 x2, 
+		int32 y2, 
+		int32 z2 
 		);
 	
 	ReaderBBoxInterface::Ptr
 	GetMod4D( 
-		size_t x1, 
-		size_t y1, 
-		size_t z1, 
-		size_t t1, 
-		size_t x2, 
-		size_t y2, 
-		size_t z2, 
-		size_t t2 
+		int32 x1, 
+		int32 y1, 
+		int32 z1, 
+		int32 t1, 
+		int32 x2, 
+		int32 y2, 
+		int32 z2, 
+		int32 t2 
 		);
 
 	ChangeIterator 

@@ -118,7 +118,7 @@ Image< ElementType, 2 >::CastAbstractImage( AbstractImage::AImagePtr & image )
 
 template< typename ElementType >
 ElementType &
-Image< ElementType, 2 >::GetElement( size_t x, size_t y )
+Image< ElementType, 2 >::GetElement( int32 x, int32 y )
 {
 	if( 	x < GetDimensionExtents( 0 ).minimum || 
 		x >= GetDimensionExtents( 0 ).maximum 	) 
@@ -136,7 +136,7 @@ Image< ElementType, 2 >::GetElement( size_t x, size_t y )
 
 template< typename ElementType >
 const ElementType &
-Image< ElementType, 2 >::GetElement( size_t x, size_t y )const
+Image< ElementType, 2 >::GetElement( int32 x, int32 y )const
 {
 	if( 	x < GetDimensionExtents( 0 ).minimum || 
 		x >= GetDimensionExtents( 0 ).maximum 	) 
@@ -155,8 +155,8 @@ Image< ElementType, 2 >::GetElement( size_t x, size_t y )const
 template< typename ElementType >
 ElementType *
 Image< ElementType, 2 >::GetPointer( 
-			size_t &width,
-			size_t &height,
+			uint32 &width,
+			uint32 &height,
 			int32 &xStride,
 			int32 &yStride
 		  )const
@@ -174,10 +174,10 @@ Image< ElementType, 2 >::GetPointer(
 template< typename ElementType >
 typename Image< ElementType, 2 >::Ptr
 Image< ElementType, 2 >::GetRestricted2DImage( 
-			size_t x1, 
-			size_t y1, 
-			size_t x2, 
-			size_t y2 
+			int32 x1, 
+			int32 y1, 
+			int32 x2, 
+			int32 y2 
 			)
 {
 
@@ -185,10 +185,10 @@ Image< ElementType, 2 >::GetRestricted2DImage(
 template< typename ElementType >
 WriterBBoxInterface &
 Image< ElementType, 2 >::SetDirtyBBox( 
-		size_t x1, 
-		size_t y1, 
-		size_t x2, 
-		size_t y2 
+		int32 x1, 
+		int32 y1, 
+		int32 x2, 
+		int32 y2 
 		)
 {
 	ModificationManager & modManager = _imageData->GetModificationManager();
@@ -204,10 +204,10 @@ Image< ElementType, 2 >::SetDirtyBBox(
 template< typename ElementType >
 ReaderBBoxInterface::Ptr
 Image< ElementType, 2 >::GetDirtyBBox( 
-		size_t x1, 
-		size_t y1, 
-		size_t x2, 
-		size_t y2 
+		int32 x1, 
+		int32 y1, 
+		int32 x2, 
+		int32 y2 
 		)const
 {
 	ModificationManager & modManager = _imageData->GetModificationManager();
@@ -341,7 +341,7 @@ Image< ElementType, 3 >::CastAbstractImage( AbstractImage::AImagePtr & image )
 
 template< typename ElementType >
 ElementType &
-Image< ElementType, 3 >::GetElement( size_t x, size_t y, size_t z )
+Image< ElementType, 3 >::GetElement( int32 x, int32 y, int32 z )
 {
 	if( 	x < GetDimensionExtents( 0 ).minimum || 
 		x >= GetDimensionExtents( 0 ).maximum 	) 
@@ -364,7 +364,7 @@ Image< ElementType, 3 >::GetElement( size_t x, size_t y, size_t z )
 
 template< typename ElementType >
 const ElementType &
-Image< ElementType, 3 >::GetElement( size_t x, size_t y, size_t z )const
+Image< ElementType, 3 >::GetElement( int32 x, int32 y, int32 z )const
 {
 	if( 	x < GetDimensionExtents( 0 ).minimum || 
 		x >= GetDimensionExtents( 0 ).maximum 	) 
@@ -388,23 +388,39 @@ Image< ElementType, 3 >::GetElement( size_t x, size_t y, size_t z )const
 template< typename ElementType >
 typename Image< ElementType, 2 >::Ptr
 Image< ElementType, 3 >::GetRestricted2DImage( 
-		size_t x1, 
-		size_t y1, 
-		size_t z1, 
-		size_t x2, 
-		size_t y2, 
-		size_t z2 
+		int32 x1, 
+		int32 y1, 
+		int32 z1, 
+		int32 x2, 
+		int32 y2, 
+		int32 z2 
 		)
 {
+	//TODO
+	return  Image< ElementType, 2 >::Ptr();
+}
 
+template< typename ElementType >
+typename Image< ElementType, 3 >::Ptr
+Image< ElementType, 3 >::GetRestricted3DImage( 
+		int32 x1, 
+		int32 y1, 
+		int32 z1, 
+		int32 x2, 
+		int32 y2, 
+		int32 z2 
+		)
+{
+	//TODO
+	return  Image< ElementType, 3 >::Ptr();
 }
 
 template< typename ElementType >
 ElementType *
 Image< ElementType, 3 >::GetPointer( 
-			size_t &width,
-			size_t &height,
-			size_t &depth,
+			uint32 &width,
+			uint32 &height,
+			uint32 &depth,
 			int32 &xStride,
 			int32 &yStride,
 			int32 &zStride
@@ -421,28 +437,16 @@ Image< ElementType, 3 >::GetPointer(
 	return &_imageData->Get( _dimExtents[0].minimum, _dimExtents[1].minimum, _dimExtents[2].minimum );
 }
 
-template< typename ElementType >
-typename Image< ElementType, 3 >::Ptr
-Image< ElementType, 3 >::GetRestricted3DImage( 
-		size_t x1, 
-		size_t y1, 
-		size_t z1, 
-		size_t x2, 
-		size_t y2, 
-		size_t z2 
-		)
-{
-}
  
 template< typename ElementType >
 WriterBBoxInterface &
 Image< ElementType, 3 >::SetDirtyBBox( 
-		size_t x1, 
-		size_t y1, 
-		size_t z1, 
-		size_t x2, 
-		size_t y2, 
-		size_t z2 
+		int32 x1, 
+		int32 y1, 
+		int32 z1, 
+		int32 x2, 
+		int32 y2, 
+		int32 z2 
 		)
 {
 	ModificationManager & modManager = _imageData->GetModificationManager();
@@ -460,12 +464,12 @@ Image< ElementType, 3 >::SetDirtyBBox(
 template< typename ElementType >
 ReaderBBoxInterface::Ptr
 Image< ElementType, 3 >::GetDirtyBBox( 
-		size_t x1, 
-		size_t y1, 
-		size_t z1, 
-		size_t x2, 
-		size_t y2, 
-		size_t z2 
+		int32 x1, 
+		int32 y1, 
+		int32 z1, 
+		int32 x2, 
+		int32 y2, 
+		int32 z2 
 		)const
 {
 	ModificationManager & modManager = _imageData->GetModificationManager();

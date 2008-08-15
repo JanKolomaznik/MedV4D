@@ -369,7 +369,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
     glLoadIdentity();
     if ( _flipH < 0 ) offset.setX( offset.x() + (int)( zoomRate * w ) );
     if ( _flipV < 0 ) offset.setY( offset.y() + (int)( zoomRate * h ) );
-    size_t height, width, depth;
+    uint32 height, width, depth;
     double maxvalue;
     int stride;
     GLuint texName;

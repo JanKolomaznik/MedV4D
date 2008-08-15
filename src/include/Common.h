@@ -201,7 +201,7 @@ int16 GetNumericTypeID<bool>();
 /**
  * Function used in conversions of integer values. 
  * @param size Size of examined type.
- * @param signed Wheather examined type is signed.
+ * @param sign Wheather examined type is signed.
  * @return ID of type with given characteristics if exists, otherwise
  * NTID_UNKNOWN.
  **/

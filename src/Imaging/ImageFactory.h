@@ -31,7 +31,7 @@ public:
 
 	/**
 	 * Method for custom empty 2D image creation.
-	 * @param ElementType Type of elements which will be contained 
+	 * ElementType is type of elements which will be contained 
 	 * in created dataset.
 	 * @param width Width of desided image.
 	 * @param height Height of desided image.
@@ -47,7 +47,7 @@ public:
 	/**
 	 * Method for custom empty 2D image creation. Difference from 
 	 * previous method is in return value.
-	 * @param ElementType Type of elements which will be contained 
+	 * ElementType is type of elements which will be contained 
 	 * in created dataset.
 	 * @param width Width of desided image.
 	 * @param height Height of desided image.
@@ -70,7 +70,7 @@ public:
 
 	/**
 	 * Method for custom empty 3D image creation.
-	 * @param ElementType Type of elements which will be contained 
+	 * ElementType is type of elements which will be contained 
 	 * in created dataset.
 	 * @param width Width of desided image.
 	 * @param height Height of desided image.
@@ -88,7 +88,7 @@ public:
 	/**
 	 * Method for custom empty 3D image creation. Difference from 
 	 * previous method is in return value.
-	 * @param ElementType Type of elements which will be contained 
+	 * ElementType is type of elements which will be contained 
 	 * in created dataset.
 	 * @param width Width of desided image.
 	 * @param height Height of desided image.
@@ -114,7 +114,7 @@ public:
 
 	/**
 	 * Method for custom empty 2D image buffer creation.
-	 * @param ElementType Type of elements which will be contained 
+	 * ElementType is type of elements which will be contained 
 	 * in created dataset.
 	 * @param width Width of desided image.
 	 * @param height Height of desided image.
@@ -130,7 +130,7 @@ public:
 	/**
 	 * Method for custom empty 2D image creation. Difference from 
 	 * previous method is in return value.
-	 * @param ElementType Type of elements which will be contained 
+	 * ElementType is type of elements which will be contained 
 	 * in created dataset.
 	 * @param width Width of desided image.
 	 * @param height Height of desided image.
@@ -145,7 +145,7 @@ public:
 
 	/**
 	 * Method for custom empty 3D image creation.
-	 * @param ElementType Type of elements which will be contained 
+	 * ElementType is type of elements which will be contained 
 	 * in created dataset.
 	 * @param width Width of desided image.
 	 * @param height Height of desided image.
@@ -163,7 +163,7 @@ public:
 	/**
 	 * Method for custom empty 3D image creation. Difference from 
 	 * previous method is in return value.
-	 * @param ElementType Type of elements which will be contained 
+	 * ElementType is type of elements which will be contained 
 	 * in created dataset.
 	 * @param width Width of desided image.
 	 * @param height Height of desided image.
