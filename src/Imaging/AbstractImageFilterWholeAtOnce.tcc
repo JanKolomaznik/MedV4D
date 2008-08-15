@@ -8,6 +8,14 @@ namespace Imaging
 {
 
 template< typename InputImageType, typename OutputImageType >
+AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
+::AbstractImageFilterWholeAtOnce( typename AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >::Properties *prop )
+	: PredecessorType( prop )
+{
+
+}
+
+template< typename InputImageType, typename OutputImageType >
 bool
 AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
 ::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
@@ -160,6 +168,39 @@ AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
 	return ApplyWriterBBoxFunc< OutputImageType::Element, OutputImageType::Dimension >( out );
 }
 
+//*****************************************************************************
+//*****************************************************************************
+//*****************************************************************************
+
+
+template< typename InputImageType, typename OutputImageType >
+AbstractImageFilterWholeAtOnceIExtents< InputImageType, OutputImageType >
+::AbstractImageFilterWholeAtOnceIExtents( typename AbstractImageFilterWholeAtOnceIExtents< InputImageType, OutputImageType >::Properties *prop )
+	: PredecessorType( prop )
+{
+	
+}
+
+template< typename InputImageType, typename OutputImageType >
+void
+AbstractImageFilterWholeAtOnceIExtents< InputImageType, OutputImageType >
+::PrepareOutputDatasets()
+{
+	PredecessorType::PrepareOutputDatasets();
+
+	size_t minimums[ ImageTraits<InputImageType>::Dimension ];
+	size_t maximums[ ImageTraits<InputImageType>::Dimension ];
+	float32 voxelExtents[ ImageTraits<InputImageType>::Dimension ];
+
+	for( unsigned i=0; i <  ImageTraits<InputImageType>::Dimension; ++i ) {
+		const DimensionExtents & dimExt = this->in->GetDimensionExtents( i );
+
+		minimums[i] = dimExt.minimum;
+		maximums[i] = dimExt.maximum;
+		voxelExtents[i] = dimExt.elementExtent;
+	}
+	this->SetOutputImageSize( minimums, maximums, voxelExtents );
+}
 
 } /*namespace Imaging*/
 } /*namespace M4D*/

@@ -148,6 +148,17 @@ enum NumericTypeIDs{
 	/*case 4:{ const unsigned DIM = 4; __VA_ARGS__ ; } break;\*/
 
 
+//*****************************************************************************
+template< unsigned Dim1, unsigned Dim2 >
+struct IsSameDimension;
+
+template< unsigned Dim >
+struct IsSameDimension< Dim, Dim >
+{
+	//Only possible is when both parameters are the same value.
+};
+//*****************************************************************************
+
 template< typename NumericType >
 int16 GetNumericTypeID()
 { return NTID_UNKNOWN; }

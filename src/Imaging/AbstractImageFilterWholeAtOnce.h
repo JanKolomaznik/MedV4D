@@ -50,6 +50,22 @@ private:
 
 };
 
+template< typename InputImageType, typename OutputImageType >
+class AbstractImageFilterWholeAtOnceIExtents
+	: public AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
+{
+public:
+	typedef AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >	PredecessorType;
+	typedef typename PredecessorType::Properties		Properties;
+
+	AbstractImageFilterWholeAtOnceIExtents( Properties *prop );
+protected:
+
+	void
+	PrepareOutputDatasets();
+private:
+	IsSameDimension< ImageTraits< InputImageType >::Dimension, ImageTraits< OutputImageType >::Dimension > ____TestSameDimension; 
+};
 
 } /*namespace Imaging*/
 } /*namespace M4D*/

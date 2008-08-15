@@ -9,7 +9,6 @@
 #include "Thread.h"
 #include "Imaging/PipelineMessages.h"
 
-#include "Imaging/filterProperties.h"
 
 #include <iostream>
 namespace M4D

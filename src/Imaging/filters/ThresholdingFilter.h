@@ -2,7 +2,7 @@
 #define _THRESHOLDING_FILTER_H
 
 #include "Common.h"
-#include "Imaging/AbstractImageSliceFilter.h"
+#include "Imaging/AbstractImageElementFilter.h"
 
 
 namespace M4D
@@ -12,14 +12,34 @@ namespace Imaging
 {
 
 
-template< typename InputImageType >
-class ThresholdingFilter;
-
-template< typename InputElementType >
-class ThresholdingFilter< Image< InputElementType, 2 > >
+template< typename ElementType >
+class ThresholdingFunctor
 {
 public:
-	typedef AbstractPipeFilter  PredecessorType;
+	void
+	operator()( const ElementType&	input, ElementType& output )
+	{
+		if( input < bottom || input > top ) {
+			output = outValue;
+		} else {
+			output = input;
+		}
+	}	
+
+	ElementType	bottom;	
+	ElementType	top;
+		
+	ElementType	outValue;
+};
+
+template< typename ImageType >
+class ThresholdingFilter
+	: public AbstractImageElementFilter< ImageType, ImageType, ThresholdingFunctor< typename ImageTraits< ImageType >::ElementType > >
+{
+public:
+	typedef ThresholdingFunctor< typename ImageTraits< ImageType >::ElementType > 		Functor;
+	typedef Imaging::AbstractImageElementFilter< ImageType, ImageType, Functor >		PredecessorType;
+	typedef typename ImageTraits< ImageType >::ElementType 					InputElementType;
 
 	struct Properties : public PredecessorType::Properties
 	{
@@ -29,36 +49,15 @@ public:
 		InputElementType	top;
 		
 		InputElementType	outValue;
-	};
 
-	ThresholdingFilter( Properties  * prop );
-	ThresholdingFilter();
-
-	GET_SET_PROPERTY_METHOD_MACRO( InputElementType, Bottom, bottom );
-	GET_SET_PROPERTY_METHOD_MACRO( InputElementType, Top, top );
-	GET_SET_PROPERTY_METHOD_MACRO( InputElementType, OutValue, outValue );
-protected:
-
-	//TODO
-private:
-	GET_PROPERTIES_DEFINITION_MACRO;
-};
-
-template< typename InputElementType >
-class ThresholdingFilter< Image< InputElementType, 3 > >
-	: public IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
-{
-public:
-	typedef typename  Imaging::IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
-
-	struct Properties : public PredecessorType::Properties
-	{
-		Properties(): PredecessorType::Properties( 0, 10 ), bottom( 0 ), top( 0 ), outValue( 0 ) {}
-
-		InputElementType	bottom;	
-		InputElementType	top;
+		void
+		CheckProperties() {
+			_functor->bottom = bottom;
+			_functor->top = top;
+			_functor->outValue = outValue;
+		}
 		
-		InputElementType	outValue;
+		Functor	*_functor;
 	};
 
 	ThresholdingFilter( Properties  * prop );
@@ -69,16 +68,6 @@ public:
 	GET_SET_PROPERTY_METHOD_MACRO( InputElementType, OutValue, outValue );
 protected:
 
-	bool
-	ProcessSlice(
-			const Image< InputElementType, 3 > 	&in,
-			Image< InputElementType, 3 >		&out,
-			size_t			x1,	
-			size_t			y1,	
-			size_t			x2,	
-			size_t			y2,	
-			size_t			slice
-		    );
 private:
 	GET_PROPERTIES_DEFINITION_MACRO;
 
@@ -86,7 +75,7 @@ private:
 
 //******************************************************************************
 //******************************************************************************
-
+/*
 template< typename InputImageType >
 class ThresholdingFilterMask;
 
@@ -132,6 +121,7 @@ protected:
 private:
 	GET_PROPERTIES_DEFINITION_MACRO;
 };
+*/
 	
 } /*namespace Imaging*/
 } /*namespace M4D*/
