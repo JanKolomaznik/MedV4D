@@ -1,4 +1,4 @@
-#include "DataConversion.h"
+#include "vtkIntegration/DataConversion.h"
 
 namespace M4D
 {
@@ -21,7 +21,7 @@ ConvertNumericTypeIDToVTKScalarType( int NumericTypeID )
 	case NTID_FLOAT_32: 		return VTK_FLOAT;
 	case NTID_FLOAT_64: 		return VTK_DOUBLE;
 	default:
-					return VTK_VOID;
+					throw EImpossibleVTKConversion();
 	}
 
 }

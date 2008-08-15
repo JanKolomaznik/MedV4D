@@ -23,7 +23,7 @@
 #include "vtkColorTransferFunction.h"
 #include "vtkVolumeProperty.h"
 
-#include "m4dImageDataSource.h"
+#include "vtkIntegration/m4dImageDataSource.h"
 
 #include "Common.h"
 #include "Imaging/Image.h"

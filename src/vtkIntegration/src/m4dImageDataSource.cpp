@@ -1,4 +1,4 @@
-#include "m4dImageDataSource.h"
+#include "vtkIntegration/m4dImageDataSource.h"
 
 #include "vtkImageData.h"
 #include "vtkInformation.h"
@@ -7,7 +7,7 @@
 
 #include "Log.h"
 #include "Debug.h"
-#include "DataConversion.h"
+#include "vtkIntegration/DataConversion.h"
 #include "Imaging/ImageFactory.h"
 
 
