@@ -47,8 +47,8 @@ BoneSegmentationRemote<ImageType>::PrepareOutputDatasets()
 {
 	PredecessorType::PrepareOutputDatasets();
 
-	size_t minimums[M4D::Imaging::ImageTraits<ImageType>::Dimension];
-	size_t maximums[M4D::Imaging::ImageTraits<ImageType>::Dimension];
+	int32 minimums[M4D::Imaging::ImageTraits<ImageType>::Dimension];
+	int32 maximums[M4D::Imaging::ImageTraits<ImageType>::Dimension];
 	float32 voxelExtents[M4D::Imaging::ImageTraits<ImageType>::Dimension];
 
 	for( unsigned i=0; i < M4D::Imaging::ImageTraits<ImageType>::Dimension; ++i ) {

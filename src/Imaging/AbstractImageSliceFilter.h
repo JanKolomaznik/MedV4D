@@ -103,7 +103,7 @@ protected:
 	GetComputationGroupWriterBBox( SliceComputationRecord & record ) = 0;
 
 	bool
-	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
+	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE /*utype*/ );
 
 	
 	void

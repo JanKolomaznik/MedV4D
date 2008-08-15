@@ -16,7 +16,7 @@ namespace Imaging
  **/
 template< typename ElementType >
 ElementType*
-PrepareElementArray( size_t size )
+PrepareElementArray( uint32 size )
 {
 	try
 	{
@@ -35,8 +35,8 @@ PrepareElementArray( size_t size )
 template< typename ElementType >
 AbstractImage::AImagePtr 
 ImageFactory::CreateEmptyImage2D( 
-			size_t		width, 
-			size_t		height
+			uint32		width, 
+			uint32		height
 			)
 {
 	//TODO exceptions
@@ -52,8 +52,8 @@ ImageFactory::CreateEmptyImage2D(
 template< typename ElementType >
 typename Image< ElementType, 2 >::Ptr 
 ImageFactory::CreateEmptyImage2DTyped( 
-			size_t		width, 
-			size_t		height
+			uint32		width, 
+			uint32		height
 			)
 {
 	//TODO exceptions
@@ -69,8 +69,8 @@ template< typename ElementType >
 void
 ImageFactory::ReallocateImage2DData(
 		Image< ElementType, 2 >	&image,
-		size_t			width, 
-		size_t			height
+		uint32			width, 
+		uint32			height
 		)
 {
 	//TODO exceptions
@@ -83,9 +83,9 @@ ImageFactory::ReallocateImage2DData(
 template< typename ElementType >
 AbstractImage::AImagePtr 
 ImageFactory::CreateEmptyImage3D( 
-			size_t		width, 
-			size_t		height,
-			size_t		depth
+			uint32		width, 
+			uint32		height,
+			uint32		depth
 			)
 {
 	//TODO exceptions
@@ -101,9 +101,9 @@ ImageFactory::CreateEmptyImage3D(
 template< typename ElementType >
 typename Image< ElementType, 3 >::Ptr 
 ImageFactory::CreateEmptyImage3DTyped( 
-			size_t		width, 
-			size_t		height,
-			size_t		depth
+			uint32		width, 
+			uint32		height,
+			uint32		depth
 			)
 {
 	//TODO exceptions
@@ -119,9 +119,9 @@ template< typename ElementType >
 void
 ImageFactory::ReallocateImage3DData(
 		Image< ElementType, 3 >	&image,
-		size_t			width, 
-		size_t			height,
-		size_t			depth
+		uint32			width, 
+		uint32			height,
+		uint32			depth
 		)
 {
 	//TODO exceptions
@@ -136,8 +136,8 @@ ImageFactory::ReallocateImage3DData(
 template< typename ElementType >
 AbstractImageData::APtr 
 ImageFactory::CreateEmptyImageData2D( 
-			size_t		width, 
-			size_t		height
+			uint32		width, 
+			uint32		height
 			)
 {
 	typename ImageDataTemplate< ElementType >::Ptr ptr = 
@@ -153,14 +153,14 @@ ImageFactory::CreateEmptyImageData2D(
 template< typename ElementType >
 typename ImageDataTemplate< ElementType >::Ptr 
 ImageFactory::CreateEmptyImageData2DTyped( 
-			size_t		width, 
-			size_t		height
+			uint32		width, 
+			uint32		height
 			)
 {
 	ImageDataTemplate< ElementType > *newImage;
 	try
 	{
-		size_t size = width * height;
+		uint32 size = width * height;
 		
 		//Preparing informations about dimensionality.
 		DimensionInfo *info = new DimensionInfo[ 2 ];
@@ -186,9 +186,9 @@ ImageFactory::CreateEmptyImageData2DTyped(
 template< typename ElementType >
 AbstractImageData::APtr 
 ImageFactory::CreateEmptyImageData3D( 
-			size_t		width, 
-			size_t		height, 
-			size_t		depth
+			uint32		width, 
+			uint32		height, 
+			uint32		depth
 			)
 {
 	typename ImageDataTemplate< ElementType >::Ptr ptr = 
@@ -205,19 +205,19 @@ ImageFactory::CreateEmptyImageData3D(
 template< typename ElementType >
 typename ImageDataTemplate< ElementType >::Ptr 
 ImageFactory::CreateEmptyImageData3DTyped( 
-			size_t		width, 
-			size_t		height, 
-			size_t		depth
+			uint32		width, 
+			uint32		height, 
+			uint32		depth
 			)
 {
 	//TODO exception handling
-	size_t size = width * height * depth;
+	uint32 size = width * height * depth;
 	
 	//Preparing informations about dimensionality.
 	DimensionInfo *info = new DimensionInfo[ 3 ];
 	info[0].Set( width, 1, 1.0 );
 	info[1].Set( height, width, 1.0 );
-	info[2].Set( depth, width * height, 1.0 );
+	info[2].Set( depth, (width * height), 1.0 );
 
 	//Creating place for data storage.
 	ElementType *array = PrepareElementArray< ElementType >( size );

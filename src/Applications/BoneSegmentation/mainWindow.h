@@ -24,8 +24,8 @@ public:
 	void
 	ReceiveMessage( 
 		M4D::Imaging::PipelineMessage::Ptr 			msg, 
-		M4D::Imaging::PipelineMessage::MessageSendStyle 	sendStyle, 
-		M4D::Imaging::FlowDirection				direction
+		M4D::Imaging::PipelineMessage::MessageSendStyle 	/*sendStyle*/, 
+		M4D::Imaging::FlowDirection				/*direction*/
 		)
 	{
 		if( msg->msgID == M4D::Imaging::PMI_FILTER_UPDATED ) {

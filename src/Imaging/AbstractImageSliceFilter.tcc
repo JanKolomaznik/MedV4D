@@ -18,7 +18,7 @@ AbstractImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 template< typename InputElementType, typename OutputImageType >
 bool
 AbstractImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
-::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
+::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE /*utype*/ )
 {
 	size_t i = 0;
 	for( i = 0; i < _actualComputationGroups.size(); ++i )
@@ -79,7 +79,7 @@ AbstractImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 			DL_PRINT( 5, "SliceFilter recalculation" );
 
 			const DimensionExtents & dimExtents = this->in->GetDimensionExtents( 2 );
-			unsigned groupCount = ( dimExtents.maximum - dimExtents.minimum ) / computationGrouping;
+			uint32 groupCount = ( dimExtents.maximum - dimExtents.minimum ) / computationGrouping;
 			for( unsigned i = 0; i < groupCount; ++i ) {
 				SliceComputationRecord record;
 				record.firstSlice = dimExtents.minimum + (i*computationGrouping);
@@ -192,8 +192,8 @@ IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputEle
 {
 	PredecessorType::PrepareOutputDatasets();
 
-	size_t minimums[3];
-	size_t maximums[3];
+	int32 minimums[3];
+	int32 maximums[3];
 	float32 voxelExtents[3];
 
 	for( unsigned i=0; i < 3; ++i ) {

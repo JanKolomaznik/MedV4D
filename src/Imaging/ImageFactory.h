@@ -40,8 +40,8 @@ public:
 	template< typename ElementType >
 	static AbstractImage::AImagePtr 
 	CreateEmptyImage2D( 
-			size_t		width, 
-			size_t		height
+			uint32		width, 
+			uint32		height
 			);
 
 	/**
@@ -56,16 +56,16 @@ public:
 	template< typename ElementType >
 	static typename Image< ElementType, 2 >::Ptr
 	CreateEmptyImage2DTyped( 
-			size_t		width, 
-			size_t		height
+			uint32		width, 
+			uint32		height
 			);
 
 	template< typename ElementType >
 	static void
 	ReallocateImage2DData(
 			Image< ElementType, 2 >	&image,
-			size_t			width, 
-			size_t			height
+			uint32			width, 
+			uint32			height
 			);
 
 	/**
@@ -80,9 +80,9 @@ public:
 	template< typename ElementType >
 	static AbstractImage::AImagePtr 
 	CreateEmptyImage3D( 
-			size_t		width, 
-			size_t		height, 
-			size_t		depth
+			uint32		width, 
+			uint32		height, 
+			uint32		depth
 			);
 
 	/**
@@ -98,18 +98,18 @@ public:
 	template< typename ElementType >
 	static typename Image< ElementType, 3 >::Ptr 
 	CreateEmptyImage3DTyped( 
-			size_t		width, 
-			size_t		height, 
-			size_t		depth
+			uint32		width, 
+			uint32		height, 
+			uint32		depth
 			);
 
 	template< typename ElementType >
 	static void
 	ReallocateImage3DData(
 			Image< ElementType, 3 >	&image,
-			size_t			width, 
-			size_t			height,
-			size_t			depth
+			uint32			width, 
+			uint32			height,
+			uint32			depth
 			);
 
 	/**
@@ -123,8 +123,8 @@ public:
 	template< typename ElementType >
 	static AbstractImageData::APtr 
 	CreateEmptyImageData2D( 
-			size_t		width, 
-			size_t		height
+			uint32		width, 
+			uint32		height
 			);
 
 	/**
@@ -139,8 +139,8 @@ public:
 	template< typename ElementType >
 	static typename ImageDataTemplate< ElementType >::Ptr
 	CreateEmptyImageData2DTyped( 
-			size_t		width, 
-			size_t		height
+			uint32		width, 
+			uint32		height
 			);
 
 	/**
@@ -155,9 +155,9 @@ public:
 	template< typename ElementType >
 	static AbstractImageData::APtr 
 	CreateEmptyImageData3D( 
-			size_t		width, 
-			size_t		height, 
-			size_t		depth
+			uint32		width, 
+			uint32		height, 
+			uint32		depth
 			);
 
 	/**
@@ -173,9 +173,9 @@ public:
 	template< typename ElementType >
 	static typename ImageDataTemplate< ElementType >::Ptr 
 	CreateEmptyImageData3DTyped( 
-			size_t		width, 
-			size_t		height, 
-			size_t		depth
+			uint32		width, 
+			uint32		height, 
+			uint32		depth
 			);
 
 	/**
@@ -219,7 +219,7 @@ private:
 	static void
 	PrepareElementArrayFromTypeID( 
 		int 			typeId, 
-		size_t 			imageSize, 
+		uint32 			imageSize, 
 		uint8			*& dataArray  
 		);
 
@@ -232,7 +232,7 @@ private:
 	static AbstractImageData*
 	CreateImageFromDataAndTypeID(
 		int 			typeId,
-		size_t 			imageSize, 
+		uint32 			imageSize, 
 		uint8			* dataArray, 
 		DimensionInfo		* info
 		);
@@ -250,8 +250,8 @@ private:
 	FlushDicomObjects(
 		M4D::Dicom::DcmProvider::DicomObjSetPtr	&dicomObjects,
 		int		 			elementTypeID, 
-		size_t 					imageSize,
-		size_t					stride,
+		uint32 					imageSize,
+		uint32					stride,
 		uint8					* dataArray
 		);
 	

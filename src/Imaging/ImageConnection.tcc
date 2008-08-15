@@ -12,8 +12,8 @@ template< typename ElementType >
 void 
 CallImageFactoryRealloc( 
 			Image< ElementType, 2 > &image,  
-			size_t 		minimums[ 2 ], 
-			size_t 		maximums[ 2 ], 
+			int32 		minimums[ 2 ], 
+			int32 		maximums[ 2 ], 
 			float32		elementExtents[ 2 ]
 	    )
 {
@@ -24,8 +24,8 @@ template< typename ElementType >
 void 
 CallImageFactoryRealloc( 
 			Image< ElementType, 3 > &image,  
-			size_t 		minimums[ 3 ], 
-			size_t 		maximums[ 3 ], 
+			int32 		minimums[ 3 ], 
+			int32 		maximums[ 3 ], 
 			float32		elementExtents[ 3 ]
 	    )
 {
@@ -109,8 +109,8 @@ template< typename ElementType, unsigned dimension >
 void
 ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 ::SetImageSize( 
-		size_t 		minimums[ dimension ], 
-		size_t 		maximums[ dimension ], 
+		int32 		minimums[ dimension ], 
+		int32 		maximums[ dimension ], 
 		float32		elementExtents[ dimension ]
 	    )
 {

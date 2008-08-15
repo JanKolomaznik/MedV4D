@@ -188,8 +188,8 @@ AbstractImageFilterWholeAtOnceIExtents< InputImageType, OutputImageType >
 {
 	PredecessorType::PrepareOutputDatasets();
 
-	size_t minimums[ ImageTraits<InputImageType>::Dimension ];
-	size_t maximums[ ImageTraits<InputImageType>::Dimension ];
+	int32 minimums[ ImageTraits<InputImageType>::Dimension ];
+	int32 maximums[ ImageTraits<InputImageType>::Dimension ];
 	float32 voxelExtents[ ImageTraits<InputImageType>::Dimension ];
 
 	for( unsigned i=0; i <  ImageTraits<InputImageType>::Dimension; ++i ) {

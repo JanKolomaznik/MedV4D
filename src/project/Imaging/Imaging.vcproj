@@ -206,11 +206,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\AbstractImageFilters.h"
+				RelativePath="..\..\Imaging\AbstractImageElementFilter.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\AbstractImageFilters.tcc"
+				RelativePath="..\..\Imaging\AbstractImageElementFilter.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\AbstractImageFilter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\AbstractImageFilter.tcc"
 				>
 			</File>
 			<File

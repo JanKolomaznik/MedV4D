@@ -2,10 +2,17 @@
 #error File Image.tcc cannot be included directly!
 #else
 
+#ifdef _MSC_VER 
+	#pragma warning (disable : 4355)
+	#define WARNING_4355_DISABLED
+#endif
+
 namespace M4D
 {
 namespace Imaging
 {
+
+
 
 template< typename ElementType >
 Image< ElementType, 2 >::Image()
@@ -57,7 +64,7 @@ Image< ElementType, 2 >::FillDimensionInfo()
 		
 	for( unsigned i = 0; i < Dimension; ++i ) {
 		_dimExtents[i].minimum = 0;
-		_dimExtents[i].maximum = _imageData->GetDimensionInfo( i ).size;
+		_dimExtents[i].maximum = (int32)_imageData->GetDimensionInfo( i ).size;
 		_dimExtents[i].elementExtent = _imageData->GetDimensionInfo( i ).elementExtent;
 	}
 }
@@ -160,7 +167,7 @@ Image< ElementType, 2 >::GetPointer(
 	xStride = _imageData->GetDimensionInfo( 0 ).stride;
 	yStride = _imageData->GetDimensionInfo( 1 ).stride;
 
-	return _imageData->Get( _dimExtents[0].minimum, _dimExtents[1].minimum );
+	return &(_imageData->Get( _dimExtents[0].minimum, _dimExtents[1].minimum ));
 }
 
 
@@ -499,5 +506,10 @@ Image< ElementType, 4 >::GetModificationManager()const
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
+
+#ifdef WARNING_4355_DISABLED 
+	#pragma warning (default : 4355)
+	#undef WARNING_4355_DISABLED
+#endif
 
 #endif /*_IMAGE__H*/

@@ -16,10 +16,7 @@ CreateThresholdingFilter( M4D::CellBE::NetStream &s )
 {
 	typedef typename M4D::Imaging::Image< ElementType, Dim > ImageType;
 	typedef typename M4D::Imaging::ThresholdingFilter< ImageType > Filter;
-	
-	ElementType	bottom;	
-	ElementType	top;
-	ElementType	outValue;	
+
 
 	Filter::Properties *prop = new Filter::Properties();
 
@@ -71,7 +68,7 @@ public:
 		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( typeID, 
 			DIMENSION_TEMPLATE_SWITCH_MACRO( dim, return CreateThresholdingFilter<TTYPE, DIM >( s ) )
 		);
-
+		return NULL;
 	}	
 	
 protected:

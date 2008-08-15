@@ -76,8 +76,8 @@ template< typename InputImageType, typename OutputImageType >
 void
 AbstractImageFilter< InputImageType, OutputImageType >
 ::SetOutputImageSize( 
-		size_t 		minimums[ ], 
-		size_t 		maximums[ ], 
+		int32 		minimums[ ], 
+		int32 		maximums[ ], 
 		float32		elementExtents[ ]
 	    )
 {

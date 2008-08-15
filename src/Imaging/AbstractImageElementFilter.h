@@ -30,7 +30,7 @@ public:
 	
 	struct Properties : public PredecessorType::Properties
 	{
-		Properties(): PredecessorType::Properties( 0, 10 ) {}
+		Properties() {}
 
 	};
 	

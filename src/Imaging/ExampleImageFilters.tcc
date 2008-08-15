@@ -87,8 +87,8 @@ ColumnMaxImageFilter< ElementType >
 {
 	PredecessorType::PrepareOutputDatasets();
 
-	size_t minimums[2];
-	size_t maximums[2];
+	int32 minimums[2];
+	int32 maximums[2];
 	float32 pixelExtents[2];
 
 	for( unsigned i=0; i < 2; ++i ) {

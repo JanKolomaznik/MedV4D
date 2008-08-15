@@ -366,7 +366,7 @@ protected:
 	 * \param successful Information, whether computation proceeded without problems.
 	 **/
 	virtual void
-	AfterComputation( bool successful ){ /*empty*/ };
+	AfterComputation( bool /*successful*/ ){ /*empty*/ };
 
 	void
 	InputDatasetUpdatedMsgHandler( MsgFilterUpdated *msg );

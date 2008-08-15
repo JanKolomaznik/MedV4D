@@ -1,5 +1,8 @@
 #include "Imaging/AbstractFilter.h"
 
+#ifdef _MSC_VER 
+	#pragma warning (disable : 4355)
+#endif
 
 namespace M4D
 {

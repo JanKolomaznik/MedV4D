@@ -31,7 +31,7 @@ struct DimensionInfo
 	 * in corresponding dimension.
 	 * @param aelementExtent Physical size of element in corresponding dimension.
 	 **/
-	DimensionInfo( size_t asize, size_t astride, float32 aelementExtent = 1.0f )
+	DimensionInfo( uint32 asize, int32 astride, float32 aelementExtent = 1.0f )
 		:size(asize), stride(astride), elementExtent(aelementExtent) {}
 	/**
 	 * Method for setting atributes.
@@ -40,17 +40,17 @@ struct DimensionInfo
 	 * in corresponding dimension.
 	 * @param aelementExtent Physical size of element in corresponding dimension.
 	 **/
-	void Set( size_t asize, size_t astride, float32 aelementExtent = 1.0f )
+	void Set( uint32 asize, int32 astride, float32 aelementExtent = 1.0f )
 		{ size = asize; stride = astride; elementExtent = aelementExtent; }
 
 	/**
 	 * Width of image in actual dimension.
 	 **/
-	size_t		size;
+	uint32		size;
 	/**
 	 * Stride, which is used to increase coordinates in actual dimension.
 	 **/
-	size_t		stride;
+	int32		stride;
 	/**
 	 * Physical size of element in this dimension.
 	 **/

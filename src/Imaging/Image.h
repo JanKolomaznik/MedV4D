@@ -18,8 +18,8 @@ struct DimensionExtents
 {
 	DimensionExtents():minimum(0),maximum(0),elementExtent(1.0f){}
 
-	size_t	minimum;
-	size_t	maximum;
+	int32	minimum;
+	int32	maximum;
 	float	elementExtent;
 
 };

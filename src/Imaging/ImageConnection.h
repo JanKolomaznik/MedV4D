@@ -152,8 +152,8 @@ public:
 
 	void
 	SetImageSize( 
-			size_t 		minimums[ dimension ], 
-			size_t 		maximums[ dimension ], 
+			int32 		minimums[ dimension ], 
+			int32 		maximums[ dimension ], 
 			float32		elementExtents[ dimension ]
 		    );
 
