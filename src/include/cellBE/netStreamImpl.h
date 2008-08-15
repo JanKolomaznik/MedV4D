@@ -29,7 +29,7 @@ protected:
 
   uint16 supp16;
   uint32 supp32;
-
+  uint64 supp64;
   uint8 *ptr8;
 
 public:
@@ -59,8 +59,32 @@ public:
     return *this;
   }
 
+  NetStream & operator<< (const uint64 what)
+  {
+    // TODO
+    //supp32 = htonl(what);  // convert it to network representation
+
+    AddByte( ((uint8*)&supp32)[0] );
+    AddByte( ((uint8*)&supp32)[1] );
+    AddByte( ((uint8*)&supp32)[2] );
+    AddByte( ((uint8*)&supp32)[3] );
+    return *this;
+  }
+
   NetStream & operator<< (const float32 what)
   {
+    supp32 = htonl(*((uint32*)&what));  // convert it to network representation
+
+    AddByte( ((uint8*)&supp32)[0] );
+    AddByte( ((uint8*)&supp32)[1] );
+    AddByte( ((uint8*)&supp32)[2] );
+    AddByte( ((uint8*)&supp32)[3] );
+    return *this;
+  }
+
+  NetStream & operator<< (const float64 what)
+  {
+    // TODO
     supp32 = htonl(*((uint32*)&what));  // convert it to network representation
 
     AddByte( ((uint8*)&supp32)[0] );
@@ -100,9 +124,38 @@ public:
     return *this;
   }
 
+  NetStream & operator>>( uint64 &what)
+  {
+    // TODO
+    ptr8 = (uint8*)&supp32;
+    ptr8[0] = GetByte();
+    ptr8[1] = GetByte();
+    ptr8[2] = GetByte();
+    ptr8[3] = GetByte();
+
+    what = ntohl( supp32);
+    
+    return *this;
+  }
+
   NetStream & operator>>( float32 &what)
   {
     ptr8 = (uint8*)&supp32;
+    ptr8[0] = GetByte();
+    ptr8[1] = GetByte();
+    ptr8[2] = GetByte();
+    ptr8[3] = GetByte();
+
+    supp32 = ntohl( *((uint32*)&supp32));
+    what = *( (float32*)&supp32);
+
+    return *this;
+  }
+
+  NetStream & operator>>( float64 &what)
+  {
+    // TODO
+    ptr8 = (uint8*)&supp64;
     ptr8[0] = GetByte();
     ptr8[1] = GetByte();
     ptr8[2] = GetByte();
@@ -263,7 +316,19 @@ public:
 
   NetStream & operator<< (const uint32 what)
   {
-    supp32 = what;
+    supp32 = htonl(what);  // convert it to network representation
+
+    AddByte( ((uint8*)&supp32)[0] );
+    AddByte( ((uint8*)&supp32)[1] );
+    AddByte( ((uint8*)&supp32)[2] );
+    AddByte( ((uint8*)&supp32)[3] );
+    return *this;
+  }
+
+  NetStream & operator<< (const uint64 what)
+  {
+    // TODO
+    //supp32 = htonl(what);  // convert it to network representation
 
     AddByte( ((uint8*)&supp32)[0] );
     AddByte( ((uint8*)&supp32)[1] );
@@ -274,6 +339,18 @@ public:
 
   NetStream & operator<< (const float32 what)
   {
+    supp32 = *((uint32*)&what);
+
+    AddByte( ((uint8*)&supp32)[0] );
+    AddByte( ((uint8*)&supp32)[1] );
+    AddByte( ((uint8*)&supp32)[2] );
+    AddByte( ((uint8*)&supp32)[3] );
+    return *this;
+  }
+
+  NetStream & operator<< (const float64 what)
+  {
+    // TODO
     supp32 = *((uint32*)&what);
 
     AddByte( ((uint8*)&supp32)[0] );
@@ -318,8 +395,37 @@ public:
     return *this;
   }
 
+  NetStream & operator>>( uint64 &what)
+  {
+    // TODO
+    ptr8 = (uint8*)&supp32;
+    ptr8[0] = GetByte();
+    ptr8[1] = GetByte();
+    ptr8[2] = GetByte();
+    ptr8[3] = GetByte();
+
+    what = supp32;
+    
+    return *this;
+  }
+
   NetStream & operator>>( float32 &what)
   {
+    ptr8 = (uint8*)&supp32;
+    ptr8[0] = GetByte();
+    ptr8[1] = GetByte();
+    ptr8[2] = GetByte();
+    ptr8[3] = GetByte();
+
+    supp32 = *((uint32*)&supp32);
+    what = *( (float32*)&supp32);
+
+    return *this;
+  }
+
+  NetStream & operator>>( float64 &what)
+  {
+    // TODO
     ptr8 = (uint8*)&supp32;
     ptr8[0] = GetByte();
     ptr8[1] = GetByte();
@@ -366,8 +472,37 @@ public:
     return *this;
   }
 
+  NetStream & operator>>( uint64 &what)
+  {
+    // TODO
+    ptr8 = (uint8*)&supp32;
+    ptr8[3] = GetByte();
+    ptr8[2] = GetByte();
+    ptr8[1] = GetByte();
+    ptr8[0] = GetByte();
+
+    what = supp32;
+    
+    return *this;
+  }
+
   NetStream & operator>>( float32 &what)
   {
+    ptr8 = (uint8*)&supp32;
+    ptr8[3] = GetByte();
+    ptr8[2] = GetByte();
+    ptr8[1] = GetByte();
+    ptr8[0] = GetByte();
+
+    supp32 = *((uint32*)&supp32);
+    what = *( (float32*)&supp32);
+
+    return *this;
+  }
+
+  NetStream & operator>>( float64 &what)
+  {
+    // TODO
     ptr8 = (uint8*)&supp32;
     ptr8[3] = GetByte();
     ptr8[2] = GetByte();
