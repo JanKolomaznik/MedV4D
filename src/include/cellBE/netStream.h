@@ -32,7 +32,14 @@ public:
     return operator<<( (const uint32) what);
   }
 
+  virtual NetStream & operator<< (const uint64 what) = 0;
+  NetStream & operator<< (const int64 what)
+  {
+    return operator<<( (const uint64) what);
+  }
+
   virtual NetStream & operator<< (const float32 what) = 0;
+  virtual NetStream & operator<< (const float64 what) = 0;
 
   ////////
   virtual NetStream & operator>>( uint8 &what) = 0;
@@ -53,7 +60,14 @@ public:
     return operator>>( (uint32 &) what);
   }
 
+  virtual NetStream & operator>>( uint64 &what) = 0;
+  NetStream & operator>>( int64 &what)
+  {
+    return operator>>( (uint64 &) what);
+  }
+
   virtual NetStream & operator>>( float32 &what) = 0;
+  virtual NetStream & operator>>( float64 &what) = 0;
 };
 
 }

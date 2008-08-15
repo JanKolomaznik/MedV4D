@@ -62,8 +62,8 @@ public:
 	M4D::Imaging::AbstractPipeFilter *
 	DeSerializeProperties( M4D::CellBE::NetStream &s )
 	{
-		unsigned dim;
-		unsigned typeID;
+		uint8 dim;
+		uint8 typeID;
 		
 		s >> dim;
 		s >> typeID;
