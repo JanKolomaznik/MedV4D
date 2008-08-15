@@ -10,18 +10,16 @@ ConvertNumericTypeIDToVTKScalarType( int NumericTypeID )
 {
 	switch( NumericTypeID ) {
 	case NTID_VOID: 		return VTK_VOID; 
-	case NTID_SIGNED_CHAR: 		return VTK_SIGNED_CHAR;
-	case NTID_UNSIGNED_CHAR: 	return VTK_UNSIGNED_CHAR;
-	case NTID_SHORT: 		return VTK_SHORT;
-	case NTID_UNSIGNED_SHORT: 	return VTK_UNSIGNED_SHORT;
-	case NTID_INT: 			return VTK_INT;
-	case NTID_UNSIGNED_INT: 	return VTK_UNSIGNED_INT;
-	case NTID_LONG: 		return VTK_LONG;
-	case NTID_UNSIGNED_LONG: 	return VTK_UNSIGNED_LONG;
-	case NTID_LONG_LONG: 		return VTK_LONG_LONG;
-	case NTID_UNSIGNED_LONG_LONG: 	return VTK_UNSIGNED_LONG_LONG;
-	case NTID_FLOAT: 		return VTK_FLOAT;
-	case NTID_DOUBLE: 		return VTK_DOUBLE;
+	case NTID_INT_8: 		return VTK_SIGNED_CHAR;
+	case NTID_UINT_8:	 	return VTK_UNSIGNED_CHAR;
+	case NTID_INT_16: 		return VTK_SHORT;
+	case NTID_UINT_16:	 	return VTK_UNSIGNED_SHORT;
+	case NTID_INT_32:		return VTK_INT;
+	case NTID_UINT_32:	 	return VTK_UNSIGNED_INT;
+	case NTID_INT_64: 		return VTK_LONG;
+	case NTID_UINT_64:	 	return VTK_UNSIGNED_LONG;
+	case NTID_FLOAT_32: 		return VTK_FLOAT;
+	case NTID_FLOAT_64: 		return VTK_DOUBLE;
 	default:
 					return VTK_VOID;
 	}
@@ -45,7 +43,12 @@ void
 FillVTKImageFromM4DImage( vtkImageData *vtkImage, const Imaging::AbstractImage &m4dImage )
 {
 	DL_PRINT( 8, "FillVTKImageFromM4DImage(), element ID " << m4dImage.GetElementTypeID() );
-	switch ( m4dImage.GetElementTypeID() ) {
+	NUMERIC_TYPE_TEMPLATE_SWITCH_DEFAULT_MACRO(
+		       	m4dImage.GetElementTypeID(), 
+			throw EImpossibleVTKConversion(), 
+			TryFillVTKImageFromM4DImage< TTYPE >( vtkImage, m4dImage )
+			);
+	/*switch ( m4dImage.GetElementTypeID() ) {
 	case NTID_VOID:
 		throw EImpossibleVTKConversion();
 		break;
@@ -88,11 +91,11 @@ FillVTKImageFromM4DImage( vtkImageData *vtkImage, const Imaging::AbstractImage &
 	default:
 		throw EImpossibleVTKConversion();
 		break;
-	}
+	}*/
 
 	return;
 }
-
+/*
 template<>
 int
 GetVTKScalarTypeIdentification<float>()
@@ -161,7 +164,7 @@ int
 GetVTKScalarTypeIdentification<unsigned char>()
 {
 	return VTK_UNSIGNED_CHAR;
-}
+}*/
 
 
 }/*namespace vtkIntegration*/

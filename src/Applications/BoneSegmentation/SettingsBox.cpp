@@ -97,5 +97,12 @@ void
 SettingsBox
 ::ExecuteFilter()
 {
-	_filter->Execute();
+	_filter->ExecuteOnWhole();
+}
+
+void
+SettingsBox
+::EndOfExecution()
+{
+	QMessageBox::information( this, tr( "Execution finished" ), tr( "Filter finished its work" ) );
 }

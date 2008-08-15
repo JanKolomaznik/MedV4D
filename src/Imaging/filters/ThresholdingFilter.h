@@ -19,7 +19,7 @@ template< typename InputElementType >
 class ThresholdingFilter< Image< InputElementType, 2 > >
 {
 public:
-	typedef typename AbstractPipeFilter  PredecessorType;
+	typedef AbstractPipeFilter  PredecessorType;
 
 	struct Properties : public PredecessorType::Properties
 	{

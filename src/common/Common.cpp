@@ -1,73 +1,65 @@
 #include "Common.h"
 
 //TODO - platform independend.
-int
-GetNTIDFromSizeAndSign( uint8 size, bool sign )
+int16
+GetNTIDFromSizeAndSign( uint16 size, bool sign )
 {
 	switch ( size ) {
 	case 1:
-		return ( sign ? NTID_SIGNED_CHAR : NTID_UNSIGNED_CHAR );
+		return ( sign ? NTID_INT_8 : NTID_UINT_8 );
 	case 2:
-		return ( sign ? NTID_SHORT : NTID_UNSIGNED_SHORT );
+		return ( sign ? NTID_INT_16 : NTID_UINT_16 );
 	case 4:
-		return ( sign ? NTID_INT : NTID_UNSIGNED_INT );
+		return ( sign ? NTID_INT_32 : NTID_UINT_32 );
 	case 8:
-		return ( sign ? NTID_LONG_LONG : NTID_UNSIGNED_LONG_LONG );
+		return ( sign ? NTID_INT_64 : NTID_UINT_64 );
 	default:
 		return NTID_UNKNOWN;
 	}
 }
 
 template<>
-int GetNumericTypeID<signed char>()
-{ return NTID_SIGNED_CHAR; }
+int16 GetNumericTypeID<int8>()
+{ return NTID_INT_8; }
 
 template<>
-int GetNumericTypeID<unsigned char>()
-{ return NTID_UNSIGNED_CHAR; }
+int16 GetNumericTypeID<uint8>()
+{ return NTID_UINT_8; }
 
 template<>
-int GetNumericTypeID<short>()
-{ return NTID_SHORT; }
+int16 GetNumericTypeID<int16>()
+{ return NTID_INT_16; }
 
 template<>
-int GetNumericTypeID<unsigned short>()
-{ return NTID_UNSIGNED_SHORT; }
+int16 GetNumericTypeID<uint16>()
+{ return NTID_UINT_16; }
 
 template<>
-int GetNumericTypeID<int>()
-{ return NTID_INT; }
+int16 GetNumericTypeID<int32>()
+{ return NTID_INT_32; }
 
 template<>
-int GetNumericTypeID<unsigned int>()
-{ return NTID_UNSIGNED_INT; }
+int16 GetNumericTypeID<uint32>()
+{ return NTID_UINT_32; }
 
 template<>
-int GetNumericTypeID<long>()
-{ return NTID_LONG; }
+int16 GetNumericTypeID<int64>()
+{ return NTID_INT_64; }
 
 template<>
-int GetNumericTypeID<unsigned long>()
-{ return NTID_UNSIGNED_LONG; }
+int16 GetNumericTypeID<uint64>()
+{ return NTID_UINT_64; }
 
 template<>
-int GetNumericTypeID<long long>()
-{ return NTID_LONG_LONG; }
+int16 GetNumericTypeID<float32>()
+{ return NTID_FLOAT_32; }
 
 template<>
-int GetNumericTypeID<unsigned long long>()
-{ return NTID_UNSIGNED_LONG_LONG; }
+int16 GetNumericTypeID<float64>()
+{ return NTID_FLOAT_64; }
 
 template<>
-int GetNumericTypeID<float>()
-{ return NTID_FLOAT; }
-
-template<>
-int GetNumericTypeID<double>()
-{ return NTID_DOUBLE; }
-
-template<>
-int GetNumericTypeID<bool>()
+int16 GetNumericTypeID<bool>()
 { return NTID_BOOL; }
 
 

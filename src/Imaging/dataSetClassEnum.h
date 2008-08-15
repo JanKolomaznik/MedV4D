@@ -16,3 +16,4 @@ enum DataSetType
 }//namespace Imaging
 
 #endif /*DATASET_CLASS_ENUM_H*/
+

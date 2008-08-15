@@ -23,8 +23,11 @@ mainWindow::mainWindow ()
 	// addSource( conn, "Bone segmentation", "Result" );
 
 	// add your own settings widgets
+	_settings = new SettingsBox( _filter );
 
-	addDockWindow( "Bone Segmentation", new SettingsBox( _filter ) );
+	addDockWindow( "Bone Segmentation", _settings );
+
+	QObject::connect( _notifier, SIGNAL( Notification() ), _settings, SLOT( EndOfExecution() ), Qt::QueuedConnection );
 }
 
 
@@ -60,27 +63,6 @@ mainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
 
 }
 
-
-class Notifier : public M4D::Imaging::MessageReceiverInterface
-{
-public:
-	Notifier( QWidget *owner ): _owner( owner ) {}
-	void
-	ReceiveMessage( 
-		PipelineMessage::Ptr 			msg, 
-		PipelineMessage::MessageSendStyle 	sendStyle, 
-		FlowDirection				direction
-		)
-	{
-		if( msg->msgID == PMI_FILTER_UPDATED ) {
-			//TODO reaction
-		}
-	}
-
-protected:
-	QWidget	*_owner;
-};
-
 void
 mainWindow::CreatePipeline()
 {
@@ -97,6 +79,7 @@ mainWindow::CreatePipeline()
 	addSource( _inConnection, "Bone segmentation", "Stage #1" );
 	addSource( _outConnection, "Bone segmentation", "Result" );
 
-	_outConnection->SetMessageHook( MessageReceiverInterface::Ptr( new Notifier( this ) ) );
+	_notifier =  new Notifier( this );
+	_outConnection->SetMessageHook( MessageReceiverInterface::Ptr( _notifier ) );
 }
 

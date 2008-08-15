@@ -32,18 +32,22 @@ typedef double float64;
 enum NumericTypeIDs{ 
 	NTID_UNKNOWN,
 	NTID_VOID, 
-	NTID_SIGNED_CHAR,
-	NTID_UNSIGNED_CHAR,
-	NTID_SHORT,
-	NTID_UNSIGNED_SHORT,
-	NTID_INT,
-	NTID_UNSIGNED_INT,
-	NTID_LONG,
-	NTID_UNSIGNED_LONG,
-	NTID_LONG_LONG,
-	NTID_UNSIGNED_LONG_LONG,
-	NTID_FLOAT,
-	NTID_DOUBLE,
+
+	NTID_INT_8,
+	NTID_UINT_8,
+
+	NTID_INT_16,
+	NTID_UINT_16,
+
+	NTID_INT_32,
+	NTID_UINT_32,
+
+	NTID_INT_64,
+	NTID_UINT_64,
+
+	NTID_FLOAT_32,
+	NTID_FLOAT_64,
+
 	NTID_BOOL
 };
 
@@ -53,18 +57,16 @@ enum NumericTypeIDs{
  * to numeric type ID.
  **/
 #define NTID_VOID_TYPE_DEFINE_MACRO			void
-#define NTID_SIGNED_CHAR_TYPE_DEFINE_MACRO		signed char
-#define NTID_UNSIGNED_CHAR_TYPE_DEFINE_MACRO		unsigned char
-#define NTID_SHORT_TYPE_DEFINE_MACRO			short
-#define NTID_UNSIGNED_SHORT_TYPE_DEFINE_MACRO		unsigned short
-#define NTID_INT_TYPE_DEFINE_MACRO			int
-#define NTID_UNSIGNED_INT_TYPE_DEFINE_MACRO		unsigned int
-#define NTID_LONG_TYPE_DEFINE_MACRO			long
-#define NTID_UNSIGNED_LONG_TYPE_DEFINE_MACRO		unsigned long
-#define NTID_LONG_LONG_TYPE_DEFINE_MACRO		long long
-#define NTID_UNSIGNED_LONG_LONG_TYPE_DEFINE_MACRO	unsigned long long
-#define NTID_FLOAT_TYPE_DEFINE_MACRO			float
-#define NTID_DOUBLE_TYPE_DEFINE_MACRO			double
+#define NTID_INT_8_TYPE_DEFINE_MACRO			int8
+#define NTID_UINT_8_TYPE_DEFINE_MACRO			uint8
+#define NTID_INT_16_TYPE_DEFINE_MACRO			int16
+#define NTID_UINT_16_TYPE_DEFINE_MACRO			uint16
+#define NTID_INT_32_TYPE_DEFINE_MACRO			int32
+#define NTID_UINT_32_TYPE_DEFINE_MACRO			uint32
+#define NTID_INT_64_TYPE_DEFINE_MACRO			int64
+#define NTID_UINT_64_TYPE_DEFINE_MACRO			uint64
+#define NTID_FLOAT_32_TYPE_DEFINE_MACRO			float32
+#define NTID_FLOAT_64_TYPE_DEFINE_MACRO			float64
 #define NTID_BOOL_TYPE_DEFINE_MACRO			bool
 //*****************************************************************************
 #define TYPE_FROM_ID_MACRO( TYPE_ID )\
@@ -85,25 +87,31 @@ enum NumericTypeIDs{
  * Create switch command with cases belonging to numerical types without bool and void.
  * in case templated command is called with apropriete type.
  * @param SWITCH Statement which will be placed in "switch( SWITCH )".
+ * @param DEFAULT Code, which will be put in default branch.
  * @param ... Templated command. Must contain TTYPE, which will be replaced by 
  * apropriete type. Example : function_name< TTYPE >( TTYPE* arg )
  **/
-#define NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( SWITCH, ... ) \
+#define NUMERIC_TYPE_TEMPLATE_SWITCH_DEFAULT_MACRO( SWITCH, DEFAULT, ... ) \
 	switch( SWITCH ) {\
-	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_SIGNED_CHAR, __VA_ARGS__ )\
-	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UNSIGNED_CHAR, __VA_ARGS__ )\
-	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_SHORT, __VA_ARGS__ )\
-	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UNSIGNED_SHORT, __VA_ARGS__ )\
-	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_INT, __VA_ARGS__ )\
-	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UNSIGNED_INT, __VA_ARGS__ )\
-	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_LONG, __VA_ARGS__ )\
-	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UNSIGNED_LONG, __VA_ARGS__ )\
-	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_LONG_LONG, __VA_ARGS__ )\
-	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UNSIGNED_LONG_LONG, __VA_ARGS__ )\
-	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_FLOAT, __VA_ARGS__ )\
-	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_DOUBLE, __VA_ARGS__ )\
-	default: ASSERT( false );\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_INT_8, __VA_ARGS__ )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UINT_8, __VA_ARGS__ )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_INT_16, __VA_ARGS__ )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UINT_16, __VA_ARGS__ )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_INT_32, __VA_ARGS__ )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UINT_32, __VA_ARGS__ )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_INT_64, __VA_ARGS__ )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UINT_64, __VA_ARGS__ )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_FLOAT_32, __VA_ARGS__ )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_FLOAT_64, __VA_ARGS__ )\
+	default: DEFAULT;\
 	}
+
+/**
+ * Like previous, but with assert in default branch.
+ **/
+#define NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( SWITCH, ... ) \
+	NUMERIC_TYPE_TEMPLATE_SWITCH_DEFAULT_MACRO( SWITCH, ASSERT( false ), __VA_ARGS__ )
+
 /**
  * Same as previous, but only for integer types.
  * @param SWITCH Statement which will be placed in "switch( SWITCH )".
@@ -112,16 +120,14 @@ enum NumericTypeIDs{
  **/
 #define INTEGER_TYPE_TEMPLATE_SWITCH_MACRO( SWITCH, ... ) \
 	switch( SWITCH ) {\
-	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_SIGNED_CHAR, __VA_ARGS__ )\
-	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UNSIGNED_CHAR, __VA_ARGS__ )\
-	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_SHORT, __VA_ARGS__ )\
-	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UNSIGNED_SHORT, __VA_ARGS__ )\
-	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_INT, __VA_ARGS__ )\
-	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UNSIGNED_INT, __VA_ARGS__ )\
-	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_LONG, __VA_ARGS__ )\
-	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UNSIGNED_LONG, __VA_ARGS__ )\
-	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_LONG_LONG, __VA_ARGS__ )\
-	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UNSIGNED_LONG_LONG, __VA_ARGS__ )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_INT_8, __VA_ARGS__ )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UINT_8, __VA_ARGS__ )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_INT_16, __VA_ARGS__ )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UINT_16, __VA_ARGS__ )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_INT_32, __VA_ARGS__ )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UINT_32, __VA_ARGS__ )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_INT_64, __VA_ARGS__ )\
+	NUMERIC_TYPE_TEMPLATE_CASE_MACRO( NTID_UINT_64, __VA_ARGS__ )\
 	default: ASSERT( false );\
 	}
 //*****************************************************************************
@@ -143,47 +149,41 @@ enum NumericTypeIDs{
 
 
 template< typename NumericType >
-int GetNumericTypeID()
+int16 GetNumericTypeID()
 { return NTID_UNKNOWN; }
 
 template<>
-int GetNumericTypeID<signed char>();
+int16 GetNumericTypeID<int8>();
 
 template<>
-int GetNumericTypeID<unsigned char>();
+int16 GetNumericTypeID<uint8>();
 
 template<>
-int GetNumericTypeID<short>();
+int16 GetNumericTypeID<int16>();
 
 template<>
-int GetNumericTypeID<unsigned short>();
+int16 GetNumericTypeID<uint16>();
 
 template<>
-int GetNumericTypeID<int>();
+int16 GetNumericTypeID<int32>();
 
 template<>
-int GetNumericTypeID<unsigned int>();
+int16 GetNumericTypeID<uint32>();
 
 template<>
-int GetNumericTypeID<long>();
+int16 GetNumericTypeID<int64>();
 
 template<>
-int GetNumericTypeID<unsigned long>();
+int16 GetNumericTypeID<uint64>();
 
 template<>
-int GetNumericTypeID<long long>();
+int16 GetNumericTypeID<float32>();
 
 template<>
-int GetNumericTypeID<unsigned long long>();
+int16 GetNumericTypeID<float64>();
 
 template<>
-int GetNumericTypeID<float>();
-
-template<>
-int GetNumericTypeID<double>();
-
-template<>
-int GetNumericTypeID<bool>();
+int16 GetNumericTypeID<bool>();
 
 
 //TODO - platform independend.
@@ -194,8 +194,8 @@ int GetNumericTypeID<bool>();
  * @return ID of type with given characteristics if exists, otherwise
  * NTID_UNKNOWN.
  **/
-int
-GetNTIDFromSizeAndSign( uint8 size, bool sign );
+int16
+GetNTIDFromSizeAndSign( uint16 size, bool sign );
 
 
 //TODO - move

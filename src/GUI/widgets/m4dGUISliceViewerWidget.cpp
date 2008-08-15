@@ -389,7 +389,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
     glScalef( _flipH * zoomRate, _flipV * zoomRate, 0. );
     switch ( _imageID )
     {
-        case NTID_UNSIGNED_INT:
+        case NTID_UINT_32:
 	{
 	    maxvalue = 255.;
 	    uint8* pixel, *original;
@@ -435,7 +435,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	}
 	break;
 
-        case NTID_SIGNED_CHAR:
+        case NTID_INT_8:
 	{    
 	    maxvalue = 127.;
 	    int8* pixel, *original;
@@ -473,7 +473,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	}
 	break;
 
-        case NTID_UNSIGNED_CHAR:
+        case NTID_UINT_8:
 	{    
 	    maxvalue = 255.;
 	    uint8* pixel, *original;
@@ -511,7 +511,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	}
 	break;
 
-        case NTID_UNSIGNED_SHORT:
+        case NTID_UINT_16:
 	{
 	    maxvalue = 65535.;
 	    uint16* pixel, *original;
@@ -548,7 +548,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	    
 	}
 	break;
-        case NTID_SHORT:
+        case NTID_INT_16:
 	{
 	    maxvalue = 32767.;
 	    int16* pixel, *original;

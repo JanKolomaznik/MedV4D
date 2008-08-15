@@ -28,6 +28,9 @@ protected slots:
 
 	void
 	ExecuteFilter();
+
+	void
+	EndOfExecution();
 protected:
 	void
 	CreateWidgets();

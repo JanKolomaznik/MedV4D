@@ -35,9 +35,10 @@ template< typename ElementType >
 int
 GetVTKScalarTypeIdentification()
 {
-	throw EImpossibleVTKConversion();
+	return ConvertNumericTypeIDToVTKScalarType( GetNumericTypeID< ElementType >() );
+	//throw EImpossibleVTKConversion();
 }
-
+/*
 template<>
 int
 GetVTKScalarTypeIdentification<float>();
@@ -75,6 +76,7 @@ GetVTKScalarTypeIdentification<signed char>();
 template<>
 int
 GetVTKScalarTypeIdentification<unsigned char>();
+*/
 
 //*******************************************************************
 template< typename ElementType >
