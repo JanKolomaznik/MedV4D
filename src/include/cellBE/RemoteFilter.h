@@ -3,6 +3,7 @@
 
 #include "Imaging/AbstractImageFilterWholeAtOnce.h"
 #include "cellBE/RemoteFilterBase.h"
+#include "cellBE/AbstractDataSetSerializer.h"
 
 namespace M4D
 {

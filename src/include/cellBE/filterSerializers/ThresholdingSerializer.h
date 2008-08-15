@@ -50,7 +50,7 @@ public:
 	{
 		s << ImageTraits< InputImageType >::Dimension;
 
-		s << GetNumericTypeID< ImageTraits< InputImageType >::ElementType >;
+		s << (uint8) GetNumericTypeID< ImageTraits< InputImageType >::ElementType >();
 		
 		s << _properties->bottom;
 
