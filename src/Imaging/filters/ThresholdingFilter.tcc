@@ -22,6 +22,22 @@ ThresholdingFilter< ImageType >
 	GetProperties()._functor = &(this->_elementFilter);	
 }
 
+//******************************************************************************
+//******************************************************************************
+
+template< typename ImageType >
+ThresholdingMaskFilter< ImageType >
+::ThresholdingMaskFilter() : PredecessorType( new Properties() )
+{
+	GetProperties()._functor = &(this->_elementFilter);
+}
+
+template< typename ImageType >
+ThresholdingMaskFilter< ImageType >
+::ThresholdingMaskFilter( typename ThresholdingFilter< ImageType >::Properties *prop ) : PredecessorType( prop )
+{
+	GetProperties()._functor = &(this->_elementFilter);	
+}
 
 
 } /*namespace Imaging*/

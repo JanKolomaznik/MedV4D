@@ -87,16 +87,50 @@
 	
 		<para>
 		First thing we should know, is how to create filtering pipeline with supposed behaviour using prepared filters. 
-		This section will be brief tutorial to pipeline construction. We show possible usage on example class, which will have all desired
-		abilities, which are normaly distributed across application.
+		This section will be brief tutorial to pipeline construction. We show possible usage on example class that will have all desired
+		abilities normaly distributed across application.
 		</para>
 
 		<para>
-		Before we start construction, we must decide if we want handle storing and deallocation of all objects, because there is 
-		prepared container for all pipeline objects, which handle deallocation of stored objects and can semiautomatically connect filters, and 
-		other objects with ports used as communication channel. For our example we use this <code>PipelineContainer</code>, for manual control and construction
-		see its source code.
+		Before we start construction, we must decide if we want handle storing and deallocation of all objects. There is 
+		prepared container for all pipeline objects, which can handle deallocation of stored objects and semiautomatically connects filters, and 
+		other objects with ports used as communication channel. For our example we use this <classname>PipelineContainer</classname>.
+		For manual control and construction see its source code.
 		</para>
+
+		<programlisting><![CDATA[
+#include "Imaging/Image.h"
+#include "Imaging/PipelineContainer.h"
+
+const unsigned Dim = 3
+typedef uint16 ElementType;
+
+typedef M4D::Imaging::Image< ElementType, Dim > ImageType;
+
+class ExamplePipelineHandler
+{
+public:
+        //Default constructor - pipeline construction
+        ExamplePipelineHandler();
+
+	//Method which pass image to pipeline and start computation.
+        void
+	FilterImage( ImageType::Ptr image );
+
+	//This method will be called, when filters finish.
+	//Parameter tells, if computation passed withou problems.
+	//Implementation of this method depends on its purpose (notify user, ...).
+        void
+	FinishNotification( bool succesfully )
+		{ /*Put your code here.*/ }
+protected:
+        M4D::Imaging::PipelineContainer   _pipeline;
+        M4D::Imaging::AbstractPipeFilter  *_firstFilter;
+        M4D::Imaging::AbstractImageConnectionInterface  *_inConnection;
+        M4D::Imaging::AbstractImageConnectionInterface  *_outConnection;
+};
+]]>
+		</programlisting>
 
 		<para>
 		Actual pipeline construction should proceed in three basic steps:
@@ -105,8 +139,48 @@
 		<itemizedlist>
 			<listitem><para>Allocation of filters</para></listitem>
 			<listitem><para>Establishing connections</para></listitem>
-			<listitem><para>Passing input datasets</para></listitem>
+			<listitem><para>Setting message hooks</para></listitem>
 		</itemizedlist>
+
+		<para>
+		Now we discuss these steps in detail. With example implementation.
+		</para>
+
+		<formalpara><title>Allocation of filters</title><para>
+		This is a test.  This is only a test.  Had this been a real
+		example, it would have made more sense.  Or less.
+		</para></formalpara>
+
+		<formalpara><title>Establishing connections</title><para>
+		This is a test.  This is only a test.  Had this been a real
+		example, it would have made more sense.  Or less.
+		</para></formalpara>
+
+		<formalpara><title>Passing input datasets and execution</title><para>
+		This is a test.  This is only a test.  Had this been a real
+		example, it would have made more sense.  Or less.
+		</para></formalpara>
+
+
+		<programlisting><![CDATA[
+#include "ExamplePipelineHandler.h"
+
+ExamplePipelineHandler
+::ExamplePipelineHandler()
+{
+
+}
+
+void
+ExamplePipelineHandler
+::FilterImage( ImageType::Ptr image )
+{
+        _inConnection->PutImage( image );
+
+        _firstFilter->Execute();
+}
+]]>
+		</programlisting>
 
 	</section>
 

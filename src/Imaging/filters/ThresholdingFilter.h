@@ -75,53 +75,71 @@ private:
 
 //******************************************************************************
 //******************************************************************************
-/*
-template< typename InputImageType >
-class ThresholdingFilterMask;
 
-template< typename InputElementType >
-class ThresholdingFilterMask< Image< InputElementType, 2 > >
-{
-	//TODO
-};
-
-template< typename InputElementType >
-class ThresholdingFilterMask< Image< InputElementType, 3 > >
-	: public IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image3DUnsigned8b >
+template< typename ElementType >
+class ThresholdingMaskFunctor
 {
 public:
-	typedef typename  Imaging::IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image3DUnsigned8b > PredecessorType;
+	void
+	operator()( const ElementType&	input, uint8& output )
+	{
+		if( input < bottom || input > top ) {
+			output = outValue;
+		} else {
+			output = inValue;
+		}
+	}	
+
+	ElementType	bottom;	
+	ElementType	top;
+		
+	uint8			inValue;
+	uint8			outValue;
+};
+
+template< typename ImageType >
+class ThresholdingMaskFilter
+	: public AbstractImageElementFilter< ImageType, Image3DUnsigned8b, ThresholdingMaskFunctor< typename ImageTraits< ImageType >::ElementType > >
+{
+public:
+	typedef ThresholdingMaskFunctor< typename ImageTraits< ImageType >::ElementType > 	Functor;
+	typedef Imaging::AbstractImageElementFilter< ImageType, Image3DUnsigned8b, Functor >	PredecessorType;
+	typedef typename ImageTraits< ImageType >::ElementType 					InputElementType;
 
 	struct Properties : public PredecessorType::Properties
 	{
-		Properties(): PredecessorType::Properties( 0, 10 ), bottom( 0 ), top( 0 ), inValue( 0 ), outValue( 0 ) {}
+		Properties(): bottom( 0 ), top( 0 ), outValue( 0 ) {}
 
 		InputElementType	bottom;	
 		InputElementType	top;
-
+		
 		uint8			inValue;
-		uint8			outValue;	
+		uint8			outValue;
 
+		void
+		CheckProperties() {
+			_functor->bottom = bottom;
+			_functor->top = top;
+			_functor->outValue = outValue;
+			_functor->inValue = inValue;
+		}
+		
+		Functor	*_functor;
 	};
 
-	ThresholdingFilterMask();
-protected:
+	ThresholdingMaskFilter( Properties  * prop );
+	ThresholdingMaskFilter();
 
-	bool
-	ProcessSlice(
-			const Image< InputElementType, 3 > 	&in,
-			Image3DUnsigned8b			&out,
-			size_t			x1,	
-			size_t			y1,	
-			size_t			x2,	
-			size_t			y2,	
-			size_t			slice
-		    );
+	GET_SET_PROPERTY_METHOD_MACRO( InputElementType, Bottom, bottom );
+	GET_SET_PROPERTY_METHOD_MACRO( InputElementType, Top, top );
+	GET_SET_PROPERTY_METHOD_MACRO( InputElementType, InValue, inValue );
+	GET_SET_PROPERTY_METHOD_MACRO( InputElementType, OutValue, outValue );
+protected:
 
 private:
 	GET_PROPERTIES_DEFINITION_MACRO;
+
 };
-*/
 	
 } /*namespace Imaging*/
 } /*namespace M4D*/
