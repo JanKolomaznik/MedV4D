@@ -19,7 +19,7 @@ BoneSegmentationRemote<ImageType>::BoneSegmentationRemote()
 
   // put into the vector serializers instances in order that is in remote pipe
   {
-    ser = GeneralFilterSerializer::GetFilterSerializer( 
+    ser = GeneralFilterSerializer::GetFilterSerializer<Thresholding>( 
       &m_thresholdingOptions );
     m_filterSerializers.push_back( ser);
   

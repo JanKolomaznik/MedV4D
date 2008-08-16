@@ -32,7 +32,8 @@ public:
 
 	/////////////////// To customize /////////////////////
 	// puting options available to outer world to be able to specify it ....
-	typedef typename ThresholdingFilter<ImageType>::Properties ThresholdingOptsType;
+	typedef ThresholdingFilter<ImageType>	Thresholding;
+	typedef typename Thresholding::Properties ThresholdingOptsType;
 	
 	ThresholdingOptsType *GetThreshholdingOptions( void)	
   {
