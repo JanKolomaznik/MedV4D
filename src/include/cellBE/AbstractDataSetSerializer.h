@@ -31,6 +31,11 @@ public:
 
   AbstractDataSetSerializer() {}
 
+  void SetDataSet( M4D::Imaging::AbstractDataSet *dataSet)
+  {
+    m_dataSet = dataSet;
+  }
+
   /**
    *  Identification of particular AbstractDataSet sucessor. Each new one has 
    *  return value that is added to enumeration in dataSetTypeEnums.h header.

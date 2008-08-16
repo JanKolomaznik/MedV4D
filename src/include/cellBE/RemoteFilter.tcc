@@ -15,6 +15,8 @@ RemoteFilter< InputImageType, OutputImageType >
     delete m_job;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
 template< typename InputImageType, typename OutputImageType >
 bool
 RemoteFilter< InputImageType, OutputImageType >
@@ -23,7 +25,19 @@ RemoteFilter< InputImageType, OutputImageType >
 		OutputImageType		&out
 		)
 {
+  // create dataSetSerializers for input & output dataSets if the not already..
+  if( m_inSerializer == NULL)
+    m_inSerializer = GeneralDataSetSerializer::GetDataSetSerializer( 
+      (M4D::Imaging::AbstractDataSet *) &in);
+  if( m_outSerializer == NULL)
+    m_outSerializer = GeneralDataSetSerializer::GetDataSetSerializer( &out);
+
+  m_inSerializer->SetDataSet( (M4D::Imaging::AbstractDataSet *) &in);
+  m_outSerializer->SetDataSet( &out);
+
+  m_job->SendDataSet();
   m_job->SendExecute();
+
 	return true;
 }
 

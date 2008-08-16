@@ -26,14 +26,6 @@ BoneSegmentationRemote<ImageType>::BoneSegmentationRemote()
     // ... for other possible members definig remote pipe filters
   }
 
-  // create dataSetSerializers for input & output dataSets
-  {
-  m_inSerializer = GeneralDataSetSerializer::GetDataSetSerializer<ImageType>(
-    getInput().GetDataSet());
-  m_outSerializer = GeneralDataSetSerializer::GetDataSetSerializer<ImageType>(
-    getOutPut().GetDataSet());  
-  }
-
   // create job
   m_job = s_cellClient.CreateJob( 
     m_filterSerializers, m_inSerializer, m_outSerializer);
