@@ -3,6 +3,7 @@
 
 #include "AbstractFilterSerializer.h"
 #include "Imaging/AbstractFilter.h"
+#include "cellBE/filterSerializers/ThresholdingSerializer.h"
 
 #include <map>
 
@@ -47,11 +48,11 @@ public:
    *  that represents a filter. Returned Serializer is later used for
    *  serializing the properties of the filter it represents.
    */
-  template< typename FilterProperties >
-  static AbstractFilterSerializer *
-  GetFilterSerializer( FilterProperties *props )
+	template< typename Filter >
+	static AbstractFilterSerializer *
+	GetFilterSerializer( typename Filter::Properties *props )
 	{
-		return new FilterSerializer< FilterProperties >( props );
+		return new FilterSerializer< Filter >( props );
 	}
 
 };
