@@ -34,7 +34,7 @@ ThresholdingMaskFilter< ImageType >
 
 template< typename ImageType >
 ThresholdingMaskFilter< ImageType >
-::ThresholdingMaskFilter( typename ThresholdingFilter< ImageType >::Properties *prop ) : PredecessorType( prop )
+::ThresholdingMaskFilter( typename ThresholdingMaskFilter< ImageType >::Properties *prop ) : PredecessorType( prop )
 {
 	GetProperties()._functor = &(this->_elementFilter);	
 }

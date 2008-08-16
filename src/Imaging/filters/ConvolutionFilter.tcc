@@ -38,22 +38,22 @@ ConvolutionFilter2D< Image< InputElementType, 3 >, MatrixElement >
 ::ProcessSlice(	
 			const Image< InputElementType, 3 > 	&in,
 			Image< InputElementType, 3 >		&out,
-			size_t			x1,	
-			size_t			y1,	
-			size_t			x2,	
-			size_t			y2,	
-			size_t			slice
+			int32			x1,	
+			int32			y1,	
+			int32			x2,	
+			int32			y2,	
+			int32			slice
 		    )
 {
-	int hwidth = GetProperties().width / 2;
-	int hheight = GetProperties().height / 2;
+	uint32 hwidth = GetProperties().width / 2;
+	uint32 hheight = GetProperties().height / 2;
 
 	//TODO check
-	for( size_t i = x1 + hwidth; i < ( x2 - GetProperties().width + hwidth ); ++i ) {
-		for( size_t j = y1 + hheight; j < ( y2 - GetProperties().height + hheight ); ++j ) {
+	for( int32 j = y1 + hheight; j < ( y2 - GetProperties().height + hheight ); ++j ) {
+		for( int32 i = x1 + hwidth; i < ( x2 - GetProperties().width + hwidth ); ++i ) {
 			MatrixElement tmp = 0.0;	
-			for( size_t ii = 0; ii < GetProperties().width; ++ii ) {
-				for( size_t jj = 0; jj < GetProperties().height; ++jj ) {
+			for( uint32 ii = 0; ii < GetProperties().width; ++ii ) {
+				for( uint32 jj = 0; jj < GetProperties().height; ++jj ) {
 					tmp += GetProperties().matrix[ GetProperties().width * jj + ii ] 
 						* in.GetElement( i + ii - hwidth, j + jj - hheight, slice );
 				}
@@ -88,23 +88,14 @@ ConvolutionFilter3D< Image< InputElementType, 3 > >
 ::ProcessSlice(	
 			const Image< InputElementType, 3 > 	&in,
 			Image< InputElementType, 3 >		&out,
-			size_t			x1,	
-			size_t			y1,	
-			size_t			x2,	
-			size_t			y2,	
-			size_t			slice
+			int32			x1,	
+			int32			y1,	
+			int32			x2,	
+			int32			y2,	
+			int32			slice
 		    )
 {
-	for( size_t i = x1; i < x2; ++i ) {
-		for( size_t j = y1; j < y2; ++j ) {
-			InputElementType value = in.GetElement( i, j, slice );
-			if( GetProperties().bottom <= value && GetProperties().top >= value ) {
-				//unchanged
-			} else {
-				out.GetElement( i, j, value ) = GetProperties().outValue;
-			}
-		}
-	}
+
 }
 
 } /*namespace Imaging*/

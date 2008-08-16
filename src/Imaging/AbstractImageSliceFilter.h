@@ -92,11 +92,11 @@ protected:
 	ProcessSlice(
 			const Image< InputElementType, 3 > 	&in,
 			OutputImageType				&out,
-			size_t					x1,
-			size_t					y1,
-			size_t					x2,
-			size_t					y2,
-			size_t					slice
+			int32					x1,
+			int32					y1,
+			int32					x2,
+			int32					y2,
+			int32					slice
 		    ) = 0;
 
 	virtual WriterBBoxInterface &

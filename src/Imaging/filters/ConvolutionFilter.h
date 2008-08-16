@@ -32,8 +32,8 @@ public:
 
 		MatrixPtr matrix; //length = width*height
 
-		size_t	width;
-		size_t	height;
+		uint32	width;
+		uint32	height;
 	};
 
 	ConvolutionFilter2D( Properties * prop );
@@ -45,11 +45,11 @@ protected:
 	ProcessSlice(
 			const Image< InputElementType, 3 > 	&in,
 			Image< InputElementType, 3 >		&out,
-			size_t			x1,	
-			size_t			y1,	
-			size_t			x2,	
-			size_t			y2,	
-			size_t			slice
+			int32			x1,	
+			int32			y1,	
+			int32			x2,	
+			int32			y2,	
+			int32			slice
 		    );
 private:
 	GET_PROPERTIES_DEFINITION_MACRO;
@@ -86,9 +86,9 @@ public:
 
 		MatrixPtr	matrix; //length = width*height*depth
 
-		size_t	width;
-		size_t	height;
-		size_t	depth;
+		uint32	width;
+		uint32	height;
+		uint32	depth;
 	
 	};
 
@@ -100,11 +100,11 @@ protected:
 	ProcessSlice(
 			const Image< InputElementType, 3 > 	&in,
 			Image< InputElementType, 3 >		&out,
-			size_t			x1,	
-			size_t			y1,	
-			size_t			x2,	
-			size_t			y2,	
-			size_t			slice
+			int32			x1,	
+			int32			y1,	
+			int32			x2,	
+			int32			y2,	
+			int32			slice
 		    );
 private:
 	GET_PROPERTIES_DEFINITION_MACRO;

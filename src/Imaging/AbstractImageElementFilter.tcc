@@ -27,24 +27,24 @@ AbstractImageElementFilter< Image< InputElementType, 2 >, Image< OutputElementTy
 		return false;
 	}
 
-	size_t width1;
-	size_t height1;
+	uint32 width1;
+	uint32 height1;
 	int32 xStride1;
 	int32 yStride1;
 	InputElementType *tmppointer1 = in.GetPointer( width1, height1, xStride1, yStride1 );
 	InputElementType *pointer1 = NULL;
 
-	size_t width2;
-	size_t height2;
+	uint32 width2;
+	uint32 height2;
 	int32 xStride2;
 	int32 yStride2;
 	OutputElementType *tmppointer2 = out.GetPointer( width2, height2, xStride2, yStride2 );
 	OutputElementType *pointer2 = NULL;
 
-	for( size_t j = 0; j < height1; ++j ) {
+	for( int32 j = 0; j < height1; ++j ) {
 		pointer1 = tmppointer1;
 		pointer2 = tmppointer2;
-		for( size_t i = 0; i < width1; ++i ) {
+		for( int32 i = 0; i < width1; ++i ) {
 
 			_elementFilter( *pointer1, *pointer2 );	
 
@@ -75,29 +75,29 @@ AbstractImageElementFilter< Image< InputElementType, 3 >, Image< OutputElementTy
 ::ProcessSlice(	
 			const Image< InputElementType, 3 > 	&in,
 			Image< OutputElementType, 3 >		&out,
-			size_t			x1,	
-			size_t			y1,	
-			size_t			x2,	
-			size_t			y2,	
-			size_t			slice
+			int32			x1,	
+			int32			y1,	
+			int32			x2,	
+			int32			y2,	
+			int32			slice
 		    )
 {
 	if( !this->CanContinue() ) {
 		return false;
 	}
 
-	size_t width1;
-	size_t height1;
-	size_t depth1;
+	uint32 width1;
+	uint32 height1;
+	uint32 depth1;
 	int32 xStride1;
 	int32 yStride1;
 	int32 zStride1;
 	InputElementType *tmppointer1 = in.GetPointer( width1, height1, depth1, xStride1, yStride1, zStride1 );
 	InputElementType *pointer1 = NULL;
 
-	size_t width2;
-	size_t height2;
-	size_t depth2;
+	uint32 width2;
+	uint32 height2;
+	uint32 depth2;
 	int32 xStride2;
 	int32 yStride2;
 	int32 zStride2;
@@ -107,10 +107,10 @@ AbstractImageElementFilter< Image< InputElementType, 3 >, Image< OutputElementTy
 	tmppointer1 += x1 * xStride1 + y1 * yStride1 + slice * zStride1;
 	tmppointer2 += x1 * xStride2 + y1 * yStride2 + slice * zStride2;
 
-	for( size_t j = y1; j < y2; ++j ) {
+	for( int32 j = y1; j < y2; ++j ) {
 		pointer1 = tmppointer1;
 		pointer2 = tmppointer2;
-		for( size_t i = x1; i < x2; ++i ) {
+		for( int32 i = x1; i < x2; ++i ) {
 
 			_elementFilter( *pointer1, *pointer2 );	
 

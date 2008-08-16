@@ -3,22 +3,20 @@ MAKE=make
 
 
 .PHONY:all
-all:	m4dPilot FilteringTest ViewerTest
+all:	m4dPilot BoneSegmentation
 
 .PHONY:clean-all
-clean-all:	clean-m4dPilot clean-FilteringTest clean-ViewerTest
+clean-all:	clean-m4dPilot clean-BoneSegmentation
 #------------------------------------------------------------------------------
 .PHONY:m4dPilot
 m4dPilot:
 	 $(MAKE) --directory=$@
 
-.PHONY:FilteringTest
-FilteringTest:
+.PHONY:BoneSegmentation
+BoneSegmentation:
 	 $(MAKE) --directory=$@
 
-.PHONY:ViewerTest
-ViewerTest:
-	 $(MAKE) --directory=$@
+
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
@@ -27,10 +25,7 @@ clean-m4dPilot:
 	 $(MAKE) --directory=m4dPilot clean
 
 .PHONY:clean-FilteringTest
-clean-FilteringTest:
-	 $(MAKE) --directory=FilteringTest clean
+clean-BoneSegmentation:
+	 $(MAKE) --directory=BoneSegmentation clean
 
-.PHONY:clean-ViewerTest
-clean-ViewerTest:
-	 $(MAKE) --directory=ViewerTest clean
 #------------------------------------------------------------------------------
