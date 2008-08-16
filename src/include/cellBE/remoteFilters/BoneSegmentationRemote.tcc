@@ -35,8 +35,8 @@ BoneSegmentationRemote<ImageType>::BoneSegmentationRemote()
   }
 
   // create job
-  m_job = m_cellClient.CreateJob( 
-    m_filterSerializers, inSerializer, outSerializer);
+  m_job = s_cellClient.CreateJob( 
+    m_filterSerializers, m_inSerializer, m_outSerializer);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

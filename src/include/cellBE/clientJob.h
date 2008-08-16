@@ -22,12 +22,6 @@ class ClientJob
   void SerializeFiltersProperties( void);
   void SendPrimaryHeader( void);
 
-  void SendCreate( void);
-  void SendDataSet( void);
-  void SendFilterProperties( void);
-  void SendExecute( void);
-  void SendDestroy( void);
-
   void Serialize( NetStream &s);
   void DeSerialize( NetStream &s);
 
@@ -42,12 +36,18 @@ class ClientJob
     , const std::string &address
     , boost::asio::io_service &service);
 
-  ~ClientJob();
-
   AbstractDataSetSerializer *m_inDataSetSeralizer;
   AbstractDataSetSerializer *m_outDataSetSerializer;
 
 public:
+  ~ClientJob();
+
+  void SendCreate( void);
+  void SendDataSet( void);
+  void SendFilterProperties( void);
+  void SendExecute( void);
+  void SendDestroy( void);
+
   void SetDataSets( M4D::Imaging::AbstractDataSet *inDataSet
                   , M4D::Imaging::AbstractDataSet *outdataSet);
 
