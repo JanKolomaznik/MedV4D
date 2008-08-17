@@ -36,12 +36,14 @@ template< typename ElementType >
 AbstractImage::AImagePtr 
 ImageFactory::CreateEmptyImage2D( 
 			uint32		width, 
-			uint32		height
+			uint32		height,
+			float32		elementWidth,
+			float32		elementHeight
 			)
 {
 	//TODO exceptions
 	typename Image< ElementType, 2 >::Ptr ptr = 
-		ImageFactory::CreateEmptyImage2DTyped< ElementType >( width, height );
+		ImageFactory::CreateEmptyImage2DTyped< ElementType >( width, height, elementWidth, elementHeight );
 
 	AbstractImage::AImagePtr aptr = 
 		boost::static_pointer_cast
@@ -53,12 +55,14 @@ template< typename ElementType >
 typename Image< ElementType, 2 >::Ptr 
 ImageFactory::CreateEmptyImage2DTyped( 
 			uint32		width, 
-			uint32		height
+			uint32		height,
+			float32		elementWidth,
+			float32		elementHeight
 			)
 {
 	//TODO exceptions
 	typename ImageDataTemplate< ElementType >::Ptr ptr = 
-		ImageFactory::CreateEmptyImageData2DTyped< ElementType >( width, height );
+		ImageFactory::CreateEmptyImageData2DTyped< ElementType >( width, height, elementWidth, elementHeight );
 
 	Image< ElementType, 2 > *img = new Image< ElementType, 2 >( ptr );
 
@@ -70,12 +74,14 @@ void
 ImageFactory::ReallocateImage2DData(
 		Image< ElementType, 2 >	&image,
 		uint32			width, 
-		uint32			height
+		uint32			height,
+		float32			elementWidth,
+		float32			elementHeight
 		)
 {
 	//TODO exceptions
 	typename ImageDataTemplate< ElementType >::Ptr ptr = 
-		ImageFactory::CreateEmptyImageData2DTyped< ElementType >( width, height );
+		ImageFactory::CreateEmptyImageData2DTyped< ElementType >( width, height, elementWidth, elementHeight );
 
 	image.ReallocateData( ptr );
 }
@@ -85,12 +91,15 @@ AbstractImage::AImagePtr
 ImageFactory::CreateEmptyImage3D( 
 			uint32		width, 
 			uint32		height,
-			uint32		depth
+			uint32		depth,
+			float32		elementWidth,
+			float32		elementHeight,
+			float32		elementDepth
 			)
 {
 	//TODO exceptions
 	typename Image< ElementType, 3 >::Ptr ptr = 
-		ImageFactory::CreateEmptyImage3DTyped< ElementType >( width, height, depth );
+		ImageFactory::CreateEmptyImage3DTyped< ElementType >( width, height, depth, elementWidth, elementHeight, elementDepth );
 
 	AbstractImage::AImagePtr aptr = 
 		boost::static_pointer_cast
@@ -103,12 +112,15 @@ typename Image< ElementType, 3 >::Ptr
 ImageFactory::CreateEmptyImage3DTyped( 
 			uint32		width, 
 			uint32		height,
-			uint32		depth
+			uint32		depth,
+			float32		elementWidth,
+			float32		elementHeight,
+			float32		elementDepth
 			)
 {
 	//TODO exceptions
 	typename ImageDataTemplate< ElementType >::Ptr ptr = 
-		ImageFactory::CreateEmptyImageData3DTyped< ElementType >( width, height, depth );
+		ImageFactory::CreateEmptyImageData3DTyped< ElementType >( width, height, depth, elementWidth, elementHeight, elementDepth );
 
 	Image< ElementType, 3 > *img = new Image< ElementType, 3 >( ptr );
 
@@ -121,12 +133,15 @@ ImageFactory::ReallocateImage3DData(
 		Image< ElementType, 3 >	&image,
 		uint32			width, 
 		uint32			height,
-		uint32			depth
+		uint32			depth,
+		float32			elementWidth,
+		float32			elementHeight,
+		float32			elementDepth
 		)
 {
 	//TODO exceptions
 	typename ImageDataTemplate< ElementType >::Ptr ptr = 
-		ImageFactory::CreateEmptyImageData3DTyped< ElementType >( width, height, depth );
+		ImageFactory::CreateEmptyImageData3DTyped< ElementType >( width, height, depth, elementWidth, elementHeight, elementDepth );
 
 	image.ReallocateData( ptr );
 }
@@ -137,11 +152,13 @@ template< typename ElementType >
 AbstractImageData::APtr 
 ImageFactory::CreateEmptyImageData2D( 
 			uint32		width, 
-			uint32		height
+			uint32		height,
+			float32		elementWidth,
+			float32		elementHeight
 			)
 {
 	typename ImageDataTemplate< ElementType >::Ptr ptr = 
-		ImageFactory::CreateEmptyImageData2DTyped< ElementType >( width, height );
+		ImageFactory::CreateEmptyImageData2DTyped< ElementType >( width, height, elementWidth, elementHeight );
 
 	AbstractImageData::APtr aptr = 
 		boost::static_pointer_cast
@@ -154,7 +171,9 @@ template< typename ElementType >
 typename ImageDataTemplate< ElementType >::Ptr 
 ImageFactory::CreateEmptyImageData2DTyped( 
 			uint32		width, 
-			uint32		height
+			uint32		height,
+			float32		elementWidth,
+			float32		elementHeight
 			)
 {
 	ImageDataTemplate< ElementType > *newImage;
@@ -164,8 +183,8 @@ ImageFactory::CreateEmptyImageData2DTyped(
 		
 		//Preparing informations about dimensionality.
 		DimensionInfo *info = new DimensionInfo[ 2 ];
-		info[0].Set( width, 1, 1.0 );
-		info[1].Set( height, width, 1.0 );
+		info[0].Set( width, 1, elementWidth );
+		info[1].Set( height, width, elementHeight );
 
 		//Creating place for data storage.
 		ElementType *array = PrepareElementArray< ElementType >( size );
@@ -188,11 +207,14 @@ AbstractImageData::APtr
 ImageFactory::CreateEmptyImageData3D( 
 			uint32		width, 
 			uint32		height, 
-			uint32		depth
+			uint32		depth,
+			float32		elementWidth,
+			float32		elementHeight,
+			float32		elementDepth
 			)
 {
 	typename ImageDataTemplate< ElementType >::Ptr ptr = 
-		ImageFactory::CreateEmptyImageData3DTyped< ElementType >( width, height, depth );
+		ImageFactory::CreateEmptyImageData3DTyped< ElementType >( width, height, depth, elementWidth, elementHeight, elementDepth );
 
 	AbstractImageData::APtr aptr = 
 		boost::static_pointer_cast
@@ -207,7 +229,10 @@ typename ImageDataTemplate< ElementType >::Ptr
 ImageFactory::CreateEmptyImageData3DTyped( 
 			uint32		width, 
 			uint32		height, 
-			uint32		depth
+			uint32		depth,
+			float32		elementWidth,
+			float32		elementHeight,
+			float32		elementDepth
 			)
 {
 	//TODO exception handling
@@ -215,9 +240,9 @@ ImageFactory::CreateEmptyImageData3DTyped(
 	
 	//Preparing informations about dimensionality.
 	DimensionInfo *info = new DimensionInfo[ 3 ];
-	info[0].Set( width, 1, 1.0 );
-	info[1].Set( height, width, 1.0 );
-	info[2].Set( depth, (width * height), 1.0 );
+	info[0].Set( width, 1, elementWidth );
+	info[1].Set( height, width, elementHeight );
+	info[2].Set( depth, (width * height), elementDepth );
 
 	//Creating place for data storage.
 	ElementType *array = PrepareElementArray< ElementType >( size );

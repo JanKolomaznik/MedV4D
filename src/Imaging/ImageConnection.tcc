@@ -29,7 +29,15 @@ CallImageFactoryRealloc(
 			float32		elementExtents[ 3 ]
 	    )
 {
-	ImageFactory::ReallocateImage3DData< ElementType >( image, maximums[0]-minimums[0], maximums[1]-minimums[1], maximums[2]-minimums[2] );
+	ImageFactory::ReallocateImage3DData< ElementType >( 
+		image, 
+		maximums[0]-minimums[0], 
+		maximums[1]-minimums[1], 
+		maximums[2]-minimums[2], 
+		elementExtents[0], 
+		elementExtents[1],
+		elementExtents[2]
+	);
 }
 
 

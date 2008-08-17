@@ -41,10 +41,10 @@ AbstractImageElementFilter< Image< InputElementType, 2 >, Image< OutputElementTy
 	OutputElementType *tmppointer2 = out.GetPointer( width2, height2, xStride2, yStride2 );
 	OutputElementType *pointer2 = NULL;
 
-	for( int32 j = 0; j < height1; ++j ) {
+	for( int32 j = 0; j < (int32)height1; ++j ) {
 		pointer1 = tmppointer1;
 		pointer2 = tmppointer2;
-		for( int32 i = 0; i < width1; ++i ) {
+		for( int32 i = 0; i < (int32)width1; ++i ) {
 
 			_elementFilter( *pointer1, *pointer2 );	
 

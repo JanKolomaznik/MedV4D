@@ -20,7 +20,7 @@ struct DimensionExtents
 
 	int32	minimum;
 	int32	maximum;
-	float	elementExtent;
+	float32	elementExtent;
 
 };
 

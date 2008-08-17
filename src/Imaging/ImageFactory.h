@@ -41,7 +41,9 @@ public:
 	static AbstractImage::AImagePtr 
 	CreateEmptyImage2D( 
 			uint32		width, 
-			uint32		height
+			uint32		height,
+			float32		elementWidth = 1.0,
+			float32		elementHeight = 1.0
 			);
 
 	/**
@@ -57,7 +59,9 @@ public:
 	static typename Image< ElementType, 2 >::Ptr
 	CreateEmptyImage2DTyped( 
 			uint32		width, 
-			uint32		height
+			uint32		height,
+			float32		elementWidth = 1.0,
+			float32		elementHeight = 1.0
 			);
 
 	template< typename ElementType >
@@ -65,7 +69,9 @@ public:
 	ReallocateImage2DData(
 			Image< ElementType, 2 >	&image,
 			uint32			width, 
-			uint32			height
+			uint32			height,
+			float32			elementWidth = 1.0,
+			float32			elementHeight = 1.0
 			);
 
 	/**
@@ -82,7 +88,10 @@ public:
 	CreateEmptyImage3D( 
 			uint32		width, 
 			uint32		height, 
-			uint32		depth
+			uint32		depth,
+			float32		elementWidth = 1.0,
+			float32		elementHeight = 1.0,
+			float32		elementDepth = 1.0
 			);
 
 	/**
@@ -100,7 +109,10 @@ public:
 	CreateEmptyImage3DTyped( 
 			uint32		width, 
 			uint32		height, 
-			uint32		depth
+			uint32		depth,
+			float32		elementWidth = 1.0,
+			float32		elementHeight = 1.0,
+			float32		elementDepth = 1.0
 			);
 
 	template< typename ElementType >
@@ -109,7 +121,10 @@ public:
 			Image< ElementType, 3 >	&image,
 			uint32			width, 
 			uint32			height,
-			uint32			depth
+			uint32			depth,
+			float32			elementWidth = 1.0,
+			float32			elementHeight = 1.0,
+			float32			elementDepth = 1.0
 			);
 
 	/**
@@ -124,7 +139,9 @@ public:
 	static AbstractImageData::APtr 
 	CreateEmptyImageData2D( 
 			uint32		width, 
-			uint32		height
+			uint32		height,
+			float32		elementWidth = 1.0,
+			float32		elementHeight = 1.0
 			);
 
 	/**
@@ -140,7 +157,9 @@ public:
 	static typename ImageDataTemplate< ElementType >::Ptr
 	CreateEmptyImageData2DTyped( 
 			uint32		width, 
-			uint32		height
+			uint32		height,
+			float32		elementWidth = 1.0,
+			float32		elementHeight = 1.0
 			);
 
 	/**
@@ -157,7 +176,10 @@ public:
 	CreateEmptyImageData3D( 
 			uint32		width, 
 			uint32		height, 
-			uint32		depth
+			uint32		depth,
+			float32		elementWidth = 1.0,
+			float32		elementHeight = 1.0,
+			float32		elementDepth = 1.0
 			);
 
 	/**
@@ -175,7 +197,10 @@ public:
 	CreateEmptyImageData3DTyped( 
 			uint32		width, 
 			uint32		height, 
-			uint32		depth
+			uint32		depth,
+			float32		elementWidth = 1.0,
+			float32		elementHeight = 1.0,
+			float32		elementDepth = 1.0
 			);
 
 	/**
