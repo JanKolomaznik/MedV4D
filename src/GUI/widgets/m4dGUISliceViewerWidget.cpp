@@ -404,6 +404,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 		    }
 		    catch (...) { _ready = false; }
 		    _inPort->ReleaseDatasetLock();
+		    if ( !_ready ) return;
 	        }
 	        else
 	        {
@@ -412,6 +413,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	        }
 	    }
 	    catch (...) { _ready = false; }
+	    if ( !_ready ) return;
 
 	    pixel = new uint8[ height * width * 4 ];
 	    unsigned i;
@@ -449,6 +451,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	                original += ( sliceNum - _minimum[2] ) * height * width;
 		    } catch (...) { _ready = false; }
 		    _inPort->ReleaseDatasetLock();
+		    if ( !_ready ) return;
 	        }
 	        else
 	        {
@@ -457,6 +460,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	        }
 	    }
 	    catch (...) { _ready = false; }
+	    if ( !_ready ) return;
 
 	    pixel = new int8[ height * width ];
 	    unsigned i;
@@ -487,6 +491,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	                original += ( sliceNum - _minimum[2] ) * height * width;
 		    } catch (...) { _ready = false; }
 		    _inPort->ReleaseDatasetLock();
+		    if ( !_ready ) return;
 	        }
 	        else
 	        {
@@ -495,6 +500,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	        }
 	    }
 	    catch (...) { _ready = false; }
+	    if ( !_ready ) return;
 
 	    pixel = new uint8[ height * width ];
 	    unsigned i;
@@ -525,6 +531,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	                original += ( sliceNum - _minimum[2] ) * height * width;
 		    } catch (...) { _ready = false; }
 		    _inPort->ReleaseDatasetLock();
+		    if ( !_ready ) return;
 	        }
 	        else
 	        {
@@ -533,6 +540,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	        }
 	    }
 	    catch (...) { _ready = false; }
+	    if ( !_ready ) return;
 
 	    pixel = new uint16[ height * width ];
 	    unsigned i;
@@ -562,6 +570,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	                original += ( sliceNum - _minimum[2] ) * height * width;
 		    } catch (...) { _ready = false; }
 		    _inPort->ReleaseDatasetLock();
+		    if ( !_ready ) return;
 	        }
 	        else
 	        {
@@ -570,6 +579,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	        }
 	    }
 	    catch (...) { _ready = false; }
+	    if ( !_ready ) return;
 
 	    pixel = new int16[ height * width ];
 	    unsigned i;
