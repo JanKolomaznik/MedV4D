@@ -8,6 +8,14 @@ namespace Imaging
 {
 
 template< typename InputImageType, typename OutputImageType >
+RemoteFilter< InputImageType, OutputImageType >::RemoteFilter()
+  : PredecessorType( NULL) 
+{
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+template< typename InputImageType, typename OutputImageType >
 RemoteFilter< InputImageType, OutputImageType >
 ::~RemoteFilter()
 {
