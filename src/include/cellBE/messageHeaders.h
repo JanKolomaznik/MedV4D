@@ -3,8 +3,6 @@
 
 #include "netStreamImpl.h"
 
-extern int endianess;
-
 namespace M4D
 {
 namespace CellBE
@@ -64,6 +62,9 @@ inline std::ostream &operator<<( std::ostream &s, JobID &id)
 
 ///////////////////////////////////////////////////////////////////////////////
 
+#define BIG_ENDIAN 0
+#define LITTLE_ENDIAN 1
+
 struct PrimaryJobHeader
 {
   uint8 action;
@@ -77,8 +78,17 @@ struct PrimaryJobHeader
   static void Serialize( PrimaryJobHeader *h)
   {
     NetStreamArrayBuf s( (uint8 *)h, sizeof( PrimaryJobHeader) );
+    uint16 tmp = 1; // for endian testing
+    uint8 *ptr = (uint8 *)&tmp;
 
-    s << h->action << h->id << (uint8) endianess << h->nexPartLength;
+    s << h->action << h->id;
+    
+    if( ptr[0] == 1)
+      s << (uint8) LITTLE_ENDIAN;
+    else
+      s << (uint8) BIG_ENDIAN;
+    
+    s << h->nexPartLength;
   }
 
   static void Deserialize( PrimaryJobHeader *h)
