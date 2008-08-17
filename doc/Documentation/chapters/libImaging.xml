@@ -168,8 +168,21 @@ protected:
 ExamplePipelineHandler
 ::ExamplePipelineHandler()
 {
+        _firstFilter = new
+        M4D::Imaging::AbstractPipeFilter *secondFilter = new
 
+        _pipeline.AddFilter( _firstFilter );
+        _pipeline.AddFilter( secondFilter );
+
+        _pipeline.MakeConnection( _firstFilter, 0, secondFilter, 0, true );
+
+        _inConnection = dynamic_cast< M4D::Imaging::AbstractImageConnectionInterface * >(
+                                &(_pipeline.MakeInputConnection( _firstFilter, 0, false )) );
+
+        _outConnection = dynamic_cast< M4D::Imaging::AbstractImageConnectionInterface * >(
+                                &(_pipeline.MakeOutputConnection( secondFilter, 0, true )) );
 }
+
 
 void
 ExamplePipelineHandler
@@ -187,7 +200,11 @@ ExamplePipelineHandler
 	<section>
 	<title>Creating new filter</title>
 		
-	<para>aaaaaaa</para>
+		<para>
+		One of the main advantage of this library is its extensibility. The biggest potential is easy way to add new filters 
+		with all features promised by pipeline design (synchronization, parallel execution, etc.). This is achieved through 
+		set of filter abstract classes, each designed for special purpose. Author of new filter have to consider
+		</para>
 	</section>
 
 	<section>
