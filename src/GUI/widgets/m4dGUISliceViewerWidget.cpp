@@ -356,6 +356,7 @@ m4dGUISliceViewerWidget::paintGL()
         if ( _selectionMode[ left ] || _selectionMode[ right ] ) drawSelectionModeBorder();
     }
     if ( _selected ) drawSelectedBorder();
+    if ( _inPort->IsPlugged() ) drawPluggedBorder();
     glFlush();
 }
 
@@ -660,6 +661,21 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 }
 
 void
+m4dGUISliceViewerWidget::drawPluggedBorder()
+{
+    glPushMatrix();
+    glLoadIdentity();
+    glColor3f(0., 0., 1.);
+    glBegin(GL_LINE_LOOP);
+        glVertex2i( 2, 2 );
+	glVertex2i( 2, this->height() - 3 );
+	glVertex2i( this->width() - 3, this->height() - 3 );
+	glVertex2i( this->width() - 3, 2 );
+    glEnd();
+    glPopMatrix();
+}
+
+void
 m4dGUISliceViewerWidget::drawSelectionModeBorder()
 {
     glPushMatrix();
@@ -671,12 +687,6 @@ m4dGUISliceViewerWidget::drawSelectionModeBorder()
 	glVertex2i( this->width() - 1, this->height() - 1 );
 	glVertex2i( this->width() - 1, 0 );
     glEnd();
-    glBegin(GL_LINE_LOOP);
-	glVertex2i( 1, 1 );
-	glVertex2i( 1, this->height() - 2 );
-	glVertex2i( this->width() - 2, this->height() - 2 );
-	glVertex2i( this->width() - 2, 1 );
-    glEnd();
     glPopMatrix();
 }
 
@@ -687,10 +697,10 @@ m4dGUISliceViewerWidget::drawSelectedBorder()
     glLoadIdentity();
     glColor3f(0., 1., 0.);
     glBegin(GL_LINE_LOOP);
-        glVertex2i( 3, 3 );
-	glVertex2i( 3, this->height() - 4 );
-	glVertex2i( this->width() - 4, this->height() - 4 );
-	glVertex2i( this->width() - 4, 3 );
+	glVertex2i( 1, 1 );
+	glVertex2i( 1, this->height() - 2 );
+	glVertex2i( this->width() - 2, this->height() - 2 );
+	glVertex2i( this->width() - 2, 1 );
     glEnd();
     glPopMatrix();
 }
