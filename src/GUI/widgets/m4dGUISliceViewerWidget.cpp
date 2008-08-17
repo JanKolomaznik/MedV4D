@@ -4,10 +4,11 @@
 #include "GUI/ogl/fonts.h"
 #include <sstream>
 
-#define MINIMUM_SELECT_DISTANCE 5
+#define MINIMUM_SELECT_DISTANCE			5
 
-#define FONT_WIDTH   8
-#define FONT_HEIGHT 16
+#define FONT_WIDTH				8
+#define FONT_HEIGHT				16
+#define BRIGHTNESS_MULTIPLICATOR_16_BIT		16
 
 namespace M4D
 {
@@ -151,8 +152,15 @@ m4dGUISliceViewerWidget::ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imag
 {
     switch( msg->msgID )
     {
+        case Imaging::PMI_DATASET_PUT:
+	case Imaging::PMI_PORT_PLUGGED:
+	{
+	    setParameters();
+	    updateGL();
+	}
+	break;
+
         case Imaging::PMI_FILTER_UPDATED:
-        case Imaging::PMI_PORT_PLUGGED:
 	{
 	    _ready = false;
 	    if ( _inPort->IsPlugged() )
@@ -418,17 +426,28 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 
 	    pixel = new uint8[ height * width * 4 ];
 	    unsigned i;
+	    double mean[3];
+	    mean[0] = mean[1] = mean[2] = 0.;
 	    for ( i = 0; i < width * height * 4; i += 4 )
 	    {
-	        if ( ( _contrastRate *   ( original[i]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. ) > maxvalue ) pixel[i] = (uint8)maxvalue;
-		else if ( ( _contrastRate *   ( original[i]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. ) < 0. ) pixel[i] = 0;
-		else pixel[i] = (uint8)( _contrastRate *   ( original[i]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. );
-	        if ( ( _contrastRate *   ( original[i+1]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. ) > maxvalue ) pixel[i+1] = (uint8)maxvalue;
-		else if ( ( _contrastRate *   ( original[i+1]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. ) < 0. ) pixel[i+1] = 0;
-		else pixel[i+1] = (uint8)( _contrastRate *   ( original[i+1]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. );
-	        if ( ( _contrastRate *   ( original[i+2]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. ) > maxvalue ) pixel[i+2] = (uint8)maxvalue;
-		else if ( ( _contrastRate *   ( original[i+2]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. ) < 0. ) pixel[i+2] = 0;
-		else pixel[i+2] = (uint8)( _contrastRate *   ( original[i+2]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. );
+	        mean[0] += (double)original[i  ] / (double)(width*height);
+	        mean[1] += (double)original[i+1] / (double)(width*height);
+	        mean[2] += (double)original[i+2] / (double)(width*height);
+	    }
+	    mean[0] += _brightnessRate;
+	    mean[1] += _brightnessRate;
+	    mean[2] += _brightnessRate;
+	    for ( i = 0; i < width * height * 4; i += 4 )
+	    {
+	        if ( ( _contrastRate *   ( original[i]   - mean[0] + _brightnessRate ) + mean[0] ) > maxvalue ) pixel[i] = (uint8)maxvalue;
+		else if ( ( _contrastRate *   ( original[i]   - mean[0] + _brightnessRate ) + mean[0] ) < 0. ) pixel[i] = 0;
+		else pixel[i] = (uint8)( _contrastRate *   ( original[i]   - mean[0] + _brightnessRate ) + mean[0] );
+	        if ( ( _contrastRate *   ( original[i+1]   - mean[1] + _brightnessRate ) + mean[1] ) > maxvalue ) pixel[i+1] = (uint8)maxvalue;
+		else if ( ( _contrastRate *   ( original[i+1]   - mean[1] + _brightnessRate ) + mean[1] ) < 0. ) pixel[i+1] = 0;
+		else pixel[i+1] = (uint8)( _contrastRate *   ( original[i+1]   - mean[1] + _brightnessRate ) + mean[1] );
+	        if ( ( _contrastRate *   ( original[i+2]   - mean[2] + _brightnessRate ) + mean[2] ) > maxvalue ) pixel[i+2] = (uint8)maxvalue;
+		else if ( ( _contrastRate *   ( original[i+2]   - mean[2] + _brightnessRate ) + mean[2] ) < 0. ) pixel[i+2] = 0;
+		else pixel[i+2] = (uint8)( _contrastRate *   ( original[i+2]   - mean[2] + _brightnessRate ) + mean[2] );
 		pixel[i+3] = original[i+3];
 	    }
 	    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
@@ -465,11 +484,15 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 
 	    pixel = new int8[ height * width ];
 	    unsigned i;
+	    double mean;
+	    mean = 0.;
+	    for ( i = 0; i < width * height; i ++ ) mean += (double)original[i  ] / (double)(width*height);
+	    mean += _brightnessRate;
 	    for ( i = 0; i < width * height; ++i )
 	    {
-	        if ( ( _contrastRate *   ( original[i]+ _brightnessRate ) ) > maxvalue ) pixel[i] = (int8)maxvalue;
-		else if ( ( _contrastRate *   ( original[i] + _brightnessRate ) ) < -maxvalue ) pixel[i] = (int8)(-maxvalue);
-		else pixel[i] = (uint8)( _contrastRate *   ( original[i] + _brightnessRate ) );
+	        if ( ( _contrastRate *   ( original[i]- mean + _brightnessRate ) + mean ) > maxvalue ) pixel[i] = (int8)maxvalue;
+		else if ( ( _contrastRate *   ( original[i] - mean + _brightnessRate ) + mean ) < -maxvalue ) pixel[i] = (int8)(-maxvalue);
+		else pixel[i] = (uint8)( _contrastRate *   ( original[i] - mean + _brightnessRate ) + mean );
 	    }
 	    glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
 	                  GL_LUMINANCE, GL_UNSIGNED_BYTE, pixel );
@@ -505,11 +528,15 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 
 	    pixel = new uint8[ height * width ];
 	    unsigned i;
+	    double mean;
+	    mean = 0.;
+	    for ( i = 0; i < width * height; i ++ ) mean += (double)original[i  ] / (double)(width*height);
+	    mean += _brightnessRate;
 	    for ( i = 0; i < width * height; ++i )
 	    {
-	        if ( ( _contrastRate *   ( original[i]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. ) > maxvalue ) pixel[i] = (uint8)maxvalue;
-		else if ( ( _contrastRate *   ( original[i]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. ) < 0. ) pixel[i] = 0;
-		else pixel[i] = (uint8)( _contrastRate *   ( original[i]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. );
+	        if ( ( _contrastRate *   ( original[i]   - mean + _brightnessRate ) + mean ) > maxvalue ) pixel[i] = (uint8)maxvalue;
+		else if ( ( _contrastRate *   ( original[i]   - mean + _brightnessRate ) + mean ) < 0. ) pixel[i] = 0;
+		else pixel[i] = (uint8)( _contrastRate *   ( original[i]   - mean + _brightnessRate ) + mean );
 	    }
 	    glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
 	                  GL_LUMINANCE, GL_UNSIGNED_BYTE, pixel );
@@ -545,11 +572,15 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 
 	    pixel = new uint16[ height * width ];
 	    unsigned i;
+	    double mean;
+	    mean = 0.;
+	    for ( i = 0; i < width * height; i ++ ) mean += (double)original[i  ] / (double)(width*height);
+	    mean += _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT;
 	    for ( i = 0; i < width * height; ++i )
 	    {
-	        if ( ( _contrastRate *   ( original[i]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. ) > maxvalue ) pixel[i] = (uint16)maxvalue;
-		else if ( ( _contrastRate *   ( original[i]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. ) < 0. ) pixel[i] = 0;
-		else pixel[i] = (uint16)( _contrastRate *   ( original[i]   - maxvalue / 2. + _brightnessRate ) + maxvalue / 2. );
+	        if ( ( _contrastRate *   ( original[i]   - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean ) > maxvalue ) pixel[i] = (uint16)maxvalue;
+		else if ( ( _contrastRate *   ( original[i]   - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean ) < 0. ) pixel[i] = 0;
+		else pixel[i] = (uint16)( _contrastRate *   ( original[i]   - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean );
 	    }
 	    glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
 	                  GL_LUMINANCE, GL_UNSIGNED_SHORT, pixel );
@@ -584,11 +615,15 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 
 	    pixel = new int16[ height * width ];
 	    unsigned i;
+	    double mean;
+	    mean = 0.;
+	    for ( i = 0; i < width * height; i ++ ) mean += (double)original[i  ] / (double)(width*height);
+	    mean += _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT;
 	    for ( i = 0; i < width * height; ++i )
 	    {
-	        if ( ( _contrastRate *   ( original[i] + _brightnessRate ) ) > maxvalue ) pixel[i] = (int16)maxvalue;
-		else if ( ( _contrastRate *   ( original[i] + _brightnessRate ) ) < -maxvalue ) pixel[i] = (int16)(-maxvalue);
-		else pixel[i] = (int16)( _contrastRate *   ( original[i] + _brightnessRate ) );
+	        if ( ( _contrastRate *   ( original[i] - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean ) > maxvalue ) pixel[i] = (int16)maxvalue;
+		else if ( ( _contrastRate *   ( original[i] - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean ) < -maxvalue ) pixel[i] = (int16)(-maxvalue);
+		else pixel[i] = (int16)( _contrastRate *   ( original[i] - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean );
 	    }
 	    glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
 	                  GL_LUMINANCE, GL_SHORT, pixel );
