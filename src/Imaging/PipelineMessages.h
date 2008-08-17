@@ -20,6 +20,7 @@ enum PipelineMsgID
 	PMI_FILTER_START_MODIFICATION,
 	PMI_FILTER_CANCELED,
 	PMI_PORT_PLUGGED,
+	PMI_DATASET_PUT,
 
 	PMI_END_SYSMSG = 1000
 };
@@ -122,6 +123,21 @@ public:
 	{
 		//TODO improve
 		return PipelineMessage::Ptr( new MsgPortPlugged() );
+	}
+
+};
+
+class MsgDatasetPut: public PipelineMessage
+{
+public:
+	MsgDatasetPut(): PipelineMessage( PMI_DATASET_PUT )
+		{ /*empty*/ }
+
+	static PipelineMessage::Ptr
+	CreateMsg()
+	{
+		//TODO improve
+		return PipelineMessage::Ptr( new MsgDatasetPut() );
 	}
 
 };

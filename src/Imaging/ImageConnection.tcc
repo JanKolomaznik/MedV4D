@@ -88,7 +88,7 @@ ImageConnection< Image< ElementType, dimension > >
 	this->_image = image;
 
 	RouteMessage( 
-			MsgFilterUpdated::CreateMsg( true ), 
+			MsgDatasetPut::CreateMsg(), 
 			PipelineMessage::MSS_NORMAL,
 			FD_BOTH	
 		);
