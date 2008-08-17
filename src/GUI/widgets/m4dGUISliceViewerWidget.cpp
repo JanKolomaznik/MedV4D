@@ -20,6 +20,7 @@ m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( unsigned index, QWidget *paren
     _index = index;
     _inPort = new Imaging::InputPortAbstractImage();
     _inputPorts.AddPort( _inPort );
+    _selected = false;
     setInputPort( );
 }
 
@@ -29,6 +30,7 @@ m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( Imaging::ConnectionInterface* 
     _index = index;
     _inPort = new Imaging::InputPortAbstractImage();
     _inputPorts.AddPort( _inPort );
+    _selected = false;
     setInputPort( conn );
 }
 
@@ -101,7 +103,6 @@ m4dGUISliceViewerWidget::setParameters()
     slotSetButtonHandler( switch_slice, right );
     _printShapeData = true;
     _printData = true;
-    _selected = false;
     _oneSliceMode = true;
     _slicesPerRow = 1;
     _flipH = _flipV = 1;
