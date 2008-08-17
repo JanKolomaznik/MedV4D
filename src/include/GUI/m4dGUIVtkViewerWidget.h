@@ -81,6 +81,7 @@ public slots:
     virtual void slotRotateAxisX( double x );
     virtual void slotRotateAxisY( double y );
     virtual void slotRotateAxisZ( double z );
+    virtual void slotSetSliceOrientation( SliceOrientation so );
 
 protected:
     virtual void resizeEvent( QResizeEvent* event );

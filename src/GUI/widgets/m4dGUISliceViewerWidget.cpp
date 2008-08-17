@@ -15,6 +15,21 @@ namespace M4D
 namespace Viewer
 {
 
+template< typename ElementType >
+class VoxelArrayCopier
+{
+public:
+    static void copy( ElementType* dst, ElementType* src, uint32 width, uint32 height, uint32 depth, int32 xstride, int32 ystride, int32 zstride )
+    {
+        uint32 i;
+	for ( i = 0; i < width * height; i++ ) dst[i] = src[ ( i % width ) * xstride + ( i / width ) * ystride + depth * zstride ];
+    }
+private:
+    VoxelArrayCopier();
+    VoxelArrayCopier( const VoxelArrayCopier& );
+    const VoxelArrayCopier& operator=( const VoxelArrayCopier& );
+};
+
 m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( unsigned index, QWidget *parent)
     : QGLWidget(parent)
 {
@@ -22,6 +37,7 @@ m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( unsigned index, QWidget *paren
     _inPort = new Imaging::InputPortAbstractImage();
     _inputPorts.AddPort( _inPort );
     _selected = false;
+    _sliceOrientation = yz;
     setInputPort( );
 }
 
@@ -32,6 +48,7 @@ m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( Imaging::ConnectionInterface* 
     _inPort = new Imaging::InputPortAbstractImage();
     _inputPorts.AddPort( _inPort );
     _selected = false;
+    _sliceOrientation = yz;
     setInputPort( conn );
 }
 
@@ -130,6 +147,7 @@ m4dGUISliceViewerWidget::setParameters()
     _availableSlots.push_back( DELETESHAPE );
     _availableSlots.push_back( DELETEALL );
     _availableSlots.push_back( ZOOM );
+    _availableSlots.push_back( SETSLICEORIENTATION );
     _leftSideData.clear();
     _rightSideData.clear();
     _ready = true;
@@ -381,7 +399,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
     if ( _flipV < 0 ) offset.setY( offset.y() + (int)( zoomRate * h ) );
     uint32 height, width, depth;
     double maxvalue;
-    int stride;
+    int32 xstride, ystride, zstride;
     GLuint texName;
 
     glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
@@ -409,8 +427,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	        {
 		    try
 		    {
-		         original = (uint8*)Imaging::Image< uint32, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
-	                 original += ( sliceNum - _minimum[2] ) * height * width * 4;
+		         original = (uint8*)Imaging::Image< uint32, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( width, height, depth, xstride, ystride, zstride );
 		    }
 		    catch (...) { _ready = false; }
 		    _inPort->ReleaseDatasetLock();
@@ -426,30 +443,50 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	    if ( !_ready ) return;
 
 	    pixel = new uint8[ height * width * 4 ];
+	    switch ( _sliceOrientation )
+	    {
+	        case xy:
+		{
+	    	    VoxelArrayCopier<uint32>::copy( (uint32*)pixel, (uint32*)original, width, height, _sliceNum - _minimum[2], xstride, ystride, zstride );
+		    break;
+		}
+
+		case yz:
+		{
+	            VoxelArrayCopier<uint32>::copy( (uint32*)pixel, (uint32*)original, height, depth, _sliceNum - _minimum[0], ystride, zstride, xstride );
+		    break;
+		}
+
+		case zx:
+		{
+	            VoxelArrayCopier<uint32>::copy( (uint32*)pixel, (uint32*)original, depth, width, _sliceNum - _minimum[1], zstride, xstride, ystride );
+		    break;
+		}
+	    }
 	    unsigned i;
 	    double mean[3];
 	    mean[0] = mean[1] = mean[2] = 0.;
 	    for ( i = 0; i < width * height * 4; i += 4 )
 	    {
-	        mean[0] += (double)original[i  ] / (double)(width*height);
-	        mean[1] += (double)original[i+1] / (double)(width*height);
-	        mean[2] += (double)original[i+2] / (double)(width*height);
+	        mean[0] += (double)pixel[i  ] / (double)(width*height);
+	        mean[1] += (double)pixel[i+1] / (double)(width*height);
+	        mean[2] += (double)pixel[i+2] / (double)(width*height);
 	    }
 	    mean[0] += _brightnessRate;
 	    mean[1] += _brightnessRate;
 	    mean[2] += _brightnessRate;
 	    for ( i = 0; i < width * height * 4; i += 4 )
 	    {
-	        if ( ( _contrastRate *   ( original[i]   - mean[0] + _brightnessRate ) + mean[0] ) > maxvalue ) pixel[i] = (uint8)maxvalue;
-		else if ( ( _contrastRate *   ( original[i]   - mean[0] + _brightnessRate ) + mean[0] ) < 0. ) pixel[i] = 0;
-		else pixel[i] = (uint8)( _contrastRate *   ( original[i]   - mean[0] + _brightnessRate ) + mean[0] );
-	        if ( ( _contrastRate *   ( original[i+1]   - mean[1] + _brightnessRate ) + mean[1] ) > maxvalue ) pixel[i+1] = (uint8)maxvalue;
-		else if ( ( _contrastRate *   ( original[i+1]   - mean[1] + _brightnessRate ) + mean[1] ) < 0. ) pixel[i+1] = 0;
-		else pixel[i+1] = (uint8)( _contrastRate *   ( original[i+1]   - mean[1] + _brightnessRate ) + mean[1] );
-	        if ( ( _contrastRate *   ( original[i+2]   - mean[2] + _brightnessRate ) + mean[2] ) > maxvalue ) pixel[i+2] = (uint8)maxvalue;
-		else if ( ( _contrastRate *   ( original[i+2]   - mean[2] + _brightnessRate ) + mean[2] ) < 0. ) pixel[i+2] = 0;
-		else pixel[i+2] = (uint8)( _contrastRate *   ( original[i+2]   - mean[2] + _brightnessRate ) + mean[2] );
-		pixel[i+3] = original[i+3];
+	        if ( ( _contrastRate *   ( pixel[i]   - mean[0] + _brightnessRate ) + mean[0] ) > maxvalue ) pixel[i] = (uint8)maxvalue;
+		else if ( ( _contrastRate *   ( pixel[i]   - mean[0] + _brightnessRate ) + mean[0] ) < 0. ) pixel[i] = 0;
+		else pixel[i] = (uint8)( _contrastRate *   ( pixel[i]   - mean[0] + _brightnessRate ) + mean[0] );
+	        if ( ( _contrastRate *   ( pixel[i+1]   - mean[1] + _brightnessRate ) + mean[1] ) > maxvalue ) pixel[i+1] = (uint8)maxvalue;
+		else if ( ( _contrastRate *   ( pixel[i+1]   - mean[1] + _brightnessRate ) + mean[1] ) < 0. ) pixel[i+1] = 0;
+		else pixel[i+1] = (uint8)( _contrastRate *   ( pixel[i+1]   - mean[1] + _brightnessRate ) + mean[1] );
+	        if ( ( _contrastRate *   ( pixel[i+2]   - mean[2] + _brightnessRate ) + mean[2] ) > maxvalue ) pixel[i+2] = (uint8)maxvalue;
+		else if ( ( _contrastRate *   ( pixel[i+2]   - mean[2] + _brightnessRate ) + mean[2] ) < 0. ) pixel[i+2] = 0;
+		else pixel[i+2] = (uint8)( _contrastRate *   ( pixel[i+2]   - mean[2] + _brightnessRate ) + mean[2] );
+		pixel[i+3] = pixel[i+3];
 	    }
 	    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
 	                  GL_RGBA, GL_UNSIGNED_BYTE, pixel );
@@ -468,8 +505,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	        {
 		    try
 		    {
-		        original = Imaging::Image< int8, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
-	                original += ( sliceNum - _minimum[2] ) * height * width;
+		        original = Imaging::Image< int8, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( width, height, depth, xstride, ystride, zstride );
 		    } catch (...) { _ready = false; }
 		    _inPort->ReleaseDatasetLock();
 		    if ( !_ready ) return;
@@ -484,16 +520,36 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	    if ( !_ready ) return;
 
 	    pixel = new int8[ height * width ];
+	    switch ( _sliceOrientation )
+	    {
+	        case xy:
+		{
+	    	    VoxelArrayCopier<int8>::copy( pixel, original, width, height, _sliceNum - _minimum[2], xstride, ystride, zstride );
+		    break;
+		}
+
+		case yz:
+		{
+	            VoxelArrayCopier<int8>::copy( pixel, original, height, depth, _sliceNum - _minimum[0], ystride, zstride, xstride );
+		    break;
+		}
+
+		case zx:
+		{
+	            VoxelArrayCopier<int8>::copy( pixel, original, depth, width, _sliceNum - _minimum[1], zstride, xstride, ystride );
+		    break;
+		}
+	    }
 	    unsigned i;
 	    double mean;
 	    mean = 0.;
-	    for ( i = 0; i < width * height; i ++ ) mean += (double)original[i  ] / (double)(width*height);
+	    for ( i = 0; i < width * height; i ++ ) mean += (double)pixel[i  ] / (double)(width*height);
 	    mean += _brightnessRate;
 	    for ( i = 0; i < width * height; ++i )
 	    {
-	        if ( ( _contrastRate *   ( original[i]- mean + _brightnessRate ) + mean ) > maxvalue ) pixel[i] = (int8)maxvalue;
-		else if ( ( _contrastRate *   ( original[i] - mean + _brightnessRate ) + mean ) < -maxvalue ) pixel[i] = (int8)(-maxvalue);
-		else pixel[i] = (uint8)( _contrastRate *   ( original[i] - mean + _brightnessRate ) + mean );
+	        if ( ( _contrastRate *   ( pixel[i]- mean + _brightnessRate ) + mean ) > maxvalue ) pixel[i] = (int8)maxvalue;
+		else if ( ( _contrastRate *   ( pixel[i] - mean + _brightnessRate ) + mean ) < -maxvalue ) pixel[i] = (int8)(-maxvalue);
+		else pixel[i] = (uint8)( _contrastRate *   ( pixel[i] - mean + _brightnessRate ) + mean );
 	    }
 	    glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
 	                  GL_LUMINANCE, GL_UNSIGNED_BYTE, pixel );
@@ -512,8 +568,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	        {
 		    try
 		    {
-		        original = Imaging::Image< uint8, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
-	                original += ( sliceNum - _minimum[2] ) * height * width;
+		        original = Imaging::Image< uint8, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( width, height, depth, xstride, ystride, zstride );
 		    } catch (...) { _ready = false; }
 		    _inPort->ReleaseDatasetLock();
 		    if ( !_ready ) return;
@@ -528,16 +583,36 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	    if ( !_ready ) return;
 
 	    pixel = new uint8[ height * width ];
+	    switch ( _sliceOrientation )
+	    {
+	        case xy:
+		{
+	    	    VoxelArrayCopier<uint8>::copy( pixel, original, width, height, _sliceNum - _minimum[2], xstride, ystride, zstride );
+		    break;
+		}
+
+		case yz:
+		{
+	            VoxelArrayCopier<uint8>::copy( pixel, original, height, depth, _sliceNum - _minimum[0], ystride, zstride, xstride );
+		    break;
+		}
+
+		case zx:
+		{
+	            VoxelArrayCopier<uint8>::copy( pixel, original, depth, width, _sliceNum - _minimum[1], zstride, xstride, ystride );
+		    break;
+		}
+	    }
 	    unsigned i;
 	    double mean;
 	    mean = 0.;
-	    for ( i = 0; i < width * height; i ++ ) mean += (double)original[i  ] / (double)(width*height);
+	    for ( i = 0; i < width * height; i ++ ) mean += (double)pixel[i  ] / (double)(width*height);
 	    mean += _brightnessRate;
 	    for ( i = 0; i < width * height; ++i )
 	    {
-	        if ( ( _contrastRate *   ( original[i]   - mean + _brightnessRate ) + mean ) > maxvalue ) pixel[i] = (uint8)maxvalue;
-		else if ( ( _contrastRate *   ( original[i]   - mean + _brightnessRate ) + mean ) < 0. ) pixel[i] = 0;
-		else pixel[i] = (uint8)( _contrastRate *   ( original[i]   - mean + _brightnessRate ) + mean );
+	        if ( ( _contrastRate *   ( pixel[i]   - mean + _brightnessRate ) + mean ) > maxvalue ) pixel[i] = (uint8)maxvalue;
+		else if ( ( _contrastRate *   ( pixel[i]   - mean + _brightnessRate ) + mean ) < 0. ) pixel[i] = 0;
+		else pixel[i] = (uint8)( _contrastRate *   ( pixel[i]   - mean + _brightnessRate ) + mean );
 	    }
 	    glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
 	                  GL_LUMINANCE, GL_UNSIGNED_BYTE, pixel );
@@ -556,8 +631,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	        {
 		    try
 		    {
-		        original = Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
-	                original += ( sliceNum - _minimum[2] ) * height * width;
+		        original = Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( width, height, depth, xstride, ystride, zstride );
 		    } catch (...) { _ready = false; }
 		    _inPort->ReleaseDatasetLock();
 		    if ( !_ready ) return;
@@ -572,16 +646,36 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	    if ( !_ready ) return;
 
 	    pixel = new uint16[ height * width ];
+	    switch ( _sliceOrientation )
+	    {
+	        case xy:
+		{
+	    	    VoxelArrayCopier<uint16>::copy( pixel, original, width, height, _sliceNum - _minimum[2], xstride, ystride, zstride );
+		    break;
+		}
+
+		case yz:
+		{
+	            VoxelArrayCopier<uint16>::copy( pixel, original, height, depth, _sliceNum - _minimum[0], ystride, zstride, xstride );
+		    break;
+		}
+
+		case zx:
+		{
+	            VoxelArrayCopier<uint16>::copy( pixel, original, depth, width, _sliceNum - _minimum[1], zstride, xstride, ystride );
+		    break;
+		}
+	    }
 	    unsigned i;
 	    double mean;
 	    mean = 0.;
-	    for ( i = 0; i < width * height; i ++ ) mean += (double)original[i  ] / (double)(width*height);
+	    for ( i = 0; i < width * height; i ++ ) mean += (double)pixel[i  ] / (double)(width*height);
 	    mean += _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT;
 	    for ( i = 0; i < width * height; ++i )
 	    {
-	        if ( ( _contrastRate *   ( original[i]   - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean ) > maxvalue ) pixel[i] = (uint16)maxvalue;
-		else if ( ( _contrastRate *   ( original[i]   - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean ) < 0. ) pixel[i] = 0;
-		else pixel[i] = (uint16)( _contrastRate *   ( original[i]   - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean );
+	        if ( ( _contrastRate *   ( pixel[i]   - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean ) > maxvalue ) pixel[i] = (uint16)maxvalue;
+		else if ( ( _contrastRate *   ( pixel[i]   - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean ) < 0. ) pixel[i] = 0;
+		else pixel[i] = (uint16)( _contrastRate *   ( pixel[i]   - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean );
 	    }
 	    glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
 	                  GL_LUMINANCE, GL_UNSIGNED_SHORT, pixel );
@@ -599,8 +693,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	        {
 		    try
 		    {
-		        original = Imaging::Image< int16, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( height, width, depth, stride, stride, stride );
-	                original += ( sliceNum - _minimum[2] ) * height * width;
+		        original = Imaging::Image< int16, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( width, height, depth, xstride, ystride, zstride );
 		    } catch (...) { _ready = false; }
 		    _inPort->ReleaseDatasetLock();
 		    if ( !_ready ) return;
@@ -615,16 +708,36 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	    if ( !_ready ) return;
 
 	    pixel = new int16[ height * width ];
+	    switch ( _sliceOrientation )
+	    {
+	        case xy:
+		{
+	    	    VoxelArrayCopier<int16>::copy( pixel, original, width, height, _sliceNum - _minimum[2], xstride, ystride, zstride );
+		    break;
+		}
+
+		case yz:
+		{
+	            VoxelArrayCopier<int16>::copy( pixel, original, height, depth, _sliceNum - _minimum[0], ystride, zstride, xstride );
+		    break;
+		}
+
+		case zx:
+		{
+	            VoxelArrayCopier<int16>::copy( pixel, original, depth, width, _sliceNum - _minimum[1], zstride, xstride, ystride );
+		    break;
+		}
+	    }
 	    unsigned i;
 	    double mean;
 	    mean = 0.;
-	    for ( i = 0; i < width * height; i ++ ) mean += (double)original[i  ] / (double)(width*height);
+	    for ( i = 0; i < width * height; i ++ ) mean += (double)pixel[i  ] / (double)(width*height);
 	    mean += _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT;
 	    for ( i = 0; i < width * height; ++i )
 	    {
-	        if ( ( _contrastRate *   ( original[i] - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean ) > maxvalue ) pixel[i] = (int16)maxvalue;
-		else if ( ( _contrastRate *   ( original[i] - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean ) < -maxvalue ) pixel[i] = (int16)(-maxvalue);
-		else pixel[i] = (int16)( _contrastRate *   ( original[i] - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean );
+	        if ( ( _contrastRate *   ( pixel[i] - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean ) > maxvalue ) pixel[i] = (int16)maxvalue;
+		else if ( ( _contrastRate *   ( pixel[i] - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean ) < -maxvalue ) pixel[i] = (int16)(-maxvalue);
+		else pixel[i] = (int16)( _contrastRate *   ( pixel[i] - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean );
 	    }
 	    glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
 	                  GL_LUMINANCE, GL_SHORT, pixel );
@@ -1257,6 +1370,35 @@ m4dGUISliceViewerWidget::slotRotateAxisY( double y )
 void
 m4dGUISliceViewerWidget::slotRotateAxisZ( double z )
 {
+}
+
+void
+m4dGUISliceViewerWidget::slotSetSliceOrientation( SliceOrientation so )
+{
+    _sliceOrientation = so;
+    switch ( _sliceOrientation )
+    {
+        case xy:
+	{
+	    if ( _sliceNum >= maximum[2] ) _sliceNum = maximum[2] - 1;
+	    if ( _sliceNum < minimum[2] ) _sliceNum = minimum[2];
+	}
+	break;
+        
+	case yz:
+	{
+	    if ( _sliceNum >= maximum[0] ) _sliceNum = maximum[0] - 1;
+	    if ( _sliceNum < minimum[0] ) _sliceNum = minimum[0];
+	}
+	break;
+        
+	case zx:
+	{
+	    if ( _sliceNum >= maximum[1] ) _sliceNum = maximum[1] - 1;
+	    if ( _sliceNum < minimum[1] ) _sliceNum = minimum[1];
+	}
+	break;
+    }
 }
 
 } /*namespace Viewer*/

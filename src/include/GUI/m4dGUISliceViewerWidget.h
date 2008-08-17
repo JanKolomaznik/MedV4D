@@ -68,6 +68,7 @@ public slots:
     virtual void slotRotateAxisX( double x );
     virtual void slotRotateAxisY( double y );
     virtual void slotRotateAxisZ( double z );
+    virtual void slotSetSliceOrientation( SliceOrientation so );
 
 protected:
     void setButtonHandler( ButtonHandler hnd, MouseButton btn );
@@ -102,6 +103,7 @@ protected:
 private:
 
     void setParameters();
+    void drawPluggedBorder();
     void drawSelectionModeBorder();
     void drawSelectedBorder();
     void drawData( double zoomRate, QPoint offset );
@@ -139,6 +141,7 @@ private:
     SelectMethods				_selectMethods[2];
     bool					_selectionMode[2];
     AvailableSlots				_availableSlots;
+    SliceOrientation				_sliceOrientation;
 };
 
 } /*namespace Viewer*/

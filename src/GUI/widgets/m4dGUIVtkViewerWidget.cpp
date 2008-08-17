@@ -304,5 +304,10 @@ m4dGUIVtkViewerWidget::slotRotateAxisZ( double z )
     _renImageData->GetActiveCamera()->Roll( z );
 }
 
+void
+m4dGUIVtkViewerWidget::slotSetSliceOrientation( SliceOrientation so )
+{
+}
+
 } /* namespace Viewer */
 } /* namespace M4D */

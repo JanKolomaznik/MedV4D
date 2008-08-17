@@ -33,6 +33,7 @@
 #define ROTATEAXISX		23
 #define ROTATEAXISY		24
 #define ROTATEAXISZ		25
+#define SETSLICEORIENTATION	26
 
 namespace M4D
 {
@@ -46,6 +47,7 @@ class m4dGUIAbstractViewerWidget : public QObject, public Imaging::MessageReceiv
 public:
     typedef enum { zoomI, moveI, adjust_bc, switch_slice, new_point, new_shape } ButtonHandler;
     typedef enum { left = 0, right = 1 } MouseButton;
+    typedef enum { xy, yz, zx } SliceOrientation;
 
     typedef std::list< unsigned > AvailableSlots;
 
@@ -104,6 +106,7 @@ public slots:
     virtual void slotRotateAxisX( double x )=0;
     virtual void slotRotateAxisY( double y )=0;
     virtual void slotRotateAxisZ( double z )=0;
+    virtual void slotSetSliceOrientation( SliceOrientation so )=0;
 
 signals:
     void signalSetButtonHandler( unsigned index, ButtonHandler hnd, MouseButton btn );
@@ -132,6 +135,7 @@ signals:
     void signalRotateAxisX( unsigned index, double x );
     void signalRotateAxisY( unsigned index, double y );
     void signalRotateAxisZ( unsigned index, double z );
+    void signalSetSliceOrientation( SliceOrientation so );
 
 };
 
