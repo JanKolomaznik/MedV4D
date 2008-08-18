@@ -218,6 +218,9 @@ public:
 			int32 y2 
 			);
 
+	WriterBBoxInterface &
+	SetWholeDirtyBBox();
+
 	ReaderBBoxInterface::Ptr
 	GetDirtyBBox( 
 			int32 x1, 
@@ -352,6 +355,9 @@ public:
 			int32 y2, 
 			int32 z2 
 			);
+
+	WriterBBoxInterface &
+	SetWholeDirtyBBox();
 
 	ReaderBBoxInterface::Ptr
 	GetDirtyBBox( 
@@ -510,6 +516,9 @@ public:
 			int32 z2,
 			int32 t2
 			);
+
+	WriterBBoxInterface &
+	SetWholeDirtyBBox();
 
 	ReaderBBoxInterface::Ptr
 	GetDirtyBBox( 

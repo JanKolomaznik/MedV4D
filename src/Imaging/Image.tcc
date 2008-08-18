@@ -202,6 +202,19 @@ Image< ElementType, 2 >::SetDirtyBBox(
 }
 
 template< typename ElementType >
+WriterBBoxInterface &
+Image< ElementType, 2 >::SetWholeDirtyBBox()
+{
+
+	return SetDirtyBBox( 
+			GetDimensionExtents(0).minimum,
+			GetDimensionExtents(1).minimum,
+			GetDimensionExtents(0).maximum,
+			GetDimensionExtents(1).maximum
+			);
+}
+
+template< typename ElementType >
 ReaderBBoxInterface::Ptr
 Image< ElementType, 2 >::GetDirtyBBox( 
 		int32 x1, 
@@ -458,6 +471,21 @@ Image< ElementType, 3 >::SetDirtyBBox(
 				x2,
 				y2,
 				z2
+			);
+}
+
+template< typename ElementType >
+WriterBBoxInterface &
+Image< ElementType, 3 >::SetWholeDirtyBBox()
+{
+
+	return SetDirtyBBox( 
+			GetDimensionExtents(0).minimum,
+			GetDimensionExtents(1).minimum,
+			GetDimensionExtents(2).minimum,
+			GetDimensionExtents(0).maximum,
+			GetDimensionExtents(1).maximum,
+			GetDimensionExtents(2).maximum
 			);
 }
 
