@@ -125,6 +125,14 @@ PipelineContainer::AddConnection( ConnectionInterface *connection )
 	_connections.push_back( connection );
 }
 
+void
+PipelineContainer::StopFilters()
+{
+	for( unsigned i = 0; i < _filters.size(); ++i ) {
+		_filters[i]->StopExecution();
+	}
+}
+
 ConnectionInterface &
 PipelineContainer::MakeConnection( M4D::Imaging::OutputPort& outPort, M4D::Imaging::InputPort& inPort )
 {

@@ -27,6 +27,8 @@ public:
 	void
 	AddConnection( ConnectionInterface *connection );
 
+	void
+	StopFilters();
 	/**
 	 * Connect two compatible ports if possible.
 	 * @param outPort Reference to output port of some filter.

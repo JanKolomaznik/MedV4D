@@ -4,6 +4,7 @@
 #include "Common.h"
 #include "Imaging/AbstractImageSliceFilter.h"
 #include <boost/shared_array.hpp>
+#include <map>
 
 namespace M4D
 {
@@ -15,16 +16,18 @@ template< typename InputImageType >
 class MedianFilter2D;
 
 template< typename InputElementType >
-class MedianFilter2D< Image< InputElementType, 2 >
+class MedianFilter2D< Image< InputElementType, 2 > >
 {
 	//TODO
 };
 
-template< typename InputElementType, typename MatrixElement >
-class MedianFilter2D< Image< InputElementType, 3 >, MatrixElement > 
+template< typename InputElementType >
+class MedianFilter2D< Image< InputElementType, 3 > > 
 	: public IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
 {
 public:	
+	typedef IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
+
 	struct Properties : public PredecessorType::Properties
 	{
 		Properties(): PredecessorType::Properties( 0, 10 ), radius( 0 ) {}
@@ -35,7 +38,6 @@ public:
 	MedianFilter2D( Properties * prop );
 	MedianFilter2D();
 protected:
-	typedef typename  Imaging::IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
 
 	bool
 	ProcessSlice(
@@ -48,7 +50,15 @@ protected:
 			int32			slice
 		    );
 private:
+	typedef typename std::map< InputElementType, int >	Histogram;
+
 	GET_PROPERTIES_DEFINITION_MACRO;
+
+	InputElementType
+	GetElementInOrder(
+		Histogram				&histogram,
+		uint32					order
+	      );
 
 };
 

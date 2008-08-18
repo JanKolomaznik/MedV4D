@@ -18,8 +18,8 @@ MedianFilter2D< Image< InputElementType, 3 > >
 
 template< typename InputElementType >
 MedianFilter2D< Image< InputElementType, 3 > >
-::MedianFilter2D( ConvolutionFilter2D< Image< InputElementType, 3 >, MatrixElement >::Properties *prop ) 
-: PredecessorType( prop ), 
+::MedianFilter2D( typename MedianFilter2D< Image< InputElementType, 3 > >::Properties *prop ) 
+: PredecessorType( prop ) 
 {
 
 }
@@ -37,26 +37,62 @@ MedianFilter2D< Image< InputElementType, 3 > >
 			int32			slice
 		    )
 {
-	uint32 radius = GetProperties().radius;
-	for( int32 j = y1 + radius; j < y2 - radius; ++j ) {
-		for( int32 i = x1 + radius; i < x2 - radius; ++i ) {
+	if( !this->CanContinue() ) {
+		return false;
+	}
+
+	int radius = GetProperties().radius;
+	int medianOrder = ((2*radius+1) * (2*radius+1)) / 2;
+
+	/*for( int j = y1 + radius; j < (y2 - radius); ++j ) {
+		for( int i = x1 + radius; i < (x2 - radius); ++i ) {
 			out.GetElement( i, j, slice ) = GetMedian( radius, in, i, j, slice );
 		}
+	}*/
+
+
+	std::map< InputElementType, int > histogram;
+	for( int j = y1 + radius; j < (y2 - radius); ++j ) {
+		//initialize histogram
+		histogram.clear();
+		for( int l = j-radius; l <= j+radius; ++l ){
+			for( int k = x1; k <= x1+(2*radius)+1; ++k ){
+				++(histogram[ in.GetElement( k, l, slice ) ]);
+			}
+		}
+		out.GetElement( x1 + radius, j, slice ) = GetElementInOrder( histogram, medianOrder );
+
+
+		for( int i = x1 + radius + 1; i < (x2 - radius); ++i ) {
+			for( int k = -radius; k <= radius; ++k ){
+				--(histogram[ in.GetElement( i-(radius+1), j + k, slice ) ]);
+				++(histogram[ in.GetElement( i+radius, j + k, slice ) ]);
+				out.GetElement( i, j, slice ) = GetElementInOrder( histogram, medianOrder );
+			}
+		}
 	}
+	return true;
 }
 
 template< typename InputElementType >
 InputElementType
 MedianFilter2D< Image< InputElementType, 3 > >
-::ProcessSlice(
-		uint32					radius,
-		const Image< InputElementType, 3 > 	&in,
-		int32					x,
-		int32					y,
-		int32					slice
+::GetElementInOrder(
+		MedianFilter2D< Image< InputElementType, 3 > >::Histogram	&histogram,
+		uint32								order
 	      )
 {
-	return in.GetElement( x, y, slice );
+	uint32 count = 0;
+	typename Histogram::iterator it = histogram.begin();
+
+	while( it != histogram.end() && count < order ) {
+		count += it->second;
+		++it;
+	}
+	if( it !=histogram.end() ) {
+		return it->first;
+	}
+	return (InputElementType)0;
 }
 
 //******************************************************************************
