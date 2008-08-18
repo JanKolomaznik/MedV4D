@@ -234,6 +234,19 @@ Image< ElementType, 2 >::GetDirtyBBox(
 }
 
 template< typename ElementType >
+ReaderBBoxInterface::Ptr
+Image< ElementType, 2 >::GetWholeDirtyBBox()const
+{
+
+	return GetDirtyBBox( 
+			GetDimensionExtents(0).minimum,
+			GetDimensionExtents(1).minimum,
+			GetDimensionExtents(0).maximum,
+			GetDimensionExtents(1).maximum
+			);
+}
+
+template< typename ElementType >
 const ModificationManager &
 Image< ElementType, 2 >::GetModificationManager()const
 {
@@ -509,6 +522,21 @@ Image< ElementType, 3 >::GetDirtyBBox(
 				x2,
 				y2,
 				z2
+			);
+}
+
+template< typename ElementType >
+ReaderBBoxInterface::Ptr
+Image< ElementType, 3 >::GetWholeDirtyBBox()const
+{
+
+	return GetDirtyBBox( 
+			GetDimensionExtents(0).minimum,
+			GetDimensionExtents(1).minimum,
+			GetDimensionExtents(2).minimum,
+			GetDimensionExtents(0).maximum,
+			GetDimensionExtents(1).maximum,
+			GetDimensionExtents(2).maximum
 			);
 }
 

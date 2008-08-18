@@ -42,11 +42,11 @@ protected:
 	WriterBBoxInterface		*_writerBBox;
 
 private:
-	ReaderBBoxInterface::Ptr
+	/*ReaderBBoxInterface::Ptr
 	ApplyReaderBBox( const InputImageType &in );
 
 	WriterBBoxInterface &
-	ApplyWriterBBox( OutputImageType &out );
+	ApplyWriterBBox( OutputImageType &out );*/
 
 };
 

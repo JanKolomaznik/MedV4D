@@ -20,6 +20,7 @@ bool
 AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
 ::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
 {
+	D_BLOCK_COMMENT( "++++ Entering ExecutionThreadMethod() - AbstractImageFilterWholeAtOnce", "----- Leaving MainExecutionThread() - AbstractImageFilterWholeAtOnce" );
 	if ( !( _readerBBox->WaitWhileDirty() == MS_MODIFIED ) ) {
 		_writerBBox->SetState( MS_CANCELED );
 		return false;
@@ -44,8 +45,8 @@ AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
 	//This kind of filter computes always on whole dataset
 	utype = AbstractPipeFilter::RECALCULATION;
 
-	_readerBBox = ApplyReaderBBox( *(this->in) );
-	_writerBBox = &(ApplyWriterBBox( *(this->out) ) );
+	_readerBBox = this->in->GetWholeDirtyBBox(); //ApplyReaderBBox( *(this->in) );
+	_writerBBox = &(this->out->SetWholeDirtyBBox()); //&(ApplyWriterBBox( *(this->out) ) );
 	
 }
 
@@ -60,7 +61,7 @@ AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
 	PredecessorType::AfterComputation( successful );
 }
 //*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-template< typename ElementType, unsigned dim >
+/*template< typename ElementType, unsigned dim >
 ReaderBBoxInterface::Ptr
 ApplyReaderBBox( const Image< ElementType, dim > &in );
 
@@ -150,9 +151,9 @@ ApplyWriterBBoxFunc( Image< ElementType, 4 > &out )
 				out.GetDimensionExtents( 2 ).maximum,
 				out.GetDimensionExtents( 3 ).maximum
 			);
-}
+}*/
 //*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-template< typename InputImageType, typename OutputImageType >
+/*template< typename InputImageType, typename OutputImageType >
 ReaderBBoxInterface::Ptr
 AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
 ::ApplyReaderBBox( const InputImageType &in )
@@ -166,7 +167,7 @@ AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
 ::ApplyWriterBBox( OutputImageType &out )
 {
 	return ApplyWriterBBoxFunc< OutputImageType::Element, OutputImageType::Dimension >( out );
-}
+}*/
 
 //*****************************************************************************
 //*****************************************************************************

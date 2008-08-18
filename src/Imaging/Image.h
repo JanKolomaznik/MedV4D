@@ -58,6 +58,9 @@ public:
 	virtual WriterBBoxInterface &
 	SetWholeDirtyBBox() = 0;
 
+	virtual ReaderBBoxInterface::Ptr 
+	GetWholeDirtyBBox()const = 0;
+
 	virtual const ModificationManager &
 	GetModificationManager()const = 0;
 protected:
@@ -232,6 +235,9 @@ public:
 			int32 y2 
 			)const;
 
+	ReaderBBoxInterface::Ptr 
+	GetWholeDirtyBBox()const;
+
 	const ModificationManager &
 	GetModificationManager()const;
 
@@ -371,6 +377,9 @@ public:
 			int32 y2, 
 			int32 z2 
 			)const;
+
+	ReaderBBoxInterface::Ptr 
+	GetWholeDirtyBBox()const;
 
 
 	const ModificationManager &
