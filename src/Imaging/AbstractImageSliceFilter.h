@@ -99,6 +99,20 @@ protected:
 			int32					slice
 		    ) = 0;
 
+	/*bool
+	ProcessSlice(
+			const Image< InputElementType, 3 > 	&in,
+			OutputImageType				&out,
+			const InputElementType			*inPointer,
+			int32					xStride1,
+			int32					yStride1,
+			int32					zStride2,
+			OutputElementType			*outPointer,
+			int32					xStride2,
+			int32					yStride2,
+			int32					zStride2
+		    ) = 0;*/
+
 	virtual WriterBBoxInterface &
 	GetComputationGroupWriterBBox( SliceComputationRecord & record ) = 0;
 

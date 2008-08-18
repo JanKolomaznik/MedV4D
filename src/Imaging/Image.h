@@ -54,6 +54,9 @@ public:
 	 **/
 	virtual int
 	GetElementTypeID()const=0;
+
+	virtual const ModificationManager &
+	GetModificationManager()const = 0;
 protected:
 	unsigned		_dimCount;
 	DimensionExtents	*_dimensionExtents;

@@ -11,7 +11,6 @@ namespace Imaging
 {
 
 
-
 Pipeline::Pipeline()
 {
 		//TODO

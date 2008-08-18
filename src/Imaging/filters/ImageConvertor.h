@@ -17,9 +17,9 @@ public:
 
 	template< typename InputType, typename OutputType >
 	static void
-	operator()( const InputType &input, OutputType &output )
+	Convert( const InputType &input, OutputType &output )
 		{
-			output = (OutputType)input;
+			output = static_cast<OutputType>(input);
 		}
 };
 
@@ -29,7 +29,6 @@ class ImageConvertor
 {
 public:
 	typedef AbstractImageFilter< AbstractImage, OutputImageType > 	PredecessorType;
-	typedef ImagePort< OutputImageType > 				OutputPortType;
 
 	class EDatasetConversionImpossible
 	{
