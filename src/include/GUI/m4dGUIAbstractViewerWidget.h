@@ -47,7 +47,7 @@ class m4dGUIAbstractViewerWidget : public QObject, public Imaging::MessageReceiv
 public:
     typedef enum { zoomI, moveI, adjust_bc, switch_slice, new_point, new_shape } ButtonHandler;
     typedef enum { left = 0, right = 1 } MouseButton;
-    typedef enum { xy, yz, zx } SliceOrientation;
+    typedef enum { xy = 0, yz = 1, zx = 2 } SliceOrientation;
 
     typedef std::list< unsigned > AvailableSlots;
 

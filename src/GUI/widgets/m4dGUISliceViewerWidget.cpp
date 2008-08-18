@@ -8,7 +8,7 @@
 
 #define FONT_WIDTH				8
 #define FONT_HEIGHT				16
-#define BRIGHTNESS_MULTIPLICATOR_16_BIT		16
+#define BRIGHTNESS_MULTIPLICATOR		16
 
 namespace M4D
 {
@@ -22,12 +22,99 @@ public:
     static void copy( ElementType* dst, ElementType* src, uint32 width, uint32 height, uint32 depth, int32 xstride, int32 ystride, int32 zstride )
     {
         uint32 i;
-	for ( i = 0; i < width * height; i++ ) dst[i] = src[ ( i % width ) * xstride + ( i / width ) * ystride + depth * zstride ];
+	for ( i = 0; i < height * width; i++ )  dst[ i ] = src[ ( i % width ) * xstride + ( i / width ) * ystride + depth * zstride ];
     }
 private:
     VoxelArrayCopier();
     VoxelArrayCopier( const VoxelArrayCopier& );
     const VoxelArrayCopier& operator=( const VoxelArrayCopier& );
+};
+
+template< typename ElementType >
+class TexturePreparer
+{
+public:
+    static bool prepare( Imaging::InputPortAbstractImage* inPort, uint32& width, uint32& height, GLint brightnessRate, GLfloat contrastRate, m4dGUIAbstractViewerWidget::SliceOrientation so, uint32 slice )
+    {
+        uint32 depth;
+        double maxvalue;
+	bool unsgn;
+	if ( typeid( ElementType ) == typeid( uint8 ) || typeid( ElementType ) == typeid( uint16 ) || typeid( ElementType ) == typeid( uint32 ) || typeid( ElementType ) == typeid( uint64 ) )
+	{
+	    maxvalue = pow( 256, sizeof( ElementType ) ) - 1;
+	    unsgn = true;
+	}
+	else
+	{
+	    maxvalue = (int)( pow( 256, sizeof( ElementType ) ) / 2 - 1 );
+	    unsgn = false;
+	}
+	double multiplicator = pow( BRIGHTNESS_MULTIPLICATOR, sizeof( ElementType ) - 1 );
+        int32 xstride, ystride, zstride;
+        bool ready = true;
+	ElementType* pixel, *original;
+	try
+	{
+	    if ( inPort->TryLockDataset() )
+	    {
+		try
+		{
+		    switch ( so )
+		    {
+			case m4dGUIAbstractViewerWidget::xy:
+			{
+		            original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetAbstractImage()).GetPointer( width, height, depth, xstride, ystride, zstride );
+			    break;
+			}
+
+			case m4dGUIAbstractViewerWidget::yz:
+			{
+		            original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetAbstractImage()).GetPointer( depth, width, height, zstride, xstride, ystride );
+			    break;
+			}
+
+			case m4dGUIAbstractViewerWidget::zx:
+			{
+		            original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetAbstractImage()).GetPointer( height, depth, width, ystride, zstride, xstride );
+			    break;
+			}
+		    }
+		} catch (...) { ready = false; }
+		inPort->ReleaseDatasetLock();
+		if ( !ready ) return ready;
+	    }
+	    else
+	    {
+	        ready = false;
+		return ready;
+	    }
+	}
+	catch (...) { ready = false; }
+	if ( !ready ) return ready;
+
+	pixel = new ElementType[ height * width ];
+	VoxelArrayCopier<ElementType>::copy( pixel, original, width, height, slice, xstride, ystride, zstride );
+	unsigned i;
+	double mean;
+	mean = 0.;
+	for ( i = 0; i < width * height; i++ ) mean += (double)pixel[i] / (double)(width*height);
+	mean += brightnessRate * multiplicator;
+	for ( i = 0; i < width * height; ++i )
+	{
+	    if ( ( contrastRate *   ( pixel[i]- mean + brightnessRate * multiplicator ) + mean ) > maxvalue ) pixel[i] = (ElementType)maxvalue;
+	    else if ( ( contrastRate *   ( pixel[i] - mean + brightnessRate * multiplicator ) + mean ) < ( unsgn ? 0 : -maxvalue ) ) pixel[i] = ( unsgn ? 0 : (ElementType)(-maxvalue) );
+	    else pixel[i] = (ElementType)( contrastRate *   ( pixel[i] - mean + brightnessRate * multiplicator ) + mean );
+	}
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
+	              GL_LUMINANCE, GL_SHORT, pixel );
+	delete[] pixel;
+	return ready;
+    }
+private:
+    TexturePreparer();
+    TexturePreparer( const TexturePreparer& );
+    const TexturePreparer& operator=( const TexturePreparer& );
+	    
 };
 
 m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( unsigned index, QWidget *parent)
@@ -37,7 +124,7 @@ m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( unsigned index, QWidget *paren
     _inPort = new Imaging::InputPortAbstractImage();
     _inputPorts.AddPort( _inPort );
     _selected = false;
-    _sliceOrientation = yz;
+    _sliceOrientation = xy;
     setInputPort( );
 }
 
@@ -48,7 +135,7 @@ m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( Imaging::ConnectionInterface* 
     _inPort = new Imaging::InputPortAbstractImage();
     _inputPorts.AddPort( _inPort );
     _selected = false;
-    _sliceOrientation = yz;
+    _sliceOrientation = xy;
     setInputPort( conn );
 }
 
@@ -72,6 +159,7 @@ m4dGUISliceViewerWidget::setInputPort( )
 {
     _inPort->UnPlug();
     setParameters();
+    resizeGL( width(), height() );
     updateGL();
 }
 
@@ -80,6 +168,7 @@ m4dGUISliceViewerWidget::setInputPort( Imaging::ConnectionInterface* conn )
 {
     conn->ConnectConsumer( *_inPort );
     setParameters();
+    resizeGL( width(), height() );
     updateGL();
 }
 
@@ -96,13 +185,13 @@ m4dGUISliceViewerWidget::setParameters()
                 try
 	        {
         	    _imageID = _inPort->GetAbstractImage().GetElementTypeID();
-		    _minimum[0] = _inPort->GetAbstractImage().GetDimensionExtents(0).minimum;
-		    _minimum[1] = _inPort->GetAbstractImage().GetDimensionExtents(1).minimum;
-		    _minimum[2] = _inPort->GetAbstractImage().GetDimensionExtents(2).minimum;
-		    _maximum[0] = _inPort->GetAbstractImage().GetDimensionExtents(0).maximum;
-		    _maximum[1] = _inPort->GetAbstractImage().GetDimensionExtents(1).maximum;
-		    _maximum[2] = _inPort->GetAbstractImage().GetDimensionExtents(2).maximum;
-	            _sliceNum = _inPort->GetAbstractImage().GetDimensionExtents(2).minimum;
+		    _minimum[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).minimum;
+		    _minimum[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).minimum;
+		    _minimum[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).minimum;
+		    _maximum[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).maximum;
+		    _maximum[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).maximum;
+		    _maximum[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).maximum;
+	            _sliceNum = _minimum[ ( _sliceOrientation + 2 ) % 3 ];
 		}
 		catch (...) { _ready = false; }
 	        _inPort->ReleaseDatasetLock();
@@ -174,7 +263,8 @@ m4dGUISliceViewerWidget::ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imag
 	case Imaging::PMI_PORT_PLUGGED:
 	{
 	    setParameters();
-	    updateGL();
+    	    resizeGL( width(), height() );
+    	    updateGL();
 	}
 	break;
 
@@ -190,13 +280,13 @@ m4dGUISliceViewerWidget::ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imag
 		        try
 			{
         		    _imageID = _inPort->GetAbstractImage().GetElementTypeID();
-		    	    _minimum[0] = _inPort->GetAbstractImage().GetDimensionExtents(0).minimum;
-		    	    _minimum[1] = _inPort->GetAbstractImage().GetDimensionExtents(1).minimum;
-		    	    _minimum[2] = _inPort->GetAbstractImage().GetDimensionExtents(2).minimum;
-		    	    _maximum[0] = _inPort->GetAbstractImage().GetDimensionExtents(0).maximum;
-		    	    _maximum[1] = _inPort->GetAbstractImage().GetDimensionExtents(1).maximum;
-		    	    _maximum[2] = _inPort->GetAbstractImage().GetDimensionExtents(2).maximum;
-			    _sliceNum = _inPort->GetAbstractImage().GetDimensionExtents(2).minimum;
+		    	    _minimum[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).minimum;
+		    	    _minimum[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).minimum;
+		    	    _minimum[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).minimum;
+		    	    _maximum[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).maximum;
+		    	    _maximum[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).maximum;
+		    	    _maximum[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).maximum;
+			    _sliceNum = _minimum[ ( _sliceOrientation + 2 ) % 3 ];
 			}
 			catch (...) { _ready = false; }
 		        _inPort->ReleaseDatasetLock();
@@ -205,7 +295,8 @@ m4dGUISliceViewerWidget::ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imag
 		}
 		catch (...) { _ready = false; }
 	    }
-	    updateGL();
+    	    resizeGL( width(), height() );
+    	    updateGL();
 	}
 	break;
 	
@@ -359,8 +450,8 @@ m4dGUISliceViewerWidget::paintGL()
     {
         unsigned i;
 	double w, h;
-	w = (double)_maximum[0] - _minimum[0],
-        h = (double)_maximum[1] - _minimum[1];
+	w = (double)_maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ],
+        h = (double)_maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ];
         if ( _oneSliceMode )
 	{
 	    QPoint offset;
@@ -384,22 +475,20 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
     if ( !_ready ) return;
     if ( !_inPort->IsPlugged() ) return;
     int w, h;
-    if ( sliceNum < (int)_minimum[2] ||
-         sliceNum >= (int)_maximum[2] )
+    if ( sliceNum < (int)_minimum[ ( _sliceOrientation + 2 ) % 3 ] ||
+         sliceNum >= (int)_maximum[ ( _sliceOrientation + 2 ) % 3 ] )
     {
         return;
     }
     else
     {
-        w = (int)_maximum[0] - _minimum[0],
-        h = (int)_maximum[1] - _minimum[1];
+        w = (int)_maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ],
+        h = (int)_maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ];
     }
     glLoadIdentity();
     if ( _flipH < 0 ) offset.setX( offset.x() + (int)( zoomRate * w ) );
     if ( _flipV < 0 ) offset.setY( offset.y() + (int)( zoomRate * h ) );
-    uint32 height, width, depth;
-    double maxvalue;
-    int32 xstride, ystride, zstride;
+    uint32 height, width;
     GLuint texName;
 
     glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
@@ -415,341 +504,10 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 
     glTranslatef( offset.x(), offset.y(), 0 );
     glScalef( _flipH * zoomRate, _flipV * zoomRate, 0. );
-    switch ( _imageID )
-    {
-        case NTID_UINT_32:
-	{
-	    maxvalue = 255.;
-	    uint8* pixel, *original;
-	    try
-	    {
-	        if ( _inPort->TryLockDataset() )
-	        {
-		    try
-		    {
-		         original = (uint8*)Imaging::Image< uint32, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( width, height, depth, xstride, ystride, zstride );
-		    }
-		    catch (...) { _ready = false; }
-		    _inPort->ReleaseDatasetLock();
-		    if ( !_ready ) return;
-	        }
-	        else
-	        {
-	            _ready = false;
-		    return;
-	        }
-	    }
-	    catch (...) { _ready = false; }
-	    if ( !_ready ) return;
-
-	    pixel = new uint8[ height * width * 4 ];
-	    switch ( _sliceOrientation )
-	    {
-	        case xy:
-		{
-	    	    VoxelArrayCopier<uint32>::copy( (uint32*)pixel, (uint32*)original, width, height, _sliceNum - _minimum[2], xstride, ystride, zstride );
-		    break;
-		}
-
-		case yz:
-		{
-	            VoxelArrayCopier<uint32>::copy( (uint32*)pixel, (uint32*)original, height, depth, _sliceNum - _minimum[0], ystride, zstride, xstride );
-		    break;
-		}
-
-		case zx:
-		{
-	            VoxelArrayCopier<uint32>::copy( (uint32*)pixel, (uint32*)original, depth, width, _sliceNum - _minimum[1], zstride, xstride, ystride );
-		    break;
-		}
-	    }
-	    unsigned i;
-	    double mean[3];
-	    mean[0] = mean[1] = mean[2] = 0.;
-	    for ( i = 0; i < width * height * 4; i += 4 )
-	    {
-	        mean[0] += (double)pixel[i  ] / (double)(width*height);
-	        mean[1] += (double)pixel[i+1] / (double)(width*height);
-	        mean[2] += (double)pixel[i+2] / (double)(width*height);
-	    }
-	    mean[0] += _brightnessRate;
-	    mean[1] += _brightnessRate;
-	    mean[2] += _brightnessRate;
-	    for ( i = 0; i < width * height * 4; i += 4 )
-	    {
-	        if ( ( _contrastRate *   ( pixel[i]   - mean[0] + _brightnessRate ) + mean[0] ) > maxvalue ) pixel[i] = (uint8)maxvalue;
-		else if ( ( _contrastRate *   ( pixel[i]   - mean[0] + _brightnessRate ) + mean[0] ) < 0. ) pixel[i] = 0;
-		else pixel[i] = (uint8)( _contrastRate *   ( pixel[i]   - mean[0] + _brightnessRate ) + mean[0] );
-	        if ( ( _contrastRate *   ( pixel[i+1]   - mean[1] + _brightnessRate ) + mean[1] ) > maxvalue ) pixel[i+1] = (uint8)maxvalue;
-		else if ( ( _contrastRate *   ( pixel[i+1]   - mean[1] + _brightnessRate ) + mean[1] ) < 0. ) pixel[i+1] = 0;
-		else pixel[i+1] = (uint8)( _contrastRate *   ( pixel[i+1]   - mean[1] + _brightnessRate ) + mean[1] );
-	        if ( ( _contrastRate *   ( pixel[i+2]   - mean[2] + _brightnessRate ) + mean[2] ) > maxvalue ) pixel[i+2] = (uint8)maxvalue;
-		else if ( ( _contrastRate *   ( pixel[i+2]   - mean[2] + _brightnessRate ) + mean[2] ) < 0. ) pixel[i+2] = 0;
-		else pixel[i+2] = (uint8)( _contrastRate *   ( pixel[i+2]   - mean[2] + _brightnessRate ) + mean[2] );
-		pixel[i+3] = pixel[i+3];
-	    }
-	    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
-	                  GL_RGBA, GL_UNSIGNED_BYTE, pixel );
-	    delete[] pixel;
-	    
-	}
-	break;
-
-        case NTID_INT_8:
-	{    
-	    maxvalue = 127.;
-	    int8* pixel, *original;
-	    try
-	    {
-	        if ( _inPort->TryLockDataset() )
-	        {
-		    try
-		    {
-		        original = Imaging::Image< int8, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( width, height, depth, xstride, ystride, zstride );
-		    } catch (...) { _ready = false; }
-		    _inPort->ReleaseDatasetLock();
-		    if ( !_ready ) return;
-	        }
-	        else
-	        {
-	            _ready = false;
-		    return;
-	        }
-	    }
-	    catch (...) { _ready = false; }
-	    if ( !_ready ) return;
-
-	    pixel = new int8[ height * width ];
-	    switch ( _sliceOrientation )
-	    {
-	        case xy:
-		{
-	    	    VoxelArrayCopier<int8>::copy( pixel, original, width, height, _sliceNum - _minimum[2], xstride, ystride, zstride );
-		    break;
-		}
-
-		case yz:
-		{
-	            VoxelArrayCopier<int8>::copy( pixel, original, height, depth, _sliceNum - _minimum[0], ystride, zstride, xstride );
-		    break;
-		}
-
-		case zx:
-		{
-	            VoxelArrayCopier<int8>::copy( pixel, original, depth, width, _sliceNum - _minimum[1], zstride, xstride, ystride );
-		    break;
-		}
-	    }
-	    unsigned i;
-	    double mean;
-	    mean = 0.;
-	    for ( i = 0; i < width * height; i ++ ) mean += (double)pixel[i  ] / (double)(width*height);
-	    mean += _brightnessRate;
-	    for ( i = 0; i < width * height; ++i )
-	    {
-	        if ( ( _contrastRate *   ( pixel[i]- mean + _brightnessRate ) + mean ) > maxvalue ) pixel[i] = (int8)maxvalue;
-		else if ( ( _contrastRate *   ( pixel[i] - mean + _brightnessRate ) + mean ) < -maxvalue ) pixel[i] = (int8)(-maxvalue);
-		else pixel[i] = (uint8)( _contrastRate *   ( pixel[i] - mean + _brightnessRate ) + mean );
-	    }
-	    glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
-	                  GL_LUMINANCE, GL_UNSIGNED_BYTE, pixel );
-	    delete[] pixel;
-	    
-	}
-	break;
-
-        case NTID_UINT_8:
-	{    
-	    maxvalue = 255.;
-	    uint8* pixel, *original;
-	    try
-	    {
-	        if ( _inPort->TryLockDataset() )
-	        {
-		    try
-		    {
-		        original = Imaging::Image< uint8, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( width, height, depth, xstride, ystride, zstride );
-		    } catch (...) { _ready = false; }
-		    _inPort->ReleaseDatasetLock();
-		    if ( !_ready ) return;
-	        }
-	        else
-	        {
-	            _ready = false;
-		    return;
-	        }
-	    }
-	    catch (...) { _ready = false; }
-	    if ( !_ready ) return;
-
-	    pixel = new uint8[ height * width ];
-	    switch ( _sliceOrientation )
-	    {
-	        case xy:
-		{
-	    	    VoxelArrayCopier<uint8>::copy( pixel, original, width, height, _sliceNum - _minimum[2], xstride, ystride, zstride );
-		    break;
-		}
-
-		case yz:
-		{
-	            VoxelArrayCopier<uint8>::copy( pixel, original, height, depth, _sliceNum - _minimum[0], ystride, zstride, xstride );
-		    break;
-		}
-
-		case zx:
-		{
-	            VoxelArrayCopier<uint8>::copy( pixel, original, depth, width, _sliceNum - _minimum[1], zstride, xstride, ystride );
-		    break;
-		}
-	    }
-	    unsigned i;
-	    double mean;
-	    mean = 0.;
-	    for ( i = 0; i < width * height; i ++ ) mean += (double)pixel[i  ] / (double)(width*height);
-	    mean += _brightnessRate;
-	    for ( i = 0; i < width * height; ++i )
-	    {
-	        if ( ( _contrastRate *   ( pixel[i]   - mean + _brightnessRate ) + mean ) > maxvalue ) pixel[i] = (uint8)maxvalue;
-		else if ( ( _contrastRate *   ( pixel[i]   - mean + _brightnessRate ) + mean ) < 0. ) pixel[i] = 0;
-		else pixel[i] = (uint8)( _contrastRate *   ( pixel[i]   - mean + _brightnessRate ) + mean );
-	    }
-	    glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
-	                  GL_LUMINANCE, GL_UNSIGNED_BYTE, pixel );
-	    delete[] pixel;
-	    
-	}
-	break;
-
-        case NTID_UINT_16:
-	{
-	    maxvalue = 65535.;
-	    uint16* pixel, *original;
-	    try
-	    {
-	        if ( _inPort->TryLockDataset() )
-	        {
-		    try
-		    {
-		        original = Imaging::Image< uint16, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( width, height, depth, xstride, ystride, zstride );
-		    } catch (...) { _ready = false; }
-		    _inPort->ReleaseDatasetLock();
-		    if ( !_ready ) return;
-	        }
-	        else
-	        {
-	            _ready = false;
-		    return;
-	        }
-	    }
-	    catch (...) { _ready = false; }
-	    if ( !_ready ) return;
-
-	    pixel = new uint16[ height * width ];
-	    switch ( _sliceOrientation )
-	    {
-	        case xy:
-		{
-	    	    VoxelArrayCopier<uint16>::copy( pixel, original, width, height, _sliceNum - _minimum[2], xstride, ystride, zstride );
-		    break;
-		}
-
-		case yz:
-		{
-	            VoxelArrayCopier<uint16>::copy( pixel, original, height, depth, _sliceNum - _minimum[0], ystride, zstride, xstride );
-		    break;
-		}
-
-		case zx:
-		{
-	            VoxelArrayCopier<uint16>::copy( pixel, original, depth, width, _sliceNum - _minimum[1], zstride, xstride, ystride );
-		    break;
-		}
-	    }
-	    unsigned i;
-	    double mean;
-	    mean = 0.;
-	    for ( i = 0; i < width * height; i ++ ) mean += (double)pixel[i  ] / (double)(width*height);
-	    mean += _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT;
-	    for ( i = 0; i < width * height; ++i )
-	    {
-	        if ( ( _contrastRate *   ( pixel[i]   - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean ) > maxvalue ) pixel[i] = (uint16)maxvalue;
-		else if ( ( _contrastRate *   ( pixel[i]   - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean ) < 0. ) pixel[i] = 0;
-		else pixel[i] = (uint16)( _contrastRate *   ( pixel[i]   - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean );
-	    }
-	    glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
-	                  GL_LUMINANCE, GL_UNSIGNED_SHORT, pixel );
-	    delete[] pixel;
-	    
-	}
-	break;
-        case NTID_INT_16:
-	{
-	    maxvalue = 32767.;
-	    int16* pixel, *original;
-	    try
-	    {
-	        if ( _inPort->TryLockDataset() )
-	        {
-		    try
-		    {
-		        original = Imaging::Image< int16, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetPointer( width, height, depth, xstride, ystride, zstride );
-		    } catch (...) { _ready = false; }
-		    _inPort->ReleaseDatasetLock();
-		    if ( !_ready ) return;
-	        }
-	        else
-	        {
-	            _ready = false;
-		    return;
-	        }
-	    }
-	    catch (...) { _ready = false; }
-	    if ( !_ready ) return;
-
-	    pixel = new int16[ height * width ];
-	    switch ( _sliceOrientation )
-	    {
-	        case xy:
-		{
-	    	    VoxelArrayCopier<int16>::copy( pixel, original, width, height, _sliceNum - _minimum[2], xstride, ystride, zstride );
-		    break;
-		}
-
-		case yz:
-		{
-	            VoxelArrayCopier<int16>::copy( pixel, original, height, depth, _sliceNum - _minimum[0], ystride, zstride, xstride );
-		    break;
-		}
-
-		case zx:
-		{
-	            VoxelArrayCopier<int16>::copy( pixel, original, depth, width, _sliceNum - _minimum[1], zstride, xstride, ystride );
-		    break;
-		}
-	    }
-	    unsigned i;
-	    double mean;
-	    mean = 0.;
-	    for ( i = 0; i < width * height; i ++ ) mean += (double)pixel[i  ] / (double)(width*height);
-	    mean += _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT;
-	    for ( i = 0; i < width * height; ++i )
-	    {
-	        if ( ( _contrastRate *   ( pixel[i] - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean ) > maxvalue ) pixel[i] = (int16)maxvalue;
-		else if ( ( _contrastRate *   ( pixel[i] - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean ) < -maxvalue ) pixel[i] = (int16)(-maxvalue);
-		else pixel[i] = (int16)( _contrastRate *   ( pixel[i] - mean + _brightnessRate * BRIGHTNESS_MULTIPLICATOR_16_BIT ) + mean );
-	    }
-	    glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
-	                  GL_LUMINANCE, GL_SHORT, pixel );
-	    delete[] pixel;
-	    
-	}
-	break;
-
-	default:
-	break;
-
-    }
+    
+    INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
+    	_imageID, _ready = TexturePreparer<TTYPE>::prepare( _inPort, width, height, _brightnessRate, _contrastRate, _sliceOrientation, _sliceNum - _minimum[ ( _sliceOrientation + 2 ) % 3 ]) )
+    
     glEnable( GL_TEXTURE_2D );
     glBindTexture( GL_TEXTURE_2D, texName );
 
@@ -916,8 +674,8 @@ m4dGUISliceViewerWidget::drawData( double zoomRate, QPoint offset )
     glColor3f( 1., 1., 1. );
     std::map< std::string, std::string >::iterator it;
     int w, h;
-    w = (int)(_maximum[0] - _minimum[0]),
-    h = (int)(_maximum[1] - _minimum[1]);
+    w = (int)(_maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ]),
+    h = (int)(_maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ]);
     int i, o_x, o_y, w_o;
     if ( _oneSliceMode )
     {
@@ -988,8 +746,8 @@ m4dGUISliceViewerWidget::resizeGL(int winW, int winH)
     if ( _inPort->IsPlugged() )
     {
         int w, h;
-	w = (int)(_maximum[0] - _minimum[0]),
-    	h = (int)(_maximum[1] - _minimum[1]);
+	w = (int)(_maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ]),
+    	h = (int)(_maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ]);
         if ( (double)width() / (double)w < (double)height() / (double)h ) _zoomRate = (double)width() / (double)w;
 	else _zoomRate = (double)height() / (double)h;
     }
@@ -1013,8 +771,8 @@ m4dGUISliceViewerWidget::mousePressEvent(QMouseEvent *event)
     _lastPos = event->pos();
     int w, h;
     QPoint offset;
-    w = (int)(_maximum[0] - _minimum[0]),
-    h = (int)(_maximum[1] - _minimum[1]);
+    w = (int)(_maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ]),
+    h = (int)(_maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ]);
     offset.setX( (int)floor( (double)_offset.x() - ( _zoomRate - (double)width()/w ) * 0.5 * w ) );
     offset.setY( (int)floor( (double)_offset.y() - ( _zoomRate - (double)height()/h ) * 0.5 * h ) );
     if ( ( event->buttons() & Qt::LeftButton ) && _selectionMode[ left ] )
@@ -1110,8 +868,8 @@ void
 m4dGUISliceViewerWidget::setSliceNum( size_t num )
 {
     if ( !_inPort->IsPlugged() ) return;
-        if ( num < _minimum[2] ||
-             num >= _maximum[2] )
+        if ( num < _minimum[ ( _sliceOrientation + 2 ) % 3 ] ||
+             num >= _maximum[ ( _sliceOrientation + 2 ) % 3 ] )
         {
             throw ErrorHandling::ExceptionBase( "Index out of bounds." );
         }
@@ -1142,11 +900,11 @@ m4dGUISliceViewerWidget::newPoint( int x, int y, int z )
     if ( _shapes.empty() ) newShape( x, y, z );
     else
     {
-	if ( _flipH < 0 ) x = - ( x - (int)( _maximum[0] - _minimum[0] ));
-        if ( _flipV < 0 ) y = - ( y - (int)( _maximum[1] - _minimum[1] ));
+	if ( _flipH < 0 ) x = - ( x - (int)( _maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ] ));
+        if ( _flipV < 0 ) y = - ( y - (int)( _maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ] ));
         if ( x < 0 || y < 0 ||
-             x >= (int)( _maximum[0] - _minimum[0] ) ||
-             y >= (int)( _maximum[1] - _minimum[1] ) )
+             x >= (int)( _maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ] ) ||
+             y >= (int)( _maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ] ) )
 	{
 	    return;
 	}
@@ -1168,8 +926,8 @@ m4dGUISliceViewerWidget::newShape( int x, int y, int z )
 {
     if ( !_inPort->IsPlugged() ) return;
     if ( x < 0 || y < 0 ||
-         x >= (int)( _maximum[0] - _minimum[0] ) ||
-         y >= (int)( _maximum[1] - _minimum[1] ) )
+         x >= (int)( _maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ] ) ||
+         y >= (int)( _maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ] ) )
     {
         return;
     }
@@ -1177,8 +935,8 @@ m4dGUISliceViewerWidget::newShape( int x, int y, int z )
     Selection::m4dShape<int> s( 3 );
     _shapes.push_back( s );
     newPoint( x, y, z );
-    if ( _flipH < 0 ) x = - ( x - (int)( _maximum[0] - _minimum[0] ));
-    if ( _flipV < 0 ) y = - ( y - (int)( _maximum[1] - _minimum[1] ));
+    if ( _flipH < 0 ) x = - ( x - (int)( _maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ] ));
+    if ( _flipV < 0 ) y = - ( y - (int)( _maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ] ));
     emit signalNewShape( _index, x, y, z );
 }
 
@@ -1376,29 +1134,8 @@ void
 m4dGUISliceViewerWidget::slotSetSliceOrientation( SliceOrientation so )
 {
     _sliceOrientation = so;
-    switch ( _sliceOrientation )
-    {
-        case xy:
-	{
-	    if ( _sliceNum >= _maximum[2] ) _sliceNum = _maximum[2] - 1;
-	    if ( _sliceNum < _minimum[2] ) _sliceNum = _minimum[2];
-	}
-	break;
-        
-	case yz:
-	{
-	    if ( _sliceNum >= _maximum[0] ) _sliceNum = _maximum[0] - 1;
-	    if ( _sliceNum < _minimum[0] ) _sliceNum = _minimum[0];
-	}
-	break;
-        
-	case zx:
-	{
-	    if ( _sliceNum >= _maximum[1] ) _sliceNum = _maximum[1] - 1;
-	    if ( _sliceNum < _minimum[1] ) _sliceNum = _minimum[1];
-	}
-	break;
-    }
+    if ( _sliceNum >= (int)_maximum[ ( _sliceOrientation + 2 ) % 3 ] ) _sliceNum = _maximum[ ( _sliceOrientation + 2 ) % 3 ] - 1;
+    if ( _sliceNum < (int)_minimum[ ( _sliceOrientation + 2 ) % 3 ] ) _sliceNum = _minimum[ ( _sliceOrientation + 2 ) % 3 ];
 }
 
 } /*namespace Viewer*/
