@@ -169,11 +169,8 @@ NetStream *
 BasicJob::GetNetStream( void)
 {
   uint8 sourceEndian = primHeader.endian;
-#ifdef LITTLE_ENDIAN
-  uint8 destEndian = 0;
-#else
-  uint8 destEndian = 1;
-#endif
+  uint8 destEndian = GetEndianess();
+
   // we return NetStream instance based on source and target mashine endians
   if( sourceEndian != destEndian)
     return new UserSerializingNetStreamSwapping();

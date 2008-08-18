@@ -108,7 +108,9 @@ ServerJob::EndDataSetPropertiesRead( const boost::system::error_code& error)
 
     // create the dataSet
     // TODO destroy old dataSEt ..
-    m_inDataSet = GeneralDataSetSerializer::DeSerializeDataSetProperties( s);
+    AbstractDataSetSerializer *dsSerializer = NULL;
+    GeneralDataSetSerializer::DeSerializeDataSetProperties( 
+      &dsSerializer, &m_inDataSet, s);
 
     // connect it to pipeline
     m_pipeLine.MakeInputConnection( 
@@ -122,9 +124,6 @@ ServerJob::EndDataSetPropertiesRead( const boost::system::error_code& error)
     conn.SetMessageHook( 
       MessageReceiverInterface::Ptr( new ExecutionDoneCallback(this) ) );
 
-    // get apropriate serializer
-    AbstractDataSetSerializer *dsSerializer = 
-      GeneralDataSetSerializer::GetDataSetSerializer( m_inDataSet);
     // now start recieving actual data using the retrieved serializer
     ReadDataPeiceHeader( dsSerializer);
   
@@ -147,13 +146,17 @@ ServerJob::SendResultBack( ResponseID result)
   buffers.push_back( 
       boost::asio::buffer( (uint8*)h, sizeof(ResponseHeader)) );
 
+  AbstractDataSetSerializer *outSerializer = NULL;
+
   switch( result)
   {
   case RESPONSE_OK:
+    // get dataSetSerializer ...
+    outSerializer = 
+      GeneralDataSetSerializer::GetDataSetSerializer( m_outDataSet);
+
     // serialize dataset settings
-    GeneralDataSetSerializer::SerializeDataSetProperties( 
-      m_outDataSet, 
-      m_dataSetPropsSerialized);
+    outSerializer->SerializeProperties( m_dataSetPropsSerialized);
 
     h->resultPropertiesLen = (uint16) m_dataSetPropsSerialized.size();
     ResponseHeader::Serialize( h);
@@ -178,7 +181,9 @@ ServerJob::SendResultBack( ResponseID result)
 
   // start sending dataSet if OK
   if( result == RESPONSE_OK)
-    GeneralDataSetSerializer::SerializeDataSet( m_outDataSet, this);
+  {    
+    outSerializer->Serialize( this);
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

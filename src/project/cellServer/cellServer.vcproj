@@ -200,6 +200,10 @@
 					RelativePath="..\..\include\cellBE\dataSetSerializers\GeneralDataSetSerializer.cpp"
 					>
 				</File>
+				<File
+					RelativePath="..\..\include\cellBE\dataSetSerializers\ImageSerializer.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="filterSerializers"
@@ -279,6 +283,14 @@
 				RelativePath="..\..\cellServer\serverJob.h"
 				>
 			</File>
+			<Filter
+				Name="filterSerializers"
+				>
+			</Filter>
+			<Filter
+				Name="dataSetSerializers"
+				>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
