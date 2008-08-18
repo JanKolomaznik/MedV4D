@@ -63,6 +63,20 @@
 		use these methods only in situations requiring synchronization. This less comfortable though, but more effective.
 		</para>
 
+		<formalpara><title><classname>AbstractPipeFilter</classname></title><para>
+		This is a test.  This is only a test.  Had this been a real
+		example, it would have made more sense.  Or less.
+		</para></formalpara>
+
+		<formalpara><title><classname>AbstractImageFilter</classname></title><para>
+		This is a test.  This is only a test.  Had this been a real
+		example, it would have made more sense.  Or less.
+		</para></formalpara>
+
+		<formalpara><title><classname>AbstractImageSliceFilter</classname></title><para>
+		This is a test.  This is only a test.  Had this been a real
+		example, it would have made more sense.  Or less.
+		</para></formalpara>
 	</section>
 
 	<section>
@@ -212,14 +226,14 @@ ExamplePipelineHandler
 		One of the main advantage of this library is its extensibility. The biggest potential is easy way to add new filters 
 		with all features promised by pipeline design (synchronization, parallel execution, etc.). This is achieved through 
 		set of filter abstract classes, each designed for special purpose. Author of new filter have to consider few aspects 
-		(dimensionality and type of input/output data, way the filter computes, etc.) and choose right ancestor class for his filter.
+		(dimensionality, type of input/output data, way the filter computes, etc.) and choose right ancestor class for his filter.
 		</para>
 
 		<para>
-		To make decision easier use prepared flowchart <xref linkend="pic.MostSuitableFilterFlowchart"/> and choose right ancestor class.
+		To make decision easier you can use prepared flowchart <xref linkend="pic.MostSuitableFilterFlowchart"/> and find most suitable ancestor class.
 		</para>
 		
-		<para>
+
 		<figure float="1" id="pic.MostSuitableFilterFlowchart">
 		<title>Filter decisive flowchart</title>
 		<mediaobject>
@@ -227,14 +241,118 @@ ExamplePipelineHandler
 			<imageobject><imagedata fileref="figures/libImaging/MostSuitableFilterFlowchart.png" format="PNG" scale="75"/></imageobject>
 		</mediaobject>
 		</figure>
+
+		<para>
+		Now if you have chosen right ancestor class, you can start with actual implementation of your filter. You should keep few rules and concepts, which 
+		can not only help you with writing, but even some other parts of library will just work without handling extra issues. This is achieved by generic 
+		design of whole library, templates are used almost everywhere.
 		</para>
+		
+		<para>
+		We now introduce these rules and concepts, and show practical examples from library sources. First of all try design your filters as generic as possible.
+		So try maximally use dataset traits (now only available <classname>ImageTraits</classname>), template specialializations, etc.
+		All ancestor classes are templated (with exception of <classname>AbstractPipeFilter</classname>), so it makes that easier.
+		</para>
+		
+		<programlisting><![CDATA[
+template< typename ElementType >
+class ThresholdingFunctor
+{
+public:
+    void
+    operator()( const ElementType&    input, ElementType& output )
+    {
+        if( input < bottom || input > top ) {
+            output = outValue;
+        } else {
+            output = input;
+        }
+    }    
+
+    ElementType    bottom;    
+    ElementType    top;
+        
+    ElementType    outValue;
+};
+
+template< typename ImageType >
+class ThresholdingFilter
+: public AbstractImageElementFilter< 
+    ImageType, 
+    ImageType,
+    ThresholdingFunctor< typename ImageTraits< ImageType >::ElementType > 
+    >
+{
+public:
+    typedef ThresholdingFunctor
+        < typename ImageTraits< ImageType >::ElementType >     Functor;
+    
+    typedef Imaging::AbstractImageElementFilter
+        < ImageType, ImageType, Functor >                      PredecessorType;
+
+    typedef typename ImageTraits< ImageType >::ElementType     InputElementType;
+
+    struct Properties : public PredecessorType::Properties
+    {
+        Properties(): bottom( 0 ), top( 0 ), outValue( 0 ) {}
+
+        InputElementType    bottom;    
+        InputElementType    top;
+        
+        InputElementType    outValue;
+
+        void
+        CheckProperties() {
+            _functor->bottom = bottom;
+            _functor->top = top;
+            _functor->outValue = outValue;
+        }
+        
+        Functor    *_functor;
+    };
+
+    ThresholdingFilter( Properties  * prop );
+    ThresholdingFilter();
+
+    GET_SET_PROPERTY_METHOD_MACRO( InputElementType, Bottom, bottom );
+    GET_SET_PROPERTY_METHOD_MACRO( InputElementType, Top, top );
+    GET_SET_PROPERTY_METHOD_MACRO( InputElementType, OutValue, outValue );
+protected:
+
+private:
+    GET_PROPERTIES_DEFINITION_MACRO;
+
+};
+
+template< typename ImageType >
+ThresholdingFilter< ImageType >
+::ThresholdingFilter() 
+    : PredecessorType( new Properties() )
+{
+    GetProperties()._functor = &(this->_elementFilter);
+}
+
+template< typename ImageType >
+ThresholdingFilter< ImageType >
+::ThresholdingFilter( typename ThresholdingFilter< ImageType >::Properties *prop ) 
+    : PredecessorType( prop )
+{
+    GetProperties()._functor = &(this->_elementFilter);    
+}
+]]>
+		</programlisting>
 
 	</section>
 
 	<section>
 	<title>Defining new dataset type</title>
 		
-	<para>aaaaaaa</para>
+		<itemizedlist>
+			<listitem><para>Designing dataset interfaces and synchronization system</para></listitem>
+			<listitem><para>Implementing connection objects and input/output ports</para></listitem>
+			<listitem><para>Creating filter base classes working on this dataset type</para></listitem>
+		</itemizedlist>
+
 	</section>
 </section>
 
