@@ -37,6 +37,8 @@ public:
 
 	MedianFilter2D( Properties * prop );
 	MedianFilter2D();
+
+	GET_SET_PROPERTY_METHOD_MACRO( uint32, Radius, radius );
 protected:
 
 	bool
@@ -54,7 +56,7 @@ private:
 
 	GET_PROPERTIES_DEFINITION_MACRO;
 
-	InputElementType
+	inline InputElementType
 	GetElementInOrder(
 		Histogram				&histogram,
 		uint32					order

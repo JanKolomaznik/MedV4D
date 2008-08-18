@@ -75,7 +75,7 @@ MedianFilter2D< Image< InputElementType, 3 > >
 }
 
 template< typename InputElementType >
-InputElementType
+inline InputElementType
 MedianFilter2D< Image< InputElementType, 3 > >
 ::GetElementInOrder(
 		MedianFilter2D< Image< InputElementType, 3 > >::Histogram	&histogram,
@@ -83,15 +83,17 @@ MedianFilter2D< Image< InputElementType, 3 > >
 	      )
 {
 	uint32 count = 0;
+	//D_PRINT( "SIZE :" << histogram.size() );
+	//D_PRINT( "ORDER :" << order << "; " << histogram.begin()->first << "; " << histogram.begin()->second );
 	typename Histogram::iterator it = histogram.begin();
 
-	while( it != histogram.end() && count < order ) {
-		count += it->second;
+	while( it != histogram.end() && (count += it->second) < order ) {
 		++it;
 	}
 	if( it !=histogram.end() ) {
 		return it->first;
 	}
+	throw 10;
 	return (InputElementType)0;
 }
 
