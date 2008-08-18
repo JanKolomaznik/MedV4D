@@ -29,16 +29,22 @@
 	<para>
 	All declarations are in namespace <code>M4D::Imaging</code>.
 	Whole design of class hierarchies is 
+	<xref linkend="pic.PipelineScheme"/>
 	</para>
 
+	<para>
+	<figure float="1" id="pic.PipelineScheme">
+	<title>Pipeline scheme</title>
 	<mediaobject>
 		<imageobject>
-		<imagedata fileref="figures/PipelineScheme.eps" format="EPS"/>
+			<imagedata fileref="figures/libImaging/PipelineScheme.eps" format="EPS" scale="25"/>
 		</imageobject>
 		<imageobject>
-		<imagedata fileref="figures/PipelineScheme.png" format="PNG"/>
+		<imagedata fileref="figures/libImaging/PipelineScheme.png" format="PNG" scale="25"/>
 		</imageobject>
 	</mediaobject>
+	</figure>
+	</para>
 
 	<para>
 	Pipeline should be built from objects of certain types, which we will now discuss.
@@ -110,24 +116,24 @@ typedef M4D::Imaging::Image< ElementType, Dim > ImageType;
 class ExamplePipelineHandler
 {
 public:
-        //Default constructor - pipeline construction
-        ExamplePipelineHandler();
+    //Default constructor - pipeline construction
+    ExamplePipelineHandler();
 
-	//Method which pass image to pipeline and start computation.
-        void
-	FilterImage( ImageType::Ptr image );
+    //Method which pass image to pipeline and start computation.
+    void
+    FilterImage( ImageType::Ptr image );
 
-	//This method will be called, when filters finish.
-	//Parameter tells, if computation passed withou problems.
-	//Implementation of this method depends on its purpose (notify user, ...).
-        void
-	FinishNotification( bool succesfully )
-		{ /*Put your code here.*/ }
+    //This method will be called, when filters finish.
+    //Parameter tells, if computation passed withou problems.
+    //Implementation of this method depends on its purpose (notify user, ...).
+    void
+    FinishNotification( bool succesfully )
+        { /*Put your code here.*/ }
 protected:
-        M4D::Imaging::PipelineContainer   _pipeline;
-        M4D::Imaging::AbstractPipeFilter  *_firstFilter;
-        M4D::Imaging::AbstractImageConnectionInterface  *_inConnection;
-        M4D::Imaging::AbstractImageConnectionInterface  *_outConnection;
+    M4D::Imaging::PipelineContainer   _pipeline;
+    M4D::Imaging::AbstractPipeFilter  *_firstFilter;
+    M4D::Imaging::AbstractImageConnectionInterface  *_inConnection;
+    M4D::Imaging::AbstractImageConnectionInterface  *_outConnection;
 };
 ]]>
 		</programlisting>
@@ -168,19 +174,21 @@ protected:
 ExamplePipelineHandler
 ::ExamplePipelineHandler()
 {
-        _firstFilter = new
-        M4D::Imaging::AbstractPipeFilter *secondFilter = new
+    _firstFilter = new
+    M4D::Imaging::AbstractPipeFilter *secondFilter = new
 
-        _pipeline.AddFilter( _firstFilter );
-        _pipeline.AddFilter( secondFilter );
+    _pipeline.AddFilter( _firstFilter );
+    _pipeline.AddFilter( secondFilter );
 
-        _pipeline.MakeConnection( _firstFilter, 0, secondFilter, 0, true );
+    _pipeline.MakeConnection( _firstFilter, 0, secondFilter, 0, true );
 
-        _inConnection = dynamic_cast< M4D::Imaging::AbstractImageConnectionInterface * >(
-                                &(_pipeline.MakeInputConnection( _firstFilter, 0, false )) );
+    _inConnection = 
+        dynamic_cast< M4D::Imaging::AbstractImageConnectionInterface * >(
+             &(_pipeline.MakeInputConnection( _firstFilter, 0, false )) );
 
-        _outConnection = dynamic_cast< M4D::Imaging::AbstractImageConnectionInterface * >(
-                                &(_pipeline.MakeOutputConnection( secondFilter, 0, true )) );
+    _outConnection = 
+        dynamic_cast< M4D::Imaging::AbstractImageConnectionInterface * >(
+             &(_pipeline.MakeOutputConnection( secondFilter, 0, true )) );
 }
 
 
@@ -188,9 +196,9 @@ void
 ExamplePipelineHandler
 ::FilterImage( ImageType::Ptr image )
 {
-        _inConnection->PutImage( image );
+    _inConnection->PutImage( image );
 
-        _firstFilter->Execute();
+    _firstFilter->Execute();
 }
 ]]>
 		</programlisting>
@@ -203,8 +211,24 @@ ExamplePipelineHandler
 		<para>
 		One of the main advantage of this library is its extensibility. The biggest potential is easy way to add new filters 
 		with all features promised by pipeline design (synchronization, parallel execution, etc.). This is achieved through 
-		set of filter abstract classes, each designed for special purpose. Author of new filter have to consider
+		set of filter abstract classes, each designed for special purpose. Author of new filter have to consider few aspects 
+		(dimensionality and type of input/output data, way the filter computes, etc.) and choose right ancestor class for his filter.
 		</para>
+
+		<para>
+		To make decision easier use prepared flowchart <xref linkend="pic.MostSuitableFilterFlowchart"/> and choose right ancestor class.
+		</para>
+		
+		<para>
+		<figure float="1" id="pic.MostSuitableFilterFlowchart">
+		<title>Filter decisive flowchart</title>
+		<mediaobject>
+			<imageobject><imagedata fileref="figures/libImaging/MostSuitableFilterFlowchart.eps" format="EPS" scale="75"/></imageobject>
+			<imageobject><imagedata fileref="figures/libImaging/MostSuitableFilterFlowchart.png" format="PNG" scale="75"/></imageobject>
+		</mediaobject>
+		</figure>
+		</para>
+
 	</section>
 
 	<section>

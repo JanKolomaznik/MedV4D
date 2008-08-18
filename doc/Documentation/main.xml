@@ -5,14 +5,14 @@
 <!ENTITY libImaging SYSTEM "chapters/libImaging.xml">
 ]>
 <book lang="en" >
-	<!--<bookinfo>
-		<title>Medv4D project documentation</title>
-		<subtitle></subtitle>
+	<bookinfo>
+		<title>Medv4D</title>
+		<subtitle>project documentation</subtitle>
 	</bookinfo>
 	<preface>
-		<title>Medv4D project documentation</title>
-		<para></para>
-	</preface>-->
+		<title>Preface</title>
+		<para>aaaa</para>
+	</preface>
 
 	&libCommon;
 	&libImaging;
