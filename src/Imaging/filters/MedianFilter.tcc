@@ -44,13 +44,6 @@ MedianFilter2D< Image< InputElementType, 3 > >
 	int radius = GetProperties().radius;
 	int medianOrder = ((2*radius+1) * (2*radius+1)) / 2;
 
-	/*for( int j = y1 + radius; j < (y2 - radius); ++j ) {
-		for( int i = x1 + radius; i < (x2 - radius); ++i ) {
-			out.GetElement( i, j, slice ) = GetMedian( radius, in, i, j, slice );
-		}
-	}*/
-
-
 	std::map< InputElementType, int > histogram;
 	for( int j = y1 + radius; j < (y2 - radius); ++j ) {
 		//initialize histogram
@@ -83,8 +76,6 @@ MedianFilter2D< Image< InputElementType, 3 > >
 	      )
 {
 	uint32 count = 0;
-	//D_PRINT( "SIZE :" << histogram.size() );
-	//D_PRINT( "ORDER :" << order << "; " << histogram.begin()->first << "; " << histogram.begin()->second );
 	typename Histogram::iterator it = histogram.begin();
 
 	while( it != histogram.end() && (count += it->second) < order ) {

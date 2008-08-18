@@ -71,20 +71,22 @@ mainWindow::CreatePipeline()
 	tmpFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
 	//tmpFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_UPDATE_FINISHED );
 		
-	tmpFilter->SetRadius( 3 );
+	tmpFilter->SetRadius( 2 );
 
 	_pipeline.AddFilter( _filter );
 	_pipeline.AddFilter( tmpFilter );
-	_pipeline.MakeConnection( *_filter, 0, *tmpFilter, 0 );
+	;
 
 	_inConnection = dynamic_cast<AbstractImageConnectionInterface*>( &_pipeline.MakeInputConnection( *_filter, 0, false ) );
+	_tmpConnection = dynamic_cast<AbstractImageConnectionInterface*>( &_pipeline.MakeConnection( *_filter, 0, *tmpFilter, 0 ) );
 	_outConnection = dynamic_cast<AbstractImageConnectionInterface*>( &_pipeline.MakeOutputConnection( *tmpFilter, 0, true ) );
 
 	if( _inConnection == NULL || _outConnection == NULL ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Pipeline error" ) );
 	}
 
-	addSource( _inConnection, "Bone segmentation", "Stage #1" );
+	addSource( _inConnection, "Bone segmentation", "Input" );
+	addSource( _tmpConnection, "Bone segmentation", "Stage #1" );
 	addSource( _outConnection, "Bone segmentation", "Result" );
 
 	_notifier =  new Notifier( this );

@@ -63,6 +63,7 @@ protected:
 	M4D::Imaging::PipelineContainer			_pipeline;
 	M4D::Imaging::AbstractPipeFilter		*_filter;
 	M4D::Imaging::AbstractImageConnectionInterface	*_inConnection;
+	M4D::Imaging::AbstractImageConnectionInterface	*_tmpConnection;
 	M4D::Imaging::AbstractImageConnectionInterface	*_outConnection;
 
 private:

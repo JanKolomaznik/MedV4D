@@ -117,7 +117,7 @@ Image< ElementType, 2 >::CastAbstractImage( AbstractImage::AImagePtr & image )
 }
 
 template< typename ElementType >
-ElementType &
+inline ElementType &
 Image< ElementType, 2 >::GetElement( int32 x, int32 y )
 {
 	if( 	x < GetDimensionExtents( 0 ).minimum || 
@@ -135,7 +135,7 @@ Image< ElementType, 2 >::GetElement( int32 x, int32 y )
 }
 
 template< typename ElementType >
-const ElementType &
+inline const ElementType &
 Image< ElementType, 2 >::GetElement( int32 x, int32 y )const
 {
 	if( 	x < GetDimensionExtents( 0 ).minimum || 
@@ -153,7 +153,7 @@ Image< ElementType, 2 >::GetElement( int32 x, int32 y )const
 }
 
 template< typename ElementType >
-ElementType *
+inline ElementType *
 Image< ElementType, 2 >::GetPointer( 
 			uint32 &width,
 			uint32 &height,
@@ -366,7 +366,7 @@ Image< ElementType, 3 >::CastAbstractImage( AbstractImage::AImagePtr & image )
 }
 
 template< typename ElementType >
-ElementType &
+inline ElementType &
 Image< ElementType, 3 >::GetElement( int32 x, int32 y, int32 z )
 {
 	if( 	x < GetDimensionExtents( 0 ).minimum || 
@@ -389,7 +389,7 @@ Image< ElementType, 3 >::GetElement( int32 x, int32 y, int32 z )
 }
 
 template< typename ElementType >
-const ElementType &
+inline const ElementType &
 Image< ElementType, 3 >::GetElement( int32 x, int32 y, int32 z )const
 {
 	if( 	x < GetDimensionExtents( 0 ).minimum || 

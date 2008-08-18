@@ -188,7 +188,7 @@ public:
 	 * \param y Y coordinate.
 	 * \exception
 	 **/
-	ElementType &
+	inline ElementType &
 	GetElement( int32 x, int32 y );
 
 	/**
@@ -197,10 +197,10 @@ public:
 	 * \param y Y coordinate.
 	 * \exception
 	 **/
-	const ElementType &
+	inline const ElementType &
 	GetElement( int32 x, int32 y )const;
 
-	ElementType *
+	inline ElementType *
 	GetPointer( 
 			uint32 &width,
 			uint32 &height,
@@ -319,13 +319,13 @@ public:
 	GetElementTypeID()const
 		{ return GetNumericTypeID<ElementType>(); }
 
-	ElementType &
+	inline ElementType &
 	GetElement( int32 x, int32 y, int32 z );
 
-	const ElementType &
+	inline const ElementType &
 	GetElement( int32 x, int32 y, int32 z )const;
 
-	ElementType *
+	inline ElementType *
 	GetPointer( 
 			uint32 &width,
 			uint32 &height,
@@ -464,13 +464,13 @@ public:
 	GetElementTypeID()const
 		{ return GetNumericTypeID<ElementType>(); }
 
-	ElementType &
+	inline ElementType &
 	GetElement( int32 x, int32 y, int32 z, int32 t );
 
-	const ElementType &
+	inline const ElementType &
 	GetElement( int32 x, int32 y, int32 z, int32 t )const;
 
-	ElementType *
+	inline ElementType *
 	GetPointer( 
 			uint32 &width,
 			uint32 &height,
