@@ -67,10 +67,18 @@ void
 mainWindow::CreatePipeline()
 {
 	_filter = new Thresholding();
+	Median2D *tmpFilter = new Median2D();
+	tmpFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
+	//tmpFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_UPDATE_FINISHED );
+		
+	tmpFilter->SetRadius( 3 );
 
 	_pipeline.AddFilter( _filter );
+	_pipeline.AddFilter( tmpFilter );
+	_pipeline.MakeConnection( *_filter, 0, *tmpFilter, 0 );
+
 	_inConnection = dynamic_cast<AbstractImageConnectionInterface*>( &_pipeline.MakeInputConnection( *_filter, 0, false ) );
-	_outConnection = dynamic_cast<AbstractImageConnectionInterface*>( &_pipeline.MakeOutputConnection( *_filter, 0, true ) );
+	_outConnection = dynamic_cast<AbstractImageConnectionInterface*>( &_pipeline.MakeOutputConnection( *tmpFilter, 0, true ) );
 
 	if( _inConnection == NULL || _outConnection == NULL ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Pipeline error" ) );

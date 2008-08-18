@@ -5,6 +5,7 @@
 #include "Imaging/PipelineContainer.h"
 #include "Imaging/ImageFactory.h"
 #include "Imaging/filters/ThresholdingFilter.h"
+#include "Imaging/filters/MedianFilter.h"
 #include "SettingsBox.h"
 
 #define ORGANIZATION_NAME     "MFF"
@@ -13,6 +14,7 @@
 typedef uint16	ElementType;
 typedef M4D::Imaging::Image< ElementType, 3 > ImageType;
 typedef M4D::Imaging::ThresholdingFilter< ImageType > Thresholding;
+typedef M4D::Imaging::MedianFilter2D< ImageType > Median2D;
 typedef M4D::Imaging::ImageConnection< ImageType > InConnection;
 
 
