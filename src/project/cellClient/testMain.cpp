@@ -14,7 +14,6 @@ int main()
 {
   try
   {
-	CellClient client;
 	PipelineContainer pipeline;
 
 	AbstractPipeFilter *filter = new BoneSegmentationRemote< ImageType >();
@@ -31,7 +30,9 @@ int main()
 
 	inConnection->PutImage( inImage );
 
-//client.Run();
+  filter->Execute();
+
+  ((RemoteFilterBase*)filter)->Run();
   }
   catch (std::exception& e)
   {

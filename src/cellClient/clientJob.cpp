@@ -153,21 +153,21 @@ ClientJob::SendDestroy( void)
 void
 ClientJob::SendExecute( void)
 {
-  primHeader.action = (uint8) EXEC;
-  PrimaryJobHeader::Serialize( &primHeader);
+  //primHeader.action = (uint8) EXEC;
+  //PrimaryJobHeader::Serialize( &primHeader);
 
-  // now everything is sent, so we have to wait for response
-  {
-    // get free header
-    ResponseHeader *h = m_freeResponseHeaders.GetFreeItem();
+  //// now everything is sent, so we have to wait for response
+  //{
+  //  // get free header
+  //  ResponseHeader *h = m_freeResponseHeaders.GetFreeItem();
 
-    // read into it
-    m_socket.async_read_some( 
-      boost::asio::buffer( (uint8*)h, sizeof( ResponseHeader) )
-      , boost::bind( &ClientJob::OnResponseRecieved, this,
-        boost::asio::placeholders::error, h)
-    );
-  }
+  //  // read into it
+  //  m_socket.async_read_some( 
+  //    boost::asio::buffer( (uint8*)h, sizeof( ResponseHeader) )
+  //    , boost::bind( &ClientJob::OnResponseRecieved, this,
+  //      boost::asio::placeholders::error, h)
+  //  );
+  //}
 }
 
 ///////////////////////////////////////////////////////////////////////////////

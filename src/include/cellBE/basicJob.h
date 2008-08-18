@@ -41,7 +41,7 @@ protected:
    */
   enum Action {
     CREATE,       // request for job create
-    EXEC,         // request for job execute
+    //EXEC,         // request for job execute
     DESTROY,      // request for job destroy
     DATASET,      // sending job's dataSet
     FILTERS,      // sending job's filters settings

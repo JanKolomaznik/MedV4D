@@ -21,6 +21,8 @@ protected:
   // gate to remote computing. Shared instance of cell client.
   static CellClient s_cellClient;
 
+public:
+  void Run( void) { s_cellClient.Run(); }
 };
 
 }}

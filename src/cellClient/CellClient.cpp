@@ -36,6 +36,8 @@ CellClient::CellClient()
       }
     } while( ! cfgFile.eof() );
 
+    //m_io_service.run();
+
   } catch (...) {
   }
 }

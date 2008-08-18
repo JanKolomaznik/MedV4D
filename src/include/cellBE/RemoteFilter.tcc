@@ -44,7 +44,7 @@ RemoteFilter< InputImageType, OutputImageType >
   m_outSerializer->SetDataSet( &out);
 
   m_job->SendDataSet();
-  m_job->SendExecute();
+  //m_job->SendExecute();
 
 	return true;
 }

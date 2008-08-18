@@ -29,7 +29,6 @@ private:
   
   void ReadFilters( void);
   void ReadDataSet( void);
-  void Execute( void);
 
   void EndFiltersRead( const boost::system::error_code& error);
   void EndDataSetPropertiesRead( const boost::system::error_code& error);

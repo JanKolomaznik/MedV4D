@@ -104,24 +104,33 @@ Server::EndPrimaryHeaderRead( tcp::socket *clientSock, PrimaryJobHeader *header,
       existing->primHeader.id = header->id;
 
       m_jobManager.AddJob( existing);
+
+      LOG( "CREATE reqest arrived");
       break;
 
     case BasicJob::DATASET:
       existing = m_jobManager.FindJob( header->id);
       existing->ReadDataSet();
+
+      LOG( "DATASET reqest arrived");
       break;
 
     case BasicJob::FILTERS:
       existing = m_jobManager.FindJob( header->id);
       existing->ReadFilters();
+
+      LOG( "FILTERS reqest arrived");
       break;
 
-    case BasicJob::EXEC:
-      existing = m_jobManager.FindJob( header->id);
-      existing->Execute();
-      break;
+    //case BasicJob::EXEC:
+    //  existing = m_jobManager.FindJob( header->id);
+    //  existing->Execute();
+
+    //  LOG( "EXEC reqest arrived");
+    //  break;
 
     case BasicJob::DESTROY:
+      LOG( "DESTROY reqest arrived");
       try {
         existing = m_jobManager.FindJob( header->id);
       } catch( ExceptionBase &) {

@@ -75,14 +75,6 @@ ServerJob::ReadDataSet( void)
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-ServerJob::Execute( void)
-{
-  // m_pipeLine.run();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void
 ServerJob::EndFiltersRead( const boost::system::error_code& error)
 {
   try {
@@ -123,6 +115,13 @@ ServerJob::EndDataSetPropertiesRead( const boost::system::error_code& error)
     // add message listener to be able catch execution done or failed messages
     conn.SetMessageHook( 
       MessageReceiverInterface::Ptr( new ExecutionDoneCallback(this) ) );
+
+    // lock the whole dataSet (no progression yet so whole dataSet)
+    WriterBBoxInterface &lock = ((AbstractImage *)m_inDataSet)->SetWholeDirtyBBox();
+
+    // and execute the pipeline. Actual exectution will wait to whole
+    // dataSet unlock when whole dataSet is read (don't forget to do it!!)
+    m_pipelineBegin->Execute();
 
     // now start recieving actual data using the retrieved serializer
     ReadDataPeiceHeader( dsSerializer);
