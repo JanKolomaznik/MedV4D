@@ -11,6 +11,9 @@ template< typename InputImageType, typename OutputImageType >
 RemoteFilter< InputImageType, OutputImageType >
 ::RemoteFilter( typename RemoteFilter< InputImageType, OutputImageType >::Properties *prop )
   : PredecessorType( prop ) 
+  , m_job( NULL)
+  , m_inSerializer(NULL)
+  , m_outSerializer(NULL)
 {
 }
 
@@ -34,15 +37,11 @@ RemoteFilter< InputImageType, OutputImageType >
 		OutputImageType		&out
 		)
 {
-  // create dataSetSerializers for input & output dataSets if the not already..
-  if( m_inSerializer == NULL)
-    m_inSerializer = GeneralDataSetSerializer::GetDataSetSerializer( 
-      (M4D::Imaging::AbstractDataSet *) &in);
-  if( m_outSerializer == NULL)
-    m_outSerializer = GeneralDataSetSerializer::GetDataSetSerializer( &out);
-
-  m_inSerializer->SetDataSet( (M4D::Imaging::AbstractDataSet *) &in);
-  m_outSerializer->SetDataSet( &out);
+  // setting datSets is performed here because actual dataSet may not be created
+  // before
+  m_job->SetDataSets( 
+    (M4D::Imaging::AbstractDataSet *) &in, 
+    (M4D::Imaging::AbstractDataSet *) &out );
 
   m_job->SendDataSet();
   //m_job->SendExecute();

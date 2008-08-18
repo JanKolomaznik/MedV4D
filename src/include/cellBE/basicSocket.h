@@ -16,7 +16,6 @@ namespace M4D
 namespace CellBE
 {
 
-//////////////////////////////////////////////////
 /**
  *  Base class containing network functionality. Used BOOST::Asio for asynchronous networking and scatter gather.
  */

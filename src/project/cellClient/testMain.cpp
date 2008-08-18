@@ -33,6 +33,11 @@ int main()
   filter->Execute();
 
   ((RemoteFilterBase*)filter)->Run();
+
+  while( 1)
+  {
+  }
+
   }
   catch (std::exception& e)
   {

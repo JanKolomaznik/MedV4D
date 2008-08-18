@@ -11,20 +11,21 @@ namespace CellBE
 
 // supportig function
 template< typename ElementType, unsigned Dim >
-M4D::Imaging::AbstractPipeFilter *
-CreateThresholdingFilter( M4D::CellBE::NetStream &s )
+void
+CreateThresholdingFilter( 
+     M4D::Imaging::AbstractPipeFilter **resultingFilter
+   , AbstractFilterSerializer **serializer
+   , const uint16 id
+   , M4D::CellBE::NetStream &s )
 {
 	typedef typename M4D::Imaging::Image< ElementType, Dim > ImageType;
 	typedef typename M4D::Imaging::ThresholdingFilter< ImageType > Filter;
-
+  typedef typename FilterSerializer< Filter > FilterSerializer;
 
 	Filter::Properties *prop = new Filter::Properties();
 
-	s >> prop->bottom;
-	s >> prop->top;
-	s >> prop->outValue;
-
-	return new Filter( prop );
+	*resultingFilter = new Filter( prop );  // id
+  *serializer = new FilterSerializer( prop, id);  // id
 }
 
 /**
@@ -37,38 +38,48 @@ class FilterSerializer< M4D::Imaging::ThresholdingFilter< InputImageType > >
 public:
 	typedef typename M4D::Imaging::ThresholdingFilter< InputImageType >::Properties Properties;
 	
-	FilterSerializer( Properties * props) 
-		: AbstractFilterSerializer( FID_Thresholding )
+	FilterSerializer( Properties * props, uint16 id) 
+		: AbstractFilterSerializer( FID_Thresholding, id )
 		, _properties( props ) 
   {}
 
-	void 
-	SerializeProperties( M4D::CellBE::NetStream &s)
-	{
-		s << ImageTraits< InputImageType >::Dimension;
-
+  void SerializeClassInfo( M4D::CellBE::NetStream &s)
+  {
+    s << ImageTraits< InputImageType >::Dimension;
 		s << (uint8) GetNumericTypeID< ImageTraits< InputImageType >::ElementType >();
-		
-		s << _properties->bottom;
+  }
 
-		s << _properties->top;
-
-		s << _properties->outValue;
-	}
-
-	M4D::Imaging::AbstractPipeFilter *
-	DeSerializeProperties( M4D::CellBE::NetStream &s )
-	{
-		uint8 dim;
+  void
+  DeSerializeClassInfo( 
+      M4D::Imaging::AbstractPipeFilter **resultingFilter
+    , AbstractFilterSerializer **serializer
+    , const uint16 id
+    , M4D::CellBE::NetStream &s
+    )
+  {
+    uint8 dim;
 		uint8 typeID;
 		
 		s >> dim;
 		s >> typeID;
 		
 		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( typeID, 
-			DIMENSION_TEMPLATE_SWITCH_MACRO( dim, return CreateThresholdingFilter<TTYPE, DIM >( s ) )
+			DIMENSION_TEMPLATE_SWITCH_MACRO( 
+        dim, CreateThresholdingFilter<TTYPE, DIM >( 
+          resultingFilter, serializer, id, s ) )
 		);
-		return NULL;
+  }
+
+	void 
+	SerializeProperties( M4D::CellBE::NetStream &s)
+	{		
+		s << _properties->bottom << _properties->top << _properties->outValue;
+	}
+
+	void
+	DeSerializeProperties( M4D::CellBE::NetStream &s )
+	{
+		s >> _properties->bottom >> _properties->top >> _properties->outValue;
 	}	
 	
 protected:

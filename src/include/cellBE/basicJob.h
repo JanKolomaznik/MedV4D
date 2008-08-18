@@ -44,6 +44,7 @@ protected:
     //EXEC,         // request for job execute
     DESTROY,      // request for job destroy
     DATASET,      // sending job's dataSet
+    ABORT,        // sending abort req to abort computation
     FILTERS,      // sending job's filters settings
     PING          // ping message
   };

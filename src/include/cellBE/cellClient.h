@@ -24,8 +24,9 @@ public:
   // creates job
   ClientJob *CreateJob(
     FilterSerializerVector &filters
-  , AbstractDataSetSerializer *inDataSetSeralizer
-  , AbstractDataSetSerializer *outDataSetSerializer);
+  //, AbstractDataSetSerializer *inDataSetSeralizer
+  //, AbstractDataSetSerializer *outDataSetSerializer
+  );
 
   inline void Run( void) { m_io_service.run(); }
 

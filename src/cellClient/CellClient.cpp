@@ -64,13 +64,17 @@ CellClient::FindNonCommentLine( ifstream &f, string &line)
 
 ClientJob *
 CellClient::CreateJob( FilterSerializerVector &filters
-                     , AbstractDataSetSerializer *inDataSetSeralizer
-                     , AbstractDataSetSerializer *outDataSetSerializer)
+                     //, AbstractDataSetSerializer *inDataSetSeralizer
+                     //, AbstractDataSetSerializer *outDataSetSerializer
+                     )
 {
+  if( filters.empty() )
+    throw ExceptionBase("Empty defining vector");
+
   ClientJob *newJob = new ClientJob(
     filters,
-    inDataSetSeralizer,
-    outDataSetSerializer,
+    //inDataSetSeralizer,
+    //outDataSetSerializer,
     FindAvailableServer( filters),
     m_io_service);
 

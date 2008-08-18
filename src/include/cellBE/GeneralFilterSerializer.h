@@ -30,15 +30,20 @@ public:
    *  appropriate FilterSerializer that performs actual deserialization
    *  and returns appropriate instance of filter
    */
-  static M4D::Imaging::AbstractPipeFilter *
-  DeSerialize( M4D::CellBE::NetStream &s)
+  static void
+  DeSerialize( M4D::Imaging::AbstractPipeFilter **resultingFilter
+    , AbstractFilterSerializer **serializer
+    , M4D::CellBE::NetStream &s)
   {
 	  FilterID filterID;
 	  s >> ((uint8 &) filterID);
 
+    uint16 id;
+    s >> id;
+
     FilterSerializers::iterator it = m_filterSerializers.find( filterID);
     if( it != m_filterSerializers.end() )
-      return it->second->DeSerializeProperties( s );
+      it->second->DeSerializeClassInfo( resultingFilter, serializer, id, s);
     else
       throw WrongFilterException();
   }
@@ -50,9 +55,9 @@ public:
    */
 	template< typename Filter >
 	static AbstractFilterSerializer *
-	GetFilterSerializer( typename Filter::Properties *props )
+	GetFilterSerializer( typename Filter::Properties *props, uint16 id )
 	{
-		return new FilterSerializer< Filter >( props );
+		return new FilterSerializer< Filter >( props, id );
 	}
 
 };

@@ -19,30 +19,66 @@ ServerJob::ServerJob(boost::asio::io_service &service)
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-ServerJob::DeserializeFilterPropertiesAndBuildPipeline( void)
+ServerJob::DeserializeFilterClassPropsAndBuildPipeline( void)
 {
   NetStreamArrayBuf s( &m_filterSettingContent[0], 
     m_filterSettingContent.size());
 
+  AbstractFilterSerializer *fSeriz;
   // create filter instances according filter properties in stream
   // and add them into pipeline
   AbstractPipeFilter *producer, *consumer;
   if( s.HasNext() )   // add the first
   {
-    producer = GeneralFilterSerializer::DeSerialize( s);
-    m_pipelineBegin = producer;
+    // perform deserialization
+    GeneralFilterSerializer::DeSerialize( &producer, &fSeriz, s);
     m_pipeLine.AddFilter( producer);
+
+    // add created Serializer into Map
+    m_filterSeralizersMap.insert( FilterSerializersMap::value_type(
+      fSeriz->GetID(), fSeriz) );
+
+    m_pipelineBegin = producer;
+    
   }
 
   // now for each remaining create & connect with predecessing
   while(s.HasNext())
   {
-    consumer = GeneralFilterSerializer::DeSerialize( s);
+    // perform deserialization
+    GeneralFilterSerializer::DeSerialize( &consumer, &fSeriz, s);
+    // add it into PipeLine
     m_pipeLine.AddFilter( consumer);
     m_pipeLine.MakeConnection( *producer, 0, *consumer, 0);
+
+    // add created Serializer into Map
+    m_filterSeralizersMap.insert( FilterSerializersMap::value_type(
+      fSeriz->GetID(), fSeriz) );
   }
 
   m_pipelineEnd = consumer;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ServerJob::DeserializeFilterProperties( void)
+{
+  NetStreamArrayBuf s( &m_filterSettingContent[0], 
+    m_filterSettingContent.size());
+
+  uint16 id;
+  FilterSerializersMap::iterator found;
+
+  if( s.HasNext() )   // add the first
+  {
+    s >> id;
+    found = m_filterSeralizersMap.find( id);
+    if( found == m_filterSeralizersMap.end() )
+      throw WrongFilterException();
+    
+    found->second->DeSerializeProperties( s);
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -79,7 +115,7 @@ ServerJob::EndFiltersRead( const boost::system::error_code& error)
 {
   try {
     HandleErrors( error);
-    DeserializeFilterPropertiesAndBuildPipeline();
+    DeserializeFilterClassPropsAndBuildPipeline();
 
   } catch( WrongFilterException &) {
     SendResultBack( RESPONSE_ERROR_IN_INPUT);
@@ -214,6 +250,47 @@ void
 ServerJob::OnExecutionFailed( void)
 {
   SendResultBack( RESPONSE_ERROR_IN_EXECUTION);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ServerJob::Command( PrimaryJobHeader *header)
+{
+  switch( header->action)
+  {
+  case BasicJob::DATASET:
+    ReadDataSet();
+    LOG( "DATASET reqest arrived");
+    break;
+
+  case BasicJob::FILTERS:
+    ReadFilters();
+    LOG( "FILTERS reqest arrived");
+    break;
+
+  case BasicJob::ABORT:
+    AbortComputation();
+    LOG( "ABORT reqest arrived");
+    break;
+
+  //case BasicJob::EXEC:
+  //  Execute();
+  //  LOG( "EXEC reqest arrived");
+  //  break;   
+
+  default:
+    LOG( "Unrecognized action job action."); // From: " << m_socket );
+    throw ExceptionBase("Unrecognized action job action");
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ServerJob::AbortComputation( void)
+{
+  m_pipeLine.StopFilters();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -16,13 +16,13 @@ uint32 ClientJob::lastID;
 
 ClientJob::ClientJob(
                      FilterSerializerVector &filters
-                   , AbstractDataSetSerializer *inDataSetSeralizer
-                   , AbstractDataSetSerializer *outDataSetSerializer
+                   //, AbstractDataSetSerializer *inDataSetSeralizer
+                   //, AbstractDataSetSerializer *outDataSetSerializer
                    , const std::string &address
                    , boost::asio::io_service &service) 
   : ClientSocket( address, service)
-  , m_inDataSetSeralizer( inDataSetSeralizer)
-  , m_outDataSetSerializer( outDataSetSerializer)
+  , m_inDataSetSerializer( NULL)
+  , m_outDataSetSerializer( NULL)
 {
   m_filters = filters;  // copy filters definitions
   SendCreate();
@@ -63,9 +63,25 @@ ClientJob::SendCreate( void)
   primHeader.action = (uint8) CREATE;
   GenerateJobID();
 
-  primHeader.nexPartLength = 0; // not used
+  SerializeFilters();
+  primHeader.nexPartLength = (uint16) filterSettingsSerialized.size();
 
-  SendPrimaryHeader();  
+  PrimaryJobHeader::Serialize( &primHeader);
+
+  // create vector of serialized information to pass to sigle send operation
+  vector<boost::asio::const_buffer> buffers;
+  buffers.push_back( 
+    boost::asio::buffer( (uint8*)&primHeader, sizeof(PrimaryJobHeader)) );
+  buffers.push_back( 
+    boost::asio::buffer( 
+      &filterSettingsSerialized[0], filterSettingsSerialized.size() ));
+
+  // send the buffer vector
+  m_socket.async_write_some( 
+    buffers, 
+    boost::bind( &ClientJob::EndSend, this,
+      boost::asio::placeholders::error)
+  );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -73,12 +89,6 @@ ClientJob::SendCreate( void)
 void
 ClientJob::SerializeFiltersProperties( void)
 {
-  if( m_filters.empty() )
-  {
-    LOG( "Empty filter vector. Add some filter into job!");
-    throw ExceptionBase( "Empty filter vector. Add some filter into job!");
-  }
-
   NetStreamVector tmp;
 
   for( FilterSerializerVector::iterator it = m_filters.begin();
@@ -86,6 +96,29 @@ ClientJob::SerializeFiltersProperties( void)
   {
     filterSettingsSerialized << (uint16) (*it)->GetID();  // insert filterID
     (*it)->SerializeProperties( tmp); // serialize it into tmp stream
+
+    // put size of the serialization
+    filterSettingsSerialized << (uint16) tmp.size();
+
+    // copy actual serialization into final stream from tmp
+    filterSettingsSerialized.insert( 
+      filterSettingsSerialized.end(), tmp.begin(), tmp.end() );
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ClientJob::SerializeFilters( void)
+{
+  NetStreamVector tmp;
+
+  for( FilterSerializerVector::iterator it = m_filters.begin();
+    it != m_filters.end(); it++)
+  {
+    filterSettingsSerialized << (uint16) (*it)->GetTypeID();  // insert filterTypeID
+    filterSettingsSerialized << (*it)->GetID();
+    (*it)->SerializeClassInfo( tmp); // serialize it into tmp stream
 
     // put size of the serialization
     filterSettingsSerialized << (uint16) tmp.size();
@@ -207,7 +240,7 @@ ClientJob::SendDataSet( void)
   primHeader.action = (uint8) DATASET;
 
   // serialize dataset settings
-  m_inDataSetSeralizer->SerializeProperties( m_dataSetPropsSerialized);
+  m_inDataSetSerializer->SerializeProperties( m_dataSetPropsSerialized);
 
   primHeader.nexPartLength = (uint16) m_dataSetPropsSerialized.size();  
 
@@ -227,7 +260,7 @@ ClientJob::SendDataSet( void)
   );
 
   // serialize dataSet using this job
-  m_inDataSetSeralizer->Serialize( this);
+  m_inDataSetSerializer->Serialize( this);
 
   SendEndOfDataSetTag();
 }
@@ -253,6 +286,20 @@ ClientJob::SetDataSets( M4D::Imaging::AbstractDataSet *inDataSet
 {
   m_inDataSet = inDataSet;
   m_outDataSet = outdataSet;
+
+  // create dataSetSerializers for input & output dataSets if the not already..
+  {
+    if( m_inDataSetSerializer == NULL)
+      m_inDataSetSerializer = 
+        GeneralDataSetSerializer::GetDataSetSerializer( inDataSet);
+    if( m_outDataSetSerializer == NULL)
+      m_outDataSetSerializer = 
+        GeneralDataSetSerializer::GetDataSetSerializer( outdataSet);
+  }
+
+  // assign dataSets
+  m_inDataSetSerializer->SetDataSet( inDataSet);
+  m_outDataSetSerializer->SetDataSet( outdataSet);
 
   SendDataSet();
 }

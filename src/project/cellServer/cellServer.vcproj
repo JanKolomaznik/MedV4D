@@ -286,6 +286,10 @@
 			<Filter
 				Name="filterSerializers"
 				>
+				<File
+					RelativePath="..\..\include\cellBE\filterSerializers\ThresholdingSerializer.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="dataSetSerializers"

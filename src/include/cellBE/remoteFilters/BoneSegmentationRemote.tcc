@@ -18,18 +18,19 @@ BoneSegmentationRemote<ImageType>::BoneSegmentationRemote()
   // definig vector that will define actual remote pipeline
   FilterSerializerVector m_filterSerializers;
 
+  uint16 filterID = 1;
+
   // put into the vector serializers instances in order that is in remote pipe
   {
     ser = GeneralFilterSerializer::GetFilterSerializer<Thresholding>( 
-      &m_thresholdingOptions );
+      &m_thresholdingOptions, filterID++);
     m_filterSerializers.push_back( ser);
   
     // ... for other possible members definig remote pipe filters
   }
 
   // create job
-  m_job = s_cellClient.CreateJob( 
-    m_filterSerializers, m_inSerializer, m_outSerializer);
+  m_job = s_cellClient.CreateJob( m_filterSerializers);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

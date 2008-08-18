@@ -25,6 +25,11 @@ class AbstractDataSetSerializer
 protected:
   M4D::Imaging::AbstractDataSet *m_dataSet;
 
+  /**
+   *  DataSetIsStateFull so Reset should reset the state
+   */
+  virtual void Reset( void) = 0;
+
 public:  
   AbstractDataSetSerializer( M4D::Imaging::AbstractDataSet *dataSet)
     : m_dataSet( dataSet) {}
@@ -34,6 +39,7 @@ public:
   void SetDataSet( M4D::Imaging::AbstractDataSet *dataSet)
   {
     m_dataSet = dataSet;
+    Reset();
   }
 
   /**

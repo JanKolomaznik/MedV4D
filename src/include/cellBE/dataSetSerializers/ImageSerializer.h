@@ -37,6 +37,10 @@ public:
   
   void OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs);
   void OnDataSetEndRead( void);
+
+private:
+  void Reset( void);
+
 };
 
 }

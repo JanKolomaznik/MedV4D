@@ -20,6 +20,7 @@ class ClientJob
   void GenerateJobID( void);
 
   void SerializeFiltersProperties( void);
+  void SerializeFilters( void);
   void SendPrimaryHeader( void);
 
   void Serialize( NetStream &s);
@@ -31,12 +32,12 @@ class ClientJob
   // only CellClient can construct instances through CreateJob members
   ClientJob(
     FilterSerializerVector &filters
-    , AbstractDataSetSerializer *inDataSetSeralizer
-    , AbstractDataSetSerializer *outDataSetSerializer
+    //, AbstractDataSetSerializer *inDataSetSeralizer
+    //, AbstractDataSetSerializer *outDataSetSerializer
     , const std::string &address
     , boost::asio::io_service &service);
 
-  AbstractDataSetSerializer *m_inDataSetSeralizer;
+  AbstractDataSetSerializer *m_inDataSetSerializer;
   AbstractDataSetSerializer *m_outDataSetSerializer;
 
 public:

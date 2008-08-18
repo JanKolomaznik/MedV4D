@@ -97,6 +97,8 @@ Server::EndPrimaryHeaderRead( tcp::socket *clientSock, PrimaryJobHeader *header,
 
     ServerJob *existing;
 
+    // create, remove & ping requests are dispatched here. Others are issued to
+    // appropriate job
     switch( (BasicJob::Action) header->action)
     {
     case BasicJob::CREATE:
@@ -108,44 +110,27 @@ Server::EndPrimaryHeaderRead( tcp::socket *clientSock, PrimaryJobHeader *header,
       LOG( "CREATE reqest arrived");
       break;
 
-    case BasicJob::DATASET:
-      existing = m_jobManager.FindJob( header->id);
-      existing->ReadDataSet();
-
-      LOG( "DATASET reqest arrived");
-      break;
-
-    case BasicJob::FILTERS:
-      existing = m_jobManager.FindJob( header->id);
-      existing->ReadFilters();
-
-      LOG( "FILTERS reqest arrived");
-      break;
-
-    //case BasicJob::EXEC:
-    //  existing = m_jobManager.FindJob( header->id);
-    //  existing->Execute();
-
-    //  LOG( "EXEC reqest arrived");
-    //  break;
-
     case BasicJob::DESTROY:
       LOG( "DESTROY reqest arrived");
       try {
         existing = m_jobManager.FindJob( header->id);
+        m_jobManager.RemoveJob( header->id );
       } catch( ExceptionBase &) {
         LOG( "Job not found" << header->id);
-      }
-      m_jobManager.RemoveJob( header->id );
+      }      
       return;
 
     case BasicJob::PING:
       WritePingMessage( clientSock);
       break;
-
-    default:
-      LOG( "Unrecognized action job action. From: " << clientSock );
-      throw ExceptionBase("Unrecognized action job action");
+    
+    default:  // issue to job
+      try {
+        existing = m_jobManager.FindJob( header->id);
+        existing->Command( header);
+      } catch( ExceptionBase &) {
+        LOG( "Job not found" << header->id);
+      }
     }
 
     //return header into free ones

@@ -5,6 +5,8 @@
 #include "Imaging/PipelineContainer.h"
 #include "Imaging/PipelineMessages.h"
 
+#include <map>
+
 namespace M4D
 {
 namespace CellBE
@@ -15,6 +17,10 @@ class ServerJob
 {
   friend class Server;
   friend class ExecutionDoneCallback;
+
+  typedef std::map<uint16, AbstractFilterSerializer *> FilterSerializersMap;
+
+  FilterSerializersMap m_filterSeralizersMap;
   
 private:
   ServerJob(boost::asio::io_service &service);
@@ -23,12 +29,26 @@ private:
 
   M4D::Imaging::PipelineContainer m_pipeLine;
 
+  // pointers to first & last filter in pipeline
   M4D::Imaging::AbstractPipeFilter *m_pipelineBegin, *m_pipelineEnd;
 
-  void DeserializeFilterPropertiesAndBuildPipeline( void);
+  void DeserializeFilterClassPropsAndBuildPipeline( void);
+  void DeserializeFilterProperties( void);
   
-  void ReadFilters( void);
+  /**
+   *  Start async operation for definition vector of filters.
+   */
+  void ReadFilters( void); 
+
+  /**
+   *  Start async operation for dataSetProperties reading.
+   */
   void ReadDataSet( void);
+
+  /**
+   *  Calls StopFilters method of PipelineContainer object
+   */
+  void AbortComputation( void);
 
   void EndFiltersRead( const boost::system::error_code& error);
   void EndDataSetPropertiesRead( const boost::system::error_code& error);
@@ -46,6 +66,9 @@ private:
 
   void OnExecutionDone( void);
   void OnExecutionFailed( void);
+
+
+  void Command( PrimaryJobHeader *header);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
