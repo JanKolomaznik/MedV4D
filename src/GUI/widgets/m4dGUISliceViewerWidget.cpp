@@ -1380,22 +1380,22 @@ m4dGUISliceViewerWidget::slotSetSliceOrientation( SliceOrientation so )
     {
         case xy:
 	{
-	    if ( _sliceNum >= maximum[2] ) _sliceNum = maximum[2] - 1;
-	    if ( _sliceNum < minimum[2] ) _sliceNum = minimum[2];
+	    if ( _sliceNum >= _maximum[2] ) _sliceNum = _maximum[2] - 1;
+	    if ( _sliceNum < _minimum[2] ) _sliceNum = _minimum[2];
 	}
 	break;
         
 	case yz:
 	{
-	    if ( _sliceNum >= maximum[0] ) _sliceNum = maximum[0] - 1;
-	    if ( _sliceNum < minimum[0] ) _sliceNum = minimum[0];
+	    if ( _sliceNum >= _maximum[0] ) _sliceNum = _maximum[0] - 1;
+	    if ( _sliceNum < _minimum[0] ) _sliceNum = _minimum[0];
 	}
 	break;
         
 	case zx:
 	{
-	    if ( _sliceNum >= maximum[1] ) _sliceNum = maximum[1] - 1;
-	    if ( _sliceNum < minimum[1] ) _sliceNum = minimum[1];
+	    if ( _sliceNum >= _maximum[1] ) _sliceNum = _maximum[1] - 1;
+	    if ( _sliceNum < _minimum[1] ) _sliceNum = _minimum[1];
 	}
 	break;
     }
