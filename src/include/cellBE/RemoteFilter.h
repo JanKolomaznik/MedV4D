@@ -41,12 +41,9 @@ class RemoteFilter
 {
 public:
 	typedef typename  Imaging::AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType > PredecessorType;
-	struct Properties : public PredecessorType::Properties
-	{
-
-	};
-
-	RemoteFilter();
+	typedef PredecessorType::Properties Properties;
+	
+	RemoteFilter( Properties *prop );
 	~RemoteFilter();
 protected:
 

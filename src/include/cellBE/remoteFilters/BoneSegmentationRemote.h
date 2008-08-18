@@ -26,6 +26,7 @@ class BoneSegmentationRemote
 {
 public:
 	typedef typename RemoteFilter<ImageType, ImageType> PredecessorType;
+	typedef PredecessorType::Properties	Properties;
 
 	BoneSegmentationRemote();
   

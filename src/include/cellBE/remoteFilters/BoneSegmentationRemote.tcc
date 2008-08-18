@@ -11,6 +11,7 @@ namespace Imaging
 
 template< typename ImageType>
 BoneSegmentationRemote<ImageType>::BoneSegmentationRemote()
+: PredecessorType( new Properties() )
 {
   AbstractFilterSerializer *ser;  
 
