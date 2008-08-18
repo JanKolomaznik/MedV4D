@@ -55,6 +55,9 @@ public:
 	virtual int
 	GetElementTypeID()const=0;
 
+	virtual WriterBBoxInterface &
+	SetWholeDirtyBBox() = 0;
+
 	virtual const ModificationManager &
 	GetModificationManager()const = 0;
 protected:
