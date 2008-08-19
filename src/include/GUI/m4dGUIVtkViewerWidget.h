@@ -82,6 +82,7 @@ public slots:
     virtual void slotRotateAxisY( double y );
     virtual void slotRotateAxisZ( double z );
     virtual void slotSetSliceOrientation( SliceOrientation so );
+    virtual void slotColorPicker( int x, int y, int z );
 
 protected:
     virtual void resizeEvent( QResizeEvent* event );

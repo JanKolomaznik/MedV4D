@@ -69,6 +69,7 @@ public slots:
     virtual void slotRotateAxisY( double y );
     virtual void slotRotateAxisZ( double z );
     virtual void slotSetSliceOrientation( SliceOrientation so );
+    virtual void slotColorPicker( int x, int y, int z );
 
 protected:
     void setButtonHandler( ButtonHandler hnd, MouseButton btn );
@@ -99,10 +100,12 @@ protected:
     void deletePoint();
     void deleteShape();
     void deleteAll();
+    void colorPicker( int x, int y, int z );
 
 private:
 
     void setParameters();
+    void resetParameters();
     void drawPluggedBorder();
     void drawSelectionModeBorder();
     void drawSelectedBorder();

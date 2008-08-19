@@ -34,6 +34,7 @@ template< typename ElementType >
 class TexturePreparer
 {
 public:
+    static GLenum oglType();
     static bool prepare( Imaging::InputPortAbstractImage* inPort, uint32& width, uint32& height, GLint brightnessRate, GLfloat contrastRate, m4dGUIAbstractViewerWidget::SliceOrientation so, uint32 slice )
     {
         uint32 depth;
@@ -59,25 +60,34 @@ public:
 	    {
 		try
 		{
-		    switch ( so )
+		    if ( inPort->GetAbstractImage().GetDimension() == 2 )
 		    {
-			case m4dGUIAbstractViewerWidget::xy:
-			{
-		            original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetAbstractImage()).GetPointer( width, height, depth, xstride, ystride, zstride );
-			    break;
-			}
+		        original = Imaging::Image< ElementType, 2 >::CastAbstractImage(inPort->GetAbstractImage()).GetPointer( width, height, xstride, ystride );
+			depth = zstride = 0;
+			slice = 0;
+		    }
+		    else if ( inPort->GetAbstractImage().GetDimension() == 3 )
+		    {
+		        switch ( so )
+		        {
+			    case m4dGUIAbstractViewerWidget::xy:
+			    {
+		                original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetAbstractImage()).GetPointer( width, height, depth, xstride, ystride, zstride );
+			        break;
+			    }
 
-			case m4dGUIAbstractViewerWidget::yz:
-			{
-		            original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetAbstractImage()).GetPointer( depth, width, height, zstride, xstride, ystride );
-			    break;
-			}
+			    case m4dGUIAbstractViewerWidget::yz:
+			    {
+		                original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetAbstractImage()).GetPointer( depth, width, height, zstride, xstride, ystride );
+			        break;
+			    }
 
-			case m4dGUIAbstractViewerWidget::zx:
-			{
-		            original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetAbstractImage()).GetPointer( height, depth, width, ystride, zstride, xstride );
-			    break;
-			}
+			    case m4dGUIAbstractViewerWidget::zx:
+			    {
+		                original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetAbstractImage()).GetPointer( height, depth, width, ystride, zstride, xstride );
+			        break;
+			    }
+		        }
 		    }
 		} catch (...) { ready = false; }
 		inPort->ReleaseDatasetLock();
@@ -106,7 +116,7 @@ public:
 	    else pixel[i] = (ElementType)( contrastRate *   ( pixel[i] - mean + brightnessRate * multiplicator ) + mean );
 	}
 	glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
-	              GL_LUMINANCE, GL_SHORT, pixel );
+	              GL_LUMINANCE, oglType(), pixel );
 	delete[] pixel;
 	return ready;
     }
@@ -117,6 +127,64 @@ private:
 	    
 };
 
+template<>
+GLenum
+TexturePreparer<uint8>::oglType()
+{
+    return GL_UNSIGNED_BYTE;
+}
+
+template<>
+GLenum
+TexturePreparer<int8>::oglType()
+{
+    return GL_BYTE;
+}
+
+template<>
+GLenum
+TexturePreparer<uint16>::oglType()
+{
+    return GL_UNSIGNED_SHORT;
+}
+
+template<>
+GLenum
+TexturePreparer<int16>::oglType()
+{
+    return GL_SHORT;
+}
+
+template<>
+GLenum
+TexturePreparer<uint32>::oglType()
+{
+    return GL_UNSIGNED_INT;
+}
+
+template<>
+GLenum
+TexturePreparer<int32>::oglType()
+{
+    return GL_INT;
+}
+
+template<>
+GLenum
+TexturePreparer<uint64>::oglType()
+{
+    //FIXME: no 64-bit integer in opengl textures
+    return GL_UNSIGNED_INT;
+}
+
+template<>
+GLenum
+TexturePreparer<int64>::oglType()
+{
+    //FIXME: no 64-bit integer in opengl textures
+    return GL_INT;
+}
+
 m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( unsigned index, QWidget *parent)
     : QGLWidget(parent)
 {
@@ -125,6 +193,7 @@ m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( unsigned index, QWidget *paren
     _inputPorts.AddPort( _inPort );
     _selected = false;
     _sliceOrientation = xy;
+    resetParameters();
     setInputPort( );
 }
 
@@ -136,6 +205,7 @@ m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( Imaging::ConnectionInterface* 
     _inputPorts.AddPort( _inPort );
     _selected = false;
     _sliceOrientation = xy;
+    resetParameters();
     setInputPort( conn );
 }
 
@@ -157,6 +227,7 @@ m4dGUISliceViewerWidget::setSelected()
 void
 m4dGUISliceViewerWidget::setInputPort( )
 {
+    _ready = false;
     _inPort->UnPlug();
     setParameters();
     resizeGL( width(), height() );
@@ -166,6 +237,7 @@ m4dGUISliceViewerWidget::setInputPort( )
 void
 m4dGUISliceViewerWidget::setInputPort( Imaging::ConnectionInterface* conn )
 {
+    _ready = false;
     conn->ConnectConsumer( *_inPort );
     setParameters();
     resizeGL( width(), height() );
@@ -173,7 +245,7 @@ m4dGUISliceViewerWidget::setInputPort( Imaging::ConnectionInterface* conn )
 }
 
 void
-m4dGUISliceViewerWidget::setParameters()
+m4dGUISliceViewerWidget::resetParameters()
 {
     _ready = false;
     if ( _inPort->IsPlugged() )
@@ -213,6 +285,7 @@ m4dGUISliceViewerWidget::setParameters()
     _oneSliceMode = true;
     _slicesPerRow = 1;
     _flipH = _flipV = 1;
+    _shapes.clear();
     _availableSlots.clear();
     _availableSlots.push_back( SETBUTTONHANDLER );
     _availableSlots.push_back( SETSELECTED );
@@ -237,9 +310,43 @@ m4dGUISliceViewerWidget::setParameters()
     _availableSlots.push_back( DELETEALL );
     _availableSlots.push_back( ZOOM );
     _availableSlots.push_back( SETSLICEORIENTATION );
+    //_availableSlots.push_back( COLORPICKER );
     _leftSideData.clear();
     _rightSideData.clear();
     _ready = true;
+}
+
+void
+m4dGUISliceViewerWidget::setParameters()
+{
+    _ready = false;
+    if ( _inPort->IsPlugged() )
+    {
+        try
+	{
+	    if ( _inPort->TryLockDataset() )
+            {
+	        try
+		{
+       		    _imageID = _inPort->GetAbstractImage().GetElementTypeID();
+	    	    _minimum[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).minimum;
+	    	    _minimum[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).minimum;
+	    	    _minimum[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).minimum;
+	    	    _maximum[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).maximum;
+	    	    _maximum[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).maximum;
+	    	    _maximum[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).maximum;
+		    _sliceNum = _minimum[ ( _sliceOrientation + 2 ) % 3 ];
+		}
+		catch (...) { _ready = false; }
+	        _inPort->ReleaseDatasetLock();
+	        _ready = true;
+            }
+	}
+	catch (...) { _ready = false; }
+    }
+    _shapes.clear();
+    _leftSideData.clear();
+    _rightSideData.clear();
 }
 
 m4dGUISliceViewerWidget::AvailableSlots
@@ -261,42 +368,11 @@ m4dGUISliceViewerWidget::ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imag
     {
         case Imaging::PMI_DATASET_PUT:
 	case Imaging::PMI_PORT_PLUGGED:
-	{
-	    setParameters();
-    	    resizeGL( width(), height() );
-    	    updateGL();
-	}
-	break;
-
         case Imaging::PMI_FILTER_UPDATED:
 	{
-	    _ready = false;
-	    if ( _inPort->IsPlugged() )
-	    {
-	        try
-		{
-		    if ( _inPort->TryLockDataset() )
-	            {
-		        try
-			{
-        		    _imageID = _inPort->GetAbstractImage().GetElementTypeID();
-		    	    _minimum[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).minimum;
-		    	    _minimum[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).minimum;
-		    	    _minimum[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).minimum;
-		    	    _maximum[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).maximum;
-		    	    _maximum[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).maximum;
-		    	    _maximum[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).maximum;
-			    _sliceNum = _minimum[ ( _sliceOrientation + 2 ) % 3 ];
-			}
-			catch (...) { _ready = false; }
-		        _inPort->ReleaseDatasetLock();
-		        _ready = true;
-	            }
-		}
-		catch (...) { _ready = false; }
-	    }
-    	    resizeGL( width(), height() );
-    	    updateGL();
+	    setParameters();
+            resizeGL( width(), height() );
+            updateGL();
 	}
 	break;
 	
@@ -450,8 +526,8 @@ m4dGUISliceViewerWidget::paintGL()
     {
         unsigned i;
 	double w, h;
-	w = (double)_maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ],
-        h = (double)_maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ];
+	w = (double)(_maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ]),
+        h = (double)(_maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ]);
         if ( _oneSliceMode )
 	{
 	    QPoint offset;
@@ -971,6 +1047,45 @@ m4dGUISliceViewerWidget::deleteAll()
 }
 
 void
+m4dGUISliceViewerWidget::colorPicker( int x, int y, int z )
+{
+    int64 result;
+    if ( !_ready ) setParameters();
+    if ( !_ready ) return;
+    if ( _inPort->IsPlugged() )
+    {
+        try
+	{
+	    if ( _inPort->TryLockDataset() )
+	    {
+                try
+	        {
+		    if ( _inPort->GetAbstractImage().GetDimension() == 3 )
+		    {
+		        INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
+		            _imageID, result = Imaging::Image< TTYPE, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetElement( x, y, z ) );
+		    }
+		    else if ( _inPort->GetAbstractImage().GetDimension() == 2 )
+		    {
+		        INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
+			    _imageID, result = Imaging::Image< TTYPE, 2 >::CastAbstractImage(_inPort->GetAbstractImage()).GetElement( x, y ) );
+		    }
+		    else
+		        result = 0;
+		}
+		catch (...) { _ready = false; }
+	        _inPort->ReleaseDatasetLock();
+	    }
+	    else
+	        return;
+	}
+	catch (...) { _ready = false; }
+    }
+    if ( !_ready ) return;
+    emit signalColorPicker( result );
+}
+
+void
 m4dGUISliceViewerWidget::slotSetButtonHandler( ButtonHandler hnd, MouseButton btn )
 {
     setButtonHandler( hnd, btn );
@@ -1136,6 +1251,12 @@ m4dGUISliceViewerWidget::slotSetSliceOrientation( SliceOrientation so )
     _sliceOrientation = so;
     if ( _sliceNum >= (int)_maximum[ ( _sliceOrientation + 2 ) % 3 ] ) _sliceNum = _maximum[ ( _sliceOrientation + 2 ) % 3 ] - 1;
     if ( _sliceNum < (int)_minimum[ ( _sliceOrientation + 2 ) % 3 ] ) _sliceNum = _minimum[ ( _sliceOrientation + 2 ) % 3 ];
+}
+
+void
+m4dGUISliceViewerWidget::slotColorPicker( int x, int y, int z )
+{
+    colorPicker( x, y, z );
 }
 
 } /*namespace Viewer*/

@@ -309,5 +309,10 @@ m4dGUIVtkViewerWidget::slotSetSliceOrientation( SliceOrientation so )
 {
 }
 
+void
+m4dGUIVtkViewerWidget::slotColorPicker( int x, int y, int z )
+{
+}
+
 } /* namespace Viewer */
 } /* namespace M4D */

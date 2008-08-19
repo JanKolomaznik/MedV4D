@@ -34,6 +34,7 @@
 #define ROTATEAXISY		24
 #define ROTATEAXISZ		25
 #define SETSLICEORIENTATION	26
+#define COLORPICKER		27
 
 namespace M4D
 {
@@ -107,6 +108,7 @@ public slots:
     virtual void slotRotateAxisY( double y )=0;
     virtual void slotRotateAxisZ( double z )=0;
     virtual void slotSetSliceOrientation( SliceOrientation so )=0;
+    virtual void slotColorPicker( int x, int y, int z )=0;
 
 signals:
     void signalSetButtonHandler( unsigned index, ButtonHandler hnd, MouseButton btn );
@@ -136,6 +138,7 @@ signals:
     void signalRotateAxisY( unsigned index, double y );
     void signalRotateAxisZ( unsigned index, double z );
     void signalSetSliceOrientation( SliceOrientation so );
+    void signalColorPicker( int64 value );
 
 };
 
