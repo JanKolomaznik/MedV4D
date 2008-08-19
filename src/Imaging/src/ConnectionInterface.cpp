@@ -16,6 +16,8 @@ ConnectionInterface::RouteMessage(
 	FlowDirection				direction
 	)
 {
+	DL_PRINT( 8, "ROUTING MESSAGE : Conn=" << this << "; msgID=" << msg->msgID );
+
 	if( _messageHook ) {
 		_messageHook->ReceiveMessage( msg, sendStyle, direction );
 	}

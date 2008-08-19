@@ -31,8 +31,12 @@ Port::ReceiveMessage(
 	FlowDirection				direction
 	)
 {
+	ASSERT( _msgReceiver != NULL );
 	//TODO handle special situations - messages for port, etc.
 	if( _msgReceiver ) {
+		
+		DL_PRINT( 8, "PORT RECEIVING MESSAGE : Port=" << this << "; msgID=" << msg->msgID );
+		
 		_msgReceiver->ReceiveMessage( msg, sendStyle, direction );
 	}
 }

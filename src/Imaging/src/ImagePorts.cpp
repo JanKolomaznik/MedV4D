@@ -30,6 +30,7 @@ InputPortAbstractImage
 		dynamic_cast< AbstractImageConnectionInterface * >( &connection );
 	if( conn ) {
 		this->_connection = conn;
+		PortPluggedMsg();
 	} else {
 		throw Port::EConnectionTypeMismatch();
 	}
@@ -56,6 +57,7 @@ OutputPortAbstractImage
 		dynamic_cast< AbstractImageConnectionInterface * >( &connection );
 	if( conn ) {
 		this->_connection = conn;
+		PortPluggedMsg();
 	} else {
 		throw Port::EConnectionTypeMismatch();
 	}

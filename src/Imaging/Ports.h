@@ -269,6 +269,7 @@ public:
 private:
 	//Not implemented
 	InputPortList( const InputPortList& );
+	InputPortList();
 	InputPortList&
 	operator=( const InputPortList& );
 
@@ -313,6 +314,7 @@ public:
 private:
 	//Not implemented
 	OutputPortList( const OutputPortList& );
+	OutputPortList();
 	OutputPortList&
 	operator=( const OutputPortList& );
 
