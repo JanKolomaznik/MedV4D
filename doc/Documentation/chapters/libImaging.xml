@@ -18,7 +18,7 @@
 	<section>
 	<title>Dependencies</title>
 		
-		<para>aaaaaaa</para>
+		<para>This library should be linked together with libCommon. So all its dependencies come with it.</para>
 	</section>
 
 </section>
@@ -29,9 +29,10 @@
 	<para>
 	All declarations are in namespace <code>M4D::Imaging</code>.
 	Whole design of class hierarchies is 
-	<xref linkend="pic.PipelineScheme"/>
+	<!--xref linkend="pic.PipelineScheme"/-->
 	</para>
 
+	<!--
 	<para>
 	<figure float="1" id="pic.PipelineScheme">
 	<title>Pipeline scheme</title>
@@ -45,6 +46,7 @@
 	</mediaobject>
 	</figure>
 	</para>
+	-->
 
 	<para>
 	Pipeline should be built from objects of certain types, which we will now discuss.
@@ -230,10 +232,10 @@ ExamplePipelineHandler
 		</para>
 
 		<para>
-		To make decision easier you can use prepared flowchart <xref linkend="pic.MostSuitableFilterFlowchart"/> and find most suitable ancestor class.
+		To make decision easier you can use prepared flowchart <!--xref linkend="pic.MostSuitableFilterFlowchart"/--> and find most suitable ancestor class.
 		</para>
 		
-
+		<!--
 		<figure float="1" id="pic.MostSuitableFilterFlowchart">
 		<title>Filter decisive flowchart</title>
 		<mediaobject>
@@ -241,6 +243,7 @@ ExamplePipelineHandler
 			<imageobject><imagedata fileref="figures/libImaging/MostSuitableFilterFlowchart.png" format="PNG" scale="75"/></imageobject>
 		</mediaobject>
 		</figure>
+		-->
 
 		<para>
 		Now if you have chosen right ancestor class, you can start with actual implementation of your filter. You should keep few rules and concepts, which 
@@ -253,7 +256,51 @@ ExamplePipelineHandler
 		So try maximally use dataset traits (now only available <classname>ImageTraits</classname>), template specialializations, etc.
 		All ancestor classes are templated (with exception of <classname>AbstractPipeFilter</classname>), so it makes that easier.
 		</para>
+
+		<para>
+		Try to keep these rules, when designing filter interface:
+		</para>
+		<itemizedlist>
+			<listitem><para>
+			Filter class has public typedef to predecessor class with name <classname>PredecessorType</classname>.
+			</para></listitem>
+			
+			<listitem><para>
+			All properties of filter are in one public nested <classname>struct Properties</classname> deriving from <classname>PredecessorType::Properties</classname>.
+			In case, that set of properties is empty, make at least public typedef to <classname>PredecessorType::Properties</classname> with name Properties.	
+			</para></listitem>
+
+			<listitem><para>
+			Prepare default constructor, and constructor with pointer to <classname>Properties</classname>. Default constructor creates default set of properties.
+			In both constructors pointer to instance of <classname>Properties</classname> is passed to predecessor constructor in list of initializers.
+			Using constructor with parameter will completely initialize filter with passed properties, no other method is needed to call.
+			</para></listitem>
+			
+		</itemizedlist>
+
+		<para>
+		AAAAAAAAAAAAAAAAAAAAAAAAA	
+		</para>
 		
+		<itemizedlist>
+			<listitem><para>
+			Pointer to <classname>Properties</classname> structure is stored as protected member <code>_properties</code>, but its type is 
+			<classname>AbstractFilter::Properties</classname>. So if you want access members of your properties structure you must either 
+			cast to right type every time, or put preprocessor macro <code>GET_PROPERTIES_DEFINITION_MACRO</code> to private section of your
+			class declaration. Now method <code>GetProperties()</code> returning reference to <classname>Properties</classname> is available for
+			usage.
+			</para></listitem>
+			
+			<listitem><para>
+			To make declaration of Get/Set methods easier three macros are prepared: <code>GET_PROPERTY_METHOD_MACRO( TYPE, NAME, MEMBER_NAME )</code>, 
+			<code>SET_PROPERTY_METHOD_MACRO( TYPE, NAME, MEMBER_NAME )</code> and <code>GET_SET_PROPERTY_METHOD_MACRO( TYPE, NAME, MEMBER_NAME )</code>.
+			These macros will be unwinded into inline declarations of <code>TYPE Get'NAME'()const</code>, <code>void Set'NAME'( TYPE value )</code> and both.
+			Parameter <code>NAME</code> is used in name of Get/Set method and parameter <code>MEMBER_NAME</code> is name of <classname>Properties</classname> member 
+			accessed by these two methods.
+			</para></listitem>
+
+		</itemizedlist>
+
 		<programlisting><![CDATA[
 template< typename ElementType >
 class ThresholdingFunctor
