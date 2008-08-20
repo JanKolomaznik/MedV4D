@@ -75,7 +75,7 @@ ImageSerializer::SerializeProperties(M4D::CellBE::NetStream &s)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-M4D::Imaging::AbstractDataSet *
+M4D::Imaging::AbstractDataSet::ADataSetPtr
 ImageSerializer::DeSerializeProperties(M4D::CellBE::NetStream &s)
 {
 
@@ -94,7 +94,9 @@ ImageSerializer::DeSerializeProperties(M4D::CellBE::NetStream &s)
 		s >> elExtents[ i ];
 	}
 
-	//TODO create dataset
+	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( elemType,
+		ImageFactory::CreateEmptyImageFromExtents< TTYPE >( dim, minimums, maximums, elExtents );
+		);
 
 	delete [] minimums;
 	delete [] maximums;
