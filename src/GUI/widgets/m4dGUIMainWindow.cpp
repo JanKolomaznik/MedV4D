@@ -73,8 +73,11 @@ const int m4dGUIMainWindow::slotsToActions[] = { ACTION_EMPTY, ACTION_EMPTY, ACT
                                                  ACTION_NEW_SHAPE, ACTION_CLEAR_POINT, ACTION_CLEAR_SHAPE, ACTION_CLEAR_ALL, 
                                                  ACTION_ROTATE_3D, ACTION_ROTATE_3D, ACTION_ROTATE_3D, ACTION_EMPTY };
 
-m4dGUIMainWindow::m4dGUIMainWindow ( const char *title, const QIcon &icon )
+m4dGUIMainWindow::m4dGUIMainWindow ( const char *appName, const char *orgName, const QIcon &icon )
 {
+  QCoreApplication::setApplicationName( appName );
+  QCoreApplication::setOrganizationName( orgName );
+
   initMainWindowResource();
 
   QWidget *centralWidget = new QWidget;
@@ -92,7 +95,7 @@ m4dGUIMainWindow::m4dGUIMainWindow ( const char *title, const QIcon &icon )
   mainLayout->addWidget( mainViewerDesktop );
   centralWidget->setLayout( mainLayout );
 
-  setWindowTitle( tr( title ) ); 
+  setWindowTitle( tr( appName ) ); 
   setWindowIcon( icon );
   showMaximized();
 

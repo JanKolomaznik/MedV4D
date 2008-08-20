@@ -4,12 +4,9 @@ using namespace std;
 using namespace M4D::Imaging;
 
 mainWindow::mainWindow ()
-  : m4dGUIMainWindow( APPLICATION_NAME )
+  : m4dGUIMainWindow( APPLICATION_NAME, ORGANIZATION_NAME )
 {
   Q_INIT_RESOURCE( mainWindow ); 
-
-  QCoreApplication::setOrganizationName( ORGANIZATION_NAME );
-  QCoreApplication::setApplicationName( APPLICATION_NAME );
 
   // createPipeline();
 

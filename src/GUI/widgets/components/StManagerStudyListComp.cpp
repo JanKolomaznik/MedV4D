@@ -534,6 +534,7 @@ void StManagerStudyListComp::addResultSetToStudyTable ( const DcmProvider::Resul
 
   // sorting must be enabled AFTER populating table with items
   table->setSortingEnabled( true );
+  table->sortByColumn( 1, Qt::AscendingOrder );
 }
 
 

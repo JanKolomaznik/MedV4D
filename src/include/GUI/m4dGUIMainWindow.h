@@ -48,11 +48,13 @@ class m4dGUIMainWindow: public QMainWindow
     /** 
      * Main Window constructor.
      *
-     * @param title title of the main window, application
+     * @param appName name of the application - for title and QSettings prefix
+     * @param orgName name of the organization - for QSettings prefix
      * @param icon reference to the icon of the main window, application - default
      * is universal app.png from incons directory
      */
-    m4dGUIMainWindow ( const char *title, const QIcon &icon = QIcon( ":/icons/app.png" ) );
+    m4dGUIMainWindow ( const char *appName, const char *orgName,
+                       const QIcon &icon = QIcon( ":/icons/app.png" ) );
 
     void addSource ( M4D::Imaging::ConnectionInterface *conn, const char *pipelineDescription,
                      const char *connectionDescription );

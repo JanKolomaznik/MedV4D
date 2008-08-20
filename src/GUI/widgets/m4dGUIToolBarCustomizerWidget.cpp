@@ -15,6 +15,9 @@ m4dGUIToolBarCustomizerWidget::m4dGUIToolBarCustomizerWidget ( QAction **actions
 {
   initToolBarCustomizerWidgetResource();
 
+  // loads previously saved actions settings (from QSettings)
+  loadActions();
+
   toolBarButtonsTable = createToolBarButtonsTable();
 
   connect( toolBarButtonsTable, SIGNAL(currentItemChanged( QTableWidgetItem *, QTableWidgetItem * ) ), 
@@ -67,13 +70,15 @@ void m4dGUIToolBarCustomizerWidget::accept ()
     actions[row]->setShortcut( QKeySequence( toolBarButtonsTable->item( row - 1, 1 )->text() ) );
   }
 
+  saveActions();
+
   emit ready();
 }
 
 
 void m4dGUIToolBarCustomizerWidget::reject ()
 {
-  for ( int row = 1; row < actionsNum; row++ )
+  for ( unsigned row = 1; row < actionsNum; row++ )
   {
     QTableWidgetItem *shortcutItem = new QTableWidgetItem( QString( actions[row]->shortcut() ) );
     toolBarButtonsTable->setItem( row - 1, 1, shortcutItem );
@@ -99,7 +104,7 @@ QTableWidget *m4dGUIToolBarCustomizerWidget::createToolBarButtonsTable ()
   actionsTable->verticalHeader()->hide();
 
   // from second - first is the empty action for all unplugged slots (it's not in toolBar)
-  for ( int row = 1; row < actionsNum; row++ )
+  for ( unsigned row = 1; row < actionsNum; row++ )
   {
     QTableWidgetItem *actionItem = new QTableWidgetItem( actions[row]->text() );
     actionItem->setFlags( actionItem->flags() & ~Qt::ItemIsEditable );
@@ -110,6 +115,39 @@ QTableWidget *m4dGUIToolBarCustomizerWidget::createToolBarButtonsTable ()
   }
 
   return actionsTable;
+}
+
+
+void m4dGUIToolBarCustomizerWidget::loadActions ()
+{
+  QSettings settings;
+  settings.beginGroup( "Actions" );
+    
+  for ( unsigned row = 1; row < actionsNum; row++ )
+  {
+    QString accelText = settings.value( actions[row]->text() ).toString();
+
+    if ( !accelText.isEmpty() ) {
+      actions[row]->setShortcut( QKeySequence( accelText ) );
+    }
+  }
+
+  settings.endGroup();
+}
+
+
+void m4dGUIToolBarCustomizerWidget::saveActions ()
+{
+  QSettings settings;
+  settings.beginGroup( "Actions" );
+     
+  for ( unsigned row = 1; row < actionsNum; row++ )
+  {
+    QString accelText = QString( actions[row]->shortcut() );
+    settings.setValue( actions[row]->text(), accelText );
+  }
+
+  settings.endGroup();
 }
 
 } // namespace GUI

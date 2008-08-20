@@ -7,12 +7,9 @@ using namespace M4D::Imaging;
 
 
 mainWindow::mainWindow ()
-  : m4dGUIMainWindow( APPLICATION_NAME ), _inConnection( NULL ), _outConnection( NULL )
+  : m4dGUIMainWindow( APPLICATION_NAME, ORGANIZATION_NAME ), _inConnection( NULL ), _outConnection( NULL )
 {
 	Q_INIT_RESOURCE( mainWindow ); 
-
-	QCoreApplication::setOrganizationName( ORGANIZATION_NAME );
-	QCoreApplication::setApplicationName( APPLICATION_NAME );
 
 	CreatePipeline();
 

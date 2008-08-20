@@ -90,6 +90,16 @@ class m4dGUIToolBarCustomizerWidget: public QWidget
      */
     QTableWidget *createToolBarButtonsTable ();
 
+    /**
+     * Modifies the behavior of each QAction whose name matches an entry in the settings.
+     */
+    void loadActions ();
+
+    /**
+     * Saves new settings of actions - to remember them, to survive a restart.
+     */
+    void saveActions ();
+
 
     /// Table of actions to be customized.
     QTableWidget *toolBarButtonsTable;
