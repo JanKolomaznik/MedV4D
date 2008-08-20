@@ -1,9 +1,11 @@
 
 #include "Common.h"
 #include "serverJob.h"
+#include "jobManager.h"
 
 #include "Imaging/ImageFactory.h"
 #include <vector>
+
 
 using namespace M4D::CellBE;
 using namespace M4D::Imaging;
@@ -11,52 +13,61 @@ using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ServerJob::ServerJob(boost::asio::io_service &service)
-    : BasicJob(service)
+ServerJob::ServerJob(boost::asio::ip::tcp::socket *sock
+                     , JobManager* jobManager)
+    : BasicJob(sock)
+    , m_jobManager( jobManager)
 {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-ServerJob::DeserializeFilterClassPropsAndBuildPipeline( void)
+ServerJob::EndReadPipelineDefinition( const boost::system::error_code& error)
 {
-  NetStreamArrayBuf s( &m_filterSettingContent[0], 
-    m_filterSettingContent.size());
-
-  AbstractFilterSerializer *fSeriz;
-  // create filter instances according filter properties in stream
-  // and add them into pipeline
-  AbstractPipeFilter *producer, *consumer;
-  if( s.HasNext() )   // add the first
-  {
-    // perform deserialization
-    GeneralFilterSerializer::DeSerialize( &producer, &fSeriz, s);
-    m_pipeLine.AddFilter( producer);
-
-    // add created Serializer into Map
-    m_filterSeralizersMap.insert( FilterSerializersMap::value_type(
-      fSeriz->GetID(), fSeriz) );
-
-    m_pipelineBegin = producer;
+  try {
+    HandleErrors( error);
     
+    NetStreamArrayBuf s( 
+      &m_filterSettingContent[0], m_filterSettingContent.size());
+
+    AbstractFilterSerializer *fSeriz;
+    // create filter instances according filter properties in stream
+    // and add them into pipeline
+    AbstractPipeFilter *producer, *consumer;
+    if( s.HasNext() )   // add the first
+    {
+      // perform deserialization
+      GeneralFilterSerializer::DeSerialize( &producer, &fSeriz, s);
+      m_pipeLine.AddFilter( producer);
+
+      // add created Serializer into Map
+      m_filterSeralizersMap.insert( FilterSerializersMap::value_type(
+        fSeriz->GetID(), fSeriz) );
+
+      m_pipelineBegin = producer;      
+    }
+
+    // now for each remaining create & connect with predecessing
+    while(s.HasNext())
+    {
+      // perform deserialization
+      GeneralFilterSerializer::DeSerialize( &consumer, &fSeriz, s);
+      // add it into PipeLine
+      m_pipeLine.AddFilter( consumer);
+      m_pipeLine.MakeConnection( *producer, 0, *consumer, 0);
+
+      // add created Serializer into Map
+      m_filterSeralizersMap.insert( FilterSerializersMap::value_type(
+        fSeriz->GetID(), fSeriz) );
+    }
+
+    m_pipelineEnd = consumer;
+
+  } catch( WrongFilterException &) {
+    SendResultBack( RESPONSE_ERROR_IN_INPUT);
+  } catch( ExceptionBase &) {
   }
-
-  // now for each remaining create & connect with predecessing
-  while(s.HasNext())
-  {
-    // perform deserialization
-    GeneralFilterSerializer::DeSerialize( &consumer, &fSeriz, s);
-    // add it into PipeLine
-    m_pipeLine.AddFilter( consumer);
-    m_pipeLine.MakeConnection( *producer, 0, *consumer, 0);
-
-    // add created Serializer into Map
-    m_filterSeralizersMap.insert( FilterSerializersMap::value_type(
-      fSeriz->GetID(), fSeriz) );
-  }
-
-  m_pipelineEnd = consumer;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -84,10 +95,23 @@ ServerJob::DeserializeFilterProperties( void)
 ///////////////////////////////////////////////////////////////////////////////
 
 void
+ServerJob::ReadPipelineDefinition( void)
+{
+  m_filterSettingContent.resize( primHeader.nexPartLength);
+  m_socket->async_read_some(
+    boost::asio::buffer( m_filterSettingContent),
+    boost::bind( &ServerJob::EndReadPipelineDefinition, this,
+      boost::asio::placeholders::error)
+    );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
 ServerJob::ReadFilters( void)
 {
   m_filterSettingContent.resize( primHeader.nexPartLength);
-  m_socket.async_read_some(
+  m_socket->async_read_some(
     boost::asio::buffer( m_filterSettingContent),
     boost::bind( &ServerJob::EndFiltersRead, this,
       boost::asio::placeholders::error)
@@ -101,7 +125,7 @@ ServerJob::ReadDataSet( void)
 {
   // read the dataSet properties
   m_filterSettingContent.resize( primHeader.nexPartLength);
-  m_socket.async_read_some(
+  m_socket->async_read_some(
     boost::asio::buffer( m_filterSettingContent),
     boost::bind( &ServerJob::EndDataSetPropertiesRead, this,
       boost::asio::placeholders::error)
@@ -115,7 +139,7 @@ ServerJob::EndFiltersRead( const boost::system::error_code& error)
 {
   try {
     HandleErrors( error);
-    DeserializeFilterClassPropsAndBuildPipeline();
+    DeserializeFilterProperties();
 
   } catch( WrongFilterException &) {
     SendResultBack( RESPONSE_ERROR_IN_INPUT);
@@ -208,7 +232,7 @@ ServerJob::SendResultBack( ResponseID result)
   }
 
   // send the buffer vector
-  m_socket.async_write_some( 
+  m_socket->async_write_some( 
     buffers, 
     boost::bind( &ServerJob::OnResultHeaderSent, this,
       boost::asio::placeholders::error, h)
@@ -260,24 +284,29 @@ ServerJob::Command( PrimaryJobHeader *header)
   switch( header->action)
   {
   case BasicJob::DATASET:
-    ReadDataSet();
     LOG( "DATASET reqest arrived");
+    ReadDataSet();
     break;
 
   case BasicJob::FILTERS:
-    ReadFilters();
     LOG( "FILTERS reqest arrived");
+    ReadFilters();    
     break;
 
   case BasicJob::ABORT:
-    AbortComputation();
     LOG( "ABORT reqest arrived");
+    AbortComputation();    
     break;
 
   //case BasicJob::EXEC:
   //  Execute();
   //  LOG( "EXEC reqest arrived");
-  //  break;   
+  //  break;
+
+  case BasicJob::DESTROY:
+      LOG( "DESTROY reqest arrived");
+      m_jobManager->RemoveJob( header->id );
+      break;
 
   default:
     LOG( "Unrecognized action job action."); // From: " << m_socket );
@@ -291,6 +320,31 @@ void
 ServerJob::AbortComputation( void)
 {
   m_pipeLine.StopFilters();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ServerJob::WaitForCommand( void)
+{  
+  m_socket->async_read_some(
+      boost::asio::buffer( (uint8*) &primHeader, sizeof(PrimaryJobHeader) ),
+      boost::bind( &ServerJob::EndWaitForCommand, this, boost::asio::placeholders::error)
+      );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ServerJob::EndWaitForCommand( const boost::system::error_code& error)
+{
+  try {
+    HandleErrors( error);
+
+    Command( &primHeader);
+
+  } catch( NetException &) {
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

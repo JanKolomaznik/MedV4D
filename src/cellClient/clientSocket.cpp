@@ -18,7 +18,7 @@ using boost::asio::ip::tcp;
 
 ClientSocket::ClientSocket( const std::string &address,
   boost::asio::io_service &service)
-  : m_address(address), BasicJob( service)
+  : m_address(address), BasicJob( new tcp::socket( service))
 {
   Connect( service);
 }
@@ -44,8 +44,8 @@ ClientSocket::Connect( boost::asio::io_service &service)
   boost::system::error_code error = boost::asio::error::host_not_found;
   while (error && endpoint_iterator != end)
   {
-    m_socket.close();
-    m_socket.connect(*endpoint_iterator++, error);
+    m_socket->close();
+    m_socket->connect(*endpoint_iterator++, error);
   }
   if (error)
     throw M4D::ErrorHandling::ExceptionBase(

@@ -34,7 +34,7 @@ private:
 
 protected:
   // ctor
-  BasicJob(boost::asio::io_service &service);
+  BasicJob(boost::asio::ip::tcp::socket *sock);
 
   /**
    *  Definition of basic action IDs.

@@ -5,8 +5,8 @@
 #include <map>
 
 #include "serverJob.h"
-#include "jobManager.h"
 #include "cellBE/resourcePool.h"
+#include "jobManager.h"
 
 namespace M4D
 {

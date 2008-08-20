@@ -24,30 +24,23 @@ class Pool
 public:
   Pool()
   {
-    m_mutex.initialize();
-    m_mutex.lock();
-
     // all are free at the beginning
     for( int i=0; i<size; i++)
       m_freeItems.push( &m_array[i]);
-
-    m_mutex.unlock();
   }
 
   T *GetFreeItem( void) 
   {
-    m_mutex.lock();
+    M4D::Multithreading::ScopedLock lock ( m_mutex);
     T *tmp = m_freeItems.top();
     m_freeItems.pop();
-    m_mutex.unlock();
     return tmp;
   }
 
   void PutFreeItem( T *free)
   {
-    m_mutex.lock();
+    M4D::Multithreading::ScopedLock lock ( m_mutex);
     m_freeItems.push( free);
-    m_mutex.unlock();
   }
 };
 

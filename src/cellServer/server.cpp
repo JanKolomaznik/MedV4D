@@ -102,23 +102,14 @@ Server::EndPrimaryHeaderRead( tcp::socket *clientSock, PrimaryJobHeader *header,
     switch( (BasicJob::Action) header->action)
     {
     case BasicJob::CREATE:
-      existing = new ServerJob( clientSock->get_io_service());
-      existing->primHeader.id = header->id;
+      LOG( "CREATE reqest arrived");
+
+      existing = new ServerJob( clientSock, &m_jobManager);
+      existing->primHeader = *header;
 
       m_jobManager.AddJob( existing);
-
-      LOG( "CREATE reqest arrived");
+      existing->ReadPipelineDefinition();
       break;
-
-    case BasicJob::DESTROY:
-      LOG( "DESTROY reqest arrived");
-      try {
-        existing = m_jobManager.FindJob( header->id);
-        m_jobManager.RemoveJob( header->id );
-      } catch( ExceptionBase &) {
-        LOG( "Job not found" << header->id);
-      }      
-      return;
 
     case BasicJob::PING:
       WritePingMessage( clientSock);
@@ -170,3 +161,4 @@ Server::WritePingMessage( tcp::socket *clientSock)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+

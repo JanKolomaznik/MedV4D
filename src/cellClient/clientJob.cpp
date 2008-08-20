@@ -39,7 +39,7 @@ ClientJob::GenerateJobID( void)
 
   // random based on host name
   boost::asio::ip::address_v4::bytes_type bytes;
-  bytes = m_socket.local_endpoint().address().to_v4().to_bytes();
+  bytes = m_socket->local_endpoint().address().to_v4().to_bytes();
   uint32 seed = bytes[0];
   for( int i=1; i<4; i++)
   {
@@ -77,7 +77,7 @@ ClientJob::SendCreate( void)
       &filterSettingsSerialized[0], filterSettingsSerialized.size() ));
 
   // send the buffer vector
-  m_socket.async_write_some( 
+  m_socket->async_write_some( 
     buffers, 
     boost::bind( &ClientJob::EndSend, this,
       boost::asio::placeholders::error)
@@ -175,7 +175,7 @@ ClientJob::SendDestroy( void)
   primHeader.nexPartLength = 0; // not used
   PrimaryJobHeader::Serialize( &primHeader);
 
-  m_socket.async_write_some(
+  m_socket->async_write_some(
     boost::asio::buffer( (uint8*) &primHeader, sizeof( PrimaryJobHeader) )
     , boost::bind( & ClientJob::EndSend, this, boost::asio::placeholders::error)
     );
@@ -225,7 +225,7 @@ ClientJob::SendFilterProperties( void)
       &filterSettingsSerialized[0], filterSettingsSerialized.size() ));
 
   // send the buffer vector
-  m_socket.async_write_some( 
+  m_socket->async_write_some( 
     buffers, 
     boost::bind( &ClientJob::EndSend, this,
       boost::asio::placeholders::error)
@@ -253,7 +253,7 @@ ClientJob::SendDataSet( void)
       &m_dataSetPropsSerialized[0], m_dataSetPropsSerialized.size() ));
 
   // send the buffer vector
-  m_socket.async_write_some( 
+  m_socket->async_write_some( 
     buffers, 
     boost::bind( &ClientJob::EndSend, this,
       boost::asio::placeholders::error)
@@ -272,7 +272,7 @@ ClientJob::SendPrimaryHeader( void)
 {
   PrimaryJobHeader::Serialize( &primHeader);
 
-  m_socket.async_write_some(
+  m_socket->async_write_some(
     boost::asio::buffer( (uint8*) &primHeader, sizeof( PrimaryJobHeader) )
     , boost::bind( & ClientJob::EndSend, this, boost::asio::placeholders::error)
     );

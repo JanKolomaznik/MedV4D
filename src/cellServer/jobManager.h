@@ -10,10 +10,10 @@ namespace CellBE
 
 class JobManager
 {
-public:
-
   typedef std::map<JobID, ServerJob *> JobMap;
   JobMap m_jobs;
+
+public:
 
   inline ServerJob *FindJob( JobID id)
   {

@@ -79,6 +79,16 @@ inline std::ostream &operator<<( std::ostream &s, JobID &id)
 
 struct PrimaryJobHeader
 {
+  PrimaryJobHeader() {}
+
+  PrimaryJobHeader( const PrimaryJobHeader & b)
+  {
+    action = b.action;
+    id = b.id;
+    endian = b.endian;
+    nexPartLength = b.nexPartLength;
+  }
+
   uint8 action;
 
   JobID id;

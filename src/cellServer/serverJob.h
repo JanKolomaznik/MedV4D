@@ -12,6 +12,8 @@ namespace M4D
 namespace CellBE
 {
 
+class JobManager;  // forward
+
 class ServerJob
   : public BasicJob
 {
@@ -23,22 +25,23 @@ class ServerJob
   FilterSerializersMap m_filterSeralizersMap;
   
 private:
-  ServerJob(boost::asio::io_service &service);
+  ServerJob( boost::asio::ip::tcp::socket *sock, JobManager* jobManager);
 
   std::vector<uint8> m_filterSettingContent;
 
   M4D::Imaging::PipelineContainer m_pipeLine;
+  
+  JobManager *m_jobManager;
 
   // pointers to first & last filter in pipeline
   M4D::Imaging::AbstractPipeFilter *m_pipelineBegin, *m_pipelineEnd;
 
-  void DeserializeFilterClassPropsAndBuildPipeline( void);
   void DeserializeFilterProperties( void);
   
   /**
    *  Start async operation for definition vector of filters.
    */
-  void ReadFilters( void); 
+  void ReadFilters( void);
 
   /**
    *  Start async operation for dataSetProperties reading.
@@ -50,8 +53,14 @@ private:
    */
   void AbortComputation( void);
 
+  /**
+   *  ReadPipelineDefinition
+   */
+  void ReadPipelineDefinition( void);
+
   void EndFiltersRead( const boost::system::error_code& error);
   void EndDataSetPropertiesRead( const boost::system::error_code& error);
+  void EndReadPipelineDefinition( const boost::system::error_code& error);
   
   /**
    *  Sends result message back to client. Within the method is switch
@@ -67,7 +76,8 @@ private:
   void OnExecutionDone( void);
   void OnExecutionFailed( void);
 
-
+  void WaitForCommand( void);
+  void EndWaitForCommand( const boost::system::error_code& error);
   void Command( PrimaryJobHeader *header);
 };
 

@@ -24,9 +24,9 @@ class BasicSocket
   friend class Server;
 
 protected:
-  boost::asio::ip::tcp::socket m_socket;
+  boost::asio::ip::tcp::socket *m_socket;
 
-  BasicSocket(boost::asio::io_service &service) : m_socket(service) {}
+  BasicSocket(boost::asio::ip::tcp::socket *sock) : m_socket(sock) {}
 
   /**
    *  Unified handling of network errors.

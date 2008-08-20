@@ -12,8 +12,8 @@ DataPieceHeader BasicJob::endHeader(ENDING_PECESIZE);
 
 ///////////////////////////////////////////////////////////////////////////////
 
-BasicJob::BasicJob(boost::asio::io_service &service)  
-    : BasicSocket(service)
+BasicJob::BasicJob(boost::asio::ip::tcp::socket *sock)  
+    : BasicSocket(sock)
     , onComplete( NULL)
     , onError(NULL)
     , m_inDataSet( NULL)
@@ -59,7 +59,7 @@ BasicJob::PutDataPiece( const M4D::CellBE::DataBuffs &bufs)
   DataPieceHeaderSerialize( header);
 
   // get free dataPieceHeader
-  m_socket.async_write_some(
+  m_socket->async_write_some(
     buffers, 
     boost::bind( & BasicJob::EndSend, this, boost::asio::placeholders::error)
     );
@@ -82,7 +82,7 @@ BasicJob::GetDataPiece( M4D::CellBE::DataBuffs &bufs
   }
 
   // read 'em
-  m_socket.async_read_some(
+  m_socket->async_read_some(
     buffers, 
     boost::bind( & BasicJob::EndReadDataPeice, this
       , boost::asio::placeholders::error
@@ -97,7 +97,7 @@ BasicJob::ReadDataPeiceHeader( AbstractDataSetSerializer *dataSetSerializer)
 {
   DataPieceHeader *header = freeHeaders.GetFreeItem();
 
-  m_socket.async_read_some(
+  m_socket->async_read_some(
       boost::asio::buffer( (uint8*)header, sizeof( DataPieceHeader) ),
       boost::bind( &BasicJob::EndReadDataPeiceHeader, this, 
         boost::asio::placeholders::error, header, dataSetSerializer)
@@ -184,7 +184,7 @@ void
 BasicJob::SendEndOfDataSetTag( void)
 {
   // send EndingTag telling no more data will come
-  m_socket.async_write_some( 
+  m_socket->async_write_some( 
     boost::asio::buffer(
       (uint8*)&endHeader, sizeof( DataPieceHeader) ),
     boost::bind( &BasicJob::EndSend, this,

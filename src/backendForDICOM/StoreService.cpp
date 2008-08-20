@@ -363,7 +363,7 @@ StoreService::AddStoragePresentationContexts(
     s_end = sops.end();
     while (s_cur != s_end && cond.good()) {
 
-        if (pid > 255) {
+        if (pid > 254) {
             D_PRINT("Too many presentation contexts");
             throw ExceptionBase();
         }
@@ -378,7 +378,7 @@ StoreService::AddStoragePresentationContexts(
             pid += 2;   /* only odd presentation context id's */
 
             if (fallbackSyntaxes.size() > 0) {
-                if (pid > 255) {
+                if (pid > 254) {
                     D_PRINT("Too many presentation contexts");
                     throw ExceptionBase();
                 }
@@ -517,6 +517,8 @@ StoreService::ProgressCallback(void * /*callbackData*/,
     case DIMSE_StoreEnd:
 		LOG("C-STORE has end");
 		break;
+    default:
+      ASSERT( false);
     }
 }
 

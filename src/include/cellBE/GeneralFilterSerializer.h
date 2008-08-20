@@ -35,13 +35,13 @@ public:
     , AbstractFilterSerializer **serializer
     , M4D::CellBE::NetStream &s)
   {
-	  FilterID filterID;
-	  s >> ((uint8 &) filterID);
+	  uint8 filterID;
+	  s >> filterID;
 
     uint16 id;
     s >> id;
 
-    FilterSerializers::iterator it = m_filterSerializers.find( filterID);
+    FilterSerializers::iterator it = m_filterSerializers.find( (FilterID) filterID);
     if( it != m_filterSerializers.end() )
       it->second->DeSerializeClassInfo( resultingFilter, serializer, id, s);
     else
