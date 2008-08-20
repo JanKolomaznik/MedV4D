@@ -29,10 +29,9 @@
 	<para>
 	All declarations are in namespace <code>M4D::Imaging</code>.
 	Whole design of class hierarchies is 
-	<!--xref linkend="pic.PipelineScheme"/-->
+	<xref linkend="pic.PipelineScheme"/>
 	</para>
 
-	<!--
 	<para>
 	<figure float="1" id="pic.PipelineScheme">
 	<title>Pipeline scheme</title>
@@ -46,7 +45,6 @@
 	</mediaobject>
 	</figure>
 	</para>
-	-->
 
 	<para>
 	Pipeline should be built from objects of certain types, which we will now discuss.
@@ -232,10 +230,9 @@ ExamplePipelineHandler
 		</para>
 
 		<para>
-		To make decision easier you can use prepared flowchart <!--xref linkend="pic.MostSuitableFilterFlowchart"/--> and find most suitable ancestor class.
+		To make decision easier you can use prepared flowchart <xref linkend="pic.MostSuitableFilterFlowchart"/> and find most suitable ancestor class.
 		</para>
 		
-		<!--
 		<figure float="1" id="pic.MostSuitableFilterFlowchart">
 		<title>Filter decisive flowchart</title>
 		<mediaobject>
@@ -243,7 +240,6 @@ ExamplePipelineHandler
 			<imageobject><imagedata fileref="figures/libImaging/MostSuitableFilterFlowchart.png" format="PNG" scale="75"/></imageobject>
 		</mediaobject>
 		</figure>
-		-->
 
 		<para>
 		Now if you have chosen right ancestor class, you can start with actual implementation of your filter. You should keep few rules and concepts, which 
@@ -284,18 +280,18 @@ ExamplePipelineHandler
 		
 		<itemizedlist>
 			<listitem><para>
-			Pointer to <classname>Properties</classname> structure is stored as protected member <code>_properties</code>, but its type is 
+			Pointer to <classname>Properties</classname> structure is stored as protected member <structfield>_properties</structfield>, but its type is 
 			<classname>AbstractFilter::Properties</classname>. So if you want access members of your properties structure you must either 
-			cast to right type every time, or put preprocessor macro <code>GET_PROPERTIES_DEFINITION_MACRO</code> to private section of your
-			class declaration. Now method <code>GetProperties()</code> returning reference to <classname>Properties</classname> is available for
+			cast to right type every time, or put preprocessor macro <function>GET_PROPERTIES_DEFINITION_MACRO</function> to private section of your
+			class declaration. Now method <function>GetProperties()</function> returning reference to <classname>Properties</classname> is available for
 			usage.
 			</para></listitem>
 			
 			<listitem><para>
-			To make declaration of Get/Set methods easier three macros are prepared: <code>GET_PROPERTY_METHOD_MACRO( TYPE, NAME, MEMBER_NAME )</code>, 
-			<code>SET_PROPERTY_METHOD_MACRO( TYPE, NAME, MEMBER_NAME )</code> and <code>GET_SET_PROPERTY_METHOD_MACRO( TYPE, NAME, MEMBER_NAME )</code>.
-			These macros will be unwinded into inline declarations of <code>TYPE Get'NAME'()const</code>, <code>void Set'NAME'( TYPE value )</code> and both.
-			Parameter <code>NAME</code> is used in name of Get/Set method and parameter <code>MEMBER_NAME</code> is name of <classname>Properties</classname> member 
+			To make declaration of Get/Set methods easier three macros are prepared: <function>GET_PROPERTY_METHOD_MACRO( TYPE, NAME, MEMBER_NAME )</function>, 
+			<function>SET_PROPERTY_METHOD_MACRO( TYPE, NAME, MEMBER_NAME )</function> and <function>GET_SET_PROPERTY_METHOD_MACRO( TYPE, NAME, MEMBER_NAME )</function>.
+			These macros will be unwinded into inline declarations of <function>TYPE Get'NAME'()const</function>, <function>void Set'NAME'( TYPE value )</function> and both.
+			Parameter <parameter>NAME</parameter> is used in name of Get/Set method and parameter <parameter>MEMBER_NAME</parameter> is name of <classname>Properties</classname> member 
 			accessed by these two methods.
 			</para></listitem>
 
