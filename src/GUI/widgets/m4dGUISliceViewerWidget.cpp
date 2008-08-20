@@ -173,7 +173,7 @@ template<>
 GLenum
 TexturePreparer<uint64>::oglType()
 {
-    //FIXME: no 64-bit integer in opengl textures
+    throw ErrorHandling::ExceptionBase( "64-bit numbers are not supported." );
     return GL_UNSIGNED_INT;
 }
 
@@ -181,7 +181,7 @@ template<>
 GLenum
 TexturePreparer<int64>::oglType()
 {
-    //FIXME: no 64-bit integer in opengl textures
+    throw ErrorHandling::ExceptionBase( "64-bit numbers are not supported." );
     return GL_INT;
 }
 
@@ -190,10 +190,10 @@ m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( unsigned index, QWidget *paren
 {
     _index = index;
     _inPort = new Imaging::InputPortAbstractImage();
+    resetParameters();
     _inputPorts.AddPort( _inPort );
     _selected = false;
     _sliceOrientation = xy;
-    resetParameters();
     setInputPort( );
 }
 
@@ -202,10 +202,10 @@ m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( Imaging::ConnectionInterface* 
 {
     _index = index;
     _inPort = new Imaging::InputPortAbstractImage();
+    resetParameters();
     _inputPorts.AddPort( _inPort );
     _selected = false;
     _sliceOrientation = xy;
-    resetParameters();
     setInputPort( conn );
 }
 
@@ -310,7 +310,7 @@ m4dGUISliceViewerWidget::resetParameters()
     _availableSlots.push_back( DELETEALL );
     _availableSlots.push_back( ZOOM );
     _availableSlots.push_back( SETSLICEORIENTATION );
-    //_availableSlots.push_back( COLORPICKER );
+    _availableSlots.push_back( COLORPICKER );
     _leftSideData.clear();
     _rightSideData.clear();
     _ready = true;
@@ -582,7 +582,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
     glScalef( _flipH * zoomRate, _flipV * zoomRate, 0. );
     
     INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
-    	_imageID, _ready = TexturePreparer<TTYPE>::prepare( _inPort, width, height, _brightnessRate, _contrastRate, _sliceOrientation, _sliceNum - _minimum[ ( _sliceOrientation + 2 ) % 3 ]) )
+    	_imageID, _ready = TexturePreparer<TTYPE>::prepare( _inPort, width, height, _brightnessRate, _contrastRate, _sliceOrientation, sliceNum - _minimum[ ( _sliceOrientation + 2 ) % 3 ]) )
     
     glEnable( GL_TEXTURE_2D );
     glBindTexture( GL_TEXTURE_2D, texName );
