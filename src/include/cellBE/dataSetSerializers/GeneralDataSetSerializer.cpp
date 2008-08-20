@@ -38,10 +38,10 @@ GeneralDataSetSerializer::DeSerializeDataSetProperties(
       , M4D::Imaging::AbstractDataSet **returnedDataSet
       , M4D::CellBE::NetStream &s)
 {
-  DataSetType type;
-  s >> ( (uint8&) type);
+  uint8 type;
+  s >> type;
 
-  switch( type)
+  switch( (DataSetType) type)
   {
   case DATASET_IMAGE:
     if( *dataSetSerializer == NULL)

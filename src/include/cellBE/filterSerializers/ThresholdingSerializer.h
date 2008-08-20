@@ -45,7 +45,7 @@ public:
 
   void SerializeClassInfo( M4D::CellBE::NetStream &s)
   {
-    s << ImageTraits< InputImageType >::Dimension;
+    s << (uint8) ImageTraits< InputImageType >::Dimension;
 		s << (uint8) GetNumericTypeID< ImageTraits< InputImageType >::ElementType >();
   }
 

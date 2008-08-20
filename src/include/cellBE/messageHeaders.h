@@ -137,8 +137,10 @@ DataPieceHeaderDeserialize( DataPieceHeader *h)
 enum ResponseID
 {
   RESPONSE_OK,
-  RESPONSE_ERROR_IN_EXECUTION,
-  RESPONSE_ERROR_IN_INPUT
+  RESPONSE_FAILED,
+  RESPONSE_DATASET,
+  //RESPONSE_ERROR_IN_EXECUTION,
+  //RESPONSE_ERROR_IN_INPUT
 };
 
 struct ResponseHeader

@@ -63,8 +63,8 @@ ClientJob::SendCreate( void)
   primHeader.action = (uint8) CREATE;
   GenerateJobID();
 
-  SerializeFilters();
-  primHeader.nexPartLength = (uint16) filterSettingsSerialized.size();
+  SerializeRemotePipeDefinition();
+  primHeader.nexPartLength = (uint16) m_remotePipeDefSerialized.size();
 
   PrimaryJobHeader::Serialize( &primHeader);
 
@@ -74,7 +74,7 @@ ClientJob::SendCreate( void)
     boost::asio::buffer( (uint8*)&primHeader, sizeof(PrimaryJobHeader)) );
   buffers.push_back( 
     boost::asio::buffer( 
-      &filterSettingsSerialized[0], filterSettingsSerialized.size() ));
+      &m_remotePipeDefSerialized[0], m_remotePipeDefSerialized.size() ));
 
   // send the buffer vector
   m_socket->async_write_some( 
@@ -82,6 +82,14 @@ ClientJob::SendCreate( void)
     boost::bind( &ClientJob::EndSend, this,
       boost::asio::placeholders::error)
   );
+
+  // wait for response
+  ResponseHeader *h = m_freeResponseHeaders.GetFreeItem();
+  m_socket->async_read_some(
+    boost::asio::buffer( (uint8*) h, sizeof(ResponseHeader)),
+    boost::bind( &ClientJob::OnResponseRecieved, this, 
+      boost::asio::placeholders::error, h)
+    );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -109,23 +117,14 @@ ClientJob::SerializeFiltersProperties( void)
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-ClientJob::SerializeFilters( void)
+ClientJob::SerializeRemotePipeDefinition( void)
 {
-  NetStreamVector tmp;
-
   for( FilterSerializerVector::iterator it = m_filters.begin();
     it != m_filters.end(); it++)
   {
-    filterSettingsSerialized << (uint16) (*it)->GetTypeID();  // insert filterTypeID
-    filterSettingsSerialized << (*it)->GetID();
-    (*it)->SerializeClassInfo( tmp); // serialize it into tmp stream
-
-    // put size of the serialization
-    filterSettingsSerialized << (uint16) tmp.size();
-
-    // copy actual serialization into final stream from tmp
-    filterSettingsSerialized.insert( 
-      filterSettingsSerialized.end(), tmp.begin(), tmp.end() );
+    m_remotePipeDefSerialized << (uint16) (*it)->GetTypeID();  // insert filterTypeID
+    m_remotePipeDefSerialized << (*it)->GetID();
+    (*it)->SerializeClassInfo( m_remotePipeDefSerialized);
   }
 }
 
@@ -143,18 +142,27 @@ ClientJob::OnResponseRecieved( const boost::system::error_code& error
     switch( (ResponseID) header->result)
     {
     case RESPONSE_OK:
+      m_state = (State) header->resultPropertiesLen;
+      break;
+
+    case RESPONSE_FAILED:
+      m_state = (State) header->resultPropertiesLen;
+      if( this->onError != NULL)  // call error handler
+        onError();
+      break;
+
+    case RESPONSE_DATASET:
       // everything was fine, so continue reading dataSetProperties
       ReadDataPeiceHeader( m_outDataSetSerializer);
       break;
 
-    case RESPONSE_ERROR_IN_EXECUTION:
-    case RESPONSE_ERROR_IN_INPUT:
-      if( this->onError != NULL)  // call error handler
-        onError();
-      break;
+    default:
+      ASSERT( false);
     }
 
+    m_freeResponseHeaders.PutFreeItem( header);
   } catch( ExceptionBase &) {
+    m_freeResponseHeaders.PutFreeItem( header);
   }
 }
 
@@ -184,28 +192,6 @@ ClientJob::SendDestroy( void)
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-ClientJob::SendExecute( void)
-{
-  //primHeader.action = (uint8) EXEC;
-  //PrimaryJobHeader::Serialize( &primHeader);
-
-  //// now everything is sent, so we have to wait for response
-  //{
-  //  // get free header
-  //  ResponseHeader *h = m_freeResponseHeaders.GetFreeItem();
-
-  //  // read into it
-  //  m_socket.async_read_some( 
-  //    boost::asio::buffer( (uint8*)h, sizeof( ResponseHeader) )
-  //    , boost::bind( &ClientJob::OnResponseRecieved, this,
-  //      boost::asio::placeholders::error, h)
-  //  );
-  //}
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void
 ClientJob::SendFilterProperties( void)
 {
   primHeader.action = (uint8) FILTERS;
@@ -230,6 +216,14 @@ ClientJob::SendFilterProperties( void)
     boost::bind( &ClientJob::EndSend, this,
       boost::asio::placeholders::error)
   );
+
+  // read response
+  ResponseHeader *h = m_freeResponseHeaders.GetFreeItem();
+  m_socket->async_read_some(
+    boost::asio::buffer( (uint8*) h, sizeof(ResponseHeader)),
+    boost::bind( &ClientJob::OnResponseRecieved, this, 
+      boost::asio::placeholders::error, h)
+    );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -240,6 +234,7 @@ ClientJob::SendDataSet( void)
   primHeader.action = (uint8) DATASET;
 
   // serialize dataset settings
+  m_dataSetPropsSerialized << (uint8) m_inDataSetSerializer->GetID();
   m_inDataSetSerializer->SerializeProperties( m_dataSetPropsSerialized);
 
   primHeader.nexPartLength = (uint16) m_dataSetPropsSerialized.size();  
@@ -300,8 +295,6 @@ ClientJob::SetDataSets( M4D::Imaging::AbstractDataSet *inDataSet
   // assign dataSets
   m_inDataSetSerializer->SetDataSet( inDataSet);
   m_outDataSetSerializer->SetDataSet( outdataSet);
-
-  SendDataSet();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -29,25 +29,55 @@ public:
   // header struct used for sending headers
   PrimaryJobHeader primHeader;
 
+  /**
+   *  Definition jobs states
+   */
+  enum State {
+    CREATION_FAILED,          // request for job execute
+    FILTER_PROPS_OK,          // 
+    FILTER_PROPS_WRONG,       //   
+    DATASET_OK,               //
+    DATASET_WRONG,            //    
+    EXECUTED,                 //
+    ABORTED,                  //
+    FAILED,                   //
+    IDLE                      //
+  };
+
+  // callback def
+  typedef void (*JobCallback)(void);
+
+  // events
+  JobCallback onComplete;
+  JobCallback onError;
+
+  // iPublicJob interface implementations
+  void PutDataPiece( const DataBuffs &bufs);
+  void PutDataPiece( const DataBuff &buf);
+  
+  NetStream * GetNetStream( void);
+
 private:
   DataBuffs m_dataBufs;
 
 protected:
   // ctor
-  BasicJob(boost::asio::ip::tcp::socket *sock);
+  BasicJob( boost::asio::ip::tcp::socket *sock);
 
   /**
    *  Definition of basic action IDs.
    */
   enum Action {
     CREATE,       // request for job create
-    //EXEC,         // request for job execute
+    //EXEC,       // request for job execute
     DESTROY,      // request for job destroy
     DATASET,      // sending job's dataSet
     ABORT,        // sending abort req to abort computation
     FILTERS,      // sending job's filters settings
     PING          // ping message
   };
+
+  State m_state;
 
   static DataPieceHeader endHeader;   // data header saying noMoreData
 
@@ -77,20 +107,6 @@ protected:
 
   M4D::Imaging::AbstractDataSet *m_inDataSet;
   M4D::Imaging::AbstractDataSet *m_outDataSet;
-  
-public:
-  // callback def
-  typedef void (*JobCallback)(void);
-
-  // events
-  JobCallback onComplete;
-  JobCallback onError;
-
-  // iPublicJob interface implementations
-  void PutDataPiece( const DataBuffs &bufs);
-  void PutDataPiece( const DataBuff &buf);
-  
-  NetStream * GetNetStream( void);
 
 };
 

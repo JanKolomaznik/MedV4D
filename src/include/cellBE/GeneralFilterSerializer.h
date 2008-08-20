@@ -30,7 +30,7 @@ public:
     , AbstractFilterSerializer **serializer
     , M4D::CellBE::NetStream &s)
   {
-	  uint8 filterID;
+	  uint16 filterID;
 	  s >> filterID;
 
     uint16 id;

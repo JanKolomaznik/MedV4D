@@ -19,8 +19,10 @@ class ClientJob
   static uint32 lastID;
   void GenerateJobID( void);
 
+  NetStreamVector m_remotePipeDefSerialized;
+
   void SerializeFiltersProperties( void);
-  void SerializeFilters( void);
+  void SerializeRemotePipeDefinition( void);
   void SendPrimaryHeader( void);
 
   void Serialize( NetStream &s);
@@ -46,7 +48,6 @@ public:
   void SendCreate( void);
   void SendDataSet( void);
   void SendFilterProperties( void);
-  void SendExecute( void);
   void SendDestroy( void);
 
   void SetDataSets( M4D::Imaging::AbstractDataSet *inDataSet

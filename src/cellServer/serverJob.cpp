@@ -45,7 +45,8 @@ ServerJob::EndReadPipelineDefinition( const boost::system::error_code& error)
       m_filterSeralizersMap.insert( FilterSerializersMap::value_type(
         fSeriz->GetID(), fSeriz) );
 
-      m_pipelineBegin = producer;      
+      m_pipelineBegin = producer;
+      consumer = producer;
     }
 
     // now for each remaining create & connect with predecessing
@@ -64,8 +65,14 @@ ServerJob::EndReadPipelineDefinition( const boost::system::error_code& error)
 
     m_pipelineEnd = consumer;
 
+    m_state = IDLE;
+    SendResultBack( RESPONSE_OK, m_state);
+
+    WaitForCommand();
+
   } catch( WrongFilterException &) {
-    SendResultBack( RESPONSE_ERROR_IN_INPUT);
+    m_state = CREATION_FAILED;
+    SendResultBack( RESPONSE_FAILED, m_state);
   } catch( ExceptionBase &) {
   }
 }
@@ -138,11 +145,18 @@ void
 ServerJob::EndFiltersRead( const boost::system::error_code& error)
 {
   try {
+
     HandleErrors( error);
     DeserializeFilterProperties();
 
+    m_state = FILTER_PROPS_OK;
+    SendResultBack( RESPONSE_OK, m_state);
+
+    WaitForCommand();
+
   } catch( WrongFilterException &) {
-    SendResultBack( RESPONSE_ERROR_IN_INPUT);
+    m_state = FILTER_PROPS_WRONG;
+    SendResultBack( RESPONSE_FAILED, m_state);
   } catch( ExceptionBase &) {
   }
 }
@@ -183,12 +197,16 @@ ServerJob::EndDataSetPropertiesRead( const boost::system::error_code& error)
     // dataSet unlock when whole dataSet is read (don't forget to do it!!)
     m_pipelineBegin->Execute();
 
+    m_state = DATASET_OK;
+    SendResultBack( RESPONSE_OK, m_state);
+
     // now start recieving actual data using the retrieved serializer
     ReadDataPeiceHeader( dsSerializer);
   
   } catch( NetException &) {
   } catch( WrongDSetException &) {
-    SendResultBack( RESPONSE_ERROR_IN_INPUT);
+    m_state = DATASET_WRONG;
+    SendResultBack( RESPONSE_FAILED, m_state);
   } catch( ExceptionBase &) {
   }
 }
@@ -196,20 +214,21 @@ ServerJob::EndDataSetPropertiesRead( const boost::system::error_code& error)
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-ServerJob::SendResultBack( ResponseID result)
+ServerJob::SendResultBack( ResponseID result, State state)
 {
-  ResponseHeader *h = m_freeResponseHeaders.GetFreeItem();
-  h->result = (uint8) result;
+  vector<boost::asio::const_buffer> buffers; 
 
-  vector<boost::asio::const_buffer> buffers;
+  ResponseHeader *h = m_freeResponseHeaders.GetFreeItem();
   buffers.push_back( 
       boost::asio::buffer( (uint8*)h, sizeof(ResponseHeader)) );
+
+  h->result = (uint8) result;
 
   AbstractDataSetSerializer *outSerializer = NULL;
 
   switch( result)
   {
-  case RESPONSE_OK:
+  case RESPONSE_DATASET:
     // get dataSetSerializer ...
     outSerializer = 
       GeneralDataSetSerializer::GetDataSetSerializer( m_outDataSet);
@@ -218,18 +237,14 @@ ServerJob::SendResultBack( ResponseID result)
     outSerializer->SerializeProperties( m_dataSetPropsSerialized);
 
     h->resultPropertiesLen = (uint16) m_dataSetPropsSerialized.size();
-    ResponseHeader::Serialize( h);
-    
-    buffers.push_back( 
-      boost::asio::buffer( 
-        &m_dataSetPropsSerialized[0], m_dataSetPropsSerialized.size() ));    
     break;
 
-  case RESPONSE_ERROR_IN_EXECUTION:    
-  case RESPONSE_ERROR_IN_INPUT:
-    ResponseHeader::Serialize( h);
+  default:
+    h->resultPropertiesLen = (uint16) state;
     break;
   }
+
+  ResponseHeader::Serialize( h);
 
   // send the buffer vector
   m_socket->async_write_some( 
@@ -238,8 +253,8 @@ ServerJob::SendResultBack( ResponseID result)
       boost::asio::placeholders::error, h)
       );
 
-  // start sending dataSet if OK
-  if( result == RESPONSE_OK)
+  // start sending dataSet if RESPONSE_EXEC_COMPLETE
+  if( result == RESPONSE_DATASET)
   {    
     outSerializer->Serialize( this);
   }
@@ -257,6 +272,7 @@ ServerJob::OnResultHeaderSent( const boost::system::error_code& error
     m_freeResponseHeaders.PutFreeItem( h);  // return the header to pool
 
   } catch( NetException &) {
+    m_freeResponseHeaders.PutFreeItem( h);
   }
 }
 
@@ -265,7 +281,7 @@ ServerJob::OnResultHeaderSent( const boost::system::error_code& error
 void
 ServerJob::OnExecutionDone( void)
 {
-  SendResultBack( RESPONSE_OK);
+  SendResultBack( RESPONSE_DATASET, EXECUTED);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -273,7 +289,8 @@ ServerJob::OnExecutionDone( void)
 void
 ServerJob::OnExecutionFailed( void)
 {
-  SendResultBack( RESPONSE_ERROR_IN_EXECUTION);
+  m_state = FAILED;
+  SendResultBack( RESPONSE_FAILED, m_state);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -194,6 +194,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\include\cellBE\FilterSerializerArray.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\cellClient\remoteFilterBase.cpp"
 				>
 			</File>

@@ -69,7 +69,7 @@ private:
    *  no other data on the tail. Also resultPropertiesLen item of ResultHeader
    *  is not used.
    */
-  void SendResultBack( ResponseID result);
+  void SendResultBack( ResponseID result, State state);
   void OnResultHeaderSent( const boost::system::error_code& error
     , ResponseHeader *h);
 

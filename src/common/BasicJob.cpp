@@ -18,6 +18,7 @@ BasicJob::BasicJob(boost::asio::ip::tcp::socket *sock)
     , onError(NULL)
     , m_inDataSet( NULL)
     , m_outDataSet( NULL)
+    , m_state( IDLE)
 {
 }
 
