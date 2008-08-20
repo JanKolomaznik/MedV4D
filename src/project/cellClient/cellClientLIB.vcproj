@@ -184,10 +184,6 @@
 					RelativePath="..\..\include\cellBE\dataSetSerializers\GeneralDataSetSerializer.cpp"
 					>
 				</File>
-				<File
-					RelativePath="..\..\include\cellBE\dataSetSerializers\ImageSerializer.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="filterSerializers"
@@ -302,6 +298,10 @@
 				>
 				<File
 					RelativePath="..\..\include\cellBE\dataSetSerializers\ImageSerializer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\cellBE\dataSetSerializers\ImageSerializer.tcc"
 					>
 				</File>
 			</Filter>

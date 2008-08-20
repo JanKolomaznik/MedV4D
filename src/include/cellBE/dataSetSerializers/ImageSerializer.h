@@ -2,6 +2,7 @@
 #define IMAGE_SERIALIZER_H
 
 #include "../AbstractDataSetSerializer.h"
+#include "Imaging/Image.h"
 
 namespace M4D
 {
@@ -15,12 +16,12 @@ class ImageSerializerBase		//musi se jmenovat jinak nez ta dlasi trida
 {
 public:
 
-  ImageSerializer( M4D::Imaging::AbstractDataSet *dSet)
+  ImageSerializerBase( M4D::Imaging::AbstractDataSet *dSet)
     : AbstractDataSetSerializer( dSet)
   {
   }
 
-  ImageSerializer() {}
+  ImageSerializerBase() {}
 
   /**
    *  Each final sucessor has to implement this functions to allow
@@ -36,6 +37,7 @@ private:
   void Reset( void);
 
 };
+
 //Tady se musi pouzit parcialni specializace
 template< typename ElementType, unsigned dim>  
 class ImageSerializer;
@@ -43,8 +45,13 @@ class ImageSerializer;
 // special case for 3D images
 template< typename ElementType>  // TADY nevim, jestli jde dedit od obecne templejty ... aby az se zkonstruuje ImageSerializer<uint8, 3> tak se zkontruuje tadle trida, ktera bude mit ty metody Image<typename ElemType, uint8> (predka)
 class ImageSerializer< ElementType, 3 >	//provedu parcialni specializaci
-: ImageSerializerBase< ElementType, 3>
+  : public ImageSerializerBase< ElementType, 3>
 {
+public:
+  ImageSerializer() {}
+  ImageSerializer( M4D::Imaging::AbstractDataSet *dSet)
+    : ImageSerializerBase( dSet) {}
+
   /**
 	 * Each special succesor should implement this functions in
 	 * its own manner.
@@ -57,8 +64,12 @@ class ImageSerializer< ElementType, 3 >	//provedu parcialni specializaci
 // special case for 2D images
 template< typename ElementType>
 class ImageSerializer< ElementType, 2 >
-: ImageSerializerBase< ElementType, 2>
+  : public ImageSerializerBase< ElementType, 2>
 {
+public:
+  ImageSerializer() {}
+  ImageSerializer( M4D::Imaging::AbstractDataSet *dSet)
+    : ImageSerializerBase( dSet) {}
   /**
 	 * Each special succesor should implement this functions in
 	 * its own manner.
@@ -68,11 +79,11 @@ class ImageSerializer< ElementType, 2 >
   void OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs);
 };
 
-//include implementation
-#include "cellBE/ImageSerializer.tcc"
+}
+}
 
-}
-}
+//include implementation
+#include "ImageSerializer.tcc"
 
 #endif
 

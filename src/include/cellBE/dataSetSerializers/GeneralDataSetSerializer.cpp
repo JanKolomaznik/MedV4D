@@ -20,7 +20,7 @@ GeneralDataSetSerializer::GetDataSetSerializer( AbstractDataSet *dataSet)
     NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( 
       ((AbstractImage *)dataSet)->GetElementTypeID(),
 		  DIMENSION_TEMPLATE_SWITCH_MACRO( 
-        ((AbstractImage *)dataSet)->image->GetDimension(),
+        ((AbstractImage *)dataSet)->GetDimension(),
 			  return new ImageSerializer< TTYPE, DIM >(dataSet) )
 		  );
     break;

@@ -10,8 +10,9 @@ namespace CellBE
 ///////////////////////////////////////////////////////////////////////////////
 
 // Common for all types of images
+template< typename ElementType, uint8 dim>
 void
-template< typename ElementType, uint8 dim>ImageSerializer
+ImageSerializerBase<ElementType, dim>
   ::SerializeProperties(M4D::CellBE::NetStream &s)
 {
 	AbstractImage *im = (AbstractImage *) m_dataSet; // cast to sucessor
@@ -30,8 +31,9 @@ template< typename ElementType, uint8 dim>ImageSerializer
 
 ///////////////////////////////////////////////////////////////////////////////
 
+template< typename ElementType, uint8 dim>
 M4D::Imaging::AbstractDataSet *
-template< typename ElementType, uint8 dim>ImageSerializer
+ImageSerializerBase<ElementType, dim>
   ::DeSerializeProperties(M4D::CellBE::NetStream &s)
 {	
 	int32 minimums[ dim ];
@@ -39,14 +41,14 @@ template< typename ElementType, uint8 dim>ImageSerializer
 	float32 elExtents[ dim ];
 
 	for( unsigned i = 0; i < dim; ++i ) {
-		const DimensionExtents &dimExtents = im->GetDimensionExtents( i );
+		const DimensionExtents &dimExtents = im->GetDimensionExtents( i );  // co je im? Image jeste neexistuje
 
 		s >> minimums[ i ];
 		s >> maximums[ i ];
 		s >> elExtents[ i ];
 	}
 
-	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( elemType,
+	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( ElementType,
 		ImageFactory::CreateEmptyImageFromExtents< TTYPE >( dim, minimums, maximums, elExtents );
 		);
 
@@ -55,43 +57,50 @@ template< typename ElementType, uint8 dim>ImageSerializer
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// 2D version
-void
-template< typename ElementType, 2>ImageSerializer
-  ::OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs)
-{
-}
 
-///////////////////////////////////////////////////////////////////////////////
-// 3D version
+template< typename ElementType, uint8 dim>
 void
-template< typename ElementType, 3>ImageSerializer
-  ::OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs)
-{
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void
-template< typename ElementType, uint8 dim>ImageSerializer
+ImageSerializerBase<ElementType, dim>
   ::OnDataSetEndRead( void)
 {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// 2D version
+
+template< typename ElementType, uint8 dim>
 void
-template< typename ElementType, 2>ImageSerializer
-  ::Serialize( M4D::CellBE::iPublicJob *job)
+ImageSerializerBase<ElementType, dim>
+  ::Reset( void)
 {
-  
-	AbstractImage *im = (AbstractImage *) m_dataSet;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// 2D version
+///////////////////////////////////////////////////////////////////////////////
+
+template< typename ElementType>
+void
+ImageSerializer< typename ElementType, 2>
+  ::OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs)
+{
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// 2D version
+///////////////////////////////////////////////////////////////////////////////
+
+template< typename ElementType>
+void
+ImageSerializer< typename ElementType, 2>
+  ::Serialize( M4D::CellBE::iPublicJob *job)
+{  
+	Image<ElementType, 2> *im = (Image<ElementType, 2> *) m_dataSet;
 
   uint32 width;
 	uint32 height;
 	int32 xStride;
 	int32 yStride;
-	ElementType *pointer = in.GetPointer( width, height, xStride, yStride );
+	ElementType *pointer = im.GetPointer( width, height, xStride, yStride );
 	for( uint32 j = 0; j < height; ++j ) {
 		ElementType *tmpPointer = pointer + j*yStride;
 
@@ -106,9 +115,22 @@ template< typename ElementType, 2>ImageSerializer
 
 ///////////////////////////////////////////////////////////////////////////////
 // 3D version
+///////////////////////////////////////////////////////////////////////////////
 
+template< typename ElementType>
 void
-template< typename ElementType, 3>ImageSerializer
+ImageSerializer< typename ElementType, 3>
+  ::OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs)
+{
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// 3D version
+///////////////////////////////////////////////////////////////////////////////
+
+template< typename ElementType>
+void
+ImageSerializer< typename ElementType, 3>
   ::Serialize( M4D::CellBE::iPublicJob *job)
 {
   uint32 width;
@@ -131,13 +153,6 @@ template< typename ElementType, 3>ImageSerializer
 			}
 		}
 	}
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void
-ImageSerializer::Reset( void)
-{
 }
 
 ///////////////////////////////////////////////////////////////////////////////
