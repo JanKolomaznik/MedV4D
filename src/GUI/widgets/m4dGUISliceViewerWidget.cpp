@@ -415,6 +415,15 @@ m4dGUISliceViewerWidget::setButtonHandler( ButtonHandler hnd, MouseButton btn )
 	_selectMethods[btn] = &M4D::Viewer::m4dGUISliceViewerWidget::newShape;
 	_selectionMode[btn] = true;
 	break;
+
+	case color_picker:
+	_selectMethods[btn] = &M4D::Viewer::m4dGUISliceViewerWidget::colorPicker;
+	_selectionMode[btn] = true;
+	break;
+
+	default:
+	throw ErrorHandling::ExceptionBase( "Unsupported button handler." );
+	break;
     }
 
     if ( _ready ) updateGL();
