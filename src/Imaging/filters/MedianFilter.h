@@ -2,7 +2,7 @@
 #define _MEDIAN_FILTER_H
 
 #include "Common.h"
-#include "Imaging/AbstractImageSliceFilter.h"
+#include "Imaging/AbstractImage2DFilter.h"
 #include <boost/shared_array.hpp>
 #include <map>
 
@@ -13,24 +13,16 @@ namespace Imaging
 {
 
 template< typename InputImageType >
-class MedianFilter2D;
-
-template< typename InputElementType >
-class MedianFilter2D< Image< InputElementType, 2 > >
-{
-	//TODO
-};
-
-template< typename InputElementType >
-class MedianFilter2D< Image< InputElementType, 3 > > 
-	: public IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
+class MedianFilter2D
+	: public AbstractImage2DFilter< InputImageType, InputImageType >
 {
 public:	
-	typedef IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
+	typedef AbstractImage2DFilter< InputImageType, InputImageType > PredecessorType;
+	typedef typename ImageTraits< InputImageType >::ElementType InputElementType;
 
 	struct Properties : public PredecessorType::Properties
 	{
-		Properties(): PredecessorType::Properties( 0, 10 ), radius( 0 ) {}
+		Properties(): radius( 0 ) {}
 
 		uint32	radius;
 	};
@@ -42,15 +34,16 @@ public:
 protected:
 
 	bool
-	ProcessSlice(
-			const Image< InputElementType, 3 > 	&in,
-			Image< InputElementType, 3 >		&out,
-			int32			x1,	
-			int32			y1,	
-			int32			x2,	
-			int32			y2,	
-			int32			slice
-		    );
+	Process2D(
+			InputElementType	*inPointer,
+			int32			i_xStride,
+			int32			i_yStride,
+			InputElementType	*outPointer,
+			int32			o_xStride,
+			int32			o_yStride,
+			uint32			width,
+			uint32			height
+		 );
 private:
 	typedef typename std::map< InputElementType, int >	Histogram;
 

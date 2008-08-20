@@ -9,33 +9,34 @@ namespace Imaging
 {
 
 
-template< typename InputElementType >
-MedianFilter2D< Image< InputElementType, 3 > >
+template< typename InputImageType >
+MedianFilter2D< InputImageType >
 ::MedianFilter2D() : PredecessorType( new Properties() )
 {
 
 }
 
-template< typename InputElementType >
-MedianFilter2D< Image< InputElementType, 3 > >
-::MedianFilter2D( typename MedianFilter2D< Image< InputElementType, 3 > >::Properties *prop ) 
+template< typename InputImageType >
+MedianFilter2D< InputImageType >
+::MedianFilter2D( typename MedianFilter2D< InputImageType >::Properties *prop ) 
 : PredecessorType( prop ) 
 {
 
 }
 
-template< typename InputElementType >
+template< typename InputImageType >
 bool
-MedianFilter2D< Image< InputElementType, 3 > >
-::ProcessSlice(	
-			const Image< InputElementType, 3 > 	&in,
-			Image< InputElementType, 3 >		&out,
-			int32			x1,	
-			int32			y1,	
-			int32			x2,	
-			int32			y2,	
-			int32			slice
-		    )
+MedianFilter2D< InputImageType >
+::Process2D(
+			typename ImageTraits< InputImageType >::ElementType	*inPointer,
+			int32			i_xStride,
+			int32			i_yStride,
+			typename ImageTraits< InputImageType >::ElementType	*outPointer,
+			int32			o_xStride,
+			int32			o_yStride,
+			uint32			width,
+			uint32			height
+		 )
 {
 	if( !this->CanContinue() ) {
 		return false;
@@ -45,34 +46,45 @@ MedianFilter2D< Image< InputElementType, 3 > >
 	int medianOrder = ((2*radius+1) * (2*radius+1)) / 2;
 
 	std::map< InputElementType, int > histogram;
-	for( int j = y1 + radius; j < (y2 - radius); ++j ) {
+
+	InputElementType *inRowPointer = inPointer;
+	InputElementType *outRowPointer = outPointer;
+	for( int j =  radius; j < (int)(height - radius); ++j ) {
+		InputElementType *inElementPointer = inRowPointer + radius*i_xStride;
+		InputElementType *outElementPointer = outRowPointer + radius*o_xStride;
+
 		//initialize histogram
 		histogram.clear();
-		for( int l = j-radius; l <= j+radius; ++l ){
-			for( int k = x1; k <= x1+(2*radius)+1; ++k ){
-				++(histogram[ in.GetElement( k, l, slice ) ]);
-			}
-		}
-		out.GetElement( x1 + radius, j, slice ) = GetElementInOrder( histogram, medianOrder );
-
-
-		for( int i = x1 + radius + 1; i < (x2 - radius); ++i ) {
+		for( int l = -radius; l <= radius; ++l ){
 			for( int k = -radius; k <= radius; ++k ){
-				--(histogram[ in.GetElement( i-(radius+1), j + k, slice ) ]);
-				++(histogram[ in.GetElement( i+radius, j + k, slice ) ]);
-				out.GetElement( i, j, slice ) = GetElementInOrder( histogram, medianOrder );
+				++(histogram[  *(inElementPointer + k*i_xStride + l*i_yStride) ]);
 			}
 		}
+		*outElementPointer = GetElementInOrder( histogram, medianOrder );
+
+
+		for( int i = radius + 1; i < (int)(width - radius); ++i ) {
+			inElementPointer += i_xStride;
+			outElementPointer += o_xStride;
+
+			for( int k = -radius; k <= radius; ++k ){
+				--(histogram[ *(inElementPointer - (radius+1)*i_xStride + k*i_yStride) ]);
+				++(histogram[ *(inElementPointer + radius*i_xStride + k*i_yStride) ]);
+				*outElementPointer = GetElementInOrder( histogram, medianOrder );
+			}
+		}
+		inRowPointer += i_yStride;
+		outRowPointer += o_yStride;
 	}
 	return true;
 }
 
-template< typename InputElementType >
-inline InputElementType
-MedianFilter2D< Image< InputElementType, 3 > >
+template< typename InputImageType >
+inline typename ImageTraits< InputImageType >::ElementType
+MedianFilter2D< InputImageType >
 ::GetElementInOrder(
-		MedianFilter2D< Image< InputElementType, 3 > >::Histogram	&histogram,
-		uint32								order
+		MedianFilter2D< InputImageType >::Histogram	&histogram,
+		uint32						order
 	      )
 {
 	uint32 count = 0;
@@ -84,8 +96,7 @@ MedianFilter2D< Image< InputElementType, 3 > >
 	if( it !=histogram.end() ) {
 		return it->first;
 	}
-	throw 10;
-	return (InputElementType)0;
+	return (typename ImageTraits< InputImageType >::ElementType)0;
 }
 
 //******************************************************************************
