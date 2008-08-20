@@ -37,7 +37,7 @@ public:
 	typedef boost::shared_ptr< AbstractImage > AImagePtr;
 	class EWrongDimension;
 	
-	AbstractImage( unsigned dim, DimensionExtents *dimExtents );
+	AbstractImage( uint16 dim, DimensionExtents *dimExtents );
 	
 	virtual
 	~AbstractImage()=0;
@@ -45,14 +45,14 @@ public:
 	const DimensionExtents &
 	GetDimensionExtents( unsigned dimension )const;
 
-	unsigned 
+	uint16 
 	GetDimension()const
 		{ return _dimCount; }
 
 	/**
 	 * @return ID of element type.
 	 **/
-	virtual int
+	virtual int16
 	GetElementTypeID()const=0;
 
 	virtual WriterBBoxInterface &
@@ -64,7 +64,7 @@ public:
 	virtual const ModificationManager &
 	GetModificationManager()const = 0;
 protected:
-	unsigned		_dimCount;
+	uint16			_dimCount;
 	DimensionExtents	*_dimensionExtents;
 private:
 
@@ -178,7 +178,7 @@ public:
 	 * elements types - working only on predefined types.
 	 * @return ID of numeric type defined in Common.h
 	 **/
-	int
+	int16
 	GetElementTypeID()const
 		{ return GetNumericTypeID<ElementType>(); }
 
@@ -315,7 +315,7 @@ public:
 	 * elements types - working only on predefined types.
 	 * @return ID of numeric type defined in Common.h
 	 **/
-	int
+	int16
 	GetElementTypeID()const
 		{ return GetNumericTypeID<ElementType>(); }
 
@@ -460,7 +460,7 @@ public:
 	 * elements types - working only on predefined types.
 	 * @return ID of numeric type defined in Common.h
 	 **/
-	int
+	int16
 	GetElementTypeID()const
 		{ return GetNumericTypeID<ElementType>(); }
 

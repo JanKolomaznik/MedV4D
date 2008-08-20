@@ -6,7 +6,7 @@ namespace M4D
 namespace Imaging
 {
 
-AbstractImage::AbstractImage( unsigned dim, DimensionExtents *dimExtents )
+AbstractImage::AbstractImage( uint16 dim, DimensionExtents *dimExtents )
 : AbstractDataSet( DATASET_IMAGE ), _dimCount( dim ), _dimensionExtents( dimExtents )
 {
 

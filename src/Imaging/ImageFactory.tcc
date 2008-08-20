@@ -31,6 +31,36 @@ PrepareElementArray( uint32 size )
 	}
 }
 
+template< typename ElementType >
+AbstractImage::AImagePtr 
+ImageFactory::CreateEmptyImageFromExtents( 
+		uint32		dim,
+		int32		minimums[], 
+		int32		maximums[],
+		float32		elementExtents[]
+		)
+{
+	switch( dim ) {
+	case 2:		
+		return CreateEmptyImage2D< ElementType >( 
+				(uint32) maximums[0]-minimums[0], 
+				(uint32) maximums[1]-minimums[1],
+				elementExtents[0],
+				elementExtents[1]
+				);
+	case 3:
+		return CreateEmptyImage3D< ElementType >( 
+				(uint32) maximums[0]-minimums[0], 
+				(uint32) maximums[1]-minimums[1],
+				(uint32) maximums[2]-minimums[2],
+				elementExtents[0],
+				elementExtents[1],
+				elementExtents[2]
+				);
+	default:
+		ASSERT( false );
+	}
+}
 
 template< typename ElementType >
 AbstractImage::AImagePtr 

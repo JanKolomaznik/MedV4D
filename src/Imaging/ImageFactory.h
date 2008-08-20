@@ -29,6 +29,15 @@ public:
 	class EWrongArrayForFlush;
 	class EUnknowDataType;
 
+	template< typename ElementType >
+	static AbstractImage::AImagePtr 
+	CreateEmptyImageFromExtents( 
+			uint32		dim,
+			int32		minimums[], 
+			int32		maximums[],
+			float32		elementExtents[]
+			);
+
 	/**
 	 * Method for custom empty 2D image creation.
 	 * ElementType is type of elements which will be contained 
