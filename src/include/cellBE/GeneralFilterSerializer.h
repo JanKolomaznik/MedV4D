@@ -1,11 +1,7 @@
 #ifndef GENERAL_FILTER_SERIALIZER_H
 #define GENERAL_FILTER_SERIALIZER_H
 
-#include "AbstractFilterSerializer.h"
-#include "Imaging/AbstractFilter.h"
-#include "cellBE/filterSerializers/ThresholdingSerializer.h"
-
-#include <map>
+#include "FilterSerializerArray.h"
 
 namespace M4D
 {
@@ -19,8 +15,7 @@ namespace CellBE
 class GeneralFilterSerializer
 {
 private:
-  typedef std::map<FilterID, AbstractFilterSerializer *> FilterSerializers;
-  static FilterSerializers m_filterSerializers;
+  static FilterSerializerArray m_filterSerializers;
 
 public:
   GeneralFilterSerializer();
@@ -41,11 +36,8 @@ public:
     uint16 id;
     s >> id;
 
-    FilterSerializers::iterator it = m_filterSerializers.find( (FilterID) filterID);
-    if( it != m_filterSerializers.end() )
-      it->second->DeSerializeClassInfo( resultingFilter, serializer, id, s);
-    else
-      throw WrongFilterException();
+    m_filterSerializers.Get( (FilterID) filterID)->DeSerializeClassInfo( 
+      resultingFilter, serializer, id, s);
   }
 
   /**

@@ -3,27 +3,17 @@
 #include "Common.h"
 #include "cellBE/GeneralFilterSerializer.h"
 
-#include "cellBE/filterSerializers/ThresholdingSerializer.h"
-
 using namespace M4D::CellBE;
-using namespace M4D::Imaging;
 using namespace std;
 
-GeneralFilterSerializer::FilterSerializers
-GeneralFilterSerializer::m_filterSerializers;
+FilterSerializerArray GeneralFilterSerializer::m_filterSerializers;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-GeneralFilterSerializer::GeneralFilterSerializer()
-{
-  // here is to be put each new filterSerializer instance
-  m_filterSerializers.insert( FilterSerializers::value_type(
-    FID_Thresholding, 
-    new FilterSerializer< typename ThresholdingFilter< Image<uint8, 3> > >( 
-      NULL, 0 )
-    ) );
-  // ...
-}
+//GeneralFilterSerializer::GeneralFilterSerializer()
+//{
+//  
+//}
 
 ///////////////////////////////////////////////////////////////////////////////
 

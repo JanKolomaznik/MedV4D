@@ -292,6 +292,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\include\cellBE\RemoteFilter.tcc"
+				>
+			</File>
+			<File
 				RelativePath="..\..\include\cellBE\RemoteFilterBase.h"
 				>
 			</File>

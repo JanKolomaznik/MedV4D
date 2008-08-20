@@ -182,6 +182,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\include\cellBE\FilterSerializerArray.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\cellServer\main.cpp"
 				>
 			</File>
@@ -237,6 +241,10 @@
 			</File>
 			<File
 				RelativePath="..\..\include\cellBE\filterIDEnums.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\cellBE\FilterSerializerArray.h"
 				>
 			</File>
 			<File
