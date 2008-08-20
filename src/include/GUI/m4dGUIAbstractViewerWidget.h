@@ -6,7 +6,7 @@
 #include "Imaging/Ports.h"
 #include <QWidget>
 
-
+/* defines that indicate the capabilities of the given type of viewer widget */
 #define SETBUTTONHANDLER	0
 #define SETSELECTED		1
 #define SETSLICENUM		2
@@ -41,6 +41,9 @@ namespace M4D
 namespace Viewer
 {
 
+/** 
+ * Abstract base class of the ViewerWidgets
+ */
 class m4dGUIAbstractViewerWidget : public QObject, public Imaging::MessageReceiverInterface
 {
     Q_OBJECT

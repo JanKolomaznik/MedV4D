@@ -285,6 +285,9 @@ m4dGUISliceViewerWidget::resetParameters()
     _oneSliceMode = true;
     _slicesPerRow = 1;
     _flipH = _flipV = 1;
+    _colorPicker = false;
+    _colorPicked = 0;
+    _pickedPosition = QPoint( -1, -1 );
     _shapes.clear();
     _availableSlots.clear();
     _availableSlots.push_back( SETBUTTONHANDLER );
@@ -613,6 +616,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
     if ( _flipH < 0 ) offset.setX( offset.x() - (int)( zoomRate * w ) );
     if ( _flipV < 0 ) offset.setY( offset.y() - (int)( zoomRate * h ) );
     if ( _printData ) drawData( zoomRate, offset );
+    if ( _colorPicker ) drawPicked();
     glFlush();
 }
 
@@ -667,7 +671,7 @@ m4dGUISliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int 
     if ( last ) glColor3f( 1., 0., 0. );
     else glColor3f( 0., 0., 1. );
     if ( s.shapeClosed() && s.shapeElements().size() > 1 &&
-	  s.shapeElements().back().getParticularValue( 2 ) == sliceNum )
+	  ( s.shapeElements().back().getParticularValue( 2 ) == sliceNum || s.shapeElements().front().getParticularValue( 2 ) == sliceNum ) )
     {
         glBegin(GL_LINES);
 	    glVertex2i( s.shapeElements().front().getParticularValue( 0 ), s.shapeElements().front().getParticularValue( 1 ) );
@@ -714,33 +718,36 @@ m4dGUISliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int 
 	    else glColor3f( 0., 0., 1. );
 	}
     }
-    for ( std::list< Selection::m4dPoint<int> >::iterator it = s.shapeElements().begin(); it != s.shapeElements().end(); ++it )
+    std::list< Selection::m4dPoint<int> >::iterator it, tmp;
+    for ( it = s.shapeElements().begin(); it != s.shapeElements().end(); ++it )
+    {
+    	tmp = it;
+	++tmp;
+	if ( &(*it) != &(s.shapeElements().back()) &&
+	   ( it->getParticularValue( 2 ) == sliceNum || tmp->getParticularValue( 2 ) == sliceNum ) )
+	{
+	    glBegin(GL_LINES);
+		glVertex2i(  it->getParticularValue( 0 ),  it->getParticularValue( 1 ) );
+		glVertex2i( tmp->getParticularValue( 0 ), tmp->getParticularValue( 1 ) );
+	    glEnd();
+            if ( _printShapeData )
+	    {
+	        if ( last ) glColor3f( 1., 1., 0. );
+                else glColor3f( 0., 1., 1. );
+	        Selection::m4dPoint< int > mid = Selection::m4dPoint< int >::midpoint( *it, *tmp );
+	        std::ostringstream dist;
+	        dist << Selection::m4dPoint< int >::distance( *it, *tmp );
+		setTextPosition( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
+		setTextCoords( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
+	        drawText( dist.str().c_str() );
+		unsetTextCoords();
+	        glPixelStorei( GL_UNPACK_ROW_LENGTH,  0 );
+                if ( last ) glColor3f( 1., 0., 0. );
+                else glColor3f( 0., 0., 1. );
+	    }
+	}
         if  ( it->getParticularValue( 2 ) == sliceNum )
         {
-	    if ( &(*it) != &(s.shapeElements().back()) )
-	    {
-	        std::list< Selection::m4dPoint<int> >::iterator tmp = it;
-		++tmp;
-	        glBegin(GL_LINES);
-		    glVertex2i(  it->getParticularValue( 0 ),  it->getParticularValue( 1 ) );
-		    glVertex2i( tmp->getParticularValue( 0 ), tmp->getParticularValue( 1 ) );
-		glEnd();
-                if ( _printShapeData )
-	        {
-	            if ( last ) glColor3f( 1., 1., 0. );
-                    else glColor3f( 0., 1., 1. );
-	            Selection::m4dPoint< int > mid = Selection::m4dPoint< int >::midpoint( *it, *tmp );
-	            std::ostringstream dist;
-	            dist << Selection::m4dPoint< int >::distance( *it, *tmp );
-		    setTextPosition( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
-		    setTextCoords( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
-	            drawText( dist.str().c_str() );
-		    unsetTextCoords();
-	    	    glPixelStorei( GL_UNPACK_ROW_LENGTH,  0 );
-                    if ( last ) glColor3f( 1., 0., 0. );
-                    else glColor3f( 0., 0., 1. );
-	        }
-	    }
 	    if ( last && &(*it) == &(s.shapeElements().back()) ) glColor3f( 1., 0., 1. );
             glBegin(GL_QUADS);
 	        glVertex2i( it->getParticularValue( 0 ) - 3, it->getParticularValue( 1 ) - 3 );
@@ -749,6 +756,7 @@ m4dGUISliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int 
 	        glVertex2i( it->getParticularValue( 0 ) - 3, it->getParticularValue( 1 ) + 3 );
 	    glEnd();
         }
+    }
 }
 
 void
@@ -813,6 +821,19 @@ m4dGUISliceViewerWidget::drawData( double zoomRate, QPoint offset )
         }
     }
     glPopMatrix();
+}
+
+void
+m4dGUISliceViewerWidget::drawPicked()
+{
+    glColor3f( 1., 1., 1. );
+    setTextPosition( _pickedPosition.x(), _pickedPosition.y() );
+    setTextCoords( _pickedPosition.x(), _pickedPosition.y() );
+    std::ostringstream pick;
+    pick << _colorPicked;
+    drawText( pick.str().c_str() );
+    unsetTextCoords();
+    glPixelStorei( GL_UNPACK_ROW_LENGTH,  0 );
 }
 
 void
@@ -882,11 +903,21 @@ void
 m4dGUISliceViewerWidget::mouseReleaseEvent(QMouseEvent *event)
 {
     _lastPos = QPoint( -1, -1 );
+    if ( _colorPicker )
+    {
+        _colorPicker = false;
+        updateGL();
+    }
 }
 
 void
 m4dGUISliceViewerWidget::mouseMoveEvent(QMouseEvent *event)
 {
+    if ( _colorPicker )
+    {
+        _colorPicker = false;
+        updateGL();
+    }
     if ( !_inPort->IsPlugged() ) return;
 
     if ( _lastPos.x() == -1 || _lastPos.y() == -1 ) return;
@@ -920,6 +951,11 @@ m4dGUISliceViewerWidget::zoomImage( int dummy, int amount )
 void
 m4dGUISliceViewerWidget::wheelEvent(QWheelEvent *event)
 {
+    if ( _colorPicker )
+    {
+        _colorPicker = false;
+        updateGL();
+    }
     if ( !_inPort->IsPlugged() ) return;
 
     int numDegrees = event->delta() / 8;
@@ -1058,39 +1094,48 @@ m4dGUISliceViewerWidget::deleteAll()
 void
 m4dGUISliceViewerWidget::colorPicker( int x, int y, int z )
 {
+    if ( !_inPort->IsPlugged() ) return;
     int64 result;
+    if ( _flipH < 0 ) x = - ( x - (int)( _maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ] ));
+    if ( _flipV < 0 ) y = - ( y - (int)( _maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ] ));
+    if ( x < 0 || y < 0 ||
+         x >= (int)( _maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ] ) ||
+         y >= (int)( _maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ] ) )
+    {
+        return;
+    }
     if ( !_ready ) setParameters();
     if ( !_ready ) return;
-    if ( _inPort->IsPlugged() )
+    try
     {
-        try
+	if ( _inPort->TryLockDataset() )
 	{
-	    if ( _inPort->TryLockDataset() )
+            try
 	    {
-                try
-	        {
-		    if ( _inPort->GetAbstractImage().GetDimension() == 3 )
-		    {
-		        INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
-		            _imageID, result = Imaging::Image< TTYPE, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetElement( x, y, z ) );
-		    }
-		    else if ( _inPort->GetAbstractImage().GetDimension() == 2 )
-		    {
-		        INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
-			    _imageID, result = Imaging::Image< TTYPE, 2 >::CastAbstractImage(_inPort->GetAbstractImage()).GetElement( x, y ) );
-		    }
-		    else
-		        result = 0;
+		if ( _inPort->GetAbstractImage().GetDimension() == 3 )
+		{
+		    INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
+		        _imageID, result = Imaging::Image< TTYPE, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetElement( x, y, z ) );
 		}
-		catch (...) { _ready = false; }
-	        _inPort->ReleaseDatasetLock();
+	        else if ( _inPort->GetAbstractImage().GetDimension() == 2 )
+	        {
+		    INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
+		        _imageID, result = Imaging::Image< TTYPE, 2 >::CastAbstractImage(_inPort->GetAbstractImage()).GetElement( x, y ) );
+	        }
+	        else
+	            result = 0;
 	    }
-	    else
-	        return;
+	    catch (...) { _ready = false; }
+	    _inPort->ReleaseDatasetLock();
 	}
-	catch (...) { _ready = false; }
+        else
+            return;
     }
+    catch (...) { _ready = false; }
     if ( !_ready ) return;
+    _colorPicker = true;
+    _colorPicked = result;
+    _pickedPosition = QPoint( x, y );
     emit signalColorPicker( result );
 }
 

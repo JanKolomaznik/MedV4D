@@ -112,6 +112,7 @@ private:
     void drawData( double zoomRate, QPoint offset );
     void drawSlice( int sliceNum, double zoomRate, QPoint offset );
     void drawShape( Selection::m4dShape<int>& s, bool last, int sliceNum, float zoomRate );
+    void drawPicked();
 
     typedef void (M4D::Viewer::m4dGUISliceViewerWidget::*ButtonMethods)( int amount1, int amount2 );
     typedef void (M4D::Viewer::m4dGUISliceViewerWidget::*SelectMethods)( int x, int y, int z );
@@ -145,6 +146,9 @@ private:
     bool					_selectionMode[2];
     AvailableSlots				_availableSlots;
     SliceOrientation				_sliceOrientation;
+    bool					_colorPicker;
+    uint64					_colorPicked;
+    QPoint					_pickedPosition;
 };
 
 } /*namespace Viewer*/
