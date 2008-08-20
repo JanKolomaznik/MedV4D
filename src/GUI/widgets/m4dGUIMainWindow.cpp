@@ -71,7 +71,7 @@ const int m4dGUIMainWindow::slotsToActions[] = { ACTION_EMPTY, ACTION_EMPTY, ACT
                                                  ACTION_EMPTY, ACTION_EMPTY, ACTION_EMPTY, ACTION_EMPTY, ACTION_OVERLAY, 
                                                  ACTION_EMPTY, ACTION_ZOOM, ACTION_PAN, ACTION_WINDOW_LEVEL, ACTION_NEW_POINT, 
                                                  ACTION_NEW_SHAPE, ACTION_CLEAR_POINT, ACTION_CLEAR_SHAPE, ACTION_CLEAR_ALL, 
-                                                 ACTION_ROTATE_3D, ACTION_ROTATE_3D, ACTION_ROTATE_3D };
+                                                 ACTION_ROTATE_3D, ACTION_ROTATE_3D, ACTION_ROTATE_3D, ACTION_EMPTY };
 
 m4dGUIMainWindow::m4dGUIMainWindow ( const char *title, const QIcon &icon )
 {
@@ -345,8 +345,9 @@ void m4dGUIMainWindow::createToolBarCustomizerDialog ()
   toolBarCustomizerDialog = new QDialog( this, Qt::WindowTitleHint | Qt::WindowSystemMenuHint );
   toolBarCustomizerDialog->setWindowTitle( tr( "Toolbar Property" ) );
 
-  toolBarCustomizerWidget = new m4dGUIToolBarCustomizerWidget;
-  // connect( studyManagerWidget->getStudyListComponent(), SIGNAL(ready()), studyManagerDialog, SLOT(accept()) );
+  toolBarCustomizerWidget = new m4dGUIToolBarCustomizerWidget( viewerActs, VIEWER_ACTIONS_NUMBER );
+  connect( toolBarCustomizerWidget, SIGNAL(ready()), toolBarCustomizerDialog, SLOT(accept()) );
+  connect( toolBarCustomizerWidget, SIGNAL(cancel()), toolBarCustomizerDialog, SLOT(reject()) );
 
   QVBoxLayout *dialogLayout = new QVBoxLayout;
   dialogLayout->addWidget( toolBarCustomizerWidget );

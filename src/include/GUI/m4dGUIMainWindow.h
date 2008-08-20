@@ -192,8 +192,6 @@ class m4dGUIMainWindow: public QMainWindow
     QMenu *toolBarsMenu;
     QMenu *toolsMenu;
     QMenu *viewMenu;
-
-    
 };
 
 } // namespace GUI
