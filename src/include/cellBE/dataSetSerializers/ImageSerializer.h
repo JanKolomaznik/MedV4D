@@ -8,6 +8,8 @@ namespace M4D
 namespace CellBE
 {
 
+// commons for every dimension cases
+template< typename ElementType, uint8 dim>
 class ImageSerializer
   : public AbstractDataSetSerializer
 {
@@ -28,20 +30,41 @@ public:
   M4D::Imaging::AbstractDataSet *
     DeSerializeProperties( M4D::CellBE::NetStream &s);
 
-
-	/**
-	 * Each special succesor should implement this functions in
-	 * its own manner.
-	 **/
-  void Serialize( M4D::CellBE::iPublicJob *job);
-  
-  void OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs);
   void OnDataSetEndRead( void);
 
 private:
   void Reset( void);
 
 };
+
+// special case for 3D images
+template< typename ElementType>  // TADY nevim, jestli jde dedit od obecne templejty ... aby az se zkonstruuje ImageSerializer<uint8, 3> tak se zkontruuje tadle trida, ktera bude mit ty metody Image<typename ElemType, uint8> (predka)
+class ImageSerializer: ImageSerializer< ElementType, 3>
+{
+  /**
+	 * Each special succesor should implement this functions in
+	 * its own manner.
+	 **/
+  void Serialize( M4D::CellBE::iPublicJob *job);
+  
+  void OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs);
+};
+
+// special case for 2D images
+template< typename ElementType>
+class ImageSerializer: ImageSerializer< ElementType, 2>
+{
+  /**
+	 * Each special succesor should implement this functions in
+	 * its own manner.
+	 **/
+  void Serialize( M4D::CellBE::iPublicJob *job);
+  
+  void OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs);
+};
+
+//include implementation
+#include "cellBE/ImageSerializer.tcc"
 
 }
 }

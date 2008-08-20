@@ -3,13 +3,16 @@
 
 #include "Common.h"
 
-//////////////////////////////////////////////////
-// Contains some common declarations for communicaton
-// between client (M4DApplication) & server (Cell)
-//////////////////////////////////////////////////
 
+/**
+ * Contains some common declarations for communicaton
+ * between client (M4DApplication) & server (Cell)
+ */
+
+/// predefined server port
 #define SERVER_PORT 44433
 
+/// tag, that is put to DataPiece header indicating end of dataSet
 #define ENDING_PECESIZE ((uint32)-1)
 
 namespace M4D
@@ -17,6 +20,9 @@ namespace M4D
 namespace CellBE
 {
 
+/**
+ *  Definition of some other exceptions used in networking
+ */
 class NetException
   : public ExceptionBase
 {

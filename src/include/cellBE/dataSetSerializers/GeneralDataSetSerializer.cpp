@@ -16,8 +16,13 @@ GeneralDataSetSerializer::GetDataSetSerializer( AbstractDataSet *dataSet)
 {
   switch( dataSet->GetDatasetType() )
   {
-  case DATASET_IMAGE:
-    return new ImageSerializer( dataSet);
+  case DATASET_IMAGE:    
+    NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( 
+      ((AbstractImage *)dataSet)->GetElementTypeID(),
+		  DIMENSION_TEMPLATE_SWITCH_MACRO( 
+        ((AbstractImage *)dataSet)->image->GetDimension(),
+			  return new ImageSerializer< TTYPE, DIM >(dataSet) )
+		  );
     break;
 
   case DATASET_TRIANGLE_MESH:
@@ -44,8 +49,16 @@ GeneralDataSetSerializer::DeSerializeDataSetProperties(
   switch( (DataSetType) type)
   {
   case DATASET_IMAGE:
+    uint16 dim, elemType;
+	  s >> dim >> elemType;   // get common properties
+
     if( *dataSetSerializer == NULL)
-      *dataSetSerializer = new ImageSerializer();
+    {
+      NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( elemType, 
+		    DIMENSION_TEMPLATE_SWITCH_MACRO( dim, 
+			    *dataSetSerializer = new ImageSerializer< TTYPE, DIM >() )
+		  );
+    }
 
     if( *returnedDataSet != NULL) // delete old dataSet
       delete *returnedDataSet;

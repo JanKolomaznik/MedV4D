@@ -16,8 +16,6 @@ uint32 ClientJob::lastID;
 
 ClientJob::ClientJob(
                      FilterSerializerVector &filters
-                   //, AbstractDataSetSerializer *inDataSetSeralizer
-                   //, AbstractDataSetSerializer *outDataSetSerializer
                    , const std::string &address
                    , boost::asio::io_service &service) 
   : ClientSocket( address, service)
@@ -258,19 +256,6 @@ ClientJob::SendDataSet( void)
   m_inDataSetSerializer->Serialize( this);
 
   SendEndOfDataSetTag();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void
-ClientJob::SendPrimaryHeader( void)
-{
-  PrimaryJobHeader::Serialize( &primHeader);
-
-  m_socket->async_write_some(
-    boost::asio::buffer( (uint8*) &primHeader, sizeof( PrimaryJobHeader) )
-    , boost::bind( & ClientJob::EndSend, this, boost::asio::placeholders::error)
-    );
 }
 
 /////////////////////////////////////////////////////////////////////////////// 

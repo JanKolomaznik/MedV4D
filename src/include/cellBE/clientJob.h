@@ -10,6 +10,8 @@ namespace CellBE
 
 /**
  *  Client side job class. Advances functionality for ID generation.
+ *  Has some supporting members that incomming and outcomming data
+ *  are store while assynchronous operation are in progress.
  */
 class ClientJob
   : public ClientSocket
@@ -23,7 +25,6 @@ class ClientJob
 
   void SerializeFiltersProperties( void);
   void SerializeRemotePipeDefinition( void);
-  void SendPrimaryHeader( void);
 
   void Serialize( NetStream &s);
   void DeSerialize( NetStream &s);
