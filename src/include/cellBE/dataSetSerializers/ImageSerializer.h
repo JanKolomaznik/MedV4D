@@ -10,7 +10,7 @@ namespace CellBE
 
 // commons for every dimension cases
 template< typename ElementType, uint8 dim>
-class ImageSerializer
+class ImageSerializerBase		//musi se jmenovat jinak nez ta dlasi trida
   : public AbstractDataSetSerializer
 {
 public:
@@ -36,10 +36,14 @@ private:
   void Reset( void);
 
 };
+//Tady se musi pouzit parcialni specializace
+template< typename ElementType, unsigned dim>  
+class ImageSerializer;
 
 // special case for 3D images
 template< typename ElementType>  // TADY nevim, jestli jde dedit od obecne templejty ... aby az se zkonstruuje ImageSerializer<uint8, 3> tak se zkontruuje tadle trida, ktera bude mit ty metody Image<typename ElemType, uint8> (predka)
-class ImageSerializer: ImageSerializer< ElementType, 3>
+class ImageSerializer< ElementType, 3 >	//provedu parcialni specializaci
+: ImageSerializerBase< ElementType, 3>
 {
   /**
 	 * Each special succesor should implement this functions in
@@ -52,7 +56,8 @@ class ImageSerializer: ImageSerializer< ElementType, 3>
 
 // special case for 2D images
 template< typename ElementType>
-class ImageSerializer: ImageSerializer< ElementType, 2>
+class ImageSerializer< ElementType, 2 >
+: ImageSerializerBase< ElementType, 2>
 {
   /**
 	 * Each special succesor should implement this functions in
