@@ -4,7 +4,7 @@
 #include "GUI/m4dGUIMainWindow.h"
 
 #define ORGANIZATION_NAME     "MFF"
-#define APPLICATION_NAME      "m4dPilot_0"
+#define APPLICATION_NAME      "m4dPilot"
 
 
 class mainWindow: public M4D::GUI::m4dGUIMainWindow

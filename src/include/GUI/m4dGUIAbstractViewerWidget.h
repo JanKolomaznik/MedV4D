@@ -46,7 +46,7 @@ class m4dGUIAbstractViewerWidget : public QObject, public Imaging::MessageReceiv
     Q_OBJECT
 
 public:
-    typedef enum { zoomI, moveI, adjust_bc, switch_slice, new_point, new_shape, rotate3d, color_picker } ButtonHandler;
+    typedef enum { zoomI, moveI, adjust_bc, switch_slice, new_point, new_shape, rotate_3D, color_picker } ButtonHandler;
     typedef enum { left = 0, right = 1 } MouseButton;
     typedef enum { xy = 0, yz = 1, zx = 2 } SliceOrientation;
 

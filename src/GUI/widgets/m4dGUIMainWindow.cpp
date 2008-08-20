@@ -17,32 +17,32 @@ namespace M4D {
 namespace GUI {
 
 /// Number of abstract viewer's actions (toolBar buttons) - first is for all unplugged slots (it's not in toolBar)
-#define VIEWER_ACTIONS_NUMBER       14
+#define VIEWER_ACTIONS_NUMBER       15
 
 const char *m4dGUIMainWindow::actionIconNames[] = { "empty.png", "window-level.png", "empty.png", "zoom.png", 
-                                                    "stack.png", "info.png", "point.png", "shape.png", "clear-point.png",
-                                                    "clear-shape.png", "clear-all.png", "flip-hor.png", "flip-vert.png",
-                                                    "empty.png" };
+                                                    "stack.png", "info.png", "probe.png", "point.png", "shape.png", 
+                                                    "clear-point.png", "clear-shape.png", "clear-all.png", "flip-hor.png", 
+                                                    "flip-vert.png", "empty.png" };
 
 const char *m4dGUIMainWindow::actionTexts[] = { "No Action", "Window/Level (Right Mouse)", "Pan (Left Mouse)", 
                                                 "Zoom (Right Mouse)", "Stack (Right Mouse)", "Toggle Overlay",
-                                                "New Point (Left Mouse)", "New Shape (Left Mouse)", "Clear Point",
-                                                "Clear Shape", "Clear All Points/Shapes", "Flip Horizontal", "Flip Vertical",
-                                                "Rotate Volume (Left Mouse)" };
+                                                "Probe Tool (Left Mouse)", "New Point (Left Mouse)", "New Shape (Left Mouse)", 
+                                                "Clear Point", "Clear Shape", "Clear All Points/Shapes", "Flip Horizontal", 
+                                                "Flip Vertical", "Rotate Volume (Left Mouse)" };
 
 // information also used for weather the connection is direct to the viewer
 const m4dGUIMainWindow::ToolType m4dGUIMainWindow::actionToolTypes[] = { CHECKABLE_TOOL, CHECKABLE_TOOL, CHECKABLE_TOOL, 
-                                                    CHECKABLE_TOOL, CHECKABLE_TOOL, TOGGLE_TOOL, CHECKABLE_TOOL, 
+                                                    CHECKABLE_TOOL, CHECKABLE_TOOL, TOGGLE_TOOL, CHECKABLE_TOOL, CHECKABLE_TOOL, 
                                                     CHECKABLE_TOOL, TOGGLE_TOOL, TOGGLE_TOOL, TOGGLE_TOOL, 
                                                     TOGGLE_TOOL, TOGGLE_TOOL, CHECKABLE_TOOL };
 
 const m4dGUIMainWindow::ButtonType m4dGUIMainWindow::actionButtonTypes[] = { LEFT_BUTTON, RIGHT_BUTTON, LEFT_BUTTON, 
-                                                    RIGHT_BUTTON, RIGHT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON,
-                                                    LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON,
+                                                    RIGHT_BUTTON, RIGHT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, 
+                                                    LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON,
                                                     LEFT_BUTTON };
 
 const char *m4dGUIMainWindow::actionShortCuts[] = { "", "Ctrl+W", "Ctrl+P", "Ctrl+Z", "Ctrl+A", "Ctrl+T",
-                                                    "Ctrl+I", "Ctrl+H", "Ctrl+N", "Ctrl+E", "Ctrl+A",
+                                                    "Ctrl+B", "Ctrl+I", "Ctrl+H", "Ctrl+N", "Ctrl+E", "Ctrl+A",
                                                     "Ctrl+R", "Ctrl+V", "Ctrl+U" };
 
 const char *m4dGUIMainWindow::actionStatusTips[] = { "Action for all unplugged available slots", 
@@ -51,6 +51,7 @@ const char *m4dGUIMainWindow::actionStatusTips[] = { "Action for all unplugged a
                                                      "Increase or decrease the image's field of view",
                                                      "Scroll through images within a series",
                                                      "Hide or display the study information",
+                                                     "Give a pixel value for a given point",
                                                      "Create a new point",
                                                      "Start a new shape (end the previous one)",
                                                      "Clear last created point",
@@ -62,16 +63,17 @@ const char *m4dGUIMainWindow::actionStatusTips[] = { "Action for all unplugged a
 
 const char *m4dGUIMainWindow::actionSlots[] = { SLOT(empty()), SLOT(viewerWindowLevel()), SLOT(viewerPan()),
                                                 SLOT(viewerZoom()), SLOT(viewerStack()), SLOT(slotTogglePrintData()),
-                                                SLOT(viewerNewPoint()), SLOT(viewerNewShape()), SLOT(slotDeletePoint()),
-                                                SLOT(slotDeleteShape()), SLOT(slotDeleteAll()), SLOT(slotToggleFlipHorizontal()),
-                                                SLOT(slotToggleFlipVertical()), SLOT(viewerRotate()) };
+                                                SLOT(viewerProbe()), SLOT(viewerNewPoint()), SLOT(viewerNewShape()), 
+                                                SLOT(slotDeletePoint()), SLOT(slotDeleteShape()), SLOT(slotDeleteAll()), 
+                                                SLOT(slotToggleFlipHorizontal()), SLOT(slotToggleFlipVertical()), 
+                                                SLOT(viewerRotate()) };
 
 const int m4dGUIMainWindow::slotsToActions[] = { ACTION_EMPTY, ACTION_EMPTY, ACTION_STACK, ACTION_EMPTY, ACTION_EMPTY, 
                                                  ACTION_FLIP_VERTICAL, ACTION_FLIP_HORIZONTAL, ACTION_EMPTY, ACTION_EMPTY,
                                                  ACTION_EMPTY, ACTION_EMPTY, ACTION_EMPTY, ACTION_EMPTY, ACTION_OVERLAY, 
                                                  ACTION_EMPTY, ACTION_ZOOM, ACTION_PAN, ACTION_WINDOW_LEVEL, ACTION_NEW_POINT, 
                                                  ACTION_NEW_SHAPE, ACTION_CLEAR_POINT, ACTION_CLEAR_SHAPE, ACTION_CLEAR_ALL, 
-                                                 ACTION_ROTATE_3D, ACTION_ROTATE_3D, ACTION_ROTATE_3D, ACTION_EMPTY };
+                                                 ACTION_ROTATE_3D, ACTION_ROTATE_3D, ACTION_ROTATE_3D, ACTION_EMPTY, ACTION_PROBE };
 
 m4dGUIMainWindow::m4dGUIMainWindow ( const char *appName, const char *orgName, const QIcon &icon )
 {
@@ -214,6 +216,12 @@ void m4dGUIMainWindow::viewerStack ()
 }
 
 
+void m4dGUIMainWindow::viewerProbe ()
+{
+  delegateAction( ACTION_PROBE, m4dGUIAbstractViewerWidget::color_picker );
+}
+
+
 void m4dGUIMainWindow::viewerNewPoint ()
 {
   delegateAction( ACTION_NEW_POINT, m4dGUIAbstractViewerWidget::new_point );
@@ -228,7 +236,7 @@ void m4dGUIMainWindow::viewerNewShape ()
 
 void m4dGUIMainWindow::viewerRotate ()
 {
-  // delegateAction( ACTION_ROTATE_3D, m4dGUIAbstractViewerWidget::rotate_3D );
+  delegateAction( ACTION_ROTATE_3D, m4dGUIAbstractViewerWidget::rotate_3D );
 }
 
 

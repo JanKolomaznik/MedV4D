@@ -20,14 +20,15 @@ namespace GUI {
 #define ACTION_ZOOM              3
 #define ACTION_STACK             4
 #define ACTION_OVERLAY           5
-#define ACTION_NEW_POINT         6
-#define ACTION_NEW_SHAPE         7
-#define ACTION_CLEAR_POINT       8
-#define ACTION_CLEAR_SHAPE       9
-#define ACTION_CLEAR_ALL         10
-#define ACTION_FLIP_HORIZONTAL   11
-#define ACTION_FLIP_VERTICAL     12
-#define ACTION_ROTATE_3D         13
+#define ACTION_PROBE             6
+#define ACTION_NEW_POINT         7
+#define ACTION_NEW_SHAPE         8
+#define ACTION_CLEAR_POINT       9
+#define ACTION_CLEAR_SHAPE       10
+#define ACTION_CLEAR_ALL         11
+#define ACTION_FLIP_HORIZONTAL   12
+#define ACTION_FLIP_VERTICAL     13
+#define ACTION_ROTATE_3D         14
 
 /**
  * Class representing the Main Window - containing all basic dialogs, viewer desktop
@@ -93,6 +94,7 @@ class m4dGUIMainWindow: public QMainWindow
     void viewerPan ();
     void viewerZoom ();
     void viewerStack ();
+    void viewerProbe ();
     void viewerNewPoint ();
     void viewerNewShape ();
     void viewerRotate ();

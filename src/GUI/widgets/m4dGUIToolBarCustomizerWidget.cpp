@@ -108,6 +108,7 @@ QTableWidget *m4dGUIToolBarCustomizerWidget::createToolBarButtonsTable ()
   {
     QTableWidgetItem *actionItem = new QTableWidgetItem( actions[row]->text() );
     actionItem->setFlags( actionItem->flags() & ~Qt::ItemIsEditable );
+    actionItem->setIcon( actions[row]->icon() );
     actionsTable->setItem( row - 1, 0, actionItem );
 
     QTableWidgetItem *shortcutItem = new QTableWidgetItem( QString( actions[row]->shortcut() ) );
