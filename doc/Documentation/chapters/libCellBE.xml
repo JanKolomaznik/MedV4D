@@ -37,12 +37,12 @@ and communicate ONLY with our supercalculating server that is budled with. All f
   	<title>Job</title>
   	
   	<para>
-  	Job is entity that represents remote computation. Job has 2 main parts: Definig Contatiner and inputamp&output dataSets.
+  	Job is entity that represents remote computation. Job has 2 main parts: Definig Contatiner and input&ampoutput dataSets.
   	Definig Contatiner contains information about filters that the remote pipeline represented by this job will consist of
   	and their settings. Each filter has Properties inner class. Instance of that class give us all neccessary information
   	of that filter because it is teplated as well (it's inner class of templated class) and has all properties of filter
   	that represents. So we don't need to instatiate any filter when defining remote pipeline. Filter::Properties instances
-  	are satisfied. According these information is actual pipeline created on ther server side. Inputamp&output dataSets
+  	are satisfied. According these information is actual pipeline created on ther server side. Input&ampoutput dataSets
   	are actual dataContainers that are dataRead from and send to server (input) and recieved and written to (output).
   	When you look at the class hiearchy, you can see there are commons parts for job on client and server side. But both
   	'types' of job has different behaviour when on client side and server side. So 2 branch in hierachy reflects that.
@@ -57,10 +57,6 @@ and communicate ONLY with our supercalculating server that is budled with. All f
   	</para>
   	</section>
   	
-  	<para>
-  	Now we fucus on particular branches of the hierarchy. Lets start with client one.
-  	</para>
-  	
   	<section>
   	<title>ClientSocket</title>
   	<para>
@@ -71,18 +67,20 @@ and communicate ONLY with our supercalculating server that is budled with. All f
   	<section>
   	<title>ClientJob</title>
   	<para>
+  	Now we fucus on particular branches of the hierarchy. Lets start with client one.
+  	</para>
+  	<para>
   	This class advances functionality for special for client job behaviour. That is ID generation,
   	sending definition container and his content. It has also supporting members special for
   	client async operations as well as members that do them.
   	</para>
-  	</section>
-  	
-  	<para>
-  	The last class in Job hierarchy remains. This class form server side brach.
-  	</para>
+  	</section>  	
   	
   	<section>
   	<title>ServerJob</title>
+  	<para>
+  	The last class in Job hierarchy remains. This class form server side brach.
+  	</para>
   	<para>
   	Is opposite to ClientJob. It's purpouse is to handle operation that the client job performs
   	(definition container unpacking and building pipeline and creating some supporting structures
@@ -123,8 +121,8 @@ and communicate ONLY with our supercalculating server that is budled with. All f
   	
   	<para>
   	Each filterSerializer (FS) should be derived from AbstractFilterSerializer class which is the base class for every
-  	FS and defines interface of its behaviour. CIS is performed by SerializeClassInfo amp& DeSerializeClassInfo pair of
-  	member functions. ACS by SerializeProperties amp& DeSerializeProperties pair.
+  	FS and defines interface of its behaviour. CIS is performed by SerializeClassInfo &amp DeSerializeClassInfo pair of
+  	member functions. ACS by SerializeProperties &amp DeSerializeProperties pair.
   	</para>
   	
   	</section>
@@ -134,7 +132,7 @@ and communicate ONLY with our supercalculating server that is budled with. All f
     	
     	<para>
       DataSetSerializer has more work to do than FilterSerializer. It performs CIS (within GeneralDataSetSerializer and
-      appropriate switch cases, desribed later) and ACS in SerializeProperties amp& DeSerializeProperties pair of functions
+      appropriate switch cases, desribed later) and ACS in SerializeProperties &amp DeSerializeProperties pair of functions
       that are in interface defined by AbstractDataSetSerializer that each new DataSet should inherit.
     	</para>
     	<para>
@@ -191,7 +189,7 @@ and communicate ONLY with our supercalculating server that is budled with. All f
   		Right place where the code to place is cellBE/FilterSerializers folder</para></listitem>
   		<listitem><para>Add the new Serializer instance into array in FilterSerializerArray class constructor and appropriate
   		edit size of the array (all described in code and by next example that is taken from code. For details see 
-  		ThresholdingSerializer.h amp& .tcc)</para></listitem>
+  		ThresholdingSerializer.h &amp .tcc)</para></listitem>
   	</itemizedlist>
   	
   	<programlisting>
