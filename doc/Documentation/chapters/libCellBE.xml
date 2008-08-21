@@ -37,12 +37,12 @@ and communicate ONLY with our supercalculating server that is budled with. All f
   	<title>Job</title>
   	
   	<para>
-  	Job is entity that represents remote computation. Job has 2 main parts: Definig Contatiner and input&output dataSets.
+  	Job is entity that represents remote computation. Job has 2 main parts: Definig Contatiner and inputamp&output dataSets.
   	Definig Contatiner contains information about filters that the remote pipeline represented by this job will consist of
   	and their settings. Each filter has Properties inner class. Instance of that class give us all neccessary information
   	of that filter because it is teplated as well (it's inner class of templated class) and has all properties of filter
   	that represents. So we don't need to instatiate any filter when defining remote pipeline. Filter::Properties instances
-  	are satisfied. According these information is actual pipeline created on ther server side. Input&output dataSets
+  	are satisfied. According these information is actual pipeline created on ther server side. Inputamp&output dataSets
   	are actual dataContainers that are dataRead from and send to server (input) and recieved and written to (output).
   	When you look at the class hiearchy, you can see there are commons parts for job on client and server side. But both
   	'types' of job has different behaviour when on client side and server side. So 2 branch in hierachy reflects that.
@@ -123,27 +123,81 @@ and communicate ONLY with our supercalculating server that is budled with. All f
   	
   	<para>
   	Each filterSerializer (FS) should be derived from AbstractFilterSerializer class which is the base class for every
-  	FS and defines interface of its behaviour. CIS is performed by SerializeClassInfo & DeSerializeClassInfo pair of
-  	member functions. ACS by SerializeProperties & DeSerializeProperties pair.
+  	FS and defines interface of its behaviour. CIS is performed by SerializeClassInfo amp& DeSerializeClassInfo pair of
+  	member functions. ACS by SerializeProperties amp& DeSerializeProperties pair.
   	</para>
   	
-  	<para>
-  	Next is the list of neccessary steps for adding new FilterSerializer:
-  	</para>
+  	</section>
   	
+  	<section>
+    	<title>DataSetSerializer</title>
+    	
+    	<para>
+      DataSetSerializer has more work to do than FilterSerializer. It performs CIS (within GeneralDataSetSerializer and
+      appropriate switch cases, desribed later) and ACS in SerializeProperties amp& DeSerializeProperties pair of functions
+      that are in interface defined by AbstractDataSetSerializer that each new DataSet should inherit.
+    	</para>
+    	<para>
+    	New is Actual Data Serialization (ADS). This is performed through another part of AbstractDataSetSerializer iterface
+    	parts: Serialize, OnDataPieceReadRequest, OnDataSetEndRead functions. For more detail of these function purpouse see 
+    	appropriate headers. 
+    	</para>
+    	<para>
+    	Main idea of dataSetSerialization is to divide the whole dataSet into smaller parts, that can be
+    	transported throug network separately (dataPieces, DP) and alternatively the calculation can be started on independently
+    	from other DP that have not yet arrived. Each DP has its header that says how long it is. So on reciving
+    	side when such header is recieved its passed to DataSetSerializer's OnDataPieceReadRequest method that will decide
+    	where the data that the DP reffers to are going to be recieved. This can tell through DataBuffs vector by putting DataBuf
+    	sctruct into it. DataBuf is struct of void * pointer pointing somewhere into memory and size. So the DataBuffs vector 
+    	defines place where data of DP should be transmitted (in geather manner). 
+    	</para>
+    	<para>
+    	Another mandatory function is OnDataSetEndRead. This is called when whole dataSet is recieved. No more DP are going
+    	to be recieved. This is recognized by recieving of special DBHeader. Function can perform some clean up or something.
+    	</para>
+    	<para>
+    	Serialize is another mandatory function. It has to perform actual whole ADS. It gets pointer to iPublicJob interface
+    	and through its function PutDataPiece should perform serialization. PutDataPiece is the same as in deserialization
+    	but it writes data into network in scatter manner. In this function the programer should define meaning of DP and
+    	reflect the meaning in deserialization functions. Perfect example is serialization of 3d image. DP is one slice. So
+    	whole dataSet is sent with slice granularity. On the other side DP (slice) is recieved directly into the right place
+    	in big array for 3d image and calculation can be started if another slices not needed. This is ideal case. Current
+    	implementation do not allow it due to dataSet locking and lack of universal dataSet handling. So dataSet is currently
+    	transferred whole and whole recieved.
+    	</para>
+    	<para>
+    	Because this serialization is statefull the inner state has to be in serializer instance. Reset mandatory method should
+    	reset the state for seralizer reusage.
+    	</para>  	
+  	</section>  
+	
+	</section>
+	
+
+</section>
+
+<section>
+<title>Usage</title>
+  
+  <section>  
+    <title>FilterSerializer</title>
+    <para>
+    	Next is the list of neccessary steps for adding new FilterSerializer:
+    </para>
+    	
   	<itemizedlist>
-			<listitem><para>Add enum FilterID item in cellBE/filterIDEnums.h header </para></listitem>
-			<listitem><para>Write actual FilterSerializer derived from AbstractFilterSerializer and implementing its interface. 
-			Right place where the code to place is cellBE/FilterSerializers folder</para></listitem>
-			<listitem><para>Add the new Serializer instance into array in FilterSerializerArray class constructor and appropriate
-			edit size of the array (all described in code and by next example that is taken from code. For details see 
-			ThresholdingSerializer.h & .tcc)</para></listitem>
-		</itemizedlist>
-		
-		<programlisting>
-	    <![CDATA[
-	    
-	    // supportig function
+  		<listitem><para>Add enum FilterID item in cellBE/filterIDEnums.h header </para></listitem>
+  		<listitem><para>Write actual FilterSerializer derived from AbstractFilterSerializer and implementing its interface. 
+  		Right place where the code to place is cellBE/FilterSerializers folder</para></listitem>
+  		<listitem><para>Add the new Serializer instance into array in FilterSerializerArray class constructor and appropriate
+  		edit size of the array (all described in code and by next example that is taken from code. For details see 
+  		ThresholdingSerializer.h amp& .tcc)</para></listitem>
+  	</itemizedlist>
+  	
+  	<programlisting>
+      <![CDATA[
+      
+      // supportig function
       template< typename ElementType, unsigned Dim >
       void
       CreateThresholdingFilter( 
@@ -161,9 +215,9 @@ and communicate ONLY with our supercalculating server that is budled with. All f
       	*resultingFilter = new Filter( prop );  // id
         *serializer = new FilterSerializer( prop, id);  // id
       }
-
+  
       ////////////////////////////////////////////////////////
-	    template< typename InputImageType >
+      template< typename InputImageType >
       class FilterSerializer< M4D::Imaging::ThresholdingFilter< InputImageType > > 
       	: public AbstractFilterSerializer   // inheritation from AbstractFilterSerializer
       {
@@ -234,50 +288,13 @@ and communicate ONLY with our supercalculating server that is budled with. All f
       // .....
       
   	  ]]>
-	  </programlisting>		
-  	</section>
-  	
-  	<section>
-  	<title>DataSetSerializer</title>
-  	
-  	<para>
-    DataSetSerializer has more work to do than FilterSerializer. It performs CIS (within GeneralDataSetSerializer and
-    appropriate switch cases, desribed later) and ACS in SerializeProperties & DeSerializeProperties pair of functions
-    that are in interface defined by AbstractDataSetSerializer that each new DataSet should inherit.
-  	</para>
-  	<para>
-  	New is Actual Data Serialization (ADS). This is performed through another part of AbstractDataSetSerializer iterface
-  	parts: Serialize, OnDataPieceReadRequest, OnDataSetEndRead functions. For more detail of these function purpouse see 
-  	appropriate headers. 
-  	</para>
-  	<para>
-  	Main idea of dataSetSerialization is to divide the whole dataSet into smaller parts, that can be
-  	transported throug network separately (dataPieces, DP) and alternatively the calculation can be started on independently
-  	from other DP that have not yet arrived. Each DP has its header that says how long it is. So on reciving
-  	side when such header is recieved its passed to DataSetSerializer's OnDataPieceReadRequest method that will decide
-  	where the data that the DP reffers to are going to be recieved. This can tell through DataBuffs vector by putting DataBuf
-  	sctruct into it. DataBuf is struct of void * pointer pointing somewhere into memory and size. So the DataBuffs vector 
-  	defines place where data of DP should be transmitted (in geather manner). 
-  	</para>
-  	<para>
-  	Another mandatory function is OnDataSetEndRead. This is called when whole dataSet is recieved. No more DP are going
-  	to be recieved. This is recognized by recieving of special DBHeader. Function can perform some clean up or something.
-  	</para>
-  	<para>
-  	Serialize is another mandatory function. It has to perform actual whole ADS. It gets pointer to iPublicJob interface
-  	and through its function PutDataPiece should perform serialization. PutDataPiece is the same as in deserialization
-  	but it writes data into network in scatter manner. In this function the programer should define meaning of DP and
-  	reflect the meaning in deserialization functions. Perfect example is serialization of 3d image. DP is one slice. So
-  	whole dataSet is sent with slice granularity. On the other side DP (slice) is recieved directly into the right place
-  	in big array for 3d image and calculation can be started if another slices not needed. This is ideal case. Current
-  	implementation do not allow it due to dataSet locking and lack of universal dataSet handling. So dataSet is currently
-  	transferred whole and whole recieved.
-  	</para>
-  	<para>
-  	Because this serialization is statefull the inner state has to be in serializer instance.
-  	</para>
-  	
-  	<para>
+    </programlisting>  
+  </section>
+  
+  <section>  
+    <title>FilterSerializer</title>
+    
+    <para>
   	Next is the list of neccessary steps for adding new DataSetSerializer:
   	</para>
   	
@@ -298,46 +315,8 @@ and communicate ONLY with our supercalculating server that is budled with. All f
       
   	  ]]>
 	  </programlisting>		
-  	</section>  
-	
 	</section>
 	
-
-</section>
-
-<section>
-<title>Usage</title>
-	
-	<para>
-	Usage is quite simple. First we have to construct DcmProvider instance. Then we only create objects needed for holding
-	data (ResultSet) and issue them along with some other parametrs to member functions of DcmProvider class instance created
-	at the beginning. Example follows:
-	</para>
-
-	<programlisting>
-	<![CDATA[
-    #include "dicomConn/DICOMServiceProvider.h"
-    
-    
-    M4D::Dicom::DcmProvider dcmProvider;  // DICOMProvider instance
-    // ....
-    // ....
-    // somewhere when finding record based on some filter form values
-    M4D::Dicom::DcmProvider::ResultSet resultSet;   // create resultSet container
-    dcmProvider.Find(     // issue filter values and resultSet to provider method
-      &resultSet,
-      firstName,
-      lastName,
-      patientID,
-      fromDate,
-      toDate,
-      referringMD,
-      description
-      );
-      
-    // now we have in resultSet (vector) all found items ...
-  ]]>
-	</programlisting>		
 </section>
 
 </chapter>
