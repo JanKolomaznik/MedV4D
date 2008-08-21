@@ -47,8 +47,8 @@ ImageSerializerBase<ElementType, dim>
 		s >> elExtents[ i ];
 	}
 
-	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( ElementType,
-		return ImageFactory::CreateEmptyImageFromExtents< TTYPE >( dim, minimums, maximums, elExtents )
+	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( GetNumericTypeID< ElementType >(),
+		return M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< TTYPE >( dim, minimums, maximums, elExtents )
 		);
 
 	return M4D::Imaging::AbstractDataSet::ADataSetPtr(); // TODO initialize
@@ -132,13 +132,15 @@ void
 ImageSerializer< typename ElementType, 3>
   ::Serialize( M4D::CellBE::iPublicJob *job)
 {
-  uint32 width;
+	Image<ElementType, 3> *im = (Image<ElementType, 3> *) m_dataSet;
+	
+	uint32 width;
 	uint32 height;
 	uint32 depth;
 	int32 xStride;
 	int32 yStride;
 	int32 zStride;
-	ElementType *pointer = in.GetPointer( width, height, depth, xStride, yStride, zStride );
+	ElementType *pointer = im->GetPointer( width, height, depth, xStride, yStride, zStride );
 
 	for( uint32 k = 0; k < depth; ++k ) {
 		for( uint32 j = 0; j < height; ++j ) {

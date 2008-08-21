@@ -3,6 +3,7 @@
 
 #include "../AbstractDataSetSerializer.h"
 #include "Imaging/Image.h"
+#include "Imaging/ImageFactory.h"
 
 namespace M4D
 {

@@ -59,6 +59,7 @@ ImageFactory::CreateEmptyImageFromExtents(
 				);
 	default:
 		ASSERT( false );
+		return AbstractImage::AImagePtr();
 	}
 }
 

@@ -33,6 +33,7 @@ GeneralDataSetSerializer::GetDataSetSerializer( AbstractDataSet *dataSet)
   default:
     throw WrongDSetException();
   }
+  return NULL;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
