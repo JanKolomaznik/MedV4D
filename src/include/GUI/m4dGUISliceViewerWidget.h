@@ -122,6 +122,8 @@ private:
     void drawSlice( int sliceNum, double zoomRate, QPoint offset );
     void drawShape( Selection::m4dShape<int>& s, bool last, int sliceNum, float zoomRate );
     void drawPicked();
+    void calculateWidthHeight( double& w, double& h );
+    void calculateOptimalZoomRate();
 
     Imaging::InputPortAbstractImage*		_inPort;
 
@@ -134,8 +136,9 @@ private:
     short					_flipV;
     size_t					_minimum[3];
     size_t					_maximum[3];
+    float					_extents[3];
     int						_imageID;
-    
+
     bool					_ready;
     bool					_printData;
     bool					_printShapeData;

@@ -230,7 +230,7 @@ m4dGUISliceViewerWidget::setInputPort( )
     _ready = false;
     _inPort->UnPlug();
     setParameters();
-    resizeGL( width(), height() );
+    calculateOptimalZoomRate();
     updateGL();
 }
 
@@ -240,7 +240,7 @@ m4dGUISliceViewerWidget::setInputPort( Imaging::ConnectionInterface* conn )
     _ready = false;
     conn->ConnectConsumer( *_inPort );
     setParameters();
-    resizeGL( width(), height() );
+    calculateOptimalZoomRate();
     updateGL();
 }
 
@@ -341,6 +341,9 @@ m4dGUISliceViewerWidget::setParameters()
 	    	    _maximum[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).maximum;
 	    	    _maximum[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).maximum;
 	    	    _maximum[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).maximum;
+	    	    _extents[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).elementExtent;
+	    	    _extents[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).elementExtent;
+	    	    _extents[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).elementExtent;
 		    _sliceNum = _minimum[ ( _sliceOrientation + 2 ) % 3 ];
 		}
 		catch (...) { _ready = false; }
@@ -515,6 +518,13 @@ m4dGUISliceViewerWidget::togglePrintData()
 }
 
 void
+m4dGUISliceViewerWidget::calculateWidthHeight( double& w, double& h )
+{
+    w = (double)( (_maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ]) * _extents[ _sliceOrientation ] ),
+    h = (double)( (_maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ]) * _extents[ ( _sliceOrientation + 1 ) % 3 ] );    
+}
+
+void
 m4dGUISliceViewerWidget::paintGL()
 {
     glClear( GL_COLOR_BUFFER_BIT );
@@ -527,8 +537,7 @@ m4dGUISliceViewerWidget::paintGL()
     {
         unsigned i;
 	double w, h;
-	w = (double)(_maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ]),
-        h = (double)(_maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ]);
+	calculateWidthHeight( w, h );
         if ( _oneSliceMode )
 	{
 	    QPoint offset;
@@ -551,7 +560,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 {
     if ( !_ready ) return;
     if ( !_inPort->IsPlugged() ) return;
-    int w, h;
+    double w, h;
     if ( sliceNum < (int)_minimum[ ( _sliceOrientation + 2 ) % 3 ] ||
          sliceNum >= (int)_maximum[ ( _sliceOrientation + 2 ) % 3 ] )
     {
@@ -559,8 +568,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
     }
     else
     {
-        w = (int)_maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ],
-        h = (int)_maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ];
+	calculateWidthHeight( w, h );
     }
     glLoadIdentity();
     if ( _flipH < 0 ) offset.setX( offset.x() + (int)( zoomRate * w ) );
@@ -590,9 +598,9 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 
     glBegin( GL_QUADS );
         glTexCoord2d(0.0,0.0); glVertex2d(  0.0,   0.0);
-        glTexCoord2d(1.0,0.0); glVertex2d(width,   0.0);
-        glTexCoord2d(1.0,1.0); glVertex2d(width,height);
-        glTexCoord2d(0.0,1.0); glVertex2d(  0.0,height);
+        glTexCoord2d(1.0,0.0); glVertex2d(width * _extents[ _sliceOrientation ],   0.0);
+        glTexCoord2d(1.0,1.0); glVertex2d(width * _extents[ _sliceOrientation ], height * _extents[ ( _sliceOrientation + 1 ) % 3 ] );
+        glTexCoord2d(0.0,1.0); glVertex2d(  0.0,height * _extents[ ( _sliceOrientation + 1 ) % 3 ] );
         glEnd();
     glDeleteTextures( 1, &texName );
     
@@ -743,9 +751,8 @@ m4dGUISliceViewerWidget::drawData( double zoomRate, QPoint offset )
     glLoadIdentity();
     glColor3f( 1., 1., 1. );
     std::map< std::string, std::string >::iterator it;
-    int w, h;
-    w = (int)(_maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ]),
-    h = (int)(_maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ]);
+    double w, h;
+    calculateWidthHeight( w, h );
     int i, o_x, o_y, w_o;
     if ( _oneSliceMode )
     {
@@ -816,16 +823,32 @@ m4dGUISliceViewerWidget::drawPicked()
 void
 m4dGUISliceViewerWidget::ImagePositionSelectionCaller( int x, int y, SelectMethods f )
 {
-    int w, h;
+    double w, h;
     QPoint offset;
-    w = (int)(_maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ]),
-    h = (int)(_maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ]);
+    calculateWidthHeight( w, h );
     offset.setX( (int)floor( (double)_offset.x() - ( _zoomRate - (double)width()/w ) * 0.5 * w ) );
     offset.setY( (int)floor( (double)_offset.y() - ( _zoomRate - (double)height()/h ) * 0.5 * h ) );
     if ( _oneSliceMode ) (this->*f)( (int)( ( x - offset.x() ) / _zoomRate ), (int)( ( this->height() - y - offset.y() ) / _zoomRate ), _sliceNum );
     else (this->*f)( (int)( ( x % ( ( width() - 1 ) / _slicesPerRow ) ) * _slicesPerRow * w / ( width() - 1 ) ),
-   				    (int)( ( ( this->height() - y ) % ( ( h / w ) * ( width() - 1 ) / _slicesPerRow ) ) * _slicesPerRow * w / ( width() - 1 ) ),
+   				    (int)( ( ( this->height() - y ) % (int)( ( h / w ) * ( width() - 1 ) / _slicesPerRow ) ) * _slicesPerRow * w / ( width() - 1 ) ),
 				    _sliceNum + x / (int)( ( width() - 1 ) / _slicesPerRow ) + _slicesPerRow * ( ( this->height() - y ) / (int)( ( h / w ) * ( width() - 1 ) / _slicesPerRow ) ) );
+}
+
+void
+m4dGUISliceViewerWidget::calculateOptimalZoomRate()
+{
+    if ( !_ready )
+    {
+        setParameters();
+	if ( !_ready ) return;
+    }
+    if ( _inPort->IsPlugged() )
+    {
+        double w, h;
+    	calculateWidthHeight( w, h );
+        if ( (double)width() / w < (double)height() / h ) _zoomRate = (double)width() / w;
+	else _zoomRate = (double)height() / h;
+    }
 }
 
 void
@@ -836,19 +859,7 @@ m4dGUISliceViewerWidget::resizeGL(int winW, int winH)
     glLoadIdentity();
     glOrtho(0.0, (double)winW, 0.0, (double)winH, -1.0, 1.0);
     glMatrixMode(GL_MODELVIEW);
-    if ( !_ready )
-    {
-        setParameters();
-	if ( !_ready ) return;
-    }
-    if ( _inPort->IsPlugged() )
-    {
-        int w, h;
-	w = (int)(_maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ]),
-    	h = (int)(_maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ]);
-        if ( (double)width() / (double)w < (double)height() / (double)h ) _zoomRate = (double)width() / (double)w;
-	else _zoomRate = (double)height() / (double)h;
-    }
+    calculateOptimalZoomRate();
     updateGL();
 }
 
@@ -992,11 +1003,11 @@ m4dGUISliceViewerWidget::newPoint( int x, int y, int z )
     if ( _shapes.empty() ) newShape( x, y, z );
     else
     {
-	if ( _flipH < 0 ) x = - ( x - (int)( _maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ] ));
-        if ( _flipV < 0 ) y = - ( y - (int)( _maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ] ));
-        if ( x < 0 || y < 0 ||
-             x >= (int)( _maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ] ) ||
-             y >= (int)( _maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ] ) )
+    	double w, h;
+	calculateWidthHeight( w, h );
+	if ( _flipH < 0 ) x = - ( x - (int)w);
+        if ( _flipV < 0 ) y = - ( y - (int)h);
+        if ( x < 0 || y < 0 || x >= (int)w || y >= (int)h )
 	{
 	    return;
 	}
@@ -1016,10 +1027,10 @@ m4dGUISliceViewerWidget::newPoint( int x, int y, int z )
 void
 m4dGUISliceViewerWidget::newShape( int x, int y, int z )
 {
+    double w, h;
+    calculateWidthHeight( w, h );
     if ( !_inPort->IsPlugged() ) return;
-    if ( x < 0 || y < 0 ||
-         x >= (int)( _maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ] ) ||
-         y >= (int)( _maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ] ) )
+    if ( x < 0 || y < 0 || x >= (int)w || y >= (int)h )
     {
         return;
     }
@@ -1027,8 +1038,8 @@ m4dGUISliceViewerWidget::newShape( int x, int y, int z )
     Selection::m4dShape<int> s( 3 );
     _shapes.push_back( s );
     newPoint( x, y, z );
-    if ( _flipH < 0 ) x = - ( x - (int)( _maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ] ));
-    if ( _flipV < 0 ) y = - ( y - (int)( _maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ] ));
+    if ( _flipH < 0 ) x = - ( x - (int)w);
+    if ( _flipV < 0 ) y = - ( y - (int)h);
     emit signalNewShape( _index, x, y, z );
 }
 
@@ -1065,13 +1076,13 @@ m4dGUISliceViewerWidget::deleteAll()
 void
 m4dGUISliceViewerWidget::colorPicker( int x, int y, int z )
 {
+    double w, h;
+    calculateWidthHeight( w, h );
     if ( !_inPort->IsPlugged() ) return;
     int64 result;
-    if ( _flipH < 0 ) x = - ( x - (int)( _maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ] ));
-    if ( _flipV < 0 ) y = - ( y - (int)( _maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ] ));
-    if ( x < 0 || y < 0 ||
-         x >= (int)( _maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ] ) ||
-         y >= (int)( _maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ] ) )
+    if ( _flipH < 0 ) x = - ( x - (int)w);
+    if ( _flipV < 0 ) y = - ( y - (int)h);
+    if ( x < 0 || y < 0 || x >= (int)w || y >= (int)h )
     {
         return;
     }
@@ -1290,6 +1301,7 @@ m4dGUISliceViewerWidget::slotToggleSliceOrientation()
     }
     if ( _sliceNum >= (int)_maximum[ ( _sliceOrientation + 2 ) % 3 ] ) _sliceNum = _maximum[ ( _sliceOrientation + 2 ) % 3 ] - 1;
     if ( _sliceNum < (int)_minimum[ ( _sliceOrientation + 2 ) % 3 ] ) _sliceNum = _minimum[ ( _sliceOrientation + 2 ) % 3 ];
+    _shapes.clear();
     updateGL();
     emit signalToggleSliceOrientation( _index );
 }
@@ -1310,7 +1322,7 @@ m4dGUISliceViewerWidget::slotMessageHandler( Imaging::PipelineMsgID msgID )
         case Imaging::PMI_FILTER_UPDATED:
 	{
 	    setParameters();
-            resizeGL( width(), height() );
+            calculateOptimalZoomRate();
             updateGL();
 	}
 	break;
