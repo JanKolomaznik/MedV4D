@@ -123,7 +123,7 @@ FindService::FindService()
 	}
 
 	// create assotiation
-	m_assocToServer = new M4DDicomAssociation( "find");
+	m_assocToServer = new DicomAssociation( "find");
 }
 
 ///////////////////////////////////////////////////////////////////////

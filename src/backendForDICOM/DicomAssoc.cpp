@@ -11,12 +11,12 @@ using namespace M4D::DicomInternal;
 ///////////////////////////////////////////////////////////////////////
 
 // shared address container
-M4DDicomAssociation::AddressContainer M4DDicomAssociation::addressContainer;
+DicomAssociation::AddressContainer DicomAssociation::addressContainer;
 
 ///////////////////////////////////////////////////////////////////////
 
-M4DDicomAssociation::DICOMAddress *
-M4DDicomAssociation::GetAddress( string addressPointer) 
+DicomAssociation::DICOMAddress *
+DicomAssociation::GetAddress( string addressPointer) 
 {
 	AddressContainer::iterator it = addressContainer.find( addressPointer);
 	if( it == addressContainer.end())
@@ -32,7 +32,7 @@ M4DDicomAssociation::GetAddress( string addressPointer)
 
 #define MAX_LINE_LEN 128
 void
-M4DDicomAssociation::FindNonCommentLine( ifstream &f, string &line)
+DicomAssociation::FindNonCommentLine( ifstream &f, string &line)
 {
 	char tmp[MAX_LINE_LEN];
 
@@ -49,7 +49,7 @@ M4DDicomAssociation::FindNonCommentLine( ifstream &f, string &line)
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DDicomAssociation::LoadOneAddress( ifstream &f) 
+DicomAssociation::LoadOneAddress( ifstream &f) 
 {
 	string line;
 
@@ -113,7 +113,7 @@ M4DDicomAssociation::LoadOneAddress( ifstream &f)
 ///////////////////////////////////////////////////////////////////////
 
 void 
-M4DDicomAssociation::InitAddressContainer( void) 
+DicomAssociation::InitAddressContainer( void) 
 {
 	std::ifstream f("config.cfg");
 	if( f.fail() )
@@ -132,7 +132,7 @@ M4DDicomAssociation::InitAddressContainer( void)
 
 ///////////////////////////////////////////////////////////////////////
 
-M4DDicomAssociation::~M4DDicomAssociation( void)
+DicomAssociation::~DicomAssociation( void)
 {
   /* destroy the association, i.e. free memory of T_ASC_Association* structure. This */
   /* call is the counterpart of ASC_requestAssociation(...) which was called above. */
@@ -144,7 +144,7 @@ M4DDicomAssociation::~M4DDicomAssociation( void)
 
 ///////////////////////////////////////////////////////////////////////
 
-M4DDicomAssociation::M4DDicomAssociation( string assocAddrID)
+DicomAssociation::DicomAssociation( string assocAddrID)
 	
 {
 	m_assoc = NULL;
@@ -198,7 +198,7 @@ M4DDicomAssociation::M4DDicomAssociation( string assocAddrID)
 }
 
 void
-M4DDicomAssociation::Request( T_ASC_Network *net) 
+DicomAssociation::Request( T_ASC_Network *net) 
 {
 #ifdef _DEBUG
   // dump presentation contexts if required
@@ -244,7 +244,7 @@ M4DDicomAssociation::Request( T_ASC_Network *net)
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DDicomAssociation::AddPresentationContext(T_ASC_Parameters *params)
+DicomAssociation::AddPresentationContext(T_ASC_Parameters *params)
 {
     /*
     ** We prefer to use Explicitly encoded transfer syntaxes.
@@ -313,7 +313,7 @@ M4DDicomAssociation::AddPresentationContext(T_ASC_Parameters *params)
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DDicomAssociation::Abort(void) 
+DicomAssociation::Abort(void) 
 {
 	LOG("Aborting Association");
 
@@ -327,7 +327,7 @@ M4DDicomAssociation::Abort(void)
 ///////////////////////////////////////////////////////////////////////
 
 void
-M4DDicomAssociation::Release(void)
+DicomAssociation::Release(void)
 {
   LOG("Releasing Association" << std::endl << std::endl );
 
@@ -341,7 +341,7 @@ M4DDicomAssociation::Release(void)
 ///////////////////////////////////////////////////////////////////////
 
 T_ASC_PresentationContextID
-M4DDicomAssociation::FindPresentationCtx( void) 
+DicomAssociation::FindPresentationCtx( void) 
 {
 	T_ASC_PresentationContextID presId = 
 		ASC_findAcceptedPresentationContextID(

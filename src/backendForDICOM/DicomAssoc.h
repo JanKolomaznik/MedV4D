@@ -15,7 +15,7 @@ namespace DicomInternal
  *  This class contains pointers to DCMTK library objects that contains actual assotiation and his properties. As well as some action members that establish (request), aborts and terminate the assotiation.
  *  Next item contained in this class is address container that holds neccessary properties for different assotiation. Assotiation has different properties when different services are called. So the container is a map indexed by string eith called service. The container is filled from config file. There are some supporting methodes taking care of it. The container is shared between all instances (static).
  */
-class M4DDicomAssociation
+class DicomAssociation
 {
 private:
 
@@ -57,8 +57,8 @@ private:
 
 public:
   // ctor, dtor
-	M4DDicomAssociation( string assocID);
-	~M4DDicomAssociation( void);
+	DicomAssociation( string assocID);
+	~DicomAssociation( void);
 
 	void Release( void);
 	void Abort( void);

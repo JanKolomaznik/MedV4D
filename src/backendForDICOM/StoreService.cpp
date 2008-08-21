@@ -56,7 +56,7 @@ StoreService::StoreService()
 	}
 
 	// create assotiation
-	m_assocToServer = new M4DDicomAssociation( "store");
+	m_assocToServer = new DicomAssociation( "store");
 
 #ifdef ON_THE_FLY_COMPRESSION
     // register global JPEG decompression codecs

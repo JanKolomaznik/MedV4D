@@ -40,7 +40,7 @@ GeneralDataSetSerializer::GetDataSetSerializer( AbstractDataSet *dataSet)
 void
 GeneralDataSetSerializer::DeSerializeDataSetProperties( 
       AbstractDataSetSerializer **dataSetSerializer
-      , M4D::Imaging::AbstractDataSet **returnedDataSet
+      , M4D::Imaging::AbstractDataSet::ADataSetPtr *returnedDataSet
       , M4D::CellBE::NetStream &s)
 {
   uint8 type;
@@ -59,9 +59,6 @@ GeneralDataSetSerializer::DeSerializeDataSetProperties(
 			    *dataSetSerializer = new ImageSerializer< TTYPE, DIM >() )
 		  );
     }
-
-    if( *returnedDataSet != NULL) // delete old dataSet
-      delete *returnedDataSet;
 
     *returnedDataSet = (*dataSetSerializer)->DeSerializeProperties( s);
     break;

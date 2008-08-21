@@ -19,7 +19,7 @@ protected :
 	static size_t m_numOfInstances;
 	static const size_t m_maxPDU;
 
-	M4DDicomAssociation *m_assocToServer;
+	DicomAssociation *m_assocToServer;
 	T_ASC_Network *m_net;
 	
 	DcmDataset *m_query;

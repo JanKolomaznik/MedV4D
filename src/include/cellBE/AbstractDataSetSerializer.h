@@ -53,7 +53,7 @@ public:
    *  sending all properties of that particular sucessor to server.
    */
   virtual void SerializeProperties( M4D::CellBE::NetStream &s) = 0;
-  virtual M4D::Imaging::AbstractDataSet *
+  virtual M4D::Imaging::AbstractDataSet::ADataSetPtr
     DeSerializeProperties( M4D::CellBE::NetStream &s) = 0;
 
   	/**

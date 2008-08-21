@@ -68,7 +68,7 @@ MoveService::MoveService()
 	}
 
 	// create assotiation
-	m_assocToServer = new M4DDicomAssociation( "move");
+	m_assocToServer = new DicomAssociation( "move");
 }
 
 ///////////////////////////////////////////////////////////////////////
