@@ -28,7 +28,7 @@ public:
    *  sending all properties of that particular sucessor to server.
    */
   void SerializeProperties( M4D::CellBE::NetStream &s);
-  M4D::Imaging::AbstractDataSet *
+  M4D::Imaging::AbstractDataSet::ADataSetPtr
     DeSerializeProperties( M4D::CellBE::NetStream &s);
 
   void OnDataSetEndRead( void);

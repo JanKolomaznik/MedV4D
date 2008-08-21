@@ -32,7 +32,7 @@ ImageSerializerBase<ElementType, dim>
 ///////////////////////////////////////////////////////////////////////////////
 
 template< typename ElementType, uint8 dim>
-M4D::Imaging::AbstractDataSet *
+M4D::Imaging::AbstractDataSet::ADataSetPtr
 ImageSerializerBase<ElementType, dim>
   ::DeSerializeProperties(M4D::CellBE::NetStream &s)
 {	
@@ -41,7 +41,6 @@ ImageSerializerBase<ElementType, dim>
 	float32 elExtents[ dim ];
 
 	for( unsigned i = 0; i < dim; ++i ) {
-		const DimensionExtents &dimExtents = im->GetDimensionExtents( i );  // co je im? Image jeste neexistuje
 
 		s >> minimums[ i ];
 		s >> maximums[ i ];
@@ -49,10 +48,10 @@ ImageSerializerBase<ElementType, dim>
 	}
 
 	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( ElementType,
-		ImageFactory::CreateEmptyImageFromExtents< TTYPE >( dim, minimums, maximums, elExtents );
+		return ImageFactory::CreateEmptyImageFromExtents< TTYPE >( dim, minimums, maximums, elExtents )
 		);
 
-	return m_dataSet; // TODO initialize
+	return M4D::Imaging::AbstractDataSet::ADataSetPtr(); // TODO initialize
 
 }
 
@@ -100,7 +99,7 @@ ImageSerializer< typename ElementType, 2>
 	uint32 height;
 	int32 xStride;
 	int32 yStride;
-	ElementType *pointer = im.GetPointer( width, height, xStride, yStride );
+	ElementType *pointer = im->GetPointer( width, height, xStride, yStride );
 	for( uint32 j = 0; j < height; ++j ) {
 		ElementType *tmpPointer = pointer + j*yStride;
 
