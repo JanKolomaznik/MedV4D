@@ -103,13 +103,17 @@ StManagerStudyListComp::StManagerStudyListComp ( QDialog *studyManagerDialog, QW
   DICOMDIRTable = createStudyTable();
   DICOMDIRsplitter->addWidget( DICOMDIRTable );
 
-  QSplitter *DICOMDIRDirectorySplitter = new QSplitter;
-  DICOMDIRDirectorySplitter->setOrientation( Qt::Vertical );
+  QWidget *directoryPane = new QWidget;
+  QVBoxLayout *directoryLayout = new QVBoxLayout( directoryPane );
+  directoryLayout->setContentsMargins( 0, 0, 0, 0 );
   directoryTree = createDirectoryTreeView();
-  DICOMDIRDirectorySplitter->addWidget( directoryTree );
+  directoryLayout->addWidget( directoryTree );
   directoryComboBox = createDirectoryComboBox();
-  DICOMDIRDirectorySplitter->addWidget( directoryComboBox );
-  DICOMDIRsplitter->addWidget( DICOMDIRDirectorySplitter );
+  directoryLayout->addWidget( directoryComboBox );
+  DICOMDIRsplitter->addWidget( directoryPane );
+
+  connect( directoryComboBox, SIGNAL(editTextChanged( const QString & )), this, SLOT(comboPathChanged( const QString & )) );
+  connect( directoryTree, SIGNAL(clicked( const QModelIndex & )), this, SLOT(treePathChanged( const QModelIndex & )) );
 
   DICOMDIRLayout->addWidget( DICOMDIRsplitter );
 
@@ -482,6 +486,21 @@ void StManagerStudyListComp::path ()
     directoryTree->hide();
     directoryComboBox->hide();
   }
+}
+
+
+void StManagerStudyListComp::treePathChanged ( const QModelIndex &index )
+{
+  directoryComboBox->setEditText( ((QDirModel *)directoryTree->model())->filePath( index ) );
+}
+
+
+void StManagerStudyListComp::comboPathChanged ( const QString &text )
+{
+  QModelIndex index = ((QDirModel *)directoryTree->model())->index( text );
+
+  directoryTree->setCurrentIndex( index );
+  directoryTree->setExpanded( index, true );
 }
 
 

@@ -8,11 +8,12 @@
 #include "dicomConn/DICOMServiceProvider.h"
 
 
+class QModelIndex;
+class QSettings;
 class QPushButton;
 class QToolButton;
 class QTabWidget;
 class QTableWidget;
-class QSettings;
 class QTreeView;
 class QComboBox;
 
@@ -98,6 +99,20 @@ class StManagerStudyListComp: public QWidget
      * Slot for directory tree behavior - to hide or show it.
      */
     void path ();
+
+    /**
+     * Slot for updating directory comboBox - according to directory tree manipulation.
+     *
+     * @param index index of the item which was expanded in the directory tree
+     */
+    void treePathChanged ( const QModelIndex &index );
+
+    /**
+     * Slot for updating directory tree - according to directory comboBox manipulation.
+     *
+     * @param text new value (path) of the comboBox
+     */
+    void comboPathChanged ( const QString &text );
 
   signals:
 
