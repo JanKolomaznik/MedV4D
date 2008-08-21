@@ -1,0 +1,244 @@
+<?xml version='1.0' encoding='utf-8'?>
+<chapter>
+<title>DICOM Client library</title>
+
+<para>
+This class is gate to DICOM world. DICOM is a standard describing creating, storing, manipulating 
+and many more actions taken on medical data. For full description informations see 
+(http://www.dclunie.com/dicom-status/status.html). Actual standard is 'little' bigger because it decribes
+all possible scenarios of all possible types. So when you want to get inside the mather you can read only
+some parts of it. There are those parts reffered in the code of particular parts.
+</para>
+<para>
+Data are stored in files (*.dcm). The files are divided into pairs of key and value. There is dictionary
+of keys. The keys changes with every new specification of the stadard (yearly). There are set of commonly used
+types of files like Images, Waves of sound, CardioGrams, ... Each type has its own set of mandatory or optionaly
+tags to be filled when created on a device. Most important tag is the one that contains actual data of the image.
+Although every DICOM file has set of common tags. Theese are used
+to identify the file. There are 4 levels of entities that identifies the files. These are: patien, study, serie, image.
+So to fully identify one image 4 IDs must be provided.
+</para>
+<para>
+On these tags DICOM server quering is performed, where data are normally stored. There are many implementations of that server. 
+Most common is PACS server. 
+Since there is no universal language SQL like system, actual quering is
+performed through dicom files. Filled tags means 'SQL WHERE clause', tags provided with no value defines 'wanted columns'.
+Although DICOM provides variety filetypes, we have focused on filetypes that provides images. 
+Most used are: CT (Computer Tomography), MR (Magnetic Resonator), RT (rentgen).	
+DICOM server implements searching (C-FIND: query file is send and resulting files are recieved), moving (C-MOVE:
+query file is send like in searching but with already known ID params that identify specific image or set of image. 
+Then particular image files are recieved),
+storing (C-STORE: new image with unique generated IDs is send, not yet implemeted) functionalities. 
+</para>
+<para>
+Library also provides local filesystem searching funcionality. This is used when actual data are stored on filesystem.
+</para>	
+<para>
+The library uses 3rd party toolkit DCMTK by DICOM@Office (dicom.offis.de) for manipulation with DICOM files (reading, saving, server quiering).
+</para>
+
+<section>
+	<title>DCMTK</title>
+	
+	<para>
+	DCMTK (DICOM ToolKit) is public domain library for handling DICOM files. It is written in C++. That is the main reason
+	we chosed it to use. Another reason was that it implement some example programs that you can compose working DICOM server.
+	We use them to have a DICOM server and be able to test with it. Library also contains some programs that serves as DICOM 
+	client. From that programs our DICOM client code was derived. 
+	</para>
+	<para>
+	That was definitely pros but there are some cons. For instance
+	there are networking absolutely hidden to library user. So we had to use in manner the DCMKT authors wanted. But we want
+	some scather-gather like behaviour to be able to make the incoming data be written to directly to one big memory array
+	that is essential for image-processing algorithms operating upon the data. It was impossible to do that due to the networking
+	hiding and impossibility knowing DICOM file sizes befor actual data are recieved that would be needed to scater-gather ops.
+	So we agreed to	following scenario: Whole file is recieved. Than type of the elemens as well as image sizes are read from
+	dataSet (see next) to set up the places in memory where the data should go. Then actual data is copied to the place from
+	dataSet. And then are deleted from it. So whole dataSet with all atributes about the image but actual data remains ('empty
+	bottle').
+	</para>
+	<para>
+	DataSet is map-like container for atrubutes (key-value pairs) that the DICOM file is composed from. When a file is being
+	retrieved from server or from filesystem, the dataSet is build automaticaly by the DCMTK library. The building is atomical
+	so no posibillity of knowing some attributes befere others (discussed above).
+	</para>
+</section>
+
+<section>
+<title>Compilation</title>
+	
+	<section>
+	<title>Dependencies</title>		
+		<para>Common library</para>
+	</section>
+
+</section>
+
+<section>
+<title>Architecture</title>
+
+	<para>
+	Public declarations are in namespace <code>M4D::Dicom</code> while private (not visible from outer) are in 
+	<code>M4D::DicomInternal</code>.
+	Whole design of class hierarchies is 
+	<xref linkend="pic.PipelineScheme"/>
+	</para>
+	
+	<section>
+	<title>DcmProvider</title>
+	
+		<para>
+		<classname>DcmProvider</classname> is the class all DICOM functionality is provide from. It has methodes for
+		comunication with DICOM server and files or fileSets manipulation (C-FIND, C-MOVE, ...) as well as searching local
+		fileSystem folders. It also contains basic class that represents one DICOM file, <classname>DicomObj</classname> and
+		some structures representing found results such as TableRow for view found information in table.
+		</para>
+
+	</section>
+	
+	<section>
+	<title>DicomObj</title>
+		
+	<para>
+	Represents one DICOM file. When retrieving whole serie, then the DicomObjs are stored in vector (DicomObjSet). 
+	It has methodes for Saving and Loading to filesystem. As well as method for copying data to defined place
+	when 'overspilling the bottle'. It also contains methodes to retrieve basic information from dataSet like width
+	height, element's data type, ...
+	</para>
+	</section>
+	
+	<section>
+	<title>DicomAssociation</title>
+		
+	<para>
+	This is base class for DICOM assotiation. Assotiation is something like connection. It is defined by IP address,
+	port and 'Application Entity' (AE). AE is like name. Both sides (client and server) has its own AE.
+  This class contains pointers to DCMTK library objects that contains actual assotiation and his properties. 
+  As well as some action members that establish (request), aborts and terminate the assotiation.
+  Next item contained in this class is address container that holds neccessary properties for different assotiation.
+  Assotiation has different properties when different services are called. So the container is a map indexed by string
+  each called service. The container is filled from config file. There are some supporting methodes taking care of it.
+  The container is shared between all instances (static).
+	</para>
+	</section>
+	
+	<section>
+	<title>AbstractService</title>
+		
+	<para>
+	This is base class for all services that is requested to the side of DICOM server. There is poiner to DCMTK 
+	Network object which need network subsystem on windows system initialized at the beginning of usage and 
+	unloaded when is no more needed. So there is reference counting.
+	</para>
+	<para>
+	Each service is devided into 2 parts. SCP (Service Class Producer = server) and SCU (Sevice Class User = Client).
+	Both sides of an service has to agree while establishing assotiation what role to play. Normally DICOM server 
+	plays server role (SCP) for C-FIND, C-MOVE, C-STORE but for C-MOVE subassotiations when image are transfered 
+	to client plays SCU role (it requests sending of data). Each scenario is described later in doc of successors.
+  Another class member is query dataSet that is used as a query to server, similary like SQL query string. 
+  Each query can be done on one of 4 levels: Patient, Study, Series, Images. For example: for Study level are all 
+  matched studies returned, for Series Level all matched series, ... On each level are relevant only sepecified set
+  of matchable attributes so its quite hard to send robust query. Some other filtering has sometimes to be done on 
+  returned records.
+  </para>
+  <para>
+  Common scenario of all services is to prepare query dataSet that selects wanted data files. Then proceed the query 
+  to main TCMTK performing function and then retrieve resulting data through callbacks to final data structures. 
+  Ancesting classes implementing the services contain supporting callback definitions that cooperated with DCMTK 
+  functions and definitions of structures that are then passed to appropriate callbacks.
+  </para>
+	</section>
+	
+	<section>
+	<title>FindService</title>
+		
+	<para>
+	Implements C-FIND service to DICOM server. Process decription in a nutshell: client (SCU) establish assotiation 
+	to server (SCP) and sends query dataSet. Server process query dataSet and sends back matched results.
+  For more details see DICOM doc ([ver]_08.pdf chapter 9.1.2) and coresponding annexes).
+  </para>
+	</section>
+	
+	<section>
+	<title>MoveService</title>
+		
+	<para>
+	Implements C-MOVE service to DICOM server. Its purpose is to move data files (records) from DICOM server. 
+  There are two main functions that retrive data files. One retrive one SINGLE image. The image is specified
+  by unique IDs on all levels (patient, study, serie, image). The other retrieve all images from specified 
+  serie (SET). That means specification of IDs on all levels but image.
+  Process decription in a nutshell: Client (SCU) establish assotiation to sever (SCP), send query dataSet,
+  server find matching image files, then establish another subassotiation (as SCU) with calling client 
+  (that plays SCP role) and transmit data files over the subassotiation. For more details see DICOM doc 
+  ([ver]_08.pdf chapter 9.1.4) and coresponding annexes).
+  </para>
+	</section>
+	
+	<section>
+	<title>StoreService</title>
+		
+	<para>
+	Implements service that performs C-STORE operatoin to DICOM server. It's purpose is to generate unique IDs
+	and send new data to server. 
+	Behavior in a nutshell: Client (SCU) generates unique ID for sent (new) data, establish assotiatoin with a 
+	server (SCP) and sends the data to server.
+  For more informations see DICOM doc ([ver]_08.pdf chapter 9.1.1) and coresponding annexes).
+  Generation of unique IDs is based on prefix and the rest is delegated to DCMTK functions. More informations 
+  about unique UDs generation see DICOM doc.
+  </para>
+	</section>
+
+	<section>
+	<title>LocalService</title>
+		
+	<para>
+	Implements searching and gettting functions to local FS dicom files. It sequentialy loads data files in 
+	specified folder (and subfolders through queue), read ID info, based on that info and given filter inserts
+	or not inserts (if matching found) record into result.
+  Each search run writes the folder that is performed on, build structure of information that is used when 
+  aditional informations concerning data from the same run are required. 
+  One run is quite expensive while loading each file is needed (there is no other way how to read required IDs).
+  So it is sensitive how wide and deep is the subtree of the given folder.
+  Maybe some timeouts will be required.
+  All functions are private beacause are all called from friend class DcmProvider.
+	</para>
+	</section>
+
+</section>
+
+<section>
+<title>Usage</title>
+	
+	<para>
+	Usage is quite simple. First we have to construct DcmProvider instance. Then we only create objects needed for holding
+	data (ResultSet) and issue them along with some other parametrs to member functions of DcmProvider class instance created
+	at the beginning. Example follows:
+	</para>
+
+	<programlisting>
+	<![CDATA[
+    #include "dicomConn/DICOMServiceProvider.h"
+    
+    
+    M4D::Dicom::DcmProvider dcmProvider;  // DICOMProvider instance
+    // ....
+    // ....
+    // somewhere when finding record based on some filter form values
+    M4D::Dicom::DcmProvider::ResultSet resultSet;   // create resultSet container
+    dcmProvider.Find(     // issue filter values and resultSet to provider method
+      &resultSet,
+      firstName,
+      lastName,
+      patientID,
+      fromDate,
+      toDate,
+      referringMD,
+      description
+      );
+      
+    // now we have in resultSet (vector) all found items ...
+  ]]>
+	</programlisting>		
+</section>
+
+</chapter>

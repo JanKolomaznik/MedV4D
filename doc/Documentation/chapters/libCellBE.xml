@@ -1,0 +1,343 @@
+<?xml version='1.0' encoding='utf-8'?>
+<chapter>
+<title>Remote computing (CellBE library)</title>
+
+<para>
+Library used to send some parts of pipeline to remote mashines to be executed and result sent back. The name is
+from Cell Broadband Engine architecture name comming from IBM. This architecture contains also supercomputers
+like Blade servers as well as not so huge system like the one in PlayStation3 console. CellBE should originally be the one
+that have be target of remote computing because there is some mashines available for testing on faculty.
+But This library is not bound to specific architecture. It was one of primary request to be platform indemendet. It
+has to eliminate such scenarios that is usual in hospitals: 'Here you have the CT mashine with software that can work
+and communicate ONLY with our supercalculating server that is budled with. All for such small price of few milions'.
+</para>
+
+<section>
+<title>Compilation</title>
+	
+	<section>
+	<title>Dependencies</title>		
+		<para>Imaging lib</para>
+	</section>
+
+</section>
+
+<section>
+<title>Architecture</title>
+
+	<para>
+	All declarations are in namespace <code>M4D::CellBE</code>.
+	System is classic Client-Server architecture. The client parts is in the library while the server part in
+  another project. Purpouse of the library is to be linked with main program that has to have ability of remote
+  computing. The both parts have some parts in common that reflects class hierarchy.
+	<xref linkend="pic.PipelineScheme"/>
+	</para>
+	
+	<section>
+  	<title>Job</title>
+  	
+  	<para>
+  	Job is entity that represents remote computation. Job has 2 main parts: Definig Contatiner and input&output dataSets.
+  	Definig Contatiner contains information about filters that the remote pipeline represented by this job will consist of
+  	and their settings. Each filter has Properties inner class. Instance of that class give us all neccessary information
+  	of that filter because it is teplated as well (it's inner class of templated class) and has all properties of filter
+  	that represents. So we don't need to instatiate any filter when defining remote pipeline. Filter::Properties instances
+  	are satisfied. According these information is actual pipeline created on ther server side. Input&output dataSets
+  	are actual dataContainers that are dataRead from and send to server (input) and recieved and written to (output).
+  	When you look at the class hiearchy, you can see there are commons parts for job on client and server side. But both
+  	'types' of job has different behaviour when on client side and server side. So 2 branch in hierachy reflects that.
+  	Each hierarchy member will be described now in more details:
+  	</para>
+
+  	<section>
+  	<title>BasicSocket</title>
+  	<para>
+  	Base class containing network functionality. Used BOOST::Asio for asynchronous networking and scatter gather. It contains
+  	pointer to socket that all the communication is performed through.
+  	</para>
+  	</section>
+  	
+  	<para>
+  	Now we fucus on particular branches of the hierarchy. Lets start with client one.
+  	</para>
+  	
+  	<section>
+  	<title>ClientSocket</title>
+  	<para>
+  	Client has to be able to establish connection to server. This class can do it.
+  	</para>
+  	</section>
+  	
+  	<section>
+  	<title>ClientJob</title>
+  	<para>
+  	This class advances functionality for special for client job behaviour. That is ID generation,
+  	sending definition container and his content. It has also supporting members special for
+  	client async operations as well as members that do them.
+  	</para>
+  	</section>
+  	
+  	<para>
+  	The last class in Job hierarchy remains. This class form server side brach.
+  	</para>
+  	
+  	<section>
+  	<title>ServerJob</title>
+  	<para>
+  	Is opposite to ClientJob. It's purpouse is to handle operation that the client job performs
+  	(definition container unpacking and building pipeline and creating some supporting structures
+  	that are used in re-recieving definition container content. Will be dicused later on)
+  	</para>
+  	</section>
+	
+	</section>
+	
+	<section>
+  	<title>Serializers</title>
+  	
+  	<para>
+  	Because this system (or library) is closely related to Imaging library that we wanted to let independent
+  	to any other library we have to solve how to perform serialization on the objects from the Imaging
+  	library that are mostly templated. Serializers object was developed.
+  	</para>
+  	<para>
+  	Serializer is object that can perform serialization of its content. We have 2 types of serializers. These
+  	are FilterSerializers perform Serialization of Filter::Properties classes. Used in sending definitioin
+  	container. And DataSetSerializers. These performs dataSet serialization. Each Serializer performs serialization
+  	of 2 main types. First is class info serialization (CIS). In this stage is template parameters along with class
+  	type serialized. These information should be enough for other side for creating appropriate templated class instance.
+  	The second serialization tier is for actual content serialization (ACS) of entities (properties for filterProperties, 
+  	dataSet atributes	for dataSet).
+  	</para>
+  	<para>
+  	The whole library is closed system that should not be chaged. Only these Serializers are subjects to edit.
+  	Serializers reflects hieararchy of objects in Imaging library. So when some new item in Imaging library
+  	appears and its author wants it to be able to use it remotely so new serializer has to written and registered.
+  	Registering is done in according type of GeneralSerializer, that serves as recognizer of particular serialiers.
+  	Details of creating new Serializer will follow later on. Now we will discuss each type of serializer in more
+  	details.
+  	</para>
+	
+	  <section>
+  	<title>FilterSerializer</title>
+  	
+  	<para>
+  	Each filterSerializer (FS) should be derived from AbstractFilterSerializer class which is the base class for every
+  	FS and defines interface of its behaviour. CIS is performed by SerializeClassInfo & DeSerializeClassInfo pair of
+  	member functions. ACS by SerializeProperties & DeSerializeProperties pair.
+  	</para>
+  	
+  	<para>
+  	Next is the list of neccessary steps for adding new FilterSerializer:
+  	</para>
+  	
+  	<itemizedlist>
+			<listitem><para>Add enum FilterID item in cellBE/filterIDEnums.h header </para></listitem>
+			<listitem><para>Write actual FilterSerializer derived from AbstractFilterSerializer and implementing its interface. 
+			Right place where the code to place is cellBE/FilterSerializers folder</para></listitem>
+			<listitem><para>Add the new Serializer instance into array in FilterSerializerArray class constructor and appropriate
+			edit size of the array (all described in code and by next example that is taken from code. For details see 
+			ThresholdingSerializer.h & .tcc)</para></listitem>
+		</itemizedlist>
+		
+		<programlisting>
+	    <![CDATA[
+	    
+	    // supportig function
+      template< typename ElementType, unsigned Dim >
+      void
+      CreateThresholdingFilter( 
+           M4D::Imaging::AbstractPipeFilter **resultingFilter
+         , AbstractFilterSerializer **serializer
+         , const uint16 id
+         , M4D::CellBE::NetStream &s )
+      {
+      	typedef typename M4D::Imaging::Image< ElementType, Dim > ImageType;
+      	typedef typename M4D::Imaging::ThresholdingFilter< ImageType > Filter;
+        typedef typename FilterSerializer< Filter > FilterSerializer;
+      
+      	Filter::Properties *prop = new Filter::Properties();
+      
+      	*resultingFilter = new Filter( prop );  // id
+        *serializer = new FilterSerializer( prop, id);  // id
+      }
+
+      ////////////////////////////////////////////////////////
+	    template< typename InputImageType >
+      class FilterSerializer< M4D::Imaging::ThresholdingFilter< InputImageType > > 
+      	: public AbstractFilterSerializer   // inheritation from AbstractFilterSerializer
+      {
+      public:
+        // typedef to Properties of filter this serializer is for. Just for simplier usage
+      	typedef typename M4D::Imaging::ThresholdingFilter< InputImageType >::Properties Properties; 
+      	
+      	// ctor - subject of customization, must call typed ancestor ctor
+      	FilterSerializer( Properties * props, uint16 id) 
+      		: AbstractFilterSerializer( FID_Thresholding, id )
+      		, _properties( props ) 
+        {}
+      
+        // member performing CIS
+        void SerializeClassInfo( M4D::CellBE::NetStream &s)
+        {
+          s << (uint8) ImageTraits< InputImageType >::Dimension;
+      		s << (uint8) GetNumericTypeID< ImageTraits< InputImageType >::ElementType >();
+        }
+      
+        // member performing CIS deserialization
+        void
+        DeSerializeClassInfo( 
+            M4D::Imaging::AbstractPipeFilter **resultingFilter
+          , AbstractFilterSerializer **serializer
+          , const uint16 id
+          , M4D::CellBE::NetStream &s
+          )
+        {
+          uint8 dim;        // read from netStream
+      		uint8 typeID;      		
+      		s >> dim;
+      		s >> typeID;
+      		
+      		// build apropriate classes based read info with assistance of CreateThresholdingFilter
+      		// templated function defined above
+      		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( typeID,         // usage of special macro. See Commons.h
+      			DIMENSION_TEMPLATE_SWITCH_MACRO( 
+              dim, CreateThresholdingFilter<TTYPE, DIM >( 
+                resultingFilter, serializer, id, s ) )
+      		);
+        }
+      
+        // pair of members performing ACS
+      	void 
+      	SerializeProperties( M4D::CellBE::NetStream &s)
+      	{		
+      		s << _properties->bottom << _properties->top << _properties->outValue;
+      	}      
+      	void
+      	DeSerializeProperties( M4D::CellBE::NetStream &s )
+      	{
+      		s >> _properties->bottom >> _properties->top >> _properties->outValue;
+      	}	
+      	
+      protected:
+      	Properties	*_properties;   // pointer to properties (actual content)
+      };
+      
+      ////////////////////////////////// ...
+      
+      // within FilterSerializerArray constructor .... creation of buddy instance of our new
+      // serializer class on place within the array defined by our new enum member (step 1)
+      m_serializerArray[ (uint32) FID_Thresholding] = 
+        new FilterSerializer< typename ThresholdingFilter< Image<uint8, 3> > >( 
+          NULL, 0 );
+      
+      // .....
+      
+  	  ]]>
+	  </programlisting>		
+  	</section>
+  	
+  	<section>
+  	<title>DataSetSerializer</title>
+  	
+  	<para>
+    DataSetSerializer has more work to do than FilterSerializer. It performs CIS (within GeneralDataSetSerializer and
+    appropriate switch cases, desribed later) and ACS in SerializeProperties & DeSerializeProperties pair of functions
+    that are in interface defined by AbstractDataSetSerializer that each new DataSet should inherit.
+  	</para>
+  	<para>
+  	New is Actual Data Serialization (ADS). This is performed through another part of AbstractDataSetSerializer iterface
+  	parts: Serialize, OnDataPieceReadRequest, OnDataSetEndRead functions. For more detail of these function purpouse see 
+  	appropriate headers. 
+  	</para>
+  	<para>
+  	Main idea of dataSetSerialization is to divide the whole dataSet into smaller parts, that can be
+  	transported throug network separately (dataPieces, DP) and alternatively the calculation can be started on independently
+  	from other DP that have not yet arrived. Each DP has its header that says how long it is. So on reciving
+  	side when such header is recieved its passed to DataSetSerializer's OnDataPieceReadRequest method that will decide
+  	where the data that the DP reffers to are going to be recieved. This can tell through DataBuffs vector by putting DataBuf
+  	sctruct into it. DataBuf is struct of void * pointer pointing somewhere into memory and size. So the DataBuffs vector 
+  	defines place where data of DP should be transmitted (in geather manner). 
+  	</para>
+  	<para>
+  	Another mandatory function is OnDataSetEndRead. This is called when whole dataSet is recieved. No more DP are going
+  	to be recieved. This is recognized by recieving of special DBHeader. Function can perform some clean up or something.
+  	</para>
+  	<para>
+  	Serialize is another mandatory function. It has to perform actual whole ADS. It gets pointer to iPublicJob interface
+  	and through its function PutDataPiece should perform serialization. PutDataPiece is the same as in deserialization
+  	but it writes data into network in scatter manner. In this function the programer should define meaning of DP and
+  	reflect the meaning in deserialization functions. Perfect example is serialization of 3d image. DP is one slice. So
+  	whole dataSet is sent with slice granularity. On the other side DP (slice) is recieved directly into the right place
+  	in big array for 3d image and calculation can be started if another slices not needed. This is ideal case. Current
+  	implementation do not allow it due to dataSet locking and lack of universal dataSet handling. So dataSet is currently
+  	transferred whole and whole recieved.
+  	</para>
+  	<para>
+  	Because this serialization is statefull the inner state has to be in serializer instance.
+  	</para>
+  	
+  	<para>
+  	Next is the list of neccessary steps for adding new DataSetSerializer:
+  	</para>
+  	
+  	<itemizedlist>
+			<listitem><para>Add enum DataSetType item in Imaging/dataSetClassEnum.h header </para></listitem>
+			<listitem><para>Write actual DataSetSerializer derived from AbstractDataSetSerializer and implementing its interface. 
+			Right place where the code to place is cellBE/DataSetSerializers folder</para></listitem>
+			<listitem><para>Register new dataSetSerializer by adding new switch case of new enum member (step 1) into 
+			GeneralDataSetSerializer::GetDataSetSerializer method and writing the content of switch case that instatiates
+			DataSetSerializer based on inner properties (like TypeID, Element type,	dimension. Properties of image).
+			And another switch case in GeneralDataSetSerializer::DeSerializeDataSetProperties method that on the other side
+			can instantate DataSetSeralizer class (CIS).</para></listitem>
+		</itemizedlist>
+		
+		<programlisting>
+	    <![CDATA[
+	    
+      
+  	  ]]>
+	  </programlisting>		
+  	</section>  
+	
+	</section>
+	
+
+</section>
+
+<section>
+<title>Usage</title>
+	
+	<para>
+	Usage is quite simple. First we have to construct DcmProvider instance. Then we only create objects needed for holding
+	data (ResultSet) and issue them along with some other parametrs to member functions of DcmProvider class instance created
+	at the beginning. Example follows:
+	</para>
+
+	<programlisting>
+	<![CDATA[
+    #include "dicomConn/DICOMServiceProvider.h"
+    
+    
+    M4D::Dicom::DcmProvider dcmProvider;  // DICOMProvider instance
+    // ....
+    // ....
+    // somewhere when finding record based on some filter form values
+    M4D::Dicom::DcmProvider::ResultSet resultSet;   // create resultSet container
+    dcmProvider.Find(     // issue filter values and resultSet to provider method
+      &resultSet,
+      firstName,
+      lastName,
+      patientID,
+      fromDate,
+      toDate,
+      referringMD,
+      description
+      );
+      
+    // now we have in resultSet (vector) all found items ...
+  ]]>
+	</programlisting>		
+</section>
+
+</chapter>

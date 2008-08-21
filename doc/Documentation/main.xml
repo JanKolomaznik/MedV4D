@@ -16,5 +16,7 @@
 
 	&libCommon;
 	&libImaging;
+	&libDICOMClient;
+	&libCellBE;
 
 </book>
