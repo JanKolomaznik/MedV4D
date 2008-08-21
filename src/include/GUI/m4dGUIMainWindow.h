@@ -28,7 +28,8 @@ namespace GUI {
 #define ACTION_CLEAR_ALL         11
 #define ACTION_FLIP_HORIZONTAL   12
 #define ACTION_FLIP_VERTICAL     13
-#define ACTION_ROTATE_3D         14
+#define ACTION_SLICE_ORIENTATION 14
+#define ACTION_ROTATE_3D         15
 
 /**
  * Class representing the Main Window - containing all basic dialogs, viewer desktop

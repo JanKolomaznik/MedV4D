@@ -17,33 +17,31 @@ namespace M4D {
 namespace GUI {
 
 /// Number of abstract viewer's actions (toolBar buttons) - first is for all unplugged slots (it's not in toolBar)
-#define VIEWER_ACTIONS_NUMBER       15
+#define VIEWER_ACTIONS_NUMBER       16
 
-const char *m4dGUIMainWindow::actionIconNames[] = { "empty.png", "window-level.png", "empty.png", "zoom.png", 
-                                                    "stack.png", "info.png", "probe.png", "point.png", "shape.png", 
-                                                    "clear-point.png", "clear-shape.png", "clear-all.png", "flip-hor.png", 
-                                                    "flip-vert.png", "empty.png" };
+const char *m4dGUIMainWindow::actionIconNames[] = { "empty.png", "window-level.png", "empty.png", "zoom.png",
+                  "stack.png", "info.png", "probe.png", "point.png", "shape.png", "clear-point.png",
+                  "clear-shape.png", "clear-all.png", "flip-hor.png", "flip-vert.png", "slice-orient.png",
+                  "empty.png" };
 
-const char *m4dGUIMainWindow::actionTexts[] = { "No Action", "Window/Level (Right Mouse)", "Pan (Left Mouse)", 
-                                                "Zoom (Right Mouse)", "Stack (Right Mouse)", "Toggle Overlay",
-                                                "Probe Tool (Left Mouse)", "New Point (Left Mouse)", "New Shape (Left Mouse)", 
-                                                "Clear Point", "Clear Shape", "Clear All Points/Shapes", "Flip Horizontal", 
-                                                "Flip Vertical", "Rotate Volume (Left Mouse)" };
+const char *m4dGUIMainWindow::actionTexts[] = { "No Action", "Window/Level (Right Mouse)", "Pan (Left Mouse)",
+                  "Zoom (Right Mouse)", "Stack (Right Mouse)", "Toggle Overlay", "Probe Tool (Left Mouse)", 
+                  "New Point (Left Mouse)", "New Shape (Left Mouse)", "Clear Point", "Clear Shape", 
+                  "Clear All Points/Shapes", "Flip Horizontal", "Flip Vertical", "Slice Orientation",
+                  "Rotate Volume (Left Mouse)" };
 
 // information also used for weather the connection is direct to the viewer
-const m4dGUIMainWindow::ToolType m4dGUIMainWindow::actionToolTypes[] = { CHECKABLE_TOOL, CHECKABLE_TOOL, CHECKABLE_TOOL, 
-                                                    CHECKABLE_TOOL, CHECKABLE_TOOL, TOGGLE_TOOL, CHECKABLE_TOOL, CHECKABLE_TOOL, 
-                                                    CHECKABLE_TOOL, TOGGLE_TOOL, TOGGLE_TOOL, TOGGLE_TOOL, 
-                                                    TOGGLE_TOOL, TOGGLE_TOOL, CHECKABLE_TOOL };
+const m4dGUIMainWindow::ToolType m4dGUIMainWindow::actionToolTypes[] = { CHECKABLE_TOOL, CHECKABLE_TOOL, CHECKABLE_TOOL,
+                  CHECKABLE_TOOL, CHECKABLE_TOOL, TOGGLE_TOOL, CHECKABLE_TOOL, CHECKABLE_TOOL, CHECKABLE_TOOL, 
+                  TOGGLE_TOOL, TOGGLE_TOOL, TOGGLE_TOOL, TOGGLE_TOOL, TOGGLE_TOOL, TOGGLE_TOOL, CHECKABLE_TOOL };
 
 const m4dGUIMainWindow::ButtonType m4dGUIMainWindow::actionButtonTypes[] = { LEFT_BUTTON, RIGHT_BUTTON, LEFT_BUTTON, 
-                                                    RIGHT_BUTTON, RIGHT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, 
-                                                    LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON,
-                                                    LEFT_BUTTON };
+                  RIGHT_BUTTON, RIGHT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, 
+                  LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON };
 
 const char *m4dGUIMainWindow::actionShortCuts[] = { "", "Ctrl+W", "Ctrl+P", "Ctrl+Z", "Ctrl+A", "Ctrl+T",
-                                                    "Ctrl+B", "Ctrl+I", "Ctrl+H", "Ctrl+N", "Ctrl+E", "Ctrl+A",
-                                                    "Ctrl+R", "Ctrl+V", "Ctrl+U" };
+                  "Ctrl+B", "Ctrl+I", "Ctrl+H", "Ctrl+N", "Ctrl+E", "Ctrl+A", "Ctrl+R", "Ctrl+V", "Ctrl+G",
+                  "Ctrl+U" };
 
 const char *m4dGUIMainWindow::actionStatusTips[] = { "Action for all unplugged available slots", 
                                                      "Adjust the brightness and/or contrast of the image", 
@@ -59,21 +57,20 @@ const char *m4dGUIMainWindow::actionStatusTips[] = { "Action for all unplugged a
                                                      "Clear all selections (points, shapes)",
                                                      "Flip the selected image from left to right about the vertical axis",
                                                      "Flip the selected image from top to bottom about the horizontal axis",
+                                                     "Switch the viewing axis orientation (x~y, y~z, z~x)",
                                                      "Rotates the volume about the three axes" };
 
 const char *m4dGUIMainWindow::actionSlots[] = { SLOT(empty()), SLOT(viewerWindowLevel()), SLOT(viewerPan()),
-                                                SLOT(viewerZoom()), SLOT(viewerStack()), SLOT(slotTogglePrintData()),
-                                                SLOT(viewerProbe()), SLOT(viewerNewPoint()), SLOT(viewerNewShape()), 
-                                                SLOT(slotDeletePoint()), SLOT(slotDeleteShape()), SLOT(slotDeleteAll()), 
-                                                SLOT(slotToggleFlipHorizontal()), SLOT(slotToggleFlipVertical()), 
-                                                SLOT(viewerRotate()) };
+                  SLOT(viewerZoom()), SLOT(viewerStack()), SLOT(slotTogglePrintData()), SLOT(viewerProbe()), 
+                  SLOT(viewerNewPoint()), SLOT(viewerNewShape()), SLOT(slotDeletePoint()), SLOT(slotDeleteShape()),
+                  SLOT(slotDeleteAll()), SLOT(slotToggleFlipHorizontal()), SLOT(slotToggleFlipVertical()), 
+                  SLOT(slotToggleSliceOrientation()), SLOT(viewerRotate()) };
 
-const int m4dGUIMainWindow::slotsToActions[] = { ACTION_EMPTY, ACTION_EMPTY, ACTION_STACK, ACTION_EMPTY, ACTION_EMPTY, 
-                                                 ACTION_FLIP_VERTICAL, ACTION_FLIP_HORIZONTAL, ACTION_EMPTY, ACTION_EMPTY,
-                                                 ACTION_EMPTY, ACTION_EMPTY, ACTION_EMPTY, ACTION_EMPTY, ACTION_OVERLAY, 
-                                                 ACTION_EMPTY, ACTION_ZOOM, ACTION_PAN, ACTION_WINDOW_LEVEL, ACTION_NEW_POINT, 
-                                                 ACTION_NEW_SHAPE, ACTION_CLEAR_POINT, ACTION_CLEAR_SHAPE, ACTION_CLEAR_ALL, 
-                                                 ACTION_ROTATE_3D, ACTION_ROTATE_3D, ACTION_ROTATE_3D, ACTION_EMPTY, ACTION_PROBE };
+const int m4dGUIMainWindow::slotsToActions[] = { ACTION_EMPTY, ACTION_EMPTY, ACTION_STACK, ACTION_EMPTY, ACTION_EMPTY,
+                  ACTION_FLIP_VERTICAL, ACTION_FLIP_HORIZONTAL, ACTION_EMPTY, ACTION_EMPTY, ACTION_EMPTY, ACTION_EMPTY, 
+                  ACTION_EMPTY, ACTION_EMPTY, ACTION_OVERLAY, ACTION_EMPTY, ACTION_ZOOM, ACTION_PAN, ACTION_WINDOW_LEVEL, 
+                  ACTION_NEW_POINT, ACTION_NEW_SHAPE, ACTION_CLEAR_POINT, ACTION_CLEAR_SHAPE, ACTION_CLEAR_ALL, 
+                  ACTION_ROTATE_3D, ACTION_ROTATE_3D, ACTION_ROTATE_3D, ACTION_SLICE_ORIENTATION, ACTION_PROBE };
 
 m4dGUIMainWindow::m4dGUIMainWindow ( const char *appName, const char *orgName, const QIcon &icon )
 {
