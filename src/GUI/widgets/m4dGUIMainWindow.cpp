@@ -361,6 +361,8 @@ void m4dGUIMainWindow::createToolBarCustomizerDialog ()
   dialogLayout->addWidget( toolBarCustomizerWidget );
   
   toolBarCustomizerDialog->setLayout( dialogLayout );
+
+  toolBarCustomizerDialog->resize( 330, 450 );
 }
 
 

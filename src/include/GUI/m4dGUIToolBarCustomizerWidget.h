@@ -36,6 +36,8 @@ class m4dGUIToolBarCustomizerWidget: public QWidget
 
   private slots:
 
+    void changeVisibility ( int row, int column );
+
     /**
      * Slot for recording current shortcut value - when the user starts to edit a cell item, 
      * this slot is called. Before the user gets a chance to modify the contents, the

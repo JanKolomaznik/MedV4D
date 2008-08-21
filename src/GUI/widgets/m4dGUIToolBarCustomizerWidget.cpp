@@ -9,6 +9,10 @@ inline void initToolBarCustomizerWidgetResource () { Q_INIT_RESOURCE( m4dGUITool
 namespace M4D {
 namespace GUI {
 
+/// Prefixes for actions visibility (in the hidden column of the actions table)
+#define SHOWN_ACTION_PREFIX          "Shown"
+#define HIDDEN_ACTION_PREFIX         "Hidden"
+
 m4dGUIToolBarCustomizerWidget::m4dGUIToolBarCustomizerWidget ( QAction **actions, unsigned actionsNum, 
                                                                QWidget *parent )
   : actions( actions ), actionsNum( actionsNum ), QWidget( parent )
@@ -20,6 +24,8 @@ m4dGUIToolBarCustomizerWidget::m4dGUIToolBarCustomizerWidget ( QAction **actions
 
   toolBarButtonsTable = createToolBarButtonsTable();
 
+  connect( toolBarButtonsTable, SIGNAL(cellClicked( int, int )), 
+           this, SLOT(changeVisibility( int, int )) );
   connect( toolBarButtonsTable, SIGNAL(currentItemChanged( QTableWidgetItem *, QTableWidgetItem * ) ), 
            this, SLOT(recordAction( QTableWidgetItem * )) );
   connect( toolBarButtonsTable, SIGNAL(itemChanged( QTableWidgetItem * )), 
@@ -42,6 +48,34 @@ m4dGUIToolBarCustomizerWidget::m4dGUIToolBarCustomizerWidget ( QAction **actions
   mainLayout->setSpacing( 8 );
   mainLayout->addWidget( toolBarButtonsTable );
   mainLayout->addLayout( buttonLayout );
+}
+
+
+void m4dGUIToolBarCustomizerWidget::changeVisibility ( int row, int column )
+{
+  if ( column != 1 ) {
+    return;
+  }
+
+  QTableWidgetItem *visibilityItem = toolBarButtonsTable->item( row, 1 );
+  QString visibilityStr = visibilityItem->toolTip();
+
+  if  ( visibilityStr == SHOWN_ACTION_PREFIX )
+  {
+    visibilityItem->setIcon( QIcon( ":/icons/hidden.png" ) );
+    visibilityItem->setToolTip( HIDDEN_ACTION_PREFIX );
+  }
+  else if ( visibilityStr == HIDDEN_ACTION_PREFIX )
+  {
+    visibilityItem->setIcon( QIcon( ":/icons/shown.png" ) );
+    visibilityItem->setToolTip( SHOWN_ACTION_PREFIX );
+  }
+  else
+  {
+    // default
+    visibilityItem->setIcon( QIcon( ":/icons/shown.png" ) );
+    visibilityItem->setToolTip( SHOWN_ACTION_PREFIX );
+  }
 }
 
 
@@ -94,12 +128,13 @@ QTableWidget *m4dGUIToolBarCustomizerWidget::createToolBarButtonsTable ()
     return new QTableWidget;
   }
 
-  QTableWidget *actionsTable = new QTableWidget( actionsNum - 1, 2, this );
+  QTableWidget *actionsTable = new QTableWidget( actionsNum - 1, 3, this );
 
   QStringList labels;
-  labels << tr( "Description" ) << tr( "Shortcut" );
+  labels << tr( "Description" ) << tr( "" ) << tr( "Shortcut" );
   actionsTable->setHorizontalHeaderLabels( labels );
   actionsTable->horizontalHeader()->setResizeMode( 0, QHeaderView::ResizeToContents );
+  actionsTable->horizontalHeader()->setResizeMode( 1, QHeaderView::ResizeToContents );
   actionsTable->horizontalHeader()->setStretchLastSection( true );
   actionsTable->verticalHeader()->hide();
 
@@ -111,8 +146,22 @@ QTableWidget *m4dGUIToolBarCustomizerWidget::createToolBarButtonsTable ()
     actionItem->setIcon( actions[row]->icon() );
     actionsTable->setItem( row - 1, 0, actionItem );
 
+    QTableWidgetItem *visibilityItem = new QTableWidgetItem;
+    if ( actions[row]->isVisible() ) 
+    {
+      visibilityItem->setIcon( QIcon( ":/icons/shown.png" ) );
+      visibilityItem->setToolTip( SHOWN_ACTION_PREFIX );
+    }
+    else
+    {
+      visibilityItem->setIcon( QIcon( ":/icons/hidden.png" ) );   
+      visibilityItem->setToolTip( HIDDEN_ACTION_PREFIX );
+    }
+    visibilityItem->setFlags( visibilityItem->flags() & ~Qt::ItemIsEditable );
+    actionsTable->setItem( row - 1, 1, visibilityItem );
+    
     QTableWidgetItem *shortcutItem = new QTableWidgetItem( QString( actions[row]->shortcut() ) );
-    actionsTable->setItem( row - 1, 1, shortcutItem );
+    actionsTable->setItem( row - 1, 2, shortcutItem );
   }
 
   return actionsTable;
