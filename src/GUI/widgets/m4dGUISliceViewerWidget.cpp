@@ -1290,6 +1290,7 @@ m4dGUISliceViewerWidget::slotToggleSliceOrientation()
     }
     if ( _sliceNum >= (int)_maximum[ ( _sliceOrientation + 2 ) % 3 ] ) _sliceNum = _maximum[ ( _sliceOrientation + 2 ) % 3 ] - 1;
     if ( _sliceNum < (int)_minimum[ ( _sliceOrientation + 2 ) % 3 ] ) _sliceNum = _minimum[ ( _sliceOrientation + 2 ) % 3 ];
+    updateGL();
     emit signalToggleSliceOrientation( _index );
 }
 
