@@ -29,7 +29,7 @@ class m4dGUISliceViewerWidget : public m4dGUIAbstractViewerWidget, public QGLWid
 public:
     
     typedef void (M4D::Viewer::m4dGUISliceViewerWidget::*ButtonMethods)( int amount1, int amount2 );
-    typedef void (M4D::Viewer::m4dGUISliceViewerWidget::*SelectMethods)( int x, int y, int z );
+    typedef void (M4D::Viewer::m4dGUISliceViewerWidget::*SelectMethods)( double x, double y, double z );
     
     m4dGUISliceViewerWidget( unsigned index, QWidget *parent = 0 );
     m4dGUISliceViewerWidget( Imaging::ConnectionInterface* conn, unsigned index, QWidget *parent = 0 );
@@ -64,8 +64,8 @@ public slots:
     virtual void slotZoom( int amount );
     virtual void slotMove( int amountH, int amountV );
     virtual void slotAdjustContrastBrightness( int amountB, int amountC );
-    virtual void slotNewPoint( int x, int y, int z );
-    virtual void slotNewShape( int x, int y, int z );
+    virtual void slotNewPoint( double x, double y, double z );
+    virtual void slotNewShape( double x, double y, double z );
     virtual void slotDeletePoint();
     virtual void slotDeleteShape();
     virtual void slotDeleteAll();
@@ -73,12 +73,15 @@ public slots:
     virtual void slotRotateAxisY( double y );
     virtual void slotRotateAxisZ( double z );
     virtual void slotToggleSliceOrientation();
-    virtual void slotColorPicker( int x, int y, int z );
+    virtual void slotColorPicker( double x, double y, double z );
 
 protected slots:
     void slotMessageHandler( Imaging::PipelineMsgID msgID );
 
 protected:
+    bool checkOutOfBounds( double x, double y );
+    void resolveFlips( double& x, double& y );
+    void resolveFlips( int& x, int& y );
     void setButtonHandler( ButtonHandler hnd, MouseButton btn );
     void ImagePositionSelectionCaller( int x, int y, SelectMethods f );
     void setOneSliceMode();
@@ -103,12 +106,12 @@ protected:
     void zoomImage( int dummy, int amount );
     void moveImage( int amountH, int amountV );
     void adjustContrastBrightness( int amountB, int amountC );
-    void newPoint( int x, int y, int z );
-    void newShape( int x, int y, int z );
+    void newPoint( double x, double y, double z );
+    void newShape( double x, double y, double z );
     void deletePoint();
     void deleteShape();
     void deleteAll();
-    void colorPicker( int x, int y, int z );
+    void colorPicker( double x, double y, double z );
 
 private:
 
@@ -120,14 +123,14 @@ private:
     void drawSelectedBorder();
     void drawData( double zoomRate, QPoint offset );
     void drawSlice( int sliceNum, double zoomRate, QPoint offset );
-    void drawShape( Selection::m4dShape<int>& s, bool last, int sliceNum, float zoomRate );
+    void drawShape( Selection::m4dShape<double>& s, bool last, int sliceNum, float zoomRate );
     void drawPicked();
     void calculateWidthHeight( double& w, double& h );
     void calculateOptimalZoomRate();
 
     Imaging::InputPortAbstractImage*		_inPort;
 
-    std::list< Selection::m4dShape<int> >	_shapes;
+    std::list< Selection::m4dShape<double> >	_shapes;
 
     std::map< std::string, std::string >	_leftSideData;
     std::map< std::string, std::string >	_rightSideData;

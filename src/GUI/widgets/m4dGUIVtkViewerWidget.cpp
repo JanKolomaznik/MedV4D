@@ -272,10 +272,10 @@ void
 m4dGUIVtkViewerWidget::slotAdjustContrastBrightness( int amountB, int amountC ) {}
 
 void
-m4dGUIVtkViewerWidget::slotNewPoint( int x, int y, int z ) {}
+m4dGUIVtkViewerWidget::slotNewPoint( double x, double y, double z ) {}
 
 void
-m4dGUIVtkViewerWidget::slotNewShape( int x, int y, int z ) {}
+m4dGUIVtkViewerWidget::slotNewShape( double x, double y, double z ) {}
 
 void
 m4dGUIVtkViewerWidget::slotDeletePoint() {}
@@ -310,7 +310,7 @@ m4dGUIVtkViewerWidget::slotToggleSliceOrientation()
 }
 
 void
-m4dGUIVtkViewerWidget::slotColorPicker( int x, int y, int z )
+m4dGUIVtkViewerWidget::slotColorPicker( double x, double y, double z )
 {
 }
 

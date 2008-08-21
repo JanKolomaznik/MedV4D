@@ -192,8 +192,6 @@ m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( unsigned index, QWidget *paren
     _inPort = new Imaging::InputPortAbstractImage();
     resetParameters();
     _inputPorts.AddPort( _inPort );
-    _selected = false;
-    _sliceOrientation = xy;
     setInputPort( );
 }
 
@@ -204,8 +202,6 @@ m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( Imaging::ConnectionInterface* 
     _inPort = new Imaging::InputPortAbstractImage();
     resetParameters();
     _inputPorts.AddPort( _inPort );
-    _selected = false;
-    _sliceOrientation = xy;
     setInputPort( conn );
 }
 
@@ -247,6 +243,8 @@ m4dGUISliceViewerWidget::setInputPort( Imaging::ConnectionInterface* conn )
 void
 m4dGUISliceViewerWidget::resetParameters()
 {
+    _selected = false;
+    _sliceOrientation = xy;
     qRegisterMetaType<Imaging::PipelineMsgID>( "Imaging::PipelineMsgID" );
     m4dGUIAbstractViewerWidget::connect( (m4dGUIAbstractViewerWidget*)this, SIGNAL(signalMessageHandler( Imaging::PipelineMsgID )), (m4dGUIAbstractViewerWidget*)this, SLOT(slotMessageHandler( Imaging::PipelineMsgID )), Qt::QueuedConnection );
     _ready = false;
@@ -606,7 +604,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
     
     if ( !_shapes.empty() )
     {
-        for ( std::list< Selection::m4dShape<int> >::iterator it = _shapes.begin(); it != --(_shapes.end()); ++it )
+        for ( std::list< Selection::m4dShape<double> >::iterator it = _shapes.begin(); it != --(_shapes.end()); ++it )
             drawShape( *it, false, sliceNum, zoomRate );
         drawShape( *(--(_shapes.end())), true, sliceNum, zoomRate );
     }
@@ -651,26 +649,27 @@ m4dGUISliceViewerWidget::drawSelectedBorder()
 }
 
 void
-m4dGUISliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int sliceNum, float zoomRate )
+m4dGUISliceViewerWidget::drawShape( Selection::m4dShape<double>& s, bool last, int sliceNum, float zoomRate )
 {
     if ( last ) glColor3f( 1., 0., 0. );
     else glColor3f( 0., 0., 1. );
     if ( s.shapeClosed() && s.shapeElements().size() > 1 &&
-	  ( s.shapeElements().back().getParticularValue( 2 ) == sliceNum || s.shapeElements().front().getParticularValue( 2 ) == sliceNum ) )
+	  ( (int)( s.shapeElements().back().getParticularValue( ( _sliceOrientation + 2 ) % 3 ) / _extents[ ( _sliceOrientation + 2 ) % 3 ] ) == sliceNum ||
+	    (int)(s.shapeElements().front().getParticularValue( ( _sliceOrientation + 2 ) % 3 ) / _extents[ ( _sliceOrientation + 2 ) % 3 ] ) == sliceNum ) )
     {
         glBegin(GL_LINES);
-	    glVertex2i( s.shapeElements().front().getParticularValue( 0 ), s.shapeElements().front().getParticularValue( 1 ) );
-	    glVertex2i(  s.shapeElements().back().getParticularValue( 0 ),  s.shapeElements().back().getParticularValue( 1 ) );
+	    glVertex2i( (int)s.shapeElements().front().getParticularValue( _sliceOrientation ), (int)s.shapeElements().front().getParticularValue( ( _sliceOrientation + 1 ) % 3 ) );
+	    glVertex2i(  (int)s.shapeElements().back().getParticularValue( _sliceOrientation ),  (int)s.shapeElements().back().getParticularValue( ( _sliceOrientation + 1 ) % 3 ) );
 	glEnd();
         if ( _printShapeData )
 	{
 	    if ( last ) glColor3f( 1., 1., 0. );
             else glColor3f( 0., 1., 1. );
-	    Selection::m4dPoint< int > mid = Selection::m4dPoint< int >::midpoint( s.shapeElements().front(), s.shapeElements().back() );
+	    Selection::m4dPoint< double > mid = Selection::m4dPoint< double >::midpoint( s.shapeElements().front(), s.shapeElements().back() );
 	    std::ostringstream dist;
-	    dist << Selection::m4dPoint< int >::distance( s.shapeElements().front(), s.shapeElements().back() );
-	    setTextPosition( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
-	    setTextCoords( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
+	    dist << Selection::m4dPoint< double >::distance( s.shapeElements().front(), s.shapeElements().back() );
+	    setTextPosition( (int)mid.getParticularValue( _sliceOrientation ), (int)mid.getParticularValue( ( _sliceOrientation + 1 ) % 3 ) );
+	    setTextCoords( (int)mid.getParticularValue( _sliceOrientation ), (int)mid.getParticularValue( ( _sliceOrientation + 1 ) % 3 ) );
             drawText( dist.str().c_str() );
 	    unsetTextCoords();
 	    glPixelStorei( GL_UNPACK_ROW_LENGTH,  0 );
@@ -680,22 +679,22 @@ m4dGUISliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int 
     }
     if ( _printShapeData )
     {
-        Selection::m4dPoint< int > c = s.getCentroid();
+        Selection::m4dPoint< double > c = s.getCentroid();
 	float a = s.getArea();
-	if ( a > 0 && sliceNum == c.getParticularValue( 2 ) )
+	if ( a > 0 && sliceNum == (int)(c.getParticularValue( ( _sliceOrientation + 2 ) % 3 ) / _extents[ ( _sliceOrientation + 2 ) % 3 ] ) )
 	{
 	    if ( last ) glColor3f( 1., 0.5, 0. );
 	    else glColor3f( 0., 0.5, 1. );
             glBegin(GL_QUADS);
-	        glVertex2i( c.getParticularValue( 0 ) - 3, c.getParticularValue( 1 ) - 3 );
-	        glVertex2i( c.getParticularValue( 0 ) + 3, c.getParticularValue( 1 ) - 3 );
-	        glVertex2i( c.getParticularValue( 0 ) + 3, c.getParticularValue( 1 ) + 3 );
-	        glVertex2i( c.getParticularValue( 0 ) - 3, c.getParticularValue( 1 ) + 3 );
+	        glVertex2i( (int)c.getParticularValue( _sliceOrientation ) - 3, (int)c.getParticularValue( ( _sliceOrientation + 1 ) % 3 ) - 3 );
+	        glVertex2i( (int)c.getParticularValue( _sliceOrientation ) + 3, (int)c.getParticularValue( ( _sliceOrientation + 1 ) % 3 ) - 3 );
+	        glVertex2i( (int)c.getParticularValue( _sliceOrientation ) + 3, (int)c.getParticularValue( ( _sliceOrientation + 1 ) % 3 ) + 3 );
+	        glVertex2i( (int)c.getParticularValue( _sliceOrientation ) - 3, (int)c.getParticularValue( ( _sliceOrientation + 1 ) % 3 ) + 3 );
 	    glEnd();
 	    std::ostringstream area;
 	    area << a;
-	    setTextPosition( c.getParticularValue( 0 ) - 5, c.getParticularValue( 1 ) + 5 );
-	    setTextCoords( c.getParticularValue( 0 ) - 5, c.getParticularValue( 1 ) + 5 );
+	    setTextPosition( (int)c.getParticularValue( _sliceOrientation ) - 5, (int)c.getParticularValue( ( _sliceOrientation + 1 ) % 3 ) + 5 );
+	    setTextCoords( (int)c.getParticularValue( _sliceOrientation ) - 5, (int)c.getParticularValue( ( _sliceOrientation + 1 ) % 3 ) + 5 );
 	    drawText( area.str().c_str() );
 	    unsetTextCoords();
 	    glPixelStorei( GL_UNPACK_ROW_LENGTH,  0 );
@@ -703,27 +702,28 @@ m4dGUISliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int 
 	    else glColor3f( 0., 0., 1. );
 	}
     }
-    std::list< Selection::m4dPoint<int> >::iterator it, tmp;
+    std::list< Selection::m4dPoint<double> >::iterator it, tmp;
     for ( it = s.shapeElements().begin(); it != s.shapeElements().end(); ++it )
     {
     	tmp = it;
 	++tmp;
 	if ( &(*it) != &(s.shapeElements().back()) &&
-	   ( it->getParticularValue( 2 ) == sliceNum || tmp->getParticularValue( 2 ) == sliceNum ) )
+	   ( (int)( it->getParticularValue( ( _sliceOrientation + 2 ) % 3 ) / _extents[ ( _sliceOrientation + 2 ) % 3 ] ) == sliceNum ||
+	     (int)( tmp->getParticularValue( ( _sliceOrientation + 2 ) % 3 ) / _extents[ ( _sliceOrientation + 2 ) % 3 ] ) == sliceNum ) )
 	{
 	    glBegin(GL_LINES);
-		glVertex2i(  it->getParticularValue( 0 ),  it->getParticularValue( 1 ) );
-		glVertex2i( tmp->getParticularValue( 0 ), tmp->getParticularValue( 1 ) );
+		glVertex2i(  (int)it->getParticularValue( _sliceOrientation ),  (int)it->getParticularValue( ( _sliceOrientation + 1 ) % 3 ) );
+		glVertex2i( (int)tmp->getParticularValue( _sliceOrientation ), (int)tmp->getParticularValue( ( _sliceOrientation + 1 ) % 3 ) );
 	    glEnd();
             if ( _printShapeData )
 	    {
 	        if ( last ) glColor3f( 1., 1., 0. );
                 else glColor3f( 0., 1., 1. );
-	        Selection::m4dPoint< int > mid = Selection::m4dPoint< int >::midpoint( *it, *tmp );
+	        Selection::m4dPoint< double > mid = Selection::m4dPoint< double >::midpoint( *it, *tmp );
 	        std::ostringstream dist;
-	        dist << Selection::m4dPoint< int >::distance( *it, *tmp );
-		setTextPosition( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
-		setTextCoords( mid.getParticularValue( 0 ), mid.getParticularValue( 1 ) );
+	        dist << Selection::m4dPoint< double >::distance( *it, *tmp );
+		setTextPosition( (int)mid.getParticularValue( _sliceOrientation ), (int)mid.getParticularValue( ( _sliceOrientation + 1 ) % 3 ) );
+		setTextCoords( (int)mid.getParticularValue( _sliceOrientation ), (int)mid.getParticularValue( ( _sliceOrientation + 1 ) % 3 ) );
 	        drawText( dist.str().c_str() );
 		unsetTextCoords();
 	        glPixelStorei( GL_UNPACK_ROW_LENGTH,  0 );
@@ -731,14 +731,14 @@ m4dGUISliceViewerWidget::drawShape( Selection::m4dShape<int>& s, bool last, int 
                 else glColor3f( 0., 0., 1. );
 	    }
 	}
-        if  ( it->getParticularValue( 2 ) == sliceNum )
+        if  ( (int)( it->getParticularValue( ( _sliceOrientation + 2 ) % 3 ) / _extents[ ( _sliceOrientation + 2 ) % 3 ] )  == sliceNum )
         {
 	    if ( last && &(*it) == &(s.shapeElements().back()) ) glColor3f( 1., 0., 1. );
             glBegin(GL_QUADS);
-	        glVertex2i( it->getParticularValue( 0 ) - 3, it->getParticularValue( 1 ) - 3 );
-	        glVertex2i( it->getParticularValue( 0 ) + 3, it->getParticularValue( 1 ) - 3 );
-	        glVertex2i( it->getParticularValue( 0 ) + 3, it->getParticularValue( 1 ) + 3 );
-	        glVertex2i( it->getParticularValue( 0 ) - 3, it->getParticularValue( 1 ) + 3 );
+	        glVertex2i( (int)it->getParticularValue( _sliceOrientation ) - 3, (int)it->getParticularValue( ( _sliceOrientation + 1 ) % 3 ) - 3 );
+	        glVertex2i( (int)it->getParticularValue( _sliceOrientation ) + 3, (int)it->getParticularValue( ( _sliceOrientation + 1 ) % 3 ) - 3 );
+	        glVertex2i( (int)it->getParticularValue( _sliceOrientation ) + 3, (int)it->getParticularValue( ( _sliceOrientation + 1 ) % 3 ) + 3 );
+	        glVertex2i( (int)it->getParticularValue( _sliceOrientation ) - 3, (int)it->getParticularValue( ( _sliceOrientation + 1 ) % 3 ) + 3 );
 	    glEnd();
         }
     }
@@ -810,9 +810,16 @@ m4dGUISliceViewerWidget::drawData( double zoomRate, QPoint offset )
 void
 m4dGUISliceViewerWidget::drawPicked()
 {
+    int x, y;
+    double w, h;
+    calculateWidthHeight( w, h );
+    if ( _flipH < 0 ) x = - ( _pickedPosition.x() - (int)w);
+    else x = _pickedPosition.x();
+    if ( _flipV < 0 ) y = - ( _pickedPosition.y() - (int)h);
+    else y = _pickedPosition.y();
     glColor3f( 1., 1., 1. );
-    setTextPosition( _pickedPosition.x(), _pickedPosition.y() );
-    setTextCoords( _pickedPosition.x(), _pickedPosition.y() );
+    setTextPosition( x, y );
+    setTextCoords( x, y );
     std::ostringstream pick;
     pick << _colorPicked;
     drawText( pick.str().c_str() );
@@ -828,10 +835,20 @@ m4dGUISliceViewerWidget::ImagePositionSelectionCaller( int x, int y, SelectMetho
     calculateWidthHeight( w, h );
     offset.setX( (int)floor( (double)_offset.x() - ( _zoomRate - (double)width()/w ) * 0.5 * w ) );
     offset.setY( (int)floor( (double)_offset.y() - ( _zoomRate - (double)height()/h ) * 0.5 * h ) );
-    if ( _oneSliceMode ) (this->*f)( (int)( ( x - offset.x() ) / _zoomRate ), (int)( ( this->height() - y - offset.y() ) / _zoomRate ), _sliceNum );
-    else (this->*f)( (int)( ( x % ( ( width() - 1 ) / _slicesPerRow ) ) * _slicesPerRow * w / ( width() - 1 ) ),
-   				    (int)( ( ( this->height() - y ) % (int)( ( h / w ) * ( width() - 1 ) / _slicesPerRow ) ) * _slicesPerRow * w / ( width() - 1 ) ),
-				    _sliceNum + x / (int)( ( width() - 1 ) / _slicesPerRow ) + _slicesPerRow * ( ( this->height() - y ) / (int)( ( h / w ) * ( width() - 1 ) / _slicesPerRow ) ) );
+    double coords[3];
+    if ( _oneSliceMode )
+    {
+        coords[ _sliceOrientation             ] = ( ( x - offset.x() ) / _zoomRate );
+	coords[ ( _sliceOrientation + 1 ) % 3 ] = ( ( this->height() - y - offset.y() ) / _zoomRate );
+	coords[ ( _sliceOrientation + 2 ) % 3 ] = ( _sliceNum * _extents[ ( _sliceOrientation + 2 ) % 3 ] );
+    }
+    else
+    {
+        coords[ _sliceOrientation             ] = ( ( x % ( ( width() - 1 ) / _slicesPerRow ) ) * _slicesPerRow * w / ( width() - 1 ) );
+	coords[ ( _sliceOrientation + 1 ) % 3 ] = ( ( ( this->height() - y ) % (int)( ( h / w ) * ( width() - 1 ) / _slicesPerRow ) ) * _slicesPerRow * w / ( width() - 1 ) );
+	coords[ ( _sliceOrientation + 2 ) % 3 ] = ( ( _sliceNum + x / (int)( ( width() - 1 ) / _slicesPerRow ) + _slicesPerRow * ( ( this->height() - y ) / (int)( ( h / w ) * ( width() - 1 ) / _slicesPerRow ) ) ) * _extents[ ( _sliceOrientation + 2 ) % 3 ] );
+    }
+    (this->*f)( coords[0], coords[1], coords[2] );
 }
 
 void
@@ -997,7 +1014,7 @@ m4dGUISliceViewerWidget::adjustContrastBrightness( int amountC, int amountB )
 }
 
 void
-m4dGUISliceViewerWidget::newPoint( int x, int y, int z )
+m4dGUISliceViewerWidget::newPoint( double x, double y, double z )
 {
     if ( !_inPort->IsPlugged() ) return;
     if ( _shapes.empty() ) newShape( x, y, z );
@@ -1005,42 +1022,42 @@ m4dGUISliceViewerWidget::newPoint( int x, int y, int z )
     {
     	double w, h;
 	calculateWidthHeight( w, h );
-	if ( _flipH < 0 ) x = - ( x - (int)w);
-        if ( _flipV < 0 ) y = - ( y - (int)h);
-        if ( x < 0 || y < 0 || x >= (int)w || y >= (int)h )
-	{
-	    return;
-	}
+	double coords[3];
+	coords[0] = x;
+	coords[1] = y;
+	coords[2] = z;
+        resolveFlips( coords[ _sliceOrientation ], coords[ ( _sliceOrientation + 1 ) % 3 ] );
+        if ( checkOutOfBounds( coords[ _sliceOrientation ], coords[ ( _sliceOrientation + 1 ) % 3 ] ) ) return;
         if ( !_shapes.back().shapeElements().empty() &&
-	     abs( x - _shapes.back().shapeElements().front().getParticularValue( 0 ) ) < MINIMUM_SELECT_DISTANCE &&
-             abs( y - _shapes.back().shapeElements().front().getParticularValue( 1 ) ) < MINIMUM_SELECT_DISTANCE &&
-                  z == _shapes.back().shapeElements().front().getParticularValue( 2 ) ) _shapes.back().closeShape();
+	     abs( (int)( coords[0] - _shapes.back().shapeElements().front().getParticularValue( 0 ) ) ) < MINIMUM_SELECT_DISTANCE &&
+             abs( (int)(coords[1] - _shapes.back().shapeElements().front().getParticularValue( 1 ) ) ) < MINIMUM_SELECT_DISTANCE &&
+             abs( (int)(coords[2] - _shapes.back().shapeElements().front().getParticularValue( 2 ) ) ) < MINIMUM_SELECT_DISTANCE ) _shapes.back().closeShape();
 	else
 	{
-            Selection::m4dPoint<int> p( x, y, z );
+            Selection::m4dPoint<double> p( coords[0], coords[1], coords[2] );
             _shapes.back().addPoint( p );
 	}
-        emit signalNewPoint( _index, x, y, z );
+        emit signalNewPoint( _index, coords[0], coords[1], coords[2] );
     }
 }
 
 void
-m4dGUISliceViewerWidget::newShape( int x, int y, int z )
+m4dGUISliceViewerWidget::newShape( double x, double y, double z )
 {
     double w, h;
     calculateWidthHeight( w, h );
     if ( !_inPort->IsPlugged() ) return;
-    if ( x < 0 || y < 0 || x >= (int)w || y >= (int)h )
-    {
-        return;
-    }
+    double coords[3];
+    coords[0] = x;
+    coords[1] = y;
+    coords[2] = z;
+    if ( checkOutOfBounds( coords[ _sliceOrientation ], coords[ ( _sliceOrientation + 1 ) % 3 ] ) ) return;
 
-    Selection::m4dShape<int> s( 3 );
+    Selection::m4dShape<double> s( 3 );
     _shapes.push_back( s );
     newPoint( x, y, z );
-    if ( _flipH < 0 ) x = - ( x - (int)w);
-    if ( _flipV < 0 ) y = - ( y - (int)h);
-    emit signalNewShape( _index, x, y, z );
+    resolveFlips( coords[ _sliceOrientation ], coords[ ( _sliceOrientation + 1 ) % 3 ] );
+    emit signalNewShape( _index, coords[0], coords[1], coords[2] );
 }
 
 void
@@ -1074,20 +1091,22 @@ m4dGUISliceViewerWidget::deleteAll()
 }
 
 void
-m4dGUISliceViewerWidget::colorPicker( int x, int y, int z )
+m4dGUISliceViewerWidget::colorPicker( double x, double y, double z )
 {
-    double w, h;
-    calculateWidthHeight( w, h );
+    double coords[3];
+    coords[0] = x;
+    coords[1] = y;
+    coords[2] = z;
+    _pickedPosition = QPoint( (int)coords[ _sliceOrientation ], (int)coords[ ( _sliceOrientation + 1 ) % 3 ] );
     if ( !_inPort->IsPlugged() ) return;
     int64 result;
-    if ( _flipH < 0 ) x = - ( x - (int)w);
-    if ( _flipV < 0 ) y = - ( y - (int)h);
-    if ( x < 0 || y < 0 || x >= (int)w || y >= (int)h )
-    {
-        return;
-    }
+    resolveFlips( coords[ _sliceOrientation ], coords[ ( _sliceOrientation + 1 ) % 3 ] );
+    if ( checkOutOfBounds( coords[ _sliceOrientation ], coords[ ( _sliceOrientation + 1 ) % 3 ] ) ) return;
     if ( !_ready ) setParameters();
     if ( !_ready ) return;
+    coords[ 0 ] = coords[ 0 ] / _extents[ 0 ];
+    coords[ 1 ] = coords[ 1 ] / _extents[ 1 ];
+    coords[ 2 ] = coords[ 2 ] / _extents[ 2 ];
     try
     {
 	if ( _inPort->TryLockDataset() )
@@ -1097,12 +1116,12 @@ m4dGUISliceViewerWidget::colorPicker( int x, int y, int z )
 		if ( _inPort->GetAbstractImage().GetDimension() == 3 )
 		{
 		    INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
-		        _imageID, result = Imaging::Image< TTYPE, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetElement( x, y, z ) );
+		        _imageID, result = Imaging::Image< TTYPE, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetElement( (int)coords[0], (int)coords[1], (int)coords[2] ) );
 		}
 	        else if ( _inPort->GetAbstractImage().GetDimension() == 2 )
 	        {
 		    INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
-		        _imageID, result = Imaging::Image< TTYPE, 2 >::CastAbstractImage(_inPort->GetAbstractImage()).GetElement( x, y ) );
+		        _imageID, result = Imaging::Image< TTYPE, 2 >::CastAbstractImage(_inPort->GetAbstractImage()).GetElement( (int)coords[0], (int)coords[1] ) );
 	        }
 	        else
 	            result = 0;
@@ -1115,11 +1134,28 @@ m4dGUISliceViewerWidget::colorPicker( int x, int y, int z )
     }
     catch (...) { _ready = false; }
     if ( !_ready ) return;
-    _slicePicked = z;
     _colorPicker = true;
     _colorPicked = result;
-    _pickedPosition = QPoint( x, y );
+    _slicePicked = (int)coords[ ( _sliceOrientation + 2 ) % 3 ];
     emit signalColorPicker( _index, result );
+}
+
+bool
+m4dGUISliceViewerWidget::checkOutOfBounds( double x, double y )
+{
+    double w, h;
+    calculateWidthHeight( w, h );
+    if ( x < 0 || y < 0 || x >= w || y >= h ) return true;
+    return false;
+}
+
+void
+m4dGUISliceViewerWidget::resolveFlips( double& x, double& y )
+{
+    double w, h;
+    calculateWidthHeight( w, h );
+    if ( _flipH < 0 ) x = - ( x - w);
+    if ( _flipV < 0 ) y = - ( y - h);
 }
 
 void
@@ -1216,13 +1252,13 @@ m4dGUISliceViewerWidget::slotAdjustContrastBrightness( int amountC, int amountB 
 }
 
 void
-m4dGUISliceViewerWidget::slotNewPoint( int x, int y, int z )
+m4dGUISliceViewerWidget::slotNewPoint( double x, double y, double z )
 {
     newPoint( x, y, z );
 }
 
 void
-m4dGUISliceViewerWidget::slotNewShape( int x, int y, int z )
+m4dGUISliceViewerWidget::slotNewShape( double x, double y, double z )
 {
     newShape( x, y, z );
 }
@@ -1301,13 +1337,12 @@ m4dGUISliceViewerWidget::slotToggleSliceOrientation()
     }
     if ( _sliceNum >= (int)_maximum[ ( _sliceOrientation + 2 ) % 3 ] ) _sliceNum = _maximum[ ( _sliceOrientation + 2 ) % 3 ] - 1;
     if ( _sliceNum < (int)_minimum[ ( _sliceOrientation + 2 ) % 3 ] ) _sliceNum = _minimum[ ( _sliceOrientation + 2 ) % 3 ];
-    _shapes.clear();
     updateGL();
     emit signalToggleSliceOrientation( _index );
 }
 
 void
-m4dGUISliceViewerWidget::slotColorPicker( int x, int y, int z )
+m4dGUISliceViewerWidget::slotColorPicker( double x, double y, double z )
 {
     colorPicker( x, y, z );
 }

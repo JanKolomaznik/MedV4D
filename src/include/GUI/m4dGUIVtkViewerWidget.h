@@ -73,8 +73,8 @@ public slots:
     virtual void slotZoom( int amount );
     virtual void slotMove( int amountH, int amountV );
     virtual void slotAdjustContrastBrightness( int amountB, int amountC );
-    virtual void slotNewPoint( int x, int y, int z );
-    virtual void slotNewShape( int x, int y, int z );
+    virtual void slotNewPoint( double x, double y, double z );
+    virtual void slotNewShape( double x, double y, double z );
     virtual void slotDeletePoint();
     virtual void slotDeleteShape();
     virtual void slotDeleteAll();
@@ -82,7 +82,7 @@ public slots:
     virtual void slotRotateAxisY( double y );
     virtual void slotRotateAxisZ( double z );
     virtual void slotToggleSliceOrientation();
-    virtual void slotColorPicker( int x, int y, int z );
+    virtual void slotColorPicker( double x, double y, double z );
 
 protected:
     virtual void resizeEvent( QResizeEvent* event );

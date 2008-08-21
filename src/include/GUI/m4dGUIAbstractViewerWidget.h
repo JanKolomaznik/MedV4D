@@ -102,8 +102,8 @@ public slots:
     virtual void slotZoom( int amount )=0;
     virtual void slotMove( int amountH, int amountV )=0;
     virtual void slotAdjustContrastBrightness( int amountB, int amountC )=0;
-    virtual void slotNewPoint( int x, int y, int z )=0;
-    virtual void slotNewShape( int x, int y, int z )=0;
+    virtual void slotNewPoint( double x, double y, double z )=0;
+    virtual void slotNewShape( double x, double y, double z )=0;
     virtual void slotDeletePoint()=0;
     virtual void slotDeleteShape()=0;
     virtual void slotDeleteAll()=0;
@@ -111,7 +111,7 @@ public slots:
     virtual void slotRotateAxisY( double y )=0;
     virtual void slotRotateAxisZ( double z )=0;
     virtual void slotToggleSliceOrientation()=0;
-    virtual void slotColorPicker( int x, int y, int z )=0;
+    virtual void slotColorPicker( double x, double y, double z )=0;
 
 signals:
     void signalSetButtonHandler( unsigned index, ButtonHandler hnd, MouseButton btn );
@@ -132,8 +132,8 @@ signals:
     void signalZoom( unsigned index, int amount );
     void signalMove( unsigned index, int amountH, int amountV );
     void signalAdjustContrastBrightness( unsigned index, int amountB, int amountC );
-    void signalNewPoint( unsigned index, int x, int y, int z );
-    void signalNewShape( unsigned index, int x, int y, int z );
+    void signalNewPoint( unsigned index, double x, double y, double z );
+    void signalNewShape( unsigned index, double x, double y, double z );
     void signalDeletePoint( unsigned index );
     void signalDeleteShape( unsigned index );
     void signalDeleteAll( unsigned index );
