@@ -47,12 +47,13 @@ public:
   ~ClientJob();
 
   void SendCreate( void);
+  void SendDataSetProps( void);
   void SendDataSet( void);
   void SendFilterProperties( void);
   void SendDestroy( void);
 
-  void SetDataSets( M4D::Imaging::AbstractDataSet *inDataSet
-                  , M4D::Imaging::AbstractDataSet *outdataSet);
+  void SetDataSets( const M4D::Imaging::AbstractDataSet &inDataSet
+                  , M4D::Imaging::AbstractDataSet &outdataSet);
 
 };
 

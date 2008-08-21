@@ -141,6 +141,8 @@ ClientJob::OnResponseRecieved( const boost::system::error_code& error
     {
     case RESPONSE_OK:
       m_state = (State) header->resultPropertiesLen;
+      if( (State) header->resultPropertiesLen == DATASET_OK )
+        SendDataSet();
       break;
 
     case RESPONSE_FAILED:
@@ -229,6 +231,17 @@ ClientJob::SendFilterProperties( void)
 void
 ClientJob::SendDataSet( void)
 {
+  // serialize dataSet using this job
+  m_inDataSetSerializer->Serialize( this);
+
+  SendEndOfDataSetTag();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ClientJob::SendDataSetProps( void)
+{
   primHeader.action = (uint8) DATASET;
 
   // serialize dataset settings
@@ -251,35 +264,27 @@ ClientJob::SendDataSet( void)
     boost::bind( &ClientJob::EndSend, this,
       boost::asio::placeholders::error)
   );
-
-  // serialize dataSet using this job
-  m_inDataSetSerializer->Serialize( this);
-
-  SendEndOfDataSetTag();
 }
 
 /////////////////////////////////////////////////////////////////////////////// 
 
 void
-ClientJob::SetDataSets( M4D::Imaging::AbstractDataSet *inDataSet
-                  , M4D::Imaging::AbstractDataSet *outdataSet)
+ClientJob::SetDataSets( const M4D::Imaging::AbstractDataSet &inDataSet
+                  , M4D::Imaging::AbstractDataSet &outdataSet)
 {
-  m_inDataSet = inDataSet;
-  m_outDataSet = outdataSet;
-
   // create dataSetSerializers for input & output dataSets if the not already..
   {
     if( m_inDataSetSerializer == NULL)
       m_inDataSetSerializer = 
-        GeneralDataSetSerializer::GetDataSetSerializer( inDataSet);
+      GeneralDataSetSerializer::GetDataSetSerializer( (AbstractDataSet *) &inDataSet);
     if( m_outDataSetSerializer == NULL)
       m_outDataSetSerializer = 
-        GeneralDataSetSerializer::GetDataSetSerializer( outdataSet);
+        GeneralDataSetSerializer::GetDataSetSerializer( &outdataSet);
   }
 
   // assign dataSets
-  m_inDataSetSerializer->SetDataSet( inDataSet);
-  m_outDataSetSerializer->SetDataSet( outdataSet);
+  m_inDataSetSerializer->SetDataSet( (AbstractDataSet *) &inDataSet);
+  m_outDataSetSerializer->SetDataSet( &outdataSet);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

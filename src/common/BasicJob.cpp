@@ -15,9 +15,7 @@ DataPieceHeader BasicJob::endHeader(ENDING_PECESIZE);
 BasicJob::BasicJob(boost::asio::ip::tcp::socket *sock)  
     : BasicSocket(sock)
     , onComplete( NULL)
-    , onError(NULL)
-    , m_inDataSet( NULL)
-    , m_outDataSet( NULL)
+    , onError( NULL)
     , m_state( IDLE)
 {
 }

@@ -40,11 +40,9 @@ RemoteFilter< InputImageType, OutputImageType >
   m_job->SendFilterProperties();
   // setting datSets is performed here because actual dataSet may not be created
   // before
-  m_job->SetDataSets( 
-    (M4D::Imaging::AbstractDataSet *) &in, 
-    (M4D::Imaging::AbstractDataSet *) &out );
+  m_job->SetDataSets( in, out );
 
-  m_job->SendDataSet();
+  m_job->SendDataSetProps();
   //m_job->SendExecute();
 
 	return true;

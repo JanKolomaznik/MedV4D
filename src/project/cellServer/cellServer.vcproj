@@ -182,7 +182,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\cellBE\FilterSerializerArray.cpp"
+				RelativePath="..\..\backendForDICOM\FilterSerializerArray.cpp"
 				>
 			</File>
 			<File
@@ -202,10 +202,6 @@
 				>
 				<File
 					RelativePath="..\..\include\cellBE\dataSetSerializers\GeneralDataSetSerializer.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\cellBE\dataSetSerializers\ImageSerializer.cpp"
 					>
 				</File>
 			</Filter>
@@ -302,6 +298,14 @@
 			<Filter
 				Name="dataSetSerializers"
 				>
+				<File
+					RelativePath="..\..\include\cellBE\dataSetSerializers\ImageSerializer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\cellBE\dataSetSerializers\ImageSerializer.tcc"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter

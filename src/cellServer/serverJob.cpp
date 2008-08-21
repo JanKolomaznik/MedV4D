@@ -179,8 +179,7 @@ ServerJob::EndDataSetPropertiesRead( const boost::system::error_code& error)
       &dsSerializer, &m_inDataSet, s);
 
     // connect it to pipeline
-    m_pipeLine.MakeInputConnection( 
-      *m_pipelineBegin, 0, AbstractDataSet::ADataSetPtr( m_inDataSet) );
+    m_pipeLine.MakeInputConnection( *m_pipelineBegin, 0, m_inDataSet);
 
     // create and connect output dataSet
     ConnectionInterface &conn = 
@@ -191,13 +190,14 @@ ServerJob::EndDataSetPropertiesRead( const boost::system::error_code& error)
       MessageReceiverInterface::Ptr( new ExecutionDoneCallback(this) ) );
 
     // lock the whole dataSet (no progression yet so whole dataSet)
-    WriterBBoxInterface &lock = ((AbstractImage *)m_inDataSet)->SetWholeDirtyBBox();
+    AbstractImage *imagePointer = (AbstractImage *) m_inDataSet.get();
+    WriterBBoxInterface &lock = imagePointer->SetWholeDirtyBBox();
 
     // and execute the pipeline. Actual exectution will wait to whole
     // dataSet unlock when whole dataSet is read (don't forget to do it!!)
     m_pipelineBegin->Execute();
 
-    m_state = DATASET_OK;
+    m_state = DATASET_PROPS_OK;
     SendResultBack( RESPONSE_OK, m_state);
 
     // now start recieving actual data using the retrieved serializer
@@ -205,7 +205,7 @@ ServerJob::EndDataSetPropertiesRead( const boost::system::error_code& error)
   
   } catch( NetException &) {
   } catch( WrongDSetException &) {
-    m_state = DATASET_WRONG;
+    m_state = DATASET_PROPS_WRONG;
     SendResultBack( RESPONSE_FAILED, m_state);
   } catch( ExceptionBase &) {
   }

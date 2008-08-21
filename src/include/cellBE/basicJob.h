@@ -33,11 +33,13 @@ public:
    *  Definition jobs states
    */
   enum State {
-    CREATION_FAILED,          // request for job execute
-    FILTER_PROPS_OK,          // 
-    FILTER_PROPS_WRONG,       //   
-    DATASET_OK,               //
-    DATASET_WRONG,            //    
+    CREATION_FAILED,          // creating failed due to unrecognized filter
+    FILTER_PROPS_OK,          // Updating filterProperties OK
+    FILTER_PROPS_WRONG,       // Updating filterProperties failed
+    DATASET_PROPS_OK,         // DataSet properties reading OK
+    DATASET_PROPS_WRONG,      // Error while reading DS properties
+    DATASET_OK,               // DS data recieved OK
+    DATASET_WRONG,            // Error while recieving DS data
     EXECUTED,                 //
     ABORTED,                  //
     FAILED,                   //
@@ -105,8 +107,8 @@ protected:
   // send EndingTag telling no more data will come
   void SendEndOfDataSetTag( void);
 
-  M4D::Imaging::AbstractDataSet *m_inDataSet;
-  M4D::Imaging::AbstractDataSet *m_outDataSet;
+  /*M4D::Imaging::AbstractDataSet::ADataSetPtr m_inDataSet;
+  M4D::Imaging::AbstractDataSet *m_outDataSet;*/
 
 };
 
