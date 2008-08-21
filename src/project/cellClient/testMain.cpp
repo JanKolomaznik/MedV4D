@@ -9,7 +9,26 @@
 using namespace M4D::CellBE;
 using namespace M4D::Imaging;
 
+typedef uint16 ElementType;
 typedef Image<uint16, 3> ImageType;
+
+
+ImageType::Ptr
+GenerateDataset()
+{
+	ImageType::Ptr inImage = 
+		ImageFactory::CreateEmptyImage3D<ElementType>(16, 16, 16);
+	for( unsigned i = 0; i < 16; ++i ) {
+		for( unsigned j = 0; j < 16; ++j ) {
+			for( unsigned k = 0; k < 16; ++k ) {
+				inImage->GetElement( i, j, k ) = (i << 2) | (j << 1) | k;
+			}
+		}
+	}
+	return inImage;
+}
+
+
 int main()
 {
   try
@@ -25,8 +44,7 @@ int main()
 		dynamic_cast<AbstractImageConnectionInterface*>( &pipeline.MakeOutputConnection( *filter, 0, true ) );
 
 	// prepare dataSet
-	AbstractImage::AImagePtr inImage = 
-		ImageFactory::CreateEmptyImage3D<uint16>(15, 15, 15);
+	ImageType::Ptr inImage = GenerateDataset();
 
 	inConnection->PutImage( inImage );
 
