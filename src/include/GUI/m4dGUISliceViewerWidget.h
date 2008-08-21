@@ -27,6 +27,10 @@ class m4dGUISliceViewerWidget : public m4dGUIAbstractViewerWidget, public QGLWid
     Q_OBJECT
 
 public:
+    
+    typedef void (M4D::Viewer::m4dGUISliceViewerWidget::*ButtonMethods)( int amount1, int amount2 );
+    typedef void (M4D::Viewer::m4dGUISliceViewerWidget::*SelectMethods)( int x, int y, int z );
+    
     m4dGUISliceViewerWidget( unsigned index, QWidget *parent = 0 );
     m4dGUISliceViewerWidget( Imaging::ConnectionInterface* conn, unsigned index, QWidget *parent = 0 );
     virtual void setInputPort();
@@ -68,11 +72,15 @@ public slots:
     virtual void slotRotateAxisX( double x );
     virtual void slotRotateAxisY( double y );
     virtual void slotRotateAxisZ( double z );
-    virtual void slotSetSliceOrientation( SliceOrientation so );
+    virtual void slotToggleSliceOrientation();
     virtual void slotColorPicker( int x, int y, int z );
+
+protected slots:
+    void slotMessageHandler( Imaging::PipelineMsgID msgID );
 
 protected:
     void setButtonHandler( ButtonHandler hnd, MouseButton btn );
+    void ImagePositionSelectionCaller( int x, int y, SelectMethods f );
     void setOneSliceMode();
     void setMoreSliceMode( unsigned slicesPerRow );
     void switchSlice( int dummy, int amount );
@@ -106,6 +114,7 @@ private:
 
     void setParameters();
     void resetParameters();
+    void borderDrawer( GLfloat red, GLfloat green, GLfloat blue, unsigned pos );
     void drawPluggedBorder();
     void drawSelectionModeBorder();
     void drawSelectedBorder();
@@ -114,9 +123,6 @@ private:
     void drawShape( Selection::m4dShape<int>& s, bool last, int sliceNum, float zoomRate );
     void drawPicked();
 
-    typedef void (M4D::Viewer::m4dGUISliceViewerWidget::*ButtonMethods)( int amount1, int amount2 );
-    typedef void (M4D::Viewer::m4dGUISliceViewerWidget::*SelectMethods)( int x, int y, int z );
-    
     Imaging::InputPortAbstractImage*		_inPort;
 
     std::list< Selection::m4dShape<int> >	_shapes;
@@ -149,6 +155,7 @@ private:
     bool					_colorPicker;
     uint64					_colorPicked;
     QPoint					_pickedPosition;
+    int						_slicePicked;
 };
 
 } /*namespace Viewer*/

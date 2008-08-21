@@ -305,7 +305,7 @@ m4dGUIVtkViewerWidget::slotRotateAxisZ( double z )
 }
 
 void
-m4dGUIVtkViewerWidget::slotSetSliceOrientation( SliceOrientation so )
+m4dGUIVtkViewerWidget::slotToggleSliceOrientation()
 {
 }
 

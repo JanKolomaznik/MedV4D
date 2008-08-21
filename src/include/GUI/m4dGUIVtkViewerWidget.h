@@ -81,7 +81,7 @@ public slots:
     virtual void slotRotateAxisX( double x );
     virtual void slotRotateAxisY( double y );
     virtual void slotRotateAxisZ( double z );
-    virtual void slotSetSliceOrientation( SliceOrientation so );
+    virtual void slotToggleSliceOrientation();
     virtual void slotColorPicker( int x, int y, int z );
 
 protected:

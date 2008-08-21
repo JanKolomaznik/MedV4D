@@ -110,7 +110,7 @@ public slots:
     virtual void slotRotateAxisX( double x )=0;
     virtual void slotRotateAxisY( double y )=0;
     virtual void slotRotateAxisZ( double z )=0;
-    virtual void slotSetSliceOrientation( SliceOrientation so )=0;
+    virtual void slotToggleSliceOrientation()=0;
     virtual void slotColorPicker( int x, int y, int z )=0;
 
 signals:
@@ -140,8 +140,11 @@ signals:
     void signalRotateAxisX( unsigned index, double x );
     void signalRotateAxisY( unsigned index, double y );
     void signalRotateAxisZ( unsigned index, double z );
-    void signalSetSliceOrientation( SliceOrientation so );
-    void signalColorPicker( int64 value );
+    void signalToggleSliceOrientation( unsigned index );
+    void signalColorPicker( unsigned index, int64 value );
+    
+    
+    void signalMessageHandler( Imaging::PipelineMsgID msgID );
 
 };
 

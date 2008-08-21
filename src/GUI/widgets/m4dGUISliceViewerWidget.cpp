@@ -42,15 +42,15 @@ public:
 	bool unsgn;
 	if ( typeid( ElementType ) == typeid( uint8 ) || typeid( ElementType ) == typeid( uint16 ) || typeid( ElementType ) == typeid( uint32 ) || typeid( ElementType ) == typeid( uint64 ) )
 	{
-	    maxvalue = pow( 256, sizeof( ElementType ) ) - 1;
+	    maxvalue = pow( (double)256, (double)sizeof( ElementType ) ) - 1;
 	    unsgn = true;
 	}
 	else
 	{
-	    maxvalue = (int)( pow( 256, sizeof( ElementType ) ) / 2 - 1 );
+	    maxvalue = (int)( pow( (double)256, (double)sizeof( ElementType ) ) / 2 - 1 );
 	    unsgn = false;
 	}
-	double multiplicator = pow( BRIGHTNESS_MULTIPLICATOR, sizeof( ElementType ) - 1 );
+	double multiplicator = pow( (double)BRIGHTNESS_MULTIPLICATOR, (double)sizeof( ElementType ) - 1 );
         int32 xstride, ystride, zstride;
         bool ready = true;
 	ElementType* pixel, *original;
@@ -247,6 +247,8 @@ m4dGUISliceViewerWidget::setInputPort( Imaging::ConnectionInterface* conn )
 void
 m4dGUISliceViewerWidget::resetParameters()
 {
+    qRegisterMetaType<Imaging::PipelineMsgID>( "Imaging::PipelineMsgID" );
+    m4dGUIAbstractViewerWidget::connect( (m4dGUIAbstractViewerWidget*)this, SIGNAL(signalMessageHandler( Imaging::PipelineMsgID )), (m4dGUIAbstractViewerWidget*)this, SLOT(slotMessageHandler( Imaging::PipelineMsgID )), Qt::QueuedConnection );
     _ready = false;
     if ( _inPort->IsPlugged() )
     {
@@ -285,6 +287,7 @@ m4dGUISliceViewerWidget::resetParameters()
     _oneSliceMode = true;
     _slicesPerRow = 1;
     _flipH = _flipV = 1;
+    _slicePicked = 0;
     _colorPicker = false;
     _colorPicked = 0;
     _pickedPosition = QPoint( -1, -1 );
@@ -367,21 +370,7 @@ m4dGUISliceViewerWidget::operator()()
 void
 m4dGUISliceViewerWidget::ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imaging::PipelineMessage::MessageSendStyle sendStyle, Imaging::FlowDirection direction )
 {
-    switch( msg->msgID )
-    {
-        case Imaging::PMI_DATASET_PUT:
-	case Imaging::PMI_PORT_PLUGGED:
-        case Imaging::PMI_FILTER_UPDATED:
-	{
-	    setParameters();
-            resizeGL( width(), height() );
-            updateGL();
-	}
-	break;
-	
-	default:
-	break;
-    }
+    emit signalMessageHandler( msg->msgID );
 }
 
 void
@@ -616,53 +605,41 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
     if ( _flipH < 0 ) offset.setX( offset.x() - (int)( zoomRate * w ) );
     if ( _flipV < 0 ) offset.setY( offset.y() - (int)( zoomRate * h ) );
     if ( _printData ) drawData( zoomRate, offset );
-    if ( _colorPicker ) drawPicked();
+    if ( _colorPicker && sliceNum == _slicePicked ) drawPicked();
     glFlush();
+}
+
+void
+m4dGUISliceViewerWidget::borderDrawer(GLfloat red, GLfloat green, GLfloat blue, unsigned pos)
+{
+    glPushMatrix();
+    glLoadIdentity();
+    glColor3f(red, green, blue);
+    glBegin(GL_LINE_LOOP);
+        glVertex2i( pos, pos );
+	glVertex2i( pos, this->height() - 1 - pos );
+	glVertex2i( this->width() - 1 - pos, this->height() - 1 - pos );
+	glVertex2i( this->width() - 1 - pos, pos );
+    glEnd();
+    glPopMatrix();
 }
 
 void
 m4dGUISliceViewerWidget::drawPluggedBorder()
 {
-    glPushMatrix();
-    glLoadIdentity();
-    glColor3f(0., 0., 1.);
-    glBegin(GL_LINE_LOOP);
-        glVertex2i( 2, 2 );
-	glVertex2i( 2, this->height() - 3 );
-	glVertex2i( this->width() - 3, this->height() - 3 );
-	glVertex2i( this->width() - 3, 2 );
-    glEnd();
-    glPopMatrix();
+    borderDrawer( 0., 0., 1., 2 );
 }
 
 void
 m4dGUISliceViewerWidget::drawSelectionModeBorder()
 {
-    glPushMatrix();
-    glLoadIdentity();
-    glColor3f(1., 0., 0.);
-    glBegin(GL_LINE_LOOP);
-        glVertex2i( 0, 0 );
-	glVertex2i( 0, this->height() - 1);
-	glVertex2i( this->width() - 1, this->height() - 1 );
-	glVertex2i( this->width() - 1, 0 );
-    glEnd();
-    glPopMatrix();
+    borderDrawer(1., 0., 0., 0);
 }
 
 void
 m4dGUISliceViewerWidget::drawSelectedBorder()
 {
-    glPushMatrix();
-    glLoadIdentity();
-    glColor3f(0., 1., 0.);
-    glBegin(GL_LINE_LOOP);
-	glVertex2i( 1, 1 );
-	glVertex2i( 1, this->height() - 2 );
-	glVertex2i( this->width() - 2, this->height() - 2 );
-	glVertex2i( this->width() - 2, 1 );
-    glEnd();
-    glPopMatrix();
+    borderDrawer(0., 1., 0., 1);
 }
 
 void
@@ -837,6 +814,21 @@ m4dGUISliceViewerWidget::drawPicked()
 }
 
 void
+m4dGUISliceViewerWidget::ImagePositionSelectionCaller( int x, int y, SelectMethods f )
+{
+    int w, h;
+    QPoint offset;
+    w = (int)(_maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ]),
+    h = (int)(_maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ]);
+    offset.setX( (int)floor( (double)_offset.x() - ( _zoomRate - (double)width()/w ) * 0.5 * w ) );
+    offset.setY( (int)floor( (double)_offset.y() - ( _zoomRate - (double)height()/h ) * 0.5 * h ) );
+    if ( _oneSliceMode ) (this->*f)( (int)( ( x - offset.x() ) / _zoomRate ), (int)( ( this->height() - y - offset.y() ) / _zoomRate ), _sliceNum );
+    else (this->*f)( (int)( ( x % ( ( width() - 1 ) / _slicesPerRow ) ) * _slicesPerRow * w / ( width() - 1 ) ),
+   				    (int)( ( ( this->height() - y ) % ( ( h / w ) * ( width() - 1 ) / _slicesPerRow ) ) * _slicesPerRow * w / ( width() - 1 ) ),
+				    _sliceNum + x / (int)( ( width() - 1 ) / _slicesPerRow ) + _slicesPerRow * ( ( this->height() - y ) / (int)( ( h / w ) * ( width() - 1 ) / _slicesPerRow ) ) );
+}
+
+void
 m4dGUISliceViewerWidget::resizeGL(int winW, int winH)
 {
     glViewport(0, 0, width(), height());
@@ -875,26 +867,10 @@ m4dGUISliceViewerWidget::mousePressEvent(QMouseEvent *event)
 	if ( !_ready ) return;
     }
     _lastPos = event->pos();
-    int w, h;
-    QPoint offset;
-    w = (int)(_maximum[ _sliceOrientation ] - _minimum[ _sliceOrientation ]),
-    h = (int)(_maximum[ ( _sliceOrientation + 1 ) % 3 ] - _minimum[ ( _sliceOrientation + 1 ) % 3 ]);
-    offset.setX( (int)floor( (double)_offset.x() - ( _zoomRate - (double)width()/w ) * 0.5 * w ) );
-    offset.setY( (int)floor( (double)_offset.y() - ( _zoomRate - (double)height()/h ) * 0.5 * h ) );
     if ( ( event->buttons() & Qt::LeftButton ) && _selectionMode[ left ] )
-    {
-        if ( _oneSliceMode ) (this->*_selectMethods[ left ])( (int)( ( event->x() - offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - offset.y() ) / _zoomRate ), _sliceNum );
-        else (this->*_selectMethods[ left ])( (int)( ( event->x() % ( ( width() - 1 ) / _slicesPerRow ) ) * _slicesPerRow * w / ( width() - 1 ) ),
-   					    (int)( ( ( this->height() - event->y() ) % ( ( h / w ) * ( width() - 1 ) / _slicesPerRow ) ) * _slicesPerRow * w / ( width() - 1 ) ),
-					    _sliceNum + event->x() / (int)( ( width() - 1 ) / _slicesPerRow ) + _slicesPerRow * ( ( this->height() - event->y() ) / (int)( ( h / w ) * ( width() - 1 ) / _slicesPerRow ) ) );
-    }
+    	ImagePositionSelectionCaller( event->x(), event->y(), _selectMethods[ left ] );
     else if ( event->buttons() & Qt::RightButton && _selectionMode[ right ] )
-    {
-        if ( _oneSliceMode ) (this->*_selectMethods[ right ])( (int)( ( event->x() - offset.x() ) / _zoomRate ), (int)( ( this->height() - event->y() - offset.y() ) / _zoomRate ), _sliceNum );
-        else (this->*_selectMethods[ right ])( (int)( ( event->x() % ( ( width() - 1 ) / _slicesPerRow ) ) * _slicesPerRow * w / ( width() - 1 ) ),
-   					     (int)( ( ( this->height() - event->y() ) % ( ( h / w ) * ( width() - 1 ) / _slicesPerRow ) ) * _slicesPerRow * w / ( width() - 1 ) ),
-					     _sliceNum + event->x() / (int)( ( width() - 1 ) / _slicesPerRow ) + _slicesPerRow * ( ( this->height() - event->y() ) / (int)( ( h / w ) * ( width() - 1 ) / _slicesPerRow ) ) );
-    }
+    	ImagePositionSelectionCaller( event->x(), event->y(), _selectMethods[ right ] );
 
     updateGL();
 }
@@ -913,11 +889,6 @@ m4dGUISliceViewerWidget::mouseReleaseEvent(QMouseEvent *event)
 void
 m4dGUISliceViewerWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    if ( _colorPicker )
-    {
-        _colorPicker = false;
-        updateGL();
-    }
     if ( !_inPort->IsPlugged() ) return;
 
     if ( _lastPos.x() == -1 || _lastPos.y() == -1 ) return;
@@ -935,6 +906,8 @@ m4dGUISliceViewerWidget::mouseMoveEvent(QMouseEvent *event)
         (this->*_buttonMethods[ right ])( dx, -dy );
     }
     _lastPos = event->pos();
+    if ( _colorPicker )
+        ImagePositionSelectionCaller( event->x(), event->y(), &M4D::Viewer::m4dGUISliceViewerWidget::colorPicker );
 
     updateGL();
 
@@ -951,11 +924,6 @@ m4dGUISliceViewerWidget::zoomImage( int dummy, int amount )
 void
 m4dGUISliceViewerWidget::wheelEvent(QWheelEvent *event)
 {
-    if ( _colorPicker )
-    {
-        _colorPicker = false;
-        updateGL();
-    }
     if ( !_inPort->IsPlugged() ) return;
 
     int numDegrees = event->delta() / 8;
@@ -968,6 +936,9 @@ m4dGUISliceViewerWidget::wheelEvent(QWheelEvent *event)
     {
         //TODO handle
     }
+    if ( _colorPicker )
+        ImagePositionSelectionCaller( event->x(), event->y(), &M4D::Viewer::m4dGUISliceViewerWidget::colorPicker );
+    
     updateGL();
 
 }
@@ -1133,10 +1104,11 @@ m4dGUISliceViewerWidget::colorPicker( int x, int y, int z )
     }
     catch (...) { _ready = false; }
     if ( !_ready ) return;
+    _slicePicked = z;
     _colorPicker = true;
     _colorPicked = result;
     _pickedPosition = QPoint( x, y );
-    emit signalColorPicker( result );
+    emit signalColorPicker( _index, result );
 }
 
 void
@@ -1300,17 +1272,51 @@ m4dGUISliceViewerWidget::slotRotateAxisZ( double z )
 }
 
 void
-m4dGUISliceViewerWidget::slotSetSliceOrientation( SliceOrientation so )
+m4dGUISliceViewerWidget::slotToggleSliceOrientation()
 {
-    _sliceOrientation = so;
+    switch ( _sliceOrientation )
+    {
+        case xy:
+	_sliceOrientation = yz;
+	break;
+
+        case yz:
+	_sliceOrientation = zx;
+	break;
+
+        case zx:
+	_sliceOrientation = xy;
+	break;
+    }
     if ( _sliceNum >= (int)_maximum[ ( _sliceOrientation + 2 ) % 3 ] ) _sliceNum = _maximum[ ( _sliceOrientation + 2 ) % 3 ] - 1;
     if ( _sliceNum < (int)_minimum[ ( _sliceOrientation + 2 ) % 3 ] ) _sliceNum = _minimum[ ( _sliceOrientation + 2 ) % 3 ];
+    emit signalToggleSliceOrientation( _index );
 }
 
 void
 m4dGUISliceViewerWidget::slotColorPicker( int x, int y, int z )
 {
     colorPicker( x, y, z );
+}
+
+void
+m4dGUISliceViewerWidget::slotMessageHandler( Imaging::PipelineMsgID msgID )
+{
+    switch( msgID )
+    {
+        case Imaging::PMI_DATASET_PUT:
+	case Imaging::PMI_PORT_PLUGGED:
+        case Imaging::PMI_FILTER_UPDATED:
+	{
+	    setParameters();
+            resizeGL( width(), height() );
+            updateGL();
+	}
+	break;
+	
+	default:
+	break;
+    }
 }
 
 } /*namespace Viewer*/
