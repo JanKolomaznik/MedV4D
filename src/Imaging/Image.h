@@ -25,8 +25,10 @@ struct DimensionExtents
 };
 
 /**
- * Abstract ancestor of image classes. Have virtual accesing methods 
- * to information about dataset - useful for casting to right type.
+ * Abstract ancestor of image classes. Has access methods 
+ * to information about image - dimension, type of elements and proportions.
+ * These informations can be used for casting to right type of image or for
+ * generic programming. 
  **/
 class AbstractImage : public AbstractDataSet
 {
@@ -63,6 +65,10 @@ public:
 
 	virtual const ModificationManager &
 	GetModificationManager()const = 0;
+
+	M4D::Common::TimeStamp
+	GetEditTimestamp()const
+		{ return GetModificationManager().GetActualTimestamp(); }
 protected:
 	uint16			_dimCount;
 	DimensionExtents	*_dimensionExtents;

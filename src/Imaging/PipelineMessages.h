@@ -21,6 +21,7 @@ enum PipelineMsgID
 	PMI_FILTER_CANCELED,
 	PMI_PORT_PLUGGED,
 	PMI_DATASET_PUT,
+	PMI_PROGRESS_INFO,
 
 	PMI_END_SYSMSG = 1000
 };
@@ -140,6 +141,24 @@ public:
 		return PipelineMessage::Ptr( new MsgDatasetPut() );
 	}
 
+};
+
+class MsgProgressInfo: public PipelineMessage
+{
+public:
+	MsgProgressInfo( uint32 partID, uint32 partCount )
+		: PipelineMessage( PMI_PROGRESS_INFO ), _partID( partID ), _partCount( partCount )
+		{ /*empty*/ }
+
+	static PipelineMessage::Ptr
+	CreateMsg( uint32 partID, uint32 partCount )
+	{
+		//TODO improve
+		return PipelineMessage::Ptr( new MsgProgressInfo( partID, partCount ) );
+	}
+protected:
+	uint32 _partID; 
+	uint32 _partCount;
 };
 
 //*****************************************************************************

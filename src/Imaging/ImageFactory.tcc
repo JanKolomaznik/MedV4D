@@ -40,6 +40,7 @@ ImageFactory::CreateEmptyImageFromExtents(
 		float32		elementExtents[]
 		)
 {
+	//TODO fix
 	switch( dim ) {
 	case 2:		
 		return CreateEmptyImage2D< ElementType >( 

@@ -50,7 +50,22 @@ private:
 	Multithreading::Mutex _accessLock;
 
 };
-
+/**
+ * AbstractDataSet is predecessor of all datastructures containing data. 
+ * Only concept implemented by this class is read/write locking system.
+ * This locking system ensure synchronization only on dataset structure 
+ * (its extents, allocated buffers, etc.), not on data contained inside.
+ * Read/write lock let multiple readers to obtain access and writers 
+ * have to wait. If there is at least one writer waiting, no other reader 
+ * is allowed to obtain lock. And when all readers finish their work, first writer
+ * get exclusive access. 
+ * Synchronization on data should be implemented in successors, because 
+ * it differ in each type of dataset.
+ * Changes in internal structure can be detected by comparing timestamps.
+ * When some change in internal structure of dataset happens timestamp is 
+ * increased - so if you store value from previous access you can easily detect
+ * changes.
+ **/
 class AbstractDataSet
 {
 public:
@@ -70,7 +85,11 @@ public:
 	virtual
 	~AbstractDataSet(){ }
 
-	const M4D::Common::TimeStamp&
+
+	/**
+	 * \return Actual structure timestamp - it changes when internal structure is modified.
+	 **/
+	M4D::Common::TimeStamp
 	GetStructureTimestamp()const
 		{ return _structureTimestamp; }
 
@@ -105,12 +124,22 @@ public:
 		return boost::static_pointer_cast< AbstractDataSet >( dataset );
 	}
 
+	/**
+	 * Method try to obtain read lock.
+	 * \return Whether locking was successful.
+	 **/
 	bool 
 	TryLockDataset()const;
 
+	/**
+	 * Method wait till it obtain read lock.
+	 **/
 	void 
 	LockDataset()const;
 
+	/**
+	 * Unlock read lock - ONLY owner of the lock can UNLOCK.
+	 **/
 	void
 	UnlockDataset()const;
 
@@ -127,16 +156,30 @@ public:
 	void
 	DowngradeFromExclusiveLock()const;
 
+	/**
+	 * Method try to obtain exclusive lock.
+	 * \return Whether locking was successful.
+	 **/
 	bool
 	TryExclusiveLockDataset()const;
 
+	/**
+	 * Method wait till it obtain exclusive lock.
+	 **/
 	void
 	ExclusiveLockDataset()const;
 
+	/**
+	 * Unlock exclusive lock - ONLY owner of the lock can UNLOCK.
+	 **/
 	void
 	ExclusiveUnlockDataset()const;
 
 protected:
+	/**
+	 * Protected constructor.
+	 * \param datasetType Type of dataset - this value will be returned by GetDatasetType().
+	 **/
 	AbstractDataSet( DataSetType datasetType ): _datasetType( datasetType ) {}
 
 
@@ -153,10 +196,12 @@ protected:
 	 **/
 	M4D::Common::TimeStamp	_structureTimestamp;
 
+	/**
+	 * Read/write lock used to synchronize structure modifications and reading.
+	 **/
 	mutable ReadWriteLock	_structureLock;
 private:
 	DataSetType	_datasetType;
-
 };
 
 

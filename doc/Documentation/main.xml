@@ -5,6 +5,7 @@
 	<!ENTITY libImaging SYSTEM "chapters/libImaging.xml">
 	<!ENTITY libDICOMClient SYSTEM "chapters/libDICOMClient.xml">
 	<!ENTITY libCellBE SYSTEM "chapters/libCellBE.xml">
+	<!ENTITY userManual SYSTEM "chapters/userManual.xml">
 ]>
 <book lang="en" >
 	<bookinfo>
