@@ -16,19 +16,81 @@
   <section>
     <title>System requirements</title>
 
-    <para>..........</para>
+    <para>
+      This section describes the hardware and software required to run the
+      application.
+    </para>
+
+    <section>
+      <title>Required hardware</title>
+
+      <itemizedlist>
+        <title>
+          The application must be run on a computer that meets the
+          following hardware requirements:
+        </title>
+        <listitem>
+          <para>Pentium II CPU ???</para>
+        </listitem>
+        <listitem>
+          <para>256 MB RAM</para>
+        </listitem>
+        <listitem>
+          <para>10 MB free hard drive space for application + for image storage ???</para>
+        </listitem>
+        <listitem>
+          <para>32 MB of video RAM</para>
+        </listitem>
+        <listitem>
+          <para>Minimum display resolution 1024 x 768 ???</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>Recommended hardware</title>
+
+      <itemizedlist>
+        <title>
+          To get the most out of the application, it's recommended that your
+          computer meet the following specifications:
+        </title>
+        <listitem>
+          <para>Pentium 4 CPU ???</para>
+        </listitem>
+        <listitem>
+          <para>1 GB RAM</para>
+        </listitem>
+        <listitem>
+          <para>128 MB of video RAM</para>
+        </listitem>
+        <listitem>
+          <para>Display resolution 1280 x 1024 ???</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>Supported operating systems</title>
+
+      <itemizedlist>
+        <listitem>
+          <para>Windows 2000, Windows XP or Windows Vista ???</para>
+        </listitem>
+        <listitem>
+          <para>... unix ???</para>
+        </listitem>
+      </itemizedlist>
+    </section>
   </section>
 
   <section>
     <title>Installing the application</title>
 
-    <para>..........</para>
-  </section>
-
-  <section>
-    <title>Starting the application</title>
-
-    <para>..........</para>
+    <para>
+      It's no need to install the application. Just copy the application and
+      the configuration file to PC hard drive and then simply start it.
+    </para>
   </section>
 </section>
 
@@ -76,7 +138,7 @@
       <title>Moving the toolbar</title>
 
       <para>
-        The toolbar does not have to remain at the top of the window. It can be
+        The toolbar does not have to remain at the top of the window. It (its components) can be
         moved to the bottom, left, or right of the window in order to accommodate
         your preferences - by dragging it to a new location.
       </para>
@@ -92,11 +154,67 @@
       </para>
 
       <para>
-        Icon size <!--TODO -->
+        You can enlarge the toolbar icons by clicking <guimenuitem>Medium</guimenuitem>
+        or <guimenuitem>Large</guimenuitem> on the <guimenu>ToolBars</guimenu> menu.
       </para>
 
       <para>
-        Assigning shortcut keys, Assigning mouse buttons, etc. <!--TODO -->
+        <itemizedlist>
+          <title>To customize the toolbar (viewer tools):</title>
+          <listitem>
+            <para>
+              Click
+              <menuchoice>
+                <shortcut>
+                  <keycombo><keycap>Ctrl</keycap><keycap>M</keycap></keycombo>
+                </shortcut>
+                <guimenu>ToolBars</guimenu>
+                <guimenuitem>Customize</guimenuitem>
+              </menuchoice>.
+            </para>
+            <para>
+              The Viewer Tool Property window appears (row ~ tool).
+            </para>
+            <para>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/userManual/shots/custom.png" format="PNG"/>
+                </imageobject>
+              </mediaobject>
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Add/remove tools to the customized toolbar by clicking the visibility
+              icon (
+              <inlinemediaobject>
+                <imageobject>
+                   <imagedata fileref="figures/userManual/icons/shown.png"/>
+                </imageobject>
+              </inlinemediaobject>/
+              <inlinemediaobject>
+                <imageobject>
+                   <imagedata fileref="figures/userManual/icons/hidden.png"/>
+                </imageobject>
+              </inlinemediaobject>).
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Click on tools shortcut to edit them (doubleclick - edit, click - rewrite)
+              - if the new value is not suitable for use as a shortcut, it will be
+              reseted to its previous value. You can now activate the tool using
+              the assigned shortcut and modifier key combination (if you save
+              your settings).
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Click <guibutton>OK</guibutton> to save your changes, or click
+              <guibutton>Cancel</guibutton> to exit without saving any changes.
+            </para>
+          </listitem>
+        </itemizedlist>
       </para>
     </section>
   </section>
@@ -236,6 +354,17 @@
               <entry>
                 <mediaobject>
                   <imageobject>
+                    <imagedata fileref="figures/userManual/tools/probe.png" format="PNG"/>
+                  </imageobject>
+                </mediaobject>
+              </entry>
+              <entry><emphasis role="bold">Probe Tool</emphasis></entry>
+              <entry>Give a pixel value for a given point</entry>
+            </row>
+            <row>
+              <entry>
+                <mediaobject>
+                  <imageobject>
                     <imagedata fileref="figures/userManual/tools/point.png" format="PNG"/>
                   </imageobject>
                 </mediaobject>
@@ -323,6 +452,17 @@
               </entry>
               <entry><emphasis role="bold">Flip Vertical</emphasis></entry>
               <entry>Flip the selected image from top to bottom about the horizontal axis</entry>
+            </row>
+            <row>
+              <entry>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/userManual/tools/slice-orient.png" format="PNG"/>
+                  </imageobject>
+                </mediaobject>
+              </entry>
+              <entry><emphasis role="bold">Slice Orientation</emphasis></entry>
+              <entry>Switch the viewing axis orientation (x~y, y~z, z~x)</entry>
             </row>
           </tbody>
         </tgroup>

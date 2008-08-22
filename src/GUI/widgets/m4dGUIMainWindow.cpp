@@ -408,8 +408,8 @@ void m4dGUIMainWindow::createActions ()
   connect( exitAct, SIGNAL(triggered()), this, SLOT(close()) );
 
   customizeAct = new QAction( tr( "Customize" ), this );
-  // customizeAct->setShortcut( tr( "Ctrl+C" ) );
-  // customizeAct->setStatusTip( tr( "Customize the toolbar" ) );
+  customizeAct->setShortcut( tr( "Ctrl+M" ) );
+  customizeAct->setStatusTip( tr( "Customize the toolbar" ) );
   connect( customizeAct, SIGNAL(triggered()), this, SLOT(customize()) );
 
   QActionGroup *toolBarSizeGroup  = new QActionGroup( this );
