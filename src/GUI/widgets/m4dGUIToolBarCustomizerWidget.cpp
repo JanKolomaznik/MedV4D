@@ -9,9 +9,14 @@ inline void initToolBarCustomizerWidgetResource () { Q_INIT_RESOURCE( m4dGUITool
 namespace M4D {
 namespace GUI {
 
-/// Prefixes for actions visibility (in the hidden column of the actions table)
+/// Prefixes for actions visibility (also in the toolTip for visibility icon)
 #define SHOWN_ACTION_PREFIX          "Shown"
 #define HIDDEN_ACTION_PREFIX         "Hidden"
+/// Name of the group of actions - in QSettings - saving/loading settings (all actions - their groups - are in this group)
+#define ACTIONS_GROUP_NAME           "Actions"
+/// Names of the keys in QSettings - to identify settings values for each action; action ~ group
+#define VISIBILITY_KEY_NAME          "Visibility"
+#define SHORTCUT_KEY_NAME            "Shortcut"
 
 m4dGUIToolBarCustomizerWidget::m4dGUIToolBarCustomizerWidget ( QAction **actions, unsigned actionsNum, 
                                                                QWidget *parent )
@@ -27,9 +32,9 @@ m4dGUIToolBarCustomizerWidget::m4dGUIToolBarCustomizerWidget ( QAction **actions
   connect( toolBarButtonsTable, SIGNAL(cellClicked( int, int )), 
            this, SLOT(changeVisibility( int, int )) );
   connect( toolBarButtonsTable, SIGNAL(currentItemChanged( QTableWidgetItem *, QTableWidgetItem * ) ), 
-           this, SLOT(recordAction( QTableWidgetItem * )) );
+           this, SLOT(recordActionShortcut( QTableWidgetItem * )) );
   connect( toolBarButtonsTable, SIGNAL(itemChanged( QTableWidgetItem * )), 
-           this, SLOT(validateAction( QTableWidgetItem * )) );
+           this, SLOT(validateActionShortcut( QTableWidgetItem * )) );
   
   QPushButton *okButton     = new QPushButton( tr( "&OK" ), this );
   QPushButton *cancelButton = new QPushButton( tr( "&Cancel" ), this );
@@ -58,34 +63,27 @@ void m4dGUIToolBarCustomizerWidget::changeVisibility ( int row, int column )
   }
 
   QTableWidgetItem *visibilityItem = toolBarButtonsTable->item( row, 1 );
-  QString visibilityStr = visibilityItem->toolTip();
 
-  if  ( visibilityStr == SHOWN_ACTION_PREFIX )
+  if  ( visibilityItem->toolTip() == SHOWN_ACTION_PREFIX )
   {
     visibilityItem->setIcon( QIcon( ":/icons/hidden.png" ) );
     visibilityItem->setToolTip( HIDDEN_ACTION_PREFIX );
   }
-  else if ( visibilityStr == HIDDEN_ACTION_PREFIX )
-  {
-    visibilityItem->setIcon( QIcon( ":/icons/shown.png" ) );
-    visibilityItem->setToolTip( SHOWN_ACTION_PREFIX );
-  }
   else
   {
-    // default
     visibilityItem->setIcon( QIcon( ":/icons/shown.png" ) );
     visibilityItem->setToolTip( SHOWN_ACTION_PREFIX );
   }
 }
 
 
-void m4dGUIToolBarCustomizerWidget::recordAction ( QTableWidgetItem *item )
+void m4dGUIToolBarCustomizerWidget::recordActionShortcut ( QTableWidgetItem *item )
 {
   oldAccelText = item->text();
 }
 
 
-void m4dGUIToolBarCustomizerWidget::validateAction ( QTableWidgetItem *item )
+void m4dGUIToolBarCustomizerWidget::validateActionShortcut ( QTableWidgetItem *item )
 {
   QString accelText = QString( QKeySequence( item->text() ) );
 
@@ -100,8 +98,16 @@ void m4dGUIToolBarCustomizerWidget::validateAction ( QTableWidgetItem *item )
 
 void m4dGUIToolBarCustomizerWidget::accept ()
 {
-  for ( unsigned row = 1; row < actionsNum; row++ ) {
-    actions[row]->setShortcut( QKeySequence( toolBarButtonsTable->item( row - 1, 1 )->text() ) );
+  for ( unsigned row = 1; row < actionsNum; row++ ) 
+  {
+    if ( toolBarButtonsTable->item( row - 1, 1 )->toolTip() == SHOWN_ACTION_PREFIX ) {
+      actions[row]->setVisible( true );
+    }
+    else {
+      actions[row]->setVisible( false );
+    }
+
+    actions[row]->setShortcut( QKeySequence( toolBarButtonsTable->item( row - 1, 2 )->text() ) );
   }
 
   saveActions();
@@ -114,8 +120,20 @@ void m4dGUIToolBarCustomizerWidget::reject ()
 {
   for ( unsigned row = 1; row < actionsNum; row++ )
   {
-    QTableWidgetItem *shortcutItem = new QTableWidgetItem( QString( actions[row]->shortcut() ) );
-    toolBarButtonsTable->setItem( row - 1, 1, shortcutItem );
+    QTableWidgetItem *visibilityItem = toolBarButtonsTable->item( row - 1, 1 );
+    if ( actions[row]->isVisible() ) 
+    {
+      visibilityItem->setIcon( QIcon( ":/icons/shown.png" ) );
+      visibilityItem->setToolTip( SHOWN_ACTION_PREFIX );
+    }
+    else
+    {
+      visibilityItem->setIcon( QIcon( ":/icons/hidden.png" ) );   
+      visibilityItem->setToolTip( HIDDEN_ACTION_PREFIX );
+    }
+
+    QTableWidgetItem *shortcutItem = toolBarButtonsTable->item( row - 1, 2 );
+    shortcutItem->setText( QString( actions[row]->shortcut() ) );
   }
 
   emit cancel();
@@ -171,15 +189,24 @@ QTableWidget *m4dGUIToolBarCustomizerWidget::createToolBarButtonsTable ()
 void m4dGUIToolBarCustomizerWidget::loadActions ()
 {
   QSettings settings;
-  settings.beginGroup( "Actions" );
+  settings.beginGroup( ACTIONS_GROUP_NAME );
     
   for ( unsigned row = 1; row < actionsNum; row++ )
   {
-    QString accelText = settings.value( actions[row]->text() ).toString();
+    // each action is a different group - within the actions group
+    settings.beginGroup( actions[row]->text() );
 
+    QVariant visibility = settings.value( VISIBILITY_KEY_NAME, "" );
+    if ( visibility != "" ) {
+      actions[row]->setVisible( visibility.toBool() );
+    }
+
+    QString accelText = settings.value( SHORTCUT_KEY_NAME ).toString();
     if ( !accelText.isEmpty() ) {
       actions[row]->setShortcut( QKeySequence( accelText ) );
     }
+
+    settings.endGroup();
   }
 
   settings.endGroup();
@@ -189,12 +216,18 @@ void m4dGUIToolBarCustomizerWidget::loadActions ()
 void m4dGUIToolBarCustomizerWidget::saveActions ()
 {
   QSettings settings;
-  settings.beginGroup( "Actions" );
+  settings.beginGroup( ACTIONS_GROUP_NAME );
      
   for ( unsigned row = 1; row < actionsNum; row++ )
   {
-    QString accelText = QString( actions[row]->shortcut() );
-    settings.setValue( actions[row]->text(), accelText );
+    // each action is a different group - within the actions group
+    settings.beginGroup( actions[row]->text() );
+
+    settings.setValue( VISIBILITY_KEY_NAME, actions[row]->isVisible() );
+
+    settings.setValue( SHORTCUT_KEY_NAME, QString( actions[row]->shortcut() ) );
+
+    settings.endGroup();
   }
 
   settings.endGroup();

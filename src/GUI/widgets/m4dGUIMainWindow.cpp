@@ -39,7 +39,7 @@ const m4dGUIMainWindow::ButtonType m4dGUIMainWindow::actionButtonTypes[] = { LEF
                   RIGHT_BUTTON, RIGHT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, 
                   LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON };
 
-const char *m4dGUIMainWindow::actionShortCuts[] = { "", "Ctrl+W", "Ctrl+P", "Ctrl+Z", "Ctrl+A", "Ctrl+T",
+const char *m4dGUIMainWindow::actionShortCuts[] = { "", "Ctrl+W", "Ctrl+P", "Ctrl+Z", "Ctrl+K", "Ctrl+T",
                   "Ctrl+B", "Ctrl+I", "Ctrl+H", "Ctrl+N", "Ctrl+E", "Ctrl+A", "Ctrl+R", "Ctrl+V", "Ctrl+G",
                   "Ctrl+U" };
 
@@ -262,9 +262,9 @@ void m4dGUIMainWindow::features ()
     }
   }
   // new point/shape behavior
-  disconnect( prevViewer, SIGNAL(signalNewShape( unsigned, int, int, int )), 
+  disconnect( prevViewer, SIGNAL(signalNewShape( unsigned, double, double, double )), 
               viewerActs[ACTION_NEW_POINT], SLOT(trigger()) );
-  connect( actViewer, SIGNAL(signalNewShape( unsigned, int, int, int )), 
+  connect( actViewer, SIGNAL(signalNewShape( unsigned, double, double, double )), 
            viewerActs[ACTION_NEW_POINT], SLOT(trigger()) );
 
   disconnect( screenLayoutWidget, SIGNAL(imageLayout( const unsigned )), prevViewer, SLOT(slotSetMoreSliceMode( unsigned )) );
@@ -351,7 +351,7 @@ void m4dGUIMainWindow::createToolBarCustomizerDialog ()
 {
   // new dialog for ToolBar Customizer Widget - without What's This button in the title bar
   toolBarCustomizerDialog = new QDialog( this, Qt::WindowTitleHint | Qt::WindowSystemMenuHint );
-  toolBarCustomizerDialog->setWindowTitle( tr( "Toolbar Property" ) );
+  toolBarCustomizerDialog->setWindowTitle( tr( "Viewer Tool Property" ) );
 
   toolBarCustomizerWidget = new m4dGUIToolBarCustomizerWidget( viewerActs, VIEWER_ACTIONS_NUMBER );
   connect( toolBarCustomizerWidget, SIGNAL(ready()), toolBarCustomizerDialog, SLOT(accept()) );

@@ -36,6 +36,13 @@ class m4dGUIToolBarCustomizerWidget: public QWidget
 
   private slots:
 
+    /**
+     * Slot changing the visibility of the tool (just in actions table) - clicking the visibility icon ->
+     * switching between shown and hidden state (icon and toolTip is changing).
+     *
+     * @param row the row of the clicked icon - in the actions table
+     * @param column the column of the clicked icon - in the actions table
+     */
     void changeVisibility ( int row, int column );
 
     /**
@@ -46,7 +53,7 @@ class m4dGUIToolBarCustomizerWidget: public QWidget
      *
      * @param item current item of our table
      */
-    void recordAction ( QTableWidgetItem *item );
+    void recordActionShortcut ( QTableWidgetItem *item );
 
     /**
      * Slot for validating the shortcut value - when the user has finished editing the cell item, 
@@ -55,7 +62,7 @@ class m4dGUIToolBarCustomizerWidget: public QWidget
      *
      * @param item current item of our table, which was changed and need to be validated
      */
-    void validateAction ( QTableWidgetItem *item );
+    void validateActionShortcut ( QTableWidgetItem *item );
 
     /**
      * Slot for accepting the dialog - it updates all the known actions with new settings.
@@ -63,8 +70,8 @@ class m4dGUIToolBarCustomizerWidget: public QWidget
     void accept ();
 
     /**
-     * Slot for rejecting the dialog - it's not needed to perform any actions, the changes 
-     * to the settings will be lost.
+     * Slot for rejecting the dialog - it's not needed to perform any actions (just set back current
+     * values to the table), the changes to the settings will be lost.
      */
     void reject ();
 
@@ -107,7 +114,7 @@ class m4dGUIToolBarCustomizerWidget: public QWidget
     QTableWidget *toolBarButtonsTable;
     /// String holding the old shortcut value of the action - replacement text not suitable -> reset to this value.
     QString oldAccelText;
-    /// Pointer to the array of pointers to actions of the viewer - tools (coming from the mainWindow).
+    /// Pointer to the array of pointers to actions of the viewer - tools (comming from the mainWindow).
     QAction **actions;
     /// Number of actions (size of the array of pointers).
     unsigned actionsNum;
