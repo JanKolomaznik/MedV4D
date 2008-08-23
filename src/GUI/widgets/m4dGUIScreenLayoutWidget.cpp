@@ -36,8 +36,6 @@ m4dGUIScreenLayoutWidget::m4dGUIScreenLayoutWidget ( QWidget *parent )
   QGroupBox *imageGroupBox = createLayoutGroupBox( tr( "Image" ), &imageLayoutToolButtons, &imageRowSpinBox,
                                                    &imageColumnSpinBox, 0, SLOT(imageLayoutChanged()),
                                                    SLOT(imageApply()) );
-  // disable image row number spinBox - viewers don't support it 
-  imageRowSpinBox->setEnabled( false );
 
   // creating OK Cancel dialogButtonBox
   QDialogButtonBox *dialogButtonBox = new QDialogButtonBox( QDialogButtonBox::Ok );
@@ -83,11 +81,11 @@ void m4dGUIScreenLayoutWidget::imageLayoutChanged ()
   imageRowSpinBox->setValue( layoutDimensions[layoutIdx][0] );
   imageColumnSpinBox->setValue( layoutDimensions[layoutIdx][1] );
 
-  if ( layoutDimensions[layoutIdx][1] == 1 ) {
+  if ( layoutDimensions[layoutIdx][0] == 1 && layoutDimensions[layoutIdx][1] == 1 ) {
     emit imageLayout();
   }
   else {
-    emit imageLayout( layoutDimensions[layoutIdx][1] );
+    emit imageLayout( layoutDimensions[layoutIdx][1], layoutDimensions[layoutIdx][0] );
   }
 }
 
@@ -100,7 +98,7 @@ void m4dGUIScreenLayoutWidget::seriesApply ()
 
 void m4dGUIScreenLayoutWidget::imageApply ()
 { 
-  emit imageLayout( seriesColumnSpinBox->value() );
+  emit imageLayout( imageColumnSpinBox->value(), imageRowSpinBox->value() );
 }
 
 

@@ -268,9 +268,11 @@ void m4dGUIMainWindow::features ()
            viewerActs[ACTION_NEW_POINT], SLOT(trigger()) );
 
   disconnect( screenLayoutWidget, SIGNAL(imageLayout()), prevViewer, SLOT(slotSetOneSliceMode()) );
-  disconnect( screenLayoutWidget, SIGNAL(imageLayout( const unsigned )), prevViewer, SLOT(slotSetMoreSliceMode( unsigned )) );
+  disconnect( screenLayoutWidget, SIGNAL(imageLayout( const unsigned, const unsigned )), 
+              prevViewer, SLOT(slotSetMoreSliceMode( unsigned, unsigned )) );
   connect( screenLayoutWidget, SIGNAL(imageLayout()), actViewer, SLOT(slotSetOneSliceMode()) );
-  connect( screenLayoutWidget, SIGNAL(imageLayout( const unsigned )), actViewer, SLOT(slotSetMoreSliceMode( unsigned )) );
+  connect( screenLayoutWidget, SIGNAL(imageLayout( const unsigned, const unsigned )), 
+           actViewer, SLOT(slotSetMoreSliceMode( unsigned, unsigned )) );
 
   m4dGUIAbstractViewerWidget::AvailableSlots availableFeatures = actViewer->getAvailableSlots();
 

@@ -34,7 +34,7 @@ class m4dGUIScreenLayoutWidget: public QWidget
 
   signals:
     void seriesLayout ( const unsigned rows, const unsigned columns );
-    void imageLayout ( const unsigned columns );
+    void imageLayout ( const unsigned slicesPerRow, const unsigned slicesPerColumn );
     void imageLayout ();
     void ready ();
 
