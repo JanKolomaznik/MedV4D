@@ -83,7 +83,12 @@ void m4dGUIScreenLayoutWidget::imageLayoutChanged ()
   imageRowSpinBox->setValue( layoutDimensions[layoutIdx][0] );
   imageColumnSpinBox->setValue( layoutDimensions[layoutIdx][1] );
 
-  emit imageLayout( layoutDimensions[layoutIdx][1] );
+  if ( layoutDimensions[layoutIdx][1] == 1 ) {
+    emit imageLayout();
+  }
+  else {
+    emit imageLayout( layoutDimensions[layoutIdx][1] );
+  }
 }
 
 
