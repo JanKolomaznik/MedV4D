@@ -233,6 +233,11 @@ m4dGUISliceViewerWidget::setInputPort( )
 void
 m4dGUISliceViewerWidget::setInputPort( Imaging::ConnectionInterface* conn )
 {
+    if ( !conn )
+    {
+        setInputPort();
+	return;
+    }
     _ready = false;
     conn->ConnectConsumer( *_inPort );
     setParameters();
