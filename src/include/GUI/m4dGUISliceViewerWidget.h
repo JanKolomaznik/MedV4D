@@ -272,7 +272,7 @@ private:
     void drawPluggedBorder();
     void drawSelectionModeBorder();
     void drawSelectedBorder();
-    void drawData( double zoomRate, QPoint offset );
+    void drawData( double zoomRate, QPoint offset, int sliceNum );
     void drawSlice( int sliceNum, double zoomRate, QPoint offset );
     void drawShape( Selection::m4dShape<double>& s, bool last, int sliceNum, float zoomRate );
     void drawPicked();

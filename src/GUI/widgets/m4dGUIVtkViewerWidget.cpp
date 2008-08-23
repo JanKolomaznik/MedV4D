@@ -57,14 +57,19 @@ m4dGUIVtkViewerWidget::setInputPort( Imaging::ConnectionInterface* conn )
         setInputPort();
 	return;
     }
-    if ( !_inPort->IsPlugged() )
-    {
-        _renImageData->AddViewProp( _actor2DPlugged );
-    }
+    _renImageData->RemoveViewProp( _volume );
+    GetRenderWindow()->RemoveRenderer( _renImageData );
+    _renImageData->Delete();
+    _renImageData = vtkRenderer::New();
     conn->ConnectConsumer( *_inPort );
     _imageData->TemporarySetImageData( _inPort->GetAbstractImage() );
+    _renImageData->AddViewProp( _volume );
+    GetRenderWindow()->AddRenderer( _renImageData );
+    if ( _selected ) _renImageData->AddViewProp( _actor2DSelected );
+    _renImageData->AddViewProp( _actor2DPlugged );
     GetRenderWindow()->Render();
     _plugged = true;
+
 }
 
 void
@@ -133,14 +138,8 @@ m4dGUIVtkViewerWidget::resizeEvent( QResizeEvent* event )
 void
 m4dGUIVtkViewerWidget::mousePressEvent(QMouseEvent *event)
 {
-    if ( !_selected )
-    {
-        setSelected();
-    }
-    else
-    {
-        QVTKWidget::mousePressEvent( event );
-    }
+    if ( !_selected ) setSelected();
+    else QVTKWidget::mousePressEvent( event );
 }
 
 void
@@ -205,12 +204,12 @@ m4dGUIVtkViewerWidget::setParameters()
   _pointsDataPlugged->SetLines(_cellsPlugged);
 
   _renImageData = vtkRenderer::New(); 
-  _renImageData->AddViewProp( _volume );
 
+  _renImageData->AddViewProp( _volume );
+  GetRenderWindow()->AddRenderer( _renImageData );
+  
   vtkRenderWindow *rWin;
   rWin = GetRenderWindow();
-
-  rWin->AddRenderer( _renImageData );
 
   vtkRenderWindowInteractor *iren;
   iren = GetInteractor();
@@ -354,13 +353,16 @@ m4dGUIVtkViewerWidget::slotMessageHandler( Imaging::PipelineMsgID msgID )
 	case Imaging::PMI_FILTER_UPDATED:
         case Imaging::PMI_DATASET_PUT:
 	case Imaging::PMI_PORT_PLUGGED:
-        if ( !_plugged )
-        {
-            _imageData->TemporaryUnsetImageData();
-	    _plugged = true;
-            _renImageData->AddViewProp( _actor2DPlugged );
-        }
+        _renImageData->RemoveViewProp( _volume );
+        GetRenderWindow()->RemoveRenderer( _renImageData );
+        _renImageData->Delete();
+        _renImageData = vtkRenderer::New();
         _imageData->TemporarySetImageData( _inPort->GetAbstractImage() );
+	_renImageData->AddViewProp( _volume );
+        GetRenderWindow()->AddRenderer( _renImageData );
+        if ( _selected ) _renImageData->AddViewProp( _actor2DSelected );
+        _renImageData->AddViewProp( _actor2DPlugged );
+	_plugged = true;
 	break;
 
 	default:

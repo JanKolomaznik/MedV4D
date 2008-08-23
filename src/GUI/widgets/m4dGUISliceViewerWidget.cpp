@@ -10,6 +10,9 @@
 #define FONT_HEIGHT				16
 #define BRIGHTNESS_MULTIPLICATOR		16
 
+#define DISPLAY_PIXEL_VALUE( PIXEL, MEAN, MULTIPLICATOR, BRIGHTNESS, CONTRAST )\
+					( CONTRAST * ( PIXEL- MEAN + BRIGHTNESS * MULTIPLICATOR ) + MEAN )
+
 namespace M4D
 {
 namespace Viewer
@@ -111,9 +114,9 @@ public:
 	mean += brightnessRate * multiplicator;
 	for ( i = 0; i < width * height; ++i )
 	{
-	    if ( ( contrastRate *   ( pixel[i]- mean + brightnessRate * multiplicator ) + mean ) > maxvalue ) pixel[i] = (ElementType)maxvalue;
-	    else if ( ( contrastRate *   ( pixel[i] - mean + brightnessRate * multiplicator ) + mean ) < ( unsgn ? 0 : -maxvalue ) ) pixel[i] = ( unsgn ? 0 : (ElementType)(-maxvalue) );
-	    else pixel[i] = (ElementType)( contrastRate *   ( pixel[i] - mean + brightnessRate * multiplicator ) + mean );
+	    if ( DISPLAY_PIXEL_VALUE( pixel[i], mean, multiplicator, brightnessRate, contrastRate ) > maxvalue ) pixel[i] = (ElementType)maxvalue;
+	    else if ( DISPLAY_PIXEL_VALUE( pixel[i], mean, multiplicator, brightnessRate, contrastRate ) < ( unsgn ? 0 : -maxvalue ) ) pixel[i] = ( unsgn ? 0 : (ElementType)(-maxvalue) );
+	    else pixel[i] = (ElementType)( DISPLAY_PIXEL_VALUE( pixel[i], mean, multiplicator, brightnessRate, contrastRate ) );
 	}
 	glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
 	              GL_LUMINANCE, oglType(), pixel );
@@ -609,7 +612,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
     }
     if ( _flipH < 0 ) offset.setX( offset.x() - (int)( zoomRate * w ) );
     if ( _flipV < 0 ) offset.setY( offset.y() - (int)( zoomRate * h ) );
-    if ( _printData ) drawData( zoomRate, offset );
+    if ( _printData ) drawData( zoomRate, offset, sliceNum );
     if ( _colorPicker && sliceNum == _slicePicked ) drawPicked();
     glFlush();
 }
@@ -744,7 +747,7 @@ m4dGUISliceViewerWidget::drawShape( Selection::m4dShape<double>& s, bool last, i
 }
 
 void
-m4dGUISliceViewerWidget::drawData( double zoomRate, QPoint offset )
+m4dGUISliceViewerWidget::drawData( double zoomRate, QPoint offset, int sliceNum )
 {
     glPushMatrix();
     glLoadIdentity();
@@ -766,6 +769,36 @@ m4dGUISliceViewerWidget::drawData( double zoomRate, QPoint offset )
 	o_x = offset.x();
 	o_y = offset.y();
 	w_o = (int)( w * zoomRate );
+    }
+    if ( i - o_y > 2 * FONT_HEIGHT )
+    {
+        std::ostringstream snum;
+	std::string sor;
+        switch ( _sliceOrientation )
+        {
+            case xy:
+	    sor = "xy";
+	    break;
+
+	    case yz:
+	    sor = "yz";
+	    break;
+
+	    case zx:
+	    sor = "zx";
+	    break;
+        }
+        setTextPosition( o_x + w_o / 2 - FONT_WIDTH, o_y );
+        setTextCoords( o_x + w_o / 2 - FONT_WIDTH, o_y );
+        drawText( sor.c_str() );
+        unsetTextCoords();
+        glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
+        snum << sliceNum + 1 << " / " << ( _maximum[ ( _sliceOrientation + 2 ) % 3 ] - _minimum[ ( _sliceOrientation + 2 ) % 3 ] );
+        setTextPosition( o_x + w_o / 2 - FONT_WIDTH * snum.str().length() / 2, o_y + FONT_HEIGHT );
+        setTextCoords( o_x + w_o / 2 - FONT_WIDTH * snum.str().length() / 2, o_y + FONT_HEIGHT );
+        drawText( snum.str().c_str() );
+        unsetTextCoords();
+        glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
     }
     for ( it = _leftSideData.begin(); it != _leftSideData.end() && i >= o_y; ++it, i -= FONT_HEIGHT )
     {
