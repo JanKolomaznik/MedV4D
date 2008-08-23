@@ -22,7 +22,7 @@ namespace GUI {
 const char *m4dGUIMainWindow::actionIconNames[] = { "empty.png", "window-level.png", "empty.png", "zoom.png",
                   "stack.png", "info.png", "probe.png", "point.png", "shape.png", "clear-point.png",
                   "clear-shape.png", "clear-all.png", "flip-hor.png", "flip-vert.png", "slice-orient.png",
-                  "empty.png" };
+                  "rotate-volume.png" };
 
 const char *m4dGUIMainWindow::actionTexts[] = { "No Action", "Window/Level (Right Mouse)", "Pan (Left Mouse)",
                   "Zoom (Right Mouse)", "Stack (Right Mouse)", "Toggle Overlay", "Probe Tool (Left Mouse)", 
