@@ -202,7 +202,6 @@ m4dGUIVtkViewerWidget::ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imagin
     switch( msg->msgID )
     {
 	case Imaging::PMI_FILTER_UPDATED:
-	//updateGL();
 	break;
 
 	default:
