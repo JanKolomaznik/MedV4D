@@ -62,7 +62,9 @@
 		</formalpara></listitem>
 	
 		<listitem><formalpara><title>Messages and message receivers</title>
-				<para></para>
+			<para>
+			
+			</para>
 		</formalpara></listitem>
 	</itemizedlist>
 	</para>	
@@ -135,6 +137,14 @@
 		
 	<para>aaaaaaa</para>
 	</section>
+
+</section>
+
+<section>
+	<title>Main design concepts</title>
+
+	<para>
+	</para>
 
 </section>
 
