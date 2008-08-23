@@ -203,8 +203,9 @@ public slots:
     /**
      * Slot to set the viewer to show several slices at once
      *  @param slicesPerRow how many slices will be shown in one row
+     *  @param slicesPerColumn how many slices will be shown in one column
      */
-    virtual void slotSetMoreSliceMode( unsigned slicesPerRow )=0;
+    virtual void slotSetMoreSliceMode( unsigned slicesPerRow, unsigned slicesPerColumn )=0;
 
     /**
      * Slot to toggle vertical flip
@@ -389,8 +390,9 @@ signals:
      * Signal indicating that the viewer is set to show more slices at a time
      *  @param index the index of the viewer
      *  @param slicesPerRow the number of slices that should be displayed in a row
+     *  @param slicesPerColumn how many slices will be shown in one column
      */
-    void signalSetMoreSliceMode( unsigned index, unsigned slicesPerRow );
+    void signalSetMoreSliceMode( unsigned index, unsigned slicesPerRow, unsigned slicesPerColumn );
 
     /**
      * Signal indicating that the vertical flip has been toggled

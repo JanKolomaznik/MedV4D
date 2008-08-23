@@ -87,8 +87,9 @@ public slots:
      * Slot to set the viewer to show several slices at once
      * (it has no function in this type of viewer)
      *  @param slicesPerRow how many slices will be shown in one row
+     *  @param slicesPerColumn how many slices will be shown in one column
      */
-    virtual void slotSetMoreSliceMode( unsigned slicesPerRow );
+    virtual void slotSetMoreSliceMode( unsigned slicesPerRow, unsigned slicesPerColumn );
 
     /**
      * Slot to toggle vertical flip

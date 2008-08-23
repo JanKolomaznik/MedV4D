@@ -258,7 +258,7 @@ void
 m4dGUIVtkViewerWidget::slotSetOneSliceMode() {}
 
 void
-m4dGUIVtkViewerWidget::slotSetMoreSliceMode( unsigned slicesPerRow ) {}
+m4dGUIVtkViewerWidget::slotSetMoreSliceMode( unsigned slicesPerRow, unsigned slicesPerColumn ) {}
 
 void
 m4dGUIVtkViewerWidget::slotToggleFlipVertical() {}

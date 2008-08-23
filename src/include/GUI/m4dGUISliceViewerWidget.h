@@ -74,6 +74,7 @@ public slots:
     /**
      * Slot to set the viewer to show several slices at once
      *  @param slicesPerRow how many slices will be shown in one row
+     *  @param slicesPerColumn how many slices will be shown in one column
      */
     virtual void slotSetMoreSliceMode( unsigned slicesPerRow, unsigned slicesPerColumn );
 
