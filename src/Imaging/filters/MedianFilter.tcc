@@ -83,7 +83,7 @@ template< typename InputImageType >
 inline typename ImageTraits< InputImageType >::ElementType
 MedianFilter2D< InputImageType >
 ::GetElementInOrder(
-		MedianFilter2D< InputImageType >::Histogram	&histogram,
+		typename MedianFilter2D< InputImageType >::Histogram	&histogram,
 		uint32						order
 	      )
 {
