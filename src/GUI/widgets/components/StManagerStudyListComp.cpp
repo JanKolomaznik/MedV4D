@@ -567,7 +567,9 @@ void StManagerStudyListComp::addRowToStudyTable ( const DcmProvider::TableRow *r
   tableRowItems.push_back( new QTableWidgetItem( QString( row->patientID.c_str() ) ) );
 
   size_t found = row->name.find( "_" );
-  tableRowItems.push_back( new QTableWidgetItem( QString( row->name.c_str() ).replace( found, 1, " " ) ) );
+  tableRowItems.push_back( new QTableWidgetItem( found != string::npos ? 
+                                                 QString( row->name.c_str() ).replace( found, 1, " " ) :
+                                                 QString( row->name.c_str() ) ) );
 
   tableRowItems.push_back( new QTableWidgetItem( QString( row->modality.c_str() ) ) );
 
