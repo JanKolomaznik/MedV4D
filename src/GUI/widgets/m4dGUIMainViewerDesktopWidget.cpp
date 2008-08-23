@@ -12,29 +12,8 @@ namespace M4D {
 namespace GUI {
 
 m4dGUIMainViewerDesktopWidget::m4dGUIMainViewerDesktopWidget ( QWidget *parent )
-  : QWidget( parent ), prodconn( false )
+  : QWidget( parent )
 {
-  // ==========================================================================
-
-	inputImage = ImageFactory::CreateEmptyImage3DTyped< uint32 >( 512, 512, 50 );
-
-	int32 i, j, k;
-	uint8* p;
-	for ( i = inputImage->GetDimensionExtents( 0 ).minimum; i < inputImage->GetDimensionExtents( 2 ).maximum; ++i )
-		for ( j = inputImage->GetDimensionExtents( 1 ).minimum; j < inputImage->GetDimensionExtents( 0 ).maximum; ++j )
-			for ( k = inputImage->GetDimensionExtents( 2 ).minimum; k < inputImage->GetDimensionExtents( 1 ).maximum; ++k )
-			{
-				p = (uint8*) &inputImage->GetElement( j, k, i );// = ( i * j * k ) % 32000;
-				p[0] = i * j % 256;
-				p[1] = j * k % 256;
-				p[2] = i * k % 256;
-				p[3] = 0;
-			}
-
-	prodconn.PutImage( inputImage );
-
-  // ==========================================================================
-
   setDesktopLayout( 1, 2 );
 
   selectedViewer = viewers[1];
@@ -77,10 +56,14 @@ void m4dGUIMainViewerDesktopWidget::replaceSelectedViewerWidget ( ViewerType typ
 
   QWidget *resizedWidget = (*widget)();
   resizedWidget->resize( resizedWidget->sizeHint() );
-  
+
+  QByteArray state = innerSplitter->saveState();
+
   // delete old - directly before inserting the new one 
   delete replacedViewer;
   innerSplitter->insertWidget( idx % layoutColumns, resizedWidget );
+
+  innerSplitter->restoreState( state );
 }
 
 
@@ -105,7 +88,7 @@ void m4dGUIMainViewerDesktopWidget::setDesktopLayout( const unsigned rows, const
     for ( int i = 0; i < difference; i++ ) 
     {
       Viewer *viewer = new Viewer;
-      m4dGUIAbstractViewerWidget *widget = new m4dGUISliceViewerWidget( &prodconn, viewersSize + i );
+      m4dGUIAbstractViewerWidget *widget = new m4dGUISliceViewerWidget( viewersSize + i );
       connect( widget, SIGNAL(signalSetSelected( unsigned, bool )), this, SLOT(selectedChanged( unsigned )) );
       viewer->viewerWidget = widget;
       viewer->type = SLICE_VIEWER;
@@ -164,8 +147,6 @@ void m4dGUIMainViewerDesktopWidget::selectedChanged ( unsigned index )
 
 void m4dGUIMainViewerDesktopWidget::sourceSelected ( int index )
 {
-  //selectedViewer->viewerWidget->setInputPort();
-  //selectedViewer->viewerWidget->setInputPort( sources[index] );
   selectedViewer->viewerWidget->InputPort()[0].UnPlug();
   sources[index]->ConnectConsumer( selectedViewer->viewerWidget->InputPort()[0] );
 }
