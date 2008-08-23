@@ -103,7 +103,7 @@ StManagerStudyListComp::StManagerStudyListComp ( QDialog *studyManagerDialog, QW
   DICOMDIRTable = createStudyTable();
   DICOMDIRsplitter->addWidget( DICOMDIRTable );
 
-  QWidget *directoryPane = new QWidget;
+  directoryPane = new QWidget;
   QVBoxLayout *directoryLayout = new QVBoxLayout( directoryPane );
   directoryLayout->setContentsMargins( 0, 0, 0, 0 );
   directoryTree = createDirectoryTreeView();
@@ -476,15 +476,11 @@ void StManagerStudyListComp::recentChanged ()
 
 void StManagerStudyListComp::path ()
 {
-  if ( directoryTree->isHidden() )
-  {
-    directoryTree->show();
-    directoryComboBox->show();
+  if ( directoryPane->isHidden() ) {
+    directoryPane->show();
   }
-  else 
-  {
-    directoryTree->hide();
-    directoryComboBox->hide();
+  else {
+    directoryPane->hide();
   }
 }
 

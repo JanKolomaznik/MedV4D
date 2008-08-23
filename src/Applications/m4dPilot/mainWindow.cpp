@@ -35,9 +35,10 @@ mainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
 		return;
 	}*/
 	try {
-		_conn.PutImage( inputImage );
+    AbstractImageConnection *conn = new AbstractImageConnection();
+		conn->PutImage( inputImage );
 		mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
-		_conn.ConnectConsumer( mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
+		conn->ConnectConsumer( mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 	} 
 	catch( ... ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Some exception" ) );

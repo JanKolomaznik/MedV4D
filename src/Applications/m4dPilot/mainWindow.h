@@ -16,12 +16,8 @@ public:
 	mainWindow ();
 
 protected:
-	void
-	process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet );
 
-	M4D::Imaging::AbstractImageConnection _conn;
-private:
-
+	void process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet );
 };
 
 

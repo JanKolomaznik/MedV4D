@@ -259,6 +259,8 @@ class StManagerStudyListComp: public QWidget
     QTreeView    *directoryTree;
     /// ComboBox for direct setting of the directory path in DICOMDIR mode
     QComboBox    *directoryComboBox;
+    /// Widget containing the directory tree and the comboBox - for hiding and showing them.
+    QWidget      *directoryPane;
 
     /// The provider object - communication with DICOM layer.
     M4D::Dicom::DcmProvider *dcmProvider;
