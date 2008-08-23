@@ -30,6 +30,9 @@ namespace GUI {
 const char *StManagerStudyListComp::attributeNames[] = { "Patient ID", "Name", "Modality", "Description", 
                                                          "Date", "Time", "Study ID", "Sex",
                                                          "Birthdate", "Referring MD" };
+/// Exam/image attributes resize information - wheather to resize to contents in study tables
+const bool StManagerStudyListComp::attributeResizes[] = { false, true, true, true, true, true, false, true,
+                                                          true, true };
 /// Name of the array in QSettings - for saving recent remote exams
 #define RECENT_REMOTE_EXAMS_SETTINGS_NAME   "recentRemoteExams"
 /// Name of the array in QSettings - for saving recent DICOMDIR
@@ -562,19 +565,29 @@ void StManagerStudyListComp::addRowToStudyTable ( const DcmProvider::TableRow *r
   vector< QTableWidgetItem * > tableRowItems;
 
   tableRowItems.push_back( new QTableWidgetItem( QString( row->patientID.c_str() ) ) );
-  tableRowItems.push_back( new QTableWidgetItem( QString( row->name.c_str() ) ) );
+
+  size_t found = row->name.find( "_" );
+  tableRowItems.push_back( new QTableWidgetItem( QString( row->name.c_str() ).replace( found, 1, " " ) ) );
+
   tableRowItems.push_back( new QTableWidgetItem( QString( row->modality.c_str() ) ) );
+
   tableRowItems.push_back( new QTableWidgetItem( QString( row->description.c_str() ) ) );
+
   QDate date = QDate::fromString( QString( row->date.c_str() ), "yyyyMMdd" );
   tableRowItems.push_back( new QTableWidgetItem( date.toString( "dd. MM. yyyy" ) ) );
+
   string reducedTime = row->time.substr( 0, 6 );
   QTime time = QTime::fromString( QString( reducedTime.c_str() ), "hhmmss" );
   tableRowItems.push_back( new QTableWidgetItem( time.toString( "hh:mm:ss" ) ) );
+
   tableRowItems.push_back( new QTableWidgetItem( QString( row->studyID.c_str() ) ) );
+
   tableRowItems.push_back( new QTableWidgetItem( row->sex ? QString( tr( "male" ) ) : 
                                                             QString( tr( "female" ) ) ) );
+
   QDate birthDate = QDate::fromString( QString( row->birthDate.c_str() ), "yyyyMMdd" );
   tableRowItems.push_back( new QTableWidgetItem( birthDate.toString( "dd. MM. yyyy" ) ) );
+
   tableRowItems.push_back( new QTableWidgetItem( QString( row->referringMD.c_str() ) ) );
 
   for ( unsigned colNum = 0; colNum < tableRowItems.size(); colNum ++ ) {  
@@ -674,6 +687,13 @@ QTableWidget *StManagerStudyListComp::createStudyTable ()
   table->setColumnCount( labels.size() + 1 );
   table->setHorizontalHeaderLabels( labels );
   table->setColumnHidden( ATTRIBUTE_NUMBER, true );
+
+  for ( int i = 0; i < ATTRIBUTE_NUMBER; i++ ) 
+  {
+    if ( attributeResizes[i] ) {
+      table->horizontalHeader()->setResizeMode( i, QHeaderView::ResizeToContents );
+    }
+  }
 
   connect( table, SIGNAL(itemSelectionChanged()), this, SLOT(setEnabledView()) );
   connect( table, SIGNAL(itemDoubleClicked( QTableWidgetItem * )), this, SLOT(view()) );

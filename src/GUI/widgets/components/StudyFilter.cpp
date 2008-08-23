@@ -44,8 +44,7 @@ void StudyFilter::filterAll ( M4D::Dicom::DcmProvider::ResultSet *resultSet,
     bool nameMatched = false;
     if ( firstName != "" && lastName == "" ) 
     {
-      size_t found;
-      found = row.name.find( "_" );
+      size_t found = row.name.find( "_" );
       if ( found == string::npos ) {
         nameMatched = firstName == row.name;
       }
@@ -55,8 +54,7 @@ void StudyFilter::filterAll ( M4D::Dicom::DcmProvider::ResultSet *resultSet,
     }
     else if ( firstName == "" && lastName != "" ) 
     {
-      size_t found;
-      found = row.name.find( "_" );
+      size_t found = row.name.find( "_" );
       if ( found == string::npos ) {
         nameMatched = lastName == row.name;
       }

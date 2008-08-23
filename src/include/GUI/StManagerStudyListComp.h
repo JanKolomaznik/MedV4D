@@ -240,8 +240,10 @@ class StManagerStudyListComp: public QWidget
     /// Title of the Study Manager Dialog - depending on searching mode and find results.
     QString studyManagerDialogTitle;
 
-    /// Names of the exam/image attributes.
+    /// Names of the exam/image attributes  (e.g in study tables).
     static const char *attributeNames[];
+    /// Exam/image attributes resize information - wheather to resize to contents in study tables.
+    static const bool  attributeResizes[];
 
     /// Buttons for viewing, switching between modes, hiding config. parts.
     QPushButton  *viewButton;
