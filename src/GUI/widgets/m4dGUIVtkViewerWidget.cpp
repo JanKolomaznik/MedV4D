@@ -37,11 +37,16 @@ m4dGUIVtkViewerWidget::~m4dGUIVtkViewerWidget()
     _volumeMapper->Delete();
     _volume->Delete();
     _renImageData->Delete();
-    _actor2D->Delete();
-    _points->Delete();
-    _pointsData->Delete();
-    _pointsDataMapper->Delete();
-    _cells->Delete();
+    _actor2DSelected->Delete();
+    _pointsSelected->Delete();
+    _pointsDataSelected->Delete();
+    _pointsDataMapperSelected->Delete();
+    _cellsSelected->Delete();
+    _actor2DPlugged->Delete();
+    _pointsPlugged->Delete();
+    _pointsDataPlugged->Delete();
+    _pointsDataMapperPlugged->Delete();
+    _cellsPlugged->Delete();
 }
 
 void
@@ -52,15 +57,27 @@ m4dGUIVtkViewerWidget::setInputPort( Imaging::ConnectionInterface* conn )
         setInputPort();
 	return;
     }
+    if ( !_inPort->IsPlugged() )
+    {
+        _renImageData->AddViewProp( _actor2DPlugged );
+    }
     conn->ConnectConsumer( *_inPort );
     _imageData->TemporarySetImageData( _inPort->GetAbstractImage() );
+    GetRenderWindow()->Render();
+    _plugged = true;
 }
 
 void
 m4dGUIVtkViewerWidget::setInputPort()
 {
+    if ( _inPort->IsPlugged() )
+    {
+        _renImageData->RemoveViewProp( _actor2DPlugged );
+    }
     _inPort->UnPlug();
     _imageData->TemporaryUnsetImageData();
+    GetRenderWindow()->Render();
+    _plugged = false;
 }
 
 void
@@ -68,7 +85,7 @@ m4dGUIVtkViewerWidget::setUnSelected()
 {
     if ( _selected )
     {
-        _renImageData->RemoveViewProp( _actor2D );
+        _renImageData->RemoveViewProp( _actor2DSelected );
 	GetRenderWindow()->Render();
     }
     _selected = false;
@@ -79,7 +96,7 @@ m4dGUIVtkViewerWidget::setSelected()
 {
     if ( !_selected )
     {
-        _renImageData->AddViewProp( _actor2D );
+        _renImageData->AddViewProp( _actor2DSelected );
 	GetRenderWindow()->Render();
     }
     _selected = true;
@@ -87,22 +104,29 @@ m4dGUIVtkViewerWidget::setSelected()
 }
 
 void
+m4dGUIVtkViewerWidget::setBorderPoints( vtkPoints* points, vtkCellArray *cells, unsigned pos )
+{
+  points->SetNumberOfPoints( 5 );
+  points->SetPoint(0,               pos,                pos, 0 );
+  points->SetPoint(1,               pos, height() - 1 - pos, 0 );
+  points->SetPoint(2, width() - 1 - pos, height() - 1 - pos, 0 );
+  points->SetPoint(3, width() - 1 - pos,                pos, 0 );
+  points->SetPoint(4,               pos,                pos, 0 );
+  cells->Reset();
+  cells->InsertNextCell(5);
+  cells->InsertCellPoint(0);
+  cells->InsertCellPoint(1);
+  cells->InsertCellPoint(2);
+  cells->InsertCellPoint(3);
+  cells->InsertCellPoint(4);
+}
+
+void
 m4dGUIVtkViewerWidget::resizeEvent( QResizeEvent* event )
 {
   QVTKWidget::resizeEvent( event );
-  _points->SetNumberOfPoints( 5 );
-  _points->SetPoint(0,           3,            3, 0 );
-  _points->SetPoint(1,           3, height() - 4, 0 );
-  _points->SetPoint(2, width() - 4, height() - 4, 0 );
-  _points->SetPoint(3, width() - 4,            3, 0 );
-  _points->SetPoint(4,           3,            3, 0 );
-  _cells->Reset();
-  _cells->InsertNextCell(5);
-  _cells->InsertCellPoint(0);
-  _cells->InsertCellPoint(1);
-  _cells->InsertCellPoint(2);
-  _cells->InsertCellPoint(3);
-  _cells->InsertCellPoint(4);
+  setBorderPoints( _pointsSelected, _cellsSelected, 1 );
+  setBorderPoints(  _pointsPlugged,  _cellsPlugged, 2 );
   GetRenderWindow()->Render();
 }
 
@@ -158,16 +182,27 @@ m4dGUIVtkViewerWidget::setParameters()
   _volume->SetMapper( _volumeMapper ); 
   _volume->SetProperty( _volumeProperty );
 
-  _actor2D = vtkActor2D::New();
-  _points = vtkPoints::New();
-  _pointsData = vtkPolyData::New();
-  _pointsDataMapper = vtkPolyDataMapper2D::New();
-  _actor2D->GetProperty()->SetColor( 0., 1., 0. );
-  _pointsDataMapper->SetInput(_pointsData);
-  _pointsData->SetPoints(_points);
-  _actor2D->SetMapper(_pointsDataMapper);
-  _cells = vtkCellArray::New();
-  _pointsData->SetLines(_cells);
+  _actor2DSelected = vtkActor2D::New();
+  _pointsSelected = vtkPoints::New();
+  _pointsDataSelected = vtkPolyData::New();
+  _pointsDataMapperSelected = vtkPolyDataMapper2D::New();
+  _actor2DSelected->GetProperty()->SetColor( 0., 1., 0. );
+  _pointsDataMapperSelected->SetInput(_pointsDataSelected);
+  _pointsDataSelected->SetPoints(_pointsSelected);
+  _actor2DSelected->SetMapper(_pointsDataMapperSelected);
+  _cellsSelected = vtkCellArray::New();
+  _pointsDataSelected->SetLines(_cellsSelected);
+  
+  _actor2DPlugged = vtkActor2D::New();
+  _pointsPlugged = vtkPoints::New();
+  _pointsDataPlugged = vtkPolyData::New();
+  _pointsDataMapperPlugged = vtkPolyDataMapper2D::New();
+  _actor2DPlugged->GetProperty()->SetColor( 0., 0., 1. );
+  _pointsDataMapperPlugged->SetInput(_pointsDataPlugged);
+  _pointsDataPlugged->SetPoints(_pointsPlugged);
+  _actor2DPlugged->SetMapper(_pointsDataMapperPlugged);
+  _cellsPlugged = vtkCellArray::New();
+  _pointsDataPlugged->SetLines(_cellsPlugged);
 
   _renImageData = vtkRenderer::New(); 
   _renImageData->AddViewProp( _volume );
@@ -204,14 +239,7 @@ m4dGUIVtkViewerWidget::operator()()
 void
 m4dGUIVtkViewerWidget::ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imaging::PipelineMessage::MessageSendStyle sendStyle, Imaging::FlowDirection direction )
 {
-    switch( msg->msgID )
-    {
-	case Imaging::PMI_FILTER_UPDATED:
-	break;
-
-	default:
-	break;
-    }
+    emit signalMessageHandler( msg->msgID );
 }
 
 void
@@ -316,6 +344,29 @@ m4dGUIVtkViewerWidget::slotToggleSliceOrientation()
 void
 m4dGUIVtkViewerWidget::slotColorPicker( double x, double y, double z )
 {
+}
+
+void
+m4dGUIVtkViewerWidget::slotMessageHandler( Imaging::PipelineMsgID msgID )
+{
+    switch( msgID )
+    {
+	case Imaging::PMI_FILTER_UPDATED:
+        case Imaging::PMI_DATASET_PUT:
+	case Imaging::PMI_PORT_PLUGGED:
+        if ( !_plugged )
+        {
+            _imageData->TemporaryUnsetImageData();
+	    _plugged = true;
+            _renImageData->AddViewProp( _actor2DPlugged );
+        }
+        _imageData->TemporarySetImageData( _inPort->GetAbstractImage() );
+	break;
+
+	default:
+	break;
+    }
+    GetRenderWindow()->Render();
 }
 
 } /* namespace Viewer */

@@ -250,6 +250,14 @@ public slots:
      */
     virtual void slotColorPicker( double x, double y, double z );
 
+protected slots:
+    
+    /**
+     * Slot to handle incoming message from Image pipeline
+     *  @param msgID the ID of the message
+     */
+    virtual void slotMessageHandler( Imaging::PipelineMsgID msgID );
+
 protected:
     virtual void resizeEvent( QResizeEvent* event );
     virtual void mousePressEvent(QMouseEvent *event);
@@ -257,7 +265,10 @@ protected:
     virtual void setSelected();
 
 private:
+    void setBorderPoints( vtkPoints* points, vtkCellArray *cells, unsigned pos );
     void setParameters();
+
+    bool					_plugged;
 
     Imaging::InputPortAbstractImage*		_inPort;
     vtkIntegration::m4dImageDataSource*		_imageData;
@@ -267,11 +278,16 @@ private:
     vtkVolumeProperty*				_volumeProperty;
     vtkVolumeRayCastMapper*			_volumeMapper;
     vtkVolume*					_volume;
-    vtkActor2D*					_actor2D;
-    vtkPoints*					_points;
-    vtkPolyData*				_pointsData;
-    vtkPolyDataMapper2D*			_pointsDataMapper;
-    vtkCellArray*				_cells;
+    vtkActor2D*					_actor2DSelected;
+    vtkPoints*					_pointsSelected;
+    vtkPolyData*				_pointsDataSelected;
+    vtkPolyDataMapper2D*			_pointsDataMapperSelected;
+    vtkCellArray*				_cellsSelected;
+    vtkActor2D*					_actor2DPlugged;
+    vtkPoints*					_pointsPlugged;
+    vtkPolyData*				_pointsDataPlugged;
+    vtkPolyDataMapper2D*			_pointsDataMapperPlugged;
+    vtkCellArray*				_cellsPlugged;
     vtkRenderer*				_renImageData;
     AvailableSlots				_availableSlots;
 };

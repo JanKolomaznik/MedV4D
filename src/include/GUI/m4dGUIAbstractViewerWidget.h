@@ -4,7 +4,7 @@
 #include "Common.h"
 #include "Imaging/PipelineMessages.h"
 #include "Imaging/Ports.h"
-#include <QWidget>
+#include <QtGui>
 
 /* defines that indicate the capabilities of the given type of viewer widget */
 #define SETBUTTONHANDLER	0
@@ -76,7 +76,11 @@ public:
     /**
      * Constructor that does nothing except for initializing the _inputPorts
      */
-    m4dGUIAbstractViewerWidget() : _inputPorts( this ) {}
+    m4dGUIAbstractViewerWidget() : _inputPorts( this )
+    {
+        qRegisterMetaType<Imaging::PipelineMsgID>( "Imaging::PipelineMsgID" );
+	m4dGUIAbstractViewerWidget::connect( this, SIGNAL(signalMessageHandler( Imaging::PipelineMsgID )), this, SLOT(slotMessageHandler( Imaging::PipelineMsgID )), Qt::QueuedConnection );
+    }
 
     /**
      * Virtual destructor that does nothing
@@ -342,6 +346,14 @@ public slots:
      *  @param z the z coordinate
      */
     virtual void slotColorPicker( double x, double y, double z )=0;
+
+protected slots:
+    
+    /**
+     * Slot to handle incoming message from Image pipeline
+     *  @param msgID the ID of the message
+     */
+    virtual void slotMessageHandler( Imaging::PipelineMsgID msgID )=0;
 
 signals:
 

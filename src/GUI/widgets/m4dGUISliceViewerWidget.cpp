@@ -250,8 +250,6 @@ m4dGUISliceViewerWidget::resetParameters()
 {
     _selected = false;
     _sliceOrientation = xy;
-    qRegisterMetaType<Imaging::PipelineMsgID>( "Imaging::PipelineMsgID" );
-    m4dGUIAbstractViewerWidget::connect( (m4dGUIAbstractViewerWidget*)this, SIGNAL(signalMessageHandler( Imaging::PipelineMsgID )), (m4dGUIAbstractViewerWidget*)this, SLOT(slotMessageHandler( Imaging::PipelineMsgID )), Qt::QueuedConnection );
     _ready = false;
     if ( _inPort->IsPlugged() )
     {

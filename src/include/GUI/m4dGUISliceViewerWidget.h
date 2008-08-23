@@ -222,7 +222,12 @@ public slots:
     virtual void slotColorPicker( double x, double y, double z );
 
 protected slots:
-    void slotMessageHandler( Imaging::PipelineMsgID msgID );
+    
+    /**
+     * Slot to handle incoming message from Image pipeline
+     *  @param msgID the ID of the message
+     */
+    virtual void slotMessageHandler( Imaging::PipelineMsgID msgID );
 
 protected:
     bool checkOutOfBounds( double x, double y );
