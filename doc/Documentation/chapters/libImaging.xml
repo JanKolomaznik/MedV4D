@@ -8,7 +8,7 @@
 	</para>
 	
 	<para>
-	Design of interfaces and class hierarchies is aimed to extensibility and code reusability. Centra
+	Design of interfaces and class hierarchies is aimed to extensibility and code reusability.
 	</para>
 
 
@@ -28,9 +28,44 @@
 
 	<para>
 	All declarations are in namespace <code>M4D::Imaging</code>.
-	Whole design of class hierarchies is 
-	<xref linkend="pic.PipelineScheme"/>
 	</para>
+
+	<para>
+	Data structures in library are designed to make possible construction of pipeline computation system as shown 
+	in scheme <xref linkend="pic.PipelineScheme"/>. We now present all types of these data structures and their tasks.
+	</para>
+
+	<para>
+	<itemizedlist>
+		<listitem><formalpara><title>Datasets</title>
+			<para>Centre of whole design - hierarchy of classes prepared for storing data, which provide methods for
+			access synchronization over data.</para>
+		</formalpara></listitem>
+		
+		<listitem><formalpara><title>Filters</title>
+			<para>Are objects planned as processors working on datasets. Only implmented branch of filters are pipeline filters. 
+			They get access to input datasets through input ports, do the computation and write results to output datasets obtained 
+			from output ports.</para>
+		</formalpara></listitem>
+		
+		<listitem><formalpara><title>Ports</title>
+			<para>Communication channels - their job is exactly as the name sais. Filters can get access to input/output datasets and 
+			receive messages through ports.</para>
+		</formalpara></listitem>
+		
+		<listitem><formalpara><title>Connections</title>
+			<para>Connection objects are meant as bridge between objects with ports (filter-filter, filter-viewer).
+			They own datasets and grant access to them through ports. Input ports have only read access and output ports 
+			have write access. Connection object oversee synchronization of readers and writer.  Model is one-to-many, so there can be 
+			multiple readers, but only one writer.
+			</para>
+		</formalpara></listitem>
+	
+		<listitem><formalpara><title>Messages and message receivers</title>
+				<para></para>
+		</formalpara></listitem>
+	</itemizedlist>
+	</para>	
 
 	<para>
 	<figure float="1" id="pic.PipelineScheme">
@@ -46,10 +81,6 @@
 	</figure>
 	</para>
 
-	<para>
-	Pipeline should be built from objects of certain types, which we will now discuss.
-	</para>
-	
 	<section>
 	<title>Datasets</title>
 	

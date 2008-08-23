@@ -15,16 +15,33 @@ namespace M4D
 {
 namespace Imaging
 {
- 
+/**
+ * Macro used for easy creation of get method to access Properties structure with right type
+ **/
 #define GET_PROPERTIES_DEFINITION_MACRO \
 	Properties & GetProperties(){ return *(static_cast<Properties*>( this->_properties ) ); }
 
+/**
+ * Macro unwinding to get method for property.
+ * \param TYPE Type of property - return value of the method.
+ * \param NAME Name of property used in name of function - Get'NAME'().
+ * \param \PROPERTY_NAME Name of property in Properties structure.
+ **/
 #define GET_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME ) \
 	TYPE Get##NAME ()const{ return (static_cast<Properties*>( this->_properties ) )->PROPERTY_NAME ; }
 
+/**
+ * Macro unwinding to set method for property.
+ * \param TYPE Type of property - parameter type of the method.
+ * \param NAME Name of property used in name of function - Set'NAME'().
+ * \param \PROPERTY_NAME Name of property in Properties structure.
+ **/
 #define SET_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME ) \
 	void Set##NAME ( TYPE value ){ (static_cast<Properties*>( this->_properties ) )->PROPERTY_NAME = value; }
 
+/**
+ * Macro unwinding to previously defined macros.
+ **/
 #define GET_SET_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME ) \
 	GET_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME ) \
 	SET_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME ) 
@@ -119,7 +136,9 @@ private:
 };
 
 /**
- * Ancestor of all filters with basic execution logic.
+ * Ancestor of all filters. This class declare basic execution interface for all filters.
+ * Its purpose is just ensure common predecessor of pipeline filters and filters with 
+ * different computation logic.
  **/
 class AbstractFilter 
   : public AbstractProcessingUnit
@@ -193,7 +212,14 @@ private:
 };
 
 /**
- * Ancestor of all filters with basic execution logic.
+ * Ancestor of pipeline filters. Public interface is extended with few methods modifiing
+ * behaviour (ie. setting invocation style) and access methods to input ports and output ports.
+ * These ports are comunication channels - can send and receive messages, get access to datasets, etc.
+ *
+ * In nonpublic interface there are declared pure virtual and virtual methods with special purpose - they are
+ * called in predefined situations or in right order during computation. 
+ * If somebody wants to create new pipeline filter, he must at least inherit its implementation from this class and
+ * override these methods : ExecutionThreadMethod(), PrepareOutputDatasets(), BeforeComputation(), AfterComputation().
  **/
 class AbstractPipeFilter : public AbstractFilter, public MessageReceiverInterface
 {
@@ -312,6 +338,8 @@ protected:
 	 * stopped, when StopExecution() is invoked.
 	 * In inherited class reimplementation of this method is easy way to 
 	 * implement new filter, and let all dirty work to ancestor class.
+	 * \param utype Tells how filter computation should proceed - on whole dataset, 
+	 * or update only on changed parts.
 	 * \return True if execution wasn't stopped, false otherwise.
 	 **/
 	virtual bool

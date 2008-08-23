@@ -12,8 +12,12 @@ namespace Imaging
 {
 
 /**
- * We disallow general usage of template - only specializations.
+ * This template is planned to be used as predecessor for filters procesing on two dimensional data.
+ * By that are meant 2D images and 3D images processed in slices. 
+ * Output dataset proportions are set to the same values as input dataset, so only method to be overrided
+ * is Process2D();
  **/
+// We disallow general usage of template - only specializations.
 template< typename InputImageType, typename OutputImageType >
 class AbstractImage2DFilter;
 

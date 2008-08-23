@@ -13,10 +13,17 @@ namespace Imaging
 {
 
 
-
 /**
- * We disallow general usage of template - only specializations.
+ * This template is prepared to ease design of image filters, which work on zero neighbourhood of element 
+ * - use only value of the element.
+ * These filters work with output dataset with same extents as input. 
+ *
+ * Because calling virtual method consumes time - this template uses different way of implementation of
+ * actual computation - third parameter of template is functor which has implemented operator(), which takes 
+ * two parameters - constant reference to input value, and reference to output value. This method is best to be inline and 
+ * effective - its called on every element of input dataset.
  **/
+// We disallow general usage of template - only specializations.
 template< typename InputImageType, typename OutputImageType, typename ElementFilter >
 class AbstractImageElementFilter;
 

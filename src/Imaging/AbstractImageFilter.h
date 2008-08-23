@@ -19,6 +19,9 @@ namespace M4D
 namespace Imaging
 {
 
+/**
+ * Template for abstract image filter with one input and one output.
+ **/
 template< typename InputImageType, typename OutputImageType >
 class AbstractImageFilter: public AbstractPipeFilter
 {
