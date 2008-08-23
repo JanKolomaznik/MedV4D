@@ -75,7 +75,7 @@ public slots:
      * Slot to set the viewer to show several slices at once
      *  @param slicesPerRow how many slices will be shown in one row
      */
-    virtual void slotSetMoreSliceMode( unsigned slicesPerRow );
+    virtual void slotSetMoreSliceMode( unsigned slicesPerRow, unsigned slicesPerColumn );
 
     /**
      * Slot to toggle vertical flip
@@ -236,7 +236,7 @@ protected:
     void setButtonHandler( ButtonHandler hnd, MouseButton btn );
     void ImagePositionSelectionCaller( int x, int y, SelectMethods f );
     void setOneSliceMode();
-    void setMoreSliceMode( unsigned slicesPerRow );
+    void setMoreSliceMode( unsigned slicesPerRow, unsigned slicesPerColumn );
     void switchSlice( int dummy, int amount );
     void toggleFlipHorizontal();
     void toggleFlipVertical();
@@ -301,6 +301,7 @@ private:
     QPoint					_offset;
     int						_sliceNum;
     unsigned					_slicesPerRow;
+    unsigned					_slicesPerColumn;
     double					_zoomRate;
     GLint					_brightnessRate;
     GLfloat					_contrastRate;

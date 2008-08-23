@@ -290,6 +290,7 @@ m4dGUISliceViewerWidget::resetParameters()
     _printData = true;
     _oneSliceMode = true;
     _slicesPerRow = 1;
+    _slicesPerColumn = 1;
     _flipH = _flipV = 1;
     _slicePicked = 0;
     _colorPicker = false;
@@ -433,6 +434,7 @@ void
 m4dGUISliceViewerWidget::setOneSliceMode()
 {
     _slicesPerRow = 1;
+    _slicesPerColumn = 1;
     _oneSliceMode = true;
     if ( _availableSlots.back() != ZOOM ) _availableSlots.push_back( ZOOM );
     updateGL();
@@ -440,13 +442,14 @@ m4dGUISliceViewerWidget::setOneSliceMode()
 }
 
 void
-m4dGUISliceViewerWidget::setMoreSliceMode( unsigned slicesPerRow )
+m4dGUISliceViewerWidget::setMoreSliceMode( unsigned slicesPerRow, unsigned slicesPerColumn )
 {
     _slicesPerRow = slicesPerRow;
+    _slicesPerColumn = slicesPerColumn;
     _oneSliceMode = false;
     if ( _availableSlots.back() == ZOOM ) _availableSlots.pop_back();
     updateGL();
-    emit signalSetMoreSliceMode( _index, slicesPerRow );
+    emit signalSetMoreSliceMode( _index, slicesPerRow, slicesPerColumn );
 }
 
 void
@@ -545,9 +548,23 @@ m4dGUISliceViewerWidget::paintGL()
 	    offset.setY( (int)floor( (double)_offset.y() - ( _zoomRate - (double)height()/h ) * 0.5 * h ) );
 	    drawSlice( _sliceNum, _zoomRate, offset );
 	}
-        else for ( i = 0; (int)( i / _slicesPerRow ) * (int)( ( width() - 1 ) / _slicesPerRow ) * ( h / w ) < ( height() - 1 ); ++i )
-	         drawSlice( _sliceNum + i, (double)( width() - 1 )/( (double)w * (double)_slicesPerRow ),
-        								      QPoint( (i % _slicesPerRow) * ( ( width() - 1 ) / _slicesPerRow ) , (int)( ( i / _slicesPerRow ) * ( ( width() - 1 ) / _slicesPerRow ) * ( h / w ) ) ) );
+        else
+	{
+            double xgap = 0, ygap = 0;
+	    double zoomRate = 1.;
+	    if ( ( (double)width() / (double)_slicesPerRow ) / w < ( (double)height() / (double)_slicesPerColumn ) / h )
+	    {
+	        ygap = ( ( (double)height() / (double)_slicesPerColumn ) - h * ( (double)width() / (double)_slicesPerRow ) / w ) / 2.;
+	        zoomRate = ( (double)width() / (double)_slicesPerRow ) / w;
+	    }
+	    else
+	    {
+	        xgap = ( ( (double)width() / (double)_slicesPerRow ) - w * ( (double)height() / (double)_slicesPerColumn ) / h ) / 2.;
+	        zoomRate = ( (double)height() / (double)_slicesPerColumn ) / h;
+	    }
+	    for ( i = 0; i < _slicesPerRow * _slicesPerColumn; ++i )
+	         drawSlice( _sliceNum + i, zoomRate, QPoint( (int)( ( i % _slicesPerRow) * ( width() / _slicesPerRow ) + xgap ) , (int)( ( ( i / _slicesPerRow ) * ( height() / _slicesPerColumn ) + ygap ) ) ) );
+	}
         if ( _selectionMode[ left ] || _selectionMode[ right ] ) drawSelectionModeBorder();
     }
     if ( _selected ) drawSelectedBorder();
@@ -876,9 +893,21 @@ m4dGUISliceViewerWidget::ImagePositionSelectionCaller( int x, int y, SelectMetho
     }
     else
     {
-        coords[ _sliceOrientation             ] = ( ( x % ( ( width() - 1 ) / _slicesPerRow ) ) * _slicesPerRow * w / ( width() - 1 ) );
-	coords[ ( _sliceOrientation + 1 ) % 3 ] = ( ( ( this->height() - y ) % (int)( ( h / w ) * ( width() - 1 ) / _slicesPerRow ) ) * _slicesPerRow * w / ( width() - 1 ) );
-	coords[ ( _sliceOrientation + 2 ) % 3 ] = ( ( _sliceNum + x / (int)( ( width() - 1 ) / _slicesPerRow ) + _slicesPerRow * ( ( this->height() - y ) / (int)( ( h / w ) * ( width() - 1 ) / _slicesPerRow ) ) ) * _extents[ ( _sliceOrientation + 2 ) % 3 ] );
+        double xgap = 0, ygap = 0;
+	double zoomRate = 1.;
+	if ( ( (double)width() / (double)_slicesPerRow ) / w < ( (double)height() / (double)_slicesPerColumn ) / h )
+	{
+	    ygap = ( ( (double)height() / (double)_slicesPerColumn ) - h * ( (double)width() / (double)_slicesPerRow ) / w ) / 2.;
+	    zoomRate = ( (double)width() / (double)_slicesPerRow ) / w;
+	}
+	else
+	{
+	    xgap = ( ( (double)width() / (double)_slicesPerRow ) - w * ( (double)height() / (double)_slicesPerColumn ) / h ) / 2.;
+	    zoomRate = ( (double)height() / (double)_slicesPerColumn ) / h;
+	}
+        coords[ _sliceOrientation             ] = (double)( x % (int)( 2 * xgap + zoomRate * w ) - xgap ) / zoomRate;
+	coords[ ( _sliceOrientation + 1 ) % 3 ] = (double)( ( height() - y ) % (int)( 2 * ygap + zoomRate * h ) - ygap ) / zoomRate;
+	coords[ ( _sliceOrientation + 2 ) % 3 ] = ( ( _sliceNum + x / (int)( (double)width() / _slicesPerRow ) + _slicesPerRow * (int)( ( height() - y ) / ( (double)height() / _slicesPerColumn ) ) ) * _extents[ ( _sliceOrientation + 2 ) % 3 ] );
     }
     (this->*f)( coords[0], coords[1], coords[2] );
 }
@@ -1330,9 +1359,9 @@ m4dGUISliceViewerWidget::slotSetOneSliceMode()
 }
 
 void
-m4dGUISliceViewerWidget::slotSetMoreSliceMode( unsigned slicesPerRow )
+m4dGUISliceViewerWidget::slotSetMoreSliceMode( unsigned slicesPerRow, unsigned slicesPerColumn )
 {
-    setMoreSliceMode( slicesPerRow );
+    setMoreSliceMode( slicesPerRow, slicesPerColumn );
 }
 
 void
