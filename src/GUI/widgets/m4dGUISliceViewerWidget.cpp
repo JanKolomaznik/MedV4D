@@ -526,12 +526,8 @@ void
 m4dGUISliceViewerWidget::paintGL()
 {
     glClear( GL_COLOR_BUFFER_BIT );
-    if ( !_ready )
-    {
-        setParameters();
-	if ( !_ready ) return;
-    }
-    if ( _inPort->IsPlugged() )
+    if ( !_ready ) setParameters();
+    if ( _inPort->IsPlugged() && _ready )
     {
         unsigned i;
 	double w, h;

@@ -47,6 +47,11 @@ m4dGUIVtkViewerWidget::~m4dGUIVtkViewerWidget()
 void
 m4dGUIVtkViewerWidget::setInputPort( Imaging::ConnectionInterface* conn )
 {
+    if ( !conn )
+    {
+        setInputPort();
+	return;
+    }
     conn->ConnectConsumer( *_inPort );
     _imageData->TemporarySetImageData( _inPort->GetAbstractImage() );
 }
