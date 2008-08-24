@@ -804,7 +804,7 @@ m4dGUISliceViewerWidget::drawData( double zoomRate, QPoint offset, int sliceNum 
 	sor = "zx";
 	break;
     }
-    if ( i - o_y > 2 * FONT_HEIGHT && snum.str().length * FONT_WIDTH < w_o )
+    if ( i - o_y > 2 * FONT_HEIGHT && (int)( snum.str().length() * FONT_WIDTH ) < w_o )
     {
         setTextPosition( o_x + w_o / 2 - FONT_WIDTH, o_y );
         setTextCoords( o_x + w_o / 2 - FONT_WIDTH, o_y );
