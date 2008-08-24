@@ -55,13 +55,28 @@ class StManagerStudyListComp: public QWidget
      * @param modalitiesVect reference to vector of strings containing set of wanted modalities
      * @param referringMD reference to string containing referring MD
      * @param description reference to string containing description of the study
-     * @throws ExceptionBase, exception -> TOWRITE
      */
     void find ( const std::string &firstName, const std::string &lastName, 
                 const std::string &patientID, 
                 const std::string &fromDate, const std::string &toDate,
                 const M4D::Dicom::DcmProvider::StringVector &modalitiesVect,
                 const std::string &referringMD, const std::string &description );
+
+    /** 
+     * Returns the buildSuccessful flag - indicating wheather the build was successful - 
+     * DcmProvider construction can cause exceptions (e.g. missing cfg).
+     *
+     * @return buildSuccessful flag
+     */
+    bool wasBuidSuccessful () const { return buildSuccessful; } 
+
+    /** 
+     * Returns the build message - in case of problems - it's filled with text
+     * of the build exception.
+     *
+     * @return buildMessage string
+     */
+    QString getBuildMessage () const { return buildMessage; }
 
     /** 
      * Sets pointer to DicomObjSet - result of the Study Manager appears there.
@@ -278,6 +293,11 @@ class StManagerStudyListComp: public QWidget
 
     /// Pointer to DicomObjSet - result of the Study Manager appears there (after clicking View).
     M4D::Dicom::DcmProvider::DicomObjSet *dicomObjectSet;	
+
+    /// Flag indicating wheather the build was successful - DcmProvider construct. can cause exceptions (e.g. missing cfg)
+    bool buildSuccessful;
+    /// Build message - text of the build exception 
+    QString buildMessage;
 };
 
 } // namespace GUI

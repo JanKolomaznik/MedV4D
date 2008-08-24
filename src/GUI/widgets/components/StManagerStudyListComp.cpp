@@ -42,7 +42,7 @@ const bool StManagerStudyListComp::attributeResizes[] = { false, true, true, tru
 
 StManagerStudyListComp::StManagerStudyListComp ( QDialog *studyManagerDialog, QWidget *parent )
   : QWidget( parent ),
-    studyManagerDialog( studyManagerDialog )
+    studyManagerDialog( studyManagerDialog ), buildSuccessful( true )
 {
   // =-=-=-=-=-=-=-=- Buttons -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
@@ -143,11 +143,18 @@ StManagerStudyListComp::StManagerStudyListComp ( QDialog *studyManagerDialog, QW
   // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
   // DICOM initializations:
-  dcmProvider = new DcmProvider();
+  try {
+    dcmProvider = new DcmProvider();
 
-  recentResultSet   = new DcmProvider::ResultSet();
-  remoteResultSet   = new DcmProvider::ResultSet();
-  DICOMDIRResultSet = new DcmProvider::ResultSet();
+    recentResultSet   = new DcmProvider::ResultSet();
+    remoteResultSet   = new DcmProvider::ResultSet();
+    DICOMDIRResultSet = new DcmProvider::ResultSet();
+  }
+  catch ( M4D::ErrorHandling::ExceptionBase &e )
+  {
+	  buildMessage = QString( e.what() );
+    buildSuccessful = false;
+  } 
   
   activeResultSet = recentResultSet;
 }

@@ -29,8 +29,8 @@ class m4dGUIStudyManagerWidget: public QWidget
     StManagerStudyListComp *getStudyListComponent () { return studyListComponent; }
 
   private:
+
     QGroupBox *createFilterGroupBox ();
-    QGroupBox *createHangingProtocolsGroupBox ();
     QGroupBox *createStudyListGroupBox ( QDialog *studyManagerDialog );
 
     StManagerFilterComp *filterComponent;

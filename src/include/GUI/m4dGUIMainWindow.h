@@ -58,6 +58,24 @@ class m4dGUIMainWindow: public QMainWindow
     m4dGUIMainWindow ( const char *appName, const char *orgName,
                        const QIcon &icon = QIcon( ":/icons/app.png" ) );
 
+    /**
+     * Returns flag indicating wheather the build was successful - construction of the 
+     * Study Manager Widget, especially its Study List Component (DcmProvider construction)
+     * can cause exceptions (e.g. for missing config file).
+     *
+     * @return build success flag
+     */
+    bool wasBuildSuccessful () const { return studyManagerWidget->getStudyListComponent()->wasBuidSuccessful(); }
+
+    /**
+     * Returns the build message - in case of problems - it's filled with text
+     * of the build exception. Construction of the Study Manager Widget, especially its Study List 
+     * Component (DcmProvider construction) can cause exceptions (e.g. for missing config file).
+     *
+     * @return build message string
+     */
+    QString getBuildMessage () const { return studyManagerWidget->getStudyListComponent()->getBuildMessage(); }
+
     void addSource ( M4D::Imaging::ConnectionInterface *conn, const char *pipelineDescription,
                      const char *connectionDescription );
     void addDockWindow ( const char *title, QWidget *widget );

@@ -18,7 +18,15 @@ int main ( int argc, char *argv[] )
   app.setQuitOnLastWindowClosed( true );
 
   mainWindow mainWindow;
-  mainWindow.show();
-
-  return app.exec();
+  if ( mainWindow.wasBuildSuccessful() ) 
+  {
+    mainWindow.show();
+    return app.exec();
+  }
+  else
+  {
+    QMessageBox::critical( &mainWindow, QObject::tr( "Exception" ), mainWindow.getBuildMessage() + QString( "\n\n" ) +
+                           QObject::tr( "The application will now terminate..." ) );
+    return 1;
+  } 
 }

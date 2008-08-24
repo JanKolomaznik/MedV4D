@@ -17,11 +17,9 @@ m4dGUIStudyManagerWidget::m4dGUIStudyManagerWidget ( QDialog *studyManagerDialog
   // studyListGroupBox must go before filterGroupBox (it needs the studyList)
   QGroupBox *studyListGroupBox = createStudyListGroupBox( studyManagerDialog );
   QGroupBox *filterGroupBox = createFilterGroupBox();
-  // QGroupBox *hangingProtocolsGroupBox = createHangingProtocolsGroupBox();
 
   QGridLayout *mainLayout = new QGridLayout;
   mainLayout->addWidget( filterGroupBox, 0, 0 );
-  // mainLayout->addWidget( hangingProtocolsGroupBox, 0, 1 );
   mainLayout->addWidget( studyListGroupBox, 1, 0 );
   setLayout( mainLayout );
 }
@@ -42,14 +40,6 @@ QGroupBox *m4dGUIStudyManagerWidget::createFilterGroupBox ()
   filterGroupBox->setLayout( filterGroupBoxLayout );
 
   return filterGroupBox;
-}
-
-
-QGroupBox *m4dGUIStudyManagerWidget::createHangingProtocolsGroupBox ()
-{
-  QGroupBox *hangingProtocolsGroupBox = new QGroupBox( tr( "Hanging protocols" ) );
-
-  return hangingProtocolsGroupBox;
 }
 
 

@@ -40,7 +40,7 @@ mainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
 		mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
 		conn->ConnectConsumer( mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 	} 
-	catch( ... ) {
+	catch ( ... ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Some exception" ) );
 	}
 }
