@@ -61,11 +61,6 @@ public:
      */
     typedef enum { left = 0, right = 1 } MouseButton;
 
-    /**
-     * Enumeration that tells according to which axis the 3D image's slices are viewed
-     */
-    typedef enum { xy = 0, yz = 1, zx = 2 } SliceOrientation;
-
     
     /**
      * A list to hold those slots that are implemented in this type of viewer

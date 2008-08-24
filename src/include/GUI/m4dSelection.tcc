@@ -185,10 +185,19 @@ m4dPoint< ElementType >::midpoint( m4dPoint< ElementType >& p1, m4dPoint< Elemen
 }
 
 template< typename ElementType >
-m4dShape< ElementType >::m4dShape( size_t dim )
+m4dShape< ElementType >::m4dShape( size_t dim, SliceOrientation so )
 {
+    _sliceOrientation = so;
     _dim      = dim;
     openShape();
+}
+
+template< typename ElementType >
+void
+m4dShape< ElementType >::setOrientation( SliceOrientation so )
+{
+    _sliceOrientation = so;
+    calculateCentroid();
 }
 
 template< typename ElementType >
@@ -309,21 +318,21 @@ m4dShape< ElementType >::calculateCentroid()
     _centroid = m4dPoint< ElementType >();
     calculateArea();
     if ( !_closed || _shapePoints.size() < 3 || !_area ) return;
-    ElementType x, y, z;
-    x = 0;
-    y = 0;
-    z = _shapePoints.front().getParticularValue( 2 );
+    ElementType coords[3];
+    coords[ _sliceOrientation             ] = 0;
+    coords[ ( _sliceOrientation + 1 ) % 3 ] = 0;
+    coords[ ( _sliceOrientation + 2 ) % 3 ] = _shapePoints.front().getParticularValue( ( _sliceOrientation + 2 ) % 3 );
     m4dPoint< ElementType > p2, p1 = _shapePoints.back();
     for ( typename std::list< m4dPoint< ElementType > >::iterator it = _shapePoints.begin(); it != _shapePoints.end(); ++it )
     {
         p2 = *it;
-	x += (ElementType)(( p1.getParticularValue( 0 ) + p2.getParticularValue( 0 ) ) * ( p1.getParticularValue( 0 ) * p2.getParticularValue( 1 ) - p2.getParticularValue( 0 ) * p1.getParticularValue( 1 ) ) / ( 6. * _area ));
-	y += (ElementType)(( p1.getParticularValue( 1 ) + p2.getParticularValue( 1 ) ) * ( p1.getParticularValue( 0 ) * p2.getParticularValue( 1 ) - p2.getParticularValue( 0 ) * p1.getParticularValue( 1 ) ) / ( 6. * _area ));
+	coords[ _sliceOrientation             ] += (ElementType)(( p1.getParticularValue( _sliceOrientation ) + p2.getParticularValue( _sliceOrientation ) ) * ( p1.getParticularValue( _sliceOrientation ) * p2.getParticularValue( ( _sliceOrientation + 1 ) % 3 ) - p2.getParticularValue( _sliceOrientation ) * p1.getParticularValue( ( _sliceOrientation + 1 ) % 3 ) ) / ( 6. * _area ));
+	coords[ ( _sliceOrientation + 1 ) % 3 ] += (ElementType)(( p1.getParticularValue( ( _sliceOrientation + 1 ) % 3 ) + p2.getParticularValue( ( _sliceOrientation + 1 ) % 3 ) ) * ( p1.getParticularValue( _sliceOrientation ) * p2.getParticularValue( ( _sliceOrientation + 1 ) % 3 ) - p2.getParticularValue( _sliceOrientation ) * p1.getParticularValue( ( _sliceOrientation + 1 ) % 3 ) ) / ( 6. * _area ));
 	p1 = p2;
     }
-    x = ( x<0 ? -x : x );
-    y = ( y<0 ? -y : y );
-    _centroid = m4dPoint< ElementType >( x, y, z );
+    coords[ _sliceOrientation             ] = ( coords[ _sliceOrientation            ]<0 ? -coords[ _sliceOrientation             ] : coords[ _sliceOrientation             ] );
+    coords[ ( _sliceOrientation + 1 ) % 3 ] = ( coords[ ( _sliceOrientation + 1 ) % 3]<0 ? -coords[ ( _sliceOrientation + 1 ) % 3 ] : coords[ ( _sliceOrientation + 1 ) % 3 ] );
+    _centroid = m4dPoint< ElementType >( coords[0], coords[1], coords[2] );
 }
 
 template< typename ElementType >
@@ -336,13 +345,13 @@ m4dShape< ElementType >::calculateArea()
     for ( typename std::list< m4dPoint< ElementType > >::iterator it = _shapePoints.begin(); it != _shapePoints.end(); ++it )
     {
         p2 = *it;
-	if ( p2.getParticularValue( 2 ) != p1.getParticularValue( 2 ) )
+	if ( p2.getParticularValue( ( _sliceOrientation + 2 ) % 3 ) != p1.getParticularValue( ( _sliceOrientation + 2 ) % 3 ) )
 	{
 	    _area = 0.;
 	    return;
 	}
-	_area += p1.getParticularValue( 0 ) * p2.getParticularValue( 1 );
-	_area -= p1.getParticularValue( 1 ) * p2.getParticularValue( 0 );
+	_area += p1.getParticularValue( _sliceOrientation ) * p2.getParticularValue( ( _sliceOrientation + 1 ) % 3 );
+	_area -= p1.getParticularValue( ( _sliceOrientation + 1 ) % 3 ) * p2.getParticularValue( _sliceOrientation );
 	p1 = p2;
     }
     _area /= 2.;

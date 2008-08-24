@@ -3,6 +3,7 @@
 #include <QtGui>
 #include "GUI/ogl/fonts.h"
 #include <sstream>
+#include <cmath>
 
 #define MINIMUM_SELECT_DISTANCE			5
 
@@ -22,10 +23,11 @@ template< typename ElementType >
 class VoxelArrayCopier
 {
 public:
-    static void copy( ElementType* dst, ElementType* src, uint32 width, uint32 height, uint32 depth, int32 xstride, int32 ystride, int32 zstride )
+    static void copy( ElementType* dst, ElementType* src, uint32 width, uint32 height, uint32 newWidth, uint32 newHeight, uint32 depth, int32 xstride, int32 ystride, int32 zstride )
     {
-        uint32 i;
-	for ( i = 0; i < height * width; i++ )  dst[ i ] = src[ ( i % width ) * xstride + ( i / width ) * ystride + depth * zstride ];
+        uint32 i, j;
+	for ( i = 0; i < height; i++ )
+	    for ( j = 0; j < width; j++ ) dst[ i * newWidth + j ] = src[ j * xstride + i * ystride + depth * zstride ];
     }
 private:
     VoxelArrayCopier();
@@ -38,22 +40,22 @@ class TexturePreparer
 {
 public:
     static GLenum oglType();
-    static bool prepare( Imaging::InputPortAbstractImage* inPort, uint32& width, uint32& height, GLint brightnessRate, GLfloat contrastRate, m4dGUIAbstractViewerWidget::SliceOrientation so, uint32 slice )
+    static bool prepare( Imaging::InputPortAbstractImage* inPort, uint32& width, uint32& height, GLint brightnessRate, GLfloat contrastRate, SliceOrientation so, uint32 slice )
     {
         uint32 depth;
         double maxvalue;
 	bool unsgn;
 	if ( typeid( ElementType ) == typeid( uint8 ) || typeid( ElementType ) == typeid( uint16 ) || typeid( ElementType ) == typeid( uint32 ) || typeid( ElementType ) == typeid( uint64 ) )
 	{
-	    maxvalue = pow( (double)256, (double)sizeof( ElementType ) ) - 1;
+	    maxvalue = std::pow( (double)256, (double)sizeof( ElementType ) ) - 1;
 	    unsgn = true;
 	}
 	else
 	{
-	    maxvalue = (int)( pow( (double)256, (double)sizeof( ElementType ) ) / 2 - 1 );
+	    maxvalue = (int)( std::pow( (double)256, (double)sizeof( ElementType ) ) / 2 - 1 );
 	    unsgn = false;
 	}
-	double multiplicator = pow( (double)BRIGHTNESS_MULTIPLICATOR, (double)sizeof( ElementType ) - 1 );
+	double multiplicator = std::pow( (double)BRIGHTNESS_MULTIPLICATOR, (double)sizeof( ElementType ) - 1 );
         int32 xstride, ystride, zstride;
         bool ready = true;
 	ElementType* pixel, *original;
@@ -73,19 +75,19 @@ public:
 		    {
 		        switch ( so )
 		        {
-			    case m4dGUIAbstractViewerWidget::xy:
+			    case xy:
 			    {
 		                original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetAbstractImage()).GetPointer( width, height, depth, xstride, ystride, zstride );
 			        break;
 			    }
 
-			    case m4dGUIAbstractViewerWidget::yz:
+			    case yz:
 			    {
 		                original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetAbstractImage()).GetPointer( depth, width, height, zstride, xstride, ystride );
 			        break;
 			    }
 
-			    case m4dGUIAbstractViewerWidget::zx:
+			    case zx:
 			    {
 		                original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetAbstractImage()).GetPointer( height, depth, width, ystride, zstride, xstride );
 			        break;
@@ -105,19 +107,36 @@ public:
 	catch (...) { ready = false; }
 	if ( !ready ) return ready;
 
-	pixel = new ElementType[ height * width ];
-	VoxelArrayCopier<ElementType>::copy( pixel, original, width, height, slice, xstride, ystride, zstride );
-	unsigned i;
+	float power_of_two_width_ratio=std::log((float)(width))/std::log(2.0);
+	float power_of_two_height_ratio=std::log((float)(height))/std::log(2.0);
+
+	uint32 newWidth=(uint32)std::pow( (double)2.0, (double)std::ceil(power_of_two_width_ratio) );
+	uint32 newHeight=(uint32)std::pow( (double)2.0, (double)std::ceil(power_of_two_height_ratio) );
+
+	pixel = new ElementType[ newHeight * newWidth ];
+	VoxelArrayCopier<ElementType>::copy( pixel, original, width, height, newWidth, newHeight, slice, xstride, ystride, zstride );
+	uint32 i, j;
 	double mean;
 	mean = 0.;
-	for ( i = 0; i < width * height; i++ ) mean += (double)pixel[i] / (double)(width*height);
+	for ( i = 0; i < height; i++ )
+	    for ( j = 0; j < width; j++ ) mean += (double)pixel[ i * newWidth + j ] / (double)(width*height);
 	mean += brightnessRate * multiplicator;
-	for ( i = 0; i < width * height; ++i )
-	{
-	    if ( DISPLAY_PIXEL_VALUE( pixel[i], mean, multiplicator, brightnessRate, contrastRate ) > maxvalue ) pixel[i] = (ElementType)maxvalue;
-	    else if ( DISPLAY_PIXEL_VALUE( pixel[i], mean, multiplicator, brightnessRate, contrastRate ) < ( unsgn ? 0 : -maxvalue ) ) pixel[i] = ( unsgn ? 0 : (ElementType)(-maxvalue) );
-	    else pixel[i] = (ElementType)( DISPLAY_PIXEL_VALUE( pixel[i], mean, multiplicator, brightnessRate, contrastRate ) );
-	}
+	for ( i = 0; i < newHeight; ++i )
+	    for ( j = 0; j < newWidth; j++ )
+	    {
+	        if ( i < height && j < width )
+		{
+	            if ( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, multiplicator, brightnessRate, contrastRate ) > maxvalue ) pixel[ i * newWidth + j ] = (ElementType)maxvalue;
+	            else if ( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, multiplicator, brightnessRate, contrastRate ) < ( unsgn ? 0 : -maxvalue ) ) pixel[ i * newWidth + j ] = ( unsgn ? 0 : (ElementType)(-maxvalue) );
+	            else pixel[ i * newWidth + j ] = (ElementType)( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, multiplicator, brightnessRate, contrastRate ) );
+		}
+		else
+		    pixel[ i * newWidth + j ] = ( unsgn ? 0 : (ElementType)(-maxvalue) );
+	    }
+	    
+	width = newWidth;
+	height = newHeight;
+
 	glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
 	              GL_LUMINANCE, oglType(), pixel );
 	delete[] pixel;
@@ -1114,7 +1133,7 @@ m4dGUISliceViewerWidget::newShape( double x, double y, double z )
     coords[2] = z;
     if ( checkOutOfBounds( coords[ _sliceOrientation ], coords[ ( _sliceOrientation + 1 ) % 3 ] ) ) return;
 
-    Selection::m4dShape<double> s( 3 );
+    Selection::m4dShape<double> s( 3, _sliceOrientation );
     _shapes.push_back( s );
     newPoint( x, y, z );
     resolveFlips( coords[ _sliceOrientation ], coords[ ( _sliceOrientation + 1 ) % 3 ] );
@@ -1398,6 +1417,8 @@ m4dGUISliceViewerWidget::slotToggleSliceOrientation()
     }
     if ( _sliceNum >= (int)_maximum[ ( _sliceOrientation + 2 ) % 3 ] ) _sliceNum = _maximum[ ( _sliceOrientation + 2 ) % 3 ] - 1;
     if ( _sliceNum < (int)_minimum[ ( _sliceOrientation + 2 ) % 3 ] ) _sliceNum = _minimum[ ( _sliceOrientation + 2 ) % 3 ];
+    calculateOptimalZoomRate();
+    for ( std::list< Selection::m4dShape<double> >::iterator it = _shapes.begin(); it != _shapes.end(); ++it ) it->setOrientation( _sliceOrientation );
     updateGL();
     emit signalToggleSliceOrientation( _index );
 }
