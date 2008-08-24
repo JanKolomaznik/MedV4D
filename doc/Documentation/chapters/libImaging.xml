@@ -62,8 +62,11 @@
 		</formalpara></listitem>
 	
 		<listitem><formalpara><title>Messages and message receivers</title>
-			<para>
-			
+			<para>Communications between objects in pipeline is assured by sending messages - successors of <classname>PipelineMessage</classname>.
+			Objects which can receive messages have to implement interface <classname>MessageReceiver</classname> (ports, filters, etc.), there are 
+			also other interfaces - but this one is most important. If you make object with this interface, you can add message hook to connection object 
+			by calling <methodname>AddMessageHook()</methodname>. Till this moment your object will obtain every message going through this particular 
+			connection object - handy for imlementation of notifiers, progress watchers, etc.
 			</para>
 		</formalpara></listitem>
 	</itemizedlist>
@@ -74,10 +77,10 @@
 	<title>Pipeline scheme</title>
 	<mediaobject>
 		<imageobject>
-			<imagedata fileref="figures/libImaging/PipelineScheme.eps" format="EPS" scale="25"/>
+			<imagedata fileref="figures/libImaging/PipelineScheme.eps" format="EPS" scale="21"/>
 		</imageobject>
 		<imageobject>
-		<imagedata fileref="figures/libImaging/PipelineScheme.png" format="PNG" scale="25"/>
+		<imagedata fileref="figures/libImaging/PipelineScheme.png" format="PNG" scale="21"/>
 		</imageobject>
 	</mediaobject>
 	</figure>
@@ -96,15 +99,6 @@
 		use these methods only in situations requiring synchronization. This less comfortable though, but more effective.
 		</para>
 
-		<formalpara><title><classname>AbstractDataSet</classname></title> 
-		<para>Is predecessor of all datastructures containing data. Only concept implemented by this class is read/write locking system. 
-		This locking system ensure synchronization only on dataset structure (its extents, allocated buffers, etc.), not on data contained 
-		inside. Read/write lock let multiple readers to obtain access and writers have to wait. If there is at least one writer waiting, no 
-		other reader is allowed to obtain lock. And when all readers finish their work, first writer get exclusive access. Synchronization 
-		on data should be implemented in successors, because it differ in each type of dataset. Changes in internal structure can be detected 
-		by comparing timestamps. When some change in internal structure of dataset happens timestamp is increased - so if you store value from 
-		previous access you can easily detect changes.
-		</para></formalpara>
 	</section>
 
 	<section>
@@ -124,6 +118,31 @@
 		This is a test.  This is only a test.  Had this been a real
 		example, it would have made more sense.  Or less.
 		</para></formalpara>
+
+		<formalpara><title><classname>AbstractImage2DFilter</classname></title><para>
+		This template is planned to be used as predecessor for filters procesing on two dimensional data.
+		By that are meant 2D images and 3D images processed in slices. 
+		Output dataset proportions are set to the same values as input dataset, so only method to be overrided
+		is <methodname>Process2D()</methodname>.
+		</para></formalpara>
+		
+		<formalpara><title><classname>AbstractImageElementFilter</classname></title><para>
+		This template is prepared to ease design of image filters, which work on zero neighbourhood of element 
+		- use only value of the element.
+		These filters work with output dataset with same extents as input. 
+		</para></formalpara><para>
+		Because calling virtual method consumes time - this template uses different way of implementation of
+		actual computation - third parameter of template is functor which has implemented operator(), which takes 
+		two parameters - constant reference to input value, and reference to output value. This method is best to be inline and 
+		effective - its called on every element of input dataset.
+		</para>
+
+		<formalpara><title><classname>AbstractImage2DFilter</classname></title><para>
+		This template is planned to be used as predecessor for filters procesing on two dimensional data.
+		By that are meant 2D images and 3D images processed in slices. 
+		Output dataset proportions are set to the same values as input dataset, so only method to be overrided
+		is <methodname>Process2D()</methodname>.
+		</para></formalpara>
 	</section>
 
 	<section>
@@ -139,6 +158,62 @@
 	</section>
 
 </section>
+<section>
+	<title>Most important classes</title>
+
+	<para>
+	</para>
+
+	<section>
+	<title>Dataset hierarchy</title>
+	
+
+		<formalpara><title><classname>AbstractDataSet</classname></title> 
+		<para>Is predecessor of all datastructures containing data. Only concept implemented by this class is read/write locking system. 
+		This locking system ensure synchronization only on dataset structure (its extents, allocated buffers, etc.), not on data contained 
+		inside. Read/write lock let multiple readers to obtain access and writers have to wait. If there is at least one writer waiting, no 
+		other reader is allowed to obtain lock. And when all readers finish their work, first writer get exclusive access. Synchronization 
+		on data should be implemented in successors, because it differ in each type of dataset. Changes in internal structure can be detected 
+		by comparing timestamps. When some change in internal structure of dataset has happened - timestamp is increased. So if you store value from 
+		previous access you can easily detect changes.
+		</para></formalpara>
+	</section>
+
+	<section>
+	<title>Filter hierarchy</title>
+		
+		<para>
+		<figure float="1" id="pic.FilterHierarchy">
+		<title>Filter hierarchy</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="figures/libImaging/FilterHierarchy.eps" format="EPS" scale="75"/>
+			</imageobject>
+			<imageobject>
+				<imagedata fileref="figures/libImaging/FilterHierarchy.png" format="PNG" scale="75"/>
+			</imageobject>
+		</mediaobject>
+		</figure>
+		</para>
+
+		<formalpara><title><classname>AbstractPipeFilter</classname></title><para>
+		This is a test.  This is only a test.  Had this been a real
+		example, it would have made more sense.  Or less.
+		</para></formalpara>
+
+		<formalpara><title><classname>AbstractImageFilter</classname></title><para>
+		This is a test.  This is only a test.  Had this been a real
+		example, it would have made more sense.  Or less.
+		</para></formalpara>
+
+		<formalpara><title><classname>AbstractImageSliceFilter</classname></title><para>
+		This is a test.  This is only a test.  Had this been a real
+		example, it would have made more sense.  Or less.
+		</para></formalpara>
+	</section>
+
+</section>
+
 
 <section>
 	<title>Main design concepts</title>

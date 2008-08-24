@@ -21,5 +21,6 @@
 	&libImaging;
 	&libDICOMClient;
 	&libCellBE;
+	&userManual;
 
 </book>
