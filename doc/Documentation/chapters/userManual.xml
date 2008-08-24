@@ -75,10 +75,10 @@
 
       <itemizedlist>
         <listitem>
-          <para>Windows 2000, Windows XP or Windows Vista ???</para>
+          <para>Windows 2000, Windows XP or Windows Vista</para>
         </listitem>
         <listitem>
-          <para>... unix ???</para>
+          <para>*nix</para>
         </listitem>
       </itemizedlist>
     </section>
@@ -105,11 +105,13 @@
       retrieved images.
     </para>
 
-    <mediaobject>
-      <imageobject>
-        <imagedata fileref="figures/userManual/shots/main-window.png" format="PNG"/>
-      </imageobject>
-    </mediaobject>
+    <para>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figures/userManual/shots/main-window.png" format="PNG"/>
+        </imageobject>
+      </mediaobject>
+    </para>
 
     <para>
       This window can contain more than one image at a time, each in a separate
@@ -131,7 +133,7 @@
 
     <para>
       To view the description of a tool, hold the cursor over its icon. Full
-      descriptions of the tools can be found in <xref linkend="Using tools"/>.
+      descriptions of the tools can be found in <xref linkend="UsingTools"/>.
     </para>
 
     <section>
@@ -172,9 +174,11 @@
                 <guimenuitem>Customize</guimenuitem>
               </menuchoice>.
             </para>
+
             <para>
               The Viewer Tool Property window appears (row ~ tool).
             </para>
+
             <para>
               <mediaobject>
                 <imageobject>
@@ -219,8 +223,8 @@
     </section>
   </section>
 
-  <section>
-    <title id="Using tools">Using tools</title>
+  <section id="UsingTools">
+    <title>Using tools</title>
 
     <section>
       <title>Main tools</title>
@@ -269,6 +273,17 @@
           <colspec colwidth="2*"/>
           <colspec colwidth="5*"/>
           <tbody>
+            <row>
+              <entry>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/userManual/tools/layout.png" format="PNG"/>
+                  </imageobject>
+                </mediaobject>
+              </entry>
+              <entry><emphasis role="bold">Screen Layout</emphasis></entry>
+              <entry>Redisplay series and images in various layouts</entry>
+            </row>
             <row>
               <entry>
                 <mediaobject>
@@ -324,17 +339,6 @@
               <entry><emphasis role="bold">Toggle Overlay</emphasis></entry>
               <entry>Hide or display the study information</entry>
             </row>
-            <!-- <row>
-              <entry>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/userManual/tools/layout.png" format="PNG"/>
-                  </imageobject>
-                </mediaobject>
-              </entry>
-              <entry><emphasis role="bold">Screen Layout</emphasis></entry>
-              <entry>Redisplay series and images in various layouts</entry>
-            </row> -->
           </tbody>
         </tgroup>
       </table>
@@ -471,6 +475,28 @@
 
     <section>
       <title>Volume tools</title>
+
+      <table frame="none">
+        <title>Volume tools</title>
+        <tgroup cols="3">
+          <colspec colwidth="*"/>
+          <colspec colwidth="2*"/>
+          <colspec colwidth="5*"/>
+          <tbody>
+            <row>
+              <entry>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/userManual/tools/rotate-volume.png" format="PNG"/>
+                  </imageobject>
+                </mediaobject>
+              </entry>
+              <entry><emphasis role="bold">Rotate Volume</emphasis></entry>
+              <entry>Rotates the volume about the three axes</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
     </section>
   </section>
 </section>
@@ -494,25 +520,264 @@
     <itemizedlist>
       <title>To access the Study Manager window:</title>
       <listitem>
-        <menuchoice>
-          <shortcut>
-            <keycombo><keycap>Ctrl</keycap><keycap>S</keycap></keycombo>
-          </shortcut>
-          <guimenu>File</guimenu>
-          <guimenuitem>Search</guimenuitem>
-        </menuchoice>
+        <para>
+          <menuchoice>
+            <shortcut>
+              <keycombo><keycap>Ctrl</keycap><keycap>S</keycap></keycombo>
+            </shortcut>
+            <guimenu>File</guimenu>
+            <guimenuitem>Search</guimenuitem>
+          </menuchoice>
+        </para>
       </listitem>
       <listitem>
         <para>
-          Click ...<!--
+          Click
           <inlinemediaobject>
             <imageobject>
-               <imagedata fileref="figures/userManual/tools/search.png"/>
+               <imagedata fileref="figures/userManual/icons/search.png"/>
             </imageobject>
-          </inlinemediaobject>-->
+          </inlinemediaobject>
+        </para>
+
+        <para>
+          The Study Manager window appears.
+        </para>
+
+        <para>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figures/userManual/shots/study.png" format="PNG"/>
+            </imageobject>
+          </mediaobject>
         </para>
       </listitem>
     </itemizedlist>
+
+    <para>
+      The <emphasis role="bold">Recent Exams</emphasis> tab lists the studies that
+      were recently viewed - it has two modes: Recent Remote Exams (recently
+      retrieved and viewed from available DICOM server) and Recent DICOMDIR
+      (recently viewed studies that are stored in DICOMDIR format) (see
+      <xref linkend="SearchingForRecentExams"/>).
+    </para>
+
+    <para>
+      The <emphasis role="bold">Remote Exams</emphasis> tab lists the studies
+      stored on available DICOM server. If you want to view one of these exams,
+      you can select it and it will be retrieved for you (see
+      <xref linkend="SearchingForRemoteExams"/>).
+    </para>
+
+    <para>
+      The <emphasis role="bold">DICOMDIR</emphasis> tab lists the studies that
+      are stored in DICOMDIR format on either a CD, your workstation's hard
+      drive, or a mapped network drive (see
+      <xref linkend="SearchingForDICOMDIRExams"/>).
+    </para>
+
+    <para>
+      All the tabs can be customized to suit your preferences by re-sorting the
+      columns in the exam lists. Click a header to sort the list according to
+      that heading. For example, click Patient Name to sort the list alphabetically.
+      Clicking the header field again will sort the list in the reverse order.
+    </para>
+
+    <section id="SearchingForRecentExams">
+      <title>Searching for Recent Exams</title>
+
+      <para>
+        Recent Exams are studies that were recently viewed - it has two modes:
+        Recent Remote Exams (recently retrieved and viewed from available DICOM
+        server) and Recent DICOMDIR (recently viewed studies that are stored in
+        DICOMDIR format).
+      </para>
+
+      <orderedlist>
+        <title>To search for a Recent Exam:</title>
+        <listitem>
+          <para>
+            Click the <emphasis role="bold">Recent Exams</emphasis> tab.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Click the
+            <inlinemediaobject>
+              <imageobject>
+                 <imagedata fileref="figures/userManual/icons/remote.png"/>
+              </imageobject>
+            </inlinemediaobject> or the
+            <inlinemediaobject>
+              <imageobject>
+                 <imagedata fileref="figures/userManual/icons/dicomdir.png"/>
+              </imageobject>
+            </inlinemediaobject> icon to select the Recent Exams mode -
+            Recent Remote Exams (recently retrieved and viewed from available DICOM
+            server) and Recent DICOMDIR (recently viewed studies that are stored in
+            DICOMDIR format).
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Optionally, filter the search by entering the search criteria.
+            Enter either a single criterion or a combination of: Patient ID,
+            Last Name, First Name, Accession Number, Study Description, or
+            Referring M.D.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Optionally, enter a range of dates in which to search. Select the
+            From: and To: check boxes to activate them, and then enter the date
+            parameters either by hand or by using the calendar window by
+            clicking on the date field drop-down list.
+          </para>
+
+          <para>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/userManual/shots/date.png" format="PNG"/>
+              </imageobject>
+            </mediaobject>
+          </para>
+
+          <para>
+            If you know that the study was performed today, click
+            <guibutton>Today</guibutton>. Today's date appears in the date boxes.
+            If you know that the study was performed yesterday, then click
+            <guibutton>Yesterday</guibutton>, and that date will appear
+            in the date boxes.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Optionally, filter the search by Modality type. Select the All check
+            box to include all modality types in the search, or clear it to filter
+            by specific modality types, which can be selected by clicking each
+            modality type's corresponding check box.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Click <guibutton>Search</guibutton>. A study list appears in the
+            bottom half of the Study Manager window.
+          </para>
+        </listitem>
+      </orderedlist>
+
+      <para>
+        To view studies without filtering, clear all of the filters by clicking
+        <guibutton>Clear Filter</guibutton>, and click <guibutton>Search</guibutton>.
+      </para>
+
+      <itemizedlist>
+        <title>To view a Recent Exam (choose one of the following options):</title>
+        <listitem>
+          <para>
+            Select a study from the list and double-click it to view it automatically
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Select a study from the list and click <guibutton>View</guibutton>
+          </para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section id="SearchingForRemoteExams">
+      <title>Searching for Remote Exams</title>
+
+      <para>
+        Recent Exams are studies that are stored on available DICOM server.
+        If you want to view one of these exams, you can select it and it will be
+        retrieved for you.
+      </para>
+
+      <orderedlist>
+        <title>To search for a Remote Exam:</title>
+        <listitem>
+          <para>
+            Click the <emphasis role="bold">Remote Exams</emphasis> tab.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Follow steps 3 through 6 of <xref linkend="SearchingForRemoteExams"/>
+            to complete the search.
+          </para>
+        </listitem>
+      </orderedlist>
+
+      <itemizedlist>
+        <title>To retrieve and view a remote exam (choose one of the following options):</title>
+        <listitem>
+          <para>
+            Select a study from the list and double-click it to retrieve and view
+            it automatically
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Select a study and click <guibutton>View</guibutton>
+          </para>
+        </listitem>
+      </itemizedlist>
+
+      <para>
+        These studies will be available in the Recent Remote Exams mode.
+      </para>
+    </section>
+
+    <section id="SearchingForDICOMDIRExams">
+      <title>Searching for DICOMDIR Exams</title>
+
+      <para>
+        DICOMDIR studies are stored in DICOMDIR format on any folder accessible
+        via file systems such as CDs, removable file systems such as memory sticks,
+        your workstation's hard drive, or a mapped network drive.
+      </para>
+
+      <orderedlist>
+        <title>To search for a DICOMDIR Exam:</title>
+        <listitem>
+          <para>
+            Click the <emphasis role="bold">DICOMDIR</emphasis> tab.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Click <guibutton>Path</guibutton>. The directory tree and  appears to the lower right of the window.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Follow steps 3 through 6 of <xref linkend="SearchingForRemoteExams"/>
+            to complete the search.
+          </para>
+        </listitem>
+      </orderedlist>
+
+      <itemizedlist>
+        <title>To retrieve and view a remote exam (choose one of the following options):</title>
+        <listitem>
+          <para>
+            Select a study from the list and double-click it to retrieve and view
+            it automatically
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Select a study and click <guibutton>View</guibutton>
+          </para>
+        </listitem>
+      </itemizedlist>
+
+      <para>
+        These studies will be available in the Recent DICOMDIR mode.
+      </para>
+    </section>
   </section>
 
   <section>
@@ -562,3 +827,12 @@
 
 
 </chapter>
+
+<!--
+- color borders
+- layout change - selected moving....
+- viewer change - adaptive toolbars...
+- on the fly viewer change
+- stud. manager - 2 recent modes
+- stud. manager - 3 modes (changing by tabs, always the same behavior)
+-->
