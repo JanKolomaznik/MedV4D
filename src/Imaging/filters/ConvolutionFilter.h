@@ -22,7 +22,7 @@ class ConvolutionFilter2D< Image< InputElementType, 2 >
 
 template< typename InputElementType, typename MatrixElement >
 class ConvolutionFilter2D< Image< InputElementType, 3 >, MatrixElement > 
-	: public IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
+	: public AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
 {
 public:	
 	struct Properties : public PredecessorType::Properties
@@ -39,7 +39,7 @@ public:
 	ConvolutionFilter2D( Properties * prop );
 	ConvolutionFilter2D();
 protected:
-	typedef typename  Imaging::IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
+	typedef typename  Imaging::AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
 
 	bool
 	ProcessSlice(
@@ -72,7 +72,7 @@ class ConvolutionFilter3D< Image< InputElementType, 2 >, MatrixElement >
 
 template< typename InputElementType, typename MatrixElement >
 class ConvolutionFilter3D< Image< InputElementType, 3 >, MatrixElement > 
-	: public IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
+	: public AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
 {
 public:
 	struct Properties : public PredecessorType::Properties
@@ -94,7 +94,7 @@ public:
 
 	ConvolutionFilter3D();
 protected:
-	typedef typename  Imaging::IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
+	typedef typename  Imaging::AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
 
 	bool
 	ProcessSlice(

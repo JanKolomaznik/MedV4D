@@ -20,10 +20,10 @@ class CopyImageFilter;
 
 template< typename InputElementType, typename OutputElementType >
 class CopyImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
-: public IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
+: public AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 {
 public:
-	typedef typename  Imaging::IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > > PredecessorType;
+	typedef typename  Imaging::AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > > PredecessorType;
 
 	CopyImageFilter();
 	~CopyImageFilter(){}
@@ -83,10 +83,10 @@ class SimpleThresholdingImageFilter;
 
 template< typename InputElementType >
 class SimpleThresholdingImageFilter< Image< InputElementType, 3 > >
-: public IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
+: public AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
 {
 public:
-	typedef typename Imaging::IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
+	typedef typename Imaging::AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
 
 	SimpleThresholdingImageFilter();
 	~SimpleThresholdingImageFilter(){}
@@ -119,10 +119,10 @@ class SimpleConvolutionImageFilter;
 
 template< typename InputElementType >
 class SimpleConvolutionImageFilter< Image< InputElementType, 3 > >
-: public IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
+: public AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
 {
 public:
-	typedef typename Imaging::IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
+	typedef typename Imaging::AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
 
 	SimpleConvolutionImageFilter();
 	~SimpleConvolutionImageFilter(){ delete _matrix; }

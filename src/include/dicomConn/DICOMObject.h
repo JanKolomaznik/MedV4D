@@ -1,10 +1,7 @@
 
 #ifndef M4D_DICOM_SERVICE_PROVIDER
 #error You cannot include this file directly
-#endif
-
-#ifndef M4D_DICOM_OBJECT
-#define M4D_DICOM_OBJECT
+#else
 
 #include <string>
 
@@ -12,11 +9,22 @@
   *  
   */
 
+namespace M4D
+{
+namespace Dicom 
+{
+
 /**
  *  This represents a DICOM file. DICOM file is structured file. Elements
- *  of that structure are pair of <tag id, tag value> ( for tags definitions see DICOM doc ([ver]_05.pdf chapter 6.2) ). Each tag has defined also it value representation (VR : see DICOM doc ([ver]_05.pdf chapter 6.2)) that is actualy data type of an tag. Whole set of an pairs (data elements) is called dataSet. In each data set is normally (but can be more) data element that stores actual data of the file. That element's data has a special format and must be specialy encoded (see DICOM doc ([ver]_05.pdf section 8). That special format is called DICOM stream.
- DicomObj can be retrieved from DICOM server,
- *  or loaded from local filesystem (disc, networkplace). Both ways through DcmProvider methodes. When it is being 
+ *  of that structure are pair of <tag id, tag value> ( for tags definitions see 
+ *  DICOM doc ([ver]_05.pdf chapter 6.2) ). Each tag has defined also it value 
+ *  representation (VR : see DICOM doc ([ver]_05.pdf chapter 6.2)) that is actualy 
+ *  data type of an tag. Whole set of an pairs (data elements) is called dataSet. 
+ *  In each data set is normally (but can be more) data element that stores actual data 
+ *  of the file. That element's data has a special format and must be specialy encoded 
+ *  (see DICOM doc ([ver]_05.pdf section 8). That special format is called DICOM stream.
+ *  DicomObj can be retrieved from DICOM server,
+ *  or loaded from local filesystem (disc, networkplace). Both ways through DcmProvider methods. When it is being 
  *  retrieved, Init function is called. This cause some basic information
  *  to be loaded from dataSet and OnLoaded callback is called.
  */
@@ -124,5 +132,8 @@ private:
 	ImageLoadedCallback m_loadedCallBack;
 };
 	
+}
+}
+
 #endif
 

@@ -66,10 +66,10 @@ private:
 
 template< typename InputElementType, typename OutputElementType, typename ElementFilter >
 class AbstractImageElementFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 >, ElementFilter >
-	 : public IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
+	 : public AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 {
 public:
-	typedef typename Imaging::IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >	PredecessorType;
+	typedef typename Imaging::AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >	PredecessorType;
 	
 	struct Properties : public PredecessorType::Properties
 	{

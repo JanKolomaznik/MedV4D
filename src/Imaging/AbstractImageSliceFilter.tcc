@@ -155,8 +155,8 @@ AbstractImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 //******************************************************************************
 
 template< typename InputElementType, typename OutputElementType >
-IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
-::IdenticalExtentsImageSliceFilter( typename IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >::Properties *prop ) 
+AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
+::AbstractImageSliceFilterIExtents( typename AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >::Properties *prop ) 
 	: PredecessorType( prop )
 {
 
@@ -164,7 +164,7 @@ IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputEle
 
 template< typename InputElementType, typename OutputElementType >
 void
-IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
+AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 ::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
 {
 	//TODO
@@ -173,7 +173,7 @@ IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputEle
 
 template< typename InputElementType, typename OutputElementType >
 WriterBBoxInterface &
-IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
+AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 ::GetComputationGroupWriterBBox(  SliceComputationRecord & record )
 {
 	return this->out->SetDirtyBBox( this->in->GetDimensionExtents( 0 ).minimum,
@@ -187,7 +187,7 @@ IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputEle
 
 template< typename InputElementType, typename OutputElementType >
 void
-IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
+AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 ::PrepareOutputDatasets()
 {
 	PredecessorType::PrepareOutputDatasets();

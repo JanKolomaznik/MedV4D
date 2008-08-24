@@ -140,10 +140,10 @@ private:
  * We disallow general usage of template - only specializations.
  **/
 template< typename InputImageType, typename OutputImageType >
-class IdenticalExtentsImageSliceFilter;
+class AbstractImageSliceFilterIExtents;
 
 template< typename InputElementType, typename OutputElementType >
-class IdenticalExtentsImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
+class AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 	 : public AbstractImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 {
 public:
@@ -151,8 +151,8 @@ public:
 	
 	typedef typename PredecessorType::Properties	Properties;
 
-	IdenticalExtentsImageSliceFilter( Properties *prop );
-	~IdenticalExtentsImageSliceFilter() {}
+	AbstractImageSliceFilterIExtents( Properties *prop );
+	~AbstractImageSliceFilterIExtents() {}
 
 protected:
 
@@ -169,7 +169,7 @@ private:
 	/**
 	 * Prohibition of copying.
 	 **/
-	PROHIBIT_COPYING_OF_OBJECT_MACRO( IdenticalExtentsImageSliceFilter );
+	PROHIBIT_COPYING_OF_OBJECT_MACRO( AbstractImageSliceFilterIExtents );
 };
 
 

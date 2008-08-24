@@ -3,14 +3,6 @@
 
 #include "cellBE/RemoteFilter.h"
 
-/**
- *  This is the firs exemplar of remote filter. It contains specification
- *  of an remote pipeline, that contains few filters that should perform
- *  bone segmentaion.
- *  This is example how remote filter currntly works and another remote
- *  filter should be written in this manner.
- *  Basic rule is to inherit from RemoteFilter templated class.
- */
 
 // include needed filters ...
 #include "Imaging/filters/ThresholdingFilter.h"
@@ -20,6 +12,14 @@ namespace M4D
 namespace Imaging
 {
 
+/**
+ *  This is the firs exemplar of remote filter. It contains specification
+ *  of an remote pipeline, that contains few filters that should perform
+ *  bone segmentaion.
+ *  This is example how remote filter currntly works and another remote
+ *  filter should be written in this manner.
+ *  Basic rule is to inherit from RemoteFilter templated class.
+ */
 template< typename ImageType >
 class BoneSegmentationRemote
   : public RemoteFilter<ImageType, ImageType>
