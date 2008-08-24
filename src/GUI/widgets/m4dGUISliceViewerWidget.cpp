@@ -787,30 +787,30 @@ m4dGUISliceViewerWidget::drawData( double zoomRate, QPoint offset, int sliceNum 
 	o_y = offset.y();
 	w_o = (int)( w * zoomRate );
     }
-    if ( i - o_y > 2 * FONT_HEIGHT )
+    std::ostringstream snum;
+    std::string sor;
+    snum << sliceNum + 1 << " / " << ( _maximum[ ( _sliceOrientation + 2 ) % 3 ] - _minimum[ ( _sliceOrientation + 2 ) % 3 ] );
+    switch ( _sliceOrientation )
     {
-        std::ostringstream snum;
-	std::string sor;
-        switch ( _sliceOrientation )
-        {
-            case xy:
-	    sor = "xy";
-	    break;
+        case xy:
+	sor = "xy";
+	break;
 
-	    case yz:
-	    sor = "yz";
-	    break;
+	case yz:
+	sor = "yz";
+	break;
 
-	    case zx:
-	    sor = "zx";
-	    break;
-        }
+	case zx:
+	sor = "zx";
+	break;
+    }
+    if ( i - o_y > 2 * FONT_HEIGHT && snum.str().length * FONT_WIDTH < w_o )
+    {
         setTextPosition( o_x + w_o / 2 - FONT_WIDTH, o_y );
         setTextCoords( o_x + w_o / 2 - FONT_WIDTH, o_y );
         drawText( sor.c_str() );
         unsetTextCoords();
         glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
-        snum << sliceNum + 1 << " / " << ( _maximum[ ( _sliceOrientation + 2 ) % 3 ] - _minimum[ ( _sliceOrientation + 2 ) % 3 ] );
         setTextPosition( o_x + w_o / 2 - FONT_WIDTH * snum.str().length() / 2, o_y + FONT_HEIGHT );
         setTextCoords( o_x + w_o / 2 - FONT_WIDTH * snum.str().length() / 2, o_y + FONT_HEIGHT );
         drawText( snum.str().c_str() );
