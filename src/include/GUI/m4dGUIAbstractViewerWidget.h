@@ -72,7 +72,9 @@ public:
      */
     typedef std::list< unsigned > AvailableSlots;
 
-    
+   
+    #pragma warning (push)
+    #pragma warning (disable: 4355) // 'this' : used in base member initializer list
     /**
      * Constructor that does nothing except for initializing the _inputPorts
      */
@@ -81,6 +83,7 @@ public:
         qRegisterMetaType<Imaging::PipelineMsgID>( "Imaging::PipelineMsgID" );
 	m4dGUIAbstractViewerWidget::connect( this, SIGNAL(signalMessageHandler( Imaging::PipelineMsgID )), this, SLOT(slotMessageHandler( Imaging::PipelineMsgID )), Qt::QueuedConnection );
     }
+    #pragma warning (pop)
 
     /**
      * Virtual destructor that does nothing
