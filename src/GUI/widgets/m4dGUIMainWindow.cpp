@@ -2,7 +2,7 @@
 
 #include <QtGui>
 
-#include <map>
+#include <list>
 
 #include "Log.h"
 #include "Debug.h"
@@ -136,11 +136,11 @@ void m4dGUIMainWindow::addDockWindow ( const char *title, QWidget *widget )
 
 void m4dGUIMainWindow::search ()
 {
-  DcmProvider::DicomObjSet dicomObjSet;	
-  studyManagerWidget->getStudyListComponent()->setDicomObjectSetPtr( &dicomObjSet );
+  DcmProvider::DicomObjSet *dicomObjSet = new DcmProvider::DicomObjSet();	
+  studyManagerWidget->getStudyListComponent()->setDicomObjectSetPtr( dicomObjSet );
 
-  map< string, string > leftOverlayInfo; 
-  map< string, string > rightOverlayInfo; 
+  list< string > leftOverlayInfo; 
+  list< string > rightOverlayInfo; 
   studyManagerWidget->getStudyListComponent()->setOverlayInfoPtr( &leftOverlayInfo,
                                                                   &rightOverlayInfo );
 
@@ -149,7 +149,7 @@ void m4dGUIMainWindow::search ()
   {
     mainViewerDesktop->getSelectedViewerWidget()->setLeftSideTextData( leftOverlayInfo );  
     mainViewerDesktop->getSelectedViewerWidget()->setRightSideTextData( rightOverlayInfo );  
-    process( DcmProvider::DicomObjSetPtr( &dicomObjSet ) );
+    process( DcmProvider::DicomObjSetPtr( dicomObjSet ) );
   }
 }
 

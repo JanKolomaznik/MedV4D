@@ -90,14 +90,14 @@ class StManagerStudyListComp: public QWidget
     }
 
     /** 
-     * Sets (left|right)overlayInfo pointer to previously allocated overlay info map - overlay info 
+     * Sets (left|right)overlayInfo pointer to previously allocated overlay info list - overlay info 
      * of the Study Manager's result will appear there.
      * 
-     * @param leftInfo pointer to the left overlay info map to fill
-     * @param rightInfo pointer to the right overlay info map to fill
+     * @param leftInfo pointer to the left overlay info list to fill
+     * @param rightInfo pointer to the right overlay info list to fill
      */
-    void setOverlayInfoPtr ( std::map< std::string, std::string > *leftInfo,
-                             std::map< std::string, std::string > *rightInfo )
+    void setOverlayInfoPtr ( std::list< std::string > *leftInfo,
+                             std::list< std::string > *rightInfo )
     {
       leftOverlayInfo  = leftInfo;  
       rightOverlayInfo = rightInfo;  
@@ -316,10 +316,10 @@ class StManagerStudyListComp: public QWidget
 
     /// Pointer to DicomObjSet - result of the Study Manager will appear there (after clicking View).
     M4D::Dicom::DcmProvider::DicomObjSet *dicomObjectSet;	
-    /// Pointer to the left overlay info map - overlay info of the Study Manager's result will appear there.
-    std::map< std::string, std::string > *leftOverlayInfo;
-    /// Pointer to the right overlay info map - overlay info of the Study Manager's result will appear there.
-    std::map< std::string, std::string > *rightOverlayInfo;
+    /// Pointer to the left overlay info list - overlay info of the Study Manager's result will appear there.
+    std::list< std::string > *leftOverlayInfo;
+    /// Pointer to the right overlay info list - overlay info of the Study Manager's result will appear there.
+    std::list< std::string > *rightOverlayInfo;
 
     /// Flag indicating wheather the build was successful - DcmProvider construct. can cause exceptions (e.g. missing cfg)
     bool buildSuccessful;

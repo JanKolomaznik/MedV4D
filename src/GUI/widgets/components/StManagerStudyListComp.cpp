@@ -645,12 +645,15 @@ unsigned StManagerStudyListComp::getSeriesIndex( const DcmProvider::SerieInfoVec
 
 void StManagerStudyListComp::fillOverlayInfo ( QTableWidget *table, int row )
 {
-  (*leftOverlayInfo)[attributeNames[6]] = table->item( row, 6 )->text().toStdString();
-  (*leftOverlayInfo)[attributeNames[3]] = table->item( row, 3 )->text().toStdString();
+  leftOverlayInfo->push_back( "Ex: " + table->item( row, 6 )->text().toStdString() );
+  leftOverlayInfo->push_back( table->item( row, 3 )->text().toStdString() );
 
-  (*rightOverlayInfo)[table->item( row, 1 )->text().toStdString()] = "";
-  (*rightOverlayInfo)[table->item( row, 8 )->text().toStdString() + " " + 
-                      table->item( row, 7 )->text().toStdString()] = "";
+  rightOverlayInfo->push_back( table->item( row, 1 )->text().toStdString() );
+  rightOverlayInfo->push_back( table->item( row, 8 )->text().toStdString() + " " + 
+                               table->item( row, 7 )->text().toStdString() );
+  rightOverlayInfo->push_back( table->item( row, 0 )->text().toStdString() );
+  rightOverlayInfo->push_back( table->item( row, 4 )->text().toStdString() );
+  rightOverlayInfo->push_back( "Acq Tm: " + table->item( row, 5 )->text().toStdString() );
 }
 
 
