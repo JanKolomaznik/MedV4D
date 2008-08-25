@@ -180,43 +180,38 @@ DcmProvider::DicomObj::FlushIntoArray( const T *dest)
 		throw ExceptionBase( "Cannot obtain pixel data!");
 	}
 
-  if( bitsAllocated == 8 &&
+  if( bitsAllocated == 8 &&   // 1 byte aligned DICOM stream
 		highBit == 7 &&
 		bitsStored == 8)	
   {
-    //if( sizeof( T) != 2)
-    //  throw ExceptionBase( "Destination type is not corresponding with PixelSize!");
+    memcpy( (void *) dest, (void *) data, 
+      GetWidth() * GetHeight() );
   }
 
-	else if( //pixelRepresentation == 0 &&
+	else if(      // 2bytes aligned DICOM stream
 		bitsAllocated == 16 &&
 		highBit == 15 &&
-		bitsStored == 16)	
-		// basic setting. TODO: rewrite to be able to accept others settings
+		bitsStored == 16)
 	{
-    // check if was passed right type
-    //if( sizeof(T) != 2)
-    //  throw ExceptionBase( "Destination type is not corresponding with PixelSize!");
-// memcpy nebo memmove
-		register uint16 i, j;
-		register uint16 *destIter = (uint16 *)dest;
-		register uint16 *srcIter = (uint16 *)data;
-		// copy that
-		for( i=0; i<GetHeight(); i++)
-			for( j=0; j<GetWidth(); j++)
-			{
-				*destIter = *srcIter;
-				destIter++;	srcIter++;
-			}
+    memcpy( (void *) dest, data, 
+      GetWidth() * GetHeight() * sizeof(T) );
+		//register uint16 i, j;
+		//register uint16 *destIter = (uint16 *)dest;
+		//register uint16 *srcIter = (uint16 *)data;
+		//// copy that
+		//for( i=0; i<GetHeight(); i++)
+		//	for( j=0; j<GetWidth(); j++)
+		//	{
+		//		*destIter = *srcIter;
+		//		destIter++;	srcIter++;
+		//	}
 	}
 
   else if( bitsAllocated == 32 &&
 		highBit == 31 &&
 		bitsStored == 32)	
   {
-    //if( sizeof( T) != 4)
-    //  throw ExceptionBase( 
-    //    "Destination type is not corresponding with PixelSize!");
+    throw ExceptionBase( "Not supported DICOM stream setup");
   }
 
   // none of above. Custom DICOM stream.
@@ -238,10 +233,10 @@ DcmProvider::DicomObj::FlushIntoArray( const T *dest)
 }
 
 void 
-DcmProvider::DicomObj::FlushIntoArrayNTID( void*dest, int elementTypeID )
+DcmProvider::DicomObj::FlushIntoArrayNTID( void* dest, int elementTypeID )
 { 
 	INTEGER_TYPE_TEMPLATE_SWITCH_MACRO( 
-		elementTypeID, FlushIntoArray<TTYPE>( (const TTYPE*) dest ) ); 
+		elementTypeID, FlushIntoArray<TTYPE>( (const TTYPE*) dest ) );
 }
 
 ///////////////////////////////////////////////////////////////////////

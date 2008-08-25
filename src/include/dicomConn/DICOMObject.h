@@ -66,7 +66,7 @@ public:
 	 *	data stream to steam of normal data types like uint16. See DICOM spec.
 	 *	08-05pu.pdf (AnnexD).
 	 *  Type T should corespond to size of pixel determined from GetPixelSize
-	 *  method or exception will be thrown.
+	 *  method or NOTE: UNSPECIFIED behaviour will follow !!!!! .
    *  @param dest = destination buffer where to unpack the DICOM data stream.
 	 **/
 	template< typename T>
