@@ -38,6 +38,7 @@ class LocalService
     }
   };
 
+  void Reset(void);
 
   // informations structure containers definitions
   typedef std::set<DcmProvider::SerieInfo> SeriesInStudy;
@@ -51,6 +52,8 @@ class LocalService
 
   // currently searched folder
   std::string m_lastSearchDir;
+
+  Dicom::DcmProvider::ResultSet m_lastResultSet;
 
   // performs search run on given folder
 	void Find( 

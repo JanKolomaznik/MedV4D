@@ -33,6 +33,8 @@ LocalService::Find(
 			Dicom::DcmProvider::ResultSet &result,
       const std::string &path)
 {
+  Reset();
+
   // save search dir
   m_lastSearchDir = path;
 
@@ -295,6 +297,14 @@ LocalService::SolveFileGET( const std::string & fileName,
     newOne->Load( fileName);
     newOne->Init();
   }
+}
+
+///////////////////////////////////////////////////////////////////////
+
+void
+LocalService::Reset(void)
+{
+  m_setOfEntries.clear();
 }
 
 ///////////////////////////////////////////////////////////////////////
