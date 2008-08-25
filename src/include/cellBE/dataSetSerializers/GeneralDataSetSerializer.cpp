@@ -71,31 +71,3 @@ GeneralDataSetSerializer::DeSerializeDataSetProperties(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-//void
-//GeneralDataSetSerializer::SerializeDataSet( 
-//    M4D::Imaging::AbstractDataSet *dataSet,
-//    M4D::CellBE::iPublicJob *j)
-//{
-//  // switch according dataType
-//}
-
-///////////////////////////////////////////////////////////////////////////////
-
-//void 
-//GeneralDataSetSerializer::DeSerializeDataSet( 
-//    M4D::Imaging::AbstractDataSet *dataSet,
-//    M4D::CellBE::iPublicJob *j)
-//{
-//}
-
-///////////////////////////////////////////////////////////////////////////////
-
-//AbstractDataSetSerializer *
-//GeneralDataSetSerializer::GetDataSetSerializer( 
-//    M4D::Imaging::AbstractDataSet *dataSet)
-//{
-//  return NULL;
-//}
-
-///////////////////////////////////////////////////////////////////////////////

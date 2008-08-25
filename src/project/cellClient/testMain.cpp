@@ -17,11 +17,11 @@ ImageType::Ptr
 GenerateDataset()
 {
 	ImageType::Ptr inImage = 
-		ImageFactory::CreateEmptyImage3D<ElementType>(16, 16, 16);
-	for( unsigned i = 0; i < 16; ++i ) {
-		for( unsigned j = 0; j < 16; ++j ) {
-			for( unsigned k = 0; k < 16; ++k ) {
-				inImage->GetElement( i, j, k ) = (i << 2) | (j << 1) | k;
+		ImageFactory::CreateEmptyImage3DTyped<ElementType>(8, 8, 8);
+	for( unsigned i = 0; i < 8; ++i ) {
+		for( unsigned j = 0; j < 8; ++j ) {
+			for( unsigned k = 0; k < 8; ++k ) {
+				inImage->GetElement( i, j, k ) = (i) | (j >> 3) | (k >> 6);
 			}
 		}
 	}
@@ -50,7 +50,7 @@ int main()
 
   filter->Execute();
 
-  ((RemoteFilterBase*)filter)->Run();
+  //((RemoteFilterBase*)filter)->Run();
 
   while( 1)
   {

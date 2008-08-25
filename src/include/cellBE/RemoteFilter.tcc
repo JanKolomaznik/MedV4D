@@ -38,12 +38,15 @@ RemoteFilter< InputImageType, OutputImageType >
 		)
 {
   m_job->SendFilterProperties();
+
   // setting datSets is performed here because actual dataSet may not be created
   // before
   m_job->SetDataSets( in, out );
 
   m_job->SendDataSetProps();
   //m_job->SendExecute();
+
+while(1) {}
 
 	return true;
 }

@@ -70,10 +70,14 @@ ServerJob::EndReadPipelineDefinition( const boost::system::error_code& error)
 
     WaitForCommand();
 
-  } catch( WrongFilterException &) {
+  } catch( NetException &ne) {
+    LOG( "NetException in EndReadPipelineDefinition" << ne.what() );
+  } catch( WrongFilterException &wfe) {
     m_state = CREATION_FAILED;
     SendResultBack( RESPONSE_FAILED, m_state);
-  } catch( ExceptionBase &) {
+    LOG( "WrongFilterException in EndReadPipelineDefinition" << wfe.what() );
+  } catch( ExceptionBase &e) {
+    LOG( "ExceptionBase in EndReadPipelineDefinition" << e.what() );
   }
 }
 
@@ -154,10 +158,14 @@ ServerJob::EndFiltersRead( const boost::system::error_code& error)
 
     WaitForCommand();
 
-  } catch( WrongFilterException &) {
+  } catch( NetException &ne) {
+    LOG( "NetException in EndFiltersRead" << ne.what() );
+  } catch( WrongFilterException &wfe) {
     m_state = FILTER_PROPS_WRONG;
     SendResultBack( RESPONSE_FAILED, m_state);
-  } catch( ExceptionBase &) {
+    LOG( "WrongFilterException in EndFiltersRead" << wfe.what() );
+  } catch( ExceptionBase &e) {
+    LOG( "ExceptionBase in EndFiltersRead" << e.what() );
   }
 }
 
@@ -173,25 +181,28 @@ ServerJob::EndDataSetPropertiesRead( const boost::system::error_code& error)
     m_filterSettingContent.size());
 
     // create the dataSet
-    // TODO destroy old dataSEt ..
-    AbstractDataSetSerializer *dsSerializer = NULL;
+    AbstractDataSet::ADataSetPtr inputDataSet;
     GeneralDataSetSerializer::DeSerializeDataSetProperties( 
-      &dsSerializer, &m_inDataSet, s);
+      &m_inDataSetSerializer, &inputDataSet, s);
 
     // connect it to pipeline
-    m_pipeLine.MakeInputConnection( *m_pipelineBegin, 0, m_inDataSet);
+    m_pipeLine.MakeInputConnection( *m_pipelineBegin, 0, inputDataSet);
 
-    // create and connect output dataSet
+    // create and connect created output dataSet
     ConnectionInterface &conn = 
       m_pipeLine.MakeOutputConnection( *m_pipelineEnd, 0, true);
-    m_outDataSet = &conn.GetDataset();
+    // create outDataSerializer
+    m_outDataSetSerializer = GeneralDataSetSerializer::GetDataSetSerializer(
+      &conn.GetDataset() );
     // add message listener to be able catch execution done or failed messages
     conn.SetMessageHook( 
       MessageReceiverInterface::Ptr( new ExecutionDoneCallback(this) ) );
 
     // lock the whole dataSet (no progression yet so whole dataSet)
-    AbstractImage *imagePointer = (AbstractImage *) m_inDataSet.get();
-    WriterBBoxInterface &lock = imagePointer->SetWholeDirtyBBox();
+    // NOte AbstractImage is used because no universal locking is used
+    // and current implementaton has only images
+    AbstractImage *imagePointer = (AbstractImage *) inputDataSet.get();
+    m_DSLock = &imagePointer->SetWholeDirtyBBox();
 
     // and execute the pipeline. Actual exectution will wait to whole
     // dataSet unlock when whole dataSet is read (don't forget to do it!!)
@@ -201,13 +212,16 @@ ServerJob::EndDataSetPropertiesRead( const boost::system::error_code& error)
     SendResultBack( RESPONSE_OK, m_state);
 
     // now start recieving actual data using the retrieved serializer
-    ReadDataPeiceHeader( dsSerializer);
+    ReadDataPeiceHeader( m_inDataSetSerializer);
   
-  } catch( NetException &) {
-  } catch( WrongDSetException &) {
+  } catch( NetException &ne) {
+    LOG( "NetException in EndDataSetPropertiesRead" << ne.what() );
+  } catch( WrongDSetException &wdse) {
     m_state = DATASET_PROPS_WRONG;
     SendResultBack( RESPONSE_FAILED, m_state);
-  } catch( ExceptionBase &) {
+    LOG( "WrongDSetException in EndDataSetPropertiesRead" << wdse.what() );
+  } catch( ExceptionBase &e) {
+    LOG( "ExceptionBase in EndDataSetPropertiesRead" << e.what() );
   }
 }
 
@@ -224,25 +238,23 @@ ServerJob::SendResultBack( ResponseID result, State state)
 
   h->result = (uint8) result;
 
-  AbstractDataSetSerializer *outSerializer = NULL;
+  //AbstractDataSetSerializer *outSerializer = NULL;
 
-  switch( result)
-  {
-  case RESPONSE_DATASET:
-    // get dataSetSerializer ...
-    outSerializer = 
-      GeneralDataSetSerializer::GetDataSetSerializer( m_outDataSet);
+  //switch( result)
+  //{
+  //case RESPONSE_DATASET:
+  //  // serialize dataset settings
+  //  outSerializer->SerializeProperties( m_dataSetPropsSerialized);
 
-    // serialize dataset settings
-    outSerializer->SerializeProperties( m_dataSetPropsSerialized);
+  //  h->resultPropertiesLen = (uint16) m_dataSetPropsSerialized.size();
+  //  break;
 
-    h->resultPropertiesLen = (uint16) m_dataSetPropsSerialized.size();
-    break;
+  //default:
+  //  h->resultPropertiesLen = (uint16) state;
+  //  break;
+  //}
 
-  default:
-    h->resultPropertiesLen = (uint16) state;
-    break;
-  }
+  h->resultPropertiesLen = (uint16) state;
 
   ResponseHeader::Serialize( h);
 
@@ -256,7 +268,7 @@ ServerJob::SendResultBack( ResponseID result, State state)
   // start sending dataSet if RESPONSE_EXEC_COMPLETE
   if( result == RESPONSE_DATASET)
   {    
-    outSerializer->Serialize( this);
+    m_outDataSetSerializer->Serialize( this);
   }
 }
 
@@ -271,8 +283,9 @@ ServerJob::OnResultHeaderSent( const boost::system::error_code& error
 
     m_freeResponseHeaders.PutFreeItem( h);  // return the header to pool
 
-  } catch( NetException &) {
+  } catch( NetException &ne) {
     m_freeResponseHeaders.PutFreeItem( h);
+    LOG( "NetException in OnResultHeaderSent" << ne.what() );
   }
 }
 
@@ -358,10 +371,23 @@ ServerJob::EndWaitForCommand( const boost::system::error_code& error)
   try {
     HandleErrors( error);
 
+    // parse primary job header
+    PrimaryJobHeader::Deserialize( &primHeader);
+
     Command( &primHeader);
 
-  } catch( NetException &) {
+  } catch( NetException &ne) {
+    LOG( "NetException in EndWaitForCommand" << ne.what() );
   }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ServerJob::OnDSRecieved( void)
+{  
+  m_state = EXECUTED;
+  m_DSLock->SetModified();     // unlock locked dataSet to start execution  
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -62,26 +62,7 @@ void
 ImageSerializerBase<ElementType, dim>
   ::OnDataSetEndRead( void)
 {
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-template< typename ElementType, uint8 dim>
-void
-ImageSerializerBase<ElementType, dim>
-  ::Reset( void)
-{
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// 2D version
-///////////////////////////////////////////////////////////////////////////////
-
-template< typename ElementType>
-void
-ImageSerializer< typename ElementType, 2>
-  ::OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs)
-{
+  // TODO unlock dataSet to start execution
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -100,27 +81,45 @@ ImageSerializer< typename ElementType, 2>
 	int32 xStride;
 	int32 yStride;
 	ElementType *pointer = im->GetPointer( width, height, xStride, yStride );
-	for( uint32 j = 0; j < height; ++j ) {
-		ElementType *tmpPointer = pointer + j*yStride;
 
-		for( uint32 i = 0; i < width; ++i ) {
-			//tady zapsani jednoho elementu
-			// << *tmpPointer;
+	// put whole array at once
+  DataBuff buff;
+  buff.data = (void *) pointer;
+  buff.len = width * height * sizeof( ElementType);
 
-			tmpPointer += xStride;
-		}
-	}
+  job->PutDataPiece( buff);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// 3D version
 ///////////////////////////////////////////////////////////////////////////////
 
 template< typename ElementType>
 void
-ImageSerializer< typename ElementType, 3>
+ImageSerializer< typename ElementType, 2>
   ::OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs)
 {
+  Image<ElementType, 2> *im = (Image<ElementType, 2> *) m_dataSet;
+
+  uint32 width;
+	uint32 height;
+	int32 xStride;
+	int32 yStride;
+	ElementType *pointer = im->GetPointer( width, height, xStride, yStride );
+
+  size_t sliceSize = width * height;
+
+// whole 2D image at once
+  DataBuff buf( pointer, sliceSize * sizeof( ElementType));
+  bufs.push_back( buf);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+template< typename ElementType>
+void
+ImageSerializer< typename ElementType, 2>
+  ::Reset( void)
+{
+//nothing to do currenlty
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -142,18 +141,54 @@ ImageSerializer< typename ElementType, 3>
 	int32 zStride;
 	ElementType *pointer = im->GetPointer( width, height, depth, xStride, yStride, zStride );
 
+  // put slices as dataPieces. Suppose whole DS is serialized. Not only window part
+  DataBuff buff;
+
+  size_t sliceSize = width * height;
+
 	for( uint32 k = 0; k < depth; ++k ) {
-		for( uint32 j = 0; j < height; ++j ) {
-			ElementType *tmpPointer = pointer + j*yStride + k*zStride;
+    buff.data = (void*) pointer;
+    buff.len = sliceSize * sizeof( ElementType);
+    job->PutDataPiece( buff);
 
-			for( uint32 i = 0; i < width; ++i ) {
-				//tady zapsani jednoho elementu
-				// << *tmpPointer;
-
-				tmpPointer += xStride;
-			}
-		}
+    pointer += sliceSize; // move on next slice
 	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+template< typename ElementType>
+void
+ImageSerializer< typename ElementType, 3>
+  ::OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs)
+{
+  Image<ElementType, 3> *im = (Image<ElementType, 3> *) m_dataSet;
+
+  uint32 width;
+	uint32 height;
+	uint32 depth;
+	int32 xStride;
+	int32 yStride;
+	int32 zStride;
+	ElementType *pointer = im->GetPointer( width, height, depth, xStride, yStride, zStride );
+
+  size_t sliceSize = width * height;
+
+  DataBuff buf;
+  buf.data = pointer + ( sliceSize * m_currSlice);
+  buf.len = sliceSize * sizeof( ElementType);
+
+  bufs.push_back( buf);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+template< typename ElementType>
+void
+ImageSerializer< typename ElementType, 3>
+  ::Reset( void)
+{
+  m_currSlice = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

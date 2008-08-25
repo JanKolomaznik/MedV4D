@@ -35,7 +35,9 @@ protected:
   {
     if( error)
     {
-      throw NetException( "Smth happend");
+      std::stringstream s;
+      s << "Smth happend on network in HandleErrors (err:" << error << ")";
+      throw NetException( s.str() );
     }
   }
 

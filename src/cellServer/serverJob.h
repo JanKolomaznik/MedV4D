@@ -29,12 +29,16 @@ private:
 
   std::vector<uint8> m_filterSettingContent;
 
+  M4D::Imaging::WriterBBoxInterface *m_DSLock;
+
   M4D::Imaging::PipelineContainer m_pipeLine;
   
   JobManager *m_jobManager;
 
   // pointers to first & last filter in pipeline
   M4D::Imaging::AbstractPipeFilter *m_pipelineBegin, *m_pipelineEnd;
+
+  void OnDSRecieved( void);
 
   void DeserializeFilterProperties( void);
   

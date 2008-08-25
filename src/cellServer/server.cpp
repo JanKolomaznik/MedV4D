@@ -75,8 +75,8 @@ Server::EndAccepted( tcp::socket *clientSock,
     LOG( "Accepted conn from:" 
       << clientSock->remote_endpoint().address() );
 
-  } catch ( NetException e) {
-    LOG("NetException");
+  } catch ( NetException &ne) {
+    LOG("NetException in EndAccepted" << ne.what() );
   }
 
   // accept again
@@ -127,7 +127,12 @@ Server::EndPrimaryHeaderRead( tcp::socket *clientSock, PrimaryJobHeader *header,
     //return header into free ones
     m_headerPool.PutFreeItem( header);
 
-  } catch( ExceptionBase &) {
+  } catch( NetException &ne) {
+    m_headerPool.PutFreeItem( header);
+    LOG( "NetException in Server::EndPrimaryHeaderRead" << ne.what() );
+  } catch( ExceptionBase &e) {
+    m_headerPool.PutFreeItem( header);
+    LOG( "ExceptionBase in Server::EndPrimaryHeaderRead" << e.what() );
   }
 
 }

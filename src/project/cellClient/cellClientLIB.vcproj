@@ -308,10 +308,6 @@
 			<Filter
 				Name="filterSerializers"
 				>
-				<File
-					RelativePath="..\..\include\cellBE\filterSerializers\ThresholdingSerializer.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="remoteFilters"
@@ -322,6 +318,10 @@
 				</File>
 				<File
 					RelativePath="..\..\include\cellBE\remoteFilters\BoneSegmentationRemote.tcc"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\cellBE\filterSerializers\ThresholdingSerializer.h"
 					>
 				</File>
 			</Filter>

@@ -27,27 +27,6 @@ public:
     M4D::Imaging::AbstractDataSet *dataSet);
   
   /**
-   *  According given dataSet type uses appropriate dataSet
-   *  serializer that writes all properties about given dataset needed for
-   *  recreation the same instance on the other network side.
-   *  Uses GetDataSetSerializer function (see above) internaly.
-   */
-  //static void SerializeDataSetProperties( 
-  //  M4D::Imaging::AbstractDataSet *dataSet,
-  //  M4D::CellBE::NetStream &s);
-
-  /**
-   *  According given dataSet type uses appropriate dataSet
-   *  serializer taht writes the whole content of given dataSet
-   *  to the network through PutDataPiece methodes of iPuplicJob
-   *  interface.
-   *  Uses GetDataSetSerializer function (see above) internaly.
-   */
-  //static void SerializeDataSet( 
-  //  M4D::Imaging::AbstractDataSet *dataSet,
-  //  M4D::CellBE::iPublicJob *j);
-
-  /**
    *  Reads dataSet type and according it will use appropriate
    *  dataSetSerializer that can instantiate dataSet according
    *  recieved dataSetProperties.
@@ -58,11 +37,6 @@ public:
       , M4D::Imaging::AbstractDataSet::ADataSetPtr *returnedDataSet
       , M4D::CellBE::NetStream &s);
 
-  //static void DeSerializeDataSet( 
-  //  M4D::Imaging::AbstractDataSet *dataSet,
-  //  M4D::CellBE::iPublicJob *j);
-
-  
 };
 
 }

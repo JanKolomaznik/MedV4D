@@ -23,25 +23,20 @@ class ClientJob
 
   NetStreamVector m_remotePipeDefSerialized;
 
+  // nothing to do. Everything is done automaticaly after 
+  // RemoteFilter::ProccessImage ends
+  void OnDSRecieved( void) {}
+
   void SerializeFiltersProperties( void);
   void SerializeRemotePipeDefinition( void);
 
-  void Serialize( NetStream &s);
-  void DeSerialize( NetStream &s);
-
-  void OnResponseRecieved( const boost::system::error_code& error
-    , ResponseHeader *header);
+  void ProcessResponse( const ResponseHeader &header);
 
   // only CellClient can construct instances through CreateJob members
   ClientJob(
     FilterSerializerVector &filters
-    //, AbstractDataSetSerializer *inDataSetSeralizer
-    //, AbstractDataSetSerializer *outDataSetSerializer
     , const std::string &address
     , boost::asio::io_service &service);
-
-  AbstractDataSetSerializer *m_inDataSetSerializer;
-  AbstractDataSetSerializer *m_outDataSetSerializer;
 
 public:
   ~ClientJob();

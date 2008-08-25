@@ -44,12 +44,14 @@ struct JobID
 
   bool operator < ( const JobID &b) const
   {
+    uint64 mine = 0;
+    uint64 theirs = 0;
     for( int i=0; i<IDLEN; i++)
     {
-      if( id[i] < b.id[i])
-        return false;
+      mine += id[i];
+      theirs += b.id[i];
     }
-    return false;
+    return mine < theirs;
   }
 
 };

@@ -17,6 +17,8 @@ BasicJob::BasicJob(boost::asio::ip::tcp::socket *sock)
     , onComplete( NULL)
     , onError( NULL)
     , m_state( IDLE)
+    , m_inDataSetSerializer( NULL)
+    , m_outDataSetSerializer( NULL)
 {
 }
 
@@ -122,15 +124,20 @@ BasicJob::EndReadDataPeiceHeader( const boost::system::error_code& error,
 
       if( this->onComplete != NULL)
         onComplete();                 // call completition callback
+
+      OnDSRecieved();
     }
     else
     {
       dataSetSerializer->OnDataPieceReadRequest( header, m_dataBufs);
       freeHeaders.PutFreeItem( header); // return used header back to pool
       GetDataPiece( m_dataBufs, dataSetSerializer);
+      m_dataBufs.clear();
     }
 
-  } catch( ExceptionBase &) {
+  } catch(NetException &ne) {
+    freeHeaders.PutFreeItem( header);
+    LOG( "NetException in EndReadDataPeiceHeader" << ne.what() );
   }
 }
 
@@ -141,10 +148,11 @@ BasicJob::EndReadDataPeice( const boost::system::error_code& error
 {
   try {
     HandleErrors( error);
-
+// TODO
     ReadDataPeiceHeader( dataSetSerializer);
 
-  } catch( ExceptionBase &) {
+  } catch( NetException &ne) {
+    LOG( "NetException in EndReadDataPeice" << ne.what() );
   }
 }
 
@@ -156,7 +164,8 @@ BasicJob::EndSend( const boost::system::error_code& e)
 {
   try {
     HandleErrors( e);
-  } catch( ExceptionBase &) {
+  } catch( NetException &ne) {
+    LOG( "NetException in EndSend" << ne.what() );
     if( onError != NULL)
       onError();
   }

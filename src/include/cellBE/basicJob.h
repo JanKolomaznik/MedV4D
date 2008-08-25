@@ -79,6 +79,8 @@ protected:
     PING          // ping message
   };
 
+  virtual void OnDSRecieved( void) = 0;
+
   State m_state;
 
   static DataPieceHeader endHeader;   // data header saying noMoreData
@@ -107,8 +109,8 @@ protected:
   // send EndingTag telling no more data will come
   void SendEndOfDataSetTag( void);
 
-  /*M4D::Imaging::AbstractDataSet::ADataSetPtr m_inDataSet;
-  M4D::Imaging::AbstractDataSet *m_outDataSet;*/
+  AbstractDataSetSerializer *m_inDataSetSerializer;
+  AbstractDataSetSerializer *m_outDataSetSerializer;
 
 };
 

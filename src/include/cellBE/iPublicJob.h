@@ -14,6 +14,13 @@ struct DataBuff
     , len(lenght)
   {}
 
+  DataBuff() {}
+
+  DataBuff( const DataBuff &b)  // copy ctor
+    : data( b.data)
+    , len( b.len)
+  {}
+
   void *data;
   size_t len;
 };

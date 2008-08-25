@@ -12,7 +12,7 @@ namespace CellBE
 
 // commons for every dimension cases
 template< typename ElementType, uint8 dim>
-class ImageSerializerBase		//musi se jmenovat jinak nez ta dlasi trida
+class ImageSerializerBase
   : public AbstractDataSetSerializer
 {
 public:
@@ -33,10 +33,6 @@ public:
     DeSerializeProperties( M4D::CellBE::NetStream &s);
 
   void OnDataSetEndRead( void);
-
-private:
-  void Reset( void);
-
 };
 
 //Tady se musi pouzit parcialni specializace
@@ -44,10 +40,12 @@ template< typename ElementType, unsigned dim>
 class ImageSerializer;
 
 // special case for 3D images
-template< typename ElementType>  // TADY nevim, jestli jde dedit od obecne templejty ... aby az se zkonstruuje ImageSerializer<uint8, 3> tak se zkontruuje tadle trida, ktera bude mit ty metody Image<typename ElemType, uint8> (predka)
-class ImageSerializer< ElementType, 3 >	//provedu parcialni specializaci
+template< typename ElementType>
+class ImageSerializer< ElementType, 3 >
   : public ImageSerializerBase< ElementType, 3>
 {
+  uint16 m_currSlice;
+
 public:
   ImageSerializer() {}
   ImageSerializer( M4D::Imaging::AbstractDataSet *dSet)
@@ -60,6 +58,9 @@ public:
   void Serialize( M4D::CellBE::iPublicJob *job);
   
   void OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs);
+
+private:
+  void Reset( void);
 };
 
 // special case for 2D images
@@ -78,6 +79,9 @@ public:
   void Serialize( M4D::CellBE::iPublicJob *job);
   
   void OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs);
+
+private:
+  void Reset( void);
 };
 
 }

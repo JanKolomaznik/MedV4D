@@ -26,7 +26,8 @@ protected:
   M4D::Imaging::AbstractDataSet *m_dataSet;
 
   /**
-   *  DataSetIsStateFull so Reset should reset the state
+   *  DataSet is state full so Reset should reset the state
+   *  so the serializer could be reused.
    */
   virtual void Reset( void) = 0;
 
@@ -51,26 +52,26 @@ public:
   /**
    *  Each final sucessor has to implement this functions to allow
    *  sending all properties of that particular sucessor to server.
+   *  This method must write all properties about dataSet that is
+   *  in m_dataSet pointer needed for recreation the same instance
+   *  (CIS - Class info serialization) on the other network side.
+   *  This MUST be serialized first. Then actual dataSet properties
+   *  take place (for image that is Dimension, element type, ...) =
+   *  (ACS - Actual Content Serialization).
    */
   virtual void SerializeProperties( M4D::CellBE::NetStream &s) = 0;
+
+  /**
+   *  This class already have right type of serializer, so CIS
+   *  has been already performed. So pnly ACS should be performed
+   *  here. It returns right dataSet instance in shared_pointer.
+   */
   virtual M4D::Imaging::AbstractDataSet::ADataSetPtr
     DeSerializeProperties( M4D::CellBE::NetStream &s) = 0;
 
-  	/**
-	 * Properties of dataset. Used to sending to server.
-	 * This is pointer to base abstract properties class.
-	 * !!! Each new type of dataSet derived from this class
-	 * should declare new properties type derived from 
-	 * DataSetPropertiesTemplate class (dataSetProperties.h) 
-	 * with template param of type DataSetType(dataSetTypeEnums.h).
-	 * This new enum type should be also added to enum with a new
-	 * data set class !!!
-	 **/
-	//DataSetPropertiesAbstract *_properties;
-
 	/**
-	 * Each special succesor should implement this functions in
-	 * its own manner.
+	 *  This method should preform actual dataSet data serialization
+   *  through iPublicJob::PutDataPiece method.
 	 **/
 	virtual void Serialize( M4D::CellBE::iPublicJob *job) = 0;
 
@@ -87,6 +88,8 @@ public:
    */
   virtual void OnDataSetEndRead( void) = 0;
 };
+
+///////////////////////////////////////////
 
 class WrongDSetException
   : public ExceptionBase

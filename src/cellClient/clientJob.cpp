@@ -19,8 +19,6 @@ ClientJob::ClientJob(
                    , const std::string &address
                    , boost::asio::io_service &service) 
   : ClientSocket( address, service)
-  , m_inDataSetSerializer( NULL)
-  , m_outDataSetSerializer( NULL)
 {
   m_filters = filters;  // copy filters definitions
   SendCreate();
@@ -81,13 +79,9 @@ ClientJob::SendCreate( void)
       boost::asio::placeholders::error)
   );
 
-  // wait for response
-  ResponseHeader *h = m_freeResponseHeaders.GetFreeItem();
-  m_socket->async_read_some(
-    boost::asio::buffer( (uint8*) h, sizeof(ResponseHeader)),
-    boost::bind( &ClientJob::OnResponseRecieved, this, 
-      boost::asio::placeholders::error, h)
-    );
+  ResponseHeader h;
+  size_t read = m_socket->read_some(boost::asio::buffer( (uint8*) &h, sizeof(ResponseHeader)));
+  ProcessResponse( h);  
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -129,40 +123,22 @@ ClientJob::SerializeRemotePipeDefinition( void)
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-ClientJob::OnResponseRecieved( const boost::system::error_code& error
-                              , ResponseHeader *header)
+ClientJob::ProcessResponse( const ResponseHeader &header)
 {
-  // now we recieved response header
-  try {
-    HandleErrors( error);
-    ResponseHeader::Deserialize( header);
+  switch( (ResponseID) header.result)
+  {
+  case RESPONSE_OK:
+    m_state = (State) header.resultPropertiesLen;
+    break;
 
-    switch( (ResponseID) header->result)
-    {
-    case RESPONSE_OK:
-      m_state = (State) header->resultPropertiesLen;
-      if( (State) header->resultPropertiesLen == DATASET_OK )
-        SendDataSet();
-      break;
+  case RESPONSE_FAILED:
+    m_state = (State) header.resultPropertiesLen;
+    if( this->onError != NULL)  // call error handler
+      onError();
+    break;
 
-    case RESPONSE_FAILED:
-      m_state = (State) header->resultPropertiesLen;
-      if( this->onError != NULL)  // call error handler
-        onError();
-      break;
-
-    case RESPONSE_DATASET:
-      // everything was fine, so continue reading dataSetProperties
-      ReadDataPeiceHeader( m_outDataSetSerializer);
-      break;
-
-    default:
-      ASSERT( false);
-    }
-
-    m_freeResponseHeaders.PutFreeItem( header);
-  } catch( ExceptionBase &) {
-    m_freeResponseHeaders.PutFreeItem( header);
+  default:
+    ASSERT( false);
   }
 }
 
@@ -183,9 +159,8 @@ ClientJob::SendDestroy( void)
   primHeader.nexPartLength = 0; // not used
   PrimaryJobHeader::Serialize( &primHeader);
 
-  m_socket->async_write_some(
+  m_socket->write_some(
     boost::asio::buffer( (uint8*) &primHeader, sizeof( PrimaryJobHeader) )
-    , boost::bind( & ClientJob::EndSend, this, boost::asio::placeholders::error)
     );
 }
 
@@ -217,13 +192,9 @@ ClientJob::SendFilterProperties( void)
       boost::asio::placeholders::error)
   );
 
-  // read response
-  ResponseHeader *h = m_freeResponseHeaders.GetFreeItem();
-  m_socket->async_read_some(
-    boost::asio::buffer( (uint8*) h, sizeof(ResponseHeader)),
-    boost::bind( &ClientJob::OnResponseRecieved, this, 
-      boost::asio::placeholders::error, h)
-    );
+  ResponseHeader h;
+  size_t read = m_socket->read_some(boost::asio::buffer( (uint8*) &h, sizeof(ResponseHeader)));
+  ProcessResponse( h);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -248,7 +219,8 @@ ClientJob::SendDataSetProps( void)
   m_dataSetPropsSerialized << (uint8) m_inDataSetSerializer->GetID();
   m_inDataSetSerializer->SerializeProperties( m_dataSetPropsSerialized);
 
-  primHeader.nexPartLength = (uint16) m_dataSetPropsSerialized.size();  
+  primHeader.nexPartLength = (uint16) m_dataSetPropsSerialized.size();
+  PrimaryJobHeader::Serialize( &primHeader);
 
   // create vector of serialized information to pass to sigle send operation
   vector<boost::asio::const_buffer> buffers;
@@ -264,6 +236,20 @@ ClientJob::SendDataSetProps( void)
     boost::bind( &ClientJob::EndSend, this,
       boost::asio::placeholders::error)
   );
+
+  ResponseHeader h;
+  size_t read = m_socket->read_some(boost::asio::buffer( (uint8*) &h, sizeof(ResponseHeader)));
+  ProcessResponse( h);
+
+  if( m_state == DATASET_PROPS_OK)
+    SendDataSet();
+
+  read = m_socket->read_some(boost::asio::buffer( (uint8*) &h, sizeof(ResponseHeader)));
+  ProcessResponse( h);
+
+  // if dataSet successfully arrived to server, wait for result
+  if( m_state == DATASET_OK)
+    ReadDataPeiceHeader( m_outDataSetSerializer);
 }
 
 /////////////////////////////////////////////////////////////////////////////// 
