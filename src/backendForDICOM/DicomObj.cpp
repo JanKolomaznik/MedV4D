@@ -127,8 +127,8 @@ DcmProvider::DicomObj::Init()
 	
   // get order in set
   OFString str;
-  dataSet->findAndGetOFString( DCM_InstanceNumber, str);
-  m_orderInSet = (uint16)strtoul( str.c_str(), NULL, 10);
+  dataSet->findAndGetOFString( DCM_SliceLocation, str);
+  m_orderInSet = (int16) strtol( str.c_str(), NULL, 10);
 
 	// try to get data
 	const uint16 *data;

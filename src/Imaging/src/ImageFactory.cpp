@@ -175,8 +175,8 @@ FlushDicomObjectsHelper(
 		it != dicomObjects->end();
 		++it, ++i
 	   ) {
-		//uint8 *arrayPosition = dataArray + (stride * i);
-		uint8 *arrayPosition = dataArray + (stride * (it->OrderInSet()-1));
+		uint8 *arrayPosition = dataArray + (stride * i);
+		//uint8 *arrayPosition = dataArray + (stride * (it->OrderInSet()-1));
 		//it->FlushIntoArray< ElementType >( (ElementType*)dataArray + (stride * i /*it->OrderInSet()*/ ) );
 
 		if( it->OrderInSet() <= 0 || it->OrderInSet() > dicomObjects->size() ) {

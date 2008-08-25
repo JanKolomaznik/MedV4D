@@ -77,9 +77,14 @@ public:
 	/**
 	 *  Returns order number in set according that images can be sorted
 	 *  in order they were accuired by the mashine.
-	 *  Currently InstanceNumber tag (0020,0013) is used.
+	 *  Currently SliceLocation tag is used.
 	 **/
-	inline uint16 OrderInSet( void) { return m_orderInSet; }
+	inline int16 OrderInSet( void) const { return m_orderInSet; }
+
+  inline bool operator<( const DcmProvider::DicomObj &b) const
+  {
+    return OrderInSet() < b.OrderInSet();
+  }
 
 	// load & save
 	void Load( const std::string &path);
@@ -124,7 +129,7 @@ private:
 	uint16 m_width, m_height;
 	uint8 m_pixelSize;
 	bool m_signed;
-	uint16 m_orderInSet;
+	int16 m_orderInSet;
 
 	Status m_status;
 

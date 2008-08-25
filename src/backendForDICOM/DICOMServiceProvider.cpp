@@ -19,13 +19,8 @@
 namespace M4D
 {
 using namespace DicomInternal;
-
-
-// create service objects
-
-//StoreService storeService;
-
-namespace Dicom {
+namespace Dicom 
+{
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -168,6 +163,9 @@ DcmProvider::GetImageSet(
 {
 	static_cast<MoveService *>(m_moveService)->MoveImageSet( 
 		patientID, studyID, serieID, result, on_loaded);
+
+  // sort the vector of images
+  std::sort( result.begin(), result.end() );
 }
 
 ///////////////////////////////////////////////////////////////////////
