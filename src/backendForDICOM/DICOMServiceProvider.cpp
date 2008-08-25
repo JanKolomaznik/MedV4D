@@ -100,6 +100,9 @@ DcmProvider::LocalGetImageSet(
 {
   static_cast<LocalService *>(m_localService)->GetImageSet( 
     patientID, studyID, serieID, result);
+
+  // sort the vector of images
+  std::sort( result.begin(), result.end() );
 }
 
 ///////////////////////////////////////////////////////////////////////
