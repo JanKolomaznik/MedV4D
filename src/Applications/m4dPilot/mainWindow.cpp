@@ -22,24 +22,20 @@ mainWindow::mainWindow ()
 }
 
 
-void 
-mainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
+void mainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
 {
-	AbstractImage::AImagePtr inputImage = ImageFactory::CreateImageFromDICOM( dicomObjSet );
-
-/*	unsigned dim = inputImage->GetDimension(); 
-	int type     = inputImage->GetElementTypeID();
-
-	if ( dim != 3 || type != NTID_UNSIGNED_SHORT ) {
-		QMessageBox::critical( this, tr( "Exception" ), tr( "Bad type" ) );
-		return;
-	}*/
 	try {
+    AbstractImage::AImagePtr inputImage = ImageFactory::CreateImageFromDICOM( dicomObjSet );
+
     AbstractImageConnection *conn = new AbstractImageConnection();
 		conn->PutImage( inputImage );
+
 		mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
 		conn->ConnectConsumer( mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 	} 
+  catch ( ImageFactory::EWrongDICOMObjIndex ) {
+    QMessageBox::critical( this, tr( "Exception" ), tr( "Wrong DICOM slice index - cannot be viewed" ) );
+  }
 	catch ( ... ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Some exception" ) );
 	}
