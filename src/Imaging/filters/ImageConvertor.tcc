@@ -89,7 +89,7 @@ ConvertImage( const AbstractImage &in, Image< OutputElementType, 3 > &out )
 
 template< typename OutputImageType, typename Convertor >
 ImageConvertor< OutputImageType, Convertor >
-::ImageConvertor( ImageConvertor< OutputImageType, Convertor >::Properties  * prop )
+::ImageConvertor( typename ImageConvertor< OutputImageType, Convertor >::Properties  * prop )
 	: PredecessorType( prop )
 {
 
