@@ -26,6 +26,8 @@ void m4dGUIMainViewerDesktopWidget::replaceSelectedViewerWidget ( ViewerType typ
 {
   ConnectionInterface *conn = replacedViewer->getInputPort();
   unsigned idx = replacedViewer->getIndex();
+  list< string > leftOverlayInfo  = replacedViewer->getLeftSideTextData();
+  list< string > rightOverlayInfo = replacedViewer->getRightSideTextData();
 
   m4dGUIAbstractViewerWidget *widget = 0;
 
@@ -42,6 +44,9 @@ void m4dGUIMainViewerDesktopWidget::replaceSelectedViewerWidget ( ViewerType typ
     default:
       widget = new m4dGUISliceViewerWidget( conn, idx );
   }
+
+  widget->setLeftSideTextData( leftOverlayInfo ); 
+  widget->setRightSideTextData( rightOverlayInfo ); 
 
   connect( widget, SIGNAL(signalSetSelected( unsigned, bool )), this, SLOT(selectedChanged( unsigned )) );
   widget->slotSetSelected( true );

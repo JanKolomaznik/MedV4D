@@ -2,8 +2,6 @@
 
 #include <QtGui>
 
-#include <list>
-
 #include "Log.h"
 #include "Debug.h"
 
