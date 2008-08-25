@@ -114,7 +114,7 @@ and communicate ONLY with our supercalculating server that is budled with. All f
   	</para>
   	<para>
   	Serializer is object that can perform serialization of its content. We have 2 types of serializers. These
-  	are FilterSerializers perform Serialization of <classname>Filter::Properties<classname> classes. Used in sending definitioin
+  	are FilterSerializers perform Serialization of <classname>Filter::Properties</classname> classes. Used in sending definitioin
   	container. And DataSetSerializers. These performs dataSet serialization. Each Serializer performs serialization
   	of 2 main types. First is class info serialization (CIS). In this stage is template parameters along with class
   	type serialized. These information should be enough for other side for creating appropriate templated class instance.
@@ -134,7 +134,7 @@ and communicate ONLY with our supercalculating server that is budled with. All f
   	<title>FilterSerializer</title>
   	
   	<para>
-  	Each filterSerializer (FS) should be derived from <classname>AbstractFilterSerializer<classname> class which is the base class for every
+  	Each filterSerializer (FS) should be derived from <classname>AbstractFilterSerializer</classname> class which is the base class for every
   	FS and defines interface of its behaviour. CIS is performed by <methodname>SerializeClassInfo</methodname> &amp; <methodname>DeSerializeClassInfo</methodname> pair of
   	member functions. ACS by SerializeProperties &amp; DeSerializeProperties pair.
   	</para>
