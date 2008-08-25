@@ -80,6 +80,8 @@ public:
         // connect message receiving signal to message handling slot
 	qRegisterMetaType<Imaging::PipelineMsgID>( "Imaging::PipelineMsgID" );
 	m4dGUIAbstractViewerWidget::connect( this, SIGNAL(signalMessageHandler( Imaging::PipelineMsgID )), this, SLOT(slotMessageHandler( Imaging::PipelineMsgID )), Qt::QueuedConnection );
+	_leftSideData.clear();
+	_rightSideData.clear();
     }
     #ifdef _MSC_VER                    // restore the above disabled warning type in MSVC++
         #pragma warning(pop)
@@ -163,15 +165,39 @@ public:
     
     /**
      * Set the data text to be printed on the left side of the viewer.
-     *  @param dataList a map of the data text
+     *  @param dataList a list of the data text
      */
-    virtual void setLeftSideTextData( std::map< std::string, std::string >& dataList )=0;
+    void setLeftSideTextData( std::list< std::string >& dataList )
+    {
+        _leftSideData = dataList;
+    }
     
     /**
      * Set the data text to be printed on the right side of the viewer.
-     *  @param dataList a map of the data text
+     *  @param dataList a list of the data text
      */
-    virtual void setRightSideTextData( std::map< std::string, std::string >& dataList )=0;
+    void setRightSideTextData( std::list< std::string >& dataList )
+    {
+        _rightSideData = dataList;
+    }
+
+    /**
+     * Get the data text to be printed on the left side of the viewer.
+     *  @return a list of the data text
+     */
+    const std::list< std::string >& getLeftSideTextData()const
+    {
+        return _leftSideData;
+    }
+
+    /**
+     * Get the data text to be printed on the right side of the viewer.
+     *  @return a list of the data text
+     */
+    const std::list< std::string >& getRightSideTextData()const
+    {
+        return _rightSideData;
+    }
 
 protected:
     
@@ -189,6 +215,16 @@ protected:
      * The index of the given viewer.
      */
     unsigned			_index;
+
+    /**
+     * The list of text data to be printed on the left side of the viewer.
+     */
+    std::list< std::string >			_leftSideData;
+
+    /**
+     * The list of text data to be printed on the right side of the viewer.
+     */
+    std::list< std::string >			_rightSideData;
 
 public slots:
 
@@ -235,29 +271,15 @@ public slots:
 
     /**
      * Slot to add some text data to show on the left side of the viewer.
-     *  @param type the type of the given data
      *  @param data the value of the given data
      */
-    virtual void slotAddLeftSideData( std::string type, std::string data )=0;
+    virtual void slotAddLeftSideData( std::string data )=0;
 
     /**
      * Slot to add some text data to show on the right side of the viewer.
-     *  @param type the type of the given data
      *  @param data the value of the given data
      */
-    virtual void slotAddRightSideData( std::string type, std::string data )=0;
-
-    /**
-     * Slot to erase some data from the left side of the viewer.
-     *  @param type the type of the data that is to be erased
-     */
-    virtual void slotEraseLeftSideData( std::string type )=0;
-
-    /**
-     * Slot to erase some data from the right side of the viewer.
-     *  @param type the type of the data that is to be erased
-     */
-    virtual void slotEraseRightSideData( std::string type )=0;
+    virtual void slotAddRightSideData( std::string data )=0;
 
     /**
      * Slot to clear all data from the left side of the viewer.
@@ -422,29 +444,15 @@ signals:
 
     /**
      * Signal indicating that some text data has been added to the left side of the viewer.
-     *  @param type the type of the data
      *  @param data the value of the data
      */
-    void signalAddLeftSideData( std::string type, std::string data );
+    void signalAddLeftSideData( std::string data );
 
     /**
      * Signal indicating that some text data has been added to the right side of the viewer.
-     *  @param type the type of the data
      *  @param data the value of the data
      */
-    void signalAddRightSideData( std::string type, std::string data );
-
-    /**
-     * Signal indicating that some text data has been erased from the left side of the viewer.
-     *  @param type the type of the data
-     */
-    void signalEraseLeftSideData( std::string type );
-
-    /**
-     * Signal indicating that some text data has been erased from the right side of the viewer.
-     *  @param type the type of the data
-     */
-    void signalEraseRightSideData( std::string type );
+    void signalAddRightSideData( std::string data );
 
     /**
      * Signal indicating that all the text data have been erased from the left side of the viewer.

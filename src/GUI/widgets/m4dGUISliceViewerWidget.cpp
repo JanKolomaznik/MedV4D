@@ -452,18 +452,6 @@ m4dGUISliceViewerWidget::ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imag
 }
 
 void
-m4dGUISliceViewerWidget::setLeftSideTextData( std::map< std::string, std::string >& dataList )
-{
-    _leftSideData = dataList;
-}
-
-void
-m4dGUISliceViewerWidget::setRightSideTextData( std::map< std::string, std::string >& dataList )
-{
-    _rightSideData = dataList;
-}
-
-void
 m4dGUISliceViewerWidget::setButtonHandler( ButtonHandler hnd, MouseButton btn )
 {
     switch (hnd)
@@ -551,34 +539,18 @@ m4dGUISliceViewerWidget::toggleFlipVertical()
 }
 
 void
-m4dGUISliceViewerWidget::addLeftSideData( std::string type, std::string data )
+m4dGUISliceViewerWidget::addLeftSideData( std::string data )
 {
-    _leftSideData[type] = data;
-    emit signalAddLeftSideData( type, data );
+    _leftSideData.push_back( data );
+    emit signalAddLeftSideData( data );
     if ( _printData ) updateGL();
 }
 
 void
-m4dGUISliceViewerWidget::addRightSideData( std::string type, std::string data )
+m4dGUISliceViewerWidget::addRightSideData( std::string data )
 {
-    _rightSideData[type] = data;
-    emit signalAddRightSideData( type, data );
-    if ( _printData ) updateGL();
-}
-
-void
-m4dGUISliceViewerWidget::eraseLeftSideData( std::string type )
-{
-    _leftSideData.erase( type );
-    emit signalEraseLeftSideData( type );
-    if ( _printData ) updateGL();
-}
-
-void
-m4dGUISliceViewerWidget::eraseRightSideData( std::string type )
-{
-    _rightSideData.erase( type );
-    emit signalEraseRightSideData( type );
+    _rightSideData.push_back( data );
+    emit signalAddRightSideData( data );
     if ( _printData ) updateGL();
 }
 
@@ -872,7 +844,7 @@ m4dGUISliceViewerWidget::drawData( double zoomRate, QPoint offset, int sliceNum 
     glPushMatrix();
     glLoadIdentity();
     glColor3f( 1., 1., 1. );
-    std::map< std::string, std::string >::iterator it;
+    std::list< std::string >::iterator it;
     double w, h;
     calculateWidthHeight( w, h );
     int i, o_x, o_y, w_o;
@@ -922,11 +894,11 @@ m4dGUISliceViewerWidget::drawData( double zoomRate, QPoint offset, int sliceNum 
     }
     for ( it = _leftSideData.begin(); it != _leftSideData.end() && i >= o_y; ++it, i -= FONT_HEIGHT )
     {
-        if ( ( (int)( it->first + it->second ).length() * FONT_WIDTH ) < w_o )
+        if ( (int)(it->length() * FONT_WIDTH) < w_o )
 	{
             setTextPosition( o_x, i );
-            setTextCoords( o_x + ( (int)( it->first + it->second ).length() * FONT_WIDTH ), i + FONT_HEIGHT );
-            drawText( ( it->first + it->second ).c_str() );
+            setTextCoords( o_x + it->length() * FONT_WIDTH, i + FONT_HEIGHT );
+            drawText( it->c_str() );
             unsetTextCoords();
 	    glPixelStorei( GL_UNPACK_ROW_LENGTH,  0 );
         }
@@ -945,13 +917,13 @@ m4dGUISliceViewerWidget::drawData( double zoomRate, QPoint offset, int sliceNum 
     }
     for ( it = _rightSideData.begin(); it != _rightSideData.end() && i >= o_y; ++it, i -= FONT_HEIGHT )
     {
-        if ( ( (int)( it->first + it->second ).length() * FONT_WIDTH ) < w_o )
+        if ( (int)(it->length() * FONT_WIDTH) < w_o )
 	{
-	    o_x = w_o - (int)( it->first + it->second ).length() * FONT_WIDTH;
+	    o_x = w_o - it->length() * FONT_WIDTH;
 	    if ( !_oneSliceMode ) o_x += offset.x();
             setTextPosition( o_x, i );
-            setTextCoords( o_x + ( (int)( it->first + it->second ).length() * FONT_WIDTH ), i + FONT_HEIGHT );
-            drawText( ( it->first + it->second ).c_str() );
+            setTextCoords( o_x + it->length() * FONT_WIDTH, i + FONT_HEIGHT );
+            drawText( it->c_str() );
             unsetTextCoords();
 	    glPixelStorei( GL_UNPACK_ROW_LENGTH,  0 );
         }
@@ -1341,27 +1313,15 @@ m4dGUISliceViewerWidget::slotToggleFlipVertical()
 }
 
 void
-m4dGUISliceViewerWidget::slotAddLeftSideData( std::string type, std::string data )
+m4dGUISliceViewerWidget::slotAddLeftSideData( std::string data )
 {
-    addLeftSideData( type, data );
+    addLeftSideData( data );
 }
 
 void
-m4dGUISliceViewerWidget::slotAddRightSideData( std::string type, std::string data )
+m4dGUISliceViewerWidget::slotAddRightSideData( std::string data )
 {
-    addRightSideData( type, data );
-}
-
-void
-m4dGUISliceViewerWidget::slotEraseLeftSideData( std::string type )
-{
-    eraseLeftSideData( type );
-}
-
-void
-m4dGUISliceViewerWidget::slotEraseRightSideData( std::string type )
-{
-    eraseRightSideData( type );
+    addRightSideData( data );
 }
 
 void

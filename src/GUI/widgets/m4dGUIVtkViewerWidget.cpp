@@ -242,16 +242,6 @@ m4dGUIVtkViewerWidget::ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imagin
 }
 
 void
-m4dGUIVtkViewerWidget::setLeftSideTextData( std::map< std::string, std::string >& dataList )
-{
-}
-
-void
-m4dGUIVtkViewerWidget::setRightSideTextData( std::map< std::string, std::string >& dataList )
-{
-}
-
-void
 m4dGUIVtkViewerWidget::slotSetButtonHandler( ButtonHandler hnd, MouseButton btn ) {}
 
 void
@@ -277,16 +267,10 @@ void
 m4dGUIVtkViewerWidget::slotToggleFlipHorizontal() {}
 
 void
-m4dGUIVtkViewerWidget::slotAddLeftSideData( std::string type, std::string data ) {}
+m4dGUIVtkViewerWidget::slotAddLeftSideData( std::string data ) {}
 
 void
-m4dGUIVtkViewerWidget::slotAddRightSideData( std::string type, std::string data ) {}
-
-void
-m4dGUIVtkViewerWidget::slotEraseLeftSideData( std::string type ) {}
-
-void
-m4dGUIVtkViewerWidget::slotEraseRightSideData( std::string type ) {}
+m4dGUIVtkViewerWidget::slotAddRightSideData( std::string data ) {}
 
 void
 m4dGUIVtkViewerWidget::slotClearLeftSideData() {}

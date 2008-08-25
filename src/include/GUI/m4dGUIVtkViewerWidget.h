@@ -111,18 +111,6 @@ public:
     virtual void ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imaging::PipelineMessage::MessageSendStyle sendStyle, Imaging::FlowDirection direction );
     
     
-    /**
-     * Set the data text to be printed on the left side of the viewer.
-     *  @param dataList a map of the data text
-     */
-    virtual void setLeftSideTextData( std::map< std::string, std::string >& dataList );
-    
-    /**
-     * Set the data text to be printed on the right side of the viewer.
-     *  @param dataList a map of the data text
-     */
-    virtual void setRightSideTextData( std::map< std::string, std::string >& dataList );
-
 public slots:
 
     /**
@@ -175,32 +163,16 @@ public slots:
     /**
      * Slot to add some text data to show on the left side of the viewer
      * (it has no function in this type of viewer).
-     *  @param type the type of the given data
      *  @param data the value of the given data
      */
-    virtual void slotAddLeftSideData( std::string type, std::string data );
+    virtual void slotAddLeftSideData( std::string data );
 
     /**
      * Slot to add some text data to show on the right side of the viewer
      * (it has no function in this type of viewer).
-     *  @param type the type of the given data
      *  @param data the value of the given data
      */
-    virtual void slotAddRightSideData( std::string type, std::string data );
-
-    /**
-     * Slot to erase some data from the left side of the viewer
-     * (it has no function in this type of viewer).
-     *  @param type the type of the data that is to be erased
-     */
-    virtual void slotEraseLeftSideData( std::string type );
-
-    /**
-     * Slot to erase some data from the right side of the viewer
-     * (it has no function in this type of viewer).
-     *  @param type the type of the data that is to be erased
-     */
-    virtual void slotEraseRightSideData( std::string type );
+    virtual void slotAddRightSideData( std::string data );
 
     /**
      * Slot to clear all data from the left side of the viewer
