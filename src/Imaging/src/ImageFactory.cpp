@@ -145,6 +145,7 @@ ImageFactory::CreateImageDataFromDICOM( M4D::Dicom::DcmProvider::DicomObjSetPtr 
 		return result;
 	}
 	catch ( ... ) {
+		LOG( "Exception in CreateImageDataFromDICOM()" );
 		throw;
 	}
 }
@@ -177,6 +178,10 @@ FlushDicomObjectsHelper(
 		//uint8 *arrayPosition = dataArray + (stride * i);
 		uint8 *arrayPosition = dataArray + (stride * (it->OrderInSet()-1));
 		//it->FlushIntoArray< ElementType >( (ElementType*)dataArray + (stride * i /*it->OrderInSet()*/ ) );
+
+		if( it->OrderInSet() <= 0 || it->OrderInSet() > dicomObjects->size() ) {
+			throw ImageFactory::EWrongDICOMObjIndex();
+		}
 
 		   DL_PRINT( 8, "-------- DICOM object " << it->OrderInSet() << " flushing to : " << (unsigned int*)arrayPosition );
 

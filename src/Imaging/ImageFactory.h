@@ -28,6 +28,7 @@ public:
 	class EEmptyDicomObjSet;
 	class EWrongArrayForFlush;
 	class EUnknowDataType;
+	class EWrongDICOMObjIndex;
 
 	/**
 	 * Create image according to passed information.
@@ -372,6 +373,16 @@ public:
 private:
 	uint8 _size;
 	bool _sign;
+};
+
+class ImageFactory::EWrongDICOMObjIndex
+{
+public:
+	EWrongDICOMObjIndex() {}
+
+	//TODO
+private:
+
 };
 
 /**
