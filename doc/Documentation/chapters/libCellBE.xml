@@ -30,7 +30,7 @@ and communicate ONLY with our supercalculating server that is budled with. All f
 	System is classic Client-Server architecture. The client parts is in the library while the server part in
   another project. Purpouse of the library is to be linked with main program that has to have ability of remote
   computing. The both parts have some parts in common that reflects class hierarchy.
-	<xref linkend="pic.PipelineScheme"/>
+	<xref linkend="pic.CellHierarchy"/>
 	</para>
 	
 	<section>
@@ -47,6 +47,20 @@ and communicate ONLY with our supercalculating server that is budled with. All f
   	When you look at the class hiearchy, you can see there are commons parts for job on client and server side. But both
   	'types' of job has different behaviour when on client side and server side. So 2 branch in hierachy reflects that.
   	Each hierarchy member will be described now in more details:
+  	</para>
+  	
+		<para>
+  	<figure float="1" id="pic.CellHierarchy">
+  	<title>Hierarchy of classes composing job</title>
+  	<mediaobject>
+  		<imageobject>
+  			<imagedata fileref="figures/cell/hierarchy.eps" format="EPS" scale="21"/>
+  		</imageobject>
+  		<imageobject>
+  		<imagedata fileref="figures/cell/hierarchy.png" format="PNG" scale="21"/>
+  		</imageobject>
+  	</mediaobject>
+  	</figure>
   	</para>
 
   	<section>
@@ -100,7 +114,7 @@ and communicate ONLY with our supercalculating server that is budled with. All f
   	</para>
   	<para>
   	Serializer is object that can perform serialization of its content. We have 2 types of serializers. These
-  	are FilterSerializers perform Serialization of Filter::Properties classes. Used in sending definitioin
+  	are FilterSerializers perform Serialization of <classname>Filter::Properties<classname> classes. Used in sending definitioin
   	container. And DataSetSerializers. These performs dataSet serialization. Each Serializer performs serialization
   	of 2 main types. First is class info serialization (CIS). In this stage is template parameters along with class
   	type serialized. These information should be enough for other side for creating appropriate templated class instance.
@@ -120,8 +134,8 @@ and communicate ONLY with our supercalculating server that is budled with. All f
   	<title>FilterSerializer</title>
   	
   	<para>
-  	Each filterSerializer (FS) should be derived from AbstractFilterSerializer class which is the base class for every
-  	FS and defines interface of its behaviour. CIS is performed by SerializeClassInfo &amp; DeSerializeClassInfo pair of
+  	Each filterSerializer (FS) should be derived from <classname>AbstractFilterSerializer<classname> class which is the base class for every
+  	FS and defines interface of its behaviour. CIS is performed by <methodname>SerializeClassInfo</methodname> &amp; <methodname>DeSerializeClassInfo</methodname> pair of
   	member functions. ACS by SerializeProperties &amp; DeSerializeProperties pair.
   	</para>
   	
@@ -132,30 +146,30 @@ and communicate ONLY with our supercalculating server that is budled with. All f
     	
     	<para>
       DataSetSerializer has more work to do than FilterSerializer. It performs CIS (within GeneralDataSetSerializer and
-      appropriate switch cases, desribed later) and ACS in SerializeProperties &amp; DeSerializeProperties pair of functions
+      appropriate switch cases, desribed later) and ACS in <methodname>SerializeProperties</methodname> &amp; <methodname>DeSerializeProperties</methodname> pair of functions
       that are in interface defined by AbstractDataSetSerializer that each new DataSet should inherit.
     	</para>
     	<para>
     	New is Actual Data Serialization (ADS). This is performed through another part of AbstractDataSetSerializer iterface
-    	parts: Serialize, OnDataPieceReadRequest, OnDataSetEndRead functions. For more detail of these function purpouse see 
+    	parts: <methodname>Serialize</methodname>, <methodname>OnDataPieceReadRequest</methodname>, <methodname>OnDataSetEndRead</methodname> functions. For more detail of these function purpouse see 
     	appropriate headers. 
     	</para>
     	<para>
     	Main idea of dataSetSerialization is to divide the whole dataSet into smaller parts, that can be
     	transported throug network separately (dataPieces, DP) and alternatively the calculation can be started on independently
     	from other DP that have not yet arrived. Each DP has its header that says how long it is. So on reciving
-    	side when such header is recieved its passed to DataSetSerializer's OnDataPieceReadRequest method that will decide
+    	side when such header is recieved its passed to DataSetSerializer's <methodname>OnDataPieceReadRequest</methodname> method that will decide
     	where the data that the DP reffers to are going to be recieved. This can tell through DataBuffs vector by putting DataBuf
     	sctruct into it. DataBuf is struct of void * pointer pointing somewhere into memory and size. So the DataBuffs vector 
     	defines place where data of DP should be transmitted (in geather manner). 
     	</para>
     	<para>
-    	Another mandatory function is OnDataSetEndRead. This is called when whole dataSet is recieved. No more DP are going
+    	Another mandatory function is <methodname>OnDataSetEndRead</methodname>. This is called when whole dataSet is recieved. No more DP are going
     	to be recieved. This is recognized by recieving of special DBHeader. Function can perform some clean up or something.
     	</para>
     	<para>
-    	Serialize is another mandatory function. It has to perform actual whole ADS. It gets pointer to iPublicJob interface
-    	and through its function PutDataPiece should perform serialization. PutDataPiece is the same as in deserialization
+    	<methodname>Serialize</methodname> is another mandatory function. It has to perform actual whole ADS. It gets pointer to <classname>iPublicJob</classname> interface
+    	and through its function <methodname>PutDataPiece</methodname> should perform serialization. PutDataPiece is the same as in deserialization
     	but it writes data into network in scatter manner. In this function the programer should define meaning of DP and
     	reflect the meaning in deserialization functions. Perfect example is serialization of 3d image. DP is one slice. So
     	whole dataSet is sent with slice granularity. On the other side DP (slice) is recieved directly into the right place
@@ -164,13 +178,77 @@ and communicate ONLY with our supercalculating server that is budled with. All f
     	transferred whole and whole recieved.
     	</para>
     	<para>
-    	Because this serialization is statefull the inner state has to be in serializer instance. Reset mandatory method should
+    	Because this serialization is statefull the inner state has to be in serializer instance. <methodname>Reset</methodname> mandatory method should
     	reset the state for seralizer reusage.
     	</para>  	
   	</section>  
 	
 	</section>
 	
+	<section>
+	  <title>CellClient class</title>
+	  <para>
+	  <classname>CellClient</classname> represent the gate to remote computing. Each job on client side is created throuh this 
+	  class by CreateJob function. This class also contains container of available servers that can be used for remote computing.
+	  It can also load it from config file. 
+	  </para>
+	</section>
+	
+	<section>
+  	<title>Remote Filter</title>
+  	<para>
+  	Remote filter is filter that represents remote pipeline. It shall create definition container that is needed to create
+  	Job, that represents remote computation. It shall contain filterProperties, that correnspons to the filter in remote
+  	pipeline which compose. Because everything is templated there is not yet no other way of creating remote pipeline
+  	than define it through this filter properties, that is members of remote filter (they are some kind hardcoded). That means
+  	if you want to create another remote filter with different pipeline within, you have to write new sucessor of 
+  	<classname>RemoteFilter</classname>. So every remote filter MUST inherit from <classname>RemoteFilter</classname>. 
+  	</para>  	
+  	<para>
+  	To have hierarchy complete there is <classname>RemoteFilterBase</classname>. This class is ancesstor of <classname>
+  	RemoteFilter</classname> and it's purpouse is to make <classname>CellClient</classname> to the sucessors to make job
+  	creating possible. 
+  	</para>
+	</section>
+	
+	<section>
+	  <title>Server</title>
+	  
+	  <para>
+	  Server is whole implemented in asynchronous manner. Base consists <classname>Server</classname>. Main part is <classname>
+	  JobManager</classname> that stores all jobs that are currently on the server. It is associative container with JobID key.
+	  Only thing that server can do accept connections and read primary header. 
+	  </para>
+	  
+	  <para>
+	  When accepts connection, reads <classname>
+	  PrimaryHeader</classname> and based on <classname>PrimaryHeader</classname>::action it decides what to do. For action 
+	  definitions see BasicJob. Primary action performed by <classname>Server</classname> is job creation. It creates new <classname>
+	  ServerJob</classname> instance, adds it to the <classname>JobManager</classname> and then all work is delegate to this job.
+	  Then the job recieve other commends (the socket that is created in accept is given to job) and performs appropriate actions.
+	  </para>
+	  
+	  <para>
+	  Server can also understand other actions. This is done for case when connection to clint is broken. After reconnect server
+	  has to react to all types of action and assotiate recieved request to existing job, give new socket to it and delegate reaction
+	  to the existing job.
+	  </para>
+	  
+	  <para>
+  	<figure float="1" id="pic.JobLifeCycle">
+  	<title>Job life cycle</title>
+  	<mediaobject>
+  		<imageobject>
+  			<imagedata fileref="figures/cell/lifecycle.eps" format="EPS" scale="21"/>
+  		</imageobject>
+  		<imageobject>
+  		<imagedata fileref="figures/cell/lifecycle.png" format="PNG" scale="21"/>
+  		</imageobject>
+  	</mediaobject>
+  	</figure>
+  	</para>
+  	
+	</section>
 
 </section>
 
