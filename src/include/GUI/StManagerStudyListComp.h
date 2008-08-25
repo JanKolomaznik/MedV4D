@@ -79,13 +79,28 @@ class StManagerStudyListComp: public QWidget
     QString getBuildMessage () const { return buildMessage; }
 
     /** 
-     * Sets pointer to DicomObjSet - result of the Study Manager appears there.
+     * Sets dicomObjectSet pointer to previously allocated DicomObjSet - result of the Study Manager
+     * will appear there.
      * 
-     * @param dcmObjSet DicomObjSet to fill
+     * @param dcmObjSet pointer to the DicomObjSet to fill
      */
-    void setDicomObjectSet ( M4D::Dicom::DcmProvider::DicomObjSet *dcmObjSet )
+    void setDicomObjectSetPtr ( M4D::Dicom::DcmProvider::DicomObjSet *dcmObjSet )
     {
       dicomObjectSet = dcmObjSet;  
+    }
+
+    /** 
+     * Sets (left|right)overlayInfo pointer to previously allocated overlay info map - overlay info 
+     * of the Study Manager's result will appear there.
+     * 
+     * @param leftInfo pointer to the left overlay info map to fill
+     * @param rightInfo pointer to the right overlay info map to fill
+     */
+    void setOverlayInfoPtr ( std::map< std::string, std::string > *leftInfo,
+                             std::map< std::string, std::string > *rightInfo )
+    {
+      leftOverlayInfo  = leftInfo;  
+      rightOverlayInfo = rightInfo;  
     }
  
   private slots:
@@ -181,6 +196,14 @@ class StManagerStudyListComp: public QWidget
      * @return the index of selected series 
      */
     unsigned getSeriesIndex( const M4D::Dicom::DcmProvider::SerieInfoVector info );
+
+    /** 
+     * Fills the overlay info map with selected study's info - to print it out on the viewer.
+     * 
+     * @param table study table from which are the infos taken
+     * @param row number of the row in the table
+     */
+    void fillOverlayInfo ( QTableWidget *table, int row );
 
     /** 
      * Updates Recent Exams by currently viewed one - saves it using Settings mechanism of Qt -
@@ -291,8 +314,12 @@ class StManagerStudyListComp: public QWidget
     /// Pointer to vector of TableRows - pointing to active ResultSet.
     M4D::Dicom::DcmProvider::ResultSet *activeResultSet;
 
-    /// Pointer to DicomObjSet - result of the Study Manager appears there (after clicking View).
+    /// Pointer to DicomObjSet - result of the Study Manager will appear there (after clicking View).
     M4D::Dicom::DcmProvider::DicomObjSet *dicomObjectSet;	
+    /// Pointer to the left overlay info map - overlay info of the Study Manager's result will appear there.
+    std::map< std::string, std::string > *leftOverlayInfo;
+    /// Pointer to the right overlay info map - overlay info of the Study Manager's result will appear there.
+    std::map< std::string, std::string > *rightOverlayInfo;
 
     /// Flag indicating wheather the build was successful - DcmProvider construct. can cause exceptions (e.g. missing cfg)
     bool buildSuccessful;

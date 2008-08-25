@@ -290,7 +290,7 @@ void StManagerStudyListComp::view ()
 {
   // no selection (not necessary test, view button is disabled) or no allocated space for dicomObjSet
   if ( activeExamTable->selectedItems().empty() || 
-       sizeof( *dicomObjectSet ) != sizeof( DcmProvider::DicomObjSet ) ) {
+       dicomObjectSet == 0 || leftOverlayInfo == 0 || rightOverlayInfo == 0 ) {
     return;
   }
 
@@ -394,6 +394,9 @@ void StManagerStudyListComp::view ()
       }
       break;
   }
+
+  // fill the overlay info map
+  fillOverlayInfo( activeExamTable, selectedRow );
 
   // add to Recent Exams
   updateRecentExams( row, recentTypePrefix );
@@ -637,6 +640,17 @@ unsigned StManagerStudyListComp::getSeriesIndex( const DcmProvider::SerieInfoVec
   seriesSelectorDialog->setLayout( mainLayout );
 
   return seriesSelectorDialog->exec();
+}
+
+
+void StManagerStudyListComp::fillOverlayInfo ( QTableWidget *table, int row )
+{
+  (*leftOverlayInfo)[attributeNames[6]] = table->item( row, 6 )->text().toStdString();
+  (*leftOverlayInfo)[attributeNames[3]] = table->item( row, 3 )->text().toStdString();
+
+  (*rightOverlayInfo)[table->item( row, 1 )->text().toStdString()] = "";
+  (*rightOverlayInfo)[table->item( row, 8 )->text().toStdString() + " " + 
+                      table->item( row, 7 )->text().toStdString()] = "";
 }
 
 

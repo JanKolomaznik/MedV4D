@@ -2,12 +2,16 @@
 
 #include <QtGui>
 
+#include <map>
+
 #include "Log.h"
 #include "Debug.h"
 
 using namespace M4D::Dicom;
 using namespace M4D::Viewer;
 using namespace M4D::Imaging;
+
+using namespace std;
 
 
 // Q_INIT_RESOURCE macro cannot be used in a namespace
@@ -132,12 +136,20 @@ void m4dGUIMainWindow::addDockWindow ( const char *title, QWidget *widget )
 
 void m4dGUIMainWindow::search ()
 {
-  DcmProvider::DicomObjSet *dicomObjSet = new DcmProvider::DicomObjSet();	
-  studyManagerWidget->getStudyListComponent()->setDicomObjectSet( dicomObjSet );
+  DcmProvider::DicomObjSet dicomObjSet;	
+  studyManagerWidget->getStudyListComponent()->setDicomObjectSetPtr( &dicomObjSet );
+
+  map< string, string > leftOverlayInfo; 
+  map< string, string > rightOverlayInfo; 
+  studyManagerWidget->getStudyListComponent()->setOverlayInfoPtr( &leftOverlayInfo,
+                                                                  &rightOverlayInfo );
 
   // Study Manager Dialog - this will fill the dicomObjSet
-  if ( studyManagerDialog->exec() ) {
-    process( DcmProvider::DicomObjSetPtr( dicomObjSet ) );
+  if ( studyManagerDialog->exec() ) 
+  {
+    mainViewerDesktop->getSelectedViewerWidget()->setLeftSideTextData( leftOverlayInfo );  
+    mainViewerDesktop->getSelectedViewerWidget()->setRightSideTextData( rightOverlayInfo );  
+    process( DcmProvider::DicomObjSetPtr( &dicomObjSet ) );
   }
 }
 

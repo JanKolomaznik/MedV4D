@@ -24,18 +24,15 @@ mainWindow::mainWindow ()
 
 void mainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
 {
-	try {
-    AbstractImage::AImagePtr inputImage = ImageFactory::CreateImageFromDICOM( dicomObjSet );
+	AbstractImage::AImagePtr inputImage = ImageFactory::CreateImageFromDICOM( dicomObjSet );
 
+	try {
     AbstractImageConnection *conn = new AbstractImageConnection();
 		conn->PutImage( inputImage );
 
 		mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
 		conn->ConnectConsumer( mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 	} 
-  catch ( ImageFactory::EWrongDICOMObjIndex ) {
-    QMessageBox::critical( this, tr( "Exception" ), tr( "Wrong DICOM slice index - cannot be viewed" ) );
-  }
 	catch ( ... ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Some exception" ) );
 	}
