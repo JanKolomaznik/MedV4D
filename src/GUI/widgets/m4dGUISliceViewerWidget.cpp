@@ -920,7 +920,6 @@ m4dGUISliceViewerWidget::drawData( double zoomRate, QPoint offset, int sliceNum 
         unsetTextCoords();
         glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
     }
-    for ( it = _leftSideData.begin(); it != _leftSideData.end(); ++it ) std::cout << it->first << " " << it->second << std::endl;
     for ( it = _leftSideData.begin(); it != _leftSideData.end() && i >= o_y; ++it, i -= FONT_HEIGHT )
     {
         if ( ( (int)( it->first + it->second ).length() * FONT_WIDTH ) < w_o )
