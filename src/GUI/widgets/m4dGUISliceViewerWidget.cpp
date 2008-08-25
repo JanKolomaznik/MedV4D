@@ -401,6 +401,18 @@ m4dGUISliceViewerWidget::ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imag
 }
 
 void
+m4dGUISliceViewerWidget::setLeftSideTextData( std::map< std::string, std::string >& dataList )
+{
+    _leftSideData = dataList;
+}
+
+void
+m4dGUISliceViewerWidget::setRightSideTextData( std::map< std::string, std::string >& dataList )
+{
+    _rightSideData = dataList;
+}
+
+void
 m4dGUISliceViewerWidget::setButtonHandler( ButtonHandler hnd, MouseButton btn )
 {
     switch (hnd)
@@ -687,7 +699,7 @@ m4dGUISliceViewerWidget::drawSelectedBorder()
 }
 
 void
-m4dGUISliceViewerWidget::drawShape( Selection::m4dShape<double>& s, bool last, int sliceNum, float zoomRate )
+m4dGUISliceViewerWidget::drawShape( Selection::m4dShape<double>& s, bool last, int sliceNum, double zoomRate )
 {
     if ( last ) glColor3f( 1., 0., 0. );
     else glColor3f( 0., 0., 1. );
@@ -838,11 +850,11 @@ m4dGUISliceViewerWidget::drawData( double zoomRate, QPoint offset, int sliceNum 
     }
     for ( it = _leftSideData.begin(); it != _leftSideData.end() && i >= o_y; ++it, i -= FONT_HEIGHT )
     {
-        if ( ( (int)( it->first + " : " + it->second ).length() * FONT_WIDTH ) < w_o )
+        if ( ( (int)( it->first + it->second ).length() * FONT_WIDTH ) < w_o )
 	{
             setTextPosition( o_x, i );
-            setTextCoords( o_x + ( (int)( it->first + " : " + it->second ).length() * FONT_WIDTH ), i + FONT_HEIGHT );
-            drawText( ( it->first + " : " + it->second ).c_str() );
+            setTextCoords( o_x + ( (int)( it->first + it->second ).length() * FONT_WIDTH ), i + FONT_HEIGHT );
+            drawText( ( it->first + it->second ).c_str() );
             unsetTextCoords();
 	    glPixelStorei( GL_UNPACK_ROW_LENGTH,  0 );
         }
@@ -861,13 +873,13 @@ m4dGUISliceViewerWidget::drawData( double zoomRate, QPoint offset, int sliceNum 
     }
     for ( it = _rightSideData.begin(); it != _rightSideData.end() && i >= o_y; ++it, i -= FONT_HEIGHT )
     {
-        if ( ( (int)( it->first + " : " + it->second ).length() * FONT_WIDTH ) < w_o )
+        if ( ( (int)( it->first + it->second ).length() * FONT_WIDTH ) < w_o )
 	{
-	    o_x = w_o - (int)( it->first + " : " + it->second ).length() * FONT_WIDTH;
+	    o_x = w_o - (int)( it->first + it->second ).length() * FONT_WIDTH;
 	    if ( !_oneSliceMode ) o_x += offset.x();
             setTextPosition( o_x, i );
-            setTextCoords( o_x + ( (int)( it->first + " : " + it->second ).length() * FONT_WIDTH ), i + FONT_HEIGHT );
-            drawText( ( it->first + " : " + it->second ).c_str() );
+            setTextCoords( o_x + ( (int)( it->first + it->second ).length() * FONT_WIDTH ), i + FONT_HEIGHT );
+            drawText( ( it->first + it->second ).c_str() );
             unsetTextCoords();
 	    glPixelStorei( GL_UNPACK_ROW_LENGTH,  0 );
         }

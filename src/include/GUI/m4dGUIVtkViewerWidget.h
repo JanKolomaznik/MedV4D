@@ -53,6 +53,19 @@ public:
     virtual QWidget* operator()();
 
     virtual void ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imaging::PipelineMessage::MessageSendStyle sendStyle, Imaging::FlowDirection direction );
+    
+    
+    /**
+     * Set the data text to be printed on the left side of the viewer.
+     *  @param dataList a map of the data text
+     */
+    virtual void setLeftSideTextData( std::map< std::string, std::string >& dataList );
+    
+    /**
+     * Set the data text to be printed on the right side of the viewer.
+     *  @param dataList a map of the data text
+     */
+    virtual void setRightSideTextData( std::map< std::string, std::string >& dataList );
 
 public slots:
 

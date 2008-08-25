@@ -242,6 +242,16 @@ m4dGUIVtkViewerWidget::ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imagin
 }
 
 void
+m4dGUIVtkViewerWidget::setLeftSideTextData( std::map< std::string, std::string >& dataList )
+{
+}
+
+void
+m4dGUIVtkViewerWidget::setRightSideTextData( std::map< std::string, std::string >& dataList )
+{
+}
+
+void
 m4dGUIVtkViewerWidget::slotSetButtonHandler( ButtonHandler hnd, MouseButton btn ) {}
 
 void
