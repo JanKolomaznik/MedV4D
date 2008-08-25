@@ -19,32 +19,73 @@ namespace M4D
 namespace Viewer
 {
 
+/**
+ * Class that arranges the voxels in correct order.
+ * Cannot be instantiated, and it has only one static function.
+ */
 template< typename ElementType >
 class VoxelArrayCopier
 {
 public:
-    static void copy( ElementType* dst, ElementType* src, uint32 width, uint32 height, uint32 newWidth, uint32 newHeight, uint32 depth, int32 xstride, int32 ystride, int32 zstride )
+
+    /**
+     * Function that arranges the voxels in correct order.
+     *  @param dst pointer to the destination array
+     *  @param src pointer to the source array
+     *  @param width the width of the image
+     *  @param height the height of the image
+     *  @param newWidth the new width of the image after texture correction ( to be a power of 2 )
+     *  @param depth the depth at which the slice lies
+     *  @param xstride the steps between two neighbor voxels according to coordinate x
+     *  @param ystride the steps between two neighbor voxels according to coordinate y
+     *  @param zstride the steps between two neighbor voxels according to coordinate z
+     */
+    static void copy( ElementType* dst, ElementType* src, uint32 width, uint32 height, uint32 newWidth, uint32 depth, int32 xstride, int32 ystride, int32 zstride )
     {
         uint32 i, j;
 	for ( i = 0; i < height; i++ )
 	    for ( j = 0; j < width; j++ ) dst[ i * newWidth + j ] = src[ j * xstride + i * ystride + depth * zstride ];
     }
 private:
-    VoxelArrayCopier();
-    VoxelArrayCopier( const VoxelArrayCopier& );
-    const VoxelArrayCopier& operator=( const VoxelArrayCopier& );
+    VoxelArrayCopier();  // not implemented
+    VoxelArrayCopier( const VoxelArrayCopier& ); // not implemented
+    const VoxelArrayCopier& operator=( const VoxelArrayCopier& );  // not implemented
 };
 
+/**
+ * Class that prepares the texture of the image according to the voxel type.
+ * Cannot be instantiated, and it has only static functions.
+ */
 template< typename ElementType >
 class TexturePreparer
 {
 public:
+
+    /**
+     * Get the OpenGL enum constant for a given type - different implementation
+     * for each template specialization.
+     *  @return OpenGL enum constant for the given type
+     */
     static GLenum oglType();
+
+    /**
+     * Prepares the texture of the image to be mapped to the following OpenGL surface.
+     *  @param inPort the input pipeline port to get the image from
+     *  @param width reference to set the width of the texture
+     *  @param height reference to set the height of the texture
+     *  @param brightnessRate the rate of brightness to adjust the image with
+     *  @param contrastRate the rate of contrast to adjust the image with
+     *  @param so the orientation of the slices (xy, yz, zx)
+     *  @param slice the number of the slice to be drawn
+     *  @return true, if texture preparing was successful, false otherwise
+     */
     static bool prepare( Imaging::InputPortAbstractImage* inPort, uint32& width, uint32& height, GLint brightnessRate, GLfloat contrastRate, SliceOrientation so, uint32 slice )
     {
         uint32 depth;
         double maxvalue;
 	bool unsgn;
+
+	// get the maximum value of the given element type
 	if ( typeid( ElementType ) == typeid( uint8 ) || typeid( ElementType ) == typeid( uint16 ) || typeid( ElementType ) == typeid( uint32 ) || typeid( ElementType ) == typeid( uint64 ) )
 	{
 	    maxvalue = std::pow( (double)256, (double)sizeof( ElementType ) ) - 1;
@@ -55,16 +96,20 @@ public:
 	    maxvalue = (int)( std::pow( (double)256, (double)sizeof( ElementType ) ) / 2 - 1 );
 	    unsgn = false;
 	}
+
+	// depending on the element type, the brightness rate might need to be multiplied
 	double multiplicator = std::pow( (double)BRIGHTNESS_MULTIPLICATOR, (double)sizeof( ElementType ) - 1 );
         int32 xstride, ystride, zstride;
         bool ready = true;
 	ElementType* pixel, *original;
 	try
 	{
+	    // need to lock dataset first
 	    if ( inPort->TryLockDataset() )
 	    {
 		try
 		{
+		    // check dimension
 		    if ( inPort->GetAbstractImage().GetDimension() == 2 )
 		    {
 		        original = Imaging::Image< ElementType, 2 >::CastAbstractImage(inPort->GetAbstractImage()).GetPointer( width, height, xstride, ystride );
@@ -73,6 +118,7 @@ public:
 		    }
 		    else if ( inPort->GetAbstractImage().GetDimension() == 3 )
 		    {
+		        // check orientation
 		        switch ( so )
 		        {
 			    case xy:
@@ -107,6 +153,7 @@ public:
 	catch (...) { ready = false; }
 	if ( !ready ) return ready;
 
+	// check to see if modification is required for power of 2 long and wide texture
 	float power_of_two_width_ratio=std::log((float)(width))/std::log(2.0);
 	float power_of_two_height_ratio=std::log((float)(height))/std::log(2.0);
 
@@ -114,7 +161,9 @@ public:
 	uint32 newHeight=(uint32)std::pow( (double)2.0, (double)std::ceil(power_of_two_height_ratio) );
 
 	pixel = new ElementType[ newHeight * newWidth ];
-	VoxelArrayCopier<ElementType>::copy( pixel, original, width, height, newWidth, newHeight, slice, xstride, ystride, zstride );
+
+	// arrange voxels
+	VoxelArrayCopier<ElementType>::copy( pixel, original, width, height, newWidth, slice, xstride, ystride, zstride );
 	uint32 i, j;
 	double mean;
 	mean = 0.;
@@ -124,12 +173,14 @@ public:
 	for ( i = 0; i < newHeight; ++i )
 	    for ( j = 0; j < newWidth; j++ )
 	    {
-	        if ( i < height && j < width )
+	        // if inside the image
+		if ( i < height && j < width )
 		{
 	            if ( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, multiplicator, brightnessRate, contrastRate ) > maxvalue ) pixel[ i * newWidth + j ] = (ElementType)maxvalue;
 	            else if ( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, multiplicator, brightnessRate, contrastRate ) < ( unsgn ? 0 : -maxvalue ) ) pixel[ i * newWidth + j ] = ( unsgn ? 0 : (ElementType)(-maxvalue) );
 	            else pixel[ i * newWidth + j ] = (ElementType)( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, multiplicator, brightnessRate, contrastRate ) );
 		}
+		// if extra pixels are reached
 		else
 		    pixel[ i * newWidth + j ] = ( unsgn ? 0 : (ElementType)(-maxvalue) );
 	    }
@@ -378,8 +429,8 @@ m4dGUISliceViewerWidget::setParameters()
 	catch (...) { _ready = false; }
     }
     _shapes.clear();
-    _leftSideData.clear();
-    _rightSideData.clear();
+    //_leftSideData.clear();
+    //_rightSideData.clear();
 }
 
 m4dGUISliceViewerWidget::AvailableSlots
@@ -572,17 +623,26 @@ m4dGUISliceViewerWidget::paintGL()
         unsigned i;
 	double w, h;
 	calculateWidthHeight( w, h );
-        if ( _oneSliceMode )
+
+        // check if in one slice mode or more slice mode
+	if ( _oneSliceMode )
 	{
+
+	    // set new offset according to zoom rate
 	    QPoint offset;
 	    offset.setX( (int)floor( (double)_offset.x() - ( _zoomRate - (double)width()/w ) * 0.5 * w ) );
 	    offset.setY( (int)floor( (double)_offset.y() - ( _zoomRate - (double)height()/h ) * 0.5 * h ) );
 	    drawSlice( _sliceNum, _zoomRate, offset );
+	
 	}
-        else
+        
+	else
 	{
-            double xgap = 0, ygap = 0;
+        
+	    double xgap = 0, ygap = 0;
 	    double zoomRate = 1.;
+	    
+	    // set zoom rate and offset according to how many slices per row and per column are to be displayed
 	    if ( ( (double)width() / (double)_slicesPerRow ) / w < ( (double)height() / (double)_slicesPerColumn ) / h )
 	    {
 	        ygap = ( ( (double)height() / (double)_slicesPerColumn ) - h * ( (double)width() / (double)_slicesPerRow ) / w ) / 2.;
@@ -593,6 +653,8 @@ m4dGUISliceViewerWidget::paintGL()
 	        xgap = ( ( (double)width() / (double)_slicesPerRow ) - w * ( (double)height() / (double)_slicesPerColumn ) / h ) / 2.;
 	        zoomRate = ( (double)height() / (double)_slicesPerColumn ) / h;
 	    }
+	    
+	    // draw slices at given offsets
 	    for ( i = 0; i < _slicesPerRow * _slicesPerColumn; ++i )
 	         drawSlice( _sliceNum + i, zoomRate, QPoint( (int)( ( i % _slicesPerRow) * ( width() / _slicesPerRow ) + xgap ) , (int)( ( ( i / _slicesPerRow ) * ( height() / _slicesPerColumn ) + ygap ) ) ) );
 	}
@@ -619,11 +681,14 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	calculateWidthHeight( w, h );
     }
     glLoadIdentity();
+    
+    // manage flips
     if ( _flipH < 0 ) offset.setX( offset.x() + (int)( zoomRate * w ) );
     if ( _flipV < 0 ) offset.setY( offset.y() + (int)( zoomRate * h ) );
     uint32 height, width;
     GLuint texName;
 
+    // opengl texture setup functions
     glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
     glGenTextures( 1, &texName );
 
@@ -638,12 +703,14 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
     glTranslatef( offset.x(), offset.y(), 0 );
     glScalef( _flipH * zoomRate, _flipV * zoomRate, 0. );
     
+    // prepare texture
     INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
     	_imageID, _ready = TexturePreparer<TTYPE>::prepare( _inPort, width, height, _brightnessRate, _contrastRate, _sliceOrientation, sliceNum - _minimum[ ( _sliceOrientation + 2 ) % 3 ]) )
     
     glEnable( GL_TEXTURE_2D );
     glBindTexture( GL_TEXTURE_2D, texName );
 
+    // draw surface and map texture on it
     glBegin( GL_QUADS );
         glTexCoord2d(0.0,0.0); glVertex2d(  0.0,   0.0);
         glTexCoord2d(1.0,0.0); glVertex2d(width * _extents[ _sliceOrientation ],   0.0);
@@ -652,6 +719,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
         glEnd();
     glDeleteTextures( 1, &texName );
     
+    // if there are selected shapes, draw them
     if ( !_shapes.empty() )
     {
         for ( std::list< Selection::m4dShape<double> >::iterator it = _shapes.begin(); it != --(_shapes.end()); ++it )
@@ -660,7 +728,11 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
     }
     if ( _flipH < 0 ) offset.setX( offset.x() - (int)( zoomRate * w ) );
     if ( _flipV < 0 ) offset.setY( offset.y() - (int)( zoomRate * h ) );
+    
+    // print text data if requested
     if ( _printData ) drawData( zoomRate, offset, sliceNum );
+
+    // print color value of the picked voxel
     if ( _colorPicker && sliceNum == _slicePicked ) drawPicked();
     glFlush();
 }
@@ -848,6 +920,7 @@ m4dGUISliceViewerWidget::drawData( double zoomRate, QPoint offset, int sliceNum 
         unsetTextCoords();
         glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
     }
+    for ( it = _leftSideData.begin(); it != _leftSideData.end(); ++it ) std::cout << it->first << " " << it->second << std::endl;
     for ( it = _leftSideData.begin(); it != _leftSideData.end() && i >= o_y; ++it, i -= FONT_HEIGHT )
     {
         if ( ( (int)( it->first + it->second ).length() * FONT_WIDTH ) < w_o )
@@ -1430,6 +1503,8 @@ m4dGUISliceViewerWidget::slotToggleSliceOrientation()
     if ( _sliceNum >= (int)_maximum[ ( _sliceOrientation + 2 ) % 3 ] ) _sliceNum = _maximum[ ( _sliceOrientation + 2 ) % 3 ] - 1;
     if ( _sliceNum < (int)_minimum[ ( _sliceOrientation + 2 ) % 3 ] ) _sliceNum = _minimum[ ( _sliceOrientation + 2 ) % 3 ];
     calculateOptimalZoomRate();
+    
+    // modify shape orientations for centroid and area calculation and displaying
     for ( std::list< Selection::m4dShape<double> >::iterator it = _shapes.begin(); it != _shapes.end(); ++it ) it->setOrientation( _sliceOrientation );
     updateGL();
     emit signalToggleSliceOrientation( _index );
