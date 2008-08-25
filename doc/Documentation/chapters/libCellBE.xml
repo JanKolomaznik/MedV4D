@@ -284,9 +284,11 @@ and communicate ONLY with our supercalculating server that is budled with. All f
   	</itemizedlist>
   	
   	<informalexample>
+	<para>
   	Example of creation &amp; registration of a new FilterSerializer (taken from code. For details see
   	ThresholdingSerializer.h &amp; .tcc). It uses supporting function, that is called rught after
   	CTS
+	</para>
   	</informalexample>
   	
   	<programlisting>

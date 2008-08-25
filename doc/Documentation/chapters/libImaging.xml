@@ -103,46 +103,8 @@
 
 	<section>
 	<title>Filters</title>
-		
-		<formalpara><title><classname>AbstractPipeFilter</classname></title><para>
-		This is a test.  This is only a test.  Had this been a real
-		example, it would have made more sense.  Or less.
-		</para></formalpara>
-
-		<formalpara><title><classname>AbstractImageFilter</classname></title><para>
-		This is a test.  This is only a test.  Had this been a real
-		example, it would have made more sense.  Or less.
-		</para></formalpara>
-
-		<formalpara><title><classname>AbstractImageSliceFilter</classname></title><para>
-		This is a test.  This is only a test.  Had this been a real
-		example, it would have made more sense.  Or less.
-		</para></formalpara>
-
-		<formalpara><title><classname>AbstractImage2DFilter</classname></title><para>
-		This template is planned to be used as predecessor for filters procesing on two dimensional data.
-		By that are meant 2D images and 3D images processed in slices. 
-		Output dataset proportions are set to the same values as input dataset, so only method to be overrided
-		is <methodname>Process2D()</methodname>.
-		</para></formalpara>
-		
-		<formalpara><title><classname>AbstractImageElementFilter</classname></title><para>
-		This template is prepared to ease design of image filters, which work on zero neighbourhood of element 
-		- use only value of the element.
-		These filters work with output dataset with same extents as input. 
-		</para></formalpara><para>
-		Because calling virtual method consumes time - this template uses different way of implementation of
-		actual computation - third parameter of template is functor which has implemented operator(), which takes 
-		two parameters - constant reference to input value, and reference to output value. This method is best to be inline and 
-		effective - its called on every element of input dataset.
-		</para>
-
-		<formalpara><title><classname>AbstractImage2DFilter</classname></title><para>
-		This template is planned to be used as predecessor for filters procesing on two dimensional data.
-		By that are meant 2D images and 3D images processed in slices. 
-		Output dataset proportions are set to the same values as input dataset, so only method to be overrided
-		is <methodname>Process2D()</methodname>.
-		</para></formalpara>
+		<para>	
+		</para>	
 	</section>
 
 	<section>
@@ -197,9 +159,16 @@
 		</para>
 
 		<formalpara><title><classname>AbstractPipeFilter</classname></title><para>
-		This is a test.  This is only a test.  Had this been a real
-		example, it would have made more sense.  Or less.
-		</para></formalpara>
+		Ancestor of pipeline filters. Public interface is extended with few methods modifiing
+		behaviour (ie. setting invocation style) and access methods to input ports and output ports.
+		These ports are comunication channels - can send and receive messages, get access to datasets, etc.
+		</para></formalpara><para>
+		In nonpublic interface there are declared pure virtual and virtual methods with special purpose - they are
+		called in predefined situations or in right order during computation. 
+		If somebody wants to create new pipeline filter, he must at least inherit its implementation from this class and
+		override these methods : <methodname>ExecutionThreadMethod()</methodname>, <methodname>PrepareOutputDatasets()</methodname>, 
+		<methodname>BeforeComputation()</methodname>, <methodname>AfterComputation()</methodname>.
+		</para>
 
 		<formalpara><title><classname>AbstractImageFilter</classname></title><para>
 		This is a test.  This is only a test.  Had this been a real
@@ -210,6 +179,49 @@
 		This is a test.  This is only a test.  Had this been a real
 		example, it would have made more sense.  Or less.
 		</para></formalpara>
+
+		<formalpara><title><classname>AbstractImage2DFilter</classname></title><para>
+		This template is planned to be used as predecessor for filters procesing on two dimensional data.
+		By that are meant 2D images and 3D images processed in slices. 
+		Output dataset proportions are set to the same values as input dataset, so only method to be overrided
+		is <methodname>Process2D()</methodname>.
+		</para></formalpara>
+		
+		<formalpara><title><classname>AbstractImageElementFilter</classname></title><para>
+		This template is prepared to ease design of image filters, which work on zero neighbourhood of element 
+		- use only value of the element.
+		These filters work with output dataset with same extents as input. 
+		</para></formalpara><para>
+		Because calling virtual method consumes time - this template uses different way of implementation of
+		actual computation - third parameter of template is functor which has implemented operator(), which takes 
+		two parameters - constant reference to input value, and reference to output value. This method is best to be inline and 
+		effective - its called on every element of input dataset.
+		</para>
+
+		<formalpara><title><classname>AbstractImage2DFilter</classname></title><para>
+		This template is planned to be used as predecessor for filters procesing on two dimensional data.
+		By that are meant 2D images and 3D images processed in slices. 
+		Output dataset proportions are set to the same values as input dataset, so only method to be overrided
+		is <methodname>Process2D()</methodname>.
+		</para></formalpara>
+
+		<formalpara><title><classname>AbstractImageFilterWholeAtOnce</classname></title><para>
+		This template is prepared for creation of image filters which need to access whole input dataset
+		or for experimental implementation - without progressive computing. 
+		</para></formalpara><para>
+		Before call of <methodname>ProcessImage()</methodname> filter waits on read bounding box with same proportion as image and after
+		that write bounding box containing output image is marked as dirty. After finished computation is this bounding box
+		marked as modified or cancelled if computation did not finished successfuly - <methodname>ProcessImage()</methodname> returned false.
+		</para><para>
+		In classes inheriting from this one you must override methods <methodname>ProcessImage()</methodname> and <methodname>PrepareOutputDatasets()</methodname>.
+		</para>
+
+		<formalpara><title><classname>AbstractImageFilterWholeAtOnceIExtents</classname></title><para>
+		Same usage as template <classname>AbstractImageFilterWholeAtOnce</classname>, but only when input and output image are the same dimension 
+		and proportions.
+		</para></formalpara><para>
+		So only method you must override is <methodname>ProcessImage()</methodname>.
+		</para>
 	</section>
 
 </section>

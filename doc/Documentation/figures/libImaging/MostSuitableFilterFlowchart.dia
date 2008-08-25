@@ -126,19 +126,19 @@
     </dia:object>
     <dia:object type="Flowchart - Diamond" version="0" id="O1">
       <dia:attribute name="obj_pos">
-        <dia:point val="2,15"/>
+        <dia:point val="1.54375,14.7719"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="1.95,14.95;8.05,18.05"/>
+        <dia:rectangle val="1.49375,14.7219;8.50625,18.2781"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="2,15"/>
+        <dia:point val="1.54375,14.7719"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
-        <dia:real val="6"/>
+        <dia:real val="6.9124999999999996"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="3"/>
+        <dia:real val="3.4562499999999998"/>
       </dia:attribute>
       <dia:attribute name="show_background">
         <dia:boolean val="true"/>
@@ -185,13 +185,13 @@ neighbourhood.#</dia:string>
         <dia:real val="6"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="3"/>
+        <dia:real val="2.9999999999999996"/>
       </dia:attribute>
       <dia:attribute name="show_background">
         <dia:boolean val="true"/>
       </dia:attribute>
       <dia:attribute name="padding">
-        <dia:real val="0.10000000000000001"/>
+        <dia:real val="0"/>
       </dia:attribute>
       <dia:attribute name="text">
         <dia:composite type="text">
@@ -203,10 +203,10 @@ dimensional data#</dia:string>
             <dia:font family="sans" style="0" name="Helvetica"/>
           </dia:attribute>
           <dia:attribute name="height">
-            <dia:real val="0.40000000000000002"/>
+            <dia:real val="0.5"/>
           </dia:attribute>
           <dia:attribute name="pos">
-            <dia:point val="5,12.3725"/>
+            <dia:point val="5,12.34"/>
           </dia:attribute>
           <dia:attribute name="color">
             <dia:color val="#000000"/>
@@ -219,25 +219,25 @@ dimensional data#</dia:string>
     </dia:object>
     <dia:object type="Flowchart - Diamond" version="0" id="O3">
       <dia:attribute name="obj_pos">
-        <dia:point val="2,3"/>
+        <dia:point val="1.72125,2.86062"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="1.95,2.95;8.05,6.05"/>
+        <dia:rectangle val="1.67125,2.81062;8.32875,6.18937"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="2,3"/>
+        <dia:point val="1.72125,2.86062"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
-        <dia:real val="6"/>
+        <dia:real val="6.5575000000000001"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="3"/>
+        <dia:real val="3.2787500000000001"/>
       </dia:attribute>
       <dia:attribute name="show_background">
         <dia:boolean val="true"/>
       </dia:attribute>
       <dia:attribute name="padding">
-        <dia:real val="0.10000000000000001"/>
+        <dia:real val="0"/>
       </dia:attribute>
       <dia:attribute name="text">
         <dia:composite type="text">
@@ -248,10 +248,10 @@ dimensional data#</dia:string>
             <dia:font family="sans" style="0" name="Helvetica"/>
           </dia:attribute>
           <dia:attribute name="height">
-            <dia:real val="0.40000000000000002"/>
+            <dia:real val="0.59999999999999998"/>
           </dia:attribute>
           <dia:attribute name="pos">
-            <dia:point val="5,4.5725"/>
+            <dia:point val="5,4.6075"/>
           </dia:attribute>
           <dia:attribute name="color">
             <dia:color val="#000000"/>
@@ -282,7 +282,7 @@ dimensional data#</dia:string>
         <dia:boolean val="true"/>
       </dia:attribute>
       <dia:attribute name="padding">
-        <dia:real val="0.10000000000000001"/>
+        <dia:real val="0"/>
       </dia:attribute>
       <dia:attribute name="text">
         <dia:composite type="text">
@@ -294,10 +294,10 @@ and one output#</dia:string>
             <dia:font family="sans" style="0" name="Helvetica"/>
           </dia:attribute>
           <dia:attribute name="height">
-            <dia:real val="0.40000000000000002"/>
+            <dia:real val="0.5"/>
           </dia:attribute>
           <dia:attribute name="pos">
-            <dia:point val="5,8.3725"/>
+            <dia:point val="5,8.34"/>
           </dia:attribute>
           <dia:attribute name="color">
             <dia:color val="#000000"/>
@@ -313,13 +313,13 @@ and one output#</dia:string>
         <dia:point val="5,2.04883"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="4.95,1.99883;5.05,3"/>
+        <dia:rectangle val="4.5,1.99883;5.5,3.07071"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
         <dia:point val="5,2.04883"/>
         <dia:point val="5,3"/>
         <dia:point val="5,3"/>
-        <dia:point val="5,3"/>
+        <dia:point val="5,2.86062"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="1"/>
@@ -345,13 +345,13 @@ and one output#</dia:string>
     </dia:object>
     <dia:object type="Standard - ZigZagLine" version="1" id="O6">
       <dia:attribute name="obj_pos">
-        <dia:point val="5,6"/>
+        <dia:point val="5,6.13937"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="4.5,5.95;5.5,7.05"/>
+        <dia:rectangle val="4.5,6.08937;5.5,7.05"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="5,6"/>
+        <dia:point val="5,6.13937"/>
         <dia:point val="5,6.5"/>
         <dia:point val="5,6.5"/>
         <dia:point val="5,7"/>
@@ -418,13 +418,13 @@ and one output#</dia:string>
         <dia:point val="5,14"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="4.5,13.95;5.5,15.05"/>
+        <dia:rectangle val="4.5,13.95;5.5,14.8219"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
         <dia:point val="5,14"/>
         <dia:point val="5,14.5"/>
         <dia:point val="5,14.5"/>
-        <dia:point val="5,15"/>
+        <dia:point val="5,14.7719"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="1"/>
@@ -607,13 +607,13 @@ and one output#</dia:string>
     </dia:object>
     <dia:object type="Standard - ZigZagLine" version="1" id="O12">
       <dia:attribute name="obj_pos">
-        <dia:point val="5,18"/>
+        <dia:point val="5,18.2281"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="4.5,17.95;5.5,19.05"/>
+        <dia:rectangle val="4.5,18.1781;5.5,19.05"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="5,18"/>
+        <dia:point val="5,18.2281"/>
         <dia:point val="5,18.5"/>
         <dia:point val="5,18.5"/>
         <dia:point val="5,19"/>
@@ -703,14 +703,14 @@ and one output#</dia:string>
     </dia:object>
     <dia:object type="Standard - ZigZagLine" version="1" id="O14">
       <dia:attribute name="obj_pos">
-        <dia:point val="8,4.5"/>
+        <dia:point val="8.27875,4.5"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="8,4.45;9.57071,4.55"/>
+        <dia:rectangle val="8.27875,4.45;9.57071,4.55"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="8,4.5"/>
-        <dia:point val="8,4.5"/>
+        <dia:point val="8.27875,4.5"/>
+        <dia:point val="8.27875,4.5"/>
         <dia:point val="9.5,4.5"/>
         <dia:point val="9.5,4.5"/>
       </dia:attribute>
