@@ -62,6 +62,7 @@ GeneralDataSetSerializer::DeSerializeDataSetProperties(
     }
 
     *returnedDataSet = (*dataSetSerializer)->DeSerializeProperties( s);
+    (*dataSetSerializer)->SetDataSet( & (*returnedDataSet->get()) );
     break;
 
   case DATASET_TRIANGLE_MESH:

@@ -48,12 +48,10 @@ BasicJob::PutDataPiece( const M4D::CellBE::DataBuffs &bufs)
   buffers.push_back( boost::asio::buffer( header, sizeof( DataPieceHeader)) );
 
   // push rest of bufs
-  const DataBuff *buf;
   for( DataBuffs::const_iterator it=bufs.begin(); it != bufs.end(); it++)
   {
-    buf = (DataBuff*) & it;
-    buffers.push_back( boost::asio::const_buffer( buf->data, buf->len) );
-    totalLen += buf->len;
+    buffers.push_back( boost::asio::const_buffer( it->data, it->len) );
+    totalLen += it->len;
   }
 
   header->pieceSize = (uint32) totalLen;
@@ -75,11 +73,9 @@ BasicJob::GetDataPiece( M4D::CellBE::DataBuffs &bufs
   vector<boost::asio::mutable_buffer> buffers;
 
   // create asio buffer vector
-  DataBuff *buf;
   for( DataBuffs::iterator it=bufs.begin(); it != bufs.end(); it++)
   {
-    buf = (DataBuff*) & it;
-    buffers.push_back( boost::asio::mutable_buffer( buf->data, buf->len) );
+    buffers.push_back( boost::asio::mutable_buffer( it->data, it->len) );
   }
 
   // read 'em

@@ -179,6 +179,8 @@ ImageSerializer< typename ElementType, 3>
   buf.len = sliceSize * sizeof( ElementType);
 
   bufs.push_back( buf);
+
+  m_currSlice++;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
