@@ -53,11 +53,11 @@ CreateConnectionObjectFromInputPort( InputPort& inPort, bool ownsDataset )
 
 		if( dim == 0 || typeID == NTID_UNKNOWN ) 
 		{
-			throw EAutoConnectingFailed();
-		}
-		
-		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( typeID, 
+			connection = new AbstractImageConnection();
+		} else {
+			NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( typeID, 
 				DIMENSION_TEMPLATE_SWITCH_MACRO( dim, connection = new ImageConnection< Image< TTYPE, DIM > >( ownsDataset ); ) );
+		}
 
 	}	
 	catch ( ... ) {

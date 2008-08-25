@@ -34,7 +34,7 @@ mainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
 	AbstractImage::AImagePtr inputImage = ImageFactory::CreateImageFromDICOM( dicomObjSet );
 
 
-	unsigned dim = inputImage->GetDimension(); 
+	/*unsigned dim = inputImage->GetDimension(); 
 	int type     = inputImage->GetElementTypeID();
 
 	if ( dim != 3 || type != GetNumericTypeID<ElementType>() ) {
@@ -42,10 +42,11 @@ mainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
 
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Bad type" ) );
 		return;
-	}
+	}*/
 	try {
 		_inConnection->PutImage( inputImage );
 
+		_convertor->Execute();
 		/*_inConnection->RouteMessage( MsgFilterUpdated::CreateMsg( true ), 
 				PipelineMessage::MSS_NORMAL,
 				FD_IN_FLOW
@@ -63,6 +64,8 @@ mainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
 void
 mainWindow::CreatePipeline()
 {
+	_convertor = new InImageConvertor();
+
 	_filter = new Thresholding();
 	Median2D *tmpFilter = new Median2D();
 	tmpFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
@@ -70,11 +73,14 @@ mainWindow::CreatePipeline()
 		
 	tmpFilter->SetRadius( 2 );
 
+	_pipeline.AddFilter( _convertor );
 	_pipeline.AddFilter( _filter );
 	_pipeline.AddFilter( tmpFilter );
 	;
 
-	_inConnection = dynamic_cast<AbstractImageConnectionInterface*>( &_pipeline.MakeInputConnection( *_filter, 0, false ) );
+	_inConnection = dynamic_cast<AbstractImageConnectionInterface*>( &_pipeline.MakeInputConnection( *_convertor, 0, false ) );
+	//_inConnection = dynamic_cast<AbstractImageConnectionInterface*>( &_pipeline.MakeInputConnection( *_filter, 0, false ) );
+	_pipeline.MakeConnection( *_convertor, 0, *_filter, 0 );
 	_tmpConnection = dynamic_cast<AbstractImageConnectionInterface*>( &_pipeline.MakeConnection( *_filter, 0, *tmpFilter, 0 ) );
 	_outConnection = dynamic_cast<AbstractImageConnectionInterface*>( &_pipeline.MakeOutputConnection( *tmpFilter, 0, true ) );
 

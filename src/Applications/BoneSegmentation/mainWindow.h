@@ -6,6 +6,7 @@
 #include "Imaging/ImageFactory.h"
 #include "Imaging/filters/ThresholdingFilter.h"
 #include "Imaging/filters/MedianFilter.h"
+#include "Imaging/filters/ImageConvertor.h"
 #include "SettingsBox.h"
 
 #define ORGANIZATION_NAME     "MFF"
@@ -16,7 +17,7 @@ typedef M4D::Imaging::Image< ElementType, 3 > ImageType;
 typedef M4D::Imaging::ThresholdingFilter< ImageType > Thresholding;
 typedef M4D::Imaging::MedianFilter2D< ImageType > Median2D;
 typedef M4D::Imaging::ImageConnection< ImageType > InConnection;
-
+typedef M4D::Imaging::ImageConvertor< ImageType > InImageConvertor;
 
 class Notifier : public QObject, public M4D::Imaging::MessageReceiverInterface
 {
@@ -62,6 +63,7 @@ protected:
 
 	M4D::Imaging::PipelineContainer			_pipeline;
 	M4D::Imaging::AbstractPipeFilter		*_filter;
+	M4D::Imaging::AbstractPipeFilter		*_convertor;
 	M4D::Imaging::AbstractImageConnectionInterface	*_inConnection;
 	M4D::Imaging::AbstractImageConnectionInterface	*_tmpConnection;
 	M4D::Imaging::AbstractImageConnectionInterface	*_outConnection;
