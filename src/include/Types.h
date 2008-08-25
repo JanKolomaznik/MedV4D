@@ -44,7 +44,7 @@ enum NumericTypeIDs{
 
 //*****************************************************************************
 /**
- * \defgroup TYPE_DEFINE_MACROS Macros defining type belonging 
+ * Macros defining type belonging 
  * to numeric type ID.
  **/
 #define NTID_VOID_TYPE_DEFINE_MACRO			void

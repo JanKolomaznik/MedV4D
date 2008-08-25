@@ -13,6 +13,11 @@ namespace Imaging
 {
 
 
+
+// We disallow general usage of template - only specializations.
+template< typename InputImageType, typename OutputImageType, typename ElementFilter >
+class AbstractImageElementFilter;
+
 /**
  * This template is prepared to ease design of image filters, which work on zero neighbourhood of element 
  * - use only value of the element.
@@ -22,12 +27,9 @@ namespace Imaging
  * actual computation - third parameter of template is functor which has implemented operator(), which takes 
  * two parameters - constant reference to input value, and reference to output value. This method is best to be inline and 
  * effective - its called on every element of input dataset.
+ *
+ * Specialization for processing 2D images.
  **/
-// We disallow general usage of template - only specializations.
-template< typename InputImageType, typename OutputImageType, typename ElementFilter >
-class AbstractImageElementFilter;
-
-
 template< typename InputElementType, typename OutputElementType, typename ElementFilter >
 class AbstractImageElementFilter< Image< InputElementType, 2 >, Image< OutputElementType, 2 >, ElementFilter >
 	 : public AbstractImageFilterWholeAtOnceIExtents< Image< InputElementType, 2 >, Image< OutputElementType, 2 > >
@@ -63,7 +65,18 @@ private:
 	PROHIBIT_COPYING_OF_OBJECT_MACRO( AbstractImageElementFilter );
 };
 
-
+/**
+ * This template is prepared to ease design of image filters, which work on zero neighbourhood of element 
+ * - use only value of the element.
+ * These filters work with output dataset with same extents as input. 
+ *
+ * Because calling virtual method consumes time - this template uses different way of implementation of
+ * actual computation - third parameter of template is functor which has implemented operator(), which takes 
+ * two parameters - constant reference to input value, and reference to output value. This method is best to be inline and 
+ * effective - its called on every element of input dataset.
+ *
+ * Specialization for processing 3D images.
+ **/
 template< typename InputElementType, typename OutputElementType, typename ElementFilter >
 class AbstractImageElementFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 >, ElementFilter >
 	 : public AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >

@@ -102,6 +102,12 @@ public:
 	SetMessageHook( MessageReceiverInterface::Ptr hook )
 		{ _messageHook = hook; }
 
+	/**
+	 * This method will resend message according to other parameters.
+	 * \param msg Smart pointer to message structure.
+	 * \param sendStyle How the message should be send (broadcast, etc.)
+	 * \param direction If mesage goes in flow or against flow of pipeline.
+	 **/
 	void
 	RouteMessage( 
 		PipelineMessage::Ptr 			msg, 

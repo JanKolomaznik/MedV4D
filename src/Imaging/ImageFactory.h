@@ -29,6 +29,14 @@ public:
 	class EWrongArrayForFlush;
 	class EUnknowDataType;
 
+	/**
+	 * Create image according to passed information.
+	 * \param dim Dimesnion of desired image.
+	 * \param minimums Minimum coordinates of elements in image (for each dimension).
+	 * \param maximums Coordinates of first element out of image (for each dimension).
+	 * \param elementExtents Proportion of elements in each dimension
+	 * @return Smart pointer to abstract ancestor of created image.
+	 **/
 	template< typename ElementType >
 	static AbstractImage::AImagePtr 
 	CreateEmptyImageFromExtents( 
@@ -44,6 +52,8 @@ public:
 	 * in created dataset.
 	 * @param width Width of desided image.
 	 * @param height Height of desided image.
+	 * @param elementWidth Width of each element.
+	 * @param elementHeight Height of each element.
 	 * @return Smart pointer to abstract ancestor of created image.
 	 **/
 	template< typename ElementType >
@@ -62,6 +72,8 @@ public:
 	 * in created dataset.
 	 * @param width Width of desided image.
 	 * @param height Height of desided image.
+	 * @param elementWidth Width of each element.
+	 * @param elementHeight Height of each element.
 	 * @return Smart pointer to created image.
 	 **/
 	template< typename ElementType >
@@ -90,6 +102,9 @@ public:
 	 * @param width Width of desided image.
 	 * @param height Height of desided image.
 	 * @param depth Depth of desided image.
+	 * @param elementWidth Width of each element.
+	 * @param elementHeight Height of each element.
+	 * @param elementDepth Depth of each element.
 	 * @return Smart pointer to abstract ancestor of created image.
 	 **/
 	template< typename ElementType >
@@ -111,6 +126,9 @@ public:
 	 * @param width Width of desided image.
 	 * @param height Height of desided image.
 	 * @param depth Depth of desided image.
+	 * @param elementWidth Width of each element.
+	 * @param elementHeight Height of each element.
+	 * @param elementDepth Depth of each element.
 	 * @return Smart pointer to created image.
 	 **/
 	template< typename ElementType >
@@ -142,6 +160,8 @@ public:
 	 * in created dataset.
 	 * @param width Width of desided image.
 	 * @param height Height of desided image.
+	 * @param elementWidth Width of each element.
+	 * @param elementHeight Height of each element.
 	 * @return Smart pointer to abstract ancestor of created image buffer.
 	 **/
 	template< typename ElementType >
@@ -160,6 +180,8 @@ public:
 	 * in created dataset.
 	 * @param width Width of desided image.
 	 * @param height Height of desided image.
+	 * @param elementWidth Width of each element.
+	 * @param elementHeight Height of each element.
 	 * @return Smart pointer to created image.
 	 **/
 	template< typename ElementType >
@@ -178,6 +200,9 @@ public:
 	 * @param width Width of desided image.
 	 * @param height Height of desided image.
 	 * @param depth Depth of desided image.
+	 * @param elementWidth Width of each element.
+	 * @param elementHeight Height of each element.
+	 * @param elementDepth Depth of each element.
 	 * @return Smart pointer to abstract ancestor of created image.
 	 **/
 	template< typename ElementType >
@@ -199,6 +224,9 @@ public:
 	 * @param width Width of desided image.
 	 * @param height Height of desided image.
 	 * @param depth Depth of desided image.
+	 * @param elementWidth Width of each element.
+	 * @param elementHeight Height of each element.
+	 * @param elementDepth Depth of each element.
 	 * @return Smart pointer to created image.
 	 **/
 	template< typename ElementType >
@@ -273,7 +301,8 @@ private:
 
 	//TODO - make this function asynchronous. Add locking of array in image.
 	/**
-	 * @param pixelSize How many bytes is used per pixel.
+	 * @param dicomObjects Set of dicom objects, which will be flushed into array.
+	 * @param elementTypeID Type of stored elements.
 	 * @param imageSize How many elements of size 'pixelSize' can be stored in array.
  	 * @param stride Number of BYTES!!! used per one object flush (size of one layer in bytes).
 	 * @param dataArray Array to be filled from dicom objects. Must be allocated!!!

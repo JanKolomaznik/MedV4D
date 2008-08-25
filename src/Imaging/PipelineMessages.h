@@ -192,6 +192,7 @@ public:
 	 * \param msg Smart pointer to message object - we don't have 
 	 * to worry about deallocation.
 	 * \param sendStyle How receiver should treat the message.
+	 * \param direction If message goes in flow or against flow (or both) of pipeline.
 	 **/
 	virtual void
 	RouteMessage( 
@@ -215,6 +216,7 @@ public:
 	 * \param msg Smart pointer to message object - we don't have 
 	 * to worry about deallocation.
 	 * \param sendStyle How treat incoming message.
+	 * \param direction If message goes in flow or against flow (or both) of pipeline.
 	 **/
 	virtual void
 	ReceiveMessage( 

@@ -189,7 +189,7 @@ public:
 
 protected:
 
-  	AbstractFilter( Properties * prop ): _properties( prop ) {}
+  	AbstractFilter( AbstractFilter::Properties * prop ): _properties( prop ) {}
 
 	/**
 	*  Filter's settings. Used to sending to server.
@@ -331,7 +331,7 @@ protected:
 	friend struct MainExecutionThread;
 
 
-	AbstractPipeFilter( Properties *prop );
+	AbstractPipeFilter( AbstractPipeFilter::Properties *prop );
 	
 	/**
 	 * Method running in execution thread - this method will be 
