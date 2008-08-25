@@ -11,7 +11,7 @@
 #define ORGANIZATION_NAME     "MFF"
 #define APPLICATION_NAME      "BoneSegmentation"
 
-typedef uint16	ElementType;
+typedef int16	ElementType;
 typedef M4D::Imaging::Image< ElementType, 3 > ImageType;
 typedef M4D::Imaging::ThresholdingFilter< ImageType > Thresholding;
 typedef M4D::Imaging::MedianFilter2D< ImageType > Median2D;
