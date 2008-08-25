@@ -224,8 +224,12 @@ The library uses 3rd party toolkit DCMTK by DICOM@Office (dicom.offis.de) for ma
     // ....
     // ....
     // somewhere when finding record based on some filter form values
-    M4D::Dicom::DcmProvider::ResultSet resultSet;   // create resultSet container
-    dcmProvider.Find(     // issue filter values and resultSet to provider method
+    
+    // create resultSet container
+    M4D::Dicom::DcmProvider::ResultSet resultSet;
+    
+    // issue filter values and resultSet to provider method
+    dcmProvider.Find(
       &resultSet,
       firstName,
       lastName,

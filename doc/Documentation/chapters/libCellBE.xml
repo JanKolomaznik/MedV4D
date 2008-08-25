@@ -235,7 +235,7 @@ and communicate ONLY with our supercalculating server that is budled with. All f
 	  </para>
 	  
 	  <para>
-  	<figure float="1" id="pic.JobLifeCycle">
+  	<figure float="2" id="pic.JobLifeCycle">
   	<title>Job life cycle</title>
   	<mediaobject>
   		<imageobject>
@@ -243,6 +243,20 @@ and communicate ONLY with our supercalculating server that is budled with. All f
   		</imageobject>
   		<imageobject>
   		<imagedata fileref="figures/cell/lifecycle.png" format="PNG" scale="21"/>
+  		</imageobject>
+  	</mediaobject>
+  	</figure>
+  	</para>
+  	
+  	<para>
+  	<figure float="3" id="pic.JobStates">
+  	<title>Job states</title>
+  	<mediaobject>
+  		<imageobject>
+  			<imagedata fileref="figures/cell/states.eps" format="EPS" scale="21"/>
+  		</imageobject>
+  		<imageobject>
+  		<imagedata fileref="figures/cell/states.png" format="PNG" scale="21"/>
   		</imageobject>
   	</mediaobject>
   	</figure>
@@ -265,110 +279,126 @@ and communicate ONLY with our supercalculating server that is budled with. All f
   		<listitem><para>Add enum FilterID item in cellBE/filterIDEnums.h header </para></listitem>
   		<listitem><para>Write actual FilterSerializer derived from AbstractFilterSerializer and implementing its interface. 
   		Right place where the code to place is cellBE/FilterSerializers folder</para></listitem>
-  		<listitem><para>Add the new Serializer instance into array in FilterSerializerArray class constructor and appropriate
-  		edit size of the array (all described in code and by next example that is taken from code. For details see 
-  		ThresholdingSerializer.h &amp; .tcc)</para></listitem>
+  		<listitem><para>Register new Serializer by adding instance into array in FilterSerializerArray class constructor and appropriate
+  		edit size of the array</para></listitem>
   	</itemizedlist>
   	
+  	<para>
+  	Example of creation &amp; registration of a new FilterSerializer (taken from code. For details see
+  	ThresholdingSerializer.h &amp; .tcc). It uses supporting function, that is called rught after
+  	CTS
+  	<para>
+  	
   	<programlisting>
-      <![CDATA[
-      
-      // supportig function
-      template< typename ElementType, unsigned Dim >
-      void
-      CreateThresholdingFilter( 
-           M4D::Imaging::AbstractPipeFilter **resultingFilter
-         , AbstractFilterSerializer **serializer
-         , const uint16 id
-         , M4D::CellBE::NetStream &s )
-      {
-      	typedef typename M4D::Imaging::Image< ElementType, Dim > ImageType;
-      	typedef typename M4D::Imaging::ThresholdingFilter< ImageType > Filter;
-        typedef typename FilterSerializer< Filter > FilterSerializer;
-      
-      	Filter::Properties *prop = new Filter::Properties();
-      
-      	*resultingFilter = new Filter( prop );  // id
-        *serializer = new FilterSerializer( prop, id);  // id
-      }
-  
-      ////////////////////////////////////////////////////////
-      template< typename InputImageType >
-      class FilterSerializer< M4D::Imaging::ThresholdingFilter< InputImageType > > 
-      	: public AbstractFilterSerializer   // inheritation from AbstractFilterSerializer
-      {
-      public:
-        // typedef to Properties of filter this serializer is for. Just for simplier usage
-      	typedef typename M4D::Imaging::ThresholdingFilter< InputImageType >::Properties Properties; 
-      	
-      	// ctor - subject of customization, must call typed ancestor ctor
-      	FilterSerializer( Properties * props, uint16 id) 
-      		: AbstractFilterSerializer( FID_Thresholding, id )
-      		, _properties( props ) 
-        {}
-      
-        // member performing CIS
-        void SerializeClassInfo( M4D::CellBE::NetStream &s)
-        {
-          s << (uint8) ImageTraits< InputImageType >::Dimension;
-      		s << (uint8) GetNumericTypeID< ImageTraits< InputImageType >::ElementType >();
-        }
-      
-        // member performing CIS deserialization
-        void
-        DeSerializeClassInfo( 
-            M4D::Imaging::AbstractPipeFilter **resultingFilter
-          , AbstractFilterSerializer **serializer
-          , const uint16 id
-          , M4D::CellBE::NetStream &s
-          )
-        {
-          uint8 dim;        // read from netStream
-      		uint8 typeID;      		
-      		s >> dim;
-      		s >> typeID;
-      		
-      		// build apropriate classes based read info with assistance of CreateThresholdingFilter
-      		// templated function defined above
-      		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( typeID,         // usage of special macro. See Commons.h
-      			DIMENSION_TEMPLATE_SWITCH_MACRO( 
-              dim, CreateThresholdingFilter<TTYPE, DIM >( 
-                resultingFilter, serializer, id, s ) )
-      		);
-        }
-      
-        // pair of members performing ACS
-      	void 
-      	SerializeProperties( M4D::CellBE::NetStream &s)
-      	{		
-      		s << _properties->bottom << _properties->top << _properties->outValue;
-      	}      
-      	void
-      	DeSerializeProperties( M4D::CellBE::NetStream &s )
-      	{
-      		s >> _properties->bottom >> _properties->top >> _properties->outValue;
-      	}	
-      	
-      protected:
-      	Properties	*_properties;   // pointer to properties (actual content)
-      };
-      
-      ////////////////////////////////// ...
-      
-      // within FilterSerializerArray constructor .... creation of buddy instance of our new
-      // serializer class on place within the array defined by our new enum member (step 1)
-      m_serializerArray[ (uint32) FID_Thresholding] = 
-        new FilterSerializer< typename ThresholdingFilter< Image<uint8, 3> > >( 
-          NULL, 0 );
-      
-      // .....
-      
-  	  ]]>
-    </programlisting>  
+<![CDATA[
+
+// supportig templated function, that creates actual instances
+template< typename ElementType, unsigned Dim >
+void
+CreateThresholdingFilter( 
+     M4D::Imaging::AbstractPipeFilter **resultingFilter
+   , AbstractFilterSerializer **serializer
+   , const uint16 id
+   , M4D::CellBE::NetStream &s )
+{
+	typedef typename M4D::Imaging::Image< ElementType, Dim > ImageType;
+	typedef typename M4D::Imaging::ThresholdingFilter< ImageType > Filter;
+  typedef typename FilterSerializer< Filter > FilterSerializer;
+
+	Filter::Properties *prop = new Filter::Properties();
+
+	*resultingFilter = new Filter( prop );  // filter creation
+  *serializer = new FilterSerializer( prop, id);  // appropr. serializer
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+// actual FilterSerializer class
+
+template< typename InputImageType >
+class FilterSerializer< M4D::Imaging::ThresholdingFilter< InputImageType > > 
+	: public AbstractFilterSerializer
+	// inheritance from AbstractFilterSerializer
+{
+public:
+  // typedef to Properties of filter this serializer is for.
+  // Just for simplier usage
+	typedef typename M4D::Imaging::ThresholdingFilter< InputImageType >
+	  ::Properties Properties; 
+	
+	// ctor - subject of customization, must call typed ancestor ctor
+	FilterSerializer( Properties * props, uint16 id) 
+		: AbstractFilterSerializer( FID_Thresholding, id )
+		, _properties( props ) 
+  {}
+
+  // member performing CIS
+  void SerializeClassInfo( M4D::CellBE::NetStream &s)
+  {
+    s << (uint8) ImageTraits< InputImageType >::Dimension;
+		s << (uint8) GetNumericTypeID< ImageTraits< InputImageType >
+		    ::ElementType >();
+  }
+
+  // member performing CIS deserialization
+  void
+  DeSerializeClassInfo( 
+      M4D::Imaging::AbstractPipeFilter **resultingFilter
+    , AbstractFilterSerializer **serializer
+    , const uint16 id
+    , M4D::CellBE::NetStream &s
+    )
+  {
+    uint8 dim;        // read from netStream
+		uint8 typeID;      		
+		s >> dim;
+		s >> typeID;
+		
+		// build apropriate classes based read info with assistance of
+		// CreateThresholdingFilter templated function defined above
+		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( typeID,
+			DIMENSION_TEMPLATE_SWITCH_MACRO( 
+        dim, CreateThresholdingFilter<TTYPE, DIM >( 
+          resultingFilter, serializer, id, s ) )
+		);
+  }
+
+  // pair of members performing ACS
+	void 
+	SerializeProperties( M4D::CellBE::NetStream &s)
+	{		
+		s << _properties->bottom << _properties->top << _properties->outValue;
+	}      
+	void
+	DeSerializeProperties( M4D::CellBE::NetStream &s )
+	{
+		s >> _properties->bottom >> _properties->top >> _properties->outValue;
+	}	
+	
+protected:
+	Properties	*_properties;   // pointer to properties (actual content)
+};
+]]>
+    </programlisting>
+
+  	<programlisting>
+<![CDATA[
+
+// within FilterSerializerArray constructor .... 
+// creation of buddy instance of our new serializer class on place within
+// the array defined by our new enum member (step 1)
+m_serializerArray[ (uint32) FID_Thresholding] = 
+  new FilterSerializer< typename ThresholdingFilter< Image<uint8, 3> > >( 
+    NULL, 0 );
+
+// .....
+
+]]>
+   </programlisting> 
   </section>
   
   <section>  
-    <title>FilterSerializer</title>
+    <title>DataSetSerializer</title>
     
     <para>
   	Next is the list of neccessary steps for adding new DataSetSerializer:
@@ -376,20 +406,21 @@ and communicate ONLY with our supercalculating server that is budled with. All f
   	
   	<itemizedlist>
 			<listitem><para>Add enum DataSetType item in Imaging/dataSetClassEnum.h header </para></listitem>
-			<listitem><para>Write actual DataSetSerializer derived from AbstractDataSetSerializer and implementing its interface. 
+			<listitem><para>Write actual DataSetSerializer derived from <classname>AbstractDataSetSerializer</classname> and implementing its interface. 
 			Right place where the code to place is cellBE/DataSetSerializers folder</para></listitem>
 			<listitem><para>Register new dataSetSerializer by adding new switch case of new enum member (step 1) into 
 			GeneralDataSetSerializer::GetDataSetSerializer method and writing the content of switch case that instatiates
 			DataSetSerializer based on inner properties (like TypeID, Element type,	dimension. Properties of image).
 			And another switch case in GeneralDataSetSerializer::DeSerializeDataSetProperties method that on the other side
-			can instantate DataSetSeralizer class (CIS).</para></listitem>
+			can instantate <classname>DataSetSeralizer</classname> class (CIS).</para></listitem>
 		</itemizedlist>
 		
 		<programlisting>
-	    <![CDATA[
-	    
-      
-  	  ]]>
+<![CDATA[
+
+
+
+]]>
 	  </programlisting>		
 	</section>
 	
