@@ -291,6 +291,10 @@
 				Name="filterSerializers"
 				>
 				<File
+					RelativePath="..\..\include\cellBE\filterSerializers\MedianSerializer.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\cellBE\filterSerializers\ThresholdingSerializer.h"
 					>
 				</File>

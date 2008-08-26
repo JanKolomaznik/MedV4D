@@ -21,7 +21,7 @@ GenerateDataset()
 	for( unsigned i = 0; i < 8; ++i ) {
 		for( unsigned j = 0; j < 8; ++j ) {
 			for( unsigned k = 0; k < 8; ++k ) {
-				inImage->GetElement( i, j, k ) = (i) | (j >> 3) | (k >> 6);
+				inImage->GetElement( i, j, k ) = j;//(i) | (j >> 3) | (k >> 6);
 			}
 		}
 	}

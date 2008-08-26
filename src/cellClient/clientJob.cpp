@@ -81,7 +81,7 @@ ClientJob::SendCreate( void)
 
   ResponseHeader h;
   size_t read = m_socket->read_some(boost::asio::buffer( (uint8*) &h, sizeof(ResponseHeader)));
-  ProcessResponse( h);  
+  ProcessResponse( h);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -134,7 +134,10 @@ ClientJob::ProcessResponse( const ResponseHeader &header)
   case RESPONSE_FAILED:
     m_state = (State) header.resultPropertiesLen;
     if( this->onError != NULL)  // call error handler
+    {
       onError();
+      throw ExceptionBase("Response failed");
+    }
     break;
 
   default:
@@ -169,6 +172,9 @@ ClientJob::SendDestroy( void)
 void
 ClientJob::SendFilterProperties( void)
 {
+  if( m_state != IDLE)
+    throw WrongJobStateException();
+
   primHeader.action = (uint8) FILTERS;
 
   // prepare serialization of filters & settings
@@ -202,17 +208,6 @@ ClientJob::SendFilterProperties( void)
 void
 ClientJob::SendDataSet( void)
 {
-  // serialize dataSet using this job
-  m_inDataSetSerializer->Serialize( this);
-
-  SendEndOfDataSetTag();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void
-ClientJob::SendDataSetProps( void)
-{
   primHeader.action = (uint8) DATASET;
 
   // serialize dataset settings
@@ -238,18 +233,69 @@ ClientJob::SendDataSetProps( void)
   );
 
   ResponseHeader h;
+  // read status of dataSet properties parsing
   size_t read = m_socket->read_some(boost::asio::buffer( (uint8*) &h, sizeof(ResponseHeader)));
   ProcessResponse( h);
 
-  if( m_state == DATASET_PROPS_OK)
-    SendDataSet();
+  // send DSContent (perform ADS)
+  {
+    // serialize dataSet using this job
+    m_inDataSetSerializer->Serialize( this);
 
+    SendEndOfDataSetTag();
+  }
+
+  // read status of dataSet recieving
   read = m_socket->read_some(boost::asio::buffer( (uint8*) &h, sizeof(ResponseHeader)));
   ProcessResponse( h);
 
-  // if dataSet successfully arrived to server, wait for result
-  if( m_state == DATASET_OK)
-    ReadDataPeiceHeader( m_outDataSetSerializer);
+  D_PRINT("After DS sending: " << m_state);
+
+  // wait for result of execution
+  m_socket->read_some(boost::asio::buffer( (uint8*) &h, sizeof(ResponseHeader)));
+  ProcessResponse( h);
+
+  D_PRINT("After execution: " << m_state);
+
+  // if execution ok, wait for result
+  if( m_state == EXECUTED)
+    ReadResultingDataSet();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ClientJob::ReadResultingDataSet( void)
+{
+  // start recieving
+  ReadDataPeiceHeader( m_outDataSetSerializer);
+
+  // wait until whole DS is recieved
+  // TODO !!
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ClientJob::SendExecute( void)
+{
+  primHeader.action = (uint8) EXEC;
+  PrimaryJobHeader::Serialize( &primHeader);
+
+  m_socket->async_write_some( 
+    boost::asio::buffer( (uint8 *) &primHeader, sizeof( PrimaryJobHeader) ), 
+    boost::bind( &ClientJob::EndSend, this,
+      boost::asio::placeholders::error)
+  );
+
+  // read status of execution
+  ResponseHeader h;
+  m_socket->read_some(boost::asio::buffer( (uint8*) &h, sizeof(ResponseHeader)));
+  ProcessResponse( h);
+
+  // if execution ok, wait for result
+  if( m_state == EXECUTED)
+    ReadResultingDataSet();
 }
 
 /////////////////////////////////////////////////////////////////////////////// 

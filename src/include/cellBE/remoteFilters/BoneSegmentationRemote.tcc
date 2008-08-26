@@ -22,8 +22,14 @@ BoneSegmentationRemote<ImageType>::BoneSegmentationRemote()
 
   // put into the vector serializers instances in order that is in remote pipe
   {
+    // insert thresholding serializer
     ser = GeneralFilterSerializer::GetFilterSerializer<Thresholding>( 
       &m_thresholdingOptions, filterID++);
+    m_filterSerializers.push_back( ser);
+
+    // insert median serializer
+    ser = GeneralFilterSerializer::GetFilterSerializer<Median>( 
+      &m_medianOptions, filterID++);
     m_filterSerializers.push_back( ser);
   
     // ... for other possible members definig remote pipe filters
@@ -31,35 +37,6 @@ BoneSegmentationRemote<ImageType>::BoneSegmentationRemote()
 
   // create job
   m_job = s_cellClient.CreateJob( m_filterSerializers);
-/*
-m_job->SendFilterProperties();
-  // setting datSets is performed here because actual dataSet may not be created
-  // before
-  
-const ImageType::Ptr inImage = 
-		ImageFactory::CreateEmptyImage3DTyped<ElementType>(8, 8, 8);
-	for( unsigned i = 0; i < 8; ++i ) {
-		for( unsigned j = 0; j < 8; ++j ) {
-			for( unsigned k = 0; k < 8; ++k ) {
-				inImage->GetElement( i, j, k ) = (i) | (j >> 3) | (k >> 6);
-			}
-		}
-	}
-
-ImageType::Ptr outImage = 
-		ImageFactory::CreateEmptyImage3DTyped<ElementType>(8, 8, 8);
-	for( unsigned i = 0; i < 8; ++i ) {
-		for( unsigned j = 0; j < 8; ++j ) {
-			for( unsigned k = 0; k < 8; ++k ) {
-				outImage->GetElement( i, j, k ) = (i) | (j >> 3) | (k >> 6);
-			}
-		}
-	}
-
-m_job->SetDataSets( (const AbstractDataSet &) *inImage.get(), (AbstractDataSet &) *outImage.get() );
-
-  m_job->SendDataSetProps();
-*/
 }
 
 ///////////////////////////////////////////////////////////////////////////////

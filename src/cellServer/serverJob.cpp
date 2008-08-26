@@ -202,6 +202,7 @@ ServerJob::EndDataSetPropertiesRead( const boost::system::error_code& error)
     // NOte AbstractImage is used because no universal locking is used
     // and current implementaton has only images
     AbstractImage *imagePointer = (AbstractImage *) inputDataSet.get();
+    D_PRINT("Locking DS");
     m_DSLock = &imagePointer->SetWholeDirtyBBox();
 
     // and execute the pipeline. Actual exectution will wait to whole
@@ -230,46 +231,19 @@ ServerJob::EndDataSetPropertiesRead( const boost::system::error_code& error)
 void
 ServerJob::SendResultBack( ResponseID result, State state)
 {
-  vector<boost::asio::const_buffer> buffers; 
-
   ResponseHeader *h = m_freeResponseHeaders.GetFreeItem();
-  buffers.push_back( 
-      boost::asio::buffer( (uint8*)h, sizeof(ResponseHeader)) );
 
   h->result = (uint8) result;
-
-  //AbstractDataSetSerializer *outSerializer = NULL;
-
-  //switch( result)
-  //{
-  //case RESPONSE_DATASET:
-  //  // serialize dataset settings
-  //  outSerializer->SerializeProperties( m_dataSetPropsSerialized);
-
-  //  h->resultPropertiesLen = (uint16) m_dataSetPropsSerialized.size();
-  //  break;
-
-  //default:
-  //  h->resultPropertiesLen = (uint16) state;
-  //  break;
-  //}
-
   h->resultPropertiesLen = (uint16) state;
 
   ResponseHeader::Serialize( h);
 
   // send the buffer vector
   m_socket->async_write_some( 
-    buffers, 
+    boost::asio::buffer( (uint8 *) h, sizeof(ResponseHeader) ), 
     boost::bind( &ServerJob::OnResultHeaderSent, this,
       boost::asio::placeholders::error, h)
       );
-
-  // start sending dataSet if RESPONSE_EXEC_COMPLETE
-  if( result == RESPONSE_DATASET)
-  {    
-    m_outDataSetSerializer->Serialize( this);
-  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -294,7 +268,12 @@ ServerJob::OnResultHeaderSent( const boost::system::error_code& error
 void
 ServerJob::OnExecutionDone( void)
 {
-  SendResultBack( RESPONSE_DATASET, EXECUTED);
+  SendResultBack( RESPONSE_OK, EXECUTED);
+
+  // start sending back resulting dataSet
+  m_outDataSetSerializer->Serialize( this);
+
+  m_state = IDLE;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -328,15 +307,15 @@ ServerJob::Command( PrimaryJobHeader *header)
     AbortComputation();    
     break;
 
-  //case BasicJob::EXEC:
-  //  Execute();
-  //  LOG( "EXEC reqest arrived");
-  //  break;
+  case BasicJob::EXEC:
+    LOG( "EXEC reqest arrived");
+    Execute();    
+    break;
 
   case BasicJob::DESTROY:
-      LOG( "DESTROY reqest arrived");
-      m_jobManager->RemoveJob( header->id );
-      break;
+    LOG( "DESTROY reqest arrived");
+    m_jobManager->RemoveJob( header->id );
+    break;
 
   default:
     LOG( "Unrecognized action job action."); // From: " << m_socket );
@@ -350,6 +329,13 @@ void
 ServerJob::AbortComputation( void)
 {
   m_pipeLine.StopFilters();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ServerJob::Execute( void)
+{
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -386,8 +372,11 @@ ServerJob::EndWaitForCommand( const boost::system::error_code& error)
 void
 ServerJob::OnDSRecieved( void)
 {  
-  m_state = EXECUTED;
-  m_DSLock->SetModified();     // unlock locked dataSet to start execution  
+  m_state = DATASET_OK;
+  SendResultBack( RESPONSE_OK, m_state);
+
+  D_PRINT("UNLocking DS");
+  m_DSLock->SetModified();     // unlock locked dataSet to start execution
 }
 
 ///////////////////////////////////////////////////////////////////////////////

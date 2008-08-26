@@ -57,6 +57,8 @@ private:
    */
   void AbortComputation( void);
 
+  void Execute( void);
+
   /**
    *  ReadPipelineDefinition
    */
@@ -109,6 +111,7 @@ public:
      m_job->OnExecutionFailed();
      break;
    case M4D::Imaging::PMI_FILTER_UPDATED:
+     D_PRINT("PMI_FILTER_UPDATED recieved. EXEC COMPLETE !!!");
      m_job->OnExecutionDone();
      break;
    }

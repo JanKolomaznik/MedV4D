@@ -40,7 +40,7 @@ public:
     DATASET_PROPS_WRONG,      // Error while reading DS properties
     DATASET_OK,               // DS data recieved OK
     DATASET_WRONG,            // Error while recieving DS data
-    EXECUTED,                 //
+    EXECUTED,                 // remotePipe has successfuly executed
     ABORTED,                  //
     FAILED,                   //
     IDLE                      //
@@ -71,7 +71,7 @@ protected:
    */
   enum Action {
     CREATE,       // request for job create
-    //EXEC,       // request for job execute
+    EXEC,         // request for job execute
     DESTROY,      // request for job destroy
     DATASET,      // sending job's dataSet
     ABORT,        // sending abort req to abort computation

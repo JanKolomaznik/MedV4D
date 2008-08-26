@@ -4,6 +4,7 @@
 #include "AbstractFilterSerializer.h"
 #include "Imaging/AbstractFilter.h"
 #include "cellBE/filterSerializers/ThresholdingSerializer.h"
+#include "cellBE/filterSerializers/MedianSerializer.h"
 
 namespace M4D
 {
@@ -16,7 +17,7 @@ namespace CellBE
  */
 class FilterSerializerArray
 {
-#define CURRENT_ARRAY_COUNT 1
+#define CURRENT_ARRAY_COUNT 2
 private:
   AbstractFilterSerializer * m_serializerArray[CURRENT_ARRAY_COUNT];
 

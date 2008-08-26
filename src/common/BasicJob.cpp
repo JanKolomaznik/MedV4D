@@ -115,8 +115,6 @@ BasicJob::EndReadDataPeiceHeader( const boost::system::error_code& error,
     if( header->pieceSize == ENDING_PECESIZE)
     {
       dataSetSerializer->OnDataSetEndRead();
-      // destroy serializer
-      delete dataSetSerializer;
 
       if( this->onComplete != NULL)
         onComplete();                 // call completition callback

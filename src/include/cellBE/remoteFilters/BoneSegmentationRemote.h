@@ -6,6 +6,7 @@
 
 // include needed filters ...
 #include "Imaging/filters/ThresholdingFilter.h"
+#include "Imaging/filters/MedianFilter.h"
 
 namespace M4D
 {
@@ -33,6 +34,8 @@ public:
 
 	/////////////////// To customize /////////////////////
 	// puting options available to outer world to be able to specify it ....
+
+  // thresholding filter issues
 	typedef ThresholdingFilter<ImageType>	Thresholding;
 	typedef typename Thresholding::Properties ThresholdingOptsType;
 	
@@ -41,11 +44,19 @@ public:
 		return &m_thresholdingOptions;
 	}
 
+  // median filter issues
+  typedef MedianFilter2D<ImageType>	Median;
+	typedef typename Median::Properties MedianOptsType;
+	
+	MedianOptsType *GetMedianOptions( void)	
+  {
+		return &m_medianOptions;
+	}
+
 protected:
 	void PrepareOutputDatasets();
 
 private:
-	//GET_PROPERTIES_DEFINITION_MACRO;
 
 	/**
 	 * Here should be added members of  filter options type that will
@@ -55,6 +66,7 @@ private:
 	 * the filter options from outer world.
 	 **/
 	ThresholdingOptsType m_thresholdingOptions;
+  MedianOptsType m_medianOptions;
 	// ...
 
 

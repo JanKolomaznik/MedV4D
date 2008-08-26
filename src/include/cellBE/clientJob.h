@@ -32,6 +32,8 @@ class ClientJob
 
   void ProcessResponse( const ResponseHeader &header);
 
+  void ReadResultingDataSet( void);
+
   // only CellClient can construct instances through CreateJob members
   ClientJob(
     FilterSerializerVector &filters
@@ -42,9 +44,9 @@ public:
   ~ClientJob();
 
   void SendCreate( void);
-  void SendDataSetProps( void);
   void SendDataSet( void);
   void SendFilterProperties( void);
+  void SendExecute( void);
   void SendDestroy( void);
 
   void SetDataSets( const M4D::Imaging::AbstractDataSet &inDataSet
@@ -53,6 +55,11 @@ public:
 };
 
 ///////////////////////////////////////////////////////////////////////////////
+
+class WrongJobStateException
+  : public ExceptionBase
+{
+};
 
 }
 }

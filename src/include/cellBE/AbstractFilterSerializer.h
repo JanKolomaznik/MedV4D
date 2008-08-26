@@ -4,6 +4,7 @@
 #include "filterIDEnums.h"
 #include "cellBE/netStream.h"
 #include "Common.h"
+#include "Imaging/AbstractFilter.h"
 
 #include <vector>
 

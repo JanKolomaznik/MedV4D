@@ -43,10 +43,10 @@ RemoteFilter< InputImageType, OutputImageType >
   // before
   m_job->SetDataSets( in, out );
 
-  m_job->SendDataSetProps();
+  // if( first)
+  m_job->SendDataSet();
+  // if( dataSetAlreadySent)
   //m_job->SendExecute();
-
-while(1) {}
 
 	return true;
 }
