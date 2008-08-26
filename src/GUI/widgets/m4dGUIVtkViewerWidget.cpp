@@ -62,7 +62,18 @@ m4dGUIVtkViewerWidget::setInputPort( Imaging::ConnectionInterface* conn )
     _renImageData->Delete();
     _renImageData = vtkRenderer::New();
     conn->ConnectConsumer( *_inPort );
-    _imageData->TemporarySetImageData( _inPort->GetAbstractImage() );
+    try
+    {
+        if ( _inPort->TryLockDataset() )
+	{
+            try
+	    {
+                if ( _inPort->GetAbstractImage().GetDimension() == 3 ) 
+                    _imageData->TemporarySetImageData( _inPort->GetAbstractImage() );
+	        _inPort->ReleaseDatasetLock();
+	    } catch (...) {}
+	}
+    } catch (...) {}
     _renImageData->AddViewProp( _volume );
     GetRenderWindow()->AddRenderer( _renImageData );
     if ( _selected ) _renImageData->AddViewProp( _actor2DSelected );
@@ -351,7 +362,18 @@ m4dGUIVtkViewerWidget::slotMessageHandler( Imaging::PipelineMsgID msgID )
         GetRenderWindow()->RemoveRenderer( _renImageData );
         _renImageData->Delete();
         _renImageData = vtkRenderer::New();
-        _imageData->TemporarySetImageData( _inPort->GetAbstractImage() );
+        try
+        {
+	    if ( _inPort->TryLockDataset() )
+	    {
+                try
+	        {
+	            if ( _inPort->GetAbstractImage().GetDimension() == 3 ) 
+                        _imageData->TemporarySetImageData( _inPort->GetAbstractImage() );
+	        } catch (...) {}
+	        _inPort->ReleaseDatasetLock();
+	    }
+        } catch (...) {}
 	_renImageData->AddViewProp( _volume );
         GetRenderWindow()->AddRenderer( _renImageData );
         if ( _selected ) _renImageData->AddViewProp( _actor2DSelected );

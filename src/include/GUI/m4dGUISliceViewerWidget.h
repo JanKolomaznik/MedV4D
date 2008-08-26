@@ -711,6 +711,11 @@ private:
      * The number of the slice where the recent voxel pick has been made.
      */
     int						_slicePicked;
+
+    /**
+     * How many dimensions the currently shown image has.
+     */
+    unsigned					_dimension;
 };
 
 } /*namespace Viewer*/

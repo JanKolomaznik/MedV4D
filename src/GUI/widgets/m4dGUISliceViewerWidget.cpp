@@ -81,7 +81,7 @@ public:
      *  @param contrast reference to return the overall contrast
      *  @return true, if texture preparing was successful, false otherwise
      */
-    static bool prepare( Imaging::InputPortAbstractImage* inPort, uint32& width, uint32& height, GLint brightnessRate, GLfloat contrastRate, SliceOrientation so, uint32 slice, int64& brightness, int64& contrast )
+    static bool prepare( Imaging::InputPortAbstractImage* inPort, uint32& width, uint32& height, GLint brightnessRate, GLfloat contrastRate, SliceOrientation so, uint32 slice, int64& brightness, int64& contrast, unsigned& dimension )
     {
         uint32 depth;
         double maxvalue;
@@ -115,11 +115,14 @@ public:
 		    if ( inPort->GetAbstractImage().GetDimension() == 2 )
 		    {
 		        original = Imaging::Image< ElementType, 2 >::CastAbstractImage(inPort->GetAbstractImage()).GetPointer( width, height, xstride, ystride );
+			dimension = 2;
 			depth = zstride = 0;
 			slice = 0;
 		    }
 		    else if ( inPort->GetAbstractImage().GetDimension() == 3 )
 		    {
+		        dimension = 3;
+
 		        // check orientation
 		        switch ( so )
 		        {
@@ -339,6 +342,7 @@ m4dGUISliceViewerWidget::resetParameters()
     _selected = false;
     _sliceOrientation = xy;
     _ready = false;
+    _dimension = 0;
     if ( _inPort->IsPlugged() )
     {
         try
@@ -350,11 +354,27 @@ m4dGUISliceViewerWidget::resetParameters()
         	    _imageID = _inPort->GetAbstractImage().GetElementTypeID();
 		    _minimum[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).minimum;
 		    _minimum[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).minimum;
-		    _minimum[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).minimum;
 		    _maximum[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).maximum;
 		    _maximum[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).maximum;
-		    _maximum[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).maximum;
-	            _sliceNum = _minimum[ ( _sliceOrientation + 2 ) % 3 ];
+	    	    _extents[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).elementExtent;
+	    	    _extents[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).elementExtent;
+		    if ( _inPort->GetAbstractImage().GetDimension() == 3 )
+		    {
+		        _minimum[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).minimum;
+		        _maximum[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).maximum;
+	    	        _extents[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).elementExtent;
+	                _sliceNum = _minimum[ ( _sliceOrientation + 2 ) % 3 ];
+			_dimension = 3;
+		    }
+		    else
+		    {
+		        _minimum[ 2 ] = 0;
+		        _maximum[ 2 ] = 1;
+	    	        _extents[ 2 ] = 1;
+	                _sliceNum = 0;
+			_sliceOrientation = xy;
+			_dimension = 2;
+		    }
 		}
 		catch (...) { _ready = false; }
 	        _inPort->ReleaseDatasetLock();
@@ -418,6 +438,7 @@ void
 m4dGUISliceViewerWidget::setParameters()
 {
     _ready = false;
+    _dimension = 0;
     if ( _inPort->IsPlugged() )
     {
         try
@@ -426,17 +447,30 @@ m4dGUISliceViewerWidget::setParameters()
             {
 	        try
 		{
-       		    _imageID = _inPort->GetAbstractImage().GetElementTypeID();
-	    	    _minimum[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).minimum;
-	    	    _minimum[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).minimum;
-	    	    _minimum[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).minimum;
-	    	    _maximum[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).maximum;
-	    	    _maximum[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).maximum;
-	    	    _maximum[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).maximum;
+        	    _imageID = _inPort->GetAbstractImage().GetElementTypeID();
+		    _minimum[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).minimum;
+		    _minimum[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).minimum;
+		    _maximum[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).maximum;
+		    _maximum[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).maximum;
 	    	    _extents[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).elementExtent;
 	    	    _extents[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).elementExtent;
-	    	    _extents[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).elementExtent;
-		    _sliceNum = _minimum[ ( _sliceOrientation + 2 ) % 3 ];
+		    if ( _inPort->GetAbstractImage().GetDimension() == 3 )
+		    {
+		        _minimum[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).minimum;
+		        _maximum[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).maximum;
+	    	        _extents[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).elementExtent;
+	                _sliceNum = _minimum[ ( _sliceOrientation + 2 ) % 3 ];
+			_dimension = 3;
+		    }
+		    else
+		    {
+		        _minimum[ 2 ] = 0;
+		        _maximum[ 2 ] = 1;
+	    	        _extents[ 2 ] = 1;
+	                _sliceNum = 0;
+			_sliceOrientation = xy;
+			_dimension = 2;
+		    }
 		}
 		catch (...) { _ready = false; }
 	        _inPort->ReleaseDatasetLock();
@@ -696,7 +730,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
     
     // prepare texture
     INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
-    	_imageID, _ready = TexturePreparer<TTYPE>::prepare( _inPort, width, height, _brightnessRate, _contrastRate, _sliceOrientation, sliceNum - _minimum[ ( _sliceOrientation + 2 ) % 3 ], _brightness, _contrast ) )
+    	_imageID, _ready = TexturePreparer<TTYPE>::prepare( _inPort, width, height, _brightnessRate, _contrastRate, _sliceOrientation, sliceNum - _minimum[ ( _sliceOrientation + 2 ) % 3 ], _brightness, _contrast, _dimension ) )
     
     glEnable( GL_TEXTURE_2D );
     glBindTexture( GL_TEXTURE_2D, texName );
@@ -1488,6 +1522,8 @@ m4dGUISliceViewerWidget::slotRotateAxisZ( double z )
 void
 m4dGUISliceViewerWidget::slotToggleSliceOrientation()
 {
+    if ( _dimension < 3 ) return;
+    
     switch ( _sliceOrientation )
     {
         case xy:
