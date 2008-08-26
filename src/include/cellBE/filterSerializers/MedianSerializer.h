@@ -18,7 +18,7 @@ CreateMedianFilter(
    , const uint16 id
    , M4D::CellBE::NetStream &s )
 {
-	typedef typename M4D::Imaging::Image< ElementType, 2 > ImageType;
+	typedef typename M4D::Imaging::Image< ElementType, 3 > ImageType;
 	typedef typename M4D::Imaging::MedianFilter2D< ImageType > Filter;
   typedef typename FilterSerializer< Filter > FilterSerializer;
 

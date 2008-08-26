@@ -160,6 +160,35 @@ ImageSerializer< typename ElementType, 3>
 template< typename ElementType>
 void
 ImageSerializer< typename ElementType, 3>
+  ::DumpDataSet( void)
+{
+  Image<ElementType, 3> *im = (Image<ElementType, 3> *) m_dataSet;
+	
+	uint32 width;
+	uint32 height;
+	uint32 depth;
+	int32 xStride;
+	int32 yStride;
+	int32 zStride;
+	ElementType *pointer = im->GetPointer( width, height, depth, xStride, yStride, zStride );
+
+  for( uint32 i = 0; i < depth; ++i ) {
+    D_PRINT("Slice (" << i << "):" << endl);
+    for( uint32 j = 0; j < depth; ++j ) {
+      for( uint32 k = 0; k < depth; ++k ) {
+        D_PRINT_NOENDL( *pointer << ",");
+        pointer += xStride;
+      }
+      D_PRINT( endl );
+    }
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+template< typename ElementType>
+void
+ImageSerializer< typename ElementType, 3>
   ::OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs)
 {
   Image<ElementType, 3> *im = (Image<ElementType, 3> *) m_dataSet;

@@ -89,20 +89,11 @@ ClientJob::SendCreate( void)
 void
 ClientJob::SerializeFiltersProperties( void)
 {
-  NetStreamVector tmp;
-
   for( FilterSerializerVector::iterator it = m_filters.begin();
     it != m_filters.end(); it++)
   {
     filterSettingsSerialized << (uint16) (*it)->GetID();  // insert filterID
-    (*it)->SerializeProperties( tmp); // serialize it into tmp stream
-
-    // put size of the serialization
-    filterSettingsSerialized << (uint16) tmp.size();
-
-    // copy actual serialization into final stream from tmp
-    filterSettingsSerialized.insert( 
-      filterSettingsSerialized.end(), tmp.begin(), tmp.end() );
+    (*it)->SerializeProperties( filterSettingsSerialized); // serialize it into tmp stream
   }
 }
 
@@ -268,10 +259,37 @@ void
 ClientJob::ReadResultingDataSet( void)
 {
   // start recieving
-  ReadDataPeiceHeader( m_outDataSetSerializer);
+  DataPieceHeader h;
+  m_socket->read_some(boost::asio::buffer( 
+    (uint8*) &h, sizeof(DataPieceHeader)));
+  DataPieceHeaderDeserialize( &h);
 
-  // wait until whole DS is recieved
-  // TODO !!
+
+  DataBuffs buffs;
+
+  while( h.pieceSize != ENDING_PECESIZE)
+  {
+    m_outDataSetSerializer->OnDataPieceReadRequest( &h, buffs);
+    
+    GetDataPiece( buffs, m_outDataSetSerializer);
+    buffs.clear();
+
+    m_socket->read_some(boost::asio::buffer( 
+      (uint8*) &h, sizeof(DataPieceHeader)));
+    DataPieceHeaderDeserialize( &h);
+  }
+
+  // dump dataSet
+  D_PRINT("Dumping incoming dataSet:" << std::endl << endl);
+  D_COMMAND (m_outDataSetSerializer->DumpDataSet() );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ClientJob::OnDSRecieved( void)
+{
+  m_mutex.unlock();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

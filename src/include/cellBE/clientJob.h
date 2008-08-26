@@ -21,11 +21,12 @@ class ClientJob
   static uint32 lastID;
   void GenerateJobID( void);
 
+  M4D::Multithreading::ScopedLock *lock;
+  M4D::Multithreading::Mutex m_mutex;
+
   NetStreamVector m_remotePipeDefSerialized;
 
-  // nothing to do. Everything is done automaticaly after 
-  // RemoteFilter::ProccessImage ends
-  void OnDSRecieved( void) {}
+  void OnDSRecieved( void);
 
   void SerializeFiltersProperties( void);
   void SerializeRemotePipeDefinition( void);

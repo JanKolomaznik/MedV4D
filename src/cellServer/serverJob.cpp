@@ -54,6 +54,11 @@ ServerJob::EndReadPipelineDefinition( const boost::system::error_code& error)
     {
       // perform deserialization
       GeneralFilterSerializer::DeSerialize( &consumer, &fSeriz, s);
+
+      // set starting by message
+      consumer->SetUpdateInvocationStyle( 
+        AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
+
       // add it into PipeLine
       m_pipeLine.AddFilter( consumer);
       m_pipeLine.MakeConnection( *producer, 0, *consumer, 0);
@@ -92,7 +97,7 @@ ServerJob::DeserializeFilterProperties( void)
   uint16 id;
   FilterSerializersMap::iterator found;
 
-  if( s.HasNext() )   // add the first
+  while( s.HasNext() )   // add the first
   {
     s >> id;
     found = m_filterSeralizersMap.find( id);
@@ -101,6 +106,7 @@ ServerJob::DeserializeFilterProperties( void)
     
     found->second->DeSerializeProperties( s);
   }
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -268,10 +274,16 @@ ServerJob::OnResultHeaderSent( const boost::system::error_code& error
 void
 ServerJob::OnExecutionDone( void)
 {
+  // dump dataSet
+  D_PRINT("Dumping outcoming dataSet:" << std::endl << endl);
+  D_COMMAND( m_outDataSetSerializer->DumpDataSet() );
+
   SendResultBack( RESPONSE_OK, EXECUTED);
 
   // start sending back resulting dataSet
   m_outDataSetSerializer->Serialize( this);
+
+  SendEndOfDataSetTag();
 
   m_state = IDLE;
 }
@@ -374,6 +386,13 @@ ServerJob::OnDSRecieved( void)
 {  
   m_state = DATASET_OK;
   SendResultBack( RESPONSE_OK, m_state);
+
+  // dump dataSet
+  D_PRINT("Dumping incoming dataSet:" << endl << endl);
+  D_COMMAND( m_inDataSetSerializer->DumpDataSet() );
+  D_PRINT("Going To SLEEP");
+  D_COMMAND( M4D::Multithreading::sleep(30) );  // wait for dumping
+  D_PRINT("I LIVE AGAIN !!");
 
   D_PRINT("UNLocking DS");
   m_DSLock->SetModified();     // unlock locked dataSet to start execution

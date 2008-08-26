@@ -87,6 +87,8 @@ public:
    *  header is recieved).
    */
   virtual void OnDataSetEndRead( void) = 0;
+
+  virtual void DumpDataSet( void) {}
 };
 
 ///////////////////////////////////////////

@@ -98,6 +98,11 @@ protected:
   static Pool< DataPieceHeader, 32> freeHeaders;
   static Pool< ResponseHeader, 32> m_freeResponseHeaders;
 
+  size_t ConvertDataBufsToBoostBuffers( 
+    const M4D::CellBE::DataBuffs &bufs,
+    std::vector<boost::asio::const_buffer> &buffers);
+
+
   void GetDataPiece( DataBuffs &bufs, AbstractDataSetSerializer *dataSetSerializer);
 
   void ReadDataPeiceHeader( AbstractDataSetSerializer *dataSetSerializer);
