@@ -190,18 +190,16 @@ public:
 
 	/**
 	 * Access method to data - checking boundaries.
-	 * \param x X coordinate.
-	 * \param y Y coordinate.
-	 * \exception
+	 * @param x X coordinate.
+	 * @param y Y coordinate.
 	 **/
 	inline ElementType &
 	GetElement( int32 x, int32 y );
 
 	/**
 	 * Access method to data for constant image- checking boundaries.
-	 * \param x X coordinate.
-	 * \param y Y coordinate.
-	 * \exception
+	 * @param x X coordinate.
+	 * @param y Y coordinate.
 	 **/
 	inline const ElementType &
 	GetElement( int32 x, int32 y )const;

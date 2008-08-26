@@ -12,7 +12,8 @@ using namespace std;
 ///////////////////////////////////////////////////////////////////////////////
 
 AbstractDataSetSerializer *
-GeneralDataSetSerializer::GetDataSetSerializer( AbstractDataSet *dataSet)
+GeneralDataSetSerializer::GetDataSetSerializer( 
+  M4D::Imaging::AbstractDataSet *dataSet)
 {
   switch( dataSet->GetDatasetType() )
   {
