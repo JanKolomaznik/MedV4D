@@ -198,6 +198,10 @@
 				RelativePath="..\..\include\TimeStamp.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\include\Types.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

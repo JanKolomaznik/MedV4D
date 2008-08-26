@@ -346,6 +346,30 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\filters\ImageConvertor.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\ImageConvertor.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\MedianFilter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\MedianFilter.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\SimpleMaxIntensityProjection.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\SimpleMaxIntensityProjection.tcc"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\filters\ThresholdingFilter.h"
 				>
 			</File>
