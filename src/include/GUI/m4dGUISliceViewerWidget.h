@@ -545,6 +545,14 @@ private:
      */
     void calculateOptimalZoomRate();
 
+    /**
+     * Draw text on the screen.
+     *  @param xpos the x coordinate of the beginning of the text
+     *  @param ypos the y coordinate of the beginning of the text
+     *  @param text the text itself
+     */
+    void textDrawer( int xpos, int ypos, const char* text );
+
     
     /**
      * The input port that can be connected to the pipeline.
@@ -648,6 +656,16 @@ private:
      * The rate of contrast adjustment of the image on display.
      */
     GLfloat					_contrastRate;
+
+    /**
+     * Overall brightness.
+     */
+    int64					_brightness;
+
+    /**
+     * Overall contrast.
+     */
+    int64					_contrast;
 
     /**
      * The methods to be used when mouse button is pressed while not in selection mode.

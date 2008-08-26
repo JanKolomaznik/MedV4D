@@ -77,9 +77,11 @@ public:
      *  @param contrastRate the rate of contrast to adjust the image with
      *  @param so the orientation of the slices (xy, yz, zx)
      *  @param slice the number of the slice to be drawn
+     *  @param brightness reference to return the overall brightness
+     *  @param contrast reference to return the overall contrast
      *  @return true, if texture preparing was successful, false otherwise
      */
-    static bool prepare( Imaging::InputPortAbstractImage* inPort, uint32& width, uint32& height, GLint brightnessRate, GLfloat contrastRate, SliceOrientation so, uint32 slice )
+    static bool prepare( Imaging::InputPortAbstractImage* inPort, uint32& width, uint32& height, GLint brightnessRate, GLfloat contrastRate, SliceOrientation so, uint32 slice, int64& brightness, int64& contrast )
     {
         uint32 depth;
         double maxvalue;
@@ -165,7 +167,7 @@ public:
 	// arrange voxels
 	VoxelArrayCopier<ElementType>::copy( pixel, original, width, height, newWidth, slice, xstride, ystride, zstride );
 	uint32 i, j;
-	double mean;
+	double mean, cont;
 	mean = 0.;
 	for ( i = 0; i < height; i++ )
 	    for ( j = 0; j < width; j++ ) mean += (double)pixel[ i * newWidth + j ] / (double)(width*height);
@@ -185,6 +187,16 @@ public:
 		    pixel[ i * newWidth + j ] = ( unsgn ? 0 : (ElementType)(-maxvalue) );
 	    }
 	    
+        mean = 0.;
+	for ( i = 0; i < height; i++ )
+            for ( j = 0; j < width; j++ ) mean += (double)pixel[ i * newWidth + j ] / (double)(width*height);
+	brightness = (int64)mean;
+	cont = 0.;
+	for ( i = 0; i < height; i++ )
+	    for ( j = 0; j < width; j++ ) cont += std::abs( (double)( pixel[ i * newWidth + j ] - mean ) ) / (double)(width*height);
+	contrast = (int64)cont;
+
+
 	width = newWidth;
 	height = newHeight;
 
@@ -354,6 +366,8 @@ m4dGUISliceViewerWidget::resetParameters()
     _zoomRate = 1.0;
     _brightnessRate = 0;
     _contrastRate = 1.0;
+    _brightness = 0;
+    _contrast = 0;
     slotSetButtonHandler( moveI, left );
     slotSetButtonHandler( switch_slice, right );
     _printShapeData = true;
@@ -429,6 +443,8 @@ m4dGUISliceViewerWidget::setParameters()
 	catch (...) { _ready = false; }
     }
     _shapes.clear();
+    _brightness = 0;
+    _contrast = 0;
     //_leftSideData.clear();
     //_rightSideData.clear();
 }
@@ -677,7 +693,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
     
     // prepare texture
     INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
-    	_imageID, _ready = TexturePreparer<TTYPE>::prepare( _inPort, width, height, _brightnessRate, _contrastRate, _sliceOrientation, sliceNum - _minimum[ ( _sliceOrientation + 2 ) % 3 ]) )
+    	_imageID, _ready = TexturePreparer<TTYPE>::prepare( _inPort, width, height, _brightnessRate, _contrastRate, _sliceOrientation, sliceNum - _minimum[ ( _sliceOrientation + 2 ) % 3 ], _brightness, _contrast ) )
     
     glEnable( GL_TEXTURE_2D );
     glBindTexture( GL_TEXTURE_2D, texName );
@@ -839,6 +855,16 @@ m4dGUISliceViewerWidget::drawShape( Selection::m4dShape<double>& s, bool last, i
 }
 
 void
+m4dGUISliceViewerWidget::textDrawer( int xpos, int ypos, const char* text )
+{
+    setTextPosition( xpos, ypos );
+    setTextCoords( xpos, ypos );
+    drawText( text );
+    unsetTextCoords();
+    glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
+}
+
+void
 m4dGUISliceViewerWidget::drawData( double zoomRate, QPoint offset, int sliceNum )
 {
     glPushMatrix();
@@ -862,9 +888,13 @@ m4dGUISliceViewerWidget::drawData( double zoomRate, QPoint offset, int sliceNum 
 	o_y = offset.y();
 	w_o = (int)( w * zoomRate );
     }
-    std::ostringstream snum;
+    std::ostringstream snum, contrast, brightness, resolution, zoom;
     std::string sor;
     snum << sliceNum + 1 << " / " << ( _maximum[ ( _sliceOrientation + 2 ) % 3 ] - _minimum[ ( _sliceOrientation + 2 ) % 3 ] );
+    resolution << w << "mm x " << h << "mm";
+    zoom << zoomRate << "x";
+    contrast << "Contrast : " << _contrast;
+    brightness << "Brightness : " << _brightness;
     switch ( _sliceOrientation )
     {
         case xy:
@@ -879,18 +909,15 @@ m4dGUISliceViewerWidget::drawData( double zoomRate, QPoint offset, int sliceNum 
 	sor = "zx";
 	break;
     }
-    if ( i - o_y > 2 * FONT_HEIGHT && (int)( snum.str().length() * FONT_WIDTH ) < w_o )
+    if ( i - o_y > 2 * FONT_HEIGHT && (int)( snum.str().length() * FONT_WIDTH ) < w_o && (int)( resolution.str().length() * FONT_WIDTH ) < w_o &&
+         (int)( zoom.str().length() * FONT_WIDTH ) < w_o && (int)( contrast.str().length() * FONT_WIDTH ) < w_o && (int)( brightness.str().length() * FONT_WIDTH ) < w_o )
     {
-        setTextPosition( o_x + w_o / 2 - FONT_WIDTH, o_y );
-        setTextCoords( o_x + w_o / 2 - FONT_WIDTH, o_y );
-        drawText( sor.c_str() );
-        unsetTextCoords();
-        glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
-        setTextPosition( o_x + w_o / 2 - FONT_WIDTH * snum.str().length() / 2, o_y + FONT_HEIGHT );
-        setTextCoords( o_x + w_o / 2 - FONT_WIDTH * snum.str().length() / 2, o_y + FONT_HEIGHT );
-        drawText( snum.str().c_str() );
-        unsetTextCoords();
-        glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
+        textDrawer( o_x + w_o / 2 - FONT_WIDTH, o_y, sor.c_str() );
+        textDrawer( o_x + w_o / 2 - FONT_WIDTH * snum.str().length() / 2, o_y + FONT_HEIGHT, snum.str().c_str() );
+        textDrawer( o_x + w_o / 4 - FONT_WIDTH * zoom.str().length() / 2, o_y, zoom.str().c_str() );
+        textDrawer( o_x + w_o / 4 - FONT_WIDTH * resolution.str().length() / 2, o_y + FONT_HEIGHT, resolution.str().c_str() );
+        textDrawer( o_x + 3 * w_o / 4 - FONT_WIDTH * brightness.str().length() / 2, o_y, brightness.str().c_str() );
+        textDrawer( o_x + 3 * w_o / 4 - FONT_WIDTH * contrast.str().length() / 2, o_y + FONT_HEIGHT, contrast.str().c_str() );
     }
     for ( it = _leftSideData.begin(); it != _leftSideData.end() && i >= o_y; ++it, i -= FONT_HEIGHT )
     {
