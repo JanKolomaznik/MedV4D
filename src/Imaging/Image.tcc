@@ -253,6 +253,31 @@ Image< ElementType, 2 >::GetModificationManager()const
 	return _imageData->GetModificationManager();
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+template< typename ElementType >
+void
+Image< ElementType, 2 >::Dump(void)
+{	
+	uint32 width;
+	uint32 height;
+	int32 xStride;
+	int32 yStride;
+	ElementType *pointer = GetPointer( width, height, xStride, yStride );
+
+  D_PRINT( "Type: 2D Image (" << width << "x" << height << "):" << std::endl);
+
+  for( uint32 j = 0; j < height; ++j ) {
+    for( uint32 k = 0; k < width; ++k ) {
+      D_PRINT_NOENDL( *pointer << ",");
+      pointer += xStride;
+    }
+    D_PRINT( std::endl );
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 
 //*****************************************************************************
 
@@ -323,6 +348,38 @@ Image< ElementType, 3 >::ReallocateData( typename ImageDataTemplate< ElementType
 
 	FillDimensionInfo();
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+template< typename ElementType >
+void
+Image< ElementType, 3 >::Dump(void)
+{	
+	uint32 width;
+	uint32 height;
+	uint32 depth;
+	int32 xStride;
+	int32 yStride;
+	int32 zStride;
+	ElementType *pointer = GetPointer( 
+    width, height, depth, xStride, yStride, zStride );
+
+  D_PRINT( "Type: 3D Image(" << width << "x" << 
+      height << "x" << depth << "):" << std::endl);
+
+  for( uint32 i = 0; i < depth; ++i ) {
+    D_PRINT("Slice (" << i << "):" << std::endl);
+    for( uint32 j = 0; j < height; ++j ) {
+      for( uint32 k = 0; k < width; ++k ) {
+        D_PRINT_NOENDL( *pointer << ",");
+        pointer += xStride;
+      }
+      D_PRINT( std::endl );
+    }
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 template< typename ElementType >
 Image< ElementType, 3 >::~Image()

@@ -88,7 +88,7 @@ public:
    */
   virtual void OnDataSetEndRead( void) = 0;
 
-  virtual void DumpDataSet( void) {}
+  void Dump( void) { m_dataSet->Dump(); }
 };
 
 ///////////////////////////////////////////

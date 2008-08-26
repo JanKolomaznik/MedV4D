@@ -85,6 +85,10 @@ public:
 	virtual
 	~AbstractDataSet(){ }
 
+  /**
+   *  Dump data set contents
+   */
+  virtual void Dump( void) = 0;
 
 	/**
 	 * \return Actual structure timestamp - it changes when internal structure is modified.

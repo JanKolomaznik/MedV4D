@@ -281,7 +281,7 @@ ClientJob::ReadResultingDataSet( void)
 
   // dump dataSet
   D_PRINT("Dumping incoming dataSet:" << std::endl << endl);
-  D_COMMAND (m_outDataSetSerializer->DumpDataSet() );
+  D_COMMAND (m_outDataSetSerializer->Dump() );
 }
 
 ///////////////////////////////////////////////////////////////////////////////

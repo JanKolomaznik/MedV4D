@@ -35,7 +35,7 @@ int main()
   {
 	PipelineContainer pipeline;
 
-	AbstractPipeFilter *filter = new BoneSegmentationRemote< ImageType >();
+	BoneSegmentationRemote< ImageType > *filter = new BoneSegmentationRemote< ImageType >();
 
 	pipeline.AddFilter( filter );
 	AbstractImageConnectionInterface *inConnection = 
@@ -48,19 +48,24 @@ int main()
 
 	inConnection->PutImage( inImage );
 
+  filter->GetMedianOptions()->radius = 0;
+  filter->GetThreshholdingOptions()->bottom = 3;
+  filter->GetThreshholdingOptions()->top = 5;
+
   filter->Execute();
 
-  //((RemoteFilterBase*)filter)->Run();
-
-  while( 1)
-  {
-  }
-
+  D_PRINT( "Result:" << std::endl << std::endl);
+  D_COMMAND( outConnection->GetDataset().Dump() );
+  
   }
   catch (std::exception& e)
   {
     std::cout << e.what() << std::endl;
     return -1;
+  }
+  catch( ...)
+  {
+    LOG( "FATAL ERROR!");
   }
 
   return 0;

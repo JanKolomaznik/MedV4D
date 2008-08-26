@@ -59,8 +59,6 @@ public:
   
   void OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs);
 
-  void DumpDataSet( void);
-
 private:
   void Reset( void);
 };

@@ -247,6 +247,8 @@ public:
 	const ModificationManager &
 	GetModificationManager()const;
 
+  void Dump(void);
+
 protected:
 	typename ImageDataTemplate< ElementType >::Ptr	_imageData;
 
@@ -391,6 +393,7 @@ public:
 	const ModificationManager &
 	GetModificationManager()const;
 
+  void Dump(void);
 
 protected:
 	typename ImageDataTemplate< ElementType >::Ptr	_imageData;
@@ -552,6 +555,8 @@ public:
 
 	const ModificationManager &
 	GetModificationManager()const;
+
+  void Dump(void);
 
 protected:
 	typename ImageDataTemplate< ElementType >::Ptr	_imageData;

@@ -275,8 +275,12 @@ void
 ServerJob::OnExecutionDone( void)
 {
   // dump dataSet
+  D_PRINT("Dumping incoming dataSet:" << endl << endl);
+  D_COMMAND( m_inDataSetSerializer->Dump() );
+
+  // dump dataSet
   D_PRINT("Dumping outcoming dataSet:" << std::endl << endl);
-  D_COMMAND( m_outDataSetSerializer->DumpDataSet() );
+  D_COMMAND( m_outDataSetSerializer->Dump() );
 
   SendResultBack( RESPONSE_OK, EXECUTED);
 
@@ -386,13 +390,6 @@ ServerJob::OnDSRecieved( void)
 {  
   m_state = DATASET_OK;
   SendResultBack( RESPONSE_OK, m_state);
-
-  // dump dataSet
-  D_PRINT("Dumping incoming dataSet:" << endl << endl);
-  D_COMMAND( m_inDataSetSerializer->DumpDataSet() );
-  D_PRINT("Going To SLEEP");
-  D_COMMAND( M4D::Multithreading::sleep(30) );  // wait for dumping
-  D_PRINT("I LIVE AGAIN !!");
 
   D_PRINT("UNLocking DS");
   m_DSLock->SetModified();     // unlock locked dataSet to start execution
