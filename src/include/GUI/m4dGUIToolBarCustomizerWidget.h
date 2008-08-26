@@ -12,8 +12,8 @@ namespace M4D {
 namespace GUI {
 
 /**
- * Class allowing user interfaces to be customized by letting the user assign new keyboard shortcuts, 
- * mouse buttons, and fine-tune the appearance of toolbars.
+ * Class representing ToolBar Customizer Widget - allows user interfaces to be customized by letting the
+ * user assign new keyboard shortcuts, mouse buttons, and fine-tune the appearance of toolbars.
  * The user is able to edit actions behavior in the table before either accepting the changes with
  * the OK button or rejecting them with the Cancel button. Since it's allowed any text to be entered 
  * in each shortcut field, it's needed a way to check that it can be used to specify a valid shortcut.

@@ -14,11 +14,13 @@ namespace GUI {
 /// Number of layouts in one row (in one groupBox)
 #define LAYOUTS_IN_ROW  3
 
+/// Icon names for tool buttons - for predefined format buttons 
 const char *m4dGUIScreenLayoutWidget::layoutIconNames[] = { "layout-1x1.png", "layout-1x2.png", 
                                                             "layout-2x1.png", "layout-2x2.png",
                                                             "layout-2x4.png", "layout-4x2.png",
                                                             "layout-4x4.png", "layout-4x6.png", 
                                                             "layout-4x8.png" };
+/// Dimensions for predefined format buttons
 const unsigned m4dGUIScreenLayoutWidget::layoutDimensions[][2] = { {1, 1}, {1, 2}, {2, 1}, {2, 2},
                                                                    {2, 4}, {4, 2}, {4, 4}, {4, 6},   
                                                                    {4, 8} };
@@ -98,7 +100,12 @@ void m4dGUIScreenLayoutWidget::seriesApply ()
 
 void m4dGUIScreenLayoutWidget::imageApply ()
 { 
-  emit imageLayout( imageColumnSpinBox->value(), imageRowSpinBox->value() );
+  if ( imageColumnSpinBox->value() == 1 && imageRowSpinBox->value() == 1 ) {
+    emit imageLayout();
+  }
+  else {
+    emit imageLayout( imageColumnSpinBox->value(), imageRowSpinBox->value() );
+  }
 }
 
 
@@ -166,6 +173,7 @@ QGroupBox *m4dGUIScreenLayoutWidget::createLayoutGroupBox ( const QString &title
 QToolButton *m4dGUIScreenLayoutWidget::createToolButton ( const QIcon &icon, const char *member )
 {
   QToolButton *toolButton = new QToolButton();
+
   toolButton->setCheckable( true );
   toolButton->setAutoExclusive( true );
 
@@ -183,6 +191,7 @@ QToolButton *m4dGUIScreenLayoutWidget::createToolButton ( const QIcon &icon, con
 QSpinBox *m4dGUIScreenLayoutWidget::createSpinBox ( const int value )
 {
   QSpinBox *spinBox = new QSpinBox();
+
   spinBox->setMinimum( 1 );
   spinBox->setValue( value );
 

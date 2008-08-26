@@ -12,7 +12,6 @@ namespace M4D {
 namespace GUI {
 
 /**
- * @class m4dGUIMainViewerDesktopWidget m4dGUIMainViewerDesktopWidget.h
  * Class representing the Main Viewer Desktop - containing abstract viewers.
  * It can manage its own layout, with selection of specific viewer - it causes
  * changes in toolBars and controls depending on the type of the viewer.

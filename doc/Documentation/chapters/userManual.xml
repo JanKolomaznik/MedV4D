@@ -108,6 +108,9 @@
     <para>
       <mediaobject>
         <imageobject>
+          <imagedata fileref="figures/userManual/shots/main-window.eps" format="EPS"/>
+        </imageobject>
+        <imageobject>
           <imagedata fileref="figures/userManual/shots/main-window.png" format="PNG"/>
         </imageobject>
       </mediaobject>
@@ -182,6 +185,9 @@
             <para>
               <mediaobject>
                 <imageobject>
+                  <imagedata fileref="figures/userManual/shots/custom.eps" format="EPS"/>
+                </imageobject>
+                <imageobject>
                   <imagedata fileref="figures/userManual/shots/custom.png" format="PNG"/>
                 </imageobject>
               </mediaobject>
@@ -193,10 +199,16 @@
               icon (
               <inlinemediaobject>
                 <imageobject>
+                   <imagedata fileref="figures/userManual/icons/shown.eps"/>
+                </imageobject>
+                <imageobject>
                    <imagedata fileref="figures/userManual/icons/shown.png"/>
                 </imageobject>
               </inlinemediaobject>/
               <inlinemediaobject>
+                <imageobject>
+                   <imagedata fileref="figures/userManual/icons/hidden.eps"/>
+                </imageobject>
                 <imageobject>
                    <imagedata fileref="figures/userManual/icons/hidden.png"/>
                 </imageobject>
@@ -240,6 +252,9 @@
               <entry>
                 <mediaobject>
                   <imageobject>
+                    <imagedata fileref="figures/userManual/tools/search.eps" format="EPS"/>
+                  </imageobject>
+                  <imageobject>
                     <imagedata fileref="figures/userManual/tools/search.png" format="PNG"/>
                   </imageobject>
                 </mediaobject>
@@ -250,6 +265,9 @@
             <row>
               <entry>
                 <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/userManual/tools/open.eps" format="EPS"/>
+                  </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/open.png" format="PNG"/>
                   </imageobject>
@@ -277,6 +295,9 @@
               <entry>
                 <mediaobject>
                   <imageobject>
+                    <imagedata fileref="figures/userManual/tools/layout.eps" format="EPS"/>
+                  </imageobject>
+                  <imageobject>
                     <imagedata fileref="figures/userManual/tools/layout.png" format="PNG"/>
                   </imageobject>
                 </mediaobject>
@@ -287,6 +308,9 @@
             <row>
               <entry>
                 <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/userManual/tools/window-level.eps" format="EPS"/>
+                  </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/window-level.png" format="PNG"/>
                   </imageobject>
@@ -299,7 +323,10 @@
               <entry>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/userManual/tools/pan.png" format="PNG"/>
+                    <imagedata fileref="figures/userManual/tools/move.eps" format="EPS"/>
+                  </imageobject>
+                  <imageobject>
+                    <imagedata fileref="figures/userManual/tools/move.png" format="PNG"/>
                   </imageobject>
                 </mediaobject>
               </entry>
@@ -309,6 +336,9 @@
             <row>
               <entry>
                 <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/userManual/tools/zoom.eps" format="EPS"/>
+                  </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/zoom.png" format="PNG"/>
                   </imageobject>
@@ -321,6 +351,9 @@
               <entry>
                 <mediaobject>
                   <imageobject>
+                    <imagedata fileref="figures/userManual/tools/stack.eps" format="EPS"/>
+                  </imageobject>
+                  <imageobject>
                     <imagedata fileref="figures/userManual/tools/stack.png" format="PNG"/>
                   </imageobject>
                 </mediaobject>
@@ -331,6 +364,9 @@
             <row>
               <entry>
                 <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/userManual/tools/info.eps" format="EPS"/>
+                  </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/info.png" format="PNG"/>
                   </imageobject>
@@ -358,6 +394,9 @@
               <entry>
                 <mediaobject>
                   <imageobject>
+                    <imagedata fileref="figures/userManual/tools/probe.eps" format="EPS"/>
+                  </imageobject>
+                  <imageobject>
                     <imagedata fileref="figures/userManual/tools/probe.png" format="PNG"/>
                   </imageobject>
                 </mediaobject>
@@ -368,6 +407,9 @@
             <row>
               <entry>
                 <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/userManual/tools/point.eps" format="EPS"/>
+                  </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/point.png" format="PNG"/>
                   </imageobject>
@@ -380,6 +422,9 @@
               <entry>
                 <mediaobject>
                   <imageobject>
+                    <imagedata fileref="figures/userManual/tools/shape.eps" format="EPS"/>
+                  </imageobject>
+                  <imageobject>
                     <imagedata fileref="figures/userManual/tools/shape.png" format="PNG"/>
                   </imageobject>
                 </mediaobject>
@@ -390,6 +435,9 @@
             <row>
               <entry>
                 <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/userManual/tools/clear-point.eps" format="EPS"/>
+                  </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/clear-point.png" format="PNG"/>
                   </imageobject>
@@ -402,6 +450,9 @@
               <entry>
                 <mediaobject>
                   <imageobject>
+                    <imagedata fileref="figures/userManual/tools/clear-shape.eps" format="EPS"/>
+                  </imageobject>
+                  <imageobject>
                     <imagedata fileref="figures/userManual/tools/clear-shape.png" format="PNG"/>
                   </imageobject>
                 </mediaobject>
@@ -412,6 +463,9 @@
             <row>
               <entry>
                 <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/userManual/tools/clear-all.eps" format="EPS"/>
+                  </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/clear-all.png" format="PNG"/>
                   </imageobject>
@@ -439,6 +493,9 @@
               <entry>
                 <mediaobject>
                   <imageobject>
+                    <imagedata fileref="figures/userManual/tools/flip-hor.eps" format="EPS"/>
+                  </imageobject>
+                  <imageobject>
                     <imagedata fileref="figures/userManual/tools/flip-hor.png" format="PNG"/>
                   </imageobject>
                 </mediaobject>
@@ -450,6 +507,9 @@
               <entry>
                 <mediaobject>
                   <imageobject>
+                    <imagedata fileref="figures/userManual/tools/flip-vert.eps" format="EPS"/>
+                  </imageobject>
+                  <imageobject>
                     <imagedata fileref="figures/userManual/tools/flip-vert.png" format="PNG"/>
                   </imageobject>
                 </mediaobject>
@@ -460,6 +520,9 @@
             <row>
               <entry>
                 <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/userManual/tools/slice-orient.eps" format="EPS"/>
+                  </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/slice-orient.png" format="PNG"/>
                   </imageobject>
@@ -486,6 +549,9 @@
             <row>
               <entry>
                 <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/userManual/tools/rotate-volume.eps" format="EPS"/>
+                  </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/rotate-volume.png" format="PNG"/>
                   </imageobject>
@@ -535,6 +601,9 @@
           Click
           <inlinemediaobject>
             <imageobject>
+               <imagedata fileref="figures/userManual/icons/search.eps"/>
+            </imageobject>
+            <imageobject>
                <imagedata fileref="figures/userManual/icons/search.png"/>
             </imageobject>
           </inlinemediaobject>
@@ -546,6 +615,9 @@
 
         <para>
           <mediaobject>
+            <imageobject>
+              <imagedata fileref="figures/userManual/shots/study.eps" format="EPS"/>
+            </imageobject>
             <imageobject>
               <imagedata fileref="figures/userManual/shots/study.png" format="PNG"/>
             </imageobject>
@@ -605,10 +677,16 @@
             Click the
             <inlinemediaobject>
               <imageobject>
+                 <imagedata fileref="figures/userManual/icons/remote.eps"/>
+              </imageobject>
+              <imageobject>
                  <imagedata fileref="figures/userManual/icons/remote.png"/>
               </imageobject>
             </inlinemediaobject> or the
             <inlinemediaobject>
+              <imageobject>
+                 <imagedata fileref="figures/userManual/icons/dicomdir.eps"/>
+              </imageobject>
               <imageobject>
                  <imagedata fileref="figures/userManual/icons/dicomdir.png"/>
               </imageobject>
@@ -636,6 +714,9 @@
 
           <para>
             <mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/userManual/shots/date.eps" format="EPS"/>
+              </imageobject>
               <imageobject>
                 <imagedata fileref="figures/userManual/shots/date.png" format="PNG"/>
               </imageobject>
@@ -755,6 +836,9 @@
           <para>
             <mediaobject>
               <imageobject>
+                <imagedata fileref="figures/userManual/shots/directory.eps" format="EPS"/>
+              </imageobject>
+              <imageobject>
                 <imagedata fileref="figures/userManual/shots/directory.png" format="PNG"/>
               </imageobject>
             </mediaobject>
@@ -821,6 +905,9 @@
         <para>
           <mediaobject>
             <imageobject>
+              <imagedata fileref="figures/userManual/shots/view.eps" format="EPS"/>
+            </imageobject>
+            <imageobject>
               <imagedata fileref="figures/userManual/shots/view.png" format="PNG"/>
             </imageobject>
           </mediaobject>
@@ -865,6 +952,9 @@
                 Click
                 <inlinemediaobject>
                   <imageobject>
+                     <imagedata fileref="figures/userManual/icons/layout.eps"/>
+                  </imageobject>
+                  <imageobject>
                      <imagedata fileref="figures/userManual/icons/layout.png"/>
                   </imageobject>
                 </inlinemediaobject>
@@ -876,6 +966,9 @@
 
               <para>
                 <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/userManual/shots/layout.eps" format="EPS"/>
+                  </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/shots/layout.png" format="PNG"/>
                   </imageobject>

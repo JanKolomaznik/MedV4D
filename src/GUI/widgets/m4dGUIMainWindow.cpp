@@ -517,9 +517,13 @@ void m4dGUIMainWindow::createMenus ()
 
   // Tools Menu
   toolsMenu = new QMenu( tr( "&Tools" ), this );
+  toolsMenu->addAction( layoutAct );
+  toolsMenu->addSeparator();
   for ( unsigned i = 1; i < VIEWER_ACTIONS_NUMBER; i++ ) {
     toolsMenu->addAction( viewerActs[i] );
   }
+  toolsMenu->addSeparator();
+  toolsMenu->addAction( replaceAct );
 
   menuBar()->addMenu( toolsMenu );
 
@@ -591,17 +595,18 @@ void m4dGUIMainWindow::delegateAction ( unsigned actionIdx, m4dGUIAbstractViewer
 
 void m4dGUIMainWindow::process ( DcmProvider::DicomObjSetPtr dicomObjSet )
 {
-	/*AbstractImage::AImagePtr inputImage = ImageFactory::CreateImageFromDICOM( dicomObjSet );
+  AbstractImage::AImagePtr inputImage = ImageFactory::CreateImageFromDICOM( dicomObjSet );
 
 	try {
-		AbstractImageConnection *conn = new AbstractImageConnection();
+    AbstractImageConnection *conn = new AbstractImageConnection();
 		conn->PutImage( inputImage );
+
 		mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
 		conn->ConnectConsumer( mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 	} 
-	catch( ... ) {
+	catch ( ... ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Some exception" ) );
-	}*/
+	}
 }
 
 } // namespace GUI
