@@ -284,11 +284,10 @@ and communicate ONLY with our supercalculating server that is budled with. All f
   	</itemizedlist>
   	
   	<informalexample>
-	<para>
-  	Example of creation &amp; registration of a new FilterSerializer (taken from code. For details see
-  	ThresholdingSerializer.h &amp; .tcc). It uses supporting function, that is called rught after
-  	CTS
-	</para>
+  	<para>
+    	Example of creation of a new FilterSerializer (taken from code. For details see
+    	ThresholdingSerializer.h &amp; .tcc). It uses supporting function, that is called righght after	CIS.
+  	</para>
   	</informalexample>
   	
   	<programlisting>
@@ -382,6 +381,14 @@ protected:
 };
 ]]>
     </programlisting>
+    
+    <informalexample>
+  	<para>
+    	Here is snippet from FilterSerializerArray.cpp constructor where actual registration of a new 
+    	FilterSerializers should be performed. <classname>FilterSerializerArray</classname> is based
+    	on array of filterSerializers. Each serializer on position defined by it ID in FilterID enum.
+  	</para>
+  	</informalexample>
 
   	<programlisting>
 <![CDATA[
@@ -417,13 +424,317 @@ m_serializerArray[ (uint32) FID_Thresholding] =
 			can instantate <classname>DataSetSeralizer</classname> class (CIS).</para></listitem>
 		</itemizedlist>
 		
+	    <informalexample>
+  	<para>
+    	Here is snippet from ImageSerializer. Example of <methodname>SerializeProperties</methodname>
+    	 &amp; <methodname>DeSerializeProperties</methodname>	functions. Here used to write information
+    	 about dimensionality, element type, sizes, etc. relevant for images.
+  	</para>
+  	</informalexample>
+  	
 		<programlisting>
 <![CDATA[
 
+template< typename ElementType, uint8 dim>
+void
+ImageSerializerBase<ElementType, dim>
+  ::SerializeProperties(M4D::CellBE::NetStream &s)
+{
+	AbstractImage *im = (AbstractImage *) m_dataSet; // cast to sucessor
+
+	// serialize common properties
+	s << (uint16) im->GetDimension() << (uint16) im->GetElementTypeID();
+
+	for( unsigned i = 0; i < im->GetDimension(); ++i ) {
+		const DimensionExtents &dimExtents = im->GetDimensionExtents( i );
+
+		s << (int32)dimExtents.minimum;
+		s << (int32)dimExtents.maximum;
+		s << (float32)dimExtents.elementExtent;
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+template< typename ElementType, uint8 dim>
+M4D::Imaging::AbstractDataSet::ADataSetPtr
+ImageSerializerBase<ElementType, dim>
+  ::DeSerializeProperties(M4D::CellBE::NetStream &s)
+{	
+	int32 minimums[ dim ];
+	int32 maximums[ dim ];
+	float32 elExtents[ dim ];
+
+	for( unsigned i = 0; i < dim; ++i ) {
+
+		s >> minimums[ i ];
+		s >> maximums[ i ];
+		s >> elExtents[ i ];
+	}
+
+	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( GetNumericTypeID< ElementType >(),
+		return M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< TTYPE >( dim, minimums, maximums, elExtents )
+		);
+
+		// unreachable but for syntactic corectness
+	return M4D::Imaging::AbstractDataSet::ADataSetPtr();
+
+}
 
 
 ]]>
-	  </programlisting>		
+	  </programlisting>	
+	  
+	  <informalexample>
+  	<para>
+    	Here is a nother snippet from ImageSerializer (3D case). Example of <methodname>Serialize</methodname>
+    	 &amp; <methodname>OnDataPieceReadRequest</methodname>	functions. That performs ACS.
+    </para>
+    <para>
+    	 <methodname>Serialize</methodname> goes through image slice by slice and send each as dataPiece through
+    	 <classname>iPublicJob</classname>::<methodname>PutDataPiece</methodname>.
+    </para>
+    <para>
+    	 <methodname>OnDataPieceReadRequest</methodname>should decide where to put data piece that is going to be
+    	 recieved and corresponds to dataPieceHeader given to this method. Memory places where the data piece
+    	 should be recieved to is specified by DataBuff strucutres that is put into bufs container that comes
+    	 as well within param. Note state variable m_currSlice that says which slice is going to be recieved.
+    	 Such variables are subject of <methodname>Reset</methodname>.
+  	</para>
+  	</informalexample>
+  	
+		<programlisting>
+<![CDATA[
+
+template< typename ElementType>
+void
+ImageSerializer< typename ElementType, 3>
+  ::Serialize( M4D::CellBE::iPublicJob *job)
+{
+	Image<ElementType, 3> *im = (Image<ElementType, 3> *) m_dataSet;
+	
+	uint32 width;
+	uint32 height;
+	uint32 depth;
+	int32 xStride;
+	int32 yStride;
+	int32 zStride;
+	ElementType *pointer = im->GetPointer( 
+	                         width, height, depth, xStride, yStride, zStride);
+
+  // put slices as dataPieces. Suppose whole DS is serialized. Not only window part
+  DataBuff buff;
+
+  size_t sliceSize = width * height;
+
+	for( uint32 k = 0; k < depth; ++k ) {
+    buff.data = (void*) pointer;
+    buff.len = sliceSize * sizeof( ElementType);
+    job->PutDataPiece( buff);
+
+    pointer += sliceSize; // move on next slice
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+template< typename ElementType>
+void
+ImageSerializer< typename ElementType, 3>
+  ::OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs)
+{
+  Image<ElementType, 3> *im = (Image<ElementType, 3> *) m_dataSet;
+
+  uint32 width;
+	uint32 height;
+	uint32 depth;
+	int32 xStride;
+	int32 yStride;
+	int32 zStride;
+	ElementType *pointer = im->GetPointer( width, height, depth, xStride, yStride, zStride );
+
+  size_t sliceSize = width * height;
+
+  DataBuff buf;
+  buf.data = pointer + ( sliceSize * m_currSlice);
+  buf.len = sliceSize * sizeof( ElementType);
+
+  bufs.push_back( buf);
+
+  m_currSlice++;  // important
+}
+
+]]>
+	  </programlisting>	
+	  
+	  <informalexample>
+  	<para>
+    	Here is example of new dataSet registration in <classname>GeneralDataSetSerializer</classname>.
+    	Actual registration is performed by adding another switch case of dataSet type which
+    	serializer is being registered.
+    </para>
+    <para>
+    	The same way should be switch case added to <methodname>DeSerializeDataSetProperties</methodname>.
+    </para>
+  	</informalexample>
+  	
+		<programlisting>
+<![CDATA[
+
+AbstractDataSetSerializer *
+GeneralDataSetSerializer::GetDataSetSerializer( AbstractDataSet *dataSet)
+{
+  switch( dataSet->GetDatasetType() )
+  {
+  case DATASET_IMAGE:    
+    NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( 
+      ((AbstractImage *)dataSet)->GetElementTypeID(),
+		  DIMENSION_TEMPLATE_SWITCH_MACRO( 
+        ((AbstractImage *)dataSet)->GetDimension(),
+			  return new ImageSerializer< TTYPE, DIM >(dataSet) )
+		  );
+    break;
+
+  case DATASET_TRIANGLE_MESH:
+    return NULL;
+    // TOBEDONE WHEN triagleMesh created
+    break;
+   ...
+   ...
+   
+   ...
+}
+
+]]>
+	  </programlisting>	
+	  
+	</section>
+	
+	<section>  
+    <title>Remote filter</title>
+    
+    <para>
+  	Next is the list of neccessary steps for writing new remote filter:
+  	</para>
+  	
+  	<itemizedlist>
+			<listitem><para>Write new class that inherits from <classname>RemoteFilter</classname> templated class
+			and implements all neccesary methodes (PrepareOutputDatasets, constructor)</para></listitem>
+			<listitem><para>In that new class should be all Filter options classes that compose the remote
+			pipeline added as member variables (hardcoded).</para></listitem>
+		</itemizedlist>
+		
+	  <informalexample>
+  	<para>
+    	Here is BoneSegmentationRemote filter. It contains thresholding and median filter. (See
+    	m_thresholdingOptions and m_medianOptions members). This filter properties offers to the
+    	outer world by 'Get' methodes to let them to be changed as well as definition the two
+    	mandatory neccesary methodes. There are seme typedef that	make the template madness easier.
+  	</para>
+  	</informalexample>
+  	
+		<programlisting>
+<![CDATA[
+
+template< typename ImageType >
+class BoneSegmentationRemote
+  : public RemoteFilter<ImageType, ImageType>
+{
+public:
+	typedef typename RemoteFilter<ImageType, ImageType> PredecessorType;
+	typedef PredecessorType::Properties	Properties;
+
+	BoneSegmentationRemote();
+  
+
+	/////////////////// To customize /////////////////////
+	// puting options available to outer world to be able to specify it ....
+
+  // thresholding filter issues
+	typedef ThresholdingFilter<ImageType>	Thresholding;
+	typedef typename Thresholding::Properties ThresholdingOptsType;
+	
+	ThresholdingOptsType *GetThreshholdingOptions( void)	
+  {
+		return &m_thresholdingOptions;
+	}
+
+  // median filter issues
+  typedef MedianFilter2D<ImageType>	Median;
+	typedef typename Median::Properties MedianOptsType;
+	
+	MedianOptsType *GetMedianOptions( void)	
+  {
+		return &m_medianOptions;
+	}
+
+protected:
+	void PrepareOutputDatasets();
+
+private:
+
+	/**
+	 * Here should be added members of  filter options type that will
+	 * define the remote pipeline this filter represents. Each member
+	 * for single filter in remote pipeline. As a next step is defining
+	 * retrieving public members, that will provide ability to change
+	 * the filter options from outer world.
+	 **/
+	ThresholdingOptsType m_thresholdingOptions;
+  MedianOptsType m_medianOptions;
+	// ...
+
+};
+
+]]>
+	  </programlisting>	
+	  
+	  <informalexample>
+  	<para>
+    	Here is implementation of BoneSegmentationRemote constructor. This way will be implemented
+    	all remote filters constructors. There are two phases. The first: creation of defining
+    	container (vector of FilterSerializers) and putting Serializers that correspond to filter
+    	properties member variales into it. The second stage is creating job while passing that
+    	defining container.
+  	</para>
+  	</informalexample>
+  	
+		<programlisting>
+<![CDATA[
+
+template< typename ImageType>
+BoneSegmentationRemote<ImageType>::BoneSegmentationRemote()
+: PredecessorType( new Properties() )
+{
+  AbstractFilterSerializer *ser;  
+
+  // definig vector that will define actual remote pipeline
+  FilterSerializerVector m_filterSerializers;
+
+  uint16 filterID = 1;
+
+  // put into the vector serializers instances in order that is in remote pipe
+  {
+    // insert thresholding serializer
+    ser = GeneralFilterSerializer::GetFilterSerializer<Thresholding>( 
+      &m_thresholdingOptions, filterID++);
+    m_filterSerializers.push_back( ser);
+
+    // insert median serializer
+    ser = GeneralFilterSerializer::GetFilterSerializer<Median>( 
+      &m_medianOptions, filterID++);
+    m_filterSerializers.push_back( ser);
+  
+    // ... for other possible members definig remote pipe filters
+  }
+
+  // create job
+  m_job = s_cellClient.CreateJob( m_filterSerializers);
+}
+
+]]>
+	  </programlisting>	
+	  	  
 	</section>
 	
 </section>
