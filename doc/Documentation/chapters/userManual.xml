@@ -30,19 +30,19 @@
           following hardware requirements:
         </title>
         <listitem>
-          <para>Pentium II CPU ???</para>
+          <para>Pentium II CPU</para>
         </listitem>
         <listitem>
           <para>256 MB RAM</para>
         </listitem>
         <listitem>
-          <para>10 MB free hard drive space for application + for image storage ???</para>
+          <para>10 MB free hard drive space for application + for image storage</para>
         </listitem>
         <listitem>
           <para>32 MB of video RAM</para>
         </listitem>
         <listitem>
-          <para>Minimum display resolution 1024 x 768 ???</para>
+          <para>Minimum display resolution 1024 x 768</para>
         </listitem>
       </itemizedlist>
     </section>
@@ -56,7 +56,7 @@
           computer meet the following specifications:
         </title>
         <listitem>
-          <para>Pentium 4 CPU ???</para>
+          <para>Pentium 4 CPU</para>
         </listitem>
         <listitem>
           <para>1 GB RAM</para>
@@ -65,7 +65,7 @@
           <para>128 MB of video RAM</para>
         </listitem>
         <listitem>
-          <para>Display resolution 1280 x 1024 ???</para>
+          <para>Display resolution 1280 x 1024</para>
         </listitem>
       </itemizedlist>
     </section>
@@ -711,7 +711,7 @@
       </orderedlist>
 
       <itemizedlist>
-        <title>To retrieve and view a remote exam (choose one of the following options):</title>
+        <title>To retrieve and view a Remote Exam (choose one of the following options):</title>
         <listitem>
           <para>
             Select a study from the list and double-click it to retrieve and view
@@ -748,7 +748,26 @@
         </listitem>
         <listitem>
           <para>
-            Click <guibutton>Path</guibutton>. The directory tree and  appears to the lower right of the window.
+            Click <guibutton>Path</guibutton>. The directory tree and input field
+            (with history) appears to the lower right of the window.
+          </para>
+
+          <para>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/userManual/shots/directory.png" format="PNG"/>
+              </imageobject>
+            </mediaobject>
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Browse to the DICOMDIR file in the directory tree or write its path
+            directly to the input field. These two elements are updating each other - browsing
+            in the directory tree causes input field value change, the currently
+            selected path appears there which can be edited. Writing the path to
+            the input field causes directory tree expand to the selected
+            path (if it's valid). Input field has higher priority.
           </para>
         </listitem>
         <listitem>
@@ -760,16 +779,15 @@
       </orderedlist>
 
       <itemizedlist>
-        <title>To retrieve and view a remote exam (choose one of the following options):</title>
+        <title>To view a DICOMDIR Exam (choose one of the following options):</title>
         <listitem>
           <para>
-            Select a study from the list and double-click it to retrieve and view
-            it automatically
+            Select a study from the list and double-click it to view it automatically
           </para>
         </listitem>
         <listitem>
           <para>
-            Select a study and click <guibutton>View</guibutton>
+            Select a study from the list and click <guibutton>View</guibutton>
           </para>
         </listitem>
       </itemizedlist>
@@ -783,12 +801,113 @@
   <section>
     <title>Viewing studies</title>
 
-    <para>..........</para>
+    <para>
+      Studies can be viewed using the procedures for the four exam tabs outlined
+      in previous sections. This section provide a general reiteration of those
+      procedures. In addition to learning how to view a study, this section will
+      also show you how to adjust the screen layout and compare multiple studies.
+    </para>
+
+    <itemizedlist>
+     <title>To view a study:</title>
+      <listitem>
+        <para>
+          Select a study from the list and double-click it to view it automatically,
+          or select a study from the list and click <guibutton>View</guibutton>.
+          The study appears in the main window (in the previously selected viewer),
+          and the toolbar is updated according to the viewer you are using.
+        </para>
+
+        <para>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figures/userManual/shots/view.png" format="PNG"/>
+            </imageobject>
+          </mediaobject>
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      Images appear side-by-side in a grid (default setting = 1x2), like the
+      films mounted beside each other on a light box. This grid configuration
+      can be adjusted by following the procedure outlined in
+      <xref linkend="AdjustingTheScreenLayout"/>.
+    </para>
+
+    <section id="AdjustingTheScreenLayout">
+      <title>Adjusting the screen layout</title>
+
+      <para>
+        Images that appear on the screen are laid out in a side-by-side (1x2) grid
+        configuration by default. This configuration can be adjusted to suit your
+        preferences.
+      </para>
+
+      <orderedlist>
+        <title>To adjust the screen layout:</title>
+        <listitem>
+          <itemizedlist>
+            <title>Choose one of the following options to access the Screen Layout dialog box:</title>
+            <listitem>
+              <para>
+                <menuchoice>
+                  <shortcut>
+                    <keycombo><keycap>Ctrl</keycap><keycap>C</keycap></keycombo>
+                  </shortcut>
+                  <guimenu>Tools</guimenu>
+                  <guimenuitem>Screen Layout</guimenuitem>
+                </menuchoice>
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+                Click
+                <inlinemediaobject>
+                  <imageobject>
+                     <imagedata fileref="figures/userManual/icons/layout.png"/>
+                  </imageobject>
+                </inlinemediaobject>
+              </para>
+
+              <para>
+                The Screen Layout dialog box appears.
+              </para>
+
+              <para>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/userManual/shots/layout.png" format="PNG"/>
+                  </imageobject>
+                </mediaobject>
+              </para>
+
+              <para>
+                The Series layout determines the format of the panes in the window.
+                Each pane can contain one series. The Image layout determines the
+                format of the images within the active series.
+              </para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+        <listitem>
+          <para>
+            Select a layout for the series/image, or define the values for rows
+            and columns, and click <guibutton>Apply</guibutton>.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Click <guibutton>OK</guibutton> to close the Screen Layout dialog box.
+          </para>
+        </listitem>
+      </orderedlist>
+    </section>
   </section>
 </section>
 
 <section>
-  <title>Annotating and Measuring Images</title>
+  <title>Measuring Images</title>
 
   <para>
     ......
@@ -796,12 +915,6 @@
 
   <section>
     <title>Overlaying text</title>
-
-    <para>..........</para>
-  </section>
-
-  <section>
-    <title>Annotating images</title>
 
     <para>..........</para>
   </section>
@@ -831,7 +944,7 @@
 <!--
 - color borders
 - layout change - selected moving....
-- viewer change - adaptive toolbars...
+- viewer change - adaptive toolbars (enable/disable, pushed, triggered, etc)
 - on the fly viewer change
 - stud. manager - 2 recent modes
 - stud. manager - 3 modes (changing by tabs, always the same behavior)
