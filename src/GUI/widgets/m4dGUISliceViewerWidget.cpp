@@ -187,10 +187,13 @@ public:
 		    pixel[ i * newWidth + j ] = ( unsgn ? 0 : (ElementType)(-maxvalue) );
 	    }
 	    
-        mean = 0.;
+        // calculate overall brightness for printout
+	mean = 0.;
 	for ( i = 0; i < height; i++ )
             for ( j = 0; j < width; j++ ) mean += (double)pixel[ i * newWidth + j ] / (double)(width*height);
 	brightness = (int64)mean;
+
+	// calculate overall contrast for printout
 	cont = 0.;
 	for ( i = 0; i < height; i++ )
 	    for ( j = 0; j < width; j++ ) cont += std::abs( (double)( pixel[ i * newWidth + j ] - mean ) ) / (double)(width*height);
@@ -763,14 +766,19 @@ m4dGUISliceViewerWidget::drawShape( Selection::m4dShape<double>& s, bool last, i
 {
     if ( last ) glColor3f( 1., 0., 0. );
     else glColor3f( 0., 0., 1. );
+    
+    // check if at least either the starting point or the ending point of the shape lies on the current slice and the shape is closed
     if ( s.shapeClosed() && s.shapeElements().size() > 1 &&
 	  ( (int)( s.shapeElements().back().getParticularValue( ( _sliceOrientation + 2 ) % 3 ) / _extents[ ( _sliceOrientation + 2 ) % 3 ] ) == sliceNum ||
 	    (int)(s.shapeElements().front().getParticularValue( ( _sliceOrientation + 2 ) % 3 ) / _extents[ ( _sliceOrientation + 2 ) % 3 ] ) == sliceNum ) )
     {
+        // draw the line between the points
         glBegin(GL_LINES);
 	    glVertex2i( (int)s.shapeElements().front().getParticularValue( _sliceOrientation ), (int)s.shapeElements().front().getParticularValue( ( _sliceOrientation + 1 ) % 3 ) );
 	    glVertex2i(  (int)s.shapeElements().back().getParticularValue( _sliceOrientation ),  (int)s.shapeElements().back().getParticularValue( ( _sliceOrientation + 1 ) % 3 ) );
 	glEnd();
+
+	// print the length of the segment if requested
         if ( _printShapeData )
 	{
 	    if ( last ) glColor3f( 1., 1., 0. );
@@ -787,6 +795,8 @@ m4dGUISliceViewerWidget::drawShape( Selection::m4dShape<double>& s, bool last, i
             else glColor3f( 0., 0., 1. );
 	}
     }
+
+    // print the area size if requested
     if ( _printShapeData )
     {
         Selection::m4dPoint< double > c = s.getCentroid();
@@ -813,10 +823,14 @@ m4dGUISliceViewerWidget::drawShape( Selection::m4dShape<double>& s, bool last, i
 	}
     }
     std::list< Selection::m4dPoint<double> >::iterator it, tmp;
+    
+    // draw all the other segments and points
     for ( it = s.shapeElements().begin(); it != s.shapeElements().end(); ++it )
     {
     	tmp = it;
 	++tmp;
+
+	// check if at least one enpoint of the given segment lies on the current slice
 	if ( &(*it) != &(s.shapeElements().back()) &&
 	   ( (int)( it->getParticularValue( ( _sliceOrientation + 2 ) % 3 ) / _extents[ ( _sliceOrientation + 2 ) % 3 ] ) == sliceNum ||
 	     (int)( tmp->getParticularValue( ( _sliceOrientation + 2 ) % 3 ) / _extents[ ( _sliceOrientation + 2 ) % 3 ] ) == sliceNum ) )
@@ -841,6 +855,8 @@ m4dGUISliceViewerWidget::drawShape( Selection::m4dShape<double>& s, bool last, i
                 else glColor3f( 0., 0., 1. );
 	    }
 	}
+
+	// check if the current point lies on the current slice
         if  ( (int)( it->getParticularValue( ( _sliceOrientation + 2 ) % 3 ) / _extents[ ( _sliceOrientation + 2 ) % 3 ] )  == sliceNum )
         {
 	    if ( last && &(*it) == &(s.shapeElements().back()) ) glColor3f( 1., 0., 1. );
