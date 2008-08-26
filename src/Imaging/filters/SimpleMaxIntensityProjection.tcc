@@ -74,8 +74,8 @@ SimpleMaxIntensityProjection< Image< ElementType, 3 > >
 				xStride2,
 				yStride2,
 				width1,
-				height1,
-				depth1
+				depth1,
+				height1
 			    );
 		} break;
 	case YZ_PLANE:
@@ -88,9 +88,9 @@ SimpleMaxIntensityProjection< Image< ElementType, 3 > >
 				xStride1,
 				xStride2,
 				yStride2,
-				width1,
 				height1,
-				depth1
+				depth1,
+				width1
 			    );
 		} break;
 	default:
