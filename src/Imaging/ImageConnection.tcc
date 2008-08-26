@@ -17,7 +17,13 @@ CallImageFactoryRealloc(
 			float32		elementExtents[ 2 ]
 	    )
 {
-	ImageFactory::ReallocateImage2DData< ElementType >( image, maximums[0]-minimums[0], maximums[1]-minimums[1] );
+	ImageFactory::ReallocateImage2DData< ElementType >( 
+		image, 
+		maximums[0]-minimums[0], 
+		maximums[1]-minimums[1], 
+		elementExtents[0], 
+		elementExtents[1]
+	);
 }
 
 template< typename ElementType >

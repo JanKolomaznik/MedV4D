@@ -25,6 +25,20 @@ MedianFilter2D< InputImageType >
 }
 
 template< typename InputImageType >
+void
+MedianFilter2D< InputImageType >
+::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
+{
+	PredecessorType::BeforeComputation( utype );
+
+	if( utype != AbstractPipeFilter::RECALCULATION 
+		&& this->_propertiesTimestamp != GetProperties().GetTimestamp() )
+	{
+		utype = AbstractPipeFilter::RECALCULATION;
+	}
+}
+
+template< typename InputImageType >
 bool
 MedianFilter2D< InputImageType >
 ::Process2D(

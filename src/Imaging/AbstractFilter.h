@@ -37,7 +37,7 @@ namespace Imaging
  * \param \PROPERTY_NAME Name of property in Properties structure.
  **/
 #define SET_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME ) \
-	void Set##NAME ( TYPE value ){ (static_cast<Properties*>( this->_properties ) )->PROPERTY_NAME = value; }
+	void Set##NAME ( TYPE value ){ this->_properties->IncTimestamp(); (static_cast<Properties*>( this->_properties ) )->PROPERTY_NAME = value; }
 
 /**
  * Macro unwinding to previously defined macros.
@@ -150,6 +150,16 @@ public:
 		~Properties(){}
 		virtual void
 		CheckProperties() {}
+
+		void
+		IncTimestamp()
+			{ ++_timestamp; }
+
+		M4D::Common::TimeStamp
+		GetTimestamp()const
+			{ return _timestamp; }			
+	private:
+		M4D::Common::TimeStamp	_timestamp;
 	};
   
 	/**
@@ -396,7 +406,11 @@ protected:
 	 * \param successful Information, whether computation proceeded without problems.
 	 **/
 	virtual void
-	AfterComputation( bool successful ){ /*empty*/ };
+	AfterComputation( bool successful )
+		{ 
+			successful = successful;
+		       	_propertiesTimestamp = _properties->GetTimestamp();
+		};
 
 	void
 	InputDatasetUpdatedMsgHandler( MsgFilterUpdated *msg );
@@ -432,6 +446,8 @@ protected:
 	 * Invocation style of filter - see comments for possible values.
 	 **/
 	UpdateInvocationStyle 	_invocationStyle;
+
+	M4D::Common::TimeStamp	_propertiesTimestamp;
 private:
 	/**
 	 * Prohibition of copying.

@@ -25,6 +25,20 @@ SimpleMaxIntensityProjection< Image< ElementType, 3 > >
 }
 
 template< typename ElementType >
+void
+SimpleMaxIntensityProjection< Image< ElementType, 3 > >
+::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
+{
+	PredecessorType::BeforeComputation( utype );
+
+	if( this->_propertiesTimestamp != GetProperties().GetTimestamp() )
+	{
+		utype = AbstractPipeFilter::RECALCULATION;
+		this->PrepareOutputDatasets();
+	}
+}
+
+template< typename ElementType >
 bool
 SimpleMaxIntensityProjection< Image< ElementType, 3 > >
 ::ProcessImage(

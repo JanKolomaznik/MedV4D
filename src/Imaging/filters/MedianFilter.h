@@ -33,6 +33,9 @@ public:
 	GET_SET_PROPERTY_METHOD_MACRO( uint32, Radius, radius );
 protected:
 
+	void
+	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
+
 	bool
 	Process2D(
 			InputElementType	*inPointer,

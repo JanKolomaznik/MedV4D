@@ -41,6 +41,9 @@ public:
 	GET_SET_PROPERTY_METHOD_MACRO( CartesianPlanes, Plane, plane );
 protected:
 
+	void
+	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
+
 	bool
 	ProcessImage(
 			const InputImageType 	&in,
