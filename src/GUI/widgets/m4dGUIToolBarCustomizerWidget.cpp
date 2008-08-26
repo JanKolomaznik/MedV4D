@@ -20,7 +20,7 @@ namespace GUI {
 
 m4dGUIToolBarCustomizerWidget::m4dGUIToolBarCustomizerWidget ( QAction **actions, unsigned actionsNum, 
                                                                QWidget *parent )
-  : actions( actions ), actionsNum( actionsNum ), QWidget( parent )
+  : QWidget( parent ), actions( actions ), actionsNum( actionsNum ) 
 {
   initToolBarCustomizerWidgetResource();
 

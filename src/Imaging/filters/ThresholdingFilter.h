@@ -38,7 +38,7 @@ class ThresholdingFilter
 {
 public:
 	typedef ThresholdingFunctor< typename ImageTraits< ImageType >::ElementType > 		Functor;
-	typedef Imaging::AbstractImageElementFilter< ImageType, ImageType, Functor >		PredecessorType;
+	typedef AbstractImageElementFilter< ImageType, ImageType, Functor >			PredecessorType;
 	typedef typename ImageTraits< ImageType >::ElementType 					InputElementType;
 
 	struct Properties : public PredecessorType::Properties

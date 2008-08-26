@@ -1,5 +1,5 @@
-#ifndef _ABSTRACT_IMAGE_H
-#define _ABSTRACT_IMAGE_H
+#ifndef _ABSTRACT_IMAGE_DATA_H
+#define _ABSTRACT_IMAGE_DATA_H
 
 #include "Common.h"
 #include "ExceptionBase.h"
@@ -174,4 +174,4 @@ public:
 } /*namespace Imaging*/
 } /*namespace M4D*/
 
-#endif /*_ABSTRACT_IMAGE_H*/
+#endif /*_ABSTRACT_IMAGE_DATA_H*/

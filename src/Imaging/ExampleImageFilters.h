@@ -6,7 +6,7 @@
 #include "Imaging/Ports.h"
 #include "Imaging/ImageDataTemplate.h"
 #include "Imaging/ImageFactory.h"
-#include "Imaging/AbstractImageFilters.h"
+#include "Imaging/AbstractImageFilter.h"
 
 
 namespace M4D
@@ -23,7 +23,7 @@ class CopyImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3
 : public AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 {
 public:
-	typedef typename  Imaging::AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > > PredecessorType;
+	typedef AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > > PredecessorType;
 
 	CopyImageFilter();
 	~CopyImageFilter(){}

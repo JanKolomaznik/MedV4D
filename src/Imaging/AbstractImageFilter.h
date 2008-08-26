@@ -28,9 +28,9 @@ class AbstractImageFilter: public AbstractPipeFilter
 public:
 	typedef AbstractPipeFilter	PredecessorType;
 
-	typedef typename M4D::Imaging::ImageTraits< InputImageType >::InputPort
+	typedef typename ImageTraits< InputImageType >::InputPort
 		InputPortType;
-	typedef typename M4D::Imaging::ImageTraits< OutputImageType >::OutputPort
+	typedef typename ImageTraits< OutputImageType >::OutputPort
 		OutputPortType;
 	typedef InputImageType	InputImage;
 	typedef OutputImageType OutputImage;

@@ -1,5 +1,5 @@
-#ifndef _THRESHOLDING_FILTER_H
-#define _THRESHOLDING_FILTER_H
+#ifndef _CONVOLUTION_FILTER_H
+#define _CONVOLUTION_FILTER_H
 
 #include "Common.h"
 #include "Imaging/AbstractImageSliceFilter.h"
@@ -118,4 +118,4 @@ private:
 //include implementation
 #include "Imaging/filters/ConvolutionFilter.tcc"
 
-#endif /*_THRESHOLDING_FILTER_H*/
+#endif /*_CONVOLUTION_FILTER_H*/

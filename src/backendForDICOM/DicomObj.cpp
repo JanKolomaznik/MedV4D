@@ -300,3 +300,4 @@ DicomObj::GetSliceLocation( float32 &location)
 /**
  * @}
  */
+

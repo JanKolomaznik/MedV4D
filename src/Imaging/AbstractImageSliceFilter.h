@@ -30,7 +30,7 @@ class AbstractImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 	 : public AbstractImageFilter< Image< InputElementType, 3 >, OutputImageType >
 {
 public:
-	typedef typename Imaging::AbstractImageFilter< Image< InputElementType, 3 >, OutputImageType >	PredecessorType;
+	typedef AbstractImageFilter< Image< InputElementType, 3 >, OutputImageType >	PredecessorType;
 	
 	struct Properties : public PredecessorType::Properties
 	{

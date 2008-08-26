@@ -1,4 +1,4 @@
-#ifndef _THRESHOLDING_FILTER_H
+#ifndef _CONVOLUTION_FILTER_H
 #error File ConvolutionFilter.tcc cannot be included directly!
 #else
 
@@ -101,4 +101,4 @@ ConvolutionFilter3D< Image< InputElementType, 3 > >
 } /*namespace Imaging*/
 } /*namespace M4D*/
 
-#endif /*_THRESHOLDING_FILTER_H*/
+#endif /*_CONVOLUTION_FILTER_H*/
