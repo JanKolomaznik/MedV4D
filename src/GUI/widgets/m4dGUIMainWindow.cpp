@@ -21,7 +21,7 @@ namespace GUI {
 /// Number of abstract viewer's actions (toolBar buttons) - first is for all unplugged slots (it's not in toolBar)
 #define VIEWER_ACTIONS_NUMBER       16
 
-const char *m4dGUIMainWindow::actionIconNames[] = { "empty.png", "window-level.png", "empty.png", "zoom.png",
+const char *m4dGUIMainWindow::actionIconNames[] = { "empty.png", "window-level.png", "move.png", "zoom.png",
                   "stack.png", "info.png", "probe.png", "point.png", "shape.png", "clear-point.png",
                   "clear-shape.png", "clear-all.png", "flip-hor.png", "flip-vert.png", "slice-orient.png",
                   "rotate-volume.png" };
