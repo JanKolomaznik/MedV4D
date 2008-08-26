@@ -9,7 +9,7 @@
 #include "SettingsBox.h"
 
 #define ORGANIZATION_NAME     "MFF"
-#define APPLICATION_NAME      "BoneSegmentation"
+#define APPLICATION_NAME      "SimpleMIP"
 
 typedef int16	ElementType;
 typedef M4D::Imaging::Image< ElementType, 3 > ImageType;

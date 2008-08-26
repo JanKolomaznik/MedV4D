@@ -61,8 +61,8 @@ MedianFilter2D< InputImageType >
 
 	std::map< InputElementType, int > histogram;
 
-	InputElementType *inRowPointer = inPointer;
-	InputElementType *outRowPointer = outPointer;
+	InputElementType *inRowPointer = inPointer + radius*i_yStride;
+	InputElementType *outRowPointer = outPointer + radius*o_yStride;
 	for( int j =  radius; j < (int)(height - radius); ++j ) {
 		InputElementType *inElementPointer = inRowPointer + radius*i_xStride;
 		InputElementType *outElementPointer = outRowPointer + radius*o_xStride;
