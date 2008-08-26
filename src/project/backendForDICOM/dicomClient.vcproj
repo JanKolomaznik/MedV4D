@@ -241,10 +241,6 @@
 				Name="libHeaders"
 				>
 				<File
-					RelativePath="..\..\include\dicomConn\DICOMObject.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\include\dicomConn\DICOMServiceProvider.h"
 					>
 				</File>
