@@ -122,8 +122,8 @@ LocalService::GetImageSet(
 ///////////////////////////////////////////////////////////////////////
 
 void
-LocalService::SolveDir( fs::path & dirName,
-                       Dicom::DcmProvider::ResultSet &result)
+LocalService::SolveDir( boost::filesystem::path & dirName,
+                       DcmProvider::ResultSet &result)
 {
   // Get all files in this dir
   // loop through them
@@ -289,11 +289,11 @@ LocalService::SolveFileGET( const std::string & fileName,
     && setID == serieID)
   {
     // if it mathes, insert new image into result
-    Dicom::DcmProvider::DicomObj buddy;
+    DicomObj buddy;
     result.push_back( buddy);
 
     // copy dataset reference & init
-    DcmProvider::DicomObj *newOne = &result.back();
+    DicomObj *newOne = &result.back();
     newOne->Load( fileName);
     newOne->Init();
   }

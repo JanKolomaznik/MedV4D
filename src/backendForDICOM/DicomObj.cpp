@@ -4,16 +4,22 @@
 #include <dcmtk/dcmdata/dcfilefo.h>
 
 #include "Common.h"
-#include "dicomConn/DICOMServiceProvider.h"
+#include "dicomConn/DcmObject.h"
 
 #include "dicomDataStreamDecoder.h"
+
+/// Implementation of DicomObj class
+/**
+ *  \file DicomObj.cpp
+ *  \author Vaclav Klecanda
+ */
 
 using namespace M4D::Dicom;
 using namespace M4D::DicomInternal;
 
 ///////////////////////////////////////////////////////////////////////
 
-DcmProvider::DicomObj::DicomObj()
+DicomObj::DicomObj()
 {
 	m_dataset = NULL;
 	m_status = Loading;
@@ -23,8 +29,7 @@ DcmProvider::DicomObj::DicomObj()
 ///////////////////////////////////////////////////////////////////////
 
 void
-DcmProvider::DicomObj::Save( const string &path)	
-	
+DicomObj::Save( const std::string &path)	
 {
 	if( m_dataset == NULL)
 		return;
@@ -50,7 +55,7 @@ DcmProvider::DicomObj::Save( const string &path)
 ///////////////////////////////////////////////////////////////////////
 
 void
-DcmProvider::DicomObj::Load( const string &path) 
+DicomObj::Load( const std::string &path) 
 {
   DcmFileFormat *dfile = new DcmFileFormat();
   m_fileFormat = dfile;
@@ -68,8 +73,8 @@ DcmProvider::DicomObj::Load( const string &path)
 ///////////////////////////////////////////////////////////////////////
 
 void
-DcmProvider::DicomObj::GetTagValue( 
-	uint16 group, uint16 tagNum, string &s) 
+DicomObj::GetTagValue( 
+	uint16 group, uint16 tagNum, std::string &s) 
 {
 	OFString str;
 	static_cast<DcmDataset *>(m_dataset)->findAndGetOFString( 
@@ -80,7 +85,7 @@ DcmProvider::DicomObj::GetTagValue(
 ///////////////////////////////////////////////////////////////////////
 
 void
-DcmProvider::DicomObj::GetTagValue(
+DicomObj::GetTagValue(
 	uint16 group, uint16 tagNum, int32 &i) 
 {
 	static_cast<DcmDataset *>(m_dataset)->findAndGetSint32( 
@@ -90,8 +95,8 @@ DcmProvider::DicomObj::GetTagValue(
 ///////////////////////////////////////////////////////////////////////
 
 void
-DcmProvider::DicomObj::GetTagValue( 
-	uint16 group, uint16 tagNum, float &f) 
+DicomObj::GetTagValue( 
+	uint16 group, uint16 tagNum, float32 &f) 
 {
 	static_cast<DcmDataset *>(m_dataset)->findAndGetFloat32( 
 		DcmTagKey( group, tagNum), f );
@@ -100,7 +105,7 @@ DcmProvider::DicomObj::GetTagValue(
 ///////////////////////////////////////////////////////////////////////
 
 void
-DcmProvider::DicomObj::Init()
+DicomObj::Init()
 {
 	DcmDataset* dataSet = static_cast<DcmDataset *>(m_dataset);
 	if( dataSet == NULL)
@@ -153,7 +158,7 @@ DcmProvider::DicomObj::Init()
 
 template <typename T>
 void
-DcmProvider::DicomObj::FlushIntoArray( const T *dest) 
+DicomObj::FlushIntoArray( const T *dest) 
 {
 	DcmDataset* dataSet = static_cast<DcmDataset *>(m_dataset);
 
@@ -233,7 +238,7 @@ DcmProvider::DicomObj::FlushIntoArray( const T *dest)
 }
 
 void 
-DcmProvider::DicomObj::FlushIntoArrayNTID( void* dest, int elementTypeID )
+DicomObj::FlushIntoArrayNTID( void* dest, int elementTypeID )
 { 
 	INTEGER_TYPE_TEMPLATE_SWITCH_MACRO( 
 		elementTypeID, FlushIntoArray<TTYPE>( (const TTYPE*) dest ) );
@@ -242,7 +247,7 @@ DcmProvider::DicomObj::FlushIntoArrayNTID( void* dest, int elementTypeID )
 ///////////////////////////////////////////////////////////////////////
 
 void
-DcmProvider::DicomObj::GetSliceThickness( float32 &f)
+DicomObj::GetSliceThickness( float32 &f)
 {
   DcmDataset* dataSet = static_cast<DcmDataset *>(m_dataset);
 
@@ -258,7 +263,7 @@ DcmProvider::DicomObj::GetSliceThickness( float32 &f)
 ///////////////////////////////////////////////////////////////////////
 
 void
-DcmProvider::DicomObj::GetPixelSpacing( float32 &horizSpacing, float32 &vertSpacing)
+DicomObj::GetPixelSpacing( float32 &horizSpacing, float32 &vertSpacing)
 {
   DcmDataset* dataSet = static_cast<DcmDataset *>(m_dataset);
 
@@ -277,7 +282,7 @@ DcmProvider::DicomObj::GetPixelSpacing( float32 &horizSpacing, float32 &vertSpac
 ///////////////////////////////////////////////////////////////////////
 
 void
-DcmProvider::DicomObj::GetSliceLocation( float32 &location)
+DicomObj::GetSliceLocation( float32 &location)
 {
   DcmDataset* dataSet = static_cast<DcmDataset *>(m_dataset);
 
@@ -291,3 +296,7 @@ DcmProvider::DicomObj::GetSliceLocation( float32 &location)
 }
 
 ///////////////////////////////////////////////////////////////////////
+
+/**
+ * @}
+ */

@@ -1,9 +1,8 @@
 #ifndef M4DDICOMFINDSERVICE
 #define M4DDICOMFINDSERVICE
 
-/**
- *  Implements C-FIND service to DICOM server. 
- *  Process decription in a nutshell: client (SCU) establish assotiation to server (SCP) and sends query dataSet. Server process query dataSet and sends back matched results.
+/// Implements C-FIND service to DICOM server. 
+/** Process decription in a nutshell: client (SCU) establish assotiation to server (SCP) and sends query dataSet. Server process query dataSet and sends back matched results.
  *  For more details see DICOM doc ([ver]_08.pdf chapter 9.1.2) and coresponding annexes).
  */
 #include <string>
@@ -74,8 +73,8 @@ class FindService : AbstractService
 	FindService();
 	~FindService();
 
-  /**
-   *  Send find request to server with appropriate query dataSet based on parameters of this functions (filter).
+  /// Send find request searching for studies.
+  /** to server with appropriate query dataSet based on parameters of this functions (filter).
    *  Returns resultSet container with table rows records.
    */
 	void FindForFilter( 
@@ -88,16 +87,16 @@ class FindService : AbstractService
     const string &referringMD,
     const string &description);
 
-  /**
-   *  Send find request to server with appropriate query dataSet based on parameters of this functions (filter).
+  /// Send find request searching for patient's studies.
+  /** to server with appropriate query dataSet based on parameters of this functions (filter).
    *  Returns resultSet container with table rows records.
    */
 	void FindStudiesAboutPatient(
 		const string &patientID,
 		Dicom::DcmProvider::ResultSet &result);
 
-  /**
-   *  Send find request to server, returns study info (map keyed by IDs of series and valued by IDs of images of appropriate serie)
+  /// Send find request searching for study info.
+  /** to server, returns study info (map keyed by IDs of series and valued by IDs of images of appropriate serie)
    *  Used when user selects record in table. Because each table record is on study info it is neccessary to retrieve info of lower level than study (serie, images). In normal case there is one serie in study. But can be more.
    */
 	void FindWholeStudyInfo(

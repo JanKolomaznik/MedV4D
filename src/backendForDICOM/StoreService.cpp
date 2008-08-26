@@ -526,8 +526,7 @@ StoreService::ProgressCallback(void * /*callbackData*/,
 
 void
 StoreService::StoreObject( 
-		const DcmProvider::DicomObj &objectToCopyAttribsFrom,
-		DcmProvider::DicomObj &objectToStore) 
+		const DicomObj &objectToCopyAttribsFrom, DicomObj &objectToStore) 
 {
 	DcmDataset *dataSetToStore = (DcmDataset *) objectToStore.m_dataset;
 	DcmDataset *dataSetPattern = 

@@ -182,7 +182,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\backendForDICOM\FilterSerializerArray.cpp"
+				RelativePath="..\..\common\FilterSerializerArray.cpp"
 				>
 			</File>
 			<File

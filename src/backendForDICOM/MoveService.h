@@ -34,15 +34,15 @@ private:
   struct ImageSetData 
   {
     ImageSetData(
-      M4D::Dicom::DcmProvider::DicomObjSet *result_,
-      M4D::Dicom::DcmProvider::DicomObj::ImageLoadedCallback on_loaded_)
+      DcmProvider::DicomObjSet *result_,
+      DicomObj::ImageLoadedCallback on_loaded_)
       : result(result_)
       , on_loaded( on_loaded_)
     {
     }
 
-    M4D::Dicom::DcmProvider::DicomObjSet *result;
-    M4D::Dicom::DcmProvider::DicomObj::ImageLoadedCallback on_loaded;
+    DcmProvider::DicomObjSet *result;
+    DicomObj::ImageLoadedCallback on_loaded;
   };
 
   /// Prepares query dataSet.
@@ -100,15 +100,15 @@ private:
 		const string &studyID,
 		const string &setID,
 		const string &imageID,
-		M4D::Dicom::DcmProvider::DicomObj &rs);
+		DicomObj &rs);
 
   // Moves the whole image serie from server
 	void MoveImageSet(
 		const string &patientID,
 		const string &studyID,
 		const string &serieID,
-		M4D::Dicom::DcmProvider::DicomObjSet &result,
-    M4D::Dicom::DcmProvider::DicomObj::ImageLoadedCallback on_loaded);
+    DcmProvider::DicomObjSet &result,
+    DicomObj::ImageLoadedCallback on_loaded);
 	
 };
 

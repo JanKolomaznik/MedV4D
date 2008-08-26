@@ -9,8 +9,10 @@
 
 #include "Common.h"
 
-#include "DicomAssoc.h"
 #include "dicomConn/DICOMServiceProvider.h"
+
+#include "DicomAssoc.h"
+
 #include "AbstractService.h"
 #include "MoveService.h"
 #include "FindService.h"
@@ -109,8 +111,8 @@ DcmProvider::LocalGetImageSet(
 
 void
 DcmProvider::FindStudyInfo(
-		const string &patientID,
-		const string &studyID,
+    const std::string &patientID,
+		const std::string &studyID,
 		SerieInfoVector &info) 
 {
 	static_cast<FindService *>(m_findService)->FindStudyInfo(
@@ -121,8 +123,8 @@ DcmProvider::FindStudyInfo(
 
 void
 DcmProvider::FindStudyAndImageInfo(
-		const string &patientID,
-		const string &studyID,
+		const std::string &patientID,
+		const std::string &studyID,
 		StudyInfo &info) 
 {
 	static_cast<FindService *>(m_findService)->FindWholeStudyInfo(
@@ -133,7 +135,7 @@ DcmProvider::FindStudyAndImageInfo(
 
 void
 DcmProvider::FindAllPatientStudies(  
-		const string &patientID,
+		const std::string &patientID,
 		ResultSet &result) 
 {
 	static_cast<FindService *>(m_findService)->FindStudiesAboutPatient( 
@@ -144,10 +146,10 @@ DcmProvider::FindAllPatientStudies(
 
 void
 DcmProvider::GetImage(
-		const string &patientID,
-		const string &studyID,
-		const string &serieID,
-		const string &imageID,
+		const std::string &patientID,
+		const std::string &studyID,
+		const std::string &serieID,
+		const std::string &imageID,
 		DicomObj &object) 
 {
 	static_cast<MoveService *>(m_moveService)->MoveImage( 
@@ -158,9 +160,9 @@ DcmProvider::GetImage(
 
 void
 DcmProvider::GetImageSet(
-		const string &patientID,
-		const string &studyID,
-		const string &serieID,
+		const std::string &patientID,
+		const std::string &studyID,
+		const std::string &serieID,
 		DicomObjSet &result,
     DicomObj::ImageLoadedCallback on_loaded) 
 {

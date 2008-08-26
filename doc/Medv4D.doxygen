@@ -478,8 +478,8 @@ WARN_LOGFILE           = warnings.txt
 # with spaces.
 
 INPUT                  = \ 
-			../src\include\dicomConn/DICOMServiceProvider.h \
-#		../src\include\dicomConn/DICOMObject.h
+			../src/include/dicomConn \
+			../src/backendForDICOM
 #			../src/cellClient \
 #			../src/cellServer \
 #			../src/common \

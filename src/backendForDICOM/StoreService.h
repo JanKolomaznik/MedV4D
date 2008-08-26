@@ -1,8 +1,8 @@
 #ifndef M4DDICOM_STORE_SERVICE
 #define M4DDICOM_STORE_SERVICE
 
-/**
- *  Implements service that performs C-STORE operatoin to DICOM server. It's purpose is to generate unique IDs and send new data to server.
+/// Implements service that performs C-STORE operation.
+/** to DICOM server. It's purpose is to generate unique IDs and send new data to server.
  *  Behavior in a nutshell: Client (SCU) generates unique ID for sent (new) data, establish assotiatoin with a server (SCP) and sends the data to server.
  *  For more informations see DICOM doc ([ver]_08.pdf chapter 9.1.1) and coresponding annexes).
  *  Generation of unique IDs is based on prefix and the rest is delegated to DCMTK functions. More informations about unique UDs generation see DICOM doc.
@@ -63,8 +63,8 @@ namespace DicomInternal {
 		void StoreSCP(DcmDataset *data);
 		
 		void StoreObject( 
-			const Dicom::DcmProvider::DicomObj &objectToCopyAttribsFrom,
-			Dicom::DcmProvider::DicomObj &objectToStore);
+      const DicomObj &objectToCopyAttribsFrom,
+			DicomObj &objectToStore);
 
     // ctor & dtor
 		StoreService();

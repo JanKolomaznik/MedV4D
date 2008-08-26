@@ -86,7 +86,7 @@ MoveService::MoveImage(
 		const string &studyID,
 		const string &setID,
 		const string &imageID,
-		DcmProvider::DicomObj &rs) 
+		DicomObj &rs) 
 {
 	DcmDataset *query = NULL;
 	GetQuery( &query, &patientID, &studyID, &setID, &imageID);
@@ -102,7 +102,7 @@ MoveService::MoveImageSet(
 		const string &studyID,
 		const string &serieID,
 		DcmProvider::DicomObjSet &result,
-    DcmProvider::DicomObj::ImageLoadedCallback on_loaded)
+    DicomObj::ImageLoadedCallback on_loaded)
 {
 	DcmDataset *query = NULL;
 	GetQuery( &query, &patientID, &studyID, &serieID, NULL);
@@ -366,8 +366,7 @@ MoveService::StoreSCPCallback(
 		LOG("Image recieved");
 
 		// set loaded flag
-		DcmProvider::DicomObj *result = 
-			static_cast<DcmProvider::DicomObj *>(callbackData);
+		DicomObj *result = static_cast<DicomObj *>(callbackData);
 		result->Init();
 	}
 }
@@ -393,10 +392,10 @@ MoveService::SubTransferOperationSCP(
         &msg, NULL);
 
 	T_DIMSE_C_StoreRQ *req;
-	DcmProvider::DicomObj *result = NULL;
+	DicomObj *result = NULL;
 
   ImageSetData *dataStruct;
-	DcmProvider::DicomObj buddy;
+	DicomObj buddy;
 
   if (cond == EC_Normal) 
 	{
@@ -422,8 +421,7 @@ MoveService::SubTransferOperationSCP(
 				break;
 
 			case SINGLE_IMAGE:
-				result = 
-					static_cast<DcmProvider::DicomObj *>(data);
+				result = static_cast<DicomObj *>(data);
 				break;
 			}
 
