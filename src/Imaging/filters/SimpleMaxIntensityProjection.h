@@ -50,7 +50,7 @@ protected:
 	void
 	PrepareOutputDatasets();
 
-	void
+	bool
 	DoProjection(
 			ElementType	*inPointer,
 			ElementType	*outPointer,

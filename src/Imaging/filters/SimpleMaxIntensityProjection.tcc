@@ -30,7 +30,7 @@ SimpleMaxIntensityProjection< Image< ElementType, 3 > >
 ::ProcessImage(
 			const Image< ElementType, 3 > 	&in,
 			Image< ElementType, 2 >		&out
-		    );
+		    )
 {
 
 	uint32 width1;
@@ -39,18 +39,18 @@ SimpleMaxIntensityProjection< Image< ElementType, 3 > >
 	int32 xStride1;
 	int32 yStride1;
 	int32 zStride1;
-	InputElementType *pointer1 = in.GetPointer( width1, height1, depth1, xStride1, yStride1, zStride1 );
+	ElementType *pointer1 = in.GetPointer( width1, height1, depth1, xStride1, yStride1, zStride1 );
 
 	uint32 width2;
 	uint32 height2;
 	int32 xStride2;
 	int32 yStride2;
-	OutputElementType *pointer2 = out.GetPointer( width2, height2, xStride2, yStride2 );
+	ElementType *pointer2 = out.GetPointer( width2, height2, xStride2, yStride2 );
 
 	switch( GetProperties().plane ) {
 	case XY_PLANE:
 		{
-			DoProjection(
+			return DoProjection(
 				pointer1,
 				pointer2,
 				xStride1,
@@ -60,12 +60,12 @@ SimpleMaxIntensityProjection< Image< ElementType, 3 > >
 				yStride2,
 				width1,
 				height1,
-				depth1,
+				depth1
 			    );
 		} break;
 	case XZ_PLANE:
 		{
-			DoProjection(
+			return DoProjection(
 				pointer1,
 				pointer2,
 				xStride1,
@@ -75,12 +75,12 @@ SimpleMaxIntensityProjection< Image< ElementType, 3 > >
 				yStride2,
 				width1,
 				height1,
-				depth1,
+				depth1
 			    );
 		} break;
 	case YZ_PLANE:
 		{
-			DoProjection(
+			return DoProjection(
 				pointer1,
 				pointer2,
 				yStride1,
@@ -90,18 +90,19 @@ SimpleMaxIntensityProjection< Image< ElementType, 3 > >
 				yStride2,
 				width1,
 				height1,
-				depth1,
+				depth1
 			    );
 		} break;
 	default:
 		ASSERT( false );
 	}
+	return false;
 }
 
 template< typename ElementType >
 void
 SimpleMaxIntensityProjection< Image< ElementType, 3 > >
-::PrepareOutputDatasets();
+::PrepareOutputDatasets()
 {
 	PredecessorType::PrepareOutputDatasets();
 
@@ -148,7 +149,7 @@ SimpleMaxIntensityProjection< Image< ElementType, 3 > >
 }
 
 template< typename ElementType >
-void
+bool
 SimpleMaxIntensityProjection< Image< ElementType, 3 > >
 ::DoProjection(
 			ElementType	*inPointer,
@@ -163,14 +164,17 @@ SimpleMaxIntensityProjection< Image< ElementType, 3 > >
 			uint32		depth
 		    )
 {
-
+	if( !this->CanContinue() ) {
+		return false;
+	}
+	
 	ElementType *inRowPointer = inPointer;
 	ElementType *outRowPointer = outPointer;
 	for( uint32 j = 0; j < height; ++j ) {
 		ElementType *inColPointer = inRowPointer;
 		ElementType *outColPointer = outRowPointer;
 		for( uint32 i = 0; i < width; ++i ) {
-			ElementType actualPointer = inColPointer;
+			ElementType *actualPointer = inColPointer;
 			ElementType max = *actualPointer;
 			
 			for( uint32 k = 1; k < depth; ++k ) {
@@ -186,6 +190,8 @@ SimpleMaxIntensityProjection< Image< ElementType, 3 > >
 		inRowPointer += iyStride;
 		outRowPointer += oyStride;
 	}
+	
+	return true;
 }
 
 } /*namespace Imaging*/
