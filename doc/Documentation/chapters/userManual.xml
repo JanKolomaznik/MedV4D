@@ -8,9 +8,16 @@
   <title>Getting Started</title>
 
   <para>
-    ...an application used for viewing and manipulating medical images. Digital
-    images and data from various sources (including CT, MR, US units, computed
-    and digital radiographic devices, secondary capture devices...
+    The application can be used for viewing and manipulating medical images. Digital
+    images and data from various sources (including CT, MR, etc.) can be displayed, analyzed
+    and processed (according to a concrete application type, you have).
+    When viewing images, users can perform adjustments of window width and level,
+    image stacking and measurement of regions of interest, and various image alterations.
+  </para>
+
+  <para>
+    This guide contains information about the base application, without additional
+    processing functionality, so it can be used with every type of final application.
   </para>
 
   <section>
@@ -580,7 +587,7 @@
 
     <para>
       The Study Manager window allows you to search for a study to view
-      and manipulate with the application.
+      and manipulate with it.
     </para>
 
     <itemizedlist>
@@ -1540,24 +1547,54 @@
     <title>Making measurements</title>
 
     <para>
-    There is an option to select points, segments and even shapes. The selection
-    is drawn out immediately, and for each segment, the segment length is also
-    displayed in mm-s. If we select a closed shape (meaning that the starting point
-    of any of its segments is the ending point of another one) - this can be done
-    by clicking on the starting point of the first segment after the last point has
-    been selected, - and the shape is 2D (which means that all of the points'
-    3. coordinates are equal) the centroid of the shape and the shape's area are
-    measured and printed out as well (only areas of non-selfcrossing shapes are
-    calculated correctly). If a segment does not lie on the current slice, it
-    is not displayed. If only one endpoint of the segment lies on the current slice,
-    the segment is displayed, but only that endpoint that is on the current slice is
-    drawn out. 3D segments are measured in 3D space. New shapes can be started
-    by selecting the new shape button.
+      There is an option to select points, segments and even shapes. The selection
+      is drawn out immediately (new point tool:
+      <menuchoice>
+        <shortcut>
+          <keycombo><keycap>Ctrl</keycap><keycap>I</keycap></keycombo>
+        </shortcut>
+        <guimenu>Tools</guimenu>
+        <guimenuitem>New Point</guimenuitem>
+      </menuchoice> or click
+      <inlinemediaobject>
+        <imageobject>
+          <imagedata fileref="figures/userManual/icons/point.eps"/>
+        </imageobject>
+        <imageobject>
+          <imagedata fileref="figures/userManual/icons/point.png"/>
+        </imageobject>
+      </inlinemediaobject>), and for each segment, the segment length is also
+      displayed in mm-s. If we select a closed shape (meaning that the starting point
+      of any of its segments is the ending point of another one) - this can be done
+      by clicking on the starting point of the first segment after the last point has
+      been selected, - and the shape is 2D (which means that all of the points'
+      3. coordinates are equal) the centroid of the shape and the shape's area are
+      measured and printed out as well (only areas of non-selfcrossing shapes are
+      calculated correctly). If a segment does not lie on the current slice, it
+      is not displayed. If only one endpoint of the segment lies on the current slice,
+      the segment is displayed, but only that endpoint that is on the current slice is
+      drawn out. 3D segments are measured in 3D space. New shapes can be started
+      by selecting the new shape tool (
+      <menuchoice>
+        <shortcut>
+          <keycombo><keycap>Ctrl</keycap><keycap>H</keycap></keycombo>
+        </shortcut>
+        <guimenu>Tools</guimenu>
+        <guimenuitem>New Shape</guimenuitem>
+      </menuchoice> or click
+      <inlinemediaobject>
+        <imageobject>
+          <imagedata fileref="figures/userManual/icons/shape.eps"/>
+        </imageobject>
+        <imageobject>
+          <imagedata fileref="figures/userManual/icons/shape.png"/>
+        </imageobject>
+      </inlinemediaobject>).
     </para>
 
     <para>
-    Selected points/segments/shapes can then be displayed in different viewing
-    orientations as well.
+      Selected points/segments/shapes can then be displayed in different viewing
+      orientations as well.
     </para>
   </section>
 
@@ -1565,20 +1602,143 @@
     <title>Probing images</title>
 
     <para>
-    Voxel value selection can also be done. In this mode, we can click on the
-    image and the clicked voxel's value will be printed out above the cursor.
+      Voxel value selection can also be done. In this mode, we can click on the
+      image and the clicked voxel's value will be printed out above the cursor.
     </para>
+
+    <orderedlist>
+      <title>To probe the area of an image:</title>
+      <listitem>
+        <itemizedlist>
+          <title>Choose one of the following options:</title>
+          <listitem>
+            <para>
+              <menuchoice>
+                <shortcut>
+                  <keycombo><keycap>Ctrl</keycap><keycap>B</keycap></keycombo>
+                </shortcut>
+                <guimenu>Tools</guimenu>
+                <guimenuitem>Probe Tool</guimenuitem>
+              </menuchoice>
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Click
+              <inlinemediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/userManual/icons/probe.eps"/>
+                </imageobject>
+                <imageobject>
+                  <imagedata fileref="figures/userManual/icons/probe.png"/>
+                </imageobject>
+              </inlinemediaobject>
+            </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+      <listitem>
+        <para>
+          Click anywhere on the image and hold the mouse button down to view the
+          value at that point.
+        </para>
+
+        <para>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figures/userManual/shots/probe-big.eps" format="EPS"/>
+            </imageobject>
+            <imageobject>
+              <imagedata fileref="figures/userManual/shots/probe.png" format="PNG"/>
+            </imageobject>
+          </mediaobject>
+        </para>
+      </listitem>
+    </orderedlist>
   </section>
 
   <section>
     <title>Clearing measurements</title>
 
     <para>
-    Measurements can easily be cleared, either point by point (always clearing
-    the last one), shape by shape (again, always clearing the last one) or clearing
-    all at once.
+      Measurements can easily be cleared, either point by point (always clearing
+      the last one), shape by shape (again, always clearing the last one) or clearing
+      all at once.
     </para>
+
+    <orderedlist>
+      <title>To clear measurements (point/shape/all):</title>
+      <listitem>
+        <para>
+          Select a image/series.
+        </para>
+      </listitem>
+      <listitem>
+        <itemizedlist>
+          <title>Choose one of the following options:</title>
+          <listitem>
+            <para>
+              <menuchoice>
+                <shortcut>
+                  <keycombo><keycap>Ctrl</keycap><keycap>N</keycap></keycombo>
+                </shortcut>
+                <guimenu>Tools</guimenu>
+                <guimenuitem>Clear Point</guimenuitem>
+              </menuchoice> /
+              <menuchoice>
+                <shortcut>
+                  <keycombo><keycap>Ctrl</keycap><keycap>E</keycap></keycombo>
+                </shortcut>
+                <guimenu>Tools</guimenu>
+                <guimenuitem>Clear Shape</guimenuitem>
+              </menuchoice> /
+              <menuchoice>
+                <shortcut>
+                  <keycombo><keycap>Ctrl</keycap><keycap>A</keycap></keycombo>
+                </shortcut>
+                <guimenu>Tools</guimenu>
+                <guimenuitem>Clear All</guimenuitem>
+              </menuchoice>
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Click
+              <inlinemediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/userManual/icons/clear-point.eps"/>
+                </imageobject>
+                <imageobject>
+                  <imagedata fileref="figures/userManual/icons/clear-point.png"/>
+                </imageobject>
+              </inlinemediaobject> /
+              <inlinemediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/userManual/icons/clear-shape.eps"/>
+                </imageobject>
+                <imageobject>
+                  <imagedata fileref="figures/userManual/icons/clear-shape.png"/>
+                </imageobject>
+              </inlinemediaobject> /
+              <inlinemediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/userManual/icons/clear-all.eps"/>
+                </imageobject>
+                <imageobject>
+                  <imagedata fileref="figures/userManual/icons/clear-all.png"/>
+                </imageobject>
+              </inlinemediaobject>
+            </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+    </orderedlist>
   </section>
+</section>
+
+<section>
+  <title>Replaceing viewers (slice viewer/3D viewer)</title>
+
 </section>
 
 
