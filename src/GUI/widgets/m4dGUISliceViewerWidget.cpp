@@ -150,6 +150,10 @@ public:
 			    }
 		        }
 		    }
+		    else return false;
+
+		    if ( !original ) return false;
+
 		} catch (...) { ready = false; }
 		inPort->ReleaseDatasetLock();
 		if ( !ready ) return ready;
@@ -685,7 +689,7 @@ m4dGUISliceViewerWidget::paintGL()
 	    }
 	    
 	    // draw slices at given offsets
-	    for ( i = 0; i < _slicesPerRow * _slicesPerColumn; ++i )
+	    for ( i = 0; i < _slicesPerRow * _slicesPerColumn && _ready; ++i )
 	         drawSlice( _sliceNum + i, zoomRate, QPoint( (int)( ( i % _slicesPerRow) * ( width() / _slicesPerRow ) + xgap ) , (int)( ( ( i / _slicesPerRow ) * ( height() / _slicesPerColumn ) + ygap ) ) ) );
 	}
         if ( _selectionMode[ left ] || _selectionMode[ right ] ) drawSelectionModeBorder();
@@ -736,6 +740,8 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
     // prepare texture
     INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
     	_imageID, _ready = TexturePreparer<TTYPE>::prepare( _inPort, width, height, _brightnessRate, _contrastRate, _sliceOrientation, sliceNum - _minimum[ ( _sliceOrientation + 2 ) % 3 ], _brightness, _contrast, _dimension ) )
+
+    if ( !_ready ) return;
     
     glEnable( GL_TEXTURE_2D );
     glBindTexture( GL_TEXTURE_2D, texName );
