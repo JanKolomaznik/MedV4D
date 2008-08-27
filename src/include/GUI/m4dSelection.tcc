@@ -1,6 +1,6 @@
 /**
- * @ingroup imaging 
- * @author Jan Kolomaznik 
+ * @ingroup gui 
+ * @author Attila Ulman 
  * @file m4dSelection.tcc 
  * @{ 
  **/
