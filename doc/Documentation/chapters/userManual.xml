@@ -108,10 +108,10 @@
     <para>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="figures/userManual/shots/main-window.eps" format="EPS"/>
+          <imagedata fileref="figures/userManual/shots/window.eps" format="EPS"/>
         </imageobject>
         <imageobject>
-          <imagedata fileref="figures/userManual/shots/main-window.png" format="PNG"/>
+          <imagedata fileref="figures/userManual/shots/window.png" format="PNG"/>
         </imageobject>
       </mediaobject>
     </para>
@@ -996,8 +996,207 @@
         </listitem>
       </orderedlist>
     </section>
+
+    <section>
+      <title>Comparing multiple studies</title>
+
+      <para>
+        Multiple studies can be compared by selecting additional studies while viewing a study.
+      </para>
+
+      <orderedlist>
+        <title>To select an additional study for comparison with the current study being viewed:</title>
+        <listitem>
+          <para>
+            Select a viewer where you want to appear the study (border around the selected viewer turns green).
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            While viewing the current study, search for the additional study by clicking
+            <inlinemediaobject>
+              <imageobject>
+                 <imagedata fileref="figures/userManual/icons/search.eps"/>
+              </imageobject>
+              <imageobject>
+                 <imagedata fileref="figures/userManual/icons/search.png"/>
+              </imageobject>
+            </inlinemediaobject>.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Conduct the search (see <xref linkend="SearchingForRemoteExams"/>).
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Select the required study from thelist and click <guibutton>View</guibutton>.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Change the screen layout as required (see <xref linkend="AdjustingTheScreenLayout"/>).
+          </para>
+        </listitem>
+      </orderedlist>
+    </section>
   </section>
 </section>
+
+
+<section>
+  <title>Manipulating Images</title>
+
+  <para>
+    This section covers manipulating image display functionality, such as orientation,
+    magnification, field of view, etc.
+  </para>
+
+  <section>
+    <title>Adjusting window/level settings</title>
+
+    <para>
+      Window leveling allows you to adjust the brightness and contrast of images.
+    </para>
+
+      <section>
+        <title>Adjusting brightness</title>
+
+        <para>
+          The level setting controls the brightness of an image.
+        </para>
+
+        <orderedlist>
+          <title>To adjust the brightness of an image:</title>
+          <listitem>
+            <itemizedlist>
+              <title>Choose one of the following options:</title>
+              <listitem>
+                <para>
+                  <menuchoice>
+                    <shortcut>
+                      <keycombo><keycap>Ctrl</keycap><keycap>W</keycap></keycombo>
+                    </shortcut>
+                    <guimenu>Tools</guimenu>
+                    <guimenuitem>Window/Level</guimenuitem>
+                  </menuchoice>
+                </para>
+              </listitem>
+              <listitem>
+                <para>
+                  Click
+                  <inlinemediaobject>
+                    <imageobject>
+                       <imagedata fileref="figures/userManual/icons/window-level.eps"/>
+                    </imageobject>
+                    <imageobject>
+                       <imagedata fileref="figures/userManual/icons/window-level.png"/>
+                    </imageobject>
+                  </inlinemediaobject>
+                </para>
+              </listitem>
+            </itemizedlist>
+            <para>
+              From here, you can adjust the brightness of the selected image.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Position the cursor over the image to be adjusted, and right-click
+              and drag the cursor up or down over the image.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Release the mouse button to apply the new values to all images within
+              the series. These values are displayed on the lower right corner of each
+              image.
+            </para>
+          </listitem>
+        </orderedlist>
+      </section>
+
+     <section>
+        <title>Adjusting contrast</title>
+
+        <para>
+          The window setting controls the contrast of an image.
+        </para>
+
+        <orderedlist>
+          <title>To adjust the contrast of an image:</title>
+          <listitem>
+            <itemizedlist>
+              <title>Choose one of the following options:</title>
+              <listitem>
+                <para>
+                  <menuchoice>
+                    <shortcut>
+                      <keycombo><keycap>Ctrl</keycap><keycap>W</keycap></keycombo>
+                    </shortcut>
+                    <guimenu>Tools</guimenu>
+                    <guimenuitem>Window/Level</guimenuitem>
+                  </menuchoice>
+                </para>
+              </listitem>
+              <listitem>
+                <para>
+                  Click
+                  <inlinemediaobject>
+                    <imageobject>
+                       <imagedata fileref="figures/userManual/icons/window-level.eps"/>
+                    </imageobject>
+                    <imageobject>
+                       <imagedata fileref="figures/userManual/icons/window-level.png"/>
+                    </imageobject>
+                  </inlinemediaobject>
+                </para>
+              </listitem>
+            </itemizedlist>
+            <para>
+              From here, you can adjust the contrast of the selected image.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Position the cursor over the image to be adjusted, and right-click
+              and drag the cursor left or right over the image.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Release the mouse button to apply the new values to all images
+              within the series. These values are displayed on the lower right
+              corner of each image.
+            </para>
+          </listitem>
+        </orderedlist>
+      </section>
+  </section>
+
+  <section>
+    <title>Changing image/slice orientation</title>
+
+    <para>
+      The following two procedures can be used to change image orientation and one
+      for slice orientation.
+    </para>
+  </section>
+
+  <section>
+    <title>Adjusting image viewing options</title>
+
+    <para>..........</para>
+  </section>
+
+  <section>
+    <title>Clearing measurements</title>
+
+    <para>..........</para>
+  </section>
+</section>
+
 
 <section>
   <title>Measuring Images</title>
@@ -1041,4 +1240,5 @@
 - on the fly viewer change
 - stud. manager - 2 recent modes
 - stud. manager - 3 modes (changing by tabs, always the same behavior)
+- switch viewer - 3D mode?
 -->

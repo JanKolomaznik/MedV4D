@@ -161,9 +161,6 @@ void m4dGUIMainWindow::open ()
   {
     QFileInfo pathInfo( path );
     QString dirName( pathInfo.absolutePath() );
-
-    // TODO
-    // mainViewerDesktop->getVtkRenderWindowWidget()->addRenderer( mainViewerDesktop->getVtkRenderWindowWidget()->dicomToRenderWindow( dirName.toAscii() ) );
   } 
 }
 
@@ -410,6 +407,7 @@ void m4dGUIMainWindow::createActions ()
   openAct->setShortcut( tr( "Ctrl+O" ) );
   openAct->setStatusTip( tr( "Open an existing document from disk or network file system" ) );
   connect( openAct, SIGNAL(triggered()), this, SLOT(open()) );
+  openAct->setEnabled( false );
 
   saveAct = new QAction( QIcon( ":/icons/save.png" ), tr( "S&ave" ), this );
   saveAct->setShortcut( tr( "Ctrl+A" ) );
