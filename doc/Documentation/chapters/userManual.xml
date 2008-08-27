@@ -1539,19 +1539,45 @@
   <section>
     <title>Making measurements</title>
 
-    <para>..........</para>
+    <para>
+    There is an option to select points, segments and even shapes. The selection
+    is drawn out immediately, and for each segment, the segment length is also
+    displayed in mm-s. If we select a closed shape (meaning that the starting point
+    of any of its segments is the ending point of another one) - this can be done
+    by clicking on the starting point of the first segment after the last point has
+    been selected, - and the shape is 2D (which means that all of the points'
+    3. coordinates are equal) the centroid of the shape and the shape's area are
+    measured and printed out as well (only areas of non-selfcrossing shapes are
+    calculated correctly). If a segment does not lie on the current slice, it
+    is not displayed. If only one endpoint of the segment lies on the current slice,
+    the segment is displayed, but only that endpoint that is on the current slice is
+    drawn out. 3D segments are measured in 3D space. New shapes can be started
+    by selecting the new shape button.
+    </para>
+
+    <para>
+    Selected points/segments/shapes can then be displayed in different viewing
+    orientations as well.
+    </para>
   </section>
 
   <section>
     <title>Probing images</title>
 
-    <para>..........</para>
+    <para>
+    Voxel value selection can also be done. In this mode, we can click on the
+    image and the clicked voxel's value will be printed out above the cursor.
+    </para>
   </section>
 
   <section>
     <title>Clearing measurements</title>
 
-    <para>..........</para>
+    <para>
+    Measurements can easily be cleared, either point by point (always clearing
+    the last one), shape by shape (again, always clearing the last one) or clearing
+    all at once.
+    </para>
   </section>
 </section>
 
