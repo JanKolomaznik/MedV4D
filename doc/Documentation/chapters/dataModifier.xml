@@ -54,10 +54,10 @@ data is within given directory.
 	<title>Module scheme</title>
 	<mediaobject>
 		<imageobject>
-			<imagedata fileref="figures/cell/dataModif.eps" format="EPS" scale="31"/>
+			<imagedata fileref="figures/cell/dataModif.eps" format="EPS" scale="35"/>
 		</imageobject>
 		<imageobject>
-		<imagedata fileref="figures/cell/dataModif.png" format="PNG" scale="31"/>
+		<imagedata fileref="figures/cell/dataModif.png" format="PNG" scale="35"/>
 		</imageobject>
 	</mediaobject>
 	</figure>

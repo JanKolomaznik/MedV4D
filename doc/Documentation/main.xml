@@ -3,6 +3,7 @@
                'http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd' [
 	<!ENTITY libCommon SYSTEM "chapters/libCommon.xml">
 	<!ENTITY libImaging SYSTEM "chapters/libImaging.xml">
+	<!ENTITY libVTKIntegration SYSTEM "chapters/libVTKIntegration.xml">
 	<!ENTITY libDICOMClient SYSTEM "chapters/libDICOMClient.xml">
 	<!ENTITY dataModifier SYSTEM "chapters/dataModifier.xml">
 	<!ENTITY libCellBE SYSTEM "chapters/libCellBE.xml">
@@ -20,6 +21,7 @@
 
 	&libCommon;
 	&libImaging;
+	&libVTKIntegration;
 	&libDICOMClient;
 	&dataModifier;
 	&libCellBE;

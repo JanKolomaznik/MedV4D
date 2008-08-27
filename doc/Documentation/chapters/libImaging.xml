@@ -80,7 +80,7 @@
 			<imagedata fileref="figures/libImaging/PipelineScheme.eps" format="EPS" scale="21"/>
 		</imageobject>
 		<imageobject>
-		<imagedata fileref="figures/libImaging/PipelineScheme.png" format="PNG" scale="21"/>
+			<imagedata fileref="figures/libImaging/PipelineScheme.png" format="PNG" scale="21"/>
 		</imageobject>
 	</mediaobject>
 	</figure>
@@ -234,6 +234,22 @@
 	</para>
 
 	<section>
+	<title>Execution process</title>
+
+		<figure float="1" id="pic.ExecutionScheme">
+		<title>Pipeline scheme</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="figures/libImaging/ExecutionScheme.eps" format="EPS" scale="40"/>
+			</imageobject>
+			<imageobject>
+				<imagedata fileref="figures/libImaging/ExecutionScheme.png" format="PNG" scale="40"/>
+			</imageobject>
+		</mediaobject>
+		</figure>
+	</section>
+
+	<section>
 	<title>Locking image parts</title>
 
 		<para>
@@ -243,10 +259,10 @@
 		<title>Synchronization over image data - 2D example</title>
 		<mediaobject>
 			<imageobject>
-				<imagedata fileref="figures/libImaging/ImageLocking.eps" format="EPS" scale="35"/>
+				<imagedata fileref="figures/libImaging/ImageLocking.eps" format="EPS" scale="30"/>
 			</imageobject>
 			<imageobject>
-				<imagedata fileref="figures/libImaging/ImageLocking.png" format="PNG" scale="35"/>
+				<imagedata fileref="figures/libImaging/ImageLocking.png" format="PNG" scale="30"/>
 			</imageobject>
 		</mediaobject>
 		</figure>
@@ -394,8 +410,8 @@ ExamplePipelineHandler
 		<figure float="1" id="pic.MostSuitableFilterFlowchart">
 		<title>Filter decisive flowchart</title>
 		<mediaobject>
-			<imageobject><imagedata fileref="figures/libImaging/MostSuitableFilterFlowchart.eps" format="EPS" scale="75"/></imageobject>
-			<imageobject><imagedata fileref="figures/libImaging/MostSuitableFilterFlowchart.png" format="PNG" scale="75"/></imageobject>
+			<imageobject><imagedata fileref="figures/libImaging/MostSuitableFilterFlowchart.eps" format="EPS" scale="65"/></imageobject>
+			<imageobject><imagedata fileref="figures/libImaging/MostSuitableFilterFlowchart.png" format="PNG" scale="65"/></imageobject>
 		</mediaobject>
 		</figure>
 

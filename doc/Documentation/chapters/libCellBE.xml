@@ -54,10 +54,10 @@ and communicate ONLY with our supercalculating server that is budled with. All f
   	<title>Hierarchy of classes composing job</title>
   	<mediaobject>
   		<imageobject>
-  			<imagedata fileref="figures/cell/hierarchy.eps" format="EPS" scale="21"/>
+  			<imagedata fileref="figures/cell/hierarchy.eps" format="EPS" scale="35"/>
   		</imageobject>
   		<imageobject>
-  		<imagedata fileref="figures/cell/hierarchy.png" format="PNG" scale="21"/>
+  		<imagedata fileref="figures/cell/hierarchy.png" format="PNG" scale="35"/>
   		</imageobject>
   	</mediaobject>
   	</figure>
@@ -221,6 +221,20 @@ and communicate ONLY with our supercalculating server that is budled with. All f
 	  </para>
 	  
 	  <para>
+  	<figure float="1" id="pic.JobLifeCycle">
+  	<title>Job life cycle</title>
+  	<mediaobject>
+  		<imageobject>
+  			<imagedata fileref="figures/cell/lifecycle.eps" format="EPS" scale="30"/>
+  		</imageobject>
+  		<imageobject>
+  		<imagedata fileref="figures/cell/lifecycle.png" format="PNG" scale="30"/>
+  		</imageobject>
+  	</mediaobject>
+  	</figure>
+  	</para>
+  	
+	  <para>
 	  When accepts connection, reads <classname>
 	  PrimaryHeader</classname> and based on <classname>PrimaryHeader</classname>::action it decides what to do. For action 
 	  definitions see BasicJob. Primary action performed by <classname>Server</classname> is job creation. It creates new <classname>
@@ -228,35 +242,22 @@ and communicate ONLY with our supercalculating server that is budled with. All f
 	  Then the job recieve other commends (the socket that is created in accept is given to job) and performs appropriate actions.
 	  </para>
 	  
+	  
 	  <para>
 	  Server can also understand other actions. This is done for case when connection to clint is broken. After reconnect server
 	  has to react to all types of action and assotiate recieved request to existing job, give new socket to it and delegate reaction
 	  to the existing job.
 	  </para>
-	  
-	  <para>
-  	<figure float="2" id="pic.JobLifeCycle">
-  	<title>Job life cycle</title>
-  	<mediaobject>
-  		<imageobject>
-  			<imagedata fileref="figures/cell/lifecycle.eps" format="EPS" scale="21"/>
-  		</imageobject>
-  		<imageobject>
-  		<imagedata fileref="figures/cell/lifecycle.png" format="PNG" scale="21"/>
-  		</imageobject>
-  	</mediaobject>
-  	</figure>
-  	</para>
-  	
+
   	<para>
-  	<figure float="3" id="pic.JobStates">
+  	<figure float="1" id="pic.JobStates">
   	<title>Job states</title>
   	<mediaobject>
   		<imageobject>
-  			<imagedata fileref="figures/cell/states.eps" format="EPS" scale="21"/>
+  			<imagedata fileref="figures/cell/states.eps" format="EPS" scale="33"/>
   		</imageobject>
   		<imageobject>
-  		<imagedata fileref="figures/cell/states.png" format="PNG" scale="21"/>
+  		<imagedata fileref="figures/cell/states.png" format="PNG" scale="33"/>
   		</imageobject>
   	</mediaobject>
   	</figure>
