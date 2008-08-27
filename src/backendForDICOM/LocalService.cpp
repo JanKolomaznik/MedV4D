@@ -366,7 +366,7 @@ LocalService::Load( std::ifstream &stream)
     LoadString( stream, pat.id);
     LoadString( stream, pat.name);
     LoadString( stream, pat.bornDate);
-    stream >> (uint8) pat.sex;
+    stream >> pat.sex;
 
     stream >> studyCount;
     for( uint32 studs=0; studs < studyCount; studs++)
@@ -484,3 +484,4 @@ LocalService::Reset(void)
 } // namespace
 }
 /** @} */
+

@@ -41,15 +41,15 @@ class LocalService
 
     Serie( std::string id_, std::string desc_, std::string path_)
       : id(id_)
-      , path( path_)
       , desc( desc_)
+      , path( path_)
     {
     }
 
     Serie( const Serie &other)
       : id(other.id)
-      , path( other.path)
       , desc( other.desc)
+      , path( other.path)
     {
     }
 
