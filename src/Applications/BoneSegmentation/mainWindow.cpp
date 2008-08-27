@@ -33,16 +33,6 @@ mainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
 {
 	AbstractImage::AImagePtr inputImage = ImageFactory::CreateImageFromDICOM( dicomObjSet );
 
-
-	/*unsigned dim = inputImage->GetDimension(); 
-	int type     = inputImage->GetElementTypeID();
-
-	if ( dim != 3 || type != GetNumericTypeID<ElementType>() ) {
-		//TODO throw exception
-
-		QMessageBox::critical( this, tr( "Exception" ), tr( "Bad type" ) );
-		return;
-	}*/
 	try {
 		_inConnection->PutImage( inputImage );
 
@@ -51,13 +41,7 @@ mainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
 		mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
 		_inConnection->ConnectConsumer( mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 
-		/*_inConnection->RouteMessage( MsgFilterUpdated::CreateMsg( true ), 
-				PipelineMessage::MSS_NORMAL,
-				FD_IN_FLOW
-				);*/
-
-		//mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
-		//conn->ConnectConsumer( mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
+		_settings->SetEnabledExecButton( true );
 	} 
 	catch( ... ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Some exception" ) );

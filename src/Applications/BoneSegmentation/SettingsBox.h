@@ -15,6 +15,9 @@ public:
 
 	SettingsBox( M4D::Imaging::AbstractPipeFilter * filter );
 	
+	void
+	SetEnabledExecButton( bool val )
+		{ execButton->setEnabled( val ); }
 protected slots:
 
 	void 

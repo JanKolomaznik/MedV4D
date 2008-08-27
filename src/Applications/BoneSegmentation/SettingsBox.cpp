@@ -6,6 +6,7 @@ SettingsBox
 	: _filter( filter )
 {
 	CreateWidgets();	
+	SetEnabledExecButton( false );
 }
 
 void

@@ -8,6 +8,7 @@ SettingsBox
 	: _filter( filter )
 {
 	CreateWidgets();	
+	SetEnabledExecButton( false );
 }
 
 void
@@ -27,7 +28,7 @@ SettingsBox
 	//-------------------------------------------------
 	
 	button = new QRadioButton( "XY" );
-	button->setDown( true );
+	button->setChecked( true );
 	static_cast<SimpleMIP*>(_filter)->SetPlane( XY_PLANE );
 	layout->addWidget( button );
 	radioButtons->addButton( button, XY_PLANE );
