@@ -97,15 +97,15 @@ Public and private declarations are in namespaces <code>M4D::GUI</code>, <code>M
 
 		<orderedlist>
 		    
-		    <listitem>
-		    VoxelArrayCopier simply arranges the voxels in the source array so that it could be displayed according to the slice orientation
-		    with the help of using strides (see Imaging library).
-		    </listitem>
+			<listitem><para>
+			VoxelArrayCopier simply arranges the voxels in the source array so that it could be displayed according to the slice orientation
+			with the help of using strides (see Imaging library).
+			</para></listitem>
 		    
-		    <listitem>
-		    TexturePreparer prepares the texture to be mapped and displayed. It also fills up images that are not powers of 2, so that older
-		    graphics cards can map and display the texture as well.
-		    </listitem>
+			<listitem><para>
+			TexturePreparer prepares the texture to be mapped and displayed. It also fills up images that are not powers of 2, so that older
+			graphics cards can map and display the texture as well.
+			</para></listitem>
 		</orderedlist>
 
 		<para>

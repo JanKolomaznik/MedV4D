@@ -7,6 +7,7 @@
 	<!ENTITY libDICOMClient SYSTEM "chapters/libDICOMClient.xml">
 	<!ENTITY dataModifier SYSTEM "chapters/dataModifier.xml">
 	<!ENTITY libCellBE SYSTEM "chapters/libCellBE.xml">
+	<!ENTITY libm4dWidgets SYSTEM "chapters/libm4dWidgets.xml">
 	<!ENTITY userManual SYSTEM "chapters/userManual.xml">
 ]>
 <book lang="en" >
@@ -25,6 +26,7 @@
 	&libDICOMClient;
 	&dataModifier;
 	&libCellBE;
+	&libm4dWidgets;
 	&userManual;
 
 </book>
