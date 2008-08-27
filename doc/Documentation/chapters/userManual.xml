@@ -185,10 +185,10 @@
             <para>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/userManual/shots/custom.eps" format="EPS"/>
+                  <imagedata fileref="figures/userManual/shots/custom-big.eps" format="EPS"/>
                 </imageobject>
                 <imageobject>
-                  <imagedata fileref="figures/userManual/shots/custom.png" format="PNG"/>
+                  <imagedata fileref="figures/userManual/shots/custom-big.png" format="PNG"/>
                 </imageobject>
               </mediaobject>
             </para>
