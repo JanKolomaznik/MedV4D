@@ -98,12 +98,15 @@ void m4dGUIMainViewerDesktopWidget::setDesktopLayout( const unsigned rows, const
     for ( int i = 0; i < difference; i++ ) 
     {
       Viewer *viewer = new Viewer;
+
       m4dGUIAbstractViewerWidget *widget = new m4dGUISliceViewerWidget( viewersSize + i );
       connect( widget, SIGNAL(signalSetSelected( unsigned, bool )), this, SLOT(selectedChanged( unsigned )) );
+      
       viewer->viewerWidget = widget;
       viewer->type = SLICE_VIEWER;
       viewer->checkedLeftButtonTool = viewer->checkedRightButtonTool = ACTION_EMPTY;
       viewer->sourceIdx = 0;
+
       viewers.push_back( viewer );
     }
   }
