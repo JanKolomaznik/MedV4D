@@ -90,7 +90,7 @@
 	<title>Datasets</title>
 	
 		<para>
-		Actual data are stored in proper descendants of class <classname>AbstractDataSet</classname>. Its hierarchy is shown in <!--TODO -->. Purpose of these 
+			Actual data are stored in proper descendants of class <classname>AbstractDataSet</classname>. Its hierarchy is shown in <xref linkend="pic.DataSetHierarchy"/><!--TODO -->. Purpose of these 
 		classes is to provide access methods for reading and writing informations of certain type and optional synchronization. 
 		</para>
 
@@ -103,8 +103,25 @@
 
 	<section>
 	<title>Filters</title>
-		<para>	
-		</para>	
+		<para>So now we know how to store data. Now we describe filters - data processors.
+			In filter class hierarchy we count with future development of different kinds of filters, but at the moment only 
+			implemented group are pipeline filters. So further in text, when we say filter, we mean pipeline filter.
+		</para>
+
+		<para>
+			As pipeline filter is meant data processor, which takes its inputs and after a set of computations writes results to 
+			output(s) with constrain that input and output must differ. Specialy in our case input/output data are stored in datasets and 
+			filter cannot process data in place - output datasets must differ from input datasets.
+		</para>
+
+		<para>
+			As noted earlier, filters can have more than one input and more than one output. Communication with surroundings is provided through
+			ports - they give access to input/output datasets, have interface for synchronization, message communication, etc.
+		</para>
+
+		<para>
+			All properties of filter are stored in one structure - designed as inner structure with name <classname>Properties</classname>.
+		</para>
 	</section>
 
 	<section>
@@ -121,14 +138,29 @@
 
 </section>
 <section>
-	<title>Most important classes</title>
+	<title>Main classes</title>
 
 	<para>
+		In this section we are going to introduce most important classes.
+		We will go through each group and list them with brief characteristics. 
 	</para>
 
 	<section>
 	<title>Dataset hierarchy</title>
 	
+		<para>
+		<figure float="1" id="pic.DataSetHierarchy">
+		<title>Filter hierarchy</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="figures/libImaging/DataSetHierarchy.eps" format="EPS" scale="75"/>
+			</imageobject>
+			<imageobject>
+				<imagedata fileref="figures/libImaging/DataSetHierarchy.png" format="PNG" scale="75"/>
+			</imageobject>
+		</mediaobject>
+		</figure>
+		</para>
 
 		<formalpara><title><classname>AbstractDataSet</classname></title> 
 		<para>Is predecessor of all datastructures containing data. Only concept implemented by this class is read/write locking system. 

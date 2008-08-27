@@ -1,0 +1,22 @@
+digraph G
+{
+  edge [fontname="FreeSans",fontsize=10,labelfontname="FreeSans",labelfontsize=10];
+  node [dir=back,color="midnightblue",fontname="FreeSans",fontsize=10,shape=record];
+  rankdir=TB;
+
+	AbstractImageDim2 [label="AbstractImageDim\< 2 \>"]
+	AbstractImageDim3 [label="AbstractImageDim\< 3 \>"]
+	AbstractImageDim4 [label="AbstractImageDim\< 4 \>"]
+
+	Image2 [label="AbstractImageDim\< ElementType, 2 \>"]
+	Image3 [label="AbstractImageDim\< ElementType, 3 \>"]
+	Image4 [label="AbstractImageDim\< ElementType, 4 \>"]
+	
+	NewDataset [label="New dataset types", style="filled", fillcolor="gray"]
+
+	AbstractDataSet -> AbstractImage
+	AbstractDataSet -> NewDataset
+	AbstractImage -> AbstractImageDim2 -> Image2
+	AbstractImage -> AbstractImageDim3 -> Image3
+	AbstractImage -> AbstractImageDim4 -> Image4
+}
