@@ -2,6 +2,10 @@
 #error File ImageConnection.tcc cannot be included directly!
 #else
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
 
 namespace M4D
 {
@@ -145,6 +149,8 @@ ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
+
+/** @} */
 
 #endif /*_IMAGE_CONNECTION_H*/
 

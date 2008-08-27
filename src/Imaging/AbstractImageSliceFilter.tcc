@@ -2,6 +2,11 @@
 #error File AbstractImageSliceFilter.tcc cannot be included directly!
 #else
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -212,6 +217,8 @@ AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputEle
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
+
+/** @} */
 
 #endif /*_ABSTRACT_IMAGE_SLICE_FILTER_H*/
 

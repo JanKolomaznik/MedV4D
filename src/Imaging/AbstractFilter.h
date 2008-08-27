@@ -11,6 +11,12 @@
 
 
 #include <iostream>
+
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -459,5 +465,6 @@ private:
 }/*namespace Imaging*/
 }/*namespace M4D*/
 
+/** @} */
 
 #endif /*_ABSTRACT_FILTER_H*/

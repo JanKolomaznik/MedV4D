@@ -6,6 +6,11 @@
 #include "Imaging/ModificationManager.h"
 #include "Imaging/AbstractDataSet.h"
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -588,6 +593,8 @@ typedef Image< uint32, 3 > 	Image3DUnsigned32b;
 
 }/*namespace Imaging*/
 }/*namespace M4D*/
+
+/** @} */
 
 //include implementation
 #include "Imaging/Image.tcc"

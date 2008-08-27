@@ -4,6 +4,11 @@
 #include "Imaging/AbstractDataSet.h"
 #include "Imaging/Image.h"
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -56,5 +61,7 @@ public:
 
 }/*namespace Imaging*/
 }/*namespace M4D*/
+
+/** @} */
 
 #endif /*_IMAGE_TRAITS_H*/

@@ -8,6 +8,11 @@
 #include "Imaging/Image.h"
 #include <vector>
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -135,6 +140,8 @@ protected:
 
 }/*namespace Imaging*/
 }/*namespace M4D*/
+
+/** @} */
 
 #include "Imaging/ImagePorts.tcc"
 

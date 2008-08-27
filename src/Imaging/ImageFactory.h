@@ -9,6 +9,11 @@
 
 #include "Common.h"
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -398,6 +403,8 @@ public:
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
+
+/** @} */
 
 //Including template implementation
 #include "ImageFactory.tcc"

@@ -13,6 +13,11 @@
 
 #include <vector>
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 
@@ -92,6 +97,8 @@ private:
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
+
+/** @} */
 
 //include implementation
 #include "Imaging/AbstractImageFilter.tcc"

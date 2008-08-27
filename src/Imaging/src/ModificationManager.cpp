@@ -6,6 +6,13 @@
 
 using namespace std;
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ *
+ *  @author Jan Kolomaznik
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -385,3 +392,5 @@ ModificationManager::Reset()
 
 }/*namespace Imaging*/
 }/*namespace M4D*/
+
+/** @} */

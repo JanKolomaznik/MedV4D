@@ -2,6 +2,11 @@
 #error File ThresholdingFilter.tcc cannot be included directly!
 #else
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 
@@ -42,5 +47,7 @@ ThresholdingMaskFilter< ImageType >
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
+
+/** @} */
 
 #endif /*_THRESHOLDING_FILTER_H*/

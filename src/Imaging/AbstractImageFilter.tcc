@@ -2,6 +2,11 @@
 #error File AbstractImageFilter.tcc cannot be included directly!
 #else
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -156,6 +161,8 @@ AbstractImageFilter< InputImageType, OutputImageType >
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
+
+/** @} */
 
 #endif /*_ABSTRACT_IMAGE_FILTER_H*/
 

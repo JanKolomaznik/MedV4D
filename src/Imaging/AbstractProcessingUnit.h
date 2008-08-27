@@ -3,6 +3,11 @@
 
 #include <boost/shared_ptr.hpp>
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -30,6 +35,7 @@ private:
 }/*namespace Imaging*/
 }/*namespace M4D*/
 
+/** @} */
 
 #endif /*_ABSTRACT_PROCESSING_UNIT_H*/
 

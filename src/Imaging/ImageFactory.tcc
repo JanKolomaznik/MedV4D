@@ -2,6 +2,11 @@
 #error File ImageDataTemplate.tcc cannot be included directly!
 #else
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -290,6 +295,8 @@ ImageFactory::CreateEmptyImageData3DTyped(
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
+
+/** @} */
 
 #endif /*_IMAGE_FACTORY_H*/
 

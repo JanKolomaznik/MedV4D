@@ -1,5 +1,12 @@
 #include "Imaging/AbstractImageData.h"
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ *
+ *  @author Jan Kolomaznik
+ */
+
 namespace M4D
 {
 
@@ -45,3 +52,5 @@ AbstractImageData::GetDimensionInfo( unsigned short dim )const
 
 }/*namespace Imaging*/
 } /*namespace M4D*/
+
+/** @} */

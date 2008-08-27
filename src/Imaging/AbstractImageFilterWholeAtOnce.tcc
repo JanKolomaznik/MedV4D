@@ -2,6 +2,11 @@
 #error File AbstractImageFilterWholeAtOnce.tcc cannot be included directly!
 #else
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -205,6 +210,8 @@ AbstractImageFilterWholeAtOnceIExtents< InputImageType, OutputImageType >
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
+
+/** @} */
 
 #endif /*_ABSTRACT_IMAGE_FILTER_WHOLEATONCE_H*/
 

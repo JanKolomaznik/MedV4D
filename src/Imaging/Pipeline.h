@@ -12,6 +12,11 @@ namespace M4D
 namespace Imaging
 {
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 class Pipeline : public AbstractPipeline
 {
 public:
@@ -47,6 +52,7 @@ private:
 }/*namespace Imaging*/
 }/*namespace M4D*/
 
+/** @} */
 
 #endif /*_PIPELINE_H*/
 

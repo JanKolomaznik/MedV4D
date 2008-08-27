@@ -8,6 +8,10 @@
 #include "Imaging/ImageFactory.h"
 #include "Imaging/AbstractImageFilter.h"
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
 
 namespace M4D
 {
@@ -151,6 +155,8 @@ private:
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
+
+/** @} */
 
 //include implementation
 #include "Imaging/ExampleImageFilters.tcc"

@@ -4,6 +4,10 @@
 #include "Common.h"
 #include "Imaging/AbstractImageFilter.h"
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
 
 namespace M4D
 {
@@ -80,6 +84,8 @@ private:
 	
 } /*namespace Imaging*/
 } /*namespace M4D*/
+
+/** @} */
 
 //include implementation
 #include "Imaging/filters/ImageConvertor.tcc"

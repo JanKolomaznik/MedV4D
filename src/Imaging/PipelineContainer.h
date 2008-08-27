@@ -8,6 +8,11 @@
 #include <boost/shared_ptr.hpp>
 #include <vector>
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -77,6 +82,7 @@ class EAutoConnectingFailed
 }/*namespace Imaging*/
 }/*namespace M4D*/
 
+/** @} */
 
 #endif /*_PIPELINE_H*/
 

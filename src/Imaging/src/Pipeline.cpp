@@ -5,6 +5,13 @@
 #include "Imaging/ImagePorts.h"
 #include "Imaging/ImageConnection.h"
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ *
+ *  @author Jan Kolomaznik
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -80,3 +87,4 @@ Pipeline::MakeConnection( M4D::Imaging::OutputPort& outPort, M4D::Imaging::Input
 }/*namespace Imaging*/
 }/*namespace M4D*/
 
+/** @} */

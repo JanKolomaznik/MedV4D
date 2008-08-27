@@ -2,6 +2,11 @@
 #error File SimpleMaxIntensityProjection.tcc cannot be included directly!
 #else
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 
@@ -210,5 +215,7 @@ SimpleMaxIntensityProjection< Image< ElementType, 3 > >
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
+
+/** @} */
 
 #endif /*_SIMPLE_MAX_INTENSITY_PROJECTION_H*/

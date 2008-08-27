@@ -7,6 +7,11 @@
 #include "Imaging/AbstractFilter.h"
 #include "Imaging/ImagePorts.h"
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -186,6 +191,8 @@ public:
 
 }/*namespace Imaging*/
 }/*namespace M4D*/
+
+/** @} */
 
 //Include implementation
 #include "Imaging/ImageConnection.tcc"

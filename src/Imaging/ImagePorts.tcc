@@ -5,6 +5,11 @@
 #include "Imaging/ConnectionInterface.h"
 #include "Imaging/ImageConnection.h"
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -133,5 +138,7 @@ OutputPortImageFilter< Image< ElementType, dimension > >
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
+
+/** @} */
 
 #endif /*_IMAGE_PORTS_H*/

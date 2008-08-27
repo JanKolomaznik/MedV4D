@@ -4,6 +4,11 @@
 
 #include "Imaging/ConnectionInterface.h"
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -39,5 +44,7 @@ OutputPortList::GetPortTypedSafe( size_t idx )const
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
+
+/** @} */
 
 #endif /*_PORTS_H*/

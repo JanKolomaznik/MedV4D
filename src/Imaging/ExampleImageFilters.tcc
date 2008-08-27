@@ -2,6 +2,11 @@
 #error File ExampleImageFilters.tcc cannot be included directly!
 #else
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -190,5 +195,7 @@ SimpleConvolutionImageFilter< Image< InputElementType, 3 > >
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
+
+/** @} */
 
 #endif /*_BASIC_IMAGE_FILTERS_H*/

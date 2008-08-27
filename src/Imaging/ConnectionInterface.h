@@ -9,6 +9,11 @@
 #include <map>
 #include <algorithm>
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -181,5 +186,6 @@ public:
 }/*namespace Imaging*/
 }/*namespace M4D*/
 
+/** @} */
 
 #endif /*_CONNECTION_INTERFACE_H*/

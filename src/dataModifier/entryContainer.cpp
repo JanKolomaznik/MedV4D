@@ -1,3 +1,9 @@
+/**
+ *  @file entryContainer.cpp
+ *  @brief Implentation of EntryContainer class
+ *  @author Vaclav Klecanda
+ */
+
 #include <dcmtk/config/osconfig.h>
 #include <dcmtk/dcmdata/dcdeftag.h>
 #include <dcmtk/dcmdata/dcfilefo.h>
@@ -7,6 +13,11 @@
 
 using namespace M4D::DataModifier;
 using namespace std;
+
+/**
+ *  @addtogroup datamodifier
+ *  @{
+ */
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -119,3 +130,5 @@ EntryContainer::FlushMaps(std::ofstream &out)
     it++;
   }
 }
+
+/** @} */

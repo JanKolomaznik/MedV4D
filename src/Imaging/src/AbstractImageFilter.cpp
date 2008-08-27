@@ -1,5 +1,11 @@
 #include "Imaging/AbstractImageFilter.h"
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ *
+ *  @author Jan Kolomaznik
+ */
 
 namespace M4D
 {
@@ -20,3 +26,5 @@ GetOutputImageFromPort( OutputPortAbstractImage &port )
 
 }/*namespace Imaging*/
 }/*namespace M4D*/
+
+/** @} */

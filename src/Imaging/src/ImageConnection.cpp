@@ -1,5 +1,12 @@
 #include "Imaging/ImageConnection.h"
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ *
+ *  @author Jan Kolomaznik
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -74,3 +81,4 @@ AbstractImageConnection
 }/*namespace Imaging*/
 }/*namespace M4D*/
 
+/** @} */

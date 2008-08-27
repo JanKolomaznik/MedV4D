@@ -1,23 +1,25 @@
+/**
+ *  @file dictionary.h
+ *  @brief Definition of PatientEntry class
+ *  @author Vaclav Klecanda
+ */
+
 #ifndef ENTRY_CONTAINER_H
 #define ENTRY_CONTAINER_H
-
-/**
- *  <p>
- *  Class encapsulating containers (info maps) containing information about
- *  found patients and studies.
- *  </p>
- */
 
 #include <map>
 #include "entities.h"
 #include "dictionary.h"
 
+/**
+ *  @addtogroup datamodifier Data modifier( support utility)
+ *  @{
+ */
+
 namespace M4D {
 namespace DataModifier {
 
-/**
- *  Patient entry - key element for patient map.
- */
+/// Patient entry - key element for patient map.
 struct PatientEntry 
 {
   std::string patID;
@@ -46,6 +48,11 @@ struct PatientEntry
 
 ///////////////////////////////////////////////////////////////////////
 
+/// Class encapsulating containers
+/**(info maps) containing information about
+ *  found patients and studies.
+ *  </p>
+ */
 class EntryContainer
 {
   // Patient map.
@@ -78,5 +85,6 @@ public:
 
 }
 }
+/** @} */
 
 #endif

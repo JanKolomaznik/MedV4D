@@ -2,6 +2,11 @@
 #error File ConvolutionFilter.tcc cannot be included directly!
 #else
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 
@@ -100,5 +105,7 @@ ConvolutionFilter3D< Image< InputElementType, 3 > >
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
+
+/** @} */
 
 #endif /*_CONVOLUTION_FILTER_H*/

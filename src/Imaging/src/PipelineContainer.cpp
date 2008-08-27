@@ -5,6 +5,13 @@
 
 #include "Functors.h"
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ *
+ *  @author Jan Kolomaznik
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -232,3 +239,4 @@ PipelineContainer::MakeOutputConnection( M4D::Imaging::AbstractPipeFilter& produ
 }/*namespace Imaging*/
 }/*namespace M4D*/
 
+/** @} */

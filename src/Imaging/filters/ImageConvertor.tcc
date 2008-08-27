@@ -2,6 +2,11 @@
 #error File ImageConvertor.tcc cannot be included directly!
 #else
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 
@@ -171,5 +176,7 @@ ImageConvertor< OutputImageType, Convertor >
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
+
+/** @} */
 
 #endif /*_IMAGE_CONVERTOR_H*/

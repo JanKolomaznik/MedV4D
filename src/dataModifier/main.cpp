@@ -1,21 +1,28 @@
+
 /**
- *  <h1> Data modifier( support utility) <h1> 
- *  <p>
+ *  @file main.cpp
+ *  @author Vaclav Klecanda
+ */
+
+/**
+ *  @addtogroup datamodifier Data modifier( support utility)
+ *  @{
+ *  @section Description
+ *
  *  Its purpouse is to modify annonimized patient information in DICOM
  *  files with dictionary generated ones. 
- *  </p>
- *  <p>It iterates over DICOM files 
+ *  
+ *  It iterates over DICOM files 
  *  in specified directory (and its subdirs), load them and build list of
  *  patient & studies within that files based on patientID and path.
  *  In each loaded file modify the patient's name and born date generated
  *  based on dictionary loaded from cfg file, as well as study date 
  *  (based on time span defined in params. Then save the changes to same file.
- *  </p>
- *  <p>
+ *
  *  When 2nd parameter is --info, no changes are made in loaded files and 
  *  only the build list is printed to std::cout to see what patients are contained
  *  in DICOM files in specified directory and subdirs.
- *  </p>
+ *  
  */
 #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem/path.hpp"
@@ -141,3 +148,5 @@ main( int argc, char** argv)
 }
 
 ///////////////////////////////////////////////////////////////////////
+
+/** @} */

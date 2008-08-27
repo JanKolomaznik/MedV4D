@@ -1,3 +1,9 @@
+/**
+ *  @file dictionary.h
+ *  @brief Definition of Dictionary class
+ *  @author Vaclav Klecanda
+ */
+
 #ifndef DICTIONARY_H
 #define DICTIONARY_H
 
@@ -6,15 +12,20 @@
 #include <map>
 #include "entities.h"
 
-namespace M4D {
-namespace DataModifier {
-
 /**
- *  <h1> Dictionary of names loaded from cfg files </h1>
- *  <p>
+ *  @addtogroup datamodifier Data modifier( support utility)
+ *  @{
+ */
+
+namespace M4D 
+{
+namespace DataModifier 
+{
+
+/// Dictionary of names loaded from cfg files.
+/**
  *  Loads the cfg files. Contains methodes for generation
  *  of names (males & females) and born dates.
- *  </p>
  */
 class Dictionary
 {
@@ -60,5 +71,7 @@ public:
 
 }
 }
+
+/** @} */
 
 #endif

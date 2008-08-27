@@ -5,6 +5,11 @@
 #include "Imaging/AbstractImageFilter.h"
 #include <vector>
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -79,6 +84,8 @@ private:
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
+
+/** @} */
 
 //include implementation
 #include "Imaging/AbstractImageFilterWholeAtOnce.tcc"

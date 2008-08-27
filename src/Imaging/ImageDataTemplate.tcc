@@ -2,6 +2,11 @@
 #error File ImageDataTemplate.tcc cannot be included directly!
 #else
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -142,5 +147,7 @@ ImageDataTemplate< ElementType >::CastAbstractPointer( AbstractImageData::APtr a
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
+
+/** @} */
 
 #endif /*_IMAGE_DATA_TEMPLATE_H*/

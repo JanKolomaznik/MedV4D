@@ -2,6 +2,11 @@
 #error File MedianFilter.tcc cannot be included directly!
 #else
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 
@@ -119,5 +124,7 @@ MedianFilter2D< InputImageType >
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
+
+/** @} */
 
 #endif /*_MEDIAN_FILTER_H*/

@@ -6,6 +6,11 @@
 #include "Imaging/AbstractImageData.h"
 #include "Imaging/ModificationManager.h"
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 
@@ -241,6 +246,8 @@ public:
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
+
+/** @} */
 
 /*Include template implementation.*/
 #include "Imaging/ImageDataTemplate.tcc"

@@ -4,6 +4,13 @@
 	#pragma warning (disable : 4355)
 #endif
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ *
+ *  @author Jan Kolomaznik
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -342,3 +349,4 @@ AbstractPipeFilter::CleanAfterStoppedRun()
 }/*namespace Imaging*/
 }/*namespace M4D*/
 
+/** @} */

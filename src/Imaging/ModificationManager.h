@@ -7,6 +7,11 @@
 #include <boost/shared_ptr.hpp>
 #include <list>
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -273,5 +278,7 @@ protected:
 
 }/*namespace Imaging*/
 }/*namespace M4D*/
+
+/** @} */
 
 #endif /*_MODIFICATION_MANAGER_H*/

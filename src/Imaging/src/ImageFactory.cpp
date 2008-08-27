@@ -1,6 +1,13 @@
 #include "Imaging/ImageFactory.h"
 #include "Debug.h"
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ *
+ *  @author Jan Kolomaznik
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -207,3 +214,5 @@ ImageFactory::FlushDicomObjects(
 
 }/*namespace Imaging*/
 }/*namespace M4D*/
+
+/** @} */

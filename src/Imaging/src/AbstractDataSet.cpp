@@ -1,5 +1,11 @@
 #include "Imaging/AbstractDataSet.h"
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ *
+ *  @author Jan Kolomaznik
+ */
 
 namespace M4D
 {
@@ -187,4 +193,6 @@ AbstractDataSet::ExclusiveUnlockDataset()const
 
 }/*namespace Imaging*/
 }/*namespace M4D*/
+
+/** @} */
 

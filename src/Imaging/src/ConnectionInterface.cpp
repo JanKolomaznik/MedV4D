@@ -2,6 +2,13 @@
 
 #include "Imaging/Ports.h"
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ *
+ *  @author Jan Kolomaznik
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -83,3 +90,4 @@ ConnectionInterface::PushConsumer( InputPort& consumer )
 }/*namespace Imaging*/
 }/*namespace M4D*/
 
+/** @} */

@@ -5,6 +5,11 @@
 #include "Imaging/AbstractImageSliceFilter.h"
 #include <boost/shared_array.hpp>
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 
@@ -114,6 +119,8 @@ private:
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
+
+/** @} */
 
 //include implementation
 #include "Imaging/filters/ConvolutionFilter.tcc"

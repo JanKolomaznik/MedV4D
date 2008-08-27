@@ -262,10 +262,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\filterProperties.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Imaging\Image.h"
 				>
 			</File>

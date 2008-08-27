@@ -3,6 +3,11 @@
 
 #include <boost/shared_ptr.hpp>
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -276,5 +281,6 @@ protected:
 }/*namespace Imaging*/
 }/*namespace M4D*/
 
+/** @} */
 
 #endif /*_PIPELINE_MESSAGES_H*/

@@ -7,6 +7,11 @@
 #include "Imaging/PipelineMessages.h"
 //#include "Imaging/ConnectionInterface.h"
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -329,6 +334,8 @@ private:
 
 }/*namespace Imaging*/
 }/*namespace M4D*/
+
+/** @} */
 
 #include "Imaging/Ports.tcc"
 

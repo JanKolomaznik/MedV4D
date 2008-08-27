@@ -6,6 +6,13 @@
 #include "Imaging/Ports.h"
 #include "Imaging/ConnectionInterface.h"
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ *
+ *  @author Jan Kolomaznik
+ */
+
 namespace M4D
 {
 namespace Imaging
@@ -224,3 +231,5 @@ OutputPortList::SendMessage(
 
 }/*namespace Imaging*/
 }/*namespace M4D*/
+
+/** @} */
