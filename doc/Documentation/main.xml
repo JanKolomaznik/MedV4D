@@ -4,6 +4,7 @@
 	<!ENTITY libCommon SYSTEM "chapters/libCommon.xml">
 	<!ENTITY libImaging SYSTEM "chapters/libImaging.xml">
 	<!ENTITY libDICOMClient SYSTEM "chapters/libDICOMClient.xml">
+	<!ENTITY dataModifier SYSTEM "chapters/dataModifier.xml">
 	<!ENTITY libCellBE SYSTEM "chapters/libCellBE.xml">
 	<!ENTITY userManual SYSTEM "chapters/userManual.xml">
 ]>
@@ -20,6 +21,7 @@
 	&libCommon;
 	&libImaging;
 	&libDICOMClient;
+	&dataModifier;
 	&libCellBE;
 	&userManual;
 

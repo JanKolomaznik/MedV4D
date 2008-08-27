@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='utf-8'?>
+<chapter>
+<title>Data modifier</title>
+
+<para>
+Is tool that scans given folder (recursively subfolders) and modify the information tag
+values within found DICOM files. This is because all data that we dispose has anonimized
+these values nad so when query is performed its results are 'nothing saying' crap. So
+thats why we developed this tool that generate new values based on dictionary from config
+file.
+</para>
+<para>
+It scans files, builds tree according IDs within the files to assign same generated values
+to files within the same study, and changes the values generated from dictionary.
+</para>
+<para>
+Values that are (currently) chaged are:
+</para>
+<itemizedlist>
+  <listitem><para>Patient sex</para></listitem>
+	<listitem><para>Patient name (based on sex)</para></listitem>
+	<listitem><para>Patient birth date</para></listitem>
+	<listitem><para>Study date (from given interval)</para></listitem>
+</itemizedlist>
+  	
+<para>
+There are another mode of this tool. When --info param is given, it only scans the
+files and builds the tree. At the end is the tree written and you can see what
+data is within given directory.
+</para>	
+
+<section>
+<title>Compilation</title>
+	
+	<section>
+	<title>Dependencies</title>		
+		<para>Common library</para>
+		<para>DCMTK library</para>
+	</section>
+
+</section>
+
+<section>
+<title>Architecture</title>
+
+	<para>
+	Everything is in namespace <code>M4D::DataModifier</code>.
+	Whole design of class hierarchies is 
+	<xref linkend="pic.modifierScheme"/>
+	</para>
+	
+	<para>
+	<figure float="1" id="pic.modifierScheme">
+	<title>Module scheme</title>
+	<mediaobject>
+		<imageobject>
+			<imagedata fileref="figures/cell/dataModif.eps" format="EPS" scale="31"/>
+		</imageobject>
+		<imageobject>
+		<imagedata fileref="figures/cell/dataModif.png" format="PNG" scale="31"/>
+		</imageobject>
+	</mediaobject>
+	</figure>
+	</para>
+
+</section>
+
+<section>
+<title>Usage</title>
+	
+	<para>
+	You can edit the dictionary files foreNames.cfg, sureNames.cfg which should be placed in
+	working directory of the dataModifier executable.
+	</para>
+	
+	<para>
+	Informations about parameters run the tool without params.
+	</para>
+</section>
+
+</chapter>
