@@ -277,7 +277,7 @@ LocalService::CheckDataSet(
 ///////////////////////////////////////////////////////////////////////////////
 
 // flushing strings
-static std::ofstream &operator<< ( std::ofstream &s, std::string &val)
+static void WriteString ( std::ofstream &s, std::string &val)
 {
   s << (uint32) val.size() << " ";
   for( uint32 i=0; i< val.size(); i++)
@@ -285,7 +285,6 @@ static std::ofstream &operator<< ( std::ofstream &s, std::string &val)
     s.put(val[i]);
   }
   s << " ";
-  return s;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -300,10 +299,10 @@ LocalService::Flush( std::ofstream &stream)
   for( Patients::iterator patIt = m_patients.begin(); 
     patIt != m_patients.end(); patIt++)
   {
-    stream  << patIt->second.id 
-      << patIt->second.name
-      << patIt->second.bornDate
-      << (uint8) patIt->second.sex << " ";
+    WriteString( stream, patIt->second.id);
+    WriteString( stream, patIt->second.name);
+    WriteString( stream, patIt->second.bornDate);
+    stream << (uint8) patIt->second.sex << " ";
 
     // write size of studies
     stream << (uint32) patIt->second.studies.size() << " ";
@@ -311,8 +310,8 @@ LocalService::Flush( std::ofstream &stream)
     for( Studies::iterator studItr = patIt->second.studies.begin();
       studItr != patIt->second.studies.end(); studItr++)
     {
-      stream << studItr->second.id
-        << studItr->second.date;
+      WriteString( stream, studItr->second.id);
+      WriteString( stream, studItr->second.date);
 
       // write size of series
       stream << (uint32) studItr->second.series.size() << " ";
@@ -320,8 +319,9 @@ LocalService::Flush( std::ofstream &stream)
       for( Series::iterator serItr = studItr->second.series.begin();
         serItr != studItr->second.series.end(); serItr++)
       {
-        stream << serItr->second.id << serItr->second.desc
-          << serItr->second.path;
+        WriteString( stream, serItr->second.id);
+        WriteString( stream, serItr->second.desc);
+        WriteString( stream, serItr->second.path);
       }
     }
   }
@@ -330,7 +330,7 @@ LocalService::Flush( std::ofstream &stream)
 ///////////////////////////////////////////////////////////////////////////////
 
 // loading strings
-static std::ifstream &operator>> ( std::ifstream &s, std::string &val)
+static void LoadString ( std::ifstream &s, std::string &val)
 {
   uint32 size;
   int8 tmp;
@@ -343,7 +343,6 @@ static std::ifstream &operator>> ( std::ifstream &s, std::string &val)
     tmp = (uint8) s.get();
     val.append( (const char *) &tmp, 1);
   }
-  return s;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -364,21 +363,27 @@ LocalService::Load( std::ifstream &stream)
   for( uint32 pats=0; pats < patCount; pats++)
   {
     Patient pat;
-    stream >> pat.id >> pat.name >> pat.bornDate >> (uint8) pat.sex;
+    LoadString( stream, pat.id);
+    LoadString( stream, pat.name);
+    LoadString( stream, pat.bornDate);
+    stream >> (uint8) pat.sex;
 
     stream >> studyCount;
     for( uint32 studs=0; studs < studyCount; studs++)
     {
       Study study;
 
-      stream >> study.id >> study.date;
+      LoadString( stream, study.id);
+      LoadString( stream, study.date);
 
       // load series
       stream >> seriesCount;
       for( uint32 sers=0; sers < seriesCount; sers++)
       {
         Serie ser;
-        stream >> ser.id >> ser.desc >> ser.path;
+        LoadString( stream, ser.id);
+        LoadString( stream, ser.desc);
+        LoadString( stream, ser.path);
         study.series.insert( Series::value_type(ser.id, ser) );
       }
 
