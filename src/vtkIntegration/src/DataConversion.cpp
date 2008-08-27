@@ -1,3 +1,8 @@
+/**
+ *  @ingroup vtkintegration
+ *  @file DataConversion.cpp
+ *  @brief some brief
+ */
 #include "vtkIntegration/DataConversion.h"
 
 namespace M4D

@@ -1,3 +1,7 @@
+/**
+ *  @ingroup gui
+ *  @file StManagerStudyListComp.cpp
+ */
 #include "GUI/StManagerStudyListComp.h"
 
 #include <QtGui>

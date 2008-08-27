@@ -1,3 +1,8 @@
+/**
+ *  @ingroup gui
+ *  @file m4dGUIScreenLayoutWidget.cpp
+ *  @brief ...
+ */
 #include "GUI/m4dGUIScreenLayoutWidget.h"
 
 #include <QtGui>

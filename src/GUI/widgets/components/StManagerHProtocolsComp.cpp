@@ -1,3 +1,7 @@
+/**
+ *  @ingroup gui
+ *  @file StManagerHProtocolsComp.cpp
+ */
 #include "GUI/StManagerHProtocolsComp.h"
 
 #include <QtGui>

@@ -1,3 +1,7 @@
+/**
+ *  @ingroup gui
+ *  @file StudyFilter.cpp
+ */
 #include "GUI/StudyFilter.h"
 
 using namespace M4D::Dicom;

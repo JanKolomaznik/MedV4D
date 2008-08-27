@@ -1,4 +1,8 @@
-
+/**
+ *  @ingroup cellbe
+ *  @file GeneralDataSetSerializer.cpp
+ *  @author Vaclav Klecanda
+ */
 #include "Common.h"
 #include "cellBE/GeneralDataSetSerializer.h"
 

@@ -1,3 +1,8 @@
+/**
+ *  @ingroup gui
+ *  @file m4dGUIVtkViewerWidget.cpp
+ *  @brief ...
+ */
 #include "GUI/m4dGUIVtkViewerWidget.h"
 
 #include <QtGui>

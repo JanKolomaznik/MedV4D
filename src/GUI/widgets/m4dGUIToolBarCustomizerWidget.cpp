@@ -1,3 +1,8 @@
+/**
+ *  @ingroup gui
+ *  @file m4dGUIToolBarCustomizerWidget.cpp
+ *  @brief ...
+ */
 #include "GUI/m4dGUIToolBarCustomizerWidget.h"
 
 #include <QtGui>

@@ -1,4 +1,8 @@
-
+/**
+ *  @ingroup cellbe
+ *  @file GeneralFilterSerializer.cpp
+ *  @author Vaclav Klecanda
+ */
 #include <vector>
 #include "Common.h"
 #include "cellBE/GeneralFilterSerializer.h"

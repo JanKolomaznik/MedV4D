@@ -1,3 +1,8 @@
+/**
+ *  @ingroup gui
+ *  @file m4dGUIMainWindow.cpp
+ *  @brief ...
+ */
 #include "GUI/m4dGUIMainWindow.h"
 
 #include <QtGui>

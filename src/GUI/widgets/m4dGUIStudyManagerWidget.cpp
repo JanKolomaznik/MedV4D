@@ -1,3 +1,8 @@
+/**
+ *  @ingroup gui
+ *  @file m4dGUIStudyManagerWidget.cpp
+ *  @brief ...
+ */
 #include "GUI/m4dGUIStudyManagerWidget.h"
 
 #include <QtGui>

@@ -1,4 +1,8 @@
-
+/**
+ *  @ingroup cellbe
+ *  @file clientJob.cpp
+ *  @author Vaclav Klecanda
+ */
 #include <string>
 #include <cstdlib>
 #include <ctime>

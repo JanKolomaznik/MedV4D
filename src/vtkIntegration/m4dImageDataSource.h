@@ -1,6 +1,12 @@
 #ifndef _M4D_IMAGE_DATA_SOURCE_H
 #define _M4D_IMAGE_DATA_SOURCE_H
 
+/**
+ *  @ingroup vtkintegration
+ *  @file DataConversion.h
+ *  @{
+ */
+
 #include "ExceptionBase.h"
 #include "Imaging/AbstractImageData.h"
 #include "Imaging/Image.h"
@@ -60,5 +66,6 @@ private:
 } /*namespace vtkIntegration*/
 } /*namespace M4D*/
 
+/** @} */
 
 #endif /*_M4D_IMAGE_DATA_SOURCE_H*/

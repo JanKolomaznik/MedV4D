@@ -1,3 +1,8 @@
+/**
+ *  @ingroup gui
+ *  @file m4dGUIMainViewerDesktopWidget.cpp
+ *  @brief ...
+ */
 #include "GUI/m4dGUIMainViewerDesktopWidget.h"
 
 #include "GUI/m4dGUIMainWindow.h"

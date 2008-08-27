@@ -1,3 +1,8 @@
+/**
+ *  @ingroup gui
+ *  @file m4dGUISliceViewerWidget.cpp
+ *  @brief ...
+ */
 #include "GUI/m4dGUISliceViewerWidget.h"
 
 #include <QtGui>

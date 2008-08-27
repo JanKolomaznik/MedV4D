@@ -1,4 +1,8 @@
-
+/**
+ *  @ingroup cellbe
+ *  @file clientSocket.cpp
+ *  @author Vaclav Klecanda
+ */
 
 #include <string>
 #include <sstream>

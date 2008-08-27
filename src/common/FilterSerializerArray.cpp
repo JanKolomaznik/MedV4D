@@ -1,4 +1,8 @@
-
+/**
+ *  @ingroup cellbe
+ *  @file FilterSerializerArray.cpp
+ *  @author Vaclav Klecanda
+ */
 #include "Common.h"
 #include "cellBE/FilterSerializerArray.h"
 

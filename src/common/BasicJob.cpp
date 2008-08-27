@@ -1,4 +1,8 @@
-
+/**
+ *  @ingroup cellbe
+ *  @file BasicJob.cpp
+ *  @author Vaclav Klecanda
+ */
 #include <vector>
 #include "Common.h"
 #include "cellBE/basicJob.h"

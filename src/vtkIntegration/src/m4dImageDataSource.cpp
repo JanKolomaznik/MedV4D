@@ -1,3 +1,8 @@
+/**
+ *  @ingroup vtkintegration
+ *  @file m4dImageDataSource.cpp
+ *  @brief some brief
+ */
 #include "vtkIntegration/m4dImageDataSource.h"
 
 #include "vtkImageData.h"
@@ -137,8 +142,8 @@ m4dImageDataSource::TemporaryUnsetImageData()
 
 int 
 m4dImageDataSource::RequestInformation (
-		vtkInformation 		*vtkNotUsed(request),
-		vtkInformationVector	**vtkNotUsed( inputVector ),
+		vtkInformation 		*,
+		vtkInformationVector	**,
 		vtkInformationVector	*outputVector
 		)
 {
@@ -163,8 +168,8 @@ m4dImageDataSource::RequestInformation (
 
 int 
 m4dImageDataSource::RequestData(
-		vtkInformation* vtkNotUsed( request ),
-		vtkInformationVector** vtkNotUsed(inputVector),
+		vtkInformation* ,
+		vtkInformationVector**,
 		vtkInformationVector* outputVector
 		)
 {

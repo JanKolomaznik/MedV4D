@@ -1,3 +1,8 @@
+/**
+ *  @ingroup gui
+ *  @file StManagerFilterComp.cpp
+ *  @brief ...
+ */
 #include "GUI/StManagerFilterComp.h"
 
 #include <QtGui>

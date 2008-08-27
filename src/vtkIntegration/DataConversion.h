@@ -1,6 +1,18 @@
 #ifndef _DATA_CONVERSION_H
 #define _DATA_CONVERSION_H
 
+/// @defgroup vtkintegration VTK integration
+/**
+ *  @ingroup vtkintegration
+ *  @file DataConversion.h
+ *
+ *  @addtogroup vtkintegration
+ *  @{
+ *  @section dataconv Data conversion
+ *
+ *  data has to be converted from our representation to VTK one
+ */
+
 #include "Imaging/Image.h"
 
 #include "vtkImageData.h"
@@ -175,5 +187,7 @@ CreateVTKImageDataFromImageData(
 
 }/*namespace vtkIntegration*/
 }/*namespace M4D*/
+
+/** @} */
 
 #endif /*_DATA_CONVERSION_H*/

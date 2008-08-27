@@ -1,4 +1,8 @@
-
+/**
+ *  @ingroup cellbe
+ *  @file CellClient.cpp
+ *  @author Vaclav Klecanda
+ */
 // Implements functions for communication with CellBE server
 
 #include <fstream>
