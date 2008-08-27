@@ -185,10 +185,10 @@
             <para>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/userManual/shots/custom-big.eps" format="EPS"/>
+                  <imagedata fileref="figures/userManual/shots/custom.eps" format="EPS"/>
                 </imageobject>
                 <imageobject>
-                  <imagedata fileref="figures/userManual/shots/custom-big.png" format="PNG"/>
+                  <imagedata fileref="figures/userManual/shots/custom.png" format="PNG"/>
                 </imageobject>
               </mediaobject>
             </para>
@@ -199,18 +199,18 @@
               icon (
               <inlinemediaobject>
                 <imageobject>
-                   <imagedata fileref="figures/userManual/icons/shown.eps"/>
+                  <imagedata fileref="figures/userManual/icons/shown.eps"/>
                 </imageobject>
                 <imageobject>
-                   <imagedata fileref="figures/userManual/icons/shown.png"/>
+                  <imagedata fileref="figures/userManual/icons/shown.png"/>
                 </imageobject>
               </inlinemediaobject>/
               <inlinemediaobject>
                 <imageobject>
-                   <imagedata fileref="figures/userManual/icons/hidden.eps"/>
+                  <imagedata fileref="figures/userManual/icons/hidden.eps"/>
                 </imageobject>
                 <imageobject>
-                   <imagedata fileref="figures/userManual/icons/hidden.png"/>
+                  <imagedata fileref="figures/userManual/icons/hidden.png"/>
                 </imageobject>
               </inlinemediaobject>).
             </para>
@@ -601,10 +601,10 @@
           Click
           <inlinemediaobject>
             <imageobject>
-               <imagedata fileref="figures/userManual/icons/search.eps"/>
+              <imagedata fileref="figures/userManual/icons/search.eps"/>
             </imageobject>
             <imageobject>
-               <imagedata fileref="figures/userManual/icons/search.png"/>
+              <imagedata fileref="figures/userManual/icons/search.png"/>
             </imageobject>
           </inlinemediaobject>
         </para>
@@ -677,18 +677,18 @@
             Click the
             <inlinemediaobject>
               <imageobject>
-                 <imagedata fileref="figures/userManual/icons/remote.eps"/>
+                <imagedata fileref="figures/userManual/icons/remote.eps"/>
               </imageobject>
               <imageobject>
-                 <imagedata fileref="figures/userManual/icons/remote.png"/>
+                <imagedata fileref="figures/userManual/icons/remote.png"/>
               </imageobject>
             </inlinemediaobject> or the
             <inlinemediaobject>
               <imageobject>
-                 <imagedata fileref="figures/userManual/icons/dicomdir.eps"/>
+                <imagedata fileref="figures/userManual/icons/dicomdir.eps"/>
               </imageobject>
               <imageobject>
-                 <imagedata fileref="figures/userManual/icons/dicomdir.png"/>
+                <imagedata fileref="figures/userManual/icons/dicomdir.png"/>
               </imageobject>
             </inlinemediaobject> icon to select the Recent Exams mode -
             Recent Remote Exams (recently retrieved and viewed from available DICOM
@@ -952,10 +952,10 @@
                 Click
                 <inlinemediaobject>
                   <imageobject>
-                     <imagedata fileref="figures/userManual/icons/layout.eps"/>
+                    <imagedata fileref="figures/userManual/icons/layout.eps"/>
                   </imageobject>
                   <imageobject>
-                     <imagedata fileref="figures/userManual/icons/layout.png"/>
+                    <imagedata fileref="figures/userManual/icons/layout.png"/>
                   </imageobject>
                 </inlinemediaobject>
               </para>
@@ -1016,10 +1016,10 @@
             While viewing the current study, search for the additional study by clicking
             <inlinemediaobject>
               <imageobject>
-                 <imagedata fileref="figures/userManual/icons/search.eps"/>
+                <imagedata fileref="figures/userManual/icons/search.eps"/>
               </imageobject>
               <imageobject>
-                 <imagedata fileref="figures/userManual/icons/search.png"/>
+                <imagedata fileref="figures/userManual/icons/search.png"/>
               </imageobject>
             </inlinemediaobject>.
           </para>
@@ -1088,10 +1088,10 @@
                   Click
                   <inlinemediaobject>
                     <imageobject>
-                       <imagedata fileref="figures/userManual/icons/window-level.eps"/>
+                      <imagedata fileref="figures/userManual/icons/window-level.eps"/>
                     </imageobject>
                     <imageobject>
-                       <imagedata fileref="figures/userManual/icons/window-level.png"/>
+                      <imagedata fileref="figures/userManual/icons/window-level.png"/>
                     </imageobject>
                   </inlinemediaobject>
                 </para>
@@ -1145,10 +1145,10 @@
                   Click
                   <inlinemediaobject>
                     <imageobject>
-                       <imagedata fileref="figures/userManual/icons/window-level.eps"/>
+                      <imagedata fileref="figures/userManual/icons/window-level.eps"/>
                     </imageobject>
                     <imageobject>
-                       <imagedata fileref="figures/userManual/icons/window-level.png"/>
+                      <imagedata fileref="figures/userManual/icons/window-level.png"/>
                     </imageobject>
                   </inlinemediaobject>
                 </para>
@@ -1179,21 +1179,293 @@
     <title>Changing image/slice orientation</title>
 
     <para>
-      The following two procedures can be used to change image orientation and one
-      for slice orientation.
+      The following two procedures can be used to change image orientation , one
+      for slice orientation and one for 3D rotation.
     </para>
+
+    <orderedlist>
+      <title>To flip an image 180 degree about the horizontal axis:</title>
+      <listitem>
+        <para>
+          Select the image to flip.
+        </para>
+      </listitem>
+      <listitem>
+        <itemizedlist>
+          <title>Choose one of the following options:</title>
+          <listitem>
+            <para>
+              <menuchoice>
+                <shortcut>
+                  <keycombo><keycap>Ctrl</keycap><keycap>R</keycap></keycombo>
+                </shortcut>
+                <guimenu>Tools</guimenu>
+                <guimenuitem>Flip Horizontal</guimenuitem>
+              </menuchoice>
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Click
+              <inlinemediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/userManual/icons/flip-hor.eps"/>
+                </imageobject>
+                <imageobject>
+                  <imagedata fileref="figures/userManual/icons/flip-hor.png"/>
+                </imageobject>
+              </inlinemediaobject>
+            </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+    </orderedlist>
+
+    <orderedlist>
+      <title>To flip an image 180 degree about the vertical axis:</title>
+      <listitem>
+        <para>
+          Select the image to flip.
+        </para>
+      </listitem>
+      <listitem>
+        <itemizedlist>
+          <title>Choose one of the following options:</title>
+          <listitem>
+            <para>
+              <menuchoice>
+                <shortcut>
+                  <keycombo><keycap>Ctrl</keycap><keycap>V</keycap></keycombo>
+                </shortcut>
+                <guimenu>Tools</guimenu>
+                <guimenuitem>Flip Vertical</guimenuitem>
+              </menuchoice>
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Click
+              <inlinemediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/userManual/icons/flip-vert.eps"/>
+                </imageobject>
+                <imageobject>
+                  <imagedata fileref="figures/userManual/icons/flip-vert.png"/>
+                </imageobject>
+              </inlinemediaobject>
+            </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+    </orderedlist>
+
+    <orderedlist>
+      <title>To switch the viewing axis orientation (x~y, y~z, z~x):</title>
+      <listitem>
+        <para>
+          Select the series on which you want to change the slice orientation.
+        </para>
+      </listitem>
+      <listitem>
+        <itemizedlist>
+          <title>Choose one of the following options:</title>
+          <listitem>
+            <para>
+              <menuchoice>
+                <shortcut>
+                  <keycombo><keycap>Ctrl</keycap><keycap>G</keycap></keycombo>
+                </shortcut>
+                <guimenu>Tools</guimenu>
+                <guimenuitem>Slice Orientation</guimenuitem>
+              </menuchoice>
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Click
+              <inlinemediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/userManual/icons/slice-orient.eps"/>
+                </imageobject>
+                <imageobject>
+                  <imagedata fileref="figures/userManual/icons/slice-orient.png"/>
+                </imageobject>
+              </inlinemediaobject>
+            </para>
+          </listitem>
+        </itemizedlist>
+
+        <para>
+          There are three possible states - x~y, y~z, z~x - this tool is
+          switching between them.
+        </para>
+      </listitem>
+    </orderedlist>
+
+    <orderedlist>
+      <title>To switch the viewing axis orientation (x~y, y~z, z~x):</title>
+      <listitem>
+        <para>
+          Select the image to rotate (its viewer must support 3D rotate).
+        </para>
+      </listitem>
+      <listitem>
+        <itemizedlist>
+          <title>Choose one of the following options:</title>
+          <listitem>
+            <para>
+              <menuchoice>
+                <shortcut>
+                  <keycombo><keycap>Ctrl</keycap><keycap>U</keycap></keycombo>
+                </shortcut>
+                <guimenu>Tools</guimenu>
+                <guimenuitem>Rotate Volume</guimenuitem>
+              </menuchoice>
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Click
+              <inlinemediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/userManual/icons/rotate-volume.eps"/>
+                </imageobject>
+                <imageobject>
+                  <imagedata fileref="figures/userManual/icons/rotate-volume.png"/>
+                </imageobject>
+              </inlinemediaobject>
+            </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+      <listitem>
+        <para>
+          Position the cursor over the volume, left-click and drag the cursor
+          over the volume. The volume rotates in the direction of the mouse movement.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Release the left mouse button to set the volume at the new rotation.
+        </para>
+      </listitem>
+    </orderedlist>
   </section>
 
   <section>
     <title>Adjusting image viewing options</title>
 
-    <para>..........</para>
-  </section>
+    <section>
+      <title>Panning</title>
 
-  <section>
-    <title>Clearing measurements</title>
+      <para>
+        Panning allows you to position images within the pane. This feature is
+        especially useful when the image is larger than the pane, as it usually
+        is after zooming.
+      </para>
 
-    <para>..........</para>
+      <orderedlist>
+        <title>To move an image within the pane:</title>
+        <listitem>
+          <para>
+            Select the image to move.
+          </para>
+        </listitem>
+        <listitem>
+          <itemizedlist>
+            <title>Choose one of the following options:</title>
+            <listitem>
+              <para>
+                <menuchoice>
+                  <shortcut>
+                    <keycombo><keycap>Ctrl</keycap><keycap>P</keycap></keycombo>
+                  </shortcut>
+                  <guimenu>Tools</guimenu>
+                  <guimenuitem>Pan</guimenuitem>
+                </menuchoice>
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+                Click
+                <inlinemediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/userManual/icons/move.eps"/>
+                  </imageobject>
+                  <imageobject>
+                    <imagedata fileref="figures/userManual/icons/move.png"/>
+                  </imageobject>
+                </inlinemediaobject>
+              </para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+        <listitem>
+          <para>
+            Position the cursor over the image you want to move, and click and
+            drag the cursor around the pane to move the image.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Release the mouse button to drop the image in its new position.
+          </para>
+        </listitem>
+      </orderedlist>
+    </section>
+
+    <section>
+      <title>Zooming</title>
+
+      <orderedlist>
+        <title>To zoom in and out of an image:</title>
+        <listitem>
+          <para>
+            Select the image to zoom.
+          </para>
+        </listitem>
+        <listitem>
+          <itemizedlist>
+            <title>Choose one of the following options:</title>
+            <listitem>
+              <para>
+                <menuchoice>
+                  <shortcut>
+                    <keycombo><keycap>Ctrl</keycap><keycap>Z</keycap></keycombo>
+                  </shortcut>
+                  <guimenu>Tools</guimenu>
+                  <guimenuitem>Zoom</guimenuitem>
+                </menuchoice>
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+                Click
+                <inlinemediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/userManual/icons/zoom.eps"/>
+                  </imageobject>
+                  <imageobject>
+                    <imagedata fileref="figures/userManual/icons/zoom.png"/>
+                  </imageobject>
+                </inlinemediaobject>
+              </para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+        <listitem>
+          <para>
+            Position the cursor over the image, and right-click and drag. Dragging
+            up increases the image zoom and dragging down decreases it.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Release the mouse button to keep the image at the new zoom setting.
+          </para>
+        </listitem>
+      </orderedlist>
+    </section>
   </section>
 </section>
 
@@ -1202,13 +1474,66 @@
   <title>Measuring Images</title>
 
   <para>
-    ......
+    This section describes the measurement and selection tools, which allow you
+    measure images and make selections in a number of ways.
   </para>
 
   <section>
     <title>Overlaying text</title>
 
-    <para>..........</para>
+    <para>
+      Toggling the overlay hides or shows the displayed study information for a series.
+    </para>
+
+    <orderedlist>
+      <title>To hide the written study information:</title>
+      <listitem>
+        <para>
+          Select a series.
+        </para>
+      </listitem>
+      <listitem>
+        <itemizedlist>
+          <title>Choose one of the following options:</title>
+          <listitem>
+            <para>
+              <menuchoice>
+                <shortcut>
+                  <keycombo><keycap>Ctrl</keycap><keycap>T</keycap></keycombo>
+                </shortcut>
+                <guimenu>Tools</guimenu>
+                <guimenuitem>Toggle Overlay</guimenuitem>
+              </menuchoice>
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Click
+              <inlinemediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/userManual/icons/info.eps"/>
+                </imageobject>
+                <imageobject>
+                  <imagedata fileref="figures/userManual/icons/info.png"/>
+                </imageobject>
+              </inlinemediaobject>
+            </para>
+
+            <para>
+              To redisplay the written information, select the series and click
+              <inlinemediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/userManual/icons/info.eps"/>
+                </imageobject>
+                <imageobject>
+                  <imagedata fileref="figures/userManual/icons/info.png"/>
+                </imageobject>
+              </inlinemediaobject> again.
+            </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+    </orderedlist>
   </section>
 
   <section>
