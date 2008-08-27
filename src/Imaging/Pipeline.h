@@ -7,15 +7,16 @@
 #include <boost/shared_ptr.hpp>
 #include <vector>
 
+/**
+ *  @addtogroup imaging Imaging Library
+ *  @{
+ */
+
 namespace M4D
 {
 namespace Imaging
 {
 
-/**
- *  @addtogroup imaging Imaging Library
- *  @{
- */
 
 class Pipeline : public AbstractPipeline
 {
