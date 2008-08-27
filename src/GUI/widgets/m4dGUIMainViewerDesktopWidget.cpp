@@ -98,6 +98,7 @@ void m4dGUIMainViewerDesktopWidget::setDesktopLayout( const unsigned rows, const
       viewer->viewerWidget = widget;
       viewer->type = SLICE_VIEWER;
       viewer->checkedLeftButtonTool = viewer->checkedRightButtonTool = ACTION_EMPTY;
+      viewer->sourceIdx = 0;
       viewers.push_back( viewer );
     }
   }
@@ -151,7 +152,9 @@ void m4dGUIMainViewerDesktopWidget::selectedChanged ( unsigned index )
 
 
 void m4dGUIMainViewerDesktopWidget::sourceSelected ( int index )
-{
+{ 
+  selectedViewer->sourceIdx = index;
+
   selectedViewer->viewerWidget->InputPort()[0].UnPlug();
   sources[index]->ConnectConsumer( selectedViewer->viewerWidget->InputPort()[0] );
 }

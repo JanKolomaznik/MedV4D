@@ -27,10 +27,12 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
     struct Viewer {
       ViewerType type;
       M4D::Viewer::m4dGUIAbstractViewerWidget *viewerWidget;
-      /// checked tool (index) for given viewer - for left mouse button
+      /// Checked tool (index) for given viewer - for left mouse button.
       unsigned checkedLeftButtonTool;
-      /// checked tool (index) for given viewer - for right mouse button
+      /// Checked tool (index) for given viewer - for right mouse button.
       unsigned checkedRightButtonTool;
+      /// Index of selected source (in comboBox and also in sources vector).
+      int sourceIdx;
     };
 
     /** 
@@ -44,6 +46,7 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
     M4D::Viewer::m4dGUIAbstractViewerWidget *getSelectedViewerWidget () const { return selectedViewer->viewerWidget; }
     unsigned getSelectedViewerLeftTool () const { return selectedViewer->checkedLeftButtonTool; }
     unsigned getSelectedViewerRightTool () const { return selectedViewer->checkedRightButtonTool; }
+    int getSelectedViewerSourceIdx () const { return selectedViewer->sourceIdx; }
     
     void replaceSelectedViewerWidget ( ViewerType type, M4D::Viewer::m4dGUIAbstractViewerWidget *replacedViewer );
     void setSelectedViewerLeftTool ( unsigned value ) { selectedViewer->checkedLeftButtonTool = value; }
@@ -57,7 +60,7 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
   private slots:
 
     /** 
-     * Slot for changing the Desktop's layout.
+     * Slot for changing the Desktop's layout - should be connected to Screen Layout Widget.
      *
      * @param rows number of rows in the new layout
      * @param columns number of columns in the new layout

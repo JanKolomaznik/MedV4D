@@ -299,6 +299,8 @@ void m4dGUIMainWindow::features ()
   else {
     replaceAct->setChecked( false );
   }
+
+  sourcesComboBox->setCurrentIndex( mainViewerDesktop->getSelectedViewerSourceIdx() );
 }
 
 
