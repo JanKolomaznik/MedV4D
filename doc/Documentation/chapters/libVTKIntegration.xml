@@ -1,6 +1,27 @@
 <?xml version='1.0' encoding='utf-8'?>
 <chapter>
-	<title>Library vtkIntegration</title>
-	<para>aaaaaaa</para>
+<title>Library vtkIntegration</title>
+
+<para>
+	This library is designed as bridge between libImaging and VTK - it can convert images from Medv4D project to
+	VTK representation. So VTK viewers and filters can be applied to our data.
+</para>
+
+<section>
+<title>Compilation</title>
+
+	<para>
+
+	</para>
+
+	<section>
+	<title>Dependencies</title>
+		
+		<itemizedlist>
+			<listitem><para>libImaging and all its dependencies</para></listitem>
+			<listitem><para>VTK</para></listitem>
+		</itemizedlist>
+	</section>
+</section>
 </chapter>
 

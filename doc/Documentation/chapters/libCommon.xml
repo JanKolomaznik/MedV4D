@@ -1,6 +1,83 @@
 <?xml version='1.0' encoding='utf-8'?>
 <chapter>
 	<title>Library Common</title>
-	<para>aaaaaaa</para>
+	<para>This library is composite of basic declarations, wrappers, etc. It has no internal structure, 
+		its just bunch of headers and source files without place, so we put them together.
+	</para>
+
+<section>
+<title>Compilation</title>
+
+	<para>
+		This library must be compiled as the first of whole project, because every other part use it.
+	</para>
+
+	<section>
+	<title>Dependencies</title>
+		
+		<itemizedlist>
+			<listitem><para>Library Boost - <ulink url="www.boost.org"/></para></listitem>
+		</itemizedlist>
+	</section>
+</section>
+
+<section>
+<title>Main parts</title>
+
+	<section>
+	<title>Log.h</title>
+		<para>
+		We have prepared few macros for easy sending informations to log stream and few classes designed for formating output.
+		This hierarchy is still opened and prepared for extending.
+		</para>
+	</section>
+
+	<section>
+	<title>Debug.h</title>
+		<para>First thing which should be considered before starting big project is how it will be debugged. We have set of preprocessor macros, which allow us 
+		to use debug prints, conditional compilation, debuging prints for code blocks. 
+		</para>
+
+		<para>Some of these macros have version, which takes numeric parameter - debugging level. Actual debugging level is passed to compiler in command line as 
+			value assigned to preprocessor definition: <code>DEBUG_LEVEL= int</code>. This enables debugging and set debugging level. If you in addition
+			pass to compiler definition <code>DEBUG_ADITIONAL_INFO</code> some of mentioned debugging tools will have richer output.
+		</para>
+	</section>
+
+	<section>
+	<title>Types.h</title>
+		<para>	
+		Because project is planned to be multi platform. we must use architecture independent types - we achieved that by typedefs (<type>int16</type>, 
+		<type>uint32</type>, <type>float32</type> etc. ), which must be rewritten for every incompatible platform.
+		</para>	
+
+		<para>
+		Another issue we are dealing with in project is how to slightly move from static polymorphism (compile time - templates) and dynamic polymorphism (runtime - 
+		object programming, RTTI). For this we have few tools to make that easier.
+		</para>
+
+		<para>
+		We have enumeration with values pertaining to basic numeric types. These values are returned from templated function <function>GetNumericTypeID&lt;TYPE&gt;()</function>.
+		On the other side over these values macros like <function>NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO()</function> decide which template instance call. 
+		</para>
+	</section>
+
+	<section>
+	<title>TimeStamp.h</title>
+		<para>
+		Very important class <classname>TimeStamp</classname>, which is used every time when change detection is needed. Its implemented thread safe, so it can be 
+		used even for synchronization purposes.
+		</para>
+	</section>
+
+	<section>
+	<title>Thread.h</title>
+		<para>
+		This is only header with wrappers to <classname>boost::thread</classname> classes (mutexes, ...). Only purpose is to provide interace for multithreading with option
+		to change multithreading framework.
+		</para>
+	</section>
+</section>
+
 </chapter>
 
