@@ -1,6 +1,13 @@
 #ifndef M4DDICOM_STORE_SERVICE
 #define M4DDICOM_STORE_SERVICE
 
+/**
+ *  @ingroup dicom
+ *  @file StoreService.h
+ *  @author Vaclav Klecanda
+ *  @{
+ */
+
 /// Implements service that performs C-STORE operation.
 /** to DICOM server. It's purpose is to generate unique IDs and send new data to server.
  *  Behavior in a nutshell: Client (SCU) generates unique ID for sent (new) data, establish assotiatoin with a server (SCP) and sends the data to server.
@@ -73,6 +80,8 @@ namespace DicomInternal {
 
 }
 }
+
+/** @} */
 
 #endif
 

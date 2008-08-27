@@ -2,7 +2,14 @@
 #define COMMON_H
 
 /**
- *  @addtogroup common Common tools
+ *  @defgroup common Common tools
+ */
+
+/**
+ *  @ingroup common
+ *  @file Common.h
+ *
+ *  @addtogroup common
  *  @{
  *  
  *  Commons contains commonly used code as well as includes of others
@@ -67,6 +74,6 @@ struct IsSameDimension< Dim, Dim >
 
 using namespace M4D::ErrorHandling;
 
-#endif
-
 /** @} */
+
+#endif

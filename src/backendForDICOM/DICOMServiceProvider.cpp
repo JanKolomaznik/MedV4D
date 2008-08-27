@@ -1,3 +1,10 @@
+
+/**
+ *  @ingroup dicom
+ *  @file DICOMServiceProvider.cpp
+ *  @author Vaclav Klecanda
+ */
+
 #include <queue>
 
 #include <dcmtk/config/osconfig.h>
@@ -201,3 +208,4 @@ DcmProvider::GetImageSet(
 
 } // namespace
 }
+/** @} */

@@ -1,3 +1,8 @@
+/**
+ *  @ingroup common
+ *  @file Common.cpp
+ *  @author Jan Kolomaznik
+ */
 #include "Common.h"
 
 //TODO - platform independend.
@@ -61,6 +66,5 @@ int16 GetNumericTypeID<float64>()
 template<>
 int16 GetNumericTypeID<bool>()
 { return NTID_BOOL; }
-
 
 

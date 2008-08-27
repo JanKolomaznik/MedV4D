@@ -10,8 +10,14 @@
 #undef SendMessage
 
 /**
- *  @addtogroup common Common tools
+ *  @ingroup common
+ *  @file Thread.h
+ *
+ *  @addtogroup common
  *  @{
+ *  @sectoin Threading support
+ *
+ *  Some tools taken from boost
  */
 
 namespace M4D
@@ -38,7 +44,7 @@ sleep( int duration );
 }/*namespace Multithreading*/
 }/*namespace M4D*/
 
+/** @} */
 
 #endif /*_THREAD_H*/
 
-/** @} */

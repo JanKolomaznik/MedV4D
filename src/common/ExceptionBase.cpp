@@ -1,3 +1,8 @@
+/**
+ *  @ingroup common
+ *  @file ExceptionBase.cpp
+ *  @author Jan Kolomaznik
+ */
 #include "ExceptionBase.h"
 
 #include "Log.h"

@@ -1,5 +1,6 @@
 /**
- *  @file dictionary.h
+ *  @ingroup datamodifier
+ *  @file entryContainer.h
  *  @brief Definition of PatientEntry class
  *  @author Vaclav Klecanda
  */

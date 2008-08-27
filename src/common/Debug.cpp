@@ -1,3 +1,8 @@
+/**
+ *  @ingroup common
+ *  @file Debug.cpp
+ *  @author Jan Kolomaznik
+ */
 #include "Debug.h"
 
 #ifdef DEBUG_LEVEL

@@ -1,6 +1,13 @@
 #ifndef M4DDICOM_ABSTRACT_SERVICE
 #define M4DDICOM_ABSTRACT_SERVICE
 
+/**
+ *  @ingroup dicom
+ *  @file AbstractService.h
+ *  @author Vaclav Klecanda
+ *  @{
+ */
+
 namespace M4D
 {
 namespace DicomInternal 
@@ -43,6 +50,8 @@ public:
 
 } // namespace
 }/*namespace M4D*/
+
+/** @} */
 
 #endif
 

@@ -5,7 +5,20 @@
 // as well as DCMToolkit dataset headers
 
 /**
- * Retrive data that are displayed in searching table from dataSet. 
+ *  @ingroup dicom
+ *  @file DICOMSupport.h
+ *  @author Vaclav Klecanda
+ *  @{
+ */
+
+namespace M4D
+{
+namespace DicomInternal 
+{
+
+/// Retrive data that are displayed in searching
+/**
+ *  table from dataSet. 
  * Called from search services to fill table row.
  */
 static void GetTableRowFromDataSet( 
@@ -45,8 +58,9 @@ static void GetTableRowFromDataSet(
   row->referringMD = str.c_str();
 }
 
+/// Retrive data for DcmProvider::SerieInfo
 /**
- * Retrive data for DcmProvider::SerieInfo from given dataSet
+ *  from given dataSet
  */
 static void GetSeriesInfo( DcmDataset *ds, DcmProvider::SerieInfo *sInfo)
 {
@@ -58,6 +72,9 @@ static void GetSeriesInfo( DcmDataset *ds, DcmProvider::SerieInfo *sInfo)
   ds->findAndGetOFString( DCM_SeriesDescription, str);
   sInfo->description = str.c_str();
 }
-	
+
+} // namespace
+}
+/** @} */
 #endif
 

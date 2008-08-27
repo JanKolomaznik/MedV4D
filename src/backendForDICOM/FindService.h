@@ -1,6 +1,12 @@
 #ifndef M4DDICOMFINDSERVICE
 #define M4DDICOMFINDSERVICE
 
+/**
+ *  @ingroup dicom
+ *  @file FindService.h
+ *  @author Vaclav Klecanda
+ */
+
 /// Implements C-FIND service to DICOM server. 
 /** Process decription in a nutshell: client (SCU) establish assotiation to server (SCP) and sends query dataSet. Server process query dataSet and sends back matched results.
  *  For more details see DICOM doc ([ver]_08.pdf chapter 9.1.2) and coresponding annexes).
@@ -117,6 +123,8 @@ class FindService : AbstractService
 
 } // namespace
 }
+
+/** @} */
 
 #endif
 

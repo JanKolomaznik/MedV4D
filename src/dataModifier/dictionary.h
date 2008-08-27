@@ -1,4 +1,5 @@
 /**
+ *  @ingroup datamodifier
  *  @file dictionary.h
  *  @brief Definition of Dictionary class
  *  @author Vaclav Klecanda

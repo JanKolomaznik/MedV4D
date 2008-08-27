@@ -1,6 +1,13 @@
 #ifndef M4D_DICOM_STREAM_DECODER
 #define M4D_DICOM_STREAM_DECODER
 
+/**
+ *  @ingroup dicom
+ *  @file dicomDataStreamDecoder.h
+ *  @author Vaclav Klecanda
+ *  @{
+ */
+
 namespace M4D
 {
 namespace DicomInternal 
@@ -88,5 +95,6 @@ public:
 
 } // namespace
 }
+/** @} */
 #endif
 

@@ -1,6 +1,12 @@
 #ifndef M4D_DICOM_OBJECT
 #define M4D_DICOM_OBJECT
 
+/**
+ *  @ingroup dicom
+ *  @file DcmObject.h
+ *  @author Vaclav Klecanda
+ */
+
 namespace M4D
 {
 namespace Dicom 

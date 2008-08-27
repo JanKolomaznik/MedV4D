@@ -1,3 +1,8 @@
+/**
+ *  @ingroup dicom
+ *  @file LocalService.cpp
+ *  @author Vaclav Klecanda
+ */
 #include <queue>
 
 #include <dcmtk/config/osconfig.h>
@@ -473,3 +478,4 @@ LocalService::Reset(void)
 
 } // namespace
 }
+/** @} */

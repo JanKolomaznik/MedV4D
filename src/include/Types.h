@@ -2,10 +2,12 @@
 #define TYPES_H
 
 /**
- *  @addtogroup common Common tools
- *  @{
+ *  @ingroup common
+ *  @file Types.h
  *
- *  @section Custom types
+ *  @addtogroup common
+ *  @{
+ *  @section CustomTypes
  *
  *  We have defines typedefs for all basic types. Signed even
  *  unsigned. It is for easier porting and avoiding mismatchs.
@@ -183,7 +185,6 @@ int16 GetNumericTypeID<bool>();
 int16
 GetNTIDFromSizeAndSign( uint16 size, bool sign );
 
+/** @} */
 
 #endif/*TYPES_H*/
-
-/** @} */

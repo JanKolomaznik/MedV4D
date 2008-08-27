@@ -2,6 +2,13 @@
 #define M4DDICOM_MOVE_SERVICE
 
 /**
+ *  @ingroup dicom
+ *  @file MoveService.h
+ *  @author Vaclav Klecanda
+ *  @{
+ */
+
+/**
  *  Implements C-MOVE service to DICOM server. Its purpose is to move data files (records) from DICOM server. 
  *  There are two main functions that retrive data files. One retrive one SINGLE image. The image is specified by unique IDs on all levels (patient, study, serie, image). The other retrieve all images from specified serie (SET). That means specification of IDs on all levels but image.
  *  Process decription in a nutshell: Client (SCU) establish assotiation to sever (SCP), send query dataSet, server find matching image files, then establish another subassotiation (as SCU) with calling client (that plays SCP role) and transmit data files over the subassotiation. For more details see DICOM doc ([ver]_08.pdf chapter 9.1.4) and coresponding annexes).
@@ -114,6 +121,8 @@ private:
 
 } // namespace
 }
+
+/** @} */
 
 #endif
 

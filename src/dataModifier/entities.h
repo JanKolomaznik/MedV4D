@@ -1,4 +1,5 @@
 /**
+ *  @ingroup datamodifier
  *  @file entities.h
  *  @brief Definition supporting structures
  *  @author Vaclav Klecanda

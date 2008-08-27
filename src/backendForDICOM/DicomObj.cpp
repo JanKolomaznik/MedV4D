@@ -1,3 +1,8 @@
+/**
+ *  @ingroup dicom
+ *  @file DicomObj.cpp
+ *  @author Vaclav Klecanda
+ */
 
 #include <dcmtk/config/osconfig.h>
 #include <dcmtk/dcmdata/dcdeftag.h>
@@ -7,16 +12,6 @@
 #include "dicomConn/DcmObject.h"
 
 #include "dicomDataStreamDecoder.h"
-
-/// Implementation of DicomObj class
-/**
- *  \file DicomObj.cpp
- *  \author Vaclav Klecanda
- 
-/**
- *  @addtogroup dicom
- *  @{
- */
 
 using namespace M4D::Dicom;
 using namespace M4D::DicomInternal;

@@ -1,3 +1,8 @@
+/**
+ *  @ingroup common
+ *  @file Thread.cpp
+ *  @author Jan Kolomaznik
+ */
 #include "Thread.h"
 
 #include <boost/thread/xtime.hpp>

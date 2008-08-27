@@ -5,8 +5,13 @@
 #include "Thread.h"
 
 /**
- *  @addtogroup common Common tools
+ *  @ingroup common
+ *  @file TimeStamp.h
+ *
+ *  @addtogroup common
  *  @{
+ *  @section TimeStamps
+ *  
  */
 
 namespace M4D
@@ -66,6 +71,7 @@ extern const TimeStamp	DefaultTimeStamp;
 }/*namespace Common*/
 }/*namespace M4D*/
 
+/** @} */
+
 #endif /*_TIME_STAMP_H*/
 
-/** @} */

@@ -1,4 +1,5 @@
 /**
+ *  @ingroup datamodifier
  *  @file entryContainer.cpp
  *  @brief Implentation of EntryContainer class
  *  @author Vaclav Klecanda

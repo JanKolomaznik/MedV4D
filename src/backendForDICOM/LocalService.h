@@ -2,12 +2,12 @@
 #define M4DDICOMLOCALSERVICE
 
 /**
- *  Implements searching and gettting functions to local FS dicom files. It sequentialy loads data files in specified folder (and subfolders through queue), read ID info, based on that info and given filter inserts or not inserts (if matching found) record into result.
- *  Each search run writes the folder that is performed on, build structure of information that is used when aditional informations concerning data from the same run are required. 
- *  One run is quite expensive while loading each file is needed (there is no other way how to read required IDs). So it is sensitive how wide and deep is the subtree of the given folder.
- *  Maybe some timeouts will be required.
- *  All functions are private beacause are all called from friend class DcmProvider.
+ *  @ingroup dicom
+ *  @file LocalService.h
+ *  @author Vaclav Klecanda
+ *  @{
  */
+
 #include <string>
 #include <map>
 #include <set>
@@ -19,6 +19,14 @@ namespace M4D
 namespace DicomInternal 
 {
 
+/// Implements searching and gettting functions to local FS dicom files.
+/**
+ *  It sequentialy loads data files in specified folder (and subfolders through queue), read ID info, based on that info and given filter inserts or not inserts (if matching found) record into result.
+ *  Each search run writes the folder that is performed on, build structure of information that is used when aditional informations concerning data from the same run are required. 
+ *  One run is quite expensive while loading each file is needed (there is no other way how to read required IDs). So it is sensitive how wide and deep is the subtree of the given folder.
+ *  Maybe some timeouts will be required.
+ *  All functions are private beacause are all called from friend class DcmProvider.
+ */
 class LocalService
 {
 	friend class M4D::Dicom::DcmProvider;
@@ -187,6 +195,8 @@ class LocalService
 
 } // namespace
 }
+
+/** @} */
 
 #endif
 

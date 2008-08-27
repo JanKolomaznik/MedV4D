@@ -5,10 +5,12 @@
 #include <iomanip>
 
 /**
- *  @addtogroup common Common tools
- *  @{
+ *  @ingroup common
+ *  @file Log.h
  *
- *  @section Loggin
+ *  @addtogroup common
+ *  @{
+ *  @section Logging
  *
  *  There are defines of function and streams for logging support.
  */
@@ -59,6 +61,8 @@ public:
 #define LOG( ARGs )	\
 	LOUT << ARGs << std::endl;
 
+/** @} */
+
 #endif /*__LOG_H_*/
 
-/** @} */
+

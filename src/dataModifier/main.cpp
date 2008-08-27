@@ -1,11 +1,12 @@
-
 /**
+ *  @ingroup datamodifier
  *  @file main.cpp
+ *  @brief entrypoint for DataModifier program
  *  @author Vaclav Klecanda
  */
 
 /**
- *  @addtogroup datamodifier Data modifier( support utility)
+ *  @defgroup datamodifier Data modifier( support utility)
  *  @{
  *  @section Description
  *
@@ -24,6 +25,7 @@
  *  in DICOM files in specified directory and subdirs.
  *  
  */
+
 #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem/path.hpp"
 #include "boost/progress.hpp"

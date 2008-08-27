@@ -1,3 +1,8 @@
+/**
+ *  @ingroup common
+ *  @file Log.cpp
+ *  @author Jan Kolomaznik
+ */
 #include "Log.h"
 #include <iostream>
 #include <fstream>

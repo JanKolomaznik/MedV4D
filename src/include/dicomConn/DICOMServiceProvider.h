@@ -1,6 +1,13 @@
 #ifndef M4D_DICOM_SERVICE_PROVIDER
 #define M4D_DICOM_SERVICE_PROVIDER
 
+/**
+ *  @ingroup dicom
+ *  @file DICOMServiceProvider.h
+ *  @brief Declares class for handling DICOM issues
+ *  @author Vaclav Klecanda
+ */
+
 #include <vector>
 #include <map>
 #include <string>
@@ -8,10 +15,6 @@
 #include "dicomConn/DcmObject.h"
 
 /**
- *  @file DICOMServiceProvider.h
- *  @brief Declares class for handling DICOM issues
- *  @author Vaclav Klecanda
-
  *  @mainpage
  *
  *  @section medv4d Project Medv4D
@@ -28,7 +31,7 @@
  *  - Vaclav Klecanda
  * 
  *
- *  @addtogroup dicom DICOM management
+ *  @defgroup dicom DICOM management
  *  @{
  *  @section DICOM
  *  DICOM is a standard describing creating, storing, manipulating and many
@@ -226,7 +229,5 @@ public:
 
 #endif
 
-/**
- * @}
- */
+/** @} */
 

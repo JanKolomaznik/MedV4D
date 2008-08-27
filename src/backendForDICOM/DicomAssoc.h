@@ -4,6 +4,13 @@
 #include <map>
 #include <fstream>
 
+/**
+ *  @ingroup dicom
+ *  @file DicomAssoc.h
+ *  @author Vaclav Klecanda
+ *  @{
+ */
+
 namespace M4D
 {
 namespace DicomInternal 
@@ -72,5 +79,6 @@ public:
 
 } // namespace
 }
+/** @} */
 #endif
 

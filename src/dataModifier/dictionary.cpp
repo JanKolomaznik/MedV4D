@@ -1,5 +1,6 @@
 /**
- *  @file dictionary.h
+ *  @ingroup datamodifier
+ *  @file dictionary.cpp
  *  @brief Implentation of Dictionary class
  *  @author Vaclav Klecanda
  */

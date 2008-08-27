@@ -1,3 +1,8 @@
+/**
+ *  @ingroup common
+ *  @file TimeStamp.cpp
+ *  @author Jan Kolomaznik
+ */
 #include "TimeStamp.h"
 #include "Thread.h"
 

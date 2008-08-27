@@ -6,9 +6,11 @@
 #include <string>
 
 /**
- *  @addtogroup common Common tools
- *  @{
+ *  @ingroup common
+ *  @file ExceptionBase.h
  *
+ *  @addtogroup common
+ *  @{
  *  @section Exception handling
  *
  *  Defines base class that is used for exception handling. All other
@@ -83,6 +85,6 @@ std::ostream& operator<<( std::ostream &out, ExceptionBase &exception );
 } /*namespace ErrorHandling*/
 } /*namespace M4D*/
 
-#endif /*_EXCEPTION_BASE_H*/
-
 /** @} */
+
+#endif /*_EXCEPTION_BASE_H*/
