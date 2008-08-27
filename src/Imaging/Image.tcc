@@ -171,10 +171,17 @@ Image< ElementType, 2 >::GetPointer(
 	width = _dimExtents[0].maximum - _dimExtents[0].minimum;
 	height = _dimExtents[1].maximum - _dimExtents[1].minimum;
 
-	xStride = _imageData->GetDimensionInfo( 0 ).stride;
-	yStride = _imageData->GetDimensionInfo( 1 ).stride;
+	if( _imageData ) {
+		xStride = _imageData->GetDimensionInfo( 0 ).stride;
+		yStride = _imageData->GetDimensionInfo( 1 ).stride;
+	
+		return &(_imageData->Get( _dimExtents[0].minimum, _dimExtents[1].minimum ));
+	} else {
+		xStride = 0;
+		yStride = 0;
 
-	return &(_imageData->Get( _dimExtents[0].minimum, _dimExtents[1].minimum ));
+		return NULL;
+	}
 }
 
 
@@ -520,11 +527,20 @@ Image< ElementType, 3 >::GetPointer(
 	height = _dimExtents[1].maximum - _dimExtents[1].minimum;
 	depth = _dimExtents[2].maximum - _dimExtents[2].minimum;
 
-	xStride = _imageData->GetDimensionInfo( 0 ).stride;
-	yStride = _imageData->GetDimensionInfo( 1 ).stride;
-	zStride = _imageData->GetDimensionInfo( 2 ).stride;
 
-	return &_imageData->Get( _dimExtents[0].minimum, _dimExtents[1].minimum, _dimExtents[2].minimum );
+	if( _imageData ) {
+		xStride = _imageData->GetDimensionInfo( 0 ).stride;
+		yStride = _imageData->GetDimensionInfo( 1 ).stride;
+		zStride = _imageData->GetDimensionInfo( 2 ).stride;
+
+		return &_imageData->Get( _dimExtents[0].minimum, _dimExtents[1].minimum, _dimExtents[2].minimum );
+	} else {	
+		xStride = 0;
+		yStride = 0;
+		zStride = 0;
+
+		return NULL;
+	}
 }
 
  

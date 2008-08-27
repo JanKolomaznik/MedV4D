@@ -3,7 +3,7 @@ MAKE=make
 
 
 .PHONY:all
-all:	m4dPilot BoneSegmentation
+all:	m4dPilot BoneSegmentation SimpleMIP
 
 .PHONY:clean-all
 clean-all:	clean-m4dPilot clean-BoneSegmentation
@@ -16,7 +16,9 @@ m4dPilot:
 BoneSegmentation:
 	 $(MAKE) --directory=$@
 
-
+.PHONY:SimpleMIP
+SimpleMIP:
+	$(MAKE) --directory=$@
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
@@ -28,4 +30,7 @@ clean-m4dPilot:
 clean-BoneSegmentation:
 	 $(MAKE) --directory=BoneSegmentation clean
 
+.PHONY:clean-SimpleMIP
+clean-SimpleMIP:
+	 $(MAKE) --directory=SimpleMIP clean
 #------------------------------------------------------------------------------
