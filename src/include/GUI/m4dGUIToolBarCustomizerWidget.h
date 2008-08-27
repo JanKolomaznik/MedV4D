@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file m4dGUIToolBarCustomizerWidget.h 
+ * @{ 
+ **/
+
 #ifndef M4D_GUI_TOOLBAR_CUSTOMIZER_WIDGET_H
 #define M4D_GUI_TOOLBAR_CUSTOMIZER_WIDGET_H
 
@@ -124,4 +131,7 @@ class m4dGUIToolBarCustomizerWidget: public QWidget
 } // namespace M4D
 
 #endif // M4D_GUI_TOOLBAR_CUSTOMIZER_WIDGET_H
+
+
+/** @} */
 

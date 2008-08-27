@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file AbstractImageElementFilter.tcc 
+ * @{ 
+ **/
+
 #ifndef _ABSTRACT_IMAGE_ELEMENT_FILTER_H
 #error File AbstractImageElementFilter.tcc cannot be included directly!
 #else
@@ -135,4 +142,7 @@ AbstractImageElementFilter< Image< InputElementType, 3 >, Image< OutputElementTy
 /** @} */
 
 #endif /*_ABSTRACT_IMAGE_ELEMENT_FILTER_H*/
+
+
+/** @} */
 

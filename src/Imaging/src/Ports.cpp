@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file Ports.cpp 
+ * @{ 
+ **/
+
 #include <algorithm>
 
 #include "Thread.h"
@@ -233,3 +240,5 @@ OutputPortList::SendMessage(
 }/*namespace M4D*/
 
 /** @} */
+/** @} */
+

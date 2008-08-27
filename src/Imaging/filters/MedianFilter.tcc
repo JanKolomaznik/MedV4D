@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file MedianFilter.tcc 
+ * @{ 
+ **/
+
 #ifndef _MEDIAN_FILTER_H
 #error File MedianFilter.tcc cannot be included directly!
 #else
@@ -128,3 +135,6 @@ MedianFilter2D< InputImageType >
 /** @} */
 
 #endif /*_MEDIAN_FILTER_H*/
+
+/** @} */
+

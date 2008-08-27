@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ImageConvertor.h 
+ * @{ 
+ **/
+
 #ifndef _IMAGE_CONVERTOR_H
 #define _IMAGE_CONVERTOR_H
 
@@ -91,3 +98,6 @@ private:
 #include "Imaging/filters/ImageConvertor.tcc"
 
 #endif /*_IMAGE_CONVERTOR_H*/
+
+/** @} */
+

@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file AbstractFilter.h 
+ * @{ 
+ **/
+
 #ifndef _ABSTRACT_FILTER_H
 #define _ABSTRACT_FILTER_H
 
@@ -468,3 +475,6 @@ private:
 /** @} */
 
 #endif /*_ABSTRACT_FILTER_H*/
+
+/** @} */
+

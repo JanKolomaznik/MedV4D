@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ConnectionInterface.cpp 
+ * @{ 
+ **/
+
 #include "Imaging/ConnectionInterface.h"
 
 #include "Imaging/Ports.h"
@@ -91,3 +98,5 @@ ConnectionInterface::PushConsumer( InputPort& consumer )
 }/*namespace M4D*/
 
 /** @} */
+/** @} */
+

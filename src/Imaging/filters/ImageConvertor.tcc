@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ImageConvertor.tcc 
+ * @{ 
+ **/
+
 #ifndef _IMAGE_CONVERTOR_H
 #error File ImageConvertor.tcc cannot be included directly!
 #else
@@ -180,3 +187,6 @@ ImageConvertor< OutputImageType, Convertor >
 /** @} */
 
 #endif /*_IMAGE_CONVERTOR_H*/
+
+/** @} */
+

@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file AbstractImage2DFilter.tcc 
+ * @{ 
+ **/
+
 #ifndef _ABSTRACT_IMAGE_2D_FILTER_H
 #error File AbstractImage2DFilter.tcc cannot be included directly!
 #else
@@ -102,4 +109,7 @@ AbstractImage2DFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3
 } /*namespace M4D*/
 
 #endif /*_ABSTRACT_IMAGE_2D_FILTER_H*/
+
+
+/** @} */
 

@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file Image.h 
+ * @{ 
+ **/
+
 #ifndef _IMAGE__H
 #define _IMAGE__H
 
@@ -600,3 +607,6 @@ typedef Image< uint32, 3 > 	Image3DUnsigned32b;
 #include "Imaging/Image.tcc"
 
 #endif /*_IMAGE__H*/
+
+/** @} */
+

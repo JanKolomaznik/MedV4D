@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file PipelineContainer.cpp 
+ * @{ 
+ **/
+
 #include "Imaging/PipelineContainer.h"
 #include "Imaging/ImagePorts.h"
 
@@ -240,3 +247,5 @@ PipelineContainer::MakeOutputConnection( M4D::Imaging::AbstractPipeFilter& produ
 }/*namespace M4D*/
 
 /** @} */
+/** @} */
+

@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file m4dGUIMainWindow.h 
+ * @{ 
+ **/
+
 #ifndef M4D_GUI_MAIN_WINDOW_H
 #define M4D_GUI_MAIN_WINDOW_H
 
@@ -222,4 +229,7 @@ class m4dGUIMainWindow: public QMainWindow
 
 #endif // M4D_GUI_MAIN_WINDOW_H
 
+
+
+/** @} */
 

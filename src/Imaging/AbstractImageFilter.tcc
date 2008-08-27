@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file AbstractImageFilter.tcc 
+ * @{ 
+ **/
+
 #ifndef _ABSTRACT_IMAGE_FILTER_H
 #error File AbstractImageFilter.tcc cannot be included directly!
 #else
@@ -165,4 +172,7 @@ AbstractImageFilter< InputImageType, OutputImageType >
 /** @} */
 
 #endif /*_ABSTRACT_IMAGE_FILTER_H*/
+
+
+/** @} */
 

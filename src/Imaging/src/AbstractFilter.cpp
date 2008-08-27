@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file AbstractFilter.cpp 
+ * @{ 
+ **/
+
 #include "Imaging/AbstractFilter.h"
 
 #ifdef _MSC_VER 
@@ -350,3 +357,5 @@ AbstractPipeFilter::CleanAfterStoppedRun()
 }/*namespace M4D*/
 
 /** @} */
+/** @} */
+

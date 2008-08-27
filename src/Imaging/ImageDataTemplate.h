@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ImageDataTemplate.h 
+ * @{ 
+ **/
+
 #ifndef _IMAGE_DATA_TEMPLATE_H
 #define _IMAGE_DATA_TEMPLATE_H
 
@@ -254,3 +261,6 @@ public:
 
 
 #endif /*_IMAGE_DATA_TEMPLATE_H*/
+
+/** @} */
+

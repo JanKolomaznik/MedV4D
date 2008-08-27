@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file AbstractPipeline.h 
+ * @{ 
+ **/
+
 #ifndef _ABSTRACT_PIPELINE_H
 #define _ABSTRACT_PIPELINE_H
 
@@ -51,3 +58,6 @@ private:
 /** @} */
 
 #endif /*_ABSTRACT_PIPELINE_H*/
+
+/** @} */
+

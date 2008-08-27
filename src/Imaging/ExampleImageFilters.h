@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ExampleImageFilters.h 
+ * @{ 
+ **/
+
 #ifndef _EXAMPLE_IMAGE_FILTERS_H
 #define _EXAMPLE_IMAGE_FILTERS_H
 
@@ -162,3 +169,6 @@ private:
 #include "Imaging/ExampleImageFilters.tcc"
 
 #endif /*_EXAMPLE_IMAGE_FILTERS_H*/
+
+/** @} */
+

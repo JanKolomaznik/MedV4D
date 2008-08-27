@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file Ports.tcc 
+ * @{ 
+ **/
+
 #ifndef _PORTS_H
 #error File Ports.tcc cannot be included directly!
 #else
@@ -48,3 +55,6 @@ OutputPortList::GetPortTypedSafe( size_t idx )const
 /** @} */
 
 #endif /*_PORTS_H*/
+
+/** @} */
+

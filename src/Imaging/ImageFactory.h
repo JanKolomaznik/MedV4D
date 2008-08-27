@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ImageFactory.h 
+ * @{ 
+ **/
+
 #ifndef _IMAGE_FACTORY_H
 #define _IMAGE_FACTORY_H
 
@@ -410,3 +417,6 @@ public:
 #include "ImageFactory.tcc"
 
 #endif /*_IMAGE_FACTORY_H*/
+
+/** @} */
+

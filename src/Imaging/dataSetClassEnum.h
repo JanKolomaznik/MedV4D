@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file dataSetClassEnum.h 
+ * @{ 
+ **/
+
 #ifndef DATASET_CLASS_ENUM_H
 #define DATASET_CLASS_ENUM_H
 
@@ -23,4 +30,7 @@ enum DataSetType
 /** @} */
 
 #endif /*DATASET_CLASS_ENUM_H*/
+
+
+/** @} */
 

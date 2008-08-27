@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file AbstractImageFilter.cpp 
+ * @{ 
+ **/
+
 #include "Imaging/AbstractImageFilter.h"
 
 /**
@@ -28,3 +35,5 @@ GetOutputImageFromPort( OutputPortAbstractImage &port )
 }/*namespace M4D*/
 
 /** @} */
+/** @} */
+

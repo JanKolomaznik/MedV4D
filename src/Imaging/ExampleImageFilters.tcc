@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ExampleImageFilters.tcc 
+ * @{ 
+ **/
+
 #ifndef _EXAMPLE_IMAGE_FILTERS_H
 #error File ExampleImageFilters.tcc cannot be included directly!
 #else
@@ -199,3 +206,6 @@ SimpleConvolutionImageFilter< Image< InputElementType, 3 > >
 /** @} */
 
 #endif /*_BASIC_IMAGE_FILTERS_H*/
+
+/** @} */
+

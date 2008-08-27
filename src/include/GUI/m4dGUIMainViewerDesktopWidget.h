@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file m4dGUIMainViewerDesktopWidget.h 
+ * @{ 
+ **/
+
 #ifndef M4D_GUI_MAIN_VIEWER_DESKTOP_H
 #define M4D_GUI_MAIN_VIEWER_DESKTOP_H
 
@@ -101,4 +108,7 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
 } // namespace M4D
 
 #endif // M4D_GUI_MAIN_VIEWER_DESKTOP_H
+
+
+/** @} */
 

@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ThresholdingFilter.h 
+ * @{ 
+ **/
+
 #ifndef _THRESHOLDING_FILTER_H
 #define _THRESHOLDING_FILTER_H
 
@@ -154,3 +161,6 @@ private:
 #include "Imaging/filters/ThresholdingFilter.tcc"
 
 #endif /*_THRESHOLDING_FILTER_H*/
+
+/** @} */
+

@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file AbstractImage2DFilter.h 
+ * @{ 
+ **/
+
 #ifndef _ABSTRACT_IMAGE_2D_FILTER_H
 #define _ABSTRACT_IMAGE_2D_FILTER_H
 
@@ -152,3 +159,6 @@ private:
 #include "Imaging/AbstractImage2DFilter.tcc"
 
 #endif /*_ABSTRACT_IMAGE_SLICE_FILTER_H*/
+
+/** @} */
+

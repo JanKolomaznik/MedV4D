@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file StManagerStudyListComp.h 
+ * @{ 
+ **/
+
 #ifndef ST_MANAGER_STUDY_LIST_COMP_H
 #define ST_MANAGER_STUDY_LIST_COMP_H
 
@@ -331,3 +338,6 @@ class StManagerStudyListComp: public QWidget
 } // namespace M4D
 
 #endif // ST_MANAGER_STUDY_LIST_COMP_H
+
+/** @} */
+

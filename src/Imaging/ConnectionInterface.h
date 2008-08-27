@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ConnectionInterface.h 
+ * @{ 
+ **/
+
 #ifndef _CONNECTION_INTERFACE_H
 #define _CONNECTION_INTERFACE_H
 
@@ -189,3 +196,6 @@ public:
 /** @} */
 
 #endif /*_CONNECTION_INTERFACE_H*/
+
+/** @} */
+

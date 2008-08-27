@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file PipelineMessages.h 
+ * @{ 
+ **/
+
 #ifndef _PIPELINE_MESSAGES_H
 #define _PIPELINE_MESSAGES_H
 
@@ -284,3 +291,6 @@ protected:
 /** @} */
 
 #endif /*_PIPELINE_MESSAGES_H*/
+
+/** @} */
+

@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file AbstractImageData.h 
+ * @{ 
+ **/
+
 #ifndef _ABSTRACT_IMAGE_DATA_H
 #define _ABSTRACT_IMAGE_DATA_H
 
@@ -182,3 +189,6 @@ public:
 /** @} */
 
 #endif /*_ABSTRACT_IMAGE_DATA_H*/
+
+/** @} */
+

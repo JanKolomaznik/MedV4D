@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file m4dGUIStudyManagerWidget.h 
+ * @{ 
+ **/
+
 #ifndef M4D_GUI_STUDY_MANAGER_WIDGET_H
 #define M4D_GUI_STUDY_MANAGER_WIDGET_H
 
@@ -71,4 +78,7 @@ class m4dGUIStudyManagerWidget: public QWidget
 } // namespace M4D
 
 #endif // M4D_GUI_STUDY_MANAGER_WIDGET_H
+
+
+/** @} */
 

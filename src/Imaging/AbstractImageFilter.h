@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file AbstractImageFilter.h 
+ * @{ 
+ **/
+
 #ifndef _ABSTRACT_IMAGE_FILTER_H
 #define _ABSTRACT_IMAGE_FILTER_H
 
@@ -104,3 +111,6 @@ private:
 #include "Imaging/AbstractImageFilter.tcc"
 
 #endif /*_ABSTRACT_IMAGE_FILTER_H*/
+
+/** @} */
+

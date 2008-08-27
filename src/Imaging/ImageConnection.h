@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ImageConnection.h 
+ * @{ 
+ **/
+
 #ifndef _IMAGE_CONNECTION_H
 #define _IMAGE_CONNECTION_H
 
@@ -198,3 +205,6 @@ public:
 #include "Imaging/ImageConnection.tcc"
 
 #endif /*_IMAGE_CONNECTION_H*/
+
+/** @} */
+

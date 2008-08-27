@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ImageConnection.cpp 
+ * @{ 
+ **/
+
 #include "Imaging/ImageConnection.h"
 
 /**
@@ -82,3 +89,5 @@ AbstractImageConnection
 }/*namespace M4D*/
 
 /** @} */
+/** @} */
+

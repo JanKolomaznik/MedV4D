@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ImagePorts.h 
+ * @{ 
+ **/
+
 #ifndef _IMAGE_PORTS_H
 #define _IMAGE_PORTS_H
 
@@ -146,4 +153,7 @@ protected:
 #include "Imaging/ImagePorts.tcc"
 
 #endif /*_IMAGE_PORTS_H*/
+
+
+/** @} */
 

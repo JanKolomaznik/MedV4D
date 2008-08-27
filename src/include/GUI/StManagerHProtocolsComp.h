@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file StManagerHProtocolsComp.h 
+ * @{ 
+ **/
+
 #ifndef ST_MANAGER_H_PROTOCOLS_COMP_H
 #define ST_MANAGER_H_PROTOCOLS_COMP_H
 
@@ -29,4 +36,7 @@ class StManagerHProtocolsComp: public QWidget
 } // namespace M4D
 
 #endif // ST_MANAGER_H_PROTOCOLS_COMP_H
+
+
+/** @} */
 

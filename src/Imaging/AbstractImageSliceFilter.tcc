@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file AbstractImageSliceFilter.tcc 
+ * @{ 
+ **/
+
 #ifndef _ABSTRACT_IMAGE_SLICE_FILTER_H
 #error File AbstractImageSliceFilter.tcc cannot be included directly!
 #else
@@ -221,4 +228,7 @@ AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputEle
 /** @} */
 
 #endif /*_ABSTRACT_IMAGE_SLICE_FILTER_H*/
+
+
+/** @} */
 

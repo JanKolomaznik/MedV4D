@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file m4dSelection.h 
+ * @{ 
+ **/
+
 #ifndef _m4dSelection_h
 #define _m4dSelection_h
 
@@ -336,3 +343,6 @@ private:
 #include "m4dSelection.tcc" /* template sources */
 
 #endif
+
+/** @} */
+

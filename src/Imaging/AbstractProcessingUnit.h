@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file AbstractProcessingUnit.h 
+ * @{ 
+ **/
+
 #ifndef _ABSTRACT_PROCESSING_UNIT_H
 #define _ABSTRACT_PROCESSING_UNIT_H
 
@@ -38,4 +45,7 @@ private:
 /** @} */
 
 #endif /*_ABSTRACT_PROCESSING_UNIT_H*/
+
+
+/** @} */
 

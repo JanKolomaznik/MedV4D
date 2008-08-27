@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file SimpleMaxIntensityProjection.h 
+ * @{ 
+ **/
+
 #ifndef _SIMPLE_MAX_INTENSITY_PROJECTION_H
 #define _SIMPLE_MAX_INTENSITY_PROJECTION_H
 
@@ -91,3 +98,6 @@ private:
 #include "Imaging/filters/SimpleMaxIntensityProjection.tcc"
 
 #endif /*_SIMPLE_MAX_INTENSITY_PROJECTION_H*/
+
+/** @} */
+

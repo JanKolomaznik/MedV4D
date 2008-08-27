@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file m4dGUISliceViewerWidget.h 
+ * @{ 
+ **/
+
 #ifndef _M4DGUISLICEVIEWERWIDGET_H
 #define _M4DGUISLICEVIEWERWIDGET_H
 
@@ -722,3 +729,6 @@ private:
 } /*namespace M4D*/
 
 #endif
+
+/** @} */
+

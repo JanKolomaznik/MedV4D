@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ThresholdingFilter.tcc 
+ * @{ 
+ **/
+
 #ifndef _THRESHOLDING_FILTER_H
 #error File ThresholdingFilter.tcc cannot be included directly!
 #else
@@ -51,3 +58,6 @@ ThresholdingMaskFilter< ImageType >
 /** @} */
 
 #endif /*_THRESHOLDING_FILTER_H*/
+
+/** @} */
+

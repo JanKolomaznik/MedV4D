@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ImagePorts.tcc 
+ * @{ 
+ **/
+
 #ifndef _IMAGE_PORTS_H
 #error File ImagePorts.tcc cannot be included directly!
 #else
@@ -142,3 +149,6 @@ OutputPortImageFilter< Image< ElementType, dimension > >
 /** @} */
 
 #endif /*_IMAGE_PORTS_H*/
+
+/** @} */
+

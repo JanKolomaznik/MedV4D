@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ImageFactory.tcc 
+ * @{ 
+ **/
+
 #ifndef _IMAGE_FACTORY_H
 #error File ImageDataTemplate.tcc cannot be included directly!
 #else
@@ -299,4 +306,7 @@ ImageFactory::CreateEmptyImageData3DTyped(
 /** @} */
 
 #endif /*_IMAGE_FACTORY_H*/
+
+
+/** @} */
 

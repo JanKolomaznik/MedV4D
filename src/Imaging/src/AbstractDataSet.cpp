@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file AbstractDataSet.cpp 
+ * @{ 
+ **/
+
 #include "Imaging/AbstractDataSet.h"
 
 /**
@@ -193,6 +200,9 @@ AbstractDataSet::ExclusiveUnlockDataset()const
 
 }/*namespace Imaging*/
 }/*namespace M4D*/
+
+/** @} */
+
 
 /** @} */
 

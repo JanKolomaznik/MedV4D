@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ModificationManager.cpp 
+ * @{ 
+ **/
+
 #include "Imaging/ModificationManager.h"
 
 #include "Functors.h"
@@ -394,3 +401,5 @@ ModificationManager::Reset()
 }/*namespace M4D*/
 
 /** @} */
+/** @} */
+

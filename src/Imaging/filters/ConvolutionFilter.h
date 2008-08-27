@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ConvolutionFilter.h 
+ * @{ 
+ **/
+
 #ifndef _CONVOLUTION_FILTER_H
 #define _CONVOLUTION_FILTER_H
 
@@ -126,3 +133,6 @@ private:
 #include "Imaging/filters/ConvolutionFilter.tcc"
 
 #endif /*_CONVOLUTION_FILTER_H*/
+
+/** @} */
+

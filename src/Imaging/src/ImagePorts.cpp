@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ImagePorts.cpp 
+ * @{ 
+ **/
+
 #include "Imaging/ImagePorts.h"
 
 /**
@@ -75,3 +82,5 @@ OutputPortAbstractImage
 }/*namespace M4D*/
 
 /** @} */
+/** @} */
+

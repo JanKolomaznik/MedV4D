@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file AbstractImageFilterWholeAtOnce.h 
+ * @{ 
+ **/
+
 #ifndef _ABSTRACT_IMAGE_FILTER_WHOLEATONCE_H
 #define _ABSTRACT_IMAGE_FILTER_WHOLEATONCE_H
 
@@ -91,3 +98,6 @@ private:
 #include "Imaging/AbstractImageFilterWholeAtOnce.tcc"
 
 #endif /*_ABSTRACT_IMAGE_FILTER_WHOLEATONCE_H*/
+
+/** @} */
+

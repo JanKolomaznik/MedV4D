@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ImageConnection.tcc 
+ * @{ 
+ **/
+
 #ifndef _IMAGE_CONNECTION_H
 #error File ImageConnection.tcc cannot be included directly!
 #else
@@ -153,4 +160,7 @@ ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 /** @} */
 
 #endif /*_IMAGE_CONNECTION_H*/
+
+
+/** @} */
 

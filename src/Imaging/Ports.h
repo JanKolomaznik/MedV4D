@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file Ports.h 
+ * @{ 
+ **/
+
 #ifndef _PORTS_H
 #define _PORTS_H
 
@@ -340,4 +347,7 @@ private:
 #include "Imaging/Ports.tcc"
 
 #endif /*_PORTS_H*/
+
+
+/** @} */
 

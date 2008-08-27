@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file m4dDICOMSliceInteractorStyle.h 
+ * @{ 
+ **/
+
 #ifndef __m4dDICOMSliceInteractorStyle_h
 #define __m4dDICOMSliceInteractorStyle_h
 
@@ -48,3 +55,6 @@ class VTK_RENDERING_EXPORT m4dDICOMSliceInteractorStyle : public vtkInteractorSt
 };
 
 #endif
+
+/** @} */
+

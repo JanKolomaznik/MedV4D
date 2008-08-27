@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ImageTraits.h 
+ * @{ 
+ **/
+
 #ifndef _IMAGE_TRAITS_H
 #define _IMAGE_TRAITS_H
 
@@ -65,3 +72,6 @@ public:
 /** @} */
 
 #endif /*_IMAGE_TRAITS_H*/
+
+/** @} */
+

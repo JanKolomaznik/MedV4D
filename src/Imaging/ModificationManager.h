@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ModificationManager.h 
+ * @{ 
+ **/
+
 #ifndef _MODIFICATION_MANAGER_H
 #define _MODIFICATION_MANAGER_H
 
@@ -282,3 +289,6 @@ protected:
 /** @} */
 
 #endif /*_MODIFICATION_MANAGER_H*/
+
+/** @} */
+

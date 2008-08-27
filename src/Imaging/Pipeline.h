@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file Pipeline.h 
+ * @{ 
+ **/
+
 #ifndef _PIPELINE_H
 #define _PIPELINE_H
 
@@ -56,4 +63,7 @@ private:
 /** @} */
 
 #endif /*_PIPELINE_H*/
+
+
+/** @} */
 

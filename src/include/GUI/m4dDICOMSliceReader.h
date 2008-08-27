@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file m4dDICOMSliceReader.h 
+ * @{ 
+ **/
+
 #ifndef __m4dDICOMSliceReader_h
 #define __m4dDICOMSliceReader_h
 
@@ -28,3 +35,6 @@ class m4dDICOMSliceReader : public vtkDICOMImageReader
 };
 
 #endif
+
+/** @} */
+

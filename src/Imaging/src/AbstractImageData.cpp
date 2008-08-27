@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file AbstractImageData.cpp 
+ * @{ 
+ **/
+
 #include "Imaging/AbstractImageData.h"
 
 /**
@@ -54,3 +61,5 @@ AbstractImageData::GetDimensionInfo( unsigned short dim )const
 } /*namespace M4D*/
 
 /** @} */
+/** @} */
+

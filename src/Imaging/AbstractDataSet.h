@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file AbstractDataSet.h 
+ * @{ 
+ **/
+
 #ifndef _ABSTRACT_DATA_SET_H
 #define _ABSTRACT_DATA_SET_H
 
@@ -220,4 +227,7 @@ private:
 /** @} */
 
 #endif /*_ABSTRACT_DATA_SET_H*/
+
+
+/** @} */
 

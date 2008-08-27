@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file Pipeline.cpp 
+ * @{ 
+ **/
+
 #include "Imaging/Pipeline.h"
 #include <algorithm>
 #include "Functors.h"
@@ -88,3 +95,5 @@ Pipeline::MakeConnection( M4D::Imaging::OutputPort& outPort, M4D::Imaging::Input
 }/*namespace M4D*/
 
 /** @} */
+/** @} */
+

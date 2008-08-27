@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file MedianFilter.h 
+ * @{ 
+ **/
+
 #ifndef _MEDIAN_FILTER_H
 #define _MEDIAN_FILTER_H
 
@@ -130,3 +137,6 @@ private:
 #include "Imaging/filters/MedianFilter.tcc"
 
 #endif /*_MEDIAN_FILTER_H*/
+
+/** @} */
+

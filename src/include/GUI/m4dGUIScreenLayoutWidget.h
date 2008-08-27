@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file m4dGUIScreenLayoutWidget.h 
+ * @{ 
+ **/
+
 #ifndef M4D_GUI_SCREEN_LAYOUT_WIDGET_H
 #define M4D_GUI_SCREEN_LAYOUT_WIDGET_H
 
@@ -141,4 +148,7 @@ class m4dGUIScreenLayoutWidget: public QWidget
 } // namespace M4D
 
 #endif // M4D_GUI_SCREEN_LAYOUT_WIDGET_H
+
+
+/** @} */
 

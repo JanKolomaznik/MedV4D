@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file AbstractImageSliceFilter.h 
+ * @{ 
+ **/
+
 #ifndef _ABSTRACT_IMAGE_SLICE_FILTER_H
 #define _ABSTRACT_IMAGE_SLICE_FILTER_H
 
@@ -187,3 +194,6 @@ private:
 #include "Imaging/AbstractImageSliceFilter.tcc"
 
 #endif /*_ABSTRACT_IMAGE_SLICE_FILTER_H*/
+
+/** @} */
+

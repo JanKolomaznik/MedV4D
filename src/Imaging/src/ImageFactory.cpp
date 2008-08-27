@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ImageFactory.cpp 
+ * @{ 
+ **/
+
 #include "Imaging/ImageFactory.h"
 #include "Debug.h"
 
@@ -216,3 +223,5 @@ ImageFactory::FlushDicomObjects(
 }/*namespace M4D*/
 
 /** @} */
+/** @} */
+

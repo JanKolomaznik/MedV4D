@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file PipelineContainer.h 
+ * @{ 
+ **/
+
 #ifndef _PIPELINE_CONTAINER_H
 #define _PIPELINE_CONTAINER_H
 
@@ -85,4 +92,7 @@ class EAutoConnectingFailed
 /** @} */
 
 #endif /*_PIPELINE_H*/
+
+
+/** @} */
 

@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file StudyFilter.h 
+ * @{ 
+ **/
+
 #ifndef STUDY_FILTER_H
 #define STUDY_FILTER_H
 
@@ -62,4 +69,7 @@ class StudyFilter {
 } // namespace M4D
 
 #endif // STUDY_FILTER_H
+
+
+/** @} */
 

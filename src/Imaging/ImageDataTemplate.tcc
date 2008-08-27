@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ImageDataTemplate.tcc 
+ * @{ 
+ **/
+
 #ifndef _IMAGE_DATA_TEMPLATE_H
 #error File ImageDataTemplate.tcc cannot be included directly!
 #else
@@ -151,3 +158,6 @@ ImageDataTemplate< ElementType >::CastAbstractPointer( AbstractImageData::APtr a
 /** @} */
 
 #endif /*_IMAGE_DATA_TEMPLATE_H*/
+
+/** @} */
+

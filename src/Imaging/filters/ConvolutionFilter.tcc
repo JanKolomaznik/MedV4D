@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ConvolutionFilter.tcc 
+ * @{ 
+ **/
+
 #ifndef _CONVOLUTION_FILTER_H
 #error File ConvolutionFilter.tcc cannot be included directly!
 #else
@@ -109,3 +116,6 @@ ConvolutionFilter3D< Image< InputElementType, 3 > >
 /** @} */
 
 #endif /*_CONVOLUTION_FILTER_H*/
+
+/** @} */
+

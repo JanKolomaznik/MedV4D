@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file AbstractImageFilterWholeAtOnce.tcc 
+ * @{ 
+ **/
+
 #ifndef _ABSTRACT_IMAGE_FILTER_WHOLEATONCE_H
 #error File AbstractImageFilterWholeAtOnce.tcc cannot be included directly!
 #else
@@ -214,4 +221,7 @@ AbstractImageFilterWholeAtOnceIExtents< InputImageType, OutputImageType >
 /** @} */
 
 #endif /*_ABSTRACT_IMAGE_FILTER_WHOLEATONCE_H*/
+
+
+/** @} */
 

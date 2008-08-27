@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file m4dSelection.tcc 
+ * @{ 
+ **/
+
 #ifndef _m4dSelection_h
 #error File m4dSelection.tcc cannot be included directly!
 #else
@@ -362,3 +369,6 @@ m4dShape< ElementType >::calculateArea()
 }/* namespace M4D	*/
 
 #endif /* m4dSelection.tcc */
+
+/** @} */
+

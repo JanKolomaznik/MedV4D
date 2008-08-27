@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file StManagerFilterComp.h 
+ * @{ 
+ **/
+
 #ifndef ST_MANAGER_FILTER_COMP_H
 #define ST_MANAGER_FILTER_COMP_H
 
@@ -144,4 +151,7 @@ class StManagerFilterComp: public QWidget
 } // namespace M4D
 
 #endif // ST_MANAGER_FILTER_COMP_H
+
+
+/** @} */
 

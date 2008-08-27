@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file Image.cpp 
+ * @{ 
+ **/
+
 #include "Imaging/Image.h"
 
 /**
@@ -37,3 +44,5 @@ AbstractImage::GetDimensionExtents( unsigned dimension )const
 }/*namespace M4D*/
 
 /** @} */
+/** @} */
+

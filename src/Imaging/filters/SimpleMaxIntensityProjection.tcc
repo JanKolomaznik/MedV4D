@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file SimpleMaxIntensityProjection.tcc 
+ * @{ 
+ **/
+
 #ifndef _SIMPLE_MAX_INTENSITY_PROJECTION_H
 #error File SimpleMaxIntensityProjection.tcc cannot be included directly!
 #else
@@ -219,3 +226,6 @@ SimpleMaxIntensityProjection< Image< ElementType, 3 > >
 /** @} */
 
 #endif /*_SIMPLE_MAX_INTENSITY_PROJECTION_H*/
+
+/** @} */
+

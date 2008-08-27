@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file Image.tcc 
+ * @{ 
+ **/
+
 #ifndef _IMAGE__H
 #error File Image.tcc cannot be included directly!
 #else
@@ -630,3 +637,6 @@ Image< ElementType, 4 >::GetModificationManager()const
 #endif
 
 #endif /*_IMAGE__H*/
+
+/** @} */
+

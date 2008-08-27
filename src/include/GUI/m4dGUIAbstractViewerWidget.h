@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file m4dGUIAbstractViewerWidget.h 
+ * @{ 
+ **/
+
 #ifndef _M4DGUIABSTRACTVIEWERWIDGET_H
 #define _M4DGUIABSTRACTVIEWERWIDGET_H
 
@@ -582,3 +589,6 @@ signals:
 } /*namespace M4D*/
 
 #endif
+
+/** @} */
+

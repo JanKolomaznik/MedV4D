@@ -1,3 +1,10 @@
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file m4dGUIVtkViewerWidget.h 
+ * @{ 
+ **/
+
 #ifndef M4D_GUI_VTK_VIEWER_WIDGET_H
 #define M4D_GUI_VTK_VIEWER_WIDGET_H
 
@@ -441,3 +448,6 @@ private:
 } /* namespace M4D */
 
 #endif // M4D_GUI_VTK_VIEWER_WIDGET_H
+
+/** @} */
+
