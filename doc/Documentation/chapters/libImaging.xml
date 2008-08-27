@@ -233,6 +233,28 @@
 	<para>
 	</para>
 
+	<section>
+	<title>Locking image parts</title>
+
+		<para>
+		<xref linkend="pic.ImageLocking"/>
+		
+		<figure float="1" id="pic.ImageLocking">
+		<title>Synchronization over image data - 2D example</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="figures/libImaging/ImageLocking.eps" format="EPS" scale="35"/>
+			</imageobject>
+			<imageobject>
+				<imagedata fileref="figures/libImaging/ImageLocking.png" format="PNG" scale="35"/>
+			</imageobject>
+		</mediaobject>
+		</figure>
+		</para>
+
+	</section>
+
+
 </section>
 
 <section>

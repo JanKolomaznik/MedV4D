@@ -1,0 +1,70 @@
+digraph G
+{
+  edge [fontname="FreeSans",fontsize=10,labelfontname="FreeSans",labelfontsize=10];
+  node [dir=back,color="midnightblue",fontname="FreeSans",fontsize=10,shape=record];
+  rankdir=TB;
+
+	AbstractFilter -> AbstractPipeFilter -> AbstractImageFilter
+	AbstractImageFilter -> AbstractImageFilterWholeAtOnce -> AbstractImageFilterWholeAtOnceIExtents
+	AbstractImageFilter -> AbstractImageSliceFilter -> AbstractImageSliceFilterIExtents
+	AbstractImageFilterWholeAtOnceIExtents -> AbstractImageElementFilter
+	AbstractImageSliceFilterIExtents -> AbstractImageElementFilter
+	AbstractImageFilter -> ImageConvertor
+/*  Node1 [label="AbstractFilter"];
+  Node1 -> Node3 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node3 [label="AbstractPipeFilter"];
+  Node3 -> Node4 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node4 [label="AbstractImageFilter\n\<Image\<InputElementType, 2\>, \nImage\<OutputElementType, 2\>\>"];
+  Node4 -> Node5 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node5 [label="AbstractImageFilterWholeAtOnce\n\<Image\<InputElementType, 2\>, \nImage\<OutputElementType, 2\>\>"];
+  Node5 -> Node6 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node6 [label="AbstractImageFilterWholeAtOnceIExtents\n\<Image\<InputElementType, 2\>, \nImage\<OutputElementType, 2\>\>"];
+  Node6 -> Node7 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node7 [label="AbstractImage2DFilter\n\<Image\<InputElementType, 2\>, Image\<OutputElementType, 2\>\>"];
+  Node6 -> Node8 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node8 [label="AbstractImageElementFilter\n\<Image\<InputElementType, 2\>, \nImage\<OutputElementType, 2\>, ElementFilter\>"];
+  Node3 -> Node9 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node9 [label="AbstractImageFilter\n\<Image\<InputElementType, 3\>, \nOutputImageType\>"];
+  Node9 -> Node10 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node10 [label="AbstractImageSliceFilter\n\<Image\<InputElementType, 3\>, OutputImageType\>"];
+  Node3 -> Node11 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node11 [label="AbstractImageFilter\n\<ImageType, ImageType\>"];
+  Node11 -> Node12 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node12 [label="AbstractImageFilterWholeAtOnce\n\<ImageType, ImageType\>"];
+  Node12 -> Node13 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node13 [label="RemoteFilter\n\<ImageType, ImageType\>"];
+  Node13 -> Node14 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node14 [label="BoneSegmentationRemote\n\<ImageType\>"];
+  Node3 -> Node15 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node15 [label="AbstractImageFilter\n\<AbstractImage, OutputImageType\>"];
+  Node3 -> Node16 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node16 [label="AbstractImageFilter\n\<Image\<ElementType, 3\>, Image\<ElementType, 2\>\>"];
+  Node16 -> Node17 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node17 [label="AbstractImageFilterWholeAtOnce\n\<Image\<ElementType, 3\>, \nImage\<ElementType, 2\>\>"];
+  Node3 -> Node18 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node18 [label="AbstractImageFilter\n\<InputImageType, OutputImageType\>"];
+  Node18 -> Node19 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node19 [label="AbstractImageFilterWholeAtOnce\n\<InputImageType, OutputImageType\>"];
+  Node19 -> Node20 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node20 [label="AbstractImageFilterWholeAtOnceIExtents\n\<InputImageType, OutputImageType\>"];
+  Node20 -> Node6 [dir=back,color="orange",fontsize=10,style="dashed",fontname="FreeSans"];
+  Node19 -> Node21 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node21 [label="RemoteFilter\n\<InputImageType, OutputImageType\>"];
+  Node21 -> Node13 [dir=back,color="orange",fontsize=10,style="dashed",fontname="FreeSans"];
+  Node19 -> Node22 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node22 [label="SimpleMaxIntensityProjection\n\<Image\<ElementType, 3\>\>"];
+  Node19 -> Node17 [dir=back,color="orange",fontsize=10,style="dashed",fontname="FreeSans"];
+  Node19 -> Node12 [dir=back,color="orange",fontsize=10,style="dashed",fontname="FreeSans"];
+  Node19 -> Node5 [dir=back,color="orange",fontsize=10,style="dashed",fontname="FreeSans"];
+  Node18 -> Node23 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node23 [label="ImageConvertor\n\<AbstractImage, OutputImageType\>"];
+  Node18 -> Node9 [dir=back,color="orange",fontsize=10,style="dashed",fontname="FreeSans"];
+  Node18 -> Node15 [dir=back,color="orange",fontsize=10,style="dashed",fontname="FreeSans"];
+  Node18 -> Node16 [dir=back,color="orange",fontsize=10,style="dashed",fontname="FreeSans"];
+  Node18 -> Node11 [dir=back,color="orange",fontsize=10,style="dashed",fontname="FreeSans"];
+  Node18 -> Node4 [dir=back,color="orange",fontsize=10,style="dashed",fontname="FreeSans"];
+  Node3 -> Node24 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node24 [label="AbstractPipeline"];
+  Node24 -> Node25 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node25 [label="Pipeline"];*/
+}
