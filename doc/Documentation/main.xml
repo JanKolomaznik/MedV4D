@@ -14,6 +14,24 @@
 	<bookinfo>
 		<title>Medv4D</title>
 		<subtitle>project documentation</subtitle>
+		<authorgroup>
+			<author>
+				<surname>Grof</surname>
+				<firstname>Szabolcs</firstname>
+			</author>
+			<author>
+				<surname>Klecanda</surname>
+				<firstname>Vaclav</firstname>
+			</author>
+			<author>
+				<surname>Kolomaznik</surname>
+				<firstname>Jan</firstname>
+			</author>
+			<author>
+				<surname>Ulman</surname>
+				<firstname>Attila</firstname>
+			</author>
+		</authorgroup>
 	</bookinfo>
 	<preface>
 		<title>Preface</title>
