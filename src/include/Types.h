@@ -2,6 +2,16 @@
 #define TYPES_H
 
 /**
+ *  @addtogroup common Common tools
+ *  @{
+ *
+ *  @section Custom types
+ *
+ *  We have defines typedefs for all basic types. Signed even
+ *  unsigned. It is for easier porting and avoiding mismatchs.
+ */
+
+/*
  * typedef of basic data types for simplier porting
  */
 // signed
@@ -175,3 +185,5 @@ GetNTIDFromSizeAndSign( uint16 size, bool sign );
 
 
 #endif/*TYPES_H*/
+
+/** @} */

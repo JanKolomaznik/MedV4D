@@ -2,6 +2,14 @@
 #define COMMON_H
 
 /**
+ *  @addtogroup common Common tools
+ *  @{
+ *  
+ *  Commons contains commonly used code as well as includes of others
+ *  commonly used code. In code then only Commons.h is included.
+ */
+
+/**
  * our defines saying what OS we are building for
  * they are connected to well known symbols
  */
@@ -54,10 +62,11 @@ struct IsSameDimension< Dim, Dim >
 	operator=( const ClassName& ); 
 
 
-
 //TODO test and move to better place
 #define MAKESTRING( S ) #S
 
 using namespace M4D::ErrorHandling;
 
 #endif
+
+/** @} */

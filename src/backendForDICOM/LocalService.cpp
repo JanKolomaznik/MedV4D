@@ -36,7 +36,7 @@ LocalService::Find(
   Reset();
 
   // save search dir
-  m_lastSearchDir = path;
+  //m_lastSearchDir = path;
 
   fs::path full_path = fs::system_complete( fs::path( path) );
   // recursively (through queue) go through all files in subtree
@@ -68,26 +68,42 @@ LocalService::Find(
 
 ///////////////////////////////////////////////////////////////////////
 
+LocalService::Series &
+LocalService::GetSeries( const std::string &patientID,
+			const std::string &studyID)
+{
+  // just take informatoin from tree
+  Patients::iterator pat = m_patients.find( patientID);
+  if( pat == m_patients.end() )
+    throw ExceptionBase("Patient not found!");
+  else
+  {
+    Studies &studies = pat->second.studies;
+    Studies::iterator stud = studies.find( studyID);
+    if( stud == studies.end() )
+      throw ExceptionBase("Study not found!");
+    else
+      return stud->second.series;
+  }
+}
+
+///////////////////////////////////////////////////////////////////////
+
 void
 LocalService::FindStudyInfo( 
       DcmProvider::SerieInfoVector &result,
       const std::string &patientID,
 			const std::string &studyID)
 {
-  Entry e;
-  e.patID = patientID;
-  e.studyID = studyID;
-
-  SetOfEntries::iterator found = m_setOfEntries.find( e);
-  if( found == m_setOfEntries.end())
+  // just take informatoin from tree
+  Series series = GetSeries( patientID, studyID);
+  DcmProvider::SerieInfo s;
+  for( Series::iterator serie=series.begin(); 
+    serie != series.end(); serie++)
   {
-  }
-  else
-  {
-    // copy content of found set into result
-    SeriesInStudy *info = &found->second;
-    for( SeriesInStudy::iterator i=info->begin(); i != info->end(); i++)
-      result.push_back( *i);
+    s.id = serie->second.id;
+    s.description = serie->second.desc;
+    result.push_back( s);
   }
 }
 
@@ -100,8 +116,18 @@ LocalService::GetImageSet(
 			const std::string &serieID,
 			Dicom::DcmProvider::DicomObjSet &result)
 {
-  fs::path full_path = fs::system_complete( fs::path( m_lastSearchDir) );
+  // retrieve from tree, where the serie of image is
+  Series &series = GetSeries( patientID, studyID);
+  Series::iterator serie = series.find( serieID);
 
+  // just for sure
+  if( serie == series.end() )
+    throw ExceptionBase("Not a serie found!");
+
+  fs::path full_path = fs::system_complete( fs::path( 
+    serie->second.path) );
+
+  // and start to search from there
   try {
     SolveDirGET( full_path, patientID, studyID, serieID, result);
 
@@ -152,7 +178,7 @@ LocalService::SolveDir( boost::filesystem::path & dirName,
 
 void
 LocalService::SolveFile( 
-  const std::string & fileName, const std::string &/* dirName */,
+  const std::string & fileName, const std::string & path,
   Dicom::DcmProvider::ResultSet &result)
 {
   OFString ofStr;
@@ -167,56 +193,198 @@ LocalService::SolveFile(
 
   DcmDataset *dataSet = dfile.getDataset();
 
-  string setID;
-  Entry entry;
-  // get info about this file
+  DcmProvider::TableRow row;
+  DcmProvider::SerieInfo serInfo;
+
+  // load data and check if it is already in tree
+  CheckDataSet( dataSet, serInfo, row, path);
+
+  // look if this row is already in resultSet
+  FoundStudiesSet::iterator found = m_alreadyFoundInRun.find(row.studyID);
+  // if not, add it
+  if( found == m_alreadyFoundInRun.end() )
   {
-    dataSet->findAndGetOFString( DCM_PatientID, ofStr);
-    entry.patID.append( ofStr.c_str() );
-
-    dataSet->findAndGetOFString( DCM_StudyInstanceUID, ofStr);
-    entry.studyID.append( ofStr.c_str() );
-
-    dataSet->findAndGetOFString( DCM_SeriesInstanceUID, ofStr);
-    setID.append( ofStr.c_str() );
-  }
-
-  // look if it is already in result set
-  SetOfEntries::iterator found = m_setOfEntries.find( entry);
-  if( found == m_setOfEntries.end() )
-  {
-    // if not, put new line into result set
-    Dicom::DcmProvider::TableRow row;
-    GetTableRowFromDataSet( dataSet, &row);
+    m_alreadyFoundInRun.insert( FoundStudiesSet::value_type( row.studyID) );
     result.push_back( row);
-
-    SeriesInStudy::value_type item;
-    GetSeriesInfo( dataSet, &item);
-
-    // put entry into set
-    SeriesInStudy buddy;
-    buddy.insert( SeriesInStudy::value_type( item) );
-
-    m_setOfEntries.insert( SetOfEntries::value_type( entry, buddy) );
-  }
-  else
-  {
-    SeriesInStudy::value_type item;
-    GetSeriesInfo( dataSet, &item);
-
-    // check if setID is already in found record
-    SeriesInStudy *foundRecSetIDs = &found->second;
-    SeriesInStudy::iterator stud = foundRecSetIDs->find( item);
-    
-    if( stud == foundRecSetIDs->end() )
-    {
-      // if not, insert it
-      foundRecSetIDs->insert( SeriesInStudy::value_type( item) );
-    }
   }
 }
 
 ///////////////////////////////////////////////////////////////////////
+
+void
+LocalService::CheckDataSet(
+    DcmDataset *dataSet,
+    DcmProvider::SerieInfo &sInfo,
+    DcmProvider::TableRow &row,
+    std::string path)
+{
+  // load data from dataSet
+  GetTableRowFromDataSet( dataSet, &row);
+  GetSeriesInfo( dataSet, &sInfo);
+
+  // now check what is in database
+  Patients::iterator patIt = m_patients.find( row.patientID);
+  if( patIt == m_patients.end() )
+  {
+    // insert new patient
+    // insert new study
+    Serie serie(sInfo.id, sInfo.description, path);
+    Series s;
+    s.insert( Series::value_type( serie.id, serie) );
+    Study stud(row.studyID, row.date, s);
+    Studies buddStudies;
+    buddStudies.insert( Studies::value_type( stud.id, stud));
+
+    Patient buddPat( row.patientID, row.name, row.birthDate, row.sex, buddStudies);
+    m_patients.insert( Patients::value_type( row.patientID, buddPat) );
+  }
+  else
+  {
+    // perform lookup level down
+    Studies &studies = patIt->second.studies;
+    Studies::iterator studItr = studies.find( row.studyID);
+    if( studItr == studies.end() )
+    {
+      // insert new study
+      Serie serie(sInfo.id, sInfo.description, path);
+      Series s;
+      s.insert( Series::value_type( serie.id, serie) );
+      Study stud(row.studyID, row.date, s);
+      patIt->second.studies.insert( Studies::value_type(
+        stud.id, stud) );
+    }
+    else
+    {
+      // perform lookup level down
+      Series &series = studItr->second.series;
+      Series::iterator serItr = series.find( sInfo.id);
+      if( serItr == series.end() )
+      {
+        // insert new serie
+        Serie buddy(sInfo.id, sInfo.description, path);
+        series.insert( Series::value_type( sInfo.id, buddy) );
+      }
+      // else do nothing
+    }
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+// flushing strings
+static std::ofstream &operator<< ( std::ofstream &s, std::string &val)
+{
+  s << (uint32) val.size() << " ";
+  for( uint32 i=0; i< val.size(); i++)
+  {
+    s.put(val[i]);
+  }
+  s << " ";
+  return s;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+LocalService::Flush( std::ofstream &stream)
+{
+  // write size of patients
+  stream << (uint32) m_patients.size() << " ";
+
+  // go through the tree and flush it
+  for( Patients::iterator patIt = m_patients.begin(); 
+    patIt != m_patients.end(); patIt++)
+  {
+    stream  << patIt->second.id 
+      << patIt->second.name
+      << patIt->second.bornDate
+      << (uint8) patIt->second.sex << " ";
+
+    // write size of studies
+    stream << (uint32) patIt->second.studies.size() << " ";
+
+    for( Studies::iterator studItr = patIt->second.studies.begin();
+      studItr != patIt->second.studies.end(); studItr++)
+    {
+      stream << studItr->second.id
+        << studItr->second.date;
+
+      // write size of series
+      stream << (uint32) studItr->second.series.size() << " ";
+
+      for( Series::iterator serItr = studItr->second.series.begin();
+        serItr != studItr->second.series.end(); serItr++)
+      {
+        stream << serItr->second.id << serItr->second.desc
+          << serItr->second.path;
+      }
+    }
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+// loading strings
+static std::ifstream &operator>> ( std::ifstream &s, std::string &val)
+{
+  uint32 size;
+  int8 tmp;
+
+  s >> size;
+  tmp = (uint8) s.get();  // skip space
+
+  for( uint32 i=0; i<size; i++)
+  {
+    tmp = (uint8) s.get();
+    val.append( (const char *) &tmp, 1);
+  }
+  return s;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+LocalService::Load( std::ifstream &stream)
+{
+  uint32 patCount;
+  uint32 studyCount;
+  uint32 seriesCount;
+
+  stream >> patCount;
+
+  if(stream.eof() )
+    return;
+
+  // load patients
+  for( uint32 pats=0; pats < patCount; pats++)
+  {
+    Patient pat;
+    stream >> pat.id >> pat.name >> pat.bornDate >> (uint8) pat.sex;
+
+    stream >> studyCount;
+    for( uint32 studs=0; studs < studyCount; studs++)
+    {
+      Study study;
+
+      stream >> study.id >> study.date;
+
+      // load series
+      stream >> seriesCount;
+      for( uint32 sers=0; sers < seriesCount; sers++)
+      {
+        Serie ser;
+        stream >> ser.id >> ser.desc >> ser.path;
+        study.series.insert( Series::value_type(ser.id, ser) );
+      }
+
+      pat.studies.insert( Studies::value_type( study.id, study) );
+    }
+
+    m_patients.insert( Patients::value_type( pat.id, pat) );
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 void
 LocalService::SolveDirGET( boost::filesystem::path & dirName,
@@ -243,7 +411,8 @@ LocalService::SolveDirGET( boost::filesystem::path & dirName,
     }
     else
     {
-      SolveFileGET( dir_itr->string(), patientID, studyID, serieID, result );
+      SolveFileGET( dir_itr->string(), 
+        patientID, studyID, serieID, result, dirName.string() );
     }
   }
 }
@@ -255,7 +424,8 @@ LocalService::SolveFileGET( const std::string & fileName,
   const std::string &patientID,
 	const std::string &studyID,
 	const std::string &serieID,
-  DcmProvider::DicomObjSet &result)
+  DcmProvider::DicomObjSet &result,
+  const std::string &path)
 {
   OFString ofStr;
 
@@ -269,24 +439,16 @@ LocalService::SolveFileGET( const std::string & fileName,
 
   DcmDataset *dataSet = dfile.getDataset();
 
-  Entry entry;
-  string setID;
-  // get info about this file
-  {
-    dataSet->findAndGetOFString( DCM_PatientID, ofStr);
-    entry.patID.append( ofStr.c_str() );
+  DcmProvider::TableRow row;
+  DcmProvider::SerieInfo serInfo;
 
-    dataSet->findAndGetOFString( DCM_StudyInstanceUID, ofStr);
-    entry.studyID.append( ofStr.c_str() );
-
-    dataSet->findAndGetOFString( DCM_SeriesInstanceUID, ofStr);
-    setID.append( ofStr.c_str() );
-  }
+  // load data and check if it is already in tree
+  CheckDataSet( dataSet, serInfo, row, path);
 
   // compare with wantend ones
-  if( entry.patID == patientID
-    && entry.studyID == studyID
-    && setID == serieID)
+  if( row.patientID == patientID
+    && row.studyID == studyID
+    && serInfo.id == serieID)
   {
     // if it mathes, insert new image into result
     DicomObj buddy;
@@ -304,7 +466,7 @@ LocalService::SolveFileGET( const std::string & fileName,
 void
 LocalService::Reset(void)
 {
-  m_setOfEntries.clear();
+  m_alreadyFoundInRun.clear();
 }
 
 ///////////////////////////////////////////////////////////////////////

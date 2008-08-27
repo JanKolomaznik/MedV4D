@@ -23,29 +23,107 @@ class LocalService
 {
 	friend class M4D::Dicom::DcmProvider;
 
-  /**
-   *  Key entry of map build while search run. When additional information (serie info) is needed, just find in map is performed and found value is returned
-   */
-  struct Entry
+  struct Serie
   {
-    std::string patID;
-    std::string studyID;
-    //std::string setID;
+    std::string id;
+    std::string desc;
+    std::string path;
 
-    inline bool operator< (const Entry &b) const
+    Serie() {}
+
+    Serie( std::string id_, std::string desc_, std::string path_)
+      : id(id_)
+      , path( path_)
+      , desc( desc_)
     {
-      return (patID + studyID).compare( b.patID + b.studyID) < 0;
+    }
+
+    Serie( const Serie &other)
+      : id(other.id)
+      , path( other.path)
+      , desc( other.desc)
+    {
+    }
+
+    inline bool operator< (const Serie &b) const
+    {
+      return id.compare( b.id) < 0;
     }
   };
+  typedef std::map<std::string, Serie> Series;
+
+  struct Study
+  {
+    std::string id;
+    std::string date;
+    Series series;
+
+    Study() {}
+
+    Study( std::string id_, std::string date_, Series series_)
+      : id(id_)
+      , date( date_)
+      , series( series_)
+    {
+    }
+
+    Study( const Study &other)
+      : id(other.id)
+      , date( other.date)
+      , series( other.series)
+    {
+    }
+
+    inline bool operator< (const Study &b) const
+    {
+      return id.compare( b.id) < 0;
+    }
+  };
+  typedef std::map<std::string, Study> Studies;
+
+  struct Patient
+  {
+    std::string id;
+    std::string name;
+    std::string bornDate;
+    uint8 sex;
+    Studies studies;
+
+    Patient() {}
+
+    Patient( std::string id_, std::string name_
+      , std::string bornDate_, bool sex_, Studies studies_)
+      : id(id_)
+      , name( name_)
+      , bornDate( bornDate_)
+      , sex( sex_)
+      , studies( studies_)
+    {
+    }
+
+    Patient( const Patient &other)
+      : id(other.id)
+      , name( other.name)
+      , bornDate( other.bornDate)
+      , sex( other.sex)
+      , studies( other.studies)
+    {
+    }
+
+    inline bool operator< (const Patient &b) const
+    {
+      return id.compare( b.id) < 0;
+    }
+  };
+  typedef std::map<std::string, Patient> Patients;
+
+  Patients m_patients;
+
+  typedef std::set<std::string> FoundStudiesSet;
+
+  FoundStudiesSet m_alreadyFoundInRun;
 
   void Reset(void);
-
-  // informations structure containers definitions
-  typedef std::set<DcmProvider::SerieInfo> SeriesInStudy;
-  typedef std::map<Entry, SeriesInStudy> SetOfEntries;
-
-  // actual structure instance
-  SetOfEntries m_setOfEntries;
 
   // queue of remainig subfolders
   std::queue<boost::filesystem::path> m_mainQueue;
@@ -78,7 +156,7 @@ class LocalService
     DcmProvider::ResultSet &result);
   // ...
   void SolveFile( const std::string & fileName,
-    const std::string & dirName,
+    const std::string & path,
     DcmProvider::ResultSet &result);
   // ...
   void SolveDirGET( boost::filesystem::path & dirName,
@@ -91,8 +169,20 @@ class LocalService
     const std::string &patientID,
 		const std::string &studyID,
 		const std::string &serieID,
-    DcmProvider::DicomObjSet &result);
+    DcmProvider::DicomObjSet &result,
+    const std::string &path);
 	
+  void CheckDataSet( 
+    DcmDataset *dataSet,
+    DcmProvider::SerieInfo &sInfo,
+    DcmProvider::TableRow &row,
+    std::string path);
+
+  Series &GetSeries( const std::string &patientID,
+			const std::string &studyID);
+
+  void Flush( std::ofstream &stream);
+  void Load( std::ifstream &stream);
 };
 
 } // namespace

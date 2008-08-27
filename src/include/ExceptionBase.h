@@ -5,6 +5,16 @@
 #include <ostream>
 #include <string>
 
+/**
+ *  @addtogroup common Common tools
+ *  @{
+ *
+ *  @section Exception handling
+ *
+ *  Defines base class that is used for exception handling. All other
+ *  exceptions within the project should inherit from her.
+ */
+
 namespace M4D
 {
 namespace ErrorHandling
@@ -74,3 +84,5 @@ std::ostream& operator<<( std::ostream &out, ExceptionBase &exception );
 } /*namespace M4D*/
 
 #endif /*_EXCEPTION_BASE_H*/
+
+/** @} */

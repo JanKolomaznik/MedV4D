@@ -33,6 +33,15 @@ DcmProvider::DcmProvider( bool blocking)
 
 	m_moveService = new MoveService();
   ((MoveService *)m_moveService)->SetMode( blocking);
+
+  m_localService = new LocalService();
+
+  // load the tree into local service
+  std::ifstream file("tree.dat");
+  if( ! file.good() )
+    throw ExceptionBase("No tree.dat file");
+
+  ((LocalService*)m_localService)->Load( file);
 }
 
 DcmProvider::DcmProvider()
@@ -40,12 +49,27 @@ DcmProvider::DcmProvider()
 	m_findService = new FindService();
 	m_moveService = new MoveService();
   m_localService = new LocalService();
+
+  // load the tree into local service
+  std::ifstream file("tree.dat");
+  if( ! file.good() )
+    throw ExceptionBase("No tree.dat file");
+
+  ((LocalService*)m_localService)->Load( file);
 }
 
 DcmProvider::~DcmProvider()
 {
 	delete ( (FindService *) m_findService);
 	delete ( (MoveService *) m_moveService);
+
+  // save the tree from local service
+  std::ofstream file("tree.dat");
+  if( ! file.good() )
+    throw ExceptionBase("No tree.dat file");
+
+  ((LocalService*)m_localService)->Flush( file);
+
   delete ( (LocalService *) m_localService);
 }
 

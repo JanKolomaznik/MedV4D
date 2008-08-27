@@ -4,6 +4,11 @@
 #include "Common.h"
 #include "Thread.h"
 
+/**
+ *  @addtogroup common Common tools
+ *  @{
+ */
+
 namespace M4D
 {
 namespace Common
@@ -62,3 +67,5 @@ extern const TimeStamp	DefaultTimeStamp;
 }/*namespace M4D*/
 
 #endif /*_TIME_STAMP_H*/
+
+/** @} */

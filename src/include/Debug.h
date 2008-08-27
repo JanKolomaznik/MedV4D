@@ -2,6 +2,15 @@
 #define __DEBUG_H_
 
 /**
+ *  @addtogroup common Common tools
+ *  @{
+ *  @ section DEBUG support
+ *
+ *  Defines some debuging tools that are (and should be) used all over
+ *  the project.
+ */
+
+/**
  * These symbols should be set at compilation time to turn on debugging prints.
  * DEBUG_LEVEL int
  * DEBUG_ADITIONAL_INFO
@@ -128,3 +137,5 @@ private:
 
 
 #endif /*__DEBUG_H_*/
+
+/** @} */

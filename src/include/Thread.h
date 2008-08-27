@@ -9,7 +9,10 @@
 #undef GetMessage
 #undef SendMessage
 
-
+/**
+ *  @addtogroup common Common tools
+ *  @{
+ */
 
 namespace M4D
 {
@@ -38,3 +41,4 @@ sleep( int duration );
 
 #endif /*_THREAD_H*/
 
+/** @} */

@@ -4,6 +4,14 @@
 #include <ostream>
 #include <iomanip>
 
+/**
+ *  @addtogroup common Common tools
+ *  @{
+ *
+ *  @section Loggin
+ *
+ *  There are defines of function and streams for logging support.
+ */
 
 extern std::ostream *logStream;
 
@@ -52,3 +60,5 @@ public:
 	LOUT << ARGs << std::endl;
 
 #endif /*__LOG_H_*/
+
+/** @} */

@@ -12,6 +12,10 @@
 /**
  *  \file DicomObj.cpp
  *  \author Vaclav Klecanda
+ 
+/**
+ *  @addtogroup dicom
+ *  @{
  */
 
 using namespace M4D::Dicom;
