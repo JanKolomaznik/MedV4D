@@ -19,6 +19,7 @@
 	<title>Dependencies</title>
 		
 		<para>This library should be linked together with libCommon. So all its dependencies come with it.</para>
+		<para>Another dependency, which in future will be optional (compiler parameter) is Dicom Toolkit (DCMTK).</para>
 	</section>
 
 </section>
@@ -97,6 +98,10 @@
 		<para>
 		By optional synchronization is meant set of synchronization methods, which are not called by access methods in class. And user should
 		use these methods only in situations requiring synchronization. This less comfortable though, but more effective.
+		</para>
+
+		<para>
+			Image datasets should be created by static class <classname>ImageFactory</classname>.
 		</para>
 
 	</section>
