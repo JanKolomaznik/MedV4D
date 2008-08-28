@@ -7,156 +7,256 @@
 
 <section>
 <title>Toolkits</title>
-	<section>
-	<title>Qt</title>
-	
-	<para>
-	The MedV4D project uses the Qt library to create and manipulate GUI elements. Qt is a very powerful, object oriented,
-	cross platform GUI library. Since it has an X Window System implementation as well as a Windows implementation,
-	it allows the software to run under Windows and Unices as well. It works together very well with many other useful toolkits,
-	one of which is the VTK (Visualization Toolkit) toolkit, which is also used as an optional component of the software.
-	</para>
-	<para>
-	Qt uses QObject as a base of all its objects, and a special macro - Q_OBJECT - to inform Qt's preprocessor that the object
-	contains Qt signals and slots. Signals are special functions without body that can be connected with slots, which causes
-	the connected slot(s) to be called when the signal is emitted.
-	</para>
-	<para>
-	Further, Qt uses QWidget as a base of all its GUI component objects. There are container widgets, which can be used to
-	contain more widgets. This allows the programmer to create more complicated GUI interfaces.
-	</para>
-	</section>
+  <section>
+  <title>Qt</title>
 
-	<section>
-	<title>VTK</title>
-	
-	<para>
-	VTK is a very complicated and large toolkit for visualizing a large number of data types. Its robustness and size is the
-	reason that the project uses it only as an optional component for visualizing volume data in a 3D scene.
-	</para>
-	<para>
-	A special Qt widget, called QVTKWidget, is used to incorporate VTK into the Qt GUI interface.
-	</para>
+  <para>
+  The MedV4D project uses the Qt library to create and manipulate GUI elements. Qt is a very powerful, object oriented,
+  cross platform GUI library. Since it has an X Window System implementation as well as a Windows implementation,
+  it allows the software to run under Windows and Unices as well. It works together very well with many other useful toolkits,
+  one of which is the VTK (Visualization Toolkit) toolkit, which is also used as an optional component of the software.
+  </para>
+  <para>
+  Qt uses QObject as a base of all its objects, and a special macro - Q_OBJECT - to inform Qt's preprocessor that the object
+  contains Qt signals and slots. Signals are special functions without body that can be connected with slots, which causes
+  the connected slot(s) to be called when the signal is emitted.
+  </para>
+  <para>
+  Further, Qt uses QWidget as a base of all its GUI component objects. There are container widgets, which can be used to
+  contain more widgets. This allows the programmer to create more complicated GUI interfaces.
+  </para>
+  </section>
 
-	</section>
+  <section>
+  <title>VTK</title>
+
+  <para>
+  VTK is a very complicated and large toolkit for visualizing a large number of data types. Its robustness and size is the
+  reason that the project uses it only as an optional component for visualizing volume data in a 3D scene.
+  </para>
+  <para>
+  A special Qt widget, called QVTKWidget, is used to incorporate VTK into the Qt GUI interface.
+  </para>
+
+  </section>
 </section>
 
 <section>
 <title>Architecture</title>
 
 <para>
-Public and private declarations are in namespaces <code>M4D::GUI</code>, <code>M4D::Viewer</code> and <code>M4D::Selection</code>. 
+Public and private declarations are in namespaces <code>M4D::GUI</code>, <code>M4D::Viewer</code> and <code>M4D::Selection</code>.
 </para>
-	
-	<section>
-	<title>M4D::GUI</title>
-	
-	<para>
-	// TODO
-	</para>
 
-	</section>
-	
-	<section>
-	<title>M4D::Viewer</title>
-		
-	<para>
-	In this namespace, there are classes that visualize the data passed by the image processing pipeline. These classes have many signals
-	and slots to connect to the other GUI components in M4D::GUI namespace.
-	</para>
-		
-		<section>
-		<title>m4dGUIAbstractViewerWidget</title>
+  <section>
+  <title>M4D::GUI</title>
 
-		<para>
-		This class is the base of all the viewer widget classes. It is an interface to declare the necessary methods, slots and signals
-		to manage the viewer subclasses, which makes it possible to add a viewer widget to another GUI component through this interface,
-		no matter what type of viewer it is.
-		</para>
-		<para>
-		There is an operator () for downcasting every viewer widget to the appropriate QWidget so that it could be added to a GUI component.
-		There is also a function that tells which slots are implemented in the given type of viewer ( different viewers have different
-		functionalities ). Other GUI components use this to know which slots should be connected.
-		Mouse buttons can be set and different modes can be set to personalize the viewer's behavior.
-		</para>
+  <para>
+  In this namespace, there are classes representing GUI components (except viewers). Most of the widgets can be used independently,
+  not just how they are used in the base application. Extensibilty is also a big advantege of the design of GUI. New widgets
+  can be added easily, especially viewers - for this reason, this framework is perfect for testing new types of viewers too.
+  </para>
 
-		</section>
+    <section>
+    <title>Creating a new application</title>
 
-		<section>
-		<title>m4dGUISliceViewerWidget</title>
+      <para>
+      Author of the new application has almost nothing to do. For a simple application is enougth to derive a class from
+      <classname>m4dGUIMainWindow</classname> and you get every widget you should need, ready to use.
+      </para>
 
-		<para>
-		This class is used for visualizing the image data slice by slice. Each slice is a 2D image, which can be set to be selected and
-		drawn according to the xy, yz or zx axis. Images are diplayed using OpenGL textures. Image data comes through the image pipeline,
-		which needs the libImaging library to be linked.
-		</para>
+      <para>
+      The main program should be as following (where <classname>mainWindow</classname> is the derived class):
+      </para>
 
-		<para>
-		There are two helper classes to handle generics in Imaging library (since Qt does not allow using templates).
-		</para>
+      <programlisting><![CDATA[
+#include <QApplication>
 
-		<orderedlist>
-		    
-			<listitem><para>
-			VoxelArrayCopier simply arranges the voxels in the source array so that it could be displayed according to the slice orientation
-			with the help of using strides (see Imaging library).
-			</para></listitem>
-		    
-			<listitem><para>
-			TexturePreparer prepares the texture to be mapped and displayed. It also fills up images that are not powers of 2, so that older
-			graphics cards can map and display the texture as well.
-			</para></listitem>
-		</orderedlist>
+#include "mainWindow.h"
 
-		<para>
-		The viewer can display one slice or more slices at a time, it can display text information and handle mouse event according to mouse
-		event handling settings, which can be set by a special method called setButtonHandler.
-		</para>
+#include "Common.h"
+#include <fstream>
 
-		</section>
 
-		<section>
-		<title>m4dGUIVtkViewerWidget</title>
+int main ( int argc, char *argv[] )
+{
+  std::ofstream logFile( "Log.txt" );
+  SET_LOUT( logFile );
 
-		<para>
-		This class basically uses VTK to visualize the dataset in 3D. Datasets are converted to volume object, and mapped into a vtk scene.
-		This is done by the libVTKIntegration library and VTK itself. For further information see the VTK manual or the libVTKIntegration
-		section.
-		</para>
+  D_COMMAND( std::ofstream debugFile( "Debug.txt" ); );
+  SET_DOUT( debugFile );
 
-		</section>
-	</section>
+  QApplication app( argc, argv );
+  app.setQuitOnLastWindowClosed( true );
 
-	<section>
-	<title>M4D::Selection</title>
+  mainWindow mainWindow;
+  if ( mainWindow.wasBuildSuccessful() )
+  {
+    mainWindow.show();
+    return app.exec();
+  }
+  else
+  {
+    QMessageBox::critical( &mainWindow, QObject::tr( "Exception" ), mainWindow.getBuildMessage() + QString( "\n\n" ) +
+                           QObject::tr( "The application will now terminate..." ) );
+    return 1;
+  }
+}
+]]>
+    </programlisting>
 
-	<para>
-	This namespace contains two classes, one for selecting points, and another one for selecting shapes. Shapes are nothing more than a collection
-	of points.
-	</para>
+    <para>
+    For sure, you will need to add some special funcionality to the GUI of the application - some widgets controlling the
+    pipeline/filters (with resources such icons); reimplemented functionality at processing the resuls of search; connections, where can be connected
+    viewers in the pipeline.
+    </para>
 
-		<section>
-		<title>m4dPoint</title>
+    <para>
+    The following code segment shows widget and pipeline connection adding
+    (taken from the <classname>mainWindow</classname> constructor - the derived class)
+    </para>
 
-		<para>
-		This is a template class for points. It can set/get point values and dimensions, and it can measure point distances and also midpoints
-		between two points.
-		</para>
+    <programlisting><![CDATA[
+createMyPipeline();
 
-		</section>
+// tell mainWindow about possible connections - can be during the creation of pipeline (connections)
 
-		<section>
-		<title>m4dShape</title>
+addSource( conn, "Bone segmentation", "Stage #1" );
+addSource( conn, "Bone segmentation", "Result" );
 
-		<para>
-		This is a template class for shapes. It contains a list of its points ( a list of m4dPoints ). Besides adding and erasing points, this
-		class can also calculate the centroid and the area size of a shape provided that the whole shape lies on the plane of the slice. For 
-		correct calculation and display, the slice's orientation has to be set.
-		</para>
+// add your own settings widgets
 
-		</section>
-	</section>
-	
+addDockWindow( "Bone Segmentation", myPipelineWidget );
+]]>
+    </programlisting>
+
+    <para>
+    To change the functionality at processing the resuls of search just reimplement the <classname>m4dGUIMainWindow</classname>'s
+    process method (in the derived class <classname>mainWindow</classname>). The default behavior is: it creates
+    image from the Dicom Object Set and sets it as input of the currently selected viewer. It looks like:
+    </para>
+
+    <programlisting><![CDATA[
+AbstractImage::AImagePtr inputImage = ImageFactory::CreateImageFromDICOM( dicomObjSet );
+
+try {
+  AbstractImageConnection *conn = new AbstractImageConnection();
+  conn->PutImage( inputImage );
+
+  mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
+  conn->ConnectConsumer( mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
+}
+catch ( ... ) {
+   QMessageBox::critical( this, tr( "Exception" ), tr( "Some exception" ) );
+}
+]]>
+    </programlisting>
+
+
+    </section>
+
+  </section>
+
+  <section>
+  <title>M4D::Viewer</title>
+
+  <para>
+  In this namespace, there are classes that visualize the data passed by the image processing pipeline. These classes have many signals
+  and slots to connect to the other GUI components in M4D::GUI namespace.
+  </para>
+
+    <section>
+    <title>m4dGUIAbstractViewerWidget</title>
+
+    <para>
+    This class is the base of all the viewer widget classes. It is an interface to declare the necessary methods, slots and signals
+    to manage the viewer subclasses, which makes it possible to add a viewer widget to another GUI component through this interface,
+    no matter what type of viewer it is.
+    </para>
+    <para>
+    There is an operator () for downcasting every viewer widget to the appropriate QWidget so that it could be added to a GUI component.
+    There is also a function that tells which slots are implemented in the given type of viewer ( different viewers have different
+    functionalities ). Other GUI components use this to know which slots should be connected.
+    Mouse buttons can be set and different modes can be set to personalize the viewer's behavior.
+    </para>
+
+    </section>
+
+    <section>
+    <title>m4dGUISliceViewerWidget</title>
+
+    <para>
+    This class is used for visualizing the image data slice by slice. Each slice is a 2D image, which can be set to be selected and
+    drawn according to the xy, yz or zx axis. Images are diplayed using OpenGL textures. Image data comes through the image pipeline,
+    which needs the libImaging library to be linked.
+    </para>
+
+    <para>
+    There are two helper classes to handle generics in Imaging library (since Qt does not allow using templates).
+    </para>
+
+    <orderedlist>
+
+      <listitem><para>
+      VoxelArrayCopier simply arranges the voxels in the source array so that it could be displayed according to the slice orientation
+      with the help of using strides (see Imaging library).
+      </para></listitem>
+
+      <listitem><para>
+      TexturePreparer prepares the texture to be mapped and displayed. It also fills up images that are not powers of 2, so that older
+      graphics cards can map and display the texture as well.
+      </para></listitem>
+    </orderedlist>
+
+    <para>
+    The viewer can display one slice or more slices at a time, it can display text information and handle mouse event according to mouse
+    event handling settings, which can be set by a special method called setButtonHandler.
+    </para>
+
+    </section>
+
+    <section>
+    <title>m4dGUIVtkViewerWidget</title>
+
+    <para>
+    This class basically uses VTK to visualize the dataset in 3D. Datasets are converted to volume object, and mapped into a vtk scene.
+    This is done by the libVTKIntegration library and VTK itself. For further information see the VTK manual or the libVTKIntegration
+    section.
+    </para>
+
+    </section>
+  </section>
+
+  <section>
+  <title>M4D::Selection</title>
+
+  <para>
+  This namespace contains two classes, one for selecting points, and another one for selecting shapes. Shapes are nothing more than a collection
+  of points.
+  </para>
+
+    <section>
+    <title>m4dPoint</title>
+
+    <para>
+    This is a template class for points. It can set/get point values and dimensions, and it can measure point distances and also midpoints
+    between two points.
+    </para>
+
+    </section>
+
+    <section>
+    <title>m4dShape</title>
+
+    <para>
+    This is a template class for shapes. It contains a list of its points ( a list of m4dPoints ). Besides adding and erasing points, this
+    class can also calculate the centroid and the area size of a shape provided that the whole shape lies on the plane of the slice. For
+    correct calculation and display, the slice's orientation has to be set.
+    </para>
+
+    </section>
+  </section>
+
 </section>
 
 </chapter>

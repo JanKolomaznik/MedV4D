@@ -192,7 +192,7 @@
             <para>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/userManual/shots/custom.eps" format="EPS" scale="75"/>
+                  <imagedata fileref="figures/userManual/shots/custom.eps" format="EPS" scale="65"/>
                 </imageobject>
                 <imageobject>
                   <imagedata fileref="figures/userManual/shots/custom.png" format="PNG"/>
@@ -206,7 +206,7 @@
               icon (
               <inlinemediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/userManual/icons/shown.eps"/>
+                  <imagedata fileref="figures/userManual/icons/shown.eps" scale="75"/>
                 </imageobject>
                 <imageobject>
                   <imagedata fileref="figures/userManual/icons/shown.png"/>
@@ -214,7 +214,7 @@
               </inlinemediaobject>/
               <inlinemediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/userManual/icons/hidden.eps"/>
+                  <imagedata fileref="figures/userManual/icons/hidden.eps" scale="75"/>
                 </imageobject>
                 <imageobject>
                   <imagedata fileref="figures/userManual/icons/hidden.png"/>
@@ -259,7 +259,7 @@
               <entry>
                 <inlinemediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/userManual/tools/search.eps" format="EPS"/>
+                    <imagedata fileref="figures/userManual/tools/search.eps" format="EPS" scale="75"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/search.png" format="PNG"/>
@@ -273,7 +273,7 @@
               <entry>
                 <inlinemediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/userManual/tools/open.eps" format="EPS"/>
+                    <imagedata fileref="figures/userManual/tools/open.eps" format="EPS" scale="75"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/open.png" format="PNG"/>
@@ -302,7 +302,7 @@
               <entry>
                 <inlinemediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/userManual/tools/layout.eps" format="EPS"/>
+                    <imagedata fileref="figures/userManual/tools/layout.eps" format="EPS" scale="75"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/layout.png" format="PNG"/>
@@ -316,7 +316,7 @@
               <entry>
                 <inlinemediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/userManual/tools/window-level.eps" format="EPS"/>
+                    <imagedata fileref="figures/userManual/tools/window-level.eps" format="EPS" scale="75"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/window-level.png" format="PNG"/>
@@ -330,7 +330,7 @@
               <entry>
                 <inlinemediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/userManual/tools/move.eps" format="EPS"/>
+                    <imagedata fileref="figures/userManual/tools/move.eps" format="EPS" scale="75"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/move.png" format="PNG"/>
@@ -344,7 +344,7 @@
               <entry>
                 <inlinemediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/userManual/tools/zoom.eps" format="EPS"/>
+                    <imagedata fileref="figures/userManual/tools/zoom.eps" format="EPS" scale="75"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/zoom.png" format="PNG"/>
@@ -358,7 +358,7 @@
               <entry>
                 <inlinemediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/userManual/tools/stack.eps" format="EPS"/>
+                    <imagedata fileref="figures/userManual/tools/stack.eps" format="EPS" scale="75"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/stack.png" format="PNG"/>
@@ -372,7 +372,7 @@
               <entry>
                 <inlinemediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/userManual/tools/info.eps" format="EPS"/>
+                    <imagedata fileref="figures/userManual/tools/info.eps" format="EPS" scale="75"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/info.png" format="PNG"/>
@@ -401,7 +401,7 @@
               <entry>
                 <inlinemediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/userManual/tools/probe.eps" format="EPS"/>
+                    <imagedata fileref="figures/userManual/tools/probe.eps" format="EPS" scale="75"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/probe.png" format="PNG"/>
@@ -415,7 +415,7 @@
               <entry>
                 <inlinemediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/userManual/tools/point.eps" format="EPS"/>
+                    <imagedata fileref="figures/userManual/tools/point.eps" format="EPS" scale="75"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/point.png" format="PNG"/>
@@ -429,7 +429,7 @@
               <entry>
                 <inlinemediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/userManual/tools/shape.eps" format="EPS"/>
+                    <imagedata fileref="figures/userManual/tools/shape.eps" format="EPS" scale="75"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/shape.png" format="PNG"/>
@@ -443,7 +443,7 @@
               <entry>
                 <inlinemediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/userManual/tools/clear-point.eps" format="EPS"/>
+                    <imagedata fileref="figures/userManual/tools/clear-point.eps" format="EPS" scale="75"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/clear-point.png" format="PNG"/>
@@ -457,7 +457,7 @@
               <entry>
                 <inlinemediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/userManual/tools/clear-shape.eps" format="EPS"/>
+                    <imagedata fileref="figures/userManual/tools/clear-shape.eps" format="EPS" scale="75"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/clear-shape.png" format="PNG"/>
@@ -471,7 +471,7 @@
               <entry>
                 <inlinemediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/userManual/tools/clear-all.eps" format="EPS"/>
+                    <imagedata fileref="figures/userManual/tools/clear-all.eps" format="EPS" scale="75"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/clear-all.png" format="PNG"/>
@@ -500,7 +500,7 @@
               <entry>
                 <inlinemediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/userManual/tools/flip-hor.eps" format="EPS"/>
+                    <imagedata fileref="figures/userManual/tools/flip-hor.eps" format="EPS" scale="75"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/flip-hor.png" format="PNG"/>
@@ -514,7 +514,7 @@
               <entry>
                 <inlinemediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/userManual/tools/flip-vert.eps" format="EPS"/>
+                    <imagedata fileref="figures/userManual/tools/flip-vert.eps" format="EPS" scale="75"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/flip-vert.png" format="PNG"/>
@@ -528,7 +528,7 @@
               <entry>
                 <inlinemediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/userManual/tools/slice-orient.eps" format="EPS"/>
+                    <imagedata fileref="figures/userManual/tools/slice-orient.eps" format="EPS" scale="75"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/slice-orient.png" format="PNG"/>
@@ -557,7 +557,7 @@
               <entry>
                 <inlinemediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/userManual/tools/rotate-volume.eps" format="EPS"/>
+                    <imagedata fileref="figures/userManual/tools/rotate-volume.eps" format="EPS" scale="75"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/rotate-volume.png" format="PNG"/>
@@ -608,7 +608,7 @@
           Click
           <inlinemediaobject>
             <imageobject>
-              <imagedata fileref="figures/userManual/icons/search.eps"/>
+              <imagedata fileref="figures/userManual/icons/search.eps" scale="75"/>
             </imageobject>
             <imageobject>
               <imagedata fileref="figures/userManual/icons/search.png"/>
@@ -689,7 +689,7 @@
             Click the
             <inlinemediaobject>
               <imageobject>
-                <imagedata fileref="figures/userManual/icons/remote.eps"/>
+                <imagedata fileref="figures/userManual/icons/remote.eps" scale="75"/>
               </imageobject>
               <imageobject>
                 <imagedata fileref="figures/userManual/icons/remote.png"/>
@@ -697,7 +697,7 @@
             </inlinemediaobject> or the
             <inlinemediaobject>
               <imageobject>
-                <imagedata fileref="figures/userManual/icons/dicomdir.eps"/>
+                <imagedata fileref="figures/userManual/icons/dicomdir.eps" scale="75"/>
               </imageobject>
               <imageobject>
                 <imagedata fileref="figures/userManual/icons/dicomdir.png"/>
@@ -967,7 +967,7 @@
                 Click
                 <inlinemediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/userManual/icons/layout.eps"/>
+                    <imagedata fileref="figures/userManual/icons/layout.eps" scale="75"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/icons/layout.png"/>
@@ -1031,7 +1031,7 @@
             While viewing the current study, search for the additional study by clicking
             <inlinemediaobject>
               <imageobject>
-                <imagedata fileref="figures/userManual/icons/search.eps"/>
+                <imagedata fileref="figures/userManual/icons/search.eps" scale="75"/>
               </imageobject>
               <imageobject>
                 <imagedata fileref="figures/userManual/icons/search.png"/>
@@ -1085,8 +1085,11 @@
         <orderedlist>
           <title>To adjust the brightness of an image:</title>
           <listitem>
+            <para>
+              Choose one of the following options:
+            </para>
+
             <itemizedlist>
-              <title>Choose one of the following options:</title>
               <listitem>
                 <para>
                   <menuchoice>
@@ -1103,7 +1106,7 @@
                   Click
                   <inlinemediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/userManual/icons/window-level.eps"/>
+                      <imagedata fileref="figures/userManual/icons/window-level.eps" scale="75"/>
                     </imageobject>
                     <imageobject>
                       <imagedata fileref="figures/userManual/icons/window-level.png"/>
@@ -1142,8 +1145,11 @@
         <orderedlist>
           <title>To adjust the contrast of an image:</title>
           <listitem>
+            <para>
+              Choose one of the following options:
+            </para>
+
             <itemizedlist>
-              <title>Choose one of the following options:</title>
               <listitem>
                 <para>
                   <menuchoice>
@@ -1160,7 +1166,7 @@
                   Click
                   <inlinemediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/userManual/icons/window-level.eps"/>
+                      <imagedata fileref="figures/userManual/icons/window-level.eps" scale="75"/>
                     </imageobject>
                     <imageobject>
                       <imagedata fileref="figures/userManual/icons/window-level.png"/>
@@ -1206,8 +1212,11 @@
         </para>
       </listitem>
       <listitem>
+        <para>
+          Choose one of the following options:
+        </para>
+
         <itemizedlist>
-          <title>Choose one of the following options:</title>
           <listitem>
             <para>
               <menuchoice>
@@ -1224,7 +1233,7 @@
               Click
               <inlinemediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/userManual/icons/flip-hor.eps"/>
+                  <imagedata fileref="figures/userManual/icons/flip-hor.eps" scale="75"/>
                 </imageobject>
                 <imageobject>
                   <imagedata fileref="figures/userManual/icons/flip-hor.png"/>
@@ -1244,8 +1253,11 @@
         </para>
       </listitem>
       <listitem>
+        <para>
+          Choose one of the following options:
+        </para>
+
         <itemizedlist>
-          <title>Choose one of the following options:</title>
           <listitem>
             <para>
               <menuchoice>
@@ -1262,7 +1274,7 @@
               Click
               <inlinemediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/userManual/icons/flip-vert.eps"/>
+                  <imagedata fileref="figures/userManual/icons/flip-vert.eps" scale="75"/>
                 </imageobject>
                 <imageobject>
                   <imagedata fileref="figures/userManual/icons/flip-vert.png"/>
@@ -1282,8 +1294,11 @@
         </para>
       </listitem>
       <listitem>
+        <para>
+          Choose one of the following options:
+        </para>
+
         <itemizedlist>
-          <title>Choose one of the following options:</title>
           <listitem>
             <para>
               <menuchoice>
@@ -1300,7 +1315,7 @@
               Click
               <inlinemediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/userManual/icons/slice-orient.eps"/>
+                  <imagedata fileref="figures/userManual/icons/slice-orient.eps" scale="75"/>
                 </imageobject>
                 <imageobject>
                   <imagedata fileref="figures/userManual/icons/slice-orient.png"/>
@@ -1325,8 +1340,11 @@
         </para>
       </listitem>
       <listitem>
+        <para>
+          Choose one of the following options:
+        </para>
+
         <itemizedlist>
-          <title>Choose one of the following options:</title>
           <listitem>
             <para>
               <menuchoice>
@@ -1343,7 +1361,7 @@
               Click
               <inlinemediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/userManual/icons/rotate-volume.eps"/>
+                  <imagedata fileref="figures/userManual/icons/rotate-volume.eps" scale="75"/>
                 </imageobject>
                 <imageobject>
                   <imagedata fileref="figures/userManual/icons/rotate-volume.png"/>
@@ -1387,8 +1405,11 @@
           </para>
         </listitem>
         <listitem>
+          <para>
+            Choose one of the following options:
+          </para>
+
           <itemizedlist>
-            <title>Choose one of the following options:</title>
             <listitem>
               <para>
                 <menuchoice>
@@ -1405,7 +1426,7 @@
                 Click
                 <inlinemediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/userManual/icons/move.eps"/>
+                    <imagedata fileref="figures/userManual/icons/move.eps" scale="75"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/icons/move.png"/>
@@ -1440,8 +1461,11 @@
           </para>
         </listitem>
         <listitem>
+          <para>
+            Choose one of the following options:
+          </para>
+
           <itemizedlist>
-            <title>Choose one of the following options:</title>
             <listitem>
               <para>
                 <menuchoice>
@@ -1458,7 +1482,7 @@
                 Click
                 <inlinemediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/userManual/icons/zoom.eps"/>
+                    <imagedata fileref="figures/userManual/icons/zoom.eps" scale="75"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/icons/zoom.png"/>
@@ -1508,8 +1532,11 @@
         </para>
       </listitem>
       <listitem>
+        <para>
+          Choose one of the following options:
+        </para>
+
         <itemizedlist>
-          <title>Choose one of the following options:</title>
           <listitem>
             <para>
               <menuchoice>
@@ -1526,7 +1553,7 @@
               Click
               <inlinemediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/userManual/icons/info.eps"/>
+                  <imagedata fileref="figures/userManual/icons/info.eps" scale="75"/>
                 </imageobject>
                 <imageobject>
                   <imagedata fileref="figures/userManual/icons/info.png"/>
@@ -1538,7 +1565,7 @@
               To redisplay the written information, select the series and click
               <inlinemediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/userManual/icons/info.eps"/>
+                  <imagedata fileref="figures/userManual/icons/info.eps" scale="75"/>
                 </imageobject>
                 <imageobject>
                   <imagedata fileref="figures/userManual/icons/info.png"/>
@@ -1566,7 +1593,7 @@
       </menuchoice> or click
       <inlinemediaobject>
         <imageobject>
-          <imagedata fileref="figures/userManual/icons/point.eps"/>
+          <imagedata fileref="figures/userManual/icons/point.eps" scale="75"/>
         </imageobject>
         <imageobject>
           <imagedata fileref="figures/userManual/icons/point.png"/>
@@ -1592,7 +1619,7 @@
       </menuchoice> or click
       <inlinemediaobject>
         <imageobject>
-          <imagedata fileref="figures/userManual/icons/shape.eps"/>
+          <imagedata fileref="figures/userManual/icons/shape.eps" scale="75"/>
         </imageobject>
         <imageobject>
           <imagedata fileref="figures/userManual/icons/shape.png"/>
@@ -1617,8 +1644,11 @@
     <orderedlist>
       <title>To probe the area of an image:</title>
       <listitem>
+        <para>
+          Choose one of the following options:
+        </para>
+
         <itemizedlist>
-          <title>Choose one of the following options:</title>
           <listitem>
             <para>
               <menuchoice>
@@ -1635,7 +1665,7 @@
               Click
               <inlinemediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/userManual/icons/probe.eps"/>
+                  <imagedata fileref="figures/userManual/icons/probe.eps" scale="75"/>
                 </imageobject>
                 <imageobject>
                   <imagedata fileref="figures/userManual/icons/probe.png"/>
@@ -1682,8 +1712,11 @@
         </para>
       </listitem>
       <listitem>
+        <para>
+          Choose one of the following options:
+        </para>
+
         <itemizedlist>
-          <title>Choose one of the following options:</title>
           <listitem>
             <para>
               <menuchoice>
@@ -1714,7 +1747,7 @@
               Click
               <inlinemediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/userManual/icons/clear-point.eps"/>
+                  <imagedata fileref="figures/userManual/icons/clear-point.eps" scale="75"/>
                 </imageobject>
                 <imageobject>
                   <imagedata fileref="figures/userManual/icons/clear-point.png"/>
@@ -1722,7 +1755,7 @@
               </inlinemediaobject> /
               <inlinemediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/userManual/icons/clear-shape.eps"/>
+                  <imagedata fileref="figures/userManual/icons/clear-shape.eps" scale="75"/>
                 </imageobject>
                 <imageobject>
                   <imagedata fileref="figures/userManual/icons/clear-shape.png"/>
@@ -1730,7 +1763,7 @@
               </inlinemediaobject> /
               <inlinemediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/userManual/icons/clear-all.eps"/>
+                  <imagedata fileref="figures/userManual/icons/clear-all.eps" scale="75"/>
                 </imageobject>
                 <imageobject>
                   <imagedata fileref="figures/userManual/icons/clear-all.png"/>
@@ -1764,8 +1797,11 @@
       </para>
     </listitem>
     <listitem>
+      <para>
+        Choose one of the following options:
+      </para>
+
       <itemizedlist>
-        <title>Choose one of the following options:</title>
         <listitem>
           <para>
             <menuchoice>
@@ -1782,7 +1818,7 @@
             Click
             <inlinemediaobject>
               <imageobject>
-                <imagedata fileref="figures/userManual/icons/swap.eps"/>
+                <imagedata fileref="figures/userManual/icons/swap.eps" scale="75"/>
               </imageobject>
               <imageobject>
                 <imagedata fileref="figures/userManual/icons/swap.png"/>
@@ -1807,7 +1843,7 @@
         To switch back to slice viewer, select the series and click
         <inlinemediaobject>
           <imageobject>
-            <imagedata fileref="figures/userManual/icons/swap.eps"/>
+            <imagedata fileref="figures/userManual/icons/swap.eps" scale="75"/>
           </imageobject>
           <imageobject>
             <imagedata fileref="figures/userManual/icons/swap.png"/>
