@@ -225,10 +225,10 @@ and communicate ONLY with our supercalculating server that is budled with. All f
   	<title>Job life cycle</title>
   	<mediaobject>
   		<imageobject>
-  			<imagedata fileref="figures/cell/lifecycle.eps" format="EPS" scale="30"/>
+  			<imagedata fileref="figures/cell/lifecycle.eps" format="EPS" scale="40"/>
   		</imageobject>
   		<imageobject>
-  		<imagedata fileref="figures/cell/lifecycle.png" format="PNG" scale="30"/>
+  		<imagedata fileref="figures/cell/lifecycle.png" format="PNG" scale="40"/>
   		</imageobject>
   	</mediaobject>
   	</figure>
@@ -474,7 +474,8 @@ ImageSerializerBase<ElementType, dim>
 	}
 
 	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( GetNumericTypeID< ElementType >(),
-		return M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< TTYPE >( dim, minimums, maximums, elExtents )
+		return M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< TTYPE >(
+		  dim, minimums, maximums, elExtents )
 		);
 
 		// unreachable but for syntactic corectness
@@ -523,7 +524,8 @@ ImageSerializer< typename ElementType, 3>
 	ElementType *pointer = im->GetPointer( 
 	                         width, height, depth, xStride, yStride, zStride);
 
-  // put slices as dataPieces. Suppose whole DS is serialized. Not only window part
+  // put slices as dataPieces. Suppose whole DS is serialized. 
+  // Not only window part
   DataBuff buff;
 
   size_t sliceSize = width * height;
@@ -552,7 +554,8 @@ ImageSerializer< typename ElementType, 3>
 	int32 xStride;
 	int32 yStride;
 	int32 zStride;
-	ElementType *pointer = im->GetPointer( width, height, depth, xStride, yStride, zStride );
+	ElementType *pointer = im->GetPointer( 
+	  width, height, depth, xStride, yStride, zStride );
 
   size_t sliceSize = width * height;
 

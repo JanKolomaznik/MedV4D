@@ -139,14 +139,16 @@ addDockWindow( "Bone Segmentation", myPipelineWidget );
     </para>
 
     <programlisting><![CDATA[
-AbstractImage::AImagePtr inputImage = ImageFactory::CreateImageFromDICOM( dicomObjSet );
+AbstractImage::AImagePtr inputImage = 
+  ImageFactory::CreateImageFromDICOM( dicomObjSet );
 
 try {
   AbstractImageConnection *conn = new AbstractImageConnection();
   conn->PutImage( inputImage );
 
   mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
-  conn->ConnectConsumer( mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
+  conn->ConnectConsumer( 
+    mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 }
 catch ( ... ) {
    QMessageBox::critical( this, tr( "Exception" ), tr( "Some exception" ) );
