@@ -257,28 +257,28 @@
           <tbody>
             <row>
               <entry>
-                <mediaobject>
+                <inlinemediaobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/search.eps" format="EPS"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/search.png" format="PNG"/>
                   </imageobject>
-                </mediaobject>
+                </inlinemediaobject>
               </entry>
               <entry><emphasis role="bold">Search</emphasis></entry>
               <entry>Search for patient studies available for viewing</entry>
             </row>
             <row>
               <entry>
-                <mediaobject>
+                <inlinemediaobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/open.eps" format="EPS"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/open.png" format="PNG"/>
                   </imageobject>
-                </mediaobject>
+                </inlinemediaobject>
               </entry>
               <entry><emphasis role="bold">Open</emphasis></entry>
               <entry>Open an existing document from disk or network file system</entry>
@@ -300,84 +300,84 @@
           <tbody>
             <row>
               <entry>
-                <mediaobject>
+                <inlinemediaobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/layout.eps" format="EPS"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/layout.png" format="PNG"/>
                   </imageobject>
-                </mediaobject>
+                </inlinemediaobject>
               </entry>
               <entry><emphasis role="bold">Screen Layout</emphasis></entry>
               <entry>Redisplay series and images in various layouts</entry>
             </row>
             <row>
               <entry>
-                <mediaobject>
+                <inlinemediaobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/window-level.eps" format="EPS"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/window-level.png" format="PNG"/>
                   </imageobject>
-                </mediaobject>
+                </inlinemediaobject>
               </entry>
               <entry><emphasis role="bold">Window/Level</emphasis></entry>
               <entry>Adjust the brightness and/or contrast of the image</entry>
             </row>
             <row>
               <entry>
-                <mediaobject>
+                <inlinemediaobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/move.eps" format="EPS"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/move.png" format="PNG"/>
                   </imageobject>
-                </mediaobject>
+                </inlinemediaobject>
               </entry>
               <entry><emphasis role="bold">Pan</emphasis></entry>
               <entry>Reposition the images in the window</entry>
             </row>
             <row>
               <entry>
-                <mediaobject>
+                <inlinemediaobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/zoom.eps" format="EPS"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/zoom.png" format="PNG"/>
                   </imageobject>
-                </mediaobject>
+                </inlinemediaobject>
               </entry>
               <entry><emphasis role="bold">Zoom</emphasis></entry>
               <entry>Increase or decrease the image's field of view</entry>
             </row>
             <row>
               <entry>
-                <mediaobject>
+                <inlinemediaobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/stack.eps" format="EPS"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/stack.png" format="PNG"/>
                   </imageobject>
-                </mediaobject>
+                </inlinemediaobject>
               </entry>
               <entry><emphasis role="bold">Stack</emphasis></entry>
               <entry>Scroll through images within a series</entry>
             </row>
             <row>
               <entry>
-                <mediaobject>
+                <inlinemediaobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/info.eps" format="EPS"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/info.png" format="PNG"/>
                   </imageobject>
-                </mediaobject>
+                </inlinemediaobject>
               </entry>
               <entry><emphasis role="bold">Toggle Overlay</emphasis></entry>
               <entry>Hide or display the study information</entry>
@@ -399,84 +399,84 @@
           <tbody>
             <row>
               <entry>
-                <mediaobject>
+                <inlinemediaobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/probe.eps" format="EPS"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/probe.png" format="PNG"/>
                   </imageobject>
-                </mediaobject>
+                </inlinemediaobject>
               </entry>
               <entry><emphasis role="bold">Probe Tool</emphasis></entry>
               <entry>Give a pixel value for a given point</entry>
             </row>
             <row>
               <entry>
-                <mediaobject>
+                <inlinemediaobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/point.eps" format="EPS"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/point.png" format="PNG"/>
                   </imageobject>
-                </mediaobject>
+                </inlinemediaobject>
               </entry>
               <entry><emphasis role="bold">New Point</emphasis></entry>
               <entry>Create a new point</entry>
             </row>
             <row>
               <entry>
-                <mediaobject>
+                <inlinemediaobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/shape.eps" format="EPS"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/shape.png" format="PNG"/>
                   </imageobject>
-                </mediaobject>
+                </inlinemediaobject>
               </entry>
               <entry><emphasis role="bold">New Shape</emphasis></entry>
               <entry>Start a new shape</entry>
             </row>
             <row>
               <entry>
-                <mediaobject>
+                <inlinemediaobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/clear-point.eps" format="EPS"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/clear-point.png" format="PNG"/>
                   </imageobject>
-                </mediaobject>
+                </inlinemediaobject>
               </entry>
               <entry><emphasis role="bold">Clear Point</emphasis></entry>
               <entry>Clear last created point</entry>
             </row>
             <row>
               <entry>
-                <mediaobject>
+                <inlinemediaobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/clear-shape.eps" format="EPS"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/clear-shape.png" format="PNG"/>
                   </imageobject>
-                </mediaobject>
+                </inlinemediaobject>
               </entry>
               <entry><emphasis role="bold">Clear Shape</emphasis></entry>
               <entry>Clear last created shape</entry>
             </row>
             <row>
               <entry>
-                <mediaobject>
+                <inlinemediaobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/clear-all.eps" format="EPS"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/clear-all.png" format="PNG"/>
                   </imageobject>
-                </mediaobject>
+                </inlinemediaobject>
               </entry>
               <entry><emphasis role="bold">Clear All Points/Shapes</emphasis></entry>
               <entry>Clear all selections (points, shapes)</entry>
@@ -498,42 +498,42 @@
           <tbody>
             <row>
               <entry>
-                <mediaobject>
+                <inlinemediaobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/flip-hor.eps" format="EPS"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/flip-hor.png" format="PNG"/>
                   </imageobject>
-                </mediaobject>
+                </inlinemediaobject>
               </entry>
               <entry><emphasis role="bold">Flip Horizontal</emphasis></entry>
               <entry>Flip the selected image from left to right about the vertical axis</entry>
             </row>
             <row>
               <entry>
-                <mediaobject>
+                <inlinemediaobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/flip-vert.eps" format="EPS"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/flip-vert.png" format="PNG"/>
                   </imageobject>
-                </mediaobject>
+                </inlinemediaobject>
               </entry>
               <entry><emphasis role="bold">Flip Vertical</emphasis></entry>
               <entry>Flip the selected image from top to bottom about the horizontal axis</entry>
             </row>
             <row>
               <entry>
-                <mediaobject>
+                <inlinemediaobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/slice-orient.eps" format="EPS"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/slice-orient.png" format="PNG"/>
                   </imageobject>
-                </mediaobject>
+                </inlinemediaobject>
               </entry>
               <entry><emphasis role="bold">Slice Orientation</emphasis></entry>
               <entry>Switch the viewing axis orientation (x~y, y~z, z~x)</entry>
@@ -555,14 +555,14 @@
           <tbody>
             <row>
               <entry>
-                <mediaobject>
+                <inlinemediaobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/rotate-volume.eps" format="EPS"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/tools/rotate-volume.png" format="PNG"/>
                   </imageobject>
-                </mediaobject>
+                </inlinemediaobject>
               </entry>
               <entry><emphasis role="bold">Rotate Volume</emphasis></entry>
               <entry>Rotates the volume about the three axes</entry>
@@ -946,8 +946,11 @@
       <orderedlist>
         <title>To adjust the screen layout:</title>
         <listitem>
+          <para>
+            Choose one of the following options to access the Screen Layout dialog box:
+          </para>
+
           <itemizedlist>
-            <title>Choose one of the following options to access the Screen Layout dialog box:</title>
             <listitem>
               <para>
                 <menuchoice>
@@ -1651,7 +1654,7 @@
         <para>
           <mediaobject>
             <imageobject>
-              <imagedata fileref="figures/userManual/shots/probe-big.eps" format="EPS" scale="75"/>
+              <imagedata fileref="figures/userManual/shots/probe-big.eps" format="EPS" scale="50"/>
             </imageobject>
             <imageobject>
               <imagedata fileref="figures/userManual/shots/probe.png" format="PNG"/>
@@ -1792,7 +1795,7 @@
       <para>
         <mediaobject>
           <imageobject>
-            <imagedata fileref="figures/userManual/shots/volume-big.eps" format="EPS" scale="75"/>
+            <imagedata fileref="figures/userManual/shots/volume-big.eps" format="EPS" scale="50"/>
           </imageobject>
           <imageobject>
             <imagedata fileref="figures/userManual/shots/volume.png" format="PNG"/>
