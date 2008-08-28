@@ -571,7 +571,8 @@ ExamplePipelineHandler
 
 
     // IMPORTANT !!!! if you want next filter to be executed automatically.
-    secondFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
+    secondFilter->SetUpdateInvocationStyle( 
+            AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
 
     _pipeline.AddFilter( _firstFilter );
     _pipeline.AddFilter( secondFilter );
@@ -587,7 +588,8 @@ ExamplePipelineHandler
         &(_pipeline.MakeOutputConnection( secondFilter, 0, true )) );
 
     //Adding message listener
-    _outConnection->SetMessageHook( MessageReceiverInterface::Ptr( new Notifier() ) );
+    _outConnection->SetMessageHook( 
+            MessageReceiverInterface::Ptr( new Notifier() ) );
 }
 
 
@@ -618,14 +620,6 @@ ExamplePipelineHandler
 		To make decision easier you can use prepared flowchart <xref linkend="pic.MostSuitableFilterFlowchart"/> and find most suitable ancestor class.
 		</para>
 		
-		<figure float="1" id="pic.MostSuitableFilterFlowchart">
-		<title>Filter decisive flowchart</title>
-		<mediaobject>
-			<imageobject><imagedata fileref="figures/libImaging/MostSuitableFilterFlowchart.eps" format="EPS" scale="65"/></imageobject>
-			<imageobject><imagedata fileref="figures/libImaging/MostSuitableFilterFlowchart.png" format="PNG" scale="65"/></imageobject>
-		</mediaobject>
-		</figure>
-
 		<para>
 		Now if you have chosen right ancestor class, you can start with actual implementation of your filter. You should keep few rules and concepts, which 
 		can not only help you with writing, but even some other parts of library will just work without handling extra issues. This is achieved by generic 
@@ -658,6 +652,14 @@ ExamplePipelineHandler
 			</para></listitem>
 			
 		</itemizedlist>
+
+		<figure float="1" id="pic.MostSuitableFilterFlowchart">
+		<title>Filter decisive flowchart</title>
+		<mediaobject>
+			<imageobject><imagedata fileref="figures/libImaging/MostSuitableFilterFlowchart.eps" format="EPS" scale="65"/></imageobject>
+			<imageobject><imagedata fileref="figures/libImaging/MostSuitableFilterFlowchart.png" format="PNG" scale="65"/></imageobject>
+		</mediaobject>
+		</figure>
 
 		<para>
 		If you follow mentioned rules you can use few preprocessor macros, which can simplify implementation of your class.
