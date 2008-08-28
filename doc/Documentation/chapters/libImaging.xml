@@ -195,6 +195,25 @@
 		by comparing timestamps. When some change in internal structure of dataset has happened - timestamp is increased. So if you store value from 
 		previous access you can easily detect changes.
 		</para></formalpara>
+
+		<formalpara><title><classname>AbstractImage</classname></title> 
+		<para> Abstract ancestor of image classes. Has access methods to information about image - dimension, type of elements and proportions.
+		These informations can be used for casting to right type of image or for generic programming.
+		</para></formalpara>
+
+		<formalpara><title><classname>AbstractImageDim&lt;Dimension&gt;</classname></title> 
+		<para>Templated class with specializations for each dimension - now has no special purpose, but in future some 
+		methods from Image classes will be moved here.
+		</para></formalpara>
+
+		<formalpara><title><classname>Image&lt;ElementType, Dimension&gt;</classname></title> 
+		<para> Templated class made for storing raster image data of certain type. 
+		It has specialization for each used dimension.
+		It contains buffer with data, which can be shared among different images - for example 
+		2D image can share one slice from 3D image. But now this sharing concept isn't finished. And will be available in
+		future versions. 
+		Sharing is possible because locking is done on buffer and this class has only wrapper methods for locking.
+		</para></formalpara>
 	</section>
 
 	<section>
@@ -227,13 +246,14 @@
 		</para>
 
 		<formalpara><title><classname>AbstractImageFilter</classname></title><para>
-		This is a test.  This is only a test.  Had this been a real
-		example, it would have made more sense.  Or less.
+		Filter base for one way image filters - it implements basic task like reading timestamps, deciding what type of computation use, etc.
+		If somebody wants to create new pipeline filter, he must at least inherit its implementation from this class and
+		override these methods : <methodname>ExecutionThreadMethod()</methodname>, <methodname>PrepareOutputDatasets()</methodname>, 
+		<methodname>BeforeComputation()</methodname>, <methodname>AfterComputation()</methodname>.
 		</para></formalpara>
 
 		<formalpara><title><classname>AbstractImageSliceFilter</classname></title><para>
-		This is a test.  This is only a test.  Had this been a real
-		example, it would have made more sense.  Or less.
+		Predecessor of filters computing in layers with limited neighbourhood (convolution, range filters, etc.).
 		</para></formalpara>
 
 		<formalpara><title><classname>AbstractImage2DFilter</classname></title><para>
@@ -289,6 +309,12 @@
 
 	<section>
 	<title>Port and connection hierarchy</title>
+
+	<para>
+		We will not list port and connection classes here, because they are similar to each other and only difference is in their specialization to certain types 
+		of dataset. There can be less classes, but this system provide us better type control in compile time.
+	</para>
+
 		<para>
 		<figure float="1" id="pic.PortsHierarchy">
 		<title>Port hierarchy</title>
@@ -328,10 +354,15 @@
 	</para>
 
 	<section>
-	<title>Execution process</title>
+	<title>Filter execution</title>
+
+	<para>
+	Execution of filter is complex process. It can be modified by overriding prepared virtual methods. Each of them has exact purpose and changing it can cause 
+	problems - so be sure what you are doing. These methods are marked gray in <xref linkend="pic.ExecutionScheme"/>. We now list them and desribe their function.
+	</para>
 
 		<figure float="1" id="pic.ExecutionScheme">
-		<title>Pipeline scheme</title>
+		<title>Execution scheme</title>
 		<mediaobject>
 			<imageobject>
 				<imagedata fileref="figures/libImaging/ExecutionScheme.eps" format="EPS" scale="40"/>
@@ -341,6 +372,50 @@
 			</imageobject>
 		</mediaobject>
 		</figure>
+
+		<para><itemizedlist>
+			<listitem><para>
+					<methodname>CheckProperties()</methodname>. Its actualy method from struct <classname>Properties</classname>, its purpose is to check
+					if all properties are set to valid values, etc. 
+					</para>
+					
+					<para>If you override this method call predeccessor implementation first in your 
+						implmentation.
+			</para></listitem>
+
+			<listitem><para>
+					<methodname>BeforeComputation()</methodname>. This method do all preparations before actual computation. First thing it has to 
+					decide if the computation will be only update of modification or recalculation of whole data (new dataset, properties changed, ect.). 
+					Next task is to call <methodname>PrepareOutputDatasets()</methodname> if needed - output input was resized, change in properties, etc.
+					When everything is prepared do marking of output parts, which will be modified.
+					</para>
+					
+					<para>If you override this method call predeccessor implementation first in your 
+						implementation.
+			</para></listitem>
+			<listitem><para>
+					<methodname>PrepareOutputDatasets()</methodname>. It has to prepare (resize) output datasets according to inputs and filter properties. 
+					Its called only when needed.
+					</para>
+					
+					<para>If you override this method call predeccessor implementation first in your 
+						implementation.
+			</para></listitem>
+			<listitem><para>
+					<methodname>ExecutionThreadMethod()</methodname>. Actual computation method - in successor classes often overriden to call some pure 
+					virtual methods with special interface to make computation easier.
+			</para></listitem>
+			<listitem><para>
+					<methodname>AfterComputation()</methodname>. This method should unlock parts of image which remained locked after unsuccesful 
+					computation. Another task which is often done here is saving of timestamps - from input/output datasets, properties, etc.
+					</para>
+					
+					<para>If you override this method call predeccessor implementation first in your 
+						implementation.
+			</para></listitem>
+		</itemizedlist></para>
+
+
 	</section>
 
 	<section>
@@ -425,6 +500,25 @@ typedef uint16 ElementType;
 
 typedef M4D::Imaging::Image< ElementType, Dim > ImageType;
 
+class Notifier : public MessageReceiverInterface
+{
+
+public:
+    void
+    ReceiveMessage( 
+        M4D::Imaging::PipelineMessage::Ptr             msg, 
+        M4D::Imaging::PipelineMessage::MessageSendStyle     sendStyle, 
+        M4D::Imaging::FlowDirection                direction
+        )
+    {
+        if( msg->msgID == M4D::Imaging::PMI_FILTER_UPDATED ) {
+            //DO NOTIFICATION - Put your code here
+        }
+    }
+
+
+};
+
 class ExamplePipelineHandler
 {
 public:
@@ -435,12 +529,6 @@ public:
     void
     FilterImage( ImageType::Ptr image );
 
-    //This method will be called, when filters finish.
-    //Parameter tells, if computation passed withou problems.
-    //Implementation of this method depends on its purpose (notify user, ...).
-    void
-    FinishNotification( bool succesfully )
-        { /*Put your code here.*/ }
 protected:
     M4D::Imaging::PipelineContainer   _pipeline;
     M4D::Imaging::AbstractPipeFilter  *_firstFilter;
@@ -455,29 +543,16 @@ protected:
 		</para>
 
 		<itemizedlist>
-			<listitem><para>Allocation of filters</para></listitem>
-			<listitem><para>Establishing connections</para></listitem>
-			<listitem><para>Setting message hooks</para></listitem>
+			<listitem><para>Allocation of filters. Normal allocation of objects. We construct desired filters and add them to pipeline.</para>
+				<para>We set filter properties. And if you want some filter to be executed by pipeline message and not manual calling of 
+				<methodname>Execute</methodname> method you must call method <methodname>SetUpdateInvocationStyle()</methodname>
+				as in example.
+			</para>
+			</listitem>
+			<listitem><para>Establishing connections. When we have allocated filters, we must connect them in pipeline. Pipeline container has methods for this
+			- see example implementation.</para></listitem>
+			<listitem><para>Setting message hooks. Special part are message listeners</para></listitem>
 		</itemizedlist>
-
-		<para>
-		Now we discuss these steps in detail. With example implementation.
-		</para>
-
-		<formalpara><title>Allocation of filters</title><para>
-		This is a test.  This is only a test.  Had this been a real
-		example, it would have made more sense.  Or less.
-		</para></formalpara>
-
-		<formalpara><title>Establishing connections</title><para>
-		This is a test.  This is only a test.  Had this been a real
-		example, it would have made more sense.  Or less.
-		</para></formalpara>
-
-		<formalpara><title>Passing input datasets and execution</title><para>
-		This is a test.  This is only a test.  Had this been a real
-		example, it would have made more sense.  Or less.
-		</para></formalpara>
 
 
 		<programlisting><![CDATA[
@@ -486,8 +561,12 @@ protected:
 ExamplePipelineHandler
 ::ExamplePipelineHandler()
 {
-    _firstFilter = new
-    M4D::Imaging::AbstractPipeFilter *secondFilter = new
+    _firstFilter = new FIRST_FILTER_TYPE();
+    M4D::Imaging::AbstractPipeFilter *secondFilter = new FIRST_FILTER_TYPE();
+
+
+    // IMPORTANT !!!! if you want next filter to be executed automatically.
+    secondFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
 
     _pipeline.AddFilter( _firstFilter );
     _pipeline.AddFilter( secondFilter );
@@ -500,7 +579,10 @@ ExamplePipelineHandler
 
     _outConnection = 
         dynamic_cast< M4D::Imaging::AbstractImageConnectionInterface * >(
-             &(_pipeline.MakeOutputConnection( secondFilter, 0, true )) );
+        &(_pipeline.MakeOutputConnection( secondFilter, 0, true )) );
+
+    //Adding message listener
+    _outConnection->SetMessageHook( MessageReceiverInterface::Ptr( new Notifier() ) );
 }
 
 
@@ -546,7 +628,7 @@ ExamplePipelineHandler
 		</para>
 		
 		<para>
-		We now introduce these rules and concepts, and show practical examples from library sources. First of all try design your filters as generic as possible.
+		We introduce these rules and concepts, and show practical examples from library sources. First of all try design your filters as generic as possible.
 		So try maximally use dataset traits (now only available <classname>ImageTraits</classname>), template specialializations, etc.
 		All ancestor classes are templated (with exception of <classname>AbstractPipeFilter</classname>), so it makes that easier.
 		</para>
@@ -596,6 +678,13 @@ ExamplePipelineHandler
 
 		</para>
 
+		<para>Here we show implementation of thresholding filter. Its simple class - inheriting from <classname>AbstractImageElementFilter</classname>. It uses 
+			<classname>ThresholdingFunctor</classname> and call it to each element of input image. 
+		</para>
+		<para>
+			Only notable hack, which is used in this example is how to pass thresholding parameters to functor - we use method 
+			<methodname>CheckProperties()</methodname> which is called before computation starts.
+		</para>
 		<programlisting><![CDATA[
 template< typename ElementType >
 class ThresholdingFunctor
