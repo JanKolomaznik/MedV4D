@@ -478,14 +478,14 @@ WARN_LOGFILE           = warnings.txt
 # with spaces.
 
 INPUT                  = \
+      ../src/include \
+      ../src/common \
 			../src/backendForDICOM
+			../src/Imaging \
 			../src/cellClient \
 			../src/cellServer \
-			../src/common \
 			../src/dataModifier \
 			../src/GUI \
-			../src/Imaging \
-			../src/include \
 			../src/vtkIntegration
 
 

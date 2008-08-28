@@ -20,11 +20,18 @@
  *  @section medv4d Project Medv4D
  *  Faculty of Mathematics and Physics\n
  *  Charles University, Czech Republic\n
+ *  www.mff.cuni.cz
  *
- *  @section Description
- *  This project ...
+ *  @section desc Description
+ *  Goal of this project is to create framework for easy development of
+ *	user-friendly medical aplications. Suppose processing of 2D, 3D even 4D
+ *	(for ex. time series), with input format DICOM storing on DICOM data server,
+ *	parallel implementation of difficult algorithms and platform independence.
+ *	It has to eliminate developing phases like DICOM files handling, GUI parts
+ *	programing. User (programmer) can focus to write only a filter that represents
+ *	the algorithm that he is interersted in.
  *  
- *  @section Authors
+ *  @section authors Authors
  *  - Jan Kolomaznik
  *  - Attila Ulman
  *  - Szabolcz Grof

@@ -1,8 +1,19 @@
 /**
+ *  @defgroup cellbe Remote computing
+ */
+/**
  * @ingroup cellbe 
  * @author Vaclav Klecanda 
- * @file cellClient.h 
+ * @file cellClient.h
+ */
+
+/**
+ * @addtogroup cellbe
  * @{ 
+ *
+ * Library used to send some parts of pipeline to remote mashines to be executed
+ * and result sent back. This library is not bound to specific architecture. 
+ * It was one of primary request to be platform indemendet.
  **/
 
 #ifndef CELLCLIENT_HPP

@@ -1,7 +1,11 @@
 /**
+ *  @defgroup imaging Imaging Library
+ */
+
+/**
  * @ingroup imaging 
- * @author Jan Kolomaznik 
  * @file AbstractFilter.h 
+ * @author Jan Kolomaznik 
  * @{ 
  **/
 
@@ -22,6 +26,11 @@
 /**
  *  @addtogroup imaging Imaging Library
  *  @{
+ *
+ *  Main goal of this library is effective implementation of pipeline
+ *  computation on input datasets. Whole computation should be as parallel
+ *  as possible in order to utilize resources available in modern processors,
+ *  etc. 
  */
 
 namespace M4D
