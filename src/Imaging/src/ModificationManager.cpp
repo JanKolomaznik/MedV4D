@@ -46,6 +46,7 @@ ReaderBBoxInterface::IsModified()const
 ModificationState
 ReaderBBoxInterface::GetState()const
 {
+	Multithreading::RecursiveScopedLock lock( _accessLock );
 	return _state;
 }
 
@@ -53,7 +54,7 @@ ModificationState
 ReaderBBoxInterface::WaitWhileDirty()const
 {
 	while( 1 ){
-		Multithreading::ScopedLock lock( _accessLock );
+		Multithreading::RecursiveScopedLock lock( _accessLock );
 		if( _state == MS_DIRTY ) {
 		//TODO - sleep
 
@@ -103,7 +104,7 @@ ProxyReaderBBox::WaitWhileDirty()const
 void
 WriterBBoxInterface::SetState( ModificationState state )
 {
-	Multithreading::ScopedLock lock( _accessLock );
+	Multithreading::RecursiveScopedLock lock( _accessLock );
 
 	_state = state;
 }

@@ -74,7 +74,7 @@ protected:
 
 	ModificationBBox	*_boundingBox;
 	
-	mutable Multithreading::Mutex	_accessLock;
+	mutable Multithreading::RecursiveMutex	_accessLock;
 };
 
 class WriterBBoxInterface : public ReaderBBoxInterface
