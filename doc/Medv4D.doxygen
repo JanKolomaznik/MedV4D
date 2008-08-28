@@ -477,18 +477,16 @@ WARN_LOGFILE           = warnings.txt
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT                  = \ 
-			../src/include/dicomConn \
-			../src/Imaging \
+INPUT                  = \
 			../src/backendForDICOM
-#			../src/cellClient \
-#			../src/cellServer \
-#			../src/common \
-#			../src/dataModifier \
-#			../src/GUI \
-#			../src/Imaging \
-#			../src/include \
-#			../src/vtkIntegration
+			../src/cellClient \
+			../src/cellServer \
+			../src/common \
+			../src/dataModifier \
+			../src/GUI \
+			../src/Imaging \
+			../src/include \
+			../src/vtkIntegration
 
 
 # This tag can be used to specify the character encoding of the source files that 
