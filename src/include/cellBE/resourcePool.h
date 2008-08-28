@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file resourcePool.h 
+ * @{ 
+ **/
+
 #ifndef RESOURCE_POOL_H
 #define RESOURCE_POOL_H
 
@@ -45,4 +52,7 @@ public:
 };
 
 #endif
+
+
+/** @} */
 

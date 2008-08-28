@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file main.cpp 
+ * @{ 
+ **/
+
 
 #include "Common.h"
 #include "server.h"
@@ -21,3 +28,5 @@ int main( void)
 
   return 0;
 }
+/** @} */
+

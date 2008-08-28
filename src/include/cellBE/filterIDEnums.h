@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file filterIDEnums.h 
+ * @{ 
+ **/
+
 #ifndef FILTERID_ENUMS_H
 #define FILTERID_ENUMS_H
 
@@ -11,4 +18,7 @@ enum FilterID {
 };
 
 #endif
+
+
+/** @} */
 

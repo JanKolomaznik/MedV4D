@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file GeneralDataSetSerializer.h 
+ * @{ 
+ **/
+
 #ifndef GENERAL_DATASET_SERIALIZER_H
 #define GENERAL_DATASET_SERIALIZER_H
 
@@ -43,4 +50,7 @@ public:
 }
 
 #endif
+
+
+/** @} */
 

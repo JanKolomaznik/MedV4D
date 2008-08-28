@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file clientJob.h 
+ * @{ 
+ **/
+
 #ifndef CLIENT_JOB_H
 #define CLIENT_JOB_H
 
@@ -65,3 +72,5 @@ class WrongJobStateException
 }
 }
 #endif
+/** @} */
+

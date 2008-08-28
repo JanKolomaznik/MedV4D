@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file RemoteFilterBase.h 
+ * @{ 
+ **/
+
 #ifndef _REMOTE_FILTER_BASE_H
 #define _REMOTE_FILTER_BASE_H
 
@@ -28,3 +35,6 @@ public:
 }}
 
 #endif
+
+/** @} */
+

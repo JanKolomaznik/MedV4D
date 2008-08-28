@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file ImageSerializer.tcc 
+ * @{ 
+ **/
+
 #ifndef IMAGE_SERIALIZER_H
 #error File ImageSerializer.tcc cannot be included directly!
 #else
@@ -199,3 +206,6 @@ ImageSerializer< typename ElementType, 3>
 } /*namespace M4D*/
 
 #endif
+
+/** @} */
+

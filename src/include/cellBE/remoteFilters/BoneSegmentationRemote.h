@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file BoneSegmentationRemote.h 
+ * @{ 
+ **/
+
 #ifndef BONE_SEGMENTATION_FILTER_H
 #define BONE_SEGMENTATION_FILTER_H
 
@@ -81,3 +88,6 @@ private:
 #include "cellBE/remoteFilters/BoneSegmentationRemote.tcc"
 
 #endif
+
+/** @} */
+

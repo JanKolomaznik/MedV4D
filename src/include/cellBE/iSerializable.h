@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file iSerializable.h 
+ * @{ 
+ **/
+
 #ifndef ISERIALIZABLE_H
 #define ISERIALIZABLE_H
 
@@ -23,4 +30,7 @@ public:
 }
 
 #endif
+
+
+/** @} */
 

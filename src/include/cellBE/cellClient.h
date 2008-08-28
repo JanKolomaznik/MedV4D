@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file cellClient.h 
+ * @{ 
+ **/
+
 #ifndef CELLCLIENT_HPP
 #define CELLCLIENT_HPP
 
@@ -51,3 +58,5 @@ private:
 } // M4D namespace
 
 #endif
+/** @} */
+

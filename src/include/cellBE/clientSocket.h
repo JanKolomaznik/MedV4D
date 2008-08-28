@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file clientSocket.h 
+ * @{ 
+ **/
+
 #ifndef CLIENT_SOCKET_H
 #define CLIENT_SOCKET_H
 
@@ -51,3 +58,5 @@ protected:
 } // M4D namespace
 
 #endif
+/** @} */
+

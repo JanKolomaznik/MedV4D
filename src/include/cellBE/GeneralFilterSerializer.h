@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file GeneralFilterSerializer.h 
+ * @{ 
+ **/
+
 #ifndef GENERAL_FILTER_SERIALIZER_H
 #define GENERAL_FILTER_SERIALIZER_H
 
@@ -59,4 +66,7 @@ public:
 }
 
 #endif
+
+
+/** @} */
 

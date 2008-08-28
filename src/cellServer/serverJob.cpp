@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file serverJob.cpp 
+ * @{ 
+ **/
+
 
 #include "Common.h"
 #include "serverJob.h"
@@ -396,3 +403,5 @@ ServerJob::OnDSRecieved( void)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/** @} */
+

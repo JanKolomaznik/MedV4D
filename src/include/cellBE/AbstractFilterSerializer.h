@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file AbstractFilterSerializer.h 
+ * @{ 
+ **/
+
 #ifndef ABSTRACT_FILTER_SERIALIZER_H
 #define ABSTRACT_FILTER_SERIALIZER_H
 
@@ -89,4 +96,7 @@ class FilterSerializer;
 }
 
 #endif
+
+
+/** @} */
 

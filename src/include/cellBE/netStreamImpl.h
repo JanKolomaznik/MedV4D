@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file netStreamImpl.h 
+ * @{ 
+ **/
+
 #ifndef NETSTREAM_IMPL_H
 #define NETSTREAM_IMPL_H
 
@@ -520,3 +527,6 @@ public:
 }
 
 #endif
+
+/** @} */
+

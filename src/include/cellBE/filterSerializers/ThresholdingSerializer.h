@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file ThresholdingSerializer.h 
+ * @{ 
+ **/
+
 #ifndef THRESHOLDING_SERIALIZER_H
 #define THRESHOLDING_SERIALIZER_H
 
@@ -90,4 +97,7 @@ protected:
 }
 
 #endif
+
+
+/** @} */
 

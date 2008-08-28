@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file AbstractDataSetSerializer.h 
+ * @{ 
+ **/
+
 #ifndef ABSTRACT_DATASET_SERIALIZER_H
 #define ABSTRACT_DATASET_SERIALIZER_H
 
@@ -102,4 +109,7 @@ class WrongDSetException
 }
 
 #endif
+
+
+/** @} */
 

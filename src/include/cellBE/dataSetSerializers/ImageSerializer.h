@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file ImageSerializer.h 
+ * @{ 
+ **/
+
 #ifndef IMAGE_SERIALIZER_H
 #define IMAGE_SERIALIZER_H
 
@@ -91,4 +98,7 @@ private:
 #include "ImageSerializer.tcc"
 
 #endif
+
+
+/** @} */
 

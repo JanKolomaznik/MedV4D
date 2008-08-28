@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file dataPieceHeader.h 
+ * @{ 
+ **/
+
 #ifndef DATAPIECE_HEADER_H
 #define DATAPIECE_HEADER_H
 
@@ -16,3 +23,5 @@ struct DataPieceHeader
 };
 
 #endif
+/** @} */
+

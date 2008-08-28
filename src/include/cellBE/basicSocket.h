@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file basicSocket.h 
+ * @{ 
+ **/
+
 #ifndef BASIC_SOCKET_H
 #define BASIC_SOCKET_H
 
@@ -46,4 +53,7 @@ protected:
 }
 }
 #endif
+
+
+/** @} */
 

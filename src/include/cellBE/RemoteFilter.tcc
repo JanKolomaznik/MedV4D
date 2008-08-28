@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file RemoteFilter.tcc 
+ * @{ 
+ **/
+
 #ifndef _REMOTE_FILTER_H
 #error File RemoteFilter.tcc cannot be included directly!
 #else
@@ -55,3 +62,6 @@ RemoteFilter< InputImageType, OutputImageType >
 } /*namespace M4D*/
 
 #endif /*_REMOTE_FILTER_H*/
+
+/** @} */
+

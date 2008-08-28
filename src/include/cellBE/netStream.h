@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file netStream.h 
+ * @{ 
+ **/
+
 #ifndef NETSTREAM_H
 #define NETSTREAM_H
 
@@ -74,3 +81,6 @@ public:
 }
 
 #endif
+
+/** @} */
+

@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file messageHeaders.h 
+ * @{ 
+ **/
+
 #ifndef MESSAGE_HEADERS_H
 #define MESSAGE_HEADERS_H
 
@@ -169,4 +176,7 @@ struct ResponseHeader
   
 }}
 #endif
+
+
+/** @} */
 

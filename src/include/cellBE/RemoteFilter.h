@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file RemoteFilter.h 
+ * @{ 
+ **/
+
 #ifndef _REMOTE_FILTER_H
 #define _REMOTE_FILTER_H
 
@@ -78,3 +85,6 @@ private:
 #include "cellBE/RemoteFilter.tcc"
 
 #endif /*_REMOTE_FILTER_H*/
+
+/** @} */
+

@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file MedianSerializer.h 
+ * @{ 
+ **/
+
 #ifndef MEDIAN_SERIALIZER_H
 #define MEDIAN_SERIALIZER_H
 
@@ -85,4 +92,7 @@ protected:
 }
 
 #endif
+
+
+/** @} */
 

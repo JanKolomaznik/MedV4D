@@ -1,4 +1,11 @@
 /**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file GeneralDataSetSerializer.cpp 
+ * @{ 
+ **/
+
+/**
  *  @ingroup cellbe
  *  @file GeneralDataSetSerializer.cpp
  *  @author Vaclav Klecanda
@@ -77,3 +84,5 @@ GeneralDataSetSerializer::DeSerializeDataSetProperties(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/** @} */
+

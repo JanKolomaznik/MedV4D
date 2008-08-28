@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file FilterSerializerArray.h 
+ * @{ 
+ **/
+
 #ifndef FILTER_SERIALIZER_ARRAY_H
 #define FILTER_SERIALIZER_ARRAY_H
 
@@ -40,4 +47,7 @@ public:
 }
 
 #endif
+
+
+/** @} */
 

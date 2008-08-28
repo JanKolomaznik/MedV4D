@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file serverJob.h 
+ * @{ 
+ **/
+
 #ifndef SERVERJOB_H
 #define SERVERJOB_H
 
@@ -122,3 +129,5 @@ public:
 } // M4D namespace
 
 #endif
+/** @} */
+

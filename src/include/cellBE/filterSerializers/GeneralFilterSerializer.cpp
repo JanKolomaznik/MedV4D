@@ -1,4 +1,11 @@
 /**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file GeneralFilterSerializer.cpp 
+ * @{ 
+ **/
+
+/**
  *  @ingroup cellbe
  *  @file GeneralFilterSerializer.cpp
  *  @author Vaclav Klecanda
@@ -60,3 +67,5 @@ FilterSerializerArray GeneralFilterSerializer::m_filterSerializers;
 //}
 
 ///////////////////////////////////////////////////////////////////////////////
+/** @} */
+

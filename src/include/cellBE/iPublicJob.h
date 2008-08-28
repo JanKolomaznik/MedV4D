@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file iPublicJob.h 
+ * @{ 
+ **/
+
 #ifndef I_PUBLICJOB_H
 #define I_PUBLICJOB_H
 
@@ -60,4 +67,7 @@ public:
 }
 
 #endif
+
+
+/** @} */
 

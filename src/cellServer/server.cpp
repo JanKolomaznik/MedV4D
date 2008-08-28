@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file server.cpp 
+ * @{ 
+ **/
+
 
 #include <sstream>
 
@@ -166,4 +173,7 @@ Server::WritePingMessage( tcp::socket *clientSock)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+
+/** @} */
 

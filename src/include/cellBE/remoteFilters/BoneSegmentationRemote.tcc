@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file BoneSegmentationRemote.tcc 
+ * @{ 
+ **/
+
 #ifndef BONE_SEGMENTATION_FILTER_H
 #error File BoneSegmentationRemote.tcc cannot be included directly!
 #else
@@ -67,3 +74,6 @@ BoneSegmentationRemote<ImageType>::PrepareOutputDatasets()
 } /*namespace M4D*/
 
 #endif
+
+/** @} */
+

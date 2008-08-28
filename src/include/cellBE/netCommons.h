@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file netCommons.h 
+ * @{ 
+ **/
+
 #ifndef TRANSDEFS_H
 #define TRANSDEFS_H
 
@@ -43,3 +50,6 @@ public:
   
 }}
 #endif
+
+/** @} */
+

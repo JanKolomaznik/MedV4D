@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file server.h 
+ * @{ 
+ **/
+
 #ifndef SERVER_H
 #define SERVER_H
 
@@ -50,3 +57,6 @@ class Server
 } // M4D namespace
 
 #endif
+
+/** @} */
+

@@ -1,3 +1,10 @@
+/**
+ * @ingroup cellbe 
+ * @author Vaclav Klecanda 
+ * @file basicJob.h 
+ * @{ 
+ **/
+
 #ifndef JOBBASE_H
 #define JOBBASE_H
 
@@ -123,4 +130,7 @@ protected:
 } // M4D namespace
 
 #endif
+
+
+/** @} */
 
