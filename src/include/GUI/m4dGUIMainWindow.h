@@ -42,8 +42,8 @@ namespace GUI {
  * Class representing the Main Window - containing all basic dialogs, viewer desktop
  * with various viewers and layout managing, adaptive toolBars, menus - all with uniform look.
  *
- * Specific applications should derive from this class and reimplement it's methods (e.g. view) 
- * or extend it's functionality (e.g. add new widgets).
+ * Specific applications should derive from this class and reimplement it's methods (e.g. provess) 
+ * or extend it's functionality (e.g. add new widgets, pipeline connections).
  */
 class m4dGUIMainWindow: public QMainWindow
 {
@@ -51,7 +51,14 @@ class m4dGUIMainWindow: public QMainWindow
 
   public:
 
+    /**
+     * Enumeration for type of the tool - toolBar behavior: checkable tool, toggle tool.
+     */
     typedef enum { CHECKABLE_TOOL, TOGGLE_TOOL } ToolType;
+
+    /**
+     * Enumeration for type of the mouse button - left, right.
+     */
     typedef enum { LEFT_BUTTON, RIGHT_BUTTON } ButtonType;
 
     /** 
@@ -64,6 +71,7 @@ class m4dGUIMainWindow: public QMainWindow
      */
     m4dGUIMainWindow ( const char *appName, const char *orgName,
                        const QIcon &icon = QIcon( ":/icons/app.png" ) );
+
 
     /**
      * Returns flag indicating wheather the build was successful - construction of the 
@@ -83,15 +91,33 @@ class m4dGUIMainWindow: public QMainWindow
      */
     QString getBuildMessage () const { return studyManagerWidget->getStudyListComponent()->getBuildMessage(); }
 
+
+    /** 
+     * Adds source (pipeline connection) to vector of registered sources - possible connections, 
+     * where can be plugged a viewer. Can be selected through comboBox in toolBar.
+     * It's calling the Main Viewer Desktop's addSource method.
+     *
+     * @param conn pointer to the connection to be added
+     * @param pipelineDescription description/name of the pipeline connection belongs to (for the user - in the comboBox)
+     * @param connectionDescription description of the connection (for the user - in the comboBox)
+     */
     void addSource ( M4D::Imaging::ConnectionInterface *conn, const char *pipelineDescription,
                      const char *connectionDescription );
+
+    /** 
+     * Adds dockWindow (widget) to the application - e.g. for pipeline/filter settings.
+     * It handles its position, size, hide/show menu items, etc.
+     * 
+     * @param title title of the dockWindow
+     * @param widget pointer to the widget, which should be in the added dockWindow
+     */
     void addDockWindow ( const char *title, QWidget *widget );
 
   private slots:
 
     /**
      * Slot for search - to show the Study Manager. After closing it (clicking on View) it calls 
-     * view method.
+     * process method.
      */
     void search ();
 
@@ -100,6 +126,9 @@ class m4dGUIMainWindow: public QMainWindow
      */
     void open ();
 
+    /**
+     * Slot for toolBar customization - to show the ToolBar Customizer Dialog.
+     */
     void customize ();
 
     /**
@@ -108,13 +137,13 @@ class m4dGUIMainWindow: public QMainWindow
     void size ();
 
     /**
-     * Slot for Status Bar - to hide or show it.
+     * Slot for Status Bar - to show or hide it.
      */
     void status ();
 
     /**
-     * Slot for setting controls and handlers for tools. Indirect slots emiting signals to selected viewer.
-     * For each checkable tool one specific slot.
+     * Slots for setting controls and handlers for tools. Indirect slots calling delegateAction method.
+     * For each checkable tool one specific slot (toggle tools are direct to viewers).
      */
     void viewerWindowLevel ();
     void viewerPan ();
@@ -127,37 +156,79 @@ class m4dGUIMainWindow: public QMainWindow
 
     /**
      * Slot for managing adaptive toolBars depending on the type of the selected viewer.
+     * Performing reconnections, updates, triggers, etc.
      */
     void features ();
 
     /**
-     * Slot for layout settings - to show Screen Layout Widget.
+     * Slot for layout settings - to show Screen Layout Dialog.
      */
     void layout ();
 
     /**
-     * Slot for replacing selected viewers (toggle VTK viewer)
+     * Slot for replacing selected viewers (toggle 3D viewer) - with updates (features).
      */
     void replace ();
 
+    /**
+     * Slot for managing sources toolBar behavior - adding new sources - connected to Main Viewer Desktop.
+     */
     void source ( const QString &pipelineDescription, const QString &connectionDescription );
 
   signals:
-    // clickable (left, right - exl.) tools changed -> change the handlers, buttons accordingly
-    void toolChanged ( M4D::Viewer::m4dGUIAbstractViewerWidget::ButtonHandler, 
-                       M4D::Viewer::m4dGUIAbstractViewerWidget::MouseButton );
+
+    /**
+     * Signal indicating checkable (left, right - exl.) tools change -> change the handlers, buttons accordingly.
+     *
+     * @param hnd button handler for the selected viewer (used in its slot)
+     * @param btn type of the button for the selected viewer (used in its slot)
+     */
+    void toolChanged ( M4D::Viewer::m4dGUIAbstractViewerWidget::ButtonHandler hnd, 
+                       M4D::Viewer::m4dGUIAbstractViewerWidget::MouseButton btn );
 
   private:
 
+    /**
+     * Creates Main Viewer Desktop and connects it with other widgets.
+     */
     void createMainViewerDesktop ();
+
+    /**
+     * Creates Study Manager Dialog with Study Manager Widget and connects it with other widgets.
+     */
     void createStudyManagerDialog ();
+
+    /**
+     * Creates ToolBar Customizer Dialog with ToolBar Customizer Widget and connects it with other widgets.
+     */
     void createToolBarCustomizerDialog ();
+
+    /**
+     * Creates Screen Layout Dialog with Screen Layout Widget and connects it with other widgets.
+     */
     void createScreenLayoutDialog ();
         
+
+    /**
+     * Creates all the actions - used in toolBars, menus, etc.
+     */
     void createActions ();
+
+    /**
+     * Creates menus - from actions.
+     */
     void createMenus ();
+
+    /**
+     * Creates toolBars - from actions & sources comboBox.
+     */
     void createToolBars ();
+
+    /**
+     * Sets up the statusBar.
+     */
     void createStatusBar ();
+
 
     /** 
      * Connects to specific slot of the selected viewer - to set controls and handlers for tools.
@@ -170,28 +241,52 @@ class m4dGUIMainWindow: public QMainWindow
 
   protected:
 
+    /** 
+     * Virtual method - called after closing the Study Manager (clicking on View) to
+     * process the result of the Study Manager (search). Default behavor: creates
+     * image from the Dicom Object Set and sets it as input of the currently selected viewer.
+     * 
+     * Can be reimplemented to get specific behavior.
+     * 
+     * @param dicomObjSet Dicom Object Set (result of the search) to process
+     */
     virtual void process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet );
 
+
+    /// Pointer to the Main Viewer Desktop
     m4dGUIMainViewerDesktopWidget *mainViewerDesktop;
+    /// Pointer to the Study Manager Widget
     m4dGUIStudyManagerWidget *studyManagerWidget;
+    /// Pointer to the ToolBar Customizer Widget
     m4dGUIToolBarCustomizerWidget *toolBarCustomizerWidget;
+    /// Pointer to the Screen Layout Widget
     m4dGUIScreenLayoutWidget *screenLayoutWidget;
   
   private:
 
+    /// Names of the action icons.
     static const char *actionIconNames[];
+    /// Texts of the actions.
     static const char *actionTexts[];
+    /// Tool types of the actions - information also used for weather the connection is direct to the viewer.
     static const ToolType   actionToolTypes[];
+    /// Types of the mouse button for the actions (checkable tools).
     static const ButtonType actionButtonTypes[];
+    /// Shortcuts of the actions.
     static const char *actionShortCuts[];
+    /// StatusTips of the actions.
     static const char *actionStatusTips[];
+    /// Slots for the actions.
     static const char *actionSlots[];
+    /// Mapping available slots of viewers to actions.
     static const int   slotsToActions[]; 
   
+    /// Dialogs for widgets.
     QDialog *studyManagerDialog;
     QDialog *toolBarCustomizerDialog;
     QDialog *screenLayoutDialog;
   
+    /// Actions.
     QAction *searchAct;
     QAction *openAct;
     QAction *saveAct;
@@ -205,6 +300,7 @@ class m4dGUIMainWindow: public QMainWindow
     QAction *layoutAct;
     QAction *replaceAct;
     
+    /// ToolBars.
     QToolBar *searchToolBar;
     QToolBar *fileToolBar;
     QToolBar *layoutToolBar;
@@ -217,7 +313,8 @@ class m4dGUIMainWindow: public QMainWindow
      * be plugged a viewer. It's visible only if there is registered at least one connection.
      */
     QComboBox *sourcesComboBox;
-   
+ 
+    /// Menus.
     QMenu *fileMenu;
     QMenu *toolBarsMenu;
     QMenu *toolsMenu;

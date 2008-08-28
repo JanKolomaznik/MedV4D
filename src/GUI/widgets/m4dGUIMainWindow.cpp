@@ -26,30 +26,35 @@ namespace GUI {
 /// Number of abstract viewer's actions (toolBar buttons) - first is for all unplugged slots (it's not in toolBar)
 #define VIEWER_ACTIONS_NUMBER       16
 
+/// Names of the action icons
 const char *m4dGUIMainWindow::actionIconNames[] = { "empty.png", "window-level.png", "move.png", "zoom.png",
                   "stack.png", "info.png", "probe.png", "point.png", "shape.png", "clear-point.png",
                   "clear-shape.png", "clear-all.png", "flip-hor.png", "flip-vert.png", "slice-orient.png",
                   "rotate-volume.png" };
 
+/// Texts of the actions
 const char *m4dGUIMainWindow::actionTexts[] = { "No Action", "Window/Level (Right Mouse)", "Pan (Left Mouse)",
                   "Zoom (Right Mouse)", "Stack (Right Mouse)", "Toggle Overlay", "Probe Tool (Left Mouse)", 
                   "New Point (Left Mouse)", "New Shape (Left Mouse)", "Clear Point", "Clear Shape", 
                   "Clear All Points/Shapes", "Flip Horizontal", "Flip Vertical", "Slice Orientation",
                   "Rotate Volume (Left Mouse)" };
 
-// information also used for weather the connection is direct to the viewer
+/// Types of the actions - information also used for weather the connection is direct to the viewer
 const m4dGUIMainWindow::ToolType m4dGUIMainWindow::actionToolTypes[] = { CHECKABLE_TOOL, CHECKABLE_TOOL, CHECKABLE_TOOL,
                   CHECKABLE_TOOL, CHECKABLE_TOOL, TOGGLE_TOOL, CHECKABLE_TOOL, CHECKABLE_TOOL, CHECKABLE_TOOL, 
                   TOGGLE_TOOL, TOGGLE_TOOL, TOGGLE_TOOL, TOGGLE_TOOL, TOGGLE_TOOL, TOGGLE_TOOL, CHECKABLE_TOOL };
 
+/// Types of the mouse button for the actions (checkable tools)
 const m4dGUIMainWindow::ButtonType m4dGUIMainWindow::actionButtonTypes[] = { LEFT_BUTTON, RIGHT_BUTTON, LEFT_BUTTON, 
                   RIGHT_BUTTON, RIGHT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, 
                   LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON, LEFT_BUTTON };
 
+/// Shortcuts of the actions
 const char *m4dGUIMainWindow::actionShortCuts[] = { "", "Ctrl+W", "Ctrl+P", "Ctrl+Z", "Ctrl+K", "Ctrl+T",
                   "Ctrl+B", "Ctrl+I", "Ctrl+H", "Ctrl+N", "Ctrl+E", "Ctrl+A", "Ctrl+R", "Ctrl+V", "Ctrl+G",
                   "Ctrl+U" };
 
+/// StatusTips of the actions
 const char *m4dGUIMainWindow::actionStatusTips[] = { "Action for all unplugged available slots", 
                                                      "Adjust the brightness and/or contrast of the image", 
                                                      "Reposition the images in the window",
@@ -67,12 +72,14 @@ const char *m4dGUIMainWindow::actionStatusTips[] = { "Action for all unplugged a
                                                      "Switch the viewing axis orientation (x~y, y~z, z~x)",
                                                      "Rotates the volume about the three axes" };
 
+/// Slots for the actions
 const char *m4dGUIMainWindow::actionSlots[] = { SLOT(empty()), SLOT(viewerWindowLevel()), SLOT(viewerPan()),
                   SLOT(viewerZoom()), SLOT(viewerStack()), SLOT(slotTogglePrintData()), SLOT(viewerProbe()), 
                   SLOT(viewerNewPoint()), SLOT(viewerNewShape()), SLOT(slotDeletePoint()), SLOT(slotDeleteShape()),
                   SLOT(slotDeleteAll()), SLOT(slotToggleFlipHorizontal()), SLOT(slotToggleFlipVertical()), 
                   SLOT(slotToggleSliceOrientation()), SLOT(viewerRotate()) };
 
+/// Mapping available slots of viewers to actions
 const int m4dGUIMainWindow::slotsToActions[] = { ACTION_EMPTY, ACTION_EMPTY, ACTION_STACK, ACTION_EMPTY, ACTION_EMPTY,
                   ACTION_FLIP_VERTICAL, ACTION_FLIP_HORIZONTAL, ACTION_EMPTY, ACTION_EMPTY, ACTION_EMPTY, ACTION_EMPTY, 
                   ACTION_EMPTY, ACTION_EMPTY, ACTION_OVERLAY, ACTION_EMPTY, ACTION_ZOOM, ACTION_PAN, ACTION_WINDOW_LEVEL, 
@@ -127,8 +134,11 @@ void m4dGUIMainWindow::addDockWindow ( const char *title, QWidget *widget )
 {
   QDockWidget *dock = new QDockWidget( tr( title ), this );
 
-  dock->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
   dock->setWidget( widget );
+
+  dock->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
+  // dock->setFloating( true );
+  // dock->move( QPoint( x() + width() - dock->width(), y() + 150 ) );
  
   addDockWidget( Qt::RightDockWidgetArea, dock );
   viewMenu->addAction( dock->toggleViewAction() );
@@ -578,7 +588,7 @@ void m4dGUIMainWindow::createStatusBar()
 void m4dGUIMainWindow::delegateAction ( unsigned actionIdx, m4dGUIAbstractViewerWidget::ButtonHandler hnd )
 {
   /*
-  // would be better
+  // would be nicer
   emit toolChanged( m4dGUIAbstractViewerWidget::adjust_bc,
                     m4dGUIAbstractViewerWidget::right );
   */
