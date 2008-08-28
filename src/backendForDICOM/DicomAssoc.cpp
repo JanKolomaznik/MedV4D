@@ -123,7 +123,7 @@ DicomAssociation::InitAddressContainer( void)
 {
 	std::ifstream f("config.cfg");
 	if( f.fail() )
-		throw ExceptionBase("Config file not found!");
+		throw ExceptionBase("DICOM server Config file not found! (should be in working directory)");
 
   try {
 	  while( !f.eof())

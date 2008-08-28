@@ -36,11 +36,17 @@ namespace DicomInternal
 LocalService::LocalService()
 {
   // tryes to open local db file (for case it don't exist)
-  std::ofstream file(LOCAL_REC_DB_FILE_NAME);
+  std::ifstream file(LOCAL_REC_DB_FILE_NAME);
   if( ! file.good() )
   {
     file.close();
-    throw ExceptionBase("Could not create DB file!");
+    // create it
+    file.open(LOCAL_REC_DB_FILE_NAME, std::ios::out);
+    if( ! file.good() )
+    {
+      file.close();
+      throw ExceptionBase("Could not create DB file!");
+    }
   }
   file.close();
 

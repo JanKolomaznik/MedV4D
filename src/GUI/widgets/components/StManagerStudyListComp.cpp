@@ -166,10 +166,13 @@ StManagerStudyListComp::StManagerStudyListComp ( QDialog *studyManagerDialog, QW
 
 StManagerStudyListComp::~StManagerStudyListComp ()
 {
-  delete dcmProvider;
-  delete recentResultSet;
-  delete remoteResultSet;
-  delete DICOMDIRResultSet;
+  if( buildSuccessful)
+  {
+    delete dcmProvider;
+    delete recentResultSet;
+    delete remoteResultSet;
+    delete DICOMDIRResultSet;
+  }
 }
 
 
