@@ -1,0 +1,12 @@
+digraph G
+{
+  edge [fontname="FreeSans",fontsize=10,labelfontname="FreeSans",labelfontsize=10];
+  node [fontname="FreeSans",fontsize=10,shape=record];
+  Node1 [label="ConnectionInterface",height=0.2,width=0.4,color="black", fillcolor="white", style="filled" fontcolor="black"];
+  Node1 -> Node3 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node3 [label="AbstractImageConnectionInterface",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classM4D_1_1Imaging_1_1AbstractImageConnectionInterface.html",tooltip="Not supposed to instantiate - use only as substitution for typed images connections..."];
+  Node3 -> Node4 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node4 [label="AbstractImageConnection",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classM4D_1_1Imaging_1_1AbstractImageConnection.html"];
+  Node3 -> Node5 [dir=back,color="midnightblue",fontsize=10,style="solid",fontname="FreeSans"];
+  Node5 [label="ImageConnection\< Image\< ElementType, dimension \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classM4D_1_1Imaging_1_1ImageConnection_3_01Image_3_01ElementType_00_01dimension_01_4_01_4.html"];
+}

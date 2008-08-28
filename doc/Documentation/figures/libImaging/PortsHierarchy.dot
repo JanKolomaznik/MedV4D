@@ -1,0 +1,12 @@
+digraph G
+{
+  edge [fontname="FreeSans",fontsize=10,labelfontname="FreeSans",labelfontsize=10];
+  node [dir=back,color="midnightblue",fontname="FreeSans",fontsize=10,shape=record];
+  rankdir=TB;
+
+	InputImagePort [label="InputPortImageFilter\< Image\< ElementType, dimension \> \>"]
+	OutputImagePort [label="OutputPortImageFilter\< Image\< ElementType, dimension \> \>"]
+	
+	Port -> InputPort -> InputPortAbstractImage -> InputImagePort
+	Port -> OutputPort -> OutputPortAbstractImage -> OutputImagePort
+}

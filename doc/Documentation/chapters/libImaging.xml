@@ -127,13 +127,37 @@
 	<section>
 	<title>Ports</title>
 		
-	<para>Ports </para>
+	<para>Ports provide communication interface for filters (or other objects - like viewers) living in pipeline. Ports are either input or output and cannot be 
+		exchanged. 
+	</para>
+	<para>Input ports give readonly access to datasets and output give full access to datasets. Ports are stored in <classname>InputPortList</classname>
+		respective  <classname>OutputPortList</classname>. These container provide access to ports through their ID - index in container. In addition these containers 
+		can send message through all ports at once.
+	</para>
+
+	<para>
+		Usage of all ports isn't mandatory. For example one can design filter, which can have multiple different output formats, but only one at the moment according 
+		to its settings. For each format there can be special port and filter send data only to propriete one.
+	</para>
+
 	</section>
 
 	<section>
 	<title>Connections</title>
 		
-	<para>aaaaaaa</para>
+	<para>Connections answer the question, where ports get access to datasets. Connection objects work like bridge between ports. There can be only one output port (writer) connected to 
+		one connection object, but multiple input ports (readers). They all share access to dataset maintained by connection object.
+	</para>
+
+	<para>Connection are designed even as inputs and outputs to whole pipeline. You can tell constructor of connection object to not create dataset. You can than pass 
+		your own dataset (but of apropriete type) to connection. And if there is no writer its your input gateway to pipeline. On the other side, if there is no 
+		readers you have output gateway.
+	</para>
+
+	<para>To connection objects can be assigned message listener. Its object which can read messages going through connection. This can be used for implementation of 
+		progress bars, notifiers and for advanced control of a pipeline or even for synchronization of multiple pipelines.	
+	</para>
+
 	</section>
 
 </section>
@@ -254,6 +278,44 @@
 		</para></formalpara><para>
 		So only method you must override is <methodname>ProcessImage()</methodname>.
 		</para>
+
+		<formalpara><title><classname>ImageConvertor</classname></title><para>
+		Because all parts of pipeline are strictly typed, we can only process images of certain type. But in reality user can open any kind of image. And here
+		comes work for <classname>ImageConvertor</classname>, which can convert generic images to desired type (template parameter). So usualy we put this filter
+		as the first in pipeline.		
+		</para></formalpara>
+
+	</section>
+
+	<section>
+	<title>Port and connection hierarchy</title>
+		<para>
+		<figure float="1" id="pic.PortsHierarchy">
+		<title>Port hierarchy</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="figures/libImaging/PortsHierarchy.eps" format="EPS" scale="75"/>
+			</imageobject>
+			<imageobject>
+				<imagedata fileref="figures/libImaging/PortsHierarchy.png" format="PNG" scale="75"/>
+			</imageobject>
+		</mediaobject>
+		</figure>
+		</para>
+
+		<para>
+		<figure float="1" id="pic.ConnectionHierarchy">
+		<title>Connection hierarchy</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="figures/libImaging/ConnectionHierarchy.eps" format="EPS" scale="75"/>
+			</imageobject>
+			<imageobject>
+				<imagedata fileref="figures/libImaging/ConnectionHierarchy.png" format="PNG" scale="75"/>
+			</imageobject>
+		</mediaobject>
+		</figure>
+		</para>
 	</section>
 
 </section>
@@ -285,8 +347,26 @@
 	<title>Locking image parts</title>
 
 		<para>
-		<xref linkend="pic.ImageLocking"/>
+		Image locking was designed to be fast and powerful enought to fulfill our needs. Locks our optional, so if some object (ie. viewer) doesn't 
+		need synchronization he can ignore locking.	
+		</para>
+		<para>
+		Locking is done by marking certain parts of image as <constant>DIRTY</constant> these parts can be only axis aligned bounding hyperboxes. If filter plans to 
+		do computation on some part of image he marks this part as <constant>DIRTY</constant> and when he finishes succesfuly he mark it as <constant>MODIFIED</constant>, 
+		if he finishes unsuccessfuly he marks it as <constant>CANCELLED</constant>. For this purposes is prepared class <classname>WriterBBoxInterface</classname>, which
+		stands for image part.
+		</para>
+
+		<para>
+			If somebody wants to read some part of image and wants to be sure that nobody's making modification to this part, he uses 
+			<classname>ReaderBBoxInterface</classname>. Its class similar to <classname>WriterBBoxInterface</classname>, but its state depends on state of incident
+			writer bounding boxes. As shown in <xref linkend="pic.ImageLocking"/> - reader bounding box will remain <constant>DIRTY</constant> until all incident writer
+			bboxes are marked modified or at least one <constant>CANCELLED</constant>.
+		</para>
+	
+			
 		
+		<para>
 		<figure float="1" id="pic.ImageLocking">
 		<title>Synchronization over image data - 2D example</title>
 		<mediaobject>
@@ -302,6 +382,18 @@
 
 	</section>
 
+	<section>
+	<title>Timestamps</title>
+
+		<para>
+		Very often we need to detect if something changed during time or which change is older. Thats why we have class <classname>TimeStamp</classname>.
+		</para>
+		<para>
+		Its simple class, it has inside two big integers - one is ID of timestamp and second is actual "time". In addition we have inside mutex for 
+		access synchronization. This class has predefined <methodname>operator&lt;()</methodname> so two instance can be easily compared which is older.
+		This has defined result only for two timestamps with same ID. Different objects have timestamps with different ID.
+		</para>
+	</section>
 
 </section>
 
@@ -595,12 +687,15 @@ ThresholdingFilter< ImageType >
 	</section>
 
 	<section>
-	<title>Defining new dataset type</title>
-		
+		<title>Defining new dataset type</title>
+		<para>
+			This area is planned for future development - some concepts are planned to be introduced to make this as easy as possible. 
+			But main steps are clear now :
+		</para>
 		<itemizedlist>
-			<listitem><para>Designing dataset interfaces and synchronization system</para></listitem>
-			<listitem><para>Implementing connection objects and input/output ports</para></listitem>
-			<listitem><para>Creating filter base classes working on this dataset type</para></listitem>
+			<listitem><para>Designing dataset interfaces and synchronization system. Use prepared abstract classes.</para></listitem>
+			<listitem><para>Implementing connection objects and input/output ports. Needed for interaction with pipeline.</para></listitem>
+			<listitem><para>Creating filter base classes working on this dataset type. To make it easier for users.</para></listitem>
 		</itemizedlist>
 
 	</section>
