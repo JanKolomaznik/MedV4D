@@ -10,7 +10,9 @@
  *  @{
  *  @section dataconv Data conversion
  *
- *  data has to be converted from our representation to VTK one
+ *  This library is designed as bridge between libImaging and VTK - it can
+ *  convert images from Medv4D project to	VTK representation. So VTK viewers
+ *  and filters can be applied to our data.
  */
 
 #include "Imaging/Image.h"

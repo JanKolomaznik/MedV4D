@@ -10,9 +10,11 @@
  *
  *  @addtogroup common
  *  @{
- *  @section Logging
+ *  @section logging Logging
  *
- *  There are defines of function and streams for logging support.
+ *  We have prepared few macros for easy sending informations 
+ *  to log stream and few classes designed for formating output.
+ *	This hierarchy is still opened and prepared for extending.
  */
 
 extern std::ostream *logStream;

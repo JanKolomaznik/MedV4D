@@ -120,6 +120,7 @@ bool
 ImageConvertor< OutputImageType, Convertor >
 ::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
 {
+  utype = utype;
 	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( 
 			this->in->GetElementTypeID(), 
 			return ConvertImage< TTYPE, typename ImageTraits< OutputImageType >::ElementType, Convertor >( *(this->in), *(this->out) )

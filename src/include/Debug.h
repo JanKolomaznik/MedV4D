@@ -7,14 +7,19 @@
  *
  *  @addtogroup common
  *  @{
- *  @section DEBUG support
+ *  @section debug DEBUG support
  *
- *  Defines some debuging tools that are (and should be) used all over
- *  the project.
+ *  First thing which should be considered before starting big project is
+ *  how it will be debugged. We have set of preprocessor macros, which
+ *  allow us to use debug prints, conditional compilation, debuging prints
+ *  for code blocks. 
  *
- * These symbols should be set at compilation time to turn on debugging prints.
- * DEBUG_LEVEL int
- * DEBUG_ADITIONAL_INFO
+ *  Some of these macros have version, which takes numeric parameter - 
+ *  debugging level. Actual debugging level is passed to compiler in 
+ *  command line as value assigned to preprocessor definition: 
+ *  DEBUG_LEVEL= int. This enables debugging and set debugging level. 
+ *  If you in addition pass to compiler definition DEBUG_ADITIONAL_INFO
+ *  some of mentioned debugging tools will have richer output.
  */
 
 

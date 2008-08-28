@@ -64,7 +64,7 @@ Server::Accept( void)
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-Server::EndAccepted( tcp::socket *clientSock,
+Server::EndAccepted( boost::asio::ip::tcp::socket *clientSock,
       const boost::system::error_code& error)
 {
   try {
@@ -93,8 +93,9 @@ Server::EndAccepted( tcp::socket *clientSock,
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-Server::EndPrimaryHeaderRead( tcp::socket *clientSock, PrimaryJobHeader *header,
-        const boost::system::error_code& error)
+Server::EndPrimaryHeaderRead( boost::asio::ip::tcp::socket *clientSock,
+                             PrimaryJobHeader *header,
+                             const boost::system::error_code& error)
 {
   try {
     BasicSocket::HandleErrors( error);
@@ -147,7 +148,7 @@ Server::EndPrimaryHeaderRead( tcp::socket *clientSock, PrimaryJobHeader *header,
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-Server::EndWritePingMessage( tcp::socket *clientSock,
+Server::EndWritePingMessage( boost::asio::ip::tcp::socket *clientSock,
         const boost::system::error_code& error)
 {
   try {
@@ -162,7 +163,7 @@ Server::EndWritePingMessage( tcp::socket *clientSock,
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-Server::WritePingMessage( tcp::socket *clientSock)
+Server::WritePingMessage( boost::asio::ip::tcp::socket *clientSock)
 {
   // write ping message
   clientSock->async_write_some(

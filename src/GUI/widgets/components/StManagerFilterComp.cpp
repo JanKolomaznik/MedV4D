@@ -1,7 +1,7 @@
 /**
  *  @ingroup gui
  *  @file StManagerFilterComp.cpp
- *  @brief ...
+ *  @brief some brief
  */
 #include "GUI/StManagerFilterComp.h"
 

@@ -7,7 +7,7 @@
  *
  *  @addtogroup common
  *  @{
- *  @section Functors
+ *  @section functors Functors
  *
  *  destruction tools
  */

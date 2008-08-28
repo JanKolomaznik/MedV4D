@@ -2,7 +2,16 @@
  * @ingroup gui 
  * @author Attila Ulman 
  * @file m4dGUIMainWindow.h 
+ *
  * @{ 
+ * 
+ *  The MedV4D project uses the Qt library to create and manipulate GUI
+ *  elements. Qt is a very powerful, object oriented,	cross platform GUI
+ *  library. Since it has an X Window System implementation as well as a 
+ *  Windows implementation,	it allows the software to run under Windows 
+ *  and Unices as well. It works together very well with many other useful
+ *  toolkits,	one of which is the VTK (Visualization Toolkit) toolkit, 
+ *  which is also used as an optional component of the software.
  **/
 
 #ifndef M4D_GUI_MAIN_WINDOW_H

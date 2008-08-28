@@ -1,7 +1,7 @@
 /**
  *  @ingroup gui
  *  @file m4dGUIStudyManagerWidget.cpp
- *  @brief ...
+ *  @brief some brief
  */
 #include "GUI/m4dGUIStudyManagerWidget.h"
 

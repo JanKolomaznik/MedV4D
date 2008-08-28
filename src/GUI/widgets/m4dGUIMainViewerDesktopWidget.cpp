@@ -1,7 +1,7 @@
 /**
  *  @ingroup gui
  *  @file m4dGUIMainViewerDesktopWidget.cpp
- *  @brief ...
+ *  @brief some brief
  */
 #include "GUI/m4dGUIMainViewerDesktopWidget.h"
 

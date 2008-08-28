@@ -19,6 +19,8 @@ namespace M4D
 namespace DicomInternal 
 {
 
+#define LOCAL_REC_DB_FILE_NAME "tree.dat"
+
 /// Implements searching and gettting functions to local FS dicom files.
 /**
  *  It sequentialy loads data files in specified folder (and subfolders through queue), read ID info, based on that info and given filter inserts or not inserts (if matching found) record into result.
@@ -29,8 +31,29 @@ namespace DicomInternal
  */
 class LocalService
 {
-	friend class M4D::Dicom::DcmProvider;
+public:
+  // performs search run on given folder
+	void Find( 
+			DcmProvider::ResultSet &result,
+      const std::string &path);
 
+  // returns serie info based on build info structure
+  void FindStudyInfo( 
+    DcmProvider::SerieInfoVector &result,
+      const std::string &patientID,
+			const std::string &studyID);
+
+  // performs search run and returns set of loaded data files (DicomObj)
+  void GetImageSet(
+      const std::string &patientID,
+			const std::string &studyID,
+			const std::string &serieID,
+      DcmProvider::DicomObjSet &result);
+
+  LocalService();
+  ~LocalService();
+
+private:
   struct Serie
   {
     std::string id;
@@ -140,24 +163,6 @@ class LocalService
   std::string m_lastSearchDir;
 
   Dicom::DcmProvider::ResultSet m_lastResultSet;
-
-  // performs search run on given folder
-	void Find( 
-			DcmProvider::ResultSet &result,
-      const std::string &path);
-
-  // returns serie info based on build info structure
-  void FindStudyInfo( 
-    DcmProvider::SerieInfoVector &result,
-      const std::string &patientID,
-			const std::string &studyID);
-
-  // performs search run and returns set of loaded data files (DicomObj)
-  void GetImageSet(
-      const std::string &patientID,
-			const std::string &studyID,
-			const std::string &serieID,
-      DcmProvider::DicomObjSet &result);
 
   // supporting functions to go on one folder or to solve single file
   void SolveDir( boost::filesystem::path & dirName,

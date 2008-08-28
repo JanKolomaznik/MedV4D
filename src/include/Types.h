@@ -7,10 +7,23 @@
  *
  *  @addtogroup common
  *  @{
- *  @section CustomTypes
+ *  @section types Types definition
  *
- *  We have defines typedefs for all basic types. Signed even
- *  unsigned. It is for easier porting and avoiding mismatchs.
+ *  Because project is planned to be multi platform. we must use
+ *  architecture independent types - we achieved that by typedefs
+ *  (int16, uint32, float32 etc. ), which must be rewritten for 
+ *  every incompatible platform.
+ *
+ *  Another issue we are dealing with in project is how to slightly
+ *  move from static polymorphism (compile time - templates) and 
+ *  dynamic polymorphism (runtime - object programming, RTTI).
+ *  For this we have few tools to make that easier.
+ *
+ *  We have enumeration with values pertaining to basic numeric types. 
+ *  These values are returned from templated function 
+ *  GetNumericTypeID<TYPE>().
+ *  On the other side over these values macros like 
+ *  NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO() decide which template instance call. 
  */
 
 /*

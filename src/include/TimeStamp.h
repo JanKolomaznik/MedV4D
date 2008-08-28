@@ -10,8 +10,11 @@
  *
  *  @addtogroup common
  *  @{
- *  @section TimeStamps
+ *  @section timestaps TimeStamps
  *  
+ *  Very important class TimeStamp, which is used every time when change
+ *  detection is needed. Its implemented thread safe, so it can be 
+ *	used even for synchronization purposes.
  */
 
 namespace M4D

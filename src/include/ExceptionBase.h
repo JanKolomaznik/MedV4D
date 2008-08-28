@@ -11,7 +11,7 @@
  *
  *  @addtogroup common
  *  @{
- *  @section Exception handling
+ *  @section exceptionhandling Exception handling
  *
  *  Defines base class that is used for exception handling. All other
  *  exceptions within the project should inherit from her.

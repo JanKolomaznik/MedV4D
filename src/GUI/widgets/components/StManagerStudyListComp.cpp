@@ -517,7 +517,8 @@ void StManagerStudyListComp::comboPathChanged ( const QString &text )
 }
 
 
-void StManagerStudyListComp::loadRecentExams ( DcmProvider::ResultSet &resultSet, const QString &prefix )
+void StManagerStudyListComp::loadRecentExams ( 
+  M4D::Dicom::DcmProvider::ResultSet &resultSet, const QString &prefix )
 {
   QSettings settings;
   int size = settings.beginReadArray( prefix );
@@ -551,8 +552,9 @@ void StManagerStudyListComp::loadRecentRow ( DcmProvider::TableRow &row, const Q
 }
 
 
-void StManagerStudyListComp::addResultSetToStudyTable ( const DcmProvider::ResultSet *resultSet,
-                                                        QTableWidget *table )
+void StManagerStudyListComp::addResultSetToStudyTable ( 
+  const M4D::Dicom::DcmProvider::ResultSet *resultSet, 
+                                    QTableWidget *table )
 {
   // for correct inserting sorting must be disabled
   table->setSortingEnabled( false );

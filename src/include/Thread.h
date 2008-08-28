@@ -15,9 +15,11 @@
  *
  *  @addtogroup common
  *  @{
- *  @sectoin Threading support
+ *  @section threading Threading support
  *
- *  Some tools taken from boost
+ *  This is only header with wrappers to boost::thread classes (mutexes, ...). 
+ *  Only purpose is to provide interace for multithreading with option to
+ *  change multithreading framework.
  */
 
 namespace M4D

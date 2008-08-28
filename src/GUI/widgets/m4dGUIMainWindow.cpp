@@ -1,7 +1,7 @@
 /**
  *  @ingroup gui
  *  @file m4dGUIMainWindow.cpp
- *  @brief ...
+ *  @brief some brief
  */
 #include "GUI/m4dGUIMainWindow.h"
 
@@ -608,7 +608,7 @@ void m4dGUIMainWindow::delegateAction ( unsigned actionIdx, m4dGUIAbstractViewer
 }
 
 
-void m4dGUIMainWindow::process ( DcmProvider::DicomObjSetPtr dicomObjSet )
+void m4dGUIMainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
 {
   AbstractImage::AImagePtr inputImage = ImageFactory::CreateImageFromDICOM( dicomObjSet );
 

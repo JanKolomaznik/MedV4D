@@ -1,4 +1,11 @@
-
+/**
+ *  @ingroup dicom
+ *  @file backendForDICOM/main.c
+ *  @author Vaclav Klecanda
+ *  @brief This file is actuali NOT used. 
+ *
+ *  It was only testing main for DICOM library
+ */
 #include "main.h"
 #include "dicomConn/DICOMServiceProvider.h"
 

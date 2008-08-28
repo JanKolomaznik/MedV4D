@@ -1,7 +1,7 @@
 /**
  *  @ingroup gui
  *  @file m4dGUISliceViewerWidget.cpp
- *  @brief ...
+ *  @brief some brief
  */
 #include "GUI/m4dGUISliceViewerWidget.h"
 
@@ -84,9 +84,19 @@ public:
      *  @param slice the number of the slice to be drawn
      *  @param brightness reference to return the overall brightness
      *  @param contrast reference to return the overall contrast
+     *  @param dimension dimense
      *  @return true, if texture preparing was successful, false otherwise
      */
-    static bool prepare( Imaging::InputPortAbstractImage* inPort, uint32& width, uint32& height, GLint brightnessRate, GLfloat contrastRate, SliceOrientation so, uint32 slice, int64& brightness, int64& contrast, unsigned& dimension )
+    static bool prepare( Imaging::InputPortAbstractImage* inPort,
+      uint32& width,
+      uint32& height,
+      GLint brightnessRate,
+      GLfloat contrastRate,
+      SliceOrientation so,
+      uint32 slice,
+      int64& brightness,
+      int64& contrast,
+      unsigned& dimension )
     {
         uint32 depth;
         double maxvalue;

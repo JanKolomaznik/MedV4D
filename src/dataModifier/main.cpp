@@ -1,6 +1,6 @@
 /**
  *  @ingroup datamodifier
- *  @file main.cpp
+ *  @file dataModifier/main.cpp
  *  @brief entrypoint for DataModifier program
  *  @author Vaclav Klecanda
  */

@@ -34,6 +34,9 @@ namespace Dicom
 ///////////////////////////////////////////////////////////////////////
 
 DcmProvider::DcmProvider( bool blocking)
+  :m_findService(NULL)
+  ,m_moveService(NULL)
+  ,m_localService(NULL)
 {
   m_findService = new FindService();
   ((FindService *)m_findService)->SetMode( blocking);
@@ -42,42 +45,30 @@ DcmProvider::DcmProvider( bool blocking)
   ((MoveService *)m_moveService)->SetMode( blocking);
 
   m_localService = new LocalService();
-
-  // load the tree into local service
-  std::ifstream file("tree.dat");
-  if( ! file.good() )
-    throw ExceptionBase("No tree.dat file");
-
-  ((LocalService*)m_localService)->Load( file);
 }
 
+///////////////////////////////////////////////////////////////////////
+
 DcmProvider::DcmProvider()
+  :m_findService(NULL)
+  ,m_moveService(NULL)
+  ,m_localService(NULL)
 {
 	m_findService = new FindService();
 	m_moveService = new MoveService();
   m_localService = new LocalService();
-
-  // load the tree into local service
-  std::ifstream file("tree.dat");
-  if( ! file.good() )
-    throw ExceptionBase("No tree.dat file");
-
-  ((LocalService*)m_localService)->Load( file);
 }
+
+///////////////////////////////////////////////////////////////////////
 
 DcmProvider::~DcmProvider()
 {
-	delete ( (FindService *) m_findService);
-	delete ( (MoveService *) m_moveService);
-
-  // save the tree from local service
-  std::ofstream file("tree.dat");
-  if( ! file.good() )
-    throw ExceptionBase("No tree.dat file");
-
-  ((LocalService*)m_localService)->Flush( file);
-
-  delete ( (LocalService *) m_localService);
+  if( m_findService != NULL)
+	  delete ( (FindService *) m_findService);
+  if( m_moveService != NULL)
+	  delete ( (MoveService *) m_moveService);
+  if( m_localService != NULL)
+    delete ( (LocalService *) m_localService);
 }
 
 ///////////////////////////////////////////////////////////////////////

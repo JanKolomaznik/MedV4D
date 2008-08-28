@@ -104,9 +104,13 @@ public:
     /**
      * Method for receiving messages - called by sender. ( Implementing from MessageReceiverInterface ).
      * @param msg Smart pointer to message object - we don't have to worry about deallocation
-     * @param sendStyle How treat incoming message
+     * @param sendStyle How treat incoming message of sending message
+     * @param direction defines direction
      */
-    virtual void ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imaging::PipelineMessage::MessageSendStyle sendStyle, Imaging::FlowDirection direction );
+    virtual void ReceiveMessage( 
+      Imaging::PipelineMessage::Ptr msg,
+      Imaging::PipelineMessage::MessageSendStyle sendStyle,
+      Imaging::FlowDirection direction );
 
     
 public slots:

@@ -31,7 +31,47 @@ namespace M4D
 namespace DicomInternal 
 {
 
-///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+LocalService::LocalService()
+{
+  // tryes to open local db file (for case it don't exist)
+  std::ofstream file(LOCAL_REC_DB_FILE_NAME);
+  if( ! file.good() )
+  {
+    file.close();
+    throw ExceptionBase("Could not create DB file!");
+  }
+  file.close();
+
+  // open it for reading and load db
+  std::ifstream forReadingFile( LOCAL_REC_DB_FILE_NAME);
+  if( ! forReadingFile.good() )
+  {
+    forReadingFile.close();
+    throw ExceptionBase("Cannot read the DB file!");
+  }
+  Load( forReadingFile);
+  forReadingFile.close();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+LocalService::~LocalService()
+{
+  std::ofstream file(LOCAL_REC_DB_FILE_NAME);
+  if( ! file.good() )
+  {
+    LOG("Could NOT write to DBFile");
+  }
+  else
+  {
+    Flush( file);
+  }
+  file.close();
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 void
 LocalService::Find( 
