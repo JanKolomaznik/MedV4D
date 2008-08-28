@@ -628,7 +628,7 @@ unsigned StManagerStudyListComp::getSeriesIndex( const DcmProvider::SerieInfoVec
 
   QVBoxLayout *mainLayout = new QVBoxLayout;
 
-  QLabel *seriesLabel = new QLabel( tr( "Series in selected study:" ) );
+  QLabel *seriesLabel = new QLabel( tr( "Series in selected study:\n(their descriptions)" ) );
   mainLayout->addWidget( seriesLabel );
 
   QSpacerItem *verticalSpacer = new QSpacerItem( 2, 10, QSizePolicy::Minimum, 
