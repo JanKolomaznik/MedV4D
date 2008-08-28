@@ -10,10 +10,6 @@
 <section>
 <title>Compilation</title>
 
-	<para>
-
-	</para>
-
 	<section>
 	<title>Dependencies</title>
 		
@@ -23,5 +19,21 @@
 		</itemizedlist>
 	</section>
 </section>
+
+<section>
+<title>Main parts</title>
+
+	<section>
+	<title><classname>m4dImageDataSource</classname></title>
+	<para>This class is implementation of VTK interface <classname>vtkImageAlgorithm</classname>. So it can be easily included
+	to VTK pipeline.
+	</para>	
+
+	<para>
+		This class takes instance of our implmentation of raster images and create VTK version of that.
+	</para>
+	</section>
+</section>
+
 </chapter>
 
