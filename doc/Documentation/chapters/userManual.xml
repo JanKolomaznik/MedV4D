@@ -656,6 +656,11 @@
     </para>
 
     <para>
+      Working in different searching modes is almost identical - you switch between the
+      modes by changing tabs and you have always the same behavior.
+    </para>
+
+    <para>
       All the tabs can be customized to suit your preferences by re-sorting the
       columns in the exam lists. Click a header to sort the list according to
       that heading. For example, click Patient Name to sort the list alphabetically.
@@ -1738,8 +1743,76 @@
 
 <section>
   <title>Replaceing viewers (slice viewer/3D viewer)</title>
+
   <para>
+    The base application supports two types of viewers - slice viewer and 3D viewer.
+    You can easily switch between them - on the fly - you don't have to reopen
+    the image or do something else, just switch.
+    Replacing the viewer with another one causes updates of adaptive toolBars -
+    according to the new viewer's properties (enabling/disabling tools, pushing,
+    triggering).
   </para>
+
+  <orderedlist>
+    <title>To switch to 3D view:</title>
+    <listitem>
+      <para>
+        Select a image/series.
+      </para>
+    </listitem>
+    <listitem>
+      <itemizedlist>
+        <title>Choose one of the following options:</title>
+        <listitem>
+          <para>
+            <menuchoice>
+              <shortcut>
+                <keycombo><keycap>Ctrl</keycap><keycap>L</keycap></keycombo>
+              </shortcut>
+              <guimenu>Tools</guimenu>
+              <guimenuitem>Replace Viewer</guimenuitem>
+            </menuchoice>
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Click
+            <inlinemediaobject>
+              <imageobject>
+                <imagedata fileref="figures/userManual/icons/swap.eps"/>
+              </imageobject>
+              <imageobject>
+                <imagedata fileref="figures/userManual/icons/swap.png"/>
+              </imageobject>
+            </inlinemediaobject>
+          </para>
+        </listitem>
+      </itemizedlist>
+
+      <para>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figures/userManual/shots/volume-big.eps" format="EPS"/>
+          </imageobject>
+          <imageobject>
+            <imagedata fileref="figures/userManual/shots/volume.png" format="PNG"/>
+          </imageobject>
+        </mediaobject>
+      </para>
+
+      <para>
+        To switch back to slice viewer, select the series and click
+        <inlinemediaobject>
+          <imageobject>
+            <imagedata fileref="figures/userManual/icons/swap.eps"/>
+          </imageobject>
+          <imageobject>
+            <imagedata fileref="figures/userManual/icons/swap.png"/>
+          </imageobject>
+        </inlinemediaobject> again.
+      </para>
+    </listitem>
+  </orderedlist>
 </section>
 
 
@@ -1747,10 +1820,4 @@
 
 <!--
 - color borders
-- layout change - selected moving....
-- viewer change - adaptive toolbars (enable/disable, pushed, triggered, etc)
-- on the fly viewer change
-- stud. manager - 2 recent modes
-- stud. manager - 3 modes (changing by tabs, always the same behavior)
-- switch viewer - 3D mode?
 -->
