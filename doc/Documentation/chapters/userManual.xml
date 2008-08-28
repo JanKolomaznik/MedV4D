@@ -115,7 +115,7 @@
     <para>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="figures/userManual/shots/window.eps" format="EPS"/>
+          <imagedata fileref="figures/userManual/shots/window.eps" format="EPS"  scale="75"/>
         </imageobject>
         <imageobject>
           <imagedata fileref="figures/userManual/shots/window.png" format="PNG"/>
@@ -192,7 +192,7 @@
             <para>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/userManual/shots/custom.eps" format="EPS"/>
+                  <imagedata fileref="figures/userManual/shots/custom.eps" format="EPS" scale="75"/>
                 </imageobject>
                 <imageobject>
                   <imagedata fileref="figures/userManual/shots/custom.png" format="PNG"/>
@@ -623,7 +623,7 @@
         <para>
           <mediaobject>
             <imageobject>
-              <imagedata fileref="figures/userManual/shots/study.eps" format="EPS"/>
+              <imagedata fileref="figures/userManual/shots/study.eps" format="EPS" scale="75"/>
             </imageobject>
             <imageobject>
               <imagedata fileref="figures/userManual/shots/study.png" format="PNG"/>
@@ -727,7 +727,7 @@
           <para>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/userManual/shots/date.eps" format="EPS"/>
+                <imagedata fileref="figures/userManual/shots/date.eps" format="EPS" scale="75"/>
               </imageobject>
               <imageobject>
                 <imagedata fileref="figures/userManual/shots/date.png" format="PNG"/>
@@ -848,7 +848,7 @@
           <para>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/userManual/shots/directory.eps" format="EPS"/>
+                <imagedata fileref="figures/userManual/shots/directory.eps" format="EPS" scale="75"/>
               </imageobject>
               <imageobject>
                 <imagedata fileref="figures/userManual/shots/directory.png" format="PNG"/>
@@ -917,7 +917,7 @@
         <para>
           <mediaobject>
             <imageobject>
-              <imagedata fileref="figures/userManual/shots/view.eps" format="EPS"/>
+              <imagedata fileref="figures/userManual/shots/view.eps" format="EPS" scale="75"/>
             </imageobject>
             <imageobject>
               <imagedata fileref="figures/userManual/shots/view.png" format="PNG"/>
@@ -979,7 +979,7 @@
               <para>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/userManual/shots/layout.eps" format="EPS"/>
+                    <imagedata fileref="figures/userManual/shots/layout.eps" format="EPS" scale="75"/>
                   </imageobject>
                   <imageobject>
                     <imagedata fileref="figures/userManual/shots/layout.png" format="PNG"/>
@@ -1651,7 +1651,7 @@
         <para>
           <mediaobject>
             <imageobject>
-              <imagedata fileref="figures/userManual/shots/probe-big.eps" format="EPS"/>
+              <imagedata fileref="figures/userManual/shots/probe-big.eps" format="EPS" scale="75"/>
             </imageobject>
             <imageobject>
               <imagedata fileref="figures/userManual/shots/probe.png" format="PNG"/>
@@ -1792,7 +1792,7 @@
       <para>
         <mediaobject>
           <imageobject>
-            <imagedata fileref="figures/userManual/shots/volume-big.eps" format="EPS"/>
+            <imagedata fileref="figures/userManual/shots/volume-big.eps" format="EPS" scale="75"/>
           </imageobject>
           <imageobject>
             <imagedata fileref="figures/userManual/shots/volume.png" format="PNG"/>

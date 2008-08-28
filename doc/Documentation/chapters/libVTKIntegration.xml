@@ -19,7 +19,7 @@
 		
 		<itemizedlist>
 			<listitem><para>libImaging and all its dependencies</para></listitem>
-			<listitem><para>VTK</para></listitem>
+			<listitem><para>VTK - <ulink url="www.VTK.org"/></para></listitem>
 		</itemizedlist>
 	</section>
 </section>
