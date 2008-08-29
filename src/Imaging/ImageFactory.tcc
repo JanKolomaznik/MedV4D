@@ -104,6 +104,11 @@ ImageFactory::CreateEmptyImage2DTyped(
 			float32		elementHeight
 			)
 {
+	D_BLOCK_COMMENT( "++++++++ Creating 2D Image ++++++++", "++++++++ Image creation finished ++++++++" )
+	D_PRINT( "++++++++ Width      = " << width );
+	D_PRINT( "++++++++ Height     = " << height );
+	D_PRINT( "++++++++ ElementExt = " << elementWidth << "x" << elementHeight );
+
 	//TODO exceptions
 	typename ImageDataTemplate< ElementType >::Ptr ptr = 
 		ImageFactory::CreateEmptyImageData2DTyped< ElementType >( width, height, elementWidth, elementHeight );
@@ -123,6 +128,11 @@ ImageFactory::ReallocateImage2DData(
 		float32			elementHeight
 		)
 {
+	D_BLOCK_COMMENT( "++++++++ Reallocating 2D Image ++++++++", "++++++++ Image reallocation finished ++++++++" )
+	D_PRINT( "++++++++ Width      = " << width );
+	D_PRINT( "++++++++ Height     = " << height );
+	D_PRINT( "++++++++ ElementExt = " << elementWidth << "x" << elementHeight );
+
 	//TODO exceptions
 	typename ImageDataTemplate< ElementType >::Ptr ptr = 
 		ImageFactory::CreateEmptyImageData2DTyped< ElementType >( width, height, elementWidth, elementHeight );
@@ -162,6 +172,12 @@ ImageFactory::CreateEmptyImage3DTyped(
 			float32		elementDepth
 			)
 {
+	D_BLOCK_COMMENT( "++++++++ Creating 3D Image ++++++++", "++++++++ Image creation finished ++++++++" )
+	D_PRINT( "++++++++ Width      = " << width );
+	D_PRINT( "++++++++ Height     = " << height );
+	D_PRINT( "++++++++ Depth      = " << depth );
+	D_PRINT( "++++++++ ElementExt = " << elementWidth << "x" << elementHeight << "x" << elementDepth );
+
 	//TODO exceptions
 	typename ImageDataTemplate< ElementType >::Ptr ptr = 
 		ImageFactory::CreateEmptyImageData3DTyped< ElementType >( width, height, depth, elementWidth, elementHeight, elementDepth );
@@ -183,6 +199,12 @@ ImageFactory::ReallocateImage3DData(
 		float32			elementDepth
 		)
 {
+	D_BLOCK_COMMENT( "++++++++ Reallocating 3D Image ++++++++", "++++++++ Image reallocation finished ++++++++" )
+	D_PRINT( "++++++++ Width      = " << width );
+	D_PRINT( "++++++++ Height     = " << height );
+	D_PRINT( "++++++++ Depth      = " << depth );
+	D_PRINT( "++++++++ ElementExt = " << elementWidth << "x" << elementHeight << "x" << elementDepth );
+
 	//TODO exceptions
 	typename ImageDataTemplate< ElementType >::Ptr ptr = 
 		ImageFactory::CreateEmptyImageData3DTyped< ElementType >( width, height, depth, elementWidth, elementHeight, elementDepth );

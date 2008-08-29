@@ -92,7 +92,10 @@ class AbstractImage::EWrongDimension
 {
 	//TODO
 };
-
+/**
+ * Templated class with specializations for each dimension - now has no special purpose, but in future some 
+ * methods from Image classes will be moved here.
+ **/
 template< unsigned dim >
 class AbstractImageDim;
 
@@ -119,6 +122,14 @@ public:
 
 };
 
+/**
+ * Templated class made for storing raster image data of certain type. 
+ * It has specialization for each used dimension.
+ * It contains buffer with data, which can be shared among different images - for example 
+ * 2D image can share one slice from 3D image. But now this sharing concept isn't finished. And will be available in
+ * future versions. 
+ * Sharing is possible because locking is done on buffer and this class has only wrapper methods for locking.
+ **/
 template< typename ElementType, unsigned dim >
 class Image;
 

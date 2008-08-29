@@ -84,6 +84,9 @@ Image< ElementType, 2 >::ReallocateData( typename ImageDataTemplate< ElementType
 			//TODO throw exception
 	}
 
+	//We have to inform about changes in structure.
+	this->IncStructureTimestamp();
+
 	_imageData = imageData;
 
 	FillDimensionInfo();
@@ -357,6 +360,9 @@ Image< ElementType, 3 >::ReallocateData( typename ImageDataTemplate< ElementType
 	if( imageData->GetDimension() != Dimension ) {
 			//TODO throw exception
 	}
+
+	//We have to inform about changes in structure.
+	this->IncStructureTimestamp();
 
 	_imageData = imageData;
 
