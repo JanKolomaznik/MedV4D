@@ -74,6 +74,9 @@ protected:
 	void
 	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
 
+	void
+	MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype );
+
 	/**
 	 * Method called in execution methods after computation.
 	 * When overriding in successors, predecessor implementation must be called as last.
@@ -82,6 +85,8 @@ protected:
 	void
 	AfterComputation( bool successful );
 	
+	ReaderBBoxInterface::Ptr	_readerBBox;
+	WriterBBoxInterface		*_writerBBox;
 
 private:
 	GET_PROPERTIES_DEFINITION_MACRO;

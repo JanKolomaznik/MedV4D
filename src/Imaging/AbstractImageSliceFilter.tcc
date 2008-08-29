@@ -77,10 +77,8 @@ cleanup:
 template< typename InputElementType, typename OutputImageType >
 void
 AbstractImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
-::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
+::MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype )
 {
-	//TODO
-	PredecessorType::BeforeComputation( utype );	
 
 	unsigned computationGrouping = static_cast<Properties*>(this->_properties)->_computationGrouping;
 	unsigned sliceComputationNeighbourCount = static_cast<Properties*>(this->_properties)->_sliceComputationNeighbourCount;
@@ -172,15 +170,6 @@ AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputEle
 	: PredecessorType( prop )
 {
 
-}
-
-template< typename InputElementType, typename OutputElementType >
-void
-AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
-::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
-{
-	//TODO
-	PredecessorType::BeforeComputation( utype );	
 }
 
 template< typename InputElementType, typename OutputElementType >

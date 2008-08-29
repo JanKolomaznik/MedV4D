@@ -59,7 +59,7 @@ mainWindow::CreatePipeline()
 	tmpFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
 	//tmpFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_UPDATE_FINISHED );
 		
-	tmpFilter->SetRadius( 2 );
+	tmpFilter->SetRadius( 0 );
 
 	_pipeline.AddFilter( _convertor );
 	_pipeline.AddFilter( _filter );

@@ -131,11 +131,9 @@ protected:
 	bool
 	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE /*utype*/ );
 
-	
-	void
-	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
 
-	
+	void
+	MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype );
 
 	
 
@@ -167,9 +165,6 @@ public:
 	~AbstractImageSliceFilterIExtents() {}
 
 protected:
-
-	void
-	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
 
 	WriterBBoxInterface &
 	GetComputationGroupWriterBBox( SliceComputationRecord & record );

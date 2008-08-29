@@ -120,12 +120,23 @@ bool
 ImageConvertor< OutputImageType, Convertor >
 ::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
 {
-  utype = utype;
+	utype = utype;
+	D_BLOCK_COMMENT( "++++ Entering ExecutionThreadMethod() - ImageConvertor", "----- Leaving MainExecutionThread() - ImageConvertor" );
+	if ( !( _readerBBox->WaitWhileDirty() == MS_MODIFIED ) ) {
+		_writerBBox->SetState( MS_CANCELED );
+		return false;
+	}
+	bool result = false;
 	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( 
 			this->in->GetElementTypeID(), 
-			return ConvertImage< TTYPE, typename ImageTraits< OutputImageType >::ElementType, Convertor >( *(this->in), *(this->out) )
+			result = ConvertImage< TTYPE, typename ImageTraits< OutputImageType >::ElementType, Convertor >( *(this->in), *(this->out) )
 			);
-	return false;
+	if( result ) {
+		_writerBBox->SetModified();
+	} else {
+		_writerBBox->SetState( MS_CANCELED );
+	}
+	return result;
 }
 
 template< typename OutputImageType, typename Convertor >
@@ -176,8 +187,20 @@ ImageConvertor< OutputImageType, Convertor >
 template< typename OutputImageType, typename Convertor >
 void
 ImageConvertor< OutputImageType, Convertor >
+::MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype )
+{
+	_readerBBox = this->in->GetWholeDirtyBBox(); 
+	_writerBBox = &(this->out->SetWholeDirtyBBox());
+}
+
+template< typename OutputImageType, typename Convertor >
+void
+ImageConvertor< OutputImageType, Convertor >
 ::AfterComputation( bool successful )
 {
+	_readerBBox = ReaderBBoxInterface::Ptr();
+	_writerBBox = NULL;
+
 	PredecessorType::AfterComputation( successful );
 }
 

@@ -177,6 +177,9 @@ MainExecutionThread::operator()()
 	//We want to do some steps before actual computing
 	_filter->BeforeComputation( _updateType );
 	
+	//Mark changed parts of output
+	_filter->MarkChanges( _updateType );
+
 	_filter->_outputPorts.SendMessage( 
 			MsgFilterStartModification::CreateMsg( _updateType == AbstractPipeFilter::RECALCULATION ), 
 			PipelineMessage::MSS_NORMAL 

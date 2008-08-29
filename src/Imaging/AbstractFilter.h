@@ -251,7 +251,8 @@ private:
  * In nonpublic interface there are declared pure virtual and virtual methods with special purpose - they are
  * called in predefined situations or in right order during computation. 
  * If somebody wants to create new pipeline filter, he must at least inherit its implementation from this class and
- * override these methods : ExecutionThreadMethod(), PrepareOutputDatasets(), BeforeComputation(), AfterComputation().
+ * override these methods : ExecutionThreadMethod(), PrepareOutputDatasets(), BeforeComputation(), MarkChanges(),
+ * AfterComputation().
  **/
 class AbstractPipeFilter : public AbstractFilter, public MessageReceiverInterface
 {
@@ -421,6 +422,9 @@ protected:
 	 **/
 	virtual void
 	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
+
+	virtual void
+	MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype ) = 0;
 
 	/**
 	 * Method called in execution methods after computation.

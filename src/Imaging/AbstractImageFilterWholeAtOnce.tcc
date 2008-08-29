@@ -56,10 +56,15 @@ AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
 	
 	//This kind of filter computes always on whole dataset
 	utype = AbstractPipeFilter::RECALCULATION;
+}
 
+template< typename InputImageType, typename OutputImageType >
+void
+AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
+::MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype )
+{
 	_readerBBox = this->in->GetWholeDirtyBBox(); //ApplyReaderBBox( *(this->in) );
 	_writerBBox = &(this->out->SetWholeDirtyBBox()); //&(ApplyWriterBBox( *(this->out) ) );
-	
 }
 
 template< typename InputImageType, typename OutputImageType >

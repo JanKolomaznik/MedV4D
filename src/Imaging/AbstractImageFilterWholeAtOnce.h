@@ -55,6 +55,9 @@ protected:
 	
 	void
 	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
+	
+	void
+	MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype );
 
 	void
 	AfterComputation( bool successful );
