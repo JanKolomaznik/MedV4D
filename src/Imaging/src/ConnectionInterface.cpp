@@ -23,6 +23,11 @@ namespace Imaging
 
 //*****************************************************************************
 
+ConnectionInterface::~ConnectionInterface()
+{
+	DisconnectAll();
+}
+
 void
 ConnectionInterface::RouteMessage( 
 	PipelineMessage::Ptr 			msg, 
@@ -77,7 +82,12 @@ ConnectionInterface::DisconnectProducer()
 void
 ConnectionInterface::DisconnectAll()
 {
-	//TODO
+	DisconnectProducer();
+
+	ConsumersMap::iterator it;
+	for( it = _consumers.begin(); it != _consumers.end(); ++it ) {
+		DisconnectConsumer( *(it->second) );
+	}
 }
 
 void

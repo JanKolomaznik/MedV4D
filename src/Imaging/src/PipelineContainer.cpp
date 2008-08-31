@@ -114,9 +114,9 @@ PipelineContainer::PipelineContainer()
 
 PipelineContainer::~PipelineContainer()
 {
-	std::for_each( _connections.begin(), _connections.end(), Functors::Deletor< ConnectionInterface *>() );
-
 	std::for_each( _filters.begin(), _filters.end(), Functors::Deletor< AbstractPipeFilter *>() );
+
+	std::for_each( _connections.begin(), _connections.end(), Functors::Deletor< ConnectionInterface *>() );
 }
 
 void

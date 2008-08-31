@@ -49,7 +49,7 @@ public:
 	 * Virtual destructor.
 	 **/
 	virtual 
-	~ConnectionInterface() {}
+	~ConnectionInterface();
 	
 	/**
 	 * Handle input port of some filter. 
@@ -63,7 +63,7 @@ public:
 	 * Disconnect chosen filter if possible.
 	 * @param inputPort Port to be disconnected.
 	 **/
-	virtual void
+	void
 	DisconnectConsumer( InputPort& inputPort );
 
 	/**
@@ -77,13 +77,13 @@ public:
 	/**
 	 * Disconnect input port. !!!Output port of some filter!!!
 	 **/
-	virtual void
+	void
 	DisconnectProducer();
 	
 	/**
 	 * Disconnect all ports.
 	 **/
-	virtual void 
+	void 
 	DisconnectAll();
 
 	/**
