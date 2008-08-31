@@ -153,13 +153,25 @@ OutputPort::SendMessage(
 
 
 //******************************************************************************
+template< typename PortPointer >
+struct PortFinisher
+{
+	void
+	operator()( PortPointer port )
+	{
+		port->UnPlug();
+		delete port;
+	}
+};
+//******************************************************************************
 
 InputPortList::~InputPortList()
 {
 	std::for_each( 
 		_ports.begin(), 
 		_ports.end(), 
-		Functors::Deletor< InputPort* >() 
+		//Functors::Deletor< InputPort* >() 
+		PortFinisher< InputPort* >()
 		);
 }
 
@@ -200,7 +212,8 @@ OutputPortList::~OutputPortList()
 	std::for_each( 
 		_ports.begin(), 
 		_ports.end(), 
-		Functors::Deletor< OutputPort* >() 
+		//Functors::Deletor< OutputPort* >() 
+		PortFinisher< OutputPort* >()
 		);
 }
 
