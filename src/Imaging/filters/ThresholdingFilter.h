@@ -95,7 +95,7 @@ public:
 	operator()( const ElementType&	input, uint8& output )
 	{
 		if( input < bottom || input > top ) {
-			output = outValue;
+			output = 0;
 		} else {
 			output = inValue;
 		}
@@ -105,7 +105,6 @@ public:
 	ElementType	top;
 		
 	uint8			inValue;
-	uint8			outValue;
 };
 
 template< typename ImageType >
@@ -119,19 +118,17 @@ public:
 
 	struct Properties : public PredecessorType::Properties
 	{
-		Properties(): bottom( 0 ), top( 0 ), outValue( 0 ) {}
+		Properties(): bottom( 0 ), top( 0 ), inValue( 255 ) {}
 
 		InputElementType	bottom;	
 		InputElementType	top;
 		
 		uint8			inValue;
-		uint8			outValue;
 
 		void
 		CheckProperties() {
 			_functor->bottom = bottom;
 			_functor->top = top;
-			_functor->outValue = outValue;
 			_functor->inValue = inValue;
 		}
 		
@@ -144,7 +141,6 @@ public:
 	GET_SET_PROPERTY_METHOD_MACRO( InputElementType, Bottom, bottom );
 	GET_SET_PROPERTY_METHOD_MACRO( InputElementType, Top, top );
 	GET_SET_PROPERTY_METHOD_MACRO( InputElementType, InValue, inValue );
-	GET_SET_PROPERTY_METHOD_MACRO( InputElementType, OutValue, outValue );
 protected:
 
 private:

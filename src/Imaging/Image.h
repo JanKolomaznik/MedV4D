@@ -608,6 +608,8 @@ typedef Image< uint16, 3 > 	Image3DUnsigned16b;
 typedef Image< int32, 3 > 	Image3DSigned32b;
 typedef Image< uint32, 3 > 	Image3DUnsigned32b;
 
+typedef Image< uint8, 2 >	Mask2D;
+typedef Image< uint8, 3 >	Mask3D;
 
 }/*namespace Imaging*/
 }/*namespace M4D*/

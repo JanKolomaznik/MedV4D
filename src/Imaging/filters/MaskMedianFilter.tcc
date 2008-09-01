@@ -1,5 +1,5 @@
-#ifndef _MEDIAN_FILTER_H
-#error File MedianFilter.tcc cannot be included directly!
+#ifndef _MASK_MEDIAN_FILTER_H
+#error File MaskMedianFilter.tcc cannot be included directly!
 #else
 
 namespace M4D
@@ -16,24 +16,24 @@ namespace Imaging
 {
 
 
-template< typename InputImageType >
-MedianFilter2D< InputImageType >
-::MedianFilter2D() : PredecessorType( new Properties() )
+template< unsigned Dim >
+MaskMedianFilter2D< Dim >
+::MaskMedianFilter2D() : PredecessorType( new Properties() )
 {
 
 }
 
-template< typename InputImageType >
-MedianFilter2D< InputImageType >
-::MedianFilter2D( typename MedianFilter2D< InputImageType >::Properties *prop ) 
+template< unsigned Dim >
+MaskMedianFilter2D< Dim >
+::MaskMedianFilter2D( typename MaskMedianFilter2D< Dim >::Properties *prop ) 
 : PredecessorType( prop ) 
 {
 
 }
 
-template< typename InputImageType >
+template< unsigned Dim >
 void
-MedianFilter2D< InputImageType >
+MaskMedianFilter2D< Dim >
 ::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
 {
 	PredecessorType::BeforeComputation( utype );
@@ -45,14 +45,14 @@ MedianFilter2D< InputImageType >
 	}
 }
 
-template< typename InputImageType >
+template< unsigned Dim >
 bool
-MedianFilter2D< InputImageType >
+MaskMedianFilter2D< Dim >
 ::Process2D(
-			typename ImageTraits< InputImageType >::ElementType	*inPointer,
+			typename MaskMedianFilter2D< Dim >::ElementType	*inPointer,
 			int32			i_xStride,
 			int32			i_yStride,
-			typename ImageTraits< InputImageType >::ElementType	*outPointer,
+			typename MaskMedianFilter2D< Dim >::ElementType	*outPointer,
 			int32			o_xStride,
 			int32			o_yStride,
 			uint32			width,
@@ -66,13 +66,13 @@ MedianFilter2D< InputImageType >
 	int radius = GetProperties().radius;
 	int medianOrder = ((2*radius+1) * (2*radius+1)) / 2;
 
-	std::map< InputElementType, int > histogram;
+	Histogram histogram;
 
-	InputElementType *inRowPointer = inPointer + radius*i_yStride;
-	InputElementType *outRowPointer = outPointer + radius*o_yStride;
+	ElementType *inRowPointer = inPointer + radius*i_yStride;
+	ElementType *outRowPointer = outPointer + radius*o_yStride;
 	for( int j =  radius; j < (int)(height - radius); ++j ) {
-		InputElementType *inElementPointer = inRowPointer + radius*i_xStride;
-		InputElementType *outElementPointer = outRowPointer + radius*o_xStride;
+		ElementType *inElementPointer = inRowPointer + radius*i_xStride;
+		ElementType *outElementPointer = outRowPointer + radius*o_xStride;
 
 		//initialize histogram
 		histogram.clear();
@@ -100,24 +100,18 @@ MedianFilter2D< InputImageType >
 	return true;
 }
 
-template< typename InputImageType >
-inline typename ImageTraits< InputImageType >::ElementType
-MedianFilter2D< InputImageType >
+template< unsigned Dim >
+inline typename MaskMedianFilter2D< Dim >::ElementType
+MaskMedianFilter2D< Dim >
 ::GetElementInOrder(
-		typename MedianFilter2D< InputImageType >::Histogram	&histogram,
+		typename MaskMedianFilter2D< Dim >::Histogram	&histogram,
 		uint32						order
 	      )
 {
-	uint32 count = 0;
-	typename Histogram::iterator it = histogram.begin();
-
-	while( it != histogram.end() && (count += it->second) < order ) {
-		++it;
+	if( histogram.falseCounter < (int32)order ) {
+		return TRUE_VALUE;
 	}
-	if( it !=histogram.end() ) {
-		return it->first;
-	}
-	return (typename ImageTraits< InputImageType >::ElementType)0;
+	return 0;
 }
 
 //******************************************************************************
@@ -130,6 +124,6 @@ MedianFilter2D< InputImageType >
 } /*namespace M4D*/
 
 
-#endif /*_MEDIAN_FILTER_H*/
+#endif /*_MASK_MEDIAN_FILTER_H*/
 
 
