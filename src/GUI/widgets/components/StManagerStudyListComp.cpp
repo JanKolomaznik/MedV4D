@@ -166,7 +166,7 @@ StManagerStudyListComp::StManagerStudyListComp ( QDialog *studyManagerDialog, QW
 
 StManagerStudyListComp::~StManagerStudyListComp ()
 {
-  if( buildSuccessful)
+  if ( buildSuccessful )
   {
     delete dcmProvider;
     delete recentResultSet;
@@ -330,17 +330,25 @@ void StManagerStudyListComp::view ()
       }
       else
       {
-        // find some info about selected study
-        dcmProvider->LocalFindStudyInfo( row->patientID, row->studyID, info );
+        try { 
+          // find some info about selected study
+          dcmProvider->LocalFindStudyInfo( row->patientID, row->studyID, info );
 
-        if ( info.size() > 1 ) {
-          seriesIndex = getSeriesIndex( info );  
+          if ( info.size() > 1 ) {
+            seriesIndex = getSeriesIndex( info );  
+          }
+
+          // now get image
+          dcmProvider->LocalGetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
+
+          recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
         }
-
-        // now get image
-        dcmProvider->LocalGetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
-
-        recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
+        catch ( M4D::ErrorHandling::ExceptionBase &e ) 
+        {
+	        QMessageBox::critical( this, tr( "Exception" ), e.what() );
+          emit cancel();
+          return;
+        } 
       }
       break;
 
@@ -387,17 +395,25 @@ void StManagerStudyListComp::view ()
       }
       else
       {
-        // find some info about selected study
-        dcmProvider->LocalFindStudyInfo( row->patientID, row->studyID, info );
+        try { 
+          // find some info about selected study
+          dcmProvider->LocalFindStudyInfo( row->patientID, row->studyID, info );
 
-        if ( info.size() > 1 ) {
-          seriesIndex = getSeriesIndex( info );  
+          if ( info.size() > 1 ) {
+            seriesIndex = getSeriesIndex( info );  
+          }
+
+          // now get image
+          dcmProvider->LocalGetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
+
+          recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
         }
-
-        // now get image
-        dcmProvider->LocalGetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
-
-        recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
+        catch ( M4D::ErrorHandling::ExceptionBase &e ) 
+        {
+	        QMessageBox::critical( this, tr( "Exception" ), e.what() );
+          emit cancel();
+          return;
+        } 
       }
       break;
   }

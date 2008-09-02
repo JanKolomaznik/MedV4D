@@ -130,16 +130,20 @@ void m4dGUIMainWindow::addSource ( ConnectionInterface *conn, const char *pipeli
 }
 
 
-void m4dGUIMainWindow::addDockWindow ( const char *title, QWidget *widget )
+void m4dGUIMainWindow::addDockWindow ( const char *title, QWidget *widget, DockWindowType windowType )
 {
   QDockWidget *dock = new QDockWidget( tr( title ), this );
 
   dock->setWidget( widget );
 
   dock->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
-  // dock->setFloating( true );
-  // dock->move( QPoint( x() + width() - dock->width(), y() + 150 ) );
- 
+  if ( windowType == FLOATING_DOCK_WINDOW )
+  {
+    dock->setFloating( true );
+    dock->resize( dock->sizeHint() );
+    dock->move( x() + width() - dock->width() - 30, y() + 170 );
+  }
+  
   addDockWidget( Qt::RightDockWidgetArea, dock );
   viewMenu->addAction( dock->toggleViewAction() );
 
@@ -367,6 +371,7 @@ void m4dGUIMainWindow::createStudyManagerDialog ()
 
   studyManagerWidget = new m4dGUIStudyManagerWidget( studyManagerDialog );
   connect( studyManagerWidget->getStudyListComponent(), SIGNAL(ready()), studyManagerDialog, SLOT(accept()) );
+  connect( studyManagerWidget->getStudyListComponent(), SIGNAL(cancel()), studyManagerDialog, SLOT(reject()) );
 
   QVBoxLayout *dialogLayout = new QVBoxLayout;
   dialogLayout->addWidget( studyManagerWidget );

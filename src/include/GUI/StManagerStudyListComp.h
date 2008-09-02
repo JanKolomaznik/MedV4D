@@ -158,6 +158,12 @@ class StManagerStudyListComp: public QWidget
      */
     void ready ();
 
+    /**
+     * Signal for indicating wheather something went wrong - to close the dialog - without processing 
+     * any result.
+     */
+    void cancel ();
+
   private:
 
     /** 
