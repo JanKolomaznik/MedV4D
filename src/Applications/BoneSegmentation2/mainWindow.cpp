@@ -20,7 +20,7 @@ mainWindow::mainWindow ()
 	// addSource( conn, "Bone segmentation", "Result" );
 
 	// add your own settings widgets
-	_settings = new SettingsBox( _filter );
+	_settings = new SettingsBox( _filter, this );
 
 	addDockWindow( "Bone Segmentation", _settings );
 

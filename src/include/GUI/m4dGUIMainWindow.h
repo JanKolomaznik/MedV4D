@@ -61,6 +61,12 @@ class m4dGUIMainWindow: public QMainWindow
   public:
 
     /**
+     * Enumeration for type of the dockWindow (positioning) - which can be added to the mainWindow for
+     * custom pipeline/filter settings widgets.
+     */
+    typedef enum { FLOATING_DOCK_WINDOW, DOCKED_DOCK_WINDOW } DockWindowType;
+
+    /**
      * Enumeration for type of the tool - toolBar behavior: checkable tool, toggle tool.
      */
     typedef enum { CHECKABLE_TOOL, TOGGLE_TOOL } ToolType;
@@ -119,8 +125,9 @@ class m4dGUIMainWindow: public QMainWindow
      * 
      * @param title title of the dockWindow
      * @param widget pointer to the widget, which should be in the added dockWindow
+     * @param windowType type of the dockWindow
      */
-    void addDockWindow ( const char *title, QWidget *widget );
+    void addDockWindow ( const char *title, QWidget *widget, DockWindowType windowType = FLOATING_DOCK_WINDOW );
 
   private slots:
 

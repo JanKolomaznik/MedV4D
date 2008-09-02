@@ -2,8 +2,8 @@
 #include "mainWindow.h"
 
 SettingsBox
-::SettingsBox( M4D::Imaging::AbstractPipeFilter * filter )
-	: _filter( filter )
+::SettingsBox( M4D::Imaging::AbstractPipeFilter * filter, QWidget * parent )
+	: _filter( filter ), _parent( parent )
 {
 	CreateWidgets();	
 	SetEnabledExecButton( false );
@@ -105,5 +105,5 @@ void
 SettingsBox
 ::EndOfExecution()
 {
-	QMessageBox::information( this, tr( "Execution finished" ), tr( "Filter finished its work" ) );
+	QMessageBox::information( _parent, tr( "Execution finished" ), tr( "Filter finished its work" ) );
 }
