@@ -635,9 +635,11 @@
 
     <para>
       The <emphasis role="bold">Recent Exams</emphasis> tab lists the studies that
-      were recently viewed - it has two modes: Recent Remote Exams (recently
-      retrieved and viewed from available DICOM server) and Recent DICOMDIR
-      (recently viewed studies that are stored in DICOMDIR format) (see
+      were recently viewed (last 20 studies - the study is deleted from the list after 20
+      views of different studies, if it's not reopened during this time)
+      - it has two modes: Recent Remote Exams (recently retrieved and viewed from
+      available DICOM server) and Recent DICOMDIR (recently viewed studies that
+      are stored in DICOMDIR format) (see
       <xref linkend="SearchingForRecentExams"/>).
     </para>
 
@@ -657,7 +659,8 @@
 
     <para>
       Working in different searching modes is almost identical - you switch between the
-      modes by changing tabs and you have always the same behavior.
+      modes by changing tabs and you have always the same behavior (e.g. filtering
+      functionality).
     </para>
 
     <para>

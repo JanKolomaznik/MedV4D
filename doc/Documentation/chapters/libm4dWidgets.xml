@@ -115,6 +115,12 @@ int main ( int argc, char *argv[] )
     <para>
     The following code segment shows widget and pipeline connection adding
     (taken from the <classname>mainWindow</classname> constructor - the derived class)
+    Calling addDockWindow causes addition of the wanted widget as a docking window (by default in floating style,
+    it can be changed through 3rd parameter of addDockWindow - to docked) and a menu addition to control the widget's
+    visibility. Possible pipeline connections - where can be plugged a viewer - will
+    appear in the toolBar - as items of comboBox (to choose from - for the
+    currently selected viewer). The user can make a choice according to the descriptions
+    of the pipeline/connection (2nd, 3rd parameters of addSource).
     </para>
 
     <programlisting><![CDATA[
@@ -139,7 +145,7 @@ addDockWindow( "Bone Segmentation", myPipelineWidget );
     </para>
 
     <programlisting><![CDATA[
-AbstractImage::AImagePtr inputImage = 
+AbstractImage::AImagePtr inputImage =
   ImageFactory::CreateImageFromDICOM( dicomObjSet );
 
 try {
@@ -147,7 +153,7 @@ try {
   conn->PutImage( inputImage );
 
   mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
-  conn->ConnectConsumer( 
+  conn->ConnectConsumer(
     mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 }
 catch ( ... ) {
