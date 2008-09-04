@@ -40,25 +40,31 @@ LocalService::LocalService()
   if( ! file.good() )
   {
     file.close();
+
     // create it
-    file.open(LOCAL_REC_DB_FILE_NAME, std::ios::out);
+    std::ofstream out(LOCAL_REC_DB_FILE_NAME);
+    if( ! out.good() )
+    {
+      out.close();
+      throw ExceptionBase("Could not create DB file!");
+    }
+    out.close();
+    file.clear();
+
+    // open it for reading and load db
+    file.open( LOCAL_REC_DB_FILE_NAME);
     if( ! file.good() )
     {
       file.close();
-      throw ExceptionBase("Could not create DB file!");
+      throw ExceptionBase("Cannot read the DB file!");
     }
+    file.close();
   }
-  file.close();
-
-  // open it for reading and load db
-  std::ifstream forReadingFile( LOCAL_REC_DB_FILE_NAME);
-  if( ! forReadingFile.good() )
+  else
   {
-    forReadingFile.close();
-    throw ExceptionBase("Cannot read the DB file!");
+    Load( file);
+    file.close();
   }
-  Load( forReadingFile);
-  forReadingFile.close();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
