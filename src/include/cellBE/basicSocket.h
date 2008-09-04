@@ -16,7 +16,7 @@
 #include <boost/bind.hpp>
 #include <vector>
 
-#include "netCommons.h"
+#include "cellBE/netCommons.h"
 
 namespace M4D
 {

@@ -14,7 +14,7 @@
 
 #include <vector>
 
-#include "netStream.h"
+#include "cellBE/netStream.h"
 
 namespace M4D
 {
@@ -266,8 +266,8 @@ class UserSerializingNetStreamBase : public NetStream
 {
 protected:
   uint8 *begin; // underlaying buf
-  uint8 *curr;
   uint8 *end;
+  uint8 *curr;
 
   uint16 supp16;
   uint32 supp32;

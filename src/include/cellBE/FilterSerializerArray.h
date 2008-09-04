@@ -8,7 +8,7 @@
 #ifndef FILTER_SERIALIZER_ARRAY_H
 #define FILTER_SERIALIZER_ARRAY_H
 
-#include "AbstractFilterSerializer.h"
+#include "cellBE/AbstractFilterSerializer.h"
 #include "Imaging/AbstractFilter.h"
 #include "cellBE/filterSerializers/ThresholdingSerializer.h"
 #include "cellBE/filterSerializers/MedianSerializer.h"

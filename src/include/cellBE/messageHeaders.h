@@ -8,15 +8,17 @@
 #ifndef MESSAGE_HEADERS_H
 #define MESSAGE_HEADERS_H
 
-#include "netStreamImpl.h"
+#include "cellBE/netStreamImpl.h"
 
 namespace M4D
 {
 namespace CellBE
 {
 
-#define BIG_ENDIAN 0
-#define LITTLE_ENDIAN 1
+enum Endianness {
+	End_BIG_ENDIAN = 0,
+	End_LITTLE_ENDIAN = 1
+};
 
 static uint8
 GetEndianess( void)
@@ -25,9 +27,9 @@ GetEndianess( void)
   uint8 *ptr = (uint8 *)&tmp;
     
   if( ptr[0] == 1)
-    return LITTLE_ENDIAN;
+    return End_LITTLE_ENDIAN;
   else
-    return BIG_ENDIAN;
+    return End_BIG_ENDIAN;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -37,7 +39,7 @@ GetEndianess( void)
    *  The first 
    *  For details see ClinetJob::GenerateJobID method implementation.
    */
-#define IDLEN 12
+static const int IDLEN = 12;
 struct JobID
 {
   uint8 id[IDLEN];
@@ -66,7 +68,7 @@ struct JobID
 inline NetStream &operator<<( NetStream &s, const JobID &id)
 {
   for( int i=0; i < IDLEN; i++)
-    s << id.id[i];
+    s << (uint8)id.id[i];
   return s;
 }
 
@@ -80,7 +82,7 @@ inline NetStream &operator>>( NetStream &s, JobID &id)
 inline std::ostream &operator<<( std::ostream &s, JobID &id)
 {
   for( int i=0; i < IDLEN; i++)
-    s << (char) id.id[i];
+    s << (uint8) id.id[i];
   return s;
 }
 

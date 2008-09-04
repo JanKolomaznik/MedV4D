@@ -8,6 +8,8 @@
 #ifndef NETSTREAM_H
 #define NETSTREAM_H
 
+#include "Common.h"
+
 namespace M4D
 {
 namespace CellBE

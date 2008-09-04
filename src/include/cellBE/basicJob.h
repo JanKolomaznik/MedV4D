@@ -8,13 +8,13 @@
 #ifndef JOBBASE_H
 #define JOBBASE_H
 
-#include "basicSocket.h"
+#include "cellBE/basicSocket.h"
 
-#include "messageHeaders.h"
-#include "resourcePool.h"
-#include "iPublicJob.h"
-#include "GeneralDataSetSerializer.h"
-#include "GeneralFilterSerializer.h"
+#include "cellBE/messageHeaders.h"
+#include "cellBE/resourcePool.h"
+#include "cellBE/iPublicJob.h"
+#include "cellBE/GeneralDataSetSerializer.h"
+#include "cellBE/GeneralFilterSerializer.h"
 
 #include "Imaging/AbstractDataSet.h"
 
