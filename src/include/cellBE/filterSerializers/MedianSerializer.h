@@ -8,6 +8,7 @@
 #ifndef MEDIAN_SERIALIZER_H
 #define MEDIAN_SERIALIZER_H
 
+#include "cellBE/netStream.h"
 #include "cellBE/AbstractFilterSerializer.h"
 #include "Imaging/filters/MedianFilter.h"
 
@@ -75,13 +76,14 @@ public:
 	void 
 	SerializeProperties( M4D::CellBE::NetStream &s)
 	{		
-    s << (uint32)_properties->radius;
+		s << (uint32)_properties->radius;
 	}
 
 	void
 	DeSerializeProperties( M4D::CellBE::NetStream &s )
 	{
-		s >> (uint32)_properties->radius;
+		s.Read( (uint32)_properties->radius );
+		//s >> (uint32)_properties->radius;
 	}	
 	
 protected:

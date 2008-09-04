@@ -74,9 +74,11 @@ inline NetStream &operator<<( NetStream &s, const JobID &id)
 
 inline NetStream &operator>>( NetStream &s, JobID &id)
 {
-  for( int i=0; i < IDLEN; i++)
-    s >> (uint8) id.id[i];
-  return s;
+	for( int i=0; i < IDLEN; i++){
+		s.Read( id.id[i] );
+		//s >> (uint8) id.id[i];
+	}
+	return s;
 }
 
 inline std::ostream &operator<<( std::ostream &s, JobID &id)

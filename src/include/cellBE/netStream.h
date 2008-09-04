@@ -23,6 +23,7 @@ class NetStream
 {
 
 public:
+
   virtual NetStream & operator<< (const uint8 what) = 0;
   NetStream & operator<< (const int8 what)
   {
@@ -77,6 +78,14 @@ public:
 
   virtual NetStream & operator>>( float32 &what) = 0;
   virtual NetStream & operator>>( float64 &what) = 0;
+
+	template< typename Type >
+	void
+	Read( Type &what )
+	{
+		(*this) >> what;
+	}
+
 };
 
 }
