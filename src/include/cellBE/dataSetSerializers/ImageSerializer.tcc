@@ -22,17 +22,17 @@ void
 ImageSerializerBase<ElementType, dim>
   ::SerializeProperties(M4D::CellBE::NetStream &s)
 {
-	AbstractImage *im = (AbstractImage *) m_dataSet; // cast to sucessor
+	M4D::Imaging::AbstractImage *im = (M4D::Imaging::AbstractImage *) this->m_dataSet; // cast to sucessor
 
 	// serialize common properties
 	s << (uint16) im->GetDimension() << (uint16) im->GetElementTypeID();
 
 	for( unsigned i = 0; i < im->GetDimension(); ++i ) {
-		const DimensionExtents &dimExtents = im->GetDimensionExtents( i );
+		const M4D::Imaging::DimensionExtents &dimExtents = im->GetDimensionExtents( i );
 
-		s << (int32)dimExtents.minimum;
-		s << (int32)dimExtents.maximum;
-		s << (float32)dimExtents.elementExtent;
+		s << dimExtents.minimum;
+		s << dimExtents.maximum;
+		s << dimExtents.elementExtent;
 	}
 }
 
@@ -78,33 +78,33 @@ ImageSerializerBase<ElementType, dim>
 
 template< typename ElementType>
 void
-ImageSerializer< typename ElementType, 2>
+ImageSerializer< ElementType, 2>
   ::Serialize( M4D::CellBE::iPublicJob *job)
 {  
-	Image<ElementType, 2> *im = (Image<ElementType, 2> *) m_dataSet;
+	M4D::Imaging::Image<ElementType, 2> *im = (M4D::Imaging::Image<ElementType, 2> *) this->m_dataSet;
 
-  uint32 width;
+	uint32 width;
 	uint32 height;
 	int32 xStride;
 	int32 yStride;
 	ElementType *pointer = im->GetPointer( width, height, xStride, yStride );
 
 	// put whole array at once
-  DataBuff buff;
-  buff.data = (void *) pointer;
-  buff.len = width * height * sizeof( ElementType);
+	DataBuff buff;
+	buff.data = (void *) pointer;
+	buff.len = width * height * sizeof( ElementType);
 
-  job->PutDataPiece( buff);
+	job->PutDataPiece( buff);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 template< typename ElementType>
 void
-ImageSerializer< typename ElementType, 2>
+ImageSerializer< ElementType, 2>
   ::OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs)
 {
-  Image<ElementType, 2> *im = (Image<ElementType, 2> *) m_dataSet;
+  M4D::Imaging::Image<ElementType, 2> *im = (M4D::Imaging::Image<ElementType, 2> *) this->m_dataSet;
 
   uint32 width;
 	uint32 height;
@@ -123,7 +123,7 @@ ImageSerializer< typename ElementType, 2>
 
 template< typename ElementType>
 void
-ImageSerializer< typename ElementType, 2>
+ImageSerializer< ElementType, 2>
   ::Reset( void)
 {
 //nothing to do currenlty
@@ -135,10 +135,10 @@ ImageSerializer< typename ElementType, 2>
 
 template< typename ElementType>
 void
-ImageSerializer< typename ElementType, 3>
+ImageSerializer< ElementType, 3>
   ::Serialize( M4D::CellBE::iPublicJob *job)
 {
-	Image<ElementType, 3> *im = (Image<ElementType, 3> *) m_dataSet;
+	M4D::Imaging::Image<ElementType, 3> *im = (M4D::Imaging::Image<ElementType, 3> *) this->m_dataSet;
 	
 	uint32 width;
 	uint32 height;
@@ -166,10 +166,10 @@ ImageSerializer< typename ElementType, 3>
 
 template< typename ElementType>
 void
-ImageSerializer< typename ElementType, 3>
+ImageSerializer< ElementType, 3>
   ::OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs)
 {
-  Image<ElementType, 3> *im = (Image<ElementType, 3> *) m_dataSet;
+  M4D::Imaging::Image<ElementType, 3> *im = (M4D::Imaging::Image<ElementType, 3> *) this->m_dataSet;
 
   uint32 width;
 	uint32 height;
@@ -194,7 +194,7 @@ ImageSerializer< typename ElementType, 3>
 
 template< typename ElementType>
 void
-ImageSerializer< typename ElementType, 3>
+ImageSerializer< ElementType, 3>
   ::Reset( void)
 {
   m_currSlice = 0;

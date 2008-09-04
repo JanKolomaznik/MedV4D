@@ -8,7 +8,7 @@
 #ifndef IMAGE_SERIALIZER_H
 #define IMAGE_SERIALIZER_H
 
-#include "../AbstractDataSetSerializer.h"
+#include "cellBE/AbstractDataSetSerializer.h"
 #include "Imaging/Image.h"
 #include "Imaging/ImageFactory.h"
 
@@ -49,25 +49,27 @@ class ImageSerializer;
 // special case for 3D images
 template< typename ElementType>
 class ImageSerializer< ElementType, 3 >
-  : public ImageSerializerBase< ElementType, 3>
+  : public ImageSerializerBase< ElementType, 3 >
 {
-  uint16 m_currSlice;
+	uint16 m_currSlice;
 
 public:
-  ImageSerializer() {}
-  ImageSerializer( M4D::Imaging::AbstractDataSet *dSet)
-    : ImageSerializerBase( dSet) {}
+	typedef ImageSerializerBase< ElementType, 3 > PredecessorType;
 
-  /**
+	ImageSerializer() {}
+	ImageSerializer( M4D::Imaging::AbstractDataSet *dSet)
+		: PredecessorType( dSet) {}
+
+	/**
 	 * Each special succesor should implement this functions in
 	 * its own manner.
 	 **/
-  void Serialize( M4D::CellBE::iPublicJob *job);
-  
-  void OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs);
+	void Serialize( M4D::CellBE::iPublicJob *job);
+
+	void OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs);
 
 private:
-  void Reset( void);
+	void Reset( void);
 };
 
 // special case for 2D images
@@ -76,19 +78,21 @@ class ImageSerializer< ElementType, 2 >
   : public ImageSerializerBase< ElementType, 2>
 {
 public:
-  ImageSerializer() {}
-  ImageSerializer( M4D::Imaging::AbstractDataSet *dSet)
-    : ImageSerializerBase( dSet) {}
-  /**
+	typedef ImageSerializerBase< ElementType, 2 > PredecessorType;
+
+	ImageSerializer() {}
+	ImageSerializer( M4D::Imaging::AbstractDataSet *dSet)
+	: PredecessorType( dSet) {}
+	/**
 	 * Each special succesor should implement this functions in
 	 * its own manner.
 	 **/
-  void Serialize( M4D::CellBE::iPublicJob *job);
-  
-  void OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs);
+	void Serialize( M4D::CellBE::iPublicJob *job);
+
+	void OnDataPieceReadRequest( DataPieceHeader *header, DataBuffs &bufs);
 
 private:
-  void Reset( void);
+	void Reset( void);
 };
 
 }

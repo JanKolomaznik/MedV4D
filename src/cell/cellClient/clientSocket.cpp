@@ -22,7 +22,7 @@ using boost::asio::ip::tcp;
 
 ClientSocket::ClientSocket( const std::string &address,
   boost::asio::io_service &service)
-  : m_address(address), BasicJob( new tcp::socket( service))
+  : BasicJob( new tcp::socket( service)), m_address(address)
 {
   Connect( service);
 }

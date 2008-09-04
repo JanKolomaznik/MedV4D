@@ -14,6 +14,15 @@ TARGETS=	server \
 		main \
 		serverJob
 
+M4DLIBS=	../../lib/libcellCommon.a \
+		../../lib/libImaging.a\
+		../../lib/libbackendForDICOM.a\
+		../../lib/libcommon.a
+
+LIBS=		$(M4DLIBS) \
+		-lboost_thread \
+		-lboost_filesystem
+
 ########################################
 
 #Name of target
@@ -32,6 +41,8 @@ CDEPFLAGS=	-MM
 
 LDFLAGS=
 ARFLAGS=	-r
+LIBDIRS=	-L../../lib 
+
 INCLUDES=	-I../.. \
 		-I../../include
 
@@ -69,7 +80,7 @@ $(TMP_DIR)/%.o:	$(SRC_DIR)/%.cpp
 -include $(DEP_FILE)
 		
 $(OUTPUT):	$(OBJ_FILES)
-		$(AR) $(ARFLAGS) $(OUTPUT) $(OBJ_FILES)
+		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
 
 .PHONY: clean
 clean:

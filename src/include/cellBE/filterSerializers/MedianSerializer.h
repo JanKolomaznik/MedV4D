@@ -82,8 +82,7 @@ public:
 	void
 	DeSerializeProperties( M4D::CellBE::NetStream &s )
 	{
-		s.Read( (uint32)_properties->radius );
-		//s >> (uint32)_properties->radius;
+		s >> (uint32&)_properties->radius;
 	}	
 	
 protected:
