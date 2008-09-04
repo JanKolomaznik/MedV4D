@@ -17,3 +17,13 @@ Jan Kolomaznik:
 Toto se da kdykoliv prerusit - co bude hotovo to bude hotovo.
 - psani abstraktnich filtru (specialni pripady) a konkretni implementace. 
 - ukazkove aplikace
+
+update 4.9.:
+---------------
+
+- defaultne aby to bylo svetlejsi, resp. aby clovek nemusel kazdou serii upravovat silenym jezdenim mysi, aby ji vubec videl
+- nejake default hodnoty do nastaveni tech filtru aby to clovek nemusel nejak zkouset
+- moznost zastavit vypocet
+LONGTERM 
+- moznost vizualizace vypoctu
+- moznost flushnout data do souboru v citelne podobe (lidi, nebo matlab) pro snazsi ladeni

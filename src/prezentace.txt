@@ -1,0 +1,52 @@
+puvodni specifikace:
+-------------------
+
+Prostøedí pro snadnìjší programování uivatelsky pøátelskıch aplikací pro medicínu.
+Pøedpokládá se zejména zpracování a vizualizace 2D, 3D a 4D dat (medical imaging), zdroje dat jsou obvykle poèítaèovı tomograf (CT) nebo magnetická nukleární rezonance (MRI).
+V rámci projektu se pøedpokládá vznik nìkolika uivatelskıch aplikací, které pouijí ji døíve vyvinuté algoritmy, ale budou je poskytovat lékaøskım uivatelùm s veškerım poadovanım komfortem (dohoda s nemocnicí Na Bulovce).
+
+vlastnosti:
+-----------
+
+  * zpracování objemovıch dat velkého rozsahu (CT nebo MRI nebo obojí..)
+  * monost paralelní implementace nároènìjších algoritmù - sdílená pamì (threads) i distribuovaná pamì (MPI?) [EXTENDED]
+  * monost vzdáleného uloení dat (datovı server), respektování veškerıch zásad nakládání s citlivımi daty paci"entù (anonymizace, pøíp. šifrování dat..)
+  * distribuovaná architektura (pøes TCP/IP):
+        o datovı server (sklad) - potenciálnì na vzdáleném poèítaèi
+        o vıpoèetní/aplikaèní server (napø. Windows Cluster Server nebo jinı "cluster") [EXTENDED]
+        o pracovní stanice - interakce s uivatelem, zobrazení vısledkù
+  * lehká verze aplikace - napø. na obyèejném notebooku bez síového pøipojení, musí podporovat minimálnì prohlíení ji pøedem spoèítanıch dat, pøehrávání prezentací, apod. (pozor na bezpeènost dat!)
+  * programovací jazyk: C++, pro nenároèné komponenty je monost pouití scriptovacího jazyka dle vlastního vıbìru
+  * operaèní systém: Windows, Linux, 32- i 64-bitové varianty (pokud to pouité knihovny dovolí)
+
+jak se zmenila a proc:
+---------------------
+
+po navsteve nemocnice Na Bulovce jsme po dohode vyskrtli moznost vzdáleného uloení dat (datovı server), protoze se
+ukazalo, ze ze strany nemocnice je nezbytne nutne pouzivat DICOM server, na kterem jsou veskera data ukladana rovnou
+ze scanovacich pristroju
+
+co jsme udelali:
+----------------
+pipelinovany vypocet
+system pro manipulaci DICOM dat, vyhledanani a stahovani z DICOM serveru
+system pro posilani casti vypoctu na jine stroje
+
+co to prinasi:
+--------------
+neni treba se starat o detaily DICOM formatu
+neni treba se starat o synchronizaci vypoctu
+napsani filtru obnasi podedeni od abstraktniho filtru a napsani 2 metod.
+napsani aplikace obnasi:
+
+jaka je konkurence?
+-------------------
+
+zaver
+-----
+
+ukazka ...
+
+
+
+
