@@ -11,7 +11,7 @@
 #include <iostream>
 
 #include "Common.h"
-#include "cellBE/netcommons.h"
+#include "cellBE/netCommons.h"
 #include "cellBE/clientSocket.h"
 
 using namespace M4D::CellBE;

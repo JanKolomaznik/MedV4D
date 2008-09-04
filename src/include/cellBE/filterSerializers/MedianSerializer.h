@@ -25,11 +25,11 @@ CreateMedianFilter(
    , const uint16 id
    , M4D::CellBE::NetStream &s )
 {
-	typedef typename M4D::Imaging::Image< ElementType, 3 > ImageType;
-	typedef typename M4D::Imaging::MedianFilter2D< ImageType > Filter;
-  typedef typename FilterSerializer< Filter > FilterSerializer;
+	typedef M4D::Imaging::Image< ElementType, 3 > ImageType;
+	typedef M4D::Imaging::MedianFilter2D< ImageType > Filter;
+  	typedef FilterSerializer< Filter > FilterSerializer;
 
-	Filter::Properties *prop = new Filter::Properties();
+	typename Filter::Properties *prop = new typename Filter::Properties();
 
 	*resultingFilter = new Filter( prop );
   *serializer = new FilterSerializer( prop, id);
@@ -53,7 +53,7 @@ public:
 
   void SerializeClassInfo( M4D::CellBE::NetStream &s)
   {
-		s << (uint8) GetNumericTypeID< ImageTraits< InputImageType >::ElementType >();
+		s << (uint8) GetNumericTypeID< M4D::Imaging::ImageTraits< InputImageType >::ElementType >();
   }
 
   void

@@ -120,9 +120,7 @@ AbstractImageFilter< InputImageType, OutputImageType >
 		|| outTS != _outTimestamp 
 	) {
 		utype = AbstractPipeFilter::RECALCULATION;
-		_inTimestamp = inTS;
-		_outTimestamp = outTS;
-		PrepareOutputDatasets();
+		this->_callPrepareOutputDatasets = true;
 	}
 	if( utype == AbstractPipeFilter::ADAPTIVE_CALCULATION ) {
 		Common::TimeStamp inEditTS = in->GetModificationManager().GetLastStoredTimestamp();
@@ -156,6 +154,8 @@ AbstractImageFilter< InputImageType, OutputImageType >
 	//We store actual timestamps of input and output - for next execution
 	_inEditTimestamp = in->GetModificationManager().GetActualTimestamp();
 	_outEditTimestamp = out->GetModificationManager().GetActualTimestamp();
+	_inTimestamp = in->GetStructureTimestamp();
+	_outTimestamp = out->GetStructureTimestamp();
 
 	this->ReleaseInputImage();
 	this->ReleaseOutputImage();

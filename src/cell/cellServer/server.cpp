@@ -12,7 +12,7 @@
 #include "server.h"
 
 #include "cellBE/netCommons.h"
-#include "cellBE/netstream.h"
+#include "cellBE/netStream.h"
 
 using namespace M4D::CellBE;
 using boost::asio::ip::tcp;

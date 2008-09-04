@@ -34,6 +34,17 @@ struct DimensionExtents
 	int32	maximum;
 	float32	elementExtent;
 
+	bool
+	operator==( const DimensionExtents &dimExt )const
+		{ return minimum == dimExt.minimum &&
+			maximum == dimExt.maximum &&
+			elementExtent == dimExt.elementExtent;
+		}
+	bool
+	operator!=( const DimensionExtents &dimExt )const
+		{
+			return !(this->operator==( dimExt ));
+		}
 };
 
 /**

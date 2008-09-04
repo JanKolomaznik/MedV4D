@@ -171,12 +171,21 @@ MainExecutionThread::operator()()
 
 	//TODO - handle exceptions
 
+	//Set to default - we decide in BeforeComputation() method 
+	//whether call PrepareOutputDatasets() method.
+	_filter->_callPrepareOutputDatasets = false;
+
 	//We check properties before we use them.
 	_filter->_properties->CheckProperties();
 
 	//We want to do some steps before actual computing
 	_filter->BeforeComputation( _updateType );
 	
+	//We decide whether resize output datasets
+	if( _filter->_callPrepareOutputDatasets ) {
+		_filter->PrepareOutputDatasets();
+	}
+
 	//Mark changed parts of output
 	_filter->MarkChanges( _updateType );
 

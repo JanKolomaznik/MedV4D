@@ -159,7 +159,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\cell\cellClient\CellClient.cpp"
+				RelativePath="..\..\cell\cellClient\cellClient.cpp"
 				>
 			</File>
 			<File

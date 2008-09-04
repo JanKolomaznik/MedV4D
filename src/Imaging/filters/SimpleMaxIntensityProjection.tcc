@@ -46,7 +46,7 @@ SimpleMaxIntensityProjection< Image< ElementType, 3 > >
 	if( this->_propertiesTimestamp != GetProperties().GetTimestamp() )
 	{
 		utype = AbstractPipeFilter::RECALCULATION;
-		this->PrepareOutputDatasets();
+		this->_callPrepareOutputDatasets = true;
 	}
 }
 

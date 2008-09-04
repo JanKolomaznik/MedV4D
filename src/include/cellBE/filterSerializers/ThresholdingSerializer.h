@@ -25,11 +25,11 @@ CreateThresholdingFilter(
    , const uint16 id
    , M4D::CellBE::NetStream &s )
 {
-	typedef typename M4D::Imaging::Image< ElementType, Dim > ImageType;
-	typedef typename M4D::Imaging::ThresholdingFilter< ImageType > Filter;
-  typedef typename FilterSerializer< Filter > FilterSerializer;
+	typedef M4D::Imaging::Image< ElementType, Dim > ImageType;
+	typedef M4D::Imaging::ThresholdingFilter< ImageType > Filter;
+	typedef FilterSerializer< Filter > FilterSerializer;
 
-	Filter::Properties *prop = new Filter::Properties();
+	typename Filter::Properties *prop = new typename Filter::Properties();
 
 	*resultingFilter = new Filter( prop );  // id
   *serializer = new FilterSerializer( prop, id);  // id
@@ -52,8 +52,8 @@ public:
 
   void SerializeClassInfo( M4D::CellBE::NetStream &s)
   {
-    s << (uint8) ImageTraits< InputImageType >::Dimension;
-		s << (uint8) GetNumericTypeID< ImageTraits< InputImageType >::ElementType >();
+    s << (uint8) M4D::Imaging::ImageTraits< InputImageType >::Dimension;
+		s << (uint8) GetNumericTypeID< M4D::Imaging::ImageTraits< InputImageType >::ElementType >();
   }
 
   void

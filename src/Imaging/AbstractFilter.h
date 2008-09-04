@@ -436,7 +436,13 @@ protected:
 		{ 
 			successful = successful;
 		       	_propertiesTimestamp = _properties->GetTimestamp();
-		};
+		}
+
+	bool
+	PropertiesUpdated() const
+		{
+			return _propertiesTimestamp != _properties->GetTimestamp();
+		}
 
 	void
 	InputDatasetUpdatedMsgHandler( MsgFilterUpdated *msg );
@@ -474,6 +480,8 @@ protected:
 	UpdateInvocationStyle 	_invocationStyle;
 
 	M4D::Common::TimeStamp	_propertiesTimestamp;
+
+	bool			_callPrepareOutputDatasets;
 private:
 	/**
 	 * Prohibition of copying.

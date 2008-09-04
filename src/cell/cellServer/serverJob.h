@@ -99,30 +99,31 @@ private:
 class ExecutionDoneCallback 
   : public M4D::Imaging::MessageReceiverInterface
 {
-  ServerJob *m_job;
+	ServerJob *m_job;
 public:
-  ExecutionDoneCallback( ServerJob *job)
-    : m_job( job)
-  {
-  }
+	ExecutionDoneCallback( ServerJob *job)
+	: m_job( job)
+		{}
 
-  void ReceiveMessage( 
-    M4D::Imaging::PipelineMessage::Ptr    msg, 
-    M4D::Imaging::PipelineMessage::MessageSendStyle  sendStyle, 
-    M4D::Imaging::FlowDirection    direction
-    ) 
-  {
-   switch( msg->msgID)
-   {
-   case M4D::Imaging::PMI_FILTER_CANCELED:
-     m_job->OnExecutionFailed();
-     break;
-   case M4D::Imaging::PMI_FILTER_UPDATED:
-     D_PRINT("PMI_FILTER_UPDATED recieved. EXEC COMPLETE !!!");
-     m_job->OnExecutionDone();
-     break;
-   }
-  }
+	void ReceiveMessage( 
+		M4D::Imaging::PipelineMessage::Ptr    msg, 
+		M4D::Imaging::PipelineMessage::MessageSendStyle  sendStyle, 
+		M4D::Imaging::FlowDirection    direction
+		) 
+	{
+		switch( msg->msgID)
+		{
+		case M4D::Imaging::PMI_FILTER_CANCELED:
+			m_job->OnExecutionFailed();
+			break;
+		case M4D::Imaging::PMI_FILTER_UPDATED:
+			D_PRINT("PMI_FILTER_UPDATED recieved. EXEC COMPLETE !!!");
+			m_job->OnExecutionDone();
+			break;
+		default:
+			/*ignore other messages*/
+		}
+	}
 };
 
 } // CellBE namespace

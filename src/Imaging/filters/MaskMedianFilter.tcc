@@ -8,7 +8,7 @@ namespace M4D
 /**
  * @ingroup imaging 
  * @author Jan Kolomaznik 
- * @file MedianFilter.tcc 
+ * @file MaskMedianFilter.tcc 
  * @{ 
  **/
 

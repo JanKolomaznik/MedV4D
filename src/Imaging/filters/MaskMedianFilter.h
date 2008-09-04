@@ -10,7 +10,7 @@ namespace M4D
 /**
  * @ingroup imaging 
  * @author Jan Kolomaznik 
- * @file MedianFilter.h 
+ * @file MaskMedianFilter.h 
  * @{ 
  **/
 
