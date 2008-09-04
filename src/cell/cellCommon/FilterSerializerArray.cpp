@@ -17,12 +17,12 @@ FilterSerializerArray::FilterSerializerArray()
 
   // thresholding
   m_serializerArray[ (uint32) FID_Thresholding] = 
-    new FilterSerializer< typename ThresholdingFilter< Image<uint8, 3> > >( 
+    new FilterSerializer< ThresholdingFilter< Image<uint8, 3> > >( 
       NULL, 0 );
 
   // median
   m_serializerArray[ (uint32) FID_Median] = 
-    new FilterSerializer< typename MedianFilter2D< Image<uint8, 2> > >( 
+    new FilterSerializer< MedianFilter2D< Image<uint8, 2> > >( 
       NULL, 0 );
   
   // ...

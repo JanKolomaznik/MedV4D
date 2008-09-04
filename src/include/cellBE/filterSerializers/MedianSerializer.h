@@ -53,7 +53,7 @@ public:
 
   void SerializeClassInfo( M4D::CellBE::NetStream &s)
   {
-		s << (uint8) GetNumericTypeID< M4D::Imaging::ImageTraits< InputImageType >::ElementType >();
+		s << (uint8) GetNumericTypeID< typename M4D::Imaging::ImageTraits< InputImageType >::ElementType >();
   }
 
   void
