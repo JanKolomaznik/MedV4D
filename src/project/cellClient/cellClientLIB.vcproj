@@ -155,7 +155,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\cell\BasicJob.cpp"
+				RelativePath="..\..\cell\cellCommon\BasicJob.cpp"
 				>
 			</File>
 			<File
@@ -171,7 +171,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\cell\FilterSerializerArray.cpp"
+				RelativePath="..\..\cell\cellCommon\FilterSerializerArray.cpp"
 				>
 			</File>
 			<File
@@ -182,7 +182,7 @@
 				Name="dataSetSerializers"
 				>
 				<File
-					RelativePath="..\..\cell\GeneralDataSetSerializer.cpp"
+					RelativePath="..\..\cell\cellCommon\GeneralDataSetSerializer.cpp"
 					>
 				</File>
 			</Filter>
@@ -190,7 +190,7 @@
 				Name="filterSerializers"
 				>
 				<File
-					RelativePath="..\..\cell\GeneralFilterSerializer.cpp"
+					RelativePath="..\..\cell\cellCommon\GeneralFilterSerializer.cpp"
 					>
 				</File>
 			</Filter>
