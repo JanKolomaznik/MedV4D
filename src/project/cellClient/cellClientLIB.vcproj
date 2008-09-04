@@ -155,34 +155,34 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\common\BasicJob.cpp"
+				RelativePath="..\..\cell\BasicJob.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\cellClient\CellClient.cpp"
+				RelativePath="..\..\cell\cellClient\CellClient.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\cellClient\clientJob.cpp"
+				RelativePath="..\..\cell\cellClient\clientJob.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\cellClient\clientSocket.cpp"
+				RelativePath="..\..\cell\cellClient\clientSocket.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\common\FilterSerializerArray.cpp"
+				RelativePath="..\..\cell\FilterSerializerArray.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\cellClient\remoteFilterBase.cpp"
+				RelativePath="..\..\cell\cellClient\remoteFilterBase.cpp"
 				>
 			</File>
 			<Filter
 				Name="dataSetSerializers"
 				>
 				<File
-					RelativePath="..\..\include\cellBE\dataSetSerializers\GeneralDataSetSerializer.cpp"
+					RelativePath="..\..\cell\GeneralDataSetSerializer.cpp"
 					>
 				</File>
 			</Filter>
@@ -190,26 +190,8 @@
 				Name="filterSerializers"
 				>
 				<File
-					RelativePath="..\..\include\cellBE\filterSerializers\GeneralFilterSerializer.cpp"
+					RelativePath="..\..\cell\GeneralFilterSerializer.cpp"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)1.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)1.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-						/>
-					</FileConfiguration>
 				</File>
 			</Filter>
 		</Filter>

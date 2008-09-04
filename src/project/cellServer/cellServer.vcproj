@@ -178,30 +178,30 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\common\BasicJob.cpp"
+				RelativePath="..\..\cell\BasicJob.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\common\FilterSerializerArray.cpp"
+				RelativePath="..\..\cell\FilterSerializerArray.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\cellServer\main.cpp"
+				RelativePath="..\..\cell\cellServer\main.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\cellServer\server.cpp"
+				RelativePath="..\..\cell\cellServer\server.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\cellServer\serverJob.cpp"
+				RelativePath="..\..\cell\cellServer\serverJob.cpp"
 				>
 			</File>
 			<Filter
 				Name="dataSetSerializers"
 				>
 				<File
-					RelativePath="..\..\include\cellBE\dataSetSerializers\GeneralDataSetSerializer.cpp"
+					RelativePath="..\..\cell\GeneralDataSetSerializer.cpp"
 					>
 				</File>
 			</Filter>
@@ -209,7 +209,7 @@
 				Name="filterSerializers"
 				>
 				<File
-					RelativePath="..\..\include\cellBE\filterSerializers\GeneralFilterSerializer.cpp"
+					RelativePath="..\..\cell\GeneralFilterSerializer.cpp"
 					>
 				</File>
 			</Filter>
@@ -260,7 +260,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\cellServer\jobManager.h"
+				RelativePath="..\..\cell\cellServer\jobManager.h"
 				>
 			</File>
 			<File
@@ -280,11 +280,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\cellServer\server.h"
+				RelativePath="..\..\cell\cellServer\server.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\cellServer\serverJob.h"
+				RelativePath="..\..\cell\cellServer\serverJob.h"
 				>
 			</File>
 			<Filter
