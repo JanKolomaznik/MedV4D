@@ -176,17 +176,22 @@ MainExecutionThread::operator()()
 	_filter->_callPrepareOutputDatasets = false;
 
 	//We check properties before we use them.
+	D_PRINT( "++++++ Filter - CheckProperties()" );
 	_filter->_properties->CheckProperties();
 
 	//We want to do some steps before actual computing
+	D_PRINT( "++++++ Filter - BeforeComputation()" );
 	_filter->BeforeComputation( _updateType );
 	
 	//We decide whether resize output datasets
 	if( _filter->_callPrepareOutputDatasets ) {
+		D_PRINT( "++++++ Filter - PrepareOutputDatasets()" );
 		_filter->PrepareOutputDatasets();
+		_filter->_callPrepareOutputDatasets = false;
 	}
 
 	//Mark changed parts of output
+	D_PRINT( "++++++ Filter - MarkChanges()" );
 	_filter->MarkChanges( _updateType );
 
 	_filter->_outputPorts.SendMessage( 
@@ -194,6 +199,7 @@ MainExecutionThread::operator()()
 			PipelineMessage::MSS_NORMAL 
 			);
 
+	D_PRINT( "++++++ Filter - ExecutionThreadMethod()" );
 	bool result = _filter->ExecutionThreadMethod( _updateType );
 
 	if( result ) {
@@ -203,6 +209,7 @@ MainExecutionThread::operator()()
 				PipelineMessage::MSS_NORMAL 
 				);
 
+		D_PRINT( "++++++ Filter - AfterComputation( true )" );
 		_filter->AfterComputation( true );
 		_filter->CleanAfterSuccessfulRun();
 	} else {
@@ -212,6 +219,7 @@ MainExecutionThread::operator()()
 				PipelineMessage::MSS_NORMAL 
 				);
 		
+		D_PRINT( "++++++ Filter - AfterComputation( false )" );
 		_filter->AfterComputation( false );
 
 		_filter->CleanAfterStoppedRun();
