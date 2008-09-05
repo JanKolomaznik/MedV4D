@@ -160,9 +160,13 @@ public:
 			    }
 		        }
 		    }
-		    else return false;
+		    else
+		    {
+		        ready = false;
+			original = 0;
+		    }
 
-		    if ( !original ) return false;
+		    if ( !original ) ready = false;
 
 		} catch (...) { ready = false; }
 		inPort->ReleaseDatasetLock();
@@ -1358,13 +1362,19 @@ m4dGUISliceViewerWidget::colorPicker( double x, double y, double z )
 		        _imageID, result = Imaging::Image< TTYPE, 2 >::CastAbstractImage(_inPort->GetAbstractImage()).GetElement( (int)coords[0], (int)coords[1] ) );
 	        }
 	        else
+		{
+		    _ready = false;
 	            result = 0;
+		}
 	    }
 	    catch (...) { _ready = false; }
 	    _inPort->ReleaseDatasetLock();
 	}
         else
+	{
+	    _ready = false;
             return;
+	}
     }
     catch (...) { _ready = false; }
     if ( !_ready ) return;
