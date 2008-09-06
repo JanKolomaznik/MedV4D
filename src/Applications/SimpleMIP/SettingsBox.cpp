@@ -20,8 +20,22 @@ SettingsBox
 	QVBoxLayout *layout;
 	QButtonGroup *radioButtons;
 	QRadioButton *button;
+	QComboBox *projectionCombo;
 
 	layout = new QVBoxLayout;
+	//-------------------------------------------------
+	projectionCombo = new QComboBox();
+
+	projectionCombo->addItem( "Maximum intensity" );
+	projectionCombo->addItem( "Summed intensity" );
+	projectionCombo->addItem( "Average intensity" );
+	
+	projectionCombo->setCurrentIndex( 0 );
+
+	QObject::connect( projectionCombo, SIGNAL( currentIndexChanged( int ) ), this, SLOT( ChangeProjectionType( int ) ) );
+
+	layout->addWidget( projectionCombo );
+
 	radioButtons = new QButtonGroup( this );
 	
 	//layout->addWidget( radioButtons );
@@ -29,7 +43,8 @@ SettingsBox
 	
 	button = new QRadioButton( "XY" );
 	button->setChecked( true );
-	static_cast<SimpleMIP*>(_filter)->SetPlane( XY_PLANE );
+	static_cast<SimpleProjectionFilter*>(_filter)->SetPlane( XY_PLANE );
+	static_cast<SimpleProjectionFilter*>(_filter)->SetProjectionType( PT_MAX );
 	layout->addWidget( button );
 	radioButtons->addButton( button, XY_PLANE );
 	
@@ -62,7 +77,26 @@ void
 SettingsBox
 ::ChangeProjPlane( int val )
 {
-	static_cast<SimpleMIP*>(_filter)->SetPlane( (M4D::Imaging::CartesianPlanes)val );
+	static_cast<SimpleProjectionFilter*>(_filter)->SetPlane( (M4D::Imaging::CartesianPlanes)val );
+}
+
+void
+SettingsBox
+::ChangeProjectionType( int val )
+{
+	switch( val ) {
+	case 0:
+		static_cast<SimpleProjectionFilter*>(_filter)->SetProjectionType( M4D::Imaging::PT_MAX );
+		break;
+	case 1:
+		static_cast<SimpleProjectionFilter*>(_filter)->SetProjectionType( M4D::Imaging::PT_SUM );
+		break;
+	case 2:
+		static_cast<SimpleProjectionFilter*>(_filter)->SetProjectionType( M4D::Imaging::PT_AVERAGE );
+		break;
+	default:
+		ASSERT( false );
+	}
 }
 
 void

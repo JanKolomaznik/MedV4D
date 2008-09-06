@@ -4,16 +4,16 @@
 #include "GUI/m4dGUIMainWindow.h"
 #include "Imaging/PipelineContainer.h"
 #include "Imaging/ImageFactory.h"
-#include "Imaging/filters/SimpleMaxIntensityProjection.h"
+#include "Imaging/filters/SimpleProjection.h"
 #include "Imaging/filters/ImageConvertor.h"
 #include "SettingsBox.h"
 
 #define ORGANIZATION_NAME     "MFF"
-#define APPLICATION_NAME      "SimpleMIP"
+#define APPLICATION_NAME      "SimpleProjection"
 
 typedef int16	ElementType;
 typedef M4D::Imaging::Image< ElementType, 3 > ImageType;
-typedef M4D::Imaging::SimpleMaxIntensityProjection< ImageType > SimpleMIP;
+typedef M4D::Imaging::SimpleProjection< ImageType > SimpleProjectionFilter;
 typedef M4D::Imaging::ImageConvertor< ImageType > InImageConvertor;
 
 class Notifier : public QObject, public M4D::Imaging::MessageReceiverInterface

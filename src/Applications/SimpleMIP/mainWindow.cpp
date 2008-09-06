@@ -56,7 +56,7 @@ mainWindow::CreatePipeline()
 {
 	_convertor = new InImageConvertor();
 
-	_filter = new SimpleMIP();
+	_filter = new SimpleProjectionFilter();
 		
 	_pipeline.AddFilter( _convertor );
 	_pipeline.AddFilter( _filter );

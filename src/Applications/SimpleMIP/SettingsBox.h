@@ -24,6 +24,9 @@ protected slots:
 	ChangeProjPlane( int val );
 
 	void
+	ChangeProjectionType( int val );
+
+	void
 	ExecuteFilter();
 
 	void
