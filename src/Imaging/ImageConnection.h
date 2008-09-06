@@ -61,6 +61,13 @@ public:
 			return GetAbstractImage();
 		}
 
+	virtual void
+	SetImageSize( 
+			uint32		dim,
+			int32 		minimums[], 
+			int32 		maximums[], 
+			float32		elementExtents[]
+		    ) = 0;
 protected:
 	class ENoImageAssociated
 	{
@@ -91,6 +98,13 @@ public:
 	virtual AbstractImage &
 	GetAbstractImage()const;
 
+	void
+	SetImageSize( 
+			uint32		dim,
+			int32 		minimums[], 
+			int32 		maximums[], 
+			float32		elementExtents[]
+		    ){ throw ErrorHandling::ETODO( "SetImage() not implemented." ); }
 protected:
 	AbstractImage::AImagePtr _image;
 };
@@ -164,9 +178,10 @@ public:
 
 	void
 	SetImageSize( 
-			int32 		minimums[ dimension ], 
-			int32 		maximums[ dimension ], 
-			float32		elementExtents[ dimension ]
+			uint32		dim,
+			int32 		minimums[], 
+			int32 		maximums[], 
+			float32		elementExtents[]
 		    );
 
 protected:

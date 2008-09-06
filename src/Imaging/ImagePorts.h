@@ -75,6 +75,14 @@ public:
 	virtual int
 	ImageGetElementTypeID()const
 		{ return NTID_UNKNOWN; }
+	
+	void
+	SetImageSize( 
+			uint32		dim,
+			int32 		minimums[], 
+			int32 		maximums[], 
+			float32		elementExtents[]
+		    );
 };
 //******************************************************************************
 template< typename ImageType >
@@ -123,12 +131,13 @@ public:
 	ImageType&
 	GetImage()const;
 
-	void
+	/*void
 	SetImageSize( 
-			int32 		minimums[ dimension ], 
-			int32 		maximums[ dimension ], 
-			float32		elementExtents[ dimension ]
-		    );
+			uint32		dim,
+			int32 		minimums[], 
+			int32 		maximums[], 
+			float32		elementExtents[]
+		    );*/
 
 	void
 	Plug( ConnectionInterface & connection );

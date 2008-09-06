@@ -76,8 +76,27 @@ class ExceptionWrongPointer: public ExceptionBase
 {
 public:
 	ExceptionWrongPointer( std::string, void *pointer ) throw();
+	//TODO
 private:
 	void	*_pointer;
+};
+
+class EWrongDimension: public ExceptionBase
+{
+public:
+	EWrongDimension( std::string name ) throw(): ExceptionBase( name ) {}
+	EWrongDimension() throw(): ExceptionBase( "Wrong dimension" ) {}
+private:
+
+};
+
+class ETODO: public ExceptionBase
+{
+public:
+	ETODO( std::string name ) throw(): ExceptionBase( name ) {}
+	ETODO() throw(): ExceptionBase( "TODO - not finished." ) {}
+private:
+
 };
 
 std::ostream& operator<<( std::ostream &out, ExceptionBase &exception );

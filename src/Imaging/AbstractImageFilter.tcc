@@ -93,7 +93,7 @@ AbstractImageFilter< InputImageType, OutputImageType >
 		float32		elementExtents[ ]
 	    )
 {
-	_outputPorts.GetPortTyped< OutputPortType >( 0 ).SetImageSize( minimums, maximums, elementExtents );
+	_outputPorts.GetPortTyped< OutputPortType >( 0 ).SetImageSize( ImageTraits< OutputImageType >::Dimension, minimums, maximums, elementExtents );
 }
 
 template< typename InputImageType, typename OutputImageType >

@@ -77,6 +77,21 @@ OutputPortAbstractImage
 	}
 }
 
+void
+OutputPortAbstractImage
+::SetImageSize( 
+		uint32		dim,
+		int32 		minimums[], 
+		int32 		maximums[], 
+		float32		elementExtents[]
+	    )
+{
+	if( !this->IsPlugged() ) {
+		throw EDisconnected( this->GetID() );
+	}
+
+	static_cast<AbstractImageConnectionInterface*>( _connection )->SetImageSize( dim, minimums, maximums, elementExtents );	
+}
 	
 }/*namespace Imaging*/
 }/*namespace M4D*/

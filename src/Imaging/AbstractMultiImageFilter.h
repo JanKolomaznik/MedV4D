@@ -41,21 +41,22 @@ public:
 protected:
 	AbstractMultiImageFilter( Properties * prop );
 
-	const InputImageType&
-	GetInputImage( uin32 idx )const;
+	const AbstractImage&
+	GetInputImage( uint32 idx )const;
 
 	void
-	ReleaseInputImage( uin32 idx )const;
+	ReleaseInputImage( uint32 idx )const;
 
-	OutputImageType&
-	GetOutputImage( uin32 idx )const;
+	AbstractImage&
+	GetOutputImage( uint32 idx )const;
 
 	void
-	ReleaseOutputImage( uin32 idx )const;
+	ReleaseOutputImage( uint32 idx )const;
 
 	void
 	SetOutputImageSize(
-			uin32		idx,
+			uint32		idx,
+			uint32		dim,
 			int32 		minimums[], 
 			int32 		maximums[], 
 			float32		elementExtents[]

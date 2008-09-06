@@ -134,14 +134,19 @@ template< typename ElementType, unsigned dimension >
 void
 ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 ::SetImageSize( 
-		int32 		minimums[ dimension ], 
-		int32 		maximums[ dimension ], 
-		float32		elementExtents[ dimension ]
+		uint32		dim,
+		int32 		minimums[], 
+		int32 		maximums[], 
+		float32		elementExtents[]
 	    )
 {
 	if( !_image ) {
 		throw ENoImageAssociated();
 	}
+	if( dim != dimension ) {
+		throw ErrorHandling::EWrongDimension();
+	}
+
 	//TODO - check if locking should be done here
 	_image->UpgradeToExclusiveLock();
 

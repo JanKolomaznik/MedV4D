@@ -167,10 +167,11 @@ PipelineContainer::MakeConnection( M4D::Imaging::OutputPort& outPort, M4D::Imagi
 		connection = CreateConnectionObjectFromPorts( outPort, inPort, true );
 		//Newly created connection will be stored.
 		_connections.push_back( connection );
+		
+		connection->ConnectProducer( outPort );
 	}
 
 	connection->ConnectConsumer( inPort );
-	connection->ConnectProducer( outPort );
 
 	return *connection;
 	

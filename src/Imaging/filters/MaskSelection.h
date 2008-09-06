@@ -2,7 +2,7 @@
 #define _MASK_SELECTION_H
 
 #include "Common.h"
-#include "Imaging/AbstractImageFilter.h"
+#include "Imaging/AbstractMultiImageFilter.h"
 
 namespace M4D
 {
@@ -24,8 +24,8 @@ class MaskSelection
 public:
 	typedef AbstractMultiImageFilter< 2, 1 > 			PredecessorType;
 	typedef Image< uint8, ImageTraits<ImageType>::Dimension >	InMaskType;
-	typedef ImageTraits< ImageType >::InputPort 			ImageInPort;				
-	typedef ImageTraits< ImageType >::OutputPort 			ImageOutPort;				
+	typedef typename ImageTraits< ImageType >::InputPort 		ImageInPort;
+	typedef typename ImageTraits< ImageType >::OutputPort 		ImageOutPort;
 	typedef typename ImageTraits< InMaskType >::InputPort 		MaskInPort;
 	
 	class EDifferentMaskExtents
@@ -74,6 +74,14 @@ protected:
 	AfterComputation( bool successful );
 	
 private:
+	template< uint32 Dim >
+	void
+	MarkChangesHelper( AbstractPipeFilter::UPDATE_TYPE utype );
+
+	template< uint32 Dim >
+	bool
+	ExecutionThreadMethodHelper( AbstractPipeFilter::UPDATE_TYPE utype );
+
 	GET_PROPERTIES_DEFINITION_MACRO;
 
 };

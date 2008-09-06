@@ -6,6 +6,7 @@
 #include "Imaging/ImageFactory.h"
 #include "Imaging/filters/ThresholdingFilter.h"
 #include "Imaging/filters/MaskMedianFilter.h"
+#include "Imaging/filters/MaskSelection.h"
 #include "Imaging/filters/ImageConvertor.h"
 #include "SettingsBox.h"
 
@@ -17,6 +18,7 @@ const unsigned Dim = 3;
 typedef M4D::Imaging::Image< ElementType, Dim > ImageType;
 typedef M4D::Imaging::ThresholdingMaskFilter< ImageType > Thresholding;
 typedef M4D::Imaging::MaskMedianFilter2D< Dim > Median2D;
+typedef M4D::Imaging::MaskSelection< ImageType > MaskSelectionFilter;
 typedef M4D::Imaging::ImageConnection< ImageType > InConnection;
 typedef M4D::Imaging::ImageConvertor< ImageType > InImageConvertor;
 

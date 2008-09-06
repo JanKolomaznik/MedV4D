@@ -53,23 +53,8 @@ bool
 MaskSelection< ImageType >
 ::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
 {
-	/*utype = utype;
-	D_BLOCK_COMMENT( "++++ Entering ExecutionThreadMethod() - ImageConvertor", "----- Leaving MainExecutionThread() - ImageConvertor" );
-	if ( !( _readerBBox->WaitWhileDirty() == MS_MODIFIED ) ) {
-		_writerBBox->SetState( MS_CANCELED );
-		return false;
-	}
-	bool result = false;
-	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( 
-			this->in->GetElementTypeID(), 
-			result = ConvertImage< TTYPE, typename ImageTraits< OutputImageType >::ElementType, Convertor >( *(this->in), *(this->out) )
-			);
-	if( result ) {
-		_writerBBox->SetModified();
-	} else {
-		_writerBBox->SetState( MS_CANCELED );
-	}
-	return result;*/
+	return ExecutionThreadMethodHelper< ImageTraits< ImageType >::Dimension >( utype );
+
 }
 
 template< typename ImageType >
@@ -97,7 +82,7 @@ MaskSelection< ImageType >
 	}
 	
 
-	this->SetOutputImageSize( 0, minimums, maximums, voxelExtents );
+	this->SetOutputImageSize( 0, ImageTraits<ImageType>::Dimension, minimums, maximums, voxelExtents );
 }
 
 template< typename ImageType >
@@ -113,7 +98,7 @@ void
 MaskSelection< ImageType >
 ::MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype )
 {
-
+	MarkChangesHelper< ImageTraits< ImageType >::Dimension >( utype );
 }
 
 template< typename ImageType >
@@ -124,6 +109,40 @@ MaskSelection< ImageType >
 	PredecessorType::AfterComputation( successful );
 }
 
+template< typename ImageType >
+template< uint32 Dim >
+void
+MaskSelection< ImageType >
+::MarkChangesHelper( AbstractPipeFilter::UPDATE_TYPE utype )
+{
+
+}
+
+template< typename ImageType >
+template< uint32 Dim >
+bool
+MaskSelection< ImageType >
+::ExecutionThreadMethodHelper( AbstractPipeFilter::UPDATE_TYPE utype )
+{
+	/*utype = utype;
+	D_BLOCK_COMMENT( "++++ Entering ExecutionThreadMethod() - ImageConvertor", "----- Leaving MainExecutionThread() - ImageConvertor" );
+	if ( !( _readerBBox->WaitWhileDirty() == MS_MODIFIED ) ) {
+		_writerBBox->SetState( MS_CANCELED );
+		return false;
+	}
+	bool result = false;
+	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( 
+			this->in->GetElementTypeID(), 
+			result = ConvertImage< TTYPE, typename ImageTraits< OutputImageType >::ElementType, Convertor >( *(this->in), *(this->out) )
+			);
+	if( result ) {
+		_writerBBox->SetModified();
+	} else {
+		_writerBBox->SetState( MS_CANCELED );
+	}
+	return result;*/
+	return false;
+}
 
 } /*namespace Imaging*/
 /** @} */

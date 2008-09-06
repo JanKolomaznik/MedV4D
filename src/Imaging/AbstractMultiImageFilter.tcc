@@ -17,73 +17,54 @@ namespace Imaging
 
 
 template< uint32 InCount, uint32 OutCount >
-AbstractMultiImageFilter< InCount, OutCount >::AbstractImageFilter( typename AbstractImageFilter< InputImageType, OutputImageType >::Properties * prop )
+AbstractMultiImageFilter< InCount, OutCount >::AbstractMultiImageFilter( typename AbstractMultiImageFilter< InCount, OutCount >::Properties * prop )
 :	AbstractPipeFilter( prop ) 
 {
 
 }
 
-const AbstractImage&
-GetInputImageFromPort( InputPortAbstractImage &port ); //definition in .cpp
-
-template< typename ImageType >
-const ImageType&
-GetInputImageFromPort( InputPortImageFilter< ImageType > &port )
-{
-	return port.GetImage();
-}	
-
-AbstractImage&
-GetOutputImageFromPort( OutputPortAbstractImage &port ); //definition in .cpp
-
-template< typename ImageType >
-ImageType&
-GetOutputImageFromPort( OutputPortImageFilter< ImageType > &port )
-{
-	return port.GetImage();
-}	
-
 template< uint32 InCount, uint32 OutCount >
-const InputImageType&
-AbstractMultiImageFilter< InCount, OutCount >::GetInputImage( uin32 idx )const
+const AbstractImage&
+AbstractMultiImageFilter< InCount, OutCount >::GetInputImage( uint32 idx )const
 {
-	_inputPorts.GetPortTyped< InputPortType >( idx ).LockDataset();
-	return GetInputImageFromPort( _inputPorts.GetPortTyped< InputPortType >( idx ) );
+	_inputPorts[ idx ].LockDataset();
+	return _inputPorts.GetPortTyped< InputPortAbstractImage >( idx ).GetAbstractImage();
 }
 
 template< uint32 InCount, uint32 OutCount >
 void 
-AbstractMultiImageFilter< InCount, OutCount >::ReleaseInputImage( uin32 idx )const
+AbstractMultiImageFilter< InCount, OutCount >::ReleaseInputImage( uint32 idx )const
 {
-	_inputPorts.GetPortTyped< InputPortType >( idx ).ReleaseDatasetLock();
+	_inputPorts[ idx ].ReleaseDatasetLock();
 }
 
 template< uint32 InCount, uint32 OutCount >
 void
-AbstractMultiImageFilter< InCount, OutCount >::ReleaseOutputImage( uin32 idx )const
+AbstractMultiImageFilter< InCount, OutCount >::ReleaseOutputImage( uint32 idx )const
 {
-	_outputPorts.GetPortTyped< OutputPortType >( idx ).ReleaseDatasetLock();
+	_outputPorts[ idx ].ReleaseDatasetLock();
 }
 
 template< uint32 InCount, uint32 OutCount >
-OutputImageType&
-AbstractMultiImageFilter< InCount, OutCount >::GetOutputImage( uin32 idx )const
+AbstractImage&
+AbstractMultiImageFilter< InCount, OutCount >::GetOutputImage( uint32 idx )const
 {
-	_outputPorts.GetPortTyped< OutputPortType >( idx ).LockDataset();
-	return GetOutputImageFromPort( _outputPorts.GetPortTyped< OutputPortType >( idx ) );
+	_outputPorts[ idx ].LockDataset();
+	return _outputPorts.GetPortTyped< OutputPortAbstractImage >( idx ).GetAbstractImage();
 }
 
 template< uint32 InCount, uint32 OutCount >
 void
 AbstractMultiImageFilter< InCount, OutCount >
 ::SetOutputImageSize( 
-		uin32		idx,
+		uint32		idx,
+		uint32		dim,
 		int32 		minimums[ ], 
 		int32 		maximums[ ], 
 		float32		elementExtents[ ]
 	    )
 {
-	_outputPorts.GetPortTyped< OutputPortType >( idx ).SetImageSize( minimums, maximums, elementExtents );
+	_outputPorts.GetPortTyped< OutputPortAbstractImage >( idx ).SetImageSize( dim, minimums, maximums, elementExtents );
 }
 
 template< uint32 InCount, uint32 OutCount >
@@ -144,7 +125,7 @@ AbstractMultiImageFilter< InCount, OutCount >
 		}
 	}
 finish:
-	/*preparation finished*/
+	;/*preparation finished*/
 }
 
 

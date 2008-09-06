@@ -89,21 +89,22 @@ OutputPortImageFilter< Image< ElementType, dimension > >
 	return static_cast<ConnectionType*>( _connection )->GetImage();
 }
 
-template< typename ElementType, unsigned dimension >
+/*template< typename ElementType, unsigned dimension >
 void
 OutputPortImageFilter< Image< ElementType, dimension > >
 ::SetImageSize( 
-		int32 		minimums[ dimension ], 
-		int32 		maximums[ dimension ], 
-		float32		elementExtents[ dimension ]
+		uint32		dim,
+		int32 		minimums[], 
+		int32 		maximums[], 
+		float32		elementExtents[]
 	    )
 {
 	if( !this->IsPlugged() ) {
 		throw EDisconnected( this->GetID() );
 	}
 
-	static_cast<ConnectionType*>( _connection )->SetImageSize( minimums, maximums, elementExtents );	
-}
+	static_cast<ConnectionType*>( _connection )->SetImageSize( dim, minimums, maximums, elementExtents );	
+}*/
 
 template< typename ElementType, unsigned dimension >
 void
