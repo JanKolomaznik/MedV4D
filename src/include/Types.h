@@ -33,7 +33,7 @@
 typedef signed char int8;
 typedef short int16;
 typedef int int32;
-typedef long int64;
+typedef long long int int64;
 // unsigned
 typedef unsigned char uint8;
 typedef unsigned short uint16;
@@ -44,6 +44,15 @@ typedef float float32;
 typedef double float64;
 // others
 //typedef uint32 size_t;
+
+static const int8 	MAX_INT8 = 0x7F;
+static const uint8 	MAX_UINT8 = 0xFF;
+static const int16 	MAX_INT16 = 0x7FFF;
+static const uint16 	MAX_UINT16 = 0xFFFF;
+static const int32 	MAX_INT32 = 0x7FFFFFFF;
+static const uint32 	MAX_UINT32 = 0xFFFFFFFF;
+static const int64 	MAX_INT64 = 0x7FFFFFFFFFFFFFFF;
+static const uint64 	MAX_UINT64 = 0xFFFFFFFFFFFFFFFF;
 
 enum NumericTypeIDs{ 
 	NTID_UNKNOWN,
@@ -197,6 +206,190 @@ int16 GetNumericTypeID<bool>();
  **/
 int16
 GetNTIDFromSizeAndSign( uint16 size, bool sign );
+
+
+template< typename Type >
+struct TypeTraits;
+
+template<>
+struct TypeTraits< int8 >
+{
+	typedef int8		Type;
+	
+	static const bool	Signed = true;
+	static const uint16	BitCount = sizeof( Type )*8;
+	static const Type	Max = (Type)MAX_INT8;
+	static const Type	Min = (Type)(-MAX_INT8-1);
+};
+
+template<>
+struct TypeTraits< uint8 >
+{
+	typedef uint8		Type;
+	
+	static const bool	Signed = false;
+	static const uint16	BitCount = sizeof( Type )*8;
+	static const Type	Max = ~((Type)0);
+	static const Type	Min = (Type)(0);
+};
+
+template<>
+struct TypeTraits< int16 >
+{
+	typedef int16		Type;
+
+	static const bool	Signed = true;
+	static const uint16	BitCount = sizeof( Type )*8;
+	static const Type	Max = (Type)MAX_INT16;
+	static const Type	Min = (Type)(-MAX_INT16-1);
+};
+
+template<>
+struct TypeTraits< uint16 >
+{
+	typedef uint16		Type;
+
+	static const bool	Signed = false;
+	static const uint16	BitCount = sizeof( Type )*8;
+	static const Type	Max = ~((Type)0);
+	static const Type	Min = (Type)(0);
+};
+
+template<>
+struct TypeTraits< int32 >
+{
+	typedef int32		Type;
+
+	static const bool	Signed = true;
+	static const uint16	BitCount = sizeof( Type )*8;
+	static const Type	Max = (Type)MAX_INT32;
+	static const Type	Min = (Type)(-MAX_INT32-1);
+};
+
+template<>
+struct TypeTraits< uint32 >
+{
+	typedef uint32		Type;
+
+	static const bool	Signed = false;
+	static const uint16	BitCount = sizeof( Type )*8;
+	static const Type	Max = ~((Type)0);
+	static const Type	Min = (Type)(0);
+};
+
+template<>
+struct TypeTraits< int64 >
+{
+	typedef int64		Type;
+
+	static const bool	Signed = true;
+	static const uint16	BitCount = sizeof( Type )*8;
+	static const Type	Max = (Type)MAX_INT64;
+	static const Type	Min = (Type)(-MAX_INT64-1);
+};
+
+template<>
+struct TypeTraits< uint64 >
+{
+	typedef uint64		Type;
+
+	static const bool	Signed = false;
+	static const uint16	BitCount = sizeof( Type )*8;
+	static const Type	Max = ~((Type)0);
+	static const Type	Min = (Type)(0);
+};
+
+//********************************************************************
+template< uint16 size, bool sign >
+struct IntegerType;
+
+template<>
+struct IntegerType< 1, true >
+{
+	typedef int8		Type;
+
+	static const bool	Signed = TypeTraits< Type >::Signed;
+	static const uint16	BitCount = TypeTraits< Type >::BitCount;
+	static const Type	Max = TypeTraits< Type >::Max;
+	static const Type	Min = TypeTraits< Type >::Min;
+};
+
+template<>
+struct IntegerType< 1, false >
+{
+	typedef uint8	Type;
+
+	static const bool	Signed = TypeTraits< Type >::Signed;
+	static const uint16	BitCount = TypeTraits< Type >::BitCount;
+	static const Type	Max = TypeTraits< Type >::Max;
+	static const Type	Min = TypeTraits< Type >::Min;
+};
+
+template<>
+struct IntegerType< 2, true >
+{
+	typedef int16	Type;
+
+	static const bool	Signed = TypeTraits< Type >::Signed;
+	static const uint16	BitCount = TypeTraits< Type >::BitCount;
+	static const Type	Max = TypeTraits< Type >::Max;
+	static const Type	Min = TypeTraits< Type >::Min;
+};
+
+template<>
+struct IntegerType< 2, false >
+{
+	typedef uint16	Type;
+
+	static const bool	Signed = TypeTraits< Type >::Signed;
+	static const uint16	BitCount = TypeTraits< Type >::BitCount;
+	static const Type	Max = TypeTraits< Type >::Max;
+	static const Type	Min = TypeTraits< Type >::Min;
+};
+
+template<>
+struct IntegerType< 4, true >
+{
+	typedef int32	Type;
+
+	static const bool	Signed = TypeTraits< Type >::Signed;
+	static const uint16	BitCount = TypeTraits< Type >::BitCount;
+	static const Type	Max = TypeTraits< Type >::Max;
+	static const Type	Min = TypeTraits< Type >::Min;
+};
+
+template<>
+struct IntegerType< 4, false >
+{
+	typedef uint32	Type;
+
+	static const bool	Signed = TypeTraits< Type >::Signed;
+	static const uint16	BitCount = TypeTraits< Type >::BitCount;
+	static const Type	Max = TypeTraits< Type >::Max;
+	static const Type	Min = TypeTraits< Type >::Min;
+};
+
+template<>
+struct IntegerType< 8, true >
+{
+	typedef int64	Type;
+
+	static const bool	Signed = TypeTraits< Type >::Signed;
+	static const uint16	BitCount = TypeTraits< Type >::BitCount;
+	static const Type	Max = TypeTraits< Type >::Max;
+	static const Type	Min = TypeTraits< Type >::Min;
+};
+
+template<>
+struct IntegerType< 8, false >
+{
+	typedef uint64	Type;
+
+	static const bool	Signed = TypeTraits< Type >::Signed;
+	static const uint16	BitCount = TypeTraits< Type >::BitCount;
+	static const Type	Max = TypeTraits< Type >::Max;
+	static const Type	Min = TypeTraits< Type >::Min;
+};
 
 /** @} */
 
