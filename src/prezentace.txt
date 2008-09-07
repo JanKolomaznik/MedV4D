@@ -1,28 +1,40 @@
+Motivace
+-------------------
+* Velmi mnoho medicinskych aplikacÃ­ mÃ¡ mnoho spoleÄnÃ½ch prvkÅ¯.
+  Pokud jsou pokaÅ¾dÃ© zpracovÃ¡ny jinak, uÅ¾ivatelÃ© se s novou aplikacÃ­ musÃ­ pracnÄ› uÄit i jejÃ­ ovlÃ¡danÃ­. 
+  NavÃ­c programÃ¡toÅ™i pokaÅ¾dÃ© Å™eÅ¡Ã­ uÅ¾ nÄ›kolikrÃ¡t Å™eÅ¡enÃ½ problÃ©m - neefektivnÃ­.
+  Toto vybÃ­zÃ­ k vytvoÅ™enÃ­ frameworku poskytujÃ­cÃ­ nÃ¡stroje pro jednoduchÃ½ a hlavnÄ› jednotnÃ½ nÃ¡vrh novÃ½ch 
+  aplikacÃ­.
+
+* V praktickÃ½ch aplikacÃ­ch je vhodnÃ©, aby vÃ½poÄty probÃ­haly progresivnÄ› - uÅ¾ivatel nemusÃ­ Äekat na 
+  dokonÄenÃ­ nÃ¡roÄnÃ©ho vÃ½poÄtu, aby zjistil zda jsou nastavenÃ­ sprÃ¡vnÃ¡.
+
+
 puvodni specifikace:
 -------------------
 
-Prostøedí pro snadnìjší programování uivatelsky pøátelskıch aplikací pro medicínu.
-Pøedpokládá se zejména zpracování a vizualizace 2D, 3D a 4D dat (medical imaging), zdroje dat jsou obvykle poèítaèovı tomograf (CT) nebo magnetická nukleární rezonance (MRI).
-V rámci projektu se pøedpokládá vznik nìkolika uivatelskıch aplikací, které pouijí ji døíve vyvinuté algoritmy, ale budou je poskytovat lékaøskım uivatelùm s veškerım poadovanım komfortem (dohoda s nemocnicí Na Bulovce).
+ProstÅ™edÃ­ pro snadnÄ›jÅ¡Ã­ programovÃ¡nÃ­ uÅ¾ivatelsky pÅ™Ã¡telskÃ½ch aplikacÃ­ pro medicÃ­nu.
+PÅ™edpoklÃ¡dÃ¡ se zejmÃ©na zpracovÃ¡nÃ­ a vizualizace 2D, 3D a 4D dat (medical imaging), zdroje dat jsou obvykle poÄÃ­taÄovÃ½ tomograf (CT) nebo magnetickÃ¡ nukleÃ¡rnÃ­ rezonance (MRI).
+V rÃ¡mci projektu se pÅ™edpoklÃ¡dÃ¡ vznik nÄ›kolika uÅ¾ivatelskÃ½ch aplikacÃ­, kterÃ© pouÅ¾ijÃ­ jiÅ¾ dÅ™Ã­ve vyvinutÃ© algoritmy, ale budou je poskytovat lÃ©kaÅ™skÃ½m uÅ¾ivatelÅ¯m s veÅ¡kerÃ½m poÅ¾adovanÃ½m komfortem (dohoda s nemocnicÃ­ Na Bulovce).
 
 vlastnosti:
 -----------
 
-  * zpracování objemovıch dat velkého rozsahu (CT nebo MRI nebo obojí..)
-  * monost paralelní implementace nároènìjších algoritmù - sdílená pamì (threads) i distribuovaná pamì (MPI?) [EXTENDED]
-  * monost vzdáleného uloení dat (datovı server), respektování veškerıch zásad nakládání s citlivımi daty paci"entù (anonymizace, pøíp. šifrování dat..)
-  * distribuovaná architektura (pøes TCP/IP):
-        o datovı server (sklad) - potenciálnì na vzdáleném poèítaèi
-        o vıpoèetní/aplikaèní server (napø. Windows Cluster Server nebo jinı "cluster") [EXTENDED]
-        o pracovní stanice - interakce s uivatelem, zobrazení vısledkù
-  * lehká verze aplikace - napø. na obyèejném notebooku bez síového pøipojení, musí podporovat minimálnì prohlíení ji pøedem spoèítanıch dat, pøehrávání prezentací, apod. (pozor na bezpeènost dat!)
-  * programovací jazyk: C++, pro nenároèné komponenty je monost pouití scriptovacího jazyka dle vlastního vıbìru
-  * operaèní systém: Windows, Linux, 32- i 64-bitové varianty (pokud to pouité knihovny dovolí)
+  * zpracovÃ¡nÃ­ objemovÃ½ch dat velkÃ©ho rozsahu (CT nebo MRI nebo obojÃ­..)
+  * moÅ¾nost paralelnÃ­ implementace nÃ¡roÄnÄ›jÅ¡Ã­ch algoritmÅ¯ - sdÃ­lenÃ¡ pamÄ›Å¥ (threads) i distribuovanÃ¡ pamÄ›Å¥ (MPI?) [EXTENDED]
+  * moÅ¾nost vzdÃ¡lenÃ©ho uloÅ¾enÃ­ dat (datovÃ½ server), respektovÃ¡nÃ­ veÅ¡kerÃ½ch zÃ¡sad naklÃ¡dÃ¡nÃ­ s citlivÃ½mi daty paci"entÅ¯ (anonymizace, pÅ™Ã­p. Å¡ifrovÃ¡nÃ­ dat..)
+  * distribuovanÃ¡ architektura (pÅ™es TCP/IP):
+        o datovÃ½ server (sklad) - potenciÃ¡lnÄ› na vzdÃ¡lenÃ©m poÄÃ­taÄi
+        o vÃ½poÄetnÃ­/aplikaÄnÃ­ server (napÅ™. Windows Cluster Server nebo jinÃ½ "cluster") [EXTENDED]
+        o pracovnÃ­ stanice - interakce s uÅ¾ivatelem, zobrazenÃ­ vÃ½sledkÅ¯
+  * lehkÃ¡ verze aplikace - napÅ™. na obyÄejnÃ©m notebooku bez sÃ­Å¥ovÃ©ho pÅ™ipojenÃ­, musÃ­ podporovat minimÃ¡lnÄ› prohlÃ­Å¾enÃ­ jiÅ¾ pÅ™edem spoÄÃ­tanÃ½ch dat, pÅ™ehrÃ¡vÃ¡nÃ­ prezentacÃ­, apod. (pozor na bezpeÄnost dat!)
+  * programovacÃ­ jazyk: C++, pro nenÃ¡roÄnÃ© komponenty je moÅ¾nost pouÅ¾itÃ­ scriptovacÃ­ho jazyka dle vlastnÃ­ho vÃ½bÄ›ru
+  * operaÄnÃ­ systÃ©m: Windows, Linux, 32- i 64-bitovÃ© varianty (pokud to pouÅ¾itÃ© knihovny dovolÃ­)
 
 jak se zmenila a proc:
 ---------------------
 
-po navsteve nemocnice Na Bulovce jsme po dohode vyskrtli moznost vzdáleného uloení dat (datovı server), protoze se
+po navsteve nemocnice Na Bulovce jsme po dohode vyskrtli moznost vzdÃ¡lenÃ©ho uloÅ¾enÃ­ dat (datovÃ½ server), protoze se
 ukazalo, ze ze strany nemocnice je nezbytne nutne pouzivat DICOM server, na kterem jsou veskera data ukladana rovnou
 ze scanovacich pristroju
 
@@ -35,8 +47,10 @@ system pro posilani casti vypoctu na jine stroje
 co to prinasi:
 --------------
 neni treba se starat o detaily DICOM formatu
-neni treba se starat o synchronizaci vypoctu
-napsani filtru obnasi podedeni od abstraktniho filtru a napsani 2 metod.
+
+implementovÃ¡ny koncepty pro zpracovÃ¡vÃ¡nÃ­ dat - pipelining
+systÃ©m pro snadnou paralelizaci vÃ½poÄtÅ¯ (synchronizace nad datasety, ...)
+
 napsani aplikace obnasi:
 
 jaka je konkurence?
