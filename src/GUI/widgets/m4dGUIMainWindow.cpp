@@ -164,9 +164,15 @@ void m4dGUIMainWindow::search ()
   // Study Manager Dialog - this will fill the dicomObjSet
   if ( studyManagerDialog->exec() ) 
   {
-    mainViewerDesktop->getSelectedViewerWidget()->setLeftSideTextData( leftOverlayInfo );  
-    mainViewerDesktop->getSelectedViewerWidget()->setRightSideTextData( rightOverlayInfo );  
-    process( DcmProvider::DicomObjSetPtr( dicomObjSet ) );
+    if ( !dicomObjSet->empty() )
+    {
+      mainViewerDesktop->getSelectedViewerWidget()->setLeftSideTextData( leftOverlayInfo );  
+      mainViewerDesktop->getSelectedViewerWidget()->setRightSideTextData( rightOverlayInfo );  
+      process( DcmProvider::DicomObjSetPtr( dicomObjSet ) );
+    }
+    else {
+      QMessageBox::critical( this, tr( "Exception" ), tr( "Empty image - nothing to process" ) );
+    }
   }
 }
 
