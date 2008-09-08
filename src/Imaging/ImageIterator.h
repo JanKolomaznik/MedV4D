@@ -57,6 +57,7 @@ protected:
 
 	int32	_size[ Dimension ];
 	int32	_strides[ Dimension ];
+	int32	_contStrides[ Dimension ];
 	int32	_position[ Dimension ];
 public:
 	ImageIterator(): _pointer( NULL ) {}
@@ -67,6 +68,7 @@ public:
 			_position[i] = it._position[i];
 			_size[i] = it._size[i];
 			_strides[i] = it._strides[i];
+			_contStrides[i] = it._contStrides[i];
 			
 		}
 	}
@@ -82,6 +84,10 @@ public:
 			_position[i] = position[i];
 			_size[i] = size[i];
 			_strides[i] = strides[i];
+			_contStrides[i] = _strides[i];
+			for( unsigned j = 0; j < i; ++j ) {
+				_contStrides[i] -= (_size[j]-1) * _strides[j];
+			}
 		}
 	}
 
@@ -94,7 +100,7 @@ public:
 			_position[i] = it._position[i];
 			_size[i] = it._size[i];
 			_strides[i] = it._strides[i];
-			
+			_contStrides[i] = it._contStrides[i];
 		}
 		return *this;
 	}
@@ -143,12 +149,12 @@ public:
 					_position[i] = 0;
 				} else {
 					++_position[i];
-					_pointer += _strides[i];
+					_pointer += _contStrides[i];
 					return *this;
 				}
 			}
 			++_position[Dimension-1];
-			_pointer += _strides[Dimension-1];
+			_pointer += _contStrides[Dimension-1];
 			return *this;
 		}
 
@@ -168,12 +174,12 @@ public:
 					_position[i] = _size[i]-1;
 				} else {
 					--_position[i];
-					_pointer -= _strides[i];
+					_pointer -= _contStrides[i];
 					return;
 				}
 			}
 			--_position[Dimension-1];
-			_pointer -= _strides[Dimension-1];
+			_pointer -= _contStrides[Dimension-1];
 			return *this;
 		}
 
@@ -197,7 +203,7 @@ public:
 			return _pointer != it._pointer;
 		}
 };
-;
+
 
 template< typename ElementType >
 ImageIterator< ElementType, 2 >

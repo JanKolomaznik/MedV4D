@@ -192,7 +192,8 @@ MainExecutionThread::operator()()
 		}
 	} catch( ... ) {
 		_filter->_outputPorts.SendMessage( 
-			MsgFilterExecutionCanceled::CreateMsg(), PipelineMessage::MSS_NORMAL );		
+			MsgFilterExecutionCanceled::CreateMsg(), PipelineMessage::MSS_NORMAL );
+		_filter->CleanAfterStoppedRun();
 		return;
 	}
 

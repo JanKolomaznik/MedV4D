@@ -17,8 +17,20 @@ SettingsBox
 
 	QVBoxLayout *layout;
 	QGridLayout *grid;
+	QPushButton *pushButton;
 
 	layout = new QVBoxLayout;
+
+	pushButton = new QPushButton( tr( "Lungs" ) );
+	layout->addWidget( pushButton );
+	QObject::connect( pushButton, SIGNAL(clicked()),
+		this, SLOT(SetToLungs()) );
+
+	pushButton = new QPushButton( tr( "Bones" ) );
+	layout->addWidget( pushButton );
+	QObject::connect( pushButton, SIGNAL(clicked()),
+		this, SLOT(SetToBones()) );
+
 	grid = new QGridLayout;
 
 	grid->setRowMinimumHeight( 0, ROW_SPACING );
@@ -87,12 +99,21 @@ SettingsBox
 	static_cast<Thresholding*>(_filter)->SetBottom( val );
 }
 
-/*void
+void
 SettingsBox
-::InValueChanged( int val )
+::SetToLungs()
 {
-	static_cast<Thresholding*>(_filter)->SetInValue( val );
-}*/
+	top->setValue( 800 );
+	bottom->setValue( 0 );
+}
+
+void
+SettingsBox
+::SetToBones()
+{
+	top->setValue( 4000 );
+	bottom->setValue( 1150 );
+}
 
 void
 SettingsBox

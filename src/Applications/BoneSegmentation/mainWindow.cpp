@@ -48,6 +48,26 @@ mainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
 	}
 
 }
+class LFNotifier : public M4D::Imaging::MessageReceiverInterface
+{
+public:
+	LFNotifier( AbstractPipeFilter * filter ): _filter( filter ) {}
+	void
+	ReceiveMessage( 
+		M4D::Imaging::PipelineMessage::Ptr 			msg, 
+		M4D::Imaging::PipelineMessage::MessageSendStyle 	/*sendStyle*/, 
+		M4D::Imaging::FlowDirection				/*direction*/
+		)
+	{
+		if( msg->msgID == M4D::Imaging::PMI_FILTER_UPDATED ) 
+		{
+			_filter->ExecuteOnWhole();	
+		}
+	}
+
+protected:
+	AbstractPipeFilter * _filter;
+};
 
 void
 mainWindow::CreatePipeline()
@@ -65,7 +85,7 @@ mainWindow::CreatePipeline()
 	_pipeline.AddFilter( medianFilter );
 
 	MaskSelectionFilter *maskSelection = new MaskSelectionFilter();
-	maskSelection->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
+	//maskSelection->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
 	_pipeline.AddFilter( maskSelection );
 
 	_inConnection = dynamic_cast<AbstractImageConnectionInterface*>( &_pipeline.MakeInputConnection( *_convertor, 0, false ) );
@@ -74,7 +94,8 @@ mainWindow::CreatePipeline()
 	
 	//_inConnection->ConnectConsumer( maskSelection->InputPort()[0] );
 	_pipeline.MakeConnection( *_convertor, 0, *maskSelection, 0 );
-	_pipeline.MakeConnection( *medianFilter, 0, *maskSelection, 1 );
+	_pipeline.MakeConnection( *medianFilter, 0, *maskSelection, 1 ).SetMessageHook( 
+		MessageReceiverInterface::Ptr( new LFNotifier( maskSelection ) ) );
 	_outConnection = dynamic_cast<AbstractImageConnectionInterface*>( &_pipeline.MakeOutputConnection( *maskSelection, 0, true ) );
 
 	if( _inConnection == NULL || _outConnection == NULL ) {

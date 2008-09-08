@@ -238,6 +238,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\AbstractMultiImageFilter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\AbstractMultiImageFilter.tcc"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\AbstractPipeline.h"
 				>
 			</File>
@@ -291,6 +299,10 @@
 			</File>
 			<File
 				RelativePath="..\..\Imaging\ImageFactory.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\ImageIterator.h"
 				>
 			</File>
 			<File

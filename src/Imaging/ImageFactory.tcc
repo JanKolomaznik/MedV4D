@@ -32,10 +32,13 @@ PrepareElementArray( uint32 size )
 {
 	try
 	{
-		ElementType *array = NULL;
-		array = new ElementType[size];
-		 
-		return array;
+		ElementType *arrayP = NULL;
+		arrayP = new ElementType[size];
+		
+		D_PRINT( "******** Allocating array - size:= " << size << "; pointer:= " 
+			<< (int*)arrayP << "; end:= " << (int*)(arrayP + size) );
+
+		return arrayP;
 	}
 	catch( ... )
 	{

@@ -26,8 +26,11 @@ protected slots:
 	void 
 	BottomValueChanged( int val );
 
-	/*void 
-	OutValueChanged( int val );*/
+	void
+	SetToLungs();
+
+	void
+	SetToBones();
 
 	void
 	ExecuteFilter();
