@@ -1,19 +1,18 @@
 /**
  * @ingroup cellbe 
  * @author Vaclav Klecanda 
- * @file SimpleMIPRemote.h
+ * @file SimpleProjectionRemote.h
  * @{ 
  **/
 
-#ifndef SIMPLE_MIP_REMOTE_H
-#define SIMPLE_MIP_REMOTE_H
+#ifndef SIMPLE_PROJ_REMOTE_H
+#define SIMPLE_PROJ_REMOTE_H
 
 #include "cellBE/RemoteFilter.h"
 
 
 // include needed filters ...
-#include "Imaging/filters/ThresholdingFilter.h"
-#include "Imaging/filters/MedianFilter.h"
+#include "Imaging/filters/SimpleProjection.h"
 
 namespace M4D
 {
@@ -29,26 +28,26 @@ namespace Imaging
  *  Basic rule is to inherit from RemoteFilter templated class.
  */
 template< typename ImageType >
-class SimpleMIPRemote
+class SimpleProjectionRemote
   : public RemoteFilter<ImageType, ImageType>
 {
 public:
 	typedef typename RemoteFilter<ImageType, ImageType> PredecessorType;
 	typedef PredecessorType::Properties	Properties;
 
-	SimpleMIPRemote();
+	SimpleProjectionRemote();
   
 
 	/////////////////// To customize /////////////////////
 	// puting options available to outer world to be able to specify it ....
 
   // thresholding filter issues
-	typedef ThresholdingFilter<ImageType>	SimpleMIP;
-	typedef typename SimpleMIP::Properties SimpleMIPOptsType;
+  typedef M4D::Imaging::SimpleProjection<ImageType>	SimpleProjT;
+	typedef typename SimpleProjT::Properties SimpleProjOptsType;
 	
 	SimpleMIPOptsType *GetThreshholdingOptions( void)	
   {
-		return &m_simpleMIPOptions;
+		return &m_simpleProjOptions;
 	}
 
 
@@ -64,7 +63,7 @@ private:
 	 * retrieving public members, that will provide ability to change
 	 * the filter options from outer world.
 	 **/
-  SimpleMIPOptsType m_simpleMIPOptions;
+  SimpleProjOptsType m_simpleProjOptions;
 	// ...
 
 
@@ -76,7 +75,7 @@ private:
 } /*namespace M4D*/
 
 //include implementation
-#include "cellBE/remoteFilters/SimpleMIPRemote.tcc"
+#include "cellBE/remoteFilters/SimpleProjectionRemote.tcc"
 
 #endif
 

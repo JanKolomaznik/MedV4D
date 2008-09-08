@@ -1,12 +1,12 @@
 /**
  * @ingroup cellbe 
  * @author Vaclav Klecanda 
- * @file SimpleMIPRemote.tcc 
+ * @file SimpleProjectionRemote.tcc 
  * @{ 
  **/
 
-#ifndef SIMPLE_MIP_REMOTE_H
-#error File SimpleMIPRemote.tcc cannot be included directly!
+#ifndef SIMPLE_PROJ_REMOTE_H
+#error File SimpleProjectionRemote.tcc cannot be included directly!
 #else
 
 namespace M4D
@@ -17,7 +17,7 @@ namespace Imaging
 ///////////////////////////////////////////////////////////////////////////////
 
 template< typename ImageType>
-SimpleMIPRemote<ImageType>::SimpleMIPRemote()
+SimpleProjectionRemote<ImageType>::SimpleProjectionRemote()
 : PredecessorType( new Properties() )
 {
   AbstractFilterSerializer *ser;  
@@ -29,9 +29,9 @@ SimpleMIPRemote<ImageType>::SimpleMIPRemote()
 
   // put into the vector serializers instances in order that is in remote pipe
   {
-    // insert simpleMIP serializer
+    // insert simpleP serializer
     ser = GeneralFilterSerializer::
-      GetFilterSerializer<FID_MaxIntensityProjection>( 
+      GetFilterSerializer<FID_SimpleProjection>( 
         &m_simpleMIPOptions, filterID++);
     m_filterSerializers.push_back( ser);
   
@@ -46,7 +46,7 @@ SimpleMIPRemote<ImageType>::SimpleMIPRemote()
 
 template< typename ImageType >
 void 
-SimpleMIPRemote<ImageType>::PrepareOutputDatasets()
+SimpleProjectionRemote<ImageType>::PrepareOutputDatasets()
 {
 	PredecessorType::PrepareOutputDatasets();
 

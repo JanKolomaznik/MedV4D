@@ -292,7 +292,7 @@
 				Name="filterSerializers"
 				>
 				<File
-					RelativePath="..\..\include\cellBE\filterSerializers\SimpleMaxIntensityProjSerializer.h"
+					RelativePath="..\..\include\cellBE\filterSerializers\SimpleProjectionSerializer.h"
 					>
 				</File>
 				<File
@@ -308,7 +308,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\include\cellBE\remoteFilters\BoneSegmentationRemote.tcc"
+					RelativePath="..\..\include\cellBE\remoteFilters\SimpleProjectionRemote.h"
 					>
 				</File>
 			</Filter>

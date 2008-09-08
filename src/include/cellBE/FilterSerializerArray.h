@@ -12,7 +12,7 @@
 #include "Imaging/AbstractFilter.h"
 #include "cellBE/filterSerializers/ThresholdingSerializer.h"
 #include "cellBE/filterSerializers/MedianSerializer.h"
-#include "cellBE/filterSerializers/SimpleMaxIntensityProjSerializer.h"
+#include "cellBE/filterSerializers/SimpleProjectionSerializer.h"
 
 namespace M4D
 {
