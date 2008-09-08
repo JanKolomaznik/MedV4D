@@ -292,6 +292,10 @@
 				Name="filterSerializers"
 				>
 				<File
+					RelativePath="..\..\include\cellBE\filterSerializers\SimpleMaxIntensityProjSerializer.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\cellBE\filterSerializers\ThresholdingSerializer.h"
 					>
 				</File>

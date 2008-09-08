@@ -25,6 +25,11 @@ FilterSerializerArray::FilterSerializerArray()
     new FilterSerializer< MedianFilter2D< Image<uint8, 2> > >( 
       NULL, 0 );
   
+  // max intensity projection
+  m_serializerArray[ (uint32) FID_MaxIntensityProjection] = 
+    new FilterSerializer< SimpleMaxIntensityProjection< Image<uint8, 3> > >( 
+      NULL, 0 );
+  
   // ...
 }
 

@@ -15,6 +15,7 @@
 enum FilterID {
   FID_Thresholding,
   FID_Median,
+  FID_MaxIntensityProjection,
 };
 
 #endif
