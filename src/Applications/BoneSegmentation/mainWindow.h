@@ -5,7 +5,8 @@
 #include "Imaging/PipelineContainer.h"
 #include "Imaging/ImageFactory.h"
 #include "Imaging/filters/ThresholdingFilter.h"
-#include "Imaging/filters/MedianFilter.h"
+#include "Imaging/filters/MaskMedianFilter.h"
+#include "Imaging/filters/MaskSelection.h"
 #include "Imaging/filters/ImageConvertor.h"
 #include "SettingsBox.h"
 
@@ -13,9 +14,11 @@
 #define APPLICATION_NAME      "BoneSegmentation"
 
 typedef int16	ElementType;
-typedef M4D::Imaging::Image< ElementType, 3 > ImageType;
-typedef M4D::Imaging::ThresholdingFilter< ImageType > Thresholding;
-typedef M4D::Imaging::MedianFilter2D< ImageType > Median2D;
+const unsigned Dim = 3;
+typedef M4D::Imaging::Image< ElementType, Dim > ImageType;
+typedef M4D::Imaging::ThresholdingMaskFilter< ImageType > Thresholding;
+typedef M4D::Imaging::MaskMedianFilter2D< Dim > Median2D;
+typedef M4D::Imaging::MaskSelection< ImageType > MaskSelectionFilter;
 typedef M4D::Imaging::ImageConnection< ImageType > InConnection;
 typedef M4D::Imaging::ImageConvertor< ImageType > InImageConvertor;
 

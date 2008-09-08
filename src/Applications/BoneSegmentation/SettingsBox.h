@@ -26,8 +26,8 @@ protected slots:
 	void 
 	BottomValueChanged( int val );
 
-	void 
-	OutValueChanged( int val );
+	/*void 
+	OutValueChanged( int val );*/
 
 	void
 	ExecuteFilter();

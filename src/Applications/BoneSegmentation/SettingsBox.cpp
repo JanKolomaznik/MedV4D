@@ -48,13 +48,13 @@ SettingsBox
 	grid->setRowMinimumHeight( 4, ROW_SPACING );
 
 	//-------------------------------------------------
-	grid->addWidget( new QLabel( tr( "Out value" ) ), 5, 1 );
+	/*grid->addWidget( new QLabel( tr( "In value" ) ), 5, 1 );
 	outValue = new QSpinBox();
 	outValue->setAlignment( Qt::AlignRight );
 	outValue->setMaximum( 4095 );
 	QObject::connect( outValue, SIGNAL(valueChanged(int)),
                       	this, SLOT(OutValueChanged(int)) );
-	grid->addWidget(outValue, 5, 3 );
+	grid->addWidget(outValue, 5, 3 );*/
 	//-------------------------------------------------
 
 	layout->addLayout( grid );
@@ -87,12 +87,12 @@ SettingsBox
 	static_cast<Thresholding*>(_filter)->SetBottom( val );
 }
 
-void
+/*void
 SettingsBox
-::OutValueChanged( int val )
+::InValueChanged( int val )
 {
-	static_cast<Thresholding*>(_filter)->SetOutValue( val );
-}
+	static_cast<Thresholding*>(_filter)->SetInValue( val );
+}*/
 
 void
 SettingsBox
