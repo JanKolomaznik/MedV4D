@@ -17,12 +17,22 @@ namespace M4D
 namespace Imaging
 {
 
+template< uint32 Dim >
+struct MaskSelectionHelper
+{
+
+	ReaderBBoxInterface::Ptr	_imageReaderBBox;
+	ReaderBBoxInterface::Ptr	_maskReaderBBox;
+	WriterBBoxInterface		*_writerBBox;
+};
+
 template< typename ImageType >
 class MaskSelection
 	: public AbstractMultiImageFilter< 2, 1 >
 {
 public:
 	typedef AbstractMultiImageFilter< 2, 1 > 			PredecessorType;
+	typedef typename ImageTraits< ImageType >::ElementType 		ElementType;
 	typedef Image< uint8, ImageTraits<ImageType>::Dimension >	InMaskType;
 	typedef typename ImageTraits< ImageType >::InputPort 		ImageInPort;
 	typedef typename ImageTraits< ImageType >::OutputPort 		ImageOutPort;
@@ -36,12 +46,16 @@ public:
 
 	struct Properties : public PredecessorType::Properties
 	{
-		Properties() {}
+		Properties(): background( 0 ) {}
 
+		ElementType	background;
 	};
 
 	MaskSelection( Properties  * prop );
 	MaskSelection();
+
+
+	GET_SET_PROPERTY_METHOD_MACRO( ElementType, Background, background );
 protected:
 	bool
 	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
@@ -72,6 +86,8 @@ protected:
 	 **/
 	void
 	AfterComputation( bool successful );
+
+	MaskSelectionHelper< ImageTraits< ImageType >::Dimension > _helper;
 	
 private:
 	template< uint32 Dim >
@@ -81,6 +97,9 @@ private:
 	template< uint32 Dim >
 	bool
 	ExecutionThreadMethodHelper( AbstractPipeFilter::UPDATE_TYPE utype );
+
+	bool
+	Process();
 
 	GET_PROPERTIES_DEFINITION_MACRO;
 

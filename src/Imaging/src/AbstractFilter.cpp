@@ -175,20 +175,27 @@ MainExecutionThread::operator()()
 	//whether call PrepareOutputDatasets() method.
 	_filter->_callPrepareOutputDatasets = false;
 
-	//We check properties before we use them.
-	D_PRINT( "++++++ Filter - CheckProperties()" );
-	_filter->_properties->CheckProperties();
+	try {
+		//We check properties before we use them.
+		D_PRINT( "++++++ Filter - CheckProperties()" );
+		_filter->_properties->CheckProperties();
 
-	//We want to do some steps before actual computing
-	D_PRINT( "++++++ Filter - BeforeComputation()" );
-	_filter->BeforeComputation( _updateType );
-	
-	//We decide whether resize output datasets
-	if( _filter->_callPrepareOutputDatasets ) {
-		D_PRINT( "++++++ Filter - PrepareOutputDatasets()" );
-		_filter->PrepareOutputDatasets();
-		_filter->_callPrepareOutputDatasets = false;
+		//We want to do some steps before actual computing
+		D_PRINT( "++++++ Filter - BeforeComputation()" );
+		_filter->BeforeComputation( _updateType );
+		
+		//We decide whether resize output datasets
+		if( _filter->_callPrepareOutputDatasets ) {
+			D_PRINT( "++++++ Filter - PrepareOutputDatasets()" );
+			_filter->PrepareOutputDatasets();
+			_filter->_callPrepareOutputDatasets = false;
+		}
+	} catch( ... ) {
+		_filter->_outputPorts.SendMessage( 
+			MsgFilterExecutionCanceled::CreateMsg(), PipelineMessage::MSS_NORMAL );		
+		return;
 	}
+
 
 	//Mark changed parts of output
 	D_PRINT( "++++++ Filter - MarkChanges()" );

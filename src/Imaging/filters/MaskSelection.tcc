@@ -115,7 +115,9 @@ void
 MaskSelection< ImageType >
 ::MarkChangesHelper( AbstractPipeFilter::UPDATE_TYPE utype )
 {
-
+	_helper._imageReaderBBox = this->in[0]->GetWholeDirtyBBox();
+	_helper._maskReaderBBox = this->in[1]->GetWholeDirtyBBox();
+	_helper._writerBBox = &(this->out[0]->SetWholeDirtyBBox());
 }
 
 template< typename ImageType >
@@ -124,24 +126,47 @@ bool
 MaskSelection< ImageType >
 ::ExecutionThreadMethodHelper( AbstractPipeFilter::UPDATE_TYPE utype )
 {
-	/*utype = utype;
-	D_BLOCK_COMMENT( "++++ Entering ExecutionThreadMethod() - ImageConvertor", "----- Leaving MainExecutionThread() - ImageConvertor" );
-	if ( !( _readerBBox->WaitWhileDirty() == MS_MODIFIED ) ) {
-		_writerBBox->SetState( MS_CANCELED );
+	if ( !( _helper._imageReaderBBox->WaitWhileDirty() == MS_MODIFIED ) 
+		||  !( _helper._maskReaderBBox->WaitWhileDirty() == MS_MODIFIED )  ) 
+	{
+		_helper._writerBBox->SetState( MS_CANCELED );
 		return false;
 	}
-	bool result = false;
-	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( 
-			this->in->GetElementTypeID(), 
-			result = ConvertImage< TTYPE, typename ImageTraits< OutputImageType >::ElementType, Convertor >( *(this->in), *(this->out) )
-			);
+
+	bool result = this->Process();
+
 	if( result ) {
-		_writerBBox->SetModified();
+		_helper._writerBBox->SetModified();
 	} else {
-		_writerBBox->SetState( MS_CANCELED );
+		_helper._writerBBox->SetState( MS_CANCELED );
 	}
-	return result;*/
-	return false;
+	return result;
+}
+
+template< typename ImageType >
+bool
+MaskSelection< ImageType >
+::Process()
+{
+	typename ImageType::Iterator imageIt = ((const ImageType*)this->in[0])->GetIterator();
+	typename ImageType::Iterator outIt = ((ImageType*)this->out[0])->GetIterator();
+	typename ImageType::Iterator imageEnd = imageIt.End();
+	typename InMaskType::Iterator maskIt = ((const InMaskType*)this->in[1])->GetIterator();
+	ElementType	background = GetBackground();
+
+	while( imageIt != imageEnd ) {
+		if( *maskIt ) {
+			*outIt = *imageIt;
+		} else {
+			*outIt = background;
+		}
+		++imageIt;
+		++maskIt;
+		++outIt;
+	}
+
+
+	return true;
 }
 
 } /*namespace Imaging*/

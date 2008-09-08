@@ -270,6 +270,20 @@ Image< ElementType, 2 >::GetModificationManager()const
 	return _imageData->GetModificationManager();
 }
 
+template< typename ElementType >
+typename Image< ElementType, 2 >::Iterator
+Image< ElementType, 2 >::GetIterator()const
+{
+	uint32 width;
+	uint32 height;
+	int32 xStride;
+	int32 yStride;
+
+	ElementType * pointer = GetPointer( width, height, xStride, yStride );
+
+	return CreateImageIterator< ElementType >( pointer, width, height, xStride, yStride, 0, 0 );
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 template< typename ElementType >
@@ -631,6 +645,23 @@ const ModificationManager &
 Image< ElementType, 3 >::GetModificationManager()const
 {
 	return _imageData->GetModificationManager();
+}
+
+template< typename ElementType >
+typename Image< ElementType, 3 >::Iterator
+Image< ElementType, 3 >::GetIterator()const
+{
+	uint32 width;
+	uint32 height;
+	uint32 depth;
+	int32 xStride;
+	int32 yStride;
+	int32 zStride;
+
+	ElementType * pointer = GetPointer( 
+			width, height, depth, xStride, yStride, zStride );
+
+	return CreateImageIterator< ElementType >( pointer, width, height, depth, xStride, yStride, zStride, 0, 0, 0 );
 }
 
 

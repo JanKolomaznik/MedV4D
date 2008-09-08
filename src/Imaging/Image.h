@@ -1,10 +1,3 @@
-/**
- * @ingroup imaging 
- * @author Jan Kolomaznik 
- * @file Image.h 
- * @{ 
- **/
-
 #ifndef _IMAGE__H
 #define _IMAGE__H
 
@@ -12,14 +5,17 @@
 #include <boost/shared_ptr.hpp>
 #include "Imaging/ModificationManager.h"
 #include "Imaging/AbstractDataSet.h"
-
-/**
- *  @addtogroup imaging Imaging Library
- *  @{
- */
+#include "Imaging/ImageIterator.h"
 
 namespace M4D
 {
+/**
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file Image.h 
+ * @{ 
+ **/
+
 namespace Imaging
 {
 
@@ -174,6 +170,8 @@ public:
 
 	static const unsigned	Dimension = 2;
 
+	typedef ImageIterator< Element, Dimension >	Iterator;
+
 	Image();
 
 	/**
@@ -279,6 +277,9 @@ public:
 	const ModificationManager &
 	GetModificationManager()const;
 
+	Iterator
+	GetIterator()const;
+
   void Dump(void);
 
 protected:
@@ -323,6 +324,8 @@ public:
 	typedef ElementType			Element;
 
 	static const unsigned	Dimension = 3;
+
+	typedef ImageIterator< Element, Dimension >	Iterator;
 
 	Image();
 
@@ -425,6 +428,9 @@ public:
 	const ModificationManager &
 	GetModificationManager()const;
 
+	Iterator
+	GetIterator()const;
+
   void Dump(void);
 
 protected:
@@ -468,6 +474,8 @@ public:
 	typedef ElementType			Element;
 
 	static const unsigned	Dimension = 4;
+
+	typedef ImageIterator< Element, Dimension >	Iterator;
 
 	Image();
 
@@ -588,6 +596,9 @@ public:
 	const ModificationManager &
 	GetModificationManager()const;
 
+	Iterator
+	GetIterator()const;
+
   void Dump(void);
 
 protected:
@@ -623,14 +634,12 @@ typedef Image< uint8, 2 >	Mask2D;
 typedef Image< uint8, 3 >	Mask3D;
 
 }/*namespace Imaging*/
-}/*namespace M4D*/
-
 /** @} */
+
+}/*namespace M4D*/
 
 //include implementation
 #include "Imaging/Image.tcc"
 
 #endif /*_IMAGE__H*/
-
-/** @} */
 
