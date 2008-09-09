@@ -56,7 +56,11 @@ mainWindow::CreatePipeline()
 {
 	_convertor = new InImageConvertor();
 
-	_filter = new SimpleProjectionFilter();
+  try {
+	  _filter = new SimpleProjectionFilter();
+  } catch( ExceptionBase &ex) {
+    LOG(ex.what() );
+  }
 		
 	_pipeline.AddFilter( _convertor );
 	_pipeline.AddFilter( _filter );
