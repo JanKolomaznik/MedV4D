@@ -51,10 +51,23 @@ neni treba se starat o detaily DICOM formatu
 implementovány koncepty pro zpracovávání dat - pipelining
 systém pro snadnou paralelizaci výpočtů (synchronizace nad datasety, ...)
 
+dalsie vyhody:
+--------------
+* GUI - maximálne jednoduchá tvorba výsledných špecializovaných aplikácií (možnosť zaoberať sa len so samotným
+  vyvýjaným algoritmom), jednotný vzhľad a spôsob práce
+* framework je tiež vhodný na testovanie nových viewerov - integrácia do prostredia je
+  jednoduchá (VTK viewer, náš slice viewer), podľa možností vieweru sa následne adaptuje celá aplikácia, koncový užívateľ má
+  tiež možnosť výberu
+* 4 diplomové, 1 bakalárska práca sa už vyvýja na frameworku  
+
 napsani aplikace obnasi:
 
-jaka je konkurence?
+jaka je konkurence projektu?
 -------------------
+* ako frameworku - zatiaľ podľa našich znalostí neexistuje
+* ako základnej aplikácie (manipulácia, zpracovanie objemoých lekárskych dát) - v drvivej väčšine sa používa 
+  produkt eFilm, ten však má aj značné obmedzenia (napr. absencia progressívneho zobrazovania, viazanosť na OS Windows, ročná
+  licencia cca 1000 USD)
 
 zaver
 -----
