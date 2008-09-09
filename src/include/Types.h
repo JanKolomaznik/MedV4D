@@ -51,9 +51,9 @@ static const int16 	MAX_INT16 = 0x7FFF;
 static const uint16 	MAX_UINT16 = 0xFFFF;
 static const int32 	MAX_INT32 = 0x7FFFFFFF;
 static const uint32 	MAX_UINT32 = 0xFFFFFFFF;
-static const int64 	MAX_INT64 = 0x7FFFFFFFFFFFFFFFLLU;
-static const uint64 	MAX_UINT64 = 0xFFFFFFFFFFFFFFFFLLU;
-static const float32	MAX_FLOAT32 = 1E+37;
+static const int64 	MAX_INT64 = 0x7FFFFFFFFFFFFFFFUL;
+static const uint64 	MAX_UINT64 = 0xFFFFFFFFFFFFFFFFUL;
+static const float32	MAX_FLOAT32 = 1E+37f;
 static const float64	MAX_FLOAT64 = 1E+37;
 
 enum NumericTypeIDs{ 
