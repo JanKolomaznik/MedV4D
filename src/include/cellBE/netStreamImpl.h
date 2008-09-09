@@ -68,13 +68,14 @@ public:
 
   NetStream & operator<< (const uint64 what)
   {
-    // TODO
-    //supp32 = htonl(what);  // convert it to network representation
+    supp64 = *((uint64*) &what);
+    uint8 mask = 255; // full byte
 
-    AddByte( ((uint8*)&supp32)[0] );
-    AddByte( ((uint8*)&supp32)[1] );
-    AddByte( ((uint8*)&supp32)[2] );
-    AddByte( ((uint8*)&supp32)[3] );
+    // FOR REVISOIN
+    for( uint8 i=7; i >= 0; i--)
+    {
+      AddByte( (uint8) ( (supp64 | (mask << (i*8))) >> (i*8) ) );
+    }
     return *this;
   }
 
@@ -91,14 +92,8 @@ public:
 
   NetStream & operator<< (const float64 what)
   {
-    // TODO
-    supp32 = htonl(*((uint32*)&what));  // convert it to network representation
-
-    AddByte( ((uint8*)&supp32)[0] );
-    AddByte( ((uint8*)&supp32)[1] );
-    AddByte( ((uint8*)&supp32)[2] );
-    AddByte( ((uint8*)&supp32)[3] );
-    return *this;
+    supp64 = *((uint64*) &what);
+    return operator<<(supp64);
   }
 
   NetStream & operator>>( uint8 &what)
@@ -133,14 +128,33 @@ public:
 
   NetStream & operator>>( uint64 &what)
   {
-    // TODO
-    ptr8 = (uint8*)&supp32;
-    ptr8[0] = GetByte();
-    ptr8[1] = GetByte();
-    ptr8[2] = GetByte();
-    ptr8[3] = GetByte();
+    // FOR REVIZION
+    ptr8 = (uint8*)&supp64;
 
-    what = ntohl( supp32);
+    if( GetEndianess() == End_BIG_ENDIAN)
+    {
+      ptr8[0] = GetByte();
+      ptr8[1] = GetByte();
+      ptr8[2] = GetByte();
+      ptr8[3] = GetByte();
+      ptr8[4] = GetByte();
+      ptr8[5] = GetByte();
+      ptr8[6] = GetByte();
+      ptr8[7] = GetByte();
+    }
+    else
+    {
+      ptr8[7] = GetByte();    // just in swapped order
+      ptr8[6] = GetByte();
+      ptr8[5] = GetByte();
+      ptr8[4] = GetByte();
+      ptr8[3] = GetByte();
+      ptr8[2] = GetByte();
+      ptr8[1] = GetByte();
+      ptr8[0] = GetByte();
+    }
+
+    what = supp64;
     
     return *this;
   }
@@ -161,17 +175,8 @@ public:
 
   NetStream & operator>>( float64 &what)
   {
-    // TODO
-    ptr8 = (uint8*)&supp64;
-    ptr8[0] = GetByte();
-    ptr8[1] = GetByte();
-    ptr8[2] = GetByte();
-    ptr8[3] = GetByte();
-
-    supp32 = ntohl( *((uint32*)&supp32));
-    what = *( (float32*)&supp32);
-
-    return *this;
+    // FOR REVIZION
+    return operator>>( (uint64 &)what);
   }
 };
 
@@ -271,6 +276,7 @@ protected:
 
   uint16 supp16;
   uint32 supp32;
+  uint64 supp64;
 
   uint8 *ptr8;
 
@@ -334,13 +340,17 @@ public:
 
   NetStream & operator<< (const uint64 what)
   {
-    // TODO
-    //supp32 = htonl(what);  // convert it to network representation
+    supp64 = *((uint64*)&what);
 
-    AddByte( ((uint8*)&supp32)[0] );
-    AddByte( ((uint8*)&supp32)[1] );
-    AddByte( ((uint8*)&supp32)[2] );
-    AddByte( ((uint8*)&supp32)[3] );
+    AddByte( ((uint8*)&supp64)[0] );
+    AddByte( ((uint8*)&supp64)[1] );
+    AddByte( ((uint8*)&supp64)[2] );
+    AddByte( ((uint8*)&supp64)[3] );
+    AddByte( ((uint8*)&supp64)[4] );
+    AddByte( ((uint8*)&supp64)[5] );
+    AddByte( ((uint8*)&supp64)[6] );
+    AddByte( ((uint8*)&supp64)[7] );
+
     return *this;
   }
 
@@ -357,14 +367,7 @@ public:
 
   NetStream & operator<< (const float64 what)
   {
-    // TODO
-    supp32 = *((uint32*)&what);
-
-    AddByte( ((uint8*)&supp32)[0] );
-    AddByte( ((uint8*)&supp32)[1] );
-    AddByte( ((uint8*)&supp32)[2] );
-    AddByte( ((uint8*)&supp32)[3] );
-    return *this;
+    return operator<<( (const uint64) what);
   }
 
 };
@@ -404,14 +407,18 @@ public:
 
   NetStream & operator>>( uint64 &what)
   {
-    // TODO
-    ptr8 = (uint8*)&supp32;
+    // TO BE REVIZED
+    ptr8 = (uint8*)&supp64;
     ptr8[0] = GetByte();
     ptr8[1] = GetByte();
     ptr8[2] = GetByte();
     ptr8[3] = GetByte();
+    ptr8[4] = GetByte();
+    ptr8[5] = GetByte();
+    ptr8[6] = GetByte();
+    ptr8[7] = GetByte();
 
-    what = supp32;
+    what = supp64;
     
     return *this;
   }
@@ -432,17 +439,8 @@ public:
 
   NetStream & operator>>( float64 &what)
   {
-    // TODO
-    ptr8 = (uint8*)&supp32;
-    ptr8[0] = GetByte();
-    ptr8[1] = GetByte();
-    ptr8[2] = GetByte();
-    ptr8[3] = GetByte();
-
-    supp32 = *((uint32*)&supp32);
-    what = *( (float32*)&supp32);
-
-    return *this;
+    // TO BE REVIZED
+    return operator>>( (uint64 &)what);
   }
 };
 
@@ -481,14 +479,20 @@ public:
 
   NetStream & operator>>( uint64 &what)
   {
-    // TODO
-    ptr8 = (uint8*)&supp32;
+    // TO BE REVIZED
+    ptr8 = (uint8*)&supp64;
+
+    // same as not waping but vice versa order
+    ptr8[7] = GetByte();
+    ptr8[6] = GetByte();
+    ptr8[5] = GetByte();
+    ptr8[4] = GetByte();
     ptr8[3] = GetByte();
     ptr8[2] = GetByte();
     ptr8[1] = GetByte();
     ptr8[0] = GetByte();
 
-    what = supp32;
+    what = supp64;
     
     return *this;
   }
@@ -509,17 +513,8 @@ public:
 
   NetStream & operator>>( float64 &what)
   {
-    // TODO
-    ptr8 = (uint8*)&supp32;
-    ptr8[3] = GetByte();
-    ptr8[2] = GetByte();
-    ptr8[1] = GetByte();
-    ptr8[0] = GetByte();
-
-    supp32 = *((uint32*)&supp32);
-    what = *( (float32*)&supp32);
-
-    return *this;
+    // TO BE REVIZED
+    return operator>>( (uint64 &)what);
   }
 };
 

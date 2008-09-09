@@ -15,23 +15,6 @@ namespace M4D
 namespace CellBE
 {
 
-enum Endianness {
-	End_BIG_ENDIAN = 0,
-	End_LITTLE_ENDIAN = 1
-};
-
-static uint8
-GetEndianess( void)
-{
-  uint16 tmp = 1; // for endian testing
-  uint8 *ptr = (uint8 *)&tmp;
-    
-  if( ptr[0] == 1)
-    return End_LITTLE_ENDIAN;
-  else
-    return End_BIG_ENDIAN;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
   
   /**
