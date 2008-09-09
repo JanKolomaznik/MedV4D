@@ -7,7 +7,8 @@ using namespace M4D::Imaging;
 
 
 mainWindow::mainWindow ()
-  : m4dGUIMainWindow( APPLICATION_NAME, ORGANIZATION_NAME ), _inConnection( NULL ), _outConnection( NULL )
+  : m4dGUIMainWindow( APPLICATION_NAME, ORGANIZATION_NAME ), _inConnection( NULL ), _outConnection( NULL ),
+    filterBuildSuccessful( true )
 {
 	Q_INIT_RESOURCE( mainWindow ); 
 
@@ -60,6 +61,8 @@ mainWindow::CreatePipeline()
 	  _filter = new SimpleProjectionFilter();
   } catch( ExceptionBase &ex) {
     LOG(ex.what() );
+    filterBuildSuccessful = false;
+    filterBuildMessage = ex.what();
   }
 		
 	_pipeline.AddFilter( _convertor );

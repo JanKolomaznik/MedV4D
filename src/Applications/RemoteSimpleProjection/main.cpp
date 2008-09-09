@@ -18,15 +18,23 @@ int main ( int argc, char *argv[] )
   app.setQuitOnLastWindowClosed( true );
 
   mainWindow mainWindow;
-  if ( mainWindow.wasBuildSuccessful() ) 
+  if ( mainWindow.wasBuildSuccessful() && mainWindow.wasFilterBuildSuccessful() ) 
   {
     mainWindow.show();
     return app.exec();
   }
   else
   {
-    QMessageBox::critical( &mainWindow, QObject::tr( "Exception" ), mainWindow.getBuildMessage() + QString( "\n\n" ) +
-                           QObject::tr( "The application will now terminate..." ) );
+    QString message;
+    if ( !mainWindow.wasBuildSuccessful() ) {
+      message += mainWindow.getBuildMessage() + QString( "\n\n" );
+    }
+    if ( !mainWindow.wasFilterBuildSuccessful() ) {
+      message += mainWindow.getFilterBuildMessage() + QString( "\n\n" );
+    }
+    message += QObject::tr( "The application will now terminate..." );
+    QMessageBox::critical( &mainWindow, QObject::tr( "Exception" ), message );
+
     return 1;
   } 
 }

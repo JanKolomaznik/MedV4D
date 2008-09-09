@@ -48,6 +48,10 @@ public:
 
 	mainWindow ();
 
+  bool wasFilterBuildSuccessful () const { return filterBuildSuccessful; }
+  QString getFilterBuildMessage () const { return filterBuildMessage; }
+
+
 protected:
 	void
 	process( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet );
@@ -63,6 +67,11 @@ protected:
 	M4D::Imaging::AbstractPipeFilter		*_convertor;
 	M4D::Imaging::AbstractImageConnectionInterface	*_inConnection;
 	M4D::Imaging::AbstractImageConnectionInterface	*_outConnection;
+
+  /// Flag indicating wheather the build of the filter was successful
+  bool filterBuildSuccessful;
+  /// Build message - text of the build exception 
+  QString filterBuildMessage;
 
 private:
 
