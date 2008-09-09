@@ -27,7 +27,7 @@ namespace Imaging
  * \param \PROPERTY_NAME Name of property in Properties structure.
  **/
 #define GET_REMOTE_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME, PROPERTIES, PROPERTIES_TYPE ) \
-	TYPE Get##NAME ()const{ return (static_cast<PROPERTIES_TYPE>( this->PROPERTIES ) ).PROPERTY_NAME ; }
+	TYPE Get##NAME ()const{ return (static_cast<PROPERTIES_TYPE&>( this->PROPERTIES ) ).PROPERTY_NAME ; }
 
 /**
  * Macro unwinding to set method for property.
