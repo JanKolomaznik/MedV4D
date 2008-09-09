@@ -23,8 +23,7 @@ void
 CreateSPFilter( 
      M4D::Imaging::AbstractPipeFilter **resultingFilter
    , AbstractFilterSerializer **serializer
-   , const uint16 id
-   , M4D::CellBE::NetStream &s )
+   , const uint16 id )
 {
 	typedef M4D::Imaging::Image< ElementType, 3 > ImageType;
   typedef M4D::Imaging::SimpleProjection< ImageType > Filter;
@@ -69,7 +68,7 @@ public:
 		s >> typeID;
 		
 		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( typeID, 
-			CreateSPFilter<TTYPE>( resultingFilter, serializer, id, s )
+			CreateSPFilter<TTYPE>( resultingFilter, serializer, id )
 		);
   }
 
