@@ -269,6 +269,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\include\cellBE\RemoteFilter.tcc"
+				>
+			</File>
+			<File
 				RelativePath="..\..\include\cellBE\RemoteFilterBase.h"
 				>
 			</File>
@@ -308,7 +312,15 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\cellBE\remoteFilters\BoneSegmentationRemote.tcc"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\cellBE\remoteFilters\SimpleProjectionRemote.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\cellBE\remoteFilters\SimpleProjectionRemote.tcc"
 					>
 				</File>
 			</Filter>

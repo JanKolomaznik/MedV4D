@@ -94,17 +94,19 @@ mainWindow::CreatePipeline()
 	
 	//_inConnection->ConnectConsumer( maskSelection->InputPort()[0] );
 	_pipeline.MakeConnection( *_convertor, 0, *maskSelection, 0 );
-	_pipeline.MakeConnection( *medianFilter, 0, *maskSelection, 1 ).SetMessageHook( 
-		MessageReceiverInterface::Ptr( new LFNotifier( maskSelection ) ) );
+
+	ConnectionInterface* tmpStage2 = &(_pipeline.MakeConnection( *medianFilter, 0, *maskSelection, 1 ) );
+	tmpStage2->SetMessageHook( MessageReceiverInterface::Ptr( new LFNotifier( maskSelection ) ) );
 	_outConnection = dynamic_cast<AbstractImageConnectionInterface*>( &_pipeline.MakeOutputConnection( *maskSelection, 0, true ) );
 
 	if( _inConnection == NULL || _outConnection == NULL ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Pipeline error" ) );
 	}
 
-	addSource( _inConnection, "Bone segmentation", "Input" );
-	addSource( _tmpConnection, "Bone segmentation", "Stage #1" );
-	addSource( _outConnection, "Bone segmentation", "Result" );
+	addSource( _inConnection, "Segmentation", "Input" );
+	addSource( _tmpConnection, "Segmentation", "Stage #1" );
+	addSource( tmpStage2, "Segmentation", "Stage #2" );
+	addSource( _outConnection, "Segmentation", "Result" );
 
 	_notifier =  new Notifier( this );
 	_outConnection->SetMessageHook( MessageReceiverInterface::Ptr( _notifier ) );
