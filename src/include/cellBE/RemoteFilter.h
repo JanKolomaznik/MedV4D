@@ -11,12 +11,40 @@
 #include "Imaging/AbstractImageFilterWholeAtOnce.h"
 #include "cellBE/RemoteFilterBase.h"
 #include "cellBE/AbstractDataSetSerializer.h"
+#include "cellBE/AbstractFilterSerializer.h"
+#include "cellBE/FilterSerializerArray.h"
 
 namespace M4D
 {
 
 namespace Imaging
 {
+
+/**
+ * Macro unwinding to get method for property.
+ * \param TYPE Type of property - return value of the method.
+ * \param NAME Name of property used in name of function - Get'NAME'().
+ * \param \PROPERTY_NAME Name of property in Properties structure.
+ **/
+#define GET_REMOTE_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME, PROPERTIES, PROPERTIES_TYPE ) \
+	TYPE Get##NAME ()const{ return (static_cast<PROPERTIES_TYPE>( this->PROPERTIES ) ).PROPERTY_NAME ; }
+
+/**
+ * Macro unwinding to set method for property.
+ * \param TYPE Type of property - parameter type of the method.
+ * \param NAME Name of property used in name of function - Set'NAME'().
+ * \param \PROPERTY_NAME Name of property in Properties structure.
+ **/
+#define SET_REMOTE_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME, PROPERTIES, PROPERTIES_TYPE ) \
+	void Set##NAME ( TYPE value ){ this->_properties->IncTimestamp(); (static_cast<PROPERTIES_TYPE>( this->PROPERTIES ) ).PROPERTY_NAME = value; }
+
+/**
+ * Macro unwinding to previously defined macros.
+ **/
+#define GET_SET_REMOTE_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME, PROPERTIES, PROPERTIES_TYPE ) \
+	GET_REMOTE_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME, PROPERTIES, PROPERTIES_TYPE ) \
+	SET_REMOTE_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME, PROPERTIES, PROPERTIES_TYPE ) 
+
 
 /**
  *  Base class for every remote filter. 
@@ -47,8 +75,8 @@ class RemoteFilter
   , public M4D::CellBE::RemoteFilterBase
 {
 public:
-	typedef typename  Imaging::AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType > PredecessorType;
-	typedef PredecessorType::Properties Properties;
+	typedef typename Imaging::AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType > PredecessorType;
+	typedef typename PredecessorType::Properties Properties;
 	
 	RemoteFilter( Properties *prop );
 	~RemoteFilter();

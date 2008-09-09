@@ -129,7 +129,7 @@ struct SumOperator
 	Result()
 		{ return (sum > TypeTraits< ElementType >::Max) ? (ElementType)(TypeTraits< ElementType >::Max) : (ElementType)sum; }
 
-	int64 sum;
+	typename TypeTraits< ElementType >::SuperiorType sum;
 };
 
 template< typename ElementType >
@@ -147,7 +147,7 @@ struct AverageOperator
 	Result()
 		{ return (ElementType)(sum / count); }
 
-	int64		sum;
+	typename TypeTraits< ElementType >::SuperiorType	sum;
 	uint32		count;
 };
 

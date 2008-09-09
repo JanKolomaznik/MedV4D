@@ -4,6 +4,15 @@
  *  @author Jan Kolomaznik
  */
 #include "Common.h"
+#include "Types.h"
+
+float32 TypeTraits< float32 >::Max = MAX_FLOAT32;
+float32 TypeTraits< float32 >::Min = -MAX_FLOAT32;
+
+float64 TypeTraits< float64 >::Max = MAX_FLOAT64;
+float64 TypeTraits< float64 >::Min = -MAX_FLOAT64;
+
+
 
 //TODO - platform independend.
 int16

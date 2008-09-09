@@ -53,6 +53,8 @@ static const int32 	MAX_INT32 = 0x7FFFFFFF;
 static const uint32 	MAX_UINT32 = 0xFFFFFFFF;
 static const int64 	MAX_INT64 = 0x7FFFFFFFFFFFFFFF;
 static const uint64 	MAX_UINT64 = 0xFFFFFFFFFFFFFFFF;
+static const float32	MAX_FLOAT32 = 1E+37;
+static const float64	MAX_FLOAT64 = 1E+37;
 
 enum NumericTypeIDs{ 
 	NTID_UNKNOWN,
@@ -220,6 +222,8 @@ struct TypeTraits< int8 >
 	static const uint16	BitCount = sizeof( Type )*8;
 	static const Type	Max = (Type)MAX_INT8;
 	static const Type	Min = (Type)(-MAX_INT8-1);
+
+	typedef int64		SuperiorType;
 };
 
 template<>
@@ -231,6 +235,8 @@ struct TypeTraits< uint8 >
 	static const uint16	BitCount = sizeof( Type )*8;
 	static const Type	Max = ~((Type)0);
 	static const Type	Min = (Type)(0);
+
+	typedef int64		SuperiorType;
 };
 
 template<>
@@ -242,6 +248,8 @@ struct TypeTraits< int16 >
 	static const uint16	BitCount = sizeof( Type )*8;
 	static const Type	Max = (Type)MAX_INT16;
 	static const Type	Min = (Type)(-MAX_INT16-1);
+
+	typedef int64		SuperiorType;
 };
 
 template<>
@@ -253,6 +261,8 @@ struct TypeTraits< uint16 >
 	static const uint16	BitCount = sizeof( Type )*8;
 	static const Type	Max = ~((Type)0);
 	static const Type	Min = (Type)(0);
+
+	typedef int64		SuperiorType;
 };
 
 template<>
@@ -264,6 +274,8 @@ struct TypeTraits< int32 >
 	static const uint16	BitCount = sizeof( Type )*8;
 	static const Type	Max = (Type)MAX_INT32;
 	static const Type	Min = (Type)(-MAX_INT32-1);
+
+	typedef int64		SuperiorType;
 };
 
 template<>
@@ -275,6 +287,8 @@ struct TypeTraits< uint32 >
 	static const uint16	BitCount = sizeof( Type )*8;
 	static const Type	Max = ~((Type)0);
 	static const Type	Min = (Type)(0);
+
+	typedef int64		SuperiorType;
 };
 
 template<>
@@ -286,6 +300,8 @@ struct TypeTraits< int64 >
 	static const uint16	BitCount = sizeof( Type )*8;
 	static const Type	Max = (Type)MAX_INT64;
 	static const Type	Min = (Type)(-MAX_INT64-1);
+
+	typedef int64		SuperiorType;
 };
 
 template<>
@@ -297,6 +313,34 @@ struct TypeTraits< uint64 >
 	static const uint16	BitCount = sizeof( Type )*8;
 	static const Type	Max = ~((Type)0);
 	static const Type	Min = (Type)(0);
+
+	typedef int64		SuperiorType;
+};
+
+template<>
+struct TypeTraits< float32 >
+{
+	typedef float32		Type;
+
+	static const bool	Signed = true;
+	static const uint16	BitCount = sizeof( Type )*8;
+	static Type		Max;
+	static Type		Min;
+
+	typedef float64		SuperiorType;
+};
+
+template<>
+struct TypeTraits< float64 >
+{
+	typedef float64		Type;
+
+	static const bool	Signed = true;
+	static const uint16	BitCount = sizeof( Type )*8;
+	static Type		Max;
+	static Type		Min;
+
+	typedef float64		SuperiorType;
 };
 
 //********************************************************************

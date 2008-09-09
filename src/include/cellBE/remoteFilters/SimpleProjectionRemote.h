@@ -32,8 +32,9 @@ class SimpleProjectionRemote
   : public RemoteFilter<ImageType, ImageType>
 {
 public:
-	typedef typename RemoteFilter<ImageType, ImageType> PredecessorType;
-	typedef PredecessorType::Properties	Properties;
+	typedef RemoteFilter<ImageType, ImageType> PredecessorType;
+		
+	typedef typename PredecessorType::Properties Properties;
 
 	SimpleProjectionRemote();
   
@@ -41,16 +42,17 @@ public:
 	/////////////////// To customize /////////////////////
 	// puting options available to outer world to be able to specify it ....
 
-  // thresholding filter issues
-  typedef M4D::Imaging::SimpleProjection<ImageType>	SimpleProjT;
+	// thresholding filter issues
+	typedef M4D::Imaging::SimpleProjection<ImageType>	SimpleProjT;
 	typedef typename SimpleProjT::Properties SimpleProjOptsType;
-	
-	SimpleMIPOptsType *GetThreshholdingOptions( void)	
-  {
+
+	SimpleProjOptsType *GetProjectionOptions( void)	
+	{
 		return &m_simpleProjOptions;
 	}
 
-
+	GET_SET_REMOTE_PROPERTY_METHOD_MACRO( CartesianPlanes, Plane, plane, m_simpleProjOptions, SimpleProjOptsType );
+	GET_SET_REMOTE_PROPERTY_METHOD_MACRO( ProjectionType, ProjectionType, projectionType, m_simpleProjOptions, SimpleProjOptsType );
 protected:
 	void PrepareOutputDatasets();
 
@@ -63,7 +65,7 @@ private:
 	 * retrieving public members, that will provide ability to change
 	 * the filter options from outer world.
 	 **/
-  SimpleProjOptsType m_simpleProjOptions;
+	SimpleProjOptsType m_simpleProjOptions;
 	// ...
 
 
