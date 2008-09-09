@@ -14,10 +14,9 @@
 
 #define FONT_WIDTH				8
 #define FONT_HEIGHT				16
-#define BRIGHTNESS_MULTIPLICATOR		16
 
-#define DISPLAY_PIXEL_VALUE( PIXEL, MEAN, MULTIPLICATOR, BRIGHTNESS, CONTRAST )\
-					( CONTRAST * ( PIXEL- MEAN + BRIGHTNESS * MULTIPLICATOR ) + MEAN )
+#define DISPLAY_PIXEL_VALUE( PIXEL, MEAN, BRIGHTNESS, CONTRAST )\
+					( CONTRAST * ( PIXEL- MEAN + BRIGHTNESS ) + MEAN )
 
 namespace M4D
 {
@@ -82,8 +81,6 @@ public:
      *  @param contrastRate the rate of contrast to adjust the image with
      *  @param so the orientation of the slices (xy, yz, zx)
      *  @param slice the number of the slice to be drawn
-     *  @param brightness reference to return the overall brightness
-     *  @param contrast reference to return the overall contrast
      *  @param dimension dimense
      *  @return true, if texture preparing was successful, false otherwise
      */
@@ -91,11 +88,9 @@ public:
       uint32& width,
       uint32& height,
       GLint brightnessRate,
-      GLfloat contrastRate,
+      GLint contrastRate,
       SliceOrientation so,
       uint32 slice,
-      int64& brightness,
-      int64& contrast,
       unsigned& dimension )
     {
         uint32 depth;
@@ -114,8 +109,6 @@ public:
 	    unsgn = false;
 	}
 
-	// depending on the element type, the brightness rate might need to be multiplied
-	double multiplicator = std::pow( (double)BRIGHTNESS_MULTIPLICATOR, (double)sizeof( ElementType ) - 1 );
         int32 xstride, ystride, zstride;
         bool ready = true;
 	ElementType* pixel, *original;
@@ -197,34 +190,38 @@ public:
 	mean = 0.;
 	for ( i = 0; i < height; i++ )
 	    for ( j = 0; j < width; j++ ) mean += (double)pixel[ i * newWidth + j ] / (double)(width*height);
-	mean += brightnessRate * multiplicator;
+	brightnessRate -= (int)mean;
 	for ( i = 0; i < newHeight; ++i )
 	    for ( j = 0; j < newWidth; j++ )
 	    {
 	        // if inside the image
 		if ( i < height && j < width )
 		{
-	            if ( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, multiplicator, brightnessRate, contrastRate ) > maxvalue ) pixel[ i * newWidth + j ] = (ElementType)maxvalue;
-	            else if ( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, multiplicator, brightnessRate, contrastRate ) < ( unsgn ? 0 : -maxvalue ) ) pixel[ i * newWidth + j ] = ( unsgn ? 0 : (ElementType)(-maxvalue) );
-	            else pixel[ i * newWidth + j ] = (ElementType)( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, multiplicator, brightnessRate, contrastRate ) );
+	            if ( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, brightnessRate, 1 ) > maxvalue ) pixel[ i * newWidth + j ] = (ElementType)maxvalue;
+	            else if ( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, brightnessRate, 1 ) < ( unsgn ? 0 : -maxvalue ) ) pixel[ i * newWidth + j ] = ( unsgn ? 0 : (ElementType)(-maxvalue) );
+	            else pixel[ i * newWidth + j ] = (ElementType)( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, brightnessRate, 1 ) );
 		}
 		// if extra pixels are reached
 		else
 		    pixel[ i * newWidth + j ] = ( unsgn ? 0 : (ElementType)(-maxvalue) );
 	    }
 	    
-        // calculate overall brightness for printout
 	mean = 0.;
 	for ( i = 0; i < height; i++ )
             for ( j = 0; j < width; j++ ) mean += (double)pixel[ i * newWidth + j ] / (double)(width*height);
-	brightness = (int64)mean;
 
-	// calculate overall contrast for printout
 	cont = 0.;
 	for ( i = 0; i < height; i++ )
 	    for ( j = 0; j < width; j++ ) cont += std::abs( (double)( pixel[ i * newWidth + j ] - mean ) ) / (double)(width*height);
-	contrast = (int64)cont;
 
+	if ( cont != 0 ) cont = (double)contrastRate/cont;
+	for ( i = 0; i < height; i++ )
+	    for ( j = 0; j < width; j++ )
+	    {        
+	        if ( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, 0, cont ) > maxvalue ) pixel[ i * newWidth + j ] = (ElementType)maxvalue;
+	        else if ( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, 0, cont ) < ( unsgn ? 0 : -maxvalue ) ) pixel[ i * newWidth + j ] = ( unsgn ? 0 : (ElementType)(-maxvalue) );
+	        else pixel[ i * newWidth + j ] = (ElementType)( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, 0, cont ) );
+	    }
 
 	width = newWidth;
 	height = newHeight;
@@ -398,6 +395,13 @@ m4dGUISliceViewerWidget::resetParameters()
 			_sliceOrientation = xy;
 			_dimension = 2;
 		    }
+		    unsigned typeSize;
+		    bool unsgn;
+		    INTEGER_TYPE_TEMPLATE_SWITCH_MACRO( _imageID, { typeSize = sizeof( TTYPE ); unsgn = ( typeid( TTYPE ) == typeid( uint8 ) || typeid( TTYPE ) == typeid( uint16 ) || typeid( TTYPE ) == typeid( uint32 ) || typeid( TTYPE ) == typeid( uint64 ) ); } );
+		    typeSize = (unsigned)std::pow( (double)256, (double)(typeSize - 1) );
+                    _brightnessRate = 12 * typeSize;
+                    _contrastRate = 20 * typeSize;
+		    if ( unsgn ) _brightnessRate *= 2;
 		}
 		catch (...) { _ready = false; }
 	        _inPort->ReleaseDatasetLock();
@@ -410,10 +414,6 @@ m4dGUISliceViewerWidget::resetParameters()
     _offset = QPoint( 0, 0 );
     _lastPos = QPoint( -1, -1 );
     _zoomRate = 1.0;
-    _brightnessRate = 0;
-    _contrastRate = 1.0;
-    _brightness = 0;
-    _contrast = 0;
     slotSetButtonHandler( moveI, left );
     slotSetButtonHandler( switch_slice, right );
     _printShapeData = true;
@@ -494,6 +494,13 @@ m4dGUISliceViewerWidget::setParameters()
 			_sliceOrientation = xy;
 			_dimension = 2;
 		    }
+		    unsigned typeSize;
+		    bool unsgn;
+		    INTEGER_TYPE_TEMPLATE_SWITCH_MACRO( _imageID, { typeSize = sizeof( TTYPE ); unsgn = ( typeid( TTYPE ) == typeid( uint8 ) || typeid( TTYPE ) == typeid( uint16 ) || typeid( TTYPE ) == typeid( uint32 ) || typeid( TTYPE ) == typeid( uint64 ) ); } );
+		    typeSize = (unsigned)std::pow( (double)256, (double)(typeSize - 1) );
+                    _brightnessRate = 12 * typeSize;
+                    _contrastRate = 20 * typeSize;
+		    if ( unsgn ) _brightnessRate *= 2;
 		}
 		catch (...) { _ready = false; }
 	        _inPort->ReleaseDatasetLock();
@@ -503,8 +510,6 @@ m4dGUISliceViewerWidget::setParameters()
 	catch (...) { _ready = false; }
     }
     _shapes.clear();
-    _brightness = 0;
-    _contrast = 0;
     //_leftSideData.clear();
     //_rightSideData.clear();
 }
@@ -753,7 +758,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
     
     // prepare texture
     INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
-    	_imageID, _ready = TexturePreparer<TTYPE>::prepare( _inPort, width, height, _brightnessRate, _contrastRate, _sliceOrientation, sliceNum - _minimum[ ( _sliceOrientation + 2 ) % 3 ], _brightness, _contrast, _dimension ) )
+    	_imageID, _ready = TexturePreparer<TTYPE>::prepare( _inPort, width, height, _brightnessRate, _contrastRate, _sliceOrientation, sliceNum - _minimum[ ( _sliceOrientation + 2 ) % 3 ], _dimension ) )
 
     if ( !_ready ) return;
     
@@ -968,8 +973,8 @@ m4dGUISliceViewerWidget::drawData( double zoomRate, QPoint offset, int sliceNum 
     snum << sliceNum + 1 << " / " << ( _maximum[ ( _sliceOrientation + 2 ) % 3 ] - _minimum[ ( _sliceOrientation + 2 ) % 3 ] );
     resolution << w << "mm x " << h << "mm";
     zoom << zoomRate << "x";
-    contrast << "Contrast : " << _contrast;
-    brightness << "Brightness : " << _brightness;
+    contrast << "Contrast : " << _contrastRate;
+    brightness << "Brightness : " << _brightnessRate;
     switch ( _sliceOrientation )
     {
         case xy:
@@ -1246,8 +1251,11 @@ m4dGUISliceViewerWidget::moveImage( int amountH, int amountV )
 void
 m4dGUISliceViewerWidget::adjustContrastBrightness( int amountC, int amountB )
 {
-    _brightnessRate += amountB;
-    _contrastRate += ((GLfloat)amountC)/((GLfloat)width()/2.0);
+    unsigned typeSize;
+    INTEGER_TYPE_TEMPLATE_SWITCH_MACRO( _imageID, typeSize = sizeof( TTYPE ) );
+    typeSize = (unsigned)std::pow( (double)256, (double)(typeSize - 1.5) );
+    _brightnessRate += amountB * typeSize;
+    _contrastRate += amountC * typeSize;
     emit signalAdjustContrastBrightness( _index, amountC, amountB );
 }
 
@@ -1597,6 +1605,16 @@ m4dGUISliceViewerWidget::slotMessageHandler( Imaging::PipelineMsgID msgID )
 	    setParameters();
             calculateOptimalZoomRate();
             updateGL();
+	    if ( msgID != Imaging::PMI_FILTER_UPDATED )
+	    {
+		unsigned typeSize;
+		bool unsgn;
+		INTEGER_TYPE_TEMPLATE_SWITCH_MACRO( _imageID, { typeSize = sizeof( TTYPE ); unsgn = ( typeid( TTYPE ) == typeid( uint8 ) || typeid( TTYPE ) == typeid( uint16 ) || typeid( TTYPE ) == typeid( uint32 ) || typeid( TTYPE ) == typeid( uint64 ) ); } );
+		typeSize = (unsigned)std::pow( (double)256, (double)(typeSize - 1) );
+                _brightnessRate = 12 * typeSize;
+                _contrastRate = 20 * typeSize;
+		if ( unsgn ) _brightnessRate *= 2;
+	    }
 	}
 	break;
 	

@@ -666,17 +666,7 @@ private:
     /**
      * The rate of contrast adjustment of the image on display.
      */
-    GLfloat					_contrastRate;
-
-    /**
-     * Overall brightness.
-     */
-    int64					_brightness;
-
-    /**
-     * Overall contrast.
-     */
-    int64					_contrast;
+    GLint					_contrastRate;
 
     /**
      * The methods to be used when mouse button is pressed while not in selection mode.
