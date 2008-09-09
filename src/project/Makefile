@@ -8,7 +8,7 @@ all:	libs Applications
 	#no command
 
 .PHONY:libs
-libs:	common backendForDICOM Imaging GUI vtkIntegration
+libs:	common backendForDICOM Imaging GUI vtkIntegration cell
 	#no command
 
 .PHONY:clean-all
@@ -16,7 +16,7 @@ clean-all:	clean-libs clean-Applications
 	#no command
 
 .PHONY:clean-libs
-clean-libs:	clean-common clean-backendForDICOM clean-Imaging clean-GUI clean-vtkIntegration
+clean-libs:	clean-common clean-backendForDICOM clean-Imaging clean-GUI clean-vtkIntegration clean-cell
 	#no command
 #------------------------------------------------------------------------------
 .PHONY:common
@@ -37,6 +37,10 @@ backendForDICOM:
 
 .PHONY:GUI
 GUI:
+	 $(MAKE) --directory=../$@
+
+.PHONY:cell
+cell:
 	 $(MAKE) --directory=../$@
 
 .PHONY:Applications
@@ -64,6 +68,10 @@ clean-backendForDICOM:
 .PHONY:clean-GUI
 clean-GUI:
 	 $(MAKE) --directory=../GUI clean-all
+
+.PHONY:clean-cell
+clean-cell:
+	 $(MAKE) --directory=../cell clean-all
 
 .PHONY:clean-Applications
 clean-Applications:

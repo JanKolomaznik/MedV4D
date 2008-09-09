@@ -27,8 +27,8 @@ M4DLIBS=	../../lib/libm4dWidgets.a\
 		../../lib/libvtkIntegration.a\
 		../../lib/libbackendForDICOM.a\
 		../../lib/libcommon.a \
-		../../lib/libcellCommon.a \
-		../../lib/libcellClient.a
+		../../lib/libcellClient.a \
+		../../lib/libcellCommon.a
 
 QTLIBS=		-lQtCore\
 		-lQtGui\

@@ -236,7 +236,7 @@ struct TypeTraits< uint8 >
 	static const Type	Max = ~((Type)0);
 	static const Type	Min = (Type)(0);
 
-	typedef int64		SuperiorType;
+	typedef uint64		SuperiorType;
 };
 
 template<>
@@ -262,7 +262,7 @@ struct TypeTraits< uint16 >
 	static const Type	Max = ~((Type)0);
 	static const Type	Min = (Type)(0);
 
-	typedef int64		SuperiorType;
+	typedef uint64		SuperiorType;
 };
 
 template<>
@@ -288,7 +288,7 @@ struct TypeTraits< uint32 >
 	static const Type	Max = ~((Type)0);
 	static const Type	Min = (Type)(0);
 
-	typedef int64		SuperiorType;
+	typedef uint64		SuperiorType;
 };
 
 template<>
@@ -314,7 +314,7 @@ struct TypeTraits< uint64 >
 	static const Type	Max = ~((Type)0);
 	static const Type	Min = (Type)(0);
 
-	typedef int64		SuperiorType;
+	typedef uint64		SuperiorType;
 };
 
 template<>

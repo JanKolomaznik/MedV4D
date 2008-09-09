@@ -36,7 +36,7 @@ namespace Imaging
  * \param \PROPERTY_NAME Name of property in Properties structure.
  **/
 #define SET_REMOTE_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME, PROPERTIES, PROPERTIES_TYPE ) \
-	void Set##NAME ( TYPE value ){ this->_properties->IncTimestamp(); (static_cast<PROPERTIES_TYPE>( this->PROPERTIES ) ).PROPERTY_NAME = value; }
+	void Set##NAME ( TYPE value ){ this->_properties->IncTimestamp(); (static_cast<PROPERTIES_TYPE&>( this->PROPERTIES ) ).PROPERTY_NAME = value; }
 
 /**
  * Macro unwinding to previously defined macros.
