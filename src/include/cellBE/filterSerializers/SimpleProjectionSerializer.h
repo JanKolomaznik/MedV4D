@@ -47,7 +47,7 @@ public:
     ::Properties Properties;
 	
 	FilterSerializer( Properties * props, uint16 id) 
-		: AbstractFilterSerializer( FID_Median, id )
+		: AbstractFilterSerializer( FID_SimpleProjection, id )
 		, _properties( props ) 
   {}
 

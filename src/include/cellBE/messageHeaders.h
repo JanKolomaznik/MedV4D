@@ -96,7 +96,7 @@ struct PrimaryJobHeader
   {
     NetStreamArrayBuf s( (uint8 *)h, sizeof( PrimaryJobHeader) );
 
-    s << h->action << h->id << GetEndianess() << h->nexPartLength;
+    s << h->action << h->id << (uint8) GetEndianess() << h->nexPartLength;
   }
 
   static void Deserialize( PrimaryJobHeader *h)
