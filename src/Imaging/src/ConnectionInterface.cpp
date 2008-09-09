@@ -85,7 +85,8 @@ ConnectionInterface::DisconnectAll()
 	DisconnectProducer();
 
 	ConsumersMap::iterator it;
-	for( it = _consumers.begin(); it != _consumers.end(); ++it ) {
+	while( _consumers.begin() != _consumers.end() ) {
+		it = _consumers.begin();
 		DisconnectConsumer( *(it->second) );
 	}
 }
