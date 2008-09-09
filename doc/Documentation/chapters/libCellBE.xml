@@ -39,7 +39,7 @@ and communicate ONLY with our supercalculating server that is budled with. All f
   	<para>
   	Job is entity that represents remote computation. Job has 2 main parts: Definig Contatiner and input&amp;output dataSets.
   	Definig Contatiner contains information about filters that the remote pipeline represented by this job will consist of
-  	and their settings. Each filter has Properties inner class. Instance of that class give us all neccessary information
+  	and their settings. Each filter has Properties inner class. Instance of that class give us all necessary information
   	of that filter because it is teplated as well (it's inner class of templated class) and has all properties of filter
   	that represents. So we don't need to instatiate any filter when defining remote pipeline. Filter::Properties instances
   	are satisfied. According these information is actual pipeline created on ther server side. Input&amp;output dataSets
@@ -273,7 +273,7 @@ and communicate ONLY with our supercalculating server that is budled with. All f
   <section>  
     <title>FilterSerializer</title>
     <para>
-    	Next is the list of neccessary steps for adding new FilterSerializer:
+    	Next is the list of necessary steps for adding new FilterSerializer:
     </para>
     	
   	<itemizedlist>
@@ -411,7 +411,7 @@ m_serializerArray[ (uint32) FID_Thresholding] =
     <title>DataSetSerializer</title>
     
     <para>
-  	Next is the list of neccessary steps for adding new DataSetSerializer:
+  	Next is the list of necessary steps for adding new DataSetSerializer:
   	</para>
   	
   	<itemizedlist>
@@ -499,7 +499,7 @@ ImageSerializerBase<ElementType, dim>
     <para>
     	 <methodname>OnDataPieceReadRequest</methodname>should decide where to put data piece that is going to be
     	 recieved and corresponds to dataPieceHeader given to this method. Memory places where the data piece
-    	 should be recieved to is specified by DataBuff strucutres that is put into bufs container that comes
+    	 should be recieved to is specified by DataBuff structures that is put into bufs container that comes
     	 as well within param. Note state variable m_currSlice that says which slice is going to be recieved.
     	 Such variables are subject of <methodname>Reset</methodname>.
   	</para>
@@ -618,12 +618,12 @@ GeneralDataSetSerializer::GetDataSetSerializer( AbstractDataSet *dataSet)
     <title>Remote filter</title>
     
     <para>
-  	Next is the list of neccessary steps for writing new remote filter:
+  	Next is the list of necessary steps for writing new remote filter:
   	</para>
   	
   	<itemizedlist>
 			<listitem><para>Write new class that inherits from <classname>RemoteFilter</classname> templated class
-			and implements all neccesary methodes (PrepareOutputDatasets, constructor)</para></listitem>
+			and implements all necessary methods (PrepareOutputDatasets, constructor)</para></listitem>
 			<listitem><para>In that new class should be all Filter options classes that compose the remote
 			pipeline added as member variables (hardcoded).</para></listitem>
 		</itemizedlist>
@@ -632,8 +632,8 @@ GeneralDataSetSerializer::GetDataSetSerializer( AbstractDataSet *dataSet)
   	<para>
     	Here is BoneSegmentationRemote filter. It contains thresholding and median filter. (See
     	m_thresholdingOptions and m_medianOptions members). This filter properties offers to the
-    	outer world by 'Get' methodes to let them to be changed as well as definition the two
-    	mandatory neccesary methodes. There are seme typedef that	make the template madness easier.
+    	outer world by 'Get' methods to let them to be changed as well as definition the two
+    	mandatory neccesary methods. There are seme typedef that	make the template madness easier.
   	</para>
   	</informalexample>
   	
@@ -698,7 +698,7 @@ private:
     	Here is implementation of BoneSegmentationRemote constructor. This way will be implemented
     	all remote filters constructors. There are two phases. The first: creation of defining
     	container (vector of FilterSerializers) and putting Serializers that correspond to filter
-    	properties member variales into it. The second stage is creating job while passing that
+    	properties member variables into it. The second stage is creating job while passing that
     	defining container.
   	</para>
   	</informalexample>

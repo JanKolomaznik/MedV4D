@@ -5,7 +5,7 @@
 <para>
 Is tool that scans given folder (recursively subfolders) and modify the information tag
 values within found DICOM files. This is because all data that we dispose has anonimized
-these values nad so when query is performed its results are 'nothing saying' crap. So
+these values nad so when query is performed its results are 'nothing saying' anonimized values. So
 thats why we developed this tool that generate new values based on dictionary from config
 file.
 </para>
