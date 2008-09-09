@@ -7,7 +7,9 @@
 #include "cellBE/FilterSerializerArray.h"
 
 using namespace M4D::Imaging;
-using namespace M4D::CellBE;
+
+namespace M4D {
+namespace CellBE {
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -34,3 +36,6 @@ FilterSerializerArray::FilterSerializerArray()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+}
+}

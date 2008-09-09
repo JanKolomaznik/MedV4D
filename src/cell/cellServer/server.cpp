@@ -14,8 +14,10 @@
 #include "cellBE/netCommons.h"
 #include "cellBE/netStream.h"
 
-using namespace M4D::CellBE;
 using boost::asio::ip::tcp;
+
+namespace M4D {
+namespace CellBE {
 
 Pool<PrimaryJobHeader, 32> Server::m_headerPool;
 
@@ -175,6 +177,8 @@ Server::WritePingMessage( boost::asio::ip::tcp::socket *clientSock)
 
 ///////////////////////////////////////////////////////////////////////////////
 
+}
+}
 
 /** @} */
 

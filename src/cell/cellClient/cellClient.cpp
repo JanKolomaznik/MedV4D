@@ -12,14 +12,15 @@
 
 #include "cellBE/cellClient.h"
 
-using namespace M4D::CellBE;
 using namespace std;
+
+namespace M4D {
+namespace CellBE {
 
 ///////////////////////////////////////////////////////////////////////////////
 
 CellClient::CellClient()
-{
-  
+{  
   ifstream cfgFile("cellServers.cfg");
   if( cfgFile.fail() )
   {
@@ -95,3 +96,6 @@ CellClient::FindAvailableServer( const FilterSerializerVector &filters)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+}
+}

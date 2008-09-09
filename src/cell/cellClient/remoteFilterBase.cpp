@@ -5,8 +5,12 @@
  */
 #include "cellBE/RemoteFilterBase.h"
 
-using namespace M4D::CellBE;
+namespace M4D {
+namespace CellBE {
 
 // instance of cellClient
 CellClient RemoteFilterBase::s_cellClient;
+
+}
+}
 

@@ -7,8 +7,10 @@
 #include "Common.h"
 #include "cellBE/basicJob.h"
 
-using namespace M4D::CellBE;
 using namespace std;
+
+namespace M4D {
+namespace CellBE {
 
 Pool< DataPieceHeader, 32> BasicJob::freeHeaders;
 Pool< ResponseHeader, 32> BasicJob::m_freeResponseHeaders;
@@ -200,3 +202,5 @@ BasicJob::SendEndOfDataSetTag( void)
 
 ///////////////////////////////////////////////////////////////////////////////
 
+}
+}

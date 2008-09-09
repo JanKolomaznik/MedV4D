@@ -14,9 +14,11 @@
 #include <vector>
 
 
-using namespace M4D::CellBE;
 using namespace M4D::Imaging;
 using namespace std;
+
+namespace M4D {
+namespace CellBE {
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -403,5 +405,9 @@ ServerJob::OnDSRecieved( void)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+}
+}
+
 /** @} */
 

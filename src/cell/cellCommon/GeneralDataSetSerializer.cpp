@@ -16,9 +16,11 @@
 // includes of particular dataSet Serializers
 #include "cellBE/dataSetSerializers/ImageSerializer.h"
 
-using namespace M4D::CellBE;
 using namespace M4D::Imaging;
 using namespace std;
+
+namespace M4D {
+namespace CellBE {
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -84,5 +86,9 @@ GeneralDataSetSerializer::DeSerializeDataSetProperties(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+}
+}
+
 /** @} */
 
