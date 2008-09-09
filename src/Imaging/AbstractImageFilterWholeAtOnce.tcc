@@ -32,6 +32,7 @@ bool
 AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
 ::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
 {
+	utype = utype;
 	D_BLOCK_COMMENT( "++++ Entering ExecutionThreadMethod() - AbstractImageFilterWholeAtOnce", "----- Leaving MainExecutionThread() - AbstractImageFilterWholeAtOnce" );
 	if ( !( _readerBBox->WaitWhileDirty() == MS_MODIFIED ) ) {
 		_writerBBox->SetState( MS_CANCELED );
@@ -63,6 +64,8 @@ void
 AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
 ::MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype )
 {
+	utype = utype;
+
 	_readerBBox = this->in->GetWholeDirtyBBox(); //ApplyReaderBBox( *(this->in) );
 	_writerBBox = &(this->out->SetWholeDirtyBBox()); //&(ApplyWriterBBox( *(this->out) ) );
 }

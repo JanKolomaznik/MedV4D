@@ -51,8 +51,8 @@ public:
 		return &m_simpleProjOptions;
 	}
 
-	GET_SET_REMOTE_PROPERTY_METHOD_MACRO( CartesianPlanes, Plane, plane, m_simpleProjOptions, SimpleProjOptsType );
-	GET_SET_REMOTE_PROPERTY_METHOD_MACRO( ProjectionType, ProjectionType, projectionType, m_simpleProjOptions, SimpleProjOptsType );
+	GET_SET_REMOTE_PROPERTY_METHOD_MACRO( CartesianPlanes, Plane, plane, m_simpleProjOptions );
+	GET_SET_REMOTE_PROPERTY_METHOD_MACRO( ProjectionType, ProjectionType, projectionType, m_simpleProjOptions );
 protected:
 	void PrepareOutputDatasets();
 

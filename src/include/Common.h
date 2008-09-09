@@ -82,7 +82,7 @@ enum Endianness {
 	End_LITTLE_ENDIAN = 1
 };
 
-static Endianness
+inline Endianness
 GetEndianess( void)
 {
   uint16 tmp = 1; // for endian testing

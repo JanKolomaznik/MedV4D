@@ -26,8 +26,8 @@ namespace Imaging
  * \param NAME Name of property used in name of function - Get'NAME'().
  * \param \PROPERTY_NAME Name of property in Properties structure.
  **/
-#define GET_REMOTE_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME, PROPERTIES, PROPERTIES_TYPE ) \
-	TYPE Get##NAME ()const{ return (static_cast<PROPERTIES_TYPE&>( this->PROPERTIES ) ).PROPERTY_NAME ; }
+#define GET_REMOTE_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME, PROPERTIES ) \
+	TYPE Get##NAME ()const{ return this->PROPERTIES.PROPERTY_NAME ; }
 
 /**
  * Macro unwinding to set method for property.
@@ -35,15 +35,15 @@ namespace Imaging
  * \param NAME Name of property used in name of function - Set'NAME'().
  * \param \PROPERTY_NAME Name of property in Properties structure.
  **/
-#define SET_REMOTE_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME, PROPERTIES, PROPERTIES_TYPE ) \
-	void Set##NAME ( TYPE value ){ this->_properties->IncTimestamp(); (static_cast<PROPERTIES_TYPE&>( this->PROPERTIES ) ).PROPERTY_NAME = value; }
+#define SET_REMOTE_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME, PROPERTIES ) \
+	void Set##NAME ( TYPE value ){ this->PROPERTIES.PROPERTY_NAME = value; }
 
 /**
  * Macro unwinding to previously defined macros.
  **/
-#define GET_SET_REMOTE_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME, PROPERTIES, PROPERTIES_TYPE ) \
-	GET_REMOTE_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME, PROPERTIES, PROPERTIES_TYPE ) \
-	SET_REMOTE_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME, PROPERTIES, PROPERTIES_TYPE ) 
+#define GET_SET_REMOTE_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME, PROPERTIES ) \
+	GET_REMOTE_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME, PROPERTIES ) \
+	SET_REMOTE_PROPERTY_METHOD_MACRO( TYPE, NAME, PROPERTY_NAME, PROPERTIES ) 
 
 
 /**

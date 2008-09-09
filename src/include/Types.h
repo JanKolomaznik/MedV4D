@@ -233,7 +233,7 @@ struct TypeTraits< uint8 >
 	
 	static const bool	Signed = false;
 	static const uint16	BitCount = sizeof( Type )*8;
-	static const Type	Max = ~((Type)0);
+	static const Type	Max = (Type)~((Type)0);
 	static const Type	Min = (Type)(0);
 
 	typedef uint64		SuperiorType;
@@ -259,7 +259,7 @@ struct TypeTraits< uint16 >
 
 	static const bool	Signed = false;
 	static const uint16	BitCount = sizeof( Type )*8;
-	static const Type	Max = ~((Type)0);
+	static const Type	Max = (Type)~((Type)0);
 	static const Type	Min = (Type)(0);
 
 	typedef uint64		SuperiorType;
@@ -285,7 +285,7 @@ struct TypeTraits< uint32 >
 
 	static const bool	Signed = false;
 	static const uint16	BitCount = sizeof( Type )*8;
-	static const Type	Max = ~((Type)0);
+	static const Type	Max = (Type)~((Type)0);
 	static const Type	Min = (Type)(0);
 
 	typedef uint64		SuperiorType;
@@ -311,7 +311,7 @@ struct TypeTraits< uint64 >
 
 	static const bool	Signed = false;
 	static const uint16	BitCount = sizeof( Type )*8;
-	static const Type	Max = ~((Type)0);
+	static const Type	Max = (Type)~((Type)0);
 	static const Type	Min = (Type)(0);
 
 	typedef uint64		SuperiorType;

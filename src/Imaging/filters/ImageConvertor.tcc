@@ -189,6 +189,8 @@ void
 ImageConvertor< OutputImageType, Convertor >
 ::MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype )
 {
+	utype = utype;
+
 	_readerBBox = this->in->GetWholeDirtyBBox(); 
 	_writerBBox = &(this->out->SetWholeDirtyBBox());
 }

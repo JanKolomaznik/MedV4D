@@ -115,6 +115,7 @@ void
 MaskSelection< ImageType >
 ::MarkChangesHelper( AbstractPipeFilter::UPDATE_TYPE utype )
 {
+	utype = utype;
 	_helper._imageReaderBBox = this->in[0]->GetWholeDirtyBBox();
 	_helper._maskReaderBBox = this->in[1]->GetWholeDirtyBBox();
 	_helper._writerBBox = &(this->out[0]->SetWholeDirtyBBox());

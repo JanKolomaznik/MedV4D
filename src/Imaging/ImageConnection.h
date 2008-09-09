@@ -100,10 +100,10 @@ public:
 
 	void
 	SetImageSize( 
-			uint32		dim,
-			int32 		minimums[], 
-			int32 		maximums[], 
-			float32		elementExtents[]
+			uint32		/*dim*/,
+			int32 		/*minimums*/[], 
+			int32 		/*maximums*/[], 
+			float32		/*elementExtents*/[]
 		    ){ throw ErrorHandling::ETODO( "SetImage() not implemented." ); }
 protected:
 	AbstractImage::AImagePtr _image;
