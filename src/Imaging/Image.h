@@ -43,6 +43,12 @@ struct DimensionExtents
 		}
 };
 
+#define IMAGE_TYPE_TEMPLATE_SWITCH_MACRO( AIMAGE_REF, ... ) \
+		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( AIMAGE_REF.GetElementTypeID(), \
+				DIMENSION_TEMPLATE_SWITCH_MACRO( AIMAGE_REF.GetDimension(), __VA_ARGS__ ) )
+
+
+
 /**
  * Abstract ancestor of image classes. Has access methods 
  * to information about image - dimension, type of elements and proportions.

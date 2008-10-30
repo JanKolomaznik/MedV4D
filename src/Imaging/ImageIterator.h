@@ -1,8 +1,6 @@
 #ifndef _IMAGE_ITERATOR_H
 #define _IMAGE_ITERATOR_H
 
-//#include "Imaging/Image.h"
-
 namespace M4D
 {
 /**
@@ -14,37 +12,6 @@ namespace M4D
 
 namespace Imaging
 {
-
-/*template< typename ElementType, uint32 Dim >
-class ImageIterator;
-
-template< typename ElementType >
-ImageIterator< ElementType, 2 >
-CreateImageIterator(
-			ElementType	*pointer, 
-			int32		width, 
-			int32		height,
-			int32		xStride,
-			int32		yStride,
-			int32		xPos = 0,
-			int32		yPos = 0
-			);
-
-template< typename ElementType >
-ImageIterator< ElementType, 3 >
-CreateImageIterator(
-			ElementType	*pointer, 
-			int32		width, 
-			int32		height,
-			int32		depth,
-			int32		xStride,
-			int32		yStride,
-			int32		zStride,
-			int32		xPos = 0,
-			int32		yPos = 0,
-			int32		zPos = 0
-			);*/
-
 
 template< typename ElementType, uint32 Dim >
 class ImageIterator
@@ -129,6 +96,13 @@ public:
 		return ++result;
 	}
 
+	bool
+	IsEnd()const
+	{
+		//TODO improve
+		return _position[ Dimension-1 ] >= _size[ Dimension-1 ];
+	}
+
 	ElementType& 
 	operator*() const
 		{
@@ -209,8 +183,8 @@ template< typename ElementType >
 ImageIterator< ElementType, 2 >
 CreateImageIterator(
 			ElementType	*pointer, 
-			int32		width, 
-			int32		height,
+			uint32		width, 
+			uint32		height,
 			int32		xStride,
 			int32		yStride,
 			int32		xPos = 0,
@@ -237,9 +211,9 @@ template< typename ElementType >
 ImageIterator< ElementType, 3 >
 CreateImageIterator(
 			ElementType	*pointer, 
-			int32		width, 
-			int32		height,
-			int32		depth,
+			uint32		width, 
+			uint32		height,
+			uint32		depth,
 			int32		xStride,
 			int32		yStride,
 			int32		zStride,

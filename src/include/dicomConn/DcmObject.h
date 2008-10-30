@@ -6,6 +6,7 @@
  *  @file DcmObject.h
  *  @author Vaclav Klecanda
  */
+#include "Common.h"
 
 namespace M4D
 {

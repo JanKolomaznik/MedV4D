@@ -12,6 +12,7 @@
 #include <map>
 #include <string>
 #include <boost/shared_ptr.hpp>
+#include "Common.h"
 #include "dicomConn/DcmObject.h"
 
 /**

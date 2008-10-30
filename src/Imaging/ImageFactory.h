@@ -1,10 +1,3 @@
-/**
- * @ingroup imaging 
- * @author Jan Kolomaznik 
- * @file ImageFactory.h 
- * @{ 
- **/
-
 #ifndef _IMAGE_FACTORY_H
 #define _IMAGE_FACTORY_H
 
@@ -16,23 +9,37 @@
 
 #include "Common.h"
 
+#include <iostream>
+#include <fstream>
+#include <string>
+
 /**
- *  @addtogroup imaging Imaging Library
- *  @{
- */
+ * @ingroup imaging 
+ * @author Jan Kolomaznik 
+ * @file ImageFactory.h 
+ * @{ 
+ **/
+
+#define BINSTREAM_WRITE_MACRO( STREAM, VARIABLE ) \
+	STREAM.write( (char*)&VARIABLE, sizeof(VARIABLE) );
+
+#define BINSTREAM_READ_MACRO( STREAM, VARIABLE ) \
+	STREAM.read( (char*)&VARIABLE, sizeof(VARIABLE) );
 
 namespace M4D
 {
-namespace Imaging
-{
-
-//TODO check comments
 
 /**
  * Factory class which takes care of allocation of image 
  * datasets. It is able to create empty image, or fill 
  * it with DICOM data.
  **/
+
+namespace Imaging
+{
+
+//TODO check comments
+
 class ImageFactory
 {
 public:
@@ -41,6 +48,10 @@ public:
 	class EWrongArrayForFlush;
 	class EUnknowDataType;
 	class EWrongDICOMObjIndex;
+
+	class EWrongStreamBeginning;
+	class EWrongFormatVersion;
+	class EWrongHeader;
 
 	/**
 	 * Create image according to passed information.
@@ -276,6 +287,24 @@ public:
 	 **/
 	static AbstractImageData::APtr 
 	CreateImageDataFromDICOM( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects );
+
+	template< typename ElementType, uint32 Dimension >
+	static void
+	DumpImage( std::ostream &stream, const Image< ElementType, Dimension > & image );
+
+	template< typename ElementType, uint32 Dimension >
+	static void
+	DumpImage( std::string filename, const Image< ElementType, Dimension > & image );
+
+	static void
+	DumpImage( std::string filename, const AbstractImage & image );
+
+	static AbstractImage::AImagePtr
+	LoadDumpedImage( std::istream &stream );
+
+	static AbstractImage::AImagePtr
+	LoadDumpedImage( std::string filename );
+
 protected:
 
 private:
@@ -331,6 +360,10 @@ private:
 		uint8					* dataArray
 		);
 	
+
+	static const uint32 IMAGE_DUMP_START_MAGIC_NUMBER;
+	static const uint32 IMAGE_DUMP_HEADER_END_MAGIC_NUMBER;
+	static const uint32 ACTUAL_FORMAT_VERSION;
 
 };
 
@@ -397,6 +430,31 @@ private:
 
 };
 
+
+class ImageFactory::EWrongStreamBeginning
+{
+public:
+	EWrongStreamBeginning() {}
+
+	//TODO
+};
+
+class ImageFactory::EWrongFormatVersion
+{
+public:
+	EWrongFormatVersion() {}
+
+	//TODO
+};
+
+class ImageFactory::EWrongHeader
+{
+public:
+	EWrongHeader() {}
+
+	//TODO
+};
+
 /**
  * Exception class, which is thrown from PrepareElementArray<>(), when
  * array couldn't be allocated ( not enough memory ).
@@ -408,15 +466,16 @@ public:
 //TODO
 };
 
+
+
 } /*namespace Imaging*/
+/** @} */
 } /*namespace M4D*/
 
-/** @} */
 
 //Including template implementation
 #include "ImageFactory.tcc"
 
 #endif /*_IMAGE_FACTORY_H*/
 
-/** @} */
 

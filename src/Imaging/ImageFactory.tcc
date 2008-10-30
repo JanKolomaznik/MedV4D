@@ -324,6 +324,42 @@ ImageFactory::CreateEmptyImageData3DTyped(
 	return typename ImageDataTemplate< ElementType >::Ptr( newImage );
 }
 
+template< typename ElementType, uint32 Dimension >
+void
+ImageFactory::DumpImage( std::ostream &stream, const Image< ElementType, Dimension > & image )
+{
+	BINSTREAM_WRITE_MACRO( stream, IMAGE_DUMP_START_MAGIC_NUMBER );
+	BINSTREAM_WRITE_MACRO( stream, ACTUAL_FORMAT_VERSION );
+	
+	uint32 Dim = Dimension;
+	BINSTREAM_WRITE_MACRO( stream, Dim );
+	uint32 numTypeID = GetNumericTypeID< ElementType >();
+	BINSTREAM_WRITE_MACRO( stream, numTypeID );
+	
+	for( unsigned i = 0; i < Dimension; ++i ) {
+		const DimensionExtents & dimExtents = image.GetDimensionExtents( i );
+		BINSTREAM_WRITE_MACRO( stream, dimExtents.minimum );
+		BINSTREAM_WRITE_MACRO( stream, dimExtents.maximum );
+		BINSTREAM_WRITE_MACRO( stream, dimExtents.elementExtent );
+	}
+
+	BINSTREAM_WRITE_MACRO( stream, IMAGE_DUMP_HEADER_END_MAGIC_NUMBER );
+
+	typename Image< ElementType, Dimension >::Iterator iterator = image.GetIterator();
+	while( !iterator.IsEnd() ) {
+		BINSTREAM_WRITE_MACRO( stream, *iterator );
+		++iterator;
+	}
+}
+
+template< typename ElementType, uint32 Dimension >
+void
+ImageFactory::DumpImage( std::string filename, const Image< ElementType, Dimension > & image )
+{
+	std::ofstream output( filename.c_str(), std::ios::out | std::ios::binary );
+
+	DumpImage( output, image );
+}
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
