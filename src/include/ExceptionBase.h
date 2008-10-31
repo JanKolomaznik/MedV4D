@@ -90,6 +90,15 @@ private:
 
 };
 
+class EWrongIndex: public ExceptionBase
+{
+public:
+	EWrongIndex( std::string name ) throw(): ExceptionBase( name ) {}
+	EWrongIndex() throw(): ExceptionBase( "Wrong index" ) {}
+private:
+
+};
+
 class ETODO: public ExceptionBase
 {
 public:
