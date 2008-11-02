@@ -18,11 +18,26 @@ namespace Geometry
 {
 
 
-template < typename CoordType, unsigned Dim >
+template < typename CoordType, unsigned Dim, typename CurveCore >
 class ParametricCurve: public PointSet< CoordType, Dim >
 {
 public:
+	friend CurveCore;
 
+	PointType
+	PointByParameter( double t )const;
+
+	bool
+	DerivationAtPoint( double t, PointType &derivation )const;	
+	
+	Sample( unsigned frequency );
+
+	SampleWithDerivations( unsigned frequency );
+
+	ResetSamples();
+protected:
+	bool 				_cyclic;
+	PointSet< CoordType, Dim >	_samplePointCache;
 };
 
 	
