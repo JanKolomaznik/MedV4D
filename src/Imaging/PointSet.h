@@ -3,6 +3,8 @@
 
 #include "Imaging/GeometricalObject.h"
 #include "Coordinates.h"
+#include <vector>
+
 
 namespace M4D
 {
@@ -25,6 +27,8 @@ class PointSet: public GeometricalObjectDim< Dim >
 public:
 	typedef Coordinates< CoordType, Dim > PointType;
 
+protected:
+	std::vector< PointType >	_points;
 };
 
 }/*namespace Geometry*/
