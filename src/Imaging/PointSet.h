@@ -27,8 +27,30 @@ class PointSet: public GeometricalObjectDim< Dim >
 public:
 	typedef Coordinates< CoordType, Dim > PointType;
 
+	void
+	Reserve( unsigned size )
+		{ _points.reserve( _pointCount = size ); }
+
+	PointType &
+	operator[]( unsigned idx ) 
+		{ 
+			if( idx < _pointCount ) {
+				return _points[ idx ]; 
+			} else 
+				throw ErrorHandling::EWrongIndex(); 
+		}
+
+	const PointType &
+	operator[]( unsigned idx ) const
+		{ 
+			if( idx < _pointCount ) {
+				return _points[ idx ]; 
+			} else 
+				throw ErrorHandling::EWrongIndex(); 
+		}
 protected:
 	std::vector< PointType >	_points;
+	uint32				_pointCount;
 };
 
 }/*namespace Geometry*/
