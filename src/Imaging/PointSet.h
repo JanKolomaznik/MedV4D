@@ -1,6 +1,7 @@
 #ifndef POINT_SET_H
 #define POINT_SET_H
 
+#include "Common.h"
 #include "Imaging/GeometricalObject.h"
 #include "Coordinates.h"
 #include <vector>
@@ -31,6 +32,10 @@ public:
 	Reserve( unsigned size )
 		{ _points.reserve( _pointCount = size ); }
 
+	uint32
+	Size()const
+		{ return _pointCount; }
+
 	PointType &
 	operator[]( unsigned idx ) 
 		{ 
@@ -48,6 +53,10 @@ public:
 			} else 
 				throw ErrorHandling::EWrongIndex(); 
 		}
+
+	void
+	AddPoint( const PointType &point )
+		{ _points.push_back( point ); } 
 protected:
 	std::vector< PointType >	_points;
 	uint32				_pointCount;
