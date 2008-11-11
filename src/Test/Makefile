@@ -15,8 +15,8 @@ NAME=		SplineTest
 #Names of target sources
 TARGETS=	SplineTest 
 
-M4DLIBS=	../../lib/libImaging.a\
-		../../lib/libcommon.a
+M4DLIBS=	../lib/libImaging.a\
+		../lib/libcommon.a
 
 
 LIBS=		$(M4DLIBS)\

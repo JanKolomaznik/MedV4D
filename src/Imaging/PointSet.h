@@ -28,6 +28,9 @@ class PointSet: public GeometricalObjectDim< Dim >
 public:
 	typedef Coordinates< CoordType, Dim > PointType;
 
+	PointSet() : _pointCount( 0 ) 
+		{}
+
 	void
 	Reserve( unsigned size )
 		{ _points.reserve( _pointCount = size ); }
@@ -56,7 +59,7 @@ public:
 
 	void
 	AddPoint( const PointType &point )
-		{ _points.push_back( point ); } 
+		{ _points.push_back( point ); ++_pointCount; } 
 protected:
 	std::vector< PointType >	_points;
 	uint32				_pointCount;

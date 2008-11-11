@@ -1,5 +1,5 @@
-#ifndef PARAMETRIC_CURVE
-#define PARAMETRIC_CURVE
+#ifndef PARAMETRIC_CURVE_H
+#define PARAMETRIC_CURVE_H
 
 #include "Imaging/PointSet.h"
 #include <cmath>
@@ -18,16 +18,9 @@ namespace Imaging
 namespace Geometry
 {
 
-template < typename Type, typename TypeB >
-Type
-min( Type a,  TypeB b )
-{ return (Type) (a<b ? a : b); }
-
-template < typename Type, typename TypeB >
-Type
-max( Type a,  TypeB b )
-{ return (Type) (a<b ? b : a); }
-
+#define MAX( a, b ) ((a)<(b) ? (b) : (a))
+#define MIN( a, b ) ((a)<(b) ? (a) : (b))
+#define MOD( a, b ) ((a)<0 ? ((a)%(b)) + (b) : (a) % (b))
 //**************************************************
 
 template< typename ValueType, unsigned Degree >
@@ -57,7 +50,7 @@ private:
 class BSplineBasis
 {
 public:
-	static const unsigned Degree = 3;
+	static const int Degree = 3;
 
 	template< typename ValueType >
 	static void
@@ -66,10 +59,12 @@ public:
 			double v[ Degree ];
 			BSplineBasis::ParameterPowers( t, v );
 			
-			values[ 0 ] = -   v[2] + 3*v[1] - 3*v[0] + 1;
-			values[ 1 ] =   3*v[2] - 6*v[1]          + 4;
-			values[ 2 ] = - 3*v[2] + 3*v[1] + 3*v[0] + 1;
-			values[ 3 ] =     v[2]                      ;
+			double scale = 1.0/6.0;
+
+			values[ 0 ] = scale * ( -   v[2] + 3*v[1] - 3*v[0] + 1 );
+			values[ 1 ] = scale * (   3*v[2] - 6*v[1]          + 4 );
+			values[ 2 ] = scale * ( - 3*v[2] + 3*v[1] + 3*v[0] + 1 );
+			values[ 3 ] = scale * (     v[2]                       );
 
 		}
 
@@ -103,7 +98,7 @@ protected:
 	ParameterPowers( double t, double vector[] )
 		{ 
 			vector[ 0 ] = t;
-			for( unsigned i=1; i < Degree; ++i ) {
+			for( int i=1; i < Degree; ++i ) {
 				vector[ i ] = vector[ i-1 ] * t;
 			}
 		}
@@ -153,8 +148,16 @@ public:
 	const PointSet< CoordType, Dim > &
 	GetSamplePoints()const
 		{ return _samplePointCache; }
+
+	void
+	SetCyclic( bool cyclic = true )
+		{ _cyclic = cyclic; }
+
+	bool
+	Cyclic() const
+		{ return _cyclic; }
 protected:
-	static const unsigned curveEndSegCount = (CurveBasis::Degree - 1)/2;
+	static const int curveEndSegCount = (CurveBasis::Degree - 1)/2;
 
 	inline PointType
 	EvaluateCurve( int segment, const BFunctionValues &values );
@@ -172,198 +175,6 @@ protected:
 };
 
 
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-ParametricCurve< CoordType, Dim, CurveBasis >
-::ParametricCurve()
-{
-
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-ParametricCurve< CoordType, Dim, CurveBasis >
-::ParametricCurve( const PointSet< CoordType, Dim > & points )
-{
-
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-typename ParametricCurve< CoordType, Dim, CurveBasis >::PointType
-ParametricCurve< CoordType, Dim, CurveBasis >
-::PointByParameter( double t )const
-{
-	int segment_nmbr = floor( t );
-	double relative_t = t - segment_nmbr;
-
-	BFunctionValues values;
-
-	CurveBasis::ValuesAtPoint( relative_t, values );
-
-	return EvaluateCurve( segment_nmbr, values );
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-bool
-ParametricCurve< CoordType, Dim, CurveBasis >
-::DerivationAtPoint( double t, PointType &derivation )const
-{
-	int segment_nmbr = floor( t );
-	double relative_t = t - segment_nmbr;
-
-	BFunctionValues dvalues;
-
-	if ( CurveBasis::DerivationsAtPoint( relative_t, dvalues ) ) {
-		derivation = EvaluateCurve( segment_nmbr, dvalues );
-		return true;
-	} 
-
-	return false;
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-bool
-ParametricCurve< CoordType, Dim, CurveBasis >
-::PointAndDerivationAtPoint( double t, PointType &point, PointType &derivation )const
-{
-	int segment_nmbr = floor( t );
-	double relative_t = t - segment_nmbr;
-
-	BFunctionValues values;
-	BFunctionValues dvalues;
-
-	if ( CurveBasis::ValuesAndDerivationsAtPoint( relative_t, values, dvalues ) ) {
-		point = EvaluateCurve( segment_nmbr, values );
-		derivation = EvaluateCurve( segment_nmbr, dvalues );
-		return true;
-	} 
-
-	point = EvaluateCurve( segment_nmbr, values );
-	return false;
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-void
-ParametricCurve< CoordType, Dim, CurveBasis >
-::Sample( unsigned frequency )
-{
-	//TODO check cyclic
-	int32 sampleCount = frequency * (this->_pointCount - 1);
-	_samplePointCache.Reserve( sampleCount );
-
-	std::vector< BFunctionValues > precomputedFValues;
-	precomputedFValues.reserve( frequency );
-
-	double dt = 1.0 / frequency;
-	double t = 0.0;
-	for( unsigned i=0; i < frequency; ++i, t += dt ) {
-		CurveBasis::ValuesAtPoint( t, precomputedFValues[ i ] );	
-	}
-	
-	unsigned actualSample = 0;
-	for( unsigned i = 0; i < this->_pointCount-1; ++i ) {
-		for( unsigned j = 0; j < frequency; ++j, ++actualSample ) {
-			_samplePointCache[ actualSample ] = EvaluateCurve( i, precomputedFValues[ j ] );
-		}
-	}
-
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-void
-ParametricCurve< CoordType, Dim, CurveBasis >
-::SampleWithDerivations( unsigned frequency )
-{
-
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-void
-ParametricCurve< CoordType, Dim, CurveBasis >
-::ResetSamples()
-{
-
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-void
-ParametricCurve< CoordType, Dim, CurveBasis >
-::ResetSamplesDerivations()
-{
-
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-void
-ParametricCurve< CoordType, Dim, CurveBasis >
-::SplitSegment( int segment )
-{
-
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-typename ParametricCurve< CoordType, Dim, CurveBasis >::PointType
-ParametricCurve< CoordType, Dim, CurveBasis >
-::EvaluateCurve( int segment, const BFunctionValues &values )
-{
-	if( _cyclic ) {
-		return EvaluateCyclicCurve( segment, values );
-	} else {
-		return EvaluateACyclicCurve( segment, values );
-	}
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-typename ParametricCurve< CoordType, Dim, CurveBasis >::PointType
-ParametricCurve< CoordType, Dim, CurveBasis >
-::EvaluateCyclicCurve( int segment, const BFunctionValues &values )
-{ 
-	PointType result;
-
-	if( segment < curveEndSegCount ) {
-		for( unsigned i = 0; i <= CurveBasis::Degree; ++i ) {
-			result += values[i]*(this->_points[ ((segment-curveEndSegCount) + i)%this->_pointCount ]);
-		}
-		return result;
-	} 
-	if( segment >= (this->_pointCount-curveEndSegCount) ) {
-		for( unsigned i = 0; i <= CurveBasis::Degree; ++i ) {
-			result += values[i]*(this->_points[ ((segment-curveEndSegCount) + i)%this->_pointCount ]);
-		}
-		return result;
-	} 
-
-	for( unsigned i = 0; i <= CurveBasis::Degree; ++i ) {
-			result += values[i]*(this->_points[ (segment-curveEndSegCount) + i ]);
-		}
-	return result;
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-typename ParametricCurve< CoordType, Dim, CurveBasis >::PointType
-ParametricCurve< CoordType, Dim, CurveBasis >
-::EvaluateACyclicCurve( int segment, const BFunctionValues &values )
-{ 
-	PointType result;
-
-	if( segment < curveEndSegCount ) {
-		for( unsigned i = 0; i <= CurveBasis::Degree; ++i ) {
-			result += values[i]*(this->_points[ max(segment-curveEndSegCount+i,0) ]);
-		}
-		return result;
-	} 
-	if( segment >= (this->_pointCount-curveEndSegCount) ) {
-		for( unsigned i = 0; i <= CurveBasis::Degree; ++i ) {
-			//TODO check cyclic
-			result += values[i]*(this->_points[ min(segment-curveEndSegCount+i,0) ]);
-		}
-		return result;
-	} 
-
-	for( unsigned i = 0; i <= CurveBasis::Degree; ++i ) {
-			result += values[i]*(this->_points[ (segment-curveEndSegCount) + i ]);
-		}
-	return result;
-}
-
 
 }/*namespace Geometry*/
 }/*namespace Imaging*/
@@ -371,4 +182,7 @@ ParametricCurve< CoordType, Dim, CurveBasis >
 
 }/*namespace M4D*/
 
-#endif /*PARAMETRIC_CURVE*/
+//include implementation
+#include "Imaging/ParametricCurve.tcc"
+
+#endif /*PARAMETRIC_CURVE_H*/

@@ -1,0 +1,4 @@
+set xrange [-5:55]
+set yrange [-5:15]
+plot "pom.dat" index 0:0 with points, "pom.dat" index 1:1 with lines
+
