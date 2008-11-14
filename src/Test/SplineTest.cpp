@@ -7,7 +7,7 @@ using namespace M4D;
 using namespace M4D::Imaging::Geometry;
 
 typedef float CoordType;
-typedef ParametricCurve< CoordType, 2, BSplineBasis > Curve;
+typedef BSpline< CoordType, 2 > Curve;
 typedef PointSet< CoordType, 2 > 	Points;
 typedef Coordinates< CoordType, 2 > Coords;
 
@@ -59,9 +59,9 @@ main( int argc, char **argv )
 		pom *= -1;
 	}
 
-	curve.SetCyclic();
+	//curve.SetCyclic();
 	//Sample
-	curve.Sample( 15 );
+	curve.Sample( 5 );
 
 	//Output
 	PrepareOutput();

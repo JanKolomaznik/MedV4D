@@ -51,6 +51,10 @@ class BSplineBasis
 {
 public:
 	static const int Degree = 3;
+	/**
+	 * With how many segments has incident interval - in one direction
+	 **/
+	static const int SupportRadius = 1;
 
 	template< typename ValueType >
 	static void
@@ -105,6 +109,76 @@ protected:
 
 };
 
+template < typename CoordType, unsigned Dim >
+class BSpline: public PointSet< CoordType, Dim >
+{
+public:
+	typedef BSplineBasis						CurveBasis;
+	typedef BasisFunctionValues< CoordType, CurveBasis::Degree > 	BFunctionValues;
+	typedef PointSet< CoordType, Dim > 				Predecessor;
+	typedef typename Predecessor::PointType 			PointType;
+
+	BSpline();
+
+	BSpline( const PointSet< CoordType, Dim > & points );
+
+	PointType
+	PointByParameter( double t )const;
+
+	bool
+	DerivationAtPoint( double t, PointType &derivation )const;
+
+	bool
+	PointAndDerivationAtPoint( double t, PointType &point, PointType &derivation )const;
+	
+	void
+	Sample( unsigned frequency );
+
+	void
+	SampleWithDerivations( unsigned frequency );
+
+	void
+	ResetSamples();
+	
+	void
+	ResetSamplesDerivations();
+
+	void
+	SplitSegment( int segment );
+
+	const PointSet< CoordType, Dim > &
+	GetSampleDerivations()const
+		{ return _sampleDerivationCache; }
+
+	const PointSet< CoordType, Dim > &
+	GetSamplePoints()const
+		{ return _samplePointCache; }
+
+	void
+	SetCyclic( bool cyclic = true )
+		{ _cyclic = cyclic; }
+
+	bool
+	Cyclic() const
+		{ return _cyclic; }
+protected:
+	inline PointType
+	EvaluateCurve( int segment, const BFunctionValues &values );
+
+	inline PointType
+	EvaluateCyclicCurve( int segment, const BFunctionValues &values );
+
+	inline PointType
+	EvaluateACyclicCurve( int segment, const BFunctionValues &values );
+
+
+	bool 				_cyclic;
+	PointSet< CoordType, Dim >	_samplePointCache;
+	PointSet< CoordType, Dim >	_sampleDerivationCache;
+
+};
+
+/*
 template < typename CoordType, unsigned Dim, typename CurveBasis >
 class ParametricCurve: public PointSet< CoordType, Dim >
 {
@@ -173,7 +247,7 @@ protected:
 	PointSet< CoordType, Dim >	_sampleDerivationCache;
 
 };
-
+*/
 
 
 }/*namespace Geometry*/
