@@ -39,7 +39,17 @@ struct ConvolutionMask
 		}
 
 	~ConvolutionMask()
-		{ delete mask; }
+		{ delete [] mask; }
+
+	MatrixElement &
+	GetElement( int32 pos[Dim] )
+		{
+			int32 idx = 0;
+			for( unsigned i=0; i<Dim; ++i ) {
+				idx += pos[i]*size[i];
+			}
+			return *(mask+idx);
+		}
 
 	int32		size[ Dim ];
 	int32		center[ Dim ];
@@ -62,11 +72,12 @@ class ConvolutionFilter2D< Image< InputElementType, 3 >, MatrixElement >
 {
 public:	
 	static const unsigned Dimension = 3;
-	typedef ConvolutionMask<MatrixElement, Dimension>	Mask;
+	typedef AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
+	typedef ConvolutionMask<MatrixElement, 2>	Mask;
 
 	struct Properties : public PredecessorType::Properties
 	{
-		Properties();
+		Properties(){}
 
 		Mask::Ptr matrix; //length = width*height
 	};
@@ -94,7 +105,7 @@ private:
 //******************************************************************************
 //******************************************************************************
 
-
+/*
 
 template< typename InputImageType, typename MatrixElement >
 class ConvolutionFilter3D;
@@ -144,7 +155,7 @@ protected:
 private:
 	GET_PROPERTIES_DEFINITION_MACRO;
 
-};
+};*/
 
 
 template< typename ElementType, typenamepe  MatrixElement, unsigned Dim >
