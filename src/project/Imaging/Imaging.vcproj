@@ -202,6 +202,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\AbstractImage2DFilter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\AbstractImage2DFilter.tcc"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\AbstractImageData.h"
 				>
 			</File>
@@ -254,6 +262,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\AImageSliceFilter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\AImageSliceFilter.tcc"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\ConnectionInterface.h"
 				>
 			</File>
@@ -262,11 +278,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\EnergicSnake.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\ExampleImageFilters.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\Imaging\ExampleImageFilters.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\GeometricalObject.h"
 				>
 			</File>
 			<File
@@ -314,11 +338,23 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\ImageRegion.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\ImageTraits.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\Imaging\ModificationManager.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\ParametricCurve.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\ParametricCurve.tcc"
 				>
 			</File>
 			<File
@@ -331,6 +367,14 @@
 			</File>
 			<File
 				RelativePath="..\..\Imaging\PipelineMessages.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\PointSet.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\Polyline.h"
 				>
 			</File>
 			<File

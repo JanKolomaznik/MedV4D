@@ -59,18 +59,6 @@ protected:
 	 * \param height Height of image area.
 	 * \return Whether computation was succesful.
 	 **/
-	/*virtual bool
-	Process2D(
-			InputElementType	*inPointer,
-			int32			i_xStride,
-			int32			i_yStride,
-			OutputElementType	*outPointer,
-			int32			o_xStride,
-			int32			o_yStride,
-			uint32			width,
-			uint32			height
-		 ) = 0;*/
-
 	virtual bool
 	Process2D(
 			const ImageRegion< InputElementType, 2 > &inRegion,
@@ -128,18 +116,6 @@ protected:
 	 * \param height Height of image area.
 	 * \return Whether computation was succesful.
 	 **/
-	/*virtual bool
-	Process2D(
-			InputElementType	*inPointer,
-			int32			i_xStride,
-			int32			i_yStride,
-			OutputElementType	*outPointer,
-			int32			o_xStride,
-			int32			o_yStride,
-			uint32			width,
-			uint32			height
-		 ) = 0;*/
-
 	virtual bool
 	Process2D(
 			const ImageRegion< InputElementType, 2 > &inRegion,

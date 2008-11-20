@@ -216,46 +216,6 @@ private:
 	PROHIBIT_COPYING_OF_OBJECT_MACRO( AImageSliceFilterIExtents );
 };
 
-///**
-// * We disallow general usage of template - only specializations.
-// **/
-//template< typename InputImageType, typename OutputImageType >
-//class AImageSliceFilterIExtents;
-//
-//template< typename InputElementType, typename OutputElementType >
-//class AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
-//	 : public AImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
-//{
-//public:
-//	typedef typename Imaging::AImageSliceFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >	PredecessorType;
-//	
-//	typedef typename PredecessorType::Properties	Properties;
-//
-//	AImageSliceFilterIExtents( Properties *prop );
-//	~AImageSliceFilterIExtents() {}
-//
-//protected:
-//
-//	WriterBBoxInterface &
-//	GetComputationGroupWriterBBox( SliceComputationRecord & record );
-//
-//	void
-//	PrepareOutputDatasets();
-//
-//	/*bool
-//	ProcessSlice(
-//			const ImageRegion< InputImageType, 3 >		&in,
-//			const ImageRegion< OutputElementType, 2 > 	&out,
-//			int32						slice
-//		    ) = 0;*/
-//private:
-//	/**
-//	 * Prohibition of copying.
-//	 **/
-//	PROHIBIT_COPYING_OF_OBJECT_MACRO( AImageSliceFilterIExtents );
-//};
-//
-
 } /*namespace Imaging*/
 } /*namespace M4D*/
 

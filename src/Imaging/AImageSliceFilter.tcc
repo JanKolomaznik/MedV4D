@@ -45,16 +45,16 @@ AImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 
 		for( int32 slice = record.firstSlice; slice <= record.lastSlice; ++slice )
 		{
-			int32 minZ = MAX( slice - (int32)sliceComputationNeighbourCount, this->in->GetDimensionExtents( 2 ).minimum );
-			int32 maxZ = MIN( slice + (int32)sliceComputationNeighbourCount, this->in->GetDimensionExtents( 2 ).maximum );
+			int32 minZ = Max( slice - (int32)sliceComputationNeighbourCount, this->in->GetDimensionExtents( 2 ).minimum );
+			int32 maxZ = Min( slice + (int32)sliceComputationNeighbourCount + 1, this->in->GetDimensionExtents( 2 ).maximum );
 
 			ImageRegion< InputImageType, 3 > region = 
 				this->in->GetSubRegion(	
 					this->in->GetDimensionExtents( 0 ).minimum,
 					this->in->GetDimensionExtents( 1 ).minimum,
+					minZ,
 					this->in->GetDimensionExtents( 0 ).maximum,
 					this->in->GetDimensionExtents( 1 ).maximum,
-					minZ,
 					maxZ );
 
 			bool result = ProcessSlice( region, *(this->out), slice - minZ );
@@ -103,9 +103,9 @@ AImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 				record.inputBBox = this->in->GetDirtyBBox( 
 					this->in->GetDimensionExtents( 0 ).minimum,
 					this->in->GetDimensionExtents( 1 ).minimum,
+					record.firstSlice - sliceComputationNeighbourCount,
 					this->in->GetDimensionExtents( 0 ).maximum,
 					this->in->GetDimensionExtents( 1 ).maximum,
-					record.firstSlice - sliceComputationNeighbourCount,
 					record.lastSlice + sliceComputationNeighbourCount
 					);
 				record.writerBBox = &( GetComputationGroupWriterBBox( record ) );
@@ -119,9 +119,9 @@ AImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 			record.inputBBox = this->in->GetDirtyBBox( 
 				this->in->GetDimensionExtents( 0 ).minimum,
 				this->in->GetDimensionExtents( 1 ).minimum,
+				record.firstSlice - sliceComputationNeighbourCount,
 				this->in->GetDimensionExtents( 0 ).maximum,
 				this->in->GetDimensionExtents( 1 ).maximum,
-				record.firstSlice - sliceComputationNeighbourCount,
 				record.lastSlice + sliceComputationNeighbourCount
 				);
 			record.writerBBox = &( GetComputationGroupWriterBBox( record ) );
@@ -151,9 +151,9 @@ AImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 				record.inputBBox = this->in->GetDirtyBBox( 
 					this->in->GetDimensionExtents( 0 ).minimum,
 					this->in->GetDimensionExtents( 1 ).minimum,
+					record.firstSlice - sliceComputationNeighbourCount,
 					this->in->GetDimensionExtents( 0 ).maximum,
 					this->in->GetDimensionExtents( 1 ).maximum,
-					record.firstSlice - sliceComputationNeighbourCount,
 					record.lastSlice + sliceComputationNeighbourCount
 					);
 				record.writerBBox = &( GetComputationGroupWriterBBox( record ) );
@@ -195,25 +195,26 @@ AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementTyp
 		for( int32 slice = record.firstSlice; slice <= record.lastSlice; ++slice )
 		{
 			int32 minZ = Max( slice - (int32)sliceComputationNeighbourCount, this->in->GetDimensionExtents( 2 ).minimum );
-			int32 maxZ = Min( slice + (int32)sliceComputationNeighbourCount, this->in->GetDimensionExtents( 2 ).maximum );
+			int32 maxZ = Min( slice + (int32)sliceComputationNeighbourCount + 1, this->in->GetDimensionExtents( 2 ).maximum );
 
 			ImageRegion< InputElementType, 3 > region1 = 
 				this->in->GetSubRegion(	
 					this->in->GetDimensionExtents( 0 ).minimum,
 					this->in->GetDimensionExtents( 1 ).minimum,
+					minZ,
 					this->in->GetDimensionExtents( 0 ).maximum,
 					this->in->GetDimensionExtents( 1 ).maximum,
-					minZ,
 					maxZ );
 
 			ImageRegion< OutputElementType, 3 > region2 = 
 				this->out->GetSubRegion(	
 					this->out->GetDimensionExtents( 0 ).minimum,
 					this->out->GetDimensionExtents( 1 ).minimum,
+					slice,
 					this->out->GetDimensionExtents( 0 ).maximum,
 					this->out->GetDimensionExtents( 1 ).maximum,
-					slice,
 					slice+1 );
+
 			bool result = ProcessSlice( region1, region2.GetSlice( 0 ), slice - minZ );
 
 			if( !result ){
@@ -260,9 +261,9 @@ AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementTyp
 				record.inputBBox = this->in->GetDirtyBBox( 
 					this->in->GetDimensionExtents( 0 ).minimum,
 					this->in->GetDimensionExtents( 1 ).minimum,
+					record.firstSlice - sliceComputationNeighbourCount,
 					this->in->GetDimensionExtents( 0 ).maximum,
 					this->in->GetDimensionExtents( 1 ).maximum,
-					record.firstSlice - sliceComputationNeighbourCount,
 					record.lastSlice + sliceComputationNeighbourCount
 					);
 				record.writerBBox = &( GetComputationGroupWriterBBox( record ) );
@@ -276,9 +277,9 @@ AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementTyp
 			record.inputBBox = this->in->GetDirtyBBox( 
 				this->in->GetDimensionExtents( 0 ).minimum,
 				this->in->GetDimensionExtents( 1 ).minimum,
+				record.firstSlice - sliceComputationNeighbourCount,
 				this->in->GetDimensionExtents( 0 ).maximum,
 				this->in->GetDimensionExtents( 1 ).maximum,
-				record.firstSlice - sliceComputationNeighbourCount,
 				record.lastSlice + sliceComputationNeighbourCount
 				);
 			record.writerBBox = &( GetComputationGroupWriterBBox( record ) );
@@ -308,9 +309,9 @@ AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementTyp
 				record.inputBBox = this->in->GetDirtyBBox( 
 					this->in->GetDimensionExtents( 0 ).minimum,
 					this->in->GetDimensionExtents( 1 ).minimum,
+					record.firstSlice - sliceComputationNeighbourCount,
 					this->in->GetDimensionExtents( 0 ).maximum,
 					this->in->GetDimensionExtents( 1 ).maximum,
-					record.firstSlice - sliceComputationNeighbourCount,
 					record.lastSlice + sliceComputationNeighbourCount
 					);
 				record.writerBBox = &( GetComputationGroupWriterBBox( record ) );
@@ -332,8 +333,8 @@ AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementTyp
 	return this->out->SetDirtyBBox( this->in->GetDimensionExtents( 0 ).minimum,
 			this->in->GetDimensionExtents( 1 ).minimum,
 			this->in->GetDimensionExtents( 0 ).maximum,
-			this->in->GetDimensionExtents( 1 ).maximum,
 			record.firstSlice,
+			this->in->GetDimensionExtents( 1 ).maximum,
 			record.lastSlice
 			);
 }
