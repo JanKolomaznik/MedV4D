@@ -6,6 +6,7 @@
 #include "Imaging/ModificationManager.h"
 #include "Imaging/AbstractDataSet.h"
 #include "Imaging/ImageIterator.h"
+#include "Imaging/ImageRegion.h"
 
 namespace M4D
 {
@@ -178,6 +179,8 @@ public:
 
 	typedef ImageIterator< Element, Dimension >	Iterator;
 
+	typedef ImageRegion< Element, Dimension >	SubRegion;
+
 	Image();
 
 	/**
@@ -286,6 +289,17 @@ public:
 	Iterator
 	GetIterator()const;
 
+	SubRegion
+	GetRegion()const;
+
+	SubRegion
+	GetSubRegion( 
+			int32 x1, 
+			int32 y1, 
+			int32 x2, 
+			int32 y2  
+			)const;
+
   void Dump(void);
 
 protected:
@@ -332,6 +346,8 @@ public:
 	static const unsigned	Dimension = 3;
 
 	typedef ImageIterator< Element, Dimension >	Iterator;
+
+	typedef ImageRegion< Element, Dimension >	SubRegion;
 
 	Image();
 
@@ -437,6 +453,19 @@ public:
 	Iterator
 	GetIterator()const;
 
+	SubRegion
+	GetRegion()const;
+
+	SubRegion
+	GetSubRegion( 
+			int32 x1, 
+			int32 y1, 
+			int32 z1, 
+			int32 x2, 
+			int32 y2, 
+			int32 z2 
+			)const;
+
   void Dump(void);
 
 protected:
@@ -482,6 +511,8 @@ public:
 	static const unsigned	Dimension = 4;
 
 	typedef ImageIterator< Element, Dimension >	Iterator;
+
+	typedef ImageRegion< Element, Dimension >	SubRegion;
 
 	Image();
 
@@ -604,6 +635,21 @@ public:
 
 	Iterator
 	GetIterator()const;
+
+	SubRegion
+	GetRegion()const;
+
+	SubRegion
+	GetSubRegion( 
+			int32 x1, 
+			int32 y1, 
+			int32 z1, 
+			int32 t1,
+			int32 x2, 
+			int32 y2, 
+			int32 z2,
+			int32 t2
+			)const;
 
   void Dump(void);
 

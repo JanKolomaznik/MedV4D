@@ -316,4 +316,9 @@ operator-( const Coordinates< CoordType, Dim > &v )
 	return result;
 }
 
+
+typedef Coordinates< int32, 2 > CoordInt2D;
+typedef Coordinates< int32, 3 > CoordInt3D;
+typedef Coordinates< int32, 4 > CoordInt4D;
+
 #endif /*COORDINATES_H*/

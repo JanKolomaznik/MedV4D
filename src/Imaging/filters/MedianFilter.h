@@ -45,6 +45,12 @@ protected:
 
 	bool
 	Process2D(
+			const ImageRegion< InputElementType, 2 > &inRegion,
+			const ImageRegion< InputElementType, 2 > &outRegion
+		 );
+
+	/*bool
+	Process2D(
 			InputElementType	*inPointer,
 			int32			i_xStride,
 			int32			i_yStride,
@@ -53,7 +59,7 @@ protected:
 			int32			o_yStride,
 			uint32			width,
 			uint32			height
-		 );
+		 );*/
 private:
 	typedef typename std::map< InputElementType, int >	Histogram;
 

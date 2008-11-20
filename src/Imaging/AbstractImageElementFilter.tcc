@@ -19,27 +19,38 @@ namespace M4D
 namespace Imaging
 {
 
-template< typename InputElementType, typename OutputElementType, typename ElementFilter >
-AbstractImageElementFilter< Image< InputElementType, 2 >, Image< OutputElementType, 2 >, ElementFilter >
-::AbstractImageElementFilter( typename AbstractImageElementFilter< Image< InputElementType, 2 >, Image< OutputElementType, 2 >, ElementFilter >::Properties *prop ) 
+template< typename InputImageType, typename OutputImageType, typename ElementFilter >
+AbstractImageElementFilter< InputImageType, OutputImageType, ElementFilter >
+::AbstractImageElementFilter( typename AbstractImageElementFilter< InputImageType, OutputImageType, ElementFilter >::Properties *prop ) 
 	: PredecessorType( prop )
 {
 	
 }
 
-template< typename InputElementType, typename OutputElementType, typename ElementFilter >
+template< typename InputImageType, typename OutputImageType, typename ElementFilter >
 bool
-AbstractImageElementFilter< Image< InputElementType, 2 >, Image< OutputElementType, 2 >, ElementFilter >
-::ProcessImage(
-		const Image< InputElementType, 2 > 	&in,
-		Image< OutputElementType, 2 >		&out
+AbstractImageElementFilter< InputImageType, OutputImageType, ElementFilter >
+::Process2D(
+		const ImageRegion< typename AbstractImageElementFilter< InputImageType, OutputImageType, ElementFilter >::InputElementType, 2 > &inRegion,
+		const ImageRegion< typename AbstractImageElementFilter< InputImageType, OutputImageType, ElementFilter >::OutputElementType, 2 > &outRegion
 	    )
 {
 	if( !this->CanContinue() ) {
 		return false;
 	}
 
-	uint32 width1;
+	ImageIterator< InputElementType, 2 > iIterator = inRegion.GetIterator();
+	ImageIterator< OutputElementType, 2 > oIterator = outRegion.GetIterator();
+
+	while( !iIterator.IsEnd() ) {
+	
+		_elementFilter( *iIterator, *oIterator );
+
+		++iIterator;
+		++oIterator;
+	}
+
+/*	uint32 width1;
 	uint32 height1;
 	int32 xStride1;
 	int32 yStride1;
@@ -65,14 +76,14 @@ AbstractImageElementFilter< Image< InputElementType, 2 >, Image< OutputElementTy
 		}
 		tmppointer1 += yStride1;
 		tmppointer2 += yStride2;
-	}
+	}*/
 	return true;
 }
 
 //*****************************************************************************
 //*****************************************************************************
 //*****************************************************************************
-
+/*
 template< typename InputElementType, typename OutputElementType, typename ElementFilter >
 AbstractImageElementFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 >, ElementFilter >
 ::AbstractImageElementFilter( typename AbstractImageElementFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 >, ElementFilter >::Properties *prop ) 
@@ -133,7 +144,7 @@ AbstractImageElementFilter< Image< InputElementType, 3 >, Image< OutputElementTy
 		tmppointer2 += yStride2;
 	}
 	return true;
-}
+}*/
 
 
 } /*namespace Imaging*/

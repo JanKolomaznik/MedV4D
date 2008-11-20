@@ -101,7 +101,10 @@ BSpline< CoordType, Dim >
 		firstSegment = -1;
 	}
 	int segmentCount = lastSegment - firstSegment;
-	int32 sampleCount = frequency * (segmentCount) + (_cyclic?0:1);
+	int32 sampleCount = frequency * segmentCount;
+	if( !_cyclic ) {
+		++sampleCount;
+	}
 
 	//Ensure that we have enough space for samples
 	_samplePointCache.Reserve( sampleCount );
@@ -197,13 +200,13 @@ BSpline< CoordType, Dim >
 
 	if( segment < 0 ) {
 		for( int i = 0; i <= CurveBasis::Degree; ++i ) {
-			result += values[i]*(this->_points[ MAX(segment+i,0) ]);
+			result += values[i]*(this->_points[ Max(segment+i,0) ]);
 		}
 		return result;
 	} 
 	if( segment >= (count-CurveBasis::Degree) ) {
 		for( int i = 0; i <= CurveBasis::Degree; ++i ) {
-			result += values[i]*(this->_points[ MIN(segment+i,count-1) ]);
+			result += values[i]*(this->_points[ Min(segment+i,count-1) ]);
 		}
 		return result;
 	} 
@@ -398,14 +401,14 @@ ParametricCurve< CoordType, Dim, CurveBasis >
 	if( segment < curveEndSegCount ) {
 		for( int i = 0; i <= CurveBasis::Degree; ++i ) {
 			//TODO - correct
-			int pom =  MAX(segment-curveEndSegCount+i,0);
+			int pom =  Max(segment-curveEndSegCount+i,0);
 			result += values[i]*(this->_points[ pom ]);
 		}
 		return result;
 	} 
 	if( segment >= (count-1-curveEndSegCount) ) {
 		for( int i = 0; i <= CurveBasis::Degree; ++i ) {
-			result += values[i]*(this->_points[ MIN(segment-curveEndSegCount+i,count-1) ]);
+			result += values[i]*(this->_points[ Min(segment-curveEndSegCount+i,count-1) ]);
 		}
 		return result;
 	} 

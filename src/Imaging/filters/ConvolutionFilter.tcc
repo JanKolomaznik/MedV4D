@@ -57,20 +57,24 @@ ConvolutionFilter2D< Image< InputElementType, 3 >, MatrixElement >
 			int32			slice
 		    )
 {
-	uint32 hwidth = GetProperties().width / 2;
-	uint32 hheight = GetProperties().height / 2;
 
+	uint32 width = GetProperties().matrix->size[0];
+	uint32 height = GetProperties().matrix->size[1];
+	uint32 hwidth = GetProperties().matrix->center[0];
+	uint32 hheight = GetProperties().matrix->center[1];
+	int32 strides[ Dimension ];
 	//TODO check
-	for( int32 j = y1 + hheight; j < ( y2 - GetProperties().height + hheight ); ++j ) {
-		for( int32 i = x1 + hwidth; i < ( x2 - GetProperties().width + hwidth ); ++i ) {
-			MatrixElement tmp = 0.0;	
+	for( int32 j = y1 + hheight; j < ( y2 - height + hheight ); ++j ) {
+		for( int32 i = x1 + hwidth; i < ( x2 - width + hwidth ); ++i ) {
+			/*MatrixElement tmp = 0.0;	
 			for( uint32 ii = 0; ii < GetProperties().width; ++ii ) {
 				for( uint32 jj = 0; jj < GetProperties().height; ++jj ) {
 					tmp += GetProperties().matrix[ GetProperties().width * jj + ii ] 
 						* in.GetElement( i + ii - hwidth, j + jj - hheight, slice );
 				}
 			}
-			out.GetElement( i, j, value ) = static_cast<InputElementType>( tmp );
+			out.GetElement( i, j, value ) = static_cast<InputElementType>( tmp );*/
+			out.GetElement( i, j, slice ) = ApplyConvolutionMask( &(in.GetElement( i, j, slice )), strides, *(GetProperties().mask) );
 		}
 	}
 }

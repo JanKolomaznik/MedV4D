@@ -3,6 +3,7 @@
 
 #include "Imaging/PointSet.h"
 #include <cmath>
+#include "Common.h"
 
 namespace M4D
 {
@@ -18,10 +19,6 @@ namespace Imaging
 namespace Geometry
 {
 
-#define MAX( a, b ) ((a)<(b) ? (b) : (a))
-#define MIN( a, b ) ((a)<(b) ? (a) : (b))
-#define MOD( a, b ) ((a)<0 ? ((a)%(b)) + (b) : (a) % (b))
-//**************************************************
 
 template< typename ValueType, unsigned Degree >
 struct BasisFunctionValues

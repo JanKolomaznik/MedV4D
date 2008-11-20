@@ -43,6 +43,11 @@ protected:
 
 	bool
 	Process2D(
+			const ImageRegion< uint8, 2 > &inRegion,
+			const ImageRegion< uint8, 2 > &outRegion
+		 );
+	/*bool
+	Process2D(
 			ElementType	*inPointer,
 			int32		i_xStride,
 			int32		i_yStride,
@@ -51,7 +56,7 @@ protected:
 			int32		o_yStride,
 			uint32		width,
 			uint32		height
-		 );
+		 );*/
 private:
 	static const uint8 TRUE_VALUE = 255;
 	

@@ -63,7 +63,8 @@ LIBS=		$(M4DLIBS)\
 		$(VTKLIBS)\
 		$(DCMTKLIBS)\
 		-lboost_thread \
-		-lboost_filesystem
+		-lboost_filesystem \
+		-lGLU
 ########################################
 
 #Name of target

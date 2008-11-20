@@ -284,6 +284,43 @@ Image< ElementType, 2 >::GetIterator()const
 	return CreateImageIterator< ElementType >( pointer, width, height, xStride, yStride, 0, 0 );
 }
 
+template< typename ElementType >
+typename Image< ElementType, 2 >::SubRegion
+Image< ElementType, 2 >::GetRegion()const
+{
+	uint32 width;
+	uint32 height;
+	int32 xStride;
+	int32 yStride;
+
+	ElementType * pointer = GetPointer( width, height, xStride, yStride );
+
+	return CreateImageRegion< ElementType >( pointer, width, height, xStride, yStride );
+}
+	
+template< typename ElementType >
+typename Image< ElementType, 2 >::SubRegion
+Image< ElementType, 2 >::GetSubRegion( 
+			int32 x1, 
+			int32 y1, 
+			int32 x2, 
+			int32 y2  
+			)const
+{
+	//TODO - check parameters
+	uint32 width;
+	uint32 height;
+	int32 xStride;
+	int32 yStride;
+
+	ElementType * pointer = GetPointer( width, height, xStride, yStride );
+
+	pointer += x1*xStride + y1*yStride;
+
+	return CreateImageRegion< ElementType >( pointer, x2 - x1, y2 - y1, xStride, yStride );
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 
 template< typename ElementType >
@@ -664,6 +701,48 @@ Image< ElementType, 3 >::GetIterator()const
 	return CreateImageIterator< ElementType >( pointer, width, height, depth, xStride, yStride, zStride, 0, 0, 0 );
 }
 
+template< typename ElementType >
+typename Image< ElementType, 3 >::SubRegion
+Image< ElementType, 3 >::GetRegion()const
+{
+	uint32 width;
+	uint32 height;
+	uint32 depth;
+	int32 xStride;
+	int32 yStride;
+	int32 zStride;
+
+	ElementType * pointer = GetPointer( 
+			width, height, depth, xStride, yStride, zStride );
+
+	return CreateImageRegion< ElementType >( pointer, width, height, depth, xStride, yStride, zStride );
+}
+
+template< typename ElementType >
+typename Image< ElementType, 3 >::SubRegion
+Image< ElementType, 3 >::GetSubRegion( 
+			int32 x1, 
+			int32 y1, 
+			int32 z1, 
+			int32 x2, 
+			int32 y2, 
+			int32 z2 
+			)const
+{
+	uint32 width;
+	uint32 height;
+	uint32 depth;
+	int32 xStride;
+	int32 yStride;
+	int32 zStride;
+
+	ElementType * pointer = GetPointer( 
+			width, height, depth, xStride, yStride, zStride );
+	
+	pointer += x1*xStride + y1*yStride + z1*zStride;
+
+	return CreateImageRegion< ElementType >( pointer, x2 - x1, y2 - y1, z2 - z1, xStride, yStride, zStride );
+}
 
 //*****************************************************************************
 

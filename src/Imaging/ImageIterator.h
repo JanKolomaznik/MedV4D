@@ -22,7 +22,7 @@ public:
 protected:
 	ElementType	*_pointer;
 
-	int32	_size[ Dimension ];
+	uint32	_size[ Dimension ];
 	int32	_strides[ Dimension ];
 	int32	_contStrides[ Dimension ];
 	int32	_position[ Dimension ];
@@ -41,10 +41,10 @@ public:
 	}
 
 	ImageIterator( 
-			ElementType	*pointer,
-			int32		size[], 
-			int32		strides[],
-			int32		position[]
+			ElementType		*pointer,
+			const uint32		size[], 
+			const int32		strides[],
+			const uint32		position[]
 			): _pointer( pointer ) 
 	{
 		for( unsigned i = 0; i < Dimension; ++i ) {
@@ -100,8 +100,14 @@ public:
 	IsEnd()const
 	{
 		//TODO improve
-		return _position[ Dimension-1 ] >= _size[ Dimension-1 ];
+		return _position[ Dimension-1 ] >= (int32)_size[ Dimension-1 ];
 	}
+
+	ElementType *
+	GetPointer() const
+		{
+			return _pointer;
+		}
 
 	ElementType& 
 	operator*() const
@@ -119,7 +125,7 @@ public:
 	operator++()
 		{
 			for( unsigned i = 0; i < Dimension-1; ++i ) {
-				if( _position[i]+1 >= _size[i] ) {
+				if( _position[i]+1 >= (int32)_size[i] ) {
 					_position[i] = 0;
 				} else {
 					++_position[i];
@@ -191,9 +197,9 @@ CreateImageIterator(
 			int32		yPos = 0
 			)
 {
-	int32 _size[2];
+	uint32 _size[2];
 	int32 _strides[2];
-	int32 _position[2];
+	uint32 _position[2];
 
 	_size[0] = width;
 	_size[1] = height;
@@ -222,9 +228,9 @@ CreateImageIterator(
 			int32		zPos = 0
 			)
 {
-	int32 _size[3];
+	uint32 _size[3];
 	int32 _strides[3];
-	int32 _position[3];
+	uint32 _position[3];
 
 	_size[0] = width;
 	_size[1] = height;

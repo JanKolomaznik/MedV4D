@@ -33,6 +33,23 @@ AbstractImage2DFilter< Image< InputElementType, 2 >, Image< OutputElementType, 2
 		return false;
 	}
 
+	return Process2D( in.GetRegion(), out.GetRegion() );
+
+}
+
+/*
+template< typename InputElementType, typename OutputElementType >
+bool
+AbstractImage2DFilter< Image< InputElementType, 2 >, Image< OutputElementType, 2 > >
+::ProcessImage(
+			const Image< InputElementType, 2 >	&in,
+			Image< OutputElementType, 2 >		&out
+		    )
+{
+	if( !this->CanContinue() ) {
+		return false;
+	}
+
 	uint32 width1;
 	uint32 height1;
 	int32 xStride1;
@@ -50,7 +67,7 @@ AbstractImage2DFilter< Image< InputElementType, 2 >, Image< OutputElementType, 2
 			pointer2, xStride2, yStride2, 
 			width1, height1 );
 
-}
+}*/
 
 
 
@@ -65,6 +82,23 @@ AbstractImage2DFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3
 }
 
 template< typename InputElementType, typename OutputElementType >
+bool
+AbstractImage2DFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
+::ProcessSlice(
+			const ImageRegion< InputElementType, 3 >	&inRegion,
+			const ImageRegion< OutputElementType, 2 > 	&outRegion,
+			int32						slice
+	    )
+{
+	if( !this->CanContinue() ) {
+		return false;
+	}
+
+	return Process2D( inRegion.GetSlice( slice ), outRegion );
+
+}
+
+/*template< typename InputElementType, typename OutputElementType >
 bool
 AbstractImage2DFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 ::ProcessSlice(
@@ -102,7 +136,7 @@ AbstractImage2DFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3
 			pointer2 + slice * zStride2, xStride2, yStride2, 
 			width1, height1 );
 
-}
+}*/
 
 
 } /*namespace Imaging*/

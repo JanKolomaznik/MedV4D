@@ -111,18 +111,19 @@ protected:
 			int32					slice
 		    ) = 0;
 
-	/*bool
+
+	/*virtual bool
 	ProcessSlice(
-			const Image< InputElementType, 3 > 	&in,
-			OutputImageType				&out,
-			const InputElementType			*inPointer,
-			int32					xStride1,
-			int32					yStride1,
-			int32					zStride2,
-			OutputElementType			*outPointer,
-			int32					xStride2,
-			int32					yStride2,
-			int32					zStride2
+			const ImageRegion< InputImageType, 3 >		&in,
+			OutputImageType					&out,
+			int32						slice
+		    ) = 0;
+
+	virtual bool
+	ProcessSlice(
+			const ImageRegion< InputImageType, 3 >		&in,
+			const ImageRegion< OutputElementType, 2 > 	&out,
+			int32						slice
 		    ) = 0;*/
 
 	virtual WriterBBoxInterface &
@@ -172,6 +173,12 @@ protected:
 	void
 	PrepareOutputDatasets();
 
+	/*bool
+	ProcessSlice(
+			const ImageRegion< InputImageType, 3 >		&in,
+			const ImageRegion< OutputElementType, 2 > 	&out,
+			int32						slice
+		    ) = 0;*/
 private:
 	/**
 	 * Prohibition of copying.

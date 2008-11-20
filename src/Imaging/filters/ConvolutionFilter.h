@@ -23,29 +23,52 @@ namespace M4D
 namespace Imaging
 {
 
-template< typename InputImageType, typename MatrixElement >
+template< unsigned Dim, typename MatrixElement = float32 >
+struct ConvolutionMask
+{
+	typedef boost::shared_ptr<ConvolutionMask<MatrixElement, Dim> > Ptr;
+
+	ConvolutionMask( MatrixElement *m, int32 s[Dim] )
+		: mask( m )
+		{ 	length = 1;
+			for( unsigned i = 0; i < Dim; ++i ) {
+				length *= size[i];
+				size[i] = s[i];
+				center[i] = s[i]/2;
+			}
+		}
+
+	~ConvolutionMask()
+		{ delete mask; }
+
+	int32		size[ Dim ];
+	int32		center[ Dim ];
+	int32		length;
+	MatrixElement	*mask;
+};
+
+template< typename InputImageType, typename MatrixElement = float32 >
 class ConvolutionFilter2D;
 
-template< typename InputElementType, typename MatrixElement >
-class ConvolutionFilter2D< Image< InputElementType, 2 >
+template< typename InputElementType, typename MatrixElement  = float32 >
+class ConvolutionFilter2D< Image< InputElementType, 2 >, MatrixElement >
 {
 	//TODO
 };
 
-template< typename InputElementType, typename MatrixElement >
+template< typename InputElementType, typename MatrixElement  = float32 >
 class ConvolutionFilter2D< Image< InputElementType, 3 >, MatrixElement > 
 	: public AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
 {
 public:	
+	static const unsigned Dimension = 3;
+	typedef ConvolutionMask<MatrixElement, Dimension>	Mask;
+
 	struct Properties : public PredecessorType::Properties
 	{
-		typedef boost::shared_array<MatrixElement> MatrixPtr;
 		Properties();
 
-		MatrixPtr matrix; //length = width*height
-
-		uint32	width;
-		uint32	height;
+		Mask::Ptr matrix; //length = width*height
 	};
 
 	ConvolutionFilter2D( Properties * prop );
@@ -123,6 +146,38 @@ private:
 
 };
 
+
+template< typename ElementType, typenamepe  MatrixElement, unsigned Dim >
+inline ElementType
+ApplyConvolutionMask( 
+		ElementType 	*center, 
+		int 		strides[Dim], 
+		const ConvolutionMask< MatrixElement, Dim > &mask 
+		)
+{
+	ElementType result = 0;
+	ElementType *pointer = center;
+	for( unsigned d=0; d < Dim; ++d )
+	{
+		pointer -= strides[d] * mask.center[d];
+	}
+
+	int32 coord[ Dim ] = { 0 }
+	for( unsigned i=0; i<mask.length; ++i ) {
+		result += mask.mask[i] * (*pointer);
+
+		for( unsigned d=0; d < Dim; ++d )
+		{
+			if( coord[d] == mask.size[d]-1 ) {
+				coord[d] = 0;
+			} else {
+				++coord[d];
+				break;
+			}
+		}
+	}
+	return result;
+}
 
 } /*namespace Imaging*/
 } /*namespace M4D*/

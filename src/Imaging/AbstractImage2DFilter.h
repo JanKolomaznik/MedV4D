@@ -9,7 +9,7 @@
 #define _ABSTRACT_IMAGE_2D_FILTER_H
 
 #include "Common.h"
-#include "Imaging/AbstractImageSliceFilter.h"
+#include "Imaging/AImageSliceFilter.h"
 #include "Imaging/AbstractImageFilterWholeAtOnce.h"
 #include <vector>
 
@@ -59,7 +59,7 @@ protected:
 	 * \param height Height of image area.
 	 * \return Whether computation was succesful.
 	 **/
-	virtual bool
+	/*virtual bool
 	Process2D(
 			InputElementType	*inPointer,
 			int32			i_xStride,
@@ -69,6 +69,12 @@ protected:
 			int32			o_yStride,
 			uint32			width,
 			uint32			height
+		 ) = 0;*/
+
+	virtual bool
+	Process2D(
+			const ImageRegion< InputElementType, 2 > &inRegion,
+			const ImageRegion< OutputElementType, 2 > &outRegion
 		 ) = 0;
 
 	bool
@@ -95,10 +101,10 @@ private:
  **/
 template< typename InputElementType, typename OutputElementType >
 class AbstractImage2DFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
-	 : public AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
+	 : public AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 {
 public:
-	typedef AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >	PredecessorType;
+	typedef AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >	PredecessorType;
 	
 	struct Properties : public PredecessorType::Properties
 	{
@@ -122,7 +128,7 @@ protected:
 	 * \param height Height of image area.
 	 * \return Whether computation was succesful.
 	 **/
-	virtual bool
+	/*virtual bool
 	Process2D(
 			InputElementType	*inPointer,
 			int32			i_xStride,
@@ -132,9 +138,15 @@ protected:
 			int32			o_yStride,
 			uint32			width,
 			uint32			height
+		 ) = 0;*/
+
+	virtual bool
+	Process2D(
+			const ImageRegion< InputElementType, 2 > &inRegion,
+			const ImageRegion< OutputElementType, 2 > &outRegion
 		 ) = 0;
 
-	bool
+	/*bool
 	ProcessSlice(
 			const Image< InputElementType, 3 > 	&in,
 			Image< OutputElementType, 3 >		&out,
@@ -143,6 +155,13 @@ protected:
 			int32					x2,
 			int32					y2,
 			int32					slice
+		    );*/
+
+	bool
+	ProcessSlice(
+			const ImageRegion< InputElementType, 3 >	&inRegion,
+			const ImageRegion< OutputElementType, 2 > 	&outRegion,
+			int32						slice
 		    );
 
 
