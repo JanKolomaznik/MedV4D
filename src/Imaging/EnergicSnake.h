@@ -38,6 +38,10 @@ public:
 
 	void
 	Reset();
+
+	EnergyModel&
+	GetEnergyModel()
+		{ return _energyFunctional; }
 private:
 	EnergyModel	_energyFunctional;
 
