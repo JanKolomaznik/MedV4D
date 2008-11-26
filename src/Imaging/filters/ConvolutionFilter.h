@@ -84,6 +84,8 @@ public:
 
 	ConvolutionFilter2D( Properties * prop );
 	ConvolutionFilter2D();
+	
+	GET_SET_PROPERTY_METHOD_MACRO( Mask::Ptr, ConvolutionMask, matrix );
 protected:
 	typedef typename  Imaging::AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
 

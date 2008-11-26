@@ -222,6 +222,7 @@ struct TypeTraits< int8 >
 	static const uint16	BitCount = sizeof( Type )*8;
 	static const Type	Max = (Type)MAX_INT8;
 	static const Type	Min = (Type)(-MAX_INT8-1);
+	static const Type	Zero = 0;
 
 	typedef int64		SuperiorType;
 };
@@ -235,6 +236,7 @@ struct TypeTraits< uint8 >
 	static const uint16	BitCount = sizeof( Type )*8;
 	static const Type	Max = (Type)~((Type)0);
 	static const Type	Min = (Type)(0);
+	static const Type	Zero = 0;
 
 	typedef uint64		SuperiorType;
 };
@@ -248,6 +250,7 @@ struct TypeTraits< int16 >
 	static const uint16	BitCount = sizeof( Type )*8;
 	static const Type	Max = (Type)MAX_INT16;
 	static const Type	Min = (Type)(-MAX_INT16-1);
+	static const Type	Zero = 0;
 
 	typedef int64		SuperiorType;
 };
@@ -261,6 +264,7 @@ struct TypeTraits< uint16 >
 	static const uint16	BitCount = sizeof( Type )*8;
 	static const Type	Max = (Type)~((Type)0);
 	static const Type	Min = (Type)(0);
+	static const Type	Zero = 0;
 
 	typedef uint64		SuperiorType;
 };
@@ -274,6 +278,7 @@ struct TypeTraits< int32 >
 	static const uint16	BitCount = sizeof( Type )*8;
 	static const Type	Max = (Type)MAX_INT32;
 	static const Type	Min = (Type)(-MAX_INT32-1);
+	static const Type	Zero = 0;
 
 	typedef int64		SuperiorType;
 };
@@ -287,6 +292,7 @@ struct TypeTraits< uint32 >
 	static const uint16	BitCount = sizeof( Type )*8;
 	static const Type	Max = (Type)~((Type)0);
 	static const Type	Min = (Type)(0);
+	static const Type	Zero = 0;
 
 	typedef uint64		SuperiorType;
 };
@@ -300,6 +306,7 @@ struct TypeTraits< int64 >
 	static const uint16	BitCount = sizeof( Type )*8;
 	static const Type	Max = (Type)MAX_INT64;
 	static const Type	Min = (Type)(-MAX_INT64-1);
+	static const Type	Zero = 0;
 
 	typedef int64		SuperiorType;
 };
@@ -313,6 +320,7 @@ struct TypeTraits< uint64 >
 	static const uint16	BitCount = sizeof( Type )*8;
 	static const Type	Max = (Type)~((Type)0);
 	static const Type	Min = (Type)(0);
+	static const Type	Zero = 0;
 
 	typedef uint64		SuperiorType;
 };
@@ -326,6 +334,7 @@ struct TypeTraits< float32 >
 	static const uint16	BitCount = sizeof( Type )*8;
 	static Type		Max;
 	static Type		Min;
+	static Type		Zero;
 
 	typedef float64		SuperiorType;
 };
@@ -339,6 +348,7 @@ struct TypeTraits< float64 >
 	static const uint16	BitCount = sizeof( Type )*8;
 	static Type		Max;
 	static Type		Min;
+	static Type		Zero;
 
 	typedef float64		SuperiorType;
 };

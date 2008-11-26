@@ -64,6 +64,7 @@ struct IsSameDimension< Dim, Dim >
 #define Max( a, b ) ((a)<(b) ? (b) : (a))
 #define Min( a, b ) ((a)<(b) ? (a) : (b))
 #define MOD( a, b ) ((a)<0 ? ((a)%(b)) + (b) : (a) % (b))
+#define PWR( a ) ( (a) * (a) )
 
 //***********************************************************
 

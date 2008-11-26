@@ -40,6 +40,12 @@ public:
 	AddConnection( ConnectionInterface *connection );
 
 	void
+	ExecuteFirstFilter()
+		{
+			_filters[0]->Execute();	
+		}
+
+	void
 	StopFilters();
 	/**
 	 * Connect two compatible ports if possible.

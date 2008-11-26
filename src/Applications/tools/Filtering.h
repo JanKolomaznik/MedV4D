@@ -20,6 +20,8 @@ PreparePipeline(
 		container.AddFilter( convertor );
 		container.AddFilter( &filter );
 
+		filter.SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
+
 		container.MakeConnection( *convertor, 0, filter, 0 );
 		
 		inConnection = &( container.MakeInputConnection( *convertor, 0, false ) );

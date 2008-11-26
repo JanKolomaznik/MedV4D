@@ -111,7 +111,9 @@ struct PrimaryJobHeader
 
 #include "dataPieceHeader.h"
 
-static void
+//static 
+inline
+void
 DataPieceHeaderSerialize( DataPieceHeader *h)
 {
   NetStreamArrayBuf s( (uint8 *)h, sizeof( DataPieceHeader) );
@@ -119,7 +121,9 @@ DataPieceHeaderSerialize( DataPieceHeader *h)
   s << h->pieceSize;
 }
 
-static void
+//static 
+inline
+void
 DataPieceHeaderDeserialize( DataPieceHeader *h)
 {
   NetStreamArrayBuf s( (uint8 *)h, sizeof( DataPieceHeader) );

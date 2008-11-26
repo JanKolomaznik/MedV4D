@@ -85,6 +85,9 @@ ClientJob::SendCreate( void)
 
   ResponseHeader h;
   size_t read = m_socket->read_some(boost::asio::buffer( (uint8*) &h, sizeof(ResponseHeader)));
+
+  read = read; //only to remove warning
+
   ProcessResponse( h);
 }
 
@@ -195,6 +198,9 @@ ClientJob::SendFilterProperties( void)
 
   ResponseHeader h;
   size_t read = m_socket->read_some(boost::asio::buffer( (uint8*) &h, sizeof(ResponseHeader)));
+
+  read = read; //only to remove warning
+
   ProcessResponse( h);
 }
 

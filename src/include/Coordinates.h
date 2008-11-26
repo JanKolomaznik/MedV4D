@@ -61,13 +61,13 @@ public:
 	Coordinates()
 		{ for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = 0; } }
 
-	Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
+	explicit Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
 		{ 
 			for( unsigned i=0; i<Dimension; ++i ) 
 			{ _coordinates[i] = coord._coordinates[i]; } 
 		}
 
-	Coordinates( const CoordType &x )
+	explicit Coordinates( const CoordType &x )
 		{ _coordinates[0] = x; }
 
 	CoordinateType &
@@ -109,13 +109,13 @@ public:
 	Coordinates()
 		{ for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = 0; } }
 
-	Coordinates( const CoordType &x, const CoordType &y )
+	explicit Coordinates( const CoordType &x, const CoordType &y )
 		{ 
 			_coordinates[0] = x; 
 			_coordinates[1] = y;
 		}
 
-	Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
+	explicit Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
 		{ 
 			for( unsigned i=0; i<Dimension; ++i ) 
 			{ _coordinates[i] = coord._coordinates[i]; } 
@@ -145,9 +145,6 @@ class Coordinates< CoordType, 3 >
 public:
 	static const unsigned Dimension = 3;
 
-	Coordinates()
-		{ for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = 0; } }
-
 	friend CoordType & GetCoordinate< CoordType, Dimension >( Coordinates< CoordType, Dimension > &coord, unsigned idx );
 	friend CoordType GetConstCoordinate< CoordType, Dimension >( const Coordinates< CoordType, Dimension > &coord, unsigned idx );
 
@@ -160,14 +157,17 @@ public:
 
 	typedef CoordType 	CoordinateType;
 
-	Coordinates( const CoordType &x, const CoordType &y, const CoordType &z )
+	Coordinates()
+		{ for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = 0; } }
+
+	explicit Coordinates( const CoordType &x, const CoordType &y, const CoordType &z )
 		{ 
 			_coordinates[0] = x; 
 			_coordinates[1] = y;
 			_coordinates[2] = z;
 		}
 
-	Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
+	explicit Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
 		{ 
 			for( unsigned i=0; i<Dimension; ++i ) 
 			{ _coordinates[i] = coord._coordinates[i]; } 
@@ -212,13 +212,13 @@ public:
 	Coordinates()
 		{ for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = 0; } }
 
-	Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
+	explicit Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
 		{ 
 			for( unsigned i=0; i<Dimension; ++i ) 
 			{ _coordinates[i] = coord._coordinates[i]; } 
 		}
 
-	Coordinates( const CoordType &x, const CoordType &y, const CoordType &z, const CoordType &t )
+	explicit Coordinates( const CoordType &x, const CoordType &y, const CoordType &z, const CoordType &t )
 		{ 
 			_coordinates[0] = x; 
 			_coordinates[1] = y;
@@ -298,6 +298,18 @@ operator*( CoordType k, const Coordinates< CoordType, Dim > &v )
 
 	for( unsigned i=0; i < Dim; ++i ) {
 		result._coordinates[ i ] = k * v[ i ];
+	}
+
+	return result;
+}
+
+template< typename CoordType, unsigned Dim >
+CoordType
+operator*( const Coordinates< CoordType, Dim > &a, const Coordinates< CoordType, Dim > &b )
+{
+	CoordType result = TypeTraits< CoordType >::Zero; 
+	for( unsigned i=0; i < Dim; ++i ) {
+		result += a[i] * b[i];
 	}
 
 	return result;
