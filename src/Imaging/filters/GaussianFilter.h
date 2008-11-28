@@ -15,19 +15,24 @@ ConvolutionMask2DFloat::Ptr
 CreateGaussianFilterMask( uint32 radius )
 {
 	uint32 pom[2];
+	uint32 size[2] = { 2*radius + 1, 2*radius + 1 };
 	float32 std = static_cast<float32>( radius )/3.0;
-	float32 *buff = new float32[pom[0]*pom[1]];
+	float32 *buff = new float32[size[0]*size[1]];
 	
 	double sum = 0.0;
 	unsigned idx = 0;
-	for( pom[0] = 0; pom[0] < 2*radius + 1; ++pom[0] ) {
-		for( pom[1] = 0; pom[1] < 2*radius + 1; ++pom[1] ) {
+	for( pom[0] = 0; pom[0] < size[0]; ++pom[0] ) {
+		for( pom[1] = 0; pom[1] < size[0]; ++pom[1] ) {
 			sum += buff[ idx ] = 
 				exp( - static_cast<float32>( PWR(pom[0]-radius) + PWR(pom[1]-radius) ) / (2.0*PWR(std)) );
+			++idx;
 		}
 	}
-	for( idx = 0; idx < PWR( 2*radius + 1 ); ++ idx ) {
+	//std::cout << sum << "\n";
+	for( idx = 0; idx < size[0]*size[1]; ++ idx ) {
+		//std::cout << buff[ idx ] << " : ";
 		buff[ idx ] /= sum;
+		//std::cout << buff[ idx ] << "\n";
 	}
 	ConvolutionMask2DFloat *maskPtr = new ConvolutionMask< 2, float32 >( buff, pom );
 
@@ -63,6 +68,12 @@ public:
 				}
 			}
 	};
+
+
+	GaussianFilter2D( Properties * prop ) :  PredecessorType( prop )
+		{ /*empty*/ }
+	GaussianFilter2D() :  PredecessorType( new Properties() )
+		{ /*empty*/ }
 
 	GET_SET_PROPERTY_METHOD_MACRO( uint32, Radius, radius );
 private:

@@ -206,7 +206,7 @@ AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementTyp
 					this->in->GetDimensionExtents( 1 ).maximum,
 					maxZ );
 
-			ImageRegion< OutputElementType, 3 > region2 = 
+			ImageRegion< OutputElementType, 3 > regionTmp = 
 				this->out->GetSubRegion(	
 					this->out->GetDimensionExtents( 0 ).minimum,
 					this->out->GetDimensionExtents( 1 ).minimum,
@@ -215,7 +215,9 @@ AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementTyp
 					this->out->GetDimensionExtents( 1 ).maximum,
 					slice+1 );
 
-			bool result = ProcessSlice( region1, region2.GetSlice( 0 ), slice - minZ );
+			ImageRegion< OutputElementType, 2 > region2 = regionTmp.GetSlice( 0 );
+
+			bool result = ProcessSlice( region1, region2, slice - minZ );
 
 			if( !result ){
 				goto cleanup;

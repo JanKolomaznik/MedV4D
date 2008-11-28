@@ -27,12 +27,13 @@ struct ConvolutionMask
 	typedef boost::shared_ptr<ConvolutionMask<Dim,MatrixElement> > Ptr;
 
 	ConvolutionMask( MatrixElement *m, uint32 s[Dim] )
-		: mask( m )
-		{ 	length = 1;
+		: length( 1 ), mask( m )
+		{ 	
+			length = 1;
 			for( unsigned i = 0; i < Dim; ++i ) {
-				length *= size[i];
 				size[i] = s[i];
 				center[i] = s[i]/2;
+				length *= s[i];
 			}
 		}
 
@@ -59,7 +60,7 @@ template< typename ElementType, typename  MatrixElement, unsigned Dim >
 inline ElementType
 ApplyConvolutionMask( 
 		ElementType 	*center, 
-		int 		strides[Dim], 
+		const int32 	strides[Dim], 
 		const ConvolutionMask< Dim, MatrixElement > &mask 
 		)
 {
@@ -70,7 +71,7 @@ ApplyConvolutionMask(
 		pointer -= strides[d] * mask.center[d];
 	}
 
-	int32 coord[ Dim ] = { 0 };
+	uint32 coord[ Dim ] = { 0 };
 	for( unsigned i=0; i<mask.length; ++i ) {
 		result += mask.mask[i] * (*pointer);
 
@@ -91,7 +92,7 @@ template< typename ElementType, typename  MatrixElement >
 void
 Compute2DConvolution(
 		const ImageRegion< ElementType, 2 > 		&inRegion,
-		const ImageRegion< ElementType, 2 > 		&outRegion,
+		ImageRegion< ElementType, 2 > 			&outRegion,
 		const ConvolutionMask< 2, MatrixElement > 	&mask
 	)
 {
@@ -99,14 +100,19 @@ Compute2DConvolution(
 	uint32 height = mask.size[1];
 	uint32 hwidth = mask.center[0];
 	uint32 hheight = mask.center[1];
-	int32 strides[ 2 ]; //TODO
 	//TODO check
-/*	Coordinates< int32, 2 > coords;
-	for( coords[0] = hheight; coords[0] < ( inRegion.GetSize(1) - height + hheight ); ++coords[0] ) {
-		for( coords[1] = hwidth; coords[1] < ( inRegion.GetSize(0) - width + hwidth ); ++coords[1] ) {
-			outRegion.GetElement( coords ) = ApplyConvolutionMask( &(inRegion.GetElement( coords )), strides, *(GetProperties().mask) );
+	
+	Coordinates< int32, 2 > coords;
+	for( coords[1] = hheight; static_cast<uint32>(coords[1]) < ( inRegion.GetSize(1) - height + hheight ); ++coords[1] ) {
+		for( coords[0] = hwidth; static_cast<uint32>(coords[0]) < ( inRegion.GetSize(0) - width + hwidth ); ++coords[0] ) {
+			outRegion.GetElement( coords ) = 
+				ApplyConvolutionMask( 
+						inRegion.GetPointer( coords ), 
+						inRegion.GetStride(), 
+						mask 
+						);
 		}
-	}*/
+	}
 }
 
 

@@ -43,8 +43,8 @@ protected:
 
 	bool
 	Process2D(
-			const ImageRegion< uint8, 2 > &inRegion,
-			const ImageRegion< uint8, 2 > &outRegion
+			const ImageRegion< uint8, 2 >	&inRegion,
+			ImageRegion< uint8, 2 > 	&outRegion
 		 );
 	/*bool
 	Process2D(

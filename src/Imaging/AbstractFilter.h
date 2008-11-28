@@ -168,6 +168,7 @@ class AbstractFilter
 public:
 	struct Properties
 	{
+	public:
 		virtual 
 		~Properties(){}
 		virtual void

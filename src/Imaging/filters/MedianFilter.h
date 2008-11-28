@@ -45,8 +45,8 @@ protected:
 
 	bool
 	Process2D(
-			const ImageRegion< InputElementType, 2 > &inRegion,
-			const ImageRegion< InputElementType, 2 > &outRegion
+			const ImageRegion< InputElementType, 2 >	&inRegion,
+			ImageRegion< InputElementType, 2 > 		&outRegion
 		 );
 
 	/*bool

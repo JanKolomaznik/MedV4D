@@ -8,7 +8,7 @@
 class FinishHook: public M4D::Imaging::MessageReceiverInterface
 {
 public:
-	FinishHook() : _finished( false ) {}
+	FinishHook() : _finished( false ), _OK( true ) {}
 
 	void
 	ReceiveMessage( 
@@ -17,14 +17,27 @@ public:
 		M4D::Imaging::FlowDirection				direction
 		)
 		{
-			_finished = msg->msgID == M4D::Imaging::PMI_FILTER_UPDATED;	
+			if( msg->msgID == M4D::Imaging::PMI_FILTER_UPDATED ) {
+				_finished = true;
+				_OK = true;
+				return;
+			}
+			if( msg->msgID == M4D::Imaging::PMI_FILTER_CANCELED ) {
+				_finished = true;
+				_OK = false;
+				return;
+			}					
 		}
 
 	bool
 	Finished()
 		{ return _finished; }
+	bool
+	OK()
+		{ return _OK; }
 private:
 	bool _finished;
+	bool _OK;
 };
 
 
@@ -33,8 +46,8 @@ M4D::Imaging::PipelineContainer *
 PreparePipeline( 
 		M4D::Imaging::AbstractPipeFilter 		&filter, 
 		M4D::Imaging::MessageReceiverInterface::Ptr 	hook,
-		M4D::Imaging::AbstractImageConnectionInterface 	*inConnection,
-		M4D::Imaging::AbstractImageConnectionInterface 	*outConnection
+		M4D::Imaging::AbstractImageConnectionInterface 	*&inConnection,
+		M4D::Imaging::AbstractImageConnectionInterface 	*&outConnection
 		)
 {
 	M4D::Imaging::PipelineContainer *container = new M4D::Imaging::PipelineContainer();
@@ -53,7 +66,7 @@ PreparePipeline(
 				);
 
 		outConnection = dynamic_cast<M4D::Imaging::AbstractImageConnectionInterface*>( 
-				&( container->MakeOutputConnection( filter, 0, false ) ) 
+				&( container->MakeOutputConnection( filter, 0, true ) ) 
 				);
 
 		outConnection->SetMessageHook( hook );

@@ -50,8 +50,8 @@ public:
 protected:
 	bool
 	Process2D(
-			const Region &inRegion,
-			const Region &outRegion
+			const Region	&inRegion,
+			Region 		&outRegion
 		 );
 private:
 	GET_PROPERTIES_DEFINITION_MACRO;

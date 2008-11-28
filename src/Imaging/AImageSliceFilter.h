@@ -96,13 +96,6 @@ protected:
 			int32						slice
 		    ) = 0;
 
-	/*virtual bool
-	ProcessSlice(
-			const ImageRegion< InputImageType, 3 >		&in,
-			const ImageRegion< OutputElementType, 2 > 	&out,
-			int32						slice
-		    ) = 0;*/
-
 	virtual WriterBBoxInterface &
 	GetComputationGroupWriterBBox( SliceComputationRecord & record ) = 0;
 
@@ -191,7 +184,7 @@ protected:
 	virtual bool
 	ProcessSlice(
 			const ImageRegion< InputElementType, 3 >	&inRegion,
-			const ImageRegion< OutputElementType, 2 > 	&outRegion,
+			ImageRegion< OutputElementType, 2 > 		&outRegion,
 			int32						slice
 		    ) = 0;
 

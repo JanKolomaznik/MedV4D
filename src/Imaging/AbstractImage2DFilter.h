@@ -62,7 +62,7 @@ protected:
 	virtual bool
 	Process2D(
 			const ImageRegion< InputElementType, 2 > &inRegion,
-			const ImageRegion< OutputElementType, 2 > &outRegion
+			ImageRegion< OutputElementType, 2 > 	 &outRegion
 		 ) = 0;
 
 	bool
@@ -118,25 +118,14 @@ protected:
 	 **/
 	virtual bool
 	Process2D(
-			const ImageRegion< InputElementType, 2 > &inRegion,
-			const ImageRegion< OutputElementType, 2 > &outRegion
+			const ImageRegion< InputElementType, 2 >	&inRegion,
+			ImageRegion< OutputElementType, 2 >		&outRegion
 		 ) = 0;
-
-	/*bool
-	ProcessSlice(
-			const Image< InputElementType, 3 > 	&in,
-			Image< OutputElementType, 3 >		&out,
-			int32					x1,
-			int32					y1,
-			int32					x2,
-			int32					y2,
-			int32					slice
-		    );*/
 
 	bool
 	ProcessSlice(
 			const ImageRegion< InputElementType, 3 >	&inRegion,
-			const ImageRegion< OutputElementType, 2 > 	&outRegion,
+			ImageRegion< OutputElementType, 2 > 		&outRegion,
 			int32						slice
 		    );
 

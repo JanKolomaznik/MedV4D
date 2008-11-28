@@ -51,10 +51,33 @@ public:
 			return Iterator( _pointer, _size, _strides, pos );
 		}
 
+	Iterator
+	GetIterator( const Coordinates< int32, Dim > &firstCorner, const Coordinates< int32, Dim > &secondCorner )const
+		{
+			//TODO check extents
+			uint32 pos[Dimension] = { 0 };
+			uint32 size[Dimension];
+			for( unsigned i=0; i<Dimension; ++i )
+			{
+				size[i] = secondCorner[i]-firstCorner[i];
+			}
+			return Iterator( &GetElement(firstCorner), size, _strides, pos );
+		}
+
 	ElementType *
 	GetPointer()const
 		{
 			return _pointer;
+		}
+
+	ElementType *
+	GetPointer( const Coordinates< int32, Dim > &coords )const
+		{ 	ElementType *tmp = _pointer;
+			//TODO check coordinates
+			for( unsigned i = 0; i < Dim; ++i ) {
+				tmp += coords[i] * _strides[i];
+			}
+			return tmp;
 		}
 
 	uint32
@@ -63,7 +86,7 @@ public:
 			return _size[dim];
 		}
 
-	uint32
+	const uint32 *const
 	GetSize()const
 		{
 			return _size;
@@ -76,7 +99,7 @@ public:
 			return _strides[dim];
 		}
 
-	uint32
+	const int32 *const
 	GetStride()const
 		{
 			return _strides;

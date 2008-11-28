@@ -49,8 +49,8 @@ template< unsigned Dim >
 bool
 MaskMedianFilter2D< Dim >
 ::Process2D(
-			const ImageRegion< uint8, 2 > &inRegion,
-			const ImageRegion< uint8, 2 > &outRegion
+			const ImageRegion< uint8, 2 >	&inRegion,
+			ImageRegion< uint8, 2 > 	&outRegion
 		 )
 {
 	if( !this->CanContinue() ) {

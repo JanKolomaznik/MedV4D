@@ -11,6 +11,11 @@ int
 main( int argc, char **argv )
 {
 
+	if( argc < 3 || argc > 3 ) {
+                std::cerr << "Wrong argument count - must be in form: 'program inputfile outputfile'\n";
+                return 1;
+        }
+
 	std::string inFilename = argv[1];
 	std::string outFilename = argv[2];
 
@@ -31,7 +36,9 @@ main( int argc, char **argv )
 		//Define and set filter
 
 	/*---------------------------------------------------------------------*/
-	container = PreparePipeline<ImageType>( &filter, M4D::Imaging::MessageReceiverInterface::Ptr( hook ), inConnection, *outConnection );
+	container = PreparePipeline<ImageType>( *filter, M4D::Imaging::MessageReceiverInterface::Ptr( hook ), inConnection, outConnection );
+	inConnection->PutImage( image );
+
 	std::cout << "Done\n";
 
 	std::cout << "Computing...\n";
@@ -39,11 +46,15 @@ main( int argc, char **argv )
 
 	while( !(hook->Finished()) ){ /*empty*/ }
 
-	std::cout << "Done\n";
+	if( hook->OK() ) {
+		std::cout << "Done\n";
 
-	std::cout << "Saving file...";
-	M4D::Imaging::ImageFactory::DumpImage( outFilename, outConnection->GetAbstractImageReadOnly() );
-	std::cout << "Done\n";
+		std::cout << "Saving file...";
+		M4D::Imaging::ImageFactory::DumpImage( outFilename, outConnection->GetAbstractImageReadOnly() );
+		std::cout << "Done\n";
+	} else {
+		std::cout << "FAILED\n";
+	}
 
 	delete container;
 

@@ -39,8 +39,8 @@ template< typename ImageType, typename MatrixElement >
 bool
 ConvolutionFilter2D< ImageType, MatrixElement >
 ::Process2D(
-		const ConvolutionFilter2D< ImageType, MatrixElement >::Region &inRegion,
-		const ConvolutionFilter2D< ImageType, MatrixElement >::Region &outRegion
+		const ConvolutionFilter2D< ImageType, MatrixElement >::Region	&inRegion,
+		ConvolutionFilter2D< ImageType, MatrixElement >::Region 	&outRegion
 		)
 {
 	try {

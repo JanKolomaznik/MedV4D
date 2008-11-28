@@ -49,8 +49,8 @@ template< typename InputImageType >
 bool
 MedianFilter2D< InputImageType >
 ::Process2D(
-			const ImageRegion< typename MedianFilter2D< InputImageType >::InputElementType, 2 > &inRegion,
-			const ImageRegion< typename MedianFilter2D< InputImageType >::InputElementType, 2 > &outRegion
+			const ImageRegion< typename MedianFilter2D< InputImageType >::InputElementType, 2 >	&inRegion,
+			ImageRegion< typename MedianFilter2D< InputImageType >::InputElementType, 2 >		&outRegion
 		 )
 {
 	if( !this->CanContinue() ) {

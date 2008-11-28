@@ -33,7 +33,8 @@ AbstractImage2DFilter< Image< InputElementType, 2 >, Image< OutputElementType, 2
 		return false;
 	}
 
-	return Process2D( in.GetRegion(), out.GetRegion() );
+	ImageRegion< OutputElementType, 2 > outRegion = out.GetRegion();
+	return Process2D( in.GetRegion(), outRegion );
 
 }
 
@@ -86,7 +87,7 @@ bool
 AbstractImage2DFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 ::ProcessSlice(
 			const ImageRegion< InputElementType, 3 >	&inRegion,
-			const ImageRegion< OutputElementType, 2 > 	&outRegion,
+			ImageRegion< OutputElementType, 2 > 		&outRegion,
 			int32						slice
 	    )
 {

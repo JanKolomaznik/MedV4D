@@ -225,6 +225,7 @@ struct TypeTraits< int8 >
 	static const Type	Zero = 0;
 
 	typedef int64		SuperiorType;
+	typedef float32		SuperiorFloatType;
 };
 
 template<>
@@ -239,6 +240,7 @@ struct TypeTraits< uint8 >
 	static const Type	Zero = 0;
 
 	typedef uint64		SuperiorType;
+	typedef float32		SuperiorFloatType;
 };
 
 template<>
@@ -253,6 +255,7 @@ struct TypeTraits< int16 >
 	static const Type	Zero = 0;
 
 	typedef int64		SuperiorType;
+	typedef float32		SuperiorFloatType;
 };
 
 template<>
@@ -267,6 +270,7 @@ struct TypeTraits< uint16 >
 	static const Type	Zero = 0;
 
 	typedef uint64		SuperiorType;
+	typedef float32		SuperiorFloatType;
 };
 
 template<>
@@ -281,6 +285,7 @@ struct TypeTraits< int32 >
 	static const Type	Zero = 0;
 
 	typedef int64		SuperiorType;
+	typedef float32		SuperiorFloatType;
 };
 
 template<>
@@ -295,6 +300,7 @@ struct TypeTraits< uint32 >
 	static const Type	Zero = 0;
 
 	typedef uint64		SuperiorType;
+	typedef float32		SuperiorFloatType;
 };
 
 template<>
@@ -309,6 +315,7 @@ struct TypeTraits< int64 >
 	static const Type	Zero = 0;
 
 	typedef int64		SuperiorType;
+	typedef float32		SuperiorFloatType;
 };
 
 template<>
@@ -323,6 +330,7 @@ struct TypeTraits< uint64 >
 	static const Type	Zero = 0;
 
 	typedef uint64		SuperiorType;
+	typedef float32		SuperiorFloatType;
 };
 
 template<>
@@ -337,6 +345,7 @@ struct TypeTraits< float32 >
 	static Type		Zero;
 
 	typedef float64		SuperiorType;
+	typedef float64		SuperiorFloatType;
 };
 
 template<>
@@ -351,6 +360,7 @@ struct TypeTraits< float64 >
 	static Type		Zero;
 
 	typedef float64		SuperiorType;
+	typedef float64		SuperiorFloatType;
 };
 
 //********************************************************************

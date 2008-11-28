@@ -31,8 +31,8 @@ template< typename InputImageType, typename OutputImageType, typename ElementFil
 bool
 AbstractImageElementFilter< InputImageType, OutputImageType, ElementFilter >
 ::Process2D(
-		const ImageRegion< typename AbstractImageElementFilter< InputImageType, OutputImageType, ElementFilter >::InputElementType, 2 > &inRegion,
-		const ImageRegion< typename AbstractImageElementFilter< InputImageType, OutputImageType, ElementFilter >::OutputElementType, 2 > &outRegion
+		const ImageRegion< typename AbstractImageElementFilter< InputImageType, OutputImageType, ElementFilter >::InputElementType, 2 >	&inRegion,
+		ImageRegion< typename AbstractImageElementFilter< InputImageType, OutputImageType, ElementFilter >::OutputElementType, 2 >	&outRegion
 	    )
 {
 	if( !this->CanContinue() ) {
