@@ -12,7 +12,7 @@ main( int argc, char** argv )
         D_COMMAND( std::ofstream debugFile( "Debug.txt" ); );
         SET_DOUT( debugFile );
 
-	if( argc < 3 | argc > 3 ) {
+	if( argc < 3 || argc > 3 ) {
 		std::cerr << "Wrong argument count - must be in form: 'program inputdir outputdir'\n";
 		return 1;
 	}

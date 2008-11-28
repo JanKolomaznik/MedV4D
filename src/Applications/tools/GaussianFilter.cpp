@@ -1,5 +1,6 @@
 #include "Common.h"
 #include "Filtering.h"
+#include "Imaging/filters/GaussianFilter.h"
 
 
 using namespace M4D;
@@ -27,11 +28,12 @@ main( int argc, char **argv )
 	M4D::Imaging::AbstractImageConnectionInterface *inConnection = NULL;
 	M4D::Imaging::AbstractImageConnectionInterface *outConnection = NULL;
 	/*---------------------------------------------------------------------*/
-	
-		//Define and set filter
+	M4D::Imaging::GaussianFilter2D< ImageType > *filter = new M4D::Imaging::GaussianFilter2D< ImageType >();
+
+	filter->SetRadius( 2 );
 
 	/*---------------------------------------------------------------------*/
-	container = PreparePipeline<ImageType>( &filter, M4D::Imaging::MessageReceiverInterface::Ptr( hook ), inConnection, *outConnection );
+	container = PreparePipeline<ImageType>( *filter, M4D::Imaging::MessageReceiverInterface::Ptr( hook ), inConnection, outConnection );
 	std::cout << "Done\n";
 
 	std::cout << "Computing...\n";

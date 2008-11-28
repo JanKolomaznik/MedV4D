@@ -14,7 +14,8 @@ RCC=rcc
 NAME=		tools
 #Names of target sources
 TARGETS=	DICOM2ImageDump \
-		ImageDumpView
+		ImageDumpView \
+		GaussianFilter
 
 M4DLIBS=	../../lib/libm4dWidgets.a\
 		../../lib/libImaging.a\
@@ -33,7 +34,8 @@ DCMTKLIBS=	-lofstd\
 OTHERLIBS=	-lz\
 		-lwrap\
 		-lboost_thread \
-		-lboost_filesystem
+		-lboost_filesystem \
+		-lGLU
 
 LIBS=		$(M4DLIBS)\
 		$(QTLIBS)\
