@@ -38,15 +38,20 @@ public:
 
 	struct Properties : public PredecessorType::Properties
 	{
-		Properties(){}
+		Properties(): multiplication( TypeTraits< MatrixElement >::One ), 
+		addition( TypeTraits< ElementType >::Zero ) {}
 
-		MaskPtr matrix; 
+		MaskPtr 	matrix; 
+		MatrixElement 	multiplication;
+		ElementType	addition;
 	};
 
 	ConvolutionFilter2D( Properties * prop );
 	ConvolutionFilter2D();
 	
 	GET_SET_PROPERTY_METHOD_MACRO( MaskPtr, ConvolutionMask, matrix );
+	GET_SET_PROPERTY_METHOD_MACRO( MatrixElement, Multiplication, multiplication );
+	GET_SET_PROPERTY_METHOD_MACRO( ElementType, Addition, addition );
 protected:
 	bool
 	Process2D(

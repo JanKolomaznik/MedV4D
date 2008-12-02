@@ -37,6 +37,12 @@ ViewerWindow::~ViewerWindow()
 int
 main( int argc, char** argv )
 {
+	std::ofstream logFile( "Log.txt" );
+        SET_LOUT( logFile );
+
+        D_COMMAND( std::ofstream debugFile( "Debug.txt" ); );
+        SET_DOUT( debugFile );
+
 	if( argc < 2 || argc > 2 ) {
 		std::cerr << "Wrong argument count - must be in form: 'program file'\n";
 		return 1;

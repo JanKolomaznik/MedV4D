@@ -32,8 +32,11 @@ CreateGaussianFilterMask( uint32 radius )
 	for( idx = 0; idx < size[0]*size[1]; ++ idx ) {
 		//std::cout << buff[ idx ] << " : ";
 		buff[ idx ] /= sum;
-		//std::cout << buff[ idx ] << "\n";
+		//buff[ idx ] = 0;
+		//if( idx % size[0] == 0 ) std::cout << "\n";
+		//std::cout << buff[ idx ] << "\t";
 	}
+	//buff[0] = 1;
 	ConvolutionMask2DFloat *maskPtr = new ConvolutionMask< 2, float32 >( buff, pom );
 
 	return ConvolutionMask2DFloat::Ptr( maskPtr );

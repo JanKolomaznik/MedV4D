@@ -44,7 +44,13 @@ ConvolutionFilter2D< ImageType, MatrixElement >
 		)
 {
 	try {
-		Compute2DConvolution( inRegion, outRegion, *(GetProperties().matrix) );
+		Compute2DConvolution( 
+				inRegion, 
+				outRegion, 
+				*(GetProperties().matrix), 
+				GetProperties().addition, 
+				GetProperties().multiplication 
+				);
 	}
 	catch( ... ) { 
 		return false; 

@@ -56,63 +56,56 @@ struct ConvolutionMask
 	MatrixElement	*mask;
 };
 
-template< typename ElementType, typename  MatrixElement, unsigned Dim >
-inline ElementType
-ApplyConvolutionMask( 
-		ElementType 	*center, 
-		const int32 	strides[Dim], 
-		const ConvolutionMask< Dim, MatrixElement > &mask 
-		)
-{
-	ElementType result = 0;
-	ElementType *pointer = center;
-	for( unsigned d=0; d < Dim; ++d )
-	{
-		pointer -= strides[d] * mask.center[d];
-	}
-
-	uint32 coord[ Dim ] = { 0 };
-	for( unsigned i=0; i<mask.length; ++i ) {
-		result += mask.mask[i] * (*pointer);
-
-		for( unsigned d=0; d < Dim; ++d )
-		{
-			if( coord[d] == mask.size[d]-1 ) {
-				coord[d] = 0;
-			} else {
-				++coord[d];
-				break;
-			}
-		}
-	}
-	return result;
-}
-
 template< typename ElementType, typename  MatrixElement >
 void
 Compute2DConvolution(
 		const ImageRegion< ElementType, 2 > 		&inRegion,
 		ImageRegion< ElementType, 2 > 			&outRegion,
-		const ConvolutionMask< 2, MatrixElement > 	&mask
-	)
+		const ConvolutionMask< 2, MatrixElement > 	&mask,
+		const ElementType				addition,
+		const MatrixElement				multiplication
+	);
+
+/*
+ * struct PostProcessor {
+ * void
+ * operator( const ElementType &, OutElementType & );
+ * };
+ */
+template< typename ElementType, typename OutElementType, typename  MatrixElement, typename PostProcessor >
+void
+Compute2DConvolutionPostProcess(
+		const ImageRegion< ElementType, 2 > 		&inRegion,
+		ImageRegion< OutElementType, 2 > 		&outRegion,
+		const ConvolutionMask< 2, MatrixElement > 	&mask,
+		const ElementType				addition,
+		const MatrixElement				multiplication,
+		PostProcessor					postprocessor
+	);
+
+template< typename ElementType, unsigned Dim >
+ElementType *
+MirrorBorderAccess( 
+		const uint32 					coord[ Dim ],
+		const uint32 					maskcenter[ Dim ],
+		ElementType 					*center, 
+		const int32 					strides[Dim], 
+		const uint32 					firstBorder[Dim],
+		const uint32 					secondBorder[Dim] 
+		)
 {
-	uint32 width = mask.size[0];
-	uint32 height = mask.size[1];
-	uint32 hwidth = mask.center[0];
-	uint32 hheight = mask.center[1];
-	//TODO check
-	
-	Coordinates< int32, 2 > coords;
-	for( coords[1] = hheight; static_cast<uint32>(coords[1]) < ( inRegion.GetSize(1) - height + hheight ); ++coords[1] ) {
-		for( coords[0] = hwidth; static_cast<uint32>(coords[0]) < ( inRegion.GetSize(0) - width + hwidth ); ++coords[0] ) {
-			outRegion.GetElement( coords ) = 
-				ApplyConvolutionMask( 
-						inRegion.GetPointer( coords ), 
-						inRegion.GetStride(), 
-						mask 
-						);
+	ElementType *pointer = center;
+	for( unsigned d=0; d < Dim; ++d )
+	{
+		if( coord[ d ] < firstBorder[d] ) {
+			pointer += strides[d] * (2*firstBorder[d] - maskcenter[d] -coord[d] -1);
+		} else if( coord[ d ] >= secondBorder[d] ) {
+			pointer += strides[d] * (2*secondBorder[d] - maskcenter[d] -coord[d] );
+		} else {
+			pointer += strides[d] * (coord[d] - maskcenter[d]);
 		}
 	}
+	return pointer;
 }
 
 
@@ -120,7 +113,10 @@ Compute2DConvolution(
 } /*namespace M4D*/
 
 /** @} */
+#include "Imaging/Convolution.tcc"
 
 #endif /*CONVOLUTION_H*/
 
+
 /** @} */
+

@@ -1,15 +1,21 @@
 #include "Common.h"
 #include "Filtering.h"
+#include "Imaging/filters/SobelEdgeDetector.h"
 
 
 using namespace M4D;
 using namespace M4D::Imaging;
 
-typedef Image< int16, 3 > ImageType;
+typedef Image< uint8, 2 > ImageType;
 
 int
 main( int argc, char **argv )
 {
+	std::ofstream logFile( "Log.txt" );
+        SET_LOUT( logFile );
+
+        D_COMMAND( std::ofstream debugFile( "Debug.txt" ); );
+        SET_DOUT( debugFile );
 
 	if( argc < 3 || argc > 3 ) {
                 std::cerr << "Wrong argument count - must be in form: 'program inputfile outputfile'\n";
@@ -32,8 +38,7 @@ main( int argc, char **argv )
 	M4D::Imaging::AbstractImageConnectionInterface *inConnection = NULL;
 	M4D::Imaging::AbstractImageConnectionInterface *outConnection = NULL;
 	/*---------------------------------------------------------------------*/
-	
-		//Define and set filter
+	M4D::Imaging::SobelEdgeDetector< ImageType > *filter = new M4D::Imaging::SobelEdgeDetector< ImageType >();
 
 	/*---------------------------------------------------------------------*/
 	container = PreparePipeline<ImageType>( *filter, M4D::Imaging::MessageReceiverInterface::Ptr( hook ), inConnection, outConnection );
@@ -45,7 +50,6 @@ main( int argc, char **argv )
 	container->ExecuteFirstFilter();
 
 	while( !(hook->Finished()) ){ /*empty*/ }
-
 	if( hook->OK() ) {
 		std::cout << "Done\n";
 
@@ -55,7 +59,6 @@ main( int argc, char **argv )
 	} else {
 		std::cout << "FAILED\n";
 	}
-
 	delete container;
 
 	return 0;

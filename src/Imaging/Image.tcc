@@ -61,6 +61,8 @@ Image< ElementType, 2 >::Image( typename ImageDataTemplate< ElementType >::Ptr i
 	//TODO handle exceptions
 }
 	
+
+	
 template< typename ElementType >
 void
 Image< ElementType, 2 >::FillDimensionInfo()

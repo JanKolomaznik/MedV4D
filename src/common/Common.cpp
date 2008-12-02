@@ -9,10 +9,14 @@
 float32 TypeTraits< float32 >::Max = MAX_FLOAT32;
 float32 TypeTraits< float32 >::Min = -MAX_FLOAT32;
 float32 TypeTraits< float32 >::Zero = 0.0f;
+float32 TypeTraits< float32 >::One = 1.0f;
+float32 TypeTraits< float32 >::CentralValue = 0.0f;
 
 float64 TypeTraits< float64 >::Max = MAX_FLOAT64;
 float64 TypeTraits< float64 >::Min = -MAX_FLOAT64;
 float64 TypeTraits< float64 >::Zero = 0.0;
+float64 TypeTraits< float64 >::One = 1.0;
+float64 TypeTraits< float64 >::CentralValue = 0.0;
 
 
 //TODO - platform independend.

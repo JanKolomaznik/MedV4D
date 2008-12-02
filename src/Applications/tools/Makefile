@@ -15,7 +15,9 @@ NAME=		tools
 #Names of target sources
 TARGETS=	DICOM2ImageDump \
 		ImageDumpView \
-		GaussianFilter
+		GaussianFilter \
+		SobelEdgeDetector \
+		CreateExampleData
 
 M4DLIBS=	../../lib/libm4dWidgets.a\
 		../../lib/libImaging.a\

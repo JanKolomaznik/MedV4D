@@ -57,6 +57,7 @@ static const float32	MAX_FLOAT32 = 1E+37f;
 static const float64	MAX_FLOAT64 = 1E+37;
 
 enum NumericTypeIDs{ 
+	//Simple numeric types IDs
 	NTID_UNKNOWN,
 	NTID_VOID, 
 
@@ -75,7 +76,20 @@ enum NumericTypeIDs{
 	NTID_FLOAT_32,
 	NTID_FLOAT_64,
 
-	NTID_BOOL
+	NTID_BOOL,
+
+	//Special types
+	/*
+	NTID_RGB,
+	NTID_RGBA,
+
+	NTID_COMPLEX_INT_8,
+	NTID_COMPLEX_INT_16,
+	NTID_COMPLEX_INT_32,
+	NTID_COMPLEX_INT_64,
+	NTID_COMPLEX_FLOAT_32,
+	NTID_COMPLEX_FLOAT_64,
+	*/
 };
 
 //*****************************************************************************
@@ -223,6 +237,9 @@ struct TypeTraits< int8 >
 	static const Type	Max = (Type)MAX_INT8;
 	static const Type	Min = (Type)(-MAX_INT8-1);
 	static const Type	Zero = 0;
+	static const Type	One = 1;
+
+	static const Type	CentralValue = 0;
 
 	typedef int64		SuperiorType;
 	typedef float32		SuperiorFloatType;
@@ -238,6 +255,9 @@ struct TypeTraits< uint8 >
 	static const Type	Max = (Type)~((Type)0);
 	static const Type	Min = (Type)(0);
 	static const Type	Zero = 0;
+	static const Type	One = 1;
+
+	static const Type	CentralValue = Max / 2;
 
 	typedef uint64		SuperiorType;
 	typedef float32		SuperiorFloatType;
@@ -253,6 +273,9 @@ struct TypeTraits< int16 >
 	static const Type	Max = (Type)MAX_INT16;
 	static const Type	Min = (Type)(-MAX_INT16-1);
 	static const Type	Zero = 0;
+	static const Type	One = 1;
+
+	static const Type	CentralValue = 0;
 
 	typedef int64		SuperiorType;
 	typedef float32		SuperiorFloatType;
@@ -268,6 +291,9 @@ struct TypeTraits< uint16 >
 	static const Type	Max = (Type)~((Type)0);
 	static const Type	Min = (Type)(0);
 	static const Type	Zero = 0;
+	static const Type	One = 1;
+
+	static const Type	CentralValue = Max / 2;
 
 	typedef uint64		SuperiorType;
 	typedef float32		SuperiorFloatType;
@@ -283,6 +309,9 @@ struct TypeTraits< int32 >
 	static const Type	Max = (Type)MAX_INT32;
 	static const Type	Min = (Type)(-MAX_INT32-1);
 	static const Type	Zero = 0;
+	static const Type	One = 1;
+
+	static const Type	CentralValue = 0;
 
 	typedef int64		SuperiorType;
 	typedef float32		SuperiorFloatType;
@@ -298,6 +327,9 @@ struct TypeTraits< uint32 >
 	static const Type	Max = (Type)~((Type)0);
 	static const Type	Min = (Type)(0);
 	static const Type	Zero = 0;
+	static const Type	One = 1;
+
+	static const Type	CentralValue = Max / 2;
 
 	typedef uint64		SuperiorType;
 	typedef float32		SuperiorFloatType;
@@ -313,6 +345,9 @@ struct TypeTraits< int64 >
 	static const Type	Max = (Type)MAX_INT64;
 	static const Type	Min = (Type)(-MAX_INT64-1);
 	static const Type	Zero = 0;
+	static const Type	One = 1;
+
+	static const Type	CentralValue = 0;
 
 	typedef int64		SuperiorType;
 	typedef float32		SuperiorFloatType;
@@ -328,6 +363,9 @@ struct TypeTraits< uint64 >
 	static const Type	Max = (Type)~((Type)0);
 	static const Type	Min = (Type)(0);
 	static const Type	Zero = 0;
+	static const Type	One = 1;
+
+	static const Type	CentralValue = Max / 2;
 
 	typedef uint64		SuperiorType;
 	typedef float32		SuperiorFloatType;
@@ -343,6 +381,8 @@ struct TypeTraits< float32 >
 	static Type		Max;
 	static Type		Min;
 	static Type		Zero;
+	static Type		One;
+	static Type		CentralValue;
 
 	typedef float64		SuperiorType;
 	typedef float64		SuperiorFloatType;
@@ -358,6 +398,8 @@ struct TypeTraits< float64 >
 	static Type		Max;
 	static Type		Min;
 	static Type		Zero;
+	static Type		One;
+	static Type		CentralValue;
 
 	typedef float64		SuperiorType;
 	typedef float64		SuperiorFloatType;
