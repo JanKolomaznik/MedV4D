@@ -24,7 +24,9 @@ main( int argc, char** argv )
 
 	for( unsigned i=0; i<size; ++i ) {
 		for( unsigned j=0; j<size; ++j ) {
-			image->GetElement( i, j ) = (/*(i>>4)+*/(j)) & 0xf ? 0 : 255;
+			//image->GetElement( i, j ) = ((i>>4)+(j>>4)) & 1 ? 0 : 255;
+			//image->GetElement( i, j ) = (/*(i>>4)+*/(j)) & 0xf ? 0 : 255;
+			image->GetElement( i, j ) = (PWR(i-128)+PWR(j-128)) < PWR(64) ? 0 : 255;
 		}
 	}
 

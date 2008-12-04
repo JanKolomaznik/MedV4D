@@ -1,6 +1,8 @@
 #ifndef ENERGIC_SNAKE_H
 #define ENERGIC_SNAKE_H
 
+#include "Imaging/PointSet.h"
+#include "Imaging/BSpline.h"
 
 namespace M4D
 {
@@ -16,27 +18,56 @@ namespace Imaging
 namespace Algorithms
 {
 
-/*class EnergyFunctional
+template< typename ContourType >
+class EFConvergeToPoint
 {
+public:
+	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > 	GradientType;
+	typedef Coordinates< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
 
+	void
+	GetParametersGradient( ContourType &curve, GradientType &gradient )
+	{
+		if( curve.Size() != gradient.Size() ) {
+			//TODO - solve problem
+		}
+		for( unsigned i = 0; i < gradient.Size(); ++i ) {
+			gradient[i] = _point - curve[i];
+		}
+	}
+
+	void
+	SetCenterPoint( const PointCoordinate &point )
+	{
+		_point = point;
+	}
+private:
+	PointCoordinate	_point;
 
 };
-*/
+
 
 template< typename ContourType, typename EnergyModel >
 class EnergicSnake
 {
 public:
+	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > 	GradientType;
+
 	EnergicSnake();
 
-	void
-	Initialize( ContourType & contour );
+	~EnergicSnake();
 
 	void
+	Initialize( const ContourType & contour );
+
+	uint32
 	Step();
 
 	bool
 	Converge();
+
+	bool
+	Converged();
 
 	void
 	Reset();
@@ -44,9 +75,35 @@ public:
 	EnergyModel&
 	GetEnergyModel()
 		{ return _energyFunctional; }
+
+	const ContourType&
+	GetCurrentCurve()const
+		{ return _curve; }
+
+	const GradientType&
+	GetCurrentGradient()const
+		{ return _gradients[_actualGradient]; }
+
+	const GradientType&
+	GetPreviousGradient()const
+		{ return _gradients[(_actualGradient+1)%2]; }
 private:
+	void
 	SwitchGradients();
+	void
 	NormalizeGradient();
+	float32
+	GradientScalarProduct( const GradientType &v1, const GradientType &v2 );
+	void
+	ComputeCurveParametersGradient();
+	void
+	UpdateCurveParameters();
+	void
+	CheckSelfIntersection();
+	void
+	CheckSegmentLengths();
+	void
+	ComputeStepScale();
 
 	EnergyModel	_energyFunctional;
 
@@ -54,31 +111,64 @@ private:
 
 	GradientType	*_gradient;
 
-	GradientType	*_gradients[2];
+	GradientType	_gradients[2];
 	unsigned	_actualGradient;
 
 	float32		_stepScale;
+	float32		_stepScaleAlpha;
+	float32		_stepScaleBeta;
+
+	unsigned	_stepCount;
+
+	unsigned	_sampleRate;
+
+
+	float32		_lastGradientSize;
 };
 
 template< typename ContourType, typename EnergyModel >
-EnergicSnake::EnergicSnake()
+EnergicSnake< ContourType, EnergyModel >
+::EnergicSnake(): _gradient( NULL )
 {
-	_gradients[0] = new GradientType;
-	_gradients[1] = new GradientType;
-
 	_actualGradient = 1;
+
+	_sampleRate = 5;
+
+	_stepScale = 5.0;
+	_stepScaleAlpha = 0.8;
+	_stepScaleBeta = 0.5;
 
 	SwitchGradients();
 }
 
 template< typename ContourType, typename EnergyModel >
-void
-EnergicSnake::Step()
+EnergicSnake< ContourType, EnergyModel >
+::~EnergicSnake()
 {
-	++step_count;
+}
 
+template< typename ContourType, typename EnergyModel >
+void
+EnergicSnake< ContourType, EnergyModel >
+::Initialize( const ContourType & contour )
+{
+	_curve = contour;
+	_curve.Sample( _sampleRate );
+}
+
+template< typename ContourType, typename EnergyModel >
+uint32
+EnergicSnake< ContourType, EnergyModel >
+::Step()
+{
+	++_stepCount;
+
+	SwitchGradients();
+
+	DL_PRINT(10, "EnergicSnake -> Step number " << _stepCount );
 	ComputeCurveParametersGradient();
 
+	DL_PRINT(10, "EnergicSnake ->    Update curve parameters " );
 	UpdateCurveParameters();
 
 	//Solve self intersection problem
@@ -86,23 +176,47 @@ EnergicSnake::Step()
 
 	//Divide or join segments with length out of tolerance
 	CheckSegmentLengths();
-
+	
+	return _stepCount;
 }
 
 template< typename ContourType, typename EnergyModel >
-void
-EnergicSnake::Converge()
+bool
+EnergicSnake< ContourType, EnergyModel >
+::Converge()
 {
 	while( !Converged() ) {
 		Step();
+	}
+	return true;
+}
+
+template< typename ContourType, typename EnergyModel >
+bool
+EnergicSnake< ContourType, EnergyModel >
+::Converged()
+{
+	if( _stepCount > 1 ) {
+		return _stepCount > 120 || _lastGradientSize < 0.001;
+	} else {
+		return false;
 	}
 }
 
 template< typename ContourType, typename EnergyModel >
 void
-EnergicSnake::ComputeCurveParametersGradient()
+EnergicSnake< ContourType, EnergyModel >
+::Reset()
 {
-	(*_gradient).Reserve( _curve.Size() );
+
+}
+
+template< typename ContourType, typename EnergyModel >
+void
+EnergicSnake< ContourType, EnergyModel >
+::ComputeCurveParametersGradient()
+{
+	_gradient->Resize( _curve.Size() );
 
 	_energyFunctional.GetParametersGradient( _curve, (*_gradient) );
 
@@ -111,59 +225,84 @@ EnergicSnake::ComputeCurveParametersGradient()
 
 template< typename ContourType, typename EnergyModel >
 void
-EnergicSnake::UpdateCurveParameters()
+EnergicSnake< ContourType, EnergyModel >
+::UpdateCurveParameters()
 {
 	ComputeStepScale();
 
 	for( size_t i=0; i < _curve.Size(); ++i ) {
+		//std::cerr << _curve[i] << " : " ;
 		_curve[i] += _stepScale * (*_gradient)[i];
+		//std::cerr << _curve[i] << "\n";
+	}
+	_curve.Sample( _sampleRate );
+}
+
+template< typename ContourType, typename EnergyModel >
+void
+EnergicSnake< ContourType, EnergyModel >
+::ComputeStepScale()
+{
+	if( _stepCount > 1 && _gradients[0].Size() == _gradients[1].Size() ) {
+		float32 product = GradientScalarProduct( _gradients[0], _gradients[1] );
+		_stepScale *= _stepScaleAlpha + _stepScaleBeta * product;
+
+		DL_PRINT(15, "EnergicSnake ->      Compute step scale : " << _stepScale << " " << product );
 	}
 }
 
 template< typename ContourType, typename EnergyModel >
 void
-EnergicSnake::ComputeStepScale()
-{
-	_stepScale = 1.0;
-}
-
-template< typename ContourType, typename EnergyModel >
-void
-EnergicSnake::CheckSelfIntersection()
+EnergicSnake< ContourType, EnergyModel >
+::CheckSelfIntersection()
 {
 
 }
 
 template< typename ContourType, typename EnergyModel >
 void
-EnergicSnake::CheckSegmentLengths()
+EnergicSnake< ContourType, EnergyModel >
+::CheckSegmentLengths()
 {
 
 }
 
 template< typename ContourType, typename EnergyModel >
 void
-EnergicSnake::SwitchGradients()
+EnergicSnake< ContourType, EnergyModel >
+::SwitchGradients()
 {
 	_actualGradient = (_actualGradient + 1) % 2;
 
-	_gradient = _gradients[_actualGradient];
+	_gradient = &(_gradients[_actualGradient]);
 }
 
 template< typename ContourType, typename EnergyModel >
 void
-EnergicSnake::NormalizeGradient()
+EnergicSnake< ContourType, EnergyModel >
+::NormalizeGradient()
 {
-	double size = 0.0;
-	for( size_t i=0; i < _gradient->Size(); ++i ) {
-		size += (*_gradient)[i] * (*_gradient)[i];
-	}
-
-	size = 1.0 / sqrt( size );
+	_lastGradientSize = GradientScalarProduct( (*_gradient), (*_gradient) );
+	
+	float32 tmp = 1.0f / sqrt( _lastGradientSize );
 
 	for( size_t i=0; i < _gradient->Size(); ++i ) {
-		(*_gradient)[i] = size * (*_gradient)[i];
+		(*_gradient)[i] *= tmp;
 	}
+}
+
+template< typename ContourType, typename EnergyModel >
+float32
+EnergicSnake< ContourType, EnergyModel >
+::GradientScalarProduct( 
+		const EnergicSnake< ContourType, EnergyModel >::GradientType &v1, 
+		const EnergicSnake< ContourType, EnergyModel >::GradientType &v2 )
+{
+	float32 product = 0.0;
+	for( size_t i=0; i < _gradient->Size(); ++i ) {
+		product += v1[i] * v2[i];
+	}
+	return product;
 }
 
 }/*namespace Algorithms*/

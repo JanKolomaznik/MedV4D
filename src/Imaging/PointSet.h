@@ -5,6 +5,8 @@
 #include "Imaging/GeometricalObject.h"
 #include "Coordinates.h"
 #include <vector>
+#include <ostream>
+#include <iomanip>
 
 
 namespace M4D
@@ -26,14 +28,16 @@ template < typename CoordType, unsigned Dim >
 class PointSet: public GeometricalObjectDim< Dim >
 {
 public:
-	typedef Coordinates< CoordType, Dim > PointType;
+	typedef Coordinates< CoordType, Dim > 	PointType;
+	typedef CoordType			Type;
+	static const unsigned Dimension	= Dim;		
 
-	PointSet() : _pointCount( 0 ) 
+	PointSet() : _points(), _pointCount( 0 ) 
 		{}
 
 	void
-	Reserve( unsigned size )
-		{ _points.reserve( _pointCount = size ); }
+	Resize( unsigned size )
+		{ _points.resize( _pointCount = size ); }
 
 	uint32
 	Size()const
@@ -64,6 +68,15 @@ protected:
 	std::vector< PointType >	_points;
 	uint32				_pointCount;
 };
+
+template < typename CoordType, unsigned Dim >
+void
+PrintPointSet( std::ostream &stream, const PointSet< CoordType, Dim > &set )
+{
+	for( size_t i = 0; i < set.Size(); ++i ) {
+		stream << set[i] << std::endl;
+	}
+}
 
 }/*namespace Geometry*/
 }/*namespace Imaging*/

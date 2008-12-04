@@ -45,6 +45,170 @@ typedef double float64;
 // others
 //typedef uint32 size_t;
 
+template< typename Type >
+struct TypeTraits;
+
+
+template< typename Type, unsigned Dim >
+struct SimpleVector;
+
+template< typename Type >
+struct SimpleVector< Type, 2 >
+{
+	static const unsigned Dimension = 2;
+	SimpleVector()
+	{
+		for( unsigned i=0; i < Dimension; ++i ) { 
+			data[i] = TypeTraits< Type >::Zero;
+		}
+	}
+	
+	explicit SimpleVector( const Type d[Dimension] )
+	{
+		for( unsigned i=0; i < Dimension; ++i ) { 
+			data[i] = d[i];
+		}
+	}
+	
+	SimpleVector( Type a, Type b )
+	{
+		data[0] = a;
+		data[1] = b;
+	}
+
+	template< typename AnotherType >
+	explicit SimpleVector( const SimpleVector< AnotherType, Dimension > &a )
+	{
+		for( unsigned i=0; i < Dimension; ++i ) { 
+			data[i] = a.data[i];
+		}
+	}
+
+	template< typename AnotherType >
+	SimpleVector< Type, Dimension >
+	operator=( const SimpleVector< AnotherType, Dimension > &a )
+	{
+		for( unsigned i=0; i < Dimension; ++i ) { 
+			data[i] = a.data[i];
+		}
+	}
+	
+	Type &
+	operator[]( unsigned idx )
+	{
+		return data[idx];
+	}
+
+	Type data[ Dimension ];
+};
+
+
+
+template< typename Type >
+struct SimpleVector< Type, 3 >
+{
+	static const unsigned Dimension = 3;
+	SimpleVector()
+	{
+		for( unsigned i=0; i < Dimension; ++i ) { 
+			data[i] = TypeTraits< Type >::Zero;
+		}
+	}
+	
+	SimpleVector( const Type d[Dimension] )
+	{
+		for( unsigned i=0; i < Dimension; ++i ) { 
+			data[i] = d[i];
+		}
+	}
+	
+	SimpleVector( Type a, Type b, Type c )
+	{
+		data[0] = a;
+		data[1] = b;
+		data[2] = c;
+	}
+
+	template< typename AnotherType >
+	explicit SimpleVector( const SimpleVector< AnotherType, Dimension > &a )
+	{
+		for( unsigned i=0; i < Dimension; ++i ) { 
+			data[i] = a.data[i];
+		}
+	}
+
+	template< typename AnotherType >
+	SimpleVector< Type, Dimension >
+	operator=( const SimpleVector< AnotherType, Dimension > &a )
+	{
+		for( unsigned i=0; i < Dimension; ++i ) { 
+			data[i] = a.data[i];
+		}
+	}
+	
+	Type &
+	operator[]( unsigned idx )
+	{
+		return data[idx];
+	}
+
+	Type data[ Dimension ];
+};
+
+template< typename Type >
+struct SimpleVector< Type, 4 >
+{
+	static const unsigned Dimension = 4;
+	SimpleVector()
+	{
+		for( unsigned i=0; i < Dimension; ++i ) { 
+			data[i] = TypeTraits< Type >::Zero;
+		}
+	}
+	
+	SimpleVector( const Type d[Dimension] )
+	{
+		for( unsigned i=0; i < Dimension; ++i ) { 
+			data[i] = d[i];
+		}
+	}
+	
+	SimpleVector( Type a, Type b, Type c, Type d )
+	{
+		data[0] = a;
+		data[1] = b;
+		data[2] = c;
+		data[3] = d;
+	}
+
+	template< typename AnotherType >
+	explicit SimpleVector( const SimpleVector< AnotherType, Dimension > &a )
+	{
+		for( unsigned i=0; i < Dimension; ++i ) { 
+			data[i] = a.data[i];
+		}
+	}
+
+	template< typename AnotherType >
+	SimpleVector< Type, Dimension >
+	operator=( const SimpleVector< AnotherType, Dimension > &a )
+	{
+		for( unsigned i=0; i < Dimension; ++i ) { 
+			data[i] = a.data[i];
+		}
+	}
+	
+	Type &
+	operator[]( unsigned idx )
+	{
+		return data[idx];
+	}
+
+	Type data[ Dimension ];
+};
+
+
+
 static const int8 	MAX_INT8 = 0x7F;
 static const uint8 	MAX_UINT8 = 0xFF;
 static const int16 	MAX_INT16 = 0x7FFF;
@@ -58,8 +222,8 @@ static const float64	MAX_FLOAT64 = 1E+37;
 
 enum NumericTypeIDs{ 
 	//Simple numeric types IDs
-	NTID_UNKNOWN,
-	NTID_VOID, 
+	NTID_SIMPLE_TYPE_MASK = 0x0f,
+	NTID_SIMPLE_TYPES = 0x0,
 
 	NTID_INT_8,
 	NTID_UINT_8,
@@ -77,7 +241,65 @@ enum NumericTypeIDs{
 	NTID_FLOAT_64,
 
 	NTID_BOOL,
+	
+	//--------------------------
+	NTID_2D_VECTORS = 0x10,
 
+	NTID_2D_INT_8,
+	NTID_2D_UINT_8,
+
+	NTID_2D_INT_16,
+	NTID_2D_UINT_16,
+
+	NTID_2D_INT_32,
+	NTID_2D_UINT_32,
+
+	NTID_2D_INT_64,
+	NTID_2D_UINT_64,
+
+	NTID_2D_FLOAT_32,
+	NTID_2D_FLOAT_64,
+
+	NTID_2D_BOOL,
+	//--------------------------
+	NTID_3D_VECTORS = 0x20,
+
+	NTID_3D_INT_8,
+	NTID_3D_UINT_8,
+
+	NTID_3D_INT_16,
+	NTID_3D_UINT_16,
+
+	NTID_3D_INT_32,
+	NTID_3D_UINT_32,
+
+	NTID_3D_INT_64,
+	NTID_3D_UINT_64,
+
+	NTID_3D_FLOAT_32,
+	NTID_3D_FLOAT_64,
+
+	NTID_3D_BOOL,
+	//--------------------------
+	NTID_4D_VECTORS = 0x30,
+
+	NTID_4D_INT_8,
+	NTID_4D_UINT_8,
+
+	NTID_4D_INT_16,
+	NTID_4D_UINT_16,
+
+	NTID_4D_INT_32,
+	NTID_4D_UINT_32,
+
+	NTID_4D_INT_64,
+	NTID_4D_UINT_64,
+
+	NTID_4D_FLOAT_32,
+	NTID_4D_FLOAT_64,
+
+	NTID_4D_BOOL,
+	//--------------------------
 	//Special types
 	/*
 	NTID_RGB,
@@ -90,6 +312,8 @@ enum NumericTypeIDs{
 	NTID_COMPLEX_FLOAT_32,
 	NTID_COMPLEX_FLOAT_64,
 	*/
+	NTID_UNKNOWN,
+	NTID_VOID, 
 };
 
 //*****************************************************************************
@@ -173,7 +397,7 @@ enum NumericTypeIDs{
 	}
 
 
-
+/*
 template< typename NumericType >
 int16 GetNumericTypeID()
 { return NTID_UNKNOWN; }
@@ -211,6 +435,10 @@ int16 GetNumericTypeID<float64>();
 template<>
 int16 GetNumericTypeID<bool>();
 
+template< typename Type, unsigned Dim >
+int16 GetNumericTypeID< SimpleVector< Type, Dim> >()
+{ return NTID_UNKNOWN; }
+*/
 
 //TODO - platform independend.
 /**
@@ -224,14 +452,30 @@ int16
 GetNTIDFromSizeAndSign( uint16 size, bool sign );
 
 
-template< typename Type >
-struct TypeTraits;
+
+template< typename NumType, unsigned Dim >
+struct TypeTraits< SimpleVector<NumType, Dim> >
+{
+	typedef	SimpleVector<NumType, Dim>	Type;
+	static const int16	NTID = TypeTraits< NumType >::NTID;
+
+	static const bool	Signed = TypeTraits< NumType >::Signed;
+	static const uint16	BitCount = sizeof( Type )*8;
+	static Type		Max;
+	static Type		Min;
+	static Type		Zero;
+	static Type		CentralValue;
+
+	typedef float64		SuperiorType;
+	typedef float64		SuperiorFloatType;
+};
 
 template<>
 struct TypeTraits< int8 >
 {
 	typedef int8		Type;
-	
+	static const int16	NTID = NTID_INT_8;
+
 	static const bool	Signed = true;
 	static const uint16	BitCount = sizeof( Type )*8;
 	static const Type	Max = (Type)MAX_INT8;
@@ -249,6 +493,7 @@ template<>
 struct TypeTraits< uint8 >
 {
 	typedef uint8		Type;
+	static const int16	NTID = NTID_UINT_8;
 	
 	static const bool	Signed = false;
 	static const uint16	BitCount = sizeof( Type )*8;
@@ -267,6 +512,7 @@ template<>
 struct TypeTraits< int16 >
 {
 	typedef int16		Type;
+	static const int16	NTID = NTID_INT_16;
 
 	static const bool	Signed = true;
 	static const uint16	BitCount = sizeof( Type )*8;
@@ -285,6 +531,7 @@ template<>
 struct TypeTraits< uint16 >
 {
 	typedef uint16		Type;
+	static const int16	NTID = NTID_UINT_16;
 
 	static const bool	Signed = false;
 	static const uint16	BitCount = sizeof( Type )*8;
@@ -303,6 +550,7 @@ template<>
 struct TypeTraits< int32 >
 {
 	typedef int32		Type;
+	static const int16	NTID = NTID_INT_32;
 
 	static const bool	Signed = true;
 	static const uint16	BitCount = sizeof( Type )*8;
@@ -321,6 +569,7 @@ template<>
 struct TypeTraits< uint32 >
 {
 	typedef uint32		Type;
+	static const int16	NTID = NTID_UINT_32;
 
 	static const bool	Signed = false;
 	static const uint16	BitCount = sizeof( Type )*8;
@@ -339,6 +588,7 @@ template<>
 struct TypeTraits< int64 >
 {
 	typedef int64		Type;
+	static const int16	NTID = NTID_INT_64;
 
 	static const bool	Signed = true;
 	static const uint16	BitCount = sizeof( Type )*8;
@@ -357,6 +607,7 @@ template<>
 struct TypeTraits< uint64 >
 {
 	typedef uint64		Type;
+	static const int16	NTID = NTID_UINT_64;
 
 	static const bool	Signed = false;
 	static const uint16	BitCount = sizeof( Type )*8;
@@ -375,6 +626,7 @@ template<>
 struct TypeTraits< float32 >
 {
 	typedef float32		Type;
+	static const int16	NTID = NTID_FLOAT_32;
 
 	static const bool	Signed = true;
 	static const uint16	BitCount = sizeof( Type )*8;
@@ -392,6 +644,7 @@ template<>
 struct TypeTraits< float64 >
 {
 	typedef float64		Type;
+	static const int16	NTID = NTID_FLOAT_64;
 
 	static const bool	Signed = true;
 	static const uint16	BitCount = sizeof( Type )*8;
@@ -404,6 +657,10 @@ struct TypeTraits< float64 >
 	typedef float64		SuperiorType;
 	typedef float64		SuperiorFloatType;
 };
+
+template< typename NumericType >
+int16 GetNumericTypeID()
+{ return TypeTraits< NumericType >::NTID; }
 
 //********************************************************************
 template< uint16 size, bool sign >

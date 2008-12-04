@@ -37,6 +37,7 @@ GetNTIDFromSizeAndSign( uint16 size, bool sign )
 	}
 }
 
+/*
 template<>
 int16 GetNumericTypeID<int8>()
 { return NTID_INT_8; }
@@ -80,5 +81,5 @@ int16 GetNumericTypeID<float64>()
 template<>
 int16 GetNumericTypeID<bool>()
 { return NTID_BOOL; }
-
+*/
 

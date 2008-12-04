@@ -21,6 +21,9 @@ template < typename CoordType, unsigned Dim >
 class Polyline: public PointSet< CoordType, Dim >
 {
 public:
+	typedef Coordinates< CoordType, Dim > 	PointType;
+	typedef CoordType			Type;
+	static const unsigned Dimension	= Dim;		
 
 };
 

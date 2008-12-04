@@ -11,24 +11,44 @@ RCC=rcc
 
 ########################################
 #Name of this project part
-NAME=		SplineTest
+NAME=		Test
 #Names of target sources
-TARGETS=	SplineTest 
+TARGETS=	SplineTest \
+		SnakeTest
 
-M4DLIBS=	../lib/libImaging.a\
+M4DLIBS=	../lib/libm4dWidgets.a\
+		../lib/libImaging.a\
+		../lib/libvtkIntegration.a\
+		../lib/libbackendForDICOM.a\
 		../lib/libcommon.a
 
+QTLIBS=		-lQtCore\
+		-lQtGui\
+		-lQtOpenGL
+
+DCMTKLIBS=	-lofstd\
+		-ldcmdata\
+		-ldcmnet
+
+OTHERLIBS=	-lz\
+		-lwrap\
+		-lboost_thread \
+		-lboost_filesystem \
+		-lGLU
 
 LIBS=		$(M4DLIBS)\
-		-lboost_thread \
-		-lboost_filesystem
+		$(QTLIBS)\
+		$(VTKLIBS)\
+		$(DCMTKLIBS)\
+		$(OTHERLIBS)
+
 ########################################
 
-#Name of target
-OUTPUTNAME=	$(NAME)
-OUTPUTDIR=	.
-OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
-TMP_DIR=	../tmp/$(NAME)
+
+OUTPUTDIR=	../executables/$(NAME)
+TMP_DIR=		../tmp/$(NAME)
+
+OUTPUTS= $(addprefix $(OUTPUTDIR)/, $(TARGETS) )
 
 CXXDEBUG_OPTIONS= -ggdb 
 
@@ -39,29 +59,28 @@ CDEPFLAGS=	-MM
 
 LDFLAGS=
 ARFLAGS=	-r
-LIBDIRS=	-L../lib\
-		-L/usr/lib/qt4
-INCLUDES=	-I../\
+LIBDIRS=	-L../lib
+INCLUDES=	-I.. \
 		-I$(srcdir)\
 		-I../include\
+		-I/usr/include/vtk-5.0\
+		-I/usr/include/qt4\
+		-I/usr/include/qt4/Qt\
+		-I/usr/include/qt4/QtCore\
+		-I/usr/include/qt4/QtGui
 
 DEBUG_DEFS=	-DDEBUG_LEVEL=10\
 		-DDEBUG_ADITIONAL_INFO
 
 DEFS=		$(DEBUG_DEFS)
 
-
-SRC_FILES=	$(addsuffix .cpp, $(TARGETS) ) 
-OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS) ) )
-
-
 .PHONY: all
-all:		tmpdir dep $(OUTPUT)
-		
+all:		tmpdir $(OUTPUTS)
 
 .PHONY: tmpdir
-tmpdir:		
+tmpdir:         
 		$(MKDIR) $(TMP_DIR) 2>/dev/null || true
+		$(MKDIR) $(OUTPUTDIR) 2>/dev/null || true
 
 .PHONY: build
 build:		cleanall all
@@ -71,15 +90,17 @@ dep:
 		$(CXX) $(INCLUDES) $(CDEPFLAGS) $(SRC_FILES) | \
 		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
 
-$(TMP_DIR)/%.o:	%.cpp	
-		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
-
 -include $(DEP_FILE)
 		
-$(OUTPUT):	$(OBJ_FILES) $(M4DLIBS)
-		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
+$(TMP_DIR)/%.o: %.cpp   
+		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
+
+
+$(OUTPUTDIR)/%:	$(TMP_DIR)/%.o $(M4DLIBS) 
+		$(CXX) $(CXXFLAGS) $< $(LIBDIRS) $(LIBS) -o $@
 
 .PHONY: clean
 clean:
-		$(RM) $(OBJ_FILES) $(DEP_FILE)
-		$(RM) $(OUTPUT)
+		$(RM) $(OUTPUTS)
+		$(RM) $(TMP_DIR)/*
+

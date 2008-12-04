@@ -36,7 +36,7 @@ struct SecondPassFunctor
 	void
 	operator()( ValueType value, OutElementType & output )
 	{
-		output = output + static_cast< OutElementType >( Abs( value ) );
+		output = static_cast< OutElementType >( Min( static_cast< ValueType >( output ) + Abs( value ), TypeTraits< OutElementType >::Max ) );
 	}
 };
 
@@ -112,7 +112,100 @@ SobelEdgeDetector< ImageType >
 
 	yMatrix = MaskPtr( new Mask( m, size ) );
 }
+//*************************************************
+template< typename ValueType, typename OutElementType >
+struct FirstPassGradientFunctor
+{
+	void
+	operator()( ValueType value, SimpleVector< OutElementType, 2 > & output )
+	{
+		output[0] = static_cast< OutElementType >( value );
+	}
+};
 
+template< typename ValueType, typename OutElementType >
+struct SecondPassGradientFunctor
+{
+	void
+	operator()( ValueType value, SimpleVector< OutElementType, 2 > & output )
+	{
+		output[1] = static_cast< OutElementType >( value );
+	}
+};
+
+
+template< typename ImageType, typename OutType >
+SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
+::SobelGradientOperator() : PredecessorType( new Properties() )
+{
+	CreateMatrices();
+}
+
+template< typename ImageType, typename OutType >
+SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
+::SobelGradientOperator( SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >::Properties *prop ) 
+: PredecessorType( prop ) 
+{
+	CreateMatrices();
+}
+
+template< typename ImageType, typename OutType >
+bool
+SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
+::Process2D(
+		const SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >::IRegion	&inRegion,
+		SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >::ORegion 		&outRegion
+		)
+{
+	try {
+		Compute2DConvolutionPostProcess<ElementType, ElementType, float32, 
+			FirstPassGradientFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, OutScalarType > > ( 
+				inRegion, 
+				outRegion, 
+				*xMatrix, 
+				0,//TypeTraits< ElementType >::Zero, 
+				1.0f,
+				FirstPassGradientFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, OutScalarType >()
+				); 
+		Compute2DConvolutionPostProcess<ElementType, ElementType, float32, 
+			SecondPassGradientFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, OutScalarType > > (  
+				inRegion, 
+				outRegion, 
+				*yMatrix, 
+				0,//TypeTraits< ElementType >::Zero, 
+				1.0f,
+				SecondPassGradientFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, OutScalarType >()
+				);
+	}
+	catch( ... ) { 
+		return false; 
+	}
+
+	return true;
+}
+
+template< typename ImageType, typename OutType >
+void
+SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
+::CreateMatrices()
+{
+	uint32	size[2];
+	size[0] = 3; size[1] = 3;
+	float32 *m = new float32[9];
+	
+	m[0]= -1.0f; m[1]=  0.0f; m[2]=  1.0f;
+	m[3]= -2.0f; m[4]=  0.0f; m[5]=  2.0f;
+	m[6]= -1.0f; m[7]=  0.0f; m[8]=  1.0f;
+
+	xMatrix = MaskPtr( new Mask( m, size ) );
+
+	m = new float32[9];
+	m[0]= -1.0f; m[1]= -2.0f; m[2]= -1.0f;
+	m[3]=  0.0f; m[4]=  0.0f; m[5]=  0.0f;
+	m[6]=  1.0f; m[7]=  2.0f; m[8]=  1.0f;
+
+	yMatrix = MaskPtr( new Mask( m, size ) );
+}
 
 } /*namespace Imaging*/
 } /*namespace M4D*/

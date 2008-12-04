@@ -102,7 +102,7 @@ MirrorBorderAccess(
 		} else if( coord[ d ] >= secondBorder[d] ) {
 			pointer += strides[d] * (2*secondBorder[d] - maskcenter[d] -coord[d] );
 		} else {
-			pointer += strides[d] * (coord[d] - maskcenter[d]);
+			pointer += strides[d] * (coord[d] - maskcenter[d] );
 		}
 	}
 	return pointer;

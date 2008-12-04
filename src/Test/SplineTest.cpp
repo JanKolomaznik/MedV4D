@@ -1,5 +1,5 @@
 #include "iostream"
-#include "Imaging/ParametricCurve.h"
+#include "Imaging/BSpline.h"
 
 using namespace std;
 
@@ -69,13 +69,8 @@ main( int argc, char **argv )
 		PrintPoint( curve[i] );
 	}
 	cout << "\n\n";
-
-	const Points &points = curve.GetSamplePoints();
-	for( unsigned i = 0; i < points.Size(); ++i ) {
-		PrintPoint( points[i] );
-	}
-	if( curve.Cyclic() )
-		PrintPoint( points[0] );
+	
+	PrintCurve( std::cout, curve );
 
 	CloseOutput();
 

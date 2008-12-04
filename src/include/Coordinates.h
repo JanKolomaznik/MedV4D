@@ -54,14 +54,13 @@ public:
 	friend Coordinates< CoordType, Dimension > operator+= < CoordType, Dimension >( Coordinates< CoordType, Dimension > &v1, const Coordinates< CoordType, Dimension > &v2 );
 	friend Coordinates< CoordType, Dimension > operator-= < CoordType, Dimension >( Coordinates< CoordType, Dimension > &v1, const Coordinates< CoordType, Dimension > &v2 );
 	friend Coordinates< CoordType, Dimension > operator- < CoordType, Dimension >( const Coordinates< CoordType, Dimension > &v );
-	friend Coordinates< CoordType, Dimension > operator* < CoordType, Dimension >( CoordType k, const Coordinates< CoordType, Dimension > &v );
 
 	typedef CoordType 	CoordinateType;
 
 	Coordinates()
 		{ for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = 0; } }
 
-	explicit Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
+	Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
 		{ 
 			for( unsigned i=0; i<Dimension; ++i ) 
 			{ _coordinates[i] = coord._coordinates[i]; } 
@@ -102,7 +101,6 @@ public:
 	friend Coordinates< CoordType, Dimension > operator+=< CoordType, Dimension >( Coordinates< CoordType, Dimension > &v1, const Coordinates< CoordType, Dimension > &v2 );
 	friend Coordinates< CoordType, Dimension > operator-=< CoordType, Dimension >( Coordinates< CoordType, Dimension > &v1, const Coordinates< CoordType, Dimension > &v2 );
 	friend Coordinates< CoordType, Dimension > operator-< CoordType, Dimension >( const Coordinates< CoordType, Dimension > &v );
-	friend Coordinates< CoordType, Dimension > operator*< CoordType, Dimension >( CoordType k, const Coordinates< CoordType, Dimension > &v );
 
 	typedef CoordType 	CoordinateType;
 
@@ -115,7 +113,7 @@ public:
 			_coordinates[1] = y;
 		}
 
-	explicit Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
+	Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
 		{ 
 			for( unsigned i=0; i<Dimension; ++i ) 
 			{ _coordinates[i] = coord._coordinates[i]; } 
@@ -153,7 +151,6 @@ public:
 	friend Coordinates< CoordType, Dimension > operator+=< CoordType, Dimension >( Coordinates< CoordType, Dimension > &v1, const Coordinates< CoordType, Dimension > &v2 );
 	friend Coordinates< CoordType, Dimension > operator-=< CoordType, Dimension >( Coordinates< CoordType, Dimension > &v1, const Coordinates< CoordType, Dimension > &v2 );
 	friend Coordinates< CoordType, Dimension > operator-< CoordType, Dimension >( const Coordinates< CoordType, Dimension > &v );
-	friend Coordinates< CoordType, Dimension > operator*< CoordType, Dimension >( CoordType k, const Coordinates< CoordType, Dimension > &v );
 
 	typedef CoordType 	CoordinateType;
 
@@ -167,7 +164,7 @@ public:
 			_coordinates[2] = z;
 		}
 
-	explicit Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
+	Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
 		{ 
 			for( unsigned i=0; i<Dimension; ++i ) 
 			{ _coordinates[i] = coord._coordinates[i]; } 
@@ -205,14 +202,13 @@ public:
 	friend Coordinates< CoordType, Dimension > operator+=< CoordType, Dimension >( Coordinates< CoordType, Dimension > &v1, const Coordinates< CoordType, Dimension > &v2 );
 	friend Coordinates< CoordType, Dimension > operator-=< CoordType, Dimension >( Coordinates< CoordType, Dimension > &v1, const Coordinates< CoordType, Dimension > &v2 );
 	friend Coordinates< CoordType, Dimension > operator-< CoordType, Dimension >( const Coordinates< CoordType, Dimension > &v );
-	friend Coordinates< CoordType, Dimension > operator*< CoordType, Dimension >( CoordType k, const Coordinates< CoordType, Dimension > &v );
 
 	typedef CoordType 	CoordinateType;
 
 	Coordinates()
 		{ for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = 0; } }
 
-	explicit Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
+	Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
 		{ 
 			for( unsigned i=0; i<Dimension; ++i ) 
 			{ _coordinates[i] = coord._coordinates[i]; } 
@@ -290,17 +286,28 @@ operator-=( Coordinates< CoordType, Dim > &v1, const Coordinates< CoordType, Dim
 	return v1;
 }
 
-template< typename CoordType, unsigned Dim >
+template< /*typename ScalarType, */typename CoordType, unsigned Dim >
 Coordinates< CoordType, Dim >
-operator*( CoordType k, const Coordinates< CoordType, Dim > &v )
+operator*( /*ScalarType*/CoordType k, const Coordinates< CoordType, Dim > &v )
 {
 	Coordinates< CoordType, Dim > result;
 
 	for( unsigned i=0; i < Dim; ++i ) {
-		result._coordinates[ i ] = k * v[ i ];
+		result[ i ] = k * v[ i ];
 	}
 
 	return result;
+}
+
+template< typename CoordType, unsigned Dim >
+Coordinates< CoordType, Dim >
+operator*=( Coordinates< CoordType, Dim > &v, CoordType k )
+{
+	for( unsigned i=0; i < Dim; ++i ) {
+		v[ i ] *= k;
+	}
+
+	return v;
 }
 
 template< typename CoordType, unsigned Dim >
@@ -328,6 +335,18 @@ operator-( const Coordinates< CoordType, Dim > &v )
 	return result;
 }
 
+template< typename StreamType, typename CoordType, unsigned Dim >
+StreamType &
+operator<<( StreamType &stream, const Coordinates< CoordType, Dim > &coords )
+{
+	for( unsigned i=0; i < Dim; ++i ) {
+		stream << coords[i];
+		if( i != Dim-1 ) {
+			stream << " ";
+		}
+	}
+	return stream;
+}
 
 typedef Coordinates< int32, 2 > CoordInt2D;
 typedef Coordinates< int32, 3 > CoordInt3D;

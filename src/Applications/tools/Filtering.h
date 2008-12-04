@@ -57,7 +57,8 @@ PreparePipeline(
 		container->AddFilter( convertor );
 		container->AddFilter( &filter );
 
-		filter.SetUpdateInvocationStyle( M4D::Imaging::AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
+		//filter.SetUpdateInvocationStyle( M4D::Imaging::AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
+		filter.SetUpdateInvocationStyle( M4D::Imaging::AbstractPipeFilter::UIS_ON_UPDATE_FINISHED );
 
 		container->MakeConnection( *convertor, 0, filter, 0 );
 		

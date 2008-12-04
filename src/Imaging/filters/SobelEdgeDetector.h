@@ -61,6 +61,48 @@ private:
 
 };
 
+template< typename ImageType, typename OutImageType >
+class SobelGradientOperator;
+
+template< typename ImageType, typename OutType >
+class SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
+	: public AbstractImage2DFilter< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
+{
+public:	
+	static const unsigned Dimension = ImageTraits< ImageType >::Dimension;
+	typedef typename ImageTraits< ImageType >::ElementType 		ElementType;
+	typedef SimpleVector< OutType, 2 >				OutElementType;
+	typedef OutType							OutScalarType;
+	typedef Image< OutElementType, ImageTraits< ImageType >::Dimension > OutImageType;
+	typedef AbstractImage2DFilter< ImageType, ImageType > 		PredecessorType;
+	typedef ConvolutionMask<2,float32>				Mask;
+	typedef typename ConvolutionMask<2,float32>::Ptr		MaskPtr;
+	typedef ImageRegion< ElementType, 2 >				IRegion;
+	typedef ImageRegion< OutElementType, 2 >			ORegion;
+
+	struct Properties : public PredecessorType::Properties
+	{
+		Properties() {}
+	};
+
+	SobelGradientOperator( Properties * prop );
+	SobelGradientOperator();
+	
+protected:
+	bool
+	Process2D(
+			const IRegion	&inRegion,
+			ORegion 	&outRegion
+		 );
+	MaskPtr		xMatrix;
+	MaskPtr		yMatrix;
+
+	void
+	CreateMatrices();
+private:
+	GET_PROPERTIES_DEFINITION_MACRO;
+
+};
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
