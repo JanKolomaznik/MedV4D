@@ -33,6 +33,9 @@ public:
 		}
 		for( unsigned i = 0; i < gradient.Size(); ++i ) {
 			gradient[i] = _point - curve[i];
+			float32 size = sqrt(gradient[i]*gradient[i]);
+			float32 pom = (size - 10.0f)/size;
+			gradient[i] = pom * gradient[i];
 		}
 	}
 
@@ -197,7 +200,7 @@ EnergicSnake< ContourType, EnergyModel >
 ::Converged()
 {
 	if( _stepCount > 1 ) {
-		return _stepCount > 120 || _lastGradientSize < 0.001;
+		return _stepCount > 120 || _lastGradientSize < 0.00001;
 	} else {
 		return false;
 	}
