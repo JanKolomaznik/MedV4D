@@ -2,6 +2,7 @@
 #include "Imaging/BSpline.h"
 #include <fstream>
 #include "Imaging/EnergicSnake.h"
+#include "Imaging/GeometricAlgorithms.h"
 
 using namespace std;
 
@@ -16,17 +17,6 @@ typedef Coordinates< CoordType, 2 > Coords;
 
 typedef EnergicSnake< Curve, EFConvergeToPoint< Curve > > Snake;
 
-
-void
-SetLine( const Coords &a, const Coords &b )
-{
-	//cout <<	"set arrow from " << a[0] << "," << a[1] 
-	//	<< " to " << b[0] << "," << b[1] << "\n";
-	
-	cout << a[0] << " " << a[1]  << "\n";
-		
-}
-
 Snake snake;
 
 int
@@ -39,7 +29,8 @@ main( int argc, char **argv )
 	//Add points
 	
 	curve.AddPoint( Coords(10,10) );
-	curve.AddPoint( Coords(120,220) );
+	curve.AddPoint( Coords(120,120) );
+	//curve.AddPoint( Coords(120,220) );
 	curve.AddPoint( Coords(250,10) );
 	curve.AddPoint( Coords(210,130) );
 	curve.AddPoint( Coords(250,245) );
@@ -63,14 +54,15 @@ main( int argc, char **argv )
 			cout << endl;
 		}
 	}
-	/*for( unsigned i = 0; i < 120; ++i ) {
-		snake.Step();
-		if( i % 3 == 0 ) {
-			PrintCurve( cout, snake.GetCurrentCurve() );
+	PrintCurve( cout, snake.GetCurrentCurve() );
 			cout << endl;
 			cout << endl;
-		}
-	}*/
+	PrintPointSet( cout, snake.GetCurrentCurve() );
 
+	bool result;
+	result = LineIntersectionTest( Coords( -1,-1 ), Coords( 10,10 ), Coords( -6,-5 ), Coords( 6,5 ) );
+	cerr << "R1 = " << result << endl;
+	result = LineIntersectionTest( Coords( 0,0 ), Coords( 10,10 ), Coords( 0,0 ), Coords( 10,7 ) );
+	cerr << "R2 = " << result << endl;
 	return 0;
 }

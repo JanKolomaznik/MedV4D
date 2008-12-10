@@ -241,6 +241,33 @@ private:
 };
 
 template< typename CoordType, unsigned Dim >
+bool
+operator==( const Coordinates< CoordType, Dim > &v1, const Coordinates< CoordType, Dim > &v2 )
+{
+	bool result = true;
+
+	for( unsigned i=0; i < Dim; ++i ) {
+		result = result && (v1._coordinates[ i ] == v2._coordinates[ i ]);
+	}
+
+	return result;
+}
+
+
+template< typename CoordType, unsigned Dim >
+bool
+operator!=( const Coordinates< CoordType, Dim > &v1, const Coordinates< CoordType, Dim > &v2 )
+{
+	bool result = false;
+
+	for( unsigned i=0; i < Dim; ++i ) {
+		result = result || (v1._coordinates[ i ] != v2._coordinates[ i ]);
+	}
+
+	return result;
+}
+
+template< typename CoordType, unsigned Dim >
 Coordinates< CoordType, Dim >
 operator+( const Coordinates< CoordType, Dim > &v1, const Coordinates< CoordType, Dim > &v2 )
 {

@@ -34,7 +34,7 @@ public:
 		for( unsigned i = 0; i < gradient.Size(); ++i ) {
 			gradient[i] = _point - curve[i];
 			float32 size = sqrt(gradient[i]*gradient[i]);
-			float32 pom = (size - 10.0f)/size;
+			float32 pom = (size - 100.0f)/size;
 			gradient[i] = pom * gradient[i];
 		}
 	}
@@ -110,23 +110,25 @@ private:
 
 	EnergyModel	_energyFunctional;
 
-	ContourType	_curve;
-
+	//
 	GradientType	*_gradient;
 
 	GradientType	_gradients[2];
 	unsigned	_actualGradient;
 
-	float32		_stepScale;
-	float32		_stepScaleAlpha;
-	float32		_stepScaleBeta;
+	float32		_lastGradientSize;
 
 	unsigned	_stepCount;
 
+
+	//Parameters
 	unsigned	_sampleRate;
-
-
-	float32		_lastGradientSize;
+	ContourType	_curve;
+	float32		_stepScale;
+	float32		_stepScaleAlpha;
+	float32		_stepScaleBeta;
+	float32		_minimalSegmentLength;
+	float32		_maximalSegmentLength;
 };
 
 template< typename ContourType, typename EnergyModel >
@@ -140,6 +142,8 @@ EnergicSnake< ContourType, EnergyModel >
 	_stepScale = 5.0;
 	_stepScaleAlpha = 0.8;
 	_stepScaleBeta = 0.5;
+	_minimalSegmentLength = 10;
+	_maximalSegmentLength = 30;
 
 	SwitchGradients();
 }
@@ -259,7 +263,26 @@ void
 EnergicSnake< ContourType, EnergyModel >
 ::CheckSelfIntersection()
 {
+	CoordInt2D seg = FindBSplineSelfIntersection( _curve );
+	if( seg[0] < 0 ) return;
+	
+	DL_PRINT(10, "EnergicSnake ->    Found self intersections : " << seg[0] << "; " << seg[1] << " : " << _curve.GetSegmentCount() );
+	unsigned inSegCount = static_cast< unsigned >( seg[1]-seg[0] );
 
+	if( inSegCount == 0 ) {
+		_curve.RemovePoint( seg[0] );
+	} else {
+		bool keepInInterval = inSegCount > (_curve.GetSegmentCount()-inSegCount);
+
+		if( keepInInterval ) {
+			DL_PRINT(10, "EnergicSnake ->     Removing interval : " << seg[1] << "; " << seg[0] );
+			_curve.RemovePoints( seg[1], seg[0] );
+		} else {
+			DL_PRINT(10, "EnergicSnake ->     Removing interval : " << seg[0] << "; " << seg[1] );
+			_curve.RemovePoints( seg[0], seg[1] );
+		}
+	}
+	_curve.Sample( _sampleRate );
 }
 
 template< typename ContourType, typename EnergyModel >
@@ -267,7 +290,26 @@ void
 EnergicSnake< ContourType, EnergyModel >
 ::CheckSegmentLengths()
 {
+	unsigned maxIdx;
+	float32  maxVal;
+	unsigned minIdx;
+	float32  minVal;
+	FindBSplineSegmentLengthExtremes( _curve, maxIdx, maxVal, minIdx, minVal );
 
+	bool changed = false;
+	if( maxVal > _maximalSegmentLength ) {
+		_curve.SplitSegment( maxIdx );
+		changed = true;
+		DL_PRINT(10, "EnergicSnake ->     Spliting segment : " << maxIdx << " length = " << maxVal );
+	}
+	if( minVal < _minimalSegmentLength ) {
+		_curve.JoinSegment( minIdx );
+		changed = true;
+		DL_PRINT(10, "EnergicSnake ->     Joining segment : " << minIdx << " length = " << minVal );
+	}
+	if( changed ) {
+		_curve.Sample( _sampleRate );
+	}
 }
 
 template< typename ContourType, typename EnergyModel >

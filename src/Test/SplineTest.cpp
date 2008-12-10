@@ -50,26 +50,47 @@ main( int argc, char **argv )
 	Coords ystep( 0, 10 );
 
 	Coords actualPoint( 0, 0 );
-	CoordType pom = 1;
+	/*CoordType pom = 1;
 	for( unsigned i = 0; i < 4; ++i ) {
 		curve.AddPoint( actualPoint );	
 		actualPoint += xstep;
 		curve.AddPoint( actualPoint );	
 		actualPoint += pom *ystep;
 		pom *= -1;
-	}
+	}*/
+	curve.AddPoint( Coords(10,10) );
+	curve.AddPoint( Coords(120,120) );
+	//curve.AddPoint( Coords(120,220) );
+	curve.AddPoint( Coords(250,10) );
+	curve.AddPoint( Coords(210,130) );
+	curve.AddPoint( Coords(250,245) );
+	curve.AddPoint( Coords(140,180) );
+	curve.AddPoint( Coords(10,230) );
+	curve.AddPoint( Coords(45,100) );
 
-	//curve.SetCyclic();
+	curve.SetCyclic();
 	//Sample
-	curve.Sample( 5 );
+	curve.Sample( 15 );
+
 
 	//Output
-	PrepareOutput();
+	/*PrepareOutput();
 	for( unsigned i = 0; i < curve.Size(); ++i ) {
 		PrintPoint( curve[i] );
-	}
+	}*/
+	PrintPointSet( std::cout, curve );
 	cout << "\n\n";
 	
+	PrintCurve( std::cout, curve );
+
+
+	cout << "\n\n";
+	
+	curve.SplitSegment( 2 );
+	curve.Sample( 15 );
+
+	PrintPointSet( std::cout, curve );
+	cout << "\n\n";
 	PrintCurve( std::cout, curve );
 
 	CloseOutput();

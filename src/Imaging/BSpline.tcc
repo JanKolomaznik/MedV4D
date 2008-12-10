@@ -19,14 +19,14 @@ namespace Geometry
 
 template < typename CoordType, unsigned Dim >
 BSpline< CoordType, Dim >
-::BSpline(): _cyclic( false )
+::BSpline(): _cyclic( false ), _lastSampleFrequency( 2 )
 {
 
 }
 
 template < typename CoordType, unsigned Dim >
 BSpline< CoordType, Dim >
-::BSpline( const PointSet< CoordType, Dim > & points ): _cyclic( false )
+::BSpline( const PointSet< CoordType, Dim > & points ): _cyclic( false ), _lastSampleFrequency( 2 )
 {
 
 }
@@ -90,18 +90,54 @@ void
 BSpline< CoordType, Dim >
 ::Sample( unsigned frequency )
 {
+	//TODO check
+	_lastSampleFrequency = frequency;
+	ReSample();
+}
+
+template < typename CoordType, unsigned Dim >
+void
+BSpline< CoordType, Dim >
+::ReSample()
+{
 	
 	if( this->_pointCount <= 1 ) {
 		return;
 	}
-	//Check if general
+	
+	//Precompute basis functions values
+	BFValVector precomputedFValues;
+	precomputedFValues.reserve( _lastSampleFrequency );
+	double dt = 1.0 / _lastSampleFrequency;
+	double t = 0.0;
+	for( unsigned i=0; i < _lastSampleFrequency; ++i, t += dt ) {
+		CurveBasis::ValuesAtPoint( t, precomputedFValues[ i ] );	
+	}
+
+	if( _cyclic ) {
+		int32 sampleCount = GetSegmentCount() * _lastSampleFrequency;
+		_samplePointCache.Resize( sampleCount );
+
+		unsigned last =	SampleUniformSpline( 0, _samplePointCache, precomputedFValues );
+		SampleUniformSplineCyclicEnd( last, _samplePointCache, precomputedFValues );
+	} else {
+		int32 sampleCount = GetSegmentCount() * _lastSampleFrequency + 1;
+		_samplePointCache.Resize( sampleCount );
+
+		unsigned last =	SampleUniformSplineACyclicBegin( 0, _samplePointCache, precomputedFValues );
+		last = SampleUniformSpline( last, _samplePointCache, precomputedFValues );
+		SampleUniformSplineACyclicEnd( last, _samplePointCache, precomputedFValues );
+	}
+
+
+	/*//Check if general
 	int firstSegment = -CurveBasis::Degree+1;
 	int lastSegment = this->_pointCount-1;
 	if( _cyclic ) { 
 		firstSegment = -1;
 	}
 	int segmentCount = lastSegment - firstSegment;
-	int32 sampleCount = frequency * segmentCount;
+	int32 sampleCount = _lastSampleFrequency * segmentCount;
 	if( !_cyclic ) {
 		++sampleCount;
 	}
@@ -111,29 +147,98 @@ BSpline< CoordType, Dim >
 
 	//Precompute basis functions values
 	std::vector< BFunctionValues > precomputedFValues;
-	precomputedFValues.reserve( frequency );
-	double dt = 1.0 / frequency;
+	precomputedFValues.reserve( _lastSampleFrequency );
+	double dt = 1.0 / _lastSampleFrequency;
 	double t = 0.0;
-	for( unsigned i=0; i < frequency; ++i, t += dt ) {
+	for( unsigned i=0; i < _lastSampleFrequency; ++i, t += dt ) {
 		CurveBasis::ValuesAtPoint( t, precomputedFValues[ i ] );	
 	}
 	
 	unsigned actualSample = 0;
 	for( int i = firstSegment; i < lastSegment; ++i ) {
-		for( unsigned j = 0; j < frequency; ++j, ++actualSample ) {
+		for( unsigned j = 0; j < _lastSampleFrequency; ++j, ++actualSample ) {
 			_samplePointCache[ actualSample ] = EvaluateCurve( i, precomputedFValues[ j ] );
 		}
 	}
 	if( !_cyclic ) {
 		//Add last point
 		_samplePointCache[ actualSample ] = EvaluateCurve( lastSegment, precomputedFValues[ 0 ] );
+	}*/
+}
+
+template < typename CoordType, unsigned Dim >
+unsigned
+BSpline< CoordType, Dim >
+::SampleUniformSpline( unsigned firstPoint, PointSet< CoordType, Dim > &points, const BSpline< CoordType, Dim >::BFValVector &values )
+{
+	unsigned actualSample = firstPoint;
+	for( int i = 0; i < (int)(this->Size()-CurveBasis::Degree); ++i ) {
+		for( unsigned j = 0; j < _lastSampleFrequency; ++j, ++actualSample ) {
+			points[ actualSample ] = EvaluateCurve( i, values[ j ] );
+		}
 	}
+	return actualSample;
+}
+
+template < typename CoordType, unsigned Dim >
+unsigned
+BSpline< CoordType, Dim >
+::SampleUniformSplineCyclicEnd( unsigned firstPoint, PointSet< CoordType, Dim > &points, const BSpline< CoordType, Dim >::BFValVector &values )
+{
+	unsigned actualSample = firstPoint;
+	for( int i = 0; i < CurveBasis::Degree; ++i ) {
+		for( unsigned j = 0; j < _lastSampleFrequency; ++j, ++actualSample ) {
+			points[ actualSample ] = EvaluateCyclicCurve( i+this->Size()-CurveBasis::Degree, values[ j ] );
+		}
+	}
+	return actualSample;
+}
+
+template < typename CoordType, unsigned Dim >
+unsigned
+BSpline< CoordType, Dim >
+::SampleUniformSplineACyclicBegin( unsigned firstPoint, PointSet< CoordType, Dim > &points, const BSpline< CoordType, Dim >::BFValVector &values )
+{
+
+	unsigned actualSample = firstPoint;
+	for( int i = -CurveBasis::Degree; i < 0; ++i ) {
+		for( unsigned j = 0; j < _lastSampleFrequency; ++j, ++actualSample ) {
+			points[ actualSample ] = EvaluateACyclicCurve( i, values[ j ] );
+		}
+	}
+	return actualSample;
+}
+
+template < typename CoordType, unsigned Dim >
+unsigned
+BSpline< CoordType, Dim >
+::SampleUniformSplineACyclicEnd( unsigned firstPoint, PointSet< CoordType, Dim > &points, const BSpline< CoordType, Dim >::BFValVector &values )
+{
+
+	unsigned actualSample = firstPoint;
+	for( int i = this->Size()-CurveBasis::Degree; i < (int)this->Size(); ++i ) {
+		for( unsigned j = 0; j < _lastSampleFrequency; ++j, ++actualSample ) {
+			points[ actualSample ] = EvaluateACyclicCurve( i, values[ j ] );
+		}
+	}
+	points[ actualSample++ ] = EvaluateACyclicCurve( this->Size()-1, values[ 0 ] );
+	return actualSample;
 }
 
 template < typename CoordType, unsigned Dim >
 void
 BSpline< CoordType, Dim >
 ::SampleWithDerivations( unsigned frequency )
+{
+	//TODO check
+	_lastSampleFrequency = frequency;
+	ReSampleWithDerivations();
+}
+
+template < typename CoordType, unsigned Dim >
+void
+BSpline< CoordType, Dim >
+::ReSampleWithDerivations()
 {
 
 }
@@ -159,7 +264,28 @@ void
 BSpline< CoordType, Dim >
 ::SplitSegment( int segment )
 {
+	int idx = segment + CurveBasis::HalfDegree;
+	if( _cyclic ) {
+		PointType newPoint = 0.5f * (this->_points[ MOD(idx, this->Size()) ]+this->_points[ MOD(idx+1, this->Size()) ]);
+		this->InsertPoint( MOD(idx+1, this->Size()), newPoint );
+	} else {
+		throw ErrorHandling::ENotFinished( "SplitSegment() - Handling noncyclic splines" );
+	}
+}
 
+template < typename CoordType, unsigned Dim >
+void
+BSpline< CoordType, Dim >
+::JoinSegment( int segment )
+{
+	int idx = segment + CurveBasis::HalfDegree;
+	if( _cyclic ) {
+		PointType newPoint = 0.5f * (this->_points[ MOD(idx, this->Size()) ]+this->_points[ MOD(idx+1, this->Size()) ]);
+		this->_points[ MOD(idx+1, this->Size()) ] = newPoint;
+		this->RemovePoint( MOD(idx, this->Size()) );
+	} else {
+		throw ErrorHandling::ENotFinished( "SplitSegment() - Handling noncyclic splines" );
+	}
 }
 
 template < typename CoordType, unsigned Dim >
@@ -167,11 +293,16 @@ typename BSpline< CoordType, Dim >::PointType
 BSpline< CoordType, Dim >
 ::EvaluateCurve( int segment, const BSpline< CoordType, Dim >::BFunctionValues &values )
 {
-	if( _cyclic ) {
+	PointType result;
+	for( int i = 0; i <= CurveBasis::Degree; ++i ) {
+			result += values[i]*(this->_points[ segment + i ]);
+	}
+	return result;
+	/*if( _cyclic ) {
 		return EvaluateCyclicCurve( segment, values );
 	} else {
 		return EvaluateACyclicCurve( segment, values );
-	}
+	}*/
 }
 
 template < typename CoordType, unsigned Dim >
@@ -217,208 +348,6 @@ BSpline< CoordType, Dim >
 	return result;
 }
 
-/*
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-ParametricCurve< CoordType, Dim, CurveBasis >
-::ParametricCurve()
-{
-
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-ParametricCurve< CoordType, Dim, CurveBasis >
-::ParametricCurve( const PointSet< CoordType, Dim > & points )
-{
-
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-typename ParametricCurve< CoordType, Dim, CurveBasis >::PointType
-ParametricCurve< CoordType, Dim, CurveBasis >
-::PointByParameter( double t )const
-{
-	int segment_nmbr = floor( t );
-	double relative_t = t - segment_nmbr;
-
-	BFunctionValues values;
-
-	CurveBasis::ValuesAtPoint( relative_t, values );
-
-	return EvaluateCurve( segment_nmbr, values );
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-bool
-ParametricCurve< CoordType, Dim, CurveBasis >
-::DerivationAtPoint( double t, PointType &derivation )const
-{
-	int segment_nmbr = floor( t );
-	double relative_t = t - segment_nmbr;
-
-	BFunctionValues dvalues;
-
-	if ( CurveBasis::DerivationsAtPoint( relative_t, dvalues ) ) {
-		derivation = EvaluateCurve( segment_nmbr, dvalues );
-		return true;
-	} 
-
-	return false;
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-bool
-ParametricCurve< CoordType, Dim, CurveBasis >
-::PointAndDerivationAtPoint( double t, PointType &point, PointType &derivation )const
-{
-	int segment_nmbr = floor( t );
-	double relative_t = t - segment_nmbr;
-
-	BFunctionValues values;
-	BFunctionValues dvalues;
-
-	if ( CurveBasis::ValuesAndDerivationsAtPoint( relative_t, values, dvalues ) ) {
-		point = EvaluateCurve( segment_nmbr, values );
-		derivation = EvaluateCurve( segment_nmbr, dvalues );
-		return true;
-	} 
-
-	point = EvaluateCurve( segment_nmbr, values );
-	return false;
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-void
-ParametricCurve< CoordType, Dim, CurveBasis >
-::Sample( unsigned frequency )
-{
-	//Check if we have enough points
-	if( this->_pointCount <= 1 ) {
-		return;
-	}
-	int32 sampleCount = frequency * (this->_pointCount);
-	if( !_cyclic ) { 
-		sampleCount += frequency;
-	}
-	_samplePointCache.Resize( sampleCount );
-
-	std::vector< BFunctionValues > precomputedFValues;
-	precomputedFValues.reserve( frequency );
-
-	double dt = 1.0 / frequency;
-	double t = 0.0;
-	for( unsigned i=0; i < frequency; ++i, t += dt ) {
-		CurveBasis::ValuesAtPoint( t, precomputedFValues[ i ] );	
-	}
-	
-	unsigned actualSample = 0;
-	//first segment - in cyclic version even last segment
-	for( unsigned j = 0; j < frequency; ++j, ++actualSample ) {
-		_samplePointCache[ actualSample ] = EvaluateCurve( -1, precomputedFValues[ j ] );
-	}
-
-	for( unsigned i = 0; i < this->_pointCount-1; ++i ) {
-		for( unsigned j = 0; j < frequency; ++j, ++actualSample ) {
-			_samplePointCache[ actualSample ] = EvaluateCurve( i, precomputedFValues[ j ] );
-		}
-	}
-	if( !_cyclic ) {
-		for( unsigned j = 0; j < frequency; ++j, ++actualSample ) {
-			_samplePointCache[ actualSample ] = EvaluateCurve( this->_pointCount, precomputedFValues[ j ] );
-		}
-	} 
-
-
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-void
-ParametricCurve< CoordType, Dim, CurveBasis >
-::SampleWithDerivations( unsigned frequency )
-{
-
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-void
-ParametricCurve< CoordType, Dim, CurveBasis >
-::ResetSamples()
-{
-
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-void
-ParametricCurve< CoordType, Dim, CurveBasis >
-::ResetSamplesDerivations()
-{
-
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-void
-ParametricCurve< CoordType, Dim, CurveBasis >
-::SplitSegment( int segment )
-{
-
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-typename ParametricCurve< CoordType, Dim, CurveBasis >::PointType
-ParametricCurve< CoordType, Dim, CurveBasis >
-::EvaluateCurve( int segment, const BFunctionValues &values )
-{
-	if( _cyclic ) {
-		return EvaluateCyclicCurve( segment, values );
-	} else {
-		return EvaluateACyclicCurve( segment, values );
-	}
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-typename ParametricCurve< CoordType, Dim, CurveBasis >::PointType
-ParametricCurve< CoordType, Dim, CurveBasis >
-::EvaluateCyclicCurve( int segment, const BFunctionValues &values )
-{ 
-	PointType result;
-	int count = this->_pointCount;
-	for( int i = 0; i <= CurveBasis::Degree; ++i ) {
-			//result += values[i]*(this->_points[ (segment-curveEndSegCount) + i ]);
-			int p = ((segment-curveEndSegCount) + i);
-			int idx = MOD( p, count );
-			result += values[i]*(this->_points[ idx ]);
-		}
-	return result;
-}
-
-template < typename CoordType, unsigned Dim, typename CurveBasis >
-typename ParametricCurve< CoordType, Dim, CurveBasis >::PointType
-ParametricCurve< CoordType, Dim, CurveBasis >
-::EvaluateACyclicCurve( int segment, const BFunctionValues &values )
-{ 
-	PointType result;
-	int count = this->_pointCount;
-
-	if( segment < curveEndSegCount ) {
-		for( int i = 0; i <= CurveBasis::Degree; ++i ) {
-			//TODO - correct
-			int pom =  Max(segment-curveEndSegCount+i,0);
-			result += values[i]*(this->_points[ pom ]);
-		}
-		return result;
-	} 
-	if( segment >= (count-1-curveEndSegCount) ) {
-		for( int i = 0; i <= CurveBasis::Degree; ++i ) {
-			result += values[i]*(this->_points[ Min(segment-curveEndSegCount+i,count-1) ]);
-		}
-		return result;
-	} 
-
-	for( int i = 0; i <= CurveBasis::Degree; ++i ) {
-			result += values[i]*(this->_points[ (segment-curveEndSegCount) + i ]);
-		}
-	return result;
-}
-*/
 	
 }/*namespace Geometry*/
 }/*namespace Imaging*/

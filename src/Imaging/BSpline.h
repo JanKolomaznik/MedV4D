@@ -50,6 +50,7 @@ class BSplineBasis
 {
 public:
 	static const int Degree = 3;
+	static const int HalfDegree = Degree / 2;
 	/**
 	 * With how many segments has incident interval - in one direction
 	 **/
@@ -114,6 +115,7 @@ class BSpline: public PointSet< CoordType, Dim >
 public:
 	typedef BSplineBasis						CurveBasis;
 	typedef BasisFunctionValues< CoordType, CurveBasis::Degree > 	BFunctionValues;
+	typedef std::vector< BFunctionValues >				BFValVector;
 	typedef PointSet< CoordType, Dim > 				Predecessor;
 	typedef typename Predecessor::PointType 			PointType;
 	typedef PointSet< CoordType, Dim >				SamplePointSet;
@@ -137,7 +139,13 @@ public:
 	Sample( unsigned frequency );
 
 	void
+	ReSample();
+
+	void
 	SampleWithDerivations( unsigned frequency );
+
+	void
+	ReSampleWithDerivations();
 
 	void
 	ResetSamples();
@@ -148,6 +156,9 @@ public:
 	void
 	SplitSegment( int segment );
 
+	void
+	JoinSegment( int segment );
+
 	const PointSet< CoordType, Dim > &
 	GetSampleDerivations()const
 		{ return _sampleDerivationCache; }
@@ -156,6 +167,10 @@ public:
 	GetSamplePoints()const
 		{ return _samplePointCache; }
 
+	unsigned
+	GetLastSampleFrequency() const
+		{ return _lastSampleFrequency; }
+
 	void
 	SetCyclic( bool cyclic = true )
 		{ _cyclic = cyclic; }
@@ -163,7 +178,48 @@ public:
 	bool
 	Cyclic() const
 		{ return _cyclic; }
+
+	unsigned
+	GetSegmentCount() const
+		{  
+			if( _cyclic ) {
+				return GetNormalSegmentCount() + GetCyclicSegmentCount();
+			} else {
+				return GetNormalSegmentCount() + 2*GetEndSegmentCount();
+			}
+		}
+
+	/**
+	 * Returns number of uniform spline "normal" segments (no multiple points, acyclic).
+	 **/
+	unsigned
+	GetNormalSegmentCount() const
+		{ return Max( 0, static_cast<int>( this->Size() - CurveBasis::Degree ) ); }
+	/**
+	 * Returns number of uniform spline segments, which make it cyclical.
+	 **/
+	unsigned
+	GetCyclicSegmentCount() const
+		{ return CurveBasis::Degree; }
+	/**
+	 * Returns number of uniform spline segments produced by multipliing points on end.
+	 **/
+	unsigned
+	GetEndSegmentCount() const
+		{ return CurveBasis::Degree; }
 protected:
+	unsigned
+	SampleUniformSpline( unsigned firstPoint, PointSet< CoordType, Dim > &points, const BFValVector &values );
+
+	unsigned
+	SampleUniformSplineCyclicEnd( unsigned firstPoint, PointSet< CoordType, Dim > &points, const BFValVector &values );
+
+	unsigned
+	SampleUniformSplineACyclicBegin( unsigned firstPoint, PointSet< CoordType, Dim > &points, const BFValVector &values );
+
+	unsigned
+	SampleUniformSplineACyclicEnd( unsigned firstPoint, PointSet< CoordType, Dim > &points, const BFValVector &values );
+
 	inline PointType
 	EvaluateCurve( int segment, const BFunctionValues &values );
 
@@ -178,7 +234,68 @@ protected:
 	PointSet< CoordType, Dim >	_samplePointCache;
 	PointSet< CoordType, Dim >	_sampleDerivationCache;
 
+	unsigned 			_lastSampleFrequency;
+
 };
+
+template< typename CoordType >
+CoordInt2D
+FindBSplineSelfIntersection( BSpline< CoordType, 2 > &curve )
+{
+	const typename BSpline< CoordType, 2 >::SamplePointSet &samples = curve.GetSamplePoints();
+	CoordInt2D result = CoordInt2D( -1, -1 );
+	for( unsigned i = 0; i < samples.Size()-3; ++i ) {
+		for( unsigned j = i+2; j < samples.Size()-1; ++j ) {
+			if( LineIntersectionTest( samples[i], samples[i+1], 
+						samples[j], samples[j+1] ) ) 
+			{
+				result[0] = i / curve.GetLastSampleFrequency();
+				result[1] = j / curve.GetLastSampleFrequency();
+				return result;
+			}
+		}
+	}
+
+	return result;
+}
+
+template< typename CoordType, unsigned Dim >
+float32
+BSplineSegmentLength( BSpline< CoordType, Dim > &curve, unsigned segment )
+{
+	const typename BSpline< CoordType, Dim >::SamplePointSet &samples = curve.GetSamplePoints();
+	segment = segment % curve.GetSegmentCount();
+	
+	float32 length = 0;
+	
+	for( unsigned i = segment * curve.GetLastSampleFrequency(); i < (segment+1) * curve.GetLastSampleFrequency(); ++i ) {
+		typename BSpline< CoordType, Dim >::PointType diff = samples[i] - samples[MOD( i+1, samples.Size() )];
+		length += sqrt( diff * diff );
+	}
+
+	return length;
+}
+
+template< typename CoordType, unsigned Dim >
+void
+FindBSplineSegmentLengthExtremes( BSpline< CoordType, Dim > &curve, unsigned &maxIdx, float32 &maxVal, unsigned &minIdx, float32 &minVal )
+{
+	float32	 len = BSplineSegmentLength( curve, 0 );
+	maxIdx = 0;
+	maxVal = len;
+	minIdx = 0;
+	minVal = len;
+	for( unsigned i=1; i < curve.GetSegmentCount(); ++i ) {
+		len = BSplineSegmentLength( curve, i );
+		if( len > maxVal ) {
+			maxVal = len;
+			maxIdx = i;
+		} else if( len < minVal ) {
+			minVal = len;
+			minIdx = i;
+		}
+	}
+}
 
 template < typename CurveType >
 void

@@ -64,6 +64,32 @@ public:
 	void
 	AddPoint( const PointType &point )
 		{ _points.push_back( point ); ++_pointCount; } 
+
+	void
+	InsertPoint( unsigned before, const PointType &point )
+		{ _points.insert( _points.begin() + before, point ); ++_pointCount; } 
+
+	void
+	RemovePoint( unsigned idx )
+		{
+			_points.erase( _points.begin() + idx );	
+			_pointCount = _points.size();
+		}
+	/**
+	 * Remove points from interval [first,last).
+	 * If first > last -> removing cyclically.
+	 **/
+	void
+	RemovePoints( unsigned first, unsigned last )
+		{
+			if( first < last ) {
+				_points.erase( _points.begin() + first, _points.begin() + last );
+			} else {
+				_points.erase( _points.begin() + first, _points.end() );
+				_points.erase( _points.begin(), _points.begin() + last );
+			}
+			_pointCount = _points.size();
+		}
 protected:
 	std::vector< PointType >	_points;
 	uint32				_pointCount;
