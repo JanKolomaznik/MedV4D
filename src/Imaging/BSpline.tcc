@@ -100,7 +100,6 @@ void
 BSpline< CoordType, Dim >
 ::ReSample()
 {
-	
 	if( this->_pointCount <= 1 ) {
 		return;
 	}
@@ -128,42 +127,6 @@ BSpline< CoordType, Dim >
 		last = SampleUniformSpline( last, _samplePointCache, precomputedFValues );
 		SampleUniformSplineACyclicEnd( last, _samplePointCache, precomputedFValues );
 	}
-
-
-	/*//Check if general
-	int firstSegment = -CurveBasis::Degree+1;
-	int lastSegment = this->_pointCount-1;
-	if( _cyclic ) { 
-		firstSegment = -1;
-	}
-	int segmentCount = lastSegment - firstSegment;
-	int32 sampleCount = _lastSampleFrequency * segmentCount;
-	if( !_cyclic ) {
-		++sampleCount;
-	}
-
-	//Ensure that we have enough space for samples
-	_samplePointCache.Resize( sampleCount );
-
-	//Precompute basis functions values
-	std::vector< BFunctionValues > precomputedFValues;
-	precomputedFValues.reserve( _lastSampleFrequency );
-	double dt = 1.0 / _lastSampleFrequency;
-	double t = 0.0;
-	for( unsigned i=0; i < _lastSampleFrequency; ++i, t += dt ) {
-		CurveBasis::ValuesAtPoint( t, precomputedFValues[ i ] );	
-	}
-	
-	unsigned actualSample = 0;
-	for( int i = firstSegment; i < lastSegment; ++i ) {
-		for( unsigned j = 0; j < _lastSampleFrequency; ++j, ++actualSample ) {
-			_samplePointCache[ actualSample ] = EvaluateCurve( i, precomputedFValues[ j ] );
-		}
-	}
-	if( !_cyclic ) {
-		//Add last point
-		_samplePointCache[ actualSample ] = EvaluateCurve( lastSegment, precomputedFValues[ 0 ] );
-	}*/
 }
 
 template < typename CoordType, unsigned Dim >

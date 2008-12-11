@@ -230,11 +230,14 @@ protected:
 	EvaluateACyclicCurve( int segment, const BFunctionValues &values );
 
 
-	bool 				_cyclic;
-	PointSet< CoordType, Dim >	_samplePointCache;
-	PointSet< CoordType, Dim >	_sampleDerivationCache;
+	bool 			_cyclic;
+	SamplePointSet		_samplePointCache;
+	SamplePointSet		_sampleDerivationCache;
 
-	unsigned 			_lastSampleFrequency;
+	BFValVector		_lastBasisFunctionValues;
+	BFValVector		_lastBasisFunctionDerivationValues;
+
+	unsigned 		_lastSampleFrequency;
 
 };
 
