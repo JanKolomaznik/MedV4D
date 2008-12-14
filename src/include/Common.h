@@ -66,6 +66,7 @@ struct IsSameDimension< Dim, Dim >
 #define MOD( a, b ) ((a)<0 ? ((a)%(b)) + (b) : (a) % (b))
 #define Abs( a ) ((a)<0 ? (-a) : (a))
 #define PWR( a ) ( (a) * (a) )
+#define ROUND( a ) ( (int)(a+0.5) )
 
 //***********************************************************
 

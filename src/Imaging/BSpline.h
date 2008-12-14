@@ -171,6 +171,10 @@ public:
 	GetLastSampleFrequency() const
 		{ return _lastSampleFrequency; }
 
+	const BFValVector &
+	GetLastBasisFunctionValues() const
+		{ return _lastBasisFunctionValues; }
+
 	void
 	SetCyclic( bool cyclic = true )
 		{ _cyclic = cyclic; }

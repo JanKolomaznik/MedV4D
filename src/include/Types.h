@@ -93,11 +93,11 @@ struct SimpleVector< Type, 2 >
 		}
 	}
 	
-	Type &
+/*	Type &
 	operator[]( unsigned idx )
 	{
 		return data[idx];
-	}
+	}*/
 
 	Type data[ Dimension ];
 };

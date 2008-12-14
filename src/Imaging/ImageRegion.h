@@ -19,11 +19,12 @@ namespace Imaging
 
 
 
-template< typename ElementType, uint32 Dim >
+template< typename EType, uint32 Dim >
 class ImageRegion
 {
 public:
 	static const uint32 Dimension = Dim;
+	typedef EType					ElementType;
 	typedef ImageIterator< ElementType, Dim >	Iterator;
 
 	ImageRegion( ElementType *pointer, const uint32 size[ Dimension ], const int32 strides[ Dimension ] )

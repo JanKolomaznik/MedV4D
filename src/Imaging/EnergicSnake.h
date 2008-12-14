@@ -3,6 +3,7 @@
 
 #include "Imaging/PointSet.h"
 #include "Imaging/BSpline.h"
+#include "Imaging/EnergyModels.h"
 
 namespace M4D
 {
@@ -17,38 +18,6 @@ namespace Imaging
 {
 namespace Algorithms
 {
-
-template< typename ContourType >
-class EFConvergeToPoint
-{
-public:
-	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > 	GradientType;
-	typedef Coordinates< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
-
-	void
-	GetParametersGradient( ContourType &curve, GradientType &gradient )
-	{
-		if( curve.Size() != gradient.Size() ) {
-			//TODO - solve problem
-		}
-		for( unsigned i = 0; i < gradient.Size(); ++i ) {
-			gradient[i] = _point - curve[i];
-			float32 size = sqrt(gradient[i]*gradient[i]);
-			float32 pom = (size - 100.0f)/size;
-			gradient[i] = pom * gradient[i];
-		}
-	}
-
-	void
-	SetCenterPoint( const PointCoordinate &point )
-	{
-		_point = point;
-	}
-private:
-	PointCoordinate	_point;
-
-};
-
 
 template< typename ContourType, typename EnergyModel >
 class EnergicSnake
