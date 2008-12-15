@@ -35,7 +35,7 @@ ImageFactory::PrepareElementArrayFromTypeID(
 		)
 {
 	//We will generate switch over common numerical types. For more see Common.h
-	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( 
+	TYPE_TEMPLATE_SWITCH_MACRO( 
 		typeId, dataArray = (uint8 *) PrepareElementArray< TTYPE >( imageSize ) );
 }
 
@@ -50,7 +50,7 @@ ImageFactory::CreateImageFromDataAndTypeID(
 	AbstractImageData*	image;
 
 	//We will generate switch over common numerical types. For more see Common.h
-	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( 
+	TYPE_TEMPLATE_SWITCH_MACRO( 
 		typeId, image = new ImageDataTemplate< TTYPE >( (TTYPE*)dataArray, info, 3, imageSize ) );
 
 	return image;
@@ -230,7 +230,7 @@ ImageFactory::LoadDumpedImage( std::istream &stream )
 
 
 	AbstractImage::AImagePtr image;
-	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
+	TYPE_TEMPLATE_SWITCH_MACRO(
 		elementTypeID,
 		image = CreateEmptyImageFromExtents< TTYPE >( 
 				dimension,

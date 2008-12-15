@@ -74,7 +74,7 @@ public:
 	typedef SimpleVector< OutType, 2 >				OutElementType;
 	typedef OutType							OutScalarType;
 	typedef Image< OutElementType, ImageTraits< ImageType >::Dimension > OutImageType;
-	typedef AbstractImage2DFilter< ImageType, ImageType > 		PredecessorType;
+	typedef AbstractImage2DFilter< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > > 		PredecessorType;
 	typedef ConvolutionMask<2,float32>				Mask;
 	typedef typename ConvolutionMask<2,float32>::Ptr		MaskPtr;
 	typedef ImageRegion< ElementType, 2 >				IRegion;

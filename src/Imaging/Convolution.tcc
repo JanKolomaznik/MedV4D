@@ -175,11 +175,9 @@ Compute2DConvolution(
 	for( coords[1] = hheight; static_cast<uint32>(coords[1]) < ( inRegion.GetSize(1) - height + hheight ); ++coords[1] ) {
 		for( coords[0] = hwidth; static_cast<uint32>(coords[0]) < ( inRegion.GetSize(0) - width + hwidth ); ++coords[0] ) {
 			outRegion.GetElement( coords ) = addition +
-				static_cast< ElementType >( ApplyConvolutionMaskMirrorBorder( 
+				static_cast< ElementType >( ApplyConvolutionMask( 
 						inRegion.GetPointer( coords ), 
 						inRegion.GetStride(), 
-						firstBorder,
-						secondBorder,
 						mask,
 						multiplication
 						) );

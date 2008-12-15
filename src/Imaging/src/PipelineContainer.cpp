@@ -44,7 +44,7 @@ CreateConnectionObjectFromPorts( OutputPort& outPort, InputPort& inPort, bool ow
 			throw EAutoConnectingFailed();
 		}
 		
-		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( typeID, 
+		TYPE_TEMPLATE_SWITCH_MACRO( typeID, 
 				DIMENSION_TEMPLATE_SWITCH_MACRO( dim, connection = new ImageConnection< Image< TTYPE, DIM > >( ownsDataset ); ) );
 
 	}	
@@ -69,7 +69,7 @@ CreateConnectionObjectFromInputPort( InputPort& inPort, bool ownsDataset )
 		{
 			connection = new AbstractImageConnection();
 		} else {
-			NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( typeID, 
+			TYPE_TEMPLATE_SWITCH_MACRO( typeID, 
 				DIMENSION_TEMPLATE_SWITCH_MACRO( dim, connection = new ImageConnection< Image< TTYPE, DIM > >( ownsDataset ); ) );
 		}
 
@@ -95,7 +95,7 @@ CreateConnectionObjectFromOutputPort( OutputPort& outPort, bool ownsDataset )
 			throw EAutoConnectingFailed();
 		}
 		
-		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( typeID, 
+		TYPE_TEMPLATE_SWITCH_MACRO( typeID, 
 				DIMENSION_TEMPLATE_SWITCH_MACRO( dim, connection = new ImageConnection< Image< TTYPE, DIM > >( ownsDataset ); ) );
 
 	}	

@@ -69,7 +69,7 @@ SobelEdgeDetector< ImageType >
 				inRegion, 
 				outRegion, 
 				*xMatrix, 
-				0,//TypeTraits< ElementType >::Zero, 
+				/*0,//*/TypeTraits< ElementType >::Zero, 
 				1.0f,
 				FirstPassFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, ElementType >()
 				);
@@ -78,7 +78,7 @@ SobelEdgeDetector< ImageType >
 				inRegion, 
 				outRegion, 
 				*yMatrix, 
-				0,//TypeTraits< ElementType >::Zero, 
+				/*0,//*/TypeTraits< ElementType >::Zero, 
 				1.0f,
 				SecondPassFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, ElementType >()
 				);
@@ -119,7 +119,7 @@ struct FirstPassGradientFunctor
 	void
 	operator()( ValueType value, SimpleVector< OutElementType, 2 > & output )
 	{
-		output[0] = static_cast< OutElementType >( value );
+		output.data[0] = static_cast< OutElementType >( value );
 	}
 };
 
@@ -129,7 +129,7 @@ struct SecondPassGradientFunctor
 	void
 	operator()( ValueType value, SimpleVector< OutElementType, 2 > & output )
 	{
-		output[1] = static_cast< OutElementType >( value );
+		output.data[1] = static_cast< OutElementType >( value );
 	}
 };
 
@@ -158,21 +158,21 @@ SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits
 		)
 {
 	try {
-		Compute2DConvolutionPostProcess<ElementType, ElementType, float32, 
+		Compute2DConvolutionPostProcess<ElementType, OutElementType, float32, 
 			FirstPassGradientFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, OutScalarType > > ( 
 				inRegion, 
 				outRegion, 
 				*xMatrix, 
-				0,//TypeTraits< ElementType >::Zero, 
+				TypeTraits< ElementType >::Zero, 
 				1.0f,
 				FirstPassGradientFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, OutScalarType >()
 				); 
-		Compute2DConvolutionPostProcess<ElementType, ElementType, float32, 
+		Compute2DConvolutionPostProcess<ElementType, OutElementType, float32, 
 			SecondPassGradientFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, OutScalarType > > (  
 				inRegion, 
 				outRegion, 
 				*yMatrix, 
-				0,//TypeTraits< ElementType >::Zero, 
+				TypeTraits< ElementType >::Zero, 
 				1.0f,
 				SecondPassGradientFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, OutScalarType >()
 				);

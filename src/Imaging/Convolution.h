@@ -98,11 +98,14 @@ MirrorBorderAccess(
 	for( unsigned d=0; d < Dim; ++d )
 	{
 		if( coord[ d ] < firstBorder[d] ) {
-			pointer += strides[d] * (2*firstBorder[d] - maskcenter[d] -coord[d] -1);
+			int32 diff = 2*firstBorder[d] - maskcenter[d] -coord[d] -1;
+			pointer += strides[d] * diff;
 		} else if( coord[ d ] >= secondBorder[d] ) {
-			pointer += strides[d] * (2*secondBorder[d] - maskcenter[d] -coord[d] );
+			int32 diff = 2*secondBorder[d] - maskcenter[d] -coord[d];
+			pointer += strides[d] * diff;
 		} else {
-			pointer += strides[d] * (coord[d] - maskcenter[d] );
+			int32 diff = coord[d] - maskcenter[d];
+			pointer += strides[d] * diff;
 		}
 	}
 	return pointer;
