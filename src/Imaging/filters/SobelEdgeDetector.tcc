@@ -26,7 +26,7 @@ struct FirstPassFunctor
 	void
 	operator()( ValueType value, OutElementType & output )
 	{
-		output = static_cast< OutElementType >( Abs( value ) );
+		output = static_cast< OutElementType >( Min( Abs( value ), TypeTraits< OutElementType >::Max ) );
 	}
 };
 
@@ -69,7 +69,7 @@ SobelEdgeDetector< ImageType >
 				inRegion, 
 				outRegion, 
 				*xMatrix, 
-				/*0,//*/TypeTraits< ElementType >::Zero, 
+				TypeTraits< ElementType >::Zero, 
 				1.0f,
 				FirstPassFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, ElementType >()
 				);
@@ -78,7 +78,7 @@ SobelEdgeDetector< ImageType >
 				inRegion, 
 				outRegion, 
 				*yMatrix, 
-				/*0,//*/TypeTraits< ElementType >::Zero, 
+				TypeTraits< ElementType >::Zero, 
 				1.0f,
 				SecondPassFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, ElementType >()
 				);
