@@ -13,7 +13,7 @@ GetCoordinate( Coordinates< CoordType, Dim > &coord, unsigned idx )
 	if ( idx >= 0 && idx < Dim ) { 
 		return coord._coordinates[ idx ];
 	} else {
-		throw EWrongIndex();
+		throw EBadIndex();
 	}
 }
 
@@ -24,7 +24,7 @@ GetConstCoordinate( const Coordinates< CoordType, Dim > &coord, unsigned idx )
 	if ( idx >= 0 && idx < Dim ) { 
 		return coord._coordinates[ idx ];
 	} else {
-		throw EWrongIndex();
+		throw EBadIndex();
 	}
 }
 template < typename CoordType, unsigned Dimension >
@@ -373,6 +373,40 @@ operator<<( StreamType &stream, const Coordinates< CoordType, Dim > &coords )
 		}
 	}
 	return stream;
+}
+
+/**
+ * Will shift coordinate in every dimension to dimesion on right, 
+ * last coordinate will become first.
+ **/
+template< typename CoordType, unsigned Dim >
+Coordinates< CoordType, Dim >
+CoordinatesDimensionsShiftRight( const Coordinates< CoordType, Dim > &v )
+{
+	Coordinates< CoordType, Dim > result;
+
+	for( unsigned i=0; i < Dim; ++i ) {
+		result._coordinates[ (i + 1) % Dim ] = v[ i ];
+	}
+
+	return result;
+}
+
+/**
+ * Will shift coordinate in every dimension to dimesion on left, 
+ * first coordinate will become last.
+ **/
+template< typename CoordType, unsigned Dim >
+Coordinates< CoordType, Dim >
+CoordinatesDimensionsShiftLeft( const Coordinates< CoordType, Dim > &v )
+{
+	Coordinates< CoordType, Dim > result;
+
+	for( unsigned i=0; i < Dim; ++i ) {
+		result._coordinates[ i ] = v[ (i + 1) % Dim ];
+	}
+
+	return result;
 }
 
 typedef Coordinates< int32, 2 > CoordInt2D;

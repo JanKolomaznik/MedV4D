@@ -68,6 +68,8 @@ struct IsSameDimension< Dim, Dim >
 #define PWR( a ) ( (a) * (a) )
 #define ROUND( a ) ( (int)(a+0.5) )
 
+extern const float32 Epsilon;
+
 //***********************************************************
 
 //TODO - move

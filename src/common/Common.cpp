@@ -4,6 +4,12 @@
  *  @author Jan Kolomaznik
  */
 #include "Common.h"
+
+
+const float32 Epsilon = 1.0E-10;
+
+
+
 #include "Types.h"
 
 float32 TypeTraits< float32 >::Max = MAX_FLOAT32;

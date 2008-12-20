@@ -49,7 +49,7 @@ public:
 			if( idx < _pointCount ) {
 				return _points[ idx ]; 
 			} else 
-				throw ErrorHandling::EWrongIndex(); 
+				throw ErrorHandling::EBadIndex(); 
 		}
 
 	const PointType &
@@ -58,7 +58,7 @@ public:
 			if( idx < _pointCount ) {
 				return _points[ idx ]; 
 			} else 
-				throw ErrorHandling::EWrongIndex(); 
+				throw ErrorHandling::EBadIndex(); 
 		}
 
 	void

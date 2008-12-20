@@ -51,7 +51,7 @@ const DimensionInfo&
 AbstractImageData::GetDimensionInfo( unsigned short dim )const
 {
 	if( dim >= _dimension ) {
-		throw EWrongDimension( dim, _dimension );
+		throw EBadDimension( dim, _dimension );
 	}
 
 	return _parameters[ dim ];

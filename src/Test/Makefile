@@ -14,6 +14,7 @@ RCC=rcc
 NAME=		Test
 #Names of target sources
 TARGETS=	SplineTest \
+		SnakeTest2 \
 		SnakeTest
 
 M4DLIBS=	../lib/libm4dWidgets.a\

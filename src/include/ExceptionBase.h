@@ -81,20 +81,20 @@ private:
 	void	*_pointer;
 };
 
-class EWrongDimension: public ExceptionBase
+class EBadDimension: public ExceptionBase
 {
 public:
-	EWrongDimension( std::string name ) throw(): ExceptionBase( name ) {}
-	EWrongDimension() throw(): ExceptionBase( "Wrong dimension" ) {}
+	EBadDimension( std::string name ) throw(): ExceptionBase( name ) {}
+	EBadDimension() throw(): ExceptionBase( "Wrong dimension" ) {}
 private:
 
 };
 
-class EWrongIndex: public ExceptionBase
+class EBadIndex: public ExceptionBase
 {
 public:
-	EWrongIndex( std::string name ) throw(): ExceptionBase( name ) {}
-	EWrongIndex() throw(): ExceptionBase( "Wrong index" ) {}
+	EBadIndex( std::string name ) throw(): ExceptionBase( name ) {}
+	EBadIndex() throw(): ExceptionBase( "Wrong index" ) {}
 private:
 
 };

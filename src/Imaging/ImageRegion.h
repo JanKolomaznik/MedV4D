@@ -27,6 +27,15 @@ public:
 	typedef EType					ElementType;
 	typedef ImageIterator< ElementType, Dim >	Iterator;
 
+	ImageRegion()
+		{
+			_pointer = NULL;
+			for ( unsigned i = 0; i < Dimension; ++i ) {
+				_size[i] = 0;
+				_strides[i] = 0;
+			}
+		}
+
 	ImageRegion( ElementType *pointer, const uint32 size[ Dimension ], const int32 strides[ Dimension ] )
 		{
 			_pointer = pointer;
@@ -121,6 +130,7 @@ public:
 				_size[i] = region._size[i];
 				_strides[i] = region._strides[i];
 			}
+			return *this;
 		}
 
 	/*ImageRegion
@@ -132,8 +142,10 @@ public:
 	ElementType &
 	GetElement( const Coordinates< int32, Dim > &coords )
 		{ 	ElementType *tmp = _pointer;
-			//TODO check coordinates
 			for( unsigned i = 0; i < Dim; ++i ) {
+				if( coords[i] < 0 || coords[i] >= (int32)_size[i] ) {
+					throw ErrorHandling::EBadIndex( "Bad index to ImageRegion!");
+				}
 				tmp += coords[i] * _strides[i];
 			}
 			return *tmp;
@@ -141,8 +153,10 @@ public:
 	ElementType
 	GetElement( const Coordinates< int32, Dim > &coords )const
 		{ 	ElementType *tmp = _pointer;
-			//TODO check coordinates
 			for( unsigned i = 0; i < Dim; ++i ) {
+				if( coords[i] < 0 || coords[i] >= (int32)_size[i] ) {
+					throw ErrorHandling::EBadIndex( "Bad index to ImageRegion!");
+				}
 				tmp += coords[i] * _strides[i];
 			}
 			return *tmp;

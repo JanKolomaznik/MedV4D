@@ -61,7 +61,7 @@ public:
 	 * Smart pointer to this class.
 	 **/
 	typedef boost::shared_ptr< AbstractImage > AImagePtr;
-	class EWrongDimension;
+	class EBadDimension;
 	
 	AbstractImage( uint16 dim, DimensionExtents *dimExtents );
 	
@@ -100,7 +100,7 @@ private:
 
 };
 
-class AbstractImage::EWrongDimension
+class AbstractImage::EBadDimension
 {
 	//TODO
 };

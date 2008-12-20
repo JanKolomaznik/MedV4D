@@ -147,7 +147,7 @@ private:
 	AbstractImageData &operator=( const AbstractImageData &);
 
 public:
-	class EWrongDimension: public ErrorHandling::ExceptionBase
+	class EBadDimension: public ErrorHandling::ExceptionBase
 	{
 	public:
 		/**
@@ -156,7 +156,7 @@ public:
 		 * @param actual Number of dimensions image, which raised 
 		 * this exception.
 		 **/
-		EWrongDimension( unsigned short wrong, unsigned short actual )
+		EBadDimension( unsigned short wrong, unsigned short actual )
 			: ErrorHandling::ExceptionBase( "Accesing image data in wrong dimension." ), 
 			_wrong( wrong ), _actual( actual ) {}
 		

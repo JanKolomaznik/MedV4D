@@ -172,7 +172,7 @@ bool
 EnergicSnake< ContourType, EnergyModel >
 ::Converged()
 {
-	if( _stepCount > 1 ) {
+	if( _stepCount > 10 ) {
 		return _stepCount > 120 || _lastGradientSize < 0.00001;
 	} else {
 		return false;

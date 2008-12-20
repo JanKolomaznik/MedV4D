@@ -105,27 +105,26 @@ BSpline< CoordType, Dim >
 	}
 	
 	//Precompute basis functions values
-	BFValVector precomputedFValues;
-	precomputedFValues.reserve( _lastSampleFrequency );
+	_lastBasisFunctionValues.reserve( _lastSampleFrequency );
 	double dt = 1.0 / _lastSampleFrequency;
 	double t = 0.0;
 	for( unsigned i=0; i < _lastSampleFrequency; ++i, t += dt ) {
-		CurveBasis::ValuesAtPoint( t, precomputedFValues[ i ] );	
+		CurveBasis::ValuesAtPoint( t, _lastBasisFunctionValues[ i ] );	
 	}
 
 	if( _cyclic ) {
 		int32 sampleCount = GetSegmentCount() * _lastSampleFrequency;
 		_samplePointCache.Resize( sampleCount );
 
-		unsigned last =	SampleUniformSpline( 0, _samplePointCache, precomputedFValues );
-		SampleUniformSplineCyclicEnd( last, _samplePointCache, precomputedFValues );
+		unsigned last =	SampleUniformSpline( 0, _samplePointCache, _lastBasisFunctionValues );
+		SampleUniformSplineCyclicEnd( last, _samplePointCache, _lastBasisFunctionValues );
 	} else {
 		int32 sampleCount = GetSegmentCount() * _lastSampleFrequency + 1;
 		_samplePointCache.Resize( sampleCount );
 
-		unsigned last =	SampleUniformSplineACyclicBegin( 0, _samplePointCache, precomputedFValues );
-		last = SampleUniformSpline( last, _samplePointCache, precomputedFValues );
-		SampleUniformSplineACyclicEnd( last, _samplePointCache, precomputedFValues );
+		unsigned last =	SampleUniformSplineACyclicBegin( 0, _samplePointCache, _lastBasisFunctionValues );
+		last = SampleUniformSpline( last, _samplePointCache, _lastBasisFunctionValues );
+		SampleUniformSplineACyclicEnd( last, _samplePointCache, _lastBasisFunctionValues );
 	}
 }
 

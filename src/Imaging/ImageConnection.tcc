@@ -144,7 +144,7 @@ ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 		throw ENoImageAssociated();
 	}
 	if( dim != dimension ) {
-		throw ErrorHandling::EWrongDimension();
+		throw ErrorHandling::EBadDimension();
 	}
 
 	//TODO - check if locking should be done here
