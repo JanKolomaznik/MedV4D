@@ -185,7 +185,6 @@ public:
 	typedef typename RegionType::ElementType	ElementType;
 	typedef typename ContourType::SamplePointSet	SamplePointSet;
 	typedef std::vector< ElementType >		ValuesAtSamplesBuffer;
-	typedef Coordinates< int32, 2 >			RasterPos;
 
 	float32
 	GetParametersGradient( ContourType &curve, GradientType &gradient )
@@ -232,14 +231,21 @@ private:
 	ValuesAtSamplesBuffer	_valBuffer;
 };
 
-template< typename ContourType >
+template< typename ContourType, typename RegionType1, typename RegionType2, typename Distribution >
 class UnifiedImageEnergy
 {
 public:
 	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > 	GradientType;
 	typedef Coordinates< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
-	typedef typename RegionType::ElementType	ElementType;
-	typedef std::vector< ElementType >		ValuesAtSamplesBuffer;
+	typedef typename ContourType::BFValVector	BFValVector;
+	typedef typename RegionType1::ElementType	ElementType1;
+	typedef typename RegionType2::ElementType	ElementType2;
+	typedef std::vector< float32 >			ValuesAtSamplesBuffer;
+	typedef typename ContourType::SamplePointSet	SampleSet;
+	static const unsigned Degree = ContourType::Degree;
+
+	UnifiedImageEnergy() : _alpha(0.5f)
+		{}
 
 	float32
 	GetParametersGradient( ContourType &curve, GradientType &gradient )
@@ -248,6 +254,12 @@ public:
 			//TODO - solve problem
 		}
 
+		if( _sampleFrequency != (int32)curve.GetLastSampleFrequency() ) {
+			RecalculateQki( curve );
+		}
+
+		FillSampleValuesBuffer( curve.GetSamplePoints() );		
+
 		float32 gradSize = 0.0f;
 		for( unsigned i = 0; i < gradient.Size(); ++i ) {
 			gradient[i] = ComputePointGradient( i, curve );
@@ -255,23 +267,142 @@ public:
 		}
 		return sqrt( gradSize );
 	}
+
+	void
+	SetRegion1( const RegionType1 &region )
+		{ _region1 = region; }
+	void
+	SetRegion2( const RegionType2 &region )
+		{ _region2 = region; }
+
+	float32
+	GetAlpha() const
+		{ return _alpha; }
+
+	void
+	SetAlpha( float32 a )
+		{ _alpha = a; }
+	
+	Distribution &
+	GetDistribution()
+		{ return _distribution; }
+
 private:
+	float32
+	ComputeValueAtPoint( const RasterPos &pos )
+	{
+		int value = _region1.GetElement( pos );
+		/*
+		float32 inProbability = _distribution.InProbability( value );// > 50 ? 0.1 : 0.9;
+		float32 outProbability = _distribution.OutProbability( value );//value < 50 ? 0.15 : 0.85;
+		float32 val1 = - log( inProbability / outProbability );
+		*/
+		float32 val1 = _distribution.LogProbabilityRatio( value );
+		
+		float32 val2 = _region2.GetElement( pos );
+		
+		return _alpha * val1 + (1-_alpha) * val2;
+	}
+
+	void
+	FillSampleValuesBuffer( const SampleSet & samples )
+	{
+		int32 sampleCount = samples.Size();
+		_valBuffer.resize( sampleCount );
+		for( int32 i = 0; i < sampleCount; ++i ) {
+			//TODO interpolation
+			float32 x = samples[i][0];
+			float32 y = samples[i][1];
+			RasterPos pos = RasterPos( ROUND( x ), ROUND( y ) );
+			_valBuffer[ i ] = ComputeValueAtPoint( pos );
+		}
+	}
+
 	PointCoordinate
-	ComputePointGradient( unsigned i, ContourType &curve )
+	ComputePointGradient( unsigned k, ContourType &curve )
 	{
 		PointCoordinate gradient = PointCoordinate( 0.0f );
 
-		ComputeQfu( k, l, curve );
+		for( int32 i = k - Degree; i <= (int32)(k + Degree); ++i ) {
+			gradient += curve.GetPointCyclic( i ) * ComputeIntegral( k, i, curve );
+		}
+		gradient = CoordinatesDimensionsShiftRight( gradient );
+		gradient[0] *= -1;
+
+		return gradient;
 	}
 
 	float32
-	ComputeQfu( int32 k, int32 l, ContourType &curve )
+	ComputeIntegral( int32 k, int32 i, ContourType &curve )
 	{
-		return 0.0f;
+		float32 result = 0.0f;
+		int32 L = Max( k, i ) - Degree;
+		int32 U = Min( k, i ) + 1;
+		int32 sampleCount = curve.GetSamplePoints().Size();
+
+		/*i = i < 0 ? i + curve.Size() : i;
+		i = i >= (int32)curve.Size() ? i - curve.Size() : i;
+		k = k < 0 ? k + curve.Size() : k;
+		k = k >= (int32)curve.Size() ? k - curve.Size() : k;*/
+
+		for( int32 j = L*_sampleFrequency; j < U*_sampleFrequency; ++j ) {
+
+			int32 idx = MOD( j, sampleCount );
+			//result += /*_valBuffer[ idx ]*/0.0f * Qki( k, i, idx );
+
+			result += _valBuffer[ idx ] * Qki( k, i, j );
+		}
+		return result / (float32)_sampleFrequency;
+	}
+	
+	float32
+	Qki( int32 k, int32 i, int32 tR )
+	{
+		//int32 tLow = tR / _sampleFrequency;
+		int32 tLow = floor( (float)tR / (float)_sampleFrequency );
+		int32 nk = k - tLow;
+		int32 ni = i - tLow;
+		int32 t = tR - tLow * _sampleFrequency;
+		
+		if( nk > (int32)Degree ) { return 0.0f; }
+		if( nk < 0 ) { return 0.0f; }
+		if( ni > (int32)Degree ) { return 0.0f; }
+		if( ni < 0 ) { return 0.0f; }
+		if( t > (int32)_sampleFrequency ) { return 0.0f; }
+		if( t < 0 ) { return 0.0f; }
+
+		return Q[nk][ni][ t ];
 	}
 
-	RegionType		_region;
+	void
+	RecalculateQki( ContourType &curve )
+	{
+		const BFValVector &values = curve.GetLastBasisFunctionValues();
+		const BFValVector &derivValues = curve.GetLastBasisFunctionDerivationValues();
+		_sampleFrequency = curve.GetLastSampleFrequency();
+
+		Q.resize( Degree+1 );
+		for( int i = 0; i <= (int)Degree; ++i ) {
+			Q[i].resize( Degree+1 );
+			for( int j = 0; j <= (int)Degree; ++j ) {
+				Q[i][j].resize( _sampleFrequency );
+				for( int k = 0; k < _sampleFrequency; ++k ) {
+					Q[i][j][k] = values[k][i] * derivValues[k][j];
+				}
+			}
+		}
+	}
+
+	float32 		_alpha;
+
+	RegionType1		_region1;
+	RegionType2		_region2;
+	Distribution		_distribution;
 	ValuesAtSamplesBuffer	_valBuffer;
+
+	std::vector< std::vector< std::vector< typename ContourType::Type > > > Q;
+	
+	int32 _sampleFrequency;
 };
 
 }/*namespace Algorithms*/

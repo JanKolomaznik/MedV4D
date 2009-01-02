@@ -69,6 +69,7 @@ struct IsSameDimension< Dim, Dim >
 #define ROUND( a ) ( (int)(a+0.5) )
 
 extern const float32 Epsilon;
+extern const float32 PI;
 
 //***********************************************************
 

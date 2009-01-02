@@ -61,6 +61,30 @@ public:
 				throw ErrorHandling::EBadIndex(); 
 		}
 
+	PointType &
+	GetPointCyclic( unsigned idx ) 
+		{ 
+			return _points[ MOD( idx, _pointCount ) ]; 
+		}
+
+	const PointType &
+	GetPointCyclic( unsigned idx ) const
+		{ 
+			return _points[ MOD( idx, _pointCount ) ]; 
+		}
+
+	PointType &
+	GetPointACyclic( unsigned idx ) 
+		{ 
+			return _points[ Max( Min( idx, _pointCount-1 ), 0 ) ]; 
+		}
+
+	const PointType &
+	GetPointACyclic( unsigned idx ) const
+		{ 
+			return _points[ Max( Min( idx, _pointCount-1 ), 0 ) ]; 
+		}
+
 	void
 	AddPoint( const PointType &point )
 		{ _points.push_back( point ); ++_pointCount; } 

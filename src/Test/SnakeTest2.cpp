@@ -20,12 +20,17 @@ typedef BSpline< CoordType, 2 > Curve;
 typedef PointSet< CoordType, 2 > 	Points;
 typedef Coordinates< CoordType, 2 > Coords;
 
-typedef	Image< SimpleVector< int16, 2 >, 2 > GradientImageType;
-typedef GradientImageType::SubRegion GradientRegionType;
+typedef	Image< int16, 2 > GradientImageType;
+typedef	Image< uint8, 2 > ImageType;
 
-typedef SimpleBaloonForce< Curve > BaloonEnergy;
+typedef GradientImageType::SubRegion GradientRegionType;
+typedef ImageType::SubRegion ImageRegionType;
+
+/*typedef SimpleBaloonForce< Curve > BaloonEnergy;
 typedef GradientMagnitudeEnergy< Curve, GradientRegionType > GradientEnergy;
-typedef DoubleEnergyFunctional< Curve, BaloonEnergy, GradientEnergy > FinalEnergy;
+typedef DoubleEnergyFunctional< Curve, BaloonEnergy, GradientEnergy > FinalEnergy;*/
+
+typedef UnifiedImageEnergy< Curve, ImageRegionType, GradientRegionType > FinalEnergy;
 
 typedef EnergicSnake< Curve, FinalEnergy > Snake;
 
@@ -37,34 +42,62 @@ main( int argc, char **argv )
 	SET_DOUT( std::cerr );
 	std::ofstream file( "gradients.txt" );
 
-	string inFilename = "CircleSmoothGradient.dump";
+	string inFilename1 = "Circle.dump";
+	string inFilename2 = "CircleSmoothLaplace.dump";
 
 	//std::cout << "Loading file..."; std::cout.flush();
 	M4D::Imaging::AbstractImage::AImagePtr aimage = 
-			M4D::Imaging::ImageFactory::LoadDumpedImage( inFilename );
+			M4D::Imaging::ImageFactory::LoadDumpedImage( inFilename1 );
 
-	GradientImageType::Ptr image = GradientImageType::CastAbstractImage( aimage );
+	ImageType::Ptr image = ImageType::CastAbstractImage( aimage );
+
+	aimage = M4D::Imaging::ImageFactory::LoadDumpedImage( inFilename2 );
+
+	GradientImageType::Ptr gradientImage = GradientImageType::CastAbstractImage( aimage );
+
 	//std::cout << "Done\n";
 
 	Curve curve;
 	//Add points
 	
+	float radius = 30.0f;
+	Coords center = Coords(127,127);
+	int segments = 16;
+	float angle = -2*PI / (float)segments;
+
+	for( int i = 0; i < segments; ++i ) {
+		Coords np = center + (radius * Coords(sin(angle*i), cos(angle*i)) );
+		curve.AddPoint( np );
+	}
+
 	/*curve.AddPoint( Coords(120,120) );
 	curve.AddPoint( Coords(135,120) );
 	curve.AddPoint( Coords(135,135) );
 	curve.AddPoint( Coords(120,135) );*/
 
+	
+/*	curve.AddPoint( Coords(30,30) );
+	curve.AddPoint( Coords(225,30) );
+	curve.AddPoint( Coords(225,225) );
+	curve.AddPoint( Coords(30,225) );*/
+	/* 
 	curve.AddPoint( Coords(127,74) );
 	curve.AddPoint( Coords(182,127) );
 	curve.AddPoint( Coords(127,182) );
 	curve.AddPoint( Coords(74,127) );
+	curve.AddPoint( Coords(127,74) );
+	curve.AddPoint( Coords(182,127) );
+	curve.AddPoint( Coords(127,182) );
+	curve.AddPoint( Coords(74,127) );*/
 
 	curve.SetCyclic();
 	curve.Sample( 5 );
 	snake.Initialize( curve );
-	snake.GetEnergyModel().GetSecondModel().SetRegion( image->GetRegion() );
+	snake.GetEnergyModel().SetRegion1( image->GetRegion() );
+	snake.GetEnergyModel().SetRegion2( gradientImage->GetRegion() );
+/*	snake.GetEnergyModel().GetSecondModel().SetRegion( image->GetRegion() );
 	snake.GetEnergyModel().SetAlpha(0.1);
-	snake.GetEnergyModel().SetBeta(25.0);
+	snake.GetEnergyModel().SetBeta(25.0);*/
 
 	while( !snake.Converged() ) {
 		unsigned i = snake.Step();

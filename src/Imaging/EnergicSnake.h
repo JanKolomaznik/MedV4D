@@ -130,6 +130,7 @@ EnergicSnake< ContourType, EnergyModel >
 {
 	_curve = contour;
 	_curve.Sample( _sampleRate );
+	_curve.SampleWithDerivations( _sampleRate );
 }
 
 template< typename ContourType, typename EnergyModel >
@@ -152,6 +153,8 @@ EnergicSnake< ContourType, EnergyModel >
 
 	//Divide or join segments with length out of tolerance
 	CheckSegmentLengths();
+
+	_curve.ReSampleWithDerivations();
 	
 	return _stepCount;
 }
@@ -208,7 +211,9 @@ EnergicSnake< ContourType, EnergyModel >
 
 	for( size_t i=0; i < _curve.Size(); ++i ) {
 		//std::cerr << _curve[i] << " : " ;
+		//TODO check right updating
 		_curve[i] += _stepScale * (*_gradient)[i];
+		//_curve[i] -= _stepScale * (*_gradient)[i];
 		//std::cerr << _curve[i] << "\n";
 	}
 	_curve.Sample( _sampleRate );
@@ -297,8 +302,14 @@ EnergicSnake< ContourType, EnergyModel >
 ::NormalizeGradient()
 {
 	_lastGradientSize = GradientScalarProduct( (*_gradient), (*_gradient) );
-	
-	float32 tmp = 1.0f / sqrt( _lastGradientSize );
+	float32 tmp = 0.0f;
+
+	if( _lastGradientSize < Epsilon ) {
+		_lastGradientSize = 0.0f;
+	} else {
+		_lastGradientSize = sqrt( _lastGradientSize );
+		tmp = 1.0f / _lastGradientSize;
+	}
 
 	for( size_t i=0; i < _gradient->Size(); ++i ) {
 		(*_gradient)[i] *= tmp;

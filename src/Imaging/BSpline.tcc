@@ -112,7 +112,8 @@ BSpline< CoordType, Dim >
 		CurveBasis::ValuesAtPoint( t, _lastBasisFunctionValues[ i ] );	
 	}
 
-	if( _cyclic ) {
+	SampleWithFunctionValues( _lastSampleFrequency, _samplePointCache, _lastBasisFunctionValues );
+	/*if( _cyclic ) {
 		int32 sampleCount = GetSegmentCount() * _lastSampleFrequency;
 		_samplePointCache.Resize( sampleCount );
 
@@ -125,7 +126,29 @@ BSpline< CoordType, Dim >
 		unsigned last =	SampleUniformSplineACyclicBegin( 0, _samplePointCache, _lastBasisFunctionValues );
 		last = SampleUniformSpline( last, _samplePointCache, _lastBasisFunctionValues );
 		SampleUniformSplineACyclicEnd( last, _samplePointCache, _lastBasisFunctionValues );
+	}*/
+}
+
+template < typename CoordType, unsigned Dim >
+void
+BSpline< CoordType, Dim >
+::SampleWithFunctionValues( unsigned sampleFrequency, PointSet< CoordType, Dim > &points, const BSpline< CoordType, Dim >::BFValVector &values )
+{
+	if( _cyclic ) {
+		int32 sampleCount = GetSegmentCount() * sampleFrequency;
+		points.Resize( sampleCount );
+
+		unsigned last =	SampleUniformSpline( 0, points, values );
+		SampleUniformSplineCyclicEnd( last, points, values );
+	} else {
+		int32 sampleCount = GetSegmentCount() * sampleFrequency + 1;
+		points.Resize( sampleCount );
+
+		unsigned last =	SampleUniformSplineACyclicBegin( 0, points, values );
+		last = SampleUniformSpline( last, points, values );
+		SampleUniformSplineACyclicEnd( last, points, values );
 	}
+
 }
 
 template < typename CoordType, unsigned Dim >
@@ -202,6 +225,19 @@ void
 BSpline< CoordType, Dim >
 ::ReSampleWithDerivations()
 {
+	if( this->_pointCount <= 1 ) {
+		return;
+	}
+	
+	//Precompute basis functions values
+	_lastBasisFunctionDerivationValues.reserve( _lastSampleFrequency );
+	double dt = 1.0 / _lastSampleFrequency;
+	double t = 0.0;
+	for( unsigned i=0; i < _lastSampleFrequency; ++i, t += dt ) {
+		CurveBasis::DerivationsAtPoint( t, _lastBasisFunctionDerivationValues[ i ] );	
+	}
+
+	SampleWithFunctionValues( _lastSampleFrequency, _sampleDerivationCache, _lastBasisFunctionDerivationValues );
 
 }
 

@@ -60,14 +60,17 @@ public:
 	Coordinates()
 		{ for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = 0; } }
 
+	Coordinates( CoordType x )
+		{
+			for( unsigned i=0; i<Dimension; ++i ) 
+			{ _coordinates[i] = x; } 
+		}
+
 	Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
 		{ 
 			for( unsigned i=0; i<Dimension; ++i ) 
 			{ _coordinates[i] = coord._coordinates[i]; } 
 		}
-
-	explicit Coordinates( const CoordType &x )
-		{ _coordinates[0] = x; }
 
 	CoordinateType &
 	operator[]( unsigned idx )
@@ -106,6 +109,12 @@ public:
 
 	Coordinates()
 		{ for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = 0; } }
+
+	Coordinates( CoordType x )
+		{
+			for( unsigned i=0; i<Dimension; ++i ) 
+			{ _coordinates[i] = x; } 
+		}
 
 	explicit Coordinates( const CoordType &x, const CoordType &y )
 		{ 
@@ -156,6 +165,12 @@ public:
 
 	Coordinates()
 		{ for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = 0; } }
+
+	Coordinates( CoordType x )
+		{
+			for( unsigned i=0; i<Dimension; ++i ) 
+			{ _coordinates[i] = x; } 
+		}
 
 	explicit Coordinates( const CoordType &x, const CoordType &y, const CoordType &z )
 		{ 
@@ -212,6 +227,12 @@ public:
 		{ 
 			for( unsigned i=0; i<Dimension; ++i ) 
 			{ _coordinates[i] = coord._coordinates[i]; } 
+		}
+
+	Coordinates( CoordType x )
+		{
+			for( unsigned i=0; i<Dimension; ++i ) 
+			{ _coordinates[i] = x; } 
 		}
 
 	explicit Coordinates( const CoordType &x, const CoordType &y, const CoordType &z, const CoordType &t )
@@ -328,6 +349,19 @@ operator*( /*ScalarType*/CoordType k, const Coordinates< CoordType, Dim > &v )
 
 template< typename CoordType, unsigned Dim >
 Coordinates< CoordType, Dim >
+operator*( const Coordinates< CoordType, Dim > &v, CoordType k )
+{
+	Coordinates< CoordType, Dim > result;
+
+	for( unsigned i=0; i < Dim; ++i ) {
+		result[ i ] = k * v[ i ];
+	}
+
+	return result;
+}
+
+template< typename CoordType, unsigned Dim >
+Coordinates< CoordType, Dim >
 operator*=( Coordinates< CoordType, Dim > &v, CoordType k )
 {
 	for( unsigned i=0; i < Dim; ++i ) {
@@ -386,7 +420,7 @@ CoordinatesDimensionsShiftRight( const Coordinates< CoordType, Dim > &v )
 	Coordinates< CoordType, Dim > result;
 
 	for( unsigned i=0; i < Dim; ++i ) {
-		result._coordinates[ (i + 1) % Dim ] = v[ i ];
+		result[ (i + 1) % Dim ] = v[ i ];
 	}
 
 	return result;
@@ -403,7 +437,7 @@ CoordinatesDimensionsShiftLeft( const Coordinates< CoordType, Dim > &v )
 	Coordinates< CoordType, Dim > result;
 
 	for( unsigned i=0; i < Dim; ++i ) {
-		result._coordinates[ i ] = v[ (i + 1) % Dim ];
+		result[ i ] = v[ (i + 1) % Dim ];
 	}
 
 	return result;
@@ -412,5 +446,7 @@ CoordinatesDimensionsShiftLeft( const Coordinates< CoordType, Dim > &v )
 typedef Coordinates< int32, 2 > CoordInt2D;
 typedef Coordinates< int32, 3 > CoordInt3D;
 typedef Coordinates< int32, 4 > CoordInt4D;
+
+typedef Coordinates< int32, 2 >			RasterPos;
 
 #endif /*COORDINATES_H*/

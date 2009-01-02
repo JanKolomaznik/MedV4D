@@ -18,6 +18,7 @@ TARGETS=	DICOM2ImageDump \
 		GaussianFilter \
 		SobelEdgeDetector \
 		SobelGradientOperator \
+		LaplaceOperator \
 		CreateExampleData
 
 M4DLIBS=	../../lib/libm4dWidgets.a\

@@ -78,7 +78,13 @@ public:
 		{
 			double v[ Degree ];
 			BSplineBasis::ParameterPowers( t, v );
-			
+
+			double scale = 1.0/6.0;
+
+			values[ 0 ] = scale * ( - 3*v[1] +  6*v[0] - 3 );
+			values[ 1 ] = scale * (   9*v[1] - 12*v[0]     );
+			values[ 2 ] = scale * ( - 9*v[1] +  6*v[0] + 3 );
+			values[ 3 ] = scale * (   3*v[1]               );
 
 			return true;
 		}
@@ -90,11 +96,8 @@ public:
 			BasisFunctionValues< ValueType, Degree > &values, 
 			BasisFunctionValues< ValueType, Degree > &dvalues )
 		{
-			double v[ Degree ];
-			BSplineBasis::ParameterPowers( t, v );
-			
-
-			return true;
+			ValuesAtPoint( t, values );
+			return DerivationAtPoint( t, dvalues );	
 		}
 	
 protected:
@@ -120,7 +123,8 @@ public:
 	typedef typename Predecessor::PointType 			PointType;
 	typedef PointSet< CoordType, Dim >				SamplePointSet;
 	typedef CoordType						Type;
-	static const unsigned Dimension	= Dim;		
+	static const unsigned 						Degree = CurveBasis::Degree;
+	static const unsigned 						Dimension	= Dim;		
 
 	BSpline();
 
@@ -175,6 +179,10 @@ public:
 	GetLastBasisFunctionValues() const
 		{ return _lastBasisFunctionValues; }
 
+	const BFValVector &
+	GetLastBasisFunctionDerivationValues() const
+		{ return _lastBasisFunctionDerivationValues; }
+
 	void
 	SetCyclic( bool cyclic = true )
 		{ _cyclic = cyclic; }
@@ -212,6 +220,10 @@ public:
 	GetEndSegmentCount() const
 		{ return CurveBasis::Degree; }
 protected:
+	
+	void
+	SampleWithFunctionValues( unsigned sampleFrequency, PointSet< CoordType, Dim > &points, const BSpline< CoordType, Dim >::BFValVector &values );
+
 	unsigned
 	SampleUniformSpline( unsigned firstPoint, PointSet< CoordType, Dim > &points, const BFValVector &values );
 

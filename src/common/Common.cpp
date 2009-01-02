@@ -7,6 +7,7 @@
 
 
 const float32 Epsilon = 1.0E-10;
+const float32 PI = 3.141592f;
 
 
 
