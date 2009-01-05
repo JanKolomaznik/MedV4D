@@ -86,6 +86,12 @@ public:
 			for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = coord._coordinates[i]; } 
 			return *this;
 		}
+
+	const CoordinateType*
+	GetData()const
+		{
+			return _coordinates;
+		}
 private:
 	CoordinateType	_coordinates[ Dimension ];
 };
@@ -141,6 +147,12 @@ public:
 		{ 
 			for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = coord._coordinates[i]; } 
 			return *this;
+		}
+
+	const CoordinateType*
+	GetData()const
+		{
+			return _coordinates;
 		}
 private:
 	CoordinateType	_coordinates[ Dimension ];
@@ -199,6 +211,12 @@ public:
 			for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = coord._coordinates[i]; } 
 			return *this;
 		}
+
+	const CoordinateType*
+	GetData()const
+		{
+			return _coordinates;
+		}
 private:
 	CoordinateType	_coordinates[ Dimension ];
 };
@@ -256,6 +274,12 @@ public:
 		{ 
 			for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = coord._coordinates[i]; } 
 			return *this;
+		}
+
+	const CoordinateType*
+	GetData()const
+		{
+			return _coordinates;
 		}
 private:
 	CoordinateType	_coordinates[ Dimension ];
@@ -448,5 +472,8 @@ typedef Coordinates< int32, 3 > CoordInt3D;
 typedef Coordinates< int32, 4 > CoordInt4D;
 
 typedef Coordinates< int32, 2 >			RasterPos;
+
+typedef Coordinates< uint32, 2 > Size2D;
+typedef Coordinates< uint32, 3 > Size3D;
 
 #endif /*COORDINATES_H*/

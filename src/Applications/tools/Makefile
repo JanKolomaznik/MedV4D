@@ -19,6 +19,7 @@ TARGETS=	DICOM2ImageDump \
 		SobelEdgeDetector \
 		SobelGradientOperator \
 		LaplaceOperator \
+		ImageCrop \
 		CreateExampleData
 
 M4DLIBS=	../../lib/libm4dWidgets.a\

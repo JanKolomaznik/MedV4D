@@ -29,8 +29,12 @@ Image< ElementType, 2 >::Image()
 		_dimExtents[i].minimum = 0;
 		_dimExtents[i].maximum = 0;
 		_dimExtents[i].elementExtent = 1.0f;
+		_dimOrder[i] = 0;
 	}
 	_imageData = typename ImageDataTemplate< ElementType >::Ptr();
+	_pointer = NULL;
+	_sourceDimension = 0;
+	_pointerCoordinatesInSource = NULL;
 }
 
 template< typename ElementType >
@@ -61,7 +65,30 @@ Image< ElementType, 2 >::Image( typename ImageDataTemplate< ElementType >::Ptr i
 	//TODO handle exceptions
 }
 	
+template< typename ElementType >
+Image< ElementType, 2 >::Image( typename ImageDataTemplate< ElementType >::Ptr imageData, Image< ElementType, 2 >::SubRegion region )
+: AbstractImageDim< 2 >( this->_dimExtents )
+{
+	_imageData = imageData;
+	if( _imageData->GetDimension() < Dimension ) {
+			//TODO throw exception
+	}
+		
+	_sourceDimension = region.GetSourceDimension();
+	_pointerCoordinatesInSource = new int32[_sourceDimension];
+	for( unsigned i = 0; i < _sourceDimension; ++i ) {
+		_pointerCoordinatesInSource[i] = region.GetPointerSourceCoordinates( i );
+	}
 
+	for( unsigned i = 0; i < Dimension; ++i ) {
+		_dimOrder[i] = region.GetDimensionOrder( i );
+		//TODO improve for mirrored dimension
+		_dimExtents[i].minimum = _pointerCoordinatesInSource[ _dimOrder[i] ];
+		_dimExtents[i].maximum = _dimExtents[i].minimum + (int32)region.GetSize( i );
+		_dimExtents[i].elementExtent = _imageData->GetDimensionInfo( _dimOrder[i] ).elementExtent;
+	}
+	_pointer = region.GetPointer();
+}
 	
 template< typename ElementType >
 void
@@ -71,11 +98,16 @@ Image< ElementType, 2 >::FillDimensionInfo()
 			//TODO throw exception
 	}
 		
+	_sourceDimension = Dimension;
+	_pointerCoordinatesInSource = new int32[Dimension];
 	for( unsigned i = 0; i < Dimension; ++i ) {
 		_dimExtents[i].minimum = 0;
 		_dimExtents[i].maximum = (int32)_imageData->GetDimensionInfo( i ).size;
 		_dimExtents[i].elementExtent = _imageData->GetDimensionInfo( i ).elementExtent;
+		_dimOrder[i] = i;
+		_pointerCoordinatesInSource[i] = 0;
 	}
+	_pointer = &_imageData->Get( 0 );
 }
 
 template< typename ElementType >
@@ -97,6 +129,9 @@ Image< ElementType, 2 >::ReallocateData( typename ImageDataTemplate< ElementType
 template< typename ElementType >
 Image< ElementType, 2 >::~Image()
 {
+	if( _pointerCoordinatesInSource ) {
+		delete [] _pointerCoordinatesInSource;
+	}
 
 }
 
@@ -180,7 +215,8 @@ Image< ElementType, 2 >::GetPointer(
 		xStride = _imageData->GetDimensionInfo( 0 ).stride;
 		yStride = _imageData->GetDimensionInfo( 1 ).stride;
 	
-		return &(_imageData->Get( _dimExtents[0].minimum, _dimExtents[1].minimum ));
+		//return &(_imageData->Get( _dimExtents[0].minimum, _dimExtents[1].minimum ));
+		return _pointer;
 	} else {
 		xStride = 0;
 		yStride = 0;
@@ -191,16 +227,25 @@ Image< ElementType, 2 >::GetPointer(
 
 
 template< typename ElementType >
+template< unsigned NewDim >
+typename Image< ElementType, NewDim >::Ptr
+Image< ElementType, 2 >::GetRestrictedImage( 
+		ImageRegion< ElementType, NewDim > region
+		)
+{
+	Image< ElementType, NewDim > *image = new Image< ElementType, NewDim >( this->_imageData, region );
+	return typename Image< ElementType, NewDim >::Ptr( image );
+}
+/*
+template< typename ElementType >
 typename Image< ElementType, 2 >::Ptr
 Image< ElementType, 2 >::GetRestricted2DImage( 
-			int32 x1, 
-			int32 y1, 
-			int32 x2, 
-			int32 y2 
-			)
+		ImageRegion< ElementType, 2 > region
+		)
 {
 
 }
+*/
 template< typename ElementType >
 WriterBBoxInterface &
 Image< ElementType, 2 >::SetDirtyBBox( 
@@ -290,14 +335,12 @@ template< typename ElementType >
 typename Image< ElementType, 2 >::SubRegion
 Image< ElementType, 2 >::GetRegion()const
 {
-	uint32 width;
-	uint32 height;
-	int32 xStride;
-	int32 yStride;
-
-	ElementType * pointer = GetPointer( width, height, xStride, yStride );
-
-	return CreateImageRegion< ElementType >( pointer, width, height, xStride, yStride );
+	return GetSubRegion( 
+			this->GetDimensionExtents(0).minimum,
+			this->GetDimensionExtents(1).minimum,
+			this->GetDimensionExtents(0).maximum,
+			this->GetDimensionExtents(1).maximum
+			);
 }
 	
 template< typename ElementType >
@@ -317,9 +360,15 @@ Image< ElementType, 2 >::GetSubRegion(
 
 	ElementType * pointer = GetPointer( width, height, xStride, yStride );
 
-	pointer += x1*xStride + y1*yStride;
+	pointer += (x1-this->GetDimensionExtents(0).minimum) * xStride 
+		+  (y1-this->GetDimensionExtents(1).minimum) * yStride;
 
-	return CreateImageRegion< ElementType >( pointer, x2 - x1, y2 - y1, xStride, yStride );
+	Coordinates< uint32, Dimension > size = Coordinates< uint32, Dimension >( x2 - x1, y2 - y1 ); 
+	Coordinates< int32, Dimension >	strides = Coordinates< int32, Dimension >( xStride, yStride );
+	Coordinates< uint32, Dimension > dimOrder = Coordinates< uint32, Dimension >( 0, 1 );
+	Coordinates< int32, Dimension >	pointerCoordinatesInSource = Coordinates< int32, Dimension >( x1, y1 );
+
+	return CreateImageRegion( pointer, size, strides, dimOrder, pointerCoordinatesInSource );
 }
 
 
@@ -359,8 +408,11 @@ Image< ElementType, 3 >::Image()
 		_dimExtents[i].minimum = 0;
 		_dimExtents[i].maximum = 0;
 		_dimExtents[i].elementExtent = 1.0f;
+		_dimOrder[i] = 0;
 	}
 	_imageData = typename ImageDataTemplate< ElementType >::Ptr();
+	_sourceDimension = 0;
+	_pointerCoordinatesInSource = NULL;
 }
 
 template< typename ElementType >
@@ -392,6 +444,31 @@ Image< ElementType, 3 >::Image( typename ImageDataTemplate< ElementType >::Ptr i
 }
 
 template< typename ElementType >
+Image< ElementType, 3 >::Image( typename ImageDataTemplate< ElementType >::Ptr imageData, Image< ElementType, 3 >::SubRegion region )
+: AbstractImageDim< 3 >( this->_dimExtents )
+{
+	_imageData = imageData;
+	if( _imageData->GetDimension() < Dimension ) {
+			//TODO throw exception
+	}
+		
+	_sourceDimension = region.GetSourceDimension();
+	_pointerCoordinatesInSource = new int32[_sourceDimension];
+	for( unsigned i = 0; i < _sourceDimension; ++i ) {
+		_pointerCoordinatesInSource[i] = region.GetPointerSourceCoordinates( i );
+	}
+
+	for( unsigned i = 0; i < Dimension; ++i ) {
+		_dimOrder[i] = region.GetDimensionOrder( i );
+		//TODO improve for mirrored dimension
+		_dimExtents[i].minimum = _pointerCoordinatesInSource[ _dimOrder[i] ];
+		_dimExtents[i].maximum = _dimExtents[i].minimum + (int32)region.GetSize( i );
+		_dimExtents[i].elementExtent = _imageData->GetDimensionInfo( _dimOrder[i] ).elementExtent;
+	}
+	_pointer = region.GetPointer();
+}
+	
+template< typename ElementType >
 void
 Image< ElementType, 3 >::FillDimensionInfo()
 {
@@ -399,11 +476,16 @@ Image< ElementType, 3 >::FillDimensionInfo()
 			//TODO throw exception
 	}
 		
+	_sourceDimension = Dimension;
+	_pointerCoordinatesInSource = new int32[Dimension];
 	for( unsigned i = 0; i < Dimension; ++i ) {
 		_dimExtents[i].minimum = 0;
-		_dimExtents[i].maximum = _imageData->GetDimensionInfo( i ).size;
+		_dimExtents[i].maximum = (int32)_imageData->GetDimensionInfo( i ).size;
 		_dimExtents[i].elementExtent = _imageData->GetDimensionInfo( i ).elementExtent;
+		_dimOrder[i] = i;
+		_pointerCoordinatesInSource[i] = 0;
 	}
+	_pointer = &_imageData->Get( 0 );
 }
 
 template< typename ElementType >
@@ -457,7 +539,9 @@ Image< ElementType, 3 >::Dump(void)
 template< typename ElementType >
 Image< ElementType, 3 >::~Image()
 {
-
+	if( _pointerCoordinatesInSource ) {
+		delete [] _pointerCoordinatesInSource;
+	}
 }
 
 template< typename ElementType >
@@ -540,16 +624,11 @@ Image< ElementType, 3 >::GetElement( int32 x, int32 y, int32 z )const
 
 	return _imageData->Get( x, y, z );
 }
-
+/*
 template< typename ElementType >
 typename Image< ElementType, 2 >::Ptr
 Image< ElementType, 3 >::GetRestricted2DImage( 
-		int32 x1, 
-		int32 y1, 
-		int32 z1, 
-		int32 x2, 
-		int32 y2, 
-		int32 z2 
+		ImageRegion< ElementType, 2 > region
 		)
 {
 	//TODO
@@ -559,16 +638,23 @@ Image< ElementType, 3 >::GetRestricted2DImage(
 template< typename ElementType >
 typename Image< ElementType, 3 >::Ptr
 Image< ElementType, 3 >::GetRestricted3DImage( 
-		int32 x1, 
-		int32 y1, 
-		int32 z1, 
-		int32 x2, 
-		int32 y2, 
-		int32 z2 
+		ImageRegion< ElementType, 3 > region
 		)
 {
 	//TODO
 	return  Image< ElementType, 3 >::Ptr();
+}
+*/
+
+template< typename ElementType >
+template< unsigned NewDim >
+typename Image< ElementType, NewDim >::Ptr
+Image< ElementType, 3 >::GetRestrictedImage( 
+		ImageRegion< ElementType, NewDim > region
+		)
+{
+	Image< ElementType, NewDim > *image = new Image< ElementType, NewDim >( this->_imageData, region );
+	return typename Image< ElementType, NewDim >::Ptr( image );
 }
 
 template< typename ElementType >
@@ -592,7 +678,8 @@ Image< ElementType, 3 >::GetPointer(
 		yStride = _imageData->GetDimensionInfo( 1 ).stride;
 		zStride = _imageData->GetDimensionInfo( 2 ).stride;
 
-		return &_imageData->Get( _dimExtents[0].minimum, _dimExtents[1].minimum, _dimExtents[2].minimum );
+		//return &_imageData->Get( _dimExtents[0].minimum, _dimExtents[1].minimum, _dimExtents[2].minimum );
+		return _pointer;
 	} else {	
 		xStride = 0;
 		yStride = 0;
@@ -707,17 +794,14 @@ template< typename ElementType >
 typename Image< ElementType, 3 >::SubRegion
 Image< ElementType, 3 >::GetRegion()const
 {
-	uint32 width;
-	uint32 height;
-	uint32 depth;
-	int32 xStride;
-	int32 yStride;
-	int32 zStride;
-
-	ElementType * pointer = GetPointer( 
-			width, height, depth, xStride, yStride, zStride );
-
-	return CreateImageRegion< ElementType >( pointer, width, height, depth, xStride, yStride, zStride );
+	return GetSubRegion( 
+			this->GetDimensionExtents(0).minimum,
+			this->GetDimensionExtents(1).minimum,
+			this->GetDimensionExtents(2).minimum,
+			this->GetDimensionExtents(0).maximum,
+			this->GetDimensionExtents(1).maximum,
+			this->GetDimensionExtents(2).maximum
+			);
 }
 
 template< typename ElementType >
@@ -740,10 +824,17 @@ Image< ElementType, 3 >::GetSubRegion(
 
 	ElementType * pointer = GetPointer( 
 			width, height, depth, xStride, yStride, zStride );
-	
-	pointer += x1*xStride + y1*yStride + z1*zStride;
 
-	return CreateImageRegion< ElementType >( pointer, x2 - x1, y2 - y1, z2 - z1, xStride, yStride, zStride );
+	pointer += (x1-this->GetDimensionExtents(0).minimum) * xStride 
+		+  (y1-this->GetDimensionExtents(1).minimum) * yStride
+		+  (z1-this->GetDimensionExtents(2).minimum) * zStride;
+
+	Coordinates< uint32, Dimension > size = Coordinates< uint32, Dimension >( x2 - x1, y2 - y1, z2 - z1 ); 
+	Coordinates< int32, Dimension >	strides = Coordinates< int32, Dimension >( xStride, yStride, zStride );
+	Coordinates< uint32, Dimension > dimOrder = Coordinates< uint32, Dimension >( 0, 1, 2 );
+	Coordinates< int32, Dimension >	pointerCoordinatesInSource = Coordinates< int32, Dimension >( x1, y1, z1 );
+
+	return CreateImageRegion( pointer, size, strides, dimOrder, pointerCoordinatesInSource );
 }
 
 //*****************************************************************************
@@ -754,6 +845,13 @@ Image< ElementType, 4 >::Image()
 {
 	_imageData = ImageDataTemplate< ElementType >::Ptr();
 }
+
+template< typename ElementType >
+Image< ElementType, 4 >::Image( typename ImageDataTemplate< ElementType >::Ptr imageData, Image< ElementType, 4 >::SubRegion region )
+{
+
+}
+	
 
 template< typename ElementType >
 const ModificationManager &

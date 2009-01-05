@@ -21,7 +21,17 @@ namespace M4D
 namespace Imaging
 {
 
+#define IMAGE_TYPE_TEMPLATE_CASE_MACRO( AIMAGE_PTR, ... )\
+	{ \
+		typedef M4D::Imaging::Image< TTYPE, DIM > IMAGE_TYPE; \
+		IMAGE_TYPE::Ptr IMAGE = IMAGE_TYPE::CastAbstractImage( AIMAGE_PTR ); \
+		__VA_ARGS__; \
+	};
 
+	//usage function< IMAGE_TYPE >
+#define IMAGE_TYPE_PTR_SWITCH_MACRO( AIMAGE_PTR, ... ) \
+		TYPE_TEMPLATE_SWITCH_MACRO( AIMAGE_PTR->GetElementTypeID(), \
+			DIMENSION_TEMPLATE_SWITCH_MACRO( AIMAGE_PTR->GetDimension(), IMAGE_TYPE_TEMPLATE_CASE_MACRO( AIMAGE_PTR, __VA_ARGS__ ) ) )
 
 /**
  * Templated class made for storing raster image data of certain type. 
@@ -84,6 +94,8 @@ public:
 	 **/
 	Image( typename ImageDataTemplate< ElementType >::Ptr imageData );
 	
+	Image( typename ImageDataTemplate< ElementType >::Ptr imageData, SubRegion region );
+
 	~Image();
 
 	/**
@@ -140,13 +152,24 @@ public:
 			int32 &yStride
 		  )const;
 
-	Ptr
+	template< unsigned NewDim >
+	typename Image< ElementType, NewDim >::Ptr
+	GetRestrictedImage( 
+			ImageRegion< ElementType, NewDim > region
+			);
+	/*
+	typename Image< ElementType, 2 >::Ptr
+	GetRestricted2DImage( 
+			ImageRegion< ElementType, 2 > region
+			);
+	*/
+	/*Ptr
 	GetRestricted2DImage( 
 			int32 x1, 
 			int32 y1, 
 			int32 x2, 
 			int32 y2 
-			);
+			);*/
 
 	WriterBBoxInterface &
 	SetDirtyBBox( 
@@ -193,6 +216,11 @@ protected:
 	typename ImageDataTemplate< ElementType >::Ptr	_imageData;
 
 	DimensionExtents	_dimExtents[Dimension];
+	ElementType		*_pointer;
+	
+	uint32			_dimOrder[ Dimension ];
+	uint32			_sourceDimension;
+	int32			*_pointerCoordinatesInSource;
 private:
 	void
 	FillDimensionInfo();
@@ -242,6 +270,8 @@ public:
 
 	Image( typename ImageDataTemplate< ElementType >::Ptr imageData );
 
+	Image( typename ImageDataTemplate< ElementType >::Ptr imageData, SubRegion region );
+
 	~Image();
 
 	/**
@@ -287,7 +317,24 @@ public:
 			int32 &zStride
 		  )const;
 
+	template< unsigned NewDim >
+	typename Image< ElementType, NewDim >::Ptr
+	GetRestrictedImage( 
+			ImageRegion< ElementType, NewDim > region
+			);
+
+	/*
 	typename Image< ElementType, 2 >::Ptr
+	GetRestricted2DImage( 
+			ImageRegion< ElementType, 2 > region
+			);
+
+	typename Image< ElementType, 3 >::Ptr
+	GetRestricted3DImage( 
+			ImageRegion< ElementType, 3 > region
+			);
+	*/
+/*	typename Image< ElementType, 2 >::Ptr
 	GetRestricted2DImage( 
 			int32 x1, 
 			int32 y1, 
@@ -306,7 +353,7 @@ public:
 			int32 y2, 
 			int32 z2 
 			);
-
+*/
 	WriterBBoxInterface &
 	SetDirtyBBox( 
 			int32 x1, 
@@ -359,6 +406,11 @@ protected:
 	typename ImageDataTemplate< ElementType >::Ptr	_imageData;
 
 	DimensionExtents	_dimExtents[Dimension];
+	ElementType		*_pointer;
+	
+	uint32			_dimOrder[ Dimension ];
+	uint32			_sourceDimension;
+	int32			*_pointerCoordinatesInSource;
 private:
 	void
 	FillDimensionInfo();
@@ -407,6 +459,8 @@ public:
 
 	Image( typename ImageDataTemplate< ElementType >::Ptr imageData );
 	
+	Image( typename ImageDataTemplate< ElementType >::Ptr imageData, SubRegion region );
+
 	~Image();
 	
 
@@ -457,7 +511,9 @@ public:
 
 	typename Image< ElementType, 2 >::Ptr
 	GetRestricted2DImage( 
-			int32 x1, 
+			ImageRegion< ElementType, 2 > region
+			);
+			/*int32 x1, 
 			int32 y1, 
 			int32 z1, 
 			int32 t1,
@@ -465,11 +521,13 @@ public:
 			int32 y2, 
 			int32 z2,
 			int32 t2
-			);
+			);*/
 
 	typename Image< ElementType, 3 >::Ptr
 	GetRestricted3DImage( 
-			int32 x1, 
+			ImageRegion< ElementType, 3 > region
+			);
+			/*int32 x1, 
 			int32 y1, 
 			int32 z1, 
 			int32 t1,
@@ -477,10 +535,12 @@ public:
 			int32 y2, 
 			int32 z2,
 			int32 t2
-			);
+			);*/
 	Ptr
 	GetRestricted4DImage( 
-			int32 x1, 
+			ImageRegion< ElementType, 2 > region
+			);
+			/*int32 x1, 
 			int32 y1, 
 			int32 z1, 
 			int32 t1,
@@ -488,7 +548,7 @@ public:
 			int32 y2, 
 			int32 z2,
 			int32 t2
-			);
+			);*/
 
 	WriterBBoxInterface &
 	SetDirtyBBox( 
@@ -544,6 +604,11 @@ protected:
 	typename ImageDataTemplate< ElementType >::Ptr	_imageData;
 
 	DimensionExtents	_dimExtents[Dimension];
+	ElementType		*_pointer;
+	
+	uint32			_dimOrder[ Dimension ];
+	uint32			_sourceDimension;
+	int32			*_pointerCoordinatesInSource;
 private:
 	void
 	FillDimensionInfo();
