@@ -225,6 +225,27 @@ Image< ElementType, 2 >::GetPointer(
 	}
 }
 
+template< typename ElementType >
+ElementType *
+Image< ElementType, 2 >::GetPointer( 
+			typename Image< ElementType, 2 >::SizeType &size,
+			typename Image< ElementType, 2 >::PointType &strides
+		  )const
+{
+	if( _imageData ) {
+		for( unsigned i = 0; i < Dimension; ++i ) {
+			size[i] = _dimExtents[i].maximum - _dimExtents[i].minimum;
+			strides[i] = _imageData->GetDimensionInfo( i ).stride;
+		}
+
+		return _pointer;
+	} else {
+		size = SizeType(0);
+		strides = PointType(0);
+
+		return NULL;
+	}
+}
 
 template< typename ElementType >
 template< unsigned NewDim >
@@ -336,37 +357,38 @@ typename Image< ElementType, 2 >::SubRegion
 Image< ElementType, 2 >::GetRegion()const
 {
 	return GetSubRegion( 
-			this->GetDimensionExtents(0).minimum,
-			this->GetDimensionExtents(1).minimum,
-			this->GetDimensionExtents(0).maximum,
-			this->GetDimensionExtents(1).maximum
+			PointType( 
+				this->GetDimensionExtents(0).minimum,
+				this->GetDimensionExtents(1).minimum 
+				), 
+			PointType(
+				this->GetDimensionExtents(0).maximum,
+				this->GetDimensionExtents(1).maximum
+				)
 			);
 }
 	
 template< typename ElementType >
 typename Image< ElementType, 2 >::SubRegion
-Image< ElementType, 2 >::GetSubRegion( 
-			int32 x1, 
-			int32 y1, 
-			int32 x2, 
-			int32 y2  
+Image< ElementType, 2 >::GetSubRegion(
+			typename Image< ElementType, 2 >::PointType min,
+			typename Image< ElementType, 2 >::PointType max
 			)const
 {
 	//TODO - check parameters
-	uint32 width;
-	uint32 height;
-	int32 xStride;
-	int32 yStride;
+	SizeType size;
+	PointType strides;
 
-	ElementType * pointer = GetPointer( width, height, xStride, yStride );
+	ElementType * pointer = GetPointer( size, strides );
 
-	pointer += (x1-this->GetDimensionExtents(0).minimum) * xStride 
-		+  (y1-this->GetDimensionExtents(1).minimum) * yStride;
+	SizeType dimOrder;
+	for( unsigned i = 0; i < Dimension; ++i ) {
+		pointer += (min[i] - this->GetDimensionExtents(i).minimum) * strides[i];
+		dimOrder[i] = i;
+	}
 
-	Coordinates< uint32, Dimension > size = Coordinates< uint32, Dimension >( x2 - x1, y2 - y1 ); 
-	Coordinates< int32, Dimension >	strides = Coordinates< int32, Dimension >( xStride, yStride );
-	Coordinates< uint32, Dimension > dimOrder = Coordinates< uint32, Dimension >( 0, 1 );
-	Coordinates< int32, Dimension >	pointerCoordinatesInSource = Coordinates< int32, Dimension >( x1, y1 );
+	size = max - min;
+	PointType pointerCoordinatesInSource = min;
 
 	return CreateImageRegion( pointer, size, strides, dimOrder, pointerCoordinatesInSource );
 }
@@ -689,6 +711,28 @@ Image< ElementType, 3 >::GetPointer(
 	}
 }
 
+template< typename ElementType >
+ElementType *
+Image< ElementType, 3 >::GetPointer( 
+			typename Image< ElementType, 3 >::SizeType &size,
+			typename Image< ElementType, 3 >::PointType &strides
+		  )const
+{
+	if( _imageData ) {
+		for( unsigned i = 0; i < Dimension; ++i ) {
+			size[i] = _dimExtents[i].maximum - _dimExtents[i].minimum;
+			strides[i] = _imageData->GetDimensionInfo( i ).stride;
+		}
+		return _pointer;
+	} else {
+		size = SizeType(0);
+		strides = PointType(0);
+
+		return NULL;
+	}
+}
+
+
  
 template< typename ElementType >
 WriterBBoxInterface &
@@ -795,44 +839,40 @@ typename Image< ElementType, 3 >::SubRegion
 Image< ElementType, 3 >::GetRegion()const
 {
 	return GetSubRegion( 
-			this->GetDimensionExtents(0).minimum,
-			this->GetDimensionExtents(1).minimum,
-			this->GetDimensionExtents(2).minimum,
-			this->GetDimensionExtents(0).maximum,
-			this->GetDimensionExtents(1).maximum,
-			this->GetDimensionExtents(2).maximum
+			PointType(
+				this->GetDimensionExtents(0).minimum,
+				this->GetDimensionExtents(1).minimum,
+				this->GetDimensionExtents(2).minimum
+				),
+			PointType(
+				this->GetDimensionExtents(0).maximum,
+				this->GetDimensionExtents(1).maximum,
+				this->GetDimensionExtents(2).maximum
+				)
 			);
 }
 
 template< typename ElementType >
 typename Image< ElementType, 3 >::SubRegion
-Image< ElementType, 3 >::GetSubRegion( 
-			int32 x1, 
-			int32 y1, 
-			int32 z1, 
-			int32 x2, 
-			int32 y2, 
-			int32 z2 
+Image< ElementType, 3 >::GetSubRegion(
+			typename Image< ElementType, 3 >::PointType min,
+			typename Image< ElementType, 3 >::PointType max
 			)const
 {
-	uint32 width;
-	uint32 height;
-	uint32 depth;
-	int32 xStride;
-	int32 yStride;
-	int32 zStride;
+	//TODO - check parameters
+	SizeType size;
+	PointType strides;
 
-	ElementType * pointer = GetPointer( 
-			width, height, depth, xStride, yStride, zStride );
+	ElementType * pointer = GetPointer( size, strides );
 
-	pointer += (x1-this->GetDimensionExtents(0).minimum) * xStride 
-		+  (y1-this->GetDimensionExtents(1).minimum) * yStride
-		+  (z1-this->GetDimensionExtents(2).minimum) * zStride;
+	SizeType dimOrder;
+	for( unsigned i = 0; i < Dimension; ++i ) {
+		pointer += (min[i] - this->GetDimensionExtents(i).minimum) * strides[i];
+		dimOrder[i] = i;
+	}
 
-	Coordinates< uint32, Dimension > size = Coordinates< uint32, Dimension >( x2 - x1, y2 - y1, z2 - z1 ); 
-	Coordinates< int32, Dimension >	strides = Coordinates< int32, Dimension >( xStride, yStride, zStride );
-	Coordinates< uint32, Dimension > dimOrder = Coordinates< uint32, Dimension >( 0, 1, 2 );
-	Coordinates< int32, Dimension >	pointerCoordinatesInSource = Coordinates< int32, Dimension >( x1, y1, z1 );
+	size = max - min;
+	PointType pointerCoordinatesInSource = min;
 
 	return CreateImageRegion( pointer, size, strides, dimOrder, pointerCoordinatesInSource );
 }

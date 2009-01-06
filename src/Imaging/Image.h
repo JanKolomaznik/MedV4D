@@ -28,7 +28,7 @@ namespace Imaging
 		__VA_ARGS__; \
 	};
 
-	//usage function< IMAGE_TYPE >
+	//usage function< IMAGE_TYPE >( IMAGE )
 #define IMAGE_TYPE_PTR_SWITCH_MACRO( AIMAGE_PTR, ... ) \
 		TYPE_TEMPLATE_SWITCH_MACRO( AIMAGE_PTR->GetElementTypeID(), \
 			DIMENSION_TEMPLATE_SWITCH_MACRO( AIMAGE_PTR->GetDimension(), IMAGE_TYPE_TEMPLATE_CASE_MACRO( AIMAGE_PTR, __VA_ARGS__ ) ) )
@@ -72,11 +72,15 @@ public:
 	 **/
 	typedef ElementType				Element;
 
-	static const unsigned	Dimension = 2;
+	static const unsigned				Dimension = 2;
 
 	typedef ImageIterator< Element, Dimension >	Iterator;
 
 	typedef ImageRegion< Element, Dimension >	SubRegion;
+
+	typedef Coordinates< int32, Dimension >		PointType;
+
+	typedef Coordinates< uint32, Dimension >	SizeType;
 
 	Image();
 
@@ -152,6 +156,12 @@ public:
 			int32 &yStride
 		  )const;
 
+	ElementType *
+	GetPointer( 
+			SizeType &size,
+			PointType &strides
+		  )const;
+
 	template< unsigned NewDim >
 	typename Image< ElementType, NewDim >::Ptr
 	GetRestrictedImage( 
@@ -203,11 +213,9 @@ public:
 	GetRegion()const;
 
 	SubRegion
-	GetSubRegion( 
-			int32 x1, 
-			int32 y1, 
-			int32 x2, 
-			int32 y2  
+	GetSubRegion(
+			PointType min,
+			PointType max
 			)const;
 
   void Dump(void);
@@ -264,6 +272,10 @@ public:
 
 	typedef ImageRegion< Element, Dimension >	SubRegion;
 
+	typedef Coordinates< int, Dimension >		PointType;
+
+	typedef Coordinates< uint32, Dimension >	SizeType;
+
 	Image();
 
 	Image( AbstractImageData::APtr imageData );
@@ -315,6 +327,12 @@ public:
 			int32 &xStride,
 			int32 &yStride,
 			int32 &zStride
+		  )const;
+
+	ElementType *
+	GetPointer( 
+			SizeType &size,
+			PointType &strides
 		  )const;
 
 	template< unsigned NewDim >
@@ -392,12 +410,8 @@ public:
 
 	SubRegion
 	GetSubRegion( 
-			int32 x1, 
-			int32 y1, 
-			int32 z1, 
-			int32 x2, 
-			int32 y2, 
-			int32 z2 
+			PointType min,
+			PointType max
 			)const;
 
   void Dump(void);
@@ -453,6 +467,10 @@ public:
 
 	typedef ImageRegion< Element, Dimension >	SubRegion;
 
+	typedef Coordinates< int, Dimension >		PointType;
+
+	typedef Coordinates< uint32, Dimension >	SizeType;
+
 	Image();
 
 	Image( AbstractImageData::APtr imageData );
@@ -507,6 +525,12 @@ public:
 			int32 &yStride,
 			int32 &zStride,
 			int32 &tStride
+		  )const;
+
+	ElementType *
+	GetPointer( 
+			SizeType &size,
+			PointType &strides
 		  )const;
 
 	typename Image< ElementType, 2 >::Ptr
@@ -587,15 +611,9 @@ public:
 	GetRegion()const;
 
 	SubRegion
-	GetSubRegion( 
-			int32 x1, 
-			int32 y1, 
-			int32 z1, 
-			int32 t1,
-			int32 x2, 
-			int32 y2, 
-			int32 z2,
-			int32 t2
+	GetSubRegion(
+			PointType min,
+			PointType max
 			)const;
 
   void Dump(void);

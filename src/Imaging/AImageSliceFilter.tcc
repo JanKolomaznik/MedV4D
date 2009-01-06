@@ -198,22 +198,28 @@ AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementTyp
 			int32 maxZ = Min( slice + (int32)sliceComputationNeighbourCount + 1, this->in->GetDimensionExtents( 2 ).maximum );
 
 			ImageRegion< InputElementType, 3 > region1 = 
-				this->in->GetSubRegion(	
-					this->in->GetDimensionExtents( 0 ).minimum,
-					this->in->GetDimensionExtents( 1 ).minimum,
-					minZ,
-					this->in->GetDimensionExtents( 0 ).maximum,
-					this->in->GetDimensionExtents( 1 ).maximum,
-					maxZ );
+				this->in->GetSubRegion( 
+					typename InputImageType::PointType(
+						this->in->GetDimensionExtents( 0 ).minimum,
+						this->in->GetDimensionExtents( 1 ).minimum,
+						minZ ),
+					typename InputImageType::PointType(
+						this->in->GetDimensionExtents( 0 ).maximum,
+						this->in->GetDimensionExtents( 1 ).maximum,
+						maxZ )
+					);
 
 			ImageRegion< OutputElementType, 3 > regionTmp = 
 				this->out->GetSubRegion(	
-					this->out->GetDimensionExtents( 0 ).minimum,
-					this->out->GetDimensionExtents( 1 ).minimum,
-					slice,
-					this->out->GetDimensionExtents( 0 ).maximum,
-					this->out->GetDimensionExtents( 1 ).maximum,
-					slice+1 );
+					typename OutputImageType::PointType(
+						this->out->GetDimensionExtents( 0 ).minimum,
+						this->out->GetDimensionExtents( 1 ).minimum,
+						slice ),
+					typename OutputImageType::PointType(
+						this->out->GetDimensionExtents( 0 ).maximum,
+						this->out->GetDimensionExtents( 1 ).maximum,
+						slice+1 )
+					);
 
 			ImageRegion< OutputElementType, 2 > region2 = regionTmp.GetSlice( 0 );
 

@@ -66,10 +66,12 @@ public:
 			{ _coordinates[i] = x; } 
 		}
 
-	Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
+	template< typename CType >
+	//Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
+	Coordinates( const Coordinates< CType, Dimension > &coord ) 
 		{ 
 			for( unsigned i=0; i<Dimension; ++i ) 
-			{ _coordinates[i] = coord._coordinates[i]; } 
+			{ _coordinates[i] = coord[i]; } 
 		}
 
 	CoordinateType &
@@ -128,10 +130,12 @@ public:
 			_coordinates[1] = y;
 		}
 
-	Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
+	template< typename CType >
+	//Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
+	Coordinates( const Coordinates< CType, Dimension > &coord ) 
 		{ 
 			for( unsigned i=0; i<Dimension; ++i ) 
-			{ _coordinates[i] = coord._coordinates[i]; } 
+			{ _coordinates[i] = coord[i]; } 
 		}
 
 	CoordinateType &
@@ -191,17 +195,19 @@ public:
 			_coordinates[2] = z;
 		}
 
-	Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
+	template< typename CType >
+	//Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
+	Coordinates( const Coordinates< CType, Dimension > &coord ) 
 		{ 
 			for( unsigned i=0; i<Dimension; ++i ) 
-			{ _coordinates[i] = coord._coordinates[i]; } 
+			{ _coordinates[i] = coord[i]; } 
 		}
 
 	CoordinateType &
 	operator[]( unsigned idx )
 		{ return GetCoordinate( *this, idx ); }
 
-	CoordinateType &
+	CoordinateType
 	operator[]( unsigned idx )const
 		{ return GetConstCoordinate( *this, idx ); }
 
@@ -241,10 +247,12 @@ public:
 	Coordinates()
 		{ for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = 0; } }
 
-	Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
+	template< typename CType >
+	//Coordinates( const Coordinates< CoordType, Dimension > &coord ) 
+	Coordinates( const Coordinates< CType, Dimension > &coord )  
 		{ 
 			for( unsigned i=0; i<Dimension; ++i ) 
-			{ _coordinates[i] = coord._coordinates[i]; } 
+			{ _coordinates[i] = coord[i]; } 
 		}
 
 	Coordinates( CoordType x )
