@@ -47,16 +47,18 @@ main( int argc, char **argv )
 	TCLAP::ValueArg<int> sliceNumber( "s", "slice", "Slice number to be kept.", false, 0, "Slice index" );
 	cmd.add( sliceNumber );
 
-	TCLAP::ValueArg<std::string> inFilenameArg( "i", "input", "Input image filename", true, "", "filename1" );
-	cmd.add( inFilenameArg );
-
-	TCLAP::ValueArg<std::string> outFilenameArg( "o", "output", "Output image filename", true, "", "filename2" );
-	cmd.add( outFilenameArg );
-
 	TCLAP::MultiArg< int > firstPoint( "l", "leftCorner", "First corner of croped area", false, "List of coordinates" );
 	cmd.add( firstPoint );
 	TCLAP::MultiArg< int > secondPoint( "r", "rightCorner", "Second corner of croped area", false, "List of coordinates" );
 	cmd.add( secondPoint );
+
+	TCLAP::UnlabeledValueArg<std::string> inFilenameArg( "input", "Input image filename", true, "", "filename1" );
+	//TCLAP::ValueArg<std::string> inFilenameArg( "i", "input", "Input image filename", true, "", "filename1" );
+	cmd.add( inFilenameArg );
+
+	TCLAP::UnlabeledValueArg<std::string> outFilenameArg( "output", "Output image filename", true, "", "filename2" );
+	//TCLAP::ValueArg<std::string> outFilenameArg( "o", "output", "Output image filename", true, "", "filename2" );
+	cmd.add( outFilenameArg );
 
 	cmd.parse( argc, argv );
 

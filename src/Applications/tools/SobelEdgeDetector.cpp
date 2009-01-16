@@ -1,6 +1,7 @@
 #include "Common.h"
 #include "Filtering.h"
 #include "Imaging/filters/SobelEdgeDetector.h"
+#include <tclap/CmdLine.h>
 
 
 using namespace M4D;
@@ -17,14 +18,24 @@ main( int argc, char **argv )
         D_COMMAND( std::ofstream debugFile( "Debug.txt" ); );
         SET_DOUT( debugFile );
 
-	if( argc < 3 || argc > 3 ) {
-                std::cerr << "Wrong argument count - must be in form: 'program inputfile outputfile'\n";
-                return 1;
-        }
+	TCLAP::CmdLine cmd( "Laplace operator.", ' ', "");
+	/*---------------------------------------------------------------------*/
 
-	std::string inFilename = argv[1];
-	std::string outFilename = argv[2];
+		//Define cmd arguments
 
+	/*---------------------------------------------------------------------*/
+	TCLAP::UnlabeledValueArg<std::string> inFilenameArg( "input", "Input image filename", true, "", "filename1" );
+	cmd.add( inFilenameArg );
+
+	TCLAP::UnlabeledValueArg<std::string> outFilenameArg( "output", "Output image filename", true, "", "filename2" );
+	cmd.add( outFilenameArg );
+
+	cmd.parse( argc, argv );
+
+	/***************************************************/
+
+	std::string inFilename = inFilenameArg.getValue();
+	std::string outFilename = outFilenameArg.getValue();
 
 	std::cout << "Loading file..."; std::cout.flush();
 	M4D::Imaging::AbstractImage::AImagePtr image = 
@@ -37,11 +48,17 @@ main( int argc, char **argv )
 	FinishHook  *hook = new FinishHook;
 	M4D::Imaging::AbstractImageConnectionInterface *inConnection = NULL;
 	M4D::Imaging::AbstractImageConnectionInterface *outConnection = NULL;
+	M4D::Imaging::AbstractPipeFilter *filter = NULL;
 	/*---------------------------------------------------------------------*/
-	M4D::Imaging::SobelEdgeDetector< ImageType > *filter = new M4D::Imaging::SobelEdgeDetector< ImageType >();
+	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
+		M4D::Imaging::SobelEdgeDetector< IMAGE_TYPE > *sobel = new M4D::Imaging::SobelEdgeDetector< IMAGE_TYPE >();
+		filter = sobel;
+	);
 
 	/*---------------------------------------------------------------------*/
-	container = PreparePipeline<ImageType>( *filter, M4D::Imaging::MessageReceiverInterface::Ptr( hook ), inConnection, outConnection );
+	container = PrepareSimplePipeline( *filter, M4D::Imaging::MessageReceiverInterface::Ptr( hook ), inConnection, outConnection );
+	//container = PreparePipeline<ImageType>( *filter, M4D::Imaging::MessageReceiverInterface::Ptr( hook ), inConnection, outConnection );
+	
 	inConnection->PutImage( image );
 
 	std::cout << "Done\n";

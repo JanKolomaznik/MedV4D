@@ -636,7 +636,9 @@ struct TypeTraits< SimpleVector<NumType, Dim> >
 	static NumType		One;
 	static Type		CentralValue;
 
+	typedef SimpleVector< typename TypeTraits< NumType >::SignedClosestType, Dim > 	SignedClosestType;
 	typedef SimpleVector< typename TypeTraits< NumType >::SuperiorType, Dim > 	SuperiorType;
+	typedef SimpleVector< typename TypeTraits< NumType >::SuperiorSignedType, Dim >	SuperiorSignedType;
 	typedef SimpleVector< typename TypeTraits< NumType >::SuperiorFloatType, Dim >	SuperiorFloatType;
 };
 
@@ -655,7 +657,9 @@ struct TypeTraits< bool >
 
 	static const Type	CentralValue = false;
 
-	typedef int64		SuperiorType;
+	typedef int8		SignedClosestType;
+	typedef int8		SuperiorType;
+	typedef int8		SuperiorSignedType;
 	typedef float32		SuperiorFloatType;
 };
 
@@ -674,7 +678,9 @@ struct TypeTraits< int8 >
 
 	static const Type	CentralValue = 0;
 
-	typedef int64		SuperiorType;
+	typedef int8		SignedClosestType;
+	typedef int16		SuperiorType;
+	typedef int16		SuperiorSignedType;
 	typedef float32		SuperiorFloatType;
 };
 
@@ -693,7 +699,9 @@ struct TypeTraits< uint8 >
 
 	static const Type	CentralValue = Max / 2;
 
-	typedef uint64		SuperiorType;
+	typedef int8		SignedClosestType;
+	typedef uint16		SuperiorType;
+	typedef int16		SuperiorSignedType;
 	typedef float32		SuperiorFloatType;
 };
 
@@ -712,7 +720,9 @@ struct TypeTraits< int16 >
 
 	static const Type	CentralValue = 0;
 
-	typedef int64		SuperiorType;
+	typedef int16		SignedClosestType;
+	typedef int32		SuperiorType;
+	typedef int32		SuperiorSignedType;
 	typedef float32		SuperiorFloatType;
 };
 
@@ -731,7 +741,9 @@ struct TypeTraits< uint16 >
 
 	static const Type	CentralValue = Max / 2;
 
-	typedef uint64		SuperiorType;
+	typedef int16		SignedClosestType;
+	typedef uint32		SuperiorType;
+	typedef int32		SuperiorSignedType;
 	typedef float32		SuperiorFloatType;
 };
 
@@ -750,7 +762,9 @@ struct TypeTraits< int32 >
 
 	static const Type	CentralValue = 0;
 
+	typedef int32		SignedClosestType;
 	typedef int64		SuperiorType;
+	typedef int64		SuperiorSignedType;
 	typedef float32		SuperiorFloatType;
 };
 
@@ -769,7 +783,9 @@ struct TypeTraits< uint32 >
 
 	static const Type	CentralValue = Max / 2;
 
+	typedef int32		SignedClosestType;
 	typedef uint64		SuperiorType;
+	typedef int64		SuperiorSignedType;
 	typedef float32		SuperiorFloatType;
 };
 
@@ -788,7 +804,9 @@ struct TypeTraits< int64 >
 
 	static const Type	CentralValue = 0;
 
+	typedef int64		SignedClosestType;
 	typedef int64		SuperiorType;
+	typedef float32		SuperiorSignedType;
 	typedef float32		SuperiorFloatType;
 };
 
@@ -807,7 +825,9 @@ struct TypeTraits< uint64 >
 
 	static const Type	CentralValue = Max / 2;
 
+	typedef int64		SignedClosestType;
 	typedef uint64		SuperiorType;
+	typedef float32		SuperiorSignedType;
 	typedef float32		SuperiorFloatType;
 };
 
@@ -825,7 +845,9 @@ struct TypeTraits< float32 >
 	static Type		One;
 	static Type		CentralValue;
 
+	typedef float32		SignedClosestType;
 	typedef float64		SuperiorType;
+	typedef float64		SuperiorSignedType;
 	typedef float64		SuperiorFloatType;
 };
 
@@ -843,7 +865,9 @@ struct TypeTraits< float64 >
 	static Type		One;
 	static Type		CentralValue;
 
+	typedef float64		SignedClosestType;
 	typedef float64		SuperiorType;
+	typedef float64		SuperiorSignedType;
 	typedef float64		SuperiorFloatType;
 };
 

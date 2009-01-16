@@ -81,4 +81,37 @@ PreparePipeline(
 	return container;
 }
 
+M4D::Imaging::PipelineContainer *
+PrepareSimplePipeline( 
+		M4D::Imaging::AbstractPipeFilter 		&filter, 
+		M4D::Imaging::MessageReceiverInterface::Ptr 	hook,
+		M4D::Imaging::AbstractImageConnectionInterface 	*&inConnection,
+		M4D::Imaging::AbstractImageConnectionInterface 	*&outConnection
+		)
+{
+	M4D::Imaging::PipelineContainer *container = new M4D::Imaging::PipelineContainer();
+	try {
+		container->AddFilter( &filter );
+
+		//filter.SetUpdateInvocationStyle( M4D::Imaging::AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
+		//filter.SetUpdateInvocationStyle( M4D::Imaging::AbstractPipeFilter::UIS_ON_UPDATE_FINISHED );
+
+		inConnection = dynamic_cast<M4D::Imaging::AbstractImageConnectionInterface*>( 
+				&( container->MakeInputConnection( filter, 0, false ) ) 
+				);
+
+		outConnection = dynamic_cast<M4D::Imaging::AbstractImageConnectionInterface*>( 
+				&( container->MakeOutputConnection( filter, 0, true ) ) 
+				);
+
+		outConnection->SetMessageHook( hook );
+	} 
+	catch( ... ) {
+		delete container;
+		throw;
+	}
+
+	return container;
+}
+
 #endif /*FILTERING_H*/

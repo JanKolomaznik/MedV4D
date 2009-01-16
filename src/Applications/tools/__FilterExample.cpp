@@ -1,5 +1,6 @@
 #include "Common.h"
 #include "Filtering.h"
+#include <tclap/CmdLine.h>
 
 
 using namespace M4D;
@@ -10,15 +11,30 @@ typedef Image< int16, 3 > ImageType;
 int
 main( int argc, char **argv )
 {
+	std::ofstream logFile( "Log.txt" );
+        SET_LOUT( logFile );
 
-	if( argc < 3 || argc > 3 ) {
-                std::cerr << "Wrong argument count - must be in form: 'program inputfile outputfile'\n";
-                return 1;
-        }
+        D_COMMAND( std::ofstream debugFile( "Debug.txt" ); );
+        SET_DOUT( debugFile );
 
-	std::string inFilename = argv[1];
-	std::string outFilename = argv[2];
+	TCLAP::CmdLine cmd( /*ADD Description*/"", ' ', "");
+	/*---------------------------------------------------------------------*/
 
+		//Define cmd arguments
+
+	/*---------------------------------------------------------------------*/
+	TCLAP::UnlabeledValueArg<std::string> inFilenameArg( "input", "Input image filename", true, "", "filename1" );
+	cmd.add( inFilenameArg );
+
+	TCLAP::UnlabeledValueArg<std::string> outFilenameArg( "output", "Output image filename", true, "", "filename2" );
+	cmd.add( outFilenameArg );
+
+	cmd.parse( argc, argv );
+
+	/***************************************************/
+
+	std::string inFilename = inFilenameArg.getValue();
+	std::string outFilename = outFilenameArg.getValue();
 
 	std::cout << "Loading file..."; std::cout.flush();
 	M4D::Imaging::AbstractImage::AImagePtr image = 
@@ -31,12 +47,15 @@ main( int argc, char **argv )
 	FinishHook  *hook = new FinishHook;
 	M4D::Imaging::AbstractImageConnectionInterface *inConnection = NULL;
 	M4D::Imaging::AbstractImageConnectionInterface *outConnection = NULL;
+	M4D::Imaging::AbstractPipeFilter *filter = NULL;
 	/*---------------------------------------------------------------------*/
 	
 		//Define and set filter
 
 	/*---------------------------------------------------------------------*/
-	container = PreparePipeline<ImageType>( *filter, M4D::Imaging::MessageReceiverInterface::Ptr( hook ), inConnection, outConnection );
+	container = PrepareSimplePipeline( *filter, M4D::Imaging::MessageReceiverInterface::Ptr( hook ), inConnection, outConnection );
+	//container = PreparePipeline<ImageType>( *filter, M4D::Imaging::MessageReceiverInterface::Ptr( hook ), inConnection, outConnection );
+	//
 	inConnection->PutImage( image );
 
 	std::cout << "Done\n";
