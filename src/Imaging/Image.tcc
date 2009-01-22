@@ -66,7 +66,7 @@ Image< ElementType, 2 >::Image( typename ImageDataTemplate< ElementType >::Ptr i
 }
 	
 template< typename ElementType >
-Image< ElementType, 2 >::Image( typename ImageDataTemplate< ElementType >::Ptr imageData, Image< ElementType, 2 >::SubRegion region )
+Image< ElementType, 2 >::Image( typename ImageDataTemplate< ElementType >::Ptr imageData, typename Image< ElementType, 2 >::SubRegion region )
 : AbstractImageDim< 2 >( this->_dimExtents )
 {
 	_imageData = imageData;
@@ -466,7 +466,7 @@ Image< ElementType, 3 >::Image( typename ImageDataTemplate< ElementType >::Ptr i
 }
 
 template< typename ElementType >
-Image< ElementType, 3 >::Image( typename ImageDataTemplate< ElementType >::Ptr imageData, Image< ElementType, 3 >::SubRegion region )
+Image< ElementType, 3 >::Image( typename ImageDataTemplate< ElementType >::Ptr imageData, typename Image< ElementType, 3 >::SubRegion region )
 : AbstractImageDim< 3 >( this->_dimExtents )
 {
 	_imageData = imageData;
@@ -887,7 +887,7 @@ Image< ElementType, 4 >::Image()
 }
 
 template< typename ElementType >
-Image< ElementType, 4 >::Image( typename ImageDataTemplate< ElementType >::Ptr imageData, Image< ElementType, 4 >::SubRegion region )
+Image< ElementType, 4 >::Image( typename ImageDataTemplate< ElementType >::Ptr imageData, typename Image< ElementType, 4 >::SubRegion region )
 {
 
 }
