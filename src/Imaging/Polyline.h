@@ -24,6 +24,18 @@ public:
 	typedef Coordinates< CoordType, Dim > 	PointType;
 	typedef CoordType			Type;
 	static const unsigned Dimension	= Dim;		
+	
+	Polyline(): _cyclic( false ) {}
+
+	void
+	SetCyclic( bool cyclic = true )
+		{ _cyclic = cyclic; }
+
+	bool
+	Cyclic() const
+		{ return _cyclic; }
+protected:
+	bool 			_cyclic;
 
 };
 

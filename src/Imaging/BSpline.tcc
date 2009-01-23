@@ -21,14 +21,14 @@ template < typename CoordType, unsigned Dim >
 BSpline< CoordType, Dim >
 ::BSpline(): _cyclic( false ), _lastSampleFrequency( 2 )
 {
-
+	_samplePointCache.SetCyclic( _cyclic );
 }
 
 template < typename CoordType, unsigned Dim >
 BSpline< CoordType, Dim >
 ::BSpline( const PointSet< CoordType, Dim > & points ): _cyclic( false ), _lastSampleFrequency( 2 )
 {
-
+	_samplePointCache.SetCyclic( _cyclic );
 }
 
 template < typename CoordType, unsigned Dim >

@@ -2,6 +2,7 @@
 #define BSPLINE_H
 
 #include "Imaging/PointSet.h"
+#include "Imaging/Polyline.h"
 #include <cmath>
 #include "Common.h"
 #include <ostream>
@@ -121,7 +122,7 @@ public:
 	typedef std::vector< BFunctionValues >				BFValVector;
 	typedef PointSet< CoordType, Dim > 				Predecessor;
 	typedef typename Predecessor::PointType 			PointType;
-	typedef PointSet< CoordType, Dim >				SamplePointSet;
+	typedef Polyline< CoordType, Dim >				SamplePointSet;
 	typedef CoordType						Type;
 	static const unsigned 						Degree = CurveBasis::Degree;
 	static const unsigned 						Dimension	= Dim;		
@@ -185,7 +186,7 @@ public:
 
 	void
 	SetCyclic( bool cyclic = true )
-		{ _cyclic = cyclic; }
+		{ _cyclic = cyclic; _samplePointCache.SetCyclic( cyclic ); }
 
 	bool
 	Cyclic() const
