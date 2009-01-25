@@ -29,6 +29,7 @@
 #include "Debug.h"
 #include "Log.h"
 #include "ExceptionBase.h"
+#include "Endianess.h"
 #include <iomanip>
 
 //*****************************************************************************
@@ -85,26 +86,6 @@ extern const float32 PI;
 #define MAKESTRING( S ) #S
 
 using namespace M4D::ErrorHandling;
-
-/**
- *  Endian detection support
- */
-enum Endianness {
-	End_BIG_ENDIAN = 0,
-	End_LITTLE_ENDIAN = 1
-};
-
-inline Endianness
-GetEndianess( void)
-{
-  uint16 tmp = 1; // for endian testing
-  uint8 *ptr = (uint8 *)&tmp;
-    
-  if( ptr[0] == 1)
-    return End_LITTLE_ENDIAN;
-  else
-    return End_BIG_ENDIAN;
-}
 
 /** @} */
 
