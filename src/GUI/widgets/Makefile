@@ -18,6 +18,7 @@ TARGETS=	m4dGUIMainWindow \
 		m4dGUIStudyManagerWidget \
 		m4dGUIScreenLayoutWidget \
 		m4dGUISliceViewerWidget \
+		m4dGUISliceViewerWidget2 \
 		m4dGUIToolBarCustomizerWidget
 
 SUBDIR=		components
@@ -36,6 +37,7 @@ MOCINPUT=	m4dGUIAbstractViewerWidget.h \
 		m4dGUIStudyManagerWidget.h \
 		m4dGUIVtkViewerWidget.h \
 		m4dGUISliceViewerWidget.h \
+		m4dGUISliceViewerWidget2.h \
 		m4dGUIToolBarCustomizerWidget.h \
 		StManagerFilterComp.h \
 		StManagerHProtocolsComp.h \

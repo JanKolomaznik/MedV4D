@@ -305,7 +305,7 @@ protected:
      *  @param hnd the button handler method to connect
      *  @param btn the mouse button to connect to
      */
-    void setButtonHandler( ButtonHandler hnd, MouseButton btn );
+    virtual void setButtonHandler( ButtonHandler hnd, MouseButton btn );
 
     /**
      * Calculates the image pixel position from a picked display position
@@ -477,7 +477,7 @@ protected:
      */
     void colorPicker( double x, double y, double z );
 
-private:
+protected:
 
     /**
      * Sets the parameters that are dependent on the given image.
@@ -528,6 +528,11 @@ private:
      *  @param offset the offset of the image on the viewer
      */
     void drawSlice( int sliceNum, double zoomRate, QPoint offset );
+
+    virtual void drawSliceAdditionals( int sliceNum, double zoomRate );
+
+    virtual void drawHUD( int sliceNum, double zoomRate, QPoint offset );
+
 
     /**
      * Draws a selected shape.
@@ -682,6 +687,11 @@ private:
      * Selection mode enabled/disabled for left and right mouse buttons.
      */
     bool					_selectionMode[2];
+
+    /**
+     * Button mode enabled/disabled for left and right mouse buttons.
+     */
+    bool					_buttonMode[2];
 
     /**
      * List of integers indicating which slots are implemented in this type of viewer.

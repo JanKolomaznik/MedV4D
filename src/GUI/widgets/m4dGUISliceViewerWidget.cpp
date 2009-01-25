@@ -540,36 +540,43 @@ m4dGUISliceViewerWidget::setButtonHandler( ButtonHandler hnd, MouseButton btn )
 	case zoomI:
 	_buttonMethods[btn] = &M4D::Viewer::m4dGUISliceViewerWidget::zoomImage;
 	_selectionMode[btn] = false;
+	_buttonMode[btn] = true;
 	break;
 
 	case moveI:
 	_buttonMethods[btn] = &M4D::Viewer::m4dGUISliceViewerWidget::moveImage;
 	_selectionMode[btn] = false;
+	_buttonMode[btn] = true;
 	break;
 
 	case adjust_bc:
 	_buttonMethods[btn] = &M4D::Viewer::m4dGUISliceViewerWidget::adjustContrastBrightness;
 	_selectionMode[btn] = false;
+	_buttonMode[btn] = true;
 	break;
 
 	case switch_slice:
 	_buttonMethods[btn] = &M4D::Viewer::m4dGUISliceViewerWidget::switchSlice;
 	_selectionMode[btn] = false;
+	_buttonMode[btn] = true;
 	break;
 
 	case new_point:
 	_selectMethods[btn] = &M4D::Viewer::m4dGUISliceViewerWidget::newPoint;
 	_selectionMode[btn] = true;
+	_buttonMode[btn] = false;
 	break;
 
 	case new_shape:
 	_selectMethods[btn] = &M4D::Viewer::m4dGUISliceViewerWidget::newShape;
 	_selectionMode[btn] = true;
+	_buttonMode[btn] = false;
 	break;
 
 	case color_picker:
 	_selectMethods[btn] = &M4D::Viewer::m4dGUISliceViewerWidget::colorPicker;
 	_selectionMode[btn] = true;
+	_buttonMode[btn] = false;
 	break;
 
 	default:
@@ -774,6 +781,13 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
         glEnd();
     glDeleteTextures( 1, &texName );
     
+	drawSliceAdditionals( sliceNum, zoomRate );
+
+	if ( _flipH < 0 ) offset.setX( offset.x() - (int)( zoomRate * w ) );
+	if ( _flipV < 0 ) offset.setY( offset.y() - (int)( zoomRate * h ) );
+
+	drawHUD( sliceNum, zoomRate, offset );
+/*
     // if there are selected shapes, draw them
     if ( !_shapes.empty() )
     {
@@ -789,7 +803,31 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 
     // print color value of the picked voxel
     if ( _colorPicker && sliceNum == _slicePicked ) drawPicked();
+*/
+
     glFlush();
+}
+
+void
+m4dGUISliceViewerWidget::drawSliceAdditionals( int sliceNum, double zoomRate )
+{
+	// if there are selected shapes, draw them
+	if ( !_shapes.empty() )	{
+		for ( std::list< Selection::m4dShape<double> >::iterator it = _shapes.begin(); it != --(_shapes.end()); ++it ) {
+			drawShape( *it, false, sliceNum, zoomRate ); 
+		}
+		drawShape( *(--(_shapes.end())), true, sliceNum, zoomRate );
+	}
+}
+
+void
+m4dGUISliceViewerWidget::drawHUD( int sliceNum, double zoomRate, QPoint offset )
+{
+	// print text data if requested
+	if ( _printData ) drawData( zoomRate, offset, sliceNum );
+
+	// print color value of the picked voxel
+	if ( _colorPicker && sliceNum == _slicePicked ) drawPicked();
 }
 
 void
@@ -1168,11 +1206,11 @@ m4dGUISliceViewerWidget::mouseMoveEvent(QMouseEvent *event)
     int dx = event->x() - _lastPos.x();
     int dy = event->y() - _lastPos.y();
 
-    if ( ( event->buttons() & Qt::LeftButton ) && !_selectionMode[ left ] )
+    if ( ( event->buttons() & Qt::LeftButton ) && _buttonMode[ left ] )
     {
         (this->*_buttonMethods[ left ])( dx, -dy );
     }
-    else if ( ( event->buttons() & Qt::RightButton ) && !_selectionMode[ right ] )
+    else if ( ( event->buttons() & Qt::RightButton ) && _buttonMode[ right ] )
     {
         (this->*_buttonMethods[ right ])( dx, -dy );
     }

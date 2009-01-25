@@ -58,19 +58,8 @@ protected:
 	void
 	process( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet );
 
-	void
-	CreatePipeline();
-
 	SettingsBox	*_settings;
 	Notifier	*_notifier;
-
-	M4D::Imaging::PipelineContainer			_pipeline;
-	M4D::Imaging::AbstractPipeFilter		*_filter;
-	M4D::Imaging::AbstractPipeFilter		*_convertor;
-	M4D::Imaging::AbstractImageConnectionInterface	*_inConnection;
-	M4D::Imaging::AbstractImageConnectionInterface	*_tmpConnection;
-	M4D::Imaging::AbstractImageConnectionInterface	*_outConnection;
-
 private:
 
 };

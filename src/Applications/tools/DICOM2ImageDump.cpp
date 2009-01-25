@@ -74,7 +74,7 @@ main( int argc, char** argv )
 				);
 
 			M4D::Imaging::AbstractImage::AImagePtr image = 
-				M4D::Imaging::ImageFactory::CreateImageFromDICOM( dcmSet );
+				M4D::Dicom::DcmProvider::CreateImageFromDICOM( dcmSet );
 
 			M4D::Imaging::ImageFactory::DumpImage( filePath.string(), *image );
 			std::cout << "Done\n";
