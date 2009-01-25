@@ -42,9 +42,7 @@ VTKLIBS=	-lvtkCommon\
 		-lQVTK\
 		-lwrap
 
-DCMTKLIBS=	-lofstd\
-		-ldcmdata\
-		-ldcmnet
+DCMTKLIBS=	-ldcmnet -ldcmdata -lofstd
 
 LIBS=		$(M4DLIBS)\
 		$(QTLIBS)\

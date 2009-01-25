@@ -56,9 +56,7 @@ VTKLIBS=	-lvtkCommon\
 		#-lvtktiff\
 		#-lvtkzlib
 
-DCMTKLIBS=	-lofstd\
-		-ldcmdata\
-		-ldcmnet
+DCMTKLIBS=	-ldcmnet -ldcmdata -lofstd
 
 LIBS=		$(M4DLIBS)\
 		$(QTLIBS)\
@@ -85,7 +83,8 @@ CDEPFLAGS=	-MM
 LDFLAGS=
 ARFLAGS=	-r
 LIBDIRS=	-L../../lib\
-		-L/usr/lib/qt4
+		-L/usr/lib/qt4\
+		-L/usr/local/dicom/lib
 INCLUDES=	-I../.. \
 		-I$(srcdir)\
 		-I../../include\

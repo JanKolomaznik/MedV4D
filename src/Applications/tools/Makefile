@@ -32,9 +32,7 @@ QTLIBS=		-lQtCore\
 		-lQtGui\
 		-lQtOpenGL
 
-DCMTKLIBS=	-lofstd\
-		-ldcmdata\
-		-ldcmnet
+DCMTKLIBS=	-ldcmnet -ldcmdata -lofstd
 
 OTHERLIBS=	-lz\
 		-lwrap\

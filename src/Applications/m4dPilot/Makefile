@@ -21,30 +21,26 @@ MOCINPUT=	mainWindow.h
 RCCINPUT=	mainWindow.qrc
 
 M4DLIBS=	../../lib/libm4dWidgets.a\
-		../../lib/libImaging.a\
 		../../lib/libvtkIntegration.a\
+		../../lib/libImaging.a\
 		../../lib/libbackendForDICOM.a\
 		../../lib/libcommon.a
 
-QTLIBS=		-lQtCore\
-		-lQtGui\
+QTLIBS=		-lQtGui\
+		-lQtCore\
 		-lQtOpenGL
-VTKLIBS=	-lvtkCommon\
-		-lvtkDICOMParser\
-		-lvtkexoIIc\
-		-lvtkFiltering\
-		-lvtkftgl\
-		-lvtkGenericFiltering\
-		-lvtkGraphics\
-		-lvtkHybrid\
-		-lvtkImaging\
+
+VTKLIBS=	-lvtkCommon -lvtkDICOMParser -lvtkFiltering -lvtkGenericFiltering -lvtkGraphics -lvtkHybrid\
 		-lvtkIO\
+		-lvtkImaging\
 		-lvtkNetCDF\
 		-lvtkRendering\
-		-lvtksys\
 		-lvtkVolumeRendering\
 		-lvtkWidgets\
+		-lvtkexoIIc\
 		-lQVTK\
+		-lvtkftgl\
+		-lvtksys\
 		-lwrap
 
 		#-lvtkexpat\
@@ -54,14 +50,12 @@ VTKLIBS=	-lvtkCommon\
 		#-lvtktiff\
 		#-lvtkzlib
 
-DCMTKLIBS=	-lofstd\
-		-ldcmdata\
-		-ldcmnet
+DCMTKLIBS=	-ldcmnet -ldcmdata -lofstd 
 
 LIBS=		$(M4DLIBS)\
 		$(QTLIBS)\
-		$(VTKLIBS)\
 		$(DCMTKLIBS)\
+		$(VTKLIBS)\
 		-lboost_thread \
 		-lboost_filesystem \
 		-lGLU
