@@ -419,6 +419,24 @@ Image< ElementType, 2 >::Dump(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 
+template< typename ElementType >
+void
+Image< ElementType, 2 >::Serialize(iAccessStream &stream)
+{
+	//TODO
+}
+	
+///////////////////////////////////////////////////////////////////////////////
+
+	template< typename ElementType >
+void
+Image< ElementType, 2 >::DeSerialize(iAccessStream &stream)
+{
+	//TODO
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 
 //*****************************************************************************
 
@@ -554,6 +572,24 @@ Image< ElementType, 3 >::Dump(void)
       D_PRINT( std::endl );
     }
   }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+template< typename ElementType >
+void
+Image< ElementType, 3 >::Serialize(iAccessStream &stream)
+{
+	//TODO
+}
+	
+///////////////////////////////////////////////////////////////////////////////
+
+	template< typename ElementType >
+void
+Image< ElementType, 3 >::DeSerialize(iAccessStream &stream)
+{
+	//TODO
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -891,6 +927,26 @@ Image< ElementType, 4 >::Image( typename ImageDataTemplate< ElementType >::Ptr i
 {
 
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+template< typename ElementType >
+void
+Image< ElementType, 4 >::Serialize(iAccessStream &stream)
+{
+	//TODO
+}
+	
+///////////////////////////////////////////////////////////////////////////////
+
+	template< typename ElementType >
+void
+Image< ElementType, 4 >::DeSerialize(iAccessStream &stream)
+{
+	//TODO
+}
+
+///////////////////////////////////////////////////////////////////////////////
 	
 
 template< typename ElementType >

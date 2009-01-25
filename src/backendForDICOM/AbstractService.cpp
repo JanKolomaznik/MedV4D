@@ -3,10 +3,10 @@
  *  @file AbstractService.cpp
  *  @author Vaclav Klecanda
  */
-#include <dcmtk/config/osconfig.h>
-#include <dcmtk/dcmnet/dimse.h>
-#include <dcmtk/dcmnet/diutil.h>
-#include <dcmtk/dcmdata/dcdeftag.h>
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmnet/dimse.h"
+#include "dcmtk/dcmnet/diutil.h"
+#include "dcmtk/dcmdata/dcdeftag.h"
 
 #include "Common.h"
 

@@ -21,7 +21,7 @@ namespace Imaging
 enum DataSetType
 {
   DATASET_IMAGE,
-  DATASET_TRIANGLE_MESH // toBE done
+  DATASET_TRIANGLE_MESH // TODO
 };
 
 }//namespace M4D

@@ -5,9 +5,9 @@
  *  @author Vaclav Klecanda
  */
 
-#include <dcmtk/config/osconfig.h>
-#include <dcmtk/dcmnet/dimse.h>
-#include <dcmtk/dcmnet/diutil.h>
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmnet/dimse.h"
+#include "dcmtk/dcmnet/diutil.h"
 
 #include "Common.h"
 

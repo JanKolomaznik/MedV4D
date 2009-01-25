@@ -221,6 +221,9 @@ public:
 			PointType min,
 			PointType max
 			)const;
+	
+	void Serialize(iAccessStream &stream);
+	void DeSerialize(iAccessStream &stream);
 
   void Dump(void);
 
@@ -417,6 +420,9 @@ public:
 			PointType min,
 			PointType max
 			)const;
+	
+	void Serialize(iAccessStream &stream);
+	void DeSerialize(iAccessStream &stream);
 
   void Dump(void);
 
@@ -619,6 +625,9 @@ public:
 			PointType min,
 			PointType max
 			)const;
+	
+	void Serialize(iAccessStream &stream);
+	void DeSerialize(iAccessStream &stream);
 
   void Dump(void);
 

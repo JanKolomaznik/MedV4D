@@ -12,6 +12,7 @@
 #include "TimeStamp.h"
 #include "Thread.h"
 #include "Imaging/dataSetClassEnum.h"
+#include "iAccessStream.h"
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -101,6 +102,9 @@ public:
    *  Dump data set contents
    */
   virtual void Dump( void) = 0;
+  
+  virtual void Serialize(iAccessStream &stream) = 0;
+  virtual void DeSerialize(iAccessStream &stream) = 0;
 
 	/**
 	 * \return Actual structure timestamp - it changes when internal structure is modified.
