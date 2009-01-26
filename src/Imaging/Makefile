@@ -1,8 +1,22 @@
 
 srcdir = .
 
+ifdef COMPILE_FOR_CELL
+binUtilsPath=/opt/cell/toolchain/bin
+ROOT=/opt/cell/sysroot
+
+CXX=$(binUtilsPath)/ppu-g++
+SPUComp=$(binUtilsPath)/spu-g++
+AR=$(binUtilsPath)/ppu-ar
+SPU_AR=$(binUtilsPath)/spu-ar
+archPostfix=CELL
+else
 CXX=g++
 AR=ar
+ROOT=
+archPostfix=
+endif
+
 RM=rm -f
 MKDIR=mkdir
 
@@ -26,7 +40,7 @@ TARGETS=	AbstractDataSet \
 ########################################
 
 #Name of target
-OUTPUTNAME=	lib$(NAME).a
+OUTPUTNAME=	lib$(NAME)$(archPostfix).a
 OUTPUTDIR=	../lib
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	../tmp/$(NAME)
