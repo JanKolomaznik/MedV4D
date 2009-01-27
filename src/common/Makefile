@@ -22,7 +22,7 @@ MKDIR=mkdir
 
 ########################################
 #Name of this project part
-NAME=		common
+NAME=		common$(archPostfix)
 #Names of target sources
 TARGETS=	Common \
 		Debug \
@@ -33,7 +33,7 @@ TARGETS=	Common \
 ########################################
 
 #Name of target
-OUTPUTNAME=	lib$(NAME)$(archPostfix).a
+OUTPUTNAME=	lib$(NAME).a
 OUTPUTDIR=	../lib
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	../tmp/$(NAME)
@@ -49,7 +49,8 @@ LDFLAGS=
 ARFLAGS=	-r
 INCLUDES=	-I.. \
 		-I$(srcdir)\
-		-I../include
+		-I../include\
+		-I/usr/local/include/boost-1_38
 
 
 

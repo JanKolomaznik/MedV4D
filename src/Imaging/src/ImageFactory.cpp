@@ -20,10 +20,6 @@ namespace M4D
 namespace Imaging
 {
 
-const uint32 ImageFactory::IMAGE_DUMP_START_MAGIC_NUMBER 	= 0xFEEDDEAF;
-const uint32 ImageFactory::IMAGE_DUMP_HEADER_END_MAGIC_NUMBER 	= 0xDEADBEAF;
-const uint32 ImageFactory::ACTUAL_FORMAT_VERSION 		= 1;
-
 
 void
 ImageFactory::PrepareElementArrayFromTypeID( 
@@ -82,7 +78,7 @@ ImageFactory::LoadDumpedImage( std::istream &stream )
 
 	//Read stream header
 	BINSTREAM_READ_MACRO( stream, startMAGIC );
-	if( startMAGIC != IMAGE_DUMP_START_MAGIC_NUMBER ) {
+	if( startMAGIC != DUMP_START_MAGIC_NUMBER ) {
 		throw EWrongStreamBeginning();
 	}
 	
@@ -109,7 +105,7 @@ ImageFactory::LoadDumpedImage( std::istream &stream )
 	}
 
 	BINSTREAM_READ_MACRO( stream, headerEndMagic );
-	if( headerEndMagic != IMAGE_DUMP_HEADER_END_MAGIC_NUMBER ) {
+	if( headerEndMagic != DUMP_HEADER_END_MAGIC_NUMBER ) {
 		throw EWrongHeader();
 	}
 	//header read

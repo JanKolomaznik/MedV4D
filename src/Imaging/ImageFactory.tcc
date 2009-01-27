@@ -328,7 +328,7 @@ template< typename ElementType, uint32 Dimension >
 void
 ImageFactory::DumpImage( std::ostream &stream, const Image< ElementType, Dimension > & image )
 {
-	BINSTREAM_WRITE_MACRO( stream, IMAGE_DUMP_START_MAGIC_NUMBER );
+	BINSTREAM_WRITE_MACRO( stream, DUMP_START_MAGIC_NUMBER );
 	BINSTREAM_WRITE_MACRO( stream, ACTUAL_FORMAT_VERSION );
 	
 	uint32 Dim = Dimension;
@@ -343,7 +343,7 @@ ImageFactory::DumpImage( std::ostream &stream, const Image< ElementType, Dimensi
 		BINSTREAM_WRITE_MACRO( stream, dimExtents.elementExtent );
 	}
 
-	BINSTREAM_WRITE_MACRO( stream, IMAGE_DUMP_HEADER_END_MAGIC_NUMBER );
+	BINSTREAM_WRITE_MACRO( stream, DUMP_HEADER_END_MAGIC_NUMBER );
 
 	typename Image< ElementType, Dimension >::Iterator iterator = image.GetIterator();
 	while( !iterator.IsEnd() ) {

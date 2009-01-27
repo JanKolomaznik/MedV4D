@@ -22,7 +22,7 @@ MKDIR=mkdir
 
 ########################################
 #Name of this project part
-NAME=		Imaging
+NAME=		Imaging$(archPostfix)
 #Names of target sources
 TARGETS=	AbstractDataSet \
 		AbstractFilter \
@@ -36,11 +36,12 @@ TARGETS=	AbstractDataSet \
 		ModificationManager \
 		PipelineContainer \
 		Pipeline \
-		Ports
+		Ports\
+		DataSetFactory
 ########################################
 
 #Name of target
-OUTPUTNAME=	lib$(NAME)$(archPostfix).a
+OUTPUTNAME=	lib$(NAME).a
 OUTPUTDIR=	../lib
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	../tmp/$(NAME)
@@ -56,9 +57,8 @@ CDEPFLAGS=	-MM
 LDFLAGS=
 ARFLAGS=	-r
 INCLUDES=	-I.. \
-		-I../include
-
-
+		-I../include\
+		-I/usr/local/include/boost-1_38
 
 DEBUG_DEFS=	-DDEBUG_LEVEL=10\
 		-DDEBUG_ADITIONAL_INFO

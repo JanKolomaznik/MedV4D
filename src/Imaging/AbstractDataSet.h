@@ -63,6 +63,11 @@ private:
 	Multithreading::Mutex _accessLock;
 
 };
+
+const uint32 DUMP_START_MAGIC_NUMBER 	= 0xFEEDDEAF;
+const uint32 DUMP_HEADER_END_MAGIC_NUMBER 	= 0xDEADBEAF;
+const uint32 ACTUAL_FORMAT_VERSION 		= 1;
+
 /**
  * AbstractDataSet is predecessor of all datastructures containing data. 
  * Only concept implemented by this class is read/write locking system.

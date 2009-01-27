@@ -315,13 +315,6 @@ private:
 	ImageFactory( const ImageFactory& );
 	void operator=( const ImageFactory& );
 
-	
-	
-
-	static const uint32 IMAGE_DUMP_START_MAGIC_NUMBER;
-	static const uint32 IMAGE_DUMP_HEADER_END_MAGIC_NUMBER;
-	static const uint32 ACTUAL_FORMAT_VERSION;
-
 };
 
 /**

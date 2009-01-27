@@ -47,8 +47,11 @@ public:
   virtual ~iAccessStream();
 
   // Serialization support for DataSetSerializators
-  virtual void PutDataPiece( const DataBuffs &bufs) = 0;
-  virtual void PutDataPiece( const DataBuff &buf) = 0;
+  virtual void PutDataBuf( const DataBuffs &bufs) = 0;
+  virtual void PutDataBuf( const DataBuff &buf) = 0;
+  
+  virtual void GetDataBuf( DataBuffs &bufs) = 0;
+  virtual void GetDataBuf( DataBuff &buf) = 0;
   
   // basic data types operators
   virtual iAccessStream & operator<< (const uint8 what) = 0;

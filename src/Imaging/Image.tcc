@@ -423,16 +423,52 @@ template< typename ElementType >
 void
 Image< ElementType, 2 >::Serialize(iAccessStream &stream)
 {
-	//TODO
+	// header
+	stream << (uint8) GetEndianess() << (uint8) DATASET_IMAGE;
+	// template properties
+	stream << GetElementTypeID() << GetDimension();
+	// other properties
+	for( uint8 i = 0; i < GetDimension(); ++i ) 
+	{
+		stream << _dimExtents[i].minimum;
+		stream << _dimExtents[i].maximum;
+		stream << _dimExtents[i].elementExtent;
+	}
+	// actual data
+	uint32 width;
+	uint32 height;
+	int32 xStride;
+	int32 yStride;
+	ElementType *pointer = GetPointer( width, height, xStride, yStride );
+
+	// put whole array at once
+	DataBuff buff;
+	buff.data = (void *) pointer;
+	buff.len = width * height * sizeof( ElementType);
+
+	stream.PutDataBuf( buff);
 }
 	
 ///////////////////////////////////////////////////////////////////////////////
 
-	template< typename ElementType >
+template< typename ElementType >
 void
 Image< ElementType, 2 >::DeSerialize(iAccessStream &stream)
 {
-	//TODO
+	uint32 width;
+	uint32 height;
+	int32 xStride;
+	int32 yStride;
+	
+	// get one buffer with whole slice this image represents
+	ElementType *pointer = GetPointer( width, height, xStride, yStride );
+
+	// put whole array at once
+	DataBuff buff;
+	buff.data = (void *) pointer;
+	buff.len = width * height * sizeof( ElementType);
+
+	stream.GetDataBuf( buff);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -580,16 +616,69 @@ template< typename ElementType >
 void
 Image< ElementType, 3 >::Serialize(iAccessStream &stream)
 {
-	//TODO
+	// header
+	stream << (uint8) GetEndianess() << (uint8) DATASET_IMAGE;
+	// template properties
+	stream << GetElementTypeID() << GetDimension();
+	// other properties
+	for( uint8 i = 0; i < GetDimension(); ++i ) 
+	{
+		stream << _dimExtents[i].minimum;
+		stream << _dimExtents[i].maximum;
+		stream << _dimExtents[i].elementExtent;
+	}
+	// actual data	
+	uint32 width;
+	uint32 height;
+	uint32 depth;
+	int32 xStride;
+	int32 yStride;
+	int32 zStride;
+	ElementType *pointer = GetPointer( width, height, depth, xStride, yStride, zStride );
+
+	  // put slices as dataPieces. Suppose whole DS is serialized. Not only window part
+	  DataBuff buff;
+	
+	  size_t sliceSize = width * height;
+
+	for( uint32 k = 0; k < depth; ++k ) 
+	{
+	    buff.data = (void*) pointer;
+	    buff.len = sliceSize * sizeof( ElementType);
+	    stream.PutDataBuf( buff);
+	
+	    pointer += sliceSize; // move on next slice
+	}
 }
 	
 ///////////////////////////////////////////////////////////////////////////////
 
-	template< typename ElementType >
+template< typename ElementType >
 void
 Image< ElementType, 3 >::DeSerialize(iAccessStream &stream)
-{
-	//TODO
+{	
+	//actual data
+	uint32 width;
+	uint32 height;
+	uint32 depth;
+	int32 xStride;
+	int32 yStride;
+	int32 zStride;
+	ElementType *pointer = GetPointer( width, height, depth, xStride, yStride, zStride );
+
+	  // put slices as dataPieces. Suppose whole DS is serialized. Not only window part
+	  DataBuff buff;
+	
+	  size_t sliceSize = width * height;
+
+	for( uint32 k = 0; k < depth; ++k ) 
+	{
+	    buff.data = (void*) pointer;
+	    buff.len = sliceSize * sizeof( ElementType);
+	    stream.GetDataBuf( buff);
+	
+	    pointer += sliceSize; // move on next slice
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -935,15 +1024,17 @@ void
 Image< ElementType, 4 >::Serialize(iAccessStream &stream)
 {
 	//TODO
+	D_PRINT("Not yet implemented");
 }
 	
 ///////////////////////////////////////////////////////////////////////////////
 
-	template< typename ElementType >
+template< typename ElementType >
 void
 Image< ElementType, 4 >::DeSerialize(iAccessStream &stream)
 {
 	//TODO
+	D_PRINT("Not yet implemented");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
