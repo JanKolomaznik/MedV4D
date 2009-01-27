@@ -28,16 +28,16 @@ public:
 	Draw( SliceViewer & viewer, int sliceNum, double zoomRate ) = 0;
 
 	virtual void 
-	ButtonMethodRight( int amountH, int amountV ) = 0;
+	ButtonMethodRight( int amountH, int amountV, double zoomRate ) = 0;
 	
 	virtual void 
-	ButtonMethodLeft( int amountH, int amountV ) = 0;
+	ButtonMethodLeft( int amountH, int amountV, double zoomRate ) = 0;
 	
 	virtual void 
-	SelectMethodRight( double x, double y, double z ) = 0;
+	SelectMethodRight( double x, double y, int sliceNum ) = 0;
 	
 	virtual void 
-	SelectMethodLeft( double x, double y, double z ) = 0;
+	SelectMethodLeft( double x, double y, int sliceNum ) = 0;
 };
 
 typedef boost::shared_ptr< SliceViewerSpecialStateOperator >	SliceViewerSpecialStateOperatorPtr;
@@ -70,6 +70,9 @@ public:
 	void drawSliceAdditionals( int sliceNum, double zoomRate );
 
 	void drawHUD( int sliceNum, double zoomRate, QPoint offset );
+
+	void setSpecialState( SliceViewerSpecialStateOperatorPtr state )
+		{ _specialState = state; }
 
 protected:    
 	void specialStateButtonMethodLeft( int amountA, int amountB );

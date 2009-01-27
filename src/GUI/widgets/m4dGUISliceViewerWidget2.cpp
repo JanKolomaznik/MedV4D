@@ -15,7 +15,7 @@ void
 m4dGUISliceViewerWidget2::specialStateButtonMethodLeft( int amountA, int amountB )
 {
 	if( _specialState ) {
-		_specialState->ButtonMethodLeft( amountA, amountB );
+		_specialState->ButtonMethodLeft( amountA, amountB, _zoomRate );
 	}
 }
 
@@ -23,7 +23,7 @@ void
 m4dGUISliceViewerWidget2::specialStateButtonMethodRight( int amountA, int amountB )
 {
 	if( _specialState ) {
-		_specialState->ButtonMethodRight( amountA, amountB );
+		_specialState->ButtonMethodRight( amountA, amountB, _zoomRate );
 	}
 }
 
@@ -31,7 +31,9 @@ void
 m4dGUISliceViewerWidget2::specialStateSelectMethodLeft( double x, double y, double z )
 {
 	if( _specialState ) {
-		_specialState->SelectMethodLeft( x, y, z );
+		resolveFlips( x, y );
+		int sliceNum = z/_extents[3];
+		_specialState->SelectMethodLeft( x/_extents[0], y/_extents[1], sliceNum );
 	}
 }
 
@@ -39,7 +41,9 @@ void
 m4dGUISliceViewerWidget2::specialStateSelectMethodRight( double x, double y, double z )
 {
 	if( _specialState ) {
-		_specialState->SelectMethodRight( x, y, z );
+		resolveFlips( x, y );
+		int sliceNum = z/_extents[3];
+		_specialState->SelectMethodLeft( x/_extents[0], y/_extents[1], sliceNum );
 	}
 }
 

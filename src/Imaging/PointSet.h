@@ -30,6 +30,7 @@ class PointSet: public GeometricalObjectDim< Dim >
 public:
 	typedef Coordinates< CoordType, Dim > 	PointType;
 	typedef CoordType			Type;
+	typedef std::vector< PointType >	PointVector;
 	static const unsigned Dimension	= Dim;		
 
 	PointSet() : _points(), _pointCount( 0 ) 
@@ -61,6 +62,22 @@ public:
 				throw ErrorHandling::EBadIndex(); 
 		}
 
+	typename PointVector::iterator
+	Begin()
+		{ return _points.begin(); }
+	
+	typename PointVector::const_iterator
+	Begin()const
+		{ return _points.begin(); }
+
+	typename PointVector::iterator
+	End()
+		{ return _points.end(); }
+	
+	typename PointVector::const_iterator
+	End()const
+		{ return _points.end(); }
+
 	PointType &
 	GetPointCyclic( unsigned idx ) 
 		{ 
@@ -85,9 +102,9 @@ public:
 			return _points[ Max( Min( idx, _pointCount-1 ), 0 ) ]; 
 		}
 
-	void
+	size_t
 	AddPoint( const PointType &point )
-		{ _points.push_back( point ); ++_pointCount; } 
+		{ _points.push_back( point ); return _pointCount++; } 
 
 	void
 	InsertPoint( unsigned before, const PointType &point )
@@ -115,8 +132,8 @@ public:
 			_pointCount = _points.size();
 		}
 protected:
-	std::vector< PointType >	_points;
-	uint32				_pointCount;
+	PointVector	_points;
+	uint32		_pointCount;
 };
 
 template < typename CoordType, unsigned Dim >

@@ -3,6 +3,7 @@
 
 #include "iAccessStream.h"
 #include "AbstractDataSet.h"
+#include "Imaging/ImageFactory.h"
 
 namespace M4D
 {
@@ -12,7 +13,7 @@ namespace Imaging
 /**
  * Factory class that creates data sets of all kind. 
  */
-class DataSetFactory
+class DataSetFactoryA : public ImageFactory
 {
 public:
 	/**

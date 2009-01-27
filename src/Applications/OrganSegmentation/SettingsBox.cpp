@@ -2,8 +2,8 @@
 #include "mainWindow.h"
 
 SettingsBox
-::SettingsBox( M4D::Imaging::AbstractPipeFilter * filter, QWidget * parent )
-	: _filter( filter ), _parent( parent )
+::SettingsBox( /*M4D::Imaging::AbstractPipeFilter * filter, */QWidget * parent )
+	: /*_filter( filter ), */_parent( parent )
 {
 	CreateWidgets();	
 	SetEnabledExecButton( false );
@@ -23,13 +23,13 @@ SettingsBox
 
 	pushButton = new QPushButton( tr( "Lungs" ) );
 	layout->addWidget( pushButton );
-	QObject::connect( pushButton, SIGNAL(clicked()),
-		this, SLOT(SetToLungs()) );
+/*	QObject::connect( pushButton, SIGNAL(clicked()),
+		this, SLOT(SetToLungs()) );*/
 
 	pushButton = new QPushButton( tr( "Bones" ) );
 	layout->addWidget( pushButton );
-	QObject::connect( pushButton, SIGNAL(clicked()),
-		this, SLOT(SetToBones()) );
+	/*QObject::connect( pushButton, SIGNAL(clicked()),
+		this, SLOT(SetToBones()) );*/
 
 	grid = new QGridLayout;
 
@@ -40,9 +40,9 @@ SettingsBox
 	top = new QSpinBox();
 	top->setAlignment( Qt::AlignRight );
 	top->setMaximum( 4095 );
-	QObject::connect( top, SIGNAL(valueChanged(int)),
+	/*QObject::connect( top, SIGNAL(valueChanged(int)),
                       	this, SLOT(TopValueChanged(int)) );
-	grid->addWidget(top, 1, 3 );
+	grid->addWidget(top, 1, 3 );*/
 	//-------------------------------------------------
 	
 	grid->setRowMinimumHeight( 2, ROW_SPACING );
@@ -52,8 +52,8 @@ SettingsBox
 	bottom = new QSpinBox();
 	bottom->setAlignment( Qt::AlignRight );
 	bottom->setMaximum( 4095 );
-	QObject::connect( bottom, SIGNAL(valueChanged(int)),
-                      	this, SLOT(BottomValueChanged(int)) );
+/*	QObject::connect( bottom, SIGNAL(valueChanged(int)),
+                      	this, SLOT(BottomValueChanged(int)) );*/
 	grid->addWidget(bottom, 3, 3 );
 	//-------------------------------------------------
 
@@ -75,8 +75,8 @@ SettingsBox
 
 	//-------------------------------------------------
 	execButton = new QPushButton( tr( "Execute" ) );
-	QObject::connect( execButton, SIGNAL(clicked()),
-                      	this, SLOT(ExecuteFilter()) );
+/*	QObject::connect( execButton, SIGNAL(clicked()),
+                      	this, SLOT(ExecuteFilter()) );*/
 	layout->addWidget(execButton);
 	//-------------------------------------------------
 
@@ -84,7 +84,7 @@ SettingsBox
 
 	setLayout(layout);	
 }
-
+/*
 void
 SettingsBox
 ::TopValueChanged( int val )
@@ -127,4 +127,4 @@ SettingsBox
 ::EndOfExecution()
 {
 	QMessageBox::information( _parent, tr( "Execution finished" ), tr( "Filter finished its work" ) );
-}
+}*/

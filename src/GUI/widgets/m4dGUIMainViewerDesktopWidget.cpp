@@ -17,7 +17,7 @@ namespace M4D {
 namespace GUI {
 
 m4dGUIMainViewerDesktopWidget::m4dGUIMainViewerDesktopWidget ( QWidget *parent )
-  : QWidget( parent )
+  : QWidget( parent ), defaultConnection( NULL )
 {
   setDesktopLayout( 1, 2 );
 
@@ -86,6 +86,19 @@ void m4dGUIMainViewerDesktopWidget::addSource ( ConnectionInterface *conn, const
                      QString( connectionDescription ) );
 }
 
+void m4dGUIMainViewerDesktopWidget::setDefaultConnection ( M4D::Imaging::ConnectionInterface *conn )
+{
+	defaultConnection = conn;
+}
+
+void
+m4dGUIMainViewerDesktopWidget::setConnectionForAll( M4D::Imaging::ConnectionInterface *conn )
+{
+	for ( size_t i = 0; i < viewers.size(); ++i ) 
+	{
+		viewers[i]->viewerWidget->setInputPort( conn );
+	}
+}
 
 void m4dGUIMainViewerDesktopWidget::setDesktopLayout( const unsigned rows, const unsigned columns )
 {
@@ -100,6 +113,10 @@ void m4dGUIMainViewerDesktopWidget::setDesktopLayout( const unsigned rows, const
       Viewer *viewer = new Viewer;
 
       m4dGUIAbstractViewerWidget *widget = new m4dGUISliceViewerWidget( viewersSize + i );
+	if( defaultConnection ) {
+		widget->setInputPort( defaultConnection );
+	}
+
       connect( widget, SIGNAL(signalSetSelected( unsigned, bool )), this, SLOT(selectedChanged( unsigned )) );
       
       viewer->viewerWidget = widget;

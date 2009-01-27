@@ -13,6 +13,7 @@ RCC=rcc
 NAME=		m4dWidgets
 #Names of target sources
 TARGETS=	m4dGUIMainWindow \
+		m4dGUIMainWindow2 \
 		m4dGUIMainViewerDesktopWidget \
 		m4dGUIVtkViewerWidget \
 		m4dGUIStudyManagerWidget \
@@ -32,6 +33,7 @@ TARGETS3=	fonts
 
 MOCINPUT=	m4dGUIAbstractViewerWidget.h \
 		m4dGUIMainWindow.h \
+		m4dGUIMainWindow2.h \
 		m4dGUIMainViewerDesktopWidget.h \
 		m4dGUIScreenLayoutWidget.h \
 		m4dGUIStudyManagerWidget.h \
@@ -45,6 +47,7 @@ MOCINPUT=	m4dGUIAbstractViewerWidget.h \
 
 
 RCCINPUT=	m4dGUIMainWindow.qrc \
+		m4dGUIMainWindow2.qrc \
 		m4dGUIStudyManagerWidget.qrc \
 		m4dGUIScreenLayoutWidget.qrc \
 		m4dGUIToolBarCustomizerWidget.qrc

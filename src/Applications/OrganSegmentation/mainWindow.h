@@ -1,19 +1,14 @@
 #ifndef MAIN_WINDOW_H
 #define MAIN_WINDOW_H
 
-#include "GUI/m4dGUIMainWindow.h"
-#include "Imaging/PipelineContainer.h"
-#include "Imaging/ImageFactory.h"
-#include "Imaging/filters/ThresholdingFilter.h"
-#include "Imaging/filters/MaskMedianFilter.h"
-#include "Imaging/filters/MaskSelection.h"
-#include "Imaging/filters/ImageConvertor.h"
+#include "GUI/m4dGUIMainWindow2.h"
+#include "ManualSegmentationWidget.h"
 #include "SettingsBox.h"
 
 #define ORGANIZATION_NAME     "MFF"
-#define APPLICATION_NAME      "BoneSegmentation"
+#define APPLICATION_NAME      "OrganSegmentation"
 
-typedef int16	ElementType;
+/*typedef int16	ElementType;
 const unsigned Dim = 3;
 typedef M4D::Imaging::Image< ElementType, Dim > ImageType;
 typedef M4D::Imaging::ThresholdingMaskFilter< ImageType > Thresholding;
@@ -21,32 +16,33 @@ typedef M4D::Imaging::MaskMedianFilter2D< Dim > Median2D;
 typedef M4D::Imaging::MaskSelection< ImageType > MaskSelectionFilter;
 typedef M4D::Imaging::ImageConnection< ImageType > InConnection;
 typedef M4D::Imaging::ImageConvertor< ImageType > InImageConvertor;
+*/
 
-class Notifier : public QObject, public M4D::Imaging::MessageReceiverInterface
-{
-	Q_OBJECT
-public:
-	Notifier( QWidget *owner ): _owner( owner ) {}
-	void
-	ReceiveMessage( 
-		M4D::Imaging::PipelineMessage::Ptr 			msg, 
-		M4D::Imaging::PipelineMessage::MessageSendStyle 	/*sendStyle*/, 
-		M4D::Imaging::FlowDirection				/*direction*/
-		)
-	{
-		if( msg->msgID == M4D::Imaging::PMI_FILTER_UPDATED ) {
-			emit Notification();
-		}
-	}
+//class Notifier : public QObject, public M4D::Imaging::MessageReceiverInterface
+//{
+//	Q_OBJECT
+//public:
+//	Notifier( QWidget *owner ): _owner( owner ) {}
+//	void
+//	ReceiveMessage( 
+//		M4D::Imaging::PipelineMessage::Ptr 			msg, 
+//		M4D::Imaging::PipelineMessage::MessageSendStyle 	/*sendStyle*/, 
+//		M4D::Imaging::FlowDirection				/*direction*/
+//		)
+//	{
+//		if( msg->msgID == M4D::Imaging::PMI_FILTER_UPDATED ) {
+//			emit Notification();
+//		}
+//	}
+//
+//signals:
+//	void
+//	Notification();
+//protected:
+//	QWidget	*_owner;
+//};
 
-signals:
-	void
-	Notification();
-protected:
-	QWidget	*_owner;
-};
-
-class mainWindow: public M4D::GUI::m4dGUIMainWindow
+class mainWindow: public M4D::GUI::m4dGUIMainWindow2
 {
 	Q_OBJECT
 
@@ -58,8 +54,9 @@ protected:
 	void
 	process( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet );
 
+	ManualSegmentationWidget	*_manualSegmentation;
 	SettingsBox	*_settings;
-	Notifier	*_notifier;
+	//Notifier	*_notifier;
 private:
 
 };

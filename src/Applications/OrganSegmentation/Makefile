@@ -15,17 +15,21 @@ NAME=		OrganSegmentation
 #Names of target sources
 TARGETS=	main \
 		mainWindow \
+		ManualSegmentationWidget \
+		ManualSegmentationManager \
+		MainManager \
 		SettingsBox
 
 MOCINPUT=	mainWindow.h \
+		ManualSegmentationWidget.h \
 		SettingsBox.h
 
 RCCINPUT=	mainWindow.qrc
 
 M4DLIBS=	../../lib/libm4dWidgets.a\
-		../../lib/libImaging.a\
 		../../lib/libvtkIntegration.a\
 		../../lib/libbackendForDICOM.a\
+		../../lib/libImaging.a\
 		../../lib/libcommon.a
 
 QTLIBS=		-lQtCore\
