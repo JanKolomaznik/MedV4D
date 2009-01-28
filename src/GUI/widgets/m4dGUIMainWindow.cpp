@@ -192,8 +192,8 @@ void m4dGUIMainWindow::open ()
 
 void m4dGUIMainWindow::save ()
 {
-  QString path( QFileDialog::getSaveFileName( this, tr( "Save File" ), 
-                                              QDir::currentPath(), "*.dcm" ) );
+  QString path( QFileDialog::getSaveFileName( this, tr( "Save current Data Set" ), 
+                                              QDir::currentPath(), "*.mv4d" ) );
   
   if ( !path.isNull() ) 
   {
