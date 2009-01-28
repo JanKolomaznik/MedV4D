@@ -190,6 +190,19 @@ void m4dGUIMainWindow::open ()
 }
 
 
+void m4dGUIMainWindow::save ()
+{
+  QString path( QFileDialog::getSaveFileName( this, tr( "Save File" ), 
+                                              QDir::currentPath(), "*.dcm" ) );
+  
+  if ( !path.isNull() ) 
+  {
+    QFileInfo pathInfo( path );
+    QString dirName( pathInfo.absolutePath() );
+  } 
+}
+
+
 void m4dGUIMainWindow::customize ()
 {
   toolBarCustomizerDialog->show();
@@ -441,7 +454,7 @@ void m4dGUIMainWindow::createActions ()
   saveAct->setShortcut( tr( "Ctrl+A" ) );
   saveAct->setStatusTip( tr( "Save the document to disk" ) );
   connect( saveAct, SIGNAL(triggered()), this, SLOT(save()) );
-  saveAct->setEnabled( false );
+  // saveAct->setEnabled( false );
 
   exitAct = new QAction( QIcon( ":/icons/exit.png" ), tr( "E&xit" ), this );
   exitAct->setShortcut( tr( "Ctrl+Q" ) );

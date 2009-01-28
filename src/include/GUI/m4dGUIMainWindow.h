@@ -143,6 +143,11 @@ class m4dGUIMainWindow: public QMainWindow
     void open ();
 
     /**
+     * Slot for save - to show the Save Dialog - save DICOM file to disk.
+     */
+    void save ();
+
+    /**
      * Slot for toolBar customization - to show the ToolBar Customizer Dialog.
      */
     void customize ();
