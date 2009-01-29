@@ -28,9 +28,10 @@ M4DLIBS=	$(srcroot)/lib/libImaging$(archPostfix).a\
 LIBS=	$(M4DLIBS)\
 		$(srcroot)/lib/libboost_threadCELL.a \
 		$(srcroot)/lib/libboost_filesystemCELL.a\
+		$(srcroot)/lib/libfileStreamCELL.a\
 		-lpthread
 		#$(ROOT)/usr/lib64/libpthread_nonshared.a
-		
+CXXDEBUG_OPTIONS= -g
 else
 ##################### NORMAL PC
 CXX=g++
@@ -46,11 +47,14 @@ INCLUDES=	-I$(srcdir)\
 			-I/usr/local/include/boost-1_38
 			
 M4DLIBS=	$(srcroot)/lib/libImaging.a\
-		$(srcroot)/lib/libcommon.a
+		$(srcroot)/lib/libcommon.a\
+		$(srcroot)/lib/libfileStream.a
 
 LIBS=	$(M4DLIBS)\
 		-lboost_thread\
 		-lboost_filesystem
+		
+CXXDEBUG_OPTIONS= -ggdb
 endif
 
 RM=rm -f
@@ -68,8 +72,6 @@ OUTPUTNAME=	$(NAME)
 OUTPUTDIR=	$(srcroot)/executables
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	$(srcroot)/tmp/$(NAME)
-
-CXXDEBUG_OPTIONS= -ggdb 
 
 CXXFLAGS= -Wall -Wno-deprecated $(CXXDEBUG_OPTIONS)
 #Dependecy file creation parameters

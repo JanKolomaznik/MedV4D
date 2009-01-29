@@ -27,7 +27,7 @@ OUTPUTDIR=	$(srcroot)/lib
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	$(srcroot)/tmp/$(NAME)
 
-CXXDEBUG_OPTIONS= -ggdb 
+CXXDEBUG_OPTIONS= -g
 
 CXXFLAGS= -Wall -Wno-deprecated $(CXXDEBUG_OPTIONS) -DBOOST_THREAD_BUILD_LIB=1
 #Dependecy file creation parameters

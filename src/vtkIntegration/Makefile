@@ -33,7 +33,9 @@ LDFLAGS=
 ARFLAGS=	-r
 INCLUDES=	-I.. \
 		-I../include\
-		-I/usr/include/vtk-5.0
+		-I/usr/include/vtk-5.0\
+		-I/usr/local/include/vtk-5.0\
+		-I/usr/local/include/boost-1_38
 
 
 

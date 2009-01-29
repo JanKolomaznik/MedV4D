@@ -38,7 +38,9 @@ LDFLAGS=
 ARFLAGS=	-r
 INCLUDES=	-I.. \
 		-I$(srcdir)\
-		-I../include
+		-I../include\
+		-I/usr/local/include/boost-1_38\
+		-I/usr/local/dicom/include
 
 
 DEBUG_DEFS=	-DDEBUG_LEVEL=10\

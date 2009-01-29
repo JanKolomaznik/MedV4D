@@ -75,7 +75,12 @@ INCLUDES=	-I../.. \
 		-I/usr/include/qt4/Qt\
 		-I/usr/include/qt4/QtCore\
 		-I/usr/include/qt4/QtGui\
-		-I/usr/include/qt4/QtOpenGL
+		-I/usr/include/qt4/QtOpenGL\
+		-I/usr/local/include/vtk-5.0\
+		-I/usr/include/Qt\
+		-I/usr/include/QtGui\
+		-I/usr/include/QtCore\
+		-I/usr/local/include/boost-1_38
 
 
 MOCOUTPUT=	$(addprefix $(TMP_DIR)/moc_, $(MOCINPUT:.h=.cpp) )

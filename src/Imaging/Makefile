@@ -1,5 +1,6 @@
 
 srcdir = .
+projSrcTop=..
 
 ifdef COMPILE_FOR_CELL
 binUtilsPath=/opt/cell/toolchain/bin
@@ -10,11 +11,13 @@ SPUComp=$(binUtilsPath)/spu-g++
 AR=$(binUtilsPath)/ppu-ar
 SPU_AR=$(binUtilsPath)/spu-ar
 archPostfix=CELL
+CXXDEBUG_OPTIONS= -g 
 else
 CXX=g++
 AR=ar
 ROOT=
 archPostfix=
+CXXDEBUG_OPTIONS= -ggdb 
 endif
 
 RM=rm -f
@@ -42,12 +45,10 @@ TARGETS=	AbstractDataSet \
 
 #Name of target
 OUTPUTNAME=	lib$(NAME).a
-OUTPUTDIR=	../lib
+OUTPUTDIR=	$(projSrcTop)/lib
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
-TMP_DIR=	../tmp/$(NAME)
+TMP_DIR=	$(projSrcTop)/tmp/$(NAME)
 SRC_DIR=	./src
-
-CXXDEBUG_OPTIONS= -ggdb 
 
 CXXFLAGS= -Wall -Wno-deprecated $(CXXDEBUG_OPTIONS)
 #Dependecy file creation parameters
@@ -56,8 +57,8 @@ CDEPFLAGS=	-MM
 
 LDFLAGS=
 ARFLAGS=	-r
-INCLUDES=	-I.. \
-		-I../include\
+INCLUDES=	-I$(projSrcTop) \
+		-I$(projSrcTop)/include\
 		-I/usr/local/include/boost-1_38
 
 DEBUG_DEFS=	-DDEBUG_LEVEL=10\

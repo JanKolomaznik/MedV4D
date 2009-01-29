@@ -30,18 +30,24 @@ QTLIBS=		-lQtGui\
 		-lQtCore\
 		-lQtOpenGL
 
-VTKLIBS=	-lvtkCommon -lvtkDICOMParser -lvtkFiltering -lvtkGenericFiltering -lvtkGraphics -lvtkHybrid\
-		-lvtkIO\
+VTKLIBS=	-lvtkCommon\
+		-lvtkDICOMParser\
+		-lvtkexoIIc\
+		-lvtkFiltering\
+		-lvtkftgl\
+		-lvtkGenericFiltering\
+		-lvtkGraphics\
+		-lvtkHybrid\
 		-lvtkImaging\
+		-lvtkIO\
 		-lvtkNetCDF\
-		-lvtkRendering\
+		-lvtksys\
 		-lvtkVolumeRendering\
 		-lvtkWidgets\
-		-lvtkexoIIc\
 		-lQVTK\
-		-lvtkftgl\
-		-lvtksys\
-		-lwrap
+		-lwrap\
+		-lvtkRendering
+
 
 		#-lvtkexpat\
 		#-lvtkfreetype\
@@ -53,9 +59,9 @@ VTKLIBS=	-lvtkCommon -lvtkDICOMParser -lvtkFiltering -lvtkGenericFiltering -lvtk
 DCMTKLIBS=	-ldcmnet -ldcmdata -lofstd 
 
 LIBS=		$(M4DLIBS)\
-		$(QTLIBS)\
 		$(DCMTKLIBS)\
 		$(VTKLIBS)\
+		$(QTLIBS)\
 		-lboost_thread \
 		-lboost_filesystem \
 		-lGLU
@@ -77,7 +83,9 @@ CDEPFLAGS=	-MM
 LDFLAGS=
 ARFLAGS=	-r
 LIBDIRS=	-L../../lib\
-		-L/usr/lib/qt4
+		-L/usr/lib/qt4\
+		-L/usr/local/lib/vtk-5.2
+
 INCLUDES=	-I../.. \
 		-I$(srcdir)\
 		-I../../include\
@@ -85,7 +93,12 @@ INCLUDES=	-I../.. \
 		-I/usr/include/qt4\
 		-I/usr/include/qt4/Qt\
 		-I/usr/include/qt4/QtCore\
-		-I/usr/include/qt4/QtGui
+		-I/usr/include/qt4/QtGui\
+		-I/usr/local/include/vtk-5.0\
+		-I/usr/include/Qt\
+		-I/usr/include/QtGui\
+		-I/usr/include/QtCore\
+		-I/usr/local/include/boost-1_38
 
 
 MOCOUTPUT=      $(addprefix $(TMP_DIR)/moc_, $(MOCINPUT:.h=.cpp) )
