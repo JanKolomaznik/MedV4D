@@ -12,16 +12,14 @@ using namespace M4D::Imaging;
 AbstractDataSet::ADataSetPtr
 DataSetFactory::CreateDataSet(iAccessStream &stream)
 {
-	Endianness endian;
-	DataSetType dsType;
-	
-	stream >> (uint8&) endian >> (uint8&) dsType;	// read
+	uint8 dsType;
+	stream >> (uint8&) dsType;	// read
 	
 	// main switch acording data set type
-	switch(dsType)
+	switch((DataSetType) dsType)
 	{
 	case DATASET_IMAGE:
-		CreateImage(stream);
+		return CreateImage(stream);
 		break;
 		
 	case DATASET_TRIANGLE_MESH:
@@ -30,7 +28,7 @@ DataSetFactory::CreateDataSet(iAccessStream &stream)
 	default:
 		ASSERT(false);
 	}
-	return null;
+	//return 1;	// program shall never go here
 }
 
 AbstractDataSet::ADataSetPtr
@@ -38,8 +36,8 @@ DataSetFactory::CreateImage(iAccessStream &stream)
 {
 	AbstractDataSet::ADataSetPtr ds;
 	
-	uint8 dim, elemType;
-	stream >> dim >> elemType;   // get class properties
+	uint16 dim, elemType;
+	stream >> elemType >> dim;   // get class properties
 	
 	int32 minimums[ dim ];
 	int32 maximums[ dim ];

@@ -44,7 +44,7 @@ class iAccessStream
 {
 public:
 
-  virtual ~iAccessStream();
+  virtual ~iAccessStream() {}
 
   // Serialization support for DataSetSerializators
   virtual void PutDataBuf( const DataBuffs &bufs) = 0;

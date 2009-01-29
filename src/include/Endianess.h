@@ -21,7 +21,7 @@ GetEndianess( void)
     return End_BIG_ENDIAN;
 }
 
-inline void Swap2Byte(uint16 what)
+inline void SwapBytes(uint16 &what)
 {
 	uint16 tmp;
 	uint8 *ptrSrc = (uint8*)&tmp;
@@ -31,7 +31,7 @@ inline void Swap2Byte(uint16 what)
 	ptrDest[1] = ptrSrc[0];
 }
 
-inline void Swap4Byte(uint32 what)
+inline void SwapBytes(uint32 &what)
 {
 	uint32 tmp;
 	uint8 *ptrSrc = (uint8*)&tmp;
@@ -43,7 +43,7 @@ inline void Swap4Byte(uint32 what)
 	ptrDest[3] = ptrSrc[0];
 }
 
-inline void Swap8Byte(uint64 what)
+inline void SwapBytes(uint64 &what)
 {
 	uint64 tmp;
 	uint8 *ptrSrc = (uint8*)&tmp;

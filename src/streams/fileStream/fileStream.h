@@ -3,16 +3,23 @@
 
 #include <fstream>
 #include "Imaging/iAccessStream.h"
+#include "Endianess.h"
 
 namespace M4D
 {
 namespace IO
 {
 
+enum OpenMode
+{
+	MODE_READ,
+	MODE_WRITE
+};
+
 class FileStream : public M4D::Imaging::iAccessStream
 {
 public:
-	FileStream(const std::string &file);
+	FileStream(const char *file, OpenMode mode);
 	~FileStream();
 	
   void PutDataBuf( const M4D::Imaging::DataBuffs &bufs);
@@ -38,6 +45,8 @@ public:
   FileStream& operator>>( float64 &what);
 private:
 	std::fstream stream_;
+	Endianness endianess_;
+	uint8 needSwapBytes_;
 };
 
 }
