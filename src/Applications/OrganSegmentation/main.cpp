@@ -20,9 +20,6 @@ int main ( int argc, char *argv[] )
 
 
 	MainManager::Initialize();
-	ManualSegmentationManager::Initialize();	
-
-
 
 	QApplication app( argc, argv );
 	app.setQuitOnLastWindowClosed( true );

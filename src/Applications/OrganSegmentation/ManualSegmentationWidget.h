@@ -9,6 +9,9 @@ class ManualSegmentationWidget: public QWidget
 	Q_OBJECT;
 public:
 	ManualSegmentationWidget( QWidget * parent = 0 );
+public slots:
+	void
+	Activate();
 protected:
 
 	M4D::Viewer::m4dGUISliceViewerWidget2	*_viewer;

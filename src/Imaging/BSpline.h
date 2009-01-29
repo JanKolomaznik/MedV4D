@@ -168,7 +168,7 @@ public:
 	GetSampleDerivations()const
 		{ return _sampleDerivationCache; }
 
-	const PointSet< CoordType, Dim > &
+	const SamplePointSet &
 	GetSamplePoints()const
 		{ return _samplePointCache; }
 

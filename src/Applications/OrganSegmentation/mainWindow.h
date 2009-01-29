@@ -50,6 +50,9 @@ public:
 
 	mainWindow ();
 
+public slots:
+	void
+	SetToManual();
 protected:
 	void
 	process( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet );

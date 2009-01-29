@@ -25,12 +25,13 @@ namespace Geometry
 
 	
 template < typename CoordType, unsigned Dim >
-class PointSet: public GeometricalObjectDim< Dim >
+class PointSet: public AGeometricalObjectDimPrec< CoordType, Dim >
 {
 public:
-	typedef Coordinates< CoordType, Dim > 	PointType;
-	typedef CoordType			Type;
-	typedef std::vector< PointType >	PointVector;
+	typedef AGeometricalObjectDimPrec< CoordType, Dim >	PredecessorType;
+	typedef typename PredecessorType::PointType 		PointType;
+	typedef typename PredecessorType::Type			Type;
+	typedef std::vector< PointType >			PointVector;
 	static const unsigned Dimension	= Dim;		
 
 	PointSet() : _points(), _pointCount( 0 ) 

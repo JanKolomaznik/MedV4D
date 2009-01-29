@@ -1,20 +1,20 @@
 
 #include "MainManager.h"
 
-M4D::Dicom::DcmProvider::DicomObjSetPtr		MainManager::_inputDcmSet;
-M4D::Imaging::AbstractImage::AImagePtr 		MainManager::_inputImage;
-M4D::Imaging::AbstractImageConnectionInterface*	MainManager::_inConnection;
+M4D::Dicom::DcmProvider::DicomObjSetPtr	MainManager::_inputDcmSet;
+InputImagePtr				MainManager::_inputImage;
+ImageConnectionPtr			MainManager::_inConnection;
 
 void
 MainManager::Initialize()
 {
-	_inConnection = new M4D::Imaging::AbstractImageConnection();
+	_inConnection = ImageConnectionPtr( new M4D::Imaging::AbstractImageConnection() );
 }
 
 void
 MainManager::Finalize()
 {
-	delete _inConnection;
+
 }
 
 void

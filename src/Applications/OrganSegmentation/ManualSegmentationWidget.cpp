@@ -11,3 +11,14 @@ ManualSegmentationWidget::ManualSegmentationWidget( QWidget * parent )
 	mainLayout->addWidget( _viewer );
 	setLayout(mainLayout);
 }
+
+void
+ManualSegmentationWidget::Activate()
+{
+	ManualSegmentationManager::Initialize();
+
+	_viewer->setInputPort( ManualSegmentationManager::GetInputConnection().get() );
+	_viewer->setSpecialState( ManualSegmentationManager::GetSpecialState() );
+	_viewer->slotSetButtonHandler( M4D::Viewer::m4dGUIAbstractViewerWidget::specialState, M4D::Viewer::m4dGUIAbstractViewerWidget::left );
+	
+}

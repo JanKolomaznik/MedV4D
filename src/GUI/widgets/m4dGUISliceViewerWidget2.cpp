@@ -32,8 +32,8 @@ m4dGUISliceViewerWidget2::specialStateSelectMethodLeft( double x, double y, doub
 {
 	if( _specialState ) {
 		resolveFlips( x, y );
-		int sliceNum = z/_extents[3];
-		_specialState->SelectMethodLeft( x/_extents[0], y/_extents[1], sliceNum );
+		int sliceNum = z/_extents[2];
+		_specialState->SelectMethodLeft( x/*_extents[0]*/, y/*_extents[1]*/, sliceNum, _zoomRate );
 	}
 }
 
@@ -42,8 +42,8 @@ m4dGUISliceViewerWidget2::specialStateSelectMethodRight( double x, double y, dou
 {
 	if( _specialState ) {
 		resolveFlips( x, y );
-		int sliceNum = z/_extents[3];
-		_specialState->SelectMethodLeft( x/_extents[0], y/_extents[1], sliceNum );
+		int sliceNum = z/_extents[2];
+		_specialState->SelectMethodRight( x/*_extents[0]*/, y/*_extents[1]*/, sliceNum, _zoomRate );
 	}
 }
 

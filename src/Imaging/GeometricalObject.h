@@ -10,24 +10,34 @@ namespace M4D
  * @{ 
  **/
 
+#include "Coordinates.h"
+
 namespace Imaging
 {
 namespace Geometry
 {
 
-class GeometricalObject
+class AGeometricalObject
 {
 public:
-	virtual ~GeometricalObject(){}
+	virtual ~AGeometricalObject(){}
 };
 
 template< unsigned Dim >
-class GeometricalObjectDim: public GeometricalObject
+class AGeometricalObjectDim: public AGeometricalObject
 {
 public:
 	static const unsigned Dimension = Dim;
 };
 
+template< typename CoordType, unsigned Dim >
+class AGeometricalObjectDimPrec: public AGeometricalObjectDim< Dim >
+{
+public:
+	typedef CoordType			Type;
+	typedef Coordinates< Type, Dim > 	PointType;
+	
+};
 
 }/*namespace Geometry*/
 }/*namespace Imaging*/

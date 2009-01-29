@@ -26,6 +26,8 @@ class AGeometryDataSet: public AbstractDataSet
 public:
 
 protected:
+	AGeometryDataSet( DataSetType datasetType ): AbstractDataSet( datasetType ) 
+		{}
 };
 
 }/*namespace Imaging*/

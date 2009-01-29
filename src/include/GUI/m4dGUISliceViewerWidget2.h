@@ -34,10 +34,10 @@ public:
 	ButtonMethodLeft( int amountH, int amountV, double zoomRate ) = 0;
 	
 	virtual void 
-	SelectMethodRight( double x, double y, int sliceNum ) = 0;
+	SelectMethodRight( double x, double y, int sliceNum, double zoomRate ) = 0;
 	
 	virtual void 
-	SelectMethodLeft( double x, double y, int sliceNum ) = 0;
+	SelectMethodLeft( double x, double y, int sliceNum, double zoomRate ) = 0;
 };
 
 typedef boost::shared_ptr< SliceViewerSpecialStateOperator >	SliceViewerSpecialStateOperatorPtr;
