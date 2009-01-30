@@ -3,6 +3,8 @@
 #include "Imaging/PipelineMessages.h"
 
 #include "MainManager.h"
+#include "ManualSegmentationManager.h"
+#include "KidneySegmentationManager.h"
 
 using namespace std;
 using namespace M4D::Imaging;
@@ -19,13 +21,13 @@ mainWindow::mainWindow ()
 
 	// add your own settings widgets
 	_settings = new SettingsBox( this );
-	QObject::connect( _settings, SIGNAL(SetToManualSignal()),
-		this, SLOT(SetToManual()) );
+	QObject::connect( _settings, SIGNAL( SetSegmentationSignal( uint32 )),
+		this, SLOT(SetSegmentationSlot( uint32 )) );
 
 	addDockWindow( "Organ Segmentation", _settings );
 
-	_manualSegmentation = new ManualSegmentationWidget();
-	addDesktopWidget( _manualSegmentation );
+	_segmentationWidget = new SegmentationWidget();
+	addDesktopWidget( _segmentationWidget );
 }
 
 
@@ -55,11 +57,23 @@ mainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
 }
 
 void
-mainWindow::SetToManual()
+mainWindow::SetSegmentationSlot( uint32 segType )
 {
-	_manualSegmentation->Activate();
+	switch( segType ) {
+	case stMANUAL:
+		_segmentationWidget->Activate( ManualSegmentationManager::GetInputConnection().get(), ManualSegmentationManager::GetSpecialState() );
 
-	stackWidget->setCurrentWidget( _manualSegmentation );
+		stackWidget->setCurrentWidget( _segmentationWidget );
+		break;
+	case stKIDNEYS:
+		_segmentationWidget->Activate( KidneySegmentationManager::GetInputConnection().get(), KidneySegmentationManager::GetSpecialState() );
+
+		stackWidget->setCurrentWidget( _segmentationWidget );
+		break;
+	default:
+		ASSERT( false );
+		break;
+	}
 }
 
 

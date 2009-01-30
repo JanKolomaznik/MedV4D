@@ -3,8 +3,9 @@
 
 #include <QtGui>
 #include "Imaging/filters/ThresholdingFilter.h"
+#include "SegmentationTypes.h"
 
-class SettingsBox : public QWidget
+class SettingsBox : public QStackedWidget
 {
 	Q_OBJECT
 public:
@@ -16,18 +17,26 @@ public:
 	SettingsBox( QWidget * parent );
 	
 signals:
+	
 	void
-	SetToManualSignal();	
+	SetSegmentationSignal( uint32 type );	
+
 protected slots:
 
+	void
+	SetToManualSegmentation();
 
+	void
+	SetToKidneySegmentation();
 protected:
 	void
 	CreateWidgets();
 
 	QWidget *_parent;
 
-	QPushButton *_manualButton;
+	QWidget *_mainSettings;
+	QWidget *_manualSegmSettings;
+	QWidget *_kidneySegmSettings;
 };
 
 #endif /*_SETTINGS_BOX_H*/

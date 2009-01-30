@@ -93,8 +93,8 @@ m4dGUIMainWindow2::m4dGUIMainWindow2 ( const char *appName, const char *orgName,
 
   initMainWindowResource();
 
-  //stackWidget = new QStackedWidget();
-  stackWidget = new QTabWidget();
+  stackWidget = new QStackedWidget();
+  //stackWidget = new QTabWidget();
   setCentralWidget( stackWidget );
 
   QWidget *centralWidget = new QWidget;
@@ -161,7 +161,7 @@ void m4dGUIMainWindow2::addDockWindow ( const char *title, QWidget *widget, Dock
 void 
 m4dGUIMainWindow2::addDesktopWidget( QWidget *widget )
 {
-	stackWidget->addTab( widget, "" );
+	stackWidget->addWidget( widget );
 }
 
 

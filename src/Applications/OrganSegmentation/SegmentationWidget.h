@@ -3,15 +3,18 @@
 
 #include <QtGui>
 #include "GUI/m4dGUISliceViewerWidget2.h"
+#include "Imaging.h"
 
-class ManualSegmentationWidget: public QWidget
+class SegmentationWidget: public QWidget
 {
 	Q_OBJECT;
 public:
-	ManualSegmentationWidget( QWidget * parent = 0 );
-public slots:
+	SegmentationWidget( QWidget * parent = 0 );
+
 	void
-	Activate();
+	Activate( M4D::Imaging::AbstractImageConnectionInterface *conn, M4D::Viewer::SliceViewerSpecialStateOperatorPtr specialState );
+public slots:
+
 protected:
 
 	M4D::Viewer::m4dGUISliceViewerWidget2	*_viewer;

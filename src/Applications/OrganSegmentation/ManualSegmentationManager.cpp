@@ -14,17 +14,17 @@ M4D::Viewer::SliceViewerSpecialStateOperatorPtr ManualSegmentationManager::_spec
 InputImagePtr				 	ManualSegmentationManager::_inputImage;
 GDataSet::Ptr					ManualSegmentationManager::_dataset;
 
-bool						ManualSegmentationManager::_wasInitialized;
+bool						ManualSegmentationManager::_wasInitialized = false;
 
 const int SAMPLE_RATE = 5;
 
-void
+static void
 GLDrawPoint( const PointType &point )
 {
 	glVertex2f( point[0], point[1] );
 }
 
-void
+static void
 GLDrawPolyline( const CurveType::SamplePointSet &polyline )
 {
 	glBegin( GL_LINE_LOOP );
@@ -32,7 +32,7 @@ GLDrawPolyline( const CurveType::SamplePointSet &polyline )
 	glEnd();
 }
 
-void
+static void
 GLDrawBSpline( const CurveType &spline )
 {
 	GLDrawPolyline( spline.GetSamplePoints() );

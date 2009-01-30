@@ -15,13 +15,14 @@ NAME=		OrganSegmentation
 #Names of target sources
 TARGETS=	main \
 		mainWindow \
-		ManualSegmentationWidget \
+		SegmentationWidget \
 		ManualSegmentationManager \
+		KidneySegmentationManager \
 		MainManager \
 		SettingsBox
 
 MOCINPUT=	mainWindow.h \
-		ManualSegmentationWidget.h \
+		SegmentationWidget.h \
 		SettingsBox.h
 
 RCCINPUT=	mainWindow.qrc

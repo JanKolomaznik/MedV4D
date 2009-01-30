@@ -1,8 +1,8 @@
 
-#include "ManualSegmentationWidget.h"
+#include "SegmentationWidget.h"
 #include "ManualSegmentationManager.h"
 
-ManualSegmentationWidget::ManualSegmentationWidget( QWidget * parent )
+SegmentationWidget::SegmentationWidget( QWidget * parent )
 	: QWidget( parent )
 {
 	_viewer = new M4D::Viewer::m4dGUISliceViewerWidget2( 0 );
@@ -13,12 +13,9 @@ ManualSegmentationWidget::ManualSegmentationWidget( QWidget * parent )
 }
 
 void
-ManualSegmentationWidget::Activate()
+SegmentationWidget::Activate( M4D::Imaging::AbstractImageConnectionInterface *conn, M4D::Viewer::SliceViewerSpecialStateOperatorPtr specialState )
 {
-	ManualSegmentationManager::Initialize();
-
-	_viewer->setInputPort( ManualSegmentationManager::GetInputConnection().get() );
-	_viewer->setSpecialState( ManualSegmentationManager::GetSpecialState() );
+	_viewer->setInputPort( conn );
+	_viewer->setSpecialState( specialState );
 	_viewer->slotSetButtonHandler( M4D::Viewer::m4dGUIAbstractViewerWidget::specialState, M4D::Viewer::m4dGUIAbstractViewerWidget::left );
-	
 }

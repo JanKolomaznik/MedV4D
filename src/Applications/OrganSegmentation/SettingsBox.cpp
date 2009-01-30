@@ -1,9 +1,12 @@
 #include "SettingsBox.h"
 #include "mainWindow.h"
+#include "ManualSegmentationManager.h"
+#include "KidneySegmentationManager.h"
+
 
 SettingsBox
-::SettingsBox( /*M4D::Imaging::AbstractPipeFilter * filter, */QWidget * parent )
-	: /*_filter( filter ), */_parent( parent )
+::SettingsBox( QWidget * parent )
+	: _parent( parent )
 {
 	CreateWidgets();	
 }
@@ -14,15 +17,56 @@ SettingsBox
 {
 	setMinimumWidth( MINIMUM_WIDTH );
 
-	QVBoxLayout *layout;
+	
+	//Create first page of settings
+	_mainSettings = new QWidget;
+	{
+		QVBoxLayout *layout;
+		QPushButton *button;
+		layout = new QVBoxLayout;
+		
+		button = new QPushButton( tr( "ManualSegmentation" ) );
+		layout->addWidget( button );
+		QObject::connect( button, SIGNAL(clicked()), this, SLOT( SetToManualSegmentation()) );
 
-	layout = new QVBoxLayout;
+		button = new QPushButton( tr( "KidneySegmentation" ) );
+		layout->addWidget( button );
+		QObject::connect( button, SIGNAL(clicked()), this, SLOT( SetToKidneySegmentation()) );
 
-	_manualButton = new QPushButton( tr( "ManualSegmentation" ) );
-	layout->addWidget( _manualButton );
-	QObject::connect( _manualButton, SIGNAL(clicked()),
-		this, SIGNAL(SetToManualSignal()) );
+		layout->addStretch( 5 );
+		_mainSettings->setLayout(layout);
+	}
+	addWidget( _mainSettings );
 
+	_manualSegmSettings = new QWidget;
+	{
+		QVBoxLayout *layout;
+		QPushButton *button;
+		layout = new QVBoxLayout;
+		button = new QPushButton( tr( "Finished" ) );
+		layout->addWidget( button );
+		layout->addStretch( 5 );
+		/*QObject::connect( button, SIGNAL(clicked()),
+			this, SLOT( SetToManualSegmentation()) );*/
+
+		_manualSegmSettings->setLayout(layout);
+	}
+	addWidget( _manualSegmSettings );
+
+	_kidneySegmSettings = new QWidget;
+	{
+		QVBoxLayout *layout;
+		QPushButton *button;
+		layout = new QVBoxLayout;
+		button = new QPushButton( tr( "Finished" ) );
+		layout->addWidget( button );
+		layout->addStretch( 5 );
+		/*QObject::connect( button, SIGNAL(clicked()),
+			this, SLOT( SetToManualSegmentation()) );*/
+
+		_kidneySegmSettings->setLayout(layout);
+	}
+	addWidget( _kidneySegmSettings );
 //	grid = new QGridLayout;
 //
 //	grid->setRowMinimumHeight( 0, ROW_SPACING );
@@ -74,6 +118,25 @@ SettingsBox
 //
 //	layout->addStretch();
 
-	setLayout(layout);	
+}
+
+void
+SettingsBox
+::SetToManualSegmentation()
+{
+	ManualSegmentationManager::Initialize();
+	
+	emit SetSegmentationSignal( stMANUAL );
+	setCurrentWidget( _manualSegmSettings );
+}
+
+void
+SettingsBox
+::SetToKidneySegmentation()
+{
+	KidneySegmentationManager::Initialize();
+	
+	emit SetSegmentationSignal( stKIDNEYS );
+	setCurrentWidget( _kidneySegmSettings );
 }
 

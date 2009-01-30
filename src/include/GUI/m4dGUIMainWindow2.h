@@ -270,8 +270,8 @@ class m4dGUIMainWindow2: public QMainWindow
      */
     virtual void process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet );
 
-	//QStackedWidget	*stackWidget;
-	QTabWidget	*stackWidget;
+	QStackedWidget	*stackWidget;
+	//QTabWidget	*stackWidget;
 
     /// Pointer to the Main Viewer Desktop
     m4dGUIMainViewerDesktopWidget *mainViewerDesktop;

@@ -22,13 +22,11 @@ DataSetFactory::CreateDataSet(iAccessStream &stream)
 		return CreateImage(stream);
 		break;
 		
-	case DATASET_TRIANGLE_MESH:
-		break;
-				
 	default:
 		ASSERT(false);
 	}
 	//return 1;	// program shall never go here
+	return AbstractDataSet::ADataSetPtr();
 }
 
 AbstractDataSet::ADataSetPtr

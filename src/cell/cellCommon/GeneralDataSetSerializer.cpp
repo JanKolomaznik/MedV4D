@@ -61,28 +61,27 @@ GeneralDataSetSerializer::DeSerializeDataSetProperties(
   uint8 type;
   s >> type;
 
-  switch( (DataSetType) type)
-  {
-  case DATASET_IMAGE:
-    uint16 dim, elemType;
-	  s >> dim >> elemType;   // get common properties
+	switch( (DataSetType) type)
+	{
+	case DATASET_IMAGE:
+		uint16 dim, elemType;
+		s >> dim >> elemType;   // get common properties
 
-    if( *dataSetSerializer == NULL)
-    {
-      NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( elemType, 
+		if( *dataSetSerializer == NULL)
+		{
+		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( elemType, 
 		    DIMENSION_TEMPLATE_SWITCH_MACRO( dim, 
 			    *dataSetSerializer = new ImageSerializer< TTYPE, DIM >() )
 		  );
-    }
+		}
 
-    *returnedDataSet = (*dataSetSerializer)->DeSerializeProperties( s);
-    (*dataSetSerializer)->SetDataSet( & (*returnedDataSet->get()) );
-    break;
+		*returnedDataSet = (*dataSetSerializer)->DeSerializeProperties( s);
+		(*dataSetSerializer)->SetDataSet( & (*returnedDataSet->get()) );
+		break;
+	default:
+		throw M4D::ErrorHandling::ETODO();
 
-  case DATASET_TRIANGLE_MESH:
-    // TOBEDONE LATERON
-    break;
-  }
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////

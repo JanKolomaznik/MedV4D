@@ -2,8 +2,9 @@
 #define MAIN_WINDOW_H
 
 #include "GUI/m4dGUIMainWindow2.h"
-#include "ManualSegmentationWidget.h"
+#include "SegmentationWidget.h"
 #include "SettingsBox.h"
+#include "SegmentationTypes.h"
 
 #define ORGANIZATION_NAME     "MFF"
 #define APPLICATION_NAME      "OrganSegmentation"
@@ -52,12 +53,13 @@ public:
 
 public slots:
 	void
-	SetToManual();
+	SetSegmentationSlot( uint32 segType );
+
 protected:
 	void
 	process( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet );
 
-	ManualSegmentationWidget	*_manualSegmentation;
+	SegmentationWidget	*_segmentationWidget;
 	SettingsBox	*_settings;
 	//Notifier	*_notifier;
 private:
