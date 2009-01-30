@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\backendForDICOM\include;..\..\include"
+				AdditionalIncludeDirectories="..\..\backendForDICOM\include;..\..\include;..\.."
 				PreprocessorDefinitions="WINDOWS,_DEBUG,UNICODE,WIN32,&quot;DEBUG_LEVEL=10&quot;"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
@@ -108,7 +108,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\backendForDICOM\include;..\..\include\DICOMConn;..\..\include"
+				AdditionalIncludeDirectories="..\..\backendForDICOM\include;..\..\include;..\.."
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
