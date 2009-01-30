@@ -286,6 +286,28 @@
 			<File
 				RelativePath="..\..\include\GUI\m4dGUIMainWindow2.h"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="MOC m4dGUIMainWindow2.h"
+						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\debug; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 $(InputPath) -o $(IntDir)\generated\moc\moc_$(InputName).cpp&#x0D;&#x0A;"
+						AdditionalDependencies="moc.exe,$(InputFileName)"
+						Outputs="$(IntDir)\generated\moc\moc_$(InputName).cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="MOC m4dGUIMainWindow2.h"
+						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 $(InputPath) -o $(IntDir)\generated\moc\moc_$(InputName).cpp&#x0D;&#x0A;"
+						AdditionalDependencies="moc.exe,$(InputFileName)"
+						Outputs="$(IntDir)\generated\moc\moc_$(InputName).cpp"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\include\GUI\m4dGUIScreenLayoutWidget.h"
@@ -342,6 +364,28 @@
 			<File
 				RelativePath="..\..\include\GUI\m4dGUISliceViewerWidget2.h"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="MOC m4dGUISliceViewerWidget2.h"
+						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\debug; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 $(InputPath) -o $(IntDir)\generated\moc\moc_$(InputName).cpp&#x0D;&#x0A;"
+						AdditionalDependencies="moc.exe,$(InputFileName)"
+						Outputs="$(IntDir)\generated\moc\moc_$(InputName).cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="MOC m4dGUISliceViewerWidget2.h"
+						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 $(InputPath) -o $(IntDir)\generated\moc\moc_$(InputName).cpp&#x0D;&#x0A;"
+						AdditionalDependencies="moc.exe,$(InputFileName)"
+						Outputs="$(IntDir)\generated\moc\moc_$(InputName).cpp"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\include\GUI\m4dGUIStudyManagerWidget.h"
@@ -538,6 +582,32 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\GUI\widgets\m4dGUIMainWindow2.qrc"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="RCC m4dGUIMainWindow2.qrc"
+						CommandLine="..\..\bin\qt\rcc.exe -name m4dGUIMainWindow2 ..\..\GUI\widgets\m4dGUIMainWindow2.qrc -o $(IntDir)\generated\rcc\qrc_m4dGUIMainWindow2.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="..\..\bin\qt\rcc.exe;m4dGUIMainWindow2.qrc"
+						Outputs="$(IntDir)\generated\rcc\qrc_m4dGUIMainWindow2.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="RCC m4dGUIMainWindow2.qrc"
+						CommandLine="..\..\bin\qt\rcc.exe -name m4dGUIMainWindow2 ..\..\GUI\widgets\m4dGUIMainWindow2.qrc -o $(IntDir)\generated\rcc\qrc_m4dGUIMainWindow2.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="..\..\bin\qt\rcc.exe;m4dGUIMainWindow2.qrc"
+						Outputs="$(IntDir)\generated\rcc\qrc_m4dGUIMainWindow2.cpp"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\GUI\widgets\m4dGUIScreenLayoutWidget.qrc"
 				>
 				<FileConfiguration
@@ -692,6 +762,30 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIMainWindow2.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIMainWindow2.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="$(IntDir)\generated\moc\moc_m4dGUIScreenLayoutWidget.cpp"
 				>
 				<FileConfiguration
@@ -729,6 +823,30 @@
 			</File>
 			<File
 				RelativePath="$(IntDir)\generated\moc\moc_m4dGUISliceViewerWidget.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="$(IntDir)\generated\moc\moc_m4dGUISliceViewerWidget2.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="$(IntDir)\generated\moc\moc_m4dGUISliceViewerWidget2.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -897,6 +1015,30 @@
 			</File>
 			<File
 				RelativePath="$(IntDir)\generated\rcc\qrc_m4dGUIMainWindow.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="$(IntDir)\generated\rcc\qrc_m4dGUIMainWindow2.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="$(IntDir)\generated\rcc\qrc_m4dGUIMainWindow2.cpp"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
