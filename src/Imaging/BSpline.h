@@ -32,7 +32,7 @@ struct BasisFunctionValues
 			if( idx <= Degree ) {
 				return _values[ idx ]; 
 			} else 
-				throw ErrorHandling::EBadIndex(); 
+				_THROW_ ErrorHandling::EBadIndex(); 
 		}
 	const ValueType &
 	operator[]( unsigned idx ) const
@@ -40,7 +40,7 @@ struct BasisFunctionValues
 			if( idx <= Degree ) {
 				return _values[ idx ]; 
 			} else 
-				throw ErrorHandling::EBadIndex(); 
+				_THROW_ ErrorHandling::EBadIndex(); 
 		}
 
 private:

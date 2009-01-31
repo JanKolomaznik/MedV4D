@@ -82,7 +82,7 @@ ImageConnection< Image< ElementType, dimension > >
 			port->Plug( *this );
 			_producer = port;
 	} else {
-		throw ConnectionInterface::EMismatchPortType();
+		_THROW_ ConnectionInterface::EMismatchPortType();
 	}
 }
 
@@ -98,7 +98,7 @@ ImageConnection< Image< ElementType, dimension > >
 	{
 		this->PushConsumer( inputPort );
 	} else {
-		throw ConnectionInterface::EMismatchPortType();
+		_THROW_ ConnectionInterface::EMismatchPortType();
 	}
 }
 
@@ -108,7 +108,7 @@ ImageConnection< Image< ElementType, dimension > >
 ::PutImage( typename M4D::Imaging::Image< ElementType, dimension >::Ptr image )
 {
 	if( !image ) {
-		throw AbstractImageConnectionInterface::EInvalidImage();
+		_THROW_ AbstractImageConnectionInterface::EInvalidImage();
 	}
 	this->_image = image;
 
@@ -141,10 +141,10 @@ ImageConnection< M4D::Imaging::Image< ElementType, dimension > >
 	    )
 {
 	if( !_image ) {
-		throw ENoImageAssociated();
+		_THROW_ ENoImageAssociated();
 	}
 	if( dim != dimension ) {
-		throw ErrorHandling::EBadDimension();
+		_THROW_ ErrorHandling::EBadDimension();
 	}
 
 	//TODO - check if locking should be done here

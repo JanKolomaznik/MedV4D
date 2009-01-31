@@ -41,7 +41,7 @@ CreateConnectionObjectFromPorts( OutputPort& outPort, InputPort& inPort, bool ow
 		if( dim == 0 || typeID == NTID_UNKNOWN || iPort.ImageGetDimension() != dim 
 			|| iPort.ImageGetElementTypeID() != typeID ) 
 		{
-			throw EAutoConnectingFailed();
+			_THROW_ EAutoConnectingFailed();
 		}
 		
 		TYPE_TEMPLATE_SWITCH_MACRO( typeID, 
@@ -49,7 +49,7 @@ CreateConnectionObjectFromPorts( OutputPort& outPort, InputPort& inPort, bool ow
 
 	}	
 	catch ( ... ) {
-		throw EAutoConnectingFailed();
+		_THROW_ EAutoConnectingFailed();
 	}
 
 	return connection;
@@ -75,7 +75,7 @@ CreateConnectionObjectFromInputPort( InputPort& inPort, bool ownsDataset )
 
 	}	
 	catch ( ... ) {
-		throw EAutoConnectingFailed();
+		_THROW_ EAutoConnectingFailed();
 	}
 	return connection;
 }
@@ -92,7 +92,7 @@ CreateConnectionObjectFromOutputPort( OutputPort& outPort, bool ownsDataset )
 
 		if( dim == 0 || typeID == NTID_UNKNOWN ) 
 		{
-			throw EAutoConnectingFailed();
+			_THROW_ EAutoConnectingFailed();
 		}
 		
 		TYPE_TEMPLATE_SWITCH_MACRO( typeID, 
@@ -100,7 +100,7 @@ CreateConnectionObjectFromOutputPort( OutputPort& outPort, bool ownsDataset )
 
 	}	
 	catch ( ... ) {
-		throw EAutoConnectingFailed();
+		_THROW_ EAutoConnectingFailed();
 	}
 	return connection;
 }
@@ -123,7 +123,7 @@ void
 PipelineContainer::AddFilter( AbstractPipeFilter *filter )
 {
 	if( filter == NULL ) {
-		throw ErrorHandling::ENULLPointer();
+		_THROW_ ErrorHandling::ENULLPointer();
 	}
 
 	_filters.push_back( filter );
@@ -133,7 +133,7 @@ void
 PipelineContainer::AddConnection( ConnectionInterface *connection )
 {
 	if( connection == NULL ) {
-		throw ErrorHandling::ENULLPointer();
+		_THROW_ ErrorHandling::ENULLPointer();
 	}
 
 	_connections.push_back( connection );
@@ -152,7 +152,7 @@ PipelineContainer::MakeConnection( M4D::Imaging::OutputPort& outPort, M4D::Imagi
 {
 		//if inPort occupied - error. Connection concept is designed only one to many.
 	if( inPort.IsPlugged() ) {
-		throw Port::EPortAlreadyConnected();
+		_THROW_ Port::EPortAlreadyConnected();
 	}
 
 	ConnectionInterface *connection = NULL;
@@ -188,7 +188,7 @@ ConnectionInterface &
 PipelineContainer::MakeInputConnection( M4D::Imaging::InputPort& inPort, bool ownsDataset )
 {
 	if( inPort.IsPlugged() ) {
-		throw Port::EPortAlreadyConnected();
+		_THROW_ Port::EPortAlreadyConnected();
 	}
 
 	ConnectionInterface *connection = NULL;
@@ -218,7 +218,7 @@ ConnectionInterface &
 PipelineContainer::MakeOutputConnection( M4D::Imaging::OutputPort& outPort, bool ownsDataset )
 {
 	if( outPort.IsPlugged() ) {
-		throw Port::EPortAlreadyConnected();
+		_THROW_ Port::EPortAlreadyConnected();
 	}
 
 	ConnectionInterface *connection = NULL;

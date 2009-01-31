@@ -26,7 +26,7 @@ InputPortAbstractImage
 ::GetAbstractImage()const
 {
 	if( !this->IsPlugged() ) {
-		throw EDisconnected( this->GetID() );
+		_THROW_ EDisconnected( this->GetID() );
 	}
 	return static_cast<ConnectionType*>( _connection )->GetAbstractImageReadOnly();
 }
@@ -37,7 +37,7 @@ InputPortAbstractImage
 ::Plug( ConnectionInterface & connection )
 {
 	if( this->IsPlugged() ) {
-		throw Port::EPortAlreadyConnected();
+		_THROW_ Port::EPortAlreadyConnected();
 	}
 
 	AbstractImageConnectionInterface *conn = 
@@ -46,7 +46,7 @@ InputPortAbstractImage
 		this->_connection = conn;
 		PortPluggedMsg();
 	} else {
-		throw Port::EConnectionTypeMismatch();
+		_THROW_ Port::EConnectionTypeMismatch();
 	}
 }
 
@@ -57,7 +57,7 @@ OutputPortAbstractImage
 ::GetAbstractImage()const
 {
 	if( !this->IsPlugged() ) {
-		throw EDisconnected( this->GetID() );
+		_THROW_ EDisconnected( this->GetID() );
 	}
 	return static_cast<ConnectionType*>( _connection )->GetAbstractImage();
 }
@@ -73,7 +73,7 @@ OutputPortAbstractImage
 		this->_connection = conn;
 		PortPluggedMsg();
 	} else {
-		throw Port::EConnectionTypeMismatch();
+		_THROW_ Port::EConnectionTypeMismatch();
 	}
 }
 
@@ -87,7 +87,7 @@ OutputPortAbstractImage
 	    )
 {
 	if( !this->IsPlugged() ) {
-		throw EDisconnected( this->GetID() );
+		_THROW_ EDisconnected( this->GetID() );
 	}
 
 	static_cast<AbstractImageConnectionInterface*>( _connection )->SetImageSize( dim, minimums, maximums, elementExtents );	

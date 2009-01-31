@@ -143,7 +143,7 @@ public:
 	CastDataSet( boost::shared_ptr< DatasetType > & dataset )
 	{
 		if( dynamic_cast< DatasetType * >( dataset.get() ) == NULL ) {
-			throw EAbstractDataSetCastProblem();
+			_THROW_ EAbstractDataSetCastProblem();
 		}
 
 		return boost::static_pointer_cast< AbstractDataSet >( dataset );

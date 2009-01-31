@@ -61,7 +61,7 @@ bool
 Port::TryLockDataset()
 {
 	if( !this->IsPlugged() ) {
-		throw EDisconnected( this->GetID() );
+		_THROW_ EDisconnected( this->GetID() );
 	} 
 
 	return _connection->GetDataset().TryLockDataset();
@@ -71,7 +71,7 @@ void
 Port::LockDataset()
 {
 	if( !this->IsPlugged() ) {
-		throw EDisconnected( this->GetID() );
+		_THROW_ EDisconnected( this->GetID() );
 	} 
 
 	_connection->GetDataset().LockDataset();
@@ -81,7 +81,7 @@ void
 Port::ReleaseDatasetLock()
 {
 	if( !this->IsPlugged() ) {
-		throw EDisconnected( this->GetID() );
+		_THROW_ EDisconnected( this->GetID() );
 	} 
 
 	_connection->GetDataset().UnlockDataset();
@@ -179,7 +179,7 @@ size_t
 InputPortList::AddPort( InputPort* port )
 {
 	if( port == NULL ) {
-		//TODO - throw exception
+		//TODO - _THROW_ exception
 		return static_cast< size_t >( -1 );
 	}
 	_ports.push_back( port );
@@ -190,7 +190,7 @@ InputPortList::AddPort( InputPort* port )
 InputPort &
 InputPortList::GetPort( size_t idx )const
 {
-	//TODO - check bounds - throw exception
+	//TODO - check bounds - _THROW_ exception
 	return *_ports[ idx ];
 }
 
@@ -221,7 +221,7 @@ size_t
 OutputPortList::AddPort( OutputPort* port )
 {
 	if( port == NULL ) {
-		//TODO - throw exception
+		//TODO - _THROW_ exception
 		return static_cast< size_t >( -1 );
 	}
 	_ports.push_back( port );
@@ -232,7 +232,7 @@ OutputPortList::AddPort( OutputPort* port )
 OutputPort &
 OutputPortList::GetPort( size_t idx )const
 {
-	//TODO - check bounds - throw exception
+	//TODO - check bounds - _THROW_ exception
 	return *_ports[ idx ];
 }
 

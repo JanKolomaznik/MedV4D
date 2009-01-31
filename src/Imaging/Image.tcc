@@ -71,7 +71,7 @@ Image< ElementType, 2 >::Image( typename ImageDataTemplate< ElementType >::Ptr i
 {
 	_imageData = imageData;
 	if( _imageData->GetDimension() < Dimension ) {
-			//TODO throw exception
+			//TODO _THROW_ exception
 	}
 		
 	_sourceDimension = region.GetSourceDimension();
@@ -95,7 +95,7 @@ void
 Image< ElementType, 2 >::FillDimensionInfo()
 {
 	if( _imageData->GetDimension() != Dimension ) {
-			//TODO throw exception
+			//TODO _THROW_ exception
 	}
 		
 	_sourceDimension = Dimension;
@@ -115,7 +115,7 @@ void
 Image< ElementType, 2 >::ReallocateData( typename ImageDataTemplate< ElementType >::Ptr imageData )
 {
 	if( imageData->GetDimension() != Dimension ) {
-			//TODO throw exception
+			//TODO _THROW_ exception
 	}
 
 	//We have to inform about changes in structure.
@@ -157,7 +157,7 @@ typename Image< ElementType, 2 >::Ptr
 Image< ElementType, 2 >::CastAbstractImage( AbstractImage::AImagePtr & image )
 {
 	if( dynamic_cast< Image< ElementType, Dimension > * >( image.get() ) == NULL ) {
-		//TODO throw exception
+		//TODO _THROW_ exception
 	}
 
 	return boost::static_pointer_cast< Image< ElementType, Dimension > >( image );
@@ -170,12 +170,12 @@ Image< ElementType, 2 >::GetElement( int32 x, int32 y )
 	if( 	x < GetDimensionExtents( 0 ).minimum || 
 		x >= GetDimensionExtents( 0 ).maximum 	) 
 	{
-		//TODO throw exception
+		//TODO _THROW_ exception
 	}
 	if( 	y < GetDimensionExtents( 1 ).minimum || 
 		y >= GetDimensionExtents( 1 ).maximum 	) 
 	{
-		//TODO throw exception
+		//TODO _THROW_ exception
 	}
 	
 	return _imageData->Get( x, y );
@@ -188,12 +188,12 @@ Image< ElementType, 2 >::GetElement( int32 x, int32 y )const
 	if( 	x < GetDimensionExtents( 0 ).minimum || 
 		x >= GetDimensionExtents( 0 ).maximum 	) 
 	{
-		//TODO throw exception
+		//TODO _THROW_ exception
 	}
 	if( 	y < GetDimensionExtents( 1 ).minimum || 
 		y >= GetDimensionExtents( 1 ).maximum 	) 
 	{
-		//TODO throw exception
+		//TODO _THROW_ exception
 	}
 	
 	return _imageData->Get( x, y );
@@ -525,7 +525,7 @@ Image< ElementType, 3 >::Image( typename ImageDataTemplate< ElementType >::Ptr i
 {
 	_imageData = imageData;
 	if( _imageData->GetDimension() < Dimension ) {
-			//TODO throw exception
+			//TODO _THROW_ exception
 	}
 		
 	_sourceDimension = region.GetSourceDimension();
@@ -549,7 +549,7 @@ void
 Image< ElementType, 3 >::FillDimensionInfo()
 {
 	if( _imageData->GetDimension() != Dimension ) {
-			//TODO throw exception
+			//TODO _THROW_ exception
 	}
 		
 	_sourceDimension = Dimension;
@@ -569,7 +569,7 @@ void
 Image< ElementType, 3 >::ReallocateData( typename ImageDataTemplate< ElementType >::Ptr imageData )
 {
 	if( imageData->GetDimension() != Dimension ) {
-			//TODO throw exception
+			//TODO _THROW_ exception
 	}
 
 	//We have to inform about changes in structure.
@@ -699,7 +699,7 @@ Image< ElementType, 3 >::CastAbstractImage( AbstractImage & image )
 		return dynamic_cast< Image< ElementType, Dimension > & >( image );
 	}
 	catch( ... ) {
-		throw ErrorHandling::ExceptionCastProblem( "Cannot cast abstract image to this type." );
+		_THROW_ ErrorHandling::ExceptionCastProblem( "Cannot cast abstract image to this type." );
 	}
 }
 
@@ -711,7 +711,7 @@ Image< ElementType, 3 >::CastAbstractImage( const AbstractImage & image )
 		return dynamic_cast< const Image< ElementType, Dimension > & >( image );
 	}
 	catch( ... ) {
-		throw ErrorHandling::ExceptionCastProblem( "Cannot cast abstract image to this type." );
+		_THROW_ ErrorHandling::ExceptionCastProblem( "Cannot cast abstract image to this type." );
 	}
 }
 
@@ -720,7 +720,7 @@ typename Image< ElementType, 3 >::Ptr
 Image< ElementType, 3 >::CastAbstractImage( AbstractImage::AImagePtr & image )
 {
 	if( dynamic_cast< Image< ElementType, Dimension > * >( image.get() ) == NULL ) {
-		throw ErrorHandling::ExceptionCastProblem( "Cannot cast abstract image to this type." );
+		_THROW_ ErrorHandling::ExceptionCastProblem( "Cannot cast abstract image to this type." );
 	}
 
 	return boost::static_pointer_cast< Image< ElementType, Dimension > >( image );
@@ -733,17 +733,17 @@ Image< ElementType, 3 >::GetElement( int32 x, int32 y, int32 z )
 	if( 	x < GetDimensionExtents( 0 ).minimum || 
 		x >= GetDimensionExtents( 0 ).maximum 	) 
 	{
-		//TODO throw exception
+		//TODO _THROW_ exception
 	}
 	if( 	y < GetDimensionExtents( 1 ).minimum || 
 		y >= GetDimensionExtents( 1 ).maximum 	) 
 	{
-		//TODO throw exception
+		//TODO _THROW_ exception
 	}
 	if( 	z < GetDimensionExtents( 2 ).minimum || 
 		z >= GetDimensionExtents( 2 ).maximum 	) 
 	{
-		//TODO throw exception
+		//TODO _THROW_ exception
 	}
 
 	return _imageData->Get( x, y, z );
@@ -756,17 +756,17 @@ Image< ElementType, 3 >::GetElement( int32 x, int32 y, int32 z )const
 	if( 	x < GetDimensionExtents( 0 ).minimum || 
 		x >= GetDimensionExtents( 0 ).maximum 	) 
 	{
-		//TODO throw exception
+		//TODO _THROW_ exception
 	}
 	if( 	y < GetDimensionExtents( 1 ).minimum || 
 		y >= GetDimensionExtents( 1 ).maximum 	) 
 	{
-		//TODO throw exception
+		//TODO _THROW_ exception
 	}
 	if( 	z < GetDimensionExtents( 2 ).minimum || 
 		z >= GetDimensionExtents( 2 ).maximum 	) 
 	{
-		//TODO throw exception
+		//TODO _THROW_ exception
 	}
 
 	return _imageData->Get( x, y, z );

@@ -104,7 +104,7 @@ public:
 			int32 		/*minimums*/[], 
 			int32 		/*maximums*/[], 
 			float32		/*elementExtents*/[]
-		    ){ throw ErrorHandling::ETODO( "SetImage() not implemented." ); }
+		    ){ _THROW_ ErrorHandling::ETODO( "SetImage() not implemented." ); }
 protected:
 	AbstractImage::AImagePtr _image;
 };
@@ -142,13 +142,13 @@ public:
 
 	Image &
 	GetImage()const 
-		{ if( !_image ) { throw AbstractImageConnectionInterface::ENoImageAssociated(); }
+		{ if( !_image ) { _THROW_ AbstractImageConnectionInterface::ENoImageAssociated(); }
 			return *_image;
 		}
 
 	const Image &
 	GetImageReadOnly()const
-		{ if( !_image ) { throw AbstractImageConnectionInterface::ENoImageAssociated(); }
+		{ if( !_image ) { _THROW_ AbstractImageConnectionInterface::ENoImageAssociated(); }
 			return *_image;
 		}
 

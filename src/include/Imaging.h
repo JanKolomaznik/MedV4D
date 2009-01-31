@@ -37,6 +37,6 @@
 #include "Imaging/Pipeline.h"
 #include "Imaging/PipelineMessages.h"
 #include "Imaging/PointSet.h"
-//#include "Imaging/PolygonFill.h"
+#include "Imaging/PolygonFill.h"
 #include "Imaging/Polyline.h"
 #include "Imaging/Ports.h"

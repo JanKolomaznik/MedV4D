@@ -64,7 +64,7 @@ ConnectionInterface::DisconnectConsumer( InputPort& inputPort )
 		inputPort.UnPlug( true );
 		_consumers.erase( it );
 	} else {
-		//TODO throw exception
+		//TODO _THROW_ exception
 	}
 }
 
@@ -75,7 +75,7 @@ ConnectionInterface::DisconnectProducer()
 		_producer->UnPlug( true );
 		_producer = NULL;
 	} else {
-		//TODO throw exception
+		//TODO _THROW_ exception
 	}
 }
 
@@ -98,7 +98,7 @@ ConnectionInterface::PushConsumer( InputPort& consumer )
 		consumer.Plug( *this );
 		_consumers[ consumer.GetID() ] = &consumer;
 	} else {
-		//TODO throw exception
+		//TODO _THROW_ exception
 	}
 }
 

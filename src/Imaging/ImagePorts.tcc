@@ -30,7 +30,7 @@ InputPortImageFilter< Image< ElementType, dimension > >
 ::GetImage()const
 {
 	if( !this->IsPlugged() ) {
-		throw EDisconnected( this->GetID() );
+		_THROW_ EDisconnected( this->GetID() );
 	}
 	return static_cast<ConnectionType*>( _connection )->GetImageReadOnly();
 }
@@ -42,7 +42,7 @@ InputPortImageFilter< Image< ElementType, dimension > >
 ::Plug( ConnectionInterface & connection )
 {
 	if( this->IsPlugged() ) {
-		throw Port::EPortAlreadyConnected();
+		_THROW_ Port::EPortAlreadyConnected();
 	}
 
 	ImageConnection< ImageType > *conn = 
@@ -51,7 +51,7 @@ InputPortImageFilter< Image< ElementType, dimension > >
 		this->_connection = conn;
 		PortPluggedMsg();
 	} else {
-		throw Port::EConnectionTypeMismatch();
+		_THROW_ Port::EConnectionTypeMismatch();
 	}
 }
 
@@ -83,7 +83,7 @@ OutputPortImageFilter< Image< ElementType, dimension > >
 ::GetImage()const
 {
 	if( !this->IsPlugged() ) {
-		throw EDisconnected( this->GetID() );
+		_THROW_ EDisconnected( this->GetID() );
 	}
 
 	return static_cast<ConnectionType*>( _connection )->GetImage();
@@ -100,7 +100,7 @@ OutputPortImageFilter< Image< ElementType, dimension > >
 	    )
 {
 	if( !this->IsPlugged() ) {
-		throw EDisconnected( this->GetID() );
+		_THROW_ EDisconnected( this->GetID() );
 	}
 
 	static_cast<ConnectionType*>( _connection )->SetImageSize( dim, minimums, maximums, elementExtents );	
@@ -112,7 +112,7 @@ OutputPortImageFilter< Image< ElementType, dimension > >
 ::Plug( ConnectionInterface & connection )
 {
 	if( this->IsPlugged() ) {
-		throw Port::EPortAlreadyConnected();
+		_THROW_ Port::EPortAlreadyConnected();
 	}
 
 	ImageConnection< ImageType > *conn = 
@@ -121,7 +121,7 @@ OutputPortImageFilter< Image< ElementType, dimension > >
 		this->_connection = conn;
 		PortPluggedMsg();
 	} else {
-		throw Port::EConnectionTypeMismatch();
+		_THROW_ Port::EConnectionTypeMismatch();
 	}
 }
 

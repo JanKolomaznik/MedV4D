@@ -49,7 +49,7 @@ ElementType
 ImageDataTemplate< ElementType >::Get( size_t index )const
 {
 	if ( index >= _elementCount ) {
-		throw EIndexOutOfBounds( index );
+		_THROW_ EIndexOutOfBounds( index );
 	}
 
 	return _data[ index ];
@@ -60,7 +60,7 @@ ElementType&
 ImageDataTemplate< ElementType >::Get( size_t index )
 {
 	if ( index >= _elementCount ) {
-		throw EIndexOutOfBounds( index );
+		_THROW_ EIndexOutOfBounds( index );
 	}
 
 	return _data[ index ];
@@ -146,7 +146,7 @@ typename ImageDataTemplate< ElementType >::Ptr
 ImageDataTemplate< ElementType >::CastAbstractPointer( AbstractImageData::APtr aptr )
 {
 	if( dynamic_cast< ImageDataTemplate< ElementType > * >( aptr.get() ) == NULL ) {
-		//TODO throw exception
+		//TODO _THROW_ exception
 	}
 
 	return boost::static_pointer_cast< ImageDataTemplate< ElementType > >( aptr );

@@ -78,7 +78,7 @@ public:
 			if( count > 0 ) {
 				static_cast<Properties*>(this->_properties)->_computationGrouping = count; 
 			}else {
-		       		throw ErrorHandling::ExceptionBadParameter< unsigned >( count );
+		       		_THROW_ ErrorHandling::ExceptionBadParameter< unsigned >( count );
 			}	
 		}
 
@@ -167,7 +167,7 @@ public:
 			if( count > 0 ) {
 				static_cast<Properties*>(this->_properties)->_computationGrouping = count; 
 			}else {
-		       		throw ErrorHandling::ExceptionBadParameter< unsigned >( count );
+		       		_THROW_ ErrorHandling::ExceptionBadParameter< unsigned >( count );
 			}	
 		}
 

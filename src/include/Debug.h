@@ -27,6 +27,12 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+
+extern std::string	____EXCEPTION_FILE_NAME;
+extern int		____EXCEPTION_LINE_NUMBER;
+
+void
+ResetExceptionInfo();
 /**
  * Do not use pdout explicitely in your code.
  */ 
@@ -36,6 +42,13 @@ extern std::ostream *pdout;
 #endif /*DEBUG_LEVEL*/
 
 
+#ifdef DEBUG_LEVEL
+#define _THROW_	____EXCEPTION_FILE_NAME = __FILE__; \
+		____EXCEPTION_LINE_NUMBER = __LINE__; \
+		throw
+#else
+#define _THROW_ throw
+#endif /*DEBUG_LEVEL*/
 
 
 //----------------------------------------------------------------------------

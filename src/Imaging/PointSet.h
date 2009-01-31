@@ -51,7 +51,7 @@ public:
 			if( idx < _pointCount ) {
 				return _points[ idx ]; 
 			} else 
-				throw ErrorHandling::EBadIndex(); 
+				_THROW_ ErrorHandling::EBadIndex(); 
 		}
 
 	const PointType &
@@ -60,7 +60,7 @@ public:
 			if( idx < _pointCount ) {
 				return _points[ idx ]; 
 			} else 
-				throw ErrorHandling::EBadIndex(); 
+				_THROW_ ErrorHandling::EBadIndex(); 
 		}
 
 	typename PointVector::iterator

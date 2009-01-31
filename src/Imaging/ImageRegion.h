@@ -186,7 +186,7 @@ public:
 		{ 	ElementType *tmp = _pointer;
 			for( unsigned i = 0; i < Dim; ++i ) {
 				if( coords[i] < 0 || coords[i] >= (int32)_size[i] ) {
-					throw ErrorHandling::EBadIndex( "Bad index to ImageRegion!");
+					_THROW_ ErrorHandling::EBadIndex( "Bad index to ImageRegion!");
 				}
 				tmp += coords[i] * _strides[i];
 			}
@@ -197,7 +197,7 @@ public:
 		{ 	ElementType *tmp = _pointer;
 			for( unsigned i = 0; i < Dim; ++i ) {
 				if( coords[i] < 0 || coords[i] >= (int32)_size[i] ) {
-					throw ErrorHandling::EBadIndex( "Bad index to ImageRegion!");
+					_THROW_ ErrorHandling::EBadIndex( "Bad index to ImageRegion!");
 				}
 				tmp += coords[i] * _strides[i];
 			}
@@ -212,7 +212,7 @@ public:
 	GetDimensionOrder( unsigned idx )const
 		{ 
 			if( idx >= Dimension ) {
-				throw ErrorHandling::EBadIndex( "Bad index to dimension order array!");
+				_THROW_ ErrorHandling::EBadIndex( "Bad index to dimension order array!");
 			}
 			return _dimOrder[idx]; 
 		}
@@ -221,7 +221,7 @@ public:
 	GetPointerSourceCoordinates( unsigned idx )const
 		{ 
 			if( idx >= _sourceDimension ) {
-				throw ErrorHandling::EBadIndex( "Bad index to pointer source coordinates array!");
+				_THROW_ ErrorHandling::EBadIndex( "Bad index to pointer source coordinates array!");
 			}
 			return _pointerCoordinatesInSource[idx]; 
 		}

@@ -50,7 +50,7 @@ void
 Pipeline::AddFilter( AbstractPipeFilter *filter )
 {
 	if( filter == NULL ) {
-		//TODO throw exception
+		//TODO _THROW_ exception
 	}
 	_filters.push_back( filter );
 }
@@ -67,7 +67,7 @@ Pipeline::MakeConnection( M4D::Imaging::OutputPort& outPort, M4D::Imaging::Input
 {
 	//if inPort occupied - error. Connection concept is designed only one to many.
 	if( inPort.IsPlugged() ) {
-		//TODO throw exception
+		//TODO _THROW_ exception
 	}
 
 	ConnectionInterface *connection = NULL;

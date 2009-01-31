@@ -34,7 +34,7 @@ const DimensionExtents &
 AbstractImage::GetDimensionExtents( unsigned dimension )const
 {
 	if( dimension >= _dimCount ) {
-		throw EBadDimension();
+		_THROW_ EBadDimension();
 	}
 	return _dimensionExtents[ dimension ];
 }

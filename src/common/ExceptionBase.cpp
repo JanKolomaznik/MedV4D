@@ -16,13 +16,31 @@ namespace ErrorHandling
 
 ExceptionBase::ExceptionBase( std::string name ) throw()
 		: std::exception(), _name( name ) 
+#ifdef DEBUG_LEVEL
+		,_exceptionFileName( ____EXCEPTION_FILE_NAME ), 
+		_exceptionLineNumber( ____EXCEPTION_LINE_NUMBER )
+#endif /*DEBUG_LEVEL*/
 { 
+
+#ifdef DEBUG_LEVEL
+	ResetExceptionInfo();
+#endif /*DEBUG_LEVEL*/
+
 	OnRaise();
 }
 
 ExceptionBase::ExceptionBase() throw()
 	: std::exception(), _name( "General exception raised." ) 
+#ifdef DEBUG_LEVEL
+		,_exceptionFileName( ____EXCEPTION_FILE_NAME ), 
+		_exceptionLineNumber( ____EXCEPTION_LINE_NUMBER )
+#endif /*DEBUG_LEVEL*/
 { 
+
+#ifdef DEBUG_LEVEL
+	ResetExceptionInfo();
+#endif /*DEBUG_LEVEL*/
+
 	OnRaise();
 }
 

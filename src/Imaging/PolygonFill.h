@@ -3,8 +3,10 @@
 
 #include "Imaging/PointSet.h"
 #include "Imaging/Polyline.h"
+#include "Imaging/ImageRegion.h"
 #include <vector>
 #include <list>
+#include <algorithm>
 
 namespace M4D
 {
@@ -22,6 +24,10 @@ namespace Algorithms
 
 struct IntervalRecord
 {
+	IntervalRecord( int32 axMin, int32 axMax, int32 ayCoordinate )
+		: xMin( axMin ), xMax( axMax ), yCoordinate( ayCoordinate )
+		{}
+
 	int32 xMin;
 	int32 xMax;
 	int32 yCoordinate;
@@ -29,101 +35,36 @@ struct IntervalRecord
 
 struct EdgeRecord
 {
-	EdgeRecord( int32 ayTop, float32 ax, int32 ady, float32 adxy ) :
-		yTop( ayTop ), x( ax ), dy( ady ), dxy( adxy )	{}
+	EdgeRecord( 
+		int32	ayTop, 
+		float32	ax, 
+		int32	ady, 
+		float32	adxy ) :yTop( ayTop ), x( ax ), dy( ady ), dxy( adxy )	{}
 
 	int32		yTop;
 
 	float32		x;
 	int32		dy;
 	float32 	dxy;
-};
 
-struct EdgeRecordComparator
-{
-
+	bool
+	operator<( const EdgeRecord &rec )const
+	{
+		return rec.yTop < yTop || ( rec.yTop == yTop && rec.x > x );
+	}
 };
 
 typedef std::vector< IntervalRecord >	IntervalRecords;
 typedef std::vector< EdgeRecord >	EdgeRecords;
 typedef std::list< EdgeRecord >		ActiveEdgeRecords;
 
-template< typename PolygonType >
+template< typename CoordType >
 void
-PolygonFill( const PolygonType & polygon, IntervalRecords & intervals )
-{
-	EdgeRecords edgeRecords;
+PolygonFill( const M4D::Imaging::Geometry::Polyline< CoordType, 2 > & polygon, IntervalRecords & intervals, float32 xScale = 1.0f, float32 yScale = 1.0f );
 
-	PrepareEdgeRecords( polygon, edgeRecords );
-
-	if( edgeRecords.empty() ) return;
-
-	ComputeFillIntervals( edgeRecords, intervals );	
-}
-
-template< typename PolygonType >
+template< typename ElementType >
 void
-PrepareEdgeRecords( const PolygonType & polygon, EdgeRecords & edgeRecords )
-{
-
-}
-
-struct UpdateEdgeFunctor
-{
-	UpdateEdgeFunctor( IntervalRecords & recs ) : intervals( &recs ), even( true ), lastX( 0.0f )
-
-	void
-	operator()( EdgeRecord & rec ) {
-		if( even ) {
-			lastX = rec.x;
-		} else {
-			intervals->push_back( IntervalRecord( lastX, rec.x, rec.yTop ) );
-		}
-		even = !even;
-
-		--rec.yTop;
-		--rec.dy;
-		rec.x += rec.dxy;
-	}
-
-	IntervalRecords *intervals;
-	bool	even;
-	float32 lastX;
-};
-
-
-struct RemoveEdgePredicate
-{
-	bool
-	operator()( const EdgeRecord & rec ) {
-		return rec.dy == 0;
-	}
-};
-
-template< typename PolygonType >
-void
-ComputeFillIntervals( EdgeRecords & edgeRecords, IntervalRecords & intervals )
-{
-	ActiveEdgeRecords activeList;
-	unsigned nextRecord = 0;
-	int32 actualY = edgeRecords[nextRecord].yTop;
-
-	while( true ) {
-		while( nextRecord < edgeRecords.size() && edgeRecords[nextRecord].yTop == actualY ) {
-			activeList.push_back( edgeRecords[nextRecord] );
-			++nextRecord;
-		}
-		activeList.Sort( EdgeRecordComparator() );
-
-		if( activeList.empty() ) break;
-
-	
-		std::for_each( activeList.begin(), activeList.end(), UpdateEdgeFunctor( intervals ) );
-
-		std::remove_if( activeList.begin(), activeList.end(), RemoveEdgePredicate() );
-
-	}
-}
+FillRegion( M4D::Imaging::ImageRegion< ElementType, 2 > region, const IntervalRecords &intervals, ElementType value );
 
 }/*namespace Algorithms*/
 }/*namespace Imaging*/
@@ -131,5 +72,7 @@ ComputeFillIntervals( EdgeRecords & edgeRecords, IntervalRecords & intervals )
 
 }/*namespace M4D*/
 
+//include implementation
+#include "Imaging/PolygonFill.tcc"
 
 #endif /*POLYGON_FILL_H*/

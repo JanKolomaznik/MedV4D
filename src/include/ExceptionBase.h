@@ -29,10 +29,35 @@ public:
 	ExceptionBase() throw();
 	~ExceptionBase() throw(){}
 	const char* what() const  throw(){ return _name.data(); }	
+
+	std::string
+	GetFileName()
+	{
+#ifdef DEBUG_LEVEL
+		return _exceptionFileName;
+#else
+		return "";
+#endif /*DEBUG_LEVEL*/
+	}
+
+	int
+	GetLineNumber()
+	{
+#ifdef DEBUG_LEVEL
+		return _exceptionLineNumber;
+#else
+		return -1;
+#endif /*DEBUG_LEVEL*/
+	}
 protected:
 	virtual void OnRaise();
 private:
 	std::string	_name;
+
+#ifdef DEBUG_LEVEL
+	std::string	_exceptionFileName;
+	int		_exceptionLineNumber;
+#endif /*DEBUG_LEVEL*/
 };
 
 class ExceptionCastProblem : public ExceptionBase

@@ -42,7 +42,7 @@ PrepareElementArray( uint32 size )
 	}
 	catch( ... )
 	{
-		throw EFailedArrayAllocation();
+		_THROW_ EFailedArrayAllocation();
 	}
 }
 

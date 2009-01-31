@@ -29,7 +29,7 @@ AbstractImageConnection
 	{
 		this->PushConsumer( inputPort );
 	} else {
-		throw ConnectionInterface::EMismatchPortType();
+		_THROW_ ConnectionInterface::EMismatchPortType();
 	}
 }
 
@@ -43,7 +43,7 @@ AbstractImageConnection
 			port->Plug( *this );
 			_producer = port;
 	} else {
-		throw ConnectionInterface::EMismatchPortType();
+		_THROW_ ConnectionInterface::EMismatchPortType();
 	}
 }
 
@@ -52,7 +52,7 @@ AbstractImageConnection
 ::PutImage( M4D::Imaging::AbstractImage::AImagePtr image )
 {
 	if( !image ) {
-		throw AbstractImageConnectionInterface::EInvalidImage();
+		_THROW_ AbstractImageConnectionInterface::EInvalidImage();
 	}
 	this->_image = image;
 
@@ -68,7 +68,7 @@ AbstractImageConnection
 ::GetAbstractImageReadOnly()const
 {
 	if( !_image ) {
-		throw AbstractImageConnectionInterface::ENoImageAssociated();
+		_THROW_ AbstractImageConnectionInterface::ENoImageAssociated();
 	}
 	
 	return *_image;
@@ -79,7 +79,7 @@ AbstractImageConnection
 ::GetAbstractImage()const
 {
 	if( !_image ) {
-		throw AbstractImageConnectionInterface::ENoImageAssociated();
+		_THROW_ AbstractImageConnectionInterface::ENoImageAssociated();
 	}
 	
 	return *_image;

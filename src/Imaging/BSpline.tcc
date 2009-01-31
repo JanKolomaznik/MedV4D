@@ -267,7 +267,7 @@ BSpline< CoordType, Dim >
 		PointType newPoint = 0.5f * (this->_points[ MOD(idx, this->Size()) ]+this->_points[ MOD(idx+1, this->Size()) ]);
 		this->InsertPoint( MOD(idx+1, this->Size()), newPoint );
 	} else {
-		throw ErrorHandling::ENotFinished( "SplitSegment() - Handling noncyclic splines" );
+		_THROW_ ErrorHandling::ENotFinished( "SplitSegment() - Handling noncyclic splines" );
 	}
 }
 
@@ -282,7 +282,7 @@ BSpline< CoordType, Dim >
 		this->_points[ MOD(idx+1, this->Size()) ] = newPoint;
 		this->RemovePoint( MOD(idx, this->Size()) );
 	} else {
-		throw ErrorHandling::ENotFinished( "SplitSegment() - Handling noncyclic splines" );
+		_THROW_ ErrorHandling::ENotFinished( "SplitSegment() - Handling noncyclic splines" );
 	}
 }
 

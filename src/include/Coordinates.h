@@ -13,7 +13,7 @@ GetCoordinate( Coordinates< CoordType, Dim > &coord, unsigned idx )
 	if ( idx >= 0 && idx < Dim ) { 
 		return coord._coordinates[ idx ];
 	} else {
-		throw EBadIndex();
+		_THROW_ EBadIndex();
 	}
 }
 
@@ -24,7 +24,7 @@ GetConstCoordinate( const Coordinates< CoordType, Dim > &coord, unsigned idx )
 	if ( idx >= 0 && idx < Dim ) { 
 		return coord._coordinates[ idx ];
 	} else {
-		throw EBadIndex();
+		_THROW_ EBadIndex();
 	}
 }
 template < typename CoordType, unsigned Dimension >

@@ -79,12 +79,12 @@ ImageFactory::LoadDumpedImage( std::istream &stream )
 	//Read stream header
 	BINSTREAM_READ_MACRO( stream, startMAGIC );
 	if( startMAGIC != DUMP_START_MAGIC_NUMBER ) {
-		throw EWrongStreamBeginning();
+		_THROW_ EWrongStreamBeginning();
 	}
 	
 	BINSTREAM_READ_MACRO( stream, formatVersion );
 	if( formatVersion != ACTUAL_FORMAT_VERSION ) {
-		throw EWrongFormatVersion();
+		_THROW_ EWrongFormatVersion();
 	}
 
 
@@ -106,7 +106,7 @@ ImageFactory::LoadDumpedImage( std::istream &stream )
 
 	BINSTREAM_READ_MACRO( stream, headerEndMagic );
 	if( headerEndMagic != DUMP_HEADER_END_MAGIC_NUMBER ) {
-		throw EWrongHeader();
+		_THROW_ EWrongHeader();
 	}
 	//header read
 

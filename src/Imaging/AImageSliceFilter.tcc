@@ -24,7 +24,7 @@ AImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 ::AImageSliceFilter( typename AImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >::Properties *prop ) 
 	: PredecessorType( prop )
 {
-	//TODO - check intervals of parameters - throw exceptions
+	//TODO - check intervals of parameters - _THROW_ exceptions
 }
 
 template< typename InputElementType, typename OutputImageType >
@@ -173,7 +173,7 @@ AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementTyp
 ::AImageSliceFilterIExtents( typename AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >::Properties *prop ) 
 	: PredecessorType( prop )
 {
-	//TODO - check intervals of parameters - throw exceptions
+	//TODO - check intervals of parameters - _THROW_ exceptions
 }
 
 template< typename InputElementType, typename OutputElementType >
