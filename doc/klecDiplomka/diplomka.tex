@@ -27,59 +27,83 @@ contains some extra packages for Fedora
 
 Download it wherever you want (even though in documentation is /tmp/cellsdkiso). Lets call the folder, you download it into, ISO_DIR.  First you shall stop the YUM updater daemon.
 
+\begin{equation}
 /etc/init.d/yum-updatesd stop
+\end{equation}
 
 If this outputs: bash: /etc/init.d/yum-updatesd: No such file or directory, you do not have any YUM updater daemon installed so you can skip this step. Now issue following command to install required utilities for SDK installation
 
+\begin{equation}
 yum install rsync sed tcl wget
+\end{equation}
 
 Now install the dowloaded installation rpm.
 
+\begin{equation}
 rpm -ivh ISO_DIR/cell-install-3.1.0-0.0.noarch.rpm
+\end{equation}
 
 After this step you have new stuff in /opt/cell installed. There is SDK installation script (cellsdk) located as well. It is wrapper for YUM that manages the SDK packages. Run it with parameter --help to see the usage. So next step is to run it. 
 
+\begin{equation}
 /opt/cell/cellsdk --iso ISO_DIR -a install
+\end{equation}
 
 Param --iso tells to use downloaded ISOs and where can be found for mounting them onto loopback device. Param -a disables agreeing licences. Otherwise you have to write some 'yes' to agree. Process begins with setting local YUM repositories pointing to the ISOs. Then all default packages are installed with all their dependecies. To check result of the installation issue
 
+\begin{equation}
 /opt/cell/cellsdk verify
+\end{equation}
 
 Now we have SDK installed. Lets continue with installation of IDE. It consists again of packages. Now to simplify processing packages install yumex that provides graphical interface to YUM. And lets you simply check packages that you want.
 
+\begin{equation}
 yum install yumex
+\end{equation}
 
-To install IDE run yumex, goto Group View->Development->Cell Development Tools. Check cellide, that is actual IDE (Eclipse with cell concerning stuff) and ibm-java2-i386-jre, that is Java Runtime Environment, JRE needed for running of IDE. And click 'Process Queue'. Note: you should have the ISOs mounted onto loopback devices. Otherwise you get 'Error Downloading Packages' after clicking 'Process Queue'. Issue this whenever you want to install package concerning Cell SDK
+To install CellIDE run yumex, goto Group View->Development->Cell Development Tools. Check cellide, that is actual IDE (Eclipse with cell concerning stuff) and ibm-java2-i386-jre, that is Java Runtime Environment, JRE needed for running of IDE. And click 'Process Queue'. Note: you should have the ISOs mounted onto loopback devices. Otherwise you get 'Error Downloading Packages' after clicking 'Process Queue'. So you have to mount ISOs whenever you want to install package concerning Cell SDK
 
+\begin{equation}
 /opt/cell/cellsdk --iso ISO_DIR mount
+\end{equation}
 
 After the installation you have two new folders. /opt/cell/ide that contains the IDE and /opt/ibm/java2-i386-50 where JRE resides. To run the ide you have to specify folder where the JRE is (through -vm param).
 
+\begin{equation}
 /opt/cell/ide/eclipse/eclipse -vm /opt/ibm/java2-i386-50/jre/bin/
+\end{equation}
 
 The last part of develelopment environment is IBM Full-System Simulator (systemsym). It is not part of ISOs with SDK so you have to download it separately. Visit http://www.alphaworks.ibm.com/tech/cellsystemsim/download and download rpm with the simulator appropriate to the platform you are currently using. Be sure to download fedora 9 version of the simulator (cell-3.1-8.f9.*). Then instal it.
 
+\begin{equation}
 rpm -ivh ISO_DIR/sys
+\end{equation}
 
 Maybe some dependencies will be missing. So you have to install it. In my case ot was libBLT24 and libtk8.5.
 
+\begin{equation}
 yum install blt tk
+\end{equation}
 
-Now you have symilator installed. But it has nothing to simulate. Image with image of simulated Fedora 9 system is needed (sysroot image). It is among SDK rpms so install it using yumex (Cell Development Tools -> sysroot_image).
+Now you have simulator installed. But it has nothing to simulate. Image with image of simulated Fedora 9 system is needed (sysroot image). It is among SDK rpms so install it using yumex (Cell Development Tools -> sysroot_image).
 Now all neccessary stuff is installed. You could start the IDE and start development. But there are some bugs to fix yet. 
 
 If you start IDE and it crashes with unhandled exception it is probably caused by xulrunner library. It is ussually installed with Firefox3. There is following workaround:
-uninstall the xulrunner
-start IDE
-create workspace
-close 'welcome page' when IDE starts. Important!
-close the IDE (save of the workspace will follow)
-reinstall the Firefox3 or whatever application uses xulrunner
-Now you should start the IDE without the crash. From the workeround can be seen that the welcome page probably cause the troubles so when you create a new workspace you should probably repeat the process.
+\begin{enumerate}
+\item uninstall the xulrunner
+\item start IDE
+\item create workspace
+\item close 'welcome page' when IDE starts. Important!
+\item close the IDE (save of the workspace will follow)
+\item reinstall the Firefox3 or whatever application uses xulrunner
+\end{enumerate}
+Now you should start the IDE without the crash. From the workeround can be seen that the welcome page probably cause the troubles so when you create a new workspace you should probably repeat the process. This library also cause crash of the IDE when you try to display help contents. There is no workaround to fix that so consider usign Firefox along IDE.
 
 Another issue (stack issue) is with tcl (scripting language that is used for configuration of the systemsym). There is bug with stack size chechking that causes cycling of tcl code. To workeraound this problem you should use ulimit command that changes default environment of linux programs
 
+\begin{equation}
 ulimit -s unlimited
+\end{equation}
 
 causes that stack is unlimited.
 
@@ -87,12 +111,46 @@ The last is to fix actual tcl script that manages loading the sysroot_image (21\
 
 It is usefull to create starting script. That solve the stack issue and add systemsim directory to PATH (needed for running).
 
+\begin{equation}
 ulimit -s unlimited
 PATH=/opt/ibm/systemsim-cell/bin:$PATH
 /opt/cell/ide/eclipse/eclipse -vm /opt/ibm/java2-i386-50/jre/bin
+\end{equation}
 
-kopirovani knihoven do sysrootu:
-mount -o loop /opt/ibm/systemsim-cell/images/cell/sysroot_disk /mnt/cell-sdk-sysroot
-cp -r /opt/cell/sysroot/usr/lib /mnt/cell-sdk-sysroot/usr/local/lib
+\subsection{Installation of libraries into sysroot_image}
+Because sysroot_image is provided as image of installed Fedora 9 without CellBE libraries so next step is to install them into sysroot image.
+
+\begin{equation}
+/opt/cell/cellsdk_sync_simulator install
+\end{equation}
+
+This shell script installs all rpms for ppc and ppc64 platforms that finds in /tmp/cellsdk/rpms. By default these rpms are copied into /tmp/cellsdk/rpms during the install process. If they are not still there (or in installed subdirectory) you have to copy them by hand from ISOs (note: ISOs has to be mounted).
+
+\begin{equation}
+cp /opt/cell/yum-repos/CellSDK-Devel-Fedora/rpms/*.{ppc,ppc64}.rpm /tmp/cellsdk/rpms
+\end{equation}
+
+\subsection{Setup CellIDE}
+
+\subsection{Using examples}
+
+Examples are installed into /opt/cell/sdk/src as tarball. So you have to untar each you want to use. It is good to start with examples and tutorial sources. Each folder has its own makefile that manages makefiles in its subfolders. So you can call only the top level one to build all projects in subfolders or any from the subfolders to build particular projects.
+
+It is convenient to use the sample sources in CellIDE where you can build it as well and create run/debug configuration for running within cell environment. To use the exmaple code (for example /opt/cell/sdk/src/tutorial/simple) create new c++ makefile project. Click right button on it to get into properties. C/C++ general tab -> Paths and Symbols -> Source location. Here you have to add the folder with the sources (/opt/cell/sdk/src/tutorial/simple) by 'create / link folder' button -> advanced -> link to folder in filesystem. Now you have two folders in list. The first one is the original, created during project creation and the other newly linked folder with the source. You can delete the original one since you are not going to use it.
+Next is neccassary to set up 'Build directory' to tell the IDE where shall search for makefile. It is C/C++ Build tab. Use 'Workspace' button to specify the folder because it will use workspace_loc variable and thus independent on exact location on filesystem.
+
+
+Tabulka:::
+\begin{center}
+\begin{tabular}{|l|c|p{3.5in}|}
+\hline
+\multicolumn{3}{|c|}{Nazev tabulky}\\ 
+\hline cell 1&cell 2&cell 3\\&todle bude pod cell 2, protoze to je mezi dvema'\&' &\\ 
+\hline Big Basin&1.5&Very nice overnight to Berry Creek Falls from
+either Headquarters or ocean side.\\ 
+\hline Sunol&1&Technicolor green in the spring. Watch out for the cows.\\ 
+\hline Henry Coe&1.5&Large wilderness nearby suitable for multi-day treks.\\ 
+\hline
+\end{tabular}
 
 \end{document}
