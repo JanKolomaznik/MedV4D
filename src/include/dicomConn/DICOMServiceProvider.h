@@ -137,7 +137,7 @@ public:
 	 * @exception ImageFactory::EUnknowDataType Thrown when type for element with 
 	 * parameters from dicomObject doesn't exist.
 	 **/
-	static M4D::Imaging::AbstractImage::AImagePtr 
+	static M4D::Imaging::AbstractImage::Ptr 
 	CreateImageFromDICOM( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects );
 
 	/**

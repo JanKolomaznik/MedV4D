@@ -126,7 +126,7 @@ public:
 	 * \exception ExceptionCastProblem When casting impossible.
 	 **/	
 	static typename Image< ElementType, 2 >::Ptr 
-	CastAbstractImage( AbstractImage::AImagePtr & image );
+	CastAbstractImage( AbstractImage::Ptr & image );
 
 	/**
 	 * Method used for easy runtime type identification of 
@@ -311,7 +311,7 @@ public:
 	 * \exception ExceptionCastProblem When casting impossible.
 	 **/	
 	static typename Image< ElementType, 3 >::Ptr 
-	CastAbstractImage( AbstractImage::AImagePtr & image );
+	CastAbstractImage( AbstractImage::Ptr & image );
 
 	/**
 	 * Method used for easy runtime type identification of 
@@ -511,7 +511,7 @@ public:
 	 * \exception ExceptionCastProblem When casting impossible.
 	 **/	
 	static typename Image< ElementType, 4 >::Ptr 
-	CastAbstractImage( AbstractImage::AImagePtr & image );
+	CastAbstractImage( AbstractImage::Ptr & image );
 
 	/**
 	 * Method used for easy runtime type identification of 

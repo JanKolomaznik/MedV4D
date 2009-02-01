@@ -41,7 +41,7 @@ public:
   static 
   void DeSerializeDataSetProperties( 
       AbstractDataSetSerializer **dataSetSerializer
-      , M4D::Imaging::AbstractDataSet::ADataSetPtr *returnedDataSet
+      , M4D::Imaging::AbstractDataSet::Ptr *returnedDataSet
       , M4D::CellBE::NetStream &s);
 
 };

@@ -69,7 +69,7 @@ LoadDumpedImageData( std::istream &stream, Image< ElementType, Dimension >& imag
 }
 
 
-AbstractImage::AImagePtr
+AbstractImage::Ptr
 ImageFactory::LoadDumpedImage( std::istream &stream )
 {
 	uint32 startMAGIC = 0;
@@ -111,7 +111,7 @@ ImageFactory::LoadDumpedImage( std::istream &stream )
 	//header read
 
 
-	AbstractImage::AImagePtr image;
+	AbstractImage::Ptr image;
 	TYPE_TEMPLATE_SWITCH_MACRO(
 		elementTypeID,
 		image = CreateEmptyImageFromExtents< TTYPE >( 
@@ -133,7 +133,7 @@ ImageFactory::LoadDumpedImage( std::istream &stream )
 	return image;
 }
 
-AbstractImage::AImagePtr
+AbstractImage::Ptr
 ImageFactory::LoadDumpedImage( std::string filename )
 {
 	std::fstream input( filename.data(), std::ios::in | std::ios::binary );

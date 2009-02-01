@@ -122,7 +122,7 @@ ImageConnection< Image< ElementType, dimension > >
 template< typename ElementType, unsigned dimension >
 void
 ImageConnection< Image< ElementType, dimension > >
-::PutImage( M4D::Imaging::AbstractImage::AImagePtr image )
+::PutImage( M4D::Imaging::AbstractImage::Ptr image )
 {
 	typename M4D::Imaging::Image< ElementType, dimension >::Ptr typedImage = 
 		M4D::Imaging::Image< ElementType, dimension >::CastAbstractImage( image );

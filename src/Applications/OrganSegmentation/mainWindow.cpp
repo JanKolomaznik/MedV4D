@@ -38,7 +38,7 @@ mainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
 
 	//mainViewerDesktop->setConnectionForAll( mainViewerDesktop->getDefaultConnection() );
 
-	/*AbstractImage::AImagePtr inputImage = ImageFactory::CreateImageFromDICOM( dicomObjSet );
+	/*AbstractImage::Ptr inputImage = ImageFactory::CreateImageFromDICOM( dicomObjSet );
 
 	try {
 		_inConnection->PutImage( inputImage );

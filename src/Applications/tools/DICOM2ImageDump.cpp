@@ -73,7 +73,7 @@ main( int argc, char** argv )
 				*dcmSet 
 				);
 
-			M4D::Imaging::AbstractImage::AImagePtr image = 
+			M4D::Imaging::AbstractImage::Ptr image = 
 				M4D::Dicom::DcmProvider::CreateImageFromDICOM( dcmSet );
 
 			M4D::Imaging::ImageFactory::DumpImage( filePath.string(), *image );

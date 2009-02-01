@@ -4,7 +4,7 @@
 #include "dicomConn.h"
 #include "Imaging.h"
 
-typedef M4D::Imaging::AbstractImage::AImagePtr	AbstractImagePtr;
+typedef M4D::Imaging::AbstractImage::Ptr	AbstractImagePtr;
 typedef M4D::Imaging::Image< int16, 3 >	InputImageType;
 typedef InputImageType::Ptr	InputImagePtr;
 typedef M4D::Imaging::AbstractImageConnectionInterface	InImageConnection;

@@ -52,7 +52,7 @@ main( int argc, char** argv )
 
 
 	std::cout << "Loading file...";
-	M4D::Imaging::AbstractImage::AImagePtr image = 
+	M4D::Imaging::AbstractImage::Ptr image = 
 			M4D::Imaging::ImageFactory::LoadDumpedImage( filename );
 	std::cout << "Done\n";
 	

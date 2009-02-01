@@ -61,7 +61,7 @@ public:
 	/**
 	 * Smart pointer to this class.
 	 **/
-	typedef boost::shared_ptr< AbstractImage > AImagePtr;
+	typedef boost::shared_ptr< AbstractImage > Ptr;
 	class EBadDimension;
 	
 	AbstractImage( uint16 dim, DimensionExtents *dimExtents );
@@ -117,6 +117,9 @@ class AbstractImageDim< 2 > : public AbstractImage
 {
 public:
 	typedef AbstractImage		PredecessorType;
+	static const unsigned 		Dimension = 2;
+	typedef boost::shared_ptr< AbstractImageDim< Dimension > > Ptr;
+
 	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( 2, dimExtents ) {}
 };
 
@@ -125,6 +128,9 @@ class AbstractImageDim< 3 > : public AbstractImage
 {
 public:
 	typedef AbstractImage		PredecessorType;
+	static const unsigned 		Dimension = 3;
+	typedef boost::shared_ptr< AbstractImageDim< Dimension > > Ptr;
+
 	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( 3, dimExtents ) {}
 
 };
@@ -134,6 +140,9 @@ class AbstractImageDim< 4 > : public AbstractImage
 {
 public:
 	typedef AbstractImage		PredecessorType;
+	static const unsigned 		Dimension = 4;
+	typedef boost::shared_ptr< AbstractImageDim< Dimension > > Ptr;
+
 	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( 4, dimExtents ) {}
 
 };

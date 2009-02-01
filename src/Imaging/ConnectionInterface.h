@@ -92,7 +92,7 @@ public:
 	 * \param dataset Smart pointer to dataset - must be valid.
 	 **/
 	virtual void
-	PutDataset( AbstractDataSet::ADataSetPtr dataset )=0;
+	PutDataset( AbstractDataSet::Ptr dataset )=0;
 
 	/**
 	 * \return Reference to dataset under control.
@@ -189,6 +189,26 @@ class ConnectionInterface::EConnectionOccupied
 public:
 	//TODO
 };
+
+//******************************************************************************
+template< typename DatasetType >
+class ConnectionTyped: public ConnectionTyped< typename DatasetType::PredecessorType >
+{
+public:
+
+protected:
+};
+
+template<>
+class ConnectionTyped< AbstractDataSet >: public ConnectionInterface
+{
+public:
+
+protected:
+};
+
+//******************************************************************************
+
 
 }/*namespace Imaging*/
 }/*namespace M4D*/

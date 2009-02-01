@@ -20,7 +20,9 @@ namespace M4D
 {
 namespace Imaging
 {
+//******************************************************************************
 
+//******************************************************************************
 template< typename PortType >
 PortType&
 InputPortList::GetPortTyped( size_t idx )const
@@ -34,6 +36,7 @@ InputPortList::GetPortTypedSafe( size_t idx )const
 {
 	return dynamic_cast< PortType* >( &(GetPort( idx )) );
 }
+//******************************************************************************
 
 template< typename PortType >
 PortType&

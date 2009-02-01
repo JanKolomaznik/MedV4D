@@ -207,7 +207,7 @@ PipelineContainer::MakeInputConnection(  M4D::Imaging::AbstractPipeFilter& consu
 }
 
 ConnectionInterface &
-PipelineContainer::MakeInputConnection(  M4D::Imaging::AbstractPipeFilter& consumer, unsigned consumerPortNumber, AbstractDataSet::ADataSetPtr dataset )
+PipelineContainer::MakeInputConnection(  M4D::Imaging::AbstractPipeFilter& consumer, unsigned consumerPortNumber, AbstractDataSet::Ptr dataset )
 {
 	ConnectionInterface &conn =  MakeInputConnection( consumer.InputPort()[ consumerPortNumber ], false );
 	conn.PutDataset( dataset );
@@ -237,7 +237,7 @@ PipelineContainer::MakeOutputConnection( M4D::Imaging::AbstractPipeFilter& produ
 }
 
 ConnectionInterface &
-PipelineContainer::MakeOutputConnection( M4D::Imaging::AbstractPipeFilter& producer, unsigned producerPortNumber, AbstractDataSet::ADataSetPtr dataset )
+PipelineContainer::MakeOutputConnection( M4D::Imaging::AbstractPipeFilter& producer, unsigned producerPortNumber, AbstractDataSet::Ptr dataset )
 {
 	ConnectionInterface &conn = MakeOutputConnection( producer.OutputPort()[ producerPortNumber ], false );
 	conn.PutDataset( dataset );

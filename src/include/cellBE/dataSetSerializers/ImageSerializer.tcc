@@ -39,7 +39,7 @@ ImageSerializerBase<ElementType, dim>
 ///////////////////////////////////////////////////////////////////////////////
 
 template< typename ElementType, uint8 dim>
-M4D::Imaging::AbstractDataSet::ADataSetPtr
+M4D::Imaging::AbstractDataSet::Ptr
 ImageSerializerBase<ElementType, dim>
   ::DeSerializeProperties(M4D::CellBE::NetStream &s)
 {	
@@ -58,7 +58,7 @@ ImageSerializerBase<ElementType, dim>
 		return M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< TTYPE >( dim, minimums, maximums, elExtents )
 		);
 
-	return M4D::Imaging::AbstractDataSet::ADataSetPtr(); // TODO initialize
+	return M4D::Imaging::AbstractDataSet::Ptr(); // TODO initialize
 
 }
 

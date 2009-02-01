@@ -21,11 +21,11 @@ public:
 	/**
 	 * Creates data set based on atributes that reads from stream
 	 */
-	static AbstractDataSet::ADataSetPtr 
+	static AbstractDataSet::Ptr 
 	CreateDataSet(iAccessStream &stream);
 	
 private:	// helpers
-	static AbstractDataSet::ADataSetPtr 
+	static AbstractDataSet::Ptr 
 	CreateImage(iAccessStream &stream);
 };
 

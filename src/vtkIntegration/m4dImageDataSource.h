@@ -26,7 +26,7 @@ public:
 	vtkTypeRevisionMacro(m4dImageDataSource,vtkImageAlgorithm);
 
 	void
-	SetImageData( Imaging::AbstractImage::AImagePtr imageData );
+	SetImageData( Imaging::AbstractImage::Ptr imageData );
 
 	void
 	TemporarySetImageData( const Imaging::AbstractImage & imageData );
@@ -51,7 +51,7 @@ protected:
 		vtkInformationVector *
 		);
 
-	Imaging::AbstractImage::AImagePtr	_imageData;
+	Imaging::AbstractImage::Ptr	_imageData;
 	const Imaging::AbstractImage		*_tmpImageData;
 
 	int				_wholeExtent[6];

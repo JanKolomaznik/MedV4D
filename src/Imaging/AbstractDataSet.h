@@ -91,7 +91,7 @@ public:
 	/**
 	 * Smart pointer to AbstractDataSet.
 	 **/
-	typedef boost::shared_ptr< AbstractDataSet > ADataSetPtr;
+	typedef boost::shared_ptr< AbstractDataSet > Ptr;
 
 	class EAbstractDataSetCastProblem: public ErrorHandling::ExceptionCastProblem
 	{
@@ -139,7 +139,7 @@ public:
 	}*/
 
 	template< typename DatasetType >
-	static typename AbstractDataSet::ADataSetPtr
+	static typename AbstractDataSet::Ptr
 	CastDataSet( boost::shared_ptr< DatasetType > & dataset )
 	{
 		if( dynamic_cast< DatasetType * >( dataset.get() ) == NULL ) {

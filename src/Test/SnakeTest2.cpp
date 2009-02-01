@@ -46,7 +46,7 @@ main( int argc, char **argv )
 	string inFilename2 = "CircleSmoothLaplace.dump";
 
 	//std::cout << "Loading file..."; std::cout.flush();
-	M4D::Imaging::AbstractImage::AImagePtr aimage = 
+	M4D::Imaging::AbstractImage::Ptr aimage = 
 			M4D::Imaging::ImageFactory::LoadDumpedImage( inFilename1 );
 
 	ImageType::Ptr image = ImageType::CastAbstractImage( aimage );

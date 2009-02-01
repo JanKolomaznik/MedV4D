@@ -196,7 +196,7 @@ ServerJob::EndDataSetPropertiesRead( const boost::system::error_code& error)
     m_filterSettingContent.size());
 
     // create the dataSet
-    AbstractDataSet::ADataSetPtr inputDataSet;
+    AbstractDataSet::Ptr inputDataSet;
     GeneralDataSetSerializer::DeSerializeDataSetProperties( 
       &m_inDataSetSerializer, &inputDataSet, s);
 

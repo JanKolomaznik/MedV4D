@@ -32,7 +32,7 @@ class AbstractImageConnectionInterface : public ConnectionInterface
 {
 public:
 	void
-	PutDataset( AbstractDataSet::ADataSetPtr dataset ) 
+	PutDataset( AbstractDataSet::Ptr dataset ) 
 		{
 			if( dynamic_cast<  M4D::Imaging::AbstractImage* >( dataset.get() ) == NULL ){
 				//TODO exception
@@ -41,7 +41,7 @@ public:
 		}
 
 	virtual void
-	PutImage( M4D::Imaging::AbstractImage::AImagePtr image )=0;
+	PutImage( M4D::Imaging::AbstractImage::Ptr image )=0;
 	
 	virtual const AbstractImage &
 	GetAbstractImageReadOnly()const = 0;
@@ -90,7 +90,7 @@ public:
 	ConnectProducer( OutputPort& outputPort );
 	
 	void
-	PutImage( M4D::Imaging::AbstractImage::AImagePtr image );
+	PutImage( M4D::Imaging::AbstractImage::Ptr image );
 	
 	virtual const AbstractImage &
 	GetAbstractImageReadOnly()const;
@@ -106,7 +106,7 @@ public:
 			float32		/*elementExtents*/[]
 		    ){ _THROW_ ErrorHandling::ETODO( "SetImage() not implemented." ); }
 protected:
-	AbstractImage::AImagePtr _image;
+	AbstractImage::Ptr _image;
 };
 
 //We prohibit general usage - only specialized templates used.
@@ -138,7 +138,7 @@ public:
 	PutImage( typename M4D::Imaging::Image< ElementType, dimension >::Ptr image );
 	
 	void
-	PutImage( M4D::Imaging::AbstractImage::AImagePtr image );
+	PutImage( M4D::Imaging::AbstractImage::Ptr image );
 
 	Image &
 	GetImage()const 

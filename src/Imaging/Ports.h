@@ -228,6 +228,7 @@ private:
 
 };
 
+//******************************************************************************
 template< typename DatasetType >
 class InputPortTyped: public InputPortTyped< typename DatasetType::PredecessorType >
 {
@@ -248,6 +249,13 @@ protected:
 	
 };
 
+template<>
+class InputPortTyped< AbstractDataSet >: public InputPort
+{
+
+};
+
+//******************************************************************************
 template< typename DatasetType >
 class OutputPortTyped: public OutputPortTyped< typename DatasetType::PredecessorType >
 {
@@ -268,6 +276,11 @@ protected:
 
 };
 
+template<>
+class OutputPortTyped< AbstractDataSet >: public OutputPort
+{
+
+};
 //******************************************************************************
 
 class PortList: public MessageSenderInterface

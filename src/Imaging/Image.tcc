@@ -154,7 +154,7 @@ Image< ElementType, 2 >::CastAbstractImage( const AbstractImage & image )
 
 template< typename ElementType >
 typename Image< ElementType, 2 >::Ptr 
-Image< ElementType, 2 >::CastAbstractImage( AbstractImage::AImagePtr & image )
+Image< ElementType, 2 >::CastAbstractImage( AbstractImage::Ptr & image )
 {
 	if( dynamic_cast< Image< ElementType, Dimension > * >( image.get() ) == NULL ) {
 		//TODO _THROW_ exception
@@ -717,7 +717,7 @@ Image< ElementType, 3 >::CastAbstractImage( const AbstractImage & image )
 
 template< typename ElementType >
 typename Image< ElementType, 3 >::Ptr 
-Image< ElementType, 3 >::CastAbstractImage( AbstractImage::AImagePtr & image )
+Image< ElementType, 3 >::CastAbstractImage( AbstractImage::Ptr & image )
 {
 	if( dynamic_cast< Image< ElementType, Dimension > * >( image.get() ) == NULL ) {
 		_THROW_ ErrorHandling::ExceptionCastProblem( "Cannot cast abstract image to this type." );

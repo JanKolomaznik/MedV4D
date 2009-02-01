@@ -33,7 +33,7 @@ void
 mainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
 {
 	try {
-		AbstractImage::AImagePtr inputImage = ImageFactory::CreateImageFromDICOM( dicomObjSet );
+		AbstractImage::Ptr inputImage = ImageFactory::CreateImageFromDICOM( dicomObjSet );
 
 
 		_inConnection->PutImage( inputImage );

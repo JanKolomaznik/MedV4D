@@ -60,7 +60,7 @@ public:
 	 * @return Smart pointer to abstract ancestor of created image.
 	 **/
 	template< typename ElementType >
-	static AbstractImage::AImagePtr 
+	static AbstractImage::Ptr 
 	CreateEmptyImageFromExtents( 
 			uint32		dim,
 			int32		minimums[], 
@@ -79,7 +79,7 @@ public:
 	 * @return Smart pointer to abstract ancestor of created image.
 	 **/
 	template< typename ElementType >
-	static AbstractImage::AImagePtr 
+	static AbstractImage::Ptr 
 	CreateEmptyImage2D( 
 			uint32		width, 
 			uint32		height,
@@ -130,7 +130,7 @@ public:
 	 * @return Smart pointer to abstract ancestor of created image.
 	 **/
 	template< typename ElementType >
-	static AbstractImage::AImagePtr 
+	static AbstractImage::Ptr 
 	CreateEmptyImage3D( 
 			uint32		width, 
 			uint32		height, 
@@ -273,10 +273,10 @@ public:
 	static void
 	DumpImage( std::string filename, const AbstractImage & image );
 
-	static AbstractImage::AImagePtr
+	static AbstractImage::Ptr
 	LoadDumpedImage( std::istream &stream );
 
-	static AbstractImage::AImagePtr
+	static AbstractImage::Ptr
 	LoadDumpedImage( std::string filename );
 	
 	/**

@@ -199,7 +199,7 @@ DcmProvider::GetImageSet(
 
 ///////////////////////////////////////////////////////////////////////
 
-AbstractImage::AImagePtr 
+AbstractImage::Ptr 
 DcmProvider::CreateImageFromDICOM( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects )
 {
 	//TODO exceptions
@@ -209,7 +209,7 @@ DcmProvider::CreateImageFromDICOM( M4D::Dicom::DcmProvider::DicomObjSetPtr dicom
 	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
 			data->GetElementTypeID(), imagePtr = new Image< TTYPE, 3 >( data ) );
 
-	return AbstractImage::AImagePtr( imagePtr );
+	return AbstractImage::Ptr( imagePtr );
 }
 
 ///////////////////////////////////////////////////////////////////////

@@ -38,7 +38,7 @@ main( int argc, char **argv )
 	std::string outFilename = outFilenameArg.getValue();
 
 	std::cout << "Loading file..."; std::cout.flush();
-	M4D::Imaging::AbstractImage::AImagePtr image = 
+	M4D::Imaging::AbstractImage::Ptr image = 
 			M4D::Imaging::ImageFactory::LoadDumpedImage( inFilename );
 	std::cout << "Done\n";
 

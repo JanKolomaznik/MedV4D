@@ -635,7 +635,7 @@ void m4dGUIMainWindow2::delegateAction ( unsigned actionIdx, m4dGUIAbstractViewe
 
 void m4dGUIMainWindow2::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
 {
-  AbstractImage::AImagePtr inputImage = M4D::Dicom::DcmProvider::CreateImageFromDICOM( dicomObjSet );
+  AbstractImage::Ptr inputImage = M4D::Dicom::DcmProvider::CreateImageFromDICOM( dicomObjSet );
 
 	try {
     AbstractImageConnection *conn = new AbstractImageConnection();

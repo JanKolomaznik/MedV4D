@@ -10,14 +10,14 @@ using namespace M4D::Imaging;
 typedef Image< int16, 3 > ImageType;
 
 template< typename ElementType >
-M4D::Imaging::AbstractImage::AImagePtr
+M4D::Imaging::AbstractImage::Ptr
 GetSlice( typename M4D::Imaging::Image<ElementType, 3>::Ptr image, int slice )
 {
 	return image->GetRestrictedImage( image->GetRegion().GetSlice( slice ) );
 }
 
 template< typename ImageType >
-M4D::Imaging::AbstractImage::AImagePtr
+M4D::Imaging::AbstractImage::Ptr
 CropImage( typename ImageType::Ptr image, const std::vector<int> &firstCorner, const std::vector<int> &secondCorner )
 {
 	typedef Coordinates< int, ImageTraits< ImageType >::Dimension > CornerType;
@@ -67,11 +67,11 @@ main( int argc, char **argv )
 
 
 	std::cout << "Loading file..."; std::cout.flush();
-	M4D::Imaging::AbstractImage::AImagePtr image = 
+	M4D::Imaging::AbstractImage::Ptr image = 
 			M4D::Imaging::ImageFactory::LoadDumpedImage( inFilename );
 	std::cout << "Done\n";
 
-	//M4D::Imaging::AbstractImage::AImagePtr outImage;
+	//M4D::Imaging::AbstractImage::Ptr outImage;
 	
 	if( sliceNumber.isSet() ) {
 		if( image->GetDimension() > 2 ) {

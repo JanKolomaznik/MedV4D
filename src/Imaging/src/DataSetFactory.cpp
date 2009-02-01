@@ -9,7 +9,7 @@
 using namespace M4D::ErrorHandling;
 using namespace M4D::Imaging;
 
-AbstractDataSet::ADataSetPtr
+AbstractDataSet::Ptr
 DataSetFactory::CreateDataSet(iAccessStream &stream)
 {
 	uint8 dsType;
@@ -26,13 +26,13 @@ DataSetFactory::CreateDataSet(iAccessStream &stream)
 		ASSERT(false);
 	}
 	//return 1;	// program shall never go here
-	return AbstractDataSet::ADataSetPtr();
+	return AbstractDataSet::Ptr();
 }
 
-AbstractDataSet::ADataSetPtr
+AbstractDataSet::Ptr
 DataSetFactory::CreateImage(iAccessStream &stream)
 {
-	AbstractDataSet::ADataSetPtr ds;
+	AbstractDataSet::Ptr ds;
 	
 	uint16 dim, elemType;
 	stream >> elemType >> dim;   // get class properties

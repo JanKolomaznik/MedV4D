@@ -49,7 +49,7 @@ AbstractImageConnection
 
 void
 AbstractImageConnection
-::PutImage( M4D::Imaging::AbstractImage::AImagePtr image )
+::PutImage( M4D::Imaging::AbstractImage::Ptr image )
 {
 	if( !image ) {
 		_THROW_ AbstractImageConnectionInterface::EInvalidImage();

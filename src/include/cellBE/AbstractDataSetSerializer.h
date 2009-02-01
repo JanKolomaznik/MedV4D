@@ -73,7 +73,7 @@ public:
    *  has been already performed. So pnly ACS should be performed
    *  here. It returns right dataSet instance in shared_pointer.
    */
-  virtual M4D::Imaging::AbstractDataSet::ADataSetPtr
+  virtual M4D::Imaging::AbstractDataSet::Ptr
     DeSerializeProperties( M4D::CellBE::NetStream &s) = 0;
 
 	/**

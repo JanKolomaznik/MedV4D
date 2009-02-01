@@ -31,7 +31,7 @@ int main ( int argc, char *argv[] )
 	//M4D::Imaging::Image<uint16, 2>::Ptr im = CreateTestImage(64, 64);
 	try {
 		
-		M4D::Imaging::AbstractDataSet::ADataSetPtr im;
+		M4D::Imaging::AbstractDataSet::Ptr im;
 		if(argc > 1)
 		{
 			FileStream s(argv[1], MODE_READ);

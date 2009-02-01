@@ -24,7 +24,7 @@ mainWindow::mainWindow ()
 
 void mainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
 {
-	AbstractImage::AImagePtr inputImage = M4D::Dicom::DcmProvider::CreateImageFromDICOM( dicomObjSet );
+	AbstractImage::Ptr inputImage = M4D::Dicom::DcmProvider::CreateImageFromDICOM( dicomObjSet );
 
 	try {
     AbstractImageConnection *conn = new AbstractImageConnection();
