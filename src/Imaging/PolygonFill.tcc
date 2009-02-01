@@ -143,6 +143,7 @@ struct FillFunctor
 
 	M4D::Imaging::ImageRegion< ElementType, 2 >	&_region;
 	ElementType					_value;
+	bool						_withBorder;
 };
 
 template< typename ElementType >

@@ -11,7 +11,7 @@ namespace Imaging
 {
 typedef ConvolutionMask< 2, float32 > ConvolutionMask2DFloat;
 
-ConvolutionMask2DFloat::Ptr
+inline ConvolutionMask2DFloat::Ptr
 CreateGaussianFilterMask( uint32 radius )
 {
 	uint32 pom[2];

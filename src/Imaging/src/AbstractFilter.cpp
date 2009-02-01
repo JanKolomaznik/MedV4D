@@ -269,6 +269,18 @@ AbstractPipeFilter::ExecuteOnWhole()
 		new Multithreading::Thread( MainExecutionThread( this, RECALCULATION ) );
 }
 
+void
+AbstractPipeFilter::ReleaseInputDataSet( uint32 idx )const
+{
+	_inputPorts[ idx ].ReleaseDatasetLock();
+}
+
+void
+AbstractPipeFilter::ReleaseOutputDataSet( uint32 idx )const
+{
+	_outputPorts[ idx ].ReleaseDatasetLock();
+}
+
 bool
 AbstractPipeFilter::StopExecution()
 {

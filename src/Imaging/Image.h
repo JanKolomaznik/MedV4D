@@ -60,6 +60,7 @@ public:
 	 * Type of "this" class.
 	 **/
 	typedef Image< ElementType, 2 >			ThisClass;
+	typedef AbstractImageDim< 2 >			PredecessorType;
 
 	/**
 	 * Dataset contained in this class.
@@ -257,6 +258,7 @@ public:
 	 * Type of "this" class.
 	 **/
 	typedef Image< ElementType, 3 >		ThisClass;
+	typedef AbstractImageDim< 3 >		PredecessorType;
 
 	/**
 	 * Dataset contained in this class.
@@ -455,6 +457,7 @@ public:
 	 * Type of "this" class.
 	 **/
 	typedef Image< ElementType, 4 >		ThisClass;
+	typedef AbstractImageDim< 4 >		PredecessorType;
 
 	/**
 	 * Dataset contained in this class.

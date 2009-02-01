@@ -25,11 +25,11 @@ SettingsBox
 		QPushButton *button;
 		layout = new QVBoxLayout;
 		
-		button = new QPushButton( tr( "ManualSegmentation" ) );
+		button = new QPushButton( tr( "Manual Segmentation" ) );
 		layout->addWidget( button );
 		QObject::connect( button, SIGNAL(clicked()), this, SLOT( SetToManualSegmentation()) );
 
-		button = new QPushButton( tr( "KidneySegmentation" ) );
+		button = new QPushButton( tr( "Kidney Segmentation" ) );
 		layout->addWidget( button );
 		QObject::connect( button, SIGNAL(clicked()), this, SLOT( SetToKidneySegmentation()) );
 
@@ -44,10 +44,11 @@ SettingsBox
 		QPushButton *button;
 		layout = new QVBoxLayout;
 		button = new QPushButton( tr( "Finished" ) );
-		layout->addWidget( button );
-		layout->addStretch( 5 );
 		/*QObject::connect( button, SIGNAL(clicked()),
 			this, SLOT( SetToManualSegmentation()) );*/
+		layout->addWidget( button );
+
+		layout->addStretch( 5 );
 
 		_manualSegmSettings->setLayout(layout);
 	}
@@ -59,11 +60,12 @@ SettingsBox
 		QPushButton *button;
 		layout = new QVBoxLayout;
 		button = new QPushButton( tr( "Finished" ) );
+		QObject::connect( button, SIGNAL(clicked()),
+			this, SLOT( FinishedUserInputKidneySeg()) );
 		layout->addWidget( button );
-		layout->addStretch( 5 );
-		/*QObject::connect( button, SIGNAL(clicked()),
-			this, SLOT( SetToManualSegmentation()) );*/
 
+		layout->addStretch( 5 );
+		
 		_kidneySegmSettings->setLayout(layout);
 	}
 	addWidget( _kidneySegmSettings );
@@ -138,5 +140,13 @@ SettingsBox
 	
 	emit SetSegmentationSignal( stKIDNEYS );
 	setCurrentWidget( _kidneySegmSettings );
+}
+
+void
+SettingsBox
+::FinishedUserInputKidneySeg()
+{
+	KidneySegmentationManager::UserInputFinished();
+
 }
 

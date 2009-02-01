@@ -57,6 +57,7 @@ struct DimensionExtents
 class AbstractImage : public AbstractDataSet
 {
 public:
+	typedef AbstractDataSet		PredecessorType;
 	/**
 	 * Smart pointer to this class.
 	 **/
@@ -115,6 +116,7 @@ template<>
 class AbstractImageDim< 2 > : public AbstractImage
 {
 public:
+	typedef AbstractImage		PredecessorType;
 	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( 2, dimExtents ) {}
 };
 
@@ -122,6 +124,7 @@ template<>
 class AbstractImageDim< 3 > : public AbstractImage
 {
 public:
+	typedef AbstractImage		PredecessorType;
 	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( 3, dimExtents ) {}
 
 };
@@ -130,6 +133,7 @@ template<>
 class AbstractImageDim< 4 > : public AbstractImage
 {
 public:
+	typedef AbstractImage		PredecessorType;
 	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( 4, dimExtents ) {}
 
 };

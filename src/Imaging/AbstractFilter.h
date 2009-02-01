@@ -300,6 +300,20 @@ public:
 	OutputPort()const
 		{ return _outputPorts; }
 	
+	template< typename DatasetType >
+	const DatasetType&
+	GetInputDataSet( uint32 idx )const;
+
+	void
+	ReleaseInputDataSet( uint32 idx )const;
+
+	template< typename DatasetType >
+	DatasetType &
+	GetOutputDataSet( uint32 idx )const;
+
+	void
+	ReleaseOutputDataSet( uint32 idx )const;
+
 	/**
 	 * Start computing only on modified data.
 	 * Asynchronous method.
@@ -490,6 +504,24 @@ private:
 	PROHIBIT_COPYING_OF_OBJECT_MACRO( AbstractPipeFilter );
 
 };
+
+typedef AbstractPipeFilter APipeFilter;
+
+template< typename DatasetType >
+const DatasetType&
+AbstractPipeFilter::GetInputDataSet( uint32 idx )const
+{
+	_inputPorts[ idx ].LockDataset();
+	return dynamic_cast< const DatasetType& >( _inputPorts.GetPort( idx ).GetDataset() );
+}
+
+template< typename DatasetType >
+DatasetType &
+AbstractPipeFilter::GetOutputDataSet( uint32 idx )const
+{
+	_outputPorts[ idx ].LockDataset();
+	return dynamic_cast< DatasetType& >( _outputPorts.GetPort( idx ).GetDataset() );
+}
 
 }/*namespace Imaging*/
 }/*namespace M4D*/

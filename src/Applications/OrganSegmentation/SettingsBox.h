@@ -28,6 +28,9 @@ protected slots:
 
 	void
 	SetToKidneySegmentation();
+
+	void
+	FinishedUserInputKidneySeg();
 protected:
 	void
 	CreateWidgets();

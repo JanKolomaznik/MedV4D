@@ -33,7 +33,7 @@ m4dGUISliceViewerWidget2::specialStateSelectMethodLeft( double x, double y, doub
 	if( _specialState ) {
 		resolveFlips( x, y );
 		int sliceNum = z/_extents[2];
-		_specialState->SelectMethodLeft( x/*_extents[0]*/, y/*_extents[1]*/, sliceNum, _zoomRate );
+		_specialState->SelectMethodLeft( x + _extents[0]*_minimum[0], y + _extents[1]*_minimum[1], sliceNum, _zoomRate );
 	}
 }
 
@@ -43,7 +43,7 @@ m4dGUISliceViewerWidget2::specialStateSelectMethodRight( double x, double y, dou
 	if( _specialState ) {
 		resolveFlips( x, y );
 		int sliceNum = z/_extents[2];
-		_specialState->SelectMethodRight( x/*_extents[0]*/, y/*_extents[1]*/, sliceNum, _zoomRate );
+		_specialState->SelectMethodRight( x + _extents[0]*_minimum[0], y + _extents[1]*_minimum[1], sliceNum, _zoomRate );
 	}
 }
 
@@ -51,7 +51,13 @@ void
 m4dGUISliceViewerWidget2::drawSliceAdditionals( int sliceNum, double zoomRate )
 {
 	if( _specialState ) {
+		glPushMatrix();
+
+		glTranslatef( -_extents[0]*_minimum[0], -_extents[1]*_minimum[1], 0.0f );
+
 		_specialState->Draw( *this, sliceNum, zoomRate );
+		
+		glPopMatrix();
 	}
 	PredecessorType::drawSliceAdditionals( sliceNum, zoomRate );
 }

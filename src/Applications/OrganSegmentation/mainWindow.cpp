@@ -16,8 +16,8 @@ mainWindow::mainWindow ()
 	Q_INIT_RESOURCE( mainWindow ); 
 
 
-	mainViewerDesktop->setDefaultConnection( MainManager::GetInputConnection().get() );
-	//mainViewerDesktop->setConnectionForAll( mainViewerDesktop->getDefaultConnection() );
+	mainViewerDesktop->setDefaultConnection( MainManager::GetInputConnection() );
+	mainViewerDesktop->setConnectionForAll( mainViewerDesktop->getDefaultConnection() );
 
 	// add your own settings widgets
 	_settings = new SettingsBox( this );
@@ -36,7 +36,7 @@ mainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
 {
 	MainManager::InitInput( dicomObjSet );
 
-	mainViewerDesktop->setConnectionForAll( mainViewerDesktop->getDefaultConnection() );
+	//mainViewerDesktop->setConnectionForAll( mainViewerDesktop->getDefaultConnection() );
 
 	/*AbstractImage::AImagePtr inputImage = ImageFactory::CreateImageFromDICOM( dicomObjSet );
 
@@ -61,12 +61,12 @@ mainWindow::SetSegmentationSlot( uint32 segType )
 {
 	switch( segType ) {
 	case stMANUAL:
-		_segmentationWidget->Activate( ManualSegmentationManager::GetInputConnection().get(), ManualSegmentationManager::GetSpecialState() );
+		_segmentationWidget->Activate( ManualSegmentationManager::GetInputConnection(), ManualSegmentationManager::GetSpecialState() );
 
 		stackWidget->setCurrentWidget( _segmentationWidget );
 		break;
 	case stKIDNEYS:
-		_segmentationWidget->Activate( KidneySegmentationManager::GetInputConnection().get(), KidneySegmentationManager::GetSpecialState() );
+		_segmentationWidget->Activate( KidneySegmentationManager::GetInputConnection(), KidneySegmentationManager::GetSpecialState() );
 
 		stackWidget->setCurrentWidget( _segmentationWidget );
 		break;

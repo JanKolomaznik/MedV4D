@@ -35,14 +35,14 @@ template< uint32 InCount, uint32 OutCount >
 void 
 AbstractMultiImageFilter< InCount, OutCount >::ReleaseInputImage( uint32 idx )const
 {
-	_inputPorts[ idx ].ReleaseDatasetLock();
+	this->ReleaseInputDataSet( idx );
 }
 
 template< uint32 InCount, uint32 OutCount >
 void
 AbstractMultiImageFilter< InCount, OutCount >::ReleaseOutputImage( uint32 idx )const
 {
-	_outputPorts[ idx ].ReleaseDatasetLock();
+	this->ReleaseOutputDataSet( idx );
 }
 
 template< uint32 InCount, uint32 OutCount >

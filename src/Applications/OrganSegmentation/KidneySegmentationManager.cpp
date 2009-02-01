@@ -2,12 +2,13 @@
 #include "KidneySegmentationManager.h"
 #include "Imaging.h"
 #include <cmath>
+#include "SnakeSegmentationFilter.h"
 
 using namespace M4D;
 using namespace M4D::Imaging;
 using namespace M4D::Imaging::Geometry;
 
-ImageConnectionPtr				KidneySegmentationManager::_inConnection;
+ImageConnectionType *				KidneySegmentationManager::_inConnection;
 M4D::Viewer::SliceViewerSpecialStateOperatorPtr KidneySegmentationManager::_specialState;
 InputImagePtr				 	KidneySegmentationManager::_inputImage;
 GDataSet::Ptr					KidneySegmentationManager::_dataset;
@@ -148,7 +149,7 @@ KidneySegmentationManager::Initialize()
 	}
 	
 	_inputImage = MainManager::GetInputImage();
-	_inConnection = ImageConnectionPtr( new M4D::Imaging::AbstractImageConnection() );
+	_inConnection = new ImageConnectionType( false );
 	_inConnection->PutImage( _inputImage );
 
 	int32 min = _inputImage->GetDimensionExtents(2).minimum;
@@ -165,4 +166,27 @@ KidneySegmentationManager::Finalize()
 
 }
 
+void
+KidneySegmentationManager::UserInputFinished()
+{
+	float32 sX = _inputImage->GetDimensionExtents(0).elementExtent;
+	float32 sY = _inputImage->GetDimensionExtents(1).elementExtent;
+	InputImageType::PointType pom( 35, 35, 0 );
+	InputImageType::PointType minP( 
+				Min(_poles[0].coordinates[0]/sX,_poles[1].coordinates[0]/sX),
+				Min(_poles[0].coordinates[1]/sY,_poles[1].coordinates[1]/sY),
+				Min(_poles[0].slice,_poles[1].slice)
+				);
+	minP -= pom;
+	InputImageType::PointType maxP( 
+				Max(_poles[0].coordinates[0]/sX,_poles[1].coordinates[0]/sX),
+				Max(_poles[0].coordinates[1]/sY,_poles[1].coordinates[1]/sY),
+				Max(_poles[0].slice,_poles[1].slice) + 1
+				);
+	maxP += pom;
+	_inputImage = _inputImage->GetRestrictedImage( 
+			_inputImage->GetSubRegion( minP, maxP )
+			);
+	_inConnection->PutImage( _inputImage );
+}
 

@@ -175,6 +175,9 @@ public:
 	void
 	UnPlug( bool onlyYourself = false );
 
+	virtual	const AbstractDataSet&
+	GetDataset()const = 0;
+
 	void
 	SendMessage( 
 		PipelineMessage::Ptr 			msg, 
@@ -205,6 +208,9 @@ public:
 	void
 	UnPlug( bool onlyYourself = false );
 	
+	virtual	AbstractDataSet&
+	GetDataset()const = 0;
+
 	void
 	SendMessage( 
 		PipelineMessage::Ptr 			msg, 
@@ -222,6 +228,45 @@ private:
 
 };
 
+template< typename DatasetType >
+class InputPortTyped: public InputPortTyped< typename DatasetType::PredecessorType >
+{
+public:
+	InputPortTyped() {}
+
+	const DatasetType&
+	GetDatasetTyped()const;
+
+	const AbstractDataSet&
+	GetDataset()const
+		{ return GetDatasetTyped(); }
+
+	void
+	Plug( ConnectionInterface & connection );
+
+protected:
+	
+};
+
+template< typename DatasetType >
+class OutputPortTyped: public OutputPortTyped< typename DatasetType::PredecessorType >
+{
+public:
+	OutputPortTyped() {}
+
+	DatasetType&
+	GetDatasetTyped()const;
+
+	AbstractDataSet&
+	GetDataset()const
+		{ return GetDatasetTyped(); }
+
+	void
+	Plug( ConnectionInterface & connection );
+
+protected:
+
+};
 
 //******************************************************************************
 

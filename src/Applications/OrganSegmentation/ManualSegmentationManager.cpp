@@ -9,7 +9,7 @@ using namespace M4D::Imaging::Geometry;
 typedef BSpline< float32, 2 >			CurveType;
 typedef CurveType::PointType			PointType;
 
-ImageConnectionPtr				ManualSegmentationManager::_inConnection;
+ImageConnectionType *				ManualSegmentationManager::_inConnection;
 M4D::Viewer::SliceViewerSpecialStateOperatorPtr ManualSegmentationManager::_specialState;
 InputImagePtr				 	ManualSegmentationManager::_inputImage;
 GDataSet::Ptr					ManualSegmentationManager::_dataset;
@@ -148,7 +148,7 @@ ManualSegmentationManager::Initialize()
 	}
 	
 	_inputImage = MainManager::GetInputImage();
-	_inConnection = ImageConnectionPtr( new M4D::Imaging::AbstractImageConnection() );
+	_inConnection = new ImageConnectionType( false );
 	_inConnection->PutImage( _inputImage );
 
 	int32 min = _inputImage->GetDimensionExtents(2).minimum;

@@ -29,7 +29,10 @@ public:
 	static void
 	Finalize();
 
-	static ImageConnectionPtr
+	static void
+	UserInputFinished();
+
+	static ImageConnectionType *
 	GetInputConnection()
 		{ return _inConnection; }
 
@@ -39,7 +42,7 @@ public:
 		return _specialState;
 	}
 protected:
-	static ImageConnectionPtr				_inConnection;
+	static ImageConnectionType				*_inConnection;
 	static M4D::Viewer::SliceViewerSpecialStateOperatorPtr 	_specialState;
 	static InputImagePtr				 	_inputImage;
 	static GDataSet::Ptr					_dataset;

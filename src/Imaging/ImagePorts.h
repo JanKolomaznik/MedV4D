@@ -42,6 +42,9 @@ public:
 	const AbstractImage&
 	GetAbstractImage()const;
 
+	const AbstractDataSet&
+	GetDataset()const
+		{ return GetAbstractImage(); }
 	void
 	Plug( ConnectionInterface & connection );
 
@@ -64,6 +67,10 @@ public:
 
 	AbstractImage&
 	GetAbstractImage()const;
+
+	AbstractDataSet&
+	GetDataset()const
+		{ return GetAbstractImage(); }
 
 	void
 	Plug( ConnectionInterface & connection );
@@ -100,6 +107,10 @@ public:
 	const ImageType&
 	GetImage()const;
 	
+	const AbstractDataSet&
+	GetDataset()const
+		{ return GetImage(); }
+
 	void
 	Plug( ConnectionInterface & connection );
 
@@ -130,6 +141,10 @@ public:
 	//TODO - check const modifier
 	ImageType&
 	GetImage()const;
+
+	AbstractDataSet&
+	GetDataset()const
+		{ return GetImage(); }
 
 	/*void
 	SetImageSize( 

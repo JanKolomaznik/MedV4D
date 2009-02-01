@@ -146,6 +146,12 @@ public:
 			return *_image;
 		}
 
+	typename Image::Ptr
+	GetImagePtr()const 
+		{ if( !_image ) { _THROW_ AbstractImageConnectionInterface::ENoImageAssociated(); }
+			return _image;
+		}
+
 	const Image &
 	GetImageReadOnly()const
 		{ if( !_image ) { _THROW_ AbstractImageConnectionInterface::ENoImageAssociated(); }
