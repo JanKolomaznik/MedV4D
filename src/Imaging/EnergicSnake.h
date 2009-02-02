@@ -320,8 +320,8 @@ template< typename ContourType, typename EnergyModel >
 float32
 EnergicSnake< ContourType, EnergyModel >
 ::GradientScalarProduct( 
-		const EnergicSnake< ContourType, EnergyModel >::GradientType &v1, 
-		const EnergicSnake< ContourType, EnergyModel >::GradientType &v2 )
+		const typename EnergicSnake< ContourType, EnergyModel >::GradientType &v1, 
+		const typename EnergicSnake< ContourType, EnergyModel >::GradientType &v2 )
 {
 	float32 product = 0.0;
 	for( size_t i=0; i < _gradient->Size(); ++i ) {

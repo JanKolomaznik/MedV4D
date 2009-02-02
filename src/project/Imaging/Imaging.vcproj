@@ -160,15 +160,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\src\ImageConnection.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Imaging\src\ImageFactory.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\src\ImagePorts.cpp"
 				>
 			</File>
 			<File
@@ -238,14 +230,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\AbstractImageSliceFilter.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\AbstractImageSliceFilter.tcc"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Imaging\AbstractMultiImageFilter.h"
 				>
 			</File>
@@ -262,6 +246,22 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\AGeometryDataSet.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\AGeometryDataSet2D.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\AImage.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\AImage.tcc"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\AImageSliceFilter.h"
 				>
 			</File>
@@ -270,7 +270,27 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\BSpline.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\BSpline.tcc"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\ConnectionInterface.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\ConnectionInterface.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\Convolution.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\Convolution.tcc"
 				>
 			</File>
 			<File
@@ -278,19 +298,39 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\DatasetDefinitionTools.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\DataSetFactory.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\EnergicSnake.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\ExampleImageFilters.h"
+				RelativePath="..\..\Imaging\EnergyModels.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\ExampleImageFilters.tcc"
+				RelativePath="..\..\Imaging\FilterComputation.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\GeometricAlgorithms.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\Imaging\GeometricalObject.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\GeometryDataSetFactory.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\iAccessStream.h"
 				>
 			</File>
 			<File
@@ -299,14 +339,6 @@
 			</File>
 			<File
 				RelativePath="..\..\Imaging\Image.tcc"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\ImageConnection.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\ImageConnection.tcc"
 				>
 			</File>
 			<File
@@ -330,19 +362,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\ImagePorts.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\ImagePorts.tcc"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Imaging\ImageRegion.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\Imaging\ImageTraits.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\Imaging.h"
 				>
 			</File>
 			<File
@@ -374,6 +402,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\PolygonFill.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\PolygonFill.tcc"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\Polyline.h"
 				>
 			</File>
@@ -398,11 +434,27 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\filters\GaussianFilter.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\filters\ImageConvertor.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\Imaging\filters\ImageConvertor.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\LaplaceOperator.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\MaskMedianFilter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\MaskSelection.h"
 				>
 			</File>
 			<File
@@ -414,11 +466,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\filters\SimpleMaxIntensityProjection.h"
+				RelativePath="..\..\Imaging\filters\SimpleProjection.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\filters\SimpleMaxIntensityProjection.tcc"
+				RelativePath="..\..\Imaging\filters\SobelEdgeDetector.h"
 				>
 			</File>
 			<File

@@ -21,7 +21,7 @@ ComputeFillIntervals( EdgeRecords & edgeRecords, IntervalRecords & intervals );
 
 template< typename CoordType >
 void
-PolygonFill( const M4D::Imaging::Geometry::Polyline< CoordType, 2 > & polygon, IntervalRecords & intervals, float32 xScale = 1.0f, float32 yScale = 1.0f )
+PolygonFill( const M4D::Imaging::Geometry::Polyline< CoordType, 2 > & polygon, IntervalRecords & intervals, float32 xScale, float32 yScale )
 {
 	EdgeRecords edgeRecords;
 	

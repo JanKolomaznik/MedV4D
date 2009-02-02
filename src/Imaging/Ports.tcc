@@ -62,7 +62,7 @@ bool
 InputPortTyped< DatasetType >
 ::IsConnectionCompatible( ConnectionInterface &conn )
 { 
-	return dynamic_cast< IdealConnectionInterface * >( &conn ); 
+	return dynamic_cast< IdealConnectionInterface * >( &conn ) != NULL; 
 }
 //******************************************************************************
 template< typename DatasetType >
@@ -106,7 +106,7 @@ bool
 OutputPortTyped< DatasetType >
 ::IsConnectionCompatible( ConnectionInterface &conn )
 { 
-	return dynamic_cast< IdealConnectionInterface * >( &conn ); 
+	return dynamic_cast< IdealConnectionInterface * >( &conn ) != NULL; 
 }
 //******************************************************************************
 template< typename PortType >

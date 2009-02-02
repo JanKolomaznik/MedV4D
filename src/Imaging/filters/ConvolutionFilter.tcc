@@ -29,7 +29,7 @@ ConvolutionFilter2D< ImageType, MatrixElement >
 
 template< typename ImageType, typename MatrixElement >
 ConvolutionFilter2D< ImageType, MatrixElement >
-::ConvolutionFilter2D( ConvolutionFilter2D< ImageType, MatrixElement >::Properties *prop ) 
+::ConvolutionFilter2D( typename ConvolutionFilter2D< ImageType, MatrixElement >::Properties *prop ) 
 : PredecessorType( prop ) 
 {
 
@@ -39,8 +39,8 @@ template< typename ImageType, typename MatrixElement >
 bool
 ConvolutionFilter2D< ImageType, MatrixElement >
 ::Process2D(
-		const ConvolutionFilter2D< ImageType, MatrixElement >::Region	&inRegion,
-		ConvolutionFilter2D< ImageType, MatrixElement >::Region 	&outRegion
+		const typename ConvolutionFilter2D< ImageType, MatrixElement >::Region	&inRegion,
+		typename ConvolutionFilter2D< ImageType, MatrixElement >::Region 	&outRegion
 		)
 {
 	try {

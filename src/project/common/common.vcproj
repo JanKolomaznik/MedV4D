@@ -175,7 +175,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\include\Coordinates.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\include\Debug.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\Endianess.h"
 				>
 			</File>
 			<File

@@ -223,7 +223,7 @@ public:
 protected:
 	
 	void
-	SampleWithFunctionValues( unsigned sampleFrequency, PointSet< CoordType, Dim > &points, const BSpline< CoordType, Dim >::BFValVector &values );
+	SampleWithFunctionValues( unsigned sampleFrequency, PointSet< CoordType, Dim > &points, const typename BSpline< CoordType, Dim >::BFValVector &values );
 
 	unsigned
 	SampleUniformSpline( unsigned firstPoint, PointSet< CoordType, Dim > &points, const BFValVector &values );

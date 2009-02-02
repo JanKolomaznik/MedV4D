@@ -49,7 +49,7 @@ SobelEdgeDetector< ImageType >
 
 template< typename ImageType >
 SobelEdgeDetector< ImageType >
-::SobelEdgeDetector( SobelEdgeDetector< ImageType >::Properties *prop ) 
+::SobelEdgeDetector( typename SobelEdgeDetector< ImageType >::Properties *prop ) 
 : PredecessorType( prop ) 
 {
 	CreateMatrices();
@@ -59,8 +59,8 @@ template< typename ImageType >
 bool
 SobelEdgeDetector< ImageType >
 ::Process2D(
-		const SobelEdgeDetector< ImageType >::Region	&inRegion,
-		SobelEdgeDetector< ImageType >::Region 		&outRegion
+		const typename SobelEdgeDetector< ImageType >::Region	&inRegion,
+		typename SobelEdgeDetector< ImageType >::Region 	&outRegion
 		)
 {
 	try {
@@ -143,7 +143,7 @@ SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits
 
 template< typename ImageType, typename OutType >
 SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
-::SobelGradientOperator( SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >::Properties *prop ) 
+::SobelGradientOperator( typename SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >::Properties *prop ) 
 : PredecessorType( prop ) 
 {
 	CreateMatrices();
@@ -153,8 +153,8 @@ template< typename ImageType, typename OutType >
 bool
 SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
 ::Process2D(
-		const SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >::IRegion	&inRegion,
-		SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >::ORegion 		&outRegion
+		const typename SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >::IRegion	&inRegion,
+		typename SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >::ORegion 		&outRegion
 		)
 {
 	try {

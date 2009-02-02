@@ -253,7 +253,7 @@ DcmProvider::CreateImageDataFromDICOM(
 		//Get parameters of final image.
 		uint32	width	= (*dicomObjects)[0].GetWidth();
 		uint32	height	= (*dicomObjects)[0].GetHeight();
-		uint32	depth	= dicomObjects->size();
+		uint32	depth	= (uint32)dicomObjects->size();
 		//Get extents of voxel.
 		float32 voxelWidth = 1.0;
 		float32 voxelHeight = 1.0;
