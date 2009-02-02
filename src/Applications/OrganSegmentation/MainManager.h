@@ -7,7 +7,7 @@
 typedef M4D::Imaging::AbstractImage::Ptr	AbstractImagePtr;
 typedef M4D::Imaging::Image< int16, 3 >	InputImageType;
 typedef InputImageType::Ptr	InputImagePtr;
-typedef M4D::Imaging::AbstractImageConnectionInterface	InImageConnection;
+typedef M4D::Imaging::ConnectionInterfaceTyped<AbstractImage>	InImageConnection;
 typedef M4D::Imaging::ImageConnection< InputImageType >	ImageConnectionType;
 
 class MainManager

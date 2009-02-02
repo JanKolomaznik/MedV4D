@@ -45,8 +45,8 @@ main( int argc, char **argv )
 	std::cout << "Initializing..."; std::cout.flush();
 	M4D::Imaging::PipelineContainer *container = NULL;
 	FinishHook  *hook = new FinishHook;
-	M4D::Imaging::AbstractImageConnectionInterface *inConnection = NULL;
-	M4D::Imaging::AbstractImageConnectionInterface *outConnection = NULL;
+	M4D::Imaging::ConnectionInterfaceTyped<AbstractImage> *inConnection = NULL;
+	M4D::Imaging::ConnectionInterfaceTyped<AbstractImage> *outConnection = NULL;
 	M4D::Imaging::AbstractPipeFilter *filter = NULL;
 	/*---------------------------------------------------------------------*/
 	

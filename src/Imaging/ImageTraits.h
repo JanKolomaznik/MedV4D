@@ -32,10 +32,12 @@ public:
 
 	static const unsigned	Dimension = 0;
 
-	typedef AbstractImageConnection		Connection;
-	typedef InputPortAbstractImage 		InputPort;
-	typedef OutputPortAbstractImage 		OutputPort;
-	typedef boost::shared_ptr< AbstractImage >	Ptr;
+	typedef	AbstractImage 		ClassName;
+	typedef ConnectionTyped< ClassName > 	Connection;
+	typedef ConnectionInterfaceTyped< ClassName > 	IConnection;
+	typedef InputPortTyped< ClassName > 	InputPort;
+	typedef OutputPortTyped< ClassName > 	OutputPort;
+	typedef boost::shared_ptr< ClassName >	Ptr;
 };
 
 template< unsigned Dim >
@@ -46,10 +48,12 @@ public:
 
 	static const unsigned	Dimension = Dim;
 
-	typedef AbstractImageConnection					Connection;
-	typedef InputPortAbstractImage 					InputPort;
-	typedef OutputPortAbstractImage 				OutputPort;
-	typedef typename boost::shared_ptr< AbstractImageDim< Dim > >	Ptr;
+	typedef	AbstractImageDim< Dim > 		ClassName;
+	typedef ConnectionTyped< ClassName > 	Connection;
+	typedef ConnectionInterfaceTyped< ClassName > 	IConnection;
+	typedef InputPortTyped< ClassName > 	InputPort;
+	typedef OutputPortTyped< ClassName > 	OutputPort;
+	typedef boost::shared_ptr< ClassName >	Ptr;
 };
 
 template< typename EType, unsigned Dim > 
@@ -59,11 +63,12 @@ public:
 	typedef EType	ElementType;
 
 	static const unsigned	Dimension = Dim;
-
-	typedef typename M4D::Imaging::ImageConnection< M4D::Imaging::Image< EType, Dim > > 		Connection;
-	typedef typename M4D::Imaging::InputPortImageFilter< M4D::Imaging::Image< EType, Dim > > 	InputPort;
-	typedef typename M4D::Imaging::OutputPortImageFilter< M4D::Imaging::Image< EType, Dim > > 	OutputPort;
-	typedef typename boost::shared_ptr< M4D::Imaging::Image< EType, Dim > >				Ptr;
+	typedef	Image< EType, Dim > 			ClassName;
+	typedef ConnectionTyped< ClassName > 	Connection;
+	typedef ConnectionInterfaceTyped< ClassName > 	IConnection;
+	typedef InputPortTyped< ClassName > 	InputPort;
+	typedef OutputPortTyped< ClassName > 	OutputPort;
+	typedef boost::shared_ptr< ClassName >	Ptr;
 };
 
 }/*namespace Imaging*/

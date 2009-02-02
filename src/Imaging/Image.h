@@ -56,11 +56,12 @@ class Image< ElementType, 2 >: public AbstractImageDim< 2 >
 {
 public:
 	friend class ImageFactory;
-	/**
-	 * Type of "this" class.
-	 **/
-	typedef Image< ElementType, 2 >			ThisClass;
-	typedef AbstractImageDim< 2 >			PredecessorType;
+
+	static const unsigned				Dimension = 2;
+
+	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( Image< ElementType, Dimension > );
+	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AbstractImageDim< Dimension > );
+	PREPARE_CAST_METHODS_MACRO;
 
 	/**
 	 * Dataset contained in this class.
@@ -68,16 +69,9 @@ public:
 	typedef ImageDataTemplate< ElementType >	DataSet;
 
 	/**
-	 * Smart pointer type for this class.
-	 **/
-	typedef boost::shared_ptr< ThisClass >		Ptr;
-
-	/**
 	 * Type of elements stored in this image.
 	 **/
 	typedef ElementType				Element;
-
-	static const unsigned				Dimension = 2;
 
 	typedef ImageIterator< Element, Dimension >	Iterator;
 
@@ -254,28 +248,23 @@ class Image< ElementType, 3 >: public AbstractImageDim< 3 >
 {
 public:
 	friend class ImageFactory;
-	/**
-	 * Type of "this" class.
-	 **/
-	typedef Image< ElementType, 3 >		ThisClass;
-	typedef AbstractImageDim< 3 >		PredecessorType;
+	
+	static const unsigned	Dimension = 3;
 
+	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( Image< ElementType, Dimension > );
+	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AbstractImageDim< Dimension > );
+	PREPARE_CAST_METHODS_MACRO;
+
+	
 	/**
 	 * Dataset contained in this class.
 	 **/
 	typedef ImageDataTemplate< ElementType >	DataSet;
 
 	/**
-	 * Smart pointer type for this class.
-	 **/
-	typedef boost::shared_ptr< ThisClass >	Ptr;
-
-	/**
 	 * Type of elements stored in this image.
 	 **/
 	typedef ElementType			Element;
-
-	static const unsigned	Dimension = 3;
 
 	typedef ImageIterator< Element, Dimension >	Iterator;
 
@@ -453,11 +442,12 @@ class Image< ElementType, 4 >: public AbstractImageDim< 4 >
 {
 public:
 	friend class ImageFactory;
-	/**
-	 * Type of "this" class.
-	 **/
-	typedef Image< ElementType, 4 >		ThisClass;
-	typedef AbstractImageDim< 4 >		PredecessorType;
+
+	static const unsigned	Dimension = 4;
+
+	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( Image< ElementType, Dimension > );
+	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AbstractImageDim< Dimension > );
+	PREPARE_CAST_METHODS_MACRO;
 
 	/**
 	 * Dataset contained in this class.
@@ -465,16 +455,9 @@ public:
 	typedef ImageDataTemplate< ElementType >	DataSet;
 
 	/**
-	 * Smart pointer type for this class.
-	 **/
-	typedef boost::shared_ptr< ThisClass >	Ptr;
-
-	/**
 	 * Type of elements stored in this image.
 	 **/
 	typedef ElementType			Element;
-
-	static const unsigned	Dimension = 4;
 
 	typedef ImageIterator< Element, Dimension >	Iterator;
 

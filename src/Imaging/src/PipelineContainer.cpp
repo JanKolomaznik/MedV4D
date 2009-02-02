@@ -6,7 +6,7 @@
  **/
 
 #include "Imaging/PipelineContainer.h"
-#include "Imaging/ImagePorts.h"
+#include "Imaging/Ports.h"
 
 #include <algorithm>
 
@@ -30,7 +30,20 @@ CreateConnectionObjectFromPorts( OutputPort& outPort, InputPort& inPort, bool ow
 	//TODO better exceptions
 	ConnectionInterface *connection = NULL;
 
-	try {
+	if( outPort.GetHierarchyDepth() > inPort.GetHierarchyDepth() ) {
+		connection = outPort.CreateIdealConnectionObject( ownsDataset );
+		if( !inPort.IsConnectionCompatible( *connection ) ) {
+			delete connection;
+			_THROW_ EAutoConnectingFailed();
+		}
+	} else {
+		connection = inPort.CreateIdealConnectionObject( ownsDataset );
+		if( !outPort.IsConnectionCompatible( *connection ) ) {
+			delete connection;
+			_THROW_ EAutoConnectingFailed();
+		}
+	}
+	/*try {
 		//checking if we have image ports
 		OutputPortAbstractImage & oPort = dynamic_cast< OutputPortAbstractImage &> ( outPort );
 		InputPortAbstractImage & iPort = dynamic_cast< InputPortAbstractImage &> ( inPort ); 
@@ -50,7 +63,7 @@ CreateConnectionObjectFromPorts( OutputPort& outPort, InputPort& inPort, bool ow
 	}	
 	catch ( ... ) {
 		_THROW_ EAutoConnectingFailed();
-	}
+	}*/
 
 	return connection;
 }
@@ -59,7 +72,8 @@ ConnectionInterface *
 CreateConnectionObjectFromInputPort( InputPort& inPort, bool ownsDataset )
 {
 	ConnectionInterface *connection = NULL;
-	try {
+	connection = inPort.CreateIdealConnectionObject( ownsDataset );
+	/*try {
 		InputPortAbstractImage & iPort = dynamic_cast< InputPortAbstractImage &> ( inPort ); 
 		
 		int typeID = iPort.ImageGetElementTypeID();
@@ -76,7 +90,7 @@ CreateConnectionObjectFromInputPort( InputPort& inPort, bool ownsDataset )
 	}	
 	catch ( ... ) {
 		_THROW_ EAutoConnectingFailed();
-	}
+	}*/
 	return connection;
 }
 
@@ -84,7 +98,8 @@ ConnectionInterface *
 CreateConnectionObjectFromOutputPort( OutputPort& outPort, bool ownsDataset )
 {
 	ConnectionInterface *connection = NULL;
-	try {
+	connection = outPort.CreateIdealConnectionObject( ownsDataset );
+	/*try {
 		OutputPortAbstractImage & oPort = dynamic_cast< OutputPortAbstractImage &> ( outPort );
 		
 		int typeID = oPort.ImageGetElementTypeID();
@@ -101,7 +116,7 @@ CreateConnectionObjectFromOutputPort( OutputPort& outPort, bool ownsDataset )
 	}	
 	catch ( ... ) {
 		_THROW_ EAutoConnectingFailed();
-	}
+	}*/
 	return connection;
 }
 

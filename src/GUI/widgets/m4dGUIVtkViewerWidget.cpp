@@ -17,7 +17,7 @@ m4dGUIVtkViewerWidget::m4dGUIVtkViewerWidget( Imaging::ConnectionInterface* conn
 {
     _index = index;
     setParameters();
-    _inPort = new Imaging::InputPortAbstractImage();
+    _inPort = new Imaging::InputPortTyped< Imaging::AbstractImage >();
     _inputPorts.AddPort( _inPort );
     setInputPort( conn );
 }
@@ -27,7 +27,7 @@ m4dGUIVtkViewerWidget::m4dGUIVtkViewerWidget( unsigned index, QWidget *parent )
 {
     _index = index;
     setParameters();
-    _inPort = new Imaging::InputPortAbstractImage();
+    _inPort = new Imaging::InputPortTyped< Imaging::AbstractImage >();
     _inputPorts.AddPort( _inPort );
     setInputPort( );
 }
@@ -73,8 +73,8 @@ m4dGUIVtkViewerWidget::setInputPort( Imaging::ConnectionInterface* conn )
 	{
             try
 	    {
-                if ( _inPort->GetAbstractImage().GetDimension() == 3 ) 
-                    _imageData->TemporarySetImageData( _inPort->GetAbstractImage() );
+                if ( _inPort->GetDatasetTyped().GetDimension() == 3 ) 
+                    _imageData->TemporarySetImageData( _inPort->GetDatasetTyped() );
 	        _inPort->ReleaseDatasetLock();
 	    } catch (...) {}
 	}
@@ -373,8 +373,8 @@ m4dGUIVtkViewerWidget::slotMessageHandler( Imaging::PipelineMsgID msgID )
 	    {
                 try
 	        {
-	            if ( _inPort->GetAbstractImage().GetDimension() == 3 ) 
-                        _imageData->TemporarySetImageData( _inPort->GetAbstractImage() );
+	            if ( _inPort->GetDatasetTyped().GetDimension() == 3 ) 
+                        _imageData->TemporarySetImageData( _inPort->GetDatasetTyped() );
 	        } catch (...) {}
 	        _inPort->ReleaseDatasetLock();
 	    }

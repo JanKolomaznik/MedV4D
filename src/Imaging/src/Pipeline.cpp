@@ -9,8 +9,8 @@
 #include <algorithm>
 #include "Functors.h"
 
-#include "Imaging/ImagePorts.h"
-#include "Imaging/ImageConnection.h"
+#include "Imaging/Ports.h"
+#include "Imaging/ConnectionInterface.h"
 
 /**
  *  @addtogroup imaging Imaging Library

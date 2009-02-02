@@ -64,6 +64,7 @@ class ExceptionCastProblem : public ExceptionBase
 {
 public:
 	ExceptionCastProblem( std::string name ) throw() : ExceptionBase( name ) {}
+	ExceptionCastProblem() throw() : ExceptionBase( "Problem with casting objects to another type" ) {}
 	~ExceptionCastProblem() throw(){}
 };
 

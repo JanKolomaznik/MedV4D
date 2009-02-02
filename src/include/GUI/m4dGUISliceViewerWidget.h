@@ -12,11 +12,9 @@
 #include <list>
 #include <string>
 #include <map>
-#include "Imaging/Image.h"
+#include "Imaging.h"
 #include "Common.h"
 #include "ExceptionBase.h"
-#include "Imaging/Ports.h"
-#include "Imaging/ImageConnection.h"
 #include "GUI/m4dSelection.h"
 #include "GUI/m4dGUIAbstractViewerWidget.h"
 
@@ -573,7 +571,7 @@ protected:
     /**
      * The input port that can be connected to the pipeline.
      */
-    Imaging::InputPortAbstractImage*		_inPort;
+    Imaging::InputPortTyped< Imaging::AbstractImage >	*_inPort;
 
     
     /**

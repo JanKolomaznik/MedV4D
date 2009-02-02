@@ -34,13 +34,14 @@ TARGETS=	AbstractDataSet \
 		ConnectionInterface \
 		Image \
 		ImageFactory \
-		ImagePorts \
-		ImageConnection \
 		ModificationManager \
 		PipelineContainer \
 		Pipeline \
 		Ports\
 		DataSetFactory
+
+#		ImageConnection 
+#		ImagePorts 
 ########################################
 
 #Name of target

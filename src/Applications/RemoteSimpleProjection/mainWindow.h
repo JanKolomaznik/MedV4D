@@ -65,8 +65,8 @@ protected:
 	M4D::Imaging::PipelineContainer			_pipeline;
 	M4D::Imaging::AbstractPipeFilter		*_filter;
 	M4D::Imaging::AbstractPipeFilter		*_convertor;
-	M4D::Imaging::AbstractImageConnectionInterface	*_inConnection;
-	M4D::Imaging::AbstractImageConnectionInterface	*_outConnection;
+	M4D::Imaging::ConnectionInterfaceTyped<AbstractImage>	*_inConnection;
+	M4D::Imaging::ConnectionInterfaceTyped<AbstractImage>	*_outConnection;
 
   /// Flag indicating wheather the build of the filter was successful
   bool filterBuildSuccessful;

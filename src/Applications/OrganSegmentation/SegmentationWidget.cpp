@@ -13,7 +13,7 @@ SegmentationWidget::SegmentationWidget( QWidget * parent )
 }
 
 void
-SegmentationWidget::Activate( M4D::Imaging::AbstractImageConnectionInterface *conn, M4D::Viewer::SliceViewerSpecialStateOperatorPtr specialState )
+SegmentationWidget::Activate( M4D::Imaging::ConnectionInterfaceTyped<AbstractImage> *conn, M4D::Viewer::SliceViewerSpecialStateOperatorPtr specialState )
 {
 	_viewer->setInputPort( conn );
 	_viewer->setSpecialState( specialState );

@@ -13,6 +13,7 @@
 #include "Thread.h"
 #include "Imaging/dataSetClassEnum.h"
 #include "Imaging/iAccessStream.h"
+#include "Imaging/DatasetDefinitionTools.h"
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -87,11 +88,7 @@ const uint32 ACTUAL_FORMAT_VERSION 		= 1;
 class AbstractDataSet
 {
 public:
-  
-	/**
-	 * Smart pointer to AbstractDataSet.
-	 **/
-	typedef boost::shared_ptr< AbstractDataSet > Ptr;
+	MANDATORY_ROOT_DATASET_DEFINITIONS_MACRO( AbstractDataSet );  
 
 	class EAbstractDataSetCastProblem: public ErrorHandling::ExceptionCastProblem
 	{

@@ -29,6 +29,12 @@ namespace Imaging
 class InputPort;
 class OutputPort;
 
+template< typename DatasetType >
+class OutputPortTyped;
+
+template< typename DatasetType >
+class InputPortTyped;
+
 
 /**
  * Connection object inheriting from interfaces for 
@@ -39,6 +45,7 @@ class ConnectionInterface : public MessageRouterInterface
 public:
 	class EMismatchPortType;
 	class EConnectionOccupied;
+	class ENoDatasetAssociated;
 
 	/**
 	 * Default constructor
@@ -99,6 +106,9 @@ public:
 	 **/
 	virtual AbstractDataSet &
 	GetDataset()const = 0;
+
+	virtual AbstractDataSet::Ptr
+	GetDatasetPtr()const = 0;
 
 	/**
 	 * \return Constant reference to dataset under control.
@@ -190,21 +200,91 @@ public:
 	//TODO
 };
 
-//******************************************************************************
-template< typename DatasetType >
-class ConnectionTyped: public ConnectionTyped< typename DatasetType::PredecessorType >
+class ConnectionInterface::ENoDatasetAssociated
 {
 public:
+	//TODO
+};
+
+//******************************************************************************
+template< typename DatasetType >
+class ConnectionInterfaceTyped: public ConnectionInterfaceTyped< typename DatasetType::PredecessorType >
+{
+public:
+	typedef	ConnectionInterfaceTyped< DatasetType > ThisClass;
+	typedef ConnectionInterfaceTyped< typename DatasetType::PredecessorType >	PredecessorType;
+	typedef OutputPortTyped< DatasetType >	ProducerPortType;
+	typedef InputPortTyped< DatasetType >	ConsumerPortType;
+
+	void
+	ConnectConsumer( InputPort& inputPort );
+
+	void
+	ConnectProducer( OutputPort& outputPort );
+
+	DatasetType &
+	GetDatasetTyped()const
+		{ return DatasetType::Cast( this->GetDataset() ); }
+
+	typename DatasetType::Ptr
+	GetDatasetPtrTyped()const
+		{ return DatasetType::Cast( this->GetDatasetPtr() ); }
+
+	const DatasetType &
+	GetDatasetReadOnlyTyped()const
+		{ return DatasetType::Cast( this->GetDatasetReadOnly() ); }
 
 protected:
 };
 
 template<>
-class ConnectionTyped< AbstractDataSet >: public ConnectionInterface
+class ConnectionInterfaceTyped< AbstractDataSet >: public ConnectionInterface
 {
 public:
+	typedef InputPortTyped< AbstractDataSet > ConsumerPortType;
 
 protected:
+};
+
+template< typename DatasetType >
+class ConnectionTyped: public ConnectionInterfaceTyped< DatasetType >
+{
+public:
+	ConnectionTyped( bool ownsDataset = true )
+		{}
+
+	void
+	PutDataset( AbstractDataSet::Ptr dataset )
+		{
+			_dataset = DatasetType::Cast( dataset );
+
+			this->RouteMessage( 
+				MsgDatasetPut::CreateMsg(), 
+				PipelineMessage::MSS_NORMAL,
+				FD_BOTH	
+			);
+		}
+
+	AbstractDataSet &
+	GetDataset()const
+		{ if( !_dataset ) { _THROW_ ConnectionInterface::ENoDatasetAssociated(); }
+			return *_dataset;
+		}
+
+
+	AbstractDataSet::Ptr
+	GetDatasetPtr()const
+		{ if( !_dataset ) { _THROW_ ConnectionInterface::ENoDatasetAssociated(); }
+			return _dataset;
+		}
+
+	const AbstractDataSet &
+	GetDatasetReadOnly()const
+		{ if( !_dataset ) { _THROW_ ConnectionInterface::ENoDatasetAssociated(); }
+			return *_dataset;
+		}
+protected:
+	typename DatasetType::Ptr _dataset;
 };
 
 //******************************************************************************
@@ -214,6 +294,9 @@ protected:
 }/*namespace M4D*/
 
 /** @} */
+
+//Include implementation
+#include "Imaging/ConnectionInterface.tcc"
 
 #endif /*_CONNECTION_INTERFACE_H*/
 

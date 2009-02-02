@@ -84,7 +84,7 @@ public:
      *  @param dimension dimense
      *  @return true, if texture preparing was successful, false otherwise
      */
-    static bool prepare( Imaging::InputPortAbstractImage* inPort,
+    static bool prepare( Imaging::InputPortTyped<Imaging::AbstractImage>* inPort,
       uint32& width,
       uint32& height,
       GLint brightnessRate,
@@ -120,14 +120,14 @@ public:
 		try
 		{
 		    // check dimension
-		    if ( inPort->GetAbstractImage().GetDimension() == 2 )
+		    if ( inPort->GetDatasetTyped().GetDimension() == 2 )
 		    {
-		        original = Imaging::Image< ElementType, 2 >::CastAbstractImage(inPort->GetAbstractImage()).GetPointer( width, height, xstride, ystride );
+		        original = Imaging::Image< ElementType, 2 >::CastAbstractImage(inPort->GetDatasetTyped()).GetPointer( width, height, xstride, ystride );
 			dimension = 2;
 			depth = zstride = 0;
 			slice = 0;
 		    }
-		    else if ( inPort->GetAbstractImage().GetDimension() == 3 )
+		    else if ( inPort->GetDatasetTyped().GetDimension() == 3 )
 		    {
 		        dimension = 3;
 
@@ -136,19 +136,19 @@ public:
 		        {
 			    case xy:
 			    {
-		                original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetAbstractImage()).GetPointer( width, height, depth, xstride, ystride, zstride );
+		                original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetDatasetTyped()).GetPointer( width, height, depth, xstride, ystride, zstride );
 			        break;
 			    }
 
 			    case yz:
 			    {
-		                original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetAbstractImage()).GetPointer( depth, width, height, zstride, xstride, ystride );
+		                original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetDatasetTyped()).GetPointer( depth, width, height, zstride, xstride, ystride );
 			        break;
 			    }
 
 			    case zx:
 			    {
-		                original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetAbstractImage()).GetPointer( height, depth, width, ystride, zstride, xstride );
+		                original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetDatasetTyped()).GetPointer( height, depth, width, ystride, zstride, xstride );
 			        break;
 			    }
 		        }
@@ -300,7 +300,7 @@ m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( unsigned index, QWidget *paren
     : QGLWidget(parent)
 {
     _index = index;
-    _inPort = new Imaging::InputPortAbstractImage();
+    _inPort = new Imaging::InputPortTyped<Imaging::AbstractImage>();
     resetParameters();
     _inputPorts.AddPort( _inPort );
     setInputPort( );
@@ -310,7 +310,7 @@ m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( Imaging::ConnectionInterface* 
     : QGLWidget(parent)
 {
     _index = index;
-    _inPort = new Imaging::InputPortAbstractImage();
+    _inPort = new Imaging::InputPortTyped<Imaging::AbstractImage>();
     resetParameters();
     _inputPorts.AddPort( _inPort );
     setInputPort( conn );
@@ -371,18 +371,18 @@ m4dGUISliceViewerWidget::resetParameters()
 	    {
                 try
 	        {
-        	    _imageID = _inPort->GetAbstractImage().GetElementTypeID();
-		    _minimum[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).minimum;
-		    _minimum[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).minimum;
-		    _maximum[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).maximum;
-		    _maximum[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).maximum;
-	    	    _extents[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).elementExtent;
-	    	    _extents[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).elementExtent;
-		    if ( _inPort->GetAbstractImage().GetDimension() == 3 )
+        	    _imageID = _inPort->GetDatasetTyped().GetElementTypeID();
+		    _minimum[ 0 ] = _inPort->GetDatasetTyped().GetDimensionExtents(0).minimum;
+		    _minimum[ 1 ] = _inPort->GetDatasetTyped().GetDimensionExtents(1).minimum;
+		    _maximum[ 0 ] = _inPort->GetDatasetTyped().GetDimensionExtents(0).maximum;
+		    _maximum[ 1 ] = _inPort->GetDatasetTyped().GetDimensionExtents(1).maximum;
+	    	    _extents[ 0 ] = _inPort->GetDatasetTyped().GetDimensionExtents(0).elementExtent;
+	    	    _extents[ 1 ] = _inPort->GetDatasetTyped().GetDimensionExtents(1).elementExtent;
+		    if ( _inPort->GetDatasetTyped().GetDimension() == 3 )
 		    {
-		        _minimum[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).minimum;
-		        _maximum[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).maximum;
-	    	        _extents[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).elementExtent;
+		        _minimum[ 2 ] = _inPort->GetDatasetTyped().GetDimensionExtents(2).minimum;
+		        _maximum[ 2 ] = _inPort->GetDatasetTyped().GetDimensionExtents(2).maximum;
+	    	        _extents[ 2 ] = _inPort->GetDatasetTyped().GetDimensionExtents(2).elementExtent;
 	                _sliceNum = _minimum[ ( _sliceOrientation + 2 ) % 3 ];
 			_dimension = 3;
 		    }
@@ -470,18 +470,18 @@ m4dGUISliceViewerWidget::setParameters()
             {
 	        try
 		{
-        	    _imageID = _inPort->GetAbstractImage().GetElementTypeID();
-		    _minimum[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).minimum;
-		    _minimum[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).minimum;
-		    _maximum[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).maximum;
-		    _maximum[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).maximum;
-	    	    _extents[ 0 ] = _inPort->GetAbstractImage().GetDimensionExtents(0).elementExtent;
-	    	    _extents[ 1 ] = _inPort->GetAbstractImage().GetDimensionExtents(1).elementExtent;
-		    if ( _inPort->GetAbstractImage().GetDimension() == 3 )
+        	    _imageID = _inPort->GetDatasetTyped().GetElementTypeID();
+		    _minimum[ 0 ] = _inPort->GetDatasetTyped().GetDimensionExtents(0).minimum;
+		    _minimum[ 1 ] = _inPort->GetDatasetTyped().GetDimensionExtents(1).minimum;
+		    _maximum[ 0 ] = _inPort->GetDatasetTyped().GetDimensionExtents(0).maximum;
+		    _maximum[ 1 ] = _inPort->GetDatasetTyped().GetDimensionExtents(1).maximum;
+	    	    _extents[ 0 ] = _inPort->GetDatasetTyped().GetDimensionExtents(0).elementExtent;
+	    	    _extents[ 1 ] = _inPort->GetDatasetTyped().GetDimensionExtents(1).elementExtent;
+		    if ( _inPort->GetDatasetTyped().GetDimension() == 3 )
 		    {
-		        _minimum[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).minimum;
-		        _maximum[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).maximum;
-	    	        _extents[ 2 ] = _inPort->GetAbstractImage().GetDimensionExtents(2).elementExtent;
+		        _minimum[ 2 ] = _inPort->GetDatasetTyped().GetDimensionExtents(2).minimum;
+		        _maximum[ 2 ] = _inPort->GetDatasetTyped().GetDimensionExtents(2).maximum;
+	    	        _extents[ 2 ] = _inPort->GetDatasetTyped().GetDimensionExtents(2).elementExtent;
 	                _sliceNum = _minimum[ ( _sliceOrientation + 2 ) % 3 ];
 			_dimension = 3;
 		    }
@@ -1397,15 +1397,15 @@ m4dGUISliceViewerWidget::colorPicker( double x, double y, double z )
 	{
             try
 	    {
-		if ( _inPort->GetAbstractImage().GetDimension() == 3 )
+		if ( _inPort->GetDatasetTyped().GetDimension() == 3 )
 		{
 		    INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
-		        _imageID, result = Imaging::Image< TTYPE, 3 >::CastAbstractImage(_inPort->GetAbstractImage()).GetElement( (int)coords[0], (int)coords[1], (int)coords[2] ) );
+		        _imageID, result = Imaging::Image< TTYPE, 3 >::CastAbstractImage(_inPort->GetDatasetTyped()).GetElement( (int)coords[0], (int)coords[1], (int)coords[2] ) );
 		}
-	        else if ( _inPort->GetAbstractImage().GetDimension() == 2 )
+	        else if ( _inPort->GetDatasetTyped().GetDimension() == 2 )
 	        {
 		    INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
-		        _imageID, result = Imaging::Image< TTYPE, 2 >::CastAbstractImage(_inPort->GetAbstractImage()).GetElement( (int)coords[0], (int)coords[1] ) );
+		        _imageID, result = Imaging::Image< TTYPE, 2 >::CastAbstractImage(_inPort->GetDatasetTyped()).GetElement( (int)coords[0], (int)coords[1] ) );
 	        }
 	        else
 		{

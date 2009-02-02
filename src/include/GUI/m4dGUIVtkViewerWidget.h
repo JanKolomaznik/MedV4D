@@ -33,9 +33,7 @@
 #include "vtkIntegration/m4dImageDataSource.h"
 
 #include "Common.h"
-#include "Imaging/Image.h"
-#include "Imaging/Ports.h"
-#include "Imaging/ImageConnection.h"
+#include "Imaging.h"
 #include "GUI/m4dGUIAbstractViewerWidget.h"
 
 namespace M4D
@@ -350,7 +348,7 @@ private:
     /**
      * The input port that can be connected to the pipeline.
      */
-    Imaging::InputPortAbstractImage*		_inPort;
+    Imaging::InputPortTyped< Imaging::AbstractImage >	*_inPort;
     
     /**
      * The object that converts m4d image to vtk image.

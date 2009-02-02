@@ -151,7 +151,17 @@ OutputPort::SendMessage(
 	//TODO
 }
 
+bool
+InputPortTyped< AbstractDataSet >::IsConnectionCompatible( ConnectionInterface &conn )
+{ 
+	return dynamic_cast< IdealConnectionInterface * >( &conn ); 
+}
 
+bool
+OutputPortTyped< AbstractDataSet >::IsConnectionCompatible( ConnectionInterface &conn )
+{ 
+	return dynamic_cast< IdealConnectionInterface * >( &conn ); 
+}
 //******************************************************************************
 template< typename PortPointer >
 struct PortFinisher

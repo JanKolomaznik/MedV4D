@@ -27,6 +27,8 @@ namespace Imaging
 //Forward declarations *****************
 class ConnectionInterface;
 
+template< typename DatasetType >
+class ConnectionInterfaceTyped;
 
 //**************************************
 
@@ -115,7 +117,17 @@ public:
 	 **/
 	void 
 	ReleaseDatasetLock();
-					
+
+
+
+	virtual ConnectionInterface*
+	CreateIdealConnectionObject( bool ownsDataset ) = 0;
+
+	virtual bool
+	IsConnectionCompatible( ConnectionInterface &conn ) = 0;
+
+	virtual unsigned
+	GetHierarchyDepth()const = 0;
 protected:
 
 
@@ -148,6 +160,7 @@ class Port::EDisconnected
 {
 public:
 	EDisconnected( uint64 port ) : _port( port ) {}
+	EDisconnected( const Port &port ) : _port( port._id ) {}
 	//TODO
 protected:
 	/**
@@ -216,6 +229,7 @@ public:
 		PipelineMessage::Ptr 			msg, 
 		PipelineMessage::MessageSendStyle 	sendStyle 
 		);
+
 protected:
 	void
 	PortPluggedMsg()
@@ -233,6 +247,10 @@ template< typename DatasetType >
 class InputPortTyped: public InputPortTyped< typename DatasetType::PredecessorType >
 {
 public:
+	typedef ConnectionInterfaceTyped< DatasetType > IdealConnectionInterface;
+	typedef InputPortTyped< typename DatasetType::PredecessorType > PredecessorType;
+	static const unsigned HierarchyDepth = DatasetType::HierarchyDepth;
+
 	InputPortTyped() {}
 
 	const DatasetType&
@@ -245,6 +263,11 @@ public:
 	void
 	Plug( ConnectionInterface & connection );
 
+	ConnectionInterface*
+	CreateIdealConnectionObject( bool ownsDataset );
+	
+	bool
+	IsConnectionCompatible( ConnectionInterface &conn );
 protected:
 	
 };
@@ -252,7 +275,16 @@ protected:
 template<>
 class InputPortTyped< AbstractDataSet >: public InputPort
 {
+public:
+	typedef ConnectionInterfaceTyped< AbstractDataSet > IdealConnectionInterface;
+	typedef InputPort PredecessorType;
+	static const unsigned HierarchyDepth = AbstractDataSet::HierarchyDepth;
 
+	unsigned
+	GetHierarchyDepth()const
+		{ return HierarchyDepth; }
+	bool
+	IsConnectionCompatible( ConnectionInterface &conn );
 };
 
 //******************************************************************************
@@ -260,6 +292,10 @@ template< typename DatasetType >
 class OutputPortTyped: public OutputPortTyped< typename DatasetType::PredecessorType >
 {
 public:
+	typedef ConnectionInterfaceTyped< DatasetType > IdealConnectionInterface;
+	typedef OutputPortTyped< typename DatasetType::PredecessorType > PredecessorType;
+	static const unsigned HierarchyDepth = DatasetType::HierarchyDepth;
+
 	OutputPortTyped() {}
 
 	DatasetType&
@@ -272,6 +308,15 @@ public:
 	void
 	Plug( ConnectionInterface & connection );
 
+	
+	ConnectionInterface*
+	CreateIdealConnectionObject( bool ownsDataset );
+
+	unsigned
+	GetHierarchyDepth()const
+		{ return HierarchyDepth; }
+	bool
+	IsConnectionCompatible( ConnectionInterface &conn );
 protected:
 
 };
@@ -279,7 +324,16 @@ protected:
 template<>
 class OutputPortTyped< AbstractDataSet >: public OutputPort
 {
+public:
+	typedef ConnectionInterfaceTyped< AbstractDataSet > IdealConnectionInterface;
+	typedef OutputPort PredecessorType;
+	static const unsigned HierarchyDepth = AbstractDataSet::HierarchyDepth;
 
+	unsigned
+	GetHierarchyDepth()const
+		{ return HierarchyDepth; }
+	bool
+	IsConnectionCompatible( ConnectionInterface &conn );
 };
 //******************************************************************************
 

@@ -27,8 +27,9 @@ template< uint32 InCount, uint32 OutCount >
 const AbstractImage&
 AbstractMultiImageFilter< InCount, OutCount >::GetInputImage( uint32 idx )const
 {
-	_inputPorts[ idx ].LockDataset();
-	return _inputPorts.GetPortTyped< InputPortAbstractImage >( idx ).GetAbstractImage();
+	/*_inputPorts[ idx ].LockDataset();
+	return _inputPorts.GetPortTyped< InputPortAbstractImage >( idx ).GetAbstractImage();*/
+	return this->GetInputDataSet< AbstractImage >( idx );
 }
 
 template< uint32 InCount, uint32 OutCount >
@@ -49,8 +50,9 @@ template< uint32 InCount, uint32 OutCount >
 AbstractImage&
 AbstractMultiImageFilter< InCount, OutCount >::GetOutputImage( uint32 idx )const
 {
-	_outputPorts[ idx ].LockDataset();
-	return _outputPorts.GetPortTyped< OutputPortAbstractImage >( idx ).GetAbstractImage();
+	/*_outputPorts[ idx ].LockDataset();
+	return _outputPorts.GetPortTyped< OutputPortAbstractImage >( idx ).GetAbstractImage();*/
+	return this->GetOutputDataSet< AbstractImage >( idx );
 }
 
 template< uint32 InCount, uint32 OutCount >
@@ -64,7 +66,13 @@ AbstractMultiImageFilter< InCount, OutCount >
 		float32		elementExtents[ ]
 	    )
 {
-	_outputPorts.GetPortTyped< OutputPortAbstractImage >( idx ).SetImageSize( dim, minimums, maximums, elementExtents );
+	ImageFactory::ChangeImageSize( 
+			_outputPorts.GetPortTyped< OutputPortTyped<AbstractImage> >( idx ).GetDatasetTyped(),
+			dim, 
+			minimums, 
+			maximums, 
+			elementExtents 
+			);
 }
 
 template< uint32 InCount, uint32 OutCount >

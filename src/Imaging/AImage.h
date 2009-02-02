@@ -57,12 +57,11 @@ struct DimensionExtents
 class AbstractImage : public AbstractDataSet
 {
 public:
-	typedef AbstractDataSet		PredecessorType;
-	/**
-	 * Smart pointer to this class.
-	 **/
-	typedef boost::shared_ptr< AbstractImage > Ptr;
-	class EBadDimension;
+	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( AbstractImage );
+	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AbstractDataSet );
+	PREPARE_CAST_METHODS_MACRO;
+	
+		class EBadDimension;
 	
 	AbstractImage( uint16 dim, DimensionExtents *dimExtents );
 	
@@ -71,6 +70,7 @@ public:
 
 	const DimensionExtents &
 	GetDimensionExtents( unsigned dimension )const;
+
 
 	uint16 
 	GetDimension()const
@@ -116,9 +116,10 @@ template<>
 class AbstractImageDim< 2 > : public AbstractImage
 {
 public:
-	typedef AbstractImage		PredecessorType;
 	static const unsigned 		Dimension = 2;
-	typedef boost::shared_ptr< AbstractImageDim< Dimension > > Ptr;
+	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( AbstractImageDim< Dimension > );
+	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AbstractImage );
+	PREPARE_CAST_METHODS_MACRO;
 
 	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( 2, dimExtents ) {}
 };
@@ -127,9 +128,10 @@ template<>
 class AbstractImageDim< 3 > : public AbstractImage
 {
 public:
-	typedef AbstractImage		PredecessorType;
 	static const unsigned 		Dimension = 3;
-	typedef boost::shared_ptr< AbstractImageDim< Dimension > > Ptr;
+	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( AbstractImageDim< Dimension > );
+	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AbstractImage );
+	PREPARE_CAST_METHODS_MACRO;
 
 	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( 3, dimExtents ) {}
 
@@ -139,9 +141,10 @@ template<>
 class AbstractImageDim< 4 > : public AbstractImage
 {
 public:
-	typedef AbstractImage		PredecessorType;
 	static const unsigned 		Dimension = 4;
-	typedef boost::shared_ptr< AbstractImageDim< Dimension > > Ptr;
+	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( AbstractImageDim< Dimension > );
+	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AbstractImage );
+	PREPARE_CAST_METHODS_MACRO;
 
 	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( 4, dimExtents ) {}
 

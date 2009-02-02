@@ -262,6 +262,18 @@ public:
 			float32		elementDepth = 1.0
 			);
 
+
+	
+	static void
+	ChangeImageSize( 
+				AbstractImage	&image,
+				uint32		dim,
+				int32 		minimums[], 
+				int32 		maximums[], 
+				float32		elementExtents[]
+			    ){}
+	
+
 	template< typename ElementType, uint32 Dimension >
 	static void
 	DumpImage( std::ostream &stream, const Image< ElementType, Dimension > & image );
