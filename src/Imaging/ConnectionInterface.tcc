@@ -19,6 +19,24 @@ namespace M4D
 {
 namespace Imaging
 {
+template< typename DatasetType, bool doConstruct >
+struct DatasetConstructionHelper;
+
+template< typename DatasetType >
+struct DatasetConstructionHelper< DatasetType, true >
+{
+	static typename DatasetType::Ptr
+	ConstructDatasetIfPossible()
+	{ return typename DatasetType::Ptr( new DatasetType() ); }
+};
+
+template< typename DatasetType >
+struct DatasetConstructionHelper< DatasetType, false >
+{
+	static typename DatasetType::Ptr
+	ConstructDatasetIfPossible()
+	{ return typename DatasetType::Ptr(); }
+};
 
 template< typename DatasetType >
 void
@@ -43,6 +61,15 @@ ConnectionInterfaceTyped< DatasetType >
 		this->PushConsumer( inputPort );
 	} else {
 		_THROW_ ConnectionInterface::EMismatchPortType();
+	}
+}
+
+template< typename DatasetType >
+ConnectionTyped< DatasetType >
+::ConnectionTyped( bool ownsDataset )
+{
+	if( ownsDataset ) {
+		_dataset = DatasetConstructionHelper< DatasetType, DatasetType::IsConstructable >::ConstructDatasetIfPossible();
 	}
 }
 

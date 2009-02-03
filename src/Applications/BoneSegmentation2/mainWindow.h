@@ -19,7 +19,7 @@ typedef M4D::Imaging::Image< ElementType, Dim > ImageType;
 typedef M4D::Imaging::ThresholdingMaskFilter< ImageType > Thresholding;
 typedef M4D::Imaging::MaskMedianFilter2D< Dim > Median2D;
 typedef M4D::Imaging::MaskSelection< ImageType > MaskSelectionFilter;
-typedef M4D::Imaging::ImageConnection< ImageType > InConnection;
+typedef M4D::Imaging::ConnectionTyped< ImageType > InConnection;
 typedef M4D::Imaging::ImageConvertor< ImageType > InImageConvertor;
 
 class Notifier : public QObject, public M4D::Imaging::MessageReceiverInterface

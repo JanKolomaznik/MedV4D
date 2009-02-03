@@ -250,8 +250,7 @@ template< typename DatasetType >
 class ConnectionTyped: public ConnectionInterfaceTyped< DatasetType >
 {
 public:
-	ConnectionTyped( bool ownsDataset = true )
-		{}
+	ConnectionTyped( bool ownsDataset = true );
 
 	void
 	PutDataset( AbstractDataSet::Ptr dataset )

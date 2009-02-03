@@ -6,6 +6,7 @@
 #include "Imaging/Image.h"
 
 #include "Common.h"
+#include "Coordinates.h"
 
 #include <iostream>
 #include <fstream>
@@ -262,16 +263,31 @@ public:
 			float32		elementDepth = 1.0
 			);
 
+	template< typename ElementType, unsigned Dim >
+	static typename ImageDataTemplate< ElementType >::Ptr 
+	CreateEmptyImageDataTyped( 
+			Coordinates< int32, Dim > 	size,
+			Coordinates< float32, Dim >	elementExtents
+			);
 
 	
+	template< unsigned Dim >
 	static void
 	ChangeImageSize( 
-				AbstractImage	&image,
-				uint32		dim,
-				int32 		minimums[], 
-				int32 		maximums[], 
-				float32		elementExtents[]
-			    ){}
+				AbstractImage			&image,
+				Coordinates< int32, Dim > 	minimum,
+				Coordinates< int32, Dim > 	maximum,
+				Coordinates< float32, Dim >	elementExtents
+			    );
+	
+	template< typename ElementType, unsigned Dim >
+	static void
+	ChangeImageSize( 
+				Image< ElementType, Dim >	&image,
+				Coordinates< int32, Dim > 	minimum,
+				Coordinates< int32, Dim > 	maximum,
+				Coordinates< float32, Dim >	elementExtents
+			    );
 	
 
 	template< typename ElementType, uint32 Dimension >

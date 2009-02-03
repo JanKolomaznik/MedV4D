@@ -62,6 +62,12 @@ namespace Imaging
 	PREPARE_CAST_CONST_REFERENCE_MACRO \
 	PREPARE_CAST_SMART_POINTER_MACRO
 
+#define IS_CONSTRUCTABLE_MACRO \
+	static const bool IsConstructable = true;
+
+#define IS_NOT_CONSTRUCTABLE_MACRO \
+	static const bool IsConstructable = false;
+
 }/*namespace Imaging*/
 }/*namespace M4D*/
 

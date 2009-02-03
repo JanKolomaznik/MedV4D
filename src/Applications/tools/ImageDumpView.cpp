@@ -4,8 +4,7 @@
 
 #include <QWidget>
 #include "GUI/m4dGUISliceViewerWidget.h"
-#include "Imaging/ImageConnection.h"
-#include "Imaging/Image.h"
+#include "Imaging.h"
 #include "Common.h"
 
 
@@ -14,12 +13,12 @@ class ViewerWindow : public QWidget
 private:
 	M4D::Viewer::m4dGUIAbstractViewerWidget *viewerWidget;
 public:
-	ViewerWindow( M4D::Imaging::AbstractImageConnection& conn);
+	ViewerWindow( M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage > & conn);
 	~ViewerWindow();
 };
 
 
-ViewerWindow::ViewerWindow( M4D::Imaging::AbstractImageConnection& conn )
+ViewerWindow::ViewerWindow( M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage > & conn )
 {
 	viewerWidget = new M4D::Viewer::m4dGUISliceViewerWidget( &conn, 0, NULL );
 	//glWidget->setSelected( true );
@@ -57,8 +56,8 @@ main( int argc, char** argv )
 	std::cout << "Done\n";
 	
 
-	M4D::Imaging::AbstractImageConnection prodconn;
-	prodconn.PutImage( image );
+	M4D::Imaging::ConnectionTyped< M4D::Imaging::AbstractImage > prodconn;
+	prodconn.PutDataset( image );
 
 
 	QApplication app(argc, argv);

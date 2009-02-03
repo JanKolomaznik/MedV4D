@@ -62,6 +62,7 @@ public:
 	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( Image< ElementType, Dimension > );
 	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AbstractImageDim< Dimension > );
 	PREPARE_CAST_METHODS_MACRO;
+	IS_CONSTRUCTABLE_MACRO;
 
 	/**
 	 * Dataset contained in this class.
@@ -254,6 +255,7 @@ public:
 	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( Image< ElementType, Dimension > );
 	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AbstractImageDim< Dimension > );
 	PREPARE_CAST_METHODS_MACRO;
+	IS_CONSTRUCTABLE_MACRO;
 
 	
 	/**
@@ -448,6 +450,7 @@ public:
 	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( Image< ElementType, Dimension > );
 	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AbstractImageDim< Dimension > );
 	PREPARE_CAST_METHODS_MACRO;
+	IS_CONSTRUCTABLE_MACRO;
 
 	/**
 	 * Dataset contained in this class.

@@ -74,6 +74,16 @@ public:
 			{ _coordinates[i] = coord[i]; } 
 		}
 
+
+	Coordinates( unsigned dim, CoordType coords[] ) 
+		{ 
+			if( dim != Dimension ) {
+				_THROW_ M4D::ErrorHandling::EBadDimension();
+			}
+			for( unsigned i=0; i<Dimension; ++i ) 
+			{ _coordinates[i] = coords[i]; } 
+		}
+
 	CoordinateType &
 	operator[]( unsigned idx )
 		{ return GetCoordinate( *this, idx ); }
@@ -138,6 +148,15 @@ public:
 			{ _coordinates[i] = coord[i]; } 
 		}
 
+	Coordinates( unsigned dim, CoordType coords[] ) 
+		{ 
+			if( dim != Dimension ) {
+				_THROW_ M4D::ErrorHandling::EBadDimension();
+			}
+			for( unsigned i=0; i<Dimension; ++i ) 
+			{ _coordinates[i] = coords[i]; } 
+		}
+
 	CoordinateType &
 	operator[]( unsigned idx )
 		{ return GetCoordinate( *this, idx ); }
@@ -193,6 +212,15 @@ public:
 			_coordinates[0] = x; 
 			_coordinates[1] = y;
 			_coordinates[2] = z;
+		}
+
+	Coordinates( unsigned dim, CoordType coords[] ) 
+		{ 
+			if( dim != Dimension ) {
+				_THROW_ M4D::ErrorHandling::EBadDimension();
+			}
+			for( unsigned i=0; i<Dimension; ++i ) 
+			{ _coordinates[i] = coords[i]; } 
 		}
 
 	template< typename CType >
@@ -267,6 +295,15 @@ public:
 			_coordinates[1] = y;
 			_coordinates[2] = z;
 			_coordinates[3] = t;
+		}
+
+	Coordinates( unsigned dim, CoordType coords[] ) 
+		{ 
+			if( dim != Dimension ) {
+				_THROW_ M4D::ErrorHandling::EBadDimension();
+			}
+			for( unsigned i=0; i<Dimension; ++i ) 
+			{ _coordinates[i] = coords[i]; } 
 		}
 
 	CoordinateType &

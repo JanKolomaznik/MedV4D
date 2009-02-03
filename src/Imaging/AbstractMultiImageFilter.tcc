@@ -66,13 +66,14 @@ AbstractMultiImageFilter< InCount, OutCount >
 		float32		elementExtents[ ]
 	    )
 {
-	ImageFactory::ChangeImageSize( 
-			_outputPorts.GetPortTyped< OutputPortTyped<AbstractImage> >( idx ).GetDatasetTyped(),
-			dim, 
-			minimums, 
-			maximums, 
-			elementExtents 
-			);
+	DIMENSION_TEMPLATE_SWITCH_MACRO( dim,
+		ImageFactory::ChangeImageSize( 
+				_outputPorts.GetPortTyped< OutputPortTyped<AbstractImage> >( idx ).GetDatasetTyped(),
+				Coordinates< int32, DIM >( DIM, minimums ), 
+				Coordinates< int32, DIM >( DIM, maximums ), 
+				Coordinates< float32, DIM >( DIM, elementExtents )
+				);
+		);
 }
 
 template< uint32 InCount, uint32 OutCount >

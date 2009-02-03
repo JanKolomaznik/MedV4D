@@ -324,6 +324,73 @@ ImageFactory::CreateEmptyImageData3DTyped(
 	return typename ImageDataTemplate< ElementType >::Ptr( newImage );
 }
 
+template< typename ElementType, unsigned Dim >
+typename ImageDataTemplate< ElementType >::Ptr 
+ImageFactory::CreateEmptyImageDataTyped( 
+			Coordinates< int32, Dim > 	size,
+			Coordinates< float32, Dim >	elementExtents
+			)
+{
+	//TODO exception handling
+	
+	//Preparing informations about dimensionality.
+	DimensionInfo *info = new DimensionInfo[ Dim ];
+
+	uint32 elementCount = 1;//width * height * depth;
+	for( unsigned i = 0; i < Dim; ++i ) {
+		info[i].Set( size[i], elementCount, elementExtents[i] );
+		elementCount *= size[i];
+	}
+
+	//Creating place for data storage.
+	ElementType *array = PrepareElementArray< ElementType >( elementCount );
+	
+	//Creating new image, which is using allocated data storage.
+	ImageDataTemplate< ElementType > *newImage = 
+		new ImageDataTemplate< ElementType >( array, info, Dim, elementCount );
+
+	//Returning smart pointer to abstract image class.
+	return typename ImageDataTemplate< ElementType >::Ptr( newImage );
+}
+
+template< unsigned Dim >
+void
+ImageFactory::ChangeImageSize( 
+				AbstractImage			&image,
+				Coordinates< int32, Dim > 	minimum,
+				Coordinates< int32, Dim > 	maximum,
+				Coordinates< float32, Dim >	elementExtents
+			    )
+{
+	if( image.GetDimension() != Dim ) {
+		_THROW_ ErrorHandling::EBadDimension();
+	}
+	TYPE_TEMPLATE_SWITCH_MACRO( image.GetElementTypeID(), 
+			ImageFactory::ChangeImageSize( 
+				static_cast< Image< TTYPE, Dim > &>( image ), 
+				minimum, 
+				maximum, 
+				elementExtents
+				);
+			);
+}
+	
+template< typename ElementType, unsigned Dim >
+void
+ImageFactory::ChangeImageSize( 
+			Image< ElementType, Dim >	&image,
+			Coordinates< int32, Dim > 	minimum,
+			Coordinates< int32, Dim > 	maximum,
+			Coordinates< float32, Dim >	elementExtents
+		    )
+{
+	typename ImageDataTemplate< ElementType >::Ptr ptr = 
+		ImageFactory::CreateEmptyImageDataTyped< ElementType, Dim>( maximum - minimum, elementExtents );
+
+	//TODO - offset
+	image.ReallocateData( ptr );
+}
+
 template< typename ElementType, uint32 Dimension >
 void
 ImageFactory::DumpImage( std::ostream &stream, const Image< ElementType, Dimension > & image )

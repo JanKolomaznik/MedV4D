@@ -1,7 +1,6 @@
 
 #include "Common.h"
 #include "Imaging/ExampleImageFilters.h"
-#include "Imaging/ImageConnection.h"
 #include "Imaging/ImageFactory.h"
 #include <iostream>
 
@@ -12,8 +11,8 @@ using namespace std;
 
 typedef Image< int16, 3 > Image3DType;
 typedef Image< int16, 2 > Image2DType;
-typedef ImageConnection< Image3DType > Conn3D;
-typedef ImageConnection< Image2DType > Conn2D;
+typedef ConnectionTyped< Image3DType > Conn3D;
+typedef ConnectionTyped< Image2DType > Conn2D;
 
 int
 main( int argc, char** argv )

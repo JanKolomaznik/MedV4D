@@ -60,6 +60,7 @@ public:
 	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( AbstractImage );
 	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AbstractDataSet );
 	PREPARE_CAST_METHODS_MACRO;
+	IS_NOT_CONSTRUCTABLE_MACRO;
 	
 		class EBadDimension;
 	
@@ -120,6 +121,7 @@ public:
 	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( AbstractImageDim< Dimension > );
 	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AbstractImage );
 	PREPARE_CAST_METHODS_MACRO;
+	IS_NOT_CONSTRUCTABLE_MACRO;
 
 	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( 2, dimExtents ) {}
 };
@@ -132,6 +134,7 @@ public:
 	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( AbstractImageDim< Dimension > );
 	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AbstractImage );
 	PREPARE_CAST_METHODS_MACRO;
+	IS_NOT_CONSTRUCTABLE_MACRO;
 
 	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( 3, dimExtents ) {}
 
@@ -145,6 +148,7 @@ public:
 	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( AbstractImageDim< Dimension > );
 	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AbstractImage );
 	PREPARE_CAST_METHODS_MACRO;
+	IS_NOT_CONSTRUCTABLE_MACRO;
 
 	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( 4, dimExtents ) {}
 

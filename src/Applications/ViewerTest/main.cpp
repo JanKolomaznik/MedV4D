@@ -1,8 +1,6 @@
 
 #include "Common.h"
-#include "Imaging/ExampleImageFilters.h"
-#include "Imaging/ImageConnection.h"
-#include "Imaging/ImageFactory.h"
+#include "Imaging.h"
 #include "GUI/m4dGUISliceViewerWidget.h"
 #include <iostream>
 #include <QApplication>

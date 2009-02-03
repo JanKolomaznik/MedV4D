@@ -89,6 +89,8 @@ class AbstractDataSet
 {
 public:
 	MANDATORY_ROOT_DATASET_DEFINITIONS_MACRO( AbstractDataSet );  
+	PREPARE_CAST_METHODS_MACRO;
+	IS_NOT_CONSTRUCTABLE_MACRO;
 
 	class EAbstractDataSetCastProblem: public ErrorHandling::ExceptionCastProblem
 	{

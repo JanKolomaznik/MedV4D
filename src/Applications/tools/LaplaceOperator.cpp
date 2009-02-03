@@ -45,8 +45,8 @@ main( int argc, char **argv )
 	std::cout << "Initializing..."; std::cout.flush();
 	M4D::Imaging::PipelineContainer *container = NULL;
 	FinishHook  *hook = new FinishHook;
-	M4D::Imaging::AbstractImageConnectionInterface *inConnection = NULL;
-	M4D::Imaging::AbstractImageConnectionInterface *outConnection = NULL;
+	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage > *inConnection = NULL;
+	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage > *outConnection = NULL;
 	M4D::Imaging::AbstractPipeFilter *filter = NULL;
 	/*---------------------------------------------------------------------*/
 	//TODO use apropriete type	
@@ -59,7 +59,7 @@ main( int argc, char **argv )
 	container = PrepareSimplePipeline( *filter, M4D::Imaging::MessageReceiverInterface::Ptr( hook ), inConnection, outConnection );
 	//container = PreparePipeline<ImageType>( *filter, M4D::Imaging::MessageReceiverInterface::Ptr( hook ), inConnection, outConnection );
 	
-	inConnection->PutImage( image );
+	inConnection->PutDataset( image );
 
 	std::cout << "Done\n";
 
@@ -71,7 +71,7 @@ main( int argc, char **argv )
 		std::cout << "Done\n";
 
 		std::cout << "Saving file..."; std::cout.flush();
-		M4D::Imaging::ImageFactory::DumpImage( outFilename, outConnection->GetAbstractImageReadOnly() );
+		M4D::Imaging::ImageFactory::DumpImage( outFilename, outConnection->GetDatasetReadOnlyTyped() );
 		std::cout << "Done\n";
 	} else {
 		std::cout << "FAILED\n";

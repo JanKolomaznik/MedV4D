@@ -46,8 +46,8 @@ M4D::Imaging::PipelineContainer *
 PreparePipeline( 
 		M4D::Imaging::AbstractPipeFilter 		&filter, 
 		M4D::Imaging::MessageReceiverInterface::Ptr 	hook,
-		M4D::Imaging::AbstractImageConnectionInterface 	*&inConnection,
-		M4D::Imaging::AbstractImageConnectionInterface 	*&outConnection
+		M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage > 	*&inConnection,
+		M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage > 	*&outConnection
 		)
 {
 	M4D::Imaging::PipelineContainer *container = new M4D::Imaging::PipelineContainer();
@@ -62,11 +62,11 @@ PreparePipeline(
 
 		container->MakeConnection( *convertor, 0, filter, 0 );
 		
-		inConnection = dynamic_cast<M4D::Imaging::AbstractImageConnectionInterface*>( 
+		inConnection = dynamic_cast<M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage >* >( 
 				&( container->MakeInputConnection( *convertor, 0, false ) ) 
 				);
 
-		outConnection = dynamic_cast<M4D::Imaging::AbstractImageConnectionInterface*>( 
+		outConnection = dynamic_cast<M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage >* >( 
 				&( container->MakeOutputConnection( filter, 0, true ) ) 
 				);
 
@@ -85,8 +85,8 @@ M4D::Imaging::PipelineContainer *
 PrepareSimplePipeline( 
 		M4D::Imaging::AbstractPipeFilter 		&filter, 
 		M4D::Imaging::MessageReceiverInterface::Ptr 	hook,
-		M4D::Imaging::AbstractImageConnectionInterface 	*&inConnection,
-		M4D::Imaging::AbstractImageConnectionInterface 	*&outConnection
+		M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage > 	*&inConnection,
+		M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage > 	*&outConnection
 		)
 {
 	M4D::Imaging::PipelineContainer *container = new M4D::Imaging::PipelineContainer();
@@ -96,11 +96,11 @@ PrepareSimplePipeline(
 		//filter.SetUpdateInvocationStyle( M4D::Imaging::AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
 		//filter.SetUpdateInvocationStyle( M4D::Imaging::AbstractPipeFilter::UIS_ON_UPDATE_FINISHED );
 
-		inConnection = dynamic_cast<M4D::Imaging::AbstractImageConnectionInterface*>( 
+		inConnection = dynamic_cast< M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage >* >( 
 				&( container->MakeInputConnection( filter, 0, false ) ) 
 				);
 
-		outConnection = dynamic_cast<M4D::Imaging::AbstractImageConnectionInterface*>( 
+		outConnection = dynamic_cast< M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage >* >( 
 				&( container->MakeOutputConnection( filter, 0, true ) ) 
 				);
 

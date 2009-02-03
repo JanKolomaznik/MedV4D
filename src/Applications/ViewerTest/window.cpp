@@ -38,7 +38,7 @@
 
 #include "window.h"
 
-mywindow::mywindow(M4D::Imaging::ImageConnection< M4D::Imaging::Image<uint32, 3> >& conn)
+mywindow::mywindow(M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::Image<uint32, 3> >& conn)
 {
     glWidget = new M4D::Viewer::m4dGUIVtkViewerWidget( &conn, 0 );
     //glWidget->setSelected( true );
