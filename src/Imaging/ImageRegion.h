@@ -27,11 +27,9 @@ public:
 	typedef EType					ElementType;
 	typedef ImageIterator< ElementType, Dim >	Iterator;
 
-	ImageRegion()
+	ImageRegion():
+			_pointer( NULL ), _sourceDimension( 0 ), _pointerCoordinatesInSource( NULL ), _origin( 0 )
 		{
-			_pointer = NULL;
-			_sourceDimension = 0;
-			_pointerCoordinatesInSource = NULL;
 			for ( unsigned i = 0; i < Dimension; ++i ) {
 				_size[i] = 0;
 				_strides[i] = 0;
@@ -46,7 +44,7 @@ public:
 			const uint32 	dimOrder[ Dimension ], 
 			uint32 		sourceDimension, 
 			const int32*	pointerCoordinatesInSource 
-		)
+		): _origin( 0 )
 		{
 			_pointer = pointer;
 			_sourceDimension = sourceDimension;
@@ -67,13 +65,14 @@ public:
 			_pointer = region._pointer;
 			_sourceDimension = region._sourceDimension;
 			_pointerCoordinatesInSource = new int32[_sourceDimension];
-		       	
+		       	_origin = region._origin;
+			_size = region._size;
+			_strides = region._strides;
+
 			for ( unsigned i = 0; i < _sourceDimension; ++i ) {
 				_pointerCoordinatesInSource[i] = region._pointerCoordinatesInSource[i];
 			}
 			for ( unsigned i = 0; i < Dimension; ++i ) {
-				_size[i] = region._size[i];
-				_strides[i] = region._strides[i];
 				_dimOrder[i] = region._dimOrder[i];
 			}
 		}
@@ -89,11 +88,17 @@ public:
 	GetIterator()const
 		{
 			uint32 pos[Dimension] = { 0 };
-			return Iterator( _pointer, _size, _strides, pos );
+			return Iterator( _pointer, _size.GetData(), _strides.GetData(), pos );
 		}
 
 	Iterator
 	GetIterator( const Coordinates< int32, Dim > &firstCorner, const Coordinates< int32, Dim > &secondCorner )const
+		{
+			return GetIteratorRel( firstCorner - _origin, secondCorner - _origin );
+		}
+
+	Iterator
+	GetIteratorRel( const Coordinates< int32, Dim > &firstCorner, const Coordinates< int32, Dim > &secondCorner )const
 		{
 			//TODO check extents
 			uint32 pos[Dimension] = { 0 };
@@ -102,7 +107,7 @@ public:
 			{
 				size[i] = secondCorner[i]-firstCorner[i];
 			}
-			return Iterator( &GetElement(firstCorner), size, _strides, pos );
+			return Iterator( &GetElementRel(firstCorner), size, _strides, pos );
 		}
 
 	ElementType *
@@ -127,27 +132,57 @@ public:
 			return _size[dim];
 		}
 
-	const uint32 *const
+	Coordinates< uint32, Dimension >
 	GetSize()const
 		{
 			return _size;
 		}
 
+	int32
+	GetMinimum( unsigned dim )const
+		{
+			return _origin[dim];
+		}
 
-	uint32
+	Coordinates< int32, Dimension >
+	GetMinimum()const
+		{
+			return _origin;
+		}
+
+	int32
+	GetMaximum( unsigned dim )const
+		{
+			return _origin[dim] + _size[dim];
+		}
+
+	Coordinates< int32, Dimension >
+	GetMaximum()const
+		{
+			return _origin + _size;
+		}
+
+	int32
 	GetStride( unsigned dim )const
 		{
 			return _strides[dim];
 		}
 
-	const int32 *const
+	Coordinates< int32, Dimension >
 	GetStride()const
 		{
 			return _strides;
 		}
 
+
 	ImageRegion< ElementType, Dimension - 1 >
 	GetSlice( int32 sliceCoord )const
+		{
+			return GetSliceRel( sliceCoord - _origin[ Dimension-1 ] );
+		}
+
+	ImageRegion< ElementType, Dimension - 1 >
+	GetSliceRel( int32 sliceCoord )const
 		{
 			ElementType *pointer = _pointer + sliceCoord*_strides[Dimension-1];
 
@@ -158,7 +193,7 @@ public:
 			pom[ _dimOrder[Dimension-1] ] += sliceCoord * Sgn(_strides[Dimension-1]);
 
 			ImageRegion< ElementType, Dimension-1 > result = 
-				ImageRegion< ElementType, Dimension-1 >( pointer, _size, _strides, _dimOrder, _sourceDimension, pom );
+				ImageRegion< ElementType, Dimension-1 >( pointer, _size.GetData(), _strides.GetData(), _dimOrder, _sourceDimension, pom );
 
 			delete [] pom;
 			return result;
@@ -183,6 +218,17 @@ public:
 
 	ElementType &
 	GetElement( const Coordinates< int32, Dim > &coords )
+		{ 	
+			return GetElementRel( coords - _origin );
+		}
+	ElementType
+	GetElement( const Coordinates< int32, Dim > &coords )const
+		{
+			return GetElementRel( coords - _origin );
+		}
+
+	ElementType &
+	GetElementRel( const Coordinates< int32, Dim > &coords )
 		{ 	ElementType *tmp = _pointer;
 			for( unsigned i = 0; i < Dim; ++i ) {
 				if( coords[i] < 0 || coords[i] >= (int32)_size[i] ) {
@@ -193,7 +239,7 @@ public:
 			return *tmp;
 		}
 	ElementType
-	GetElement( const Coordinates< int32, Dim > &coords )const
+	GetElementRel( const Coordinates< int32, Dim > &coords )const
 		{ 	ElementType *tmp = _pointer;
 			for( unsigned i = 0; i < Dim; ++i ) {
 				if( coords[i] < 0 || coords[i] >= (int32)_size[i] ) {
@@ -229,9 +275,10 @@ protected:
 	
 private:
 	ElementType	*_pointer;
-	uint32		_size[ Dimension ];
-	int32		_strides[ Dimension ];
-	
+	Coordinates< uint32, Dimension >	_size;
+	Coordinates< int32, Dimension >		_strides;
+	Coordinates< int32, Dimension >		_origin;
+
 	uint32		_dimOrder[ Dimension ];
 	uint32		_sourceDimension;
 	int32		*_pointerCoordinatesInSource;

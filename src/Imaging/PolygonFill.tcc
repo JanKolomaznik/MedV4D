@@ -135,7 +135,10 @@ struct FillFunctor
 	void
 	operator()( const IntervalRecord &rec )
 	{
-		for( RasterPos pos = RasterPos(rec.xMin, rec.yCoordinate); pos[0] <= rec.xMax; ++pos[0] ) {
+		if( _region.GetMinimum( 1 ) > rec.yCoordinate || _region.GetMaximum( 1 ) <= rec.yCoordinate ) { return; }
+
+		RasterPos pos = RasterPos( Max( rec.xMin, _region.GetMinimum(0) ), rec.yCoordinate);
+		for( ; pos[0] <= Min( rec.xMax, _region.GetMaximum()-1 ); ++pos[0] ) {
 
 			_region.GetElement( pos ) = _value;
 		}
