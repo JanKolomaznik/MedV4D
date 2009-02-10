@@ -19,6 +19,7 @@ int		____EXCEPTION_LINE_NUMBER = -1;
 
 #else
 
+#include <iostream>
 std::string	____EXCEPTION_FILE_NAME = "AVAILABLE ONLY IN DEBUG MODE";
 int		____EXCEPTION_LINE_NUMBER = -2;
 
