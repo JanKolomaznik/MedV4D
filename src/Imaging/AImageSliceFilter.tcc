@@ -199,11 +199,11 @@ AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementTyp
 
 			ImageRegion< InputElementType, 3 > region1 = 
 				this->in->GetSubRegion( 
-					typename InputImageType::PointType(
+					CreateVector(
 						this->in->GetDimensionExtents( 0 ).minimum,
 						this->in->GetDimensionExtents( 1 ).minimum,
 						minZ ),
-					typename InputImageType::PointType(
+					CreateVector(
 						this->in->GetDimensionExtents( 0 ).maximum,
 						this->in->GetDimensionExtents( 1 ).maximum,
 						maxZ )
@@ -211,11 +211,11 @@ AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementTyp
 
 			ImageRegion< OutputElementType, 3 > regionTmp = 
 				this->out->GetSubRegion(	
-					typename OutputImageType::PointType(
+					CreateVector(
 						this->out->GetDimensionExtents( 0 ).minimum,
 						this->out->GetDimensionExtents( 1 ).minimum,
 						slice ),
-					typename OutputImageType::PointType(
+					CreateVector(
 						this->out->GetDimensionExtents( 0 ).maximum,
 						this->out->GetDimensionExtents( 1 ).maximum,
 						slice+1 )

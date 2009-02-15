@@ -23,7 +23,7 @@ template< typename ElementType, typename  MatrixElement, unsigned Dim >
 inline typename TypeTraits< ElementType >::SuperiorFloatType
 ApplyConvolutionMask( 
 		ElementType 					*center, 
-		const int32 					strides[Dim], 
+		const Vector< int32, Dim >			strides, 
 		const ConvolutionMask< Dim, MatrixElement > 	&mask, 
 		const MatrixElement				&multiplication
 		)
@@ -58,7 +58,7 @@ template< typename ElementType, typename  MatrixElement, unsigned Dim >
 inline typename TypeTraits< ElementType >::SuperiorFloatType
 ApplyConvolutionMaskMirrorBorder( 
 		ElementType 					*center, 
-		const int32 					strides[Dim], 
+		const Vector< int32, Dim >			strides, 
 		const uint32 					firstBorder[Dim],
 		const uint32 					secondBorder[Dim],
 		const ConvolutionMask< Dim, MatrixElement > 	&mask, 
@@ -104,7 +104,7 @@ Compute2DConvolution(
 	
 	uint32 firstBorder[2];
 	uint32 secondBorder[2];
-	Coordinates< int32, 2 > coords;
+	Vector< int32, 2 > coords;
 	for( coords[1] = 0; static_cast<uint32>(coords[1]) < hheight; ++coords[1] ) {
 		firstBorder[1] = hheight - coords[1];
 		secondBorder[1] = mask.size[1];
@@ -204,7 +204,7 @@ Compute2DConvolutionPostProcess(
 	
 	uint32 firstBorder[2];
 	uint32 secondBorder[2];
-	Coordinates< int32, 2 > coords;
+	Vector< int32, 2 > coords;
 	typename TypeTraits< ElementType >::SuperiorFloatType result = TypeTraits< ElementType >::Zero;
 	for( coords[1] = 0; static_cast<uint32>(coords[1]) < hheight; ++coords[1] ) {
 		firstBorder[1] = hheight - coords[1];

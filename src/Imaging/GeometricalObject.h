@@ -10,7 +10,7 @@ namespace M4D
  * @{ 
  **/
 
-#include "Coordinates.h"
+#include "Vector.h"
 
 namespace Imaging
 {
@@ -35,7 +35,7 @@ class AGeometricalObjectDimPrec: public AGeometricalObjectDim< Dim >
 {
 public:
 	typedef CoordType			Type;
-	typedef Coordinates< Type, Dim > 	PointType;
+	typedef Vector< Type, Dim > 	PointType;
 	
 };
 

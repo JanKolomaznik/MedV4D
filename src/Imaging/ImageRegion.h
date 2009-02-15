@@ -1,7 +1,7 @@
 #ifndef _IMAGE_REGION_H
 #define _IMAGE_REGION_H
 
-#include "Coordinates.h"
+#include "Vector.h"
 #include "Imaging/ImageIterator.h"
 
 namespace M4D
@@ -92,13 +92,13 @@ public:
 		}
 
 	Iterator
-	GetIterator( const Coordinates< int32, Dim > &firstCorner, const Coordinates< int32, Dim > &secondCorner )const
+	GetIterator( const Vector< int32, Dim > &firstCorner, const Vector< int32, Dim > &secondCorner )const
 		{
 			return GetIteratorRel( firstCorner - _origin, secondCorner - _origin );
 		}
 
 	Iterator
-	GetIteratorRel( const Coordinates< int32, Dim > &firstCorner, const Coordinates< int32, Dim > &secondCorner )const
+	GetIteratorRel( const Vector< int32, Dim > &firstCorner, const Vector< int32, Dim > &secondCorner )const
 		{
 			//TODO check extents
 			uint32 pos[Dimension] = { 0 };
@@ -117,7 +117,7 @@ public:
 		}
 
 	ElementType *
-	GetPointer( const Coordinates< int32, Dim > &coords )const
+	GetPointer( const Vector< int32, Dim > &coords )const
 		{ 	ElementType *tmp = _pointer;
 			//TODO check coordinates
 			for( unsigned i = 0; i < Dim; ++i ) {
@@ -132,7 +132,7 @@ public:
 			return _size[dim];
 		}
 
-	Coordinates< uint32, Dimension >
+	Vector< uint32, Dimension >
 	GetSize()const
 		{
 			return _size;
@@ -144,7 +144,7 @@ public:
 			return _origin[dim];
 		}
 
-	Coordinates< int32, Dimension >
+	Vector< int32, Dimension >
 	GetMinimum()const
 		{
 			return _origin;
@@ -156,7 +156,7 @@ public:
 			return _origin[dim] + _size[dim];
 		}
 
-	Coordinates< int32, Dimension >
+	Vector< int32, Dimension >
 	GetMaximum()const
 		{
 			return _origin + _size;
@@ -168,7 +168,7 @@ public:
 			return _strides[dim];
 		}
 
-	Coordinates< int32, Dimension >
+	Vector< int32, Dimension >
 	GetStride()const
 		{
 			return _strides;
@@ -217,18 +217,18 @@ public:
 	UnionBBox( const ImageRegion & region );*/
 
 	ElementType &
-	GetElement( const Coordinates< int32, Dim > &coords )
+	GetElement( const Vector< int32, Dim > &coords )
 		{ 	
 			return GetElementRel( coords - _origin );
 		}
 	ElementType
-	GetElement( const Coordinates< int32, Dim > &coords )const
+	GetElement( const Vector< int32, Dim > &coords )const
 		{
 			return GetElementRel( coords - _origin );
 		}
 
 	ElementType &
-	GetElementRel( const Coordinates< int32, Dim > &coords )
+	GetElementRel( const Vector< int32, Dim > &coords )
 		{ 	ElementType *tmp = _pointer;
 			for( unsigned i = 0; i < Dim; ++i ) {
 				if( coords[i] < 0 || coords[i] >= (int32)_size[i] ) {
@@ -239,7 +239,7 @@ public:
 			return *tmp;
 		}
 	ElementType
-	GetElementRel( const Coordinates< int32, Dim > &coords )const
+	GetElementRel( const Vector< int32, Dim > &coords )const
 		{ 	ElementType *tmp = _pointer;
 			for( unsigned i = 0; i < Dim; ++i ) {
 				if( coords[i] < 0 || coords[i] >= (int32)_size[i] ) {
@@ -275,9 +275,9 @@ protected:
 	
 private:
 	ElementType	*_pointer;
-	Coordinates< uint32, Dimension >	_size;
-	Coordinates< int32, Dimension >		_strides;
-	Coordinates< int32, Dimension >		_origin;
+	Vector< uint32, Dimension >	_size;
+	Vector< int32, Dimension >		_strides;
+	Vector< int32, Dimension >		_origin;
 
 	uint32		_dimOrder[ Dimension ];
 	uint32		_sourceDimension;
@@ -290,10 +290,10 @@ template< typename ElementType, unsigned RegDimension, unsigned SourceDimension 
 ImageRegion< ElementType, RegDimension >
 CreateImageRegion(
 			ElementType	*pointer, 
-			Coordinates< uint32, RegDimension >	size, 
-			Coordinates< int32, RegDimension >	strides,
-			Coordinates< uint32, RegDimension >	dimOrder,
-			Coordinates< int32, SourceDimension >	pointerCoordinatesInSource
+			Vector< uint32, RegDimension >	size, 
+			Vector< int32, RegDimension >	strides,
+			Vector< uint32, RegDimension >	dimOrder,
+			Vector< int32, SourceDimension >	pointerCoordinatesInSource
 			)
 {
 	return ImageRegion< ElementType, RegDimension >( 

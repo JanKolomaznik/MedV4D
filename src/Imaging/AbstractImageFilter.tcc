@@ -99,9 +99,9 @@ AbstractImageFilter< InputImageType, OutputImageType >
 {
 	ImageFactory::ChangeImageSize( 
 			_outputPorts.GetPortTyped< OutputPortTyped<OutputImageType> >( 0 ).GetDatasetTyped(),
-			Coordinates< int32, OutputImageType::Dimension >( OutputImageType::Dimension, minimums ), 
-			Coordinates< int32, OutputImageType::Dimension >( OutputImageType::Dimension, maximums ), 
-			Coordinates< float32, OutputImageType::Dimension >( OutputImageType::Dimension, elementExtents )
+			Vector< int32, OutputImageType::Dimension >( minimums ), 
+			Vector< int32, OutputImageType::Dimension >( maximums ), 
+			Vector< float32, OutputImageType::Dimension >( elementExtents )
 			);
 }
 

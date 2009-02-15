@@ -327,8 +327,8 @@ ImageFactory::CreateEmptyImageData3DTyped(
 template< typename ElementType, unsigned Dim >
 typename ImageDataTemplate< ElementType >::Ptr 
 ImageFactory::CreateEmptyImageDataTyped( 
-			Coordinates< int32, Dim > 	size,
-			Coordinates< float32, Dim >	elementExtents
+			Vector< int32, Dim > 	size,
+			Vector< float32, Dim >	elementExtents
 			)
 {
 	//TODO exception handling
@@ -357,9 +357,9 @@ template< unsigned Dim >
 void
 ImageFactory::ChangeImageSize( 
 				AbstractImage			&image,
-				Coordinates< int32, Dim > 	minimum,
-				Coordinates< int32, Dim > 	maximum,
-				Coordinates< float32, Dim >	elementExtents
+				Vector< int32, Dim > 	minimum,
+				Vector< int32, Dim > 	maximum,
+				Vector< float32, Dim >	elementExtents
 			    )
 {
 	if( image.GetDimension() != Dim ) {
@@ -379,9 +379,9 @@ template< typename ElementType, unsigned Dim >
 void
 ImageFactory::ChangeImageSize( 
 			Image< ElementType, Dim >	&image,
-			Coordinates< int32, Dim > 	minimum,
-			Coordinates< int32, Dim > 	maximum,
-			Coordinates< float32, Dim >	elementExtents
+			Vector< int32, Dim > 	minimum,
+			Vector< int32, Dim > 	maximum,
+			Vector< float32, Dim >	elementExtents
 		    )
 {
 	typename ImageDataTemplate< ElementType >::Ptr ptr = 

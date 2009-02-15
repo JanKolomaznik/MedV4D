@@ -6,7 +6,7 @@
 #include "Imaging/Image.h"
 
 #include "Common.h"
-#include "Coordinates.h"
+#include "Vector.h"
 
 #include <iostream>
 #include <fstream>
@@ -56,7 +56,7 @@ public:
 	 * Create image according to passed information.
 	 * \param dim Dimesnion of desired image.
 	 * \param minimums Minimum coordinates of elements in image (for each dimension).
-	 * \param maximums Coordinates of first element out of image (for each dimension).
+	 * \param maximums Vector of first element out of image (for each dimension).
 	 * \param elementExtents Proportion of elements in each dimension
 	 * @return Smart pointer to abstract ancestor of created image.
 	 **/
@@ -266,8 +266,8 @@ public:
 	template< typename ElementType, unsigned Dim >
 	static typename ImageDataTemplate< ElementType >::Ptr 
 	CreateEmptyImageDataTyped( 
-			Coordinates< int32, Dim > 	size,
-			Coordinates< float32, Dim >	elementExtents
+			Vector< int32, Dim > 	size,
+			Vector< float32, Dim >	elementExtents
 			);
 
 	
@@ -275,18 +275,18 @@ public:
 	static void
 	ChangeImageSize( 
 				AbstractImage			&image,
-				Coordinates< int32, Dim > 	minimum,
-				Coordinates< int32, Dim > 	maximum,
-				Coordinates< float32, Dim >	elementExtents
+				Vector< int32, Dim > 	minimum,
+				Vector< int32, Dim > 	maximum,
+				Vector< float32, Dim >	elementExtents
 			    );
 	
 	template< typename ElementType, unsigned Dim >
 	static void
 	ChangeImageSize( 
 				Image< ElementType, Dim >	&image,
-				Coordinates< int32, Dim > 	minimum,
-				Coordinates< int32, Dim > 	maximum,
-				Coordinates< float32, Dim >	elementExtents
+				Vector< int32, Dim > 	minimum,
+				Vector< int32, Dim > 	maximum,
+				Vector< float32, Dim >	elementExtents
 			    );
 	
 

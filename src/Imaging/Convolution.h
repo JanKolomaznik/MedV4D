@@ -89,7 +89,7 @@ MirrorBorderAccess(
 		const uint32 					coord[ Dim ],
 		const uint32 					maskcenter[ Dim ],
 		ElementType 					*center, 
-		const int32 					strides[Dim], 
+		const Vector< int32, Dim >			strides, 
 		const uint32 					firstBorder[Dim],
 		const uint32 					secondBorder[Dim] 
 		)

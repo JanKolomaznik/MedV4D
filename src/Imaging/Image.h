@@ -78,9 +78,9 @@ public:
 
 	typedef ImageRegion< Element, Dimension >	SubRegion;
 
-	typedef Coordinates< int32, Dimension >		PointType;
+	typedef Vector< int32, Dimension >		PointType;
 
-	typedef Coordinates< uint32, Dimension >	SizeType;
+	typedef Vector< uint32, Dimension >	SizeType;
 
 	Image();
 
@@ -272,9 +272,9 @@ public:
 
 	typedef ImageRegion< Element, Dimension >	SubRegion;
 
-	typedef Coordinates< int, Dimension >		PointType;
+	typedef Vector< int, Dimension >		PointType;
 
-	typedef Coordinates< uint32, Dimension >	SizeType;
+	typedef Vector< uint32, Dimension >	SizeType;
 
 	Image();
 
@@ -466,9 +466,9 @@ public:
 
 	typedef ImageRegion< Element, Dimension >	SubRegion;
 
-	typedef Coordinates< int, Dimension >		PointType;
+	typedef Vector< int, Dimension >		PointType;
 
-	typedef Coordinates< uint32, Dimension >	SizeType;
+	typedef Vector< uint32, Dimension >	SizeType;
 
 	Image();
 

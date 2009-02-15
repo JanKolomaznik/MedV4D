@@ -240,8 +240,8 @@ Image< ElementType, 2 >::GetPointer(
 
 		return _pointer;
 	} else {
-		size = SizeType(0);
-		strides = PointType(0);
+		size = SizeType( (uint32)0 );
+		strides = PointType( (int32)0 );
 
 		return NULL;
 	}
@@ -357,11 +357,11 @@ typename Image< ElementType, 2 >::SubRegion
 Image< ElementType, 2 >::GetRegion()const
 {
 	return GetSubRegion( 
-			PointType( 
+			CreateVector( 
 				this->GetDimensionExtents(0).minimum,
 				this->GetDimensionExtents(1).minimum 
 				), 
-			PointType(
+			CreateVector(
 				this->GetDimensionExtents(0).maximum,
 				this->GetDimensionExtents(1).maximum
 				)
@@ -850,8 +850,8 @@ Image< ElementType, 3 >::GetPointer(
 		}
 		return _pointer;
 	} else {
-		size = SizeType(0);
-		strides = PointType(0);
+		size = SizeType( (uint32)0 );
+		strides = PointType( (int32)0 );
 
 		return NULL;
 	}
@@ -964,12 +964,12 @@ typename Image< ElementType, 3 >::SubRegion
 Image< ElementType, 3 >::GetRegion()const
 {
 	return GetSubRegion( 
-			PointType(
+			CreateVector(
 				this->GetDimensionExtents(0).minimum,
 				this->GetDimensionExtents(1).minimum,
 				this->GetDimensionExtents(2).minimum
 				),
-			PointType(
+			CreateVector(
 				this->GetDimensionExtents(0).maximum,
 				this->GetDimensionExtents(1).maximum,
 				this->GetDimensionExtents(2).maximum

@@ -69,9 +69,9 @@ AbstractMultiImageFilter< InCount, OutCount >
 	DIMENSION_TEMPLATE_SWITCH_MACRO( dim,
 		ImageFactory::ChangeImageSize( 
 				_outputPorts.GetPortTyped< OutputPortTyped<AbstractImage> >( idx ).GetDatasetTyped(),
-				Coordinates< int32, DIM >( DIM, minimums ), 
-				Coordinates< int32, DIM >( DIM, maximums ), 
-				Coordinates< float32, DIM >( DIM, elementExtents )
+				Vector< int32, DIM >( minimums ), 
+				Vector< int32, DIM >( maximums ), 
+				Vector< float32, DIM >( elementExtents )
 				);
 		);
 }

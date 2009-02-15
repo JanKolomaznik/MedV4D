@@ -20,7 +20,7 @@ template< typename ImageType >
 M4D::Imaging::AbstractImage::Ptr
 CropImage( typename ImageType::Ptr image, const std::vector<int> &firstCorner, const std::vector<int> &secondCorner )
 {
-	typedef Coordinates< int, ImageTraits< ImageType >::Dimension > CornerType;
+	typedef Vector< int, ImageTraits< ImageType >::Dimension > CornerType;
 
 	if( firstCorner.size() != secondCorner.size() && firstCorner.size() != ImageTraits< ImageType >::Dimension ) {
 		throw M4D::ErrorHandling::EBadDimension();

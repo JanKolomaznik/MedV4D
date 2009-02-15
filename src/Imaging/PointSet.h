@@ -3,7 +3,7 @@
 
 #include "Common.h"
 #include "Imaging/GeometricalObject.h"
-#include "Coordinates.h"
+#include "Vector.h"
 #include <vector>
 #include <ostream>
 #include <iomanip>

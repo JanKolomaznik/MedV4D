@@ -37,7 +37,7 @@ class EFConvergeToPoint
 {
 public:
 	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > 	GradientType;
-	typedef Coordinates< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
+	typedef Vector< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
 
 	float32
 	GetParametersGradient( ContourType &curve, GradientType &gradient )
@@ -71,7 +71,7 @@ class DoubleEnergyFunctional
 {
 public:
 	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > 	GradientType;
-	typedef Coordinates< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
+	typedef Vector< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
 	typedef FirstEnergyModel	FirstEnergy;
 	typedef SecondEnergyModel	SecondEnergy;
 	
@@ -149,7 +149,7 @@ class SimpleBaloonForce
 {
 public:
 	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > 	GradientType;
-	typedef Coordinates< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
+	typedef Vector< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
 
 	float32
 	GetParametersGradient( ContourType &curve, GradientType &gradient )
@@ -181,7 +181,7 @@ class GradientMagnitudeEnergy
 {
 public:
 	typedef M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > 	GradientType;
-	typedef Coordinates< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
+	typedef Vector< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
 	typedef typename RegionType::ElementType	ElementType;
 	typedef typename ContourType::SamplePointSet	SamplePointSet;
 	typedef std::vector< ElementType >		ValuesAtSamplesBuffer;
@@ -236,7 +236,7 @@ class UnifiedImageEnergy
 {
 public:
 	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > 	GradientType;
-	typedef Coordinates< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
+	typedef Vector< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
 	typedef typename ContourType::BFValVector	BFValVector;
 	typedef typename RegionType1::ElementType	ElementType1;
 	typedef typename RegionType2::ElementType	ElementType2;

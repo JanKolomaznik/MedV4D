@@ -9,7 +9,7 @@
 #define FILTER_COMPUTATION_H
 
 #include "Imaging/Image.h"
-#include "Coordinates.h"
+#include "Vector.h"
 #include "Imaging/ImageRegion.h"
 #include <boost/shared_ptr.hpp>
 
@@ -87,11 +87,11 @@ __ImageFilterComputationFarFromBorder(
 	M4D::Imaging::ImageIterator< OutElementType, Dim > outIterator = ...
 	
 
-	/*Coordinates< uint32, Dim > firstCorner = kernel.CenterCoordinates<Dim>();
-	Coordinates< uint32, Dim > secondCorner = inRegion.GetSize() - (kernel.Size<Dim>() - kernel.CenterCoordinates<Dim>());
+	/*Vector< uint32, Dim > firstCorner = kernel.CenterVector<Dim>();
+	Vector< uint32, Dim > secondCorner = inRegion.GetSize() - (kernel.Size<Dim>() - kernel.CenterVector<Dim>());
 
 	bool finished = false;
-	Coordinates< uint32, Dim > actual( firstCorner );
+	Vector< uint32, Dim > actual( firstCorner );
 
 	NormalAccessor< M4D::Imaging::ImageRegion< ElementType, Dim > accessor( inRegion );
 
@@ -180,7 +180,7 @@ Compute2DConvolutionPostProcess(
 	
 	uint32 firstBorder[2];
 	uint32 secondBorder[2];
-	Coordinates< int32, 2 > coords;
+	Vector< int32, 2 > coords;
 	typename TypeTraits< ElementType >::SuperiorFloatType result = TypeTraits< ElementType >::Zero;
 	for( coords[1] = 0; static_cast<uint32>(coords[1]) < hheight; ++coords[1] ) {
 		firstBorder[1] = hheight - coords[1];

@@ -3,7 +3,7 @@
 
 #include <cmath>
 #include "Common.h"
-#include "Coordinates.h"
+#include "Vector.h"
 #include <ostream>
 #include <iomanip>
 
@@ -24,13 +24,13 @@ namespace Geometry
 template< typename CoordType >
 bool
 LineIntersectionTest( 
-		const Coordinates< CoordType, 2 > &pointL1A, 
-		const Coordinates< CoordType, 2 > &pointL1B,
-		const Coordinates< CoordType, 2 > &pointL2A, 
-		const Coordinates< CoordType, 2 > &pointL2B
+		const Vector< CoordType, 2 > &pointL1A, 
+		const Vector< CoordType, 2 > &pointL1B,
+		const Vector< CoordType, 2 > &pointL2A, 
+		const Vector< CoordType, 2 > &pointL2B
 	     )
 {
-	Coordinates< CoordType, 2 > v1 = pointL1B - pointL1A;
+	Vector< CoordType, 2 > v1 = pointL1B - pointL1A;
 	
 	bool first = PointLinePositionPointVector( pointL2A, pointL1A, v1 ) < 0;
 	bool second = PointLinePositionPointVector( pointL2B, pointL1A, v1 ) > 0;
@@ -54,9 +54,9 @@ LineIntersectionTest(
 template< typename CoordType >
 inline float32
 PointLinePosition2Points( 
-		const Coordinates< CoordType, 2 > &point,
-		const Coordinates< CoordType, 2 > &lineA, 
-		const Coordinates< CoordType, 2 > &lineB
+		const Vector< CoordType, 2 > &point,
+		const Vector< CoordType, 2 > &lineA, 
+		const Vector< CoordType, 2 > &lineB
 	     )
 {
 	return (lineB[0]-lineA[0])*(point[1]-lineA[1])
@@ -71,9 +71,9 @@ PointLinePosition2Points(
 template< typename CoordType >
 inline float32
 PointLinePositionPointVector( 
-		const Coordinates< CoordType, 2 > &point,
-		const Coordinates< CoordType, 2 > &A, 
-		const Coordinates< CoordType, 2 > &v
+		const Vector< CoordType, 2 > &point,
+		const Vector< CoordType, 2 > &A, 
+		const Vector< CoordType, 2 > &v
 	     )
 {
 	return (v[0])*(point[1]-A[1])
