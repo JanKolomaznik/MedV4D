@@ -113,6 +113,8 @@ FileStream& FileStream::operator>>( uint16 &what)
 FileStream& FileStream::operator>>( uint32 &what)
 {
 	stream_.read((char*)&what, sizeof(what));
+	if(needSwapBytes_)
+		SwapBytes(what);
 	return *this;
 }
 /////////////////////////////////////////////////////////////////////////////
