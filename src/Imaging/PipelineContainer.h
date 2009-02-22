@@ -47,6 +47,10 @@ public:
 
 	void
 	StopFilters();
+
+	void
+	Reset();
+
 	/**
 	 * Connect two compatible ports if possible.
 	 * @param outPort Reference to output port of some filter.

@@ -135,6 +135,17 @@ PipelineContainer::~PipelineContainer()
 }
 
 void
+PipelineContainer::Reset()
+{
+	std::for_each( _filters.begin(), _filters.end(), Functors::Deletor< AbstractPipeFilter *>() );
+	_filters.clear();
+
+	std::for_each( _connections.begin(), _connections.end(), Functors::Deletor< ConnectionInterface *>() );
+	_connections.clear();
+
+}
+
+void
 PipelineContainer::AddFilter( AbstractPipeFilter *filter )
 {
 	if( filter == NULL ) {

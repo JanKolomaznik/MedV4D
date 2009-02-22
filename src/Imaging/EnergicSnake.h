@@ -20,7 +20,7 @@ namespace Algorithms
 {
 
 template< typename ContourType, typename EnergyModel >
-class EnergicSnake
+class EnergicSnake: public EnergyModel
 {
 public:
 	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > 	GradientType;
@@ -44,10 +44,6 @@ public:
 	void
 	Reset();
 
-	EnergyModel&
-	GetEnergyModel()
-		{ return _energyFunctional; }
-
 	const ContourType&
 	GetCurrentCurve()const
 		{ return _curve; }
@@ -59,6 +55,45 @@ public:
 	const GradientType&
 	GetPreviousGradient()const
 		{ return _gradients[(_actualGradient+1)%2]; }
+
+	unsigned
+	GetCurrentGradientSize()const
+		{ return _lastGradientSize; }
+
+	unsigned
+	GetSampleRate()const
+		{ return _sampleRate; }
+
+	void
+	SetSampleRate( unsigned rate )
+		{ _sampleRate = rate; }
+
+	float32
+	GetMinSegmentLength()const
+		{ return _minimalSegmentLength; }
+
+	void
+	SetMinSegmentLength( float32 len )
+		{ _minimalSegmentLength = len; }
+
+	float32
+	GetMaxSegmentLength()const
+		{ return _maximalSegmentLength; }
+
+	void
+	SetMaxSegmentLength( float32 len )
+		{ _maximalSegmentLength = len; }
+protected:
+	//Parameters
+	unsigned	_selfIntersectionTestFrequency;
+	unsigned	_segmentLengthsTestFrequency;
+	unsigned	_sampleRate;
+	float32		_minimalSegmentLength;
+	float32		_maximalSegmentLength;
+
+	float32		_stepScale;
+	float32		_stepScaleAlpha;
+	float32		_stepScaleBeta;
 private:
 	void
 	SwitchGradients();
@@ -77,8 +112,6 @@ private:
 	void
 	ComputeStepScale();
 
-	EnergyModel	_energyFunctional;
-
 	//
 	GradientType	*_gradient;
 
@@ -90,14 +123,7 @@ private:
 	unsigned	_stepCount;
 
 
-	//Parameters
-	unsigned	_sampleRate;
 	ContourType	_curve;
-	float32		_stepScale;
-	float32		_stepScaleAlpha;
-	float32		_stepScaleBeta;
-	float32		_minimalSegmentLength;
-	float32		_maximalSegmentLength;
 };
 
 template< typename ContourType, typename EnergyModel >
@@ -139,20 +165,24 @@ EnergicSnake< ContourType, EnergyModel >
 ::Step()
 {
 	++_stepCount;
-
 	SwitchGradients();
 
-	DL_PRINT(10, "EnergicSnake -> Step number " << _stepCount );
+		DL_PRINT(10, "EnergicSnake -> Step number " << _stepCount );
 	ComputeCurveParametersGradient();
 
-	DL_PRINT(10, "EnergicSnake ->    Update curve parameters " );
+		DL_PRINT(10, "EnergicSnake ->    Update curve parameters " );
 	UpdateCurveParameters();
 
-	//Solve self intersection problem
-	CheckSelfIntersection();
+	if( _stepCount % _selfIntersectionTestFrequency == 0 ) {
+		_curve.Sample( _sampleRate );
+		//Solve self intersection problem
+		CheckSelfIntersection();
+	}
 
-	//Divide or join segments with length out of tolerance
-	CheckSegmentLengths();
+	if( _stepCount % _segmentLengthsTestFrequency == 0 ) {
+		//Divide or join segments with length out of tolerance
+		CheckSegmentLengths();
+	}
 
 	_curve.ReSampleWithDerivations();
 	
@@ -195,10 +225,13 @@ void
 EnergicSnake< ContourType, EnergyModel >
 ::ComputeCurveParametersGradient()
 {
+	//Set gradient to same size as the curve has.
 	_gradient->Resize( _curve.Size() );
 
-	_energyFunctional.GetParametersGradient( _curve, (*_gradient) );
+	//Compute gradient
+	this->GetParametersGradient( _curve, (*_gradient) );
 
+	//Normalize gradient to unit size and store its original size ( 1/normalization factor )
 	NormalizeGradient();
 }
 
@@ -210,13 +243,8 @@ EnergicSnake< ContourType, EnergyModel >
 	ComputeStepScale();
 
 	for( size_t i=0; i < _curve.Size(); ++i ) {
-		//std::cerr << _curve[i] << " : " ;
-		//TODO check right updating
 		_curve[i] += _stepScale * (*_gradient)[i];
-		//_curve[i] -= _stepScale * (*_gradient)[i];
-		//std::cerr << _curve[i] << "\n";
 	}
-	_curve.Sample( _sampleRate );
 }
 
 template< typename ContourType, typename EnergyModel >
@@ -240,7 +268,7 @@ EnergicSnake< ContourType, EnergyModel >
 	CoordInt2D seg = FindBSplineSelfIntersection( _curve );
 	if( seg[0] < 0 ) return;
 	
-	DL_PRINT(10, "EnergicSnake ->    Found self intersections : " << seg[0] << "; " << seg[1] << " : " << _curve.GetSegmentCount() );
+		DL_PRINT(10, "EnergicSnake ->    Found self intersections : " << seg[0] << "; " << seg[1] << " : " << _curve.GetSegmentCount() );
 	unsigned inSegCount = static_cast< unsigned >( seg[1]-seg[0] );
 
 	if( inSegCount == 0 ) {
