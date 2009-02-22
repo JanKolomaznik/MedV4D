@@ -107,8 +107,12 @@ public:
 	*/
 	virtual void Dump( void) = 0;
 
-	virtual void Serialize(iAccessStream &stream) = 0;
-	virtual void DeSerialize(iAccessStream &stream) = 0;
+	// interface for serialization
+	virtual void SerializeData(iAccessStream &stream) = 0;
+	virtual void SerializeClassInfo(iAccessStream &stream) = 0;
+	virtual void SerializeProperties(iAccessStream &stream) = 0;
+	virtual void DeSerializeData(iAccessStream &stream) = 0;
+	virtual void DeSerializeProperties(iAccessStream &stream) = 0;
 
 	/**
 	 * \return Actual structure timestamp - it changes when internal structure is modified.

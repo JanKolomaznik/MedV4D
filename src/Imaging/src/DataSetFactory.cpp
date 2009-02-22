@@ -36,26 +36,16 @@ DataSetFactory::CreateImage(iAccessStream &stream)
 	
 	uint16 dim, elemType;
 	stream >> elemType >> dim;   // get class properties
-	
-	int32 minimums[ dim ];
-	int32 maximums[ dim ];
-	float32 elExtents[ dim ];
-
-	for( unsigned i = 0; i < dim; ++i ) {
-
-		stream >> minimums[ i ];
-		stream >> maximums[ i ];
-		stream >> elExtents[ i ];
-	}
 
 	// create approp class
-	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( 
-			elemType,
-			ds = ImageFactory::CreateEmptyImageFromExtents< TTYPE >( 
-					dim, minimums, maximums, elExtents )				
-	);
-
-	ds.get()->DeSerialize(stream);
+	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( elemType, 
+			    DIMENSION_TEMPLATE_SWITCH_MACRO( dim, 
+			    		ds = Image< TTYPE, DIM >::Ptr(new Image< TTYPE, DIM >()) )
+			  );
+	
+	ds->DeSerializeProperties(stream);
+	
+	ImageFactory::AllocateDataAccordingProperties(ds);
 	
 	return ds;
 }

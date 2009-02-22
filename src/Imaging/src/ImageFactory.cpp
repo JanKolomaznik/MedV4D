@@ -20,6 +20,11 @@ namespace M4D
 namespace Imaging
 {
 
+void 
+ImageFactory::AllocateDataAccordingProperties(AbstractDataSet::Ptr &image)
+{
+	// TODO
+}
 
 void
 ImageFactory::PrepareElementArrayFromTypeID( 

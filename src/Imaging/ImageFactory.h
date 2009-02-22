@@ -307,6 +307,8 @@ public:
 	static AbstractImage::Ptr
 	LoadDumpedImage( std::string filename );
 	
+	static void AllocateDataAccordingProperties(AbstractDataSet::Ptr &image);
+	
 	/**
 	 * @param typeId Id of type used for storing pixel value.
 	 * @param imageSize How many elements of size 'pixelSize' will be stored in array.

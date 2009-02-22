@@ -421,12 +421,18 @@ Image< ElementType, 2 >::Dump(void)
 
 template< typename ElementType >
 void
-Image< ElementType, 2 >::Serialize(iAccessStream &stream)
+Image< ElementType, 2 >::SerializeClassInfo(iAccessStream &stream)
 {
 	// header
-	stream << (uint8) GetEndianess() << (uint8) DATASET_IMAGE;
+	stream << (uint8) DATASET_IMAGE;
 	// template properties
 	stream << GetElementTypeID() << GetDimension();
+}
+///////////////////////////////////////////////////////////////////////////////
+template< typename ElementType >
+void
+Image< ElementType, 2 >::SerializeProperties(iAccessStream &stream)
+{
 	// other properties
 	for( uint8 i = 0; i < GetDimension(); ++i ) 
 	{
@@ -434,6 +440,24 @@ Image< ElementType, 2 >::Serialize(iAccessStream &stream)
 		stream << _dimExtents[i].maximum;
 		stream << _dimExtents[i].elementExtent;
 	}
+}
+///////////////////////////////////////////////////////////////////////////////
+template< typename ElementType >
+void
+Image< ElementType, 2 >::DeSerializeProperties(iAccessStream &stream)
+{		
+	for( unsigned i = 0; i < 2; ++i ) {
+
+		stream >> _dimExtents[ i ].minimum;		
+		stream >> _dimExtents[ i ].maximum;		
+		stream >> _dimExtents[ i ].elementExtent;		
+	}
+}
+///////////////////////////////////////////////////////////////////////////////
+template< typename ElementType >
+void
+Image< ElementType, 2 >::SerializeData(iAccessStream &stream)
+{
 	// actual data
 	uint32 width;
 	uint32 height;
@@ -453,7 +477,7 @@ Image< ElementType, 2 >::Serialize(iAccessStream &stream)
 
 template< typename ElementType >
 void
-Image< ElementType, 2 >::DeSerialize(iAccessStream &stream)
+Image< ElementType, 2 >::DeSerializeData(iAccessStream &stream)
 {
 	uint32 width;
 	uint32 height;
@@ -611,15 +635,21 @@ Image< ElementType, 3 >::Dump(void)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
 template< typename ElementType >
 void
-Image< ElementType, 3 >::Serialize(iAccessStream &stream)
+Image< ElementType, 3 >::SerializeClassInfo(iAccessStream &stream)
 {
 	// header
-	stream << (uint8) GetEndianess() << (uint8) DATASET_IMAGE;
+	stream << (uint8) DATASET_IMAGE;
 	// template properties
 	stream << GetElementTypeID() << GetDimension();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template< typename ElementType >
+void
+Image< ElementType, 3 >::SerializeProperties(iAccessStream &stream)
+{
 	// other properties
 	for( uint8 i = 0; i < GetDimension(); ++i ) 
 	{
@@ -627,7 +657,26 @@ Image< ElementType, 3 >::Serialize(iAccessStream &stream)
 		stream << _dimExtents[i].maximum;
 		stream << _dimExtents[i].elementExtent;
 	}
-	// actual data	
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template< typename ElementType >
+void
+Image< ElementType, 3 >::DeSerializeProperties(iAccessStream &stream)
+{
+	for( unsigned i = 0; i < 3; ++i ) {
+
+		stream >> _dimExtents[ i ].minimum;		
+		stream >> _dimExtents[ i ].maximum;		
+		stream >> _dimExtents[ i ].elementExtent;		
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template< typename ElementType >
+void
+Image< ElementType, 3 >::SerializeData(iAccessStream &stream)
+{	
 	uint32 width;
 	uint32 height;
 	uint32 depth;
@@ -655,7 +704,7 @@ Image< ElementType, 3 >::Serialize(iAccessStream &stream)
 
 template< typename ElementType >
 void
-Image< ElementType, 3 >::DeSerialize(iAccessStream &stream)
+Image< ElementType, 3 >::DeSerializeData(iAccessStream &stream)
 {	
 	//actual data
 	uint32 width;
@@ -1018,10 +1067,42 @@ Image< ElementType, 4 >::Image( typename ImageDataTemplate< ElementType >::Ptr i
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
 template< typename ElementType >
 void
-Image< ElementType, 4 >::Serialize(iAccessStream &stream)
+Image< ElementType, 4 >::SerializeClassInfo(iAccessStream &stream)
+{
+	// header
+	stream << (uint8) DATASET_IMAGE;
+	// template properties
+	stream << GetElementTypeID() << GetDimension();
+}
+///////////////////////////////////////////////////////////////////////////////
+template< typename ElementType >
+void
+Image< ElementType, 4 >::SerializeProperties(iAccessStream &stream)
+{
+	for( unsigned i = 0; i < 4; ++i ) {
+
+		stream << _dimExtents[ i ].minimum;
+		stream << _dimExtents[ i ].maximum;
+		stream << _dimExtents[ i ].elementExtent;
+	}
+}
+///////////////////////////////////////////////////////////////////////////////
+template< typename ElementType >
+void
+Image< ElementType, 4 >::DeSerializeProperties(iAccessStream &stream)
+{
+	for( unsigned i = 0; i < 4; ++i ) {
+		stream >> _dimExtents[ i ].minimum;
+		stream >> _dimExtents[ i ].maximum;
+		stream >> _dimExtents[ i ].elementExtent;
+	}
+}
+///////////////////////////////////////////////////////////////////////////////
+template< typename ElementType >
+void
+Image< ElementType, 4 >::SerializeData(iAccessStream &stream)
 {
 	//TODO
 	D_PRINT("Not yet implemented");
@@ -1031,7 +1112,7 @@ Image< ElementType, 4 >::Serialize(iAccessStream &stream)
 
 template< typename ElementType >
 void
-Image< ElementType, 4 >::DeSerialize(iAccessStream &stream)
+Image< ElementType, 4 >::DeSerializeData(iAccessStream &stream)
 {
 	//TODO
 	D_PRINT("Not yet implemented");
