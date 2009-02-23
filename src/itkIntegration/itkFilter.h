@@ -4,7 +4,7 @@
 // itk includes
 #include "itkImage.h"
 
-#include "itkDataContainerWrapper.h"
+//#include "itkDataContainerWrapper.h"
 #include "Imaging/AbstractImageFilter.h"
 
 /**
@@ -27,9 +27,9 @@ public:
 	typedef ITKFilter< InputImageType, OutputImageType > SelfType;
 
 protected:
-	typedef itk::Image< typename InputImageType::Element, typename InputImageType::Dimension >
+	typedef itk::Image< typename InputImageType::Element, InputImageType::Dimension >
 		ITKInputImageType;
-	typedef itk::Image< typename OutputImageType::Element, typename OutputImageType::Dimension >
+	typedef itk::Image< typename OutputImageType::Element, OutputImageType::Dimension >
 		ITKOutputImageType;
 	
 	ITKFilter();
@@ -41,7 +41,7 @@ protected:
 	
 	void PrepareOutputDatasets(void);
 	
-	void SetOutputImageSize(ITKOutputImageType::RegionType::SizeType &size);
+	void SetOutputImageSize(ITKOutputImageType &itkImage);
 	
 private:
 //	ITKDataContainerWrapper< InputImageType::ElementType > m_inputDatCnt;

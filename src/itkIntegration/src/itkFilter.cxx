@@ -28,27 +28,36 @@ template< typename InputImageType, typename OutputImageType >
 void
 ITKFilter<InputImageType, OutputImageType>::PrepareOutputDatasets(void)
 {
-	PredecessorType::PrepareOutputDatasets();
-	
+	PredecessorType::PrepareOutputDatasets();	
 	
 	m_inputITKImage.GetPixelContainer.SetImportPointer(
 					data->GetData(), (TElementIdentifier) data->GetSize());
 	
+	typename ITKInputImageType::RegionType region;
+	typename ITKInputImageType::SpacingType spacing;
+	// copy info from input medved image into input ITK image
+	for(uint32 i=0; i<InputImageType::Dimension; i++)
+	{
+		region.GetIndex()[i] = in->GetDimensionExtents(i).minimum;
+		region.GetSize()[i] = in->GetDimensionExtents(i).maximum;
+		spacing[i] = in->GetDimensionExtents(i).elementExtent;		
+	}
 	// init input dataContainerWrap according changed input image
-	m_inputDatCnt.SetData( this->GetInputImage() );
+	//m_inputDatCnt.SetData( this->GetInputImage() );
 	// output image has to be set according output of the last filter
 	// within ITK pipeline
+	
 }
 ///////////////////////////////////////////////////////////////////////////////
 
 template< typename InputImageType, typename OutputImageType >
 void
 ITKFilter<InputImageType, OutputImageType>
-	::SetOutputImageSize(ITKOutputImageType *image)
+	::SetOutputImageSize(ITKOutputImageType &itkImage)
 {
-	int32 *minimums = image->GetLargestPossibleRegion().GetSize();
-	int32 *minimums = image->GetLargestPossibleRegion().GetIndex();
-	float32 *voxelExtents = image->GetSpacing();
+	int32 *maximums = itkImage.GetLargestPossibleRegion().GetSize();
+	int32 *minimums = itkImage.GetLargestPossibleRegion().GetIndex();
+	float32 *voxelExtents = itkImage.GetSpacing();
 
 	this->SetOutputImageSize( minimums, maximums, voxelExtents );
 }
