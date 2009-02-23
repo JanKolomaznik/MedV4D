@@ -58,7 +58,6 @@ private:
 };
 
 class InStream
-	: public MediumAccessor
 {
 public:
 	InStream(MediumAccessor *accessor);
