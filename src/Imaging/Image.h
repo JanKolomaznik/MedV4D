@@ -218,11 +218,11 @@ public:
 			PointType max
 			)const;
 	
-	void SerializeClassInfo(iAccessStream &stream);
-	void SerializeProperties(iAccessStream &stream);
-	void SerializeData(iAccessStream &stream);
-	void DeSerializeData(iAccessStream &stream);	
-	void DeSerializeProperties(iAccessStream &stream);
+	void SerializeClassInfo(OutStream &stream);
+	void SerializeProperties(OutStream &stream);
+	void SerializeData(OutStream &stream);
+	void DeSerializeData(InStream &stream);	
+	void DeSerializeProperties(InStream &stream);
 
   void Dump(void);
 
@@ -417,11 +417,11 @@ public:
 			PointType max
 			)const;
 	
-	void SerializeClassInfo(iAccessStream &stream);
-	void SerializeProperties(iAccessStream &stream);
-	void SerializeData(iAccessStream &stream);
-	void DeSerializeData(iAccessStream &stream);	
-	void DeSerializeProperties(iAccessStream &stream);
+	void SerializeClassInfo(OutStream &stream);
+	void SerializeProperties(OutStream &stream);
+	void SerializeData(OutStream &stream);
+	void DeSerializeData(InStream &stream);	
+	void DeSerializeProperties(InStream &stream);
 
   void Dump(void);
 
@@ -621,11 +621,11 @@ public:
 			PointType max
 			)const;
 	
-	void SerializeClassInfo(iAccessStream &stream);
-	void SerializeProperties(iAccessStream &stream);
-	void SerializeData(iAccessStream &stream);
-	void DeSerializeData(iAccessStream &stream);	
-	void DeSerializeProperties(iAccessStream &stream);
+	void SerializeClassInfo(OutStream &stream);
+	void SerializeProperties(OutStream &stream);
+	void SerializeData(OutStream &stream);
+	void DeSerializeData(InStream &stream);	
+	void DeSerializeProperties(InStream &stream);
 
   void Dump(void);
 

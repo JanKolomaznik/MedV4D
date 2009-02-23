@@ -12,7 +12,7 @@
 #include "TimeStamp.h"
 #include "Thread.h"
 #include "Imaging/dataSetClassEnum.h"
-#include "Imaging/iAccessStream.h"
+#include "IO/IOStreams.h"
 #include "Imaging/DatasetDefinitionTools.h"
 
 /**
@@ -108,11 +108,11 @@ public:
 	virtual void Dump( void) = 0;
 
 	// interface for serialization
-	virtual void SerializeData(iAccessStream &stream) = 0;
-	virtual void SerializeClassInfo(iAccessStream &stream) = 0;
-	virtual void SerializeProperties(iAccessStream &stream) = 0;
-	virtual void DeSerializeData(iAccessStream &stream) = 0;
-	virtual void DeSerializeProperties(iAccessStream &stream) = 0;
+	virtual void SerializeData(OutStream &stream) = 0;
+	virtual void SerializeClassInfo(OutStream &stream) = 0;
+	virtual void SerializeProperties(OutStream &stream) = 0;
+	virtual void DeSerializeData(InStream &stream) = 0;
+	virtual void DeSerializeProperties(InStream &stream) = 0;
 
 	/**
 	 * \return Actual structure timestamp - it changes when internal structure is modified.

@@ -137,9 +137,9 @@ public:
 	void Dump( void)
 	{ _THROW_ ErrorHandling::ETODO();	}
 
-	void Serialize(iAccessStream &stream)
+	void Serialize(OutStream &stream)
 	{ _THROW_ ErrorHandling::ETODO();	}
-	void DeSerialize(iAccessStream &stream)
+	void DeSerialize(InStream &stream)
 	{ _THROW_ ErrorHandling::ETODO();	}
 protected:
 

@@ -421,42 +421,42 @@ Image< ElementType, 2 >::Dump(void)
 
 template< typename ElementType >
 void
-Image< ElementType, 2 >::SerializeClassInfo(iAccessStream &stream)
+Image< ElementType, 2 >::SerializeClassInfo(OutStream &stream)
 {
 	// header
-	stream << (uint8) DATASET_IMAGE;
+	stream.Put<uint8>( (uint8) DATASET_IMAGE);
 	// template properties
-	stream << GetElementTypeID() << GetDimension();
+	stream.Put<uint16>( GetElementTypeID());
+	stream.Put<uint16>( GetDimension());
 }
 ///////////////////////////////////////////////////////////////////////////////
 template< typename ElementType >
 void
-Image< ElementType, 2 >::SerializeProperties(iAccessStream &stream)
+Image< ElementType, 2 >::SerializeProperties(OutStream &stream)
 {
 	// other properties
 	for( uint8 i = 0; i < GetDimension(); ++i ) 
 	{
-		stream << _dimExtents[i].minimum;
-		stream << _dimExtents[i].maximum;
-		stream << _dimExtents[i].elementExtent;
+		stream.Put<int32>(_dimExtents[i].minimum);
+		stream.Put<int32>(_dimExtents[i].maximum);
+		stream.Put<float32>(_dimExtents[i].elementExtent);
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////
 template< typename ElementType >
 void
-Image< ElementType, 2 >::DeSerializeProperties(iAccessStream &stream)
+Image< ElementType, 2 >::DeSerializeProperties(InStream &stream)
 {		
 	for( unsigned i = 0; i < 2; ++i ) {
-
-		stream >> _dimExtents[ i ].minimum;		
-		stream >> _dimExtents[ i ].maximum;		
-		stream >> _dimExtents[ i ].elementExtent;		
+		stream.Get<int32>(_dimExtents[ i ].minimum);		
+		stream.Get<int32>(_dimExtents[ i ].maximum);
+		stream.Get<float32>(_dimExtents[ i ].elementExtent);		
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////
 template< typename ElementType >
 void
-Image< ElementType, 2 >::SerializeData(iAccessStream &stream)
+Image< ElementType, 2 >::SerializeData(OutStream &stream)
 {
 	// actual data
 	uint32 width;
@@ -477,7 +477,7 @@ Image< ElementType, 2 >::SerializeData(iAccessStream &stream)
 
 template< typename ElementType >
 void
-Image< ElementType, 2 >::DeSerializeData(iAccessStream &stream)
+Image< ElementType, 2 >::DeSerializeData(InStream &stream)
 {
 	uint32 width;
 	uint32 height;
@@ -637,45 +637,45 @@ Image< ElementType, 3 >::Dump(void)
 ///////////////////////////////////////////////////////////////////////////////
 template< typename ElementType >
 void
-Image< ElementType, 3 >::SerializeClassInfo(iAccessStream &stream)
+Image< ElementType, 3 >::SerializeClassInfo(OutStream &stream)
 {
 	// header
-	stream << (uint8) DATASET_IMAGE;
+	stream.Put<uint8>( (uint8) DATASET_IMAGE);
 	// template properties
-	stream << GetElementTypeID() << GetDimension();
+	stream.Put<uint16>(GetElementTypeID());
+	stream.Put<uint16>(GetDimension());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 template< typename ElementType >
 void
-Image< ElementType, 3 >::SerializeProperties(iAccessStream &stream)
+Image< ElementType, 3 >::SerializeProperties(OutStream &stream)
 {
 	// other properties
 	for( uint8 i = 0; i < GetDimension(); ++i ) 
 	{
-		stream << _dimExtents[i].minimum;
-		stream << _dimExtents[i].maximum;
-		stream << _dimExtents[i].elementExtent;
+		stream.Put<int32>(_dimExtents[i].minimum);
+		stream.Put<int32>(_dimExtents[i].maximum);
+		stream.Put<float32>(_dimExtents[i].elementExtent);
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 template< typename ElementType >
 void
-Image< ElementType, 3 >::DeSerializeProperties(iAccessStream &stream)
+Image< ElementType, 3 >::DeSerializeProperties(InStream &stream)
 {
 	for( unsigned i = 0; i < 3; ++i ) {
-
-		stream >> _dimExtents[ i ].minimum;		
-		stream >> _dimExtents[ i ].maximum;		
-		stream >> _dimExtents[ i ].elementExtent;		
+		stream.Get<int32>(_dimExtents[ i ].minimum);	
+		stream.Get<int32>(_dimExtents[ i ].maximum);
+		stream.Get<float32>(_dimExtents[ i ].elementExtent);		
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 template< typename ElementType >
 void
-Image< ElementType, 3 >::SerializeData(iAccessStream &stream)
+Image< ElementType, 3 >::SerializeData(OutStream &stream)
 {	
 	uint32 width;
 	uint32 height;
@@ -704,7 +704,7 @@ Image< ElementType, 3 >::SerializeData(iAccessStream &stream)
 
 template< typename ElementType >
 void
-Image< ElementType, 3 >::DeSerializeData(iAccessStream &stream)
+Image< ElementType, 3 >::DeSerializeData(InStream &stream)
 {	
 	//actual data
 	uint32 width;
@@ -1069,40 +1069,40 @@ Image< ElementType, 4 >::Image( typename ImageDataTemplate< ElementType >::Ptr i
 ///////////////////////////////////////////////////////////////////////////////
 template< typename ElementType >
 void
-Image< ElementType, 4 >::SerializeClassInfo(iAccessStream &stream)
+Image< ElementType, 4 >::SerializeClassInfo(OutStream &stream)
 {
 	// header
-	stream << (uint8) DATASET_IMAGE;
+	stream.Put<uint8>( (uint8) DATASET_IMAGE);
 	// template properties
-	stream << GetElementTypeID() << GetDimension();
+	stream.Put<uint16>(GetElementTypeID());
+	stream.Put<uint16>(GetDimension());
 }
 ///////////////////////////////////////////////////////////////////////////////
 template< typename ElementType >
 void
-Image< ElementType, 4 >::SerializeProperties(iAccessStream &stream)
+Image< ElementType, 4 >::SerializeProperties(OutStream &stream)
 {
 	for( unsigned i = 0; i < 4; ++i ) {
-
-		stream << _dimExtents[ i ].minimum;
-		stream << _dimExtents[ i ].maximum;
-		stream << _dimExtents[ i ].elementExtent;
+		stream.Put<int32>(_dimExtents[i].minimum);
+		stream.Put<int32>(_dimExtents[i].maximum);
+		stream.Put<float32>(_dimExtents[i].elementExtent);
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////
 template< typename ElementType >
 void
-Image< ElementType, 4 >::DeSerializeProperties(iAccessStream &stream)
+Image< ElementType, 4 >::DeSerializeProperties(InStream &stream)
 {
 	for( unsigned i = 0; i < 4; ++i ) {
-		stream >> _dimExtents[ i ].minimum;
-		stream >> _dimExtents[ i ].maximum;
-		stream >> _dimExtents[ i ].elementExtent;
+		stream.Get<int32>(_dimExtents[ i ].minimum);		
+		stream.Get<int32>(_dimExtents[ i ].maximum);
+		stream.Get<float32>(_dimExtents[ i ].elementExtent);		
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////
 template< typename ElementType >
 void
-Image< ElementType, 4 >::SerializeData(iAccessStream &stream)
+Image< ElementType, 4 >::SerializeData(OutStream &stream)
 {
 	//TODO
 	D_PRINT("Not yet implemented");
@@ -1112,7 +1112,7 @@ Image< ElementType, 4 >::SerializeData(iAccessStream &stream)
 
 template< typename ElementType >
 void
-Image< ElementType, 4 >::DeSerializeData(iAccessStream &stream)
+Image< ElementType, 4 >::DeSerializeData(InStream &stream)
 {
 	//TODO
 	D_PRINT("Not yet implemented");

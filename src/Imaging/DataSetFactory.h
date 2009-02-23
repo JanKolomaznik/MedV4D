@@ -1,7 +1,6 @@
 #ifndef DATASETFACTORY_H_
 #define DATASETFACTORY_H_
 
-#include "iAccessStream.h"
 #include "AbstractDataSet.h"
 #include "Imaging/ImageFactory.h"
 #include "Imaging/GeometryDataSetFactory.h"
@@ -22,11 +21,11 @@ public:
 	 * Creates data set based on atributes that reads from stream
 	 */
 	static AbstractDataSet::Ptr 
-	CreateDataSet(iAccessStream &stream);
+	CreateDataSet(InStream &stream);
 	
 private:	// helpers
 	static AbstractDataSet::Ptr 
-	CreateImage(iAccessStream &stream);
+	CreateImage(InStream &stream);
 };
 
 }

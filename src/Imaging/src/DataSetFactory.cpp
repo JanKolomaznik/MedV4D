@@ -10,10 +10,10 @@ using namespace M4D::ErrorHandling;
 using namespace M4D::Imaging;
 
 AbstractDataSet::Ptr
-DataSetFactory::CreateDataSet(iAccessStream &stream)
+DataSetFactory::CreateDataSet(InStream &stream)
 {
 	uint8 dsType;
-	stream >> (uint8&) dsType;	// read
+	stream.Get<uint8>(dsType);
 	
 	// main switch acording data set type
 	switch((DataSetType) dsType)
@@ -30,12 +30,13 @@ DataSetFactory::CreateDataSet(iAccessStream &stream)
 }
 
 AbstractDataSet::Ptr
-DataSetFactory::CreateImage(iAccessStream &stream)
+DataSetFactory::CreateImage(InStream &stream)
 {
 	AbstractDataSet::Ptr ds;
 	
 	uint16 dim, elemType;
-	stream >> elemType >> dim;   // get class properties
+	stream.Get<uint16>(elemType);
+	stream.Get<uint16>(dim);
 
 	// create approp class
 	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( elemType, 
