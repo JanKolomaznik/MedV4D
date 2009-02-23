@@ -1,0 +1,27 @@
+
+#include "../netAcccessor.h"
+
+using namespace M4D::RemoteComputing;
+using namespace std;
+
+/////////////////////////////////////////////////////////////////////////////
+
+NetAccessor::NetAccessor(boost::asio::ip::tcp::socket &socket)
+	: m_socket_( socket)
+{
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void
+NetAccessor::PutData(const void *data, size_t length)
+{
+	m_socket_.write_some( boost::asio::buffer( data, length) );	
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void
+NetAccessor::GetData(void *data, size_t length)	
+{
+	m_socket_.read_some( boost::asio::buffer( data, length) );		
+}
+/////////////////////////////////////////////////////////////////////////////
