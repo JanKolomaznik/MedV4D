@@ -100,6 +100,38 @@ Stará <strong><a href="http://cgg.ms.mff.cuni.cz:8080/">WiKi projektu</a></stron
 <a href="main.pdf">Projektová dokumentace</a>
 </p>
 
+<hr/>
+<h2>Pøíklady úloh (RP/BP/DP): </h2>
+
+<h4><u>Objemová vizualizace</u></h4>
+
+<p>
+  Zobrazování objemových dat se v projektu MedV4D øe¹í nyní pomocí knihovny VTK.
+  Výsledky nejsou pøíli¹ kvalitní (malá konfigurovatelnost) a pøedev¹ím nejsou rychlé.
+  Moderní hardware umo¾òuje napsat rychlej¹í zobrazování pomocí programování GPU v jazyku CUDA a shaderech.
+</p>
+
+<p>
+  Cílem bude obohatit projekt MedV4D o rychlé objemové zobrazování.
+  Práce mù¾e navazovat na diplomovou práci Vlada Hrinèára.
+  Øe¹itel mù¾e srovnat rùzná øe¹ení, vlastni versus pùvodní VTK, co se týèe rychlosti, slo¾itosti implementace a mo¾ností roz¹íøení.
+</p>
+
+<h4><u>ITK rozhraní</u></h4>
+
+<p>
+  ITK je rozsáhlá knihovna pro zpracování lékaøských dat, která se dá pou¾ít k realizaci úloh zahrnujících segmentaci a registraci.
+  Knihovna ITK má podobnou architekturu jako MedV4D, ale na rozdíl od MedV4D byla urèena pouze pro tvorbu algoritmù.
+  Rádi bychom knihovnu ITK v budoucnu pou¾ívali v rámci MedV4D kdekoliv to bude mo¾né.
+  Cílem je napsat pøíklad pou¾ití ITK a MedV4D, tzn. vytvoøit pomocí MedV4D kompletní u¾ivatelské rozhraní pro zadání vstupu výpoètu následnì provedeného ITK.
+  Výsledek výpoètu se zobrazí v GUI MedV4D u¾ivatelsky nejpøívìtivìj¹ím zpùsobem.
+</p>
+
+<p>
+  Øe¹itel dostane za úkol pøepsat nìjakou pomìrnì jednoduchou úlohu (díky ITK) do prostøedí MedV4D.
+  Vedlej¹í efekt bude vytvoøení metod a postupù pro spolupráci MedV4D a ITK.
+</p>
+
 <p>
 <hr/>
 <div>
