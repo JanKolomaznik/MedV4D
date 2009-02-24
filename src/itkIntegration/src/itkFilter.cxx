@@ -16,7 +16,7 @@ namespace ITKIntegration
 /////////////////////////////////////////////////////////////////////////////////
 template< typename InputImageType, typename OutputImageType >
 ITKFilter<InputImageType, OutputImageType>::ITKFilter()
-	: PredecessorType( PredecessorType::Properties)
+	: PredecessorType(NULL)
 {
 //	// set our dataContainerWraps to ITKImages
 //	m_inputITKImage.SetPixelContainer( & m_inputDatCnt);
@@ -28,20 +28,9 @@ template< typename InputImageType, typename OutputImageType >
 void
 ITKFilter<InputImageType, OutputImageType>::PrepareOutputDatasets(void)
 {
-	PredecessorType::PrepareOutputDatasets();	
+	PredecessorType::PrepareOutputDatasets();
 	
-	m_inputITKImage.GetPixelContainer.SetImportPointer(
-					data->GetData(), (TElementIdentifier) data->GetSize());
-	
-	typename ITKInputImageType::RegionType region;
-	typename ITKInputImageType::SpacingType spacing;
-	// copy info from input medved image into input ITK image
-	for(uint32 i=0; i<InputImageType::Dimension; i++)
-	{
-		region.GetIndex()[i] = in->GetDimensionExtents(i).minimum;
-		region.GetSize()[i] = in->GetDimensionExtents(i).maximum;
-		spacing[i] = in->GetDimensionExtents(i).elementExtent;		
-	}
+	SetupInputITKImageAccordingInputMedvedImage();
 	// init input dataContainerWrap according changed input image
 	//m_inputDatCnt.SetData( this->GetInputImage() );
 	// output image has to be set according output of the last filter
@@ -60,6 +49,32 @@ ITKFilter<InputImageType, OutputImageType>
 	float32 *voxelExtents = itkImage.GetSpacing();
 
 	this->SetOutputImageSize( minimums, maximums, voxelExtents );
+}
+///////////////////////////////////////////////////////////////////////////////
+template< typename InputImageType, typename OutputImageType >
+void
+ITKFilter<InputImageType, OutputImageType>
+	::SetOutputITKImage(ITKOutputImageType *outImage)
+{
+	m_outputITKImage = outImage;
+}
+///////////////////////////////////////////////////////////////////////////////
+template< typename InputImageType, typename OutputImageType >
+void
+ITKFilter<InputImageType, OutputImageType>
+	::SetupInputITKImageAccordingInputMedvedImage(void)
+{
+	const InputImageType &in = this->GetInputImage();
+		
+	m_inputITKImage.SetupAccordingMedvedImage(in);
+}
+///////////////////////////////////////////////////////////////////////////////
+template< typename InputImageType, typename OutputImageType >
+void
+ITKFilter<InputImageType, OutputImageType>
+	::SetupOutMedvedImageAccordingOutputITKImage(void)
+{
+	
 }
 ///////////////////////////////////////////////////////////////////////////////
 }

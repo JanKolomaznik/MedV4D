@@ -2,10 +2,10 @@
 #define ITKFILTER_H_
 
 // itk includes
-#include "itkImage.h"
+#include "itkImageWrapper.h"
 
 //#include "itkDataContainerWrapper.h"
-#include "Imaging/AbstractImageFilter.h"
+#include "Imaging/AbstractImageFilterWholeAtOnce.h"
 
 /**
  *  @addtogroup itkIntegration ITK Integration
@@ -20,24 +20,25 @@ namespace ITKIntegration
 // currently only for image types ...
 template< typename InputImageType, typename OutputImageType >
 class ITKFilter 
-	: public Imaging::AbstractImageFilter< InputImageType, InputImageType >
+	: public Imaging::AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
 {
 public:
-	typedef Imaging::AbstractImageFilter< InputImageType, OutputImageType > PredecessorType;
+	typedef M4D::Imaging::AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType > PredecessorType;
 	typedef ITKFilter< InputImageType, OutputImageType > SelfType;
 
 protected:
-	typedef itk::Image< typename InputImageType::Element, InputImageType::Dimension >
+	typedef ITKImageWrapper< typename InputImageType::Element, InputImageType::Dimension >
 		ITKInputImageType;
-	typedef itk::Image< typename OutputImageType::Element, OutputImageType::Dimension >
+	typedef ITKImageWrapper< typename OutputImageType::Element, OutputImageType::Dimension >
 		ITKOutputImageType;
 	
 	ITKFilter();
 	
-	inline ITKInputImageType &
-	GetInputITKImage() { return m_inputITKImage; }
-	inline ITKOutputImageType &
-	GetOutputITKImage() { return m_outputITKImage; }
+	ITKInputImageType &
+	GetInputITKImage(void) { return m_inputITKImage; }
+	
+	void
+	SetOutputITKImage(ITKOutputImageType *outImage);
 	
 	void PrepareOutputDatasets(void);
 	
@@ -47,9 +48,12 @@ private:
 //	ITKDataContainerWrapper< InputImageType::ElementType > m_inputDatCnt;
 //	ITKDataContainerWrapper< OutputImageType::ElementType > m_outputDatCnt;
 	
+	void SetupInputITKImageAccordingInputMedvedImage(void);
+	void SetupOutMedvedImageAccordingOutputITKImage(void);
+	
 	// ITK images that simulate begining and end if ITK pipeline
 	ITKInputImageType m_inputITKImage;
-	ITKOutputImageType m_outputITKImage;
+	ITKOutputImageType *m_outputITKImage;
 };
 
 }}
