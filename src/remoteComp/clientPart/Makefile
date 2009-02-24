@@ -1,5 +1,6 @@
 
 srcdir = .
+srcTop = ../..
 
 CXX=g++
 AR=ar
@@ -16,9 +17,9 @@ TARGETS=	remoteNodesManager
 
 #Name of target
 OUTPUTNAME=	lib$(NAME).a
-OUTPUTDIR=	../../lib
+OUTPUTDIR=	$(srcTop)/lib
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
-TMP_DIR=	../../tmp/$(NAME)
+TMP_DIR=	$(srcTop)/tmp/$(NAME)
 SRC_DIR=	.
 
 CXXDEBUG_OPTIONS= -ggdb 
@@ -30,8 +31,8 @@ CDEPFLAGS=	-MM
 
 LDFLAGS=
 ARFLAGS=	-r
-INCLUDES=	-I../.. \
-		-I../../include
+INCLUDES=	-I$(srcTop) \
+		-I$(srcTop)/include
 
 
 

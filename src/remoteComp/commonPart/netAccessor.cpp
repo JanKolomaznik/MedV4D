@@ -1,5 +1,6 @@
 
-#include "../netAcccessor.h"
+#include "Common.h"
+#include "remoteComp/netAccessor.h"
 
 using namespace M4D::RemoteComputing;
 using namespace std;
@@ -8,6 +9,10 @@ using namespace std;
 
 NetAccessor::NetAccessor(boost::asio::ip::tcp::socket &socket)
 	: m_socket_( socket)
+{
+}
+/////////////////////////////////////////////////////////////////////////////
+NetAccessor::~NetAccessor()
 {
 }
 
