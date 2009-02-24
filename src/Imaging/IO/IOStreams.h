@@ -51,7 +51,10 @@ public:
   void PutDataBuf( const DataBuff &buf);
   
   template< typename T>
-  void Put(const T what);
+  void Put(const T what)
+  {
+  	accessor_->PutData( (const void *)&what, sizeof(T));
+  }
   
 private:
 	MediumAccessor *accessor_;
@@ -66,7 +69,12 @@ public:
 	void GetDataBuf( DataBuff &buf);
 	  
 	  template< typename T>
-	  void Get( T &what);
+	  void Get( T &what)
+	  {
+		  accessor_->GetData( (void *)&what, sizeof(T));
+	  	if(needSwapBytes_)
+	  			SwapBytes<T>(what);
+	  }
 	  
 private:
 	uint8 needSwapBytes_;
