@@ -27,13 +27,13 @@ inline void SwapBytes(T &what)
 	switch(sizeof(T))
 	{
 	case 2:
-		SwapBytes( (uint16) what);
+		SwapBytes( (uint16&) what);
 		break;
 	case 4:
-		SwapBytes( (uint32) what);
+		SwapBytes( (uint32&) what);
 		break;
 	case 8:
-		SwapBytes( (uint64) what);
+		SwapBytes( (uint64&) what);
 		break;
 	};
 }
