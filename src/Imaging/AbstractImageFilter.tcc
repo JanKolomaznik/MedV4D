@@ -97,12 +97,15 @@ AbstractImageFilter< InputImageType, OutputImageType >
 		float32		elementExtents[ ]
 	    )
 {
+	this->out->UpgradeToExclusiveLock();
 	ImageFactory::ChangeImageSize( 
-			_outputPorts.GetPortTyped< OutputPortTyped<OutputImageType> >( 0 ).GetDatasetTyped(),
+			*(this->out),
+			//_outputPorts.GetPortTyped< OutputPortTyped<OutputImageType> >( 0 ).GetDatasetTyped(),
 			Vector< int32, OutputImageType::Dimension >( minimums ), 
 			Vector< int32, OutputImageType::Dimension >( maximums ), 
 			Vector< float32, OutputImageType::Dimension >( elementExtents )
 			);
+	this->out->DowngradeFromExclusiveLock();
 }
 
 template< typename InputImageType, typename OutputImageType >

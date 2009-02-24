@@ -413,7 +413,7 @@ protected:
 	CleanAfterSuccessfulRun();
 
 	/**
-	 * Method used for clean after stopped run of execution thread.
+	 * Method used for cleaning after stopped run of execution thread.
 	 * It will first detach thread and than set _workState to OUT_OF_DATE.
 	 * Because execution thread is detached, new execution thread can be 
 	 * started. The old one will only finish - after this call it doesn't

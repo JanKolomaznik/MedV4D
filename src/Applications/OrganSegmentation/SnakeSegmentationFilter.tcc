@@ -14,6 +14,112 @@ namespace M4D
 namespace Imaging
 {
 
+template < typename ElementType >
+const InputImageType&
+SnakeSegmentationFilter< ElementType >::GetInputImage( uint32 idx )const
+{
+	return this->GetInputDataSet< InputImageType >( idx );
+}
+
+template < typename ElementType >
+void 
+SnakeSegmentationFilter< ElementType >::ReleaseInputImage( uint32 idx )const
+{
+	this->ReleaseInputDataSet( idx );
+}
+
+template < typename ElementType >
+const InputImageType&
+SnakeSegmentationFilter< ElementType >::GetOutputGDataset()const
+{
+	return this->GetOuputDataSet< OutputDataset >( 0 );
+}
+
+template < typename ElementType >
+void 
+SnakeSegmentationFilter< ElementType >::ReleaseOutputGDataset( uint32 idx )const
+{
+	this->ReleaseOutputDataSet( 0 );
+}
+	
+template < typename ElementType >
+void
+SnakeSegmentationFilter< ElementType >::ExecutionThreadMethod()
+{
+	//TODO locking
+	for( int32 i = _minSlice; i < _maxSlice; ++i ) {
+
+		ProcessSlice()
+
+	}
+}
+
+template < typename ElementType >
+void
+SnakeSegmentationFilter< ElementType >::PrepareOutputDatasets()
+{
+	int32 _minSlice = in[0]->GetDimensionExtents(2).minimum;
+	int32 _maxSlice = in[0]->GetDimensionExtents(2).maximum;
+	for( unsigned i=1; i<InCount; ++i ) {
+		_minSlice = Max( _minSlice, in[i]->GetDimensionExtents(2).minimum );
+		_maxSlice = Max( _maxSlice, in[i]->GetDimensionExtents(2).maximum );
+	}
+
+	this->out->UpgradeToExclusiveLock();
+		GeometryFactory::ChangeSliceCount( (*this->out), _minSlice, _maxSlice );
+	this->out->DowngradeFromExclusiveLock();
+}
+
+template < typename ElementType >
+void
+SnakeSegmentationFilter< ElementType >::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
+{
+	PredecessorType::BeforeComputation( utype );
+
+	utype = AbstractPipeFilter::RECALCULATION;
+	this->_callPrepareOutputDatasets = true;
+
+	for( unsigned i = 0; i < InCount; ++i ) {
+		in[ i ] = &(this->GetInputImage( i ));
+	}
+	out = &(this->GetOutputGDataset());
+	
+}
+
+template < typename ElementType >
+void
+SnakeSegmentationFilter< ElementType >::MarkChanges( AbstractPipeFilter::UPDATE_TYPE &utype )
+{
+	for( unsigned i=0; i < InCount; ++i ) {
+		readerBBox[i] = in[i]->GetWholeDirtyBBox();
+	}
+}
+
+template < typename ElementType >
+void
+SnakeSegmentationFilter< ElementType >::AfterComputation( bool successful )
+{
+	for( unsigned i=0; i < InCount; ++i ) {
+	/*	_inTimestamp[ i ] = in[ i ]->GetStructureTimestamp();
+		_inEditTimestamp[ i ] = in[ i ]->GetEditTimestamp();*/
+		
+		this->ReleaseInputImage( i );
+	}
+	PredecessorType::AfterComputation( successful );	
+}
+
+
+template < typename ElementType >
+void
+SnakeSegmentationFilter< ElementType >
+::ProcessSlice( const typename SnakeSegmentationFilter< ElementType >::RegionType	&region, 
+		typename SnakeSegmentationFilter< ElementType >::CurveType		&initialization, 
+		typename SnakeSegmentationFilter< ElementType >::OutputDataset::ObjectsInSlice &slice 
+		)
+{
+	slice.clear();
+	slice.push_back( initialization );
+}
 	
 } /*namespace Imaging*/
 } /*namespace M4D*/

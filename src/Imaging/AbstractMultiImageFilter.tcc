@@ -66,14 +66,17 @@ AbstractMultiImageFilter< InCount, OutCount >
 		float32		elementExtents[ ]
 	    )
 {
+	this->out[idx]->UpgradeToExclusiveLock();
 	DIMENSION_TEMPLATE_SWITCH_MACRO( dim,
 		ImageFactory::ChangeImageSize( 
-				_outputPorts.GetPortTyped< OutputPortTyped<AbstractImage> >( idx ).GetDatasetTyped(),
+				*(this->out[idx]),
+				//_outputPorts.GetPortTyped< OutputPortTyped<AbstractImage> >( idx ).GetDatasetTyped(),
 				Vector< int32, DIM >( minimums ), 
 				Vector< int32, DIM >( maximums ), 
 				Vector< float32, DIM >( elementExtents )
 				);
 		);
+	this->out[idx]->DowngradeFromExclusiveLock();
 }
 
 template< uint32 InCount, uint32 OutCount >
