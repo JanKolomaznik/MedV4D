@@ -11,6 +11,8 @@ namespace RemoteComputing
 class iRemoteFilterProperties
 {
 public:
+	virtual ~iRemoteFilterProperties() {}
+	
 	virtual void SerializeClassInfo(Imaging::OutStream &stream) = 0;
 	virtual void SerializeProperties(Imaging::OutStream &stream) = 0;
 	virtual void DeserializeProperties(Imaging::InStream &stream) = 0;

@@ -106,9 +106,9 @@ RemoteFilter< InputImageType, OutputImageType >::SendDataSet(void)
 {
 	Imaging::OutStream stream(&netAccessor_);
 	
-	OutputImageType &out = GetOutputImage();
-	out.SerializeProperties(stream);
-	out.SerializeData(stream);
+	InputImageType &in = (InputImageType &) this->GetInputImage();
+	in.SerializeProperties(stream);
+	in.SerializeData(stream);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -119,7 +119,7 @@ RemoteFilter< InputImageType, OutputImageType >::RecieveDataSet(void)
 {
 	Imaging::InStream stream(&netAccessor_);
 	
-	OutputImageType out = GetOutputImage();
+	OutputImageType &out = this->GetOutputImage();
 	out.DeSerializeProperties(stream);
 	
 	//get attribs of image and call SetOutputImageSize
@@ -134,7 +134,7 @@ RemoteFilter< InputImageType, OutputImageType >::RecieveDataSet(void)
 			maximums[i] = out.GetDimensionExtents(i).maximum;
 			voxelExtents[i] = out.GetDimensionExtents(i).elementExtent;
 		}
-		out.SetOutputImageSize( minimums, maximums, voxelExtents );
+		this->SetOutputImageSize( minimums, maximums, voxelExtents );
 	}
 	
 	// and recieve the resulting dataset

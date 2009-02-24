@@ -1,24 +1,8 @@
 
 srcdir = .
-projSrcTop=..
+srcTop=..
 
-ifdef COMPILE_FOR_CELL
-binUtilsPath=/opt/cell/toolchain/bin
-ROOT=/opt/cell/sysroot
-
-CXX=$(binUtilsPath)/ppu-g++
-SPUComp=$(binUtilsPath)/spu-g++
-AR=$(binUtilsPath)/ppu-ar
-SPU_AR=$(binUtilsPath)/spu-ar
-archPostfix=CELL
-CXXDEBUG_OPTIONS= -g
-else
-CXX=g++
-AR=ar
-ROOT=
-archPostfix=
-CXXDEBUG_OPTIONS= -ggdb
-endif
+include $(srcTop)/project/ToolchainSelect.mk
 
 RM=rm -f
 MKDIR=mkdir
@@ -37,9 +21,9 @@ TARGETS=	Common \
 
 #Name of target
 OUTPUTNAME=	lib$(NAME).a
-OUTPUTDIR=	$(projSrcTop)/lib
+OUTPUTDIR=	$(srcTop)/lib
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
-TMP_DIR=	$(projSrcTop)/tmp/$(NAME)
+TMP_DIR=	$(srcTop)/tmp/$(NAME)
 
 CXXFLAGS= -Wall -Wno-deprecated $(CXXDEBUG_OPTIONS)
 #Dependecy file creation parameters
@@ -48,12 +32,10 @@ CDEPFLAGS=	-MM
 
 LDFLAGS=
 ARFLAGS=	-r
-INCLUDES=	-I$(projSrcTop) \
+INCLUDES=	-I$(srcTop)\
 		-I$(srcdir)\
-		-I$(projSrcTop)/include\
+		-I$(srcTop)/include\
 		-I/usr/local/include/boost-1_38
-
-
 
 DEBUG_DEFS=	-DDEBUG_LEVEL=10\
 		-DDEBUG_ADITIONAL_INFO

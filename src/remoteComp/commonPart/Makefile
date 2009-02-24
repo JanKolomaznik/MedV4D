@@ -2,14 +2,14 @@
 srcdir = .
 srcTop = ../..
 
-CXX=g++
-AR=ar
+include $(srcTop)/project/ToolchainSelect.mk
+
 RM=rm -f
 MKDIR=mkdir
 
 ########################################
 #Name of this project part
-NAME=		remoteCompCommons
+NAME=		remoteCompCommons$(archPostfix)
 #Names of target sources
 TARGETS=	netAccessor
 

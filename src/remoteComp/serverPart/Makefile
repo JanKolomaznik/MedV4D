@@ -2,13 +2,13 @@
 srcdir = .
 srcTop = ../..
 
-CXX=g++
-AR=ar
+include $(srcTop)/project/ToolchainSelect.mk
+
 RM=rm -f
 MKDIR=mkdir
 
 ITKIncludeRoot=/usr/local/include/InsightToolkit
-   
+
 ITKIncludes=	-I$(ITKIncludeRoot)\
 				-I$(ITKIncludeRoot)/Common\
 				-I$(ITKIncludeRoot)/Algorithms\
@@ -19,10 +19,34 @@ ITKIncludes=	-I$(ITKIncludeRoot)\
 				-I$(ITKIncludeRoot)/Utilities/vxl/core\
 				-I$(ITKIncludeRoot)/gdcm/src
 				
-M4DLIBS=	$(srcTop)/lib/libremoteCompCommons.a \
-		$(srcTop)/lib/libImaging.a\
-		$(srcTop)/lib/libbackendForDICOM.a\
-		$(srcTop)/lib/libcommon.a
+ITKLIBS= 	$(ITKLibsRoot)/libITKNumerics.a\
+			$(ITKLibsRoot)/libITKIO.a\
+			$(ITKLibsRoot)/libITKNrrdIO.a\
+			$(ITKLibsRoot)/libitkgdcm.a\
+			$(ITKLibsRoot)/libitkjpeg12.a\
+			$(ITKLibsRoot)/libitkjpeg16.a\
+			$(ITKLibsRoot)/libitkopenjpeg.a\
+			$(ITKLibsRoot)/libitkpng.a\
+			$(ITKLibsRoot)/libitktiff.a\
+			$(ITKLibsRoot)/libitkjpeg8.a\
+			$(ITKLibsRoot)/libITKSpatialObject.a\
+			$(ITKLibsRoot)/libITKCommon.a\
+			$(ITKLibsRoot)/libitkvnl_inst.a\
+			$(ITKLibsRoot)/libitkvnl_algo.a\
+			$(ITKLibsRoot)/libitkvnl.a\
+			$(ITKLibsRoot)/libitkv3p_netlib.a\
+			$(ITKLibsRoot)/libitkvcl.a\
+			$(ITKLibsRoot)/libITKMetaIO.a\
+			$(ITKLibsRoot)/libitksys.a\
+			$(ITKLibsRoot)/libITKDICOMParser.a\
+			$(ITKLibsRoot)/libITKEXPAT.a\
+			$(ITKLibsRoot)/libITKniftiio.a\
+			$(ITKLibsRoot)/libITKznz.a\
+			$(ITKLibsRoot)/libitkzlib.a
+				
+M4DLIBS=	$(srcTop)/lib/libremoteCompCommons$(archPostfix).a \
+		$(srcTop)/lib/libImaging$(archPostfix).a\
+		$(srcTop)/lib/libcommon$(archPostfix).a
 
 LIBS=		$(M4DLIBS) \
 		-lboost_thread \
@@ -30,7 +54,7 @@ LIBS=		$(M4DLIBS) \
 
 ########################################
 #Name of this project part
-NAME=		remoteCompServer
+NAME=		remoteCompServer$(archPostfix)
 #Names of target sources
 TARGETS=	main\
 			server\
@@ -44,8 +68,6 @@ OUTPUTDIR=	$(srcTop)/executables
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	$(srcTop)/tmp/$(NAME)
 SRC_DIR=	./src
-
-CXXDEBUG_OPTIONS= -ggdb 
 
 CXXFLAGS= -Wall -Wno-deprecated $(CXXDEBUG_OPTIONS)
 #Dependecy file creation parameters
@@ -62,7 +84,7 @@ INCLUDES=	-I$(srcTop) \
 			-I/usr/local/include/boost-1_38
 
 DEBUG_DEFS=	-DDEBUG_LEVEL=10\
-		-DDEBUG_ADITIONAL_INFO
+			-DDEBUG_ADITIONAL_INFO
 
 DEFS=		$(DEBUG_DEFS)
 
