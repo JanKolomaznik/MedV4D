@@ -16,12 +16,13 @@ public:
 	typedef APipeFilter	PredecessorType;
 
 	typedef SlicedGeometry< float32, Imaging::Geometry::BSpline > OutputDataset;
-
-	typedef typename ImageTraits< InputImageType >::InputPort
-		InputPortType;
-	typedef OutputPortTyped< OutputDataset > OutputPortType;
+	typedef	Imaging::Geometry::BSpline< float32, 2 >	CurveType;
 
 	typedef Image< ElementType, 3 >		InputImageType;
+
+	typedef typename ImageTraits< InputImageType >::InputPort InputPortType;
+	typedef OutputPortTyped< OutputDataset > OutputPortType;
+
 
 	typedef ImageRegion< ElementType, 2 >	RegionType;
 
@@ -43,8 +44,8 @@ protected:
 	void
 	ReleaseInputImage( uint32 idx )const;
 
-	OutputDataset&
-	GetOutputGDataset()const;
+/*	OutputDataset&
+	GetOutputGDataset()const;*/
 
 	void
 	ReleaseOutputGDataset()const;
@@ -65,7 +66,9 @@ protected:
 	AfterComputation( bool successful );
 
 	void
-	ProcessSlice( const RegionType &region, CurveType &initialization, typename OutputDataset::ObjectsInSlice &slice );
+	ProcessSlice( const RegionType &region, CurveType &initialization, typename OutputDataset::ObjectsInSlice &slice )
+	{//TODO
+	}
 
 	const InputImageType	*in[ InCount ];
 	OutputDataset		*out;
@@ -75,7 +78,10 @@ protected:
 
 };
 
+} /*namespace Imaging*/
+} /*namespace M4D*/
+
 //include implementation
-#include "Imaging/filters/ConvolutionFilter.tcc"
+#include "SnakeSegmentationFilter.tcc"
 
 #endif //SNAKE_SEGMENTATION_FILTER_H

@@ -12,7 +12,7 @@ public:
 	SegmentationWidget( QWidget * parent = 0 );
 
 	void
-	Activate( M4D::Imaging::ConnectionInterfaceTyped<AbstractImage> *conn, M4D::Viewer::SliceViewerSpecialStateOperatorPtr specialState );
+	Activate( M4D::Imaging::ConnectionInterfaceTyped<M4D::Imaging::AbstractImage> *conn, M4D::Viewer::SliceViewerSpecialStateOperatorPtr specialState );
 public slots:
 
 protected:

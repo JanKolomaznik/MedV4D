@@ -149,7 +149,7 @@ ManualSegmentationManager::Initialize()
 	
 	_inputImage = MainManager::GetInputImage();
 	_inConnection = new ImageConnectionType( false );
-	_inConnection->PutImage( _inputImage );
+	_inConnection->PutDataset( _inputImage );
 
 	int32 min = _inputImage->GetDimensionExtents(2).minimum;
 	int32 max = _inputImage->GetDimensionExtents(2).maximum;

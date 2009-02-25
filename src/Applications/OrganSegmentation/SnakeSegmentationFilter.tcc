@@ -1,6 +1,6 @@
 
 #ifndef SNAKE_SEGMENTATION_FILTER_H
-#error File ConvolutionFilter.tcc cannot be included directly!
+#error File SnakeSegmentationFilter.tcc cannot be included directly!
 #else
 
 /**
@@ -15,7 +15,7 @@ namespace Imaging
 {
 
 template < typename ElementType >
-const InputImageType&
+const typename SnakeSegmentationFilter< ElementType >::InputImageType&
 SnakeSegmentationFilter< ElementType >::GetInputImage( uint32 idx )const
 {
 	return this->GetInputDataSet< InputImageType >( idx );
@@ -28,16 +28,16 @@ SnakeSegmentationFilter< ElementType >::ReleaseInputImage( uint32 idx )const
 	this->ReleaseInputDataSet( idx );
 }
 
-template < typename ElementType >
-const InputImageType&
+/*template < typename ElementType >
+typename SnakeSegmentationFilter< ElementType >::OutputDataset&
 SnakeSegmentationFilter< ElementType >::GetOutputGDataset()const
 {
 	return this->GetOuputDataSet< OutputDataset >( 0 );
-}
+}*/
 
 template < typename ElementType >
 void 
-SnakeSegmentationFilter< ElementType >::ReleaseOutputGDataset( uint32 idx )const
+SnakeSegmentationFilter< ElementType >::ReleaseOutputGDataset()const
 {
 	this->ReleaseOutputDataSet( 0 );
 }
@@ -49,7 +49,7 @@ SnakeSegmentationFilter< ElementType >::ExecutionThreadMethod()
 	//TODO locking
 	for( int32 i = _minSlice; i < _maxSlice; ++i ) {
 
-		ProcessSlice()
+		//ProcessSlice()
 
 	}
 }
@@ -66,7 +66,7 @@ SnakeSegmentationFilter< ElementType >::PrepareOutputDatasets()
 	}
 
 	this->out->UpgradeToExclusiveLock();
-		GeometryFactory::ChangeSliceCount( (*this->out), _minSlice, _maxSlice );
+		//GeometryDataSetFactory::ChangeSliceCount( (*this->out), _minSlice, _maxSlice );
 	this->out->DowngradeFromExclusiveLock();
 }
 
@@ -82,7 +82,7 @@ SnakeSegmentationFilter< ElementType >::BeforeComputation( AbstractPipeFilter::U
 	for( unsigned i = 0; i < InCount; ++i ) {
 		in[ i ] = &(this->GetInputImage( i ));
 	}
-	out = &(this->GetOutputGDataset());
+	//out = &(this->GetOutputGDataset());
 	
 }
 
@@ -108,7 +108,7 @@ SnakeSegmentationFilter< ElementType >::AfterComputation( bool successful )
 	PredecessorType::AfterComputation( successful );	
 }
 
-
+/*
 template < typename ElementType >
 void
 SnakeSegmentationFilter< ElementType >
@@ -119,7 +119,7 @@ SnakeSegmentationFilter< ElementType >
 {
 	slice.clear();
 	slice.push_back( initialization );
-}
+}*/
 	
 } /*namespace Imaging*/
 } /*namespace M4D*/

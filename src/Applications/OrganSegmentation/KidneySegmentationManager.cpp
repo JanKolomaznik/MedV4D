@@ -1,8 +1,8 @@
 
-#include "KidneySegmentationManager.h"
 #include "Imaging.h"
 #include <cmath>
 #include "SnakeSegmentationFilter.h"
+#include "KidneySegmentationManager.h"
 
 using namespace M4D;
 using namespace M4D::Imaging;
@@ -150,7 +150,7 @@ KidneySegmentationManager::Initialize()
 	
 	_inputImage = MainManager::GetInputImage();
 	_inConnection = new ImageConnectionType( false );
-	_inConnection->PutImage( _inputImage );
+	_inConnection->PutDataset( _inputImage );
 
 	int32 min = _inputImage->GetDimensionExtents(2).minimum;
 	int32 max = _inputImage->GetDimensionExtents(2).maximum;
@@ -187,6 +187,6 @@ KidneySegmentationManager::UserInputFinished()
 	_inputImage = _inputImage->GetRestrictedImage( 
 			_inputImage->GetSubRegion( minP, maxP )
 			);
-	_inConnection->PutImage( _inputImage );
+	_inConnection->PutDataset( _inputImage );
 }
 

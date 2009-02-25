@@ -7,8 +7,8 @@
 typedef M4D::Imaging::AbstractImage::Ptr	AbstractImagePtr;
 typedef M4D::Imaging::Image< int16, 3 >	InputImageType;
 typedef InputImageType::Ptr	InputImagePtr;
-typedef M4D::Imaging::ConnectionInterfaceTyped<AbstractImage>	InImageConnection;
-typedef M4D::Imaging::ImageConnection< InputImageType >	ImageConnectionType;
+typedef M4D::Imaging::ConnectionTyped< M4D::Imaging::AbstractImage >	InImageConnection;
+typedef M4D::Imaging::ConnectionTyped< InputImageType >	ImageConnectionType;
 
 class MainManager
 {
@@ -28,7 +28,7 @@ public:
 
 	static InputImagePtr
 	GetInputImage()
-		{ return _inputImage = _inConvConnection->GetImagePtr(); }
+		{ return _inputImage = _inConvConnection->GetDatasetPtrTyped(); }
 protected:
 	static M4D::Dicom::DcmProvider::DicomObjSetPtr		_inputDcmSet;
 	static InputImagePtr 					_inputImage;

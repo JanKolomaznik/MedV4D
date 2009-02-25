@@ -50,7 +50,7 @@ namespace Imaging
 
 #define PREPARE_CAST_SMART_POINTER_MACRO	\
 	static Ptr \
-	Cast( AbstractDataSet::Ptr & dataset ) \
+	Cast( AbstractDataSet::Ptr dataset ) \
 	{	if( dynamic_cast< ThisClass * >( dataset.get() ) == NULL ) { \
 			_THROW_ ErrorHandling::ExceptionCastProblem();\
 		} \

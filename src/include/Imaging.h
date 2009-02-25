@@ -1,3 +1,6 @@
+#ifndef ___IMAGING_ALL_HEADERS_
+#define ___IMAGING_ALL_HEADERS_
+
 #include "Imaging/AbstractDataSet.h"
 #include "Imaging/AbstractFilter.h"
 #include "Imaging/AbstractImage2DFilter.h"
@@ -22,6 +25,7 @@
 //#include "Imaging/FilterComputation.h"
 #include "Imaging/GeometricAlgorithms.h"
 #include "Imaging/GeometricalObject.h"
+#include "Imaging/GeometryDataSetFactory.h"
 #include "Imaging/IO/IOStreams.h"
 //#include "Imaging/ImageConnection.h"
 #include "Imaging/ImageDataTemplate.h"
@@ -50,3 +54,5 @@
 #include "Imaging/filters/SimpleProjection.h"
 #include "Imaging/filters/SobelEdgeDetector.h"
 #include "Imaging/filters/ThresholdingFilter.h"
+
+#endif //___IMAGING_ALL_HEADERS_

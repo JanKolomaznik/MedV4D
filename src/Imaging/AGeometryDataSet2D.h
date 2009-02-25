@@ -134,13 +134,21 @@ public:
 
 
 
+	
+
 	void Dump( void)
 	{ _THROW_ ErrorHandling::ETODO();	}
+	void SerializeData(OutStream &stream)
+	{ _THROW_ ErrorHandling::ETODO();	}
+	void SerializeClassInfo(OutStream &stream)
+	{ _THROW_ ErrorHandling::ETODO();	}
+	void SerializeProperties(OutStream &stream)
+	{ _THROW_ ErrorHandling::ETODO();	}
+	void DeSerializeData(InStream &stream)
+	{ _THROW_ ErrorHandling::ETODO();	}
+	void DeSerializeProperties(InStream &stream)
+	{ _THROW_ ErrorHandling::ETODO();	}
 
-	void Serialize(OutStream &stream)
-	{ _THROW_ ErrorHandling::ETODO();	}
-	void DeSerialize(InStream &stream)
-	{ _THROW_ ErrorHandling::ETODO();	}
 protected:
 
 	Slices	_slices;

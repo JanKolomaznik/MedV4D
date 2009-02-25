@@ -43,6 +43,28 @@ public:
 			{ _coordinates[i] = x; } 
 		}
 
+	Vector( CoordType x, CoordType y )
+		{
+			if( Dimension != 2 ) { 
+				_THROW_ M4D::ErrorHandling::EBadDimension();
+			}
+
+			_coordinates[0] = x; 
+			_coordinates[1] = y; 
+		}
+
+	Vector( CoordType x, CoordType y, CoordType z )
+		{
+			if( Dimension != 3 ) {
+				_THROW_ M4D::ErrorHandling::EBadDimension();
+			}
+
+			_coordinates[0] = x; 
+			_coordinates[1] = y; 
+			_coordinates[3] = y; 
+		}
+	
+
 	template< typename CType >
 	Vector( const Vector< CType, Dimension > &coord ) 
 		{ 

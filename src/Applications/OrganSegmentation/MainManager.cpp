@@ -30,7 +30,7 @@ MainManager::InitInput( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
 	AbstractImagePtr image = M4D::Dicom::DcmProvider::CreateImageFromDICOM( dicomObjSet );
 
 	try {
-		_inConnection->PutImage( image );
+		_inConnection->PutDataset( image );
 
 		_conversionPipeline.ExecuteFirstFilter();
 		/*_convertor->Execute();
