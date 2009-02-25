@@ -8,7 +8,8 @@ all:	libs Applications
 	#no command
 
 .PHONY:libs
-libs:	common backendForDICOM Imaging GUI vtkIntegration cell
+libs:	common backendForDICOM Imaging GUI vtkIntegration 
+	#cell
 	#no command
 
 .PHONY:clean-all

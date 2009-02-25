@@ -267,12 +267,14 @@ AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementTyp
 				record.firstSlice = dimExtents.minimum + (i*computationGrouping);
 				record.lastSlice = dimExtents.minimum + ((i+1)*computationGrouping) - 1;
 				record.inputBBox = this->in->GetDirtyBBox( 
-					this->in->GetDimensionExtents( 0 ).minimum,
-					this->in->GetDimensionExtents( 1 ).minimum,
-					record.firstSlice - sliceComputationNeighbourCount,
-					this->in->GetDimensionExtents( 0 ).maximum,
-					this->in->GetDimensionExtents( 1 ).maximum,
-					record.lastSlice + sliceComputationNeighbourCount
+					CreateVector< int32 >( 
+						this->in->GetDimensionExtents( 0 ).minimum,
+						this->in->GetDimensionExtents( 1 ).minimum,
+						record.firstSlice - sliceComputationNeighbourCount ),
+					CreateVector< int32 >( 
+						this->in->GetDimensionExtents( 0 ).maximum,
+						this->in->GetDimensionExtents( 1 ).maximum,
+						record.lastSlice + sliceComputationNeighbourCount )					
 					);
 				record.writerBBox = &( GetComputationGroupWriterBBox( record ) );
 
@@ -283,12 +285,14 @@ AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementTyp
 			record.firstSlice = dimExtents.minimum + (groupCount*computationGrouping) - sliceComputationNeighbourCount;
 			record.lastSlice = dimExtents.maximum - 1;
 			record.inputBBox = this->in->GetDirtyBBox( 
-				this->in->GetDimensionExtents( 0 ).minimum,
-				this->in->GetDimensionExtents( 1 ).minimum,
-				record.firstSlice - sliceComputationNeighbourCount,
-				this->in->GetDimensionExtents( 0 ).maximum,
-				this->in->GetDimensionExtents( 1 ).maximum,
-				record.lastSlice + sliceComputationNeighbourCount
+				CreateVector< int32 >( 
+					this->in->GetDimensionExtents( 0 ).minimum,
+					this->in->GetDimensionExtents( 1 ).minimum,
+					record.firstSlice - sliceComputationNeighbourCount ),
+				CreateVector< int32 >( 
+					this->in->GetDimensionExtents( 0 ).maximum,
+					this->in->GetDimensionExtents( 1 ).maximum,
+					record.lastSlice + sliceComputationNeighbourCount )
 				);
 			record.writerBBox = &( GetComputationGroupWriterBBox( record ) );
 
@@ -315,12 +319,14 @@ AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementTyp
 				BBox.GetInterval( 3, record.firstSlice, record.lastSlice );
 
 				record.inputBBox = this->in->GetDirtyBBox( 
-					this->in->GetDimensionExtents( 0 ).minimum,
-					this->in->GetDimensionExtents( 1 ).minimum,
-					record.firstSlice - sliceComputationNeighbourCount,
-					this->in->GetDimensionExtents( 0 ).maximum,
-					this->in->GetDimensionExtents( 1 ).maximum,
-					record.lastSlice + sliceComputationNeighbourCount
+					CreateVector< int32 >( 
+						this->in->GetDimensionExtents( 0 ).minimum,
+						this->in->GetDimensionExtents( 1 ).minimum,
+						record.firstSlice - sliceComputationNeighbourCount ),
+					CreateVector< int32 >( 
+						this->in->GetDimensionExtents( 0 ).maximum,
+						this->in->GetDimensionExtents( 1 ).maximum,
+						record.lastSlice + sliceComputationNeighbourCount )
 					);
 				record.writerBBox = &( GetComputationGroupWriterBBox( record ) );
 
@@ -338,12 +344,15 @@ WriterBBoxInterface &
 AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 ::GetComputationGroupWriterBBox(  SliceComputationRecord & record )
 {
-	return this->out->SetDirtyBBox( this->in->GetDimensionExtents( 0 ).minimum,
-			this->in->GetDimensionExtents( 1 ).minimum,
-			this->in->GetDimensionExtents( 0 ).maximum,
-			record.firstSlice,
-			this->in->GetDimensionExtents( 1 ).maximum,
-			record.lastSlice
+	return this->out->SetDirtyBBox( 
+			CreateVector< int32 >( 
+				this->in->GetDimensionExtents( 0 ).minimum,
+				this->in->GetDimensionExtents( 1 ).minimum,
+				this->in->GetDimensionExtents( 0 ).maximum ),
+			CreateVector< int32 >( 
+				record.firstSlice,
+				this->in->GetDimensionExtents( 1 ).maximum,
+				record.lastSlice )
 			);
 }
 

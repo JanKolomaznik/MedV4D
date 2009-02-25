@@ -45,19 +45,19 @@ namespace Imaging
  * future versions. 
  * Sharing is possible because locking is done on buffer and this class has only wrapper methods for locking.
  **/
-template< typename ElementType, unsigned dim >
-class Image;
+/*template< typename ElementType, unsigned dim >
+class Image;*/
 
 /**
  * Partial specialization of image template for two dimensional case.
  **/
-template< typename ElementType >
-class Image< ElementType, 2 >: public AbstractImageDim< 2 >
+template< typename ElementType, unsigned Dim >
+class Image: public AbstractImageDim< Dim >
 {
 public:
 	friend class ImageFactory;
 
-	static const unsigned				Dimension = 2;
+	static const unsigned				Dimension = Dim;
 
 	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( Image< ElementType, Dimension > );
 	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AbstractImageDim< Dimension > );
@@ -106,22 +106,38 @@ public:
 	 * \param image Refence to abstract image - predecessor of this class.
 	 * \exception ExceptionCastProblem When casting impossible.
 	 **/	
-	static Image< ElementType, 2 > &
-	CastAbstractImage( AbstractImage & image );
+	static Image< ElementType, Dimension > &
+	CastAbstractImage( AbstractImage & image )
+		{
+			//TODO - handle exception well
+			return dynamic_cast< Image< ElementType, Dimension > & >( image );
+		}
 
 	/**
 	 * \param image Constant refence to abstract image - predecessor of this class.
 	 * \exception ExceptionCastProblem When casting impossible.
 	 **/	
-	static const Image< ElementType, 2 > &
-	CastAbstractImage( const AbstractImage & image );
+	static const Image< ElementType, Dimension > &
+	CastAbstractImage( const AbstractImage & image )
+		{
+			//TODO - handle exception well
+			return dynamic_cast< const Image< ElementType, Dimension > & >( image );
+		}
 
 	/**
 	 * \param image Smart pointer to abstract image - predecessor of this class.
 	 * \exception ExceptionCastProblem When casting impossible.
 	 **/	
-	static typename Image< ElementType, 2 >::Ptr 
-	CastAbstractImage( AbstractImage::Ptr & image );
+	static typename Image< ElementType, Dimension >::Ptr 
+	CastAbstractImage( AbstractImage::Ptr & image )
+		{
+			if( dynamic_cast< Image< ElementType, Dimension > * >( image.get() ) == NULL ) {
+				//TODO _THROW_ exception
+			}
+
+			return boost::static_pointer_cast< Image< ElementType, Dimension > >( image );
+		}
+	
 
 	/**
 	 * Method used for easy runtime type identification of 
@@ -132,29 +148,36 @@ public:
 	GetElementTypeID()const
 		{ return GetNumericTypeID<ElementType>(); }
 
+	
+	inline ElementType &
+	GetElement( const PointType &pos );
+
+	inline const ElementType &
+	GetElement( const PointType &pos )const;
+
 	/**
 	 * Access method to data - checking boundaries.
 	 * @param x X coordinate.
 	 * @param y Y coordinate.
 	 **/
-	inline ElementType &
-	GetElement( int32 x, int32 y );
+	/*inline ElementType &
+	GetElement( int32 x, int32 y );*/
 
 	/**
 	 * Access method to data for constant image- checking boundaries.
 	 * @param x X coordinate.
 	 * @param y Y coordinate.
 	 **/
-	inline const ElementType &
-	GetElement( int32 x, int32 y )const;
+	/*inline const ElementType &
+	GetElement( int32 x, int32 y )const;*/
 
-	inline ElementType *
+	/*inline ElementType *
 	GetPointer( 
 			uint32 &width,
 			uint32 &height,
 			int32 &xStride,
 			int32 &yStride
-		  )const;
+		  )const;*/
 
 	ElementType *
 	GetPointer( 
@@ -181,23 +204,35 @@ public:
 			int32 y2 
 			);*/
 
-	WriterBBoxInterface &
+	/*WriterBBoxInterface &
 	SetDirtyBBox( 
 			int32 x1, 
 			int32 y1, 
 			int32 x2, 
 			int32 y2 
+			);*/
+
+	WriterBBoxInterface &
+	SetDirtyBBox( 
+			PointType min,
+			PointType max 
 			);
 
 	WriterBBoxInterface &
 	SetWholeDirtyBBox();
 
-	ReaderBBoxInterface::Ptr
+	/*ReaderBBoxInterface::Ptr
 	GetDirtyBBox( 
 			int32 x1, 
 			int32 y1, 
 			int32 x2, 
 			int32 y2 
+			)const;*/
+
+	ReaderBBoxInterface::Ptr
+	GetDirtyBBox( 
+			PointType min,
+			PointType max
 			)const;
 
 	ReaderBBoxInterface::Ptr 
@@ -243,6 +278,8 @@ private:
 	ReallocateData( typename ImageDataTemplate< ElementType >::Ptr imageData );
 
 };
+
+#ifdef BLABLA___
 
 /**
  * Partial specialization of image template for three dimensional case.
@@ -646,6 +683,7 @@ private:
 	ReallocateData( typename ImageDataTemplate< ElementType >::Ptr imageData );
 };
 
+#endif
 
 //Typedefs :
 

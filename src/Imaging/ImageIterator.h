@@ -184,6 +184,30 @@ public:
 		}
 };
 
+template< typename ElementType, unsigned Dim >
+ImageIterator< ElementType, Dim >
+CreateImageIteratorGen(
+			ElementType	*pointer, 
+			Vector< uint32, Dim > size,
+			Vector< int32, Dim > strides,	
+			Vector< uint32, Dim > pos
+			)
+{
+	/*uint32 _size[2];
+	int32 _strides[2];
+	uint32 _position[2];
+
+	_size[0] = width;
+	_size[1] = height;
+
+	_strides[0] = xStride;
+	_strides[1] = yStride;
+
+	_position[0] = xPos;
+	_position[1] = yPos;*/
+
+	return ImageIterator< ElementType, Dim >( pointer, size.GetData(), strides.GetData(), pos.GetData() );
+}
 
 template< typename ElementType >
 ImageIterator< ElementType, 2 >

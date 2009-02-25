@@ -21,9 +21,9 @@ namespace Imaging
 
 
 
-template< typename ElementType >
-Image< ElementType, 2 >::Image()
-: AbstractImageDim< 2 >( this->_dimExtents )
+template< typename ElementType, unsigned Dim >
+Image< ElementType, Dim >::Image()
+: AbstractImageDim< Dim >( this->_dimExtents )
 {
 	for( unsigned i = 0; i < Dimension; ++i ) {
 		_dimExtents[i].minimum = 0;
@@ -37,9 +37,9 @@ Image< ElementType, 2 >::Image()
 	_pointerCoordinatesInSource = NULL;
 }
 
-template< typename ElementType >
-Image< ElementType, 2 >::Image( AbstractImageData::APtr imageData )
-: AbstractImageDim< 2 >( this->_dimExtents )
+template< typename ElementType, unsigned Dim >
+Image< ElementType, Dim >::Image( AbstractImageData::APtr imageData )
+: AbstractImageDim< Dim >( this->_dimExtents )
 {
 	try 
 	{
@@ -55,9 +55,9 @@ Image< ElementType, 2 >::Image( AbstractImageData::APtr imageData )
 	}
 }
 
-template< typename ElementType >
-Image< ElementType, 2 >::Image( typename ImageDataTemplate< ElementType >::Ptr imageData )
-: AbstractImageDim< 2 >( this->_dimExtents )
+template< typename ElementType, unsigned Dim >
+Image< ElementType, Dim >::Image( typename ImageDataTemplate< ElementType >::Ptr imageData )
+: AbstractImageDim< Dim >( this->_dimExtents )
 {
 	_imageData = imageData;
 	
@@ -65,9 +65,9 @@ Image< ElementType, 2 >::Image( typename ImageDataTemplate< ElementType >::Ptr i
 	//TODO handle exceptions
 }
 	
-template< typename ElementType >
-Image< ElementType, 2 >::Image( typename ImageDataTemplate< ElementType >::Ptr imageData, typename Image< ElementType, 2 >::SubRegion region )
-: AbstractImageDim< 2 >( this->_dimExtents )
+template< typename ElementType, unsigned Dim >
+Image< ElementType, Dim >::Image( typename ImageDataTemplate< ElementType >::Ptr imageData, typename Image< ElementType, Dim >::SubRegion region )
+: AbstractImageDim< Dim >( this->_dimExtents )
 {
 	_imageData = imageData;
 	if( _imageData->GetDimension() < Dimension ) {
@@ -90,9 +90,9 @@ Image< ElementType, 2 >::Image( typename ImageDataTemplate< ElementType >::Ptr i
 	_pointer = region.GetPointer();
 }
 	
-template< typename ElementType >
+template< typename ElementType, unsigned Dim >
 void
-Image< ElementType, 2 >::FillDimensionInfo()
+Image< ElementType, Dim >::FillDimensionInfo()
 {
 	if( _imageData->GetDimension() != Dimension ) {
 			//TODO _THROW_ exception
@@ -110,9 +110,9 @@ Image< ElementType, 2 >::FillDimensionInfo()
 	_pointer = &_imageData->Get( 0 );
 }
 
-template< typename ElementType >
+template< typename ElementType, unsigned Dim >
 void
-Image< ElementType, 2 >::ReallocateData( typename ImageDataTemplate< ElementType >::Ptr imageData )
+Image< ElementType, Dim >::ReallocateData( typename ImageDataTemplate< ElementType >::Ptr imageData )
 {
 	if( imageData->GetDimension() != Dimension ) {
 			//TODO _THROW_ exception
@@ -126,8 +126,8 @@ Image< ElementType, 2 >::ReallocateData( typename ImageDataTemplate< ElementType
 	FillDimensionInfo();
 }
 
-template< typename ElementType >
-Image< ElementType, 2 >::~Image()
+template< typename ElementType, unsigned Dim >
+Image< ElementType, Dim >::~Image()
 {
 	if( _pointerCoordinatesInSource ) {
 		delete [] _pointerCoordinatesInSource;
@@ -135,26 +135,66 @@ Image< ElementType, 2 >::~Image()
 
 }
 
-template< typename ElementType >
-Image< ElementType, 2 > &
-Image< ElementType, 2 >::CastAbstractImage( AbstractImage & image )
+template< typename ElementType, unsigned Dim >
+inline ElementType &
+Image< ElementType, Dim >::GetElement( const typename Image< ElementType, Dim >::PointType &pos )
+{
+	/*if( 	x < GetDimensionExtents( 0 ).minimum || 
+		x >= GetDimensionExtents( 0 ).maximum 	) 
+	{
+		//TODO _THROW_ exception
+	}
+	if( 	y < GetDimensionExtents( 1 ).minimum || 
+		y >= GetDimensionExtents( 1 ).maximum 	) 
+	{
+		//TODO _THROW_ exception
+	}*/
+	
+	throw ErrorHandling::ETODO();
+	return _imageData->Get( 0, 0 );
+}
+
+template< typename ElementType, unsigned Dim >
+inline const ElementType &
+Image< ElementType, Dim >::GetElement( const typename Image< ElementType, Dim >::PointType &pos )const
+{
+	/*if( 	x < GetDimensionExtents( 0 ).minimum || 
+		x >= GetDimensionExtents( 0 ).maximum 	) 
+	{
+		//TODO _THROW_ exception
+	}
+	if( 	y < GetDimensionExtents( 1 ).minimum || 
+		y >= GetDimensionExtents( 1 ).maximum 	) 
+	{
+		//TODO _THROW_ exception
+	}*/
+	
+	throw ErrorHandling::ETODO();
+	return _imageData->Get( 0, 0 );
+}
+
+
+/*
+template< typename ElementType, unsigned Dim >
+Image< ElementType, Dim > &
+Image< ElementType, Dim >::CastAbstractImage( AbstractImage & image )
 {
 	//TODO - handle exception well
 	return dynamic_cast< Image< ElementType, Dimension > & >( image );
 }
 
-template< typename ElementType >
-const Image< ElementType, 2 > &
-Image< ElementType, 2 >::CastAbstractImage( const AbstractImage & image )
+template< typename ElementType, unsigned Dim >
+const Image< ElementType, Dim > &
+Image< ElementType, Dim >::CastAbstractImage( const AbstractImage & image )
 {
 	//TODO - handle exception well
 	return dynamic_cast< const Image< ElementType, Dimension > & >( image );
 }
 
 
-template< typename ElementType >
-typename Image< ElementType, 2 >::Ptr 
-Image< ElementType, 2 >::CastAbstractImage( AbstractImage::Ptr & image )
+template< typename ElementType, unsigned Dim >
+typename Image< ElementType, Dim >::Ptr 
+Image< ElementType, Dim >::CastAbstractImage( AbstractImage::Ptr & image )
 {
 	if( dynamic_cast< Image< ElementType, Dimension > * >( image.get() ) == NULL ) {
 		//TODO _THROW_ exception
@@ -162,10 +202,11 @@ Image< ElementType, 2 >::CastAbstractImage( AbstractImage::Ptr & image )
 
 	return boost::static_pointer_cast< Image< ElementType, Dimension > >( image );
 }
+*/
 
-template< typename ElementType >
+/*template< typename ElementType, unsigned Dim >
 inline ElementType &
-Image< ElementType, 2 >::GetElement( int32 x, int32 y )
+Image< ElementType, Dim >::GetElement( int32 x, int32 y )
 {
 	if( 	x < GetDimensionExtents( 0 ).minimum || 
 		x >= GetDimensionExtents( 0 ).maximum 	) 
@@ -181,9 +222,9 @@ Image< ElementType, 2 >::GetElement( int32 x, int32 y )
 	return _imageData->Get( x, y );
 }
 
-template< typename ElementType >
+template< typename ElementType, unsigned Dim >
 inline const ElementType &
-Image< ElementType, 2 >::GetElement( int32 x, int32 y )const
+Image< ElementType, Dim >::GetElement( int32 x, int32 y )const
 {
 	if( 	x < GetDimensionExtents( 0 ).minimum || 
 		x >= GetDimensionExtents( 0 ).maximum 	) 
@@ -197,11 +238,11 @@ Image< ElementType, 2 >::GetElement( int32 x, int32 y )const
 	}
 	
 	return _imageData->Get( x, y );
-}
+}*/
 
-template< typename ElementType >
+/*template< typename ElementType, unsigned Dim >
 inline ElementType *
-Image< ElementType, 2 >::GetPointer( 
+Image< ElementType, Dim >::GetPointer( 
 			uint32 &width,
 			uint32 &height,
 			int32 &xStride,
@@ -223,13 +264,13 @@ Image< ElementType, 2 >::GetPointer(
 
 		return NULL;
 	}
-}
+}*/
 
-template< typename ElementType >
+template< typename ElementType, unsigned Dim >
 ElementType *
-Image< ElementType, 2 >::GetPointer( 
-			typename Image< ElementType, 2 >::SizeType &size,
-			typename Image< ElementType, 2 >::PointType &strides
+Image< ElementType, Dim >::GetPointer( 
+			typename Image< ElementType, Dim >::SizeType &size,
+			typename Image< ElementType, Dim >::PointType &strides
 		  )const
 {
 	if( _imageData ) {
@@ -247,10 +288,10 @@ Image< ElementType, 2 >::GetPointer(
 	}
 }
 
-template< typename ElementType >
+template< typename ElementType, unsigned Dim >
 template< unsigned NewDim >
 typename Image< ElementType, NewDim >::Ptr
-Image< ElementType, 2 >::GetRestrictedImage( 
+Image< ElementType, Dim >::GetRestrictedImage( 
 		ImageRegion< ElementType, NewDim > region
 		)
 {
@@ -258,7 +299,7 @@ Image< ElementType, 2 >::GetRestrictedImage(
 	return typename Image< ElementType, NewDim >::Ptr( image );
 }
 /*
-template< typename ElementType >
+template< typename ElementType, unsigned Dim >
 typename Image< ElementType, 2 >::Ptr
 Image< ElementType, 2 >::GetRestricted2DImage( 
 		ImageRegion< ElementType, 2 > region
@@ -267,94 +308,84 @@ Image< ElementType, 2 >::GetRestricted2DImage(
 
 }
 */
-template< typename ElementType >
+template< typename ElementType, unsigned Dim >
 WriterBBoxInterface &
-Image< ElementType, 2 >::SetDirtyBBox( 
-		int32 x1, 
-		int32 y1, 
-		int32 x2, 
-		int32 y2 
+Image< ElementType, Dim >::SetDirtyBBox( 
+			typename Image< ElementType, Dim >::PointType min,
+			typename Image< ElementType, Dim >::PointType max
 		)
 {
 	ModificationManager & modManager = _imageData->GetModificationManager();
 
-	return modManager.AddMod2D( 
-				x1,
-				y1,
-				x2,
-				y2
-			);
+	return modManager.AddMod( min, max );
 }
 
-template< typename ElementType >
-WriterBBoxInterface &
-Image< ElementType, 2 >::SetWholeDirtyBBox()
-{
-
-	return SetDirtyBBox( 
-			GetDimensionExtents(0).minimum,
-			GetDimensionExtents(1).minimum,
-			GetDimensionExtents(0).maximum,
-			GetDimensionExtents(1).maximum
-			);
-}
-
-template< typename ElementType >
+template< typename ElementType, unsigned Dim >
 ReaderBBoxInterface::Ptr
-Image< ElementType, 2 >::GetDirtyBBox( 
-		int32 x1, 
-		int32 y1, 
-		int32 x2, 
-		int32 y2 
+Image< ElementType, Dim >::GetDirtyBBox( 
+			typename Image< ElementType, Dim >::PointType min,
+			typename Image< ElementType, Dim >::PointType max
 		)const
 {
 	ModificationManager & modManager = _imageData->GetModificationManager();
 
-	return modManager.GetMod2D( 
-				x1,
-				y1,
-				x2,
-				y2
+	return modManager.GetMod( min, max );
+}
+
+template< typename ElementType, unsigned Dim >
+WriterBBoxInterface &
+Image< ElementType, Dim >::SetWholeDirtyBBox()
+{
+
+	return SetDirtyBBox( 
+			this->GetMinimum(),
+			this->GetMaximum()
+			/*GetDimensionExtents(0).minimum,
+			GetDimensionExtents(1).minimum,
+			GetDimensionExtents(0).maximum,
+			GetDimensionExtents(1).maximum*/
 			);
 }
 
-template< typename ElementType >
+template< typename ElementType, unsigned Dim >
 ReaderBBoxInterface::Ptr
-Image< ElementType, 2 >::GetWholeDirtyBBox()const
+Image< ElementType, Dim >::GetWholeDirtyBBox()const
 {
 
 	return GetDirtyBBox( 
-			GetDimensionExtents(0).minimum,
-			GetDimensionExtents(1).minimum,
-			GetDimensionExtents(0).maximum,
-			GetDimensionExtents(1).maximum
+			this->GetMinimum(),
+			this->GetMaximum()
 			);
 }
 
-template< typename ElementType >
+template< typename ElementType, unsigned Dim >
 const ModificationManager &
-Image< ElementType, 2 >::GetModificationManager()const
+Image< ElementType, Dim >::GetModificationManager()const
 {
 	return _imageData->GetModificationManager();
 }
 
-template< typename ElementType >
-typename Image< ElementType, 2 >::Iterator
-Image< ElementType, 2 >::GetIterator()const
+template< typename ElementType, unsigned Dim >
+typename Image< ElementType, Dim >::Iterator
+Image< ElementType, Dim >::GetIterator()const
 {
-	uint32 width;
+	SizeType size;
+	PointType strides;
+
+	ElementType * pointer = GetPointer( size, strides );
+	/*uint32 width;
 	uint32 height;
 	int32 xStride;
 	int32 yStride;
 
-	ElementType * pointer = GetPointer( width, height, xStride, yStride );
+	ElementType * pointer = GetPointer( width, height, xStride, yStride );*/
 
-	return CreateImageIterator< ElementType >( pointer, width, height, xStride, yStride, 0, 0 );
+	return CreateImageIteratorGen< ElementType, Dim >( pointer, size, strides, Vector< int32, Dim >() );
 }
 
-template< typename ElementType >
-typename Image< ElementType, 2 >::SubRegion
-Image< ElementType, 2 >::GetRegion()const
+template< typename ElementType, unsigned Dim >
+typename Image< ElementType, Dim >::SubRegion
+Image< ElementType, Dim >::GetRegion()const
 {
 	return GetSubRegion( 
 			CreateVector( 
@@ -368,11 +399,11 @@ Image< ElementType, 2 >::GetRegion()const
 			);
 }
 	
-template< typename ElementType >
-typename Image< ElementType, 2 >::SubRegion
-Image< ElementType, 2 >::GetSubRegion(
-			typename Image< ElementType, 2 >::PointType min,
-			typename Image< ElementType, 2 >::PointType max
+template< typename ElementType, unsigned Dim >
+typename Image< ElementType, Dim >::SubRegion
+Image< ElementType, Dim >::GetSubRegion(
+			typename Image< ElementType, Dim >::PointType min,
+			typename Image< ElementType, Dim >::PointType max
 			)const
 {
 	//TODO - check parameters
@@ -396,22 +427,21 @@ Image< ElementType, 2 >::GetSubRegion(
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template< typename ElementType >
+template< typename ElementType, unsigned Dim >
 void
-Image< ElementType, 2 >::Dump(void)
+Image< ElementType, Dim >::Dump(void)
 {	
-	uint32 width;
-	uint32 height;
-	int32 xStride;
-	int32 yStride;
-	ElementType *pointer = GetPointer( width, height, xStride, yStride );
+	PointType stride;
+	SizeType size;
 
-  D_PRINT( "Type: 2D Image (" << width << "x" << height << "):" << std::endl);
+	ElementType *pointer = GetPointer( size, stride );
 
-  for( uint32 j = 0; j < height; ++j ) {
-    for( uint32 k = 0; k < width; ++k ) {
+  D_PRINT( "Type: 2D Image (" << size[0] << "x" << size[1] << "):" << std::endl);
+
+  for( uint32 j = 0; j < size[1]; ++j ) {
+    for( uint32 k = 0; k < size[0]; ++k ) {
       D_PRINT_NOENDL( *pointer << ",");
-      pointer += xStride;
+      pointer += stride[0];
     }
     D_PRINT( std::endl );
   }
@@ -419,67 +449,76 @@ Image< ElementType, 2 >::Dump(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template< typename ElementType >
+template< typename ElementType, unsigned Dim >
 void
-Image< ElementType, 2 >::SerializeClassInfo(OutStream &stream)
+Image< ElementType, Dim >::SerializeClassInfo(OutStream &stream)
 {
 	// header
-	stream.Put<uint8>( (uint8) DATASET_IMAGE);
+	/*stream.Put<uint8>( (uint8) DATASET_IMAGE);
 	// template properties
-	stream.Put<uint16>( GetElementTypeID());
-	stream.Put<uint16>( GetDimension());
+	stream.Put<uint16>( this->GetElementTypeID());
+	stream.Put<uint16>( this->GetDimension());*/
 }
 ///////////////////////////////////////////////////////////////////////////////
-template< typename ElementType >
+template< typename ElementType, unsigned Dim >
 void
-Image< ElementType, 2 >::SerializeProperties(OutStream &stream)
+Image< ElementType, Dim >::SerializeProperties(OutStream &stream)
 {
 	// other properties
-	for( uint8 i = 0; i < GetDimension(); ++i ) 
+	for( uint8 i = 0; i < Dimension; ++i ) 
 	{
-		stream.Put<int32>(_dimExtents[i].minimum);
+		/*stream.Put<int32>(_dimExtents[i].minimum);
 		stream.Put<int32>(_dimExtents[i].maximum);
-		stream.Put<float32>(_dimExtents[i].elementExtent);
+		stream.Put<float32>(_dimExtents[i].elementExtent);*/
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////
-template< typename ElementType >
+template< typename ElementType, unsigned Dim >
 void
-Image< ElementType, 2 >::DeSerializeProperties(InStream &stream)
+Image< ElementType, Dim >::DeSerializeProperties(InStream &stream)
 {		
-	for( unsigned i = 0; i < 2; ++i ) {
-		stream.Get<int32>(_dimExtents[ i ].minimum);		
+	for( unsigned i = 0; i < Dimension; ++i ) {
+		/*stream.Get<int32>(_dimExtents[ i ].minimum);		
 		stream.Get<int32>(_dimExtents[ i ].maximum);
-		stream.Get<float32>(_dimExtents[ i ].elementExtent);		
+		stream.Get<float32>(_dimExtents[ i ].elementExtent);		*/
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////
-template< typename ElementType >
+template< typename ElementType, unsigned Dim >
 void
-Image< ElementType, 2 >::SerializeData(OutStream &stream)
+Image< ElementType, Dim >::SerializeData(OutStream &stream)
 {
 	// actual data
-	uint32 width;
-	uint32 height;
-	int32 xStride;
-	int32 yStride;
-	ElementType *pointer = GetPointer( width, height, xStride, yStride );
+	//PointType stride;
+	//SizeType size;
 
-	// put whole array at once
-	DataBuff buff;
-	buff.data = (void *) pointer;
-	buff.len = width * height * sizeof( ElementType);
+	//ElementType *pointer = GetPointer( size, stride );
 
-	stream.PutDataBuf( buff);
+/*	DataBuff buff;
+	size_t sliceSize = size[0] * size[1];
+
+	for( uint32 k = 0; k < depth; ++k ) 
+	{
+	    buff.data = (void*) pointer;
+	    buff.len = sliceSize * sizeof( ElementType);
+	    stream.PutDataBuf( buff);
+	
+	    pointer += sliceSize; // move on next slice
+	}*/
 }
 	
 ///////////////////////////////////////////////////////////////////////////////
 
-template< typename ElementType >
+template< typename ElementType, unsigned Dim >
 void
-Image< ElementType, 2 >::DeSerializeData(InStream &stream)
+Image< ElementType, Dim >::DeSerializeData(InStream &stream)
 {
-	uint32 width;
+	//PointType stride;
+	//SizeType size;
+
+	//ElementType *pointer = GetPointer( size, stride );
+
+	/*uint32 width;
 	uint32 height;
 	int32 xStride;
 	int32 yStride;
@@ -492,11 +531,14 @@ Image< ElementType, 2 >::DeSerializeData(InStream &stream)
 	buff.data = (void *) pointer;
 	buff.len = width * height * sizeof( ElementType);
 
-	stream.GetDataBuf( buff);
+	stream.GetDataBuf( buff);*/
+
+	
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifdef VVVVVVVVVVVVVVVVVV
 
 //*****************************************************************************
 
@@ -1127,6 +1169,8 @@ Image< ElementType, 4 >::GetModificationManager()const
 {
 	return _imageData->GetModificationManager();
 }
+
+#endif
 
 } /*namespace Imaging*/
 } /*namespace M4D*/

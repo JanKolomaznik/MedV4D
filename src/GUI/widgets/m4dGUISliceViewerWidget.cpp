@@ -122,7 +122,13 @@ public:
 		    // check dimension
 		    if ( inPort->GetDatasetTyped().GetDimension() == 2 )
 		    {
-		        original = Imaging::Image< ElementType, 2 >::CastAbstractImage(inPort->GetDatasetTyped()).GetPointer( width, height, xstride, ystride );
+			Vector< uint32, 2 > size;
+			Vector< int32, 2 > strides;
+		        original = Imaging::Image< ElementType, 2 >::CastAbstractImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
+			width = size[0];
+			height = size[1];
+			xstride = strides[0];
+			ystride = strides[1];
 			dimension = 2;
 			depth = zstride = 0;
 			slice = 0;
@@ -130,25 +136,45 @@ public:
 		    else if ( inPort->GetDatasetTyped().GetDimension() == 3 )
 		    {
 		        dimension = 3;
+			Vector< uint32, 3 > size;
+			Vector< int32, 3 > strides;
 
 		        // check orientation
 		        switch ( so )
 		        {
 			    case xy:
 			    {
-		                original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetDatasetTyped()).GetPointer( width, height, depth, xstride, ystride, zstride );
+		                original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
+				width = size[0];
+				height = size[1];
+				depth = size[2];
+				xstride = strides[0];
+				ystride = strides[1];
+				zstride = strides[2];
 			        break;
 			    }
 
 			    case yz:
 			    {
-		                original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetDatasetTyped()).GetPointer( depth, width, height, zstride, xstride, ystride );
+		                original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
+				width = size[1];
+				height = size[2];
+				depth = size[0];
+				xstride = strides[1];
+				ystride = strides[2];
+				zstride = strides[0];
 			        break;
 			    }
 
 			    case zx:
 			    {
-		                original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetDatasetTyped()).GetPointer( height, depth, width, ystride, zstride, xstride );
+		                original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
+				width = size[2];
+				height = size[0];
+				depth = size[1];
+				xstride = strides[2];
+				ystride = strides[0];
+				zstride = strides[1];
 			        break;
 			    }
 		        }
@@ -1400,12 +1426,12 @@ m4dGUISliceViewerWidget::colorPicker( double x, double y, double z )
 		if ( _inPort->GetDatasetTyped().GetDimension() == 3 )
 		{
 		    INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
-		        _imageID, result = Imaging::Image< TTYPE, 3 >::CastAbstractImage(_inPort->GetDatasetTyped()).GetElement( (int)coords[0], (int)coords[1], (int)coords[2] ) );
+		        _imageID, result = Imaging::Image< TTYPE, 3 >::CastAbstractImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >( (int)coords[0], (int)coords[1], (int)coords[2] ) ) );
 		}
 	        else if ( _inPort->GetDatasetTyped().GetDimension() == 2 )
 	        {
 		    INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
-		        _imageID, result = Imaging::Image< TTYPE, 2 >::CastAbstractImage(_inPort->GetDatasetTyped()).GetElement( (int)coords[0], (int)coords[1] ) );
+		        _imageID, result = Imaging::Image< TTYPE, 2 >::CastAbstractImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >( (int)coords[0], (int)coords[1] ) ) );
 	        }
 	        else
 		{

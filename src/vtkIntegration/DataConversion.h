@@ -21,6 +21,7 @@
 #include "ExceptionBase.h"
 
 #include "Common.h"
+#include "Vector.h"
 
 #include <fstream>
 
@@ -145,7 +146,7 @@ FillVTKImageDataFromImageData(
 				//if( ++i < 2000 ) 
 				//	pomFile << image.Get( idxX, idxY, idxZ ) << " ";
 				
-				*iPtr = image.GetElement( idxX, idxY, idxZ );
+				*iPtr = image.GetElement( CreateVector<int32>( idxX, idxY, idxZ ) );
 				++iPtr;
 			}
 			iPtr += IncY;

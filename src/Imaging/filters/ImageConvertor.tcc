@@ -70,18 +70,46 @@ ConvertImage( const AbstractImage &in, Image< OutputElementType, 3 > &out )
 	uint32 width;
 	uint32 depth;
 
+		Vector< uint32, 2 > size2d;
+		Vector< int32, 2 > strides2d;
+		Vector< uint32, 3 > size3d;
+		Vector< int32, 3 > strides3d;
+
 	switch( in.GetDimension() ) {
 	case 2: 
-		sPointer1 = (static_cast< const Image<InputElementType, 2 > & >( in )).GetPointer( width, height, xStride1, yStride1 );
+		sPointer1 = (static_cast< const Image<InputElementType, 2 > & >( in )).GetPointer( size2d, strides2d );
+		width = size2d[0];
+		height = size2d[1];
 		depth = 1;
+
+		xStride1 = strides2d[0];
+		yStride1 = strides2d[1];
 		zStride1 = 0;
 		break;
-	case 3:	sPointer1 = (static_cast< const Image<InputElementType, 3 > & >( in )).GetPointer( width, height, depth, xStride1, yStride1, zStride1 );
+	case 3:	
+		sPointer1 = (static_cast< const Image<InputElementType, 3 > & >( in )).GetPointer( size3d, strides3d );
+		width = size3d[0];
+		height = size3d[1];
+		depth = size3d[2];
+
+		xStride1 = strides3d[0];
+		yStride1 = strides3d[1];
+		zStride1 = strides3d[2];
 		break;
 	default: 
 		return false;
 	}
-	sPointer2 = out.GetPointer( width, height, depth, xStride2, yStride2, zStride2 );
+	Vector< uint32, 3 > size;
+	Vector< int32, 3 > strides;
+	sPointer2 = out.GetPointer( size, strides );
+	width = size[0];
+	height = size[1];
+	depth = size[2];
+	xStride2 = strides[0];
+	yStride2 = strides[1];
+	zStride2 = strides[2];
+
+
 
 	for( uint32 k = 0; k < depth; ++k ) {
 		for( uint32 j = 0; j < height; ++j ) {

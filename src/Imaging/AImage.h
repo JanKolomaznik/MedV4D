@@ -5,6 +5,7 @@
 #include <boost/shared_ptr.hpp>
 #include "Imaging/ModificationManager.h"
 #include "Imaging/AbstractDataSet.h"
+#include "Vector.h"
 
 namespace M4D
 {
@@ -123,7 +124,30 @@ public:
 	PREPARE_CAST_METHODS_MACRO;
 	IS_NOT_CONSTRUCTABLE_MACRO;
 
+
 	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( 2, dimExtents ) {}
+
+	typedef Vector< int32, Dimension >		PointType;
+
+	PointType
+	GetMinimum()const
+	{
+		PointType result;
+		for( unsigned i=0; i < Dimension; ++i ) {
+			result[i] = this->GetDimensionExtents(i).minimum;
+		}
+		return result;
+	}
+
+	PointType
+	GetMaximum()const
+	{
+		PointType result;
+		for( unsigned i=0; i < Dimension; ++i ) {
+			result[i] = this->GetDimensionExtents(i).maximum;
+		}
+		return result;
+	}
 };
 
 template<>
@@ -138,6 +162,27 @@ public:
 
 	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( 3, dimExtents ) {}
 
+	typedef Vector< int32, Dimension >		PointType;
+
+	PointType
+	GetMinimum()const
+	{
+		PointType result;
+		for( unsigned i=0; i < Dimension; ++i ) {
+			result[i] = this->GetDimensionExtents(i).minimum;
+		}
+		return result;
+	}
+
+	PointType
+	GetMaximum()const
+	{
+		PointType result;
+		for( unsigned i=0; i < Dimension; ++i ) {
+			result[i] = this->GetDimensionExtents(i).maximum;
+		}
+		return result;
+	}
 };
 
 template<>
@@ -152,6 +197,27 @@ public:
 
 	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( 4, dimExtents ) {}
 
+	typedef Vector< int32, Dimension >		PointType;
+
+	PointType
+	GetMinimum()const
+	{
+		PointType result;
+		for( unsigned i=0; i < Dimension; ++i ) {
+			result[i] = this->GetDimensionExtents(i).minimum;
+		}
+		return result;
+	}
+
+	PointType
+	GetMaximum()const
+	{
+		PointType result;
+		for( unsigned i=0; i < Dimension; ++i ) {
+			result[i] = this->GetDimensionExtents(i).maximum;
+		}
+		return result;
+	}
 };
 
 

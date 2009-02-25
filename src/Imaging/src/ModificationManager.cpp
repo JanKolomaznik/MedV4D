@@ -397,6 +397,45 @@ ModificationManager::Reset()
 	_lastStoredTimestamp = ++_actualTimestamp;
 }
 
+template<>
+WriterBBoxInterface &
+ModificationManager::AddMod< 2 >( 
+		Vector< int32, 2 > min,
+		Vector< int32, 2 > max
+		)
+{
+	return this->AddMod2D( min[0], min[1], max[0], max[1] );
+}
+
+template<>
+WriterBBoxInterface &
+ModificationManager::AddMod< 3 >( 
+		Vector< int32, 3 > min,
+		Vector< int32, 3 > max
+		)
+{
+	return this->AddMod3D( min[0], min[1], min[2], max[0], max[1], max[2] );
+}
+
+template<>
+ReaderBBoxInterface::Ptr
+ModificationManager::GetMod< 2 >( 
+		Vector< int32, 2 > min,
+		Vector< int32, 2 > max
+		)
+{
+	return this->GetMod2D( min[0], min[1], max[0], max[1] );
+}
+
+template<>
+ReaderBBoxInterface::Ptr
+ModificationManager::GetMod< 3 >( 
+		Vector< int32, 3 > min,
+		Vector< int32, 3 > max
+		)
+{
+	return this->GetMod3D( min[0], min[1], min[2], max[0], max[1], max[2] );
+}
 
 }/*namespace Imaging*/
 }/*namespace M4D*/

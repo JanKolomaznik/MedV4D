@@ -13,6 +13,7 @@
 #include "TimeStamp.h"
 #include <boost/shared_ptr.hpp>
 #include <list>
+#include "Vector.h"
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -161,6 +162,21 @@ public:
 	
 	~ModificationManager();
 
+
+	template< unsigned Dim >
+	WriterBBoxInterface &
+	AddMod(
+		Vector< int32, Dim > min,
+		Vector< int32, Dim > max
+	      );
+
+	template< unsigned Dim >
+	ReaderBBoxInterface::Ptr
+	GetMod(
+		Vector< int32, Dim > min,
+		Vector< int32, Dim > max
+	      );
+
 	//ModBBoxWholeDataset&
 	//GetWholeDatasetBBox();
 	WriterBBoxInterface &
@@ -281,6 +297,7 @@ public:
 protected:
 	mutable ModificationManager::ChangeReverseIterator _changeIterator;
 };
+
 
 
 }/*namespace Imaging*/

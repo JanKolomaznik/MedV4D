@@ -80,19 +80,23 @@ SimpleProjection< Image< ElementType, 3 > >
 		    )
 {
 
-	uint32 width1;
+	Vector< uint32, 3 > size1;
+	Vector< int32, 3 > strides1;
+/*	uint32 width1;
 	uint32 height1;
 	uint32 depth1;
 	int32 xStride1;
 	int32 yStride1;
-	int32 zStride1;
-	ElementType *pointer1 = in.GetPointer( width1, height1, depth1, xStride1, yStride1, zStride1 );
+	int32 zStride1;*/
+	ElementType *pointer1 = in.GetPointer( size1, strides1 );
 
-	uint32 width2;
+	/*uint32 width2;
 	uint32 height2;
 	int32 xStride2;
-	int32 yStride2;
-	ElementType *pointer2 = out.GetPointer( width2, height2, xStride2, yStride2 );
+	int32 yStride2;*/
+	Vector< uint32, 2 > size2;
+	Vector< int32, 2 > strides2;
+	ElementType *pointer2 = out.GetPointer( size2, strides2 );
 
 	switch( GetProperties().plane ) {
 	case XY_PLANE:
@@ -100,14 +104,14 @@ SimpleProjection< Image< ElementType, 3 > >
 			return DoProjection< OperatorType >(
 				pointer1,
 				pointer2,
-				xStride1,
-				yStride1,
-				zStride1,
-				xStride2,
-				yStride2,
-				width1,
-				height1,
-				depth1
+				strides1[0],
+				strides1[1],
+				strides1[2],
+				strides2[0],
+				strides2[1],
+				size1[0],
+				size1[1],
+				size1[2]
 			    );
 		} break;
 	case XZ_PLANE:
@@ -115,14 +119,14 @@ SimpleProjection< Image< ElementType, 3 > >
 			return DoProjection< OperatorType >(
 				pointer1,
 				pointer2,
-				xStride1,
-				zStride1,
-				yStride1,
-				xStride2,
-				yStride2,
-				width1,
-				depth1,
-				height1
+				strides1[0],
+				strides1[2],
+				strides1[1],
+				strides2[0],
+				strides2[1],
+				size1[0],
+				size1[2],
+				size1[1]
 			    );
 		} break;
 	case YZ_PLANE:
@@ -130,14 +134,14 @@ SimpleProjection< Image< ElementType, 3 > >
 			return DoProjection< OperatorType >(
 				pointer1,
 				pointer2,
-				yStride1,
-				zStride1,
-				xStride1,
-				xStride2,
-				yStride2,
-				height1,
-				depth1,
-				width1
+				strides1[1],
+				strides1[2],
+				strides1[0],
+				strides2[0],
+				strides2[1],
+				size1[1],
+				size1[2],
+				size1[0]
 			    );
 		} break;
 	default:
