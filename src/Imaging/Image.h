@@ -261,11 +261,16 @@ public:
 
   void Dump(void);
 
+	PointType
+	GetStrides()const
+		{ return _strides;}
+
 protected:
 	typename ImageDataTemplate< ElementType >::Ptr	_imageData;
 
 	DimensionExtents	_dimExtents[Dimension];
 	ElementType		*_pointer;
+	PointType		_strides;
 	
 	uint32			_dimOrder[ Dimension ];
 	uint32			_sourceDimension;

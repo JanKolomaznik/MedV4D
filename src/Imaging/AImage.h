@@ -107,118 +107,44 @@ class AbstractImage::EBadDimension
 {
 	//TODO
 };
-/**
- * Templated class with specializations for each dimension - now has no special purpose, but in future some 
- * methods from Image classes will be moved here.
- **/
-template< unsigned dim >
-class AbstractImageDim;
 
-template<>
-class AbstractImageDim< 2 > : public AbstractImage
+template< unsigned Dim >
+class AbstractImageDim : public AbstractImage
 {
 public:
-	static const unsigned 		Dimension = 2;
+	static const unsigned 		Dimension = Dim;
 	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( AbstractImageDim< Dimension > );
 	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AbstractImage );
 	PREPARE_CAST_METHODS_MACRO;
 	IS_NOT_CONSTRUCTABLE_MACRO;
 
+	typedef Vector< int32, Dimension >	PointType;
+	typedef Vector< uint32, Dimension >	SizeType;
 
-	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( 2, dimExtents ) {}
+	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( Dimension, dimExtents ) 
+		{
+			for( unsigned i = 0; i < Dimension; ++i ) {
+				_minimum = dimExtents[ i ].minimum;
+				_maximum = dimExtents[ i ].maximum;
+			}
+		}
 
-	typedef Vector< int32, Dimension >		PointType;
 
 	PointType
 	GetMinimum()const
-	{
-		PointType result;
-		for( unsigned i=0; i < Dimension; ++i ) {
-			result[i] = this->GetDimensionExtents(i).minimum;
-		}
-		return result;
-	}
+		{ return _minimum;}
 
 	PointType
 	GetMaximum()const
-	{
-		PointType result;
-		for( unsigned i=0; i < Dimension; ++i ) {
-			result[i] = this->GetDimensionExtents(i).maximum;
-		}
-		return result;
-	}
+		{ return _maximum; }
+
+
+protected:
+	PointType	_minimum;
+	PointType	_maximum;
 };
 
-template<>
-class AbstractImageDim< 3 > : public AbstractImage
-{
-public:
-	static const unsigned 		Dimension = 3;
-	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( AbstractImageDim< Dimension > );
-	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AbstractImage );
-	PREPARE_CAST_METHODS_MACRO;
-	IS_NOT_CONSTRUCTABLE_MACRO;
 
-	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( 3, dimExtents ) {}
-
-	typedef Vector< int32, Dimension >		PointType;
-
-	PointType
-	GetMinimum()const
-	{
-		PointType result;
-		for( unsigned i=0; i < Dimension; ++i ) {
-			result[i] = this->GetDimensionExtents(i).minimum;
-		}
-		return result;
-	}
-
-	PointType
-	GetMaximum()const
-	{
-		PointType result;
-		for( unsigned i=0; i < Dimension; ++i ) {
-			result[i] = this->GetDimensionExtents(i).maximum;
-		}
-		return result;
-	}
-};
-
-template<>
-class AbstractImageDim< 4 > : public AbstractImage
-{
-public:
-	static const unsigned 		Dimension = 4;
-	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( AbstractImageDim< Dimension > );
-	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AbstractImage );
-	PREPARE_CAST_METHODS_MACRO;
-	IS_NOT_CONSTRUCTABLE_MACRO;
-
-	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( 4, dimExtents ) {}
-
-	typedef Vector< int32, Dimension >		PointType;
-
-	PointType
-	GetMinimum()const
-	{
-		PointType result;
-		for( unsigned i=0; i < Dimension; ++i ) {
-			result[i] = this->GetDimensionExtents(i).minimum;
-		}
-		return result;
-	}
-
-	PointType
-	GetMaximum()const
-	{
-		PointType result;
-		for( unsigned i=0; i < Dimension; ++i ) {
-			result[i] = this->GetDimensionExtents(i).maximum;
-		}
-		return result;
-	}
-};
 
 
 

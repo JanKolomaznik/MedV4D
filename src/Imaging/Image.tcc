@@ -30,6 +30,7 @@ Image< ElementType, Dim >::Image()
 		_dimExtents[i].maximum = 0;
 		_dimExtents[i].elementExtent = 1.0f;
 		_dimOrder[i] = 0;
+		_strides[i] = 0;
 	}
 	_imageData = typename ImageDataTemplate< ElementType >::Ptr();
 	_pointer = NULL;
@@ -86,6 +87,7 @@ Image< ElementType, Dim >::Image( typename ImageDataTemplate< ElementType >::Ptr
 		_dimExtents[i].minimum = _pointerCoordinatesInSource[ _dimOrder[i] ];
 		_dimExtents[i].maximum = _dimExtents[i].minimum + (int32)region.GetSize( i );
 		_dimExtents[i].elementExtent = _imageData->GetDimensionInfo( _dimOrder[i] ).elementExtent;
+		_strides[i] = _imageData->GetDimensionInfo( _dimOrder[i] ).stride;
 	}
 	_pointer = region.GetPointer();
 }
@@ -106,6 +108,7 @@ Image< ElementType, Dim >::FillDimensionInfo()
 		_dimExtents[i].elementExtent = _imageData->GetDimensionInfo( i ).elementExtent;
 		_dimOrder[i] = i;
 		_pointerCoordinatesInSource[i] = 0;
+		_strides[i] = _imageData->GetDimensionInfo( _dimOrder[i] ).stride;
 	}
 	_pointer = &_imageData->Get( 0 );
 }
@@ -139,38 +142,24 @@ template< typename ElementType, unsigned Dim >
 inline ElementType &
 Image< ElementType, Dim >::GetElement( const typename Image< ElementType, Dim >::PointType &pos )
 {
-	/*if( 	x < GetDimensionExtents( 0 ).minimum || 
-		x >= GetDimensionExtents( 0 ).maximum 	) 
-	{
-		//TODO _THROW_ exception
+	for( unsigned i = 0; i < Dimension; ++i ) {
+		if( pos[i] < this->_minimum[i] || pos[i] >= this->_maximum[i] )	{
+			_THROW_ ErrorHandling::EBadIndex();
+		}
 	}
-	if( 	y < GetDimensionExtents( 1 ).minimum || 
-		y >= GetDimensionExtents( 1 ).maximum 	) 
-	{
-		//TODO _THROW_ exception
-	}*/
-	
-	throw ErrorHandling::ETODO();
-	return _imageData->Get( 0, 0 );
+	return *(_pointer + ( (pos - this->_minimum) * this->_strides ));
 }
 
 template< typename ElementType, unsigned Dim >
 inline const ElementType &
 Image< ElementType, Dim >::GetElement( const typename Image< ElementType, Dim >::PointType &pos )const
 {
-	/*if( 	x < GetDimensionExtents( 0 ).minimum || 
-		x >= GetDimensionExtents( 0 ).maximum 	) 
-	{
-		//TODO _THROW_ exception
+	for( unsigned i = 0; i < Dimension; ++i ) {
+		if( pos[i] < this->_minimum[i] || pos[i] >= this->_maximum[i] )	{
+			_THROW_ ErrorHandling::EBadIndex();
+		}
 	}
-	if( 	y < GetDimensionExtents( 1 ).minimum || 
-		y >= GetDimensionExtents( 1 ).maximum 	) 
-	{
-		//TODO _THROW_ exception
-	}*/
-	
-	throw ErrorHandling::ETODO();
-	return _imageData->Get( 0, 0 );
+	return *(_pointer + ( (pos - this->_minimum) * this->_strides ));
 }
 
 
