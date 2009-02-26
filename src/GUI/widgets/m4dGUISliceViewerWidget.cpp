@@ -209,6 +209,7 @@ public:
 
 	pixel = new ElementType[ newHeight * newWidth ];
 
+	    //std::cout << "AAAAAAA: " << pixel << ";" << original << ";" << width << ";" << height << ";" << newWidth << ";" << slice << ";" << xstride << ";" << ystride << ";" << zstride << "\n\n";
 	// arrange voxels
 	VoxelArrayCopier<ElementType>::copy( pixel, original, width, height, newWidth, slice, xstride, ystride, zstride );
 	uint32 i, j;

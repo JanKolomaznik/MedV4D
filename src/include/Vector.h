@@ -37,7 +37,7 @@ public:
 	Vector()
 		{ for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = 0; } }
 
-	Vector( CoordType x )
+	explicit Vector( CoordType x )
 		{
 			for( unsigned i=0; i<Dimension; ++i ) 
 			{ _coordinates[i] = x; } 
@@ -61,7 +61,19 @@ public:
 
 			_coordinates[0] = x; 
 			_coordinates[1] = y; 
-			_coordinates[3] = y; 
+			_coordinates[2] = z; 
+		}
+
+	Vector( CoordType x, CoordType y, CoordType z , CoordType w )
+		{
+			if( Dimension != 4 ) {
+				_THROW_ M4D::ErrorHandling::EBadDimension();
+			}
+
+			_coordinates[0] = x; 
+			_coordinates[1] = y; 
+			_coordinates[2] = z; 
+			_coordinates[3] = w; 
 		}
 	
 
@@ -141,6 +153,47 @@ operator!=( const Vector< CoordType, Dim > &v1, const Vector< CoordType, Dim > &
 	}
 
 	return result;
+}
+
+
+template< typename CoordType, unsigned Dim >
+bool
+operator<=( const Vector< CoordType, Dim > &v1, const Vector< CoordType, Dim > &v2 )
+{
+	bool result = true;
+	for( unsigned i=0; i < Dim; ++i ) {
+		result = result && (v1[ i ] <= v2[ i ]);
+	}
+
+	return result;
+}
+
+template< typename CoordType, unsigned Dim >
+bool
+operator<( const Vector< CoordType, Dim > &v1, const Vector< CoordType, Dim > &v2 )
+{
+	bool result = true;
+	for( unsigned i=0; i < Dim; ++i ) {
+		result = result && (v1[ i ] < v2[ i ]);
+	}
+
+	return result;
+}
+
+
+
+template< typename CoordType, unsigned Dim >
+bool
+operator>=( const Vector< CoordType, Dim > &v1, const Vector< CoordType, Dim > &v2 )
+{
+	return v2 <= v1;
+}
+
+template< typename CoordType, unsigned Dim >
+bool
+operator>( const Vector< CoordType, Dim > &v1, const Vector< CoordType, Dim > &v2 )
+{
+	return v2 < v1;
 }
 
 template< typename CoordType, unsigned Dim >

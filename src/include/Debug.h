@@ -86,6 +86,14 @@ extern std::ostream *pdout;
 #endif /*DEBUG_LEVEL*/
 
 //----------------------------------------------------------------------------
+#ifdef DEBUG_LEVEL
+	#define DS_PRINT( ARG )	\
+		DOUT << ARG << std::endl;
+#else
+#define	DS_PRINT(ARG)
+#endif /*DEBUG_LEVEL*/
+
+//----------------------------------------------------------------------------
 #ifdef DEBUG_LEVEL	
 #define D_PRINT_NOENDL( ARG )	\
 	DOUT << ARG;

@@ -47,7 +47,7 @@ ExceptionBase::ExceptionBase() throw()
 void
 ExceptionBase::OnRaise()
 { 
-	DL_PRINT( EXCEPTION_DEBUG_LEVEL, "Raised exception : " << (*this) );
+	DS_PRINT( _exceptionFileName << ":" << ____EXCEPTION_LINE_NUMBER << " Raised exception : " << (*this) );
 }
 
 

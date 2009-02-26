@@ -68,6 +68,8 @@ public:
 	~ExceptionCastProblem() throw(){}
 };
 
+typedef ExceptionCastProblem ECastProblem;
+
 class ENULLPointer : public ExceptionBase
 {
 public:
@@ -121,6 +123,15 @@ class EBadIndex: public ExceptionBase
 public:
 	EBadIndex( std::string name ) throw(): ExceptionBase( name ) {}
 	EBadIndex() throw(): ExceptionBase( "Wrong index" ) {}
+private:
+
+};
+
+class EBadParameter: public ExceptionBase
+{
+public:
+	EBadParameter( std::string name ) throw(): ExceptionBase( name ) {}
+	EBadParameter() throw(): ExceptionBase( "Bad parameter" ) {}
 private:
 
 };
