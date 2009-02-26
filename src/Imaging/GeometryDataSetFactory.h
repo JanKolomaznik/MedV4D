@@ -27,15 +27,19 @@ class GeometryDataSetFactory
 public:
 
 
-	template< 
-	typename CoordType, 
-	template< typename CType, unsigned Dim > class OType 
-	>
-	static typename SlicedGeometry< CoordType, OType >::Ptr
+	template< typename OType >
+	static typename SlicedGeometry< OType >::Ptr
 	CreateSlicedGeometry( int32 minSlice, int32 maxSlice )
 	{
-		SlicedGeometry< CoordType, OType > *geometry = new SlicedGeometry< CoordType, OType >( minSlice, maxSlice );
-		return typename SlicedGeometry< CoordType, OType >::Ptr( geometry );
+		SlicedGeometry< OType > *geometry = new SlicedGeometry< OType >( minSlice, maxSlice );
+		return typename SlicedGeometry< OType >::Ptr( geometry );
+	}
+
+	template< typename OType >
+	static void
+	ChangeSliceCount( SlicedGeometry< OType > &dataset, int32 minSlice, int32 maxSlice )
+	{
+		dataset.Resize( minSlice, maxSlice );
 	}
 
 protected:

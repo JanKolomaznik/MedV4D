@@ -11,6 +11,7 @@
 #include "Imaging/AGeometryDataSet.h"
 #include <vector>
 #include "Common.h"
+#include "Imaging/GeometryDataSetFactory.h"
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -25,6 +26,10 @@ namespace Imaging
 class AGeometryDataSet2D: public AGeometryDataSet
 {
 public:
+	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( AGeometryDataSet2D );
+	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AGeometryDataSet );
+	PREPARE_CAST_METHODS_MACRO;
+	IS_NOT_CONSTRUCTABLE_MACRO;
 
 protected:
 	AGeometryDataSet2D( DataSetType datasetType ): AGeometryDataSet( datasetType ) 
@@ -35,6 +40,11 @@ protected:
 class ASlicedGeometry: public AGeometryDataSet2D
 {
 public:
+	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( ASlicedGeometry );
+	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AGeometryDataSet2D );
+	PREPARE_CAST_METHODS_MACRO;
+	IS_NOT_CONSTRUCTABLE_MACRO;
+	
 	
 	int32
 	GetSliceMin()const
@@ -53,16 +63,18 @@ protected:
 
 //TODO - locking
 
-template< 
-	typename CoordType, 
-	template< typename CType, unsigned Dim > class OType 
-	>
+template< typename OType >
 class SlicedGeometry: public ASlicedGeometry
 {
 public:
-	typedef SlicedGeometry< CoordType, OType >		ThisClass;
-	typedef boost::shared_ptr< ThisClass >			Ptr;
-	typedef OType< CoordType, 2 >				ObjectType;
+	friend class GeometryDataSetFactory;
+
+	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( SlicedGeometry< OType > );
+	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( ASlicedGeometry );
+	PREPARE_CAST_METHODS_MACRO;
+	IS_CONSTRUCTABLE_MACRO;
+
+	typedef OType						ObjectType;
 	typedef typename ObjectType::PointType			PointType;
 	typedef std::vector< ObjectType > 			ObjectsInSlice;
 	typedef std::vector< ObjectsInSlice >			Slices;
@@ -71,6 +83,8 @@ public:
 		{
 			_slices.resize( maxSlice - minSlice );
 		}
+	SlicedGeometry(): ASlicedGeometry( 0, 0 )
+		{ }
 
 	ObjectsInSlice &
 	GetSlice( int32 idx )
@@ -150,6 +164,14 @@ public:
 	{ _THROW_ ErrorHandling::ETODO();	}
 
 protected:
+	void
+	Resize( int32 minSlice, int32 maxSlice )
+	{
+		//TODO check values
+		_minSlice = minSlice;
+		_maxSlice = maxSlice;
+		_slices.resize( maxSlice - minSlice );
+	}
 
 	Slices	_slices;
 };

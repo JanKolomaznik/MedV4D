@@ -132,6 +132,19 @@ public:
 			}
 			_pointCount = _points.size();
 		}
+
+	void
+	Move( PointType t )
+		{
+			for_each( _points.begin(), _points.end(), MoveFunctor< PointType >( t ) );
+		}
+
+	void
+	Scale( Vector< float32, Dim > factors, PointType center )
+		{
+			for_each( _points.begin(), _points.end(), ScaleFunctor< PointType >( factors, center ) );
+		}
+	
 protected:
 	PointVector	_points;
 	uint32		_pointCount;

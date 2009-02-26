@@ -149,7 +149,7 @@ private:
 	/**
 	 * Actual state.
 	 **/
-	FILTER_STATE		_state;
+	volatile FILTER_STATE		_state;
 
 	/**
 	 * Mutex for locking when changing state.
@@ -339,6 +339,10 @@ public:
 	bool
 	StopExecution();
 
+	bool
+	IsRunning()const
+		{ return _workState.IsRunning(); }
+
 	/**
 	 * @return True if all computations are done or don't have input data.
 	 **/
@@ -512,7 +516,11 @@ const DatasetType&
 AbstractPipeFilter::GetInputDataSet( uint32 idx )const
 {
 	_inputPorts[ idx ].LockDataset();
-	return dynamic_cast< const DatasetType& >( _inputPorts.GetPort( idx ).GetDataset() );
+	const DatasetType* dataset = dynamic_cast< const DatasetType* >(&( _inputPorts.GetPort( idx ).GetDataset() ));
+	if( dataset ) return *dataset;
+	
+	_inputPorts[ idx ].ReleaseDatasetLock();
+	_THROW_ ErrorHandling::ECastProblem(); 
 }
 
 template< typename DatasetType >
@@ -520,7 +528,11 @@ DatasetType &
 AbstractPipeFilter::GetOutputDataSet( uint32 idx )const
 {
 	_outputPorts[ idx ].LockDataset();
-	return dynamic_cast< DatasetType& >( _outputPorts.GetPort( idx ).GetDataset() );
+	DatasetType* dataset = dynamic_cast< DatasetType* >(&( _outputPorts.GetPort( idx ).GetDataset() ));
+	if( dataset ) return *dataset;
+
+	_outputPorts[ idx ].ReleaseDatasetLock();
+	_THROW_ ErrorHandling::ECastProblem(); 
 }
 
 }/*namespace Imaging*/

@@ -190,7 +190,16 @@ MainExecutionThread::operator()()
 			_filter->PrepareOutputDatasets();
 			_filter->_callPrepareOutputDatasets = false;
 		}
-	} catch( ... ) {
+	} 
+	catch( ErrorHandling::ExceptionBase &e ) {
+		D_PRINT( "------ Filter - EXCEPTION OCCURED : " << e );
+		_filter->_outputPorts.SendMessage( 
+			MsgFilterExecutionCanceled::CreateMsg(), PipelineMessage::MSS_NORMAL );
+		_filter->CleanAfterStoppedRun();
+		return;
+	}
+	catch( ... ) {
+		D_PRINT( "------ Filter - UNKNOWN EXCEPTION OCCURED : " );
 		_filter->_outputPorts.SendMessage( 
 			MsgFilterExecutionCanceled::CreateMsg(), PipelineMessage::MSS_NORMAL );
 		_filter->CleanAfterStoppedRun();

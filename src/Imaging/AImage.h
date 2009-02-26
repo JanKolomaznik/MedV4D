@@ -124,8 +124,8 @@ public:
 	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( Dimension, dimExtents ) 
 		{
 			for( unsigned i = 0; i < Dimension; ++i ) {
-				_minimum = dimExtents[ i ].minimum;
-				_maximum = dimExtents[ i ].maximum;
+				_minimum[i] = dimExtents[ i ].minimum;
+				_maximum[i] = dimExtents[ i ].maximum;
 			}
 		}
 

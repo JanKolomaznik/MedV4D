@@ -26,8 +26,8 @@ Image< ElementType, Dim >::Image()
 : AbstractImageDim< Dim >( this->_dimExtents )
 {
 	for( unsigned i = 0; i < Dimension; ++i ) {
-		_dimExtents[i].minimum = 0;
-		_dimExtents[i].maximum = 0;
+		this->_minimum[i] = _dimExtents[i].minimum = 0;
+		this->_maximum[i] = _dimExtents[i].maximum = 0;
 		_dimExtents[i].elementExtent = 1.0f;
 		_dimOrder[i] = 0;
 		_strides[i] = 0;
@@ -84,8 +84,8 @@ Image< ElementType, Dim >::Image( typename ImageDataTemplate< ElementType >::Ptr
 	for( unsigned i = 0; i < Dimension; ++i ) {
 		_dimOrder[i] = region.GetDimensionOrder( i );
 		//TODO improve for mirrored dimension
-		_dimExtents[i].minimum = _pointerCoordinatesInSource[ _dimOrder[i] ];
-		_dimExtents[i].maximum = _dimExtents[i].minimum + (int32)region.GetSize( i );
+		this->_minimum[i] = _dimExtents[i].minimum = _pointerCoordinatesInSource[ _dimOrder[i] ];
+		this->_maximum[i] = _dimExtents[i].maximum = _dimExtents[i].minimum + (int32)region.GetSize( i );
 		_dimExtents[i].elementExtent = _imageData->GetDimensionInfo( _dimOrder[i] ).elementExtent;
 		_strides[i] = _imageData->GetDimensionInfo( _dimOrder[i] ).stride;
 	}
@@ -103,8 +103,8 @@ Image< ElementType, Dim >::FillDimensionInfo()
 	_sourceDimension = Dimension;
 	_pointerCoordinatesInSource = new int32[Dimension];
 	for( unsigned i = 0; i < Dimension; ++i ) {
-		_dimExtents[i].minimum = 0;
-		_dimExtents[i].maximum = (int32)_imageData->GetDimensionInfo( i ).size;
+		this->_minimum[i] = _dimExtents[i].minimum = 0;
+		this->_maximum[i] = _dimExtents[i].maximum = (int32)_imageData->GetDimensionInfo( i ).size;
 		_dimExtents[i].elementExtent = _imageData->GetDimensionInfo( i ).elementExtent;
 		_dimOrder[i] = i;
 		_pointerCoordinatesInSource[i] = 0;
@@ -395,7 +395,15 @@ Image< ElementType, Dim >::GetSubRegion(
 			typename Image< ElementType, Dim >::PointType max
 			)const
 {
-	//TODO - check parameters
+	if( !(min >= this->_minimum) ) { 
+		_THROW_ ErrorHandling::EBadParameter( "Parameter 'min' pointing outside of image!" ); 
+	}
+	if( !(max <= this->_maximum) ) { 
+		std::cout << max << "   " << this->_maximum << "\n";
+		_THROW_ ErrorHandling::EBadParameter( "Parameter 'max' pointing outside of image!" ); 
+	}
+
+
 	SizeType size;
 	PointType strides;
 

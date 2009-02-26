@@ -146,9 +146,12 @@ private:
 	MessageReceiverInterface	*_msgReceiver;	
 };
 
-class Port::EConnectionTypeMismatch
+class Port::EConnectionTypeMismatch: public ErrorHandling::ExceptionBase
 {
 public:
+	EConnectionTypeMismatch() throw() : ExceptionBase( "Port type mismatch." ){}
+	~EConnectionTypeMismatch() throw(){}
+
 	//TODO
 };
 /**
@@ -156,11 +159,12 @@ public:
  * connected and method need port to be connected for succesful
  * execution.
  **/
-class Port::EDisconnected
+class Port::EDisconnected: public ErrorHandling::ExceptionBase
 {
 public:
-	EDisconnected( uint64 port ) : _port( port ) {}
-	EDisconnected( const Port &port ) : _port( port._id ) {}
+	EDisconnected( uint64 port ) throw() : ExceptionBase( "Port Disconnected." ), _port( port ) {}
+	EDisconnected( const Port &port ) throw() : ExceptionBase( "Port Disconnected." ), _port( port._id ) {}
+	~EDisconnected() throw(){}
 	//TODO
 protected:
 	/**
@@ -169,9 +173,12 @@ protected:
 	uint64  _port;
 };
 
-class Port::EPortAlreadyConnected
+class Port::EPortAlreadyConnected: public ErrorHandling::ExceptionBase
 {
 public:
+	EPortAlreadyConnected() throw() : ExceptionBase( "Port already connected." ){}
+	~EPortAlreadyConnected() throw(){}
+
 	//TODO
 };
 

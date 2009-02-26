@@ -200,7 +200,9 @@ InputPortList::AddPort( InputPort* port )
 InputPort &
 InputPortList::GetPort( size_t idx )const
 {
-	//TODO - check bounds - _THROW_ exception
+	if( _ports.size() <= idx ) {
+		_THROW_ ErrorHandling::EBadIndex();
+	}
 	return *_ports[ idx ];
 }
 
@@ -242,7 +244,9 @@ OutputPortList::AddPort( OutputPort* port )
 OutputPort &
 OutputPortList::GetPort( size_t idx )const
 {
-	//TODO - check bounds - _THROW_ exception
+	if( _ports.size() <= idx ) {
+		_THROW_ ErrorHandling::EBadIndex();
+	}
 	return *_ports[ idx ];
 }
 

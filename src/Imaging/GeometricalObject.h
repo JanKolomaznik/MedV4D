@@ -36,7 +36,47 @@ class AGeometricalObjectDimPrec: public AGeometricalObjectDim< Dim >
 public:
 	typedef CoordType			Type;
 	typedef Vector< Type, Dim > 	PointType;
+
+	virtual void
+	Move( PointType t ) = 0;
+
+	virtual void
+	Scale( Vector< float32, Dim > factors, PointType center ) = 0;
 	
+};
+
+
+template < typename VectorType >
+struct MoveFunctor
+{
+	MoveFunctor( VectorType pt ): t( pt ) {}
+
+	void
+	operator()( VectorType &v )const
+		{
+			v = v + t;
+		}
+	VectorType t;
+};
+
+template < typename VectorType >
+struct ScaleFunctor
+{
+	typedef Vector<float32, VectorType::Dimension> ScaleFactor;
+
+	ScaleFunctor( ScaleFactor pfactor, VectorType pcenter ): factor( pfactor ), center( pcenter ) {}
+
+	void
+	operator()( VectorType &v )const
+		{
+			VectorType pom = (v-center);
+			for( unsigned i=0; i<VectorType::Dimension; ++i ){
+				pom[i] = pom[i] * factor[i];
+			}
+			v = pom + center;
+		}
+	ScaleFactor factor;
+	VectorType center;
 };
 
 }/*namespace Geometry*/
