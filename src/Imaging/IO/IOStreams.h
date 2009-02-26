@@ -1,6 +1,7 @@
 #ifndef IOSTREAMS_H_
 #define IOSTREAMS_H_
 
+#include "Common.h"
 #include <vector>
 #include "mediumAccessor.h"
 
