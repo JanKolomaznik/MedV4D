@@ -2,7 +2,8 @@
 #define ITKFILTER_H_
 
 // itk includes
-#include "itkImageWrapper.h"
+//#include "itkImageWrapper.h"
+#include "itkImage.h"
 
 //#include "itkDataContainerWrapper.h"
 #include "Imaging/AbstractImageFilterWholeAtOnce.h"
@@ -27,33 +28,36 @@ public:
 	typedef ITKFilter< InputImageType, OutputImageType > SelfType;
 
 protected:
-	typedef ITKImageWrapper< typename InputImageType::Element, InputImageType::Dimension >
-		ITKInputImageType;
-	typedef ITKImageWrapper< typename OutputImageType::Element, OutputImageType::Dimension >
-		ITKOutputImageType;
+	typedef typename InputImageType::Element InputPixelType;
+	typedef typename OutputImageType::Element OutputPixelType;
+//	typedef ITKImageWrapper< InputPixelType, InputImageType::Dimension >
+//		ITKInputImageWrapperType;
+	typedef itk::Image< InputPixelType, InputImageType::Dimension >
+			ITKInputImageType;
+//	typedef ITKImageWrapper< OutputPixelType, OutputImageType::Dimension >
+//		ITKOutputImageWrapperType;
+	typedef itk::Image< OutputPixelType, OutputImageType::Dimension >
+			ITKOutputImageType;
 	
 	ITKFilter();
+	~ITKFilter() {}
 	
-	ITKInputImageType &
-	GetInputITKImage(void) { return m_inputITKImage; }
+	const ITKInputImageType *
+	GetInputITKImage(void) { return inImage.GetPointer(); }
 	
 	void
 	SetOutputITKImage(ITKOutputImageType *outImage);
 	
 	void PrepareOutputDatasets(void);
 	
-	void SetOutputImageSize(ITKOutputImageType &itkImage);
+	void SetOutputImageSize(ITKOutputImageType *itkImage);
 	
 private:
-//	ITKDataContainerWrapper< InputImageType::ElementType > m_inputDatCnt;
-//	ITKDataContainerWrapper< OutputImageType::ElementType > m_outputDatCnt;
-	
-	void SetupInputITKImageAccordingInputMedvedImage(void);
+	typename ITKInputImageType::Pointer inImage;
 	void SetupOutMedvedImageAccordingOutputITKImage(void);
 	
 	// ITK images that simulate begining and end if ITK pipeline
-	ITKInputImageType m_inputITKImage;
-	ITKOutputImageType *m_outputITKImage;
+	//ITKInputImageWrapperType m_inputITKImageWrapper;
 };
 
 }}
