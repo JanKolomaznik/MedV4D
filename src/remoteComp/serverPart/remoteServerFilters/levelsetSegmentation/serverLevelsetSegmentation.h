@@ -70,7 +70,7 @@ private:
 	
 	typedef FastMarchingFilterType::NodeType                NodeType;
 	
-	NodeType &initSeedNode_;
+	NodeType *initSeedNode_;
 };
 
 }

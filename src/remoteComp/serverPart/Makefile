@@ -20,15 +20,7 @@ ITKIncludes=	-I$(ITKIncludeRoot)\
 				-I$(ITKIncludeRoot)/gdcm/src
 				
 ITKLIBS= 	$(ITKLibsRoot)/libITKNumerics.a\
-			$(ITKLibsRoot)/libITKIO.a\
 			$(ITKLibsRoot)/libITKNrrdIO.a\
-			$(ITKLibsRoot)/libitkgdcm.a\
-			$(ITKLibsRoot)/libitkjpeg12.a\
-			$(ITKLibsRoot)/libitkjpeg16.a\
-			$(ITKLibsRoot)/libitkopenjpeg.a\
-			$(ITKLibsRoot)/libitkpng.a\
-			$(ITKLibsRoot)/libitktiff.a\
-			$(ITKLibsRoot)/libitkjpeg8.a\
 			$(ITKLibsRoot)/libITKSpatialObject.a\
 			$(ITKLibsRoot)/libITKCommon.a\
 			$(ITKLibsRoot)/libitkvnl_inst.a\
@@ -36,21 +28,21 @@ ITKLIBS= 	$(ITKLibsRoot)/libITKNumerics.a\
 			$(ITKLibsRoot)/libitkvnl.a\
 			$(ITKLibsRoot)/libitkv3p_netlib.a\
 			$(ITKLibsRoot)/libitkvcl.a\
-			$(ITKLibsRoot)/libITKMetaIO.a\
 			$(ITKLibsRoot)/libitksys.a\
-			$(ITKLibsRoot)/libITKDICOMParser.a\
+			$(ITKLibsRoot)/libITKMetaIO.a\
 			$(ITKLibsRoot)/libITKEXPAT.a\
 			$(ITKLibsRoot)/libITKniftiio.a\
 			$(ITKLibsRoot)/libITKznz.a\
-			$(ITKLibsRoot)/libitkzlib.a
 				
 M4DLIBS=	$(srcTop)/lib/libremoteCompCommons$(archPostfix).a \
 		$(srcTop)/lib/libImaging$(archPostfix).a\
 		$(srcTop)/lib/libcommon$(archPostfix).a
 
 LIBS=		$(M4DLIBS) \
+			$(ITKLIBS) \
 		-lboost_thread \
-		-lboost_filesystem
+		-lboost_filesystem\
+		-ldl
 
 ########################################
 #Name of this project part

@@ -78,8 +78,6 @@ private:
 	boost::asio::io_service m_io_service;
 	boost::asio::ip::tcp::socket m_socket_;
 	
-	Properties props;
-	
 	NetAccessor netAccessor_;
 	
 	void Connect(void);

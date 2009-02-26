@@ -11,6 +11,7 @@ namespace RemoteComputing
 template< typename InputElementType, typename OutputElementType >
 ServerLevelsetSegmentation<InputElementType, OutputElementType>
 	::ServerLevelsetSegmentation()
+	: initSeedNode_(NULL)
 {
 	// setup filters
 		SetupBinaryThresholder();	
@@ -24,7 +25,8 @@ ServerLevelsetSegmentation<InputElementType, OutputElementType>
 	  thresholder->SetInput( thresholdSegmentation->GetOutput() );
 	  
 	  // connect the pipeline into in/out of the ITKFilter
-	  SetFeatureImage( PredecessorType::GetInputITKImage() );
+	  thresholdSegmentation->SetFeatureImage( 
+			  PredecessorType::GetInputITKImage() );
 	  SetOutputITKImage( thresholder->GetOutput() );
 }
 
@@ -56,7 +58,7 @@ ServerLevelsetSegmentation<InputElementType, OutputElementType>
   seeds->Initialize();
   seeds->InsertElement( 0, node );
   
-  initSeedNode_ = seeds->ElementAt(0);
+  initSeedNode_ = &seeds->ElementAt(0);
 
   fastMarching->SetTrialPoints(  seeds  );
 
@@ -74,9 +76,9 @@ ServerLevelsetSegmentation<InputElementType, OutputElementType>
 {
 	PredecessorType::PrepareOutputDatasets();
 
-	typename PredecessorType::ITKInputImageType &image = 
+	const typename PredecessorType::ITKInputImageType *image = 
 		PredecessorType::GetInputITKImage();
-	fastMarching->SetOutputSize( image.GetLargestPossibleRegion() );
+	fastMarching->SetOutputSize( image->GetLargestPossibleRegion().GetSize() );
 }
 ///////////////////////////////////////////////////////////////////////////////
 template< typename InputElementType, typename OutputElementType >
@@ -84,7 +86,7 @@ void
 ServerLevelsetSegmentation<InputElementType, OutputElementType>
 	::SetupBinaryThresholder(void)
 {
-	thresholder = ThresholdingFilterType::New();
+  thresholder = ThresholdingFilterType::New();
 		                        
   thresholder->SetLowerThreshold( -1000.0 );
   thresholder->SetUpperThreshold(     0.0 );
@@ -116,10 +118,10 @@ ServerLevelsetSegmentation<InputElementType, OutputElementType>
   thresholdSegmentation->SetAdvectionScaling( properties_.advectionScaling);
   thresholdSegmentation->SetCurvatureScaling( properties_.curvatureScaling);
   
-  initSeedNode_.GetIndex()[0] = properties_.seedX;
-  initSeedNode_.GetIndex()[1] = properties_.seedY;
-  initSeedNode_.GetIndex()[2] = properties_.seedZ;
-  initSeedNode_.SetValue(- properties_.initialDistance);
+  initSeedNode_->GetIndex()[0] = properties_.seedX;
+  initSeedNode_->GetIndex()[1] = properties_.seedY;
+  initSeedNode_->GetIndex()[2] = properties_.seedZ;
+  initSeedNode_->SetValue(- properties_.initialDistance);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -128,7 +130,7 @@ bool
 ServerLevelsetSegmentation<InputElementType, OutputElementType>
 	::ProcessImage(const InputImageType &in, OutputImageType &out)
 {
-	thresholdSegmentation.Update();
+	thresholdSegmentation->Update();
 	
 	return true;
 }

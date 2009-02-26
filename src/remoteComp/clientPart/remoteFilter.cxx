@@ -17,7 +17,7 @@ namespace RemoteComputing
 template< typename InputImageType, typename OutputImageType >
 RemoteFilter< InputImageType, OutputImageType >
 ::RemoteFilter(iRemoteFilterProperties *properties)
-  : PredecessorType( &props )
+  : PredecessorType( new typename PredecessorType::Properties() )
   , properties_(properties)
   , m_socket_(m_io_service)
   , netAccessor_(m_socket_)
