@@ -7,8 +7,10 @@ using namespace M4D::Imaging;
 
 
 mainWindow::mainWindow ()
-  : m4dGUIMainWindow( APPLICATION_NAME, ORGANIZATION_NAME ), _inConnection( NULL ), _outConnection( NULL )
+  : m4dGUIMainWindow( APPLICATION_NAME, ORGANIZATION_NAME )
   , remoteFilter_(&properties_)
+  , _inConnection( NULL )
+  , _outConnection( NULL )  
 {
 	Q_INIT_RESOURCE( mainWindow ); 
 
@@ -21,7 +23,7 @@ mainWindow::mainWindow ()
 	// addSource( conn, "Bone segmentation", "Result" );
 
 	// add your own settings widgets
-	_settings = new SettingsBox( &remoteFilter_, this );
+	_settings = new SettingsBox( &remoteFilter_, &properties_, this );
 
 	addDockWindow( "Simple MIP", _settings );
 
@@ -56,7 +58,7 @@ void
 mainWindow::CreatePipeline()
 {
 	//_filter = new LevelSetFilterType();
-	_pipeline.AddFilter( remoteFilter_ );
+	_pipeline.AddFilter( &remoteFilter_ );
 
 	_inConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeInputConnection( remoteFilter_, 0, false ) );
 	_outConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeOutputConnection( remoteFilter_, 0, true ) );

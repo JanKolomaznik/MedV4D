@@ -46,7 +46,7 @@ public:
 	mainWindow ();
 	
 	LevelSetFilterProperties properties_;
-	LevelSetFilterType remoteFilter_;
+	RemoteFilterType remoteFilter_;
 
 protected:
 	void
