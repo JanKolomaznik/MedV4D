@@ -24,7 +24,7 @@ template< typename ImageType, typename MatrixElement >
 ConvolutionFilter2D< ImageType, MatrixElement >
 ::ConvolutionFilter2D() : PredecessorType( new Properties() )
 {
-
+	this->_name = "ConvolutionFilter2D";
 }
 
 template< typename ImageType, typename MatrixElement >
@@ -32,7 +32,7 @@ ConvolutionFilter2D< ImageType, MatrixElement >
 ::ConvolutionFilter2D( typename ConvolutionFilter2D< ImageType, MatrixElement >::Properties *prop ) 
 : PredecessorType( prop ) 
 {
-
+	this->_name = "ConvolutionFilter2D";
 }
 
 template< typename ImageType, typename MatrixElement >

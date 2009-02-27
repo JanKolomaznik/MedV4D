@@ -133,23 +133,24 @@ extern std::ostream *pdout;
 class DebugCommentObject
 {
 public:
-	DebugCommentObject( std::string enter, std::string leave )
-		: _leaveText( leave )
+	DebugCommentObject( std::string enter, std::string leave, std::string file )
+		: _leaveText( leave ), _file( file )
 	{
-		D_PRINT( enter );
+		DS_PRINT( _file << ": " << enter );
 	}
 
 	~DebugCommentObject()
 	{
-		D_PRINT( _leaveText );
+		DS_PRINT( _file << ": " << _leaveText );
 	}
 private:
 	std::string	_leaveText;
+	std::string	_file;
 };
 #endif /*DEBUG_LEVEL*/
 
 #ifdef DEBUG_LEVEL
-#define D_BLOCK_COMMENT( ENTER_TEXT, LEAVE_TEXT ) DebugCommentObject ____DEBUG_BLOCK_OBJ##__LINE__ = DebugCommentObject( ENTER_TEXT, LEAVE_TEXT );
+#define D_BLOCK_COMMENT( ENTER_TEXT, LEAVE_TEXT ) DebugCommentObject ____DEBUG_BLOCK_OBJ##__LINE__ = DebugCommentObject( ENTER_TEXT, LEAVE_TEXT, __FILE__ );
 #else
 #define D_BLOCK_COMMENT( ENTER_TEXT, LEAVE_TEXT )
 #endif /*DEBUG_LEVEL*/

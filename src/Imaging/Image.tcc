@@ -162,99 +162,6 @@ Image< ElementType, Dim >::GetElement( const typename Image< ElementType, Dim >:
 	return *(_pointer + ( (pos - this->_minimum) * this->_strides ));
 }
 
-
-/*
-template< typename ElementType, unsigned Dim >
-Image< ElementType, Dim > &
-Image< ElementType, Dim >::CastAbstractImage( AbstractImage & image )
-{
-	//TODO - handle exception well
-	return dynamic_cast< Image< ElementType, Dimension > & >( image );
-}
-
-template< typename ElementType, unsigned Dim >
-const Image< ElementType, Dim > &
-Image< ElementType, Dim >::CastAbstractImage( const AbstractImage & image )
-{
-	//TODO - handle exception well
-	return dynamic_cast< const Image< ElementType, Dimension > & >( image );
-}
-
-
-template< typename ElementType, unsigned Dim >
-typename Image< ElementType, Dim >::Ptr 
-Image< ElementType, Dim >::CastAbstractImage( AbstractImage::Ptr & image )
-{
-	if( dynamic_cast< Image< ElementType, Dimension > * >( image.get() ) == NULL ) {
-		//TODO _THROW_ exception
-	}
-
-	return boost::static_pointer_cast< Image< ElementType, Dimension > >( image );
-}
-*/
-
-/*template< typename ElementType, unsigned Dim >
-inline ElementType &
-Image< ElementType, Dim >::GetElement( int32 x, int32 y )
-{
-	if( 	x < GetDimensionExtents( 0 ).minimum || 
-		x >= GetDimensionExtents( 0 ).maximum 	) 
-	{
-		//TODO _THROW_ exception
-	}
-	if( 	y < GetDimensionExtents( 1 ).minimum || 
-		y >= GetDimensionExtents( 1 ).maximum 	) 
-	{
-		//TODO _THROW_ exception
-	}
-	
-	return _imageData->Get( x, y );
-}
-
-template< typename ElementType, unsigned Dim >
-inline const ElementType &
-Image< ElementType, Dim >::GetElement( int32 x, int32 y )const
-{
-	if( 	x < GetDimensionExtents( 0 ).minimum || 
-		x >= GetDimensionExtents( 0 ).maximum 	) 
-	{
-		//TODO _THROW_ exception
-	}
-	if( 	y < GetDimensionExtents( 1 ).minimum || 
-		y >= GetDimensionExtents( 1 ).maximum 	) 
-	{
-		//TODO _THROW_ exception
-	}
-	
-	return _imageData->Get( x, y );
-}*/
-
-/*template< typename ElementType, unsigned Dim >
-inline ElementType *
-Image< ElementType, Dim >::GetPointer( 
-			uint32 &width,
-			uint32 &height,
-			int32 &xStride,
-			int32 &yStride
-		  )const
-{
-	width = _dimExtents[0].maximum - _dimExtents[0].minimum;
-	height = _dimExtents[1].maximum - _dimExtents[1].minimum;
-
-	if( _imageData ) {
-		xStride = _imageData->GetDimensionInfo( 0 ).stride;
-		yStride = _imageData->GetDimensionInfo( 1 ).stride;
-	
-		//return &(_imageData->Get( _dimExtents[0].minimum, _dimExtents[1].minimum ));
-		return _pointer;
-	} else {
-		xStride = 0;
-		yStride = 0;
-
-		return NULL;
-	}
-}*/
-
 template< typename ElementType, unsigned Dim >
 ElementType *
 Image< ElementType, Dim >::GetPointer( 
@@ -287,16 +194,7 @@ Image< ElementType, Dim >::GetRestrictedImage(
 	Image< ElementType, NewDim > *image = new Image< ElementType, NewDim >( this->_imageData, region );
 	return typename Image< ElementType, NewDim >::Ptr( image );
 }
-/*
-template< typename ElementType, unsigned Dim >
-typename Image< ElementType, 2 >::Ptr
-Image< ElementType, 2 >::GetRestricted2DImage( 
-		ImageRegion< ElementType, 2 > region
-		)
-{
 
-}
-*/
 template< typename ElementType, unsigned Dim >
 WriterBBoxInterface &
 Image< ElementType, Dim >::SetDirtyBBox( 
@@ -306,7 +204,12 @@ Image< ElementType, Dim >::SetDirtyBBox(
 {
 	ModificationManager & modManager = _imageData->GetModificationManager();
 
-	return modManager.AddMod( min, max );
+	DIMENSION_TEMPLATE_SWITCH_MACRO( _sourceDimension, 
+		{	
+			Vector< int32, DIM > pmin = PosInSource< DIM >( min );
+			Vector< int32, DIM > pmax = PosInSource< DIM >( max );
+			return modManager.AddMod( pmin, pmax );
+		} );
 }
 
 template< typename ElementType, unsigned Dim >
@@ -318,7 +221,12 @@ Image< ElementType, Dim >::GetDirtyBBox(
 {
 	ModificationManager & modManager = _imageData->GetModificationManager();
 
-	return modManager.GetMod( min, max );
+	DIMENSION_TEMPLATE_SWITCH_MACRO( _sourceDimension, 
+		{	
+			Vector< int32, DIM > pmin = PosInSource< DIM >( min );
+			Vector< int32, DIM > pmax = PosInSource< DIM >( max );
+			return modManager.GetMod( pmin, pmax );
+		} );
 }
 
 template< typename ElementType, unsigned Dim >
@@ -329,10 +237,6 @@ Image< ElementType, Dim >::SetWholeDirtyBBox()
 	return SetDirtyBBox( 
 			this->GetMinimum(),
 			this->GetMaximum()
-			/*GetDimensionExtents(0).minimum,
-			GetDimensionExtents(1).minimum,
-			GetDimensionExtents(0).maximum,
-			GetDimensionExtents(1).maximum*/
 			);
 }
 
@@ -376,16 +280,7 @@ template< typename ElementType, unsigned Dim >
 typename Image< ElementType, Dim >::SubRegion
 Image< ElementType, Dim >::GetRegion()const
 {
-	return GetSubRegion( 
-			CreateVector( 
-				this->GetDimensionExtents(0).minimum,
-				this->GetDimensionExtents(1).minimum 
-				), 
-			CreateVector(
-				this->GetDimensionExtents(0).maximum,
-				this->GetDimensionExtents(1).maximum
-				)
-			);
+	return GetSubRegion( this->_minimum, this->_maximum );
 }
 	
 template< typename ElementType, unsigned Dim >

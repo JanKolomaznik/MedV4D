@@ -74,9 +74,9 @@ public:
 
 
 	GaussianFilter2D( Properties * prop ) :  PredecessorType( prop )
-		{ /*empty*/ }
+		{ this->_name = "GaussianFilter2D"; }
 	GaussianFilter2D() :  PredecessorType( new Properties() )
-		{ /*empty*/ }
+		{ this->_name = "GaussianFilter2D"; }
 
 	GET_SET_PROPERTY_METHOD_MACRO( uint32, Radius, radius );
 private:

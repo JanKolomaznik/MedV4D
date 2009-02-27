@@ -132,7 +132,7 @@ ImageConvertor< OutputImageType, Convertor >
 ::ImageConvertor( typename ImageConvertor< OutputImageType, Convertor >::Properties  * prop )
 	: PredecessorType( prop )
 {
-
+	this->_name = "ImageConvertor";
 }
 
 template< typename OutputImageType, typename Convertor >
@@ -140,7 +140,7 @@ ImageConvertor< OutputImageType, Convertor >
 ::ImageConvertor()
 	: PredecessorType( new Properties() )
 {
-	
+	this->_name = "ImageConvertor";
 }
 
 template< typename OutputImageType, typename Convertor >
@@ -149,7 +149,6 @@ ImageConvertor< OutputImageType, Convertor >
 ::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
 {
 	utype = utype;
-	D_BLOCK_COMMENT( "++++ Entering ExecutionThreadMethod() - ImageConvertor", "----- Leaving MainExecutionThread() - ImageConvertor" );
 	if ( !( _readerBBox->WaitWhileDirty() == MS_MODIFIED ) ) {
 		_writerBBox->SetState( MS_CANCELED );
 		return false;

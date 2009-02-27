@@ -266,14 +266,29 @@ public:
 		{ return _strides;}
 
 protected:
+	template< unsigned SDim >
+	Vector< int32, SDim >
+	PosInSource( Vector< int32, Dimension > pos )const
+	{
+		Vector< int32, SDim > result( _pointerCoordinatesInSource );
+		pos -= this->_minimum;
+		for( unsigned i=0; i<Dimension; ++i ) {
+			result[_dimOrder[i]] += pos[i];
+		}
+		return result;
+	}
+
 	typename ImageDataTemplate< ElementType >::Ptr	_imageData;
 
 	DimensionExtents	_dimExtents[Dimension];
 	ElementType		*_pointer;
 	PointType		_strides;
 	
+	///which source dimension is mapped to each dimension of this image
 	uint32			_dimOrder[ Dimension ];
+	///dimension of source data buffer
 	uint32			_sourceDimension;
+	///coordinates of point specified by _pointer in source data buffer
 	int32			*_pointerCoordinatesInSource;
 private:
 	void

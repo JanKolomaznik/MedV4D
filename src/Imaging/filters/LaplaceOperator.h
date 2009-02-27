@@ -45,9 +45,9 @@ public:
 
 
 	LaplaceOperator2D( Properties * prop ) :  PredecessorType( prop )
-		{ /*empty*/ }
+		{ this->_name = "LaplaceOperator2D"; }
 	LaplaceOperator2D() :  PredecessorType( new Properties() )
-		{ /*empty*/ }
+		{ this->_name = "LaplaceOperator2D"; }
 
 private:
 	GET_PROPERTIES_DEFINITION_MACRO;

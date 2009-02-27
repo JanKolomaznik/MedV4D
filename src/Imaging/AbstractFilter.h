@@ -19,7 +19,7 @@
 #include <boost/shared_ptr.hpp>
 #include "Thread.h"
 #include "Imaging/PipelineMessages.h"
-
+#include <string>
 
 #include <iostream>
 
@@ -220,9 +220,12 @@ public:
 	virtual bool
 	StopExecution() = 0;
 
+	std::string
+	GetName()const
+		{ return _name; }
 protected:
 
-  	AbstractFilter( AbstractFilter::Properties * prop ): _properties( prop ) {}
+  	AbstractFilter( AbstractFilter::Properties * prop ): _properties( prop ), _name( "Filter" ) {}
 
 	/**
 	*  Filter's settings. Used to sending to server.
@@ -236,6 +239,7 @@ protected:
 	*/
 	Properties *_properties;
 
+	std::string _name;
 	
 private:
 	/**

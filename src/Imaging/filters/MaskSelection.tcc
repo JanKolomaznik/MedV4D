@@ -31,6 +31,8 @@ MaskSelection< ImageType >
 	this->_inputPorts.AddPort( imageInport );
 	this->_inputPorts.AddPort( maskInPort );
 	this->_outputPorts.AddPort( imageOutport );
+	
+	this->_name = "MaskSelection";
 }
 
 template< typename ImageType >
@@ -46,6 +48,8 @@ MaskSelection< ImageType >
 	this->_inputPorts.AddPort( imageInport );
 	this->_inputPorts.AddPort( maskInPort );
 	this->_outputPorts.AddPort( imageOutport );
+
+	this->_name = "MaskSelection";
 }
 
 template< typename ImageType >

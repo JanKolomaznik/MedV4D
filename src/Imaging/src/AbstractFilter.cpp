@@ -167,7 +167,7 @@ void
 MainExecutionThread::operator()()
 {
 	D_BLOCK_COMMENT( "++++ Entering MainExecutionThread()", "----- Leaving MainExecutionThread()" );
-	D_PRINT( "++++ Filter = " << _filter ); 
+	D_PRINT( "++++ Filter " << _filter->GetName() << " = " << _filter ); 
 
 	//TODO - handle exceptions
 
@@ -177,29 +177,29 @@ MainExecutionThread::operator()()
 
 	try {
 		//We check properties before we use them.
-		D_PRINT( "++++++ Filter - CheckProperties()" );
+		D_PRINT( "++++++ " << _filter->GetName() << " - CheckProperties()" );
 		_filter->_properties->CheckProperties();
 
 		//We want to do some steps before actual computing
-		D_PRINT( "++++++ Filter - BeforeComputation()" );
+		D_PRINT( "++++++ " << _filter->GetName() << " - BeforeComputation()" );
 		_filter->BeforeComputation( _updateType );
 		
 		//We decide whether resize output datasets
 		if( _filter->_callPrepareOutputDatasets ) {
-			D_PRINT( "++++++ Filter - PrepareOutputDatasets()" );
+			D_PRINT( "++++++ " << _filter->GetName() << " - PrepareOutputDatasets()" );
 			_filter->PrepareOutputDatasets();
 			_filter->_callPrepareOutputDatasets = false;
 		}
 	} 
 	catch( ErrorHandling::ExceptionBase &e ) {
-		D_PRINT( "------ Filter - EXCEPTION OCCURED : " << e );
+		D_PRINT( "------ " << _filter->GetName() << " - EXCEPTION OCCURED : " << e );
 		_filter->_outputPorts.SendMessage( 
 			MsgFilterExecutionCanceled::CreateMsg(), PipelineMessage::MSS_NORMAL );
 		_filter->CleanAfterStoppedRun();
 		return;
 	}
 	catch( ... ) {
-		D_PRINT( "------ Filter - UNKNOWN EXCEPTION OCCURED : " );
+		D_PRINT( "------ " << _filter->GetName() << " - UNKNOWN EXCEPTION OCCURED : " );
 		_filter->_outputPorts.SendMessage( 
 			MsgFilterExecutionCanceled::CreateMsg(), PipelineMessage::MSS_NORMAL );
 		_filter->CleanAfterStoppedRun();
@@ -208,7 +208,7 @@ MainExecutionThread::operator()()
 
 
 	//Mark changed parts of output
-	D_PRINT( "++++++ Filter - MarkChanges()" );
+	D_PRINT( "++++++ " << _filter->GetName() << " - MarkChanges()" );
 	_filter->MarkChanges( _updateType );
 
 	_filter->_outputPorts.SendMessage( 
@@ -216,7 +216,7 @@ MainExecutionThread::operator()()
 			PipelineMessage::MSS_NORMAL 
 			);
 
-	D_PRINT( "++++++ Filter - ExecutionThreadMethod()" );
+	D_PRINT( "++++++ " << _filter->GetName() << " - ExecutionThreadMethod()" );
 	bool result = _filter->ExecutionThreadMethod( _updateType );
 
 	if( result ) {
@@ -226,7 +226,7 @@ MainExecutionThread::operator()()
 				PipelineMessage::MSS_NORMAL 
 				);
 
-		D_PRINT( "++++++ Filter - AfterComputation( true )" );
+		D_PRINT( "++++++ " << _filter->GetName() << " - AfterComputation( true )" );
 		_filter->AfterComputation( true );
 		_filter->CleanAfterSuccessfulRun();
 	} else {
@@ -236,7 +236,7 @@ MainExecutionThread::operator()()
 				PipelineMessage::MSS_NORMAL 
 				);
 		
-		D_PRINT( "++++++ Filter - AfterComputation( false )" );
+		D_PRINT( "++++++ " << _filter->GetName() << " - AfterComputation( false )" );
 		_filter->AfterComputation( false );
 
 		_filter->CleanAfterStoppedRun();

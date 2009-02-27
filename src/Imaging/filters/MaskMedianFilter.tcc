@@ -20,7 +20,7 @@ template< unsigned Dim >
 MaskMedianFilter2D< Dim >
 ::MaskMedianFilter2D() : PredecessorType( new Properties() )
 {
-
+	this->_name = "MaskMedianFilter2D";
 }
 
 template< unsigned Dim >
@@ -28,7 +28,7 @@ MaskMedianFilter2D< Dim >
 ::MaskMedianFilter2D( typename MaskMedianFilter2D< Dim >::Properties *prop ) 
 : PredecessorType( prop ) 
 {
-
+	this->_name = "MaskMedianFilter2D";
 }
 
 template< unsigned Dim >

@@ -65,10 +65,29 @@ struct IsSameDimension< Dim, Dim >
 #define Max( a, b ) ((a)<(b) ? (b) : (a))
 #define Min( a, b ) ((a)<(b) ? (a) : (b))
 #define MOD( a, b ) ((a)<0 ? ((a)%(b)) + (b) : (a) % (b))
-#define Abs( a ) ((a)<0 ? (-a) : (a))
-#define Sgn( a ) ((a)<0 ? -1 : ((a)>0 ? 1 : 0 ) )
 #define PWR( a ) ( (a) * (a) )
 #define ROUND( a ) ( (int)(a+0.5) )
+
+template< typename NType >
+inline NType
+Abs( NType a ) {
+	if( (a)<0 ) return -1 * a;
+
+	return a;
+}
+
+template< typename NType >
+inline int32
+Sgn( NType a ) {
+	if( a < 0 ) {
+		return -1;
+	} 
+	if( a > 0 ) {
+		return 1;
+	} 
+
+	return 0;
+}
 
 extern const float32 Epsilon;
 extern const float32 PI;
