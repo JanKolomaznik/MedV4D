@@ -76,6 +76,17 @@ class m4dGUIMainWindow: public QMainWindow
      */
     typedef enum { LEFT_BUTTON, RIGHT_BUTTON } ButtonType;
 
+    /**
+     * Structure representing a study (it contains pointer to its DicomObjSet and overlay info lists).
+     * Study Manager is filling it.
+     */
+    struct Study {
+      /// Pointer to DicomObjSet - result of the Study Manager will appear there.
+      M4D::Dicom::DcmProvider::DicomObjSet *dicomObjSet;
+      /// Overlay info lists of the Study Manager's result.
+      std::list< std::string > leftOverlayInfo, rightOverlayInfo;
+    };
+
     /** 
      * Main Window constructor.
      *
@@ -284,6 +295,8 @@ class m4dGUIMainWindow: public QMainWindow
     m4dGUIScreenLayoutWidget *screenLayoutWidget;
   
   private:
+
+    Study actualStudy;
 
     /// Names of the action icons.
     static const char *actionIconNames[];

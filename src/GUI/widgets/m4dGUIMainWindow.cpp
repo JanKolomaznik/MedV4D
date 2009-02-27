@@ -153,22 +153,20 @@ void m4dGUIMainWindow::addDockWindow ( const char *title, QWidget *widget, DockW
 
 void m4dGUIMainWindow::search ()
 {
-  DcmProvider::DicomObjSet *dicomObjSet = new DcmProvider::DicomObjSet();	
-  studyManagerWidget->getStudyListComponent()->setDicomObjectSetPtr( dicomObjSet );
-
-  list< string > leftOverlayInfo; 
-  list< string > rightOverlayInfo; 
-  studyManagerWidget->getStudyListComponent()->setOverlayInfoPtr( &leftOverlayInfo,
-                                                                  &rightOverlayInfo );
+  actualStudy.dicomObjSet = new DcmProvider::DicomObjSet();	
+  studyManagerWidget->getStudyListComponent()->setDicomObjectSetPtr( actualStudy.dicomObjSet );
+  
+  actualStudy.leftOverlayInfo.clear();
+  actualStudy.rightOverlayInfo.clear();
 
   // Study Manager Dialog - this will fill the dicomObjSet
   if ( studyManagerDialog->exec() ) 
   {
-    if ( !dicomObjSet->empty() )
+    if ( !actualStudy.dicomObjSet->empty() )
     {
-      mainViewerDesktop->getSelectedViewerWidget()->setLeftSideTextData( leftOverlayInfo );  
-      mainViewerDesktop->getSelectedViewerWidget()->setRightSideTextData( rightOverlayInfo );  
-      process( DcmProvider::DicomObjSetPtr( dicomObjSet ) );
+      mainViewerDesktop->getSelectedViewerWidget()->setLeftSideTextData( actualStudy.leftOverlayInfo );  
+      mainViewerDesktop->getSelectedViewerWidget()->setRightSideTextData( actualStudy.rightOverlayInfo );  
+      process( DcmProvider::DicomObjSetPtr( actualStudy.dicomObjSet ) );
     }
     else {
       QMessageBox::critical( this, tr( "Exception" ), tr( "Empty image - nothing to process" ) );
@@ -391,6 +389,9 @@ void m4dGUIMainWindow::createStudyManagerDialog ()
   studyManagerWidget = new m4dGUIStudyManagerWidget( studyManagerDialog );
   connect( studyManagerWidget->getStudyListComponent(), SIGNAL(ready()), studyManagerDialog, SLOT(accept()) );
   connect( studyManagerWidget->getStudyListComponent(), SIGNAL(cancel()), studyManagerDialog, SLOT(reject()) );
+
+  studyManagerWidget->getStudyListComponent()->setOverlayInfoPtr( &actualStudy.leftOverlayInfo,
+                                                                  &actualStudy.rightOverlayInfo );
 
   QVBoxLayout *dialogLayout = new QVBoxLayout;
   dialogLayout->addWidget( studyManagerWidget );
