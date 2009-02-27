@@ -21,12 +21,11 @@ main( int argc, char** argv )
 	unsigned size = 256;
 	M4D::Imaging::Image< uint8, 2 >::Ptr image =
 	M4D::Imaging::ImageFactory::CreateEmptyImage2DTyped< uint8 >( size, size );
-
 	for( unsigned i=0; i<size; ++i ) {
 		for( unsigned j=0; j<size; ++j ) {
 			//image->GetElement( i, j ) = ((i>>4)+(j>>4)) & 1 ? 0 : 255;
 			//image->GetElement( i, j ) = (/*(i>>4)+*/(j)) & 0xf ? 0 : 255;
-			image->GetElement( i, j ) = (PWR(i-128)+PWR(j-128)) < PWR(64) ? 0 : 255;
+			image->GetElement( Vector< int32, 2 >( i, j ) ) = (PWR(i-128)+PWR(j-128)) < PWR(64) ? 0 : 255;
 		}
 	}
 

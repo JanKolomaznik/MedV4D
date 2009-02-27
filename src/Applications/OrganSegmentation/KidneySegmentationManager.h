@@ -4,14 +4,21 @@
 #include "Imaging.h"
 #include "GUI/m4dGUISliceViewerWidget2.h"
 #include "MainManager.h"
+#include "SnakeSegmentationFilter.h"
 
 typedef M4D::Imaging::Geometry::BSpline< float32, 2 >	CurveType;
 typedef CurveType::PointType				PointType;
 
-typedef M4D::Imaging::SlicedGeometry< float32, M4D::Imaging::Geometry::BSpline >	GDataSet;
+typedef M4D::Imaging::SlicedGeometry< M4D::Imaging::Geometry::BSpline<float32,2> >	GDataSet;
+typedef	M4D::Imaging::ConnectionTyped< GDataSet >	OutputGeomConnection;
+typedef M4D::Imaging::SnakeSegmentationFilter< int16 > SegmentationFilter;
+typedef M4D::Imaging::GaussianFilter2D< InputImageType >	Gaussian;
+typedef M4D::Imaging::LaplaceOperator2D< InputImageType >	Laplacian;
+typedef M4D::Imaging::SobelEdgeDetector< InputImageType >	Sobel;
+typedef Laplacian	EdgeFilter;
 
 struct PoleDefinition {
-	PoleDefinition(): defined( false ), radius( 10.0 )
+	PoleDefinition(): defined( false ), radius( 10.0 ), slice( 0 )
 		{}
 
 	bool		defined;
@@ -23,33 +30,53 @@ struct PoleDefinition {
 class KidneySegmentationManager
 {
 public:
-	static void
+	KidneySegmentationManager();
+	
+	~KidneySegmentationManager();
+
+	void
 	Initialize();
 
-	static void
+	void
 	Finalize();
 
-	static void
-	UserInputFinished();
+	void
+	PolesSet();
 
-	static ImageConnectionType *
+	void
+	StartSegmentation();
+
+	void
+	RunSplineSegmentation();
+
+	void
+	RunFilters();
+
+	ImageConnectionType *
 	GetInputConnection()
 		{ return _inConnection; }
 
-	static M4D::Viewer::SliceViewerSpecialStateOperatorPtr
+	M4D::Viewer::SliceViewerSpecialStateOperatorPtr
 	GetSpecialState()
 	{
 		return _specialState;
 	}
 protected:
-	static ImageConnectionType				*_inConnection;
-	static M4D::Viewer::SliceViewerSpecialStateOperatorPtr 	_specialState;
-	static InputImagePtr				 	_inputImage;
-	static GDataSet::Ptr					_dataset;
-	static PoleDefinition					_poles[2];
-
-	static bool						_wasInitialized;
+	ImageConnectionType				*_inConnection;
+	ImageConnectionType				*_gaussianConnection;
+	ImageConnectionType				*_edgeConnection;
+	OutputGeomConnection				*_outGeomConnection;
+	M4D::Imaging::PipelineContainer			_container;
+	M4D::Viewer::SliceViewerSpecialStateOperatorPtr 	_specialState;
+	InputImagePtr				 	_inputImage;
+	PoleDefinition					_poles[2];
+	SegmentationFilter				*_segmentationFilter;
+	EdgeFilter					*_edgeFilter;
+	Gaussian					*_gaussianFilter;
+	bool						_wasInitialized;
 };
+
+extern KidneySegmentationManager kidneySegmentationManager;
 
 #endif //KIDNEY_SEGMENTATION_MANAGER_H
 

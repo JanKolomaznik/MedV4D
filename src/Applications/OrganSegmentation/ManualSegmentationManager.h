@@ -5,7 +5,7 @@
 #include "GUI/m4dGUISliceViewerWidget2.h"
 #include "MainManager.h"
 
-typedef M4D::Imaging::SlicedGeometry< float32, M4D::Imaging::Geometry::BSpline >	GDataSet;
+typedef M4D::Imaging::SlicedGeometry< M4D::Imaging::Geometry::BSpline<float32,2> >	GDataSet;
 
 class ManualSegmentationManager
 {

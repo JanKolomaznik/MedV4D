@@ -66,7 +66,7 @@ mainWindow::SetSegmentationSlot( uint32 segType )
 		stackWidget->setCurrentWidget( _segmentationWidget );
 		break;
 	case stKIDNEYS:
-		_segmentationWidget->Activate( KidneySegmentationManager::GetInputConnection(), KidneySegmentationManager::GetSpecialState() );
+		_segmentationWidget->Activate( kidneySegmentationManager.GetInputConnection(), kidneySegmentationManager.GetSpecialState() );
 
 		stackWidget->setCurrentWidget( _segmentationWidget );
 		break;

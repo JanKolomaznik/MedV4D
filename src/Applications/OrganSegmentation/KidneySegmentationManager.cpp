@@ -1,20 +1,14 @@
 
 #include "Imaging.h"
 #include <cmath>
-#include "SnakeSegmentationFilter.h"
 #include "KidneySegmentationManager.h"
 
 using namespace M4D;
 using namespace M4D::Imaging;
 using namespace M4D::Imaging::Geometry;
 
-ImageConnectionType *				KidneySegmentationManager::_inConnection;
-M4D::Viewer::SliceViewerSpecialStateOperatorPtr KidneySegmentationManager::_specialState;
-InputImagePtr				 	KidneySegmentationManager::_inputImage;
-GDataSet::Ptr					KidneySegmentationManager::_dataset;
-PoleDefinition					KidneySegmentationManager::_poles[2];
+KidneySegmentationManager kidneySegmentationManager;
 
-bool						KidneySegmentationManager::_wasInitialized = false;
 
 const int SAMPLE_RATE = 5;
 
@@ -27,7 +21,9 @@ GLDrawPoint( const PointType &point )
 static void
 GLDrawPolyline( const CurveType::SamplePointSet &polyline )
 {
-	glBegin( GL_LINE_LOOP );
+	int style = polyline.Cyclic() ? GL_LINE_LOOP : GL_LINE_STRIP;
+		
+	glBegin( style );
 		std::for_each( polyline.Begin(), polyline.End(), GLDrawPoint );
 	glEnd();
 }
@@ -75,7 +71,7 @@ class KidneyViewerSpecialState: public M4D::Viewer::SliceViewerSpecialStateOpera
 public:
 	enum SubStates { DEFINING_POLE, MOVING_POLE };
 
-	KidneyViewerSpecialState( PoleDefinition * first, PoleDefinition * second ): _state( DEFINING_POLE ), _actual( -1 )
+	KidneyViewerSpecialState( PoleDefinition * first, PoleDefinition * second ): _state( DEFINING_POLE ), _actual( -1 ), drawDataset( false )
 		{ _poles[0] = first; _poles[1] = second; }
 
 	void
@@ -86,6 +82,10 @@ public:
 				if( sliceNum == _poles[i]->slice && _poles[i]->defined ) {
 					GLDrawCrossMark( _poles[i]->coordinates, _poles[i]->radius / zoomRate );
 				}
+			}
+			if( drawDataset ) {
+				const GDataSet::ObjectsInSlice &slice = _dataset->GetSlice( sliceNum );
+				std::for_each( slice.begin(), slice.end(), GLDrawBSpline );
 			}
 		} catch (...) {
 
@@ -132,14 +132,54 @@ public:
 		}
 	}
 
-
+	void
+	ShowGeometryDataset( GDataSet::Ptr dataset )
+	{
+		_dataset = dataset;
+		drawDataset = true;
+	}
 
 	SubStates	_state;
 
 	int32		_actual;
 	PoleDefinition	*_poles[2];
+
+	GDataSet::Ptr	_dataset;
+	bool		drawDataset;
 };
 
+
+KidneySegmentationManager::KidneySegmentationManager()
+	: _wasInitialized( false )
+{
+
+	_gaussianFilter = new Gaussian();
+	_container.AddFilter( _gaussianFilter );
+	
+	_edgeFilter = new EdgeFilter();
+	_edgeFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
+	_container.AddFilter( _edgeFilter );
+
+	_segmentationFilter = new SegmentationFilter();
+	_container.AddFilter( _segmentationFilter );
+
+	_inConnection = (ImageConnectionType*)&(_container.MakeInputConnection( *_gaussianFilter, 0, false ) );
+	_gaussianConnection = (ImageConnectionType*)&(_container.MakeConnection( *_gaussianFilter, 0, *_edgeFilter, 0 ) );
+		_container.MakeConnection( *_gaussianFilter, 0, *_segmentationFilter, 0 );
+	_edgeConnection = (ImageConnectionType*)&(_container.MakeConnection( *_edgeFilter, 0, *_segmentationFilter, 1 ) );
+	_outGeomConnection = (OutputGeomConnection*)&(_container.MakeOutputConnection( *_segmentationFilter, 0, true ) );
+
+	KidneyViewerSpecialState *sState = new KidneyViewerSpecialState( &(_poles[0]), &(_poles[1]) );
+	_specialState = M4D::Viewer::SliceViewerSpecialStateOperatorPtr( sState );
+
+		
+}
+
+KidneySegmentationManager::~KidneySegmentationManager()
+{
+	/*delete _inConnection;
+	delete _outGeomConnection;*/
+}
 
 void
 KidneySegmentationManager::Initialize()
@@ -149,44 +189,81 @@ KidneySegmentationManager::Initialize()
 	}
 	
 	_inputImage = MainManager::GetInputImage();
-	_inConnection = new ImageConnectionType( false );
 	_inConnection->PutDataset( _inputImage );
 
-	int32 min = _inputImage->GetDimensionExtents(2).minimum;
-	int32 max = _inputImage->GetDimensionExtents(2).maximum;
-	_dataset = M4D::Imaging::DataSetFactory::CreateSlicedGeometry< float32, M4D::Imaging::Geometry::BSpline >( min, max );
 
-	KidneyViewerSpecialState *sState = new KidneyViewerSpecialState( &(_poles[0]), &(_poles[1]) );
-	_specialState = M4D::Viewer::SliceViewerSpecialStateOperatorPtr( sState );
+
+	//int32 min = _inputImage->GetDimensionExtents(2).minimum;
+	//int32 max = _inputImage->GetDimensionExtents(2).maximum;
+	//_dataset = M4D::Imaging::DataSetFactory::CreateSlicedGeometry< M4D::Imaging::Geometry::BSpline<float32, 2> >( min, max );
+	_wasInitialized = true;
 }
 
 void
 KidneySegmentationManager::Finalize()
 {
-
+	_wasInitialized = false;
 }
 
 void
-KidneySegmentationManager::UserInputFinished()
+KidneySegmentationManager::PolesSet()
 {
+	//std::cout << "Slice1 = " << _poles[0].slice << "; Slice2 = " << _poles[1].slice << "\n";
 	float32 sX = _inputImage->GetDimensionExtents(0).elementExtent;
 	float32 sY = _inputImage->GetDimensionExtents(1).elementExtent;
-	InputImageType::PointType pom( 35, 35, 0 );
+	InputImageType::PointType pom( 60, 60, 0 );
 	InputImageType::PointType minP( 
 				Min(_poles[0].coordinates[0]/sX,_poles[1].coordinates[0]/sX),
 				Min(_poles[0].coordinates[1]/sY,_poles[1].coordinates[1]/sY),
 				Min(_poles[0].slice,_poles[1].slice)
 				);
+	//std::cout << minP << " ";
 	minP -= pom;
 	InputImageType::PointType maxP( 
 				Max(_poles[0].coordinates[0]/sX,_poles[1].coordinates[0]/sX),
 				Max(_poles[0].coordinates[1]/sY,_poles[1].coordinates[1]/sY),
 				Max(_poles[0].slice,_poles[1].slice) + 1
 				);
+	//std::cout << maxP << "\n";
 	maxP += pom;
 	_inputImage = _inputImage->GetRestrictedImage( 
 			_inputImage->GetSubRegion( minP, maxP )
 			);
+	_inputImage->GetElement( minP ) = 50;
 	_inConnection->PutDataset( _inputImage );
+
+	RunFilters();
+	//RunSplineSegmentation();
+}
+
+void
+KidneySegmentationManager::StartSegmentation()
+{
+	RunSplineSegmentation();
+}
+
+void
+KidneySegmentationManager::RunFilters()
+{
+	_gaussianFilter->ExecuteOnWhole();
+}
+
+void
+KidneySegmentationManager::RunSplineSegmentation()
+{
+	_segmentationFilter->SetFirstPoint( _poles[0].coordinates );
+	_segmentationFilter->SetFirstSlice( _poles[0].slice );
+	_segmentationFilter->SetSecondPoint( _poles[1].coordinates );
+	_segmentationFilter->SetSecondSlice( _poles[1].slice );
+
+	_segmentationFilter->ExecuteOnWhole();
+
+	while( _segmentationFilter->IsRunning() ){ /*std::cout << ".";*/ }
+	
+	std::cout << "Done\n";
+
+	KidneyViewerSpecialState *sState = (KidneyViewerSpecialState*)(_specialState.get());
+	sState->ShowGeometryDataset( _outGeomConnection->GetDatasetPtrTyped() );
+	
 }
 

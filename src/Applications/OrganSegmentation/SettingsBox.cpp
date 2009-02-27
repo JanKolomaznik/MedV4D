@@ -59,9 +59,14 @@ SettingsBox
 		QVBoxLayout *layout;
 		QPushButton *button;
 		layout = new QVBoxLayout;
-		button = new QPushButton( tr( "Finished" ) );
+		button = new QPushButton( tr( "Poles Set" ) );
 		QObject::connect( button, SIGNAL(clicked()),
-			this, SLOT( FinishedUserInputKidneySeg()) );
+			this, SLOT( PolesSetKidneySegm()) );
+		layout->addWidget( button );
+
+		button = new QPushButton( tr( "Start Segmentation" ) );
+		QObject::connect( button, SIGNAL(clicked()),
+			this, SLOT( StartSegmentationKidneySegm()) );
 		layout->addWidget( button );
 
 		layout->addStretch( 5 );
@@ -136,7 +141,7 @@ void
 SettingsBox
 ::SetToKidneySegmentation()
 {
-	KidneySegmentationManager::Initialize();
+	kidneySegmentationManager.Initialize();
 	
 	emit SetSegmentationSignal( stKIDNEYS );
 	setCurrentWidget( _kidneySegmSettings );
@@ -144,9 +149,17 @@ SettingsBox
 
 void
 SettingsBox
-::FinishedUserInputKidneySeg()
+::PolesSetKidneySegm()
 {
-	KidneySegmentationManager::UserInputFinished();
+	kidneySegmentationManager.PolesSet();
+
+}
+
+void
+SettingsBox
+::StartSegmentationKidneySegm()
+{
+	kidneySegmentationManager.StartSegmentation();
 
 }
 

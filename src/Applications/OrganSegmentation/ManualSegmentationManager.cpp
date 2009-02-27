@@ -153,7 +153,7 @@ ManualSegmentationManager::Initialize()
 
 	int32 min = _inputImage->GetDimensionExtents(2).minimum;
 	int32 max = _inputImage->GetDimensionExtents(2).maximum;
-	_dataset = M4D::Imaging::DataSetFactory::CreateSlicedGeometry< float32, M4D::Imaging::Geometry::BSpline >( min, max );
+	_dataset = M4D::Imaging::DataSetFactory::CreateSlicedGeometry< M4D::Imaging::Geometry::BSpline<float32,2> >( min, max );
 
 	ViewerSpecialState *sState = new ViewerSpecialState( _dataset );
 	_specialState = M4D::Viewer::SliceViewerSpecialStateOperatorPtr( sState );

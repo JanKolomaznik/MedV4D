@@ -15,6 +15,36 @@ namespace Imaging
 {
 
 template < typename ElementType >
+SnakeSegmentationFilter< ElementType >
+::SnakeSegmentationFilter() : PredecessorType( new Properties() )
+{
+	//TODO check if OK
+	for( unsigned i = 0; i < InCount; ++i ) {
+		InputPortType *inPort = new InputPortType();
+		_inputPorts.AddPort( inPort );
+	}
+	
+	OutputPortType *outPort = new OutputPortType();
+	_outputPorts.AddPort( outPort );
+
+}
+
+template < typename ElementType >
+SnakeSegmentationFilter< ElementType >
+::SnakeSegmentationFilter( typename SnakeSegmentationFilter< ElementType >::Properties *prop ) 
+: PredecessorType( prop ) 
+{
+	//TODO check if OK
+	for( unsigned i = 0; i < InCount; ++i ) {
+		InputPortType *inPort = new InputPortType();
+		_inputPorts.AddPort( inPort );
+	}
+	
+	OutputPortType *outPort = new OutputPortType();
+	_outputPorts.AddPort( outPort );
+}
+
+template < typename ElementType >
 const typename SnakeSegmentationFilter< ElementType >::InputImageType&
 SnakeSegmentationFilter< ElementType >::GetInputImage( uint32 idx )const
 {
@@ -28,12 +58,12 @@ SnakeSegmentationFilter< ElementType >::ReleaseInputImage( uint32 idx )const
 	this->ReleaseInputDataSet( idx );
 }
 
-/*template < typename ElementType >
-typename SnakeSegmentationFilter< ElementType >::OutputDataset&
+template < typename ElementType >
+typename SnakeSegmentationFilter< ElementType >::OutputDatasetType&
 SnakeSegmentationFilter< ElementType >::GetOutputGDataset()const
 {
-	return this->GetOuputDataSet< OutputDataset >( 0 );
-}*/
+	return this->GetOutputDataSet< OutputDatasetType >( 0 );
+}
 
 template < typename ElementType >
 void 
@@ -43,30 +73,53 @@ SnakeSegmentationFilter< ElementType >::ReleaseOutputGDataset()const
 }
 	
 template < typename ElementType >
-void
-SnakeSegmentationFilter< ElementType >::ExecutionThreadMethod()
+bool
+SnakeSegmentationFilter< ElementType >::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
 {
+	if( !CanContinue() ) return false;
+
 	//TODO locking
+	
+	CurveType initialization;
+	initialization.SetCyclic();
+	initialization.AddPoint( typename CurveType::PointType( -5, -5 ) );
+	initialization.AddPoint( typename CurveType::PointType( 5, -5 ) );
+	initialization.AddPoint( typename CurveType::PointType( 5, 5 ) );
+	initialization.AddPoint( typename CurveType::PointType( -5, 5 ) );
+
+	//std::cout << "Min slice = " << _minSlice << "; Max slice = " << _maxSlice << "\n";
+
+	float32 center = ((float32)(_maxSlice + _minSlice))/2.0f;
+	float32 s = 6.0f/(_maxSlice - _minSlice);
+
+	Coordinates trans = GetFirstPoint();
+	Coordinates relMove = (1.0f/(GetSecondSlice()-GetFirstSlice()) ) * (GetSecondPoint() - GetFirstPoint());
 	for( int32 i = _minSlice; i < _maxSlice; ++i ) {
+		float32 scaleFactor = 4.0f - s*Abs( i - center );
+		CurveType pom = initialization;
+		pom.Move(trans);
+		pom.Scale( Vector< float32, 2>( scaleFactor ), trans );
+		trans += relMove;
 
-		//ProcessSlice()
-
+		ProcessSlice( pom, this->out->GetSlice( i ) );
 	}
+
+	return true;
 }
 
 template < typename ElementType >
 void
 SnakeSegmentationFilter< ElementType >::PrepareOutputDatasets()
 {
-	int32 _minSlice = in[0]->GetDimensionExtents(2).minimum;
-	int32 _maxSlice = in[0]->GetDimensionExtents(2).maximum;
+	_minSlice = in[0]->GetDimensionExtents(2).minimum;
+	_maxSlice = in[0]->GetDimensionExtents(2).maximum;
 	for( unsigned i=1; i<InCount; ++i ) {
 		_minSlice = Max( _minSlice, in[i]->GetDimensionExtents(2).minimum );
 		_maxSlice = Max( _maxSlice, in[i]->GetDimensionExtents(2).maximum );
 	}
 
 	this->out->UpgradeToExclusiveLock();
-		//GeometryDataSetFactory::ChangeSliceCount( (*this->out), _minSlice, _maxSlice );
+		GeometryDataSetFactory::ChangeSliceCount( (*this->out), _minSlice, _maxSlice );
 	this->out->DowngradeFromExclusiveLock();
 }
 
@@ -82,13 +135,13 @@ SnakeSegmentationFilter< ElementType >::BeforeComputation( AbstractPipeFilter::U
 	for( unsigned i = 0; i < InCount; ++i ) {
 		in[ i ] = &(this->GetInputImage( i ));
 	}
-	//out = &(this->GetOutputGDataset());
+	out = &(this->GetOutputGDataset());
 	
 }
 
 template < typename ElementType >
 void
-SnakeSegmentationFilter< ElementType >::MarkChanges( AbstractPipeFilter::UPDATE_TYPE &utype )
+SnakeSegmentationFilter< ElementType >::MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype )
 {
 	for( unsigned i=0; i < InCount; ++i ) {
 		readerBBox[i] = in[i]->GetWholeDirtyBBox();
@@ -108,18 +161,27 @@ SnakeSegmentationFilter< ElementType >::AfterComputation( bool successful )
 	PredecessorType::AfterComputation( successful );	
 }
 
-/*
+
+/*template < typename ElementType >
+void
+SnakeSegmentationFilter< ElementType >
+::ProcessSlice( //const typename SnakeSegmentationFilter< ElementType >::RegionType	&region, 
+		typename SnakeSegmentationFilter< ElementType >::CurveType		&initialization, 
+		typename SnakeSegmentationFilter< ElementType >::OutputDatasetType::ObjectsInSlice &slice 
+		)*/
+
 template < typename ElementType >
 void
 SnakeSegmentationFilter< ElementType >
-::ProcessSlice( const typename SnakeSegmentationFilter< ElementType >::RegionType	&region, 
-		typename SnakeSegmentationFilter< ElementType >::CurveType		&initialization, 
-		typename SnakeSegmentationFilter< ElementType >::OutputDataset::ObjectsInSlice &slice 
-		)
+::ProcessSlice( 
+			typename SnakeSegmentationFilter< ElementType >::CurveType &initialization, 
+			typename SnakeSegmentationFilter< ElementType >::ObjectsInSlice &slice 
+			)
 {
 	slice.clear();
 	slice.push_back( initialization );
-}*/
+	slice[0].Sample( 5 );
+}
 	
 } /*namespace Imaging*/
 } /*namespace M4D*/
