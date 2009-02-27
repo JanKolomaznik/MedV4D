@@ -159,7 +159,7 @@ void m4dGUIMainWindow::search ()
   actualStudy.leftOverlayInfo.clear();
   actualStudy.rightOverlayInfo.clear();
 
-  // Study Manager Dialog - this will fill the dicomObjSet
+  // Study Manager Dialog - this will fill the dicomObjSet, overlay infos
   if ( studyManagerDialog->exec() ) 
   {
     if ( !actualStudy.dicomObjSet->empty() )
@@ -177,7 +177,7 @@ void m4dGUIMainWindow::search ()
 
 void m4dGUIMainWindow::open ()
 {
-  QString path( QFileDialog::getOpenFileName( this, tr( "Open File" ), 
+  QString path( QFileDialog::getOpenFileName( this, tr( "Open" ), 
                                               QDir::currentPath(), "*.dcm" ) );
   
   if ( !path.isNull() ) 
@@ -188,15 +188,32 @@ void m4dGUIMainWindow::open ()
 }
 
 
-void m4dGUIMainWindow::save ()
+void m4dGUIMainWindow::load ()
 {
-  QString path( QFileDialog::getSaveFileName( this, tr( "Save current Data Set" ), 
+  QString path( QFileDialog::getOpenFileName( this, tr( "Load" ), 
                                               QDir::currentPath(), "*.mv4d" ) );
   
   if ( !path.isNull() ) 
   {
     QFileInfo pathInfo( path );
     QString dirName( pathInfo.absolutePath() );
+
+    // TODO - loading method
+  } 
+}
+
+
+void m4dGUIMainWindow::save ()
+{
+  QString path( QFileDialog::getSaveFileName( this, tr( "Save" ), 
+                                              QDir::currentPath(), "*.mv4d" ) );
+  
+  if ( !path.isNull() ) 
+  {
+    QFileInfo pathInfo( path );
+    QString dirName( pathInfo.absolutePath() );
+
+    // TODO - saving method
   } 
 }
 
@@ -447,15 +464,18 @@ void m4dGUIMainWindow::createActions ()
 
   openAct = new QAction( QIcon( ":/icons/open.png" ), tr( "&Open..." ), this );
   openAct->setShortcut( tr( "Ctrl+O" ) );
-  openAct->setStatusTip( tr( "Open an existing document from disk or network file system" ) );
+  openAct->setStatusTip( tr( "Open an existing document (DICOM) from disk or network file system" ) );
   connect( openAct, SIGNAL(triggered()), this, SLOT(open()) );
-  openAct->setEnabled( false );
 
-  saveAct = new QAction( QIcon( ":/icons/save.png" ), tr( "S&ave" ), this );
+  loadAct = new QAction( QIcon( ":/icons/load.png" ), tr( "Loa&d..." ), this );
+  loadAct->setShortcut( tr( "Ctrl+D" ) );
+  loadAct->setStatusTip( tr( "Load saved Data Set" ) );
+  connect( loadAct, SIGNAL(triggered()), this, SLOT(load()) );
+
+  saveAct = new QAction( QIcon( ":/icons/save.png" ), tr( "S&ave..." ), this );
   saveAct->setShortcut( tr( "Ctrl+A" ) );
-  saveAct->setStatusTip( tr( "Save the document to disk" ) );
+  saveAct->setStatusTip( tr( "Save current Data Set" ) );
   connect( saveAct, SIGNAL(triggered()), this, SLOT(save()) );
-  // saveAct->setEnabled( false );
 
   exitAct = new QAction( QIcon( ":/icons/exit.png" ), tr( "E&xit" ), this );
   exitAct->setShortcut( tr( "Ctrl+Q" ) );
@@ -537,6 +557,7 @@ void m4dGUIMainWindow::createMenus ()
   fileMenu = new QMenu( tr( "&File" ), this );
   fileMenu->addAction( searchAct );
   fileMenu->addAction( openAct );
+  fileMenu->addAction( loadAct );
   fileMenu->addAction( saveAct );
   fileMenu->addSeparator();
   fileMenu->addAction( exitAct );
@@ -579,6 +600,7 @@ void m4dGUIMainWindow::createToolBars ()
 
   fileToolBar = addToolBar( tr( "File" ) );
   fileToolBar->addAction( openAct );
+  fileToolBar->addAction( loadAct );
   fileToolBar->addAction( saveAct );
 
   layoutToolBar = addToolBar( tr( "Layout" ) );

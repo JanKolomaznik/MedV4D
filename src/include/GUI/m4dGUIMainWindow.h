@@ -78,12 +78,12 @@ class m4dGUIMainWindow: public QMainWindow
 
     /**
      * Structure representing a study (it contains pointer to its DicomObjSet and overlay info lists).
-     * Study Manager is filling it.
+     * Study Manager, loading method are filling it.
      */
     struct Study {
-      /// Pointer to DicomObjSet - result of the Study Manager will appear there.
+      /// Pointer to DicomObjSet.
       M4D::Dicom::DcmProvider::DicomObjSet *dicomObjSet;
-      /// Overlay info lists of the Study Manager's result.
+      /// Overlay info lists.
       std::list< std::string > leftOverlayInfo, rightOverlayInfo;
     };
 
@@ -154,7 +154,12 @@ class m4dGUIMainWindow: public QMainWindow
     void open ();
 
     /**
-     * Slot for save - to show the Save Dialog - save DICOM file to disk.
+     * Slot for load - to show the Load Dialog - load saved Data Set from disk.
+     */
+    void load ();
+
+    /**
+     * Slot for save - to show the Save Dialog - save current Data Set to disk.
      */
     void save ();
 
@@ -296,6 +301,7 @@ class m4dGUIMainWindow: public QMainWindow
   
   private:
 
+    /// Current study - Study Manager, loading method are filling it.
     Study actualStudy;
 
     /// Names of the action icons.
@@ -323,6 +329,7 @@ class m4dGUIMainWindow: public QMainWindow
     /// Actions.
     QAction *searchAct;
     QAction *openAct;
+    QAction *loadAct;
     QAction *saveAct;
     QAction *exitAct;
     QAction *customizeAct;
