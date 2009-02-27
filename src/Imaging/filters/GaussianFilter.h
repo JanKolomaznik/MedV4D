@@ -14,6 +14,7 @@ typedef ConvolutionMask< 2, float32 > ConvolutionMask2DFloat;
 inline ConvolutionMask2DFloat::Ptr
 CreateGaussianFilterMask( uint32 radius )
 {
+	D_PRINT( "Creating gaussian convolution mask. Radius = " << radius );
 	uint32 pom[2];
 	uint32 size[2] = { 2*radius + 1, 2*radius + 1 };
 	float32 std = static_cast<float32>( radius )/3.0;
@@ -59,8 +60,10 @@ public:
 	protected:
 		M4D::Common::TimeStamp	_tmpStamp;
 	public:
-		Properties()
-			{}
+		Properties(): radius( 1 )
+			{
+				this->IncTimestamp();
+			}
 
 		void
 		CheckProperties()

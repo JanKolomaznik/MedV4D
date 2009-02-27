@@ -100,6 +100,8 @@ public:
 	
 	Image( typename ImageDataTemplate< ElementType >::Ptr imageData, SubRegion region );
 
+	Image( typename ImageDataTemplate< ElementType >::Ptr imageData, PointType minimum, PointType maximum );
+
 	~Image();
 
 	/**
@@ -297,6 +299,8 @@ private:
 	void
 	ReallocateData( typename ImageDataTemplate< ElementType >::Ptr imageData );
 
+	void
+	ReallocateData( typename ImageDataTemplate< ElementType >::Ptr imageData, PointType minimum, PointType maximum );
 };
 
 

@@ -79,6 +79,21 @@ ImageFactory::CreateEmptyImageFromExtents(
 	}
 }
 
+template< typename ElementType, unsigned Dim >
+typename Image< ElementType, Dim >::Ptr 
+ImageFactory::CreateEmptyImageFromExtents( 
+		Vector< int32, Dim >	minimum, 
+		Vector< int32, Dim >	maximum,
+		Vector< float32, Dim >	elementExtents
+		)
+{
+	typename ImageDataTemplate< ElementType >::Ptr data = CreateEmptyImageDataTyped( maximum - minimum, elementExtents );
+
+	Image< ElementType, Dim > *img = new Image< ElementType, Dim >( data, minimum, maximum );
+
+	return typename Image< ElementType, Dim >::Ptr( img );
+}
+
 template< typename ElementType >
 AbstractImage::Ptr 
 ImageFactory::CreateEmptyImage2D( 
@@ -387,8 +402,7 @@ ImageFactory::ChangeImageSize(
 	typename ImageDataTemplate< ElementType >::Ptr ptr = 
 		ImageFactory::CreateEmptyImageDataTyped< ElementType, Dim>( maximum - minimum, elementExtents );
 
-	//TODO - offset
-	image.ReallocateData( ptr );
+	image.ReallocateData( ptr, minimum, maximum );
 }
 
 template< typename ElementType, uint32 Dimension >

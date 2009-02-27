@@ -47,7 +47,6 @@ AImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 		{
 			int32 minZ = Max( slice - (int32)sliceComputationNeighbourCount, this->in->GetDimensionExtents( 2 ).minimum );
 			int32 maxZ = Min( slice + (int32)sliceComputationNeighbourCount + 1, this->in->GetDimensionExtents( 2 ).maximum );
-
 			ImageRegion< InputImageType, 3 > region = 
 				this->in->GetSubRegion(	
 					this->in->GetDimensionExtents( 0 ).minimum,

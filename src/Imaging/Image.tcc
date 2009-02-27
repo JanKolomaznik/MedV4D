@@ -91,6 +91,36 @@ Image< ElementType, Dim >::Image( typename ImageDataTemplate< ElementType >::Ptr
 	}
 	_pointer = region.GetPointer();
 }
+
+template< typename ElementType, unsigned Dim >
+Image< ElementType, Dim >::Image( 
+		typename ImageDataTemplate< ElementType >::Ptr	imageData, 
+		typename Image< ElementType, Dim >::PointType	minimum, 
+		typename Image< ElementType, Dim >::PointType	maximum 
+		)
+: AbstractImageDim< Dim >( this->_dimExtents )
+{
+	if( imageData->GetDimension() != Dimension ) {
+			_THROW_ ErrorHandling::EBadParameter( "Creating image from buffer of wrong dimension." );
+	}
+	_imageData = imageData;
+		
+	_sourceDimension = Dimension;
+	_pointerCoordinatesInSource = new int32[_sourceDimension];
+	for( unsigned i = 0; i < _sourceDimension; ++i ) {
+		_pointerCoordinatesInSource[i] = 0;
+	}
+	this->_minimum = minimum;
+	this->_maximum = maximum;
+	for( unsigned i = 0; i < Dimension; ++i ) {
+		_dimOrder[i] = i;
+		_dimExtents[i].minimum = this->_minimum[i];
+		_dimExtents[i].maximum = this->_maximum[i];
+		_dimExtents[i].elementExtent = _imageData->GetDimensionInfo( i ).elementExtent;
+		_strides[i] = _imageData->GetDimensionInfo( i ).stride;
+	}
+	_pointer = &_imageData->Get( 0 );
+}
 	
 template< typename ElementType, unsigned Dim >
 void
@@ -127,6 +157,37 @@ Image< ElementType, Dim >::ReallocateData( typename ImageDataTemplate< ElementTy
 	_imageData = imageData;
 
 	FillDimensionInfo();
+}
+
+template< typename ElementType, unsigned Dim >
+void
+Image< ElementType, Dim >::ReallocateData( 
+		typename ImageDataTemplate< ElementType >::Ptr imageData,
+		typename Image< ElementType, Dim >::PointType	minimum, 
+		typename Image< ElementType, Dim >::PointType	maximum	)
+{
+	if( imageData->GetDimension() != Dimension ) {
+			_THROW_ ErrorHandling::EBadParameter( "Creating image from buffer of wrong dimension." );
+	}
+	//We have to inform about changes in structure.
+	this->IncStructureTimestamp();
+	_imageData = imageData;
+		
+	_sourceDimension = Dimension;
+	_pointerCoordinatesInSource = new int32[_sourceDimension];
+	for( unsigned i = 0; i < _sourceDimension; ++i ) {
+		_pointerCoordinatesInSource[i] = 0;
+	}
+	this->_minimum = minimum;
+	this->_maximum = maximum;
+	for( unsigned i = 0; i < Dimension; ++i ) {
+		_dimOrder[i] = i;
+		_dimExtents[i].minimum = this->_minimum[i];
+		_dimExtents[i].maximum = this->_maximum[i];
+		_dimExtents[i].elementExtent = _imageData->GetDimensionInfo( i ).elementExtent;
+		_strides[i] = _imageData->GetDimensionInfo( i ).stride;
+	}
+	_pointer = &_imageData->Get( 0 );
 }
 
 template< typename ElementType, unsigned Dim >
