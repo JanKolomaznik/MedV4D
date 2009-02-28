@@ -69,7 +69,8 @@ class DcmProvider
 {
 public:
 	// METHODs ////////////////////////////////////////////////////////////
-	
+	static void Init(void);
+	static void Shutdown(void);
 	/**
 	 * Creates image from given dicomObject set.
 	 * @param dicomObjects Given set of dicom objects.

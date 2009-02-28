@@ -27,12 +27,28 @@ using namespace M4D::Dicom;
 using namespace M4D::Imaging;
 
 ///////////////////////////////////////////////////////////////////////
-FindService g_findService;
+FindService *g_findService;
 LocalService g_localService;
-MoveService g_moveService;
+MoveService *g_moveService;
 ///////////////////////////////////////////////////////////////////////
-// Theese function are only inline redirections to member functions
-// of appropriate service objects
+
+void
+DcmProvider::Init(void)
+{
+	g_findService = new FindService();
+	g_moveService = new MoveService();
+}
+
+///////////////////////////////////////////////////////////////////////
+
+void
+DcmProvider::Shutdown(void)
+{
+	delete g_findService;
+	delete g_moveService;
+}
+
+///////////////////////////////////////////////////////////////////////
 
 void
 DcmProvider::Find( 
@@ -45,7 +61,7 @@ DcmProvider::Find(
     const std::string &referringMD,
     const std::string &description) 
 {
-	g_findService.FindForFilter( 
+	g_findService->FindForFilter( 
     result, patientForeName, patientSureName, patientID,
     dateFrom, dateTo, referringMD, description);
 }
@@ -96,7 +112,7 @@ DcmProvider::FindStudyInfo(
 		const std::string &studyID,
 		SerieInfoVector &info) 
 {
-	g_findService.FindStudyInfo(
+	g_findService->FindStudyInfo(
 		patientID, studyID, info);
 }
 
@@ -108,7 +124,7 @@ DcmProvider::FindStudyAndImageInfo(
 		const std::string &studyID,
 		StudyInfo &info) 
 {
-	g_findService.FindWholeStudyInfo(
+	g_findService->FindWholeStudyInfo(
 		patientID, studyID, info);
 }
 
@@ -119,7 +135,7 @@ DcmProvider::FindAllPatientStudies(
 		const std::string &patientID,
 		ResultSet &result) 
 {
-	g_findService.FindStudiesAboutPatient( 
+	g_findService->FindStudiesAboutPatient( 
 		patientID, result);
 }
 
@@ -133,7 +149,7 @@ DcmProvider::GetImage(
 		const std::string &imageID,
 		DicomObj &object) 
 {
-	g_moveService.MoveImage( 
+	g_moveService->MoveImage( 
 		patientID, studyID, serieID, imageID, object);
 }
 
@@ -147,7 +163,7 @@ DcmProvider::GetImageSet(
 		DicomObjSet &result,
     DicomObj::ImageLoadedCallback on_loaded) 
 {
-	g_moveService.MoveImageSet( 
+	g_moveService->MoveImageSet( 
 		patientID, studyID, serieID, result, on_loaded);
 
   // sort the vector of images
