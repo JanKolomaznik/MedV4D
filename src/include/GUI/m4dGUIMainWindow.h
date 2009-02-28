@@ -301,9 +301,6 @@ class m4dGUIMainWindow: public QMainWindow
   
   private:
 
-    /// Current study - Study Manager, loading method are filling it.
-    Study actualStudy;
-
     /// Names of the action icons.
     static const char *actionIconNames[];
     /// Texts of the actions.
@@ -360,6 +357,9 @@ class m4dGUIMainWindow: public QMainWindow
     QMenu *toolBarsMenu;
     QMenu *toolsMenu;
     QMenu *viewMenu;
+
+    /// Current study - Study Manager, loading method are filling it.
+    Study actualStudy;
 };
 
 } // namespace GUI

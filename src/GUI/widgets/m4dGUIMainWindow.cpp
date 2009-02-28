@@ -183,7 +183,8 @@ void m4dGUIMainWindow::open ()
   if ( !path.isNull() ) 
   {
     QFileInfo pathInfo( path );
-    QString dirName( pathInfo.absolutePath() );
+
+
   } 
 }
 
@@ -655,9 +656,9 @@ void m4dGUIMainWindow::delegateAction ( unsigned actionIdx, m4dGUIAbstractViewer
 }
 
 
-void m4dGUIMainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
+void m4dGUIMainWindow::process ( DcmProvider::DicomObjSetPtr dicomObjSet )
 {
-  AbstractImage::Ptr inputImage = M4D::Dicom::DcmProvider::CreateImageFromDICOM( dicomObjSet );
+  AbstractImage::Ptr inputImage = DcmProvider::CreateImageFromDICOM( dicomObjSet );
 
 	try {
     ConnectionInterfaceTyped< AbstractImage > *conn = new ConnectionTyped< AbstractImage >;
