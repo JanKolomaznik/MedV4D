@@ -149,6 +149,8 @@ StManagerStudyListComp::StManagerStudyListComp ( QDialog *studyManagerDialog, QW
   // DICOM initializations:
   try {
 
+    DcmProvider::Init();
+
     recentResultSet   = new ResultSet();
     remoteResultSet   = new ResultSet();
     DICOMDIRResultSet = new ResultSet();
@@ -175,6 +177,8 @@ StManagerStudyListComp::~StManagerStudyListComp ()
 {
   if ( buildSuccessful )
   {
+    DcmProvider::Shutdown();
+
     delete recentResultSet;
     delete remoteResultSet;
     delete DICOMDIRResultSet;
