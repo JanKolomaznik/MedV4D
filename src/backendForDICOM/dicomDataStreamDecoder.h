@@ -10,7 +10,7 @@
 
 namespace M4D
 {
-namespace DicomInternal 
+namespace Dicom
 {
 
 /**

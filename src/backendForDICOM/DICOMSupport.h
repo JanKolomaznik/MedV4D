@@ -13,7 +13,7 @@
 
 namespace M4D
 {
-namespace DicomInternal 
+namespace Dicom
 {
 
 /// Retrive data that are displayed in searching
@@ -22,7 +22,7 @@ namespace DicomInternal
  * Called from search services to fill table row.
  */
 static void GetTableRowFromDataSet( 
-   DcmDataset *ds, DcmProvider::TableRow *row)
+   DcmDataset *ds, TableRow *row)
 {
   OFString str;
   // patient info
@@ -62,7 +62,7 @@ static void GetTableRowFromDataSet(
 /**
  *  from given dataSet
  */
-static void GetSeriesInfo( DcmDataset *ds, DcmProvider::SerieInfo *sInfo)
+static void GetSeriesInfo( DcmDataset *ds, SerieInfo *sInfo)
 {
   OFString str;
 	// Parse the response

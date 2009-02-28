@@ -23,61 +23,20 @@
 #include "../FindService.h"
 #include "../LocalService.h"
 
-using namespace M4D::DicomInternal;
+using namespace M4D::Dicom;
 using namespace M4D::Imaging;
 
-namespace M4D
-{
-namespace Dicom 
-{
-
 ///////////////////////////////////////////////////////////////////////
-
-DcmProvider::DcmProvider( bool blocking)
-  :m_findService(NULL)
-  ,m_moveService(NULL)
-  ,m_localService(NULL)
-{
-  m_findService = new FindService();
-  ((FindService *)m_findService)->SetMode( blocking);
-
-	m_moveService = new MoveService();
-  ((MoveService *)m_moveService)->SetMode( blocking);
-
-  m_localService = new LocalService();
-}
-
-///////////////////////////////////////////////////////////////////////
-
-DcmProvider::DcmProvider()
-  :m_findService(NULL)
-  ,m_moveService(NULL)
-  ,m_localService(NULL)
-{
-	m_findService = new FindService();
-	m_moveService = new MoveService();
-  m_localService = new LocalService();
-}
-
-///////////////////////////////////////////////////////////////////////
-
-DcmProvider::~DcmProvider()
-{
-  if( m_findService != NULL)
-	  delete ( (FindService *) m_findService);
-  if( m_moveService != NULL)
-	  delete ( (MoveService *) m_moveService);
-  if( m_localService != NULL)
-    delete ( (LocalService *) m_localService);
-}
-
+FindService g_findService;
+LocalService g_localService;
+MoveService g_moveService;
 ///////////////////////////////////////////////////////////////////////
 // Theese function are only inline redirections to member functions
 // of appropriate service objects
 
 void
 DcmProvider::Find( 
-		DcmProvider::ResultSet &result,
+		ResultSet &result,
     const std::string &patientForeName,
     const std::string &patientSureName,
     const std::string &patientID,
@@ -86,7 +45,7 @@ DcmProvider::Find(
     const std::string &referringMD,
     const std::string &description) 
 {
-	static_cast<FindService *>(m_findService)->FindForFilter( 
+	g_findService.FindForFilter( 
     result, patientForeName, patientSureName, patientID,
     dateFrom, dateTo, referringMD, description);
 }
@@ -95,10 +54,10 @@ DcmProvider::Find(
 
 void
 DcmProvider::LocalFind( 
-			DcmProvider::ResultSet &result,
+			ResultSet &result,
       const std::string &path)
 {
-  static_cast<LocalService *>(m_localService)->Find( result, path);
+	g_localService.Find( result, path);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -109,7 +68,7 @@ DcmProvider::LocalFindStudyInfo(
 			const std::string &studyID,
       SerieInfoVector &info)
 {
-  static_cast<LocalService *>(m_localService)->FindStudyInfo( 
+	g_localService.FindStudyInfo( 
     info, patientID, studyID);
 }
 
@@ -122,7 +81,7 @@ DcmProvider::LocalGetImageSet(
 			const std::string &serieID,
 			DicomObjSet &result)
 {
-  static_cast<LocalService *>(m_localService)->GetImageSet( 
+	g_localService.GetImageSet( 
     patientID, studyID, serieID, result);
 
   // sort the vector of images
@@ -137,7 +96,7 @@ DcmProvider::FindStudyInfo(
 		const std::string &studyID,
 		SerieInfoVector &info) 
 {
-	static_cast<FindService *>(m_findService)->FindStudyInfo(
+	g_findService.FindStudyInfo(
 		patientID, studyID, info);
 }
 
@@ -149,7 +108,7 @@ DcmProvider::FindStudyAndImageInfo(
 		const std::string &studyID,
 		StudyInfo &info) 
 {
-	static_cast<FindService *>(m_findService)->FindWholeStudyInfo(
+	g_findService.FindWholeStudyInfo(
 		patientID, studyID, info);
 }
 
@@ -160,7 +119,7 @@ DcmProvider::FindAllPatientStudies(
 		const std::string &patientID,
 		ResultSet &result) 
 {
-	static_cast<FindService *>(m_findService)->FindStudiesAboutPatient( 
+	g_findService.FindStudiesAboutPatient( 
 		patientID, result);
 }
 
@@ -174,7 +133,7 @@ DcmProvider::GetImage(
 		const std::string &imageID,
 		DicomObj &object) 
 {
-	static_cast<MoveService *>(m_moveService)->MoveImage( 
+	g_moveService.MoveImage( 
 		patientID, studyID, serieID, imageID, object);
 }
 
@@ -188,7 +147,7 @@ DcmProvider::GetImageSet(
 		DicomObjSet &result,
     DicomObj::ImageLoadedCallback on_loaded) 
 {
-	static_cast<MoveService *>(m_moveService)->MoveImageSet( 
+	g_moveService.MoveImageSet( 
 		patientID, studyID, serieID, result, on_loaded);
 
   // sort the vector of images
@@ -198,7 +157,7 @@ DcmProvider::GetImageSet(
 ///////////////////////////////////////////////////////////////////////
 
 AbstractImage::Ptr 
-DcmProvider::CreateImageFromDICOM( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects )
+DcmProvider::CreateImageFromDICOM( DicomObjSetPtr dicomObjects )
 {
 	//TODO exceptions
 	AbstractImageData::APtr data = CreateImageDataFromDICOM( dicomObjects );
@@ -214,7 +173,7 @@ DcmProvider::CreateImageFromDICOM( M4D::Dicom::DcmProvider::DicomObjSetPtr dicom
 
 AbstractImageData::APtr 
 DcmProvider::CreateImageDataFromDICOM( 
-		M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects )
+		DicomObjSetPtr dicomObjects )
 {
 		D_PRINT( LogDelimiter( '*' ) );
 		D_PRINT( "-- Entering CreateImageFromDICOM()" );
@@ -327,7 +286,7 @@ DcmProvider::CreateImageDataFromDICOM(
 template< typename ElementType >
 void
 FlushDicomObjectsHelper(
-		M4D::Dicom::DcmProvider::DicomObjSetPtr	&dicomObjects,
+		DicomObjSetPtr	&dicomObjects,
 		uint32 					imageSize,
 		uint32					stride,
 		uint8					* dataArray
@@ -336,7 +295,7 @@ FlushDicomObjectsHelper(
 	//Copy each slice into image to its place.
 	uint32 i = 0;
 	for( 
-		Dicom::DcmProvider::DicomObjSet::iterator it = dicomObjects->begin();
+		DicomObjSet::iterator it = dicomObjects->begin();
 		it != dicomObjects->end();
 		++it, ++i
 	   ) {
@@ -358,7 +317,7 @@ FlushDicomObjectsHelper(
 
 void
 DcmProvider::FlushDicomObjects(
-		M4D::Dicom::DcmProvider::DicomObjSetPtr	&dicomObjects,
+		DicomObjSetPtr	&dicomObjects,
 		int 					elementTypeID, 
 		uint32 					imageSize,
 		uint32					stride,
@@ -374,7 +333,13 @@ DcmProvider::FlushDicomObjects(
 
 ///////////////////////////////////////////////////////////////////////
 
-} // namespace
+M4D::Imaging::AbstractImage::Ptr
+DcmProvider::LoadSerieThatFileBelongsTo(const std::string &fileName)
+{
+	
 }
+
+///////////////////////////////////////////////////////////////////////
+
 /** @} */
 

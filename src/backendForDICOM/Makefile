@@ -52,12 +52,16 @@ DEFS=		-DHAVE_CONFIG_H\
 		$(DEBUG_DEFS)
 
 
-SRC_FILES=	$(addprefix $(SRC_DIR)/, $(addsuffix .cpp, $(TARGETS)) )
-OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )
-
-
+OBJ_FILES=	$(TMP_DIR)/AbstractService.o\
+			$(TMP_DIR)/DicomAssoc.o \
+			$(TMP_DIR)/DicomObj.o \
+			$(TMP_DIR)/DICOMServiceProvider.o \
+			$(TMP_DIR)/FindService.o \
+			$(TMP_DIR)/LocalService.o \
+			$(TMP_DIR)/MoveService.o \
+			$(TMP_DIR)/StoreService.o 
 .PHONY: all
-all:		tmpdir dep $(OUTPUT)
+all:		tmpdir $(OUTPUT)
 		
 
 .PHONY: tmpdir
@@ -67,20 +71,34 @@ tmpdir:
 .PHONY: build
 build:		cleanall all
 
-.PHONY: dep
-dep:
-		$(CXX) $(INCLUDES) $(CDEPFLAGS) $(DEFS) $(SRC_FILES) | \
-		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
-
-$(TMP_DIR)/%.o:	%.cpp	
-		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
-
--include $(DEP_FILE)
+$(TMP_DIR)/AbstractService.o:	
+		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -o $(TMP_DIR)/AbstractService.o -c $(SRC_DIR)/AbstractService.cpp
+		
+$(TMP_DIR)/DicomAssoc.o:	
+		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -o $(TMP_DIR)/DicomAssoc.o -c $(SRC_DIR)/DicomAssoc.cpp
+		
+$(TMP_DIR)/DicomObj.o:	
+		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -o $(TMP_DIR)/DicomObj.o -c $(SRC_DIR)/DicomObj.cpp
+		
+$(TMP_DIR)/DICOMServiceProvider.o:	
+		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -o $(TMP_DIR)/DICOMServiceProvider.o -c $(SRC_DIR)/DICOMServiceProvider.cpp
+		
+$(TMP_DIR)/FindService.o:	
+		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -o $(TMP_DIR)/FindService.o -c $(SRC_DIR)/FindService.cpp
+		
+$(TMP_DIR)/MoveService.o:	
+		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -o $(TMP_DIR)/MoveService.o -c $(SRC_DIR)/MoveService.cpp
+		
+$(TMP_DIR)/LocalService.o:	
+		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -o $(TMP_DIR)/LocalService.o -c $(SRC_DIR)/LocalService.cpp
+		
+$(TMP_DIR)/StoreService.o:	
+		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -o $(TMP_DIR)/StoreService.o -c $(SRC_DIR)/StoreService.cpp
 		
 $(OUTPUT):	$(OBJ_FILES)
 		$(AR) $(ARFLAGS) $(OUTPUT) $(OBJ_FILES)
 
 .PHONY: clean
 clean:
-		$(RM) $(TMP_DIR)/*.o $(DEP_FILE)
+		$(RM) $(TMP_DIR)/*.o
 		$(RM) $(OUTPUT)

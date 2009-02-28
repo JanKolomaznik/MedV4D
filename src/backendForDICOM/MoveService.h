@@ -8,24 +8,43 @@
  *  @{
  */
 
+#include "structures.h"
+#include "DcmObject.h"
+
 /**
  *  Implements C-MOVE service to DICOM server. Its purpose is to move data files (records) from DICOM server. 
  *  There are two main functions that retrive data files. One retrive one SINGLE image. The image is specified by unique IDs on all levels (patient, study, serie, image). The other retrieve all images from specified serie (SET). That means specification of IDs on all levels but image.
  *  Process decription in a nutshell: Client (SCU) establish assotiation to sever (SCP), send query dataSet, server find matching image files, then establish another subassotiation (as SCU) with calling client (that plays SCP role) and transmit data files over the subassotiation. For more details see DICOM doc ([ver]_08.pdf chapter 9.1.4) and coresponding annexes).
  */
 
-using namespace M4D::Dicom;
-
 namespace M4D
 {
-namespace DicomInternal 
+namespace Dicom 
 {
 
 class MoveService : AbstractService
 {
-private:
+public:
+	  // ctor & dtor
+		MoveService();
+		~MoveService();
+		
+		 // Moves one SINGLE image from server
+			void MoveImage( 
+				const string &patientID,
+				const string &studyID,
+				const string &setID,
+				const string &imageID,
+				DicomObj &rs);
 
-  friend class M4D::Dicom::DcmProvider;
+		  // Moves the whole image serie from server
+			void MoveImageSet(
+				const string &patientID,
+				const string &studyID,
+				const string &serieID,
+		    DicomObjSet &result,
+		    DicomObj::ImageLoadedCallback on_loaded);
+private:
 
   /**
    *  The two data retrival kinds definitions. According params of this type are the kinds of retrival distinguished in callbacks.
@@ -41,14 +60,14 @@ private:
   struct ImageSetData 
   {
     ImageSetData(
-      DcmProvider::DicomObjSet *result_,
+      DicomObjSet *result_,
       DicomObj::ImageLoadedCallback on_loaded_)
       : result(result_)
       , on_loaded( on_loaded_)
     {
     }
 
-    DcmProvider::DicomObjSet *result;
+    DicomObjSet *result;
     DicomObj::ImageLoadedCallback on_loaded;
   };
 
@@ -97,25 +116,6 @@ private:
 		T_DIMSE_C_StoreRSP *rsp,            /* final store response */
 		DcmDataset **statusDetail);
 
-  // ctor & dtor
-	MoveService();
-	~MoveService();
-
-  // Moves one SINGLE image from server
-	void MoveImage( 
-		const string &patientID,
-		const string &studyID,
-		const string &setID,
-		const string &imageID,
-		DicomObj &rs);
-
-  // Moves the whole image serie from server
-	void MoveImageSet(
-		const string &patientID,
-		const string &studyID,
-		const string &serieID,
-    DcmProvider::DicomObjSet &result,
-    DicomObj::ImageLoadedCallback on_loaded);
 	
 };
 

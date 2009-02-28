@@ -17,11 +17,7 @@
 #include "../DICOMSupport.h"
 
 using namespace M4D::ErrorHandling;
-
-namespace M4D
-{
-namespace DicomInternal 
-{
+using namespace M4D::Dicom;
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -220,7 +216,7 @@ FindService::FindSupport(
 void
 FindService::FindStudiesAboutPatient( 
 		const string &patientID,
-		DcmProvider::ResultSet &result) 
+		ResultSet &result) 
 {
 	// create query
 	DcmDataset *query = NULL;
@@ -234,7 +230,7 @@ FindService::FindStudiesAboutPatient(
 
 void
 FindService::FindForFilter( 
-		DcmProvider::ResultSet &result, 
+		ResultSet &result, 
 		const string &patientForeName,
     const string &patientSureName,
     const string &patID,
@@ -321,7 +317,7 @@ void
 FindService::FindWholeStudyInfo(
 		const string &patientID,
 		const string &studyID,
-		DcmProvider::StudyInfo &info) 
+		StudyInfo &info) 
 {
 	// create query
 	DcmDataset *query = NULL;
@@ -337,7 +333,7 @@ void
 FindService::FindStudyInfo(
 		const string &patientID,
 		const string &studyID,
-    DcmProvider::SerieInfoVector &seriesIDs) 
+    SerieInfoVector &seriesIDs) 
 {
 	// create query
 	DcmDataset *query = NULL;
@@ -371,7 +367,7 @@ FindService::TableRowCallback(
      *                              mask of the C-FIND-RQ which was sent.
      */
 {
-  DcmProvider::TableRow *row = new DcmProvider::TableRow;
+  TableRow *row = new TableRow;
 
 	//////////////////////////////////////////////////
 	// Parse the response
@@ -379,8 +375,8 @@ FindService::TableRowCallback(
 	GetTableRowFromDataSet( responseIdentifiers, row);  
 
 	// finaly add the new row into result set. SYNCHRONIZED?
-	DcmProvider::ResultSet *rs = 
-		static_cast<DcmProvider::ResultSet *>(callbackData);
+	ResultSet *rs = 
+		static_cast<ResultSet *>(callbackData);
 
 	rs->push_back(*row);
   D_PRINT( "Next patient record arrived ...");
@@ -421,20 +417,20 @@ FindService::WholeStudyInfoCallback(
 	setID = str.c_str();
 
 	// get container that recieved values should go into
-	DcmProvider::StudyInfo *setInfo = 
-		static_cast<DcmProvider::StudyInfo*>(callbackData);
+	StudyInfo *setInfo = 
+		static_cast<StudyInfo*>(callbackData);
 
-	DcmProvider::StringVector *setImages;
+	StringVector *setImages;
 	// try to find if there is already just recieved setID within the container
-	DcmProvider::StudyInfo::iterator it = 
+	StudyInfo::iterator it = 
 		setInfo->find( setID);
 	
 	if( it == setInfo->end() )
 	{
 		// create new StringVector & insert it into setInfo
-		DcmProvider::StringVector buddy;
+		StringVector buddy;
 		setInfo->insert( 
-			DcmProvider::StudyInfo::value_type( setID, buddy) );
+			StudyInfo::value_type( setID, buddy) );
 		setImages = &setInfo->find( setID)->second;
 	}	
 	else
@@ -471,19 +467,16 @@ FindService::StudyInfoCallback(
      *                              mask of the C-FIND-RQ which was sent.
      */
 {
-  DcmProvider::SerieInfo seriesInfo;
+  SerieInfo seriesInfo;
   
   GetSeriesInfo( responseIdentifiers, &seriesInfo);
 
 	// get container that recieved values should go into
-  DcmProvider::SerieInfoVector *setInfo = 
-		static_cast<DcmProvider::SerieInfoVector *>(callbackData);
+  SerieInfoVector *setInfo = 
+		static_cast<SerieInfoVector *>(callbackData);
 
 	setInfo->push_back( seriesInfo);
   D_PRINT( "Next record into study info arrived ...");
-}
-
-} // namespace
 }
 
 /** @} */

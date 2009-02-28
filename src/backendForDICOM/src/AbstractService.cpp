@@ -13,9 +13,7 @@
 #include "../DicomAssoc.h"
 #include "../AbstractService.h"
 
-namespace M4D
-{
-namespace DicomInternal {
+using namespace M4D::Dicom;
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -86,7 +84,5 @@ AbstractService::~AbstractService()
 
 ///////////////////////////////////////////////////////////////////////
 
-} // namespace
-}
 /** @} */
 

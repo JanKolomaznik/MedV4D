@@ -8,6 +8,8 @@
  *  @{
  */
 
+#include "DcmObject.h"
+
 /// Implements service that performs C-STORE operation.
 /** to DICOM server. It's purpose is to generate unique IDs and send new data to server.
  *  Behavior in a nutshell: Client (SCU) generates unique ID for sent (new) data, establish assotiatoin with a server (SCP) and sends the data to server.
@@ -15,11 +17,10 @@
  *  Generation of unique IDs is based on prefix and the rest is delegated to DCMTK functions. More informations about unique UDs generation see DICOM doc.
  */
 
-using namespace M4D::Dicom;
-
 namespace M4D
 {
-namespace DicomInternal {
+namespace Dicom
+{
 
 	class StoreService : AbstractService
 	{

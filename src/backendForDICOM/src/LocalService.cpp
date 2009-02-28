@@ -22,11 +22,7 @@
 namespace fs = boost::filesystem;
 
 using namespace M4D::ErrorHandling;
-
-namespace M4D
-{
-namespace DicomInternal 
-{
+using namespace M4D::Dicom;
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -84,7 +80,7 @@ LocalService::~LocalService()
 
 void
 LocalService::Find( 
-			Dicom::DcmProvider::ResultSet &result,
+			ResultSet &result,
       const std::string &path)
 {
   Reset();
@@ -145,13 +141,13 @@ LocalService::GetSeries( const std::string &patientID,
 
 void
 LocalService::FindStudyInfo( 
-      DcmProvider::SerieInfoVector &result,
+      SerieInfoVector &result,
       const std::string &patientID,
 			const std::string &studyID)
 {
   // just take informatoin from tree
   Series series = GetSeries( patientID, studyID);
-  DcmProvider::SerieInfo s;
+  SerieInfo s;
   for( Series::iterator serie=series.begin(); 
     serie != series.end(); serie++)
   {
@@ -168,7 +164,7 @@ LocalService::GetImageSet(
       const std::string &patientID,
 			const std::string &studyID,
 			const std::string &serieID,
-			Dicom::DcmProvider::DicomObjSet &result)
+			DicomObjSet &result)
 {
   // retrieve from tree, where the serie of image is
   Series &series = GetSeries( patientID, studyID);
@@ -203,7 +199,7 @@ LocalService::GetImageSet(
 
 void
 LocalService::SolveDir( boost::filesystem::path & dirName,
-                       DcmProvider::ResultSet &result)
+                       ResultSet &result)
 {
   // Get all files in this dir
   // loop through them
@@ -233,7 +229,7 @@ LocalService::SolveDir( boost::filesystem::path & dirName,
 void
 LocalService::SolveFile( 
   const std::string & fileName, const std::string & path,
-  Dicom::DcmProvider::ResultSet &result)
+  ResultSet &result)
 {
   OFString ofStr;
 
@@ -247,8 +243,8 @@ LocalService::SolveFile(
 
   DcmDataset *dataSet = dfile.getDataset();
 
-  DcmProvider::TableRow row;
-  DcmProvider::SerieInfo serInfo;
+  TableRow row;
+  SerieInfo serInfo;
 
   // load data and check if it is already in tree
   CheckDataSet( dataSet, serInfo, row, path);
@@ -268,8 +264,8 @@ LocalService::SolveFile(
 void
 LocalService::CheckDataSet(
     DcmDataset *dataSet,
-    DcmProvider::SerieInfo &sInfo,
-    DcmProvider::TableRow &row,
+    SerieInfo &sInfo,
+    TableRow &row,
     std::string path)
 {
   // load data from dataSet
@@ -450,7 +446,7 @@ LocalService::SolveDirGET( boost::filesystem::path & dirName,
   const std::string &patientID,
 	const std::string &studyID,
 	const std::string &serieID,
-  DcmProvider::DicomObjSet &result)
+ DicomObjSet &result)
 {
   // Get all files in this dir
   // loop through them
@@ -483,7 +479,7 @@ LocalService::SolveFileGET( const std::string & fileName,
   const std::string &patientID,
 	const std::string &studyID,
 	const std::string &serieID,
-  DcmProvider::DicomObjSet &result,
+  DicomObjSet &result,
   const std::string &path)
 {
   OFString ofStr;
@@ -498,8 +494,8 @@ LocalService::SolveFileGET( const std::string & fileName,
 
   DcmDataset *dataSet = dfile.getDataset();
 
-  DcmProvider::TableRow row;
-  DcmProvider::SerieInfo serInfo;
+  TableRow row;
+  SerieInfo serInfo;
 
   // load data and check if it is already in tree
   CheckDataSet( dataSet, serInfo, row, path);
@@ -530,7 +526,5 @@ LocalService::Reset(void)
 
 ///////////////////////////////////////////////////////////////////////
 
-} // namespace
-}
 /** @} */
 

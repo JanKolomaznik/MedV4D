@@ -7,6 +7,8 @@
  *  @author Vaclav Klecanda
  */
 #include "Common.h"
+#include <vector>
+#include <boost/shared_ptr.hpp>
 
 namespace M4D
 {
@@ -132,6 +134,10 @@ private:
   ImageLoadedCallback m_loadedCallBack;
 };
 
+/// Container for one serie of images
+typedef std::vector<DicomObj> DicomObjSet;
+/// shared pointer to DicomObjSet type
+typedef boost::shared_ptr< DicomObjSet> DicomObjSetPtr;
 
 }
 }

@@ -13,7 +13,6 @@
 #include "../dicomDataStreamDecoder.h"
 
 using namespace M4D::Dicom;
-using namespace M4D::DicomInternal;
 
 ///////////////////////////////////////////////////////////////////////
 

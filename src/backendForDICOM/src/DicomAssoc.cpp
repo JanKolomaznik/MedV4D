@@ -13,7 +13,7 @@
 
 #include "../DicomAssoc.h"
 
-using namespace M4D::DicomInternal;
+using namespace M4D::Dicom;
 ///////////////////////////////////////////////////////////////////////
 
 // shared address container

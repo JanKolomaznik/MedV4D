@@ -10,7 +10,7 @@
 
 namespace M4D
 {
-namespace DicomInternal 
+namespace Dicom 
 {
 
 /// This is base class for all services that is requested from DICOM server.

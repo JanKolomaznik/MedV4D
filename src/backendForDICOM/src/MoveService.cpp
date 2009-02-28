@@ -14,12 +14,9 @@
 #include "../AbstractService.h"
 #include "../MoveService.h"
 
-namespace M4D
-{
+using namespace M4D::ErrorHandling;
+using namespace M4D::Dicom;
 
-using namespace ErrorHandling;
-
-namespace DicomInternal {
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -105,7 +102,7 @@ MoveService::MoveImageSet(
 		const string &patientID,
 		const string &studyID,
 		const string &serieID,
-		DcmProvider::DicomObjSet &result,
+		DicomObjSet &result,
     DicomObj::ImageLoadedCallback on_loaded)
 {
 	DcmDataset *query = NULL;
@@ -540,7 +537,5 @@ MoveService::MoveCallback( void * /*callbackData*/,
 
 ///////////////////////////////////////////////////////////////////////
 
-} // namespace
-}
 /** @} */
 

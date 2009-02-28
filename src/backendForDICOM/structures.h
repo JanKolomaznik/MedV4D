@@ -1,6 +1,9 @@
 #ifndef STRUCTURES_H_
 #define STRUCTURES_H_
 
+#include <vector>
+#include <map>
+
 namespace M4D {
 namespace Dicom {
 
@@ -44,11 +47,6 @@ typedef std::vector<SerieInfo> SerieInfoVector;
 // vector of M4DSetInfo
 typedef std::vector<std::string> StringVector;
 typedef std::map<std::string, StringVector> StudyInfo;
-
-/// Container for one serie of images
-typedef std::vector<DicomObj> DicomObjSet;
-/// shared pointer to DicomObjSet type
-typedef boost::shared_ptr< DicomObjSet> DicomObjSetPtr;
 
 }
 }

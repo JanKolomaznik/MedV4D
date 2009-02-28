@@ -11,12 +11,12 @@
 #include <string>
 #include <map>
 #include <set>
-
-using namespace M4D::Dicom;
+#include "structures.h"
+#include "DcmObject.h"
 
 namespace M4D
 {
-namespace DicomInternal 
+namespace Dicom
 {
 
 #define LOCAL_REC_DB_FILE_NAME "tree.dat"
@@ -34,12 +34,12 @@ class LocalService
 public:
   // performs search run on given folder
 	void Find( 
-			DcmProvider::ResultSet &result,
+			ResultSet &result,
       const std::string &path);
 
   // returns serie info based on build info structure
   void FindStudyInfo( 
-    DcmProvider::SerieInfoVector &result,
+    SerieInfoVector &result,
       const std::string &patientID,
 			const std::string &studyID);
 
@@ -48,7 +48,7 @@ public:
       const std::string &patientID,
 			const std::string &studyID,
 			const std::string &serieID,
-      DcmProvider::DicomObjSet &result);
+      DicomObjSet &result);
 
   LocalService();
   ~LocalService();
@@ -162,33 +162,33 @@ private:
   // currently searched folder
   std::string m_lastSearchDir;
 
-  Dicom::DcmProvider::ResultSet m_lastResultSet;
+  ResultSet m_lastResultSet;
 
   // supporting functions to go on one folder or to solve single file
   void SolveDir( boost::filesystem::path & dirName,
-    DcmProvider::ResultSet &result);
+    ResultSet &result);
   // ...
   void SolveFile( const std::string & fileName,
     const std::string & path,
-    DcmProvider::ResultSet &result);
+    ResultSet &result);
   // ...
   void SolveDirGET( boost::filesystem::path & dirName,
     const std::string &patientID,
 		const std::string &studyID,
 		const std::string &serieID,
-    DcmProvider::DicomObjSet &result);
+    DicomObjSet &result);
   // ...
   void SolveFileGET( const std::string & fileName,
     const std::string &patientID,
 		const std::string &studyID,
 		const std::string &serieID,
-    DcmProvider::DicomObjSet &result,
+    DicomObjSet &result,
     const std::string &path);
 	
   void CheckDataSet( 
     DcmDataset *dataSet,
-    DcmProvider::SerieInfo &sInfo,
-    DcmProvider::TableRow &row,
+    SerieInfo &sInfo,
+    TableRow &row,
     std::string path);
 
   Series &GetSeries( const std::string &patientID,

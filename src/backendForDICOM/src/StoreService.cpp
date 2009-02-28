@@ -23,11 +23,7 @@
 #endif
 
 using namespace M4D::ErrorHandling;
-
-namespace M4D
-{
-namespace DicomInternal 
-{
+using namespace M4D::Dicom;
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -567,7 +563,5 @@ StoreService::CopyNeccessaryAttribs(
 	dest->putAndInsertString( DCM_StudyInstanceUID, tmp);
 }
 
-} // namespace
-}
 /** @} */
 

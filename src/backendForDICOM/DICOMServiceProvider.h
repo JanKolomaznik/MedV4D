@@ -14,7 +14,7 @@
 #include "Common.h"
 #include "structures.h"
 #include "Imaging/ImageFactory.h"
-#include "dicomConn/DcmObject.h"
+#include "DcmObject.h"
 
 
 
@@ -80,7 +80,7 @@ public:
 	 * parameters from dicomObject doesn't exist.
 	 **/
 	static M4D::Imaging::AbstractImage::Ptr 
-	CreateImageFromDICOM( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects );
+	CreateImageFromDICOM( DicomObjSetPtr dicomObjects );
 
 	/**
 	 * Creates image from given dicomObject set.
@@ -92,7 +92,7 @@ public:
 	 * parameters from dicomObject doesn't exist.
 	 **/
 	static M4D::Imaging::AbstractImageData::APtr 
-	CreateImageDataFromDICOM( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjects );
+	CreateImageDataFromDICOM( DicomObjSetPtr dicomObjects );
 	
 	//TODO - make this function asynchronous. Add locking of array in image.
 	/**
@@ -106,7 +106,7 @@ public:
 	 **/
 	static void
 	FlushDicomObjects(
-		M4D::Dicom::DcmProvider::DicomObjSetPtr	&dicomObjects,
+		DicomObjSetPtr	&dicomObjects,
 		int		 			elementTypeID, 
 		uint32 					imageSize,
 		uint32					stride,
@@ -125,7 +125,7 @@ public:
    *	@param description  - item decsription
 	 */
 	static void Find( 
-		DcmProvider::ResultSet &result,
+		ResultSet &result,
     const std::string &patientForeName,
     const std::string &patientSureName,
     const std::string &patientID,
@@ -140,7 +140,7 @@ public:
    *  @param path   - given path
    */
 	static void LocalFind( 
-		DcmProvider::ResultSet &result,
+		ResultSet &result,
     const std::string &path);
 
 	/**
