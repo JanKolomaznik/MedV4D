@@ -19,6 +19,22 @@ namespace M4D
 namespace Imaging
 {
 
+template< typename ElementType, unsigned Dim >
+void
+ImageFactory::AllocateDataAccordingProperties(Image<ElementType, Dim> &image)
+{
+	Vector< int32, Dim > 	minimum;
+	Vector< int32, Dim > 	maximum;
+	Vector< float32, Dim >	elementExtents;
+	
+	for( unsigned i = 0; i < Dim; ++i ) {
+		minimum[i] = image.GetDimensionExtents( i ).minimum;
+		maximum[i] = image.GetDimensionExtents( i ).maximum;
+		elementExtents[i] = image.GetDimensionExtents( i ).elementExtent;
+	}
+	
+	ChangeImageSize(image, minimum, maximum, elementExtents);
+}
 
 /**
  * Function creating templated array of desired size.
@@ -249,6 +265,28 @@ ImageFactory::CreateEmptyImageData2D(
 		< AbstractImageData, ImageDataTemplate<ElementType> >( ptr );
 
 	return aptr;
+}
+
+template< typename ElementType, unsigned Dim  >
+typename ImageDataTemplate< ElementType >::Ptr 
+ImageFactory::CreateImageDataBuffer( ElementType *pointer, 
+	Vector< int32, Dim > 	size,
+	Vector< float32, Dim >	elementSize)
+{
+	// NOTE: right now just for 3D case
+	uint32 totalSize = size[0] * size[1] * size[2];
+	
+	DimensionInfo *info = new DimensionInfo[ 3 ];
+	info[0].Set( size[0], 1, elementSize[0] );
+	info[1].Set( size[1], size[0], elementSize[1] );
+	info[2].Set( size[2], (size[0] * size[1]), elementSize[2] );
+	
+	//Creating new image, which is using allocated data storage.
+	ImageDataTemplate< ElementType > *newImage = 
+		new ImageDataTemplate< ElementType >( pointer, info, 3, totalSize );
+
+	//Returning smart pointer to abstract image class.
+	return typename ImageDataTemplate< ElementType >::Ptr( newImage );
 }
 
 template< typename ElementType >

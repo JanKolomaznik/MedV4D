@@ -19,6 +19,7 @@ DataSetFactory::CreateDataSet(InStream &stream)
 	switch((DataSetType) dsType)
 	{
 	case DATASET_IMAGE:
+		D_PRINT("D-Set factory: Creating Image");
 		return CreateImage(stream);
 		break;
 		
@@ -37,6 +38,8 @@ DataSetFactory::CreateImage(InStream &stream)
 	uint16 dim, elemType;
 	stream.Get<uint16>(elemType);
 	stream.Get<uint16>(dim);
+	
+	D_PRINT("Elemtype: " << elemType << ", dim: " << dim);
 
 	// create approp class
 	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( elemType, 
@@ -46,7 +49,14 @@ DataSetFactory::CreateImage(InStream &stream)
 	
 	ds->DeSerializeProperties(stream);
 	
-	ImageFactory::AllocateDataAccordingProperties(ds);
+	// allocate data buffer according read properties
+	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( elemType, 
+		DIMENSION_TEMPLATE_SWITCH_MACRO( dim, 
+			ImageFactory::AllocateDataAccordingProperties<TTYPE, DIM>(*(Image<TTYPE, DIM> *)ds.get()) )
+		);
+	
+	// deserialize data
+	ds->DeSerializeData(stream);
 	
 	return ds;
 }

@@ -429,7 +429,7 @@ Image< ElementType, Dim >::SerializeProperties(OutStream &stream)
 template< typename ElementType, unsigned Dim >
 void
 Image< ElementType, Dim >::DeSerializeProperties(InStream &stream)
-{		
+{
 	for( unsigned i = 0; i < Dimension; ++i ) {
 		stream.Get<int32>(_dimExtents[ i ].minimum);		
 		stream.Get<int32>(_dimExtents[ i ].maximum);
@@ -442,22 +442,26 @@ void
 Image< ElementType, Dim >::SerializeData(OutStream &stream)
 {
 	// actual data
-	//PointType stride;
-	//SizeType size;
+	PointType stride;
+	SizeType size;
 
-	//ElementType *pointer = GetPointer( size, stride );
+	ElementType *pointer = GetPointer( size, stride );
 
-/*	DataBuff buff;
-	size_t sliceSize = size[0] * size[1];
+	DataBuff buff;
 
-	for( uint32 k = 0; k < depth; ++k ) 
+	// note: this expects image that represent the WHOLE buffer NOT only window
+	switch(this->GetDimension())
 	{
-	    buff.data = (void*) pointer;
-	    buff.len = sliceSize * sizeof( ElementType);
-	    stream.PutDataBuf( buff);
-	
-	    pointer += sliceSize; // move on next slice
-	}*/
+	case 3:
+		for( uint32 i = 0; i < size[2]; i++ ) 
+		{
+		    buff.data = (void*) pointer;
+		    buff.len = size[0] * size[1] * sizeof( ElementType);// whole slice
+		    stream.PutDataBuf( buff);
+		
+		    pointer += stride[2]; // move on next slice
+		}
+	}
 }
 	
 ///////////////////////////////////////////////////////////////////////////////
@@ -466,27 +470,25 @@ template< typename ElementType, unsigned Dim >
 void
 Image< ElementType, Dim >::DeSerializeData(InStream &stream)
 {
-	//PointType stride;
-	//SizeType size;
+	PointType stride;
+	SizeType size;
 
-	//ElementType *pointer = GetPointer( size, stride );
+	ElementType *pointer = GetPointer( size, stride );
 
-	/*uint32 width;
-	uint32 height;
-	int32 xStride;
-	int32 yStride;
-	
-	// get one buffer with whole slice this image represents
-	ElementType *pointer = GetPointer( width, height, xStride, yStride );
-
-	// put whole array at once
 	DataBuff buff;
-	buff.data = (void *) pointer;
-	buff.len = width * height * sizeof( ElementType);
-
-	stream.GetDataBuf( buff);*/
-
-	
+	// note: this expects image that represent the WHOLE buffer NOT only window
+	switch(this->GetDimension())
+	{
+	case 3:
+		for( uint32 i = 0; i < size[2]; i++ ) 
+		{
+		    buff.data = (void*) pointer;
+		    buff.len = size[0] * size[1] * sizeof( ElementType);// whole slice
+		    stream.GetDataBuf( buff);
+		
+		    pointer += stride[2]; // move on next slice
+		}
+	}	
 }
 
 ///////////////////////////////////////////////////////////////////////////////

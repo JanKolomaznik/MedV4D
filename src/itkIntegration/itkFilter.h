@@ -7,6 +7,7 @@
 
 //#include "itkDataContainerWrapper.h"
 #include "Imaging/AbstractImageFilterWholeAtOnce.h"
+#include "Imaging/ImageFactory.h"
 
 /**
  *  @addtogroup itkIntegration ITK Integration
@@ -26,6 +27,8 @@ class ITKFilter
 public:
 	typedef M4D::Imaging::AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType > PredecessorType;
 	typedef ITKFilter< InputImageType, OutputImageType > SelfType;
+//	typedef typename InputImageType InputImageType;	
+//	typedef typename OutputImageType OutputImageType;
 
 protected:
 	typedef typename InputImageType::Element InputPixelType;
@@ -43,18 +46,20 @@ protected:
 	~ITKFilter() {}
 	
 	const ITKInputImageType *
-	GetInputITKImage(void) { return inImage.GetPointer(); }
-	
+	GetInputITKImage(void) { return inITKImage.GetPointer(); }	
 	void
-	SetOutputITKImage(ITKOutputImageType *outImage);
+	SetOutputITKImage(const ITKOutputImageType *outImage) { 
+		outITKImage = (ITKOutputImageType *) outImage; }
 	
-	void PrepareOutputDatasets(void);
-	
-	void SetOutputImageSize(ITKOutputImageType *itkImage);
+	void PrepareOutputDatasets(void);	
+	void SetOutputImageSizeAccordingITK(ITKOutputImageType *itkImage);
 	
 private:
-	typename ITKInputImageType::Pointer inImage;
+	typename ITKInputImageType::Pointer inITKImage;	
+	ITKOutputImageType *outITKImage;
+	
 	void SetupOutMedvedImageAccordingOutputITKImage(void);
+	void SetupInITKImageAccordingInMedevedImage(void);
 	
 	// ITK images that simulate begining and end if ITK pipeline
 	//ITKInputImageWrapperType m_inputITKImageWrapper;

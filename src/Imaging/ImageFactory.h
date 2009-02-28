@@ -277,6 +277,11 @@ public:
 			Vector< int32, Dim > 	size,
 			Vector< float32, Dim >	elementExtents
 			);
+	
+	template< typename ElementType, unsigned Dim  >
+	static typename ImageDataTemplate< ElementType >::Ptr 
+	CreateImageDataBuffer( ElementType *pointer, Vector< int32, Dim > 	size,
+			Vector< float32, Dim >	elementSize); 
 
 	
 	template< unsigned Dim >
@@ -315,7 +320,8 @@ public:
 	static AbstractImage::Ptr
 	LoadDumpedImage( std::string filename );
 	
-	static void AllocateDataAccordingProperties(AbstractDataSet::Ptr &image);
+	template< typename ElementType, unsigned Dim >
+	static void AllocateDataAccordingProperties(Image<ElementType, Dim> &image);
 	
 	/**
 	 * @param typeId Id of type used for storing pixel value.
