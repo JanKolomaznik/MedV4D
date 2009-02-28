@@ -148,11 +148,10 @@ StManagerStudyListComp::StManagerStudyListComp ( QDialog *studyManagerDialog, QW
 
   // DICOM initializations:
   try {
-    dcmProvider = new DcmProvider();
 
-    recentResultSet   = new DcmProvider::ResultSet();
-    remoteResultSet   = new DcmProvider::ResultSet();
-    DICOMDIRResultSet = new DcmProvider::ResultSet();
+    recentResultSet   = new ResultSet();
+    remoteResultSet   = new ResultSet();
+    DICOMDIRResultSet = new ResultSet();
   }
   catch ( M4D::ErrorHandling::ExceptionBase &e )
   {
@@ -176,7 +175,6 @@ StManagerStudyListComp::~StManagerStudyListComp ()
 {
   if ( buildSuccessful )
   {
-    delete dcmProvider;
     delete recentResultSet;
     delete remoteResultSet;
     delete DICOMDIRResultSet;
@@ -187,7 +185,7 @@ StManagerStudyListComp::~StManagerStudyListComp ()
 void StManagerStudyListComp::find ( const string &firstName, const string &lastName,
                                     const string &patientID, 
                                     const string &fromDate, const string &toDate,
-                                    const DcmProvider::StringVector &modalitiesVect,
+                                    const StringVector &modalitiesVect,
                                     const string &referringMD, const string &description )
 {
   try {
@@ -226,7 +224,7 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
 
       case 1:
         // Remote Exams tab active
-        dcmProvider->Find( *activeResultSet, firstName, lastName, patientID, fromDate, toDate, 
+        DcmProvider::Find( *activeResultSet, firstName, lastName, patientID, fromDate, toDate, 
                             referringMD, description );
         StudyFilter::filterModalities( activeResultSet, modalitiesVect );
 
@@ -252,7 +250,7 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
           }
         }
 
-        dcmProvider->LocalFind( *activeResultSet, DICOMDIRPath.toStdString() );
+        DcmProvider::LocalFind( *activeResultSet, DICOMDIRPath.toStdString() );
         StudyFilter::filterAll( activeResultSet, firstName, lastName, patientID, 
                                 fromDate, toDate, modalitiesVect, referringMD, 
                                 description );
@@ -309,13 +307,13 @@ void StManagerStudyListComp::view ()
     return;
   }
 
-  DcmProvider::SerieInfoVector info;
+  SerieInfoVector info;
   unsigned seriesIndex = 0;
 
   // we are sure, there is exactly one selected
   int selectedRow = activeExamTable->selectedItems()[0]->row();
   int idx = activeExamTable->item( selectedRow, ATTRIBUTE_NUMBER )->text().toInt();
-  DcmProvider::TableRow *row = &activeResultSet->at( idx );
+  TableRow *row = &activeResultSet->at( idx );
 
   const char *recentTypePrefix = RECENT_REMOTE_EXAMS_SETTINGS_NAME;
 
@@ -327,27 +325,27 @@ void StManagerStudyListComp::view ()
       if ( recentRemoteButton->isChecked() )
       {
         // find some info about selected study
-        dcmProvider->FindStudyInfo( row->patientID, row->studyID, info );
+    	DcmProvider::FindStudyInfo( row->patientID, row->studyID, info );
 
         if ( info.size() > 1 ) {
           seriesIndex = getSeriesIndex( info );
         }
 
         // now get image
-        dcmProvider->GetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
+        DcmProvider::GetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
       }
       else
       {
         try { 
           // find some info about selected study
-          dcmProvider->LocalFindStudyInfo( row->patientID, row->studyID, info );
+        	DcmProvider::LocalFindStudyInfo( row->patientID, row->studyID, info );
 
           if ( info.size() > 1 ) {
             seriesIndex = getSeriesIndex( info );  
           }
 
           // now get image
-          dcmProvider->LocalGetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
+          DcmProvider::LocalGetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
 
           recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
         }
@@ -363,7 +361,7 @@ void StManagerStudyListComp::view ()
     case 1:
       // Remote Exams tab active
       // find some info about selected study
-      dcmProvider->FindStudyInfo( row->patientID, row->studyID, info );
+    	DcmProvider::FindStudyInfo( row->patientID, row->studyID, info );
 
       if ( info.size() > 1 ) {
         seriesIndex = getSeriesIndex( info );
@@ -544,7 +542,7 @@ void StManagerStudyListComp::comboPathChanged ( const QString &text )
 }
 
 
-void StManagerStudyListComp::loadRecentExams ( M4D::Dicom::DcmProvider::ResultSet &resultSet, 
+void StManagerStudyListComp::loadRecentExams ( M4D::Dicom::ResultSet &resultSet, 
                                                const QString &prefix )
 {
   QSettings settings;
@@ -552,7 +550,7 @@ void StManagerStudyListComp::loadRecentExams ( M4D::Dicom::DcmProvider::ResultSe
  
   for ( int i = 0; i < size; i++ )
   {
-    DcmProvider::TableRow row;
+    TableRow row;
 
     settings.setArrayIndex( i );
     loadRecentRow( row, settings );
@@ -564,7 +562,7 @@ void StManagerStudyListComp::loadRecentExams ( M4D::Dicom::DcmProvider::ResultSe
 }
 
 
-void StManagerStudyListComp::loadRecentRow ( DcmProvider::TableRow &row, const QSettings &settings )
+void StManagerStudyListComp::loadRecentRow ( TableRow &row, const QSettings &settings )
 {
   row.patientID   = settings.value( attributeNames[0] ).toString().toStdString();
   row.name        = settings.value( attributeNames[1] ).toString().toStdString();
@@ -579,7 +577,7 @@ void StManagerStudyListComp::loadRecentRow ( DcmProvider::TableRow &row, const Q
 }
 
 
-void StManagerStudyListComp::addResultSetToStudyTable ( const M4D::Dicom::DcmProvider::ResultSet *resultSet, 
+void StManagerStudyListComp::addResultSetToStudyTable ( const M4D::Dicom::ResultSet *resultSet, 
                                                         QTableWidget *table )
 {
   // for correct inserting sorting must be disabled
@@ -598,7 +596,7 @@ void StManagerStudyListComp::addResultSetToStudyTable ( const M4D::Dicom::DcmPro
 }
 
 
-void StManagerStudyListComp::addRowToStudyTable ( const DcmProvider::TableRow *row, 
+void StManagerStudyListComp::addRowToStudyTable ( const TableRow *row, 
                                                   QTableWidget *table )
 {
   int rowNum = table->rowCount();
@@ -646,7 +644,7 @@ void StManagerStudyListComp::addRowToStudyTable ( const DcmProvider::TableRow *r
 }
 
 
-unsigned StManagerStudyListComp::getSeriesIndex( const DcmProvider::SerieInfoVector info )
+unsigned StManagerStudyListComp::getSeriesIndex( const SerieInfoVector info )
 {
   // no resize, just exit button - reject, result code is 0 -> returned value will be 0
   QDialog *seriesSelectorDialog = new QDialog( this, Qt::WindowTitleHint | Qt::WindowSystemMenuHint| Qt::MSWindowsFixedSizeDialogHint );
@@ -689,9 +687,9 @@ void StManagerStudyListComp::fillOverlayInfo ( QTableWidget *table, int row )
 }
 
 
-void StManagerStudyListComp::updateRecentExams ( const DcmProvider::TableRow *row, const QString &prefix )
+void StManagerStudyListComp::updateRecentExams ( const TableRow *row, const QString &prefix )
 {
-  DcmProvider::ResultSet resultSet;
+  ResultSet resultSet;
   loadRecentExams( resultSet, prefix );
 
   StudyFilter::filterDuplicates( &resultSet, row );
@@ -714,7 +712,7 @@ void StManagerStudyListComp::updateRecentExams ( const DcmProvider::TableRow *ro
 }
 
 
-void StManagerStudyListComp::updateRecentRow ( const DcmProvider::TableRow *row, QSettings &settings )
+void StManagerStudyListComp::updateRecentRow ( const TableRow *row, QSettings &settings )
 {
   settings.setValue( attributeNames[0], row->patientID.c_str() );
   settings.setValue( attributeNames[1], row->name.c_str() );

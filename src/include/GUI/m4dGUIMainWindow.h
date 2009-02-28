@@ -82,7 +82,7 @@ class m4dGUIMainWindow: public QMainWindow
      */
     struct Study {
       /// Pointer to DicomObjSet.
-      M4D::Dicom::DcmProvider::DicomObjSet *dicomObjSet;
+      M4D::Dicom::DicomObjSet *dicomObjSet;
       /// Overlay info lists.
       std::list< std::string > leftOverlayInfo, rightOverlayInfo;
     };
@@ -287,7 +287,7 @@ class m4dGUIMainWindow: public QMainWindow
      * 
      * @param dicomObjSet Dicom Object Set (result of the search) to process
      */
-    virtual void process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet );
+    virtual void process ( M4D::Dicom::DicomObjSetPtr dicomObjSet );
 
 
     /// Pointer to the Main Viewer Desktop

@@ -268,7 +268,7 @@ class m4dGUIMainWindow2: public QMainWindow
      * 
      * @param dicomObjSet Dicom Object Set (result of the search) to process
      */
-    virtual void process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet );
+    virtual void process ( M4D::Dicom::DicomObjSetPtr dicomObjSet );
 
 	QStackedWidget	*stackWidget;
 	//QTabWidget	*stackWidget;
