@@ -368,20 +368,20 @@ void StManagerStudyListComp::view ()
       } 
 
       // now get image
-      dcmProvider->GetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
+      DcmProvider::GetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
       break;
 
     case 2:
       // DICOMDIR tab active
       // find some info about selected study
-      dcmProvider->LocalFindStudyInfo( row->patientID, row->studyID, info );
+    	DcmProvider::LocalFindStudyInfo( row->patientID, row->studyID, info );
 
       if ( info.size() > 1 ) {
         seriesIndex = getSeriesIndex( info );  
       }
 
       // now get image
-      dcmProvider->LocalGetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
+      DcmProvider::LocalGetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
 
       recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
       break;
@@ -390,27 +390,27 @@ void StManagerStudyListComp::view ()
       if ( recentRemoteButton->isChecked() )
       {
         // find some info about selected study
-        dcmProvider->FindStudyInfo( row->patientID, row->studyID, info );
+        DcmProvider::FindStudyInfo( row->patientID, row->studyID, info );
 
         if ( info.size() > 1 ) {
           seriesIndex = getSeriesIndex( info );
         }
 
         // now get image
-        dcmProvider->GetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );  
+        DcmProvider::GetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );  
       }
       else
       {
         try { 
           // find some info about selected study
-          dcmProvider->LocalFindStudyInfo( row->patientID, row->studyID, info );
+          DcmProvider::LocalFindStudyInfo( row->patientID, row->studyID, info );
 
           if ( info.size() > 1 ) {
             seriesIndex = getSeriesIndex( info );  
           }
 
           // now get image
-          dcmProvider->LocalGetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
+          DcmProvider::LocalGetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
 
           recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
         }

@@ -153,7 +153,7 @@ void m4dGUIMainWindow::addDockWindow ( const char *title, QWidget *widget, DockW
 
 void m4dGUIMainWindow::search ()
 {
-  actualStudy.dicomObjSet = new DcmProvider::DicomObjSet();	
+  actualStudy.dicomObjSet = new DicomObjSet();	
   studyManagerWidget->getStudyListComponent()->setDicomObjectSetPtr( actualStudy.dicomObjSet );
   
   actualStudy.leftOverlayInfo.clear();
@@ -166,7 +166,7 @@ void m4dGUIMainWindow::search ()
     {
       mainViewerDesktop->getSelectedViewerWidget()->setLeftSideTextData( actualStudy.leftOverlayInfo );  
       mainViewerDesktop->getSelectedViewerWidget()->setRightSideTextData( actualStudy.rightOverlayInfo );  
-      process( DcmProvider::DicomObjSetPtr( actualStudy.dicomObjSet ) );
+      process( DicomObjSetPtr( actualStudy.dicomObjSet ) );
     }
     else {
       QMessageBox::critical( this, tr( "Exception" ), tr( "Empty image - nothing to process" ) );
@@ -656,7 +656,7 @@ void m4dGUIMainWindow::delegateAction ( unsigned actionIdx, m4dGUIAbstractViewer
 }
 
 
-void m4dGUIMainWindow::process ( DcmProvider::DicomObjSetPtr dicomObjSet )
+void m4dGUIMainWindow::process ( DicomObjSetPtr dicomObjSet )
 {
   AbstractImage::Ptr inputImage = DcmProvider::CreateImageFromDICOM( dicomObjSet );
 

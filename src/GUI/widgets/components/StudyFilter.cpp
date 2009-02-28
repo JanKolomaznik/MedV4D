@@ -12,8 +12,8 @@ using namespace std;
 namespace M4D {
 namespace GUI {
 
-void StudyFilter::filterModalities ( DcmProvider::ResultSet *resultSet,
-                                     const DcmProvider::StringVector &modalitiesVect )
+void StudyFilter::filterModalities ( ResultSet *resultSet,
+                                     const StringVector &modalitiesVect )
 {
   if ( resultSet == 0 ) {
     return;
@@ -30,11 +30,11 @@ void StudyFilter::filterModalities ( DcmProvider::ResultSet *resultSet,
 }
 
 
-void StudyFilter::filterAll ( M4D::Dicom::DcmProvider::ResultSet *resultSet, 
+void StudyFilter::filterAll ( M4D::Dicom::ResultSet *resultSet, 
                               const std::string &firstName, const std::string &lastName, 
                               const std::string &patientID, 
                               const std::string &fromDate, const std::string &toDate,
-                              const M4D::Dicom::DcmProvider::StringVector &modalitiesVect,
+                              const M4D::Dicom::StringVector &modalitiesVect,
                               const std::string &referringMD, const std::string &description )
 {
   if ( resultSet == 0 ) {
@@ -43,7 +43,7 @@ void StudyFilter::filterAll ( M4D::Dicom::DcmProvider::ResultSet *resultSet,
 
   for ( unsigned i = 0; i < resultSet->size(); i++ )
   {
-    DcmProvider::TableRow row = resultSet->at( i );
+    TableRow row = resultSet->at( i );
 
     bool nameMatched = false;
     if ( firstName != "" && lastName == "" ) 
@@ -91,8 +91,8 @@ void StudyFilter::filterAll ( M4D::Dicom::DcmProvider::ResultSet *resultSet,
 }
 
 
-void StudyFilter::filterDuplicates ( M4D::Dicom::DcmProvider::ResultSet *resultSet, 
-                                     const M4D::Dicom::DcmProvider::TableRow *row )
+void StudyFilter::filterDuplicates ( M4D::Dicom::ResultSet *resultSet, 
+                                     const M4D::Dicom::TableRow *row )
 {
   if ( resultSet == 0 ) {
     return;
@@ -103,7 +103,7 @@ void StudyFilter::filterDuplicates ( M4D::Dicom::DcmProvider::ResultSet *resultS
 
   for ( unsigned i = 0; i < resultSet->size(); i++ )
   {
-    DcmProvider::TableRow currentRow = resultSet->at( i );
+    TableRow currentRow = resultSet->at( i );
 
     if ( patientID == currentRow.patientID && studyID == currentRow.studyID ) 
     {

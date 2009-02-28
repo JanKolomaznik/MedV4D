@@ -10,7 +10,7 @@
 
 // DICOM includes:
 #include "Common.h"
-#include "dicomConn/DICOMServiceProvider.h"
+#include "backendForDICOM/DICOMServiceProvider.h"
 
 
 namespace M4D {
@@ -30,8 +30,8 @@ class StudyFilter {
      * @param resultSet ResultSet to filter
      * @param modalitiesVect reference to vector of strings containing set of wanted modalities
      */
-    static void filterModalities ( M4D::Dicom::DcmProvider::ResultSet *resultSet, 
-                                   const M4D::Dicom::DcmProvider::StringVector &modalitiesVect ); 
+    static void filterModalities ( M4D::Dicom::ResultSet *resultSet, 
+                                   const M4D::Dicom::StringVector &modalitiesVect ); 
 
     /** 
      * Filters ResultSet (TableRows) - filtering with all of the Study Manager's input values - 
@@ -47,11 +47,11 @@ class StudyFilter {
      * @param referringMD reference to string containing referring MD
      * @param description reference to string containing description of the study
      */
-    static void filterAll ( M4D::Dicom::DcmProvider::ResultSet *resultSet, 
+    static void filterAll ( M4D::Dicom::ResultSet *resultSet, 
                             const std::string &firstName, const std::string &lastName, 
                             const std::string &patientID, 
                             const std::string &fromDate, const std::string &toDate,
-                            const M4D::Dicom::DcmProvider::StringVector &modalitiesVect,
+                            const M4D::Dicom::StringVector &modalitiesVect,
                             const std::string &referringMD, const std::string &description ); 
 
     /** 
@@ -61,8 +61,8 @@ class StudyFilter {
      * @param resultSet ResultSet to filter
      * @param row given TableRow - all TableRows in ResultSet will be different from this
      */
-    static void filterDuplicates ( M4D::Dicom::DcmProvider::ResultSet *resultSet, 
-                                   const M4D::Dicom::DcmProvider::TableRow *row );
+    static void filterDuplicates ( M4D::Dicom::ResultSet *resultSet, 
+                                   const M4D::Dicom::TableRow *row );
 };
 
 } // namespace GUI
