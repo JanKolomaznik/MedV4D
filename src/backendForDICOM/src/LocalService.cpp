@@ -13,7 +13,6 @@
 
 // fs
 #include "boost/filesystem/operations.hpp"
-#include "boost/filesystem/path.hpp"
 
 #include "Common.h"
 #include "../LocalService.h"
@@ -522,6 +521,19 @@ void
 LocalService::Reset(void)
 {
   m_alreadyFoundInRun.clear();
+}
+
+///////////////////////////////////////////////////////////////////////
+
+void
+LocalService::GetSeriesFromFolder( const std::string &folder,
+      const std::string &patientID,
+  		const std::string &studyID,
+  		const std::string &serieID,
+      DicomObjSet &result)
+{
+	fs::path p = fs::path(folder);
+	SolveDirGET( p, patientID, studyID, serieID, result);
 }
 
 ///////////////////////////////////////////////////////////////////////

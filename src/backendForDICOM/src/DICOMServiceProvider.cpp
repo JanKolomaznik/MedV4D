@@ -333,10 +333,26 @@ DcmProvider::FlushDicomObjects(
 
 ///////////////////////////////////////////////////////////////////////
 
-M4D::Imaging::AbstractImage::Ptr
+DicomObjSet
 DcmProvider::LoadSerieThatFileBelongsTo(const std::string &fileName)
 {
+	DicomObj o;
+	o.Load(fileName);
 	
+	std::string seriesUID;
+	o.GetTagValue(0x0020, 0x000e, seriesUID);
+	std::string studyUID;
+	o.GetTagValue(0x0020, 0x000d, studyUID);	
+	std::string patientID;
+	o.GetTagValue(0x0010, 0x0020, patientID);
+	
+	std::string folder;
+	DicomObjSet result;
+	
+	g_localService.GetSeriesFromFolder(
+			folder, patientID, studyUID, seriesUID, result);
+	
+	return result;
 }
 
 ///////////////////////////////////////////////////////////////////////

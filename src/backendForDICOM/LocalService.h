@@ -52,6 +52,12 @@ public:
 
   LocalService();
   ~LocalService();
+  
+  void GetSeriesFromFolder( const std::string &folder,
+      const std::string &patientID,
+  		const std::string &studyID,
+  		const std::string &serieID,
+      DicomObjSet &result);
 
 private:
   struct Serie

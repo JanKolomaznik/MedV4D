@@ -205,7 +205,7 @@ public:
 		const std::string &serieID,
 		DicomObjSet &result);
 	
-	static M4D::Imaging::AbstractImage::Ptr
+	static DicomObjSet
 	LoadSerieThatFileBelongsTo(const std::string &fileName);
 };
 
