@@ -12,9 +12,11 @@
 #include <map>
 #include <string>
 #include "Common.h"
-
+#include "structures.h"
 #include "Imaging/ImageFactory.h"
 #include "dicomConn/DcmObject.h"
+
+
 
 /**
  *  @mainpage
@@ -65,67 +67,7 @@ namespace Dicom
  */
 class DcmProvider
 {
-private:
-  // pointers to particular service instances. void pointers are used
-  // to eliminate includes of lower level library headers. They are 
-  // casted in place of usage to rigth type.
-	void *m_findService;
-	void *m_moveService;
-  void *m_localService;
-
 public:
-
-	// TYPEDEFS ///////////////////////////////////////////////////////////
-
-	/// Represents one row in table that shows found results.
-	struct TableRow 
-  {
-    std::string patientID;
-		std::string name;
-    std::string birthDate;
-    bool sex;
-    //std::string accesion;
-    std::string studyID;
-    std::string date;	
-    std::string time;			
-    std::string modality;
-    std::string description;    
-    std::string referringMD;
-    //std::string institution;
-    //std::string location;
-    //std::string server;
-    //std::string availability;
-    //std::string status;
-    //std::string user;
-	};
-
-  /// Result set - Vector of table rows.
-	typedef std::vector<TableRow> ResultSet;
-
-  /// Contains all series' infos of one Study.
-  struct SerieInfo
-  {
-    std::string id;
-    std::string description;
-
-    bool operator <( const SerieInfo &b) const
-    {
-      return (id + description).compare( b.id + b.description) < 0;
-    }
-  };
-
-  /// Vector of SerieInfos
-  typedef std::vector<SerieInfo> SerieInfoVector;
-
-	// vector of M4DSetInfo
-  typedef std::vector<std::string> StringVector;
-	typedef std::map<std::string, StringVector> StudyInfo;
-
-  /// Container for one serie of images
-	typedef std::vector<DicomObj> DicomObjSet;
-  /// shared pointer to DicomObjSet type
-	typedef boost::shared_ptr< DicomObjSet > DicomObjSetPtr;
-
 	// METHODs ////////////////////////////////////////////////////////////
 	
 	/**
@@ -182,7 +124,7 @@ public:
    *	@param referringMD  - referring medician name
    *	@param description  - item decsription
 	 */
-	void Find( 
+	static void Find( 
 		DcmProvider::ResultSet &result,
     const std::string &patientForeName,
     const std::string &patientSureName,
@@ -197,14 +139,14 @@ public:
    *  @param result - result set containing results
    *  @param path   - given path
    */
-  void LocalFind( 
+	static void LocalFind( 
 		DcmProvider::ResultSet &result,
     const std::string &path);
 
 	/**
    *  Find provides informations about patient and study. But there can be more series in one study. So this member returns ID of all series of given study (seriesInstanceUIDs). There is normally only one.
    */
-	void FindStudyInfo(
+	static void FindStudyInfo(
 		const std::string &patientID,
 		const std::string &studyID,
 		SerieInfoVector &info) ;
@@ -212,7 +154,7 @@ public:
   /**
    *  The same as FindStudyInfo. Works with local filesystem.
    */
-	void LocalFindStudyInfo(
+	static void LocalFindStudyInfo(
 		const std::string &patientID,
 		const std::string &studyID,
 		SerieInfoVector &info) ;
@@ -220,7 +162,7 @@ public:
 	/**
    *  The same as FindStudyInfo but gets even imageIDs. Rarely used.
    */
-	void FindStudyAndImageInfo(
+	static void FindStudyAndImageInfo(
 		const std::string &patientID,
 		const std::string &studyID,
 		StudyInfo &info) ;
@@ -229,7 +171,7 @@ public:
    *  Finds all studies concerning given patient. Construct special query
    *  to DICOM server to retrieve all patient's studies.
    */
-	void FindAllPatientStudies(  
+	static void FindAllPatientStudies(  
 		const std::string &patientID,
 		ResultSet &result) ;
 
@@ -237,7 +179,7 @@ public:
    *  Send C-MOVE request to DICOM server to retrieve specified image.
    *  Image has to be specified through all level of IDs (patient, study, set, image)
    */
-	void GetImage(
+	static void GetImage(
 		const std::string &patientID,
 		const std::string &studyID,
 		const std::string &serieID,
@@ -247,7 +189,7 @@ public:
   /**
    *  Send C-MOVE request to retrieve all images in set.
    */
-	void GetImageSet(
+	static void GetImageSet(
 		const std::string &patientID,
 		const std::string &studyID,
 		const std::string &serieID,
@@ -257,22 +199,14 @@ public:
   /**
    *  Retrieve images from local filesystem.
    */
-  void LocalGetImageSet(
+	static void LocalGetImageSet(
     const std::string &patientID,
 		const std::string &studyID,
 		const std::string &serieID,
 		DicomObjSet &result);
-
-  // ctor, dtor
-	DcmProvider();
-
-  /// Parametrized ctor
-  /** If blocking param is true (default ctor behaviour), all methodes
-   *  using dicom server will be blocking. False means nonblocking.
-   */
-  DcmProvider( bool blocking);
-
-	~DcmProvider();
+	
+	static M4D::Imaging::AbstractImage::Ptr
+	LoadSerieThatFileBelongsTo(const std::string &fileName);
 };
 
 

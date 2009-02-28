@@ -11,7 +11,7 @@
 
 #include "Common.h"
 
-#include "DicomAssoc.h"
+#include "../DicomAssoc.h"
 
 using namespace M4D::DicomInternal;
 ///////////////////////////////////////////////////////////////////////

@@ -16,14 +16,12 @@
 
 #include "Common.h"
 
-#include "dicomConn/DICOMServiceProvider.h"
-
-#include "DicomAssoc.h"
-
-#include "AbstractService.h"
-#include "MoveService.h"
-#include "FindService.h"
-#include "LocalService.h"
+#include "../DICOMServiceProvider.h"
+#include "../DicomAssoc.h"
+#include "../AbstractService.h"
+#include "../MoveService.h"
+#include "../FindService.h"
+#include "../LocalService.h"
 
 using namespace M4D::DicomInternal;
 using namespace M4D::Imaging;

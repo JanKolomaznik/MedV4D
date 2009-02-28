@@ -11,10 +11,9 @@
 
 #include "Common.h"
 
-#include "DicomAssoc.h"
-#include "dicomConn/DICOMServiceProvider.h"
-#include "AbstractService.h"
-#include "StoreService.h"
+#include "../DicomAssoc.h"
+#include "../AbstractService.h"
+#include "../StoreService.h"
 
 #ifdef ON_THE_FLY_COMPRESSION
 #include <dcmtk/dcmjpeg/djdecode.h>  /* for dcmjpeg decoders */

@@ -16,11 +16,8 @@
 #include "boost/filesystem/path.hpp"
 
 #include "Common.h"
-
-#include "dicomConn/DICOMServiceProvider.h"
-#include "LocalService.h"
-
-#include "DICOMSupport.h"
+#include "../LocalService.h"
+#include "../DICOMSupport.h"
 
 namespace fs = boost::filesystem;
 

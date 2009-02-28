@@ -10,10 +10,9 @@
 
 #include "Common.h"
 
-#include "DicomAssoc.h"
-#include "dicomConn/DICOMServiceProvider.h"
-#include "AbstractService.h"
-#include "MoveService.h"
+#include "../DicomAssoc.h"
+#include "../AbstractService.h"
+#include "../MoveService.h"
 
 namespace M4D
 {

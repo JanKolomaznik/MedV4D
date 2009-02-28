@@ -9,9 +9,8 @@
 #include "dcmtk/dcmdata/dcfilefo.h"
 
 #include "Common.h"
-#include "dicomConn/DcmObject.h"
-
-#include "dicomDataStreamDecoder.h"
+#include "../DcmObject.h"
+#include "../dicomDataStreamDecoder.h"
 
 using namespace M4D::Dicom;
 using namespace M4D::DicomInternal;
