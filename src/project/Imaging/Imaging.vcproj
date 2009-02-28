@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1250"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="Imaging"
 	ProjectGUID="{A5A68502-8A1D-44AC-AB98-199CE76FFB8A}"
 	RootNamespace="Imaging"
@@ -161,6 +161,10 @@
 			</File>
 			<File
 				RelativePath="..\..\Imaging\src\ImageFactory.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\src\IOStreams.cpp"
 				>
 			</File>
 			<File
@@ -371,6 +375,10 @@
 			</File>
 			<File
 				RelativePath="..\..\include\Imaging.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\IO\IOStreams.h"
 				>
 			</File>
 			<File

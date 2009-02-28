@@ -29,7 +29,7 @@ mainWindow::mainWindow ()
 
 
 void 
-mainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
+mainWindow::process ( M4D::Dicom::DicomObjSetPtr dicomObjSet )
 {
 	AbstractImage::Ptr inputImage = M4D::Dicom::DcmProvider::CreateImageFromDICOM( dicomObjSet );
 
