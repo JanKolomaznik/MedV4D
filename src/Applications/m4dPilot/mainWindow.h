@@ -17,7 +17,7 @@ public:
 
 protected:
 
-	void process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet );
+	void process ( M4D::Dicom::DicomObjSetPtr dicomObjSet );
 };
 
 
