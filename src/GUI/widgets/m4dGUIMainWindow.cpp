@@ -184,7 +184,17 @@ void m4dGUIMainWindow::open ()
   {
     QFileInfo pathInfo( path );
 
+    try {
 
+      DicomObjSet *dicomObjSet = NULL;
+      dicomObjSet = &DcmProvider::LoadSerieThatFileBelongsTo( pathInfo.absolutePath().toStdString() );
+
+      process( DicomObjSetPtr( dicomObjSet ) );
+
+    }
+    catch ( M4D::ErrorHandling::ExceptionBase &e ) {
+	    QMessageBox::critical( this, tr( "Exception" ), e.what() );
+    } 
   } 
 }
 

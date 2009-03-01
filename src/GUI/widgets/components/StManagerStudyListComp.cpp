@@ -154,6 +154,7 @@ StManagerStudyListComp::StManagerStudyListComp ( QDialog *studyManagerDialog, QW
     recentResultSet   = new ResultSet();
     remoteResultSet   = new ResultSet();
     DICOMDIRResultSet = new ResultSet();
+
   }
   catch ( M4D::ErrorHandling::ExceptionBase &e )
   {
