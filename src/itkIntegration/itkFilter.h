@@ -8,7 +8,7 @@
 //#include "itkDataContainerWrapper.h"
 #include "Imaging/AbstractImageFilterWholeAtOnce.h"
 #include "Imaging/ImageFactory.h"
-
+#include "conversions.h"
 /**
  *  @addtogroup itkIntegration ITK Integration
  *  @{
@@ -27,8 +27,6 @@ class ITKFilter
 public:
 	typedef M4D::Imaging::AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType > PredecessorType;
 	typedef ITKFilter< InputImageType, OutputImageType > SelfType;
-//	typedef typename InputImageType InputImageType;	
-//	typedef typename OutputImageType OutputImageType;
 
 protected:
 	typedef typename InputImageType::Element InputPixelType;
@@ -51,14 +49,17 @@ protected:
 	SetOutputITKImage(const ITKOutputImageType *outImage) { 
 		outITKImage = (ITKOutputImageType *) outImage; }
 	
-	void PrepareOutputDatasets(void);	
-	void SetOutputImageSizeAccordingITK(ITKOutputImageType *itkImage);
+	void PrepareOutputDatasets(void);
+	
+protected:
+	void SetOutImageSize(
+			const typename ITKOutputImageType::RegionType &region,
+			const typename ITKOutputImageType::SpacingType &spacing);
 	
 private:
 	typename ITKInputImageType::Pointer inITKImage;	
 	ITKOutputImageType *outITKImage;
 	
-	void SetupOutMedvedImageAccordingOutputITKImage(void);
 	void SetupInITKImageAccordingInMedevedImage(void);
 	
 	// ITK images that simulate begining and end if ITK pipeline

@@ -24,8 +24,49 @@ ITKFilter<InputImageType, OutputImageType>::ITKFilter()
 //	m_inputITKImage.SetPixelContainer( & m_inputDatCnt);
 //	m_outputITKImage.SetPixelContainer( & m_outputDatCnt);
 }
-///////////////////////////////////////////////////////////////////////////////
 
+///////////////////////////////////////////////////////////////////////////////
+template< typename InputImageType, typename OutputImageType >
+void
+ITKFilter<InputImageType, OutputImageType>::SetOutImageSize(
+		const typename ITKOutputImageType::RegionType &region,
+		const typename ITKOutputImageType::SpacingType &spacing)
+{
+	// set itkOutImage Properties
+	outITKImage->SetLargestPossibleRegion(region);
+	outITKImage->SetBufferedRegion(region);	// buferred is the whole region
+	outITKImage->SetSpacing(spacing);
+	
+	// set output medved properties and allocate the data buffer
+	const OutputImageType &outMedImage = this->GetOutputImage();
+	
+	int32 minimums[ OutputImageType::Dimension ];
+	int32 maximums[ OutputImageType::Dimension ];
+	float32 voxelExtents[ OutputImageType::Dimension ];
+
+	for( unsigned i=0; i < OutputImageType::Dimension; ++i ) {
+		minimums[i] = region.GetIndex()[0];
+		maximums[i] = region.GetIndex()[0] + region.GetSize()[0]
+		voxelExtents[i] = spacing[0];
+	}
+	this->SetOutputImageSize( minimums, maximums, voxelExtents );
+	
+	// set buffer properties of ITK out image
+	typename InputImageType::PointType strides;
+	typename InputImageType::SizeType size;
+	size_t sizeOfData = 1;	// size in elements (not in bytes) 
+	typename InputImageType::Element *dataPointer = 
+		inMedImage.GetPointer(size, strides);
+	// count num of elems
+	for( uint32 i=0; i< InputImageType::Dimension; i++)
+		sizeOfData *= size[i];
+		
+	outITKImage->GetPixelContainer()->SetImportPointer(
+			dataPointer, 
+			(typename ITKInputImageType::PixelContainer::ElementIdentifier) sizeOfData);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 template< typename InputImageType, typename OutputImageType >
 void
 ITKFilter<InputImageType, OutputImageType>::PrepareOutputDatasets(void)
@@ -33,72 +74,53 @@ ITKFilter<InputImageType, OutputImageType>::PrepareOutputDatasets(void)
 	PredecessorType::PrepareOutputDatasets();
 	
 	SetupInITKImageAccordingInMedevedImage();
-	SetupOutMedvedImageAccordingOutputITKImage();
-	//const InputImageType &in = this->GetInputImage();			
-	//m_inputITKImageWrapper.SetupAccordingMedvedImage(in);
-	// init input dataContainerWrap according changed input image
-	//m_inputDatCnt.SetData( this->GetInputImage() );
-	// output image has to be set according output of the last filter
-	// within ITK pipeline
+	
+	// here size of output image of the last filter in ITK pipeline
+	// not yet known, so SetupOutMedvedImageAccordingOutputITKImage
+	// call is not possible
+	//SetupOutMedvedImageAccordingOutputITKImage();
 	
 }
 ///////////////////////////////////////////////////////////////////////////////
-
-template< typename InputImageType, typename OutputImageType >
-void
-ITKFilter<InputImageType, OutputImageType>
-	::SetOutputImageSizeAccordingITK(ITKOutputImageType *itkImage)
-{
-	int32 *maximums = (int32 *) &itkImage->GetLargestPossibleRegion().GetSize();
-	int32 *minimums = (int32 *) &itkImage->GetLargestPossibleRegion().GetIndex();
-	float32 *voxelExtents = (float32 *)itkImage->GetSpacing();
-
-	this->SetOutputImageSize( minimums, maximums, voxelExtents );
-}
-///////////////////////////////////////////////////////////////////////////////
-template< typename InputImageType, typename OutputImageType >
-void
-ITKFilter<InputImageType, OutputImageType>
-	::SetupOutMedvedImageAccordingOutputITKImage(void)
-{
-	// craete outMedvedImage buffer pointing to outITKImage buffer
-	//OutputImageType &outMedImage = this->GetOutputImage();
-	Vector< int32, OutputImageType::Dimension > 	size;
-	Vector< float32, OutputImageType::Dimension >	elementSize;
-	
-	const typename ITKInputImageType::RegionType::SizeType &regionSize = 
-		outITKImage->GetLargestPossibleRegion().GetSize();
-	
-//	const typename ITKInputImageType::RegionType::IndexType &regionIndex = 
-//		outITKImage->GetLargestPossibleRegion().GetIndex();
-	
-	const typename ITKInputImageType::SpacingType &spacing =
-		outITKImage->GetSpacing();
-	
-	// copy info from input medved image into input ITK image
-	for(uint32 i=0; i<InputImageType::Dimension; i++)
-	{
-//		outMedImage.GetDimensionExtents(i).maximum = regionSize[i];
-//		outMedImage.GetDimensionExtents(i).minimum = regionIndex[i];
-//		outMedImage.GetDimensionExtents(i).elementExtent = spacing[i];
-		
-		size[i] = regionSize[i];
-		elementSize[i] = spacing[i];
-	}
-	
-	typedef M4D::Imaging::ImageDataTemplate<typename OutputImageType::Element> BufferType;
-	typename BufferType::Ptr container =
-		M4D::Imaging::ImageFactory::CreateImageDataBuffer< 
-			typename OutputImageType::Element, OutputImageType::Dimension>(
-				outITKImage->GetBufferPointer(),
-				size, elementSize );
-	
-	typename OutputImageType::Ptr newOutImage = typename OutputImageType::Ptr(
-			new OutputImageType(container));
-	
-	// put new image into output connection
-	this->_outputPorts[0].GetConnection()->PutDataset( newOutImage);
-}
+//template< typename InputImageType, typename OutputImageType >
+//void
+//ITKFilter<InputImageType, OutputImageType>
+//	::SetupOutMedvedImageAccordingOutputITKImage(void)
+//{
+//	// craete outMedvedImage buffer pointing to outITKImage buffer
+////	Vector< int32, OutputImageType::Dimension > 	size;
+////	Vector< float32, OutputImageType::Dimension >	elementSize;
+//	
+//	const typename ITKInputImageType::RegionType::SizeType &regionSize = 
+//		outITKImage->GetLargestPossibleRegion().GetSize();
+//	
+////	const typename ITKInputImageType::RegionType::IndexType &regionIndex = 
+////		outITKImage->GetLargestPossibleRegion().GetIndex();
+//	
+//	const typename ITKInputImageType::SpacingType &spacing =
+//		outITKImage->GetSpacing();
+//	
+//	Vector< int32, OutputImageType::Dimension > 	size;
+//	Vector< float32, OutputImageType::Dimension >	elementSize;
+//	
+//	// copy output ITK image info into out medved image 
+//	for(uint32 i=0; i<OutputImageType::Dimension; i++)
+//	{
+//		size[i] = regionSize[i];
+//		elementSize[i] = spacing[i];
+//	}
+//	
+//	M4D::Imaging::ImageFactory::AssignNewDataToImage< 
+//			typename OutputImageType::Element, OutputImageType::Dimension>(
+//				outITKImage->GetBufferPointer(),
+//				this->GetOutputImage(), size, elementSize );
+//	
+////	typename OutputImageType::Ptr newOutImage = typename OutputImageType::Ptr(
+////			new OutputImageType(container));
+//	
+//	// put new image into output connection
+//	//this->_outputPorts[0].GetConnection()->PutDataset( newOutImage);
+//}
 ///////////////////////////////////////////////////////////////////////////////
 template< typename InputImageType, typename OutputImageType >
 void
@@ -138,6 +160,8 @@ ITKFilter<InputImageType, OutputImageType>
 		regionIndex[i] = inMedImage.GetDimensionExtents(i).minimum;
 		spacing[i] = inMedImage.GetDimensionExtents(i).elementExtent;		
 	}
+	
+	inITKImage->SetBufferedRegion( inITKImage->GetLargestPossibleRegion() );
 }
 ///////////////////////////////////////////////////////////////////////////////
 }
