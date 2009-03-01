@@ -186,7 +186,9 @@ void m4dGUIMainWindow::open ()
     try {
 
       DicomObjSet *dicomObjSet = NULL;
-      dicomObjSet = &DcmProvider::LoadSerieThatFileBelongsTo( pathInfo.absoluteFilePath().toStdString() );
+      dicomObjSet = &DcmProvider::LoadSerieThatFileBelongsTo( 
+    		  pathInfo.absoluteFilePath().toStdString(), 
+    		  pathInfo.absolutePath().toStdString() );
 
       process( DicomObjSetPtr( dicomObjSet ) );
 
