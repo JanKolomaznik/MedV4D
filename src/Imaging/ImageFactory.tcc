@@ -267,28 +267,6 @@ ImageFactory::CreateEmptyImageData2D(
 	return aptr;
 }
 
-template< typename ElementType, unsigned Dim  >
-typename ImageDataTemplate< ElementType >::Ptr 
-ImageFactory::CreateImageDataBuffer( ElementType *pointer, 
-	Vector< int32, Dim > 	size,
-	Vector< float32, Dim >	elementSize)
-{
-	// NOTE: right now just for 3D case
-	uint32 totalSize = size[0] * size[1] * size[2];
-	
-	DimensionInfo *info = new DimensionInfo[ 3 ];
-	info[0].Set( size[0], 1, elementSize[0] );
-	info[1].Set( size[1], size[0], elementSize[1] );
-	info[2].Set( size[2], (size[0] * size[1]), elementSize[2] );
-	
-	//Creating new image, which is using allocated data storage.
-	ImageDataTemplate< ElementType > *newImage = 
-		new ImageDataTemplate< ElementType >( pointer, info, 3, totalSize );
-
-	//Returning smart pointer to abstract image class.
-	return typename ImageDataTemplate< ElementType >::Ptr( newImage );
-}
-
 template< typename ElementType >
 typename ImageDataTemplate< ElementType >::Ptr 
 ImageFactory::CreateEmptyImageData2DTyped( 
@@ -478,6 +456,32 @@ ImageFactory::DumpImage( std::string filename, const Image< ElementType, Dimensi
 	std::ofstream output( filename.c_str(), std::ios::out | std::ios::binary );
 
 	DumpImage( output, image );
+}
+
+template< typename ElementType, unsigned Dim  >
+void	
+ImageFactory::AssignNewDataToImage( 
+			ElementType *pointer, 
+			Image<ElementType, Dim> &image, 
+			Vector< int32, Dim > 	&size,
+			Vector< float32, Dim >	&elementSize)
+{
+	// NOTE: right now just for 3D case
+	uint32 totalSize = size[0] * size[1] * size[2];
+	
+	DimensionInfo *info = new DimensionInfo[ 3 ];
+	info[0].Set( size[0], 1, elementSize[0] );
+	info[1].Set( size[1], size[0], elementSize[1] );
+	info[2].Set( size[2], (size[0] * size[1]), elementSize[2] );
+	
+	//Creating new image, which is using allocated data storage.
+	ImageDataTemplate< ElementType > *newImage = 
+		new ImageDataTemplate< ElementType >( pointer, info, 3, totalSize );
+	
+	typename ImageDataTemplate< ElementType >::Ptr container = 
+		typename ImageDataTemplate< ElementType >::Ptr( newImage );
+		
+	image.ReallocateData( container );
 }
 
 } /*namespace Imaging*/

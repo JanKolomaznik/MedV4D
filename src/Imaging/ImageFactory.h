@@ -279,9 +279,10 @@ public:
 			);
 	
 	template< typename ElementType, unsigned Dim  >
-	static typename ImageDataTemplate< ElementType >::Ptr 
-	CreateImageDataBuffer( ElementType *pointer, Vector< int32, Dim > 	size,
-			Vector< float32, Dim >	elementSize); 
+	static void	AssignNewDataToImage( 
+			ElementType *pointer, Image<ElementType, Dim> &image,
+			Vector< int32, Dim > 	&size, 
+			Vector< float32, Dim >	&elementSize);
 
 	
 	template< unsigned Dim >

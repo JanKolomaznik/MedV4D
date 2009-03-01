@@ -384,21 +384,21 @@ Image< ElementType, Dim >::GetSubRegion(
 
 template< typename ElementType, unsigned Dim >
 void
-Image< ElementType, Dim >::Dump(void)
+Image< ElementType, Dim >::Dump(std::ostream &s) const
 {	
 	PointType stride;
 	SizeType size;
 
 	ElementType *pointer = GetPointer( size, stride );
 
-  D_PRINT( "Type: 2D Image (" << size[0] << "x" << size[1] << "):" << std::endl);
+  	s << "Type: 2D Image (" << size[0] << "x" << size[1] << "):" << std::endl;
 
   for( uint32 j = 0; j < size[1]; ++j ) {
     for( uint32 k = 0; k < size[0]; ++k ) {
-      D_PRINT_NOENDL( *pointer << ",");
+      s << *pointer << ",";
       pointer += stride[0];
     }
-    D_PRINT( std::endl );
+    s << std::endl;
   }
 }
 

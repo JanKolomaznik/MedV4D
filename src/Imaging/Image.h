@@ -261,7 +261,7 @@ public:
 	void DeSerializeData(InStream &stream);	
 	void DeSerializeProperties(InStream &stream);
 
-  void Dump(void);
+  void Dump(std::ostream &s) const;
 
 	PointType
 	GetStrides()const
