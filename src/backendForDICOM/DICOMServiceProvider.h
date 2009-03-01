@@ -207,7 +207,8 @@ public:
 		DicomObjSet &result);
 	
 	static DicomObjSet
-	LoadSerieThatFileBelongsTo(const std::string &fileName);
+	LoadSerieThatFileBelongsTo(const std::string &fileName,
+			const std::string &folder);
 };
 
 

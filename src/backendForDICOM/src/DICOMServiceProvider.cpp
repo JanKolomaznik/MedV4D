@@ -350,7 +350,8 @@ DcmProvider::FlushDicomObjects(
 ///////////////////////////////////////////////////////////////////////
 
 DicomObjSet
-DcmProvider::LoadSerieThatFileBelongsTo(const std::string &fileName)
+DcmProvider::LoadSerieThatFileBelongsTo(const std::string &fileName,
+		const std::string &folder)
 {
 	DicomObj o;
 	o.Load(fileName);
@@ -362,7 +363,6 @@ DcmProvider::LoadSerieThatFileBelongsTo(const std::string &fileName)
 	std::string patientID;
 	o.GetTagValue(0x0010, 0x0020, patientID);
 	
-	std::string folder;
 	DicomObjSet result;
 	
 	g_localService.GetSeriesFromFolder(
