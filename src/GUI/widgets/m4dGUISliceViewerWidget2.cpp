@@ -77,9 +77,9 @@ m4dGUISliceViewerWidget2::setButtonHandler( ButtonHandler hnd, MouseButton btn )
 	}
 
 	_selectMethods[ left ] = (SelectMethods)&M4D::Viewer::m4dGUISliceViewerWidget2::specialStateSelectMethodLeft;
-	_selectionMode[ left ] = true;
+	_selectMode[ left ] = true;
 	_selectMethods[ right ] = (SelectMethods)&M4D::Viewer::m4dGUISliceViewerWidget2::specialStateSelectMethodRight;
-	_selectionMode[ right ] = true;
+	_selectMode[ right ] = true;
 
 	_buttonMethods[ left ] = (ButtonMethods)&M4D::Viewer::m4dGUISliceViewerWidget2::specialStateButtonMethodLeft;
 	_buttonMode[ left ] = true;

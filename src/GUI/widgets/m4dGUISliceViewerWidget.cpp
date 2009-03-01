@@ -560,50 +560,52 @@ m4dGUISliceViewerWidget::ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imag
 }
 
 void
+m4dGUISliceViewerWidget::setButtonMethod( ButtonMethods bm, MouseButton btn )
+{
+    _buttonMethods[btn] = bm;
+    _selectMode[btn] = false;
+    _buttonMode[btn] = true;
+}
+
+void
+m4dGUISliceViewerWidget::setSelectMethod( SelectMethods sm, MouseButton btn )
+{
+    _selectMethods[btn] = sm;
+    _selectMode[btn] = true;
+    _buttonMode[btn] = false;
+}
+
+void
 m4dGUISliceViewerWidget::setButtonHandler( ButtonHandler hnd, MouseButton btn )
 {
     switch (hnd)
     {
 	case zoomI:
-	_buttonMethods[btn] = &M4D::Viewer::m4dGUISliceViewerWidget::zoomImage;
-	_selectionMode[btn] = false;
-	_buttonMode[btn] = true;
+	setButtonMethod( &M4D::Viewer::m4dGUISliceViewerWidget::zoomImage, btn );
 	break;
 
 	case moveI:
-	_buttonMethods[btn] = &M4D::Viewer::m4dGUISliceViewerWidget::moveImage;
-	_selectionMode[btn] = false;
-	_buttonMode[btn] = true;
+	setButtonMethod( &M4D::Viewer::m4dGUISliceViewerWidget::moveImage, btn );
 	break;
 
 	case adjust_bc:
-	_buttonMethods[btn] = &M4D::Viewer::m4dGUISliceViewerWidget::adjustContrastBrightness;
-	_selectionMode[btn] = false;
-	_buttonMode[btn] = true;
+	setButtonMethod( &M4D::Viewer::m4dGUISliceViewerWidget::adjustContrastBrightness, btn );
 	break;
 
 	case switch_slice:
-	_buttonMethods[btn] = &M4D::Viewer::m4dGUISliceViewerWidget::switchSlice;
-	_selectionMode[btn] = false;
-	_buttonMode[btn] = true;
+	setButtonMethod( &M4D::Viewer::m4dGUISliceViewerWidget::switchSlice, btn );
 	break;
 
 	case new_point:
-	_selectMethods[btn] = &M4D::Viewer::m4dGUISliceViewerWidget::newPoint;
-	_selectionMode[btn] = true;
-	_buttonMode[btn] = false;
+	setSelectMethod( &M4D::Viewer::m4dGUISliceViewerWidget::newPoint, btn );
 	break;
 
 	case new_shape:
-	_selectMethods[btn] = &M4D::Viewer::m4dGUISliceViewerWidget::newShape;
-	_selectionMode[btn] = true;
-	_buttonMode[btn] = false;
+	setSelectMethod( &M4D::Viewer::m4dGUISliceViewerWidget::newShape, btn );
 	break;
 
 	case color_picker:
-	_selectMethods[btn] = &M4D::Viewer::m4dGUISliceViewerWidget::colorPicker;
-	_selectionMode[btn] = true;
-	_buttonMode[btn] = false;
+	setSelectMethod( &M4D::Viewer::m4dGUISliceViewerWidget::colorPicker, btn );
 	break;
 
 	default:
@@ -745,7 +747,7 @@ m4dGUISliceViewerWidget::paintGL()
 	    for ( i = 0; i < _slicesPerRow * _slicesPerColumn && _ready; ++i )
 	         drawSlice( _sliceNum + i, zoomRate, QPoint( (int)( ( i % _slicesPerRow) * ( width() / _slicesPerRow ) + xgap ) , (int)( ( ( i / _slicesPerRow ) * ( height() / _slicesPerColumn ) + ygap ) ) ) );
 	}
-        if ( _selectionMode[ left ] || _selectionMode[ right ] ) drawSelectionModeBorder();
+        if ( _selectMode[ left ] || _selectMode[ right ] ) drawSelectionModeBorder();
     }
     if ( _selected ) drawSelectedBorder();
     if ( _inPort->IsPlugged() ) drawPluggedBorder();
@@ -1203,9 +1205,9 @@ m4dGUISliceViewerWidget::mousePressEvent(QMouseEvent *event)
 	if ( !_ready ) return;
     }
     _lastPos = event->pos();
-    if ( ( event->buttons() & Qt::LeftButton ) && _selectionMode[ left ] )
+    if ( ( event->buttons() & Qt::LeftButton ) && _selectMode[ left ] )
     	ImagePositionSelectionCaller( event->x(), event->y(), _selectMethods[ left ] );
-    else if ( event->buttons() & Qt::RightButton && _selectionMode[ right ] )
+    else if ( event->buttons() & Qt::RightButton && _selectMode[ right ] )
     	ImagePositionSelectionCaller( event->x(), event->y(), _selectMethods[ right ] );
 
     updateGL();

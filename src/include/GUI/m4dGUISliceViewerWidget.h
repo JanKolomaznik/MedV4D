@@ -98,6 +98,26 @@ public:
      */
     virtual QWidget* operator()();
 
+    /**
+     * Set a button method according to the parameters.
+     *  @param bm the button method to be set
+     *  @param btn the mouse button the method should be set to
+     */
+    void setButtonMethod( ButtonMethods bm, MouseButton btn );
+
+    /**
+     * Set a select method according to the parameters.
+     *  @param sm the select method to be set
+     *  @param btn the mouse button the method should be set to
+     */
+    void setSelectMethod( SelectMethods sm, MouseButton btn );
+
+    /**
+     * Connect one of a predefined list of button handler methods to a given mouse button.
+     *  @param hnd the button handler method to connect
+     *  @param btn the mouse button to connect to
+     */
+    virtual void setButtonHandler( ButtonHandler hnd, MouseButton btn );
     
     /**
      * Method for receiving messages - called by sender. ( Implementing from MessageReceiverInterface ).
@@ -297,13 +317,6 @@ protected:
      *  @param y the y coordinate of the point
      */
     void resolveFlips( double& x, double& y );
-
-    /**
-     * Connect a button handler method to a given mouse button.
-     *  @param hnd the button handler method to connect
-     *  @param btn the mouse button to connect to
-     */
-    virtual void setButtonHandler( ButtonHandler hnd, MouseButton btn );
 
     /**
      * Calculates the image pixel position from a picked display position
@@ -684,7 +697,7 @@ protected:
     /**
      * Selection mode enabled/disabled for left and right mouse buttons.
      */
-    bool					_selectionMode[2];
+    bool					_selectMode[2];
 
     /**
      * Button mode enabled/disabled for left and right mouse buttons.
