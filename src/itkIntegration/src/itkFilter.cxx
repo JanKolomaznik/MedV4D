@@ -37,17 +37,15 @@ ITKFilter<InputImageType, OutputImageType>::SetOutImageSize(
 	outITKImage->SetBufferedRegion(region);	// buferred is the whole region
 	outITKImage->SetSpacing(spacing);
 	
-	// set output medved properties and allocate the data buffer
-	const OutputImageType &outMedImage = this->GetOutputImage();
-	
+	// set output medved properties and allocate the data buffer	
 	int32 minimums[ OutputImageType::Dimension ];
 	int32 maximums[ OutputImageType::Dimension ];
 	float32 voxelExtents[ OutputImageType::Dimension ];
 
-	for( unsigned i=0; i < OutputImageType::Dimension; ++i ) {
-		minimums[i] = region.GetIndex()[0];
-		maximums[i] = region.GetIndex()[0] + region.GetSize()[0]
-		voxelExtents[i] = spacing[0];
+	for( unsigned i=0; i < OutputImageType::Dimension; i++ ) {
+		minimums[i] = region.GetIndex()[i];
+		maximums[i] = region.GetIndex()[i] + region.GetSize()[i];
+		voxelExtents[i] = spacing[i];
 	}
 	this->SetOutputImageSize( minimums, maximums, voxelExtents );
 	
@@ -55,8 +53,9 @@ ITKFilter<InputImageType, OutputImageType>::SetOutImageSize(
 	typename InputImageType::PointType strides;
 	typename InputImageType::SizeType size;
 	size_t sizeOfData = 1;	// size in elements (not in bytes) 
+	const OutputImageType &outMedImage = this->GetOutputImage();
 	typename InputImageType::Element *dataPointer = 
-		inMedImage.GetPointer(size, strides);
+		outMedImage.GetPointer(size, strides);
 	// count num of elems
 	for( uint32 i=0; i< InputImageType::Dimension; i++)
 		sizeOfData *= size[i];
@@ -71,15 +70,8 @@ template< typename InputImageType, typename OutputImageType >
 void
 ITKFilter<InputImageType, OutputImageType>::PrepareOutputDatasets(void)
 {
-	PredecessorType::PrepareOutputDatasets();
-	
-	SetupInITKImageAccordingInMedevedImage();
-	
-	// here size of output image of the last filter in ITK pipeline
-	// not yet known, so SetupOutMedvedImageAccordingOutputITKImage
-	// call is not possible
-	//SetupOutMedvedImageAccordingOutputITKImage();
-	
+	PredecessorType::PrepareOutputDatasets();	
+	SetupInITKImageAccordingInMedevedImage();	
 }
 ///////////////////////////////////////////////////////////////////////////////
 //template< typename InputImageType, typename OutputImageType >

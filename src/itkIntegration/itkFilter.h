@@ -31,12 +31,8 @@ public:
 protected:
 	typedef typename InputImageType::Element InputPixelType;
 	typedef typename OutputImageType::Element OutputPixelType;
-//	typedef ITKImageWrapper< InputPixelType, InputImageType::Dimension >
-//		ITKInputImageWrapperType;
 	typedef itk::Image< InputPixelType, InputImageType::Dimension >
 			ITKInputImageType;
-//	typedef ITKImageWrapper< OutputPixelType, OutputImageType::Dimension >
-//		ITKOutputImageWrapperType;
 	typedef itk::Image< OutputPixelType, OutputImageType::Dimension >
 			ITKOutputImageType;
 	

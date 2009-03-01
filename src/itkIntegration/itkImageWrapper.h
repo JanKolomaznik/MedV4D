@@ -9,6 +9,8 @@ namespace M4D
 namespace ITKIntegration
 {
 
+/////////////// NOT USED !!!!! Bud left in repo ... ///////////////////
+
 template <typename PixelType, uint16 dimension>
 class ITKImageWrapper
 	: public itk::Image< PixelType, dimension >
