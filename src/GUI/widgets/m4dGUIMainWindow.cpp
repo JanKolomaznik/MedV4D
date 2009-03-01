@@ -177,8 +177,7 @@ void m4dGUIMainWindow::search ()
 
 void m4dGUIMainWindow::open ()
 {
-  QString path( QFileDialog::getOpenFileName( this, tr( "Open" ), 
-                                              QDir::currentPath(), "*.dcm" ) );
+  QString path( QFileDialog::getOpenFileName( this, tr( "Open" ), "", "*.dcm" ) );
   
   if ( !path.isNull() ) 
   {
@@ -187,7 +186,7 @@ void m4dGUIMainWindow::open ()
     try {
 
       DicomObjSet *dicomObjSet = NULL;
-      dicomObjSet = &DcmProvider::LoadSerieThatFileBelongsTo( pathInfo.absolutePath().toStdString() );
+      dicomObjSet = &DcmProvider::LoadSerieThatFileBelongsTo( pathInfo.absoluteFilePath().toStdString() );
 
       process( DicomObjSetPtr( dicomObjSet ) );
 
@@ -201,14 +200,14 @@ void m4dGUIMainWindow::open ()
 
 void m4dGUIMainWindow::load ()
 {
-  QString path( QFileDialog::getOpenFileName( this, tr( "Load" ), 
-                                              QDir::currentPath(), "*.mv4d" ) );
+  QString path( QFileDialog::getOpenFileName( this, tr( "Load" ), "", "*.mv4d" ) );
   
   if ( !path.isNull() ) 
   {
     QFileInfo pathInfo( path );
-    QString dirName( pathInfo.absolutePath() );
 
+    // pathInfo.absoluteFilePath().toStdString() - full path with filename
+    
     // TODO - loading method
   } 
 }
@@ -216,14 +215,14 @@ void m4dGUIMainWindow::load ()
 
 void m4dGUIMainWindow::save ()
 {
-  QString path( QFileDialog::getSaveFileName( this, tr( "Save" ), 
-                                              QDir::currentPath(), "*.mv4d" ) );
+  QString path( QFileDialog::getSaveFileName( this, tr( "Save" ), "", "*.mv4d" ) );
   
   if ( !path.isNull() ) 
   {
     QFileInfo pathInfo( path );
-    QString dirName( pathInfo.absolutePath() );
 
+    // pathInfo.absoluteFilePath().toStdString() - full path with filename
+   
     // TODO - saving method
   } 
 }
