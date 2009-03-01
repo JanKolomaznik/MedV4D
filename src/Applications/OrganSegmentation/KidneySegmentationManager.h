@@ -44,6 +44,12 @@ public:
 	PolesSet();
 
 	void
+	DefineInsidePoint();
+
+	void
+	DefineOutsidePoint();
+
+	void
 	StartSegmentation();
 
 	void

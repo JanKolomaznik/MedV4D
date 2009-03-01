@@ -64,6 +64,16 @@ SettingsBox
 			this, SLOT( PolesSetKidneySegm()) );
 		layout->addWidget( button );
 
+		button = new QPushButton( tr( "Set Inside Point" ) );
+		QObject::connect( button, SIGNAL(clicked()),
+			this, SLOT( DefineInsidePointKidneySegm()) );
+		layout->addWidget( button );
+
+		button = new QPushButton( tr( "Set Outside Point" ) );
+		QObject::connect( button, SIGNAL(clicked()),
+			this, SLOT( DefineOutsidePointKidneySegm()) );
+		layout->addWidget( button );
+
 		button = new QPushButton( tr( "Start Segmentation" ) );
 		QObject::connect( button, SIGNAL(clicked()),
 			this, SLOT( StartSegmentationKidneySegm()) );
@@ -152,7 +162,20 @@ SettingsBox
 ::PolesSetKidneySegm()
 {
 	kidneySegmentationManager.PolesSet();
+}
 
+void
+SettingsBox
+::DefineInsidePointKidneySegm()
+{
+	kidneySegmentationManager.DefineInsidePoint();
+}
+
+void
+SettingsBox
+::DefineOutsidePointKidneySegm()
+{
+	kidneySegmentationManager.DefineOutsidePoint();
 }
 
 void

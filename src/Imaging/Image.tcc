@@ -205,6 +205,7 @@ Image< ElementType, Dim >::GetElement( const typename Image< ElementType, Dim >:
 {
 	for( unsigned i = 0; i < Dimension; ++i ) {
 		if( pos[i] < this->_minimum[i] || pos[i] >= this->_maximum[i] )	{
+			D_PRINT( "Wrong position = " << pos );
 			_THROW_ ErrorHandling::EBadIndex();
 		}
 	}
@@ -217,6 +218,7 @@ Image< ElementType, Dim >::GetElement( const typename Image< ElementType, Dim >:
 {
 	for( unsigned i = 0; i < Dimension; ++i ) {
 		if( pos[i] < this->_minimum[i] || pos[i] >= this->_maximum[i] )	{
+			D_PRINT( "Wrong position = " << pos );
 			_THROW_ ErrorHandling::EBadIndex();
 		}
 	}

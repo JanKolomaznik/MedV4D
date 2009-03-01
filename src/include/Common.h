@@ -77,6 +77,12 @@ Abs( NType a ) {
 }
 
 template< typename NType >
+inline NType
+Sqr( NType a ) {
+	return a*a;
+}
+
+template< typename NType >
 inline int32
 Sgn( NType a ) {
 	if( a < 0 ) {

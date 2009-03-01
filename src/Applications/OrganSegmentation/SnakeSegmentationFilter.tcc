@@ -71,7 +71,29 @@ SnakeSegmentationFilter< ElementType >::ReleaseOutputGDataset()const
 {
 	this->ReleaseOutputDataSet( 0 );
 }
+
+template < typename ElementType >
+void 
+SnakeSegmentationFilter< ElementType >::ComputeStatistics( Vector<int32, 3> p, float32 &E, float32 &var )
+{
+	static const int32 Radius = 5;
+	float32 sum = 0.0f;
+	Vector<int32, 3> i = p;
+	for( i[0] = p[0] - Radius; i[0] <= p[0] + Radius; ++i[0] ) {
+		for( i[1] = p[1] - Radius; i[1] <= p[1] + Radius; ++i[1] ) {
+			sum += in[0]->GetElement( i );
+		}
+	}
+	E = sum / Sqr(2*Radius +1);
+	for( i[0] = p[0] - Radius; i[0] <= p[0] + Radius; ++i[0] ) {
+		for( i[1] = p[1] - Radius; i[1] <= p[1] + Radius; ++i[1] ) {
+			sum += Sqr( in[0]->GetElement( i )) ;
+		}
+	}
+	var = sum / Sqr(2*Radius +1) - Sqr( E );
+}
 	
+/*
 template < typename ElementType >
 bool
 SnakeSegmentationFilter< ElementType >::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
@@ -79,6 +101,22 @@ SnakeSegmentationFilter< ElementType >::ExecutionThreadMethod( AbstractPipeFilte
 	if( !CanContinue() ) return false;
 
 	//TODO locking
+	
+	Vector<int32, 3> p( 
+		GetInsidePoint()[0]/in[0]->GetDimensionExtents(0).elementExtent,
+		GetInsidePoint()[1]/in[0]->GetDimensionExtents(1).elementExtent,
+		GetInsidePointSlice()
+		);
+	ComputeStatistics( p, _inEstimatedValue, _inVariation );
+	p =  Vector<int32, 3>( 
+		GetOutsidePoint()[0]/in[0]->GetDimensionExtents(0).elementExtent,
+		GetOutsidePoint()[1]/in[0]->GetDimensionExtents(1).elementExtent,
+		GetOutsidePointSlice()
+		);
+	ComputeStatistics( p, _outEstimatedValue, _outVariation );
+
+	LOG( "In region stats : E = " << _inEstimatedValue << "; var = " << _inVariation );
+	LOG( "Out region stats : E = " << _outEstimatedValue << "; var = " << _outVariation );
 	
 	CurveType initialization;
 	initialization.SetCyclic();
@@ -104,6 +142,25 @@ SnakeSegmentationFilter< ElementType >::ExecutionThreadMethod( AbstractPipeFilte
 		ProcessSlice( pom, this->out->GetSlice( i ) );
 	}
 
+	return true;
+}*/
+
+template < typename ElementType >
+bool
+SnakeSegmentationFilter< ElementType >::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
+{
+	if( !CanContinue() ) return false;
+
+	//TODO locking
+	
+	unsigned stepCount = (_maxSlice - _minSlice) / 2;
+	for( unsigned step = 0; step < stepCount; ++step ) {
+		ProcessSlice( _minSlice + step, southSpline );
+		ProcessSlice( _maxSlice - step, northSpline );
+	}
+	if( _minSlice + stepCount + 1 == _maxSlice - _minSlice ) {
+		ProcessSlice( _minSlice + step + 1, southSpline );
+	}
 	return true;
 }
 

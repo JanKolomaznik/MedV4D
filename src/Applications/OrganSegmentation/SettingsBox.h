@@ -33,6 +33,12 @@ protected slots:
 	PolesSetKidneySegm();
 
 	void
+	DefineInsidePointKidneySegm();
+
+	void
+	DefineOutsidePointKidneySegm();
+
+	void
 	StartSegmentationKidneySegm();
 protected:
 	void

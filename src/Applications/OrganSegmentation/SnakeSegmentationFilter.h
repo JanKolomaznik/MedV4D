@@ -32,6 +32,11 @@ public:
 		int32		firstSlice;
 		Coordinates	secondPoint;
 		int32		secondSlice;
+
+		Coordinates	insidePoint;
+		int32		insidePointSlice;
+		Coordinates	outsidePoint;
+		int32		outsidePointSlice;
 	};
 
 	~SnakeSegmentationFilter() {}
@@ -43,7 +48,15 @@ public:
 	GET_SET_PROPERTY_METHOD_MACRO( int32, FirstSlice, firstSlice );
 	GET_SET_PROPERTY_METHOD_MACRO( Coordinates, SecondPoint, secondPoint );
 	GET_SET_PROPERTY_METHOD_MACRO( int32, SecondSlice, secondSlice );
+
+	GET_SET_PROPERTY_METHOD_MACRO( Coordinates, InsidePoint, insidePoint );
+	GET_SET_PROPERTY_METHOD_MACRO( int32, InsidePointSlice, insidePointSlice );
+	GET_SET_PROPERTY_METHOD_MACRO( Coordinates, OutsidePoint, outsidePoint );
+	GET_SET_PROPERTY_METHOD_MACRO( int32, OutsidePointSlice, outsidePointSlice );
 protected:
+	void
+	ComputeStatistics( Vector<int32, 3> p, float32 &E, float32 &var );
+
 	const InputImageType&
 	GetInputImage( uint32 idx )const;
 
@@ -83,6 +96,12 @@ protected:
 	int32 _minSlice;
 	int32 _maxSlice;
 	ReaderBBoxInterface::Ptr readerBBox[ InCount ];
+
+	float32 _inEstimatedValue;
+	float32	_inVariation;
+
+	float32 _outEstimatedValue;
+	float32	_outVariation;
 
 };
 
