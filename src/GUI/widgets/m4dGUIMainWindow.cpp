@@ -185,12 +185,13 @@ void m4dGUIMainWindow::open ()
 
     try {
 
-      DicomObjSet *dicomObjSet = NULL;
-      dicomObjSet = &DcmProvider::LoadSerieThatFileBelongsTo( 
+      actualStudy.dicomObjSet = new DicomObjSet();	
+      DcmProvider::LoadSerieThatFileBelongsTo( 
     		  pathInfo.absoluteFilePath().toStdString(), 
-    		  pathInfo.absolutePath().toStdString() );
+    		  pathInfo.absolutePath().toStdString(),
+    		  *actualStudy.dicomObjSet);
 
-      process( DicomObjSetPtr( dicomObjSet ) );
+      process( DicomObjSetPtr( actualStudy.dicomObjSet ) );
 
     }
     catch ( M4D::ErrorHandling::ExceptionBase &e ) {

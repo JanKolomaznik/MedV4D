@@ -206,9 +206,9 @@ public:
 		const std::string &serieID,
 		DicomObjSet &result);
 	
-	static DicomObjSet
+	static void
 	LoadSerieThatFileBelongsTo(const std::string &fileName,
-			const std::string &folder);
+			const std::string &folder, DicomObjSet &result);
 };
 
 
