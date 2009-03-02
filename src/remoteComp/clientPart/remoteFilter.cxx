@@ -45,7 +45,25 @@ template< typename InputImageType, typename OutputImageType >
 void
 RemoteFilter< InputImageType, OutputImageType >::PrepareOutputDatasets(void)
 {
-	PredecessorType::PrepareOutputDatasets();	
+	PredecessorType::PrepareOutputDatasets();
+	
+	// copy properties of input image to output image
+	InputImageType &in = (InputImageType &) this->GetInputImage();
+	{
+		int32 minimums[OutputImageType::Dimension];
+		int32 maximums[OutputImageType::Dimension];
+		float32 voxelExtents[OutputImageType::Dimension];
+	
+		for( unsigned i=0; i < OutputImageType::Dimension; ++i ) 
+		{
+			minimums[i] = in.GetDimensionExtents(i).minimum;
+			maximums[i] = in.GetDimensionExtents(i).maximum;
+			voxelExtents[i] = in.GetDimensionExtents(i).elementExtent;
+		}
+		this->SetOutputImageSize( minimums, maximums, voxelExtents );
+	}
+	
+	SendCommand(DATASET);
 	SendDataSet();
 }
 
@@ -59,12 +77,14 @@ RemoteFilter< InputImageType, OutputImageType >
 		OutputImageType		&out
 		)
 {
-	SendCommand(EXEC);
-	Imaging::OutStream stream(&netAccessor_);
-	properties_->SerializeProperties(stream);
-	RecieveDataSet();
-	
-	return true;
+	try {
+		SendCommand(EXEC);
+		Imaging::OutStream stream(&netAccessor_);
+		properties_->SerializeProperties(stream);
+		return RecieveDataSet();
+	} catch (NetException &e) {
+		return false;
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -107,6 +127,7 @@ RemoteFilter< InputImageType, OutputImageType >::SendDataSet(void)
 	Imaging::OutStream stream(&netAccessor_);
 	
 	InputImageType &in = (InputImageType &) this->GetInputImage();
+	in.SerializeClassInfo(stream);
 	in.SerializeProperties(stream);
 	in.SerializeData(stream);
 }
@@ -114,31 +135,31 @@ RemoteFilter< InputImageType, OutputImageType >::SendDataSet(void)
 ///////////////////////////////////////////////////////////////////////////////
 
 template< typename InputImageType, typename OutputImageType >
-void
+bool
 RemoteFilter< InputImageType, OutputImageType >::RecieveDataSet(void)
 {
 	Imaging::InStream stream(&netAccessor_);
 	
+	uint8 result;
+	stream.Get<uint8>(result);
+
 	OutputImageType &out = this->GetOutputImage();
-	out.DeSerializeProperties(stream);
 	
-	//get attribs of image and call SetOutputImageSize
+	switch ( (eRemoteComputationResult) result) 
 	{
-		int32 minimums[OutputImageType::Dimension];
-		int32 maximums[OutputImageType::Dimension];
-		float32 voxelExtents[OutputImageType::Dimension];
-	
-		for( unsigned i=0; i < OutputImageType::Dimension; ++i ) 
-		{
-			minimums[i] = out.GetDimensionExtents(i).minimum;
-			maximums[i] = out.GetDimensionExtents(i).maximum;
-			voxelExtents[i] = out.GetDimensionExtents(i).elementExtent;
-		}
-		this->SetOutputImageSize( minimums, maximums, voxelExtents );
-	}
-	
-	// and recieve the resulting dataset
-	out.DeSerializeData(stream);
+		case OK:
+			out.DeSerializeProperties(stream);			
+			// and recieve the resulting dataset
+			out.DeSerializeData(stream);
+			return true;
+			break;
+			
+		case FAILED:
+			return false;
+			break;
+		default:
+			ASSERT(false);
+	}	
 }
 
 ///////////////////////////////////////////////////////////////////////////////

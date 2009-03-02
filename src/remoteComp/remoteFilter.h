@@ -82,7 +82,7 @@ private:
 	
 	void Connect(void);
 	void SendDataSet(void);
-	void RecieveDataSet(void);
+	bool RecieveDataSet(void);
 	
 	void SendCommand( eCommand command);
 };

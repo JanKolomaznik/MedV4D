@@ -34,6 +34,8 @@ class Server
     
     void ReadCommand(void);
     
+    void OnClientDisconnected();
+    
     void CreatePipeline();
     void ReadDataSet();
     void ReadFilterProperties();
@@ -43,13 +45,11 @@ class Server
     
     NetAccessor netAccessor_;
     
-    // pointers to first & last filter in pipeline
-    M4D::Imaging::AbstractPipeFilter *m_pipelineBegin, *m_pipelineEnd;
+    // pointer to currently only one filter
+    M4D::Imaging::AbstractPipeFilter *m_filter;
+    iRemoteFilterProperties *m_props;
+    M4D::Imaging::ConnectionInterface *m_connWithOutputDataSet;
     M4D::Imaging::PipelineContainer m_pipeLine;
-    
-    void CleenupPipeline(void);
-    
-    void HandleErrors(const boost::system::error_code& error);
 };
 
 } // CellBE namespace

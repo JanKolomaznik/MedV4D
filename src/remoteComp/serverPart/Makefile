@@ -86,8 +86,10 @@ OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )
 
 
 .PHONY: all
-all:		tmpdir dep $(OUTPUT)
+all:		tmpdir commonPart dep $(OUTPUT)
 		
+commonPart:
+	$(MAKE) --directory=../commonPart
 
 .PHONY: tmpdir
 tmpdir:		

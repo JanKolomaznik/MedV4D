@@ -19,166 +19,152 @@ using namespace M4D::Imaging;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Server::Server(boost::asio::io_service &io_service)
-  : m_acceptor(io_service, tcp::endpoint(tcp::v4(), (uint16) SERVER_PORT) )
-  , m_socket_(io_service)
-  , netAccessor_(m_socket_)
-{
-  // start server accepting
-  Accept();
+Server::Server(boost::asio::io_service &io_service) :
+	m_acceptor(io_service, tcp::endpoint(tcp::v4(), (uint16) SERVER_PORT) ),
+			m_socket_(io_service), netAccessor_(m_socket_) {
+	// start server accepting
+	Accept();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void
-Server::Accept( void)
-{
-  // and start accepting
-  m_acceptor.async_accept(
-    m_socket_,
-    boost::bind(&Server::EndAccepted, this, boost::asio::placeholders::error) 
-    );
+void Server::Accept(void) {
+	// and start accepting
+	m_acceptor.async_accept(m_socket_, boost::bind(&Server::EndAccepted, this,
+			boost::asio::placeholders::error) );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void
-Server::EndAccepted( const boost::system::error_code& error)
-{
-  try {
+void Server::EndAccepted(const boost::system::error_code& error) {
+	try {
 
-    HandleErrors( error);
-    
-    LOG( "Accepted conn from:" 
-          << m_socket_.remote_endpoint().address() );
+		if(error)
+		{
+			LOG("Accept failed!");
+			Accept();
+		}
 
-    ReadCommand(); 
+		LOG( "Accepted conn from:"
+				<< m_socket_.remote_endpoint().address() );
 
-  } catch ( NetException &ne) {
-    LOG("NetException in EndAccepted" << ne.what() );
-  }
+		ReadCommand();
 
-  // accept again
-  //Accept();
+	} catch (boost::system::system_error &e) {
+		m_socket_.close();
+		if(e.code() == boost::asio::error::eof )
+		{
+			OnClientDisconnected();
+		}
+	} catch( NetException &ne) {
+		LOG( "NetException in Server::ReadCommand" << ne.what() );
+	} catch( ExceptionBase &e) {
+		LOG( "ExceptionBase in Server::EndPrimaryHeaderRead" << e.what() );
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void
-Server::ReadCommand(void)
-{
-  try {
-    uint8 command;
-    m_socket_.read_some( boost::asio::buffer( &command, sizeof(uint8)) );
-    
-    switch( (eCommand) command)
-    {
-    case CREATE:
-    	CreatePipeline();
-      break;
+void Server::ReadCommand(void) {
+	uint8 command;
 
-    case EXEC:
-    	ReadFilterProperties();
-      break;
-      
-    case DATASET:
-    	ReadDataSet();
-      break;
-    
-    default:
-      ASSERT(false);
-    }
+	while (1) { // only diconnecting of client can break this loop
+		netAccessor_.GetData( (void*) &command, sizeof(uint8));
 
-  } catch( NetException &ne) {
-    LOG( "NetException in Server::EndPrimaryHeaderRead" << ne.what() );
-  } catch( ExceptionBase &e) {
-    LOG( "ExceptionBase in Server::EndPrimaryHeaderRead" << e.what() );
-  }
+		switch ( (eCommand) command) {
+		case CREATE:
+			D_PRINT("Recieved CREATE command");
+			CreatePipeline();
+			break;
 
+		case EXEC:
+			D_PRINT("Recieved EXEC command")
+			;
+			ReadFilterProperties();
+			break;
+
+		case DATASET:
+			D_PRINT("Recieved DATASET command")
+			;
+			ReadDataSet();
+			break;
+
+		default:
+			ASSERT(false)
+			;
+		}
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void
-Server::CreatePipeline(void)
-{	
+void Server::OnClientDisconnected() {
+	LOG( "Client disconnected, reseting pipe and accepting");
+	m_pipeLine.Reset();
+	Accept();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void Server::CreatePipeline(void) {
 	Imaging::InStream stream(&netAccessor_);
-	
-    // perform deserialization    
-	m_pipelineBegin = RemoteFilterFactory::DeserializeFilter(stream);
-    m_pipeLine.AddFilter( m_pipelineBegin);
-    
-  // set starting by message
-    m_pipelineBegin->SetUpdateInvocationStyle( 
-        Imaging::AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
-  
-  // currently only 1 filter
-  m_pipelineEnd = m_pipelineBegin;
+
+	// perform deserialization    
+	m_filter = RemoteFilterFactory::DeserializeFilter(stream, &m_props);
+	// set starting by message
+	m_filter->SetUpdateInvocationStyle(Imaging::AbstractPipeFilter::UIS_ON_CHANGE_BEGIN);
+	m_pipeLine.AddFilter(m_filter);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void
-Server::CleenupPipeline(void)
-{
-	//m_pipeLine.Clean();
-	m_pipelineEnd = m_pipelineBegin = NULL; 
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void
-Server::ReadDataSet(void)
-{
+void Server::ReadDataSet(void) {
 	Imaging::InStream stream(&netAccessor_);
-	
-    // create the dataSet
-    AbstractDataSet::Ptr inputDataSet = DataSetFactory::CreateDataSet(stream);
 
-    // connect it to pipeline
-    m_pipeLine.MakeInputConnection( *m_pipelineBegin, 0, inputDataSet);
+	// create the dataSet
+	AbstractDataSet::Ptr inputDataSet = DataSetFactory::CreateDataSet(stream);
 
-    // create and connect created output dataSet
-    ConnectionInterface &conn = 
-      m_pipeLine.MakeOutputConnection( *m_pipelineEnd, 0, true);
-    
-    // add message listener to be able catch execution done or failed messages
-    conn.SetMessageHook( 
-      MessageReceiverInterface::Ptr( new ExecutionDoneCallback(this) ) );    
+	D_PRINT("Connecting recieved dataset into pipeline");
+	// connect it to pipeline
+	m_pipeLine.MakeInputConnection( *m_filter, 0, inputDataSet);
+
+	// create and connect created output dataSet
+	D_PRINT("Creating output connection")
+	m_connWithOutputDataSet = &m_pipeLine.MakeOutputConnection( *m_filter, 0,
+			true);
+
+	// add message listener to be able catch execution done or failed messages
+	m_connWithOutputDataSet->SetMessageHook(MessageReceiverInterface::Ptr(new ExecutionDoneCallback(this)) );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void
-Server::ReadFilterProperties(void)
-{
+void Server::ReadFilterProperties(void) {
 	Imaging::InStream stream(&netAccessor_);
-	
+
+	m_props->DeserializeProperties(stream);
+
 	// and execute the pipeline. Actual exectution will wait to whole
-    // dataSet unlock when whole dataSet is read (don't forget to do it!!)
-    m_pipelineBegin->Execute();
+	// dataSet unlock when whole dataSet is read (don't forget to do it!!)
+	m_pipeLine.ExecuteFirstFilter();
 }
 ///////////////////////////////////////////////////////////////////////////////
 
-void
-Server::OnExecutionDone( void)
-{
-	
-}
-    
-///////////////////////////////////////////////////////////////////////////////
-void
-Server::OnExecutionFailed( void)
-{
-	
-}
-    
-///////////////////////////////////////////////////////////////////////////////
+void Server::OnExecutionDone(void) {
+	// send resulting dataSet back
+	uint8 result = (eRemoteComputationResult) OK;
+	Imaging::OutStream stream(&netAccessor_);
+	stream.Put<uint8>(result);
 
-void
-Server::HandleErrors(const boost::system::error_code& error)
-{
-	
+	m_connWithOutputDataSet->GetDataset().SerializeProperties(stream);
+	m_connWithOutputDataSet->GetDataset().SerializeData(stream);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Server::OnExecutionFailed(void) {
+	uint8 result = (eRemoteComputationResult) FAILED;
+	Imaging::OutStream stream(&netAccessor_);
+	stream.Put<uint8>(result);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

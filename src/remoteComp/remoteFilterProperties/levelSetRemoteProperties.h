@@ -15,21 +15,21 @@ class LevelSetRemoteProperties
 {
 public:
 	LevelSetRemoteProperties()
-		: seedX( 0 )
-		, seedY( 0 )
-		, seedZ( 0 )
+		: seedX( 256 )
+		, seedY( 256 )
+		, seedZ( 256 )
 		, lowerThreshold( 0 ) 
-		, upperThreshold( 0 ) 
-		, maxIterations( 50 ) 
-		, initialDistance( 3 ) 
-		, curvatureScaling( 1 ) 
-		, propagationScaling( 0 ) 
-		, advectionScaling( 0 ) 
+		, upperThreshold( 1000 ) 
+		, maxIterations( 800 ) 
+		, initialDistance( 4.0f ) 
+		, curvatureScaling( 1.0f ) 
+		, propagationScaling( 0.0f ) 
+		, advectionScaling( 0.0f ) 
 	{}
 
-	InputElementType seedX;
-	InputElementType seedY;
-	InputElementType seedZ;
+	uint32 seedX;
+	uint32 seedY;
+	uint32 seedZ;
 	InputElementType lowerThreshold;
 	InputElementType upperThreshold;
 	uint32 maxIterations;
@@ -52,9 +52,9 @@ public:
 	}
 	void SerializeProperties(Imaging::OutStream &stream)
 	{
-		stream.Put<InputElementType>(seedX);
-		stream.Put<InputElementType>(seedY);
-		stream.Put<InputElementType>(seedZ);
+		stream.Put<uint32>(seedX);
+		stream.Put<uint32>(seedY);
+		stream.Put<uint32>(seedZ);
 		stream.Put<InputElementType>(lowerThreshold);
 		stream.Put<InputElementType>(upperThreshold);
 		stream.Put<uint32>(maxIterations);
@@ -65,9 +65,9 @@ public:
 	}
 	void DeserializeProperties(Imaging::InStream &stream)
 	{
-		stream.Get<InputElementType>(seedX);
-		stream.Get<InputElementType>(seedY);
-		stream.Get<InputElementType>(seedZ);
+		stream.Get<uint32>(seedX);
+		stream.Get<uint32>(seedY);
+		stream.Get<uint32>(seedZ);
 		stream.Get<InputElementType>(lowerThreshold);
 		stream.Get<InputElementType>(upperThreshold);
 		stream.Get<uint32>(maxIterations);

@@ -10,24 +10,27 @@ namespace RemoteComputing
 ///////////////////////////////////////////////////////////////////////////////
 template< typename InputElementType, typename OutputElementType >
 ServerLevelsetSegmentation<InputElementType, OutputElementType>
-	::ServerLevelsetSegmentation()
-	: initSeedNode_(NULL)
+	::ServerLevelsetSegmentation(Properties *props)
+	: properties_(props)
+	, initSeedNode_(NULL)
 {
 	// setup filters
-		SetupBinaryThresholder();	
-		SetupFastMarchingFilter();  
-		SetupLevelSetSegmentator();
-		
-		ApplyProperties();
+	SetupBinaryThresholder();	
+	SetupFastMarchingFilter();  
+	SetupLevelSetSegmentator();
+	
+	featureToFloatCaster = FeatureToFloatFilterType::New();
+	
+	ApplyProperties();
 	 
-	  // connect the filters to form pipeline
-	  thresholdSegmentation->SetInput( fastMarching->GetOutput() );  
-	  thresholder->SetInput( thresholdSegmentation->GetOutput() );
+	featureToFloatCaster->SetInput( this->GetInputITKImage() );
+	thresholdSegmentation->SetFeatureImage( featureToFloatCaster->GetOutput() );
+	thresholdSegmentation->SetInput( fastMarching->GetOutput() );
+	thresholder->SetInput( thresholdSegmentation->GetOutput() );
+	//floatToFeature->SetInput(fastMarching->GetOutput());
 	  
-	  // connect the pipeline into in/out of the ITKFilter
-	  thresholdSegmentation->SetFeatureImage( 
-			  PredecessorType::GetInputITKImage() );
-	  SetOutputITKImage( thresholder->GetOutput() );
+	// connect the pipeline into in/out of the ITKFilter
+	SetOutputITKImage( thresholder->GetOutput() );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -74,11 +77,23 @@ void
 ServerLevelsetSegmentation<InputElementType, OutputElementType>
 	::PrepareOutputDatasets(void)
 {
+	typename PredecessorType::ITKOutputImageType::RegionType region;
+	typename PredecessorType::ITKOutputImageType::SpacingType spacing;
+	
+	ITKIntegration::ConvertMedevedImagePropsToITKImageProps<
+		InputImageType, typename PredecessorType::ITKOutputImageType>(
+				region, spacing, this->GetInputImage());
+	
+	SetOutImageSize(region, spacing);
 	PredecessorType::PrepareOutputDatasets();
-
-	const typename PredecessorType::ITKInputImageType *image = 
-		PredecessorType::GetInputITKImage();
-	fastMarching->SetOutputSize( image->GetLargestPossibleRegion().GetSize() );
+	
+	// set fast marching size
+//	FastMarchingFilterType::InputImageRegionType::SizeType size;
+//	size[0]	= this->GetInputITKImage()->GetLargestPossibleRegion().GetSize()[0];
+//	size[1]	= this->GetInputITKImage()->GetLargestPossibleRegion().GetSize()[1];
+	
+	fastMarching->SetOutputSize(
+			this->GetInputITKImage()->GetLargestPossibleRegion().GetSize());
 }
 ///////////////////////////////////////////////////////////////////////////////
 template< typename InputElementType, typename OutputElementType >
@@ -111,17 +126,19 @@ void
 ServerLevelsetSegmentation<InputElementType, OutputElementType>
 	::ApplyProperties(void)
 {
-  thresholdSegmentation->SetNumberOfIterations( properties_.maxIterations );
-  thresholdSegmentation->SetUpperThreshold( properties_.upperThreshold );
-  thresholdSegmentation->SetLowerThreshold( properties_.lowerThreshold );
-  thresholdSegmentation->SetPropagationScaling( properties_.propagationScaling );
-  thresholdSegmentation->SetAdvectionScaling( properties_.advectionScaling);
-  thresholdSegmentation->SetCurvatureScaling( properties_.curvatureScaling);
+  thresholdSegmentation->SetNumberOfIterations( properties_->maxIterations );
+  thresholdSegmentation->SetUpperThreshold( properties_->upperThreshold );
+  thresholdSegmentation->SetLowerThreshold( properties_->lowerThreshold );
+  thresholdSegmentation->SetPropagationScaling( properties_->propagationScaling );
+  thresholdSegmentation->SetAdvectionScaling( properties_->advectionScaling);
+  thresholdSegmentation->SetCurvatureScaling( properties_->curvatureScaling);
   
-  initSeedNode_->GetIndex()[0] = properties_.seedX;
-  initSeedNode_->GetIndex()[1] = properties_.seedY;
-  initSeedNode_->GetIndex()[2] = properties_.seedZ;
-  initSeedNode_->SetValue(- properties_.initialDistance);
+  NodeType::IndexType index;  
+  index[0] = properties_->seedX;
+  index[1] = properties_->seedY;
+  index[2] = properties_->seedZ;
+  initSeedNode_->SetIndex(index);
+  initSeedNode_->SetValue(- properties_->initialDistance);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -130,9 +147,38 @@ bool
 ServerLevelsetSegmentation<InputElementType, OutputElementType>
 	::ProcessImage(const InputImageType &in, OutputImageType &out)
 {
-	thresholdSegmentation->Update();
+//	std::ofstream before("before.dat");
+//	std::ofstream after("after.dat");
 	
+//	std::ofstream thresholderStr("thresholder.dat");
+//	std::ofstream featureToFloatCasterStr("featureToFloatCaster.dat");
+//	std::ofstream fastMarchingStr("fastMarching.dat");
+	try {
+		PrintRunInfo(std::cout);
+		thresholder->Update();
+		//featureToFloatCaster->GetOutput()->Print(featureToFloatCasterStr);
+		//fastMarching->GetOutput()->Print(featureToFloatCasterStr);
+		//thresholdSegmentation->GetOutput()->Print(thresholderStr);
+		//out.Dump(after);
+		
+//		before.close();
+//		after.close();
+	} catch (itk::ExceptionObject &ex) {
+		return false;
+	}
 	return true;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template< typename InputElementType, typename OutputElementType >
+void
+ServerLevelsetSegmentation<InputElementType, OutputElementType>
+	::PrintRunInfo(std::ostream &stream)
+{
+	stream << "Run info:" << std::endl;
+	
+	//fastMarching->PrintSelf(stream, NULL);
+	//thresholdSegmentation->PrintSelf(stream, NULL);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

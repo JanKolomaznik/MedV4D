@@ -10,6 +10,7 @@
 #include "itkFastMarchingImageFilter.h"
 #include "itkBinaryThresholdImageFilter.h"
 #include "itkZeroCrossingImageFilter.h"
+#include "itkCastImageFilter.h"
 
 namespace M4D
 {
@@ -27,11 +28,12 @@ public:
 	typedef Imaging::Image<OutputElementType, 3> OutputImageType;
 	typedef LevelSetRemoteProperties<InputElementType, OutputElementType> Properties;
 	
-	ServerLevelsetSegmentation();
+	typedef itk::Image<InputElementType, 3> ITKInputImageType;
+	typedef itk::Image<OutputElementType, 3> ITKOutputImageType;
+	
+	ServerLevelsetSegmentation(Properties *props);
 	
 	void PrepareOutputDatasets(void);
-	
-	inline Properties * GetProperties(void) { return &properties_; }
 	void ApplyProperties(void);
 	
 protected:
@@ -41,7 +43,7 @@ protected:
 			    );
 	
 private:
-	Properties properties_;
+	Properties *properties_;
 	
 	typedef float32 InternalPixelType;
 	typedef itk::Image< InternalPixelType, 3 > InternalITKImageType;
@@ -49,24 +51,34 @@ private:
 	// filter that creates initial level set
 	typedef  itk::FastMarchingImageFilter< InternalITKImageType, InternalITKImageType >
 	    FastMarchingFilterType;
+	
+	typedef itk::CastImageFilter< ITKInputImageType, InternalITKImageType > 
+			FeatureToFloatFilterType;
 		
 	// filter that performs actual levelset segmentation
 	typedef  itk::ThresholdSegmentationLevelSetImageFilter< 
-		InternalITKImageType, typename PredecessorType::ITKInputImageType, InternalPixelType >
+		InternalITKImageType, InternalITKImageType, InternalPixelType >
 			ThresholdSegmentationLevelSetImageFilterType;
 		
 	// threshold filter used to threshold final output to zeros and ones
 	typedef itk::BinaryThresholdImageFilter<InternalITKImageType, typename PredecessorType::ITKOutputImageType>
 	    ThresholdingFilterType;
+	
+	typedef itk::CastImageFilter< InternalITKImageType, ITKOutputImageType > 
+		FloatToFeatureFilterType;
 
 	
 	FastMarchingFilterType::Pointer fastMarching;
 	typename ThresholdingFilterType::Pointer thresholder;
 	typename ThresholdSegmentationLevelSetImageFilterType::Pointer thresholdSegmentation;
+	typename FeatureToFloatFilterType::Pointer featureToFloatCaster;
+	typename FloatToFeatureFilterType::Pointer floatToFeature;
 	
 	void SetupFastMarchingFilter(void);
 	void SetupBinaryThresholder(void);
 	void SetupLevelSetSegmentator(void);
+	
+	void PrintRunInfo(std::ostream &stream);
 	
 	typedef FastMarchingFilterType::NodeType                NodeType;
 	

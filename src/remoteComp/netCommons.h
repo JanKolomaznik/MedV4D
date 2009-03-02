@@ -10,7 +10,6 @@
 
 #include "Common.h"
 
-
 /**
  * Contains some common declarations for communicaton
  * between client (M4DApplication) & server (Cell)
@@ -34,6 +33,11 @@ enum eCommand {
 CREATE,       // request for job create
 EXEC,         // request for job execute
 DATASET,      // sending job's dataSet
+};
+
+enum eRemoteComputationResult {
+	OK,
+	FAILED
 };
 
 /**
