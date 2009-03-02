@@ -117,6 +117,7 @@ m4dGUIMainWindow::m4dGUIMainWindow ( const char *appName, const char *orgName, c
   // and the other dialogs
   createScreenLayoutDialog();
   createToolBarCustomizerDialog();
+  createProgressBarDialog();
 
   // update availability of features (according to selected viewer - first one is init.)
   features();
@@ -184,6 +185,9 @@ void m4dGUIMainWindow::open ()
     currentOpenPath = path;
     QFileInfo pathInfo( currentOpenPath );
 
+    // progressBarDialog->show();
+    // progressBarWidget->start();
+
     try {
 
       actualStudy.dicomObjSet = new DicomObjSet();	
@@ -197,6 +201,8 @@ void m4dGUIMainWindow::open ()
     catch ( M4D::ErrorHandling::ExceptionBase &e ) {
 	    QMessageBox::critical( this, tr( "Exception" ), e.what() );
     } 
+
+    // progressBarWidget->stop();
   } 
 }
 
@@ -465,6 +471,24 @@ void m4dGUIMainWindow::createScreenLayoutDialog ()
   dialogLayout->addWidget( screenLayoutWidget );
 
   screenLayoutDialog->setLayout( dialogLayout );
+}
+
+
+void m4dGUIMainWindow::createProgressBarDialog ()
+{
+  // new dialog for Progress Bar Widget - fixed, just with title
+  progressBarDialog = new QDialog( this, Qt::Dialog | Qt::WindowTitleHint | Qt::MSWindowsFixedSizeDialogHint );
+  progressBarDialog->setWindowTitle( tr( "Loading..." ) );
+  progressBarDialog->setWindowModality( Qt::WindowModal );
+
+  progressBarWidget = new m4dGUIProgressBarWidget( tr( "Loading Data Sets..." ) );
+  connect( progressBarWidget, SIGNAL(ready()), progressBarDialog, SLOT(close()) );
+  connect( progressBarDialog, SIGNAL(rejected()), progressBarWidget, SLOT(pause()) );
+  
+  QVBoxLayout *dialogLayout = new QVBoxLayout;
+  dialogLayout->addWidget( progressBarWidget );
+  
+  progressBarDialog->setLayout( dialogLayout );
 }
 
 

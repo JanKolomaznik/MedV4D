@@ -32,6 +32,7 @@ class m4dGUIScreenLayoutWidget: public QWidget
   Q_OBJECT
 
   public:
+
     /**
      * Screen Layout Widget constructor.
      *

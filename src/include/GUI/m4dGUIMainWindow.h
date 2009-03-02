@@ -24,6 +24,7 @@
 #include "GUI/m4dGUIStudyManagerWidget.h"
 #include "GUI/m4dGUIToolBarCustomizerWidget.h"
 #include "GUI/m4dGUIScreenLayoutWidget.h"
+#include "GUI/m4dGUIProgressBarWidget.h"
 
 
 namespace M4D {
@@ -244,6 +245,11 @@ class m4dGUIMainWindow: public QMainWindow
      * Creates Screen Layout Dialog with Screen Layout Widget and connects it with other widgets.
      */
     void createScreenLayoutDialog ();
+
+    /**
+     * Creates Progress Bar Dialog with Progress Bar Widget.
+     */
+    void createProgressBarDialog ();
         
 
     /**
@@ -298,6 +304,8 @@ class m4dGUIMainWindow: public QMainWindow
     m4dGUIToolBarCustomizerWidget *toolBarCustomizerWidget;
     /// Pointer to the Screen Layout Widget
     m4dGUIScreenLayoutWidget *screenLayoutWidget;
+    /// Pointer to the Progress Bar Widget
+    m4dGUIProgressBarWidget *progressBarWidget;
   
   private:
 
@@ -322,6 +330,7 @@ class m4dGUIMainWindow: public QMainWindow
     QDialog *studyManagerDialog;
     QDialog *toolBarCustomizerDialog;
     QDialog *screenLayoutDialog;
+    QDialog *progressBarDialog;
   
     /// Actions.
     QAction *searchAct;
