@@ -50,11 +50,11 @@ ITKFilter<InputImageType, OutputImageType>::SetOutImageSize(
 	this->SetOutputImageSize( minimums, maximums, voxelExtents );
 	
 	// set buffer properties of ITK out image
-	typename InputImageType::PointType strides;
-	typename InputImageType::SizeType size;
+	typename OutputImageType::PointType strides;
+	typename OutputImageType::SizeType size;
 	size_t sizeOfData = 1;	// size in elements (not in bytes) 
 	const OutputImageType &outMedImage = this->GetOutputImage();
-	typename InputImageType::Element *dataPointer = 
+	typename OutputImageType::Element *dataPointer = 
 		outMedImage.GetPointer(size, strides);
 	// count num of elems
 	for( uint32 i=0; i< InputImageType::Dimension; i++)
