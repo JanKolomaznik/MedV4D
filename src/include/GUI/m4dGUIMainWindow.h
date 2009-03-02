@@ -360,6 +360,9 @@ class m4dGUIMainWindow: public QMainWindow
 
     /// Current study - Study Manager, loading method are filling it.
     Study actualStudy;
+
+    /// Current path - history of Open/Load dialogs
+    QString currentOpenPath, currentLoadPath;
 };
 
 } // namespace GUI

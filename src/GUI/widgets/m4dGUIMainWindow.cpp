@@ -177,19 +177,19 @@ void m4dGUIMainWindow::search ()
 
 void m4dGUIMainWindow::open ()
 {
-  QString path( QFileDialog::getOpenFileName( this, tr( "Open" ), "", "*.dcm" ) );
+  QString path( QFileDialog::getOpenFileName( this, tr( "Open" ), currentOpenPath, "*.dcm" ) );
   
   if ( !path.isNull() ) 
   {
-    QFileInfo pathInfo( path );
+    currentOpenPath = path;
+    QFileInfo pathInfo( currentOpenPath );
 
     try {
 
       actualStudy.dicomObjSet = new DicomObjSet();	
-      DcmProvider::LoadSerieThatFileBelongsTo( 
-    		  pathInfo.absoluteFilePath().toStdString(), 
-    		  pathInfo.absolutePath().toStdString(),
-    		  *actualStudy.dicomObjSet);
+      DcmProvider::LoadSerieThatFileBelongsTo( pathInfo.absoluteFilePath().toStdString(), 
+    		                                       pathInfo.absolutePath().toStdString(),
+    		                                       *actualStudy.dicomObjSet );
 
       process( DicomObjSetPtr( actualStudy.dicomObjSet ) );
 
