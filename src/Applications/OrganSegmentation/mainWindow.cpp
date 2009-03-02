@@ -32,7 +32,7 @@ mainWindow::mainWindow ()
 
 
 void 
-mainWindow::process ( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
+mainWindow::process ( M4D::Dicom::DicomObjSetPtr dicomObjSet )
 {
 	MainManager::InitInput( dicomObjSet );
 

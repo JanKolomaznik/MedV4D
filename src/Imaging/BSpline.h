@@ -297,6 +297,17 @@ BSplineSegmentLength( BSpline< CoordType, Dim > &curve, unsigned segment )
 }
 
 template< typename CoordType, unsigned Dim >
+float32
+BSplineLength( BSpline< CoordType, Dim > &curve )
+{
+	float32 length = 0;
+	for( unsigned i = 0; i < curve.GetSegmentCount(); ++i ) {
+		length += BSplineSegmentLength( curve, i );
+	}
+	return length;
+}
+
+template< typename CoordType, unsigned Dim >
 void
 FindBSplineSegmentLengthExtremes( BSpline< CoordType, Dim > &curve, unsigned &maxIdx, float32 &maxVal, unsigned &minIdx, float32 &minVal )
 {

@@ -1,7 +1,7 @@
 #ifndef MAIN_MANAGER_H
 #define MAIN_MANAGER_H
 
-#include "dicomConn.h"
+#include "backendForDICOM.h"
 #include "Imaging.h"
 
 typedef M4D::Imaging::AbstractImage::Ptr	AbstractImagePtr;
@@ -20,7 +20,7 @@ public:
 	Finalize();
 
 	static void
-	InitInput( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet );
+	InitInput( M4D::Dicom::DicomObjSetPtr dicomObjSet );
 
 	static ImageConnectionType *
 	GetInputConnection()
@@ -30,7 +30,7 @@ public:
 	GetInputImage()
 		{ return _inputImage = _inConvConnection->GetDatasetPtrTyped(); }
 protected:
-	static M4D::Dicom::DcmProvider::DicomObjSetPtr		_inputDcmSet;
+	static M4D::Dicom::DicomObjSetPtr		_inputDcmSet;
 	static InputImagePtr 					_inputImage;
 	static InImageConnection				*_inConnection;
 	static ImageConnectionType				*_inConvConnection;

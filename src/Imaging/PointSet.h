@@ -80,27 +80,27 @@ public:
 		{ return _points.end(); }
 
 	PointType &
-	GetPointCyclic( unsigned idx ) 
+	GetPointCyclic( int32 idx ) 
 		{ 
 			return _points[ MOD( idx, _pointCount ) ]; 
 		}
 
 	const PointType &
-	GetPointCyclic( unsigned idx ) const
+	GetPointCyclic( int32 idx ) const
 		{ 
 			return _points[ MOD( idx, _pointCount ) ]; 
 		}
 
 	PointType &
-	GetPointACyclic( unsigned idx ) 
+	GetPointACyclic( int32 idx ) 
 		{ 
-			return _points[ Max( Min( idx, _pointCount-1 ), 0 ) ]; 
+			return _points[ Max( Min( idx, (int32)_pointCount-1 ), 0 ) ]; 
 		}
 
 	const PointType &
-	GetPointACyclic( unsigned idx ) const
+	GetPointACyclic( int32 idx ) const
 		{ 
-			return _points[ Max( Min( idx, _pointCount-1 ), 0 ) ]; 
+			return _points[ Max( Min( idx, (int32)_pointCount-1 ), 0 ) ]; 
 		}
 
 	size_t

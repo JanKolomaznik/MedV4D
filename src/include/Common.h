@@ -31,6 +31,7 @@
 #include "ExceptionBase.h"
 #include "Endianess.h"
 #include <iomanip>
+#include <sstream>
 
 //*****************************************************************************
 /**
@@ -62,11 +63,86 @@ struct IsSameDimension< Dim, Dim >
 //*****************************************************************************
 
 
-#define Max( a, b ) ((a)<(b) ? (b) : (a))
-#define Min( a, b ) ((a)<(b) ? (a) : (b))
-#define MOD( a, b ) ((a)<0 ? ((a)%(b)) + (b) : (a) % (b))
+//#define Max( a, b ) ((a)<(b) ? (b) : (a))
+//#define Min( a, b ) ((a)<(b) ? (a) : (b))
+//#define MOD( a, b ) ((a)<0 ? ((a)%(b)) + (b) : (a) % (b))
 #define PWR( a ) ( (a) * (a) )
 #define ROUND( a ) ( (int)(a+0.5) )
+
+template< typename NTypeA, typename NTypeB >
+NTypeB
+MOD( NTypeA a, NTypeB b );
+
+template<>
+inline int32
+MOD( int32 a, int32 b )
+{
+	int32 val = a % b;
+	if( val < 0 ) {
+		val += b;
+	}
+	return val;
+}
+
+template<>
+inline uint32
+MOD( int32 a, uint32 b )
+{
+	int32 val = a % b;
+	if( val < 0 ) {
+		val += b;
+	}
+	return (uint32)val;
+}
+
+template<>
+inline uint32
+MOD( uint32 a, uint32 b )
+{
+	return a % b;
+}
+
+/*template<>
+inline int64
+MOD( int64 a, int64 b )
+{
+	if( a < 0 ) {
+		return a % b + b;
+	}
+	return a % b;
+}*/
+
+template< typename NType >
+inline NType
+Max( NType a, NType b ) {
+	if( a<b ) return b;
+
+	return a;
+}
+
+template< typename NType >
+inline NType
+Max( NType a, NType b, NType c ) {
+	if( a<b ) return Max( b, c );
+
+	return Max( a, c );
+}
+
+template< typename NType >
+inline NType
+Min( NType a, NType b ) {
+	if( a>b ) return b;
+
+	return a;
+}
+
+template< typename NType >
+inline NType
+Min( NType a, NType b, NType c ) {
+	if( a>b ) return Min( b, c );
+
+	return Min( a, c );
+}
 
 template< typename NType >
 inline NType
@@ -109,6 +185,40 @@ extern const float32 PI;
 
 //TODO test and move to better place
 #define MAKESTRING( S ) #S
+
+/**
+ * This class enables converting many arguments to a string.
+ **/
+class ToString
+{
+public:
+  inline operator std::string() const
+  {
+       return toString();
+  }
+
+  inline std::string toString() const
+  {
+       return m_ostream.str();
+  }
+
+  /** Add argument of any type to the stream. */
+  template <class ArgType>
+  ToString& operator<<(ArgType const& arg)
+  {
+       m_ostream << arg;
+       return *this;
+  }
+
+private:
+  std::ostringstream m_ostream;
+};
+
+
+/**
+Macro for a better usage of the class defined above.
+*/
+#define TO_STRING(MSG) ( std::string(ToString() << MSG) )
 
 using namespace M4D::ErrorHandling;
 

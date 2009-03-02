@@ -73,6 +73,60 @@ SnakeSegmentationFilter< ElementType >::ReleaseOutputGDataset()const
 }
 
 template < typename ElementType >
+void
+SnakeSegmentationFilter< ElementType >::PrepareOutputDatasets()
+{
+	_minSlice = in[0]->GetDimensionExtents(2).minimum;
+	_maxSlice = in[0]->GetDimensionExtents(2).maximum;
+	for( unsigned i=1; i<InCount; ++i ) {
+		_minSlice = Max( _minSlice, in[i]->GetDimensionExtents(2).minimum );
+		_maxSlice = Max( _maxSlice, in[i]->GetDimensionExtents(2).maximum );
+	}
+
+	this->out->UpgradeToExclusiveLock();
+		GeometryDataSetFactory::ChangeSliceCount( (*this->out), _minSlice, _maxSlice );
+	this->out->DowngradeFromExclusiveLock();
+}
+
+template < typename ElementType >
+void
+SnakeSegmentationFilter< ElementType >::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
+{
+	PredecessorType::BeforeComputation( utype );
+
+	utype = AbstractPipeFilter::RECALCULATION;
+	this->_callPrepareOutputDatasets = true;
+
+	for( unsigned i = 0; i < InCount; ++i ) {
+		in[ i ] = &(this->GetInputImage( i ));
+	}
+	out = &(this->GetOutputGDataset());
+	
+}
+
+template < typename ElementType >
+void
+SnakeSegmentationFilter< ElementType >::MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype )
+{
+	for( unsigned i=0; i < InCount; ++i ) {
+		readerBBox[i] = in[i]->GetWholeDirtyBBox();
+	}
+}
+
+template < typename ElementType >
+void
+SnakeSegmentationFilter< ElementType >::AfterComputation( bool successful )
+{
+	for( unsigned i=0; i < InCount; ++i ) {
+	/*	_inTimestamp[ i ] = in[ i ]->GetStructureTimestamp();
+		_inEditTimestamp[ i ] = in[ i ]->GetEditTimestamp();*/
+		
+		this->ReleaseInputImage( i );
+	}
+	PredecessorType::AfterComputation( successful );	
+}
+
+template < typename ElementType >
 void 
 SnakeSegmentationFilter< ElementType >::ComputeStatistics( Vector<int32, 3> p, float32 &E, float32 &var )
 {
@@ -146,6 +200,20 @@ SnakeSegmentationFilter< ElementType >::ExecutionThreadMethod( AbstractPipeFilte
 }*/
 
 template < typename ElementType >
+typename SnakeSegmentationFilter< ElementType >::CurveType
+SnakeSegmentationFilter< ElementType >::CreateSquareControlPoints( float32 radius )
+{
+	CurveType result;
+	result.SetCyclic( true );
+	result.AddPoint( Coordinates( radius, radius ) );
+	result.AddPoint( Coordinates( radius, -radius ) );
+	result.AddPoint( Coordinates( -radius, -radius ) );
+	result.AddPoint( Coordinates( -radius, radius ) );
+
+	return result;
+}
+
+template < typename ElementType >
 bool
 SnakeSegmentationFilter< ElementType >::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
 {
@@ -153,69 +221,52 @@ SnakeSegmentationFilter< ElementType >::ExecutionThreadMethod( AbstractPipeFilte
 
 	//TODO locking
 	
+	CurveType northSpline = CreateSquareControlPoints( 0.5 );
+	CurveType southSpline = northSpline;
+
+	northSpline.Move( GetSecondPoint() );
+	southSpline.Move( GetFirstPoint() );
 	unsigned stepCount = (_maxSlice - _minSlice) / 2;
 	for( unsigned step = 0; step < stepCount; ++step ) {
 		ProcessSlice( _minSlice + step, southSpline );
-		ProcessSlice( _maxSlice - step, northSpline );
+		ProcessSlice( _maxSlice - step - 1, northSpline );
 	}
-	if( _minSlice + stepCount + 1 == _maxSlice - _minSlice ) {
-		ProcessSlice( _minSlice + step + 1, southSpline );
-	}
+	/*if( (_minSlice + stepCount) == (_maxSlice - stepCount-1) ) {//TODO check !!!
+		ProcessSlice( _minSlice + stepCount, southSpline );
+	}*/
 	return true;
 }
 
 template < typename ElementType >
 void
-SnakeSegmentationFilter< ElementType >::PrepareOutputDatasets()
+SnakeSegmentationFilter< ElementType >
+::ProcessSlice( 
+		int32	sliceNumber,
+		typename SnakeSegmentationFilter< ElementType >::CurveType &initialization 
+		)
 {
-	_minSlice = in[0]->GetDimensionExtents(2).minimum;
-	_maxSlice = in[0]->GetDimensionExtents(2).maximum;
-	for( unsigned i=1; i<InCount; ++i ) {
-		_minSlice = Max( _minSlice, in[i]->GetDimensionExtents(2).minimum );
-		_maxSlice = Max( _maxSlice, in[i]->GetDimensionExtents(2).maximum );
-	}
-
-	this->out->UpgradeToExclusiveLock();
-		GeometryDataSetFactory::ChangeSliceCount( (*this->out), _minSlice, _maxSlice );
-	this->out->DowngradeFromExclusiveLock();
-}
-
-template < typename ElementType >
-void
-SnakeSegmentationFilter< ElementType >::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
-{
-	PredecessorType::BeforeComputation( utype );
-
-	utype = AbstractPipeFilter::RECALCULATION;
-	this->_callPrepareOutputDatasets = true;
-
-	for( unsigned i = 0; i < InCount; ++i ) {
-		in[ i ] = &(this->GetInputImage( i ));
-	}
-	out = &(this->GetOutputGDataset());
+	static const unsigned ResultSampleRate = 5;
+	//Initialization and setup
+	SnakeAlgorithm algorithm;
 	
-}
+	algorithm.Initialize( initialization );
+	//****************************************
+	//**** COMPUTATION ***********************
 
-template < typename ElementType >
-void
-SnakeSegmentationFilter< ElementType >::MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype )
-{
-	for( unsigned i=0; i < InCount; ++i ) {
-		readerBBox[i] = in[i]->GetWholeDirtyBBox();
+	while( 40 > algorithm.Step() ) {
+		/* empty */
 	}
-}
 
-template < typename ElementType >
-void
-SnakeSegmentationFilter< ElementType >::AfterComputation( bool successful )
-{
-	for( unsigned i=0; i < InCount; ++i ) {
-	/*	_inTimestamp[ i ] = in[ i ]->GetStructureTimestamp();
-		_inEditTimestamp[ i ] = in[ i ]->GetEditTimestamp();*/
-		
-		this->ReleaseInputImage( i );
-	}
-	PredecessorType::AfterComputation( successful );	
+
+	//****************************************
+	//Result processing
+	const CurveType &result = algorithm.GetCurrentCurve();
+
+	ObjectsInSlice &slice = this->out->GetSlice( sliceNumber );
+	slice.clear();
+	slice.push_back( result );
+	slice[0].Sample( ResultSampleRate );
+	initialization = result;
 }
 
 

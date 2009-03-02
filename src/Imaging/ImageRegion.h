@@ -28,7 +28,7 @@ public:
 	typedef ImageIterator< ElementType, Dim >	Iterator;
 
 	ImageRegion():
-			_pointer( NULL ), _sourceDimension( 0 ), _pointerCoordinatesInSource( NULL ), _origin( 0 )
+			_pointer( NULL ), _origin( 0 ), _sourceDimension( 0 ), _pointerCoordinatesInSource( NULL )
 		{
 			for ( unsigned i = 0; i < Dimension; ++i ) {
 				_size[i] = 0;

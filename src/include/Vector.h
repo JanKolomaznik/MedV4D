@@ -308,14 +308,12 @@ template< typename StreamType, typename CoordType, unsigned Dim >
 StreamType &
 operator<<( StreamType &stream, const Vector< CoordType, Dim > &coords )
 {
-	stream << "[";
 	for( unsigned i=0; i < Dim; ++i ) {
 		stream << coords[i];
 		if( i != Dim-1 ) {
 			stream << " ";
 		}
 	}
-	stream << "]";
 	return stream;
 }
 

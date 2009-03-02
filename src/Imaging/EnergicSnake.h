@@ -61,6 +61,22 @@ public:
 		{ return _lastGradientSize; }
 
 	unsigned
+	GetSelfIntersectionTestPeriod()const
+		{ return _selfIntersectionTestPeriod; }
+
+	void
+	SetSelfIntersectionTestPeriod( unsigned period )
+		{ _selfIntersectionTestPeriod = period; }
+
+	unsigned
+	GetSegmentLengthsTestPeriod()const
+		{ return _segmentLengthsTestPeriod; }
+
+	void
+	SetSegmentLengthsTestPeriod( unsigned period )
+		{ _segmentLengthsTestPeriod = period; }
+
+	unsigned
 	GetSampleRate()const
 		{ return _sampleRate; }
 
@@ -85,8 +101,8 @@ public:
 		{ _maximalSegmentLength = len; }
 protected:
 	//Parameters
-	unsigned	_selfIntersectionTestFrequency;
-	unsigned	_segmentLengthsTestFrequency;
+	unsigned	_selfIntersectionTestPeriod;
+	unsigned	_segmentLengthsTestPeriod;
 	unsigned	_sampleRate;
 	float32		_minimalSegmentLength;
 	float32		_maximalSegmentLength;
@@ -132,13 +148,18 @@ EnergicSnake< ContourType, EnergyModel >
 {
 	_actualGradient = 1;
 
+	_selfIntersectionTestPeriod = 2;
+	_segmentLengthsTestPeriod = 2;
 	_sampleRate = 5;
 
 	_stepScale = 5.0;
-	_stepScaleAlpha = 0.8;
-	_stepScaleBeta = 0.5;
-	_minimalSegmentLength = 10;
-	_maximalSegmentLength = 30;
+	_stepScaleAlpha = 0.95;
+	_stepScaleBeta = 0.1;
+	_minimalSegmentLength = 3;
+	_maximalSegmentLength = 45;
+
+	_stepCount = 0;
+	_lastGradientSize = 0.0f;
 
 	SwitchGradients();
 }
@@ -154,9 +175,13 @@ void
 EnergicSnake< ContourType, EnergyModel >
 ::Initialize( const ContourType & contour )
 {
+	this->ResetEnergy();
+
 	_curve = contour;
 	_curve.Sample( _sampleRate );
 	_curve.SampleWithDerivations( _sampleRate );
+	_stepCount = 0;
+	
 }
 
 template< typename ContourType, typename EnergyModel >
@@ -173,15 +198,17 @@ EnergicSnake< ContourType, EnergyModel >
 		DL_PRINT(10, "EnergicSnake ->    Update curve parameters " );
 	UpdateCurveParameters();
 
-	if( _stepCount % _selfIntersectionTestFrequency == 0 ) {
+	if( _stepCount % _selfIntersectionTestPeriod == 0 ) 
+	{
 		_curve.Sample( _sampleRate );
 		//Solve self intersection problem
-		CheckSelfIntersection();
+	//	CheckSelfIntersection();
 	}
 
-	if( _stepCount % _segmentLengthsTestFrequency == 0 ) {
+	if( _stepCount % _segmentLengthsTestPeriod == 0 ) 
+	{
 		//Divide or join segments with length out of tolerance
-		CheckSegmentLengths();
+	//	CheckSegmentLengths();
 	}
 
 	_curve.ReSampleWithDerivations();
@@ -217,7 +244,7 @@ void
 EnergicSnake< ContourType, EnergyModel >
 ::Reset()
 {
-
+	this->ResetEnergy();
 }
 
 template< typename ContourType, typename EnergyModel >
@@ -229,9 +256,10 @@ EnergicSnake< ContourType, EnergyModel >
 	_gradient->Resize( _curve.Size() );
 
 	//Compute gradient
-	this->GetParametersGradient( _curve, (*_gradient) );
+	_lastGradientSize = this->GetParametersGradient( _curve, (*_gradient) );
+	D_PRINT( "GRADIENT SIZE = " << _lastGradientSize );
 
-	//Normalize gradient to unit size and store its original size ( 1/normalization factor )
+	//Normalize gradient to unit size ( 1/normalization factor )
 	NormalizeGradient();
 }
 
@@ -256,7 +284,8 @@ EnergicSnake< ContourType, EnergyModel >
 		float32 product = GradientScalarProduct( _gradients[0], _gradients[1] );
 		_stepScale *= _stepScaleAlpha + _stepScaleBeta * product;
 
-		DL_PRINT(15, "EnergicSnake ->      Compute step scale : " << _stepScale << " " << product );
+		//_stepScale = 10;
+		DL_PRINT(5, "EnergicSnake ->      Compute step scale : " << _stepScale << " " << product );
 	}
 }
 
@@ -329,13 +358,13 @@ void
 EnergicSnake< ContourType, EnergyModel >
 ::NormalizeGradient()
 {
-	_lastGradientSize = GradientScalarProduct( (*_gradient), (*_gradient) );
+	//_lastGradientSize = GradientScalarProduct( (*_gradient), (*_gradient) );
 	float32 tmp = 0.0f;
 
 	if( _lastGradientSize < Epsilon ) {
 		_lastGradientSize = 0.0f;
 	} else {
-		_lastGradientSize = sqrt( _lastGradientSize );
+		//_lastGradientSize = sqrt( _lastGradientSize );
 		tmp = 1.0f / _lastGradientSize;
 	}
 

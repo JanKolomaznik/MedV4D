@@ -90,7 +90,9 @@ public:
 	GetSlice( int32 idx )
 		{ 
 			if ( idx < this->_minSlice || idx >= this->_maxSlice ) {
-				_THROW_ M4D::ErrorHandling::EBadIndex( "Wrong slice index" );
+				_THROW_ M4D::ErrorHandling::EBadIndex( 
+						TO_STRING( "Wrong slice index = " << idx << "; minSlice = " << this->_minSlice << "; maxSlice = " << this->_maxSlice )
+							);
 			}
 			return _slices[ idx - this->_minSlice ];
 		}
@@ -99,51 +101,44 @@ public:
 	GetSlice( int32 idx )const
 		{ 
 			if ( idx < this->_minSlice || idx >= this->_maxSlice ) {
-				_THROW_ M4D::ErrorHandling::EBadIndex( "Wrong slice index" );
+				_THROW_ M4D::ErrorHandling::EBadIndex( 
+						TO_STRING( "Wrong slice index = " << idx << "; minSlice = " << this->_minSlice << "; maxSlice = " << this->_maxSlice )
+							);
 			}
 			return _slices[ idx - this->_minSlice ];
 		}
 	uint32
 	GetSliceSize( int32 idx )const
 		{
-			if ( idx < this->_minSlice || idx >= this->_maxSlice ) {
-				_THROW_ M4D::ErrorHandling::EBadIndex( "Wrong slice index" );
-			}
-			return _slices[ idx - this->_minSlice ].size();
+			return GetSlice( idx ).size();
 		}
 
 	ObjectType &
 	GetObject( int32 sliceNumber, uint32 objectNumber )
 		{
-			if ( sliceNumber < this->_minSlice || sliceNumber >= this->_maxSlice ) {
-				_THROW_ M4D::ErrorHandling::EBadIndex( "Wrong slice index" );
-			}
-			if( objectNumber >= _slices[ sliceNumber - this->_minSlice ].size() ) {
+			ObjectsInSlice &slice = GetSlice( sliceNumber );
+			if( objectNumber >= slice.size() ) {
 				_THROW_ M4D::ErrorHandling::EBadIndex( "Wrong object in slice index" );
 			}
-			return _slices[ sliceNumber - this->_minSlice ][ objectNumber ];
+			return slice[ objectNumber ];
 		}
 
 	const ObjectType &
 	GetObject( int32 sliceNumber, uint32 objectNumber )const
 		{
-			if ( sliceNumber < this->_minSlice || sliceNumber >= this->_maxSlice ) {
-				_THROW_ M4D::ErrorHandling::EBadIndex( "Wrong slice index" );
-			}
-			if( objectNumber >= _slices[ sliceNumber - this->_minSlice ].size() ) {
+			const ObjectsInSlice &slice = GetSlice( sliceNumber );
+			if( objectNumber >= slice.size() ) {
 				_THROW_ M4D::ErrorHandling::EBadIndex( "Wrong object in slice index" );
 			}
-			return _slices[ sliceNumber - this->_minSlice ][ objectNumber ];
+			return slice[ objectNumber ];
 		}
 
 	uint32
 	AddObject( int32 sliceNumber, const ObjectType &obj )
 		{
-			if ( sliceNumber < this->_minSlice || sliceNumber >= this->_maxSlice ) {
-				_THROW_ M4D::ErrorHandling::EBadIndex( "Wrong slice index" );
-			}
-			_slices[ sliceNumber - this->_minSlice ].push_back( obj );
-			return _slices[ sliceNumber - this->_minSlice ].size();
+			ObjectsInSlice &slice = GetSlice( sliceNumber );
+			slice.push_back( obj );
+			return slice.size();
 		}
 
 

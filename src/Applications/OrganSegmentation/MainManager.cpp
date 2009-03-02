@@ -1,7 +1,7 @@
 
 #include "MainManager.h"
 
-M4D::Dicom::DcmProvider::DicomObjSetPtr	MainManager::_inputDcmSet;
+M4D::Dicom::DicomObjSetPtr		MainManager::_inputDcmSet;
 InputImagePtr				MainManager::_inputImage;
 InImageConnection *			MainManager::_inConnection;
 ImageConnectionType *			MainManager::_inConvConnection;
@@ -23,7 +23,7 @@ MainManager::Finalize()
 }
 
 void
-MainManager::InitInput( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet )
+MainManager::InitInput( M4D::Dicom::DicomObjSetPtr dicomObjSet )
 {
 	_inputDcmSet = dicomObjSet;
 

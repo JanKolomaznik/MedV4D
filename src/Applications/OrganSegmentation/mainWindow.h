@@ -57,7 +57,7 @@ public slots:
 
 protected:
 	void
-	process( M4D::Dicom::DcmProvider::DicomObjSetPtr dicomObjSet );
+	process( M4D::Dicom::DicomObjSetPtr dicomObjSet );
 
 	SegmentationWidget	*_segmentationWidget;
 	SettingsBox	*_settings;

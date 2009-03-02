@@ -18,7 +18,7 @@ using namespace M4D::Imaging::Algorithms;
 typedef float CoordType;
 typedef BSpline< CoordType, 2 > Curve;
 typedef PointSet< CoordType, 2 > 	Points;
-typedef Coordinates< CoordType, 2 > Coords;
+typedef Vector< CoordType, 2 > Coords;
 
 typedef	Image< int16, 2 > GradientImageType;
 typedef	Image< uint8, 2 > ImageType;
@@ -30,20 +30,38 @@ typedef ImageType::SubRegion ImageRegionType;
 typedef GradientMagnitudeEnergy< Curve, GradientRegionType > GradientEnergy;
 typedef DoubleEnergyFunctional< Curve, BaloonEnergy, GradientEnergy > FinalEnergy;*/
 
-typedef UnifiedImageEnergy< Curve, ImageRegionType, GradientRegionType > FinalEnergy;
+//typedef UnifiedImageEnergy< Curve, ImageRegionType, GradientRegionType > FinalEnergy;
+class Distribution
+{
+public:
+	float32
+	LogProbabilityRatio( int val )
+	{ 
+		float32 P1 = ((float32)(255-val))/255.0f + 0.0001;
+		float32 P2 = ((float32)val)/255.0f  + 0.0001;
+		return log( P1 / P2 );
+	}
+};
+
+typedef RegionImageEnergy< Curve, ImageRegionType, Distribution > RegionEnergy;
+//typedef RegionEnergy FinalEnergy;
+
+typedef SegmentationEnergy< Curve, RegionEnergy, InternalCurveEnergy< Curve >, DummyEnergy3 > FinalEnergy;
 
 typedef EnergicSnake< Curve, FinalEnergy > Snake;
 
-Snake snake;
 
 int
 main( int argc, char **argv )
 {
+
+	Snake snake;
+
 	SET_DOUT( std::cerr );
 	std::ofstream file( "gradients.txt" );
 
 	string inFilename1 = "Circle.dump";
-	string inFilename2 = "CircleSmoothLaplace.dump";
+	//string inFilename2 = "CircleSmoothLaplace.dump";
 
 	//std::cout << "Loading file..."; std::cout.flush();
 	M4D::Imaging::AbstractImage::Ptr aimage = 
@@ -51,17 +69,17 @@ main( int argc, char **argv )
 
 	ImageType::Ptr image = ImageType::CastAbstractImage( aimage );
 
-	aimage = M4D::Imaging::ImageFactory::LoadDumpedImage( inFilename2 );
+	//aimage = M4D::Imaging::ImageFactory::LoadDumpedImage( inFilename2 );
 
-	GradientImageType::Ptr gradientImage = GradientImageType::CastAbstractImage( aimage );
+	//GradientImageType::Ptr gradientImage = GradientImageType::CastAbstractImage( aimage );
 
 	//std::cout << "Done\n";
 
 	Curve curve;
 	//Add points
 	
-	float radius = 30.0f;
-	Coords center = Coords(127,127);
+	float radius = 20.0f;
+	Coords center = Coords(57,127);
 	int segments = 16;
 	float angle = -2*PI / (float)segments;
 
@@ -70,38 +88,27 @@ main( int argc, char **argv )
 		curve.AddPoint( np );
 	}
 
-	/*curve.AddPoint( Coords(120,120) );
-	curve.AddPoint( Coords(135,120) );
-	curve.AddPoint( Coords(135,135) );
-	curve.AddPoint( Coords(120,135) );*/
+	/*curve.AddPoint( Coords(50,50) );
+	curve.AddPoint( Coords(200,50) );
+	curve.AddPoint( Coords(135,200) );
+	curve.AddPoint( Coords(50,70) );*/
 
-	
-/*	curve.AddPoint( Coords(30,30) );
-	curve.AddPoint( Coords(225,30) );
-	curve.AddPoint( Coords(225,225) );
-	curve.AddPoint( Coords(30,225) );*/
-	/* 
-	curve.AddPoint( Coords(127,74) );
-	curve.AddPoint( Coords(182,127) );
-	curve.AddPoint( Coords(127,182) );
-	curve.AddPoint( Coords(74,127) );
-	curve.AddPoint( Coords(127,74) );
-	curve.AddPoint( Coords(182,127) );
-	curve.AddPoint( Coords(127,182) );
-	curve.AddPoint( Coords(74,127) );*/
 
 	curve.SetCyclic();
 	curve.Sample( 5 );
-	snake.Initialize( curve );
-	snake.GetEnergyModel().SetRegion1( image->GetRegion() );
-	snake.GetEnergyModel().SetRegion2( gradientImage->GetRegion() );
-/*	snake.GetEnergyModel().GetSecondModel().SetRegion( image->GetRegion() );
-	snake.GetEnergyModel().SetAlpha(0.1);
-	snake.GetEnergyModel().SetBeta(25.0);*/
 
-	while( !snake.Converged() ) {
-		unsigned i = snake.Step();
-		if( i % 3 == 0 ) 
+	snake.Initialize( curve );
+	snake.SetGamma( 1.0f );
+	snake.SetImageEnergyBalance( 1.0f );
+	snake.SetInternalEnergyBalance( 0.5f );
+	snake.SetConstrainEnergyBalance( 0.0f );
+	snake.SetRegionStatRegion( image->GetRegion() );
+	//snake.GetEnergyModel().SetRegion2( gradientImage->GetRegion() );
+
+	unsigned i = 0;
+	while( i < 40 ) {
+		i = snake.Step();
+		if( i % 4 == 0 ) 
 		{
 			PrintCurve( cout, snake.GetCurrentCurve() );
 			cout << endl;
@@ -113,10 +120,5 @@ main( int argc, char **argv )
 			cout << endl;
 	PrintPointSet( cout, snake.GetCurrentCurve() );
 
-	bool result;
-	result = LineIntersectionTest( Coords( -1,-1 ), Coords( 10,10 ), Coords( -6,-5 ), Coords( 6,5 ) );
-	cerr << "R1 = " << result << endl;
-	result = LineIntersectionTest( Coords( 0,0 ), Coords( 10,10 ), Coords( 0,0 ), Coords( 10,7 ) );
-	cerr << "R2 = " << result << endl;
 	return 0;
 }

@@ -54,8 +54,19 @@ public:
 	GET_SET_PROPERTY_METHOD_MACRO( Coordinates, OutsidePoint, outsidePoint );
 	GET_SET_PROPERTY_METHOD_MACRO( int32, OutsidePointSlice, outsidePointSlice );
 protected:
+
+	typedef M4D::Imaging::Algorithms::SegmentationEnergy< 
+					CurveType,
+					M4D::Imaging::Algorithms::DummyEnergy1,
+					M4D::Imaging::Algorithms::DummyEnergy2,
+					M4D::Imaging::Algorithms::DummyEnergy3 >	EnergyModel;
+	typedef M4D::Imaging::Algorithms::EnergicSnake< CurveType, EnergyModel >	SnakeAlgorithm;
+
 	void
 	ComputeStatistics( Vector<int32, 3> p, float32 &E, float32 &var );
+
+	CurveType
+	CreateSquareControlPoints( float32 radius );
 
 	const InputImageType&
 	GetInputImage( uint32 idx )const;
@@ -84,6 +95,11 @@ protected:
 	void
 	AfterComputation( bool successful );
 
+	void
+	ProcessSlice( 
+			int32		sliceNumber,
+			CurveType	&initialization 
+			);
 	void
 	ProcessSlice( 
 			//const RegionType &region, 

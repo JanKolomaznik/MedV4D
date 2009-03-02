@@ -85,6 +85,7 @@ public:
 			}
 			if( drawDataset ) {
 				const GDataSet::ObjectsInSlice &slice = _dataset->GetSlice( sliceNum );
+				LOG( "sliceSize = " << slice.size() ); 
 				std::for_each( slice.begin(), slice.end(), GLDrawBSpline );
 			}
 			if( sliceNum == _insidePointSlice ) {
@@ -173,7 +174,7 @@ public:
 	int32		_outsidePointSlice;
 
 	GDataSet::Ptr	_dataset;
-	bool		drawDataset;
+	volatile bool	drawDataset;
 };
 
 
@@ -312,7 +313,8 @@ KidneySegmentationManager::RunSplineSegmentation()
 	
 	std::cout << "Done\n";
 
-	sState->ShowGeometryDataset( _outGeomConnection->GetDatasetPtrTyped() );
+	GDataSet::Ptr ptr = _outGeomConnection->GetDatasetPtrTyped();
+	sState->ShowGeometryDataset( ptr );
 	
 }
 
