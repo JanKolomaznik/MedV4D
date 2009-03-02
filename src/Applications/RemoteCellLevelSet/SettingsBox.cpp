@@ -32,7 +32,9 @@ SettingsBox
 		grid->addWidget( new QLabel( tr( "lowerThreshold" ) ), 1, 1 );
 		lowerThreshold = new QSpinBox();
 		lowerThreshold->setAlignment( Qt::AlignRight );
-		lowerThreshold->setMaximum( -4095 );
+		lowerThreshold->setMaximum( 10000);
+		lowerThreshold->setMinimum(-10000);
+		lowerThreshold->setValue( props_->lowerThreshold);
 		QObject::connect( lowerThreshold, SIGNAL(valueChanged(int)),
 		                      	this, SLOT(lowerThresholdValueChanged(int)) );
 		grid->addWidget(lowerThreshold, 1, 3 );
@@ -40,7 +42,9 @@ SettingsBox
 		grid->addWidget( new QLabel( tr( "upperThreshold" ) ), 2, 1 );
 		upperThreshold = new QSpinBox();
 		upperThreshold->setAlignment( Qt::AlignRight );
-		upperThreshold->setMaximum( 4095 );
+		upperThreshold->setMaximum(  10000 );
+		upperThreshold->setMinimum( -10000 );
+		upperThreshold->setValue( props_->upperThreshold );
 		QObject::connect( upperThreshold, SIGNAL(valueChanged(int)),
 		                      	this, SLOT(upperThresholdValueChanged(int)) );
 		grid->addWidget(upperThreshold, 2, 3 );		
@@ -51,7 +55,7 @@ SettingsBox
 		maxIterations = new QSpinBox();
 		maxIterations->setAlignment( Qt::AlignRight );
 		maxIterations->setMaximum( 1200 );
-		maxIterations->setValue(1000);
+		maxIterations->setValue(props_->maxIterations);
 		QObject::connect( maxIterations, SIGNAL(valueChanged(int)),
 		                      	this, SLOT(maxIterationsValueChanged(int)) );
 		grid->addWidget(maxIterations, 4, 3 );
@@ -64,6 +68,7 @@ SettingsBox
 		initialDistance->setRange( 4.0, 40.0 );
 		initialDistance->setSingleStep( 0.5);
 		initialDistance->setDecimals(1);
+		initialDistance->setValue(props_->initialDistance);
 		QObject::connect( initialDistance, SIGNAL(valueChanged(double)),
 		                      	this, SLOT(initialDistanceValueChanged(double)) );
 		grid->addWidget(initialDistance, 6, 3 );
@@ -75,8 +80,8 @@ SettingsBox
 		seedX->setAlignment( Qt::AlignRight );
 		seedX->setMinimum(0);
 		seedX->setMaximum( 512 );
-		seedX->setSingleStep(1);
-		seedX->setValue(256);
+		seedX->setSingleStep(10);
+		seedX->setValue(props_->seedX);
 		QObject::connect( seedX, SIGNAL(valueChanged(int)),
 		                      	this, SLOT(seedXValueChanged(int)) );
 		grid->addWidget(seedX, 8, 3 );
@@ -86,8 +91,8 @@ SettingsBox
 		seedY->setAlignment( Qt::AlignRight );
 		seedY->setMinimum(0);
 		seedY->setMaximum( 512 );
-		seedY->setSingleStep(1);
-		seedY->setValue(256);
+		seedY->setSingleStep(10);
+		seedY->setValue(props_->seedY);
 		QObject::connect( seedY, SIGNAL(valueChanged(int)),
 		                      	this, SLOT(seedYValueChanged(int)) );
 		grid->addWidget(seedY, 9, 3 );
@@ -97,8 +102,8 @@ SettingsBox
 		seedZ->setAlignment( Qt::AlignRight );
 		seedZ->setMinimum(0);
 		seedZ->setMaximum( 512 );
-		seedZ->setSingleStep(1);
-		seedZ->setValue(256);
+		seedZ->setSingleStep(10);
+		seedZ->setValue(props_->seedZ);
 		QObject::connect( seedZ, SIGNAL(valueChanged(int)),
 		                      	this, SLOT(seedZValueChanged(int)) );
 		grid->addWidget(seedZ, 10, 3 );
@@ -108,9 +113,10 @@ SettingsBox
 		grid->addWidget( new QLabel( tr( "curvatureScaling" ) ), 12, 1 );
 		curvatureScaling = new QDoubleSpinBox();
 		curvatureScaling->setAlignment( Qt::AlignRight );
-		curvatureScaling->setRange( 0.0, 40.0 );
-		curvatureScaling->setSingleStep( 0.5);
-		curvatureScaling->setDecimals(1);
+		curvatureScaling->setRange( -10.0, 10.0 );
+		curvatureScaling->setSingleStep( 0.05);
+		curvatureScaling->setDecimals(2);
+		curvatureScaling->setValue(props_->curvatureScaling);
 		QObject::connect( curvatureScaling, SIGNAL(valueChanged(double)),
 		                      	this, SLOT(curvatureScalingValueChanged(double)) );
 		grid->addWidget(curvatureScaling, 12, 3 );
@@ -118,9 +124,10 @@ SettingsBox
 		grid->addWidget( new QLabel( tr( "propagationScaling" ) ), 13, 1 );
 		propagationScaling = new QDoubleSpinBox();
 		propagationScaling->setAlignment( Qt::AlignRight );
-		propagationScaling->setRange( 4.0, 40.0 );
-		propagationScaling->setSingleStep( 0.5);
-		propagationScaling->setDecimals(1);
+		propagationScaling->setRange( -10.0, 10.0 );
+		propagationScaling->setSingleStep( 0.05);
+		propagationScaling->setDecimals(2);
+		propagationScaling->setValue(props_->propagationScaling);
 		QObject::connect( propagationScaling, SIGNAL(valueChanged(double)),
 		                      	this, SLOT(propagationScalingValueChanged(double)) );
 		grid->addWidget(propagationScaling, 13, 3 );
@@ -128,9 +135,10 @@ SettingsBox
 		grid->addWidget( new QLabel( tr( "advectionScaling" ) ), 14, 1 );
 		advectionScaling = new QDoubleSpinBox();
 		advectionScaling->setAlignment( Qt::AlignRight );
-		advectionScaling->setRange( 4.0, 40.0 );
-		advectionScaling->setSingleStep( 0.5);
-		advectionScaling->setDecimals(1);
+		advectionScaling->setRange( -10.0, 10.0 );
+		advectionScaling->setSingleStep( 0.05);
+		advectionScaling->setDecimals(2);
+		advectionScaling->setValue(props_->advectionScaling);
 		QObject::connect( advectionScaling, SIGNAL(valueChanged(double)),
 		                      	this, SLOT(advectionScalingValueChanged(double)) );
 		grid->addWidget(advectionScaling, 14, 3 );

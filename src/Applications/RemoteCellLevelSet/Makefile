@@ -118,8 +118,13 @@ OBJ_FILES=	$(addprefix $(TMP_DIR)/,   $(addprefix rcc_, $(RCCINPUT:.qrc=.o ) ) $
 
 
 .PHONY: all
-all:		tmpdir dep $(OUTPUT)
-		
+all:		tmpdir commonPart clientPart dep $(OUTPUT)
+
+commonPart:
+	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart
+	
+clientPart:
+	$(MAKE) --directory=$(srcTop)/remoteComp/clientPart		
 
 .PHONY: tmpdir
 tmpdir:		
