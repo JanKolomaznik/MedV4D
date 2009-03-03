@@ -111,7 +111,7 @@ Compute2DConvolution(
 		for( coords[0] = 0; static_cast<uint32>(coords[0]) < inRegion.GetSize(0); ++coords[0] ) {
 			firstBorder[0] = Max( static_cast<int32>(hwidth - coords[0]), 0 );
 			secondBorder[0] = Min( inRegion.GetSize(0)-coords[0]+hwidth, mask.size[0] );
-			outRegion.GetElement( coords ) = addition +
+			outRegion.GetElementRel( coords ) = addition +
 				static_cast< ElementType >( ApplyConvolutionMaskMirrorBorder( 
 						inRegion.GetPointer( coords ), 
 						inRegion.GetStride(), 
@@ -128,7 +128,7 @@ Compute2DConvolution(
 		for( coords[0] = 0; static_cast<uint32>(coords[0]) < inRegion.GetSize(0); ++coords[0] ) {
 			firstBorder[0] = Max( static_cast<int32>(hwidth - coords[0]), 0 );
 			secondBorder[0] = Min( inRegion.GetSize(0)-coords[0]+hwidth, mask.size[0] );
-			outRegion.GetElement( coords ) = addition +
+			outRegion.GetElementRel( coords ) = addition +
 				static_cast< ElementType >( ApplyConvolutionMaskMirrorBorder( 
 						inRegion.GetPointer( coords ), 
 						inRegion.GetStride(), 
@@ -145,7 +145,7 @@ Compute2DConvolution(
 		for( coords[0] = 0; static_cast<uint32>(coords[0]) < hwidth; ++coords[0] ) {
 			firstBorder[0] = hwidth - coords[0];
 			secondBorder[0] = mask.size[0];
-			outRegion.GetElement( coords ) = addition +
+			outRegion.GetElementRel( coords ) = addition +
 				static_cast< ElementType >( ApplyConvolutionMaskMirrorBorder( 
 						inRegion.GetPointer( coords ), 
 						inRegion.GetStride(), 
@@ -159,7 +159,7 @@ Compute2DConvolution(
 		for( coords[0] = inRegion.GetSize(0)-width+hwidth; static_cast<uint32>(coords[0]) < inRegion.GetSize(0); ++coords[0] ) {
 			firstBorder[0] = 0;
 			secondBorder[0] = inRegion.GetSize(0)-coords[0]+hwidth;
-			outRegion.GetElement( coords ) = addition +
+			outRegion.GetElementRel( coords ) = addition +
 				static_cast< ElementType >( ApplyConvolutionMaskMirrorBorder( 
 						inRegion.GetPointer( coords ), 
 						inRegion.GetStride(), 
@@ -174,7 +174,7 @@ Compute2DConvolution(
 
 	for( coords[1] = hheight; static_cast<uint32>(coords[1]) < ( inRegion.GetSize(1) - height + hheight ); ++coords[1] ) {
 		for( coords[0] = hwidth; static_cast<uint32>(coords[0]) < ( inRegion.GetSize(0) - width + hwidth ); ++coords[0] ) {
-			outRegion.GetElement( coords ) = addition +
+			outRegion.GetElementRel( coords ) = addition +
 				static_cast< ElementType >( ApplyConvolutionMask( 
 						inRegion.GetPointer( coords ), 
 						inRegion.GetStride(), 
@@ -220,7 +220,7 @@ Compute2DConvolutionPostProcess(
 						mask,
 						multiplication
 						);
-			postprocessor( result, outRegion.GetElement( coords ) ); 
+			postprocessor( result, outRegion.GetElementRel( coords ) ); 
 		}
 	}
 	for( coords[1] = inRegion.GetSize(1)-height+hheight; static_cast<uint32>(coords[1]) < inRegion.GetSize(1); ++coords[1] ) {
@@ -237,7 +237,7 @@ Compute2DConvolutionPostProcess(
 						mask,
 						multiplication
 						);
-			postprocessor( result, outRegion.GetElement( coords ) ); 
+			postprocessor( result, outRegion.GetElementRel( coords ) ); 
 
 		}
 	}
@@ -255,7 +255,7 @@ Compute2DConvolutionPostProcess(
 						mask,
 						multiplication
 						);
-			postprocessor( result, outRegion.GetElement( coords ) ); 
+			postprocessor( result, outRegion.GetElementRel( coords ) ); 
 		}
 		for( coords[0] = inRegion.GetSize(0)-width+hwidth; static_cast<uint32>(coords[0]) < inRegion.GetSize(0); ++coords[0] ) {
 			firstBorder[0] = 0;
@@ -268,7 +268,7 @@ Compute2DConvolutionPostProcess(
 						mask,
 						multiplication
 						);
-			postprocessor( result, outRegion.GetElement( coords ) ); 
+			postprocessor( result, outRegion.GetElementRel( coords ) ); 
 		}
 	}
 
@@ -280,7 +280,7 @@ Compute2DConvolutionPostProcess(
 						mask,
 						multiplication
 						);
-			postprocessor( result, outRegion.GetElement( coords ) ); 
+			postprocessor( result, outRegion.GetElementRel( coords ) ); 
 			
 		}
 	}

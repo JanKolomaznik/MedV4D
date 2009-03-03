@@ -82,6 +82,8 @@ public:
 
 	typedef Vector< uint32, Dimension >	SizeType;
 
+	typedef Vector< float32, Dimension >	ExtentsSizeType;
+
 	Image();
 
 	/**
@@ -157,29 +159,9 @@ public:
 	inline const ElementType &
 	GetElement( const PointType &pos )const;
 
-	/**
-	 * Access method to data - checking boundaries.
-	 * @param x X coordinate.
-	 * @param y Y coordinate.
-	 **/
-	/*inline ElementType &
-	GetElement( int32 x, int32 y );*/
+	inline ElementType
+	GetElementWorldCoords( const Vector< float32, Dim > &pos )const;
 
-	/**
-	 * Access method to data for constant image- checking boundaries.
-	 * @param x X coordinate.
-	 * @param y Y coordinate.
-	 **/
-	/*inline const ElementType &
-	GetElement( int32 x, int32 y )const;*/
-
-	/*inline ElementType *
-	GetPointer( 
-			uint32 &width,
-			uint32 &height,
-			int32 &xStride,
-			int32 &yStride
-		  )const;*/
 
 	ElementType *
 	GetPointer( 
@@ -192,27 +174,6 @@ public:
 	GetRestrictedImage( 
 			ImageRegion< ElementType, NewDim > region
 			);
-	/*
-	typename Image< ElementType, 2 >::Ptr
-	GetRestricted2DImage( 
-			ImageRegion< ElementType, 2 > region
-			);
-	*/
-	/*Ptr
-	GetRestricted2DImage( 
-			int32 x1, 
-			int32 y1, 
-			int32 x2, 
-			int32 y2 
-			);*/
-
-	/*WriterBBoxInterface &
-	SetDirtyBBox( 
-			int32 x1, 
-			int32 y1, 
-			int32 x2, 
-			int32 y2 
-			);*/
 
 	WriterBBoxInterface &
 	SetDirtyBBox( 
@@ -223,13 +184,6 @@ public:
 	WriterBBoxInterface &
 	SetWholeDirtyBBox();
 
-	/*ReaderBBoxInterface::Ptr
-	GetDirtyBBox( 
-			int32 x1, 
-			int32 y1, 
-			int32 x2, 
-			int32 y2 
-			)const;*/
 
 	ReaderBBoxInterface::Ptr
 	GetDirtyBBox( 
@@ -254,6 +208,9 @@ public:
 			PointType min,
 			PointType max
 			)const;
+
+	ImageRegion< ElementType, Dim-1 >
+	GetSlice( int32 slice )const;
 	
 	void SerializeClassInfo(OutStream &stream);
 	void SerializeProperties(OutStream &stream);
@@ -285,9 +242,10 @@ protected:
 	DimensionExtents	_dimExtents[Dimension];
 	ElementType		*_pointer;
 	PointType		_strides;
+	ExtentsSizeType	_elementExtents;
 	
 	///which source dimension is mapped to each dimension of this image
-	uint32			_dimOrder[ Dimension ];
+	SizeType			_dimOrder;
 	///dimension of source data buffer
 	uint32			_sourceDimension;
 	///coordinates of point specified by _pointer in source data buffer

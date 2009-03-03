@@ -105,7 +105,8 @@ public:
 	/**
 	*  Dump data set contents
 	*/
-	virtual void Dump( std::ostream &s) const = 0;
+	virtual void Dump( std::ostream &s) const
+		{ _THROW_ ErrorHandling::ETODO(); }
 
 	// interface for serialization
 	virtual void SerializeData(OutStream &stream) = 0;

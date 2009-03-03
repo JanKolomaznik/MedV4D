@@ -26,7 +26,7 @@ struct FirstPassFunctor
 	void
 	operator()( ValueType value, OutElementType & output )
 	{
-		output = static_cast< OutElementType >( Min( Abs( value ), TypeTraits< OutElementType >::Max ) );
+		output = Min( Abs( static_cast< OutElementType >( value ) ), TypeTraits< OutElementType >::Max );
 	}
 };
 
@@ -36,7 +36,8 @@ struct SecondPassFunctor
 	void
 	operator()( ValueType value, OutElementType & output )
 	{
-		output = static_cast< OutElementType >( Min( static_cast< ValueType >( output ) + Abs( value ), TypeTraits< OutElementType >::Max ) );
+		OutElementType tmp = output + Abs( value );
+		output = Min( tmp, TypeTraits< OutElementType >::Max );
 	}
 };
 

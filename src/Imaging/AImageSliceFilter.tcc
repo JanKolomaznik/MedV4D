@@ -220,7 +220,7 @@ AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementTyp
 						slice+1 )
 					);
 
-			ImageRegion< OutputElementType, 2 > region2 = regionTmp.GetSlice( 0 );
+			ImageRegion< OutputElementType, 2 > region2 = regionTmp.GetSliceRel( 0 );
 
 			bool result = ProcessSlice( region1, region2, slice - minZ );
 

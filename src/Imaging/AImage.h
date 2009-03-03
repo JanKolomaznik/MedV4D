@@ -126,6 +126,7 @@ public:
 			for( unsigned i = 0; i < Dimension; ++i ) {
 				_minimum[i] = dimExtents[ i ].minimum;
 				_maximum[i] = dimExtents[ i ].maximum;
+				_size[i] = _maximum[i] - _minimum[i];
 			}
 		}
 
@@ -142,6 +143,7 @@ public:
 protected:
 	PointType	_minimum;
 	PointType	_maximum;
+	SizeType	_size;
 };
 
 

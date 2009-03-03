@@ -229,7 +229,6 @@ SnakeSegmentationFilter< ElementType >::ExecutionThreadMethod( AbstractPipeFilte
 	unsigned stepCount = (_maxSlice - _minSlice) / 2;
 	for( unsigned step = 0; step < stepCount; ++step ) {
 			D_PRINT( "Segmentation step " << step );
-			PrintPointSet( std::cout , southSpline );
 		ProcessSlice( _minSlice + step, southSpline );
 		ProcessSlice( _maxSlice - step - 1, northSpline );
 	}
@@ -267,7 +266,7 @@ SnakeSegmentationFilter< ElementType >
 	//****************************************
 	//**** COMPUTATION ***********************
 
-	while( 10 > algorithm.Step() ) {
+	while( 30 > algorithm.Step() ) {
 		/* empty */
 	}
 

@@ -58,7 +58,7 @@ struct IsSameDimension;
 template< unsigned Dim >
 struct IsSameDimension< Dim, Dim >
 {
-	//Only possible is when both parameters are the same value.
+	//Only possible when both parameters are the same value.
 };
 //*****************************************************************************
 

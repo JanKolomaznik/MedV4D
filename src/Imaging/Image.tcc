@@ -28,7 +28,8 @@ Image< ElementType, Dim >::Image()
 	for( unsigned i = 0; i < Dimension; ++i ) {
 		this->_minimum[i] = _dimExtents[i].minimum = 0;
 		this->_maximum[i] = _dimExtents[i].maximum = 0;
-		_dimExtents[i].elementExtent = 1.0f;
+		this->_size[i] = this->_maximum[i] - this->_minimum[i];
+		this->_elementExtents[i] = _dimExtents[i].elementExtent = 1.0f;
 		_dimOrder[i] = 0;
 		_strides[i] = 0;
 	}
@@ -86,7 +87,8 @@ Image< ElementType, Dim >::Image( typename ImageDataTemplate< ElementType >::Ptr
 		//TODO improve for mirrored dimension
 		this->_minimum[i] = _dimExtents[i].minimum = _pointerCoordinatesInSource[ _dimOrder[i] ];
 		this->_maximum[i] = _dimExtents[i].maximum = _dimExtents[i].minimum + (int32)region.GetSize( i );
-		_dimExtents[i].elementExtent = _imageData->GetDimensionInfo( _dimOrder[i] ).elementExtent;
+		this->_size[i] = this->_maximum[i] - this->_minimum[i];
+		this->_elementExtents[i] = _dimExtents[i].elementExtent = _imageData->GetDimensionInfo( _dimOrder[i] ).elementExtent;
 		_strides[i] = _imageData->GetDimensionInfo( _dimOrder[i] ).stride;
 	}
 	_pointer = region.GetPointer();
@@ -116,7 +118,8 @@ Image< ElementType, Dim >::Image(
 		_dimOrder[i] = i;
 		_dimExtents[i].minimum = this->_minimum[i];
 		_dimExtents[i].maximum = this->_maximum[i];
-		_dimExtents[i].elementExtent = _imageData->GetDimensionInfo( i ).elementExtent;
+		this->_size[i] = this->_maximum[i] - this->_minimum[i];
+		this->_elementExtents[i] = _dimExtents[i].elementExtent = _imageData->GetDimensionInfo( i ).elementExtent;
 		_strides[i] = _imageData->GetDimensionInfo( i ).stride;
 	}
 	_pointer = &_imageData->Get( 0 );
@@ -135,7 +138,8 @@ Image< ElementType, Dim >::FillDimensionInfo()
 	for( unsigned i = 0; i < Dimension; ++i ) {
 		this->_minimum[i] = _dimExtents[i].minimum = 0;
 		this->_maximum[i] = _dimExtents[i].maximum = (int32)_imageData->GetDimensionInfo( i ).size;
-		_dimExtents[i].elementExtent = _imageData->GetDimensionInfo( i ).elementExtent;
+		this->_size[i] = this->_maximum[i] - this->_minimum[i];
+		this->_elementExtents[i] = _dimExtents[i].elementExtent = _imageData->GetDimensionInfo( i ).elementExtent;
 		_dimOrder[i] = i;
 		_pointerCoordinatesInSource[i] = 0;
 		_strides[i] = _imageData->GetDimensionInfo( _dimOrder[i] ).stride;
@@ -184,7 +188,8 @@ Image< ElementType, Dim >::ReallocateData(
 		_dimOrder[i] = i;
 		_dimExtents[i].minimum = this->_minimum[i];
 		_dimExtents[i].maximum = this->_maximum[i];
-		_dimExtents[i].elementExtent = _imageData->GetDimensionInfo( i ).elementExtent;
+		this->_size[i] = this->_maximum[i] - this->_minimum[i];
+		this->_elementExtents[i] = _dimExtents[i].elementExtent = _imageData->GetDimensionInfo( i ).elementExtent;
 		_strides[i] = _imageData->GetDimensionInfo( i ).stride;
 	}
 	_pointer = &_imageData->Get( 0 );
@@ -203,11 +208,10 @@ template< typename ElementType, unsigned Dim >
 inline ElementType &
 Image< ElementType, Dim >::GetElement( const typename Image< ElementType, Dim >::PointType &pos )
 {
-	for( unsigned i = 0; i < Dimension; ++i ) {
-		if( pos[i] < this->_minimum[i] || pos[i] >= this->_maximum[i] )	{
-			D_PRINT( "Wrong position = " << pos );
-			_THROW_ ErrorHandling::EBadIndex();
-		}
+	if( !( pos >= this->_minimum && pos < this->_maximum ) ) {
+			_THROW_ ErrorHandling::EBadIndex( 
+					TO_STRING( "Parameter 'pos = [" << pos << "]' pointing outside of the image. Min = [" << 
+						this->_minimum << "]; Max = [" << this->_maximum << "]" ) );
 	}
 	return *(_pointer + ( (pos - this->_minimum) * this->_strides ));
 }
@@ -216,13 +220,24 @@ template< typename ElementType, unsigned Dim >
 inline const ElementType &
 Image< ElementType, Dim >::GetElement( const typename Image< ElementType, Dim >::PointType &pos )const
 {
-	for( unsigned i = 0; i < Dimension; ++i ) {
-		if( pos[i] < this->_minimum[i] || pos[i] >= this->_maximum[i] )	{
-			D_PRINT( "Wrong position = " << pos );
-			_THROW_ ErrorHandling::EBadIndex();
-		}
+	if( !( pos >= this->_minimum && pos < this->_maximum ) ) {
+			_THROW_ ErrorHandling::EBadIndex( 
+					TO_STRING( "Parameter 'pos = [" << pos << "]' pointing outside of the image. Min = [" << 
+						this->_minimum << "]; Max = [" << this->_maximum << "]" ) );
 	}
 	return *(_pointer + ( (pos - this->_minimum) * this->_strides ));
+}	
+
+
+template< typename ElementType, unsigned Dim >
+inline ElementType
+Image< ElementType, Dim >::GetElementWorldCoords( const Vector< float32, Dim > &pos )const
+{
+	Vector< int32, Dim > coords;
+	for( unsigned i = 0; i < Dim; ++i ) {
+		coords[i] = ROUND( pos[i] / this->_dimExtents[i].elementExtent );
+	}
+	return GetElement( coords );
 }
 
 template< typename ElementType, unsigned Dim >
@@ -354,29 +369,30 @@ Image< ElementType, Dim >::GetSubRegion(
 			)const
 {
 	if( !(min >= this->_minimum) ) { 
-		_THROW_ ErrorHandling::EBadParameter( "Parameter 'min' pointing outside of image!" ); 
+		_THROW_ ErrorHandling::EBadParameter( TO_STRING( "Parameter 'min = [" << min << "]' pointing outside of image!" ) ); 
 	}
 	if( !(max <= this->_maximum) ) { 
 		std::cout << max << "   " << this->_maximum << "\n";
-		_THROW_ ErrorHandling::EBadParameter( "Parameter 'max' pointing outside of image!" ); 
+		_THROW_ ErrorHandling::EBadParameter( TO_STRING( "Parameter 'max = [" << max << "]' pointing outside of image!" ) ); 
 	}
 
 
-	SizeType size;
-	PointType strides;
+	ElementType * pointer = _pointer;
+	PointType size = max - min;
 
-	ElementType * pointer = GetPointer( size, strides );
+	pointer += (min - this->_minimum) * _strides;
 
-	SizeType dimOrder;
-	for( unsigned i = 0; i < Dimension; ++i ) {
-		pointer += (min[i] - this->GetDimensionExtents(i).minimum) * strides[i];
-		dimOrder[i] = i;
-	}
-
-	size = max - min;
 	PointType pointerCoordinatesInSource = min;
 
-	return CreateImageRegion( pointer, size, strides, dimOrder, pointerCoordinatesInSource );
+	return CreateImageRegion<ElementType, Dim, Dim >( pointer, size, _strides, _elementExtents, _dimOrder, pointerCoordinatesInSource );
+}
+
+template< typename ElementType, unsigned Dim >
+ImageRegion< ElementType, Dim-1 >
+Image< ElementType, Dim >::GetSlice( int32 slice )const
+{
+	SubRegion region = GetRegion();
+	return region.GetSlice( slice );
 }
 
 

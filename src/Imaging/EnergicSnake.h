@@ -255,12 +255,17 @@ EnergicSnake< ContourType, EnergyModel >
 	//Set gradient to same size as the curve has.
 	_gradient->Resize( _curve.Size() );
 
-	//Compute gradient
-	_lastGradientSize = this->GetParametersGradient( _curve, (*_gradient) );
-	D_PRINT( "GRADIENT SIZE = " << _lastGradientSize );
+	try {
+		//Compute gradient
+		_lastGradientSize = this->GetParametersGradient( _curve, (*_gradient) );
+		D_PRINT( "GRADIENT SIZE = " << _lastGradientSize );
 
-	//Normalize gradient to unit size ( 1/normalization factor )
-	NormalizeGradient();
+		//Normalize gradient to unit size ( 1/normalization factor )
+		NormalizeGradient();
+	} catch (ErrorHandling::ExceptionBase &e ) {
+		LOG( "Exception thrown during optimization step " << _stepCount << std::endl << e );
+		_lastGradientSize = 0.0f;
+	}
 }
 
 template< typename ContourType, typename EnergyModel >

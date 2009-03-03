@@ -95,7 +95,7 @@ AbstractImage2DFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3
 		return false;
 	}
 
-	return Process2D( inRegion.GetSlice( slice ), outRegion );
+	return Process2D( inRegion.GetSliceRel( slice ), outRegion );
 
 }
 

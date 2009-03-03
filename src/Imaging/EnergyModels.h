@@ -219,7 +219,7 @@ public:
 	typedef typename ContourType::SamplePointSet	SampleSet;
 	static const unsigned Degree = ContourType::Degree;
 
-	UnifiedImageEnergy() : _alpha(0.5f)
+	UnifiedImageEnergy() : _alpha(0.5f), _sampleFrequency( -1 )
 		{}
 
 	void
@@ -267,17 +267,12 @@ public:
 
 private:
 	float32
-	ComputeValueAtPoint( const RasterPos &pos )
+	ComputeValueAtPoint( const PointCoordinate &pos )
 	{
-		int value = _region1.GetElement( pos );
-		/*
-		float32 inProbability = _distribution.InProbability( value );// > 50 ? 0.1 : 0.9;
-		float32 outProbability = _distribution.OutProbability( value );//value < 50 ? 0.15 : 0.85;
-		float32 val1 = - log( inProbability / outProbability );
-		*/
+		int value = _region1.GetElementWorldCoords( pos );
 		float32 val1 = _distribution.LogProbabilityRatio( value );
 		
-		float32 val2 = _region2.GetElement( pos );
+		float32 val2 = _region2.GetElementWorldCoords( pos );
 		
 		return _alpha * val1 + (1-_alpha) * val2;
 	}
@@ -288,11 +283,7 @@ private:
 		int32 sampleCount = samples.Size();
 		_valBuffer.resize( sampleCount );
 		for( int32 i = 0; i < sampleCount; ++i ) {
-			//TODO interpolation
-			float32 x = samples[i][0];
-			float32 y = samples[i][1];
-			RasterPos pos = RasterPos( ROUND( x ), ROUND( y ) );
-			_valBuffer[ i ] = ComputeValueAtPoint( pos );
+			_valBuffer[ i ] = ComputeValueAtPoint( samples[i] );
 		}
 	}
 
@@ -396,7 +387,7 @@ public:
 	typedef typename ContourType::SamplePointSet	SampleSet;
 	static const unsigned Degree = ContourType::Degree;
 
-	RegionImageEnergy()
+	RegionImageEnergy():_sampleFrequency( -1 )
 		{}
 
 	void
@@ -429,9 +420,9 @@ public:
 
 private:
 	float32
-	ComputeValueAtPoint( const RasterPos &pos )
+	ComputeValueAtPoint( const PointCoordinate &pos )
 	{
-		int value = _region.GetElement( pos );
+		int value = _region.GetElementWorldCoords( pos );
 
 		float32 val1 = this->LogProbabilityRatio( value );
 		
@@ -445,10 +436,10 @@ private:
 		_valBuffer.resize( sampleCount );
 		for( int32 i = 0; i < sampleCount; ++i ) {
 			//TODO interpolation
-			float32 x = samples[i][0];
+			/*float32 x = samples[i][0];
 			float32 y = samples[i][1];
-			RasterPos pos = RasterPos( ROUND( x ), ROUND( y ) );
-			_valBuffer[ i ] = ComputeValueAtPoint( pos );
+			RasterPos pos = RasterPos( ROUND( x ), ROUND( y ) );*/
+			_valBuffer[ i ] = ComputeValueAtPoint( samples[i] );
 		}
 	}
 

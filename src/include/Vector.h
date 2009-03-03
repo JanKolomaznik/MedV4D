@@ -84,7 +84,7 @@ public:
 			{ _coordinates[i] = coord[i]; } 
 		}
 
-	Vector( CoordType coords[] ) 
+	Vector( const CoordType coords[] ) 
 		{ 
 			for( unsigned i=0; i<Dimension; ++i ) 
 			{ _coordinates[i] = coords[i]; } 

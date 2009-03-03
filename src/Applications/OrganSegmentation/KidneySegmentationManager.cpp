@@ -258,7 +258,13 @@ KidneySegmentationManager::PolesSet()
 	_inputImage = _inputImage->GetRestrictedImage( 
 			_inputImage->GetSubRegion( minP, maxP )
 			);
+
+	/*std::cout << "AAAAA = ";
 	_inputImage->GetElement( minP ) = 50;
+	std::cout << &(_inputImage->GetElement( minP )) << ";   ";
+	_inputImage->GetRegion().GetSlice(5).GetElement( Vector<int32 ,2 >(minP[0], minP[1]) ) = 50;
+	std::cout << &(_inputImage->GetRegion().GetSlice(5).GetElement( Vector<int32 ,2 >(minP[0], minP[1]) )) << "\n";*/
+
 	_inConnection->PutDataset( _inputImage );
 
 	RunFilters();
