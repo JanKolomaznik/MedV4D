@@ -85,7 +85,6 @@ public:
 			}
 			if( drawDataset ) {
 				const GDataSet::ObjectsInSlice &slice = _dataset->GetSlice( sliceNum );
-				LOG( "sliceSize = " << slice.size() ); 
 				std::for_each( slice.begin(), slice.end(), GLDrawBSpline );
 			}
 			if( sliceNum == _insidePointSlice ) {
@@ -183,6 +182,7 @@ KidneySegmentationManager::KidneySegmentationManager()
 {
 
 	_gaussianFilter = new Gaussian();
+	_gaussianFilter->SetRadius( 3 );
 	_container.AddFilter( _gaussianFilter );
 	
 	_edgeFilter = new EdgeFilter();
@@ -263,6 +263,8 @@ KidneySegmentationManager::PolesSet()
 
 	RunFilters();
 	//RunSplineSegmentation();
+	
+	//_inConnection->PutDataset( _gaussianConnection->GetDatasetPtrTyped() );
 }
 
 void
@@ -297,6 +299,7 @@ KidneySegmentationManager::RunSplineSegmentation()
 {
 	KidneyViewerSpecialState *sState = (KidneyViewerSpecialState*)(_specialState.get());
 
+	LOG( "Poles set to : [" << _poles[0].coordinates << "]; [" << _poles[1].coordinates << "]" );
 	_segmentationFilter->SetFirstPoint( _poles[0].coordinates );
 	_segmentationFilter->SetFirstSlice( _poles[0].slice );
 	_segmentationFilter->SetSecondPoint( _poles[1].coordinates );

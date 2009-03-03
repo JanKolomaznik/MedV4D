@@ -221,13 +221,15 @@ SnakeSegmentationFilter< ElementType >::ExecutionThreadMethod( AbstractPipeFilte
 
 	//TODO locking
 	
-	CurveType northSpline = CreateSquareControlPoints( 0.5 );
+	CurveType northSpline = CreateSquareControlPoints( 3.0f );
 	CurveType southSpline = northSpline;
 
 	northSpline.Move( GetSecondPoint() );
 	southSpline.Move( GetFirstPoint() );
 	unsigned stepCount = (_maxSlice - _minSlice) / 2;
 	for( unsigned step = 0; step < stepCount; ++step ) {
+			D_PRINT( "Segmentation step " << step );
+			PrintPointSet( std::cout , southSpline );
 		ProcessSlice( _minSlice + step, southSpline );
 		ProcessSlice( _maxSlice - step - 1, northSpline );
 	}
@@ -248,12 +250,24 @@ SnakeSegmentationFilter< ElementType >
 	static const unsigned ResultSampleRate = 5;
 	//Initialization and setup
 	SnakeAlgorithm algorithm;
+
+	algorithm.SetInE( 1060 );
+	algorithm.SetInVar( 900 );
+	algorithm.SetOutE( 910 );
+	algorithm.SetOutVar( 1600 );
+
+	algorithm.SetGamma( 1.0f );
+	algorithm.SetImageEnergyBalance( 1.0f );
+	algorithm.SetInternalEnergyBalance( 0.0f );
+	algorithm.SetConstrainEnergyBalance( 0.0f );
+	algorithm.SetRegionStatRegion( in[0]->GetSlice( sliceNumber ) );
+	
 	
 	algorithm.Initialize( initialization );
 	//****************************************
 	//**** COMPUTATION ***********************
 
-	while( 40 > algorithm.Step() ) {
+	while( 10 > algorithm.Step() ) {
 		/* empty */
 	}
 

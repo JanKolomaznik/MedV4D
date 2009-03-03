@@ -1,4 +1,4 @@
-#include "dicomConn/DICOMServiceProvider.h"
+#include "backendForDICOM/DICOMServiceProvider.h"
 #include "Imaging/ImageFactory.h"
 #include <iostream>
 #include <sstream>
@@ -31,23 +31,22 @@ main( int argc, char** argv )
 
 	cmd.parse( argc, argv );
 
-	M4D::Dicom::DcmProvider dcmProvider;
 
 	filesystem::path inpath = inFilenameArg.getValue();
 	filesystem::path outpath = outFilenameArg.getValue();
 	std::string prefix = prefixArg.getValue();
 
 
-	M4D::Dicom::DcmProvider::ResultSet resultSet;
+	M4D::Dicom::ResultSet resultSet;
 
 	std::cout << "Searching for DICOM files...\n";
-	dcmProvider.LocalFind( resultSet, inpath.string() );
+	M4D::Dicom::DcmProvider::LocalFind( resultSet, inpath.string() );
 
 	for( size_t i = 0; i < resultSet.size(); ++i ) {
-		M4D::Dicom::DcmProvider::TableRow &row = resultSet[i];
-		M4D::Dicom::DcmProvider::SerieInfoVector info;
+		M4D::Dicom::TableRow &row = resultSet[i];
+		M4D::Dicom::SerieInfoVector info;
 
-		dcmProvider.LocalFindStudyInfo( row.patientID, row.studyID, info );
+		M4D::Dicom::DcmProvider::LocalFindStudyInfo( row.patientID, row.studyID, info );
 
 
 		std::cout << "Processing DICOM series...\n";
@@ -64,9 +63,9 @@ main( int argc, char** argv )
 
 			std::cout << "Converting to file '" << fileNameStream.str() << "' ... ";
 			
-			M4D::Dicom::DcmProvider::DicomObjSetPtr dcmSet( new M4D::Dicom::DcmProvider::DicomObjSet ) ;
+			M4D::Dicom::DicomObjSetPtr dcmSet( new M4D::Dicom::DicomObjSet ) ;
 
-			dcmProvider.LocalGetImageSet(
+			M4D::Dicom::DcmProvider::LocalGetImageSet(
 				row.patientID,
 				row.studyID,
 				info[j].id,

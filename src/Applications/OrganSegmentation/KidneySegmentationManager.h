@@ -67,7 +67,7 @@ public:
 	{
 		return _specialState;
 	}
-protected:
+//protected:
 	ImageConnectionType				*_inConnection;
 	ImageConnectionType				*_gaussianConnection;
 	ImageConnectionType				*_edgeConnection;

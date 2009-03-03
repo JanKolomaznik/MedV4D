@@ -2,12 +2,60 @@
 #define SNAKE_SEGMENTATION_FILTER_H
 
 #include "Imaging.h"
+#include <cmath>
 
 namespace M4D
 {
 
 namespace Imaging
 {
+
+class NormalDistribution
+{
+private:
+	float32 _inE;
+	float32	_inVar;
+
+	float32 _outE;
+	float32	_outVar;
+
+	float32 _a;
+	float32 _b;
+	float32 _c;
+public:
+	NormalDistribution(): _inE( 0.0f ), _inVar( 1.0f ), _outE( 0.0f ), _outVar( 1.0f )
+		{ Recalc(); }
+
+	void
+	SetInE( float32 E )
+		{ _inE = E; Recalc(); }
+	void
+	SetInVar( float32 var )
+		{ _inVar = var; Recalc(); }
+
+	void
+	SetOutE( float32 E )
+		{ _outE = E; Recalc(); }
+	void
+	SetOutVar( float32 var )
+		{ _outVar = var; Recalc(); }
+
+	template< typename NType >
+	float32
+	LogProbabilityRatio( NType value )
+	{ return Sqr(value) * _a + value * _b + _c; }
+
+private:
+	void
+	Recalc()
+	{ 
+		_a = 1.0f / (2*_outVar) - 1.0f / (2*_inVar);
+		_b = _inE / _inVar - _outE / _outVar;
+		_c = log( _outVar / _inVar ) + Sqr( _outE )/(2*_outVar) - Sqr( _inE )/(2*_inVar);
+	}
+
+};
+
 
 template < typename ElementType >
 class SnakeSegmentationFilter: public APipeFilter
@@ -23,6 +71,7 @@ public:
 	typedef typename OutputDatasetType::ObjectsInSlice		ObjectsInSlice;
 
 	typedef Vector< float32, 2 >					Coordinates;
+
 
 	static const unsigned InCount = 2;
 
@@ -55,11 +104,14 @@ public:
 	GET_SET_PROPERTY_METHOD_MACRO( int32, OutsidePointSlice, outsidePointSlice );
 protected:
 
+	typedef	NormalDistribution					Distribution;
+
 	typedef M4D::Imaging::Algorithms::SegmentationEnergy< 
-					CurveType,
-					M4D::Imaging::Algorithms::DummyEnergy1,
-					M4D::Imaging::Algorithms::DummyEnergy2,
-					M4D::Imaging::Algorithms::DummyEnergy3 >	EnergyModel;
+			CurveType,
+			M4D::Imaging::Algorithms::RegionImageEnergy< CurveType, RegionType, Distribution >,
+			M4D::Imaging::Algorithms::InternalCurveEnergy< CurveType >,
+			M4D::Imaging::Algorithms::DummyEnergy3 >			EnergyModel;
+
 	typedef M4D::Imaging::Algorithms::EnergicSnake< CurveType, EnergyModel >	SnakeAlgorithm;
 
 	void
