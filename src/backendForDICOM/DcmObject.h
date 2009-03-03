@@ -84,7 +84,7 @@ public:
    *  in order they were accuired by the mashine.
    *  Currently SliceLocation tag is used.
    */
-  inline int16 OrderInSet( void) const { return m_orderInSet; }
+  inline float32 OrderInSet( void) const { return m_orderInSet; }
 
   /// For sorting issues.
   inline bool operator<( const DicomObj &b) const
@@ -126,7 +126,7 @@ private:
   uint16 m_width, m_height;
   uint8 m_pixelSize;
   bool m_signed;
-  int16 m_orderInSet;
+  float32 m_orderInSet;
 
   Status m_status;
 

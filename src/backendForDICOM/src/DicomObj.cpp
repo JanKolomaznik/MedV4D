@@ -129,8 +129,12 @@ DicomObj::Init()
 	
   // get order in set
   OFString str;
-  dataSet->findAndGetOFString( DCM_SliceLocation, str);
-  m_orderInSet = (int16) strtol( str.c_str(), NULL, 10);
+  //dataSet->findAndGetOFString( DCM_SliceLocation, str);
+  dataSet->findAndGetOFStringArray( DCM_ImagePositionPatient, str);
+  int found = str.find_last_of('\\');
+		  
+	std::istringstream stream( str.substr(found+1).c_str());
+	stream >> m_orderInSet;
 
 	// try to get data
 	const uint16 *data;
