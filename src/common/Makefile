@@ -16,7 +16,8 @@ TARGETS=	Common \
 		ExceptionBase \
 		Log \
 		Functors \
-		TimeStamp
+		TimeStamp \
+		perfCounter
 ########################################
 
 #Name of target
