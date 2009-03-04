@@ -2,6 +2,7 @@
 #include "Imaging.h"
 #include <cmath>
 #include "KidneySegmentationManager.h"
+#include <QtGui>
 
 using namespace M4D;
 using namespace M4D::Imaging;
@@ -298,6 +299,8 @@ void
 KidneySegmentationManager::RunFilters()
 {
 	_gaussianFilter->ExecuteOnWhole();
+
+	while( _gaussianFilter->IsRunning() ){ /*std::cout << ".";*/ }
 }
 
 void
@@ -319,7 +322,9 @@ KidneySegmentationManager::RunSplineSegmentation()
 	_segmentationFilter->ExecuteOnWhole();
 
 	while( _segmentationFilter->IsRunning() ){ /*std::cout << ".";*/ }
-	
+
+	QMessageBox::information( NULL, "Execution finished", "Filter finished its work" );
+
 	std::cout << "Done\n";
 
 	GDataSet::Ptr ptr = _outGeomConnection->GetDatasetPtrTyped();
