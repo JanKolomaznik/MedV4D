@@ -17,13 +17,13 @@ public:
 	LevelSetRemoteProperties()
 		: seedX( 256 )
 		, seedY( 256 )
-		, seedZ( 256 )
+		, seedZ( 4 )
 		, lowerThreshold( 0 ) 
 		, upperThreshold( 1000 ) 
-		, maxIterations( 800 ) 
+		, maxIterations( 1200 ) 
 		, initialDistance( 4.0f ) 
-		, curvatureScaling( 1.0f ) 
-		, propagationScaling( 0.0f ) 
+		, curvatureScaling( 0.0f ) 
+		, propagationScaling( 1.0f ) 
 		, advectionScaling( 0.0f ) 
 	{}
 
