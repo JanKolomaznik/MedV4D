@@ -1198,6 +1198,11 @@ m4dGUISliceViewerWidget::mousePressEvent(QMouseEvent *event)
         setSelected();
 	return;
     }
+    if ( _eventHandler )
+    {
+        _eventHandler->mousePressEvent(event);
+        return;
+    }
     if ( !_inPort->IsPlugged() ) return;
     if ( !_ready )
     {
@@ -1222,11 +1227,21 @@ m4dGUISliceViewerWidget::mouseReleaseEvent(QMouseEvent *event)
         _colorPicker = false;
         updateGL();
     }
+    if ( _eventHandler )
+    {
+        _eventHandler->mouseReleaseEvent(event);
+        return;
+    }
 }
 
 void
 m4dGUISliceViewerWidget::mouseMoveEvent(QMouseEvent *event)
 {
+    if ( _eventHandler )
+    {
+        _eventHandler->mouseMoveEvent(event);
+        return;
+    }
     if ( !_inPort->IsPlugged() ) return;
 
     if ( _lastPos.x() == -1 || _lastPos.y() == -1 ) return;
@@ -1252,16 +1267,34 @@ m4dGUISliceViewerWidget::mouseMoveEvent(QMouseEvent *event)
 }
 
 void
-m4dGUISliceViewerWidget::zoomImage( int dummy, int amount )
+m4dGUISliceViewerWidget::mouseDoubleClickEvent ( QMouseEvent * event )
 {
-    _zoomRate += 0.001 * amount;
-    if ( _zoomRate < 0. ) _zoomRate = 0.;
-    emit signalZoom( _index, amount );
+    if ( _eventHandler ) _eventHandler->mouseDoubleClickEvent(event);
+    else QGLWidget::mouseDoubleClickEvent(event);
+}
+
+void
+m4dGUISliceViewerWidget::keyPressEvent ( QKeyEvent * event )
+{
+    if ( _eventHandler ) _eventHandler->keyPressEvent(event);
+    else QGLWidget::keyPressEvent(event);
+}
+
+void
+m4dGUISliceViewerWidget::keyReleaseEvent ( QKeyEvent * event )
+{
+    if ( _eventHandler ) _eventHandler->keyReleaseEvent(event);
+    else QGLWidget::keyReleaseEvent(event);
 }
 
 void
 m4dGUISliceViewerWidget::wheelEvent(QWheelEvent *event)
 {
+    if ( _eventHandler )
+    {
+        _eventHandler->wheelEvent(event);
+        return;
+    }
     if ( !_inPort->IsPlugged() ) return;
 
     int numDegrees = event->delta() / 8;
@@ -1305,6 +1338,14 @@ m4dGUISliceViewerWidget::setSliceNum( size_t num )
         }
     _sliceNum = num;
     emit signalSetSliceNum( _index, num );
+}
+
+void
+m4dGUISliceViewerWidget::zoomImage( int dummy, int amount )
+{
+    _zoomRate += 0.001 * amount;
+    if ( _zoomRate < 0. ) _zoomRate = 0.;
+    emit signalZoom( _index, amount );
 }
 
 void

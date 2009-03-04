@@ -5,8 +5,8 @@
  * @{ 
  **/
 
-#ifndef M4D_GUI_VTK_VIEWER_WIDGET_H
-#define M4D_GUI_VTK_VIEWER_WIDGET_H
+#ifndef M4D_GUI_VTKVIEWERWIDGET_H_
+#define M4D_GUI_VTKVIEWERWIDGET_H_
 
 #include <QWidget>
 #include "QVTKWidget.h"
@@ -323,6 +323,48 @@ protected:
      *  @param event the mouse press event to be handled
      */
     virtual void mousePressEvent(QMouseEvent *event);
+
+    /**
+     * Method inherited from QVTKWidget. It is called whenever a mouse button is double clicked
+     * above the widget.
+     *  @param event the mouse double-click event to be handled
+     */
+    virtual void mouseDoubleClickEvent ( QMouseEvent * event );
+
+    /**
+     * Method inherited from QVTKWidget. It is called whenever a mouse cursor is moved
+     * above the widget.
+     *  @param event the mouse move event to be handled
+     */
+    virtual void mouseMoveEvent ( QMouseEvent * event );
+
+    /**
+     * Method inherited from QVTKWidget. It is called whenever a mouse button is released
+     * above the widget.
+     *  @param event the mouse release event to be handled
+     */
+    virtual void mouseReleaseEvent ( QMouseEvent * event );
+
+    /**
+     * Method inherited from QVTKWidget. It is called whenever a mouse wheel is rolled
+     * above the widget.
+     *  @param event the wheel event to be handled
+     */
+    virtual void wheelEvent ( QWheelEvent * event );
+
+    /**
+     * Method inherited from QVTKWidget. It is called whenever a keyboard key is pressed
+     * above the widget.
+     *  @param event the key press event to be handled
+     */
+    virtual void keyPressEvent ( QKeyEvent * event );
+
+    /**
+     * Method inherited from QVTKWidget. It is called whenever a keyboard key is released
+     * above the widget.
+     *  @param event the key release event to be handled
+     */
+    virtual void keyReleaseEvent ( QKeyEvent * event );
 
 private:
 

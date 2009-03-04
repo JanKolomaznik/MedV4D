@@ -155,7 +155,50 @@ void
 m4dGUIVtkViewerWidget::mousePressEvent(QMouseEvent *event)
 {
     if ( !_selected ) setSelected();
+    else if ( _eventHandler ) _eventHandler->mouseDoubleClickEvent(event);
     else QVTKWidget::mousePressEvent( event );
+}
+
+void
+m4dGUIVtkViewerWidget::mouseDoubleClickEvent ( QMouseEvent * event )
+{
+    if ( _eventHandler ) _eventHandler->mouseDoubleClickEvent(event);
+    else QVTKWidget::mouseDoubleClickEvent( event );
+}
+
+void
+m4dGUIVtkViewerWidget::mouseMoveEvent ( QMouseEvent * event )
+{
+    if ( _eventHandler ) _eventHandler->mouseMoveEvent(event);
+    else QVTKWidget::mouseMoveEvent( event );
+}
+
+void
+m4dGUIVtkViewerWidget::mouseReleaseEvent ( QMouseEvent * event )
+{
+    if ( _eventHandler ) _eventHandler->mouseReleaseEvent(event);
+    else QVTKWidget::mouseReleaseEvent( event );
+}
+
+void
+m4dGUIVtkViewerWidget::wheelEvent ( QWheelEvent * event )
+{
+    if ( _eventHandler ) _eventHandler->wheelEvent(event);
+    else QVTKWidget::wheelEvent( event );
+}
+
+void
+m4dGUIVtkViewerWidget::keyPressEvent ( QKeyEvent * event )
+{
+    if ( _eventHandler ) _eventHandler->keyPressEvent(event);
+    else QVTKWidget::keyPressEvent( event );
+}
+
+void
+m4dGUIVtkViewerWidget::keyReleaseEvent ( QKeyEvent * event )
+{
+    if ( _eventHandler ) _eventHandler->keyReleaseEvent(event);
+    else QVTKWidget::keyReleaseEvent( event );
 }
 
 void

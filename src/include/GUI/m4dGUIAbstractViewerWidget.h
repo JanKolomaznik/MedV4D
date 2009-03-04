@@ -5,8 +5,8 @@
  * @{ 
  **/
 
-#ifndef _M4DGUIABSTRACTVIEWERWIDGET_H
-#define _M4DGUIABSTRACTVIEWERWIDGET_H
+#ifndef M4D_GUI_ABSTRACTVIEWERWIDGET_H_
+#define M4D_GUI_ABSTRACTVIEWERWIDGET_H_
 
 #include "Common.h"
 #include "Imaging/PipelineMessages.h"
@@ -48,6 +48,28 @@ namespace M4D
 namespace Viewer
 {
 
+class m4dGUIViewerEventHandlerInterface
+{
+
+public:
+
+    virtual void mouseDoubleClickEvent ( QMouseEvent * event )=0;
+
+    virtual void mouseMoveEvent ( QMouseEvent * event )=0;
+
+    virtual void mousePressEvent ( QMouseEvent * event )=0;
+
+    virtual void mouseReleaseEvent ( QMouseEvent * event )=0;
+
+    virtual void wheelEvent ( QWheelEvent * event )=0;
+
+    virtual void keyPressEvent ( QKeyEvent * event )=0;
+
+    virtual void keyReleaseEvent ( QKeyEvent * event )=0;
+
+};
+
+
 /** 
  * Abstract base class of the ViewerWidgets.
  */
@@ -79,6 +101,7 @@ public:
         #pragma warning(push)
         #pragma warning(disable: 4355) // 'this' : used in base member initializer list
     #endif
+
     /**
      * Constructor that does nothing except for initializing the _inputPorts.
      */
@@ -89,7 +112,9 @@ public:
 	m4dGUIAbstractViewerWidget::connect( this, SIGNAL(signalMessageHandler( Imaging::PipelineMsgID )), this, SLOT(slotMessageHandler( Imaging::PipelineMsgID )), Qt::QueuedConnection );
 	_leftSideData.clear();
 	_rightSideData.clear();
+	_eventHandler = 0;
     }
+
     #ifdef _MSC_VER                    // restore the above disabled warning type in MSVC++
         #pragma warning(pop)
     #endif
@@ -206,32 +231,47 @@ public:
         return _rightSideData;
     }
 
+    void setViewerEventHandler(m4dGUIViewerEventHandlerInterface *eventHandler)
+    {
+        _eventHandler = eventHandler;
+    }
+
+    const m4dGUIViewerEventHandlerInterface* getViewerEventHandler()
+    {
+        return _eventHandler;
+    }
+
 protected:
     
     /**
      * List of the input ports connected to the given viewer.
      */
-    Imaging::InputPortList	_inputPorts;
+    Imaging::InputPortList				_inputPorts;
 
     /**
      * Tells if the viewer is selected or not.
      */
-    bool			_selected;
+    bool						_selected;
 
     /**
      * The index of the given viewer.
      */
-    unsigned			_index;
+    unsigned						_index;
 
     /**
      * The list of text data to be printed on the left side of the viewer.
      */
-    std::list< std::string >			_leftSideData;
+    std::list< std::string >				_leftSideData;
 
     /**
      * The list of text data to be printed on the right side of the viewer.
      */
-    std::list< std::string >			_rightSideData;
+    std::list< std::string >				_rightSideData;
+
+    /**
+     * Special event handler to use as an alternative to the default.
+     */
+    m4dGUIViewerEventHandlerInterface			*_eventHandler;
 
 public slots:
 

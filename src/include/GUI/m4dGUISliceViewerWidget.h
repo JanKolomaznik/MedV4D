@@ -5,8 +5,8 @@
  * @{ 
  **/
 
-#ifndef _M4DGUISLICEVIEWERWIDGET_H
-#define _M4DGUISLICEVIEWERWIDGET_H
+#ifndef M4D_GUI_SLICEVIEWERWIDGET_H_
+#define M4D_GUI_SLICEVIEWERWIDGET_H_
 
 #include <QtOpenGL>
 #include <list>
@@ -394,33 +394,54 @@ protected:
      *  @param winW the new width of the widget
      *  @param winH the new height of the widget
      */
-    void resizeGL(int winW, int winH);
+    virtual void resizeGL(int winW, int winH);
 
     /**
      * Method inherited from QGLWidget. It is called whenever a mouse button is pressed
      * above the widget.
      *  @param event the mouse press event to be handled
      */
-    void mousePressEvent(QMouseEvent *event);
+    virtual void mousePressEvent(QMouseEvent *event);
 
     /**
      * Method inherited from QGLWidget. It is called whenever a mouse button is released
      * above the widget.
      *  @param event the mouse release event to be handled
      */
-    void mouseReleaseEvent(QMouseEvent *event);
+    virtual void mouseReleaseEvent(QMouseEvent *event);
 
     /**
      * Method inherited from QGLWidget. It is called whenever the mouse is moved above a widget.
      *  @param event the mouse move event to be handled
      */
-    void mouseMoveEvent(QMouseEvent *event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
 
     /**
      * Method inherited from QGLWidget. It is called whenever the wheel is moved above the widget.
      *  @param event the wheel event to be handled.
      */
-    void wheelEvent(QWheelEvent *event);
+    virtual void wheelEvent(QWheelEvent *event);
+
+    /**
+     * Method inherited from QGLWidget. It is called whenever a mouse button is double-clicked
+     * above the widget.
+     *  @param event the mouse double-click event to be handled
+     */
+    virtual void mouseDoubleClickEvent ( QMouseEvent * event );
+
+    /**
+     * Method inherited from QGLWidget. It is called whenever a keyboard key is pressed
+     * above the widget.
+     *  @param event the key press event to be handled
+     */
+    virtual void keyPressEvent ( QKeyEvent * event );
+
+    /**
+     * Method inherited from QGLWidget. It is called whenever a keyboard key is released
+     * above the widget.
+     *  @param event the key release event to be handled
+     */
+    virtual void keyReleaseEvent ( QKeyEvent * event );
 
     /**
      * Sets the current slice number.
