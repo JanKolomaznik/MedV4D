@@ -560,7 +560,11 @@ public:
 		}
 		
 		ComputeC( curve );
-
+		
+		_differences.Resize( gradient.Size() );
+		for( int32 i = 0; i < (int32)_differences.Size(); ++i ) {
+			_differences[i] = curve.GetPointCyclic( i - 1 ) - curve.GetPointCyclic( i );
+		}
 		float32 gradSize = 0.0f;
 		for( unsigned i = 0; i < gradient.Size(); ++i ) {
 			gradient[i] = ComputePointGradient( i, curve );
@@ -575,11 +579,14 @@ private:
 		PointCoordinate gradient = PointCoordinate( 0.0f );
 
 		for( int32 l = -Degree + 1; l < (int32)(Degree); ++l ) {
-			const PointCoordinate &pl = curve.GetPointCyclic( k + l );
+			//const PointCoordinate &pl = curve.GetPointCyclic( k + l );
+			const PointCoordinate &pl = _differences.GetPointCyclic( k + l );
 			for( int32 m = -Degree + 1; m < (int32)(Degree); ++m ) {
-				const PointCoordinate &pm = curve.GetPointCyclic( k + m );
+				//const PointCoordinate &pm = curve.GetPointCyclic( k + m );
+				const PointCoordinate &pm = _differences.GetPointCyclic( k + m );
 				for( int32 n = -Degree + 1; n < (int32)(Degree); ++n ) {
-					const PointCoordinate &pn = curve.GetPointCyclic( k + n );
+					//const PointCoordinate &pn = curve.GetPointCyclic( k + n );
+					const PointCoordinate &pn = _differences.GetPointCyclic( k + n );
 					for( unsigned i = 0; i < 2; ++i ) {
 						gradient[i] += pl[i] * pm[i] * pn[i] * H1(l,m,n);
 						gradient[i] += pl[i] * pm[(i+1) % 2] * pn[(i+1) % 2] * H1(l,m,n);
@@ -666,6 +673,8 @@ private:
 	}
 
 private:
+	GradientType _differences;
+
 	float32 _gamma;
 
 

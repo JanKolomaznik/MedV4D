@@ -83,34 +83,40 @@ main( int argc, char **argv )
 	int segments = 16;
 	float angle = -2*PI / (float)segments;
 
-	for( int i = 0; i < segments; ++i ) {
+	/*for( int i = 0; i < segments; ++i ) {
 		Coords np = center + (radius * Coords(sin(angle*i), cos(angle*i)) );
 		curve.AddPoint( np );
-	}
+	}*/
 
-	/*curve.AddPoint( Coords(50,50) );
-	curve.AddPoint( Coords(200,50) );
-	curve.AddPoint( Coords(135,200) );
-	curve.AddPoint( Coords(50,70) );*/
+	curve.AddPoint( Coords(50,110) );
+	curve.AddPoint( Coords(230,50) );
+	curve.AddPoint( Coords(230,200) );
+	curve.AddPoint( Coords(80,150) );
+	curve.AddPoint( Coords(50,130) );
 
+	curve.Scale( Vector<float32,2>(0.3f, 0.3f), Vector<float32,2>( 125, 125 ) );
 
 	curve.SetCyclic();
 	curve.Sample( 5 );
 
 	snake.Initialize( curve );
-	snake.SetGamma( 1.0f );
-	snake.SetImageEnergyBalance( 1.0f );
+	snake.SetGamma( 0.52f );
+	snake.SetImageEnergyBalance( 0.0f );
 	snake.SetInternalEnergyBalance( 0.5f );
 	snake.SetConstrainEnergyBalance( 0.0f );
 	snake.SetRegionStatRegion( image->GetRegion() );
 	//snake.GetEnergyModel().SetRegion2( gradientImage->GetRegion() );
+
+	snake.SetSelfIntersectionTestPeriod( 0 );
+	snake.SetSegmentLengthsTestPeriod( 0 );
 
 	unsigned i = 0;
 	while( i < 40 ) {
 		i = snake.Step();
 		if( i % 4 == 0 ) 
 		{
-			PrintCurve( cout, snake.GetCurrentCurve() );
+			//PrintCurve( cout, snake.GetCurrentCurve() );
+			PrintPointSet( cout, snake.GetCurrentCurve() );
 			cout << endl;
 			cout << endl;
 		}

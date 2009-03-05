@@ -99,6 +99,22 @@ public:
 	void
 	SetMaxSegmentLength( float32 len )
 		{ _maximalSegmentLength = len; }
+
+	float32
+	GetStepScale()const
+		{ return _stepScale; }
+
+	void
+	SetStepScale( float32 s )
+		{ _stepScale = s; }
+
+	float32
+	GetMaxStepScale()const
+		{ return _maxStepScale; }
+
+	void
+	SetMaxStepScale( float32 s )
+		{ _maxStepScale = s; }
 protected:
 	//Parameters
 	unsigned	_selfIntersectionTestPeriod;
@@ -110,6 +126,7 @@ protected:
 	float32		_stepScale;
 	float32		_stepScaleAlpha;
 	float32		_stepScaleBeta;
+	float32		_maxStepScale;
 private:
 	void
 	SwitchGradients();
@@ -155,6 +172,7 @@ EnergicSnake< ContourType, EnergyModel >
 	_stepScale = 5.0;
 	_stepScaleAlpha = 0.95;
 	_stepScaleBeta = 0.1;
+	_maxStepScale = 100.0f;
 	_minimalSegmentLength = 3;
 	_maximalSegmentLength = 45;
 
@@ -198,17 +216,17 @@ EnergicSnake< ContourType, EnergyModel >
 		DL_PRINT(10, "EnergicSnake ->    Update curve parameters " );
 	UpdateCurveParameters();
 
-	if( _stepCount % _selfIntersectionTestPeriod == 0 ) 
+	if( _selfIntersectionTestPeriod && _stepCount % _selfIntersectionTestPeriod == 0 ) 
 	{
 		_curve.Sample( _sampleRate );
 		//Solve self intersection problem
-	//	CheckSelfIntersection();
+		CheckSelfIntersection();
 	}
 
-	if( _stepCount % _segmentLengthsTestPeriod == 0 ) 
+	if( _segmentLengthsTestPeriod && _stepCount % _segmentLengthsTestPeriod == 0 ) 
 	{
 		//Divide or join segments with length out of tolerance
-	//	CheckSegmentLengths();
+		CheckSegmentLengths();
 	}
 
 	_curve.ReSampleWithDerivations();
@@ -288,7 +306,7 @@ EnergicSnake< ContourType, EnergyModel >
 	if( _stepCount > 1 && _gradients[0].Size() == _gradients[1].Size() ) {
 		float32 product = GradientScalarProduct( _gradients[0], _gradients[1] );
 		_stepScale *= _stepScaleAlpha + _stepScaleBeta * product;
-
+		_stepScale = Min( _maxStepScale, _stepScale );
 		//_stepScale = 10;
 		DL_PRINT(5, "EnergicSnake ->      Compute step scale : " << _stepScale << " " << product );
 	}
@@ -338,8 +356,8 @@ EnergicSnake< ContourType, EnergyModel >
 		changed = true;
 		DL_PRINT(10, "EnergicSnake ->     Spliting segment : " << maxIdx << " length = " << maxVal );
 	}
-	if( minVal < _minimalSegmentLength ) {
-		_curve.JoinSegment( minIdx );
+	if( _curve.Size() > 4 && minVal < _minimalSegmentLength ) {
+		_curve.JoinSegments( minIdx );
 		changed = true;
 		DL_PRINT(10, "EnergicSnake ->     Joining segment : " << minIdx << " length = " << minVal );
 	}

@@ -219,6 +219,10 @@ SnakeSegmentationFilter< ElementType >::ExecutionThreadMethod( AbstractPipeFilte
 {
 	if( !CanContinue() ) return false;
 
+	if ( !(readerBBox[0]->WaitWhileDirty() == MS_MODIFIED ) ) {
+		return false;
+	}
+	
 	//TODO locking
 	
 	CurveType northSpline = CreateSquareControlPoints( 3.0f );
@@ -254,6 +258,13 @@ SnakeSegmentationFilter< ElementType >
 	algorithm.SetInVar( 900 );
 	algorithm.SetOutE( 910 );
 	algorithm.SetOutVar( 1600 );
+
+	algorithm.SetStepScale( 3.0 );
+	algorithm.SetMaxStepScale( 4.0 );
+	algorithm.SetMaxSegmentLength( 30 );
+	algorithm.SetMinSegmentLength( 20 );
+	algorithm.SetSelfIntersectionTestPeriod( 3 );
+	algorithm.SetSegmentLengthsTestPeriod( 1 );
 
 	algorithm.SetGamma( 1.0f );
 	algorithm.SetImageEnergyBalance( 1.0f );

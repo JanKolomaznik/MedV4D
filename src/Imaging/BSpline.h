@@ -162,7 +162,7 @@ public:
 	SplitSegment( int segment );
 
 	void
-	JoinSegment( int segment );
+	JoinSegments( int segment );
 
 	const PointSet< CoordType, Dim > &
 	GetSampleDerivations()const
@@ -311,20 +311,28 @@ template< typename CoordType, unsigned Dim >
 void
 FindBSplineSegmentLengthExtremes( BSpline< CoordType, Dim > &curve, unsigned &maxIdx, float32 &maxVal, unsigned &minIdx, float32 &minVal )
 {
-	float32	 len = BSplineSegmentLength( curve, 0 );
+	float32	 first = BSplineSegmentLength( curve, 0 );
+	float32	 len = first;
 	maxIdx = 0;
 	maxVal = len;
 	minIdx = 0;
-	minVal = len;
+	minVal = first + BSplineSegmentLength( curve, 1 );
+	float32 previous = first;
 	for( unsigned i=1; i < curve.GetSegmentCount(); ++i ) {
 		len = BSplineSegmentLength( curve, i );
 		if( len > maxVal ) {
 			maxVal = len;
 			maxIdx = i;
-		} else if( len < minVal ) {
-			minVal = len;
-			minIdx = i;
+		} 
+		if( previous + len < minVal ) {
+			minVal = previous + len;
+			minIdx = i-1;
 		}
+		previous = len;
+	}
+	if( previous + first < minVal ) {
+			minVal = previous + first;
+			minIdx = curve.GetSegmentCount();
 	}
 }
 

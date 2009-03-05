@@ -82,7 +82,8 @@ class WriterBBoxInterface : public ReaderBBoxInterface
 {
 public:
 	WriterBBoxInterface( Common::TimeStamp timestamp, ModificationManager* manager, ModificationBBox* boundingBox )
-		: ReaderBBoxInterface( timestamp, manager, boundingBox ) {}
+		: ReaderBBoxInterface( timestamp, manager, boundingBox ) 
+		{ _state = MS_DIRTY; }
 
 	void
 	SetState( ModificationState state );

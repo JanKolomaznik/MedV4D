@@ -36,6 +36,18 @@ GLDrawBSpline( const CurveType &spline )
 }
 
 static void
+GLDrawBSplineCP( const CurveType &spline )
+{
+	GLDrawPolyline( spline.GetSamplePoints() );
+
+	glPointSize( 3.0f );
+	glBegin( GL_POINTS );
+		std::for_each( spline.Begin(), spline.End(), GLDrawPoint );
+	glEnd();
+	glPointSize( 1.0f );
+}
+
+static void
 GLDrawCrossMark( PointType center, float32 radius )
 {
 	static const float32 cosA = cos( PI / 6.0 );
@@ -86,7 +98,7 @@ public:
 			}
 			if( drawDataset ) {
 				const GDataSet::ObjectsInSlice &slice = _dataset->GetSlice( sliceNum );
-				std::for_each( slice.begin(), slice.end(), GLDrawBSpline );
+				std::for_each( slice.begin(), slice.end(), GLDrawBSplineCP );
 			}
 			if( sliceNum == _insidePointSlice ) {
 				GLDrawCrossMark( _insidePoint, 10 / zoomRate );
@@ -300,7 +312,7 @@ KidneySegmentationManager::RunFilters()
 {
 	_gaussianFilter->ExecuteOnWhole();
 
-	while( _gaussianFilter->IsRunning() ){ /*std::cout << ".";*/ }
+	//while( _gaussianFilter->IsRunning() ){ /*std::cout << ".";*/ }
 }
 
 void
