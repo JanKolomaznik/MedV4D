@@ -207,14 +207,14 @@ private:
 };
 
 template< typename ContourType, typename RegionType1, typename RegionType2, typename Distribution >
-class UnifiedImageEnergy
+class UnifiedImageEnergy : public Distribution
 {
 public:
 	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > 	GradientType;
 	typedef Vector< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
 	typedef typename ContourType::BFValVector	BFValVector;
-	typedef typename RegionType1::ElementType	ElementType1;
-	typedef typename RegionType2::ElementType	ElementType2;
+	//typedef typename RegionType1::ElementType	ElementType1;
+	//typedef typename RegionType2::ElementType	ElementType2;
 	typedef std::vector< float32 >			ValuesAtSamplesBuffer;
 	typedef typename ContourType::SamplePointSet	SampleSet;
 	static const unsigned Degree = ContourType::Degree;
@@ -261,20 +261,16 @@ public:
 	SetAlpha( float32 a )
 		{ _alpha = a; }
 	
-	Distribution &
-	GetDistribution()
-		{ return _distribution; }
-
 private:
 	float32
 	ComputeValueAtPoint( const PointCoordinate &pos )
 	{
 		int value = _region1.GetElementWorldCoords( pos );
-		float32 val1 = _distribution.LogProbabilityRatio( value );
+		float32 val1 = this->LogProbabilityRatio( value );
 		
 		float32 val2 = _region2.GetElementWorldCoords( pos );
 		
-		return _alpha * val1 + (1-_alpha) * val2;
+		return _alpha * -val1 + (1-_alpha) * val2;
 	}
 
 	void
@@ -366,7 +362,6 @@ private:
 
 	RegionType1		_region1;
 	RegionType2		_region2;
-	Distribution		_distribution;
 	ValuesAtSamplesBuffer	_valBuffer;
 
 	std::vector< std::vector< std::vector< typename ContourType::Type > > > Q;
@@ -588,8 +583,8 @@ private:
 					//const PointCoordinate &pn = curve.GetPointCyclic( k + n );
 					const PointCoordinate &pn = _differences.GetPointCyclic( k + n );
 					for( unsigned i = 0; i < 2; ++i ) {
-						gradient[i] += pl[i] * pm[i] * pn[i] * H1(l,m,n);
-						gradient[i] += pl[i] * pm[(i+1) % 2] * pn[(i+1) % 2] * H1(l,m,n);
+						gradient[i] += 4 * pl[i] * pm[i] * pn[i] * H1(l,m,n);
+						gradient[i] += 4 * pl[i] * pm[(i+1) % 2] * pn[(i+1) % 2] * H1(l,m,n);
 					}
 				}
 			}

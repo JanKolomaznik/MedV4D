@@ -11,7 +11,7 @@
 class ViewerWindow : public QWidget
 {
 private:
-	M4D::Viewer::m4dGUIAbstractViewerWidget *viewerWidget;
+	M4D::Viewer::m4dGUISliceViewerWidget *viewerWidget;
 public:
 	ViewerWindow( M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage > & conn);
 	~ViewerWindow();
@@ -22,6 +22,7 @@ ViewerWindow::ViewerWindow( M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging
 {
 	viewerWidget = new M4D::Viewer::m4dGUISliceViewerWidget( &conn, 0, NULL );
 	//glWidget->setSelected( true );
+	viewerWidget->setButtonHandler( M4D::Viewer::m4dGUIAbstractViewerWidget::color_picker, M4D::Viewer::m4dGUIAbstractViewerWidget::right );
 
 	QHBoxLayout *mainLayout = new QHBoxLayout;
 	mainLayout->addWidget((*viewerWidget)());

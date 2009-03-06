@@ -21,7 +21,7 @@ typedef PointSet< CoordType, 2 > 	Points;
 typedef Vector< CoordType, 2 > Coords;
 
 typedef	Image< int16, 2 > GradientImageType;
-typedef	Image< uint8, 2 > ImageType;
+typedef	Image< int16, 2 > ImageType;
 
 typedef GradientImageType::SubRegion GradientRegionType;
 typedef ImageType::SubRegion ImageRegionType;
@@ -43,10 +43,12 @@ public:
 	}
 };
 
-typedef RegionImageEnergy< Curve, ImageRegionType, Distribution > RegionEnergy;
+//typedef RegionImageEnergy< Curve, ImageRegionType, Distribution > ImageEnergy;
+typedef UnifiedImageEnergy< Curve, ImageRegionType, GradientRegionType, Distribution > ImageEnergy;
 //typedef RegionEnergy FinalEnergy;
 
-typedef SegmentationEnergy< Curve, RegionEnergy, InternalCurveEnergy< Curve >, DummyEnergy3 > FinalEnergy;
+typedef SegmentationEnergy< Curve, ImageEnergy, InternalCurveEnergy< Curve >, DummyEnergy3 > FinalEnergy;
+//typedef SegmentationEnergy< Curve, RegionEnergy, InternalCurveEnergy< Curve >, DummyEnergy3 > FinalEnergy;
 
 typedef EnergicSnake< Curve, FinalEnergy > Snake;
 
@@ -58,10 +60,11 @@ main( int argc, char **argv )
 	Snake snake;
 
 	SET_DOUT( std::cerr );
+	SET_LOUT( std::cerr );
 	std::ofstream file( "gradients.txt" );
 
 	string inFilename1 = "Circle.dump";
-	//string inFilename2 = "CircleSmoothLaplace.dump";
+	string inFilename2 = "CircleSmoothLaplace.dump";
 
 	//std::cout << "Loading file..."; std::cout.flush();
 	M4D::Imaging::AbstractImage::Ptr aimage = 
@@ -69,18 +72,29 @@ main( int argc, char **argv )
 
 	ImageType::Ptr image = ImageType::CastAbstractImage( aimage );
 
-	//aimage = M4D::Imaging::ImageFactory::LoadDumpedImage( inFilename2 );
+	aimage = M4D::Imaging::ImageFactory::LoadDumpedImage( inFilename2 );
 
-	//GradientImageType::Ptr gradientImage = GradientImageType::CastAbstractImage( aimage );
+	GradientImageType::Ptr gradientImage = GradientImageType::CastAbstractImage( aimage );
 
 	//std::cout << "Done\n";
+
+	/*GradientImageType::Iterator it = gradientImage->GetIterator();
+	float32 value = *it;
+	while( !it.IsEnd() ) {
+		if( Abs(*it) > value ) {
+			value = *it;
+		}
+		++it;
+	}*/
+	//std::cerr << " LLLLLL "<< gradientImage->GetElement( Vector<int32,2>(182, 126) ) << "\n";
+	ImageFactory::DumpImage( "testing.dump", *gradientImage );
 
 	Curve curve;
 	//Add points
 	
-	float radius = 20.0f;
-	Coords center = Coords(57,127);
-	int segments = 16;
+	float radius = 40.0f;
+	Coords center = Coords(90,127);
+	int segments = 8;
 	float angle = -2*PI / (float)segments;
 
 	/*for( int i = 0; i < segments; ++i ) {
@@ -88,6 +102,7 @@ main( int argc, char **argv )
 		curve.AddPoint( np );
 	}*/
 
+	
 	curve.AddPoint( Coords(50,110) );
 	curve.AddPoint( Coords(230,50) );
 	curve.AddPoint( Coords(230,200) );
@@ -95,28 +110,31 @@ main( int argc, char **argv )
 	curve.AddPoint( Coords(50,130) );
 
 	curve.Scale( Vector<float32,2>(0.3f, 0.3f), Vector<float32,2>( 125, 125 ) );
+	
 
 	curve.SetCyclic();
 	curve.Sample( 5 );
 
 	snake.Initialize( curve );
-	snake.SetGamma( 0.52f );
+	snake.SetGamma( 1.0f );
+	snake.SetAlpha( 0.0f );
 	snake.SetImageEnergyBalance( 0.0f );
-	snake.SetInternalEnergyBalance( 0.5f );
+	snake.SetInternalEnergyBalance( 1.0f );
 	snake.SetConstrainEnergyBalance( 0.0f );
-	snake.SetRegionStatRegion( image->GetRegion() );
-	//snake.GetEnergyModel().SetRegion2( gradientImage->GetRegion() );
+	snake.SetRegion1( image->GetRegion() );
+	snake.SetRegion2( gradientImage->GetRegion() );
+	//snake.SetRegionStatRegion( image->GetRegion() );
 
 	snake.SetSelfIntersectionTestPeriod( 0 );
 	snake.SetSegmentLengthsTestPeriod( 0 );
 
 	unsigned i = 0;
-	while( i < 40 ) {
+	while( i < 30 ) {
 		i = snake.Step();
 		if( i % 4 == 0 ) 
 		{
-			//PrintCurve( cout, snake.GetCurrentCurve() );
-			PrintPointSet( cout, snake.GetCurrentCurve() );
+			PrintCurve( cout, snake.GetCurrentCurve() );
+			//PrintPointSet( cout, snake.GetCurrentCurve() );
 			cout << endl;
 			cout << endl;
 		}

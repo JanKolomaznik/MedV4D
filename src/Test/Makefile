@@ -13,10 +13,10 @@ RCC=rcc
 #Name of this project part
 NAME=		Test
 #Names of target sources
-TARGETS=	SnakeTest2
+TARGETS=	SnakeTest2 \
+		SplineTest
 		
 #SnakeTest
-#SplineTest \
 
 M4DLIBS=	../lib/libm4dWidgets.a\
 		../lib/libImaging.a\

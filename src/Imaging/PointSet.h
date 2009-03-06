@@ -3,10 +3,12 @@
 
 #include "Common.h"
 #include "Imaging/GeometricalObject.h"
+#include "Imaging/GeometricAlgorithms.h"
 #include "Vector.h"
 #include <vector>
 #include <ostream>
 #include <iomanip>
+#include <algorithm>
 
 
 namespace M4D
@@ -51,7 +53,7 @@ public:
 			if( idx < _pointCount ) {
 				return _points[ idx ]; 
 			} else 
-				_THROW_ ErrorHandling::EBadIndex(); 
+				_THROW_ ErrorHandling::EBadIndex( TO_STRING("Index = " << idx << " out of range < 0, " << Size() << " ).") ); 
 		}
 
 	const PointType &
@@ -60,7 +62,7 @@ public:
 			if( idx < _pointCount ) {
 				return _points[ idx ]; 
 			} else 
-				_THROW_ ErrorHandling::EBadIndex(); 
+				_THROW_ ErrorHandling::EBadIndex( TO_STRING("Index = " << idx << " out of range < 0, " << Size() << " ).") ); 
 		}
 
 	typename PointVector::iterator
@@ -136,13 +138,13 @@ public:
 	void
 	Move( PointType t )
 		{
-			for_each( _points.begin(), _points.end(), MoveFunctor< PointType >( t ) );
+			std::for_each( _points.begin(), _points.end(), MoveFunctor< PointType >( t ) );
 		}
 
 	void
 	Scale( Vector< float32, Dim > factors, PointType center )
 		{
-			for_each( _points.begin(), _points.end(), ScaleFunctor< PointType >( factors, center ) );
+			std::for_each( _points.begin(), _points.end(), ScaleFunctor< PointType >( factors, center ) );
 		}
 	
 protected:
@@ -152,9 +154,12 @@ protected:
 
 template < typename CoordType, unsigned Dim >
 void
-PrintPointSet( std::ostream &stream, const PointSet< CoordType, Dim > &set )
+PrintPointSet( std::ostream &stream, const PointSet< CoordType, Dim > &set, unsigned step = 1 )
 {
-	for( size_t i = 0; i < set.Size(); ++i ) {
+	if( step == 0 ) {
+		step = 1;
+	}
+	for( size_t i = 0; i < set.Size(); i+=step ) {
 		stream << set[i] << std::endl;
 	}
 }

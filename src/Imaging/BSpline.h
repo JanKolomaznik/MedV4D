@@ -259,24 +259,54 @@ protected:
 };
 
 template< typename CoordType >
-CoordInt2D
-FindBSplineSelfIntersection( BSpline< CoordType, 2 > &curve )
+bool
+CheckSegmentIntersection( BSpline< CoordType, 2 > &curve, int32 segment1, int32 segment2 )
 {
 	const typename BSpline< CoordType, 2 >::SamplePointSet &samples = curve.GetSamplePoints();
-	CoordInt2D result = CoordInt2D( -1, -1 );
-	for( unsigned i = 0; i < samples.Size()-3; ++i ) {
-		for( unsigned j = i+2; j < samples.Size()-1; ++j ) {
-			if( LineIntersectionTest( samples[i], samples[i+1], 
-						samples[j], samples[j+1] ) ) 
-			{
-				result[0] = i / curve.GetLastSampleFrequency();
-				result[1] = j / curve.GetLastSampleFrequency();
-				return result;
+	unsigned frq = curve.GetLastSampleFrequency();
+	if( segment1 > segment2 ) {
+		int32 tmp = segment2;
+		segment2 = segment1;
+		segment1 = tmp;
+	}
+
+	if( segment1 == 0 && segment2 == (int32)curve.GetSegmentCount() - 1 ) {
+		for( unsigned i = segment1 * frq; i < (segment1+1) * frq; ++i ) {
+			for( unsigned j = Max(i+2, segment2 * frq); j < (segment2+1) * frq -1; ++j ) {
+				if( LineIntersectionTest( samples.GetPointCyclic(i), samples.GetPointCyclic(i+1), samples.GetPointCyclic(j), samples.GetPointCyclic(j+1) ) ) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	for( unsigned i = segment1 * frq; i < (segment1+1) * frq; ++i ) {
+		for( unsigned j = Max(i+2, segment2 * frq); j < (segment2+1) * frq; ++j ) {
+			if( LineIntersectionTest( samples.GetPointCyclic(i), samples.GetPointCyclic(i+1), samples.GetPointCyclic(j), samples.GetPointCyclic(j+1) ) ) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+template< typename CoordType >
+bool
+FindBSplineSelfIntersection( BSpline< CoordType, 2 > &curve, CoordInt2D &segIndices )
+{
+	segIndices = CoordInt2D( -1, -1 );
+	for( unsigned i = 0; i < curve.GetSegmentCount(); ++i ) {
+		for( unsigned j = i; j < curve.GetSegmentCount(); ++j ) {
+			if( CheckSegmentIntersection( curve, i, j ) ) {
+				segIndices[0] = i;
+				segIndices[1] = j;
+				return true;
 			}
 		}
 	}
 
-	return result;
+	return false;
 }
 
 template< typename CoordType, unsigned Dim >
@@ -311,7 +341,7 @@ template< typename CoordType, unsigned Dim >
 void
 FindBSplineSegmentLengthExtremes( BSpline< CoordType, Dim > &curve, unsigned &maxIdx, float32 &maxVal, unsigned &minIdx, float32 &minVal )
 {
-	float32	 first = BSplineSegmentLength( curve, 0 );
+	/*float32	 first = BSplineSegmentLength( curve, 0 );
 	float32	 len = first;
 	maxIdx = 0;
 	maxVal = len;
@@ -333,6 +363,22 @@ FindBSplineSegmentLengthExtremes( BSpline< CoordType, Dim > &curve, unsigned &ma
 	if( previous + first < minVal ) {
 			minVal = previous + first;
 			minIdx = curve.GetSegmentCount();
+	}*/
+	float32	 len =  BSplineSegmentLength( curve, 0 );
+	maxIdx = 0;
+	maxVal = len;
+	minIdx = 0;
+	minVal = len;
+	for( unsigned i=1; i < curve.GetSegmentCount(); ++i ) {
+		len = BSplineSegmentLength( curve, i );
+		if( len > maxVal ) {
+			maxVal = len;
+			maxIdx = i;
+		} 
+		if( len < minVal ) {
+			minVal = len;
+			minIdx = i;
+		}
 	}
 }
 
@@ -342,6 +388,19 @@ PrintCurve( std::ostream &stream, const CurveType &curve )
 {
 	const typename CurveType::SamplePointSet &points = curve.GetSamplePoints();
 	PrintPointSet( stream, points );
+
+	if( curve.Cyclic() && (points.Size() > 0) ) {
+		stream << points[0] << std::endl;
+	}
+}
+
+template < typename CurveType >
+void
+PrintCurveSegmentPoints( std::ostream &stream, const CurveType &curve )
+{
+	const typename CurveType::SamplePointSet &points = curve.GetSamplePoints();
+	unsigned frq = curve.GetLastSampleFrequency();
+	PrintPointSet( stream, points, frq );
 
 	if( curve.Cyclic() && (points.Size() > 0) ) {
 		stream << points[0] << std::endl;

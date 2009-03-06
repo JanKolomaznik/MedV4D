@@ -317,24 +317,21 @@ void
 EnergicSnake< ContourType, EnergyModel >
 ::CheckSelfIntersection()
 {
-	CoordInt2D seg = FindBSplineSelfIntersection( _curve );
-	if( seg[0] < 0 ) return;
-	
-		DL_PRINT(10, "EnergicSnake ->    Found self intersections : " << seg[0] << "; " << seg[1] << " : " << _curve.GetSegmentCount() );
-	unsigned inSegCount = static_cast< unsigned >( seg[1]-seg[0] );
+	CoordInt2D seg;
+	if( !FindBSplineSelfIntersection( _curve, seg ) ) return;
 
-	if( inSegCount == 0 ) {
-		_curve.RemovePoint( seg[0] );
+	DL_PRINT(10, "EnergicSnake ->    Found self intersections : " << seg[0] << "; " << seg[1] << " : " << _curve.GetSegmentCount() );
+	if( (int32)(seg[0] + ContourType::Degree) >= seg[1] ) {
+		_curve.RemovePoints( MOD(seg[1], _curve.Size()), MOD(seg[0] + ContourType::Degree + 1, _curve.Size()) );
+		_curve.Sample( _sampleRate );
+		return;
+	}	
+	unsigned inSegCount = seg[1]-(seg[0]+1);
+
+	if( inSegCount < _curve.GetSegmentCount() - inSegCount - 2 ) {
+		_curve.RemovePoints( MOD(seg[0]+2, _curve.Size()), MOD(seg[1]+2, _curve.Size()) );
 	} else {
-		bool keepInInterval = inSegCount > (_curve.GetSegmentCount()-inSegCount);
-
-		if( keepInInterval ) {
-			DL_PRINT(10, "EnergicSnake ->     Removing interval : " << seg[1] << "; " << seg[0] );
-			_curve.RemovePoints( seg[1], seg[0] );
-		} else {
-			DL_PRINT(10, "EnergicSnake ->     Removing interval : " << seg[0] << "; " << seg[1] );
-			_curve.RemovePoints( seg[0], seg[1] );
-		}
+		_curve.RemovePoints( MOD(seg[1]+1, _curve.Size()), MOD(seg[0]+1, _curve.Size()) );
 	}
 	_curve.Sample( _sampleRate );
 }
@@ -357,9 +354,14 @@ EnergicSnake< ContourType, EnergyModel >
 		DL_PRINT(10, "EnergicSnake ->     Spliting segment : " << maxIdx << " length = " << maxVal );
 	}
 	if( _curve.Size() > 4 && minVal < _minimalSegmentLength ) {
+		float32 prev = BSplineSegmentLength( _curve, MOD( minIdx-1, _curve.GetSegmentCount() ) );
+		float32 next = BSplineSegmentLength( _curve, MOD( minIdx+1, _curve.GetSegmentCount() ) );
+		if( prev < next ) {
+			minIdx = MOD( minIdx-1, _curve.GetSegmentCount() );
+		}
 		_curve.JoinSegments( minIdx );
 		changed = true;
-		DL_PRINT(10, "EnergicSnake ->     Joining segment : " << minIdx << " length = " << minVal );
+		DL_PRINT(10, "EnergicSnake ->     Joining segments : " << minIdx << ", "<< minIdx << " length = " << minVal );
 	}
 	if( changed ) {
 		_curve.Sample( _sampleRate );

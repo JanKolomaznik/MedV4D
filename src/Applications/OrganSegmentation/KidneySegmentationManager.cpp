@@ -195,11 +195,12 @@ KidneySegmentationManager::KidneySegmentationManager()
 {
 
 	_gaussianFilter = new Gaussian();
-	_gaussianFilter->SetRadius( 3 );
+	_gaussianFilter->SetRadius( 5 );
 	_container.AddFilter( _gaussianFilter );
 	
 	_edgeFilter = new EdgeFilter();
-	_edgeFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
+	//_edgeFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
+	_edgeFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_UPDATE_FINISHED );
 	_container.AddFilter( _edgeFilter );
 
 	_segmentationFilter = new SegmentationFilter();
@@ -278,12 +279,15 @@ KidneySegmentationManager::PolesSet()
 	_inputImage->GetRegion().GetSlice(5).GetElement( Vector<int32 ,2 >(minP[0], minP[1]) ) = 50;
 	std::cout << &(_inputImage->GetRegion().GetSlice(5).GetElement( Vector<int32 ,2 >(minP[0], minP[1]) )) << "\n";*/
 
+
 	_inConnection->PutDataset( _inputImage );
 
 	RunFilters();
+
 	//RunSplineSegmentation();
 	
-	//_inConnection->PutDataset( _gaussianConnection->GetDatasetPtrTyped() );
+	_inConnection->PutDataset( _gaussianConnection->GetDatasetPtrTyped() );
+	//_inConnection->PutDataset( _edgeConnection->GetDatasetPtrTyped() );
 }
 
 void
@@ -312,7 +316,7 @@ KidneySegmentationManager::RunFilters()
 {
 	_gaussianFilter->ExecuteOnWhole();
 
-	//while( _gaussianFilter->IsRunning() ){ /*std::cout << ".";*/ }
+	while( _gaussianFilter->IsRunning() ){ /*std::cout << ".";*/ }
 }
 
 void

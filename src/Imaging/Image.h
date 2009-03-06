@@ -113,8 +113,11 @@ public:
 	static Image< ElementType, Dimension > &
 	CastAbstractImage( AbstractImage & image )
 		{
-			//TODO - handle exception well
-			return dynamic_cast< Image< ElementType, Dimension > & >( image );
+			try {
+				return dynamic_cast< Image< ElementType, Dimension > & >( image );
+			} catch (...) {
+				_THROW_ ErrorHandling::ExceptionCastProblem();
+			}
 		}
 
 	/**
@@ -124,8 +127,11 @@ public:
 	static const Image< ElementType, Dimension > &
 	CastAbstractImage( const AbstractImage & image )
 		{
-			//TODO - handle exception well
-			return dynamic_cast< const Image< ElementType, Dimension > & >( image );
+			try {
+				return dynamic_cast< const Image< ElementType, Dimension > & >( image );
+			} catch (...) {
+				_THROW_ ErrorHandling::ExceptionCastProblem();
+			}
 		}
 
 	/**
@@ -136,7 +142,7 @@ public:
 	CastAbstractImage( AbstractImage::Ptr & image )
 		{
 			if( dynamic_cast< Image< ElementType, Dimension > * >( image.get() ) == NULL ) {
-				//TODO _THROW_ exception
+				_THROW_ ErrorHandling::ExceptionCastProblem();
 			}
 
 			return boost::static_pointer_cast< Image< ElementType, Dimension > >( image );

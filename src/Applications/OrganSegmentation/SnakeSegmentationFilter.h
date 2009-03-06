@@ -108,7 +108,8 @@ protected:
 
 	typedef M4D::Imaging::Algorithms::SegmentationEnergy< 
 			CurveType,
-			M4D::Imaging::Algorithms::RegionImageEnergy< CurveType, RegionType, Distribution >,
+			//M4D::Imaging::Algorithms::RegionImageEnergy< CurveType, RegionType, Distribution >,
+			M4D::Imaging::Algorithms::UnifiedImageEnergy< CurveType, RegionType, RegionType, Distribution >,
 			M4D::Imaging::Algorithms::InternalCurveEnergy< CurveType >,
 			M4D::Imaging::Algorithms::DummyEnergy3 >			EnergyModel;
 
