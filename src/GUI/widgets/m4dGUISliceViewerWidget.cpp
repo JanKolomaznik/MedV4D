@@ -1201,6 +1201,7 @@ m4dGUISliceViewerWidget::mousePressEvent(QMouseEvent *event)
     if ( _eventHandler )
     {
         _eventHandler->mousePressEvent(event);
+    	updateGL();
         return;
     }
     if ( !_inPort->IsPlugged() ) return;
@@ -1230,6 +1231,7 @@ m4dGUISliceViewerWidget::mouseReleaseEvent(QMouseEvent *event)
     if ( _eventHandler )
     {
         _eventHandler->mouseReleaseEvent(event);
+    	updateGL();
         return;
     }
 }
@@ -1240,6 +1242,7 @@ m4dGUISliceViewerWidget::mouseMoveEvent(QMouseEvent *event)
     if ( _eventHandler )
     {
         _eventHandler->mouseMoveEvent(event);
+    	updateGL();
         return;
     }
     if ( !_inPort->IsPlugged() ) return;
@@ -1271,6 +1274,7 @@ m4dGUISliceViewerWidget::mouseDoubleClickEvent ( QMouseEvent * event )
 {
     if ( _eventHandler ) _eventHandler->mouseDoubleClickEvent(event);
     else QGLWidget::mouseDoubleClickEvent(event);
+    updateGL();
 }
 
 void
@@ -1278,6 +1282,7 @@ m4dGUISliceViewerWidget::keyPressEvent ( QKeyEvent * event )
 {
     if ( _eventHandler ) _eventHandler->keyPressEvent(event);
     else QGLWidget::keyPressEvent(event);
+    updateGL();
 }
 
 void
@@ -1285,6 +1290,7 @@ m4dGUISliceViewerWidget::keyReleaseEvent ( QKeyEvent * event )
 {
     if ( _eventHandler ) _eventHandler->keyReleaseEvent(event);
     else QGLWidget::keyReleaseEvent(event);
+    updateGL();
 }
 
 void
@@ -1293,6 +1299,7 @@ m4dGUISliceViewerWidget::wheelEvent(QWheelEvent *event)
     if ( _eventHandler )
     {
         _eventHandler->wheelEvent(event);
+    	updateGL();
         return;
     }
     if ( !_inPort->IsPlugged() ) return;
