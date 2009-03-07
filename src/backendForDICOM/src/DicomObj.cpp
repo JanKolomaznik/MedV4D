@@ -177,6 +177,9 @@ DicomObj::FlushIntoArray( const T *dest)
   else m_signed = false;
 
 	const uint16 *data;
+	
+	// here should be solved all cases of pixelRepresentation (tag: 0x0028, 0x0103)
+	// it is connected in tranfer syntax etc. ...
 
 	// since we are using only implicit transfer syntax array are 16bit.
 	OFCondition cond = dataSet->findAndGetUint16Array( 

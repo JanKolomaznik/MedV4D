@@ -20,17 +20,17 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 	SetupLevelSetSegmentator();
 	
 	featureToFloatCaster = FeatureToFloatFilterType::New();
-	floatToFeature = FloatToFeatureFilterType::New();
+	//floatToFeature = FloatToFeatureFilterType::New();
 	 
 	featureToFloatCaster->SetInput( this->GetInputITKImage() );
 	thresholdSegmentation->SetFeatureImage( featureToFloatCaster->GetOutput() );
 	thresholdSegmentation->SetInput( fastMarching->GetOutput() );
-	//thresholder->SetInput( thresholdSegmentation->GetOutput() );
-	floatToFeature->SetInput(thresholdSegmentation->GetOutput());
+	thresholder->SetInput( thresholdSegmentation->GetOutput() );
+	//floatToFeature->SetInput(thresholdSegmentation->GetOutput());
 	  
 	// connect the pipeline into in/out of the ITKFilter
-	SetOutputITKImage( floatToFeature->GetOutput() );
-	//SetOutputITKImage( thresholder->GetOutput() );
+	//SetOutputITKImage( floatToFeature->GetOutput() );
+	SetOutputITKImage( thresholder->GetOutput() );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -156,7 +156,8 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 //	std::ofstream fastMarchingStr("fastMarching.dat");
 	try {
 		PrintRunInfo(std::cout);
-		floatToFeature->Update();
+		//floatToFeature->Update();
+		thresholder->Update();
 		
 		thresholdSegmentation->PrintStats(std::cout);
 		//featureToFloatCaster->GetOutput()->Print(featureToFloatCasterStr);

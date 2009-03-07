@@ -13,6 +13,30 @@ namespace M4D
 namespace Dicom
 {
 
+template<typename T>
+std::string PrintBinary(const T &val)
+{
+	std::stringstream s;
+	T tmp = val;
+	
+	for(unsigned int i=0; i<(sizeof(T)*8); i++)
+	{
+		s << (tmp & 1);	// print last digit
+		tmp = tmp >> 1;		// bitshift to right
+	}
+	
+	// now we have printed the number from back to front
+	// so inverse the stream content and output it
+	std::string printedString = s.str();
+	std::stringstream outs;
+	for( 	std::string::reverse_iterator it = printedString.rbegin(); 
+			it != printedString.rend(); 
+			it++)
+		outs << *it;
+	
+	return outs.str();
+}
+
 /**
  *  Decodes data from DICOM data stream. See DICOM doc( [ver]_5 AnnexD) for details
  *  about DICOM data stream decoding.
@@ -69,6 +93,16 @@ public:
       m_pixelCellMask <<= numZerosLeft;
       m_pixelCellMask >>= numZerosLeft;
     }
+    
+    D_COMMAND( std::cout << "DicomDataStreamDecoder: bitsAlloc: " 
+        		<< m_bitsAllocated
+        		<< " bitsStored: " 
+        		<< m_bitsStored 
+        		<< " highBit: " 
+        		<< m_highBit 
+        		<< " DataSigned: " 
+        		<< m_isDataSigned 
+        		<< std::endl);
   }
 
   template< typename T>
@@ -80,11 +114,17 @@ public:
       m_buf += ( ((uint32)*m_stream) << m_currBitsAvail);
       m_currBitsAvail += 16;
       m_stream++;
+      
+      //      D_COMMAND( std::cout << "CurBuf: " 
+      //    		  << PrintBinary<uint64>(m_buf) << std::endl);
     }
 
     m_item = m_buf & m_bitsAllocatedMask;   // get the val
     m_buf >>= m_bitsAllocated;              // cut off the val from buf
     m_currBitsAvail -= m_bitsAllocated;     // decrease avail bits in buff
+    
+    //    D_COMMAND( std::cout << "Gettin': " 
+    //    		<< PrintBinary<T>((m_item & m_pixelCellMask)) << std::endl);
 
     // get the pixel value from pixel cell
     return (T) (m_item & m_pixelCellMask);
