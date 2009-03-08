@@ -54,7 +54,7 @@ class LoadingThread: public QObject
 
   public:
 
-    LoadingThread ( std::string &fileName, std::string &folder, M4D::Dicom::DicomObjSet *result,
+    LoadingThread ( std::string fileName, std::string folder, M4D::Dicom::DicomObjSet *result,
                     QObject *mainWindow )
       : fileName( fileName ), folder( folder ), result( result ), mainWindow( mainWindow )
     {} 
@@ -138,7 +138,6 @@ class m4dGUIMainWindow: public QMainWindow
       std::list< std::string > leftOverlayInfo, rightOverlayInfo;
     };
 
-    //vv
 
     /** 
      * Main Window constructor.
