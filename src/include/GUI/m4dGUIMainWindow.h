@@ -48,6 +48,56 @@ namespace GUI {
 #define ACTION_SLICE_ORIENTATION 14
 #define ACTION_ROTATE_3D         15
 
+class LoadingThread: public QObject 
+{ 
+  Q_OBJECT
+
+  public:
+
+    LoadingThread ( std::string &fileName, std::string &folder, M4D::Dicom::DicomObjSet *result,
+                    QObject *mainWindow )
+      : fileName( fileName ), folder( folder ), result( result ), mainWindow( mainWindow )
+    {} 
+
+    LoadingThread ( const LoadingThread &lt )
+    {
+      fileName   = lt.fileName;
+      folder     = lt.folder;
+      result     = lt.result;
+      mainWindow = lt.mainWindow;
+
+      connect( this, SIGNAL( ready() ), mainWindow, SLOT( loadingReady() ), Qt::QueuedConnection );
+      connect( this, SIGNAL( exception( const QString & ) ), mainWindow, SLOT( loadingException( const QString & ) ), 
+               Qt::QueuedConnection );
+    }
+
+    void operator() ()
+    {
+      try {
+
+        M4D::Dicom::DcmProvider::LoadSerieThatFileBelongsTo( fileName, folder, *result );
+
+        emit ready();
+
+      }
+      catch ( M4D::ErrorHandling::ExceptionBase &e ) {
+        emit exception( e.what() );
+      }
+    } 
+
+  signals:
+
+    void ready ();
+
+    void exception ( const QString &description );
+
+  private:
+
+    std::string fileName, folder;
+    M4D::Dicom::DicomObjSet *result;
+    QObject *mainWindow;
+};
+
 /**
  * Class representing the Main Window - containing all basic dialogs, viewer desktop
  * with various viewers and layout managing, adaptive toolBars, menus - all with uniform look.
@@ -87,6 +137,8 @@ class m4dGUIMainWindow: public QMainWindow
       /// Overlay info lists.
       std::list< std::string > leftOverlayInfo, rightOverlayInfo;
     };
+
+    //vv
 
     /** 
      * Main Window constructor.
@@ -212,6 +264,10 @@ class m4dGUIMainWindow: public QMainWindow
      * Slot for managing sources toolBar behavior - adding new sources - connected to Main Viewer Desktop.
      */
     void source ( const QString &pipelineDescription, const QString &connectionDescription );
+
+    void loadingReady ();
+
+    void loadingException ( const QString &description );
 
   signals:
 

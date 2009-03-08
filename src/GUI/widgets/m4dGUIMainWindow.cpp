@@ -9,6 +9,7 @@
 
 #include "Log.h"
 #include "Debug.h"
+#include "Thread.h"
 
 using namespace M4D::Dicom;
 using namespace M4D::Viewer;
@@ -185,24 +186,15 @@ void m4dGUIMainWindow::open ()
     currentOpenPath = path;
     QFileInfo pathInfo( currentOpenPath );
 
-    // progressBarDialog->show();
-    // progressBarWidget->start();
+    progressBarDialog->show();
+    progressBarWidget->start();
 
-    try {
+    actualStudy.dicomObjSet = new M4D::Dicom::DicomObjSet();	
 
-      actualStudy.dicomObjSet = new DicomObjSet();	
-      DcmProvider::LoadSerieThatFileBelongsTo( pathInfo.absoluteFilePath().toStdString(), 
-    		                                       pathInfo.absolutePath().toStdString(),
-    		                                       *actualStudy.dicomObjSet );
-
-      process( DicomObjSetPtr( actualStudy.dicomObjSet ) );
-
-    }
-    catch ( M4D::ErrorHandling::ExceptionBase &e ) {
-	    QMessageBox::critical( this, tr( "Exception" ), e.what() );
-    } 
-
-    // progressBarWidget->stop();
+    Multithreading::Thread *loadingThread;
+    loadingThread = new Multithreading::Thread( LoadingThread ( pathInfo.absoluteFilePath().toStdString(), 
+  		                                                          pathInfo.absolutePath().toStdString(),
+  		                                                          actualStudy.dicomObjSet, this ) );
   } 
 }
 
@@ -403,6 +395,33 @@ void m4dGUIMainWindow::source ( const QString &pipelineDescription, const QStrin
   sourcesComboBox->addItem( pipelineDescription + " - " + connectionDescription );
 
   sourcesToolBar->show();
+}
+
+
+void m4dGUIMainWindow::loadingReady ()
+{
+  if ( !actualStudy.dicomObjSet->empty() ) 
+  {
+    process( DicomObjSetPtr( actualStudy.dicomObjSet ) );
+
+    progressBarWidget->stop();
+  }
+  else
+  {
+    progressBarWidget->stop();
+
+    QMessageBox::critical( this, tr( "Exception" ), tr( "Empty image - nothing to process" ) );
+  } 
+}
+
+
+void m4dGUIMainWindow::loadingException ( const QString &description )
+{
+  delete actualStudy.dicomObjSet;
+
+  progressBarWidget->stop();
+
+  QMessageBox::critical( this, tr( "Exception" ), description );
 }
 
 
