@@ -56,6 +56,10 @@ public:
 			//TODO - solve problem
 		}
 
+		GradientType * gradients[3];
+		unsigned gradientCount = 0;
+		float32 gradientNorms[3];
+
 		bool doImageGradient = Abs(_imageEnergyBalance) > Epsilon;
 		bool doInternalGradient = Abs(_internalEnergyBalance) > Epsilon;
 		bool doConstrainGradient = Abs(_constrainEnergyBalance) > Epsilon;
@@ -69,6 +73,9 @@ public:
 			//check if gradient is considerable and set normalization factor multiplied by balance
 			if( (doImageGradient = (Abs(imageEnergyGradientNorm) > Epsilon)) ) { 
 				imageEnergyGradientNorm = _imageEnergyBalance / imageEnergyGradientNorm;
+
+				gradientNorms[ gradientCount ] = imageEnergyGradientNorm;
+				gradients[ gradientCount++ ] = &imageEnergyGradient;
 			}
 		}
 		
@@ -82,6 +89,9 @@ public:
 			//check if gradient is considerable and set normalization factor multiplied by balance
 			if( (doInternalGradient = (Abs(internalEnergyGradientNorm) > Epsilon)) ) { 
 				internalEnergyGradientNorm = _internalEnergyBalance / internalEnergyGradientNorm;
+
+				gradientNorms[ gradientCount ] = internalEnergyGradientNorm;
+				gradients[ gradientCount++ ] = &internalEnergyGradient;
 			}
 		}
 
@@ -95,6 +105,9 @@ public:
 			//check if gradient is considerable and set normalization factor multiplied by balance
 			if( (doConstrainGradient = (Abs(constrainEnergyGradientNorm) > Epsilon)) ) { 
 				constrainEnergyGradientNorm = _constrainEnergyBalance / constrainEnergyGradientNorm;
+
+				gradientNorms[ gradientCount ] = constrainEnergyGradientNorm;
+				gradients[ gradientCount++ ] = &constrainEnergyGradient;
 			}
 		}
 
@@ -103,7 +116,10 @@ public:
 
 		for( unsigned i = 0; i < gradient.Size(); ++i ) {
 			PointCoordinate point;
-			if( doImageGradient ) {
+			for( unsigned j = 0; j < gradientCount; ++j ) {
+				point += gradientNorms[j] * (*gradients[j])[i];
+			}
+			/*if( doImageGradient ) {
 				point += imageEnergyGradientNorm * imageEnergyGradient[ i ];
 			}	
 			if( doInternalGradient ) {
@@ -111,7 +127,7 @@ public:
 			}	
 			if( doConstrainGradient ) {
 				point += constrainEnergyGradientNorm * constrainEnergyGradient[ i ];
-			}
+			}*/
 			gradient[i] = point;
 			resultSize += point * point;
 		}

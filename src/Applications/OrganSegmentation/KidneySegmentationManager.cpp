@@ -195,7 +195,7 @@ KidneySegmentationManager::KidneySegmentationManager()
 {
 
 	_gaussianFilter = new Gaussian();
-	_gaussianFilter->SetRadius( 5 );
+	_gaussianFilter->SetRadius( 10 );
 	_container.AddFilter( _gaussianFilter );
 	
 	_edgeFilter = new EdgeFilter();
@@ -286,8 +286,8 @@ KidneySegmentationManager::PolesSet()
 
 	//RunSplineSegmentation();
 	
-	_inConnection->PutDataset( _gaussianConnection->GetDatasetPtrTyped() );
-	//_inConnection->PutDataset( _edgeConnection->GetDatasetPtrTyped() );
+	//_inConnection->PutDataset( _gaussianConnection->GetDatasetPtrTyped() );
+	_inConnection->PutDataset( _edgeConnection->GetDatasetPtrTyped() );
 }
 
 void

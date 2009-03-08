@@ -263,9 +263,9 @@ SnakeSegmentationFilter< ElementType >
 	algorithm.SetOutE( 910 );
 	algorithm.SetOutVar( 1600 );
 
-	algorithm.SetStepScale( 2.0 );
-	algorithm.SetSampleRate( 7 );
-	algorithm.SetMaxStepScale( 3.0 );
+	algorithm.SetStepScale( 1.0 );
+	algorithm.SetSampleRate( 5 );
+	algorithm.SetMaxStepScale( 2.0 );
 	algorithm.SetMaxSegmentLength( 25 );
 	algorithm.SetMinSegmentLength( 10 );
 	algorithm.SetSelfIntersectionTestPeriod( 1 );
@@ -273,36 +273,42 @@ SnakeSegmentationFilter< ElementType >
 
 	algorithm.SetGamma( 0.8f );
 	algorithm.SetImageEnergyBalance( 1.0f );
-	algorithm.SetInternalEnergyBalance( 0.3f );
+	algorithm.SetInternalEnergyBalance( 0.0f );
 	algorithm.SetConstrainEnergyBalance( 0.0f );
 	//algorithm.SetRegionStatRegion( in[0]->GetSlice( sliceNumber ) );
 	algorithm.SetRegion1( in[0]->GetSlice( sliceNumber ) );
 	algorithm.SetRegion2( in[0]->GetSlice( sliceNumber ) );
 	algorithm.SetAlpha( 1.0f );
+
+
 	
 	
 	algorithm.Initialize( initialization );
 	//****************************************
 	//**** COMPUTATION ***********************
 
-	unsigned i = 0;
+	/*unsigned i = 0;
 	while( 60 > i ) {
 		i = algorithm.Step();
-		/*if( i % 5 == 0 ) {
+		if( i % 5 == 0 ) {
 			const CurveType &pom = algorithm.GetCurrentCurve();
 			slice.push_back( pom );
 			slice[slice.size()-1].Sample( ResultSampleRate );
-		}*/
+		}
+	}*/
+
+	if( algorithm.Converge() ) {
+		const CurveType &result = algorithm.GetCurrentCurve();
+
+		slice.push_back( result );
+		slice[0].Sample( ResultSampleRate );
+		initialization = result;
+	} else {
+		const CurveType &result = algorithm.GetCurrentCurve();
+		slice.push_back( result );
 	}
 
-
-	//****************************************
-	//Result processing
-	const CurveType &result = algorithm.GetCurrentCurve();
-
-	slice.push_back( result );
 	slice[0].Sample( ResultSampleRate );
-	initialization = result;
 }
 
 
