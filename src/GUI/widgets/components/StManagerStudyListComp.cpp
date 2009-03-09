@@ -156,7 +156,7 @@ StManagerStudyListComp::StManagerStudyListComp ( QDialog *studyManagerDialog, QW
     DICOMDIRResultSet = new ResultSet();
 
   }
-  catch ( M4D::ErrorHandling::ExceptionBase &e )
+  catch ( ErrorHandling::ExceptionBase &e )
   {
 	  buildMessage = QString( e.what() );
     buildSuccessful = false;
@@ -295,7 +295,7 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
     }
 
   } 
-  catch ( M4D::ErrorHandling::ExceptionBase &e ) {
+  catch ( ErrorHandling::ExceptionBase &e ) {
 	  QMessageBox::critical( this, tr( "Exception" ), e.what() );
   } 
   catch( std::exception &e ) {
@@ -354,7 +354,7 @@ void StManagerStudyListComp::view ()
 
           recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
         }
-        catch ( M4D::ErrorHandling::ExceptionBase &e ) 
+        catch ( ErrorHandling::ExceptionBase &e ) 
         {
 	        QMessageBox::critical( this, tr( "Exception" ), e.what() );
           emit cancel();
@@ -419,7 +419,7 @@ void StManagerStudyListComp::view ()
 
           recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
         }
-        catch ( M4D::ErrorHandling::ExceptionBase &e ) 
+        catch ( ErrorHandling::ExceptionBase &e ) 
         {
 	        QMessageBox::critical( this, tr( "Exception" ), e.what() );
           emit cancel();
@@ -547,7 +547,7 @@ void StManagerStudyListComp::comboPathChanged ( const QString &text )
 }
 
 
-void StManagerStudyListComp::loadRecentExams ( M4D::Dicom::ResultSet &resultSet, 
+void StManagerStudyListComp::loadRecentExams ( ResultSet &resultSet, 
                                                const QString &prefix )
 {
   QSettings settings;
@@ -582,7 +582,7 @@ void StManagerStudyListComp::loadRecentRow ( TableRow &row, const QSettings &set
 }
 
 
-void StManagerStudyListComp::addResultSetToStudyTable ( const M4D::Dicom::ResultSet *resultSet, 
+void StManagerStudyListComp::addResultSetToStudyTable ( const ResultSet *resultSet, 
                                                         QTableWidget *table )
 {
   // for correct inserting sorting must be disabled

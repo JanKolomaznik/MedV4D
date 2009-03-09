@@ -10,8 +10,6 @@
 
 #include <QWidget>
 
-// DICOM includes:
-#include "Common.h"
 #include "backendForDICOM/DICOMServiceProvider.h"
 
 
@@ -66,7 +64,7 @@ class StManagerStudyListComp: public QWidget
     void find ( const std::string &firstName, const std::string &lastName, 
                 const std::string &patientID, 
                 const std::string &fromDate, const std::string &toDate,
-                const M4D::Dicom::StringVector &modalitiesVect,
+                const Dicom::StringVector &modalitiesVect,
                 const std::string &referringMD, const std::string &description );
 
     /** 
@@ -91,7 +89,7 @@ class StManagerStudyListComp: public QWidget
      * 
      * @param dcmObjSet pointer to the DicomObjSet to fill
      */
-    void setDicomObjectSetPtr ( M4D::Dicom::DicomObjSet *dcmObjSet )
+    void setDicomObjectSetPtr ( Dicom::DicomObjSet *dcmObjSet )
     {
       dicomObjectSet = dcmObjSet;  
     }
@@ -173,7 +171,7 @@ class StManagerStudyListComp: public QWidget
      * @param resultSet reference to ResultSet - the result of the load
      * @param prefix prefix for group of settings (to identify them) - same for one type of exam
      */
-    void loadRecentExams ( M4D::Dicom::ResultSet &resultSet, const QString &prefix );
+    void loadRecentExams ( Dicom::ResultSet &resultSet, const QString &prefix );
     
     /** 
      * Loads a TableRow from specific QSettings
@@ -181,7 +179,7 @@ class StManagerStudyListComp: public QWidget
      * @param row reference to TableRow - the result of the load
      * @param settings reference to settings - where is the wanted row
      */
-    void loadRecentRow ( M4D::Dicom::TableRow &row, const QSettings &settings );
+    void loadRecentRow ( Dicom::TableRow &row, const QSettings &settings );
 
     /** 
      * Adds result of Find - ResultSet - to Study Table - depending on searching mode.
@@ -189,7 +187,7 @@ class StManagerStudyListComp: public QWidget
      * @param resultSet pointer to ResultSet to be added
      * @param table pointer to table where to display results
      */
-    void addResultSetToStudyTable ( const M4D::Dicom::ResultSet *resultSet, 
+    void addResultSetToStudyTable ( const Dicom::ResultSet *resultSet, 
                                     QTableWidget *table );
 
     /** 
@@ -198,7 +196,7 @@ class StManagerStudyListComp: public QWidget
      * @param row pointer to TableRow to be added
      * @param table pointer to table where to display results
      */
-    void addRowToStudyTable ( const M4D::Dicom::TableRow *row,
+    void addRowToStudyTable ( const Dicom::TableRow *row,
                               QTableWidget *table );
 
     /** 
@@ -208,7 +206,7 @@ class StManagerStudyListComp: public QWidget
      * @param info SerieInfoVector from which is the dialog created (descriptions of studies)
      * @return the index of selected series 
      */
-    unsigned getSeriesIndex( const M4D::Dicom::SerieInfoVector info );
+    unsigned getSeriesIndex( const Dicom::SerieInfoVector info );
 
     /** 
      * Fills the overlay info map with selected study's info - to print it out on the viewer.
@@ -225,7 +223,7 @@ class StManagerStudyListComp: public QWidget
      * @param row pointer to TableRow to be added - currently viewed
      * @param prefix prefix for group of settings (to identify them) - same for one type of exam
      */
-    void updateRecentExams ( const M4D::Dicom::TableRow *row, const QString &prefix );
+    void updateRecentExams ( const Dicom::TableRow *row, const QString &prefix );
 
     /** 
      * Saves a given TableRow to specific QSettings.
@@ -233,7 +231,7 @@ class StManagerStudyListComp: public QWidget
      * @param row pointer to TableRow to be saved
      * @param settings reference to settings - where to save the row
      */
-    void updateRecentRow ( const M4D::Dicom::TableRow *row, QSettings &settings );
+    void updateRecentRow ( const Dicom::TableRow *row, QSettings &settings );
 
 
     /** 
@@ -316,16 +314,16 @@ class StManagerStudyListComp: public QWidget
     QWidget      *directoryPane;
 
     /// Pointer to vector of TableRows - result of the Find operation in Recent Exams (remote) mode.
-    M4D::Dicom::ResultSet *recentResultSet;
+    Dicom::ResultSet *recentResultSet;
     /// Pointer to vector of TableRows - result of the Find operation in Remote Exams mode.
-    M4D::Dicom::ResultSet *remoteResultSet;
+    Dicom::ResultSet *remoteResultSet;
     /// Pointer to vector of TableRows - result of the Find operation in DICOMDIR mode.
-    M4D::Dicom::ResultSet *DICOMDIRResultSet;
+    Dicom::ResultSet *DICOMDIRResultSet;
     /// Pointer to vector of TableRows - pointing to active ResultSet.
-    M4D::Dicom::ResultSet *activeResultSet;
+    Dicom::ResultSet *activeResultSet;
 
     /// Pointer to DicomObjSet - result of the Study Manager will appear there (after clicking View).
-    M4D::Dicom::DicomObjSet *dicomObjectSet;	
+    Dicom::DicomObjSet *dicomObjectSet;	
     /// Pointer to the left overlay info list - overlay info of the Study Manager's result will appear there.
     std::list< std::string > *leftOverlayInfo;
     /// Pointer to the right overlay info list - overlay info of the Study Manager's result will appear there.

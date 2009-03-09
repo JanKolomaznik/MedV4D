@@ -100,7 +100,7 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
      */
     M4D::Viewer::m4dGUIAbstractViewerWidget *getPrevSelectedViewerWidget () const { return prevSelectedViewer->viewerWidget; }
    
-	  M4D::Imaging::ConnectionInterface *getDefaultConnection () const { return defaultConnection; }
+    Imaging::ConnectionInterface *getDefaultConnection () const { return defaultConnection; }
 
 
     /** 
@@ -128,21 +128,21 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
      */
     void setSelectedViewerRightTool ( unsigned value ) { selectedViewer->checkedRightButtonTool = value; }
 
-    void setDefaultConnection ( M4D::Imaging::ConnectionInterface *conn );
+    void setDefaultConnection ( Imaging::ConnectionInterface *conn );
 
-	  void setConnectionForAll ( M4D::Imaging::ConnectionInterface *conn );
+    void setConnectionForAll ( Imaging::ConnectionInterface *conn );
 
 
-	  /** 
-	   * Adds source (pipeline connection) to vector of registered sources - possible connections, 
-	   * where can be plugged a viewer. Can be selected through comboBox in toolBar. 
-	   *
-	   * @param conn pointer to the connection to be added
-	   * @param pipelineDescription description/name of the pipeline connection belongs to (for the user - in the comboBox)
-	   * @param connectionDescription description of the connection (for the user - in the comboBox)
-	   */
-	  void addSource ( M4D::Imaging::ConnectionInterface *conn, const char *pipelineDescription,
-		                 const char *connectionDescription );
+    /** 
+     * Adds source (pipeline connection) to vector of registered sources - possible connections, 
+     * where can be plugged a viewer. Can be selected through comboBox in toolBar. 
+     *
+     * @param conn pointer to the connection to be added
+     * @param pipelineDescription description/name of the pipeline connection belongs to (for the user - in the comboBox)
+     * @param connectionDescription description of the connection (for the user - in the comboBox)
+     */
+    void addSource ( Imaging::ConnectionInterface *conn, const char *pipelineDescription,
+                     const char *connectionDescription );
 
   private slots:
 
@@ -193,13 +193,13 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
     Viewer *prevSelectedViewer;
 
     /// Connection which will be used for newly added viewers
-	  M4D::Imaging::ConnectionInterface *defaultConnection;
+    Imaging::ConnectionInterface *defaultConnection;
 
     /**
      * Vector of registered sources - possible connections, where can be plugged a viewer. Can be selected
      * through comboBox in toolBar. 
      */ 
-    std::vector< M4D::Imaging::ConnectionInterface * > sources;
+    std::vector< Imaging::ConnectionInterface * > sources;
 
     /// Number of rows in the layout.
     unsigned layoutRows;

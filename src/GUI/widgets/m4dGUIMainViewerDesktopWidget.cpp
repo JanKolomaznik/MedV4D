@@ -77,12 +77,12 @@ void m4dGUIMainViewerDesktopWidget::replaceSelectedViewerWidget ( ViewerType typ
 }
 
 
-void m4dGUIMainViewerDesktopWidget::setDefaultConnection ( M4D::Imaging::ConnectionInterface *conn )
+void m4dGUIMainViewerDesktopWidget::setDefaultConnection ( ConnectionInterface *conn )
 {
 	defaultConnection = conn;
 }
 
-void m4dGUIMainViewerDesktopWidget::setConnectionForAll ( M4D::Imaging::ConnectionInterface *conn )
+void m4dGUIMainViewerDesktopWidget::setConnectionForAll ( ConnectionInterface *conn )
 {
   for ( size_t i = 0; i < viewers.size(); ++i ) {
 		viewers[i]->viewerWidget->setInputPort( conn );

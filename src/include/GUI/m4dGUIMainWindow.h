@@ -48,56 +48,6 @@ namespace GUI {
 #define ACTION_SLICE_ORIENTATION 14
 #define ACTION_ROTATE_3D         15
 
-class LoadingThread: public QObject 
-{ 
-  Q_OBJECT
-
-  public:
-
-    LoadingThread ( std::string fileName, std::string folder, M4D::Dicom::DicomObjSet *result,
-                    QObject *mainWindow )
-      : fileName( fileName ), folder( folder ), result( result ), mainWindow( mainWindow )
-    {} 
-
-    LoadingThread ( const LoadingThread &lt )
-    {
-      fileName   = lt.fileName;
-      folder     = lt.folder;
-      result     = lt.result;
-      mainWindow = lt.mainWindow;
-
-      connect( this, SIGNAL( ready() ), mainWindow, SLOT( loadingReady() ), Qt::QueuedConnection );
-      connect( this, SIGNAL( exception( const QString & ) ), mainWindow, SLOT( loadingException( const QString & ) ), 
-               Qt::QueuedConnection );
-    }
-
-    void operator() ()
-    {
-      try {
-
-        M4D::Dicom::DcmProvider::LoadSerieThatFileBelongsTo( fileName, folder, *result );
-
-        emit ready();
-
-      }
-      catch ( M4D::ErrorHandling::ExceptionBase &e ) {
-        emit exception( e.what() );
-      }
-    } 
-
-  signals:
-
-    void ready ();
-
-    void exception ( const QString &description );
-
-  private:
-
-    std::string fileName, folder;
-    M4D::Dicom::DicomObjSet *result;
-    QObject *mainWindow;
-};
-
 /**
  * Class representing the Main Window - containing all basic dialogs, viewer desktop
  * with various viewers and layout managing, adaptive toolBars, menus - all with uniform look.
@@ -133,7 +83,7 @@ class m4dGUIMainWindow: public QMainWindow
      */
     struct Study {
       /// Pointer to DicomObjSet.
-      M4D::Dicom::DicomObjSet *dicomObjSet;
+      Dicom::DicomObjSet *dicomObjSet;
       /// Overlay info lists.
       std::list< std::string > leftOverlayInfo, rightOverlayInfo;
     };
@@ -179,7 +129,7 @@ class m4dGUIMainWindow: public QMainWindow
      * @param pipelineDescription description/name of the pipeline connection belongs to (for the user - in the comboBox)
      * @param connectionDescription description of the connection (for the user - in the comboBox)
      */
-    void addSource ( M4D::Imaging::ConnectionInterface *conn, const char *pipelineDescription,
+    void addSource ( Imaging::ConnectionInterface *conn, const char *pipelineDescription,
                      const char *connectionDescription );
 
     /** 
@@ -276,8 +226,8 @@ class m4dGUIMainWindow: public QMainWindow
      * @param hnd button handler for the selected viewer (used in its slot)
      * @param btn type of the button for the selected viewer (used in its slot)
      */
-    void toolChanged ( M4D::Viewer::m4dGUIAbstractViewerWidget::ButtonHandler hnd, 
-                       M4D::Viewer::m4dGUIAbstractViewerWidget::MouseButton btn );
+    void toolChanged ( Viewer::m4dGUIAbstractViewerWidget::ButtonHandler hnd, 
+                       Viewer::m4dGUIAbstractViewerWidget::MouseButton btn );
 
   private:
 
@@ -335,7 +285,7 @@ class m4dGUIMainWindow: public QMainWindow
      * @param actionIdx order in viewerActs (macro for each tool)
      * @param hnd button handler for the selected viewer (used in its slot)
      */
-    void delegateAction ( unsigned actionIdx, M4D::Viewer::m4dGUIAbstractViewerWidget::ButtonHandler hnd );
+    void delegateAction ( unsigned actionIdx, Viewer::m4dGUIAbstractViewerWidget::ButtonHandler hnd );
 
   protected:
 
@@ -348,7 +298,7 @@ class m4dGUIMainWindow: public QMainWindow
      * 
      * @param dicomObjSet Dicom Object Set (result of the search) to process
      */
-    virtual void process ( M4D::Dicom::DicomObjSetPtr dicomObjSet );
+    virtual void process ( Dicom::DicomObjSetPtr dicomObjSet );
 
 
     /// Pointer to the Main Viewer Desktop

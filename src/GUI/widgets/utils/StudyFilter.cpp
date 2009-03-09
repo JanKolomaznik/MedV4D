@@ -30,11 +30,11 @@ void StudyFilter::filterModalities ( ResultSet *resultSet,
 }
 
 
-void StudyFilter::filterAll ( M4D::Dicom::ResultSet *resultSet, 
+void StudyFilter::filterAll ( ResultSet *resultSet, 
                               const std::string &firstName, const std::string &lastName, 
                               const std::string &patientID, 
                               const std::string &fromDate, const std::string &toDate,
-                              const M4D::Dicom::StringVector &modalitiesVect,
+                              const StringVector &modalitiesVect,
                               const std::string &referringMD, const std::string &description )
 {
   if ( resultSet == 0 ) {
@@ -91,8 +91,8 @@ void StudyFilter::filterAll ( M4D::Dicom::ResultSet *resultSet,
 }
 
 
-void StudyFilter::filterDuplicates ( M4D::Dicom::ResultSet *resultSet, 
-                                     const M4D::Dicom::TableRow *row )
+void StudyFilter::filterDuplicates ( ResultSet *resultSet, 
+                                     const TableRow *row )
 {
   if ( resultSet == 0 ) {
     return;

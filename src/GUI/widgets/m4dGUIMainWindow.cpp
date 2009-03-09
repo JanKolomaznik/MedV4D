@@ -10,6 +10,7 @@
 #include "Log.h"
 #include "Debug.h"
 #include "Thread.h"
+#include "GUI/LoadingThreads.h"
 
 using namespace M4D::Dicom;
 using namespace M4D::Viewer;
@@ -189,12 +190,12 @@ void m4dGUIMainWindow::open ()
     progressBarDialog->show();
     progressBarWidget->start();
 
-    actualStudy.dicomObjSet = new M4D::Dicom::DicomObjSet();	
+    actualStudy.dicomObjSet = new DicomObjSet();	
 
     Multithreading::Thread *loadingThread;
-    loadingThread = new Multithreading::Thread( LoadingThread ( pathInfo.absoluteFilePath().toStdString(), 
-  		                                                          pathInfo.absolutePath().toStdString(),
-  		                                                          actualStudy.dicomObjSet, this ) );
+    loadingThread = new Multithreading::Thread( OpenLoadingThread ( pathInfo.absoluteFilePath().toStdString(), 
+  		                                                              pathInfo.absolutePath().toStdString(),
+  		                                                              actualStudy.dicomObjSet, this ) );
   } 
 }
 
