@@ -383,7 +383,7 @@ AbstractPipeFilter::CleanAfterSuccessfulRun()
 	//Another execution thread can be created.
 
 	//TODO - check if right
-	//delete _executionThread;
+	delete _executionThread;
 	_executionThread = NULL;
 
 	//After this call no other changes to filter members are applied 
@@ -398,7 +398,7 @@ AbstractPipeFilter::CleanAfterStoppedRun()
 	//Another execution thread can be created.
 	
 	//TODO - check if right
-	//delete _executionThread;
+	delete _executionThread;
 	_executionThread = NULL;
 
 	//After this call no other changes to filter members are applied 

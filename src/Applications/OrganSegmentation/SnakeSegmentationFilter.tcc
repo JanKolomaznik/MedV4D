@@ -257,7 +257,7 @@ SnakeSegmentationFilter< ElementType >
 {
 	static const unsigned ResultSampleRate = 5;
 
-	Vector< float32, 1 > a = 5;
+	Vector< float32, 1 > a(5.0f);
 	ObjectsInSlice &slice = this->out->GetSlice( sliceNumber );
 	slice.clear();
 	
@@ -293,7 +293,7 @@ SnakeSegmentationFilter< ElementType >
 	algorithm.SetConstrainEnergyBalance( 0.0f );
 	//algorithm.SetRegionStatRegion( in[0]->GetSlice( sliceNumber ) );
 	algorithm.SetRegion1( in[0]->GetSlice( sliceNumber ) );
-	algorithm.SetRegion2( in[0]->GetSlice( sliceNumber ) );
+	algorithm.SetRegion2( in[1]->GetSlice( sliceNumber ) );
 	algorithm.SetAlpha( 1.0f );
 
 	algorithm.SetCalmDownInterval( 20 );
