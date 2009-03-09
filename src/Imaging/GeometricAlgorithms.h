@@ -52,7 +52,7 @@ LineIntersectionTest(
  * > 0 left from AB
  */
 template< typename CoordType >
-inline float32
+inline CoordType
 PointLinePosition2Points( 
 		const Vector< CoordType, 2 > &point,
 		const Vector< CoordType, 2 > &lineA, 
@@ -69,7 +69,7 @@ PointLinePosition2Points(
  * > 0 left from p
  */
 template< typename CoordType >
-inline float32
+inline CoordType
 PointLinePositionPointVector( 
 		const Vector< CoordType, 2 > &point,
 		const Vector< CoordType, 2 > &A, 
@@ -79,6 +79,66 @@ PointLinePositionPointVector(
 	return (v[0])*(point[1]-A[1])
 		- (v[1])*(point[0]-A[0]);
 }
+
+template< typename CoordType >
+inline CoordType
+PerpendicularVectorToVector( const Vector< CoordType, 2 > &v )
+{
+	return Vector< CoordType, 2 >( -v[1], v[0] );
+}
+
+
+template< typename CoordType >
+inline CoordType
+PointLineDistanceSquared( 
+		const Vector< CoordType, 2 > &point,
+		const Vector< CoordType, 2 > &A, 
+		const Vector< CoordType, 2 > &v
+		)
+{
+	Vector< CoordType, 2 > tmp = point - A;
+	Vector< CoordType, 2 > norm = PerpendicularVectorToVector( v );
+	CoordType sizeTmp = Sqr(tmp * norm);
+	return sizeTmp / (norm * norm);
+}
+
+template< typename CoordType >
+inline float32
+PointLineDistance( 
+		const Vector< CoordType, 2 > &point,
+		const Vector< CoordType, 2 > &A, 
+		const Vector< CoordType, 2 > &v
+		)
+{
+	return sqrt( PointLineDistanceSquared( point, A, v ) );
+}
+
+template< typename CoordType >
+inline CoordType
+PointLineSegmentDistanceSquared( 
+		const Vector< CoordType, 2 > &point,
+		const Vector< CoordType, 2 > &A, 
+		const Vector< CoordType, 2 > &v
+		)
+{
+	return Min( 
+			(point-A)*(point-A), 
+			(point-(A+v))*(point-(A+v)), 
+			PointLineDistanceSquared( point, A, v )
+		  );
+}
+
+template< typename CoordType >
+inline float32
+PointLineSegmentDistance( 
+		const Vector< CoordType, 2 > &point,
+		const Vector< CoordType, 2 > &A, 
+		const Vector< CoordType, 2 > &v
+		)
+{
+	return sqrt( PointLineSegmentDistanceSquared( point, A, v ) );
+}
+
 }/*namespace Geometry*/
 }/*namespace Imaging*/
 /** @} */

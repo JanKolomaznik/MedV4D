@@ -61,12 +61,12 @@ mainWindow::SetSegmentationSlot( uint32 segType )
 {
 	switch( segType ) {
 	case stMANUAL:
-		_segmentationWidget->Activate( ManualSegmentationManager::GetInputConnection(), ManualSegmentationManager::GetSpecialState() );
+		_segmentationWidget->Activate( ManualSegmentationManager::Instance().GetInputConnection(), ManualSegmentationManager::Instance().GetSpecialState() );
 
 		stackWidget->setCurrentWidget( _segmentationWidget );
 		break;
 	case stKIDNEYS:
-		_segmentationWidget->Activate( kidneySegmentationManager.GetInputConnection(), kidneySegmentationManager.GetSpecialState() );
+		_segmentationWidget->Activate( KidneySegmentationManager::Instance().GetInputConnection(), KidneySegmentationManager::Instance().GetSpecialState() );
 
 		stackWidget->setCurrentWidget( _segmentationWidget );
 		break;

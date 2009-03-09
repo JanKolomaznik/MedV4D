@@ -260,37 +260,6 @@ BSpline< CoordType, Dim >
 }
 
 template < typename CoordType, unsigned Dim >
-void
-BSpline< CoordType, Dim >
-::SplitSegment( int segment )
-{
-	int idx = segment + CurveBasis::HalfDegree;
-	if( _cyclic ) {
-		PointType newPoint = 0.5f * (this->_points[ MOD(idx, this->Size()) ]+this->_points[ MOD(idx+1, this->Size()) ]);
-		this->InsertPoint( MOD(idx+1, this->Size()), newPoint );
-	} else {
-		_THROW_ ErrorHandling::ENotFinished( "SplitSegment() - Handling noncyclic splines" );
-	}
-}
-
-template < typename CoordType, unsigned Dim >
-void
-BSpline< CoordType, Dim >
-::JoinSegments( int segment )
-{
-	int idx = segment + (Degree+1 + 1)/2;
-	this->RemovePoint( MOD(idx, this->Size()) );
-	/*int idx = segment + CurveBasis::HalfDegree;
-	if( _cyclic ) {
-		PointType newPoint = 0.5f * (this->_points[ MOD(idx, this->Size()) ]+this->_points[ MOD(idx+1, this->Size()) ]);
-		this->_points[ MOD(idx+1, this->Size()) ] = newPoint;
-		this->RemovePoint( MOD(idx, this->Size()) );
-	} else {
-		_THROW_ ErrorHandling::ENotFinished( "SplitSegment() - Handling noncyclic splines" );
-	}*/
-}
-
-template < typename CoordType, unsigned Dim >
 typename BSpline< CoordType, Dim >::PointType
 BSpline< CoordType, Dim >
 ::EvaluateCurve( int segment, const typename BSpline< CoordType, Dim >::BFunctionValues &values )

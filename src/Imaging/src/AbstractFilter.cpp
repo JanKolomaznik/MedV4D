@@ -6,6 +6,7 @@
  **/
 
 #include "Imaging/AbstractFilter.h"
+#include <ctime>
 
 #ifdef _MSC_VER 
 	#pragma warning (disable : 4355)
@@ -217,7 +218,10 @@ MainExecutionThread::operator()()
 			);
 
 	D_PRINT( "++++++ " << _filter->GetName() << " - ExecutionThreadMethod()" );
+	clock_t time = clock();
 	bool result = _filter->ExecutionThreadMethod( _updateType );
+	time = clock() - time;
+	LOG( _filter->GetName() << " was running for : " << (((float32)time)/CLOCKS_PER_SEC) << " seconds." );
 
 	if( result ) {
 		//Send message about finished job	

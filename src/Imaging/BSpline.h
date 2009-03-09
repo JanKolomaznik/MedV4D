@@ -158,12 +158,6 @@ public:
 	void
 	ResetSamplesDerivations();
 
-	void
-	SplitSegment( int segment );
-
-	void
-	JoinSegments( int segment );
-
 	const PointSet< CoordType, Dim > &
 	GetSampleDerivations()const
 		{ return _sampleDerivationCache; }
@@ -257,6 +251,30 @@ protected:
 	unsigned 		_lastSampleFrequency;
 
 };
+
+
+template < typename CurveType >
+void
+SplitSegment( CurveType &curve, int segment )
+{
+	int idx = segment + CurveType::CurveBasis::HalfDegree;
+	if( curve.Cyclic() ) {
+		typename CurveType::PointType newPoint = 0.5f * (curve[ MOD(idx, curve.Size()) ]+curve[ MOD(idx+1, curve.Size()) ]);
+		curve.InsertPoint( MOD(idx+1, curve.Size()), newPoint );
+		curve.ReSample();
+	} else {
+		_THROW_ ErrorHandling::ENotFinished( "SplitSegment() - Handling noncyclic splines" );
+	}
+}
+
+template < typename CurveType >
+void
+JoinSegments( CurveType &curve, int segment )
+{
+	int idx = segment + (CurveType::Degree+1 + 1)/2;
+	curve.RemovePoint( MOD(idx, curve.Size()) );
+	curve.ReSample();
+}
 
 template< typename CoordType >
 bool

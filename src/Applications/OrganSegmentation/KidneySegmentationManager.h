@@ -27,12 +27,12 @@ struct PoleDefinition {
 	PointType	coordinates;
 };
 
-class KidneySegmentationManager
+class KidneySegmentationManager: public QObject
 {
+	Q_OBJECT
 public:
-	KidneySegmentationManager();
-	
-	~KidneySegmentationManager();
+	static KidneySegmentationManager &
+	Instance();
 
 	void
 	Initialize();
@@ -42,12 +42,6 @@ public:
 
 	void
 	PolesSet();
-
-	void
-	DefineInsidePoint();
-
-	void
-	DefineOutsidePoint();
 
 	void
 	StartSegmentation();
@@ -67,7 +61,20 @@ public:
 	{
 		return _specialState;
 	}
-//protected:
+
+public slots:
+	void
+	SetComputationPrecision( int value )
+	{
+		_computationPrecision = value;
+	}
+protected:
+	KidneySegmentationManager();
+	
+	~KidneySegmentationManager();
+
+	int						_computationPrecision;
+
 	ImageConnectionType				*_inConnection;
 	ImageConnectionType				*_gaussianConnection;
 	ImageConnectionType				*_edgeConnection;
@@ -79,10 +86,11 @@ public:
 	SegmentationFilter				*_segmentationFilter;
 	EdgeFilter					*_edgeFilter;
 	Gaussian					*_gaussianFilter;
+
+	static KidneySegmentationManager		*_instance;
 	bool						_wasInitialized;
 };
 
-extern KidneySegmentationManager kidneySegmentationManager;
 
 #endif //KIDNEY_SEGMENTATION_MANAGER_H
 

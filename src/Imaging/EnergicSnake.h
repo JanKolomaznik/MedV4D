@@ -309,6 +309,9 @@ void
 EnergicSnake< ContourType, EnergyModel, ConvergenceCriterion >
 ::CheckSelfIntersection()
 {
+	if( _curve.Size() <= 3 ) {
+		_THROW_ ErrorHandling::ExceptionBase( "Self intersection test can't proceed - too few control points." );
+	}
 	CoordInt2D seg;
 	if( !FindBSplineSelfIntersection( _curve, seg ) ) return;
 
@@ -346,7 +349,7 @@ EnergicSnake< ContourType, EnergyModel, ConvergenceCriterion >
 	bool changed = false;
 	if( maxVal > _parameters._maxSegmentLength ) {
 		DL_PRINT(10, "EnergicSnake ->     Spliting segment : " << maxIdx << " length = " << maxVal << " segCount = " << _curve.GetSegmentCount() );
-		_curve.SplitSegment( maxIdx );
+		SplitSegment( _curve, maxIdx );
 		changed = true;
 		_curve.Sample( _parameters._sampleRate );
 		//We change spline topology - inform about that
@@ -361,7 +364,7 @@ EnergicSnake< ContourType, EnergyModel, ConvergenceCriterion >
 		if( prev < next ) {
 			minIdx = MOD( minIdx-1, _curve.GetSegmentCount() );
 		}
-		_curve.JoinSegments( minIdx );
+		JoinSegments( _curve, minIdx );
 		changed = true;
 		_curve.Sample( _parameters._sampleRate );
 

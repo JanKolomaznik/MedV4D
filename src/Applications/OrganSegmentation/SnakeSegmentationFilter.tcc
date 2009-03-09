@@ -18,6 +18,8 @@ template < typename ElementType >
 SnakeSegmentationFilter< ElementType >
 ::SnakeSegmentationFilter() : PredecessorType( new Properties() )
 {
+	this->_name = "SnakeSegmentationFilter";
+
 	//TODO check if OK
 	for( unsigned i = 0; i < InCount; ++i ) {
 		InputPortType *inPort = new InputPortType();
@@ -34,6 +36,8 @@ SnakeSegmentationFilter< ElementType >
 ::SnakeSegmentationFilter( typename SnakeSegmentationFilter< ElementType >::Properties *prop ) 
 : PredecessorType( prop ) 
 {
+	this->_name = "SnakeSegmentationFilter";
+
 	//TODO check if OK
 	for( unsigned i = 0; i < InCount; ++i ) {
 		InputPortType *inPort = new InputPortType();
@@ -123,6 +127,7 @@ SnakeSegmentationFilter< ElementType >::AfterComputation( bool successful )
 		
 		this->ReleaseInputImage( i );
 	}
+	this->ReleaseOutputGDataset();
 	PredecessorType::AfterComputation( successful );	
 }
 
@@ -236,9 +241,9 @@ SnakeSegmentationFilter< ElementType >::ExecutionThreadMethod( AbstractPipeFilte
 		ProcessSlice( _minSlice + step, southSpline );
 		ProcessSlice( _maxSlice - step - 1, northSpline );
 	}
-	/*if( (_minSlice + stepCount) == (_maxSlice - stepCount-1) ) {//TODO check !!!
+	if( (_minSlice + stepCount) != (_maxSlice - stepCount-2) ) {//TODO check !!!
 		ProcessSlice( _minSlice + stepCount, southSpline );
-	}*/
+	}
 	return true;
 }
 
@@ -255,6 +260,9 @@ SnakeSegmentationFilter< ElementType >
 	ObjectsInSlice &slice = this->out->GetSlice( sliceNumber );
 	slice.clear();
 	
+	typename InputImageType::ElementExtentsType tmp =  in[0]->GetElementExtents();
+	float32 extent = Max( tmp[0], tmp[1] );
+
 	//Initialization and setup
 	SnakeAlgorithm algorithm;
 
@@ -263,11 +271,18 @@ SnakeSegmentationFilter< ElementType >
 	algorithm.SetOutE( 910 );
 	algorithm.SetOutVar( 1600 );
 
-	algorithm.SetStepScale( 1.0 );
+	/*algorithm.SetStepScale( 1.0 );
 	algorithm.SetSampleRate( 5 );
 	algorithm.SetMaxStepScale( 2.0 );
-	algorithm.SetMaxSegmentLength( 25 );
-	algorithm.SetMinSegmentLength( 10 );
+	algorithm.SetMaxSegmentLength( 20 );
+	algorithm.SetMinSegmentLength( 10 );*/
+
+	algorithm.SetSampleRate( 5 );
+	algorithm.SetMaxStepScale( 2.0 );
+	algorithm.SetStepScale( algorithm.GetMaxStepScale() / 2.0 );
+	algorithm.SetMaxSegmentLength( GetPrecision() * extent * 2.0 );
+	algorithm.SetMinSegmentLength( GetPrecision() * extent );
+
 	algorithm.SetSelfIntersectionTestPeriod( 1 );
 	algorithm.SetSegmentLengthsTestPeriod( 3 );
 
@@ -279,6 +294,9 @@ SnakeSegmentationFilter< ElementType >
 	algorithm.SetRegion1( in[0]->GetSlice( sliceNumber ) );
 	algorithm.SetRegion2( in[0]->GetSlice( sliceNumber ) );
 	algorithm.SetAlpha( 1.0f );
+
+	algorithm.SetCalmDownInterval( 20 );
+	algorithm.SetMaxStepCount( 60 );
 
 
 	

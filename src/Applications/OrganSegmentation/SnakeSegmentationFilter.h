@@ -86,6 +86,8 @@ public:
 		int32		insidePointSlice;
 		Coordinates	outsidePoint;
 		int32		outsidePointSlice;
+
+		int32		precision;
 	};
 
 	~SnakeSegmentationFilter() {}
@@ -102,6 +104,8 @@ public:
 	GET_SET_PROPERTY_METHOD_MACRO( int32, InsidePointSlice, insidePointSlice );
 	GET_SET_PROPERTY_METHOD_MACRO( Coordinates, OutsidePoint, outsidePoint );
 	GET_SET_PROPERTY_METHOD_MACRO( int32, OutsidePointSlice, outsidePointSlice );
+
+	GET_SET_PROPERTY_METHOD_MACRO( int32, Precision, precision );
 protected:
 
 	typedef	NormalDistribution					Distribution;

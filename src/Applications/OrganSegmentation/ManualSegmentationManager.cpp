@@ -9,13 +9,7 @@ using namespace M4D::Imaging::Geometry;
 typedef BSpline< float32, 2 >			CurveType;
 typedef CurveType::PointType			PointType;
 
-ImageConnectionType *				ManualSegmentationManager::_inConnection;
-M4D::Viewer::SliceViewerSpecialStateOperatorPtr ManualSegmentationManager::_specialState;
-InputImagePtr				 	ManualSegmentationManager::_inputImage;
-GDataSet::Ptr					ManualSegmentationManager::_dataset;
-
-bool						ManualSegmentationManager::_wasInitialized = false;
-
+ManualSegmentationManager		*ManualSegmentationManager::_instance = NULL;
 const int SAMPLE_RATE = 5;
 
 static void
@@ -139,6 +133,15 @@ public:
 
 };
 
+ManualSegmentationManager &
+ManualSegmentationManager::Instance()
+{
+	if( _instance == NULL ) {
+		_instance = new ManualSegmentationManager();
+		//_THROW_ EInstanceUnavailable();
+	}
+	return *_instance;
+}
 
 void
 ManualSegmentationManager::Initialize()
@@ -147,6 +150,7 @@ ManualSegmentationManager::Initialize()
 		Finalize();
 	}
 	
+
 	_inputImage = MainManager::GetInputImage();
 	_inConnection = new ImageConnectionType( false );
 	_inConnection->PutDataset( _inputImage );
@@ -157,12 +161,13 @@ ManualSegmentationManager::Initialize()
 
 	ViewerSpecialState *sState = new ViewerSpecialState( _dataset );
 	_specialState = M4D::Viewer::SliceViewerSpecialStateOperatorPtr( sState );
+
+	_wasInitialized = true;
 }
 
 void
 ManualSegmentationManager::Finalize()
 {
-
 }
 
 

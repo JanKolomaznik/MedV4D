@@ -30,6 +30,7 @@ template < typename CoordType, unsigned Dim >
 class PointSet: public AGeometricalObjectDimPrec< CoordType, Dim >
 {
 public:
+	typedef CoordType					CoordinateType;
 	typedef AGeometricalObjectDimPrec< CoordType, Dim >	PredecessorType;
 	typedef typename PredecessorType::PointType 		PointType;
 	typedef typename PredecessorType::Type			Type;
@@ -162,6 +163,25 @@ PrintPointSet( std::ostream &stream, const PointSet< CoordType, Dim > &set, unsi
 	for( size_t i = 0; i < set.Size(); i+=step ) {
 		stream << set[i] << std::endl;
 	}
+}
+
+template< typename PointSetType >
+int32
+ClosestPointFromPointSet( const PointSetType &pset, typename PointSetType::PointType point )
+{
+	if( 0 == pset.Size() ) {
+		return -1;
+	}
+	typename PointSetType::CoordinateType distanceSq = (pset[0]-point)*(pset[0]-point);
+	int32 idx = 0;
+	for( unsigned i = 1; i < pset.Size(); ++i ) {
+		typename PointSetType::CoordinateType tmp = (pset[i]-point)*(pset[i]-point);
+		if( tmp > distanceSq ) {
+			distanceSq = tmp;
+			idx = i;
+		}
+	}
+	return idx;
 }
 
 }/*namespace Geometry*/

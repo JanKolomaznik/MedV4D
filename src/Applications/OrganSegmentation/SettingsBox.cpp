@@ -40,17 +40,16 @@ SettingsBox
 
 	_manualSegmSettings = new QWidget;
 	{
-		QVBoxLayout *layout;
+		/*QVBoxLayout *layout;
 		QPushButton *button;
 		layout = new QVBoxLayout;
 		button = new QPushButton( tr( "Finished" ) );
-		/*QObject::connect( button, SIGNAL(clicked()),
-			this, SLOT( SetToManualSegmentation()) );*/
-		layout->addWidget( button );
+			layout->addWidget( button );
 
 		layout->addStretch( 5 );
 
-		_manualSegmSettings->setLayout(layout);
+		_manualSegmSettings->setLayout(layout);*/
+		CreateManualGUI();
 	}
 	addWidget( _manualSegmSettings );
 
@@ -64,15 +63,16 @@ SettingsBox
 			this, SLOT( PolesSetKidneySegm()) );
 		layout->addWidget( button );
 
-		button = new QPushButton( tr( "Set Inside Point" ) );
-		QObject::connect( button, SIGNAL(clicked()),
-			this, SLOT( DefineInsidePointKidneySegm()) );
-		layout->addWidget( button );
+		QSlider *slider = new QSlider();
+		slider->setOrientation( Qt::Horizontal );
+		slider->setValue( 25 );
+		slider->setMinimum( 5 );
+		slider->setMaximum( 50 );
+		KidneySegmentationManager::Instance().SetComputationPrecision( 25 );
+		QObject::connect( slider, SIGNAL( valueChanged( int ) ), 
+				&(KidneySegmentationManager::Instance()), SLOT( SetComputationPrecision( int ) ) );
+		layout->addWidget( slider );
 
-		button = new QPushButton( tr( "Set Outside Point" ) );
-		QObject::connect( button, SIGNAL(clicked()),
-			this, SLOT( DefineOutsidePointKidneySegm()) );
-		layout->addWidget( button );
 
 		button = new QPushButton( tr( "Start Segmentation" ) );
 		QObject::connect( button, SIGNAL(clicked()),
@@ -84,64 +84,50 @@ SettingsBox
 		_kidneySegmSettings->setLayout(layout);
 	}
 	addWidget( _kidneySegmSettings );
-//	grid = new QGridLayout;
-//
-//	grid->setRowMinimumHeight( 0, ROW_SPACING );
-//
-//	//-------------------------------------------------
-//	grid->addWidget( new QLabel( tr( "Top" ) ), 1, 1 );
-//	top = new QSpinBox();
-//	top->setAlignment( Qt::AlignRight );
-//	top->setMaximum( 4095 );
-//	/*QObject::connect( top, SIGNAL(valueChanged(int)),
-//                      	this, SLOT(TopValueChanged(int)) );
-//	grid->addWidget(top, 1, 3 );*/
-//	//-------------------------------------------------
-//	
-//	grid->setRowMinimumHeight( 2, ROW_SPACING );
-//
-//	//-------------------------------------------------
-//	grid->addWidget( new QLabel( tr( "Bottom" ) ), 3, 1 );
-//	bottom = new QSpinBox();
-//	bottom->setAlignment( Qt::AlignRight );
-//	bottom->setMaximum( 4095 );
-///*	QObject::connect( bottom, SIGNAL(valueChanged(int)),
-//                      	this, SLOT(BottomValueChanged(int)) );*/
-//	grid->addWidget(bottom, 3, 3 );
-//	//-------------------------------------------------
-//
-//	grid->setRowMinimumHeight( 4, ROW_SPACING );
-//
-//	//-------------------------------------------------
-//	/*grid->addWidget( new QLabel( tr( "In value" ) ), 5, 1 );
-//	outValue = new QSpinBox();
-//	outValue->setAlignment( Qt::AlignRight );
-//	outValue->setMaximum( 4095 );
-//	QObject::connect( outValue, SIGNAL(valueChanged(int)),
-//                      	this, SLOT(OutValueChanged(int)) );
-//	grid->addWidget(outValue, 5, 3 );*/
-//	//-------------------------------------------------
-//
-//	layout->addLayout( grid );
-//
-//	layout->addSpacing( EXECUTE_BUTTON_SPACING );
-//
-//	//-------------------------------------------------
-//	execButton = new QPushButton( tr( "Execute" ) );
-///*	QObject::connect( execButton, SIGNAL(clicked()),
-//                      	this, SLOT(ExecuteFilter()) );*/
-//	layout->addWidget(execButton);
-//	//-------------------------------------------------
-//
-//	layout->addStretch();
 
+}
+
+void
+SettingsBox
+::CreateManualGUI()
+{
+	QVBoxLayout *verticalLayout;
+	QStackedWidget *stackedWidget;
+	QWidget *page;
+	QWidget *verticalLayoutWidget_2;
+	QVBoxLayout *verticalLayout_2;
+	QWidget *page_2;
+	QWidget *verticalLayoutWidget_3;
+	QVBoxLayout *verticalLayout_3;
+
+	verticalLayout = new QVBoxLayout();
+	
+	QToolBar *tbar = new QToolBar();
+	tbar->addAction( "New\nSpline" );
+	tbar->addAction( "Edit\nPoints" );
+	tbar->addAction( "Edit\nSegs" );
+	verticalLayout->addWidget( tbar );
+	
+	stackedWidget = new QStackedWidget();
+	page = new QWidget();
+	verticalLayoutWidget_2 = new QWidget(page);
+	verticalLayout_2 = new QVBoxLayout(verticalLayoutWidget_2);
+	stackedWidget->addWidget(page);
+	page_2 = new QWidget();
+	verticalLayoutWidget_3 = new QWidget(page_2);
+	verticalLayout_3 = new QVBoxLayout(verticalLayoutWidget_3);
+	stackedWidget->addWidget(page_2);
+
+	verticalLayout->addWidget(stackedWidget);
+
+	_manualSegmSettings->setLayout(verticalLayout);
 }
 
 void
 SettingsBox
 ::SetToManualSegmentation()
 {
-	ManualSegmentationManager::Initialize();
+	ManualSegmentationManager::Instance().Initialize();
 	
 	emit SetSegmentationSignal( stMANUAL );
 	setCurrentWidget( _manualSegmSettings );
@@ -151,7 +137,7 @@ void
 SettingsBox
 ::SetToKidneySegmentation()
 {
-	kidneySegmentationManager.Initialize();
+	KidneySegmentationManager::Instance().Initialize();
 	
 	emit SetSegmentationSignal( stKIDNEYS );
 	setCurrentWidget( _kidneySegmSettings );
@@ -161,28 +147,14 @@ void
 SettingsBox
 ::PolesSetKidneySegm()
 {
-	kidneySegmentationManager.PolesSet();
-}
-
-void
-SettingsBox
-::DefineInsidePointKidneySegm()
-{
-	kidneySegmentationManager.DefineInsidePoint();
-}
-
-void
-SettingsBox
-::DefineOutsidePointKidneySegm()
-{
-	kidneySegmentationManager.DefineOutsidePoint();
+	KidneySegmentationManager::Instance().PolesSet();
 }
 
 void
 SettingsBox
 ::StartSegmentationKidneySegm()
 {
-	kidneySegmentationManager.StartSegmentation();
+	KidneySegmentationManager::Instance().StartSegmentation();
 
 }
 

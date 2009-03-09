@@ -8,7 +8,7 @@ using namespace M4D;
 using namespace M4D::Imaging;
 using namespace M4D::Imaging::Geometry;
 
-KidneySegmentationManager kidneySegmentationManager;
+KidneySegmentationManager		*KidneySegmentationManager::_instance = NULL;
 
 
 const int SAMPLE_RATE = 5;
@@ -195,7 +195,7 @@ KidneySegmentationManager::KidneySegmentationManager()
 {
 
 	_gaussianFilter = new Gaussian();
-	_gaussianFilter->SetRadius( 10 );
+	_gaussianFilter->SetRadius( 5 );
 	_container.AddFilter( _gaussianFilter );
 	
 	_edgeFilter = new EdgeFilter();
@@ -224,12 +224,23 @@ KidneySegmentationManager::~KidneySegmentationManager()
 	delete _outGeomConnection;*/
 }
 
+KidneySegmentationManager &
+KidneySegmentationManager::Instance()
+{
+	if( _instance == NULL ) {
+		_instance = new KidneySegmentationManager();
+		//_THROW_ EInstanceUnavailable();
+	}
+	return *_instance;
+}
+
 void
 KidneySegmentationManager::Initialize()
 {
 	if( _wasInitialized ) {
 		Finalize();
 	}
+	
 	
 	_inputImage = MainManager::GetInputImage();
 	_inConnection->PutDataset( _inputImage );
@@ -245,7 +256,6 @@ KidneySegmentationManager::Initialize()
 void
 KidneySegmentationManager::Finalize()
 {
-	_wasInitialized = false;
 }
 
 void
@@ -284,26 +294,9 @@ KidneySegmentationManager::PolesSet()
 
 	RunFilters();
 
-	//RunSplineSegmentation();
-	
 	//_inConnection->PutDataset( _gaussianConnection->GetDatasetPtrTyped() );
-	_inConnection->PutDataset( _edgeConnection->GetDatasetPtrTyped() );
+	//_inConnection->PutDataset( _edgeConnection->GetDatasetPtrTyped() );
 }
-
-void
-KidneySegmentationManager::DefineInsidePoint()
-{ 
-	KidneyViewerSpecialState *sState = (KidneyViewerSpecialState*)(_specialState.get());
-	sState->DefineInsidePoint();
-}
-
-void
-KidneySegmentationManager::DefineOutsidePoint()
-{ 
-	KidneyViewerSpecialState *sState = (KidneyViewerSpecialState*)(_specialState.get());
-	sState->DefineOutsidePoint();
-}
-
 
 void
 KidneySegmentationManager::StartSegmentation()
@@ -316,7 +309,7 @@ KidneySegmentationManager::RunFilters()
 {
 	_gaussianFilter->ExecuteOnWhole();
 
-	while( _gaussianFilter->IsRunning() ){ /*std::cout << ".";*/ }
+	//while( _gaussianFilter->IsRunning() ){ /*std::cout << ".";*/ }
 }
 
 void
@@ -330,10 +323,12 @@ KidneySegmentationManager::RunSplineSegmentation()
 	_segmentationFilter->SetSecondPoint( _poles[1].coordinates );
 	_segmentationFilter->SetSecondSlice( _poles[1].slice );
 
-	_segmentationFilter->SetInsidePoint( sState->_insidePoint );
+	/*_segmentationFilter->SetInsidePoint( sState->_insidePoint );
 	_segmentationFilter->SetInsidePointSlice( sState->_insidePointSlice );
 	_segmentationFilter->SetOutsidePoint( sState->_outsidePoint );
-	_segmentationFilter->SetOutsidePointSlice( sState->_outsidePointSlice );
+	_segmentationFilter->SetOutsidePointSlice( sState->_outsidePointSlice );*/
+
+	_segmentationFilter->SetPrecision( _computationPrecision );
 
 	_segmentationFilter->ExecuteOnWhole();
 
