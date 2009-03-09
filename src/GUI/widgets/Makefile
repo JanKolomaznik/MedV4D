@@ -23,14 +23,20 @@ TARGETS=	m4dGUIMainWindow \
 		m4dGUIToolBarCustomizerWidget\
 		m4dGUIProgressBarWidget
 
-SUBDIR=		components
+SUBDIR1=	components
+
 SUBDIR2=	ogl
-TARGETS2=	StManagerFilterComp \
+
+SUBDIR3=	utils
+
+TARGETS1=	StManagerFilterComp \
 		StManagerHProtocolsComp \
-		StManagerStudyListComp \
-		StudyFilter 
+		StManagerStudyListComp
 		
-TARGETS3=	fonts
+TARGETS2=	fonts
+
+TARGETS3=	LoadingThreads \
+		StudyFilter 
 
 MOCINPUT=	m4dGUIAbstractViewerWidget.h \
 		m4dGUIMainWindow.h \
@@ -93,8 +99,8 @@ DEBUG_DEFS=	-DDEBUG_LEVEL=10\
 DEFS=		$(DEBUG_DEFS)
 
 
-SRC_FILES=	$(addsuffix .cpp, $(TARGETS) $(addprefix $(SUBDIR)/, $(TARGETS2) ) $(addprefix $(SUBDIR2)/, $(TARGETS3) ) )
-OBJ_FILES=	$(addprefix $(TMP_DIR)/,  $(addprefix moc_, $(MOCINPUT:.h=.o) )  $(addprefix rcc_, $(RCCINPUT:.qrc=.o ) )  $(addsuffix .o, $(TARGETS) $(TARGETS2) $(TARGETS3) ) )
+SRC_FILES=	$(addsuffix .cpp, $(TARGETS) $(addprefix $(SUBDIR1)/, $(TARGETS1) ) $(addprefix $(SUBDIR2)/, $(TARGETS2) ) $(addprefix $(SUBDIR3)/, $(TARGETS3) ) )
+OBJ_FILES=	$(addprefix $(TMP_DIR)/,  $(addprefix moc_, $(MOCINPUT:.h=.o) )  $(addprefix rcc_, $(RCCINPUT:.qrc=.o ) )  $(addsuffix .o, $(TARGETS) $(TARGETS1) $(TARGETS2) $(TARGETS3) ) )
 
 
 .PHONY: all
@@ -122,10 +128,13 @@ $(TMP_DIR)/rcc_%.cpp:	%.qrc
 $(TMP_DIR)/%.o:	%.cpp	
 		$(CC) $(CCFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
-$(TMP_DIR)/%.o:	$(SUBDIR)/%.cpp	
+$(TMP_DIR)/%.o:	$(SUBDIR1)/%.cpp	
 		$(CC) $(CCFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 $(TMP_DIR)/%.o:	$(SUBDIR2)/%.cpp	
+		$(CC) $(CCFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
+
+$(TMP_DIR)/%.o:	$(SUBDIR3)/%.cpp	
 		$(CC) $(CCFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 $(TMP_DIR)/%.o:	$(TMP_DIR)/%.cpp

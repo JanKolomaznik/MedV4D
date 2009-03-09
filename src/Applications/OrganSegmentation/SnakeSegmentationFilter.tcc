@@ -257,6 +257,7 @@ SnakeSegmentationFilter< ElementType >
 {
 	static const unsigned ResultSampleRate = 5;
 
+	Vector< float32, 1 > a = 5;
 	ObjectsInSlice &slice = this->out->GetSlice( sliceNumber );
 	slice.clear();
 	

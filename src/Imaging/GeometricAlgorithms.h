@@ -121,10 +121,16 @@ PointLineSegmentDistanceSquared(
 		const Vector< CoordType, 2 > &v
 		)
 {
+	Vector< CoordType, 2 > perp = PerpendicularVectorToVector( v );
+	Vector< CoordType, 2 > B = A + v;
+	CoordType p1 = PointLinePositionPointVector( point, A, perp );
+	CoordType p2 = PointLinePositionPointVector( point, B, perp );
+	if( Sgn(p1) == Sgn(p2) ) {
+		return PointLineDistanceSquared( point, A, v );
+	}
 	return Min( 
 			(point-A)*(point-A), 
-			(point-(A+v))*(point-(A+v)), 
-			PointLineDistanceSquared( point, A, v )
+			(point-B)*(point-B) 
 		  );
 }
 
