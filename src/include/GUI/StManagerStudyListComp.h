@@ -149,6 +149,10 @@ class StManagerStudyListComp: public QWidget
      */
     void comboPathChanged ( const QString &text );
 
+    void loadingReady ();
+
+    void loadingException ( const QString &description );
+
   signals:
 
     /**
@@ -161,6 +165,10 @@ class StManagerStudyListComp: public QWidget
      * any result.
      */
     void cancel ();
+
+    void start ();
+
+    void stop ();
 
   private:
 

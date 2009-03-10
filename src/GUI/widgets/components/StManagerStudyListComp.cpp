@@ -9,8 +9,9 @@
 #include <vector>
 
 #include "GUI/StudyFilter.h"
-// DICOM includes:
 #include "ExceptionBase.h"
+#include "Thread.h"
+#include "GUI/LoadingThreads.h"
 
 // DICOM namespace:
 using namespace M4D::Dicom;
@@ -262,24 +263,6 @@ void StManagerStudyListComp::find ( const string &firstName, const string &lastN
 
         dialogTitle = DICOMDIR_NAME;
         break;
-
-      default:
-        if ( recentRemoteButton->isChecked() ) {
-          loadRecentExams( *activeResultSet, RECENT_REMOTE_EXAMS_SETTINGS_NAME );
-        }
-        else
-        {
-          loadRecentExams( *activeResultSet, RECENT_DICOMDIR_SETTINGS_NAME );
-
-          dialogTitle = RECENT_DICOMDIR_NAME;
-        }
-
-        StudyFilter::filterAll( activeResultSet, firstName, lastName, patientID, 
-                                fromDate, toDate, modalitiesVect, referringMD, 
-                                description );
-
-        reverse( activeResultSet->begin(), activeResultSet->end() );
-        break;
     }
 
     QString resNum;
@@ -312,130 +295,81 @@ void StManagerStudyListComp::view ()
     return;
   }
 
-  SerieInfoVector info;
-  unsigned seriesIndex = 0;
+  emit start();
 
   // we are sure, there is exactly one selected
   int selectedRow = activeExamTable->selectedItems()[0]->row();
   int idx = activeExamTable->item( selectedRow, ATTRIBUTE_NUMBER )->text().toInt();
   TableRow *row = &activeResultSet->at( idx );
 
+  SerieInfoVector info;
+  unsigned seriesIndex = 0;
+  
   const char *recentTypePrefix = RECENT_REMOTE_EXAMS_SETTINGS_NAME;
+  bool isLocal = false;
 
-  // different FindStudyInfo and GetImageSet calls
-  switch ( studyListTab->currentIndex() )
-  {
-    case 0:
-      // Recent Exams tab active
-      if ( recentRemoteButton->isChecked() )
-      {
-        // find some info about selected study
-    	DcmProvider::FindStudyInfo( row->patientID, row->studyID, info );
+  try {
 
-        if ( info.size() > 1 ) {
-          seriesIndex = getSeriesIndex( info );
-        }
-
-        // now get image
-        DcmProvider::GetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
-      }
-      else
-      {
-        try { 
-          // find some info about selected study
-        	DcmProvider::LocalFindStudyInfo( row->patientID, row->studyID, info );
-
-          if ( info.size() > 1 ) {
-            seriesIndex = getSeriesIndex( info );  
-          }
-
-          // now get image
-          DcmProvider::LocalGetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
-
-          recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
-        }
-        catch ( ErrorHandling::ExceptionBase &e ) 
+    // different FindStudyInfo and GetImageSet calls
+    switch ( studyListTab->currentIndex() )
+    {
+      case 0:
+        // Recent Exams tab active
+        if ( recentRemoteButton->isChecked() )
         {
-	        QMessageBox::critical( this, tr( "Exception" ), e.what() );
-          emit cancel();
-          return;
-        } 
-      }
-      break;
-
-    case 1:
-      // Remote Exams tab active
-      // find some info about selected study
-    	DcmProvider::FindStudyInfo( row->patientID, row->studyID, info );
-
-      if ( info.size() > 1 ) {
-        seriesIndex = getSeriesIndex( info );
-      } 
-
-      // now get image
-      DcmProvider::GetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
-      break;
-
-    case 2:
-      // DICOMDIR tab active
-      // find some info about selected study
-    	DcmProvider::LocalFindStudyInfo( row->patientID, row->studyID, info );
-
-      if ( info.size() > 1 ) {
-        seriesIndex = getSeriesIndex( info );  
-      }
-
-      // now get image
-      DcmProvider::LocalGetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
-
-      recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
-      break;
-      
-    default:
-      if ( recentRemoteButton->isChecked() )
-      {
-        // find some info about selected study
-        DcmProvider::FindStudyInfo( row->patientID, row->studyID, info );
-
-        if ( info.size() > 1 ) {
-          seriesIndex = getSeriesIndex( info );
-        }
-
-        // now get image
-        DcmProvider::GetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );  
-      }
-      else
-      {
-        try { 
           // find some info about selected study
-          DcmProvider::LocalFindStudyInfo( row->patientID, row->studyID, info );
-
-          if ( info.size() > 1 ) {
-            seriesIndex = getSeriesIndex( info );  
-          }
-
-          // now get image
-          DcmProvider::LocalGetImageSet( row->patientID, row->studyID, info[seriesIndex].id, *dicomObjectSet );
-
-          recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
+    	    DcmProvider::FindStudyInfo( row->patientID, row->studyID, info );
         }
-        catch ( ErrorHandling::ExceptionBase &e ) 
+        else
         {
-	        QMessageBox::critical( this, tr( "Exception" ), e.what() );
-          emit cancel();
-          return;
-        } 
-      }
-      break;
+          // find some info about selected study
+      	  DcmProvider::LocalFindStudyInfo( row->patientID, row->studyID, info );
+         
+          recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
+          isLocal = true;
+        }
+        break;
+
+      case 1:
+        // Remote Exams tab active
+        // find some info about selected study
+    	  DcmProvider::FindStudyInfo( row->patientID, row->studyID, info );
+        break;
+
+      case 2:
+        // DICOMDIR tab active
+        // find some info about selected study
+    	  DcmProvider::LocalFindStudyInfo( row->patientID, row->studyID, info );
+
+        recentTypePrefix = RECENT_DICOMDIR_SETTINGS_NAME;
+        isLocal = true;
+        break;
+    }
+
+    if ( info.size() > 1 ) {
+      seriesIndex = getSeriesIndex( info );
+    }
+
+    // now get image
+    Multithreading::Thread loadingThread( SearchLoadingThread ( row->patientID, row->studyID,
+                                                                info[seriesIndex].id, isLocal,
+                                                                dicomObjectSet, this ) );
+
   }
+  catch ( ErrorHandling::ExceptionBase &e ) 
+  {
+    QMessageBox::critical( this, tr( "Exception" ), e.what() );
+
+    emit cancel();
+
+    return;
+  } 
 
   // fill the overlay info map
   fillOverlayInfo( activeExamTable, selectedRow );
 
   // add to Recent Exams
   updateRecentExams( row, recentTypePrefix );
-
-  emit ready();
 }
 
 
@@ -544,6 +478,24 @@ void StManagerStudyListComp::comboPathChanged ( const QString &text )
 
   directoryTree->setCurrentIndex( index );
   directoryTree->setExpanded( index, true );
+}
+
+
+void StManagerStudyListComp::loadingReady ()
+{
+  stop();
+
+  emit ready();
+}
+
+
+void StManagerStudyListComp::loadingException ( const QString &description )
+{
+  stop();
+
+  QMessageBox::critical( this, tr( "Exception" ), description );
+  
+  emit cancel();
 }
 
 

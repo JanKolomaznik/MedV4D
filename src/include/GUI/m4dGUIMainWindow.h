@@ -214,6 +214,10 @@ class m4dGUIMainWindow: public QMainWindow
      */
     void source ( const QString &pipelineDescription, const QString &connectionDescription );
 
+    void startProgress ();
+
+    void stopProgress ();
+
     void loadingReady ();
 
     void loadingException ( const QString &description );
