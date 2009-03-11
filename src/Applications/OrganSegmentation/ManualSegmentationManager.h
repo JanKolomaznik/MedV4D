@@ -8,7 +8,6 @@
 
 #include <QtCore>
 
-typedef M4D::Imaging::SlicedGeometry< M4D::Imaging::Geometry::BSpline<float32,2> >	GDataSet;
 
 class ManualSegmentationManager;
 

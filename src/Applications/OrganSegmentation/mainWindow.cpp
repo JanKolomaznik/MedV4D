@@ -16,7 +16,7 @@ mainWindow::mainWindow ()
 	Q_INIT_RESOURCE( mainWindow ); 
 
 
-	mainViewerDesktop->setDefaultConnection( MainManager::GetInputConnection() );
+	mainViewerDesktop->setDefaultConnection( MainManager::Instance().GetInputConnection() );
 	mainViewerDesktop->setConnectionForAll( mainViewerDesktop->getDefaultConnection() );
 
 	// add your own settings widgets
@@ -34,7 +34,7 @@ mainWindow::mainWindow ()
 void 
 mainWindow::process ( M4D::Dicom::DicomObjSetPtr dicomObjSet )
 {
-	MainManager::InitInput( dicomObjSet );
+	MainManager::Instance().InitInput( dicomObjSet );
 
 	//mainViewerDesktop->setConnectionForAll( mainViewerDesktop->getDefaultConnection() );
 

@@ -3,6 +3,8 @@
 
 #include "backendForDICOM.h"
 #include "Imaging.h"
+#include <QtCore>
+#include "SliceSplineFill.h"
 
 typedef M4D::Imaging::AbstractImage::Ptr	AbstractImagePtr;
 typedef M4D::Imaging::Image< int16, 3 >	InputImageType;
@@ -10,31 +12,56 @@ typedef InputImageType::Ptr	InputImagePtr;
 typedef M4D::Imaging::ConnectionTyped< M4D::Imaging::AbstractImage >	InImageConnection;
 typedef M4D::Imaging::ConnectionTyped< InputImageType >	ImageConnectionType;
 
-class MainManager
+typedef M4D::Imaging::SlicedGeometry< M4D::Imaging::Geometry::BSpline<float32,2> >	GDataSet;
+typedef M4D::Imaging::ConnectionTyped< GDataSet >	GDatasetConnectionType;
+typedef M4D::Imaging::ConnectionTyped< M4D::Imaging::Mask3D >		Mask3DConnectionType;
+
+class MainManager;
+
+class MainManager: public QObject
 {
+	Q_OBJECT;
 public:
-	static void
+	static MainManager &
+	Instance();
+
+	void
 	Initialize();
 
-	static void
+	void
 	Finalize();
 
-	static void
+	void
 	InitInput( M4D::Dicom::DicomObjSetPtr dicomObjSet );
 
-	static ImageConnectionType *
+	ImageConnectionType *
 	GetInputConnection()
 		{ return _inConvConnection; }
 
-	static InputImagePtr
+	InputImagePtr
 	GetInputImage()
 		{ return _inputImage = _inConvConnection->GetDatasetPtrTyped(); }
+
+	void
+	ProcessResultDatasets( InputImagePtr image, GDataSet::Ptr splines );
 protected:
-	static M4D::Dicom::DicomObjSetPtr		_inputDcmSet;
-	static InputImagePtr 					_inputImage;
-	static InImageConnection				*_inConnection;
-	static ImageConnectionType				*_inConvConnection;
-	static M4D::Imaging::PipelineContainer			_conversionPipeline;
+	void
+	CreateResultProcessPipeline();
+
+	M4D::Dicom::DicomObjSetPtr		_inputDcmSet;
+	InputImagePtr 					_inputImage;
+	InImageConnection				*_inConnection;
+	ImageConnectionType				*_inConvConnection;
+	M4D::Imaging::PipelineContainer			_conversionPipeline;
+
+	M4D::Imaging::PipelineContainer			_resultProcessingPipeline;
+	ImageConnectionType				*_inResultImageConnection;
+	GDatasetConnectionType				*_inResultGDatasetConnection;
+	Mask3DConnectionType				*_resultProcessMaskConnection;
+
+	M4D::Imaging::SliceSplineFill< float32 >			*_splineFillFilter;
+
+	static MainManager * _instance;
 };
 
 #endif //MAIN_MANAGER_H

@@ -169,6 +169,7 @@ protected:
 	int32 _minSlice;
 	int32 _maxSlice;
 	ReaderBBoxInterface::Ptr readerBBox[ InCount ];
+	WriterBBoxInterface		*writerBBox;
 
 	float32 _inEstimatedValue;
 	float32	_inVariation;

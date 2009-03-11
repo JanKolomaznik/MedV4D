@@ -242,7 +242,7 @@ KidneySegmentationManager::Initialize()
 	}
 	
 	
-	_inputImage = MainManager::GetInputImage();
+	_inputImage = MainManager::Instance().GetInputImage();
 	_inConnection->PutDataset( _inputImage );
 
 
@@ -336,9 +336,15 @@ KidneySegmentationManager::RunSplineSegmentation()
 
 	QMessageBox::information( NULL, "Execution finished", "Filter finished its work" );
 
-	std::cout << "Done\n";
+
+
+	//std::cout << "Done\n";
 
 	GDataSet::Ptr ptr = _outGeomConnection->GetDatasetPtrTyped();
+
+	D_PRINT( "Go to Process results." );
+
+	MainManager::Instance().ProcessResultDatasets( _inputImage, ptr );
 	sState->ShowGeometryDataset( ptr );
 	
 }

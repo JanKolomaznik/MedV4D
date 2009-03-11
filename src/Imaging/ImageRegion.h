@@ -162,7 +162,7 @@ public:
 	Vector< int32, Dimension >
 	GetMaximum()const
 		{
-			return _origin + _size;
+			return _origin + Vector< int32, Dimension >( (int32*)_size.GetData() );
 		}
 
 	int32
@@ -305,6 +305,10 @@ public:
 			}
 			return _pointerCoordinatesInSource[idx]; 
 		}
+
+	Vector< float32, Dimension >
+	GetElementExtents()const
+		{ return _elementExtents; }
 protected:
 	
 private:

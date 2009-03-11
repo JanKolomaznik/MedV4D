@@ -151,7 +151,7 @@ ManualSegmentationManager::Initialize()
 	}
 	
 
-	_inputImage = MainManager::GetInputImage();
+	_inputImage = MainManager::Instance().GetInputImage();
 	_inConnection = new ImageConnectionType( false );
 	_inConnection->PutDataset( _inputImage );
 

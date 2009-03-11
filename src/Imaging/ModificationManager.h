@@ -100,6 +100,11 @@ class ModificationBBox
 public:
 	ModificationBBox( 
 		int32 x1, 
+		int32 x2
+		);
+
+	ModificationBBox( 
+		int32 x1, 
 		int32 y1, 
 		int32 x2, 
 		int32 y2 
@@ -177,6 +182,18 @@ public:
 		Vector< int32, Dim > min,
 		Vector< int32, Dim > max
 	      );
+
+	WriterBBoxInterface &
+	AddMod1D( 
+		int32 x1, 
+		int32 x2 
+		);
+
+	ReaderBBoxInterface::Ptr
+	GetMod1D( 
+		int32 x1, 
+		int32 x2
+		);
 
 	//ModBBoxWholeDataset&
 	//GetWholeDatasetBBox();

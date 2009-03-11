@@ -27,8 +27,10 @@ PolygonFill( const M4D::Imaging::Geometry::Polyline< CoordType, 2 > & polygon, I
 	
 	if( polygon.Size() < 3 ) return;
 
+	D_PRINT( "Edges count = " << polygon.Size() );
 	PrepareEdgeRecords( polygon, edgeRecords, xScale, yScale );
 
+	D_PRINT( "Edge records count = " << edgeRecords.size() );
 	if( edgeRecords.empty() ) return;
 
 	ComputeFillIntervals( edgeRecords, intervals );	
@@ -129,7 +131,7 @@ ComputeFillIntervals( EdgeRecords & edgeRecords, IntervalRecords & intervals )
 template< typename ElementType >
 struct FillFunctor
 {
-	FillFunctor( M4D::Imaging::ImageRegion< ElementType, 2 > region, ElementType value ):
+	FillFunctor( M4D::Imaging::ImageRegion< ElementType, 2 > &region, ElementType value ):
 		_region( region ), _value( value ) {}
 
 	void
@@ -138,7 +140,7 @@ struct FillFunctor
 		if( _region.GetMinimum( 1 ) > rec.yCoordinate || _region.GetMaximum( 1 ) <= rec.yCoordinate ) { return; }
 
 		RasterPos pos = RasterPos( Max( rec.xMin, _region.GetMinimum(0) ), rec.yCoordinate);
-		for( ; pos[0] <= Min( rec.xMax, _region.GetMaximum()-1 ); ++pos[0] ) {
+		for( ; pos[0] <= Min( rec.xMax, _region.GetMaximum()[0]-1 ); ++pos[0] ) {
 
 			_region.GetElement( pos ) = _value;
 		}
@@ -151,9 +153,22 @@ struct FillFunctor
 
 template< typename ElementType >
 void
-FillRegion( M4D::Imaging::ImageRegion< ElementType, 2 > region, const IntervalRecords &intervals, ElementType value )
+FillRegionFromIntervals( M4D::Imaging::ImageRegion< ElementType, 2 > &region, const IntervalRecords &intervals, ElementType value )
 {
+	D_PRINT( "Fill intervals count = " << intervals.size() );
 	std::for_each( intervals.begin(), intervals.end(), FillFunctor< ElementType >( region, value ) );
+}
+
+template< typename ElementType, typename CoordType >
+void
+FillRegion( M4D::Imaging::ImageRegion< ElementType, 2 > &region, const M4D::Imaging::Geometry::Polyline< CoordType, 2 > & polygon, ElementType value )
+{
+	IntervalRecords intervals;
+
+	D_PRINT( "Region element extents = " << region.GetElementExtents() );
+	PolygonFill( polygon, intervals, region.GetElementExtents()[0], region.GetElementExtents()[1] );
+
+	FillRegionFromIntervals( region, intervals, value );
 }
 
 

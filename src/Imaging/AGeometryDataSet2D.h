@@ -12,6 +12,7 @@
 #include <vector>
 #include "Common.h"
 #include "Imaging/GeometryDataSetFactory.h"
+#include "Imaging/ModificationManager.h"
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -45,6 +46,28 @@ public:
 	PREPARE_CAST_METHODS_MACRO;
 	IS_NOT_CONSTRUCTABLE_MACRO;
 	
+	WriterBBoxInterface &
+	SetDirtyBBox( 
+			int32 min,
+			int32 max 
+			)
+		{ return _modificationManager.AddMod( Vector< int32, 1 >( min ), Vector< int32, 1 >( max ) ); }
+
+	WriterBBoxInterface &
+	SetWholeDirtyBBox()
+		{ return SetDirtyBBox( _minSlice, _maxSlice ); }
+
+
+	ReaderBBoxInterface::Ptr
+	GetDirtyBBox( 
+			int32 min,
+			int32 max 
+			)const
+		{ return _modificationManager.GetMod( Vector< int32, 1 >( min ), Vector< int32, 1 >( max ) ); }
+
+	ReaderBBoxInterface::Ptr 
+	GetWholeDirtyBBox()const
+		{ return GetDirtyBBox( _minSlice, _maxSlice ); }
 	
 	int32
 	GetSliceMin()const
@@ -59,6 +82,8 @@ protected:
 
 	int32 _minSlice;
 	int32 _maxSlice;
+
+	mutable ModificationManager _modificationManager;
 };
 
 //TODO - locking

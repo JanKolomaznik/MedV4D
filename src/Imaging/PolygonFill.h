@@ -64,7 +64,12 @@ PolygonFill( const M4D::Imaging::Geometry::Polyline< CoordType, 2 > & polygon, I
 
 template< typename ElementType >
 void
-FillRegion( M4D::Imaging::ImageRegion< ElementType, 2 > region, const IntervalRecords &intervals, ElementType value );
+FillRegionFromIntervals( M4D::Imaging::ImageRegion< ElementType, 2 > &region, const IntervalRecords &intervals, ElementType value );
+
+template< typename ElementType, typename CoordType >
+void
+FillRegion( M4D::Imaging::ImageRegion< ElementType, 2 > &region, const M4D::Imaging::Geometry::Polyline< CoordType, 2 > & polygon, ElementType value );
+
 
 }/*namespace Algorithms*/
 }/*namespace Imaging*/

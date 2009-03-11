@@ -115,6 +115,7 @@ SnakeSegmentationFilter< ElementType >::MarkChanges( AbstractPipeFilter::UPDATE_
 	for( unsigned i=0; i < InCount; ++i ) {
 		readerBBox[i] = in[i]->GetWholeDirtyBBox();
 	}
+	writerBBox = &(out->SetWholeDirtyBBox());
 }
 
 template < typename ElementType >
@@ -225,10 +226,9 @@ SnakeSegmentationFilter< ElementType >::ExecutionThreadMethod( AbstractPipeFilte
 	if( !CanContinue() ) return false;
 
 	if ( !(readerBBox[0]->WaitWhileDirty() == MS_MODIFIED ) ) {
+		writerBBox->SetState( MS_CANCELED );
 		return false;
 	}
-	
-	//TODO locking
 	
 	CurveType northSpline = CreateSquareControlPoints( 3.0f );
 	CurveType southSpline = northSpline;
@@ -244,6 +244,8 @@ SnakeSegmentationFilter< ElementType >::ExecutionThreadMethod( AbstractPipeFilte
 	if( (_minSlice + stepCount) != (_maxSlice - stepCount-2) ) {//TODO check !!!
 		ProcessSlice( _minSlice + stepCount, southSpline );
 	}
+
+	writerBBox->SetModified();
 	return true;
 }
 
@@ -255,7 +257,7 @@ SnakeSegmentationFilter< ElementType >
 		typename SnakeSegmentationFilter< ElementType >::CurveType &initialization 
 		)
 {
-	static const unsigned ResultSampleRate = 5;
+	static const unsigned ResultSampleRate = 8;
 
 	Vector< float32, 1 > a(5.0f);
 	ObjectsInSlice &slice = this->out->GetSlice( sliceNumber );

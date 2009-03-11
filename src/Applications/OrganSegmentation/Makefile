@@ -25,6 +25,7 @@ MOCINPUT=	mainWindow.h \
 		SegmentationWidget.h \
 		SettingsBox.h \
 		ManualSegmentationManager.h \
+		MainManager.h \
 		KidneySegmentationManager.h
 
 RCCINPUT=	mainWindow.qrc

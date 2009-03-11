@@ -19,7 +19,7 @@ int main ( int argc, char *argv[] )
 	SET_DOUT( debugFile );
 
 
-	MainManager::Initialize();
+	MainManager::Instance().Initialize();
 
 	QApplication app( argc, argv );
 	app.setQuitOnLastWindowClosed( true );

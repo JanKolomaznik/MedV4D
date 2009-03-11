@@ -121,6 +121,19 @@ WriterBBoxInterface::SetModified()
 
 ModificationBBox::ModificationBBox( 
 		int32 x1, 
+		int32 x2 
+		) 
+{
+	_dimension = 1;
+	_first = new int32[_dimension];
+	_first[0] = x1;
+
+	_second = new int32[_dimension];
+	_second[0] = x2;
+}
+
+ModificationBBox::ModificationBBox( 
+		int32 x1, 
 		int32 y1, 
 		int32 x2, 
 		int32 y2 
@@ -213,6 +226,38 @@ ModificationManager::~ModificationManager()
 
 		std::for_each( _changes.begin(), _changes.end(), M4D::Functors::Deletor< WriterBBoxInterface *>() );
 	}
+}
+
+WriterBBoxInterface &
+ModificationManager::AddMod1D( 
+	int32 x1, 
+	int32 x2 
+	)
+{
+	Multithreading::RecursiveScopedLock lock( _accessLock );
+
+	_actualTimestamp.Increase();
+	//TODO - construction of right object
+	WriterBBoxInterface *change = new WriterBBoxInterface( _actualTimestamp, this, new ModificationBBox( x1, x2 ) );
+	
+	_changes.push_back( change );
+
+	return *change;
+}
+
+ReaderBBoxInterface::Ptr
+ModificationManager::GetMod1D( 
+	int32 x1, 
+	int32 x2 
+	)
+{
+	//TODO
+	Multithreading::RecursiveScopedLock lock( _accessLock );
+
+	//TODO - construction of right object
+	ReaderBBoxInterface *changeProxy = new ProxyReaderBBox( _actualTimestamp, this, new ModificationBBox( x1, x2 ) );
+
+	return ReaderBBoxInterface::Ptr( changeProxy );
 }
 
 WriterBBoxInterface &
@@ -399,6 +444,16 @@ ModificationManager::Reset()
 
 template<>
 WriterBBoxInterface &
+ModificationManager::AddMod< 1 >( 
+		Vector< int32, 1 > min,
+		Vector< int32, 1 > max
+		)
+{
+	return this->AddMod1D( min[0], max[0] );
+}
+
+template<>
+WriterBBoxInterface &
 ModificationManager::AddMod< 2 >( 
 		Vector< int32, 2 > min,
 		Vector< int32, 2 > max
@@ -415,6 +470,16 @@ ModificationManager::AddMod< 3 >(
 		)
 {
 	return this->AddMod3D( min[0], min[1], min[2], max[0], max[1], max[2] );
+}
+
+template<>
+ReaderBBoxInterface::Ptr
+ModificationManager::GetMod< 1 >( 
+		Vector< int32, 1 > min,
+		Vector< int32, 1 > max
+		)
+{
+	return this->GetMod1D( min[0], max[0] );
 }
 
 template<>
