@@ -163,23 +163,15 @@ void m4dGUIMainWindow::search ()
   actualStudy.rightOverlayInfo.clear();
 
   // Study Manager Dialog - this will fill the dicomObjSet, overlay infos
-  if ( studyManagerDialog->exec() ) 
-  {
-    if ( !actualStudy.dicomObjSet->empty() )
-    {
-      mainViewerDesktop->getSelectedViewerWidget()->setLeftSideTextData( actualStudy.leftOverlayInfo );  
-      mainViewerDesktop->getSelectedViewerWidget()->setRightSideTextData( actualStudy.rightOverlayInfo );  
-      process( DicomObjSetPtr( actualStudy.dicomObjSet ) );
-    }
-    else {
-      QMessageBox::critical( this, tr( "Exception" ), tr( "Empty image - nothing to process" ) );
-    }
-  }
+  studyManagerDialog->show(); 
 }
 
 
 void m4dGUIMainWindow::open ()
 {
+  actualStudy.leftOverlayInfo.clear();
+  actualStudy.rightOverlayInfo.clear();
+
   QString path( QFileDialog::getOpenFileName( this, tr( "Open" ), currentOpenPath, "*.dcm" ) );
   
   if ( !path.isNull() ) 
@@ -414,15 +406,15 @@ void m4dGUIMainWindow::loadingReady ()
 {
   if ( !actualStudy.dicomObjSet->empty() ) 
   {
+    mainViewerDesktop->getSelectedViewerWidget()->setLeftSideTextData( actualStudy.leftOverlayInfo );  
+    mainViewerDesktop->getSelectedViewerWidget()->setRightSideTextData( actualStudy.rightOverlayInfo );  
+
     process( DicomObjSetPtr( actualStudy.dicomObjSet ) );
 
     stopProgress();
   }
-  else
-  {
-    stopProgress();
-
-    QMessageBox::critical( this, tr( "Exception" ), tr( "Empty image - nothing to process" ) );
+  else {
+    loadingException ( tr( "Empty image - nothing to process" ) );
   } 
 }
 
@@ -452,13 +444,17 @@ void m4dGUIMainWindow::createStudyManagerDialog ()
   studyManagerDialog = new QDialog( this, Qt::WindowTitleHint | Qt::WindowSystemMenuHint );
   studyManagerDialog->setWindowTitle( tr( "Study Manager" ) );
   studyManagerDialog->setWindowIcon( QIcon( ":/icons/search.png" ) );
+  studyManagerDialog->setWindowModality( Qt::WindowModal );
 
   studyManagerWidget = new m4dGUIStudyManagerWidget( studyManagerDialog );
   connect( studyManagerWidget->getStudyListComponent(), SIGNAL(ready()), studyManagerDialog, SLOT(accept()) );
   connect( studyManagerWidget->getStudyListComponent(), SIGNAL(cancel()), studyManagerDialog, SLOT(reject()) );
+  connect( studyManagerWidget->getStudyListComponent(), SIGNAL(start()), studyManagerDialog, SLOT(hide()) );
+
+  connect( studyManagerWidget->getStudyListComponent(), SIGNAL(ready()), this, SLOT(loadingReady()) );
+  connect( studyManagerWidget->getStudyListComponent(), SIGNAL(exception( const QString & )), this, SLOT(loadingException( const QString & )) );
  
   connect( studyManagerWidget->getStudyListComponent(), SIGNAL(start()), this, SLOT(startProgress()) );
-  connect( studyManagerWidget->getStudyListComponent(), SIGNAL(stop()), this, SLOT(stopProgress()) );
 
   studyManagerWidget->getStudyListComponent()->setOverlayInfoPtr( &actualStudy.leftOverlayInfo,
                                                                   &actualStudy.rightOverlayInfo );

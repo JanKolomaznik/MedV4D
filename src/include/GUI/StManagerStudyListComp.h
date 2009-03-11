@@ -166,9 +166,9 @@ class StManagerStudyListComp: public QWidget
      */
     void cancel ();
 
-    void start ();
+    void exception ( const QString &description );
 
-    void stop ();
+    void start ();
 
   private:
 

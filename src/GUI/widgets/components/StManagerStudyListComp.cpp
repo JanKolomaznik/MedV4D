@@ -79,8 +79,6 @@ StManagerStudyListComp::StManagerStudyListComp ( QDialog *studyManagerDialog, QW
   // =-=-=-=-=-=-=-=- Tabs -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
   
   studyListTab = new QTabWidget;
-  //connect( studyListTab, SIGNAL(currentChanged(int)), this, SLOT(activeTabChanged()) );
-  //connect( studyListTab, SIGNAL(currentChanged(int)), this, SLOT(setEnabledView()) );
 
   // Recent Exams tab
   QHBoxLayout *recentExamsLayout = new QHBoxLayout;
@@ -119,9 +117,6 @@ StManagerStudyListComp::StManagerStudyListComp ( QDialog *studyManagerDialog, QW
   directoryComboBox = createDirectoryComboBox();
   directoryLayout->addWidget( directoryComboBox );
   DICOMDIRsplitter->addWidget( directoryPane );
-
-  //connect( directoryComboBox, SIGNAL(editTextChanged( const QString & )), this, SLOT(comboPathChanged( const QString & )) );
-  //connect( directoryTree, SIGNAL(clicked( const QModelIndex & )), this, SLOT(treePathChanged( const QModelIndex & )) );
 
   DICOMDIRLayout->addWidget( DICOMDIRsplitter );
 
@@ -165,8 +160,7 @@ StManagerStudyListComp::StManagerStudyListComp ( QDialog *studyManagerDialog, QW
   
   activeResultSet = recentResultSet;
 
-
-	//TODO - check if can move here - synchronization problems - signals emited during initialization
+	// connections here - because signals are emited during initialization
   connect( studyListTab, SIGNAL(currentChanged(int)), this, SLOT(activeTabChanged()) );
   connect( studyListTab, SIGNAL(currentChanged(int)), this, SLOT(setEnabledView()) );
 
@@ -358,9 +352,7 @@ void StManagerStudyListComp::view ()
   }
   catch ( ErrorHandling::ExceptionBase &e ) 
   {
-    QMessageBox::critical( this, tr( "Exception" ), e.what() );
-
-    emit cancel();
+    loadingException( e.what() );
 
     return;
   } 
@@ -483,19 +475,15 @@ void StManagerStudyListComp::comboPathChanged ( const QString &text )
 
 void StManagerStudyListComp::loadingReady ()
 {
-  stop();
-
   emit ready();
 }
 
 
 void StManagerStudyListComp::loadingException ( const QString &description )
 {
-  stop();
-
-  QMessageBox::critical( this, tr( "Exception" ), description );
-  
   emit cancel();
+
+  emit exception( description );
 }
 
 

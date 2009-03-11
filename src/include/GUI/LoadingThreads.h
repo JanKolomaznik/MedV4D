@@ -34,9 +34,9 @@ class OpenLoadingThread: public QObject
       result     = lt.result;
       mainWindow = lt.mainWindow;
 
-      connect( this, SIGNAL( ready() ), mainWindow, SLOT( loadingReady() ), 
+      connect( this, SIGNAL(ready()), mainWindow, SLOT(loadingReady()), 
                Qt::QueuedConnection );
-      connect( this, SIGNAL( exception( const QString & ) ), mainWindow, SLOT( loadingException( const QString & ) ), 
+      connect( this, SIGNAL(exception( const QString & )), mainWindow, SLOT(loadingException( const QString & )), 
                Qt::QueuedConnection );
     }
 
@@ -77,9 +77,9 @@ class SearchLoadingThread: public QObject
       result    = lt.result;
       studyListComponent = lt.studyListComponent;
 
-      connect( this, SIGNAL( ready() ), studyListComponent, SLOT( loadingReady() ),
+      connect( this, SIGNAL(ready()), studyListComponent, SLOT(loadingReady()),
                Qt::QueuedConnection );
-      connect( this, SIGNAL( exception( const QString & ) ), studyListComponent, SLOT( loadingException( const QString & ) ), 
+      connect( this, SIGNAL(exception( const QString & )), studyListComponent, SLOT(loadingException( const QString & )), 
                Qt::QueuedConnection );
     }
 
