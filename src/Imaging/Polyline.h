@@ -2,6 +2,7 @@
 #define POLYLINE_H
 
 #include "Imaging/PointSet.h"
+#include "Imaging/GeometricAlgorithms.h"
 
 namespace M4D
 {
@@ -39,6 +40,21 @@ protected:
 
 };
 
+template< typename CoordType >
+CoordType
+PolylineDistanceSquared( const Vector< CoordType, 2 > &pos, const Polyline< CoordType, 2 > &polyline )
+{
+	CoordType dist = PointLineSegmentDistanceSquared( pos, polyline[0] , polyline[1] - polyline[0] );
+	for( unsigned i = 2; i < polyline.Size(); ++i ) {
+		dist = Min( dist, 
+			PointLineSegmentDistanceSquared( pos, polyline[i-1] , polyline[i] - polyline[i-1] ) );
+	}
+	if( polyline.Cyclic() ) {
+		dist = Min( dist, 
+			PointLineSegmentDistanceSquared( pos, polyline[polyline.Size()-1] , polyline[0] - polyline[polyline.Size()-1] ) );
+	}
+	return dist;
+}
 	
 }/*namespace Geometry*/
 }/*namespace Imaging*/

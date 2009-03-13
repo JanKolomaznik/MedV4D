@@ -94,7 +94,7 @@ public:
       m_pixelCellMask >>= numZerosLeft;
     }
     
-    D_COMMAND( std::cout << "DicomDataStreamDecoder: bitsAlloc: " 
+    D_PRINT( "DicomDataStreamDecoder: bitsAlloc: " 
         		<< m_bitsAllocated
         		<< " bitsStored: " 
         		<< m_bitsStored 

@@ -6,14 +6,16 @@
 #include <QtCore>
 #include "SliceSplineFill.h"
 
-typedef M4D::Imaging::AbstractImage::Ptr	AbstractImagePtr;
-typedef M4D::Imaging::Image< int16, 3 >	InputImageType;
-typedef InputImageType::Ptr	InputImagePtr;
-typedef M4D::Imaging::ConnectionTyped< M4D::Imaging::AbstractImage >	InImageConnection;
-typedef M4D::Imaging::ConnectionTyped< InputImageType >	ImageConnectionType;
+typedef M4D::Imaging::AbstractImage::Ptr		AbstractImagePtr;
+typedef M4D::Imaging::Image< int16, 3 >			InputImageType;
+typedef M4D::Imaging::Geometry::BSpline<float32,2>	CurveType;
+typedef M4D::Imaging::SlicedGeometry< CurveType >	GDataSet;
 
-typedef M4D::Imaging::SlicedGeometry< M4D::Imaging::Geometry::BSpline<float32,2> >	GDataSet;
-typedef M4D::Imaging::ConnectionTyped< GDataSet >	GDatasetConnectionType;
+typedef InputImageType::Ptr	InputImagePtr;
+
+typedef M4D::Imaging::ConnectionTyped< M4D::Imaging::AbstractImage >	InImageConnection;
+typedef M4D::Imaging::ConnectionTyped< InputImageType >			ImageConnectionType;
+typedef M4D::Imaging::ConnectionTyped< GDataSet >			GDatasetConnectionType;
 typedef M4D::Imaging::ConnectionTyped< M4D::Imaging::Mask3D >		Mask3DConnectionType;
 
 class MainManager;

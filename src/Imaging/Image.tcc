@@ -280,6 +280,9 @@ Image< ElementType, Dim >::SetDirtyBBox(
 			typename Image< ElementType, Dim >::PointType max
 		)
 {
+	if( ! _imageData ) {
+		_THROW_ ErrorHandling::EObjectUnavailable( "Image data buffer unavailable." );
+	}
 	ModificationManager & modManager = _imageData->GetModificationManager();
 
 	DIMENSION_TEMPLATE_SWITCH_MACRO( _sourceDimension, 
@@ -297,6 +300,9 @@ Image< ElementType, Dim >::GetDirtyBBox(
 			typename Image< ElementType, Dim >::PointType max
 		)const
 {
+	if( ! _imageData ) {
+		_THROW_ ErrorHandling::EObjectUnavailable( "Image data buffer unavailable." );
+	}
 	ModificationManager & modManager = _imageData->GetModificationManager();
 
 	DIMENSION_TEMPLATE_SWITCH_MACRO( _sourceDimension, 

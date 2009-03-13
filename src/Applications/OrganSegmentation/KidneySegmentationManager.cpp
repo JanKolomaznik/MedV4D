@@ -3,6 +3,8 @@
 #include <cmath>
 #include "KidneySegmentationManager.h"
 #include <QtGui>
+#include "OGLDrawing.h"
+
 
 using namespace M4D;
 using namespace M4D::Imaging;
@@ -13,71 +15,6 @@ KidneySegmentationManager		*KidneySegmentationManager::_instance = NULL;
 
 const int SAMPLE_RATE = 5;
 
-static void
-GLDrawPoint( const PointType &point )
-{
-	glVertex2f( point[0], point[1] );
-}
-
-static void
-GLDrawPolyline( const CurveType::SamplePointSet &polyline )
-{
-	int style = polyline.Cyclic() ? GL_LINE_LOOP : GL_LINE_STRIP;
-		
-	glBegin( style );
-		std::for_each( polyline.Begin(), polyline.End(), GLDrawPoint );
-	glEnd();
-}
-
-static void
-GLDrawBSpline( const CurveType &spline )
-{
-	GLDrawPolyline( spline.GetSamplePoints() );
-}
-
-static void
-GLDrawBSplineCP( const CurveType &spline )
-{
-	GLDrawPolyline( spline.GetSamplePoints() );
-
-	glPointSize( 3.0f );
-	glBegin( GL_POINTS );
-		std::for_each( spline.Begin(), spline.End(), GLDrawPoint );
-	glEnd();
-	glPointSize( 1.0f );
-}
-
-static void
-GLDrawCrossMark( PointType center, float32 radius )
-{
-	static const float32 cosA = cos( PI / 6.0 );
-	static const float32 sinA = sin( PI / 6.0 );
-	static const float32 sqrt2inv = 1.0 / sqrt( 2.0 );
-	float32 pomR = radius * sqrt2inv;
-
-	glPushMatrix();
-
-	glTranslatef( center[0], center[1], 0.0f );
-	glBegin( GL_LINES );
-		glVertex2f( pomR, pomR );		
-		glVertex2f( -pomR, -pomR );		
-		glVertex2f( -pomR, pomR );		
-		glVertex2f( pomR, -pomR );		
-	glEnd();
-
-	glBegin( GL_LINE_LOOP );
-		float32 px = pomR;
-		float32 py = pomR;
-		for( int i = 0; i < 12; ++i ) {
-			glVertex2f( px, py );
-			float32 oldpx = px;
-			px = px * cosA - py * sinA;
-			py = oldpx * sinA + py * cosA;
-		}
-	glEnd();
-
-	glPopMatrix();
-}
 
 class KidneyViewerSpecialState: public M4D::Viewer::SliceViewerSpecialStateOperator
 {
@@ -242,8 +179,8 @@ KidneySegmentationManager::Initialize()
 	}
 	
 	
-	_inputImage = MainManager::Instance().GetInputImage();
-	_inConnection->PutDataset( _inputImage );
+	//_inputImage = MainManager::Instance().GetInputImage();
+	//_inConnection->PutDataset( _inputImage );
 
 
 
@@ -342,10 +279,20 @@ KidneySegmentationManager::RunSplineSegmentation()
 
 	GDataSet::Ptr ptr = _outGeomConnection->GetDatasetPtrTyped();
 
-	D_PRINT( "Go to Process results." );
+	/*D_PRINT( "Go to Process results." );
 
 	MainManager::Instance().ProcessResultDatasets( _inputImage, ptr );
+	*/
+
 	sState->ShowGeometryDataset( ptr );
 	
+	
+}
+
+void
+KidneySegmentationManager::Activate( InputImageType::Ptr inImage )
+{
+	_inputImage = inImage;
+	_inConnection->PutDataset( _inputImage );
 }
 

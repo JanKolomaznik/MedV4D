@@ -136,6 +136,15 @@ private:
 
 };
 
+class EObjectUnavailable: public ExceptionBase
+{
+public:
+	EObjectUnavailable( std::string name ) throw(): ExceptionBase( name ) {}
+	EObjectUnavailable() throw(): ExceptionBase( "Object is'n available." ) {}
+private:
+
+};
+
 class ETODO: public ExceptionBase
 {
 public:

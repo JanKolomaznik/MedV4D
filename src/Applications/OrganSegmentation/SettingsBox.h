@@ -34,6 +34,9 @@ protected slots:
 
 	void
 	StartSegmentationKidneySegm();
+
+	void
+	BeginManualCorrection();
 protected:
 	void
 	CreateWidgets();

@@ -191,6 +191,11 @@ MainExecutionThread::operator()()
 			_filter->PrepareOutputDatasets();
 			_filter->_callPrepareOutputDatasets = false;
 		}
+
+
+		//Mark changed parts of output
+		D_PRINT( "++++++ " << _filter->GetName() << " - MarkChanges()" );
+		_filter->MarkChanges( _updateType );
 	} 
 	catch( ErrorHandling::ExceptionBase &e ) {
 		D_PRINT( "------ " << _filter->GetName() << " - EXCEPTION OCCURED : " << e );
@@ -206,11 +211,6 @@ MainExecutionThread::operator()()
 		_filter->CleanAfterStoppedRun();
 		return;
 	}
-
-
-	//Mark changed parts of output
-	D_PRINT( "++++++ " << _filter->GetName() << " - MarkChanges()" );
-	_filter->MarkChanges( _updateType );
 
 	_filter->_outputPorts.SendMessage( 
 			MsgFilterStartModification::CreateMsg( _updateType == AbstractPipeFilter::RECALCULATION ), 

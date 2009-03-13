@@ -1,6 +1,7 @@
 
 #include "ManualSegmentationManager.h"
 #include "Imaging.h"
+#include "OGLDrawing.h"
 
 using namespace M4D;
 using namespace M4D::Imaging;
@@ -12,63 +13,18 @@ typedef CurveType::PointType			PointType;
 ManualSegmentationManager		*ManualSegmentationManager::_instance = NULL;
 const int SAMPLE_RATE = 5;
 
-static void
-GLDrawPoint( const PointType &point )
-{
-	glVertex2f( point[0], point[1] );
-}
-
-static void
-GLDrawPolyline( const CurveType::SamplePointSet &polyline )
-{
-	glBegin( GL_LINE_LOOP );
-		std::for_each( polyline.Begin(), polyline.End(), GLDrawPoint );
-	glEnd();
-}
-
-static void
-GLDrawBSpline( const CurveType &spline )
-{
-	GLDrawPolyline( spline.GetSamplePoints() );
-}
-
 class ViewerSpecialState: public M4D::Viewer::SliceViewerSpecialStateOperator
 {
 public:
 	enum SubStates { START_NEW_SHAPE, DEFINING_SHAPE };
 
-	ViewerSpecialState( GDataSet::Ptr dset ): _dataset( dset ), _curve( NULL ), _state( START_NEW_SHAPE )
+	ViewerSpecialState(): _manager( ManualSegmentationManager::Instance() )
 		{  }
 
 	void
 	Draw( M4D::Viewer::SliceViewer & viewer, int sliceNum, double zoomRate )
 	{
-		try{
-		const GDataSet::ObjectsInSlice &slice = _dataset->GetSlice( sliceNum );
-		if( _state == DEFINING_SHAPE && sliceNum == _sliceNumber && _curve ) {
-			for( uint32 i = 0; i < slice.size(); ++i ) {
-				if( i != _curveIdx ) {
-					GLDrawBSpline( slice[i] );
-				}
-			}
-
-			GLDrawBSpline( *_curve );
-
-			float32 size;
-			glGetFloatv( GL_POINT_SIZE, &size );
-			glPointSize(5.0);
-
-			glBegin( GL_POINTS );
-				std::for_each( _curve->Begin(), _curve->End(), GLDrawPoint );
-			glEnd();
-
-			glPointSize(size);
-		} else {
-			std::for_each( slice.begin(), slice.end(), GLDrawBSpline );
-		}
-		} catch (...) {
-
-		}
+		_manager.Draw( sliceNum );
 	}
 
 
@@ -81,44 +37,22 @@ public:
 	void 
 	ButtonMethodLeft( int amountH, int amountV, double zoomRate )
 	{
-		(*_curve)[ _lastPointIdx ][0] += ((float32)amountH)/zoomRate;
+		_manager.LeftButtonMove( Vector< float32, 2 >( ((float32)amountH)/zoomRate, ((float32)amountV)/zoomRate ) );
+		/*(*_curve)[ _lastPointIdx ][0] += ((float32)amountH)/zoomRate;
 		(*_curve)[ _lastPointIdx ][1] += ((float32)amountV)/zoomRate;
-		(*_curve).ReSample();
+		(*_curve).ReSample();*/
 	}
 	
 	void 
 	SelectMethodRight( double x, double y, int sliceNum, double zoomRate )
 	{
-
+		_manager.RightButtonDown( Vector< float32, 2 >( x, y ), sliceNum );
 	}
 	
 	void 
 	SelectMethodLeft( double x, double y, int sliceNum, double zoomRate )
 	{
-		switch( _state ) {
-		case START_NEW_SHAPE:
-			_sliceNumber = sliceNum;
-			_curveIdx = _dataset->AddObject( sliceNum, CurveType() ) - 1;
-			_curve = &(_dataset->GetObject( sliceNum, _curveIdx ));
-			_curve->SetCyclic( true );
-			_curve->AddPoint( PointType( x, y ) );//*0.37/zoomRate
-			_lastPointIdx = 0;
-			_state = DEFINING_SHAPE;
-			break;
-		case DEFINING_SHAPE:
-			if( sliceNum != _sliceNumber ) {
-				_state = START_NEW_SHAPE;
-				SelectMethodLeft( x, y, sliceNum, zoomRate );
-				return;
-			}
-			_lastPointIdx = _curve->AddPoint( PointType( x, y ) );
-			//std::cerr << (*_curve)[ _lastPointIdx ] << " ";
-			_curve->Sample( SAMPLE_RATE );
-			break;
-		default:
-			ASSERT( false );
-			break;
-		}
+		_manager.LeftButtonDown( Vector< float32, 2 >( x, y ), sliceNum );
 	}
 
 
@@ -130,6 +64,8 @@ public:
 
 	SubStates	_state;
 	unsigned 	_lastPointIdx;
+
+	ManualSegmentationManager	&_manager;
 
 };
 
@@ -151,15 +87,15 @@ ManualSegmentationManager::Initialize()
 	}
 	
 
-	_inputImage = MainManager::Instance().GetInputImage();
+	//_inputImage = MainManager::Instance().GetInputImage();
 	_inConnection = new ImageConnectionType( false );
-	_inConnection->PutDataset( _inputImage );
+	//_inConnection->PutDataset( _inputImage );
 
-	int32 min = _inputImage->GetDimensionExtents(2).minimum;
+	/*int32 min = _inputImage->GetDimensionExtents(2).minimum;
 	int32 max = _inputImage->GetDimensionExtents(2).maximum;
-	_dataset = M4D::Imaging::DataSetFactory::CreateSlicedGeometry< M4D::Imaging::Geometry::BSpline<float32,2> >( min, max );
+	_dataset = M4D::Imaging::DataSetFactory::CreateSlicedGeometry< M4D::Imaging::Geometry::BSpline<float32,2> >( min, max );*/
 
-	ViewerSpecialState *sState = new ViewerSpecialState( _dataset );
+	ViewerSpecialState *sState = new ViewerSpecialState();
 	_specialState = M4D::Viewer::SliceViewerSpecialStateOperatorPtr( sState );
 
 	_wasInitialized = true;
@@ -168,6 +104,168 @@ ManualSegmentationManager::Initialize()
 void
 ManualSegmentationManager::Finalize()
 {
+
 }
 
+void
+ManualSegmentationManager::Draw( int32 sliceNum )
+{
+	try{
+		const GDataSet::ObjectsInSlice &slice = _dataset->GetSlice( sliceNum );
+		switch( _state ) {
+		
+		default:
+			std::for_each( slice.begin(), slice.end(), GLDrawBSpline );
+			if( sliceNum == _curveSlice && _curve ) {
+				glColor3f( 1.0f, 0.0f, 0.0f );
+				GLDrawBSplineCP( *_curve );
+			}
+		};
+	} catch (...) {
+
+	}
+}
+
+void
+ManualSegmentationManager::LeftButtonMove( Vector< float32, 2 > diff )
+{
+
+}
+
+void
+ManualSegmentationManager::RightButtonDown( Vector< float32, 2 > pos, int32 sliceNum )
+{
+	switch( _state ) {
+	case SELECTED:
+		SetState( SELECT );
+		break;
+	case CREATING:
+		FinishCurveCreating();
+		break;
+	default:
+		;
+	}
+}
+
+struct ClosestSplineFunctor
+{
+	ClosestSplineFunctor( Vector< float32, 2 > &p ) : pos( p ), minDist( TypeTraits< float32 >::Max ), counter(0), idx(-1)  {}
+
+	void
+	operator()( const CurveType &curve ) {
+		float32 tmp = PolylineDistanceSquared( pos, curve.GetSamplePoints() );
+
+		if( minDist > tmp ) {
+			minDist = tmp;
+			idx = counter;
+		}
+		++counter;
+	}
+
+	Vector< float32, 2 > pos;
+	float32 minDist;
+	unsigned counter;
+	int32 idx;
+};
+
+
+void
+ManualSegmentationManager::LeftButtonDown( Vector< float32, 2 > pos, int32 sliceNum )
+{
+	switch( _state ) {
+	case SELECT:
+	case SELECTED: {
+			const GDataSet::ObjectsInSlice &slice = _dataset->GetSlice( sliceNum );
+			ClosestSplineFunctor f = std::for_each( slice.begin(), slice.end(), ClosestSplineFunctor( pos ) );
+			if( f.minDist < DISTANCE_TOLERATION_SQUARED ) {
+				_curveSlice = sliceNum;
+				_curveIdx = f.idx;
+				_curve = &(_dataset->GetObject(sliceNum, _curveIdx));
+			}
+		}
+		break;
+	case CREATING:
+		if( sliceNum != _curveSlice ) {
+			SetState( CREATING );
+		}
+		if( _curve == NULL ) {
+			PrepareNewCurve( sliceNum );
+		}
+		_curve->AddPoint( pos );
+		_curve->ReSample();
+		break;
+	default:
+		;
+	}
+}
+
+void
+ManualSegmentationManager::PrepareNewCurve( int32 sliceNum )
+{
+	_curve = new CurveType();
+	_curve->SetCyclic( true );
+	_curve->Sample( 10 );
+	_curveSlice = sliceNum;
+}
+
+void
+ManualSegmentationManager::FinishCurveCreating()
+{
+	if( _curve == NULL ) {
+		return;
+	}
+	if( _curve->Size() < 4 ) {
+		delete _curve;
+		return;
+	}
+	_dataset->AddObject( _curveSlice, *_curve );
+	_curve = NULL;
+}
+
+void
+ManualSegmentationManager::Activate( InputImageType::Ptr inImage )
+{
+	int32 min = inImage->GetDimensionExtents(2).minimum;
+	int32 max = inImage->GetDimensionExtents(2).maximum;
+	GDataSet::Ptr dataset = M4D::Imaging::DataSetFactory::CreateSlicedGeometry< CurveType >( min, max );
+
+	Activate( inImage, dataset );
+}
+
+void
+ManualSegmentationManager::Activate( InputImageType::Ptr inImage, GDataSet::Ptr geometry )
+{
+	SetState( SELECT );
+	_curve = NULL;
+	_inputImage = inImage;
+	_dataset = geometry;
+	_inConnection->PutDataset( _inputImage );
+}
+
+void
+ManualSegmentationManager::SetCreatingState( bool enable )
+{
+	if( enable ) {
+		SetState( CREATING );
+	} else {
+		SetState( SELECT );
+	}
+}
+
+void
+ManualSegmentationManager::SetState( InternalState state )
+{
+	switch( _state ) {
+	case CREATING:
+		FinishCurveCreating();
+		break;
+	case SELECTED:
+		_curve = NULL;
+	default:
+		;
+	}
+	_state = state;
+	
+	emit StateUpdated();
+}
 

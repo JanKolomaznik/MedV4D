@@ -51,7 +51,8 @@ MOCINPUT=	m4dGUIAbstractViewerWidget.h \
 		StManagerFilterComp.h \
 		StManagerHProtocolsComp.h \
 		StManagerStudyListComp.h \
-		m4dGUIProgressBarWidget.h
+		m4dGUIProgressBarWidget.h \
+		LoadingThreads.h
 
 
 RCCINPUT=	m4dGUIMainWindow.qrc \

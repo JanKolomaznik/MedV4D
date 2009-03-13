@@ -8,6 +8,7 @@
 
 #include <QtCore>
 
+static const float32 DISTANCE_TOLERATION_SQUARED = 10.0f;
 
 class ManualSegmentationManager;
 
@@ -33,7 +34,45 @@ public:
 	{
 		return _specialState;
 	}
+
+	void
+	Draw( int32 sliceNum );
+	void
+	LeftButtonMove( Vector< float32, 2 > diff );
+	void
+	RightButtonDown( Vector< float32, 2 > pos, int32 sliceNum );
+	void
+	LeftButtonDown( Vector< float32, 2 > pos, int32 sliceNum );
+
+	void
+	Activate( InputImageType::Ptr inImage );
+	void
+	Activate( InputImageType::Ptr inImage, GDataSet::Ptr geometry );
+public slots:
+	void
+	SetCreatingState( bool enable );
+
+signals:
+	void StateUpdated();
 protected:
+	enum InternalState {
+		SELECT,
+		SELECTED,
+		CREATING
+	};
+	InternalState					_state;
+	CurveType					*_curve;
+	int32						_curveSlice;
+	int32						_curveIdx;
+
+	void
+	SetState( InternalState state );
+	void
+	FinishCurveCreating();
+	void
+	PrepareNewCurve( int32 sliceNum );
+
+
 	ImageConnectionType				*_inConnection;
 	M4D::Viewer::SliceViewerSpecialStateOperatorPtr 	_specialState;
 	InputImagePtr				 	_inputImage;

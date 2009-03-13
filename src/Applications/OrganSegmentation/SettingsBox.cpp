@@ -79,6 +79,18 @@ SettingsBox
 			this, SLOT( StartSegmentationKidneySegm()) );
 		layout->addWidget( button );
 
+		layout->addStretch( 1 );
+
+		button = new QPushButton( tr( "Process Results" ) );
+		/*QObject::connect( button, SIGNAL(clicked()),
+			this, SLOT( StartSegmentationKidneySegm()) );*/
+		layout->addWidget( button );
+
+		button = new QPushButton( tr( "Manual Correction" ) );
+		QObject::connect( button, SIGNAL(clicked()),
+			this, SLOT( BeginManualCorrection()) );
+		layout->addWidget( button );
+
 		layout->addStretch( 5 );
 		
 		_kidneySegmSettings->setLayout(layout);
@@ -103,9 +115,16 @@ SettingsBox
 	verticalLayout = new QVBoxLayout();
 	
 	QToolBar *tbar = new QToolBar();
-	tbar->addAction( "New\nSpline" );
-	tbar->addAction( "Edit\nPoints" );
-	tbar->addAction( "Edit\nSegs" );
+	QAction * action;
+	action = tbar->addAction( "New\nSpline" );
+	action->setCheckable( true );
+	QObject::connect( action, SIGNAL( toggled( bool ) ), &(ManualSegmentationManager::Instance()), SLOT( SetCreatingState( bool ) ) );
+
+	action = tbar->addAction( "Edit\nPoints" );
+	action->setCheckable( true );
+	
+	action = tbar->addAction( "Edit\nSegs" );
+	action->setCheckable( true );
 	verticalLayout->addWidget( tbar );
 	
 	stackedWidget = new QStackedWidget();
@@ -127,7 +146,7 @@ void
 SettingsBox
 ::SetToManualSegmentation()
 {
-	ManualSegmentationManager::Instance().Initialize();
+	ManualSegmentationManager::Instance().Activate( MainManager::Instance().GetInputImage() );
 	
 	emit SetSegmentationSignal( stMANUAL );
 	setCurrentWidget( _manualSegmSettings );
@@ -137,10 +156,23 @@ void
 SettingsBox
 ::SetToKidneySegmentation()
 {
-	KidneySegmentationManager::Instance().Initialize();
+	KidneySegmentationManager::Instance().Activate( MainManager::Instance().GetInputImage() );
 	
 	emit SetSegmentationSignal( stKIDNEYS );
 	setCurrentWidget( _kidneySegmSettings );
+}
+
+void
+SettingsBox
+::BeginManualCorrection()
+{
+	ManualSegmentationManager::Instance().Activate( 
+			KidneySegmentationManager::Instance().GetInputImage(), 
+			KidneySegmentationManager::Instance().GetOutputGeometry() 
+			);
+	
+	emit SetSegmentationSignal( stMANUAL );
+	setCurrentWidget( _manualSegmSettings );
 }
 
 void

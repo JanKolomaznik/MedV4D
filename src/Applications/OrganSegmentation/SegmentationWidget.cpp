@@ -15,6 +15,7 @@ SegmentationWidget::SegmentationWidget( QWidget * parent )
 void
 SegmentationWidget::Activate( M4D::Imaging::ConnectionInterfaceTyped<M4D::Imaging::AbstractImage> *conn, M4D::Viewer::SliceViewerSpecialStateOperatorPtr specialState )
 {
+	_viewer->setInputPort();
 	_viewer->setInputPort( conn );
 	_viewer->setSpecialState( specialState );
 	_viewer->slotSetButtonHandler( M4D::Viewer::m4dGUIAbstractViewerWidget::specialState, M4D::Viewer::m4dGUIAbstractViewerWidget::left );

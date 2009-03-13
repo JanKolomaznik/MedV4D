@@ -81,7 +81,7 @@ PointLinePositionPointVector(
 }
 
 template< typename CoordType >
-inline CoordType
+inline Vector< CoordType, 2 >
 PerpendicularVectorToVector( const Vector< CoordType, 2 > &v )
 {
 	return Vector< CoordType, 2 >( -v[1], v[0] );

@@ -44,9 +44,6 @@ public:
 	PolesSet();
 
 	void
-	StartSegmentation();
-
-	void
 	RunSplineSegmentation();
 
 	void
@@ -62,12 +59,26 @@ public:
 		return _specialState;
 	}
 
+	GDataSet::Ptr
+	GetOutputGeometry()
+		{ return _outGeomConnection->GetDatasetPtrTyped(); }
+
+	InputImagePtr
+	GetInputImage()
+		{ return _inputImage; }
+
+	void
+	Activate( InputImageType::Ptr inImage );
 public slots:
 	void
 	SetComputationPrecision( int value )
 	{
 		_computationPrecision = value;
 	}
+
+	void
+	StartSegmentation();
+
 protected:
 	KidneySegmentationManager();
 	

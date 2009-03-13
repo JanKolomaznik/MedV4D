@@ -67,7 +67,8 @@ public:
 	bool
 	Converged( EnergicSnakeParameters &params, EnergicSnakeStats &stats )
 	{
-		if( (stats._stepCount >= _maxStepCount) && (stats._lastStructureChange >= _calmDownInterval) ) {
+		if( ((stats._stepCount >= _maxStepCount) && (stats._lastStructureChange >= _calmDownInterval)) 
+			|| stats._stepCount >= 2*_maxStepCount ) {
 			return true;
 		}
 		return false;
