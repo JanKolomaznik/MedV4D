@@ -8,7 +8,7 @@
 
 #include <QtCore>
 
-static const float32 DISTANCE_TOLERATION_SQUARED = 10.0f;
+static const float32 DISTANCE_TOLERATION_SQUARED = 3.0f;
 
 class ManualSegmentationManager;
 
@@ -52,18 +52,24 @@ public slots:
 	void
 	SetCreatingState( bool enable );
 
+	void
+	SetEditPointsState( bool enable );
+
 signals:
 	void StateUpdated();
 protected:
 	enum InternalState {
 		SELECT,
 		SELECTED,
-		CREATING
+		CREATING,
+		SELECT_POINT,
+		SELECTED_POINT
 	};
-	InternalState					_state;
-	CurveType					*_curve;
-	int32						_curveSlice;
-	int32						_curveIdx;
+	InternalState	_state;
+	CurveType	*_curve;
+	int32		_curveSlice;
+	int32		_curveIdx;
+	int32		_curvePointIndex;
 
 	void
 	SetState( InternalState state );

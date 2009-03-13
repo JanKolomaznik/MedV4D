@@ -125,7 +125,7 @@ PointLineSegmentDistanceSquared(
 	Vector< CoordType, 2 > B = A + v;
 	CoordType p1 = PointLinePositionPointVector( point, A, perp );
 	CoordType p2 = PointLinePositionPointVector( point, B, perp );
-	if( Sgn(p1) == Sgn(p2) ) {
+	if( Sgn(p1) != Sgn(p2) ) {
 		return PointLineDistanceSquared( point, A, v );
 	}
 	return Min( 

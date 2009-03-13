@@ -176,7 +176,7 @@ ClosestPointFromPointSet( const PointSetType &pset, typename PointSetType::Point
 	int32 idx = 0;
 	for( unsigned i = 1; i < pset.Size(); ++i ) {
 		typename PointSetType::CoordinateType tmp = (pset[i]-point)*(pset[i]-point);
-		if( tmp > distanceSq ) {
+		if( tmp < distanceSq ) {
 			distanceSq = tmp;
 			idx = i;
 		}

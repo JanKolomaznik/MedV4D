@@ -27,6 +27,8 @@ int main ( int argc, char *argv[] )
 	}
 	std::cout << histogram  << "\n";
 	std::cerr << histogram.GetSum() << "\n";*/   
+	//std::cout << M4D::Imaging::Geometry::PointLineSegmentDistanceSquared( Vector< float32, 2 >( 4.0f, 8.0f ), Vector< float32, 2 >( 3.0f, 5.0f ), Vector< float32, 2 >( 4.0f, 0.0f ) ) << "\n";
+	//std::cout << M4D::Imaging::Geometry::PointLineSegmentDistanceSquared( Vector< float32, 2 >( 4.0f, 3.0f ), Vector< float32, 2 >( 3.0f, 5.0f ), Vector< float32, 2 >( 4.0f, 0.0f ) ) << "\n";
 	
 
 	MainManager::Instance().Initialize();

@@ -115,10 +115,15 @@ ManualSegmentationManager::Draw( int32 sliceNum )
 		switch( _state ) {
 		
 		default:
+			glColor3f( 0.0f, 0.0f, 1.0f );
 			std::for_each( slice.begin(), slice.end(), GLDrawBSpline );
 			if( sliceNum == _curveSlice && _curve ) {
 				glColor3f( 1.0f, 0.0f, 0.0f );
 				GLDrawBSplineCP( *_curve );
+				if( SELECTED_POINT == _state ) {
+					glColor3f( 0.0f, 1.0f, 0.0f );
+					GLDrawPointSize( (*_curve)[ _curvePointIndex ], 3.5f );
+				}
 			}
 		};
 	} catch (...) {
@@ -129,7 +134,10 @@ ManualSegmentationManager::Draw( int32 sliceNum )
 void
 ManualSegmentationManager::LeftButtonMove( Vector< float32, 2 > diff )
 {
-
+	if( SELECTED_POINT == _state ) {
+		(*_curve)[ _curvePointIndex ] += diff;
+		_curve->ReSample();
+	}
 }
 
 void
@@ -178,9 +186,12 @@ ManualSegmentationManager::LeftButtonDown( Vector< float32, 2 > pos, int32 slice
 			const GDataSet::ObjectsInSlice &slice = _dataset->GetSlice( sliceNum );
 			ClosestSplineFunctor f = std::for_each( slice.begin(), slice.end(), ClosestSplineFunctor( pos ) );
 			if( f.minDist < DISTANCE_TOLERATION_SQUARED ) {
+				SetState( SELECTED );
 				_curveSlice = sliceNum;
 				_curveIdx = f.idx;
 				_curve = &(_dataset->GetObject(sliceNum, _curveIdx));
+			} else {
+				SetState( SELECT );
 			}
 		}
 		break;
@@ -193,6 +204,20 @@ ManualSegmentationManager::LeftButtonDown( Vector< float32, 2 > pos, int32 slice
 		}
 		_curve->AddPoint( pos );
 		_curve->ReSample();
+		break;
+	case SELECT_POINT:
+	case SELECTED_POINT:
+		{
+			int32 idx = ClosestPointFromPointSet( *_curve, pos );
+			PointType diff = (*_curve)[idx] - pos;
+			D_PRINT( diff );
+			if( (diff * diff) < DISTANCE_TOLERATION_SQUARED ) {
+				_curvePointIndex = idx;
+				SetState( SELECTED_POINT );
+			} else {
+				SetState( SELECT_POINT );
+			}
+		}
 		break;
 	default:
 		;
@@ -253,6 +278,16 @@ ManualSegmentationManager::SetCreatingState( bool enable )
 }
 
 void
+ManualSegmentationManager::SetEditPointsState( bool enable )
+{
+	if( enable ) {
+		SetState( SELECT_POINT );
+	} else {
+		SetState( SELECTED );
+	}
+}
+
+void
 ManualSegmentationManager::SetState( InternalState state )
 {
 	switch( _state ) {
@@ -260,10 +295,14 @@ ManualSegmentationManager::SetState( InternalState state )
 		FinishCurveCreating();
 		break;
 	case SELECTED:
-		_curve = NULL;
+		if( state != SELECT_POINT && state != SELECTED_POINT ) {
+			_curve = NULL;
+		}
+		break;
 	default:
 		;
 	}
+	D_PRINT( "Manual segmentation state changed from : " << _state << " to : " << state );
 	_state = state;
 	
 	emit StateUpdated();

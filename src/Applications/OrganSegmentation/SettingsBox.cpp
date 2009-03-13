@@ -122,6 +122,7 @@ SettingsBox
 
 	action = tbar->addAction( "Edit\nPoints" );
 	action->setCheckable( true );
+	QObject::connect( action, SIGNAL( toggled( bool ) ), &(ManualSegmentationManager::Instance()), SLOT( SetEditPointsState( bool ) ) );
 	
 	action = tbar->addAction( "Edit\nSegs" );
 	action->setCheckable( true );
