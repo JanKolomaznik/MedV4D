@@ -83,7 +83,7 @@ SettingsBox
 
 		button = new QPushButton( tr( "Process Results" ) );
 		/*QObject::connect( button, SIGNAL(clicked()),
-			this, SLOT( StartSegmentationKidneySegm()) );*/
+			this, SLOT( ProcessResultsManual()) );*/
 		layout->addWidget( button );
 
 		button = new QPushButton( tr( "Manual Correction" ) );
@@ -96,6 +96,9 @@ SettingsBox
 		_kidneySegmSettings->setLayout(layout);
 	}
 	addWidget( _kidneySegmSettings );
+	
+	QObject::connect( &(ManualSegmentationManager::Instance()), SIGNAL( StateUpdated() ),
+			this, SLOT( ManualSegmentationUpdate() ) );
 
 }
 
@@ -111,24 +114,25 @@ SettingsBox
 	QWidget *page_2;
 	QWidget *verticalLayoutWidget_3;
 	QVBoxLayout *verticalLayout_3;
+	QPushButton *button;
 
 	verticalLayout = new QVBoxLayout();
 	
 	QToolBar *tbar = new QToolBar();
-	QAction * action;
-	action = tbar->addAction( "New\nSpline" );
-	action->setCheckable( true );
-	QObject::connect( action, SIGNAL( toggled( bool ) ), &(ManualSegmentationManager::Instance()), SLOT( SetCreatingState( bool ) ) );
+	_createSplineButton = tbar->addAction( "New\nSpline" );
+	_createSplineButton->setCheckable( true );
+	QObject::connect( _createSplineButton, SIGNAL( toggled( bool ) ), &(ManualSegmentationManager::Instance()), SLOT( SetCreatingState( bool ) ) );
 
-	action = tbar->addAction( "Edit\nPoints" );
-	action->setCheckable( true );
-	QObject::connect( action, SIGNAL( toggled( bool ) ), &(ManualSegmentationManager::Instance()), SLOT( SetEditPointsState( bool ) ) );
+	_editPointsButton = tbar->addAction( "Edit\nPoints" );
+	_editPointsButton->setCheckable( true );
+	QObject::connect( _editPointsButton, SIGNAL( toggled( bool ) ), &(ManualSegmentationManager::Instance()), SLOT( SetEditPointsState( bool ) ) );
 	
-	action = tbar->addAction( "Edit\nSegs" );
-	action->setCheckable( true );
+	/*action = tbar->addAction( "Edit\nSegs" );
+	action->setCheckable( true );*/
+
 	verticalLayout->addWidget( tbar );
 	
-	stackedWidget = new QStackedWidget();
+	/*stackedWidget = new QStackedWidget();
 	page = new QWidget();
 	verticalLayoutWidget_2 = new QWidget(page);
 	verticalLayout_2 = new QVBoxLayout(verticalLayoutWidget_2);
@@ -138,9 +142,56 @@ SettingsBox
 	verticalLayout_3 = new QVBoxLayout(verticalLayoutWidget_3);
 	stackedWidget->addWidget(page_2);
 
-	verticalLayout->addWidget(stackedWidget);
+	verticalLayout->addWidget(stackedWidget);*/
+
+	_deleteCurveButton = new QPushButton( tr( "Delete Curve" ) );
+	QObject::connect( _deleteCurveButton, SIGNAL(clicked()),
+		 &(ManualSegmentationManager::Instance()), SLOT( DeleteSelectedCurve()) );
+	verticalLayout->addWidget( _deleteCurveButton );
+
+	button = new QPushButton( tr( "Process Results" ) );
+	QObject::connect( button, SIGNAL(clicked()),
+		this, SLOT( ProcessResultsManual()) );
+	verticalLayout->addWidget( button );
+
+	verticalLayout->addStretch( 5 );
 
 	_manualSegmSettings->setLayout(verticalLayout);
+}
+
+void
+SettingsBox
+::ManualSegmentationUpdate()
+{
+	switch( ManualSegmentationManager::Instance().GetInternalState() ) {
+	case ManualSegmentationManager::SELECT:
+		_deleteCurveButton->setEnabled( false );
+		_createSplineButton->setEnabled( true );
+		_editPointsButton->setEnabled( false );
+		break;
+	case ManualSegmentationManager::SELECTED:
+		_deleteCurveButton->setEnabled( true );
+		_createSplineButton->setEnabled( true );
+		_editPointsButton->setEnabled( true );
+		break;
+	case ManualSegmentationManager::CREATING:
+		_deleteCurveButton->setEnabled( false );
+		_createSplineButton->setEnabled( true );
+		_editPointsButton->setEnabled( false );
+		break;
+	case ManualSegmentationManager::SELECT_POINT:
+		_deleteCurveButton->setEnabled( false );
+		_createSplineButton->setEnabled( false );
+		_editPointsButton->setEnabled( true );
+		break;
+	case ManualSegmentationManager::SELECTED_POINT:
+		_deleteCurveButton->setEnabled( false );
+		_createSplineButton->setEnabled( false );
+		_editPointsButton->setEnabled( true );
+		break;
+	default:
+		;
+	}
 }
 
 void
@@ -191,3 +242,12 @@ SettingsBox
 
 }
 
+void
+SettingsBox
+::ProcessResultsManual()
+{
+	MainManager::Instance().ProcessResultDatasets(
+			ManualSegmentationManager::Instance().GetInputImage(),
+			ManualSegmentationManager::Instance().GetOutputGeometry()
+			);
+}

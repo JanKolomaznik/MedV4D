@@ -153,57 +153,7 @@ SnakeSegmentationFilter< ElementType >::ComputeStatistics( Vector<int32, 3> p, f
 	var = sum / Sqr(2*Radius +1) - Sqr( E );
 }
 	
-/*
-template < typename ElementType >
-bool
-SnakeSegmentationFilter< ElementType >::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
-{
-	if( !CanContinue() ) return false;
 
-	//TODO locking
-	
-	Vector<int32, 3> p( 
-		GetInsidePoint()[0]/in[0]->GetDimensionExtents(0).elementExtent,
-		GetInsidePoint()[1]/in[0]->GetDimensionExtents(1).elementExtent,
-		GetInsidePointSlice()
-		);
-	ComputeStatistics( p, _inEstimatedValue, _inVariation );
-	p =  Vector<int32, 3>( 
-		GetOutsidePoint()[0]/in[0]->GetDimensionExtents(0).elementExtent,
-		GetOutsidePoint()[1]/in[0]->GetDimensionExtents(1).elementExtent,
-		GetOutsidePointSlice()
-		);
-	ComputeStatistics( p, _outEstimatedValue, _outVariation );
-
-	LOG( "In region stats : E = " << _inEstimatedValue << "; var = " << _inVariation );
-	LOG( "Out region stats : E = " << _outEstimatedValue << "; var = " << _outVariation );
-	
-	CurveType initialization;
-	initialization.SetCyclic();
-	initialization.AddPoint( typename CurveType::PointType( -5, -5 ) );
-	initialization.AddPoint( typename CurveType::PointType( 5, -5 ) );
-	initialization.AddPoint( typename CurveType::PointType( 5, 5 ) );
-	initialization.AddPoint( typename CurveType::PointType( -5, 5 ) );
-
-	//std::cout << "Min slice = " << _minSlice << "; Max slice = " << _maxSlice << "\n";
-
-	float32 center = ((float32)(_maxSlice + _minSlice))/2.0f;
-	float32 s = 6.0f/(_maxSlice - _minSlice);
-
-	Coordinates trans = GetFirstPoint();
-	Coordinates relMove = (1.0f/(GetSecondSlice()-GetFirstSlice()) ) * (GetSecondPoint() - GetFirstPoint());
-	for( int32 i = _minSlice; i < _maxSlice; ++i ) {
-		float32 scaleFactor = 4.0f - s*Abs( i - center );
-		CurveType pom = initialization;
-		pom.Move(trans);
-		pom.Scale( Vector< float32, 2>( scaleFactor ), trans );
-		trans += relMove;
-
-		ProcessSlice( pom, this->out->GetSlice( i ) );
-	}
-
-	return true;
-}*/
 
 template < typename ElementType >
 typename SnakeSegmentationFilter< ElementType >::CurveType

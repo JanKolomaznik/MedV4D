@@ -166,6 +166,16 @@ public:
 			return slice.size();
 		}
 
+	void
+	RemoveObject( int32 sliceNumber, uint32 objectNumber )
+		{
+			ObjectsInSlice &slice = GetSlice( sliceNumber );
+			if( objectNumber >= slice.size() ) {
+				_THROW_ M4D::ErrorHandling::EBadIndex( "Wrong object in slice index" );
+			}
+			slice.erase( slice.begin() + objectNumber );
+		}
+
 
 
 	

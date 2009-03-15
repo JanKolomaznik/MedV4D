@@ -288,6 +288,16 @@ ManualSegmentationManager::SetEditPointsState( bool enable )
 }
 
 void
+ManualSegmentationManager::DeleteSelectedCurve()
+{
+	if( SELECTED == _state ) {
+		_dataset->RemoveObject( _curveSlice, _curveIdx );
+		_curve = NULL;
+		SetState( SELECT );
+	}
+}
+
+void
 ManualSegmentationManager::SetState( InternalState state )
 {
 	switch( _state ) {

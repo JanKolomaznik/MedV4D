@@ -16,6 +16,14 @@ class ManualSegmentationManager: public QObject
 {
 	Q_OBJECT
 public:
+	enum InternalState {
+		SELECT,
+		SELECTED,
+		CREATING,
+		SELECT_POINT,
+		SELECTED_POINT
+	};
+
 	static ManualSegmentationManager &
 	Instance();
 
@@ -34,6 +42,18 @@ public:
 	{
 		return _specialState;
 	}
+
+	GDataSet::Ptr
+	GetOutputGeometry()
+		{ return _dataset; }
+
+	InputImagePtr
+	GetInputImage()
+		{ return _inputImage; }
+
+	InternalState
+	GetInternalState()const
+		{ return _state; }
 
 	void
 	Draw( int32 sliceNum );
@@ -55,16 +75,13 @@ public slots:
 	void
 	SetEditPointsState( bool enable );
 
+	void
+	DeleteSelectedCurve();
+
 signals:
 	void StateUpdated();
 protected:
-	enum InternalState {
-		SELECT,
-		SELECTED,
-		CREATING,
-		SELECT_POINT,
-		SELECTED_POINT
-	};
+
 	InternalState	_state;
 	CurveType	*_curve;
 	int32		_curveSlice;

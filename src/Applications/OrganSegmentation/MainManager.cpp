@@ -1,5 +1,6 @@
 
 #include "MainManager.h"
+#include <QtGui>
 
 MainManager 	* MainManager::_instance;
 
@@ -67,9 +68,14 @@ MainManager::ProcessResultDatasets( InputImagePtr image, GDataSet::Ptr splines )
 
 	_splineFillFilter->ExecuteOnWhole();
 
+	QString name = QFileDialog::getSaveFileName();
+
 	while( _splineFillFilter->IsRunning() ) { }
 
-	M4D::Imaging::ImageFactory::DumpImage( "BLABLA.dump", _resultProcessMaskConnection->GetDatasetTyped() );
+	M4D::Imaging::ImageFactory::DumpImage( TO_STRING( name.toStdString() << "Mask.dump" ), _resultProcessMaskConnection->GetDatasetTyped() );
+	M4D::Imaging::ImageFactory::DumpImage( TO_STRING( name.toStdString() << "Data.dump" ), *image );
+	
+	QMessageBox::information( NULL, "Saving finished", "Results saved" );
 }
 
 void

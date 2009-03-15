@@ -15,7 +15,10 @@ public:
 	
 
 	SettingsBox( QWidget * parent );
-	
+
+public slots:
+	void
+	ManualSegmentationUpdate();
 signals:
 	
 	void
@@ -37,6 +40,9 @@ protected slots:
 
 	void
 	BeginManualCorrection();
+
+	void
+	ProcessResultsManual();
 protected:
 	void
 	CreateWidgets();
@@ -49,6 +55,10 @@ protected:
 	QWidget *_mainSettings;
 	QWidget *_manualSegmSettings;
 	QWidget *_kidneySegmSettings;
+
+	QPushButton	*_deleteCurveButton;
+	QAction		*_createSplineButton;
+	QAction		*_editPointsButton;
 };
 
 #endif /*_SETTINGS_BOX_H*/
