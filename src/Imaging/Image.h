@@ -78,6 +78,8 @@ public:
 
 	typedef ImageRegion< Element, Dimension >	SubRegion;
 
+	typedef ImageRegion< ElementType, Dimension-1 >	SliceRegion;
+
 	typedef Vector< int32, Dimension >		PointType;
 
 	typedef Vector< uint32, Dimension >	SizeType;
@@ -215,7 +217,7 @@ public:
 			PointType max
 			)const;
 
-	ImageRegion< ElementType, Dim-1 >
+	SliceRegion
 	GetSlice( int32 slice )const;
 	
 	void SerializeClassInfo(OutStream &stream);

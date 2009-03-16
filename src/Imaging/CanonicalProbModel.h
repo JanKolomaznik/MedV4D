@@ -63,6 +63,8 @@ public:
 		return _grid[ _strides * pos ];
 	}
 	SIMPLE_GET_METHOD( Vector< uint32, 3 >, Size, _gridSize );
+	SIMPLE_GET_METHOD( Vector< float32, 3 >, GridStep, _gridStep );
+	SIMPLE_GET_METHOD( Vector< float32, 3 >, Origin, _originCoordiantes );
 protected:
 
 	Vector< uint32, 3 >

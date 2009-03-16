@@ -394,7 +394,7 @@ Image< ElementType, Dim >::GetSubRegion(
 }
 
 template< typename ElementType, unsigned Dim >
-ImageRegion< ElementType, Dim-1 >
+typename Image< ElementType, Dim >::SliceRegion
 Image< ElementType, Dim >::GetSlice( int32 slice )const
 {
 	SubRegion region = GetRegion();

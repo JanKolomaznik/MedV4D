@@ -27,6 +27,7 @@ public:
 	static const uint32 Dimension = Dim;
 	typedef EType					ElementType;
 	typedef ImageIterator< ElementType, Dim >	Iterator;
+	typedef Vector< int32, Dim >			PointType;
 
 	ImageRegion():
 			_pointer( NULL ), _origin( 0 ), _elementExtents( 1.0f ), _sourceDimension( 0 ), _pointerCoordinatesInSource( NULL )
@@ -95,13 +96,13 @@ public:
 		}
 
 	Iterator
-	GetIterator( const Vector< int32, Dim > &firstCorner, const Vector< int32, Dim > &secondCorner )const
+	GetIterator( const PointType &firstCorner, const PointType &secondCorner )const
 		{
 			return GetIteratorRel( firstCorner - _origin, secondCorner - _origin );
 		}
 
 	Iterator
-	GetIteratorRel( const Vector< int32, Dim > &firstCorner, const Vector< int32, Dim > &secondCorner )const
+	GetIteratorRel( const PointType &firstCorner, const PointType &secondCorner )const
 		{
 			//TODO check extents
 			uint32 pos[Dimension] = { 0 };
@@ -120,7 +121,7 @@ public:
 		}
 
 	ElementType *
-	GetPointer( const Vector< int32, Dim > &coords )const
+	GetPointer( const PointType &coords )const
 		{ 	ElementType *tmp = _pointer;
 			//TODO check coordinates
 			for( unsigned i = 0; i < Dim; ++i ) {
@@ -147,7 +148,7 @@ public:
 			return _origin[dim];
 		}
 
-	Vector< int32, Dimension >
+	PointType
 	GetMinimum()const
 		{
 			return _origin;
@@ -159,10 +160,10 @@ public:
 			return _origin[dim] + _size[dim];
 		}
 
-	Vector< int32, Dimension >
+	PointType
 	GetMaximum()const
 		{
-			return _origin + Vector< int32, Dimension >( (int32*)_size.GetData() );
+			return _origin + PointType( (int32*)_size.GetData() );
 		}
 
 	int32
@@ -171,7 +172,7 @@ public:
 			return _strides[dim];
 		}
 
-	Vector< int32, Dimension >
+	PointType
 	GetStride()const
 		{
 			return _strides;
@@ -237,18 +238,18 @@ public:
 	UnionBBox( const ImageRegion & region );*/
 
 	ElementType &
-	GetElement( const Vector< int32, Dim > &coords )
+	GetElement( const PointType &coords )
 		{ 	
 			return GetElementRel( coords - _origin );
 		}
 	ElementType
-	GetElement( const Vector< int32, Dim > &coords )const
+	GetElement( const PointType &coords )const
 		{
 			return GetElementRel( coords - _origin );
 		}
 
 	ElementType &
-	GetElementRel( const Vector< int32, Dim > &coords )
+	GetElementRel( const PointType &coords )
 		{
 			for( unsigned i = 0; i < Dim; ++i ) {
 				if( coords[i] < 0 || coords[i] >= (int32)_size[i] ) {
@@ -261,7 +262,7 @@ public:
 			return *(_pointer + coords * _strides );
 		}
 	ElementType
-	GetElementRel( const Vector< int32, Dim > &coords )const
+	GetElementRel( const PointType &coords )const
 		{
 			for( unsigned i = 0; i < Dim; ++i ) {
 				if( coords[i] < 0 || coords[i] >= (int32)_size[i] ) {
@@ -277,7 +278,7 @@ public:
 	ElementType
 	GetElementWorldCoords( const Vector< float32, Dimension > &pos )const
 	{
-		Vector< int32, Dim > coords;
+		PointType coords;
 		for( unsigned i = 0; i < Dim; ++i ) {
 			coords[i] = ROUND( pos[i] / _elementExtents[i] );
 		}
@@ -314,8 +315,8 @@ protected:
 private:
 	ElementType			*_pointer;
 	Vector< uint32, Dimension >	_size;
-	Vector< int32, Dimension >	_strides;
-	Vector< int32, Dimension >	_origin;
+	PointType	_strides;
+	PointType	_origin;
 	Vector< float32, Dimension >	_elementExtents;
 
 	Vector< uint32, Dimension >	_dimOrder;
