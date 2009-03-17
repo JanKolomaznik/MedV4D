@@ -375,7 +375,7 @@ public:
 	~InputPortList();
 
 	size_t
-	AddPort( InputPort* port );
+	AppendPort( InputPort* port );
 
 	InputPort &
 	GetPort( size_t idx )const;
@@ -420,7 +420,7 @@ public:
 	~OutputPortList();
 
 	size_t
-	AddPort( OutputPort* port );
+	AppendPort( OutputPort* port );
 
 	OutputPort &
 	GetPort( size_t idx )const;

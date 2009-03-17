@@ -30,8 +30,8 @@ AbstractImageFilter< InputImageType, OutputImageType >::AbstractImageFilter( typ
 	M4D::Imaging::OutputPort *outPort = new OutputPortType();
 
 	//TODO check if OK
-	_inputPorts.AddPort( inPort );
-	_outputPorts.AddPort( outPort );
+	_inputPorts.AppendPort( inPort );
+	_outputPorts.AppendPort( outPort );
 }
 
 /*const AbstractImage&

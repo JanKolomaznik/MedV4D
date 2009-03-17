@@ -186,7 +186,7 @@ InputPortList::~InputPortList()
 }
 
 size_t
-InputPortList::AddPort( InputPort* port )
+InputPortList::AppendPort( InputPort* port )
 {
 	if( port == NULL ) {
 		//TODO - _THROW_ exception
@@ -230,7 +230,7 @@ OutputPortList::~OutputPortList()
 }
 
 size_t
-OutputPortList::AddPort( OutputPort* port )
+OutputPortList::AppendPort( OutputPort* port )
 {
 	if( port == NULL ) {
 		//TODO - _THROW_ exception

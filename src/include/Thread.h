@@ -5,7 +5,6 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 
-#undef AddPort
 #undef GetMessage
 #undef SendMessage
 
