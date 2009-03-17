@@ -17,7 +17,8 @@ TARGETS=	Common \
 		Log \
 		Functors \
 		TimeStamp \
-		perfCounter
+		perfCounter\
+		fileAccessor
 ########################################
 
 #Name of target
