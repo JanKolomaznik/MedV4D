@@ -34,10 +34,10 @@ ITKLIBS= 	$(ITKLibsRoot)/libITKNumerics.a\
 			$(ITKLibsRoot)/libITKniftiio.a\
 			$(ITKLibsRoot)/libITKznz.a\
 				
-M4DLIBS=	$(srcTop)/lib/libremoteCompCommons$(archPostfix).a \
+M4DLIBS=	$(srcTop)/lib/libremoteCompServer$(archPostfix).a\
+		$(srcTop)/lib/libremoteCompCommons$(archPostfix).a \
 		$(srcTop)/lib/libImaging$(archPostfix).a\
-		$(srcTop)/lib/libcommon$(archPostfix).a\
-		$(srcTop)/lib/remoteCompServer$(archPostfix).a
+		$(srcTop)/lib/libcommon$(archPostfix).a		
 
 LIBS=		$(M4DLIBS) \
 			$(ITKLIBS) \
