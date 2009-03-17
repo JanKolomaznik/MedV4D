@@ -164,10 +164,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\src\IOStreams.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Imaging\src\ModificationManager.cpp"
 				>
 			</File>
@@ -375,10 +371,6 @@
 			</File>
 			<File
 				RelativePath="..\..\include\Imaging.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\IO\IOStreams.h"
 				>
 			</File>
 			<File
