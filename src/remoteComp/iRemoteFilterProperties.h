@@ -1,7 +1,7 @@
 #ifndef IREMOTEFILTERPROPERTIES_H_
 #define IREMOTEFILTERPROPERTIES_H_
 
-#include "Imaging/IO/IOStreams.h"
+#include "common/IOStreams.h"
 
 namespace M4D
 {
@@ -13,9 +13,9 @@ class iRemoteFilterProperties
 public:
 	virtual ~iRemoteFilterProperties() {}
 	
-	virtual void SerializeClassInfo(Imaging::OutStream &stream) = 0;
-	virtual void SerializeProperties(Imaging::OutStream &stream) = 0;
-	virtual void DeserializeProperties(Imaging::InStream &stream) = 0;
+	virtual void SerializeClassInfo(M4D::IO::OutStream &stream) = 0;
+	virtual void SerializeProperties(M4D::IO::OutStream &stream) = 0;
+	virtual void DeserializeProperties(M4D::IO::InStream &stream) = 0;
 };
 
 }

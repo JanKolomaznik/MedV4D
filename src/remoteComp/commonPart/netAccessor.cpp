@@ -29,8 +29,9 @@ NetAccessor::PutData(const void *data, size_t length)
 //	if(ec || (written != length) )
 //		throw NetException();
 	try {
-		size_t written = boost::asio::write(
-			m_socket_, boost::asio::buffer(data, length));
+		//size_t written = 
+			boost::asio::write(
+					m_socket_, boost::asio::buffer(data, length));
 	} catch (boost::system::system_error &e) {
 		if(e.code() == boost::asio::error::eof )
 			throw DisconnectedException();

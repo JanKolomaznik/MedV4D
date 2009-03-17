@@ -59,6 +59,8 @@ DecimatorFilter<InputElementType, OutputElementType>
 	m_transform->SetScale( m_ratio );
 	
 	typename ITKOutputImageType::PointType	origin;
+	origin.Fill(0);
+	
 	m_filter->SetOutputSpacing( spacing );
 	m_filter->SetOutputOrigin( origin );
 	m_filter->SetSize( size );

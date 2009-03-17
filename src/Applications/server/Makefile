@@ -18,22 +18,47 @@ ITKIncludes=	-I$(ITKIncludeRoot)\
 				-I$(ITKIncludeRoot)/Utilities/vxl/vcl\
 				-I$(ITKIncludeRoot)/Utilities/vxl/core\
 				-I$(ITKIncludeRoot)/gdcm/src
+				
+ITKLIBS= 	$(ITKLibsRoot)/libITKNumerics.a\
+			$(ITKLibsRoot)/libITKNrrdIO.a\
+			$(ITKLibsRoot)/libITKSpatialObject.a\
+			$(ITKLibsRoot)/libITKCommon.a\
+			$(ITKLibsRoot)/libitkvnl_inst.a\
+			$(ITKLibsRoot)/libitkvnl_algo.a\
+			$(ITKLibsRoot)/libitkvnl.a\
+			$(ITKLibsRoot)/libitkv3p_netlib.a\
+			$(ITKLibsRoot)/libitkvcl.a\
+			$(ITKLibsRoot)/libitksys.a\
+			$(ITKLibsRoot)/libITKMetaIO.a\
+			$(ITKLibsRoot)/libITKEXPAT.a\
+			$(ITKLibsRoot)/libITKniftiio.a\
+			$(ITKLibsRoot)/libITKznz.a\
+				
+M4DLIBS=	$(srcTop)/lib/libremoteCompCommons$(archPostfix).a \
+		$(srcTop)/lib/libImaging$(archPostfix).a\
+		$(srcTop)/lib/libcommon$(archPostfix).a\
+		$(srcTop)/lib/remoteCompServer$(archPostfix).a
+
+LIBS=		$(M4DLIBS) \
+			$(ITKLIBS) \
+		-lboost_thread \
+		-lboost_filesystem\
+		-ldl
 
 ########################################
 #Name of this project part
 NAME=		remoteCompServer$(archPostfix)
 #Names of target sources
-TARGETS=	server\
-			remoteFilterFactory
+TARGETS=	main
 
 ########################################
 
 #Name of target
-OUTPUTNAME=	lib$(NAME).a
-OUTPUTDIR=	$(srcTop)/lib
+OUTPUTNAME=	$(NAME)
+OUTPUTDIR=	$(srcTop)/executables
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	$(srcTop)/tmp/$(NAME)
-SRC_DIR=	./src
+SRC_DIR=	.
 
 CXXFLAGS= -Wall -Wno-deprecated $(CXXDEBUG_OPTIONS)
 #Dependecy file creation parameters
@@ -60,7 +85,13 @@ OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )
 
 
 .PHONY: all
-all:		tmpdir dep $(OUTPUT)
+all:		tmpdir commonPart serverPart dep $(OUTPUT)
+		
+commonPart:
+	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart
+	
+serverPart:
+	$(MAKE) --directory=$(srcTop)/remoteComp/serverPart
 
 .PHONY: tmpdir
 tmpdir:		

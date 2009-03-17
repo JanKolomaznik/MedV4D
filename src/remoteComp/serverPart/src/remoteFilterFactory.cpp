@@ -4,6 +4,7 @@
 
 using namespace M4D::RemoteComputing;
 using namespace M4D::Imaging;
+using namespace M4D::IO;
 
 ///////////////////////////////////////////////////////////////////////////////
 template< typename InputPixelType, typename OutputPixelType>
@@ -33,7 +34,7 @@ CreateFilterStage1(uint16 outElemType, uint16 filterID, iRemoteFilterProperties 
 }
 ///////////////////////////////////////////////////////////////////////////////
 M4D::Imaging::AbstractPipeFilter *
-RemoteFilterFactory::DeserializeFilter(Imaging::InStream &stream, iRemoteFilterProperties **props)
+RemoteFilterFactory::DeserializeFilter(InStream &stream, iRemoteFilterProperties **props)
 {
 	uint16 filterID;
 	uint16 inElemType, outElemType;

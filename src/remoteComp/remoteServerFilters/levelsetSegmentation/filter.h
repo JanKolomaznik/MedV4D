@@ -3,7 +3,7 @@
 
 #include "itkThresholdSegmentationLevelSetImageFilter.h"
 
-#include "diffFunc.h"
+//#include "diffFunc.h"
 #include "common/perfCounter.h"
 
 namespace itk
@@ -17,7 +17,7 @@ public:
 	typedef itk::ThresholdSegmentationLevelSetImageFilter<TInputImage, TFeatureImage, TOutputPixelType> Superclass;	
 	typedef ThreshSegLevelSetFilter Self;
 	typedef itk::SmartPointer<Self> Pointer;
-	typedef itk::ThresholdLevelSetFunc<TFeatureImage> SegmentationFunctionType;
+	//typedef itk::ThresholdLevelSetFunc<TFeatureImage> SegmentationFunctionType;
 	
 	typedef typename Superclass::TimeStepType TimeStepType;
 	
@@ -34,7 +34,7 @@ protected:
 	ThreshSegLevelSetFilter(void);
 	~ThreshSegLevelSetFilter(void) {}
 	
-	typename SegmentationFunctionType::Pointer func_;
+	//typename SegmentationFunctionType::Pointer func_;
 	
 private:
 	PerfCounter cntr_;

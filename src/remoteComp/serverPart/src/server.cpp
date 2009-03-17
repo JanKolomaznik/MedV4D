@@ -16,6 +16,7 @@
 using boost::asio::ip::tcp;
 using namespace M4D::RemoteComputing;
 using namespace M4D::Imaging;
+using namespace M4D::IO;
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -107,7 +108,7 @@ void Server::OnClientDisconnected() {
 ///////////////////////////////////////////////////////////////////////////////
 
 void Server::CreatePipeline(void) {
-	Imaging::InStream stream(&netAccessor_);
+	InStream stream(&netAccessor_);
 
 	// perform deserialization    
 	m_filter = RemoteFilterFactory::DeserializeFilter(stream, &m_props);
@@ -119,7 +120,7 @@ void Server::CreatePipeline(void) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void Server::ReadDataSet(void) {
-	Imaging::InStream stream(&netAccessor_);
+	InStream stream(&netAccessor_);
 
 	// create the dataSet
 	AbstractDataSet::Ptr inputDataSet = DataSetFactory::CreateDataSet(stream);
@@ -140,7 +141,7 @@ void Server::ReadDataSet(void) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void Server::ReadFilterProperties(void) {
-	Imaging::InStream stream(&netAccessor_);
+	InStream stream(&netAccessor_);
 
 	m_props->DeserializeProperties(stream);
 
@@ -153,7 +154,7 @@ void Server::ReadFilterProperties(void) {
 void Server::OnExecutionDone(void) {
 	// send resulting dataSet back
 	uint8 result = (eRemoteComputationResult) OK;
-	Imaging::OutStream stream(&netAccessor_);
+	OutStream stream(&netAccessor_);
 	stream.Put<uint8>(result);
 
 	m_connWithOutputDataSet->GetDataset().SerializeProperties(stream);
@@ -163,7 +164,7 @@ void Server::OnExecutionDone(void) {
 ///////////////////////////////////////////////////////////////////////////////
 void Server::OnExecutionFailed(void) {
 	uint8 result = (eRemoteComputationResult) FAILED;
-	Imaging::OutStream stream(&netAccessor_);
+	OutStream stream(&netAccessor_);
 	stream.Put<uint8>(result);
 }
 

@@ -15,16 +15,16 @@ class LevelSetRemoteProperties
 {
 public:
 	LevelSetRemoteProperties()
-		: seedX( 256 )
-		, seedY( 256 )
-		, seedZ( 4 )
+		: seedX( 64 )
+		, seedY( 64 )
+		, seedZ( 1 )
 		, lowerThreshold( -500 ) 
 		, upperThreshold( 500 ) 
-		, maxIterations( 2200 ) 
+		, maxIterations( 800 ) 
 		, initialDistance( 5.0f ) 
-		, curvatureScaling( 0.0f ) 
+		, curvatureScaling( 0.01f ) 
 		, propagationScaling( 1.0f ) 
-		, advectionScaling( 0.0f ) 
+		, advectionScaling( 10.0f ) 
 	{}
 
 	uint32 seedX;
@@ -44,13 +44,13 @@ public:
 		initialDistance >= 3;
 	}
 	
-	void SerializeClassInfo(Imaging::OutStream &stream)
+	void SerializeClassInfo(M4D::IO::OutStream &stream)
 	{
 		stream.Put<uint16>(FID_LevelSetSegmentation);
 		stream.Put<uint16>(GetNumericTypeID< InputElementType >());
 		stream.Put<uint16>(GetNumericTypeID< OutputElementType >());
 	}
-	void SerializeProperties(Imaging::OutStream &stream)
+	void SerializeProperties(M4D::IO::OutStream &stream)
 	{
 		stream.Put<uint32>(seedX);
 		stream.Put<uint32>(seedY);
@@ -63,7 +63,7 @@ public:
 		stream.Put<float32>(propagationScaling);
 		stream.Put<float32>(advectionScaling);
 	}
-	void DeserializeProperties(Imaging::InStream &stream)
+	void DeserializeProperties(M4D::IO::InStream &stream)
 	{
 		stream.Get<uint32>(seedX);
 		stream.Get<uint32>(seedY);

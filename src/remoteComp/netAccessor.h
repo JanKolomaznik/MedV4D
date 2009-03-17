@@ -14,7 +14,7 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 
-#include "Imaging/IO/mediumAccessor.h"
+#include "common/mediumAccessor.h"
 #include "Endianess.h"
 
 
@@ -27,7 +27,7 @@ namespace RemoteComputing
  *  Interface that is given to user of Imaging library. Through virtual
  *  function is actual implementation hidden in CellBE library.
  */
-class NetAccessor : public Imaging::MediumAccessor
+class NetAccessor : public IO::MediumAccessor
 {
 public:
 	NetAccessor(boost::asio::ip::tcp::socket &socket);
