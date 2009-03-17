@@ -1,1 +1,0 @@
-Project for modifying data's patient attributes (mostly annonimized) with dictionary based ones.
