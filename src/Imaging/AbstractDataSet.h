@@ -12,7 +12,7 @@
 #include "TimeStamp.h"
 #include "Thread.h"
 #include "Imaging/dataSetClassEnum.h"
-#include "IO/IOStreams.h"
+#include "common/IOStreams.h"
 #include "Imaging/DatasetDefinitionTools.h"
 
 /**
@@ -109,11 +109,11 @@ public:
 		{ _THROW_ ErrorHandling::ETODO(); }
 
 	// interface for serialization
-	virtual void SerializeData(OutStream &stream) = 0;
-	virtual void SerializeClassInfo(OutStream &stream) = 0;
-	virtual void SerializeProperties(OutStream &stream) = 0;
-	virtual void DeSerializeData(InStream &stream) = 0;
-	virtual void DeSerializeProperties(InStream &stream) = 0;
+	virtual void SerializeData(M4D::IO::OutStream &stream) = 0;
+	virtual void SerializeClassInfo(M4D::IO::OutStream &stream) = 0;
+	virtual void SerializeProperties(M4D::IO::OutStream &stream) = 0;
+	virtual void DeSerializeData(M4D::IO::InStream &stream) = 0;
+	virtual void DeSerializeProperties(M4D::IO::InStream &stream) = 0;
 
 	/**
 	 * \return Actual structure timestamp - it changes when internal structure is modified.

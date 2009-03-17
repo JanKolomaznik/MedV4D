@@ -18,7 +18,9 @@ TARGETS=	Common \
 		Functors \
 		TimeStamp \
 		perfCounter\
-		fileAccessor
+		fileAccessor\
+		IOStreams
+		
 ########################################
 
 #Name of target

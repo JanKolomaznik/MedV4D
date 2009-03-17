@@ -8,6 +8,7 @@
 
 using namespace M4D::ErrorHandling;
 using namespace M4D::Imaging;
+using namespace M4D::IO;
 
 AbstractDataSet::Ptr
 DataSetFactory::CreateDataSet(InStream &stream)

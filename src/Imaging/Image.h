@@ -220,11 +220,11 @@ public:
 	SliceRegion
 	GetSlice( int32 slice )const;
 	
-	void SerializeClassInfo(OutStream &stream);
-	void SerializeProperties(OutStream &stream);
-	void SerializeData(OutStream &stream);
-	void DeSerializeData(InStream &stream);	
-	void DeSerializeProperties(InStream &stream);
+	void SerializeClassInfo(M4D::IO::OutStream &stream);
+	void SerializeProperties(M4D::IO::OutStream &stream);
+	void SerializeData(M4D::IO::OutStream &stream);
+	void DeSerializeData(M4D::IO::InStream &stream);	
+	void DeSerializeProperties(M4D::IO::InStream &stream);
 
   void Dump(std::ostream &s) const;
 

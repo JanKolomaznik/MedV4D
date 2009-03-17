@@ -22,8 +22,7 @@ TARGETS=	AbstractDataSet \
 		PipelineContainer \
 		Pipeline \
 		Ports\
-		DataSetFactory\
-		IOStreams
+		DataSetFactory
 
 #		ImageConnection 
 #		ImagePorts 

@@ -428,7 +428,7 @@ Image< ElementType, Dim >::Dump(std::ostream &s) const
 
 template< typename ElementType, unsigned Dim >
 void
-Image< ElementType, Dim >::SerializeClassInfo(OutStream &stream)
+Image< ElementType, Dim >::SerializeClassInfo(M4D::IO::OutStream &stream)
 {
 	// header
 	stream.Put<uint8>( (uint8) DATASET_IMAGE);
@@ -439,7 +439,7 @@ Image< ElementType, Dim >::SerializeClassInfo(OutStream &stream)
 ///////////////////////////////////////////////////////////////////////////////
 template< typename ElementType, unsigned Dim >
 void
-Image< ElementType, Dim >::SerializeProperties(OutStream &stream)
+Image< ElementType, Dim >::SerializeProperties(M4D::IO::OutStream &stream)
 {
 	// other properties
 	for( uint8 i = 0; i < Dimension; ++i ) 
@@ -452,7 +452,7 @@ Image< ElementType, Dim >::SerializeProperties(OutStream &stream)
 ///////////////////////////////////////////////////////////////////////////////
 template< typename ElementType, unsigned Dim >
 void
-Image< ElementType, Dim >::DeSerializeProperties(InStream &stream)
+Image< ElementType, Dim >::DeSerializeProperties(M4D::IO::InStream &stream)
 {
 	for( unsigned i = 0; i < Dimension; ++i ) {
 		stream.Get<int32>(_dimExtents[ i ].minimum);		
@@ -463,7 +463,7 @@ Image< ElementType, Dim >::DeSerializeProperties(InStream &stream)
 ///////////////////////////////////////////////////////////////////////////////
 template< typename ElementType, unsigned Dim >
 void
-Image< ElementType, Dim >::SerializeData(OutStream &stream)
+Image< ElementType, Dim >::SerializeData(M4D::IO::OutStream &stream)
 {
 	// actual data
 	PointType stride;
@@ -471,7 +471,7 @@ Image< ElementType, Dim >::SerializeData(OutStream &stream)
 
 	ElementType *pointer = GetPointer( size, stride );
 
-	DataBuff buff;
+	M4D::IO::DataBuff buff;
 
 	// note: this expects image that represent the WHOLE buffer NOT only window
 	switch(this->GetDimension())
@@ -492,14 +492,14 @@ Image< ElementType, Dim >::SerializeData(OutStream &stream)
 
 template< typename ElementType, unsigned Dim >
 void
-Image< ElementType, Dim >::DeSerializeData(InStream &stream)
+Image< ElementType, Dim >::DeSerializeData(M4D::IO::InStream &stream)
 {
 	PointType stride;
 	SizeType size;
 
 	ElementType *pointer = GetPointer( size, stride );
 
-	DataBuff buff;
+	M4D::IO::DataBuff buff;
 	// note: this expects image that represent the WHOLE buffer NOT only window
 	switch(this->GetDimension())
 	{

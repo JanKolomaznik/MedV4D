@@ -21,11 +21,11 @@ public:
 	 * Creates data set based on atributes that reads from stream
 	 */
 	static AbstractDataSet::Ptr 
-	CreateDataSet(InStream &stream);
+	CreateDataSet(M4D::IO::InStream &stream);
 	
 private:	// helpers
 	static AbstractDataSet::Ptr 
-	CreateImage(InStream &stream);
+	CreateImage(M4D::IO::InStream &stream);
 };
 
 }

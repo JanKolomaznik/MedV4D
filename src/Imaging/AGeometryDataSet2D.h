@@ -182,15 +182,15 @@ public:
 
 	void Dump( void)
 	{ _THROW_ ErrorHandling::ETODO();	}
-	void SerializeData(OutStream &stream)
+	void SerializeData(M4D::IO::OutStream &stream)
 	{ _THROW_ ErrorHandling::ETODO();	}
-	void SerializeClassInfo(OutStream &stream)
+	void SerializeClassInfo(M4D::IO::OutStream &stream)
 	{ _THROW_ ErrorHandling::ETODO();	}
-	void SerializeProperties(OutStream &stream)
+	void SerializeProperties(M4D::IO::OutStream &stream)
 	{ _THROW_ ErrorHandling::ETODO();	}
-	void DeSerializeData(InStream &stream)
+	void DeSerializeData(M4D::IO::InStream &stream)
 	{ _THROW_ ErrorHandling::ETODO();	}
-	void DeSerializeProperties(InStream &stream)
+	void DeSerializeProperties(M4D::IO::InStream &stream)
 	{ _THROW_ ErrorHandling::ETODO();	}
 
 protected:
