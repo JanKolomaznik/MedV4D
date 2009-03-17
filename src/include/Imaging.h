@@ -26,7 +26,6 @@
 #include "Imaging/GeometricAlgorithms.h"
 #include "Imaging/GeometricalObject.h"
 #include "Imaging/GeometryDataSetFactory.h"
-#include "Imaging/IO/IOStreams.h"
 //#include "Imaging/ImageConnection.h"
 #include "Imaging/ImageDataTemplate.h"
 #include "Imaging/ImageFactory.h"
