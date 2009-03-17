@@ -18,6 +18,23 @@ ITKIncludes=	-I$(ITKIncludeRoot)\
 				-I$(ITKIncludeRoot)/Utilities/vxl/vcl\
 				-I$(ITKIncludeRoot)/Utilities/vxl/core\
 				-I$(ITKIncludeRoot)/gdcm/src
+				
+ITKLIBS= 	$(ITKLibsRoot)/libITKNumerics.a\
+			$(ITKLibsRoot)/libITKNrrdIO.a\
+			$(ITKLibsRoot)/libITKSpatialObject.a\
+			$(ITKLibsRoot)/libITKCommon.a\
+			$(ITKLibsRoot)/libitkvnl_inst.a\
+			$(ITKLibsRoot)/libitkvnl_algo.a\
+			$(ITKLibsRoot)/libitkvnl.a\
+			$(ITKLibsRoot)/libitkv3p_netlib.a\
+			$(ITKLibsRoot)/libitkvcl.a\
+			$(ITKLibsRoot)/libitksys.a\
+			$(ITKLibsRoot)/libITKMetaIO.a\
+			$(ITKLibsRoot)/libITKEXPAT.a\
+			$(ITKLibsRoot)/libITKniftiio.a\
+			$(ITKLibsRoot)/libITKznz.a\
+			
+LIBS=		$(ITKLIBS)
 
 ########################################
 #Name of this project part
@@ -80,7 +97,7 @@ $(TMP_DIR)/%.o:	$(SRC_DIR)/%.cpp
 -include $(DEP_FILE)
 		
 $(OUTPUT):	$(OBJ_FILES)
-		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
+		$(AR) $(ARFLAGS) $(OUTPUT) $(OBJ_FILES)
 
 .PHONY: clean
 clean:
