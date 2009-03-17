@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1250"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="common"
 	ProjectGUID="{D300E0F3-DB4D-4B1C-9473-830764C94644}"
 	RootNamespace="common"
@@ -154,6 +154,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\common\IOStreams.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\common\Log.cpp"
 				>
 			</File>
@@ -193,6 +197,10 @@
 			</File>
 			<File
 				RelativePath="..\..\include\Functors.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\common\IOStreams.h"
 				>
 			</File>
 			<File
