@@ -1,0 +1,3 @@
+#Thu Feb 26 13:57:28 CET 2009
+prefWatchExpressions=<?xml version\="1.0" encoding\="UTF-8"?><watchExpressions>\n<expression enabled\="true" text\="line"/>\n<expression enabled\="true" text\="error"/>\n<expression enabled\="true" text\="host_name"/>\n</watchExpressions>
+eclipse.preferences.version=1
