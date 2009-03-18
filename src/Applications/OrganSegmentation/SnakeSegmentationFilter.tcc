@@ -23,11 +23,11 @@ SnakeSegmentationFilter< ElementType >
 	//TODO check if OK
 	for( unsigned i = 0; i < InCount; ++i ) {
 		InputPortType *inPort = new InputPortType();
-		_inputPorts.AddPort( inPort );
+		_inputPorts.AppendPort( inPort );
 	}
 	
 	OutputPortType *outPort = new OutputPortType();
-	_outputPorts.AddPort( outPort );
+	_outputPorts.AppendPort( outPort );
 
 }
 
@@ -41,11 +41,11 @@ SnakeSegmentationFilter< ElementType >
 	//TODO check if OK
 	for( unsigned i = 0; i < InCount; ++i ) {
 		InputPortType *inPort = new InputPortType();
-		_inputPorts.AddPort( inPort );
+		_inputPorts.AppendPort( inPort );
 	}
 	
 	OutputPortType *outPort = new OutputPortType();
-	_outputPorts.AddPort( outPort );
+	_outputPorts.AppendPort( outPort );
 }
 
 template < typename ElementType >

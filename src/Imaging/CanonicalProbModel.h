@@ -13,6 +13,20 @@ namespace Imaging
 
 struct GridPointRecord
 {
+	GridPointRecord() 
+		: inProbabilityPos( 0 ),
+		outProbabilityPos( 0 ),
+		logRationPos( 0.0 )
+	{}
+	GridPointRecord( 
+		float32	pinProbabilityPos,
+		float32	poutProbabilityPos,
+		float32	plogRationPos
+		) 
+		: inProbabilityPos( pinProbabilityPos ),
+		outProbabilityPos( poutProbabilityPos ),
+		logRationPos( plogRationPos )
+	{}
 	float32	inProbabilityPos;
 	float32	outProbabilityPos;
 	float32	logRationPos;
@@ -24,8 +38,11 @@ public:
 	typedef int32	IntensityType;
 	typedef Vector< float32, 3 > Coordinates;
 
-	ProbabilityGrid( Vector< float32, 3 > origin, Vector< uint32, 3 > gridSize ) :
-		_originCoordiantes( origin ), _gridSize( _gridSize ), _strides( 1, gridSize[0], gridSize[0]*gridSize[1] )
+	typedef Vector< float32, 3 > Vector3F;
+	typedef Vector< uint32, 3 > Vector3UI;
+
+	ProbabilityGrid( Vector< float32, 3 > origin, Vector< uint32, 3 > gridSize, Vector< float32, 3 > step ) :
+		_gridStep( step ), _originCoordiantes( origin ), _gridSize( _gridSize ), _strides( 1, gridSize[0], gridSize[0]*gridSize[1] )
 	{
 		_grid = new GridPointRecord[ _gridSize[0]*_gridSize[1]*_gridSize[2] ];
 	}
@@ -62,9 +79,18 @@ public:
 		}
 		return _grid[ _strides * pos ];
 	}
-	SIMPLE_GET_METHOD( Vector< uint32, 3 >, Size, _gridSize );
-	SIMPLE_GET_METHOD( Vector< float32, 3 >, GridStep, _gridStep );
-	SIMPLE_GET_METHOD( Vector< float32, 3 >, Origin, _originCoordiantes );
+
+	const GridPointRecord &
+	GetPointRecord( const Vector< uint32, 3 > &pos )const
+	{
+		if( !(pos < _gridSize) ) {
+			return _outlier;
+		}
+		return _grid[ _strides * pos ];
+	}
+	SIMPLE_GET_METHOD( Vector3UI, Size, _gridSize );
+	SIMPLE_GET_METHOD( Vector3F, GridStep, _gridStep );
+	SIMPLE_GET_METHOD( Vector3F, Origin, _originCoordiantes );
 protected:
 
 	Vector< uint32, 3 >
@@ -72,9 +98,9 @@ protected:
 	{
 		Coordinates pom = pos - _originCoordiantes;
 		return Vector< uint32, 3 >( 
-				Round( pom[0]/_gridStep[0] ), 
-				Round( pom[1]/_gridStep[1] ), 
-				Round( pom[2]/_gridStep[2] )
+				ROUND( pom[0]/_gridStep[0] ), 
+				ROUND( pom[1]/_gridStep[1] ), 
+				ROUND( pom[2]/_gridStep[2] )
 				);
 	}
 
@@ -130,13 +156,20 @@ public:
 	LogRatioProbabilityPosition( const Coordinates &pos );
 	//***********************************************************************
 protected:
+	CanonicalProbModel( ProbabilityGrid *grid, int32 interestMin, int32 interestMax ) : 
+		_inIntensity( interestMin, interestMax ),
+		_outIntensity( interestMin, interestMax ),
+		_logRatioIntensity( interestMin, interestMax ),
+		_grid( grid )
+		{}
+
 	Histogram< float32 >	_inIntensity;
 	Histogram< float32 >	_outIntensity;
 	Histogram< float32 >	_logRatioIntensity;
 
 	ProbabilityGrid		*_grid;
 private:
-}
+};
 
 }/*namespace Imaging*/
 }/*namespace M4D*/

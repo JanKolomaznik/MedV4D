@@ -28,9 +28,9 @@ MaskSelection< ImageType >
 
 	M4D::Imaging::OutputPort *imageOutport = new ImageOutPort();
 
-	this->_inputPorts.AddPort( imageInport );
-	this->_inputPorts.AddPort( maskInPort );
-	this->_outputPorts.AddPort( imageOutport );
+	this->_inputPorts.AppendPort( imageInport );
+	this->_inputPorts.AppendPort( maskInPort );
+	this->_outputPorts.AppendPort( imageOutport );
 	
 	this->_name = "MaskSelection";
 }
@@ -45,9 +45,9 @@ MaskSelection< ImageType >
 
 	M4D::Imaging::OutputPort *imageOutport = new ImageOutPort();
 
-	this->_inputPorts.AddPort( imageInport );
-	this->_inputPorts.AddPort( maskInPort );
-	this->_outputPorts.AddPort( imageOutport );
+	this->_inputPorts.AppendPort( imageInport );
+	this->_inputPorts.AppendPort( maskInPort );
+	this->_outputPorts.AppendPort( imageOutport );
 
 	this->_name = "MaskSelection";
 }

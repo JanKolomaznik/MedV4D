@@ -22,10 +22,10 @@ SliceSplineFill< CoordType >
 
 	//TODO check if OK
 	InputPortType *inPort = new InputPortType();
-	_inputPorts.AddPort( inPort );
+	_inputPorts.AppendPort( inPort );
 
 	OutputPortType *outPort = new OutputPortType();
-	_outputPorts.AddPort( outPort );
+	_outputPorts.AppendPort( outPort );
 
 }
 
@@ -38,10 +38,10 @@ SliceSplineFill< CoordType >
 
 	//TODO check if OK
 	InputPortType *inPort = new InputPortType();
-	_inputPorts.AddPort( inPort );
+	_inputPorts.AppendPort( inPort );
 
 	OutputPortType *outPort = new OutputPortType();
-	_outputPorts.AddPort( outPort );
+	_outputPorts.AppendPort( outPort );
 }
 
 template < typename CoordType >

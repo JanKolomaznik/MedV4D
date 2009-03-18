@@ -1,7 +1,7 @@
 #ifndef MAIN_MANAGER_H
 #define MAIN_MANAGER_H
 
-#include "backendForDICOM.h"
+#include "backendForDICOM/DICOMServiceProvider.h"
 #include "Imaging.h"
 #include <QtCore>
 #include "SliceSplineFill.h"

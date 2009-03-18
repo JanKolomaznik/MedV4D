@@ -11,30 +11,23 @@ RCC=rcc
 
 ########################################
 #Name of this project part
-NAME=		OrganSegmentation
+NAME=		OrganSegmentationTrainer
 #Names of target sources
 TARGETS=	main \
-		mainWindow \
-		SegmentationWidget \
-		ManualSegmentationManager \
-		KidneySegmentationManager \
-		MainManager \
-		SettingsBox
+		MainWindow \
+		ImageTools
 
-MOCINPUT=	mainWindow.h \
-		SegmentationWidget.h \
-		SettingsBox.h \
-		ManualSegmentationManager.h \
-		MainManager.h \
-		KidneySegmentationManager.h
+MOCINPUT=	MainWindow.h 
+		
 
-RCCINPUT=	mainWindow.qrc
+RCCINPUT=	MainWindow.qrc
 
-M4DLIBS=	../../lib/libm4dWidgets.a\
-		../../lib/libvtkIntegration.a\
-		../../lib/libbackendForDICOM.a\
-		../../lib/libImaging.a\
+M4DLIBS=	../../lib/libImaging.a\
 		../../lib/libcommon.a
+
+#../../lib/libm4dWidgets.a\
+#../../lib/libvtkIntegration.a\
+#../../lib/libbackendForDICOM.a\
 
 QTLIBS=		-lQtCore\
 		-lQtGui\
@@ -68,11 +61,12 @@ DCMTKLIBS=	-ldcmnet -ldcmdata -lofstd
 
 LIBS=		$(M4DLIBS)\
 		$(QTLIBS)\
-		$(VTKLIBS)\
-		$(DCMTKLIBS)\
 		-lboost_thread \
 		-lboost_filesystem \
 		-lGLU
+#$(VTKLIBS)\
+#$(DCMTKLIBS)\
+
 ########################################
 
 #Name of target

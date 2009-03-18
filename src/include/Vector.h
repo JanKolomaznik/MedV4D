@@ -135,7 +135,7 @@ operator==( const Vector< CoordType, Dim > &v1, const Vector< CoordType, Dim > &
 	bool result = true;
 
 	for( unsigned i=0; i < Dim; ++i ) {
-		result = result && (v1._coordinates[ i ] == v2._coordinates[ i ]);
+		result = result && (v1[ i ] == v2[ i ]);
 	}
 
 	return result;
@@ -149,7 +149,7 @@ operator!=( const Vector< CoordType, Dim > &v1, const Vector< CoordType, Dim > &
 	bool result = false;
 
 	for( unsigned i=0; i < Dim; ++i ) {
-		result = result || (v1._coordinates[ i ] != v2._coordinates[ i ]);
+		result = result || (v1[ i ] != v2[ i ]);
 	}
 
 	return result;
