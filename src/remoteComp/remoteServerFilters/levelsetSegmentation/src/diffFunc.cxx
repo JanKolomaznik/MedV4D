@@ -7,25 +7,26 @@ namespace itk
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template <class TImageType, class TFeatureImageType>
-ThresholdLevelSetFunc<TImageType, TFeatureImageType>
+template <class ImageType, class FeatureImageType>
+ThresholdLevelSetFunc< ImageType, FeatureImageType >
 ::ThresholdLevelSetFunc()
 {
-	RadiusType radius;
-	radius[0] = radius[1] = radius[2] = 1;
-	this->SetRadius(radius);
+	m_WaveDT = 1.0/(2.0 * ImageType::ImageDimension);
+	m_DT = 1.0/(2.0 * ImageType::ImageDimension);
 	
-	this->SetRadius(r);
+	RadiusType radius;
+	radius.Fill(1);
+	this->SetRadius(radius);
 	  
   // Dummy neighborhood.
   NeighborhoodType it;
-  it.SetRadius( r );
+  it.SetRadius( radius );
   
   // Find the center index of the neighborhood.
   m_Center =  it.Size() / 2;
 
   // Get the stride length for each axis.
-  for(unsigned int i = 0; i < ImageDimension; i++)
+  for(unsigned int i = 0; i < ImageType::ImageDimension; i++)
     {  m_xStride[i] = it.GetStride(i); }
 
 	cntr_.Reset();
@@ -55,25 +56,25 @@ ThresholdLevelSetFunc<TImageType, TFeatureImageType>
 	
 ///////////////////////////////////////////////////////////////////////////////
 	
-template< class TImageType>
-typename LevelSetFunction< TImageType>::PixelType
-LevelSetFunction< TImageType>
+template <class ImageType, class FeatureImageType>
+typename ThresholdLevelSetFunc< ImageType, FeatureImageType >::PixelType
+ThresholdLevelSetFunc< ImageType, FeatureImageType >
 ::ComputeUpdate(const NeighborhoodType &it, void *globalData,
 		const FloatOffsetType& offset)
 {
 	unsigned int i, j;
-	const ScalarValueType ZERO = NumericTraits<ScalarValueType>::Zero;
-	const ScalarValueType center_value = it.GetCenterPixel();
+	//const PixelType ZERO = NumericTraits<PixelType>::Zero;
+	const PixelType center_value = it.GetCenterPixel();
 
 	const NeighborhoodScalesType neighborhoodScales = this->ComputeNeighborhoodScales();
 
 	// Global data structure
-	GlobalDataStruct *gd = (GlobalDataStruct *)globalData;
+	GlobalDataType *gd = (GlobalDataType *)globalData;
 
 	// Compute the Hessian matrix and various other derivatives.  Some of these
 	// derivatives may be used by overloaded virtual functions.
 	gd->m_GradMagSqr = 1.0e-6;
-	for( i = 0; i < ImageDimension; i++)
+	for( i = 0; i < ImageType::ImageDimension; i++)
 	{
 		const unsigned int positionA =
 		static_cast<unsigned int>( m_Center + m_xStride[i]);
@@ -90,7 +91,7 @@ LevelSetFunction< TImageType>
 		gd->m_dx_backward[i] = ( center_value - it.GetPixel( positionB ) ) * neighborhoodScales[i];
 		gd->m_GradMagSqr += gd->m_dx[i] * gd->m_dx[i];
 
-		for( j = i+1; j < ImageDimension; j++ )
+		for( j = i+1; j < ImageType::ImageDimension; j++ )
 		{
 			const unsigned int positionAa = static_cast<unsigned int>(
 					m_Center - m_xStride[i] - m_xStride[j] );
@@ -111,22 +112,22 @@ LevelSetFunction< TImageType>
 
 	// Return the combination of all the terms.
 	return ( PixelType )( 
-			ComputeCurvatureTerm() - 
-			ComputePropagationTerm() - 
-			ComputeAdvectionTerm() 
+			this->ComputeCurvatureTerm(gd) - 
+			this->ComputePropagationTerm(it, offset, gd)
+			//- ComputeAdvectionTerm()
 			);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template< class TImageType >
-typename ThresholdLevelSetFunc< TImageType >::TimeStepType
-ThresholdLevelSetFunc<TImageType>
+template <class ImageType, class FeatureImageType>
+typename ThresholdLevelSetFunc< ImageType, FeatureImageType >::TimeStepType
+ThresholdLevelSetFunc< ImageType, FeatureImageType >
 	::ComputeGlobalTimeStep(void *GlobalData) const
 {
   TimeStepType dt;
 
-  GlobalDataStruct *d = (GlobalDataStruct *)GlobalData;
+  GlobalDataType *d = (GlobalDataType *)GlobalData;
 
   d->m_MaxAdvectionChange += d->m_MaxPropagationChange;
   
@@ -155,16 +156,16 @@ ThresholdLevelSetFunc<TImageType>
     }
 
   double maxScaleCoefficient = 0.0;
-  for (unsigned int i=0; i<ImageDimension; i++)
+  for (unsigned int i=0; i<FeatureImageType::ImageDimension; i++)
     {
     maxScaleCoefficient = vnl_math_max(this->m_ScaleCoefficients[i],maxScaleCoefficient);
     }
   dt /= maxScaleCoefficient;
  
   // reset the values  
-  d->m_MaxAdvectionChange   = NumericTraits<ScalarValueType>::Zero;
-  d->m_MaxPropagationChange = NumericTraits<ScalarValueType>::Zero;
-  d->m_MaxCurvatureChange   = NumericTraits<ScalarValueType>::Zero;
+  d->m_MaxAdvectionChange   = NumericTraits<PixelType>::Zero;
+  d->m_MaxPropagationChange = NumericTraits<PixelType>::Zero;
+  d->m_MaxCurvatureChange   = NumericTraits<PixelType>::Zero;
   
   return dt;
 }

@@ -10,8 +10,15 @@ template <class TInputImage,class TFeatureImage, class TOutputPixelType>
 ThreshSegLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::ThreshSegLevelSetFilter(void)
 {
-//	func_ = SegmentationFunctionType::New();
-//	this->SetSegmentationFunction(func_);
+	func_ = SegmentationFunctionType::New();
+	this->SetDifferenceFunction(func_);
+	
+	  this->SetIsoSurfaceValue(NumericTraits<ValueType>::Zero);
+	  
+	  // Provide some reasonable defaults which will at least prevent infinite
+	  // looping.
+	  this->SetMaximumRMSError(0.02);
+	  this->SetNumberOfIterations(1000);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -37,7 +44,23 @@ ThreshSegLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 	//func_->cntr_.Reset();
 	cntr_.Reset();
 	cntr_.Start();
-	Superclass::GenerateData();
+
+	  // A positive speed value causes surface expansion, the opposite of the
+	  // default.  Flip the sign of the propagation and advection weights.
+//	  if (m_ReverseExpansionDirection == true)
+//	    {
+//	    this->GetSegmentationFunction()->ReverseExpansionDirection();
+//	    }
+	  
+	  // Start the solver
+	  Superclass::GenerateData();
+	  
+	  // Reset all the signs of the weights.
+//	  if (m_ReverseExpansionDirection == true)
+//	    {
+//	    this->GetSegmentationFunction()->ReverseExpansionDirection();
+//	    }  
+	  
 	cntr_.Stop();
 }
 
