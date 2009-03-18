@@ -15,7 +15,15 @@ typedef M4D::Imaging::Histogram< int64 >	DiscreteHistogram;
 typedef M4D::Imaging::ProbabilityGrid		GridType;
 
 typedef boost::filesystem::path			Path;
-typedef std::pair< Path, Path >			TrainingDataInfo;
+//typedef std::pair< Path, Path >			TrainingDataInfo;
+
+struct TrainingDataInfo
+{
+	Path first;
+	Path second;
+	Path dir;
+};
+
 typedef std::vector< TrainingDataInfo >		TrainingDataInfos;
 
 struct Transformation
@@ -29,10 +37,14 @@ struct Transformation
 		return result;
 	}
 
-	Transformation
-	GetInversion()const
+	Vector< float32, 3 >
+	GetInversion( const Vector< float32, 3 > &pos )const
 	{
-		return Transformation();
+		Vector< float32, 3 > result = pos;
+		result -= result[2] * _diff;
+		result[2] /= _zScale;
+
+		return result + _origin;
 	}
 
 	float32 _zScale;

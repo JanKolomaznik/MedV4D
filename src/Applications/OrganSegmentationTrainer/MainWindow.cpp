@@ -158,6 +158,13 @@ MainWindow::ExecuteTraining()
 			);
 	Vector< float32, 3 > origin( _xSizeSB->value() * 0.5f, _ySizeSB->value() * 0.5f, 0.0f );
 
+	if( _trainingsetInfos.empty() ) {
+		return;
+	}
+
+	
+	Train( _trainingsetInfos, size, step, origin, _minHistogramSB->value(), _maxHistogramSB->value() );
+
 	TrainingFinished();
 }
 

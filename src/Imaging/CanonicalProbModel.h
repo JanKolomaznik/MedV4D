@@ -42,7 +42,7 @@ public:
 	typedef Vector< uint32, 3 > Vector3UI;
 
 	ProbabilityGrid( Vector< float32, 3 > origin, Vector< uint32, 3 > gridSize, Vector< float32, 3 > step ) :
-		_gridStep( step ), _originCoordiantes( origin ), _gridSize( _gridSize ), _strides( 1, gridSize[0], gridSize[0]*gridSize[1] )
+		_gridStep( step ), _originCoordiantes( origin ), _gridSize( gridSize ), _strides( 1, gridSize[0], gridSize[0]*gridSize[1] )
 	{
 		_grid = new GridPointRecord[ _gridSize[0]*_gridSize[1]*_gridSize[2] ];
 	}
@@ -170,6 +170,45 @@ protected:
 	ProbabilityGrid		*_grid;
 private:
 };
+
+struct InProbabilityAccessor
+{
+	int16
+	operator()( const GridPointRecord & rec ) 
+	{
+		return (int16)( 4096 * rec.inProbabilityPos );
+	}
+};
+
+struct OutProbabilityAccessor
+{
+	int16
+	operator()( const GridPointRecord & rec ) 
+	{
+		return (int16)( 4096 * rec.outProbabilityPos );
+	}
+};
+
+template< typename ElementType, typename Accessor >
+typename Image< int16, 3 >::Ptr
+MakeImageFromProbabilityGrid( const ProbabilityGrid &grid, Accessor accessor )
+{
+	Vector< uint32, 3 > size = grid.GetSize();
+	
+	Image< int16, 3 >::Ptr image = ImageFactory::CreateEmptyImageFromExtents< int16, 3 >( 
+			Vector<int32,3>(), Vector<int32,3>( (int32*)size.GetData() ), Vector< float32, 3 >( 1.0f ) ); 
+	
+	Vector< uint32, 3 > idx;
+	for( idx[0] = 0; idx[0] < size[0]; ++idx[0] ) {
+		for( idx[1] = 0; idx[1] < size[1]; ++idx[1] ) {
+			for( idx[2] = 0; idx[2] < size[2]; ++idx[2] ) {
+				const GridPointRecord &rec = grid.GetPointRecord( idx );
+				image->GetElement( idx ) = accessor( rec );
+			}
+		}
+	}
+	return image;
+}
 
 }/*namespace Imaging*/
 }/*namespace M4D*/

@@ -181,7 +181,7 @@ public:
 	typename Image< ElementType, NewDim >::Ptr
 	GetRestrictedImage( 
 			ImageRegion< ElementType, NewDim > region
-			);
+			)const;
 
 	WriterBBoxInterface &
 	SetDirtyBBox( 

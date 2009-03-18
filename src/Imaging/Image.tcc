@@ -267,7 +267,7 @@ template< unsigned NewDim >
 typename Image< ElementType, NewDim >::Ptr
 Image< ElementType, Dim >::GetRestrictedImage( 
 		ImageRegion< ElementType, NewDim > region
-		)
+		)const
 {
 	Image< ElementType, NewDim > *image = new Image< ElementType, NewDim >( this->_imageData, region );
 	return typename Image< ElementType, NewDim >::Ptr( image );

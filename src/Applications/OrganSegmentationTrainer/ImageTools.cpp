@@ -7,8 +7,15 @@ using namespace boost::filesystem;
 Transformation
 GetTransformation( MaskType::PointType north, MaskType::PointType south, Vector< float32, 3 > elExtents )
 {
-	M4D::ErrorHandling::ETODO();
-	return Transformation();
+	//_THROW_ M4D::ErrorHandling::ETODO();
+	Transformation tr;
+
+	MaskType::PointType diff = north - south;
+	
+	tr._origin = Vector< float32, 3 >( south[0] * elExtents[0], south[1] * elExtents[1], south[2] * elExtents[2] );
+	tr._diff = Vector< float32, 3 >( diff[0] * elExtents[0], diff[1] * elExtents[1], 0.0f );
+	tr._zScale = 1.0f / (north[2] - south[2]);
+	return tr;
 }
 
 void
@@ -30,6 +37,7 @@ TrainingStep(
 	DiscreteHistogram inHistogram( generalInHistogram.GetMin(), generalInHistogram.GetMax(), false );
 	DiscreteHistogram outHistogram( generalOutHistogram.GetMin(), generalOutHistogram.GetMax(), true );
 
+	D_PRINT( "Filling histograms..." );
 	FillInOutHistograms( inHistogram, outHistogram, image, mask );
 
 	generalInHistogram += inHistogram;
@@ -37,8 +45,10 @@ TrainingStep(
 
 	GridType grid( generalGrid.GetOrigin(), generalGrid.GetSize(), generalGrid.GetGridStep() );
 	
-	FillGrid( tr.GetInversion(), image, mask, grid );
+	D_PRINT( "Filling grid..." );
+	FillGrid( tr, image, mask, grid );
 
+	D_PRINT( "Incorporating grids..." );
 	IncorporateGrids( grid, generalGrid );
 
 }
@@ -61,9 +71,9 @@ ComputeProbRecord( Vector< float32, 3 > pos, Vector< float32, 3 > hStep, const I
 	Vector< int32, 3 > idx;
 	int32 counter = 0;
 	int32 inCounter = 0;
-	for( idx[0] = rmin[0]; idx[0] <= max[0]; ++idx[0] ) {
-		for( idx[1] = rmin[1]; idx[1] <= max[1]; ++idx[1] ) {
-			for( idx[2] = rmin[2]; idx[2] <= max[0]; ++idx[2] ) {
+	for( idx[0] = rmin[0]; idx[0] <= rmax[0]; ++idx[0] ) {
+		for( idx[1] = rmin[1]; idx[1] <= rmax[1]; ++idx[1] ) {
+			for( idx[2] = rmin[2]; idx[2] <= rmax[2]; ++idx[2] ) {
 				if( mask.GetElement( idx ) != 0 ) {
 					++inCounter;
 				}	
@@ -80,7 +90,7 @@ ComputeProbRecord( Vector< float32, 3 > pos, Vector< float32, 3 > hStep, const I
 }
 
 void
-FillGrid( Transformation invTr, const ImageType &image, const MaskType &mask, GridType &grid )
+FillGrid( Transformation tr, const ImageType &image, const MaskType &mask, GridType &grid )
 {
 	Vector< uint32, 3 > size = grid.GetSize();
 	Vector< float32, 3 > step = grid.GetGridStep();
@@ -94,12 +104,12 @@ FillGrid( Transformation invTr, const ImageType &image, const MaskType &mask, Gr
 	Vector< uint32, 3 > idx;
 	for( idx[0] = 0; idx[0] < size[0]; ++idx[0] ) {
 		for( idx[1] = 0; idx[1] < size[1]; ++idx[1] ) {
-			for( idx[2] = 0; idx[2] < size[0]; ++idx[2] ) {
+			for( idx[2] = 0; idx[2] < size[2]; ++idx[2] ) {
 				for( unsigned i = 0; i < 3; ++i ) {
 					tmp[i] = idx[i]*step[i];
 				}
 				tmp += origin;
-				grid.GetPointRecord( idx ) = ComputeProbRecord( invTr( tmp ), halfStep, image, mask );
+				grid.GetPointRecord( idx ) = ComputeProbRecord( tr.GetInversion( tmp ), halfStep, image, mask );
 			}
 		}
 	}
@@ -132,12 +142,14 @@ static MaskType::SliceRegion::PointType
 FindMaskCenterOfGravity( const MaskType::SliceRegion &region )
 {
 	MaskType::SliceRegion::PointType sum;
-	MaskType::SliceRegion::PointType idx = region.GetMinimum();
+	MaskType::SliceRegion::PointType min = region.GetMinimum();
+	MaskType::SliceRegion::PointType idx;
 	MaskType::SliceRegion::PointType max = region.GetMaximum();
 	int32 count = 0;
-	for( ; idx[0] < max[0]; ++idx[0] ) {
-		for( ; idx[1] < max[1]; ++idx[1] ) {
-			if( region.GetElement( idx ) ) {
+	for( idx = min; idx[1] < max[1]; ++idx[1] ) {
+		for( idx[0] = min[0]; idx[0] < max[0]; ++idx[0] ) {
+			//LOG( idx << " -> " << (int16)region.GetElement( idx ) );
+			if( region.GetElement( idx ) != 0 ) {
 				++count;
 				sum += idx;
 			}
@@ -147,7 +159,7 @@ FindMaskCenterOfGravity( const MaskType::SliceRegion &region )
 	if( count == 0 ) {
 		_THROW_ M4D::ErrorHandling::ExceptionBase( "Center of gravity unable to find." );
 	}
-	return MaskType::SliceRegion::PointType( sum[0] / count, sum[1] / count, sum[2] / count );
+	return MaskType::SliceRegion::PointType( sum[0] / count, sum[1] / count );
 }
 
 void
@@ -157,6 +169,11 @@ GetPoles( const MaskType & mask, MaskType::PointType &north, MaskType::PointType
 	int32 northSliceCoord = mask.GetMaximum()[2]-1;
 	MaskType::SliceRegion southRegion = mask.GetSlice( southSliceCoord );
 	MaskType::SliceRegion northRegion = mask.GetSlice( northSliceCoord );
+
+	/*M4D::Imaging::Mask2D::Ptr tmp = mask.GetRestrictedImage( southRegion );
+	ImageFactory::DumpImage( "pom.dump", *tmp );
+	tmp = mask.GetRestrictedImage( northRegion );
+	ImageFactory::DumpImage( "pom2.dump", *tmp );*/
 
 	MaskType::SliceRegion::PointType southTmp = FindMaskCenterOfGravity( southRegion );
 	MaskType::SliceRegion::PointType northTmp = FindMaskCenterOfGravity( northRegion );
@@ -172,7 +189,7 @@ IncorporateGrids( const GridType &last, GridType &general )
 	Vector< uint32, 3 > idx;
 	for( idx[0] = 0; idx[0] < size[0]; ++idx[0] ) {
 		for( idx[1] = 0; idx[1] < size[1]; ++idx[1] ) {
-			for( idx[2] = 0; idx[2] < size[0]; ++idx[2] ) {
+			for( idx[2] = 0; idx[2] < size[2]; ++idx[2] ) {
 				const GridPointRecord &rec = last.GetPointRecord( idx );
 				GridPointRecord &genRec = general.GetPointRecord( idx );
 				genRec.inProbabilityPos += rec.inProbabilityPos;
@@ -189,7 +206,7 @@ ConsolidateGeneralGrid( GridType &grid, int32 count )
 	Vector< uint32, 3 > idx;
 	for( idx[0] = 0; idx[0] < size[0]; ++idx[0] ) {
 		for( idx[1] = 0; idx[1] < size[1]; ++idx[1] ) {
-			for( idx[2] = 0; idx[2] < size[0]; ++idx[2] ) {
+			for( idx[2] = 0; idx[2] < size[2]; ++idx[2] ) {
 				GridPointRecord &rec = grid.GetPointRecord( idx );
 				rec.inProbabilityPos /= count;
 				rec.outProbabilityPos /= count;
@@ -229,7 +246,9 @@ GetTrainingSetInfos( const Path & dirPath, std::string indexExtension, TrainingD
 			GetTrainingSetInfos( itr->path(), indexExtension, infos, recursive );
 		} else if ( itr->path().extension() == indexExtension ) {
 			D_PRINT( "Found index file : " << itr->path() );
-			infos.push_back( RetrieveInfoFromIndex( itr->path() ) );
+			TrainingDataInfo info = RetrieveInfoFromIndex( itr->path() );
+			info.dir = dirPath;
+			infos.push_back( info );
 		}
 	}
 
@@ -248,16 +267,35 @@ Train( const TrainingDataInfos &infos, Vector< uint32, 3 > size, Vector< float32
 	for( unsigned i = 0; i < infos.size(); ++i ) {
 		ImageType::Ptr image;
 		MaskType::Ptr mask;
+		Path imageFile = infos[i].dir;
+		imageFile /= infos[i].first;
+		Path maskFile = infos[i].dir;
+		maskFile /= infos[i].second;
 		try {
-			AbstractImage::Ptr aimage = ImageFactory::LoadDumpedImage( infos[i].first.string() );
+			D_PRINT( "Loading training image number '" << i << "' from file '" << imageFile.string() <<"'." );
+			AbstractImage::Ptr aimage = ImageFactory::LoadDumpedImage( imageFile.string() );
 			image = ImageType::CastAbstractImage( aimage );
-			aimage = ImageFactory::LoadDumpedImage( infos[i].second.string() );
+			D_PRINT( "Loading training mask number '" << i << "' from file '" << maskFile.string() <<"'." );
+			aimage = ImageFactory::LoadDumpedImage( maskFile.string() );
 			mask = MaskType::CastAbstractImage( aimage );
-		} catch (...) {
+		} catch ( const M4D::ErrorHandling::ExceptionBase & e ) {
 			continue;
 		}
 
 		++counter;
 		TrainingStep( generalInHistogram, generalOutHistogram, *image, *mask, generalGrid );
 	}	
+	LOG( "IN HISTOGRAM" );
+	LOG( generalInHistogram );
+	LOG( "-----------------------------------------------" );
+	LOG( "OUT HISTOGRAM" );
+	LOG( generalOutHistogram );
+
+
+	ImageType::Ptr tmp;
+	tmp = MakeImageFromProbabilityGrid<InProbabilityAccessor>( generalGrid, InProbabilityAccessor() );
+	ImageFactory::DumpImage( "pom.dump", *tmp );
+
+	tmp = MakeImageFromProbabilityGrid<OutProbabilityAccessor>( generalGrid, OutProbabilityAccessor() );
+	ImageFactory::DumpImage( "pom2.dump", *tmp );
 }

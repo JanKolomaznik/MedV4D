@@ -140,7 +140,7 @@ std::ostream &
 operator<<( std::ostream &stream, const Histogram< CellType > &histogram )
 {
 	for( int32 i = histogram.GetMin() - 1; i <= histogram.GetMax(); ++i ) {
-		std::cout << histogram[i] << std::endl;
+		stream << histogram[i] << std::endl;
 	}
 	return stream;
 }

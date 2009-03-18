@@ -70,7 +70,7 @@ public:
 			);
 
 	template< typename ElementType, unsigned Dim >
-	typename Image< ElementType, Dim >::Ptr 
+	static typename Image< ElementType, Dim >::Ptr 
 	CreateEmptyImageFromExtents( 
 			Vector< int32, Dim >	minimum, 
 			Vector< int32, Dim >	maximum,

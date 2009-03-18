@@ -71,8 +71,13 @@ ImageFactory::CreateEmptyImageFromExtents(
 		float32		elementExtents[]
 		)
 {
-	//TODO fix
-	switch( dim ) {
+	DIMENSION_TEMPLATE_SWITCH_MACRO( dim, 
+			return ImageFactory::CreateEmptyImageFromExtents< ElementType, DIM >(
+				Vector< int32, DIM >( minimums ),
+				Vector< int32, DIM >( maximums ),
+				Vector< float32, DIM >( elementExtents ) );
+			);
+/*	switch( dim ) {
 	case 2:		
 		return CreateEmptyImage2D< ElementType >( 
 				(uint32) maximums[0]-minimums[0], 
@@ -92,7 +97,7 @@ ImageFactory::CreateEmptyImageFromExtents(
 	default:
 		ASSERT( false );
 		return AbstractImage::Ptr();
-	}
+	}*/
 }
 
 template< typename ElementType, unsigned Dim >
@@ -103,7 +108,8 @@ ImageFactory::CreateEmptyImageFromExtents(
 		Vector< float32, Dim >	elementExtents
 		)
 {
-	typename ImageDataTemplate< ElementType >::Ptr data = CreateEmptyImageDataTyped( maximum - minimum, elementExtents );
+	typename ImageDataTemplate< ElementType >::Ptr data = 
+		ImageFactory::CreateEmptyImageDataTyped< ElementType, Dim>( maximum - minimum, elementExtents );
 
 	Image< ElementType, Dim > *img = new Image< ElementType, Dim >( data, minimum, maximum );
 
