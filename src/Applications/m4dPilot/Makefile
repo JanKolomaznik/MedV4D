@@ -84,7 +84,8 @@ LDFLAGS=
 ARFLAGS=	-r
 LIBDIRS=	-L../../lib\
 		-L/usr/lib/qt4\
-		-L/usr/local/lib/vtk-5.2
+		-L/usr/local/lib/vtk-5.2\
+		-L/usr/lib/vtk-5.2
 
 INCLUDES=	-I../.. \
 		-I$(srcdir)\
