@@ -10,6 +10,34 @@ namespace M4D
 namespace Imaging
 {
 
+class ProbabilityFromModel
+{
+private:
+	CanonicalProbModel 	*_model;
+	float32 		_zCoord;
+	Transformation		_transformation;
+	Vector< float32, 3 >	_tmp;
+	float32			_balance;
+public:
+	ProbabilityFromModel():_model( NULL ), _balance( 0.5 ) {}
+
+	float32
+	LogProbabilityRatio( int16 value, const Vector< float32, 2 > &pos )
+	{ 
+		_tmp[0] = pos[0];
+		_tmp[1] = pos[1];
+		_tmp[2] = _zCoord; //TODO - set with _zCoord
+
+		//return _model->LogRatioProbabilityPosition( _transformation( _tmp ) ); 
+		return _model->LogRatioProbabilityIntesityPosition( value, _transformation( _tmp ), _balance ); 
+		//return _model->LogRatioProbabilityIntesity( value ); 
+	}
+	SIMPLE_GET_SET_METHODS( CanonicalProbModel*, Model, _model );
+	SIMPLE_GET_SET_METHODS( float32, ZCoordinate, _zCoord );
+	SIMPLE_GET_SET_METHODS( float32, Balance, _balance );
+	SIMPLE_GET_SET_METHODS( Transformation, Transformation, _transformation );
+};
+
 class NormalDistribution
 {
 private:
@@ -77,17 +105,16 @@ public:
 
 	struct Properties : public PredecessorType::Properties
 	{
-		Coordinates	firstPoint;
-		int32		firstSlice;
-		Coordinates	secondPoint;
-		int32		secondSlice;
+		Properties(): precision( -1 ), shapeIntensityBalance( 0.5 ), probModel( NULL ) {}
 
-		Coordinates	insidePoint;
-		int32		insidePointSlice;
-		Coordinates	outsidePoint;
-		int32		outsidePointSlice;
+		Coordinates		firstPoint;
+		int32			firstSlice;
+		Coordinates		secondPoint;
+		int32			secondSlice;
 
-		int32		precision;
+		int32			precision;
+		float32			shapeIntensityBalance;
+		CanonicalProbModel*	probModel;
 	};
 
 	~SnakeSegmentationFilter() {}
@@ -100,15 +127,13 @@ public:
 	GET_SET_PROPERTY_METHOD_MACRO( Coordinates, SecondPoint, secondPoint );
 	GET_SET_PROPERTY_METHOD_MACRO( int32, SecondSlice, secondSlice );
 
-	GET_SET_PROPERTY_METHOD_MACRO( Coordinates, InsidePoint, insidePoint );
-	GET_SET_PROPERTY_METHOD_MACRO( int32, InsidePointSlice, insidePointSlice );
-	GET_SET_PROPERTY_METHOD_MACRO( Coordinates, OutsidePoint, outsidePoint );
-	GET_SET_PROPERTY_METHOD_MACRO( int32, OutsidePointSlice, outsidePointSlice );
-
 	GET_SET_PROPERTY_METHOD_MACRO( int32, Precision, precision );
+	GET_SET_PROPERTY_METHOD_MACRO( float32, ShapeIntensityBalance, shapeIntensityBalance );
+	GET_SET_PROPERTY_METHOD_MACRO( CanonicalProbModel*, ProbabilityModel, probModel );
 protected:
 
-	typedef	NormalDistribution					Distribution;
+	typedef	ProbabilityFromModel					Distribution;
+	//typedef NormalDistribution					Distribution;
 
 	typedef M4D::Imaging::Algorithms::SegmentationEnergy< 
 			CurveType,
@@ -168,14 +193,12 @@ protected:
 	OutputDatasetType	*out;
 	int32 _minSlice;
 	int32 _maxSlice;
+
+	Vector< float32, 3 >	_southPole;
+	Vector< float32, 3 >	_northPole;
+
 	ReaderBBoxInterface::Ptr readerBBox[ InCount ];
 	WriterBBoxInterface		*writerBBox;
-
-	float32 _inEstimatedValue;
-	float32	_inVariation;
-
-	float32 _outEstimatedValue;
-	float32	_outVariation;
 
 };
 

@@ -66,7 +66,7 @@ public:
 				_THROW_	EIncompatibleHistograms();
 			}
 			CellType sum = 0;	
-			for( unsigned i = 0; i <= _cells.size(); ++i ) {
+			for( unsigned i = 0; i < _cells.size(); ++i ) {
 				_cells[i] += histogram._cells[i];
 				sum += _cells[i];
 			}
@@ -122,6 +122,49 @@ public:
 	int32
 	GetMax()const
 		{ return _maxCell; }
+
+
+	void
+	Save( std::ostream &stream ) 
+	{
+		BINSTREAM_WRITE_MACRO( stream, _minCell );
+		BINSTREAM_WRITE_MACRO( stream, _maxCell );
+		BINSTREAM_WRITE_MACRO( stream, _storeOutliers );
+		BINSTREAM_WRITE_MACRO( stream, _sum );
+		
+		CellType tmp;
+		for( unsigned i = 0; i < _cells.size(); ++i ) {
+			tmp = _cells[i];
+			BINSTREAM_WRITE_MACRO( stream, tmp );
+		}
+	}
+
+	
+	static Histogram *
+	Load( std::istream &stream )
+	{
+		int32		minCell;
+		int32		maxCell;
+		bool		storeOutliers;
+		CellType	sum;
+
+		BINSTREAM_READ_MACRO( stream, minCell );
+		BINSTREAM_READ_MACRO( stream, maxCell );
+		BINSTREAM_READ_MACRO( stream, storeOutliers );
+		BINSTREAM_READ_MACRO( stream, sum );
+		
+		Histogram *result = new Histogram( minCell, maxCell, storeOutliers );
+
+		CellType tmp;
+		for( unsigned i = 0; i < result->_cells.size(); ++i ) {
+			BINSTREAM_READ_MACRO( stream, tmp );
+			result->_cells[i] = tmp;
+		}
+
+		result->_sum = sum;
+
+		return result;
+	}
 protected:
 	typedef std::vector<CellType> CellVector;
 
@@ -139,6 +182,7 @@ template< typename CellType >
 std::ostream &
 operator<<( std::ostream &stream, const Histogram< CellType > &histogram )
 {
+	stream << "Sum = " << histogram.GetSum() << std::endl;
 	for( int32 i = histogram.GetMin() - 1; i <= histogram.GetMax(); ++i ) {
 		stream << histogram[i] << std::endl;
 	}

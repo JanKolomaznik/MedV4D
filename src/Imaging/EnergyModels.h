@@ -282,7 +282,7 @@ private:
 	ComputeValueAtPoint( const PointCoordinate &pos )
 	{
 		int value = _region1.GetElementWorldCoords( pos );
-		float32 val1 = this->LogProbabilityRatio( value );
+		float32 val1 = this->LogProbabilityRatio( value, pos );
 		
 		float32 val2 = _region2.GetElementWorldCoords( pos );
 		
@@ -435,7 +435,7 @@ private:
 	{
 		int value = _region.GetElementWorldCoords( pos );
 
-		float32 val1 = this->LogProbabilityRatio( value );
+		float32 val1 = this->LogProbabilityRatio( value, pos );
 		
 		return -val1;
 	}

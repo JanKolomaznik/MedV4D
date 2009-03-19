@@ -77,6 +77,12 @@ public slots:
 	}
 
 	void
+	SetShapeIntensityBalance( int value )
+	{
+		_shapeIntensityBalance = static_cast<float32>(value) / 1000.0f;
+	}
+
+	void
 	StartSegmentation();
 
 protected:
@@ -97,6 +103,9 @@ protected:
 	SegmentationFilter				*_segmentationFilter;
 	EdgeFilter					*_edgeFilter;
 	Gaussian					*_gaussianFilter;
+	M4D::Imaging::CanonicalProbModel::Ptr		_probModel;
+
+	float32						_shapeIntensityBalance;
 
 	static KidneySegmentationManager		*_instance;
 	bool						_wasInitialized;

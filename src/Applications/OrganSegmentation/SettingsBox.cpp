@@ -65,14 +65,23 @@ SettingsBox
 
 		QSlider *slider = new QSlider();
 		slider->setOrientation( Qt::Horizontal );
-		slider->setValue( 25 );
 		slider->setMinimum( 5 );
 		slider->setMaximum( 50 );
+		slider->setValue( 25 );
 		KidneySegmentationManager::Instance().SetComputationPrecision( 25 );
 		QObject::connect( slider, SIGNAL( valueChanged( int ) ), 
 				&(KidneySegmentationManager::Instance()), SLOT( SetComputationPrecision( int ) ) );
 		layout->addWidget( slider );
 
+		slider = new QSlider();
+		slider->setOrientation( Qt::Horizontal );
+		slider->setMinimum( 0 );
+		slider->setMaximum( 1000 );
+		slider->setValue( 500 );
+		KidneySegmentationManager::Instance().SetShapeIntensityBalance( 500 );
+		QObject::connect( slider, SIGNAL( valueChanged( int ) ), 
+				&(KidneySegmentationManager::Instance()), SLOT( SetShapeIntensityBalance( int ) ) );
+		layout->addWidget( slider );
 
 		button = new QPushButton( tr( "Start Segmentation" ) );
 		QObject::connect( button, SIGNAL(clicked()),

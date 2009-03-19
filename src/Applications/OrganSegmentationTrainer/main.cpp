@@ -18,9 +18,6 @@ int main ( int argc, char *argv[] )
 	D_COMMAND( std::ofstream debugFile( "Debug.txt" ); );
 	SET_DOUT( debugFile );
 
-	
-	//TrainingDataInfos infos;
-	//FindTrainingFilePairs( "./TrainingData/", ".idx", infos, false );
 
 	QApplication app( argc, argv );
 	app.setQuitOnLastWindowClosed( true );

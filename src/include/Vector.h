@@ -123,6 +123,25 @@ public:
 		{
 			return _coordinates;
 		}
+
+	void
+	ToBinStream( std::ostream &stream )
+	{
+		CoordinateType tmp;
+		for( unsigned i=0; i<Dimension; ++i ) { 
+			tmp = _coordinates[i];
+			BINSTREAM_WRITE_MACRO( stream, tmp );
+		}
+	}
+	void
+	FromBinStream( std::istream &stream )
+	{
+		CoordinateType tmp;
+		for( unsigned i=0; i<Dimension; ++i ) { 
+			BINSTREAM_READ_MACRO( stream, tmp );
+			_coordinates[i] = tmp;
+		}
+	}
 private:
 	CoordinateType	_coordinates[ Dimension ];
 };

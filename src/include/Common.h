@@ -33,6 +33,12 @@
 #include <iomanip>
 #include <sstream>
 
+#define BINSTREAM_WRITE_MACRO( STREAM, VARIABLE ) \
+	STREAM.write( (char*)&VARIABLE, sizeof(VARIABLE) );
+
+#define BINSTREAM_READ_MACRO( STREAM, VARIABLE ) \
+	STREAM.read( (char*)&VARIABLE, sizeof(VARIABLE) );
+
 //*****************************************************************************
 /**
  * Macro for easy generic programing - mixing static and dynamic polymorhism.

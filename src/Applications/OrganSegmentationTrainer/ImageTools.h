@@ -11,11 +11,13 @@
 typedef M4D::Imaging::Image< int16, 3 >		ImageType;
 typedef M4D::Imaging::Mask3D			MaskType;
 typedef M4D::Imaging::Histogram< int64 >	DiscreteHistogram;
-//Transformation
+typedef M4D::Imaging::Histogram< float32 >	FloatHistogram;
+
+//typedef M4D::Imaging::Transformation		Transformation;
 typedef M4D::Imaging::ProbabilityGrid		GridType;
 
 typedef boost::filesystem::path			Path;
-//typedef std::pair< Path, Path >			TrainingDataInfo;
+
 
 struct TrainingDataInfo
 {
@@ -26,43 +28,17 @@ struct TrainingDataInfo
 
 typedef std::vector< TrainingDataInfo >		TrainingDataInfos;
 
-struct Transformation
-{
-	Vector< float32, 3 >
-	operator()( const Vector< float32, 3 > &pos )const
-	{
-		Vector< float32, 3 > result = pos - _origin;
-		result[2] *= _zScale;
-		result += result[2] * _diff;
-		return result;
-	}
-
-	Vector< float32, 3 >
-	GetInversion( const Vector< float32, 3 > &pos )const
-	{
-		Vector< float32, 3 > result = pos;
-		result -= result[2] * _diff;
-		result[2] /= _zScale;
-
-		return result + _origin;
-	}
-
-	float32 _zScale;
-	Vector< float32, 3 > _origin;
-	Vector< float32, 3 > _diff;
-};
-
 void
 GetPoles( const MaskType & mask, MaskType::PointType &north, MaskType::PointType &south );
 
-Transformation
-GetTransformation( MaskType::PointType north, MaskType::PointType south, MaskType::ElementExtentsType elementExtents ); 
+/*Transformation
+GetTransformation( MaskType::PointType north, MaskType::PointType south, MaskType::ElementExtentsType elementExtents ); */
 
 void
 FillInOutHistograms( DiscreteHistogram &inHistogram, DiscreteHistogram &outHistogram, const ImageType &image, const MaskType &mask );
 
 void
-FillGrid( Transformation tr, const ImageType &image, const MaskType &mask, GridType &grid );
+FillGrid( M4D::Imaging::Transformation tr, const ImageType &image, const MaskType &mask, GridType &grid );
 
 void
 IncorporateGrids( const GridType &last, GridType &general );
@@ -76,7 +52,7 @@ TrainingStep(
 		GridType		&generalGrid
 	    );
 
-void
+M4D::Imaging::CanonicalProbModel::Ptr
 Train( const TrainingDataInfos &infos, Vector< uint32, 3 > size, Vector< float32, 3 > step, Vector< float32, 3 > origin, int32 minHist, int32 maxHist );
 
 void

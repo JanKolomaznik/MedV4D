@@ -4,38 +4,113 @@
 #include "Common.h"
 #include <cmath>
 #include "Imaging/Histogram.h"
+#include <fstream>
+#include <boost/shared_ptr.hpp>
 
 namespace M4D
 {
 namespace Imaging
 {
 
+struct Transformation
+{
+	Vector< float32, 3 >
+	operator()( const Vector< float32, 3 > &pos )const
+	{
+		Vector< float32, 3 > result = pos - _origin;
+		result[2] *= _zScale;
+		result -= result[2] * _diff;
+		return result;
+	}
+
+	Vector< float32, 3 >
+	GetInversion( const Vector< float32, 3 > &pos )const
+	{
+		Vector< float32, 3 > result = pos;
+		result += result[2] * _diff;
+		result[2] /= _zScale;
+
+		return result + _origin;
+	}
+
+	float32 _zScale;
+	Vector< float32, 3 > _origin;
+	Vector< float32, 3 > _diff;
+};
+
+inline Transformation
+GetTransformation( Vector<int32,3> north, Vector<int32,3> south, Vector< float32, 3 > elExtents )
+{
+	//_THROW_ M4D::ErrorHandling::ETODO();
+	Transformation tr;
+
+	Vector<int32,3> diff = north - south;
+	
+	tr._origin = Vector< float32, 3 >( south[0] * elExtents[0], south[1] * elExtents[1], south[2] * elExtents[2] );
+	tr._diff = Vector< float32, 3 >( diff[0] * elExtents[0], diff[1] * elExtents[1], 0.0f );
+	//tr._diff = Vector< float32, 3 >();
+	tr._zScale = 1.0f / ((north[2] - south[2])*elExtents[2]);
+	return tr;
+}
+
+inline Transformation
+GetTransformation( Vector<float32,3> north, Vector<float32,3> south )
+{
+	//_THROW_ M4D::ErrorHandling::ETODO();
+	Transformation tr;
+
+	Vector<float32,3> diff = north - south;
+	diff[2] = 0.0f;
+	
+	tr._origin = south;
+	tr._diff = diff;
+	//tr._diff = Vector< float32, 3 >();
+	tr._zScale = 1.0f / (north[2] - south[2]);
+	return tr;
+}
 
 struct GridPointRecord
 {
 	GridPointRecord() 
 		: inProbabilityPos( 0 ),
 		outProbabilityPos( 0 ),
-		logRationPos( 0.0 )
+		logRatioPos( 0.0 )
 	{}
 	GridPointRecord( 
 		float32	pinProbabilityPos,
 		float32	poutProbabilityPos,
-		float32	plogRationPos
+		float32	plogRatioPos
 		) 
 		: inProbabilityPos( pinProbabilityPos ),
 		outProbabilityPos( poutProbabilityPos ),
-		logRationPos( plogRationPos )
+		logRatioPos( plogRatioPos )
 	{}
+	void
+	ToBinStream( std::ostream &stream )
+	{
+		BINSTREAM_WRITE_MACRO( stream, inProbabilityPos );
+		BINSTREAM_WRITE_MACRO( stream, outProbabilityPos );
+		BINSTREAM_WRITE_MACRO( stream, logRatioPos );
+	}
+
+	void
+	FromBinStream( std::istream &stream )
+	{
+		BINSTREAM_READ_MACRO( stream, inProbabilityPos );
+		BINSTREAM_READ_MACRO( stream, outProbabilityPos );
+		BINSTREAM_READ_MACRO( stream, logRatioPos );
+	}
+
 	float32	inProbabilityPos;
 	float32	outProbabilityPos;
-	float32	logRationPos;
+	float32	logRatioPos;
 };
 
 class ProbabilityGrid
 {
 public:
 	typedef int32	IntensityType;
+
 	typedef Vector< float32, 3 > Coordinates;
 
 	typedef Vector< float32, 3 > Vector3F;
@@ -68,7 +143,7 @@ public:
 	float32
 	LogRatioProbabilityPosition( const Coordinates &pos )
 	{
-		return GetPointRecord( GetClosestPoint( pos ) ).logRationPos;
+		return GetPointRecord( GetClosestPoint( pos ) ).logRatioPos;
 	}
 	//***********************************************************************
 	GridPointRecord &
@@ -88,6 +163,49 @@ public:
 		}
 		return _grid[ _strides * pos ];
 	}
+
+	void
+	Save( std::ostream &stream ) 
+	{
+		_gridSize.ToBinStream( stream );
+		_gridStep.ToBinStream( stream );
+		_originCoordiantes.ToBinStream( stream );
+
+		Vector< uint32, 3 > idx;
+		for( idx[0] = 0; idx[0] < _gridSize[0]; ++idx[0] ) {
+			for( idx[1] = 0; idx[1] < _gridSize[1]; ++idx[1] ) {
+				for( idx[2] = 0; idx[2] < _gridSize[2]; ++idx[2] ) {
+					GetPointRecord( idx ).ToBinStream( stream );
+				}
+			}
+		}
+
+	}
+
+	static ProbabilityGrid *
+	Load( std::istream &stream )
+	{
+		Vector< float32, 3 >	gridStep;
+		Vector< float32, 3 >	originCoordiantes;
+		Vector< uint32, 3 >	gridSize;
+
+		gridSize.FromBinStream( stream );
+		gridStep.FromBinStream( stream );
+		originCoordiantes.FromBinStream( stream );
+		
+		ProbabilityGrid * result = new ProbabilityGrid( originCoordiantes, gridSize, gridStep );
+
+		Vector< uint32, 3 > idx;
+		for( idx[0] = 0; idx[0] < gridSize[0]; ++idx[0] ) {
+			for( idx[1] = 0; idx[1] < gridSize[1]; ++idx[1] ) {
+				for( idx[2] = 0; idx[2] < gridSize[2]; ++idx[2] ) {
+					result->GetPointRecord( idx ).FromBinStream( stream );
+				}
+			}
+		}
+		return result;
+	}
+
 	SIMPLE_GET_METHOD( Vector3UI, Size, _gridSize );
 	SIMPLE_GET_METHOD( Vector3F, GridStep, _gridStep );
 	SIMPLE_GET_METHOD( Vector3F, Origin, _originCoordiantes );
@@ -96,7 +214,7 @@ protected:
 	Vector< uint32, 3 >
 	GetClosestPoint( const Coordinates &pos )
 	{
-		Coordinates pom = pos - _originCoordiantes;
+		Coordinates pom = pos + _originCoordiantes;
 		return Vector< uint32, 3 >( 
 				ROUND( pom[0]/_gridStep[0] ), 
 				ROUND( pom[1]/_gridStep[1] ), 
@@ -123,6 +241,14 @@ public:
 	typedef int32	IntensityType;
 	typedef Vector< float32, 3 > Coordinates;
 
+	typedef boost::shared_ptr< CanonicalProbModel > Ptr;
+
+	CanonicalProbModel( ProbabilityGrid *grid, Histogram< float32 > *inHistogram, Histogram< float32 > *outHistogram, Histogram< float32 > *logRatioHistogram ) : 
+		_inIntensity( inHistogram ),
+		_outIntensity( outHistogram ),
+		_logRatioIntensity( logRatioHistogram ),
+		_grid( grid )
+		{}
 	//***********************************************************************
 	float32
 	InProbabilityIntesity( IntensityType intensity );
@@ -131,7 +257,8 @@ public:
 	OutProbabilityIntesity( IntensityType intensity );
 	
 	float32
-	LogRatioProbabilityIntesity( IntensityType intensity );
+	LogRatioProbabilityIntesity( IntensityType intensity )
+	{ return _logRatioIntensity->Get( intensity ); }
 	//***********************************************************************
 
 	//***********************************************************************
@@ -142,7 +269,11 @@ public:
 	OutProbabilityIntesityPosition( IntensityType intensity, const Coordinates &pos );
 	
 	float32
-	LogRatioProbabilityIntesityPosition( IntensityType intensity, const Coordinates &pos );
+	LogRatioProbabilityIntesityPosition( IntensityType intensity, const Coordinates &pos, float32 balance = 0.5 )
+	{ 
+		return balance * _logRatioIntensity->Get( intensity ) 
+			+ (1.0f-balance) * _grid->LogRatioProbabilityPosition( pos ); 
+	}
 	//***********************************************************************
 
 	//***********************************************************************
@@ -153,19 +284,57 @@ public:
 	OutProbabilityPosition( const Coordinates &pos );
 
 	float32
-	LogRatioProbabilityPosition( const Coordinates &pos );
+	LogRatioProbabilityPosition( const Coordinates &pos )
+	{ return _grid->LogRatioProbabilityPosition( pos ); }
 	//***********************************************************************
-protected:
-	CanonicalProbModel( ProbabilityGrid *grid, int32 interestMin, int32 interestMax ) : 
-		_inIntensity( interestMin, interestMax ),
-		_outIntensity( interestMin, interestMax ),
-		_logRatioIntensity( interestMin, interestMax ),
-		_grid( grid )
-		{}
+	const ProbabilityGrid &
+	GetGrid()const
+	{ return *_grid; }
 
-	Histogram< float32 >	_inIntensity;
-	Histogram< float32 >	_outIntensity;
-	Histogram< float32 >	_logRatioIntensity;
+	const Histogram< float32 > &
+	GetInIntesity()const
+	{ return *_inIntensity; }
+	
+	const Histogram< float32 > &
+	GetOutIntesity()const
+	{ return *_outIntensity; }
+
+	const Histogram< float32 > &
+	GetLogRatioIntesity()const
+	{ return *_logRatioIntensity; }
+
+	void
+	SaveToFile( std::string filename )const
+	{
+		std::ofstream output( filename.data(), std::ios::out | std::ios::binary );
+
+		_inIntensity->Save( output );	
+		_outIntensity->Save( output );	
+		_logRatioIntensity->Save( output );	
+
+		_grid->Save( output );
+	}
+	static Ptr
+	LoadFromFile( std::string filename )
+	{
+		std::fstream input( filename.data(), std::ios::in | std::ios::binary );
+
+		Histogram< float32 > *inIntensity = Histogram< float32 >::Load( input );
+		Histogram< float32 > *outIntensity = Histogram< float32 >::Load( input );
+		Histogram< float32 > *logRatioIntensity = Histogram< float32 >::Load( input );
+
+		ProbabilityGrid *grid = ProbabilityGrid::Load( input );
+
+		CanonicalProbModel *result = new CanonicalProbModel( grid, inIntensity, outIntensity, logRatioIntensity );
+
+		return Ptr( result );
+	}
+protected:
+	
+
+	Histogram< float32 >	*_inIntensity;
+	Histogram< float32 >	*_outIntensity;
+	Histogram< float32 >	*_logRatioIntensity;
 
 	ProbabilityGrid		*_grid;
 private:

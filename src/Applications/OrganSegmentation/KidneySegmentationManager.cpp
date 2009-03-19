@@ -178,6 +178,7 @@ KidneySegmentationManager::Initialize()
 		Finalize();
 	}
 	
+	_probModel = CanonicalProbModel::LoadFromFile( "KidneyModel.mdl" );
 	
 	//_inputImage = MainManager::Instance().GetInputImage();
 	//_inConnection->PutDataset( _inputImage );
@@ -259,6 +260,7 @@ KidneySegmentationManager::RunSplineSegmentation()
 	_segmentationFilter->SetFirstSlice( _poles[0].slice );
 	_segmentationFilter->SetSecondPoint( _poles[1].coordinates );
 	_segmentationFilter->SetSecondSlice( _poles[1].slice );
+	_segmentationFilter->SetProbabilityModel( _probModel.get() );
 
 	/*_segmentationFilter->SetInsidePoint( sState->_insidePoint );
 	_segmentationFilter->SetInsidePointSlice( sState->_insidePointSlice );
@@ -266,6 +268,7 @@ KidneySegmentationManager::RunSplineSegmentation()
 	_segmentationFilter->SetOutsidePointSlice( sState->_outsidePointSlice );*/
 
 	_segmentationFilter->SetPrecision( _computationPrecision );
+	_segmentationFilter->SetShapeIntensityBalance( _shapeIntensityBalance );
 
 	_segmentationFilter->ExecuteOnWhole();
 

@@ -3,6 +3,7 @@
 
 #include <QtGui>
 #include "ImageTools.h"
+#include "Imaging.h"
 
 class MainWindow: public QMainWindow
 {
@@ -24,6 +25,9 @@ public slots:
 
 	void
 	TrainingFinished();
+
+	void
+	SaveTrainedModel();
 protected:
 	void
 	CreateWidgets();
@@ -43,6 +47,8 @@ private:
 	QPushButton	*_saveVisualization;
 
 	TrainingDataInfos _trainingsetInfos;
+
+	boost::shared_ptr< M4D::Imaging::CanonicalProbModel >	_model;
 };
 
 

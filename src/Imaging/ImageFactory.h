@@ -19,12 +19,6 @@
  * @{ 
  **/
 
-#define BINSTREAM_WRITE_MACRO( STREAM, VARIABLE ) \
-	STREAM.write( (char*)&VARIABLE, sizeof(VARIABLE) );
-
-#define BINSTREAM_READ_MACRO( STREAM, VARIABLE ) \
-	STREAM.read( (char*)&VARIABLE, sizeof(VARIABLE) );
-
 namespace M4D
 {
 

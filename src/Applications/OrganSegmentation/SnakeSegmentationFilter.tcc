@@ -105,6 +105,14 @@ SnakeSegmentationFilter< ElementType >::BeforeComputation( AbstractPipeFilter::U
 		in[ i ] = &(this->GetInputImage( i ));
 	}
 	out = &(this->GetOutputGDataset());
+
+	_northPole[ 0 ] = GetSecondPoint()[ 0 ];
+	_northPole[ 1 ] = GetSecondPoint()[ 1 ];
+	_northPole[ 2 ] = GetSecondSlice() * in[0]->GetElementExtents()[2];
+
+	_southPole[ 0 ] = GetFirstPoint()[ 0 ];
+	_southPole[ 1 ] = GetFirstPoint()[ 1 ];
+	_southPole[ 2 ] = GetFirstSlice() * in[0]->GetElementExtents()[2];
 	
 }
 
@@ -209,7 +217,6 @@ SnakeSegmentationFilter< ElementType >
 {
 	static const unsigned ResultSampleRate = 8;
 
-	Vector< float32, 1 > a(5.0f);
 	ObjectsInSlice &slice = this->out->GetSlice( sliceNumber );
 	slice.clear();
 	
@@ -219,10 +226,19 @@ SnakeSegmentationFilter< ElementType >
 	//Initialization and setup
 	SnakeAlgorithm algorithm;
 
+	
+	//Distribution settings
+	algorithm.SetZCoordinate( sliceNumber * tmp[2] );
+	algorithm.SetTransformation( GetTransformation( _northPole, _southPole ) );
+	algorithm.SetModel( GetProbabilityModel() );
+	algorithm.SetBalance( GetShapeIntensityBalance() );
+	/*
 	algorithm.SetInE( 1060 );
 	algorithm.SetInVar( 900 );
 	algorithm.SetOutE( 910 );
 	algorithm.SetOutVar( 1600 );
+	*/
+
 
 	/*algorithm.SetStepScale( 1.0 );
 	algorithm.SetSampleRate( 5 );

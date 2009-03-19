@@ -4,19 +4,6 @@
 using namespace M4D::Imaging;
 using namespace boost::filesystem;
 
-Transformation
-GetTransformation( MaskType::PointType north, MaskType::PointType south, Vector< float32, 3 > elExtents )
-{
-	//_THROW_ M4D::ErrorHandling::ETODO();
-	Transformation tr;
-
-	MaskType::PointType diff = north - south;
-	
-	tr._origin = Vector< float32, 3 >( south[0] * elExtents[0], south[1] * elExtents[1], south[2] * elExtents[2] );
-	tr._diff = Vector< float32, 3 >( diff[0] * elExtents[0], diff[1] * elExtents[1], 0.0f );
-	tr._zScale = 1.0f / (north[2] - south[2]);
-	return tr;
-}
 
 void
 TrainingStep( 
@@ -36,6 +23,9 @@ TrainingStep(
 
 	DiscreteHistogram inHistogram( generalInHistogram.GetMin(), generalInHistogram.GetMax(), false );
 	DiscreteHistogram outHistogram( generalOutHistogram.GetMin(), generalOutHistogram.GetMax(), true );
+
+	/*D_PRINT( inHistogram );
+	D_PRINT( outHistogram );*/
 
 	D_PRINT( "Filling histograms..." );
 	FillInOutHistograms( inHistogram, outHistogram, image, mask );
@@ -99,7 +89,7 @@ FillGrid( Transformation tr, const ImageType &image, const MaskType &mask, GridT
 	Vector< float32, 3 > tmp;
 
 	//TODO - halfstep correction
-	halfStep[2] *= (mask.GetMaximum()[2] - mask.GetMinimum()[2]) * mask.GetElementExtents()[2];
+	//halfStep[2] *= (mask.GetMaximum()[2] - mask.GetMinimum()[2]) * mask.GetElementExtents()[2];
 
 	Vector< uint32, 3 > idx;
 	for( idx[0] = 0; idx[0] < size[0]; ++idx[0] ) {
@@ -108,7 +98,7 @@ FillGrid( Transformation tr, const ImageType &image, const MaskType &mask, GridT
 				for( unsigned i = 0; i < 3; ++i ) {
 					tmp[i] = idx[i]*step[i];
 				}
-				tmp += origin;
+				tmp -= origin;
 				grid.GetPointRecord( idx ) = ComputeProbRecord( tr.GetInversion( tmp ), halfStep, image, mask );
 			}
 		}
@@ -180,6 +170,9 @@ GetPoles( const MaskType & mask, MaskType::PointType &north, MaskType::PointType
 
 	south = MaskType::PointType( southTmp[0], southTmp[1], southSliceCoord );
 	north = MaskType::PointType( northTmp[0], northTmp[1], northSliceCoord );
+
+	D_PRINT( "South pole = " << south );
+	D_PRINT( "North pole = " << north );
 }
 
 void
@@ -212,7 +205,13 @@ ConsolidateGeneralGrid( GridType &grid, int32 count )
 				rec.outProbabilityPos /= count;
 
 				//TODO - check extremes
-				rec.logRationPos = log( rec.inProbabilityPos / rec.outProbabilityPos );
+				if( rec.inProbabilityPos < Epsilon ) {
+					rec.inProbabilityPos = Epsilon;
+				}
+				if( rec.outProbabilityPos < Epsilon ) {
+					rec.outProbabilityPos = Epsilon;
+				}
+				rec.logRatioPos = log( rec.inProbabilityPos / rec.outProbabilityPos );
 			}
 		}
 	}
@@ -256,12 +255,40 @@ GetTrainingSetInfos( const Path & dirPath, std::string indexExtension, TrainingD
 }
 
 void
+NormalizeHistograms( 
+		DiscreteHistogram	&generalInHistogram, 
+		DiscreteHistogram	&generalOutHistogram, 
+		FloatHistogram		&inHistogram, 
+		FloatHistogram		&outHistogram, 
+		FloatHistogram		&logRatioHistogram 
+		)
+{
+	int32 min = inHistogram.GetMin();
+	int32 max = inHistogram.GetMax();
+	for( int32 i = min; i < max; ++i ) {
+		inHistogram.SetValueCell( i, static_cast<float32>(generalInHistogram.Get( i )) / static_cast<float32>(generalInHistogram.GetSum()) );
+		outHistogram.SetValueCell( i, static_cast<float32>(generalOutHistogram.Get( i )) / static_cast<float32>(generalOutHistogram.GetSum()) );
+
+		float32 tmp = inHistogram.Get( i )/outHistogram.Get( i );
+		logRatioHistogram.SetValueCell( i, log( tmp )  );
+	}
+	inHistogram.SetValueCell( min-1, 0.0f );
+	inHistogram.SetValueCell( max, 0.0f );
+
+	outHistogram.SetValueCell( min-1, 1.0f );
+	outHistogram.SetValueCell( max, 1.0f );
+
+	logRatioHistogram.SetValueCell( min-1, 2 * logRatioHistogram.Get( min )  );
+	logRatioHistogram.SetValueCell( max, 2 * logRatioHistogram.Get( max-1 )  );
+}
+
+CanonicalProbModel::Ptr
 Train( const TrainingDataInfos &infos, Vector< uint32, 3 > size, Vector< float32, 3 > step, Vector< float32, 3 > origin, int32 minHist, int32 maxHist )
 {
 	DiscreteHistogram generalInHistogram( minHist, maxHist, false );
 	DiscreteHistogram generalOutHistogram( minHist, maxHist, true );
 
-	GridType generalGrid( origin, size, step );
+	GridType *generalGrid = new GridType( origin, size, step );
 
 	unsigned counter = 0;
 	for( unsigned i = 0; i < infos.size(); ++i ) {
@@ -275,6 +302,7 @@ Train( const TrainingDataInfos &infos, Vector< uint32, 3 > size, Vector< float32
 			D_PRINT( "Loading training image number '" << i << "' from file '" << imageFile.string() <<"'." );
 			AbstractImage::Ptr aimage = ImageFactory::LoadDumpedImage( imageFile.string() );
 			image = ImageType::CastAbstractImage( aimage );
+
 			D_PRINT( "Loading training mask number '" << i << "' from file '" << maskFile.string() <<"'." );
 			aimage = ImageFactory::LoadDumpedImage( maskFile.string() );
 			mask = MaskType::CastAbstractImage( aimage );
@@ -283,19 +311,38 @@ Train( const TrainingDataInfos &infos, Vector< uint32, 3 > size, Vector< float32
 		}
 
 		++counter;
-		TrainingStep( generalInHistogram, generalOutHistogram, *image, *mask, generalGrid );
+		TrainingStep( generalInHistogram, generalOutHistogram, *image, *mask, *generalGrid );
 	}	
+	D_PRINT( "Consolidate general grid ..." );
+	ConsolidateGeneralGrid( *generalGrid, counter );
+
+	FloatHistogram *inHistogram = new FloatHistogram( minHist, maxHist, false );
+	FloatHistogram *outHistogram = new FloatHistogram( minHist, maxHist, true );
+	FloatHistogram *logRatioHistogram = new FloatHistogram( minHist, maxHist, true );
+
+	D_PRINT( "Normalize histograms ..." );
+	NormalizeHistograms( generalInHistogram, generalOutHistogram, *inHistogram, *outHistogram, *logRatioHistogram );
+
+	CanonicalProbModel *model = new CanonicalProbModel( generalGrid, inHistogram, outHistogram, logRatioHistogram );
+
+
 	LOG( "IN HISTOGRAM" );
-	LOG( generalInHistogram );
+	LOG( *inHistogram );
 	LOG( "-----------------------------------------------" );
 	LOG( "OUT HISTOGRAM" );
-	LOG( generalOutHistogram );
+	LOG( *outHistogram );
+	LOG( "-----------------------------------------------" );
+	LOG( "LOG HISTOGRAM" );
+	LOG( *logRatioHistogram );
 
 
-	ImageType::Ptr tmp;
-	tmp = MakeImageFromProbabilityGrid<InProbabilityAccessor>( generalGrid, InProbabilityAccessor() );
+/*	ImageType::Ptr tmp;
+	tmp = MakeImageFromProbabilityGrid<InProbabilityAccessor>( *generalGrid, InProbabilityAccessor() );
 	ImageFactory::DumpImage( "pom.dump", *tmp );
 
-	tmp = MakeImageFromProbabilityGrid<OutProbabilityAccessor>( generalGrid, OutProbabilityAccessor() );
-	ImageFactory::DumpImage( "pom2.dump", *tmp );
+	tmp = MakeImageFromProbabilityGrid<OutProbabilityAccessor>( *generalGrid, OutProbabilityAccessor() );
+	ImageFactory::DumpImage( "pom2.dump", *tmp );*/
+
+
+	return CanonicalProbModel::Ptr( model );
 }

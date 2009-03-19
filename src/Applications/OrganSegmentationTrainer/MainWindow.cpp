@@ -47,25 +47,25 @@ MainWindow::CreateWidgets()
 	int intervalRow = 4;
 	label = new QLabel( "X Samples" );
 	_xSamplesSB = spinBox = new QSpinBox();
-	spinBox->setMinimum( 1 );
+	spinBox->setMinimum( 10 );
 	spinBox->setMaximum( 512 );
-	spinBox->setValue( 10 );
+	spinBox->setValue( 40 );
 	gridLayout->addWidget( label, sampleRow, 0 );
 	gridLayout->addWidget( spinBox, sampleRow, 1 );
 
 	label = new QLabel( "Y Samples" );
 	_ySamplesSB = spinBox = new QSpinBox();
-	spinBox->setMinimum( 1 );
+	spinBox->setMinimum( 10 );
 	spinBox->setMaximum( 512 );
-	spinBox->setValue( 10 );
+	spinBox->setValue( 40 );
 	gridLayout->addWidget( label, sampleRow, 2 );
 	gridLayout->addWidget( spinBox, sampleRow, 3 );
 
 	label = new QLabel( "Z Samples" );
 	_zSamplesSB = spinBox = new QSpinBox();
-	spinBox->setMinimum( 1 );
-	spinBox->setMaximum( 512 );
-	spinBox->setValue( 10 );
+	spinBox->setMinimum( 5 );
+	spinBox->setMaximum( 200 );
+	spinBox->setValue( 20 );
 	gridLayout->addWidget( label, sampleRow, 4 );
 	gridLayout->addWidget( spinBox, sampleRow, 5 );
 
@@ -113,6 +113,7 @@ MainWindow::CreateWidgets()
 	QHBoxLayout *saveLayout = new QHBoxLayout();
 	rightLayout->addLayout( saveLayout );
 	_saveModel = new QPushButton( "Save model..." );
+	QObject::connect( _saveModel, SIGNAL( released() ), this, SLOT( SaveTrainedModel() ) );
 	saveLayout->addWidget( _saveModel );
 
 	_saveVisualization = new QPushButton( "Save visualization..." );
@@ -132,7 +133,7 @@ MainWindow::CreateWidgets()
 void
 MainWindow::ReloadTrainingSetInfos()
 {
-	std::string dirName = QFileDialog::getExistingDirectory().toStdString();
+	std::string dirName = QFileDialog::getExistingDirectory( this ).toStdString();
 
 	if( dirName == "" ) {
 		return;
@@ -163,9 +164,31 @@ MainWindow::ExecuteTraining()
 	}
 
 	
-	Train( _trainingsetInfos, size, step, origin, _minHistogramSB->value(), _maxHistogramSB->value() );
+	_model = Train( _trainingsetInfos, size, step, origin, _minHistogramSB->value(), _maxHistogramSB->value() );
 
 	TrainingFinished();
+}
+
+void
+MainWindow::SaveTrainedModel()
+{
+	if( ! _model ) {
+		return;
+	}
+
+	std::string fileName = QFileDialog::getSaveFileName( this ).toStdString();
+
+	if( fileName == "" ) {
+		return;
+	}
+
+	_model->SaveToFile( fileName );
+	
+	/*M4D::Imaging::CanonicalProbModel *test;
+	test = CanonicalProbModel::LoadFromFile( fileName );
+	ImageType::Ptr tmp;
+	tmp = MakeImageFromProbabilityGrid<InProbabilityAccessor>( test->GetGrid(), InProbabilityAccessor() );
+	ImageFactory::DumpImage( "pom.dump", *tmp );*/
 }
 
 void
