@@ -83,6 +83,12 @@ public slots:
 	}
 
 	void
+	SetEdgeRegionBalance( int value )
+	{
+		_edgeRegionBalance = static_cast<float32>(value) / 1000.0f;
+	}
+
+	void
 	StartSegmentation();
 
 protected:
@@ -106,6 +112,7 @@ protected:
 	M4D::Imaging::CanonicalProbModel::Ptr		_probModel;
 
 	float32						_shapeIntensityBalance;
+	float32						_edgeRegionBalance;
 
 	static KidneySegmentationManager		*_instance;
 	bool						_wasInitialized;

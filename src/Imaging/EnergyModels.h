@@ -119,15 +119,7 @@ public:
 			for( unsigned j = 0; j < gradientCount; ++j ) {
 				point += gradientNorms[j] * (*gradients[j])[i];
 			}
-			/*if( doImageGradient ) {
-				point += imageEnergyGradientNorm * imageEnergyGradient[ i ];
-			}	
-			if( doInternalGradient ) {
-				point += internalEnergyGradientNorm * internalEnergyGradient[ i ];
-			}	
-			if( doConstrainGradient ) {
-				point += constrainEnergyGradientNorm * constrainEnergyGradient[ i ];
-			}*/
+			
 			gradient[i] = point;
 			resultSize += point * point;
 		}
@@ -241,7 +233,7 @@ public:
 	void
 	ResetEnergy() {}
 
-	float32
+	/*float32
 	GetParametersGradient( ContourType &curve, GradientType &gradient )
 	{
 		if( curve.Size() != gradient.Size() ) {
@@ -257,6 +249,44 @@ public:
 		float32 gradSize = 0.0f;
 		for( unsigned i = 0; i < gradient.Size(); ++i ) {
 			gradient[i] = ComputePointGradient( i, curve );
+			gradSize += gradient[i] * gradient[i];
+		}
+		return sqrt( gradSize );
+	}*/
+	float32
+	GetParametersGradient( ContourType &curve, GradientType &gradient )
+	{
+		if( curve.Size() != gradient.Size() ) {
+			//TODO - solve problem
+		}
+
+		if( _sampleFrequency != (int32)curve.GetLastSampleFrequency() ) {
+			RecalculateQki( curve );
+		}
+
+		FillSampleValuesBuffers( curve.GetSamplePoints() );		
+
+		GradientType regionEnergyGradient;
+		regionEnergyGradient.Resize( gradient.Size() );
+		float32 regionEnergyGradientNorm = 0.0f;
+
+		GradientType edgeEnergyGradient;
+		edgeEnergyGradient.Resize( gradient.Size() );
+		float32 edgeEnergyGradientNorm = 0.0f;
+
+		for( unsigned i = 0; i < gradient.Size(); ++i ) {
+			regionEnergyGradient[i] = ComputePointGradient( i, curve, _regionValBuffer );
+			regionEnergyGradientNorm += regionEnergyGradient[i] * regionEnergyGradient[i];
+
+			edgeEnergyGradient[i] = ComputePointGradient( i, curve, _edgeValBuffer );
+			edgeEnergyGradientNorm += edgeEnergyGradient[i] * edgeEnergyGradient[i];
+		}
+		regionEnergyGradientNorm = _alpha * 1.0f/regionEnergyGradientNorm;
+		edgeEnergyGradientNorm = (1.0f-_alpha) * 1.0f/edgeEnergyGradientNorm;
+
+		float32 gradSize = 0.0f;
+		for( unsigned i = 0; i < gradient.Size(); ++i ) {
+			gradient[i] = regionEnergyGradientNorm * regionEnergyGradient[i] + edgeEnergyGradientNorm * edgeEnergyGradient[i];
 			gradSize += gradient[i] * gradient[i];
 		}
 		return sqrt( gradSize );
@@ -279,33 +309,38 @@ public:
 	
 private:
 	float32
-	ComputeValueAtPoint( const PointCoordinate &pos )
+	ComputeValueAtPointRegion( const PointCoordinate &pos )
 	{
 		int value = _region1.GetElementWorldCoords( pos );
-		float32 val1 = this->LogProbabilityRatio( value, pos );
 		
-		float32 val2 = _region2.GetElementWorldCoords( pos );
-		
-		return _alpha * -val1 + (1-_alpha) * val2;
+		return -(this->LogProbabilityRatio( value, pos ));
+	}
+
+	float32
+	ComputeValueAtPointEdge( const PointCoordinate &pos )
+	{
+		return _region2.GetElementWorldCoords( pos );
 	}
 
 	void
-	FillSampleValuesBuffer( const SampleSet & samples )
+	FillSampleValuesBuffers( const SampleSet & samples )
 	{
 		int32 sampleCount = samples.Size();
-		_valBuffer.resize( sampleCount );
+		_regionValBuffer.resize( sampleCount );
+		_edgeValBuffer.resize( sampleCount );
 		for( int32 i = 0; i < sampleCount; ++i ) {
-			_valBuffer[ i ] = ComputeValueAtPoint( samples[i] );
+			_regionValBuffer[ i ] = ComputeValueAtPointRegion( samples[i] );
+			_edgeValBuffer[ i ] = ComputeValueAtPointEdge( samples[i] );
 		}
 	}
 
 	PointCoordinate
-	ComputePointGradient( unsigned k, ContourType &curve )
+	ComputePointGradient( unsigned k, ContourType &curve, ValuesAtSamplesBuffer &valBuffer )
 	{
 		PointCoordinate gradient = PointCoordinate( 0.0f );
 
 		for( int32 i = k - Degree; i <= (int32)(k + Degree); ++i ) {
-			gradient += curve.GetPointCyclic( i ) * ComputeIntegral( k, i, curve );
+			gradient += curve.GetPointCyclic( i ) * ComputeIntegral( k, i, curve, valBuffer );
 		}
 		gradient = VectorDimensionsShiftRight( gradient );
 		gradient[0] *= -1;
@@ -314,24 +349,18 @@ private:
 	}
 
 	float32
-	ComputeIntegral( int32 k, int32 i, ContourType &curve )
+	ComputeIntegral( int32 k, int32 i, ContourType &curve, ValuesAtSamplesBuffer &valBuffer )
 	{
 		float32 result = 0.0f;
 		int32 L = Max( k, i ) - Degree;
 		int32 U = Min( k, i ) + 1;
 		int32 sampleCount = curve.GetSamplePoints().Size();
 
-		/*i = i < 0 ? i + curve.Size() : i;
-		i = i >= (int32)curve.Size() ? i - curve.Size() : i;
-		k = k < 0 ? k + curve.Size() : k;
-		k = k >= (int32)curve.Size() ? k - curve.Size() : k;*/
-
 		for( int32 j = L*_sampleFrequency; j < U*_sampleFrequency; ++j ) {
 
 			int32 idx = MOD( j, sampleCount );
-			//result += /*_valBuffer[ idx ]*/0.0f * Qki( k, i, idx );
 
-			result += _valBuffer[ idx ] * Qki( k, i, j );
+			result += valBuffer[ idx ] * Qki( k, i, j );
 		}
 		return result / (float32)_sampleFrequency;
 	}
@@ -378,7 +407,8 @@ private:
 
 	RegionType1		_region1;
 	RegionType2		_region2;
-	ValuesAtSamplesBuffer	_valBuffer;
+	ValuesAtSamplesBuffer	_edgeValBuffer;
+	ValuesAtSamplesBuffer	_regionValBuffer;
 
 	std::vector< std::vector< std::vector< typename ContourType::Type > > > Q;
 	
@@ -476,15 +506,10 @@ private:
 		int32 U = Min( k, i ) + 1;
 		int32 sampleCount = curve.GetSamplePoints().Size();
 
-		/*i = i < 0 ? i + curve.Size() : i;
-		i = i >= (int32)curve.Size() ? i - curve.Size() : i;
-		k = k < 0 ? k + curve.Size() : k;
-		k = k >= (int32)curve.Size() ? k - curve.Size() : k;*/
 
 		for( int32 j = L*_sampleFrequency; j < U*_sampleFrequency; ++j ) {
 
 			int32 idx = MOD( j, sampleCount );
-			//result += /*_valBuffer[ idx ]*/0.0f * Qki( k, i, idx );
 
 			result += _valBuffer[ idx ] * Qki( k, i, j );
 		}

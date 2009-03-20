@@ -105,7 +105,7 @@ public:
 
 	struct Properties : public PredecessorType::Properties
 	{
-		Properties(): precision( -1 ), shapeIntensityBalance( 0.5 ), probModel( NULL ) {}
+		Properties(): precision( -1 ), shapeIntensityBalance( 0.5 ), edgeRegionBalance( 0.5 ), probModel( NULL ) {}
 
 		Coordinates		firstPoint;
 		int32			firstSlice;
@@ -114,6 +114,7 @@ public:
 
 		int32			precision;
 		float32			shapeIntensityBalance;
+		float32			edgeRegionBalance;
 		CanonicalProbModel*	probModel;
 	};
 
@@ -129,7 +130,9 @@ public:
 
 	GET_SET_PROPERTY_METHOD_MACRO( int32, Precision, precision );
 	GET_SET_PROPERTY_METHOD_MACRO( float32, ShapeIntensityBalance, shapeIntensityBalance );
+	GET_SET_PROPERTY_METHOD_MACRO( float32, EdgeRegionBalance, edgeRegionBalance );
 	GET_SET_PROPERTY_METHOD_MACRO( CanonicalProbModel*, ProbabilityModel, probModel );
+
 protected:
 
 	typedef	ProbabilityFromModel					Distribution;

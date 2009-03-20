@@ -117,6 +117,7 @@ MainWindow::CreateWidgets()
 	saveLayout->addWidget( _saveModel );
 
 	_saveVisualization = new QPushButton( "Save visualization..." );
+	QObject::connect( _saveVisualization, SIGNAL( released() ), this, SLOT( SaveModelVisualization() ) );
 	saveLayout->addWidget( _saveVisualization );
 	
 	rightLayout->addStretch( 2 );	
@@ -184,6 +185,30 @@ MainWindow::SaveTrainedModel()
 
 	_model->SaveToFile( fileName );
 	
+	/*M4D::Imaging::CanonicalProbModel *test;
+	test = CanonicalProbModel::LoadFromFile( fileName );
+	ImageType::Ptr tmp;
+	tmp = MakeImageFromProbabilityGrid<InProbabilityAccessor>( test->GetGrid(), InProbabilityAccessor() );
+	ImageFactory::DumpImage( "pom.dump", *tmp );*/
+}
+
+void
+MainWindow::SaveModelVisualization()
+{
+	if( ! _model ) {
+		return;
+	}
+
+	std::string fileName = QFileDialog::getSaveFileName( this ).toStdString();
+
+	if( fileName == "" ) {
+		return;
+	}
+
+	ImageType::Ptr tmp;
+	tmp = MakeImageFromProbabilityGrid<InProbabilityAccessor>( _model->GetGrid(), InProbabilityAccessor() );
+	ImageFactory::DumpImage( fileName, *tmp );
+
 	/*M4D::Imaging::CanonicalProbModel *test;
 	test = CanonicalProbModel::LoadFromFile( fileName );
 	ImageType::Ptr tmp;

@@ -28,6 +28,9 @@ public slots:
 
 	void
 	SaveTrainedModel();
+
+	void
+	SaveModelVisualization();
 protected:
 	void
 	CreateWidgets();

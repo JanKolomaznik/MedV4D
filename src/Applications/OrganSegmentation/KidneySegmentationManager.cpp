@@ -268,6 +268,7 @@ KidneySegmentationManager::RunSplineSegmentation()
 	_segmentationFilter->SetOutsidePointSlice( sState->_outsidePointSlice );*/
 
 	_segmentationFilter->SetPrecision( _computationPrecision );
+	_segmentationFilter->SetEdgeRegionBalance( _edgeRegionBalance );
 	_segmentationFilter->SetShapeIntensityBalance( _shapeIntensityBalance );
 
 	_segmentationFilter->ExecuteOnWhole();
