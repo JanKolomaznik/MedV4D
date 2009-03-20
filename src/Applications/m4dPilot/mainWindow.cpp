@@ -27,11 +27,13 @@ void mainWindow::process ( M4D::Dicom::DicomObjSetPtr dicomObjSet )
 	AbstractImage::Ptr inputImage = M4D::Dicom::DcmProvider::CreateImageFromDICOM( dicomObjSet );
 
 	try {
+
     ConnectionTyped<AbstractImage> *conn = new ConnectionTyped<AbstractImage>();
 		conn->PutDataset( inputImage );
 
-		mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
-		conn->ConnectConsumer( mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
+		currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
+		conn->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
+
 	} 
 	catch ( ... ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Some exception" ) );

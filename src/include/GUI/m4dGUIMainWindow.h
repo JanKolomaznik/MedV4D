@@ -121,6 +121,45 @@ class m4dGUIMainWindow: public QMainWindow
 
 
     /** 
+     * Adds a widget to the Stacking Desktop - can be anything derived from QWidget. 
+     * If there is already one added, will be replaced.
+     * This method is just adding the widget, current widget will be kept - no switching.
+     * 
+     * @param widget pointer to the widget, which should be added
+     */
+    void addDesktopWidget ( QWidget *widget );
+
+    /** 
+     * Adds a Viewer Desktop Widget to the Stacking Desktop.  
+     * Can be added as many as needed.
+     * This method is just adding the widget, current widhet will be kept - no switching.
+     * 
+     * @param viewerDesktop pointer to the Viewer Desktop Widget, which should be added
+     * @return index in the Stacking Desktop - used for swithing to this desktop
+     */
+    int addViewerDesktop ( m4dGUIMainViewerDesktopWidget *viewerDesktop );
+
+    /** 
+     * Switches to a previously added widget - in the Stacking Desktop. 
+     * Causes toolBar and control adaptations.
+     */
+    void switchToDesktopWidget ();
+
+    /** 
+     * Switches to a previously added Viewer Desktop Widget - in the Stacking Desktop. 
+     * Causes toolBar and control adaptations.
+     * 
+     * @param index index in the Stacking Desktop - returned by addViewerDesktop
+     */
+    void switchToViewerDesktop ( int index );
+
+    /** 
+     * Switches to the default Viewer Desktop Widget - in Stacking Desktop. 
+     * Causes toolBar and control adaptations.
+     */
+    void switchToDefaultViewerDesktop ();
+
+    /** 
      * Adds source (pipeline connection) to vector of registered sources - possible connections, 
      * where can be plugged a viewer. Can be selected through comboBox in toolBar.
      * It's calling the Main Viewer Desktop's addSource method.
@@ -196,8 +235,10 @@ class m4dGUIMainWindow: public QMainWindow
     /**
      * Slot for managing adaptive toolBars depending on the type of the selected viewer.
      * Performing reconnections, updates, triggers, etc.
+     * 
+     * @param prevViewer pointer to the previously selected viewer - to disconnect it
      */
-    void features ();
+    void features ( M4D::Viewer::m4dGUIAbstractViewerWidget *prevViewer );
 
     /**
      * Slot for layout settings - to show Screen Layout Dialog.
@@ -236,9 +277,9 @@ class m4dGUIMainWindow: public QMainWindow
   private:
 
     /**
-     * Creates Main Viewer Desktop and connects it with other widgets.
+     * Creates default Viewer Desktop and connects it with other widgets.
      */
-    void createMainViewerDesktop ();
+    void createDefaultViewerDesktop ();
 
     /**
      * Creates Study Manager Dialog with Study Manager Widget and connects it with other widgets.
@@ -305,8 +346,8 @@ class m4dGUIMainWindow: public QMainWindow
     virtual void process ( Dicom::DicomObjSetPtr dicomObjSet );
 
 
-    /// Pointer to the Main Viewer Desktop
-    m4dGUIMainViewerDesktopWidget *mainViewerDesktop;
+    /// Pointer to the current Viewer Desktop
+    m4dGUIMainViewerDesktopWidget *currentViewerDesktop;
     /// Pointer to the Study Manager Widget
     m4dGUIStudyManagerWidget *studyManagerWidget;
     /// Pointer to the ToolBar Customizer Widget
@@ -363,6 +404,8 @@ class m4dGUIMainWindow: public QMainWindow
     QToolBar *viewerToolBar;
     QToolBar *replaceToolBar;
     QToolBar *sourcesToolBar;
+
+    QStackedWidget *mainDesktopStackedWidget;
 
     /**
      * ComboBox in toolBar for selecting from registered sources - possible connections, where can

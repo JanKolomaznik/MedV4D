@@ -274,7 +274,7 @@ class m4dGUIMainWindow2: public QMainWindow
 	//QTabWidget	*stackWidget;
 
     /// Pointer to the Main Viewer Desktop
-    m4dGUIMainViewerDesktopWidget *mainViewerDesktop;
+    m4dGUIMainViewerDesktopWidget *currentViewerDesktop;
     /// Pointer to the Study Manager Widget
     m4dGUIStudyManagerWidget *studyManagerWidget;
     /// Pointer to the ToolBar Customizer Widget

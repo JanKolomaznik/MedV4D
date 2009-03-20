@@ -54,9 +54,11 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
     /** 
      * Main Viewer Desktop constructor.
      *
+     * @param rows number of rows in the layout of desktop widget
+     * @param columns number of columns in the layout of desktop widget
      * @param parent pointer to the parent widget - default is 0
      */
-    m4dGUIMainViewerDesktopWidget ( QWidget *parent = 0 );
+    m4dGUIMainViewerDesktopWidget ( const unsigned rows, const unsigned columns, QWidget *parent = 0 );
 
     /** 
      * Getter to the selected viewer's type.
@@ -174,8 +176,10 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
     /**
      * Signal indicating selected viewer change - should be connected to main window's 
      * features slot - to update the whole adaptable toolBar.
+     *
+     * @param prevViewer pointer to the previously selected viewer - to disconnect it
      */
-    void propagateFeatures ();
+    void propagateFeatures ( M4D::Viewer::m4dGUIAbstractViewerWidget *prevViewer );
 
     /**
      * Signal indicating source (pipeline connection) addition - it's emitted after the addition.

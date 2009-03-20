@@ -95,20 +95,19 @@ m4dGUIMainWindow::m4dGUIMainWindow ( const char *appName, const char *orgName, c
 
   initMainWindowResource();
 
-  QWidget *centralWidget = new QWidget;
-  setCentralWidget( centralWidget );
+  mainDesktopStackedWidget = new QStackedWidget();
+  // reserve the first slot to simple widget
+  mainDesktopStackedWidget->addWidget( new QWidget );
+  setCentralWidget( mainDesktopStackedWidget );
 
-  createMainViewerDesktop();
-  
+  createDefaultViewerDesktop();
+  addViewerDesktop( currentViewerDesktop ); 
+  mainDesktopStackedWidget->setCurrentIndex( 1 );
+
   createActions();
   createMenus();
   createToolBars();
   createStatusBar();
-
-  QVBoxLayout *mainLayout = new QVBoxLayout;
-  mainLayout->setContentsMargins( 0, 0, 0, 0 );
-  mainLayout->addWidget( mainViewerDesktop );
-  centralWidget->setLayout( mainLayout );
 
   setWindowTitle( tr( appName ) ); 
   setWindowIcon( icon );
@@ -122,14 +121,73 @@ m4dGUIMainWindow::m4dGUIMainWindow ( const char *appName, const char *orgName, c
   createProgressBarDialog();
 
   // update availability of features (according to selected viewer - first one is init.)
-  features();
+  features( currentViewerDesktop->getPrevSelectedViewerWidget() );
+}
+
+
+void m4dGUIMainWindow::addDesktopWidget ( QWidget *widget )
+{
+  // always add it to the reserved first place
+  mainDesktopStackedWidget->removeWidget( mainDesktopStackedWidget->widget( 0 ) );
+  mainDesktopStackedWidget->insertWidget( 0, widget );
+}
+
+
+int m4dGUIMainWindow::addViewerDesktop ( m4dGUIMainViewerDesktopWidget *viewerDesktop )
+{
+  connect( viewerDesktop, SIGNAL(propagateFeatures( M4D::Viewer::m4dGUIAbstractViewerWidget * )), 
+           this, SLOT(features( M4D::Viewer::m4dGUIAbstractViewerWidget * )) );
+  connect( viewerDesktop, SIGNAL(sourceAdded( const QString &, const QString & )), 
+           this, SLOT(source( const QString &, const QString & )) );
+
+  return mainDesktopStackedWidget->addWidget( viewerDesktop );
+}
+
+
+void m4dGUIMainWindow::switchToDesktopWidget ()
+{
+  mainDesktopStackedWidget->setCurrentIndex( 0 );
+
+  sourcesToolBar->hide();
+
+  for ( unsigned i = 0; i < VIEWER_ACTIONS_NUMBER; i++ ) {
+    viewerActs[i]->setEnabled( false ); 
+  }
+  replaceAct->setEnabled( false );
+  layoutAct->setEnabled( false );
+}
+
+
+void m4dGUIMainWindow::switchToViewerDesktop ( int index )
+{
+  mainDesktopStackedWidget->setCurrentIndex( index );
+
+  m4dGUIMainViewerDesktopWidget *prevViewerDesktop = currentViewerDesktop;
+  currentViewerDesktop = (m4dGUIMainViewerDesktopWidget *)mainDesktopStackedWidget->currentWidget();
+
+  if ( sourcesComboBox->count() ) 
+  {
+    sourcesToolBar->show();
+
+    sourcesComboBox->setCurrentIndex( currentViewerDesktop->getSelectedViewerSourceIdx() );
+  }
+
+  features( prevViewerDesktop->getSelectedViewerWidget() );
+  replaceAct->setEnabled( true );
+  layoutAct->setEnabled( true );
+}
+
+
+void m4dGUIMainWindow::switchToDefaultViewerDesktop ()
+{
+  switchToViewerDesktop( 1 );
 }
 
 
 void m4dGUIMainWindow::addSource ( ConnectionInterface *conn, const char *pipelineDescription,
                                    const char *connectionDescription )
 {
-  mainViewerDesktop->addSource( conn, pipelineDescription, connectionDescription );
+  currentViewerDesktop->addSource( conn, pipelineDescription, connectionDescription );
 }
 
 
@@ -186,7 +244,7 @@ void m4dGUIMainWindow::open ()
     Multithreading::Thread loadingThread( OpenLoadingThread ( pathInfo.absoluteFilePath().toStdString(), 
   		                                                        pathInfo.absolutePath().toStdString(),
   		                                                        actualStudy.dicomObjSet, this ) );
-  } 
+  }
 }
 
 
@@ -216,7 +274,7 @@ void m4dGUIMainWindow::save ()
     // pathInfo.absoluteFilePath().toStdString() - full path with filename
    
     // TODO - saving method
-  } 
+  }
 }
 
 
@@ -299,15 +357,14 @@ void m4dGUIMainWindow::viewerRotate ()
 }
 
 
-void m4dGUIMainWindow::features ()
+void m4dGUIMainWindow::features ( m4dGUIAbstractViewerWidget *prevViewer )
 {
-  m4dGUIAbstractViewerWidget *prevViewer = mainViewerDesktop->getPrevSelectedViewerWidget();
   disconnect( this, 
               SIGNAL(toolChanged( m4dGUIAbstractViewerWidget::ButtonHandler, m4dGUIAbstractViewerWidget::MouseButton )), 
               prevViewer,
               SLOT(slotSetButtonHandler( m4dGUIAbstractViewerWidget::ButtonHandler, m4dGUIAbstractViewerWidget::MouseButton )) );
 
-  m4dGUIAbstractViewerWidget *actViewer = mainViewerDesktop->getSelectedViewerWidget();
+  m4dGUIAbstractViewerWidget *actViewer = currentViewerDesktop->getSelectedViewerWidget();
   connect( this, 
            SIGNAL(toolChanged( m4dGUIAbstractViewerWidget::ButtonHandler, m4dGUIAbstractViewerWidget::MouseButton )), 
            actViewer,
@@ -345,17 +402,17 @@ void m4dGUIMainWindow::features ()
   }
 
   // trigger previously checked tools for newly selected viewer
-  viewerActs[mainViewerDesktop->getSelectedViewerLeftTool()]->trigger();
-  viewerActs[mainViewerDesktop->getSelectedViewerRightTool()]->trigger();
+  viewerActs[currentViewerDesktop->getSelectedViewerLeftTool()]->trigger();
+  viewerActs[currentViewerDesktop->getSelectedViewerRightTool()]->trigger();
 
-  if ( mainViewerDesktop->getSelectedViewerType() == m4dGUIMainViewerDesktopWidget::VTK_VIEWER ) {
+  if ( currentViewerDesktop->getSelectedViewerType() == m4dGUIMainViewerDesktopWidget::VTK_VIEWER ) {
     replaceAct->setChecked( true );
   }
   else {
     replaceAct->setChecked( false );
   }
 
-  sourcesComboBox->setCurrentIndex( mainViewerDesktop->getSelectedViewerSourceIdx() );
+  sourcesComboBox->setCurrentIndex( currentViewerDesktop->getSelectedViewerSourceIdx() );
 }
 
 
@@ -367,17 +424,18 @@ void m4dGUIMainWindow::layout ()
 
 void m4dGUIMainWindow::replace ()
 {
-  m4dGUIAbstractViewerWidget *replacedViewer = mainViewerDesktop->getSelectedViewerWidget();
+  m4dGUIAbstractViewerWidget *replacedViewer = currentViewerDesktop->getSelectedViewerWidget();
   
   if ( !replaceAct->isChecked() ) {
-    mainViewerDesktop->replaceSelectedViewerWidget( m4dGUIMainViewerDesktopWidget::SLICE_VIEWER,
-                                                    replacedViewer );
+    currentViewerDesktop->replaceSelectedViewerWidget( m4dGUIMainViewerDesktopWidget::SLICE_VIEWER,
+                                                      replacedViewer );
   }
   else {
-    mainViewerDesktop->replaceSelectedViewerWidget( m4dGUIMainViewerDesktopWidget::VTK_VIEWER,
-                                                    replacedViewer );
+    currentViewerDesktop->replaceSelectedViewerWidget( m4dGUIMainViewerDesktopWidget::VTK_VIEWER,
+                                                      replacedViewer );
   }
-  features();
+
+  features( currentViewerDesktop->getPrevSelectedViewerWidget() );
 }
 
 
@@ -406,8 +464,8 @@ void m4dGUIMainWindow::loadingReady ()
 {
   if ( !actualStudy.dicomObjSet->empty() ) 
   {
-    mainViewerDesktop->getSelectedViewerWidget()->setLeftSideTextData( actualStudy.leftOverlayInfo );  
-    mainViewerDesktop->getSelectedViewerWidget()->setRightSideTextData( actualStudy.rightOverlayInfo );  
+    currentViewerDesktop->getSelectedViewerWidget()->setLeftSideTextData( actualStudy.leftOverlayInfo );  
+    currentViewerDesktop->getSelectedViewerWidget()->setRightSideTextData( actualStudy.rightOverlayInfo );  
 
     process( DicomObjSetPtr( actualStudy.dicomObjSet ) );
 
@@ -429,12 +487,9 @@ void m4dGUIMainWindow::loadingException ( const QString &description )
 }
 
 
-void m4dGUIMainWindow::createMainViewerDesktop ()
+void m4dGUIMainWindow::createDefaultViewerDesktop ()
 {
-  mainViewerDesktop = new m4dGUIMainViewerDesktopWidget;
-  connect( mainViewerDesktop, SIGNAL(propagateFeatures()), this, SLOT(features()) );
-  connect( mainViewerDesktop, SIGNAL(sourceAdded( const QString &, const QString & )), 
-           this, SLOT(source( const QString &, const QString & )) );
+  currentViewerDesktop = new m4dGUIMainViewerDesktopWidget( 1, 2 );
 }
 
 
@@ -494,7 +549,7 @@ void m4dGUIMainWindow::createScreenLayoutDialog ()
 
   screenLayoutWidget = new m4dGUIScreenLayoutWidget;
   connect( screenLayoutWidget, SIGNAL(seriesLayout( const unsigned, const unsigned )), 
-           mainViewerDesktop, SLOT(setDesktopLayout( const unsigned, const unsigned )) );
+           currentViewerDesktop, SLOT(setDesktopLayout( const unsigned, const unsigned )) );
   connect( screenLayoutWidget, SIGNAL(ready()), screenLayoutDialog, SLOT(close()) );
 
   QVBoxLayout *dialogLayout = new QVBoxLayout;
@@ -687,7 +742,7 @@ void m4dGUIMainWindow::createToolBars ()
   sourcesComboBox = new QComboBox;
   sourcesComboBox->setSizeAdjustPolicy( QComboBox::AdjustToContents );
   connect( sourcesComboBox, SIGNAL(activated( int )), 
-           mainViewerDesktop, SLOT(sourceSelected( int )) );
+           currentViewerDesktop, SLOT(sourceSelected( int )) );
   sourcesToolBar->addWidget( sourcesComboBox );
   sourcesToolBar->hide();
 }
@@ -710,15 +765,15 @@ void m4dGUIMainWindow::delegateAction ( unsigned actionIdx, m4dGUIAbstractViewer
   if ( actionButtonTypes[actionIdx] == RIGHT_BUTTON )
   {
     btn = m4dGUIAbstractViewerWidget::right;
-    mainViewerDesktop->setSelectedViewerRightTool( actionIdx );
+    currentViewerDesktop->setSelectedViewerRightTool( actionIdx );
   }
   else
   {
     btn = m4dGUIAbstractViewerWidget::left;
-    mainViewerDesktop->setSelectedViewerLeftTool( actionIdx );
+    currentViewerDesktop->setSelectedViewerLeftTool( actionIdx );
   }
 
-  mainViewerDesktop->getSelectedViewerWidget()->slotSetButtonHandler( hnd, btn );
+  currentViewerDesktop->getSelectedViewerWidget()->slotSetButtonHandler( hnd, btn );
 }
 
 
@@ -727,11 +782,13 @@ void m4dGUIMainWindow::process ( DicomObjSetPtr dicomObjSet )
   AbstractImage::Ptr inputImage = DcmProvider::CreateImageFromDICOM( dicomObjSet );
 
 	try {
+
     ConnectionInterfaceTyped< AbstractImage > *conn = new ConnectionTyped< AbstractImage >;
 		conn->PutDataset( inputImage );
 
-		mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
-		conn->ConnectConsumer( mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
+		currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
+		conn->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
+
 	} 
 	catch ( ... ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Some exception" ) );

@@ -113,7 +113,7 @@ m4dGUIMainWindow2::m4dGUIMainWindow2 ( const char *appName, const char *orgName,
 
   QVBoxLayout *mainLayout = new QVBoxLayout;
   mainLayout->setContentsMargins( 0, 0, 0, 0 );
-  mainLayout->addWidget( mainViewerDesktop );
+  mainLayout->addWidget( currentViewerDesktop );
   centralWidget->setLayout( mainLayout );
 
   setWindowTitle( tr( appName ) ); 
@@ -134,7 +134,7 @@ m4dGUIMainWindow2::m4dGUIMainWindow2 ( const char *appName, const char *orgName,
 void m4dGUIMainWindow2::addSource ( ConnectionInterface *conn, const char *pipelineDescription,
                                    const char *connectionDescription )
 {
-  mainViewerDesktop->addSource( conn, pipelineDescription, connectionDescription );
+  currentViewerDesktop->addSource( conn, pipelineDescription, connectionDescription );
 }
 
 
@@ -180,8 +180,8 @@ void m4dGUIMainWindow2::search ()
   {
     if ( !dicomObjSet->empty() )
     {
-      mainViewerDesktop->getSelectedViewerWidget()->setLeftSideTextData( leftOverlayInfo );  
-      mainViewerDesktop->getSelectedViewerWidget()->setRightSideTextData( rightOverlayInfo );  
+      currentViewerDesktop->getSelectedViewerWidget()->setLeftSideTextData( leftOverlayInfo );  
+      currentViewerDesktop->getSelectedViewerWidget()->setRightSideTextData( rightOverlayInfo );  
       process( DicomObjSetPtr( dicomObjSet ) );
     }
     else {
@@ -285,13 +285,13 @@ void m4dGUIMainWindow2::viewerRotate ()
 
 void m4dGUIMainWindow2::features ()
 {
-  m4dGUIAbstractViewerWidget *prevViewer = mainViewerDesktop->getPrevSelectedViewerWidget();
+  m4dGUIAbstractViewerWidget *prevViewer = currentViewerDesktop->getPrevSelectedViewerWidget();
   disconnect( this, 
               SIGNAL(toolChanged( m4dGUIAbstractViewerWidget::ButtonHandler, m4dGUIAbstractViewerWidget::MouseButton )), 
               prevViewer,
               SLOT(slotSetButtonHandler( m4dGUIAbstractViewerWidget::ButtonHandler, m4dGUIAbstractViewerWidget::MouseButton )) );
 
-  m4dGUIAbstractViewerWidget *actViewer = mainViewerDesktop->getSelectedViewerWidget();
+  m4dGUIAbstractViewerWidget *actViewer = currentViewerDesktop->getSelectedViewerWidget();
   connect( this, 
            SIGNAL(toolChanged( m4dGUIAbstractViewerWidget::ButtonHandler, m4dGUIAbstractViewerWidget::MouseButton )), 
            actViewer,
@@ -329,17 +329,17 @@ void m4dGUIMainWindow2::features ()
   }
 
   // trigger previously checked tools for newly selected viewer
-  viewerActs[mainViewerDesktop->getSelectedViewerLeftTool()]->trigger();
-  viewerActs[mainViewerDesktop->getSelectedViewerRightTool()]->trigger();
+  viewerActs[currentViewerDesktop->getSelectedViewerLeftTool()]->trigger();
+  viewerActs[currentViewerDesktop->getSelectedViewerRightTool()]->trigger();
 
-  if ( mainViewerDesktop->getSelectedViewerType() == m4dGUIMainViewerDesktopWidget::VTK_VIEWER ) {
+  if ( currentViewerDesktop->getSelectedViewerType() == m4dGUIMainViewerDesktopWidget::VTK_VIEWER ) {
     replaceAct->setChecked( true );
   }
   else {
     replaceAct->setChecked( false );
   }
 
-  sourcesComboBox->setCurrentIndex( mainViewerDesktop->getSelectedViewerSourceIdx() );
+  sourcesComboBox->setCurrentIndex( currentViewerDesktop->getSelectedViewerSourceIdx() );
 }
 
 
@@ -351,14 +351,14 @@ void m4dGUIMainWindow2::layout ()
 
 void m4dGUIMainWindow2::replace ()
 {
-  m4dGUIAbstractViewerWidget *replacedViewer = mainViewerDesktop->getSelectedViewerWidget();
+  m4dGUIAbstractViewerWidget *replacedViewer = currentViewerDesktop->getSelectedViewerWidget();
   
   if ( !replaceAct->isChecked() ) {
-    mainViewerDesktop->replaceSelectedViewerWidget( m4dGUIMainViewerDesktopWidget::SLICE_VIEWER,
+    currentViewerDesktop->replaceSelectedViewerWidget( m4dGUIMainViewerDesktopWidget::SLICE_VIEWER,
                                                     replacedViewer );
   }
   else {
-    mainViewerDesktop->replaceSelectedViewerWidget( m4dGUIMainViewerDesktopWidget::VTK_VIEWER,
+    currentViewerDesktop->replaceSelectedViewerWidget( m4dGUIMainViewerDesktopWidget::VTK_VIEWER,
                                                     replacedViewer );
   }
   features();
@@ -375,9 +375,9 @@ void m4dGUIMainWindow2::source ( const QString &pipelineDescription, const QStri
 
 void m4dGUIMainWindow2::createMainViewerDesktop ()
 {
-  mainViewerDesktop = new m4dGUIMainViewerDesktopWidget;
-  connect( mainViewerDesktop, SIGNAL(propagateFeatures()), this, SLOT(features()) );
-  connect( mainViewerDesktop, SIGNAL(sourceAdded( const QString &, const QString & )), 
+  currentViewerDesktop = new m4dGUIMainViewerDesktopWidget( 1, 2 );
+  connect( currentViewerDesktop, SIGNAL(propagateFeatures()), this, SLOT(features()) );
+  connect( currentViewerDesktop, SIGNAL(sourceAdded( const QString &, const QString & )), 
            this, SLOT(source( const QString &, const QString & )) );
 }
 
@@ -428,7 +428,7 @@ void m4dGUIMainWindow2::createScreenLayoutDialog ()
 
   screenLayoutWidget = new m4dGUIScreenLayoutWidget;
   connect( screenLayoutWidget, SIGNAL(seriesLayout( const unsigned, const unsigned )), 
-           mainViewerDesktop, SLOT(setDesktopLayout( const unsigned, const unsigned )) );
+           currentViewerDesktop, SLOT(setDesktopLayout( const unsigned, const unsigned )) );
   connect( screenLayoutWidget, SIGNAL(ready()), screenLayoutDialog, SLOT(close()) );
 
   QVBoxLayout *dialogLayout = new QVBoxLayout;
@@ -598,7 +598,7 @@ void m4dGUIMainWindow2::createToolBars ()
   sourcesComboBox = new QComboBox;
   sourcesComboBox->setSizeAdjustPolicy( QComboBox::AdjustToContents );
   connect( sourcesComboBox, SIGNAL(activated( int )), 
-           mainViewerDesktop, SLOT(sourceSelected( int )) );
+           currentViewerDesktop, SLOT(sourceSelected( int )) );
   sourcesToolBar->addWidget( sourcesComboBox );
   sourcesToolBar->hide();
 }
@@ -621,15 +621,15 @@ void m4dGUIMainWindow2::delegateAction ( unsigned actionIdx, m4dGUIAbstractViewe
   if ( actionButtonTypes[actionIdx] == RIGHT_BUTTON )
   {
     btn = m4dGUIAbstractViewerWidget::right;
-    mainViewerDesktop->setSelectedViewerRightTool( actionIdx );
+    currentViewerDesktop->setSelectedViewerRightTool( actionIdx );
   }
   else
   {
     btn = m4dGUIAbstractViewerWidget::left;
-    mainViewerDesktop->setSelectedViewerLeftTool( actionIdx );
+    currentViewerDesktop->setSelectedViewerLeftTool( actionIdx );
   }
 
-  mainViewerDesktop->getSelectedViewerWidget()->slotSetButtonHandler( hnd, btn );
+  currentViewerDesktop->getSelectedViewerWidget()->slotSetButtonHandler( hnd, btn );
 }
 
 
@@ -641,8 +641,8 @@ void m4dGUIMainWindow2::process ( M4D::Dicom::DicomObjSetPtr dicomObjSet )
     ConnectionInterfaceTyped< AbstractImage > *conn = new ConnectionTyped< AbstractImage >;
 		conn->PutDataset( inputImage );
 
-		mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
-		conn->ConnectConsumer( mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
+		currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
+		conn->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 	} 
 	catch ( ... ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Some exception" ) );

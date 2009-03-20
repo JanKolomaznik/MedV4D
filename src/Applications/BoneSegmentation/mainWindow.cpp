@@ -38,8 +38,8 @@ mainWindow::process ( M4D::Dicom::DicomObjSetPtr dicomObjSet )
 
 		_convertor->Execute();
 
-		mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
-		_inConnection->ConnectConsumer( mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
+		currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
+		_inConnection->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 
 		_settings->SetEnabledExecButton( true );
 	} 

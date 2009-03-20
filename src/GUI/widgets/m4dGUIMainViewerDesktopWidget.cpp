@@ -16,10 +16,11 @@ using namespace std;
 namespace M4D {
 namespace GUI {
 
-m4dGUIMainViewerDesktopWidget::m4dGUIMainViewerDesktopWidget ( QWidget *parent )
+m4dGUIMainViewerDesktopWidget::m4dGUIMainViewerDesktopWidget ( const unsigned rows, const unsigned columns, 
+                                                              QWidget *parent )
   : QWidget( parent ), defaultConnection( NULL )
 {
-  setDesktopLayout( 1, 2 );
+  setDesktopLayout( rows, columns );
 
   selectedViewer = viewers[1];
   viewers[0]->viewerWidget->slotSetSelected( true );
@@ -172,7 +173,7 @@ void m4dGUIMainViewerDesktopWidget::selectedChanged ( unsigned index )
 
   prevSelectedViewer->viewerWidget->slotSetSelected( false );
 
-  emit propagateFeatures(); 
+  emit propagateFeatures( prevSelectedViewer->viewerWidget ); 
 }
 
 
