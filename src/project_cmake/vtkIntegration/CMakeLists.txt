@@ -1,6 +1,6 @@
 #vtkIntegration library
 
-include_directories(../ ../include /usr/local/include ${VTK_INCLUDE_DIRS})
+include_directories(../../ ../../include /usr/local/include ${VTK_INCLUDE_DIRS})
 link_directories(../lib /usr/local/lib)
 
 set(SRC_DIR ../../vtkIntegration/src)

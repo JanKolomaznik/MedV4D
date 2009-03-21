@@ -1,11 +1,18 @@
 #m4dPilot application
 
 include(${QT_USE_FILE})
-include_directories(../../ ../../include /usr/local/include ${QT_INCLUDE_DIR} ${QT_QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR} ${QT_QTOPENGL_INCLUDE_DIR} ${VTK_INCLUDE_DIRS})
 
-set(VTK_LIBRARIES vtkCommon vtkDICOMParser vtkexoIIc vtkFiltering vtkftgl vtkGenericFiltering vtkGraphics vtkHybrid vtkImaging vtkIO vtkNetCDF vtksys vtkVolumeRendering vtkWidgets QVTK wrap vtkRendering)
+include_directories(../../ ../../include ${QT_INCLUDE_DIR} ${QT_QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR} ${QT_QTOPENGL_INCLUDE_DIR} ${VTK_INCLUDE_DIRS})
+
+link_directories(${VTK_LIBRARY_DIRS} ${DCMTK_LIBRARY_DIRS} ${Boost_LIBRARY_DIRS} ${QBoost_LIBRARY_DIRS})
+
+set(VTK_LIBRARIES vtkCommon vtkDICOMParser vtkexoIIc vtkFiltering vtkftgl vtkGenericFiltering vtkGraphics vtkHybrid vtkImaging vtkIO vtkNetCDF vtksys vtkVolumeRendering vtkWidgets QVTK vtkRendering)
 
 set(DCMTK_LIBRARIES dcmnet dcmdata ofstd)
+
+set(M4DLIBS backendForDICOM Imaging m4dWidgets vtkIntegration Common)
+
+
 
 set(SRC_DIR ../../Applications/m4dPilot)
 
@@ -19,12 +26,12 @@ QT4_ADD_RESOURCES(RCCOUTPUT ${RCCINPUT})
 
 set(INPUT ${SRC_DIR}/main.cpp ${SRC_DIR}/mainWindow.cpp)
 
-set(M4DLIBS backendForDICOM Imaging m4dWidgets vtkIntegration Common)
+
 
 set(OUTPUT m4dPilot)
 
 add_executable(${OUTPUT} ${INPUT} ${MOCOUTPUT} ${RCCOUTPUT})
 target_link_libraries(${OUTPUT} ${M4DLIBS} ${Boost_LIBRARIES} ${VTK_LIBRARIES} ${QT_LIBRARIES} ${OPENGL_LIBRARY} ${DCMTK_LIBRARIES})
 
-add_dependencies(${OUTPUT} Common)
+add_dependencies(${OUTPUT} Common backendForDICOM Imaging m4dWidgets vtkIntegration)
 
