@@ -1,3 +1,5 @@
+#m4dPilot application
+
 include(${QT_USE_FILE})
 include_directories(../../ ../../include /usr/local/include ${QT_INCLUDE_DIR} ${QT_QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR} ${QT_QTOPENGL_INCLUDE_DIR} ${VTK_INCLUDE_DIRS})
 
@@ -17,9 +19,12 @@ QT4_ADD_RESOURCES(RCCOUTPUT ${RCCINPUT})
 
 set(INPUT ${SRC_DIR}/main.cpp ${SRC_DIR}/mainWindow.cpp)
 
-set(OUTPUT m4dPilot)
-
 set(M4DLIBS backendForDICOM Imaging m4dWidgets vtkIntegration Common)
+
+set(OUTPUT m4dPilot)
 
 add_executable(${OUTPUT} ${INPUT} ${MOCOUTPUT} ${RCCOUTPUT})
 target_link_libraries(${OUTPUT} ${M4DLIBS} ${Boost_LIBRARIES} ${VTK_LIBRARIES} ${QT_LIBRARIES} ${OPENGL_LIBRARY} ${DCMTK_LIBRARIES})
+
+add_dependencies(${OUTPUT} Common)
+

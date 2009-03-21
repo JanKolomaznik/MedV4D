@@ -1,3 +1,5 @@
+#common library
+
 include_directories(../../include ../../common)
 
 set(SRC_DIR ../../common)

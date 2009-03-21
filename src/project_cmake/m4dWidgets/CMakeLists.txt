@@ -1,3 +1,5 @@
+#m4dWidgets library
+
 include(${QT_USE_FILE})
 include_directories(../../ ../../include /usr/local/include ${QT_INCLUDE_DIR}
 ${QT_QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR}
@@ -42,3 +44,6 @@ ${SRC_DIR}/components/StManagerStudyListComp.cpp ${SRC_DIR}/utils/LoadingThreads
 ${SRC_DIR}/utils/StudyFilter.cpp)
 
 add_library(m4dWidgets ${INPUT} ${MOCOUTPUT} ${RCCOUTPUT})
+
+add_dependencies(m4dWidgets Common)
+
