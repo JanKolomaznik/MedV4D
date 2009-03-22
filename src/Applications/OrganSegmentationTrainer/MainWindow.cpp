@@ -29,6 +29,10 @@ MainWindow::CreateWidgets()
 	listLayout->addWidget( loadButton );
 	QObject::connect( loadButton, SIGNAL( released() ), this, SLOT( ReloadTrainingSetInfos() ) );
 
+	_recursiveChBox = new QCheckBox();
+	_recursiveChBox->setText( "Recursive search" );
+	listLayout->addWidget( _recursiveChBox );
+
 	QVBoxLayout *rightLayout = new QVBoxLayout();
 	layout->addStretch( 1 );
 	layout->addLayout( rightLayout, 6 );
@@ -140,7 +144,7 @@ MainWindow::ReloadTrainingSetInfos()
 		return;
 	}
 	_trainingsetInfos.clear();
-	GetTrainingSetInfos( dirName, ".idx", _trainingsetInfos, true );
+	GetTrainingSetInfos( dirName, ".idx", _trainingsetInfos, _recursiveChBox->isChecked() );
 
 	UpdateList();
 }

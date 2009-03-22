@@ -22,6 +22,8 @@ main( int argc, char **argv )
 	/*---------------------------------------------------------------------*/
 
 		//Define cmd arguments
+	TCLAP::ValueArg<double> thresholdArg( "t", "threshold", "Edge threshold value", false, 50, "Numeric type of image element" );
+	cmd.add( thresholdArg );
 
 	/*---------------------------------------------------------------------*/
 	TCLAP::UnlabeledValueArg<std::string> inFilenameArg( "input", "Input image filename", true, "", "filename1" );
@@ -50,8 +52,10 @@ main( int argc, char **argv )
 	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage > *outConnection = NULL;
 	M4D::Imaging::AbstractPipeFilter *filter = NULL;
 	/*---------------------------------------------------------------------*/
+	double threshold = thresholdArg.getValue();
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
 		M4D::Imaging::SobelEdgeDetector< IMAGE_TYPE > *sobel = new M4D::Imaging::SobelEdgeDetector< IMAGE_TYPE >();
+		sobel->SetThreshold( static_cast<TTYPE>( threshold ) );
 		filter = sobel;
 	);
 

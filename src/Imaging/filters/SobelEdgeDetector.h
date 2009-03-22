@@ -39,12 +39,15 @@ public:
 
 	struct Properties : public PredecessorType::Properties
 	{
-		Properties() {}
+		Properties(): threshold( 50 ) {}
+
+		ElementType	threshold;
 	};
 
 	SobelEdgeDetector( Properties * prop );
 	SobelEdgeDetector();
 	
+	GET_SET_PROPERTY_METHOD_MACRO( ElementType, Threshold, threshold );
 protected:
 	bool
 	Process2D(

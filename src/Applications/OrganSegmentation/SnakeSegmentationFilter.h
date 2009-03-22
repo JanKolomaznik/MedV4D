@@ -85,7 +85,7 @@ private:
 };
 
 
-template < typename ElementType >
+template < typename ElementType, typename SecondElementType >
 class SnakeSegmentationFilter: public APipeFilter
 {
 public:
@@ -93,9 +93,12 @@ public:
 	typedef	Imaging::Geometry::BSpline< float32, 2 >		CurveType;
 	typedef SlicedGeometry< Imaging::Geometry::BSpline<float32,2> >	OutputDatasetType;
 	typedef Image< ElementType, 3 >					InputImageType;
+	typedef Image< SecondElementType, 3 >				EdgeImageType;
 	typedef typename ImageTraits< InputImageType >::InputPort 	InputPortType;
+	typedef typename ImageTraits< EdgeImageType >::InputPort 	EdgePortType;
 	typedef OutputPortTyped< OutputDatasetType > 			OutputPortType;
 	typedef ImageRegion< ElementType, 2 >				RegionType;
+	typedef ImageRegion< SecondElementType, 2 >			EdgeRegionType;
 	typedef typename OutputDatasetType::ObjectsInSlice		ObjectsInSlice;
 
 	typedef Vector< float32, 2 >					Coordinates;
@@ -141,7 +144,7 @@ protected:
 	typedef M4D::Imaging::Algorithms::SegmentationEnergy< 
 			CurveType,
 			//M4D::Imaging::Algorithms::RegionImageEnergy< CurveType, RegionType, Distribution >,
-			M4D::Imaging::Algorithms::UnifiedImageEnergy< CurveType, RegionType, RegionType, Distribution >,
+			M4D::Imaging::Algorithms::UnifiedImageEnergy2< CurveType, RegionType, EdgeRegionType, Distribution >,
 			M4D::Imaging::Algorithms::InternalCurveEnergy< CurveType >,
 			M4D::Imaging::Algorithms::DummyEnergy3 >			EnergyModel;
 
@@ -192,7 +195,8 @@ protected:
 			typename OutputDatasetType::ObjectsInSlice &slice 
 			);
 
-	const InputImageType	*in[ InCount ];
+	const InputImageType	*in;
+	const EdgeImageType	*inEdge;
 	OutputDatasetType	*out;
 	int32 _minSlice;
 	int32 _maxSlice;

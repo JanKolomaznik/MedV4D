@@ -49,6 +49,8 @@ private:
 	QPushButton	*_saveModel;
 	QPushButton	*_saveVisualization;
 
+	QCheckBox 	*_recursiveChBox;
+
 	TrainingDataInfos _trainingsetInfos;
 
 	boost::shared_ptr< M4D::Imaging::CanonicalProbModel >	_model;

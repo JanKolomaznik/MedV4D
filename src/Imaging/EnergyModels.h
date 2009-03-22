@@ -26,9 +26,7 @@ FillSampleValuesBufferFromRegion( BufferType &buffer, const SamplesSet & samples
 	int32 sampleCount = samples.Size();
 	buffer.resize( sampleCount );
 	for( int32 i = 0; i < sampleCount; ++i ) {
-		//TODO interpolation
-		RasterPos pos = RasterPos( ROUND( samples[i][0] ), ROUND( samples[i][1] ) );
-		buffer[ i ] = region.GetElement( pos );
+		buffer[ i ] = region.GetElementWorldCoords( samples[i] );
 	}
 }
 
@@ -207,7 +205,7 @@ public:
 	}
 	
 	void
-	SetRegion( const RegionType &region )
+	SetRegionEdge( const RegionType &region )
 		{ _region = region; }
 private:
 	RegionType		_region;
@@ -233,26 +231,7 @@ public:
 	void
 	ResetEnergy() {}
 
-	/*float32
-	GetParametersGradient( ContourType &curve, GradientType &gradient )
-	{
-		if( curve.Size() != gradient.Size() ) {
-			//TODO - solve problem
-		}
-
-		if( _sampleFrequency != (int32)curve.GetLastSampleFrequency() ) {
-			RecalculateQki( curve );
-		}
-
-		FillSampleValuesBuffer( curve.GetSamplePoints() );		
-
-		float32 gradSize = 0.0f;
-		for( unsigned i = 0; i < gradient.Size(); ++i ) {
-			gradient[i] = ComputePointGradient( i, curve );
-			gradSize += gradient[i] * gradient[i];
-		}
-		return sqrt( gradSize );
-	}*/
+	
 	float32
 	GetParametersGradient( ContourType &curve, GradientType &gradient )
 	{
@@ -293,10 +272,10 @@ public:
 	}
 
 	void
-	SetRegion1( const RegionType1 &region )
+	SetRegionStat( const RegionType1 &region )
 		{ _region1 = region; }
 	void
-	SetRegion2( const RegionType2 &region )
+	SetRegionEdge( const RegionType2 &region )
 		{ _region2 = region; }
 
 	float32
@@ -456,7 +435,7 @@ public:
 	}
 
 	void
-	SetRegionStatRegion( const RegionType &region )
+	SetRegionStat( const RegionType &region )
 		{ _region = region; }
 
 private:

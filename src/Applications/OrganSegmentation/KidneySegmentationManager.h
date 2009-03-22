@@ -11,11 +11,13 @@ typedef CurveType::PointType				PointType;
 
 typedef M4D::Imaging::SlicedGeometry< M4D::Imaging::Geometry::BSpline<float32,2> >	GDataSet;
 typedef	M4D::Imaging::ConnectionTyped< GDataSet >	OutputGeomConnection;
-typedef M4D::Imaging::SnakeSegmentationFilter< int16 > SegmentationFilter;
+typedef M4D::Imaging::SnakeSegmentationFilter< int16, SimpleVector< int16, 2 > > SegmentationFilter;
 typedef M4D::Imaging::GaussianFilter2D< InputImageType >	Gaussian;
 typedef M4D::Imaging::LaplaceOperator2D< InputImageType >	Laplacian;
 typedef M4D::Imaging::SobelEdgeDetector< InputImageType >	Sobel;
-typedef Laplacian	EdgeFilter;
+typedef M4D::Imaging::SobelGradientOperator< InputImageType, M4D::Imaging::Image< SimpleVector< int16, 2 >, 3 > >	SobelGradient;
+//typedef Laplacian	EdgeFilter;
+typedef SobelGradient	EdgeFilter;
 
 struct PoleDefinition {
 	PoleDefinition(): defined( false ), radius( 10.0 ), slice( 0 )
@@ -107,8 +109,12 @@ protected:
 	InputImagePtr				 	_inputImage;
 	PoleDefinition					_poles[2];
 	SegmentationFilter				*_segmentationFilter;
-	EdgeFilter					*_edgeFilter;
 	Gaussian					*_gaussianFilter;
+
+	EdgeFilter					*_edgeFilter;
+	Sobel						*_sobelEdge;
+	SobelGradient					*_sobelGradient;
+
 	M4D::Imaging::CanonicalProbModel::Ptr		_probModel;
 
 	float32						_shapeIntensityBalance;

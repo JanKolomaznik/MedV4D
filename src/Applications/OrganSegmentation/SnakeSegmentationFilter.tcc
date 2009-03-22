@@ -14,121 +14,120 @@ namespace M4D
 namespace Imaging
 {
 
-template < typename ElementType >
-SnakeSegmentationFilter< ElementType >
+template < typename ElementType, typename SecondElementType >
+SnakeSegmentationFilter< ElementType, SecondElementType >
 ::SnakeSegmentationFilter() : PredecessorType( new Properties() )
 {
 	this->_name = "SnakeSegmentationFilter";
 
-	//TODO check if OK
-	for( unsigned i = 0; i < InCount; ++i ) {
-		InputPortType *inPort = new InputPortType();
-		_inputPorts.AppendPort( inPort );
-	}
+	InputPortType *inPort = new InputPortType();
+	_inputPorts.AppendPort( inPort );
+
+	EdgePortType *edgePort = new EdgePortType();
+	_inputPorts.AppendPort( edgePort );
 	
 	OutputPortType *outPort = new OutputPortType();
 	_outputPorts.AppendPort( outPort );
 
 }
 
-template < typename ElementType >
-SnakeSegmentationFilter< ElementType >
-::SnakeSegmentationFilter( typename SnakeSegmentationFilter< ElementType >::Properties *prop ) 
+template < typename ElementType, typename SecondElementType >
+SnakeSegmentationFilter< ElementType, SecondElementType >
+::SnakeSegmentationFilter( typename SnakeSegmentationFilter< ElementType, SecondElementType >::Properties *prop ) 
 : PredecessorType( prop ) 
 {
 	this->_name = "SnakeSegmentationFilter";
 
-	//TODO check if OK
-	for( unsigned i = 0; i < InCount; ++i ) {
-		InputPortType *inPort = new InputPortType();
-		_inputPorts.AppendPort( inPort );
-	}
+	InputPortType *inPort = new InputPortType();
+	_inputPorts.AppendPort( inPort );
+
+	EdgePortType *edgePort = new EdgePortType();
+	_inputPorts.AppendPort( edgePort );
 	
 	OutputPortType *outPort = new OutputPortType();
 	_outputPorts.AppendPort( outPort );
 }
 
-template < typename ElementType >
-const typename SnakeSegmentationFilter< ElementType >::InputImageType&
-SnakeSegmentationFilter< ElementType >::GetInputImage( uint32 idx )const
+template < typename ElementType, typename SecondElementType >
+const typename SnakeSegmentationFilter< ElementType, SecondElementType >::InputImageType&
+SnakeSegmentationFilter< ElementType, SecondElementType >::GetInputImage( uint32 idx )const
 {
 	return this->GetInputDataSet< InputImageType >( idx );
 }
 
-template < typename ElementType >
+template < typename ElementType, typename SecondElementType >
 void 
-SnakeSegmentationFilter< ElementType >::ReleaseInputImage( uint32 idx )const
+SnakeSegmentationFilter< ElementType, SecondElementType >::ReleaseInputImage( uint32 idx )const
 {
 	this->ReleaseInputDataSet( idx );
 }
 
-template < typename ElementType >
-typename SnakeSegmentationFilter< ElementType >::OutputDatasetType&
-SnakeSegmentationFilter< ElementType >::GetOutputGDataset()const
+template < typename ElementType, typename SecondElementType >
+typename SnakeSegmentationFilter< ElementType, SecondElementType >::OutputDatasetType&
+SnakeSegmentationFilter< ElementType, SecondElementType >::GetOutputGDataset()const
 {
 	return this->GetOutputDataSet< OutputDatasetType >( 0 );
 }
 
-template < typename ElementType >
+template < typename ElementType, typename SecondElementType >
 void 
-SnakeSegmentationFilter< ElementType >::ReleaseOutputGDataset()const
+SnakeSegmentationFilter< ElementType, SecondElementType >::ReleaseOutputGDataset()const
 {
 	this->ReleaseOutputDataSet( 0 );
 }
 
-template < typename ElementType >
+template < typename ElementType, typename SecondElementType >
 void
-SnakeSegmentationFilter< ElementType >::PrepareOutputDatasets()
+SnakeSegmentationFilter< ElementType, SecondElementType >::PrepareOutputDatasets()
 {
-	_minSlice = in[0]->GetDimensionExtents(2).minimum;
-	_maxSlice = in[0]->GetDimensionExtents(2).maximum;
-	for( unsigned i=1; i<InCount; ++i ) {
-		_minSlice = Max( _minSlice, in[i]->GetDimensionExtents(2).minimum );
-		_maxSlice = Max( _maxSlice, in[i]->GetDimensionExtents(2).maximum );
-	}
+	_minSlice = in->GetDimensionExtents(2).minimum;
+	_maxSlice = in->GetDimensionExtents(2).maximum;
+
+	_minSlice = Max( _minSlice, inEdge->GetDimensionExtents(2).minimum );
+	_maxSlice = Min( _maxSlice, inEdge->GetDimensionExtents(2).maximum );
 
 	this->out->UpgradeToExclusiveLock();
 		GeometryDataSetFactory::ChangeSliceCount( (*this->out), _minSlice, _maxSlice );
 	this->out->DowngradeFromExclusiveLock();
 }
 
-template < typename ElementType >
+template < typename ElementType, typename SecondElementType >
 void
-SnakeSegmentationFilter< ElementType >::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
+SnakeSegmentationFilter< ElementType, SecondElementType >::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
 {
 	PredecessorType::BeforeComputation( utype );
 
 	utype = AbstractPipeFilter::RECALCULATION;
 	this->_callPrepareOutputDatasets = true;
 
-	for( unsigned i = 0; i < InCount; ++i ) {
-		in[ i ] = &(this->GetInputImage( i ));
-	}
+	in = &(this->GetInputDataSet< InputImageType >( 0 ));
+	inEdge = &(this->GetInputDataSet< EdgeImageType >( 1 ));
+	
 	out = &(this->GetOutputGDataset());
 
 	_northPole[ 0 ] = GetSecondPoint()[ 0 ];
 	_northPole[ 1 ] = GetSecondPoint()[ 1 ];
-	_northPole[ 2 ] = GetSecondSlice() * in[0]->GetElementExtents()[2];
+	_northPole[ 2 ] = GetSecondSlice() * in->GetElementExtents()[2];
 
 	_southPole[ 0 ] = GetFirstPoint()[ 0 ];
 	_southPole[ 1 ] = GetFirstPoint()[ 1 ];
-	_southPole[ 2 ] = GetFirstSlice() * in[0]->GetElementExtents()[2];
+	_southPole[ 2 ] = GetFirstSlice() * in->GetElementExtents()[2];
 	
 }
 
-template < typename ElementType >
+template < typename ElementType, typename SecondElementType >
 void
-SnakeSegmentationFilter< ElementType >::MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype )
+SnakeSegmentationFilter< ElementType, SecondElementType >::MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype )
 {
-	for( unsigned i=0; i < InCount; ++i ) {
-		readerBBox[i] = in[i]->GetWholeDirtyBBox();
-	}
+	readerBBox[0] = in->GetWholeDirtyBBox();
+	readerBBox[1] = inEdge->GetWholeDirtyBBox();
+	
 	writerBBox = &(out->SetWholeDirtyBBox());
 }
 
-template < typename ElementType >
+template < typename ElementType, typename SecondElementType >
 void
-SnakeSegmentationFilter< ElementType >::AfterComputation( bool successful )
+SnakeSegmentationFilter< ElementType, SecondElementType >::AfterComputation( bool successful )
 {
 	for( unsigned i=0; i < InCount; ++i ) {
 	/*	_inTimestamp[ i ] = in[ i ]->GetStructureTimestamp();
@@ -140,9 +139,9 @@ SnakeSegmentationFilter< ElementType >::AfterComputation( bool successful )
 	PredecessorType::AfterComputation( successful );	
 }
 
-template < typename ElementType >
+template < typename ElementType, typename SecondElementType >
 void 
-SnakeSegmentationFilter< ElementType >::ComputeStatistics( Vector<int32, 3> p, float32 &E, float32 &var )
+SnakeSegmentationFilter< ElementType, SecondElementType >::ComputeStatistics( Vector<int32, 3> p, float32 &E, float32 &var )
 {
 	static const int32 Radius = 5;
 	float32 sum = 0.0f;
@@ -163,9 +162,9 @@ SnakeSegmentationFilter< ElementType >::ComputeStatistics( Vector<int32, 3> p, f
 	
 
 
-template < typename ElementType >
-typename SnakeSegmentationFilter< ElementType >::CurveType
-SnakeSegmentationFilter< ElementType >::CreateSquareControlPoints( float32 radius )
+template < typename ElementType, typename SecondElementType >
+typename SnakeSegmentationFilter< ElementType, SecondElementType >::CurveType
+SnakeSegmentationFilter< ElementType, SecondElementType >::CreateSquareControlPoints( float32 radius )
 {
 	CurveType result;
 	result.SetCyclic( true );
@@ -177,9 +176,9 @@ SnakeSegmentationFilter< ElementType >::CreateSquareControlPoints( float32 radiu
 	return result;
 }
 
-template < typename ElementType >
+template < typename ElementType, typename SecondElementType >
 bool
-SnakeSegmentationFilter< ElementType >::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
+SnakeSegmentationFilter< ElementType, SecondElementType >::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
 {
 	if( !CanContinue() ) return false;
 
@@ -207,12 +206,12 @@ SnakeSegmentationFilter< ElementType >::ExecutionThreadMethod( AbstractPipeFilte
 	return true;
 }
 
-template < typename ElementType >
+template < typename ElementType, typename SecondElementType >
 void
-SnakeSegmentationFilter< ElementType >
+SnakeSegmentationFilter< ElementType, SecondElementType >
 ::ProcessSlice( 
 		int32	sliceNumber,
-		typename SnakeSegmentationFilter< ElementType >::CurveType &initialization 
+		typename SnakeSegmentationFilter< ElementType, SecondElementType >::CurveType &initialization 
 		)
 {
 	static const unsigned ResultSampleRate = 8;
@@ -220,7 +219,7 @@ SnakeSegmentationFilter< ElementType >
 	ObjectsInSlice &slice = this->out->GetSlice( sliceNumber );
 	slice.clear();
 	
-	typename InputImageType::ElementExtentsType tmp =  in[0]->GetElementExtents();
+	typename InputImageType::ElementExtentsType tmp =  in->GetElementExtents();
 	float32 extent = Max( tmp[0], tmp[1] );
 
 	//Initialization and setup
@@ -260,8 +259,8 @@ SnakeSegmentationFilter< ElementType >
 	algorithm.SetInternalEnergyBalance( 0.0f );
 	algorithm.SetConstrainEnergyBalance( 0.0f );
 	//algorithm.SetRegionStatRegion( in[0]->GetSlice( sliceNumber ) );
-	algorithm.SetRegion1( in[0]->GetSlice( sliceNumber ) );
-	algorithm.SetRegion2( in[1]->GetSlice( sliceNumber ) );
+	algorithm.SetRegionStat( in->GetSlice( sliceNumber ) );
+	algorithm.SetRegionEdge( inEdge->GetSlice( sliceNumber ) );
 	algorithm.SetAlpha( GetEdgeRegionBalance() );
 
 	algorithm.SetCalmDownInterval( 20 );
@@ -299,20 +298,20 @@ SnakeSegmentationFilter< ElementType >
 }
 
 
-/*template < typename ElementType >
+/*template < typename ElementType, typename SecondElementType >
 void
-SnakeSegmentationFilter< ElementType >
-::ProcessSlice( //const typename SnakeSegmentationFilter< ElementType >::RegionType	&region, 
-		typename SnakeSegmentationFilter< ElementType >::CurveType		&initialization, 
-		typename SnakeSegmentationFilter< ElementType >::OutputDatasetType::ObjectsInSlice &slice 
+SnakeSegmentationFilter< ElementType, SecondElementType >
+::ProcessSlice( //const typename SnakeSegmentationFilter< ElementType, SecondElementType >::RegionType	&region, 
+		typename SnakeSegmentationFilter< ElementType, SecondElementType >::CurveType		&initialization, 
+		typename SnakeSegmentationFilter< ElementType, SecondElementType >::OutputDatasetType::ObjectsInSlice &slice 
 		)*/
 
-template < typename ElementType >
+template < typename ElementType, typename SecondElementType >
 void
-SnakeSegmentationFilter< ElementType >
+SnakeSegmentationFilter< ElementType, SecondElementType >
 ::ProcessSlice( 
-			typename SnakeSegmentationFilter< ElementType >::CurveType &initialization, 
-			typename SnakeSegmentationFilter< ElementType >::ObjectsInSlice &slice 
+			typename SnakeSegmentationFilter< ElementType, SecondElementType >::CurveType &initialization, 
+			typename SnakeSegmentationFilter< ElementType, SecondElementType >::ObjectsInSlice &slice 
 			)
 {
 	slice.clear();

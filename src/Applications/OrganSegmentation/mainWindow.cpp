@@ -16,8 +16,8 @@ mainWindow::mainWindow ()
 	Q_INIT_RESOURCE( mainWindow ); 
 
 
-	mainViewerDesktop->setDefaultConnection( MainManager::Instance().GetInputConnection() );
-	mainViewerDesktop->setConnectionForAll( mainViewerDesktop->getDefaultConnection() );
+	currentViewerDesktop->setDefaultConnection( MainManager::Instance().GetInputConnection() );
+	currentViewerDesktop->setConnectionForAll( currentViewerDesktop->getDefaultConnection() );
 
 	// add your own settings widgets
 	_settings = new SettingsBox( this );

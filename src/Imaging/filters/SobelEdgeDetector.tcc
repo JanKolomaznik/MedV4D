@@ -33,12 +33,18 @@ struct FirstPassFunctor
 template< typename ValueType, typename OutElementType >
 struct SecondPassFunctor
 {
+	SecondPassFunctor( OutElementType threshold ) : _threshold( threshold ) {}
+
 	void
 	operator()( ValueType value, OutElementType & output )
 	{
-		OutElementType tmp = output + Abs( value );
-		output = Min( tmp, TypeTraits< OutElementType >::Max );
+		ValueType tmp = output + Abs( value );
+		output =  static_cast< OutElementType >( Min( tmp, static_cast< ValueType >(TypeTraits< OutElementType >::Max) ) );
+		if( output < _threshold ) {
+			output = TypeTraits< OutElementType >::Zero;
+		}
 	}
+	OutElementType _threshold;
 };
 
 template< typename ImageType >
@@ -81,7 +87,7 @@ SobelEdgeDetector< ImageType >
 				*yMatrix, 
 				TypeTraits< ElementType >::Zero, 
 				1.0f,
-				SecondPassFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, ElementType >()
+				SecondPassFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, ElementType >( GetThreshold() )
 				);
 	}
 	catch( ... ) { 

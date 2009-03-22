@@ -50,15 +50,13 @@ private:
 };
 
 template< typename ContourType, typename FirstEnergyModel, typename SecondEnergyModel >
-class DoubleEnergyFunctional
+class DoubleEnergyFunctional : public FirstEnergyModel, public SecondEnergyModel
 {
 public:
 	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > 	GradientType;
 	typedef Vector< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
-	typedef FirstEnergyModel	FirstEnergy;
-	typedef SecondEnergyModel	SecondEnergy;
 	
-	DoubleEnergyFunctional(): _alpha( 1.0f ), _beta( 1.0f )
+	DoubleEnergyFunctional(): _alpha( 0.5f )
 		{}
 
 	float32
@@ -72,16 +70,16 @@ public:
 		float32 secondGradientNorm = 0.0;
 		secondGradient.Resize( gradient.Size() );
 		
-		firstGradientNorm = _firstModel.GetParametersGradient( curve, firstGradient );
+		firstGradientNorm = FirstEnergyModel::GetParametersGradient( curve, firstGradient );
 		if( Abs(firstGradientNorm) > Epsilon ) {
 			firstGradientNorm = _alpha / firstGradientNorm;
 		} else {
 			firstGradientNorm = 0.0f;
 		}
 
-		secondGradientNorm = _secondModel.GetParametersGradient( curve, secondGradient );
+		secondGradientNorm = SecondEnergyModel::GetParametersGradient( curve, secondGradient );
 		if( Abs(secondGradientNorm) > Epsilon ) {
-			secondGradientNorm = _beta / secondGradientNorm;
+			secondGradientNorm = (1.0f - _alpha) / secondGradientNorm;
 		} else {
 			secondGradientNorm = 0.0f;
 		}
@@ -92,7 +90,7 @@ public:
 		
 			gradSize += gradient[i] * gradient[i];
 		}
-		return gradSize;
+		return sqrt( gradSize );
 	}
 
 	float32
@@ -103,60 +101,16 @@ public:
 	SetAlpha( float32 a )
 		{ _alpha = a; }
 
-	float32
-	GetBeta() const
-		{ return _beta; }
-
-	void
-	SetBeta( float32 b )
-		{ _beta = b; }
-
-	FirstEnergy &
-	GetFirstModel()
-		{ return _firstModel; }
-
-	SecondEnergy &
-	GetSecondModel()
-		{ return _secondModel; }
 private:
-	FirstEnergyModel	_firstModel;
-	SecondEnergyModel	_secondModel;
-
 	float32			_alpha;
-	float32			_beta;
-
 };
 
-template< typename ContourType >
-class SimpleBaloonForce
+
+
+template< typename ContourType, typename RegionType1, typename RegionType2, typename Distribution >
+class UnifiedImageEnergy2 : public DoubleEnergyFunctional< ContourType, RegionImageEnergy< ContourType, RegionType1, Distribution >, GradientMagnitudeEnergy< ContourType, RegionType2 > >
 {
-public:
-	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > 	GradientType;
-	typedef Vector< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
-
-	float32
-	GetParametersGradient( ContourType &curve, GradientType &gradient )
-	{
-		if( curve.Size() != gradient.Size() ) {
-			//TODO - solve problem
-		}
-		PointCoordinate	center;
-		float32 gradSize = 0.0f;
-		for( unsigned i = 0; i < gradient.Size(); ++i ) {
-			center += curve[i];
-		}
-		center *= 1.0f/static_cast<float32>( gradient.Size() );
-
-		for( unsigned i = 0; i < gradient.Size(); ++i ) {
-			gradient[i] = curve[i] - center;
-			float32 size = sqrt(gradient[i]*gradient[i]);
-			gradient[i] *= 1.0f/size;
-			gradSize += gradient[i] * gradient[i];
-		}
-		return sqrt( gradSize );
-	}
-private:
-
+	/*empty*/
 };
 
 }/*namespace Algorithms*/

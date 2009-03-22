@@ -135,8 +135,15 @@ KidneySegmentationManager::KidneySegmentationManager()
 	_gaussianFilter->SetRadius( 5 );
 	_container.AddFilter( _gaussianFilter );
 	
-	_edgeFilter = new EdgeFilter();
+	/*_edgeFilter = new EdgeFilter();
 	//_edgeFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
+	_edgeFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_UPDATE_FINISHED );
+	_container.AddFilter( _edgeFilter );*/
+
+	M4D::Imaging::AbstractPipeFilter *filter = new Sobel();
+	filter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_UPDATE_FINISHED );
+	_container.AddFilter( filter );
+	_edgeFilter = new EdgeFilter();
 	_edgeFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_UPDATE_FINISHED );
 	_container.AddFilter( _edgeFilter );
 
@@ -144,9 +151,13 @@ KidneySegmentationManager::KidneySegmentationManager()
 	_container.AddFilter( _segmentationFilter );
 
 	_inConnection = (ImageConnectionType*)&(_container.MakeInputConnection( *_gaussianFilter, 0, false ) );
-	_gaussianConnection = (ImageConnectionType*)&(_container.MakeConnection( *_gaussianFilter, 0, *_edgeFilter, 0 ) );
+	_gaussianConnection = (ImageConnectionType*)&(_container.MakeConnection( *_gaussianFilter, 0, *filter, 0 ) );
 		_container.MakeConnection( *_gaussianFilter, 0, *_segmentationFilter, 0 );
-	_edgeConnection = (ImageConnectionType*)&(_container.MakeConnection( *_edgeFilter, 0, *_segmentationFilter, 1 ) );
+
+	//_edgeConnection = (ImageConnectionType*)&(_container.MakeConnection( *_edgeFilter, 0, *_segmentationFilter, 1 ) );
+		_container.MakeConnection( *filter, 0, *_edgeFilter, 0 );
+		_container.MakeConnection( *_edgeFilter, 0, *_segmentationFilter, 1 );
+
 	_outGeomConnection = (OutputGeomConnection*)&(_container.MakeOutputConnection( *_segmentationFilter, 0, true ) );
 
 	KidneyViewerSpecialState *sState = new KidneyViewerSpecialState( &(_poles[0]), &(_poles[1]) );
