@@ -1,0 +1,109 @@
+\documentclass[12pt,oneside]{book}
+% pouzite balicky
+\usepackage[latin2]{inputenc}
+\usepackage{amsmath}
+\usepackage[czech]{babel}
+
+\RequirePackage{ifpdf}
+\ifpdf
+  \RequirePackage[pdftex]{graphicx}
+  \RequirePackage[pdftex]{color}
+  \RequirePackage{ps4pdf}
+\else
+  \RequirePackage[dvips]{graphicx}
+  \RequirePackage[dvips]{color}
+  \RequirePackage{pstricks}
+\fi
+
+\usepackage{pst-all}
+
+\usepackage{pslatex}
+\usepackage{url} 
+\usepackage{hyperref} 
+
+\usepackage{listings}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{comment}
+\usepackage{lscape}
+\usepackage{rotating}
+
+%\usepackage{nopageno}
+\usepackage{geometry}
+\geometry{paperwidth=8.26in,paperheight=11.69in,
+          left=4cm,right=3cm,
+          top=3.5cm,bottom=3.5cm}
+
+\usepackage{float}
+\floatstyle{ruled}
+
+\newfloat{algorithm}{thp}{loa}
+\floatname{algorithm}{Algoritmus}
+
+\newtheorem{theorem}{V�ta}
+
+\newtheorem{definition}{Definice}
+
+\newcommand{\etalchar}[1]{$^{#1}$}
+\sloppy
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{This is my first document}
+\author{Vaclav Klecanda}
+\date{31.1.2009}
+\begin{document}
+
+\pagestyle{empty}
+
+\include{diplomka_titlepage}
+\pagestyle{empty}
+
+\include{thanks}
+\pagestyle{empty}
+%--------------------------------------------------------
+%-------------             OBSAH            -------------
+%--------------------------------------------------------
+\tableofcontents
+
+\pagebreak
+
+%--------------------------------------------------------
+%-------------       SEZNAM OBRAZKU         -------------
+%--------------------------------------------------------
+\listoffigures
+
+\pagebreak
+
+%--------------------------------------------------------
+%-------------       SEZNAM TABULEK         -------------
+%--------------------------------------------------------
+\listoftables
+
+%\listof{algorithm}{Seznam algoritmu}
+
+\pagebreak
+
+%--------------------------------------------------------
+%-------------           ABSTRAKT           -------------
+%--------------------------------------------------------
+
+\include{abstract}
+\pagebreak
+
+%vkladani headeru
+\pagestyle{headings}
+
+\include{aboutCell}
+\include{cellProgramming}
+\include{segmentation}
+\include{results}
+
+\include{sdkInstallation}
+
+%--------------------------------------------------------
+%-------------          REFERENCE           -------------
+%--------------------------------------------------------
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

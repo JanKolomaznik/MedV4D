@@ -1,0 +1,64 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% typ dokumentu
+\documentclass[12pt,oneside]{book}
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% pouzite balicky
+
+\usepackage[utf8]{inputenc}
+\usepackage[czech]{babel}
+
+\RequirePackage{ifpdf}
+\ifpdf
+  \RequirePackage[pdftex]{graphicx}
+  \RequirePackage[pdftex]{color}
+  \RequirePackage{ps4pdf}
+\else
+  \RequirePackage[dvips]{graphicx}
+  \RequirePackage[dvips]{color}
+  \RequirePackage{pstricks}
+\fi
+
+\usepackage{geometry}
+\geometry{paperwidth=8.26in,paperheight=11.69in,
+          left=3cm,right=3cm,
+          top=3.5cm,bottom=3.5cm}
+
+\usepackage{float}
+\floatstyle{ruled}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\pagestyle{empty}
+
+\begin{center}
+
+\fontfamily{phv}\fontseries{b}\selectfont
+
+
+\large
+UNIVERZITA KARLOVA V~PRAZE\\
+Matematicko-fyzikální fakulta\\[7cm]
+
+\Huge
+DIPLOMOVÁ PRÁCE\\[12cm]
+
+\Large
+\begin{tabular*}{1.0\textwidth}[b]{@{\extracolsep{\fill}} l r }
+2007 & Václav KLECANDA
+\end{tabular*}
+
+
+\end{center}
+\end{document}
+ 

@@ -1,0 +1,37 @@
+\chapter {CellBE programming} 
+
+In this chapter content of SDK, some usefull libraries, as well as some design patterns of CellBE programming will be described.
+
+\section {SDK content}
+
+CellBE SDK is divided into variety of components. Each component is contained in one or more rpm package for easy intallation purposes. Here is list of most important available components:
+\begin{enumerate}
+  \item {Toolchain}
+  \par
+  Set of tools (compilers, linkers, ...) needed for actual code ceneration. There are two groups of the tools. One is for PPU and the other for SPU. There are also more toolchains for another (hybrid) architectures.
+
+  \item {Libraries}
+  \par
+  IBM provides with the SDK some usefull libraries for mathematics (linear algebra, FFT, monte carlo, ...), cryptographic or runtime management. Code of these libraries is debuged, highly optimailezed for runnig on SPEs and SIMDized.
+
+  \item {Full system simulator}
+  \par
+  Program that can simulate the CellBE processor on other hardware platforms. It is used mostly in profiling stage because simulator can simulate actual computation of a code in cycles precision. It can of course used when programmer has not access to actuall CellBE hardware, but simulation is incredibly slow.
+
+  \item {IDE}
+  \par
+  IDE is in fact verstion 3.2 of Eclipse with integration of debugging, profiling, CellBE machine management and ohter features that makes development for CellBE easier and more comfortable.
+\end{enumerate}
+
+\section {Building for CellBE}
+\par
+Actual building is done using selected toolchain. But there is difference between management of code building for PPU and SPU. It is caused by difference of actual code usage. While PPU code resides in central memory (just like in common architectures) SPU code is loaded into SPE dynamically and shall be somehow separated. It is similar to shader programs for graphic accelerators. They are also loaded into appropriate processors when they are needed and live separated (in form of files).
+
+\par
+There are two options for SPE code management. One is to build shared library and load it explicitly when it is used. Another way is to build a static library and include it into PPU executable. This inclusion is called embeding and is performed with extra tool from toolchain. The SPU program is then referenced as special extern structure direct from PPU code (instead of performing some shared libraries loading). Both ways has its pros but even cons which are the same as with shared vs. static libraries.
+
+\section {Design patterns}
+
+Because of heterogenous nature of CellBE and its PPU & SPEs processing elements variety of design patterns how to use them to solve a problem has been developed.
+
+Programming for CellBE as a whole is not much different from programming of common processors. 
