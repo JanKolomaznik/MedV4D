@@ -1,5 +1,5 @@
 
-srcdir = .
+srcdir = /src
 srcTop=..
 
 include $(srcTop)/project/ToolchainSelect.mk
@@ -37,7 +37,6 @@ CDEPFLAGS=	-MM
 LDFLAGS=
 ARFLAGS=	-r
 INCLUDES=	-I$(srcTop)\
-		-I$(srcdir)\
 		-I$(srcTop)/include\
 		-I/usr/local/include/boost-1_38
 
