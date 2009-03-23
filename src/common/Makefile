@@ -47,7 +47,7 @@ DEBUG_DEFS=	-DDEBUG_LEVEL=10\
 DEFS=		$(DEBUG_DEFS)
 
 
-SRC_FILES=	$(addsuffix .cpp, $(TARGETS))
+SRC_FILES=	$(addsuffix .cpp, $(addprefix src/, $(TARGETS)) )
 OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )
 
 

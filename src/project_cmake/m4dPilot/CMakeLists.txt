@@ -17,6 +17,10 @@ link_directories(${VTK_LIBRARY_DIRS}
 
 set(VTK_LIBRARIES vtkCommon vtkDICOMParser vtkexoIIc vtkFiltering vtkftgl vtkGenericFiltering vtkGraphics vtkHybrid vtkImaging vtkIO vtkNetCDF vtksys vtkVolumeRendering vtkWidgets QVTK vtkRendering)
 
+IF(UNIX)
+  set(VTK_LIBRARIES ${VTK_LIBRARIES} wrap)
+ENDIF(UNIX)
+
 set(DCMTK_LIBRARIES dcmnet dcmdata ofstd)
 
 set(M4DLIBS backendForDICOM Imaging m4dWidgets vtkIntegration Common)
