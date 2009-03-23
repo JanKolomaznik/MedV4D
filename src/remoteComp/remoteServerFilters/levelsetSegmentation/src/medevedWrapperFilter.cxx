@@ -148,25 +148,10 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 	::ProcessImage(const InputImageType &in, OutputImageType &out)
 {
 	ApplyProperties();
-//	std::ofstream before("before.dat");
-//	std::ofstream after("after.dat");
-	
-//	std::ofstream thresholderStr("thresholder.dat");
-//	std::ofstream featureToFloatCasterStr("featureToFloatCaster.dat");
-//	std::ofstream fastMarchingStr("fastMarching.dat");
 	try {
 		PrintRunInfo(std::cout);
-		//floatToFeature->Update();
-		thresholder->Update();
-		
+		thresholder->Update();		
 		thresholdSegmentation->PrintStats(std::cout);
-		//featureToFloatCaster->GetOutput()->Print(featureToFloatCasterStr);
-		//fastMarching->GetOutput()->Print(featureToFloatCasterStr);
-		//thresholdSegmentation->GetOutput()->Print(thresholderStr);
-		//out.Dump(after);
-		
-//		before.close();
-//		after.close();
 	} catch (itk::ExceptionObject &ex) {
 		LOUT << ex << std::endl;
 		std::cerr << ex << std::endl;

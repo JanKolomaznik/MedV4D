@@ -15,8 +15,8 @@ class LevelSetRemoteProperties
 {
 public:
 	LevelSetRemoteProperties()
-		: seedX( 64 )
-		, seedY( 64 )
+		: seedX( 128 )
+		, seedY( 128 )
 		, seedZ( 1 )
 		, lowerThreshold( -500 ) 
 		, upperThreshold( 500 ) 

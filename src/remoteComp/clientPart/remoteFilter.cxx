@@ -26,7 +26,7 @@ RemoteFilter< InputImageType, OutputImageType >
 	
 	SendCommand(CREATE);	
 	
-	Imaging::OutStream stream(&netAccessor_);
+	IO::OutStream stream(&netAccessor_);
 	properties_->SerializeClassInfo(stream);
 }
 
@@ -79,7 +79,7 @@ RemoteFilter< InputImageType, OutputImageType >
 {
 	try {
 		SendCommand(EXEC);
-		Imaging::OutStream stream(&netAccessor_);
+		IO::OutStream stream(&netAccessor_);
 		properties_->SerializeProperties(stream);
 		return RecieveDataSet();
 	} catch (NetException &e) {
@@ -124,7 +124,7 @@ template< typename InputImageType, typename OutputImageType >
 void
 RemoteFilter< InputImageType, OutputImageType >::SendDataSet(void)
 {
-	Imaging::OutStream stream(&netAccessor_);
+	IO::OutStream stream(&netAccessor_);
 	
 	InputImageType &in = (InputImageType &) this->GetInputImage();
 	in.SerializeClassInfo(stream);
@@ -138,7 +138,7 @@ template< typename InputImageType, typename OutputImageType >
 bool
 RemoteFilter< InputImageType, OutputImageType >::RecieveDataSet(void)
 {
-	Imaging::InStream stream(&netAccessor_);
+	IO::InStream stream(&netAccessor_);
 	
 	uint8 result;
 	stream.Get<uint8>(result);

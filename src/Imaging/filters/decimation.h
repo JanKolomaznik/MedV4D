@@ -1,7 +1,7 @@
 #ifndef DECIMATION_H_
 #define DECIMATION_H_
 
-#include "Common.h"
+#include "common/Common.h"
 #include "Imaging/AbstractImageFilterWholeAtOnce.h"
 
 namespace M4D

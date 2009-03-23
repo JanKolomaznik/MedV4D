@@ -52,7 +52,7 @@ SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
     }
   
   FeatureScalarType val = Interpolate(cdx);
-  LOUT << "ComputePropagationTerm at index: " << cdx << ", " << val << std::endl;
+  //LOUT << "ComputePropagationTerm at index: " << cdx << ", " << val << std::endl;
 
 	return val;
 }

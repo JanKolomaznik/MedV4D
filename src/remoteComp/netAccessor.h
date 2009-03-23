@@ -15,7 +15,7 @@
 #include <boost/bind.hpp>
 
 #include "common/mediumAccessor.h"
-#include "Endianess.h"
+#include "common/Endianess.h"
 
 
 namespace M4D

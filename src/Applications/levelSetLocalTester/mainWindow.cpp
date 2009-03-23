@@ -52,8 +52,8 @@ mainWindow::process ( M4D::Dicom::DicomObjSetPtr dicomObjSet )
 
 		_convertor->Execute();
 
-		mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
-		_inConnection->ConnectConsumer( mainViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
+		currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
+		_inConnection->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 
 		_settings->SetEnabledExecButton( true );
 
@@ -74,7 +74,7 @@ mainWindow::CreatePipeline()
 	typedef M4D::Imaging::DecimationFilter<ImageType, Interpolator> Decimator;
 	
 	
-	_decimator = new Decimator( new Decimator::Properties(0.25f) );
+	_decimator = new Decimator( new Decimator::Properties(0.5f) );
 	_decimator->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
 	_pipeline.AddFilter( _decimator );
 	

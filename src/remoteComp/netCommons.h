@@ -8,7 +8,7 @@
 #ifndef TRANSDEFS_H
 #define TRANSDEFS_H
 
-#include "Common.h"
+#include "common/Common.h"
 
 /**
  * Contains some common declarations for communicaton

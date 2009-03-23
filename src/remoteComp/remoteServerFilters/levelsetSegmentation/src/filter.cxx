@@ -41,7 +41,7 @@ void
 ThreshSegLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::GenerateData(void)
 {
-	//func_->cntr_.Reset();
+	func_->cntr_.Reset();
 	cntr_.Reset();
 	cntr_.Start();
 
@@ -78,7 +78,7 @@ ThreshSegLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 	s << "RMS change: " << this->GetRMSChange() << std::endl;
 	s << std::endl;
 	s << "Time spent in solver: " << cntr_ << std::endl;
-	//s << "Time spent in difference solving: " << func_->cntr_ << std::endl;
+	s << "Time spent in difference solving: " << func_->cntr_ << std::endl;
 	s << "===========================" << std::endl;
 }
 

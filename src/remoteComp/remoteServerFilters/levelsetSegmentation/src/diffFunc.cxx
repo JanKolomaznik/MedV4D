@@ -62,6 +62,7 @@ ThresholdLevelSetFunc< ImageType, FeatureImageType >
 ::ComputeUpdate(const NeighborhoodType &it, void *globalData,
 		const FloatOffsetType& offset)
 {
+	cntr_.Start();
 	unsigned int i, j;
 	//const PixelType ZERO = NumericTraits<PixelType>::Zero;
 	const PixelType center_value = it.GetCenterPixel();
@@ -111,11 +112,15 @@ ThresholdLevelSetFunc< ImageType, FeatureImageType >
 	}
 
 	// Return the combination of all the terms.
-	return ( PixelType )( 
+	PixelType result = ( PixelType )( 
 			this->ComputeCurvatureTerm(gd) - 
 			this->ComputePropagationTerm(it, offset, gd)
 			//- ComputeAdvectionTerm()
-			);
+			);			
+	
+	cntr_.Stop();
+	
+	return result;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

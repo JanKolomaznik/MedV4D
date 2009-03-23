@@ -1,5 +1,5 @@
 
-#include "Common.h"
+#include "common/Common.h"
 #include "SettingsBox.h"
 #include "mainWindow.h"
 

@@ -1,7 +1,7 @@
 #ifndef BASE_H_
 #define BASE_H_
 
-#include "Vector.h"
+#include "common/Vector.h"
 
 namespace M4D
 {

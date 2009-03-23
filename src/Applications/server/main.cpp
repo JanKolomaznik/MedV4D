@@ -1,4 +1,4 @@
-#include "Common.h"
+#include "common/Common.h"
 #include <fstream>
 
 #include "remoteComp/serverPart/server.h"

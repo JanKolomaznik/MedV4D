@@ -3,7 +3,7 @@
 
 #include <QtGui>
 #include "remoteComp/remoteFilterProperties/levelSetRemoteProperties.h"
-#include "remoteComp/remoteServerFilters/levelsetSegmentation/medevedWrapperFilter.h"
+#include "remoteComp/remoteServerFilters/levelsetSegmentation2/medevedWrapperFilter.h"
 
 typedef int16	ElementType;
 typedef M4D::RemoteComputing::LevelSetRemoteProperties< ElementType, ElementType > 
@@ -11,7 +11,6 @@ typedef M4D::RemoteComputing::LevelSetRemoteProperties< ElementType, ElementType
 
 typedef M4D::Imaging::Image< ElementType, 3 > ImageType;
 typedef M4D::RemoteComputing::ThreshLSSegMedvedWrapper< ElementType, ElementType > RemoteFilterType;
-//typedef M4D::RemoteComputing::Popop< ElementType, ElementType > RemoteFilterType;
 
 class SettingsBox : public QWidget
 {

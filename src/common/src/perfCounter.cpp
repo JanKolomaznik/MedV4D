@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include "common/Common.h"
 #include "common/perfCounter.h"
 
 
@@ -7,7 +8,7 @@
 
 std::ostream& operator<<(std::ostream &os, PerfCounter &pc)
 {
-	return os << pc.total_ << " ms";
+	return os << ( (float32) pc.total_ / (float32) CLOCKS_PER_SEC ) << " s";
 }
 
 ///////////////////////////////////////////////////////////////////////////////
