@@ -3,7 +3,7 @@
 
 #include <QtGui>
 #include "ImageTools.h"
-#include "Imaging.h"
+#include "Imaging/Imaging.h"
 
 class MainWindow: public QMainWindow
 {

@@ -1,5 +1,5 @@
 #include "MainWindow.h"
-#include "Imaging.h"
+#include "Imaging/Imaging.h"
 
 using namespace M4D::Imaging;
 

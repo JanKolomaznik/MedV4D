@@ -2,10 +2,10 @@
 
 #include "MainWindow.h"
 
-#include "Common.h"
+#include "common/Common.h"
 #include <fstream>
 
-#include "Imaging.h"
+#include "Imaging/Imaging.h"
 #include "ImageTools.h"
 
 #include <cstdlib>

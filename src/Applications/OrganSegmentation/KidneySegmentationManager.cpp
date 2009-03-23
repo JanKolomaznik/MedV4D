@@ -1,5 +1,5 @@
 
-#include "Imaging.h"
+#include "Imaging/Imaging.h"
 #include <cmath>
 #include "KidneySegmentationManager.h"
 #include <QtGui>

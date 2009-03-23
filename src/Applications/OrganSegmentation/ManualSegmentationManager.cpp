@@ -1,6 +1,6 @@
 
 #include "ManualSegmentationManager.h"
-#include "Imaging.h"
+#include "Imaging/Imaging.h"
 #include "OGLDrawing.h"
 
 using namespace M4D;

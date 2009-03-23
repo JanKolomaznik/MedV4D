@@ -1,8 +1,8 @@
 #ifndef IMAGE_TOOLS_H
 #define IMAGE_TOOLS_H
 
-#include "Imaging.h"
-#include "Common.h"
+#include "Imaging/Imaging.h"
+#include "common/Common.h"
 
 #include <boost/filesystem.hpp>
 #include <vector>

@@ -2,8 +2,8 @@
 #define MANUAL_SEGMENTATION_WIDGET_H
 
 #include <QtGui>
-#include "GUI/m4dGUISliceViewerWidget2.h"
-#include "Imaging.h"
+#include "GUI/widgets/m4dGUISliceViewerWidget2.h"
+#include "Imaging/Imaging.h"
 
 class SegmentationWidget: public QWidget
 {

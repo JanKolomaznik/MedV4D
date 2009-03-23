@@ -1,7 +1,7 @@
 #ifndef SNAKE_SEGMENTATION_FILTER_H
 #define SNAKE_SEGMENTATION_FILTER_H
 
-#include "Imaging.h"
+#include "Imaging/Imaging.h"
 #include <cmath>
 
 namespace M4D

@@ -1,8 +1,8 @@
 #ifndef OGL_DRAWING_H
 #define OGL_DRAWING_H
 
-#include "Common.h"
-#include "Imaging.h"
+#include "common/Common.h"
+#include "Imaging/Imaging.h"
 
 inline void
 GLPoint( const Vector< float32, 2 > &point )

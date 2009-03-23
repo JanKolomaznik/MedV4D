@@ -1,8 +1,8 @@
 #ifndef KIDNEY_SEGMENTATION_MANAGER_H
 #define KIDNEY_SEGMENTATION_MANAGER_H
 
-#include "Imaging.h"
-#include "GUI/m4dGUISliceViewerWidget2.h"
+#include "Imaging/Imaging.h"
+#include "GUI/widgets/m4dGUISliceViewerWidget2.h"
 #include "MainManager.h"
 #include "SnakeSegmentationFilter.h"
 

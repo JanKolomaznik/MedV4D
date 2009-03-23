@@ -1,7 +1,7 @@
 #ifndef SLICE_SPLINE_FILL_H
 #define SLICE_SPLINE_FILL_H
 
-#include "Imaging.h"
+#include "Imaging/Imaging.h"
 #include <cmath>
 
 namespace M4D
