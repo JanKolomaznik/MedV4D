@@ -23,11 +23,11 @@ TARGETS=	m4dGUIMainWindow \
 		m4dGUIToolBarCustomizerWidget\
 		m4dGUIProgressBarWidget
 
-SUBDIR1=	components
+SUBDIR1=	components/src
 
-SUBDIR2=	ogl
+SUBDIR2=	ogl/src
 
-SUBDIR3=	utils
+SUBDIR3=	utils/src
 
 TARGETS1=	StManagerFilterComp \
 		StManagerHProtocolsComp \
@@ -100,7 +100,7 @@ DEBUG_DEFS=	-DDEBUG_LEVEL=10\
 DEFS=		$(DEBUG_DEFS)
 
 
-SRC_FILES=	$(addsuffix .cpp, $(addprefix src/, $(TARGETS)) $(addprefix $(SUBDIR1)/src/, $(TARGETS1) ) $(addprefix $(SUBDIR2)/src/, $(TARGETS2) ) $(addprefix $(SUBDIR3)/src/, $(TARGETS3) ) )
+SRC_FILES=	$(addsuffix .cpp, $(addprefix src/, $(TARGETS)) $(addprefix $(SUBDIR1)/, $(TARGETS1) ) $(addprefix $(SUBDIR2)/, $(TARGETS2) ) $(addprefix $(SUBDIR3)/, $(TARGETS3) ) )
 OBJ_FILES=	$(addprefix $(TMP_DIR)/,  $(addprefix moc_, $(MOCINPUT:.h=.o) )  $(addprefix rcc_, $(RCCINPUT:.qrc=.o ) )  $(addsuffix .o, $(TARGETS) $(TARGETS1) $(TARGETS2) $(TARGETS3) ) )
 
 
@@ -120,13 +120,19 @@ dep:
 		$(CC) $(INCLUDES) $(CDEPFLAGS) $(SRC_FILES) | \
 		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
 
-$(TMP_DIR)/moc_%.cpp:	../../include/GUI/%.h
+$(TMP_DIR)/moc_%.cpp:	%.h
+		$(MOC) $< -o $@
+
+$(TMP_DIR)/moc_%.cpp:	components/%.h
+		$(MOC) $< -o $@
+
+$(TMP_DIR)/moc_%.cpp:	utils/%.h
 		$(MOC) $< -o $@
 
 $(TMP_DIR)/rcc_%.cpp:	src/%.qrc
 		$(RCC) -name $(*F) $< -o $@
 
-$(TMP_DIR)/%.o:	%.cpp	
+$(TMP_DIR)/%.o:	src/%.cpp	
 		$(CC) $(CCFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 $(TMP_DIR)/%.o:	$(SUBDIR1)/%.cpp	

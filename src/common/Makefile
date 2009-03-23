@@ -66,7 +66,7 @@ dep:
 		$(CXX) $(INCLUDES) $(CDEPFLAGS) $(DEFS) $(SRC_FILES) | \
 		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
 
-$(TMP_DIR)/%.o:	%.cpp	
+$(TMP_DIR)/%.o:	src/%.cpp	
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 -include $(DEP_FILE)
