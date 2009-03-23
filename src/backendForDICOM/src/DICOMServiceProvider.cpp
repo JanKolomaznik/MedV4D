@@ -14,7 +14,7 @@
 
 #include "boost/filesystem/path.hpp"
 
-#include "Common.h"
+#include "common/Common.h"
 
 #include "../DICOMServiceProvider.h"
 #include "../DicomAssoc.h"

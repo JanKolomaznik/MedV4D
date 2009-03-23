@@ -8,7 +8,7 @@
 #ifndef _CONVOLUTION_FILTER_H
 #define _CONVOLUTION_FILTER_H
 
-#include "Common.h"
+#include "common/Common.h"
 #include "Imaging/AbstractImage2DFilter.h"
 #include <boost/shared_array.hpp>
 #include "Imaging/Convolution.h"

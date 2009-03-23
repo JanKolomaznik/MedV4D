@@ -6,7 +6,7 @@
  *  @file DcmObject.h
  *  @author Vaclav Klecanda
  */
-#include "Common.h"
+#include "common/Common.h"
 #include <vector>
 #include <boost/shared_ptr.hpp>
 

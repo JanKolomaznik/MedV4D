@@ -1,7 +1,7 @@
 #ifndef HISTOGRAM_H
 #define HISTOGRAM_H
 
-#include "Common.h"
+#include "common/Common.h"
 #include <vector>
 #include <ostream>
 #include <iomanip>

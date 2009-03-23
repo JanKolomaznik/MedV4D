@@ -9,7 +9,7 @@
 #include <dcmtk/dcmdata/dcdeftag.h>
 #include <dcmtk/dcmdata/dcdict.h>		// data dictionary
 
-#include "Common.h"
+#include "common/Common.h"
 
 #include "../DicomAssoc.h"
 #include "../AbstractService.h"

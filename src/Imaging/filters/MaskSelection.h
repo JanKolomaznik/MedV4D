@@ -1,7 +1,7 @@
 #ifndef _MASK_SELECTION_H
 #define _MASK_SELECTION_H
 
-#include "Common.h"
+#include "common/Common.h"
 #include "Imaging/AbstractMultiImageFilter.h"
 
 namespace M4D

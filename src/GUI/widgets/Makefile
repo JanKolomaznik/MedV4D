@@ -100,7 +100,7 @@ DEBUG_DEFS=	-DDEBUG_LEVEL=10\
 DEFS=		$(DEBUG_DEFS)
 
 
-SRC_FILES=	$(addsuffix .cpp, $(TARGETS) $(addprefix $(SUBDIR1)/, $(TARGETS1) ) $(addprefix $(SUBDIR2)/, $(TARGETS2) ) $(addprefix $(SUBDIR3)/, $(TARGETS3) ) )
+SRC_FILES=	$(addsuffix .cpp, src/$(TARGETS) $(addprefix $(SUBDIR1)/src, $(TARGETS1) ) $(addprefix $(SUBDIR2)/src, $(TARGETS2) ) $(addprefix $(SUBDIR3)/src, $(TARGETS3) ) )
 OBJ_FILES=	$(addprefix $(TMP_DIR)/,  $(addprefix moc_, $(MOCINPUT:.h=.o) )  $(addprefix rcc_, $(RCCINPUT:.qrc=.o ) )  $(addsuffix .o, $(TARGETS) $(TARGETS1) $(TARGETS2) $(TARGETS3) ) )
 
 
@@ -123,7 +123,7 @@ dep:
 $(TMP_DIR)/moc_%.cpp:	../../include/GUI/%.h
 		$(MOC) $< -o $@
 
-$(TMP_DIR)/rcc_%.cpp:	%.qrc
+$(TMP_DIR)/rcc_%.cpp:	src/%.qrc
 		$(RCC) -name $(*F) $< -o $@
 
 $(TMP_DIR)/%.o:	%.cpp	

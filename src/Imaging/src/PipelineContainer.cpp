@@ -10,7 +10,7 @@
 
 #include <algorithm>
 
-#include "Functors.h"
+#include "common/Functors.h"
 
 /**
  *  @addtogroup imaging Imaging Library

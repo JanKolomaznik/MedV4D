@@ -8,7 +8,7 @@
 #ifndef _A_IMAGE_SLICE_FILTER_H
 #define _A_IMAGE_SLICE_FILTER_H
 
-#include "Common.h"
+#include "common/Common.h"
 #include "Imaging/AbstractImageFilter.h"
 #include <vector>
 

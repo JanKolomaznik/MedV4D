@@ -10,7 +10,7 @@
 
 #include "Imaging/AGeometryDataSet.h"
 #include <vector>
-#include "Common.h"
+#include "common/Common.h"
 #include "Imaging/GeometryDataSetFactory.h"
 #include "Imaging/ModificationManager.h"
 

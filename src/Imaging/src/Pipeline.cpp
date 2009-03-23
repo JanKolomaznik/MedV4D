@@ -7,7 +7,7 @@
 
 #include "Imaging/Pipeline.h"
 #include <algorithm>
-#include "Functors.h"
+#include "common/Functors.h"
 
 #include "Imaging/Ports.h"
 #include "Imaging/ConnectionInterface.h"

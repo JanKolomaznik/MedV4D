@@ -9,8 +9,8 @@
 #define _ABSTRACT_DATA_SET_H
 
 #include <boost/shared_ptr.hpp>
-#include "TimeStamp.h"
-#include "Thread.h"
+#include "common/TimeStamp.h"
+#include "common/Thread.h"
 #include "Imaging/dataSetClassEnum.h"
 #include "common/IOStreams.h"
 #include "Imaging/DatasetDefinitionTools.h"

@@ -1,8 +1,8 @@
 #ifndef _IMAGE_REGION_H
 #define _IMAGE_REGION_H
 
-#include "Common.h"
-#include "Vector.h"
+#include "common/Common.h"
+#include "common/Vector.h"
 #include "Imaging/ImageIterator.h"
 
 namespace M4D

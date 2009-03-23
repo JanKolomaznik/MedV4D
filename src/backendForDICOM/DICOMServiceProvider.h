@@ -11,7 +11,7 @@
 #include <vector>
 #include <map>
 #include <string>
-#include "Common.h"
+#include "common/Common.h"
 #include "structures.h"
 #include "Imaging/ImageFactory.h"
 #include "DcmObject.h"

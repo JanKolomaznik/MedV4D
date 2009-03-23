@@ -7,7 +7,7 @@
  *  @{
  */
 
-#include "ExceptionBase.h"
+#include "common/ExceptionBase.h"
 #include "Imaging/AbstractImageData.h"
 #include "Imaging/Image.h"
 

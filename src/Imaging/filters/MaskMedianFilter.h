@@ -1,7 +1,7 @@
 #ifndef _MASK_MEDIAN_FILTER_H
 #define _MASK_MEDIAN_FILTER_H
 
-#include "Common.h"
+#include "common/Common.h"
 #include "Imaging/AbstractImage2DFilter.h"
 
 namespace M4D

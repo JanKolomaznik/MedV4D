@@ -1,7 +1,7 @@
 #ifndef _ABSTRACT_MULTI_IMAGE_FILTER_H
 #define _ABSTRACT_MULTI_IMAGE_FILTER_H
 
-#include "Common.h"
+#include "common/Common.h"
 
 #include "Imaging/Ports.h"
 #include "Imaging/ImageDataTemplate.h"

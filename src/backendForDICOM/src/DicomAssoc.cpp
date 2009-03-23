@@ -9,7 +9,7 @@
 #include "dcmtk/dcmnet/dimse.h"
 #include "dcmtk/dcmnet/diutil.h"
 
-#include "Common.h"
+#include "common/Common.h"
 
 #include "../DicomAssoc.h"
 

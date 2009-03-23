@@ -5,8 +5,8 @@
 #include "Imaging/ImageDataTemplate.h"
 #include "Imaging/Image.h"
 
-#include "Common.h"
-#include "Vector.h"
+#include "common/Common.h"
+#include "common/Vector.h"
 
 #include <iostream>
 #include <fstream>

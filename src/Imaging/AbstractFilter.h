@@ -12,12 +12,12 @@
 #ifndef _ABSTRACT_FILTER_H
 #define _ABSTRACT_FILTER_H
 
-#include "Common.h"
+#include "common/Common.h"
 #include "Imaging/AbstractProcessingUnit.h"
 #include "Imaging/Ports.h"
 #include "Imaging/ConnectionInterface.h"
 #include <boost/shared_ptr.hpp>
-#include "Thread.h"
+#include "common/Thread.h"
 #include "Imaging/PipelineMessages.h"
 #include <string>
 

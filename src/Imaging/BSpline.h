@@ -4,7 +4,7 @@
 #include "Imaging/PointSet.h"
 #include "Imaging/Polyline.h"
 #include <cmath>
-#include "Common.h"
+#include "common/Common.h"
 #include <ostream>
 #include <iomanip>
 

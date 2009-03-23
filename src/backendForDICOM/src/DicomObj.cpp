@@ -8,7 +8,7 @@
 #include "dcmtk/dcmdata/dcdeftag.h"
 #include "dcmtk/dcmdata/dcfilefo.h"
 
-#include "Common.h"
+#include "common/Common.h"
 #include "../DcmObject.h"
 #include "../dicomDataStreamDecoder.h"
 

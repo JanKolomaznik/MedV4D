@@ -3,7 +3,7 @@
 
 #include "Imaging/PointSet.h"
 #include <cmath>
-#include "Common.h"
+#include "common/Common.h"
 
 namespace M4D
 {

@@ -14,7 +14,7 @@
 // fs
 #include "boost/filesystem/operations.hpp"
 
-#include "Common.h"
+#include "common/Common.h"
 #include "../LocalService.h"
 #include "../DICOMSupport.h"
 

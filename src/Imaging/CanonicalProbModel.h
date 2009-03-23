@@ -1,7 +1,7 @@
 #ifndef CANONICAL_PROB_MODEL_H
 #define CANONICAL_PROB_MODEL_H
 
-#include "Common.h"
+#include "common/Common.h"
 #include <cmath>
 #include "Imaging/Histogram.h"
 #include <fstream>

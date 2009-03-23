@@ -8,7 +8,7 @@
 #ifndef _CONNECTION_INTERFACE_H
 #define _CONNECTION_INTERFACE_H
 
-#include "Common.h"
+#include "common/Common.h"
 //#include "Imaging/Ports.h"
 #include "Imaging/PipelineMessages.h"
 #include "Imaging/AbstractDataSet.h"

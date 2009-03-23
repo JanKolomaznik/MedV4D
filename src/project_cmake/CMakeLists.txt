@@ -11,13 +11,29 @@ SET(QT_USE_QTOPENGL 1)
 
 FIND_PACKAGE(Boost REQUIRED COMPONENTS filesystem system thread)
 FIND_PACKAGE(OpenGL REQUIRED)
-FIND_PACKAGE(Qt4 REQUIRED)
-FIND_PACKAGE(VTK REQUIRED)
 
 IF(WIN32)
+  FIND_PACKAGE(Qt4 REQUIRED)
+  get_filename_component(QT_MOC_EXECUTABLE ../bin/qt/moc.exe ABSOLUTE)
+  get_filename_component(QT_UIC_EXECUTABLE ../bin/qt/uic.exe ABSOLUTE)
+  get_filename_component(QT_RCC_EXECUTABLE ../bin/qt/rcc.exe ABSOLUTE)
+  SET(QT_INCLUDE_DIR "../../include/qt/headers")
+  SET(QT_QT_INCLUDE_DIR "../../include/qt/headers")
+  SET(QT_QTCORE_INCLUDE_DIR "../../include/qt/headers/QtOpenGL")
+  SET(QT_QTGUI_INCLUDE_DIR "../../include/qt/headers/QtGui")
+  SET(QT_QTOPENGL_INCLUDE_DIR "../../include/qt/headers/QtCore")
+  SET(QT_LIBRARIES ../../lib/qt/QtOpenGLd.lib 
+                   ../../lib/qt/QtGuid.lib
+                   ../../lib/qt/QtCored.lib)
+
+  SET(VTK_LIBRARY_DIRS "../../lib/vtk")
+  SET(VTK_INCLUDE_DIRS "../../include/vtk")
+
   SET(DCMTK_LIBRARY_DIRS "../../lib/dcmtkLibs")
   SET(DCMTK_INCLUDE_DIRS "../../include/dcmtk")
 ELSE(WIN32)
+  FIND_PACKAGE(Qt4 REQUIRED)
+  FIND_PACKAGE(VTK REQUIRED)
   FIND_PACKAGE(DCMTK REQUIRED)
 ENDIF(WIN32)
 

@@ -8,7 +8,7 @@
 #ifndef _IMAGE_CONVERTOR_H
 #define _IMAGE_CONVERTOR_H
 
-#include "Common.h"
+#include "common/Common.h"
 #include "Imaging/AbstractImageFilter.h"
 
 /**

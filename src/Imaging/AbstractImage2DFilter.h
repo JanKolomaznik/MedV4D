@@ -8,7 +8,7 @@
 #ifndef _ABSTRACT_IMAGE_2D_FILTER_H
 #define _ABSTRACT_IMAGE_2D_FILTER_H
 
-#include "Common.h"
+#include "common/Common.h"
 #include "Imaging/AImageSliceFilter.h"
 #include "Imaging/AbstractImageFilterWholeAtOnce.h"
 #include <vector>

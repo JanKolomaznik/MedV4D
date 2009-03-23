@@ -1,7 +1,7 @@
 #ifndef _MEDIAN_FILTER_H
 #define _MEDIAN_FILTER_H
 
-#include "Common.h"
+#include "common/Common.h"
 #include "Imaging/AbstractImage2DFilter.h"
 #include <boost/shared_array.hpp>
 #include <map>

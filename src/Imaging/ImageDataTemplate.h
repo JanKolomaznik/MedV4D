@@ -8,7 +8,7 @@
 #ifndef _IMAGE_DATA_TEMPLATE_H
 #define _IMAGE_DATA_TEMPLATE_H
 
-#include "ExceptionBase.h"
+#include "common/ExceptionBase.h"
 
 #include "Imaging/AbstractImageData.h"
 #include "Imaging/ModificationManager.h"

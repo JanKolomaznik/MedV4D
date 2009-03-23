@@ -7,9 +7,9 @@
 
 #include <algorithm>
 
-#include "Thread.h"
+#include "common/Thread.h"
 
-#include "Functors.h"
+#include "common/Functors.h"
 #include "Imaging/Ports.h"
 #include "Imaging/ConnectionInterface.h"
 

@@ -7,7 +7,7 @@
 
 #include "Imaging/ModificationManager.h"
 
-#include "Functors.h"
+#include "common/Functors.h"
 #include <algorithm>
 #include <cstdlib>
 

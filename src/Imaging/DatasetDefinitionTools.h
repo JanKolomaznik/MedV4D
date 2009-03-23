@@ -10,7 +10,7 @@
 
 
 #include <boost/shared_ptr.hpp>
-#include "Common.h"
+#include "common/Common.h"
 /**
  *  @addtogroup imaging Imaging Library
  *  @{

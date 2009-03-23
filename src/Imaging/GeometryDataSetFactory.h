@@ -1,7 +1,7 @@
 #ifndef _GEOMETRY_DATASET_FACTORY_H
 #define _GEOMETRY_DATASET_FACTORY_H
 
-#include "Common.h"
+#include "common/Common.h"
 #include "Imaging/AbstractDataSet.h"
 #include "AGeometryDataSet2D.h"
 

@@ -8,8 +8,8 @@
 #ifndef _ABSTRACT_IMAGE_DATA_H
 #define _ABSTRACT_IMAGE_DATA_H
 
-#include "Common.h"
-#include "ExceptionBase.h"
+#include "common/Common.h"
+#include "common/ExceptionBase.h"
 
 #include <boost/shared_ptr.hpp>
 

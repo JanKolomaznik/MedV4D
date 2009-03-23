@@ -6,7 +6,7 @@
  **/
 
 #include "Imaging/ImageFactory.h"
-#include "Debug.h"
+#include "common/Debug.h"
 
 /**
  *  @addtogroup imaging Imaging Library

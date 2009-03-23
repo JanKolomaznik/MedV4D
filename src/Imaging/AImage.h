@@ -5,7 +5,7 @@
 #include <boost/shared_ptr.hpp>
 #include "Imaging/ModificationManager.h"
 #include "Imaging/AbstractDataSet.h"
-#include "Vector.h"
+#include "common/Vector.h"
 
 namespace M4D
 {

@@ -1,7 +1,7 @@
 #ifndef _SIMPLE_PROJECTION_H
 #define _SIMPLE_PROJECTION_H
 
-#include "Common.h"
+#include "common/Common.h"
 #include "Imaging/AbstractImageFilterWholeAtOnce.h"
 
 namespace M4D

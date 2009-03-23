@@ -8,8 +8,8 @@
 #ifndef _SOBEL_EDGE_DETECTOR_H
 #define _SOBEL_EDGE_DETECTOR_H
 
-#include "Common.h"
-#include "Types.h"
+#include "common/Common.h"
+#include "common/Types.h"
 #include "Imaging/AbstractImage2DFilter.h"
 #include "Imaging/Convolution.h"
 

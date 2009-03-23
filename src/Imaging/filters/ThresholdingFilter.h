@@ -8,7 +8,7 @@
 #ifndef _THRESHOLDING_FILTER_H
 #define _THRESHOLDING_FILTER_H
 
-#include "Common.h"
+#include "common/Common.h"
 #include "Imaging/AbstractImageElementFilter.h"
 
 /**

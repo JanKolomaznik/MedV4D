@@ -2,8 +2,8 @@
 #define GEOMETRIC_ALGORITHMS
 
 #include <cmath>
-#include "Common.h"
-#include "Vector.h"
+#include "common/Common.h"
+#include "common/Vector.h"
 #include <ostream>
 #include <iomanip>
 

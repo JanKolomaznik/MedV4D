@@ -1,10 +1,10 @@
 #ifndef POINT_SET_H
 #define POINT_SET_H
 
-#include "Common.h"
+#include "common/Common.h"
 #include "Imaging/GeometricalObject.h"
 #include "Imaging/GeometricAlgorithms.h"
-#include "Vector.h"
+#include "common/Vector.h"
 #include <vector>
 #include <ostream>
 #include <iomanip>

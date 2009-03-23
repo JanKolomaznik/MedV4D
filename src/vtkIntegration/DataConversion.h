@@ -18,10 +18,10 @@
 #include "Imaging/Image.h"
 
 #include "vtkImageData.h"
-#include "ExceptionBase.h"
+#include "common/ExceptionBase.h"
 
-#include "Common.h"
-#include "Vector.h"
+#include "common/Common.h"
+#include "common/Vector.h"
 
 #include <fstream>
 

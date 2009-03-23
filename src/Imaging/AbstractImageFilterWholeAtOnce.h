@@ -8,7 +8,7 @@
 #ifndef _ABSTRACT_IMAGE_FILTER_WHOLEATONCE_H
 #define _ABSTRACT_IMAGE_FILTER_WHOLEATONCE_H
 
-#include "Common.h"
+#include "common/Common.h"
 #include "Imaging/AbstractImageFilter.h"
 #include <vector>
 

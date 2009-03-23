@@ -10,8 +10,8 @@
 #include "vtkInformationVector.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
 
-#include "Log.h"
-#include "Debug.h"
+#include "common/Log.h"
+#include "common/Debug.h"
 #include "vtkIntegration/DataConversion.h"
 #include "Imaging/ImageFactory.h"
 
