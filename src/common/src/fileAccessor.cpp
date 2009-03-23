@@ -1,5 +1,5 @@
-#include "Common.h"
-#include "fileAccessor.h"
+#include "common/Common.h"
+#include "common/fileAccessor.h"
 #include <stdio.h>
 
 using namespace std;

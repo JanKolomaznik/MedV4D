@@ -3,7 +3,7 @@
  *  @file Thread.cpp
  *  @author Jan Kolomaznik
  */
-#include "Thread.h"
+#include "common/Thread.h"
 
 #include <boost/thread/xtime.hpp>
 

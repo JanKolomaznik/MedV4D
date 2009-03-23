@@ -1,6 +1,6 @@
 
-#include "Common.h"
-#include "IOStreams.h"
+#include "common/Common.h"
+#include "common/IOStreams.h"
 
 using namespace M4D::IO;
 

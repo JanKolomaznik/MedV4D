@@ -3,7 +3,7 @@
  *  @file Debug.cpp
  *  @author Jan Kolomaznik
  */
-#include "Debug.h"
+#include "common/Debug.h"
 
 #ifdef DEBUG_LEVEL
 

@@ -3,7 +3,7 @@
  *  @file Common.cpp
  *  @author Jan Kolomaznik
  */
-#include "Common.h"
+#include "common/Common.h"
 
 
 const float32 Epsilon = 1.0E-10;
@@ -11,7 +11,7 @@ const float32 PI = 3.141592f;
 
 
 
-#include "Types.h"
+#include "common/Types.h"
 
 float32 TypeTraits< float32 >::Max = MAX_FLOAT32;
 float32 TypeTraits< float32 >::Min = -MAX_FLOAT32;
