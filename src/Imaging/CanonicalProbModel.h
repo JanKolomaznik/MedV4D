@@ -106,6 +106,12 @@ struct GridPointRecord
 	float32	logRatioPos;
 };
 
+struct LayerStats
+{
+	Vector< uint32, 2 > recordPos;
+	float32	radius;
+};
+
 class ProbabilityGrid
 {
 public:
@@ -120,11 +126,13 @@ public:
 		_gridStep( step ), _originCoordiantes( origin ), _gridSize( gridSize ), _strides( 1, gridSize[0], gridSize[0]*gridSize[1] )
 	{
 		_grid = new GridPointRecord[ _gridSize[0]*_gridSize[1]*_gridSize[2] ];
+		_layerStats = new LayerStats[ _gridSize[2] ];
 	}
 
 	~ProbabilityGrid()
 	{
 		delete [] _grid;
+		delete [] _layerStats;
 	}
 
 	//***********************************************************************
@@ -145,10 +153,30 @@ public:
 	{
 		return GetPointRecord( GetClosestPoint( pos ) ).logRatioPos;
 	}
+
+	Vector< float32, 3 >
+	GetLayerProbCenter( const Coordinates &pos )const
+	{
+		Vector< float32, 2 > tmp = _layerStats[ GetClosestPoint( pos )[2] ].recordPos;
+
+		return Vector< float32, 3 >( 
+				tmp[0]*_gridStep[0] - _originCoordiantes[0], 
+				tmp[1]*_gridStep[1] - _originCoordiantes[1], 
+				pos[2] 
+				);
+	}
+	
+	float32
+	GetLayerProbRadius( const Coordinates &pos )const
+	{
+		return _layerStats[ GetClosestPoint( pos )[2] ].radius;
+	}
+
 	//***********************************************************************
 	GridPointRecord &
 	GetPointRecord( const Vector< uint32, 3 > &pos )
 	{
+		//D_PRINT( pos );
 		if( !(pos < _gridSize) ) {
 			return _outlier;
 		}
@@ -158,6 +186,7 @@ public:
 	const GridPointRecord &
 	GetPointRecord( const Vector< uint32, 3 > &pos )const
 	{
+		//D_PRINT( pos );
 		if( !(pos < _gridSize) ) {
 			return _outlier;
 		}
@@ -179,6 +208,9 @@ public:
 				}
 			}
 		}
+		/*for( unsigned i = 0; i < _gridSize[2]; ++i ) {
+			BINSTREAM_WRITE_MACRO( stream, (_layerStats[i]) );
+		}*/
 
 	}
 
@@ -203,7 +235,34 @@ public:
 				}
 			}
 		}
+		/*for( unsigned i = 0; i < _gridSize[2]; ++i ) {
+			BINSTREAM_READ_MACRO( stream, (result->_layerStats[i]) );
+		}*/
+		result->ComputeLayerStats();
 		return result;
+	}
+
+	void
+	ComputeLayerStats()
+	{
+		Vector< uint32, 3 > idx;
+		for( idx[2] = 0; idx[2] < _gridSize[2]; ++idx[2] ) {
+			Vector< float32, 2 > tmp;
+			float32 sumProb = 0.0f;
+			uint32 count = 0;
+			for( idx[0] = 0; idx[0] < _gridSize[0]; ++idx[0] ) {
+				for( idx[1] = 0; idx[1] < _gridSize[1]; ++idx[1] ) {
+					float32 prob = GetPointRecord( idx ).inProbabilityPos;
+					if( prob > 0.85f ) {
+						tmp += prob * Vector< float32, 2 >( idx[0], idx[1] );
+						sumProb += prob;
+						++count;
+					}
+				}
+			}
+			_layerStats[ idx[2] ].recordPos = 1.0f/sumProb * tmp;
+			_layerStats[ idx[2] ].radius = sqrt( count * _gridStep[0] * _gridStep[1] / 3.14f );
+		}
 	}
 
 	SIMPLE_GET_METHOD( Vector3UI, Size, _gridSize );
@@ -212,7 +271,7 @@ public:
 protected:
 
 	Vector< uint32, 3 >
-	GetClosestPoint( const Coordinates &pos )
+	GetClosestPoint( const Coordinates &pos ) const 
 	{
 		Coordinates pom = pos + _originCoordiantes;
 		return Vector< uint32, 3 >( 
@@ -231,6 +290,8 @@ protected:
 	Vector< uint32, 3 >	_strides;
 
 	GridPointRecord		*_grid;//< Array of grid point records
+
+	LayerStats		*_layerStats;
 
 	GridPointRecord		_outlier;
 };
@@ -286,6 +347,14 @@ public:
 	float32
 	LogRatioProbabilityPosition( const Coordinates &pos )
 	{ return _grid->LogRatioProbabilityPosition( pos ); }
+
+	Vector< float32, 3 >
+	GetLayerProbCenter( const Coordinates &pos )const
+	{ return _grid->GetLayerProbCenter( pos ); }
+
+	float32
+	GetLayerProbRadius( const Coordinates &pos )const
+	{ return _grid->GetLayerProbRadius( pos ); }
 	//***********************************************************************
 	const ProbabilityGrid &
 	GetGrid()const

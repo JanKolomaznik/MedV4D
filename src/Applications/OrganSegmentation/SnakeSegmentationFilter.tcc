@@ -48,33 +48,6 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 	_outputPorts.AppendPort( outPort );
 }
 
-template < typename ElementType, typename SecondElementType >
-const typename SnakeSegmentationFilter< ElementType, SecondElementType >::InputImageType&
-SnakeSegmentationFilter< ElementType, SecondElementType >::GetInputImage( uint32 idx )const
-{
-	return this->GetInputDataSet< InputImageType >( idx );
-}
-
-template < typename ElementType, typename SecondElementType >
-void 
-SnakeSegmentationFilter< ElementType, SecondElementType >::ReleaseInputImage( uint32 idx )const
-{
-	this->ReleaseInputDataSet( idx );
-}
-
-template < typename ElementType, typename SecondElementType >
-typename SnakeSegmentationFilter< ElementType, SecondElementType >::OutputDatasetType&
-SnakeSegmentationFilter< ElementType, SecondElementType >::GetOutputGDataset()const
-{
-	return this->GetOutputDataSet< OutputDatasetType >( 0 );
-}
-
-template < typename ElementType, typename SecondElementType >
-void 
-SnakeSegmentationFilter< ElementType, SecondElementType >::ReleaseOutputGDataset()const
-{
-	this->ReleaseOutputDataSet( 0 );
-}
 
 template < typename ElementType, typename SecondElementType >
 void
@@ -103,7 +76,7 @@ SnakeSegmentationFilter< ElementType, SecondElementType >::BeforeComputation( Ab
 	in = &(this->GetInputDataSet< InputImageType >( 0 ));
 	inEdge = &(this->GetInputDataSet< EdgeImageType >( 1 ));
 	
-	out = &(this->GetOutputGDataset());
+	out = &(this->GetOutputDataSet<OutputDatasetType>(0));
 
 	_northPole[ 0 ] = GetSecondPoint()[ 0 ];
 	_northPole[ 1 ] = GetSecondPoint()[ 1 ];
@@ -133,33 +106,11 @@ SnakeSegmentationFilter< ElementType, SecondElementType >::AfterComputation( boo
 	/*	_inTimestamp[ i ] = in[ i ]->GetStructureTimestamp();
 		_inEditTimestamp[ i ] = in[ i ]->GetEditTimestamp();*/
 		
-		this->ReleaseInputImage( i );
+		this->ReleaseInputDataSet( i );
 	}
-	this->ReleaseOutputGDataset();
+	this->ReleaseOutputDataSet( 0 );
 	PredecessorType::AfterComputation( successful );	
 }
-
-template < typename ElementType, typename SecondElementType >
-void 
-SnakeSegmentationFilter< ElementType, SecondElementType >::ComputeStatistics( Vector<int32, 3> p, float32 &E, float32 &var )
-{
-	static const int32 Radius = 5;
-	float32 sum = 0.0f;
-	Vector<int32, 3> i = p;
-	for( i[0] = p[0] - Radius; i[0] <= p[0] + Radius; ++i[0] ) {
-		for( i[1] = p[1] - Radius; i[1] <= p[1] + Radius; ++i[1] ) {
-			sum += in[0]->GetElement( i );
-		}
-	}
-	E = sum / Sqr(2*Radius +1);
-	for( i[0] = p[0] - Radius; i[0] <= p[0] + Radius; ++i[0] ) {
-		for( i[1] = p[1] - Radius; i[1] <= p[1] + Radius; ++i[1] ) {
-			sum += Sqr( in[0]->GetElement( i )) ;
-		}
-	}
-	var = sum / Sqr(2*Radius +1) - Sqr( E );
-}
-	
 
 
 template < typename ElementType, typename SecondElementType >
@@ -172,7 +123,23 @@ SnakeSegmentationFilter< ElementType, SecondElementType >::CreateSquareControlPo
 	result.AddPoint( Coordinates( radius, -radius ) );
 	result.AddPoint( Coordinates( -radius, -radius ) );
 	result.AddPoint( Coordinates( -radius, radius ) );
+	
+	return result;
+}
 
+template < typename ElementType, typename SecondElementType >
+typename SnakeSegmentationFilter< ElementType, SecondElementType >::CurveType
+SnakeSegmentationFilter< ElementType, SecondElementType >::CreateCircleControlPoints( float32 radius, int segments )
+{
+	CurveType result;
+	result.SetCyclic( true );
+
+	float angle = -2*PI / (float)segments;
+
+	for( int i = 0; i < segments; ++i ) {
+		Coordinates np = radius * Coordinates(sin(angle*i), cos(angle*i));
+		result.AddPoint( np );
+	}
 	return result;
 }
 
@@ -186,7 +153,22 @@ SnakeSegmentationFilter< ElementType, SecondElementType >::ExecutionThreadMethod
 		writerBBox->SetState( MS_CANCELED );
 		return false;
 	}
+
+	typename InputImageType::ElementExtentsType tmp =  in->GetElementExtents();
+	_extent = Max( tmp[0], tmp[1] );
 	
+	bool result = false;
+	//result = SequentialComputation();	
+	result = ParallelizableComputation();	
+
+	writerBBox->SetModified();
+	return result;
+}
+
+template < typename ElementType, typename SecondElementType >
+bool
+SnakeSegmentationFilter< ElementType, SecondElementType >::SequentialComputation()
+{
 	CurveType northSpline = CreateSquareControlPoints( 3.0f );
 	CurveType southSpline = northSpline;
 
@@ -202,7 +184,18 @@ SnakeSegmentationFilter< ElementType, SecondElementType >::ExecutionThreadMethod
 		ProcessSlice( _minSlice + stepCount, southSpline );
 	}
 
-	writerBBox->SetModified();
+	return true;
+}
+
+template < typename ElementType, typename SecondElementType >
+bool
+SnakeSegmentationFilter< ElementType, SecondElementType >::ParallelizableComputation()
+{
+	D_PRINT( "First slice = " << GetFirstSlice() << "; Second slice = " << GetSecondSlice() );
+	for( int32 slice = _minSlice; slice < _maxSlice; ++slice ) {
+			D_PRINT( "Segmentation in slice " << slice );
+		ProcessSlice( slice );
+	}
 	return true;
 }
 
@@ -220,7 +213,6 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 	slice.clear();
 	
 	typename InputImageType::ElementExtentsType tmp =  in->GetElementExtents();
-	float32 extent = Max( tmp[0], tmp[1] );
 
 	//Initialization and setup
 	SnakeAlgorithm algorithm;
@@ -231,13 +223,6 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 	algorithm.SetTransformation( GetTransformation( _northPole, _southPole ) );
 	algorithm.SetModel( GetProbabilityModel() );
 	algorithm.SetBalance( GetShapeIntensityBalance() );
-	/*
-	algorithm.SetInE( 1060 );
-	algorithm.SetInVar( 900 );
-	algorithm.SetOutE( 910 );
-	algorithm.SetOutVar( 1600 );
-	*/
-
 
 	/*algorithm.SetStepScale( 1.0 );
 	algorithm.SetSampleRate( 5 );
@@ -248,8 +233,8 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 	algorithm.SetSampleRate( 6 );
 	algorithm.SetMaxStepScale( 1.2 );
 	algorithm.SetStepScale( algorithm.GetMaxStepScale() / 2.0 );
-	algorithm.SetMaxSegmentLength( GetPrecision() * extent * 2.0 );
-	algorithm.SetMinSegmentLength( GetPrecision() * extent );
+	algorithm.SetMaxSegmentLength( GetPrecision() * _extent * 2.0 );
+	algorithm.SetMinSegmentLength( GetPrecision() * _extent );
 
 	algorithm.SetSelfIntersectionTestPeriod( 1 );
 	algorithm.SetSegmentLengthsTestPeriod( 3 );
@@ -258,7 +243,6 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 	algorithm.SetImageEnergyBalance( 1.0f );
 	algorithm.SetInternalEnergyBalance( 0.0f );
 	algorithm.SetConstrainEnergyBalance( 0.0f );
-	//algorithm.SetRegionStatRegion( in[0]->GetSlice( sliceNumber ) );
 	algorithm.SetRegionStat( in->GetSlice( sliceNumber ) );
 	algorithm.SetRegionEdge( inEdge->GetSlice( sliceNumber ) );
 	algorithm.SetAlpha( GetEdgeRegionBalance() );
@@ -297,28 +281,193 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 	slice[0].Sample( ResultSampleRate );
 }
 
-
-/*template < typename ElementType, typename SecondElementType >
+template < typename ElementType, typename SecondElementType >
 void
 SnakeSegmentationFilter< ElementType, SecondElementType >
-::ProcessSlice( //const typename SnakeSegmentationFilter< ElementType, SecondElementType >::RegionType	&region, 
-		typename SnakeSegmentationFilter< ElementType, SecondElementType >::CurveType		&initialization, 
-		typename SnakeSegmentationFilter< ElementType, SecondElementType >::OutputDatasetType::ObjectsInSlice &slice 
-		)*/
+::ProcessSlice( int32 sliceNumber )
+{
+	static const unsigned ResultSampleRate = 8;
+
+	ObjectsInSlice &slice = this->out->GetSlice( sliceNumber );
+	slice.clear();
+
+	typename InputImageType::ElementExtentsType tmp =  in->GetElementExtents();
+
+	Transformation trans = GetTransformation( _northPole, _southPole );
+
+	//Initialization and setup
+	SnakeAlgorithm algorithm;
+	
+	//Distribution settings
+	algorithm.SetZCoordinate( sliceNumber * tmp[2] );
+	algorithm.SetTransformation( trans );
+	algorithm.SetModel( GetProbabilityModel() );
+
+	algorithm.SetRegionStat( in->GetSlice( sliceNumber ) );
+	algorithm.SetRegionEdge( inEdge->GetSlice( sliceNumber ) );
+//********************
+	/*
+	algorithm.SetBalance( GetShapeIntensityBalance() );
+
+	algorithm.SetSampleRate( 6 );
+	algorithm.SetMaxStepScale( 2.2 );
+	algorithm.SetStepScale( algorithm.GetMaxStepScale() / 2.0 );
+	algorithm.SetMaxSegmentLength( GetPrecision() * _extent * 2.0 );
+	algorithm.SetMinSegmentLength( GetPrecision() * _extent );
+
+	//algorithm.SetSelfIntersectionTestPeriod( 1 );
+	//algorithm.SetSegmentLengthsTestPeriod( 3 );
+
+	algorithm.SetGamma( 0.8f );
+	algorithm.SetImageEnergyBalance( 1.0f );
+	algorithm.SetInternalEnergyBalance( 0.0f );
+	algorithm.SetConstrainEnergyBalance( 0.0f );
+	algorithm.SetAlpha( GetEdgeRegionBalance() );
+
+	algorithm.SetCalmDownInterval( 20 );
+	algorithm.SetMaxStepCount( 60 );
+	*/
+	//Computation
+	
+	float32 t = static_cast<float32>(sliceNumber - GetFirstSlice())/(GetSecondSlice() - GetFirstSlice());
+	Coordinates center = GetFirstPoint() + t * (GetSecondPoint() - GetFirstPoint());
+
+	Vector<float32, 3 > tmpPos = trans( Vector<float32, 3 >( 0, 0, sliceNumber * tmp[2] ) );
+	tmpPos[0] = 0;
+	tmpPos[1] = 0;
+
+	CurveType init = CreateCircleControlPoints( GetProbabilityModel()->GetLayerProbRadius( tmpPos ) * 2, 12 );
+	tmpPos = trans.GetInversion( GetProbabilityModel()->GetLayerProbCenter( tmpPos ) );
+
+	//init.Move( Coordinates( tmpPos[0], tmpPos[1] ) );
+	init.Move( center );
+
+	algorithm.SetSampleRate( 3 );
+	algorithm.Initialize( init );
+
+	FindInitialization( algorithm );
+
+		/*slice.push_back( algorithm.GetCurrentCurve() );
+		slice[slice.size()-1].Sample( ResultSampleRate );*/
+
+	ComputeRawShape( algorithm );
+
+		/*slice.push_back( algorithm.GetCurrentCurve() );
+		slice[slice.size()-1].Sample( ResultSampleRate );*/
+
+	FinishComputation( algorithm );
+
+	slice.push_back( algorithm.GetCurrentCurve() );
+	slice[slice.size()-1].Sample( ResultSampleRate );
+
+	/*slice.push_back( init );
+	slice[1].Sample( ResultSampleRate );*/
+}
 
 template < typename ElementType, typename SecondElementType >
 void
 SnakeSegmentationFilter< ElementType, SecondElementType >
-::ProcessSlice( 
-			typename SnakeSegmentationFilter< ElementType, SecondElementType >::CurveType &initialization, 
-			typename SnakeSegmentationFilter< ElementType, SecondElementType >::ObjectsInSlice &slice 
-			)
+::FindInitialization( typename SnakeSegmentationFilter< ElementType, SecondElementType >::SnakeAlgorithm &algorithm )
 {
-	slice.clear();
-	slice.push_back( initialization );
-	slice[0].Sample( 5 );
+	algorithm.SetBalance( 0.5 );
+
+	algorithm.SetSampleRate( 3 );
+	algorithm.SetMaxStepScale( 10.0f );
+	algorithm.SetStepScale( algorithm.GetMaxStepScale() / 2.0 );
+	algorithm.SetStepScaleAlpha( 0.9f );
+	algorithm.SetStepScaleBeta( 0.25f );
+	algorithm.SetMaxSegmentLength( 30 );
+	algorithm.SetMinSegmentLength( 10 );
+
+	algorithm.SetSelfIntersectionTestPeriod( 5 );
+	algorithm.SetSegmentLengthsTestPeriod( 4 );
+
+	algorithm.SetGamma( 0.8f );
+	algorithm.SetImageEnergyBalance( 1.0f );
+	algorithm.SetInternalEnergyBalance( 0.0f );
+	algorithm.SetConstrainEnergyBalance( 0.0f );
+	algorithm.SetAlpha( 1.0f );
+
+	//algorithm.SetCalmDownInterval( 20 );
+	//algorithm.SetMaxStepCount( 60 );
+
+
+	unsigned i = 0;
+	while( 30 > i && i >= 0 ) {
+		i = algorithm.Step();
+	}
 }
-	
+
+template < typename ElementType, typename SecondElementType >
+void
+SnakeSegmentationFilter< ElementType, SecondElementType >
+::ComputeRawShape( typename SnakeSegmentationFilter< ElementType, SecondElementType >::SnakeAlgorithm &algorithm )
+{
+	algorithm.SetBalance( GetShapeIntensityBalance() );
+
+	algorithm.SetSampleRate( 8 );
+	algorithm.SetStepScaleAlpha( 0.95f );
+	algorithm.SetStepScaleBeta( 0.1f );
+	algorithm.SetMaxStepScale( 1.5 );
+	algorithm.SetStepScale( algorithm.GetMaxStepScale() / 2.0 );
+	algorithm.SetMaxSegmentLength( GetPrecision() * _extent * 2.0 );
+	algorithm.SetMinSegmentLength( GetPrecision() * _extent );
+
+	algorithm.SetSelfIntersectionTestPeriod( 1 );
+	algorithm.SetSegmentLengthsTestPeriod( 1 );
+
+	algorithm.SetGamma( 0.8f );
+	algorithm.SetImageEnergyBalance( 1.0f );
+	algorithm.SetInternalEnergyBalance( 0.0f );
+	algorithm.SetConstrainEnergyBalance( 0.0f );
+	algorithm.SetAlpha( 0.75f );
+
+	//algorithm.SetCalmDownInterval( 20 );
+	//algorithm.SetMaxStepCount( 60 );
+
+
+	unsigned i = 0;
+	while( 65 > i && i >= 0 ) {
+		i = algorithm.Step();
+	}
+
+}
+
+template < typename ElementType, typename SecondElementType >
+void
+SnakeSegmentationFilter< ElementType, SecondElementType >
+::FinishComputation( typename SnakeSegmentationFilter< ElementType, SecondElementType >::SnakeAlgorithm &algorithm )
+{
+
+	algorithm.SetBalance( 0.9f );
+
+	algorithm.SetSampleRate( 8 );
+	algorithm.SetStepScaleAlpha( 0.95f );
+	algorithm.SetStepScaleBeta( 0.1f );
+	algorithm.SetMaxStepScale( 1.0f );
+	algorithm.SetStepScale( algorithm.GetMaxStepScale() / 2.0 );
+	algorithm.SetMaxSegmentLength( GetPrecision() * _extent * 2.0 );
+	algorithm.SetMinSegmentLength( GetPrecision() * _extent );
+
+	algorithm.SetSelfIntersectionTestPeriod( 1 );
+	algorithm.SetSegmentLengthsTestPeriod( 1 );
+
+	algorithm.SetGamma( 0.8f );
+	algorithm.SetImageEnergyBalance( 1.0f );
+	algorithm.SetInternalEnergyBalance( 0.0f );
+	algorithm.SetConstrainEnergyBalance( 0.0f );
+	algorithm.SetAlpha( GetEdgeRegionBalance() );
+
+	//algorithm.SetCalmDownInterval( 20 );
+	//algorithm.SetMaxStepCount( 60 );
+
+
+	unsigned i = 0;
+	while( 90 > i && i >= 0 ) {
+		i = algorithm.Step();
+	}
+}
+
 } /*namespace Imaging*/
 } /*namespace M4D*/
 

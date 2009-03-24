@@ -126,6 +126,8 @@ public:
 	SIMPLE_GET_SET_METHODS( float32, MaxSegmentLength, _parameters._maxSegmentLength );
 	SIMPLE_GET_SET_METHODS( float32, StepScale, _parameters._stepScale );
 	SIMPLE_GET_SET_METHODS( float32, MaxStepScale, _parameters._maxStepScale );
+	SIMPLE_GET_SET_METHODS( float32, StepScaleAlpha, _parameters._stepScaleAlpha );
+	SIMPLE_GET_SET_METHODS( float32, StepScaleBeta, _parameters._stepScaleBeta );
 protected:
 	EnergicSnakeParameters	_parameters;
 private:
@@ -232,7 +234,7 @@ EnergicSnake< ContourType, EnergyModel, ConvergenceCriterion >
 			CheckSegmentLengths();
 		}
 
-		_curve.ReSampleWithDerivations();
+		_curve.SampleWithDerivations( _parameters._sampleRate );
 	} catch (ErrorHandling::ExceptionBase &e ) {
 		LOG( "Exception thrown during optimization step " << _stats._stepCount << std::endl << e );
 		_stats._lastGradientSize = 0.0f;

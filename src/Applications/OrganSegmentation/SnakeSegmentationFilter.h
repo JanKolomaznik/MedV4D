@@ -150,27 +150,22 @@ protected:
 
 	typedef M4D::Imaging::Algorithms::EnergicSnake< CurveType, EnergyModel >	SnakeAlgorithm;
 
-	void
-	ComputeStatistics( Vector<int32, 3> p, float32 &E, float32 &var );
-
 	CurveType
 	CreateSquareControlPoints( float32 radius );
 
-	const InputImageType&
-	GetInputImage( uint32 idx )const;
+	CurveType
+	CreateCircleControlPoints( float32 radius, int segments );
 
-	void
-	ReleaseInputImage( uint32 idx )const;
-
-	OutputDatasetType&
-	GetOutputGDataset()const;
-
-	void
-	ReleaseOutputGDataset()const;
 
 	bool
 	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
 	
+	bool
+	SequentialComputation();
+
+	bool
+	ParallelizableComputation();
+
 	void
 	PrepareOutputDatasets();
 	
@@ -188,18 +183,25 @@ protected:
 			int32		sliceNumber,
 			CurveType	&initialization 
 			);
+
 	void
-	ProcessSlice( 
-			//const RegionType &region, 
-			CurveType &initialization, 
-			typename OutputDatasetType::ObjectsInSlice &slice 
-			);
+	ProcessSlice( int32 sliceNumber );
+
+	void
+	FindInitialization( SnakeAlgorithm &algorithm );
+
+	void
+	ComputeRawShape( SnakeAlgorithm &algorithm );
+
+	void
+	FinishComputation( SnakeAlgorithm &algorithm );
 
 	const InputImageType	*in;
 	const EdgeImageType	*inEdge;
 	OutputDatasetType	*out;
 	int32 _minSlice;
 	int32 _maxSlice;
+	float32 _extent;
 
 	Vector< float32, 3 >	_southPole;
 	Vector< float32, 3 >	_northPole;

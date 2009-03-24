@@ -316,6 +316,8 @@ Train( const TrainingDataInfos &infos, Vector< uint32, 3 > size, Vector< float32
 	D_PRINT( "Consolidate general grid ..." );
 	ConsolidateGeneralGrid( *generalGrid, counter );
 
+	generalGrid->ComputeLayerStats();
+
 	FloatHistogram *inHistogram = new FloatHistogram( minHist, maxHist, false );
 	FloatHistogram *outHistogram = new FloatHistogram( minHist, maxHist, true );
 	FloatHistogram *logRatioHistogram = new FloatHistogram( minHist, maxHist, true );
