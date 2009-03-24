@@ -1,29 +1,24 @@
 \chapter{CellBE platform}
 
-This chapter will introduce CellBE (Cell Broadband Engine) itself, its specifics. Introduce to my experience with the platform will then follow.
+This chapter will introduce Cell Broadband Engine processor (CellBE) and the whole platform and its specifics.
 
 \section{About the processor}
 
-CellBE processor is representative of new generation of IBM's CellBE platform family made by collaboration of IBM, Sony, and Toshiba. CellBE is an asymmetric, high-performance multi-core processor that combines eight synergistic processing elements (SPEs) and a Power Processing Element (PPE), which is a general-purpose IBM Power PC\textregistered core. Each SPE has a 4-way SIMD engine, a high-speed local store and a direct memory access (DMA) engine. The 4-way SIMD unit of each SPE can perform a floating or integer operation on four data elements at every clock tick. Unlike conventional microprocessors, each SPE does not have a hardware cache to manage its small on-chip local store. All the elements are connected through high speed bus (EIB - Element Interconnect Bus). Therefore, this architecture can be viewed as a distributed memory multiprocessor with a very small local memory (local store), under software control, attached to a larger (central) shared memory through DMA engine that manages transfering data from central memory to local store and vice versa.
+CellBE processor is representative of new generation of IBM's CellBE platform family made by collaboration of IBM, Sony, and Toshiba. CellBE is an asymmetric, high-performance multi-core processor that combines eight synergistic processing elements (SPEs) and a Power Processing Element (PPE), which is a general-purpose IBM \text{PowerPC\textregistered} core. Each SPE has a 4-way SIMD engine, a high-speed local store and a direct memory access (DMA) engine. The 4-way SIMD unit of each SPE can perform a floating or integer operation on four data elements at every clock tick. Unlike conventional microprocessors, each SPE does not have a hardware cache to manage its small on-chip local store. All the elements are connected through high speed bus (EIB - Element Interconnect Bus). Therefore, this architecture can be viewed as a distributed memory multiprocessor with a very small local memory (local store), under software control, attached to a larger (central) shared memory through DMA engine that manages transfering data from central memory to local store and vice versa. Whole layout is on figure \ref{fg:processorLayout}.
 
 CellBE achieves a significant performance per Watt and performance per chip area advantage over conventional high-performance processors, and is significantly more flexible and programmable than single-function and other optimized processors such as graphics processors, or conventional digital signal processors. While a conventional microprocessor may deliver about 20+GFlops of single-precision (32b) floating-point performance, Cell delivers 200+ GFlops (in ideal conditions) at comparable power.
 
-A number of signal processing and media applications have been implemented on Cell with excellent results. Advanced visualization such as ray-casting, ray-tracing, and volume rendering. Streaming applications such as media encoders and decoders and streaming encryption and decryption standards have also been demonstrated to perform about an order of magnitude better on Cell than on conventional PC.
-
-TODO obrazek Cellu
 \begin{figure}
     \centering
-    \includegraphics[height=7.9cm]{medatlas}
-    \caption[CellBE processor layout]{Anatomick� atlas - horn� ��st b�icha zep�edu.
-      Jsou zde dob�e vid�t ledviny (zelen�).
-      Prav� je ��ste�n� p�ekryt� dvan�ctern�kem.
-      Slezina (�erven�) le�� vlevo zhruba v~�rovni ledvin a j�tra (mod�e) le�� vpravo vep�edu o~n�co v��e.
-      Na obr�zku je vid�t jen jejich ��st.}
+    \includegraphics[width=10cm]{data/cellLayout.eps}
+    \caption[CellBE processor layout]{One PPE unit along with eight SPE stream processor units and system memory connected together with high speed EIB bus}
     \label{fg:processorLayout}
 \end{figure}
 
-\subsection{PPE - PowerPC\textregistered Processing Element}
-PPE is derived from IBM Power PC\textregistered core. Has 512kB L2 cache in die. It supports the Power Architecture ISA, inherits the memory translation, protection, and SMP coherence model of mainstream 64-bit Power processors. CBEA also supports virtualization (logical partitioning), large pages, and other recent innovations in the Power architecture. Programming for the PPE is the same as for conventional processors.
+A number of signal processing and media applications have been implemented on Cell with excellent results. Advanced visualization such as ray-casting, ray-tracing, and volume rendering. Streaming applications such as media encoders and decoders and streaming encryption and decryption standards have also been demonstrated to perform about an order of magnitude better on Cell than on conventional PC.
+
+\subsection{PPE - \text{PowerPC\textregistered} Processing Element}
+PPE is derived from IBM \text{PowerPC\textregistered} core. Has 512kB L2 cache in die. It supports the Power Architecture ISA, inherits the memory translation, protection, and SMP coherence model of mainstream 64-bit Power processors. CBEA also supports virtualization (logical partitioning), large pages, and other recent innovations in the Power architecture. Programming for the PPE is the same as for conventional processors.
 
 \subsection{SPU - Synergistic Processing Element}
 SPE is an autonomous processor (sometimes called accellerator) targeted for computational intensive applications. It supports a SIMD-RISC instruction set. Has 128 (128-bit long) unified registers to store all types of data (in contrast from traditional RISCs where registers are devided according data types). One of CellBE programming aspects is converting the code that it uses the SIMD instructions. This process is calleed "SIMDation".
@@ -33,12 +28,3 @@ SPE stores its program and data in its associated local storage memory as privat
 Programming for SPE has some differencies over programming for conventional processor. You have always to count with the fact you have only 256kB for your program and data. Data is 
 
 This processor is embeded in Sony Playstation 3 game console as well as IBM Blade servers where two or more such processors (as building blocks) connected by high speed bus creates powerfull and modular machine. I have PlayStation3 machine available for my work.
-
-\section{My journey into CellBE platform}
-When I started this work I was Windows\textregistered user. Because the developmnet environment (SDK) for CellBE is purely in Linux I had to learn it. I had have already gone through some basic courses so i knew some basic commands. But it is far insufficient when you want to use all the tools for CellBE development. There are some bugs and parts that are not fully finished. Without some kind of deeper knowledge of the system you will have so much troubles as I had. So that's why one of the biggest advice is to become advanced Linux (especially Fedora) user.
-
-The process of advancing my Linux experience went hand in hand with exploration of CellBE platform and the environment. I gradually went through variety of errors and bugs. And I gained more and more experince by their solutions. The process takes quite long time and meanwhile new version of SDK (3.1) had appeard. I wanted to use and describe the latest tools. So I had to begin from scrath because new version brought new obstacles as well.
-
-The new version was declared to be compatible with new version of Fedora (9 - Sulphur) that had been released few months before the new version of SDK. Previous version of SDK (3.0) was for Fedora 7 Warewolf. I tried all possible combinations of Fedoras and SDKs to find out if they are compatible with each other. Only result from that was finding that the are not and lots of days spent on it. Even if I tried Fedora 10 Cambridge that was released as the latest there was some issues. The SDK is huge package of software dependent on lots of third party libraries and solutions that is trated differently within particular distributions and even versions of same distribution. So the next advice is not to combine versions (system, SDK nor particular libraries that the SDK components are dependent on - use repository ones, see Tools installation TODO). There was although some efforts to get it run on another distributions than Fedora. But i thing the time spent is not worth the result.
-
-Finally I installed declared by IBM as working combination consisting of Fedora 9 Sulphur and SDK 3.1 and decided working on it. Altough I have run into some bugs and errors. The process of installation is described in Appendix A. Installation of Fedora is omited. For details see official site http://fedoraproject.org/.

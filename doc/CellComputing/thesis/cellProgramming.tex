@@ -1,6 +1,20 @@
 \chapter {CellBE programming} 
+\par
+In this chapter will describe my experience with the CellBE platform will then follow. content of SDK, some usefull libraries, as well as some design patterns of CellBE programming will be described.
 
-In this chapter content of SDK, some usefull libraries, as well as some design patterns of CellBE programming will be described.
+\section{My journey into CellBE platform}
+\par
+When I started this work I was \text{Windows\textregistered} user. Because the developmnet environment (SDK) for CellBE is purely in Linux I had to learn it. I had have already gone through some basic courses so i knew some basic commands. But it is far insufficient when you want to use all the tools for CellBE development. There are some bugs and parts that are not fully finished. Without some kind of deeper knowledge of the system you will have so much troubles as I had. So that's why one of the biggest advice is to become advanced Linux (especially Fedora) user.
+
+\par
+The process of advancing my Linux experience went hand in hand with exploration of CellBE platform and the environment. I gradually went through variety of errors and bugs. And I gained more and more experince by their solutions. The process takes quite long time and meanwhile new version of SDK (3.1) had appeard. I wanted to use and describe the latest tools. So I had to begin from scrath because new version brought new obstacles as well.
+
+\par
+The new version was declared to be compatible with new version of Fedora (9 - Sulphur) that had been released few months before the new version of SDK. Previous version of SDK (3.0) was for Fedora 7 Warewolf. I tried all possible combinations of Fedoras and SDKs to find out if they are compatible with each other. Only result from that was finding that the are not and lots of days spent on it. Even if I tried Fedora 10 Cambridge that was released as the latest there was some issues. The SDK is huge package of software dependent on lots of third party libraries and solutions that is trated differently within particular distributions and even versions of same distribution. So the next advice is not to combine versions (system, SDK nor particular libraries that the SDK components are dependent on - use repository ones, see \ref{toolsSetup}). There was although some efforts to get it run on another distributions than Fedora. But i thing the time spent is not worth the result.
+
+\par
+Finally I installed declared by IBM as working combination consisting of Fedora 9 Sulphur and SDK 3.1 and decided working on it. Altough I have run into some bugs and errors. The process of installation is described in \ref{toolsSetup}. Installation of Fedora is omited. For details see official site \url{http://fedoraproject.org/}.
+
 
 \section {SDK content}
 
@@ -32,6 +46,7 @@ There are two options for SPE code management. One is to build shared library an
 
 \section {Design patterns}
 
-Because of heterogenous nature of CellBE and its PPU & SPEs processing elements variety of design patterns how to use them to solve a problem has been developed.
+\par
+Because of heterogenous nature of CellBE and its PPU \& SPEs processing elements variety of design patterns how to use them to solve a problem has been developed.
 
 Programming for CellBE as a whole is not much different from programming of common processors. 

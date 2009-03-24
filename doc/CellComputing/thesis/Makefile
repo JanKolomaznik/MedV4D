@@ -8,9 +8,11 @@
 #images
 ################################################################################
 
+DATA=data
+
 PDF_IMAGES=     bspline_example.pdf
 
-EPS_IMAGES=     bspline_example.eps
+EPS_IMAGES=     cellLayout.eps
 
 all: dvi bib
 

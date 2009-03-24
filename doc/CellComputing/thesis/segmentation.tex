@@ -7,9 +7,9 @@ Segmentation is process when pixels of input image are split into several subset
 
 In more formal way it is a function that assign a segment to pixel:
 \begin{equation}
-$$S: S(p) = k$$
+S: S(p) = k
 \end{equation}
-where p \in pixels of an image and k \in set of segments
+where p $\in$ pixels of an image and k $\in$ set of segments
 
 Segmentation is used in many domains such as medicine (locating organs, tumors, bones, ...), parsing images from satellite for maps (location buildings, roads, ...), machine vision (fingerprint recognition, face, eyes, or other features recognition). Or such simple tool as well known "magic-stick" tool in popular graphics editing software (Photoshop, GIMP) that performs thresholding segmentation.
 
@@ -78,35 +78,36 @@ Advantages of the level set method is that it is implicit (no special stuff need
 Level set method as proposed by Osher and Sethian \cite{sethianLS} provide numerical and matematical mechanisms how to compute surface deformation as time varying iso-values of LS function using partial differential equations (PDE). 
 LS function is a signed scalar (distance) function 
 \begin{equation}
-$$\psi : U_{x,y,z} \rightarrow R$$,
+\psi : U_{x,y,z} \rightarrow R,
 \end{equation}
-where U \subset R^3 is the domain of the volume (note: every definitions will be for 2D case). \psi can be sometimes called embedding. LS is implicit representation of an surface of the segmented object. Surface is then subset of the LS function values
+where $U \subset R^3$ is the domain of the volume (note: every definitions will be for 2D case). $\psi$ can be sometimes called embedding. LS is implicit representation of an surface of the segmented object. Surface is then subset of the LS function values
 \begin{equation}
-$$S = \{x\mid \psi(x) = k\}$$
+\vec{S} = \{\vec{x}\mid \psi(\vec{x}) = k\}
 \end{equation}
-S is then called an k-isosurface or k-level set of \psi. k can be chosen freely, but in most cases it is zero. Surface is then called zero isosurface, zero LS or front in some contexts and corresponds to the actual object contour. 
+S is then called an k-isosurface or k-level set of $\psi$. k can be chosen freely, but in most cases it is zero. Surface is then called zero isosurface, zero LS or front in some contexts and corresponds to the actual object contour. 
 
-Surface can be also defined as local mapping $S^$:
+Surface can be also defined as local mapping $\vec{S}$:
 \begin{equation}
-S: V_r x V_s \rightarrow R^3_{x,y,z},
+\vec{S}: V_r x V_s \rightarrow R^3_{x,y,z},
 \end{equation}
-where V x V \subset $R^2$. Because of deformation time variable t \in $R^+$ has to be added resulting function S = S(r,s,t). 
-Deformation (propagation) of the surface is then described by an evolution equation i.e. differential equation on S. One approach (dynamic) is to use one-parameter family of \psi i.e. \psi(x,t) changes over time, x remains on the k-level set of \psi as it moves and k remains constant. Resulting equation is:
+where $V x V \subset R^2$. Because of deformation time variable $t \in R^+$ has to be added resulting function S = S(r,s,t). 
+Deformation (propagation) of the surface is then described by an evolution equation i.e. differential equation on S. One approach (dynamic) is to use one-parameter family of $\psi$ i.e. $\psi(\vec{x},t)$ changes over time, $\vec{x}$ remains on the k-level set of $\psi$ as it moves and k remains constant. Resulting equation is:
 \begin{equation}
-$$\psi(x(t),t) = k \Rightarrow \frac{\delta\psi}{\delta t} = - \Delta\psi \centerdot v.$$
+\label{deformEq}
+\psi(\vec{x}(t),t) = k \Rightarrow \frac{\delta \psi}{\delta t} = - \Delta \psi \centerdot \vec{v}.
 \end{equation}
 Where v represents movement of point x on deforming surface i.e. positions in time.
-All surface movements depend on forces that are based on LS geometry. And LS geometry can be expressed in terms of differential structure of \psi. So following version of equation //TODO link folmulated:
+All surface movements depend on forces that are based on LS geometry. And LS geometry can be expressed in terms of differential structure of $\psi$. So following version of equation \ref{deformEq} link folmulated:
 \begin{equation}
-$$\frac{\delta\psi}{\delta t} = - \Delta\psi \centerdot v = - \Delta\psi \centerdot F(x, D\psi, D^2\psi, ...),$$
+\frac{\delta\psi}{\delta t} = - \Delta \psi \centerdot \vec{v} = - \Delta \psi \centerdot F(\vec{x}, D\psi, D^2\psi, ...),
 \end{equation}
-where $D^n\psi$ is the set of n-order derivatives of \psi evaluated at x. The term $F(x, D\psi, D^2\psi, ...)$ represents some force that influence the movement of a surface point. This equation can applies to every values of k i.e. every LS of function \psi and is basic equation of LS method.
+where $D^n\psi$ is the set of n-order derivatives of $\psi$ evaluated at x. The term $F(\vec{x}, D\psi, D^2\psi, ...)$ represents some force that influence the movement of a surface point. This equation can applies to every values of k i.e. every LS of function $\psi$ and is basic equation of LS method.
 
 \subsection{Level set computation}
 
 Computation of surface deformation has to be discretized so it is performed on discretized volume i.e. grid. Equation converts the problem to solving nonlinear partial differential equations (PDE). Surface deformation (propagation, movement) is then computed from initial model in cycles representing discrete time steps using this update equation:
 \begin{equation}
-$$\psi_{i,j,k}^{n+1} = \psi_{i,j,k}^{n} + \Delta t \Delta \psi_{i,j,k}^{n}$$,
+\psi_{i,j,k}^{n+1} = \psi_{i,j,k}^{n} + \Delta t \Delta \psi_{i,j,k}^{n},
 \end{equation}
 where the term $\psi_{i,j,k}^{n}$ is discrete aproximation of $\frac{\delta\psi}{\delta t}$ refering to the n-th time step at discrete position i,j,k (which has an counter part in continous domain $\psi(x_i, y_j, z_k)$ ) and $\Delta t \Delta \psi_{i,j,k}^{n}$ is finite forward difference term representing aproximation of the forces influencing the LS (update term). The solution is then succession of steps where new solution is obtained as current solution plus update term.
 
@@ -120,9 +121,14 @@ Because of computational burden of level set solving some speed-up approaches ha
 
 Narrow Bands (proposed by Adalsteinsson and Sethian \cite{sethianFastLS}) computes embedding only within narrow band (tube). Remaining points are set constant to indicate that thay are not in the tube. When LS reach the border of the tube, new tube has to be recalculated based on current LS and new run of embedding computations are performed on this new tube until envolving LS reaches tube borders.
 
-//TODO obrazek
+\begin{figure}
+    \centering
+    \includegraphics[width=14cm]{data/narrowBands.eps}
+    \caption[Narrow bands computation illustration]{Embedding computation is performed only within narrow band (highlighted in grey). When level set touches (highlighted by circle) the border ot the band, new band has to be computed (reinitialized).}
+    \label{fg:narrowBands}
+\end{figure}
 
-Sparse Fields method (proposed by Whitaker [23]) introduces a scheme in which updates of an embedding are calculated only on the level set. This means that it performs exactly the number of calculations that is needed to calculate next position of the level set. This is the biggest advantage of the method. Points that are adjacent to the level set are called active points (forming active set). Because active points must be adjecant to the LS their positions lie within certain range from the LS. Therefore even values of an embedding in acitive set positions must lie on certain range (active range). When active point value move out from this active range it is no longer the active point and is removed from the active set. And vice versa, the point whose value comes into active range is added into active set. Along the active set there is few layers of points adjecant to the active set organized like peels of an onion. 
+Sparse Fields method (proposed by Whitaker \cite{sparseFilelds}) introduces a scheme in which updates of an embedding are calculated only on the level set. This means that it performs exactly the number of calculations that is needed to calculate next position of the level set. This is the biggest advantage of the method. Points that are adjacent to the level set are called active points (forming active set). Because active points must be adjecant to the LS their positions lie within certain range from the LS. Therefore even values of an embedding in acitive set positions must lie on certain range (active range). When active point value move out from this active range it is no longer the active point and is removed from the active set. And vice versa, the point whose value comes into active range is added into active set. Along the active set there is few layers of points adjecant to the active set organized like peels of an onion. 
 Process can be imagined as a tram that lays down tracks before it and picks them up behind.
 
  Computation of embedding is performed on 
@@ -135,14 +141,19 @@ Even faster method that perform extension and distance reinitialization is $O(N)
 
 The update term from equation //TODO can be further divided into another subterms such as:
 \begin{equation}
-$$\psi_{i,j,k}^{n+1} = \psi_{i,j,k}^{n} + \Delta t \Delta \psi_{i,j,k}^{n}$$,
+\psi_{i,j,k}^{n+1} = \psi_{i,j,k}^{n} + \Delta t \Delta \psi_{i,j,k}^{n},
 \end{equation}
 
 The most used subterms are propagation (i.e. speed function calculated from segmented image), advection and curvature term (explained later).
 
-Segmentation using LS approach is performed based on a speed function that is calculated from input (segmented image). There are variety speed functions. In this work I use speed function based on threshold $$T_low$$ and $$T_hi$$ of the intensities from the input image. If pixel has intensity value that is within the threshold interval (for maximum speed in the middle of threshold interval), the level set model grows. Otherwise it contracts as fast as the pixel has value further from the interval.
+Segmentation using LS approach is performed based on a speed function that is calculated from input (segmented image). There are variety speed functions. In this work I use speed function based on threshold $T_{low}$ and $T_{hi}$ of the intensities from the input image. If pixel has intensity value that is within the threshold interval (for maximum speed in the middle of threshold interval), the level set model grows (see figure \ref{fg:speedFunction}). Otherwise it contracts as fast as the pixel has value further from the interval.
 
-// TODO obrazek speed funkce
+\begin{figure}
+    \centering
+    \includegraphics[width=14cm]{data/speedFunction.eps}
+    \caption[Graph of thresholding based speed function]{Gray rectangle encloses interval, where is the speed function positive (i.e. the model expands). The fastest expansion is in $T_{mid}$ point that is the middle of that interval}
+    \label{fg:speedFunction}
+\end{figure}
 
 This is quite natural definition of what we need from the process. Grow as fast as possible where the segmented object lies and contract otherwise.
 
@@ -151,13 +162,13 @@ inconsistent with interactive parameter tuning. In general we are concerned with
 that include a surface curvature term and simultaneously require the model to expand and
 contract to match the data.
 
- Tuning of weights of that subterms makes the LS method complex and robust. 
+Tuning of weights of that subterms makes the LS method complex and robust. 
 
-
-ruzne vzorecky pro diferenci -> termy a vahy
+ruzne vzorecky pro diferenci, termy a vahy
 
 segmentace pomoci levelsetu
 
-\section{Uvedeni problemu se streamovacimi zarizenimi s odkazem na lefohn_tvcg03.pdf}
+\section{Level set methodes on streaming devices}
 
+Uvedeni problemu se streamovacimi zarizenimi s odkazem na lefohn_tvcg03.pdf
 srovnani jejich moznosti s moznostmi cellu - vyhody nevyhody

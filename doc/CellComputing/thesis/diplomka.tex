@@ -1,6 +1,6 @@
 \documentclass[12pt,oneside]{book}
 % pouzite balicky
-\usepackage[latin2]{inputenc}
+\usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage[czech]{babel}
 
@@ -18,7 +18,7 @@
 \usepackage{pst-all}
 
 \usepackage{pslatex}
-\usepackage{url} 
+\usepackage{url}
 \usepackage{hyperref} 
 
 \usepackage{listings}
@@ -54,29 +54,20 @@
 
 \pagestyle{empty}
 
-\include{diplomka_titlepage}
+\include{titlepage}
 \pagestyle{empty}
 
 \include{thanks}
 \pagestyle{empty}
-%--------------------------------------------------------
-%-------------             OBSAH            -------------
-%--------------------------------------------------------
+
 \tableofcontents
-
 \pagebreak
 
-%--------------------------------------------------------
-%-------------       SEZNAM OBRAZKU         -------------
-%--------------------------------------------------------
 \listoffigures
-
 \pagebreak
 
-%--------------------------------------------------------
-%-------------       SEZNAM TABULEK         -------------
-%--------------------------------------------------------
 \listoftables
+\pagebreak
 
 %\listof{algorithm}{Seznam algoritmu}
 
@@ -92,11 +83,15 @@
 %vkladani headeru
 \pagestyle{headings}
 
+%\setlength{\parindent}{0pt} 
+\setlength{\parskip}{2ex} 
+
 \include{aboutCell}
 \include{cellProgramming}
 \include{segmentation}
 \include{results}
 
+\appendix
 \include{sdkInstallation}
 
 %--------------------------------------------------------
