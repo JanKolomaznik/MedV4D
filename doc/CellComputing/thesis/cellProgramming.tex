@@ -44,7 +44,7 @@ Actual building is done using selected toolchain. But there is difference betwee
 \par
 There are two options for SPE code management. One is to build shared library and load it explicitly when it is used. Another way is to build a static library and include it into PPU executable. This inclusion is called embeding and is performed with extra tool from toolchain. The SPU program is then referenced as special extern structure direct from PPU code (instead of performing some shared libraries loading). Both ways has its pros but even cons which are the same as with shared vs. static libraries.
 
-\section{Parallel systems & CellBE}
+\section{Parallel systems \& CellBE}
 
 Parallelization depends also on type of system (hardware) where the program will be run. There are two basic kind of paralel systems:
 \begin{enumerate}
@@ -89,16 +89,20 @@ Choosing a framework is important decision of writing CellBE application. It sho
 
 The CellBE processor offers many opportunities for parallel processing. That is because it is composed of and can be compound to heterogenous elements. Levels are:
 \begin{enumerate}
-\item server level 
+\item server level
+\par
 In a hybrid environment at the cluster level using MPI or some sort of grid computing middleware.
 
 \item CellBE chips level
+\par
 In case there are more in the machine (e.g. blade server with two CellBEs). Using ALF or DaCS for hybrid.
 
-\item SPE level 
+\item SPE level
+\par
 Inside the CellBE chip offloading intensive parts of code to SPE, using libspe, ALF, DaCS.
 
 \item SIMD instruction level
+\par
 Instruction that process more data in parallel. Using leanguage intrinsic.
 \end{enumerate}
 

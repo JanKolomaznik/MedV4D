@@ -78,38 +78,39 @@ Advantages of the level set method is that it is implicit (no special stuff need
 Level set method as proposed by Osher and Sethian \cite{sethianLS} provide numerical and matematical mechanisms how to compute surface deformation as time varying iso-values of LS function using partial differential equations (PDE). 
 LS function is a signed scalar (distance) function 
 \begin{equation}
-\psi : U_{x,y,z} \rightarrow R,
+\phi : U_{x,y,z} \rightarrow \mathbb R,
 \end{equation}
-where $U \subset R^3$ is the domain of the volume (note: every definitions will be for 2D case). $\psi$ can be sometimes called embedding. LS is implicit representation of an surface of the segmented object. Surface is then subset of the LS function values
+where $U \subset R^3$ is the domain of the volume (note: every definitions will be for 2D case). $\phi$ can be sometimes called embedding. LS is implicit representation of an surface of the segmented object. Surface is then subset of the LS function values
 \begin{equation}
-\vec{S} = \{\vec{x}\mid \psi(\vec{x}) = k\}
+\vec{S} = \{\vec{x}\mid \phi(\vec{x}) = k\}
 \end{equation}
-S is then called an k-isosurface or k-level set of $\psi$. k can be chosen freely, but in most cases it is zero. Surface is then called zero isosurface, zero LS or front in some contexts and corresponds to the actual object contour. 
+S is then called an k-isosurface or k-level set of $\phi$. k can be chosen freely, but in most cases it is zero. Surface is then called zero isosurface, zero LS or front in some contexts and corresponds to the actual object contour. 
 
 Surface can be also defined as local mapping $\vec{S}$:
 \begin{equation}
-\vec{S}: V_r x V_s \rightarrow R^3_{x,y,z},
+\vec{S}: V_r x V_s \rightarrow \mathbb R^3_{x,y,z},
 \end{equation}
-where $V x V \subset R^2$. Because of deformation time variable $t \in R^+$ has to be added resulting function S = S(r,s,t). 
-Deformation (propagation) of the surface is then described by an evolution equation i.e. differential equation on S. One approach (dynamic) is to use one-parameter family of $\psi$ i.e. $\psi(\vec{x},t)$ changes over time, $\vec{x}$ remains on the k-level set of $\psi$ as it moves and k remains constant. Resulting equation is:
+where $V x V \subset \mathbb R^2$. Because of deformation time variable $t \in \mathbb R^+$ has to be added resulting function S = S(r,s,t). 
+Deformation (propagation) of the surface is then described by an evolution equation i.e. differential equation on S. One approach (dynamic) is to use one-parameter family of $\phi$ i.e. $\phi(\vec{x},t)$ changes over time, $\vec{x}$ remains on the k-level set of $\phi$ as it moves and k remains constant. Resulting equation is:
 \begin{equation}
 \label{deformEq}
-\psi(\vec{x}(t),t) = k \Rightarrow \frac{\delta \psi}{\delta t} = - \Delta \psi \centerdot \vec{v}.
+\phi(\vec{x}(t),t) = k \Rightarrow \frac{\delta \phi}{\delta t} = - \Delta \phi \centerdot \vec{v}.
 \end{equation}
 Where v represents movement of point x on deforming surface i.e. positions in time.
-All surface movements depend on forces that are based on LS geometry. And LS geometry can be expressed in terms of differential structure of $\psi$. So following version of equation \ref{deformEq} link folmulated:
+All surface movements depend on forces that are based on LS geometry. And LS geometry can be expressed in terms of differential structure of $\phi$. So following version of equation \ref{deformEq} link folmulated:
 \begin{equation}
-\frac{\delta\psi}{\delta t} = - \Delta \psi \centerdot \vec{v} = - \Delta \psi \centerdot F(\vec{x}, D\psi, D^2\psi, ...),
+\frac{\delta\phi}{\delta t} = - \Delta \phi \centerdot \vec{v} = - \Delta \phi \centerdot F(\vec{x}, D\phi, D^2\phi, ...),
 \end{equation}
-where $D^n\psi$ is the set of n-order derivatives of $\psi$ evaluated at x. The term $F(\vec{x}, D\psi, D^2\psi, ...)$ represents some force that influence the movement of a surface point. This equation can applies to every values of k i.e. every LS of function $\psi$ and is basic equation of LS method.
+where $D^n\phi$ is the set of n-order derivatives of $\phi$ evaluated at x. The term $F(\vec{x}, D\phi, D^2\phi, ...)$ represents some force that influence the movement of a surface point. This equation can applies to every values of k i.e. every LS of function $\phi$ and is basic equation of LS method.
 
 \subsection{Level set computation}
 
 Computation of surface deformation has to be discretized so it is performed on discretized volume i.e. grid. Equation converts the problem to solving nonlinear partial differential equations (PDE). Surface deformation (propagation, movement) is then computed from initial model in cycles representing discrete time steps using this update equation:
 \begin{equation}
-\psi_{i,j,k}^{n+1} = \psi_{i,j,k}^{n} + \Delta t \Delta \psi_{i,j,k}^{n},
+\label{deformEqApprox}
+\phi_{i,j,k}^{n+1} = \phi_{i,j,k}^{n} + \Delta t \Delta \phi_{i,j,k}^{n},
 \end{equation}
-where the term $\psi_{i,j,k}^{n}$ is discrete aproximation of $\frac{\delta\psi}{\delta t}$ refering to the n-th time step at discrete position i,j,k (which has an counter part in continous domain $\psi(x_i, y_j, z_k)$ ) and $\Delta t \Delta \psi_{i,j,k}^{n}$ is finite forward difference term representing aproximation of the forces influencing the LS (update term). The solution is then succession of steps where new solution is obtained as current solution plus update term.
+where the term $\phi_{i,j,k}^{n}$ is discrete aproximation of $\frac{\delta\phi}{\delta t}$ refering to the n-th time step at discrete position i,j,k (which has an counter part in continous domain $\phi(x_i, y_j, z_k)$ ) and $\Delta t \Delta \phi_{i,j,k}^{n}$ is finite forward difference term representing aproximation of the forces influencing the LS (update term). The solution is then succession of steps where new solution is obtained as current solution plus update term.
 
 Discretization of the LS solution brings two problems. Fist one is need of stable and accurate numeric scheme for solving PDE equations. This is solved by proposed 'upwind sheme' by Osher and Sethian. The second one is high computational complexity caused by conversion surface problem into (one dimension higher) volume problem. 
 // TODO popsat narocnost
@@ -139,36 +140,52 @@ Even faster method that perform extension and distance reinitialization is $O(N)
 
 \subsection{Level set segmentation}
 
-The update term from equation //TODO can be further divided into another subterms such as:
+Segmentation using LS method is performed based on a speed function that is calculated from input (segmented image) and that encourages the mode to grow into direction where the object lies. There are variety speed functions. In this work I use speed function based on threshold $T_{low}$ and $T_{hi}$ of the intensities from the input image. If pixel has intensity value that is within the threshold interval (for maximum speed in the middle of threshold interval), the level set model grows (see figure \ref{fg:speedFunction}). Otherwise it contracts as fast as the pixel has value further from the interval. The function $D$ is defined as:
+
 \begin{equation}
-\psi_{i,j,k}^{n+1} = \psi_{i,j,k}^{n} + \Delta t \Delta \psi_{i,j,k}^{n},
+D(\vec{x}) = 
+\begin{cases}
+V(\vec{x}) - T_{low} & \text{if $V(\vec{x}) < T_{mid}$,}\\
+T_{hi} - V(\vec{x}) & \text{if $V(\vec{x}) > T_{mid}$}\\
+\end{cases}
 \end{equation}
-
-The most used subterms are propagation (i.e. speed function calculated from segmented image), advection and curvature term (explained later).
-
-Segmentation using LS approach is performed based on a speed function that is calculated from input (segmented image). There are variety speed functions. In this work I use speed function based on threshold $T_{low}$ and $T_{hi}$ of the intensities from the input image. If pixel has intensity value that is within the threshold interval (for maximum speed in the middle of threshold interval), the level set model grows (see figure \ref{fg:speedFunction}). Otherwise it contracts as fast as the pixel has value further from the interval.
+where $V(\vec{x})$ is pixel value in point $\vec{x}$ and $T_{mid}$ is the middle of the thresholding interval.
 
 \begin{figure}
     \centering
     \includegraphics[width=14cm]{data/speedFunction.eps}
-    \caption[Graph of thresholding based speed function]{Gray rectangle encloses interval, where is the speed function positive (i.e. the model expands). The fastest expansion is in $T_{mid}$ point that is the middle of that interval}
+    \caption[Graph of thresholding based speed function]{Gray rectangle encloses interval, where is the speed function positive (i.e. the model expands). The fastest expansion is in $T_{mid}$ point}
     \label{fg:speedFunction}
 \end{figure}
 
 This is quite natural definition of what we need from the process. Grow as fast as possible where the segmented object lies and contract otherwise.
 
-and such speed functions are
-inconsistent with interactive parameter tuning. In general we are concerned with problems
-that include a surface curvature term and simultaneously require the model to expand and
-contract to match the data.
+The update term from equation \ref{deformEqApprox} can be rewriten into following form that consist of few terms:
+\begin{equation}
+\phi_t = \alpha |\bigtriangledown \phi| H + \beta \bigtriangledown|\bigtriangledown I|\centerdot \bigtriangledown \phi + \gamma|\bigtriangledown \phi|D
+\end{equation}
+where $|\bigtriangledown \phi|D$ represents speed function term, $\bigtriangledown|\bigtriangledown$ is edge term that is and $|\bigtriangledown \phi| H$ represent curvature term. $\alpha$, $\beta$ and $\gamma$ are wights of particular terms.
 
-Tuning of weights of that subterms makes the LS method complex and robust. 
+Edge term is computed from second order derivatives just like Canny and Marr-Hildreth algorithms for edge detection. It shall to push level set towards edges (i.e. border of segmented object).
 
-ruzne vzorecky pro diferenci, termy a vahy
+Curvature forces resulting level set model to have less surface and thus protect negative effects like levelset leaking into unwanted places like Figure \ref{fg:leaking} shows. Note, if $\alpha$ = $\beta$ = 0, the result is the same as from flood-fill method because there is only speed term taking place.
 
-segmentace pomoci levelsetu
+\begin{figure}
+    \centering
+    \includegraphics[width=14cm]{data/leaking.eps}
+    \caption[Leaking of segmentaion into unwanted places]{}
+    \label{fg:leaking}
+\end{figure}
+
+I omit the edge term so there is only two params of the method. Tuning of the term weights has to be performed in order to have best results.
 
 \section{Level set methodes on streaming devices}
 
-Uvedeni problemu se streamovacimi zarizenimi s odkazem na lefohn_tvcg03.pdf
-srovnani jejich moznosti s moznostmi cellu - vyhody nevyhody
+\par
+There was some attempts for mapping level set method onto special stream device. There are some obstacles due to streaming architecture that has to be overcomed to ifficiently solve the problem. The ﬁrst is that in order to take advantage streaming architecture, the streams of data must be large, contiguous blocks. Thus the points in discrete grid near the level-set surface must be packed into data blocks that can be further processed by streaming processors. Another difficulty is that the level set moves with each time step, and thus the packed representation must be quickly adapted.
+
+\par
+For example Cates at al. \cite{GIST} or Lefohn at al. \cite{lefonhGPUSolver} mapped level set segmentation method onto GPU. GPU is a streaming architecture with many (hundrets) of streaming cores. They runs short programs called shaders. In mapping to GPU architecture texture memory is used to store input data (in large continuous block) and actual computation is managed by vertices that flows into the shader and plays role of some pointers to texture memory. This is some kind of trick because the texture memory is not addressed directly by address number (like in single dimension continuous address space in common processors) but instead by a coordinate to texture. So some virtual texture space has to be created like propose Lefonh at al. \cite{lefonhGPUSolver}. Another workaround has to be performed when computed data is trasferred back to CPU. This direction is much more slower than CPU to GPU direction and thus the results has to be packed somehow. Lefonh at al. \cite{lefonhGPUSolver} decribes this packaging as well. These troubles are payed by some advantage. One is the high count of the processors and extreme fast dedicated memory so the results can be impressive. Another is that the calculation can be directly visualized by the GPU.
+
+\par
+Although CellBE has some parts of the approach in common with GPU, such as streaming processors and thus need to pack the input data into larger continuous parts some GPU obstacles need not to overcome. Its e.g. creation of virtual address space mapping coordinates to flat address space because the SPE directly has its own flat adress space. Also the result packing for sending back to CPU is not neccessary because transmission of data from and to SPE has the same speed and can be perfromed directly. All these CellBE processor features could result easier and more straightforward process of mapping of level set method. But probably at cost of lower speed than GPU.
