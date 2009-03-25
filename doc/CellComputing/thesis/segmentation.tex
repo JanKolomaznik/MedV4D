@@ -132,8 +132,6 @@ Narrow Bands (proposed by Adalsteinsson and Sethian \cite{sethianFastLS}) comput
 Sparse Fields method (proposed by Whitaker \cite{sparseFilelds}) introduces a scheme in which updates of an embedding are calculated only on the level set. This means that it performs exactly the number of calculations that is needed to calculate next position of the level set. This is the biggest advantage of the method. Points that are adjacent to the level set are called active points (forming active set). Because active points must be adjecant to the LS their positions lie within certain range from the LS. Therefore even values of an embedding in acitive set positions must lie on certain range (active range). When active point value move out from this active range it is no longer the active point and is removed from the active set. And vice versa, the point whose value comes into active range is added into active set. Along the active set there is few layers of points adjecant to the active set organized like peels of an onion. 
 Process can be imagined as a tram that lays down tracks before it and picks them up behind.
 
- Computation of embedding is performed on 
-
 ,Several layers around that level set are updated via a distance transform at each iteration.
 
 Even faster method that perform extension and distance reinitialization is $O(N)$ is presented by Peng et al. \cite{pengSparseFields}.
@@ -164,7 +162,7 @@ The update term from equation \ref{deformEqApprox} can be rewriten into followin
 \begin{equation}
 \phi_t = \alpha |\bigtriangledown \phi| H + \beta \bigtriangledown|\bigtriangledown I|\centerdot \bigtriangledown \phi + \gamma|\bigtriangledown \phi|D
 \end{equation}
-where $|\bigtriangledown \phi|D$ represents speed function term, $\bigtriangledown|\bigtriangledown$ is edge term that is and $|\bigtriangledown \phi| H$ represent curvature term. $\alpha$, $\beta$ and $\gamma$ are wights of particular terms.
+where $|\bigtriangledown \phi|D$ represents speed function term, $\bigtriangledown|\bigtriangledown I|$ is edge term that is and $|\bigtriangledown \phi| H$ represent curvature term. $\alpha$, $\beta$ and $\gamma$ are wights of particular terms.
 
 Edge term is computed from second order derivatives just like Canny and Marr-Hildreth algorithms for edge detection. It shall to push level set towards edges (i.e. border of segmented object).
 
