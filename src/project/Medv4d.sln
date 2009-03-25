@@ -18,12 +18,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dicomClient", "backendForDI
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "common\common.vcproj", "{D300E0F3-DB4D-4B1C-9473-830764C94644}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "m4dPilot", "GUI\m4dPilot.vcproj", "{CAFBCE49-21C9-3A1D-995B-E6FFF641C6E6}"
-	ProjectSection(ProjectDependencies) = postProject
-		{E4C0EE3F-2176-47AD-97C4-CEF94A1B3378} = {E4C0EE3F-2176-47AD-97C4-CEF94A1B3378}
-		{2D198559-0E14-42E5-AB0B-3F0A5AE76EDF} = {2D198559-0E14-42E5-AB0B-3F0A5AE76EDF}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "m4dWidgets", "m4dWidgets\m4dWidgets.vcproj", "{E4C0EE3F-2176-47AD-97C4-CEF94A1B3378}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A5A68502-8A1D-44AC-AB98-199CE76FFB8A} = {A5A68502-8A1D-44AC-AB98-199CE76FFB8A}
@@ -47,6 +41,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimpleMIP", "SimpleMIP\Simp
 		{D300E0F3-DB4D-4B1C-9473-830764C94644} = {D300E0F3-DB4D-4B1C-9473-830764C94644}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "m4dPilot", "m4dPilot\m4dPilot.vcproj", "{CAFBCE49-21C9-3A1D-995B-E6FFF641C6E6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -69,10 +65,6 @@ Global
 		{D300E0F3-DB4D-4B1C-9473-830764C94644}.Debug|Win32.Build.0 = Debug|Win32
 		{D300E0F3-DB4D-4B1C-9473-830764C94644}.Release|Win32.ActiveCfg = Release|Win32
 		{D300E0F3-DB4D-4B1C-9473-830764C94644}.Release|Win32.Build.0 = Release|Win32
-		{CAFBCE49-21C9-3A1D-995B-E6FFF641C6E6}.Debug|Win32.ActiveCfg = Debug|Win32
-		{CAFBCE49-21C9-3A1D-995B-E6FFF641C6E6}.Debug|Win32.Build.0 = Debug|Win32
-		{CAFBCE49-21C9-3A1D-995B-E6FFF641C6E6}.Release|Win32.ActiveCfg = Release|Win32
-		{CAFBCE49-21C9-3A1D-995B-E6FFF641C6E6}.Release|Win32.Build.0 = Release|Win32
 		{E4C0EE3F-2176-47AD-97C4-CEF94A1B3378}.Debug|Win32.ActiveCfg = Debug|Win32
 		{E4C0EE3F-2176-47AD-97C4-CEF94A1B3378}.Debug|Win32.Build.0 = Debug|Win32
 		{E4C0EE3F-2176-47AD-97C4-CEF94A1B3378}.Release|Win32.ActiveCfg = Release|Win32
@@ -85,6 +77,10 @@ Global
 		{DB98F211-3739-4991-B7F4-A66CE6A78101}.Debug|Win32.Build.0 = Debug|Win32
 		{DB98F211-3739-4991-B7F4-A66CE6A78101}.Release|Win32.ActiveCfg = Release|Win32
 		{DB98F211-3739-4991-B7F4-A66CE6A78101}.Release|Win32.Build.0 = Release|Win32
+		{CAFBCE49-21C9-3A1D-995B-E6FFF641C6E6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CAFBCE49-21C9-3A1D-995B-E6FFF641C6E6}.Debug|Win32.Build.0 = Debug|Win32
+		{CAFBCE49-21C9-3A1D-995B-E6FFF641C6E6}.Release|Win32.ActiveCfg = Release|Win32
+		{CAFBCE49-21C9-3A1D-995B-E6FFF641C6E6}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
