@@ -32,7 +32,7 @@ cover: bookCover.tex
 	pdflatex bookCover.tex
 
 clean:
-	rm *.log *.aux *.tex.aux *.lot *.out *.toc *.pdf *.dvi
+	rm *.log *.aux *.tex.aux *.lot *.out *.toc *.pdf *.dvi *.lof
 
 #pictures through pdf & pdf latex
 ################################################################################

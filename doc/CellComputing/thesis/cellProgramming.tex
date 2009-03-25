@@ -44,9 +44,116 @@ Actual building is done using selected toolchain. But there is difference betwee
 \par
 There are two options for SPE code management. One is to build shared library and load it explicitly when it is used. Another way is to build a static library and include it into PPU executable. This inclusion is called embeding and is performed with extra tool from toolchain. The SPU program is then referenced as special extern structure direct from PPU code (instead of performing some shared libraries loading). Both ways has its pros but even cons which are the same as with shared vs. static libraries.
 
-\section {Design patterns}
+\section{Parallel systems & CellBE}
+
+Parallelization depends also on type of system (hardware) where the program will be run. There are two basic kind of paralel systems:
+\begin{enumerate}
+\item {shared-memory system}
+\par
+Is multi processor system with one shared memory which all processor can see. Processors has to synchronize access to the memory otherwise race conditions will rise.
+
+\item {distributed-memory system}
+\par
+Is system where each processor has its own private memory. There is no need for synchronization.
+\end{enumerate}
+
+In context of parallel systems, CellBE is some kind of hybrid system. SPEs matches the distributed-memory system (due to private local stores) while PPE is shared-memory system. Sometimes called heterogenous multi-core, with distributed memory. Because CellBE processors can be gathered into bigger units (e.g. blade server, with two CellBE chips) they can be viewed as either 16 + 2 cores in SMP mode or two non-uniform memory access machines connected together. Programmer has then decide which view of the CellBE processor is better for the solved problem.
+
+\section{CellBE programming models}
+
+Implementation of paralel algorithms rely on paralel programming model. That is a set of software technologies (such as programming languages extension, special compilers, libraries) through that actual paralelism is achieved. So another decision that programmer has to make is to choose a programming model or mixture of them that will best fit for the solved problem.
+
+For CellBE there are variety of parallel programming models. They differ from each other in view of the hardware (hardware model) and thus how many action (such as task distribution management, data distribution management, synchronization) are performed implicitely by the model. The most abstract ones can perform many action implicit (i.e. ease of implementation) but at cost there can be no performance tunning done. And on the other hand the most concrete one see the CellBE with all the details and actions performed can be tunned and performed explicitely in way application requires.
+
+There are some models that are determined only for CellBE platform and are contained in SDK. While there are another models (such as MPI, openMP) that are compatible but they would expose only PPE, will not further decribed.
+
+List of the programming models (frameworks) follows in order from most concrete to most abstract:
+\begin{enumerate}
+\item {libspe2}
+\par
+Offers features such as SPE context management (creating, running, scheduling, and deleting), DMA primitives for data transfer, mailboxes, signal, events, and synchronization functions for PPE to SPE and SPE to SPE dialogs. 
+
+\item {Data Communication and Synchronization - DaCS}
+\par
+Defines program entity for PPE or SPE (HE - host element program for PPE and AE - accelerator element program for SPE). Provides some services for that programs. These are resource and process management, where an HE manipulates its AEs, group management, for defining groups within which synchronization events like barriers can happen, message passing by using send and receive primitives etc.
+
+\item {Accelerated Library Framework - ALF}
+\par
+ALF defines ALF-task as another entity that perform computationaly intensive parts of a program. The idea is to have the host program split the work into multiple independent pieces, which are called work blocks. They are described by a computational kernel, the input and the output data. Programming with ALF is divided into two side. The host and the accelerator one. On the accelerator side, the programmer only has to code the computational kernel, unwrap the input data, and pack the output data when the kernel finishes. The ALF offer clear separation between host accelerator sides of program parts. Providing the following services (from programmers view for free): work blocks queue management, load balancing between accelerators, transparent DMA transfers, ...
+
+\end{enumerate}
+
+Choosing a framework is important decision of writing CellBE application. It should be considered enough.
+
+\section {CellBE paralelism levels}
+
+The CellBE processor offers many opportunities for parallel processing. That is because it is composed of and can be compound to heterogenous elements. Levels are:
+\begin{enumerate}
+\item server level 
+In a hybrid environment at the cluster level using MPI or some sort of grid computing middleware.
+
+\item CellBE chips level
+In case there are more in the machine (e.g. blade server with two CellBEs). Using ALF or DaCS for hybrid.
+
+\item SPE level 
+Inside the CellBE chip offloading intensive parts of code to SPE, using libspe, ALF, DaCS.
+
+\item SIMD instruction level
+Instruction that process more data in parallel. Using leanguage intrinsic.
+\end{enumerate}
+
+\section{Computation configurations}
 
 \par
-Because of heterogenous nature of CellBE and its PPU \& SPEs processing elements variety of design patterns how to use them to solve a problem has been developed.
+Because of heterogenous nature of CellBE and its PPU \& SPEs processing elements some different computation configuration are used. They differ in usage of SPUs and hase its own pros and cons:
+\begin{enumerate}
+\item Streaming configuration
+\par
+All SPE serves as a stream processor (see Figure \ref{fg:streamingModel}). They run exact same code expecting the same type of data and producing also the same of data type. This configuration is well suited for some streaming application for example filters where there is still the same type of data on input. No SPU context need not to be switched that save according time. One disadvantage is that configuration is static.
 
-Programming for CellBE as a whole is not much different from programming of common processors. 
+\begin{figure}
+    \centering
+    \includegraphics[width=10cm]{data/streamingModel.eps}
+    \caption[Streaming SPE configuration]{All SPE run the same code creating farm of processor that process same type of data.}
+    \label{fg:streamingModel}
+\end{figure}
+
+\item Pipeline configuration
+\par
+SPE server as stages of an pipeline (see Figure \ref{fg:pipelineModel}). Data are passed through from one to other of the SPEs. The SPE to SPE transfer are faster than SPE to PPE so this can be benefit. The configuration is also static which means no SPU context switch.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=10cm]{data/pipelineModel.eps}
+    \caption[Pipeline SPE configuration]{SPE creates pipeline. Each spe represent one stage of that pipeline. Data are transferred only via SPE to SPE DMA transfers benefiting the speed of bus.}
+    \label{fg:pipelineModel}
+\end{figure}
+
+\item PPU centric
+\par
+This configuration is common approach with CellBE. Program runs on PPE (see Figure \ref{fg:PPUCentricModel})and only selected, highly demanding computational kernels (hotspots) are offloaded to SPEs. This method is the easiest from a program development perspective because it limits the scope of source code changes and does not require much re-engineering at the application logic level. One disadvantage is dynamic changes of SPE contexts that is quite expensive opertation.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=10cm]{data/PPUCentricModel.eps}
+    \caption[PPU centric configuration]{Program is run on PPE and only hotspots are offloaded to SPEs. Offloading means managing SPE context creation and loading as well as managing data transfer and synchronization between PPE and SPUs}
+    \label{fg:PPUCentricModel}
+\end{figure}
+
+\item SPE server
+\par
+Another configuration is to have server-like programs running on SPEs that sits and waits offering some functionality. This is requires the code to be small enough to fit into the SPU local store along with processed data.
+
+\end{enumerate}
+
+\section {Process of porting application for CellBE}
+
+\par
+The most common process of porting an application for CellBE system (Figure \ref{fg:appPorting}) begins with locatlization of compute intensive parts, hotspots (by profiling of the application on PPE). Hotspot computation is then moved to the SPEs. Then the SIMDation (i.e. rewriting scalar code into vectorised to be able to use SIMD instruction) of the hotspots and data movement tunnig can be performed until satisfactory performance is obtained. The whole process is repeated for every single hotspot.
+
+\begin{figure}
+    \centering
+    \includegraphics[height=10cm]{data/portingCycle.eps}
+    \caption[Application for CellBE porting process]{Diagram shows all stages of the process and loops for better performance tunnig and other hotspots}
+    \label{fg:appPorting}
+\end{figure}
