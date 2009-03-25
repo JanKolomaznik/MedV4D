@@ -137,8 +137,6 @@ int m4dGUIMainWindow::addViewerDesktop ( m4dGUIMainViewerDesktopWidget *viewerDe
 {
   connect( viewerDesktop, SIGNAL(propagateFeatures( M4D::Viewer::m4dGUIAbstractViewerWidget * )), 
            this, SLOT(features( M4D::Viewer::m4dGUIAbstractViewerWidget * )) );
-  connect( viewerDesktop, SIGNAL(sourceAdded( const QString &, const QString & )), 
-           this, SLOT(source( const QString &, const QString & )) );
 
   return mainDesktopStackedWidget->addWidget( viewerDesktop );
 }
@@ -158,7 +156,7 @@ void m4dGUIMainWindow::switchToDesktopWidget ()
 }
 
 
-void m4dGUIMainWindow::switchToViewerDesktop ( int index )
+void m4dGUIMainWindow::switchToViewerDesktop ( int index, bool enableOtherTools )
 {
   mainDesktopStackedWidget->setCurrentIndex( index );
 
@@ -173,8 +171,8 @@ void m4dGUIMainWindow::switchToViewerDesktop ( int index )
   }
 
   features( prevViewerDesktop->getSelectedViewerWidget() );
-  replaceAct->setEnabled( true );
-  layoutAct->setEnabled( true );
+  replaceAct->setEnabled( enableOtherTools );
+  layoutAct->setEnabled( enableOtherTools );
 }
 
 
@@ -187,7 +185,15 @@ void m4dGUIMainWindow::switchToDefaultViewerDesktop ()
 void m4dGUIMainWindow::addSource ( ConnectionInterface *conn, const char *pipelineDescription,
                                    const char *connectionDescription )
 {
-  currentViewerDesktop->addSource( conn, pipelineDescription, connectionDescription );
+  for ( unsigned i = 1; i < mainDesktopStackedWidget->count(); i++ ) 
+  {
+    m4dGUIMainViewerDesktopWidget *desktop = (m4dGUIMainViewerDesktopWidget *)mainDesktopStackedWidget->widget( i );
+    desktop->addSource( conn, pipelineDescription, connectionDescription );
+  }
+
+  sourcesComboBox->addItem( QString( pipelineDescription ) + " - " + QString( connectionDescription ) );
+
+  sourcesToolBar->show();
 }
 
 
@@ -436,14 +442,6 @@ void m4dGUIMainWindow::replace ()
   }
 
   features( currentViewerDesktop->getPrevSelectedViewerWidget() );
-}
-
-
-void m4dGUIMainWindow::source ( const QString &pipelineDescription, const QString &connectionDescription )
-{
-  sourcesComboBox->addItem( pipelineDescription + " - " + connectionDescription );
-
-  sourcesToolBar->show();
 }
 
 

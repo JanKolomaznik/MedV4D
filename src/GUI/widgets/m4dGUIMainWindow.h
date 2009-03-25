@@ -150,11 +150,14 @@ class m4dGUIMainWindow: public QMainWindow
      * Causes toolBar and control adaptations.
      * 
      * @param index index in the Stacking Desktop - returned by addViewerDesktop
+     * @param enableOtherTools flag for enable/disable other tools (e.g. replace, layout)
+     * (not the viewer tools, which are adaptating according to current desktop and the 
+     * selected viewer within it) - default is true
      */
-    void switchToViewerDesktop ( int index );
+    void switchToViewerDesktop ( int index, bool enableOtherTools = true );
 
     /** 
-     * Switches to the default Viewer Desktop Widget - in Stacking Desktop. 
+     * Switches to the default Viewer Desktop Widget - in the Stacking Desktop. 
      * Causes toolBar and control adaptations.
      */
     void switchToDefaultViewerDesktop ();
@@ -162,7 +165,8 @@ class m4dGUIMainWindow: public QMainWindow
     /** 
      * Adds source (pipeline connection) to vector of registered sources - possible connections, 
      * where can be plugged a viewer. Can be selected through comboBox in toolBar.
-     * It's calling the Main Viewer Desktop's addSource method.
+     * It's calling the Main Viewer Desktop's addSource method - for every in the Stacking Desktop.
+     * So adding desktops should go before adding sources.
      *
      * @param conn pointer to the connection to be added
      * @param pipelineDescription description/name of the pipeline connection belongs to (for the user - in the comboBox)
@@ -249,11 +253,6 @@ class m4dGUIMainWindow: public QMainWindow
      * Slot for replacing selected viewers (toggle 3D viewer) - with updates (features).
      */
     void replace ();
-
-    /**
-     * Slot for managing sources toolBar behavior - adding new sources - connected to Main Viewer Desktop.
-     */
-    void source ( const QString &pipelineDescription, const QString &connectionDescription );
 
     void startProgress ();
 

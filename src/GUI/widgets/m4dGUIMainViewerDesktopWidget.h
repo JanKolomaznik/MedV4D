@@ -106,17 +106,6 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
 
 
     /** 
-     * Raplces the selected viewer - keeping the connection, overlay infos, etc. from the replaced viewer.
-     * It's inserted to the repleced viewer's place, with its dimensions. The whole toolBar and the controls
-     * are updated according to the type of the new viewer.
-     *
-     * @param type type of the wanted viewer
-     * @param replacedViewer pointer to the replaced viewer
-     */
-    void replaceSelectedViewerWidget ( ViewerType type, M4D::Viewer::m4dGUIAbstractViewerWidget *replacedViewer );
-    
-
-    /** 
      * Setter for the selected viewer's checked tool (index) - for left mouse button.
      *
      * @param value value to set (the index of the tool)
@@ -134,6 +123,20 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
 
     void setConnectionForAll ( Imaging::ConnectionInterface *conn );
 
+    void setViewerEventHandlerForSelected ( M4D::Viewer::m4dGUIViewerEventHandlerInterface *eventHandler );
+
+    void setViewerEventHandlerForAll ( M4D::Viewer::m4dGUIViewerEventHandlerInterface *eventHandler );
+
+
+    /** 
+     * Raplces the selected viewer - keeping the connection, overlay infos, etc. from the replaced viewer.
+     * It's inserted to the repleced viewer's place, with its dimensions. The whole toolBar and the controls
+     * are updated according to the type of the new viewer.
+     *
+     * @param type type of the wanted viewer
+     * @param replacedViewer pointer to the replaced viewer
+     */
+    void replaceSelectedViewerWidget ( ViewerType type, M4D::Viewer::m4dGUIAbstractViewerWidget *replacedViewer );
 
     /** 
      * Adds source (pipeline connection) to vector of registered sources - possible connections, 
@@ -180,12 +183,6 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
      * @param prevViewer pointer to the previously selected viewer - to disconnect it
      */
     void propagateFeatures ( M4D::Viewer::m4dGUIAbstractViewerWidget *prevViewer );
-
-    /**
-     * Signal indicating source (pipeline connection) addition - it's emitted after the addition.
-     * Should be connected to main window's source slot - to add item to sources toolBar.
-     */
-    void sourceAdded ( const QString &pipelineDescription, const QString &connectionDescription );
 
   private:
 

@@ -22,8 +22,36 @@ m4dGUIMainViewerDesktopWidget::m4dGUIMainViewerDesktopWidget ( const unsigned ro
 {
   setDesktopLayout( rows, columns );
 
-  selectedViewer = viewers[1];
+  selectedViewer = viewers[0];
   viewers[0]->viewerWidget->slotSetSelected( true );
+}
+
+
+void m4dGUIMainViewerDesktopWidget::setDefaultConnection ( ConnectionInterface *conn )
+{
+	defaultConnection = conn;
+}
+
+
+void m4dGUIMainViewerDesktopWidget::setConnectionForAll ( ConnectionInterface *conn )
+{
+  for ( unsigned i = 0; i < viewers.size(); ++i ) {
+		viewers[i]->viewerWidget->setInputPort( conn );
+	}
+}
+
+
+void m4dGUIMainViewerDesktopWidget::setViewerEventHandlerForSelected ( m4dGUIViewerEventHandlerInterface *eventHandler )
+{
+  selectedViewer->viewerWidget->setViewerEventHandler( eventHandler );
+}
+
+
+void m4dGUIMainViewerDesktopWidget::setViewerEventHandlerForAll ( m4dGUIViewerEventHandlerInterface *eventHandler )
+{
+  for ( unsigned i = 0; i < viewers.size(); ++i ) {
+		viewers[i]->viewerWidget->setViewerEventHandler( eventHandler );
+	}
 }
 
 
@@ -78,26 +106,10 @@ void m4dGUIMainViewerDesktopWidget::replaceSelectedViewerWidget ( ViewerType typ
 }
 
 
-void m4dGUIMainViewerDesktopWidget::setDefaultConnection ( ConnectionInterface *conn )
-{
-	defaultConnection = conn;
-}
-
-void m4dGUIMainViewerDesktopWidget::setConnectionForAll ( ConnectionInterface *conn )
-{
-  for ( size_t i = 0; i < viewers.size(); ++i ) {
-		viewers[i]->viewerWidget->setInputPort( conn );
-	}
-}
-
-
 void m4dGUIMainViewerDesktopWidget::addSource ( ConnectionInterface *conn, const char *pipelineDescription,
                                                 const char *connectionDescription )
 {
   sources.push_back( conn );
-
-  emit sourceAdded ( QString( pipelineDescription ), 
-                     QString( connectionDescription ) );
 }
 
 
@@ -171,7 +183,9 @@ void m4dGUIMainViewerDesktopWidget::selectedChanged ( unsigned index )
   prevSelectedViewer = selectedViewer;
   selectedViewer = viewers[index];
 
-  prevSelectedViewer->viewerWidget->slotSetSelected( false );
+  if ( prevSelectedViewer != selectedViewer ) {
+    prevSelectedViewer->viewerWidget->slotSetSelected( false );
+  }
 
   emit propagateFeatures( prevSelectedViewer->viewerWidget ); 
 }
