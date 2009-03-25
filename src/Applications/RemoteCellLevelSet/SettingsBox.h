@@ -32,7 +32,7 @@ protected slots:
 	// events callbacks
 	void lowerThresholdValueChanged( int val ) {props_->lowerThreshold = val;}
 	void upperThresholdValueChanged( int val ) {props_->upperThreshold = val;}
-	void maxIterationsValueChanged( int val ) {props_->lowerThreshold = val;}
+	void maxIterationsValueChanged( int val ) {props_->maxIterations = val;}
 	void initialDistanceValueChanged( double val ) {props_->initialDistance = val;}
 	void seedXValueChanged( int val) {props_->seedX = val;}
 	void seedYValueChanged( int val) {props_->seedY = val;}

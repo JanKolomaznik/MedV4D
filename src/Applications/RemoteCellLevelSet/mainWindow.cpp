@@ -2,6 +2,9 @@
 #include "SettingsBox.h"
 #include "Imaging/PipelineMessages.h"
 
+#include "Imaging/interpolators/nearestNeighbor.h"
+#include "Imaging/filters/decimation.h"
+
 using namespace std;
 using namespace M4D::Imaging;
 
@@ -58,11 +61,27 @@ void
 mainWindow::CreatePipeline()
 {
 	_convertor = new InImageConvertor();
+	_pipeline.AddFilter( _convertor );
+	
+	typedef M4D::Imaging::NearestNeighborInterpolator<ImageType> Interpolator;
+	typedef M4D::Imaging::DecimationFilter<ImageType, Interpolator> Decimator;
+	
+	
+	_decimator = new Decimator( new Decimator::Properties(0.5f) );
+	_decimator->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
+	_pipeline.AddFilter( _decimator );
+	
 	_filter = new RemoteFilterType(& properties_);
+	_pipeline.AddFilter( _filter );
 
 	_inConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( 
 			&_pipeline.MakeInputConnection( *_convertor, 0, false ) );
-	_pipeline.MakeConnection( *_convertor, 0, *_filter, 0 );
+	_pipeline.MakeConnection( *_convertor, 0, *_decimator, 0 );	
+//		_pipeline.MakeConnection( *_convertor, 0, *_filter, 0 );
+	
+	_tmpConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( 
+			&_pipeline.MakeConnection( *_decimator, 0, *_filter, 0 ) );
+	
 	_outConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( 
 			&_pipeline.MakeOutputConnection( *_filter, 0, true ) );
 	
@@ -71,6 +90,7 @@ mainWindow::CreatePipeline()
 	}
 
 	addSource( _inConnection, "Simple MIP", "Input" );
+	addSource( _tmpConnection, "Simple MIP", "Decimated image" );
 	addSource( _outConnection, "Simple MIP", "Result" );
 
 	_notifier =  new Notifier( this );

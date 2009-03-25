@@ -8,7 +8,7 @@
 #include <fstream>
 #include <map>
 
-#include "Common.h"
+#include "common/Common.h"
 #include "remoteComp/remoteNodesManager.h"
 
 using namespace std;

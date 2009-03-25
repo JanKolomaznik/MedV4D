@@ -20,19 +20,19 @@ ITKIncludes=	-I$(ITKIncludeRoot)\
 				-I$(ITKIncludeRoot)/gdcm/src
 				
 ITKLIBS= 	$(ITKLibsRoot)/libITKNumerics.a\
-			$(ITKLibsRoot)/libITKNrrdIO.a\
 			$(ITKLibsRoot)/libITKSpatialObject.a\
 			$(ITKLibsRoot)/libITKCommon.a\
 			$(ITKLibsRoot)/libitkvnl_inst.a\
 			$(ITKLibsRoot)/libitkvnl_algo.a\
 			$(ITKLibsRoot)/libitkvnl.a\
-			$(ITKLibsRoot)/libitkv3p_netlib.a\
 			$(ITKLibsRoot)/libitkvcl.a\
 			$(ITKLibsRoot)/libitksys.a\
-			$(ITKLibsRoot)/libITKMetaIO.a\
-			$(ITKLibsRoot)/libITKEXPAT.a\
-			$(ITKLibsRoot)/libITKniftiio.a\
-			$(ITKLibsRoot)/libITKznz.a\
+			$(ITKLibsRoot)/libitkv3p_netlib.a
+			#$(ITKLibsRoot)/libITKNrrdIO.a\			
+			#$(ITKLibsRoot)/libITKMetaIO.a\
+			#$(ITKLibsRoot)/libITKEXPAT.a\
+			#$(ITKLibsRoot)/libITKniftiio.a\
+			#$(ITKLibsRoot)/libITKznz.a\
 				
 M4DLIBS=	$(srcTop)/lib/libremoteCompServer$(archPostfix).a\
 		$(srcTop)/lib/libremoteCompCommons$(archPostfix).a \

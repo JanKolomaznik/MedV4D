@@ -4,7 +4,9 @@
 
 ##########################################
 ifdef COMPILE_FOR_CELL
-ITKLibsRoot=/usr/local/lib/InsightToolkit
+
+# subject to change
+ITKLibsRoot=/data/cell/ITK/LIBCell
 binUtilsPath=/opt/cell/toolchain/bin
 ROOT=/opt/cell/sysroot
 

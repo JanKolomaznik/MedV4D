@@ -79,14 +79,12 @@ void Server::ReadCommand(void) {
 			break;
 
 		case EXEC:
-			D_PRINT("Recieved EXEC command")
-			;
+			D_PRINT("Recieved EXEC command");
 			ReadFilterProperties();
 			break;
 
 		case DATASET:
-			D_PRINT("Recieved DATASET command")
-			;
+			D_PRINT("Recieved DATASET command");
 			ReadDataSet();
 			break;
 

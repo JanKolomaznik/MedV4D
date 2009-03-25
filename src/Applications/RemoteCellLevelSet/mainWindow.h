@@ -62,8 +62,10 @@ protected:
 	M4D::Imaging::PipelineContainer			_pipeline;
 	M4D::Imaging::AbstractPipeFilter		*_filter;
 	M4D::Imaging::AbstractPipeFilter		*_convertor;
+	M4D::Imaging::AbstractPipeFilter		*_decimator;
 	M4D::Imaging::ConnectionInterfaceTyped<M4D::Imaging::AbstractImage>	*_inConnection;
 	M4D::Imaging::ConnectionInterfaceTyped<M4D::Imaging::AbstractImage>	*_outConnection;
+	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage >	*_tmpConnection;
 
 private:
 
