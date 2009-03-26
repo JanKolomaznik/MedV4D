@@ -37,13 +37,13 @@ ITKLIBS= 	$(ITKLibsRoot)/libITKNumerics.a\
 M4DLIBS=	$(srcTop)/lib/libremoteCompServer$(archPostfix).a\
 		$(srcTop)/lib/libremoteCompCommons$(archPostfix).a \
 		$(srcTop)/lib/libImaging$(archPostfix).a\
-		$(srcTop)/lib/libcommon$(archPostfix).a		
+		$(srcTop)/lib/libcommon$(archPostfix).a
 
 LIBS=		$(M4DLIBS) \
 			$(ITKLIBS) \
-		-lboost_thread \
-		-lboost_filesystem\
-		-ldl
+			-lboost_thread\
+			-lboost_filesystem\
+			-ldl
 
 ########################################
 #Name of this project part
