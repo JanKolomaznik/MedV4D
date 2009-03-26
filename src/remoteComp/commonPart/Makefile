@@ -33,7 +33,7 @@ LDFLAGS=
 ARFLAGS=	-r
 INCLUDES=	-I$(srcTop) \
 			-I$(srcTop)/include \
-			-I/usr/local/include/boost-1_38
+			-I/usr/include
 
 
 

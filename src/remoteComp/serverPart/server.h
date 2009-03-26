@@ -22,7 +22,7 @@ class Server
 {
 
   public:
-    Server(boost::asio::io_service& io_service);
+    Server(asio::io_service& io_service);
     
     void OnExecutionDone( void);
     void OnExecutionFailed( void);
@@ -30,7 +30,7 @@ class Server
   private:
     void Accept();
 
-    void EndAccepted( const boost::system::error_code& error);
+    void EndAccepted( const asio::error_code& error);
     
     void ReadCommand(void);
     
@@ -40,8 +40,8 @@ class Server
     void ReadDataSet();
     void ReadFilterProperties();
 
-    boost::asio::ip::tcp::acceptor m_acceptor;
-    boost::asio::ip::tcp::socket m_socket_;
+    asio::ip::tcp::acceptor m_acceptor;
+    asio::ip::tcp::socket m_socket_;
     
     NetAccessor netAccessor_;
     

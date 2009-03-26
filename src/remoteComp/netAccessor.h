@@ -11,7 +11,7 @@
 #define __USE_W32_SOCKETS     // for windows
 #define _WIN32_WINNT 0x0501   // win ver
 
-#include <boost/asio.hpp>
+#include <asio.hpp>
 #include <boost/bind.hpp>
 
 #include "common/mediumAccessor.h"
@@ -30,13 +30,13 @@ namespace RemoteComputing
 class NetAccessor : public IO::MediumAccessor
 {
 public:
-	NetAccessor(boost::asio::ip::tcp::socket &socket);
+	NetAccessor(asio::ip::tcp::socket &socket);
 	~NetAccessor();
 	
 	void PutData(const void *data, size_t length);
 	void GetData(void *data, size_t length);
 protected:
-	boost::asio::ip::tcp::socket &m_socket_;
+	asio::ip::tcp::socket &m_socket_;
 };
 
 }

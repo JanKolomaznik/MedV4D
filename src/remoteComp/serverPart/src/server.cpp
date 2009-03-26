@@ -13,14 +13,14 @@
 #include "../../netCommons.h"
 #include "Imaging/DataSetFactory.h"
 
-using boost::asio::ip::tcp;
+using asio::ip::tcp;
 using namespace M4D::RemoteComputing;
 using namespace M4D::Imaging;
 using namespace M4D::IO;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Server::Server(boost::asio::io_service &io_service) :
+Server::Server(asio::io_service &io_service) :
 	m_acceptor(io_service, tcp::endpoint(tcp::v4(), (uint16) SERVER_PORT) ),
 			m_socket_(io_service), netAccessor_(m_socket_) {
 	// start server accepting
@@ -32,12 +32,12 @@ Server::Server(boost::asio::io_service &io_service) :
 void Server::Accept(void) {
 	// and start accepting
 	m_acceptor.async_accept(m_socket_, boost::bind(&Server::EndAccepted, this,
-			boost::asio::placeholders::error) );
+			asio::placeholders::error) );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void Server::EndAccepted(const boost::system::error_code& error) {
+void Server::EndAccepted(const asio::error_code& error) {
 	try {
 
 		if(error)
@@ -51,9 +51,9 @@ void Server::EndAccepted(const boost::system::error_code& error) {
 
 		ReadCommand();
 
-	} catch (boost::system::system_error &e) {
+	} catch (asio::system_error &e) {
 		m_socket_.close();
-		if(e.code() == boost::asio::error::eof )
+		if(e.code() == asio::error::eof )
 		{
 			OnClientDisconnected();
 		}

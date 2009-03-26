@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
 	SET_DOUT( debugFile );
 
 	try {
-		boost::asio::io_service asioService;
+		asio::io_service asioService;
 
 		Server server(asioService);
 		asioService.run();

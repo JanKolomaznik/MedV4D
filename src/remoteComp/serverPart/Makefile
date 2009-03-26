@@ -64,7 +64,7 @@ LIBDIRS=	-L$(srcTop)/lib
 INCLUDES=	-I$(srcTop) \
 			-I$(srcTop)/include\
 			$(ITKIncludes)\
-			-I/usr/local/include/boost-1_38
+			-I/usr/include
 
 DEBUG_DEFS=	-DDEBUG_LEVEL=10\
 			-DDEBUG_ADITIONAL_INFO
