@@ -62,7 +62,7 @@ After the installation you have two new folders. /opt/cell/ide that contains the
 /opt/cell/ide/eclipse/eclipse -vm /opt/ibm/java2-i386-50/jre/bin/
 \end{verbatim}
 
-\section{Systemsym instalation}
+\section{IBM Full-System Simulator}
 
 The last part of develelopment environment is IBM Full-System Simulator (systemsym). It is not part of ISOs with SDK so you have to download it separately. Visit \url{http://www.alphaworks.ibm.com/tech/cellsystemsim/download} and download rpm with the simulator appropriate to the platform you are currently using. Be sure to download fedora 9 version of the simulator (cell-3.1-8.f9.*). Then instal it.
 
@@ -79,7 +79,7 @@ yum install blt tk
 Now you have simulator installed. But it has nothing to simulate. Image with image of simulated Fedora 9 system is needed (sysroot image). It is among SDK rpms so install it using yumex (Cell Development Tools$\rightarrow$sysroot\_image).
 Now all neccessary stuff is installed. You could start the IDE and start development. But there are some bugs to fix yet. 
 
-\section{Bug fixing}
+\subsection{Bug fixing}
 
 If you start IDE and it crashes with unhandled exception it is probably caused by xulrunner library. It is ussually installed with Firefox3. There is following workaround:
 \begin{enumerate}
@@ -123,7 +123,7 @@ PATH=/opt/ibm/systemsim-cell/bin:\$PATH
 /opt/cell/ide/eclipse/eclipse -vm /opt/ibm/java2-i386-50/jre/bin
 \end{verbatim}
 
-\section{Installation of libraries into sysroot\_image}
+\subsection{Installation of libraries into sysroot\_image}
 
 Because sysroot\_image is provided as image of installed Fedora 9 without CellBE libraries so next step is to install them into sysroot image.
 
@@ -137,6 +137,19 @@ This shell script installs all rpms for ppc and ppc64 platforms that finds in /t
 cp /opt/cell/yum-repos/CellSDK-Devel-Fedora/rpms/*.{ppc,ppc64}.rpm\
 /tmp/cellsdk/rpms
 \end{verbatim}
+
+\subsection{Copying content into sysroot\_image}
+
+Sysroot\_image is common binary image that can mounted and thus some additional content copyed into. This is useful when extra library that are not part of the default image need to be used. In my case that was some boost libraries. So to mount the sysroot\_image issue:
+\begin{verbatim}
+mount -o loop /opt/ibm/systemsim-cell/images/cell/sysroot_disk <your mount point>
+\end{verbatim}
+And then copy whatever you want.
+
+\subsection{Simulator hints}
+
+\par
+You can ssh to running simulator. It is better to use real bash that the console within IDE. You have all the bash advantages like command and path completition available in contrast to 'text mode' of the IDE console.
 
 \section{Setup CellIDE}
 
