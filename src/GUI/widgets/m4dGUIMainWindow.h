@@ -171,9 +171,12 @@ class m4dGUIMainWindow: public QMainWindow
      * @param conn pointer to the connection to be added
      * @param pipelineDescription description/name of the pipeline connection belongs to (for the user - in the comboBox)
      * @param connectionDescription description of the connection (for the user - in the comboBox)
+     * @param viewerEventHandler pointer to event handler, which should be active on the viewer connected
+     * to this source - default is 0 - dafult handler in use
      */
-    void addSource ( Imaging::ConnectionInterface *conn, const char *pipelineDescription,
-                     const char *connectionDescription );
+    void addSource ( Imaging::ConnectionInterface *conn, 
+                     const char *pipelineDescription, const char *connectionDescription, 
+                     M4D::Viewer::m4dGUIViewerEventHandlerInterface *viewerEventHandler = 0 );
 
     /** 
      * Adds dockWindow (widget) to the application - e.g. for pipeline/filter settings.

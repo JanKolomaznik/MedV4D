@@ -134,7 +134,7 @@ m4dGUIMainWindow2::m4dGUIMainWindow2 ( const char *appName, const char *orgName,
 void m4dGUIMainWindow2::addSource ( ConnectionInterface *conn, const char *pipelineDescription,
                                    const char *connectionDescription )
 {
-  currentViewerDesktop->addSource( conn, pipelineDescription, connectionDescription );
+  currentViewerDesktop->addSource( conn, 0 );
 }
 
 

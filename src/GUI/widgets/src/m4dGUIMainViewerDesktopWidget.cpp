@@ -106,10 +106,10 @@ void m4dGUIMainViewerDesktopWidget::replaceSelectedViewerWidget ( ViewerType typ
 }
 
 
-void m4dGUIMainViewerDesktopWidget::addSource ( ConnectionInterface *conn, const char *pipelineDescription,
-                                                const char *connectionDescription )
+void m4dGUIMainViewerDesktopWidget::addSource ( ConnectionInterface *conn, 
+                                                m4dGUIViewerEventHandlerInterface *viewerEventHandler )
 {
-  sources.push_back( conn );
+  sources.push_back( Source( conn, viewerEventHandler ) );
 }
 
 
@@ -196,7 +196,9 @@ void m4dGUIMainViewerDesktopWidget::sourceSelected ( int index )
   selectedViewer->sourceIdx = index;
 
   selectedViewer->viewerWidget->InputPort()[0].UnPlug();
-  sources[index]->ConnectConsumer( selectedViewer->viewerWidget->InputPort()[0] );
+  sources[index].conn->ConnectConsumer( selectedViewer->viewerWidget->InputPort()[0] );
+
+  selectedViewer->viewerWidget->setViewerEventHandler( sources[index].hnd );
 }
 
 } // namespace GUI

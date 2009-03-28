@@ -51,6 +51,22 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
       int sourceIdx;
     };
 
+    /**
+     * Structure representing registered sources - possible connections, where can be plugged a viewer -
+     * + event handlers, which should be active on the viewer connected to particular source.
+     */
+    struct Source {
+      /// Ctor.
+      Source ( Imaging::ConnectionInterface *conn, M4D::Viewer::m4dGUIViewerEventHandlerInterface *hnd )
+        : conn( conn ), hnd( hnd )
+      {}
+      /// Pointer to the connection.
+      Imaging::ConnectionInterface *conn;
+      /// Pointer to the viewer event handler.
+      M4D::Viewer::m4dGUIViewerEventHandlerInterface *hnd;
+    };
+
+
     /** 
      * Main Viewer Desktop constructor.
      *
@@ -143,11 +159,11 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
      * where can be plugged a viewer. Can be selected through comboBox in toolBar. 
      *
      * @param conn pointer to the connection to be added
-     * @param pipelineDescription description/name of the pipeline connection belongs to (for the user - in the comboBox)
-     * @param connectionDescription description of the connection (for the user - in the comboBox)
+     * @param viewerEventHandler pointer to event handler, which should be active on the viewer connected
+     * to this source
      */
-    void addSource ( Imaging::ConnectionInterface *conn, const char *pipelineDescription,
-                     const char *connectionDescription );
+    void addSource ( Imaging::ConnectionInterface *conn, 
+                     M4D::Viewer::m4dGUIViewerEventHandlerInterface *viewerEventHandler );
 
   private slots:
 
@@ -193,14 +209,15 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
     /// Pointer to the previously selected viewer.
     Viewer *prevSelectedViewer;
 
-    /// Connection which will be used for newly added viewers
+    /// Connection which will be used for newly added viewers.
     Imaging::ConnectionInterface *defaultConnection;
 
     /**
      * Vector of registered sources - possible connections, where can be plugged a viewer. Can be selected
-     * through comboBox in toolBar. 
+     * through comboBox in toolBar + event handlers, which should be active on the viewer connected
+     * to particular source.
      */ 
-    std::vector< Imaging::ConnectionInterface * > sources;
+    std::vector< Source > sources;
 
     /// Number of rows in the layout.
     unsigned layoutRows;
