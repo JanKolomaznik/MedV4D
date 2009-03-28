@@ -27,21 +27,17 @@ class Notifier : public QObject, public M4D::Imaging::MessageReceiverInterface
 	Q_OBJECT
 public:
 	Notifier( QWidget *owner ): _owner( owner ) {}
-	void
-	ReceiveMessage( 
-		M4D::Imaging::PipelineMessage::Ptr 			msg, 
-		M4D::Imaging::PipelineMessage::MessageSendStyle 	/*sendStyle*/, 
-		M4D::Imaging::FlowDirection				/*direction*/
+	void ReceiveMessage(M4D::Imaging::PipelineMessage::Ptr 			        msg, 
+		                  M4D::Imaging::PipelineMessage::MessageSendStyle /*sendStyle*/, 
+		                  M4D::Imaging::FlowDirection				              /*direction*/
 		)
 	{
 		if( msg->msgID == M4D::Imaging::PMI_FILTER_UPDATED ) {
 			emit Notification();
 		}
 	}
-
 signals:
-	void
-	Notification();
+	void Notification();
 protected:
 	QWidget	*_owner;
 };
@@ -62,7 +58,7 @@ protected:
 	CreatePipeline();
 
 	SettingsBox	*_settings;
-	Notifier	*_notifier;
+  Notifier * _notifier;
 
 	M4D::Imaging::PipelineContainer			_pipeline;
 	M4D::Imaging::AbstractPipeFilter		*_filter;
