@@ -36,6 +36,8 @@ mainWindow::process ( M4D::Dicom::DicomObjSetPtr dicomObjSet )
 {
 	MainManager::Instance().InitInput( dicomObjSet );
 
+	_settings->SetToDefault();
+
 	//mainViewerDesktop->setConnectionForAll( mainViewerDesktop->getDefaultConnection() );
 
 	/*AbstractImage::Ptr inputImage = ImageFactory::CreateImageFromDICOM( dicomObjSet );
@@ -69,6 +71,9 @@ mainWindow::SetSegmentationSlot( uint32 segType )
 		_segmentationWidget->Activate( KidneySegmentationManager::Instance().GetInputConnection(), KidneySegmentationManager::Instance().GetSpecialState() );
 
 		stackWidget->setCurrentWidget( _segmentationWidget );
+		break;
+	case stDefault:
+		stackWidget->setCurrentIndex( 0 );
 		break;
 	default:
 		ASSERT( false );

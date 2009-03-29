@@ -2,8 +2,8 @@
 #define MANUAL_SEGMENTATION_MANAGER_H
 
 #include "Imaging/Imaging.h"
-#include "GUI/widgets/m4dGUISliceViewerWidget2.h"
 #include "MainManager.h"
+#include "ManagerViewerSpecialState.h"
 #include "common/Common.h"
 
 #include <QtCore>
@@ -56,9 +56,11 @@ public:
 		{ return _state; }
 
 	void
-	Draw( int32 sliceNum );
+	Draw( int32 sliceNum, double zoomRate );
 	void
 	LeftButtonMove( Vector< float32, 2 > diff );
+	void
+	RightButtonMove( Vector< float32, 2 > diff ){}
 	void
 	RightButtonDown( Vector< float32, 2 > pos, int32 sliceNum );
 	void

@@ -201,6 +201,7 @@ MainExecutionThread::operator()()
 		D_PRINT( "------ " << _filter->GetName() << " - EXCEPTION OCCURED : " << e );
 		_filter->_outputPorts.SendMessage( 
 			MsgFilterExecutionCanceled::CreateMsg(), PipelineMessage::MSS_NORMAL );
+		_filter->AfterComputation( false );
 		_filter->CleanAfterStoppedRun();
 		return;
 	}
@@ -208,6 +209,7 @@ MainExecutionThread::operator()()
 		D_PRINT( "------ " << _filter->GetName() << " - UNKNOWN EXCEPTION OCCURED : " );
 		_filter->_outputPorts.SendMessage( 
 			MsgFilterExecutionCanceled::CreateMsg(), PipelineMessage::MSS_NORMAL );
+		_filter->AfterComputation( false );
 		_filter->CleanAfterStoppedRun();
 		return;
 	}

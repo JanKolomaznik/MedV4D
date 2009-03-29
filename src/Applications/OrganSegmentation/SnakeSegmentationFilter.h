@@ -108,7 +108,7 @@ public:
 
 	struct Properties : public PredecessorType::Properties
 	{
-		Properties(): precision( -1 ), shapeIntensityBalance( 0.5 ), edgeRegionBalance( 0.5 ), probModel( NULL ) {}
+		Properties(): precision( -1 ), shapeIntensityBalance( 0.5 ), edgeRegionBalance( 0.5 ), probModel( NULL ), separateSliceInit(true) {}
 
 		Coordinates		firstPoint;
 		int32			firstSlice;
@@ -119,6 +119,8 @@ public:
 		float32			shapeIntensityBalance;
 		float32			edgeRegionBalance;
 		CanonicalProbModel*	probModel;
+
+		bool			separateSliceInit;
 	};
 
 	~SnakeSegmentationFilter() {}
@@ -135,6 +137,7 @@ public:
 	GET_SET_PROPERTY_METHOD_MACRO( float32, ShapeIntensityBalance, shapeIntensityBalance );
 	GET_SET_PROPERTY_METHOD_MACRO( float32, EdgeRegionBalance, edgeRegionBalance );
 	GET_SET_PROPERTY_METHOD_MACRO( CanonicalProbModel*, ProbabilityModel, probModel );
+	GET_SET_PROPERTY_METHOD_MACRO( bool, SeparateSliceInit, separateSliceInit );
 
 protected:
 

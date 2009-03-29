@@ -2,6 +2,9 @@
 #include "MainManager.h"
 #include <QtGui>
 
+#include <boost/filesystem.hpp>
+typedef boost::filesystem::path	Path;
+
 MainManager 	* MainManager::_instance;
 
 MainManager &
@@ -72,8 +75,19 @@ MainManager::ProcessResultDatasets( InputImagePtr image, GDataSet::Ptr splines )
 
 	while( _splineFillFilter->IsRunning() ) { }
 
-	M4D::Imaging::ImageFactory::DumpImage( TO_STRING( name.toStdString() << "Mask.dump" ), _resultProcessMaskConnection->GetDatasetTyped() );
-	M4D::Imaging::ImageFactory::DumpImage( TO_STRING( name.toStdString() << "Data.dump" ), *image );
+	Path maskName = TO_STRING( name.toStdString() << "Mask.dump" );
+	Path dataName = TO_STRING( name.toStdString() << "Data.dump" );
+	Path indexName = TO_STRING( name.toStdString() << ".idx" );
+
+	M4D::Imaging::ImageFactory::DumpImage( maskName.file_string(), _resultProcessMaskConnection->GetDatasetTyped() );
+	M4D::Imaging::ImageFactory::DumpImage( dataName.file_string(), *image );
+
+	std::ofstream indexFile( indexName.file_string().data() );
+
+	indexFile << dataName.filename() << std::endl;
+	indexFile << maskName.filename() << std::endl;
+
+	indexFile.close();
 	
 	QMessageBox::information( NULL, "Saving finished", "Results saved" );
 }

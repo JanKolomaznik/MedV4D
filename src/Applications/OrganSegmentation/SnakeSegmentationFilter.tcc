@@ -158,8 +158,12 @@ SnakeSegmentationFilter< ElementType, SecondElementType >::ExecutionThreadMethod
 	_extent = Max( tmp[0], tmp[1] );
 	
 	bool result = false;
-	//result = SequentialComputation();	
-	result = ParallelizableComputation();	
+
+	if( GetSeparateSliceInit() ) {
+		result = ParallelizableComputation();
+	} else {
+		result = SequentialComputation();
+	}
 
 	writerBBox->SetModified();
 	return result;
@@ -169,7 +173,7 @@ template < typename ElementType, typename SecondElementType >
 bool
 SnakeSegmentationFilter< ElementType, SecondElementType >::SequentialComputation()
 {
-	CurveType northSpline = CreateSquareControlPoints( 3.0f );
+	CurveType northSpline = CreateCircleControlPoints( 6.0f, 12 );
 	CurveType southSpline = northSpline;
 
 	northSpline.Move( GetSecondPoint() );
@@ -196,6 +200,7 @@ SnakeSegmentationFilter< ElementType, SecondElementType >::ParallelizableComputa
 			D_PRINT( "Segmentation in slice " << slice );
 		ProcessSlice( slice );
 	}
+
 	return true;
 }
 
@@ -241,7 +246,7 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 
 	algorithm.SetGamma( 0.8f );
 	algorithm.SetImageEnergyBalance( 1.0f );
-	algorithm.SetInternalEnergyBalance( 0.0f );
+	algorithm.SetInternalEnergyBalance( 0.5f );
 	algorithm.SetConstrainEnergyBalance( 0.0f );
 	algorithm.SetRegionStat( in->GetSlice( sliceNumber ) );
 	algorithm.SetRegionEdge( inEdge->GetSlice( sliceNumber ) );
@@ -305,28 +310,9 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 
 	algorithm.SetRegionStat( in->GetSlice( sliceNumber ) );
 	algorithm.SetRegionEdge( inEdge->GetSlice( sliceNumber ) );
-//********************
-	/*
-	algorithm.SetBalance( GetShapeIntensityBalance() );
 
-	algorithm.SetSampleRate( 6 );
-	algorithm.SetMaxStepScale( 2.2 );
-	algorithm.SetStepScale( algorithm.GetMaxStepScale() / 2.0 );
-	algorithm.SetMaxSegmentLength( GetPrecision() * _extent * 2.0 );
-	algorithm.SetMinSegmentLength( GetPrecision() * _extent );
-
-	//algorithm.SetSelfIntersectionTestPeriod( 1 );
-	//algorithm.SetSegmentLengthsTestPeriod( 3 );
-
-	algorithm.SetGamma( 0.8f );
-	algorithm.SetImageEnergyBalance( 1.0f );
-	algorithm.SetInternalEnergyBalance( 0.0f );
-	algorithm.SetConstrainEnergyBalance( 0.0f );
-	algorithm.SetAlpha( GetEdgeRegionBalance() );
-
-	algorithm.SetCalmDownInterval( 20 );
-	algorithm.SetMaxStepCount( 60 );
-	*/
+	algorithm.SetStepScaleAlpha( 0.9f );
+	algorithm.SetStepScaleBeta( 0.25f );
 	//Computation
 	
 	float32 t = static_cast<float32>(sliceNumber - GetFirstSlice())/(GetSecondSlice() - GetFirstSlice());
@@ -336,7 +322,7 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 	tmpPos[0] = 0;
 	tmpPos[1] = 0;
 
-	CurveType init = CreateCircleControlPoints( GetProbabilityModel()->GetLayerProbRadius( tmpPos ) * 2, 12 );
+	CurveType init = CreateCircleControlPoints( Min(GetProbabilityModel()->GetLayerProbRadius( tmpPos ) * 2, 18.0f), 12 );
 	tmpPos = trans.GetInversion( GetProbabilityModel()->GetLayerProbCenter( tmpPos ) );
 
 	//init.Move( Coordinates( tmpPos[0], tmpPos[1] ) );
@@ -347,13 +333,13 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 
 	FindInitialization( algorithm );
 
-		/*slice.push_back( algorithm.GetCurrentCurve() );
-		slice[slice.size()-1].Sample( ResultSampleRate );*/
+		//slice.push_back( algorithm.GetCurrentCurve() );
+		//slice[slice.size()-1].Sample( ResultSampleRate );
 
 	ComputeRawShape( algorithm );
 
-		/*slice.push_back( algorithm.GetCurrentCurve() );
-		slice[slice.size()-1].Sample( ResultSampleRate );*/
+		//slice.push_back( algorithm.GetCurrentCurve() );
+		//slice[slice.size()-1].Sample( ResultSampleRate );
 
 	FinishComputation( algorithm );
 
@@ -374,22 +360,18 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 	algorithm.SetSampleRate( 3 );
 	algorithm.SetMaxStepScale( 10.0f );
 	algorithm.SetStepScale( algorithm.GetMaxStepScale() / 2.0 );
-	algorithm.SetStepScaleAlpha( 0.9f );
-	algorithm.SetStepScaleBeta( 0.25f );
 	algorithm.SetMaxSegmentLength( 30 );
 	algorithm.SetMinSegmentLength( 10 );
 
-	algorithm.SetSelfIntersectionTestPeriod( 5 );
+	algorithm.SetSelfIntersectionTestPeriod( 3 );
 	algorithm.SetSegmentLengthsTestPeriod( 4 );
 
 	algorithm.SetGamma( 0.8f );
 	algorithm.SetImageEnergyBalance( 1.0f );
 	algorithm.SetInternalEnergyBalance( 0.0f );
-	algorithm.SetConstrainEnergyBalance( 0.0f );
+	algorithm.SetConstrainEnergyBalance( 0.3f );
 	algorithm.SetAlpha( 1.0f );
 
-	//algorithm.SetCalmDownInterval( 20 );
-	//algorithm.SetMaxStepCount( 60 );
 
 
 	unsigned i = 0;
@@ -405,9 +387,7 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 {
 	algorithm.SetBalance( GetShapeIntensityBalance() );
 
-	algorithm.SetSampleRate( 8 );
-	algorithm.SetStepScaleAlpha( 0.95f );
-	algorithm.SetStepScaleBeta( 0.1f );
+	algorithm.SetSampleRate( 5 );
 	algorithm.SetMaxStepScale( 1.5 );
 	algorithm.SetStepScale( algorithm.GetMaxStepScale() / 2.0 );
 	algorithm.SetMaxSegmentLength( GetPrecision() * _extent * 2.0 );
@@ -427,7 +407,7 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 
 
 	unsigned i = 0;
-	while( 65 > i && i >= 0 ) {
+	while( 55 > i && i >= 0 ) {
 		i = algorithm.Step();
 	}
 
@@ -442,8 +422,6 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 	algorithm.SetBalance( 0.9f );
 
 	algorithm.SetSampleRate( 8 );
-	algorithm.SetStepScaleAlpha( 0.95f );
-	algorithm.SetStepScaleBeta( 0.1f );
 	algorithm.SetMaxStepScale( 1.0f );
 	algorithm.SetStepScale( algorithm.GetMaxStepScale() / 2.0 );
 	algorithm.SetMaxSegmentLength( GetPrecision() * _extent * 2.0 );
@@ -456,16 +434,16 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 	algorithm.SetImageEnergyBalance( 1.0f );
 	algorithm.SetInternalEnergyBalance( 0.0f );
 	algorithm.SetConstrainEnergyBalance( 0.0f );
-	algorithm.SetAlpha( GetEdgeRegionBalance() );
+	algorithm.SetAlpha( GetEdgeRegionBalance() * 0.5 );
 
-	//algorithm.SetCalmDownInterval( 20 );
-	//algorithm.SetMaxStepCount( 60 );
+	algorithm.SetCalmDownInterval( 20 );
+	algorithm.SetMaxStepCount( 80 );
 
 
-	unsigned i = 0;
-	while( 90 > i && i >= 0 ) {
+/*	unsigned i = 0;
+	while( 75 > i && i >= 0 ) {
 		i = algorithm.Step();
-	}
+	}*/
 }
 
 } /*namespace Imaging*/

@@ -3,7 +3,8 @@
 
 enum SegmentationTypes {
 	stMANUAL,
-	stKIDNEYS
+	stKIDNEYS,
+	stDefault
 };
 
 #endif //_SEGMENTATION_TYPES_H

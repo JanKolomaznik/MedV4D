@@ -93,6 +93,12 @@ SettingsBox
 				&(KidneySegmentationManager::Instance()), SLOT( SetEdgeRegionBalance( int ) ) );
 		layout->addWidget( slider );
 
+		QCheckBox *box = new QCheckBox( "Separate slice init" );
+		box->setChecked( true );
+		KidneySegmentationManager::Instance().SetSeparateSliceInit( true );
+		QObject::connect( box, SIGNAL( toggled( bool ) ), 
+				&(KidneySegmentationManager::Instance()), SLOT( SetSeparateSliceInit( bool ) ) );
+		layout->addWidget( box );
 
 
 		button = new QPushButton( tr( "Start Segmentation" ) );
@@ -213,6 +219,14 @@ SettingsBox
 	default:
 		;
 	}
+}
+
+void
+SettingsBox
+::SetToDefault()
+{
+	emit SetSegmentationSignal( stDefault );
+	setCurrentWidget( _mainSettings );
 }
 
 void

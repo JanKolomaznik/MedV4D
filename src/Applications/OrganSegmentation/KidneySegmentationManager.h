@@ -2,9 +2,9 @@
 #define KIDNEY_SEGMENTATION_MANAGER_H
 
 #include "Imaging/Imaging.h"
-#include "GUI/widgets/m4dGUISliceViewerWidget2.h"
 #include "MainManager.h"
 #include "SnakeSegmentationFilter.h"
+#include "ManagerViewerSpecialState.h"
 
 typedef M4D::Imaging::Geometry::BSpline< float32, 2 >	CurveType;
 typedef CurveType::PointType				PointType;
@@ -70,6 +70,17 @@ public:
 		{ return _inputImage; }
 
 	void
+	Draw( int32 sliceNum, double zoomRate );
+	void
+	LeftButtonMove( Vector< float32, 2 > diff );
+	void
+	RightButtonMove( Vector< float32, 2 > diff ){}
+	void
+	RightButtonDown( Vector< float32, 2 > pos, int32 sliceNum );
+	void
+	LeftButtonDown( Vector< float32, 2 > pos, int32 sliceNum );
+
+	void
 	Activate( InputImageType::Ptr inImage );
 public slots:
 	void
@@ -91,9 +102,17 @@ public slots:
 	}
 
 	void
+	SetSeparateSliceInit( bool value )
+	{
+		_separateSliceInit = value;
+	}
+
+	void
 	StartSegmentation();
 
 protected:
+	enum SubStates { DEFINING_POLE, MOVING_POLE };
+
 	KidneySegmentationManager();
 	
 	~KidneySegmentationManager();
@@ -119,9 +138,14 @@ protected:
 
 	float32						_shapeIntensityBalance;
 	float32						_edgeRegionBalance;
+	bool						_separateSliceInit;
 
 	static KidneySegmentationManager		*_instance;
 	bool						_wasInitialized;
+
+	int						_actualPole;
+	SubStates					_state;
+	GDataSet::Ptr					_dataset;
 };
 
 

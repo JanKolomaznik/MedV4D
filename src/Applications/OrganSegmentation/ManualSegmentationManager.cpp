@@ -13,61 +13,7 @@ typedef CurveType::PointType			PointType;
 ManualSegmentationManager		*ManualSegmentationManager::_instance = NULL;
 const int SAMPLE_RATE = 5;
 
-class ViewerSpecialState: public M4D::Viewer::SliceViewerSpecialStateOperator
-{
-public:
-	enum SubStates { START_NEW_SHAPE, DEFINING_SHAPE };
-
-	ViewerSpecialState(): _manager( ManualSegmentationManager::Instance() )
-		{  }
-
-	void
-	Draw( M4D::Viewer::SliceViewer & viewer, int sliceNum, double zoomRate )
-	{
-		_manager.Draw( sliceNum );
-	}
-
-
-	void 
-	ButtonMethodRight( int amountH, int amountV, double zoomRate )
-	{
-
-	}
-	
-	void 
-	ButtonMethodLeft( int amountH, int amountV, double zoomRate )
-	{
-		_manager.LeftButtonMove( Vector< float32, 2 >( ((float32)amountH)/zoomRate, ((float32)amountV)/zoomRate ) );
-		/*(*_curve)[ _lastPointIdx ][0] += ((float32)amountH)/zoomRate;
-		(*_curve)[ _lastPointIdx ][1] += ((float32)amountV)/zoomRate;
-		(*_curve).ReSample();*/
-	}
-	
-	void 
-	SelectMethodRight( double x, double y, int sliceNum, double zoomRate )
-	{
-		_manager.RightButtonDown( Vector< float32, 2 >( x, y ), sliceNum );
-	}
-	
-	void 
-	SelectMethodLeft( double x, double y, int sliceNum, double zoomRate )
-	{
-		_manager.LeftButtonDown( Vector< float32, 2 >( x, y ), sliceNum );
-	}
-
-
-	GDataSet::Ptr	_dataset;
-
-	CurveType	*_curve;
-	int32		_sliceNumber;
-	uint32		_curveIdx;
-
-	SubStates	_state;
-	unsigned 	_lastPointIdx;
-
-	ManualSegmentationManager	&_manager;
-
-};
+typedef ManagerViewerSpecialState< ManualSegmentationManager >	ViewerSpecialState;
 
 ManualSegmentationManager &
 ManualSegmentationManager::Instance()
@@ -95,7 +41,7 @@ ManualSegmentationManager::Initialize()
 	int32 max = _inputImage->GetDimensionExtents(2).maximum;
 	_dataset = M4D::Imaging::DataSetFactory::CreateSlicedGeometry< M4D::Imaging::Geometry::BSpline<float32,2> >( min, max );*/
 
-	ViewerSpecialState *sState = new ViewerSpecialState();
+	ViewerSpecialState *sState = new ViewerSpecialState( ManualSegmentationManager::Instance() );
 	_specialState = M4D::Viewer::SliceViewerSpecialStateOperatorPtr( sState );
 
 	_wasInitialized = true;
@@ -108,7 +54,7 @@ ManualSegmentationManager::Finalize()
 }
 
 void
-ManualSegmentationManager::Draw( int32 sliceNum )
+ManualSegmentationManager::Draw( int32 sliceNum, double zoomRate )
 {
 	try{
 		const GDataSet::ObjectsInSlice &slice = _dataset->GetSlice( sliceNum );

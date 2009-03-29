@@ -19,6 +19,10 @@ public:
 public slots:
 	void
 	ManualSegmentationUpdate();
+
+	void
+	SetToDefault();
+
 signals:
 	
 	void
