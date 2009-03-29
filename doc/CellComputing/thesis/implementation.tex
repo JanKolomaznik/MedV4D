@@ -1,6 +1,6 @@
 \chapter{Design and implementation}
 
-This chapter will describe details of implementation and design of my test application, used frameworks. //TODO
+This chapter will describe details of implementation and design of my test application, frameworks that was used, adaptation for that frameworks and actual CellBE proting process details.
 
 \section{Used frameworks}
 
@@ -99,7 +99,7 @@ This pipeline contains three ITK filters.
 \begin{enumerate}
   \item{fast marching filter}
   \par
-  Is responsible for computation of initial level set. Parameters of this filter are point $\vec{x}$ in dataset and distance $d$. Output is then level set that correspond to level set //TODO tvaru koule and with //TODO polomer $d$.
+  Is responsible for computation of initial level set. Parameters of this filter are point $\vec{x}$ in dataset and distance $d$. Output is then level set that corresponds to ball shaped level set with radius $d$.
 
   \item{level set segmentation filter}
   \par
@@ -110,21 +110,22 @@ This pipeline contains three ITK filters.
   Purpose of this filter is extract resulting object from level set. It is thresholding that select pixels with values less that zero that corresponds to inner part of the resulting level set.
 \end{enumerate}
 
-Due to mapping the algorithm to CellBE radical changes in code would be necessary even in ITK code. So i decided to rebuild appropriate part of ITK class hierarchy responsible for level set computation. I borrowed some part of original code, //TODO podedil from ohter classes (close to finite difference solver (FDS) class, see Figure\ref{fg:originalITKHierarchy}). Purpose of //TODOdedeni from filter close to FDS is that it original ancestors responsible for speed function calculation preallocates another image for precalculation of the speed function. This another image is another notable amount of memory that can not be accepted for my purpose (PS3 that I have available has only //TODOMB). So I override this behaviour in way that speed function is calculated every time it is needed without any precalculations. This approach could be eevn better for CellBE streaming nature. 
-
-Result of this changes is my own filter (see Figure\ref{fg:resultingFilter}) that uses reasonable parts of the original ITK level set segmentation filter which is ready to be ported for CellBE.
+Due to mapping the algorithm to CellBE radical changes in code would be necessary even in ITK code. So i decided to rebuild appropriate part of ITK class hierarchy responsible for level set computation (LS hierarchy). I borrowed some part of original code, inherited from ohter classes (close to finite difference solver (FDS) class, see Figure\ref{fg:originalHierarchy}). In the original LS hierarchy are actually two hierarchies of classes. One represents the filter that performs level set evolution algorithm, filter hierarchy and the other finite difference function that computes the finite differences (the upwind scheme), function hierarchy. In function hierarchy the base is FiniteDifferenceFunction that computes the scheme with assistance of virtual methodes, that are implemented in successors. Successors are LevelSetFunction that provides curvature term computation methodes, SegmentationLevelSetFunction provides speed image computation based on speed image that computes ThresholdSegmentationLevelSetFunction. In filter hierarchy everything starts with FiniteDifferenceImageFilter that acts as FDE solver. Virtual methodes of its successors are used (just like in function hierarchy). SparseFieldLevelSetImageFilter provides implementation of sparse field speed-up approach, SegmentationLevelSetImageFilter and ThresholdSegmentationLevelSetImageFilter do not do anything interresting. They just manage speed function.
+One reason of inheritance from filter close to FDS is that it original ancestors responsible for speed function calculation preallocates another image for precalculation of the speed function. This another image is another notable amount of memory that can not be accepted for my purpose (PS3 that I have available has only 256MB including operating system). So I override this behaviour in way that speed function is calculated every time it is needed without any precalculations. This approach could be eevn better for CellBE streaming nature. The second reason was to simplify the structure of hierarchy and some code cleen-up and refactorization.
 
 \begin{figure}
     \centering
-    \includegraphics[width=12cm]{data/originalITKHierarchy.eps}
-    \caption[MedV4D server cycle]{}
-    \label{fg:originalITKHierarchy}
+    \includegraphics[width=15cm]{data/originalHierarchy.eps}
+    \caption[Original ITK thresholding level set filter class hierarchy]{Illustrates the FiniteDifferenceFunction hierarchy and the FiniteDifferenceImageFilter hierarchy and their relationship}
+    \label{fg:originalHierarchy}
 \end{figure}
 
+Result of this changes is my own filter that omits all unnecessary part of original LS hierarchy, uses reasonable parts of the original ITK level set segmentation filter and is ready to be ported for CellBE (see Figure\ref{fg:resultingFilter}). In the function hierarchy stayed only the base class that the resulting ThresholdLevelSetFunc class is derived. This new class does the same job as original LS function hierachy but in manner closer to streaming architecture (the prealocation of the speed image is ommited). The computation of particular up-wind scheme terms was separated into stand alone classes for more code readability and modularity. The filter hierarchy was shortend and begins already in SparseFieldLevelSetImageFilter. All the successors in orginal hierarchy was ommited since they did anything reasonable. Some function implementation from the SparseFieldLevelSetImageFilter was borrowed into the new ThreshSegLevelSetFilter to be tuned for CellBE.
+
 \begin{figure}
     \centering
-    \includegraphics[width=12cm]{data/resultingFilter.eps}
-    \caption[MedV4D server cycle]{}
+    \includegraphics[width=15cm]{data/resultingFilter.eps}
+    \caption[Resulting level set filter ready to be ported to CellBE]{Show result of original LS hierarchy rebuilding. Some unnecessary parts was ommited to clean-up the code and to change behaviour towards straming architecture as well as term computation was separated into supporting classes for modularity}
     \label{fg:resultingFilter}
 \end{figure}
 
