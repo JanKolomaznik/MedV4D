@@ -12,7 +12,7 @@
 #define _WIN32_WINNT 0x0501   // win ver
 
 #include <asio.hpp>
-#include <boost/bind.hpp>
+//#include <boost/bind.hpp>
 
 #include "common/mediumAccessor.h"
 #include "common/Endianess.h"

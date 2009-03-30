@@ -29,8 +29,6 @@ class Server
 
   private:
     void Accept();
-
-    void EndAccepted( const asio::error_code& error);
     
     void ReadCommand(void);
     

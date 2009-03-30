@@ -29,21 +29,17 @@ Server::Server(asio::io_service &io_service) :
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void Server::Accept(void) {
-	// and start accepting
-	m_acceptor.async_accept(m_socket_, boost::bind(&Server::EndAccepted, this,
-			asio::placeholders::error) );
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void Server::EndAccepted(const asio::error_code& error) {
+void Server::Accept(void) {	
 	try {
+		asio::error_code error;
+		
+		// and start accepting
+		m_acceptor.accept(m_socket_, error);
 
 		if(error)
 		{
-			LOG("Accept failed!");
-			Accept();
+			LOG("Accept failed!, " << error.message());
+			return;
 		}
 
 		LOG( "Accepted conn from:"
@@ -52,7 +48,11 @@ void Server::EndAccepted(const asio::error_code& error) {
 		ReadCommand();
 
 	} catch (asio::system_error &e) {
-		m_socket_.close();
+		LOG( "asio::system_error caught" << e.what() );
+		return;
+		
+		if(m_socket_.is_open())
+			m_socket_.close();
 		if(e.code() == asio::error::eof )
 		{
 			OnClientDisconnected();

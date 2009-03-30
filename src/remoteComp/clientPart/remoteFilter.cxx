@@ -93,21 +93,21 @@ template< typename InputImageType, typename OutputImageType >
 void
 RemoteFilter< InputImageType, OutputImageType >::Connect(void)
 {
-  boost::asio::ip::tcp::resolver resolver(m_io_service);
+  asio::ip::tcp::resolver resolver(m_io_service);
 
   std::stringstream port;
   port << SERVER_PORT;
 
-  boost::asio::ip::tcp::resolver::query query(
+  asio::ip::tcp::resolver::query query(
 	FindAvailableServer(),
     port.str(),
-    boost::asio::ip::tcp::resolver::query::numeric_service);
+    asio::ip::tcp::resolver::query::numeric_service);
 
-  boost::asio::ip::tcp::resolver::iterator endpoint_iterator = 
+  asio::ip::tcp::resolver::iterator endpoint_iterator = 
 	  resolver.resolve(query);
-  boost::asio::ip::tcp::resolver::iterator end;
+  asio::ip::tcp::resolver::iterator end;
 
-  boost::system::error_code error = boost::asio::error::host_not_found;
+  asio::error_code error = asio::error::host_not_found;
   while (error && endpoint_iterator != end)
   {
 	m_socket_.close();
@@ -169,7 +169,7 @@ void
 RemoteFilter< InputImageType, OutputImageType >::SendCommand( eCommand command)
 {
 	m_socket_.write_some( 
-				boost::asio::buffer( (uint8*)&command, sizeof(uint8)) );
+				asio::buffer( (uint8*)&command, sizeof(uint8)) );
 }
 ///////////////////////////////////////////////////////////////////////////////
 

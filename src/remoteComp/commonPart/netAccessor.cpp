@@ -21,15 +21,7 @@ NetAccessor::~NetAccessor()
 void
 NetAccessor::PutData(const void *data, size_t length)
 {
-//	boost::system::error_code ec;
-//		asio::write( m_socket_,
-//			asio::buffer( data, length), ec );
-//	size_t written = m_socket_.write_some( 
-//			asio::buffer( data, length), ec );
-//	if(ec || (written != length) )
-//		throw NetException();
 	try {
-		//size_t written = 
 			asio::write(
 					m_socket_, asio::buffer(data, length));
 	} catch (asio::system_error &e) {
@@ -44,6 +36,7 @@ NetAccessor::PutData(const void *data, size_t length)
 void
 NetAccessor::GetData(void *data, size_t length)	
 {
-	asio::read( m_socket_, asio::buffer(data, length));
+	size_t transferred = asio::read( 
+			m_socket_, asio::buffer(data, length), asio::transfer_all());
 }
 /////////////////////////////////////////////////////////////////////////////

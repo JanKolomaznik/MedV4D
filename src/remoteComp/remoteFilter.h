@@ -75,8 +75,8 @@ protected:
 private:	
 	iRemoteFilterProperties *properties_;
 	
-	boost::asio::io_service m_io_service;
-	boost::asio::ip::tcp::socket m_socket_;
+	asio::io_service m_io_service;
+	asio::ip::tcp::socket m_socket_;
 	
 	NetAccessor netAccessor_;
 	
