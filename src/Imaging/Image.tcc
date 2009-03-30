@@ -357,7 +357,7 @@ Image< ElementType, Dim >::GetIterator()const
 
 	ElementType * pointer = GetPointer( width, height, xStride, yStride );*/
 
-	return CreateImageIteratorGen< ElementType, Dim >( pointer, size, strides, Vector< int32, Dim >() );
+	return Iterator( pointer, this->_minimum, this->_maximum, strides, this->_minimum );
 }
 
 template< typename ElementType, unsigned Dim >

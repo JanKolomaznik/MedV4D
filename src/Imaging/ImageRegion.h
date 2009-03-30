@@ -91,27 +91,21 @@ public:
 	Iterator
 	GetIterator()const
 		{
-			uint32 pos[Dimension] = { 0 };
-			return Iterator( _pointer, _size.GetData(), _strides.GetData(), pos );
+			return Iterator( _pointer, GetMinimum(), GetMaximum(), _strides, GetMinimum() );
+			//return Iterator( _pointer, _size.GetData(), _strides.GetData(), pos );
 		}
 
 	Iterator
 	GetIterator( const PointType &firstCorner, const PointType &secondCorner )const
 		{
-			return GetIteratorRel( firstCorner - _origin, secondCorner - _origin );
+			return Iterator( &GetElement(firstCorner), firstCorner, secondCorner, _strides, firstCorner );
 		}
 
 	Iterator
 	GetIteratorRel( const PointType &firstCorner, const PointType &secondCorner )const
 		{
 			//TODO check extents
-			uint32 pos[Dimension] = { 0 };
-			uint32 size[Dimension];
-			for( unsigned i=0; i<Dimension; ++i )
-			{
-				size[i] = secondCorner[i]-firstCorner[i];
-			}
-			return Iterator( &GetElementRel(firstCorner), size, _strides, pos );
+			return GetIterator( firstCorner + _origin, secondCorner + _origin );
 		}
 
 	ElementType *
@@ -346,6 +340,19 @@ CreateImageRegion(
 			SourceDimension, 
 			pointerCoordinatesInSource.GetData() 
 			);
+}
+
+//*****************************************************************************
+template< typename RegionType, typename Applicator >
+Applicator
+ForEachInRegion( RegionType &region, Applicator applicator )
+{
+	typename RegionType::Iterator iterator = region.GetIterator();
+	
+	for( ; !iterator.IsEnd(); ++iterator ) {
+		applicator( *iterator, iterator.GetCoordinates() );
+	}	
+	return applicator;
 }
 
 }/*namespace Imaging*/
