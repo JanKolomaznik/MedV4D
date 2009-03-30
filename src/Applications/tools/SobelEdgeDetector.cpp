@@ -1,4 +1,4 @@
-#include "Common.h"
+#include "common/Common.h"
 #include "Filtering.h"
 #include "Imaging/filters/SobelEdgeDetector.h"
 #include <tclap/CmdLine.h>

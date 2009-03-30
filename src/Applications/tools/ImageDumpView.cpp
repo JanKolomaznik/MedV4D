@@ -3,9 +3,9 @@
 #include <sstream>
 
 #include <QWidget>
-#include "GUI/m4dGUISliceViewerWidget.h"
-#include "Imaging.h"
-#include "Common.h"
+#include "GUI/widgets/m4dGUISliceViewerWidget.h"
+#include "Imaging/Imaging.h"
+#include "common/Common.h"
 
 
 class ViewerWindow : public QWidget

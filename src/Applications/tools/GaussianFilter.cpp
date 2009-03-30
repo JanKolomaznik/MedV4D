@@ -1,4 +1,4 @@
-#include "Common.h"
+#include "common/Common.h"
 #include "Filtering.h"
 #include "Imaging/filters/GaussianFilter.h"
 #include <tclap/CmdLine.h>
