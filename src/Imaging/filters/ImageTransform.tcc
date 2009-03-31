@@ -45,12 +45,13 @@ TransformImage( const Image< ElementType, 2 > &in, Image< ElementType, 2 > &out,
 			CoordType point( ( i - width/2 ) * RotationMatrix[0][0] + ( j - height/2 ) * RotationMatrix[0][1] + width/2 - prop->_translation[0],
 					 ( i - width/2 ) * RotationMatrix[1][0] + ( j - height/2 ) * RotationMatrix[1][1] + height/2 - prop->_translation[1] );
 
-			if ( point[0] < 0 ) point[0] = 0;
-			if ( point[0] >= width ) point[0] = width - 1;
-			if ( point[1] < 0 ) point[1] = 0;
-			if ( point[1] >= height ) point[1] = height - 1;
+			if ( ( point[0] < 0 ) |
+			     ( point[0] >= width ) |
+			     ( point[1] < 0 ) |
+			     ( point[1] >= height ) ) *pointer = 0;
 
-			*pointer = interpolator->Get( point ); 
+			else *pointer = interpolator->Get( point );
+
 			pointer += xStride;
 		}
 	}
@@ -108,33 +109,31 @@ TransformImage( const Image< ElementType, 3 > &in, Image< ElementType, 3 > &out,
 				CoordType point( ( i - width/2 ) * RotationMatrixX[0][0] + ( j - height/2 ) * RotationMatrixX[0][1] + ( k - depth/2 ) * RotationMatrixX[0][2] + width/2, 
 						 ( i - width/2 ) * RotationMatrixX[1][0] + ( j - height/2 ) * RotationMatrixX[1][1] + ( k - depth/2 ) * RotationMatrixX[1][2] + height/2,
 						 ( i - width/2 ) * RotationMatrixX[2][0] + ( j - height/2 ) * RotationMatrixX[2][1] + ( k - depth/2 ) * RotationMatrixX[2][2] + depth/2 );
-				//std::cout<<( i - (int32)width/2 ) * RotationMatrixX[0][0] + ( j - (int32)height/2 ) * RotationMatrixX[0][1] + ( k - (int32)depth/2 ) * RotationMatrixX[0][2] + (int32)width/2<<" "<<i<<" "<<j<<" "<<k<<" "<<point[0]<<" "<<point[1]<<" "<<point[2]<<std::endl;
 
 				CoordType  tmp( ( point[0] - width/2 ) * RotationMatrixY[0][0] + ( point[1] - height/2 ) * RotationMatrixY[0][1] + ( point[2] - depth/2 ) * RotationMatrixY[0][2] + width/2,
 						( point[0] - width/2 ) * RotationMatrixY[1][0] + ( point[1] - height/2 ) * RotationMatrixY[1][1] + ( point[2] - depth/2 ) * RotationMatrixY[1][2] + height/2,
 						( point[0] - width/2 ) * RotationMatrixY[2][0] + ( point[1] - height/2 ) * RotationMatrixY[2][1] + ( point[2] - depth/2 ) * RotationMatrixY[2][2] + depth/2 );
 
 				point = tmp;
-				//std::cout<<i<<" "<<j<<" "<<k<<" "<<point[0]<<" "<<point[1]<<" "<<point[2]<<std::endl;
+
 				tmp = CoordType( ( point[0] - width/2 ) * RotationMatrixZ[0][0] + ( point[1] - height/2 ) * RotationMatrixZ[0][1] + ( point[2] - depth/2 ) * RotationMatrixZ[0][2] + width/2,
 						 ( point[0] - width/2 ) * RotationMatrixZ[1][0] + ( point[1] - height/2 ) * RotationMatrixZ[1][1] + ( point[2] - depth/2 ) * RotationMatrixZ[1][2] + height/2,
 						 ( point[0] - width/2 ) * RotationMatrixZ[2][0] + ( point[1] - height/2 ) * RotationMatrixZ[2][1] + ( point[2] - depth/2 ) * RotationMatrixZ[2][2] + depth/2 );
 
 				point = tmp;
-				//std::cout<<i<<" "<<j<<" "<<k<<" "<<point[0]<<" "<<point[1]<<" "<<point[2]<<std::endl;
-				//std::cout<<"here"<<std::endl;
+
 				point[0] -= prop->_translation[0];
 				point[1] -= prop->_translation[1];
 				point[2] -= prop->_translation[2];
 
-				if ( point[0] < 0 ) point[0] = 0;
-				if ( point[0] >= width ) point[0] = width - 1;
-				if ( point[1] < 0 ) point[1] = 0;
-				if ( point[1] >= height ) point[1] = height - 1;
-				if ( point[2] < 0 ) point[2] = 0;
-				if ( point[2] >= depth ) point[2] = depth - 1;
+				if ( ( point[0] < 0 ) |
+				     ( point[0] >= width ) |
+				     ( point[1] < 0 ) |
+				     ( point[1] >= height ) |
+				     ( point[2] < 0 ) |
+				     ( point[2] >= depth ) ) *pointer = 0;
 
-				*pointer = interpolator->Get( point );
+				else *pointer = interpolator->Get( point );
 				
 				pointer += xStride;
 			}
