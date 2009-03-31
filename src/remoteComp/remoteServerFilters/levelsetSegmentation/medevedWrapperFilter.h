@@ -5,14 +5,17 @@
 #include "remoteComp/remoteFilterProperties/levelSetRemoteProperties.h"
 #include "Imaging/Image.h"
 
-#include "itkImage.h"
-//#include "itkThresholdSegmentationLevelSetImageFilter.h"
-#include "filter.h"
-
 #include "itkFastMarchingImageFilter.h"
 #include "itkBinaryThresholdImageFilter.h"
 #include "itkZeroCrossingImageFilter.h"
 #include "itkCastImageFilter.h"
+#include "itkImage.h"
+
+#if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
+#include "cellSrc/filter.h"
+#else
+#include "PCSrc/filter.h"
+#endif
 
 namespace M4D
 {

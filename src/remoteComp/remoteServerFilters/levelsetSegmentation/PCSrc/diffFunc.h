@@ -66,6 +66,6 @@ private:
 }
 
 //include implementation
-#include "src/diffFunc.cxx"
+#include "src/diffFunc.tcc"
 
 #endif /*CELLTHRESHOLDLEVELSETFINITEDIFFERENCEFUNCTION_H_*/

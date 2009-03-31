@@ -19,6 +19,7 @@ public:
 	typedef ThreshSegLevelSetFilter Self;
 	typedef itk::SmartPointer<Self> Pointer;
 	typedef itk::ThresholdLevelSetFunc<TInputImage, TFeatureImage> SegmentationFunctionType;
+	typedef typename TFeatureImage::PixelType FeaturePixelType;
 	
 	typedef typename Superclass::TimeStepType TimeStepType;
 	typedef typename Superclass::ValueType ValueType;
@@ -30,7 +31,10 @@ public:
 		
 	void GenerateData(void);	// overriden to measure time spent within
 	
-	SegmentationFunctionType *GetDiffFunction() { return &(*func_); }
+	void SetUpperThreshold(FeaturePixelType upThreshold) { func_->SetUpperThreshold(upThreshold); }
+	void SetLowerThreshold(FeaturePixelType downThreshold) { func_->SetLowerThreshold(downThreshold); }
+	void SetPropagationWeight(float32 propWeight) { func_->SetPropagationWeight(propWeight); }
+	void SetCurvatureWeight(float32 curvWeight) { func_->SetCurvatureWeight(curvWeight); }
 	
 	void SetFeatureImage(const TFeatureImage *f)
 	  {
@@ -51,6 +55,6 @@ private:
 
 }
 //include implementation
-#include "src/filter.cxx"
+#include "src/filter.tcc"
 
 #endif /*CELLREADYTHRESHOLDSEGMENTATIONLEVELSETIMAGEFILTER_H_*/

@@ -127,11 +127,11 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 	::ApplyProperties(void)
 {
   thresholdSegmentation->SetNumberOfIterations( properties_->maxIterations );
-  thresholdSegmentation->GetDiffFunction()->SetUpperThreshold( properties_->upperThreshold );
-  thresholdSegmentation->GetDiffFunction()->SetLowerThreshold( properties_->lowerThreshold );
-  thresholdSegmentation->GetDiffFunction()->SetPropagationWeight( properties_->propagationScaling );
+  thresholdSegmentation->SetUpperThreshold( properties_->upperThreshold );
+  thresholdSegmentation->SetLowerThreshold( properties_->lowerThreshold );
+  thresholdSegmentation->SetPropagationWeight( properties_->propagationScaling );
   //thresholdSegmentation->GetDiffFunction()->SetAdvectionScaling( properties_->advectionScaling);
-  thresholdSegmentation->GetDiffFunction()->SetCurvatureWeight( properties_->curvatureScaling);
+  thresholdSegmentation->SetCurvatureWeight( properties_->curvatureScaling);
   
   NodeType::IndexType index;  
   index[0] = properties_->seedX;

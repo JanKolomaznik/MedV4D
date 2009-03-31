@@ -1,5 +1,5 @@
 #ifndef CELLTHRESHOLDLEVELSETFINITEDIFFERENCEFUNCTION_H_
-#error File diffFunc.cxx cannot be included directly!
+#error File diffFunc.tcc cannot be included directly!
 #else
 
 namespace itk

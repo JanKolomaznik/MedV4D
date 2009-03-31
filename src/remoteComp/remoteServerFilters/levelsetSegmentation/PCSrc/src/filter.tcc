@@ -1,5 +1,5 @@
 #ifndef CELLREADYTHRESHOLDSEGMENTATIONLEVELSETIMAGEFILTER_H_
-#error File filter.cxx cannot be included directly!
+#error File filter.tcc cannot be included directly!
 #else
 
 namespace itk {
