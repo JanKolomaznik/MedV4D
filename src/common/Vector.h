@@ -403,6 +403,15 @@ VectorDimensionsShiftLeft( const Vector< CoordType, Dim > &v )
 	return result;
 }
 
+template< typename CoordType, unsigned Dim >
+void
+VectorAbs( Vector< CoordType, Dim > &v )
+{
+	for( unsigned i=0; i < Dim; ++i ) {
+		v[ i ] = Abs( v[ i ] );
+	}
+}
+
 typedef Vector< int32, 2 > CoordInt2D;
 typedef Vector< int32, 3 > CoordInt3D;
 typedef Vector< int32, 4 > CoordInt4D;
