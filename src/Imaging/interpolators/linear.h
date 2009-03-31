@@ -1,9 +1,10 @@
-#ifndef TRILINEAR_H_
-#define TRILINEAR_H_
+#ifndef LINEAR_H_
+#define LINEAR_H_
 
 #include <cmath>
 
 #include "base.h"
+#include "Imaging/Image.h"
 
 namespace M4D
 {
@@ -11,15 +12,15 @@ namespace Imaging
 {
 
 template< typename ImageType >
-class TrilinearInterpolator
+class LinearInterpolator
 	: public InterpolatorBase<ImageType>
 {
 public:
-	typedef TrilinearInterpolator<ImageType> Self;
+	typedef LinearInterpolator<ImageType> Self;
 	typedef InterpolatorBase<ImageType> PredecessorType;
 	typedef typename PredecessorType::CoordType CoordType;
 	
-	TrilinearInterpolator(const ImageType *image) 
+	LinearInterpolator(const ImageType *image) 
 		: PredecessorType(image) {}
 	
 	typename ImageType::Element Get(CoordType &coords);
@@ -29,6 +30,6 @@ public:
 }
 
 //include implementation
-#include "src/trilinear.tcc"
+#include "src/linear.tcc"
 
-#endif /*TRILINEAR_H_*/
+#endif /*LINEAR_H_*/

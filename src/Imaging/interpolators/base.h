@@ -19,6 +19,8 @@ public:
 	{
 		m_dataPointer = m_image->GetPointer(m_size, m_strides);
 	}
+
+	virtual typename ImageType::Element Get(CoordType &coords)=0;
 	
 protected:
 	const ImageType *m_image;
