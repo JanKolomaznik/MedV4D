@@ -9,6 +9,7 @@ ifdef COMPILE_FOR_CELL
 ITKLibsRoot=/data/cell/ITK/LIBCell
 binUtilsPath=/opt/cell/toolchain/bin
 ROOT=/opt/cell/sysroot
+PLATFORM_DEFS= -DCOMPILE_ON_CELL=1
 
 CXX=$(binUtilsPath)/ppu-g++
 SPU_LD_PROFILE_OPTS= -Wl,-q -g
@@ -25,6 +26,7 @@ CXX=ppu-g++
 AR=ppu-ar
 ROOT=
 archPostfix=CELL
+PLATFORM_DEFS= -DCOMPILE_ON_CELL=1
 
 PROFILE_OPTIONS=
 CXXDEBUG_OPTIONS= -g

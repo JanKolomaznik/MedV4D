@@ -40,7 +40,7 @@ INCLUDES=	-I$(srcTop) \
 DEBUG_DEFS=	-DDEBUG_LEVEL=10\
 		-DDEBUG_ADITIONAL_INFO
 
-DEFS=		$(DEBUG_DEFS)
+DEFS=		$(DEBUG_DEFS) $(PLATFORM_DEFS)
 
 
 SRC_FILES=	$(addprefix $(SRC_DIR)/, $(addsuffix .cpp, $(TARGETS)) )
