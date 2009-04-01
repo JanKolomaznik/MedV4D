@@ -2,7 +2,7 @@
 #define MYFINITEDIFFERENCEFILTER_
 
 #include "itkInPlaceImageFilter.h"
-//#include "commonTypes.h"
+#include "commonBase.h"
 
 namespace itk 
 {
@@ -10,11 +10,13 @@ namespace itk
 template <class TInputImage, class TOutputImage>
 class MyFiniteDifferenceImageFilter  
   : public InPlaceImageFilter<TInputImage, TOutputImage>
+  , public CommonBase<typename TOutputImage::PixelType>
 {
 public:
   /** Standard class typedefs. */
   typedef MyFiniteDifferenceImageFilter                   Self;
   typedef InPlaceImageFilter<TInputImage, TOutputImage>   Superclass;
+  typedef CommonBase<typename TOutputImage::PixelType>	  TypeBaseClass;
   typedef SmartPointer<Self>                              Pointer;
   typedef SmartPointer<const Self>                        ConstPointer;
   
@@ -33,8 +35,8 @@ public:
   typedef typename TInputImage::PixelType     InputPixelType;
   typedef OutputPixelType                     PixelType;
   typedef OutputPixelType                	  ValueType;
-  
-  typedef double  TimeStepType;
+  typedef typename TypeBaseClass::TimeStepType TimeStepType;
+  typedef typename TypeBaseClass::StatusType StatusType;
 
   /** Extract value type in case the pixel is of vector type */
   typedef typename NumericTraits< OutputPixelType >::ValueType OutputPixelValueType;

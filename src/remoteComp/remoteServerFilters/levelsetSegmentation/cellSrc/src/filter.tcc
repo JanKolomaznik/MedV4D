@@ -16,20 +16,12 @@ namespace itk {
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
 MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::MySegmtLevelSetFilter()
-{
-	m_ValueOne = 1;
-	m_ValueZero = 0;
-	 m_StatusChanging = -1;
-	 m_StatusActiveChangingUp = -2;
-	 m_StatusActiveChangingDown = -3;
-	m_StatusBoundaryPixel = -4;
-	m_StatusNull = NumericTraits<StatusType >::NonpositiveMin();
-		  
-  m_IsoSurfaceValue = m_ValueZero;
+{		  
+  m_IsoSurfaceValue = this->m_ValueZero;
   m_NumberOfLayers = OutputImageType::ImageDimension;
   m_LayerNodeStore = LayerNodeStorageType::New();
   m_LayerNodeStore->SetGrowthStrategyToExponential();
-  this->SetRMSChange(static_cast<double>(m_ValueZero));
+  this->SetRMSChange(static_cast<double>(this->m_ValueZero));
   m_BoundsCheckingActive = false;
   m_ConstantGradientValue = 1.0;
   
@@ -107,8 +99,8 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
     }
 
   // Process the outermost inside/outside layers in the sparse field.
-  this->ProcessStatusList(UpList[j], UpList[k], up_to, m_StatusNull);
-  this->ProcessStatusList(DownList[j], DownList[k], down_to, m_StatusNull);
+  this->ProcessStatusList(UpList[j], UpList[k], up_to, this->m_StatusNull);
+  this->ProcessStatusList(DownList[j], DownList[k], down_to, this->m_StatusNull);
   
   // Now we are left with the lists of indicies which must be
   // brought into the outermost layers.  Bring UpList into last inside layer
@@ -177,7 +169,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 
       // Have we bumped up against the boundary?  If so, turn on bounds
       // checking.
-      if ( neighbor_status == m_StatusBoundaryPixel )
+      if ( neighbor_status == this->m_StatusBoundaryPixel )
         {
         m_BoundsCheckingActive = true;
         }
@@ -185,7 +177,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
       if (neighbor_status == SearchForStatus)
         { // mark this pixel so we don't add it twice.
         statusIt.SetPixel(m_NeighborList.GetArrayIndex(i),
-                          m_StatusChanging, bounds_status);
+        		this->m_StatusChanging, bounds_status);
         if (bounds_status == true)
           {
           node = m_LayerNodeStore->Borrow();
@@ -239,7 +231,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
     }
   
   counter =0;
-  rms_change_accumulator = m_ValueZero;
+  rms_change_accumulator = this->m_ValueZero;
   layerIt = m_Layers[0]->Begin();
   updateIt = m_UpdateBuffer.begin();
   while (layerIt != m_Layers[0]->End() )
@@ -272,7 +264,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
       for (i = 0; i < m_NeighborList.GetSize(); ++i)
         {
         if (statusIt.GetPixel(m_NeighborList.GetArrayIndex(i))
-            == m_StatusActiveChangingDown)
+            == this->m_StatusActiveChangingDown)
           {
           flag = true;
           break;
@@ -307,7 +299,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
       node = m_LayerNodeStore->Borrow();
       node->m_Value = layerIt->m_Value;
       UpList->PushFront(node);
-      statusIt.SetCenterPixel(m_StatusActiveChangingUp);
+      statusIt.SetCenterPixel(this->m_StatusActiveChangingUp);
 
       // Now remove this index from the active list.
       release_node = layerIt.GetPointer();
@@ -325,7 +317,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
       for (i = 0; i < m_NeighborList.GetSize(); ++i)
         {
         if (statusIt.GetPixel(m_NeighborList.GetArrayIndex(i))
-            == m_StatusActiveChangingUp)
+            == this->m_StatusActiveChangingUp)
           {
           flag = true;
           break;
@@ -360,7 +352,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
       node = m_LayerNodeStore->Borrow();
       node->m_Value = layerIt->m_Value;
       DownList->PushFront(node);
-      statusIt.SetCenterPixel(m_StatusActiveChangingDown);
+      statusIt.SetCenterPixel(this->m_StatusActiveChangingDown);
 
       // Now remove this index from the active list.
       release_node = layerIt.GetPointer();
@@ -381,7 +373,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
   
   // Determine the average change during this iteration.
   if (counter == 0)
-    { this->SetRMSChange(static_cast<double>(m_ValueZero)); }
+    { this->SetRMSChange(static_cast<double>(this->m_ValueZero)); }
   else
     {
     this->SetRMSChange(static_cast<double>( vcl_sqrt((double)(rms_change_accumulator / static_cast<ValueType>(counter)) )) );
@@ -413,8 +405,8 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
     OutputImageType>::New();
   zeroCrossingFilter->SetInput(m_ShiftedImage);
   zeroCrossingFilter->GraftOutput(this->GetOutput());
-  zeroCrossingFilter->SetBackgroundValue(m_ValueOne);
-  zeroCrossingFilter->SetForegroundValue(m_ValueZero);
+  zeroCrossingFilter->SetBackgroundValue(this->m_ValueOne);
+  zeroCrossingFilter->SetForegroundValue(this->m_ValueZero);
 
   zeroCrossingFilter->Update();
 
@@ -453,7 +445,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
     statusIt(m_StatusImage, m_StatusImage->GetRequestedRegion());
   for (statusIt.GoToBegin(); ! statusIt.IsAtEnd(); ++statusIt)
     {
-    statusIt.Set( m_StatusNull );
+    statusIt.Set( this->m_StatusNull );
     }
 
   // Initialize the boundary pixels in the status image to
@@ -476,7 +468,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
     statusIt = ImageRegionIterator<StatusImageType>(m_StatusImage, *fit);
     for (statusIt.GoToBegin(); ! statusIt.IsAtEnd(); ++statusIt)
       {
-      statusIt.Set( m_StatusBoundaryPixel );
+      statusIt.Set( this->m_StatusBoundaryPixel );
       }
     }
 
@@ -561,9 +553,9 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
          shiftedIt = shiftedIt.Begin();
        ! outputIt.IsAtEnd(); ++outputIt, ++statusIt, ++shiftedIt)
     {
-    if (statusIt.Get() == m_StatusNull || statusIt.Get() == m_StatusBoundaryPixel)
+    if (statusIt.Get() == this->m_StatusNull || statusIt.Get() == this->m_StatusBoundaryPixel)
       {
-      if (shiftedIt.Get() > m_ValueZero)
+      if (shiftedIt.Get() > this->m_ValueZero)
         {
         outputIt.Set(outside_value);
         }
@@ -616,7 +608,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 
   for (outputIt.GoToBegin(); !outputIt.IsAtEnd(); ++outputIt)
     {
-    if ( outputIt.GetCenterPixel() == m_ValueZero )
+    if ( outputIt.GetCenterPixel() == this->m_ValueZero )
       {
       // Grab the neighborhood in the status image.
       center_index = outputIt.GetIndex();
@@ -652,11 +644,11 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
         offset_index = center_index
           + m_NeighborList.GetNeighborhoodOffset(i);
 
-        if ( outputIt.GetPixel(m_NeighborList.GetArrayIndex(i)) != m_ValueZero)
+        if ( outputIt.GetPixel(m_NeighborList.GetArrayIndex(i)) != this->m_ValueZero)
           {
           value = shiftedIt.GetPixel(m_NeighborList.GetArrayIndex(i));
 
-          if ( value < m_ValueZero ) // Assign to first inside layer.
+          if ( value < this->m_ValueZero ) // Assign to first inside layer.
             {
             layer_number = 1;
             }
@@ -704,7 +696,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
     for (i = 0; i < m_NeighborList.GetSize(); ++i)
       {
       if ( statusIt.GetPixel( m_NeighborList.GetArrayIndex(i) )
-           == m_StatusNull )
+           == this->m_StatusNull )
         {
         statusIt.SetPixel(m_NeighborList.GetArrayIndex(i), to,
                           boundary_status);
@@ -759,7 +751,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
     // assign an active layer value in the output image.
     shiftedIt.SetLocation( activeIt->m_Value );
 
-    length = m_ValueZero;
+    length = this->m_ValueZero;
     for (i = 0; i < OutputImageType::ImageDimension; ++i)
       {
       dx_forward = ( shiftedIt.GetPixel(center + m_NeighborList.GetStride(i))
@@ -1046,7 +1038,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
       if ( promote > past_end )
         {
         m_LayerNodeStore->Return( node );
-        statusIt.SetCenterPixel(m_StatusNull);
+        statusIt.SetCenterPixel(this->m_StatusNull);
         }
       else
         {
@@ -1081,9 +1073,9 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
   for (outputIt = outputIt.Begin(), statusIt = statusIt.Begin();
        ! outputIt.IsAtEnd(); ++outputIt, ++statusIt)
     {
-    if (statusIt.Get() == m_StatusNull)
+    if (statusIt.Get() == this->m_StatusNull)
       {
-      if (outputIt.Get() > m_ValueZero)
+      if (outputIt.Get() > this->m_ValueZero)
         {
         outputIt.Set(inside_value);
         }

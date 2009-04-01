@@ -26,6 +26,7 @@ public:
 	typedef typename TFeatureImage::PixelType FeaturePixelType;
 	
 	typedef typename Superclass::TimeStepType TimeStepType;
+	typedef typename Superclass::StatusType StatusType;
 	typedef Image<TOutputPixelType, TInputImage::ImageDimension> OutputImageType;
 	
 	/////////////////
@@ -46,9 +47,6 @@ public:
 
   /** A type for a list of LayerPointerTypes */
   typedef std::vector<LayerPointerType> LayerListType;
-  
-  /** Type used for storing status information */
-  typedef signed char StatusType;
   
   /** The type of the image used to index status information.  Necessary for
    *  the internals of the algorithm. */
@@ -170,13 +168,6 @@ public:
 	    void ProcessOutsideList(LayerType *OutsideList, StatusType ChangeToStatus);
 	
 	  // MEMBERS
-		  ValueType m_ValueOne;
-		  ValueType m_ValueZero;
-		  StatusType m_StatusChanging;
-		  StatusType m_StatusActiveChangingUp;
-		  StatusType m_StatusActiveChangingDown;
-		  StatusType m_StatusBoundaryPixel;
-		  StatusType m_StatusNull;
 	/** This image is a copy of the input with m_IsoSurfaceValue subtracted from
 	   * each pixel.  This way we only need to consider the zero level set in our
 	   * calculations.  Makes the implementation easier and more efficient. */
