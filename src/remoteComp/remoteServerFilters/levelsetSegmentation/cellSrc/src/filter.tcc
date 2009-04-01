@@ -24,9 +24,6 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
   this->SetRMSChange(static_cast<double>(this->m_ValueZero));
   m_BoundsCheckingActive = false;
   m_ConstantGradientValue = 1.0;
-  
-  
-  func_ = SegmentationFunctionType::New();
 
   this->SetIsoSurfaceValue(NumericTraits<ValueType>::Zero);
   
@@ -508,10 +505,24 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
     this->ConstructLayer(i, i+2);
     }
   
-  LOG("Active layer");
-    typename LayerType::ConstIterator layerIt;
-    for (layerIt = m_Layers[0]->Begin(); layerIt != m_Layers[0]->End(); ++layerIt)
-  	  LOG(layerIt->m_Value << ", ");
+  //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  // init conf structure
+        m_Conf.m_upThreshold = 500;
+        m_Conf.m_downThreshold = -500;
+        m_Conf.m_propWeight = 1;
+        m_Conf.m_curvWeight = 0.001f;
+        m_Conf.m_NumberOfLayers = m_NumberOfLayers;
+        m_Conf.m_ConstantGradientValue = m_ConstantGradientValue;
+        //m_Conf.m_neighbourScales = ;
+        m_Conf.m_UpdateBuffer = &m_UpdateBuffer;
+        m_Conf.m_activeSet = m_Layers[0].GetPointer();
+        m_Conf.m_featureImage = this->GetFeatureImage();
+        m_Conf.m_outputImage = this->GetOutput();
+        m_Conf.m_inputImage = this->GetInput();
+        
+        updateSolver.m_Conf = m_Conf;
+        updateSolver.Init();
+   //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
   
   // Set the values in the output image for the active layer.
   this->InitializeActiveLayerValues();
@@ -739,7 +750,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
   center = shiftedIt.Size() /2;
   typename OutputImageType::Pointer output = this->GetOutput();
 
-  const NeighborhoodScalesType neighborhoodScales = func_->ComputeNeighborhoodScales();
+  const NeighborhoodScalesType neighborhoodScales; // = func_->ComputeNeighborhoodScales();
 
   ValueType dx_forward, dx_backward, length, distance;
 
@@ -798,117 +809,12 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>::TimeStepTyp
 MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::CalculateChange()
 {
-  typename SegmentationFunctionType::FloatOffsetType offset;
-  ValueType norm_grad_phi_squared, dx_forward, dx_backward, forwardValue,
-    backwardValue, centerValue;
-  unsigned i;
-  ValueType MIN_NORM      = 1.0e-6;
-  if (this->GetUseImageSpacing())
-    {
-    double minSpacing = NumericTraits<double>::max();
-    for (i=0; i< OutputImageType::ImageDimension; i++)
-      {
-      minSpacing = vnl_math_min(minSpacing,this->GetInput()->GetSpacing()[i]);
-      }
-    MIN_NORM *= minSpacing;
-    }
-
-  void *globalData = func_->GetGlobalDataPointer();
-  
-  typename LayerType::ConstIterator layerIt;
-  NeighborhoodIterator<OutputImageType> outputIt(func_->GetRadius(),
-                    this->GetOutput(), this->GetOutput()->GetRequestedRegion());
-  TimeStepType timeStep;
-
-  const NeighborhoodScalesType neighborhoodScales = func_->ComputeNeighborhoodScales();
-
-  if ( m_BoundsCheckingActive == false )
-    {
-    outputIt.NeedToUseBoundaryConditionOff();
-    }
-  
-  m_UpdateBuffer.clear();
-  m_UpdateBuffer.reserve(m_Layers[0]->Size());
-
-  // Calculates the update values for the active layer indicies in this
-  // iteration.  Iterates through the active layer index list, applying 
-  // the level set function to the output image (level set image) at each
-  // index.  Update values are stored in the update buffer.
-  for (layerIt = m_Layers[0]->Begin(); layerIt != m_Layers[0]->End(); ++layerIt)
-    {
-    outputIt.SetLocation(layerIt->m_Value);
-
-    // Calculate the offset to the surface from the center of this
-    // neighborhood.  This is used by some level set functions in sampling a
-    // speed, advection, or curvature term.
-    if ((centerValue = outputIt.GetCenterPixel()) != 0.0 )
-      {
-      // Surface is at the zero crossing, so distance to surface is:
-      // phi(x) / norm(grad(phi)), where phi(x) is the center of the
-      // neighborhood.  The location is therefore
-      // (i,j,k) - ( phi(x) * grad(phi(x)) ) / norm(grad(phi))^2
-      norm_grad_phi_squared = 0.0;
-      for (i = 0; i < OutputImageType::ImageDimension; ++i)
-        {
-        forwardValue  = outputIt.GetNext(i);
-        backwardValue = outputIt.GetPrevious(i);
-            
-        if (forwardValue * backwardValue >= 0)
-          { //  Neighbors are same sign OR at least one neighbor is zero.
-          dx_forward  = forwardValue - centerValue;
-          dx_backward = centerValue - backwardValue;
-
-          // Pick the larger magnitude derivative.
-          if (::vnl_math_abs(dx_forward) > ::vnl_math_abs(dx_backward) )
-            {
-            offset[i] = dx_forward;
-            }
-          else
-            {
-            offset[i] = dx_backward;
-            }
-          }
-        else //Neighbors are opposite sign, pick the direction of the 0 surface.
-          {
-          if (forwardValue * centerValue < 0)
-            {
-            offset[i] = forwardValue - centerValue;
-            }
-          else
-            {
-            offset[i] = centerValue - backwardValue;
-            }
-          }
-        
-        norm_grad_phi_squared += offset[i] * offset[i];
-        }
-      
-      for (i = 0; i < OutputImageType::ImageDimension; ++i)
-        {
-#if defined(ITK_USE_DEPRECATED_LEVELSET_INTERPOLATION)
-        offset[i] = (offset[i] * centerValue) * vcl_sqrt(ImageDimension +0.5) 
-                    / (norm_grad_phi_squared + MIN_NORM);
-#else
-        offset[i] = (offset[i] * centerValue) / (norm_grad_phi_squared + MIN_NORM);
-#endif
-        }
-          
-      m_UpdateBuffer.push_back( func_->ComputeUpdate(outputIt, globalData, offset) );
-      }
-//    else // Don't do interpolation
-//      {
-//      m_UpdateBuffer.push_back( func_->ComputeUpdate(outputIt, globalData) );
-//      }
-    }
-  
-  // Ask the finite difference function to compute the time step for
-  // this iteration.  We give it the global data pointer to use, then
-  // ask it to free the global data memory.
-  timeStep = func_->ComputeGlobalTimeStep(globalData);
-
-  func_->ReleaseGlobalDataPointer(globalData);
-  
-  return timeStep;
+	  m_UpdateBuffer.clear();
+	  m_UpdateBuffer.reserve(m_Layers[0]->Size());
+	  
+	TimeStepType dt = updateSolver.CalculateChange();
+	
+	return dt;
 }
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -1098,9 +1004,9 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 	s << "Max. RMS error: " << this->GetMaximumRMSError() << std::endl;
 	s << "No. elpased iterations: " << this->GetElapsedIterations() << std::endl;
 	s << "RMS change: " << this->GetRMSChange() << std::endl;
-	s << std::endl;
-	s << "Time spent in solver: " << cntr_ << std::endl;
-	s << "Time spent in difference solving: " << func_->cntr_ << std::endl;
+//	s << std::endl;
+//	s << "Time spent in solver: " << cntr_ << std::endl;
+//	s << "Time spent in difference solving: " << func_->cntr_ << std::endl;
 	s << "===========================" << std::endl;
 }
 

@@ -4,12 +4,13 @@
 #include "myFiniteDifferenceFilter.h"
 //#include "itkThresholdSegmentationLevelSetImageFilter.h"
 
-#include "diffFunc.h"
 #include "supportClasses.h"
 #include "common/perfCounter.h"
 #include "itkSparseFieldLayer.h"
 #include "itkObjectStore.h"
 #include "itkNeighborhoodIterator.h"
+
+#include "SPE/updateCalculatorSPE.h"
 
 namespace itk
 {
@@ -22,12 +23,15 @@ public:
 	typedef MyFiniteDifferenceImageFilter<TInputImage, Image<TOutputPixelType, TInputImage::ImageDimension> > Superclass;	
 	typedef MySegmtLevelSetFilter Self;
 	typedef itk::SmartPointer<Self> Pointer;
-	typedef itk::ThresholdLevelSetFunc<TInputImage, TFeatureImage> SegmentationFunctionType;
 	typedef typename TFeatureImage::PixelType FeaturePixelType;
 	
 	typedef typename Superclass::TimeStepType TimeStepType;
 	typedef typename Superclass::StatusType StatusType;
 	typedef Image<TOutputPixelType, TInputImage::ImageDimension> OutputImageType;
+	
+	typedef ThresholdLevelSetFunc<TFeatureImage> SegmentationFunctionType;
+	
+	typedef UpdateCalculatorSPE<TInputImage, TFeatureImage, TOutputPixelType> TUpdateCalculatorSPE;
 	
 	/////////////////
 	
@@ -63,18 +67,20 @@ public:
 	
 	itkNewMacro(Self);
 	
-	void SetUpperThreshold(FeaturePixelType upThreshold) { func_->SetUpperThreshold(upThreshold); }
-	void SetLowerThreshold(FeaturePixelType downThreshold) { func_->SetLowerThreshold(downThreshold); }
-	void SetPropagationWeight(float32 propWeight) { func_->SetPropagationWeight(propWeight); }
-	void SetCurvatureWeight(float32 curvWeight) { func_->SetCurvatureWeight(curvWeight); }
+	void SetUpperThreshold(FeaturePixelType upThreshold) { m_Conf.m_upThreshold = upThreshold; }
+  	void SetLowerThreshold(FeaturePixelType loThreshold) { m_Conf.m_downThreshold = loThreshold; }
+  	void SetPropagationWeight(float32 propWeight) { m_Conf.m_propWeight = propWeight; }
+  	void SetCurvatureWeight(float32 curvWeight) { m_Conf.m_curvWeight = curvWeight; }
 	
 	void SetIsoSurfaceValue(ValueType val) { m_IsoSurfaceValue = val; }
 	
 	void SetFeatureImage(const TFeatureImage *f)
 	  {
 	    this->ProcessObject::SetNthInput( 1, const_cast< TFeatureImage * >(f) );
-	    func_->SetFeatureImage(f);
 	  }
+	
+	TFeatureImage * GetFeatureImage()
+	  	  { return ( static_cast< TFeatureImage *>(this->ProcessObject::GetInput(1)) ); }
 	
 	void InitializeIteration() {}
 	
@@ -209,11 +215,21 @@ public:
 	    double m_ConstantGradientValue;
 	
 	// **************************************
+	    
+	    typedef RunConfiguration<
+	    		      	  	NeighborhoodScalesType, 
+	    		      	  	TFeatureImage, 
+	    		      	  	OutputImageType, 
+	    		      	  	TFeatureImage,
+	    		      	  	LayerType,
+	    		      	  	UpdateBufferType> TRunConf;
+	    		  
+	    		  TRunConf m_Conf;
 protected:
 	MySegmtLevelSetFilter(void);
 	~MySegmtLevelSetFilter(void);
 	
-	typename SegmentationFunctionType::Pointer func_;
+	TUpdateCalculatorSPE updateSolver;
 	
 private:
 	PerfCounter cntr_;
