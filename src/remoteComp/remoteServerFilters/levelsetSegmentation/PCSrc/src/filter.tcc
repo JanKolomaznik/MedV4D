@@ -7,8 +7,8 @@ namespace itk {
 ///////////////////////////////////////////////////////////////////////////////
 
 template <class TInputImage,class TFeatureImage, class TOutputPixelType>
-ThreshSegLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
-::ThreshSegLevelSetFilter(void)
+MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
+::MySegmtLevelSetFilter(void)
 {
 	func_ = SegmentationFunctionType::New();
 	this->SetDifferenceFunction(func_);
@@ -25,7 +25,7 @@ ThreshSegLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 
 //template <class TInputImage,class TFeatureImage, class TOutputPixelType>
 //void
-//ThreshSegLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
+//MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 //::Initialize(void)
 //{
 //	Superclass::Initialize();
@@ -38,7 +38,7 @@ ThreshSegLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 
 template <class TInputImage,class TFeatureImage, class TOutputPixelType>
 void
-ThreshSegLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
+MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::GenerateData(void)
 {
 	func_->cntr_.Reset();
@@ -68,7 +68,7 @@ ThreshSegLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 
 template <class TInputImage,class TFeatureImage, class TOutputPixelType>
 void
-ThreshSegLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
+MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::PrintStats(std::ostream &s)
 {
 	s << "========= stats ===========" << std::endl;
@@ -84,8 +84,8 @@ ThreshSegLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 
 ///////////////////////////////////////////////////////////////////////////////
 template <class TInputImage,class TFeatureImage, class TOutputPixelType>
-typename ThreshSegLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>::TimeStepType
-ThreshSegLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
+typename MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>::TimeStepType
+MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 	::CalculateChange(void)
 {
 	//std::cout << "Sem tu!" << std::endl;
@@ -96,7 +96,7 @@ ThreshSegLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ///////////////////////////////////////////////////////////////////////////////
 template <class TInputImage,class TFeatureImage, class TOutputPixelType>
 void
-ThreshSegLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
+MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::ApplyUpdate(TimeStepType dt)
 {
 	//std::cout << "Sem tu!" << std::endl;

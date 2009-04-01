@@ -11,12 +11,12 @@ namespace itk
 {
 
 template <class TInputImage,class TFeatureImage, class TOutputPixelType = float >
-class ThreshSegLevelSetFilter	
+class MySegmtLevelSetFilter	
 	: public itk::SparseFieldLevelSetImageFilter<TInputImage, Image<TOutputPixelType, TInputImage::ImageDimension> >
 {
 public:
 	typedef itk::SparseFieldLevelSetImageFilter<TInputImage, Image<TOutputPixelType, TInputImage::ImageDimension> > Superclass;	
-	typedef ThreshSegLevelSetFilter Self;
+	typedef MySegmtLevelSetFilter Self;
 	typedef itk::SmartPointer<Self> Pointer;
 	typedef itk::ThresholdLevelSetFunc<TInputImage, TFeatureImage> SegmentationFunctionType;
 	typedef typename TFeatureImage::PixelType FeaturePixelType;
@@ -44,8 +44,8 @@ public:
 	
 	void PrintStats(std::ostream &s);
 protected:
-	ThreshSegLevelSetFilter(void);
-	~ThreshSegLevelSetFilter(void) {}
+	MySegmtLevelSetFilter(void);
+	~MySegmtLevelSetFilter(void) {}
 	
 	typename SegmentationFunctionType::Pointer func_;
 	

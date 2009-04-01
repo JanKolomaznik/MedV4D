@@ -25,6 +25,8 @@ SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
 {
 	FeatureScalarType pixelValue = m_featureImage->GetPixel(index);
 	
+	//D_PRINT(index << ":" << pixelValue);
+	
     if (pixelValue < m_threshIntervalMid)
       {
       return pixelValue - m_LowerThreshold;
@@ -52,7 +54,7 @@ SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
     }
   
   FeatureScalarType val = Interpolate(cdx);
-  //LOUT << "ComputePropagationTerm at index: " << cdx << ", " << val << std::endl;
+  //LOG("ComputePropagationTerm at index: " << cdx << ", " << val);
 
 	return val;
 }

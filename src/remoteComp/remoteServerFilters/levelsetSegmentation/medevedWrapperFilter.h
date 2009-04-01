@@ -11,7 +11,7 @@
 #include "itkCastImageFilter.h"
 #include "itkImage.h"
 
-#if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
+#if( 1) //defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
 #include "cellSrc/filter.h"
 #else
 #include "PCSrc/filter.h"
@@ -61,7 +61,7 @@ private:
 			FeatureToFloatFilterType;
 		
 	// filter that performs actual levelset segmentation
-	typedef  itk::ThreshSegLevelSetFilter< 
+	typedef  itk::MySegmtLevelSetFilter< 
 		InternalITKImageType, InternalITKImageType, InternalPixelType >
 			ThresholdSegmentationFilterType;
 		
@@ -95,6 +95,6 @@ private:
 }
 
 //include implementation
-#include "src/medevedWrapperFilter.cxx"
+#include "medevedWrapperFilter.cxx"
 
 #endif /*SERVERLEVELSETSEGMENTATION_H_*/
