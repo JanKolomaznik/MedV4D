@@ -26,13 +26,14 @@ struct ConvolutionMask
 {
 	typedef boost::shared_ptr<ConvolutionMask<Dim,MatrixElement> > Ptr;
 
-	ConvolutionMask( MatrixElement *m, uint32 s[Dim] )
+	ConvolutionMask( MatrixElement *m, Vector< uint32, Dim > s )
 		: length( 1 ), mask( m )
 		{ 	
 			length = 1;
 			for( unsigned i = 0; i < Dim; ++i ) {
 				size[i] = s[i];
 				center[i] = s[i]/2;
+				strides[i] = length;
 				length *= s[i];
 			}
 		}
@@ -41,21 +42,24 @@ struct ConvolutionMask
 		{ delete [] mask; }
 
 	MatrixElement &
-	GetElement( Vector< uint32, Dim > )
+	Get( const Vector< uint32, Dim > &coord )
 		{
-			int32 idx = 0;
-			for( unsigned i=0; i<Dim; ++i ) {
-				idx += pos[i]*size[i];
-			}
-			return *(mask+idx);
+			return mask[coord * strides];
+		}
+	MatrixElement
+	Get( const Vector< uint32, Dim > &coord )const
+		{
+			return mask[coord * strides];
 		}
 
 	Vector< uint32, Dim >	size;
 	Vector< uint32, Dim >	center;
+	Vector< uint32, Dim >	strides;
 	uint32		length;
 	MatrixElement	*mask;
 };
 
+/*
 template< typename ElementType, typename  MatrixElement >
 void
 Compute2DConvolution(
@@ -65,13 +69,14 @@ Compute2DConvolution(
 		const ElementType				addition,
 		const MatrixElement				multiplication
 	);
-
+*/
 /*
  * struct PostProcessor {
  * void
  * operator( const ElementType &, OutElementType & );
  * };
  */
+/*
 template< typename ElementType, typename OutElementType, typename  MatrixElement, typename PostProcessor >
 void
 Compute2DConvolutionPostProcess(
@@ -110,13 +115,14 @@ MirrorBorderAccess(
 	}
 	return pointer;
 }
+*/
 
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
 
 /** @} */
-#include "Imaging/Convolution.tcc"
+//#include "Imaging/Convolution.tcc"
 
 #endif /*CONVOLUTION_H*/
 

@@ -71,7 +71,7 @@ SobelEdgeDetector< ImageType >
 		)
 {
 	try {
-		Compute2DConvolutionPostProcess<ElementType, ElementType, float32, 
+		/*Compute2DConvolutionPostProcess<ElementType, ElementType, float32, 
 			FirstPassFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, ElementType > > ( 
 				inRegion, 
 				outRegion, 
@@ -88,7 +88,7 @@ SobelEdgeDetector< ImageType >
 				TypeTraits< ElementType >::Zero, 
 				1.0f,
 				SecondPassFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, ElementType >( GetThreshold() )
-				);
+				);*/
 	}
 	catch( ... ) { 
 		return false; 
@@ -165,7 +165,7 @@ SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits
 		)
 {
 	try {
-		Compute2DConvolutionPostProcess<ElementType, OutElementType, float32, 
+		/*Compute2DConvolutionPostProcess<ElementType, OutElementType, float32, 
 			FirstPassGradientFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, OutScalarType > > ( 
 				inRegion, 
 				outRegion, 
@@ -182,7 +182,7 @@ SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits
 				TypeTraits< ElementType >::Zero, 
 				1.0f,
 				SecondPassGradientFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, OutScalarType >()
-				);
+				);*/
 	}
 	catch( ... ) { 
 		return false; 

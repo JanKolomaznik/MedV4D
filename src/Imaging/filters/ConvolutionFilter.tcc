@@ -9,6 +9,7 @@
 #error File ConvolutionFilter.tcc cannot be included directly!
 #else
 
+#include "Imaging/FilterComputation.h"
 /**
  *  @addtogroup imaging Imaging Library
  *  @{
@@ -25,17 +26,17 @@ template< typename ElType >
 class ConvolutionFilterFtor: public FilterFunctorBase< ElType >
 {
 public:
-	ConvolutionFilterFtor( const ConvolutionMask<2, float32> &mask,  ) : _mask( mask ), _size( size ), _lastRow( TypeTraits< int32 >::Min )
+	ConvolutionFilterFtor( const ConvolutionMask<2, float32> &mask ) : _mask( mask ), _size( mask.size ), _center( mask.center ), _lastRow( TypeTraits< int32 >::Min )
 	{ 
 		_array = new ElType[ _size[0]*_size[1] ]; 
-		_leftCorner = Vector< int32, 2 >( -center[0], -_center[1] );
+		_leftCorner = Vector< int32, 2 >( -_center[0], -_center[1] );
 		_rightCorner = Vector< int32, 2 >( _size[0] - _center[0] - 1, _size[1] - _center[1] - 1 );
 	}
 
 	ConvolutionFilterFtor( const ConvolutionFilterFtor &ftor ) : _mask( ftor._mask ), _size( ftor._size ), _lastRow( TypeTraits< int32 >::Min )
 	{ 
 		_array = new ElType[ _size[0]*_size[1] ]; 
-		_leftCorner = Vector< int32, 2 >( -center[0], -_center[1] );
+		_leftCorner = Vector< int32, 2 >( -_center[0], -_center[1] );
 		_rightCorner = Vector< int32, 2 >( _size[0] - _center[0] - 1, _size[1] - _center[1] - 1 );
 	}
 
@@ -49,12 +50,12 @@ public:
 		Vector< int32, 2 > idx;
 		unsigned i = 0;
 		if( _lastRow == pos[1] ) {
-			idx[0] = pos[0] + _radius;
+			idx[0] = pos[0] + _rightCorner[0];
 			for( idx[1] = pos[1] + _leftCorner[1]; idx[1] <= pos[1] + _rightCorner[1]; ++idx[1] ) {
-				_array[ i*_size + _lastCol ] = accessor( idx );
+				_array[ i*_size[0] + _lastCol ] = accessor( idx );
 				++i;
 			}
-			_lastCol = (_lastCol + 1) % _size;
+			_lastCol = (_lastCol + 1) % _size[0];
 		} else {
 			for( idx[1] = pos[1] + _leftCorner[1]; idx[1] <= pos[1] + _rightCorner[1]; ++idx[1] ) {
 				for( idx[0] = pos[0] + _leftCorner[0]; idx[0] <= pos[0] + _rightCorner[0]; ++idx[0] ) {
@@ -69,11 +70,12 @@ public:
 		Vector< uint32, 2 > midx;
 		for( midx[1] = 0; midx[1] < _size[1]; ++midx[1] ) {
 			for( midx[0] = 0; midx[0] < _size[0]; ++midx[0] ) {
-				result += _mask.Get( midx ) * _array[ midx[1] * _size[0] + ((midx[0] + _lastCol) %_size[0]) ];
+				uint32 tmp = midx[1] * _size[0] + ((midx[0] + _lastCol) %_size[0]);
+				result += _mask.Get( midx ) * _array[ tmp ];
 			}
 		}
 
-		return _array[ _size*_size / 2 ];
+		return static_cast<ElType>( result );
 	}
 	Vector< int32, 2 >
 	GetLeftCorner()const
@@ -84,10 +86,10 @@ public:
 	{ return _rightCorner; }
 protected:
 	const ConvolutionMask<2, float32> &_mask;
-	Vector< uint32, 2 > _size, 
+	Vector< uint32, 2 > _size; 
 	Vector< uint32, 2 > _center;
 
-	Vector< int32, 2 > _leftCorner, 
+	Vector< int32, 2 > _leftCorner; 
 	Vector< int32, 2 > _rightCorner;
 	int32	_lastRow;
 	int32	_lastCol;
@@ -119,13 +121,21 @@ ConvolutionFilter2D< ImageType, MatrixElement >
 		)
 {
 	try {
-		Compute2DConvolution( 
+		/*Compute2DConvolution( 
 				inRegion, 
 				outRegion, 
 				*(GetProperties().matrix), 
 				GetProperties().addition, 
 				GetProperties().multiplication 
-				);
+				);*/
+
+		ConvolutionFilterFtor< ElementType > filter( *GetConvolutionMask() );
+		FilterProcessorNeighborhood< 
+			ConvolutionFilterFtor< ElementType >,
+			Region,
+			Region,
+			MirrorAccessor
+			>( filter, inRegion, outRegion );	
 	}
 	catch( ... ) { 
 		return false; 

@@ -93,21 +93,25 @@ public:
 	CoordinateType &
 	operator[]( unsigned idx )
 		{ 
-			if ( idx >= 0 && idx < Dim ) { 
+			return _coordinates[ idx ];
+			
+			/*if ( idx >= 0 && idx < Dim ) { 
 				return _coordinates[ idx ];
 			} else {
 				_THROW_ EBadIndex();
-			}
+			}*/
 		}
 
 	CoordinateType
 	operator[]( unsigned idx )const
 		{ 
-			if ( idx >= 0 && idx < Dim ) { 
+			return _coordinates[ idx ];
+			
+			/*if ( idx >= 0 && idx < Dim ) { 
 				return _coordinates[ idx ];
 			} else {
 				_THROW_ EBadIndex();
-			}
+			}*/
 		}
 
 	template< typename CType >
