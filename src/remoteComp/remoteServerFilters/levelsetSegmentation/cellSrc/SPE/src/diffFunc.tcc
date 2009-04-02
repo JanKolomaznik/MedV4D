@@ -116,7 +116,7 @@ ThresholdLevelSetFunc< ImageType, FeatureImageType >
 			this->ComputeCurvatureTerm(gd) - 
 			this->ComputePropagationTerm(it, offset, gd)
 			//- ComputeAdvectionTerm()
-			);			
+			);
 	
 	cntr_.Stop();
 	
