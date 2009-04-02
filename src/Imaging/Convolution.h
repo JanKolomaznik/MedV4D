@@ -41,7 +41,7 @@ struct ConvolutionMask
 		{ delete [] mask; }
 
 	MatrixElement &
-	GetElement( int32 pos[Dim] )
+	GetElement( Vector< uint32, Dim > )
 		{
 			int32 idx = 0;
 			for( unsigned i=0; i<Dim; ++i ) {
@@ -50,8 +50,8 @@ struct ConvolutionMask
 			return *(mask+idx);
 		}
 
-	uint32		size[ Dim ];
-	uint32		center[ Dim ];
+	Vector< uint32, Dim >	size;
+	Vector< uint32, Dim >	center;
 	uint32		length;
 	MatrixElement	*mask;
 };

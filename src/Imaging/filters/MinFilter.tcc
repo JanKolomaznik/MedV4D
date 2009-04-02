@@ -1,5 +1,5 @@
-#ifndef _MEDIAN_FILTER_H
-#error File MedianFilter.tcc cannot be included directly!
+#ifndef _MIN_FILTER_H
+#error File MinFilter.tcc cannot be included directly!
 #else
 
 #include <algorithm>
@@ -10,7 +10,7 @@ namespace M4D
 /**
  * @ingroup imaging 
  * @author Jan Kolomaznik 
- * @file MedianFilter.tcc 
+ * @file MinFilter.tcc 
  * @{ 
  **/
 
@@ -18,16 +18,16 @@ namespace Imaging
 {
 
 template< typename ElType >
-class MedianFilterFtor: public FilterFunctorBase< ElType >
+class MinFilterFtor: public FilterFunctorBase< ElType >
 {
 public:
-	MedianFilterFtor( uint32 radius ) : _radius( radius ), _lastRow( TypeTraits< int32 >::Min ), _size( (2*radius+1) )
+	MinFilterFtor( uint32 radius ) : _radius( radius ), _lastRow( TypeTraits< int32 >::Min ), _size( (2*radius+1) )
 	{ _array = new ElType[ _size*_size ]; }
 
-	MedianFilterFtor( const MedianFilterFtor &ftor ): _radius( ftor._radius ), _lastRow( TypeTraits< int32 >::Min ), _size( (2*ftor._radius+1) )
+	MinFilterFtor( const MinFilterFtor &ftor ): _radius( ftor._radius ), _lastRow( TypeTraits< int32 >::Min ), _size( (2*ftor._radius+1) )
 	{ _array = new ElType[ _size*_size ]; }
 
-	~MedianFilterFtor()
+	~MinFilterFtor()
 	{ delete [] _array; }
 
 	template< typename Accessor >
@@ -52,8 +52,10 @@ public:
 			_lastCol = 0;
 			_lastRow = pos[1];
 		}
-		std::nth_element( &(_array[ 0 ]), &(_array[ _size*_size / 2 ]), &(_array[ _size*_size ]) );
-		return _array[ _size*_size / 2 ];
+		//std::nth_element( &(_array[ 0 ]), &(_array[ _size*_size - 1 ]), &(_array[ _size*_size ]) );
+		//return _array[ _size*_size - 1 ];
+		
+		return *std::min_element( &(_array[ 0 ]), &(_array[ _size*_size ]) );
 	}
 	Vector< int32, 2 >
 	GetLeftCorner()const
@@ -72,15 +74,15 @@ protected:
 
 
 template< typename InputImageType >
-MedianFilter2D< InputImageType >
-::MedianFilter2D() : PredecessorType( new Properties() )
+MinFilter2D< InputImageType >
+::MinFilter2D() : PredecessorType( new Properties() )
 {
 
 }
 
 template< typename InputImageType >
-MedianFilter2D< InputImageType >
-::MedianFilter2D( typename MedianFilter2D< InputImageType >::Properties *prop ) 
+MinFilter2D< InputImageType >
+::MinFilter2D( typename MinFilter2D< InputImageType >::Properties *prop ) 
 : PredecessorType( prop ) 
 {
 
@@ -88,7 +90,7 @@ MedianFilter2D< InputImageType >
 
 template< typename InputImageType >
 void
-MedianFilter2D< InputImageType >
+MinFilter2D< InputImageType >
 ::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
 {
 	PredecessorType::BeforeComputation( utype );
@@ -102,10 +104,10 @@ MedianFilter2D< InputImageType >
 
 template< typename InputImageType >
 bool
-MedianFilter2D< InputImageType >
+MinFilter2D< InputImageType >
 ::Process2D(
-			const typename MedianFilter2D< InputImageType >::Region	&inRegion,
-			typename MedianFilter2D< InputImageType >::Region 	&outRegion
+			const typename MinFilter2D< InputImageType >::Region	&inRegion,
+			typename MinFilter2D< InputImageType >::Region 	&outRegion
 		 )
 {
 	if( !this->CanContinue() ) {
@@ -113,9 +115,9 @@ MedianFilter2D< InputImageType >
 	}
 
 	try {
-		MedianFilterFtor< InputElementType > filter( GetRadius() );
-		FilterProcessorNeighborhood< 
-			MedianFilterFtor< InputElementType >,
+		MinFilterFtor< InputElementType > filter( GetRadius() );
+		FilterProcessor< 
+			MinFilterFtor< InputElementType >,
 			Region,
 			Region,
 			MirrorAccessor
@@ -138,6 +140,6 @@ MedianFilter2D< InputImageType >
 } /*namespace M4D*/
 
 
-#endif /*_MEDIAN_FILTER_H*/
+#endif /*_MIN_FILTER_H*/
 
 

@@ -1,6 +1,6 @@
 #include "common/Common.h"
 #include "Filtering.h"
-#include "Imaging/filters/GaussianFilter.h"
+#include "Imaging/filters/MedianFilter.h"
 #include <tclap/CmdLine.h>
 
 
@@ -18,7 +18,7 @@ main( int argc, char **argv )
         D_COMMAND( std::ofstream debugFile( "Debug.txt" ); );
         SET_DOUT( debugFile );
 	
-	TCLAP::CmdLine cmd( "Gaussian filter - smooth.", ' ', "");
+	TCLAP::CmdLine cmd( "Median filter.", ' ', "");
 	/*---------------------------------------------------------------------*/
 
 	TCLAP::ValueArg<unsigned> radiusArg( "r", "radius", "Filter mask radius.", false, 5, "Unsigned integer" );
@@ -54,9 +54,9 @@ main( int argc, char **argv )
 	unsigned radius = radiusArg.getValue();
 
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
-		M4D::Imaging::GaussianFilter2D< IMAGE_TYPE > *gaussFilter = new M4D::Imaging::GaussianFilter2D< IMAGE_TYPE >();
-		gaussFilter->SetRadius( radius );
-		filter = gaussFilter;
+		M4D::Imaging::MedianFilter2D< IMAGE_TYPE > *medianFilter = new M4D::Imaging::MedianFilter2D< IMAGE_TYPE >();
+		medianFilter->SetRadius( radius );
+		filter = medianFilter;
 	);
 
 	/*---------------------------------------------------------------------*/
@@ -74,7 +74,7 @@ main( int argc, char **argv )
 	if( hook->OK() ) {
 		std::cout << "Done in "<< filter->GetLastComputationTime() << " seconds.\n";
 
-		std::cout << "Saving file '" << outFilename << "' ..."; std::cout.flush();
+		std::cout << "Saving file '" << inFilename << "' ..."; std::cout.flush();
 		M4D::Imaging::ImageFactory::DumpImage( outFilename, outConnection->GetDatasetReadOnlyTyped() );
 		std::cout << "Done\n";
 	} else {

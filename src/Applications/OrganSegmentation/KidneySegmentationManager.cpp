@@ -21,10 +21,14 @@ KidneySegmentationManager::KidneySegmentationManager()
 	: _wasInitialized( false )
 {
 
-	_gaussianFilter = new Gaussian();
+	/*_gaussianFilter = new Gaussian();
 	_gaussianFilter->SetRadius( 5 );
-	_container.AddFilter( _gaussianFilter );
+	_container.AddFilter( _gaussianFilter );*/
 	
+	_medianFilter = new Median();
+	_medianFilter->SetRadius( 5 );
+	_container.AddFilter( _medianFilter );
+
 	/*_edgeFilter = new EdgeFilter();
 	//_edgeFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
 	_edgeFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_UPDATE_FINISHED );
@@ -40,9 +44,13 @@ KidneySegmentationManager::KidneySegmentationManager()
 	_segmentationFilter = new SegmentationFilter();
 	_container.AddFilter( _segmentationFilter );
 
-	_inConnection = (ImageConnectionType*)&(_container.MakeInputConnection( *_gaussianFilter, 0, false ) );
+	/*_inConnection = (ImageConnectionType*)&(_container.MakeInputConnection( *_gaussianFilter, 0, false ) );
 	_gaussianConnection = (ImageConnectionType*)&(_container.MakeConnection( *_gaussianFilter, 0, *filter, 0 ) );
-		_container.MakeConnection( *_gaussianFilter, 0, *_segmentationFilter, 0 );
+		_container.MakeConnection( *_gaussianFilter, 0, *_segmentationFilter, 0 );*/
+
+	_inConnection = (ImageConnectionType*)&(_container.MakeInputConnection( *_medianFilter, 0, false ) );
+	_gaussianConnection = (ImageConnectionType*)&(_container.MakeConnection( *_medianFilter, 0, *filter, 0 ) );
+		_container.MakeConnection( *_medianFilter, 0, *_segmentationFilter, 0 );
 
 	//_edgeConnection = (ImageConnectionType*)&(_container.MakeConnection( *_edgeFilter, 0, *_segmentationFilter, 1 ) );
 		_container.MakeConnection( *filter, 0, *_edgeFilter, 0 );
@@ -195,7 +203,9 @@ KidneySegmentationManager::StartSegmentation()
 void
 KidneySegmentationManager::RunFilters()
 {
-	_gaussianFilter->ExecuteOnWhole();
+	_medianFilter->ExecuteOnWhole();
+
+	//_gaussianFilter->ExecuteOnWhole();
 
 	//while( _gaussianFilter->IsRunning() ){ /*std::cout << ".";*/ }
 }

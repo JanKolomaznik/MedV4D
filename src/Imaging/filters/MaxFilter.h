@@ -1,5 +1,5 @@
-#ifndef _MEDIAN_FILTER_H
-#define _MEDIAN_FILTER_H
+#ifndef _MAX_FILTER_H
+#define _MAX_FILTER_H
 
 #include "common/Common.h"
 #include "Imaging/AbstractImage2DFilter.h"
@@ -14,7 +14,7 @@ namespace M4D
 /**
  * @ingroup imaging 
  * @author Jan Kolomaznik 
- * @file MedianFilter.h 
+ * @file MaxFilter.h 
  * @{ 
  **/
 
@@ -22,7 +22,7 @@ namespace Imaging
 {
 
 template< typename InputImageType >
-class MedianFilter2D
+class MaxFilter2D
 	: public AbstractImage2DFilter< InputImageType, InputImageType >
 {
 public:	
@@ -37,8 +37,8 @@ public:
 		uint32	radius;
 	};
 
-	MedianFilter2D( Properties * prop );
-	MedianFilter2D();
+	MaxFilter2D( Properties * prop );
+	MaxFilter2D();
 
 	GET_SET_PROPERTY_METHOD_MACRO( uint32, Radius, radius );
 protected:
@@ -68,8 +68,8 @@ private:
 
 
 //include implementation
-#include "Imaging/filters/MedianFilter.tcc"
+#include "Imaging/filters/MaxFilter.tcc"
 
-#endif /*_MEDIAN_FILTER_H*/
+#endif /*_MAX_FILTER_H*/
 
 

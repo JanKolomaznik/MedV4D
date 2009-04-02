@@ -223,7 +223,8 @@ MainExecutionThread::operator()()
 	clock_t time = clock();
 	bool result = _filter->ExecutionThreadMethod( _updateType );
 	time = clock() - time;
-	LOG( _filter->GetName() << " was running for : " << (((float32)time)/CLOCKS_PER_SEC) << " seconds." );
+	_filter->_lastComputationTime = (((float32)time)/CLOCKS_PER_SEC);
+	LOG( _filter->GetName() << " was running for : " << _filter->_lastComputationTime << " seconds." );
 
 	if( result ) {
 		//Send message about finished job	

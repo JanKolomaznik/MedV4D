@@ -16,11 +16,14 @@ NAME=		tools
 TARGETS=	DICOM2ImageDump \
 		ImageDumpView \
 		GaussianFilter \
+		MedianFilter \
 		SobelEdgeDetector \
 		SobelGradientOperator \
 		LaplaceOperator \
 		ImageCrop \
-		CreateExampleData
+		CreateExampleData \
+		MaxFilter \
+		MinFilter
 
 M4DLIBS=	../../lib/libm4dWidgets.a\
 		../../lib/libImaging.a\

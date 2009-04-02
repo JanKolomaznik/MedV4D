@@ -383,6 +383,7 @@ public:
 		FlowDirection				direction
 		);
 	
+	SIMPLE_GET_METHOD( float32, LastComputationTime, _lastComputationTime );
 protected:
 	friend struct MainExecutionThread;
 
@@ -505,6 +506,9 @@ protected:
 	M4D::Common::TimeStamp	_propertiesTimestamp;
 
 	bool			_callPrepareOutputDatasets;
+
+
+	float32			_lastComputationTime;
 private:
 	/**
 	 * Prohibition of copying.

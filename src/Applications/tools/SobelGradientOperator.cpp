@@ -38,7 +38,7 @@ main( int argc, char **argv )
 	std::string inFilename = inFilenameArg.getValue();
 	std::string outFilename = outFilenameArg.getValue();
 
-	std::cout << "Loading file..."; std::cout.flush();
+	std::cout << "Loading file '" << inFilename << "' ..."; std::cout.flush();
 	M4D::Imaging::AbstractImage::Ptr image = 
 			M4D::Imaging::ImageFactory::LoadDumpedImage( inFilename );
 	std::cout << "Done\n";
@@ -70,9 +70,9 @@ main( int argc, char **argv )
 
 	while( !(hook->Finished()) ){ /*empty*/ }
 	if( hook->OK() ) {
-		std::cout << "Done\n";
+		std::cout << "Done in "<< filter->GetLastComputationTime() << " seconds.\n";
 
-		std::cout << "Saving file..."; std::cout.flush();
+		std::cout << "Saving file '" << outFilename << "' ..."; std::cout.flush();
 		M4D::Imaging::ImageFactory::DumpImage( outFilename, outConnection->GetDatasetReadOnlyTyped() );
 		std::cout << "Done\n";
 	} else {

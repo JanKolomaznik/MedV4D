@@ -37,6 +37,7 @@ public:
 				_strides[i] = 0;
 				_dimOrder[i] = 0;
 			}
+			_startPointer = NULL;
 		}
 
 	ImageRegion( 
@@ -63,11 +64,13 @@ public:
 			for ( unsigned i = 0; i < Dimension; ++i ) {
 				_origin[i] = _pointerCoordinatesInSource[ _dimOrder[i] ];
 			}
+			_startPointer = _pointer - _origin * _strides;
 		}
 
 	ImageRegion( const ImageRegion& region )
 		{
 			_pointer = region._pointer;
+			_startPointer = region._startPointer;
 			_sourceDimension = region._sourceDimension;
 			_pointerCoordinatesInSource = new int32[_sourceDimension];
 		       	_origin = region._origin;
@@ -98,7 +101,7 @@ public:
 	Iterator
 	GetIterator( const PointType &firstCorner, const PointType &secondCorner )const
 		{
-			return Iterator( &GetElement(firstCorner), firstCorner, secondCorner, _strides, firstCorner );
+			return Iterator( _startPointer + firstCorner*_strides, firstCorner, secondCorner, _strides, firstCorner );
 		}
 
 	Iterator
@@ -211,6 +214,7 @@ public:
 	operator=( const ImageRegion& region )
 		{
 			_pointer = region._pointer;
+			_startPointer = region._startPointer;
 			_sourceDimension = region._sourceDimension;
 			_pointerCoordinatesInSource = new int32[_sourceDimension];
 		       	_origin = region._origin;
@@ -268,6 +272,17 @@ public:
 			}
 			return *(_pointer + coords * _strides );
 		}
+	ElementType &
+	GetElementFast( const PointType &coords )
+		{
+			return *(_startPointer + coords * _strides );
+		}
+
+	ElementType
+	GetElementFast( const PointType &coords )const
+		{
+			return *(_startPointer + coords * _strides );
+		}
 
 	ElementType
 	GetElementWorldCoords( const Vector< float32, Dimension > &pos )const
@@ -308,6 +323,7 @@ protected:
 	
 private:
 	ElementType			*_pointer;
+	ElementType			*_startPointer;
 	Vector< uint32, Dimension >	_size;
 	PointType	_strides;
 	PointType	_origin;
@@ -349,10 +365,7 @@ ForEachInRegion( RegionType &region, Applicator applicator )
 {
 	typename RegionType::Iterator iterator = region.GetIterator();
 	
-	for( ; !iterator.IsEnd(); ++iterator ) {
-		applicator( *iterator, iterator.GetCoordinates() );
-	}	
-	return applicator;
+	return ForEachByIterator( iterator, applicator );
 }
 
 }/*namespace Imaging*/

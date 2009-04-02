@@ -246,7 +246,7 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 
 	algorithm.SetGamma( 0.8f );
 	algorithm.SetImageEnergyBalance( 1.0f );
-	algorithm.SetInternalEnergyBalance( 0.5f );
+	algorithm.SetInternalEnergyBalance( 0.0f );
 	algorithm.SetConstrainEnergyBalance( 0.0f );
 	algorithm.SetRegionStat( in->GetSlice( sliceNumber ) );
 	algorithm.SetRegionEdge( inEdge->GetSlice( sliceNumber ) );

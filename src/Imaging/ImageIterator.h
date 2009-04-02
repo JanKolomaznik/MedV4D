@@ -35,7 +35,8 @@ public:
 	ImageIterator(): _pointer( NULL ) {}
 
 	ImageIterator( const ImageIterator& it ): _pointer( it._pointer ), _minimum( it._minimum ), 
-			_maximum( it._maximum ), _strides( it._strides ), _position( it._position )
+			_maximum( it._maximum ), _strides( it._strides ), _contStrides( it._contStrides ), 
+			_position( it._position ), _size( it._size )
 	{
 		_size = _maximum - _minimum;
 	}
@@ -68,7 +69,7 @@ public:
 		_strides = it._strides;
 		_contStrides = it._contStrides;
 		_position = it._position;
-		_size = _maximum - _minimum;
+		_size = it._size;
 		return *this;
 	}
 
@@ -186,80 +187,18 @@ public:
 			return _pointer != it._pointer;
 		}
 };
-/*
-template< typename ElementType, unsigned Dim >
-ImageIterator< ElementType, Dim >
-CreateImageIteratorGen(
-			ElementType	*pointer, 
-			Vector< uint32, Dim > size,
-			Vector< int32, Dim > strides,	
-			Vector< uint32, Dim > pos
-			)
+
+
+
+template< typename IteratorType, typename Applicator >
+Applicator
+ForEachByIterator( IteratorType iterator, Applicator applicator )
 {
-	return ImageIterator< ElementType, Dim >( pointer, size.GetData(), strides.GetData(), pos.GetData() );
+	for( ; !iterator.IsEnd(); ++iterator ) {
+		applicator( *iterator, iterator.GetCoordinates() );
+	}	
+	return applicator;
 }
-
-template< typename ElementType >
-ImageIterator< ElementType, 2 >
-CreateImageIterator(
-			ElementType	*pointer, 
-			uint32		width, 
-			uint32		height,
-			int32		xStride,
-			int32		yStride,
-			int32		xPos = 0,
-			int32		yPos = 0
-			)
-{
-	uint32 _size[2];
-	int32 _strides[2];
-	uint32 _position[2];
-
-	_size[0] = width;
-	_size[1] = height;
-
-	_strides[0] = xStride;
-	_strides[1] = yStride;
-
-	_position[0] = xPos;
-	_position[1] = yPos;
-
-	return ImageIterator< ElementType, 2 >( pointer, _size, _strides, _position );
-}
-
-template< typename ElementType >
-ImageIterator< ElementType, 3 >
-CreateImageIterator(
-			ElementType	*pointer, 
-			uint32		width, 
-			uint32		height,
-			uint32		depth,
-			int32		xStride,
-			int32		yStride,
-			int32		zStride,
-			int32		xPos = 0,
-			int32		yPos = 0,
-			int32		zPos = 0
-			)
-{
-	uint32 _size[3];
-	int32 _strides[3];
-	uint32 _position[3];
-
-	_size[0] = width;
-	_size[1] = height;
-	_size[2] = depth;
-
-	_strides[0] = xStride;
-	_strides[1] = yStride;
-	_strides[2] = zStride;
-
-	_position[0] = xPos;
-	_position[1] = yPos;
-	_position[2] = zPos;
-
-	return ImageIterator< ElementType, 3 >( pointer, _size, _strides, _position );
-}*/
 
 }/*namespace Imaging*/
 /** @} */

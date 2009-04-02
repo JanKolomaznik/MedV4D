@@ -13,6 +13,7 @@ typedef M4D::Imaging::SlicedGeometry< M4D::Imaging::Geometry::BSpline<float32,2>
 typedef	M4D::Imaging::ConnectionTyped< GDataSet >	OutputGeomConnection;
 typedef M4D::Imaging::SnakeSegmentationFilter< int16, SimpleVector< int16, 2 > > SegmentationFilter;
 typedef M4D::Imaging::GaussianFilter2D< InputImageType >	Gaussian;
+typedef M4D::Imaging::MedianFilter2D< InputImageType >		Median;
 typedef M4D::Imaging::LaplaceOperator2D< InputImageType >	Laplacian;
 typedef M4D::Imaging::SobelEdgeDetector< InputImageType >	Sobel;
 typedef M4D::Imaging::SobelGradientOperator< InputImageType, M4D::Imaging::Image< SimpleVector< int16, 2 >, 3 > >	SobelGradient;
@@ -128,7 +129,8 @@ protected:
 	InputImagePtr				 	_inputImage;
 	PoleDefinition					_poles[2];
 	SegmentationFilter				*_segmentationFilter;
-	Gaussian					*_gaussianFilter;
+	//Gaussian					*_gaussianFilter;
+	Median						*_medianFilter;
 
 	EdgeFilter					*_edgeFilter;
 	Sobel						*_sobelEdge;

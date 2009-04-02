@@ -1,6 +1,6 @@
 #include "common/Common.h"
 #include "Filtering.h"
-#include "Imaging/filters/GaussianFilter.h"
+#include "Imaging/filters/MaxFilter.h"
 #include <tclap/CmdLine.h>
 
 
@@ -18,7 +18,7 @@ main( int argc, char **argv )
         D_COMMAND( std::ofstream debugFile( "Debug.txt" ); );
         SET_DOUT( debugFile );
 	
-	TCLAP::CmdLine cmd( "Gaussian filter - smooth.", ' ', "");
+	TCLAP::CmdLine cmd( "Max filter.", ' ', "");
 	/*---------------------------------------------------------------------*/
 
 	TCLAP::ValueArg<unsigned> radiusArg( "r", "radius", "Filter mask radius.", false, 5, "Unsigned integer" );
@@ -54,9 +54,9 @@ main( int argc, char **argv )
 	unsigned radius = radiusArg.getValue();
 
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
-		M4D::Imaging::GaussianFilter2D< IMAGE_TYPE > *gaussFilter = new M4D::Imaging::GaussianFilter2D< IMAGE_TYPE >();
-		gaussFilter->SetRadius( radius );
-		filter = gaussFilter;
+		M4D::Imaging::MaxFilter2D< IMAGE_TYPE > *maxFilter = new M4D::Imaging::MaxFilter2D< IMAGE_TYPE >();
+		maxFilter->SetRadius( radius );
+		filter = maxFilter;
 	);
 
 	/*---------------------------------------------------------------------*/

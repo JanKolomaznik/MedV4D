@@ -26,6 +26,7 @@
 //#define OS_MAC
 
 #include "Types.h"
+#include "TypeComparator.h"
 #include "Debug.h"
 #include "Log.h"
 #include "ExceptionBase.h"
