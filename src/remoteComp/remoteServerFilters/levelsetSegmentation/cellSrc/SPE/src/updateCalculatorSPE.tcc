@@ -113,8 +113,6 @@ namespace itk {
 		      }
 		    MIN_NORM *= minSpacing;
 //		    }
-
-		  void *globalData = m_diffFunc.GetGlobalDataPointer();
 		  
 		  typename LayerType::ConstIterator layerIt;
 		  NeighborhoodIterator<OutputImageType> outputIt(m_diffFunc.GetRadius(),
@@ -191,7 +189,7 @@ namespace itk {
 		#endif
 		        }
 		          
-		      m_Conf.m_UpdateBuffer->push_back( m_diffFunc.ComputeUpdate(outputIt, globalData, offset) );
+		      m_Conf.m_UpdateBuffer->push_back( m_diffFunc.ComputeUpdate(outputIt, &m_globalData, offset) );
 		      }
 		//    else // Don't do interpolation
 		//      {
@@ -202,9 +200,7 @@ namespace itk {
 		  // Ask the finite difference function to compute the time step for
 		  // this iteration.  We give it the global data pointer to use, then
 		  // ask it to free the global data memory.
-		  timeStep = m_diffFunc.ComputeGlobalTimeStep(globalData);
-
-		  m_diffFunc.ReleaseGlobalDataPointer(globalData);
+		  timeStep = m_diffFunc.ComputeGlobalTimeStep(&m_globalData);
 		  
 		  return timeStep;
 	}

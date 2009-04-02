@@ -28,6 +28,12 @@ ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >
   // Get the stride length for each axis.
   for(unsigned int i = 0; i < ImageType::ImageDimension; i++)
     {  m_xStride[i] = it.GetStride(i); }
+  
+  // initialize variables
+  for (unsigned int i = 0; i < ImageType::ImageDimension; i++)
+    {
+    m_ScaleCoefficients[i] = 1.0;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

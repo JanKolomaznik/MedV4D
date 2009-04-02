@@ -20,7 +20,7 @@ public:
 		, seedZ( 1 )
 		, lowerThreshold( -500 ) 
 		, upperThreshold( 500 ) 
-		, maxIterations( 1800 ) 
+		, maxIterations( 800 ) 
 		, initialDistance( 5.0f ) 
 		, curvatureScaling( 0.01f ) 
 		, propagationScaling( 1.0f ) 
