@@ -4,21 +4,25 @@
 #include <vector>
 
 #include "diffFunc.h"
-#include "../commonBase.h"
+#include "../commonConsts.h"
 #include "../commonTypes.h"
 
 #include "itkSparseFieldLayer.h"
+
+#include "itkConstNeighborhoodIterator.h"
+#include "itkZeroFluxNeumannBoundaryCondition.h"
 
 namespace itk {
 
 template <class TInputImage, class TFeatureImage, class TOutputPixelType = float >
 class UpdateCalculatorSPE
-	: public CommonBase<typename Image<TOutputPixelType, TInputImage::ImageDimension>::ValueType>
+	: public CommonTypes<TInputImage::ImageDimension>
+	, public Consts<typename Image<TOutputPixelType, TInputImage::ImageDimension>::ValueType, typename CommonTypes<TInputImage::ImageDimension>::StatusType>
 {
 public:
 	
 	/** Standard class typedefs */
-	typedef CommonBase<typename Image<TOutputPixelType, TInputImage::ImageDimension>::ValueType> SuperClass;
+	typedef CommonTypes<TInputImage::ImageDimension> SuperClass;
 	typedef typename SuperClass::TimeStepType TimeStepType;
 	typedef typename SuperClass::StatusType StatusType;
 	
@@ -27,7 +31,13 @@ public:
 		typedef TFeatureImage                       FeatureImageType;
 		typedef typename FeatureImageType::PixelType FeaturePixelType;
 		
-		typedef ThresholdLevelSetFunc<TFeatureImage> SegmentationFunctionType;
+		// &&&&&&&&&
+		typedef ZeroFluxNeumannBoundaryCondition<TInputImage>  DefaultBoundaryConditionType;
+		typedef ConstNeighborhoodIterator<TInputImage, DefaultBoundaryConditionType> InNeighborhoodType;
+		typedef ConstNeighborhoodIterator<TFeatureImage, DefaultBoundaryConditionType> FeatureNeighborhoodType;
+		// &&&&&&&&&
+		
+		typedef ThresholdLevelSetFunc<InNeighborhoodType, FeatureNeighborhoodType> SegmentationFunctionType;
 		
 		  typedef typename Image<TOutputPixelType, TInputImage::ImageDimension>::ValueType ValueType;
 		  
@@ -58,7 +68,6 @@ public:
 			UpdateCalculatorSPE()
 			{
 				memset(&m_globalData, 0, sizeof(TGlobalData));
-				m_diffFunc = SegmentationFunctionType::New();
 			}
 		  
 		  void CalculateChangeItem(NeighborhoodIterator<OutputImageType> &outIt);
@@ -79,7 +88,7 @@ public:
 	
 protected:
 
-	typename SegmentationFunctionType::Pointer m_diffFunc;
+	SegmentationFunctionType m_diffFunc;
     
     
     

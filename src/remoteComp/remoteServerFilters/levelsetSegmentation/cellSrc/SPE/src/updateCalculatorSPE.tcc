@@ -21,11 +21,11 @@ namespace itk {
 		MIN_NORM *= minSpacing;
 		
 		// set props to diffFunc
-		m_diffFunc->SetFeatureImage(m_Conf.m_featureImage);
-		m_diffFunc->SetUpperThreshold(m_Conf.m_upThreshold);
-		m_diffFunc->SetLowerThreshold(m_Conf.m_downThreshold);
-		m_diffFunc->SetPropagationWeight(m_Conf.m_propWeight);
-		m_diffFunc->SetCurvatureWeight(m_Conf.m_curvWeight);
+		m_diffFunc.SetFeatureImage(m_Conf.m_featureImage);
+		m_diffFunc.SetUpperThreshold(m_Conf.m_upThreshold);
+		m_diffFunc.SetLowerThreshold(m_Conf.m_downThreshold);
+		m_diffFunc.SetPropagationWeight(m_Conf.m_propWeight);
+		m_diffFunc.SetCurvatureWeight(m_Conf.m_curvWeight);
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -89,7 +89,7 @@ namespace itk {
 				offset[i] = (offset[i] * centerValue) / (norm_grad_phi_squared + MIN_NORM);
 			}
 
-			m_Conf.m_UpdateBuffer->push_back( m_diffFunc->ComputeUpdate(outIt, (void *)&m_globalData, offset) );
+			m_Conf.m_UpdateBuffer->push_back( m_diffFunc.ComputeUpdate(outIt, (void *)&m_globalData, offset) );
 		}
 	}
 
@@ -114,14 +114,14 @@ namespace itk {
 		    MIN_NORM *= minSpacing;
 //		    }
 
-		  void *globalData = m_diffFunc->GetGlobalDataPointer();
+		  void *globalData = m_diffFunc.GetGlobalDataPointer();
 		  
 		  typename LayerType::ConstIterator layerIt;
-		  NeighborhoodIterator<OutputImageType> outputIt(m_diffFunc->GetRadius(),
+		  NeighborhoodIterator<OutputImageType> outputIt(m_diffFunc.GetRadius(),
 				  m_Conf.m_outputImage, m_Conf.m_outputImage->GetRequestedRegion());
 		  TimeStepType timeStep;
 
-		  const NeighborhoodScalesType neighborhoodScales = m_diffFunc->ComputeNeighborhoodScales();
+		  const NeighborhoodScalesType neighborhoodScales = m_diffFunc.ComputeNeighborhoodScales();
 
 //		  if ( m_BoundsCheckingActive == false )
 //		    {
@@ -191,20 +191,20 @@ namespace itk {
 		#endif
 		        }
 		          
-		      m_Conf.m_UpdateBuffer->push_back( m_diffFunc->ComputeUpdate(outputIt, globalData, offset) );
+		      m_Conf.m_UpdateBuffer->push_back( m_diffFunc.ComputeUpdate(outputIt, globalData, offset) );
 		      }
 		//    else // Don't do interpolation
 		//      {
-		//      m_UpdateBuffer.push_back( m_diffFunc->ComputeUpdate(outputIt, globalData) );
+		//      m_UpdateBuffer.push_back( m_diffFunc.ComputeUpdate(outputIt, globalData) );
 		//      }
 		    }
 		  
 		  // Ask the finite difference function to compute the time step for
 		  // this iteration.  We give it the global data pointer to use, then
 		  // ask it to free the global data memory.
-		  timeStep = m_diffFunc->ComputeGlobalTimeStep(globalData);
+		  timeStep = m_diffFunc.ComputeGlobalTimeStep(globalData);
 
-		  m_diffFunc->ReleaseGlobalDataPointer(globalData);
+		  m_diffFunc.ReleaseGlobalDataPointer(globalData);
 		  
 		  return timeStep;
 	}

@@ -3,14 +3,28 @@
 
 namespace itk {
 
-template<typename ValueType>
-class CommonBase
+template<uint8 Dim>
+class CommonTypes
 {
 public:
 	typedef double  TimeStepType;
 	  
 	/** Type used for storing status information */
 	typedef signed char StatusType;
+	
+	/** The type of data structure that holds the scales with which the
+   * neighborhood is weighted to properly account for spacing and neighborhood radius. */
+  typedef Vector<float32, Dim> NeighborhoodScalesType;
+
+  /** A floating point offset from an image grid location. Used for
+   * interpolation among grid values in a neighborhood. */
+  typedef Vector<float32, Dim> FloatOffsetType;
+};
+
+template<typename ValueType, typename StatusType >
+class Consts
+{
+public:
 	
 	/** Multiplicative identity of the ValueType. */
   ValueType m_ValueOne;//NumericTraits<ValueType>::One;
@@ -39,7 +53,7 @@ public:
   StatusType m_StatusNull;
   
 protected:
-	CommonBase()
+	Consts()
 	{
 		m_ValueOne = NumericTraits<ValueType>::One;
 		m_ValueZero = NumericTraits<ValueType>::Zero;

@@ -1,7 +1,7 @@
 #ifndef CELLTHRESHOLDLEVELSETFINITEDIFFERENCEFUNCTION_H_
 #define CELLTHRESHOLDLEVELSETFINITEDIFFERENCEFUNCTION_H_
 
-#include "itkFiniteDifferenceFunction.h"
+#include "diffFuncBase.h"
 #include "common/perfCounter.h"
 #include "speedTermSolver.h"
 //#include "advectionTermSolver.h"
@@ -10,26 +10,26 @@
 namespace itk
 {
 
-template <class ImageType, class FeatureImageType = ImageType>
+template <class TInputNeighbour, class TFeatureNeighbour = TInputNeighbour>
 class ThresholdLevelSetFunc
-	: public itk::FiniteDifferenceFunction<FeatureImageType>
-	, public SpeedTermSolver<FeatureImageType, typename itk::FiniteDifferenceFunction<FeatureImageType>::NeighborhoodType, typename itk::FiniteDifferenceFunction<FeatureImageType>::FloatOffsetType>
+	: public MyDiffFuncBase<TInputNeighbour>
+	, public SpeedTermSolver<typename TFeatureNeighbour::ImageType, TInputNeighbour, typename MyDiffFuncBase<TInputNeighbour>::FloatOffsetType>
 	//, public AdvectionTermSolver,
-	, public CurvatureTermSolver<FeatureImageType>
+	, public CurvatureTermSolver<typename TInputNeighbour::ImageType>
 {
 public:
-	typedef ThresholdLevelSetFunc<ImageType, FeatureImageType> Self;
-	typedef itk::SmartPointer<Self> Pointer;
-	typedef itk::FiniteDifferenceFunction<ImageType> Superclass;
+	typedef ThresholdLevelSetFunc<TInputNeighbour, TFeatureNeighbour> Self;
+	typedef MyDiffFuncBase<TInputNeighbour> Superclass;
 	typedef typename Superclass::PixelType 	PixelType;
-	typedef typename Superclass::NeighborhoodType 	NeighborhoodType;
 	typedef typename Superclass::FloatOffsetType 	FloatOffsetType;
 	typedef typename Superclass::RadiusType 	RadiusType;
 	typedef typename Superclass::TimeStepType TimeStepType;
 	typedef typename Superclass::NeighborhoodScalesType NeighborhoodScalesType;
-	typedef GlobalDataStruct<PixelType, FeatureImageType::ImageDimension> GlobalDataType;
 	
-	itkNewMacro(Self);
+	typedef TInputNeighbour NeighborhoodType;
+	typedef typename TInputNeighbour::ImageType ImageType;
+	typedef GlobalDataStruct<PixelType, ImageType::ImageDimension> GlobalDataType;
+
 	
 	virtual PixelType ComputeUpdate(
 			const NeighborhoodType &neighborhood,
@@ -41,20 +41,17 @@ public:
 	void *GetGlobalDataPointer() const { return new GlobalDataType(); }
 	void ReleaseGlobalDataPointer(void *globalData) const { delete (GlobalDataType*) globalData; }
 	
-	PerfCounter cntr_;
-	
-protected:
 	ThresholdLevelSetFunc();
 	
 private:
 	/** Slices for the ND neighborhood. */
-	  std::slice x_slice[FeatureImageType::ImageDimension];
+	  std::slice x_slice[ImageType::ImageDimension];
 
 	  /** The offset of the center pixel in the neighborhood. */
 	  ::size_t m_Center;
 
 	  /** Stride length along the y-dimension. */
-	  ::size_t m_xStride[FeatureImageType::ImageDimension];
+	  ::size_t m_xStride[ImageType::ImageDimension];
 	  
 	  /** Constants used in the time step calculation. */
 	  double m_WaveDT;

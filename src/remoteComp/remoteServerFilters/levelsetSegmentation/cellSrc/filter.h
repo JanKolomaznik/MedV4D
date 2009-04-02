@@ -29,8 +29,6 @@ public:
 	typedef typename Superclass::StatusType StatusType;
 	typedef Image<TOutputPixelType, TInputImage::ImageDimension> OutputImageType;
 	
-	typedef ThresholdLevelSetFunc<TFeatureImage> SegmentationFunctionType;
-	
 	typedef UpdateCalculatorSPE<TInputImage, TFeatureImage, TOutputPixelType> TUpdateCalculatorSPE;
 	
 	/////////////////
@@ -47,7 +45,7 @@ public:
   typedef SparseFieldLayer<LayerNodeType> LayerType;
   typedef typename LayerType::Pointer     LayerPointerType;
   
-  typedef typename SegmentationFunctionType::NeighborhoodScalesType NeighborhoodScalesType;
+  typedef typename Superclass::NeighborhoodScalesType NeighborhoodScalesType;
 
   /** A type for a list of LayerPointerTypes */
   typedef std::vector<LayerPointerType> LayerListType;

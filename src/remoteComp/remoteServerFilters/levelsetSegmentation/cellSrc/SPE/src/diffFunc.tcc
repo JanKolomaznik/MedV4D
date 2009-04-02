@@ -7,8 +7,8 @@ namespace itk
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template <class ImageType, class FeatureImageType>
-ThresholdLevelSetFunc< ImageType, FeatureImageType >
+template <class TInputNeighbour, class TFeatureNeighbour>
+ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >
 ::ThresholdLevelSetFunc()
 {
 	m_WaveDT = 1.0/(2.0 * ImageType::ImageDimension);
@@ -28,8 +28,6 @@ ThresholdLevelSetFunc< ImageType, FeatureImageType >
   // Get the stride length for each axis.
   for(unsigned int i = 0; i < ImageType::ImageDimension; i++)
     {  m_xStride[i] = it.GetStride(i); }
-
-	cntr_.Reset();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -56,13 +54,12 @@ ThresholdLevelSetFunc< ImageType, FeatureImageType >
 	
 ///////////////////////////////////////////////////////////////////////////////
 	
-template <class ImageType, class FeatureImageType>
-typename ThresholdLevelSetFunc< ImageType, FeatureImageType >::PixelType
-ThresholdLevelSetFunc< ImageType, FeatureImageType >
+template <class TInputNeighbour, class TFeatureNeighbour>
+typename ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >::PixelType
+ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >
 ::ComputeUpdate(const NeighborhoodType &it, void *globalData,
 		const FloatOffsetType& offset)
 {
-	cntr_.Start();
 	unsigned int i, j;
 	//const PixelType ZERO = NumericTraits<PixelType>::Zero;
 	const PixelType center_value = it.GetCenterPixel();
@@ -118,16 +115,14 @@ ThresholdLevelSetFunc< ImageType, FeatureImageType >
 			//- ComputeAdvectionTerm()
 			);
 	
-	cntr_.Stop();
-	
 	return result;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template <class ImageType, class FeatureImageType>
-typename ThresholdLevelSetFunc< ImageType, FeatureImageType >::TimeStepType
-ThresholdLevelSetFunc< ImageType, FeatureImageType >
+template <class TInputNeighbour, class TFeatureNeighbour>
+typename ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >::TimeStepType
+ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >
 	::ComputeGlobalTimeStep(void *GlobalData) const
 {
   TimeStepType dt;
@@ -161,9 +156,9 @@ ThresholdLevelSetFunc< ImageType, FeatureImageType >
     }
 
   double maxScaleCoefficient = 0.0;
-  for (unsigned int i=0; i<FeatureImageType::ImageDimension; i++)
+  for (unsigned int i=0; i<ImageType::ImageDimension; i++)
     {
-    maxScaleCoefficient = vnl_math_max(this->m_ScaleCoefficients[i],maxScaleCoefficient);
+    maxScaleCoefficient = vnl_math_max( (double)this->m_ScaleCoefficients[i],maxScaleCoefficient);
     }
   dt /= maxScaleCoefficient;
  
