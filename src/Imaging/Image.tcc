@@ -291,6 +291,7 @@ Image< ElementType, Dim >::SetDirtyBBox(
 			Vector< int32, DIM > pmax = PosInSource< DIM >( max );
 			return modManager.AddMod( pmin, pmax );
 		} );
+	_THROW_ ErrorHandling::EShouldntReachThis();
 }
 
 template< typename ElementType, unsigned Dim >
@@ -311,6 +312,7 @@ Image< ElementType, Dim >::GetDirtyBBox(
 			Vector< int32, DIM > pmax = PosInSource< DIM >( max );
 			return modManager.GetMod( pmin, pmax );
 		} );
+	_THROW_ ErrorHandling::EShouldntReachThis();
 }
 
 template< typename ElementType, unsigned Dim >

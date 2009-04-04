@@ -51,6 +51,17 @@ struct ConvolutionMask
 		{
 			return mask[coord * strides];
 		}
+	MatrixElement &
+	Get( uint32 i )
+		{
+			return mask[i];
+		}
+	MatrixElement
+	Get( uint32 i )const
+		{
+			return mask[i];
+		}
+
 
 	Vector< uint32, Dim >	size;
 	Vector< uint32, Dim >	center;

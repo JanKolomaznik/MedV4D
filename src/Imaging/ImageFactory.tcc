@@ -77,27 +77,7 @@ ImageFactory::CreateEmptyImageFromExtents(
 				Vector< int32, DIM >( maximums ),
 				Vector< float32, DIM >( elementExtents ) );
 			);
-/*	switch( dim ) {
-	case 2:		
-		return CreateEmptyImage2D< ElementType >( 
-				(uint32) maximums[0]-minimums[0], 
-				(uint32) maximums[1]-minimums[1],
-				elementExtents[0],
-				elementExtents[1]
-				);
-	case 3:
-		return CreateEmptyImage3D< ElementType >( 
-				(uint32) maximums[0]-minimums[0], 
-				(uint32) maximums[1]-minimums[1],
-				(uint32) maximums[2]-minimums[2],
-				elementExtents[0],
-				elementExtents[1],
-				elementExtents[2]
-				);
-	default:
-		ASSERT( false );
-		return AbstractImage::Ptr();
-	}*/
+	_THROW_ ErrorHandling::EShouldntReachThis();
 }
 
 template< typename ElementType, unsigned Dim >

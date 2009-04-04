@@ -41,7 +41,7 @@ ImageFactory::CreateImageFromDataAndTypeID(
 		DimensionInfo		* info
 		)
 {
-	AbstractImageData*	image;
+	AbstractImageData*	image = NULL;
 
 	//We will generate switch over common numerical types. For more see Common.h
 	TYPE_TEMPLATE_SWITCH_MACRO( 

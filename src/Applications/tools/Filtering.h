@@ -36,8 +36,8 @@ public:
 	OK()
 		{ return _OK; }
 private:
-	bool _finished;
-	bool _OK;
+	volatile bool _finished;
+	volatile bool _OK;
 };
 
 

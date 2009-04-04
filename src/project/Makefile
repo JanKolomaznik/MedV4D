@@ -17,7 +17,7 @@ clean-all:	clean-libs clean-Applications
 	#no command
 
 .PHONY:clean-libs
-clean-libs:	clean-common clean-backendForDICOM clean-Imaging clean-GUI clean-vtkIntegration clean-cell
+clean-libs:	clean-common clean-backendForDICOM clean-Imaging clean-GUI clean-vtkIntegration
 	#no command
 #------------------------------------------------------------------------------
 .PHONY:common

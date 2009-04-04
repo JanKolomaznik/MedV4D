@@ -35,6 +35,8 @@ OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	$(srcTop)/tmp/$(NAME)
 SRC_DIR=	./src
 
+CXXDEBUG_OPTIONS = -ggdb
+
 CXXFLAGS= -Wall -Wno-deprecated $(CXXDEBUG_OPTIONS)
 #Dependecy file creation parameters
 DEP_FILE=	$(TMP_DIR)/depend

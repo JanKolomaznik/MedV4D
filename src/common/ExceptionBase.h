@@ -154,6 +154,14 @@ private:
 
 };
 
+class EShouldntReachThis: public ExceptionBase
+{
+public:
+	EShouldntReachThis() throw(): ExceptionBase( "Shouldn't reach this." ) {}
+private:
+
+};
+
 std::ostream& operator<<( std::ostream &out, ExceptionBase &exception );
 
 } /*namespace ErrorHandling*/

@@ -26,22 +26,20 @@ template< typename ElType >
 class ConvolutionFilterFtor: public FilterFunctorBase< ElType >
 {
 public:
-	ConvolutionFilterFtor( const ConvolutionMask<2, float32> &mask ) : _mask( mask ), _size( mask.size ), _center( mask.center ), _lastRow( TypeTraits< int32 >::Min )
+	ConvolutionFilterFtor( const ConvolutionMask<2, float32> &mask ) : _mask( mask ), _size( mask.size ), _center( mask.center )
 	{ 
-		_array = new ElType[ _size[0]*_size[1] ]; 
 		_leftCorner = Vector< int32, 2 >( -_center[0], -_center[1] );
 		_rightCorner = Vector< int32, 2 >( _size[0] - _center[0] - 1, _size[1] - _center[1] - 1 );
 	}
 
-	ConvolutionFilterFtor( const ConvolutionFilterFtor &ftor ) : _mask( ftor._mask ), _size( ftor._size ), _lastRow( TypeTraits< int32 >::Min )
+	ConvolutionFilterFtor( const ConvolutionFilterFtor &ftor ) : _mask( ftor._mask ), _size( ftor._size )
 	{ 
-		_array = new ElType[ _size[0]*_size[1] ]; 
 		_leftCorner = Vector< int32, 2 >( -_center[0], -_center[1] );
 		_rightCorner = Vector< int32, 2 >( _size[0] - _center[0] - 1, _size[1] - _center[1] - 1 );
 	}
 
 	~ConvolutionFilterFtor()
-	{ delete [] _array; }
+	{}
 
 	template< typename Accessor >
 	ElType
@@ -49,29 +47,13 @@ public:
 	{
 		Vector< int32, 2 > idx;
 		unsigned i = 0;
-		if( _lastRow == pos[1] ) {
-			idx[0] = pos[0] + _rightCorner[0];
-			for( idx[1] = pos[1] + _leftCorner[1]; idx[1] <= pos[1] + _rightCorner[1]; ++idx[1] ) {
-				_array[ i*_size[0] + _lastCol ] = accessor( idx );
-				++i;
-			}
-			_lastCol = (_lastCol + 1) % _size[0];
-		} else {
-			for( idx[1] = pos[1] + _leftCorner[1]; idx[1] <= pos[1] + _rightCorner[1]; ++idx[1] ) {
-				for( idx[0] = pos[0] + _leftCorner[0]; idx[0] <= pos[0] + _rightCorner[0]; ++idx[0] ) {
-					_array[i++] = accessor( idx );
-				}
-			}
-			_lastCol = 0;
-			_lastRow = pos[1];
-		}
 		typename TypeTraits< ElType >::SuperiorFloatType result = 0;
+		const Vector< int32, 2 > lborder( pos + _leftCorner );
+		const Vector< int32, 2 > rborder( pos + _rightCorner );
 
-		Vector< uint32, 2 > midx;
-		for( midx[1] = 0; midx[1] < _size[1]; ++midx[1] ) {
-			for( midx[0] = 0; midx[0] < _size[0]; ++midx[0] ) {
-				uint32 tmp = midx[1] * _size[0] + ((midx[0] + _lastCol) %_size[0]);
-				result += _mask.Get( midx ) * _array[ tmp ];
+		for( idx[1] = lborder[1]; idx[1] <= rborder[1]; ++idx[1] ) {
+			for( idx[0] = lborder[0]; idx[0] <= rborder[0]; ++idx[0] ) {
+				result += _mask.mask[i] * accessor( idx );
 			}
 		}
 
@@ -91,9 +73,6 @@ protected:
 
 	Vector< int32, 2 > _leftCorner; 
 	Vector< int32, 2 > _rightCorner;
-	int32	_lastRow;
-	int32	_lastCol;
-	ElType	*_array;
 };
 
 
@@ -121,14 +100,6 @@ ConvolutionFilter2D< ImageType, MatrixElement >
 		)
 {
 	try {
-		/*Compute2DConvolution( 
-				inRegion, 
-				outRegion, 
-				*(GetProperties().matrix), 
-				GetProperties().addition, 
-				GetProperties().multiplication 
-				);*/
-
 		ConvolutionFilterFtor< ElementType > filter( *GetConvolutionMask() );
 		FilterProcessorNeighborhood< 
 			ConvolutionFilterFtor< ElementType >,
@@ -147,38 +118,6 @@ ConvolutionFilter2D< ImageType, MatrixElement >
 //******************************************************************************
 //******************************************************************************
 
-/*
-template< typename InputImageType, typename MatrixElement >
-ConvolutionFilter3D< InputImageType, MatrixElement >::Properties
-::Properties() : PredecessorType::Properties( 0, 10 ), width( 1 ), height( 1 ), depth( 1 )
-{
-	matrix = MatrixPtr( new MatrixElement[1] );
-
-	matrix[0] = 1;
-}
-
-template< typename InputElementType >
-ConvolutionFilter3D< Image< InputElementType, 3 > >
-::ConvolutionFilter3D() : public PredecessorType( 0, 15 )
-{
-
-}
-
-template< typename InputElementType >
-bool
-ConvolutionFilter3D< Image< InputElementType, 3 > >
-::ProcessSlice(	
-			const Image< InputElementType, 3 > 	&in,
-			Image< InputElementType, 3 >		&out,
-			int32			x1,	
-			int32			y1,	
-			int32			x2,	
-			int32			y2,	
-			int32			slice
-		    )
-{
-
-}*/
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
