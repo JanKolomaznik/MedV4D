@@ -3,15 +3,15 @@
 
 #include "globalData.h"
 
-namespace itk
-{
+namespace M4D {
+namespace Cell {
 
-template< class ImageType > 
+template< typename PixelType, uint8 Dim > 
 class CurvatureTermSolver
 {
 public:
-	typedef typename ImageType::PixelType ScalarValueType;
-	typedef GlobalDataStruct<ScalarValueType, ImageType::ImageDimension> GlobalDataType;
+	typedef PixelType ScalarValueType;
+	typedef GlobalDataStruct<ScalarValueType, Dim> GlobalDataType;
 	
     /** Gamma. Scales all curvature weight values */
     void SetCurvatureWeight(const ScalarValueType c)
@@ -28,8 +28,8 @@ private:
 	ScalarValueType ComputeMeanCurvature(GlobalDataType *gd);
 };
 
-}
-
 #include "src/curvatureTermSolver.tcc"
+
+}}
 
 #endif /*CURVATURETERMSOLVER_H_*/

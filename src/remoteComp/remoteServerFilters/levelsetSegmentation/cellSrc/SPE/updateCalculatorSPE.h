@@ -9,15 +9,17 @@
 
 #include "itkSparseFieldLayer.h"
 
-#include "itkConstNeighborhoodIterator.h"
-#include "itkZeroFluxNeumannBoundaryCondition.h"
+//#include "itkConstNeighborhoodIterator.h"
+//#include "itkZeroFluxNeumannBoundaryCondition.h"
+#include "neighbourhoodIterator.h"
 
-namespace itk {
+namespace M4D {
+namespace Cell {
 
 template <class TInputImage, class TFeatureImage, class TOutputPixelType = float >
 class UpdateCalculatorSPE
 	: public CommonTypes<TInputImage::ImageDimension>
-	, public Consts<typename Image<TOutputPixelType, TInputImage::ImageDimension>::ValueType, typename CommonTypes<TInputImage::ImageDimension>::StatusType>
+	, public Consts<typename itk::Image<TOutputPixelType, TInputImage::ImageDimension>::ValueType, typename CommonTypes<TInputImage::ImageDimension>::StatusType>
 {
 public:
 	
@@ -26,20 +28,25 @@ public:
 	typedef typename SuperClass::TimeStepType TimeStepType;
 	typedef typename SuperClass::StatusType StatusType;
 	
-		typedef Image<TOutputPixelType, TInputImage::ImageDimension> OutputImageType;
+		typedef itk::Image<TOutputPixelType, TInputImage::ImageDimension> OutputImageType;
 		typedef TInputImage                         InputImageType;
 		typedef TFeatureImage                       FeatureImageType;
 		typedef typename FeatureImageType::PixelType FeaturePixelType;
+		typedef typename FeatureImageType::PixelType InputPixelType;
+		
+		typedef typename itk::Image<TOutputPixelType, TInputImage::ImageDimension>::ValueType ValueType;
 		
 		// &&&&&&&&&
-		typedef ZeroFluxNeumannBoundaryCondition<TInputImage>  DefaultBoundaryConditionType;
-		typedef ConstNeighborhoodIterator<TInputImage, DefaultBoundaryConditionType> InNeighborhoodType;
-		typedef ConstNeighborhoodIterator<TFeatureImage, DefaultBoundaryConditionType> FeatureNeighborhoodType;
+//		typedef ZeroFluxNeumannBoundaryCondition<TInputImage>  DefaultBoundaryConditionType;
+//		typedef ConstNeighborhoodIterator<TInputImage, DefaultBoundaryConditionType> InNeighborhoodType;
+//		typedef ConstNeighborhoodIterator<TFeatureImage, DefaultBoundaryConditionType> FeatureNeighborhoodType;
+		typedef NeighbourIteratorCell<FeaturePixelType, TInputImage::ImageDimension> TFeatureNeighbourhood;
+		typedef NeighbourIteratorCell<ValueType, TInputImage::ImageDimension> TOutpuNeighbourhood;
 		// &&&&&&&&&
 		
-		typedef ThresholdLevelSetFunc<InNeighborhoodType, FeatureNeighborhoodType> SegmentationFunctionType;
+		typedef ThresholdLevelSetFunc<TOutpuNeighbourhood, TFeatureNeighbourhood> SegmentationFunctionType;
 		
-		  typedef typename Image<TOutputPixelType, TInputImage::ImageDimension>::ValueType ValueType;
+		  
 		  
 		  typedef typename SegmentationFunctionType::FloatOffsetType 	FloatOffsetType;
 
@@ -50,14 +57,14 @@ public:
 		  // spolecne !!!!!!!!!!!!!!
 		  typedef typename OutputImageType::IndexType IndexType;
 		  /** Node type used in sparse field layer lists. */
-		  typedef SparseFieldLevelSetNode<IndexType> LayerNodeType;
+		  typedef itk::SparseFieldLevelSetNode<IndexType> LayerNodeType;
 		  
 		  /** A list type used in the algorithm. */
-		  typedef SparseFieldLayer<LayerNodeType> LayerType;		  
+		  typedef itk::SparseFieldLayer<LayerNodeType> LayerType;		  
 		  typedef typename LayerType::Pointer     LayerPointerType;		  
 		  typedef std::vector<LayerPointerType> LayerListType;
 		  
-		  typedef Image<StatusType, TInputImage::ImageDimension> StatusImageType;
+		  typedef itk::Image<StatusType, TInputImage::ImageDimension> StatusImageType;
 		  typedef GlobalDataStruct<FeaturePixelType, FeatureImageType::ImageDimension> TGlobalData;
 		  
 			
@@ -70,7 +77,7 @@ public:
 				memset(&m_globalData, 0, sizeof(TGlobalData));
 			}
 		  
-		  void CalculateChangeItem(NeighborhoodIterator<OutputImageType> &outIt);
+		  //void CalculateChangeItem(NeighborhoodIterator<OutputImageType> &outIt);
 	
 		  TimeStepType CalculateChange();
 		  
@@ -106,9 +113,9 @@ private:
 	TGlobalData m_globalData;
 };
 
-}
-
-//include implementation
-#include "src/updateCalculatorSPE.tcc"
+	//include implementation
+	#include "src/updateCalculatorSPE.tcc"
+	
+} }
 
 #endif /*HARDWORKER_H_*/

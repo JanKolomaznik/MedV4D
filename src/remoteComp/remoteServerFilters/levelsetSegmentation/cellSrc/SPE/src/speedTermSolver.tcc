@@ -2,31 +2,23 @@
 #error File SpeedTermSolver.tcc cannot be included directly!
 #else
 
-namespace itk
-{
-
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class FeatureImageType, typename NeighborhoodType, typename FloatOffsetType>
-SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
+template<typename FeatureScalarType, typename TFeatureNeighbourhood>
+SpeedTermSolver<FeatureScalarType, TFeatureNeighbourhood>
 ::SpeedTermSolver()
 {
 	this->CountMiddleVal();
 	m_PropagationWeight = 1.0f;
-	m_Interpolator = InterpolatorType::New();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class FeatureImageType, typename NeighborhoodType, typename FloatOffsetType>
-typename SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>::FeatureScalarType
-SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
-	::GetSpeedInPoint(const IndexType &index) const
+template<typename FeatureScalarType, typename TFeatureNeighbourhood>
+FeatureScalarType
+SpeedTermSolver<FeatureScalarType, TFeatureNeighbourhood>
+	::GetSpeedInPoint(const FeatureScalarType &pixelValue) const
 {
-	FeatureScalarType pixelValue = m_featureImage->GetPixel(index);
-	
-	//D_PRINT(index << ":" << pixelValue);
-	
     if (pixelValue < m_threshIntervalMid)
       {
       return pixelValue - m_LowerThreshold;
@@ -39,21 +31,21 @@ SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
 	
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class FeatureImageType, typename NeighborhoodType, typename FloatOffsetType>
-typename SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>::FeatureScalarType
-SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
-::PropagationSpeed(const NeighborhoodType &neighborhood,
+template<typename FeatureScalarType, typename TFeatureNeighbourhood>
+FeatureScalarType
+SpeedTermSolver<FeatureScalarType, TFeatureNeighbourhood>
+::PropagationSpeed(const TFeatureNeighbourhood &neighborhood,
                    const FloatOffsetType &offset, GlobalDataType *gd) const
 {
-  const IndexType idx = neighborhood.GetIndex();  
+  const IndexType idx = neighborhood.GetIndex();
 
   ContinuousIndexType cdx;
-  for (unsigned i = 0; i < FeatureImageType::ImageDimension; ++i)
+  for (unsigned i = 0; i < TFeatureNeighbourhood::Dim; ++i)
     {
     cdx[i] = static_cast<double>(idx[i]) - offset[i];
     }
   
-  FeatureScalarType val = Interpolate(cdx);
+  FeatureScalarType val = Interpolate(cdx, neighborhood);
   //LOG("ComputePropagationTerm at index: " << cdx << ", " << val);
 
 	return val;
@@ -61,14 +53,14 @@ SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class FeatureImageType, typename NeighborhoodType, typename FloatOffsetType>
-typename SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>::FeatureScalarType
-SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
-	::Interpolate(ContinuousIndexType &index) const
+template<typename FeatureScalarType, typename TFeatureNeighbourhood>
+FeatureScalarType
+SpeedTermSolver<FeatureScalarType, TFeatureNeighbourhood>
+	::Interpolate(ContinuousIndexType &index, const TFeatureNeighbourhood &neighb) const
 {
 	unsigned int dim;  // index over dimension
 	
-	unsigned int neighborCount = 1 << FeatureImageType::ImageDimension;
+	unsigned int neighborCount = 1 << TFeatureNeighbourhood::Dim;
 	
 	typedef float32 RealType;
 
@@ -76,11 +68,11 @@ SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
 	   * Compute base index = closet index below point
 	   * Compute distance from point to base index
 	   */
-	  signed long baseIndex[FeatureImageType::ImageDimension];
-	  double distance[FeatureImageType::ImageDimension];
+	  signed long baseIndex[TFeatureNeighbourhood::Dim];
+	  double distance[TFeatureNeighbourhood::Dim];
 	  long tIndex;
 
-	  for( dim = 0; dim < FeatureImageType::ImageDimension; dim++ )
+	  for( dim = 0; dim < TFeatureNeighbourhood::Dim; dim++ )
 	    {
 	    // The following "if" block is equivalent to the following line without
 	    // having to call floor.
@@ -106,8 +98,8 @@ SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
 	   * neighbors. The weight for each neighbor is the fraction overlap
 	   * of the neighbor pixel with respect to a pixel centered on point.
 	   */
-	  RealType value = NumericTraits<RealType>::Zero;
-	  RealType totalOverlap = NumericTraits<RealType>::Zero;
+	  RealType value = itk::NumericTraits<RealType>::Zero;
+	  RealType totalOverlap = itk::NumericTraits<RealType>::Zero;
 
 	  for( unsigned int counter = 0; counter < neighborCount; counter++ )
 	    {
@@ -117,7 +109,7 @@ SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
 	    IndexType neighIndex;
 
 	    // get neighbor index and overlap fraction
-	    for( dim = 0; dim < FeatureImageType::ImageDimension; dim++ )
+	    for( dim = 0; dim < TFeatureNeighbourhood::Dim; dim++ )
 	      {
 
 	      if ( upper & 1 )
@@ -138,7 +130,7 @@ SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
 	    // get neighbor value only if overlap is not zero
 	    if( overlap )
 	      {
-	      value += overlap * static_cast<RealType>( GetSpeedInPoint(neighIndex) );
+	      value += overlap * static_cast<RealType>( GetSpeedInPoint(neighb.GetPixel(neighIndex)) );
 	      totalOverlap += overlap;
 	      }
 
@@ -155,15 +147,15 @@ SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class FeatureImageType, typename NeighborhoodType, typename FloatOffsetType>
-typename SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>::FeatureScalarType
-SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
+template<typename FeatureScalarType, typename TFeatureNeighbourhood>
+FeatureScalarType
+SpeedTermSolver<FeatureScalarType, TFeatureNeighbourhood>
 ::ComputePropagationTerm(
-	  const NeighborhoodType &neighborhood,
+	  const TFeatureNeighbourhood &neighborhood,
 	  const FloatOffsetType& offset,
 	  GlobalDataType *gd) const
 {
-	const FeatureScalarType ZERO = NumericTraits<FeatureScalarType>::Zero;
+	const FeatureScalarType ZERO = itk::NumericTraits<FeatureScalarType>::Zero;
 	uint32 i;
 	
 	if(m_PropagationWeight == 0)
@@ -184,7 +176,7 @@ SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
 
 	if ( propagation_term> ZERO )
 	{
-		for(i = 0; i< FeatureImageType::ImageDimension; i++)
+		for(i = 0; i< TFeatureNeighbourhood::Dim; i++)
 		{
 			propagation_gradient += vnl_math_sqr( vnl_math_max(gd->m_dx_backward[i], ZERO) )
 			+ vnl_math_sqr( vnl_math_min(gd->m_dx_forward[i], ZERO) );
@@ -192,7 +184,7 @@ SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
 	}
 	else
 	{
-		for(i = 0; i< FeatureImageType::ImageDimension; i++)
+		for(i = 0; i< TFeatureNeighbourhood::Dim; i++)
 		{
 			propagation_gradient += vnl_math_sqr( vnl_math_min(gd->m_dx_backward[i], ZERO) )
 			+ vnl_math_sqr( vnl_math_max(gd->m_dx_forward[i], ZERO) );
@@ -210,7 +202,5 @@ SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-}
 
 #endif

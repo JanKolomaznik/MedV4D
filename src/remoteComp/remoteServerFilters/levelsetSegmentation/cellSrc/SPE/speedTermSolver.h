@@ -2,21 +2,20 @@
 #define SPEEDTERMSOLVER_H_
 
 #include "globalData.h"
-#include "itkLinearInterpolateImageFunction.h"
 
-namespace itk
-{
+namespace M4D {
+namespace Cell {
 
-template<class FeatureImageType, typename NeighborhoodType, typename FloatOffsetType>
+template<typename FeatureScalarType, typename TFeatureNeighbourhood>
 class SpeedTermSolver
 {
 public:
-	typedef typename FeatureImageType::PixelType FeatureScalarType;
-	typedef typename NeighborhoodType::IndexType IndexType;
-	typedef LinearInterpolateImageFunction<FeatureImageType>  InterpolatorType;
+	typedef typename TFeatureNeighbourhood::IndexType IndexType;
+	typedef typename TFeatureNeighbourhood::PixelType FeaturePixelType;
 	
-	typedef GlobalDataStruct<FeatureScalarType, FeatureImageType::ImageDimension> GlobalDataType;
-	typedef typename InterpolatorType::ContinuousIndexType ContinuousIndexType;
+	typedef GlobalDataStruct<FeaturePixelType, TFeatureNeighbourhood::Dim> GlobalDataType;
+	typedef typename TFeatureNeighbourhood::ContinuousIndexType ContinuousIndexType;
+	typedef ContinuousIndexType FloatOffsetType;
 	
 	/** Set/Get threshold values */
 	  void SetUpperThreshold(FeatureScalarType f)
@@ -33,11 +32,6 @@ public:
         { m_PropagationWeight = p; }
       float32 GetPropagationWeight() const
         { return m_PropagationWeight; }
-      
-  	void SetFeatureImage(const FeatureImageType *featureIm) { 
-  		m_featureImage = featureIm; 
-  		m_Interpolator->SetInputImage(featureIm); 
-  		}
 	  
 protected:
 	
@@ -48,20 +42,19 @@ protected:
   float32 m_PropagationWeight;
   
   FeatureScalarType ComputePropagationTerm(
-		  const NeighborhoodType &neighborhood,
+		  const TFeatureNeighbourhood &neighborhood,
 		  const FloatOffsetType& offset,
 		  GlobalDataType *gd) const;
   
-  FeatureScalarType GetSpeedInPoint(const IndexType &index) const;
+  FeatureScalarType GetSpeedInPoint(const FeatureScalarType &pixelValue) const;
   
-  FeatureScalarType PropagationSpeed(const NeighborhoodType &neighborhood,
+  FeatureScalarType PropagationSpeed(const TFeatureNeighbourhood &neighborhood,
                      const FloatOffsetType &offset, GlobalDataType *gd) const;
   
   SpeedTermSolver();
   
 private:
-	const FeatureImageType *m_featureImage;
-  
+	
 	inline void CountMiddleVal(void)
 	{
 		m_threshIntervalMid = 
@@ -69,14 +62,12 @@ private:
 			+ m_LowerThreshold;
 	}
 	
-	FeatureScalarType Interpolate(ContinuousIndexType &index) const;
-	
-	typename InterpolatorType::Pointer m_Interpolator;
+	FeatureScalarType Interpolate(ContinuousIndexType &index, const TFeatureNeighbourhood &neighb) const;
 };
-
-}
 
 //include implementation
 #include "src/speedTermSolver.tcc"
+
+}}
 
 #endif /*THRESHOLDINGSPEEDFUNCTION_H_*/

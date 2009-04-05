@@ -6,7 +6,7 @@
 ifdef COMPILE_FOR_CELL
 
 # subject to change
-ITKLibsRoot=/data/cell/ITK/LIBCell
+ITKLibsRoot=/data/cell/ITK/LIBCell/bin
 binUtilsPath=/opt/cell/toolchain/bin
 ROOT=/opt/cell/sysroot
 PLATFORM_DEFS= -DCOMPILE_ON_CELL=1

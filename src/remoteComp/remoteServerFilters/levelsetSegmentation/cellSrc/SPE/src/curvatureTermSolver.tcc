@@ -2,19 +2,15 @@
 #error File curvatureTermSolver.tcc cannot be included directly!
 #else
 
-namespace itk
-{
-
-
 ///////////////////////////////////////////////////////////////////////////////
 
-template< class ImageType > 
-typename CurvatureTermSolver< ImageType >::ScalarValueType
-CurvatureTermSolver< ImageType >
+template< typename PixelType, uint8 Dim >
+typename CurvatureTermSolver< PixelType, Dim>::ScalarValueType
+CurvatureTermSolver< PixelType, Dim>
 ::ComputeCurvatureTerm(GlobalDataType *gd)
 {
-	if ( m_CurvatureWeight == NumericTraits<ScalarValueType>::Zero )
-		return NumericTraits<ScalarValueType>::Zero;
+	if ( m_CurvatureWeight == itk::NumericTraits<ScalarValueType>::Zero )
+		return itk::NumericTraits<ScalarValueType>::Zero;
 
 	ScalarValueType curvature_term =
 	this->ComputeMeanCurvature(gd) * m_CurvatureWeight;
@@ -136,18 +132,18 @@ CurvatureTermSolver< ImageType >
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template< class ImageType > 
-typename CurvatureTermSolver< ImageType >::ScalarValueType
-CurvatureTermSolver< ImageType >
+template< typename PixelType, uint8 Dim >  
+typename CurvatureTermSolver< PixelType, Dim>::ScalarValueType
+CurvatureTermSolver< PixelType, Dim>
 	::ComputeMeanCurvature(GlobalDataType *gd)
 {
   // Calculate the mean curvature
-  ScalarValueType curvature_term = NumericTraits<ScalarValueType>::Zero;
+  ScalarValueType curvature_term = itk::NumericTraits<ScalarValueType>::Zero;
   unsigned int i, j;
   
-  for (i = 0; i < ImageType::ImageDimension; i++)
+  for (i = 0; i < Dim; i++)
     {      
-    for(j = 0; j < ImageType::ImageDimension; j++)
+    for(j = 0; j < Dim; j++)
       {      
       if(j != i)
         {
@@ -162,6 +158,5 @@ CurvatureTermSolver< ImageType >
 
 ///////////////////////////////////////////////////////////////////////////////
 
-}
 
 #endif

@@ -17,7 +17,7 @@ namespace itk
 
 template <class TInputImage,class TFeatureImage, class TOutputPixelType = float >
 class MySegmtLevelSetFilter	
-	: public itk::MyFiniteDifferenceImageFilter<TInputImage, Image<TOutputPixelType, TInputImage::ImageDimension> >
+	: public MyFiniteDifferenceImageFilter<TInputImage, Image<TOutputPixelType, TInputImage::ImageDimension> >
 {
 public:
 	typedef MyFiniteDifferenceImageFilter<TInputImage, Image<TOutputPixelType, TInputImage::ImageDimension> > Superclass;	
@@ -29,7 +29,7 @@ public:
 	typedef typename Superclass::StatusType StatusType;
 	typedef Image<TOutputPixelType, TInputImage::ImageDimension> OutputImageType;
 	
-	typedef UpdateCalculatorSPE<TInputImage, TFeatureImage, TOutputPixelType> TUpdateCalculatorSPE;
+	typedef M4D::Cell::UpdateCalculatorSPE<TInputImage, TFeatureImage, TOutputPixelType> TUpdateCalculatorSPE;
 	
 	/////////////////
 	
@@ -214,7 +214,7 @@ public:
 	
 	// **************************************
 	    
-	    typedef RunConfiguration<
+	    typedef M4D::Cell::RunConfiguration<
 	    		      	  	NeighborhoodScalesType, 
 	    		      	  	TFeatureImage, 
 	    		      	  	OutputImageType, 

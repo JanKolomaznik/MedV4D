@@ -56,6 +56,11 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
     DownList[i] = LayerType::New();
     }
   
+//  LOG("Update list:");
+//  for(typename UpdateBufferType::iterator it = m_UpdateBuffer.begin(); it != m_UpdateBuffer.end(); it++)
+//	  LOUT << *it << ", ";
+//  LOG("");
+
   // Process the active layer.  This step will update the values in the active
   // layer as well as the values at indicies that *will* become part of the
   // active layer when they are promoted/demoted.  Also records promotions,

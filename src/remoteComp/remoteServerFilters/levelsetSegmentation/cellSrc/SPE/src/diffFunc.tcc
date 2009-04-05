@@ -2,35 +2,31 @@
 #error File diffFunc.tcc cannot be included directly!
 #else
 
-namespace itk
-{
-
 ///////////////////////////////////////////////////////////////////////////////
 
 template <class TInputNeighbour, class TFeatureNeighbour>
 ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >
 ::ThresholdLevelSetFunc()
 {
-	m_WaveDT = 1.0/(2.0 * ImageType::ImageDimension);
-	m_DT = 1.0/(2.0 * ImageType::ImageDimension);
+	m_WaveDT = 1.0/(2.0 * TInputNeighbour::Dim);
+	m_DT = 1.0/(2.0 * TInputNeighbour::Dim);
 	
-	RadiusType radius;
-	radius.Fill(1);
+	RadiusType radius(1,1,1);
 	this->SetRadius(radius);
 	  
-  // Dummy neighborhood.
-  NeighborhoodType it;
-  it.SetRadius( radius );
-  
-  // Find the center index of the neighborhood.
-  m_Center =  it.Size() / 2;
-
-  // Get the stride length for each axis.
-  for(unsigned int i = 0; i < ImageType::ImageDimension; i++)
-    {  m_xStride[i] = it.GetStride(i); }
+//  // Dummy neighborhood.
+//  NeighborhoodType it;
+//  it.SetRadius( radius );
+//  
+//  // Find the center index of the neighborhood.
+//  m_Center =  it.Size() / 2;
+//
+//  // Get the stride length for each axis.
+//  for(unsigned int i = 0; i < TInputNeighbour::Dim; i++)
+//    {  m_xStride[i] = it.GetStride(i); }
   
   // initialize variables
-  for (unsigned int i = 0; i < ImageType::ImageDimension; i++)
+  for (unsigned int i = 0; i < TInputNeighbour::Dim; i++)
     {
     m_ScaleCoefficients[i] = 1.0;
     }
@@ -63,7 +59,7 @@ ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >
 template <class TInputNeighbour, class TFeatureNeighbour>
 typename ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >::PixelType
 ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >
-::ComputeUpdate(const NeighborhoodType &it, void *globalData,
+::ComputeUpdate(const NeighborhoodType &it, const TFeatureNeighbour &featureNeib, void *globalData,
 		const FloatOffsetType& offset)
 {
 	unsigned int i, j;
@@ -74,16 +70,19 @@ ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >
 
 	// Global data structure
 	GlobalDataType *gd = (GlobalDataType *)globalData;
+	
+	typename TInputNeighbour::StrideType stride = it.GetNeighborhood().GetStrides();
+	uint32 m_Center = it.GetNeighborhood().GetSize() / 2;
 
 	// Compute the Hessian matrix and various other derivatives.  Some of these
 	// derivatives may be used by overloaded virtual functions.
 	gd->m_GradMagSqr = 1.0e-6;
-	for( i = 0; i < ImageType::ImageDimension; i++)
+	for( i = 0; i < TInputNeighbour::Dim; i++)
 	{
 		const unsigned int positionA =
-		static_cast<unsigned int>( m_Center + m_xStride[i]);
+		static_cast<unsigned int>( m_Center + stride[i] );
 		const unsigned int positionB =
-		static_cast<unsigned int>( m_Center - m_xStride[i]);
+		static_cast<unsigned int>( m_Center - stride[i] );
 
 		gd->m_dx[i] = 0.5 * (it.GetPixel( positionA ) -
 				it.GetPixel( positionB ) ) * neighborhoodScales[i];
@@ -95,16 +94,16 @@ ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >
 		gd->m_dx_backward[i] = ( center_value - it.GetPixel( positionB ) ) * neighborhoodScales[i];
 		gd->m_GradMagSqr += gd->m_dx[i] * gd->m_dx[i];
 
-		for( j = i+1; j < ImageType::ImageDimension; j++ )
+		for( j = i+1; j < TInputNeighbour::Dim; j++ )
 		{
 			const unsigned int positionAa = static_cast<unsigned int>(
-					m_Center - m_xStride[i] - m_xStride[j] );
+					m_Center - stride[i] - stride[j] );
 			const unsigned int positionBa = static_cast<unsigned int>(
-					m_Center - m_xStride[i] + m_xStride[j] );
+					m_Center - stride[i] + stride[j] );
 			const unsigned int positionCa = static_cast<unsigned int>(
-					m_Center + m_xStride[i] - m_xStride[j] );
+					m_Center + stride[i] - stride[j] );
 			const unsigned int positionDa = static_cast<unsigned int>(
-					m_Center + m_xStride[i] + m_xStride[j] );
+					m_Center + stride[i] + stride[j] );
 
 			gd->m_dxy[i][j] = gd->m_dxy[j][i] = 0.25 * ( it.GetPixel( positionAa )
 					- it.GetPixel( positionBa )
@@ -117,7 +116,7 @@ ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >
 	// Return the combination of all the terms.
 	PixelType result = ( PixelType )( 
 			this->ComputeCurvatureTerm(gd) - 
-			this->ComputePropagationTerm(it, offset, gd)
+			this->ComputePropagationTerm(featureNeib, offset, gd)
 			//- ComputeAdvectionTerm()
 			);
 	
@@ -162,21 +161,20 @@ ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >
     }
 
   double maxScaleCoefficient = 0.0;
-  for (unsigned int i=0; i<ImageType::ImageDimension; i++)
+  for (unsigned int i=0; i<TInputNeighbour::Dim; i++)
     {
     maxScaleCoefficient = vnl_math_max( (double)this->m_ScaleCoefficients[i],maxScaleCoefficient);
     }
   dt /= maxScaleCoefficient;
  
   // reset the values  
-  d->m_MaxAdvectionChange   = NumericTraits<PixelType>::Zero;
-  d->m_MaxPropagationChange = NumericTraits<PixelType>::Zero;
-  d->m_MaxCurvatureChange   = NumericTraits<PixelType>::Zero;
+  d->m_MaxAdvectionChange   = itk::NumericTraits<PixelType>::Zero;
+  d->m_MaxPropagationChange = itk::NumericTraits<PixelType>::Zero;
+  d->m_MaxCurvatureChange   = itk::NumericTraits<PixelType>::Zero;
   
   return dt;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-}
 #endif

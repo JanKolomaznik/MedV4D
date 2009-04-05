@@ -1,7 +1,8 @@
 #ifndef COMMONTYPES_H_
 #define COMMONTYPES_H_
 
-namespace itk {
+namespace M4D {
+namespace Cell {
 
 // geather all configurations that SPE needs to load
 template<typename NeighborhoodScalesType, typename FeatureImageType, 
@@ -68,6 +69,7 @@ public:
 //	TimeStepType dt;
 //};
 
-}  // namespace itk
+}
+}  // namespace
 
 #endif /*COMMONTYPES_H_*/

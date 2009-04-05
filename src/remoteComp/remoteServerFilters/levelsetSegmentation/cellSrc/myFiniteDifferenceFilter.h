@@ -10,14 +10,14 @@ namespace itk
 template <class TInputImage, class TOutputImage>
 class MyFiniteDifferenceImageFilter  
   : public InPlaceImageFilter<TInputImage, TOutputImage>
-  , public Consts<typename TOutputImage::PixelType, typename CommonTypes<TOutputImage::ImageDimension>::StatusType>
-  , public CommonTypes<TOutputImage::ImageDimension>
+  , public M4D::Cell::Consts<typename TOutputImage::PixelType, typename M4D::Cell::CommonTypes<TOutputImage::ImageDimension>::StatusType>
+  , public M4D::Cell::CommonTypes<TOutputImage::ImageDimension>
 {
 public:
   /** Standard class typedefs. */
   typedef MyFiniteDifferenceImageFilter                   Self;
   typedef InPlaceImageFilter<TInputImage, TOutputImage>   Superclass;
-  typedef CommonTypes<TOutputImage::ImageDimension>	  		TypeBaseClass;
+  typedef M4D::Cell::CommonTypes<TOutputImage::ImageDimension>	  		TypeBaseClass;
   typedef SmartPointer<Self>                              Pointer;
   typedef SmartPointer<const Self>                        ConstPointer;
   

@@ -1,7 +1,8 @@
 #ifndef CONSTS_H_
 #define CONSTS_H_
 
-namespace itk {
+namespace M4D {
+namespace Cell {
 
 template<uint8 Dim>
 class CommonTypes
@@ -55,16 +56,16 @@ public:
 protected:
 	Consts()
 	{
-		m_ValueOne = NumericTraits<ValueType>::One;
-		m_ValueZero = NumericTraits<ValueType>::Zero;
+		m_ValueOne = itk::NumericTraits<ValueType>::One;
+		m_ValueZero = itk::NumericTraits<ValueType>::Zero;
 		 m_StatusChanging = -1;
 		 m_StatusActiveChangingUp = -2;
 		 m_StatusActiveChangingDown = -3;
 		m_StatusBoundaryPixel = -4;
-		m_StatusNull = NumericTraits<StatusType>::NonpositiveMin();
+		m_StatusNull = itk::NumericTraits<StatusType>::NonpositiveMin();
 	}
 };
 
-}
+}}
 
 #endif /*CONSTS_H_*/

@@ -6,32 +6,32 @@
 #include "curvatureTermSolver.h"
 #include "../commonConsts.h"
 
-namespace itk
-{
+namespace M4D {
+namespace Cell {
 
 template <class TInputNeighbour, class TFeatureNeighbour = TInputNeighbour>
 class ThresholdLevelSetFunc
-	: public SpeedTermSolver<typename TFeatureNeighbour::ImageType, TInputNeighbour, typename CommonTypes<TInputNeighbour::ImageType::ImageDimension>::FloatOffsetType>
+	: public SpeedTermSolver<typename TInputNeighbour::PixelType, TInputNeighbour>
 	//, public AdvectionTermSolver,
-	, public CurvatureTermSolver<typename TInputNeighbour::ImageType>
-	, public CommonTypes<TInputNeighbour::ImageType::ImageDimension>
+	, public CurvatureTermSolver<typename TInputNeighbour::PixelType, TInputNeighbour::Dim>
+	, public CommonTypes<TInputNeighbour::Dim>
 {
 public:
 	typedef ThresholdLevelSetFunc<TInputNeighbour, TFeatureNeighbour> Self;
-	typedef CommonTypes<TInputNeighbour::ImageType::ImageDimension> Superclass;
+	typedef CommonTypes<TInputNeighbour::Dim> Superclass;
 	typedef typename Superclass::FloatOffsetType 	FloatOffsetType;
 	typedef typename Superclass::TimeStepType TimeStepType;
-	typedef typename Superclass::NeighborhoodScalesType NeighborhoodScalesType;	
-	  typedef typename TInputNeighbour::PixelType     PixelType;	  
+	typedef typename Superclass::NeighborhoodScalesType NeighborhoodScalesType;
+	  typedef typename TInputNeighbour::PixelType     PixelType;
 	  typedef typename TInputNeighbour::RadiusType RadiusType;
 	
 	typedef TInputNeighbour NeighborhoodType;
-	typedef typename TInputNeighbour::ImageType ImageType;
-	typedef GlobalDataStruct<PixelType, ImageType::ImageDimension> GlobalDataType;
+	typedef GlobalDataStruct<PixelType, TInputNeighbour::Dim> GlobalDataType;
 
 	
 	virtual PixelType ComputeUpdate(
 			const NeighborhoodType &neighborhood,
+			const TFeatureNeighbour &featureNeib,
 	        void *globalData,
 	        const FloatOffsetType& offset = FloatOffsetType(0.0) );
 	
@@ -52,7 +52,7 @@ public:
 	   * spacing into account. */
 	  void SetScaleCoefficients (NeighborhoodScalesType vals)
 	    {
-	    for( unsigned int i = 0; i < ImageType::ImageDimension; i++ )
+	    for( unsigned int i = 0; i < TInputNeighbour::Dim; i++ )
 	      {
 	      m_ScaleCoefficients[i] = vals[i];
 	      }
@@ -60,10 +60,9 @@ public:
 	  
 	  const NeighborhoodScalesType ComputeNeighborhoodScales() const
 	  {
-		  NeighborhoodScalesType neighborhoodScales;
-		    neighborhoodScales.Fill(0.0);
-		    typedef typename NeighborhoodScalesType::ComponentType NeighborhoodScaleType;
-		    for(int i=0; i<ImageType::ImageDimension; i++)
+		  NeighborhoodScalesType neighborhoodScales(0,0,0);
+		    
+		    for(int i=0; i<TInputNeighbour::Dim; i++)
 		      {
 		      if (this->m_Radius[i] > 0)
 		        {
@@ -76,14 +75,14 @@ public:
 	ThresholdLevelSetFunc();
 	
 private:
-	/** Slices for the ND neighborhood. */
-	  std::slice x_slice[ImageType::ImageDimension];
-
-	  /** The offset of the center pixel in the neighborhood. */
-	  ::size_t m_Center;
-
-	  /** Stride length along the y-dimension. */
-	  ::size_t m_xStride[ImageType::ImageDimension];
+//	/** Slices for the ND neighborhood. */
+//	  std::slice x_slice[TInputNeighbour::Dim];
+//
+//	  /** The offset of the center pixel in the neighborhood. */
+//	  ::size_t m_Center;
+//
+//	  /** Stride length along the y-dimension. */
+//	  ::size_t m_xStride[TInputNeighbour::Dim];
 	  
 	  /** Constants used in the time step calculation. */
 	  double m_WaveDT;
@@ -93,9 +92,9 @@ private:
 	  NeighborhoodScalesType m_ScaleCoefficients;
 };
 
-}
-
 //include implementation
 #include "src/diffFunc.tcc"
+	
+}}
 
 #endif /*CELLTHRESHOLDLEVELSETFINITEDIFFERENCEFUNCTION_H_*/

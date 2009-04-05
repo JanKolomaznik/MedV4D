@@ -3,7 +3,8 @@
 
 #include "vnl/vnl_matrix_fixed.h"
 
-namespace itk {
+namespace M4D {
+namespace Cell {
 
 template< typename ScalarValueType, uint16 Dim > 
 struct GlobalDataStruct {
@@ -23,6 +24,6 @@ struct GlobalDataStruct {
 	ScalarValueType m_GradMagSqr;
 };
 
-}
+}}
 
 #endif /*GLOBALDATA_H_*/
