@@ -90,14 +90,14 @@ SobelEdgeDetector< ImageType >
 				SecondPassFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, ElementType >( GetThreshold() )
 				);*/
 
-		ConvolutionFilterFtor< TypeTraits< ElementType >::SuperiorFloatType > filter( *xMatrix );
+		/*ConvolutionFilterFtor< TypeTraits< ElementType >::SuperiorFloatType > filter( *xMatrix );
 		FilterProcessorNeighborhoodPreproc< 
 			ConvolutionFilterFtor< ElementType >,
 			Region,
 			Region,
 			MirrorAccessor,
 			FirstPassFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, ElementType >
-			>( filter, inRegion, outRegion, FirstPassFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, ElementType >() );	
+			>( filter, inRegion, outRegion, FirstPassFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, ElementType >() );	*/
 	}
 	catch( ... ) { 
 		return false; 
