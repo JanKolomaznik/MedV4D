@@ -1,0 +1,9 @@
+﻿Malá specifikace
+HapticInterface
+Jan Bím 5. 4. 2009
+Cíl
+Cílem tohoto projektu je naprogramovat modul pro framework MedV4D. Tento modul by měl obsahovat obecný 3D kurzor. Kurzor, který dokáže spolupracovat s většinou dnešních vstupních zařízeni, to znamená myš, klávesnice, popřípadě nějaký joystick, nebo gamepad. Dále by měl umět spolupracovat s haptickými zařízeními. Pro účely tohoto projektu konkrétně s Novint Falcon. 3D kurzor by měl dávat adekvátní haptické odezvy při prohlíženi objemových dat.
+Prostředky
+Projekt by měl být programován v programovacím jazyce C++. Vzhledem k požadavku na multiplatformnost se o použití konkrétních knihoven rozhodne až podle výsledků právě probíhající rešerše haptických API. Co se ostatních knihoven týče, tak budou pro projekt k dispozici ITK a VTK.
+Závěr
+Projekt by měl být prezentován tak, že bude spolupracovat se zobrazovací, již existující, komponentou MedV4da. Jako testovací data se použijí naměřené údaje z CT zařízení. Co se dalších možných rozšíření týče, tak určitě by se nechal projekt vylepšit o zobrazovací část. Popřípadě by se nechal dovést k dokonalosti ve smyslu toho, že by se pomocí něj dali zjišťovat různé ztvrdlé části tkáně pod kůží apod. To by znamenalo naprosto přesné zpracování objemových dat a převést je na haptické vjemy za hranici přesnosti, kterou poskytuje právě Novint Falcon.
