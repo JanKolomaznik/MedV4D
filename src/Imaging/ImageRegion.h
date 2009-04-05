@@ -90,7 +90,11 @@ public:
 				delete [] _pointerCoordinatesInSource;
 			}
 		}
-
+	
+	/**
+	 * Method for obtaining iterator, which can iterate over all elements in this region.
+	 * @return Image iterator.
+	 **/
 	Iterator
 	GetIterator()const
 		{
@@ -98,6 +102,10 @@ public:
 			//return Iterator( _pointer, _size.GetData(), _strides.GetData(), pos );
 		}
 
+	/**
+	 * Method for obtaining iterator, which can iterate over elements from bounding box defined by two corners.
+	 * @return Image iterator.
+	 **/
 	Iterator
 	GetIterator( const PointType &firstCorner, const PointType &secondCorner )const
 		{
