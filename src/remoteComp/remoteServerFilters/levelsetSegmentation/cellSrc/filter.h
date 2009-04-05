@@ -24,18 +24,19 @@ public:
 	typedef MySegmtLevelSetFilter Self;
 	typedef itk::SmartPointer<Self> Pointer;
 	typedef typename TFeatureImage::PixelType FeaturePixelType;
+	typedef Image<TOutputPixelType, TInputImage::ImageDimension> OutputImageType;
+	  typedef typename OutputImageType::ValueType ValueType;
 	
 	typedef typename Superclass::TimeStepType TimeStepType;
 	typedef typename Superclass::StatusType StatusType;
-	typedef Image<TOutputPixelType, TInputImage::ImageDimension> OutputImageType;
 	
-	typedef M4D::Cell::UpdateCalculatorSPE<TInputImage, TFeatureImage, TOutputPixelType> TUpdateCalculatorSPE;
+	
+	typedef M4D::Cell::UpdateCalculatorSPE<ValueType, FeaturePixelType, TInputImage::ImageDimension> TUpdateCalculatorSPE;
 	
 	/////////////////
 	
-	/** The data type used in numerical computations.  Derived from the output
-   *  image type. */
-  typedef typename OutputImageType::ValueType ValueType;
+	/** The data type used in numerical computations.  Derived from the output image type. */
+
   typedef typename OutputImageType::IndexType IndexType;
 
   /** Node type used in sparse field layer lists. */
@@ -216,13 +217,13 @@ public:
 	    
 	    typedef M4D::Cell::RunConfiguration<
 	    		      	  	NeighborhoodScalesType, 
-	    		      	  	TFeatureImage, 
-	    		      	  	OutputImageType, 
-	    		      	  	TFeatureImage,
+	    		      	  FeaturePixelType, 
+	    		      	ValueType,
 	    		      	  	LayerType,
-	    		      	  	UpdateBufferType> TRunConf;
+	    		      	  	UpdateBufferType,
+	    		      	  TInputImage::ImageDimension> TRunConf;
 	    		  
-	    		  TRunConf m_Conf;
+	    TRunConf m_Conf;
 protected:
 	MySegmtLevelSetFilter(void);
 	~MySegmtLevelSetFilter(void);

@@ -16,66 +16,50 @@
 namespace M4D {
 namespace Cell {
 
-template <class TInputImage, class TFeatureImage, class TOutputPixelType = float >
+template <typename TValuePixel, typename TFeaturePixel, uint8 Dimension >
 class UpdateCalculatorSPE
-	: public CommonTypes<TInputImage::ImageDimension>
-	, public Consts<typename itk::Image<TOutputPixelType, TInputImage::ImageDimension>::ValueType, typename CommonTypes<TInputImage::ImageDimension>::StatusType>
+	: public CommonTypes<Dimension>
+	, public Consts<TValuePixel, typename CommonTypes<Dimension>::StatusType>
 {
 public:
 	
 	/** Standard class typedefs */
-	typedef CommonTypes<TInputImage::ImageDimension> SuperClass;
+	typedef CommonTypes<Dimension> SuperClass;
 	typedef typename SuperClass::TimeStepType TimeStepType;
 	typedef typename SuperClass::StatusType StatusType;
 	
-		typedef itk::Image<TOutputPixelType, TInputImage::ImageDimension> OutputImageType;
-		typedef TInputImage                         InputImageType;
-		typedef TFeatureImage                       FeatureImageType;
-		typedef typename FeatureImageType::PixelType FeaturePixelType;
-		typedef typename FeatureImageType::PixelType InputPixelType;
+	typedef TValuePixel ValueType;
+	typedef TFeaturePixel FeaturePixelType;
 		
-		typedef typename itk::Image<TOutputPixelType, TInputImage::ImageDimension>::ValueType ValueType;
-		
-		// &&&&&&&&&
-//		typedef ZeroFluxNeumannBoundaryCondition<TInputImage>  DefaultBoundaryConditionType;
-//		typedef ConstNeighborhoodIterator<TInputImage, DefaultBoundaryConditionType> InNeighborhoodType;
-//		typedef ConstNeighborhoodIterator<TFeatureImage, DefaultBoundaryConditionType> FeatureNeighborhoodType;
-		typedef NeighbourIteratorCell<FeaturePixelType, TInputImage::ImageDimension> TFeatureNeighbourhood;
-		typedef NeighbourIteratorCell<ValueType, TInputImage::ImageDimension> TOutpuNeighbourhood;
-		// &&&&&&&&&
-		
-		typedef ThresholdLevelSetFunc<TOutpuNeighbourhood, TFeatureNeighbourhood> SegmentationFunctionType;
+	typedef NeighbourIteratorCell<FeaturePixelType, Dimension> TFeatureNeighbourhood;
+	typedef NeighbourIteratorCell<ValueType, Dimension> TOutputNeighbourhood;		
+	typedef ThresholdLevelSetFunc<TOutputNeighbourhood, TFeatureNeighbourhood> SegmentationFunctionType;
 		
 		  
-		  
-		  typedef typename SegmentationFunctionType::FloatOffsetType 	FloatOffsetType;
-
-		  /**Typedefs from the superclass */
-	//	  typedef typename SegmentationFunctionType::RadiusType             RadiusType;
-		  typedef typename SegmentationFunctionType::NeighborhoodScalesType NeighborhoodScalesType;
-		  
-		  // spolecne !!!!!!!!!!!!!!
-		  typedef typename OutputImageType::IndexType IndexType;
-		  /** Node type used in sparse field layer lists. */
-		  typedef itk::SparseFieldLevelSetNode<IndexType> LayerNodeType;
-		  
-		  /** A list type used in the algorithm. */
-		  typedef itk::SparseFieldLayer<LayerNodeType> LayerType;		  
-		  typedef typename LayerType::Pointer     LayerPointerType;		  
-		  typedef std::vector<LayerPointerType> LayerListType;
-		  
-		  typedef itk::Image<StatusType, TInputImage::ImageDimension> StatusImageType;
-		  typedef GlobalDataStruct<FeaturePixelType, FeatureImageType::ImageDimension> TGlobalData;
-		  
-			
-			/** Container type used to store updates to the active layer. */
-			typedef std::vector<ValueType> UpdateBufferType;
-		  // !!!!!!!!!!!!!!!!!!!!!!!!
-			
-			UpdateCalculatorSPE()
-			{
-				memset(&m_globalData, 0, sizeof(TGlobalData));
-			}
+  typedef typename SegmentationFunctionType::FloatOffsetType 	FloatOffsetType;
+  typedef typename SegmentationFunctionType::NeighborhoodScalesType NeighborhoodScalesType;
+  
+  // spolecne !!!!!!!!!!!!!!
+  typedef typename TOutputNeighbourhood::IndexType IndexType;
+  /** Node type used in sparse field layer lists. */
+  typedef itk::SparseFieldLevelSetNode<IndexType> LayerNodeType;
+  
+  /** A list type used in the algorithm. */
+  typedef itk::SparseFieldLayer<LayerNodeType> LayerType;
+  typedef typename LayerType::Pointer     LayerPointerType;
+  typedef std::vector<LayerPointerType> LayerListType;
+  
+  typedef GlobalDataStruct<FeaturePixelType, Dimension> TGlobalData;
+  
+	
+	/** Container type used to store updates to the active layer. */
+	typedef std::vector<ValueType> UpdateBufferType;
+  // !!!!!!!!!!!!!!!!!!!!!!!!
+	
+	UpdateCalculatorSPE()
+	{
+		memset(&m_globalData, 0, sizeof(TGlobalData));
+	}
 		  
 		  //void CalculateChangeItem(NeighborhoodIterator<OutputImageType> &outIt);
 	
@@ -83,11 +67,11 @@ public:
 		  
 		  typedef RunConfiguration<
 		      	  	NeighborhoodScalesType, 
-		      	  	FeatureImageType, 
-		      	  	OutputImageType, 
-		      	  	InputImageType,
+		      	  FeaturePixelType, 
+		      	ValueType,
 		      	  	LayerType,
-		      	  	UpdateBufferType> TRunConf;
+		      	  	UpdateBufferType,
+		      	  Dimension> TRunConf;
 		  
 		  TRunConf m_Conf;
 		  

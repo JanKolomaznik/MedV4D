@@ -1,23 +1,27 @@
 #ifndef COMMONTYPES_H_
 #define COMMONTYPES_H_
 
+#include "SPE/neighborhoodCell.h"
+
 namespace M4D {
 namespace Cell {
 
 // geather all configurations that SPE needs to load
-template<typename NeighborhoodScalesType, typename FeatureImageType, 
-typename OutputImageType, typename TInputImage, typename LayerListType, 
-typename UpdateBufferType>
+template<typename NeighborhoodScalesType, typename FeaturePixelType, 
+typename ValuePixelType, typename LayerListType, 
+typename UpdateBufferType, uint8 Dimension>
 class RunConfiguration
 {
 public:
 	
-	typedef RunConfiguration<NeighborhoodScalesType, FeatureImageType, 
-		OutputImageType, TInputImage, LayerListType, 
-		UpdateBufferType> Self;
+	typedef RunConfiguration<NeighborhoodScalesType, FeaturePixelType, 
+		ValuePixelType, LayerListType, UpdateBufferType, Dimension> Self;
 	
-	typename FeatureImageType::PixelType m_upThreshold;
-	typename FeatureImageType::PixelType m_downThreshold;
+	typedef typename NeighborhoodCell<ValuePixelType, Dimension>::TImageProperties ValueImageProps;
+	typedef typename NeighborhoodCell<FeaturePixelType, Dimension>::TImageProperties FeatureImageProps;
+	
+	FeaturePixelType m_upThreshold;
+	ValuePixelType m_downThreshold;
     float32 m_propWeight;
     float32 m_curvWeight;
     
@@ -36,9 +40,8 @@ public:
     UpdateBufferType *m_UpdateBuffer;
 	LayerListType *m_activeSet;
     
-	const FeatureImageType *m_featureImage;
-	OutputImageType *m_outputImage;
-	const TInputImage *m_inputImage;
+	FeatureImageProps featureImageProps;
+	ValueImageProps valueImageProps;
 	
 	void operator=(const Self& o)
 	{
@@ -51,9 +54,8 @@ public:
 		m_neighbourScales = o.m_neighbourScales;
 		m_UpdateBuffer = o.m_UpdateBuffer;
 		m_activeSet = o.m_activeSet;
-		m_featureImage = o.m_featureImage;
-		m_outputImage = o.m_outputImage;
-		m_inputImage = o.m_inputImage;
+		featureImageProps = o.featureImageProps;
+		valueImageProps = o.valueImageProps;
 	}
 };
 

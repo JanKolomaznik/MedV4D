@@ -16,6 +16,7 @@ public:
 	typedef Vector<uint32, Dim> TStrides;
 	typedef Vector<uint32, Dim> TIndex;
 	typedef Vector<float32, Dim> ContinuousIndexType;
+	typedef Vector<float32, Dim> TSpacing;
 	
 	struct TRegion
 	{
@@ -28,7 +29,10 @@ public:
 	};
 	struct TImageProperties
 	{
+		typedef TRegion RegionType;
+		typedef TSpacing SpacingType;
 		TRegion region;
+		SpacingType spacing;
 		TPixel *imageData;
 		TImageProperties() {}
 		TImageProperties(TRegion region_, TPixel *data_) 

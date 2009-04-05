@@ -2,27 +2,7 @@
 #error File updateCalculatorSPE.tcc cannot be included directly!
 #else
 
-// support functions
-template<typename ImageType, typename RegionType>
-RegionType ConvertRegion(const ImageType &image)
-{
-	// convert values
-	typename ImageType::RegionType imageRegion;
-	typename RegionType::OffsetType offset;
-	typename RegionType::SizeType size;
 
-	imageRegion = image.GetLargestPossibleRegion();
-
-	for(uint8 i=0; i<ImageType::ImageDimension; i++)
-	{
-		offset[i] = imageRegion.GetIndex()[i];
-		size[i] = imageRegion.GetSize()[i];
-	}
-
-	RegionType reg(offset, size);
-
-	return reg;
-}
 
 template<typename ImageType>
 void 
@@ -55,17 +35,17 @@ PrintITKImage(const ImageType &image, std::ostream &s)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template <class TInputImage,class TFeatureImage, class TOutputPixelType>
+template <typename TValuePixel, typename TFeaturePixel, uint8 Dimension >
 void
-UpdateCalculatorSPE<TInputImage, TFeatureImage, TOutputPixelType>
+UpdateCalculatorSPE<TValuePixel, TFeaturePixel, Dimension>
 ::Init(void)
 {
 	MIN_NORM = 1.0e-6;
 
 	double minSpacing = itk::NumericTraits<double>::max();
-	for (uint8 i=0; i<TInputImage::ImageDimension; i++)
+	for (uint8 i=0; i<Dimension; i++)
 	{
-		minSpacing = vnl_math_min(minSpacing,m_Conf.m_inputImage->GetSpacing()[i]);
+		minSpacing = vnl_math_min(minSpacing, (double) m_Conf.valueImageProps.spacing[i]);
 	}
 	MIN_NORM *= minSpacing;
 
@@ -77,7 +57,7 @@ UpdateCalculatorSPE<TInputImage, TFeatureImage, TOutputPixelType>
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-//template <class TInputImage,class TFeatureImage, class TOutputPixelType>
+//template <typename TValuePixel, typename TFeaturePixel, uint8 Dimension >
 //void
 //UpdateCalculatorSPE<TInputImage, TFeatureImage, TOutputPixelType>
 //::CalculateChangeItem(NeighborhoodIterator<OutputImageType> &outIt)
@@ -97,7 +77,7 @@ UpdateCalculatorSPE<TInputImage, TFeatureImage, TOutputPixelType>
 //		// neighborhood.  The location is therefore
 //		// (i,j,k) - ( phi(x) * grad(phi(x)) ) / norm(grad(phi))^2
 //		norm_grad_phi_squared = 0.0;
-//		for (i = 0; i < TInputImage::ImageDimension; ++i)
+//		for (i = 0; i < Dimension; ++i)
 //		{
 //			forwardValue = outIt.GetNext(i);
 //			backwardValue = outIt.GetPrevious(i);
@@ -132,7 +112,7 @@ UpdateCalculatorSPE<TInputImage, TFeatureImage, TOutputPixelType>
 //			norm_grad_phi_squared += offset[i] * offset[i];
 //		}
 //
-//		for (i = 0; i < TInputImage::ImageDimension; ++i)
+//		for (i = 0; i < Dimension; ++i)
 //		{
 //			offset[i] = (offset[i] * centerValue) / (norm_grad_phi_squared + MIN_NORM);
 //		}
@@ -142,9 +122,9 @@ UpdateCalculatorSPE<TInputImage, TFeatureImage, TOutputPixelType>
 //}
 
 ///////////////////////////////////////////////////////////////////////////////
-template <class TInputImage,class TFeatureImage, class TOutputPixelType>
-typename UpdateCalculatorSPE<TInputImage, TFeatureImage, TOutputPixelType>::TimeStepType
-UpdateCalculatorSPE<TInputImage, TFeatureImage, TOutputPixelType>
+template <typename TValuePixel, typename TFeaturePixel, uint8 Dimension >
+typename UpdateCalculatorSPE<TValuePixel, TFeaturePixel, Dimension>::TimeStepType
+UpdateCalculatorSPE<TValuePixel, TFeaturePixel, Dimension>
 ::CalculateChange()
 {
 	typename SegmentationFunctionType::FloatOffsetType offset;
@@ -155,33 +135,27 @@ UpdateCalculatorSPE<TInputImage, TFeatureImage, TOutputPixelType>
 	//		  if (this->GetUseImageSpacing())
 	//		    {
 	double minSpacing = itk::NumericTraits<double>::max();
-	for (i=0; i< OutputImageType::ImageDimension; i++)
+	for (i=0; i< Dimension; i++)
 	{
-		minSpacing = vnl_math_min(minSpacing, m_Conf.m_outputImage->GetSpacing()[i]);
+		minSpacing = vnl_math_min(minSpacing, (double) m_Conf.valueImageProps.spacing[i]);
 	}
 	MIN_NORM *= minSpacing;
 	//		    }
 
 	typename LayerType::ConstIterator layerIt;
 
-	typedef NeighborhoodCell<typename OutputImageType::PixelType, OutputImageType::ImageDimension> OutNeighbourhood;
-	typedef NeighborhoodCell<FeaturePixelType, OutputImageType::ImageDimension> FeatureNeighbourhood;
+	typedef NeighborhoodCell<TValuePixel, Dimension> OutNeighbourhood;
+	typedef NeighborhoodCell<TFeaturePixel, Dimension> FeatureNeighbourhood;
 
-	// fill the image properties
-	typename OutNeighbourhood::TImageProperties outImageProps(
-			ConvertRegion<OutputImageType, typename OutNeighbourhood::TRegion>(*m_Conf.m_outputImage),
-			(InputPixelType *)m_Conf.m_outputImage->GetBufferPointer() );
-	typename FeatureNeighbourhood::TImageProperties featureImageProps(
-			ConvertRegion<TFeatureImage, typename FeatureNeighbourhood::TRegion>(*m_Conf.m_featureImage),
-			(FeaturePixelType *)m_Conf.m_featureImage->GetBufferPointer() );
+	
 
 	// create neghbours as middle layer between image in PPE and part of image on SPE
-	OutNeighbourhood outNeigh(m_diffFunc.GetRadius(), &outImageProps);
-	FeatureNeighbourhood featureNeigh(m_diffFunc.GetRadius(), &featureImageProps);
+	OutNeighbourhood outNeigh(m_diffFunc.GetRadius(), & m_Conf.valueImageProps);
+	FeatureNeighbourhood featureNeigh(m_diffFunc.GetRadius(), & m_Conf.featureImageProps);
 
 	// create neigbor iterators to perform calculations on
-	typedef NeighbourIteratorCell<typename OutputImageType::PixelType, OutputImageType::ImageDimension> TOutIter;
-	typedef NeighbourIteratorCell<FeaturePixelType, OutputImageType::ImageDimension> TFeatureIter;
+	typedef NeighbourIteratorCell<TValuePixel, Dimension> TOutIter;
+	typedef NeighbourIteratorCell<TFeaturePixel, Dimension> TFeatureIter;
 	TOutIter outIter(&outNeigh);
 	TFeatureIter featureIter(&featureNeigh);
 
@@ -218,7 +192,7 @@ UpdateCalculatorSPE<TInputImage, TFeatureImage, TOutputPixelType>
 			// neighborhood.  The location is therefore
 			// (i,j,k) - ( phi(x) * grad(phi(x)) ) / norm(grad(phi))^2
 			norm_grad_phi_squared = 0.0;
-			for (i = 0; i < OutputImageType::ImageDimension; ++i)
+			for (i = 0; i < Dimension; ++i)
 			{
 				forwardValue = outIter.GetNext(i);
 				backwardValue = outIter.GetPrevious(i);
@@ -253,7 +227,7 @@ UpdateCalculatorSPE<TInputImage, TFeatureImage, TOutputPixelType>
 				norm_grad_phi_squared += offset[i] * offset[i];
 			}
 
-			for (i = 0; i < OutputImageType::ImageDimension; ++i)
+			for (i = 0; i < Dimension; ++i)
 			{
 #if defined(ITK_USE_DEPRECATED_LEVELSET_INTERPOLATION)
 				offset[i] = (offset[i] * centerValue) * vcl_sqrt(ImageDimension +0.5)

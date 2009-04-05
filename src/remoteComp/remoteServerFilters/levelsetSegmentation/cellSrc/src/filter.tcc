@@ -10,6 +10,38 @@
 
 namespace itk {
 
+// support functions
+template<typename ImageType, typename RegionType>
+RegionType ConvertRegion(const ImageType &image)
+{
+	// convert values
+	typename ImageType::RegionType imageRegion;
+	typename RegionType::OffsetType offset;
+	typename RegionType::SizeType size;
+
+	imageRegion = image.GetLargestPossibleRegion();
+
+	for(uint8 i=0; i<ImageType::ImageDimension; i++)
+	{
+		offset[i] = imageRegion.GetIndex()[i];
+		size[i] = imageRegion.GetSize()[i];
+	}
+
+	RegionType reg(offset, size);
+
+	return reg;
+}
+
+template<typename T1, typename T2>
+T1 ConvertIncompatibleVectors(const T2 &v2)
+{
+	T1 tmp;
+	for(uint32 i=0; i<T1::Dimension; i++)
+		tmp[i] = v2[i];
+
+	return tmp;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -521,11 +553,21 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
         //m_Conf.m_neighbourScales = ;
         m_Conf.m_UpdateBuffer = &m_UpdateBuffer;
         m_Conf.m_activeSet = m_Layers[0].GetPointer();
-        m_Conf.m_featureImage = this->GetFeatureImage();
-        m_Conf.m_outputImage = this->GetOutput();
-        m_Conf.m_inputImage = this->GetInput();
         
-        updateSolver.m_Conf = m_Conf;
+        // fill the image properties
+        m_Conf.featureImageProps.imageData = 
+        	(FeaturePixelType *)this->GetFeatureImage()->GetBufferPointer();
+        m_Conf.featureImageProps.region = 
+        	ConvertRegion<TFeatureImage, typename TRunConf::FeatureImageProps::RegionType>(*this->GetFeatureImage());
+        m_Conf.featureImageProps.spacing = 
+        	ConvertIncompatibleVectors<typename TRunConf::FeatureImageProps::SpacingType, typename TFeatureImage::SpacingType>(this->GetFeatureImage()->GetSpacing());
+        	
+        m_Conf.valueImageProps.imageData = (ValueType *)this->GetOutput()->GetBufferPointer();
+        m_Conf.valueImageProps.region = 
+        	ConvertRegion<OutputImageType, typename TRunConf::ValueImageProps::RegionType>(*this->GetOutput());
+        m_Conf.featureImageProps.spacing = ConvertIncompatibleVectors<typename TRunConf::ValueImageProps::SpacingType, typename OutputImageType::SpacingType>(this->GetOutput()->GetSpacing());
+        
+        updateSolver.m_Conf = (const typename TUpdateCalculatorSPE::TRunConf &)m_Conf;
         updateSolver.Init();
    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
   
