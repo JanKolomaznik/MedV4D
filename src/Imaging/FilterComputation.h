@@ -146,12 +146,18 @@ FilterProcessorNeighborhood( Filter &filter, const InputRegion &input, OutputReg
 
 }
 
-template< typename Filter, typename InputRegion, typename OutputRegion, template< typename Region > class Accessor, typename Preprocessor  >
+template< typename Filter, typename InputRegion, typename OutputRegion, template< typename Region > class Accessor, template< typename In, typename Out > class Preprocessor  >
 void
-FilterProcessorNeighborhoodPreproc( Filter &filter, const InputRegion &input, OutputRegion &output, Preprocessor preprocessor )
+FilterProcessorNeighborhoodPreproc( 
+			Filter			&filter, 
+			const InputRegion	&input, 
+			OutputRegion		&output,
+			Preprocessor< typename Filter::OutputValue, typename OutputRegion::ElementType > preprocessor 
+			)
 {
 	typedef Accessor< InputRegion > AccessorType;
 	typedef SimpleAccessor< InputRegion > SimpleAccessorType;
+	typedef Preprocessor< typename Filter::OutputValue, typename OutputRegion::ElementType > PreprocessorType;
 	AccessorType accessor( input );
 	SimpleAccessorType simpleAccessor( input );
 	
@@ -161,15 +167,15 @@ FilterProcessorNeighborhoodPreproc( Filter &filter, const InputRegion &input, Ou
 	typename OutputRegion::PointType rightCorner = maximum - filter.GetRightCorner();
 
 	if( OutputRegion::Dimension == 2 ) {	
-		SolveBoundaryFiltering2D< OutputRegion, PreprocessorFilterApplicator< Filter, AccessorType, Preprocessor > >
-			( output, PreprocessorFilterApplicator< Filter, AccessorType, Preprocessor >( filter, accessor, preprocessor ), leftCorner, rightCorner );
+		SolveBoundaryFiltering2D< OutputRegion, PreprocessorFilterApplicator< Filter, AccessorType, PreprocessorType > >
+			( output, PreprocessorFilterApplicator< Filter, AccessorType, PreprocessorType >( filter, accessor, preprocessor ), leftCorner, rightCorner );
 	} else {
 		_THROW_ ErrorHandling::ETODO();
 	}
 	
 	typename OutputRegion::Iterator iterator = output.GetIterator( leftCorner, rightCorner );
 
-	ForEachByIterator( iterator, PreprocessorFilterApplicator< Filter, SimpleAccessorType, Preprocessor >( filter, simpleAccessor, preprocessor ) );
+	ForEachByIterator( iterator, PreprocessorFilterApplicator< Filter, SimpleAccessorType, PreprocessorType >( filter, simpleAccessor, preprocessor ) );
 
 }
 

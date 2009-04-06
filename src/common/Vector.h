@@ -3,6 +3,10 @@
 
 #include "ExceptionBase.h"
 
+#ifdef DEBUG_LEVEL
+	#define CHECK_INDICES_ENABLED
+#endif /*DEBUG_LEVEL*/
+
 template< typename CoordType, unsigned Dim >
 class Vector;
 
@@ -93,25 +97,25 @@ public:
 	CoordinateType &
 	operator[]( unsigned idx )
 		{ 
-			return _coordinates[ idx ];
-			
-			/*if ( idx >= 0 && idx < Dim ) { 
-				return _coordinates[ idx ];
-			} else {
+#ifdef CHECK_INDICES_ENABLED
+			if ( idx >= Dim ) { 
 				_THROW_ EBadIndex();
-			}*/
+			}
+#endif /*CHECK_INDICES_ENABLED*/
+
+			return _coordinates[ idx ];
 		}
 
 	CoordinateType
 	operator[]( unsigned idx )const
 		{ 
-			return _coordinates[ idx ];
-			
-			/*if ( idx >= 0 && idx < Dim ) { 
-				return _coordinates[ idx ];
-			} else {
+#ifdef CHECK_INDICES_ENABLED
+			if ( idx >= Dim ) { 
 				_THROW_ EBadIndex();
-			}*/
+			}
+#endif /*CHECK_INDICES_ENABLED*/
+
+			return _coordinates[ idx ];
 		}
 
 	template< typename CType >

@@ -9,6 +9,8 @@
 #error File SobelEdgeDetector.tcc cannot be included directly!
 #else
 
+#include "Imaging/FilterComputation.h"
+
 /**
  *  @addtogroup imaging Imaging Library
  *  @{
@@ -71,33 +73,25 @@ SobelEdgeDetector< ImageType >
 		)
 {
 	try {
-		/*Compute2DConvolutionPostProcess<ElementType, ElementType, float32, 
-			FirstPassFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, ElementType > > ( 
-				inRegion, 
-				outRegion, 
-				*xMatrix, 
-				TypeTraits< ElementType >::Zero, 
-				1.0f,
-				FirstPassFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, ElementType >()
-				);
-		Compute2DConvolutionPostProcess<ElementType, ElementType, float32, 
-			SecondPassFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, ElementType > > (  
-				inRegion, 
-				outRegion, 
-				*yMatrix, 
-				TypeTraits< ElementType >::Zero, 
-				1.0f,
-				SecondPassFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, ElementType >( GetThreshold() )
-				);*/
+		typedef ConvolutionFilterFtor< typename TypeTraits< ElementType >::SuperiorFloatType > FilterType;
 
-		/*ConvolutionFilterFtor< TypeTraits< ElementType >::SuperiorFloatType > filter( *xMatrix );
+		FilterType filter( *xMatrix );
 		FilterProcessorNeighborhoodPreproc< 
-			ConvolutionFilterFtor< ElementType >,
+			FilterType,
 			Region,
 			Region,
 			MirrorAccessor,
-			FirstPassFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, ElementType >
-			>( filter, inRegion, outRegion, FirstPassFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, ElementType >() );	*/
+			FirstPassFunctor
+			>( filter, inRegion, outRegion, FirstPassFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, ElementType >() );
+
+		FilterType filter2( *yMatrix );
+		FilterProcessorNeighborhoodPreproc< 
+			FilterType,
+			Region,
+			Region,
+			MirrorAccessor,
+			SecondPassFunctor
+			>( filter2, inRegion, outRegion, SecondPassFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, ElementType >( GetThreshold() ) );
 	}
 	catch( ... ) { 
 		return false; 
@@ -130,22 +124,28 @@ SobelEdgeDetector< ImageType >
 }
 //*************************************************
 template< typename ValueType, typename OutElementType >
-struct FirstPassGradientFunctor
+struct FirstPassGradientFunctor;
+
+template< typename ValueType, typename OutScalarType >
+struct FirstPassGradientFunctor< ValueType, SimpleVector< OutScalarType, 2 > >: public PreprocessorBase< ValueType, SimpleVector< OutScalarType, 2 > >
 {
 	void
-	operator()( ValueType value, SimpleVector< OutElementType, 2 > & output )
+	operator()( ValueType value, SimpleVector< OutScalarType, 2 > & output )
 	{
-		output.data[0] = static_cast< OutElementType >( value );
+		output.data[0] = static_cast< OutScalarType >( value );
 	}
 };
 
 template< typename ValueType, typename OutElementType >
-struct SecondPassGradientFunctor
+struct SecondPassGradientFunctor;
+
+template< typename ValueType, typename OutScalarType >
+struct SecondPassGradientFunctor< ValueType, SimpleVector< OutScalarType, 2 > > : public PreprocessorBase< ValueType, SimpleVector< OutScalarType, 2 > >
 {
 	void
-	operator()( ValueType value, SimpleVector< OutElementType, 2 > & output )
+	operator()( ValueType value, SimpleVector< OutScalarType, 2 > & output )
 	{
-		output.data[1] = static_cast< OutElementType >( value );
+		output.data[1] = static_cast< OutScalarType >( value );
 	}
 };
 
@@ -192,6 +192,25 @@ SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits
 				1.0f,
 				SecondPassGradientFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, OutScalarType >()
 				);*/
+		typedef ConvolutionFilterFtor< typename TypeTraits< ElementType >::SuperiorFloatType > FilterType;
+
+		FilterType filter( *xMatrix );
+		FilterProcessorNeighborhoodPreproc< 
+			FilterType,
+			IRegion,
+			ORegion,
+			MirrorAccessor,
+			FirstPassGradientFunctor
+			>( filter, inRegion, outRegion, FirstPassGradientFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, OutElementType >() );
+
+		FilterType filter2( *yMatrix );
+		FilterProcessorNeighborhoodPreproc< 
+			FilterType,
+			IRegion,
+			ORegion,
+			MirrorAccessor,
+			SecondPassGradientFunctor
+			>( filter2, inRegion, outRegion, SecondPassGradientFunctor< typename TypeTraits< ElementType >::SuperiorFloatType, OutElementType >() );
 	}
 	catch( ... ) { 
 		return false; 

@@ -21,7 +21,7 @@ main( int argc, char **argv )
 	TCLAP::CmdLine cmd( "Max filter.", ' ', "");
 	/*---------------------------------------------------------------------*/
 
-	TCLAP::ValueArg<unsigned> radiusArg( "r", "radius", "Filter mask radius.", false, 5, "Unsigned integer" );
+	TCLAP::ValueArg<unsigned> radiusArg( "r", "radius", "Filter mask radius.", false, 1, "Unsigned integer" );
 	cmd.add( radiusArg );
 
 	/*---------------------------------------------------------------------*/
