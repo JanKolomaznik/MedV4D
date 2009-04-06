@@ -45,6 +45,9 @@ public:
 	class EWrongStreamBeginning;
 	class EWrongFormatVersion;
 	class EWrongHeader;
+	
+	template<typename ElemType, uint8 Dim>
+	AbstractImage::Ptr DeserializeImage(M4D::IO::InStream &stream);
 
 	/**
 	 * Create image according to passed information.

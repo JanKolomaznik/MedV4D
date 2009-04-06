@@ -45,16 +45,8 @@ DataSetFactory::CreateImage(InStream &stream)
 	// create approp class
 	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( elemType, 
 			    DIMENSION_TEMPLATE_SWITCH_MACRO( dim, 
-			    		ds = Image< TTYPE, DIM >::Ptr(new Image< TTYPE, DIM >()) )
+			    		ds = ImageFactory::DeserializeImage< TTYPE, DIM >(stream) )
 			  );
-	
-	ds->DeSerializeProperties(stream);
-	
-	// allocate data buffer according read properties
-	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( elemType, 
-		DIMENSION_TEMPLATE_SWITCH_MACRO( dim, 
-			ImageFactory::AllocateDataAccordingProperties<TTYPE, DIM>(*(Image<TTYPE, DIM> *)ds.get()) )
-		);
 	
 	// deserialize data
 	ds->DeSerializeData(stream);

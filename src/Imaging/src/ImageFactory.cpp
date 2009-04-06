@@ -20,6 +20,21 @@ namespace M4D
 namespace Imaging
 {
 
+template<typename ElemType, uint8 Dim>
+AbstractImage::Ptr
+ImageFactory::DeserializeImage(M4D::IO::InStream &stream)
+{
+	Vector<int32, Dim> min;
+	Vector<int32, Dim> max;
+	Vector<float32, Dim> extends;
+	
+	for( unsigned i = 0; i < Dim; ++i ) {
+		stream.Get<int32>(min[i]);
+		stream.Get<int32>(max[i]);
+		stream.Get<float32>(extends[i]);
+	}
+}
+
 void
 ImageFactory::PrepareElementArrayFromTypeID( 
 		int 		typeId, 

@@ -113,7 +113,7 @@ public:
 	virtual void SerializeClassInfo(M4D::IO::OutStream &stream) = 0;
 	virtual void SerializeProperties(M4D::IO::OutStream &stream) = 0;
 	virtual void DeSerializeData(M4D::IO::InStream &stream) = 0;
-	virtual void DeSerializeProperties(M4D::IO::InStream &stream) = 0;
+	//virtual void DeSerializeProperties(M4D::IO::InStream &stream) = 0;
 
 	/**
 	 * \return Actual structure timestamp - it changes when internal structure is modified.

@@ -454,17 +454,6 @@ Image< ElementType, Dim >::SerializeProperties(M4D::IO::OutStream &stream)
 ///////////////////////////////////////////////////////////////////////////////
 template< typename ElementType, unsigned Dim >
 void
-Image< ElementType, Dim >::DeSerializeProperties(M4D::IO::InStream &stream)
-{
-	for( unsigned i = 0; i < Dimension; ++i ) {
-		stream.Get<int32>(_dimExtents[ i ].minimum);		
-		stream.Get<int32>(_dimExtents[ i ].maximum);
-		stream.Get<float32>(_dimExtents[ i ].elementExtent);
-	}
-}
-///////////////////////////////////////////////////////////////////////////////
-template< typename ElementType, unsigned Dim >
-void
 Image< ElementType, Dim >::SerializeData(M4D::IO::OutStream &stream)
 {
 	// actual data
