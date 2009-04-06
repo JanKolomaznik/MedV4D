@@ -11,27 +11,55 @@ using namespace M4D::Imaging;
 using namespace M4D::IO;
 
 AbstractDataSet::Ptr
-DataSetFactory::CreateDataSet(InStream &stream)
+DataSetFactory::DeserializeDataset(InStream &stream)
 {
-	uint8 dsType;
-	stream.Get<uint8>(dsType);
+	uint32 startMAGIC = 0;
+	uint32 datasetType = 0;
+	uint32 formatVersion = 0;
+
+	//Read stream header
+	stream.Get<uint32>( startMAGIC );
+	if( startMAGIC != DUMP_START_MAGIC_NUMBER ) {
+		_THROW_ EWrongStreamBeginning();
+	}
 	
+	stream.Get<uint32>( formatVersion );
+	if( formatVersion != ACTUAL_FORMAT_VERSION ) {
+		_THROW_ EWrongFormatVersion();
+	}
+
+	stream.Get<uint32>( datasetType );
+		
 	// main switch acording data set type
-	switch((DataSetType) dsType)
+	switch((DataSetType) datasetType )
 	{
 	case DATASET_IMAGE:
 		D_PRINT("D-Set factory: Creating Image");
-		return CreateImage(stream);
+		return DeserializeImageFromStream( stream );
 		break;
 		
 	default:
 		ASSERT(false);
 	}
-	//return 1;	// program shall never go here
 	return AbstractDataSet::Ptr();
 }
 
-AbstractDataSet::Ptr
+void 
+DataSetFactory::SerializeDataset(M4D::IO::OutStream &stream, const AbstractDataSet &dataset)
+{
+	switch( dataset.GetDatasetType() )
+	{
+	case DATASET_IMAGE:
+		return SerializeImage( stream, static_cast<const AbstractImage &>( dataset ) );
+		break;
+		
+	default:
+		ASSERT(false);
+	}
+
+}
+
+/*AbstractDataSet::Ptr
 DataSetFactory::CreateImage(InStream &stream)
 {
 	AbstractDataSet::Ptr ds;
@@ -52,4 +80,4 @@ DataSetFactory::CreateImage(InStream &stream)
 	ds->DeSerializeData(stream);
 	
 	return ds;
-}
+}*/

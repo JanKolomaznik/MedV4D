@@ -19,7 +19,7 @@ namespace M4D
 namespace Imaging
 {
 
-template< typename ElementType, unsigned Dim >
+/*template< typename ElementType, unsigned Dim >
 void
 ImageFactory::AllocateDataAccordingProperties(Image<ElementType, Dim> &image)
 {
@@ -34,6 +34,35 @@ ImageFactory::AllocateDataAccordingProperties(Image<ElementType, Dim> &image)
 	}
 	
 	ChangeImageSize(image, minimum, maximum, elementExtents);
+}*/
+
+template< typename ElementType, unsigned Dimension >
+void 
+ImageFactory::SerializeImage( M4D::IO::OutStream &stream, const Image< ElementType, Dimension > &image )
+{
+	stream.Put<uint32>( DUMP_START_MAGIC_NUMBER );
+	stream.Put<uint32>( ACTUAL_FORMAT_VERSION );
+	stream.Put<uint32>( DATASET_IMAGE );
+	
+	uint32 Dim = Dimension;
+	stream.Put<uint32>( Dim );
+	uint32 numTypeID = GetNumericTypeID< ElementType >();
+	stream.Put<uint32>( numTypeID );
+	
+	for( unsigned i = 0; i < Dimension; ++i ) {
+		const DimensionExtents & dimExtents = image.GetDimensionExtents( i );
+		stream.Put<int32>( dimExtents.minimum );
+		stream.Put<int32>( dimExtents.maximum );
+		stream.Put<float32>( dimExtents.elementExtent );
+	}
+
+	stream.Put<uint32>( DUMP_HEADER_END_MAGIC_NUMBER );
+
+	typename Image< ElementType, Dimension >::Iterator iterator = image.GetIterator();
+	while( !iterator.IsEnd() ) {
+		stream.Put<ElementType>( *iterator );
+		++iterator;
+	}
 }
 
 /**

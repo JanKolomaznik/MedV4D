@@ -20,11 +20,10 @@ namespace M4D
 namespace Imaging
 {
 
-template<typename ElemType, uint8 Dim>
 AbstractImage::Ptr
 ImageFactory::DeserializeImage(M4D::IO::InStream &stream)
 {
-	Vector<int32, Dim> min;
+	/*Vector<int32, Dim> min;
 	Vector<int32, Dim> max;
 	Vector<float32, Dim> extends;
 	
@@ -32,7 +31,98 @@ ImageFactory::DeserializeImage(M4D::IO::InStream &stream)
 		stream.Get<int32>(min[i]);
 		stream.Get<int32>(max[i]);
 		stream.Get<float32>(extends[i]);
+	}*/
+
+	uint32 startMAGIC = 0;
+	uint32 datasetType = 0;
+	uint32 formatVersion = 0;
+
+	//Read stream header
+	stream.Get<uint32>( startMAGIC );
+	if( startMAGIC != DUMP_START_MAGIC_NUMBER ) {
+		_THROW_ EWrongStreamBeginning();
 	}
+	
+	stream.Get<uint32>( formatVersion );
+	if( formatVersion != ACTUAL_FORMAT_VERSION ) {
+		_THROW_ EWrongFormatVersion();
+	}
+
+	stream.Get<uint32>( datasetType );
+	if( formatVersion != DATASET_IMAGE ) {
+		_THROW_ EWrongDatasetTypeIdentification();
+	}
+
+	return ImageFactory::DeserializeImageFromStream(stream);
+
+	
+}
+
+template< typename ElementType, uint32 Dimension >
+void
+LoadSerializedImageData( M4D::IO::InStream &stream, Image< ElementType, Dimension >& image )
+{
+	typename Image< ElementType, Dimension >::Iterator iterator = image.GetIterator();
+	while( !iterator.IsEnd() && !stream.eof() ) {
+		stream.Get< ElementType >( *iterator );
+		++iterator;
+	}
+}
+
+AbstractImage::Ptr
+ImageFactory::DeserializeImageFromStream(M4D::IO::InStream &stream)
+{
+	uint32 dimension;
+	stream.Get<uint32>( dimension );
+	
+	uint32 elementTypeID;
+	stream.Get<uint32>( elementTypeID );
+
+	int32 *minimums = new int32[ dimension ];
+	int32 *maximums = new int32[ dimension ];
+	float32 *elementExtents = new float32[ dimension ];
+
+	for ( unsigned i = 0; i < dimension; ++i ) {
+		stream.Get<int32>( minimums[i] );
+		stream.Get<int32>( maximums[i] );
+		stream.Get<float32>( elementExtents[i] );
+	}
+
+	uint32 headerEndMagic = 0;
+	stream.Get<uint32>( headerEndMagic );
+	if( headerEndMagic != DUMP_HEADER_END_MAGIC_NUMBER ) {
+		_THROW_ EWrongHeader();
+	}
+	//header read
+
+
+	AbstractImage::Ptr image;
+	TYPE_TEMPLATE_SWITCH_MACRO(
+		elementTypeID,
+		image = CreateEmptyImageFromExtents< TTYPE >( 
+				dimension,
+				minimums,
+				maximums,
+				elementExtents
+			);
+		DIMENSION_TEMPLATE_SWITCH_MACRO(
+			dimension,
+			LoadSerializedImageData< TTYPE, DIM >( stream, static_cast< Image< TTYPE, DIM > &>( *(image.get()) ) );
+			)
+	);
+
+	delete [] minimums;
+	delete [] maximums;
+	delete [] elementExtents;
+
+	return image;
+
+}
+
+void 
+ImageFactory::SerializeImage( M4D::IO::OutStream &stream, const AbstractImage &image )
+{
+	IMAGE_TYPE_TEMPLATE_SWITCH_MACRO( image, ImageFactory::SerializeImage< TTYPE, DIM >( stream, static_cast< const Image<TTYPE,DIM> &>(image) ) );
 }
 
 void

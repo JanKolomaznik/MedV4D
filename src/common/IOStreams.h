@@ -65,18 +65,22 @@ class InStream
 {
 public:
 	InStream(MediumAccessor *accessor);
-	
+
 	void GetDataBuf( DataBuffs &bufs);
 	void GetDataBuf( DataBuff &buf);
-	  
-	  template< typename T>
-	  void Get( T &what)
-	  {
-		  accessor_->GetData( (void *)&what, sizeof(T));
-	  	if(needSwapBytes_)
-	  			SwapBytes<T>(what);
-	  }
-	  
+
+	template< typename T>
+	void Get( T &what)
+	{
+		accessor_->GetData( (void *)&what, sizeof(T));
+		if( needSwapBytes_ ) {
+			SwapBytes<T>( what );
+		}
+	}
+	
+	bool
+	eof()
+	{ return accessor_->eof(); }
 private:
 	uint8 needSwapBytes_;
 	MediumAccessor *accessor_;

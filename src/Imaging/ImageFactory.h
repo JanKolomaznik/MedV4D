@@ -45,10 +45,20 @@ public:
 	class EWrongStreamBeginning;
 	class EWrongFormatVersion;
 	class EWrongHeader;
+	class EWrongDatasetTypeIdentification;
 	
-	template<typename ElemType, uint8 Dim>
-	AbstractImage::Ptr DeserializeImage(M4D::IO::InStream &stream);
+	static AbstractImage::Ptr 
+	DeserializeImage(M4D::IO::InStream &stream);
 
+	static AbstractImage::Ptr 
+	DeserializeImageFromStream(M4D::IO::InStream &stream);
+
+	static void 
+	SerializeImage( M4D::IO::OutStream &stream, const AbstractImage &image );
+
+	template< typename ElementType, unsigned Dimension >
+	static void 
+	SerializeImage( M4D::IO::OutStream &stream, const Image< ElementType, Dimension > &image );
 	/**
 	 * Create image according to passed information.
 	 * \param dim Dimesnion of desired image.
@@ -318,8 +328,8 @@ public:
 	static AbstractImage::Ptr
 	LoadDumpedImage( std::string filename );
 	
-	template< typename ElementType, unsigned Dim >
-	static void AllocateDataAccordingProperties(Image<ElementType, Dim> &image);
+	/*template< typename ElementType, unsigned Dim >
+	static void AllocateDataAccordingProperties(Image<ElementType, Dim> &image);*/
 	
 	/**
 	 * @param typeId Id of type used for storing pixel value.
@@ -443,6 +453,14 @@ class ImageFactory::EWrongHeader
 {
 public:
 	EWrongHeader() {}
+
+	//TODO
+};
+
+class ImageFactory::EWrongDatasetTypeIdentification
+{
+public:
+	EWrongDatasetTypeIdentification() {}
 
 	//TODO
 };

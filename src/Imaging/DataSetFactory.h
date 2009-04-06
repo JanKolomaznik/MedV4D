@@ -21,11 +21,15 @@ public:
 	 * Creates data set based on atributes that reads from stream
 	 */
 	static AbstractDataSet::Ptr 
-	CreateDataSet(M4D::IO::InStream &stream);
+	DeserializeDataset(M4D::IO::InStream &stream);
+
+	static void 
+	SerializeDataset(M4D::IO::OutStream &stream, const AbstractDataSet &dataset);
+	
 	
 private:	// helpers
-	static AbstractDataSet::Ptr 
-	CreateImage(M4D::IO::InStream &stream);
+	/*static AbstractDataSet::Ptr 
+	CreateImage(M4D::IO::InStream &stream);*/
 };
 
 }
