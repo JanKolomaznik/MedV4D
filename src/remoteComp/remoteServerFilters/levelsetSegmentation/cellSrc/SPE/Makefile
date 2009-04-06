@@ -36,7 +36,7 @@ ITKIncludes=	-I$(ITKIncludeRoot)\
 				-I$(ITKIncludeRoot)/Utilities/vxl/core\
 				-I$(ITKIncludeRoot)/gdcm/src
 				
-INCLUDE         := -I$(srcTop) $(ITKIncludes)
+INCLUDE         := -I$(srcTop)
 
 ########################################################################
 #			buildutils/make.footer

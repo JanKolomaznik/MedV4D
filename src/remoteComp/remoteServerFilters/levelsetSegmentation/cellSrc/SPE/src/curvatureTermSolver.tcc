@@ -9,8 +9,8 @@ typename CurvatureTermSolver< PixelType, Dim>::ScalarValueType
 CurvatureTermSolver< PixelType, Dim>
 ::ComputeCurvatureTerm(GlobalDataType *gd)
 {
-	if ( m_CurvatureWeight == itk::NumericTraits<ScalarValueType>::Zero )
-		return itk::NumericTraits<ScalarValueType>::Zero;
+	if ( m_CurvatureWeight == 0)//itk::NumericTraits<ScalarValueType>::Zero )
+		return 0;//itk::NumericTraits<ScalarValueType>::Zero;
 
 	ScalarValueType curvature_term =
 	this->ComputeMeanCurvature(gd) * m_CurvatureWeight;
@@ -138,7 +138,7 @@ CurvatureTermSolver< PixelType, Dim>
 	::ComputeMeanCurvature(GlobalDataType *gd)
 {
   // Calculate the mean curvature
-  ScalarValueType curvature_term = itk::NumericTraits<ScalarValueType>::Zero;
+  ScalarValueType curvature_term = 0;//itk::NumericTraits<ScalarValueType>::Zero;
   unsigned int i, j;
   
   for (i = 0; i < Dim; i++)

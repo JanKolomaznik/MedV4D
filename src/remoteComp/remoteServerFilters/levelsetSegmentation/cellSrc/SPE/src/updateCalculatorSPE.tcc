@@ -40,7 +40,7 @@ UpdateCalculatorSPE<TValuePixel, TFeaturePixel, Dimension>
 {
 	MIN_NORM = 1.0e-6;
 
-	double minSpacing = itk::NumericTraits<double>::max();
+	double minSpacing = 1000000;//itk::NumericTraits<double>::max();
 	for (uint8 i=0; i<Dimension; i++)
 	{
 		minSpacing = vnl_math_min(minSpacing, (double) m_Conf.valueImageProps.spacing[i]);
@@ -81,7 +81,7 @@ UpdateCalculatorSPE<TValuePixel, TFeaturePixel, Dimension>
 				dx_backward = centerValue - backwardValue;
 
 				// Pick the larger magnitude derivative.
-				if (::vnl_math_abs(dx_forward)> ::vnl_math_abs(dx_backward) )
+				if (vnl_math_abs(dx_forward)> vnl_math_abs(dx_backward) )
 				{
 					offset[i] = dx_forward;
 				}

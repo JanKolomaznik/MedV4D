@@ -49,7 +49,7 @@ protected:
   FeatureScalarType GetSpeedInPoint(const FeatureScalarType &pixelValue) const;
   
   FeatureScalarType PropagationSpeed(const TFeatureNeighbourhood &neighborhood,
-                     const FloatOffsetType &offset, GlobalDataType *gd) const;
+                     const FloatOffsetType &offset) const;
   
   SpeedTermSolver();
   

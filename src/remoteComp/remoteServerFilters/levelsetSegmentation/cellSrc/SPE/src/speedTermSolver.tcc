@@ -2,6 +2,8 @@
 #error File SpeedTermSolver.tcc cannot be included directly!
 #else
 
+#include <math.h>
+
 ///////////////////////////////////////////////////////////////////////////////
 
 template<typename FeatureScalarType, typename TFeatureNeighbourhood>
@@ -35,7 +37,7 @@ template<typename FeatureScalarType, typename TFeatureNeighbourhood>
 FeatureScalarType
 SpeedTermSolver<FeatureScalarType, TFeatureNeighbourhood>
 ::PropagationSpeed(const TFeatureNeighbourhood &neighborhood,
-                   const FloatOffsetType &offset, GlobalDataType *gd) const
+                   const FloatOffsetType &offset) const
 {
   const IndexType idx = neighborhood.GetIndex();
 
@@ -98,8 +100,8 @@ SpeedTermSolver<FeatureScalarType, TFeatureNeighbourhood>
 	   * neighbors. The weight for each neighbor is the fraction overlap
 	   * of the neighbor pixel with respect to a pixel centered on point.
 	   */
-	  RealType value = itk::NumericTraits<RealType>::Zero;
-	  RealType totalOverlap = itk::NumericTraits<RealType>::Zero;
+	  RealType value = 0;//itk::NumericTraits<RealType>::Zero;
+	  RealType totalOverlap = 0;//itk::NumericTraits<RealType>::Zero;
 
 	  for( unsigned int counter = 0; counter < neighborCount; counter++ )
 	    {
@@ -155,7 +157,7 @@ SpeedTermSolver<FeatureScalarType, TFeatureNeighbourhood>
 	  const FloatOffsetType& offset,
 	  GlobalDataType *gd) const
 {
-	const FeatureScalarType ZERO = itk::NumericTraits<FeatureScalarType>::Zero;
+	const FeatureScalarType ZERO = 0;//itk::NumericTraits<FeatureScalarType>::Zero;
 	uint32 i;
 	
 	if(m_PropagationWeight == 0)
@@ -163,7 +165,7 @@ SpeedTermSolver<FeatureScalarType, TFeatureNeighbourhood>
 
 	// Get the propagation speed
 	FeatureScalarType propagation_term = 
-		m_PropagationWeight * PropagationSpeed(neighborhood, offset, gd);
+		m_PropagationWeight * PropagationSpeed(neighborhood, offset);
 
 	//
 	// Construct upwind gradient values for use in the propagation speed term:
@@ -197,7 +199,7 @@ SpeedTermSolver<FeatureScalarType, TFeatureNeighbourhood>
 	vnl_math_max(gd->m_MaxPropagationChange,
 			vnl_math_abs(propagation_term));
 
-	propagation_term *= vcl_sqrt( propagation_gradient );
+	propagation_term *= sqrt( propagation_gradient );
 	return propagation_term;
 }
 

@@ -1,7 +1,7 @@
 #ifndef NEIGHBORHOODCELL_H_
 #define NEIGHBORHOODCELL_H_
 
-#include "common/Vector.h"
+#include "common/VectorNoExcepts.h"
 
 namespace M4D {
 namespace Cell {
@@ -17,6 +17,8 @@ public:
 	typedef Vector<uint32, Dim> TIndex;
 	typedef Vector<float32, Dim> ContinuousIndexType;
 	typedef Vector<float32, Dim> TSpacing;
+	
+	static const uint8 Dimension = Dim;
 	
 	struct TRegion
 	{

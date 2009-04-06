@@ -168,9 +168,9 @@ ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >
   dt /= maxScaleCoefficient;
  
   // reset the values  
-  d->m_MaxAdvectionChange   = itk::NumericTraits<PixelType>::Zero;
-  d->m_MaxPropagationChange = itk::NumericTraits<PixelType>::Zero;
-  d->m_MaxCurvatureChange   = itk::NumericTraits<PixelType>::Zero;
+  d->m_MaxAdvectionChange   = 0;//itk::NumericTraits<PixelType>::Zero;
+  d->m_MaxPropagationChange = 0;//itk::NumericTraits<PixelType>::Zero;
+  d->m_MaxCurvatureChange   = 0;//itk::NumericTraits<PixelType>::Zero;
   
   return dt;
 }

@@ -1,7 +1,7 @@
 #ifndef GLOBALDATA_H_
 #define GLOBALDATA_H_
 
-#include "vnl/vnl_matrix_fixed.h"
+//#include "vnl/vnl_matrix_fixed.h"
 
 namespace M4D {
 namespace Cell {
@@ -11,8 +11,46 @@ struct GlobalDataStruct {
 	ScalarValueType m_MaxAdvectionChange;
 	ScalarValueType m_MaxPropagationChange;
 	ScalarValueType m_MaxCurvatureChange;
+	
+	template <class T, uint8 num_rows, uint8 num_cols>
+	class vnl_matrix_fixed
+	{
+	 public:
+	  typedef vnl_matrix_fixed<T,num_rows,num_cols> self;
+	  typedef unsigned int size_type;
+
+	  T data_[num_rows][num_cols]; // Local storage
+	  
+	  T       * operator[] (unsigned r) { return data_[r]; }
+
+	   //: return pointer to given row
+	   // No boundary checking here.
+	   T const * operator[] (unsigned r) const { return data_[r]; }
+
+	   //: Access an element for reading or writing
+	   // There are assert style boundary checks - #define NDEBUG to turn them off.
+	   T       & operator() (unsigned r, unsigned c)
+	   {
+	     return this->data_[r][c];
+	   }
+
+//	 public:
+//
+//	  //: Construct an empty num_rows*num_cols matrix
+//	  vnl_matrix_fixed() {}
+//
+//	  //: Construct an m*n matrix and fill with value
+//	  explicit vnl_matrix_fixed(T value)
+//	  {
+//	    T* p = data_[0];
+//	    unsigned int n = num_rows * num_cols;
+//	    while (n--)
+//	      *p++ = value;
+//	  }
+	};
 
 	/** Hessian matrix */
+	
 	vnl_matrix_fixed<ScalarValueType, Dim, Dim> m_dxy;
 
 	/** Array of first derivatives*/

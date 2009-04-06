@@ -40,7 +40,7 @@ public:
   typedef typename OutputImageType::IndexType IndexType;
 
   /** Node type used in sparse field layer lists. */
-  typedef SparseFieldLevelSetNode<IndexType> LayerNodeType;
+  typedef M4D::Cell::SparseFieldLevelSetNode<IndexType> LayerNodeType;
   
   /** A list type used in the algorithm. */
   typedef SparseFieldLayer<LayerNodeType> LayerType;

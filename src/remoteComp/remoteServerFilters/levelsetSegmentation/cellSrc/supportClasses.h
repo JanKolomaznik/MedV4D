@@ -3,16 +3,6 @@
 
 namespace itk {
 
-template <class TValueType>
-class SparseFieldLevelSetNode
-{
-public:
-  TValueType               m_Value;
-  SparseFieldLevelSetNode *Next;
-  SparseFieldLevelSetNode *Previous;
-};
-
-
 template <class TNeighborhoodType>
 class SparseFieldCityBlockNeighborList
 {

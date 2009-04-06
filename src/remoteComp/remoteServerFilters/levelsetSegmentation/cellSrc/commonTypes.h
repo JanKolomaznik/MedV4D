@@ -6,6 +6,15 @@
 namespace M4D {
 namespace Cell {
 
+template <class TValueType>
+class SparseFieldLevelSetNode
+{
+public:
+  TValueType               m_Value;
+  SparseFieldLevelSetNode *Next;
+  SparseFieldLevelSetNode *Previous;
+};
+
 // geather all configurations that SPE needs to load
 template<typename NeighborhoodScalesType, typename FeaturePixelType, 
 typename ValuePixelType, typename LayerNodeType, uint8 Dimension>

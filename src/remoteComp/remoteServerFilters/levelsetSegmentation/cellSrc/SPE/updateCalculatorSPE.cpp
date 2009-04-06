@@ -1,12 +1,15 @@
 
 #include "common/Common.h"
-#include "itkNumericTraits.h"
+#include "common/VectorNoExcepts.h"
+//#include "vnl/vnl_vector.h"
+#include "vnl_math.h"
+//#include "itkNumericTraits.h"
 #include "updateCalculatorSPE.h"
 
-typedef int16	TFeatureElement;
+typedef float32	TFeatureElement;
 typedef float32 TValueElement;
 
-typedef itk::UpdateCalculatorSPE<TValueElement, TFeatureElement, 3> TUpdateCalculatorSPE;
+typedef M4D::Cell::UpdateCalculatorSPE<TValueElement, TFeatureElement, 3> TUpdateCalculatorSPE;
 
 int main(unsigned long long speid __attribute__ ((unused)),
          unsigned long long argp __attribute__ ((unused)), 

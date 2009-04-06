@@ -91,6 +91,7 @@ public:
 	      {
 	      return m_neighbourhood->GetPixel( i );
 	      }
+	    IsInBounds = true;
 	   // bool inbounds; 
 	    return m_neighbourhood->GetPixel( i ); 
 	    }

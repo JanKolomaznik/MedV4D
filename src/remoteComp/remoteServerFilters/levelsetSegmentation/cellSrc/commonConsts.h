@@ -56,13 +56,13 @@ public:
 protected:
 	Consts()
 	{
-		m_ValueOne = itk::NumericTraits<ValueType>::One;
-		m_ValueZero = itk::NumericTraits<ValueType>::Zero;
+		m_ValueOne = 1;//itk::NumericTraits<ValueType>::One;
+		m_ValueZero = 0;//itk::NumericTraits<ValueType>::Zero;
 		 m_StatusChanging = -1;
 		 m_StatusActiveChangingUp = -2;
 		 m_StatusActiveChangingDown = -3;
 		m_StatusBoundaryPixel = -4;
-		m_StatusNull = itk::NumericTraits<StatusType>::NonpositiveMin();
+		m_StatusNull = -127;//itk::NumericTraits<StatusType>::NonpositiveMin();
 	}
 };
 

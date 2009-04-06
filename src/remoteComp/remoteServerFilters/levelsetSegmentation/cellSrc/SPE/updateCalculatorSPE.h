@@ -7,8 +7,6 @@
 #include "../commonConsts.h"
 #include "../commonTypes.h"
 
-#include "itkSparseFieldLayer.h"
-
 //#include "itkConstNeighborhoodIterator.h"
 //#include "itkZeroFluxNeumannBoundaryCondition.h"
 #include "neighbourhoodIterator.h"
@@ -49,7 +47,7 @@ public:
   
   typedef typename TOutIter::IndexType IndexType;
   /** Node type used in sparse field layer lists. */
-  typedef itk::SparseFieldLevelSetNode<IndexType> LayerNodeType;
+  typedef SparseFieldLevelSetNode<IndexType> LayerNodeType;
   
   typedef LinkedChainIteratorCell<LayerNodeType> TLayerIterator;
   
