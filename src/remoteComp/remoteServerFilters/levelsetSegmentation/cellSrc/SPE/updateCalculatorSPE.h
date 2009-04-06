@@ -12,6 +12,9 @@
 //#include "itkConstNeighborhoodIterator.h"
 //#include "itkZeroFluxNeumannBoundaryCondition.h"
 #include "neighbourhoodIterator.h"
+// tools
+#include "tools/cellRemoteArray.h"
+#include "tools/cellLinkedChainIterator.h"
 
 namespace M4D {
 namespace Cell {
@@ -31,37 +34,33 @@ public:
 	typedef TValuePixel ValueType;
 	typedef TFeaturePixel FeaturePixelType;
 		
-	typedef NeighbourIteratorCell<FeaturePixelType, Dimension> TFeatureNeighbourhood;
-	typedef NeighbourIteratorCell<ValueType, Dimension> TOutputNeighbourhood;		
-	typedef ThresholdLevelSetFunc<TOutputNeighbourhood, TFeatureNeighbourhood> SegmentationFunctionType;
+	typedef NeighborhoodCell<FeaturePixelType, Dimension> TFeatureNeighbourhood;
+	typedef NeighborhoodCell<ValueType, Dimension> TOutputNeighbourhood;
+	
+	typedef NeighbourIteratorCell<TValuePixel, Dimension> TOutIter;
+	typedef NeighbourIteratorCell<TFeaturePixel, Dimension> TFeatureIter;
+	
+	typedef ThresholdLevelSetFunc<TOutIter, TFeatureIter> SegmentationFunctionType;
+	typedef RemoteArrayCell<TValuePixel, 8> TUpdateBufferArray;
 		
 		  
   typedef typename SegmentationFunctionType::FloatOffsetType 	FloatOffsetType;
   typedef typename SegmentationFunctionType::NeighborhoodScalesType NeighborhoodScalesType;
   
-  // spolecne !!!!!!!!!!!!!!
-  typedef typename TOutputNeighbourhood::IndexType IndexType;
+  typedef typename TOutIter::IndexType IndexType;
   /** Node type used in sparse field layer lists. */
   typedef itk::SparseFieldLevelSetNode<IndexType> LayerNodeType;
   
-  /** A list type used in the algorithm. */
-  typedef itk::SparseFieldLayer<LayerNodeType> LayerType;
-  typedef typename LayerType::Pointer     LayerPointerType;
-  typedef std::vector<LayerPointerType> LayerListType;
+  typedef LinkedChainIteratorCell<LayerNodeType> TLayerIterator;
   
   typedef GlobalDataStruct<FeaturePixelType, Dimension> TGlobalData;
-  
-	
-	/** Container type used to store updates to the active layer. */
-	typedef std::vector<ValueType> UpdateBufferType;
-  // !!!!!!!!!!!!!!!!!!!!!!!!
 	
 	UpdateCalculatorSPE()
 	{
 		memset(&m_globalData, 0, sizeof(TGlobalData));
 	}
 		  
-		  //void CalculateChangeItem(NeighborhoodIterator<OutputImageType> &outIt);
+		  void CalculateChangeItem(void);
 	
 		  TimeStepType CalculateChange();
 		  
@@ -69,8 +68,7 @@ public:
 		      	  	NeighborhoodScalesType, 
 		      	  FeaturePixelType, 
 		      	ValueType,
-		      	  	LayerType,
-		      	  	UpdateBufferType,
+		      	LayerNodeType,
 		      	  Dimension> TRunConf;
 		  
 		  TRunConf m_Conf;
@@ -81,7 +79,8 @@ protected:
 
 	SegmentationFunctionType m_diffFunc;
     
-    
+	TUpdateBufferArray m_updateBufferArray;
+	TLayerIterator m_layerIterator;
     
     
 	//CalculateChangeStepConfiguration<LayerNodeType> m_stepConf;
@@ -90,11 +89,18 @@ protected:
 	  
 private:
 	
-	
+	TOutIter m_outIter;
+	TFeatureIter m_featureIter;
 	
 	ValueType MIN_NORM;
 	
 	TGlobalData m_globalData;
+	
+	// tmp variables to avoid repeating allocations on stack
+	typename SegmentationFunctionType::FloatOffsetType offset;
+	ValueType norm_grad_phi_squared, dx_forward, dx_backward, forwardValue,
+	backwardValue, centerValue;
+	unsigned i;
 };
 
 	//include implementation

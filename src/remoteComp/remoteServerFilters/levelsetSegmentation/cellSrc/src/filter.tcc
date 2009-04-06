@@ -551,8 +551,8 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
         m_Conf.m_NumberOfLayers = m_NumberOfLayers;
         m_Conf.m_ConstantGradientValue = m_ConstantGradientValue;
         //m_Conf.m_neighbourScales = ;
-        m_Conf.m_UpdateBuffer = &m_UpdateBuffer;
-        m_Conf.m_activeSet = m_Layers[0].GetPointer();
+        m_Conf.m_activeSetBegin = m_Layers[0]->Begin().GetPointer();
+        m_Conf.m_activeSetEnd = m_Layers[0]->End().GetPointer();
         
         // fill the image properties
         m_Conf.featureImageProps.imageData = 
@@ -858,6 +858,11 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 {
 	  m_UpdateBuffer.clear();
 	  m_UpdateBuffer.reserve(m_Layers[0]->Size());
+	  
+	  m_Conf.m_activeSetBegin = m_Layers[0]->Begin().GetPointer();
+	  m_Conf.m_activeSetEnd = m_Layers[0]->End().GetPointer();
+	  m_Conf.m_UpdateBufferData = &m_UpdateBuffer[0];
+	  updateSolver.m_Conf = (const typename TUpdateCalculatorSPE::TRunConf &)m_Conf;
 	  
 	TimeStepType dt = updateSolver.CalculateChange();
 	

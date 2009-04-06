@@ -42,6 +42,7 @@ public:
 
 	  /** Constructor which establishes the region size, neighborhood, and image
 	   * over which to walk. */
+	  NeighbourIteratorCell() : m_neighbourhood(0) {}
 	  NeighbourIteratorCell(NeighborhoodType *neiborhood)
 	  	: m_neighbourhood(neiborhood)
 	    {
@@ -49,6 +50,11 @@ public:
 	    for (unsigned int i=0; i < Dimension; i++)
 	      { m_InBounds[i] = false; }
 	    }
+	  
+	  void SetNeighbourhood(NeighborhoodType *neiborhood)
+	  {
+		  m_neighbourhood = neiborhood;  
+	  }
 
 	  /** Computes the internal, N-d offset of a pixel array position n from 
 	   * (0,0, ..., 0) in the "upper-left" corner of the neighborhood. */

@@ -219,8 +219,7 @@ public:
 	    		      	  	NeighborhoodScalesType, 
 	    		      	  FeaturePixelType, 
 	    		      	ValueType,
-	    		      	  	LayerType,
-	    		      	  	UpdateBufferType,
+	    		      	LayerNodeType,
 	    		      	  TInputImage::ImageDimension> TRunConf;
 	    		  
 	    TRunConf m_Conf;

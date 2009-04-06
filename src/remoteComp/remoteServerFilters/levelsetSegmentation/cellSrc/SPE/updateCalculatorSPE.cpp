@@ -1,15 +1,12 @@
 
-#include "common/Types.h"
+#include "common/Common.h"
+#include "itkNumericTraits.h"
 #include "updateCalculatorSPE.h"
 
 typedef int16	TFeatureElement;
-typedef float32 TInnerElement;
+typedef float32 TValueElement;
 
-typedef itk::Image<TInnerElement, 3> TInputImage;
-typedef itk::Image<TInnerElement, 3> TOutputImage;
-typedef itk::Image< TFeatureElement, 3 > 		TFautureImage;
-
-typedef itk::UpdateCalculatorSPE<TInputImage, TOutputImage, TOutputImage> TUpdateCalculatorSPE;
+typedef itk::UpdateCalculatorSPE<TValueElement, TFeatureElement, 3> TUpdateCalculatorSPE;
 
 int main(unsigned long long speid __attribute__ ((unused)),
          unsigned long long argp __attribute__ ((unused)), 

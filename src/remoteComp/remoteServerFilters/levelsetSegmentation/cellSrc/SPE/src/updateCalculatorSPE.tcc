@@ -2,8 +2,6 @@
 #error File updateCalculatorSPE.tcc cannot be included directly!
 #else
 
-
-
 template<typename ImageType>
 void 
 PrintITKImage(const ImageType &image, std::ostream &s)
@@ -57,69 +55,65 @@ UpdateCalculatorSPE<TValuePixel, TFeaturePixel, Dimension>
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-//template <typename TValuePixel, typename TFeaturePixel, uint8 Dimension >
-//void
-//UpdateCalculatorSPE<TInputImage, TFeatureImage, TOutputPixelType>
-//::CalculateChangeItem(NeighborhoodIterator<OutputImageType> &outIt)
-//{
-//	FloatOffsetType offset;
-//	ValueType norm_grad_phi_squared, dx_forward, dx_backward, forwardValue,
-//	backwardValue, centerValue;
-//	uint32 i;
-//
-//	// Calculate the offset to the surface from the center of this
-//	// neighborhood.  This is used by some level set functions in sampling a
-//	// speed, advection, or curvature term.
-//	if((centerValue = outIt.GetCenterPixel()) != 0.0 )
-//	{
-//		// Surface is at the zero crossing, so distance to surface is:
-//		// phi(x) / norm(grad(phi)), where phi(x) is the center of the
-//		// neighborhood.  The location is therefore
-//		// (i,j,k) - ( phi(x) * grad(phi(x)) ) / norm(grad(phi))^2
-//		norm_grad_phi_squared = 0.0;
-//		for (i = 0; i < Dimension; ++i)
-//		{
-//			forwardValue = outIt.GetNext(i);
-//			backwardValue = outIt.GetPrevious(i);
-//
-//			if (forwardValue * backwardValue >= 0)
-//			{ //  Neighbors are same sign OR at least one neighbor is zero.
-//				dx_forward = forwardValue - centerValue;
-//				dx_backward = centerValue - backwardValue;
-//
-//				// Pick the larger magnitude derivative.
-//				if (::vnl_math_abs(dx_forward)> ::vnl_math_abs(dx_backward) )
-//				{
-//					offset[i] = dx_forward;
-//				}
-//				else
-//				{
-//					offset[i] = dx_backward;
-//				}
-//			}
-//			else //Neighbors are opposite sign, pick the direction of the 0 surface.
-//			{
-//				if (forwardValue * centerValue < 0)
-//				{
-//					offset[i] = forwardValue - centerValue;
-//				}
-//				else
-//				{
-//					offset[i] = centerValue - backwardValue;
-//				}
-//			}
-//
-//			norm_grad_phi_squared += offset[i] * offset[i];
-//		}
-//
-//		for (i = 0; i < Dimension; ++i)
-//		{
-//			offset[i] = (offset[i] * centerValue) / (norm_grad_phi_squared + MIN_NORM);
-//		}
-//
-//		m_Conf.m_UpdateBuffer->push_back( m_diffFunc.ComputeUpdate(outIt, (void *)&m_globalData, offset) );
-//	}
-//}
+template <typename TValuePixel, typename TFeaturePixel, uint8 Dimension >
+void
+UpdateCalculatorSPE<TValuePixel, TFeaturePixel, Dimension>
+::CalculateChangeItem(void)
+{		
+	// Calculate the offset to the surface from the center of this
+	// neighborhood.  This is used by some level set functions in sampling a
+	// speed, advection, or curvature term.
+	if ((centerValue = m_outIter.GetCenterPixel()) != 0.0 )
+	{
+		// Surface is at the zero crossing, so distance to surface is:
+		// phi(x) / norm(grad(phi)), where phi(x) is the center of the
+		// neighborhood.  The location is therefore
+		// (i,j,k) - ( phi(x) * grad(phi(x)) ) / norm(grad(phi))^2
+		norm_grad_phi_squared = 0.0;
+		for (i = 0; i < Dimension; ++i)
+		{
+			forwardValue = m_outIter.GetNext(i);
+			backwardValue = m_outIter.GetPrevious(i);
+
+			if (forwardValue * backwardValue >= 0)
+			{ //  Neighbors are same sign OR at least one neighbor is zero.
+				dx_forward = forwardValue - centerValue;
+				dx_backward = centerValue - backwardValue;
+
+				// Pick the larger magnitude derivative.
+				if (::vnl_math_abs(dx_forward)> ::vnl_math_abs(dx_backward) )
+				{
+					offset[i] = dx_forward;
+				}
+				else
+				{
+					offset[i] = dx_backward;
+				}
+			}
+			else //Neighbors are opposite sign, pick the direction of the 0 surface.
+			{
+				if (forwardValue * centerValue < 0)
+				{
+					offset[i] = forwardValue - centerValue;
+				}
+				else
+				{
+					offset[i] = centerValue - backwardValue;
+				}
+			}
+
+			norm_grad_phi_squared += offset[i] * offset[i];
+		}
+
+		for (i = 0; i < Dimension; ++i)
+		{
+			offset[i] = (offset[i] * centerValue) / (norm_grad_phi_squared + MIN_NORM);
+		}
+
+		m_updateBufferArray.push_back( 
+				m_diffFunc.ComputeUpdate(m_outIter, m_featureIter, (void*)&m_globalData, offset) );
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename TValuePixel, typename TFeaturePixel, uint8 Dimension >
@@ -127,46 +121,12 @@ typename UpdateCalculatorSPE<TValuePixel, TFeaturePixel, Dimension>::TimeStepTyp
 UpdateCalculatorSPE<TValuePixel, TFeaturePixel, Dimension>
 ::CalculateChange()
 {
-	typename SegmentationFunctionType::FloatOffsetType offset;
-	ValueType norm_grad_phi_squared, dx_forward, dx_backward, forwardValue,
-	backwardValue, centerValue;
-	unsigned i;
-	ValueType MIN_NORM = 1.0e-6;
-	//		  if (this->GetUseImageSpacing())
-	//		    {
-	double minSpacing = itk::NumericTraits<double>::max();
-	for (i=0; i< Dimension; i++)
-	{
-		minSpacing = vnl_math_min(minSpacing, (double) m_Conf.valueImageProps.spacing[i]);
-	}
-	MIN_NORM *= minSpacing;
-	//		    }
-
-	typename LayerType::ConstIterator layerIt;
-
-	typedef NeighborhoodCell<TValuePixel, Dimension> OutNeighbourhood;
-	typedef NeighborhoodCell<TFeaturePixel, Dimension> FeatureNeighbourhood;
-
-	
+	m_updateBufferArray.SetArray(m_Conf.m_UpdateBufferData);
+	m_layerIterator.SetBeginEnd(m_Conf.m_activeSetBegin, m_Conf.m_activeSetEnd);
 
 	// create neghbours as middle layer between image in PPE and part of image on SPE
-	OutNeighbourhood outNeigh(m_diffFunc.GetRadius(), & m_Conf.valueImageProps);
-	FeatureNeighbourhood featureNeigh(m_diffFunc.GetRadius(), & m_Conf.featureImageProps);
-
-	// create neigbor iterators to perform calculations on
-	typedef NeighbourIteratorCell<TValuePixel, Dimension> TOutIter;
-	typedef NeighbourIteratorCell<TFeaturePixel, Dimension> TFeatureIter;
-	TOutIter outIter(&outNeigh);
-	TFeatureIter featureIter(&featureNeigh);
-
-	TimeStepType timeStep;
-
-	const NeighborhoodScalesType neighborhoodScales = m_diffFunc.ComputeNeighborhoodScales();
-
-	//		  if ( m_BoundsCheckingActive == false )
-	//		    {
-	//		    outputIt.NeedToUseBoundaryConditionOff();
-	//		    }
+	TOutputNeighbourhood outNeigh(m_diffFunc.GetRadius(), & m_Conf.valueImageProps);
+	TFeatureNeighbourhood featureNeigh(m_diffFunc.GetRadius(), & m_Conf.featureImageProps);
 
 	//PrintITKImage<OutputImageType>(*m_Conf.m_outputImage,LOUT);
 	
@@ -174,81 +134,25 @@ UpdateCalculatorSPE<TValuePixel, TFeaturePixel, Dimension>
 	// iteration.  Iterates through the active layer index list, applying 
 	// the level set function to the output image (level set image) at each
 	// index.  Update values are stored in the update buffer.
-	for (layerIt = m_Conf.m_activeSet->Begin(); layerIt != m_Conf.m_activeSet->End(); ++layerIt)
+	LayerNodeType *next;
+	while(m_layerIterator.HasNext())
 	{
-		outIter.SetLocation((typename TOutIter::IndexType &)layerIt->m_Value);
-		featureIter.SetLocation((typename TFeatureIter::IndexType &)layerIt->m_Value);
+		next = m_layerIterator.Next();
+		m_outIter.SetNeighbourhood(&outNeigh);
+		m_featureIter.SetNeighbourhood(&featureNeigh);
+		m_outIter.SetLocation((typename TOutIter::IndexType &)next->m_Value);
+		m_featureIter.SetLocation((typename TFeatureIter::IndexType &)next->m_Value);
 		
-		//outIter.GetNeighborhood().Print(LOUT);
-		
-
-		// Calculate the offset to the surface from the center of this
-		// neighborhood.  This is used by some level set functions in sampling a
-		// speed, advection, or curvature term.
-		if ((centerValue = outIter.GetCenterPixel()) != 0.0 )
-		{
-			// Surface is at the zero crossing, so distance to surface is:
-			// phi(x) / norm(grad(phi)), where phi(x) is the center of the
-			// neighborhood.  The location is therefore
-			// (i,j,k) - ( phi(x) * grad(phi(x)) ) / norm(grad(phi))^2
-			norm_grad_phi_squared = 0.0;
-			for (i = 0; i < Dimension; ++i)
-			{
-				forwardValue = outIter.GetNext(i);
-				backwardValue = outIter.GetPrevious(i);
-
-				if (forwardValue * backwardValue >= 0)
-				{ //  Neighbors are same sign OR at least one neighbor is zero.
-					dx_forward = forwardValue - centerValue;
-					dx_backward = centerValue - backwardValue;
-
-					// Pick the larger magnitude derivative.
-					if (::vnl_math_abs(dx_forward)> ::vnl_math_abs(dx_backward) )
-					{
-						offset[i] = dx_forward;
-					}
-					else
-					{
-						offset[i] = dx_backward;
-					}
-				}
-				else //Neighbors are opposite sign, pick the direction of the 0 surface.
-				{
-					if (forwardValue * centerValue < 0)
-					{
-						offset[i] = forwardValue - centerValue;
-					}
-					else
-					{
-						offset[i] = centerValue - backwardValue;
-					}
-				}
-
-				norm_grad_phi_squared += offset[i] * offset[i];
-			}
-
-			for (i = 0; i < Dimension; ++i)
-			{
-#if defined(ITK_USE_DEPRECATED_LEVELSET_INTERPOLATION)
-				offset[i] = (offset[i] * centerValue) * vcl_sqrt(ImageDimension +0.5)
-				/ (norm_grad_phi_squared + MIN_NORM);
-#else
-				offset[i] = (offset[i] * centerValue) / (norm_grad_phi_squared + MIN_NORM);
-#endif
-			}
-
-			m_Conf.m_UpdateBuffer->push_back( m_diffFunc.ComputeUpdate(outIter, featureIter, (void*)&m_globalData, offset) );
-		}
-		//    else // Don't do interpolation
-		//      {
-		//      m_UpdateBuffer.push_back( m_diffFunc.ComputeUpdate(outIter, globalData) );
-		//      }
+		//m_outIter.GetNeighborhood().Print(LOUT);
+		CalculateChangeItem();
 	}
+	
+	m_updateBufferArray.FlushArray();
 
 	// Ask the finite difference function to compute the time step for
 	// this iteration.  We give it the global data pointer to use, then
 	// ask it to free the global data memory.
-	timeStep = m_diffFunc.ComputeGlobalTimeStep(&m_globalData);
+	TimeStepType timeStep = m_diffFunc.ComputeGlobalTimeStep(&m_globalData);
 
 	return timeStep;
 }

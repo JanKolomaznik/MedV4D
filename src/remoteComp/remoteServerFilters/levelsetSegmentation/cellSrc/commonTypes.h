@@ -8,14 +8,13 @@ namespace Cell {
 
 // geather all configurations that SPE needs to load
 template<typename NeighborhoodScalesType, typename FeaturePixelType, 
-typename ValuePixelType, typename LayerListType, 
-typename UpdateBufferType, uint8 Dimension>
+typename ValuePixelType, typename LayerNodeType, uint8 Dimension>
 class RunConfiguration
 {
 public:
 	
 	typedef RunConfiguration<NeighborhoodScalesType, FeaturePixelType, 
-		ValuePixelType, LayerListType, UpdateBufferType, Dimension> Self;
+		ValuePixelType, LayerNodeType, Dimension> Self;
 	
 	typedef typename NeighborhoodCell<ValuePixelType, Dimension>::TImageProperties ValueImageProps;
 	typedef typename NeighborhoodCell<FeaturePixelType, Dimension>::TImageProperties FeatureImageProps;
@@ -37,8 +36,9 @@ public:
   
     NeighborhoodScalesType m_neighbourScales;
     
-    UpdateBufferType *m_UpdateBuffer;
-	LayerListType *m_activeSet;
+    ValuePixelType *m_UpdateBufferData;
+    LayerNodeType *m_activeSetBegin;
+    LayerNodeType *m_activeSetEnd;
     
 	FeatureImageProps featureImageProps;
 	ValueImageProps valueImageProps;
@@ -52,8 +52,9 @@ public:
 		m_NumberOfLayers = o.m_NumberOfLayers;
 		m_ConstantGradientValue = o.m_ConstantGradientValue;
 		m_neighbourScales = o.m_neighbourScales;
-		m_UpdateBuffer = o.m_UpdateBuffer;
-		m_activeSet = o.m_activeSet;
+		m_UpdateBufferData = o.m_UpdateBufferData;
+		m_activeSetBegin = o.m_activeSetBegin;
+		m_activeSetEnd = o.m_activeSetEnd;
 		featureImageProps = o.featureImageProps;
 		valueImageProps = o.valueImageProps;
 	}
