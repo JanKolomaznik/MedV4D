@@ -23,6 +23,9 @@ public:
 	
 	void PutData(const void *data, size_t length);
 	void GetData(void *data, size_t length);
+
+	bool eof()
+	{ return stream_.eof(); }
 private:
 	std::fstream stream_;
 };
