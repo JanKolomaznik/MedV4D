@@ -21,7 +21,7 @@ LD_PROFILE_OPTS= -Wl,-q
 CXXDEBUG_OPTIONS= -g
 ##########################################
 else ifdef COMPILE_ON_CELL
-ITKLibsRoot=/usr/local/lib/InsightToolkit
+ITKLibsRoot=/data/cell/ITK/LIBCell/bin
 CXX=ppu-g++
 AR=ppu-ar
 ROOT=
@@ -32,7 +32,7 @@ PROFILE_OPTIONS=
 CXXDEBUG_OPTIONS= -g
 ##########################################
 else
-ITKLibsRoot=/usr/local/lib/InsightToolkit
+ITKLibsRoot=/home/vencax/cell/ITK/BUILD/bin
 CXX=g++
 AR=ar
 ROOT=

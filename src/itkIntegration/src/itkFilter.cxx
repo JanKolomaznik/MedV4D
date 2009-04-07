@@ -119,7 +119,7 @@ void
 ITKFilter<InputImageType, OutputImageType>
 	::SetupInITKImageAccordingInMedevedImage(void)
 {
-	const InputImageType &inMedImage = this->GetInputImage();
+	const InputImageType &inMedImage = *this->in;
 	typename InputImageType::PointType strides;
 	typename InputImageType::SizeType size;
 	size_t sizeOfData = 1;	// size in elements (not in bytes) 
