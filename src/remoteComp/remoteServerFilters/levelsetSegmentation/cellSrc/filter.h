@@ -31,7 +31,7 @@ public:
 	typedef typename Superclass::StatusType StatusType;
 	
 	
-	typedef M4D::Cell::UpdateCalculatorSPE<ValueType, FeaturePixelType, TInputImage::ImageDimension> TUpdateCalculatorSPE;
+	typedef M4D::Cell::UpdateCalculatorSPE TUpdateCalculatorSPE;
 	
 	/////////////////
 	
@@ -40,7 +40,7 @@ public:
   typedef typename OutputImageType::IndexType IndexType;
 
   /** Node type used in sparse field layer lists. */
-  typedef M4D::Cell::SparseFieldLevelSetNode<IndexType> LayerNodeType;
+  typedef SparseFieldLevelSetNode<IndexType> LayerNodeType;
   
   /** A list type used in the algorithm. */
   typedef SparseFieldLayer<LayerNodeType> LayerType;
@@ -215,14 +215,9 @@ public:
 	
 	// **************************************
 	    
-	    typedef M4D::Cell::RunConfiguration<
-	    		      	  	NeighborhoodScalesType, 
-	    		      	  FeaturePixelType, 
-	    		      	ValueType,
-	    		      	LayerNodeType,
-	    		      	  TInputImage::ImageDimension> TRunConf;
-	    		  
+	    typedef M4D::Cell::RunConfiguration TRunConf;	    		  
 	    TRunConf m_Conf;
+	    
 protected:
 	MySegmtLevelSetFilter(void);
 	~MySegmtLevelSetFilter(void);

@@ -3,6 +3,15 @@
 
 namespace itk {
 
+template <class TIndex>
+class SparseFieldLevelSetNode
+{
+public:
+	TIndex               m_Value;
+	SparseFieldLevelSetNode *Next;
+	SparseFieldLevelSetNode *Previous;
+};
+
 template <class TNeighborhoodType>
 class SparseFieldCityBlockNeighborList
 {

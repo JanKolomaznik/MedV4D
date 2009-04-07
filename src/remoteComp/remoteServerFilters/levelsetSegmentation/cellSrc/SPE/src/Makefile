@@ -10,16 +10,15 @@
 
 CELL_TOP=/opt/cell/sdk
 
-DIRS	:= 	src			\
-			tools/src
-
 ########################################################################
 #			Target
 ########################################################################
 
 #PROGRAMS_spu 	:= updateCalculatorSPEMain
 
-LIBRARY_embed64	:= updateCalculatorSPEMain.a
+LIBRARY := updateSolver.a
+
+#LIBRARY_embed64	:= updateCalculatorSPEMain.a
 
 
 ########################################################################
@@ -29,13 +28,12 @@ LIBRARY_embed64	:= updateCalculatorSPEMain.a
 CFLAGS_gcc:= -ffunction-sections -fdata-sections #-g #--param max-unroll-times=1 # needed to keep size of program down
 LDFLAGS_gcc= --gc-sections --print-gc-sections --stack-analysis --local-store=0:256	#-Wl,-q -g
 
-
-srcTop=../../../../..
+srcTop=../../../../../..
 				
 INCLUDE         := -I$(srcTop)
 
-INSTALL_DIR		= $(srcTop)/SPU
-INSTALL_FILES		= $(LIBRARY_embed64)
+#INSTALL_DIR		= $(srcTop)/SPU
+#INSTALL_FILES		= $(LIBRARY_embed64)
 
 ########################################################################
 #			buildutils/make.footer

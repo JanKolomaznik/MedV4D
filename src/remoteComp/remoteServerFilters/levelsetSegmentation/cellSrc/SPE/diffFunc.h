@@ -4,65 +4,66 @@
 #include "speedTermSolver.h"
 //#include "advectionTermSolver.h"
 #include "curvatureTermSolver.h"
-#include "../commonConsts.h"
+#include "neighbourhoodIterator.h"
+//#include "../commonConsts.h"
 
 namespace M4D {
 namespace Cell {
 
-template <class TInputNeighbour, class TFeatureNeighbour = TInputNeighbour>
 class ThresholdLevelSetFunc
-	: public SpeedTermSolver<typename TInputNeighbour::PixelType, TInputNeighbour>
+	: public SpeedTermSolver	//<typename TInputNeighbour::PixelType, TInputNeighbour>
 	//, public AdvectionTermSolver,
-	, public CurvatureTermSolver<typename TInputNeighbour::PixelType, TInputNeighbour::Dim>
-	, public CommonTypes<TInputNeighbour::Dim>
+	, public CurvatureTermSolver	//<typename TInputNeighbour::PixelType, TInputNeighbour::Dim>
+	//, public CommonTypes<TInputNeighbour::Dim>
 {
 public:
-	typedef ThresholdLevelSetFunc<TInputNeighbour, TFeatureNeighbour> Self;
-	typedef CommonTypes<TInputNeighbour::Dim> Superclass;
-	typedef typename Superclass::FloatOffsetType 	FloatOffsetType;
-	typedef typename Superclass::TimeStepType TimeStepType;
-	typedef typename Superclass::NeighborhoodScalesType NeighborhoodScalesType;
-	  typedef typename TInputNeighbour::PixelType     PixelType;
-	  typedef typename TInputNeighbour::RadiusType RadiusType;
-	
-	typedef TInputNeighbour NeighborhoodType;
-	typedef GlobalDataStruct<PixelType, TInputNeighbour::Dim> GlobalDataType;
+//	typedef ThresholdLevelSetFunc<TInputNeighbour, TFeatureNeighbour> Self;
+//	typedef CommonTypes<TInputNeighbour::Dim> Superclass;
+//	typedef typename Superclass::FloatOffsetType 	FloatOffsetType;
+//	typedef typename Superclass::TimeStepType TimeStepType;
+//	typedef typename Superclass::NeighborhoodScalesType NeighborhoodScalesType;
+//	  typedef typename TInputNeighbour::PixelType     PixelType;
+//	  typedef typename TInputNeighbour::RadiusType RadiusType;
+//	
+//	typedef TInputNeighbour NeighborhoodType;
+//	typedef GlobalDataStruct<PixelType, TInputNeighbour::Dim> GlobalDataType;
+	typedef NeighbourIteratorCell NeighborhoodIteratorType;
 
 	
-	virtual PixelType ComputeUpdate(
-			const NeighborhoodType &neighborhood,
-			const TFeatureNeighbour &featureNeib,
-	        void *globalData,
-	        const FloatOffsetType& offset = FloatOffsetType(0.0) );
+	TPixelValue ComputeUpdate(
+			const NeighborhoodIteratorType &neighborhood,
+			const NeighborhoodIteratorType &featureNeib,
+			GlobalDataStruct *globalData,
+	        const TContinuousIndex& offset );
 	
-	TimeStepType ComputeGlobalTimeStep(void *GlobalData) const;
+	TimeStepType ComputeGlobalTimeStep(void *GlobalData);
 
 	/** Sets the radius of the neighborhood this MyDiffFuncBase
 	   * needs to perform its calculations. */
-	  void SetRadius(const RadiusType &r)
+	  void SetRadius(const TRadius &r)
 	    { m_Radius = r; }
 
 	  /** Returns the radius of the neighborhood this MyDiffFuncBase
 	   * needs to perform its calculations. */
-	  const RadiusType &GetRadius() const
+	  const TRadius &GetRadius() const
 	    { return m_Radius; }
 
 	  /** Set the ScaleCoefficients for the difference
 	   * operators. The defaults a 1.0. These can be set to take the image
 	   * spacing into account. */
-	  void SetScaleCoefficients (NeighborhoodScalesType vals)
+	  void SetScaleCoefficients (TNeighborhoodScales vals)
 	    {
-	    for( unsigned int i = 0; i < TInputNeighbour::Dim; i++ )
+	    for( unsigned int i = 0; i < DIM; i++ )
 	      {
 	      m_ScaleCoefficients[i] = vals[i];
 	      }
 	    }
 	  
-	  const NeighborhoodScalesType ComputeNeighborhoodScales() const
+	  const TNeighborhoodScales ComputeNeighborhoodScales()
 	  {
-		  NeighborhoodScalesType neighborhoodScales(0,0,0);
+		  TNeighborhoodScales neighborhoodScales;
 		    
-		    for(int i=0; i<TInputNeighbour::Dim; i++)
+		    for(int i=0; i<DIM; i++)
 		      {
 		      if (this->m_Radius[i] > 0)
 		        {
@@ -89,12 +90,12 @@ private:
 	  double m_WaveDT;
 	  double m_DT;
 	  
-	  RadiusType m_Radius;
-	  NeighborhoodScalesType m_ScaleCoefficients;
+	  TRadius m_Radius;
+	  TNeighborhoodScales m_ScaleCoefficients;
 };
 
 //include implementation
-#include "src/diffFunc.tcc"
+//#include "src/diffFunc.tcc"
 	
 }}
 

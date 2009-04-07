@@ -6,12 +6,10 @@
 namespace M4D {
 namespace Cell {
 
-template< typename PixelType, uint8 Dim > 
 class CurvatureTermSolver
 {
 public:
-	typedef PixelType ScalarValueType;
-	typedef GlobalDataStruct<ScalarValueType, Dim> GlobalDataType;
+	typedef TPixelValue ScalarValueType;
 	
     /** Gamma. Scales all curvature weight values */
     void SetCurvatureWeight(const ScalarValueType c)
@@ -20,15 +18,15 @@ public:
       { return m_CurvatureWeight; }
 	    
 protected:
-	ScalarValueType ComputeCurvatureTerm(GlobalDataType *gd);
+	ScalarValueType ComputeCurvatureTerm(GlobalDataStruct *gd);
 	
 private:
 	ScalarValueType m_CurvatureWeight;
 	
-	ScalarValueType ComputeMeanCurvature(GlobalDataType *gd);
+	ScalarValueType ComputeMeanCurvature(GlobalDataStruct *gd);
 };
 
-#include "src/curvatureTermSolver.tcc"
+//#include "src/curvatureTermSolver.tcc"
 
 }}
 

@@ -8,36 +8,16 @@ template<typename T, uint8 BUFSIZE>
 class RemoteArrayCell
 {
 public:
-//	RemoteArrayCell(T *array) { SetArray(array); }
-//	~RemoteArrayCell() { FlushArray(); }
+	RemoteArrayCell();
+	RemoteArrayCell(T *array);
+	~RemoteArrayCell();
 	
-	void push_back(T val)
-	{
-		m_buf[m_currBuf][m_currPos] = val;
-		m_currPos++;
-		if(m_currPos == BUFSIZE)
-			FlushArray();
-	}
-	
-	void SetArray(T *array)
-	{
-		m_currFlushedPos = m_arrayBegin = array;
-		m_currPos = m_currBuf = 0;
-	}
-	
-	void FlushArray()
-	{
-		CopyData(m_buf[m_currBuf], m_currFlushedPos, m_currPos);
-		m_currFlushedPos += m_currPos;
-		m_currBuf = !m_currBuf;
-		m_currPos = 0;
-	}
+	void push_back(T val);
+	void SetArray(T *array);
+	void FlushArray();
 	
 private:
-	void CopyData(T *src, T *dest, size_t size)
-	{
-		memcpy(dest, src, size * sizeof(T));
-	}
+	void CopyData(T *src, T *dest, size_t size);
 	
 	T m_buf[2][BUFSIZE];
 	bool m_currBuf;
@@ -49,5 +29,8 @@ private:
 
 }
 }
+
+//include implementation
+#include "src/cellRemoteArray.tcc"
 
 #endif /*CELLREMOTEARRAY_H_*/

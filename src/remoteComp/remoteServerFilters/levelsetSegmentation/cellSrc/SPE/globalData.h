@@ -2,37 +2,39 @@
 #define GLOBALDATA_H_
 
 //#include "vnl/vnl_matrix_fixed.h"
+#include "commonTypes.h"
 
 namespace M4D {
 namespace Cell {
 
-template< typename ScalarValueType, uint16 Dim > 
-struct GlobalDataStruct {
+struct GlobalDataStruct 
+{
+	typedef TPixelValue ScalarValueType;
+	
 	ScalarValueType m_MaxAdvectionChange;
 	ScalarValueType m_MaxPropagationChange;
 	ScalarValueType m_MaxCurvatureChange;
 	
-	template <class T, uint8 num_rows, uint8 num_cols>
-	class vnl_matrix_fixed
-	{
-	 public:
-	  typedef vnl_matrix_fixed<T,num_rows,num_cols> self;
-	  typedef unsigned int size_type;
-
-	  T data_[num_rows][num_cols]; // Local storage
-	  
-	  T       * operator[] (unsigned r) { return data_[r]; }
-
-	   //: return pointer to given row
-	   // No boundary checking here.
-	   T const * operator[] (unsigned r) const { return data_[r]; }
-
-	   //: Access an element for reading or writing
-	   // There are assert style boundary checks - #define NDEBUG to turn them off.
-	   T       & operator() (unsigned r, unsigned c)
-	   {
-	     return this->data_[r][c];
-	   }
+//	class vnl_matrix_fixed
+//	{
+//	 public:
+//	  typedef vnl_matrix_fixed<T,num_rows,DIM> self;
+//	  typedef unsigned int size_type;
+//
+//	  T data_[DIM][DIM]; // Local storage
+//	  
+//	  T       * operator[] (unsigned r) { return data_[r]; }
+//
+//	   //: return pointer to given row
+//	   // No boundary checking here.
+//	   T const * operator[] (unsigned r) const { return data_[r]; }
+//
+//	   //: Access an element for reading or writing
+//	   // There are assert style boundary checks - #define NDEBUG to turn them off.
+//	   T       & operator() (unsigned r, unsigned c)
+//	   {
+//	     return this->data_[r][c];
+//	   }
 
 //	 public:
 //
@@ -47,17 +49,18 @@ struct GlobalDataStruct {
 //	    while (n--)
 //	      *p++ = value;
 //	  }
-	};
+	//};
 
 	/** Hessian matrix */
 	
-	vnl_matrix_fixed<ScalarValueType, Dim, Dim> m_dxy;
+	//vnl_matrix_fixed<ScalarValueType, Dim, Dim> m_dxy;
+ScalarValueType m_dxy[DIM][DIM];
 
 	/** Array of first derivatives*/
-	ScalarValueType m_dx[Dim];
+	ScalarValueType m_dx[DIM];
 
-	ScalarValueType m_dx_forward[Dim];
-	ScalarValueType m_dx_backward[Dim];
+	ScalarValueType m_dx_forward[DIM];
+	ScalarValueType m_dx_backward[DIM];
 
 	ScalarValueType m_GradMagSqr;
 };

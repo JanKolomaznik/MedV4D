@@ -10,14 +10,13 @@ namespace itk
 template <class TInputImage, class TOutputImage>
 class MyFiniteDifferenceImageFilter  
   : public InPlaceImageFilter<TInputImage, TOutputImage>
-  , public M4D::Cell::Consts<typename TOutputImage::PixelType, typename M4D::Cell::CommonTypes<TOutputImage::ImageDimension>::StatusType>
-  , public M4D::Cell::CommonTypes<TOutputImage::ImageDimension>
+  , public M4D::Cell::Consts
 {
 public:
   /** Standard class typedefs. */
   typedef MyFiniteDifferenceImageFilter                   Self;
   typedef InPlaceImageFilter<TInputImage, TOutputImage>   Superclass;
-  typedef M4D::Cell::CommonTypes<TOutputImage::ImageDimension>	  		TypeBaseClass;
+  //typedef M4D::Cell::CommonTypes<TOutputImage::ImageDimension>	  		TypeBaseClass;
   typedef SmartPointer<Self>                              Pointer;
   typedef SmartPointer<const Self>                        ConstPointer;
   
@@ -36,8 +35,8 @@ public:
   typedef typename TInputImage::PixelType     InputPixelType;
   typedef OutputPixelType                     PixelType;
   typedef OutputPixelType                	  ValueType;
-  typedef typename TypeBaseClass::TimeStepType TimeStepType;
-  typedef typename TypeBaseClass::StatusType StatusType;
+  typedef M4D::Cell::TimeStepType TimeStepType;
+  typedef M4D::Cell::StatusType StatusType;
 
   /** Extract value type in case the pixel is of vector type */
   typedef typename NumericTraits< OutputPixelType >::ValueType OutputPixelValueType;
@@ -45,7 +44,7 @@ public:
 
 //
 //  typedef typename FiniteDifferenceFunctionType::RadiusType RadiusType;
-//  typedef typename FiniteDifferenceFunctionType::NeighborhoodScalesType NeighborhoodScalesType;
+  typedef M4D::Cell::TNeighborhoodScales NeighborhoodScalesType;
 
   typedef enum { UNINITIALIZED = 0, INITIALIZED = 1 } FilterStateType;
   

@@ -1,37 +1,20 @@
 #ifndef CONSTS_H_
 #define CONSTS_H_
 
+#include "SPE/commonTypes.h"
+
 namespace M4D {
 namespace Cell {
 
-template<uint8 Dim>
-class CommonTypes
-{
-public:
-	typedef double  TimeStepType;
-	  
-	/** Type used for storing status information */
-	typedef signed char StatusType;
-	
-	/** The type of data structure that holds the scales with which the
-   * neighborhood is weighted to properly account for spacing and neighborhood radius. */
-  typedef Vector<float32, Dim> NeighborhoodScalesType;
-
-  /** A floating point offset from an image grid location. Used for
-   * interpolation among grid values in a neighborhood. */
-  typedef Vector<float32, Dim> FloatOffsetType;
-};
-
-template<typename ValueType, typename StatusType >
 class Consts
 {
 public:
 	
 	/** Multiplicative identity of the ValueType. */
-  ValueType m_ValueOne;//NumericTraits<ValueType>::One;
+	TPixelValue m_ValueOne;//NumericTraits<ValueType>::One;
 
   /** Additive identity of the ValueType. */
-  ValueType m_ValueZero; //NumericTraits<ValueType>::Zero;
+	TPixelValue m_ValueZero; //NumericTraits<ValueType>::Zero;
 
   /** Special status value which indicates pending change to another sparse
    *  field layer. */

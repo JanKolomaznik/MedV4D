@@ -1,31 +1,26 @@
-#ifndef NEIGHBORHOODCELL_H_
-#error File neighborhoodCell.tcc cannot be included directly!
-#else
+
+#include "common/Types.h"
+#include "../neighborhoodCell.h"
+#include <string.h>
+
+
+using namespace M4D::Cell;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template< typename TPixel, uint8 Dim>
-NeighborhoodCell<TPixel, Dim>
-	::NeighborhoodCell(const RadiusType &radius, TImageProperties *props)
+NeighborhoodCell::NeighborhoodCell(const TRadius &radius, TImageProperties *props)
 		: m_radius(radius), m_imageProps(props)
 {
-	// check validity of given radius
-	for(uint8 i=0; i < Dim; i++)
-	{
-		if(radius[i] <= 0)
-			;// TODO throw exception
-	}
-	
 	// set size
-	for (unsigned int i=0; i<Dim; ++i)
+	for (unsigned int i=0; i<DIM; ++i)
 		{ m_radiusSize[i] = m_radius[i]*2+1; }
 	
 	// count size of buffer in linear manner
 	m_size = m_radiusSize[0];
-	for(uint8 i=1; i < Dim; i++)
+	for(uint8 i=1; i < DIM; i++)
 		m_size *= m_radiusSize[i];
 	
-	m_buf = new TPixel[m_size];
+	m_buf = new TPixelValue[m_size];
 	
 	ComputeStridesFromSize(m_radiusSize, m_radiusStrides);
 	ComputeStridesFromSize(m_imageProps->region.size, m_imageStrides);
@@ -33,16 +28,15 @@ NeighborhoodCell<TPixel, Dim>
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template< typename TPixel, uint8 Dim>
 void
-NeighborhoodCell<TPixel, Dim>
+NeighborhoodCell
 ::ComputeStridesFromSize(const TSize &size, TStrides &strides)
 {
   unsigned int accum;
 
   accum = 1;
   strides[0] = 1;
-  for (unsigned int dim = 1; dim < Dim; ++dim)
+  for (unsigned int dim = 1; dim < DIM; ++dim)
     {
 	  accum *= size[dim-1];
 	  strides[dim] = accum;
@@ -51,13 +45,13 @@ NeighborhoodCell<TPixel, Dim>
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template< typename TPixel, uint8 Dim>
-TPixel *
-NeighborhoodCell<TPixel, Dim>
+
+TPixelValue *
+NeighborhoodCell
 ::ComputeImageDataPointer(const TIndex &pos)
 {
-	TPixel *pointer = m_imageProps->imageData;
-	for(uint8 i=0; i<Dim; i++)
+	TPixelValue *pointer = m_imageProps->imageData;
+	for(uint8 i=0; i<DIM; i++)
 	{
 		pointer += pos[i] * m_imageStrides[i];
 	}
@@ -66,10 +60,10 @@ NeighborhoodCell<TPixel, Dim>
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template< typename TPixel, uint8 Dim>
+
 void
-NeighborhoodCell<TPixel, Dim>
-::LoadData(TPixel *src, TPixel *dest, size_t size)
+NeighborhoodCell
+::LoadData(TPixelValue *src, TPixelValue *dest, size_t size)
 {
 	// copy the memory
 	memcpy((void*)dest, (void*)src, size);
@@ -77,12 +71,12 @@ NeighborhoodCell<TPixel, Dim>
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template< typename TPixel, uint8 Dim>
+
 bool
-NeighborhoodCell<TPixel, Dim>
+NeighborhoodCell
 ::IsWithinImage(const TIndex &pos)
 {
-	for(uint32 i=0; i<Dim; i++)
+	for(uint32 i=0; i<DIM; i++)
 	{
 		if((pos[i] < m_imageProps->region.offset[i]) 
 				|| (pos[i] >= (m_imageProps->region.offset[i] + m_imageProps->region.size[i]) ) )
@@ -93,16 +87,16 @@ NeighborhoodCell<TPixel, Dim>
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template< typename TPixel, uint8 Dim>
+
 void
-NeighborhoodCell<TPixel, Dim>
-::LoadSlice(TIndex posm, uint8 dim, TPixel *dest)
+NeighborhoodCell
+::LoadSlice(TIndex posm, uint8 dim, TPixelValue *dest)
 {
 	posm[dim] -= m_radius[dim];
 	if(dim == 0)
 	{		
-		TPixel *begin = ComputeImageDataPointer(posm);
-		LoadData(begin, dest, m_radiusSize[dim] * sizeof(TPixel));
+		TPixelValue *begin = ComputeImageDataPointer(posm);
+		LoadData(begin, dest, m_radiusSize[dim] * sizeof(TPixelValue));
 	}
 	else
 	{
@@ -118,24 +112,24 @@ NeighborhoodCell<TPixel, Dim>
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template< typename TPixel, uint8 Dim>
+
 void
-NeighborhoodCell<TPixel, Dim>
+NeighborhoodCell
 	::SetPosition(const TIndex &pos)
 {
 	m_currIndex = pos;
 	
 #define DEFAULT_VAL 0
 	// fill the buff
-	memset((void*)m_buf, DEFAULT_VAL, m_size * sizeof(TPixel));
+	memset((void*)m_buf, DEFAULT_VAL, m_size * sizeof(TPixelValue));
 	
 	TIndex iteratingIndex(pos);
-	iteratingIndex[Dim-1] -= m_radius[Dim-1];
-	for(uint32 i=0; i<m_radiusSize[Dim-1]; i++)
+	iteratingIndex[DIM-1] -= m_radius[DIM-1];
+	for(uint32 i=0; i<m_radiusSize[DIM-1]; i++)
 	{
 		if(IsWithinImage(iteratingIndex))
-			LoadSlice(iteratingIndex, Dim-2, m_buf + (i * m_radiusStrides[Dim-1]));
-		iteratingIndex[Dim-1] += 1;	// move in iteration  direction
+			LoadSlice(iteratingIndex, DIM-2, m_buf + (i * m_radiusStrides[DIM-1]));
+		iteratingIndex[DIM-1] += 1;	// move in iteration  direction
 	}
 //	const Iterator _end = Superclass::End();
 //	  InternalPixelType * Iit;
@@ -178,61 +172,60 @@ NeighborhoodCell<TPixel, Dim>
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template<typename T1, typename T2>
-T1 operator+ ( const T1 &v1, const T2 &v2 )
-{
-	T1 tmp(v1);
-	for(uint32 i=0; i<T1::Dimension; i++)
-	{
-		tmp[i] += v2[i];
-	}
-	return tmp;
-}
+//template<typename T1, typename T2>
+//T1 operator+ ( const T1 &v1, const T2 &v2 )
+//{
+//	T1 tmp(v1);
+//	for(uint32 i=0; i<T1::Dimension; i++)
+//	{
+//		tmp[i] += v2[i];
+//	}
+//	return tmp;
+//}
 ///////////////////////////////////////////////////////////////////////////////
 
-template< typename TPixel, uint8 Dim>
-void
-NeighborhoodCell<TPixel, Dim>::Print(std::ostream &stream)
-{
-	stream << "m_currIndex: " << m_currIndex << std::endl;
-	
-	TOffset iteratingIndex;
-	for(uint32 i=0; i<Dim; i++)
-	{
-		iteratingIndex[i] = -m_radius[i];
-	}
-	TOffset begin(iteratingIndex);
-	
-	
-	for(uint32 i=0; i<m_radiusSize[2]; i++)
-	{
-		iteratingIndex[1] = begin[1];
-		for(uint32 j=0; j<m_radiusSize[1]; j++)
-		{
-			iteratingIndex[0] = begin[0];
-			for(uint32 k=0; k<m_radiusSize[0]; k++)
-			{
-				stream << "(" << (iteratingIndex + m_currIndex) << ") = " << GetPixel(GetNeighborhoodIndex(iteratingIndex)) << std::endl;
-				iteratingIndex[0] += 1;				
-			}
-			iteratingIndex[1] += 1;
-		}
-		iteratingIndex[2] += 1;
-	}
-}
+
+//void
+//NeighborhoodCell::Print(std::ostream &stream)
+//{
+//	stream << "m_currIndex: " << m_currIndex << std::endl;
+//	
+//	TOffset iteratingIndex;
+//	for(uint32 i=0; i<DIM; i++)
+//	{
+//		iteratingIndex[i] = -m_radius[i];
+//	}
+//	TOffset begin(iteratingIndex);
+//	
+//	
+//	for(uint32 i=0; i<m_radiusSize[2]; i++)
+//	{
+//		iteratingIndex[1] = begin[1];
+//		for(uint32 j=0; j<m_radiusSize[1]; j++)
+//		{
+//			iteratingIndex[0] = begin[0];
+//			for(uint32 k=0; k<m_radiusSize[0]; k++)
+//			{
+//				stream << "(" << (iteratingIndex + m_currIndex) << ") = " << GetPixel(GetNeighborhoodIndex(iteratingIndex)) << std::endl;
+//				iteratingIndex[0] += 1;
+//			}
+//			iteratingIndex[1] += 1;
+//		}
+//		iteratingIndex[2] += 1;
+//	}
+//}
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template< typename TPixel, uint8 Dim>
-const uint32 
-NeighborhoodCell<TPixel, Dim>::GetNeighborhoodIndex(const TOffset &o) const
+
+uint32 
+NeighborhoodCell::GetNeighborhoodIndex(const TOffset &o) const
 {
   uint32 idx = (m_size/2);
-  for (unsigned i = 0; i < Dim; ++i)
+  for (unsigned i = 0; i < DIM; ++i)
     {      idx+=o[i] * static_cast<long>(m_radiusStrides[i]);    }
   return idx;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#endif

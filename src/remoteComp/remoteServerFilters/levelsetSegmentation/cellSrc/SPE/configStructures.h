@@ -1,35 +1,18 @@
-#ifndef COMMONTYPES_H_
-#define COMMONTYPES_H_
+#ifndef CONFIGSTRUCTURES_H_
+#define CONFIGSTRUCTURES_H_
 
-#include "SPE/neighborhoodCell.h"
+#include "commonTypes.h"
 
 namespace M4D {
 namespace Cell {
 
-template <class TValueType>
-class SparseFieldLevelSetNode
-{
-public:
-  TValueType               m_Value;
-  SparseFieldLevelSetNode *Next;
-  SparseFieldLevelSetNode *Previous;
-};
-
 // geather all configurations that SPE needs to load
-template<typename NeighborhoodScalesType, typename FeaturePixelType, 
-typename ValuePixelType, typename LayerNodeType, uint8 Dimension>
 class RunConfiguration
 {
 public:
 	
-	typedef RunConfiguration<NeighborhoodScalesType, FeaturePixelType, 
-		ValuePixelType, LayerNodeType, Dimension> Self;
-	
-	typedef typename NeighborhoodCell<ValuePixelType, Dimension>::TImageProperties ValueImageProps;
-	typedef typename NeighborhoodCell<FeaturePixelType, Dimension>::TImageProperties FeatureImageProps;
-	
-	FeaturePixelType m_upThreshold;
-	ValuePixelType m_downThreshold;
+	TPixelValue m_upThreshold;
+	TPixelValue m_downThreshold;
     float32 m_propWeight;
     float32 m_curvWeight;
     
@@ -43,16 +26,16 @@ public:
     	      sparse-field of the level-set image.  This value defaults to 1.0 */
     float64 m_ConstantGradientValue;
   
-    NeighborhoodScalesType m_neighbourScales;
+    TNeighborhoodScales m_neighbourScales;
     
-    ValuePixelType *m_UpdateBufferData;
-    LayerNodeType *m_activeSetBegin;
-    LayerNodeType *m_activeSetEnd;
+    TPixelValue *m_UpdateBufferData;
+    SparseFieldLevelSetNode *m_activeSetBegin;
+    SparseFieldLevelSetNode *m_activeSetEnd;
     
-	FeatureImageProps featureImageProps;
-	ValueImageProps valueImageProps;
+    TImageProperties featureImageProps;
+    TImageProperties valueImageProps;
 	
-	void operator=(const Self& o)
+	void operator=(const RunConfiguration& o)
 	{
 		m_upThreshold = o.m_upThreshold;
 		m_downThreshold = o.m_downThreshold;
@@ -84,4 +67,4 @@ public:
 }
 }  // namespace
 
-#endif /*COMMONTYPES_H_*/
+#endif /*CONFIGSTRUCTURES_H_*/

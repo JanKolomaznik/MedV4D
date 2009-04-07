@@ -1,14 +1,48 @@
-#ifndef NEIGHBOURHOODITERATOR_H_
-#error File neighbourhoodIterator.tcc cannot be included directly!
-#else
 
-template<typename TPixel, uint8 Dimension>
+#include "common/Types.h"
+#include "../neighbourhoodIterator.h"
+
+using namespace M4D::Cell;
+
+///////////////////////////////////////////////////////////////////////////////
+
+
+NeighbourIteratorCell
+::NeighbourIteratorCell()
+	: m_neighbourhood(0) 
+{
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+
+NeighbourIteratorCell
+::NeighbourIteratorCell(NeighborhoodType *neiborhood)
+	: m_neighbourhood(neiborhood)
+{
+//this->Initialize(radius, ptr, region);
+for (unsigned int i=0; i < DIM; i++)
+  { m_InBounds[i] = false; }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+
+NeighbourIteratorCell
+::~NeighbourIteratorCell()
+{
+	
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+
 bool
-NeighbourIteratorCell<TPixel, Dimension>
+NeighbourIteratorCell
 ::InBounds() const
 { 
   bool ans = true;
-  for (unsigned int i=0; i<Dimension; i++)
+  for (unsigned int i=0; i<DIM; i++)
     {
     if (m_Loop[i] < m_InnerBoundsLow[i] || m_Loop[i] >= m_InnerBoundsHigh[i])
       {
@@ -24,27 +58,27 @@ NeighbourIteratorCell<TPixel, Dimension>
   return ans;
 }
 
-template<typename TPixel, uint8 Dimension>
+
 void
-NeighbourIteratorCell<TPixel, Dimension>::ComputeNeighborhoodOffsetTable()
+NeighbourIteratorCell::ComputeNeighborhoodOffsetTable()
 {
-	m_OffsetTable = new IndexType[m_neighbourhood->GetSize()];
-  OffsetType o;
+	m_OffsetTable = new TOffset[m_neighbourhood->GetSize()];
+  TOffset o;
   unsigned int i, j;
-  for (j = 0; j < Dim; j++)
+  for (j = 0; j < DIM; j++)
     {
-    o[j] = -(static_cast<long>(m_neighbourhood->GetRadius(j)));
+    o[j] = -(static_cast<long>(m_neighbourhood->GetStride(j)));
     }
 
-  for (i = 0; i < m_neighbourhood->Size(); ++i)
+  for (i = 0; i < m_neighbourhood->GetSize(); ++i)
     {
 	  m_OffsetTable[i] = o;
-    for (j= 0; j< Dim; j++)
+    for (j= 0; j< DIM; j++)
       {
       o[j] = o[j] + 1;
-      if (o[j] > static_cast<long>(m_neighbourhood->GetRadius(j)))
+      if (o[j] > static_cast<long>(m_neighbourhood->GetStride(j)))
         {
-        o[j] = -(static_cast<long>(m_neighbourhood->GetRadius(j)));
+        o[j] = -(static_cast<long>(m_neighbourhood->GetStride(j)));
         }
       else break;
       }
@@ -52,9 +86,9 @@ NeighbourIteratorCell<TPixel, Dimension>::ComputeNeighborhoodOffsetTable()
 } 
 
 
-//template<typename TPixel, uint8 Dimension>
-//typename NeighbourIteratorCell<TPixel, Dimension>::PixelType
-//NeighbourIteratorCell<TPixel, Dimension>
+//
+//typename NeighbourIteratorCell::PixelType
+//NeighbourIteratorCell
 //::GetPixel(const unsigned n, bool& IsInBounds) const
 //{
 //  // If the region the iterator is walking (padded by the neighborhood size)
@@ -127,39 +161,39 @@ NeighbourIteratorCell<TPixel, Dimension>::ComputeNeighborhoodOffsetTable()
 //}
 
 
-template<typename TPixel, uint8 Dimension>
-typename NeighbourIteratorCell<TPixel, Dimension>::OffsetType
-NeighbourIteratorCell<TPixel, Dimension>
+
+TOffset
+NeighbourIteratorCell
 ::ComputeInternalIndex(unsigned int n) const
 {
-  OffsetType ans;
-  long D = (long)Dimension;
+  TOffset ans;
+  long D = (long)DIM;
   unsigned long r;
   r = (unsigned long)n;
   for (long i = D-1; i >= 0; --i)
     {
-    ans[i] = static_cast<OffsetValueType>(r / m_neighbourhood->GetStride(i));
+    ans[i] = static_cast<TOffset::TValue>(r / m_neighbourhood->GetStride(i));
     r = r % m_neighbourhood->GetStride(i);
     }
   return ans;
 }
 
 
-template<typename TPixel, uint8 Dimension>
-typename NeighbourIteratorCell<TPixel, Dimension>::RegionType
-NeighbourIteratorCell<TPixel, Dimension>
-::GetBoundingBoxAsImageRegion() const
-{
-  RegionType ans;
-  typename IndexType::IndexValueType zero = 0;
-  ans.SetIndex(this->GetIndex(zero));
-  ans.SetSize(this->GetSize());
-  
-  return ans;
-}
 
-//template<typename TPixel, uint8 Dimension>
-//NeighbourIteratorCell<TPixel, Dimension>
+//TRegion
+//NeighbourIteratorCell
+//::GetBoundingBoxAsImageRegion() const
+//{
+//  TRegion ans;
+//  uint32 zero = 0;
+//  ans.offset = (this->GetIndex(zero));
+//  ans.size = (this->GetSize());
+//  
+//  return ans;
+//}
+
+//
+//NeighbourIteratorCell
 //::NeighbourIteratorCell()
 //{
 //  IndexType zeroIndex; zeroIndex.Fill(0);
@@ -184,8 +218,8 @@ NeighbourIteratorCell<TPixel, Dimension>
 //  m_IsInBoundsValid = false;
 //}
 
-//template<typename TPixel, uint8 Dimension>
-//NeighbourIteratorCell<TPixel, Dimension>
+//
+//NeighbourIteratorCell
 //::ConstNeighborhoodIterator(const Self& orig)
 //  : Neighborhood<InternalPixelType *, Dimension>(orig)
 //{
@@ -226,9 +260,9 @@ NeighbourIteratorCell<TPixel, Dimension>
 //  
 //}
 
-//template<typename TPixel, uint8 Dimension>
+//
 //void
-//NeighbourIteratorCell<TPixel, Dimension>
+//NeighbourIteratorCell
 //::SetEndIndex()
 //{
 //  if (m_Region.GetNumberOfPixels() > 0)
@@ -244,24 +278,24 @@ NeighbourIteratorCell<TPixel, Dimension>
 //    }
 //}
 
-template<typename TPixel, uint8 Dimension>
+
 void
-NeighbourIteratorCell<TPixel, Dimension>
+NeighbourIteratorCell
 ::GoToBegin()
 {
   this->SetLocation( m_BeginIndex );
 }
 
-template<typename TPixel, uint8 Dimension>
+
 void
-NeighbourIteratorCell<TPixel, Dimension>
+NeighbourIteratorCell
 ::GoToEnd()
 {
   this->SetLocation( m_EndIndex );
 }
 
-//template<typename TPixel, uint8 Dimension>
-//NeighbourIteratorCell<TPixel, Dimension>
+//
+//NeighbourIteratorCell
 //::Initialize(const SizeType &radius, const ImageType *ptr,
 //             const RegionType &region)
 //{
@@ -278,8 +312,8 @@ NeighbourIteratorCell<TPixel, Dimension>
 //
 //}
 
-//template<typename TPixel, uint8 Dimension>
-//void NeighbourIteratorCell<TPixel, Dimension>
+//
+//void NeighbourIteratorCell
 //::SetBound(const SizeType& size)
 //{
 //  SizeType radius  = m_neighbourhood->GetRadius();
@@ -304,4 +338,3 @@ NeighbourIteratorCell<TPixel, Dimension>
 //                                 // higher dimensions  
 //}
 
-#endif

@@ -82,7 +82,7 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 	
 	ITKIntegration::ConvertMedevedImagePropsToITKImageProps<
 		InputImageType, typename PredecessorType::ITKOutputImageType>(
-				region, spacing, this->GetInputImage());
+				region, spacing, *this->in);
 	
 	SetOutImageSize(region, spacing);
 	PredecessorType::PrepareOutputDatasets();

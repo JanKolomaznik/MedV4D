@@ -1,13 +1,15 @@
-#ifndef CURVATURETERMSOLVER_H_
-#error File curvatureTermSolver.tcc cannot be included directly!
-#else
+
+
+#include "common/Types.h"
+#include "../curvatureTermSolver.h"
+#include "../vnl_math.h"
+
+using namespace M4D::Cell;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template< typename PixelType, uint8 Dim >
-typename CurvatureTermSolver< PixelType, Dim>::ScalarValueType
-CurvatureTermSolver< PixelType, Dim>
-::ComputeCurvatureTerm(GlobalDataType *gd)
+CurvatureTermSolver::ScalarValueType
+CurvatureTermSolver::ComputeCurvatureTerm(GlobalDataStruct *gd)
 {
 	if ( m_CurvatureWeight == 0)//itk::NumericTraits<ScalarValueType>::Zero )
 		return 0;//itk::NumericTraits<ScalarValueType>::Zero;
@@ -132,18 +134,17 @@ CurvatureTermSolver< PixelType, Dim>
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template< typename PixelType, uint8 Dim >  
-typename CurvatureTermSolver< PixelType, Dim>::ScalarValueType
-CurvatureTermSolver< PixelType, Dim>
-	::ComputeMeanCurvature(GlobalDataType *gd)
+
+TPixelValue
+CurvatureTermSolver::ComputeMeanCurvature(GlobalDataStruct *gd)
 {
   // Calculate the mean curvature
   ScalarValueType curvature_term = 0;//itk::NumericTraits<ScalarValueType>::Zero;
   unsigned int i, j;
   
-  for (i = 0; i < Dim; i++)
+  for (i = 0; i < DIM; i++)
     {      
-    for(j = 0; j < Dim; j++)
+    for(j = 0; j < DIM; j++)
       {      
       if(j != i)
         {
@@ -158,5 +159,3 @@ CurvatureTermSolver< PixelType, Dim>
 
 ///////////////////////////////////////////////////////////////////////////////
 
-
-#endif

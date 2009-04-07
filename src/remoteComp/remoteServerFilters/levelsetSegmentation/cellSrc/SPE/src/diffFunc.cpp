@@ -1,17 +1,19 @@
-#ifndef CELLTHRESHOLDLEVELSETFINITEDIFFERENCEFUNCTION_H_
-#error File diffFunc.tcc cannot be included directly!
-#else
+
+#include "common/Types.h"
+#include "../diffFunc.h"
+#include "../vnl_math.h"
+
+using namespace M4D::Cell;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template <class TInputNeighbour, class TFeatureNeighbour>
-ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >
-::ThresholdLevelSetFunc()
+ThresholdLevelSetFunc::ThresholdLevelSetFunc()
 {
-	m_WaveDT = 1.0/(2.0 * TInputNeighbour::Dim);
-	m_DT = 1.0/(2.0 * TInputNeighbour::Dim);
+	m_WaveDT = 1.0/(2.0 * DIM);
+	m_DT = 1.0/(2.0 * DIM);
 	
-	RadiusType radius(1,1,1);
+	TRadius radius;
+	radius[0] = radius[1] = radius[2] = 1;
 	this->SetRadius(radius);
 	  
 //  // Dummy neighborhood.
@@ -22,11 +24,11 @@ ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >
 //  m_Center =  it.Size() / 2;
 //
 //  // Get the stride length for each axis.
-//  for(unsigned int i = 0; i < TInputNeighbour::Dim; i++)
+//  for(unsigned int i = 0; i < DIM; i++)
 //    {  m_xStride[i] = it.GetStride(i); }
   
   // initialize variables
-  for (unsigned int i = 0; i < TInputNeighbour::Dim; i++)
+  for (unsigned int i = 0; i < DIM; i++)
     {
     m_ScaleCoefficients[i] = 1.0;
     }
@@ -56,45 +58,43 @@ ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >
 	
 ///////////////////////////////////////////////////////////////////////////////
 	
-template <class TInputNeighbour, class TFeatureNeighbour>
-typename ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >::PixelType
-ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >
-::ComputeUpdate(const NeighborhoodType &it, const TFeatureNeighbour &featureNeib, void *globalData,
-		const FloatOffsetType& offset)
+
+TPixelValue
+ThresholdLevelSetFunc::ComputeUpdate(
+		const NeighbourIteratorCell &it, 
+		const NeighbourIteratorCell &featureNeib, GlobalDataStruct *globalData,
+		const TContinuousIndex& offset)
 {
 	unsigned int i, j;
 	//const PixelType ZERO = NumericTraits<PixelType>::Zero;
-	const PixelType center_value = it.GetCenterPixel();
+	const TPixelValue center_value = it.GetCenterPixel();
 
-	const NeighborhoodScalesType neighborhoodScales = this->ComputeNeighborhoodScales();
-
-	// Global data structure
-	GlobalDataType *gd = (GlobalDataType *)globalData;
+	TNeighborhoodScales neighborhoodScales = this->ComputeNeighborhoodScales();
 	
-	typename TInputNeighbour::StrideType stride = it.GetNeighborhood().GetStrides();
+	TStrides stride = it.GetNeighborhood().GetStrides();
 	uint32 m_Center = it.GetNeighborhood().GetSize() / 2;
 
 	// Compute the Hessian matrix and various other derivatives.  Some of these
 	// derivatives may be used by overloaded virtual functions.
-	gd->m_GradMagSqr = 1.0e-6;
-	for( i = 0; i < TInputNeighbour::Dim; i++)
+	globalData->m_GradMagSqr = 1.0e-6;
+	for( i = 0; i < DIM; i++)
 	{
 		const unsigned int positionA =
 		static_cast<unsigned int>( m_Center + stride[i] );
 		const unsigned int positionB =
 		static_cast<unsigned int>( m_Center - stride[i] );
 
-		gd->m_dx[i] = 0.5 * (it.GetPixel( positionA ) -
+		globalData->m_dx[i] = 0.5 * (it.GetPixel( positionA ) -
 				it.GetPixel( positionB ) ) * neighborhoodScales[i];
-		gd->m_dxy[i][i] = ( it.GetPixel( positionA )
+		globalData->m_dxy[i][i] = ( it.GetPixel( positionA )
 				+ it.GetPixel( positionB ) - 2.0 * center_value ) *
 		vnl_math_sqr(neighborhoodScales[i]);
 
-		gd->m_dx_forward[i] = ( it.GetPixel( positionA ) - center_value ) * neighborhoodScales[i];
-		gd->m_dx_backward[i] = ( center_value - it.GetPixel( positionB ) ) * neighborhoodScales[i];
-		gd->m_GradMagSqr += gd->m_dx[i] * gd->m_dx[i];
+		globalData->m_dx_forward[i] = ( it.GetPixel( positionA ) - center_value ) * neighborhoodScales[i];
+		globalData->m_dx_backward[i] = ( center_value - it.GetPixel( positionB ) ) * neighborhoodScales[i];
+		globalData->m_GradMagSqr += globalData->m_dx[i] * globalData->m_dx[i];
 
-		for( j = i+1; j < TInputNeighbour::Dim; j++ )
+		for( j = i+1; j < DIM; j++ )
 		{
 			const unsigned int positionAa = static_cast<unsigned int>(
 					m_Center - stride[i] - stride[j] );
@@ -105,7 +105,7 @@ ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >
 			const unsigned int positionDa = static_cast<unsigned int>(
 					m_Center + stride[i] + stride[j] );
 
-			gd->m_dxy[i][j] = gd->m_dxy[j][i] = 0.25 * ( it.GetPixel( positionAa )
+			globalData->m_dxy[i][j] = globalData->m_dxy[j][i] = 0.25 * ( it.GetPixel( positionAa )
 					- it.GetPixel( positionBa )
 					- it.GetPixel( positionCa )
 					+ it.GetPixel( positionDa ) )
@@ -114,9 +114,9 @@ ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >
 	}
 
 	// Return the combination of all the terms.
-	PixelType result = ( PixelType )( 
-			this->ComputeCurvatureTerm(gd) - 
-			this->ComputePropagationTerm(featureNeib, offset, gd)
+	TPixelValue result = ( TPixelValue )( 
+			this->ComputeCurvatureTerm(globalData) - 
+			this->ComputePropagationTerm(featureNeib, offset, globalData)
 			//- ComputeAdvectionTerm()
 			);
 	
@@ -125,10 +125,8 @@ ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template <class TInputNeighbour, class TFeatureNeighbour>
-typename ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >::TimeStepType
-ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >
-	::ComputeGlobalTimeStep(void *GlobalData) const
+TimeStepType
+ThresholdLevelSetFunc::ComputeGlobalTimeStep(void *GlobalData)
 {
   TimeStepType dt;
 
@@ -161,7 +159,7 @@ ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >
     }
 
   double maxScaleCoefficient = 0.0;
-  for (unsigned int i=0; i<TInputNeighbour::Dim; i++)
+  for (unsigned int i=0; i<DIM; i++)
     {
     maxScaleCoefficient = vnl_math_max( (double)this->m_ScaleCoefficients[i],maxScaleCoefficient);
     }
@@ -176,5 +174,3 @@ ThresholdLevelSetFunc< TInputNeighbour, TFeatureNeighbour >
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-#endif

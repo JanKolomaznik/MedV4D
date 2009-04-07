@@ -2,20 +2,30 @@
 #define SPEEDTERMSOLVER_H_
 
 #include "globalData.h"
+#include "neighbourhoodIterator.h"
 
 namespace M4D {
 namespace Cell {
 
-template<typename FeatureScalarType, typename TFeatureNeighbourhood>
 class SpeedTermSolver
 {
 public:
-	typedef typename TFeatureNeighbourhood::IndexType IndexType;
-	typedef typename TFeatureNeighbourhood::PixelType FeaturePixelType;
+//	typedef typename TFeatureNeighbourhood::IndexType IndexType;
+//	typedef typename TFeatureNeighbourhood::PixelType FeaturePixelType;
+//	
+//	typedef GlobalDataStruct GlobalDataType;
+//	typedef typename TFeatureNeighbourhood::ContinuousIndexType ContinuousIndexType;
+//	typedef ContinuousIndexType FloatOffsetType;
 	
-	typedef GlobalDataStruct<FeaturePixelType, TFeatureNeighbourhood::Dim> GlobalDataType;
-	typedef typename TFeatureNeighbourhood::ContinuousIndexType ContinuousIndexType;
+	typedef TIndex IndexType;
+	typedef TPixelValue FeaturePixelType;
+	typedef FeaturePixelType FeatureScalarType;
+	
+	typedef GlobalDataStruct GlobalDataType;
+	typedef TContinuousIndex ContinuousIndexType;
 	typedef ContinuousIndexType FloatOffsetType;
+	
+	typedef NeighbourIteratorCell TFeatureNeighbourhoodIter;
 	
 	/** Set/Get threshold values */
 	  void SetUpperThreshold(FeatureScalarType f)
@@ -42,13 +52,13 @@ protected:
   float32 m_PropagationWeight;
   
   FeatureScalarType ComputePropagationTerm(
-		  const TFeatureNeighbourhood &neighborhood,
+		  const TFeatureNeighbourhoodIter &neighborhood,
 		  const FloatOffsetType& offset,
-		  GlobalDataType *gd) const;
+		  GlobalDataType *gd);
   
   FeatureScalarType GetSpeedInPoint(const FeatureScalarType &pixelValue) const;
   
-  FeatureScalarType PropagationSpeed(const TFeatureNeighbourhood &neighborhood,
+  FeatureScalarType PropagationSpeed(const TFeatureNeighbourhoodIter &neighborhood,
                      const FloatOffsetType &offset) const;
   
   SpeedTermSolver();
@@ -62,11 +72,11 @@ private:
 			+ m_LowerThreshold;
 	}
 	
-	FeatureScalarType Interpolate(ContinuousIndexType &index, const TFeatureNeighbourhood &neighb) const;
+	FeatureScalarType Interpolate(ContinuousIndexType &index, const TFeatureNeighbourhoodIter &neighb) const;
 };
 
 //include implementation
-#include "src/speedTermSolver.tcc"
+//#include "src/speedTermSolver.tcc"
 
 }}
 
