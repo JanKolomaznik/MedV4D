@@ -118,13 +118,26 @@ OBJ_FILES=	$(addprefix $(TMP_DIR)/,   $(addprefix rcc_, $(RCCINPUT:.qrc=.o ) ) $
 
 
 .PHONY: all
-all:		tmpdir commonPart clientPart dep $(OUTPUT)
+all:		tmpdir Common Imaging DICOM GUI commonRCPart clientRCPart dep $(OUTPUT)
 
-commonPart:
+commonRCPart:
 	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart
 	
-clientPart:
-	$(MAKE) --directory=$(srcTop)/remoteComp/clientPart		
+clientRCPart:
+	$(MAKE) --directory=$(srcTop)/remoteComp/clientPart
+	
+GUI:
+	$(MAKE) --directory=$(srcTop)/GUI/widgets
+	
+DICOM:
+	$(MAKE) --directory=$(srcTop)/backendForDICOM
+	
+Imaging:
+	$(MAKE) --directory=$(srcTop)/Imaging
+	
+Common:
+	$(MAKE) --directory=$(srcTop)/common
+	
 
 .PHONY: tmpdir
 tmpdir:		

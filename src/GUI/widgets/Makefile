@@ -88,8 +88,7 @@ INCLUDES=	-I../.. \
 		-I/usr/local/include/vtk-5.0\
 		-I/usr/include/Qt\
 		-I/usr/include/QtGui\
-		-I/usr/include/QtCore\
-		-I/usr/local/include/boost-1_38
+		-I/usr/include/QtCore
 
 
 MOCOUTPUT=	$(addprefix $(TMP_DIR)/moc_, $(MOCINPUT:.h=.cpp) )
