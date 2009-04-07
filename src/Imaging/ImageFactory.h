@@ -44,6 +44,7 @@ public:
 	class EWrongDICOMObjIndex;
 
 	class EWrongStreamBeginning;
+	class EWrongStreamEnd;
 	class EWrongFormatVersion;
 	class EWrongHeader;
 	class EWrongDatasetTypeIdentification;
@@ -446,6 +447,14 @@ class ImageFactory::EWrongStreamBeginning
 {
 public:
 	EWrongStreamBeginning() {}
+
+	//TODO
+};
+
+class ImageFactory::EWrongStreamEnd
+{
+public:
+	EWrongStreamEnd() {}
 
 	//TODO
 };

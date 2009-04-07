@@ -105,6 +105,12 @@ ImageFactory::DeserializeImage(M4D::IO::InStream &stream, Image< ElementType, Di
 		stream.Get< ElementType >( *iterator );
 		++iterator;
 	}
+
+	uint32 eoDataset = 0;
+	stream.Get<uint32>( eoDataset );
+	if( eoDataset != DUMP_END_MAGIC_NUMBER ) {
+		_THROW_ EWrongStreamEnd();
+	}
 }
 
 template< typename ElementType, uint32 Dimension >
@@ -159,6 +165,12 @@ ImageFactory::DeserializeImageFromStream(M4D::IO::InStream &stream)
 			LoadSerializedImageData< TTYPE, DIM >( stream, static_cast< Image< TTYPE, DIM > &>( *(image.get()) ) );
 			)
 	);
+
+	uint32 eoDataset = 0;
+	stream.Get<uint32>( eoDataset );
+	if( eoDataset != DUMP_END_MAGIC_NUMBER ) {
+		_THROW_ EWrongStreamEnd();
+	}
 
 	delete [] minimums;
 	delete [] maximums;

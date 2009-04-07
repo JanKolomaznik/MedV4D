@@ -63,6 +63,8 @@ ImageFactory::SerializeImage( M4D::IO::OutStream &stream, const Image< ElementTy
 		stream.Put<ElementType>( *iterator );
 		++iterator;
 	}
+
+	stream.Put<uint32>( DUMP_END_MAGIC_NUMBER );
 }
 
 /**
