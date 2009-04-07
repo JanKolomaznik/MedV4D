@@ -5,6 +5,8 @@
  * @{ 
  **/
 
+#include "Imaging/DataSetFactory.h"
+
 #ifndef _REMOTE_FILTER_H
 #error File remoteFilter.cxx cannot be included directly!
 #else
@@ -125,11 +127,11 @@ void
 RemoteFilter< InputImageType, OutputImageType >::SendDataSet(void)
 {
 	IO::OutStream stream(&netAccessor_);
-	
-	InputImageType &in = (InputImageType &) this->GetInputImage();
-	in.SerializeClassInfo(stream);
-	in.SerializeProperties(stream);
-	in.SerializeData(stream);
+	M4D::Imaging::DataSetFactory::SerializeDataset(stream, *this->in);
+//	InputImageType &in = (InputImageType &) this->GetInputImage();
+//	in.SerializeClassInfo(stream);
+//	in.SerializeProperties(stream);
+//	in.SerializeData(stream);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -142,15 +144,11 @@ RemoteFilter< InputImageType, OutputImageType >::RecieveDataSet(void)
 	
 	uint8 result;
 	stream.Get<uint8>(result);
-
-	OutputImageType &out = this->GetOutputImage();
 	
 	switch ( (eRemoteComputationResult) result) 
 	{
 		case OK:
-			out.DeSerializeProperties(stream);			
-			// and recieve the resulting dataset
-			out.DeSerializeData(stream);
+			M4D::Imaging::DataSetFactory::DeserializeDataset(stream, *this->out);
 			return true;
 			break;
 			

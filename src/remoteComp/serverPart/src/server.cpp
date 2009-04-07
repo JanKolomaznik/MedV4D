@@ -121,7 +121,7 @@ void Server::ReadDataSet(void) {
 	InStream stream(&netAccessor_);
 
 	// create the dataSet
-	AbstractDataSet::Ptr inputDataSet = DataSetFactory::CreateDataSet(stream);
+	AbstractDataSet::Ptr inputDataSet = DataSetFactory::DeserializeDataset(stream);
 
 	D_PRINT("Connecting recieved dataset into pipeline");
 	// connect it to pipeline
@@ -155,8 +155,9 @@ void Server::OnExecutionDone(void) {
 	OutStream stream(&netAccessor_);
 	stream.Put<uint8>(result);
 
-	m_connWithOutputDataSet->GetDataset().SerializeProperties(stream);
-	m_connWithOutputDataSet->GetDataset().SerializeData(stream);
+	DataSetFactory::SerializeDataset(stream, m_connWithOutputDataSet->GetDataset());
+//	m_connWithOutputDataSet->GetDataset().SerializeProperties(stream);
+//	m_connWithOutputDataSet->GetDataset().SerializeData(stream);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
