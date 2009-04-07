@@ -85,13 +85,19 @@ OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )
 
 
 .PHONY: all
-all:		tmpdir commonPart serverPart dep $(OUTPUT)
+all:		tmpdir Common Imaging commonRCPart serverRCPart dep $(OUTPUT)
 		
-commonPart:
+commonRCPart:
 	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart
 	
-serverPart:
+serverRCPart:
 	$(MAKE) --directory=$(srcTop)/remoteComp/serverPart
+	
+Imaging:
+	$(MAKE) --directory=$(srcTop)/Imaging
+	
+Common:
+	$(MAKE) --directory=$(srcTop)/common
 
 .PHONY: tmpdir
 tmpdir:		
