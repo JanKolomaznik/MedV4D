@@ -49,7 +49,7 @@ ImageFactory::DeserializeImage(M4D::IO::InStream &stream)
 	}
 
 	stream.Get<uint32>( datasetType );
-	if( formatVersion != DATASET_IMAGE ) {
+	if( datasetType != DATASET_IMAGE ) {
 		_THROW_ EWrongDatasetTypeIdentification();
 	}
 
@@ -160,7 +160,7 @@ ImageFactory::DumpImage( std::string filename, const AbstractImage & image )
 {
 	IMAGE_TYPE_TEMPLATE_SWITCH_MACRO( image, ImageFactory::DumpImage< TTYPE, DIM >( filename, static_cast< const Image<TTYPE,DIM> &>(image) ) );	
 }
-
+/*
 template< typename ElementType, uint32 Dimension >
 void
 LoadDumpedImageData( std::istream &stream, Image< ElementType, Dimension >& image )
@@ -235,14 +235,16 @@ ImageFactory::LoadDumpedImage( std::istream &stream )
 	delete [] elementExtents;
 
 	return image;
-}
+}*/
 
 AbstractImage::Ptr
 ImageFactory::LoadDumpedImage( std::string filename )
 {
-	std::fstream input( filename.data(), std::ios::in | std::ios::binary );
+	//std::fstream input( filename.data(), std::ios::in | std::ios::binary );
 
-	return LoadDumpedImage( input );
+	M4D::IO::FInStream input( filename );
+
+	return DeserializeImage( input );
 }
 
 

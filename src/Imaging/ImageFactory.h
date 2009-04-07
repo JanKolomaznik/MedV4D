@@ -11,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include "common/FStreams.h"
 
 /**
  * @ingroup imaging 
@@ -311,9 +312,9 @@ public:
 			    );
 	
 
-	template< typename ElementType, uint32 Dimension >
+	/*template< typename ElementType, uint32 Dimension >
 	static void
-	DumpImage( std::ostream &stream, const Image< ElementType, Dimension > & image );
+	DumpImage( std::ostream &stream, const Image< ElementType, Dimension > & image );*/
 
 	template< typename ElementType, uint32 Dimension >
 	static void

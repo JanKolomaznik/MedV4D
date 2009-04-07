@@ -108,8 +108,8 @@ public:
 	virtual void Dump( std::ostream &s) const
 		{ _THROW_ ErrorHandling::ETODO(); }
 
-	void Serialize(M4D::IO::OutStream &stream)
-		{ DataSetFactory::SerializeDataset( stream, *this );
+	void Serialize(M4D::IO::OutStream &stream);
+
 	// interface for serialization
 	/*virtual void SerializeData(M4D::IO::OutStream &stream) = 0;
 	virtual void SerializeClassInfo(M4D::IO::OutStream &stream) = 0;

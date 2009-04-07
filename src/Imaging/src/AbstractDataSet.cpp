@@ -6,7 +6,7 @@
  **/
 
 #include "Imaging/AbstractDataSet.h"
-
+#include "Imaging/DataSetFactory.h"
 /**
  *  @addtogroup imaging Imaging Library
  *  @{
@@ -146,6 +146,13 @@ ReadWriteLock::ExclusiveUnlockDataset()
 
 //******************************************************************************
 //******************************************************************************
+
+void 
+AbstractDataSet::Serialize(M4D::IO::OutStream &stream)
+{
+	DataSetFactory::SerializeDataset( stream, *this );
+}
+
 
 bool 
 AbstractDataSet::TryLockDataset()const

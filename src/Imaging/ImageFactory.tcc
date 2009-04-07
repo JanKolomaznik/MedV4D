@@ -436,7 +436,7 @@ ImageFactory::ChangeImageSize(
 	image.ReallocateData( ptr, minimum, maximum );
 }
 
-template< typename ElementType, uint32 Dimension >
+/*template< typename ElementType, uint32 Dimension >
 void
 ImageFactory::DumpImage( std::ostream &stream, const Image< ElementType, Dimension > & image )
 {
@@ -462,15 +462,25 @@ ImageFactory::DumpImage( std::ostream &stream, const Image< ElementType, Dimensi
 		BINSTREAM_WRITE_MACRO( stream, *iterator );
 		++iterator;
 	}
-}
+}*/
 
-template< typename ElementType, uint32 Dimension >
+/*template< typename ElementType, uint32 Dimension >
 void
 ImageFactory::DumpImage( std::string filename, const Image< ElementType, Dimension > & image )
 {
 	std::ofstream output( filename.c_str(), std::ios::out | std::ios::binary );
 
 	DumpImage( output, image );
+}*/
+
+template< typename ElementType, uint32 Dimension >
+void
+ImageFactory::DumpImage( std::string filename, const Image< ElementType, Dimension > & image )
+{
+	//std::ofstream output( filename.c_str(), std::ios::out | std::ios::binary );
+	M4D::IO::FOutStream output( filename );
+
+	SerializeImage( output, image );
 }
 
 template< typename ElementType, unsigned Dim  >

@@ -57,7 +57,7 @@ public:
   	accessor_->PutData( (const void *)&what, sizeof(T));
   }
   
-private:
+protected:
 	MediumAccessor *accessor_;
 };
 
@@ -81,10 +81,11 @@ public:
 	bool
 	eof()
 	{ return accessor_->eof(); }
-private:
+protected:
 	uint8 needSwapBytes_;
 	MediumAccessor *accessor_;
 };
+
 
 }
 }
