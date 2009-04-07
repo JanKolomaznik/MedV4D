@@ -35,7 +35,7 @@ public:
 	
 	void PutData(const void *data, size_t length);
 	void GetData(void *data, size_t length);
-	bool eof() { return true; }
+	bool eof() { return false; }
 protected:
 	asio::ip::tcp::socket &m_socket_;
 };
