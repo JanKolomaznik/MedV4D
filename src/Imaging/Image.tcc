@@ -280,9 +280,6 @@ Image< ElementType, Dim >::SetDirtyBBox(
 			typename Image< ElementType, Dim >::PointType max
 		)
 {
-	if( ! _imageData ) {
-		_THROW_ ErrorHandling::EObjectUnavailable( "Image data buffer unavailable." );
-	}
 	ModificationManager & modManager = _imageData->GetModificationManager();
 
 	DIMENSION_TEMPLATE_SWITCH_MACRO( _sourceDimension, 
@@ -301,9 +298,6 @@ Image< ElementType, Dim >::GetDirtyBBox(
 			typename Image< ElementType, Dim >::PointType max
 		)const
 {
-	if( ! _imageData ) {
-		_THROW_ ErrorHandling::EObjectUnavailable( "Image data buffer unavailable." );
-	}
 	ModificationManager & modManager = _imageData->GetModificationManager();
 
 	DIMENSION_TEMPLATE_SWITCH_MACRO( _sourceDimension, 
@@ -319,7 +313,6 @@ template< typename ElementType, unsigned Dim >
 WriterBBoxInterface &
 Image< ElementType, Dim >::SetWholeDirtyBBox()
 {
-
 	return SetDirtyBBox( 
 			this->GetMinimum(),
 			this->GetMaximum()
@@ -330,7 +323,6 @@ template< typename ElementType, unsigned Dim >
 ReaderBBoxInterface::Ptr
 Image< ElementType, Dim >::GetWholeDirtyBBox()const
 {
-
 	return GetDirtyBBox( 
 			this->GetMinimum(),
 			this->GetMaximum()
@@ -341,6 +333,9 @@ template< typename ElementType, unsigned Dim >
 const ModificationManager &
 Image< ElementType, Dim >::GetModificationManager()const
 {
+	if( ! _imageData ) {
+		_THROW_ ErrorHandling::EObjectUnavailable( "Image data buffer unavailable." );
+	}
 	return _imageData->GetModificationManager();
 }
 

@@ -98,37 +98,9 @@ public:
 class ModificationBBox
 {
 public:
-	ModificationBBox( 
-		int32 x1, 
-		int32 x2
-		);
-
-	ModificationBBox( 
-		int32 x1, 
-		int32 y1, 
-		int32 x2, 
-		int32 y2 
-		);
-
-	ModificationBBox( 
-		int32 x1, 
-		int32 y1, 
-		int32 z1, 
-		int32 x2, 
-		int32 y2, 
-		int32 z2 
-		);
-
-	ModificationBBox( 
-		int32 x1, 
-		int32 y1, 
-		int32 z1, 
-		int32 t1, 
-		int32 x2, 
-		int32 y2, 
-		int32 z2, 
-		int32 t2 
-		);
+	
+	template< unsigned Dim >
+	explicit ModificationBBox( const Vector< int32, Dim > &min, const Vector< int32, Dim > &max );
 
 	~ModificationBBox() { delete [] _first;  delete [] _second; }
 
@@ -183,77 +155,6 @@ public:
 		Vector< int32, Dim > max
 	      );
 
-	WriterBBoxInterface &
-	AddMod1D( 
-		int32 x1, 
-		int32 x2 
-		);
-
-	ReaderBBoxInterface::Ptr
-	GetMod1D( 
-		int32 x1, 
-		int32 x2
-		);
-
-	//ModBBoxWholeDataset&
-	//GetWholeDatasetBBox();
-	WriterBBoxInterface &
-	AddMod2D( 
-		int32 x1, 
-		int32 y1, 
-		int32 x2, 
-		int32 y2 
-		);
-	
-	ReaderBBoxInterface::Ptr
-	GetMod2D( 
-		int32 x1, 
-		int32 y1, 
-		int32 x2, 
-		int32 y2 
-		);
-
-	WriterBBoxInterface &
-	AddMod3D( 
-		int32 x1, 
-		int32 y1, 
-		int32 z1, 
-		int32 x2, 
-		int32 y2, 
-		int32 z2 
-		);
-	
-	ReaderBBoxInterface::Ptr
-	GetMod3D( 
-		int32 x1, 
-		int32 y1, 
-		int32 z1, 
-		int32 x2, 
-		int32 y2, 
-		int32 z2 
-		);
-
-	WriterBBoxInterface &
-	AddMod4D( 
-		int32 x1, 
-		int32 y1, 
-		int32 z1, 
-		int32 x2, 
-		int32 y2, 
-		int32 z2 
-		);
-	
-	ReaderBBoxInterface::Ptr
-	GetMod4D( 
-		int32 x1, 
-		int32 y1, 
-		int32 z1, 
-		int32 t1, 
-		int32 x2, 
-		int32 y2, 
-		int32 z2, 
-		int32 t2 
-		);
 
 	ChangeIterator 
 	GetChangeBBox( const Common::TimeStamp & changeStamp );
@@ -317,6 +218,53 @@ protected:
 };
 
 
+template< unsigned Dim >
+ModificationBBox::ModificationBBox( const Vector< int32, Dim > &min, const Vector< int32, Dim > &max )
+{
+	_dimension = Dim;
+	_first = new int32[Dim];
+	_second = new int32[Dim];
+
+	for( unsigned i = 0; i < Dim; ++i ) {
+		_first[i] = min[i];
+		_second[i] = max[i];
+	}
+}
+
+template< unsigned Dim >
+WriterBBoxInterface &
+ModificationManager::AddMod( 
+		Vector< int32, Dim > min,
+		Vector< int32, Dim > max
+		)
+{
+	Multithreading::RecursiveScopedLock lock( _accessLock );
+
+	_actualTimestamp.Increase();
+	//TODO - construction of right object
+	ModificationBBox * bbox = new ModificationBBox( min, max );
+	WriterBBoxInterface *change = new WriterBBoxInterface( _actualTimestamp, this, bbox );
+	
+	_changes.push_back( change );
+
+	return *change;
+}
+
+template< unsigned Dim >
+ReaderBBoxInterface::Ptr
+ModificationManager::GetMod( 
+		Vector< int32, Dim > min,
+		Vector< int32, Dim > max
+		)
+{
+	Multithreading::RecursiveScopedLock lock( _accessLock );
+
+	//TODO - construction of right object
+	ModificationBBox * bbox = new ModificationBBox( min, max );
+	ReaderBBoxInterface *changeProxy = new ProxyReaderBBox( _actualTimestamp, this, bbox );
+
+	return ReaderBBoxInterface::Ptr( changeProxy );
+}
 
 }/*namespace Imaging*/
 }/*namespace M4D*/

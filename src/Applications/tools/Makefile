@@ -22,7 +22,6 @@ TARGETS=	DICOM2ImageDump \
 		LaplaceOperator \
 		ImageCrop \
 		CreateExampleData \
-		ExampleLoad \
 		MaxFilter \
 		MinFilter
 

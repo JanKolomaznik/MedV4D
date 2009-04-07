@@ -68,6 +68,9 @@ namespace Imaging
 #define IS_NOT_CONSTRUCTABLE_MACRO \
 	static const bool IsConstructable = false;
 
+
+
+
 }/*namespace Imaging*/
 }/*namespace M4D*/
 

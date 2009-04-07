@@ -119,81 +119,7 @@ WriterBBoxInterface::SetModified()
 //******************************************************************************
 //******************************************************************************
 
-ModificationBBox::ModificationBBox( 
-		int32 x1, 
-		int32 x2 
-		) 
-{
-	_dimension = 1;
-	_first = new int32[_dimension];
-	_first[0] = x1;
 
-	_second = new int32[_dimension];
-	_second[0] = x2;
-}
-
-ModificationBBox::ModificationBBox( 
-		int32 x1, 
-		int32 y1, 
-		int32 x2, 
-		int32 y2 
-		) 
-{
-	_dimension = 2;
-	_first = new int32[_dimension];
-	_first[0] = x1;
-	_first[1] = y1;
-
-	_second = new int32[_dimension];
-	_second[0] = x2;
-	_second[1] = y2;
-}
-
-ModificationBBox::ModificationBBox( 
-		int32 x1, 
-		int32 y1, 
-		int32 z1, 
-		int32 x2, 
-		int32 y2, 
-		int32 z2 
-		)
-{
-	_dimension = 3;
-	_first = new int32[_dimension];
-	_first[0] = x1;
-	_first[1] = y1;
-	_first[2] = z1;
-
-	_second = new int32[_dimension];
-	_second[0] = x2;
-	_second[1] = y2;
-	_second[2] = z2;
-}
-
-ModificationBBox::ModificationBBox( 
-		int32 x1, 
-		int32 y1, 
-		int32 z1, 
-		int32 t1, 
-		int32 x2, 
-		int32 y2, 
-		int32 z2, 
-		int32 t2 
-		)
-{
-	_dimension = 4;
-	_first = new int32[_dimension];
-	_first[0] = x1;
-	_first[1] = y1;
-	_first[2] = z1;
-	_first[3] = t1;
-
-	_second = new int32[_dimension];
-	_second[0] = x2;
-	_second[1] = y2;
-	_second[2] = z2;
-	_second[3] = t2;
-}
 
 bool
 ModificationBBox::Incident( const ModificationBBox & bbox )const
@@ -228,113 +154,6 @@ ModificationManager::~ModificationManager()
 	}
 }
 
-WriterBBoxInterface &
-ModificationManager::AddMod1D( 
-	int32 x1, 
-	int32 x2 
-	)
-{
-	Multithreading::RecursiveScopedLock lock( _accessLock );
-
-	_actualTimestamp.Increase();
-	//TODO - construction of right object
-	WriterBBoxInterface *change = new WriterBBoxInterface( _actualTimestamp, this, new ModificationBBox( x1, x2 ) );
-	
-	_changes.push_back( change );
-
-	return *change;
-}
-
-ReaderBBoxInterface::Ptr
-ModificationManager::GetMod1D( 
-	int32 x1, 
-	int32 x2 
-	)
-{
-	//TODO
-	Multithreading::RecursiveScopedLock lock( _accessLock );
-
-	//TODO - construction of right object
-	ReaderBBoxInterface *changeProxy = new ProxyReaderBBox( _actualTimestamp, this, new ModificationBBox( x1, x2 ) );
-
-	return ReaderBBoxInterface::Ptr( changeProxy );
-}
-
-WriterBBoxInterface &
-ModificationManager::AddMod2D( 
-	int32 x1, 
-	int32 y1, 
-	int32 x2, 
-	int32 y2 
-	)
-{
-	Multithreading::RecursiveScopedLock lock( _accessLock );
-
-	_actualTimestamp.Increase();
-	//TODO - construction of right object
-	WriterBBoxInterface *change = new WriterBBoxInterface( _actualTimestamp, this, new ModificationBBox( x1, y1, x2, y2 ) );
-	
-	_changes.push_back( change );
-
-	return *change;
-}
-
-ReaderBBoxInterface::Ptr
-ModificationManager::GetMod2D( 
-	int32 x1, 
-	int32 y1, 
-	int32 x2, 
-	int32 y2 
-	)
-{
-	//TODO
-	Multithreading::RecursiveScopedLock lock( _accessLock );
-
-	//TODO - construction of right object
-	ReaderBBoxInterface *changeProxy = new ProxyReaderBBox( _actualTimestamp, this, new ModificationBBox( x1, y1, x2, y2 ) );
-
-	return ReaderBBoxInterface::Ptr( changeProxy );
-}
-
-WriterBBoxInterface &
-ModificationManager::AddMod3D( 
-	int32 x1, 
-	int32 y1, 
-	int32 z1, 
-	int32 x2, 
-	int32 y2, 
-	int32 z2 
-	)
-{
-	Multithreading::RecursiveScopedLock lock( _accessLock );
-
-	_actualTimestamp.Increase();
-	//TODO - construction of right object
-	WriterBBoxInterface *change = new WriterBBoxInterface( _actualTimestamp, this, new ModificationBBox( x1, y1, z1, x2, y2, z2 ) );
-	
-	_changes.push_back( change );
-
-	return *change;
-}
-
-ReaderBBoxInterface::Ptr
-ModificationManager::GetMod3D( 
-	int32 x1, 
-	int32 y1, 
-	int32 z1, 
-	int32 x2, 
-	int32 y2, 
-	int32 z2 
-	)
-{
-	//TODO
-	Multithreading::RecursiveScopedLock lock( _accessLock );
-
-	//TODO - construction of right object
-	ReaderBBoxInterface *changeProxy = new ProxyReaderBBox( _actualTimestamp, this, new ModificationBBox( x1, y1, z1, x2, y2, z2 ) );
-
-	return ReaderBBoxInterface::Ptr( changeProxy );
-}
 
 //Predicate used in find_if algorithm
 struct ChangeTimestampComparator
@@ -442,6 +261,7 @@ ModificationManager::Reset()
 	_lastStoredTimestamp = ++_actualTimestamp;
 }
 
+/*
 template<>
 WriterBBoxInterface &
 ModificationManager::AddMod< 1 >( 
@@ -500,7 +320,7 @@ ModificationManager::GetMod< 3 >(
 		)
 {
 	return this->GetMod3D( min[0], min[1], min[2], max[0], max[1], max[2] );
-}
+}*/
 
 }/*namespace Imaging*/
 }/*namespace M4D*/

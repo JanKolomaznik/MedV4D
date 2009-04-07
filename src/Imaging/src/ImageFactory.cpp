@@ -107,11 +107,7 @@ ImageFactory::DeserializeImage(M4D::IO::InStream &stream, Image< ElementType, Di
 
 	ChangeImageSize( existingImage, minimum, maximum, elementExtents );
 
-	typename Image< ElementType, Dimension >::Iterator iterator = existingImage.GetIterator();
-	while( !iterator.IsEnd() && !stream.eof() ) {
-		stream.Get< ElementType >( *iterator );
-		++iterator;
-	}
+	LoadSerializedImageData( stream, existingImage );
 
 	uint32 eoDataset = 0;
 	stream.Get<uint32>( eoDataset );
