@@ -110,6 +110,8 @@ public:
 
 	void Serialize(M4D::IO::OutStream &stream);
 
+	void Deserialize(M4D::IO::InStream &stream);
+
 	// interface for serialization
 	/*virtual void SerializeData(M4D::IO::OutStream &stream) = 0;
 	virtual void SerializeClassInfo(M4D::IO::OutStream &stream) = 0;

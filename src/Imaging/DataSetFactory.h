@@ -23,6 +23,9 @@ public:
 	static AbstractDataSet::Ptr 
 	DeserializeDataset(M4D::IO::InStream &stream);
 
+	static void
+	DeserializeDataset(M4D::IO::InStream &stream, AbstractDataSet &dataset);
+
 	static void 
 	SerializeDataset(M4D::IO::OutStream &stream, const AbstractDataSet &dataset);
 	

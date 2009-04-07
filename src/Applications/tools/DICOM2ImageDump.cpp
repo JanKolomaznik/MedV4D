@@ -18,7 +18,7 @@ main( int argc, char** argv )
 
 	TCLAP::CmdLine cmd("Tool for conversion DICOM files to dump format.", ' ', "");
 
-	TCLAP::ValueArg<std::string> prefixArg( "p", "prefix", "Prefix of files created from inputs.", false, "DICOMSerie", "Slice index" );
+	TCLAP::ValueArg<std::string> prefixArg( "p", "prefix", "Prefix of files created from inputs.", false, "DICOMSerie", "Prefix" );
 	cmd.add( prefixArg );
 
 	TCLAP::UnlabeledValueArg<std::string> inFilenameArg( "input", "Input image filename", true, "", "filename1" );

@@ -47,9 +47,17 @@ public:
 	class EWrongFormatVersion;
 	class EWrongHeader;
 	class EWrongDatasetTypeIdentification;
+	class EWrongDatasetType;
 	
 	static AbstractImage::Ptr 
 	DeserializeImage(M4D::IO::InStream &stream);
+
+	static void
+	DeserializeImage(M4D::IO::InStream &stream, AbstractImage &existingImage );
+
+	template< typename ElementType, unsigned Dimension >
+	static void
+	DeserializeImage(M4D::IO::InStream &stream, Image< ElementType, Dimension > &existingImage );
 
 	static AbstractImage::Ptr 
 	DeserializeImageFromStream(M4D::IO::InStream &stream);
@@ -465,6 +473,15 @@ public:
 
 	//TODO
 };
+
+class ImageFactory::EWrongDatasetType
+{
+public:
+	EWrongDatasetType() {}
+
+	//TODO
+};
+
 
 /**
  * Exception class, which is thrown from PrepareElementArray<>(), when

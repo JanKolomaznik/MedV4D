@@ -45,6 +45,20 @@ DataSetFactory::DeserializeDataset(InStream &stream)
 }
 
 void 
+DataSetFactory::DeserializeDataset(M4D::IO::InStream &stream, AbstractDataSet &dataset)
+{
+	switch( dataset.GetDatasetType() )
+	{
+	case DATASET_IMAGE:
+		return DeserializeImage( stream, static_cast<AbstractImage &>( dataset ) );
+		break;
+		
+	default:
+		ASSERT(false);
+	}
+
+}
+void 
 DataSetFactory::SerializeDataset(M4D::IO::OutStream &stream, const AbstractDataSet &dataset)
 {
 	switch( dataset.GetDatasetType() )

@@ -23,16 +23,6 @@ namespace Imaging
 AbstractImage::Ptr
 ImageFactory::DeserializeImage(M4D::IO::InStream &stream)
 {
-	/*Vector<int32, Dim> min;
-	Vector<int32, Dim> max;
-	Vector<float32, Dim> extends;
-	
-	for( unsigned i = 0; i < Dim; ++i ) {
-		stream.Get<int32>(min[i]);
-		stream.Get<int32>(max[i]);
-		stream.Get<float32>(extends[i]);
-	}*/
-
 	uint32 startMAGIC = 0;
 	uint32 datasetType = 0;
 	uint32 formatVersion = 0;
@@ -56,6 +46,65 @@ ImageFactory::DeserializeImage(M4D::IO::InStream &stream)
 	return ImageFactory::DeserializeImageFromStream(stream);
 
 	
+}
+
+void
+ImageFactory::DeserializeImage(M4D::IO::InStream &stream, AbstractImage &existingImage )
+{
+	IMAGE_TYPE_TEMPLATE_SWITCH_MACRO( existingImage, ImageFactory::DeserializeImage< TTYPE, DIM >( stream, static_cast< Image<TTYPE,DIM> &>(existingImage) ) );
+}
+
+template< typename ElementType, unsigned Dimension >
+void
+ImageFactory::DeserializeImage(M4D::IO::InStream &stream, Image< ElementType, Dimension > &existingImage )
+{
+	uint32 startMAGIC = 0;
+	uint32 datasetType = 0;
+	uint32 formatVersion = 0;
+
+	//Read stream header
+	stream.Get<uint32>( startMAGIC );
+	if( startMAGIC != DUMP_START_MAGIC_NUMBER ) {
+		_THROW_ EWrongStreamBeginning();
+	}
+	
+	stream.Get<uint32>( formatVersion );
+	if( formatVersion != ACTUAL_FORMAT_VERSION ) {
+		_THROW_ EWrongFormatVersion();
+	}
+
+	stream.Get<uint32>( datasetType );
+	if( datasetType != DATASET_IMAGE ) {
+		_THROW_ EWrongDatasetTypeIdentification();
+	}
+
+	uint32 dimension;
+	stream.Get<uint32>( dimension );
+	
+	uint32 elementTypeID;
+	stream.Get<uint32>( elementTypeID );
+
+	if( dimension != Dimension || 
+		(int32)elementTypeID != GetNumericTypeID< ElementType >() ) {
+		_THROW_ EWrongDatasetType();
+	}
+
+	Vector< int32, Dimension > minimum;
+	Vector< int32, Dimension > maximum;
+	Vector< float32, Dimension > elementExtents;
+
+	for ( unsigned i = 0; i < dimension; ++i ) {
+		stream.Get<int32>( minimum[i] );
+		stream.Get<int32>( maximum[i] );
+		stream.Get<float32>( elementExtents[i] );
+	}
+	ChangeImageSize( existingImage, minimum, maximum, elementExtents );
+
+	typename Image< ElementType, Dimension >::Iterator iterator = existingImage.GetIterator();
+	while( !iterator.IsEnd() && !stream.eof() ) {
+		stream.Get< ElementType >( *iterator );
+		++iterator;
+	}
 }
 
 template< typename ElementType, uint32 Dimension >

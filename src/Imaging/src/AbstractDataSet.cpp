@@ -153,6 +153,11 @@ AbstractDataSet::Serialize(M4D::IO::OutStream &stream)
 	DataSetFactory::SerializeDataset( stream, *this );
 }
 
+void 
+AbstractDataSet::Deserialize(M4D::IO::InStream &stream)
+{
+	DataSetFactory::DeserializeDataset( stream, *this );
+}
 
 bool 
 AbstractDataSet::TryLockDataset()const
