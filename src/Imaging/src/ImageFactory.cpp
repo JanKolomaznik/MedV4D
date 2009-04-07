@@ -98,6 +98,13 @@ ImageFactory::DeserializeImage(M4D::IO::InStream &stream, Image< ElementType, Di
 		stream.Get<int32>( maximum[i] );
 		stream.Get<float32>( elementExtents[i] );
 	}
+
+	uint32 headerEndMagic = 0;
+	stream.Get<uint32>( headerEndMagic );
+	if( headerEndMagic != DUMP_HEADER_END_MAGIC_NUMBER ) {
+		_THROW_ EWrongHeader();
+	}
+
 	ChangeImageSize( existingImage, minimum, maximum, elementExtents );
 
 	typename Image< ElementType, Dimension >::Iterator iterator = existingImage.GetIterator();
