@@ -64,7 +64,7 @@ ReaderBBoxInterface::WaitWhileDirty()const
 	}
 }
 
-ProxyReaderBBox::ProxyReaderBBox( Common::TimeStamp timestamp, ModificationManager* manager, ModificationBBox* boundingBox )
+ProxyReaderBBox::ProxyReaderBBox( const Common::TimeStamp &timestamp, ModificationManager* manager, ModificationBBox* boundingBox )
 	: ReaderBBoxInterface( timestamp, manager, boundingBox ) 
 {
 	_changeIterator = _manager->ChangesReverseBegin();

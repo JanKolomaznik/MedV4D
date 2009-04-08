@@ -40,7 +40,7 @@ public:
 	typedef boost::shared_ptr< ReaderBBoxInterface > Ptr;
 
 
-	ReaderBBoxInterface( Common::TimeStamp timestamp, ModificationManager* manager, ModificationBBox* boundingBox )
+	ReaderBBoxInterface( const Common::TimeStamp &timestamp, ModificationManager* manager, ModificationBBox* boundingBox )
 		: _changeTimestamp( timestamp ),  _state( MS_MODIFIED ), _manager( manager ), _boundingBox( boundingBox ) {}
 
 	virtual
@@ -81,7 +81,7 @@ protected:
 class WriterBBoxInterface : public ReaderBBoxInterface
 {
 public:
-	WriterBBoxInterface( Common::TimeStamp timestamp, ModificationManager* manager, ModificationBBox* boundingBox )
+	WriterBBoxInterface( const Common::TimeStamp &timestamp, ModificationManager* manager, ModificationBBox* boundingBox )
 		: ReaderBBoxInterface( timestamp, manager, boundingBox ) 
 		{ _state = MS_DIRTY; }
 
@@ -206,7 +206,7 @@ private:
 class ProxyReaderBBox: public ReaderBBoxInterface
 {
 public:
-	ProxyReaderBBox( Common::TimeStamp timestamp, ModificationManager* manager, ModificationBBox* boundingBox );
+	ProxyReaderBBox( const Common::TimeStamp &timestamp, ModificationManager* manager, ModificationBBox* boundingBox );
 
 	ModificationState
 	GetState()const;
