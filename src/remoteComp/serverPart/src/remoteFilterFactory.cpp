@@ -1,6 +1,8 @@
 
+#include "common/Common.h"
 #include "../remoteFilterFactory.h"
-#include "remoteComp/remoteServerFilters/levelsetSegmentation/medevedWrapperFilter.h"
+//#include "remoteComp/remoteServerFilters/levelsetSegmentation/medevedWrapperFilter.h"
+#include "remoteComp/remoteFilterProperties/thresholdingRemoteProperties.h"
 //#include "remoteComp/remoteServerFilters/levelsetSegmentation2/medevedWrapperFilter.h"
 
 using namespace M4D::RemoteComputing;
@@ -14,11 +16,17 @@ CreateFilterStage2(uint16 filterID, iRemoteFilterProperties **props)
 {
 	switch( (FilterID) filterID)
 	{
-	case FID_LevelSetSegmentation:
-		*props = new LevelSetRemoteProperties<int16, int16>();
-		return new ThreshLSSegMedvedWrapper< int16, int16>( 
-				(LevelSetRemoteProperties<int16, int16> *) *props);
-		break;
+//	case FID_LevelSetSegmentation:
+//		*props = new LevelSetRemoteProperties<int16, int16>();
+//		return new ThreshLSSegMedvedWrapper< int16, int16>( 
+//				(LevelSetRemoteProperties<int16, int16> *) *props);
+//		break;
+		
+	case FID_Thresholding:
+			*props = new ThresholdingRemoteProps<int16, int16>();
+			return new ThresholdingMaskFilter< int16>( 
+					(ThresholdingMaskFilter< int16>::Properties *) *props);
+			break;
 		
 	default:
 		ASSERT(false);
