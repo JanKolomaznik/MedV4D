@@ -20,9 +20,12 @@ TimeStamp::TimeStamp()
 }
 
 TimeStamp::TimeStamp( const TimeStamp& b )
-	: _uniqueID( b._uniqueID ), _timeStamp( b._timeStamp )
+//	: _uniqueID( b._uniqueID ), _timeStamp( b._timeStamp )
 {
+	Multithreading::ScopedLock lock( _accessLock );
 
+		_uniqueID = b._uniqueID;
+		_timeStamp = b._timeStamp;
 }
 
 TimeStamp::~TimeStamp()

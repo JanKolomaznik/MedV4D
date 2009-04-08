@@ -11,7 +11,7 @@
 #include "itkCastImageFilter.h"
 #include "itkImage.h"
 
-#if( 1 )//defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
+#if( ( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) ) && defined(NOT_A_TEST) )
 #include "cellSrc/filter.h"
 #else
 #include "PCSrc/filter.h"

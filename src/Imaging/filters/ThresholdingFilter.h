@@ -9,6 +9,7 @@
 #define _THRESHOLDING_FILTER_H
 
 #include "common/Common.h"
+#include "Imaging/ImageTraits.h"
 #include "Imaging/AbstractImageElementFilter.h"
 
 /**

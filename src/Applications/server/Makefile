@@ -37,7 +37,8 @@ ITKLIBS= 	$(ITKLibsRoot)/libITKNumerics.a\
 M4DLIBS=	$(srcTop)/lib/libremoteCompServer$(archPostfix).a\
 		$(srcTop)/lib/libremoteCompCommons$(archPostfix).a \
 		$(srcTop)/lib/libImaging$(archPostfix).a\
-		$(srcTop)/lib/libcommon$(archPostfix).a
+		$(srcTop)/lib/libcommon$(archPostfix).a\
+		$(srcTop)/lib/libSPUPart$(archPostfix).a
 
 LIBS=		$(M4DLIBS) \
 			$(ITKLIBS) \
@@ -71,8 +72,8 @@ LIBDIRS=	-L$(srcTop)/lib\
 			-L$(ROOT)/lib64
 			
 INCLUDES=	-I$(srcTop) \
-			$(ITKIncludes)\
-			-I/usr/include
+			-I/usr/include \
+			$(ITKIncludes)
 
 DEBUG_DEFS=	-DDEBUG_LEVEL=10\
 			-DDEBUG_ADITIONAL_INFO
@@ -85,8 +86,8 @@ OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )
 
 
 .PHONY: all
-all:		tmpdir Common Imaging commonRCPart serverRCPart dep $(OUTPUT)
-		
+all:		tmpdir Common Imaging commonRCPart serverRCPart libSPUPart dep $(OUTPUT)
+
 commonRCPart:
 	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart
 	
@@ -98,6 +99,28 @@ Imaging:
 	
 Common:
 	$(MAKE) --directory=$(srcTop)/common
+	
+libSPUPart:
+	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE -f ./Makefile.PC
+	
+##################
+
+commonRCPartCLEAN:
+	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart clean
+	
+serverRCPartCLEAN:
+	$(MAKE) --directory=$(srcTop)/remoteComp/serverPart clean
+	
+ImagingCLEAN:
+	$(MAKE) --directory=$(srcTop)/Imaging clean
+	
+CommonCLEAN:
+	$(MAKE) --directory=$(srcTop)/common clean
+	
+libSPUPartCLEAN:
+	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE -f ./Makefile.PC clean
+
+##################
 
 .PHONY: tmpdir
 tmpdir:		
@@ -120,6 +143,6 @@ $(OUTPUT):	$(OBJ_FILES)
 		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
 
 .PHONY: clean
-clean:
+clean: libSPUPartCLEAN serverRCPartCLEAN ImagingCLEAN CommonCLEAN libSPUPartCLEAN		
 		$(RM) $(TMP_DIR)/*.o $(DEP_FILE)
 		$(RM) $(OUTPUT)

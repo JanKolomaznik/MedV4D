@@ -101,8 +101,7 @@ INCLUDES=	-I$(srcTop) \
 		-I$(srcdir)\
 		-I$(srcTop)/include\
 		-I/usr/include/vtk-5.0\
-		$(QTINCLUDES)\
-		-I/usr/local/include/boost-1_38
+		$(QTINCLUDES)
 
 
 MOCOUTPUT=      $(addprefix $(TMP_DIR)/moc_, $(MOCINPUT:.h=.cpp) )
@@ -138,6 +137,27 @@ Imaging:
 Common:
 	$(MAKE) --directory=$(srcTop)/common
 	
+## CLEANING ##################################
+
+commonRCPartCLEAN:
+	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart clean
+	
+clientRCPartCLEAN:
+	$(MAKE) --directory=$(srcTop)/remoteComp/clientPart clean
+	
+GUICLEAN:
+	$(MAKE) --directory=$(srcTop)/GUI/widgets clean
+	
+DICOMCLEAN:
+	$(MAKE) --directory=$(srcTop)/backendForDICOM clean
+	
+ImagingCLEAN:
+	$(MAKE) --directory=$(srcTop)/Imaging clean
+	
+CommonCLEAN:
+	$(MAKE) --directory=$(srcTop)/common clean
+
+##############################################	
 
 .PHONY: tmpdir
 tmpdir:		
@@ -169,6 +189,6 @@ $(OUTPUT):	$(OBJ_FILES) $(M4DLIBS)
 		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
 
 .PHONY: clean
-clean:
+clean: commonRCPartCLEAN clientRCPartCLEAN GUICLEAN DICOMCLEAN ImagingCLEAN CommonCLEAN
 		$(RM) $(OBJ_FILES) $(MOCOUTPUT) $(addprefix $(TMP_DIR)/rcc_, $(RCCINPUT:.qrc=.cpp ) ) $(DEP_FILE)
 		$(RM) $(OUTPUT)
