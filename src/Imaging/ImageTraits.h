@@ -10,6 +10,7 @@
 
 #include "Imaging/AbstractDataSet.h"
 #include "Imaging/Image.h"
+#include "common/Types.h"
 
 /**
  *  @addtogroup imaging Imaging Library

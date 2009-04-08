@@ -144,15 +144,15 @@ public:
 	template< unsigned Dim >
 	WriterBBoxInterface &
 	AddMod(
-		Vector< int32, Dim > min,
-		Vector< int32, Dim > max
+		const Vector< int32, Dim > &min,
+		const Vector< int32, Dim > &max
 	      );
 
 	template< unsigned Dim >
 	ReaderBBoxInterface::Ptr
 	GetMod(
-		Vector< int32, Dim > min,
-		Vector< int32, Dim > max
+		const Vector< int32, Dim > &min,
+		const Vector< int32, Dim > &max
 	      );
 
 
@@ -234,8 +234,8 @@ ModificationBBox::ModificationBBox( const Vector< int32, Dim > &min, const Vecto
 template< unsigned Dim >
 WriterBBoxInterface &
 ModificationManager::AddMod( 
-		Vector< int32, Dim > min,
-		Vector< int32, Dim > max
+		const Vector< int32, Dim > &min,
+		const Vector< int32, Dim > &max
 		)
 {
 	Multithreading::RecursiveScopedLock lock( _accessLock );
@@ -253,8 +253,8 @@ ModificationManager::AddMod(
 template< unsigned Dim >
 ReaderBBoxInterface::Ptr
 ModificationManager::GetMod( 
-		Vector< int32, Dim > min,
-		Vector< int32, Dim > max
+		const Vector< int32, Dim > &min,
+		const Vector< int32, Dim > &max
 		)
 {
 	Multithreading::RecursiveScopedLock lock( _accessLock );
