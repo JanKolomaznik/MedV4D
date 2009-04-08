@@ -46,10 +46,7 @@ public:
 	typedef InputImageType	InputImage;
 	typedef OutputImageType OutputImage;
 
-	struct Properties : public PredecessorType::Properties
-	{
-
-	};
+	typedef PredecessorType::Properties Properties;
 
 	~AbstractImageFilter() {}
 protected:
