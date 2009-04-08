@@ -11,6 +11,8 @@
 #include "Imaging/AbstractDataSet.h"
 #include "Imaging/Image.h"
 #include "common/Types.h"
+#include "Imaging/ConnectionInterface.h"
+#include "Imaging/Ports.h"
 
 /**
  *  @addtogroup imaging Imaging Library
