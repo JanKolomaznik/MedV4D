@@ -56,15 +56,15 @@ UpdateCalculatorSPE
 	double minSpacing = 1000000;//itk::NumericTraits<double>::max();
 	for (uint8 i=0; i<DIM; i++)
 	{
-		minSpacing = vnl_math_min(minSpacing, (double) m_Conf.valueImageProps.spacing[i]);
+		minSpacing = vnl_math_min(minSpacing, (double) m_Conf->valueImageProps.spacing[i]);
 	}
 	MIN_NORM *= minSpacing;
 
 	// set props to diffFunc
-	m_diffFunc.SetUpperThreshold(m_Conf.m_upThreshold);
-	m_diffFunc.SetLowerThreshold(m_Conf.m_downThreshold);
-	m_diffFunc.SetPropagationWeight(m_Conf.m_propWeight);
-	m_diffFunc.SetCurvatureWeight(m_Conf.m_curvWeight);
+	m_diffFunc.SetUpperThreshold(m_Conf->m_upThreshold);
+	m_diffFunc.SetLowerThreshold(m_Conf->m_downThreshold);
+	m_diffFunc.SetPropagationWeight(m_Conf->m_propWeight);
+	m_diffFunc.SetCurvatureWeight(m_Conf->m_curvWeight);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -133,14 +133,14 @@ UpdateCalculatorSPE
 TimeStepType
 UpdateCalculatorSPE::CalculateChange()
 {
-	m_updateBufferArray.SetArray(m_Conf.m_UpdateBufferData);
-	m_layerIterator.SetBeginEnd(m_Conf.m_activeSetBegin, m_Conf.m_activeSetEnd);
+	m_updateBufferArray.SetArray(m_Conf->m_UpdateBufferData);
+	m_layerIterator.SetBeginEnd(m_Conf->m_activeSetBegin, m_Conf->m_activeSetEnd);
 
 	// create neghbours as middle layer between image in PPE and part of image on SPE
-	NeighborhoodCell outNeigh(m_diffFunc.GetRadius(), & m_Conf.valueImageProps);
-	NeighborhoodCell featureNeigh(m_diffFunc.GetRadius(), & m_Conf.featureImageProps);
+	NeighborhoodCell outNeigh(m_diffFunc.GetRadius(), & m_Conf->valueImageProps);
+	NeighborhoodCell featureNeigh(m_diffFunc.GetRadius(), & m_Conf->featureImageProps);
 
-	//PrintITKImage<OutputImageType>(*m_Conf.m_outputImage,LOUT);
+	//PrintITKImage<OutputImageType>(*m_Conf->m_outputImage,LOUT);
 	
 	// Calculates the update values for the active layer indicies in this
 	// iteration.  Iterates through the active layer index list, applying 

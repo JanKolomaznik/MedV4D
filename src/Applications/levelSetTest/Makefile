@@ -34,9 +34,7 @@ ITKLIBS= 	$(ITKLibsRoot)/libITKNumerics.a\
 			#$(ITKLibsRoot)/libITKniftiio.a\
 			#$(ITKLibsRoot)/libITKznz.a\
 				
-M4DLIBS=	$(srcTop)/lib/libremoteCompServer$(archPostfix).a\
-		$(srcTop)/lib/libremoteCompCommons$(archPostfix).a \
-		$(srcTop)/lib/libImaging$(archPostfix).a\
+M4DLIBS=	$(srcTop)/lib/libImaging$(archPostfix).a\
 		$(srcTop)/lib/libcommon$(archPostfix).a\
 		$(srcTop)/lib/libPPEStuff$(archPostfix).a \
 		$(srcTop)/lib/SPU/libSPEPart$(archPostfix).a
@@ -88,13 +86,7 @@ OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )
 
 
 .PHONY: all
-all:		tmpdir Common Imaging commonRCPart serverRCPart libSPUPart PPEStuf dep $(OUTPUT)
-
-commonRCPart:
-	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart
-	
-serverRCPart:
-	$(MAKE) --directory=$(srcTop)/remoteComp/serverPart
+all:		tmpdir Common Imaging libSPEPart PPEStuf dep $(OUTPUT)
 	
 Imaging:
 	$(MAKE) --directory=$(srcTop)/Imaging
@@ -102,19 +94,13 @@ Imaging:
 Common:
 	$(MAKE) --directory=$(srcTop)/common
 	
-libSPUPart:
+libSPEPart:
 	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE
 	
 PPEStuf:
 	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/PPE
 	
 ##################
-
-commonRCPartCLEAN:
-	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart clean
-	
-serverRCPartCLEAN:
-	$(MAKE) --directory=$(srcTop)/remoteComp/serverPart clean
 	
 ImagingCLEAN:
 	$(MAKE) --directory=$(srcTop)/Imaging clean

@@ -3,6 +3,10 @@
 
 #include "commonTypes.h"
 
+#if( (defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) ) && (NOT_ONLY_TEST) )
+#include <spu_mfcio.h>
+#endif
+
 namespace M4D {
 namespace Cell {
 

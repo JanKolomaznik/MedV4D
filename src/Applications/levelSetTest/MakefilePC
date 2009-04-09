@@ -32,25 +32,21 @@ ITKLIBS= 	$(ITKLibsRoot)/libITKNumerics.a\
 			#$(ITKLibsRoot)/libITKMetaIO.a\
 			#$(ITKLibsRoot)/libITKEXPAT.a\
 			#$(ITKLibsRoot)/libITKniftiio.a\
-			#$(ITKLibsRoot)/libITKznz.a\
+			#$(ITKLibsRoot)/libITKznz.a
 				
-M4DLIBS=	$(srcTop)/lib/libremoteCompServer$(archPostfix).a\
-		$(srcTop)/lib/libremoteCompCommons$(archPostfix).a \
-		$(srcTop)/lib/libImaging$(archPostfix).a\
-		$(srcTop)/lib/libcommon$(archPostfix).a\
-		$(srcTop)/lib/libPPEStuff$(archPostfix).a \
-		$(srcTop)/lib/SPU/libSPEPart$(archPostfix).a
+M4DLIBS=	$(srcTop)/lib/libImaging$(archPostfix).a\
+			$(srcTop)/lib/libcommon$(archPostfix).a\
+			$(srcTop)/lib/SPU/libSPEPart$(archPostfix).a
 
 LIBS=		$(M4DLIBS) \
 			$(ITKLIBS) \
 			-lboost_thread\
 			-lboost_filesystem\
-			-ldl\
-			-lspe2
+			-ldl
 
 ########################################
 #Name of this project part
-NAME=		remoteCompServer$(archPostfix)
+NAME=		levelSetTest$(archPostfix)
 #Names of target sources
 TARGETS=	main
 
@@ -88,13 +84,7 @@ OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )
 
 
 .PHONY: all
-all:		tmpdir Common Imaging commonRCPart serverRCPart libSPUPart PPEStuf dep $(OUTPUT)
-
-commonRCPart:
-	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart
-	
-serverRCPart:
-	$(MAKE) --directory=$(srcTop)/remoteComp/serverPart
+all:		tmpdir Common Imaging libSPEPart dep $(OUTPUT)
 	
 Imaging:
 	$(MAKE) --directory=$(srcTop)/Imaging
@@ -102,19 +92,10 @@ Imaging:
 Common:
 	$(MAKE) --directory=$(srcTop)/common
 	
-libSPUPart:
-	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE
-	
-PPEStuf:
-	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/PPE
+libSPEPart:
+	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE -f Makefile.PC
 	
 ##################
-
-commonRCPartCLEAN:
-	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart clean
-	
-serverRCPartCLEAN:
-	$(MAKE) --directory=$(srcTop)/remoteComp/serverPart clean
 	
 ImagingCLEAN:
 	$(MAKE) --directory=$(srcTop)/Imaging clean
@@ -123,10 +104,7 @@ CommonCLEAN:
 	$(MAKE) --directory=$(srcTop)/common clean
 	
 libSPUPartCLEAN:
-	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE clean
-	
-PPEStufCLEAN:
-	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/PPE clean
+	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE -f ./Makefile.PC clean
 
 ##################
 
@@ -151,6 +129,6 @@ $(OUTPUT):	$(OBJ_FILES)
 		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
 
 .PHONY: clean
-clean: libSPUPartCLEAN PPEStufCLEAN #libSPUPartCLEAN serverRCPartCLEAN ImagingCLEAN CommonCLEAN
+clean: libSPUPartCLEAN PPEStufCLEAN libSPUPartCLEAN ImagingCLEAN CommonCLEAN
 		$(RM) $(TMP_DIR)/*.o $(DEP_FILE)
 		$(RM) $(OUTPUT)

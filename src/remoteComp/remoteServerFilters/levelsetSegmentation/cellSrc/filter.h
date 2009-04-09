@@ -10,7 +10,12 @@
 #include "itkObjectStore.h"
 #include "itkNeighborhoodIterator.h"
 
-#include "SPE/updateCalculatorSPE.h"
+#if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
+	#include "PPE/SPEManager.h"
+#else
+	#include "SPE/updateCalculatorSPE.h"
+#endif
+
 
 namespace itk
 {
@@ -29,9 +34,6 @@ public:
 	
 	typedef typename Superclass::TimeStepType TimeStepType;
 	typedef typename Superclass::StatusType StatusType;
-	
-	
-	typedef M4D::Cell::UpdateCalculatorSPE TUpdateCalculatorSPE;
 	
 	/////////////////
 	
@@ -222,7 +224,15 @@ protected:
 	MySegmtLevelSetFilter(void);
 	~MySegmtLevelSetFilter(void);
 	
+#if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
+	M4D::Cell::SPEManager m_SPEManager;
+	M4D::Cell::ESPUCommands command;
+#else
+	typedef M4D::Cell::UpdateCalculatorSPE TUpdateCalculatorSPE;
 	TUpdateCalculatorSPE updateSolver;
+#endif
+	
+	
 	
 private:
 	PerfCounter cntr_;

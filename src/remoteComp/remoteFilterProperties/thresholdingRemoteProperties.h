@@ -12,8 +12,8 @@ namespace RemoteComputing
 
 template< typename InputElementType, typename OutputElementType >
 class ThresholdingRemoteProps
-	: public iRemoteFilterProperties
-	, public M4D::Imaging::ThresholdingFilter<M4D::Imaging::Image<InputElementType, 3> >::Properties
+	: public M4D::Imaging::ThresholdingFilter<M4D::Imaging::Image<InputElementType, 3> >::Properties
+	, public iRemoteFilterProperties
 {
 public:
 	ThresholdingRemoteProps()

@@ -31,16 +31,13 @@ public:
 	  /** Typedef support for common objects */
 	  //typedef typename IndexType::IndexValueType       IndexValueType;
 
-	  
-	  NeighborhoodType &GetNeighborhood() const { return *m_neighbourhood; }
-
 	  /** Constructor which establishes the region size, neighborhood, and image
-	   * over which to walk. */
-	  NeighbourIteratorCell();
-	  NeighbourIteratorCell(NeighborhoodType *neiborhood);
-	  
-	  /** Virtual destructor */
-	  virtual ~NeighbourIteratorCell();
+	  	   * over which to walk. */
+	  	  NeighbourIteratorCell();
+	  	  NeighbourIteratorCell(NeighborhoodType *neiborhood);
+	  	  ~NeighbourIteratorCell();
+	  	  
+	  NeighborhoodType &GetNeighborhood() const { return *m_neighbourhood; }	  
 	  
 	  inline void SetNeighbourhood(NeighborhoodType *neiborhood)
 	  {
@@ -84,7 +81,7 @@ public:
 	  TPixelValue GetPixel(const unsigned i) const { return m_neighbourhood->GetPixel( i ); }
 
 	  /** Returns the pixel value located at a linear array location i. */
-	  virtual TPixelValue GetPixel(const unsigned i,bool& IsInBounds) const
+	  TPixelValue GetPixel(const unsigned i,bool& IsInBounds) const
 	    { 
 	    if( !m_NeedToUseBoundaryCondition )
 	      {
@@ -104,7 +101,7 @@ public:
 
 	  /** Returns the pixel value located at the itk::Offset o from the center of
 	      the neighborhood. */
-	  virtual TPixelValue GetPixel(const TOffset &o) const
+	   TPixelValue GetPixel(const TOffset &o) const
 	    { 
 	    bool inbounds; 
 	    return (this->GetPixel(m_neighbourhood->GetNeighborhoodIndex(o), inbounds)); 
@@ -117,35 +114,35 @@ public:
 	   * image and the pixel value returned is an actual pixel in the
 	   * image. Sets "IsInBounds" to false if the offset is outside the
 	   * image and the pixel value returned is a boundary condition. */
-	  virtual TPixelValue GetPixel(const TOffset &o,
+	   TPixelValue GetPixel(const TOffset &o,
 	                             bool& IsInBounds) const
 	    {return (this->GetPixel(m_neighbourhood->GetNeighborhoodIndex(o), IsInBounds)); }
 	  
 	  /** Returns the pixel value located i pixels distant from the neighborhood 
 	   *  center in the positive specified ``axis'' direction. No bounds checking 
 	   *  is done on the size of the neighborhood. */
-	  virtual TPixelValue GetNext(const unsigned axis, const unsigned i) const
+	   TPixelValue GetNext(const unsigned axis, const unsigned i) const
 	    { return (GetPixel(m_neighbourhood->GetCenterNeighborhoodIndex()
 	                           + (i * m_neighbourhood->GetStride(axis)))); }
 
 	  /** Returns the pixel value located one pixel distant from the neighborhood
 	   *  center in the specifed positive axis direction. No bounds checking is 
 	   *  done on the size of the neighborhood. */
-	  virtual TPixelValue GetNext(const unsigned axis) const
+	   TPixelValue GetNext(const unsigned axis) const
 	    { return (GetPixel(m_neighbourhood->GetCenterNeighborhoodIndex()
 	                           + m_neighbourhood->GetStride(axis))); }
 
 	  /** Returns the pixel value located i pixels distant from the neighborhood 
 	   *  center in the negative specified ``axis'' direction. No bounds checking 
 	   *  is done on the size of the neighborhood. */
-	  virtual TPixelValue GetPrevious(const unsigned axis, const unsigned i) const
+	   TPixelValue GetPrevious(const unsigned axis, const unsigned i) const
 	    { return (GetPixel(m_neighbourhood->GetCenterNeighborhoodIndex()
 	                           - (i * m_neighbourhood->GetStride(axis)))); }
 	  
 	  /** Returns the pixel value located one pixel distant from the neighborhood 
 	   *  center in the specifed negative axis direction. No bounds checking is 
 	   *  done on the size of the neighborhood. */
-	  virtual TPixelValue GetPrevious(const unsigned axis) const
+	   TPixelValue GetPrevious(const unsigned axis) const
 	    { return (GetPixel(m_neighbourhood->GetCenterNeighborhoodIndex()
 	                           - m_neighbourhood->GetStride(axis))); } 
 	  
@@ -192,11 +189,11 @@ public:
 	  /** Virtual method for rewinding the iterator to its beginning pixel.
 	   * This is useful for writing functions which take neighborhood iterators
 	   * of arbitrary type and must use virtual functions. */
-	  virtual void GoToBegin();
+	   void GoToBegin();
 	  
 	  /** Virtual method for sending the iterator to one past the last pixel in its
 	   * region. */
-	  virtual void GoToEnd();
+	   void GoToEnd();
 	  
 //	  /** Initializes the iterator to walk a particular image and a particular
 //	   * region of that image. */
@@ -318,7 +315,7 @@ public:
 
 	  /** Default method for setting the index of the first pixel in the
 	   * iteration region. */
-	  virtual void SetBeginIndex( const TIndex& start)
+	   void SetBeginIndex( const TIndex& start)
 	    {  m_BeginIndex = start;  }
 
 	  /** Default method for setting the index of the first pixel in the

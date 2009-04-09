@@ -74,7 +74,7 @@ public:
 	  }
 	
 	ThresholdLevelSetFunc();
-	virtual ~ThresholdLevelSetFunc() {}
+	~ThresholdLevelSetFunc() {}
 	
 private:
 //	/** Slices for the ND neighborhood. */

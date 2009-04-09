@@ -60,6 +60,13 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
   // looping.
   this->SetMaximumRMSError(0.02);
   this->SetNumberOfIterations(1000);
+  
+  m_Conf.m_upThreshold = 500;
+  m_Conf.m_downThreshold = -500;
+  m_Conf.m_propWeight = 1;
+  m_Conf.m_curvWeight = 0.001f;
+  m_Conf.m_NumberOfLayers = m_NumberOfLayers;
+  m_Conf.m_ConstantGradientValue = m_ConstantGradientValue;
 }
 ///////////////////////////////////////////////////////////////////////////////
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
@@ -540,30 +547,26 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
     }
   
   //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-  // init conf structure
-        m_Conf.m_upThreshold = 500;
-        m_Conf.m_downThreshold = -500;
-        m_Conf.m_propWeight = 1;
-        m_Conf.m_curvWeight = 0.001f;
-        m_Conf.m_NumberOfLayers = m_NumberOfLayers;
-        m_Conf.m_ConstantGradientValue = m_ConstantGradientValue;
+  // init conf structure       
         
-        // fill the image properties
-        m_Conf.featureImageProps.imageData = 
-        	(FeaturePixelType *)this->GetFeatureImage()->GetBufferPointer();
-        m_Conf.featureImageProps.region = 
-        	ConvertRegion<TFeatureImage, M4D::Cell::TRegion>(*this->GetFeatureImage());
-        m_Conf.featureImageProps.spacing = 
-        	ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename TFeatureImage::SpacingType>(this->GetFeatureImage()->GetSpacing());
-        	
-        m_Conf.valueImageProps.imageData = (ValueType *)this->GetOutput()->GetBufferPointer();
-        m_Conf.valueImageProps.region = 
-        	ConvertRegion<OutputImageType, M4D::Cell::TRegion>(*this->GetOutput());
-        m_Conf.featureImageProps.spacing = ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename OutputImageType::SpacingType>(this->GetOutput()->GetSpacing());
-        
-        updateSolver.m_Conf = m_Conf;
-        updateSolver.Init();
+    // fill the image properties
+    m_Conf.featureImageProps.imageData = 
+    	(FeaturePixelType *)this->GetFeatureImage()->GetBufferPointer();
+    m_Conf.featureImageProps.region = 
+    	ConvertRegion<TFeatureImage, M4D::Cell::TRegion>(*this->GetFeatureImage());
+    m_Conf.featureImageProps.spacing = 
+    	ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename TFeatureImage::SpacingType>(this->GetFeatureImage()->GetSpacing());
+    	
+    m_Conf.valueImageProps.imageData = (ValueType *)this->GetOutput()->GetBufferPointer();
+    m_Conf.valueImageProps.region = 
+    	ConvertRegion<OutputImageType, M4D::Cell::TRegion>(*this->GetOutput());
+    m_Conf.featureImageProps.spacing = ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename OutputImageType::SpacingType>(this->GetOutput()->GetSpacing());
+  
    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        
+#if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
+	m_SPEManager.RunSPEs(&m_Conf);
+#endif
   
   // Set the values in the output image for the active layer.
   this->InitializeActiveLayerValues();
@@ -856,9 +859,17 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 	  m_Conf.m_activeSetBegin = (M4D::Cell::SparseFieldLevelSetNode *) m_Layers[0]->Begin().GetPointer();
 	  m_Conf.m_activeSetEnd = (M4D::Cell::SparseFieldLevelSetNode *) m_Layers[0]->End().GetPointer();
 	  m_Conf.m_UpdateBufferData = &m_UpdateBuffer[0];
-	  updateSolver.m_Conf = m_Conf;
 	  
-	TimeStepType dt = updateSolver.CalculateChange();
+	  TimeStepType dt;
+	  
+#if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
+	  command = M4D::Cell::CALC_CHANGE;
+	  m_SPEManager.SendCommand(command);
+#else
+	  updateSolver.m_Conf = &m_Conf;
+	  updateSolver.Init();
+	  dt = updateSolver.CalculateChange();
+#endif	
 	
 	return dt;
 }

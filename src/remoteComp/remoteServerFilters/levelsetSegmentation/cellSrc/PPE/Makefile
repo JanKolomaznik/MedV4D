@@ -9,31 +9,31 @@
 # PROLOG END TAG zYx
 
 CELL_TOP=/opt/cell/sdk
+srcTop=../../../../..
+
+TARGET_PROCESSOR := ppu64
 
 ########################################################################
 #			Target
 ########################################################################
 
-#PROGRAMS_spu 	:= updateCalculatorSPEMain
+LIBRARY	:= libPPEStuff.a
 
-LIBRARY_spu := updateSolver.a
-
-#LIBRARY_embed64	:= updateCalculatorSPEMain.a
-
+# path to source files
+VPATH := src
 
 ########################################################################
 #			Local Defines
 ########################################################################
-
-CFLAGS_gcc:= -g $(PLATFORM_DEFS) -ffunction-sections -fdata-sections #-g #--param max-unroll-times=1 # needed to keep size of program down
-LDFLAGS_gcc= --gc-sections --print-gc-sections --stack-analysis --local-store=0:256	#-Wl,-q -g
-
-srcTop=../../../../../..
+#--param max-unroll-times=1 # needed to keep size of program down
+#MY_SPECIAL_FLAGS = -ffunction-sections -fdata-sections -g
+CFLAGS_gcc:= -g
+#LDFLAGS_gcc= --gc-sections --print-gc-sections --stack-analysis --local-store=0:256	#-Wl,-q -g
 				
 INCLUDE         := -I$(srcTop)
 
-#INSTALL_DIR		= $(srcTop)/SPU
-#INSTALL_FILES		= $(LIBRARY_embed64)
+INSTALL_DIR		= $(srcTop)/lib
+INSTALL_FILES		= $(LIBRARY)
 
 ########################################################################
 #			buildutils/make.footer

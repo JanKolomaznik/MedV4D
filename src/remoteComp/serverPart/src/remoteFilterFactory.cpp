@@ -21,7 +21,7 @@ CreateFilterStage2(uint16 filterID, iRemoteFilterProperties **props)
 	case FID_LevelSetSegmentation:
 		*props = new LevelSetRemoteProperties<int16, int16>();
 		return new ThreshLSSegMedvedWrapper< int16, int16>( 
-				(LevelSetRemoteProperties<int16, int16> *) *props);
+				dynamic_cast<LevelSetRemoteProperties<int16, int16> *>(*props) );
 		break;
 		
 //	case FID_Thresholding:

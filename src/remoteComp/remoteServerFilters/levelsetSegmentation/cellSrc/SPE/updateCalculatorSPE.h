@@ -57,7 +57,7 @@ public:
   TimeStepType CalculateChange();
   
   
-  RunConfiguration m_Conf;
+  RunConfiguration *m_Conf;
 		  
 		  void Init(void);
 	

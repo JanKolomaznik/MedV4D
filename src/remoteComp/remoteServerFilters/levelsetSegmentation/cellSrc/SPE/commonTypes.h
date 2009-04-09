@@ -11,38 +11,24 @@ typedef double  TimeStepType;
 /** Type used for storing status information */
 typedef signed char StatusType;
 
-struct UIntVector
+template<typename T>
+struct MyVector
 {
-	typedef uint32 TValue;
-	uint32 data[DIM];
-	uint32 & operator[]( unsigned idx )	{ return data[ idx ]; }
-	uint32 operator[]( unsigned idx ) const	{ return data[ idx ]; }
-};
-struct FloatVector
-{
-	typedef float32 TValue;
-	float32 data[DIM];
-	float32 & operator[]( unsigned idx )	{ return data[ idx ]; }
-	float32 operator[]( unsigned idx ) const	{ return data[ idx ]; }
-};
-struct IntVector
-{
-	typedef int32 TValue;
-	int32 data[DIM];
-	int32 & operator[]( unsigned idx )	{ return data[ idx ]; }
-	int32 operator[]( unsigned idx ) const	{ return data[ idx ]; }
+	typedef T TValue;
+	T data[DIM];
+	T & operator[]( unsigned idx )	{ return data[ idx ]; }
+	T operator[]( unsigned idx ) const	{ return data[ idx ]; }
 };
 
-typedef IntVector TOffset;
-typedef UIntVector TRadius;
-typedef UIntVector  TIndex;
-typedef FloatVector TNeighborhoodScales;
+typedef MyVector<int32> TOffset;
+typedef MyVector<uint32> TRadius;
+typedef MyVector<uint32>  TIndex;
+typedef MyVector<float32> TNeighborhoodScales;
 
-typedef UIntVector TRadius;
-typedef UIntVector TSize;
-typedef UIntVector TStrides;
-typedef FloatVector TContinuousIndex;
-typedef FloatVector TSpacing;
+typedef MyVector<uint32> TSize;
+typedef MyVector<uint32> TStrides;
+typedef MyVector<float32> TContinuousIndex;
+typedef MyVector<float32> TSpacing;
 
 struct TRegion
 {

@@ -8,7 +8,7 @@ MKDIR=mkdir
 
 ########################################
 #Name of this project part
-NAME=		SPUPart$(archPostfix)
+NAME=		SPEPart$(archPostfix)
 #Names of target sources
 TARGETS=	main
 ########################################
@@ -16,7 +16,7 @@ TARGETS=	main
 #Name of target
 OUTPUTNAME=	lib$(NAME).a
 OUTPUTDIR=	$(srcTop)/lib
-OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
+OUTPUT=		$(OUTPUTDIR)/SPU/$(OUTPUTNAME)
 TMP_DIR=	$(srcTop)/tmp/$(NAME)
 
 CXXDEBUG_OPTIONS= -g 

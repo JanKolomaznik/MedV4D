@@ -26,6 +26,8 @@ public:
 		, propagationScaling( 1.0f ) 
 		, advectionScaling( 10.0f ) 
 	{}
+	
+	virtual ~LevelSetRemoteProperties() {}
 
 	uint32 seedX;
 	uint32 seedY;

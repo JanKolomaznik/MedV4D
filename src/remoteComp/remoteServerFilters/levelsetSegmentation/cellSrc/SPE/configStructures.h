@@ -6,6 +6,13 @@
 namespace M4D {
 namespace Cell {
 
+enum ESPUCommands
+{
+	CALC_CHANGE,
+	CALC_UPDATE,
+	QUIT
+};
+
 // geather all configurations that SPE needs to load
 class RunConfiguration
 {

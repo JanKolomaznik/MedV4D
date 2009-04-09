@@ -2,6 +2,10 @@
 #error File cellLinkedChainIterator.tcc cannot be included directly!
 #else
 
+#if( (defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) ) && (NOT_ONLY_TEST) )
+#include <spu_mfcio.h>
+#endif
+
 namespace M4D {
 namespace Cell {
 
@@ -17,7 +21,7 @@ LinkedChainIteratorCell<Item>
 		  tag = mfc_tag_reserve();
 		  if (tag == MFC_TAG_INVALID)
 		  {
-			  D_PRINT ("SPU ERROR, unable to reserve tag\n");
+			  //D_PRINT ("SPU ERROR, unable to reserve tag\n");
 		  }
 #endif
 		}
@@ -56,9 +60,11 @@ template<typename Item>
 Item *
 LinkedChainIteratorCell<Item>::Next(void) 
 	{ 
-	// wait for current DMA to complete
-//	  mfc_write_tag_mask (1 << tag);
-//	  mfc_read_tag_status_all ();
+#if( (defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) ) && (NOT_ONLY_TEST) )
+	  // wait for current DMA to complete
+	  mfc_write_tag_mask (1 << tag);
+	  mfc_read_tag_status_all ();
+#endif
 		  
 	  // imediately load the next item
 	  m_currBufPosition = ! m_currBufPosition;
@@ -80,9 +86,9 @@ void
 LinkedChainIteratorCell<Item>::Load(Item *src, Item *dest, size_t size)
 	{
 #if( (defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) ) && (NOT_ONLY_TEST) )
-			mfc_get(src, dest, sizeof(Item), tag, 0, 0);
+			mfc_get(src, dest, size, tag, 0, 0);
 #else
-			memcpy(dest, src, sizeof(Item) );
+			memcpy(dest, src, size);
 #endif
 	}
 

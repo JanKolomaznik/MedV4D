@@ -193,7 +193,10 @@ public:
 	/**
 	 * Destructor - virtual - can be polymorphically destroyed.
 	 **/
-	~AbstractFilter() { delete _properties; }
+	~AbstractFilter() 
+	{ 
+		delete _properties;
+	}
 	
 	/**
 	 * Start computing only on modified data.
@@ -264,10 +267,7 @@ class AbstractPipeFilter : public AbstractFilter, public MessageReceiverInterfac
 public:
 	typedef AbstractFilter	PredecessorType;
 
-	struct Properties: public PredecessorType::Properties
-	{
-
-	};
+	typedef PredecessorType::Properties Properties;
 
 	enum UpdateInvocationStyle {
 		UIS_ON_DEMAND,
