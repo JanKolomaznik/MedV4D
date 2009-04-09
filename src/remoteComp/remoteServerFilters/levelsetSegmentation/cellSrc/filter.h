@@ -223,7 +223,7 @@ public:
 	    typedef M4D::Cell::RunConfiguration TRunConf;
 	    TRunConf m_Conf;
 	    
-	    M4D::Cell::ApplyUpdateConf m_applyUpdateConf;
+	    //M4D::Cell::ApplyUpdateConf m_applyUpdateConf;
 	    
 protected:
 	MySegmtLevelSetFilter(void);

@@ -550,28 +550,37 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
   // init conf structure       
         
     // fill the image properties
+  	// feature image
     m_Conf.featureImageProps.imageData = 
     	(FeaturePixelType *)this->GetFeatureImage()->GetBufferPointer();
     m_Conf.featureImageProps.region = 
     	ConvertRegion<TFeatureImage, M4D::Cell::TRegion>(*this->GetFeatureImage());
     m_Conf.featureImageProps.spacing = 
     	ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename TFeatureImage::SpacingType>(this->GetFeatureImage()->GetSpacing());
-    	
+    // output image
     m_Conf.valueImageProps.imageData = (ValueType *)this->GetOutput()->GetBufferPointer();
     m_Conf.valueImageProps.region = 
     	ConvertRegion<OutputImageType, M4D::Cell::TRegion>(*this->GetOutput());
     m_Conf.featureImageProps.spacing = ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename OutputImageType::SpacingType>(this->GetOutput()->GetSpacing());
+    //status image
+    m_Conf.statusImageProps.imageData = (StatusType *)m_StatusImage->GetBufferPointer();
+    m_Conf.statusImageProps.region = 
+    	ConvertRegion<StatusImageType, M4D::Cell::TRegion>(*m_StatusImage);
+    m_Conf.statusImageProps.spacing = ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename StatusImageType::SpacingType>(m_StatusImage->GetSpacing());
     
     applyUpdateCalc.m_LayerNodeStore = 
     	(M4D::Cell::ApplyUpdateSPE::LayerNodeStorageType *)m_LayerNodeStore.GetPointer();
     applyUpdateCalc.m_Layers = new M4D::Cell::ApplyUpdateSPE::LayerType*[m_Layers.size()];
-    m_applyUpdateConf.layerBegins = new M4D::Cell::SparseFieldLevelSetNode*[m_Layers.size()];
-    m_applyUpdateConf.layerEnds = new M4D::Cell::SparseFieldLevelSetNode*[m_Layers.size()];
+    
+    applyUpdateCalc.conf.layerBegins = new M4D::Cell::SparseFieldLevelSetNode*[m_Layers.size()];
+    applyUpdateCalc.conf.layerEnds = new M4D::Cell::SparseFieldLevelSetNode*[m_Layers.size()];
     for(uint32 i=0; i<m_Layers.size() ; i++)
     {
     	applyUpdateCalc.m_Layers[i] = 
     		(M4D::Cell::ApplyUpdateSPE::LayerType *)m_Layers[i].GetPointer();
     }
+    
+    applyUpdateCalc.SetCommonConfiguration(&m_Conf);
   
    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
         
@@ -895,16 +904,13 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 #if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
 	  command = M4D::Cell::CALC_CHANGE;
 	  m_SPEManager.SendCommand(command);
-#else
-	  updateSolver.m_Conf = &m_Conf;
-	  updateSolver.Init();
-	  
+#else	  
 	  for(uint32 i=0; i<m_Layers.size() ; i++)
 	  {
 		  applyUpdateCalc.m_Layers[i] = (M4D::Cell::ApplyUpdateSPE::LayerType *) m_Layers[i].GetPointer();
 		  
-		  m_applyUpdateConf.layerBegins[i] = (M4D::Cell::SparseFieldLevelSetNode *) m_Layers[i]->Begin().GetPointer();
-		  m_applyUpdateConf.layerEnds[i] = (M4D::Cell::SparseFieldLevelSetNode *) m_Layers[i]->End().GetPointer();
+		  applyUpdateCalc.conf.layerBegins[i] = (M4D::Cell::SparseFieldLevelSetNode *) m_Layers[i]->Begin().GetPointer();
+		  applyUpdateCalc.conf.layerEnds[i] = (M4D::Cell::SparseFieldLevelSetNode *) m_Layers[i]->End().GetPointer();
 	  }
 	  applyUpdateCalc.PropagateAllLayerValues();
 #endif	
