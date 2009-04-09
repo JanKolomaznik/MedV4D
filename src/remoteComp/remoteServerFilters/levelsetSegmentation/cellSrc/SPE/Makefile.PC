@@ -56,23 +56,22 @@ OBJECT_FILES = 	$(TMP_DIR)/curvatureTermSolver.o\
 				$(TMP_DIR)/speedTermSolver.o\
 				$(TMP_DIR)/updateCalculatorSPE.o
 		
-$(OUTPUT): operations.o path.o portability.o neighbourhoodIterator.o speedTermSolver.o updateCalculatorSPE.o
+$(OUTPUT): curvatureTermSolver.o diffFunc.o neighborhoodCell.o neighbourhoodIterator.o speedTermSolver.o updateCalculatorSPE.o
 		$(AR) $(ARFLAGS) $(OUTPUT) $(OBJECT_FILES)
-
-operations.o:
-	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/curvatureTermSolver.o src/curvatureTermSolver.cpp
-path.o:
-	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/diffFunc.o src/diffFunc.cpp
-portability.o:
-	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/neighborhoodCell.o src/neighborhoodCell.cpp
+## tools ###################
+neighborhoodCell.o:
+	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/neighborhoodCell.o tools/src/neighborhoodCell.cpp
 neighbourhoodIterator.o:
-	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/neighbourhoodIterator.o src/neighbourhoodIterator.cpp
-	
+	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/neighbourhoodIterator.o tools/src/neighbourhoodIterator.cpp
+## update calc #############
+curvatureTermSolver.o:
+	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/curvatureTermSolver.o updateCalculation/src/curvatureTermSolver.cpp
+diffFunc.o:
+	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/diffFunc.o updateCalculation/src/diffFunc.cpp
 speedTermSolver.o:
-	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/speedTermSolver.o src/speedTermSolver.cpp
-	
+	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/speedTermSolver.o updateCalculation/src/speedTermSolver.cpp
 updateCalculatorSPE.o:
-	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/updateCalculatorSPE.o src/updateCalculatorSPE.cpp
+	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/updateCalculatorSPE.o updateCalculation/src/updateCalculatorSPE.cpp
 
 .PHONY: clean
 clean:

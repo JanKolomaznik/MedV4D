@@ -4,7 +4,7 @@
 //#include "vnl/vnl_vector.h"
 #include "vnl_math.h"
 //#include "itkNumericTraits.h"
-#include "updateCalculatorSPE.h"
+#include "updateCalculation/updateCalculatorSPE.h"
 //#include "neighborhoodCell.h"
 //#include "neighbourhoodIterator.h"
 

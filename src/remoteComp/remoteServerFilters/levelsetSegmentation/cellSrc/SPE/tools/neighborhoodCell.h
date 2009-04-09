@@ -1,7 +1,7 @@
 #ifndef NEIGHBORHOODCELL_H_
 #define NEIGHBORHOODCELL_H_
 
-#include "commonTypes.h"
+#include "../commonTypes.h"
 
 #if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
 #include <spu_mfcio.h>

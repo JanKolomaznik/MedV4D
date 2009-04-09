@@ -4,7 +4,7 @@
 #include "speedTermSolver.h"
 //#include "advectionTermSolver.h"
 #include "curvatureTermSolver.h"
-#include "neighbourhoodIterator.h"
+#include "../tools/neighbourhoodIterator.h"
 //#include "../commonConsts.h"
 
 namespace M4D {

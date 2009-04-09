@@ -13,7 +13,7 @@
 #if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
 	#include "PPE/SPEManager.h"
 #else
-	#include "SPE/updateCalculatorSPE.h"
+	#include "SPE/updateCalculation/updateCalculatorSPE.h"
 #endif
 
 

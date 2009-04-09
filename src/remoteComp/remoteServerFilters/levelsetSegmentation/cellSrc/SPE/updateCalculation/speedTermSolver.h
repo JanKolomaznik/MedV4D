@@ -2,7 +2,7 @@
 #define SPEEDTERMSOLVER_H_
 
 #include "globalData.h"
-#include "neighbourhoodIterator.h"
+#include "../tools/neighbourhoodIterator.h"
 
 namespace M4D {
 namespace Cell {

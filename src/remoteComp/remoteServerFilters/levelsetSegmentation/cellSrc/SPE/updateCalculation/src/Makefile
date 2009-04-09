@@ -9,31 +9,31 @@
 # PROLOG END TAG zYx
 
 CELL_TOP=/opt/cell/sdk
-srcTop=../../../../..
-
-DIRS	:= 	updateCalculation/src tools/src
 
 ########################################################################
 #			Target
 ########################################################################
 
-LIBRARY_embed64	:= libSPEPart$(archPostfix).a
-PROGRAMS_spu 	:= SPEMain
+#PROGRAMS_spu 	:= updateCalculatorSPEMain
+
+LIBRARY_spu := updateSolver.a
+
+#LIBRARY_embed64	:= updateCalculatorSPEMain.a
+
 
 ########################################################################
 #			Local Defines
 ########################################################################
 
-MY_SPECIAL_FLAGS = -ffunction-sections -fdata-sections #-g #--param max-unroll-times=1 # needed to keep size of program down
-CFLAGS_gcc:= -g $(PLATFORM_DEFS)
-#LDFLAGS_gcc= --gc-sections --print-gc-sections --stack-analysis --local-store=0:256	#-Wl,-q -g
+CFLAGS_gcc:= -g $(PLATFORM_DEFS) -ffunction-sections -fdata-sections #-g #--param max-unroll-times=1 # needed to keep size of program down
+LDFLAGS_gcc= --gc-sections --print-gc-sections --stack-analysis --local-store=0:256	#-Wl,-q -g
+
+srcTop=../../../../../..
 				
 INCLUDE         := -I$(srcTop)
 
-IMPORTS := updateCalculation/src/updateSolver.a tools/src/SPEtools.a
-
-INSTALL_DIR		= $(srcTop)/lib/SPU
-INSTALL_FILES		= $(LIBRARY_embed64)
+#INSTALL_DIR		= $(srcTop)/SPU
+#INSTALL_FILES		= $(LIBRARY_embed64)
 
 ########################################################################
 #			buildutils/make.footer

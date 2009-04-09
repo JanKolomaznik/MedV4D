@@ -2,7 +2,7 @@
 #define GLOBALDATA_H_
 
 //#include "vnl/vnl_matrix_fixed.h"
-#include "commonTypes.h"
+#include "../commonTypes.h"
 
 namespace M4D {
 namespace Cell {
