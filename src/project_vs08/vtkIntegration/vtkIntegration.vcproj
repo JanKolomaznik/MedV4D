@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1250"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="vtkIntegration"
 	ProjectGUID="{2D198559-0E14-42E5-AB0B-3F0A5AE76EDF}"
 	TargetFrameworkVersion="131072"
@@ -95,6 +95,12 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="2"
+				InlineFunctionExpansion="2"
+				EnableIntrinsicFunctions="true"
+				FavorSizeOrSpeed="1"
+				OmitFramePointers="true"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="..\..\include\;..\..\include\vtk;..\..\"
 			/>
 			<Tool
