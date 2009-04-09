@@ -1,0 +1,17 @@
+Following DICOM tags should be anonymized:
+==========================================
+
+0008-0080 Institution Name
+0008-0081 Institution Address
+0008-0090 Referring Physician's Name
+0008-1010 Station Name
+0008-1040 Instutional Department Name
+0008-1050 Performing Physician's Name
+0008-1070 Operator's Name
+
+0010-0010 Patient's Name
+0010-0020 Patient ID
+0010-1000 Other Patient ID
+
+0018-1000 Device Serial Number
+0018-1010 Secondary Capture Device ID
