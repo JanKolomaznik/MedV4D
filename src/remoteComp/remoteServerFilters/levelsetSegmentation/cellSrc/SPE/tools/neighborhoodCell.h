@@ -1,8 +1,6 @@
 #ifndef NEIGHBORHOODCELL_H_
 #define NEIGHBORHOODCELL_H_
 
-#include "../commonTypes.h"
-
 #if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
 #include <spu_mfcio.h>
 #endif
@@ -14,6 +12,7 @@ namespace Cell {
 #define SIZEIN1DIM ((RADIUS * 2) + 1)
 #define NEIGHBOURHOOD_SIZE (SIZEIN1DIM * SIZEIN1DIM * SIZEIN1DIM)
 
+template<typename PixelType>
 class NeighborhoodCell
 {
 public:
@@ -22,8 +21,9 @@ public:
 	NeighborhoodCell(TImageProperties *props);
 	void SetPosition(const TIndex &pos);
 	
-	inline TPixelValue GetPixel(uint32 pos) { return m_buf[pos]; }
-	inline TPixelValue *GetPixelPointer(uint32 pos) { return &m_buf[pos]; }
+	inline PixelType GetPixel(uint32 pos) { return m_buf[pos]; }
+	void SetCenterPixel(PixelType val);
+	inline PixelType *GetPixelPointer(uint32 pos) { return &m_buf[pos]; }
 	
 	TStrides GetStrides() { return m_radiusStrides; }
 	uint32 GetStride(const uint32 axis)
@@ -39,9 +39,9 @@ public:
 	//void Print(std::ostream &stream);
 protected:
 	
-	TPixelValue *ComputeImageDataPointer(const TIndex &pos);
-	void LoadData(TPixelValue *src, TPixelValue *dest, size_t size);
-	void LoadSlice(TIndex posm, uint8 dim, TPixelValue *dest);
+	PixelType *ComputeImageDataPointer(const TIndex &pos);
+	void LoadData(PixelType *src, PixelType *dest, size_t size);
+	void LoadSlice(TIndex posm, uint8 dim, PixelType *dest);
 	bool IsWithinImage(const TIndex &pos);
 	
 	TStrides m_radiusStrides;
@@ -52,11 +52,14 @@ protected:
 	TImageProperties *m_imageProps;
 	TStrides m_imageStrides;
 	
-	TPixelValue m_buf[NEIGHBOURHOOD_SIZE];
+	PixelType m_buf[NEIGHBOURHOOD_SIZE];
 	size_t m_size;
 };
 
 }  // namespace
 } // namespace
+
+//include implementation
+#include "src/neighborhoodCell.tcc"
 
 #endif /*NEIGHBORHOODCELL_H_*/

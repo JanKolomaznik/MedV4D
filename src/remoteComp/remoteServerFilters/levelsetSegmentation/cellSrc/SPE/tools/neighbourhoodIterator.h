@@ -6,13 +6,14 @@
 namespace M4D {
 namespace Cell {
 
+template<typename PixelType>
 class NeighbourIteratorCell
 {
 public:
 	  
 	  /** Standard class typedefs. */
 	  typedef NeighbourIteratorCell             Self;
-	  typedef NeighborhoodCell	NeighborhoodType;
+	  typedef NeighborhoodCell<PixelType>	NeighborhoodType;
 //
 //	  /** Inherit typedefs from superclass */
 //	  typedef typename NeighborhoodType::TOffset      OffsetType;
@@ -44,7 +45,7 @@ public:
 		  m_neighbourhood = neiborhood;  
 	  }
 	  
-	  void SetCenterPixel(TPixelValue val);	//TODO !!!!!!!!!!!
+	  void SetCenterPixel(PixelType val) { m_neighbourhood->SetCenterPixel(val); }
 
 	  /** Computes the internal, N-d offset of a pixel array position n from 
 	   * (0,0, ..., 0) in the "upper-left" corner of the neighborhood. */
@@ -68,22 +69,22 @@ public:
 //	    {    return m_Bound[n];  }
 	  
 	  /** Returns the pointer to the center pixel of the neighborhood. */
-	  const TPixelValue *GetCenterPointer() const
+	  const PixelType *GetCenterPointer() const
 	    {    return m_neighbourhood->GetPixelPointer(m_neighbourhood->GetSize()>>1);  }
 	  
 	  /** Returns the pixel referenced at the center of the 
 	   *  ConstNeighborhoodIterator. */
-	  TPixelValue GetCenterPixel() const
+	  PixelType GetCenterPixel() const
 	    {return m_neighbourhood->GetPixel( m_neighbourhood->GetCenterNeighborhoodIndex() );}
 	  
 //	  /** Virtual function that "dereferences" a ConstNeighborhoodIterator,
 //	   * returning a Neighborhood of pixel values. */
 //	  virtual NeighborhoodType GetNeighborhood() const;
 	  
-	  TPixelValue GetPixel(const unsigned i) const { return m_neighbourhood->GetPixel( i ); }
+	  PixelType GetPixel(const unsigned i) const { return m_neighbourhood->GetPixel( i ); }
 
 	  /** Returns the pixel value located at a linear array location i. */
-	  TPixelValue GetPixel(const unsigned i,bool& IsInBounds) const
+	  PixelType GetPixel(const unsigned i,bool& IsInBounds) const
 	    { 
 	    if( !m_NeedToUseBoundaryCondition )
 	      {
@@ -99,11 +100,11 @@ public:
 	   * image and the pixel value returned is an actual pixel in the
 	   * image. Sets "IsInBounds" to false if the location is outside the
 	   * image and the pixel value returned is a boundary condition. */
-	  //virtual TPixelValue GetPixel(const unsigned i, bool& IsInBounds) const;
+	  //virtual PixelType GetPixel(const unsigned i, bool& IsInBounds) const;
 
 	  /** Returns the pixel value located at the itk::Offset o from the center of
 	      the neighborhood. */
-	   TPixelValue GetPixel(const TOffset &o) const
+	   PixelType GetPixel(const TOffset &o) const
 	    { 
 	    bool inbounds; 
 	    return (this->GetPixel(m_neighbourhood->GetNeighborhoodIndex(o), inbounds)); 
@@ -116,35 +117,35 @@ public:
 	   * image and the pixel value returned is an actual pixel in the
 	   * image. Sets "IsInBounds" to false if the offset is outside the
 	   * image and the pixel value returned is a boundary condition. */
-	   TPixelValue GetPixel(const TOffset &o,
+	   PixelType GetPixel(const TOffset &o,
 	                             bool& IsInBounds) const
 	    {return (this->GetPixel(m_neighbourhood->GetNeighborhoodIndex(o), IsInBounds)); }
 	  
 	  /** Returns the pixel value located i pixels distant from the neighborhood 
 	   *  center in the positive specified ``axis'' direction. No bounds checking 
 	   *  is done on the size of the neighborhood. */
-	   TPixelValue GetNext(const unsigned axis, const unsigned i) const
+	   PixelType GetNext(const unsigned axis, const unsigned i) const
 	    { return (GetPixel(m_neighbourhood->GetCenterNeighborhoodIndex()
 	                           + (i * m_neighbourhood->GetStride(axis)))); }
 
 	  /** Returns the pixel value located one pixel distant from the neighborhood
 	   *  center in the specifed positive axis direction. No bounds checking is 
 	   *  done on the size of the neighborhood. */
-	   TPixelValue GetNext(const unsigned axis) const
+	   PixelType GetNext(const unsigned axis) const
 	    { return (GetPixel(m_neighbourhood->GetCenterNeighborhoodIndex()
 	                           + m_neighbourhood->GetStride(axis))); }
 
 	  /** Returns the pixel value located i pixels distant from the neighborhood 
 	   *  center in the negative specified ``axis'' direction. No bounds checking 
 	   *  is done on the size of the neighborhood. */
-	   TPixelValue GetPrevious(const unsigned axis, const unsigned i) const
+	   PixelType GetPrevious(const unsigned axis, const unsigned i) const
 	    { return (GetPixel(m_neighbourhood->GetCenterNeighborhoodIndex()
 	                           - (i * m_neighbourhood->GetStride(axis)))); }
 	  
 	  /** Returns the pixel value located one pixel distant from the neighborhood 
 	   *  center in the specifed negative axis direction. No bounds checking is 
 	   *  done on the size of the neighborhood. */
-	   TPixelValue GetPrevious(const unsigned axis) const
+	   PixelType GetPrevious(const unsigned axis) const
 	    { return (GetPixel(m_neighbourhood->GetCenterNeighborhoodIndex()
 	                           - m_neighbourhood->GetStride(axis))); } 
 	  
@@ -334,10 +335,10 @@ public:
 	  TIndex m_Bound;
 
 	  /** A pointer to the first pixel in the iteration region. */
-	  const TPixelValue *m_Begin;
+	  const PixelType *m_Begin;
 
 	  /** A pointer to one past the last pixel in the iteration region. */
-	  const TPixelValue *m_End;
+	  const PixelType *m_End;
 
 	  /** The end index for iteration within the itk::Image region
 	   * on which this ConstNeighborhoodIterator is defined. */
@@ -379,10 +380,10 @@ public:
 
 	  NeighborhoodType *m_neighbourhood;
 };
-//
-////include implementation
-//#include "src/neighbourhoodIterator.tcc"
 
 }}  // namespace
+
+//include implementation
+#include "src/neighbourhoodIterator.tcc"
 
 #endif /*NEIGHBOURHOODITERATOR_H_*/

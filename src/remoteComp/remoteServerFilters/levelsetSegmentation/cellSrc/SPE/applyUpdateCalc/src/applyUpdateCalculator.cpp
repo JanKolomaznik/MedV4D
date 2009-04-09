@@ -6,6 +6,22 @@
 
 using namespace M4D::Cell;
 
+#define LYERCOUNT(X) ((X * 2) + 1)
+
+///////////////////////////////////////////////////////////////////////////////
+
+ApplyUpdateSPE::ApplyUpdateSPE()
+{
+	
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+ApplyUpdateSPE::~ApplyUpdateSPE()
+{
+	
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 void
 ApplyUpdateSPE::PropagateAllLayerValues()
@@ -19,7 +35,7 @@ ApplyUpdateSPE::PropagateAllLayerValues()
   this->PropagateLayerValues(0, 2, 4, 2); // first outside
 
   // Update the rest of the layers.
-  for (i = 1; i < commonConf.m_NumberOfLayers - 2; ++i)
+  for (i = 1; i < (uint32)LYERCOUNT(commonConf->m_NumberOfLayers) - 2; ++i)
     {
     this->PropagateLayerValues(i, i+2, i+4, (i+2)%2);
     }
@@ -27,52 +43,54 @@ ApplyUpdateSPE::PropagateAllLayerValues()
 ///////////////////////////////////////////////////////////////////////////////
 void
 ApplyUpdateSPE::PropagateLayerValues(StatusType from, StatusType to,
-                       StatusType promote, int InOrOut)
+                       StatusType promote, uint32 InOrOut)
 {
   unsigned int i;
-  ValueType value, value_temp, delta;
-  value = NumericTraits<ValueType>::Zero; // warnings
+  TPixelValue value, value_temp, delta;
+  value = 0; // warnings
   bool found_neighbor_flag;
-  typename LayerType::Iterator toIt;
-  LayerNodeType *node;
-  StatusType past_end = static_cast<StatusType>( m_Layers.size() ) - 1;
+  StatusType past_end = static_cast<StatusType>( LYERCOUNT(commonConf->m_NumberOfLayers) ) - 1;
+  
+  SparseFieldLevelSetNode *tmp;
   
   // Are we propagating values inward (more negative) or outward (more
   // positive)?
-  if (InOrOut == 1) delta = - m_ConstantGradientValue;
-  else delta = m_ConstantGradientValue;
+  if (InOrOut == 1) delta = - commonConf->m_ConstantGradientValue;
+  else delta = commonConf->m_ConstantGradientValue;
  
-  NeighborhoodIterator<OutputImageType>
-    outputIt(m_NeighborList.GetRadius(), this->GetOutput(),
-             this->GetOutput()->GetRequestedRegion() );
-  NeighborhoodIterator<StatusImageType>
-    statusIt(m_NeighborList.GetRadius(), m_StatusImage,
-             this->GetOutput()->GetRequestedRegion() );
-
-  if ( m_BoundsCheckingActive == false )
-    {
-    outputIt.NeedToUseBoundaryConditionOff();
-    statusIt.NeedToUseBoundaryConditionOff();
-    }
+//  NeighborhoodIterator<OutputImageType>
+//    outputIt(m_NeighborList.GetRadius(), this->GetOutput(),
+//             this->GetOutput()->GetRequestedRegion() );
+//  NeighborhoodIterator<StatusImageType>
+//    statusIt(m_NeighborList.GetRadius(), m_StatusImage,
+//             this->GetOutput()->GetRequestedRegion() );
   
-  toIt  = m_Layers[to]->Begin();
-  while ( toIt != m_Layers[to]->End() )
+  NeighborhoodCell<TPixelValue> outNeigh( & commonConf->valueImageProps);
+  NeighborhoodCell<StatusType> statusNeigh( & commonConf->statusImageProps);
+  
+  m_outIter.SetNeighbourhood( &statusNeigh);
+  m_statusIter.SetNeighbourhood( &statusNeigh);
+  
+  SparseFieldLevelSetNode *currNode  = conf.layerBegins[to];
+  while ( currNode != conf.layerEnds[to] )
     {
-    statusIt.SetLocation( toIt->m_Value );
+    m_statusIter.SetLocation( currNode->m_Value );
 
     // Is this index marked for deletion? If the status image has
     // been marked with another layer's value, we need to delete this node
     // from the current list then skip to the next iteration.
-    if (statusIt.GetCenterPixel() != to)
+    if (m_statusIter.GetCenterPixel() != to)
       {
-      node = toIt.GetPointer();
-      ++toIt;
-      m_Layers[to]->Unlink( node );
-      m_LayerNodeStore->Return( node );
+    	tmp = currNode;
+    	currNode = currNode->Next;	// move on
+    	
+      UnlinkNode( tmp, to);
+      ReturnToNodeStore(tmp);
+      
       continue;
       }
       
-    outputIt.SetLocation( toIt->m_Value );
+    m_outIter.SetLocation( currNode->m_Value );
 
     found_neighbor_flag = false;
     for (i = 0; i < m_NeighborList.GetSize(); ++i)
@@ -80,9 +98,9 @@ ApplyUpdateSPE::PropagateLayerValues(StatusType from, StatusType to,
       // If this neighbor is in the "from" list, compare its absolute value
       // to to any previous values found in the "from" list.  Keep the value
       // that will cause the next layer to be closest to the zero level set.
-      if ( statusIt.GetPixel( m_NeighborList.GetArrayIndex(i) ) == from )
+      if ( m_statusIter.GetPixel( m_NeighborList.GetArrayIndex(i) ) == from )
         {
-        value_temp = outputIt.GetPixel( m_NeighborList.GetArrayIndex(i) );
+        value_temp = m_outIter.GetPixel( m_NeighborList.GetArrayIndex(i) );
 
         if (found_neighbor_flag == false)
           {
@@ -114,8 +132,8 @@ ApplyUpdateSPE::PropagateLayerValues(StatusType from, StatusType to,
       {
       // Set the new value using the smallest distance
       // found in our "from" neighbors.
-      outputIt.SetCenterPixel( value + delta );
-      ++toIt;
+      m_outIter.SetCenterPixel( value + delta );
+      currNode = currNode->Next;	// move on
       }
     else
       {
@@ -123,18 +141,19 @@ ApplyUpdateSPE::PropagateLayerValues(StatusType from, StatusType to,
       // node.  A "promote" value past the end of my sparse field size
       // means delete the node instead.  Change the status value in the
       // status image accordingly.
-      node  = toIt.GetPointer();
-      ++toIt;
-      m_Layers[to]->Unlink( node );
+    	tmp = currNode;
+      currNode = currNode->Next;	// move on
+      
+      UnlinkNode( tmp, to );
       if ( promote > past_end )
         {
-        m_LayerNodeStore->Return( node );
-        statusIt.SetCenterPixel(this->m_StatusNull);
+    	  ReturnToNodeStore( tmp );
+        m_statusIter.SetCenterPixel(this->m_StatusNull);
         }
       else
         {
-        m_Layers[promote]->PushFront( node );
-        statusIt.SetCenterPixel(promote);
+    	  PushToLayer(tmp, promote);
+        m_statusIter.SetCenterPixel(promote);
         }
       }
     }
@@ -143,9 +162,25 @@ ApplyUpdateSPE::PropagateLayerValues(StatusType from, StatusType to,
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-ApplyUpdateSPE::UnlinkNode(SparseFieldLevelSetNode *node)
+ApplyUpdateSPE::UnlinkNode(SparseFieldLevelSetNode *node, uint8 layerNum)
 {
-	
+	m_Layers[layerNum]->Unlink( node );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ApplyUpdateSPE::ReturnToNodeStore(SparseFieldLevelSetNode *node)
+{
+	m_LayerNodeStore->Return( node );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ApplyUpdateSPE::PushToLayer(SparseFieldLevelSetNode *node, uint8 layerNum)
+{
+	m_Layers[layerNum]->PushFront( node );
 }
 
 ///////////////////////////////////////////////////////////////////////////////

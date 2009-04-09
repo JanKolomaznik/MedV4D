@@ -27,7 +27,7 @@ public:
 //	
 //	typedef TInputNeighbour NeighborhoodType;
 //	typedef GlobalDataStruct<PixelType, TInputNeighbour::Dim> GlobalDataType;
-	typedef NeighbourIteratorCell NeighborhoodIteratorType;
+	typedef NeighbourIteratorCell<TPixelValue> NeighborhoodIteratorType;
 
 	
 	TPixelValue ComputeUpdate(

@@ -8,29 +8,54 @@
 #include "../tools/cellRemoteArray.h"
 #include "../tools/cellLinkedChainIterator.h"
 
+#include "../../supportClasses.h"
+#include "../../commonConsts.h"
+
+// to remove
+#include "itkSparseFieldLayer.h"
+#include "itkObjectStore.h"
+
 namespace M4D {
 namespace Cell {
 
-class ApplyUpdateSPE
+class ApplyUpdateSPE : public Consts
 {
 public:
+	ApplyUpdateSPE();
+	~ApplyUpdateSPE();
+	
 	void ApplyUpdate(TimeStepType dt);
 	
 	void PropagateAllLayerValues();
 	
-	ApplyUpdateConf &conf;
-	RunConfiguration &commonConf;
+	ApplyUpdateConf conf;
+	RunConfiguration *commonConf;
+	
+	void SetCommonConfiguration(RunConfiguration *c) { commonConf = c; }
+	
+	typedef NeighbourIteratorCell<TPixelValue> TValueNeighbIterator;
+	typedef NeighbourIteratorCell<StatusType> TStatusNeighbIterator;
+	
+	//to remove
+	typedef itk::SparseFieldLayer<SparseFieldLevelSetNode> LayerType;
+	LayerType **m_Layers;
+	typedef itk::ObjectStore<SparseFieldLevelSetNode> LayerNodeStorageType;
+	LayerNodeStorageType *m_LayerNodeStore;
 	
 private:
 	void PropagateLayerValues(StatusType from, StatusType to,
 	                       StatusType promote, uint32 InOrOut);
 	
-	void UnlinkNode(SparseFieldLevelSetNode *node);
+	void UnlinkNode(SparseFieldLevelSetNode *node, uint8 layerNum);
+	void ReturnToNodeStore(SparseFieldLevelSetNode *node);
+	void PushToLayer(SparseFieldLevelSetNode *node, uint8 layerNum);
 	
-	SparseFieldCityBlockNeighborList< TRadius, TOffset, 3 > *m_NeighborList;
+	itk::SparseFieldCityBlockNeighborList< TRadius, TOffset, 3 > m_NeighborList;
 	
-	NeighbourIteratorCell m_outIter;
-	NeighbourIteratorCell m_statusIter;
+	TValueNeighbIterator m_outIter;
+	TStatusNeighbIterator m_statusIter;
+	
+	
 };
 
 }

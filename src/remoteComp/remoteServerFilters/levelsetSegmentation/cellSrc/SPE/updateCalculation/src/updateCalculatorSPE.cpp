@@ -35,6 +35,21 @@
 
 using namespace M4D::Cell;
 
+///////////////////////////////////////////////////////////////////////////////
+
+void 
+M4D::Cell::ComputeStridesFromSize(const TSize &size, TStrides &strides)
+{
+  unsigned int accum;
+
+  accum = 1;
+  strides[0] = 1;
+  for (unsigned int dim = 1; dim < DIM; ++dim)
+    {
+	  accum *= size[dim-1];
+	  strides[dim] = accum;
+	  }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 

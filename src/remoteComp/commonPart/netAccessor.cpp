@@ -36,7 +36,8 @@ NetAccessor::PutData(const void *data, size_t length)
 void
 NetAccessor::GetData(void *data, size_t length)	
 {
-	size_t transferred = asio::read( 
+	//size_t transferred = 
+	asio::read( 
 			m_socket_, asio::buffer(data, length), asio::transfer_all());
 }
 /////////////////////////////////////////////////////////////////////////////

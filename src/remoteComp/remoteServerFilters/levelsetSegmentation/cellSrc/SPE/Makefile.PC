@@ -6,6 +6,18 @@ include $(srcTop)/project/ToolchainSelect.mk
 RM=rm -f
 MKDIR=mkdir
 
+ITKIncludeRoot=/usr/local/include/InsightToolkit
+
+ITKIncludes=	-I$(ITKIncludeRoot)\
+				-I$(ITKIncludeRoot)/Common\
+				-I$(ITKIncludeRoot)/Algorithms\
+				-I$(ITKIncludeRoot)/BasicFilters\
+				-I$(ITKIncludeRoot)/IO\
+				-I$(ITKIncludeRoot)/Utilities\
+				-I$(ITKIncludeRoot)/Utilities/vxl/vcl\
+				-I$(ITKIncludeRoot)/Utilities/vxl/core\
+				-I$(ITKIncludeRoot)/gdcm/src
+
 ########################################
 #Name of this project part
 NAME=		SPEPart$(archPostfix)
@@ -30,7 +42,8 @@ LDFLAGS=
 ARFLAGS=	-r
 
 INCLUDES=	-I$(ROOT)/usr/include\
-			-I$(srcTop)
+			-I$(srcTop)\
+			$(ITKIncludes)
 
 DEBUG_DEFS=	-DDEBUG_LEVEL=10\
 		-DDEBUG_ADITIONAL_INFO
@@ -54,7 +67,7 @@ OBJECT_FILES = 	$(TMP_DIR)/curvatureTermSolver.o\
 				$(TMP_DIR)/neighborhoodCell.o\
 				$(TMP_DIR)/neighbourhoodIterator.o\
 				$(TMP_DIR)/speedTermSolver.o\
-				$(TMP_DIR)/updateCalculatorSPE.o
+				$(TMP_DIR)/updateCalculatorSPE.o\
 				$(TMP_DIR)/applyUpdateCalculator.o
 		
 $(OUTPUT): $(OBJECT_FILES)
@@ -75,7 +88,7 @@ $(TMP_DIR)/updateCalculatorSPE.o:
 	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/updateCalculatorSPE.o updateCalculation/src/updateCalculatorSPE.cpp
 ## apply update calc #############
 $(TMP_DIR)/applyUpdateCalculator.o:
-	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/updateCalculatorSPE.o applyUpdateCalc/src/applyUpdateCalculator.cpp
+	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/applyUpdateCalculator.o applyUpdateCalc/src/applyUpdateCalculator.cpp
 
 .PHONY: clean
 clean:

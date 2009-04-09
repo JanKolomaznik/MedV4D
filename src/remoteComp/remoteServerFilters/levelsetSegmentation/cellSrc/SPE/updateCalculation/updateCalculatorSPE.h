@@ -72,8 +72,10 @@ protected:
 	  
 private:
 	
-	NeighbourIteratorCell m_outIter;
-	NeighbourIteratorCell m_featureIter;
+	typedef NeighbourIteratorCell<TPixelValue> TNeighbourIterator;
+	
+	TNeighbourIterator m_outIter;
+	TNeighbourIterator m_featureIter;
 	
 	TPixelValue MIN_NORM;
 	

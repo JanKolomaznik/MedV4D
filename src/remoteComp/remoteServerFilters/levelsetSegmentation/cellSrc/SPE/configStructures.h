@@ -17,6 +17,12 @@ struct ApplyUpdateConf
 {
 	SparseFieldLevelSetNode **layerBegins;
 	SparseFieldLevelSetNode **layerEnds;
+	
+	void operator=(const ApplyUpdateConf& o)
+	{
+		layerBegins = o.layerBegins;
+		layerEnds = o.layerEnds;
+	}
 };
 
 // geather all configurations that SPE needs to load

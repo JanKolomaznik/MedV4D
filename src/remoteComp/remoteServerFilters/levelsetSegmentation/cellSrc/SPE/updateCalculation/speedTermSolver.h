@@ -25,7 +25,7 @@ public:
 	typedef TContinuousIndex ContinuousIndexType;
 	typedef ContinuousIndexType FloatOffsetType;
 	
-	typedef NeighbourIteratorCell TFeatureNeighbourhoodIter;
+	typedef NeighbourIteratorCell<FeaturePixelType> TFeatureNeighbourhoodIter;
 	
 	/** Set/Get threshold values */
 	  void SetUpperThreshold(FeatureScalarType f)
