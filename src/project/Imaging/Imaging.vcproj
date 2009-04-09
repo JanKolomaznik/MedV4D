@@ -156,6 +156,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\src\DataSetFactory.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\src\Image.cpp"
 				>
 			</File>

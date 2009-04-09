@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1250"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="Imaging"
 	ProjectGUID="{A5A68502-8A1D-44AC-AB98-199CE76FFB8A}"
 	RootNamespace="Imaging"
@@ -154,6 +154,10 @@
 			</File>
 			<File
 				RelativePath="..\..\Imaging\src\ConnectionInterface.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\src\DataSetFactory.cpp"
 				>
 			</File>
 			<File
