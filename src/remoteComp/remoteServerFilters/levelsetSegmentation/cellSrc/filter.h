@@ -14,6 +14,7 @@
 	#include "PPE/SPEManager.h"
 #else
 	#include "SPE/updateCalculation/updateCalculatorSPE.h"
+	#include "SPE/applyUpdateCalc/applyUpdateCalculator.h"
 #endif
 
 
@@ -207,8 +208,10 @@ public:
 	  
 	  bool m_BoundsCheckingActive;
 	  
+	  typedef NeighborhoodIterator<OutputImageType> NeighbourIterT;
+	  
 	  /** Connectivity information for examining neighbor pixels.   */
-	    SparseFieldCityBlockNeighborList<NeighborhoodIterator<OutputImageType> >
+	    SparseFieldCityBlockNeighborList< typename NeighbourIterT::RadiusType, typename NeighbourIterT::OffsetType, 3 >
 	    m_NeighborList;
 	    
 	    /** The constant gradient to maintain between isosurfaces in the
@@ -217,7 +220,7 @@ public:
 	
 	// **************************************
 	    
-	    typedef M4D::Cell::RunConfiguration TRunConf;	    		  
+	    typedef M4D::Cell::RunConfiguration TRunConf;
 	    TRunConf m_Conf;
 	    
 protected:
@@ -230,6 +233,8 @@ protected:
 #else
 	typedef M4D::Cell::UpdateCalculatorSPE TUpdateCalculatorSPE;
 	TUpdateCalculatorSPE updateSolver;
+	
+	M4D::Cell::ApplyUpdateSPE applyUpdateCalc; 
 #endif
 	
 	

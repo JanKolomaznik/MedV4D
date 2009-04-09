@@ -30,6 +30,8 @@ typedef MyVector<uint32> TStrides;
 typedef MyVector<float32> TContinuousIndex;
 typedef MyVector<float32> TSpacing;
 
+void ComputeStridesFromSize(const TSize &size, TStrides &strides);
+
 struct TRegion
 {
 	TIndex offset;

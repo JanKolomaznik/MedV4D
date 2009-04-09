@@ -1,6 +1,8 @@
 #ifndef SUPPORTCLASSES_H_
 #define SUPPORTCLASSES_H_
 
+#include "SPE/commonTypes.h"
+
 namespace itk {
 
 template <class TIndex>
@@ -12,27 +14,24 @@ public:
 	SparseFieldLevelSetNode *Previous;
 };
 
-template <class TNeighborhoodType>
+template<typename TRadius, typename TOffset, uint8 Dim>
 class SparseFieldCityBlockNeighborList
 {
 public:
-  typedef TNeighborhoodType                     NeighborhoodType;
-  typedef typename NeighborhoodType::OffsetType OffsetType;
-  typedef typename NeighborhoodType::RadiusType RadiusType;
-  itkStaticConstMacro(Dimension, unsigned int,
-                      NeighborhoodType::Dimension );
+	
+#define SIZE (2 * Dim)
 
-  const RadiusType &GetRadius() const
+  const TRadius &GetRadius() const
     { return m_Radius; }
   
   const unsigned int &GetArrayIndex(unsigned int i) const
     { return m_ArrayIndex[i]; }
 
-  const OffsetType &GetNeighborhoodOffset(unsigned int i) const
+  const TOffset &GetNeighborhoodOffset(unsigned int i) const
     { return m_NeighborhoodOffset[i]; }
 
   const unsigned int &GetSize() const
-    { return m_Size; }
+    { return m_size; }
 
   int GetStride(unsigned int i)
     { return m_StrideTable[i]; }
@@ -43,14 +42,14 @@ public:
   void Print(std::ostream &os) const;
   
 private:
-  unsigned int              m_Size;
-  RadiusType                m_Radius;
-  std::vector<unsigned int> m_ArrayIndex;
-  std::vector<OffsetType>   m_NeighborhoodOffset;
+	uint32 m_size;
+  TRadius                m_Radius;
+  unsigned int m_ArrayIndex[SIZE];
+  TOffset   m_NeighborhoodOffset[SIZE];
 
   /** An internal table for keeping track of stride lengths in a neighborhood,
       i.e. the memory offsets between pixels along each dimensional axis. */
-  unsigned m_StrideTable[Dimension];
+  M4D::Cell::TStrides m_StrideTable;
 };
 
 

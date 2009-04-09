@@ -4,9 +4,6 @@
 #include "diffFunc.h"
 //#include "../commonConsts.h"
 #include "../configStructures.h"
-
-//#include "itkConstNeighborhoodIterator.h"
-//#include "itkZeroFluxNeumannBoundaryCondition.h"
 #include "../tools/neighbourhoodIterator.h"
 // tools
 #include "../tools/cellRemoteArray.h"

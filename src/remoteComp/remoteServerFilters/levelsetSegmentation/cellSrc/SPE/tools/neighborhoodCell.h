@@ -19,7 +19,7 @@ class NeighborhoodCell
 public:
 	
 	//ctor
-	NeighborhoodCell(TImageProperties *props);	
+	NeighborhoodCell(TImageProperties *props);
 	void SetPosition(const TIndex &pos);
 	
 	inline TPixelValue GetPixel(uint32 pos) { return m_buf[pos]; }
@@ -38,7 +38,6 @@ public:
 	
 	//void Print(std::ostream &stream);
 protected:
-	void ComputeStridesFromSize(const TSize &size, TStrides &strides);
 	
 	TPixelValue *ComputeImageDataPointer(const TIndex &pos);
 	void LoadData(TPixelValue *src, TPixelValue *dest, size_t size);

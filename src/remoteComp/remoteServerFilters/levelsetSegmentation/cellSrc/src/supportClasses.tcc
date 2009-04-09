@@ -7,62 +7,59 @@
 namespace itk {
 
 
-template <class TNeighborhoodType>
-SparseFieldCityBlockNeighborList<TNeighborhoodType>
+template<typename TRadius, typename TOffset, uint8 Dim>
+SparseFieldCityBlockNeighborList<TRadius, TOffset, Dim>
 ::SparseFieldCityBlockNeighborList()
 {
-  typedef typename NeighborhoodType::ImageType ImageType;
-  typename ImageType::Pointer dummy_image = ImageType::New();
-
   unsigned int i, nCenter;
   int d;
-  OffsetType zero_offset;
+  TOffset zero_offset;
+  
+  m_size = SIZE;
+  
+  M4D::Cell::TSize size;
     
-  for (i = 0; i < Dimension; ++i)
+  for (i = 0; i < Dim; ++i)
     {
     m_Radius[i] = 1;
     zero_offset[i] = 0;
+    size[i] = 3;
     }
-  NeighborhoodType it(m_Radius, dummy_image, dummy_image->GetRequestedRegion());
-  nCenter = it.Size() / 2;
+  
+  nCenter = (Dim * Dim * Dim) / 2;
 
-  m_Size = 2 * Dimension;
-  m_ArrayIndex.reserve(m_Size);
-  m_NeighborhoodOffset.reserve(m_Size);
-
-  for (i = 0; i < m_Size; ++i)
+  for (i = 0; i < SIZE; ++i)
     {
-    m_NeighborhoodOffset.push_back(zero_offset);
+    m_NeighborhoodOffset[i] = zero_offset;
     }
+  
+  M4D::Cell::ComputeStridesFromSize(size, m_StrideTable);
+  
+  uint32 pushIndex = 0;
 
-  for (d = Dimension - 1, i = 0; d >= 0; --d, ++i)
+  for (d = Dim - 1, i = 0; d >= 0; --d, ++i)
     {
-    m_ArrayIndex.push_back( nCenter - it.GetStride(d) );
+    m_ArrayIndex[pushIndex++] = nCenter - m_StrideTable[d];
     m_NeighborhoodOffset[i][d] = -1;
     }
-  for (d = 0; d < static_cast<int>(Dimension); ++d, ++i)
+  for (d = 0; d < static_cast<int>(Dim); ++d, ++i)
     {
-    m_ArrayIndex.push_back( nCenter + it.GetStride(d) );
+    m_ArrayIndex[pushIndex++] = nCenter + m_StrideTable[d];
     m_NeighborhoodOffset[i][d] = 1;
-    }
-
-  for (i = 0; i < Dimension; ++i)
-    {
-    m_StrideTable[i] = it.GetStride(i);
     }
 }
 
-template <class TNeighborhoodType>
+template<typename TRadius, typename TOffset, uint8 Dim>
 void
-SparseFieldCityBlockNeighborList<TNeighborhoodType>
+SparseFieldCityBlockNeighborList<TRadius, TOffset, Dim>
 ::Print(std::ostream &os) const
 {
   os << "SparseFieldCityBlockNeighborList: " << std::endl;
-  for (unsigned i = 0; i < this->GetSize(); ++i)
+  for (unsigned i = 0; i < SIZE; ++i)
     {
     os << "m_ArrayIndex[" << i << "]: " << m_ArrayIndex[i] << std::endl;
-    os << "m_NeighborhoodOffset[" << i << "]: " << m_NeighborhoodOffset[i]
-       << std::endl;
+    //os << "m_NeighborhoodOffset[" << i << "]: " << m_NeighborhoodOffset[i]
+       //<< std::endl;
     }
 }
 

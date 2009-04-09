@@ -13,6 +13,12 @@ enum ESPUCommands
 	QUIT
 };
 
+struct ApplyUpdateConf
+{
+	SparseFieldLevelSetNode **layerBegins;
+	SparseFieldLevelSetNode **layerEnds;
+};
+
 // geather all configurations that SPE needs to load
 class RunConfiguration
 {
@@ -23,10 +29,10 @@ public:
     float32 m_propWeight;
     float32 m_curvWeight;
     
-	  /** The number of layers to use in the sparse field.  Sparse field will
-	   * consist of m_NumberOfLayers layers on both sides of a single active layer.
-	   * This active layer is the interface of interest, i.e. the zero
-	   * level set. */
+  /** The number of layers to use in the sparse field.  Sparse field will
+   * consist of m_NumberOfLayers layers on both sides of a single active layer.
+   * This active layer is the interface of interest, i.e. the zero
+   * level set. */
 	uint8 m_NumberOfLayers;
     
     /** The constant gradient to maintain between isosurfaces in the
@@ -41,6 +47,7 @@ public:
     
     TImageProperties featureImageProps;
     TImageProperties valueImageProps;
+    TImageProperties statusImageProps;
 	
 	void operator=(const RunConfiguration& o)
 	{
@@ -56,6 +63,7 @@ public:
 		m_activeSetEnd = o.m_activeSetEnd;
 		featureImageProps = o.featureImageProps;
 		valueImageProps = o.valueImageProps;
+		statusImageProps = o.statusImageProps;
 	}
 };
 

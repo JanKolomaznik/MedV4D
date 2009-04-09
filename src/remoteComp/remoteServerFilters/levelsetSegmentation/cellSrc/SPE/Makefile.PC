@@ -55,25 +55,29 @@ OBJECT_FILES = 	$(TMP_DIR)/curvatureTermSolver.o\
 				$(TMP_DIR)/neighbourhoodIterator.o\
 				$(TMP_DIR)/speedTermSolver.o\
 				$(TMP_DIR)/updateCalculatorSPE.o
+				$(TMP_DIR)/applyUpdateCalculator.o
 		
-$(OUTPUT): curvatureTermSolver.o diffFunc.o neighborhoodCell.o neighbourhoodIterator.o speedTermSolver.o updateCalculatorSPE.o
+$(OUTPUT): $(OBJECT_FILES)
 		$(AR) $(ARFLAGS) $(OUTPUT) $(OBJECT_FILES)
 ## tools ###################
-neighborhoodCell.o:
+$(TMP_DIR)/neighborhoodCell.o:
 	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/neighborhoodCell.o tools/src/neighborhoodCell.cpp
-neighbourhoodIterator.o:
+$(TMP_DIR)/neighbourhoodIterator.o:
 	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/neighbourhoodIterator.o tools/src/neighbourhoodIterator.cpp
 ## update calc #############
-curvatureTermSolver.o:
+$(TMP_DIR)/curvatureTermSolver.o:
 	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/curvatureTermSolver.o updateCalculation/src/curvatureTermSolver.cpp
-diffFunc.o:
+$(TMP_DIR)/diffFunc.o:
 	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/diffFunc.o updateCalculation/src/diffFunc.cpp
-speedTermSolver.o:
+$(TMP_DIR)/speedTermSolver.o:
 	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/speedTermSolver.o updateCalculation/src/speedTermSolver.cpp
-updateCalculatorSPE.o:
+$(TMP_DIR)/updateCalculatorSPE.o:
 	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/updateCalculatorSPE.o updateCalculation/src/updateCalculatorSPE.cpp
+## apply update calc #############
+$(TMP_DIR)/applyUpdateCalculator.o:
+	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/updateCalculatorSPE.o applyUpdateCalc/src/applyUpdateCalculator.cpp
 
 .PHONY: clean
 clean:
-		$(RM) $(TMP_DIR)/operations.o $(TMP_DIR)/path.o $(TMP_DIR)/portability.o $(TMP_DIR)/utf8_codecvt_facet.o
+		$(RM) $(OBJECT_FILES)
 		$(RM) $(OUTPUT)

@@ -43,6 +43,8 @@ public:
 	  {
 		  m_neighbourhood = neiborhood;  
 	  }
+	  
+	  void SetCenterPixel(TPixelValue val);	//TODO !!!!!!!!!!!
 
 	  /** Computes the internal, N-d offset of a pixel array position n from 
 	   * (0,0, ..., 0) in the "upper-left" corner of the neighborhood. */
