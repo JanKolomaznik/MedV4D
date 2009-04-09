@@ -7,19 +7,15 @@ using namespace M4D::Cell;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-NeighborhoodCell::NeighborhoodCell(const TRadius &radius, TImageProperties *props)
-		: m_radius(radius), m_imageProps(props)
+NeighborhoodCell::NeighborhoodCell(TImageProperties *props)
+		: m_imageProps(props)
 {
 	// set size
 	for (unsigned int i=0; i<DIM; ++i)
-		{ m_radiusSize[i] = m_radius[i]*2+1; }
+		{ m_radiusSize[i] = SIZEIN1DIM; }
 	
 	// count size of buffer in linear manner
-	m_size = m_radiusSize[0];
-	for(uint8 i=1; i < DIM; i++)
-		m_size *= m_radiusSize[i];
-	
-	m_buf = new TPixelValue[m_size];
+	m_size = NEIGHBOURHOOD_SIZE;
 	
 	ComputeStridesFromSize(m_radiusSize, m_radiusStrides);
 	ComputeStridesFromSize(m_imageProps->region.size, m_imageStrides);
@@ -91,7 +87,7 @@ void
 NeighborhoodCell
 ::LoadSlice(TIndex posm, uint8 dim, TPixelValue *dest)
 {
-	posm[dim] -= m_radius[dim];
+	posm[dim] -= RADIUS;
 	if(dim == 0)
 	{		
 		TPixelValue *begin = ComputeImageDataPointer(posm);
@@ -123,7 +119,7 @@ NeighborhoodCell
 	memset((void*)m_buf, DEFAULT_VAL, m_size * sizeof(TPixelValue));
 	
 	TIndex iteratingIndex(pos);
-	iteratingIndex[DIM-1] -= m_radius[DIM-1];
+	iteratingIndex[DIM-1] -= RADIUS;
 	for(uint32 i=0; i<m_radiusSize[DIM-1]; i++)
 	{
 		if(IsWithinImage(iteratingIndex))

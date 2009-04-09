@@ -3,19 +3,23 @@
 
 #include "commonTypes.h"
 
-#if( (defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) ) && (NOT_ONLY_TEST) )
+#if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
 #include <spu_mfcio.h>
 #endif
 
 namespace M4D {
 namespace Cell {
 
+#define RADIUS 1
+#define SIZEIN1DIM ((RADIUS * 2) + 1)
+#define NEIGHBOURHOOD_SIZE (SIZEIN1DIM * SIZEIN1DIM * SIZEIN1DIM)
+
 class NeighborhoodCell
 {
 public:
 	
 	//ctor
-	NeighborhoodCell(const TRadius &radius, TImageProperties *props);	
+	NeighborhoodCell(TImageProperties *props);	
 	void SetPosition(const TIndex &pos);
 	
 	inline TPixelValue GetPixel(uint32 pos) { return m_buf[pos]; }
@@ -41,7 +45,6 @@ protected:
 	void LoadSlice(TIndex posm, uint8 dim, TPixelValue *dest);
 	bool IsWithinImage(const TIndex &pos);
 	
-	TRadius m_radius;
 	TStrides m_radiusStrides;
 	TSize m_radiusSize;
 	
@@ -50,7 +53,7 @@ protected:
 	TImageProperties *m_imageProps;
 	TStrides m_imageStrides;
 	
-	TPixelValue *m_buf;
+	TPixelValue m_buf[NEIGHBOURHOOD_SIZE];
 	size_t m_size;
 };
 

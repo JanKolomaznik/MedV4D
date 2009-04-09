@@ -322,7 +322,7 @@ public:
 	   * iteration region. */
 	  //virtual void SetEndIndex();
 	  
-	  TOffset *m_OffsetTable;
+	  TOffset m_OffsetTable[NEIGHBOURHOOD_SIZE];
 	  
 	  /** The starting index for iteration within the itk::Image region
 	   * on which this ConstNeighborhoodIterator is defined. */

@@ -62,7 +62,6 @@ NeighbourIteratorCell
 void
 NeighbourIteratorCell::ComputeNeighborhoodOffsetTable()
 {
-	m_OffsetTable = new TOffset[m_neighbourhood->GetSize()];
   TOffset o;
   unsigned int i, j;
   for (j = 0; j < DIM; j++)
