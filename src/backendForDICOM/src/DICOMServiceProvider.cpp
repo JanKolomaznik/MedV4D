@@ -232,7 +232,12 @@ DcmProvider::CreateImageDataFromDICOM(
 		float32 voxelHeight = 1.0;
 		float32 voxelDepth = 1.0;
 		(*dicomObjects)[0].GetPixelSpacing( voxelWidth, voxelHeight );
-		(*dicomObjects)[0].GetSliceThickness( voxelDepth );
+		//(*dicomObjects)[0].GetSliceThickness( voxelDepth );
+		float32 tmp1 = 0.0;
+		float32 tmp2 = 1.0;
+		(*dicomObjects)[0].GetSliceLocation( tmp1 );
+		(*dicomObjects)[1].GetSliceLocation( tmp2 );
+		voxelDepth = Abs( tmp1 - tmp2 );
 
 		uint32	sliceSize = width * height;	//Count of elements in one slice.
 		uint32	imageSize = sliceSize * depth;	//Count of elements in whole image.

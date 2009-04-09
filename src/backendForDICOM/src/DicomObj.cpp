@@ -301,6 +301,25 @@ DicomObj::GetSliceLocation( float32 &location)
 
 ///////////////////////////////////////////////////////////////////////
 
+void 
+DicomObj::GetImagePosition( float32 &x, float32 &y, float32 &z )
+{
+	DcmDataset* dataSet = static_cast<DcmDataset *>(m_dataset);
+
+	if( dataSet == NULL)
+		throw ExceptionBase("No data available!");
+
+	OFString s;
+	dataSet->findAndGetOFStringArray( DCM_ImagePositionPatient, s);
+
+	std::istringstream stream( s.c_str());
+	stream >> x;
+	stream.seekg( stream.cur);
+	stream >> y;
+	stream.seekg( stream.cur);
+	stream >> z;
+}
+
 /**
  * @}
  */

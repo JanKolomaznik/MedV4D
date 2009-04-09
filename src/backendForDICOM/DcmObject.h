@@ -66,6 +66,7 @@ public:
   void GetSliceThickness( float32 &f);
   void GetPixelSpacing( float32 &horizSpacing, float32 &vertSpacing);
   void GetSliceLocation( float32 &location);
+  void GetImagePosition( float32 &x, float32 &y, float32 &z );
 
   /// Converts from special dicom data stream
   /** to steam of normal data types like uint16. See DICOM spec.
