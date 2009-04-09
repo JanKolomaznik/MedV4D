@@ -82,6 +82,8 @@ class m4dGUIMainWindow: public QMainWindow
      * Study Manager, loading method are filling it.
      */
     struct Study {
+      /// Pointer to AbstractDataSet.
+      Imaging::AbstractDataSet::Ptr abstractDataSet;
       /// Pointer to DicomObjSet.
       Dicom::DicomObjSet *dicomObjSet;
       /// Overlay info lists.
@@ -337,15 +339,15 @@ class m4dGUIMainWindow: public QMainWindow
   protected:
 
     /** 
-     * Virtual method - called after closing the Study Manager (clicking on View) to
-     * process the result of the Study Manager (search). Default behavor: creates
-     * image from the Dicom Object Set and sets it as input of the currently selected viewer.
+     * Virtual method - called after closing the Study Manager (clicking on View)/opening/loading
+     * to process the result of these actions. Default behavor:
+     * Sets Abstract Data Set as input of the currently selected viewer.
      * 
      * Can be reimplemented to get specific behavior.
      * 
-     * @param dicomObjSet Dicom Object Set (result of the search) to process
+     * @param inputDataSet pointer to Abstract Data Set to process
      */
-    virtual void process ( Dicom::DicomObjSetPtr dicomObjSet );
+    virtual void process ( Imaging::AbstractDataSet::Ptr inputDataSet );
 
 
     /// Pointer to the current Viewer Desktop

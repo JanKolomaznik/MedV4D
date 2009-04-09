@@ -50,7 +50,7 @@ public:
 
 protected:
 	void
-	process( M4D::Dicom::DicomObjSetPtr dicomObjSet );
+	process( M4D::Imaging::AbstractDataSet::Ptr inputDataSet );
 
 	void
 	CreatePipeline();

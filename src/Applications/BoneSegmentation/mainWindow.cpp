@@ -74,12 +74,10 @@ mainWindow::mainWindow ()
 	QObject::connect( _notifier, SIGNAL( Notification() ), _settings, SLOT( EndOfExecution() ), Qt::QueuedConnection );
 }
 
-void mainWindow::process ( M4D::Dicom::DicomObjSetPtr dicomObjSet )
+void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 {
-	AbstractImage::Ptr inputImage = M4D::Dicom::DcmProvider::CreateImageFromDICOM( dicomObjSet );
-
 	try {
-		_inConnection->PutDataset( inputImage );
+		_inConnection->PutDataset( inputDataSet );
 
 		_convertor->Execute();
 

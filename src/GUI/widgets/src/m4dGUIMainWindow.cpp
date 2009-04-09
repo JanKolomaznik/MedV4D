@@ -15,6 +15,7 @@
 using namespace M4D::Dicom;
 using namespace M4D::Viewer;
 using namespace M4D::Imaging;
+using namespace M4D::IO;
 
 using namespace std;
 
@@ -263,9 +264,10 @@ void m4dGUIMainWindow::load ()
   {
     QFileInfo pathInfo( path );
 
-    // pathInfo.absoluteFilePath().toStdString() - full path with filename
-    
-    // TODO - loading method
+    FInStream inStr( pathInfo.absoluteFilePath().toStdString() );		
+    actualStudy.abstractDataSet = DataSetFactory::DeserializeDataset( inStr );
+
+    process( actualStudy.abstractDataSet );
   } 
 }
 
@@ -277,10 +279,9 @@ void m4dGUIMainWindow::save ()
   if ( !path.isNull() ) 
   {
     QFileInfo pathInfo( path );
-
-    // pathInfo.absoluteFilePath().toStdString() - full path with filename
    
-    // TODO - saving method
+    FOutStream stream( pathInfo.absoluteFilePath().toStdString() );
+    // DataSetFactory::SerializeDataset( stream, const_cast< const AbstractDataSet::Ptr >(actualStudy.abstractDataSet) );
   }
 }
 
@@ -466,9 +467,13 @@ void m4dGUIMainWindow::loadingReady ()
     currentViewerDesktop->getSelectedViewerWidget()->setLeftSideTextData( actualStudy.leftOverlayInfo );  
     currentViewerDesktop->getSelectedViewerWidget()->setRightSideTextData( actualStudy.rightOverlayInfo );  
 
-    process( DicomObjSetPtr( actualStudy.dicomObjSet ) );
+    actualStudy.abstractDataSet = DcmProvider::CreateImageFromDICOM( DicomObjSetPtr( actualStudy.dicomObjSet ) );
+
+    process( actualStudy.abstractDataSet );
 
     stopProgress();
+
+    saveAct->setEnabled( true );
   }
   else {
     loadingException ( tr( "Empty image - nothing to process" ) );
@@ -597,6 +602,7 @@ void m4dGUIMainWindow::createActions ()
   saveAct->setShortcut( tr( "Ctrl+A" ) );
   saveAct->setStatusTip( tr( "Save current Data Set" ) );
   connect( saveAct, SIGNAL(triggered()), this, SLOT(save()) );
+  saveAct->setEnabled( false );
 
   exitAct = new QAction( QIcon( ":/icons/exit.png" ), tr( "E&xit" ), this );
   exitAct->setShortcut( tr( "Ctrl+Q" ) );
@@ -776,14 +782,12 @@ void m4dGUIMainWindow::delegateAction ( unsigned actionIdx, m4dGUIAbstractViewer
 }
 
 
-void m4dGUIMainWindow::process ( DicomObjSetPtr dicomObjSet )
+void m4dGUIMainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 {
-  AbstractImage::Ptr inputImage = DcmProvider::CreateImageFromDICOM( dicomObjSet );
-
-	try {
+  try {
 
     ConnectionInterfaceTyped< AbstractImage > *conn = new ConnectionTyped< AbstractImage >;
-		conn->PutDataset( inputImage );
+		conn->PutDataset( inputDataSet );
 
 		currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
 		conn->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );

@@ -17,7 +17,7 @@ public:
 
 protected:
 
-	void process ( M4D::Dicom::DicomObjSetPtr dicomObjSet );
+	void process ( M4D::Imaging::AbstractDataSet::Ptr inputDataSet );
 };
 
 

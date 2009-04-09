@@ -17,8 +17,8 @@ namespace GUI {
 /**
  * Class providing client study filtering functionality for Study Manager.
  */
-class StudyFilter {
-
+class StudyFilter 
+{
   public:
 
     /** 
