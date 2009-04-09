@@ -24,7 +24,9 @@ public:
 	ApplyUpdateSPE();
 	~ApplyUpdateSPE();
 	
-	void ApplyUpdate(TimeStepType dt);
+	typedef float32 ValueType;
+	
+	ValueType ApplyUpdate(TimeStepType dt);
 	
 	void PropagateAllLayerValues();
 	
@@ -36,15 +38,36 @@ public:
 	typedef NeighbourIteratorCell<TPixelValue> TValueNeighbIterator;
 	typedef NeighbourIteratorCell<StatusType> TStatusNeighbIterator;
 	
+	typedef GETRemoteArrayCell<TPixelValue, 8> TUpdateBufferArray;
+	
 	//to remove
 	typedef itk::SparseFieldLayer<SparseFieldLevelSetNode> LayerType;
+	typedef LayerType::Pointer LayerPointerType;
+	
 	LayerType **m_Layers;
 	typedef itk::ObjectStore<SparseFieldLevelSetNode> LayerNodeStorageType;
 	LayerNodeStorageType *m_LayerNodeStore;
 	
+	
 private:
 	void PropagateLayerValues(StatusType from, StatusType to,
 	                       StatusType promote, uint32 InOrOut);
+	
+	void ProcessOutsideList(LayerType *OutsideList, StatusType ChangeToStatus);
+	void ProcessStatusList(LayerType *InputList, LayerType *OutputList,
+            StatusType ChangeToStatus, StatusType SearchForStatus, TStatusNeighbIterator &statIter);
+	void UpdateActiveLayerValues(TimeStepType dt,
+            LayerType *UpList, LayerType *DownList);
+	
+	ValueType CalculateUpdateValue(
+		    const TimeStepType &dt,
+		    const ValueType &value,
+		    const ValueType &change)
+		    {
+			ValueType val = (value + dt * change); 
+			return val;
+			}
+	
 	
 	void UnlinkNode(SparseFieldLevelSetNode *node, uint8 layerNum);
 	void ReturnToNodeStore(SparseFieldLevelSetNode *node);
@@ -54,8 +77,6 @@ private:
 	
 	TValueNeighbIterator m_outIter;
 	TStatusNeighbIterator m_statusIter;
-	
-	
 };
 
 }

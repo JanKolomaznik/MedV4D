@@ -91,16 +91,6 @@ public:
 	// **************************************
 
 	  // FUNCTIONS
-	
-	inline virtual ValueType CalculateUpdateValue(
-	    const IndexType &itkNotUsed(idx),
-	    const TimeStepType &dt,
-	    const ValueType &value,
-	    const ValueType &change)
-	    {
-		ValueType val = (value + dt * change); 
-		return val;
-		}
 	  
 	  /**This method packages the output(s) into a consistent format.  The default
 	     * implementation produces a volume with the final solution values in the

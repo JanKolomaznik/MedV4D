@@ -16,7 +16,7 @@ RemoteArrayCell<T, BUFSIZE>::RemoteArrayCell()
 template<typename T, uint8 BUFSIZE>
 RemoteArrayCell<T, BUFSIZE>::RemoteArrayCell(T *array)
 { 
-	SetArray(array); 
+	SetArray(array);
 }
 ///////////////////////////////////////////////////////////////////////////////
 template<typename T, uint8 BUFSIZE>
@@ -59,6 +59,43 @@ RemoteArrayCell<T, BUFSIZE>::CopyData(T *src, T *dest, size_t size)
 	{
 		memcpy(dest, src, size * sizeof(T));
 	}
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+template<typename T, uint8 BUFSIZE>
+GETRemoteArrayCell<T, BUFSIZE>::GETRemoteArrayCell(T *begin)//, T *end)
+	: m_arrayBegin(begin), m_currLoadedPos(begin), m_currPos(begin)//, m_arrayEnd(end)
+{
+	// load the first chunk
+	m_currBuf = 0;
+}
+///////////////////////////////////////////////////////////////////////////////
+template<typename T, uint8 BUFSIZE>
+void
+GETRemoteArrayCell<T, BUFSIZE>::CopyData(T *src, T *dest, size_t size)
+{
+	memcpy(dest, src, size * sizeof(T));
+}
+///////////////////////////////////////////////////////////////////////////////
+template<typename T, uint8 BUFSIZE>
+T
+GETRemoteArrayCell<T, BUFSIZE>::pop_front()
+{
+	T retval = m_buf[m_currBuf][m_currPos];
+	m_currPos++;
+	if(m_currPos == BUFSIZE)
+		LoadNextPiece();
+	m_currBuf = ! m_currBuf;
+	
+	return retval;
+}
+///////////////////////////////////////////////////////////////////////////////
+template<typename T, uint8 BUFSIZE>
+void
+GETRemoteArrayCell<T, BUFSIZE>::LoadNextPiece()
+{
+	CopyData(m_currLoadedPos, m_buf[!m_currBuf], BUFSIZE);
+	m_currLoadedPos += BUFSIZE;
+}
 ///////////////////////////////////////////////////////////////////////////////
 
 }}

@@ -5,6 +5,39 @@
 
 namespace itk {
 
+///////////////////////////////////////////////////////////////////////////////
+
+// support functions
+template<typename ImageType, typename RegionType>
+RegionType ConvertRegion(const ImageType &image)
+{
+	// convert values
+	typename ImageType::RegionType imageRegion;
+
+	imageRegion = image.GetLargestPossibleRegion();
+	RegionType reg;
+
+	for(uint8 i=0; i<ImageType::ImageDimension; i++)
+	{
+		reg.offset[i] = imageRegion.GetIndex()[i];
+		reg.size[i] = imageRegion.GetSize()[i];
+	}
+
+	return reg;
+}
+
+template<typename T1, typename T2>
+T1 ConvertIncompatibleVectors(const T2 &v2)
+{
+	T1 tmp;
+	for(uint32 i=0; i<DIM; i++)
+		tmp[i] = v2[i];
+
+	return tmp;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 template <class TIndex>
 class SparseFieldLevelSetNode
 {
