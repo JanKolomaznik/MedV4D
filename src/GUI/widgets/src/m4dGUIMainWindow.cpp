@@ -281,7 +281,7 @@ void m4dGUIMainWindow::save ()
     QFileInfo pathInfo( path );
    
     FOutStream stream( pathInfo.absoluteFilePath().toStdString() );
-    // DataSetFactory::SerializeDataset( stream, const_cast< const AbstractDataSet::Ptr >(actualStudy.abstractDataSet) );
+    DataSetFactory::SerializeDataset( stream, *actualStudy.abstractDataSet );
   }
 }
 
