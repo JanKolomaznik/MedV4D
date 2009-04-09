@@ -51,9 +51,9 @@ public:
     SparseFieldLevelSetNode *m_activeSetBegin;
     SparseFieldLevelSetNode *m_activeSetEnd;
     
-    TImageProperties featureImageProps;
-    TImageProperties valueImageProps;
-    TImageProperties statusImageProps;
+    TImageProperties<TPixelValue> featureImageProps;
+    TImageProperties<TPixelValue> valueImageProps;
+    TImageProperties<StatusType> statusImageProps;
 	
 	void operator=(const RunConfiguration& o)
 	{

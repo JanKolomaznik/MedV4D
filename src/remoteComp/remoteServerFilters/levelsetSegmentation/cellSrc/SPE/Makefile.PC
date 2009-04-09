@@ -64,19 +64,13 @@ build:		cleanall all
 
 OBJECT_FILES = 	$(TMP_DIR)/curvatureTermSolver.o\
 				$(TMP_DIR)/diffFunc.o\
-				$(TMP_DIR)/neighborhoodCell.o\
-				$(TMP_DIR)/neighbourhoodIterator.o\
 				$(TMP_DIR)/speedTermSolver.o\
 				$(TMP_DIR)/updateCalculatorSPE.o\
 				$(TMP_DIR)/applyUpdateCalculator.o
 		
 $(OUTPUT): $(OBJECT_FILES)
 		$(AR) $(ARFLAGS) $(OUTPUT) $(OBJECT_FILES)
-## tools ###################
-$(TMP_DIR)/neighborhoodCell.o:
-	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/neighborhoodCell.o tools/src/neighborhoodCell.cpp
-$(TMP_DIR)/neighbourhoodIterator.o:
-	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/neighbourhoodIterator.o tools/src/neighbourhoodIterator.cpp
+
 ## update calc #############
 $(TMP_DIR)/curvatureTermSolver.o:
 	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/curvatureTermSolver.o updateCalculation/src/curvatureTermSolver.cpp

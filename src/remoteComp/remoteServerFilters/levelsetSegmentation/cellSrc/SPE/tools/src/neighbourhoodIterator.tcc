@@ -1,13 +1,14 @@
+#ifndef NEIGHBOURHOODITERATOR_H_
+#error File neighbourhoodIterator.tcc cannot be included directly!
+#else
 
-#include "common/Types.h"
-#include "../neighbourhoodIterator.h"
-
-using namespace M4D::Cell;
+namespace M4D {
+namespace Cell {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-
-NeighbourIteratorCell
+template<typename PixelType>
+NeighbourIteratorCell<PixelType>
 ::NeighbourIteratorCell()
 	: m_neighbourhood(0) 
 {
@@ -15,8 +16,8 @@ NeighbourIteratorCell
 
 ///////////////////////////////////////////////////////////////////////////////
 
-
-NeighbourIteratorCell
+template<typename PixelType>
+NeighbourIteratorCell<PixelType>
 ::NeighbourIteratorCell(NeighborhoodType *neiborhood)
 	: m_neighbourhood(neiborhood)
 {
@@ -27,8 +28,8 @@ for (unsigned int i=0; i < DIM; i++)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-
-NeighbourIteratorCell
+template<typename PixelType>
+NeighbourIteratorCell<PixelType>
 ::~NeighbourIteratorCell()
 {
 	
@@ -36,9 +37,9 @@ NeighbourIteratorCell
 
 ///////////////////////////////////////////////////////////////////////////////
 
-
+template<typename PixelType>
 bool
-NeighbourIteratorCell
+NeighbourIteratorCell<PixelType>
 ::InBounds() const
 { 
   bool ans = true;
@@ -58,9 +59,9 @@ NeighbourIteratorCell
   return ans;
 }
 
-
+template<typename PixelType>
 void
-NeighbourIteratorCell::ComputeNeighborhoodOffsetTable()
+NeighbourIteratorCell<PixelType>::ComputeNeighborhoodOffsetTable()
 {
   TOffset o;
   unsigned int i, j;
@@ -160,9 +161,9 @@ NeighbourIteratorCell::ComputeNeighborhoodOffsetTable()
 //}
 
 
-
+template<typename PixelType>
 TOffset
-NeighbourIteratorCell
+NeighbourIteratorCell<PixelType>
 ::ComputeInternalIndex(unsigned int n) const
 {
   TOffset ans;
@@ -278,20 +279,20 @@ NeighbourIteratorCell
 //}
 
 
-void
-NeighbourIteratorCell
-::GoToBegin()
-{
-  this->SetLocation( m_BeginIndex );
-}
-
-
-void
-NeighbourIteratorCell
-::GoToEnd()
-{
-  this->SetLocation( m_EndIndex );
-}
+//void
+//NeighbourIteratorCell
+//::GoToBegin()
+//{
+//  this->SetLocation( m_BeginIndex );
+//}
+//
+//
+//void
+//NeighbourIteratorCell
+//::GoToEnd()
+//{
+//  this->SetLocation( m_EndIndex );
+//}
 
 //
 //NeighbourIteratorCell
@@ -337,3 +338,7 @@ NeighbourIteratorCell
 //                                 // higher dimensions  
 //}
 
+}
+}
+
+#endif

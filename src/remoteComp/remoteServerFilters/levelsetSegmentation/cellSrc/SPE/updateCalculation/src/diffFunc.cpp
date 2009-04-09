@@ -61,8 +61,8 @@ ThresholdLevelSetFunc::ThresholdLevelSetFunc()
 
 TPixelValue
 ThresholdLevelSetFunc::ComputeUpdate(
-		const NeighbourIteratorCell &it, 
-		const NeighbourIteratorCell &featureNeib, GlobalDataStruct *globalData,
+		const NeighborhoodIteratorType &it, 
+		const NeighborhoodIteratorType &featureNeib, GlobalDataStruct *globalData,
 		const TContinuousIndex& offset)
 {
 	unsigned int i, j;

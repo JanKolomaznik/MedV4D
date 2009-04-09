@@ -17,8 +17,10 @@ class NeighborhoodCell
 {
 public:
 	
+	typedef PixelType TPixel;
+	
 	//ctor
-	NeighborhoodCell(TImageProperties *props);
+	NeighborhoodCell(TImageProperties<PixelType> *props);
 	void SetPosition(const TIndex &pos);
 	
 	inline PixelType GetPixel(uint32 pos) { return m_buf[pos]; }
@@ -34,7 +36,7 @@ public:
 		{ return  static_cast<uint32>(m_size/2); }
 	size_t GetSize() { return m_size; }
 	
-	void SetImageProperties(TImageProperties *props) { m_imageProps = props; }
+	void SetImageProperties(TImageProperties<PixelType> *props) { m_imageProps = props; }
 	
 	//void Print(std::ostream &stream);
 protected:
@@ -49,7 +51,7 @@ protected:
 	
 	TIndex m_currIndex;
 	
-	TImageProperties *m_imageProps;
+	TImageProperties<PixelType> *m_imageProps;
 	TStrides m_imageStrides;
 	
 	PixelType m_buf[NEIGHBOURHOOD_SIZE];

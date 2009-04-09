@@ -1,30 +1,16 @@
+#ifndef NEIGHBORHOODCELL_H_
+#error File neighborhoodCell.tcc cannot be included directly!
+#else
 
-#include "common/Types.h"
-#include "../neighborhoodCell.h"
+namespace M4D {
+namespace Cell {
+
 #include <string.h>
 
-using namespace M4D::Cell;
-
 ///////////////////////////////////////////////////////////////////////////////
 
-void 
-M4D::Cell::ComputeStridesFromSize(const TSize &size, TStrides &strides)
-{
-  unsigned int accum;
-
-  accum = 1;
-  strides[0] = 1;
-  for (unsigned int dim = 1; dim < DIM; ++dim)
-    {
-	  accum *= size[dim-1];
-	  strides[dim] = accum;
-	  }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-NeighborhoodCell::NeighborhoodCell(TImageProperties *props)
+template<typename PixelType>
+NeighborhoodCell<PixelType>::NeighborhoodCell(TImageProperties<PixelType> *props)
 		: m_imageProps(props)
 {
 	// set size
@@ -40,12 +26,12 @@ NeighborhoodCell::NeighborhoodCell(TImageProperties *props)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-
-TPixelValue *
-NeighborhoodCell
+template<typename PixelType>
+PixelType *
+NeighborhoodCell<PixelType>
 ::ComputeImageDataPointer(const TIndex &pos)
 {
-	TPixelValue *pointer = m_imageProps->imageData;
+	PixelType *pointer = m_imageProps->imageData;
 	for(uint8 i=0; i<DIM; i++)
 	{
 		pointer += pos[i] * m_imageStrides[i];
@@ -55,10 +41,10 @@ NeighborhoodCell
 
 ///////////////////////////////////////////////////////////////////////////////
 
-
+template<typename PixelType>
 void
-NeighborhoodCell
-::LoadData(TPixelValue *src, TPixelValue *dest, size_t size)
+NeighborhoodCell<PixelType>
+::LoadData(PixelType *src, PixelType *dest, size_t size)
 {
 	// copy the memory
 	memcpy((void*)dest, (void*)src, size);
@@ -66,9 +52,9 @@ NeighborhoodCell
 
 ///////////////////////////////////////////////////////////////////////////////
 
-
+template<typename PixelType>
 bool
-NeighborhoodCell
+NeighborhoodCell<PixelType>
 ::IsWithinImage(const TIndex &pos)
 {
 	for(uint32 i=0; i<DIM; i++)
@@ -82,16 +68,16 @@ NeighborhoodCell
 
 ///////////////////////////////////////////////////////////////////////////////
 
-
+template<typename PixelType>
 void
-NeighborhoodCell
-::LoadSlice(TIndex posm, uint8 dim, TPixelValue *dest)
+NeighborhoodCell<PixelType>
+::LoadSlice(TIndex posm, uint8 dim, PixelType *dest)
 {
 	posm[dim] -= RADIUS;
 	if(dim == 0)
 	{		
-		TPixelValue *begin = ComputeImageDataPointer(posm);
-		LoadData(begin, dest, m_radiusSize[dim] * sizeof(TPixelValue));
+		PixelType *begin = ComputeImageDataPointer(posm);
+		LoadData(begin, dest, m_radiusSize[dim] * sizeof(PixelType));
 	}
 	else
 	{
@@ -107,16 +93,26 @@ NeighborhoodCell
 
 ///////////////////////////////////////////////////////////////////////////////
 
-
+template<typename PixelType>
 void
-NeighborhoodCell
+NeighborhoodCell<PixelType>::SetCenterPixel(PixelType val)
+{
+	PixelType *begin = ComputeImageDataPointer(m_currIndex);
+	*begin = val;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+template<typename PixelType>
+void
+NeighborhoodCell<PixelType>
 	::SetPosition(const TIndex &pos)
 {
 	m_currIndex = pos;
 	
 #define DEFAULT_VAL 0
 	// fill the buff
-	memset((void*)m_buf, DEFAULT_VAL, m_size * sizeof(TPixelValue));
+	memset((void*)m_buf, DEFAULT_VAL, m_size * sizeof(PixelType));
 	
 	TIndex iteratingIndex(pos);
 	iteratingIndex[DIM-1] -= RADIUS;
@@ -126,43 +122,6 @@ NeighborhoodCell
 			LoadSlice(iteratingIndex, DIM-2, m_buf + (i * m_radiusStrides[DIM-1]));
 		iteratingIndex[DIM-1] += 1;	// move in iteration  direction
 	}
-//	const Iterator _end = Superclass::End();
-//	  InternalPixelType * Iit;
-//	  ImageType *ptr = const_cast<ImageType *>(m_ConstImage.GetPointer());
-//	  const SizeType size = this->GetSize();
-//	  const OffsetValueType *OffsetTable = m_ConstImage->GetOffsetTable();
-//	  const SizeType radius = this->GetRadius();
-//
-//	  unsigned int i;
-//	  Iterator Nit;
-//	  SizeType loop;
-//	  for (i=0; i<Dimension; ++i) loop[i]=0;
-//
-//	  // Find first "upper-left-corner"  pixel address of neighborhood
-//	  Iit = ptr->GetBufferPointer() + ptr->ComputeOffset(pos);
-//
-//	  for (i = 0; i<Dimension; ++i)
-//	    {
-//	    Iit -= radius[i] * OffsetTable[i];
-//	    }
-//
-//	  // Compute the rest of the pixel addresses
-//	  for (Nit = Superclass::Begin(); Nit != _end; ++Nit)
-//	    {
-//	    *Nit = Iit;
-//	    ++Iit;
-//	    for (i = 0; i <Dimension; ++i)
-//	      {
-//	      loop[i]++;
-//	      if ( loop[i] == size[i] )
-//	        {
-//	        if (i==Dimension-1) break;
-//	        Iit += OffsetTable[i+1] - OffsetTable[i] * static_cast<long>(size[i]);
-//	        loop[i]= 0;
-//	        }
-//	      else break;
-//	      }
-//	    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -212,9 +171,9 @@ NeighborhoodCell
 
 ///////////////////////////////////////////////////////////////////////////////
 
-
+template<typename PixelType>
 uint32 
-NeighborhoodCell::GetNeighborhoodIndex(const TOffset &o) const
+NeighborhoodCell<PixelType>::GetNeighborhoodIndex(const TOffset &o) const
 {
   uint32 idx = (m_size/2);
   for (unsigned i = 0; i < DIM; ++i)
@@ -224,3 +183,6 @@ NeighborhoodCell::GetNeighborhoodIndex(const TOffset &o) const
 
 ///////////////////////////////////////////////////////////////////////////////
 
+}
+}
+#endif

@@ -37,11 +37,13 @@ struct TRegion
 	TIndex offset;
 	TSize size;
 };
+
+template<typename PixelType>
 struct TImageProperties
 {
 	TRegion region;
 	TSpacing spacing;
-	TPixelValue *imageData;
+	PixelType *imageData;
 };
 
 class SparseFieldLevelSetNode

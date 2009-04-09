@@ -21,9 +21,9 @@
 namespace itk
 {
 
-template <class TInputImage,class TFeatureImage, class TOutputPixelType = float >
+template <class TInputImage, class TFeatureImage, class TOutputPixelType = float >
 class MySegmtLevelSetFilter	
-	: public MyFiniteDifferenceImageFilter<TInputImage, Image<TOutputPixelType, TInputImage::ImageDimension> >
+	: public itk::MyFiniteDifferenceImageFilter<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> >
 {
 public:
 	typedef MyFiniteDifferenceImageFilter<TInputImage, Image<TOutputPixelType, TInputImage::ImageDimension> > Superclass;	
@@ -222,6 +222,8 @@ public:
 	    
 	    typedef M4D::Cell::RunConfiguration TRunConf;
 	    TRunConf m_Conf;
+	    
+	    M4D::Cell::ApplyUpdateConf m_applyUpdateConf;
 	    
 protected:
 	MySegmtLevelSetFilter(void);

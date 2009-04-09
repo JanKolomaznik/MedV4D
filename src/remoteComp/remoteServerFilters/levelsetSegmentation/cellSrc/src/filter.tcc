@@ -561,6 +561,17 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
     m_Conf.valueImageProps.region = 
     	ConvertRegion<OutputImageType, M4D::Cell::TRegion>(*this->GetOutput());
     m_Conf.featureImageProps.spacing = ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename OutputImageType::SpacingType>(this->GetOutput()->GetSpacing());
+    
+    applyUpdateCalc.m_LayerNodeStore = 
+    	(M4D::Cell::ApplyUpdateSPE::LayerNodeStorageType *)m_LayerNodeStore.GetPointer();
+    applyUpdateCalc.m_Layers = new M4D::Cell::ApplyUpdateSPE::LayerType*[m_Layers.size()];
+    m_applyUpdateConf.layerBegins = new M4D::Cell::SparseFieldLevelSetNode*[m_Layers.size()];
+    m_applyUpdateConf.layerEnds = new M4D::Cell::SparseFieldLevelSetNode*[m_Layers.size()];
+    for(uint32 i=0; i<m_Layers.size() ; i++)
+    {
+    	applyUpdateCalc.m_Layers[i] = 
+    		(M4D::Cell::ApplyUpdateSPE::LayerType *)m_Layers[i].GetPointer();
+    }
   
    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
         
@@ -880,137 +891,154 @@ void
 MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::PropagateAllLayerValues()
 {
-  unsigned int i;
-
-  // Update values in the first inside and first outside layers using the
-  // active layer as a seed. Inside layers are odd numbers, outside layers are
-  // even numbers. 
-  this->PropagateLayerValues(0, 1, 3, 1); // first inside
-  this->PropagateLayerValues(0, 2, 4, 2); // first outside
-
-  // Update the rest of the layers.
-  for (i = 1; i < m_Layers.size() - 2; ++i)
-    {
-    this->PropagateLayerValues(i, i+2, i+4, (i+2)%2);
-    }
+	
+#if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
+	  command = M4D::Cell::CALC_CHANGE;
+	  m_SPEManager.SendCommand(command);
+#else
+	  updateSolver.m_Conf = &m_Conf;
+	  updateSolver.Init();
+	  
+	  for(uint32 i=0; i<m_Layers.size() ; i++)
+	  {
+		  applyUpdateCalc.m_Layers[i] = (M4D::Cell::ApplyUpdateSPE::LayerType *) m_Layers[i].GetPointer();
+		  
+		  m_applyUpdateConf.layerBegins[i] = (M4D::Cell::SparseFieldLevelSetNode *) m_Layers[i]->Begin().GetPointer();
+		  m_applyUpdateConf.layerEnds[i] = (M4D::Cell::SparseFieldLevelSetNode *) m_Layers[i]->End().GetPointer();
+	  }
+	  applyUpdateCalc.PropagateAllLayerValues();
+#endif	
+//  unsigned int i;
+//
+//  // Update values in the first inside and first outside layers using the
+//  // active layer as a seed. Inside layers are odd numbers, outside layers are
+//  // even numbers. 
+//  this->PropagateLayerValues(0, 1, 3, 1); // first inside
+//  this->PropagateLayerValues(0, 2, 4, 2); // first outside
+//
+//  // Update the rest of the layers.
+//  for (i = 1; i < m_Layers.size() - 2; ++i)
+//    {
+//    this->PropagateLayerValues(i, i+2, i+4, (i+2)%2);
+//    }
 }
 ///////////////////////////////////////////////////////////////////////////////
-template<class TInputImage,class TFeatureImage, class TOutputPixelType>
-void
-MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
-::PropagateLayerValues(StatusType from, StatusType to,
-                       StatusType promote, int InOrOut)
-{
-  unsigned int i;
-  ValueType value, value_temp, delta;
-  value = NumericTraits<ValueType>::Zero; // warnings
-  bool found_neighbor_flag;
-  typename LayerType::Iterator toIt;
-  LayerNodeType *node;
-  StatusType past_end = static_cast<StatusType>( m_Layers.size() ) - 1;
-  
-  // Are we propagating values inward (more negative) or outward (more
-  // positive)?
-  if (InOrOut == 1) delta = - m_ConstantGradientValue;
-  else delta = m_ConstantGradientValue;
- 
-  NeighborhoodIterator<OutputImageType>
-    outputIt(m_NeighborList.GetRadius(), this->GetOutput(),
-             this->GetOutput()->GetRequestedRegion() );
-  NeighborhoodIterator<StatusImageType>
-    statusIt(m_NeighborList.GetRadius(), m_StatusImage,
-             this->GetOutput()->GetRequestedRegion() );
-
-  if ( m_BoundsCheckingActive == false )
-    {
-    outputIt.NeedToUseBoundaryConditionOff();
-    statusIt.NeedToUseBoundaryConditionOff();
-    }
-  
-  toIt  = m_Layers[to]->Begin();
-  while ( toIt != m_Layers[to]->End() )
-    {
-    statusIt.SetLocation( toIt->m_Value );
-
-    // Is this index marked for deletion? If the status image has
-    // been marked with another layer's value, we need to delete this node
-    // from the current list then skip to the next iteration.
-    if (statusIt.GetCenterPixel() != to)
-      {
-      node = toIt.GetPointer();
-      ++toIt;
-      m_Layers[to]->Unlink( node );
-      m_LayerNodeStore->Return( node );
-      continue;
-      }
-      
-    outputIt.SetLocation( toIt->m_Value );
-
-    found_neighbor_flag = false;
-    for (i = 0; i < m_NeighborList.GetSize(); ++i)
-      {
-      // If this neighbor is in the "from" list, compare its absolute value
-      // to to any previous values found in the "from" list.  Keep the value
-      // that will cause the next layer to be closest to the zero level set.
-      if ( statusIt.GetPixel( m_NeighborList.GetArrayIndex(i) ) == from )
-        {
-        value_temp = outputIt.GetPixel( m_NeighborList.GetArrayIndex(i) );
-
-        if (found_neighbor_flag == false)
-          {
-          value = value_temp;
-          }
-        else
-          {
-          if (InOrOut == 1)
-            {
-            // Find the largest (least negative) neighbor
-            if ( value_temp > value )
-              {
-              value = value_temp;
-              }
-            }
-          else
-            {
-            // Find the smallest (least positive) neighbor
-            if (value_temp < value)
-              {
-              value = value_temp;
-              }
-            }
-          }
-        found_neighbor_flag = true;
-        }
-      }
-    if (found_neighbor_flag == true)
-      {
-      // Set the new value using the smallest distance
-      // found in our "from" neighbors.
-      outputIt.SetCenterPixel( value + delta );
-      ++toIt;
-      }
-    else
-      {
-      // Did not find any neighbors on the "from" list, then promote this
-      // node.  A "promote" value past the end of my sparse field size
-      // means delete the node instead.  Change the status value in the
-      // status image accordingly.
-      node  = toIt.GetPointer();
-      ++toIt;
-      m_Layers[to]->Unlink( node );
-      if ( promote > past_end )
-        {
-        m_LayerNodeStore->Return( node );
-        statusIt.SetCenterPixel(this->m_StatusNull);
-        }
-      else
-        {
-        m_Layers[promote]->PushFront( node );
-        statusIt.SetCenterPixel(promote);
-        }
-      }
-    }
-}
+//template<class TInputImage,class TFeatureImage, class TOutputPixelType>
+//void
+//MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
+//::PropagateLayerValues(StatusType from, StatusType to,
+//                       StatusType promote, int InOrOut)
+//{
+//  unsigned int i;
+//  ValueType value, value_temp, delta;
+//  value = NumericTraits<ValueType>::Zero; // warnings
+//  bool found_neighbor_flag;
+//  typename LayerType::Iterator toIt;
+//  LayerNodeType *node;
+//  StatusType past_end = static_cast<StatusType>( m_Layers.size() ) - 1;
+//  
+//  // Are we propagating values inward (more negative) or outward (more
+//  // positive)?
+//  if (InOrOut == 1) delta = - m_ConstantGradientValue;
+//  else delta = m_ConstantGradientValue;
+// 
+//  NeighborhoodIterator<OutputImageType>
+//    outputIt(m_NeighborList.GetRadius(), this->GetOutput(),
+//             this->GetOutput()->GetRequestedRegion() );
+//  NeighborhoodIterator<StatusImageType>
+//    statusIt(m_NeighborList.GetRadius(), m_StatusImage,
+//             this->GetOutput()->GetRequestedRegion() );
+//
+//  if ( m_BoundsCheckingActive == false )
+//    {
+//    outputIt.NeedToUseBoundaryConditionOff();
+//    statusIt.NeedToUseBoundaryConditionOff();
+//    }
+//  
+//  toIt  = m_Layers[to]->Begin();
+//  while ( toIt != m_Layers[to]->End() )
+//    {
+//    statusIt.SetLocation( toIt->m_Value );
+//
+//    // Is this index marked for deletion? If the status image has
+//    // been marked with another layer's value, we need to delete this node
+//    // from the current list then skip to the next iteration.
+//    if (statusIt.GetCenterPixel() != to)
+//      {
+//      node = toIt.GetPointer();
+//      ++toIt;
+//      m_Layers[to]->Unlink( node );
+//      m_LayerNodeStore->Return( node );
+//      continue;
+//      }
+//      
+//    outputIt.SetLocation( toIt->m_Value );
+//
+//    found_neighbor_flag = false;
+//    for (i = 0; i < m_NeighborList.GetSize(); ++i)
+//      {
+//      // If this neighbor is in the "from" list, compare its absolute value
+//      // to to any previous values found in the "from" list.  Keep the value
+//      // that will cause the next layer to be closest to the zero level set.
+//      if ( statusIt.GetPixel( m_NeighborList.GetArrayIndex(i) ) == from )
+//        {
+//        value_temp = outputIt.GetPixel( m_NeighborList.GetArrayIndex(i) );
+//
+//        if (found_neighbor_flag == false)
+//          {
+//          value = value_temp;
+//          }
+//        else
+//          {
+//          if (InOrOut == 1)
+//            {
+//            // Find the largest (least negative) neighbor
+//            if ( value_temp > value )
+//              {
+//              value = value_temp;
+//              }
+//            }
+//          else
+//            {
+//            // Find the smallest (least positive) neighbor
+//            if (value_temp < value)
+//              {
+//              value = value_temp;
+//              }
+//            }
+//          }
+//        found_neighbor_flag = true;
+//        }
+//      }
+//    if (found_neighbor_flag == true)
+//      {
+//      // Set the new value using the smallest distance
+//      // found in our "from" neighbors.
+//      outputIt.SetCenterPixel( value + delta );
+//      ++toIt;
+//      }
+//    else
+//      {
+//      // Did not find any neighbors on the "from" list, then promote this
+//      // node.  A "promote" value past the end of my sparse field size
+//      // means delete the node instead.  Change the status value in the
+//      // status image accordingly.
+//      node  = toIt.GetPointer();
+//      ++toIt;
+//      m_Layers[to]->Unlink( node );
+//      if ( promote > past_end )
+//        {
+//        m_LayerNodeStore->Return( node );
+//        statusIt.SetCenterPixel(this->m_StatusNull);
+//        }
+//      else
+//        {
+//        m_Layers[promote]->PushFront( node );
+//        statusIt.SetCenterPixel(promote);
+//        }
+//      }
+//    }
+//}
 
 ///////////////////////////////////////////////////////////////////////////////
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>

@@ -68,7 +68,7 @@ ApplyUpdateSPE::PropagateLayerValues(StatusType from, StatusType to,
   NeighborhoodCell<TPixelValue> outNeigh( & commonConf->valueImageProps);
   NeighborhoodCell<StatusType> statusNeigh( & commonConf->statusImageProps);
   
-  m_outIter.SetNeighbourhood( &statusNeigh);
+  m_outIter.SetNeighbourhood( &outNeigh);
   m_statusIter.SetNeighbourhood( &statusNeigh);
   
   SparseFieldLevelSetNode *currNode  = conf.layerBegins[to];
