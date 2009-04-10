@@ -17,6 +17,7 @@ TARGETS=	Common \
 		Log \
 		Functors \
 		TimeStamp \
+		Thread \
 		perfCounter\
 		fileAccessor\
 		IOStreams
