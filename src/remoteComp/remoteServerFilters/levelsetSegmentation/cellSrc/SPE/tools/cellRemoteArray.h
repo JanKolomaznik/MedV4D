@@ -36,10 +36,12 @@ template<typename T, uint8 BUFSIZE>
 class GETRemoteArrayCell
 {
 public:
+	typedef GETRemoteArrayCell<T, BUFSIZE> Self;
 	GETRemoteArrayCell(T *begin);//, T *end);
 	//~GETRemoteArrayCell();
 	
-	T pop_front();
+	T GetCurrVal();
+	Self &operator++();
 	//bool HasNext() { return (m_currPos != m_arrayEnd); }
 	
 private:

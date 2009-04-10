@@ -79,17 +79,22 @@ GETRemoteArrayCell<T, BUFSIZE>::CopyData(T *src, T *dest, size_t size)
 ///////////////////////////////////////////////////////////////////////////////
 template<typename T, uint8 BUFSIZE>
 T
-GETRemoteArrayCell<T, BUFSIZE>::pop_front()
+GETRemoteArrayCell<T, BUFSIZE>::GetCurrVal()
 {
-	T retval = m_buf[m_currBuf][m_currPos];
+	return m_buf[m_currBuf][m_currPos];
+}
+///////////////////////////////////////////////////////////////////////////////
+template<typename T, uint8 BUFSIZE>
+GETRemoteArrayCell<T, BUFSIZE> &
+GETRemoteArrayCell<T, BUFSIZE>::operator++()
+{
 	m_currPos++;
 	if(m_currPos == BUFSIZE)
 	{
 		LoadNextPiece();
 		m_currBuf = ! m_currBuf;
+		m_currPos = 0;
 	}
-	
-	return retval;
 }
 ///////////////////////////////////////////////////////////////////////////////
 template<typename T, uint8 BUFSIZE>
