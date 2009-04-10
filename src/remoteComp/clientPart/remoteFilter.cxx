@@ -24,6 +24,8 @@ RemoteFilter< InputImageType, OutputImageType >
   , m_socket_(m_io_service)
   , netAccessor_(m_socket_)
 {
+	this->_name = "Remote Filter";
+	
 	Connect();
 	
 	SendCommand(CREATE);	
@@ -50,7 +52,6 @@ RemoteFilter< InputImageType, OutputImageType >::PrepareOutputDatasets(void)
 	PredecessorType::PrepareOutputDatasets();
 	
 	// copy properties of input image to output image
-	InputImageType &in = (InputImageType &) this->GetInputImage();
 	{
 		int32 minimums[OutputImageType::Dimension];
 		int32 maximums[OutputImageType::Dimension];
@@ -58,9 +59,9 @@ RemoteFilter< InputImageType, OutputImageType >::PrepareOutputDatasets(void)
 	
 		for( unsigned i=0; i < OutputImageType::Dimension; ++i ) 
 		{
-			minimums[i] = in.GetDimensionExtents(i).minimum;
-			maximums[i] = in.GetDimensionExtents(i).maximum;
-			voxelExtents[i] = in.GetDimensionExtents(i).elementExtent;
+			minimums[i] = this->in->GetDimensionExtents(i).minimum;
+			maximums[i] = this->in->GetDimensionExtents(i).maximum;
+			voxelExtents[i] = this->in->GetDimensionExtents(i).elementExtent;
 		}
 		this->SetOutputImageSize( minimums, maximums, voxelExtents );
 	}

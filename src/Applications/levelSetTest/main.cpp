@@ -10,10 +10,11 @@
 using namespace M4D::Common;
 using namespace M4D::RemoteComputing;
 using namespace M4D::Imaging;
-using namespace M4D::IO; 
+using namespace M4D::IO;
+using namespace M4D::Multithreading;
 
-#define OUTFILE "out.dat"
-#define INFILE "in.dat"
+#define OUTFILE "out.mv4d"
+#define INFILE "in.mv4d"
 
 class ExecutionDoneCallback 
   : public M4D::Imaging::MessageReceiverInterface
@@ -22,13 +23,17 @@ class ExecutionDoneCallback
 public:
 	ExecutionDoneCallback(const AbstractDataSet &ds)
 	: m_ds( ds)
-		{}
+		{
+			lock = new ScopedLock(mutex);
+		}
 	
 	void SaveDS()
 	{
 		FOutStream stream(OUTFILE);
 		DataSetFactory::SerializeDataset(stream, m_ds);
 	}
+	
+	Mutex mutex;	
 
 	void ReceiveMessage( 
 		M4D::Imaging::PipelineMessage::Ptr    msg, 
@@ -40,16 +45,21 @@ public:
 		{
 		case M4D::Imaging::PMI_FILTER_CANCELED:
 			D_PRINT("PMI_FILTER_UPDATED recieved. EXEC FAILED!!!");
+			delete lock;
 			break;
 		case M4D::Imaging::PMI_FILTER_UPDATED:
 			D_PRINT("PMI_FILTER_UPDATED recieved. EXEC COMPLETE !!!");
 			SaveDS();
+			delete lock;
 			break;
 		default:
 			/*ignore other messages*/
       			break;
 		}
 	}
+	
+private:
+	ScopedLock *lock;
 };
 
 
@@ -72,6 +82,9 @@ int main(int argc, char *argv[]) {
 		
 		LevelSetRemoteProperties<int16, int16> *props = new LevelSetRemoteProperties<int16, int16>();
 		m_filter =  new ThreshLSSegMedvedWrapper< int16, int16>( props);
+		
+		m_filter->SetUpdateInvocationStyle(AbstractPipeFilter::UIS_ON_CHANGE_BEGIN);
+		m_pipeLine.AddFilter(m_filter);
 
 		D_PRINT("Connecting recieved dataset into pipeline");
 		// connect it to pipeline
@@ -83,10 +96,19 @@ int main(int argc, char *argv[]) {
 				true);
 
 		// add message listener to be able catch execution done or failed messages
-		MessageReceiverInterface::Ptr messasgeReciever = MessageReceiverInterface::Ptr(
-				new ExecutionDoneCallback(m_connWithOutputDataSet->GetDataset()));
+		ExecutionDoneCallback *callback = 
+			new ExecutionDoneCallback(m_connWithOutputDataSet->GetDataset());
+		MessageReceiverInterface::Ptr messasgeReciever = 
+			MessageReceiverInterface::Ptr(callback);
 		m_connWithOutputDataSet->SetMessageHook( messasgeReciever);
 		
+		m_pipeLine.ExecuteFirstFilter();
+		
+		// wait for execution done
+		ScopedLock lock(callback->mutex);
+		
+		// wait for stuff within pipeline finish
+		sleep(3000);
 	}
 	catch (std::exception& e)
 	{

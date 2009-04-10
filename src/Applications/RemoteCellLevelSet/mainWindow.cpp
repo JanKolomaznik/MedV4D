@@ -35,13 +35,16 @@ mainWindow::mainWindow ()
 
 
 void 
-mainWindow::process ( M4D::Dicom::DicomObjSetPtr dicomObjSet )
+mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 {
 	try {
-		AbstractImage::Ptr inputImage = M4D::Dicom::DcmProvider::CreateImageFromDICOM( dicomObjSet );
+//
+//				currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
+//				conn->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
+	
 
 
-		_inConnection->PutDataset( inputImage );
+		_inConnection->PutDataset( inputDataSet );
 
 		_convertor->Execute();
 

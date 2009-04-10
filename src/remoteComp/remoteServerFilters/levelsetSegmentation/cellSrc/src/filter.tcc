@@ -88,12 +88,12 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
     }
   
   
-  std::stringstream s;
-  s << "before" << this->m_ElapsedIterations << ".dat";
-  std::ofstream f(s.str().c_str());
-  PrintITKImage<OutputImageType>(*this->GetOutput(), f);
-  
-  LOUT << "Saving " << s << std::endl;
+//  std::stringstream s;
+//  s << "before" << this->m_ElapsedIterations << ".dat";
+//  std::ofstream f(s.str().c_str());
+//  PrintITKImage<OutputImageType>(*this->GetOutput(), f);
+//  
+//  LOUT << "Saving " << s << std::endl;
   
 //  std::cout << "Update list (in ApplyUpdate):" << std::endl;
 //  PrintUpdateBuf(std::cout);
@@ -104,12 +104,12 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
   // demotions in the m_StatusLayer for current active layer indicies
   // (i.e. those indicies which will move inside or outside the active
   // layers).
-  this->UpdateActiveLayerValues(dt, UpList[0], DownList[0]);
-  
-  std::stringstream s2;
-  s2 << "after" << this->m_ElapsedIterations << ".dat";
-  std::ofstream f2(s2.str().c_str());
-  PrintITKImage<OutputImageType>(*this->GetOutput(), f2);
+this->UpdateActiveLayerValues(dt, UpList[0], DownList[0]);
+//  
+//  std::stringstream s2;
+//  s2 << "after" << this->m_ElapsedIterations << ".dat";
+//  std::ofstream f2(s2.str().c_str());
+//  PrintITKImage<OutputImageType>(*this->GetOutput(), f2);
   
 //  LOUT << "Saving " << s2 << std::endl;
 

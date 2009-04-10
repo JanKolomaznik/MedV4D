@@ -117,7 +117,7 @@ OBJ_FILES=	$(addprefix $(TMP_DIR)/,   $(addprefix rcc_, $(RCCINPUT:.qrc=.o ) ) $
 
 
 .PHONY: all
-all:		tmpdir Common Imaging DICOM GUI commonRCPart clientRCPart dep $(OUTPUT)
+all:		tmpdir Common Imaging DICOM VTKInt GUI commonRCPart clientRCPart dep $(OUTPUT)
 
 commonRCPart:
 	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart
@@ -127,6 +127,9 @@ clientRCPart:
 	
 GUI:
 	$(MAKE) --directory=$(srcTop)/GUI/widgets
+	
+VTKInt:
+	$(MAKE) --directory=$(srcTop)/vtkIntegration
 	
 DICOM:
 	$(MAKE) --directory=$(srcTop)/backendForDICOM
@@ -189,6 +192,6 @@ $(OUTPUT):	$(OBJ_FILES) $(M4DLIBS)
 		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
 
 .PHONY: clean
-clean: commonRCPartCLEAN clientRCPartCLEAN GUICLEAN DICOMCLEAN ImagingCLEAN CommonCLEAN
+clean: commonRCPartCLEAN clientRCPartCLEAN #GUICLEAN DICOMCLEAN ImagingCLEAN CommonCLEAN
 		$(RM) $(OBJ_FILES) $(MOCOUTPUT) $(addprefix $(TMP_DIR)/rcc_, $(RCCINPUT:.qrc=.cpp ) ) $(DEP_FILE)
 		$(RM) $(OUTPUT)

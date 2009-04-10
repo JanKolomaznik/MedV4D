@@ -16,7 +16,7 @@ DecimationFilter<ImageType, InterpolatorType>
 ::DecimationFilter( Properties * prop )
 	: PredecessorType(prop)
 {
-	
+	this->_name = "Decimator Filter";
 }
 
 ///////////////////////////////////////////////////////////////////////////////
