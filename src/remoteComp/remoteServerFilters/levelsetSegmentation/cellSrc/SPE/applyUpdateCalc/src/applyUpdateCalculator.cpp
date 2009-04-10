@@ -366,12 +366,7 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
   	m_outIter.SetNeighbourhood( &outNeigh);
   		m_statusIter.SetNeighbourhood( &statusNeigh);
 	  
-  		//LOUT << "updated activeLayerVals:" << std::endl;
-  		
-//  	    ValueType centerVal = m_outIter.GetCenterPixel();
-//  	LOUT << "centerVal = " << centerVal << std::endl;
-	  
-	  TIndex currIndex;
+	  ValueType centerVal
 	  
 	  counter =0;
 	  rms_change_accumulator = this->m_ValueZero;
@@ -381,18 +376,11 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 		  m_outIter.SetLocation(layerIt->m_Value);
 		  m_statusIter.SetLocation(layerIt->m_Value);
 		  
-		  currIndex = layerIt->m_Value;
-		  
-		  TPixelValue curVal = m_outIter.GetCenterPixel();
-		  
-		  TPixelValue updateVal = updateIt.GetCurrVal();
+		  centerVal = m_outIter.GetCenterPixel();
 	
-	    new_value = this->CalculateUpdateValue(dt, curVal, updateVal);
+	    new_value = this->CalculateUpdateValue(dt, centerVal, updateIt.GetCurrVal());
 	    
-	    //LOUT << new_value << ", ";
 	    
-	    ValueType centerVal = m_outIter.GetCenterPixel();
-	LOUT << "1centerVal = " << centerVal << std::endl;
 	
 	    // If this index needs to be moved to another layer, then search its
 	    // neighborhood for indicies that need to be pulled up/down into the
@@ -407,7 +395,6 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	
 	    if (new_value >= UPPER_ACTIVE_THRESHOLD)
 	      { // This index will move UP into a positive (outside) layer.
-LOUT << "2new_value = " << new_value << ">= UPPER_ACTIVE_THRESHOLD" << std::endl;
 	      // First check for active layer neighbors moving in the opposite
 	      // direction.
 	      flag = false;
@@ -424,38 +411,32 @@ LOUT << "2new_value = " << new_value << ">= UPPER_ACTIVE_THRESHOLD" << std::endl
 	        {
 	        ++layerIt;
 	        ++updateIt;
-	        LOUT << "3flag == true" << std::endl;
 	        continue;
 	        }
 	
 	      rms_change_accumulator += vnl_math_sqr(new_value- centerVal );
-	      LOUT << "4rms_change_accumulator = " << rms_change_accumulator << std::endl;
 	
 	      // Search the neighborhood for inside indicies.
 	      temp_value = new_value - commonConf->m_ConstantGradientValue;
-	      LOUT << "5temp_value = " << temp_value << std::endl;
 	      for (i = 0; i < m_NeighborList.GetSize(); ++i)
 	        {
 	        idx = m_NeighborList.GetArrayIndex(i);
 	        neighbor_status = m_statusIter.GetPixel( idx );
 	        char tmp[2]; tmp[1] = 0;
 	               tmp[0] = (neighbor_status + '0');
-	        LOUT << "333status on " << idx << ":" << tmp << std::endl;
 	        if (neighbor_status == 1)
 	          {
 	          // Keep the smallest possible value for the new active node.  This
 	          // places the new active layer node closest to the zero level-set.
-	        	ValueType rr = m_outIter.GetPixel(idx);
-	        	LOUT << "444neighbor_status == 1, pix=" << rr << std::endl;
-	          if ( rr < LOWER_ACTIVE_THRESHOLD ||
-	               ::vnl_math_abs(temp_value) < ::vnl_math_abs(rr) )
+	        	ValueType pix = m_outIter.GetPixel(idx);
+	          if ( pix < LOWER_ACTIVE_THRESHOLD ||
+	               ::vnl_math_abs(temp_value) < ::vnl_math_abs(pix) )
 	            {
 	            m_outIter.SetPixel(idx, temp_value);
 	            }
 	          }
 	        }
 	      node = m_LayerNodeStore->Borrow();
-	      LOUT << "6m_LayerNodeStore->Borrow() = " << std::endl;
 	      node->m_Value = layerIt->m_Value;
 	      UpList->PushFront(node);
 	      m_statusIter.SetCenterPixel(this->m_StatusActiveChangingUp);
@@ -469,7 +450,6 @@ LOUT << "2new_value = " << new_value << ">= UPPER_ACTIVE_THRESHOLD" << std::endl
 	
 	    else if (new_value < LOWER_ACTIVE_THRESHOLD)
 	      { // This index will move DOWN into a negative (inside) layer.
-LOUT << "7new_value = " << new_value << "< LOWER_ACTIVE_THRESHOLD" << std::endl;
 	      // First check for active layer neighbors moving in the opposite
 	      // direction.
 	      flag = false;
@@ -489,25 +469,21 @@ LOUT << "7new_value = " << new_value << "< LOWER_ACTIVE_THRESHOLD" << std::endl;
 	        continue;
 	        }
 	      
-	      rms_change_accumulator += vnl_math_sqr(new_value - centerVal);	      
-	      LOUT << "8rms_change_accumulator = " << rms_change_accumulator << std::endl;
+	      rms_change_accumulator += vnl_math_sqr(new_value - centerVal);
 	          
 	      // Search the neighborhood for outside indicies.
 	      temp_value = new_value + commonConf->m_ConstantGradientValue;
-	      LOUT << "9temp_value = " << temp_value << std::endl;
 	      for (i = 0; i < m_NeighborList.GetSize(); ++i)
 	        {
 	        idx = m_NeighborList.GetArrayIndex(i);
 	        neighbor_status = m_statusIter.GetPixel( idx );
 	        char tmp[2]; tmp[1] = 0;
 	               tmp[0] = (neighbor_status + '0');
-	        LOUT << "10status on " << idx << ":" << tmp << std::endl;
 	        if (neighbor_status == 2)
 	          {
 	          // Keep the smallest magnitude value for this active set node.  This
 	          // places the node closest to the active layer.
 	        	ValueType pix = m_outIter.GetPixel(idx);
-	        	LOUT << "11neighbor_status == 2, pix=" << pix << std::endl;
 	          if ( pix >= UPPER_ACTIVE_THRESHOLD ||
 	               ::vnl_math_abs(temp_value) < ::vnl_math_abs(pix) )
 	            {
@@ -518,7 +494,6 @@ LOUT << "7new_value = " << new_value << "< LOWER_ACTIVE_THRESHOLD" << std::endl;
 	      node = m_LayerNodeStore->Borrow();
 	      node->m_Value = layerIt->m_Value;
 	      DownList->PushFront(node);
-	      LOUT << "12DownList->PushFront(node)" << std::endl;
 	      m_statusIter.SetCenterPixel(this->m_StatusActiveChangingDown);
 	
 	      // Now remove this index from the active list.
@@ -530,7 +505,6 @@ LOUT << "7new_value = " << new_value << "< LOWER_ACTIVE_THRESHOLD" << std::endl;
 	    else
 	      {
 	      rms_change_accumulator += vnl_math_sqr(new_value - centerVal);
-	      LOUT << "13else: " << new_value << ", acc: " << rms_change_accumulator << std::endl;
 	      //rms_change_accumulator += (*updateIt) * (*updateIt);
 	      m_outIter.SetCenterPixel( new_value );
 	      ++layerIt;
@@ -539,7 +513,7 @@ LOUT << "7new_value = " << new_value << "< LOWER_ACTIVE_THRESHOLD" << std::endl;
 	    ++counter;
 	    }
   
-	  LOUT << std::endl << "14rms accum: " << rms_change_accumulator << "counter: " << counter << std::endl;
+	  //LOUT << std::endl << "14rms accum: " << rms_change_accumulator << "counter: " << counter << std::endl;
 	
   // Determine the average change during this iteration.
   if (counter == 0)
@@ -549,7 +523,7 @@ LOUT << "7new_value = " << new_value << "< LOWER_ACTIVE_THRESHOLD" << std::endl;
 	  ValueType ret =
 		  static_cast<double>( sqrt((double)(rms_change_accumulator / static_cast<ValueType>(counter)) ));
 		  
-		  LOUT << "returning: " << ret << std::endl;	  
+		  //LOUT << "returning: " << ret << std::endl;	  
 		  return ret;
   }
 }
