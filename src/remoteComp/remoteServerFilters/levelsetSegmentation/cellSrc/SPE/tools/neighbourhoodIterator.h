@@ -2,6 +2,7 @@
 #define NEIGHBOURHOODITERATOR_H_
 
 #include "neighborhoodCell.h"
+#include "common/Debug.h"
 
 namespace M4D {
 namespace Cell {
@@ -38,14 +39,41 @@ public:
 	  	  NeighbourIteratorCell(NeighborhoodType *neiborhood);
 	  	  ~NeighbourIteratorCell();
 	  	  
+	  	  
+	  	  // TOREMOVE
+//	  	void DebugSetImagePixel(TIndex idx, PixelType val) { 
+//	  		m_neighbourhood->DebugSetImagePixel(idx, val); 
+//	  		}
+	  	
+	  	PixelType GetCenterPixelDebug() const
+	  		    {return m_neighbourhood->DebugGetImagePixel( m_OffsetTable[m_neighbourhood->GetCenterNeighborhoodIndex()] );}
+	
+	    PixelType GetPixelDebug(const unsigned i) const { return m_neighbourhood->DebugGetImagePixel( m_OffsetTable[i] ); }
+	    
+	    // xxxxxxxxxxxxxxxxxxxxxxxx
+	  	  
 	  NeighborhoodType &GetNeighborhood() const { return *m_neighbourhood; }	  
 	  
 	  inline void SetNeighbourhood(NeighborhoodType *neiborhood)
 	  {
-		  m_neighbourhood = neiborhood;  
+		  m_neighbourhood = neiborhood;
+		  ComputeNeighborhoodOffsetTable();
 	  }
 	  
+	  
 	  void SetCenterPixel(PixelType val) { m_neighbourhood->SetCenterPixel(val); }
+	  
+	  void SetPixel(TOffset pos, PixelType val) { 
+		  m_neighbourhood->SetPixel(val, pos);
+		  DOUT << "Setting pixel " << pos[0] << "," << pos[1] << "," << pos[2] << " = " << val << std::endl;
+		  }
+	  
+	  	void SetPixel(uint32 idx, PixelType val) {
+	  		TOffset o = m_OffsetTable[idx];
+	  		TIndex soucet = m_neighbourhood->m_currIndex + o;
+	  		m_neighbourhood->SetPixel(val, o);
+	  		DOUT << "Setting pixel 2" << soucet[0] << "," << soucet[1] << "," << soucet[2] << " = " << val << std::endl;
+	  		}
 
 	  /** Computes the internal, N-d offset of a pixel array position n from 
 	   * (0,0, ..., 0) in the "upper-left" corner of the neighborhood. */
@@ -81,45 +109,50 @@ public:
 //	   * returning a Neighborhood of pixel values. */
 //	  virtual NeighborhoodType GetNeighborhood() const;
 	  
-	  PixelType GetPixel(const unsigned i) const { return m_neighbourhood->GetPixel( i ); }
+	  PixelType GetPixel(const unsigned i) const { 
+		  return m_neighbourhood->GetPixel( i ); 
+		  }
+	  PixelType GetPixel(const TOffset &o) const { 
+		  return m_neighbourhood->GetPixel( m_neighbourhood->GetNeighborhoodIndex(o) ); 
+		  }
 
-	  /** Returns the pixel value located at a linear array location i. */
-	  PixelType GetPixel(const unsigned i,bool& IsInBounds) const
-	    { 
-	    if( !m_NeedToUseBoundaryCondition )
-	      {
-	      return m_neighbourhood->GetPixel( i );
-	      }
-	    IsInBounds = true;
-	   // bool inbounds; 
-	    return m_neighbourhood->GetPixel( i ); 
-	    }
-
-	  /** Return the pixel value located at a linear array location i.
-	   * Sets "IsInBounds" to true if the location is inside the
-	   * image and the pixel value returned is an actual pixel in the
-	   * image. Sets "IsInBounds" to false if the location is outside the
-	   * image and the pixel value returned is a boundary condition. */
-	  //virtual PixelType GetPixel(const unsigned i, bool& IsInBounds) const;
-
-	  /** Returns the pixel value located at the itk::Offset o from the center of
-	      the neighborhood. */
-	   PixelType GetPixel(const TOffset &o) const
-	    { 
-	    bool inbounds; 
-	    return (this->GetPixel(m_neighbourhood->GetNeighborhoodIndex(o), inbounds)); 
-	    }
-	  
-	  
-
-	  /** Returns the pixel value located at the itk::Offset o from the center of
-	   * the neighborhood. Sets "IsInBounds" to true if the offset is inside the
-	   * image and the pixel value returned is an actual pixel in the
-	   * image. Sets "IsInBounds" to false if the offset is outside the
-	   * image and the pixel value returned is a boundary condition. */
-	   PixelType GetPixel(const TOffset &o,
-	                             bool& IsInBounds) const
-	    {return (this->GetPixel(m_neighbourhood->GetNeighborhoodIndex(o), IsInBounds)); }
+//	  /** Returns the pixel value located at a linear array location i. */
+//	  PixelType GetPixel(const unsigned i,bool& IsInBounds) const
+//	    { 
+//	    if( !m_NeedToUseBoundaryCondition )
+//	      {
+//	      return m_neighbourhood->GetPixel( i );
+//	      }
+//	    IsInBounds = true;
+//	   // bool inbounds; 
+//	    return m_neighbourhood->GetPixel( i ); 
+//	    }
+//
+//	  /** Return the pixel value located at a linear array location i.
+//	   * Sets "IsInBounds" to true if the location is inside the
+//	   * image and the pixel value returned is an actual pixel in the
+//	   * image. Sets "IsInBounds" to false if the location is outside the
+//	   * image and the pixel value returned is a boundary condition. */
+//	  //virtual PixelType GetPixel(const unsigned i, bool& IsInBounds) const;
+//
+//	  /** Returns the pixel value located at the itk::Offset o from the center of
+//	      the neighborhood. */
+//	   PixelType GetPixel(const TOffset &o) const
+//	    { 
+//	    bool inbounds; 
+//	    return (this->GetPixel(m_neighbourhood->GetNeighborhoodIndex(o), inbounds)); 
+//	    }
+//	  
+//	  
+//
+//	  /** Returns the pixel value located at the itk::Offset o from the center of
+//	   * the neighborhood. Sets "IsInBounds" to true if the offset is inside the
+//	   * image and the pixel value returned is an actual pixel in the
+//	   * image. Sets "IsInBounds" to false if the offset is outside the
+//	   * image and the pixel value returned is a boundary condition. */
+//	   PixelType GetPixel(const TOffset &o,
+//	                             bool& IsInBounds) const
+//	    {return (this->GetPixel(m_neighbourhood->GetNeighborhoodIndex(o), IsInBounds)); }
 	  
 	  /** Returns the pixel value located i pixels distant from the neighborhood 
 	   *  center in the positive specified ``axis'' direction. No bounds checking 

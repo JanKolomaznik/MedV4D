@@ -19,11 +19,15 @@ public:
 	
 	typedef PixelType TPixel;
 	
+//	PixelType DebugGetImagePixel(TOffset idx);
+//	void DebugSetImagePixel(TOffset off, PixelType val);
+	
 	//ctor
 	NeighborhoodCell(TImageProperties<PixelType> *props);
 	void SetPosition(const TIndex &pos);
 	
 	inline PixelType GetPixel(uint32 pos) { return m_buf[pos]; }
+	void SetPixel(PixelType val, TOffset pos);
 	void SetCenterPixel(PixelType val);
 	inline PixelType *GetPixelPointer(uint32 pos) { return &m_buf[pos]; }
 	
@@ -39,6 +43,7 @@ public:
 	void SetImageProperties(TImageProperties<PixelType> *props) { m_imageProps = props; }
 	
 	//void Print(std::ostream &stream);
+	TIndex m_currIndex;
 protected:
 	
 	PixelType *ComputeImageDataPointer(const TIndex &pos);
@@ -49,7 +54,7 @@ protected:
 	TStrides m_radiusStrides;
 	TSize m_radiusSize;
 	
-	TIndex m_currIndex;
+	
 	
 	TImageProperties<PixelType> *m_imageProps;
 	TStrides m_imageStrides;

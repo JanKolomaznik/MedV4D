@@ -1,4 +1,5 @@
 #include "common/Types.h"
+#include "common/Common.h"
 #include "../applyUpdateCalculator.h"
 #include "../../vnl_math.h"
 #include <math.h>	//sqrt
@@ -186,7 +187,7 @@ void ApplyUpdateSPE::PushToLayer(SparseFieldLevelSetNode *node, uint8 layerNum)
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-ValueType
+ApplyUpdateSPE::ValueType
 ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 {
 	unsigned int i, j, k, t;
@@ -206,6 +207,12 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	//  for(typename UpdateBufferType::iterator it = m_UpdateBuffer.begin(); it != m_UpdateBuffer.end(); it++)
 	//	  LOUT << *it << ", ";
 	//  LOG("");
+	
+	NeighborhoodCell<TPixelValue> outNeigh( &commonConf->valueImageProps);
+	NeighborhoodCell<StatusType> statusNeigh( &commonConf->statusImageProps);
+
+	m_outIter.SetNeighbourhood( &outNeigh);
+	m_statusIter.SetNeighbourhood( &statusNeigh);
 
 	// Process the active layer.  This step will update the values in the active
 	// layer as well as the values at indicies that *will* become part of the
@@ -213,15 +220,15 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	// demotions in the m_StatusLayer for current active layer indicies
 	// (i.e. those indicies which will move inside or outside the active
 	// layers).
-	this->UpdateActiveLayerValues(dt, UpList[0], DownList[0]);
+	ValueType retval = this->UpdateActiveLayerValues(dt, UpList[0], DownList[0]);//, m_outIter, m_statusIter);
 
 	// Process the status up/down lists.  This is an iterative process which
 	// proceeds outwards from the active layer.  Each iteration generates the
 	// list for the next iteration.
 
 	// First process the status lists generated on the active layer.
-	this->ProcessStatusList(UpList[0], UpList[1], 2, 1);
-	this->ProcessStatusList(DownList[0], DownList[1], 1, 2);
+	this->ProcessStatusList(UpList[0], UpList[1], 2, 1, m_statusIter);
+	this->ProcessStatusList(DownList[0], DownList[1], 1, 2, m_statusIter);
 
 	down_to = up_to = 0;
 	up_search = 3;
@@ -230,8 +237,8 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	k = 0;
 	while (down_search < static_cast<StatusType>( LYERCOUNT(commonConf->m_NumberOfLayers) ) )
 	{
-		this->ProcessStatusList(UpList[j], UpList[k], up_to, up_search);
-		this->ProcessStatusList(DownList[j], DownList[k], down_to, down_search);
+		this->ProcessStatusList(UpList[j], UpList[k], up_to, up_search, m_statusIter);
+		this->ProcessStatusList(DownList[j], DownList[k], down_to, down_search, m_statusIter);
 
 		if (up_to == 0)
 			up_to += 1;
@@ -249,19 +256,21 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	}
 
 	// Process the outermost inside/outside layers in the sparse field.
-	this->ProcessStatusList(UpList[j], UpList[k], up_to, this->m_StatusNull);
+	this->ProcessStatusList(UpList[j], UpList[k], up_to, this->m_StatusNull, m_statusIter);
 	this->ProcessStatusList(DownList[j], DownList[k], down_to,
-			this->m_StatusNull);
+			this->m_StatusNull, m_statusIter);
 
 	// Now we are left with the lists of indicies which must be
 	// brought into the outermost layers.  Bring UpList into last inside layer
 	// and DownList into last outside layer.
-	this->ProcessOutsideList(UpList[k], static_cast<int>(LYERCOUNT(commonConf->m_NumberOfLayers)) -2);
-	this->ProcessOutsideList(DownList[k], static_cast<int>(LYERCOUNT(commonConf->m_NumberOfLayers)) -1);
+	this->ProcessOutsideList(UpList[k], static_cast<int>(LYERCOUNT(commonConf->m_NumberOfLayers)) -2, m_statusIter);
+	this->ProcessOutsideList(DownList[k], static_cast<int>(LYERCOUNT(commonConf->m_NumberOfLayers)) -1, m_statusIter);
 
 	// Finally, we update all of the layer values (excluding the active layer,
 	// which has already been updated).
 	this->PropagateAllLayerValues();
+	
+	return retval;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -276,7 +285,8 @@ ApplyUpdateSPE::ProcessOutsideList(
 	// (ChangeToStatus) and update the status image value at that index.
 	while ( !OutsideList->Empty() )
 	{
-		statIter->SetPixel(OutsideList->Front()->m_Value, ChangeToStatus);
+		statIter.SetLocation(OutsideList->Front()->m_Value);
+		statIter.SetCenterPixel(ChangeToStatus);
 		node = OutsideList->Front();
 		OutsideList->PopFront();
 		m_Layers[ChangeToStatus]->PushFront(node);
@@ -286,7 +296,7 @@ ApplyUpdateSPE::ProcessOutsideList(
 void
 ApplyUpdateSPE::ProcessStatusList(
 		LayerType *InputList, LayerType *OutputList, StatusType ChangeToStatus,
-		StatusType SearchForStatus)
+		StatusType SearchForStatus, TStatusNeighbIterator &statusIt)
 {
 	unsigned int i;
 	bool bounds_status;
@@ -294,13 +304,6 @@ ApplyUpdateSPE::ProcessStatusList(
 	StatusType neighbor_status;
 //	NeighborhoodIterator<StatusImageType> statusIt(m_NeighborList.GetRadius(),
 //			m_StatusImage, this->GetOutput()->GetRequestedRegion());
-	
-	
-	NeighborhoodCell<TPixelValue> outNeigh( &commonConf->valueImageProps);
-	NeighborhoodCell<StatusType> statusNeigh( &commonConf->statusImageProps);
-
-	m_outIter.SetNeighbourhood( &outNeigh);
-	m_statusIter.SetNeighbourhood( &statusNeigh);
 		
 
 	// Push each index in the input list into its appropriate status layer
@@ -309,8 +312,8 @@ ApplyUpdateSPE::ProcessStatusList(
 	// the output list (search for SearchForStatus).
 	while ( !InputList->Empty() )
 	{
-		m_statusIter.SetLocation(InputList->Front()->m_Value);
-		m_statusIter.SetCenterPixel(ChangeToStatus);
+		statusIt.SetLocation(InputList->Front()->m_Value);
+		statusIt.SetCenterPixel(ChangeToStatus);
 
 		node = InputList->Front(); // Must unlink from the input list 
 		InputList->PopFront(); // _before_ transferring to another list.
@@ -319,12 +322,12 @@ ApplyUpdateSPE::ProcessStatusList(
 		for (i = 0; i < m_NeighborList.GetSize(); ++i)
 		{
 			neighbor_status
-					= m_statusIter.GetPixel(m_NeighborList.GetArrayIndex(i));
+					= statusIt.GetPixel(m_NeighborList.GetArrayIndex(i));
 
 			if (neighbor_status == SearchForStatus)
-			{ // mark this pixel so we don't add it twice.
-				m_statusIter.SetPixel(m_NeighborList.GetArrayIndex(i),
-						this->m_StatusChanging, bounds_status);
+			{ // mark this pixel so we don't add it twice. //TODO
+				statusIt.SetPixel(m_NeighborList.GetNeighborhoodOffset(i),
+						this->m_StatusChanging);
 				if (bounds_status == true)
 				{
 					node = m_LayerNodeStore->Borrow();
@@ -339,182 +342,380 @@ ApplyUpdateSPE::ProcessStatusList(
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void 
+ApplyUpdateSPE::ValueType 
 ApplyUpdateSPE::UpdateActiveLayerValues(
 		TimeStepType dt, LayerType *UpList, LayerType *DownList)
 {
-	// This method scales the update buffer values by the time step and adds
-	// them to the active layer pixels.  New values at an index which fall
-	// outside of the active layer range trigger that index to be placed on the
-	// "up" or "down" status list.  The neighbors of any such index are then
-	// assigned new values if they are determined to be part of the active list
-	// for the next iteration (i.e. their values will be raised or lowered into
-	// the active range).
-	const ValueType LOWER_ACTIVE_THRESHOLD = - (commonConf->m_ConstantGradientValue / 2.0);
-	const ValueType UPPER_ACTIVE_THRESHOLD = commonConf->m_ConstantGradientValue / 2.0;
-	//   const ValueType LOWER_ACTIVE_THRESHOLD = - 0.7;
-	//   const ValueType UPPER_ACTIVE_THRESHOLD =   0.7;
-	TPixelValue new_value, temp_value, rms_change_accumulator;
-	SparseFieldLevelSetNode *node, *release_node;
-	StatusType neighbor_status;
-	unsigned int i, idx, counter;
-	bool bounds_status, flag;
-
-	LayerType::Iterator layerIt;
-
-//	NeighborhoodIterator<OutputImageType> outputIt(m_NeighborList.GetRadius(),
-//			this->GetOutput(), this->GetOutput()->GetRequestedRegion());
+//	const ValueType LOWER_ACTIVE_THRESHOLD = - (commonConf->m_ConstantGradientValue / 2.0);
+//	const ValueType UPPER_ACTIVE_THRESHOLD = commonConf->m_ConstantGradientValue / 2.0;
+//	//   const ValueType LOWER_ACTIVE_THRESHOLD = - 0.7;
+//	//   const ValueType UPPER_ACTIVE_THRESHOLD =   0.7;
+//	TPixelValue new_value, temp_value, rms_change_accumulator;
+//	SparseFieldLevelSetNode *node, *release_node;
+//	StatusType neighbor_status;
+//	unsigned int i, idx, counter;
+//	bool flag;//bounds_status, 
 //
-//	NeighborhoodIterator<StatusImageType> statusIt(m_NeighborList.GetRadius(),
-//			m_StatusImage, this->GetOutput()->GetRequestedRegion());
-
+//	LayerType::Iterator layerIt;
+//
+////	NeighborhoodIterator<OutputImageType> outputIt(m_NeighborList.GetRadius(),
+////			this->GetOutput(), this->GetOutput()->GetRequestedRegion());
+////
+////	NeighborhoodIterator<StatusImageType> statusIt(m_NeighborList.GetRadius(),
+////			m_StatusImage, this->GetOutput()->GetRequestedRegion());
+//	
+//	NeighborhoodCell<TPixelValue> outNeigh( &commonConf->valueImageProps);
+//	NeighborhoodCell<StatusType> statusNeigh( &commonConf->statusImageProps);
+//
+//	m_outIter.SetNeighbourhood( &outNeigh);
+//	m_statusIter.SetNeighbourhood( &statusNeigh);
+//
+//	counter =0;
+//	rms_change_accumulator = this->m_ValueZero;
+//	layerIt = m_Layers[0]->Begin();
+//	
+//	TUpdateBufferArray updateBufferArray(commonConf->m_UpdateBufferData);
+//	
+//	std::cout << "updated activeLayerVals:" << std::endl;
+//	
+//	while (layerIt != m_Layers[0]->End() )
+//	{
+//		m_outIter.SetLocation(layerIt->m_Value);
+//		m_statusIter.SetLocation(layerIt->m_Value);
+//
+//		new_value = this->CalculateUpdateValue(
+//				dt, m_outIter.GetCenterPixel(), updateBufferArray.pop_front() );
+//		
+//		std::cout << new_value << ", ";
+//
+//		// If this index needs to be moved to another layer, then search its
+//		// neighborhood for indicies that need to be pulled up/down into the
+//		// active layer. Set those new active layer values appropriately,
+//		// checking first to make sure they have not been set by a more
+//		// influential neighbor.
+//
+//		//   ...But first make sure any neighbors in the active layer are not
+//		// moving to a layer in the opposite direction.  This step is necessary
+//		// to avoid the creation of holes in the active layer.  The fix is simply
+//		// to not change this value and leave the index in the active set.
+//
+//		if (new_value >= UPPER_ACTIVE_THRESHOLD)
+//		{ // This index will move UP into a positive (outside) layer.
+//
+//			// First check for active layer neighbors moving in the opposite
+//			// direction.
+//			flag = false;
+//			for (i = 0; i < m_NeighborList.GetSize(); ++i)
+//			{
+//				if (m_statusIter.GetPixel(m_NeighborList.GetArrayIndex(i))
+//						== this->m_StatusActiveChangingDown)
+//				{
+//					flag = true;
+//					break;
+//				}
+//			}
+//			if (flag == true)
+//			{
+//				++layerIt;
+//				continue;
+//			}
+//
+//			rms_change_accumulator += vnl_math_sqr(new_value
+//					-m_outIter.GetCenterPixel());
+//
+//			// Search the neighborhood for inside indicies.
+//			temp_value = new_value - commonConf->m_ConstantGradientValue;
+//			for (i = 0; i < m_NeighborList.GetSize(); ++i)
+//			{
+//				idx = m_NeighborList.GetArrayIndex(i);
+//				neighbor_status = m_statusIter.GetPixel(idx);
+//				if (neighbor_status == 1)
+//				{
+//					// Keep the smallest possible value for the new active node.  This
+//					// places the new active layer node closest to the zero level-set.
+//					if (m_outIter.GetPixel(idx) < LOWER_ACTIVE_THRESHOLD ||:: vnl_math_abs(temp_value) < ::vnl_math_abs(m_outIter.GetPixel(idx)) )
+//            {
+//            m_outIter.SetPixel(m_NeighborList.GetNeighborhoodOffset(idx), temp_value);
+//            }
+//          }
+//        }
+//      node = m_LayerNodeStore->Borrow();
+//      node->m_Value = layerIt->m_Value;
+//      UpList->PushFront(node);
+//      m_statusIter.SetCenterPixel(this->m_StatusActiveChangingUp);
+//
+//      // Now remove this index from the active list.
+//      release_node = layerIt.GetPointer();
+//      ++layerIt;
+//      m_Layers[0]->Unlink(release_node);
+//      m_LayerNodeStore->Return( release_node );
+//      }
+//
+//    else if (new_value < LOWER_ACTIVE_THRESHOLD)
+//      { // This index will move DOWN into a negative (inside) layer.
+//
+//      // First check for active layer neighbors moving in the opposite
+//      // direction.
+//      flag = false;
+//      for (i = 0; i < m_NeighborList.GetSize(); ++i)
+//        {
+//        if (m_statusIter.GetPixel(m_NeighborList.GetArrayIndex(i))
+//            == this->m_StatusActiveChangingUp)
+//          {
+//          flag = true;
+//          break;
+//          }
+//        }
+//      if (flag == true)
+//        {
+//        ++layerIt;
+//        continue;
+//        }
+//      
+//      rms_change_accumulator += vnl_math_sqr(new_value - m_outIter.GetCenterPixel());
+//          
+//      // Search the neighborhood for outside indicies.
+//      temp_value = new_value + commonConf->m_ConstantGradientValue;
+//      for (i = 0; i < m_NeighborList.GetSize(); ++i)
+//        {
+//        idx = m_NeighborList.GetArrayIndex(i);
+//        neighbor_status = m_statusIter.GetPixel( idx );
+//        if (neighbor_status == 2)
+//          {
+//          // Keep the smallest magnitude value for this active set node.  This
+//          // places the node closest to the active layer.
+//          if ( m_outIter.GetPixel(idx) >= UPPER_ACTIVE_THRESHOLD ||
+//               ::vnl_math_abs(temp_value) < ::vnl_math_abs(m_outIter.GetPixel(idx)) )
+//            {
+//            m_outIter.SetPixel(m_NeighborList.GetNeighborhoodOffset(idx), temp_value);
+//            }
+//          }
+//        }
+//      node = m_LayerNodeStore->Borrow();
+//      node->m_Value = layerIt->m_Value;
+//      DownList->PushFront(node);
+//      m_statusIter.SetCenterPixel(this->m_StatusActiveChangingDown);
+//
+//      // Now remove this index from the active list.
+//      release_node = layerIt.GetPointer();
+//      ++layerIt;
+//      m_Layers[0]->Unlink(release_node);
+//      m_LayerNodeStore->Return( release_node );
+//      }
+//    else
+//      {
+//      rms_change_accumulator += vnl_math_sqr(new_value - m_outIter.GetCenterPixel());
+//      //rms_change_accumulator += (*updateIt) * (*updateIt);
+//      m_outIter.SetCenterPixel( new_value );
+//      ++layerIt;
+//      }
+//    ++counter;
+//    }
 	
-
-	counter =0;
-	rms_change_accumulator = this->m_ValueZero;
-	layerIt = m_Layers[0]->Begin();
+	  const ValueType LOWER_ACTIVE_THRESHOLD = - (commonConf->m_ConstantGradientValue / 2.0);
+	  const ValueType UPPER_ACTIVE_THRESHOLD =    commonConf->m_ConstantGradientValue / 2.0;
+	  //   const ValueType LOWER_ACTIVE_THRESHOLD = - 0.7;
+	  //   const ValueType UPPER_ACTIVE_THRESHOLD =   0.7;
+	  ValueType new_value, temp_value, rms_change_accumulator;
+	  SparseFieldLevelSetNode *node, *release_node;
+	  StatusType neighbor_status;
+	  unsigned int i, idx, counter;
+	  bool bounds_status, flag;
+	  
+	  LayerType::Iterator         layerIt;
+	  
+	  TPixelValue *updateIt = commonConf->m_UpdateBufferData;
+	  
+	  NeighborhoodCell<TPixelValue> outNeigh( &commonConf->valueImageProps);
+  	NeighborhoodCell<StatusType> statusNeigh( &commonConf->statusImageProps);
+  	
+  	m_outIter.SetNeighbourhood( &outNeigh);
+  		m_statusIter.SetNeighbourhood( &statusNeigh);
+	  
+  		//LOUT << "updated activeLayerVals:" << std::endl;
+  		
+//  	    ValueType centerVal = m_outIter.GetCenterPixel();
+//  	LOUT << "centerVal = " << centerVal << std::endl;
+	  
+	  TIndex currIndex;
+	  
+	  counter =0;
+	  rms_change_accumulator = this->m_ValueZero;
+	  layerIt = m_Layers[0]->Begin();
+	  while (layerIt != m_Layers[0]->End() )
+	    {
+		  m_outIter.SetLocation(layerIt->m_Value);
+		  m_statusIter.SetLocation(layerIt->m_Value);
+		  
+		  currIndex = layerIt->m_Value;
+		  
+		  TPixelValue curVal = m_outIter.GetCenterPixel();
 	
-	TUpdateBufferArray updateBufferArray(commonConf->m_UpdateBufferData);
+	    new_value = this->CalculateUpdateValue(dt, curVal, *updateIt);
+	    
+	    //LOUT << new_value << ", ";
+	    
+	    ValueType centerVal = m_outIter.GetCenterPixel();
+	LOUT << "1centerVal = " << centerVal << std::endl;
 	
-	while (layerIt != m_Layers[0]->End() )
-	{
-		outputIt.SetLocation(layerIt->m_Value);
-		statusIt.SetLocation(layerIt->m_Value);
-
-		new_value = this->CalculateUpdateValue(layerIt->m_Value, dt,
-				outputIt.GetCenterPixel(), updateBufferArray.pop_front() );
-
-		// If this index needs to be moved to another layer, then search its
-		// neighborhood for indicies that need to be pulled up/down into the
-		// active layer. Set those new active layer values appropriately,
-		// checking first to make sure they have not been set by a more
-		// influential neighbor.
-
-		//   ...But first make sure any neighbors in the active layer are not
-		// moving to a layer in the opposite direction.  This step is necessary
-		// to avoid the creation of holes in the active layer.  The fix is simply
-		// to not change this value and leave the index in the active set.
-
-		if (new_value >= UPPER_ACTIVE_THRESHOLD)
-		{ // This index will move UP into a positive (outside) layer.
-
-			// First check for active layer neighbors moving in the opposite
-			// direction.
-			flag = false;
-			for (i = 0; i < m_NeighborList.GetSize(); ++i)
-			{
-				if (statusIt.GetPixel(m_NeighborList.GetArrayIndex(i))
-						== this->m_StatusActiveChangingDown)
-				{
-					flag = true;
-					break;
-				}
-			}
-			if (flag == true)
-			{
-				++layerIt;
-				continue;
-			}
-
-			rms_change_accumulator += vnl_math_sqr(new_value
-					-outputIt.GetCenterPixel());
-
-			// Search the neighborhood for inside indicies.
-			temp_value = new_value - commonConf->m_ConstantGradientValue;
-			for (i = 0; i < m_NeighborList.GetSize(); ++i)
-			{
-				idx = m_NeighborList.GetArrayIndex(i);
-				neighbor_status = statusIt.GetPixel(idx);
-				if (neighbor_status == 1)
-				{
-					// Keep the smallest possible value for the new active node.  This
-					// places the new active layer node closest to the zero level-set.
-					if (outputIt.GetPixel(idx) < LOWER_ACTIVE_THRESHOLD ||:: vnl_math_abs(temp_value) < ::vnl_math_abs(outputIt.GetPixel(idx)) )
-            {
-            outputIt.SetPixel(idx, temp_value, bounds_status);
-            }
-          }
-        }
-      node = m_LayerNodeStore->Borrow();
-      node->m_Value = layerIt->m_Value;
-      UpList->PushFront(node);
-      statusIt.SetCenterPixel(this->m_StatusActiveChangingUp);
-
-      // Now remove this index from the active list.
-      release_node = layerIt.GetPointer();
-      ++layerIt;
-      m_Layers[0]->Unlink(release_node);
-      m_LayerNodeStore->Return( release_node );
-      }
-
-    else if (new_value < LOWER_ACTIVE_THRESHOLD)
-      { // This index will move DOWN into a negative (inside) layer.
-
-      // First check for active layer neighbors moving in the opposite
-      // direction.
-      flag = false;
-      for (i = 0; i < m_NeighborList.GetSize(); ++i)
-        {
-        if (statusIt.GetPixel(m_NeighborList.GetArrayIndex(i))
-            == this->m_StatusActiveChangingUp)
-          {
-          flag = true;
-          break;
-          }
-        }
-      if (flag == true)
-        {
-        ++layerIt;
-        ++updateIt;
-        continue;
-        }
-      
-      rms_change_accumulator += vnl_math_sqr(new_value - outputIt.GetCenterPixel());
-          
-      // Search the neighborhood for outside indicies.
-      temp_value = new_value + commonConf->m_ConstantGradientValue;
-      for (i = 0; i < m_NeighborList.GetSize(); ++i)
-        {
-        idx = m_NeighborList.GetArrayIndex(i);
-        neighbor_status = statusIt.GetPixel( idx );
-        if (neighbor_status == 2)
-          {
-          // Keep the smallest magnitude value for this active set node.  This
-          // places the node closest to the active layer.
-          if ( outputIt.GetPixel(idx) >= UPPER_ACTIVE_THRESHOLD ||
-               ::vnl_math_abs(temp_value) < ::vnl_math_abs(outputIt.GetPixel(idx)) )
-            {
-            outputIt.SetPixel(idx, temp_value, bounds_status);
-            }
-          }
-        }
-      node = m_LayerNodeStore->Borrow();
-      node->m_Value = layerIt->m_Value;
-      DownList->PushFront(node);
-      statusIt.SetCenterPixel(this->m_StatusActiveChangingDown);
-
-      // Now remove this index from the active list.
-      release_node = layerIt.GetPointer();
-      ++layerIt;
-      m_Layers[0]->Unlink(release_node);
-      m_LayerNodeStore->Return( release_node );
-      }
-    else
-      {
-      rms_change_accumulator += vnl_math_sqr(new_value - outputIt.GetCenterPixel());
-      //rms_change_accumulator += (*updateIt) * (*updateIt);
-      outputIt.SetCenterPixel( new_value );
-      ++layerIt;
-      }
-    ++updateIt;
-    ++counter;
-    }
+	    // If this index needs to be moved to another layer, then search its
+	    // neighborhood for indicies that need to be pulled up/down into the
+	    // active layer. Set those new active layer values appropriately,
+	    // checking first to make sure they have not been set by a more
+	    // influential neighbor.
+	
+	    //   ...But first make sure any neighbors in the active layer are not
+	    // moving to a layer in the opposite direction.  This step is necessary
+	    // to avoid the creation of holes in the active layer.  The fix is simply
+	    // to not change this value and leave the index in the active set.
+	
+	    if (new_value >= UPPER_ACTIVE_THRESHOLD)
+	      { // This index will move UP into a positive (outside) layer.
+LOUT << "2new_value = " << new_value << ">= UPPER_ACTIVE_THRESHOLD" << std::endl;
+	      // First check for active layer neighbors moving in the opposite
+	      // direction.
+	      flag = false;
+	      for (i = 0; i < m_NeighborList.GetSize(); ++i)
+	        {
+	        if (m_statusIter.GetPixel(m_NeighborList.GetArrayIndex(i))
+	            == this->m_StatusActiveChangingDown)
+	          {
+	          flag = true;
+	          break;
+	          }
+	        }
+	      if (flag == true)
+	        {
+	        ++layerIt;
+	        ++updateIt;
+	        LOUT << "3flag == true" << std::endl;
+	        continue;
+	        }
+	
+	      rms_change_accumulator += vnl_math_sqr(new_value- centerVal );
+	      LOUT << "4rms_change_accumulator = " << rms_change_accumulator << std::endl;
+	
+	      // Search the neighborhood for inside indicies.
+	      temp_value = new_value - commonConf->m_ConstantGradientValue;
+	      LOUT << "5temp_value = " << temp_value << std::endl;
+	      for (i = 0; i < m_NeighborList.GetSize(); ++i)
+	        {
+	        idx = m_NeighborList.GetArrayIndex(i);
+	        neighbor_status = m_statusIter.GetPixel( idx );
+	        char tmp[2]; tmp[1] = 0;
+	               tmp[0] = (neighbor_status + '0');
+	        LOUT << "333status on " << idx << ":" << tmp << std::endl;
+	        if (neighbor_status == 1)
+	          {
+	          // Keep the smallest possible value for the new active node.  This
+	          // places the new active layer node closest to the zero level-set.
+	        	ValueType rr = m_outIter.GetPixel(idx);
+	        	LOUT << "444neighbor_status == 1, pix=" << rr << std::endl;
+	          if ( rr < LOWER_ACTIVE_THRESHOLD ||
+	               ::vnl_math_abs(temp_value) < ::vnl_math_abs(rr) )
+	            {
+	            m_outIter.SetPixel(idx, temp_value);
+	            }
+	          }
+	        }
+	      node = m_LayerNodeStore->Borrow();
+	      LOUT << "6m_LayerNodeStore->Borrow() = " << std::endl;
+	      node->m_Value = layerIt->m_Value;
+	      UpList->PushFront(node);
+	      m_statusIter.SetCenterPixel(this->m_StatusActiveChangingUp);
+	
+	      // Now remove this index from the active list.
+	      release_node = layerIt.GetPointer();
+	      ++layerIt;
+	      m_Layers[0]->Unlink(release_node);
+	      m_LayerNodeStore->Return( release_node );
+	      }
+	
+	    else if (new_value < LOWER_ACTIVE_THRESHOLD)
+	      { // This index will move DOWN into a negative (inside) layer.
+LOUT << "7new_value = " << new_value << "< LOWER_ACTIVE_THRESHOLD" << std::endl;
+	      // First check for active layer neighbors moving in the opposite
+	      // direction.
+	      flag = false;
+	      for (i = 0; i < m_NeighborList.GetSize(); ++i)
+	        {
+	        if (m_statusIter.GetPixel(m_NeighborList.GetArrayIndex(i))
+	            == this->m_StatusActiveChangingUp)
+	          {
+	          flag = true;
+	          break;
+	          }
+	        }
+	      if (flag == true)
+	        {
+	        ++layerIt;
+	        ++updateIt;
+	        continue;
+	        }
+	      
+	      rms_change_accumulator += vnl_math_sqr(new_value - centerVal);	      
+	      LOUT << "8rms_change_accumulator = " << rms_change_accumulator << std::endl;
+	          
+	      // Search the neighborhood for outside indicies.
+	      temp_value = new_value + commonConf->m_ConstantGradientValue;
+	      LOUT << "9temp_value = " << temp_value << std::endl;
+	      for (i = 0; i < m_NeighborList.GetSize(); ++i)
+	        {
+	        idx = m_NeighborList.GetArrayIndex(i);
+	        neighbor_status = m_statusIter.GetPixel( idx );
+	        char tmp[2]; tmp[1] = 0;
+	               tmp[0] = (neighbor_status + '0');
+	        LOUT << "10status on " << idx << ":" << tmp << std::endl;
+	        if (neighbor_status == 2)
+	          {
+	          // Keep the smallest magnitude value for this active set node.  This
+	          // places the node closest to the active layer.
+	        	ValueType pix = m_outIter.GetPixel(idx);
+	        	LOUT << "11neighbor_status == 2, pix=" << pix << std::endl;
+	          if ( pix >= UPPER_ACTIVE_THRESHOLD ||
+	               ::vnl_math_abs(temp_value) < ::vnl_math_abs(pix) )
+	            {
+	            m_outIter.SetPixel(idx, temp_value);
+	            }
+	          }
+	        }
+	      node = m_LayerNodeStore->Borrow();
+	      node->m_Value = layerIt->m_Value;
+	      DownList->PushFront(node);
+	      LOUT << "12DownList->PushFront(node)" << std::endl;
+	      m_statusIter.SetCenterPixel(this->m_StatusActiveChangingDown);
+	
+	      // Now remove this index from the active list.
+	      release_node = layerIt.GetPointer();
+	      ++layerIt;
+	      m_Layers[0]->Unlink(release_node);
+	      m_LayerNodeStore->Return( release_node );
+	      }
+	    else
+	      {
+	      rms_change_accumulator += vnl_math_sqr(new_value - centerVal);
+	      LOUT << "13else: " << new_value << ", acc: " << rms_change_accumulator << std::endl;
+	      //rms_change_accumulator += (*updateIt) * (*updateIt);
+	      m_outIter.SetCenterPixel( new_value );
+	      ++layerIt;
+	      }
+	    ++updateIt;
+	    ++counter;
+	    }
   
+	  LOUT << std::endl << "14rms accum: " << rms_change_accumulator << "counter: " << counter << std::endl;
+	
   // Determine the average change during this iteration.
   if (counter == 0)
     return this->m_ValueZero;
   else
-	  return static_cast<double>( vcl_sqrt((double)(rms_change_accumulator / static_cast<ValueType>(counter)) ));
+  {
+	  ValueType ret =
+		  static_cast<double>( sqrt((double)(rms_change_accumulator / static_cast<ValueType>(counter)) ));
+		  
+		  LOUT << "returning: " << ret << std::endl;	  
+		  return ret;
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

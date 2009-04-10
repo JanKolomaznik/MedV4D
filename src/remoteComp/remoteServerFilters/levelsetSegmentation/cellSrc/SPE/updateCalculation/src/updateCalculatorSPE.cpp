@@ -4,35 +4,6 @@
 #include "../../vnl_math.h"
 #include <string.h>
 
-//template<typename ImageType>
-//void 
-//PrintITKImage(const ImageType &image, std::ostream &s)
-//{
-//	image.Print( s);
-//	    
-//	typename ImageType::RegionType::IndexType index;
-//	typename ImageType::RegionType::SizeType size = 
-//    	image.GetLargestPossibleRegion().GetSize();
-//    
-//    s << "size: " << size[0] << "," << size[1] << "," << size[2] << std::endl;
-//    
-//    for( unsigned int i=0; i<size[0]; i++)
-//    {
-//    	for( unsigned int j=0; j<size[1]; j++)
-//    	{
-//    		for( unsigned int k=0; k< size[2]; k++)
-//    		{
-//    			index[0] = i;
-//    			index[1] = j;
-//    			index[2] = k;
-//    			
-//    			s << "[" << i << "," << j << "," << k << "]= ";
-//    			s << image.GetPixel(index) << std::endl;
-//    		}
-//    	}
-//    }
-//}
-
 using namespace M4D::Cell;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -49,6 +20,15 @@ M4D::Cell::ComputeStridesFromSize(const TSize &size, TStrides &strides)
 	  accum *= size[dim-1];
 	  strides[dim] = accum;
 	  }
+}
+
+TIndex M4D::Cell::operator+(const TIndex &i, const TOffset &o)
+{
+	TIndex ret;
+	ret[0] = i[0] + o[0];
+	ret[1] = i[1] + o[1];
+	ret[2] = i[2] + o[2];
+	return ret;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

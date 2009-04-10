@@ -31,6 +31,7 @@ typedef MyVector<float32> TContinuousIndex;
 typedef MyVector<float32> TSpacing;
 
 void ComputeStridesFromSize(const TSize &size, TStrides &strides);
+TIndex operator+(const TIndex &i, const TOffset &o);
 
 struct TRegion
 {

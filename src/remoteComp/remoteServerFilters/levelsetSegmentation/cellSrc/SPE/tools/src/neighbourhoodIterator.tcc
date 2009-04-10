@@ -24,6 +24,8 @@ NeighbourIteratorCell<PixelType>
 //this->Initialize(radius, ptr, region);
 for (unsigned int i=0; i < DIM; i++)
   { m_InBounds[i] = false; }
+
+ComputeNeighborhoodOffsetTable();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -67,22 +69,28 @@ NeighbourIteratorCell<PixelType>::ComputeNeighborhoodOffsetTable()
   unsigned int i, j;
   for (j = 0; j < DIM; j++)
     {
-    o[j] = -(static_cast<long>(m_neighbourhood->GetStride(j)));
+    o[j] = -(static_cast<long>(RADIUS));
     }
 
-  for (i = 0; i < m_neighbourhood->GetSize(); ++i)
+  for (i = 0; i < NEIGHBOURHOOD_SIZE; ++i)
     {
 	  m_OffsetTable[i] = o;
     for (j= 0; j< DIM; j++)
       {
       o[j] = o[j] + 1;
-      if (o[j] > static_cast<long>(m_neighbourhood->GetStride(j)))
+      if (o[j] > static_cast<long>(RADIUS))
         {
-        o[j] = -(static_cast<long>(m_neighbourhood->GetStride(j)));
+        o[j] = -(static_cast<long>(RADIUS));
         }
       else break;
       }
     }
+  
+//  std::cout << "Offset table" << std::endl;
+//  for(i=0; i<NEIGHBOURHOOD_SIZE; i++)
+//  {
+//	  std::cout << m_OffsetTable[i][0] << "," << m_OffsetTable[i][1] << "," << m_OffsetTable[i][2] << std::endl; 
+//  }
 } 
 
 

@@ -105,6 +105,45 @@ NeighborhoodCell<PixelType>::SetCenterPixel(PixelType val)
 
 template<typename PixelType>
 void
+NeighborhoodCell<PixelType>::SetPixel(PixelType val, TOffset pos)
+{
+	TIndex i = m_currIndex + pos;
+	if(IsWithinImage(i))
+	{
+		PixelType *begin = ComputeImageDataPointer(i);
+		*begin = val;
+	}
+}
+
+// xxxxxxxxxxxxxxxxxxxxxxxxxxx
+//template<typename PixelType>
+//PixelType
+//NeighborhoodCell<PixelType>::DebugGetImagePixel(TOffset off)
+//{
+//	TIndex i = m_currIndex + off;
+//	if(IsWithinImage(i))
+//		{
+//		return *ComputeImageDataPointer(i);
+//		}
+//}
+//	
+//template<typename PixelType>
+//void
+//NeighborhoodCell<PixelType>::DebugSetImagePixel(TOffset off, PixelType val)
+//{
+//	TIndex i = m_currIndex + off;
+//	if(IsWithinImage(i))
+//	{
+//		PixelType *begin = ComputeImageDataPointer(i);
+//		*begin = val;
+//	}
+//}
+// xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+///////////////////////////////////////////////////////////////////////////////
+
+template<typename PixelType>
+void
 NeighborhoodCell<PixelType>
 	::SetPosition(const TIndex &pos)
 {

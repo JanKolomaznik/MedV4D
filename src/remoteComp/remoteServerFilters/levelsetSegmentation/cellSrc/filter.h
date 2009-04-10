@@ -88,6 +88,8 @@ public:
 	
 	void PrintStats(std::ostream &s);
 	
+	void PrintUpdateBuf(std::ostream &s);
+	
 	// **************************************
 
 	  // FUNCTIONS
@@ -137,6 +139,13 @@ public:
 	    /** Initializes the values of the active layer set. */
 	    void InitializeActiveLayerValues();
 	    
+
+	    /** Adjusts the values associated with all the index layers of the sparse
+	     * field by propagating out one layer at a time from the active set. This
+	     * method also takes care of deleting nodes from the layers which have been
+	     * marked in the status image as having been moved to other layers. */
+	    void PropagateAllLayerValues();
+	    
 	    /** Adjusts the values in a single layer "to" using values in a neighboring
 	     *  layer "from".  The list of indicies in "to" are traversed and assigned
 	     *  new values appropriately. Any indicies in "to" without neighbors in
@@ -146,12 +155,16 @@ public:
 	     *  propagation is outwards (more positive). */   
 	    void PropagateLayerValues(StatusType from, StatusType to,
 	                              StatusType promote, int InOrOut);
+	    
+	    ValueType CalculateUpdateValue(
+	    		    const TimeStepType &dt,
+	    		    const ValueType &value,
+	    		    const ValueType &change)
+	    		    {
+	    			ValueType val = (value + dt * change); 
+	    			return val;
+	    			}
 
-	    /** Adjusts the values associated with all the index layers of the sparse
-	     * field by propagating out one layer at a time from the active set. This
-	     * method also takes care of deleting nodes from the layers which have been
-	     * marked in the status image as having been moved to other layers. */
-	    void PropagateAllLayerValues();
 
 	    /** Updates the active layer values using m_UpdateBuffer. Also creates an
 	     *  "up" and "down" list for promotion/demotion of indicies leaving the

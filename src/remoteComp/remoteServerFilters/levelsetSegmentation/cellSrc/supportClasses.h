@@ -26,6 +26,35 @@ RegionType ConvertRegion(const ImageType &image)
 	return reg;
 }
 
+template<typename ImageType>
+void 
+PrintITKImage(const ImageType &image, std::ostream &s)
+{
+	image.Print( s);
+	    
+	typename ImageType::RegionType::IndexType index;
+	typename ImageType::RegionType::SizeType size = 
+    	image.GetLargestPossibleRegion().GetSize();
+    
+    s << "size: " << size[0] << "," << size[1] << "," << size[2] << std::endl;
+    
+    for( unsigned int i=0; i<size[0]; i++)
+    {
+    	for( unsigned int j=0; j<size[1]; j++)
+    	{
+    		for( unsigned int k=0; k< size[2]; k++)
+    		{
+    			index[0] = i;
+    			index[1] = j;
+    			index[2] = k;
+    			
+    			s << "[" << i << "," << j << "," << k << "]= ";
+    			s << image.GetPixel(index) << std::endl;
+    		}
+    	}
+    }
+}
+
 template<typename T1, typename T2>
 T1 ConvertIncompatibleVectors(const T2 &v2)
 {

@@ -48,16 +48,16 @@ public:
 	typedef itk::ObjectStore<SparseFieldLevelSetNode> LayerNodeStorageType;
 	LayerNodeStorageType *m_LayerNodeStore;
 	
-	
+	ValueType UpdateActiveLayerValues(TimeStepType dt,
+	            LayerType *UpList, LayerType *DownList);
 private:
 	void PropagateLayerValues(StatusType from, StatusType to,
 	                       StatusType promote, uint32 InOrOut);
 	
-	void ProcessOutsideList(LayerType *OutsideList, StatusType ChangeToStatus);
+	void ProcessOutsideList(LayerType *OutsideList, StatusType ChangeToStatus, TStatusNeighbIterator &statIter);
 	void ProcessStatusList(LayerType *InputList, LayerType *OutputList,
-            StatusType ChangeToStatus, StatusType SearchForStatus, TStatusNeighbIterator &statIter);
-	void UpdateActiveLayerValues(TimeStepType dt,
-            LayerType *UpList, LayerType *DownList);
+            StatusType ChangeToStatus, StatusType SearchForStatus, TStatusNeighbIterator &statusIt);
+	
 	
 	ValueType CalculateUpdateValue(
 		    const TimeStepType &dt,
