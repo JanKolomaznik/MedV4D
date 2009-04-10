@@ -206,6 +206,9 @@ DcmProvider::CreateImageDataFromDICOM(
 		throw ImageFactory::EEmptyDicomObjSet();	
 	}
 
+	// first we have sort the images into right order !
+	std::sort(dicomObjects->begin(), dicomObjects->end());
+		
 		D_PRINT( "---- DICOM OBJECT SET size = " << dicomObjects->size() );
 
 
@@ -313,9 +316,6 @@ FlushDicomObjectsHelper(
 		uint8					* dataArray
 		)
 {
-	// first we have sort the images into right order !
-	std::sort(dicomObjects->begin(), dicomObjects->end());
-	
 	//Copy each slice into image to its place.
 	uint32 i = 0;
 	for( 
