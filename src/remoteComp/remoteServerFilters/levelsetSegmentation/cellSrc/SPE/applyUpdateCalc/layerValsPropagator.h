@@ -25,11 +25,13 @@ public:
 	
 protected:
 	
+	typedef LinkedChainIteratorCell<SparseFieldLevelSetNode> TLayerIterator;
 	typedef NeighbourIteratorCell<TPixelValue> TValueNeighbIterator;
 	typedef NeighbourIteratorCell<StatusType> TStatusNeighbIterator;
 	
 	TValueNeighbIterator m_outIter;
 	TStatusNeighbIterator m_statusIter;
+	TLayerIterator m_layerIterator;
 	
 	itk::SparseFieldCityBlockNeighborList< TRadius, TOffset, 3 > m_NeighborList;
 	

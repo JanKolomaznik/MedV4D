@@ -1,5 +1,6 @@
 
 #include "common/Common.h"
+#include "common/Log.h"
 
 #include "../layerValsPropagator.h"
 
@@ -41,23 +42,25 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 	else
 		delta = commonConf->m_ConstantGradientValue;
 
-	//  NeighborhoodIterator<OutputImageType>
-	//    outputIt(m_NeighborList.GetRadius(), this->GetOutput(),
-	//             this->GetOutput()->GetRequestedRegion() );
-	//  NeighborhoodIterator<StatusImageType>
-	//    statusIt(m_NeighborList.GetRadius(), m_StatusImage,
-	//             this->GetOutput()->GetRequestedRegion() );
-
 	NeighborhoodCell<TPixelValue> outNeigh( &commonConf->valueImageProps);
 	NeighborhoodCell<StatusType> statusNeigh( &commonConf->statusImageProps);
 
 	m_outIter.SetNeighbourhood( &outNeigh);
 	m_statusIter.SetNeighbourhood( &statusNeigh);
+	
+	uint32 counter = 0;
 
+//	SparseFieldLevelSetNode *currNode;
+//	m_layerIterator.SetBeginEnd(conf.layerBegins[to], conf.layerEnds[to]);
 	SparseFieldLevelSetNode *currNode = this->conf.layerBegins[to];
 	while (currNode != conf.layerEnds[to])
 	{
+//	while (m_layerIterator.HasNext())
+//	{
+//		currNode = m_layerIterator.Next();
 		m_statusIter.SetLocation(currNode->m_Value);
+		
+		counter++;
 
 		// Is this index marked for deletion? If the status image has
 		// been marked with another layer's value, we need to delete this node
@@ -141,6 +144,8 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 			}
 		}
 	}
+	
+	LOG("counter=" << counter);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
