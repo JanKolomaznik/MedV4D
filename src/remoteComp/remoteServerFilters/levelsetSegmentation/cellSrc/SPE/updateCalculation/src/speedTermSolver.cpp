@@ -36,17 +36,17 @@ SpeedTermSolver
 SpeedTermSolver::FeatureScalarType
 SpeedTermSolver
 ::PropagationSpeed(const TFeatureNeighbourhoodIter &neighborhood,
-                   const FloatOffsetType &offset) const
+                   const ContinuousIndexType &offset) const
 {
-  const TIndex idx = neighborhood.GetIndex();
-
-  ContinuousIndexType cdx;
-  for (unsigned i = 0; i < DIM; ++i)
-    {
-    cdx[i] = static_cast<double>(idx[i]) - offset[i];
-    }
+//  const TIndex idx = neighborhood.GetIndex();
+//
+//  ContinuousIndexType cdx;
+//  for (unsigned i = 0; i < DIM; ++i)
+//    {
+//    cdx[i] = static_cast<double>(idx[i]) - offset[i];
+//    }
   
-  FeatureScalarType val = Interpolate(cdx, neighborhood);
+  FeatureScalarType val = Interpolate(offset, neighborhood);
   //LOG("ComputePropagationTerm at index: " << cdx << ", " << val);
 
 	return val;
@@ -56,7 +56,7 @@ SpeedTermSolver
 
 SpeedTermSolver::FeatureScalarType
 SpeedTermSolver
-	::Interpolate(ContinuousIndexType &index, const TFeatureNeighbourhoodIter &neighb) const
+	::Interpolate(const ContinuousIndexType &index, const TFeatureNeighbourhoodIter &neighb) const
 {
 	unsigned int dim;  // index over dimension
 	
@@ -151,7 +151,7 @@ SpeedTermSolver::FeatureScalarType
 SpeedTermSolver
 ::ComputePropagationTerm(
 	  const TFeatureNeighbourhoodIter &neighborhood,
-	  const FloatOffsetType& offset,
+	  const ContinuousIndexType& offset,
 	  GlobalDataType *gd)
 {
 	const FeatureScalarType ZERO = 0;//itk::NumericTraits<FeatureScalarType>::Zero;
@@ -162,7 +162,7 @@ SpeedTermSolver
 
 	// Get the propagation speed
 	FeatureScalarType propagation_term = 
-		m_PropagationWeight * PropagationSpeed(neighborhood, offset);
+		m_PropagationWeight * Interpolate(offset, neighborhood);//PropagationSpeed(neighborhood, offset);
 
 	//
 	// Construct upwind gradient values for use in the propagation speed term:

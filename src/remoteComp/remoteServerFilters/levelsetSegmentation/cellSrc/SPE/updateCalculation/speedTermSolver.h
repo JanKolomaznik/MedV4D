@@ -23,7 +23,6 @@ public:
 	
 	typedef GlobalDataStruct GlobalDataType;
 	typedef TContinuousIndex ContinuousIndexType;
-	typedef ContinuousIndexType FloatOffsetType;
 	
 	typedef NeighbourIteratorCell<FeaturePixelType> TFeatureNeighbourhoodIter;
 	
@@ -53,13 +52,13 @@ protected:
   
   FeatureScalarType ComputePropagationTerm(
 		  const TFeatureNeighbourhoodIter &neighborhood,
-		  const FloatOffsetType& offset,
+		  const ContinuousIndexType& offset,
 		  GlobalDataType *gd);
   
   FeatureScalarType GetSpeedInPoint(const FeatureScalarType &pixelValue) const;
   
   FeatureScalarType PropagationSpeed(const TFeatureNeighbourhoodIter &neighborhood,
-                     const FloatOffsetType &offset) const;
+                     const ContinuousIndexType &offset) const;
   
   SpeedTermSolver();
   
@@ -72,7 +71,7 @@ private:
 			+ m_LowerThreshold;
 	}
 	
-	FeatureScalarType Interpolate(ContinuousIndexType &index, const TFeatureNeighbourhoodIter &neighb) const;
+	FeatureScalarType Interpolate(const ContinuousIndexType &index, const TFeatureNeighbourhoodIter &neighb) const;
 };
 
 //include implementation

@@ -63,8 +63,8 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 //	  }
 //	  m_Conf.m_UpdateBufferData = &m_UpdateBuffer[0];
 //	  
-//	    std::cout << "Update list:" << std::endl;
-//	    PrintUpdateBuf(std::cout);
+////	    std::cout << "Update list:" << std::endl;
+////	    PrintUpdateBuf(std::cout);
 //	  
 //	  this->SetRMSChange(applyUpdateCalc.ApplyUpdate(dt));
 //#endif	
@@ -83,6 +83,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
     DownList[i] = LayerType::New();
     }
   
+	  LOUT << "ApplyUpdate" << std::endl << std::endl;
   
 //  std::stringstream s;
 //  s << "before" << this->m_ElapsedIterations << ".dat";
@@ -112,6 +113,10 @@ this->UpdateActiveLayerValues(dt, UpList[0], DownList[0]);
   // Process the status up/down lists.  This is an iterative process which
   // proceeds outwards from the active layer.  Each iteration generates the
   // list for the next iteration.
+std::stringstream s;
+	  s << "before" << this->m_ElapsedIterations;
+//	  std::ofstream b(s.str().c_str());
+//		PrintITKImage<StatusImageType>(*m_StatusImage.GetPointer(), b);
   
   // First process the status lists generated on the active layer.
   this->ProcessStatusList(UpList[0], UpList[1], 2, 1);
@@ -144,11 +149,21 @@ this->UpdateActiveLayerValues(dt, UpList[0], DownList[0]);
   this->ProcessStatusList(UpList[j], UpList[k], up_to, this->m_StatusNull);
   this->ProcessStatusList(DownList[j], DownList[k], down_to, this->m_StatusNull);
   
+	  std::stringstream s2;
+		  s2 << "beforeOutside" << this->m_ElapsedIterations;
+//		  std::ofstream b1(s2.str().c_str());
+//	  PrintITKImage<StatusImageType>(*m_StatusImage.GetPointer(), b1);
   // Now we are left with the lists of indicies which must be
   // brought into the outermost layers.  Bring UpList into last inside layer
   // and DownList into last outside layer.
   this->ProcessOutsideList(UpList[k], static_cast<int>( m_Layers.size()) -2);
   this->ProcessOutsideList(DownList[k], static_cast<int>( m_Layers.size()) -1);
+	  
+
+	std::stringstream s3;
+		  s3 << "afterOutside" << this->m_ElapsedIterations;
+//		  std::ofstream a1(s3.str().c_str());
+//	PrintITKImage<StatusImageType>(*m_StatusImage.GetPointer(), a1);
 
   // Finally, we update all of the layer values (excluding the active layer,
   // which has already been updated).
@@ -162,10 +177,13 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 {
   LayerNodeType *node;
   
+  LOUT << "ProcessOutsideList" << std::endl << std::endl;
+  
   // Push each index in the input list into its appropriate status layer
   // (ChangeToStatus) and update the status image value at that index.
   while ( ! OutsideList->Empty() )
     {
+	  LOUT << "m_StatusImage->SetPixel(" << OutsideList->Front()->m_Value << ")=" << ((uint32)ChangeToStatus) << std::endl;
     m_StatusImage->SetPixel(OutsideList->Front()->m_Value, ChangeToStatus); 
     node = OutsideList->Front();
     OutsideList->PopFront();
@@ -192,23 +210,27 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
     statusIt.NeedToUseBoundaryConditionOff();
     }
   
+  LOUT << "ProcessStatusList" << std::endl << std::endl;
+  
   // Push each index in the input list into its appropriate status layer
   // (ChangeToStatus) and update the status image value at that index.
   // Also examine the neighbors of the index to determine which need to go onto
   // the output list (search for SearchForStatus).
   while ( ! InputList->Empty() )
     {
-    statusIt.SetLocation(InputList->Front()->m_Value);
+	  node = InputList->Front();
+    statusIt.SetLocation(node->m_Value);
     statusIt.SetCenterPixel(ChangeToStatus);
 
-    node = InputList->Front();  // Must unlink from the input list 
-    InputList->PopFront();      // _before_ transferring to another list.
-    m_Layers[ChangeToStatus]->PushFront(node);
+    LOUT << "1. node=" << node->m_Value << std::endl;
+      
+    InputList->PopFront();  // Must unlink from the input list  _before_ transferring to another list.
+    m_Layers[ChangeToStatus]->PushFront(node);    
      
     for (i = 0; i < m_NeighborList.GetSize(); ++i)
       {
       neighbor_status = statusIt.GetPixel(m_NeighborList.GetArrayIndex(i));
-
+      LOUT << "2. neighbor_status=" << ((uint32)neighbor_status) << std::endl;
       // Have we bumped up against the boundary?  If so, turn on bounds
       // checking.
       if ( neighbor_status == this->m_StatusBoundaryPixel )
@@ -218,13 +240,17 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 
       if (neighbor_status == SearchForStatus)
         { // mark this pixel so we don't add it twice.
+    	  LOUT << "3. neighbor_status == SearchForStatus" << std::endl;
         statusIt.SetPixel(m_NeighborList.GetArrayIndex(i),
         		this->m_StatusChanging, bounds_status);
+        
         if (bounds_status == true)
           {
           node = m_LayerNodeStore->Borrow();
           node->m_Value = statusIt.GetIndex() +
             m_NeighborList.GetNeighborhoodOffset(i);
+          
+          LOUT << "4. pushing to outList" << std::endl;
           OutputList->PushFront( node );
           } // else this index was out of bounds.
         }
@@ -238,6 +264,24 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::UpdateActiveLayerValues(TimeStepType dt,
                           LayerType *UpList, LayerType *DownList)
 {
+//	#if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
+//		  command = M4D::Cell::CALC_CHANGE;
+//		  m_SPEManager.SendCommand(command);
+//	#else	  
+//		  for(uint32 i=0; i<m_Layers.size() ; i++)
+//		  {
+//			  applyUpdateCalc.m_Layers[i] = (M4D::Cell::ApplyUpdateSPE::LayerType *) m_Layers[i].GetPointer();
+//			  
+//			  applyUpdateCalc.conf.layerBegins[i] = (M4D::Cell::SparseFieldLevelSetNode *) m_Layers[i]->Begin().GetPointer();
+//			  applyUpdateCalc.conf.layerEnds[i] = (M4D::Cell::SparseFieldLevelSetNode *) m_Layers[i]->End().GetPointer();
+//		  }
+//		  m_Conf.m_UpdateBufferData = &m_UpdateBuffer[0];
+//		  
+////		    std::cout << "Update list:" << std::endl;
+////		    PrintUpdateBuf(std::cout);
+//		  
+//		  this->SetRMSChange(applyUpdateCalc.UpdateActiveLayerValues(dt, (M4D::Cell::ApplyUpdateSPE::LayerType*)UpList, (M4D::Cell::ApplyUpdateSPE::LayerType*)DownList));
+//	#endif
 	const ValueType LOWER_ACTIVE_THRESHOLD = - (m_ConstantGradientValue / 2.0);
 	  const ValueType UPPER_ACTIVE_THRESHOLD =    m_ConstantGradientValue / 2.0;
 	  //   const ValueType LOWER_ACTIVE_THRESHOLD = - 0.7;
@@ -264,6 +308,12 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 	    outputIt.NeedToUseBoundaryConditionOff();
 	    statusIt.NeedToUseBoundaryConditionOff();
 	    }
+	  
+//	  uint32 count = 0;
+//  	  LOUT << "Active layer:" << std::endl;
+//  	  for( layerIt = m_Layers[0]->Begin(); layerIt != m_Layers[0]->End(); layerIt=layerIt->Next, count++)
+//  		  LOUT << layerIt->m_Value << ",";
+//  	  LOUT << std::endl << "count=" << count << std::endl;
 	  
 	  counter =0;
 	  rms_change_accumulator = this->m_ValueZero;
@@ -333,6 +383,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 	        }
 	      node = m_LayerNodeStore->Borrow();
 	      node->m_Value = layerIt->m_Value;
+	      LOUT << "A1. pushing up node:" << node->m_Value << std::endl;
 	      UpList->PushFront(node);
 	      statusIt.SetCenterPixel(this->m_StatusActiveChangingUp);
 
@@ -386,6 +437,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 	        }
 	      node = m_LayerNodeStore->Borrow();
 	      node->m_Value = layerIt->m_Value;
+	      LOUT << "A2. pushing down node:" << node->m_Value << std::endl;
 	      DownList->PushFront(node);
 	      statusIt.SetCenterPixel(this->m_StatusActiveChangingDown);
 
