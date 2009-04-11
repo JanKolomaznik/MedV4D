@@ -83,6 +83,11 @@ private:
 			return val;
 			}
 	
+	SparseFieldLevelSetNode *BorrowFromLocalNodeStore()
+	{
+		return m_LayerNodeStore->Borrow();
+	}
+	
 	
 	void UnlinkNode(SparseFieldLevelSetNode *node, uint8 layerNum);
 	void ReturnToNodeStore(SparseFieldLevelSetNode *node);

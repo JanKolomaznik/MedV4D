@@ -50,124 +50,124 @@ void
 MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::ApplyUpdate(TimeStepType dt)
 {
-//#if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
-//	  command = M4D::Cell::CALC_CHANGE;
-//	  m_SPEManager.SendCommand(command);
-//#else	  
-//	  for(uint32 i=0; i<m_Layers.size() ; i++)
-//	  {
-//		  applyUpdateCalc.m_Layers[i] = (M4D::Cell::ApplyUpdateSPE::LayerType *) m_Layers[i].GetPointer();
-//		  
-//		  applyUpdateCalc.conf.layerBegins[i] = (M4D::Cell::SparseFieldLevelSetNode *) m_Layers[i]->Begin().GetPointer();
-//		  applyUpdateCalc.conf.layerEnds[i] = (M4D::Cell::SparseFieldLevelSetNode *) m_Layers[i]->End().GetPointer();
-//	  }
-//	  m_Conf.m_UpdateBufferData = &m_UpdateBuffer[0];
-//	  
-////	    std::cout << "Update list:" << std::endl;
-////	    PrintUpdateBuf(std::cout);
-//	  
-//	  this->SetRMSChange(applyUpdateCalc.ApplyUpdate(dt));
-//#endif	
-	
-	
-  unsigned int i, j, k, t;
-
-  StatusType up_to, up_search;
-  StatusType down_to, down_search;
-  
-  LayerPointerType UpList[2];
-  LayerPointerType DownList[2];
-  for (i = 0; i < 2; ++i)
-    {
-    UpList[i]   = LayerType::New();
-    DownList[i] = LayerType::New();
-    }
-  
-	  LOUT << "ApplyUpdate" << std::endl << std::endl;
-  
-//  std::stringstream s;
-//  s << "before" << this->m_ElapsedIterations << ".dat";
-//  std::ofstream f(s.str().c_str());
-//  PrintITKImage<OutputImageType>(*this->GetOutput(), f);
-//  
-//  LOUT << "Saving " << s << std::endl;
-  
-//  std::cout << "Update list (in ApplyUpdate):" << std::endl;
-//  PrintUpdateBuf(std::cout);
-
-  // Process the active layer.  This step will update the values in the active
-  // layer as well as the values at indicies that *will* become part of the
-  // active layer when they are promoted/demoted.  Also records promotions,
-  // demotions in the m_StatusLayer for current active layer indicies
-  // (i.e. those indicies which will move inside or outside the active
-  // layers).
-this->UpdateActiveLayerValues(dt, UpList[0], DownList[0]);
-//  
-//  std::stringstream s2;
-//  s2 << "after" << this->m_ElapsedIterations << ".dat";
-//  std::ofstream f2(s2.str().c_str());
-//  PrintITKImage<OutputImageType>(*this->GetOutput(), f2);
-  
-//  LOUT << "Saving " << s2 << std::endl;
-
-  // Process the status up/down lists.  This is an iterative process which
-  // proceeds outwards from the active layer.  Each iteration generates the
-  // list for the next iteration.
-std::stringstream s;
-	  s << "before" << this->m_ElapsedIterations;
-//	  std::ofstream b(s.str().c_str());
-//		PrintITKImage<StatusImageType>(*m_StatusImage.GetPointer(), b);
-  
-  // First process the status lists generated on the active layer.
-  this->ProcessStatusList(UpList[0], UpList[1], 2, 1);
-  this->ProcessStatusList(DownList[0], DownList[1], 1, 2);
-  
-  down_to = up_to = 0;
-  up_search       = 3;
-  down_search     = 4;
-  j = 1;
-  k = 0;
-  while( down_search < static_cast<StatusType>( m_Layers.size() ) )
-    {
-    this->ProcessStatusList(UpList[j], UpList[k], up_to, up_search);
-    this->ProcessStatusList(DownList[j], DownList[k], down_to, down_search);
-
-    if (up_to == 0) up_to += 1;
-    else            up_to += 2;
-    down_to += 2;
-
-    up_search += 2;
-    down_search += 2;
-
-    // Swap the lists so we can re-use the empty one.
-    t = j;
-    j = k;
-    k = t;
-    }
-
-  // Process the outermost inside/outside layers in the sparse field.
-  this->ProcessStatusList(UpList[j], UpList[k], up_to, this->m_StatusNull);
-  this->ProcessStatusList(DownList[j], DownList[k], down_to, this->m_StatusNull);
-  
-	  std::stringstream s2;
-		  s2 << "beforeOutside" << this->m_ElapsedIterations;
-//		  std::ofstream b1(s2.str().c_str());
-//	  PrintITKImage<StatusImageType>(*m_StatusImage.GetPointer(), b1);
-  // Now we are left with the lists of indicies which must be
-  // brought into the outermost layers.  Bring UpList into last inside layer
-  // and DownList into last outside layer.
-  this->ProcessOutsideList(UpList[k], static_cast<int>( m_Layers.size()) -2);
-  this->ProcessOutsideList(DownList[k], static_cast<int>( m_Layers.size()) -1);
+#if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
+	  command = M4D::Cell::CALC_CHANGE;
+	  m_SPEManager.SendCommand(command);
+#else	  
+	  for(uint32 i=0; i<m_Layers.size() ; i++)
+	  {
+		  applyUpdateCalc.m_Layers[i] = (M4D::Cell::ApplyUpdateSPE::LayerType *) m_Layers[i].GetPointer();
+		  
+		  applyUpdateCalc.conf.layerBegins[i] = (M4D::Cell::SparseFieldLevelSetNode *) m_Layers[i]->Begin().GetPointer();
+		  applyUpdateCalc.conf.layerEnds[i] = (M4D::Cell::SparseFieldLevelSetNode *) m_Layers[i]->End().GetPointer();
+	  }
+	  m_Conf.m_UpdateBufferData = &m_UpdateBuffer[0];
 	  
-
-	std::stringstream s3;
-		  s3 << "afterOutside" << this->m_ElapsedIterations;
-//		  std::ofstream a1(s3.str().c_str());
-//	PrintITKImage<StatusImageType>(*m_StatusImage.GetPointer(), a1);
-
-  // Finally, we update all of the layer values (excluding the active layer,
-  // which has already been updated).
-  this->PropagateAllLayerValues();
+//	    std::cout << "Update list:" << std::endl;
+//	    PrintUpdateBuf(std::cout);
+	  
+	  this->SetRMSChange(applyUpdateCalc.ApplyUpdate(dt));
+#endif	
+	
+	
+//  unsigned int i, j, k, t;
+//
+//  StatusType up_to, up_search;
+//  StatusType down_to, down_search;
+//  
+//  LayerPointerType UpList[2];
+//  LayerPointerType DownList[2];
+//  for (i = 0; i < 2; ++i)
+//    {
+//    UpList[i]   = LayerType::New();
+//    DownList[i] = LayerType::New();
+//    }
+//  
+//	  LOUT << "ApplyUpdate" << std::endl << std::endl;
+//  
+////  std::stringstream s;
+////  s << "before" << this->m_ElapsedIterations << ".dat";
+////  std::ofstream f(s.str().c_str());
+////  PrintITKImage<OutputImageType>(*this->GetOutput(), f);
+////  
+////  LOUT << "Saving " << s << std::endl;
+//  
+////  std::cout << "Update list (in ApplyUpdate):" << std::endl;
+////  PrintUpdateBuf(std::cout);
+//
+//  // Process the active layer.  This step will update the values in the active
+//  // layer as well as the values at indicies that *will* become part of the
+//  // active layer when they are promoted/demoted.  Also records promotions,
+//  // demotions in the m_StatusLayer for current active layer indicies
+//  // (i.e. those indicies which will move inside or outside the active
+//  // layers).
+//this->UpdateActiveLayerValues(dt, UpList[0], DownList[0]);
+////  
+////  std::stringstream s2;
+////  s2 << "after" << this->m_ElapsedIterations << ".dat";
+////  std::ofstream f2(s2.str().c_str());
+////  PrintITKImage<OutputImageType>(*this->GetOutput(), f2);
+//  
+////  LOUT << "Saving " << s2 << std::endl;
+//
+//  // Process the status up/down lists.  This is an iterative process which
+//  // proceeds outwards from the active layer.  Each iteration generates the
+//  // list for the next iteration.
+//std::stringstream s;
+//	  s << "before" << this->m_ElapsedIterations;
+////	  std::ofstream b(s.str().c_str());
+////		PrintITKImage<StatusImageType>(*m_StatusImage.GetPointer(), b);
+//  
+//  // First process the status lists generated on the active layer.
+//  this->ProcessStatusList(UpList[0], UpList[1], 2, 1);
+//  this->ProcessStatusList(DownList[0], DownList[1], 1, 2);
+//  
+//  down_to = up_to = 0;
+//  up_search       = 3;
+//  down_search     = 4;
+//  j = 1;
+//  k = 0;
+//  while( down_search < static_cast<StatusType>( m_Layers.size() ) )
+//    {
+//    this->ProcessStatusList(UpList[j], UpList[k], up_to, up_search);
+//    this->ProcessStatusList(DownList[j], DownList[k], down_to, down_search);
+//
+//    if (up_to == 0) up_to += 1;
+//    else            up_to += 2;
+//    down_to += 2;
+//
+//    up_search += 2;
+//    down_search += 2;
+//
+//    // Swap the lists so we can re-use the empty one.
+//    t = j;
+//    j = k;
+//    k = t;
+//    }
+//
+//  // Process the outermost inside/outside layers in the sparse field.
+//  this->ProcessStatusList(UpList[j], UpList[k], up_to, this->m_StatusNull);
+//  this->ProcessStatusList(DownList[j], DownList[k], down_to, this->m_StatusNull);
+//  
+//	  std::stringstream s2;
+//		  s2 << "beforeOutside" << this->m_ElapsedIterations;
+////		  std::ofstream b1(s2.str().c_str());
+////	  PrintITKImage<StatusImageType>(*m_StatusImage.GetPointer(), b1);
+//  // Now we are left with the lists of indicies which must be
+//  // brought into the outermost layers.  Bring UpList into last inside layer
+//  // and DownList into last outside layer.
+//  this->ProcessOutsideList(UpList[k], static_cast<int>( m_Layers.size()) -2);
+//  this->ProcessOutsideList(DownList[k], static_cast<int>( m_Layers.size()) -1);
+//	  
+//
+//	std::stringstream s3;
+//		  s3 << "afterOutside" << this->m_ElapsedIterations;
+////		  std::ofstream a1(s3.str().c_str());
+////	PrintITKImage<StatusImageType>(*m_StatusImage.GetPointer(), a1);
+//
+//  // Finally, we update all of the layer values (excluding the active layer,
+//  // which has already been updated).
+//  this->PropagateAllLayerValues();
 }
 ///////////////////////////////////////////////////////////////////////////////
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>

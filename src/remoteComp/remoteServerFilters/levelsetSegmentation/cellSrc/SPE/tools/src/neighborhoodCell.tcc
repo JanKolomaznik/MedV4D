@@ -60,7 +60,7 @@ NeighborhoodCell<PixelType>
 	for(uint32 i=0; i<DIM; i++)
 	{
 		if((pos[i] < m_imageProps->region.offset[i]) 
-				|| (pos[i] >= (m_imageProps->region.offset[i] + m_imageProps->region.size[i]) ) )
+				|| (pos[i] >= (m_imageProps->region.offset[i] + (int32)m_imageProps->region.size[i]) ) )
 			return false;
 	}
 	return true;

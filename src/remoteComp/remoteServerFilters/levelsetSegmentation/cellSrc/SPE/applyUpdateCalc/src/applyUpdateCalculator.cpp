@@ -193,7 +193,7 @@ void ApplyUpdateSPE::PushToLayer(SparseFieldLevelSetNode *node, uint8 layerNum)
 ApplyUpdateSPE::ValueType
 ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 {
-	unsigned int i, j, k, t;
+	unsigned int j, k, t;
 
 	StatusType up_to, up_search;
 	StatusType down_to, down_search;
@@ -316,7 +316,8 @@ ApplyUpdateSPE::ProcessOutsideList(
 		m_statusIter.SetCenterPixel(ChangeToStatus);
 		node = OutsideList->Front();
 		OutsideList->PopFront();
-		m_Layers[ChangeToStatus]->PushFront(node);
+		PushToLayer(node, ChangeToStatus);
+//		m_Layers[ChangeToStatus]->PushFront(node);
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -350,7 +351,8 @@ ApplyUpdateSPE::ProcessStatusList(
 		LOUT << "1. node=" << node->m_Value << std::endl;
 		
 		InputList->PopFront(); // Must unlink from the input list  _before_ transferring to another list.
-		m_Layers[ChangeToStatus]->PushFront(node);
+		//m_Layers[ChangeToStatus]->PushFront(node);
+		PushToLayer(node, ChangeToStatus);
 
 		for (i = 0; i < m_NeighborList.GetSize(); ++i)
 		{
@@ -366,7 +368,8 @@ ApplyUpdateSPE::ProcessStatusList(
 						this->m_StatusChanging);
 				if (bounds_status == true)
 				{
-					node = m_LayerNodeStore->Borrow();
+//					node = m_LayerNodeStore->Borrow();
+					node = BorrowFromLocalNodeStore();
 					node->m_Value = m_statusIter.GetIndex()
 							+ m_NeighborList.GetNeighborhoodOffset(i);
 					LOUT << "4. pushing to outList node: " << node->m_Value << std::endl;
@@ -479,7 +482,8 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	            }
 	          }
 	        }
-	      node = m_LayerNodeStore->Borrow();
+//	      node = m_LayerNodeStore->Borrow();
+	      node = BorrowFromLocalNodeStore();
 	      node->m_Value = layerIt->m_Value;
 	      LOUT << "A1. pushing up node:" << node->m_Value << std::endl;
 	      UpList->PushFront(node);
@@ -488,8 +492,10 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	      // Now remove this index from the active list.
 	      release_node = layerIt.GetPointer();
 	      ++layerIt;
-	      m_Layers[0]->Unlink(release_node);
-	      m_LayerNodeStore->Return( release_node );
+	      //m_Layers[0]->Unlink(release_node);
+	      UnlinkNode(release_node, 0);
+	      //m_LayerNodeStore->Return( release_node );
+	      ReturnToNodeStore(release_node);
 	      }
 	
 	    else if (new_value < LOWER_ACTIVE_THRESHOLD)
@@ -535,7 +541,8 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	            }
 	          }
 	        }
-	      node = m_LayerNodeStore->Borrow();
+//	      node = m_LayerNodeStore->Borrow();
+	      node = BorrowFromLocalNodeStore();
 	      node->m_Value = layerIt->m_Value;
 	      LOUT << "A2. pushing down node:" << node->m_Value << std::endl;
 	      DownList->PushFront(node);
@@ -544,8 +551,10 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	      // Now remove this index from the active list.
 	      release_node = layerIt.GetPointer();
 	      ++layerIt;
-	      m_Layers[0]->Unlink(release_node);
-	      m_LayerNodeStore->Return( release_node );
+	      //m_Layers[0]->Unlink(release_node);
+	      UnlinkNode(release_node, 0);
+//	      m_LayerNodeStore->Return( release_node );
+	      ReturnToNodeStore(release_node);
 	      }
 	    else
 	      {
