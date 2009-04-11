@@ -45,11 +45,11 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::~MySegmtLevelSetFilter()
 {}
 ///////////////////////////////////////////////////////////////////////////////
-//template<class TInputImage,class TFeatureImage, class TOutputPixelType>
-//void
-//MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
-//::ApplyUpdate(TimeStepType dt)
-//{
+template<class TInputImage,class TFeatureImage, class TOutputPixelType>
+void
+MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
+::ApplyUpdate(TimeStepType dt)
+{
 //#if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
 //	  command = M4D::Cell::CALC_CHANGE;
 //	  m_SPEManager.SendCommand(command);
@@ -68,12 +68,8 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 //	  
 //	  this->SetRMSChange(applyUpdateCalc.ApplyUpdate(dt));
 //#endif	
-//}
-template<class TInputImage,class TFeatureImage, class TOutputPixelType>
-void
-MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
-::ApplyUpdate(TimeStepType dt)
-{
+	
+	
   unsigned int i, j, k, t;
 
   StatusType up_to, up_search;

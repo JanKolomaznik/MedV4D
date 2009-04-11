@@ -50,6 +50,7 @@ public:
 	
 	ValueType UpdateActiveLayerValues(TimeStepType dt,
 	            LayerType *UpList, LayerType *DownList);
+	            //, TValueNeighbIterator &outIt, TStatusNeighbIterator &statusIt);
 private:
 	void PropagateLayerValues(StatusType from, StatusType to,
 	                       StatusType promote, uint32 InOrOut);

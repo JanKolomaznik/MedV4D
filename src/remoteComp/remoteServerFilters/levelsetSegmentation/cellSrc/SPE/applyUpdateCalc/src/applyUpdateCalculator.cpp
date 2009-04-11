@@ -366,7 +366,7 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
   	m_outIter.SetNeighbourhood( &outNeigh);
   		m_statusIter.SetNeighbourhood( &statusNeigh);
 	  
-	  ValueType centerVal
+	  ValueType centerVal;
 	  
 	  counter =0;
 	  rms_change_accumulator = this->m_ValueZero;
