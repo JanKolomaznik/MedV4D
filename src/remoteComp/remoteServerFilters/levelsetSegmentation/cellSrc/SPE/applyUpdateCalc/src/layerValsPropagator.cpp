@@ -144,24 +144,3 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-void LayerValuesPropagator::UnlinkNode(SparseFieldLevelSetNode *node, uint8 layerNum)
-{
-	m_Layers[layerNum]->Unlink(node);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void LayerValuesPropagator::ReturnToNodeStore(SparseFieldLevelSetNode *node)
-{
-	m_LayerNodeStore->Return(node);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void LayerValuesPropagator::PushToLayer(SparseFieldLevelSetNode *node, uint8 layerNum)
-{
-	m_Layers[layerNum]->PushFront(node);
-}
-
-///////////////////////////////////////////////////////////////////////////////
