@@ -35,12 +35,6 @@ public:
     float32 m_propWeight;
     float32 m_curvWeight;
     
-  /** The number of layers to use in the sparse field.  Sparse field will
-   * consist of m_NumberOfLayers layers on both sides of a single active layer.
-   * This active layer is the interface of interest, i.e. the zero
-   * level set. */
-	uint8 m_NumberOfLayers;
-    
     /** The constant gradient to maintain between isosurfaces in the
     	      sparse-field of the level-set image.  This value defaults to 1.0 */
     float64 m_ConstantGradientValue;
@@ -61,7 +55,6 @@ public:
 		m_downThreshold = o.m_downThreshold;
 		m_propWeight = o.m_propWeight;
 		m_curvWeight = o.m_curvWeight;
-		m_NumberOfLayers = o.m_NumberOfLayers;
 		m_ConstantGradientValue = o.m_ConstantGradientValue;
 		m_neighbourScales = o.m_neighbourScales;
 		m_UpdateBufferData = o.m_UpdateBufferData;

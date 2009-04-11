@@ -18,7 +18,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::MySegmtLevelSetFilter()
 {		  
   m_IsoSurfaceValue = this->m_ValueZero;
-  m_NumberOfLayers = OutputImageType::ImageDimension;
+  m_NumberOfLayers = NUM_LAYERS;	// dont change !
   m_LayerNodeStore = LayerNodeStorageType::New();
   m_LayerNodeStore->SetGrowthStrategyToExponential();
   this->SetRMSChange(static_cast<double>(this->m_ValueZero));
@@ -36,7 +36,6 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
   m_Conf.m_downThreshold = -500;
   m_Conf.m_propWeight = 1;
   m_Conf.m_curvWeight = 0.001f;
-  m_Conf.m_NumberOfLayers = m_NumberOfLayers;
   m_Conf.m_ConstantGradientValue = m_ConstantGradientValue;
 }
 ///////////////////////////////////////////////////////////////////////////////

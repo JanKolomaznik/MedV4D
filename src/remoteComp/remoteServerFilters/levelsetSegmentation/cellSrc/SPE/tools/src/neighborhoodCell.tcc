@@ -273,8 +273,8 @@ NeighborhoodCell<PixelType>
 	{
 		if(pos[i] < m_imageProps->region.offset[i])
 			howMuch[i] = m_imageProps->region.offset[i] - pos[i];
-		else if(pos[i] >= (m_imageProps->region.offset[i] + m_imageProps->region.size[i]) )
-			howMuch[i] = (m_imageProps->region.offset[i] + m_imageProps->region.size[i] - 1) - pos[i];
+		else if(pos[i] >= (m_imageProps->region.offset[i] + (int32)m_imageProps->region.size[i]) )
+			howMuch[i] = (m_imageProps->region.offset[i] + (int32)m_imageProps->region.size[i] - 1) - pos[i];
 		else
 			howMuch[i] = 0;
 	}

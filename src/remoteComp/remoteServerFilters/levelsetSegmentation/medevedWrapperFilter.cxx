@@ -170,7 +170,7 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 	stream << "Filter started with these values:" << std::endl;
 	stream << "Seed: " << properties_->seedX << ", " << properties_->seedY << ", " << properties_->seedZ << std::endl;
 	stream << "Init distance: " << properties_->initialDistance << std::endl;
-	stream << "Threshold: " << properties_->lowerThreshold << " - " << properties_->upperThreshold << std::endl;
+	stream << "Threshold: <" << properties_->lowerThreshold << "," << properties_->upperThreshold << ">" << std::endl;
 	stream << "Max iteration: " << properties_->maxIterations << std::endl;
 	stream << "Speed scaling: " << properties_->propagationScaling << std::endl;
 	stream << "Curvature scaling: " << properties_->curvatureScaling << std::endl;

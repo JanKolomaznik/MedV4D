@@ -6,6 +6,9 @@ namespace Cell {
 
 typedef float32 TPixelValue;
 #define DIM 3
+#define NUM_LAYERS 3
+// NUM_LAYERS inward and NUM_LAYERS outward + active layer
+#define LYERCOUNT ((NUM_LAYERS * 2) + 1)
 
 typedef double  TimeStepType;
 /** Type used for storing status information */

@@ -9,7 +9,7 @@
 
 using namespace M4D::Cell;
 
-#define LYERCOUNT(X) ((X * 2) + 1)
+
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -38,7 +38,7 @@ void ApplyUpdateSPE::PropagateAllLayerValues()
 	this->PropagateLayerValues(0, 2, 4, 2); // first outside
 
 	// Update the rest of the layers.
-	for (i = 1; i < (uint32)LYERCOUNT(commonConf->m_NumberOfLayers) - 2; ++i)
+	for (i = 1; i < (uint32) LYERCOUNT - 2; ++i)
 	{
 		this->PropagateLayerValues(i, i+2, i+4, (i+2)%2);
 	}
@@ -51,7 +51,7 @@ void ApplyUpdateSPE::PropagateLayerValues(StatusType from, StatusType to,
 	TPixelValue value, value_temp, delta;
 	value = 0; // warnings
 	bool found_neighbor_flag;
-	StatusType past_end = static_cast<StatusType>( LYERCOUNT(commonConf->m_NumberOfLayers) ) - 1;
+	StatusType past_end = static_cast<StatusType>( LYERCOUNT ) - 1;
 
 	SparseFieldLevelSetNode *tmp;
 
@@ -247,7 +247,7 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	down_search = 4;
 	j = 1;
 	k = 0;
-	while (down_search < static_cast<StatusType>( LYERCOUNT(commonConf->m_NumberOfLayers) ) )
+	while (down_search < static_cast<StatusType>( LYERCOUNT ) )
 	{
 		this->ProcessStatusList(&UpList[j], &UpList[k], up_to, up_search);
 		this->ProcessStatusList(&DownList[j], &DownList[k], down_to, down_search);
@@ -280,8 +280,8 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	// Now we are left with the lists of indicies which must be
 	// brought into the outermost layers.  Bring UpList into last inside layer
 	// and DownList into last outside layer.
-	this->ProcessOutsideList(&UpList[k], static_cast<int>(LYERCOUNT(commonConf->m_NumberOfLayers)) -2);
-	this->ProcessOutsideList(&DownList[k], static_cast<int>(LYERCOUNT(commonConf->m_NumberOfLayers)) -1);
+	this->ProcessOutsideList(&UpList[k], static_cast<int>(LYERCOUNT) -2);
+	this->ProcessOutsideList(&DownList[k], static_cast<int>(LYERCOUNT) -1);
 	
 	std::stringstream s3;
 		  s3 << "afterOutside" << this->m_ElapsedIterations;
