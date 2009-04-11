@@ -120,33 +120,6 @@ NeighborhoodCell<PixelType>::SetPixel(PixelType val, TOffset pos)
 	m_buf[GetNeighborhoodIndex(pos)] = val;
 }
 
-
-
-// xxxxxxxxxxxxxxxxxxxxxxxxxxx
-//template<typename PixelType>
-//PixelType
-//NeighborhoodCell<PixelType>::DebugGetImagePixel(TOffset off)
-//{
-//	TIndex i = m_currIndex + off;
-//	if(IsWithinImage(i))
-//		{
-//		return *ComputeImageDataPointer(i);
-//		}
-//}
-//	
-//template<typename PixelType>
-//void
-//NeighborhoodCell<PixelType>::DebugSetImagePixel(TOffset off, PixelType val)
-//{
-//	TIndex i = m_currIndex + off;
-//	if(IsWithinImage(i))
-//	{
-//		PixelType *begin = ComputeImageDataPointer(i);
-//		*begin = val;
-//	}
-//}
-// xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
 ///////////////////////////////////////////////////////////////////////////////
 
 template<typename PixelType>
@@ -170,18 +143,6 @@ NeighborhoodCell<PixelType>
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-//template<typename T1, typename T2>
-//T1 operator+ ( const T1 &v1, const T2 &v2 )
-//{
-//	T1 tmp(v1);
-//	for(uint32 i=0; i<T1::Dimension; i++)
-//	{
-//		tmp[i] += v2[i];
-//	}
-//	return tmp;
-//}
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -237,15 +198,8 @@ NeighborhoodCell<PixelType>::PrintImage(std::ostream &s)
 				ind[0] = i; ind[1] = j; ind[2] = k;
 				data = ComputeImageDataPointer(ind);
 				s << "[" << ind[0] << "," << ind[1] << "," << ind[2] << "]"  << "= " << ((int32)*data) << std::endl;
-//				data++;
-//				i[0]++;
 			}
-//			i[1]++;
-//			i[0] = m_imageProps->region.offset[0];
 		}
-//		i[2]++;
-//		i[1] = m_imageProps->region.offset[1];
-//		i[0] = m_imageProps->region.offset[0];
 	}
 }
 

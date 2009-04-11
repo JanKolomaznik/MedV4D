@@ -22,9 +22,6 @@ public:
 	
 	typedef PixelType TPixel;
 	
-//	PixelType DebugGetImagePixel(TOffset idx);
-//	void DebugSetImagePixel(TOffset off, PixelType val);
-	
 	//ctor
 	NeighborhoodCell(TImageProperties<PixelType> *props);
 	void SetPosition(const TIndex &pos);
@@ -57,14 +54,8 @@ protected:
 	void LoadData(PixelType *src, PixelType *dest, size_t size);
 	void LoadSlice(TIndex posm, uint8 dim, PixelType *dest);
 	
-	
-	
-	
 	TStrides m_radiusStrides;
 	TSize m_radiusSize;
-	
-	
-	
 	TImageProperties<PixelType> *m_imageProps;
 	TStrides m_imageStrides;
 	
