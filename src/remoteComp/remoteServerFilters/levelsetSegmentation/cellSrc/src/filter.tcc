@@ -250,7 +250,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
           node->m_Value = statusIt.GetIndex() +
             m_NeighborList.GetNeighborhoodOffset(i);
           
-          LOUT << "4. pushing to outList" << std::endl;
+          LOUT << "4. pushing to outList node: " << node->m_Value << std::endl;
           OutputList->PushFront( node );
           } // else this index was out of bounds.
         }
