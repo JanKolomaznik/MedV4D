@@ -99,6 +99,8 @@ NeighborhoodCell<PixelType>::SetCenterPixel(PixelType val)
 {
 	PixelType *begin = ComputeImageDataPointer(m_currIndex);
 	*begin = val;
+	// change the buffer as well
+	m_buf[static_cast<uint32>(m_size/2)] = val;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -113,7 +115,12 @@ NeighborhoodCell<PixelType>::SetPixel(PixelType val, TOffset pos)
 		PixelType *begin = ComputeImageDataPointer(i);
 		*begin = val;
 	}
+	// change the buffer as well !!!!!!!!
+	//std::cout << "setting" << i << "=" << val << std::endl;
+	m_buf[GetNeighborhoodIndex(pos)] = val;
 }
+
+
 
 // xxxxxxxxxxxxxxxxxxxxxxxxxxx
 //template<typename PixelType>
@@ -178,35 +185,69 @@ NeighborhoodCell<PixelType>
 ///////////////////////////////////////////////////////////////////////////////
 
 
-//void
-//NeighborhoodCell::Print(std::ostream &stream)
-//{
-//	stream << "m_currIndex: " << m_currIndex << std::endl;
-//	
-//	TOffset iteratingIndex;
-//	for(uint32 i=0; i<DIM; i++)
-//	{
-//		iteratingIndex[i] = -m_radius[i];
-//	}
-//	TOffset begin(iteratingIndex);
-//	
-//	
-//	for(uint32 i=0; i<m_radiusSize[2]; i++)
-//	{
-//		iteratingIndex[1] = begin[1];
-//		for(uint32 j=0; j<m_radiusSize[1]; j++)
-//		{
-//			iteratingIndex[0] = begin[0];
-//			for(uint32 k=0; k<m_radiusSize[0]; k++)
-//			{
-//				stream << "(" << (iteratingIndex + m_currIndex) << ") = " << GetPixel(GetNeighborhoodIndex(iteratingIndex)) << std::endl;
-//				iteratingIndex[0] += 1;
-//			}
-//			iteratingIndex[1] += 1;
-//		}
-//		iteratingIndex[2] += 1;
-//	}
-//}
+template<typename PixelType>
+std::ostream & operator<<(std::ostream &stream, NeighborhoodCell<PixelType> &n)
+{
+	stream << "m_currIndex: " << n.m_currIndex << std::endl;
+	
+	TOffset iteratingIndex;
+	for(uint32 i=0; i<DIM; i++)
+	{
+		iteratingIndex[i] = -RADIUS;
+	}
+	TOffset begin(iteratingIndex);
+	PixelType val;
+	
+	for(uint32 i=0; i<SIZEIN1DIM; i++)
+	{
+		iteratingIndex[1] = begin[1];
+		for(uint32 j=0; j<SIZEIN1DIM; j++)
+		{
+			iteratingIndex[0] = begin[0];
+			for(uint32 k=0; k<SIZEIN1DIM; k++)
+			{
+				val = n.GetPixel(n.GetNeighborhoodIndex(iteratingIndex));
+				stream << (iteratingIndex) << "=" << (int32) val << std::endl;
+				iteratingIndex[0] += 1;
+			}
+			iteratingIndex[1] += 1;
+		}
+		iteratingIndex[2] += 1;
+	}
+	return stream;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+template<typename PixelType>
+void
+NeighborhoodCell<PixelType>::PrintImage(std::ostream &s)
+{
+	//s << "image: " << std::endl;
+	s << "size: " << m_imageProps->region.size[0] << "," << m_imageProps->region.size[1] << "," << m_imageProps->region.size[2] << std::endl;
+	PixelType *data;
+	TIndex ind;
+	
+	for(uint32 i=0; i<m_imageProps->region.size[0]; i++)
+	{
+		for(uint32 j=0; j<m_imageProps->region.size[1]; j++)
+		{
+			for(uint32 k=0; k<m_imageProps->region.size[2]; k++)
+			{
+				ind[0] = i; ind[1] = j; ind[2] = k;
+				data = ComputeImageDataPointer(ind);
+				s << "[" << ind[0] << "," << ind[1] << "," << ind[2] << "]"  << "= " << ((int32)*data) << std::endl;
+//				data++;
+//				i[0]++;
+			}
+//			i[1]++;
+//			i[0] = m_imageProps->region.offset[0];
+		}
+//		i[2]++;
+//		i[1] = m_imageProps->region.offset[1];
+//		i[0] = m_imageProps->region.offset[0];
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -218,6 +259,25 @@ NeighborhoodCell<PixelType>::GetNeighborhoodIndex(const TOffset &o) const
   for (unsigned i = 0; i < DIM; ++i)
     {      idx+=o[i] * static_cast<long>(m_radiusStrides[i]);    }
   return idx;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+template<typename PixelType>
+void
+NeighborhoodCell<PixelType>
+::HowMuchCrossesBoundary(TOffset &howMuch)
+{
+	TIndex pos = m_currIndex + howMuch;
+	for(uint32 i=0; i<DIM; i++)
+	{
+		if(pos[i] < m_imageProps->region.offset[i])
+			howMuch[i] = m_imageProps->region.offset[i] - pos[i];
+		else if(pos[i] >= (m_imageProps->region.offset[i] + m_imageProps->region.size[i]) )
+			howMuch[i] = (m_imageProps->region.offset[i] + m_imageProps->region.size[i] - 1) - pos[i];
+		else
+			howMuch[i] = 0;
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////

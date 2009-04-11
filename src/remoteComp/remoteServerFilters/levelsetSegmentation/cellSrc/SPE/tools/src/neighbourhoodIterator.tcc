@@ -186,7 +186,45 @@ NeighbourIteratorCell<PixelType>
   return ans;
 }
 
+///////////////////////////////////////////////////////////////////////////////
 
+template<typename PixelType>
+PixelType
+NeighbourIteratorCell<PixelType>::GetPixel(uint32 pos, bool &isWithin)
+{
+	if(m_neighbourhood->IsWithinImage(m_neighbourhood->m_currIndex + m_OffsetTable[pos]) )
+	{
+		isWithin = true;
+		return m_neighbourhood->GetPixel(pos);
+	}
+	else
+	{
+		isWithin = false;
+		return OnBehindBoundary(m_OffsetTable[pos]);
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template<typename PixelType>
+PixelType
+NeighbourIteratorCell<PixelType>
+::OnBehindBoundary(const TOffset &off)
+{
+	TOffset o = off;
+	m_neighbourhood->HowMuchCrossesBoundary(o);
+	        
+	uint32 linear_index = NEIGHBOURHOOD_SIZE / 2;
+	
+	TStrides strides = m_neighbourhood->GetStrides();
+
+  // Return the value of the pixel at the closest boundary point.
+  for (uint32 i = 0; i < DIM; ++i)
+    {
+    linear_index += (off[i] + o[i]) * strides[i];
+    }
+  
+  return m_neighbourhood->GetPixel(linear_index);
+}
 
 //TRegion
 //NeighbourIteratorCell

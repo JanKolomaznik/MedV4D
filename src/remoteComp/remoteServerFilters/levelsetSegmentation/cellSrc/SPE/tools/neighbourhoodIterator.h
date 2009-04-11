@@ -115,6 +115,9 @@ public:
 	  PixelType GetPixel(const TOffset &o) const { 
 		  return m_neighbourhood->GetPixel( m_neighbourhood->GetNeighborhoodIndex(o) ); 
 		  }
+	  
+	  PixelType GetPixel(uint32 pos, bool &isWithin);
+	  PixelType OnBehindBoundary(const TOffset &off);
 
 //	  /** Returns the pixel value located at a linear array location i. */
 //	  PixelType GetPixel(const unsigned i,bool& IsInBounds) const
@@ -185,7 +188,7 @@ public:
 	  /** Returns the N-dimensional index of the iterator's position in
 	     * the image. */
 	  const TIndex& GetIndex(void) const
-	      { return m_Loop;  }
+	      { return m_neighbourhood->m_currIndex;  }
 	  
 	  /** Returns the image index for neighbor pixel at offset o from the center of
 	      the neighborhood. */

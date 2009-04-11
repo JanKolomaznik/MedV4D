@@ -5,6 +5,9 @@
 #include <spu_mfcio.h>
 #endif
 
+//
+#include <iostream>
+
 namespace M4D {
 namespace Cell {
 
@@ -27,6 +30,7 @@ public:
 	void SetPosition(const TIndex &pos);
 	
 	inline PixelType GetPixel(uint32 pos) { return m_buf[pos]; }
+	
 	void SetPixel(PixelType val, TOffset pos);
 	void SetCenterPixel(PixelType val);
 	inline PixelType *GetPixelPointer(uint32 pos) { return &m_buf[pos]; }
@@ -41,15 +45,20 @@ public:
 	size_t GetSize() { return m_size; }
 	
 	void SetImageProperties(TImageProperties<PixelType> *props) { m_imageProps = props; }
-	
-	//void Print(std::ostream &stream);
+	bool IsWithinImage(const TIndex &pos);
 	TIndex m_currIndex;
+	void PrintImage(std::ostream &s);
+	
+	void HowMuchCrossesBoundary(TOffset &howMuch);
+	
 protected:
 	
 	PixelType *ComputeImageDataPointer(const TIndex &pos);
 	void LoadData(PixelType *src, PixelType *dest, size_t size);
 	void LoadSlice(TIndex posm, uint8 dim, PixelType *dest);
-	bool IsWithinImage(const TIndex &pos);
+	
+	
+	
 	
 	TStrides m_radiusStrides;
 	TSize m_radiusSize;
@@ -62,6 +71,9 @@ protected:
 	PixelType m_buf[NEIGHBOURHOOD_SIZE];
 	size_t m_size;
 };
+
+template<typename PixelType>
+std::ostream & operator<<(std::ostream &stream, NeighborhoodCell<PixelType> &n);
 
 }  // namespace
 } // namespace

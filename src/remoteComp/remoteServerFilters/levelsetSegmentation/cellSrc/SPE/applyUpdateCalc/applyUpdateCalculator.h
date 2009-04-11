@@ -11,6 +11,8 @@
 #include "../../supportClasses.h"
 #include "../../commonConsts.h"
 
+#include "../tools/sparesFieldLayer.h"
+
 // to remove
 #include "itkSparseFieldLayer.h"
 #include "itkObjectStore.h"
@@ -40,6 +42,8 @@ public:
 	
 	typedef GETRemoteArrayCell<TPixelValue, 8> TUpdateBufferArray;
 	
+	typedef M4D::Cell::SparseFieldLayer<SparseFieldLevelSetNode> MyLayerType;
+	
 	//to remove
 	typedef itk::SparseFieldLayer<SparseFieldLevelSetNode> LayerType;
 	typedef LayerType::Pointer LayerPointerType;
@@ -48,16 +52,26 @@ public:
 	typedef itk::ObjectStore<SparseFieldLevelSetNode> LayerNodeStorageType;
 	LayerNodeStorageType *m_LayerNodeStore;
 	
+//	ValueType UpdateActiveLayerValues(TimeStepType dt,
+//	            LayerType *UpList, LayerType *DownList);
+//	            //, TValueNeighbIterator &outIt, TStatusNeighbIterator &statusIt);
+//	void PropagateLayerValues(StatusType from, StatusType to,
+//		                       StatusType promote, uint32 InOrOut);
+//		
+//		void ProcessOutsideList(LayerType *OutsideList, StatusType ChangeToStatus, TStatusNeighbIterator &statIter);
+//		void ProcessStatusList(LayerType *InputList, LayerType *OutputList,
+//	            StatusType ChangeToStatus, StatusType SearchForStatus, TStatusNeighbIterator &statusIt);
 	ValueType UpdateActiveLayerValues(TimeStepType dt,
-	            LayerType *UpList, LayerType *DownList);
-	            //, TValueNeighbIterator &outIt, TStatusNeighbIterator &statusIt);
+			MyLayerType *UpList, MyLayerType *DownList);
+		            //, TValueNeighbIterator &outIt, TStatusNeighbIterator &statusIt);
+		void PropagateLayerValues(StatusType from, StatusType to,
+			                       StatusType promote, uint32 InOrOut);
+			
+	void ProcessOutsideList(MyLayerType *OutsideList, StatusType ChangeToStatus);//, TStatusNeighbIterator &statIter);
+	void ProcessStatusList(MyLayerType *InputList, MyLayerType *OutputList,
+            StatusType ChangeToStatus, StatusType SearchForStatus);//, TStatusNeighbIterator &statusIt);
 private:
-	void PropagateLayerValues(StatusType from, StatusType to,
-	                       StatusType promote, uint32 InOrOut);
 	
-	void ProcessOutsideList(LayerType *OutsideList, StatusType ChangeToStatus, TStatusNeighbIterator &statIter);
-	void ProcessStatusList(LayerType *InputList, LayerType *OutputList,
-            StatusType ChangeToStatus, StatusType SearchForStatus, TStatusNeighbIterator &statusIt);
 	
 	
 	ValueType CalculateUpdateValue(
@@ -78,6 +92,8 @@ private:
 	
 	TValueNeighbIterator m_outIter;
 	TStatusNeighbIterator m_statusIter;
+	
+	uint32 m_ElapsedIterations;
 };
 
 }

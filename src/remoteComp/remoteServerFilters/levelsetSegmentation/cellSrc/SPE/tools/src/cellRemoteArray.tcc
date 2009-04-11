@@ -95,6 +95,7 @@ GETRemoteArrayCell<T, BUFSIZE>::operator++()
 		m_currBuf = ! m_currBuf;
 		m_currPos = 0;
 	}
+	return *this;
 }
 ///////////////////////////////////////////////////////////////////////////////
 template<typename T, uint8 BUFSIZE>

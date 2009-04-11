@@ -30,11 +30,13 @@ template<typename ImageType>
 void 
 PrintITKImage(const ImageType &image, std::ostream &s)
 {
-	image.Print( s);
+	//image.Print( s);
 	    
 	typename ImageType::RegionType::IndexType index;
 	typename ImageType::RegionType::SizeType size = 
     	image.GetLargestPossibleRegion().GetSize();
+	
+	typename ImageType::PixelType pixel;
     
     s << "size: " << size[0] << "," << size[1] << "," << size[2] << std::endl;
     
@@ -49,7 +51,8 @@ PrintITKImage(const ImageType &image, std::ostream &s)
     			index[2] = k;
     			
     			s << "[" << i << "," << j << "," << k << "]= ";
-    			s << image.GetPixel(index) << std::endl;
+    			pixel = image.GetPixel(index);
+    			s << ((int32) pixel) << std::endl;
     		}
     	}
     }

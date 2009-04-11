@@ -22,7 +22,7 @@ struct MyVector
 
 typedef MyVector<int32> TOffset;
 typedef MyVector<uint32> TRadius;
-typedef MyVector<uint32>  TIndex;
+typedef MyVector<int32>  TIndex;
 typedef MyVector<float32> TNeighborhoodScales;
 
 typedef MyVector<uint32> TSize;
@@ -32,6 +32,13 @@ typedef MyVector<float32> TSpacing;
 
 void ComputeStridesFromSize(const TSize &size, TStrides &strides);
 TIndex operator+(const TIndex &i, const TOffset &o);
+
+template<typename T>
+std::ostream &operator<<(std::ostream &s, const MyVector<T> &v)
+{
+	s << "[" << v[0] << ", " << v[1] << ", " << v[2] << "]";
+	return s;
+}
 
 struct TRegion
 {
