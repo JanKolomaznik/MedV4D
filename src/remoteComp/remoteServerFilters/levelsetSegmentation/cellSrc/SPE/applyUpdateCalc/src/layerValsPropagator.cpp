@@ -50,23 +50,24 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 		delta = -commonConf->m_ConstantGradientValue;
 	else
 		delta = commonConf->m_ConstantGradientValue;
-
-	NeighborhoodCell<TPixelValue> outNeigh;
-	outNeigh.SetImageProperties( &commonConf->valueImageProps);
-	NeighborhoodCell<StatusType> statusNeigh;
-	statusNeigh.SetImageProperties( &commonConf->statusImageProps);
-
-	m_outIter.SetNeighbourhood( &outNeigh);
-	m_statusIter.SetNeighbourhood( &statusNeigh);
 	
 	uint32 counter = 0;
-
 	SparseFieldLevelSetNode *currNode;
+	
+	// prepare neighbour preloaders
+	m_valueNeighPreloader.SetImageProps(&commonConf->valueImageProps);
+	m_statusNeighPreloader.SetImageProps(&commonConf->statusImageProps);
+	
 	m_layerIterator.SetBeginEnd(conf.layerBegins[to], conf.layerEnds[to]);
 	while (m_layerIterator.HasNext())
 	{
 		currNode = m_layerIterator.Next();
-		m_statusIter.SetLocation(currNode->m_Value);
+		// load approp neigborhood
+		m_valueNeighPreloader.Load(currNode->m_Value);
+		m_statusNeighPreloader.Load(currNode->m_Value);
+		
+		m_outIter.SetNeighbourhood( m_valueNeighPreloader.GetLoaded());
+		m_statusIter.SetNeighbourhood( m_statusNeighPreloader.GetLoaded());
 		
 		counter++;
 
@@ -83,8 +84,6 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 
 			continue;
 		}
-
-		m_outIter.SetLocation(currNode->m_Value);
 
 		found_neighbor_flag = false;
 		for (i = 0; i < m_NeighborList.GetSize(); ++i)
@@ -152,6 +151,10 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 			}
 		}
 	}
+	
+	// save to propaget changes in neighbourhoods
+	m_valueNeighPreloader.SaveCurrItem();
+	m_statusNeighPreloader.SaveCurrItem();
 	
 	//LOG("counter=" << counter);
 }

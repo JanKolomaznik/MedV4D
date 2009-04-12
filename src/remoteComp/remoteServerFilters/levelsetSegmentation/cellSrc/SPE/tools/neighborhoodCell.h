@@ -18,6 +18,7 @@ class NeighborhoodCell
 public:
 	
 	typedef PixelType TPixel;
+	typedef TImageProperties<PixelType> TImageProps;
 	
 	//ctor
 	NeighborhoodCell();
