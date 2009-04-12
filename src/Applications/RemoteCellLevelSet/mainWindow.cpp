@@ -70,7 +70,7 @@ mainWindow::CreatePipeline()
 	typedef M4D::Imaging::DecimationFilter<ImageType, Interpolator> Decimator;
 	
 	
-	_decimator = new Decimator( new Decimator::Properties(0.5f) );
+	_decimator = new Decimator( new Decimator::Properties(0.25f) );
 	_decimator->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
 	_pipeline.AddFilter( _decimator );
 	
