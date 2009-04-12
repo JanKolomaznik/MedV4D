@@ -39,7 +39,7 @@ namespace itk {
 
 		while ( ! this->Halt() )
 		{
-			this->InitializeIteration(); // An optional method for precalculating
+			//this->InitializeIteration(); // An optional method for precalculating
 			// global values, or otherwise setting up
 			// for the next iteration
 			dt = this->CalculateChange();

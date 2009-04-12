@@ -1,48 +1,28 @@
-#ifndef CELLREADYTHRESHOLDSEGMENTATIONLEVELSETIMAGEFILTER_H_
-#define CELLREADYTHRESHOLDSEGMENTATIONLEVELSETIMAGEFILTER_H_
+#ifndef PCPARTOFTHEFILTER_H_
+#define PCPARTOFTHEFILTER_H_
 
-
-//#include "itkThresholdSegmentationLevelSetImageFilter.h"
-
-#if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
-#define CELL
-#else
-#define PC
-#endif
-
-#ifdef CELL
-#include "PPE/SPEManager.h"
 #include "initPartOfFilter.h"
-#else	/* PC */
-#include "SPE/updateCalculation/updateCalculatorSPE.h"
-#include "SPE/applyUpdateCalc/applyUpdateCalculator.h"
-#include "pcPartOfTheFilter.h"
-#endif
+
+#include "supportClasses.h"
+#include "common/perfCounter.h"
+#include "itkSparseFieldLayer.h"
+#include "itkObjectStore.h"
+#include "itkNeighborhoodIterator.h"
 
 namespace itk
 {
 
 template <class TInputImage, class TFeatureImage, class TOutputPixelType = float >
-class MySegmtLevelSetFilter	
-#ifdef CELL
+class PCPartOfSegmtLevelSetFilter
 	: public itk::MySegmtLevelSetFilter_InitPart<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> >
-#else
-	: public itk::PCPartOfSegmtLevelSetFilter<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> >
-#endif
 {
 public:
-	
-	typedef MySegmtLevelSetFilter Self;
+	typedef MySegmtLevelSetFilter_InitPart<TInputImage, Image<TOutputPixelType, TInputImage::ImageDimension> > Superclass;	
+	typedef PCPartOfSegmtLevelSetFilter Self;
 	typedef itk::SmartPointer<Self> Pointer;
 	typedef typename TFeatureImage::PixelType FeaturePixelType;
 	typedef Image<TOutputPixelType, TInputImage::ImageDimension> OutputImageType;
 	  typedef typename OutputImageType::ValueType ValueType;
-	
-#ifdef CELL
-	typedef MySegmtLevelSetFilter_InitPart<TInputImage, Image<TOutputPixelType, TInputImage::ImageDimension> > Superclass;
-#else
-	typedef PCPartOfSegmtLevelSetFilter<TInputImage, Image<TOutputPixelType, TInputImage::ImageDimension> > Superclass;
-#endif
 	
 	typedef typename Superclass::TimeStepType TimeStepType;
 	typedef typename Superclass::StatusType StatusType;
@@ -78,16 +58,7 @@ public:
   
   //////////////
 	
-	itkNewMacro(Self);
-
-	
 	// **************************************
-
-	  // FUNCTIONS
-	  
-	   
-	    /** Constructs the sparse field layers and initializes their values. */
-	    void Initialize();
 
 	    /** Applies the update buffer values to the active layer and reconstructs the
 	     *  sparse field layers for the next iteration. */
@@ -104,18 +75,44 @@ public:
 	     * marked in the status image as having been moved to other layers. */
 	    void PropagateAllLayerValues();
 	    
-	    //M4D::Cell::ApplyUpdateConf m_applyUpdateConf;
+	    /** Adjusts the values in a single layer "to" using values in a neighboring
+	     *  layer "from".  The list of indicies in "to" are traversed and assigned
+	     *  new values appropriately. Any indicies in "to" without neighbors in
+	     *  "from" are moved into the "promote" layer (or deleted if "promote" is
+	     *  greater than the number of layers). "InOrOut" == 1 indicates this
+	     *  propagation is inwards (more negative).  "InOrOut" == 2 indicates this
+	     *  propagation is outwards (more positive). */   
+//	    void PropagateLayerValues(StatusType from, StatusType to,
+//	                              StatusType promote, int InOrOut);
+	    
+	    ValueType CalculateUpdateValue(
+	    		    const TimeStepType &dt,
+	    		    const ValueType &value,
+	    		    const ValueType &change)
+	    		    {
+	    			ValueType val = (value + dt * change); 
+	    			return val;
+	    			}
+
+
+	    /** Updates the active layer values using m_UpdateBuffer. Also creates an
+	     *  "up" and "down" list for promotion/demotion of indicies leaving the
+	     *  active set. */
+	    void UpdateActiveLayerValues(TimeStepType dt, LayerType *StatusUpList,
+	                                 LayerType *StatusDownList);
+	    /** */
+	    void ProcessStatusList(LayerType *InputList, LayerType *OutputList,
+	                           StatusType ChangeToStatus, StatusType SearchForStatus);
+
+	    /** */
+	    void ProcessOutsideList(LayerType *OutsideList, StatusType ChangeToStatus);
 	    
 protected:
-	MySegmtLevelSetFilter(void);
-	~MySegmtLevelSetFilter(void);
+	PCPartOfSegmtLevelSetFilter(void);
+	~PCPartOfSegmtLevelSetFilter(void);
 	
 	void InitConfigStructures(void);
 	
-#if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
-	M4D::Cell::SPEManager m_SPEManager;
-	M4D::Cell::ESPUCommands command;
-#else
 	typedef M4D::Cell::UpdateCalculatorSPE TUpdateCalculatorSPE;
 	TUpdateCalculatorSPE updateSolver;
 	
@@ -124,9 +121,6 @@ protected:
 	M4D::Cell::LayerGate::LayerType *m_gateLayerPointers[LYERCOUNT];
 	
 	void SetupGate();
-#endif
-	
-	
 	
 private:
 	PerfCounter cntr_;
@@ -134,6 +128,6 @@ private:
 
 }
 //include implementation
-#include "src/filter.tcc"
+#include "src/pcPartOfTheFilter.tcc"
 
-#endif /*CELLREADYTHRESHOLDSEGMENTATIONLEVELSETIMAGEFILTER_H_*/
+#endif /*PCPARTOFTHEFILTER_H_*/

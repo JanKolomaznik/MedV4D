@@ -128,11 +128,6 @@ protected:
    * \returns A time step to use in updating the output with the changes
    * calculated from this method. */
   virtual TimeStepType CalculateChange() = 0;
-
-  /** This method can be defined in subclasses as needed to copy the input
-   * to the output. See DenseFiniteDifferenceImageFilter for an
-   * implementation. */
-  virtual void CopyInputToOutput() = 0;
   
   /** This is the default, high-level algorithm for calculating finite
    * difference solutions.  It calls virtual methods in its subclasses
@@ -152,6 +147,8 @@ protected:
    * \sa ProcessObject::GenerateInputRequestedRegion() */
   virtual void GenerateInputRequestedRegion();
   
+  virtual void Initialize()=0;
+  
   /** This method returns true when the current iterative solution of the
    * equation has met the criteria to stop solving.  Defined by a subclass. */
   virtual bool Halt();
@@ -167,13 +164,8 @@ protected:
    */
   virtual bool ThreadedHalt(void *itkNotUsed(threadInfo)) { return this->Halt(); }
 
-  /** This method is optionally defined by a subclass and is called before
-   * the loop of iterations of calculate_change & upate. It does the global
-   * initialization, i.e. in the SparseFieldLevelSetImageFilter, initialize 
-   * the list of layers. 
-   * */
-  virtual void Initialize() { };
 
+  virtual void CopyInputToOutput(void) = 0;
   /** Virtual method for resolving a single time step from a set of time steps
    * returned from processing threads.
    * \return Time step (dt) for the iteration update based on a list
@@ -189,8 +181,6 @@ protected:
    * The default is to return the minimum value in the list. */
   virtual TimeStepType ResolveTimeStep(const TimeStepType* timeStepList, 
                                        const bool* valid,int size);
-  
-  virtual void InitializeIteration() = 0;
 
   /** Set the number of elapsed iterations of the filter. */
   itkSetMacro(ElapsedIterations, unsigned int);

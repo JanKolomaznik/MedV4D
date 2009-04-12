@@ -68,6 +68,11 @@ public:
   typedef std::vector<ValueType> UpdateBufferType;
   
   //////////////
+  
+	void SetUpperThreshold(FeaturePixelType upThreshold) { m_Conf.m_upThreshold = upThreshold; }
+	void SetLowerThreshold(FeaturePixelType loThreshold) { m_Conf.m_downThreshold = loThreshold; }
+	void SetPropagationWeight(float32 propWeight) { m_Conf.m_propWeight = propWeight; }
+	void SetCurvatureWeight(float32 curvWeight) { m_Conf.m_curvWeight = curvWeight; }
 	
 	void SetIsoSurfaceValue(ValueType val) { m_IsoSurfaceValue = val; }
 	
@@ -78,8 +83,6 @@ public:
 	
 	TFeatureImage * GetFeatureImage()
 	  	  { return ( static_cast< TFeatureImage *>(this->ProcessObject::GetInput(1)) ); }
-	
-	void InitializeIteration() {}
 	
 	void PrintStats(std::ostream &s);
 	
@@ -125,6 +128,10 @@ public:
 
 	    /** Initializes the values of the active layer set. */
 	    void InitializeActiveLayerValues();
+	    
+	    void PropagateAllLayerValues();
+	    
+	    void InitConfigStructures(void);
 
 	
 	  // MEMBERS

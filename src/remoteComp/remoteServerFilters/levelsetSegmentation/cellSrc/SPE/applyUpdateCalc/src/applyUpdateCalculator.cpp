@@ -31,8 +31,6 @@ ApplyUpdateSPE::~ApplyUpdateSPE()
 ApplyUpdateSPE::ValueType
 ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 {
-
-
 	MyLayerType UpList[2];
 	MyLayerType DownList[2];
 

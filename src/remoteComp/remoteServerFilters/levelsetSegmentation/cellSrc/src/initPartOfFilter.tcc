@@ -169,6 +169,33 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+template<class TInputImage,class TFeatureImage, class TOutputPixelType>
+void
+MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
+::InitConfigStructures(void)
+{
+	// fill the image properties
+  	// feature image
+    m_Conf.featureImageProps.imageData = 
+    	(FeaturePixelType *)GetFeatureImage()->GetBufferPointer();
+    m_Conf.featureImageProps.region = 
+    	ConvertRegion<TFeatureImage, M4D::Cell::TRegion>(*GetFeatureImage());
+    m_Conf.featureImageProps.spacing = 
+    	ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename TFeatureImage::SpacingType>(GetFeatureImage()->GetSpacing());
+    // output image
+    m_Conf.valueImageProps.imageData = (ValueType *)this->GetOutput()->GetBufferPointer();
+    m_Conf.valueImageProps.region = 
+    	ConvertRegion<OutputImageType, M4D::Cell::TRegion>(*this->GetOutput());
+    m_Conf.featureImageProps.spacing = ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename OutputImageType::SpacingType>(this->GetOutput()->GetSpacing());
+    //status image
+    m_Conf.statusImageProps.imageData = (StatusType *)m_StatusImage->GetBufferPointer();
+    m_Conf.statusImageProps.region = 
+    	ConvertRegion<StatusImageType, M4D::Cell::TRegion>(*m_StatusImage);
+    m_Conf.statusImageProps.spacing = ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename StatusImageType::SpacingType>(m_StatusImage->GetSpacing());
+}
+
+///////////////////////////////////////////////////////////////////////////////
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
 void
 MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
