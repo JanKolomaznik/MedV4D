@@ -22,7 +22,7 @@ ObjectStoreCell<T, STORESIZE>::Borrow()
 		uint16 pos = FindFirstFree();
 		ToggleBitInMap(pos);
 		m_borrowed++;
-		D_PRINT("borrowing: " << &m_buf[pos] << " on " << pos << ", borrowed=" << m_borrowed);
+		//D_PRINT("borrowing: " << &m_buf[pos] << " on " << pos << ", borrowed=" << m_borrowed);
 		return &m_buf[pos];
 	}
 	return NULL;
@@ -33,18 +33,18 @@ template<typename T, uint16 STORESIZE>
 void
 ObjectStoreCell<T, STORESIZE>::Return(T *p)
 {
-	if(p < m_buf || p >= &m_buf[STORESIZE] )	// trying put foreign node
-	{
-		D_PRINT("PUTTING FOREIGN!");
-		return;
-	}
+//	if(p < m_buf || p >= &m_buf[STORESIZE] )	// trying put foreign node
+//	{
+//		D_PRINT("PUTTING FOREIGN!");
+//		return;
+//	}
 	
 	// only update alloc map, position is counted from address
-	uint16 pos = p - m_buf;
+#define POS (p - m_buf)
 	
-	ToggleBitInMap(pos);
+	ToggleBitInMap(POS);
 	m_borrowed--;
-	D_PRINT("returning: " << p << " on " << pos << ", borrowed=" << m_borrowed);
+	//D_PRINT("returning: " << p << " on " << pos << ", borrowed=" << m_borrowed);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -75,22 +75,20 @@ template<typename T, uint16 STORESIZE>
 uint16
 ObjectStoreCell<T, STORESIZE>::FindFirstFree(void)
 {
-	uint32 aLLOC_MAP_ITEM_COUNT = ALLOC_MAP_ITEM_COUNT;
-	
 	TAllocMapItem *it = m_allocMap;
 	uint16 cntr = 0;
-	TAllocMapItem searchMask = (TAllocMapItem)-1; /* full = all ones */
+#define searchMask ((TAllocMapItem)-1) /* full = all ones */
 	// search for 0 in alloc map
-	while(*it == searchMask	&& cntr < aLLOC_MAP_ITEM_COUNT)
+	while(*it == searchMask	&& cntr < ALLOC_MAP_ITEM_COUNT)
 	{
 		it++;
 		cntr++;
 	}
 #define BITSINBYTE 8
-	if(cntr < aLLOC_MAP_ITEM_COUNT)
+#define ALLOCITEMSIZEINBITS (sizeof(TAllocMapItem) * BITSINBYTE)
+	if(cntr < ALLOC_MAP_ITEM_COUNT)
 	{
-		uint32 sizeOFTAllocMapItem = sizeof(TAllocMapItem) * BITSINBYTE;
-		cntr *= sizeOFTAllocMapItem;
+		cntr *= ALLOCITEMSIZEINBITS;
 		// add bit count in found cell
 		TAllocMapItem tmp = *it;
 		while(tmp & 1)
@@ -100,7 +98,7 @@ ObjectStoreCell<T, STORESIZE>::FindFirstFree(void)
 		}
 		return cntr;
 	}
-	return 65535;
+	return (uint16)-1;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
