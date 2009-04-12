@@ -20,7 +20,7 @@ public:
 	typedef itk::ObjectStore<SparseFieldLevelSetNode> LayerNodeStorageType;
 	
 	void UnlinkNode(SparseFieldLevelSetNode *node, uint8 layerNum);
-	void ReturnToNodeStore(SparseFieldLevelSetNode *node);
+	//void ReturnToNodeStore(SparseFieldLevelSetNode *node);
 	void PushToLayer(SparseFieldLevelSetNode *node, uint8 layerNum);
 	
 	

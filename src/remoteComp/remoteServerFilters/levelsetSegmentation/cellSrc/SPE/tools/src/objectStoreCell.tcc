@@ -7,12 +7,25 @@ namespace Cell {
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename T, uint16 STORESIZE>
+ObjectStoreCell<T, STORESIZE>::ObjectStoreCell()
+	: m_borrowed(0)
+{
+	
+}
+///////////////////////////////////////////////////////////////////////////////
+template<typename T, uint16 STORESIZE>
 T *
 ObjectStoreCell<T, STORESIZE>::Borrow()
 {
-	uint16 pos = FindFirstFree();
-	ToggleBitInMap(pos);
-	return m_buf[pos];
+	if(m_borrowed < STORESIZE)
+	{
+		uint16 pos = FindFirstFree();
+		ToggleBitInMap(pos);
+		m_borrowed++;
+		D_PRINT("borrowing: " << &m_buf[pos] << " on " << pos << ", borrowed=" << m_borrowed);
+		return &m_buf[pos];
+	}
+	return NULL;
 }	 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -20,8 +33,18 @@ template<typename T, uint16 STORESIZE>
 void
 ObjectStoreCell<T, STORESIZE>::Return(T *p)
 {
+	if(p < m_buf || p >= &m_buf[STORESIZE] )	// trying put foreign node
+	{
+		D_PRINT("PUTTING FOREIGN!");
+		return;
+	}
+	
 	// only update alloc map, position is counted from address
-	ToggleBitInMap( (p - &m_buf) / sizeof(T));
+	uint16 pos = p - m_buf;
+	
+	ToggleBitInMap(pos);
+	m_borrowed--;
+	D_PRINT("returning: " << p << " on " << pos << ", borrowed=" << m_borrowed);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -31,16 +54,18 @@ template<typename T, uint16 STORESIZE>
 void
 ObjectStoreCell<T, STORESIZE>::ToggleBitInMap(uint16 bitPos)
 {
-	uint16 cellNum = bitPos / sizeof(TAllocMapItem);
+	uint16 cellNum = bitPos / ALLOC_MAP_ITEM_SIZE_IN_BITS;
 	TAllocMapItem *cell = &m_allocMap[cellNum];
 	
 	// create mask used to set the bit
 	TAllocMapItem mask = 1;
-//#define IN_MASK_POS (bitPos % sizeof(TAllocMapItem))
-	uint32 IN_MASK_POS = bitPos % sizeof(TAllocMapItem);
+#define IN_MASK_POS (bitPos % ALLOC_MAP_ITEM_SIZE_IN_BITS)
 	cellNum = 0;	// reusing
 	while(cellNum < IN_MASK_POS)
-		mask = mask << 1;
+	{
+		mask <<= 1;
+		cellNum++;
+	}
 	
 	TOGGLE_BIT(*cell,mask);
 }
@@ -50,28 +75,32 @@ template<typename T, uint16 STORESIZE>
 uint16
 ObjectStoreCell<T, STORESIZE>::FindFirstFree(void)
 {
-	TAllocMapItem *it = &m_allocMap;
-	uint16 cntr = 0;
-	while(*it == 1 && cntr < ALLOC_MAP_ITEM_COUNT)	// search for 0 in alloc map
-		;
+	uint32 aLLOC_MAP_ITEM_COUNT = ALLOC_MAP_ITEM_COUNT;
 	
-	if(cntr < ALLOC_MAP_ITEM_COUNT)
+	TAllocMapItem *it = m_allocMap;
+	uint16 cntr = 0;
+	TAllocMapItem searchMask = (TAllocMapItem)-1; /* full = all ones */
+	// search for 0 in alloc map
+	while(*it == searchMask	&& cntr < aLLOC_MAP_ITEM_COUNT)
 	{
-		uint16 retval = cntr * sizeof(TAllocMapItem);
+		it++;
+		cntr++;
+	}
+#define BITSINBYTE 8
+	if(cntr < aLLOC_MAP_ITEM_COUNT)
+	{
+		uint32 sizeOFTAllocMapItem = sizeof(TAllocMapItem) * BITSINBYTE;
+		cntr *= sizeOFTAllocMapItem;
 		// add bit count in found cell
 		TAllocMapItem tmp = *it;
 		while(tmp & 1)
 		{
 			cntr++;
-			tmp >> 1;	// observe next bit
+			tmp >>= 1;	// observe next bit
 		}
 		return cntr;
 	}
-	else
-	{
-		m_full = true;
-		return 65535;
-	}
+	return 65535;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

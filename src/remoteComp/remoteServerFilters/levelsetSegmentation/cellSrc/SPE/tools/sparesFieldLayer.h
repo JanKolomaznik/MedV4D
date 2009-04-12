@@ -89,8 +89,10 @@ public:
    *  time. */
   bool Empty() const
     {
-    if (m_HeadNode.Next == &m_HeadNode) return true;
-    else return false;
+//    if (m_HeadNode.Next == &m_HeadNode) 
+//    	return true;
+//    else return false;
+	  return m_Size == 0;
     }
   
   /** Returns the number of elements in the list. Size() executes in constant

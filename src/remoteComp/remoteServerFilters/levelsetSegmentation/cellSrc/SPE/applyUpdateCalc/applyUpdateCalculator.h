@@ -20,7 +20,7 @@ public:
 	
 	typedef GETRemoteArrayCell<TPixelValue, 8> TUpdateBufferArray;	
 	typedef M4D::Cell::SparseFieldLayer<SparseFieldLevelSetNode> MyLayerType;
-	typedef M4D::Cell::ObjectStoreCell<SparseFieldLevelSetNode, 20> TObjectStore; 
+	typedef M4D::Cell::ObjectStoreCell<SparseFieldLevelSetNode, 2048> TObjectStore; 
 	
 	void UpdateActiveLayerValues(TimeStepType dt,
 			MyLayerType *UpList, MyLayerType *DownList,

@@ -77,7 +77,7 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 			//currNode = currNode->Next; // move on
 
 			m_layerGate.UnlinkNode(tmp, to);
-			m_layerGate.ReturnToNodeStore(tmp);
+			//m_layerGate.ReturnToNodeStore(tmp);
 
 			continue;
 		}
@@ -140,7 +140,7 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 			m_layerGate.UnlinkNode(tmp, to);
 			if (promote > past_end)
 			{
-				m_layerGate.ReturnToNodeStore(tmp);
+				//m_layerGate.ReturnToNodeStore(tmp);
 				m_statusIter.SetCenterPixel(this->m_StatusNull);
 			}
 			else

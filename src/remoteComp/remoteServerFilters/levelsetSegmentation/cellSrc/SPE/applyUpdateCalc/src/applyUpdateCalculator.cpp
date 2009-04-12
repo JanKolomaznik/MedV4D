@@ -174,10 +174,13 @@ ApplyUpdateSPE::ProcessOutsideList(
 		m_statusIter.SetLocation(OutsideList->Front()->m_Value);
 		m_statusIter.SetCenterPixel(ChangeToStatus);
 		node = OutsideList->Front();
-		OutsideList->PopFront();
 		
-		//m_localNodeStore.
+		OutsideList->PopFront();
+		LOG("1: pop ," << OutsideList->Size() << " node " << node->m_Value);
+		
 		this->m_layerGate.PushToLayer(node, ChangeToStatus);
+		
+		m_localNodeStore.Return(node);
 //		m_Layers[ChangeToStatus]->PushFront(node);
 	}
 }
@@ -203,17 +206,19 @@ ApplyUpdateSPE::ProcessStatusList(
 	while ( !InputList->Empty() )
 	{
 		node = InputList->Front();
-		m_statusIter.SetLocation(node->m_Value);
-		
-		//std::cout << m_statusIter.GetNeighborhood() << std::endl;
-		
+		m_statusIter.SetLocation(node->m_Value);		
 		m_statusIter.SetCenterPixel(ChangeToStatus);
 
 		DL_PRINT(DEBUG_ALG, "1. node=" << node->m_Value);
 		
+		
 		InputList->PopFront(); // Must unlink from the input list  _before_ transferring to another list.
+		LOG("2: pop ," << OutputList->Size() << " node " << node->m_Value);
+		
 		//m_Layers[ChangeToStatus]->PushFront(node);
 		this->m_layerGate.PushToLayer(node, ChangeToStatus);
+		// and return it to local store
+		m_localNodeStore.Return(node);
 
 		for (i = 0; i < m_NeighborList.GetSize(); ++i)
 		{
@@ -229,12 +234,17 @@ ApplyUpdateSPE::ProcessStatusList(
 						this->m_StatusChanging);
 				if (bounds_status == true)
 				{
-//					node = m_LayerNodeStore->Borrow();
-					node = BorrowFromLocalNodeStore();
+					node = m_localNodeStore.Borrow();
+					//node = BorrowFromLocalNodeStore();
+					
+					// reuse node from this loop coz it should be returned to local store
 					node->m_Value = m_statusIter.GetIndex()
 							+ m_NeighborList.GetNeighborhoodOffset(i);
-					DL_PRINT(DEBUG_ALG, "4. pushing to outList node: " << node->m_Value);
+					DL_PRINT(DEBUG_ALG, "4. pushing to outList node: " << node->m_Value);					
+		
+					LOG("3: push," << OutputList->Size() << " node " << node->m_Value);
 					OutputList->PushFront(node);
+					
 				} // else this index was out of bounds.
 			}
 		}
@@ -259,7 +269,7 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	  ValueType centerVal;
 	  SparseFieldLevelSetNode *currNode;	  
 	  
-#define MAX_TURN_LENGHT 20
+#define MAX_TURN_LENGHT 2
 	
 	uint16 turnCounter = 0;
 	  
@@ -273,7 +283,7 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 		  
 		  centerVal = m_outIter.GetCenterPixel();
 	
-	    new_value = this->CalculateUpdateValue(dt, centerVal, m_updateValuesIt.GetCurrVal());	    
+	    new_value = this->CalculateUpdateValue(dt, centerVal, m_updateValuesIt.GetCurrVal());
 	
 	    // If this index needs to be moved to another layer, then search its
 	    // neighborhood for indicies that need to be pulled up/down into the
@@ -330,12 +340,14 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	          }
 	        }
 //	      node = m_LayerNodeStore->Borrow();
-	      node = BorrowFromLocalNodeStore();
+	      //node = BorrowFromLocalNodeStore();
+	      node = m_localNodeStore.Borrow();
 	      node->m_Value = currNode->m_Value;
 	      DL_PRINT(DEBUG_ALG, "A1. pushing up node:" << node->m_Value);
 	      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	      // tady se do uplistu da adresa z linked chain iteratoru, takze je treba 
 	      // si predtim vzit z local objetStore
+	      LOG("4: push," << UpList->Size() << " node " << node->m_Value);
 	      UpList->PushFront(node);
 	      m_statusIter.SetCenterPixel(this->m_StatusActiveChangingUp);
 	
@@ -345,7 +357,7 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	      //m_Layers[0]->Unlink(release_node);
 	      this->m_layerGate.UnlinkNode(currNode, 0);
 	      //m_LayerNodeStore->Return( release_node );
-	      this->m_layerGate.ReturnToNodeStore(currNode);
+	      //this->m_layerGate.ReturnToNodeStore(currNode);
 	      }
 	
 	    else if (new_value < LOWER_ACTIVE_THRESHOLD)
@@ -392,9 +404,12 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	          }
 	        }
 //	      node = m_LayerNodeStore->Borrow();
-	      node = BorrowFromLocalNodeStore();
+	      //node = BorrowFromLocalNodeStore();
+	      node = m_localNodeStore.Borrow();
 	      node->m_Value = currNode->m_Value;
 	      DL_PRINT(DEBUG_ALG, "A2. pushing down node:" << node->m_Value );
+	      
+	      LOG("5: push," << DownList->Size() << " node " << node->m_Value);
 	      DownList->PushFront(node);
 	      m_statusIter.SetCenterPixel(this->m_StatusActiveChangingDown);
 	
@@ -404,7 +419,7 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	      //m_Layers[0]->Unlink(release_node);
 	      this->m_layerGate.UnlinkNode(currNode, 0);
 //	      m_LayerNodeStore->Return( release_node );
-	      this->m_layerGate.ReturnToNodeStore(currNode);
+	      //this->m_layerGate.ReturnToNodeStore(currNode);
 	      }
 	    else
 	      {
