@@ -20,7 +20,8 @@ public:
 	typedef PixelType TPixel;
 	
 	//ctor
-	NeighborhoodCell(TImageProperties<PixelType> *props);
+	NeighborhoodCell();
+	
 	void SetPosition(const TIndex &pos);
 	
 	inline PixelType GetPixel(uint32 pos) { return m_buf[pos]; }
@@ -38,7 +39,10 @@ public:
 		{ return  static_cast<uint32>(m_size/2); }
 	size_t GetSize() { return m_size; }
 	
-	void SetImageProperties(TImageProperties<PixelType> *props) { m_imageProps = props; }
+	void SetImageProperties(TImageProperties<PixelType> *props) { 
+		m_imageProps = props;
+		ComputeStridesFromSize(m_imageProps->region.size, m_imageStrides);
+		}
 	bool IsWithinImage(const TIndex &pos);
 	TIndex m_currIndex;
 	void PrintImage(std::ostream &s);

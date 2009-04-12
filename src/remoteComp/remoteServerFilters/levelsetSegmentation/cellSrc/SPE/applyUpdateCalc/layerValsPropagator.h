@@ -8,6 +8,7 @@
 #include "../tools/cellRemoteArray.h"
 #include "../tools/cellLinkedChainIterator.h"
 #include "../tools/sparesFieldLayer.h"
+#include "../tools/preloadedBufer.h"
 
 #include "../../supportClasses.h"
 
@@ -40,6 +41,8 @@ protected:
 	typedef LinkedChainIteratorCellWithLayerAccess<SparseFieldLevelSetNode> TLayerIterator;
 	typedef NeighbourIteratorCell<TPixelValue> TValueNeighbIterator;
 	typedef NeighbourIteratorCell<StatusType> TStatusNeighbIterator;
+	typedef PreloadedBuffer<TValueNeighbIterator, 4> TValueNeighbPreloadedBuffer;
+	typedef PreloadedBuffer<TStatusNeighbIterator, 4> TStatusNeighbPreloadedBuffer;
 	
 	TValueNeighbIterator m_outIter;
 	TStatusNeighbIterator m_statusIter;
@@ -50,6 +53,9 @@ protected:
 	
 	LayerGate m_layerGate;
 	TLayerIterator m_layerIterator;
+	
+	TValueNeighbPreloadedBuffer m_valueNeighPreloadedBuf;
+	TStatusNeighbPreloadedBuffer m_statusNeighPreloadedBuf;
 	
 private:
 	void PropagateLayerValues(StatusType from, StatusType to,

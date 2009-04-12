@@ -133,8 +133,10 @@ UpdateCalculatorSPE::CalculateChange()
 	m_layerIterator.SetBeginEnd(m_Conf->m_activeSetBegin, m_Conf->m_activeSetEnd);
 
 	// create neghbours as middle layer between image in PPE and part of image on SPE
-	NeighborhoodCell<TPixelValue> outNeigh( & m_Conf->valueImageProps);
-	NeighborhoodCell<TPixelValue> featureNeigh( & m_Conf->featureImageProps);
+	NeighborhoodCell<TPixelValue> outNeigh;
+	outNeigh.SetImageProperties( & m_Conf->valueImageProps);
+	NeighborhoodCell<TPixelValue> featureNeigh;
+	featureNeigh.SetImageProperties( & m_Conf->featureImageProps);
 
 	//PrintITKImage<OutputImageType>(*m_Conf->m_outputImage,LOUT);
 	

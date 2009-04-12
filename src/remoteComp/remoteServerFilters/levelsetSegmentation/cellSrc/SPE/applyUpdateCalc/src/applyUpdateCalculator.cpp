@@ -41,8 +41,10 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	//	  LOUT << *it << ", ";
 	//  LOG("");
 	
-	NeighborhoodCell<TPixelValue> outNeigh( &commonConf->valueImageProps);
-	NeighborhoodCell<StatusType> statusNeigh( &commonConf->statusImageProps);
+	NeighborhoodCell<TPixelValue> outNeigh;
+	outNeigh.SetImageProperties( &commonConf->valueImageProps);
+	NeighborhoodCell<StatusType> statusNeigh;
+	statusNeigh.SetImageProperties( &commonConf->statusImageProps);
 
 	m_outIter.SetNeighbourhood( &outNeigh);
 	m_statusIter.SetNeighbourhood( &statusNeigh);

@@ -10,8 +10,8 @@ namespace Cell {
 ///////////////////////////////////////////////////////////////////////////////
 
 template<typename PixelType>
-NeighborhoodCell<PixelType>::NeighborhoodCell(TImageProperties<PixelType> *props)
-		: m_imageProps(props)
+NeighborhoodCell<PixelType>::NeighborhoodCell()
+		: m_imageProps(0)
 {
 	// set size
 	for (unsigned int i=0; i<DIM; ++i)
@@ -21,7 +21,6 @@ NeighborhoodCell<PixelType>::NeighborhoodCell(TImageProperties<PixelType> *props
 	m_size = NEIGHBOURHOOD_SIZE;
 	
 	ComputeStridesFromSize(m_radiusSize, m_radiusStrides);
-	ComputeStridesFromSize(m_imageProps->region.size, m_imageStrides);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
