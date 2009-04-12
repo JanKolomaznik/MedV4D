@@ -36,27 +36,27 @@ public:
   /** Returns a pointer to the first node in the list.  Constant
    * time. */ 
   NodeType *Front()
-    { return m_HeadNode->Next; }
+    { return m_HeadNode.Next; }
 
   /** Returns a const pointer to the first node in the list. Constant time. */
   const NodeType *Front() const
-    { return m_HeadNode->Next; }
+    { return m_HeadNode.Next; }
 
   /** Unlinks the first node from the list. Constant time. */
   void PopFront()
     {
-    m_HeadNode->Next = m_HeadNode->Next->Next;
-    m_HeadNode->Next->Previous = m_HeadNode;
+    m_HeadNode.Next = m_HeadNode.Next->Next;
+    m_HeadNode.Next->Previous = &m_HeadNode;
     m_Size -= 1;
     }
   
   /** Links a node into the front of the list. Constant time. */
   void PushFront(NodeType *n)
     {
-    n->Next = m_HeadNode->Next;
-    n->Previous = m_HeadNode;
-    m_HeadNode->Next->Previous = n;
-    m_HeadNode->Next = n;
+    n->Next = m_HeadNode.Next;
+    n->Previous = &m_HeadNode;
+    m_HeadNode.Next->Previous = n;
+    m_HeadNode.Next = n;
     m_Size += 1;
     }
   
@@ -70,12 +70,12 @@ public:
   
 //  /** Returns an iterator pointing to the first node in the list. */
 //  Iterator Begin()
-//    { return Iterator(m_HeadNode->Next); }
+//    { return Iterator(m_HeadNode.Next); }
 //
 //  /** Returns a const iterator pointing to the first node in the
 //   * list. */
 //  ConstIterator Begin() const
-//    { return ConstIterator(m_HeadNode->Next); }
+//    { return ConstIterator(m_HeadNode.Next); }
 //
 //  /** Returns an iterator pointing one node past the end of the list. */
 //  Iterator End()
@@ -89,7 +89,7 @@ public:
    *  time. */
   bool Empty() const
     {
-    if (m_HeadNode->Next == m_HeadNode) return true;
+    if (m_HeadNode.Next == &m_HeadNode) return true;
     else return false;
     }
   
@@ -103,23 +103,21 @@ public:
 
   SparseFieldLayer()
   {
-	  m_HeadNode = new NodeType;
-	  m_HeadNode->Next = m_HeadNode;
-	  m_HeadNode->Previous = m_HeadNode;
+	  m_HeadNode.Next = &m_HeadNode;
+	  m_HeadNode.Previous = &m_HeadNode;
 	  m_Size = 0;
   }
   ~SparseFieldLayer()
   {
-	  delete m_HeadNode;
   }
   
 private:
   SparseFieldLayer(const Self&);    //purposely not implemented
   void operator=(const Self&);      //purposely not implemented
   
-  /** The anchor node of the list.  m_HeadNode->Next is the first node in the
-   *  list. If m_HeadNode->Next == m_HeadNode, then the list is empty. */
-  NodeType *   m_HeadNode;
+  /** The anchor node of the list.  m_HeadNode.Next is the first node in the
+   *  list. If m_HeadNode.Next == m_HeadNode, then the list is empty. */
+  NodeType   m_HeadNode;
   unsigned int m_Size;
 };
     
