@@ -29,6 +29,8 @@ public:
             StatusType ChangeToStatus, StatusType SearchForStatus);//, TStatusNeighbIterator &statusIt);
 private:
 	
+	void
+	ProcessStatusLists(MyLayerType *UpLists, MyLayerType *DownLists);
 	
 	
 	ValueType CalculateUpdateValue(

@@ -31,10 +31,7 @@ ApplyUpdateSPE::~ApplyUpdateSPE()
 ApplyUpdateSPE::ValueType
 ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 {
-	unsigned int j, k, t;
 
-	StatusType up_to, up_search;
-	StatusType down_to, down_search;
 
 	MyLayerType UpList[2];
 	MyLayerType DownList[2];
@@ -70,9 +67,36 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 //	  std::ofstream b(s.str().c_str());
 //	m_statusIter.GetNeighborhood().PrintImage(b);
 
+	ProcessStatusLists(UpList, DownList);
+	
+//	std::stringstream s3;
+//		  s3 << "afterOutside" << this->m_ElapsedIterations;
+	//	  std::ofstream a1(s3.str().c_str());
+	//m_statusIter.GetNeighborhood().PrintImage(a1);
+
+	// Finally, we update all of the layer values (excluding the active layer,
+	// which has already been updated).
+	this->PropagateAllLayerValues();
+	
+	m_ElapsedIterations++;
+	
+	return retval;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+ApplyUpdateSPE::ProcessStatusLists(
+		MyLayerType *UpLists, MyLayerType *DownLists)
+{
+	unsigned int j, k, t;
+
+	StatusType up_to, up_search;
+	StatusType down_to, down_search;
+	
 	// First process the status lists generated on the active layer.
-	this->ProcessStatusList(&UpList[0], &UpList[1], 2, 1);
-	this->ProcessStatusList(&DownList[0], &DownList[1], 1, 2);
+	this->ProcessStatusList(&UpLists[0], &UpLists[1], 2, 1);
+	this->ProcessStatusList(&DownLists[0], &DownLists[1], 1, 2);
 
 	down_to = up_to = 0;
 	up_search = 3;
@@ -81,8 +105,8 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	k = 0;
 	while (down_search < static_cast<StatusType>( LYERCOUNT ) )
 	{
-		this->ProcessStatusList(&UpList[j], &UpList[k], up_to, up_search);
-		this->ProcessStatusList(&DownList[j], &DownList[k], down_to, down_search);
+		this->ProcessStatusList(&UpLists[j], &UpLists[k], up_to, up_search);
+		this->ProcessStatusList(&DownLists[j], &DownLists[k], down_to, down_search);
 
 		if (up_to == 0)
 			up_to += 1;
@@ -100,8 +124,8 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	}
 
 	// Process the outermost inside/outside layers in the sparse field.
-	this->ProcessStatusList(&UpList[j], &UpList[k], up_to, this->m_StatusNull);
-	this->ProcessStatusList(&DownList[j], &DownList[k], down_to, this->m_StatusNull);
+	this->ProcessStatusList(&UpLists[j], &UpLists[k], up_to, this->m_StatusNull);
+	this->ProcessStatusList(&DownLists[j], &DownLists[k], down_to, this->m_StatusNull);
 	
 //	 std::stringstream s2;
 //			  s2 << "beforeOutside" << this->m_ElapsedIterations;
@@ -111,21 +135,8 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	// Now we are left with the lists of indicies which must be
 	// brought into the outermost layers.  Bring UpList into last inside layer
 	// and DownList into last outside layer.
-	this->ProcessOutsideList(&UpList[k], static_cast<int>(LYERCOUNT) -2);
-	this->ProcessOutsideList(&DownList[k], static_cast<int>(LYERCOUNT) -1);
-	
-//	std::stringstream s3;
-//		  s3 << "afterOutside" << this->m_ElapsedIterations;
-	//	  std::ofstream a1(s3.str().c_str());
-	//m_statusIter.GetNeighborhood().PrintImage(a1);
-
-	// Finally, we update all of the layer values (excluding the active layer,
-	// which has already been updated).
-	this->PropagateAllLayerValues();
-	
-	m_ElapsedIterations++;
-	
-	return retval;
+	this->ProcessOutsideList(&UpLists[k], static_cast<int>(LYERCOUNT) -2);
+	this->ProcessOutsideList(&DownLists[k], static_cast<int>(LYERCOUNT) -1);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
