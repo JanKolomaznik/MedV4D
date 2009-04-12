@@ -3,6 +3,8 @@
 
 #include "layerValsPropagator.h"
 
+#include "../tools/objectStoreCell.h"
+
 namespace M4D {
 namespace Cell {
 
@@ -18,6 +20,7 @@ public:
 	
 	typedef GETRemoteArrayCell<TPixelValue, 8> TUpdateBufferArray;	
 	typedef M4D::Cell::SparseFieldLayer<SparseFieldLevelSetNode> MyLayerType;
+	typedef M4D::Cell::ObjectStoreCell<SparseFieldLevelSetNode, 20> TObjectStore; 
 	
 	void UpdateActiveLayerValues(TimeStepType dt,
 			MyLayerType *UpList, MyLayerType *DownList,
@@ -48,7 +51,7 @@ private:
 	}
 	
 
-	
+	TObjectStore m_localNodeStore;
 	TUpdateBufferArray m_updateValuesIt;
 	
 	uint32 m_ElapsedIterations;

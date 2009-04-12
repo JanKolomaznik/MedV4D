@@ -151,7 +151,7 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 		}
 	}
 	
-	LOG("counter=" << counter);
+	//LOG("counter=" << counter);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

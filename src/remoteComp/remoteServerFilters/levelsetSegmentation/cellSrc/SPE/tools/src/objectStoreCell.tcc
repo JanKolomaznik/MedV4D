@@ -6,9 +6,9 @@ namespace M4D {
 namespace Cell {
 
 ///////////////////////////////////////////////////////////////////////////////
-template<typename T, uint16 SIZE>
+template<typename T, uint16 STORESIZE>
 T *
-ObjectStoreCell<T, SIZE>::Borrow()
+ObjectStoreCell<T, STORESIZE>::Borrow()
 {
 	uint16 pos = FindFirstFree();
 	ToggleBitInMap(pos);
@@ -16,19 +16,20 @@ ObjectStoreCell<T, SIZE>::Borrow()
 }	 
 
 ///////////////////////////////////////////////////////////////////////////////
-template<typename T, uint16 SIZE> 
+template<typename T, uint16 STORESIZE> 
 void
-ObjectStoreCell<T, SIZE>::Return(T *p)
+ObjectStoreCell<T, STORESIZE>::Return(T *p)
 {
 	// only update alloc map, position is counted from address
 	ToggleBitInMap( (p - &m_buf) / sizeof(T));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-#define TOGGLE_BIT((cell), (mask))  ((cell) = (cell) ^ (mask)) 
-template<typename T, uint16 SIZE> 
+#define TOGGLE_BIT(cell, mask)  ((cell) = (cell) ^ (mask)) 
+
+template<typename T, uint16 STORESIZE> 
 void
-ObjectStoreCell<T, SIZE>::ToggleBitInMap(uint16 bitPos)
+ObjectStoreCell<T, STORESIZE>::ToggleBitInMap(uint16 bitPos)
 {
 	uint16 cellNum = bitPos / sizeof(TAllocMapItem);
 	TAllocMapItem *cell = &m_allocMap[cellNum];
@@ -45,9 +46,9 @@ ObjectStoreCell<T, SIZE>::ToggleBitInMap(uint16 bitPos)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-template<typename T, uint16 SIZE>
+template<typename T, uint16 STORESIZE>
 uint16
-ObjectStoreCell<T, SIZE>::FindFirstFree(void)
+ObjectStoreCell<T, STORESIZE>::FindFirstFree(void)
 {
 	TAllocMapItem *it = &m_allocMap;
 	uint16 cntr = 0;
@@ -56,15 +57,15 @@ ObjectStoreCell<T, SIZE>::FindFirstFree(void)
 	
 	if(cntr < ALLOC_MAP_ITEM_COUNT)
 	{
-		uint16 retval = cnt * sizeof(TAllocMapItem);
+		uint16 retval = cntr * sizeof(TAllocMapItem);
 		// add bit count in found cell
 		TAllocMapItem tmp = *it;
 		while(tmp & 1)
 		{
-			cnt++;
+			cntr++;
 			tmp >> 1;	// observe next bit
 		}
-		return cnt;
+		return cntr;
 	}
 	else
 	{

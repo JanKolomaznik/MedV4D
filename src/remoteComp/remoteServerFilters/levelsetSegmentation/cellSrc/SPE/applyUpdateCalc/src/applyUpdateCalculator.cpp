@@ -9,7 +9,7 @@
 
 using namespace M4D::Cell;
 
-#define DEBUG_ALG 2
+#define DEBUG_ALG 12
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -175,6 +175,8 @@ ApplyUpdateSPE::ProcessOutsideList(
 		m_statusIter.SetCenterPixel(ChangeToStatus);
 		node = OutsideList->Front();
 		OutsideList->PopFront();
+		
+		//m_localNodeStore.
 		this->m_layerGate.PushToLayer(node, ChangeToStatus);
 //		m_Layers[ChangeToStatus]->PushFront(node);
 	}
