@@ -50,14 +50,12 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 	
 	uint32 counter = 0;
 
-//	SparseFieldLevelSetNode *currNode;
-//	m_layerIterator.SetBeginEnd(conf.layerBegins[to], conf.layerEnds[to]);
-	SparseFieldLevelSetNode *currNode = this->conf.layerBegins[to];
-	while (currNode != conf.layerEnds[to])
+	SparseFieldLevelSetNode *currNode;
+	TLayerIterator layerIterator(&m_layerGate);
+	layerIterator.SetBeginEnd(conf.layerBegins[to], conf.layerEnds[to]);
+	while (layerIterator.HasNext())
 	{
-//	while (m_layerIterator.HasNext())
-//	{
-//		currNode = m_layerIterator.Next();
+		currNode = layerIterator.Next();
 		m_statusIter.SetLocation(currNode->m_Value);
 		
 		counter++;
@@ -68,10 +66,10 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 		if (m_statusIter.GetCenterPixel() != to)
 		{
 			tmp = currNode;
-			currNode = currNode->Next; // move on
+			//currNode = currNode->Next; // move on
 
-			this->UnlinkNode(tmp, to);
-			this->ReturnToNodeStore(tmp);
+			m_layerGate.UnlinkNode(tmp, to);
+			m_layerGate.ReturnToNodeStore(tmp);
 
 			continue;
 		}
@@ -120,7 +118,7 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 			// Set the new value using the smallest distance
 			// found in our "from" neighbors.
 			m_outIter.SetCenterPixel(value + delta);
-			currNode = currNode->Next; // move on
+			//currNode = currNode->Next; // move on
 		}
 		else
 		{
@@ -129,17 +127,17 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 			// means delete the node instead.  Change the status value in the
 			// status image accordingly.
 			tmp = currNode;
-			currNode = currNode->Next; // move on
+			//currNode = currNode->Next; // move on
 
-			this->UnlinkNode(tmp, to);
+			m_layerGate.UnlinkNode(tmp, to);
 			if (promote > past_end)
 			{
-				this->ReturnToNodeStore(tmp);
+				m_layerGate.ReturnToNodeStore(tmp);
 				m_statusIter.SetCenterPixel(this->m_StatusNull);
 			}
 			else
 			{
-				this->PushToLayer(tmp, promote);
+				m_layerGate.PushToLayer(tmp, promote);
 				m_statusIter.SetCenterPixel(promote);
 			}
 		}

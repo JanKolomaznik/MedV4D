@@ -232,6 +232,8 @@ protected:
 	MySegmtLevelSetFilter(void);
 	~MySegmtLevelSetFilter(void);
 	
+	void InitConfigStructures(void);
+	
 #if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
 	M4D::Cell::SPEManager m_SPEManager;
 	M4D::Cell::ESPUCommands command;
@@ -239,7 +241,11 @@ protected:
 	typedef M4D::Cell::UpdateCalculatorSPE TUpdateCalculatorSPE;
 	TUpdateCalculatorSPE updateSolver;
 	
-	M4D::Cell::ApplyUpdateSPE applyUpdateCalc; 
+	M4D::Cell::ApplyUpdateSPE applyUpdateCalc;
+	
+	M4D::Cell::LayerGate::LayerType *m_gateLayerPointers[LYERCOUNT];
+	
+	void SetupGate();
 #endif
 	
 	

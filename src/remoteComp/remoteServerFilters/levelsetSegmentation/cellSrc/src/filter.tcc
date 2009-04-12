@@ -43,7 +43,29 @@ template<class TInputImage,class TFeatureImage, class TOutputPixelType>
 MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::~MySegmtLevelSetFilter()
 {}
+
+
 ///////////////////////////////////////////////////////////////////////////////
+#if( ! (defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) ) )
+
+template<class TInputImage,class TFeatureImage, class TOutputPixelType>
+void
+MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
+::SetupGate()
+{
+  for(uint32 i=0; i<m_Layers.size() ; i++)
+  {
+	  m_gateLayerPointers[i] = (M4D::Cell::LayerGate::LayerType *) m_Layers[i].GetPointer();
+	  
+	  applyUpdateCalc.conf.layerBegins[i] = (M4D::Cell::SparseFieldLevelSetNode *) m_Layers[i]->Begin().GetPointer();
+	  applyUpdateCalc.conf.layerEnds[i] = (M4D::Cell::SparseFieldLevelSetNode *) m_Layers[i]->End().GetPointer();
+  }
+  applyUpdateCalc.SetGateProps(m_gateLayerPointers,
+		  (M4D::Cell::LayerGate::LayerNodeStorageType *)m_LayerNodeStore.GetPointer() );
+}
+#endif
+///////////////////////////////////////////////////////////////////////////////
+
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
 void
 MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
@@ -52,14 +74,8 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 #if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
 	  command = M4D::Cell::CALC_CHANGE;
 	  m_SPEManager.SendCommand(command);
-#else	  
-	  for(uint32 i=0; i<m_Layers.size() ; i++)
-	  {
-		  applyUpdateCalc.m_Layers[i] = (M4D::Cell::ApplyUpdateSPE::LayerType *) m_Layers[i].GetPointer();
-		  
-		  applyUpdateCalc.conf.layerBegins[i] = (M4D::Cell::SparseFieldLevelSetNode *) m_Layers[i]->Begin().GetPointer();
-		  applyUpdateCalc.conf.layerEnds[i] = (M4D::Cell::SparseFieldLevelSetNode *) m_Layers[i]->End().GetPointer();
-	  }
+#else
+	  SetupGate();
 	  m_Conf.m_UpdateBufferData = &m_UpdateBuffer[0];
 	  
 //	    std::cout << "Update list:" << std::endl;
@@ -594,9 +610,31 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
     this->ConstructLayer(i, i+2);
     }
   
-  //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-  // init conf structure       
+  InitConfigStructures();
         
+#if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
+	m_SPEManager.RunSPEs(&m_Conf);
+#endif
+  
+  // Set the values in the output image for the active layer.
+  this->InitializeActiveLayerValues();
+ 
+  // Initialize layer values using the active layer as seeds.
+  this->PropagateAllLayerValues();
+
+  // Initialize pixels inside and outside the sparse field layers to positive
+  // and negative values, respectively.  This is not necessary for the
+  // calculations, but is useful for presenting a more intuitive output to the
+  // filter.  See PostProcessOutput method for more information.
+  this->InitializeBackgroundPixels();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template<class TInputImage,class TFeatureImage, class TOutputPixelType>
+void
+MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
+::InitConfigStructures(void)
+{	        
     // fill the image properties
   	// feature image
     m_Conf.featureImageProps.imageData = 
@@ -615,39 +653,13 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
     m_Conf.statusImageProps.region = 
     	ConvertRegion<StatusImageType, M4D::Cell::TRegion>(*m_StatusImage);
     m_Conf.statusImageProps.spacing = ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename StatusImageType::SpacingType>(m_StatusImage->GetSpacing());
-    
-    applyUpdateCalc.m_LayerNodeStore = 
-    	(M4D::Cell::ApplyUpdateSPE::LayerNodeStorageType *)m_LayerNodeStore.GetPointer();
-    applyUpdateCalc.m_Layers = new M4D::Cell::ApplyUpdateSPE::LayerType*[m_Layers.size()];
-    
-    applyUpdateCalc.conf.layerBegins = new M4D::Cell::SparseFieldLevelSetNode*[m_Layers.size()];
-    applyUpdateCalc.conf.layerEnds = new M4D::Cell::SparseFieldLevelSetNode*[m_Layers.size()];
-    for(uint32 i=0; i<m_Layers.size() ; i++)
-    {
-    	applyUpdateCalc.m_Layers[i] = 
-    		(M4D::Cell::ApplyUpdateSPE::LayerType *)m_Layers[i].GetPointer();
-    }
-    
-    applyUpdateCalc.SetCommonConfiguration(&m_Conf);
-  
-   //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-        
-#if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
-	m_SPEManager.RunSPEs(&m_Conf);
-#endif
-  
-  // Set the values in the output image for the active layer.
-  this->InitializeActiveLayerValues();
- 
-  // Initialize layer values using the active layer as seeds.
-  this->PropagateAllLayerValues();
-
-  // Initialize pixels inside and outside the sparse field layers to positive
-  // and negative values, respectively.  This is not necessary for the
-  // calculations, but is useful for presenting a more intuitive output to the
-  // filter.  See PostProcessOutput method for more information.
-  this->InitializeBackgroundPixels();
+	    
+	#if( ! (defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) ) )
+	    SetupGate();
+	    applyUpdateCalc.SetCommonConfiguration(&m_Conf);
+	#endif
 }
+
 ///////////////////////////////////////////////////////////////////////////////
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
 void
@@ -970,14 +982,10 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 	  command = M4D::Cell::CALC_CHANGE;
 	  m_SPEManager.SendCommand(command);
 #else
-	  for(uint32 i=0; i<m_Layers.size() ; i++)
-	  {
-		  applyUpdateCalc.m_Layers[i] = (M4D::Cell::ApplyUpdateSPE::LayerType *) m_Layers[i].GetPointer();
-		  
-		  applyUpdateCalc.conf.layerBegins[i] = (M4D::Cell::SparseFieldLevelSetNode *) m_Layers[i]->Begin().GetPointer();
-		  applyUpdateCalc.conf.layerEnds[i] = (M4D::Cell::SparseFieldLevelSetNode *) m_Layers[i]->End().GetPointer();
-	  }
+	  SetupGate();
+	  
 	  m_Conf.m_UpdateBufferData = &m_UpdateBuffer[0];
+	  
 	  applyUpdateCalc.PropagateAllLayerValues();
 #endif	
 //  unsigned int i;

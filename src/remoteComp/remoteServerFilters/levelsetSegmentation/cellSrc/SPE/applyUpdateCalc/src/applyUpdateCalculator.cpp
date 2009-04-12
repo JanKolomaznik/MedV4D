@@ -158,7 +158,7 @@ ApplyUpdateSPE::ProcessOutsideList(
 		m_statusIter.SetCenterPixel(ChangeToStatus);
 		node = OutsideList->Front();
 		OutsideList->PopFront();
-		PushToLayer(node, ChangeToStatus);
+		this->m_layerGate.PushToLayer(node, ChangeToStatus);
 //		m_Layers[ChangeToStatus]->PushFront(node);
 	}
 }
@@ -194,7 +194,7 @@ ApplyUpdateSPE::ProcessStatusList(
 		
 		InputList->PopFront(); // Must unlink from the input list  _before_ transferring to another list.
 		//m_Layers[ChangeToStatus]->PushFront(node);
-		PushToLayer(node, ChangeToStatus);
+		this->m_layerGate.PushToLayer(node, ChangeToStatus);
 
 		for (i = 0; i < m_NeighborList.GetSize(); ++i)
 		{
@@ -237,7 +237,7 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	  unsigned int i, idx, counter;
 	  bool flag; //bounds_status, 
 	  
-	  LayerType::Iterator         layerIt;
+	  LayerGate::LayerType::Iterator         layerIt;
 	  
 	  TUpdateBufferArray updateIt(commonConf->m_UpdateBufferData);
 	  //TPixelValue *updateIt = commonConf->m_UpdateBufferData;
@@ -258,8 +258,8 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	  
 	  counter =0;
 	  rms_change_accumulator = this->m_ValueZero;
-	  layerIt = m_Layers[0]->Begin();
-	  while (layerIt != m_Layers[0]->End() )
+	  layerIt = this->m_layerGate.m_Layers[0]->Begin();
+	  while (layerIt != this->m_layerGate.m_Layers[0]->End() )
 	    {
 		  m_outIter.SetLocation(layerIt->m_Value);
 		  m_statusIter.SetLocation(layerIt->m_Value);
@@ -335,9 +335,9 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	      release_node = layerIt.GetPointer();
 	      ++layerIt;
 	      //m_Layers[0]->Unlink(release_node);
-	      UnlinkNode(release_node, 0);
+	      this->m_layerGate.UnlinkNode(release_node, 0);
 	      //m_LayerNodeStore->Return( release_node );
-	      ReturnToNodeStore(release_node);
+	      this->m_layerGate.ReturnToNodeStore(release_node);
 	      }
 	
 	    else if (new_value < LOWER_ACTIVE_THRESHOLD)
@@ -394,9 +394,9 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	      release_node = layerIt.GetPointer();
 	      ++layerIt;
 	      //m_Layers[0]->Unlink(release_node);
-	      UnlinkNode(release_node, 0);
+	      this->m_layerGate.UnlinkNode(release_node, 0);
 //	      m_LayerNodeStore->Return( release_node );
-	      ReturnToNodeStore(release_node);
+	      this->m_layerGate.ReturnToNodeStore(release_node);
 	      }
 	    else
 	      {

@@ -15,13 +15,16 @@ enum ESPUCommands
 
 struct ApplyUpdateConf
 {
-	SparseFieldLevelSetNode **layerBegins;
-	SparseFieldLevelSetNode **layerEnds;
+	SparseFieldLevelSetNode *layerBegins[LYERCOUNT];
+	SparseFieldLevelSetNode *layerEnds[LYERCOUNT];
 	
 	void operator=(const ApplyUpdateConf& o)
 	{
-		layerBegins = o.layerBegins;
-		layerEnds = o.layerEnds;
+		for(uint32 i=0; i<LYERCOUNT; i++)
+		{
+		layerBegins[i] = o.layerBegins[i];
+		layerEnds[i] = o.layerEnds[i];
+		}
 	}
 };
 

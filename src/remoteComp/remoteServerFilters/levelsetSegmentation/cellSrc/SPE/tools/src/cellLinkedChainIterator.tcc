@@ -33,47 +33,47 @@ LinkedChainIteratorCell<Item>
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template<typename Item>
-void
-LinkedChainIteratorCell<Item>::SetBeginEnd(Item *begin, Item *end)
-	{
-		m_begin = begin; m_end = end;
-		
-		// load the first item
-		m_currBufPosition = 0;
-		m_nextForLoad = m_currToProcess = begin;
-		
-		if(HasNextForLoad())
-		{
-			Load(m_nextForLoad, &m_buf[m_currBufPosition], sizeof(Item));
-			m_nextForLoad = begin->Next;
-		}
-	}
-
-///////////////////////////////////////////////////////////////////////////////
-
-template<typename Item>
-Item *
-LinkedChainIteratorCell<Item>::Next(void) 
-	{ 
-#if( (defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) ) && (NOT_ONLY_TEST) )
-	  // wait for current DMA to complete
-	  mfc_write_tag_mask (1 << tag);
-	  mfc_read_tag_status_all ();
-#endif
-		  
-	  // imediately load the next item
-	  m_currBufPosition = ! m_currBufPosition;
-	  
-	  if(HasNextForLoad())
-	  {
-		  Load(m_nextForLoad, &m_buf[m_currBufPosition], sizeof(Item));
-		  m_nextForLoad = m_nextForLoad->Next;
-	  }
-	  
-	  m_currToProcess = m_currToProcess->Next;
-	  return &m_buf[! m_currBufPosition]; 
-	  }
+//template<typename Item>
+//void
+//LinkedChainIteratorCell<Item>::SetBeginEnd(Item *begin, Item *end)
+//	{
+//		m_begin = begin; m_end = end;
+//		
+//		// load the first item
+//		m_currBufPosition = 0;
+//		m_nextForLoad = m_currToProcess = begin;
+//		
+//		if(HasNextForLoad())
+//		{
+//			Load(m_nextForLoad, &m_buf[m_currBufPosition], sizeof(Item));
+//			m_nextForLoad = begin->Next;
+//		}
+//	}
+//
+/////////////////////////////////////////////////////////////////////////////////
+//
+//template<typename Item>
+//Item *
+//LinkedChainIteratorCell<Item>::Next(void) 
+//	{ 
+//#if( (defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) ) && (NOT_ONLY_TEST) )
+//	  // wait for current DMA to complete
+//	  mfc_write_tag_mask (1 << tag);
+//	  mfc_read_tag_status_all ();
+//#endif
+//		  
+//	  // imediately load the next item
+//	  m_currBufPosition = ! m_currBufPosition;
+//	  
+//	  if(HasNextForLoad())
+//	  {
+//		  Load(m_nextForLoad, &m_buf[m_currBufPosition], sizeof(Item));
+//		  m_nextForLoad = m_nextForLoad->Next;
+//	  }
+//	  
+//	  m_currToProcess = m_currToProcess->Next;
+//	  return &m_buf[! m_currBufPosition]; 
+//	  }
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -87,6 +87,16 @@ LinkedChainIteratorCell<Item>::Load(Item *src, Item *dest, size_t size)
 			memcpy(dest, src, size);
 #endif
 	}
+
+///////////////////////////////////////////////////////////////////////////////
+
+template<typename Item>
+LinkedChainIteratorCellWithLayerAccess<Item>
+::LinkedChainIteratorCellWithLayerAccess(LayerGate *layer_gate)
+	: m_layerGate(m_layerGate)
+{
+
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 

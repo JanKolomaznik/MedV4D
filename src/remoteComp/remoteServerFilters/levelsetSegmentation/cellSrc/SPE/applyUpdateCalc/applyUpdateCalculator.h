@@ -44,7 +44,7 @@ private:
 	
 	SparseFieldLevelSetNode *BorrowFromLocalNodeStore()
 	{
-		return m_LayerNodeStore->Borrow();
+		return this->m_layerGate.m_LayerNodeStore->Borrow();
 	}
 	
 

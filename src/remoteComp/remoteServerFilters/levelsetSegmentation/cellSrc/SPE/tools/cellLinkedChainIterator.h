@@ -5,6 +5,8 @@
 #include <spu_mfcio.h>
 #endif
 
+#include "../applyUpdateCalc/layerGate.h"
+
 namespace M4D {
 namespace Cell {
 
@@ -15,9 +17,18 @@ public:
 	LinkedChainIteratorCell();
 	~LinkedChainIteratorCell();
 	
-	void SetBeginEnd(Item *begin, Item *end);	
+//	void SetBeginEnd(Item *begin, Item *end);	
+	void SetBeginEnd(Item *begin, Item *end)
+	{
+		m_currToProcess = begin;
+		m_end = end;
+	}
 	inline bool HasNext(void) { return (m_currToProcess != m_end); }	
-	Item *Next(void);
+//	Item *Next(void);
+	Item *Next(void) {
+		m_currToProcess = m_currToProcess->Next;
+		return m_currToProcess->Previous;
+	}
 	
 private:
 	
@@ -31,7 +42,21 @@ private:
 	Item *m_nextForLoad;
 	Item *m_currToProcess;
 	
-	unsigned int tag;	  
+	unsigned int tag;
+};
+
+
+template<typename Item>
+class LinkedChainIteratorCellWithLayerAccess
+	: public LinkedChainIteratorCell<Item>
+{
+public:
+	LinkedChainIteratorCellWithLayerAccess(LayerGate *layer_gate);
+	
+	LayerGate *GetLayerGate() { return m_layerGate; }
+	
+private:
+	LayerGate *m_layerGate;
 };
 
 }}  // namespace

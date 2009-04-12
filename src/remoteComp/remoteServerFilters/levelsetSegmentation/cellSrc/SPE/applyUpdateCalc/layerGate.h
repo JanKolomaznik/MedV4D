@@ -13,24 +13,20 @@ namespace Cell {
 class LayerGate
 {
 public:
-	void SetCommonConfiguration(RunConfiguration *c) { commonConf = c; }
 	
 	//to remove
-			typedef itk::SparseFieldLayer<SparseFieldLevelSetNode> LayerType;
-			typedef LayerType::Pointer LayerPointerType;
-			
-			LayerType **m_Layers;
-			typedef itk::ObjectStore<SparseFieldLevelSetNode> LayerNodeStorageType;
-			LayerNodeStorageType *m_LayerNodeStore;
+	typedef itk::SparseFieldLayer<SparseFieldLevelSetNode> LayerType;
+	typedef LayerType::Pointer LayerPointerType;
+	typedef itk::ObjectStore<SparseFieldLevelSetNode> LayerNodeStorageType;
 	
-protected:
-			
-			RunConfiguration *commonConf;
-			
-			
-			void UnlinkNode(SparseFieldLevelSetNode *node, uint8 layerNum);
-			void ReturnToNodeStore(SparseFieldLevelSetNode *node);
-			void PushToLayer(SparseFieldLevelSetNode *node, uint8 layerNum);
+	void UnlinkNode(SparseFieldLevelSetNode *node, uint8 layerNum);
+	void ReturnToNodeStore(SparseFieldLevelSetNode *node);
+	void PushToLayer(SparseFieldLevelSetNode *node, uint8 layerNum);
+	
+	
+	LayerType **m_Layers;
+	LayerNodeStorageType *m_LayerNodeStore;			
+		
 };
 
 }
