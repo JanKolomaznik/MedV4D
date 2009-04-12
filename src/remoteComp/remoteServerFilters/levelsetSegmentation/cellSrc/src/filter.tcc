@@ -654,7 +654,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
     	ConvertRegion<StatusImageType, M4D::Cell::TRegion>(*m_StatusImage);
     m_Conf.statusImageProps.spacing = ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename StatusImageType::SpacingType>(m_StatusImage->GetSpacing());
 	    
-	#if( ! (defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) ) )
+	#ifdef PC
 	    SetupGate();
 	    applyUpdateCalc.SetCommonConfiguration(&m_Conf);
 	#endif
