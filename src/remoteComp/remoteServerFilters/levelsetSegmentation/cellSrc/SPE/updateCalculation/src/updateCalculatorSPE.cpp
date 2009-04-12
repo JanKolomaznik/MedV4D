@@ -131,14 +131,10 @@ UpdateCalculatorSPE::CalculateChange()
 {
 	m_updateBufferArray.SetArray(m_Conf->m_UpdateBufferData);
 	m_layerIterator.SetBeginEnd(m_Conf->m_activeSetBegin, m_Conf->m_activeSetEnd);
-
-	// create neghbours as middle layer between image in PPE and part of image on SPE
-	NeighborhoodCell<TPixelValue> outNeigh;
-	outNeigh.SetImageProperties( & m_Conf->valueImageProps);
-	NeighborhoodCell<TPixelValue> featureNeigh;
-	featureNeigh.SetImageProperties( & m_Conf->featureImageProps);
-
-	//PrintITKImage<OutputImageType>(*m_Conf->m_outputImage,LOUT);
+	
+	// prepare neighbour preloaders
+	m_valueNeighbPreloader.SetImageProps(& m_Conf->valueImageProps);
+	m_featureNeighbPreloader.SetImageProps(& m_Conf->featureImageProps);
 	
 	// Calculates the update values for the active layer indicies in this
 	// iteration.  Iterates through the active layer index list, applying 
@@ -148,12 +144,14 @@ UpdateCalculatorSPE::CalculateChange()
 	while(m_layerIterator.HasNext())
 	{
 		next = m_layerIterator.Next();
-		m_outIter.SetNeighbourhood(&outNeigh);
-		m_featureIter.SetNeighbourhood(&featureNeigh);
-		m_outIter.SetLocation(next->m_Value);
-		m_featureIter.SetLocation(next->m_Value);
 		
-		//m_outIter.GetNeighborhood().Print(LOUT);
+		// load approp neigborhood
+		m_valueNeighbPreloader.Load(next->m_Value);
+		m_featureNeighbPreloader.Load(next->m_Value);
+		
+		m_outIter.SetNeighbourhood( m_valueNeighbPreloader.GetLoaded());
+		m_featureIter.SetNeighbourhood( m_featureNeighbPreloader.GetLoaded());
+				
 		CalculateChangeItem();
 	}
 	

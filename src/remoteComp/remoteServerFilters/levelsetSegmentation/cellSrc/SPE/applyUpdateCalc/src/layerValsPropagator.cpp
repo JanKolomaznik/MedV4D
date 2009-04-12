@@ -77,7 +77,6 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 		if (m_statusIter.GetCenterPixel() != to)
 		{
 			tmp = currNode;
-			//currNode = currNode->Next; // move on
 
 			m_layerGate.UnlinkNode(tmp, to);
 			//m_layerGate.ReturnToNodeStore(tmp);

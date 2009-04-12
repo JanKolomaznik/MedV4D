@@ -8,51 +8,34 @@
 // tools
 #include "../tools/cellRemoteArray.h"
 #include "../tools/cellLinkedChainIterator.h"
+#include "../tools/preloadedNeighbourhoods.h"
 
 namespace M4D {
 namespace Cell {
 
 class UpdateCalculatorSPE
-//	: public CommonTypes<Dimension>
-//	, public Consts<TValuePixel, typename CommonTypes<Dimension>::StatusType>
 {
 public:
 	
-	/** Standard class typedefs */
-//	typedef CommonTypes<Dimension> SuperClass;
-//	typedef typename SuperClass::TimeStepType TimeStepType;
-//	typedef typename SuperClass::StatusType StatusType;
-//	
-//	typedef TValuePixel ValueType;
-//	typedef TFeaturePixel FeaturePixelType;
-//		
-//	typedef NeighborhoodCell<FeaturePixelType, Dimension> TFeatureNeighbourhood;
-//	typedef NeighborhoodCell<ValueType, Dimension> TOutputNeighbourhood;
-//	
-//	typedef NeighbourIteratorCell<TValuePixel, Dimension> TOutIter;
-//	typedef NeighbourIteratorCell<TFeaturePixel, Dimension> TFeatureIter;
-//	
-//	typedef ThresholdLevelSetFunc<TOutIter, TFeatureIter> SegmentationFunctionType;
+	typedef TPixelValue TFeature;
+
 	typedef RemoteArrayCell<TPixelValue, 8> TUpdateBufferArray;
-//		
-//		  
-//  typedef typename SegmentationFunctionType::FloatOffsetType 	FloatOffsetType;
-//  typedef typename SegmentationFunctionType::NeighborhoodScalesType NeighborhoodScalesType;
-//  
-//  typedef typename TOutIter::IndexType IndexType;
-//  /** Node type used in sparse field layer lists. */
+	
+	typedef NeighborhoodCell<TPixelValue> TValueNeighborhood;
+	typedef NeighborhoodCell<TFeature> TFeatureNeighborhood;
+	
+	typedef PreloadedNeigborhoods<TValueNeighborhood, 4> TValueNeighbPreloadeder;
+	typedef PreloadedNeigborhoods<TFeatureNeighborhood, 4> TFeatureNeighbPreloadeder;
+	
   typedef SparseFieldLevelSetNode LayerNodeType;
   
   typedef LinkedChainIteratorCell<LayerNodeType> TLayerIterator;
-//  
-//  typedef GlobalDataStruct<FeaturePixelType, Dimension> TGlobalData;
 	
   UpdateCalculatorSPE();
 		  
   void CalculateChangeItem(void);
 
-  TimeStepType CalculateChange();
-  
+  TimeStepType CalculateChange();  
   
   RunConfiguration *m_Conf;
 		  
@@ -64,7 +47,8 @@ protected:
     
 	TUpdateBufferArray m_updateBufferArray;
 	TLayerIterator m_layerIterator;
-    
+	TValueNeighbPreloadeder m_valueNeighbPreloader;
+	TValueNeighbPreloadeder m_featureNeighbPreloader;
     
 	//CalculateChangeStepConfiguration m_stepConf;
 	
