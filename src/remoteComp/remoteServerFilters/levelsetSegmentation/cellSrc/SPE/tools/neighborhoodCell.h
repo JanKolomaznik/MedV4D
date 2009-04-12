@@ -5,9 +5,6 @@
 #include <spu_mfcio.h>
 #endif
 
-//
-#include <iostream>
-
 namespace M4D {
 namespace Cell {
 

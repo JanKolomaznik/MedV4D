@@ -1,6 +1,10 @@
 #ifndef LINKEDCHAINITERATOR_H_
 #define LINKEDCHAINITERATOR_H_
 
+#if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
+#include <spu_mfcio.h>
+#endif
+
 namespace M4D {
 namespace Cell {
 

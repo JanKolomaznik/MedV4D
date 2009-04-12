@@ -10,8 +10,8 @@
 
 CELL_TOP=/opt/cell/sdk
 srcTop=../../../../..
-
-DIRS	:= 	updateCalculation/src tools/src
+#tools/src 
+DIRS	:= 	updateCalculation/src applyUpdateCalc/src
 
 ########################################################################
 #			Target
@@ -25,12 +25,12 @@ PROGRAMS_spu 	:= SPEMain
 ########################################################################
 
 MY_SPECIAL_FLAGS = -ffunction-sections -fdata-sections #-g #--param max-unroll-times=1 # needed to keep size of program down
-CFLAGS_gcc:= -g $(PLATFORM_DEFS)
+CFLAGS_gcc:= -g -DCOMPILE_FOR_CELL
 #LDFLAGS_gcc= --gc-sections --print-gc-sections --stack-analysis --local-store=0:256	#-Wl,-q -g
 				
 INCLUDE         := -I$(srcTop)
 
-IMPORTS := updateCalculation/src/updateSolver.a tools/src/SPEtools.a
+IMPORTS := updateCalculation/src/updateSolver.a applyUpdateCalc/src/applyUpdateCalc.a
 
 INSTALL_DIR		= $(srcTop)/lib/SPU
 INSTALL_FILES		= $(LIBRARY_embed64)
@@ -39,8 +39,5 @@ INSTALL_FILES		= $(LIBRARY_embed64)
 #			buildutils/make.footer
 ########################################################################
 
-ifdef CELL_TOP
-	include $(CELL_TOP)/buildutils/make.footer
-else
-	include ../../../../../buildutils/make.footer
-endif
+include $(CELL_TOP)/buildutils/make.footer
+	

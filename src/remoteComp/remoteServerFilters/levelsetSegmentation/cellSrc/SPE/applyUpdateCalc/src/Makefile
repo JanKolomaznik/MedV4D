@@ -15,16 +15,27 @@ srcTop=../../../../../../..
 #			Target
 ########################################################################
 
-LIBRARY_spu := updateSolver.a
+LIBRARY_spu := applyUpdateCalc.a
 
 ########################################################################
 #			Local Defines
 ########################################################################
-
-CFLAGS_gcc:= -g -DCOMPILE_FOR_CELL #-g #--param max-unroll-times=1 # needed to keep size of program down
+#-ffunction-sections -fdata-sections #-g #--param max-unroll-times=1 # needed to keep size of program down
+CFLAGS_gcc:= -g -DCOMPILE_FOR_CELL 
 LDFLAGS_gcc= --gc-sections --print-gc-sections --stack-analysis --local-store=0:256	#-Wl,-q -g
 
-INCLUDE         := -I$(srcTop)
+ITKIncludeRoot=/usr/local/include/InsightToolkit
+ITKIncludes=	-I$(ITKIncludeRoot)\
+				-I$(ITKIncludeRoot)/Common\
+				-I$(ITKIncludeRoot)/Algorithms\
+				-I$(ITKIncludeRoot)/BasicFilters\
+				-I$(ITKIncludeRoot)/IO\
+				-I$(ITKIncludeRoot)/Utilities\
+				-I$(ITKIncludeRoot)/Utilities/vxl/vcl\
+				-I$(ITKIncludeRoot)/Utilities/vxl/core\
+				-I$(ITKIncludeRoot)/gdcm/src
+				
+INCLUDE         := -I$(srcTop) $(ITKIncludes)
 
 ########################################################################
 #			buildutils/make.footer

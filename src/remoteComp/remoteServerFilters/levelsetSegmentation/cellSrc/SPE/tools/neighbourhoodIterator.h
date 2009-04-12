@@ -40,7 +40,7 @@ public:
 	void SetPixel(TOffset pos, PixelType val)
 	{
 		m_neighbourhood->SetPixel(val, pos);
-		DOUT << "Setting pixel " << pos[0] << "," << pos[1] << "," << pos[2] << " = " << val << std::endl;
+		//DOUT << "Setting pixel " << pos[0] << "," << pos[1] << "," << pos[2] << " = " << val << std::endl;
 	}
 
 	void SetPixel(uint32 idx, PixelType val)
@@ -48,7 +48,7 @@ public:
 		TOffset o = m_OffsetTable[idx];
 		TIndex soucet = m_neighbourhood->m_currIndex + o;
 		m_neighbourhood->SetPixel(val, o);
-		DOUT << "Setting pixel 2" << soucet[0] << "," << soucet[1] << "," << soucet[2] << " = " << val << std::endl;
+		//DOUT << "Setting pixel 2" << soucet[0] << "," << soucet[1] << "," << soucet[2] << " = " << val << std::endl;
 	}
 
 	/** Returns the pointer to the center pixel of the neighborhood. */
