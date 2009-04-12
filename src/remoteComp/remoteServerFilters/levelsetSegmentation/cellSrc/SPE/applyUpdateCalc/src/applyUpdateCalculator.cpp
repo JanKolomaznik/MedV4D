@@ -41,13 +41,18 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	//	  LOUT << *it << ", ";
 	//  LOG("");
 	
-	NeighborhoodCell<TPixelValue> outNeigh;
-	outNeigh.SetImageProperties( &commonConf->valueImageProps);
-	NeighborhoodCell<StatusType> statusNeigh;
-	statusNeigh.SetImageProperties( &commonConf->statusImageProps);
-
-	m_outIter.SetNeighbourhood( &outNeigh);
-	m_statusIter.SetNeighbourhood( &statusNeigh);
+	// prepare neighbour preloaders
+		m_valueNeighPreloader.SetImageProps(&commonConf->valueImageProps);
+		m_statusNeighPreloader.SetImageProps(&commonConf->statusImageProps);
+		
+//	
+//	NeighborhoodCell<TPixelValue> outNeigh;
+//	outNeigh.SetImageProperties( &commonConf->valueImageProps);
+//	NeighborhoodCell<StatusType> statusNeigh;
+//	statusNeigh.SetImageProperties( &commonConf->statusImageProps);
+//
+//	m_outIter.SetNeighbourhood( &outNeigh);
+//	m_statusIter.SetNeighbourhood( &statusNeigh);
 	
 	// prepare iterator over update value list
 	this->m_updateValuesIt.SetArray(commonConf->m_UpdateBufferData);	
@@ -279,9 +284,13 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 		{
 			currNode = this->m_layerIterator.Next();
 			turnCounter ++;
-
-		  m_outIter.SetLocation(currNode->m_Value);
-		  m_statusIter.SetLocation(currNode->m_Value);
+			
+			// load approp neigborhood
+			m_valueNeighPreloader.Load(currNode->m_Value);
+			m_statusNeighPreloader.Load(currNode->m_Value);
+			
+			m_outIter.SetNeighbourhood( m_valueNeighPreloader.GetLoaded());
+			m_statusIter.SetNeighbourhood( m_statusNeighPreloader.GetLoaded());
 		  
 		  centerVal = m_outIter.GetCenterPixel();
 	
