@@ -62,9 +62,21 @@ RemoteArrayCell<T, BUFSIZE>::CopyData(T *src, T *dest, size_t size)
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 template<typename T, uint8 BUFSIZE>
-GETRemoteArrayCell<T, BUFSIZE>::GETRemoteArrayCell(T *begin)//, T *end)
-	: m_currBuf(0), m_currPos(0), m_arrayBegin(begin), m_currLoadedPos(begin)//, m_arrayEnd(end)
+GETRemoteArrayCell<T, BUFSIZE>::GETRemoteArrayCell()//, T *end)
+	: m_currBuf(0), m_currPos(0), m_arrayBegin(0), m_currLoadedPos(0)//, m_arrayEnd(end)
 {
+	
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template<typename T, uint8 BUFSIZE>
+void
+GETRemoteArrayCell<T, BUFSIZE>::SetArray(T *begin)
+{
+	m_currBuf = 0;
+	m_currPos = 0;
+	m_arrayBegin = m_currLoadedPos = begin;
+	
 	// load the first chunk
 	LoadNextPiece();
 	m_currBuf = ! m_currBuf;

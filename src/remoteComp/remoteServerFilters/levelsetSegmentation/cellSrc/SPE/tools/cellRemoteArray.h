@@ -37,8 +37,10 @@ class GETRemoteArrayCell
 {
 public:
 	typedef GETRemoteArrayCell<T, BUFSIZE> Self;
-	GETRemoteArrayCell(T *begin);//, T *end);
+	GETRemoteArrayCell();//, T *end);
 	//~GETRemoteArrayCell();
+	
+	void SetArray(T *begin);
 	
 	T GetCurrVal();
 	Self &operator++();

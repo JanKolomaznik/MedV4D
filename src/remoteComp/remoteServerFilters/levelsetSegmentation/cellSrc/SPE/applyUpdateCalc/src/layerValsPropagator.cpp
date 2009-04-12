@@ -7,6 +7,15 @@
 using namespace M4D::Cell;
 
 ///////////////////////////////////////////////////////////////////////////////
+
+LayerValuesPropagator::LayerValuesPropagator()
+	: m_layerIterator(& m_layerGate)
+{
+	
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 void LayerValuesPropagator::PropagateAllLayerValues()
 {
 	unsigned int i;
@@ -51,11 +60,10 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 	uint32 counter = 0;
 
 	SparseFieldLevelSetNode *currNode;
-	TLayerIterator layerIterator(&m_layerGate);
-	layerIterator.SetBeginEnd(conf.layerBegins[to], conf.layerEnds[to]);
-	while (layerIterator.HasNext())
+	m_layerIterator.SetBeginEnd(conf.layerBegins[to], conf.layerEnds[to]);
+	while (m_layerIterator.HasNext())
 	{
-		currNode = layerIterator.Next();
+		currNode = m_layerIterator.Next();
 		m_statusIter.SetLocation(currNode->m_Value);
 		
 		counter++;

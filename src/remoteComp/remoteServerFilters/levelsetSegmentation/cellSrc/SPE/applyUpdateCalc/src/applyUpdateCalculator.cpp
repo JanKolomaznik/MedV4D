@@ -33,6 +33,8 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 {
 	MyLayerType UpList[2];
 	MyLayerType DownList[2];
+	
+	DL_PRINT(DEBUG_ALG, "ApplyUpdate" << std::endl);
 
 	//  LOG("Update list:");
 	//  for(typename UpdateBufferType::iterator it = m_UpdateBuffer.begin(); it != m_UpdateBuffer.end(); it++)
@@ -45,16 +47,18 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	m_outIter.SetNeighbourhood( &outNeigh);
 	m_statusIter.SetNeighbourhood( &statusNeigh);
 	
-
-	DL_PRINT(DEBUG_ALG, "ApplyUpdate" << std::endl);
-
-	// Process the active layer.  This step will update the values in the active
-	// layer as well as the values at indicies that *will* become part of the
-	// active layer when they are promoted/demoted.  Also records promotions,
-	// demotions in the m_StatusLayer for current active layer indicies
-	// (i.e. those indicies which will move inside or outside the active
-	// layers).
-	ValueType retval = this->UpdateActiveLayerValues(dt, &UpList[0], &DownList[0]);//, m_outIter, m_statusIter);
+	// prepare iterator over update value list
+	this->m_updateValuesIt.SetArray(commonConf->m_UpdateBufferData);	
+	// prepare iterator over active layer
+	this->m_layerIterator.SetBeginEnd(conf.layerBegins[0], conf.layerEnds[0]);
+		
+	uint32 counter = 0;
+	ValueType rms_change_accumulator = this->m_ValueZero;
+		
+	while(m_layerIterator.HasNext())  
+	{
+		// do one run
+		UpdateActiveLayerValues(dt, &UpList[0], &DownList[0], counter, rms_change_accumulator);
 
 	// Process the status up/down lists.  This is an iterative process which
 	// proceeds outwards from the active layer.  Each iteration generates the
@@ -65,7 +69,21 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 //	  std::ofstream b(s.str().c_str());
 //	m_statusIter.GetNeighborhood().PrintImage(b);
 
-	ProcessStatusLists(UpList, DownList);
+		ProcessStatusLists(UpList, DownList);
+	}
+	
+	  DL_PRINT(DEBUG_ALG, std::endl << "14rms accum: " << rms_change_accumulator << "counter: " << counter);
+		
+	  ValueType retval;
+	  
+	  // Determine the average change during this iteration.
+	  if (counter == 0)
+		  retval = this->m_ValueZero;
+	  else
+	  {
+		  retval =  static_cast<double>( 
+				  sqrt((double)(rms_change_accumulator / static_cast<ValueType>(counter)) ));			  
+	  }
 	
 //	std::stringstream s3;
 //		  s3 << "afterOutside" << this->m_ElapsedIterations;
@@ -78,6 +96,7 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	
 	m_ElapsedIterations++;
 	
+	//LOUT << "returning: " << ret << std::endl;	
 	return retval;
 }
 
@@ -222,51 +241,37 @@ ApplyUpdateSPE::ProcessStatusList(
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ApplyUpdateSPE::ValueType 
+void
 ApplyUpdateSPE::UpdateActiveLayerValues(
-		TimeStepType dt, MyLayerType *UpList, MyLayerType *DownList)
-{
-	
+		TimeStepType dt, MyLayerType *UpList, MyLayerType *DownList, 
+		uint32 &counter, ValueType &rms_change_accumulator)
+{	
 	  const ValueType LOWER_ACTIVE_THRESHOLD = - (commonConf->m_ConstantGradientValue / 2.0);
 	  const ValueType UPPER_ACTIVE_THRESHOLD =    commonConf->m_ConstantGradientValue / 2.0;
-	  ValueType new_value, temp_value, rms_change_accumulator;
-	  SparseFieldLevelSetNode *node, *release_node;
+	  ValueType new_value, temp_value;
 	  StatusType neighbor_status;
-	  unsigned int i, idx, counter;
+	  unsigned int i, idx;
+	  SparseFieldLevelSetNode *node;
 	  bool flag; //bounds_status, 
 	  
-	  LayerGate::LayerType::Iterator         layerIt;
-	  
-	  TUpdateBufferArray updateIt(commonConf->m_UpdateBufferData);
-	  //TPixelValue *updateIt = commonConf->m_UpdateBufferData;
-	  
-//	  NeighborhoodCell<TPixelValue> outNeigh( &commonConf->valueImageProps);
-//  	NeighborhoodCell<StatusType> statusNeigh( &commonConf->statusImageProps);
-//  	
-//  	m_outIter.SetNeighbourhood( &outNeigh);
-//  		m_statusIter.SetNeighbourhood( &statusNeigh);
-	  
 	  ValueType centerVal;
+	  SparseFieldLevelSetNode *currNode;	  
 	  
-//	  uint32 count = 0;
-//  	  LOUT << "Active layer:" << std::endl;
-//  	  for( layerIt = m_Layers[0]->Begin(); layerIt != m_Layers[0]->End(); layerIt=layerIt->Next, count++)
-//  		  LOUT << layerIt->m_Value << ",";
-//  	  LOUT << std::endl << "count=" << count << std::endl;
+#define MAX_TURN_LENGHT 20
+	
+	uint16 turnCounter = 0;
 	  
-	  counter =0;
-	  rms_change_accumulator = this->m_ValueZero;
-	  layerIt = this->m_layerGate.m_Layers[0]->Begin();
-	  while (layerIt != this->m_layerGate.m_Layers[0]->End() )
-	    {
-		  m_outIter.SetLocation(layerIt->m_Value);
-		  m_statusIter.SetLocation(layerIt->m_Value);
+		while (this->m_layerIterator.HasNext() && turnCounter < MAX_TURN_LENGHT)
+		{
+			currNode = this->m_layerIterator.Next();
+			turnCounter ++;
+
+		  m_outIter.SetLocation(currNode->m_Value);
+		  m_statusIter.SetLocation(currNode->m_Value);
 		  
 		  centerVal = m_outIter.GetCenterPixel();
 	
-	    new_value = this->CalculateUpdateValue(dt, centerVal, updateIt.GetCurrVal());
-	    
-	    
+	    new_value = this->CalculateUpdateValue(dt, centerVal, m_updateValuesIt.GetCurrVal());	    
 	
 	    // If this index needs to be moved to another layer, then search its
 	    // neighborhood for indicies that need to be pulled up/down into the
@@ -295,8 +300,8 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	        }
 	      if (flag == true)
 	        {
-	        ++layerIt;
-	        ++updateIt;
+	        //++layerIt;
+	        ++m_updateValuesIt;
 	        continue;
 	        }
 	
@@ -324,18 +329,21 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	        }
 //	      node = m_LayerNodeStore->Borrow();
 	      node = BorrowFromLocalNodeStore();
-	      node->m_Value = layerIt->m_Value;
+	      node->m_Value = currNode->m_Value;
 	      DL_PRINT(DEBUG_ALG, "A1. pushing up node:" << node->m_Value);
+	      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	      // tady se do uplistu da adresa z linked chain iteratoru, takze je treba 
+	      // si predtim vzit z local objetStore
 	      UpList->PushFront(node);
 	      m_statusIter.SetCenterPixel(this->m_StatusActiveChangingUp);
 	
 	      // Now remove this index from the active list.
-	      release_node = layerIt.GetPointer();
-	      ++layerIt;
+	      //release_node = layerIt.GetPointer();
+	      //++layerIt;
 	      //m_Layers[0]->Unlink(release_node);
-	      this->m_layerGate.UnlinkNode(release_node, 0);
+	      this->m_layerGate.UnlinkNode(currNode, 0);
 	      //m_LayerNodeStore->Return( release_node );
-	      this->m_layerGate.ReturnToNodeStore(release_node);
+	      this->m_layerGate.ReturnToNodeStore(currNode);
 	      }
 	
 	    else if (new_value < LOWER_ACTIVE_THRESHOLD)
@@ -354,8 +362,8 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	        }
 	      if (flag == true)
 	        {
-	        ++layerIt;
-	        ++updateIt;
+	        //++layerIt;
+	        ++m_updateValuesIt;
 	        continue;
 	        }
 	      
@@ -383,43 +391,31 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	        }
 //	      node = m_LayerNodeStore->Borrow();
 	      node = BorrowFromLocalNodeStore();
-	      node->m_Value = layerIt->m_Value;
+	      node->m_Value = currNode->m_Value;
 	      DL_PRINT(DEBUG_ALG, "A2. pushing down node:" << node->m_Value );
 	      DownList->PushFront(node);
 	      m_statusIter.SetCenterPixel(this->m_StatusActiveChangingDown);
 	
 	      // Now remove this index from the active list.
-	      release_node = layerIt.GetPointer();
-	      ++layerIt;
+	      //release_node = layerIt.GetPointer();
+	      //++layerIt;
 	      //m_Layers[0]->Unlink(release_node);
-	      this->m_layerGate.UnlinkNode(release_node, 0);
+	      this->m_layerGate.UnlinkNode(currNode, 0);
 //	      m_LayerNodeStore->Return( release_node );
-	      this->m_layerGate.ReturnToNodeStore(release_node);
+	      this->m_layerGate.ReturnToNodeStore(currNode);
 	      }
 	    else
 	      {
 	      rms_change_accumulator += vnl_math_sqr(new_value - centerVal);
 	      //rms_change_accumulator += (*updateIt) * (*updateIt);
 	      m_outIter.SetCenterPixel( new_value );
-	      ++layerIt;
+	      //++layerIt;
 	      }
-	    ++updateIt;
+	    ++m_updateValuesIt;
 	    ++counter;
 	    }
   
-	  DL_PRINT(DEBUG_ALG, std::endl << "14rms accum: " << rms_change_accumulator << "counter: " << counter);
 	
-  // Determine the average change during this iteration.
-  if (counter == 0)
-    return this->m_ValueZero;
-  else
-  {
-	  ValueType ret =
-		  static_cast<double>( sqrt((double)(rms_change_accumulator / static_cast<ValueType>(counter)) ));
-		  
-		  //LOUT << "returning: " << ret << std::endl;	  
-		  return ret;
-  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

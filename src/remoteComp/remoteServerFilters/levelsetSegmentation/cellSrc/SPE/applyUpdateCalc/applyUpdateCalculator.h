@@ -19,9 +19,9 @@ public:
 	typedef GETRemoteArrayCell<TPixelValue, 8> TUpdateBufferArray;	
 	typedef M4D::Cell::SparseFieldLayer<SparseFieldLevelSetNode> MyLayerType;
 	
-	ValueType UpdateActiveLayerValues(TimeStepType dt,
-			MyLayerType *UpList, MyLayerType *DownList);
-		            //, TValueNeighbIterator &outIt, TStatusNeighbIterator &statusIt);
+	void UpdateActiveLayerValues(TimeStepType dt,
+			MyLayerType *UpList, MyLayerType *DownList,
+			uint32 &counter, ValueType &rms_change_accumulator);
 		
 			
 	void ProcessOutsideList(MyLayerType *OutsideList, StatusType ChangeToStatus);//, TStatusNeighbIterator &statIter);
@@ -49,7 +49,7 @@ private:
 	
 
 	
-	
+	TUpdateBufferArray m_updateValuesIt;
 	
 	uint32 m_ElapsedIterations;
 };

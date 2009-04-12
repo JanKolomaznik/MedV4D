@@ -19,6 +19,7 @@ namespace Cell {
 class LayerValuesPropagator : public Consts
 {
 public:
+	
 	void PropagateAllLayerValues();	
 	
 	void SetCommonConfiguration(RunConfiguration *c) { commonConf = c; }
@@ -34,6 +35,8 @@ public:
 	
 protected:
 	
+	LayerValuesPropagator();
+	
 	typedef LinkedChainIteratorCellWithLayerAccess<SparseFieldLevelSetNode> TLayerIterator;
 	typedef NeighbourIteratorCell<TPixelValue> TValueNeighbIterator;
 	typedef NeighbourIteratorCell<StatusType> TStatusNeighbIterator;
@@ -46,6 +49,7 @@ protected:
 	RunConfiguration *commonConf;
 	
 	LayerGate m_layerGate;
+	TLayerIterator m_layerIterator;
 	
 private:
 	void PropagateLayerValues(StatusType from, StatusType to,
