@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   version="1.0"
+   width="744.09448"
+   height="1052.3622"
+   id="svg2">
+  <defs
+     id="defs4" />
+  <g
+     id="layer1">
+    <rect
+       width="881.48944"
+       height="187.2813"
+       rx="9"
+       ry="5.181818"
+       x="-2386.7805"
+       y="624.29059"
+       id="rect3682"
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:7.30000019;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    <g
+       transform="translate(-1.8526873,-9.2634365)"
+       id="g3712">
+      <image
+         xlink:href="/home/vencax/g3570.png"
+         x="164.93864"
+         y="148.28"
+         width="449.21863"
+         height="450.55441"
+         id="image3676" />
+      <rect
+         width="470.84601"
+         height="182.20145"
+         rx="4.8073339"
+         ry="5.041266"
+         x="160.21309"
+         y="427.96588"
+         id="rect3680"
+         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:7.30000019;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <rect
+         width="458.61313"
+         height="100.03596"
+         rx="4.6824365"
+         ry="2.7678587"
+         x="79.61039"
+         y="-207.97449"
+         transform="matrix(0,1,-1,0,0,0)"
+         id="rect3684"
+         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:7.30000019;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <rect
+         width="458.61313"
+         height="100.03596"
+         rx="4.6824365"
+         ry="2.7678587"
+         x="91.332138"
+         y="-618.64844"
+         transform="matrix(0,1,-1,0,0,0)"
+         id="rect3686"
+         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:7.30000019;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <path
+         d="M 377.14,220.8767 C 363.69853,216.89413 345.51655,216.30846 334.41962,228.19061 C 327.57708,235.51733 323.25603,249.5418 311.67757,252.46265 C 269.29174,263.15509 265.60894,298.46238 271.79283,319.8877 C 297.25215,342.6112 291.07072,351.94657 324.97957,366.71326 C 338.36308,366.58616 382.12568,376.52791 394.75973,363.33285 C 404.73153,334.03334 427.728,322.07586 459.71648,313.00827 C 464.70222,308.65833 456.42564,280.78135 449.60008,264.43397 C 437.58853,235.66592 427.97563,234.34641 377.14,220.8767 z"
+         id="path2383"
+         style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:3.84829569;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    </g>
+  </g>
+</svg>

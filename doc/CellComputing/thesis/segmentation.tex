@@ -63,11 +63,21 @@ Is method that uses matematical implicit model of an segmented object. It is rep
 
 Whole process can be illustrated in very similar way to flood-filling. Initial surface (e.g. simple circle, for 2D case, as a surface of a distance function from given point) is deformed with forces that has direction of surface normals. When it approaches borders of the object propagation slows down. On borders on the object propagation stops (forces are zero there).
 
-//TODO obrazek
+\begin{figure}
+    \centering
+    \includegraphics[width=15cm]{data/flooding.eps}
+    \caption[Flooding an object]{Initial shape (the circle) grows and fills (floods) the object on the background. In contrast to common floodfill approach, level set method has several parameters that can e.g. prevent flooding beyond the object borders through small holes.}
+    \label{fg:shore}
+\end{figure}
 
 Another illustration uses landscape with a lake. Water is always at constant altitude and the surface of an landscape changes in time. With the changes of the landscape shoreline of the lake changes as well. Landscape represents the LS function and water surface represent the surface i.e. k-level set.
 
-// TODO obrazek
+\begin{figure}
+    \centering
+    \includegraphics[width=15cm]{data/shore.eps}
+    \caption[Shore illustration of moving level set]{Picture A inllustrates a lake with an island with a small rock on the right side. Level set is represent by the shore of that lake (thick line). As the level set moves it envolves into picture B, the rock on the righ suddenly grows to the left pushing the shoreline accordingly and make the island disappear.}
+    \label{fg:shore}
+\end{figure}
 
 Advantages of the level set method is that it is implicit (no special stuff needed for merging and splitting surfaces), has only few intuitive parameters, can change the topology and can be performed in all dimension without explicit changes in method. 
 
@@ -105,14 +115,14 @@ where $D^n\phi$ is the set of n-order derivatives of $\phi$ evaluated at x. The 
 
 \subsection{Level set computation}
 
-Computation of surface deformation has to be discretized so it is performed on discretized volume i.e. grid. Equation converts the problem to solving nonlinear partial differential equations (PDE). Surface deformation (propagation, movement) is then computed from initial model in cycles representing discrete time steps using this update equation:
+Computation of surface deformation has to be discretized. So it is performed on discretized volume i.e. grid. Equation converts the problem to solving nonlinear partial differential equations (PDE). Surface deformation (propagation, movement) is then computed from initial model in cycles representing discrete time steps using this update equation:
 \begin{equation}
 \label{deformEqApprox}
 \phi_{i,j,k}^{n+1} = \phi_{i,j,k}^{n} + \Delta t \Delta \phi_{i,j,k}^{n},
 \end{equation}
 where the term $\phi_{i,j,k}^{n}$ is discrete aproximation of $\frac{\delta\phi}{\delta t}$ refering to the n-th time step at discrete position i,j,k (which has an counter part in continous domain $\phi(x_i, y_j, z_k)$ ) and $\Delta t \Delta \phi_{i,j,k}^{n}$ is finite forward difference term representing aproximation of the forces influencing the LS (update term). The solution is then succession of steps where new solution is obtained as current solution plus update term.
 
-Discretization of the LS solution brings two problems. Fist one is need of stable and accurate numeric scheme for solving PDE equations. This is solved by proposed 'upwind sheme' by Osher and Sethian. The second one is high computational complexity caused by conversion surface problem into (one dimension higher) volume problem. 
+Discretization of the LS solution brings two problems. Fist one is need of stable and accurate numeric scheme for solving PDE equations. This is solved by proposed 'upwind scheme' by Osher and Sethian\cite{sethianLS}. The second one is high computational complexity caused by conversion surface problem into (one dimension higher) volume problem. 
 // TODO popsat narocnost
 Some 
 
@@ -129,10 +139,25 @@ Narrow Bands (proposed by Adalsteinsson and Sethian \cite{sethianFastLS}) comput
     \label{fg:narrowBands}
 \end{figure}
 
-Sparse Fields method (proposed by Whitaker \cite{sparseFilelds}) introduces a scheme in which updates of an embedding are calculated only on the level set. This means that it performs exactly the number of calculations that is needed to calculate next position of the level set. This is the biggest advantage of the method. Points that are adjacent to the level set are called active points (forming active set). Because active points must be adjecant to the LS their positions lie within certain range from the LS. Therefore even values of an embedding in acitive set positions must lie on certain range (active range). When active point value move out from this active range it is no longer the active point and is removed from the active set. And vice versa, the point whose value comes into active range is added into active set. Along the active set there is few layers of points adjecant to the active set organized like peels of an onion. 
-Process can be imagined as a tram that lays down tracks before it and picks them up behind.
+Sparse Fields method (proposed by Whitaker \cite{sparseFilelds}) introduces a scheme in which updates of an embedding are calculated only on the level set. This means that it performs exactly the number of calculations that is needed to calculate next position of the level set. This is the biggest advantage of the method. Points that are adjacent to the level set are called active points (forming active set). Because active points must be adjecant to the LS their positions lie within certain range from the LS. Therefore even values of an embedding in acitive set positions must lie on certain range (active range). When active point value move out from this active range it is no longer the active point and is removed from the active set. And vice versa, the point whose value comes into active range is added into active set. Along the active set there is few layers of points adjecant to the active set organized like peels of an onion, see figure\ref{fg:sparseFilelds}. Process can be imagined as a tram that lays down tracks before it and picks them up behind.
 
-,Several layers around that level set are updated via a distance transform at each iteration.
+\begin{figure}
+    \centering
+    \includegraphics[width=14cm]{data/sparsefileld.eps}
+    \caption[Sparse fields method computation illustration]{Embedding is calculated only at points that are covered by the level set (the white line). Those point (active set) are colored in black forms the zero layer. Other layers embrace the zero layer from both inner and outer side, formed like onion peels}
+    \label{fg:sparseFilelds}
+\end{figure}
+
+
+Algorithm:
+\label{alg:sparseFileld}
+1) FOREACH(point $\in$ active set (zero layer)
+  a) compute level set geometry $\vector(x)$
+  b) compute change using upwind scheme in point $\vector(x)$
+2) FOREACH(point $\in$ active set compute new embedding value $\phi_{i,j,k}^{n+1}$ (compute \ref{deformEqApprox}) and decide if it falls into [-$\frac{1}{2}$,$\frac{1}{2}$] interval. If so, put the $\vector(x)$ into appropriate status lists (list of points, that are changing status) to lower status list if new value moved under the interval and vice versa.
+3) Visit points in other layers $L_i$ in order i=$\pm$1,...,$\pmN$, and update the vaulues 
+
+//TODO
 
 Even faster method that perform extension and distance reinitialization is $O(N)$ is presented by Peng et al. \cite{pengSparseFields}.
 
@@ -141,6 +166,8 @@ Even faster method that perform extension and distance reinitialization is $O(N)
 Segmentation using LS method is performed based on a speed function that is calculated from input (segmented image) and that encourages the mode to grow into direction where the object lies. There are variety speed functions. In this work I use speed function based on threshold $T_{low}$ and $T_{hi}$ of the intensities from the input image. If pixel has intensity value that is within the threshold interval (for maximum speed in the middle of threshold interval), the level set model grows (see figure \ref{fg:speedFunction}). Otherwise it contracts as fast as the pixel has value further from the interval. The function $D$ is defined as:
 
 \begin{equation}
+\label{eq:speedFunction}
+
 D(\vec{x}) = 
 \begin{cases}
 V(\vec{x}) - T_{low} & \text{if $V(\vec{x}) < T_{mid}$,}\\

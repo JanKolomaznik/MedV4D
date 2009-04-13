@@ -159,3 +159,11 @@ Examples are installed into /opt/cell/sdk/src as tarball. So you have to untar e
 
 It is convenient to use the sample sources in CellIDE where you can build it as well and create run/debug configuration for running within cell environment. To use the exmaple code (for example /opt/cell/sdk/src/tutorial/simple) create new c++ makefile project. Click right button on it to get into properties. C/C++ general tab $\rightarrow$ Paths and Symbols $\rightarrow$ Source location. Here you have to add the folder with the sources (/opt/cell/sdk/src/tutorial/simple) by 'create / link folder' button $\rightarrow$advanced $\rightarrow$ link to folder in filesystem. Now you have two folders in list. The first one is the original, created during project creation and the other newly linked folder with the source. You can delete the original one since you are not going to use it.
 Next is neccassary to set up 'Build directory' to tell the IDE where shall search for makefile. It is C/C++ Build tab. Use 'Workspace' button to specify the folder because it will use workspace\_loc variable and thus independent on exact location on filesystem.  
+
+\section{Tunnig memory usage on PS3}
+
+Services manager (/usr/sbin/ntsysv)
+
+\subsection{disabling X resources}
+
+You have to change runlevel. Edit /etc/inittab file and change in line "id:5:initdefault:" the 5 to 3.

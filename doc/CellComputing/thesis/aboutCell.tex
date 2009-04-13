@@ -20,7 +20,7 @@ A number of signal processing and media applications have been implemented on Ce
 \subsection{PPE - \text{PowerPC\textregistered} Processing Element}
 PPE is derived from IBM \text{PowerPC\textregistered} core. Has 512kB L2 cache in die. It supports the Power Architecture ISA, inherits the memory translation, protection, and SMP coherence model of mainstream 64-bit Power processors. CBEA also supports virtualization (logical partitioning), large pages, and other recent innovations in the Power architecture. Programming for the PPE is the same as for conventional processors.
 
-\subsection{SPU - Synergistic Processing Element}
+\subsection{SPE - Synergistic Processing Element}
 SPE is an autonomous processor (sometimes called accellerator) targeted for computational intensive applications. It supports a SIMD-RISC instruction set. Has 128 (128-bit long) unified registers to store all types of data (in contrast from traditional RISCs where registers are devided according data types). One of CellBE programming aspects is converting the code that it uses the SIMD instructions. This process is calleed "SIMDation".
 
 SPE stores its program and data in its associated local storage memory as private memory. DMA transactions are used to tranfer data from/to central memory as well as between two local stores. We say that data is "DMAed" from source to destination. DMA commands can be issued in many ways. Synchronous, asynchronous, in scatter-gaether manner through DMA lists. This memory management is another big part of programming for CellBE.
