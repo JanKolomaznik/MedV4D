@@ -1,11 +1,20 @@
 #ifndef LAYERGATE_H_
 #define LAYERGATE_H_
 
-#include "../configStructures.h"
+#if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
+#define FOR_CELL
+#else
+#define FOR_PC
+#endif
 
-// to remove
-#include "itkSparseFieldLayer.h"
-#include "itkObjectStore.h"
+#include "../commonTypes.h"
+//#include "../configStructures.h"
+//#include "../tools/cellRemoteArray.h"
+
+#ifdef FOR_PC
+#include "common/Common.h"
+#include "../../PPE/SPURequestsDispatcher.h"
+#endif
 
 namespace M4D {
 namespace Cell {
@@ -14,19 +23,19 @@ class LayerGate
 {
 public:
 	
-	//to remove
-	typedef itk::SparseFieldLayer<SparseFieldLevelSetNode> LayerType;
-	typedef LayerType::Pointer LayerPointerType;
-	typedef itk::ObjectStore<SparseFieldLevelSetNode> LayerNodeStorageType;
+#ifdef FOR_PC
+	SPURequestsDispatcher *dispatcher;
+#endif
+	
+//	typedef PUTRemoteArrayCell<TIndex, 8> TPutNodeArray;
+	
 	
 	void UnlinkNode(SparseFieldLevelSetNode *node, uint8 layerNum);
 	//void ReturnToNodeStore(SparseFieldLevelSetNode *node);
 	void PushToLayer(SparseFieldLevelSetNode *node, uint8 layerNum);
 	
-	
-	LayerType **m_Layers;
-	LayerNodeStorageType *m_LayerNodeStore;			
-		
+//	TPutNodeArray putArrays[LYERCOUNT];
+//	TPutNodeArray unlinkArrays[LYERCOUNT];
 };
 
 }

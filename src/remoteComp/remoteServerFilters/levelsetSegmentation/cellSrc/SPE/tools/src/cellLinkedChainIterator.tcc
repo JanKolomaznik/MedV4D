@@ -88,15 +88,15 @@ LinkedChainIteratorCell<Item>::Load(Item *src, Item *dest, size_t size)
 #endif
 	}
 
-///////////////////////////////////////////////////////////////////////////////
-
-template<typename Item>
-LinkedChainIteratorCellWithLayerAccess<Item>
-::LinkedChainIteratorCellWithLayerAccess(LayerGate *layer_gate)
-	: m_layerGate(m_layerGate)
-{
-
-}
+/////////////////////////////////////////////////////////////////////////////////
+//
+//template<typename Item>
+//LinkedChainIteratorCellWithLayerAccess<Item>
+//::LinkedChainIteratorCellWithLayerAccess(LayerGate *layer_gate)
+//	: m_layerGate(m_layerGate)
+//{
+//
+//}
 
 ///////////////////////////////////////////////////////////////////////////////
 

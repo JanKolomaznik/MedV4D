@@ -5,7 +5,7 @@
 #include <spu_mfcio.h>
 #endif
 
-#include "../applyUpdateCalc/layerGate.h"
+//#include "../applyUpdateCalc/layerGate.h"
 
 namespace M4D {
 namespace Cell {
@@ -46,18 +46,18 @@ private:
 };
 
 
-template<typename Item>
-class LinkedChainIteratorCellWithLayerAccess
-	: public LinkedChainIteratorCell<Item>
-{
-public:
-	LinkedChainIteratorCellWithLayerAccess(LayerGate *layer_gate);
-	
-	LayerGate *GetLayerGate() { return m_layerGate; }
-	
-private:
-	LayerGate *m_layerGate;
-};
+//template<typename Item>
+//class LinkedChainIteratorCellWithLayerAccess
+//	: public LinkedChainIteratorCell<Item>
+//{
+//public:
+//	LinkedChainIteratorCellWithLayerAccess(LayerGate *layer_gate);
+//	
+//	LayerGate *GetLayerGate() { return m_layerGate; }
+//	
+//private:
+//	LayerGate *m_layerGate;
+//};
 
 }}  // namespace
 

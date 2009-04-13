@@ -5,15 +5,16 @@
 //#include "itkThresholdSegmentationLevelSetImageFilter.h"
 
 #if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
-#define CELL
+#define FOR_CELL
 #else
-#define PC
+#define FOR_PC
 #endif
 
-#ifdef CELL
+#ifdef FOR_CELL
 #include "PPE/SPEManager.h"
 #include "initPartOfFilter.h"
 #else	/* PC */
+#include "common/Common.h"
 #include "SPE/updateCalculation/updateCalculatorSPE.h"
 #include "SPE/applyUpdateCalc/applyUpdateCalculator.h"
 #include "pcPartOfTheFilter.h"
@@ -24,7 +25,7 @@ namespace itk
 
 template <class TInputImage, class TFeatureImage, class TOutputPixelType = float >
 class MySegmtLevelSetFilter	
-#ifdef CELL
+#ifdef FOR_CELL
 	: public itk::MySegmtLevelSetFilter_InitPart<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> >
 #else
 	: public itk::PCPartOfSegmtLevelSetFilter<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> >
@@ -38,7 +39,7 @@ public:
 	typedef Image<TOutputPixelType, TInputImage::ImageDimension> OutputImageType;
 	  typedef typename OutputImageType::ValueType ValueType;
 	
-#ifdef CELL
+#ifdef FOR_CELL
 	typedef MySegmtLevelSetFilter_InitPart<TInputImage, Image<TOutputPixelType, TInputImage::ImageDimension> > Superclass;
 #else
 	typedef PCPartOfSegmtLevelSetFilter<TInputImage, Image<TOutputPixelType, TInputImage::ImageDimension> > Superclass;
@@ -112,7 +113,7 @@ protected:
 	
 	void InitConfigStructures(void);
 	
-#if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
+#ifdef FOR_CELL
 	M4D::Cell::SPEManager m_SPEManager;
 	M4D::Cell::ESPUCommands command;
 #else
@@ -121,9 +122,9 @@ protected:
 	
 	M4D::Cell::ApplyUpdateSPE applyUpdateCalc;
 	
-	M4D::Cell::LayerGate::LayerType *m_gateLayerPointers[LYERCOUNT];
-	
-	void SetupGate();
+//	M4D::Cell::LayerGate::LayerType *m_gateLayerPointers[LYERCOUNT];
+//	
+//	void SetupGate();
 #endif
 	
 	

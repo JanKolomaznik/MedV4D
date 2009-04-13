@@ -193,6 +193,8 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
     m_Conf.statusImageProps.region = 
     	ConvertRegion<StatusImageType, M4D::Cell::TRegion>(*m_StatusImage);
     m_Conf.statusImageProps.spacing = ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename StatusImageType::SpacingType>(m_StatusImage->GetSpacing());
+    
+    m_requestDispatcher.SetProps(m_Layers, m_LayerNodeStore);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -45,10 +45,10 @@ private:
 			return val;
 			}
 	
-	SparseFieldLevelSetNode *BorrowFromLocalNodeStore()
-	{
-		return this->m_layerGate.m_LayerNodeStore->Borrow();
-	}
+//	SparseFieldLevelSetNode *BorrowFromLocalNodeStore()
+//	{
+//		return this->m_layerGate.m_LayerNodeStore->Borrow();
+//	}
 	
 
 	TObjectStore m_localNodeStore;

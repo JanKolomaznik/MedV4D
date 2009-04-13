@@ -118,9 +118,7 @@ protected:
 	
 	M4D::Cell::ApplyUpdateSPE applyUpdateCalc;
 	
-	M4D::Cell::LayerGate::LayerType *m_gateLayerPointers[LYERCOUNT];
-	
-	void SetupGate();
+//	void SetupGate();
 	
 private:
 	PerfCounter cntr_;

@@ -59,6 +59,30 @@ private:
 	T *m_currLoadedPos;
 };
 
+// this array has to notify PPU when flushed to process it
+template<typename T, uint8 BUFSIZE>
+class PUTRemoteArrayCell
+{
+public:
+	PUTRemoteArrayCell();
+	
+	void push_back(T val);
+	bool IsFull() { return m_currPos==BUFSIZE; }
+	void FlushArray(T *whereToFLush);
+	
+private:
+	void CopyData(T *src, T *dest, size_t size);
+	
+	T m_buf[2][BUFSIZE];
+	bool m_currBuf;
+	uint8 m_currPos;
+	
+	T *m_arrayBegin;
+	T *m_currFlushedPos;
+	
+	uint32 id;		// identification (of layer)
+};
+
 }
 }
 

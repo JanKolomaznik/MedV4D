@@ -65,6 +65,21 @@ public:
 	SparseFieldLevelSetNode *Previous;
 };
 
+
+#define LAYERGATE_ARRAY_SIZE 8
+
+enum MessageID {
+	UNLINKED_NODES_PROCESS,
+	PUSHED_NODES_PROCESS
+};
+#define MessageID_MASK 7	// first 3 bit
+
+#define MessageLyaerID_MASK (MessageID_MASK << 3) // next 3 bits
+#define MessageLyaerID_SHIFT 3
+
+#define MessagePARAM_MASK ( ~ (MessageID_MASK | MessageLyaerID_MASK))	// the rest
+#define MessagePARAM_SHIFT 6
+
 }
 }  // namespace
 

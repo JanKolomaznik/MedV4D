@@ -9,7 +9,7 @@ using namespace M4D::Cell;
 ///////////////////////////////////////////////////////////////////////////////
 
 LayerValuesPropagator::LayerValuesPropagator()
-	: m_layerIterator(& m_layerGate)
+	//: m_layerIterator(& m_layerGate)
 {
 	
 }

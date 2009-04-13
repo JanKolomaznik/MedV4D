@@ -18,23 +18,24 @@ PCPartOfSegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 {}
 
 
-///////////////////////////////////////////////////////////////////////////////
-
-template<class TInputImage,class TFeatureImage, class TOutputPixelType>
-void
-PCPartOfSegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
-::SetupGate()
-{
-  for(uint32 i=0; i<this->m_Layers.size() ; i++)
-  {
-	  m_gateLayerPointers[i] = (M4D::Cell::LayerGate::LayerType *) this->m_Layers[i].GetPointer();
-	  
-	  applyUpdateCalc.conf.layerBegins[i] = (M4D::Cell::SparseFieldLevelSetNode *) this->m_Layers[i]->Begin().GetPointer();
-	  applyUpdateCalc.conf.layerEnds[i] = (M4D::Cell::SparseFieldLevelSetNode *) this->m_Layers[i]->End().GetPointer();
-  }
-  applyUpdateCalc.SetGateProps(m_gateLayerPointers,
-		  (M4D::Cell::LayerGate::LayerNodeStorageType *)this->m_LayerNodeStore.GetPointer() );
-}
+/////////////////////////////////////////////////////////////////////////////////
+//
+//template<class TInputImage,class TFeatureImage, class TOutputPixelType>
+//void
+//PCPartOfSegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
+//::SetupGate()
+//{
+//	m_gateLayersPointer
+//  for(uint32 i=0; i<this->m_Layers.size() ; i++)
+//  {
+//	  m_gateLayerPointers[i] = (M4D::Cell::LayerGate::LayerType *) this->m_Layers[i].GetPointer();
+//	  
+//	  applyUpdateCalc.conf.layerBegins[i] = (M4D::Cell::SparseFieldLevelSetNode *) this->m_Layers[i]->Begin().GetPointer();
+//	  applyUpdateCalc.conf.layerEnds[i] = (M4D::Cell::SparseFieldLevelSetNode *) this->m_Layers[i]->End().GetPointer();
+//  }
+//  applyUpdateCalc.SetGateProps(m_gateLayerPointers,
+//		  (M4D::Cell::LayerGate::LayerNodeStorageType *)this->m_LayerNodeStore.GetPointer() );
+//}
 ///////////////////////////////////////////////////////////////////////////////
 
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
@@ -430,7 +431,7 @@ PCPartOfSegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 	Superclass::InitConfigStructures();
 	
 	#ifdef PC
-	    SetupGate();
+	    //SetupGate();
 	    applyUpdateCalc.SetCommonConfiguration(&this->m_Conf);
 	#endif
 }
@@ -457,7 +458,7 @@ void
 PCPartOfSegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::PropagateAllLayerValues()
 {
-	  SetupGate();
+	  //SetupGate();
 	  
 	  this->m_Conf.m_UpdateBufferData = &this->m_UpdateBuffer[0];
 	  

@@ -2,6 +2,9 @@
 #define LAYERVALSPROPAGATOR_H_
 
 #include "../../commonConsts.h"
+#include "../configStructures.h"
+
+#include "layerGate.h"
 
 // tools
 #include "../tools/neighbourhoodIterator.h"
@@ -12,7 +15,7 @@
 
 #include "../../supportClasses.h"
 
-#include "layerGate.h"
+
 
 namespace M4D {
 namespace Cell {
@@ -27,18 +30,13 @@ public:
 			
 	ApplyUpdateConf conf;
 	
-	
-	void SetGateProps(LayerGate::LayerType **layers, LayerGate::LayerNodeStorageType *layerNodeStore)
-	{
-		m_layerGate.m_Layers = layers;
-		m_layerGate.m_LayerNodeStore = layerNodeStore;
-	}
+	LayerGate m_layerGate;
 	
 protected:
 	
 	LayerValuesPropagator();
 	
-	typedef LinkedChainIteratorCellWithLayerAccess<SparseFieldLevelSetNode> TLayerIterator;
+	typedef LinkedChainIteratorCell<SparseFieldLevelSetNode> TLayerIterator;
 	typedef NeighbourIteratorCell<TPixelValue> TValueNeighbIterator;
 	typedef NeighbourIteratorCell<StatusType> TStatusNeighbIterator;
 	
@@ -54,7 +52,7 @@ protected:
 	
 	RunConfiguration *commonConf;
 	
-	LayerGate m_layerGate;
+	
 	TLayerIterator m_layerIterator;
 	
 	TValueNeighbPreloadeder m_valueNeighPreloader;

@@ -2,6 +2,7 @@
 #define INITPARTOFFILTER_H_
 
 #include "myFiniteDifferenceFilter.h"
+#include "PPE/SPURequestsDispatcher.h"
 //#include "itkThresholdSegmentationLevelSetImageFilter.h"
 
 #include "supportClasses.h"
@@ -183,6 +184,8 @@ protected:
 	
     typedef M4D::Cell::RunConfiguration TRunConf;
     TRunConf m_Conf;
+    
+    M4D::Cell::SPURequestsDispatcher m_requestDispatcher;
 	
 private:
 	PerfCounter cntr_;

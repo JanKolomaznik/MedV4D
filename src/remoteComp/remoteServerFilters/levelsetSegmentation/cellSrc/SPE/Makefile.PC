@@ -68,7 +68,8 @@ OBJECT_FILES = 	$(TMP_DIR)/curvatureTermSolver.o\
 				$(TMP_DIR)/updateCalculatorSPE.o\
 				$(TMP_DIR)/applyUpdateCalculator.o\
 				$(TMP_DIR)/layerValsPropagator.o\
-				$(TMP_DIR)/layerGate.o
+				$(TMP_DIR)/layerGate.o\
+				$(TMP_DIR)/SPURequestsDispatcher.o
 		
 $(OUTPUT): $(OBJECT_FILES)
 		$(AR) $(ARFLAGS) $(OUTPUT) $(OBJECT_FILES)
@@ -89,6 +90,9 @@ $(TMP_DIR)/layerValsPropagator.o:
 	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/layerValsPropagator.o applyUpdateCalc/src/layerValsPropagator.cpp
 $(TMP_DIR)/layerGate.o:
 	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/layerGate.o applyUpdateCalc/src/layerGate.cpp
+## PPE parts ###############
+$(TMP_DIR)/SPURequestsDispatcher.o:
+	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/SPURequestsDispatcher.o ../PPE/src/SPURequestsDispatcher.cpp
 
 .PHONY: clean
 clean:
