@@ -61,6 +61,8 @@ void Server::Accept(void) {
 		LOG( "NetException in Server::ReadCommand" << ne.what() );
 	} catch( ExceptionBase &e) {
 		LOG( "ExceptionBase in Server::EndPrimaryHeaderRead" << e.what() );
+	} catch( ... ) {
+		LOG( "UNKNOWN exception in Server::EndPrimaryHeaderRead");
 	}
 }
 
