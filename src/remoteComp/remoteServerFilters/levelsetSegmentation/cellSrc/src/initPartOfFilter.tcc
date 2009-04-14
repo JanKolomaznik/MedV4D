@@ -459,6 +459,10 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
   // dynamically but not shrink.  In newer implementations there may be a
   // squeeze method which can do this.  Alternately, we can implement our own
   // strategy for downsizing.
+	if(m_Layers[0]->Size() > 10000)
+	{
+		int i = 10;
+	}
   m_UpdateBuffer.clear();
   m_UpdateBuffer.reserve(m_Layers[0]->Size());
   memset(&m_UpdateBuffer[0], 0, m_Layers[0]->Size() * sizeof(ValueType));

@@ -4,20 +4,19 @@
 
 using namespace M4D::Cell;
 
+#define DEBUG_GATE 12
+
 ///////////////////////////////////////////////////////////////////////////////
 
 void LayerGate::UnlinkNode(SparseFieldLevelSetNode *node, uint8 layerNum)
 {
-//	m_Layers[layerNum]->Unlink(node);
-//	m_LayerNodeStore->Return(node);
-//	unlinkArrays[layerNum].push_back(node->m_value);
 	uint32 message = 0;
 	message |= (UNLINKED_NODES_PROCESS & MessageID_MASK);
-	message |= (layerNum & MessageLyaerID_MASK);
+	message |= ((layerNum << MessageLyaerID_SHIFT) & MessageLyaerID_MASK);
 	
 	uint64 nodeAddress = (uint64) node;
 	
-	LOG("Send ULNK, node:" << node);
+	DL_PRINT(DEBUG_GATE, "Send ULNK, node:" << node << "layer: " << (uint32)layerNum);
 	
 #ifdef FOR_PC
 	dispatcher->MyPushMessage(message);
@@ -42,15 +41,7 @@ void LayerGate::UnlinkNode(SparseFieldLevelSetNode *node, uint8 layerNum)
 
 void LayerGate::PushToLayer(SparseFieldLevelSetNode *node, uint8 layerNum)
 {
-//	SparseFieldLevelSetNode *tmp = m_LayerNodeStore->Borrow();
-//	tmp->m_Value = node->m_Value;
-//	m_Layers[layerNum]->PushFront(tmp);
-//	putArrays[layerNum].push_back(node->m_value);
 	uint32 message = 0;
-//	uint32 mask = MessageLyaerID_MASK;
-//	uint32 pp = (layerNum & MessageLyaerID_MASK);
-//	uint32 ee = MessageID_MASK;
-//	uint32 ii = MessageID_MASK << 3;
 	
 	message |= (PUSHED_NODES_PROCESS & MessageID_MASK);
 	message |= ((layerNum << MessageLyaerID_SHIFT) & MessageLyaerID_MASK);
@@ -63,9 +54,8 @@ void LayerGate::PushToLayer(SparseFieldLevelSetNode *node, uint8 layerNum)
 	param |= (node->m_Value[1] << 8);
 	param |= (node->m_Value[2] << 16);
 	
-	LOG("Send PUSH, node:" << node->m_Value);
+	DL_PRINT(DEBUG_GATE, "Send PUSH, node:" << node->m_Value << "layer: " << (uint32)layerNum);
 	
-//	uint32 oo = ~(ee | ii);
 	message |= ((param << MessagePARAM_SHIFT) & MessagePARAM_MASK);
 	
 #ifdef FOR_PC
