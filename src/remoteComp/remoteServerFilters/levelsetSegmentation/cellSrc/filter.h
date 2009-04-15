@@ -4,12 +4,6 @@
 
 //#include "itkThresholdSegmentationLevelSetImageFilter.h"
 
-#if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
-#define FOR_CELL
-#else
-#define FOR_PC
-#endif
-
 #ifdef FOR_CELL
 #include "PPE/SPEManager.h"
 #include "initPartOfFilter.h"

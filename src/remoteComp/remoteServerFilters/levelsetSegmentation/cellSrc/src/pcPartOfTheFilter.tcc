@@ -430,7 +430,7 @@ PCPartOfSegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 {	        
 	Superclass::InitConfigStructures();
 	
-	#ifdef PC
+	#ifdef FOR_PC
 	    //SetupGate();
 	    applyUpdateCalc.SetCommonConfiguration(&this->m_Conf);
 	#endif

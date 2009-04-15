@@ -183,7 +183,6 @@ template<typename PixelType>
 void
 NeighborhoodCell<PixelType>::PrintImage(std::ostream &s)
 {
-	//s << "image: " << std::endl;
 	s << "size: " << m_imageProps->region.size[0] << "," << m_imageProps->region.size[1] << "," << m_imageProps->region.size[2] << std::endl;
 	PixelType *data;
 	TIndex ind;

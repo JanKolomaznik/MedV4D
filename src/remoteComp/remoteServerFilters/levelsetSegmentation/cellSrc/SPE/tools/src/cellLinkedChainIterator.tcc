@@ -12,12 +12,12 @@ LinkedChainIteratorCell<Item>
 ::LinkedChainIteratorCell()
 		: m_begin(0), m_end(0)
 		{
-#if( (defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) ) && (NOT_ONLY_TEST) )
+#ifdef FOR_CELL
 		/* First, we reserve two MFC tags for use with double buffering */
 		  tag = mfc_tag_reserve();
 		  if (tag == MFC_TAG_INVALID)
 		  {
-			  //D_PRINT ("SPU ERROR, unable to reserve tag\n");
+			  D_PRINT ("SPU ERROR, unable to reserve tag\n");
 		  }
 #endif
 		}
@@ -81,22 +81,12 @@ template<typename Item>
 void
 LinkedChainIteratorCell<Item>::Load(Item *src, Item *dest, size_t size)
 	{
-#if( (defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) ) && (NOT_ONLY_TEST) )
+#ifdef FOR_CELL
 			mfc_get(src, dest, size, tag, 0, 0);
 #else
 			memcpy(dest, src, size);
 #endif
 	}
-
-/////////////////////////////////////////////////////////////////////////////////
-//
-//template<typename Item>
-//LinkedChainIteratorCellWithLayerAccess<Item>
-//::LinkedChainIteratorCellWithLayerAccess(LayerGate *layer_gate)
-//	: m_layerGate(m_layerGate)
-//{
-//
-//}
 
 ///////////////////////////////////////////////////////////////////////////////
 

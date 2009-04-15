@@ -1,12 +1,6 @@
 #ifndef LAYERGATE_H_
 #define LAYERGATE_H_
 
-#if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
-#define FOR_CELL
-#else
-#define FOR_PC
-#endif
-
 #include "../commonTypes.h"
 //#include "../configStructures.h"
 //#include "../tools/cellRemoteArray.h"

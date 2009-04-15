@@ -1,5 +1,6 @@
 
 #include "common/Types.h"
+#include "common/Debug.h"
 #include "../layerGate.h"
 
 using namespace M4D::Cell;
@@ -18,6 +19,9 @@ void LayerGate::UnlinkNode(SparseFieldLevelSetNode *node, uint8 layerNum)
 	
 	DL_PRINT(DEBUG_GATE, "Send ULNK, node:" << node << "layer: " << (uint32)layerNum);
 	
+#ifdef FOR_CELL
+	// push to mailbox
+#endif
 #ifdef FOR_PC
 	dispatcher->MyPushMessage(message);
 	// push node address word by word

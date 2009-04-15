@@ -11,16 +11,6 @@
 #include "itkObjectStore.h"
 #include "itkNeighborhoodIterator.h"
 
-#if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
-	#include "PPE/SPEManager.h"
-#define CELL
-#else
-#define PC
-	#include "SPE/updateCalculation/updateCalculatorSPE.h"
-	#include "SPE/applyUpdateCalc/applyUpdateCalculator.h"
-#endif
-
-
 namespace itk
 {
 

@@ -2,7 +2,6 @@
 #define NEIGHBOURHOODITERATOR_H_
 
 #include "neighborhoodCell.h"
-#include "common/Debug.h"
 
 namespace M4D
 {

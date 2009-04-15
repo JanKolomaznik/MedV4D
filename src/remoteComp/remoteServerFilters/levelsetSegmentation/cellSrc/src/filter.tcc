@@ -83,7 +83,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 	
   InitConfigStructures();
         
-#if( defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) )
+#ifdef FOR_CELL
 	m_SPEManager.RunSPEs(&m_Conf);
 #endif
   

@@ -1,5 +1,6 @@
 
 #include "common/Types.h"
+#include "common/Debug.h"
 //#include "tools/VectorNoExcepts.h"
 //#include "vnl/vnl_vector.h"
 #include "vnl_math.h"

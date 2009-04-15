@@ -48,7 +48,7 @@ INCLUDES=	-I$(ROOT)/usr/include\
 DEBUG_DEFS=	-DDEBUG_LEVEL=10\
 		-DDEBUG_ADITIONAL_INFO
 
-DEFS=		$(DEBUG_DEFS)
+DEFS=		$(DEBUG_DEFS) $(PLATFORM_DEFS)
 libSrcPath=$(boostTrunk)/$(srcdir)
 
 .PHONY: all
