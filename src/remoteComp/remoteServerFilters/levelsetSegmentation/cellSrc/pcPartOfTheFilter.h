@@ -118,7 +118,7 @@ protected:
 	
 	M4D::Cell::ApplyUpdateSPE applyUpdateCalc;
 	
-//	void SetupGate();
+	void SetupGate();
 	
 private:
 	PerfCounter cntr_;

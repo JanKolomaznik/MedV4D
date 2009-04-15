@@ -67,6 +67,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 	  
 	  applyUpdateCalc.SetCommonConfiguration(& this->m_Conf);
 	  
+	  
 //	    std::cout << "Update list:" << std::endl;
 //	    PrintUpdateBuf(std::cout);
 	  

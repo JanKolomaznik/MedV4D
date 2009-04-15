@@ -1,5 +1,6 @@
 
 #include "common/Types.h"
+#include "common/Debug.h"
 #include "../updateCalculatorSPE.h"
 #include "../../vnl_math.h"
 #include <string.h>

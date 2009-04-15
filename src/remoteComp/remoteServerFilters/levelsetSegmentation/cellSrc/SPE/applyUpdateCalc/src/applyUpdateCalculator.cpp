@@ -367,7 +367,8 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	      //release_node = layerIt.GetPointer();
 	      //++layerIt;
 	      //m_Layers[0]->Unlink(release_node);
-	      this->m_layerGate.UnlinkNode(currNode, 0);
+	      this->m_layerGate.UnlinkNode(
+	    		  this->m_layerIterator.GetCentralMemAddrrOfCurrProcessedNode(), 0);
 	      //m_LayerNodeStore->Return( release_node );
 	      //this->m_layerGate.ReturnToNodeStore(currNode);
 	      }
@@ -429,7 +430,7 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	      //release_node = layerIt.GetPointer();
 	      //++layerIt;
 	      //m_Layers[0]->Unlink(release_node);
-	      this->m_layerGate.UnlinkNode(currNode, 0);
+	      this->m_layerGate.UnlinkNode(this->m_layerIterator.GetCentralMemAddrrOfCurrProcessedNode(), 0);
 //	      m_LayerNodeStore->Return( release_node );
 	      //this->m_layerGate.ReturnToNodeStore(currNode);
 	      }

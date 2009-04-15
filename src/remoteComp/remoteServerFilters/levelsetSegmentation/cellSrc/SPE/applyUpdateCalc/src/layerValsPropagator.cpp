@@ -78,7 +78,8 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 		{
 			tmp = currNode;
 
-			m_layerGate.UnlinkNode(tmp, to);
+			m_layerGate.UnlinkNode(
+					this->m_layerIterator.GetCentralMemAddrrOfCurrProcessedNode(), to);
 			//m_layerGate.ReturnToNodeStore(tmp);
 
 			continue;
@@ -137,7 +138,8 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 			tmp = currNode;
 			//currNode = currNode->Next; // move on
 
-			m_layerGate.UnlinkNode(tmp, to);
+			m_layerGate.UnlinkNode(
+					this->m_layerIterator.GetCentralMemAddrrOfCurrProcessedNode(), to);
 			if (promote > past_end)
 			{
 				//m_layerGate.ReturnToNodeStore(tmp);

@@ -5,19 +5,21 @@
 namespace M4D {
 namespace Cell {
 
+#define DEBUG_CHAINTOOL 12
+
 ///////////////////////////////////////////////////////////////////////////////
 
 template<typename Item>
 LinkedChainIteratorCell<Item>
 ::LinkedChainIteratorCell()
-		: m_begin(0), m_end(0)
+		: m_end(0)//, m_begin(0), 
 		{
 #ifdef FOR_CELL
 		/* First, we reserve two MFC tags for use with double buffering */
 		  tag = mfc_tag_reserve();
 		  if (tag == MFC_TAG_INVALID)
 		  {
-			  D_PRINT ("SPU ERROR, unable to reserve tag\n");
+			  D_PRINT("SPU ERROR, unable to reserve tag\n");
 		  }
 #endif
 		}
@@ -33,47 +35,58 @@ LinkedChainIteratorCell<Item>
 
 ///////////////////////////////////////////////////////////////////////////////
 
-//template<typename Item>
-//void
-//LinkedChainIteratorCell<Item>::SetBeginEnd(Item *begin, Item *end)
-//	{
-//		m_begin = begin; m_end = end;
-//		
-//		// load the first item
-//		m_currBufPosition = 0;
-//		m_nextForLoad = m_currToProcess = begin;
-//		
-//		if(HasNextForLoad())
-//		{
-//			Load(m_nextForLoad, &m_buf[m_currBufPosition], sizeof(Item));
-//			m_nextForLoad = begin->Next;
-//		}
-//	}
-//
-/////////////////////////////////////////////////////////////////////////////////
-//
-//template<typename Item>
-//Item *
-//LinkedChainIteratorCell<Item>::Next(void) 
-//	{ 
-//#if( (defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) ) && (NOT_ONLY_TEST) )
-//	  // wait for current DMA to complete
-//	  mfc_write_tag_mask (1 << tag);
-//	  mfc_read_tag_status_all ();
-//#endif
-//		  
-//	  // imediately load the next item
-//	  m_currBufPosition = ! m_currBufPosition;
-//	  
-//	  if(HasNextForLoad())
-//	  {
-//		  Load(m_nextForLoad, &m_buf[m_currBufPosition], sizeof(Item));
-//		  m_nextForLoad = m_nextForLoad->Next;
-//	  }
-//	  
-//	  m_currToProcess = m_currToProcess->Next;
-//	  return &m_buf[! m_currBufPosition]; 
-//	  }
+template<typename Item>
+void
+LinkedChainIteratorCell<Item>::SetBeginEnd(Item *begin, Item *end)
+	{
+		m_end = end;
+		pom = begin;
+		
+		// load the first item
+		m_currBufPosition = 1;	// 1 because its inverted at the begining of next		
+		m_buf[1].Next = m_buf;	// to make the first call to HasNext not to return false
+		
+		if(HasNext())
+		{
+			m_realAddresses[0] = begin;
+			Load(begin, &m_buf[0], sizeof(Item));
+			DL_PRINT(DEBUG_CHAINTOOL, "loading the first node in chain \n");
+		}
+		else
+	  {
+		  m_buf[!m_currBufPosition].Next = 0;
+	  }
+		
+	}
+
+///////////////////////////////////////////////////////////////////////////////
+
+template<typename Item>
+Item *
+LinkedChainIteratorCell<Item>::Next(void) 
+	{ 
+#ifdef FOR_CELL
+	  // wait for current DMA to complete
+	  mfc_write_tag_mask (1 << tag);
+	  mfc_read_tag_status_all ();
+#endif
+	  m_currBufPosition = ! m_currBufPosition;
+	  
+	  DL_PRINT(DEBUG_CHAINTOOL, "normal: " << pom->Next 
+			  << ", iterator's: " << m_buf[m_currBufPosition].Next );
+
+	  // imediately load the next item
+	  if(HasNext())
+	  {
+		  m_realAddresses[!m_currBufPosition] = GetCurrItem()->Next;
+		  Load(GetCurrItem()->Next, &m_buf[!m_currBufPosition], sizeof(Item));
+		  counter++;
+	  }
+	  
+	  pom = pom->Next;
+	  
+	  return GetCurrItem();
+	  }
 
 ///////////////////////////////////////////////////////////////////////////////
 

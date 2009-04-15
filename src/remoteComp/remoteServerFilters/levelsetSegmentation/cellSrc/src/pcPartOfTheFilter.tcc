@@ -459,6 +459,15 @@ PCPartOfSegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::PropagateAllLayerValues()
 {
 	  //SetupGate();
+	uint32 i;
+		    for(i=0; i<this->m_Layers.size() ; i++)
+		    {	  	  
+		  	  applyUpdateCalc.conf.layerBegins[i] = (M4D::Cell::SparseFieldLevelSetNode *) this->m_Layers[i]->Begin().GetPointer();
+		  	  applyUpdateCalc.conf.layerEnds[i] = (M4D::Cell::SparseFieldLevelSetNode *) this->m_Layers[i]->End().GetPointer();
+		    }
+		    
+		    for(uint32 i=0; i<LYERCOUNT; i++)
+		    		  LOG("Layer " << i << "size: " << this->m_Layers[i]->Size());
 	  
 	  this->m_Conf.m_UpdateBufferData = &this->m_UpdateBuffer[0];
 	  
