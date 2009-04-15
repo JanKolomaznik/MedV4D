@@ -5,6 +5,8 @@
 #include "../../vnl_math.h"
 #include <string.h>
 
+#define UPDATE_CALC_DEBUG 12
+
 using namespace M4D::Cell;
 
 
@@ -159,6 +161,9 @@ UpdateCalculatorSPE::CalculateChange()
 		
 		m_outIter.SetNeighbourhood( m_valueNeighbPreloader.GetLoaded());
 		m_featureIter.SetNeighbourhood( m_featureNeighbPreloader.GetLoaded());
+		
+		DL_PRINT(UPDATE_CALC_DEBUG, 
+				"node: " << next->m_Value << " value=" << m_outIter.GetCenterPixel());
 				
 		CalculateChangeItem();
 	}
@@ -169,6 +174,8 @@ UpdateCalculatorSPE::CalculateChange()
 	// this iteration.  We give it the global data pointer to use, then
 	// ask it to free the global data memory.
 	TimeStepType timeStep = m_diffFunc.ComputeGlobalTimeStep(&m_globalData);
+	
+	DL_PRINT(UPDATE_CALC_DEBUG, "value=" << timeStep);
 
 	return timeStep;
 }
