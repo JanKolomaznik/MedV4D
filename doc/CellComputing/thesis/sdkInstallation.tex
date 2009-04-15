@@ -161,9 +161,25 @@ It is convenient to use the sample sources in CellIDE where you can build it as 
 Next is neccassary to set up 'Build directory' to tell the IDE where shall search for makefile. It is C/C++ Build tab. Use 'Workspace' button to specify the folder because it will use workspace\_loc variable and thus independent on exact location on filesystem.  
 
 \section{Tunnig memory usage on PS3}
+\label{ps3MemoryUsage}
 
-Services manager (/usr/sbin/ntsysv)
+PS3 has only 256MB RAM memory. This is very small amount for operating system
+and programs together. When install fedora system with default state and
+boot up it, the amount of remaining free memory is about 10MB. It is
+insufficient for either debugging and compilation. So some of resources has
+to be switched off. Our PS3s are accessed remotely via ssh so there is no need
+for X server. So this is the first you can turn off. This is performed by
+change of runlevel from 5 to 3. Run level setting is in /etc/inittab file:
+\begin{verbatim}
+change in line "id:5:initdefault:" the 5 to 3
+\end{verbatim}
+Another resource are services. Here you have to consider if the service you
+want to turn off is really unnecesary. In Our PS3 NeworkManger and Wireless
+supplicant was turn off. NOTE: when you turn oww netowrk manager, you have to
+tuen on network service othervise the networking will not run properly. For
+sevice management within ssh console /usr/sbin/ntsysv manager is quite useful.
+After disabling all unnecessary services we got about 130MB of free space.
 
-\subsection{disabling X resources}
-
-You have to change runlevel. Edit /etc/inittab file and change in line "id:5:initdefault:" the 5 to 3.
+Yellow dog distributions goes even beyond. They can access other 256MB in PS3
+locked for graphics. Special device is created and the graphic memory is the
+used as swap. For details see //TODO

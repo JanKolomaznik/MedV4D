@@ -2,7 +2,7 @@
 \par
 In this chapter will describe my experience with the CellBE platform will then follow. content of SDK, some usefull libraries, as well as some design patterns of CellBE programming will be described.
 
-\section{My journey into CellBE platform}
+\section{My journey into CellBE platform}	// TODO prefor,ulovat
 \par
 When I started this work I was \text{Windows\textregistered} user. Because the developmnet environment (SDK) for CellBE is purely in Linux I had to learn it. I had have already gone through some basic courses so i knew some basic commands. But it is far insufficient when you want to use all the tools for CellBE development. There are some bugs and parts that are not fully finished. Without some kind of deeper knowledge of the system you will have so much troubles as I had. So that's why one of the biggest advice is to become advanced Linux (especially Fedora) user.
 
@@ -10,7 +10,19 @@ When I started this work I was \text{Windows\textregistered} user. Because the d
 The process of advancing my Linux experience went hand in hand with exploration of CellBE platform and the environment. I gradually went through variety of errors and bugs. And I gained more and more experince by their solutions. The process takes quite long time and meanwhile new version of SDK (3.1) had appeard. I wanted to use and describe the latest tools. So I had to begin from scrath because new version brought new obstacles as well.
 
 \par
-The new version was declared to be compatible with new version of Fedora (9 - Sulphur) that had been released few months before the new version of SDK. Previous version of SDK (3.0) was for Fedora 7 Warewolf. I tried all possible combinations of Fedoras and SDKs to find out if they are compatible with each other. Only result from that was finding that the are not and lots of days spent on it. Even if I tried Fedora 10 Cambridge that was released as the latest there was some issues. The SDK is huge package of software dependent on lots of third party libraries and solutions that is trated differently within particular distributions and even versions of same distribution. So the next advice is not to combine versions (system, SDK nor particular libraries that the SDK components are dependent on - use repository ones, see \ref{toolsSetup}). There was although some efforts to get it run on another distributions than Fedora. But i thing the time spent is not worth the result.
+The new version was declared to be compatible with new version of Fedora (9 -
+Sulphur) that had been released few months before the new version of SDK.
+Previous version of SDK (3.0) was for Fedora 7 Warewolf. I tried all possible
+combinations of Fedora distributions and SDKs to find out if they are compatible
+with each other. Only result from that was finding that the are not and lots of
+days spent on it. Even if I tried Fedora 10 Cambridge that was released as the
+latest there was some issues. The SDK is huge package of software dependent on
+lots of third party libraries and solutions that are treated differently within
+particular distributions and even versions of same distribution. So the next
+advice is not to combine versions (system, SDK nor particular libraries that the
+SDK components are dependent on - use repository ones, see \ref{toolsSetup}).
+There was although some efforts to get it run on another distributions than
+Fedora. But i thing the time spent is not worth the result.
 
 \par
 Finally I installed declared by IBM as working combination consisting of Fedora 9 Sulphur and SDK 3.1 and decided working on it. Altough I have run into some bugs and errors. The process of installation is described in \ref{toolsSetup}. Installation of Fedora is omited. For details see official site \url{http://fedoraproject.org/}.
@@ -37,12 +49,6 @@ CellBE SDK is divided into variety of components. Each component is contained in
   IDE is in fact verstion 3.2 of Eclipse with integration of debugging, profiling, CellBE machine management and ohter features that makes development for CellBE easier and more comfortable.
 \end{enumerate}
 
-\section {Building for CellBE}
-\par
-Actual building is done using selected toolchain. But there is difference between management of code building for PPU and SPU. It is caused by difference of actual code usage. While PPU code resides in central memory (just like in common architectures) SPU code is loaded into SPE dynamically and shall be somehow separated. It is similar to shader programs for graphic accelerators. They are also loaded into appropriate processors when they are needed and live separated (in form of files).
-
-\par
-There are two options for SPE code management. One is to build shared library and load it explicitly when it is used. Another way is to build a static library and include it into PPU executable. This inclusion is called embeding and is performed with extra tool from toolchain. The SPU program is then referenced as special extern structure direct from PPU code (instead of performing some shared libraries loading). Both ways has its pros but even cons which are the same as with shared vs. static libraries.
 
 \section{Parallel systems \& CellBE}
 
@@ -149,6 +155,26 @@ This configuration is common approach with CellBE. Program runs on PPE (see Figu
 Another configuration is to have server-like programs running on SPEs that sits and waits offering some functionality. This is requires the code to be small enough to fit into the SPU local store along with processed data.
 
 \end{enumerate}
+
+\section {Building for CellBE}
+\par
+Actual building is done using selected toolchain. But there is difference
+between management of code building for PPU and SPU. It is caused by difference
+of actual code usage. While PPU code resides in central memory (just like in
+common architectures) SPU code is loaded into SPE dynamically and shall be
+somehow separated. It is similar to shader programs for graphic accelerators.
+They are also loaded into appropriate processors when they are needed and live
+separated (in form of files).
+
+\par
+There are two options for SPE code management. One is to build shared library
+and load it explicitly when it is used. Another way is to build a static library
+and include it into PPU executable. This inclusion is called embeding and is
+performed with extra tool from toolchain. The SPU program is then referenced as
+special extern structure direct from PPU code (instead of performing some shared
+libraries loading). Both ways has its pros but even cons which are the same as
+with shared vs. static libraries.
+
 
 \section {Process of porting application for CellBE}
 

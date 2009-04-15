@@ -26,15 +26,24 @@ The most convinient way how to incorporate ITK pipeline that is to be run on Cel
 \end{figure}
 
 \par
-There was some neccessary goals for incorporate 'pok' into Medv4D framework:
+There were two main goals which were neccessary for incorporation 'pok' into
+Medv4D framework:
 \begin{enumerate}
+
+  \item{Remote computing infrastructure}
+  \par
+  Infrastructure for sending commands to server along with data or parameter
+values as well recieving response messages along with resulting data had to be
+implemented into Medv4D. It lead into designing whole new library of Medv4D
+called remote computing. On client side it is representing by a remote filter
+that encapsulate whole infrastructure necessary for sending part of pipeline
+that the filter represents to server as well as result handling. Server side had
+to be designed completely as a whole.
+
   \item{ITK integration}
   \par
   This is performed by wrapper Medv4D filter that is connected into Medv4D pipeline. Within this filter are two ITK images that serves as input and output for inner ITK pipeline. Actual data of this ITK images point to data of containing Medv4D wrapper filter (see Figure \ref{fg:ITKWrapping} for details).
 
-  \item{Remote computing infrastructure}
-  \par
-  Infrastructure for sending commands to server along with data or parameter values as well recieving response messages along with resulting data had to be implemented into Medv4D. It lead into designing whole new library of Medv4D called remote computing. On client side it is representing by a remote filter that encapsulate whole infrastructure necessary for sending part of pipeline that the filter represents to server as well as result handling. Server side had to be designed completely as a whole.
 \end{enumerate}
 
 \begin{figure}
@@ -57,6 +66,7 @@ As mentioned above base element of client RC part is remote filter. It implement
   Tells the server to read actual dataset that the computation will be performed on. The dataset is parameter of the command.
 
   \item{EXEC}
+\par
   Is request for actual execution of the remote pipeline. But before that parameter of this command which are filter parameter values should be parsed. After the parsing and association of filter parameters with actual filter is the remote pipeline executed.
 \end{enumerate}
 
@@ -133,13 +143,11 @@ Result of this changes is my own filter (ThreshSegLevelSetFilter) that omits all
     \label{fg:resultingFilter}
 \end{figure}
 
-\section{Actual porting process}
+\section{Profiling}
 
 Server application with the thresholding level set filter within was build and then profiled. As the first step of the porting process.
 
 //TODO tabulka s vysledky
-
-\chapter{Results}
 Tabulka:::
 \begin{center}
 \begin{tabular}{|l|c|p{3.5in}|}
@@ -156,6 +164,8 @@ either Headquarters or ocean side.\\
 
 The profiling shows that the most time consuming parts of the program is not the difference solving in update calculation step but the update application step. The original idea was to offload only the difference solving within the update calculation step which is performed on $$3^3$$ voxel matrix and calculated independently of the others which makes this job perfectly suited for offloading to SPE. But the time taken for computation of this part is only the fragment of the whole. This is the reason for another changes to the ITK class hierarchy and new level set filter design. Actualy the whole program is rebuild and from original ITK class hierarchy last nothing. Everything replaced by the ThreshSegLevelSetFilter in conjuction with my version of original FinititeDifferenceImageFilter (FDIF) where the main loop of the algorithm as well as stopping conditions resides. The reason of replacing even the FDIF is that it suppose usage of a difference function. It had appropriate virtual methodes that expects it. But in the new design the difference function will be offloaded as well so it was taken out completely through the MyFDIF.
 
+\section{New design}
+
 Further figure shows structure of the new design
 
 \begin{figure}
@@ -167,14 +177,203 @@ Further figure shows structure of the new design
 
 On the figure \ref{fg:newDesign} can be noticed that almost whole original ITK pipeline is offloaded to SPE. Only initialization routines are left to PPE. This lead to create the SPE program manager that will manage computations on SPEs. It is responsible for SPE thread initialization and run, and SPEs synchronization.
 
-SPE part consists of two main parts. The UpdateCalculator, performing \emph{apply update calculation} and ApplyUpdateCalculator, performng \emph{apply update calculation}.
+SPE part consists of two main parts. UpdateCalculator, performing \emph{apply
+update calculation} and ApplyUpdateCalculator, performng \emph{apply update
+calculation}. The UpdateCalculator contains //TODO. It traverse over
+\emph{layer0} and computes update values for points in that layer which are
+stored in \empth{update buffer}. Then is the ApplyUpdateCalculator's turn. It
+takes the update values from the \empth{update buffer} and performs all the
+steps from the sparse field algorithm \ref{alg:sparseFileld}. This means
+\begin{enumerate}
+\item STEP 2
+\par
+For every \emph{layer0} compute new level set value and perform test if
+it stays in the interval [-$\frac{1}{2}$,$\frac{1}{2}$]. If not, move the point
+into appropriate status list. This is performed by
+\emph{UpdateActiveLayerValues} method.
 
-//popsat algoritmus vic do hloubky, co se kde produkuje
-//jak se to bude prenaset mezu SPU a PPU
+\item STEP 3
+\par
+Is performed by subcomponent of ApplyUpdateCalculator, the
+LayerValuesPropagator. This traverses over all layers, process their values and
+remove nodes eventually if they are no longer in a layer. Step processed by
+\emph{PropagateAllLayerValues}
 
+
+\item STEP 4
+\par
+Traverse over status lists in innermost to outermost order and process their
+nodes. If needed a node is moved to inward (outward) status list and
+simultaneously appropriate layer. This is performed by \emph{ProcessStatusLists}
+method.
+\end{enumerate}
+
+\subsection{Data flow}
+
+In porting procese is necessary to know the data flow i.e. find out what data is
+where sent, what data is there produced and especially the size of all the data.
+This si because of decision where thay will be stored. If only in SPE local
+store or in central memory. For the first case their size has to be somethow
+limited because of limitation of local store. For the second case comunication
+via DMA will be neccessary but the data size is not limited to small local
+store.
+
+In my application following data flow
+\begin{enumerate}
+\item UpdateCalculator
+\par
+Needs array which is as long as the layer0. The size of a layer can be very big
+so it impossible to store it within SPE local store. It has to reside in central
+memory and the layer's nodes has to be load into SPE local store while
+traversing the list.
+
+\item \emph{UpdateActiveLayerValues}
+\par
+Process the array from UpdateCalculator so it has to load it from central
+memory. It operates on layer0. Some nodes are moved into status list and
+simultaneously \emph{UNLINKed} from layer0 list. Layer resides in central
+memory so beside the loading nodes for transversing, some special operation has
+to be defined which perform the \emph{UNLINK} action.
+\par
+Status lists are temorary objects. They live
+only during one ApplyUpdateCalculator turn. So they can reside within SPE's
+local store. So no special operation comunicating with central memory has to be
+defined. But processing of the list0 has to be changed. In original ITK code is
+\emph{UpdateActiveLayerValues} called on the whole layer0. This one call can
+produce many of nodes that has to be put into a status list. So iteration over
+layer0 has to be limited to produce limited amount of nodes to be put into
+status lists. I defined the limit with constant MAX_TURN_LENGHT and call
+processing the limited legment of layer0 a 'turn'. See Figure
+\ref{fg:updateActiveLayerValues}.
+
+\begin{figure}	//TODO
+    \centering
+    \includegraphics[width=15cm]{data/updateActiveLayerValues.eps}
+    \caption[Diagram of new design components]{//TODO}
+    \label{fg:updateActiveLayerValues}
+\end{figure}
+
+\item \emph{ProcessStatusLists}
+\par
+Works on the status lists that reside within SPE's local store and are somehow
+limited in size (since the \emph{UpdateActiveLayerValues} run produce limited
+nodes into this status lists. During processing this list nodes are linked into
+appropriate layer, this is another special operation communicating with central
+memory, lets call it \emph{PUSH}. One status list processing empty the list
+so after \emph{ProcessStatusLists} run all statuslists remains
+empty and are ready for next \emph{UpdateActiveLayerValues} turn.
+
+\item \emph{ProcessStatusLists}
+\par
+This method traverse over all the layers and performs moving nodes among
+layers. This means operations \emph{PUSH} and \emph{UNLINK}.
+\end{enumerate}
+
+Status and actual level set values are stored within status and output images.
+So for methodes descibed above is necessary to load and store parts of that
+images. Computation is performed on small neighborhood of voxels 3x3x3. So 27
+voxels (resp. statuses) has to be tranferred for one node processing.
+
+There are some actions and operations defined above that need communication
+with central memory. This is parts of program where cell PPE - SPE communication
+features take place. Other SPE code need not to know if it is run on SPE or PPE
+(except case of vector intrinsics usage).
+
+Because of separation of address spaces programming
+of SPE is very similar to client - server application design. Roles depends on
+how the work is started. In case PPU initiate the tranfers the PPU is a client
+and SPE is a server (SPE recieve some data for computation). Another
+possibility that SPE grab the data from the central memory. In this case SPE is
+client of central memory. This case is prefered because the PPE is only one and
+would be able to manage all the SPU.
+
+\subsection{Tools}
+I implemented some tools that performs the PPE - SPE communication.
+
+\begin{enumerate}
+\item NeighbourhoodCell
+\par
+Represent the part of an image needed for one node computation.
+
+\item RemoteArrayCell
+\par
+Represent an array stored in main memory. This tool is used for
+UpdateCalculator to save computed update values and in ApplyUpdateCalculator to
+retrieve the values which UpdateCalculator stored. Its role is to perform DMA
+transfers not along each value save but on a buffer of that values.
+
+\item \emph{LinkedChainIteratorCell}
+\par
+It traverse over a layer which is linked list data structure. When one item is
+retrieved transfer of the next one is immediatelly started.
+//TODO DMA lists scatter-gatehr
+
+\item \emph{PUSH} and \emph{UNLINK} operations
+\par
+This is simple operations that has small parameters so I decided to implement
+it via mailboxes. Actual operation is done by the PPE that has
+central memory accessible directly.
+\par
+\emph{PUSH} has to push a node into
+specified layer. So only voxel coordinates and nuber of layer is send over
+mailbox to PPE that creates new node and puts it into the layer.
+
+\par
+\emph{UNLINK} operation has to unlink a node from a specified list. Address of
+that node along the layer number are the paramters. Address is transferred in
+32 bits parts (because mailbox has 32 bit size) and is completed on the PPE
+side.
+\end{enumerate}
+
+//TODO
+Vyhodou je ze cvsechen kod vola jenom tooly takze v nich se soustreduje vsechen
+prenos a debugovat se muze jenom ten tool
+
+Another support tool that is worth mention is \emph{ObjectStore} which is
+simple memory allocator templated with class that provides and size. Provides
+two main methodes, \emph{Borrow} and \emph{Return}. It is used for allocataion
+of status field nodes. They resides in local store and thus should be allocated
+on stack.
+
+Great //TODO vyhoda of the tools is also that the whole code uses only the
+tools. So debuging transfer issues means debuging the tool.
+
+\subsection{Work balancing}
+
+The sparse field layers are central part that defines amount of work to be
+performed. So it is necessary to balance their lenght among the SPE that
+process them. This work is left to \emph{Work manager}. Its goal is to ensure
+that all the layers are devided among SPE //TODO rovnomerne.
+
+For this purpose the \emph{UNLINK} and \emph{PUSH} operations implemented using
+mailboxes fits well. The idea behind is that actual operation on the linked
+list is delegated to the \emph{Work manager} that decides which layer segment
+(resp. SPE that the segment process) should the node append into (resp. remove
+from).
+
+\begin{figure}	//TODO obrazek
+    \centering
+    \includegraphics[width=15cm]{data/updateActiveLayerValues.eps}
+    \caption[Diagram of new design components]{//TODO}
+    \label{fg:updateActiveLayerValues}
+\end{figure}
+
+The whole process can be //TODO prirovnat to
 //analogie s pracovnikama a managerama
 
-//TODO popsat kde objekty ziji
-//popsat jednotlive tooly a vztah k Cell featuram
+\section{Actual porting process}
+
+Because work with PS3 is quite time consuming because of small amount of memory
+(see \ref{ps3MemoryUsage}) I decided to left actual porting to the very end of
+process. Into the original code was gradually added features that is needed for
+running on SPE. Some parts was rewritten (e.g. the
+\emph{UpdateActiveLayerValues} turn) to allow some data to live in SPE local
+store. All the changes have not change the programs output, so I can say that
+the all the programs in every step are ekvivalent. All the debugging was
+performed on PC platform localy and thus quickly. The CellBE special features
+like DMA transfer was simulated by memcpy or the mailbox issues trough simple
+queue.
+
+
 
 //popsat process jak celou dobu pro PC a jenom casti, ktery spolu komunikujou (tooly) jsou simulovany memcp()

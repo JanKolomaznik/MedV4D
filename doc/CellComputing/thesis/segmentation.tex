@@ -2,7 +2,7 @@
 
 In this chapter will be segmentation described, listed some techniques. After that level set method will be described along with its relation to segmentation as well as computation issues. //TODO
 
-\subsection{Problem formulation}
+\section{Problem formulation}
 Segmentation is process when pixels of input image are split into several subsets (partitions) based on their characteristics or computed properties, such as color, intensity, or texture. Pixels within such partition then have similar features and compose some object in the image.
 
 In more formal way it is a function that assign a segment to pixel:
@@ -17,7 +17,7 @@ Although there were some attempts to find general-purpouse segmentation solution
 
 Sometimes segmentation methodes are performed on different resolutions and then combined together. Which means solution from lower resolution is taken as another input (some criterion, etc.) for solution of higher resolution. 
 
-\subsection{Segmentation methodes overview}
+\section{Segmentation methodes overview}
 
 Segmentation methodes can be divided into following basic categories:
 
@@ -61,16 +61,25 @@ Segmentation methodes can be divided into following basic categories:
 
 Is method that uses matematical implicit model of an segmented object. It is represented as an surface of level set (LS) function defined on volume. Surface is then deformed with forces that are computed from segmented image resulting actual segmentaion of the object.
 
-Whole process can be illustrated in very similar way to flood-filling. Initial surface (e.g. simple circle, for 2D case, as a surface of a distance function from given point) is deformed with forces that has direction of surface normals. When it approaches borders of the object propagation slows down. On borders on the object propagation stops (forces are zero there).
+Whole process can be illustrated in very similar way to flood-filling, see
+figure \ref{fg:flooding}.
+Initial surface (e.g. simple circle, for 2D case, as a surface of a distance
+function from given point) is deformed with forces that has direction of surface
+normals. When it approaches borders of the object propagation slows down. On
+borders on the object propagation stops (forces are zero there).
 
 \begin{figure}
     \centering
-    \includegraphics[width=15cm]{data/flooding.eps}
+    \includegraphics[width=12cm]{data/flooding.eps}
     \caption[Flooding an object]{Initial shape (the circle) grows and fills (floods) the object on the background. In contrast to common floodfill approach, level set method has several parameters that can e.g. prevent flooding beyond the object borders through small holes.}
-    \label{fg:shore}
+    \label{fg:flooding}
 \end{figure}
 
-Another illustration uses landscape with a lake. Water is always at constant altitude and the surface of an landscape changes in time. With the changes of the landscape shoreline of the lake changes as well. Landscape represents the LS function and water surface represent the surface i.e. k-level set.
+Another illustration uses landscape with a lake (in figure \ref{fg:shore}).
+Water is always at constant altitude and the surface of an landscape changes in
+time. With the changes of the landscape shoreline of the lake changes as well.
+Landscape represents the LS function and water surface represent the surface
+i.e. k-level set.
 
 \begin{figure}
     \centering
@@ -98,18 +107,25 @@ S is then called an k-isosurface or k-level set of $\phi$. k can be chosen freel
 
 Surface can be also defined as local mapping $\vec{S}$:
 \begin{equation}
-\vec{S}: V_r x V_s \rightarrow \mathbb R^3_{x,y,z},
+\vec{S}: V_r \times V_s \rightarrow \mathbb R^3_{x,y,z},
 \end{equation}
-where $V x V \subset \mathbb R^2$. Because of deformation time variable $t \in \mathbb R^+$ has to be added resulting function S = S(r,s,t). 
-Deformation (propagation) of the surface is then described by an evolution equation i.e. differential equation on S. One approach (dynamic) is to use one-parameter family of $\phi$ i.e. $\phi(\vec{x},t)$ changes over time, $\vec{x}$ remains on the k-level set of $\phi$ as it moves and k remains constant. Resulting equation is:
+where $V \times V \subset \mathbb R^2$. Because of deformation time variable $t
+\in \mathbb R^+$ has to be added resulting function S = S(r,s,t).
+Deformation (propagation) of the surface is then described by an evolution
+equation i.e. differential equation on S. One approach (dynamic) is to use
+one-parameter family of $\phi$ i.e. $\phi(\vec{x},t)$ changes over time,
+$\vec{x}$ remains on the k-level set of $\phi$ as it moves and k remains
+constant. Resulting equation is
 \begin{equation}
 \label{deformEq}
-\phi(\vec{x}(t),t) = k \Rightarrow \frac{\delta \phi}{\delta t} = - \Delta \phi \centerdot \vec{v}.
+\phi(\vec{x}(t),t) = k \Rightarrow \frac{\delta \phi}{\delta t} = - \Delta \phi
+\cdot \vec{v}.
 \end{equation}
 Where v represents movement of point x on deforming surface i.e. positions in time.
 All surface movements depend on forces that are based on LS geometry. And LS geometry can be expressed in terms of differential structure of $\phi$. So following version of equation \ref{deformEq} link folmulated:
 \begin{equation}
-\frac{\delta\phi}{\delta t} = - \Delta \phi \centerdot \vec{v} = - \Delta \phi \centerdot F(\vec{x}, D\phi, D^2\phi, ...),
+\frac{\delta\phi}{\delta t} = - \Delta \phi \cdot \vec{v} = - \Delta \phi
+\cdot F(\vec{x}, D\phi, D^2\phi, ...),
 \end{equation}
 where $D^n\phi$ is the set of n-order derivatives of $\phi$ evaluated at x. The term $F(\vec{x}, D\phi, D^2\phi, ...)$ represents some force that influence the movement of a surface point. This equation can applies to every values of k i.e. every LS of function $\phi$ and is basic equation of LS method.
 
@@ -170,7 +186,7 @@ Segmentation using LS method is performed based on a speed function that is calc
 
 D(\vec{x}) = 
 \begin{cases}
-V(\vec{x}) - T_{low} & \text{if $V(\vec{x}) < T_{mid}$,}\\
+V(\vec{x}) - T_{low} & \text{if $V(\vec{x}) < T_{mid}$}\\
 T_{hi} - V(\vec{x}) & \text{if $V(\vec{x}) > T_{mid}$}\\
 \end{cases}
 \end{equation}
@@ -187,13 +203,18 @@ This is quite natural definition of what we need from the process. Grow as fast 
 
 The update term from equation \ref{deformEqApprox} can be rewriten into following form that consist of few terms:
 \begin{equation}
-\phi_t = \alpha |\bigtriangledown \phi| H + \beta \bigtriangledown|\bigtriangledown I|\centerdot \bigtriangledown \phi + \gamma|\bigtriangledown \phi|D
+\phi_t = \alpha |\bigtriangledown \phi| H + \beta
+\bigtriangledown|\bigtriangledown I|\cdot \bigtriangledown \phi +
+\gamma|\bigtriangledown \phi|D
 \end{equation}
 where $|\bigtriangledown \phi|D$ represents speed function term, $\bigtriangledown|\bigtriangledown I|$ is edge term that is and $|\bigtriangledown \phi| H$ represent curvature term. $\alpha$, $\beta$ and $\gamma$ are wights of particular terms.
 
 Edge term is computed from second order derivatives just like Canny and Marr-Hildreth algorithms for edge detection. It shall to push level set towards edges (i.e. border of segmented object).
 
-Curvature forces resulting level set model to have less surface and thus protect negative effects like levelset leaking into unwanted places like Figure \ref{fg:leaking} shows. Note, if $\alpha$ = $\beta$ = 0, the result is the same as from flood-fill method because there is only speed term taking place.
+Curvature forces resulting level set model to have less surface and thus protect
+negative effects like levelset leaking into unwanted places like Figure
+\ref{fg:leaking} shows. Note: if $\alpha$ = $\beta$ = 0, the result is the same
+as from flood-fill method because there is only speed term taking place.
 
 \begin{figure}
     \centering
@@ -204,10 +225,24 @@ Curvature forces resulting level set model to have less surface and thus protect
 
 I omit the edge term so there is only two params of the method. Tuning of the term weights has to be performed in order to have best results.
 
-\section{Level set methodes on streaming devices}
+\section{Level set methodes on streaming architectures}
 
 \par
-There was some attempts for mapping level set method onto special stream device. There are some obstacles due to streaming architecture that has to be overcomed to ifficiently solve the problem. The ﬁrst is that in order to take advantage streaming architecture, the streams of data must be large, contiguous blocks. Thus the points in discrete grid near the level-set surface must be packed into data blocks that can be further processed by streaming processors. Another difficulty is that the level set moves with each time step, and thus the packed representation must be quickly adapted.
+There was some attempts for mapping level set method onto special stream device.
+There are some obstacles due to streaming architecture that has to be overcomed
+to ifficiently solve the problem. The ﬁrst is that in order to take advantage
+streaming architecture, the streams of data must be large, contiguous blocks.
+Thus the points in discrete grid near the level-set surface must be packed into
+data blocks that can be further processed by streaming processors. Another
+difficulty is that the level set moves with each time step, and thus the packed
+representation must be quickly adapted.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=14cm]{data/gpuVirtMemory.eps}
+    \caption[Leaking of segmentaion into unwanted places]{}
+    \label{fg:virtual memory on GPU}
+\end{figure}
 
 \par
 For example Cates at al. \cite{GIST} or Lefohn at al. \cite{lefonhGPUSolver} mapped level set segmentation method onto GPU. GPU is a streaming architecture with many (hundrets) of streaming cores. They runs short programs called shaders. In mapping to GPU architecture texture memory is used to store input data (in large continuous block) and actual computation is managed by vertices that flows into the shader and plays role of some pointers to texture memory. This is some kind of trick because the texture memory is not addressed directly by address number (like in single dimension continuous address space in common processors) but instead by a coordinate to texture. So some virtual texture space has to be created like propose Lefonh at al. \cite{lefonhGPUSolver}. Another workaround has to be performed when computed data is trasferred back to CPU. This direction is much more slower than CPU to GPU direction and thus the results has to be packed somehow. Lefonh at al. \cite{lefonhGPUSolver} decribes this packaging as well. These troubles are payed by some advantage. One is the high count of the processors and extreme fast dedicated memory so the results can be impressive. Another is that the calculation can be directly visualized by the GPU.
