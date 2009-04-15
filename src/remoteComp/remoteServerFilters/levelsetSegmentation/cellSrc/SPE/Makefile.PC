@@ -2,21 +2,10 @@
 srcTop=../../../../..
 
 include $(srcTop)/project/ToolchainSelect.mk
+include $(srcTop)/project/pathsDefinitions.mk
 
 RM=rm -f
 MKDIR=mkdir
-
-ITKIncludeRoot=/usr/local/include/InsightToolkit
-
-ITKIncludes=	-I$(ITKIncludeRoot)\
-				-I$(ITKIncludeRoot)/Common\
-				-I$(ITKIncludeRoot)/Algorithms\
-				-I$(ITKIncludeRoot)/BasicFilters\
-				-I$(ITKIncludeRoot)/IO\
-				-I$(ITKIncludeRoot)/Utilities\
-				-I$(ITKIncludeRoot)/Utilities/vxl/vcl\
-				-I$(ITKIncludeRoot)/Utilities/vxl/core\
-				-I$(ITKIncludeRoot)/gdcm/src
 
 ########################################
 #Name of this project part

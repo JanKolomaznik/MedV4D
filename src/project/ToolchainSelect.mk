@@ -5,11 +5,9 @@
 ##########################################
 ifdef COMPILE_FOR_CELL
 
-# subject to change
-ITKLibsRoot=/data/cell/ITK/LIBCell/bin
 binUtilsPath=/opt/cell/toolchain/bin
 ROOT=/opt/cell/sysroot
-PLATFORM_DEFS= -DCOMPILE_ON_CELL=1
+PLATFORM_DEFS= -DFOR_CELL
 
 CXX=$(binUtilsPath)/ppu-g++
 SPU_LD_PROFILE_OPTS= -Wl,-q -g
@@ -21,23 +19,24 @@ LD_PROFILE_OPTS= -Wl,-q
 CXXDEBUG_OPTIONS= -g
 ##########################################
 else ifdef COMPILE_ON_CELL
-ITKLibsRoot=/data/cell/ITK/LIBCell/bin
+
 CXX=ppu-g++
 AR=ppu-ar
 ROOT=
 archPostfix=CELL
-PLATFORM_DEFS= -DCOMPILE_ON_CELL=1
+PLATFORM_DEFS= -DFOR_CELL
 
 PROFILE_OPTIONS=
 CXXDEBUG_OPTIONS= -g
 ##########################################
 else
-ITKLibsRoot=/home/vencax/cell/ITK/BUILD/bin
+
 CXX=g++
 AR=ar
 ROOT=
 archPostfix=
 
+PLATFORM_DEFS= -DFOR_PC
 PROFILE_OPTIONS=
 CXXDEBUG_OPTIONS= -ggdb $(PROFILE_OPTIONS)
 ##########################################

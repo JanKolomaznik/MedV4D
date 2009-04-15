@@ -1,4 +1,4 @@
-
+srcTop = ../..
 srcdir = .
 
 CC=g++
@@ -7,6 +7,8 @@ RM=rm -f
 MKDIR=mkdir
 MOC=moc
 RCC=rcc
+
+include $(srcTop)/project/pathsDefinitions.mk
 
 ########################################
 #Name of this project part
@@ -85,7 +87,8 @@ INCLUDES=	-I../.. \
 		-I/usr/include/qt4/QtCore\
 		-I/usr/include/qt4/QtGui\
 		-I/usr/include/qt4/QtOpenGL\
-		-I/usr/local/include/vtk-5.0\
+		-I$(VTKIncludeDir)\
+		-I/usr/include/vtk\
 		-I/usr/include/Qt\
 		-I/usr/include/QtGui\
 		-I/usr/include/QtCore

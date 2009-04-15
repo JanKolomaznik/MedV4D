@@ -1,10 +1,12 @@
-
+srcTop = ..
 srcdir = .
 
 CXX=g++
 AR=ar
 RM=rm -f
 MKDIR=mkdir
+
+include $(srcTop)/project/pathsDefinitions.mk
 
 ########################################
 #Name of this project part
@@ -33,8 +35,9 @@ LDFLAGS=
 ARFLAGS=	-r
 INCLUDES=	-I.. \
 		-I../include\
+		-I$(VTKIncludeDir)\
 		-I/usr/include/vtk-5.0\
-		-I/usr/local/include/vtk-5.0
+		-I/usr/include/vtk
 
 
 

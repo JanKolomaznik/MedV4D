@@ -9,6 +9,7 @@ MKDIR=mkdir
 MOC=moc
 RCC=rcc
 
+include $(srcTop)/project/pathsDefinitions.mk
 
 ########################################
 #Name of this project part
@@ -24,48 +25,22 @@ MOCINPUT=	mainWindow.h \
 RCCINPUT=	mainWindow.qrc
 
 M4DLIBS=	$(srcTop)/lib/libm4dWidgets.a\
-		$(srcTop)/lib/libvtkIntegration.a\
-		$(srcTop)/lib/libbackendForDICOM.a\
-		$(srcTop)/lib/libImaging.a\
-		$(srcTop)/lib/libcommon.a\
-		$(srcTop)/lib/libremoteCompCommons.a\
-		$(srcTop)/lib/libremoteClient.a
+			$(srcTop)/lib/libvtkIntegration.a\
+			$(srcTop)/lib/libbackendForDICOM.a\
+			$(srcTop)/lib/libImaging.a\
+			$(srcTop)/lib/libcommon.a\
+			$(srcTop)/lib/libremoteCompCommons.a\
+			$(srcTop)/lib/libremoteClient.a
 
 QTLIBS=		-lQtCore\
 		-lQtGui\
 		-lQtOpenGL
-VTKLIBS=	-lvtkCommon\
-		-lvtkDICOMParser\
-		-lvtkexoIIc\
-		-lvtkFiltering\
-		-lvtkftgl\
-		-lvtkGenericFiltering\
-		-lvtkGraphics\
-		-lvtkHybrid\
-		-lvtkImaging\
-		-lvtkIO\
-		-lvtkNetCDF\
-		-lvtkRendering\
-		-lvtksys\
-		-lvtkVolumeRendering\
-		-lvtkWidgets\
-		-lQVTK\
-		-lwrap
-
-		#-lvtkexpat\
-		#-lvtkfreetype\
-		#-lvtkjpeg\
-		#-lvtkpng\
-		#-lvtktiff\
-		#-lvtkzlib
-
-DCMTKLIBS=	-ldcmnet -ldcmdata -lofstd
 
 LIBS=		$(M4DLIBS)\
 		$(QTLIBS)\
 		$(VTKLIBS)\
 		$(DCMTKLIBS)\
-		-lboost_thread \
+		-lboost_thread-mt \
 		-lboost_filesystem \
 		-lGLU
 ########################################
@@ -86,7 +61,9 @@ CDEPFLAGS=	-MM
 LDFLAGS=
 ARFLAGS=	-r
 LIBDIRS=	-L$(srcTop)/lib\
-		-L/usr/lib/qt4
+		-L/usr/lib/qt4\
+		-L$(DCMTK_LIB_PATH)\
+		-L$(VTKLibsDir)
 		
 QTINCLUDES = \
 		-I/usr/include/qt4\
@@ -100,7 +77,7 @@ QTINCLUDES = \
 INCLUDES=	-I$(srcTop) \
 		-I$(srcdir)\
 		-I$(srcTop)/include\
-		-I/usr/include/vtk-5.0\
+		-I$(VTKIncludeDir)\
 		$(QTINCLUDES)
 
 
@@ -192,6 +169,6 @@ $(OUTPUT):	$(OBJ_FILES) $(M4DLIBS)
 		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
 
 .PHONY: clean
-clean: commonRCPartCLEAN clientRCPartCLEAN #GUICLEAN DICOMCLEAN ImagingCLEAN CommonCLEAN
+clean: commonRCPartCLEAN clientRCPartCLEAN GUICLEAN DICOMCLEAN ImagingCLEAN CommonCLEAN
 		$(RM) $(OBJ_FILES) $(MOCOUTPUT) $(addprefix $(TMP_DIR)/rcc_, $(RCCINPUT:.qrc=.cpp ) ) $(DEP_FILE)
 		$(RM) $(OUTPUT)
