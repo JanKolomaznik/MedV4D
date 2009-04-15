@@ -8,6 +8,8 @@
 namespace M4D {
 namespace Cell {
 
+#define DEBUG_CHAINTOOL 12
+
 template<typename Item>
 class LinkedChainIteratorCell
 {

@@ -57,11 +57,18 @@ UpdateCalculatorSPE
 	}
 	MIN_NORM *= minSpacing;
 
+	UpdateFunctionProperties();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void UpdateCalculatorSPE::UpdateFunctionProperties()
+{
 	// set props to diffFunc
-	m_diffFunc.SetUpperThreshold(m_Conf->m_upThreshold);
-	m_diffFunc.SetLowerThreshold(m_Conf->m_downThreshold);
-	m_diffFunc.SetPropagationWeight(m_Conf->m_propWeight);
-	m_diffFunc.SetCurvatureWeight(m_Conf->m_curvWeight);
+		m_diffFunc.SetUpperThreshold(m_Conf->m_upThreshold);
+		m_diffFunc.SetLowerThreshold(m_Conf->m_downThreshold);
+		m_diffFunc.SetPropagationWeight(m_Conf->m_propWeight);
+		m_diffFunc.SetCurvatureWeight(m_Conf->m_curvWeight);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -130,8 +137,8 @@ UpdateCalculatorSPE
 TimeStepType
 UpdateCalculatorSPE::CalculateChange()
 {
-	m_updateBufferArray.SetArray(m_Conf->m_UpdateBufferData);
-	m_layerIterator.SetBeginEnd(m_Conf->m_activeSetBegin, m_Conf->m_activeSetEnd);
+	m_updateBufferArray.SetArray(m_stepConfig->updateBuffBegin);
+	m_layerIterator.SetBeginEnd(m_stepConfig->layer0Begin, m_stepConfig->layer0End);
 	
 	// prepare neighbour preloaders
 	m_valueNeighbPreloader.SetImageProps(& m_Conf->valueImageProps);

@@ -18,7 +18,6 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 ::MySegmtLevelSetFilter_InitPart()
 {		  
   m_IsoSurfaceValue = this->m_ValueZero;
-  m_NumberOfLayers = NUM_LAYERS;	// dont change !
   m_LayerNodeStore = LayerNodeStorageType::New();
   m_LayerNodeStore->SetGrowthStrategyToExponential();
   this->SetRMSChange(static_cast<double>(this->m_ValueZero));
@@ -31,6 +30,13 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
   // looping.
   this->SetMaximumRMSError(0.02);
   this->SetNumberOfIterations(1000);
+  
+  //initial properties
+  m_conf.runConf.m_upThreshold = 500;
+  m_conf.runConf.m_downThreshold = -500;
+  m_conf.runConf.m_propWeight = 1;
+  m_conf.runConf.m_curvWeight = 0.001f;
+  m_conf.runConf.m_ConstantGradientValue = this->m_ConstantGradientValue;
 }
 ///////////////////////////////////////////////////////////////////////////////
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
@@ -143,17 +149,11 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
   
   // Allocate the layers for the sparse field.
   m_Layers.clear();
-  m_Layers.reserve(2*m_NumberOfLayers + 1);
+  m_Layers.reserve(LYERCOUNT);
 
-  while ( m_Layers.size() < (2*m_NumberOfLayers+1) )
+  while ( m_Layers.size() < (LYERCOUNT) )
     {
     m_Layers.push_back( LayerType::New() );
-    }
-  
-  // Throw an exception if we don't have enough layers.
-  if (m_Layers.size() < 3)
-    {
-    itkExceptionMacro( << "Not enough layers have been allocated for the sparse field.  Requires at least one layer.");
     }
   
   // Construct the active layer and initialize the first layers inside and
@@ -162,39 +162,67 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 
   // Construct the rest of the non-active set layers using the first two
   // layers. Inside layers are odd numbers, outside layers are even numbers.
-  for (i = 1; i < m_Layers.size() - 2; ++i)
+  for (i = 1; i < LYERCOUNT - 2; ++i)
     {
     this->ConstructLayer(i, i+2);
     }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
 void
 MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
-::InitConfigStructures(void)
+::InitRunConf()
 {
-	// fill the image properties
-  	// feature image
-    m_Conf.featureImageProps.imageData = 
+	// feature image
+    m_conf.runConf.featureImageProps.imageData = 
     	(FeaturePixelType *)GetFeatureImage()->GetBufferPointer();
-    m_Conf.featureImageProps.region = 
+    m_conf.runConf.featureImageProps.region = 
     	ConvertRegion<TFeatureImage, M4D::Cell::TRegion>(*GetFeatureImage());
-    m_Conf.featureImageProps.spacing = 
+    m_conf.runConf.featureImageProps.spacing = 
     	ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename TFeatureImage::SpacingType>(GetFeatureImage()->GetSpacing());
     // output image
-    m_Conf.valueImageProps.imageData = (ValueType *)this->GetOutput()->GetBufferPointer();
-    m_Conf.valueImageProps.region = 
+    m_conf.runConf.valueImageProps.imageData = (ValueType *)this->GetOutput()->GetBufferPointer();
+    m_conf.runConf.valueImageProps.region = 
     	ConvertRegion<OutputImageType, M4D::Cell::TRegion>(*this->GetOutput());
-    m_Conf.featureImageProps.spacing = ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename OutputImageType::SpacingType>(this->GetOutput()->GetSpacing());
+    m_conf.runConf.featureImageProps.spacing = ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename OutputImageType::SpacingType>(this->GetOutput()->GetSpacing());
     //status image
-    m_Conf.statusImageProps.imageData = (StatusType *)m_StatusImage->GetBufferPointer();
-    m_Conf.statusImageProps.region = 
+    m_conf.runConf.statusImageProps.imageData = (StatusType *)m_StatusImage->GetBufferPointer();
+    m_conf.runConf.statusImageProps.region = 
     	ConvertRegion<StatusImageType, M4D::Cell::TRegion>(*m_StatusImage);
-    m_Conf.statusImageProps.spacing = ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename StatusImageType::SpacingType>(m_StatusImage->GetSpacing());
+    m_conf.runConf.statusImageProps.spacing = ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename StatusImageType::SpacingType>(m_StatusImage->GetSpacing());
     
     m_requestDispatcher.SetProps(m_Layers, m_LayerNodeStore);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template<class TInputImage,class TFeatureImage, class TOutputPixelType>
+void
+MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
+::InitCalculateChangeAndUpdActiveLayerConf()
+{
+	m_conf.calcChngApplyUpdateConf.layer0Begin = 
+		(NodeTypeInSPU *) this->m_Layers[0]->Begin().GetPointer();
+	m_conf.calcChngApplyUpdateConf.layer0End = 
+		(NodeTypeInSPU *) this->m_Layers[0]->End().GetPointer();
+    
+	m_conf.calcChngApplyUpdateConf.updateBuffBegin = &this->m_UpdateBuffer[0];
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template<class TInputImage,class TFeatureImage, class TOutputPixelType>
+void
+MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
+::InitPropagateValuesConf()
+{
+	for(uint32 i=0; i<LYERCOUNT; i++)
+    {	  	  
+		m_conf.propagateValsConf.layerBegins[i] = 
+			(NodeTypeInSPU *) this->m_Layers[i]->Begin().GetPointer();
+		
+		m_conf.propagateValsConf.layerEnds[i] = 
+			(NodeTypeInSPU *) this->m_Layers[i]->End().GetPointer();
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -207,7 +235,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
   // with value greater than the outermost layer.  Assign background pixels
   // INSIDE the sparse field layers to a new level set with value less than
   // the innermost layer.
-  const ValueType max_layer = static_cast<ValueType>(m_NumberOfLayers);
+  const ValueType max_layer = static_cast<ValueType>(LYERCOUNT);
 
   const ValueType outside_value  = (max_layer+1) * m_ConstantGradientValue;
   const ValueType inside_value = -(max_layer+1) * m_ConstantGradientValue;
@@ -290,8 +318,8 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
       // then activate bounds checking.
       for (i = 0; i < OutputImageType::ImageDimension; i++)
         {
-        if (center_index[i] + static_cast<long>(m_NumberOfLayers) >= (upperBounds[i] - 1)
-            || center_index[i] - static_cast<long>(m_NumberOfLayers) <= lowerBounds[i])
+        if (center_index[i] + static_cast<long>(LYERCOUNT) >= (upperBounds[i] - 1)
+            || center_index[i] - static_cast<long>(LYERCOUNT) <= lowerBounds[i])
           {
           m_BoundsCheckingActive = true;
           }
@@ -495,7 +523,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
   // with value less than the innermost layer.  Assign background pixels
   // OUTSIDE the sparse field layers to a new level set with value greater than
   // the outermost layer.
-  const ValueType max_layer = static_cast<ValueType>(m_NumberOfLayers);
+  const ValueType max_layer = static_cast<ValueType>(LYERCOUNT);
 
   const ValueType inside_value  = (max_layer+1) * m_ConstantGradientValue;
   const ValueType outside_value = -(max_layer+1) * m_ConstantGradientValue;

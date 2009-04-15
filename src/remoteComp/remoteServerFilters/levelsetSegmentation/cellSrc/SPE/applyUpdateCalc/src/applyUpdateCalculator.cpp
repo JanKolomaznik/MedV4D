@@ -56,9 +56,9 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 //	m_statusIter.SetNeighbourhood( &statusNeigh);
 	
 	// prepare iterator over update value list
-	this->m_updateValuesIt.SetArray(commonConf->m_UpdateBufferData);	
+	this->m_updateValuesIt.SetArray(m_stepConfig->updateBuffBegin);	
 	// prepare iterator over active layer
-	this->m_layerIterator.SetBeginEnd(conf.layerBegins[0], conf.layerEnds[0]);
+	this->m_layerIterator.SetBeginEnd(m_stepConfig->layer0Begin, m_stepConfig->layer0End);
 		
 	uint32 counter = 0;
 	ValueType rms_change_accumulator = this->m_ValueZero;

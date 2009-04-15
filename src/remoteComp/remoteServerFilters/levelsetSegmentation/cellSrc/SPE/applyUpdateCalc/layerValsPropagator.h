@@ -24,11 +24,10 @@ class LayerValuesPropagator : public Consts
 {
 public:
 	
-	void PropagateAllLayerValues();	
-	
-	void SetCommonConfiguration(RunConfiguration *c) { commonConf = c; }
+	void PropagateAllLayerValues();
 			
-	ApplyUpdateConf conf;
+	PropagateValuesConf *m_propLayerValuesConfig;
+	RunConfiguration *commonConf;
 	
 	LayerGate m_layerGate;
 	
@@ -48,10 +47,7 @@ protected:
 	TValueNeighbIterator m_outIter;
 	TStatusNeighbIterator m_statusIter;
 	
-	itk::SparseFieldCityBlockNeighborList< TRadius, TOffset, 3 > m_NeighborList;
-	
-	RunConfiguration *commonConf;
-	
+	itk::SparseFieldCityBlockNeighborList< TRadius, TOffset, 3 > m_NeighborList;	
 	
 	TLayerIterator m_layerIterator;
 	

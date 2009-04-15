@@ -114,11 +114,8 @@ protected:
 	void InitConfigStructures(void);
 	
 	typedef M4D::Cell::UpdateCalculatorSPE TUpdateCalculatorSPE;
-	TUpdateCalculatorSPE updateSolver;
-	
+	TUpdateCalculatorSPE updateSolver;	
 	M4D::Cell::ApplyUpdateSPE applyUpdateCalc;
-	
-	void SetupGate();
 	
 private:
 	PerfCounter cntr_;

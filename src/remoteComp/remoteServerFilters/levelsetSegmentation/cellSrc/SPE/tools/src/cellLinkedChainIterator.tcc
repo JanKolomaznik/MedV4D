@@ -5,7 +5,7 @@
 namespace M4D {
 namespace Cell {
 
-#define DEBUG_CHAINTOOL 12
+
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -51,6 +51,7 @@ LinkedChainIteratorCell<Item>::SetBeginEnd(Item *begin, Item *end)
 			m_realAddresses[0] = begin;
 			Load(begin, &m_buf[0], sizeof(Item));
 			DL_PRINT(DEBUG_CHAINTOOL, "loading the first node in chain \n");
+			counter = 1;
 		}
 		else
 	  {
@@ -80,6 +81,7 @@ LinkedChainIteratorCell<Item>::Next(void)
 	  {
 		  m_realAddresses[!m_currBufPosition] = GetCurrItem()->Next;
 		  Load(GetCurrItem()->Next, &m_buf[!m_currBufPosition], sizeof(Item));
+		  DL_PRINT(DEBUG_CHAINTOOL, "loading node " << counter);
 		  counter++;
 	  }
 	  

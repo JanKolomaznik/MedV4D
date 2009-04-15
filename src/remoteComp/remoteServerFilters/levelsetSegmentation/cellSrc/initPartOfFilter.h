@@ -60,10 +60,10 @@ public:
   
   //////////////
   
-	void SetUpperThreshold(FeaturePixelType upThreshold) { m_Conf.m_upThreshold = upThreshold; }
-	void SetLowerThreshold(FeaturePixelType loThreshold) { m_Conf.m_downThreshold = loThreshold; }
-	void SetPropagationWeight(float32 propWeight) { m_Conf.m_propWeight = propWeight; }
-	void SetCurvatureWeight(float32 curvWeight) { m_Conf.m_curvWeight = curvWeight; }
+	void SetUpperThreshold(FeaturePixelType upThreshold) { m_conf.runConf.m_upThreshold = upThreshold; }
+	void SetLowerThreshold(FeaturePixelType loThreshold) { m_conf.runConf.m_downThreshold = loThreshold; }
+	void SetPropagationWeight(float32 propWeight) { m_conf.runConf.m_propWeight = propWeight; }
+	void SetCurvatureWeight(float32 curvWeight) { m_conf.runConf.m_curvWeight = curvWeight; }
 	
 	void SetIsoSurfaceValue(ValueType val) { m_IsoSurfaceValue = val; }
 	
@@ -137,12 +137,6 @@ public:
 	  */
 	  LayerListType m_Layers;
 
-	  /** The number of layers to use in the sparse field.  Sparse field will
-	   * consist of m_NumberOfLayers layers on both sides of a single active layer.
-	   * This active layer is the interface of interest, i.e. the zero
-	   * level set. */
-	  unsigned int m_NumberOfLayers;
-
 	  /** An image of status values used internally by the algorithm. */
 	  typename StatusImageType::Pointer m_StatusImage;
 
@@ -172,8 +166,14 @@ protected:
 	MySegmtLevelSetFilter_InitPart(void);
 	~MySegmtLevelSetFilter_InitPart(void);
 	
-    typedef M4D::Cell::RunConfiguration TRunConf;
-    TRunConf m_Conf;
+	typedef M4D::Cell::SparseFieldLevelSetNode NodeTypeInSPU;
+	
+	void InitRunConf();
+	void InitCalculateChangeAndUpdActiveLayerConf();
+	void InitPropagateValuesConf();
+	
+    typedef M4D::Cell::ConfigStructures TConfigStructs;
+    TConfigStructs m_conf;
     
     M4D::Cell::SPURequestsDispatcher m_requestDispatcher;
 	

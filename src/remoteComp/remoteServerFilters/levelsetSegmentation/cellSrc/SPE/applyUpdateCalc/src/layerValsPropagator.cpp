@@ -58,7 +58,10 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 	m_valueNeighPreloader.SetImageProps(&commonConf->valueImageProps);
 	m_statusNeighPreloader.SetImageProps(&commonConf->statusImageProps);
 	
-	m_layerIterator.SetBeginEnd(conf.layerBegins[to], conf.layerEnds[to]);
+	m_layerIterator.SetBeginEnd(
+			m_propLayerValuesConfig->layerBegins[to], 
+			m_propLayerValuesConfig->layerEnds[to]);
+	
 	while (m_layerIterator.HasNext())
 	{
 		currNode = m_layerIterator.Next();

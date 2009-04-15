@@ -38,8 +38,10 @@ public:
   TimeStepType CalculateChange();  
   
   RunConfiguration *m_Conf;
+  CalculateChangeAndUpdActiveLayerConf *m_stepConfig;
 		  
 		  void Init(void);
+		  void UpdateFunctionProperties();
 	
 protected:
 
@@ -49,10 +51,6 @@ protected:
 	TLayerIterator m_layerIterator;
 	TValueNeighbPreloadeder m_valueNeighbPreloader;
 	TValueNeighbPreloadeder m_featureNeighbPreloader;
-    
-	//CalculateChangeStepConfiguration m_stepConf;
-	
-	//LayerListType m_Layers;	// TODO load
 	  
 private:
 	

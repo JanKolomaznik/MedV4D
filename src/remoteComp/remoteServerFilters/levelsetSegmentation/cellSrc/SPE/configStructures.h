@@ -13,18 +13,33 @@ enum ESPUCommands
 	QUIT
 };
 
-struct ApplyUpdateConf
+struct PropagateValuesConf
 {
 	SparseFieldLevelSetNode *layerBegins[LYERCOUNT];
 	SparseFieldLevelSetNode *layerEnds[LYERCOUNT];
 	
-	void operator=(const ApplyUpdateConf& o)
+	void operator=(const PropagateValuesConf& o)
 	{
 		for(uint32 i=0; i<LYERCOUNT; i++)
 		{
 		layerBegins[i] = o.layerBegins[i];
 		layerEnds[i] = o.layerEnds[i];
 		}
+	}
+};
+
+struct CalculateChangeAndUpdActiveLayerConf
+{
+	SparseFieldLevelSetNode *layer0Begin;
+	SparseFieldLevelSetNode *layer0End;
+
+	TPixelValue *updateBuffBegin;
+	
+	void operator=(const CalculateChangeAndUpdActiveLayerConf& o)
+	{
+		layer0Begin = o.layer0Begin;
+		layer0End = o.layer0End;
+		updateBuffBegin = o.updateBuffBegin;
 	}
 };
 
@@ -44,10 +59,6 @@ public:
   
     TNeighborhoodScales m_neighbourScales;
     
-    TPixelValue *m_UpdateBufferData;
-    SparseFieldLevelSetNode *m_activeSetBegin;
-    SparseFieldLevelSetNode *m_activeSetEnd;
-    
     TImageProperties<TPixelValue> featureImageProps;
     TImageProperties<TPixelValue> valueImageProps;
     TImageProperties<StatusType> statusImageProps;
@@ -60,13 +71,18 @@ public:
 		m_curvWeight = o.m_curvWeight;
 		m_ConstantGradientValue = o.m_ConstantGradientValue;
 		m_neighbourScales = o.m_neighbourScales;
-		m_UpdateBufferData = o.m_UpdateBufferData;
-		m_activeSetBegin = o.m_activeSetBegin;
-		m_activeSetEnd = o.m_activeSetEnd;
 		featureImageProps = o.featureImageProps;
 		valueImageProps = o.valueImageProps;
 		statusImageProps = o.statusImageProps;
 	}
+};
+
+class ConfigStructures
+{
+public:
+	RunConfiguration runConf;
+	CalculateChangeAndUpdActiveLayerConf calcChngApplyUpdateConf;
+	PropagateValuesConf propagateValsConf;
 };
 
 //template<typename TNode>

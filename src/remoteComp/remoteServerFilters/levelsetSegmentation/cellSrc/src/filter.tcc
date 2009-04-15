@@ -10,14 +10,8 @@ namespace itk {
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
 MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::MySegmtLevelSetFilter()
-{  
-	this->m_Conf.m_upThreshold = 500;
-	this->m_Conf.m_downThreshold = -500;
-	this->m_Conf.m_propWeight = 1;
-	this->m_Conf.m_curvWeight = 0.001f;
-	this->m_Conf.m_ConstantGradientValue = this->m_ConstantGradientValue;
-	
-	applyUpdateCalc.m_layerGate.dispatcher = &this->m_requestDispatcher;
+{	
+	this->applyUpdateCalc.m_layerGate.dispatcher = &this->m_requestDispatcher;
 }
 ///////////////////////////////////////////////////////////////////////////////
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
@@ -25,55 +19,6 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::~MySegmtLevelSetFilter()
 {}
 
-
-///////////////////////////////////////////////////////////////////////////////
-//#if( ! (defined(COMPILE_FOR_CELL) || defined(COMPILE_ON_CELL) ) )
-//
-//template<class TInputImage,class TFeatureImage, class TOutputPixelType>
-//void
-//MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
-//::SetupGate()
-//{
-//  for(uint32 i=0; i<this->m_Layers.size() ; i++)
-//  {
-//	  m_gateLayerPointers[i] = (M4D::Cell::LayerGate::LayerType *) this->m_Layers[i].GetPointer();
-//	  
-//	  applyUpdateCalc.conf.layerBegins[i] = (M4D::Cell::SparseFieldLevelSetNode *) this->m_Layers[i]->Begin().GetPointer();
-//	  applyUpdateCalc.conf.layerEnds[i] = (M4D::Cell::SparseFieldLevelSetNode *) this->m_Layers[i]->End().GetPointer();
-//  }
-//  applyUpdateCalc.SetGateProps(m_gateLayerPointers,
-//		  (M4D::Cell::LayerGate::LayerNodeStorageType *)this->m_LayerNodeStore.GetPointer() );
-//}
-//#endif
-///////////////////////////////////////////////////////////////////////////////
-
-template<class TInputImage,class TFeatureImage, class TOutputPixelType>
-void
-MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
-::ApplyUpdate(TimeStepType dt)
-{
-#ifdef FOR_CELL
-	  command = M4D::Cell::CALC_CHANGE;
-	  m_SPEManager.SendCommand(command);
-#else
-	  //SetupGate();
-	  uint32 i;
-	    for(i=0; i<this->m_Layers.size() ; i++)
-	    {	  	  
-	  	  applyUpdateCalc.conf.layerBegins[i] = (M4D::Cell::SparseFieldLevelSetNode *) this->m_Layers[i]->Begin().GetPointer();
-	  	  applyUpdateCalc.conf.layerEnds[i] = (M4D::Cell::SparseFieldLevelSetNode *) this->m_Layers[i]->End().GetPointer();
-	    }
-	  this->m_Conf.m_UpdateBufferData = &this->m_UpdateBuffer[0];
-	  
-	  applyUpdateCalc.SetCommonConfiguration(& this->m_Conf);
-	  
-	  
-//	    std::cout << "Update list:" << std::endl;
-//	    PrintUpdateBuf(std::cout);
-	  
-	  this->SetRMSChange(applyUpdateCalc.ApplyUpdate(dt));
-#endif	
-}
 ///////////////////////////////////////////////////////////////////////////////
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
 void
@@ -82,10 +27,20 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 {
   this->InitializeInputAndConstructLayers();
 	
-  InitConfigStructures();
+  this->InitRunConf();
         
 #ifdef FOR_CELL
 	m_SPEManager.RunSPEs(&m_Conf);
+#else
+	// setup apply update
+	this->applyUpdateCalc.commonConf = & this->m_conf.runConf;
+	this->applyUpdateCalc.m_stepConfig = & this->m_conf.calcChngApplyUpdateConf;	
+	this->applyUpdateCalc.m_propLayerValuesConfig = & this->m_conf.propagateValsConf;	
+	
+	// and update solver
+	this->updateSolver.m_Conf = & this->m_conf.runConf;
+	this->updateSolver.m_stepConfig = & this->m_conf.calcChngApplyUpdateConf;
+	this->updateSolver.Init();
 #endif
   
   // Set the values in the output image for the active layer.
@@ -102,12 +57,21 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
 void
 MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
-::InitConfigStructures(void)
-{	        
-	Superclass::InitConfigStructures();
+::ApplyUpdate(TimeStepType dt)
+{
+	this->InitCalculateChangeAndUpdActiveLayerConf();
+	this->InitPropagateValuesConf();
+	
+#ifdef FOR_CELL
+	  command = M4D::Cell::CALC_CHANGE;
+	  m_SPEManager.SendCommand(command);
+#else	  
+	  Superclass::ApplyUpdate(dt);
+#endif	
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -118,10 +82,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::CalculateChange()
 {
 	this->AllocateUpdateBuffer();
-	  
-	  this->m_Conf.m_activeSetBegin = (M4D::Cell::SparseFieldLevelSetNode *) this->m_Layers[0]->Begin().GetPointer();
-	  this->m_Conf.m_activeSetEnd = (M4D::Cell::SparseFieldLevelSetNode *) this->m_Layers[0]->End().GetPointer();
-	  this->m_Conf.m_UpdateBufferData = &this->m_UpdateBuffer[0];
+	this->InitCalculateChangeAndUpdActiveLayerConf();
 	  
 	  TimeStepType dt;
 	  
@@ -141,6 +102,7 @@ void
 MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::PropagateAllLayerValues()
 {
+	this->InitPropagateValuesConf();
 	
 #ifdef FOR_CELL
 	  command = M4D::Cell::CALC_CHANGE;

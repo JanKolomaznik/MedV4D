@@ -26,6 +26,7 @@ public:
 			MyLayerType *UpList, MyLayerType *DownList,
 			uint32 &counter, ValueType &rms_change_accumulator);
 		
+	CalculateChangeAndUpdActiveLayerConf *m_stepConfig;
 			
 	void ProcessOutsideList(MyLayerType *OutsideList, StatusType ChangeToStatus);//, TStatusNeighbIterator &statIter);
 	void ProcessStatusList(MyLayerType *InputList, MyLayerType *OutputList,

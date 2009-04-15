@@ -99,8 +99,6 @@ public:
 	     * marked in the status image as having been moved to other layers. */
 	    void PropagateAllLayerValues();
 	    
-	    //M4D::Cell::ApplyUpdateConf m_applyUpdateConf;
-	    
 protected:
 	MySegmtLevelSetFilter(void);
 	~MySegmtLevelSetFilter(void);
@@ -110,21 +108,7 @@ protected:
 #ifdef FOR_CELL
 	M4D::Cell::SPEManager m_SPEManager;
 	M4D::Cell::ESPUCommands command;
-#else
-	typedef M4D::Cell::UpdateCalculatorSPE TUpdateCalculatorSPE;
-	TUpdateCalculatorSPE updateSolver;
-	
-	M4D::Cell::ApplyUpdateSPE applyUpdateCalc;
-	
-//	M4D::Cell::LayerGate::LayerType *m_gateLayerPointers[LYERCOUNT];
-//	
-//	void SetupGate();
 #endif
-	
-	
-	
-private:
-	PerfCounter cntr_;
 };
 
 }
