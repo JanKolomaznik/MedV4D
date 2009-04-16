@@ -235,7 +235,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
   // with value greater than the outermost layer.  Assign background pixels
   // INSIDE the sparse field layers to a new level set with value less than
   // the innermost layer.
-  const ValueType max_layer = static_cast<ValueType>(LYERCOUNT);
+  const ValueType max_layer = static_cast<ValueType>(NUM_LAYERS);
 
   const ValueType outside_value  = (max_layer+1) * m_ConstantGradientValue;
   const ValueType inside_value = -(max_layer+1) * m_ConstantGradientValue;
@@ -318,8 +318,8 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
       // then activate bounds checking.
       for (i = 0; i < OutputImageType::ImageDimension; i++)
         {
-        if (center_index[i] + static_cast<long>(LYERCOUNT) >= (upperBounds[i] - 1)
-            || center_index[i] - static_cast<long>(LYERCOUNT) <= lowerBounds[i])
+        if (center_index[i] + static_cast<long>(NUM_LAYERS) >= (upperBounds[i] - 1)
+            || center_index[i] - static_cast<long>(NUM_LAYERS) <= lowerBounds[i])
           {
           m_BoundsCheckingActive = true;
           }
@@ -523,7 +523,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
   // with value less than the innermost layer.  Assign background pixels
   // OUTSIDE the sparse field layers to a new level set with value greater than
   // the outermost layer.
-  const ValueType max_layer = static_cast<ValueType>(LYERCOUNT);
+  const ValueType max_layer = static_cast<ValueType>(NUM_LAYERS);
 
   const ValueType inside_value  = (max_layer+1) * m_ConstantGradientValue;
   const ValueType outside_value = -(max_layer+1) * m_ConstantGradientValue;
