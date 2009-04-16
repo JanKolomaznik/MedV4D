@@ -13,8 +13,18 @@ namespace RemoteComputing
 class RemoteFilterFactory
 {
 public:
-	static M4D::Imaging::AbstractPipeFilter *
-		DeserializeFilter(M4D::IO::InStream &stream, iRemoteFilterProperties **props);
+		
+	// class ID serialization & deserialization
+	static void SerializeFilterClassID(
+			M4D::IO::OutStream &stream, const AbstractFilter &filter);	
+	static AbstractFilter::Ptr 
+		DeserializeFilterClassID(M4D::IO::InStream &stream);
+	
+	// Actual properties content serialization & deserialization	
+	static void SerializeFilterProperties(
+			M4D::IO::OutStream &stream, const AbstractFilter &filter);		
+	static void	DeSerializeFilterProperties(
+			M4D::IO::InStream &stream, AbstractFilter &filter);
 	
 private:
 	static M4D::Imaging::AbstractPipeFilter *

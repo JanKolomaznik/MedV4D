@@ -19,6 +19,7 @@
 #include <boost/shared_ptr.hpp>
 #include "common/Thread.h"
 #include "Imaging/PipelineMessages.h"
+#include "filterIDsEnum.h"
 #include <string>
 
 #include <iostream>
@@ -140,6 +141,9 @@ public:
 	bool
 	IsRunning()const
 		{ return _state == RUNNING; }
+	
+protected:
+	
 private:
 	/**
 	 * Enumeration of all possible states.
@@ -180,7 +184,12 @@ public:
 
 		M4D::Common::TimeStamp
 		GetTimestamp()const
-			{ return _timestamp; }			
+			{ return _timestamp; }
+		/**
+		 * returns ID of the filter used in filter serialization
+		 */
+		virtual FilterID GetID(void) { return FID_AbstractFilterNOT_USE; }
+		
 	private:
 		M4D::Common::TimeStamp	_timestamp;
 	};

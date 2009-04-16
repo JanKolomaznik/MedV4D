@@ -14,14 +14,15 @@ typedef M4D::Imaging::Image<int16, 3> TImage;
 ///////////////////////////////////////////////////////////////////////////////
 template< typename InputPixelType, typename OutputPixelType>
 M4D::Imaging::AbstractPipeFilter *
-CreateFilterStage2(uint16 filterID, iRemoteFilterProperties **props)
+CreateFilterStage2(uint16 filterID)
 {
 	switch( (FilterID) filterID)
 	{
 	case FID_LevelSetSegmentation:
-		*props = new LevelSetRemoteProperties<int16, int16>();
-		return new ThreshLSSegMedvedWrapper< int16, int16>( 
-				dynamic_cast<LevelSetRemoteProperties<int16, int16> *>(*props) );
+		typedef LevelSetRemoteProperties<int16, int16> Filter;
+		Filter::Properties *p = new Filter::Properties();
+			
+		return Filter::Ptr(	new Filter(p) );
 		break;
 		
 //	case FID_Thresholding:
@@ -59,4 +60,56 @@ RemoteFilterFactory::DeserializeFilter(InStream &stream, iRemoteFilterProperties
 			return CreateFilterStage1<TTYPE>(outElemType, filterID, props)
 		);
 }
+///////////////////////////////////////////////////////////////////////////////
+void
+RemoteFilterFactory::SerializeFilterClassID(
+		M4D::IO::OutStream &stream, const AbstractFilter &filter)
+{
+	FilterID id = filter.GetProperties().GetID();
+	
+	stream.Put<uint16>(FID_LevelSetSegmentation);
+			stream.Put<uint16>(GetNumericTypeID< InputElementType >());
+			stream.Put<uint16>(GetNumericTypeID< OutputElementType >());
+}
+///////////////////////////////////////////////////////////////////////////////
+AbstractFilter::Ptr 
+RemoteFilterFactory::DeserializeFilterClassID(M4D::IO::InStream &stream)
+{
+	uint16 filterID;
+	uint16 inElemType, outElemType;
+	
+	stream.Get<uint16>(filterID);
+	stream.Get<uint16>(inElemType);
+	stream.Get<uint16>(outElemType);
+	
+	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( 
+			inElemType,
+			return CreateFilterStage1<TTYPE>(outElemType, filterID, props)
+		);
+}
+///////////////////////////////////////////////////////////////////////////////
+void
+RemoteFilterFactory::SerializeFilterProperties(
+		M4D::IO::OutStream &stream, const AbstractFilter &filter)
+{
+	FilterID id = filter.GetProperties().GetID();
+	
+	switch(id)
+	{
+		
+	}
+}
+///////////////////////////////////////////////////////////////////////////////
+void
+RemoteFilterFactory::DeSerializeFilterProperties(
+		M4D::IO::InStream &stream, AbstractFilter &filter)
+{
+	FilterID id = filter.GetProperties().GetID();
+		
+	switch(id)
+	{
+	
+	}
+}
+
 ///////////////////////////////////////////////////////////////////////////////
