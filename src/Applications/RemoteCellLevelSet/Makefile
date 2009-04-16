@@ -78,7 +78,8 @@ INCLUDES=	-I$(srcTop) \
 		-I$(srcdir)\
 		-I$(srcTop)/include\
 		-I$(VTKIncludeDir)\
-		$(QTINCLUDES)
+		$(QTINCLUDES)\
+		$(ITKIncludes)
 
 
 MOCOUTPUT=      $(addprefix $(TMP_DIR)/moc_, $(MOCINPUT:.h=.cpp) )
@@ -169,6 +170,6 @@ $(OUTPUT):	$(OBJ_FILES) $(M4DLIBS)
 		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
 
 .PHONY: clean
-clean: commonRCPartCLEAN clientRCPartCLEAN GUICLEAN DICOMCLEAN ImagingCLEAN CommonCLEAN
+clean: commonRCPartCLEAN clientRCPartCLEAN #GUICLEAN DICOMCLEAN ImagingCLEAN CommonCLEAN
 		$(RM) $(OBJ_FILES) $(MOCOUTPUT) $(addprefix $(TMP_DIR)/rcc_, $(RCCINPUT:.qrc=.cpp ) ) $(DEP_FILE)
 		$(RM) $(OUTPUT)

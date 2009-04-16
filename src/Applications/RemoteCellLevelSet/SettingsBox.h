@@ -2,11 +2,11 @@
 #define _SETTINGS_BOX_H
 
 #include <QtGui>
-#include "remoteComp/remoteFilterProperties/levelSetRemoteProperties.h"
 #include "remoteComp/remoteFilter.h"
+#include "remoteComp/remoteServerFilters/levelsetSegmentation/medevedWrapperFilter.h"
 
 typedef int16	ElementType;
-typedef M4D::RemoteComputing::LevelSetRemoteProperties< ElementType, ElementType > 
+typedef M4D::RemoteComputing::ThreshLSSegMedvedWrapper< ElementType, ElementType >::Properties
 	LevelSetFilterProperties;
 
 typedef M4D::Imaging::Image< ElementType, 3 > ImageType;

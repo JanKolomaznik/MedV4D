@@ -1,7 +1,8 @@
 
 #include "common/Common.h"
-#include "SettingsBox.h"
 #include "mainWindow.h"
+#include "SettingsBox.h"
+
 
 using namespace M4D::Imaging;
 
