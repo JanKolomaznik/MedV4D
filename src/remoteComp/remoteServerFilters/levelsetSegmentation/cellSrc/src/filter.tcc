@@ -66,11 +66,19 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 	this->InitCalculateChangeAndUpdActiveLayerConf();
 	this->InitPropagateValuesConf();
 	
+	  LOG("================= ApplyUpdate	===================================================");
+	  	  		  	for(uint32 i=0; i<LYERCOUNT; i++)
+	  	  		  		  	  LOG("Layer " << i << "size: " <<	this->m_Layers[i]->Size());
+	  	  		  	
 #ifdef FOR_CELL
 	  command = M4D::Cell::CALC_CHANGE;
 	  m_SPEManager.SendCommand(command);
 #else	  
 	  Superclass::ApplyUpdate(dt);
+	  
+	  LOG("after");
+	  	  	  	  for(uint32 i=0; i<LYERCOUNT; i++)
+	  	  	  	  		  		  	  LOG("Layer " << i << "size: " <<	this->m_Layers[i]->Size());
 #endif	
 }
 
@@ -86,12 +94,27 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 	  
 	  TimeStepType dt;
 	  
+
+	  LOG("================= Calc change	  ===================================================");
+	  LOG("Layer0 " << "size: " << this->m_Layers[0]->Size());
+
+
+	 	 	  	this->PrintUpdateBuf(LOUT);
+
+	  
 #ifdef FOR_CELL
 	  command = M4D::Cell::CALC_CHANGE;
 	  m_SPEManager.SendCommand(command);
 #else
 	  dt = Superclass::CalculateChange();
 #endif	
+	  
+
+	  LOG("Layer0 after" << "size: " << this->m_Layers[0]->Size());
+
+	 	 	  	  LOG("dt=" << dt);
+
+	 	 	  	this->PrintUpdateBuf(LOUT);
 	
 	return dt;
 }
