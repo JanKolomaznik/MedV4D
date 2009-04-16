@@ -13,8 +13,8 @@ class iRemoteFilterProperties
 public:
 	virtual ~iRemoteFilterProperties() {}
 	
-	virtual void SerializeClassInfo(M4D::IO::OutStream &stream) = 0;
-	virtual void SerializeProperties(M4D::IO::OutStream &stream) = 0;
+	virtual void SerializeClassInfo(M4D::IO::OutStream &stream) const = 0;
+	virtual void SerializeProperties(M4D::IO::OutStream &stream) const = 0;
 	virtual void DeserializeProperties(M4D::IO::InStream &stream) = 0;
 };
 

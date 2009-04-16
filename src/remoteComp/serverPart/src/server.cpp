@@ -111,7 +111,7 @@ void Server::CreatePipeline(void) {
 	InStream stream(&netAccessor_);
 
 	// perform deserialization    
-	m_filter = RemoteFilterFactory::DeserializeFilter(stream, &m_props);
+	m_filter = RemoteFilterFactory::DeserializeFilterClassID(stream, &m_props);
 	// set starting by message
 	m_filter->SetUpdateInvocationStyle(Imaging::AbstractPipeFilter::UIS_ON_CHANGE_BEGIN);
 	m_pipeLine.AddFilter(m_filter);
@@ -143,7 +143,7 @@ void Server::ReadDataSet(void) {
 void Server::ReadFilterProperties(void) {
 	InStream stream(&netAccessor_);
 
-	m_props->DeserializeProperties(stream);
+	RemoteFilterFactory::DeSerializeFilterProperties(stream, *m_props);
 
 	// and execute the pipeline. Actual exectution will wait to whole
 	// dataSet unlock when whole dataSet is read (don't forget to do it!!)
