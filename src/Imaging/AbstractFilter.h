@@ -161,6 +161,7 @@ private:
 	Multithreading::Mutex	_stateLock;
 };
 
+
 /**
  * Ancestor of all filters. This class declare basic execution interface for all filters.
  * Its purpose is just ensure common predecessor of pipeline filters and filters with 
@@ -198,6 +199,7 @@ public:
 	 * Smart pointer to filter with this interface.
 	 **/
 	typedef boost::shared_ptr< AbstractFilter > AbstractFilterPtr;
+	typedef boost::shared_ptr< AbstractFilter > Ptr;
 
 	/**
 	 * Destructor - virtual - can be polymorphically destroyed.
@@ -239,16 +241,6 @@ protected:
 
   	AbstractFilter( AbstractFilter::Properties * prop ): _properties( prop ), _name( "Filter" ) {}
 
-	/**
-	*  Filter's settings. Used to sending to server.
-	*  This is pointer to base abstract settings class.
-	*  !!! Each new filter derived from this class
-	*  should declare new settings type derived from 
-	*  FilterSettingTemplate class (filterProperties.h) 
-	*  with template param of type FilterID (FilterIDEnums.h).
-	*  This new enum item should be also added to enum with a new
-	*  data set class !!!
-	*/
 	Properties *_properties;
 
 	std::string _name;
@@ -393,6 +385,8 @@ public:
 		);
 	
 	SIMPLE_GET_METHOD( float32, LastComputationTime, _lastComputationTime );
+	
+	Properties *GetPropertiesPointer() const { return _properties; }
 protected:
 	friend struct MainExecutionThread;
 
