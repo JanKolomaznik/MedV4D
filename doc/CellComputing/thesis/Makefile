@@ -90,7 +90,7 @@ shape_based_diag.pdf: shape_based_diag.tex
 #bib
 ################################################################################
 
-bib: diplomka_references.bib
+bib: references.bib
 	bibtex diplomka
 
 #graphs

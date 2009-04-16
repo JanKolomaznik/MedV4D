@@ -70,7 +70,7 @@ borders on the object propagation stops (forces are zero there).
 
 \begin{figure}
     \centering
-    \includegraphics[width=12cm]{data/flooding.eps}
+    \includegraphics[width=12cm]{data/flooding}
     \caption[Flooding an object]{Initial shape (the circle) grows and fills (floods) the object on the background. In contrast to common floodfill approach, level set method has several parameters that can e.g. prevent flooding beyond the object borders through small holes.}
     \label{fg:flooding}
 \end{figure}
@@ -83,7 +83,7 @@ i.e. k-level set.
 
 \begin{figure}
     \centering
-    \includegraphics[width=15cm]{data/shore.eps}
+    \includegraphics[width=15cm]{data/shore}
     \caption[Shore illustration of moving level set]{Picture A inllustrates a lake with an island with a small rock on the right side. Level set is represent by the shore of that lake (thick line). As the level set moves it envolves into picture B, the rock on the righ suddenly grows to the left pushing the shoreline accordingly and make the island disappear.}
     \label{fg:shore}
 \end{figure}
@@ -150,7 +150,7 @@ Narrow Bands (proposed by Adalsteinsson and Sethian \cite{sethianFastLS}) comput
 
 \begin{figure}
     \centering
-    \includegraphics[width=14cm]{data/narrowBands.eps}
+    \includegraphics[width=\textwidth]{data/narrowBands}
     \caption[Narrow bands computation illustration]{Embedding computation is performed only within narrow band (highlighted in grey). When level set touches (highlighted by circle) the border ot the band, new band has to be computed (reinitialized).}
     \label{fg:narrowBands}
 \end{figure}
@@ -159,7 +159,7 @@ Sparse Fields method (proposed by Whitaker \cite{sparseFilelds}) introduces a sc
 
 \begin{figure}
     \centering
-    \includegraphics[width=14cm]{data/sparsefileld.eps}
+    \includegraphics[width=\textwidth]{data/sparsefield}
     \caption[Sparse fields method computation illustration]{Embedding is calculated only at points that are covered by the level set (the white line). Those point (active set) are colored in black forms the zero layer. Other layers embrace the zero layer from both inner and outer side, formed like onion peels}
     \label{fg:sparseFilelds}
 \end{figure}
@@ -168,10 +168,15 @@ Sparse Fields method (proposed by Whitaker \cite{sparseFilelds}) introduces a sc
 Algorithm:
 \label{alg:sparseFileld}
 1) FOREACH(point $\in$ active set (zero layer)
-  a) compute level set geometry $\vector(x)$
-  b) compute change using upwind scheme in point $\vector(x)$
-2) FOREACH(point $\in$ active set compute new embedding value $\phi_{i,j,k}^{n+1}$ (compute \ref{deformEqApprox}) and decide if it falls into [-$\frac{1}{2}$,$\frac{1}{2}$] interval. If so, put the $\vector(x)$ into appropriate status lists (list of points, that are changing status) to lower status list if new value moved under the interval and vice versa.
-3) Visit points in other layers $L_i$ in order i=$\pm$1,...,$\pmN$, and update the vaulues 
+  a) compute level set geometry $\vec(x)$
+  b) compute change using upwind scheme in point $\vec(x)$
+2) FOREACH(point $\in$ active set compute new embedding value
+$\phi_{i,j,k}^{n+1}$ (compute \ref{deformEqApprox}) and decide if it falls into
+[-$\frac{1}{2}$,$\frac{1}{2}$] interval. If so, put the $\vec(x)$ into
+appropriate status lists (list of points, that are changing status) to lower
+status list if new value moved under the interval and vice versa.
+3) Visit points in other layers $L_i$ in order $i=\pm 1,\ldots, \pm N$, and
+update the vaulues
 
 //TODO
 
@@ -183,7 +188,6 @@ Segmentation using LS method is performed based on a speed function that is calc
 
 \begin{equation}
 \label{eq:speedFunction}
-
 D(\vec{x}) = 
 \begin{cases}
 V(\vec{x}) - T_{low} & \text{if $V(\vec{x}) < T_{mid}$}\\
@@ -194,7 +198,7 @@ where $V(\vec{x})$ is pixel value in point $\vec{x}$ and $T_{mid}$ is the middle
 
 \begin{figure}
     \centering
-    \includegraphics[width=14cm]{data/speedFunction.eps}
+    \includegraphics[width=\textwidth]{data/speedFunction}
     \caption[Graph of thresholding based speed function]{Gray rectangle encloses interval, where is the speed function positive (i.e. the model expands). The fastest expansion is in $T_{mid}$ point}
     \label{fg:speedFunction}
 \end{figure}
@@ -218,7 +222,7 @@ as from flood-fill method because there is only speed term taking place.
 
 \begin{figure}
     \centering
-    \includegraphics[width=14cm]{data/leaking.eps}
+    \includegraphics[width=\textwidth]{data/leaking}
     \caption[Leaking of segmentaion into unwanted places]{}
     \label{fg:leaking}
 \end{figure}
@@ -230,7 +234,7 @@ I omit the edge term so there is only two params of the method. Tuning of the te
 \par
 There was some attempts for mapping level set method onto special stream device.
 There are some obstacles due to streaming architecture that has to be overcomed
-to ifficiently solve the problem. The ﬁrst is that in order to take advantage
+to ifficiently solve the problem. The first is that in order to take advantage
 streaming architecture, the streams of data must be large, contiguous blocks.
 Thus the points in discrete grid near the level-set surface must be packed into
 data blocks that can be further processed by streaming processors. Another
@@ -239,7 +243,7 @@ representation must be quickly adapted.
 
 \begin{figure}
     \centering
-    \includegraphics[width=14cm]{data/gpuVirtMemory.eps}
+    \includegraphics[width=\textwidth]{data/gpuVirtMemory}
     \caption[Leaking of segmentaion into unwanted places]{}
     \label{fg:virtual memory on GPU}
 \end{figure}

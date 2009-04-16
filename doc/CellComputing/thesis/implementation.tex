@@ -20,7 +20,7 @@ The most convinient way how to incorporate ITK pipeline that is to be run on Cel
 
 \begin{figure}
     \centering
-    \includegraphics[width=14cm]{data/computationProcess.eps}
+    \includegraphics[width=\textwidth]{data/computationProcess}
     \caption[RemoteCellLevelSet application computation process]{Client acts like GUI for the server side that performs actual computation}
     \label{fg:computationProcess}
 \end{figure}
@@ -48,7 +48,7 @@ to be designed completely as a whole.
 
 \begin{figure}
     \centering
-    \includegraphics[width=12cm]{data/ITKFilter.eps}
+    \includegraphics[width=12cm]{data/ITKFilter}
     \caption[ITK wrapper Medv4D filter]{Basic elements are the two ITK images whose data are actually Medv4D images' data}
     \label{fg:ITKWrapping}
 \end{figure}
@@ -79,7 +79,7 @@ CREATE command is sent in constructor of remote filter thus when pipeline is con
 
 \begin{figure}
     \centering
-    \includegraphics[width=12cm]{data/RCClientCycle.eps}
+    \includegraphics[width=12cm]{data/RCClientCycle}
     \caption[Remote Medv4D filter]{Shows three basic states of remote filter and when particular command are sent to server.}
     \label{fg:RCClientCycle}
 \end{figure}
@@ -92,7 +92,7 @@ Server part is counter part of client one so the designe reflects it. Goal of se
 
 \begin{figure}
     \centering
-    \includegraphics[width=12cm]{data/RCServerCycle.eps}
+    \includegraphics[width=12cm]{data/RCServerCycle}
     \caption[MedV4D server cycle]{}
     \label{fg:RCServerCycle}
 \end{figure}
@@ -129,7 +129,7 @@ In filter hierarchy everything starts with FiniteDifferenceImageFilter that comp
 
 \begin{figure}
     \centering
-    \includegraphics[width=15cm]{data/originalHierarchy.eps}
+    \includegraphics[width=15cm]{data/originalHierarchy}
     \caption[Original ITK thresholding level set filter class hierarchy]{Illustrates the FiniteDifferenceFunction hierarchy and the FiniteDifferenceImageFilter hierarchy and their relationship}
     \label{fg:originalHierarchy}
 \end{figure}
@@ -138,7 +138,7 @@ Result of this changes is my own filter (ThreshSegLevelSetFilter) that omits all
 
 \begin{figure}
     \centering
-    \includegraphics[width=15cm]{data/resultingFilter.eps}
+    \includegraphics[width=15cm]{data/resultingFilter}
     \caption[Resulting level set filter ready to be ported to CellBE]{Show result of original LS hierarchy rebuilding. Some unnecessary parts was ommited to clean-up the code and to change behaviour towards straming architecture as well as term computation was separated into supporting classes for modularity}
     \label{fg:resultingFilter}
 \end{figure}
@@ -170,7 +170,7 @@ Further figure shows structure of the new design
 
 \begin{figure}
     \centering
-    \includegraphics[width=15cm]{data/newDesign.eps}
+    \includegraphics[width=15cm]{data/newDesign}
     \caption[Diagram of new design components]{//TODO}
     \label{fg:newDesign}
 \end{figure}
@@ -181,8 +181,8 @@ SPE part consists of two main parts. UpdateCalculator, performing \emph{apply
 update calculation} and ApplyUpdateCalculator, performng \emph{apply update
 calculation}. The UpdateCalculator contains //TODO. It traverse over
 \emph{layer0} and computes update values for points in that layer which are
-stored in \empth{update buffer}. Then is the ApplyUpdateCalculator's turn. It
-takes the update values from the \empth{update buffer} and performs all the
+stored in \emph{update buffer}. Then is the ApplyUpdateCalculator's turn. It
+takes the update values from the \emph{update buffer} and performs all the
 steps from the sparse field algorithm \ref{alg:sparseFileld}. This means
 \begin{enumerate}
 \item STEP 2
@@ -242,16 +242,9 @@ defined. But processing of the list0 has to be changed. In original ITK code is
 \emph{UpdateActiveLayerValues} called on the whole layer0. This one call can
 produce many of nodes that has to be put into a status list. So iteration over
 layer0 has to be limited to produce limited amount of nodes to be put into
-status lists. I defined the limit with constant MAX_TURN_LENGHT and call
+status lists. I defined the limit with constant MAX\_TURN\_LENGHT and call
 processing the limited legment of layer0 a 'turn'. See Figure
 \ref{fg:updateActiveLayerValues}.
-
-\begin{figure}	//TODO
-    \centering
-    \includegraphics[width=15cm]{data/updateActiveLayerValues.eps}
-    \caption[Diagram of new design components]{//TODO}
-    \label{fg:updateActiveLayerValues}
-\end{figure}
 
 \item \emph{ProcessStatusLists}
 \par
@@ -268,6 +261,13 @@ empty and are ready for next \emph{UpdateActiveLayerValues} turn.
 This method traverse over all the layers and performs moving nodes among
 layers. This means operations \emph{PUSH} and \emph{UNLINK}.
 \end{enumerate}
+
+\begin{figure}	//TODO
+    \centering
+    \includegraphics[width=15cm]{data/updateActiveLayerValues}
+    \caption[Diagram of new design components]{//TODO}
+    \label{fg:updateActiveLayerValues}
+\end{figure}
 
 Status and actual level set values are stored within status and output images.
 So for methodes descibed above is necessary to load and store parts of that
@@ -353,7 +353,7 @@ from).
 
 \begin{figure}	//TODO obrazek
     \centering
-    \includegraphics[width=15cm]{data/updateActiveLayerValues.eps}
+    \includegraphics[width=15cm]{data/updateActiveLayerValues}
     \caption[Diagram of new design components]{//TODO}
     \label{fg:updateActiveLayerValues}
 \end{figure}
