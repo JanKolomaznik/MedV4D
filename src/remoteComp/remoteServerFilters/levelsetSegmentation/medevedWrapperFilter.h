@@ -31,10 +31,25 @@ public:
 		PredecessorType;	
 	typedef Imaging::Image<InputElementType, 3> InputImageType;
 	typedef Imaging::Image<OutputElementType, 3> OutputImageType;
-	typedef LevelSetRemoteProperties<InputElementType, OutputElementType> Properties;
 	
 	typedef itk::Image<InputElementType, 3> ITKInputImageType;
 	typedef itk::Image<OutputElementType, 3> ITKOutputImageType;
+	
+	struct Properties : public PredecessorType::Properties
+	{
+		uint32 seedX;
+		uint32 seedY;
+		uint32 seedZ;
+		InputElementType lowerThreshold;
+		InputElementType upperThreshold;
+		uint32 maxIterations;
+		float32 initialDistance;
+		float32 curvatureScaling;
+		float32 propagationScaling;
+		float32 advectionScaling;
+		
+		FilterID GetID(void) { return FID_LevelSetSegmentation; }
+	};
 	
 	ThreshLSSegMedvedWrapper(Properties *props);
 	
