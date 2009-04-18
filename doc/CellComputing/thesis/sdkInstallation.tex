@@ -3,7 +3,9 @@
 
 \section{SDK instalation}
 
-As first you have to do is to download actual SDK. Go to \url{http://www-128.ibm.com/developerworks/power/cell/ downloads.html?S_TACT=105AGX16&S_CMP=LP}. You should download following files:
+As first you have to do is to download actual SDK.
+Go to \url{http://www-128.ibm.com/developerworks/power/cell/ downloads.html?S_TACT=105AGX16&S_CMP=LP}.
+You should download following files:
 
 \begin{enumerate} 
 \item SDK 3.1 Installer 
@@ -14,13 +16,16 @@ CellSDK-Devel-Fedora\_3.1.0.0.0.iso  (434MB), contains rpm packages that actual 
 CellSDK-Extras-Fedora\_3.1.0.0.0.iso  (34MB), contains some extra packages for Fedora
 \end{enumerate}
 
-Download it wherever you want (even though in documentation is /tmp/cellsdkiso). Lets call the folder, you download it into, ISODIR.  First you shall stop the YUM updater daemon.
+Download it wherever you want (even though in documentation is /tmp/cellsdkiso).
+Lets call the folder, you download it into, ISODIR.
+First you shall stop the YUM updater daemon.
 
 \begin{verbatim}
 /etc/init.d/yum-updatesd stop
 \end{verbatim}
 
-If this outputs: bash: /etc/init.d/yum-updatesd: No such file or directory, you do not have any YUM updater daemon installed so you can skip this step. Now issue following command to install required utilities for SDK installation
+If this outputs: bash: /etc/init.d/yum-updatesd: No such file or directory, you do not have any YUM updater daemon installed so you can skip this step.
+Now issue following command to install required utilities for SDK installation
 
 \begin{verbatim}
 yum install rsync sed tcl wget
@@ -32,31 +37,46 @@ Now install the dowloaded installation rpm.
 rpm -ivh ISODIR/cell-install-3.1.0-0.0.noarch.rpm
 \end{verbatim}
 
-After this step you have new stuff in /opt/cell installed. There is SDK installation script (cellsdk) located as well. It is wrapper for YUM that manages the SDK packages. Run it with parameter --help to see the usage. So next step is to run it. 
+After this step you have new stuff in /opt/cell installed. There is SDK installation script (cellsdk) located as well.
+It is wrapper for YUM that manages the SDK packages. Run it with parameter --help to see the usage.
+So next step is to run it. 
 
 \begin{verbatim}
 /opt/cell/cellsdk --iso ISODIR -a install
 \end{verbatim}
 
-Param --iso tells to use downloaded ISOs and where can be found for mounting them onto loopback device. Param -a disables agreeing licences. Otherwise you have to write some 'yes' to agree. Process begins with setting local YUM repositories pointing to the ISOs. Then all default packages are installed with all their dependecies. To check result of the installation issue
+Param --iso tells to use downloaded ISOs and where can be found for mounting them onto loopback device.
+Param -a disables agreeing licences. Otherwise you have to write some 'yes' to agree.
+Process begins with setting local YUM repositories pointing to the ISOs.
+Then all default packages are installed with all their dependecies.
+To check result of the installation issue
 
 \begin{verbatim}
 /opt/cell/cellsdk verify
 \end{verbatim}
 
-Now we have SDK installed. Lets continue with installation of IDE. It consists again of packages. Now to simplify processing packages install yumex that provides graphical interface to YUM. And lets you simply check packages that you want.
+Now we have SDK installed. Lets continue with installation of IDE.
+It consists again of packages.
+Now to simplify processing packages install yumex that provides graphical interface to YUM.
+And lets you simply check packages that you want.
 
 \begin{verbatim}
 yum install yumex
 \end{verbatim}
 
-To install CellIDE run yumex, goto Group View$\rightarrow$Development$\rightarrow$Cell Development Tools. Check \textit{cellide}, that is actual IDE (Eclipse with cell concerning stuff) and \textit{ibm-java2-i386-jre}, that is Java Runtime Environment, JRE needed for running of IDE. And click 'Process Queue'. Note: you should have the ISOs mounted onto loopback devices. Otherwise you get 'Error Downloading Packages' after clicking 'Process Queue'. So you have to mount ISOs whenever you want to install package concerning Cell SDK
+To install CellIDE run yumex, goto Group View$\rightarrow$Development$\rightarrow$Cell Development Tools.
+Check \textit{cellide}, that is actual IDE (Eclipse with cell concerning stuff) and \textit{ibm-java2-i386-jre}, that is Java Runtime Environment, JRE needed for running of IDE.
+And click 'Process Queue'. Note: you should have the ISOs mounted onto loopback devices.
+Otherwise you get 'Error Downloading Packages' after clicking 'Process Queue'.
+So you have to mount ISOs whenever you want to install package concerning Cell SDK
 
 \begin{verbatim}
 /opt/cell/cellsdk --iso ISODIR mount
 \end{verbatim}
 
-After the installation you have two new folders. /opt/cell/ide that contains the IDE and /opt/ibm/java2-i386-50 where JRE resides. To run the ide you have to specify folder where the JRE is (through -vm param).
+After the installation you have two new folders.
+/opt/cell/ide that contains the IDE and /opt/ibm/java2-i386-50 where JRE resides.
+To run the ide you have to specify folder where the JRE is (through -vm param).
 
 \begin{verbatim}
 /opt/cell/ide/eclipse/eclipse -vm /opt/ibm/java2-i386-50/jre/bin/
@@ -64,7 +84,10 @@ After the installation you have two new folders. /opt/cell/ide that contains the
 
 \section{IBM Full-System Simulator}
 
-The last part of develelopment environment is IBM Full-System Simulator (systemsym). It is not part of ISOs with SDK so you have to download it separately. Visit \url{http://www.alphaworks.ibm.com/tech/cellsystemsim/download} and download rpm with the simulator appropriate to the platform you are currently using. Be sure to download fedora 9 version of the simulator (cell-3.1-8.f9.*). Then instal it.
+The last part of develelopment environment is IBM Full-System Simulator (systemsym).
+It is not part of ISOs with SDK so you have to download it separately.
+Visit \url{http://www.alphaworks.ibm.com/tech/cellsystemsim/download} and download rpm with the simulator appropriate to the platform you are currently using.
+Be sure to download fedora 9 version of the simulator (cell-3.1-8.f9.*). Then instal it.
 
 \begin{verbatim}
 rpm -ivh ISODIR/systemsim-cell-3.1-8.f9.i386.rpm
@@ -76,12 +99,16 @@ Maybe some dependencies will be missing. So you have to install it. In my case o
 yum install blt tk
 \end{verbatim}
 
-Now you have simulator installed. But it has nothing to simulate. Image with image of simulated Fedora 9 system is needed (sysroot image). It is among SDK rpms so install it using yumex (Cell Development Tools$\rightarrow$sysroot\_image).
-Now all neccessary stuff is installed. You could start the IDE and start development. But there are some bugs to fix yet. 
+Now you have simulator installed. But it has nothing to simulate.
+Image with image of simulated Fedora 9 system is needed (sysroot image).
+It is among SDK rpms so install it using yumex (Cell Development Tools$\rightarrow$sysroot\_image).
+Now all neccessary stuff is installed.
+ You could start the IDE and start development. But there are some bugs to fix yet. 
 
 \subsection{Bug fixing}
 
-If you start IDE and it crashes with unhandled exception it is probably caused by xulrunner library. It is ussually installed with Firefox3. There is following workaround:
+If you start IDE and it crashes with unhandled exception it is probably caused by xulrunner library.
+It is ussually installed with Firefox3. There is following workaround:
 \begin{enumerate}
 \item download an older version of xulrunner
 
@@ -104,7 +131,9 @@ Lets call it XULDIR
 Now you should start the IDE without the crash.
 
 \par
-Another issue (stack issue) is with tcl (scripting language that is used for configuration of the systemsym). There is bug with stack size chechking that causes cycling of tcl code. To workeraound this problem you should use ulimit command that changes default environment of linux programs
+Another issue (stack issue) is with tcl (scripting language that is used for configuration of the systemsym).
+There is bug with stack size chechking that causes cycling of tcl code.
+To workeraound this problem you should use ulimit command that changes default environment of linux programs
 
 \begin{verbatim}
 ulimit -s unlimited
@@ -113,7 +142,12 @@ ulimit -s unlimited
 causes that stack is unlimited.
 
 \par
-The last is to fix actual tcl script that manages loading the sysroot\_image (21\% issue - loading of the sysroot\_image freezes on 21\% so is not started and thats why unusable). It is cause by wrong triggers that are triggerd when some text is output from console by the sysroot\_image loading. There is probably triggers that wait for text from previous version of SDK that is never output in the current version. That is why the loading freezes on 21\%. To fix it you have to edit /opt/cell/ide/eclipse/plugins/ com.ibm.celldt.simulator.profile.default\_3.1.0.200809010950/ simulator\_init.tcl file. Replace the "Welcome to Fedora Core" string with "Welcome to Fedora" and "INIT: Entering runlevel: 2" with "Starting login process".
+The last is to fix actual tcl script that manages loading the sysroot\_image (21\% issue - loading of the sysroot\_image freezes on 21\% so is not started and thats why unusable).
+It is cause by wrong triggers that are triggerd when some text is output from console by the sysroot\_image loading.
+There is probably triggers that wait for text from previous version of SDK that is never output in the current version.
+That is why the loading freezes on 21\%.
+To fix it you have to edit /opt/cell/ide/eclipse/plugins/ com.ibm.celldt.simulator.profile.default\_3.1.0.200809010950/ simulator\_init.tcl file.
+Replace the "Welcome to Fedora Core" string with "Welcome to Fedora" and "INIT: Entering runlevel: 2" with "Starting login process".
 
 It is usefull to create starting script. That solve the stack issue and add systemsim directory to PATH (needed for running).
 
@@ -131,7 +165,9 @@ Because sysroot\_image is provided as image of installed Fedora 9 without CellBE
 /opt/cell/cellsdk_sync_simulator install
 \end{verbatim}
 
-This shell script installs all rpms for ppc and ppc64 platforms that finds in /tmp/cellsdk/rpms. By default these rpms are copied into /tmp/cellsdk/rpms during the install process. If they are not still there (or in installed subdirectory) you have to copy them by hand from ISOs (note: ISOs has to be mounted).
+This shell script installs all rpms for ppc and ppc64 platforms that finds in /tmp/cellsdk/rpms.
+By default these rpms are copied into /tmp/cellsdk/rpms during the install process.
+If they are not still there (or in installed subdirectory) you have to copy them by hand from ISOs (note: ISOs has to be mounted).
 
 \begin{verbatim}
 cp /opt/cell/yum-repos/CellSDK-Devel-Fedora/rpms/*.{ppc,ppc64}.rpm\
@@ -140,7 +176,9 @@ cp /opt/cell/yum-repos/CellSDK-Devel-Fedora/rpms/*.{ppc,ppc64}.rpm\
 
 \subsection{Copying content into sysroot\_image}
 
-Sysroot\_image is common binary image that can mounted and thus some additional content copyed into. This is useful when extra library that are not part of the default image need to be used. In my case that was some boost libraries. So to mount the sysroot\_image issue:
+Sysroot\_image is common binary image that can mounted and thus some additional content copyed into.
+This is useful when extra library that are not part of the default image need to be used.
+In my case that was some boost libraries. So to mount the sysroot\_image issue:
 \begin{verbatim}
 mount -o loop /opt/ibm/systemsim-cell/images/cell/sysroot_disk <your mount point>
 \end{verbatim}
@@ -149,37 +187,47 @@ And then copy whatever you want.
 \subsection{Simulator hints}
 
 \par
-You can ssh to running simulator. It is better to use real bash that the console within IDE. You have all the bash advantages like command and path completition available in contrast to 'text mode' of the IDE console.
+You can ssh to running simulator. It is better to use real bash that the console within IDE.
+You have all the bash advantages like command and path completition available in contrast to 'text mode' of the IDE console.
 
 \section{Setup CellIDE}
 
 \section{Using examples}
 
-Examples are installed into /opt/cell/sdk/src as tarball. So you have to untar each you want to use. It is good to start with examples and tutorial sources. Each folder has its own makefile that manages makefiles in its subfolders. So you can call only the top level one to build all projects in subfolders or any from the subfolders to build particular projects.
+Examples are installed into /opt/cell/sdk/src as tarball. So you have to untar each you want to use.
+It is good to start with examples and tutorial sources.
+Each folder has its own makefile that manages makefiles in its subfolders.
+ So you can call only the top level one to build all projects in subfolders or any from the subfolders to build particular projects.
 
-It is convenient to use the sample sources in CellIDE where you can build it as well and create run/debug configuration for running within cell environment. To use the exmaple code (for example /opt/cell/sdk/src/tutorial/simple) create new c++ makefile project. Click right button on it to get into properties. C/C++ general tab $\rightarrow$ Paths and Symbols $\rightarrow$ Source location. Here you have to add the folder with the sources (/opt/cell/sdk/src/tutorial/simple) by 'create / link folder' button $\rightarrow$advanced $\rightarrow$ link to folder in filesystem. Now you have two folders in list. The first one is the original, created during project creation and the other newly linked folder with the source. You can delete the original one since you are not going to use it.
-Next is neccassary to set up 'Build directory' to tell the IDE where shall search for makefile. It is C/C++ Build tab. Use 'Workspace' button to specify the folder because it will use workspace\_loc variable and thus independent on exact location on filesystem.  
+It is convenient to use the sample sources in CellIDE where you can build it as well and create run/debug configuration for running within cell environment.
+To use the exmaple code (for example /opt/cell/sdk/src/tutorial/simple) create new c++ makefile project.
+Click right button on it to get into properties.
+C/C++ general tab $\rightarrow$ Paths and Symbols $\rightarrow$ Source location.
+Here you have to add the folder with the sources (/opt/cell/sdk/src/tutorial/simple) by 'create / link folder' button $\rightarrow$advanced $\rightarrow$ link to folder in filesystem.
+Now you have two folders in list. The first one is the original, created during project creation and the other newly linked folder with the source.
+You can delete the original one since you are not going to use it.
+Next is neccassary to set up 'Build directory' to tell the IDE where shall search for makefile.
+It is C/C++ Build tab. Use 'Workspace' button to specify the folder because it will use workspace\_loc variable and thus independent on exact location on filesystem.  
 
 \section{Tunnig memory usage on PS3}
 \label{ps3MemoryUsage}
 
-PS3 has only 256MB RAM memory. This is very small amount for operating system
-and programs together. When install fedora system with default state and
-boot up it, the amount of remaining free memory is about 10MB. It is
-insufficient for either debugging and compilation. So some of resources has
-to be switched off. Our PS3s are accessed remotely via ssh so there is no need
-for X server. So this is the first you can turn off. This is performed by
-change of runlevel from 5 to 3. Run level setting is in /etc/inittab file:
+PS3 has only 256MB RAM memory. This is very small amount for operating system and programs together.
+When install fedora system with default state and boot up it, the amount of remaining free memory is about 10MB.
+It is insufficient for either debugging and compilation.
+So some of resources has to be switched off.
+Our PS3s are accessed remotely via ssh so there is no need for X server.
+So this is the first you can turn off. This is performed by change of runlevel from 5 to 3.
+Run level setting is in /etc/inittab file:
 \begin{verbatim}
 change in line "id:5:initdefault:" the 5 to 3
 \end{verbatim}
-Another resource are services. Here you have to consider if the service you
-want to turn off is really unnecesary. In Our PS3 NeworkManger and Wireless
-supplicant was turn off. NOTE: when you turn oww netowrk manager, you have to
-tuen on network service othervise the networking will not run properly. For
-sevice management within ssh console /usr/sbin/ntsysv manager is quite useful.
+Another resource are services.
+Here you have to consider if the service you want to turn off is really unnecesary.
+In Our PS3 NeworkManger and Wireless supplicant was turn off.
+NOTE: when you turn oww netowrk manager, you have to turn on network service othervise the networking will not run properly.
+For sevice management within ssh console /usr/sbin/ntsysv manager is quite useful.
 After disabling all unnecessary services we got about 130MB of free space.
 
-Yellow dog distributions goes even beyond. They can access other 256MB in PS3
-locked for graphics. Special device is created and the graphic memory is the
-used as swap. For details see //TODO
+Yellow dog distributions goes even beyond. They can access other 256MB in PS3 locked for graphics.
+Special device is created and the graphic memory is the used as a swap partition. For details see \url{http://us.fixstars.com/products/ydl/}.
