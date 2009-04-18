@@ -3,9 +3,10 @@
 In this chapter will describe my experience with the CellBE platform will then follow.
 Content of SDK, some usefull libraries, as well as some design patterns of CellBE programming will be described.
 
-\section{CellBE platform development}	// TODO prefor,ulovat
+\section{CellBE platform development}
 \par
-IBM deliver SDK for development of programs fot CellBE. It is for linux platform, in the concrete for Fedora or Red Hat distribution.
+IBM deliver SDK for development of programs fot CellBE.
+It is for linux platform, in the concrete for Fedora or Red Hat distribution.
 It comes in two flawors.
 The official non free one which has all the features needed for development for CellBE evene for some hibrid systems and support team ready to help.
 And the free one that is open to wide public and everybody can download it and start developing.
@@ -13,7 +14,7 @@ The free one does not have the tools for hibrid systems nor some tools for devel
 Wee use the free one since we develop only in C/C++ and for clean CellBE processor.
 
 \par
-Because the SDK is for Linux operation system the user has to have already deeper knowledge about the system.
+Because the SDK is for Linux operation system, its user has to have already deeper knowledge about the system.
 There are some bugs and parts that are not fully finished (see \ref{toolsSetup}).
 Without deeper knowledge of the Linux system is impossible to react on some unexpected behaviour during installation or development phase.
 
@@ -117,11 +118,21 @@ Offers features such as SPE context management (creating, running, scheduling, a
 
 \item {Data Communication and Synchronization - DaCS}
 \par
-Defines program entity for PPE or SPE (HE - host element program for PPE and AE - accelerator element program for SPE). Provides some services for that programs. These are resource and process management, where an HE manipulates its AEs, group management, for defining groups within which synchronization events like barriers can happen, message passing by using send and receive primitives etc.
+Defines program entity for PPE or SPE (HE - host element program for PPE and AE - accelerator element program for SPE).
+Provides some services for that programs.
+These are resource and process management, where an HE manipulates its AEs.
+Group management, for defining groups within which synchronization events like barriers can happen.
+Message passing by using send and receive primitives etc.
 
 \item {Accelerated Library Framework - ALF}
 \par
-ALF defines ALF-task as another entity that perform computationaly intensive parts of a program. The idea is to have the host program split the work into multiple independent pieces, which are called work blocks. They are described by a computational kernel, the input and the output data. Programming with ALF is divided into two side. The host and the accelerator one. On the accelerator side, the programmer only has to code the computational kernel, unwrap the input data, and pack the output data when the kernel finishes. The ALF offer clear separation between host accelerator sides of program parts. Providing the following services (from programmers view for free): work blocks queue management, load balancing between accelerators, transparent DMA transfers, ...
+ALF defines ALF-task as another entity that perform computationaly intensive parts of a program.
+The idea is to have the host program split the work into multiple independent pieces, which are called work blocks.
+They are described by a computational kernel, the input and the output data. Programming with ALF is divided into two side.
+The host and the accelerator one.
+On the accelerator side, the programmer only has to code the computational kernel, unwrap the input data, and pack the output data when the kernel finishes.
+The ALF offer clear separation between host accelerator sides of program parts.
+Providing the following services (from programmers view for free): work blocks queue management, load balancing between accelerators, transparent DMA transfers, ...
 
 \end{enumerate}
 
@@ -159,11 +170,11 @@ Because of heterogenous nature of CellBE and its PPU \& SPEs processing elements
 \begin{enumerate}
 \item Streaming configuration
 \par
-All SPE serves as a stream processor (see Figure \ref{fg:streamingModel}).
- They run exact same code expecting the same type of data and producing also the same of data type.
- This configuration is well suited for some streaming application for example filters where there is still the same type of data on input.
- No SPU context need not to be switched that save according time.
- One disadvantage is that configuration is static.
+All SPE serves as a stream processor (see figure \ref{fg:streamingModel}).
+They run exact same code expecting the same type of data and producing also the same of data type.
+This configuration is well suited for some streaming application for example filters where there is still the same type of data on input.
+No SPU context need not to be switched that save according time.
+One disadvantage is that configuration is static.
 
 \begin{figure}
     \centering
@@ -174,10 +185,10 @@ All SPE serves as a stream processor (see Figure \ref{fg:streamingModel}).
 
 \item Pipeline configuration
 \par
-SPE server as stages of an pipeline (see Figure \ref{fg:pipelineModel}).
- Data are passed through from one to other of the SPEs.
- The SPE to SPE transfer are faster than SPE to PPE so this can be benefit.
- The configuration is also static which means no SPU context switch.
+SPE server as stages of an pipeline (see figure \ref{fg:pipelineModel}).
+Data are passed through from one to other of the SPEs.
+The SPE to SPE transfer are faster than SPE to PPE so this can be benefit.
+The configuration is also static which means no SPU context switch.
 
 \begin{figure}
     \centering
@@ -189,9 +200,9 @@ SPE server as stages of an pipeline (see Figure \ref{fg:pipelineModel}).
 \item PPU centric
 \par
 This configuration is common approach with CellBE.
- Program runs on PPE (see Figure \ref{fg:PPUCentricModel})and only selected, highly demanding computational kernels (hotspots) are offloaded to SPEs.
- This method is the easiest from a program development perspective because it limits the scope of source code changes and does not require much re-engineering at the application logic level.
- One disadvantage is dynamic changes of SPE contexts that is quite expensive opertation.
+Program runs on PPE (see figure \ref{fg:PPUCentricModel})and only selected, highly demanding computational kernels (hotspots) are offloaded to SPEs.
+This method is the easiest from a program development perspective because it limits the scope of source code changes and does not require much re-engineering at the application logic level.
+One disadvantage is dynamic changes of SPE contexts that is quite expensive opertation.
 
 \begin{figure}
     \centering
@@ -231,7 +242,7 @@ The SPU program is then referenced as special extern structure direct from PPU c
 \section {Process of porting application for CellBE}
 
 \par
-The most common process of porting an application for CellBE system (Figure \ref{fg:appPorting}) begins with locatlization of compute intensive parts, hotspots (by profiling of the application on PPE).
+The most common process of porting an application for CellBE system (figure \ref{fg:appPorting}) begins with locatlization of compute intensive parts, hotspots (by profiling of the application on PPE).
  Hotspot computation is then moved to the SPEs.
  Then the SIMDation (i.e. rewriting scalar code into vectorised to be able to use SIMD instruction) of the hotspots and data movement tunnig can be performed until satisfactory performance is obtained.
  The whole process is repeated for every single hotspot.

@@ -15,53 +15,41 @@ either Headquarters or ocean side.\\
 
 \chapter{Conclusion}
 
-At the beginig I studied avalable literature to find out what is actualy
-CellBE, what benefits it brings for what price. What special features it have
-and what are thay good for. Then I have been trying to install SDK to start
-actual development process. During this phase I faced some obstacles like bugs,
-incompatibilities among tools, lilbraries that the tools use and even
-inoperating system vs. SDK incompatibilities. So I had to go through
-variety of forums and toher sources to find the solution. As a side
-effect I improved my linux knowledge. Eventually
-I managed to install SDK and was able to start developing. Then I tested
-variety of libraries, tools and other feature that the SDK brings.
-I have chosen level set based segmentation algorithm implementing sparse field
-accelerating method to
-port to CellBE platform. This is quite complex algorithm to test the platform
-potential for image processing as a whole. I adopted ITK implementation of that
-algorithm. So I had to study ITK toolkit and its internals. I have also
-incorporated the whole program into MedV4D framework that means I have
-imiplmented some new modules that allows using ITK and can offload some part of
-processing to another machine (that run on CellBE).
-Actual porting process started with profiling of existing application which had
-find out hot spots of the code which can be in turn offloaded to SPE to //TODO
-vyuzit CellBE potential.
-Profiling step results are unexpected so another redesign of application
-followed. In this new design almost whole original ITK pipeline was offloaded
-into SPE. Big code restructuralisation was necessary to allow to perform actual
-computations on SPE.
+At the beginig we studied avalable literature to find out what is actualy CellBE, what benefits it brings for what price.
+What special features it have and what are thay good for.
+Then we have been trying to install SDK to start actual development process.
+During this phase we faced some obstacles like bugs, incompatibilities among tools, lilbraries that the tools use and even operating system vs. SDK incompatibilities.
+So we had to go through variety of forums and toher sources to find the solution.
+As a side effect we improved our linux knowledge.
+Eventually we managed to install SDK and was able to start developing.
+Then we tested variety of libraries, tools and other feature that the SDK brings.
+We have chosen level set based segmentation algorithm implementing sparse field accelerating method to port to CellBE platform.
+This is quite complex algorithm to test the platform potential for image processing as a whole.
+We adopted ITK implementation of that algorithm.
+So we had to study ITK toolkit and its internals.
+We have also incorporated the whole program into MedV4D framework.
+That means we have imiplmented some new modules that allows using ITK and can offload some part of processing to another machine (that run on CellBE).
+Actual porting process started with profiling of existing application.
+This step have found out hot spots of the code which can be in turn offloaded to SPE to take advantage of CellBE potential.
+Profiling step results are unexpected so another redesign of application followed.
+In this new design almost whole original ITK pipeline was offloaded into SPE.
+Big code restructuralisation was necessary to allow to perform actual computations on SPE.
 
+\par
+The implemented algorithm is complex enough.
+So its worth to let it to compute on a remote mashine with CellBE (or any other processor).
+I.e. simple thresholding would be worthless to compute remotely.
+It is tradeoff between time spent in transfer of actual dataset and the time we spare with computation on better hardware.
+But the nature of the thresholding is exactly targeted for streaming arghitecture such as CellBE.
+So when the CellBE processor is in common machines such as notebooks, desktops, even class of such simple image processing algorithms (such as the thresholding or variety of maskings, edge detections) that is implemented in everyday used software could take advantege of the processor.
+But nowadays is available only in Blade servers and PS3.
+So only complex algorithm is worth to port.
+We think the pallete of tools and features of the CellBE can make it well suited for every algorithm.
+Some of the algorithms siuts more and the performance gain is huge.
+But some of them could not suit as well and performance gain would be less but we dont think there is an algorithm that can perform much worse (i.e. have big negative performance gain).
 
-
-The implemented algorithm is complex enough. So its worth to let it to compute
-on a remote mashine with CellBE (or any other processor). I.e.
-simple thresholding would be worthless to compute remotely. It is tradeoff
-between time spent in
-transfer of actual dataset and the time we spare with computation on
-better hardware. But the nature of the thresholding is exactly targeted for
-streaming arghitecture such as CellBE. So when the CellBE processor is in common
-machines such as notebooks, desktops, even class of such simple image processing
-algorithms (such as the thresholding or variety of maskings, edge detections)
-that is implemented in everyday used software could take advantege of the
-processor. But nowadays is available only in Blade servers and PS3. So only
-complex algorithm is worth to port. I think the pallete of tools and features
-of the CellBE can make it well suited for every algorithm. Some of the
-algorithms siuts more and the performance gain is huge. But some of them could
-not suit as well and performance gain wouldbe less but I dont think there is an
-algorithm that can perform much worse (i.e. have big negative performance gain).
-
-Personaly I like the CellBE platform for its varations of use scenarios
-and ability of program tunnig and customization. I think its great potential has
-already been proved. But it is still waiting for wider spectrum of programmers.
+We like the CellBE platform for its varations of use scenarios and ability of program tunnig and customization.
+We think its great potential has already been proved.
+But it is still waiting for wider spectrum of programmers.
 
 // popsat, ze by bylo lepsi, kdyby to bylo jednodussi
