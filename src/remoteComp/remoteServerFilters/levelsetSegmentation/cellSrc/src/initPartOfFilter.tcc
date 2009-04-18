@@ -42,8 +42,8 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
 MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 ::~MySegmtLevelSetFilter_InitPart()
-{}
-
+{
+}
 ///////////////////////////////////////////////////////////////////////////////
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
 void

@@ -23,7 +23,7 @@ public:
 			  {
 				  for(uint32 i=0; i<LYERCOUNT; i++)
 					  layers[i] = LayerType::New();
-			  }		  
+			  }
 		  };
 		  
 		  typedef ConfigStructures TConfigStructs;

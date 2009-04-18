@@ -26,9 +26,9 @@ WorkManager<IndexType, ValueType>::WorkManager(uint32 coreCount)
 template<typename IndexType, typename ValueType>
 WorkManager<IndexType, ValueType>::~WorkManager()
 {
-	delete m_LayerSegments;
-	delete m_UpdateBuffers;
-	delete m_configs;
+	delete [] m_configs;	
+	delete [] m_UpdateBuffers;
+	delete [] m_LayerSegments;	
 }
 
 ///////////////////////////////////////////////////////////////////////////////
