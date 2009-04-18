@@ -6,12 +6,13 @@
 using namespace M4D::Cell;
 
 ///////////////////////////////////////////////////////////////////////////////
-
+#ifdef FOR_CELL
 extern spe_program_handle_t SPEMain; // handle to SPE program
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void *ppu_pthread_function(void *arg) {
+void *ppu_pthread_function(void *arg) 
+{
 	unsigned int entry = SPE_DEFAULT_ENTRY;
 	
 	Tppu_pthread_data *datap = (Tppu_pthread_data *)arg;
@@ -24,14 +25,36 @@ void *ppu_pthread_function(void *arg) {
 	}
 	pthread_exit(NULL);
 }
-
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 
 SPEManager::SPEManager() {
 	/* Determine the number of SPE threads to create.   */
 	speCount = 1;//spe_cpu_info_get(SPE_COUNT_USABLE_SPES, -1);
 
+#ifdef FOR_CELL
 	data = new Tppu_pthread_data[speCount];
+#endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+SPEManager::InitProgramProps(void)
+{	
+	m_requestDispatcher._workManager = _workManager;
+	
+	_SPEProgSim.applyUpdateCalc.m_layerGate.dispatcher = &m_requestDispatcher;
+	
+	// setup apply update
+	_SPEProgSim.applyUpdateCalc.commonConf =  &_workManager->GetConfSructs()[0].runConf;
+	_SPEProgSim.applyUpdateCalc.m_stepConfig = &_workManager->GetConfSructs()[0].calcChngApplyUpdateConf;	
+	_SPEProgSim.applyUpdateCalc.m_propLayerValuesConfig = &_workManager->GetConfSructs()[0].propagateValsConf;	
+	
+	// and update solver
+	_SPEProgSim.updateSolver.m_Conf = &_workManager->GetConfSructs()[0].runConf;
+	_SPEProgSim.updateSolver.m_stepConfig = &_workManager->GetConfSructs()[0].calcChngApplyUpdateConf;
+	_SPEProgSim.updateSolver.Init();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -39,29 +62,29 @@ SPEManager::SPEManager() {
 SPEManager::~SPEManager() {
 	//TODO stop the SPUs
 	
-	ESPUCommands quitCommand = QUIT;
-	SendCommand(quitCommand);
-	
-	// wait for thread termination
-	for (uint32 i=0; i<speCount; i++) {
-	    if (pthread_join (data[i].pthread, NULL)) {
-	    	D_PRINT ("Failed joining thread");
-	    }
-	}
-
-	/* Destroy contexts */
-	for (uint32 i=0; i<speCount; i++) {
-		if (spe_context_destroy(data[i].spe_ctx) != 0) {
-			D_PRINT("Failed destroying context");
-			//exit (1);
-		}
-	}
-
-	delete data;
+//	ESPUCommands quitCommand = QUIT;
+//	SendCommand(quitCommand);
+//	
+//	// wait for thread termination
+//	for (uint32 i=0; i<speCount; i++) {
+//	    if (pthread_join (data[i].pthread, NULL)) {
+//	    	D_PRINT ("Failed joining thread");
+//	    }
+//	}
+//
+//	/* Destroy contexts */
+//	for (uint32 i=0; i<speCount; i++) {
+//		if (spe_context_destroy(data[i].spe_ctx) != 0) {
+//			D_PRINT("Failed destroying context");
+//			//exit (1);
+//		}
+//	}
+//
+//	delete data;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
+#ifdef FOR_CELL
 void
 SPEManager::SendCommand(enum ESPUCommands &cmd)
 {
@@ -110,5 +133,5 @@ void SPEManager::RunSPEs(RunConfiguration *conf) {
 		}
 	}
 }
-
+#endif
 ///////////////////////////////////////////////////////////////////////////////

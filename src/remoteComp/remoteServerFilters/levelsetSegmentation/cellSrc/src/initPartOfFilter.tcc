@@ -16,10 +16,10 @@ namespace itk {
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
 MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 ::MySegmtLevelSetFilter_InitPart()
+	: _workManager(m_SPEManager.GetSPECount())
 {		  
+	m_SPEManager._workManager = &_workManager;
   m_IsoSurfaceValue = this->m_ValueZero;
-  m_LayerNodeStore = LayerNodeStorageType::New();
-  m_LayerNodeStore->SetGrowthStrategyToExponential();
   this->SetRMSChange(static_cast<double>(this->m_ValueZero));
   m_BoundsCheckingActive = false;
   m_ConstantGradientValue = 1.0;
@@ -32,11 +32,11 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
   this->SetNumberOfIterations(1000);
   
   //initial properties
-  m_conf.runConf.m_upThreshold = 500;
-  m_conf.runConf.m_downThreshold = -500;
-  m_conf.runConf.m_propWeight = 1;
-  m_conf.runConf.m_curvWeight = 0.001f;
-  m_conf.runConf.m_ConstantGradientValue = this->m_ConstantGradientValue;
+  m_runConf.m_upThreshold = 500;
+  m_runConf.m_downThreshold = -500;
+  m_runConf.m_propWeight = 1;
+  m_runConf.m_curvWeight = 0.001f;
+  m_runConf.m_ConstantGradientValue = this->m_ConstantGradientValue;
 }
 ///////////////////////////////////////////////////////////////////////////////
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
@@ -137,24 +137,6 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
       }
     }
 
-  // Erase all existing layer lists.
-  for (i = 0; i < m_Layers.size(); ++i)
-    {
-    while (! m_Layers[i]->Empty() )
-      {
-      m_LayerNodeStore->Return(m_Layers[i]->Front());
-      m_Layers[i]->PopFront();
-      }
-    }
-  
-  // Allocate the layers for the sparse field.
-  m_Layers.clear();
-  m_Layers.reserve(LYERCOUNT);
-
-  while ( m_Layers.size() < (LYERCOUNT) )
-    {
-    m_Layers.push_back( LayerType::New() );
-    }
   
   // Construct the active layer and initialize the first layers inside and
   // outside of the active layer.
@@ -173,56 +155,26 @@ template<class TInputImage,class TFeatureImage, class TOutputPixelType>
 void
 MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 ::InitRunConf()
-{
+{	
 	// feature image
-    m_conf.runConf.featureImageProps.imageData = 
+    m_runConf.featureImageProps.imageData = 
     	(FeaturePixelType *)GetFeatureImage()->GetBufferPointer();
-    m_conf.runConf.featureImageProps.region = 
+    m_runConf.featureImageProps.region = 
     	ConvertRegion<TFeatureImage, M4D::Cell::TRegion>(*GetFeatureImage());
-    m_conf.runConf.featureImageProps.spacing = 
+    m_runConf.featureImageProps.spacing = 
     	ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename TFeatureImage::SpacingType>(GetFeatureImage()->GetSpacing());
     // output image
-    m_conf.runConf.valueImageProps.imageData = (ValueType *)this->GetOutput()->GetBufferPointer();
-    m_conf.runConf.valueImageProps.region = 
+    m_runConf.valueImageProps.imageData = (ValueType *)this->GetOutput()->GetBufferPointer();
+    m_runConf.valueImageProps.region = 
     	ConvertRegion<OutputImageType, M4D::Cell::TRegion>(*this->GetOutput());
-    m_conf.runConf.featureImageProps.spacing = ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename OutputImageType::SpacingType>(this->GetOutput()->GetSpacing());
+    m_runConf.featureImageProps.spacing = ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename OutputImageType::SpacingType>(this->GetOutput()->GetSpacing());
     //status image
-    m_conf.runConf.statusImageProps.imageData = (StatusType *)m_StatusImage->GetBufferPointer();
-    m_conf.runConf.statusImageProps.region = 
+    m_runConf.statusImageProps.imageData = (StatusType *)m_StatusImage->GetBufferPointer();
+    m_runConf.statusImageProps.region = 
     	ConvertRegion<StatusImageType, M4D::Cell::TRegion>(*m_StatusImage);
-    m_conf.runConf.statusImageProps.spacing = ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename StatusImageType::SpacingType>(m_StatusImage->GetSpacing());
+    m_runConf.statusImageProps.spacing = ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename StatusImageType::SpacingType>(m_StatusImage->GetSpacing());
     
-    m_requestDispatcher.SetProps(m_Layers, m_LayerNodeStore);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-template<class TInputImage,class TFeatureImage, class TOutputPixelType>
-void
-MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
-::InitCalculateChangeAndUpdActiveLayerConf()
-{
-	m_conf.calcChngApplyUpdateConf.layer0Begin = 
-		(NodeTypeInSPU *) this->m_Layers[0]->Begin().GetPointer();
-	m_conf.calcChngApplyUpdateConf.layer0End = 
-		(NodeTypeInSPU *) this->m_Layers[0]->End().GetPointer();
-    
-	m_conf.calcChngApplyUpdateConf.updateBuffBegin = &this->m_UpdateBuffer[0];
-}
-
-///////////////////////////////////////////////////////////////////////////////
-template<class TInputImage,class TFeatureImage, class TOutputPixelType>
-void
-MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
-::InitPropagateValuesConf()
-{
-	for(uint32 i=0; i<LYERCOUNT; i++)
-    {	  	  
-		m_conf.propagateValsConf.layerBegins[i] = 
-			(NodeTypeInSPU *) this->m_Layers[i]->Begin().GetPointer();
-		
-		m_conf.propagateValsConf.layerEnds[i] = 
-			(NodeTypeInSPU *) this->m_Layers[i]->End().GetPointer();
-    }
+    _workManager.SetupRunConfig(&m_runConf);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -296,7 +248,6 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
     statusIt(m_NeighborList.GetRadius(), m_StatusImage,
              this->GetOutput()->GetRequestedRegion());
   IndexType center_index, offset_index;
-  LayerNodeType *node;
   bool bounds_status;
   ValueType value;
   StatusType layer_number;
@@ -325,13 +276,8 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
           }
         }
       
-      // Borrow a node from the store and set its value.
-      node = m_LayerNodeStore->Borrow();
-      node->m_Value = center_index;
-
-      // Add the node to the active list and set the status in the status
-      // image.
-      m_Layers[0]->PushFront( node );
+      _workManager.PUSHNode(center_index, 0);
+      
       statusIt.SetCenterPixel( 0 );
 
       // Grab the neighborhood in the image of shifted input values.
@@ -361,9 +307,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
                              layer_number, bounds_status );
           if ( bounds_status == true ) // In bounds.
             {
-            node = m_LayerNodeStore->Borrow();
-            node->m_Value = offset_index;
-            m_Layers[layer_number]->PushFront( node );
+        	  _workManager.PUSHNode(offset_index, layer_number);
             } // else do nothing.
           }
         }
@@ -377,16 +321,17 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 ::ConstructLayer(StatusType from, StatusType to)
 {
   unsigned int i;
-  LayerNodeType *node;
   bool boundary_status;
   typename LayerType::ConstIterator fromIt;
   NeighborhoodIterator<StatusImageType>
     statusIt(m_NeighborList.GetRadius(), m_StatusImage,
              this->GetOutput()->GetRequestedRegion() );
   
+  for(uint32 spuIt=0; spuIt<m_SPEManager.GetSPECount(); spuIt++)
+  {
   // For all indicies in the "from" layer...
-  for (fromIt = m_Layers[from]->Begin();
-       fromIt != m_Layers[from]->End();  ++fromIt)
+  for (fromIt = _workManager.GetLayers()[spuIt].layers[from]->Begin();
+       fromIt != _workManager.GetLayers()[spuIt].layers[from]->End();  ++fromIt)
     {
     // Search the neighborhood of this index in the status image for
     // unassigned indicies. Push those indicies onto the "to" layer and
@@ -402,14 +347,13 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
                           boundary_status);
         if (boundary_status == true) // in bounds
           {
-          node = m_LayerNodeStore->Borrow();
-          node->m_Value = statusIt.GetIndex()
-            + m_NeighborList.GetNeighborhoodOffset(i);
-          m_Layers[to]->PushFront( node );
+        	_workManager.PUSHNode(statusIt.GetIndex()
+                    + m_NeighborList.GetNeighborhoodOffset(i), to);
           }
         }
       }
     }
+  }
 }
 ///////////////////////////////////////////////////////////////////////////////
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
@@ -442,10 +386,11 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
   //const NeighborhoodScalesType neighborhoodScales; // = func_->ComputeNeighborhoodScales();
 
   ValueType dx_forward, dx_backward, length, distance;
-
+  for(uint32 spuIt=0; spuIt<m_SPEManager.GetSPECount(); spuIt++)
+    {
   // For all indicies in the active layer...
-  for (activeIt = m_Layers[0]->Begin();
-       activeIt != m_Layers[0]->End(); ++activeIt)
+  for (activeIt = _workManager.GetLayers()[spuIt].layers[0]->Begin();
+       activeIt != _workManager.GetLayers()[spuIt].layers[0]->End(); ++activeIt)
     {
     // Interpolate on the (shifted) input image values at this index to
     // assign an active layer value in the output image.
@@ -474,43 +419,8 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
     output->SetPixel( activeIt->m_Value , 
                       vnl_math_min(vnl_math_max(-CHANGE_FACTOR, distance), CHANGE_FACTOR) );
     }
+    }
   
-}
-///////////////////////////////////////////////////////////////////////////////
-template<class TInputImage,class TFeatureImage, class TOutputPixelType>
-void
-MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
-::AllocateUpdateBuffer()
-{
-  // Preallocate the update buffer.  NOTE: There is currently no way to
-  // downsize a std::vector. This means that the update buffer will grow
-  // dynamically but not shrink.  In newer implementations there may be a
-  // squeeze method which can do this.  Alternately, we can implement our own
-  // strategy for downsizing.
-//	if(m_Layers[0]->Size() > 10000)
-//	{
-//		int i = 10;
-//	}
-  m_UpdateBuffer.clear();
-  m_UpdateBuffer.reserve(m_Layers[0]->Size());
-  memset(&m_UpdateBuffer[0], 0, m_Layers[0]->Size() * sizeof(ValueType));
-  
-//  std::cout << "Update list, after reservation:" << std::endl;
-//  PrintUpdateBuf(std::cout);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-template<class TInputImage,class TFeatureImage, class TOutputPixelType>
-void
-MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
-::PrintUpdateBuf(std::ostream &s)
-{
-	s << "size=" << m_Layers[0]->Size() << std::endl;
-	ValueType *updBuffData = &m_UpdateBuffer[0];
-    for(uint32 i=0; i<m_Layers[0]->Size(); i++, updBuffData++)
-    	s << *updBuffData << ", ";
-  	  s << std::endl;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

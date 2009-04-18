@@ -24,7 +24,7 @@ void
 PCPartOfSegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::ApplyUpdate(TimeStepType dt)
 {
-	this->SetRMSChange(applyUpdateCalc.ApplyUpdate(dt));
+//	this->SetRMSChange(applyUpdateCalc.ApplyUpdate(dt));
 //  unsigned int i, j, k, t;
 //
 //  StatusType up_to, up_search;
@@ -411,12 +411,12 @@ PCPartOfSegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>::TimeS
 PCPartOfSegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::CalculateChange()
 {	  
-	this->InitCalculateChangeAndUpdActiveLayerConf();
-	updateSolver.UpdateFunctionProperties();
-	
-	TimeStepType dt = updateSolver.CalculateChange();
-	
-	return dt;
+//	this->InitCalculateChangeAndUpdActiveLayerConf();
+//	updateSolver.UpdateFunctionProperties();
+//	
+//	TimeStepType dt = updateSolver.CalculateChange();
+//	
+//	return dt;
 }
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -425,10 +425,10 @@ void
 PCPartOfSegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::PropagateAllLayerValues()
 {		    
-	for(uint32 i=0; i<LYERCOUNT; i++)
-	  LOG("Layer " << i << "size: " << this->m_Layers[i]->Size());	  
+//	for(uint32 i=0; i<LYERCOUNT; i++)
+//	  LOG("Layer " << i << "size: " << _workManager.GetLayers()[0].layers[from]->Size());	  
 	  
-	  applyUpdateCalc.PropagateAllLayerValues();
+//	  applyUpdateCalc.PropagateAllLayerValues();
 //  unsigned int i;
 //
 //  // Update values in the first inside and first outside layers using the

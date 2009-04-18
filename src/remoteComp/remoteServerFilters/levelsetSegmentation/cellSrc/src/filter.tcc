@@ -6,12 +6,10 @@ namespace itk {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
 MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::MySegmtLevelSetFilter()
-{	
-	this->applyUpdateCalc.m_layerGate.dispatcher = &this->m_requestDispatcher;
+{
 }
 ///////////////////////////////////////////////////////////////////////////////
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
@@ -28,19 +26,11 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
   this->InitializeInputAndConstructLayers();
 	
   this->InitRunConf();
+  
+  this->m_SPEManager.InitProgramProps();
         
 #ifdef FOR_CELL
 	m_SPEManager.RunSPEs(&m_Conf);
-#else
-	// setup apply update
-	this->applyUpdateCalc.commonConf = & this->m_conf.runConf;
-	this->applyUpdateCalc.m_stepConfig = & this->m_conf.calcChngApplyUpdateConf;	
-	this->applyUpdateCalc.m_propLayerValuesConfig = & this->m_conf.propagateValsConf;	
-	
-	// and update solver
-	this->updateSolver.m_Conf = & this->m_conf.runConf;
-	this->updateSolver.m_stepConfig = & this->m_conf.calcChngApplyUpdateConf;
-	this->updateSolver.Init();
 #endif
   
   // Set the values in the output image for the active layer.
@@ -62,16 +52,14 @@ template<class TInputImage,class TFeatureImage, class TOutputPixelType>
 void
 MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::ApplyUpdate(TimeStepType dt)
-{
-	this->InitCalculateChangeAndUpdActiveLayerConf();
-	this->InitPropagateValuesConf();
-	  	  		  	
-#ifdef FOR_CELL
-	  command = M4D::Cell::CALC_CHANGE;
-	  m_SPEManager.SendCommand(command);
-#else	  
-	  Superclass::ApplyUpdate(dt);
-#endif	
+{	  	  		  	
+//#ifdef FOR_CELL
+//	  command = M4D::Cell::CALC_CHANGE;
+//	  m_SPEManager.SendCommand(command);
+//#else	  
+//	  Superclass::ApplyUpdate(dt);
+//#endif	
+	this->SetRMSChange(this->m_SPEManager.ApplyUpdate(dt));	
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -80,18 +68,15 @@ typename
 MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>::TimeStepType
 MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::CalculateChange()
-{
-	this->AllocateUpdateBuffer();
-	this->InitCalculateChangeAndUpdActiveLayerConf();
-	  
+{	  
 	  TimeStepType dt;
 
-#ifdef FOR_CELL
-	  command = M4D::Cell::CALC_CHANGE;
-	  m_SPEManager.SendCommand(command);
-#else
-	  dt = Superclass::CalculateChange();
-#endif	
+//#ifdef FOR_CELL
+//	  command = M4D::Cell::CALC_CHANGE;
+//	  m_SPEManager.SendCommand(command);
+//#else
+	  dt = this->m_SPEManager.RunUpdateCalc();
+//#endif	
 	
 	return dt;
 }
@@ -102,14 +87,16 @@ void
 MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::PropagateAllLayerValues()
 {
-	this->InitPropagateValuesConf();
+//	this->InitPropagateValuesConf();
+//	
+//#ifdef FOR_CELL
+//	  command = M4D::Cell::CALC_CHANGE;
+//	  m_SPEManager.SendCommand(command);
+//#else
+//	  Superclass::PropagateAllLayerValues();
+//#endif
 	
-#ifdef FOR_CELL
-	  command = M4D::Cell::CALC_CHANGE;
-	  m_SPEManager.SendCommand(command);
-#else
-	  Superclass::PropagateAllLayerValues();
-#endif
+	this->m_SPEManager.RunPropagateLayerVals();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -9,8 +9,7 @@
 #include "initPartOfFilter.h"
 #else	/* PC */
 #include "common/Common.h"
-#include "SPE/updateCalculation/updateCalculatorSPE.h"
-#include "SPE/applyUpdateCalc/applyUpdateCalculator.h"
+
 #include "pcPartOfTheFilter.h"
 #endif
 
@@ -41,37 +40,6 @@ public:
 	
 	typedef typename Superclass::TimeStepType TimeStepType;
 	typedef typename Superclass::StatusType StatusType;
-	
-	/////////////////
-	
-	/** The data type used in numerical computations.  Derived from the output image type. */
-
-  typedef typename OutputImageType::IndexType IndexType;
-
-  /** Node type used in sparse field layer lists. */
-  typedef SparseFieldLevelSetNode<IndexType> LayerNodeType;
-  
-  /** A list type used in the algorithm. */
-  typedef SparseFieldLayer<LayerNodeType> LayerType;
-  typedef typename LayerType::Pointer     LayerPointerType;
-  
-  typedef typename Superclass::NeighborhoodScalesType NeighborhoodScalesType;
-
-  /** A type for a list of LayerPointerTypes */
-  typedef std::vector<LayerPointerType> LayerListType;
-  
-  /** The type of the image used to index status information.  Necessary for
-   *  the internals of the algorithm. */
-  typedef Image<StatusType, OutputImageType::ImageDimension>  StatusImageType;
-
-  /** Memory pre-allocator used to manage layer nodes in a multi-threaded
-   *  environment. */
-  typedef ObjectStore<LayerNodeType> LayerNodeStorageType;
-
-  /** Container type used to store updates to the active layer. */
-  typedef std::vector<ValueType> UpdateBufferType;
-  
-  //////////////
 	
 	itkNewMacro(Self);
 
@@ -106,7 +74,6 @@ protected:
 	void InitConfigStructures(void);
 	
 #ifdef FOR_CELL
-	M4D::Cell::SPEManager m_SPEManager;
 	M4D::Cell::ESPUCommands command;
 #endif
 };

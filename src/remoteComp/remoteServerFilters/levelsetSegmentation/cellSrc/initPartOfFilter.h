@@ -2,13 +2,11 @@
 #define INITPARTOFFILTER_H_
 
 #include "myFiniteDifferenceFilter.h"
-#include "PPE/SPURequestsDispatcher.h"
+#include "PPE/SPEManager.h"
 //#include "itkThresholdSegmentationLevelSetImageFilter.h"
 
 #include "supportClasses.h"
 #include "common/perfCounter.h"
-#include "itkSparseFieldLayer.h"
-#include "itkObjectStore.h"
 #include "itkNeighborhoodIterator.h"
 
 namespace itk
@@ -25,45 +23,37 @@ public:
 	typedef typename TFeatureImage::PixelType FeaturePixelType;
 	typedef Image<TOutputPixelType, TInputImage::ImageDimension> OutputImageType;
 	  typedef typename OutputImageType::ValueType ValueType;
+	  typedef typename OutputImageType::IndexType IndexType;
 	
 	typedef typename Superclass::TimeStepType TimeStepType;
 	typedef typename Superclass::StatusType StatusType;
+	
+	typedef M4D::Cell::WorkManager<IndexType, ValueType> TWorkManager;
+	typedef typename TWorkManager::LayerType LayerType; 
 	
 	/////////////////
 	
 	/** The data type used in numerical computations.  Derived from the output image type. */
 
-  typedef typename OutputImageType::IndexType IndexType;
+  
 
   /** Node type used in sparse field layer lists. */
   typedef SparseFieldLevelSetNode<IndexType> LayerNodeType;
   
-  /** A list type used in the algorithm. */
-  typedef SparseFieldLayer<LayerNodeType> LayerType;
-  typedef typename LayerType::Pointer     LayerPointerType;
-  
   typedef typename Superclass::NeighborhoodScalesType NeighborhoodScalesType;
-
-  /** A type for a list of LayerPointerTypes */
-  typedef std::vector<LayerPointerType> LayerListType;
   
   /** The type of the image used to index status information.  Necessary for
    *  the internals of the algorithm. */
   typedef Image<StatusType, OutputImageType::ImageDimension>  StatusImageType;
-
-  /** Memory pre-allocator used to manage layer nodes in a multi-threaded
-   *  environment. */
-  typedef ObjectStore<LayerNodeType> LayerNodeStorageType;
-
-  /** Container type used to store updates to the active layer. */
-  typedef std::vector<ValueType> UpdateBufferType;
+  
+  
   
   //////////////
   
-	void SetUpperThreshold(FeaturePixelType upThreshold) { m_conf.runConf.m_upThreshold = upThreshold; }
-	void SetLowerThreshold(FeaturePixelType loThreshold) { m_conf.runConf.m_downThreshold = loThreshold; }
-	void SetPropagationWeight(float32 propWeight) { m_conf.runConf.m_propWeight = propWeight; }
-	void SetCurvatureWeight(float32 curvWeight) { m_conf.runConf.m_curvWeight = curvWeight; }
+	void SetUpperThreshold(FeaturePixelType upThreshold) { m_runConf.m_upThreshold = upThreshold; }
+	void SetLowerThreshold(FeaturePixelType loThreshold) { m_runConf.m_downThreshold = loThreshold; }
+	void SetPropagationWeight(float32 propWeight) { m_runConf.m_propWeight = propWeight; }
+	void SetCurvatureWeight(float32 curvWeight) { m_runConf.m_curvWeight = curvWeight; }
 	
 	void SetIsoSurfaceValue(ValueType val) { m_IsoSurfaceValue = val; }
 	
@@ -131,24 +121,11 @@ public:
 	   * calculations.  Makes the implementation easier and more efficient. */
 	  typename OutputImageType::Pointer m_ShiftedImage;
 
-	  /** An array which contains all of the layers needed in the sparse
-	   * field. Layers are organized as follows: m_Layer[0] = active layer, 
-	   * m_Layer[i:odd] = inside layer (i+1)/2, m_Layer[i:even] = outside layer i/2
-	  */
-	  LayerListType m_Layers;
-
 	  /** An image of status values used internally by the algorithm. */
 	  typename StatusImageType::Pointer m_StatusImage;
-
-	  /** Storage for layer node objects. */
-	  typename LayerNodeStorageType::Pointer m_LayerNodeStore;
 	  
 	  /** The value in the input which represents the isosurface of interest. */
 	  ValueType m_IsoSurfaceValue;
-
-	  /** The update buffer used to store change values computed in
-	   *  CalculateChange. */
-	  UpdateBufferType m_UpdateBuffer;
 	  
 	  bool m_BoundsCheckingActive;
 	  
@@ -164,18 +141,14 @@ public:
 	    
 protected:
 	MySegmtLevelSetFilter_InitPart(void);
-	~MySegmtLevelSetFilter_InitPart(void);
-	
-	typedef M4D::Cell::SparseFieldLevelSetNode NodeTypeInSPU;
+	~MySegmtLevelSetFilter_InitPart(void);	
 	
 	void InitRunConf();
-	void InitCalculateChangeAndUpdActiveLayerConf();
-	void InitPropagateValuesConf();
-	
-    typedef M4D::Cell::ConfigStructures TConfigStructs;
-    TConfigStructs m_conf;
     
-    M4D::Cell::SPURequestsDispatcher m_requestDispatcher;
+    M4D::Cell::RunConfiguration m_runConf;
+    
+    M4D::Cell::SPEManager m_SPEManager;
+    TWorkManager _workManager;
 	
 private:
 	PerfCounter cntr_;
