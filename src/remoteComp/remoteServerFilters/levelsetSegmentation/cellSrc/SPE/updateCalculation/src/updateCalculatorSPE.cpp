@@ -45,7 +45,6 @@ UpdateCalculatorSPE
 
 ///////////////////////////////////////////////////////////////////////////////
 
-
 void
 UpdateCalculatorSPE
 ::Init(void)
@@ -67,10 +66,10 @@ UpdateCalculatorSPE
 void UpdateCalculatorSPE::UpdateFunctionProperties()
 {
 	// set props to diffFunc
-		m_diffFunc.SetUpperThreshold(m_Conf->m_upThreshold);
-		m_diffFunc.SetLowerThreshold(m_Conf->m_downThreshold);
-		m_diffFunc.SetPropagationWeight(m_Conf->m_propWeight);
-		m_diffFunc.SetCurvatureWeight(m_Conf->m_curvWeight);
+	m_diffFunc.SetUpperThreshold(m_Conf->m_upThreshold);
+	m_diffFunc.SetLowerThreshold(m_Conf->m_downThreshold);
+	m_diffFunc.SetPropagationWeight(m_Conf->m_propWeight);
+	m_diffFunc.SetCurvatureWeight(m_Conf->m_curvWeight);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -95,7 +94,8 @@ UpdateCalculatorSPE
 			backwardValue = m_outIter.GetPrevious(i);
 
 			if (forwardValue * backwardValue >= 0)
-			{ //  Neighbors are same sign OR at least one neighbor is zero.
+			{ 
+				//  Neighbors are same sign OR at least one neighbor is zero.
 				dx_forward = forwardValue - centerValue;
 				dx_backward = centerValue - backwardValue;
 

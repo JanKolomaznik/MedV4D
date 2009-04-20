@@ -38,18 +38,10 @@ SpeedTermSolver
 ::PropagationSpeed(const TFeatureNeighbourhoodIter &neighborhood,
                    const ContinuousIndexType &offset) const
 {
-//  const TIndex idx = neighborhood.GetIndex();
-//
-//  ContinuousIndexType cdx;
-//  for (unsigned i = 0; i < DIM; ++i)
-//    {
-//    cdx[i] = static_cast<double>(idx[i]) - offset[i];
-//    }
   
   FeatureScalarType val = Interpolate(offset, neighborhood);
-  //LOG("ComputePropagationTerm at index: " << cdx << ", " << val);
 
-	return val;
+  return val;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

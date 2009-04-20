@@ -2,33 +2,18 @@
 #define CELLTHRESHOLDLEVELSETFINITEDIFFERENCEFUNCTION_H_
 
 #include "speedTermSolver.h"
-//#include "advectionTermSolver.h"
 #include "curvatureTermSolver.h"
 #include "../tools/neighbourhoodIterator.h"
-//#include "../commonConsts.h"
 
 namespace M4D {
 namespace Cell {
 
 class ThresholdLevelSetFunc
-	: public SpeedTermSolver	//<typename TInputNeighbour::PixelType, TInputNeighbour>
-	//, public AdvectionTermSolver,
-	, public CurvatureTermSolver	//<typename TInputNeighbour::PixelType, TInputNeighbour::Dim>
-	//, public CommonTypes<TInputNeighbour::Dim>
+	: public SpeedTermSolver
+	, public CurvatureTermSolver
 {
 public:
-//	typedef ThresholdLevelSetFunc<TInputNeighbour, TFeatureNeighbour> Self;
-//	typedef CommonTypes<TInputNeighbour::Dim> Superclass;
-//	typedef typename Superclass::FloatOffsetType 	FloatOffsetType;
-//	typedef typename Superclass::TimeStepType TimeStepType;
-//	typedef typename Superclass::NeighborhoodScalesType NeighborhoodScalesType;
-//	  typedef typename TInputNeighbour::PixelType     PixelType;
-//	  typedef typename TInputNeighbour::RadiusType RadiusType;
-//	
-//	typedef TInputNeighbour NeighborhoodType;
-//	typedef GlobalDataStruct<PixelType, TInputNeighbour::Dim> GlobalDataType;
 	typedef NeighbourIteratorCell<TPixelValue> NeighborhoodIteratorType;
-
 	
 	TPixelValue ComputeUpdate(
 			const NeighborhoodIteratorType &neighborhood,
@@ -77,14 +62,6 @@ public:
 	~ThresholdLevelSetFunc() {}
 	
 private:
-//	/** Slices for the ND neighborhood. */
-//	  std::slice x_slice[TInputNeighbour::Dim];
-//
-//	  /** The offset of the center pixel in the neighborhood. */
-//	  ::size_t m_Center;
-//
-//	  /** Stride length along the y-dimension. */
-//	  ::size_t m_xStride[TInputNeighbour::Dim];
 	  
 	  /** Constants used in the time step calculation. */
 	  double m_WaveDT;
@@ -93,10 +70,8 @@ private:
 	  TRadius m_Radius;
 	  TNeighborhoodScales m_ScaleCoefficients;
 };
-
-//include implementation
-//#include "src/diffFunc.tcc"
 	
-}}
+}
+}
 
 #endif /*CELLTHRESHOLDLEVELSETFINITEDIFFERENCEFUNCTION_H_*/

@@ -26,8 +26,6 @@ private:
 	ScalarValueType ComputeMeanCurvature(GlobalDataStruct *gd);
 };
 
-//#include "src/curvatureTermSolver.tcc"
-
 }}
 
 #endif /*CURVATURETERMSOLVER_H_*/
