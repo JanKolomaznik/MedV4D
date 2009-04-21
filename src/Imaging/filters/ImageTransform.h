@@ -56,27 +56,31 @@ public:
 			}
 		}
 
-		void SetRotation(CoordType rotation)
-		{
-			_rotation = rotation;
-		}
-
-		void SetScale(CoordType scale)
-		{
-			_scale = scale;
-		}
-
-		void SetTranslation(CoordType translation)
-		{
-			_translation = translation;
-		}
-
 	};
 
 	ImageTransform( Properties  * prop );
 	ImageTransform();
+
+	void SetRotation(CoordType rotation)
+	{
+		dynamic_cast< Properties* >( this->_properties )->_rotation = rotation;
+	}
+
+	void SetScale(CoordType scale)
+	{
+		dynamic_cast< Properties* >( this->_properties )->_scale = scale;
+	}
+
+	void SetTranslation(CoordType translation)
+	{
+		dynamic_cast< Properties* >( this->_properties )->_translation = translation;
+	}
+
 protected:
 	bool
+	ExecuteTransformation();
+
+	virtual bool
 	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
 
 	/**

@@ -22,7 +22,7 @@ namespace Imaging
 
 template< typename ElementType >
 bool
-TransformImage( const Image< ElementType, 2 > &in, Image< ElementType, 2 > &out, AbstractFilter::Properties* &properties, InterpolatorBase< Image< ElementType, 2 > >* &interpolator )
+TransformImage( const Image< ElementType, 2 > &in, Image< ElementType, 2 > &out, AbstractFilter::Properties* properties, InterpolatorBase< Image< ElementType, 2 > >* interpolator )
 {
 	
 	ElementType *sPointer;
@@ -60,7 +60,7 @@ TransformImage( const Image< ElementType, 2 > &in, Image< ElementType, 2 > &out,
 
 template< typename ElementType >
 bool
-TransformImage( const Image< ElementType, 3 > &in, Image< ElementType, 3 > &out, AbstractFilter::Properties* &properties, InterpolatorBase< Image< ElementType, 3 > >* &interpolator )
+TransformImage( const Image< ElementType, 3 > &in, Image< ElementType, 3 > &out, AbstractFilter::Properties* properties, InterpolatorBase< Image< ElementType, 3 > >* interpolator )
 {
 	
 	ElementType *sPointer;
@@ -164,6 +164,17 @@ ImageTransform< ElementType, dim >
 template< typename ElementType, uint32 dim >
 bool
 ImageTransform< ElementType, dim >
+::ExecuteTransformation()
+{
+	bool result = false;
+	LinearInterpolator< ImageType > interpolator( this->in );
+	result = TransformImage< ElementType >( *(this->in), *(this->out), this->_properties,static_cast< InterpolatorBase< ImageType >* >( &interpolator ) );
+	return result;
+}
+
+template< typename ElementType, uint32 dim >
+bool
+ImageTransform< ElementType, dim >
 ::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
 {
 	utype = utype;
@@ -172,9 +183,7 @@ ImageTransform< ElementType, dim >
 		return false;
 	}
 	bool result = false;
-	InterpolatorBase< ImageType > *interpolator = new LinearInterpolator< ImageType >( this->in );
-	result = TransformImage< ElementType >( *(this->in), *(this->out), this->_properties, interpolator );
-	delete interpolator;
+	result = ExecuteTransformation();
 	if( result ) {
 		_writerBBox->SetModified();
 	} else {

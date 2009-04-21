@@ -1,14 +1,17 @@
 #common library
 
-include_directories(../../common ../../include)
+include_directories(../../common ../../include ../..)
 
 set(SRC_DIR ../../common/src)
 set(INPUT ${SRC_DIR}/Common.cpp 
           ${SRC_DIR}/Debug.cpp 
           ${SRC_DIR}/ExceptionBase.cpp 
           ${SRC_DIR}/Functors.cpp 
-          ${SRC_DIR}/Log.cpp 
+          ${SRC_DIR}/Log.cpp
+	  ${SRC_DIR}/Thread.cpp
           ${SRC_DIR}/TimeStamp.cpp 
-          ${SRC_DIR}/IOStreams.cpp)
+          ${SRC_DIR}/IOStreams.cpp
+	  ${SRC_DIR}/perfCounter.cpp
+	  ${SRC_DIR}/fileAccessor.cpp)
 
 add_library(Common ${INPUT})

@@ -59,5 +59,5 @@ set(INPUT ${SRC_DIR}/src/m4dGUIMainWindow.cpp
 
 add_library(m4dWidgets ${INPUT} ${MOCOUTPUT} ${RCCOUTPUT})
 
-add_dependencies(m4dWidgets Common)
+add_dependencies(m4dWidgets Common backendForDICOM)
 

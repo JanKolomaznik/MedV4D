@@ -1,4 +1,4 @@
-#m4dPilot application
+#SimpleMIP application
 
 include(${QT_USE_FILE})
 
@@ -27,9 +27,10 @@ set(M4DLIBS Imaging m4dWidgets vtkIntegration Common backendForDICOM)
 
 
 
-set(SRC_DIR ../../Applications/m4dPilot)
+set(SRC_DIR ../../Applications/SimpleMIP)
 
-set(MOCINPUT ${SRC_DIR}/mainWindow.h)
+set(MOCINPUT ${SRC_DIR}/mainWindow.h
+	     ${SRC_DIR}/SettingsBox.h)
 
 QT4_WRAP_CPP(MOCOUTPUT ${MOCINPUT})
 
@@ -37,11 +38,13 @@ set(RCCINPUT ${SRC_DIR}/mainWindow.qrc)
 
 QT4_ADD_RESOURCES(RCCOUTPUT ${RCCINPUT})
 
-set(INPUT ${SRC_DIR}/main.cpp ${SRC_DIR}/mainWindow.cpp)
+set(INPUT ${SRC_DIR}/main.cpp
+	  ${SRC_DIR}/mainWindow.cpp
+	  ${SRC_DIR}/SettingsBox.cpp)
 
 
 
-set(OUTPUT m4dPilot)
+set(OUTPUT SimpleMIP)
 
 add_executable(${OUTPUT} ${INPUT} ${MOCOUTPUT} ${RCCOUTPUT})
 target_link_libraries(${OUTPUT} 

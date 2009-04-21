@@ -7,6 +7,9 @@ SET(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/../lib)
 SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/../executables)
 SET(CMAKE_DEBUG_POSTFIX, "d") 
 
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/.. ${CMAKE_SOURCE_DIR}/../include /usr/local/include /usr/local/dicom/include)
+LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/../lib /usr/local/lib /usr/local/dicom/lib)
+
 SET(QT_USE_QTOPENGL 1)
 
 FIND_PACKAGE(Boost REQUIRED COMPONENTS filesystem system thread)
@@ -50,4 +53,5 @@ ADD_SUBDIRECTORY(m4dWidgets)
 ADD_SUBDIRECTORY(vtkIntegration)
 
 ADD_SUBDIRECTORY(m4dPilot)
-
+ADD_SUBDIRECTORY(BoneSegmentation)
+ADD_SUBDIRECTORY(SimpleMIP)
