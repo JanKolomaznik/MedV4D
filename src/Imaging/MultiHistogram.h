@@ -23,7 +23,7 @@ template< typename CellType, uint32 dim >
 class MultiHistogram
 {
 public:
-	MultiHistogram( vector<int32> min, vector<int32> max, bool storeOutliers = true ) :
+	MultiHistogram( const std::vector<int32>& min, const std::vector<int32>& max, bool storeOutliers = true ) :
 		_minCell( min ), _maxCell( max ), _storeOutliers( storeOutliers ), _sum( 0 )
 	{
 		if ( _minCell.size() != dim || _maxCell.size() != dim ) {
@@ -42,7 +42,7 @@ public:
 
 
 	void
-	Resize( vector<int32> min, vector<int32> max )
+	Resize( const std::vector<int32>& min, const std::vector<int32>& max )
 	{
 		_minCell = min;
 		_maxCell = max;
@@ -56,7 +56,7 @@ public:
 	}
 
 	CellType
-	operator[]( vector<int32> cell )const
+	operator[]( const std::vector<int32>& cell )const
 		{
 			return Get( cell );
 		}
@@ -89,7 +89,7 @@ public:
 		}
 
 	CellType
-	Get( vector<int32> cell )const
+	Get( std::vector<int32> cell )const
 		{
 			uint32 i;
 			if ( cell.size() != dim ) {
@@ -114,7 +114,7 @@ public:
 			return _cells[ idx ];
 		}
 	void
-	SetValueCell( vector<int32> cell, CellType value )
+	SetValueCell( std::vector<int32> cell, CellType value )
 		{
 			uint32 i;
 			if ( cell.size() != dim ) {
@@ -153,11 +153,11 @@ public:
 	GetSum()const
 		{ return _sum; }
 
-	vector<int32>
+	std::vector<int32>
 	GetMin()const
 		{ return _minCell; }
 
-	vector<int32>
+	std::vector<int32>
 	GetMax()const
 		{ return _maxCell; }
 
@@ -185,8 +185,8 @@ public:
 	static MultiHistogram *
 	Load( std::istream &stream )
 	{
-		vector<int32>	minCell;
-		vector<int32>	maxCell;
+		std::vector<int32>	minCell;
+		std::vector<int32>	maxCell;
 		bool		storeOutliers;
 		CellType	sum;
 
@@ -216,21 +216,22 @@ protected:
 
 	CellVector	_cells;
 
-	vector<int32>	_minCell;
-	vector<int32>	_maxCell;
+	std::vector<int32>	_minCell;
+	std::vector<int32>	_maxCell;
 	bool		_storeOutliers;
 
 	CellType	_sum;
+
 };
 
 
-template< typename CellType >
+template< typename CellType, uint32 dim >
 std::ostream &
-operator<<( std::ostream &stream, const MultiHistogram< CellType > &histogram )
+operator<<( std::ostream &stream, const MultiHistogram< CellType, dim > &histogram )
 {
 	stream << "Sum = " << histogram.GetSum() << std::endl;
-	for( int32 i = histogram.GetMin() - 1; i <= histogram.GetMax(); ++i ) {
-		stream << histogram[i] << std::endl;
+	for( int32 i = 0; i <= histogram._cells.size(); ++i ) {
+		stream << histogram._cells[i] << std::endl;
 	}
 	return stream;
 }
