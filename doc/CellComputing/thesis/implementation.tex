@@ -1,7 +1,11 @@
 \chapter{Design and implementation}
 
 This chapter will describe details of implementation and design of my test application.
-Frameworks that was used, adaptation for that frameworks and actual Cell B.E. proting process details.
+Starts with listings frameworks that were used and describes process of incorporation of the application into that frameworks.
+Then few design details concerning the incorporation is described.
+After that results of profiling of the application are summarized.
+Followed by new design description which was neccessary due to unexpected profiling results.
+The rest of chapter will present actual porting process with all its specifics.
 
 \section{Used frameworks}
 
@@ -183,17 +187,17 @@ Parameters of this filter are threshold interval (thresholding level set segment
 It is thresholding that select pixels with values less that zero that corresponds to inner part of the resulting level set.
 \end{enumerate}
 
-I have chosen ITK sparse field method implementation as a starting point.
+We have chosen ITK sparse field method implementation as a starting point.
 This implementation uses linked lists to represent the sparse field layers.
-Actual algorithm as described higher (\ref{alg:sparseFileld}) is implemented in several classes.
-Due to mapping the algorithm to Cell B.E. radical changes in code would be necessary even in ITK code.
-So i decided to rebuild appropriate part of ITK class hierarchy responsible for the sparse field level set computation (LS hierarchy) to create actual LS Filter.
-I borrowed some part of original code and inherited my classes from classes close to finite difference solver (FDS) class, see figure\ref{fg:originalHierarchy}.
-In the original LS hierarchy are actually two hierarchies of classes.
-One represents the filter that performs level set evolution algorithm, filter hierarchy.
-The other finite \emph{difference function} that computes the finite differences (the upwind scheme), function hierarchy.
+Actual algorithm, as described higher (\ref{alg:sparseFileld}), is implemented in several classes.
+Due to mapping the algorithm to Cell B.E. radical changes in code was necessary even in ITK code.
+We decided to rebuild appropriate part of ITK class hierarchy responsible for the sparse field level set computation (LS hierarchy) to create actual LS Filter.
+We borrowed some part of original code and inherited my classes from classes close to finite difference solver (FDS) class, see figure\ref{fg:originalHierarchy}.
+In the original LS hierarchy are actually two class hierarchies.
+One represents the filter that performs level set algorithm, the filter hierarchy.
+The other finite \emph{difference function} that computes the finite differences (the upwind scheme), the function hierarchy.
 
-In function hierarchy the base is FiniteDifferenceFunction that computes the 'upwind scheme' with assistance of virtual methods, that are implemented in successors.
+At the top of the function hierarchy is FiniteDifferenceFunction that computes the 'upwind scheme' with assistance of virtual methods, that are implemented in successors.
 Successors are:
 \begin{enumerate}
   \item{LevelSetFunction}
@@ -203,15 +207,16 @@ Successors are:
 \item{SegmentationLevelSetFunction}
 \par
 provides speed image computation infrastrucutre
+
 \item{ThresholdSegmentationLevelSetFunction}
 \par
 computes actual speed image
 \end{enumerate}
 
-//TODO zeptat se jak se popisuje algoritmus ...
-In filter hierarchy everything starts with FiniteDifferenceImageFilter that computes main loop of level set calculation (see step 1 in \ref{alg:sparseFileld}).
+In the filter hierarchy, everything starts with FiniteDifferenceImageFilter that computes main loop of level set calculation (see step 1 in \ref{alg:sparseFileld}).
 Virtual methods of its successors are used (just like in function hierarchy) to implement sub steps.
-Successor is the SparseFieldLevelSetImageFilter providing implementation of Step 1a , the \emph{update calculation} function and other steps by \emph{apply update calculation} function.
+Successor is the SparseFieldLevelSetImageFilter providing implementation of Step 1a through \emph{update calculation} function.
+Other steps is performed by \emph{apply update calculation} function.
 Next successors, SegmentationLevelSetImageFilter and ThresholdSegmentationLevelSetImageFilter only manage \emph{difference function} in their own manner.
 In case ThresholdSegmentationLevelSetImageFilter manages speed function as described in \ref{eq:speedFunction}.
 It preallocates another image for pre-calculation of the speed function.
@@ -224,16 +229,27 @@ The second reason was to simplify the structure of hierarchy and some code clean
 \begin{figure}
     \centering
     \includegraphics[width=15cm]{data/originalHierarchy}
-    \caption[Original ITK thresholding level set filter class hierarchy]{Illustrates the FiniteDifferenceFunction hierarchy and the FiniteDifferenceImageFilter hierarchy and their relationship}
+    \caption[Original ITK thresholding level set filter class hierarchy]
+{Illustrates the FiniteDifferenceFunction hierarchy and the FiniteDifferenceImageFilter hierarchy and their relationship}
     \label{fg:originalHierarchy}
 \end{figure}
 
-Result of this changes is my own filter (ThreshSegLevelSetFilter) that omits all unnecessary part of original LS hierarchy, uses reasonable parts of the original ITK level set segmentation filter and is ready to be ported for Cell B.E. (see figure\ref{fg:resultingFilter}). In the function hierarchy stayed only the base class that the resulting ThresholdLevelSetFunc class is derived. This new class does the same job as original LS function hierarchy but in manner closer to streaming architecture (the pre-allocation of the speed image is omited). The computation of particular up-wind scheme terms was separated into stand alone classes for more code readability and modularity. The filter hierarchy was shorted and begins already in SparseFieldLevelSetImageFilter. All the successors in original hierarchy was omited since they did anything reasonable. Some function implementation from the SparseFieldLevelSetImageFilter was borrowed into the new ThreshSegLevelSetFilter to be tuned for Cell B.E..
+Result of this changes is our own filter (ThreshSegLevelSetFilter) that omits all unnecessary part of original LS hierarchy, uses reasonable parts of the original ITK level set segmentation filter and is ready to be ported for Cell B.E. (see figure\ref{fg:resultingFilter}).
+In the function hierarchy stayed only the base class that the resulting ThresholdLevelSetFunc class is derived.
+This new class does the same job as original LS function hierarchy but in manner closer to streaming architecture (the pre-allocation of the speed image is omited).
+The computation of particular up-wind scheme terms was separated into stand alone classes for more code readability and modularity.
+The filter hierarchy was shorted and begins already in SparseFieldLevelSetImageFilter.
+All the successors in original hierarchy was omited since they did anything reasonable.
+Some function implementation from the SparseFieldLevelSetImageFilter was borrowed into the new ThreshSegLevelSetFilter to be tuned for Cell B.E.
 
 \begin{figure}
     \centering
     \includegraphics[width=15cm]{data/resultingFilter}
-    \caption[Resulting level set filter ready to be ported to Cell B.E.]{Show result of original LS hierarchy rebuilding. Some unnecessary parts was omited to clean-up the code and to change behaviour towards streaming architecture as well as term computation was separated into supporting classes for modularity}
+    \caption[Resulting level set filter ready to be ported to Cell B.E.]
+    {
+Show result of original LS hierarchy rebuilding.
+Some unnecessary parts was omited to clean-up the code and to change behaviour towards streaming architecture as well as term computation was separated into supporting classes for modularity
+    }
     \label{fg:resultingFilter}
 \end{figure}
 
