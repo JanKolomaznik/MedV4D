@@ -1,7 +1,9 @@
 \chapter {Cell B.E. programming}
 \par
-In this chapter will describe my experience with the Cell B.E. platform will then follow.
-Content of SDK, some useful libraries, as well as some design patterns of Cell B.E. programming will be described.
+In this chapter Cell B.E. platform development tools will be described as well as our experience with that tools will be mentioned.
+Then particular SDK content and tools will listed.
+After that paralel systems and models will be mentioned as well as the relationship to Cell B.E. development along with few design patterns.
+At the end core configurations and their pros and cons will be listed finishing with some practical approaches to Cell B.E. porting process.
 
 \section{Cell B.E. platform development}
 \par
@@ -221,22 +223,33 @@ Another configuration is to have server-like programs running on SPEs that sits 
 
 \section {Building for Cell B.E.}
 \par
-Actual building is done using selected toolchain.
- But there is difference between management of code building for PPU and SPU.
- It is caused by difference of actual code usage.
+Actual compilation process is performed using appropriate toolchain.
+PPE code using of PPE toolchain and SPE code using SPE one.
+But there is difference between management of code in linking stage between PPU and SPU object files.
+It is caused by difference of actual code usage.
 While PPU code resides in central memory (just like in common architectures) SPU code is loaded into SPE dynamically and shall be somehow separated.
- It is similar to shader programs for graphic accelerators.
-They are also loaded into appropriate processors when they are needed and live separated (in form of files).
-
-//TODO obrazek
+It is similar to shader programs for graphic accelerators.
+They are also loaded into appropriate processors when they are needed so they live separated (in form of files).
 
 \par
 There are two options for SPE code management.
  One is to build shared library and load it explicitly when it is used.
- Another way is to build a static library and include it into PPU executable.
- This inclusion is called embeding and is performed with extra tool from toolchain.
+Another way is to build a static library and include it into PPU executable usig Cell B.E. Embedded SPE Object Format (CESOF).
+This allows PPE executable objects to contain SPE executables i.e. SPE binary is contained within PPE binary. See figure\ref{fg:SPEEmbedding}.
+This inclusion is called embeding and is performed with extra tool from toolchain.
 The SPU program is then referenced as special extern structure direct from PPU code (instead of performing some shared libraries loading).
- Both ways has its pros but even cons which are the same as with shared vs. static libraries on other platforms.
+Both ways has its pros but even cons which are the same as with shared vs. static libraries on other platforms.
+
+
+\begin{figure}
+    \centering
+    \includegraphics[height=\textwidth]{data/SPEEmbedding}
+    \caption[SPE binary embedding]{Illustration how is SPE binary 'embedded' into a PPE binary.
+SPE binary is another section of PPE binary.
+It is reachable through extern struct variable, that contains pointer to SPE binary.}
+    \label{fg:SPEEmbedding}
+\end{figure}
+
 
 
 \section {Process of porting application for Cell B.E.}

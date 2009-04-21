@@ -1,12 +1,41 @@
 \chapter{Introduction}
 
+Since first processors of x86 platform were released big race for who introduce processor with operating on higher frequency started.
+This was conditioned to research new production technoligies that allow to integrated more transistors onto smaller area.
+In the process manunfacturers started to realize that it is impossible to continue this frequency race forever.
+This results integration of more computing units into single processor.
+This first among common desktop processors was Intel's \textregistered{Pentium} with hyper threading.
+This processors was able to execute two threads at a time.
+Since then qick boom of multi core integration started even among other biggest processor manufacturers.
+Integration of more execution cores allows less power consumption.
+This factor is nowadays especially important due to processor integration into labtops and even due to environmental issues.
+Thats why current efforts of processor manufacturers is to gain the best performance to power consumption ratio.
+
+Cores that are ingreated into the current processors are general purpose.
+This means thay have pipeline for instruction execution with several stages.
+Instruction can be with several states within such pipeline, e.g. fetched, awaiting operands, ready, executed.
+Instruction flows among the stages not in the order they are within the program.
+Order is decided by the processor based on variety factors and predictions.
+One of the pipeline stages is branch prediction unit that has to predict the most probable flow of the executed program.
+When this predicion is false whole pipeline has to be discarded and execution of the right branch of program has to be started.
+Processors suffer heavily from mispredicions because they lead into big holes in which the processor pipeline stalls or is being reset.
+
+Another general purpose processor suffering is from cache misses.
+This occurs when requested data are not within processor cache and have to be load from memory.
+
+Altough many of improvements were implemented into the general purpose processors they still suffer from the described problems.
+This is one of the reasons why collaboration of three big companies IBM, Sony, and Toshiba started development of Cell B.E. processor.
+Processor that is multicore, has good performance to power consumption ratio and is able to overcome the problems that the general purpose processors suffer.
+Because it allow the programmer to somewhat manage processor cache and branch prediction unit.
+
 \chapter{Cell B.E. platform}
 
-This chapter will introduce Cell Broadband Engine processor (Cell B.E.) and the whole platform and its specifics.
+This chapter will introduce Cell Broadband Engine processor (Cell B.E.) and the whole platform and its specific details.
+Particular Cell B.E. processor will be desribed and illustrated.
 
 \section{About the processor}
 
-Cell B.E. processor is representative of a new generation of IBM's Cell B.E. platform family made by collaboration of IBM, Sony, and Toshiba.
+Cell B.E. processor is representative of a new generation of IBM's Cell B.E. platform family.
 Cell B.E. is an asymmetric, high-performance multi-core processor that combines eight synergistic processing elements (SPEs) and a Power Processing Element (PPE), which is a general-purpose IBM \textregistered{PowerPC} core.
 Next part is a central memory element.
 PPE can operate with the central memory directly while SPE indirectly, see below.
