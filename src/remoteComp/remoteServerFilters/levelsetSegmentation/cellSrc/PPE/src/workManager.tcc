@@ -133,6 +133,28 @@ WorkManager<IndexType, ValueType>::AllocateUpdateBuffers()
 
 ///////////////////////////////////////////////////////////////////////////////
 
+template<typename IndexType, typename ValueType>
+void
+WorkManager<IndexType, ValueType>::PrintLists(std::ostream &s)
+{
+	LayerNodeType *begin, *end;
+	
+	for(uint32 i=0; i<LYERCOUNT; i++)
+	{
+		s << "layer" << i << ", size=" << m_LayerSegments[0].layers[i]->Size() << std::endl;
+		begin = m_LayerSegments[0].layers[i]->Begin().GetPointer();
+		end = m_LayerSegments[0].layers[i]->End().GetPointer();
+		
+		while(begin != end)
+		{
+			s << begin->m_Value << std::endl;
+			begin = begin->Next;
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 //template<class TInputImage,class TFeatureImage, class TOutputPixelType>
 //void
 //MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>

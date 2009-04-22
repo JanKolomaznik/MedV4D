@@ -54,7 +54,7 @@ namespace itk {
 				this->ResetPipeline();
 				throw ProcessAborted(__FILE__,__LINE__);
 			}
-			//LOG("Elapsed iters:" << m_ElapsedIterations);
+			D_PRINT("Elapsed iters:" << m_ElapsedIterations << ", dt = " << dt);
 		}
 
 		if (m_ManualReinitialization == false)

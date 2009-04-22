@@ -51,6 +51,8 @@ public:
 	void InitCalculateChangeAndUpdActiveLayerConf();
 	void InitPropagateValuesConf();
 	void AllocateUpdateBuffers();
+	
+	void PrintLists(std::ostream &s);
 
 private:
 	typedef SparseFieldLevelSetNode NodeTypeInSPU;

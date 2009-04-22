@@ -58,7 +58,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 //	  m_SPEManager.SendCommand(command);
 //#else	  
 //	  Superclass::ApplyUpdate(dt);
-//#endif	
+//#endif
 	this->SetRMSChange(this->m_SPEManager.ApplyUpdate(dt));	
 }
 
@@ -70,6 +70,8 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::CalculateChange()
 {	  
 	  TimeStepType dt;
+	  
+	  this->_workManager.PrintLists(LOUT);
 
 //#ifdef FOR_CELL
 //	  command = M4D::Cell::CALC_CHANGE;
