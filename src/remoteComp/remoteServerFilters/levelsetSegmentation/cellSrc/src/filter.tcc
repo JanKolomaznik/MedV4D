@@ -71,7 +71,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 {	  
 	  TimeStepType dt;
 	  
-	  this->_workManager.PrintLists(LOUT);
+	  //this->_workManager.PrintLists(LOUT);
 
 //#ifdef FOR_CELL
 //	  command = M4D::Cell::CALC_CHANGE;

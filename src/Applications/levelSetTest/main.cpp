@@ -80,8 +80,13 @@ int main(int argc, char *argv[]) {
 		M4D::IO::FInStream inStr(INFILE);		
 		AbstractDataSet::Ptr inputDataSet = DataSetFactory::DeserializeDataset(inStr);
 		
-		LevelSetRemoteProperties<int16, int16> *props = new LevelSetRemoteProperties<int16, int16>();
-		m_filter =  new ThreshLSSegMedvedWrapper< int16, int16>( props);
+		typedef ThreshLSSegMedvedWrapper< int16, int16> FilterType;
+		
+		FilterType::Properties *props = new FilterType::Properties();
+		props->seedX = 256;
+		props->seedY = 256;
+		props->initialDistance = 100;
+		m_filter =  new FilterType( props);
 		
 		m_filter->SetUpdateInvocationStyle(AbstractPipeFilter::UIS_ON_CHANGE_BEGIN);
 		m_pipeLine.AddFilter(m_filter);

@@ -50,18 +50,23 @@ void LayerGate::PushToLayer(SparseFieldLevelSetNode *node, uint8 layerNum)
 	message |= (PUSHED_NODES_PROCESS & MessageID_MASK);
 	message |= ((layerNum << MessageLyaerID_SHIFT) & MessageLyaerID_MASK);
 	
-	// convert node's value vector into the message param (24bits)
-	// NOTE: vectors with values higher than 2^24 will be malformed
-	// but since we transfer image coord and image are no larger that 1000
-	// this limitation is painless
-	uint32 param = node->m_Value[0];
-	param |= (node->m_Value[1] << 8);
-	param |= (node->m_Value[2] << 16);
-	
 	DL_PRINT(DEBUG_GATE, "Send PUSH, node:" << node->m_Value << "layer: " << (uint32)layerNum);
 	
+	// 1st coord will be passed with message
+	// the two rest along the next word
+	// NOTE: vectors with coords values higher than 2^16 will be malformed
+	// but since we transfer image coord and image are no larger that 1000
+	// this limitation is painless
+	uint32 param = node->m_Value[0];	
 	message |= ((param << MessagePARAM_SHIFT) & MessagePARAM_MASK);
 	
+#ifdef FOR_PC
+	dispatcher->MyPushMessage(message);
+#endif	
+
+	message = (node->m_Value[1]);
+	message |= (node->m_Value[2] << 16);
+
 #ifdef FOR_PC
 	dispatcher->MyPushMessage(message);
 	

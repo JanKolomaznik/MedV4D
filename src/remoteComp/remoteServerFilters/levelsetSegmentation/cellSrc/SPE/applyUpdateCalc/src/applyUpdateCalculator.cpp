@@ -10,7 +10,7 @@
 
 using namespace M4D::Cell;
 
-#define DEBUG_ALG 0
+#define DEBUG_ALG 12
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -34,8 +34,6 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 {
 	MyLayerType UpList[2];
 	MyLayerType DownList[2];
-	
-	DL_PRINT(DEBUG_ALG, "ApplyUpdate" << std::endl);
 
 	//  LOG("Update list:");
 	//  for(typename UpdateBufferType::iterator it = m_UpdateBuffer.begin(); it != m_UpdateBuffer.end(); it++)
@@ -62,6 +60,11 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 		
 	uint32 counter = 0;
 	ValueType rms_change_accumulator = this->m_ValueZero;
+	
+//	std::stringstream s;
+//		  s << "before" << this->m_ElapsedIterations;
+//		  std::ofstream b(s.str().c_str());
+//		  m_outIter.GetNeighborhood().PrintImage(b);
 		
 	while(m_layerIterator.HasNext())  
 	{
@@ -71,12 +74,6 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	// Process the status up/down lists.  This is an iterative process which
 	// proceeds outwards from the active layer.  Each iteration generates the
 	// list for the next iteration.
-	
-//	  std::stringstream s;
-//	  s << "before" << this->m_ElapsedIterations;
-//	  std::ofstream b(s.str().c_str());
-//	m_statusIter.GetNeighborhood().PrintImage(b);
-
 		ProcessStatusLists(UpList, DownList);
 	}
 	
@@ -95,8 +92,8 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	
 //	std::stringstream s3;
 //		  s3 << "afterOutside" << this->m_ElapsedIterations;
-	//	  std::ofstream a1(s3.str().c_str());
-	//m_statusIter.GetNeighborhood().PrintImage(a1);
+//		  std::ofstream a1(s3.str().c_str());
+//		  m_outIter.GetNeighborhood().PrintImage(a1);
 
 	// Finally, we update all of the layer values (excluding the active layer,
 	// which has already been updated).
@@ -104,7 +101,7 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	
 	m_ElapsedIterations++;
 	
-	//LOUT << "returning: " << ret << std::endl;	
+	DL_PRINT(DEBUG_ALG, "returning: " << retval);
 	return retval;
 }
 
@@ -205,7 +202,6 @@ ApplyUpdateSPE::ProcessStatusList(
 //	NeighborhoodIterator<StatusImageType> statusIt(m_NeighborList.GetRadius(),
 //			m_StatusImage, this->GetOutput()->GetRequestedRegion());
 		
-	DL_PRINT(DEBUG_ALG, "ProcessStatusList" << std::endl);
 
 	// Push each index in the input list into its appropriate status layer
 	// (ChangeToStatus) and update the status image value at that index.
@@ -233,7 +229,7 @@ ApplyUpdateSPE::ProcessStatusList(
 			//std::cout << "predIncriminovanym:" << std::endl << m_statusIter.GetNeighborhood() << std::endl;
 			neighbor_status
 					= m_statusIter.GetPixel(m_NeighborList.GetArrayIndex(i), bounds_status);
-			DL_PRINT(DEBUG_ALG, "2. neighbor_status=" << ((uint32)neighbor_status) );
+			DL_PRINT(DEBUG_ALG, "2. neighbor_status=" << ((int32)neighbor_status) );
 
 			if (neighbor_status == SearchForStatus)
 			{ // mark this pixel so we don't add it twice. //TODO

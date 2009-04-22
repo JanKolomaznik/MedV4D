@@ -2,6 +2,8 @@
 #error File myFiniteDifferenceFilter.tcc cannot be included directly!
 #else
 
+#define DEBUGMYFINITEFILT 12
+
 namespace itk {
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -54,7 +56,8 @@ namespace itk {
 				this->ResetPipeline();
 				throw ProcessAborted(__FILE__,__LINE__);
 			}
-			D_PRINT("Elapsed iters:" << m_ElapsedIterations << ", dt = " << dt);
+			DL_PRINT(DEBUGMYFINITEFILT, 
+					"Elapsed iters:" << m_ElapsedIterations << ", dt = " << dt);
 		}
 
 		if (m_ManualReinitialization == false)

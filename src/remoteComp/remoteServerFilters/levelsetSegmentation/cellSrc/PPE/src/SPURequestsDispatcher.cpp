@@ -32,14 +32,16 @@ SPURequestsDispatcher::DispatchPushNodeMess(uint32 message)
 	uint8 lyerID = (message & MessageLyaerID_MASK) >> MessageLyaerID_SHIFT;
 	uint32 param = (message & MessagePARAM_MASK) >> MessagePARAM_SHIFT;
 	
+	uint32 secondWord = MyPopMessage();
+	
 	TIndex ind = { {
-			param & (0xFF),
-			(param & (0xFF << 8)) >> 8,
-			(param & (0xFF << 16)) >> 16
+			param,
+			secondWord & 0xFFFF,
+			(secondWord & (0xFFFF << 16)) >> 16
 	} };
 	
 	_workManager->PUSHNode(ind, lyerID);
-	DL_PRINT(DEBUG_MAILBOX, "PUSH, " << (uint32)lyerID);
+	DL_PRINT(DEBUG_MAILBOX, "PUSH " << ind << " layr=" << (uint32)lyerID);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -54,7 +56,7 @@ SPURequestsDispatcher::DispatchUnlinkMessage(uint32 message)
 	LayerNodeType *n = (LayerNodeType *) nodeAddress;
 	
 	_workManager->UNLINKNode(n, lyerID);
-	DL_PRINT(DEBUG_MAILBOX, "ULNK, " << (uint32)lyerID);
+	DL_PRINT(DEBUG_MAILBOX, "ULNK " << n << " layr=" << (uint32)lyerID);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
