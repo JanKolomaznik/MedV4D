@@ -123,6 +123,13 @@ public:
 	GetMax()const
 		{ return _maxCell; }
 
+	void
+        Reset()
+        {
+                uint32 i;
+                for ( i = 0; i < _cells.size(); ++i ) _cells[ i ] = 0;
+        }
+
 
 	void
 	Save( std::ostream &stream ) 

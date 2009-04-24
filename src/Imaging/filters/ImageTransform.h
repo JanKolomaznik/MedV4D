@@ -42,6 +42,8 @@ public:
 	{
 		CoordType _rotation;
 
+		CoordType _sampling;
+
 		CoordType _scale;
 
 		CoordType _translation;
@@ -51,6 +53,7 @@ public:
 			for ( uint32 i = 0; i < dim; i++ )
 			{
 				_rotation[i] = 0.0f;
+				_sampling[i] = 1.0f;
 				_scale[i] = 1.0f;
 				_translation[i] = 0.0f;
 			}
@@ -64,6 +67,11 @@ public:
 	void SetRotation(CoordType rotation)
 	{
 		dynamic_cast< Properties* >( this->_properties )->_rotation = rotation;
+	}
+
+	void SetSampling(CoordType sampling)
+	{
+		dynamic_cast< Properties* >( this->_properties )->_sampling = sampling;
 	}
 
 	void SetScale(CoordType scale)

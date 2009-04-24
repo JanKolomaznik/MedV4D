@@ -9,6 +9,9 @@
 #define IMAGE_REGISTRATION_H_
 
 #include "Imaging/filters/ImageTransform.h"
+#include "Imaging/MultiHistogram.h"
+#include "Imaging/Histogram.h"
+#include <boost/shared_ptr.hpp>
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -38,12 +41,20 @@ public:
 	ImageRegistration( Properties  * prop );
 	ImageRegistration();
 
+	void
+	SetReferenceImage( typename ImageType::Ptr ref );
+
 protected:
 	bool
 	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
 
 private:
 	GET_PROPERTIES_DEFINITION_MACRO;
+
+	typename ImageType::Ptr						referenceImage;
+	MultiHistogram< uint32, 2 >				jointHistogram;
+	Histogram< uint32 >					inputImageHistogram;
+	Histogram< uint32 >					referenceImageHistogram;
 
 };
 

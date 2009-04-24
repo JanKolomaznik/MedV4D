@@ -28,11 +28,13 @@ TransformImage( const Image< ElementType, 2 > &in, Image< ElementType, 2 > &out,
 	ElementType *sPointer;
 	int32 xStride;
 	int32 yStride;
-	int32 height;
-	int32 width;
+	int32 height, oldheight;
+	int32 width, oldwidth;
 	typename ImageTransform< ElementType, 2 >::Properties* prop = dynamic_cast< typename ImageTransform< ElementType, 2 >::Properties* >( properties );
 	typedef typename InterpolatorBase< Image< ElementType, 2 > >::CoordType CoordType;
 	sPointer = out.GetPointer( (uint32&)width, (uint32&)height, xStride, yStride );
+	oldwidth = (int32)(width / prop->_sampling[0]);
+	oldheight = (int32)(height / prop->_sampling[1]);
 	Vector< CoordType, 2 > RotationMatrix(
 					CoordType( std::cos( -prop->_rotation[0] ), -std::sin( -prop->_rotation[0] ) ),
 					CoordType( std::sin( -prop->_rotation[0] ),  std::cos( -prop->_rotation[0] ) )
@@ -42,13 +44,22 @@ TransformImage( const Image< ElementType, 2 > &in, Image< ElementType, 2 > &out,
 		ElementType *pointer = sPointer + j*yStride;
 
 		for( int32 i = 0; i < (int32)width; ++i ) {
-			CoordType point( ( i - width/2 ) * RotationMatrix[0][0] + ( j - height/2 ) * RotationMatrix[0][1] + width/2 - prop->_translation[0],
-					 ( i - width/2 ) * RotationMatrix[1][0] + ( j - height/2 ) * RotationMatrix[1][1] + height/2 - prop->_translation[1] );
+			CoordType point( ( i - width/2 ) * RotationMatrix[0][0] + ( j - height/2 ) * RotationMatrix[0][1] + width/2,
+					 ( i - width/2 ) * RotationMatrix[1][0] + ( j - height/2 ) * RotationMatrix[1][1] + height/2 );
+
+			point[0] -= prop->_translation[0];
+			point[1] -= prop->_translation[1];
+
+			point[0] = ( point[0] / prop->_scale[0] + ( width / 2 - width / ( 2 * prop->_scale[0] ) ) );
+			point[1] = ( point[1] / prop->_scale[1] + ( height / 2 - height / ( 2 * prop->_scale[1] ) ) );
+
+			point[0] /= prop->_sampling[0];
+			point[1] /= prop->_sampling[1];
 
 			if ( ( point[0] < 0 ) |
-			     ( point[0] >= width ) |
+			     ( point[0] >= oldwidth ) |
 			     ( point[1] < 0 ) |
-			     ( point[1] >= height ) ) *pointer = 0;
+			     ( point[1] >= oldheight ) ) *pointer = 0;
 
 			else *pointer = interpolator->Get( point );
 
@@ -63,13 +74,13 @@ bool
 TransformImage( const Image< ElementType, 3 > &in, Image< ElementType, 3 > &out, AbstractFilter::Properties* properties, InterpolatorBase< Image< ElementType, 3 > >* interpolator )
 {
 	
-	ElementType *sPointer;
+	ElementType *sPointer, *pointer;
 	int32 xStride;
 	int32 yStride;
 	int32 zStride;
-	int32 height;
-	int32 width;
-	int32 depth;
+	int32 height, oldheight;
+	int32 width, oldwidth;
+	int32 depth, olddepth;
 	typename ImageTransform< ElementType, 3 >::Properties* prop = dynamic_cast< typename ImageTransform< ElementType, 3 >::Properties* >( properties );
 
 	Vector< uint32, 3 > size;
@@ -79,6 +90,9 @@ TransformImage( const Image< ElementType, 3 > &in, Image< ElementType, 3 > &out,
 	width = (int32)size[0];
 	height = (int32)size[1];
 	depth = (int32)size[2];
+	oldwidth = (int32)(width / prop->_sampling[0]);
+	oldheight = (int32)(height / prop->_sampling[1]);
+	olddepth = (int32)(depth / prop->_sampling[2]);
 	xStride = strides[0];
 	yStride = strides[1];
 	zStride = strides[2];
@@ -103,9 +117,11 @@ TransformImage( const Image< ElementType, 3 > &in, Image< ElementType, 3 > &out,
 
 	for( int32 k = 0; k < depth; ++k ) {
 		for( int32 j = 0; j < height; ++j ) {
-			ElementType *pointer = sPointer + k*zStride + j*yStride;
+
+			pointer = sPointer + k*zStride + j*yStride;
 
 			for( int32 i = 0; i < (int32)width; ++i ) {
+
 				CoordType point( ( i - width/2 ) * RotationMatrixX[0][0] + ( j - height/2 ) * RotationMatrixX[0][1] + ( k - depth/2 ) * RotationMatrixX[0][2] + width/2, 
 						 ( i - width/2 ) * RotationMatrixX[1][0] + ( j - height/2 ) * RotationMatrixX[1][1] + ( k - depth/2 ) * RotationMatrixX[1][2] + height/2,
 						 ( i - width/2 ) * RotationMatrixX[2][0] + ( j - height/2 ) * RotationMatrixX[2][1] + ( k - depth/2 ) * RotationMatrixX[2][2] + depth/2 );
@@ -126,12 +142,20 @@ TransformImage( const Image< ElementType, 3 > &in, Image< ElementType, 3 > &out,
 				point[1] -= prop->_translation[1];
 				point[2] -= prop->_translation[2];
 
+				point[0] = ( point[0] / prop->_scale[0] + ( width / 2 - width / ( 2 * prop->_scale[0] ) ) );
+				point[1] = ( point[1] / prop->_scale[1] + ( height / 2 - height / ( 2 * prop->_scale[1] ) ) );
+				point[2] = ( point[2] / prop->_scale[2] + ( depth / 2 - depth / ( 2 * prop->_scale[2] ) ) );
+
+				point[0] /= prop->_sampling[0];
+				point[1] /= prop->_sampling[1];
+				point[2] /= prop->_sampling[2];
+
 				if ( ( point[0] < 0 ) |
-				     ( point[0] >= width ) |
+				     ( point[0] >= oldwidth ) |
 				     ( point[1] < 0 ) |
-				     ( point[1] >= height ) |
+				     ( point[1] >= oldheight ) |
 				     ( point[2] < 0 ) |
-				     ( point[2] >= depth ) ) *pointer = 0;
+				     ( point[2] >= olddepth ) ) *pointer = 0;
 
 				else *pointer = interpolator->Get( point );
 				
@@ -203,13 +227,14 @@ ImageTransform< ElementType, dim >
 	int32 minimums[ ImageTraits<ImageType>::Dimension ];
 	int32 maximums[ ImageTraits<ImageType>::Dimension ];
 	float32 voxelExtents[ ImageTraits<ImageType>::Dimension ];
+	Properties* prop = dynamic_cast< Properties* >( this->_properties );
 
 	for( unsigned i=0; i < dimension; ++i ) {
 		const DimensionExtents & dimExt = this->in->GetDimensionExtents( i );
 
 		minimums[i] = dimExt.minimum;
-		maximums[i] = dimExt.maximum;
-		voxelExtents[i] = dimExt.elementExtent * dynamic_cast< Properties* >( this->_properties )->_scale[i];
+		maximums[i] = dimExt.minimum + (dimExt.maximum - dimExt.minimum) * prop->_sampling[i];
+		voxelExtents[i] = dimExt.elementExtent;
 	}
 	//fill greater dimensions
 	for( unsigned i=dimension; i < ImageTraits<ImageType>::Dimension; ++i ) {

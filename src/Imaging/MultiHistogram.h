@@ -69,6 +69,7 @@ public:
 		 	_maxCell = histogram._maxCell;
 			_storeOutliers = histogram._storeOutliers;
 			_sum = histogram._sum;
+			return *this;
 		}
 
 	void
@@ -161,6 +162,13 @@ public:
 	GetMax()const
 		{ return _maxCell; }
 
+	void
+	Reset()
+	{
+		uint32 i;
+		for ( i = 0; i < _cells.size(); ++i ) _cells[ i ] = 0;
+	}
+
 
 	void
 	Save( std::ostream &stream ) 
@@ -175,7 +183,7 @@ public:
 		BINSTREAM_WRITE_MACRO( stream, _sum );
 		
 		CellType tmp;
-		for( unsigned i = 0; i < _cells.size(); ++i ) {
+		for( i = 0; i < _cells.size(); ++i ) {
 			tmp = _cells[i];
 			BINSTREAM_WRITE_MACRO( stream, tmp );
 		}
@@ -202,7 +210,7 @@ public:
 		MultiHistogram *result = new MultiHistogram( minCell, maxCell, storeOutliers );
 
 		CellType tmp;
-		for( unsigned i = 0; i < result->_cells.size(); ++i ) {
+		for( i = 0; i < result->_cells.size(); ++i ) {
 			BINSTREAM_READ_MACRO( stream, tmp );
 			result->_cells[i] = tmp;
 		}
