@@ -7,9 +7,7 @@
 
 #include <QtGui>
 
-#include "common/Log.h"
-#include "common/Debug.h"
-#include "common/Thread.h"
+#include "Imaging/Imaging.h"
 #include "GUI/widgets/utils/LoadingThreads.h"
 
 using namespace M4D::Dicom;

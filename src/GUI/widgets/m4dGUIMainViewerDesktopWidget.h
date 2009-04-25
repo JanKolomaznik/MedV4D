@@ -11,8 +11,6 @@
 #include <QtGui>
 
 #include "utils/ViewerFactory.h"
-#include "m4dGUISliceViewerWidget.h"        // delete
-#include "m4dGUIVtkViewerWidget.h"
 
 
 namespace M4D {
