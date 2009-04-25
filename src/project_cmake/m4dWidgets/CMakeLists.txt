@@ -26,7 +26,8 @@ set(MOCINPUT ${GUI_INCLUDE}/m4dGUIAbstractViewerWidget.h
              ${GUI_INCLUDE}/components/StManagerHProtocolsComp.h
              ${GUI_INCLUDE}/components/StManagerStudyListComp.h
              ${GUI_INCLUDE}/utils/LoadingThreads.h
-             ${GUI_INCLUDE}/utils/StudyFilter.h)
+             ${GUI_INCLUDE}/utils/StudyFilter.h
+	     ${GUI_INCLUDE}/utils/ViewerFactory.h)
 
 QT4_WRAP_CPP(MOCOUTPUT ${MOCINPUT})
 
@@ -55,7 +56,8 @@ set(INPUT ${SRC_DIR}/src/m4dGUIMainWindow.cpp
           ${SRC_DIR}/components/src/StManagerHProtocolsComp.cpp
           ${SRC_DIR}/components/src/StManagerStudyListComp.cpp 
           ${SRC_DIR}/utils/src/LoadingThreads.cpp
-          ${SRC_DIR}/utils/src/StudyFilter.cpp)
+          ${SRC_DIR}/utils/src/StudyFilter.cpp
+	  ${SRC_DIR}/utils/src/ViewerFactory.cpp)
 
 add_library(m4dWidgets ${INPUT} ${MOCOUTPUT} ${RCCOUTPUT})
 

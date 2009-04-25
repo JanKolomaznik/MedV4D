@@ -38,7 +38,8 @@ TARGETS1=	StManagerFilterComp \
 TARGETS2=	fonts
 
 TARGETS3=	LoadingThreads \
-		StudyFilter 
+		StudyFilter \
+		ViewerFactory
 
 MOCINPUT=	m4dGUIAbstractViewerWidget.h \
 		m4dGUIMainWindow.h \
@@ -54,7 +55,9 @@ MOCINPUT=	m4dGUIAbstractViewerWidget.h \
 		StManagerHProtocolsComp.h \
 		StManagerStudyListComp.h \
 		m4dGUIProgressBarWidget.h \
-		LoadingThreads.h
+		LoadingThreads.h \
+		StudyFilter.h \
+		ViewerFactory.h
 
 
 RCCINPUT=	m4dGUIMainWindow.qrc \
