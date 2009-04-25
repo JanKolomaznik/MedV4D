@@ -10,8 +10,8 @@
 
 #include <QtGui>
 
-#include "m4dGUIAbstractViewerWidget.h"
-#include "m4dGUISliceViewerWidget.h"
+#include "utils/ViewerFactory.h"
+#include "m4dGUISliceViewerWidget.h"        // delete
 #include "m4dGUIVtkViewerWidget.h"
 
 
@@ -30,17 +30,12 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
   public:
 
     /**
-     * Enumeration for concrete viewer type - viewers derived from m4dGUIAbstractViewerWidget.
-     */
-    typedef enum { SLICE_VIEWER, VTK_VIEWER } ViewerType;
-
-    /**
-     * Structure representing a viewer (it contains its concrete type, the viewer widget, which 
+     * Structure representing a viewer (it contains its unique ID, the viewer widget, which 
      * tools were checked for it, index of its source - pipeline connection).
      */
     struct Viewer {
-      /// Concrete type of the viewer.
-      ViewerType type;
+      /// Unique ID of the viewer.
+      unsigned ID;
       /// Viewer widget.
       M4D::Viewer::m4dGUIAbstractViewerWidget *viewerWidget;
       /// Checked tool (index) for given viewer - for left mouse button.
@@ -72,16 +67,24 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
      *
      * @param rows number of rows in the layout of desktop widget
      * @param columns number of columns in the layout of desktop widget
+     * @param viewerFactory pointer to the Viewer Factory - which will create viewers to the desktop
+     * (will be deleted in the Main Viewer Desktop destructor)
      * @param parent pointer to the parent widget - default is 0
      */
-    m4dGUIMainViewerDesktopWidget ( const unsigned rows, const unsigned columns, QWidget *parent = 0 );
+    m4dGUIMainViewerDesktopWidget ( const unsigned rows, const unsigned columns, 
+                                    ViewerFactory *viewerFactory, QWidget *parent = 0 );
 
     /** 
-     * Getter to the selected viewer's type.
-     *
-     * @return type of the selected viewer
+     * Main Viewer Desktop destructor.
      */
-    ViewerType getSelectedViewerType () const { return selectedViewer->type; }
+    ~m4dGUIMainViewerDesktopWidget ();
+
+    /** 
+     * Getter to the selected viewer's ID.
+     *
+     * @return ID of the selected viewer
+     */
+    unsigned getSelectedViewerID () const { return selectedViewer->ID; }
 
     /** 
      * Getter to the selected viewer's viewer widget.
@@ -149,10 +152,10 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
      * It's inserted to the repleced viewer's place, with its dimensions. The whole toolBar and the controls
      * are updated according to the type of the new viewer.
      *
-     * @param type type of the wanted viewer
+     * @param viewerFactory pointer to the Viewer Factory - which will create the new viewer
      * @param replacedViewer pointer to the replaced viewer
      */
-    void replaceSelectedViewerWidget ( ViewerType type, M4D::Viewer::m4dGUIAbstractViewerWidget *replacedViewer );
+    void replaceSelectedViewerWidget ( ViewerFactory *viewerFactory, M4D::Viewer::m4dGUIAbstractViewerWidget *replacedViewer );
 
     /** 
      * Adds source (pipeline connection) to vector of registered sources - possible connections, 
@@ -201,6 +204,9 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
     void propagateFeatures ( M4D::Viewer::m4dGUIAbstractViewerWidget *prevViewer );
 
   private:
+
+    /// Default Viewer Factory - for creating viewers.
+    ViewerFactory *viewerFactory;
 
     /// Vector of viewer structures in the layout.
     std::vector< Viewer * > viewers;

@@ -16,14 +16,20 @@ using namespace std;
 namespace M4D {
 namespace GUI {
 
-m4dGUIMainViewerDesktopWidget::m4dGUIMainViewerDesktopWidget ( const unsigned rows, const unsigned columns, 
-                                                              QWidget *parent )
-  : QWidget( parent ), defaultConnection( NULL )
+m4dGUIMainViewerDesktopWidget::m4dGUIMainViewerDesktopWidget ( const unsigned rows, const unsigned columns,
+                                                               ViewerFactory *viewerFactory, QWidget *parent )
+  : QWidget( parent ), viewerFactory( viewerFactory ), defaultConnection( NULL )
 {
   setDesktopLayout( rows, columns );
 
   selectedViewer = viewers[0];
   viewers[0]->viewerWidget->slotSetSelected( true );
+}
+
+
+m4dGUIMainViewerDesktopWidget::~m4dGUIMainViewerDesktopWidget ()
+{
+  delete viewerFactory;
 }
 
 
@@ -55,7 +61,7 @@ void m4dGUIMainViewerDesktopWidget::setViewerEventHandlerForAll ( m4dGUIViewerEv
 }
 
 
-void m4dGUIMainViewerDesktopWidget::replaceSelectedViewerWidget ( ViewerType type, 
+void m4dGUIMainViewerDesktopWidget::replaceSelectedViewerWidget ( ViewerFactory *viewerFactory, 
                                                                   m4dGUIAbstractViewerWidget *replacedViewer ) 
 {
   ConnectionInterface *conn = replacedViewer->getInputPort();
@@ -63,21 +69,7 @@ void m4dGUIMainViewerDesktopWidget::replaceSelectedViewerWidget ( ViewerType typ
   list< string > leftOverlayInfo  = replacedViewer->getLeftSideTextData();
   list< string > rightOverlayInfo = replacedViewer->getRightSideTextData();
 
-  m4dGUIAbstractViewerWidget *widget = 0;
-
-  switch ( type )
-  {
-    case SLICE_VIEWER:
-      widget = new m4dGUISliceViewerWidget( conn, idx );
-      break;
-
-    case VTK_VIEWER:
-      widget = new m4dGUIVtkViewerWidget( conn, idx );
-      break;
-
-    default:
-      widget = new m4dGUISliceViewerWidget( conn, idx );
-  }
+  m4dGUIAbstractViewerWidget *widget = viewerFactory->newViewer( conn, idx );
 
   widget->setLeftSideTextData( leftOverlayInfo ); 
   widget->setRightSideTextData( rightOverlayInfo ); 
@@ -85,7 +77,7 @@ void m4dGUIMainViewerDesktopWidget::replaceSelectedViewerWidget ( ViewerType typ
   connect( widget, SIGNAL(signalSetSelected( unsigned, bool )), this, SLOT(selectedChanged( unsigned )) );
   widget->slotSetSelected( true );
 
-  selectedViewer->type = type;
+  selectedViewer->ID = viewerFactory->getID();
   selectedViewer->viewerWidget = widget;
   selectedViewer->checkedLeftButtonTool = selectedViewer->checkedRightButtonTool = ACTION_EMPTY;
 
@@ -125,15 +117,15 @@ void m4dGUIMainViewerDesktopWidget::setDesktopLayout( const unsigned rows, const
     {
       Viewer *viewer = new Viewer;
 
-      m4dGUIAbstractViewerWidget *widget = new m4dGUISliceViewerWidget( viewersSize + i );
+      m4dGUIAbstractViewerWidget *widget = viewerFactory->newViewer( viewersSize + i );
 	    if( defaultConnection ) {
 		    widget->setInputPort( defaultConnection );
 	    }
 
       connect( widget, SIGNAL(signalSetSelected( unsigned, bool )), this, SLOT(selectedChanged( unsigned )) );
       
+      viewer->ID = viewerFactory->getID();
       viewer->viewerWidget = widget;
-      viewer->type = SLICE_VIEWER;
       viewer->checkedLeftButtonTool = viewer->checkedRightButtonTool = ACTION_EMPTY;
       viewer->sourceIdx = 0;
 

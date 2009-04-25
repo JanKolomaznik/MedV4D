@@ -217,6 +217,10 @@
 					RelativePath="..\..\GUI\widgets\utils\src\StudyFilter.cpp"
 					>
 				</File>
+				<File
+					RelativePath="..\..\GUI\widgets\utils\src\ViewerFactory.cpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -648,6 +652,10 @@
 							Outputs="$(IntDir)\generated\moc\moc_$(InputName).cpp"
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\GUI\widgets\utils\ViewerFactory.h"
+					>
 				</File>
 			</Filter>
 			<Filter

@@ -332,7 +332,7 @@ void m4dGUIMainWindow2::features ()
   viewerActs[currentViewerDesktop->getSelectedViewerLeftTool()]->trigger();
   viewerActs[currentViewerDesktop->getSelectedViewerRightTool()]->trigger();
 
-  if ( currentViewerDesktop->getSelectedViewerType() == m4dGUIMainViewerDesktopWidget::VTK_VIEWER ) {
+  if ( currentViewerDesktop->getSelectedViewerID() == VTK_VIEWER_ID ) {
     replaceAct->setChecked( true );
   }
   else {
@@ -354,12 +354,12 @@ void m4dGUIMainWindow2::replace ()
   m4dGUIAbstractViewerWidget *replacedViewer = currentViewerDesktop->getSelectedViewerWidget();
   
   if ( !replaceAct->isChecked() ) {
-    currentViewerDesktop->replaceSelectedViewerWidget( m4dGUIMainViewerDesktopWidget::SLICE_VIEWER,
-                                                    replacedViewer );
+    currentViewerDesktop->replaceSelectedViewerWidget( new SliceViewerFactory(),
+                                                       replacedViewer );
   }
   else {
-    currentViewerDesktop->replaceSelectedViewerWidget( m4dGUIMainViewerDesktopWidget::VTK_VIEWER,
-                                                    replacedViewer );
+    currentViewerDesktop->replaceSelectedViewerWidget( new VtkViewerFactory(),
+                                                       replacedViewer );
   }
   features();
 }
@@ -375,7 +375,7 @@ void m4dGUIMainWindow2::source ( const QString &pipelineDescription, const QStri
 
 void m4dGUIMainWindow2::createMainViewerDesktop ()
 {
-  currentViewerDesktop = new m4dGUIMainViewerDesktopWidget( 1, 2 );
+  currentViewerDesktop = new m4dGUIMainViewerDesktopWidget( 1, 2, 0 );
   connect( currentViewerDesktop, SIGNAL(propagateFeatures()), this, SLOT(features()) );
   connect( currentViewerDesktop, SIGNAL(sourceAdded( const QString &, const QString & )), 
            this, SLOT(source( const QString &, const QString & )) );

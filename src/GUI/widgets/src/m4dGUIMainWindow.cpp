@@ -413,7 +413,7 @@ void m4dGUIMainWindow::features ( m4dGUIAbstractViewerWidget *prevViewer )
   viewerActs[currentViewerDesktop->getSelectedViewerLeftTool()]->trigger();
   viewerActs[currentViewerDesktop->getSelectedViewerRightTool()]->trigger();
 
-  if ( currentViewerDesktop->getSelectedViewerType() == m4dGUIMainViewerDesktopWidget::VTK_VIEWER ) {
+  if ( currentViewerDesktop->getSelectedViewerID() == VTK_VIEWER_ID ) {
     replaceAct->setChecked( true );
   }
   else {
@@ -435,12 +435,12 @@ void m4dGUIMainWindow::replace ()
   m4dGUIAbstractViewerWidget *replacedViewer = currentViewerDesktop->getSelectedViewerWidget();
   
   if ( !replaceAct->isChecked() ) {
-    currentViewerDesktop->replaceSelectedViewerWidget( m4dGUIMainViewerDesktopWidget::SLICE_VIEWER,
-                                                      replacedViewer );
+    currentViewerDesktop->replaceSelectedViewerWidget( &SliceViewerFactory(),
+                                                       replacedViewer );
   }
   else {
-    currentViewerDesktop->replaceSelectedViewerWidget( m4dGUIMainViewerDesktopWidget::VTK_VIEWER,
-                                                      replacedViewer );
+    currentViewerDesktop->replaceSelectedViewerWidget( &VtkViewerFactory(),
+                                                       replacedViewer );
   }
 
   features( currentViewerDesktop->getPrevSelectedViewerWidget() );
@@ -493,7 +493,7 @@ void m4dGUIMainWindow::loadingException ( const QString &description )
 
 void m4dGUIMainWindow::createDefaultViewerDesktop ()
 {
-  currentViewerDesktop = new m4dGUIMainViewerDesktopWidget( 1, 2 );
+  currentViewerDesktop = new m4dGUIMainViewerDesktopWidget( 1, 2, new SliceViewerFactory() );
 }
 
 
