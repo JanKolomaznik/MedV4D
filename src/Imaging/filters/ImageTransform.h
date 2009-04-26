@@ -104,7 +104,7 @@ protected:
 	 * \param utype Input/output parameter choosing desired update method. If 
 	 * desired update method can't be used - right type is put as output value.
 	 **/
-	void
+	virtual void
 	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
 
 	void

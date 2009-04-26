@@ -48,13 +48,22 @@ protected:
 	bool
 	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
 
+	/**
+         * Method called in execution methods before actual computation.
+         * When overriding in successors predecessor implementation must be called first.
+         * \param utype Input/output parameter choosing desired update method. If
+         * desired update method can't be used - right type is put as output value.
+         **/
+        void
+        BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
+
 private:
 	GET_PROPERTIES_DEFINITION_MACRO;
 
 	typename ImageType::Ptr						referenceImage;
-	MultiHistogram< uint32, 2 >				jointHistogram;
-	Histogram< uint32 >					inputImageHistogram;
-	Histogram< uint32 >					referenceImageHistogram;
+	MultiHistogram< uint32, 2 >					jointHistogram;
+	Histogram< uint32 >						inputImageHistogram;
+	Histogram< uint32 >						referenceImageHistogram;
 
 };
 

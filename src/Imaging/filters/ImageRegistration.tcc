@@ -20,7 +20,7 @@ namespace M4D
 namespace Imaging
 {
 
-/*template< typename ElementType >
+template< typename ElementType >
 void
 CalculateHistograms( MultiHistogram< uint32, 2 >& jointHist,
 		 Histogram< uint32 >& inputHist,
@@ -28,14 +28,43 @@ CalculateHistograms( MultiHistogram< uint32, 2 >& jointHist,
 		 Image< ElementType, 3 >& inputImage,
 		 Image< ElementType, 3 >& refImage )
 {
-	jointHistogram.Reset();
-	inputImageHistogram.Reset();
-	referenceImageHistogram.Reset();
-	std::vector< ElementType > index(2);
+	jointHist.Reset();
+	inputHist.Reset();
+	refHist.Reset();
+	std::vector< int32 > index(2);
 	uint32 i, j, k;
-	for ( i = 
-	
-}*/
+	ElementType *sin, *sref;
+	Vector< uint32, 3 > size;
+        Vector< int32, 3 > strides;
+	sin = inputImage.GetPointer( size, strides );
+	int32 inXStride = strides[0];
+	int32 inYStride = strides[1];
+	int32 inZStride = strides[2];
+	sref = refImage.GetPointer( size, strides );
+	int32 refXStride = strides[0];
+	int32 refYStride = strides[1];
+	int32 refZStride = strides[2];
+	uint32 refWidth = size[0];
+	uint32 refHeight = size[1];
+	uint32 refDepth = size[2];
+	for ( k = 0; k < refDepth; ++k )
+		for ( j = 0; j < refHeight; ++j )
+		{
+			ElementType *in = sin + k*inZStride + j*inYStride;
+			ElementType *ref = sref + k*refZStride + j*refYStride;
+			for ( i = 0; i < refWidth; ++i )
+			{
+				index[0] = *in;
+				index[1] = *ref;
+				jointHist.IncCell( index );
+				inputHist.IncCell( *in );
+				refHist.IncCell( *ref );
+				in += inXStride;
+				ref += refXStride;
+			}
+		}
+	std::cout << "Done" << std::endl;
+}
 
 template< typename ElementType, uint32 dim >
 ImageRegistration< ElementType, dim >
@@ -71,12 +100,44 @@ ImageRegistration< ElementType, dim >
 	}
 	bool result = false;
 	result = this->ExecuteTransformation();
+	//if ( referenceImage ) CalculateHistograms< ElementType > ( jointHistogram, inputImageHistogram, referenceImageHistogram, *(this->out), *(referenceImage) );
 	if( result ) {
 		this->_writerBBox->SetModified();
 	} else {
 		this->_writerBBox->SetState( MS_CANCELED );
 	}
 	return result;
+}
+
+template< typename ElementType, uint32 dim >
+void
+ImageRegistration< ElementType, dim >
+::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
+{
+
+        PredecessorType::BeforeComputation( utype );
+	
+	/*if ( referenceImage && this->in )
+	{
+
+		Vector< uint32, 3 > size;
+ 		Vector< int32, 3 > strides;
+		this->in->GetPointer( size, strides );
+		uint32 inWidth = size[0];
+		uint32 inHeight = size[1];
+		uint32 inDepth = size[2];
+		referenceImage->GetPointer( size, strides );
+		uint32 refWidth = size[0];
+		uint32 refHeight = size[1];
+		uint32 refDepth = size[2];
+
+		typedef typename PredecessorType::CoordType::CoordinateType		CoordType;
+
+		this->SetSampling( CreateVector< CoordType >( (CoordType)refWidth/(CoordType)inWidth, (CoordType)refHeight/(CoordType)inHeight, (CoordType)refDepth/(CoordType)inDepth ) );
+
+		this->_callPrepareOutputDatasets = true;
+
+	}*/
 }
 
 template< typename ElementType, uint32 dim >
