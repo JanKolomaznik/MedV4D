@@ -14,6 +14,7 @@ FileAccessor::FileAccessor(const char *file, OpenMode mode) {
 		if(stream_.fail())
 		{
 			stream_.close();
+			LOG("Cannont create FileAccessor - " << file);
 			throw exception();
 		}
 	}
@@ -23,6 +24,7 @@ FileAccessor::FileAccessor(const char *file, OpenMode mode) {
 		if(stream_.fail())
 		{
 			stream_.close();
+			LOG("Cannont create FileAccessor - " << file);
 			throw exception();
 		}
 	}

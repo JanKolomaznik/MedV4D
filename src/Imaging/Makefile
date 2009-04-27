@@ -3,9 +3,7 @@ srcdir = .
 srcTop=..
 
 include $(srcTop)/project/ToolchainSelect.mk
-
-RM=rm -f
-MKDIR=mkdir
+include $(srcTop)/project/configurationSelector.mk
 
 ########################################
 #Name of this project part
@@ -35,23 +33,9 @@ OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	$(srcTop)/tmp/$(NAME)
 SRC_DIR=	./src
 
-CXXDEBUG_OPTIONS = -ggdb
-
-CXXFLAGS= -Wall -Wno-deprecated $(CXXDEBUG_OPTIONS)
-#Dependecy file creation parameters
-DEP_FILE=	$(TMP_DIR)/depend
-CDEPFLAGS=	-MM 
-
-LDFLAGS=
-ARFLAGS=	-r
 INCLUDES=	-I$(srcTop) \
 		-I$(srcTop)/include\
 		-I/usr/include
-
-DEBUG_DEFS=	-DDEBUG_LEVEL=10\
-		-DDEBUG_ADITIONAL_INFO
-
-DEFS=		$(DEBUG_DEFS)
 
 
 SRC_FILES=	$(addprefix $(SRC_DIR)/, $(addsuffix .cpp, $(TARGETS)) )

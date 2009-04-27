@@ -15,19 +15,15 @@ SPUCXX=$(binUtilsPath)/spu-g++ -g --param max-unroll-times=1
 AR=$(binUtilsPath)/ppu-ar
 SPU_AR=$(binUtilsPath)/spu-ar
 archPostfix=CELL
-LD_PROFILE_OPTS= -Wl,-q
-CXXDEBUG_OPTIONS= -g
 ##########################################
 else ifdef COMPILE_ON_CELL
-
+# not tested
 CXX=ppu-g++
 AR=ppu-ar
 ROOT=
 archPostfix=CELL
 PLATFORM_DEFS= -DFOR_CELL
 
-PROFILE_OPTIONS=
-CXXDEBUG_OPTIONS= -g
 ##########################################
 else
 
@@ -37,8 +33,8 @@ ROOT=
 archPostfix=
 
 PLATFORM_DEFS= -DFOR_PC
-PROFILE_OPTIONS=
-CXXDEBUG_OPTIONS= -ggdb $(PROFILE_OPTIONS)
+
+CXXDEBUG_OPTIONS= -ggdb
 ##########################################
 endif
- 
+

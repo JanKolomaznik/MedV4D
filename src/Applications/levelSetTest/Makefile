@@ -3,36 +3,10 @@ srcdir = .
 srcTop = ../..
 
 include $(srcTop)/project/ToolchainSelect.mk
+include $(srcTop)/project/pathsDefinitions.mk
 
 RM=rm -f
 MKDIR=mkdir
-
-ITKIncludeRoot=/usr/local/include/InsightToolkit
-
-ITKIncludes=	-I$(ITKIncludeRoot)\
-				-I$(ITKIncludeRoot)/Common\
-				-I$(ITKIncludeRoot)/Algorithms\
-				-I$(ITKIncludeRoot)/BasicFilters\
-				-I$(ITKIncludeRoot)/IO\
-				-I$(ITKIncludeRoot)/Utilities\
-				-I$(ITKIncludeRoot)/Utilities/vxl/vcl\
-				-I$(ITKIncludeRoot)/Utilities/vxl/core\
-				-I$(ITKIncludeRoot)/gdcm/src
-				
-ITKLIBS= 	$(ITKLibsRoot)/libITKNumerics.a\
-			$(ITKLibsRoot)/libITKSpatialObject.a\
-			$(ITKLibsRoot)/libITKCommon.a\
-			$(ITKLibsRoot)/libitkvnl_inst.a\
-			$(ITKLibsRoot)/libitkvnl_algo.a\
-			$(ITKLibsRoot)/libitkvnl.a\
-			$(ITKLibsRoot)/libitkvcl.a\
-			$(ITKLibsRoot)/libitksys.a\
-			$(ITKLibsRoot)/libitkv3p_netlib.a
-			#$(ITKLibsRoot)/libITKNrrdIO.a\			
-			#$(ITKLibsRoot)/libITKMetaIO.a\
-			#$(ITKLibsRoot)/libITKEXPAT.a\
-			#$(ITKLibsRoot)/libITKniftiio.a\
-			#$(ITKLibsRoot)/libITKznz.a\
 				
 M4DLIBS=	$(srcTop)/lib/libImaging$(archPostfix).a\
 		$(srcTop)/lib/libcommon$(archPostfix).a\
