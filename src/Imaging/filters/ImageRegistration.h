@@ -13,6 +13,9 @@
 #include "Imaging/Histogram.h"
 #include <boost/shared_ptr.hpp>
 
+#define	HISTOGRAM_MIN_VALUE						0
+#define HISTOGRAM_MAX_VALUE						3000
+
 /**
  *  @addtogroup imaging Imaging Library
  *  @{
