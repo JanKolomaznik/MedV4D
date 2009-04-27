@@ -22,15 +22,11 @@ namespace Imaging
 
 template< typename ElementType >
 void
-CalculateHistograms( MultiHistogram< uint32, 2 >& jointHist,
-		 Histogram< uint32 >& inputHist,
-		 Histogram< uint32 >& refHist,
+CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 2 >::HistCellType, 2 >& jointHist,
 		 Image< ElementType, 2 >& inputImage,
 		 Image< ElementType, 2 >& refImage )
 {
 	jointHist.Reset();
-	inputHist.Reset();
-	refHist.Reset();
 	std::vector< int32 > index(2);
 	uint32 i, j;
 	ElementType *sin, *sref;
@@ -57,8 +53,6 @@ CalculateHistograms( MultiHistogram< uint32, 2 >& jointHist,
 			if ( index[1] < HISTOGRAM_MIN_VALUE ) index[1] = HISTOGRAM_MIN_VALUE;
 			if ( index[1] >= HISTOGRAM_MAX_VALUE ) index[1] = HISTOGRAM_MAX_VALUE - 1;
 			jointHist.IncCell( index );
-			inputHist.IncCell( index[0] );
-			refHist.IncCell( index[1] );
 			in += inXStride;
 			ref += refXStride;
 		}
@@ -67,15 +61,11 @@ CalculateHistograms( MultiHistogram< uint32, 2 >& jointHist,
 
 template< typename ElementType >
 void
-CalculateHistograms( MultiHistogram< uint32, 2 >& jointHist,
-		 Histogram< uint32 >& inputHist,
-		 Histogram< uint32 >& refHist,
+CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 3 >::HistCellType, 2 >& jointHist,
 		 Image< ElementType, 3 >& inputImage,
 		 Image< ElementType, 3 >& refImage )
 {
 	jointHist.Reset();
-	inputHist.Reset();
-	refHist.Reset();
 	std::vector< int32 > index(2);
 	uint32 i, j, k;
 	ElementType *sin, *sref;
@@ -106,8 +96,6 @@ CalculateHistograms( MultiHistogram< uint32, 2 >& jointHist,
 				if ( index[1] < HISTOGRAM_MIN_VALUE ) index[1] = HISTOGRAM_MIN_VALUE;
 				if ( index[1] >= HISTOGRAM_MAX_VALUE ) index[1] = HISTOGRAM_MAX_VALUE - 1;
 				jointHist.IncCell( index );
-				inputHist.IncCell( index[0] );
-				refHist.IncCell( index[1] );
 				in += inXStride;
 				ref += refXStride;
 			}
@@ -119,8 +107,7 @@ ImageRegistration< ElementType, dim >
 ::ImageRegistration( typename ImageRegistration< ElementType, dim >::Properties  * prop )
 	: PredecessorType( prop ),
 	  jointHistogram( std::vector< int32 >( 2, HISTOGRAM_MIN_VALUE ), std::vector< int32 >( 2, HISTOGRAM_MAX_VALUE ) ),
-	  inputImageHistogram( HISTOGRAM_MIN_VALUE, HISTOGRAM_MAX_VALUE ),
-	  referenceImageHistogram( HISTOGRAM_MIN_VALUE, HISTOGRAM_MAX_VALUE )
+	  _criterion( new NormalizedMutualInformation< HistCellType >() )
 {
 	this->_name = "ImageRegistration";
 }
@@ -130,10 +117,16 @@ ImageRegistration< ElementType, dim >
 ::ImageRegistration()
 	: PredecessorType( new Properties() ),
 	  jointHistogram( std::vector< int32 >( 2, HISTOGRAM_MIN_VALUE ), std::vector< int32 >( 2, HISTOGRAM_MAX_VALUE ) ),
-	  inputImageHistogram( HISTOGRAM_MIN_VALUE, HISTOGRAM_MAX_VALUE ),
-	  referenceImageHistogram( HISTOGRAM_MIN_VALUE, HISTOGRAM_MAX_VALUE )
+	  _criterion( new NormalizedMutualInformation< HistCellType >() )
 {
 	this->_name = "ImageRegistration";
+}
+
+template< typename ElementType, uint32 dim >
+ImageRegistration< ElementType, dim >
+::~ImageRegistration()
+{
+	delete _criterion;
 }
 
 template< typename ElementType, uint32 dim >
@@ -148,7 +141,16 @@ ImageRegistration< ElementType, dim >
 	}
 	bool result = false;
 	result = this->ExecuteTransformation();
-	if ( referenceImage ) CalculateHistograms< ElementType > ( jointHistogram, inputImageHistogram, referenceImageHistogram, *(this->out), *(referenceImage) );
+	if ( referenceImage )
+	{
+		CalculateHistograms< ElementType > ( jointHistogram, *(this->out), *(referenceImage) );
+		uint32 size = 0;
+		Vector< uint32, dim > sizeVector;
+		Vector< int32, dim > strideVector;
+		referenceImage->GetPointer( sizeVector, strideVector );
+		for ( uint32 i = 0; i < dim; ++i ) size += sizeVector[i];
+		std::cout << _criterion->compute( jointHistogram, size ) << std:: endl;
+	}
 	if( result ) {
 		this->_writerBBox->SetModified();
 	} else {

@@ -10,7 +10,7 @@
 
 #include "Imaging/filters/ImageTransform.h"
 #include "Imaging/MultiHistogram.h"
-#include "Imaging/Histogram.h"
+#include "Imaging/criterion/NormalizedMutualInformation.h"
 #include <boost/shared_ptr.hpp>
 
 #define	HISTOGRAM_MIN_VALUE						0
@@ -34,6 +34,7 @@ class ImageRegistration
 public:
 	typedef Image< ElementType, dim >				ImageType;
 	typedef ImageTransform< ElementType, dim >		 	PredecessorType;
+	typedef uint32							HistCellType;
 
 	struct Properties : public PredecessorType::Properties
 	{
@@ -43,6 +44,8 @@ public:
 
 	ImageRegistration( Properties  * prop );
 	ImageRegistration();
+
+	~ImageRegistration();
 
 	void
 	SetReferenceImage( typename ImageType::Ptr ref );
@@ -64,9 +67,8 @@ private:
 	GET_PROPERTIES_DEFINITION_MACRO;
 
 	typename ImageType::Ptr						referenceImage;
-	MultiHistogram< uint32, 2 >					jointHistogram;
-	Histogram< uint32 >						inputImageHistogram;
-	Histogram< uint32 >						referenceImageHistogram;
+	MultiHistogram< HistCellType, 2 >				jointHistogram;
+	CriterionBase< HistCellType >					*_criterion;
 
 };
 
