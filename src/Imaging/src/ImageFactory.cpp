@@ -157,14 +157,19 @@ ImageFactory::DeserializeImageFromStream(M4D::IO::InStream &stream)
 	AbstractImage::Ptr image;
 	TYPE_TEMPLATE_SWITCH_MACRO(
 		elementTypeID,
-		image = CreateEmptyImageFromExtents< TTYPE >( 
+		/*image = CreateEmptyImageFromExtents< TTYPE >( 
 				dimension,
 				minimums,
 				maximums,
 				elementExtents
-			);
+			);*/
 		DIMENSION_TEMPLATE_SWITCH_MACRO(
 			dimension,
+			image = CreateEmptyImageFromExtents< TTYPE, DIM >( 
+				Vector< int32, DIM >( minimums ),
+				Vector< int32, DIM >( maximums ),
+				Vector< float32, DIM >( elementExtents )
+			);
 			LoadSerializedImageData< TTYPE, DIM >( stream, static_cast< Image< TTYPE, DIM > &>( *(image.get()) ) );
 			)
 	);
