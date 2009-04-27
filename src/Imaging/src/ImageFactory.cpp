@@ -165,12 +165,13 @@ ImageFactory::DeserializeImageFromStream(M4D::IO::InStream &stream)
 			);*/
 		DIMENSION_TEMPLATE_SWITCH_MACRO(
 			dimension,
-			image = CreateEmptyImageFromExtents< TTYPE, DIM >( 
+			Image< TTYPE, DIM >::Ptr tmpImage = CreateEmptyImageFromExtents< TTYPE, DIM >( 
 				Vector< int32, DIM >( minimums ),
 				Vector< int32, DIM >( maximums ),
 				Vector< float32, DIM >( elementExtents )
 			);
-			LoadSerializedImageData< TTYPE, DIM >( stream, static_cast< Image< TTYPE, DIM > &>( *(image.get()) ) );
+			LoadSerializedImageData< TTYPE, DIM >( stream, *tmpImage );
+			image = tmpImage;
 			)
 	);
 
