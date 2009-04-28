@@ -33,9 +33,7 @@ OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	$(srcTop)/tmp/$(NAME)
 SRC_DIR=	./src
 
-INCLUDES=	-I$(srcTop) \
-		-I$(srcTop)/include\
-		-I/usr/include
+INCLUDES=	-I$(srcTop)
 
 
 SRC_FILES=	$(addprefix $(SRC_DIR)/, $(addsuffix .cpp, $(TARGETS)) )
