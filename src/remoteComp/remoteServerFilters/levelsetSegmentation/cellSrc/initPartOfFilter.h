@@ -52,8 +52,8 @@ public:
   
 	void SetUpperThreshold(FeaturePixelType upThreshold) { m_runConf.m_upThreshold = upThreshold; }
 	void SetLowerThreshold(FeaturePixelType loThreshold) { m_runConf.m_downThreshold = loThreshold; }
-	void SetPropagationWeight(float32 propWeight) { m_runConf.m_propWeight = propWeight; }
-	void SetCurvatureWeight(float32 curvWeight) { m_runConf.m_curvWeight = curvWeight; }
+	void SetPropagationScaling(float32 propWeight) { m_runConf.m_propWeight = propWeight; }
+	void SetCurvatureScaling(float32 curvWeight) { m_runConf.m_curvWeight = curvWeight; }
 	
 	void SetIsoSurfaceValue(ValueType val) { m_IsoSurfaceValue = val; }
 	

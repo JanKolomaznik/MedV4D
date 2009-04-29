@@ -40,11 +40,10 @@ WorkManager<IndexType, ValueType>
 {
 	M4D::Multithreading::ScopedLock lock(_layerAccessMutex);
 	
-	// push node into segment that have the least count of nodes
-	
 	LayerNodeType *node = m_LayerNodeStore->Borrow();
 	node->m_Value = index;
-	m_LayerSegments[0].layers[layerNum]->PushFront( node );
+	// push node into segment that have the least count of nodes
+	m_LayerSegments[GetShortestLayer(layerNum)].layers[layerNum]->PushFront( node );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -56,7 +55,7 @@ WorkManager<IndexType, ValueType>::UNLINKNode(LayerNodeType *node, uint32 layerN
 	M4D::Multithreading::ScopedLock lock(_layerAccessMutex);
 	
 	// unlink node from segment that have the biggest count of nodes
-	m_LayerSegments[0].layers[layerNum]->Unlink(node);
+	m_LayerSegments[GetLongestLayer(layerNum)].layers[layerNum]->Unlink(node);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -151,6 +150,24 @@ WorkManager<IndexType, ValueType>::PrintLists(std::ostream &s)
 			begin = begin->Next;
 		}
 	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+template<typename IndexType, typename ValueType>
+uint8
+WorkManager<IndexType, ValueType>::GetShortestLayer(uint8 layerNum)
+{
+	return 0;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+template<typename IndexType, typename ValueType>
+uint8
+WorkManager<IndexType, ValueType>::GetLongestLayer(uint8 layerNum)
+{
+	return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -11,7 +11,10 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::MySegmtLevelSetFilter(void)
 {
 	func_ = SegmentationFunctionType::New();
+	
+#ifndef WITH_ORIG_ITKPIPELINE
 	this->SetDifferenceFunction(func_);
+#endif
 	
 	  this->SetIsoSurfaceValue(NumericTraits<ValueType>::Zero);
 	  

@@ -9,7 +9,8 @@ namespace itk
 
 template<class FeatureImageType, typename NeighborhoodType, typename FloatOffsetType>
 SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
-::SpeedTermSolver()
+::SpeedTermSolver() 
+	: numCalls(0)
 {
 	this->CountMiddleVal();
 	m_PropagationWeight = 1.0f;
@@ -53,10 +54,36 @@ SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
     cdx[i] = static_cast<double>(idx[i]) - offset[i];
     }
   
-  FeatureScalarType val = Interpolate(cdx);
-  //LOG("ComputePropagationTerm at index: " << cdx << ", " << val);
+  if(IsInsideBuffer(cdx))
+  	return Interpolate(cdx);
+  else
+	return GetSpeedInPoint(idx);
+}
 
-	return val;
+///////////////////////////////////////////////////////////////////////////////
+
+template<class FeatureImageType, typename NeighborhoodType, typename FloatOffsetType>
+bool
+SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
+	::IsInsideBuffer(ContinuousIndexType &cdx) const
+{
+	const typename FeatureImageType::RegionType::SizeType &size = 
+		m_featureImage->GetLargestPossibleRegion().GetSize();
+	const typename FeatureImageType::RegionType::IndexType &index = 
+		m_featureImage->GetLargestPossibleRegion().GetIndex();
+	
+	for( unsigned int j = 0; j < FeatureImageType::ImageDimension; j++ )
+      {
+      if( cdx[j] < index[j] )
+        {
+        return false;
+        }
+      if( cdx[j] > (size[j]-1) )
+        {
+        return false;
+        }
+      }
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -161,7 +188,7 @@ SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
 ::ComputePropagationTerm(
 	  const NeighborhoodType &neighborhood,
 	  const FloatOffsetType& offset,
-	  GlobalDataType *gd) const
+	  GlobalDataType *gd)
 {
 	const FeatureScalarType ZERO = NumericTraits<FeatureScalarType>::Zero;
 	uint32 i;
@@ -206,6 +233,9 @@ SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
 			vnl_math_abs(propagation_term));
 
 	propagation_term *= vcl_sqrt( propagation_gradient );
+	
+	numCalls++;
+	
 	return propagation_term;
 }
 

@@ -15,8 +15,7 @@ M4DLIBS=	$(srcTop)/lib/libImaging$(archPostfix).a\
 
 LIBS=		$(M4DLIBS) \
 			$(ITKLIBS) \
-			-lboost_thread\
-			-lboost_filesystem\
+			-lboost_thread
 			-ldl\
 			-lspe2
 

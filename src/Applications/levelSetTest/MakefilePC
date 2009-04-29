@@ -15,7 +15,6 @@ M4DLIBS=	$(srcTop)/lib/libImaging$(archPostfix).a\
 LIBS=		$(M4DLIBS) \
 			$(ITKLIBS) \
 			-lboost_thread-mt\
-			-lboost_filesystem\
 			-ldl
 
 ########################################
@@ -103,6 +102,6 @@ $(OUTPUT):	$(OBJ_FILES)
 		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
 
 .PHONY: clean
-clean: libSPEPartCLEAN #ImagingCLEAN CommonCLEAN
+clean: #libSPEPartCLEAN ImagingCLEAN CommonCLEAN
 		$(RM) $(TMP_DIR)/*.o $(DEP_FILE)
 		$(RM) $(OUTPUT)

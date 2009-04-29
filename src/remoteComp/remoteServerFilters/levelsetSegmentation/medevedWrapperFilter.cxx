@@ -129,9 +129,9 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
   thresholdSegmentation->SetNumberOfIterations( properties_->maxIterations );
   thresholdSegmentation->SetUpperThreshold( properties_->upperThreshold );
   thresholdSegmentation->SetLowerThreshold( properties_->lowerThreshold );
-  thresholdSegmentation->SetPropagationWeight( properties_->propagationScaling );
+  thresholdSegmentation->SetPropagationScaling( properties_->propagationScaling );
   //thresholdSegmentation->GetDiffFunction()->SetAdvectionScaling( properties_->advectionScaling);
-  thresholdSegmentation->SetCurvatureWeight( properties_->curvatureScaling);
+  thresholdSegmentation->SetCurvatureScaling( properties_->curvatureScaling);
   
   NodeType::IndexType index;  
   index[0] = properties_->seedX;

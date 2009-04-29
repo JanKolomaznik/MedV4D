@@ -38,6 +38,8 @@ public:
   		m_featureImage = featureIm; 
   		m_Interpolator->SetInputImage(featureIm); 
   		}
+  	
+  	uint32 numCalls;
 	  
 protected:
 	
@@ -50,7 +52,7 @@ protected:
   FeatureScalarType ComputePropagationTerm(
 		  const NeighborhoodType &neighborhood,
 		  const FloatOffsetType& offset,
-		  GlobalDataType *gd) const;
+		  GlobalDataType *gd);
   
   FeatureScalarType GetSpeedInPoint(const IndexType &index) const;
   
@@ -61,6 +63,8 @@ protected:
   
 private:
 	const FeatureImageType *m_featureImage;
+	
+	bool IsInsideBuffer(ContinuousIndexType &cdx) const;
   
 	inline void CountMiddleVal(void)
 	{

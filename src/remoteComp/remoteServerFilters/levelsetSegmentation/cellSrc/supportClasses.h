@@ -79,6 +79,8 @@ public:
 	SparseFieldLevelSetNode *Previous;
 };
 
+///////////////////////////////////////////////////////////////////////////////
+
 template<typename TRadius, typename TOffset, uint8 Dim>
 class SparseFieldCityBlockNeighborList
 {

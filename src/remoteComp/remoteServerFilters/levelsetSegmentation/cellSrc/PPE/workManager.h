@@ -63,6 +63,9 @@ private:
 
 	/** Storage for layer node objects. */
 	typename LayerNodeStorageType::Pointer m_LayerNodeStore;
+	
+	uint8 GetShortestLayer(uint8 layerNum);
+	uint8 GetLongestLayer(uint8 layerNum);
 
 	uint32 _numOfCores;
 
