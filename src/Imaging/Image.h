@@ -8,6 +8,7 @@
 #include "Imaging/AbstractDataSet.h"
 #include "Imaging/ImageIterator.h"
 #include "Imaging/ImageRegion.h"
+#include <iostream>
 
 namespace M4D
 {

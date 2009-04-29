@@ -38,3 +38,8 @@ CXXDEBUG_OPTIONS= -ggdb
 ##########################################
 endif
 
+RM=rm -f
+MKDIR=mkdir
+MOC=moc
+RCC=rcc
+ARFLAGS=	-r

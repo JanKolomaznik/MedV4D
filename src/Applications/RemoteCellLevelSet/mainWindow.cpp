@@ -1,9 +1,10 @@
-#include "mainWindow.h"
-#include "SettingsBox.h"
+#include "common/Common.h"
 #include "Imaging/PipelineMessages.h"
-
 #include "Imaging/interpolators/nearestNeighbor.h"
 #include "Imaging/filters/decimation.h"
+#include "SettingsBox.h"
+#include "mainWindow.h"
+
 
 using namespace std;
 using namespace M4D::Imaging;
@@ -70,7 +71,7 @@ mainWindow::CreatePipeline()
 	typedef M4D::Imaging::DecimationFilter<ImageType, Interpolator> Decimator;
 	
 	
-	_decimator = new Decimator( new Decimator::Properties(0.25f) );
+	_decimator = new Decimator( new Decimator::Properties(0.5f) );
 	_decimator->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
 	_pipeline.AddFilter( _decimator );
 	

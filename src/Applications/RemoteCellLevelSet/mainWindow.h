@@ -4,6 +4,7 @@
 #include "GUI/widgets/m4dGUIMainWindow.h"
 #include "Imaging/PipelineContainer.h"
 #include "Imaging/ImageFactory.h"
+#include "Imaging/filters/ImageConvertor.h"
 
 
 #include "SettingsBox.h"

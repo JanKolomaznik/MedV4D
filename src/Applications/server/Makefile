@@ -4,6 +4,7 @@ srcTop = ../..
 
 include $(srcTop)/project/ToolchainSelect.mk
 include $(srcTop)/project/pathsDefinitions.mk
+include $(srcTop)/project/configurationSelector.mk
 
 RM=rm -f
 MKDIR=mkdir
@@ -37,25 +38,11 @@ OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	$(srcTop)/tmp/$(NAME)
 SRC_DIR=	.
 
-CXXFLAGS= -Wall -Wno-deprecated $(CXXDEBUG_OPTIONS)
-#Dependecy file creation parameters
-DEP_FILE=	$(TMP_DIR)/depend
-CDEPFLAGS=	-MM
-
-LDFLAGS=
-ARFLAGS=	-r
 LIBDIRS=	-L$(srcTop)/lib\
 			-L$(ROOT)/lib64
 			
 INCLUDES=	-I$(srcTop) \
-		-I/usr/include \
 		$(ITKIncludes)
-
-DEBUG_DEFS=	-DDEBUG_LEVEL=10\
-			-DDEBUG_ADITIONAL_INFO
-
-DEFS=		$(DEBUG_DEFS) $(PLATFORM_DEFS)
-
 
 SRC_FILES=	$(addprefix $(SRC_DIR)/, $(addsuffix .cpp, $(TARGETS)) )
 OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )

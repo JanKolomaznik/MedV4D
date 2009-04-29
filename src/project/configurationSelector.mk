@@ -3,10 +3,11 @@ CXXFLAGS= -Wall -Wno-deprecated
 # verbose compiler
 #CXXFLAGS += -v
 #debug opts
-CXXFLAGS += -g -DDEBUG_LEVEL=10 -DDEBUG_ADITIONAL_INFO
+CXXFLAGS += -g -pg -DDEBUG_LEVEL=10 -DDEBUG_ADITIONAL_INFO
 
 # linker flags
-LD_PROFILE_OPTS= -Wl,-q
+#-Wl,-q
+LD_PROFILE_OPTS= -pg
 LDFLAGS= $(LD_PROFILE_OPTS)
 
 #Dependecy file creation parameters

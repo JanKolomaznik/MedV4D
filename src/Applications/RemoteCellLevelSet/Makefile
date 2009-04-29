@@ -2,14 +2,9 @@
 srcTop = ../..
 srcdir = .
 
-CXX=g++
-AR=ar
-RM=rm -f
-MKDIR=mkdir
-MOC=moc
-RCC=rcc
-
+include $(srcTop)/project/ToolchainSelect.mk
 include $(srcTop)/project/pathsDefinitions.mk
+include $(srcTop)/project/configurationSelector.mk
 
 ########################################
 #Name of this project part
@@ -51,44 +46,20 @@ OUTPUTDIR=	$(srcTop)/executables
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	$(srcTop)/tmp/$(NAME)
 
-CXXDEBUG_OPTIONS= -ggdb 
 
-CXXFLAGS= -Wall -Wno-deprecated $(CXXDEBUG_OPTIONS)
-#Dependecy file creation parameters
-DEP_FILE=	$(TMP_DIR)/depend
-CDEPFLAGS=	-MM 
-
-LDFLAGS=
-ARFLAGS=	-r
 LIBDIRS=	-L$(srcTop)/lib\
-		-L/usr/lib/qt4\
-		-L$(DCMTK_LIB_PATH)\
-		-L$(VTKLibsDir)
-		
-QTINCLUDES = \
-		-I/usr/include/qt4\
-		-I/usr/include/qt4/Qt\
-		-I/usr/include/qt4/QtCore\
-		-I/usr/include/qt4/QtGui\
-		-I/usr/include/Qt\
-		-I/usr/include/QtGui\
-		-I/usr/include/QtCore\
+			$(QTLibDirs)\
+			-L$(DCMTK_LIB_PATH)\
+			-L$(VTKLibsDir)
 		
 INCLUDES=	-I$(srcTop) \
-		-I$(srcdir)\
-		-I$(srcTop)/include\
-		-I$(VTKIncludeDir)\
-		$(QTINCLUDES)\
-		$(ITKIncludes)
+			-I$(srcdir)\
+			-I$(VTKIncludeDir)\
+			$(QTIncludDirs)\
+			$(ITKIncludes)
 
 
 MOCOUTPUT=      $(addprefix $(TMP_DIR)/moc_, $(MOCINPUT:.h=.cpp) )
-
-DEBUG_DEFS=	-DDEBUG_LEVEL=10\
-		-DDEBUG_ADITIONAL_INFO
-
-DEFS=		$(DEBUG_DEFS)
-
 
 SRC_FILES=	$(addsuffix .cpp, $(TARGETS) ) 
 OBJ_FILES=	$(addprefix $(TMP_DIR)/,   $(addprefix rcc_, $(RCCINPUT:.qrc=.o ) ) $(addprefix moc_, $(MOCINPUT:.h=.o) ) $(addsuffix .o, $(TARGETS) ) )

@@ -1,12 +1,9 @@
 srcTop = ..
 srcdir = .
 
-CXX=g++
-AR=ar
-RM=rm -f
-MKDIR=mkdir
-
+include $(srcTop)/project/ToolchainSelect.mk
 include $(srcTop)/project/pathsDefinitions.mk
+include $(srcTop)/project/configurationSelector.mk
 
 ########################################
 #Name of this project part
@@ -24,28 +21,8 @@ OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	../tmp/$(NAME)
 SRC_DIR=	./src
 
-CXXDEBUG_OPTIONS= -ggdb
-
-CXXFLAGS= -Wall -Wno-deprecated $(CXXDEBUG_OPTIONS)
-#Dependecy file creation parameters
-DEP_FILE=	$(TMP_DIR)/depend
-CDEPFLAGS=	-MM 
-
-LDFLAGS=
-ARFLAGS=	-r
 INCLUDES=	-I.. \
-		-I../include\
-		-I$(VTKIncludeDir)\
-		-I/usr/include/vtk-5.0\
-		-I/usr/include/vtk
-
-
-
-DEBUG_DEFS=	-DDEBUG_LEVEL=10\
-		-DDEBUG_ADITIONAL_INFO
-
-DEFS=		$(DEBUG_DEFS)
-
+		-I$(VTKIncludeDir)
 
 SRC_FILES=	$(addprefix $(SRC_DIR)/, $(addsuffix .cpp, $(TARGETS)) )
 OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )
@@ -53,10 +30,10 @@ OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )
 
 .PHONY: all
 all:		tmpdir dep $(OUTPUT)
-		
+
 
 .PHONY: tmpdir
-tmpdir:		
+tmpdir:
 		$(MKDIR) $(TMP_DIR) 2>/dev/null || true
 
 .PHONY: build
@@ -67,11 +44,11 @@ dep:
 		$(CXX) $(INCLUDES) $(CDEPFLAGS) $(DEFS) $(SRC_FILES) | \
 		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
 
-$(TMP_DIR)/%.o:	$(SRC_DIR)/%.cpp	
+$(TMP_DIR)/%.o:	$(SRC_DIR)/%.cpp
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 -include $(DEP_FILE)
-		
+
 $(OUTPUT):	$(OBJ_FILES)
 		$(AR) $(ARFLAGS) $(OUTPUT) $(OBJ_FILES)
 

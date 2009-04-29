@@ -1,8 +1,10 @@
 srcTop = ..
 srcdir = .
 
-CXX=g++
-AR=ar
+include $(srcTop)/project/ToolchainSelect.mk
+include $(srcTop)/project/pathsDefinitions.mk
+include $(srcTop)/project/configurationSelector.mk
+
 RM=rm -f
 MKDIR=mkdir
 
@@ -27,29 +29,12 @@ OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	$(srcTop)/tmp/$(NAME)
 SRC_DIR=	./src
 
-CXXDEBUG_OPTIONS= -ggdb
-
-CXXFLAGS= -Wall -Wno-deprecated $(CXXDEBUG_OPTIONS)
-#Dependecy file creation parameters
-DEP_FILE=	$(TMP_DIR)/depend
-CDEPFLAGS=	-MM 
-
-LDFLAGS=
-ARFLAGS=	-r
 INCLUDES=	-I$(srcTop) \
-		-I$(srcdir)\
-		-I$(srcTop)/include\
-		-I/usr/local/dicom/include
+			-I$(srcdir)\
+			-I$(DCMTK_INCLUDE_PATH)		
 
-
-DEBUG_DEFS=	-DDEBUG_LEVEL=10\
-		-DDEBUG_ADITIONAL_INFO
-		
-
-DEFS=		-DHAVE_CONFIG_H\
-		-DHAVE_SSTREAM\
-		$(DEBUG_DEFS)
-
+CXXFLAGS +=		-DHAVE_CONFIG_H\
+				-DHAVE_SSTREAM\
 
 OBJ_FILES=	$(TMP_DIR)/AbstractService.o\
 			$(TMP_DIR)/DicomAssoc.o \

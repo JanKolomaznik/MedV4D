@@ -3,36 +3,11 @@ srcdir = .
 srcTop = ../..
 
 include $(srcTop)/project/ToolchainSelect.mk
+include $(srcTop)/project/pathsDefinitions.mk
+include $(srcTop)/project/configurationSelector.mk
 
 RM=rm -f
 MKDIR=mkdir
-
-ITKIncludeRoot=/usr/local/include/InsightToolkit
-
-ITKIncludes=	-I$(ITKIncludeRoot)\
-				-I$(ITKIncludeRoot)/Common\
-				-I$(ITKIncludeRoot)/Algorithms\
-				-I$(ITKIncludeRoot)/BasicFilters\
-				-I$(ITKIncludeRoot)/IO\
-				-I$(ITKIncludeRoot)/Utilities\
-				-I$(ITKIncludeRoot)/Utilities/vxl/vcl\
-				-I$(ITKIncludeRoot)/Utilities/vxl/core\
-				-I$(ITKIncludeRoot)/gdcm/src
-				
-ITKLIBS= 	$(ITKLibsRoot)/libITKNumerics.a\
-			$(ITKLibsRoot)/libITKNrrdIO.a\
-			$(ITKLibsRoot)/libITKSpatialObject.a\
-			$(ITKLibsRoot)/libITKCommon.a\
-			$(ITKLibsRoot)/libitkvnl_inst.a\
-			$(ITKLibsRoot)/libitkvnl_algo.a\
-			$(ITKLibsRoot)/libitkvnl.a\
-			$(ITKLibsRoot)/libitkv3p_netlib.a\
-			$(ITKLibsRoot)/libitkvcl.a\
-			$(ITKLibsRoot)/libitksys.a\
-			$(ITKLibsRoot)/libITKMetaIO.a\
-			$(ITKLibsRoot)/libITKEXPAT.a\
-			$(ITKLibsRoot)/libITKniftiio.a\
-			$(ITKLibsRoot)/libITKznz.a\
 			
 LIBS=		$(ITKLIBS)
 
@@ -52,25 +27,8 @@ OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	$(srcTop)/tmp/$(NAME)
 SRC_DIR=	./src
 
-CXXFLAGS= -Wall -Wno-deprecated $(CXXDEBUG_OPTIONS)
-#Dependecy file creation parameters
-DEP_FILE=	$(TMP_DIR)/depend
-CDEPFLAGS=	-MM 
-
-LDFLAGS=
-ARFLAGS=	-r
-LIBDIRS=	-L$(srcTop)/lib
-
 INCLUDES=	-I$(srcTop) \
-			-I$(srcTop)/include\
-			$(ITKIncludes)\
-			-I/usr/include
-
-DEBUG_DEFS=	-DDEBUG_LEVEL=10\
-			-DDEBUG_ADITIONAL_INFO
-
-DEFS=		$(DEBUG_DEFS) $(PLATFORM_DEFS)
-
+			$(ITKIncludes)
 
 SRC_FILES=	$(addprefix $(SRC_DIR)/, $(addsuffix .cpp, $(TARGETS)) )
 OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )

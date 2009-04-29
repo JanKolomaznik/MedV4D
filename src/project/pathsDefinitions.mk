@@ -85,5 +85,17 @@ VTKLIBS=	-lvtkCommon\
 		#-lvtktiff\
 		#-lvtkzlib
 
+QTIncludDirs := -I/usr/include/qt4\
+		-I/usr/include/qt4/Qt\
+		-I/usr/include/qt4/QtCore\
+		-I/usr/include/qt4/QtGui\
+		-I/usr/include/qt4/QtOpenGL\
+		-I/usr/include/Qt\
+		-I/usr/include/QtGui\
+		-I/usr/include/QtCore
+
+QTLibDirs := -L/usr/lib/qt4
+
+DCMTK_INCLUDE_PATH := /usr/local/dicom/include
 DCMTK_LIB_PATH := /usr/local/dicom/lib
 DCMTKLIBS=	-ldcmnet -ldcmdata -lofstd

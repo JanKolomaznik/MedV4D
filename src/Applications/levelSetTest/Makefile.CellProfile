@@ -2,6 +2,9 @@
 srcdir = .
 srcTop = ../..
 
+#force Cell B.E. platform
+COMPILE_FOR_CELL=1
+
 include $(srcTop)/project/ToolchainSelect.mk
 include $(srcTop)/project/pathsDefinitions.mk
 include $(srcTop)/project/configurationSelector.mk
@@ -10,8 +13,7 @@ RM=rm -f
 MKDIR=mkdir
 				
 M4DLIBS=	$(srcTop)/lib/libImaging$(archPostfix).a\
-			$(srcTop)/lib/libcommon$(archPostfix).a\
-			$(srcTop)/lib/SPU/libSPEPart$(archPostfix).a
+			$(srcTop)/lib/libcommon$(archPostfix).a
 
 LIBS=		$(M4DLIBS) \
 			$(ITKLIBS) \
@@ -31,31 +33,25 @@ OUTPUTNAME=	$(NAME)
 OUTPUTDIR=	$(srcTop)/executables
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	$(srcTop)/tmp/$(NAME)
-SRC_DIR=	.
+
 
 LIBDIRS=	-L$(srcTop)/lib\
 			-L$(ROOT)/lib64
 			
 INCLUDES=	-I$(srcTop) \
-			-I/usr/include \
 			$(ITKIncludes)
 
-
-SRC_FILES=	$(addprefix $(SRC_DIR)/, $(addsuffix .cpp, $(TARGETS)) )
-OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )
+OBJ_FILES=	$(TMP_DIR)/main.o
 
 
 .PHONY: all
-all:		tmpdir Common Imaging libSPEPart dep $(OUTPUT)
+all:		tmpdir Common Imaging $(OUTPUT)
 	
 Imaging:
 	$(MAKE) --directory=$(srcTop)/Imaging
 	
 Common:
 	$(MAKE) --directory=$(srcTop)/common
-	
-libSPEPart:
-	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE -f Makefile.PC
 	
 ##################
 	
@@ -64,9 +60,6 @@ ImagingCLEAN:
 	
 CommonCLEAN:
 	$(MAKE) --directory=$(srcTop)/common clean
-	
-libSPEPartCLEAN:
-	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE -f ./Makefile.PC clean
 
 ##################
 
@@ -77,20 +70,13 @@ tmpdir:
 .PHONY: build
 build:		cleanall all
 
-.PHONY: dep
-dep:
-		$(CXX) $(INCLUDES) $(CDEPFLAGS) $(DEFS) $(SRC_FILES) | \
-		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
-
-$(TMP_DIR)/%.o:	$(SRC_DIR)/%.cpp	
+$(TMP_DIR)/%.o:	%.cpp	
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
-
--include $(DEP_FILE)
 		
 $(OUTPUT):	$(OBJ_FILES)
-		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
+		$(CXX) $(CXXFLAGS) $(LDFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT)
 
 .PHONY: clean
-clean: #libSPEPartCLEAN ImagingCLEAN CommonCLEAN
-		$(RM) $(TMP_DIR)/*.o $(DEP_FILE)
+clean: ImagingCLEAN CommonCLEAN
+		$(RM) $(TMP_DIR)/*.o
 		$(RM) $(OUTPUT)
