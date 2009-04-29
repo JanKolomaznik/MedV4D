@@ -277,9 +277,15 @@ void m4dGUIMainWindow::save ()
   if ( !path.isNull() ) 
   {
     QFileInfo pathInfo( path );
-   
+
     FOutStream stream( pathInfo.absoluteFilePath().toStdString() );
-    DataSetFactory::SerializeDataset( stream, *actualStudy.abstractDataSet );
+
+    try {
+      DataSetFactory::SerializeDataset( stream, currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0].GetDataset() );
+    }
+    catch ( Port::EDisconnected &e ) {
+      QMessageBox::critical( this, tr( "Exception" ), e.what() ); 
+    }
   }
 }
 
@@ -470,8 +476,6 @@ void m4dGUIMainWindow::loadingReady ()
     process( actualStudy.abstractDataSet );
 
     stopProgress();
-
-    saveAct->setEnabled( true );
   }
   else {
     loadingException ( tr( "Empty image - nothing to process" ) );
@@ -600,7 +604,6 @@ void m4dGUIMainWindow::createActions ()
   saveAct->setShortcut( tr( "Ctrl+A" ) );
   saveAct->setStatusTip( tr( "Save current Data Set" ) );
   connect( saveAct, SIGNAL(triggered()), this, SLOT(save()) );
-  saveAct->setEnabled( false );
 
   exitAct = new QAction( QIcon( ":/icons/exit.png" ), tr( "E&xit" ), this );
   exitAct->setShortcut( tr( "Ctrl+Q" ) );
