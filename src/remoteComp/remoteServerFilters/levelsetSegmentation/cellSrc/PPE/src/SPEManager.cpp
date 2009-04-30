@@ -61,26 +61,28 @@ SPEManager::InitProgramProps(void)
 
 SPEManager::~SPEManager() {
 	//TODO stop the SPUs
+#ifdef FOR_CELL
+	ESPUCommands quitCommand = QUIT;
+	SendCommand(quitCommand);
 	
-//	ESPUCommands quitCommand = QUIT;
-//	SendCommand(quitCommand);
-//	
-//	// wait for thread termination
-//	for (uint32 i=0; i<speCount; i++) {
-//	    if (pthread_join (data[i].pthread, NULL)) {
-//	    	D_PRINT ("Failed joining thread");
-//	    }
-//	}
-//
-//	/* Destroy contexts */
-//	for (uint32 i=0; i<speCount; i++) {
-//		if (spe_context_destroy(data[i].spe_ctx) != 0) {
-//			D_PRINT("Failed destroying context");
-//			//exit (1);
-//		}
-//	}
-//
-//	delete data;
+	// wait for thread termination
+	for (uint32 i=0; i<speCount; i++) {
+	    if (pthread_join (data[i].pthread, NULL)) {
+	    	D_PRINT ("Failed joining thread");
+	    }
+	}
+
+	/* Destroy contexts */
+	for (uint32 i=0; i<speCount; i++) {
+		if (spe_context_destroy(data[i].spe_ctx) != 0) {
+			D_PRINT("Failed destroying context");
+			//exit (1);
+		}
+	}	
+
+
+	delete [] data;
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////

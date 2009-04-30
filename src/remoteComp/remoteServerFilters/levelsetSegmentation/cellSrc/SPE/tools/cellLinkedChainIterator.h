@@ -1,9 +1,7 @@
 #ifndef LINKEDCHAINITERATOR_H_
 #define LINKEDCHAINITERATOR_H_
 
-#ifdef FOR_CELL
-#include <spu_mfcio.h>
-#endif
+#include "DMAGate.h"
 
 namespace M4D {
 namespace Cell {

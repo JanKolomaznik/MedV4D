@@ -50,8 +50,7 @@ public:
 	  double ApplyUpdate(TimeStepType dt)
 	  {
 		  _workManager->InitCalculateChangeAndUpdActiveLayerConf();
-		  _workManager->InitPropagateValuesConf();
-			
+		  _workManager->InitPropagateValuesConf();			
 		  return _SPEProgSim.applyUpdateCalc.ApplyUpdate(dt);
 	  }
 	void RunPropagateLayerVals()

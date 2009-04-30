@@ -2,21 +2,21 @@ ifndef CONF
 CONF = Debug
 endif
 
-CXXFLAGS= -Wall -Wno-deprecated
+CXXFLAGS += -Wall -Wno-deprecated
 # verbose compiler
 #CXXFLAGS += -v
 
 ####################### CONFs ############################
 ifeq "$(CONF)" "Debug"
-CXXFLAGS = -g -DDEBUG_LEVEL=10 -DDEBUG_ADITIONAL_INFO
+CXXFLAGS += -g -DDEBUG_LEVEL=10 -DDEBUG_ADITIONAL_INFO
 endif
 
 ifeq "$(CONF)" "Release"
-CXXFLAGS = -DDEBUG_LEVEL=1
+CXXFLAGS += -DDEBUG_LEVEL=1
 endif
 
 ifeq "$(CONF)" "Profile"
-CXXFLAGS = -g -pg -DDEBUG_LEVEL=10 -DDEBUG_ADITIONAL_INFO
+CXXFLAGS += -g -pg -DDEBUG_LEVEL=10 -DDEBUG_ADITIONAL_INFO
 endif
 ##########################################################
 

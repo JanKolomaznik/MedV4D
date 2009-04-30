@@ -11,6 +11,10 @@
 CELL_TOP=/opt/cell/sdk
 srcTop=../../../../..
 
+include $(srcTop)/project/ToolchainSelect.mk
+include $(srcTop)/project/pathsDefinitions.mk
+include $(srcTop)/project/configurationSelector.mk
+
 TARGET_PROCESSOR := ppu64
 
 ########################################################################
@@ -27,10 +31,11 @@ VPATH := src
 ########################################################################
 #--param max-unroll-times=1 # needed to keep size of program down
 #MY_SPECIAL_FLAGS = -ffunction-sections -fdata-sections -g
-CFLAGS_gcc:= -g
+#CFLAGS_gcc:= CXXFLAGS
 #LDFLAGS_gcc= --gc-sections --print-gc-sections --stack-analysis --local-store=0:256	#-Wl,-q -g
 				
-INCLUDE         := -I$(srcTop)
+INCLUDE         := -I$(srcTop)\
+					$(ITKIncludes)
 
 INSTALL_DIR		= $(srcTop)/lib
 INSTALL_FILES		= $(LIBRARY)

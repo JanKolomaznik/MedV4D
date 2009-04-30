@@ -4,18 +4,19 @@ srcTop = ../..
 
 include $(srcTop)/project/ToolchainSelect.mk
 include $(srcTop)/project/pathsDefinitions.mk
+include $(srcTop)/project/configurationSelector.mk
 
 RM=rm -f
 MKDIR=mkdir
 				
 M4DLIBS=	$(srcTop)/lib/libImaging$(archPostfix).a\
-		$(srcTop)/lib/libcommon$(archPostfix).a\
-		$(srcTop)/lib/libPPEStuff$(archPostfix).a \
-		$(srcTop)/lib/SPU/libSPEPart$(archPostfix).a
+			$(srcTop)/lib/libcommon$(archPostfix).a\
+			$(srcTop)/lib/libPPEStuff$(archPostfix).a \
+			$(srcTop)/lib/SPU/libSPEPart$(archPostfix).a
 
 LIBS=		$(M4DLIBS) \
 			$(ITKLIBS) \
-			-lboost_thread
+			-lboost_thread-mt\
 			-ldl\
 			-lspe2
 
@@ -34,25 +35,11 @@ OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	$(srcTop)/tmp/$(NAME)
 SRC_DIR=	.
 
-CXXFLAGS= -Wall -Wno-deprecated $(CXXDEBUG_OPTIONS)
-#Dependecy file creation parameters
-DEP_FILE=	$(TMP_DIR)/depend
-CDEPFLAGS=	-MM 
-
-LDFLAGS=
-ARFLAGS=	-r
 LIBDIRS=	-L$(srcTop)/lib\
 			-L$(ROOT)/lib64
 			
 INCLUDES=	-I$(srcTop) \
-			-I/usr/include \
 			$(ITKIncludes)
-
-DEBUG_DEFS=	-DDEBUG_LEVEL=10\
-			-DDEBUG_ADITIONAL_INFO
-
-DEFS=		$(DEBUG_DEFS) $(PLATFORM_DEFS)
-
 
 SRC_FILES=	$(addprefix $(SRC_DIR)/, $(addsuffix .cpp, $(TARGETS)) )
 OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )

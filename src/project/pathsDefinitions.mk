@@ -1,6 +1,6 @@
 
 ##########################################
-ifdef COMPILE_FOR_CELL
+ifeq "$(ARCH)" "CellCross"
 
 # path to ITK libraries and includes
 ITKIncludeDir=/usr/local/include/InsightToolkit
@@ -9,9 +9,19 @@ ITKLibsDir=/data/cell/ITK/LIBCell/bin
 # path to VTK libraries & includes
 VTKLibsDir=/usr/local/lib/vtk-5.0
 VTKIncludeDir=/usr/local/include/vtk-5.0
-
+endif
 ##########################################
-else ifdef COMPILE_ON_CELL
+ifeq "$(ARCH)" "CellPCTest"
+# path to ITK libraries and includes
+ITKIncludeDir=/usr/local/include/InsightToolkit
+ITKLibsDir=/data/cell/ITK/LIBCell/bin
+
+# path to VTK libraries & includes
+VTKLibsDir=/usr/local/lib/vtk-5.0
+VTKIncludeDir=/usr/local/include/vtk-5.0
+endif
+##########################################
+ifeq "$(ARCH)" "CellNative"
 
 # path to ITK libraries and includes
 ITKIncludeDir=/usr/local/include/InsightToolkit
@@ -20,10 +30,9 @@ ITKLibsDir=/data/cell/ITK/LIBCell/bin
 # path to VTK libraries & includes
 VTKLibsDir=/usr/local/lib/vtk-5.0
 VTKIncludeDir=/usr/local/include/vtk-5.0
-
+endif
 ##########################################
-else
-
+ifeq "$(ARCH)" "PC"
 # path to ITK libraries and includes
 ITKIncludeDir=/usr/local/include/InsightToolkit
 ITKLibsDir=/usr/local/lib/InsightToolkit
@@ -31,9 +40,8 @@ ITKLibsDir=/usr/local/lib/InsightToolkit
 # path to VTK libraries & includes
 VTKLibsDir=/usr/local/lib/vtk-5.0
 VTKIncludeDir=/usr/local/include/vtk-5.0
-
-##########################################
 endif
+##########################################
 
 ITKIncludes=	-I$(ITKIncludeDir)\
 		-I$(ITKIncludeDir)/Common\

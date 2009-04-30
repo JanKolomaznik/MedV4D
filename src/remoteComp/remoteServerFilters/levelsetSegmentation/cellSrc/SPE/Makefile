@@ -10,6 +10,11 @@
 
 CELL_TOP=/opt/cell/sdk
 srcTop=../../../../..
+
+include $(srcTop)/project/ToolchainSelect.mk
+include $(srcTop)/project/pathsDefinitions.mk
+include $(srcTop)/project/configurationSelector.mk
+
 #tools/src 
 DIRS	:= 	updateCalculation/src applyUpdateCalc/src
 

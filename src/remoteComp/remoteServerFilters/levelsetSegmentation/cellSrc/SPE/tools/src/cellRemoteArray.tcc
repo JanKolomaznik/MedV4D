@@ -47,18 +47,19 @@ template<typename T, uint8 BUFSIZE>
 void
 RemoteArrayCell<T, BUFSIZE>::FlushArray()
 	{
-		CopyData(m_buf[m_currBuf], m_currFlushedPos, m_currPos);
+		//CopyData(m_buf[m_currBuf], m_currFlushedPos, m_currPos);
+	DMAGate::Put(m_buf[m_currBuf], m_currFlushedPos, m_currPos * sizeof(T) );
 		m_currFlushedPos += m_currPos;
 		m_currBuf = !m_currBuf;
 		m_currPos = 0;
 	}
 ///////////////////////////////////////////////////////////////////////////////
-template<typename T, uint8 BUFSIZE>
-void
-RemoteArrayCell<T, BUFSIZE>::CopyData(T *src, T *dest, size_t size)
-	{
-		memcpy(dest, src, size * sizeof(T));
-	}
+//template<typename T, uint8 BUFSIZE>
+//void
+//RemoteArrayCell<T, BUFSIZE>::CopyData(T *src, T *dest, size_t size)
+//	{
+//		memcpy(dest, src, size * sizeof(T));
+//	}
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 template<typename T, uint8 BUFSIZE>
@@ -82,12 +83,12 @@ GETRemoteArrayCell<T, BUFSIZE>::SetArray(T *begin)
 	m_currBuf = ! m_currBuf;
 }
 ///////////////////////////////////////////////////////////////////////////////
-template<typename T, uint8 BUFSIZE>
-void
-GETRemoteArrayCell<T, BUFSIZE>::CopyData(T *src, T *dest, size_t size)
-{
-	memcpy(dest, src, size * sizeof(T));
-}
+//template<typename T, uint8 BUFSIZE>
+//void
+//GETRemoteArrayCell<T, BUFSIZE>::CopyData(T *src, T *dest, size_t size)
+//{
+//	memcpy(dest, src, size * sizeof(T));
+//}
 ///////////////////////////////////////////////////////////////////////////////
 template<typename T, uint8 BUFSIZE>
 T
@@ -114,7 +115,8 @@ template<typename T, uint8 BUFSIZE>
 void
 GETRemoteArrayCell<T, BUFSIZE>::LoadNextPiece()
 {
-	CopyData(m_currLoadedPos, m_buf[!m_currBuf], BUFSIZE);
+	//CopyData(m_currLoadedPos, m_buf[!m_currBuf], BUFSIZE);
+	DMAGate::Get(m_currLoadedPos, m_buf[!m_currBuf], BUFSIZE* sizeof(T) );
 	m_currLoadedPos += BUFSIZE;
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -135,20 +137,21 @@ template<typename T, uint8 BUFSIZE>
 void
 PUTRemoteArrayCell<T, BUFSIZE>::FlushArray(T *whereToFLush)
 {
-	CopyData(m_buf[m_currBuf], whereToFLush, m_currPos);
+	//CopyData(m_buf[m_currBuf], whereToFLush, m_currPos);
+	DMAGate::Put(m_buf[m_currBuf], whereToFLush, m_currPos* sizeof(T) );
 	m_currFlushedPos += m_currPos;
 	m_currBuf = !m_currBuf;
 	m_currPos = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-template<typename T, uint8 BUFSIZE>
-void
-PUTRemoteArrayCell<T, BUFSIZE>::CopyData(T *src, T *dest, size_t size)
-{
-	memcpy(dest, src, size * sizeof(T));
-}
+//
+//template<typename T, uint8 BUFSIZE>
+//void
+//PUTRemoteArrayCell<T, BUFSIZE>::CopyData(T *src, T *dest, size_t size)
+//{
+//	memcpy(dest, src, size * sizeof(T));
+//}
 
 ///////////////////////////////////////////////////////////////////////////////
 

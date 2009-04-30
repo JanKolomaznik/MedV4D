@@ -5,8 +5,6 @@
 namespace M4D {
 namespace Cell {
 
-#include <string.h>
-
 ///////////////////////////////////////////////////////////////////////////////
 
 template<typename PixelType>
@@ -40,14 +38,14 @@ NeighborhoodCell<PixelType>
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template<typename PixelType>
-void
-NeighborhoodCell<PixelType>
-::LoadData(PixelType *src, PixelType *dest, size_t size)
-{
-	// copy the memory
-	memcpy((void*)dest, (void*)src, size);
-}
+//template<typename PixelType>
+//void
+//NeighborhoodCell<PixelType>
+//::LoadData(PixelType *src, PixelType *dest, size_t size)
+//{
+//	// copy the memory
+//	memcpy((void*)dest, (void*)src, size);
+//}
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -76,7 +74,8 @@ NeighborhoodCell<PixelType>
 	if(dim == 0)
 	{		
 		PixelType *begin = ComputeImageDataPointer(posm);
-		LoadData(begin, dest, m_radiusSize[dim] * sizeof(PixelType));
+		//LoadData(begin, dest, m_radiusSize[dim] * sizeof(PixelType));
+		DMAGate::Get(begin, dest, m_radiusSize[dim] * sizeof(PixelType) );		
 	}
 	else
 	{

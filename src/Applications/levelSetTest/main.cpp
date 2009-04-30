@@ -83,9 +83,11 @@ int main(int argc, char *argv[]) {
 		typedef ThreshLSSegMedvedWrapper< int16, int16> FilterType;
 		
 		FilterType::Properties *props = new FilterType::Properties();
-		props->seedX = 256;
-		props->seedY = 256;
-		props->initialDistance = 100;
+		
+#define  RATIO 0.5f
+		props->seedX = (uint32)(256 * RATIO);
+		props->seedY = (uint32)(256 * RATIO);
+		props->initialDistance = 100 * RATIO;
 		m_filter =  new FilterType( props);
 		
 		m_filter->SetUpdateInvocationStyle(AbstractPipeFilter::UIS_ON_CHANGE_BEGIN);

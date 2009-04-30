@@ -49,7 +49,8 @@ LinkedChainIteratorCell<Item>::SetBeginEnd(Item *begin, Item *end)
 		if(HasNext())
 		{
 			m_realAddresses[0] = begin;
-			Load(begin, &m_buf[0], sizeof(Item));
+//			Load(begin, &m_buf[0], sizeof(Item));
+			DMAGate::Get(begin, &m_buf[0], sizeof(Item) );
 			DL_PRINT(DEBUG_CHAINTOOL, "loading the first node in chain \n");
 			counter = 1;
 		}
@@ -80,7 +81,8 @@ LinkedChainIteratorCell<Item>::Next(void)
 	  if(HasNext())
 	  {
 		  m_realAddresses[!m_currBufPosition] = GetCurrItem()->Next;
-		  Load(GetCurrItem()->Next, &m_buf[!m_currBufPosition], sizeof(Item));
+		  //Load(GetCurrItem()->Next, &m_buf[!m_currBufPosition], sizeof(Item));
+		  DMAGate::Get(GetCurrItem()->Next, &m_buf[!m_currBufPosition], sizeof(Item) );
 		  DL_PRINT(DEBUG_CHAINTOOL, "loading node " << counter);
 		  counter++;
 	  }
@@ -92,16 +94,16 @@ LinkedChainIteratorCell<Item>::Next(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template<typename Item>
-void
-LinkedChainIteratorCell<Item>::Load(Item *src, Item *dest, size_t size)
-	{
-#ifdef FOR_CELL
-			mfc_get(src, dest, size, tag, 0, 0);
-#else
-			memcpy(dest, src, size);
-#endif
-	}
+//template<typename Item>
+//void
+//LinkedChainIteratorCell<Item>::Load(Item *src, Item *dest, size_t size)
+//	{
+//#ifdef FOR_CELL
+//			mfc_get(src, dest, size, tag, 0, 0);
+//#else
+//			memcpy(dest, src, size);
+//#endif
+//	}
 
 ///////////////////////////////////////////////////////////////////////////////
 

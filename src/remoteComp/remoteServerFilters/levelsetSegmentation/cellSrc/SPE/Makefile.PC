@@ -3,6 +3,7 @@ srcTop=../../../../..
 
 include $(srcTop)/project/ToolchainSelect.mk
 include $(srcTop)/project/pathsDefinitions.mk
+include $(srcTop)/project/configurationSelector.mk
 
 RM=rm -f
 MKDIR=mkdir
@@ -20,25 +21,10 @@ OUTPUTDIR=	$(srcTop)/lib
 OUTPUT=		$(OUTPUTDIR)/SPU/$(OUTPUTNAME)
 TMP_DIR=	$(srcTop)/tmp/$(NAME)
 
-CXXDEBUG_OPTIONS= -g 
-
-CXXFLAGS= -Wall -Wno-deprecated $(CXXDEBUG_OPTIONS)
-#Dependecy file creation parameters
-DEP_FILE=	$(TMP_DIR)/depend
-CDEPFLAGS=	-MM 
-
-LDFLAGS=
-ARFLAGS=	-r
-
-INCLUDES=	-I$(ROOT)/usr/include\
-			-I$(srcTop)\
+INCLUDES=	-I$(srcTop)\
 			$(ITKIncludes)
 
-DEBUG_DEFS=	-DDEBUG_LEVEL=10\
-		-DDEBUG_ADITIONAL_INFO
-
-DEFS=		$(DEBUG_DEFS) $(PLATFORM_DEFS)
-libSrcPath=$(boostTrunk)/$(srcdir)
+#libSrcPath=$(boostTrunk)/$(srcdir)
 
 .PHONY: all
 all:		tmpdir $(OUTPUT)

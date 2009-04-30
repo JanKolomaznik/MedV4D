@@ -2,9 +2,6 @@
 srcdir = .
 srcTop = ../..
 
-#force Cell B.E. platform
-COMPILE_FOR_CELL=1
-
 include $(srcTop)/project/ToolchainSelect.mk
 include $(srcTop)/project/pathsDefinitions.mk
 include $(srcTop)/project/configurationSelector.mk
