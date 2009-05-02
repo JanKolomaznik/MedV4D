@@ -48,10 +48,6 @@ CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 2 
 		{
 			index[0] = *in;
 			index[1] = *ref;
-			if ( index[0] < HISTOGRAM_MIN_VALUE ) index[0] = HISTOGRAM_MIN_VALUE;
-			if ( index[0] >= HISTOGRAM_MAX_VALUE ) index[0] = HISTOGRAM_MAX_VALUE - 1;
-			if ( index[1] < HISTOGRAM_MIN_VALUE ) index[1] = HISTOGRAM_MIN_VALUE;
-			if ( index[1] >= HISTOGRAM_MAX_VALUE ) index[1] = HISTOGRAM_MAX_VALUE - 1;
 			jointHist.IncCell( index );
 			in += inXStride;
 			ref += refXStride;
@@ -91,10 +87,6 @@ CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 3 
 			{
 				index[0] = *in;
 				index[1] = *ref;
-				if ( index[0] < HISTOGRAM_MIN_VALUE ) index[0] = HISTOGRAM_MIN_VALUE;
-				if ( index[0] >= HISTOGRAM_MAX_VALUE ) index[0] = HISTOGRAM_MAX_VALUE - 1;
-				if ( index[1] < HISTOGRAM_MIN_VALUE ) index[1] = HISTOGRAM_MIN_VALUE;
-				if ( index[1] >= HISTOGRAM_MAX_VALUE ) index[1] = HISTOGRAM_MAX_VALUE - 1;
 				jointHist.IncCell( index );
 				in += inXStride;
 				ref += refXStride;
@@ -144,11 +136,11 @@ ImageRegistration< ElementType, dim >
 	if ( referenceImage )
 	{
 		CalculateHistograms< ElementType > ( jointHistogram, *(this->out), *(referenceImage) );
-		uint32 size = 0;
+		uint32 size = 1;
 		Vector< uint32, dim > sizeVector;
 		Vector< int32, dim > strideVector;
 		referenceImage->GetPointer( sizeVector, strideVector );
-		for ( uint32 i = 0; i < dim; ++i ) size += sizeVector[i];
+		for ( uint32 i = 0; i < dim; ++i ) size *= sizeVector[i];
 		std::cout << _criterion->compute( jointHistogram, size ) << std:: endl;
 	}
 	if( result ) {

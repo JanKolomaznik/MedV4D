@@ -36,6 +36,7 @@ NormalizedMutualInformation< ElementType >
 		if ( separateFreq[1] > 0 ) H_b += separateFreq[1] * std::log( separateFreq[1] );
 
 	}
+	std::cout << H_a << " " << H_b << " " << H_joint << " " << (double)datasetSize << std::endl;
 
 	return ( H_a + H_b ) / H_joint;
 }

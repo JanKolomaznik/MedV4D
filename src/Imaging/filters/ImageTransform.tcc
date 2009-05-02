@@ -280,6 +280,7 @@ void
 ImageTransform< ElementType, dim >
 ::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
 {
+
 	PredecessorType::BeforeComputation( utype );
 
 	//This kind of filter computes always on whole dataset
