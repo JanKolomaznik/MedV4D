@@ -30,11 +30,14 @@ TransformImage( const Image< ElementType, 2 > &in, Image< ElementType, 2 > &out,
 	int32 yStride;
 	int32 height, oldheight;
 	int32 width, oldwidth;
+	float32 xExtent, yExtent;
 	typename ImageTransform< ElementType, 2 >::Properties* prop = dynamic_cast< typename ImageTransform< ElementType, 2 >::Properties* >( properties );
 	typedef typename InterpolatorBase< Image< ElementType, 2 > >::CoordType CoordType;
 	sPointer = out.GetPointer( (uint32&)width, (uint32&)height, xStride, yStride );
 	oldwidth = (int32)(width / prop->_sampling[0]);
 	oldheight = (int32)(height / prop->_sampling[1]);
+	xExtent = out.GetDimensionExtents( 0 ).elementExtent;
+	yExtent = out.GetDimensionExtents( 1 ).elementExtent;
 	Vector< CoordType, 2 > RotationMatrix(
 					CoordType( std::cos( -prop->_rotation[0] ), -std::sin( -prop->_rotation[0] ) ),
 					CoordType( std::sin( -prop->_rotation[0] ),  std::cos( -prop->_rotation[0] ) )
@@ -44,8 +47,8 @@ TransformImage( const Image< ElementType, 2 > &in, Image< ElementType, 2 > &out,
 		ElementType *pointer = sPointer + j*yStride;
 
 		for( int32 i = 0; i < (int32)width; ++i ) {
-			CoordType point( ( i - width/2 ) * RotationMatrix[0][0] + ( j - height/2 ) * RotationMatrix[0][1] + width/2,
-					 ( i - width/2 ) * RotationMatrix[1][0] + ( j - height/2 ) * RotationMatrix[1][1] + height/2 );
+			CoordType point( ( ( i - width/2 ) * RotationMatrix[0][0] * xExtent + ( j - height/2 ) * RotationMatrix[0][1] * yExtent ) / xExtent + width/2,
+					 ( ( i - width/2 ) * RotationMatrix[1][0] * xExtent + ( j - height/2 ) * RotationMatrix[1][1] * yExtent ) / yExtent + height/2 );
 
 			point[0] -= prop->_translation[0];
 			point[1] -= prop->_translation[1];
@@ -86,6 +89,7 @@ public:
 		int32 height, oldheight;
 		int32 width, oldwidth;
 		int32 depth, olddepth;
+		float32 xExtent, yExtent, zExtent;
 
 		Vector< uint32, 3 > size;
 		Vector< int32, 3 > strides;
@@ -100,6 +104,10 @@ public:
 		xStride = strides[0];
 		yStride = strides[1];
 		zStride = strides[2];
+		xExtent = out.GetDimensionExtents( 0 ).elementExtent;
+		yExtent = out.GetDimensionExtents( 1 ).elementExtent;
+		zExtent = out.GetDimensionExtents( 2 ).elementExtent;
+		
 
 		Vector< CoordType, 3 > RotationMatrixX(
 						CoordType( 1.0, 0.0, 0.0 ),
@@ -127,19 +135,19 @@ public:
 
 			for( int32 i = 0; i < (int32)width; ++i ) {
 
-				CoordType point( ( i - width/2 ) * RotationMatrixX[0][0] + ( j - height/2 ) * RotationMatrixX[0][1] + ( k - depth/2 ) * RotationMatrixX[0][2] + width/2, 
-						 ( i - width/2 ) * RotationMatrixX[1][0] + ( j - height/2 ) * RotationMatrixX[1][1] + ( k - depth/2 ) * RotationMatrixX[1][2] + height/2,
-						 ( i - width/2 ) * RotationMatrixX[2][0] + ( j - height/2 ) * RotationMatrixX[2][1] + ( k - depth/2 ) * RotationMatrixX[2][2] + depth/2 );
+				CoordType point( ( ( i - width/2 ) * RotationMatrixX[0][0] * xExtent + ( j - height/2 ) * RotationMatrixX[0][1] * yExtent + ( k - depth/2 ) * RotationMatrixX[0][2] * zExtent ) / xExtent + width/2, 
+						 ( ( i - width/2 ) * RotationMatrixX[1][0] * xExtent + ( j - height/2 ) * RotationMatrixX[1][1] * yExtent + ( k - depth/2 ) * RotationMatrixX[1][2] * zExtent ) / yExtent + height/2,
+						 ( ( i - width/2 ) * RotationMatrixX[2][0] * xExtent + ( j - height/2 ) * RotationMatrixX[2][1] * yExtent + ( k - depth/2 ) * RotationMatrixX[2][2] * zExtent ) / zExtent + depth/2 );
 
-				CoordType  tmp( ( point[0] - width/2 ) * RotationMatrixY[0][0] + ( point[1] - height/2 ) * RotationMatrixY[0][1] + ( point[2] - depth/2 ) * RotationMatrixY[0][2] + width/2,
-						( point[0] - width/2 ) * RotationMatrixY[1][0] + ( point[1] - height/2 ) * RotationMatrixY[1][1] + ( point[2] - depth/2 ) * RotationMatrixY[1][2] + height/2,
-						( point[0] - width/2 ) * RotationMatrixY[2][0] + ( point[1] - height/2 ) * RotationMatrixY[2][1] + ( point[2] - depth/2 ) * RotationMatrixY[2][2] + depth/2 );
+				CoordType  tmp( ( ( point[0] - width/2 ) * RotationMatrixY[0][0] * xExtent + ( point[1] - height/2 ) * RotationMatrixY[0][1] * yExtent + ( point[2] - depth/2 ) * RotationMatrixY[0][2] * zExtent ) / xExtent + width/2,
+						( ( point[0] - width/2 ) * RotationMatrixY[1][0] * xExtent + ( point[1] - height/2 ) * RotationMatrixY[1][1] * yExtent + ( point[2] - depth/2 ) * RotationMatrixY[1][2] * zExtent ) / yExtent + height/2,
+						( ( point[0] - width/2 ) * RotationMatrixY[2][0] * xExtent + ( point[1] - height/2 ) * RotationMatrixY[2][1] * yExtent + ( point[2] - depth/2 ) * RotationMatrixY[2][2] * zExtent ) / zExtent + depth/2 );
 
 				point = tmp;
 
-				tmp = CoordType( ( point[0] - width/2 ) * RotationMatrixZ[0][0] + ( point[1] - height/2 ) * RotationMatrixZ[0][1] + ( point[2] - depth/2 ) * RotationMatrixZ[0][2] + width/2,
-						 ( point[0] - width/2 ) * RotationMatrixZ[1][0] + ( point[1] - height/2 ) * RotationMatrixZ[1][1] + ( point[2] - depth/2 ) * RotationMatrixZ[1][2] + height/2,
-						 ( point[0] - width/2 ) * RotationMatrixZ[2][0] + ( point[1] - height/2 ) * RotationMatrixZ[2][1] + ( point[2] - depth/2 ) * RotationMatrixZ[2][2] + depth/2 );
+				tmp = CoordType( ( ( point[0] - width/2 ) * RotationMatrixZ[0][0] * xExtent + ( point[1] - height/2 ) * RotationMatrixZ[0][1] * yExtent + ( point[2] - depth/2 ) * RotationMatrixZ[0][2] * zExtent ) / xExtent + width/2,
+						 ( ( point[0] - width/2 ) * RotationMatrixZ[1][0] * xExtent + ( point[1] - height/2 ) * RotationMatrixZ[1][1] * yExtent + ( point[2] - depth/2 ) * RotationMatrixZ[1][2] * zExtent ) / yExtent + height/2,
+						 ( ( point[0] - width/2 ) * RotationMatrixZ[2][0] * xExtent + ( point[1] - height/2 ) * RotationMatrixZ[2][1] * yExtent + ( point[2] - depth/2 ) * RotationMatrixZ[2][2] * zExtent ) / zExtent + depth/2 );
 
 				point = tmp;
 

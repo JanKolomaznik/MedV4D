@@ -10,15 +10,16 @@ namespace M4D
 namespace Imaging
 {
 
-template< typename ElementType, uint32 dim >
+template< typename RegistrationFilterElementType, typename ElementType, uint32 dim >
 void
-PowellOptimization< ElementType, dim >
-::optimize(Vector< ElementType, dim > &v, ElementType &fret, ElementType func(Vector< ElementType, dim > &))
+PowellOptimization< RegistrationFilterElementType, ElementType, dim >
+::optimize(Vector< ElementType, dim > &v, ElementType &fret, ImageRegistration< RegistrationFilterElementType, dim/3 >* fil )
 {
-	extern_functor = func;
+	_filter = fil;
         const ElementType FTOL=1.0e-6;
         ElementType p_d[dim];
-        int i,j,iter;
+        uint32 i,j;
+	int iter;
 	for (i=0;i<dim;i++) p_d[i] = v[i];
         NRVec< ElementType > p(p_d,dim);
         NRMat< ElementType > xi(dim,dim);
@@ -26,13 +27,13 @@ PowellOptimization< ElementType, dim >
         for (i=0;i<dim;i++)
           for (j=0;j<dim;j++)
             xi[i][j]=(i == j ? 1.0 : 0.0);
-        powell(p,xi,FTOL,iter,fret,&M4D::Imaging::PowellOptimization< ElementType, dim >::caller);
+        powell(p,xi,FTOL,iter,fret,&M4D::Imaging::PowellOptimization< RegistrationFilterElementType, ElementType, dim >::caller);
 	for (i=0;i<dim;i++) v[i] = p[i];
 }
 
-template< typename ElementType, uint32 dim >
+template< typename RegistrationFilterElementType, typename ElementType, uint32 dim >
 void
-PowellOptimization< ElementType, dim >
+PowellOptimization< RegistrationFilterElementType, ElementType, dim >
 ::powell(NRVec< ElementType > &p, NRMat< ElementType > &xi, const ElementType ftol, int &iter,
         ElementType &fret, VectorFunc func)
 {
@@ -81,9 +82,9 @@ PowellOptimization< ElementType, dim >
         }
 }
 
-template< typename ElementType, uint32 dim >
+template< typename RegistrationFilterElementType, typename ElementType, uint32 dim >
 void
-PowellOptimization< ElementType, dim >
+PowellOptimization< RegistrationFilterElementType, ElementType, dim >
 ::linmin(NRVec< ElementType > &p, NRVec< ElementType > &xi, ElementType &fret, VectorFunc func)
 {
         int j;
@@ -102,8 +103,8 @@ PowellOptimization< ElementType, dim >
         }
         ax=0.0;
         xx=1.0;
-        mnbrak(ax,xx,bx,fa,fx,fb,&M4D::Imaging::PowellOptimization< ElementType, dim >::f1dim);
-        fret=brent(ax,xx,bx,&M4D::Imaging::PowellOptimization< ElementType, dim >::f1dim,TOL,xmin);
+        mnbrak(ax,xx,bx,fa,fx,fb,&M4D::Imaging::PowellOptimization< RegistrationFilterElementType, ElementType, dim >::f1dim);
+        fret=brent(ax,xx,bx,&M4D::Imaging::PowellOptimization< RegistrationFilterElementType, ElementType, dim >::f1dim,TOL,xmin);
         for (j=0;j<n;j++) {
                 xi[j] *= xmin;
                 p[j] += xi[j];
@@ -112,9 +113,9 @@ PowellOptimization< ElementType, dim >
         delete pcom_p;
 }
 
-template< typename ElementType, uint32 dim >
+template< typename RegistrationFilterElementType, typename ElementType, uint32 dim >
 void
-PowellOptimization< ElementType, dim >
+PowellOptimization< RegistrationFilterElementType, ElementType, dim >
 ::mnbrak(ElementType &ax, ElementType &bx, ElementType &cx, ElementType &fa, ElementType &fb, ElementType &fc,
         SingleFunc func)
 {
@@ -168,9 +169,9 @@ PowellOptimization< ElementType, dim >
         }
 }
 
-template< typename ElementType, uint32 dim >
+template< typename RegistrationFilterElementType, typename ElementType, uint32 dim >
 ElementType
-PowellOptimization< ElementType, dim >
+PowellOptimization< RegistrationFilterElementType, ElementType, dim >
 ::f1dim(const ElementType x)
 {
         int j;
@@ -183,9 +184,9 @@ PowellOptimization< ElementType, dim >
 }
 
 
-template< typename ElementType, uint32 dim >
+template< typename RegistrationFilterElementType, typename ElementType, uint32 dim >
 ElementType
-PowellOptimization< ElementType, dim >
+PowellOptimization< RegistrationFilterElementType, ElementType, dim >
 ::brent(const ElementType ax, const ElementType bx, const ElementType cx, SingleFunc f,
         const ElementType tol, ElementType &xmin)
 {

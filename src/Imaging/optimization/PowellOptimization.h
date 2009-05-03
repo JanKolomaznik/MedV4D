@@ -16,16 +16,16 @@ namespace M4D
 namespace Imaging
 {
 
-template< typename ElementType, uint32 dim >
-class PowellOptimization : public OptimizationBase< ElementType, dim >
+template< typename RegistrationFilterElementType, typename ElementType, uint32 dim >
+class PowellOptimization : public OptimizationBase< RegistrationFilterElementType, ElementType, dim >
 {
 
 public:
 
-	typedef 	ElementType (M4D::Imaging::PowellOptimization< ElementType, dim >::*VectorFunc)(NRVec< ElementType > &);
-	typedef		ElementType (M4D::Imaging::PowellOptimization< ElementType, dim >::*SingleFunc)(const ElementType);
+	typedef 	ElementType (M4D::Imaging::PowellOptimization< RegistrationFilterElementType, ElementType, dim >::*VectorFunc)(NRVec< ElementType > &);
+	typedef		ElementType (M4D::Imaging::PowellOptimization< RegistrationFilterElementType, ElementType, dim >::*SingleFunc)(const ElementType);
 
-	void optimize(Vector< ElementType, dim > &v, ElementType &fret, ElementType func(Vector< ElementType, dim > &));
+	void optimize(Vector< ElementType, dim > &v, ElementType &fret, ImageRegistration< RegistrationFilterElementType, dim/3 >* filt );
 
 private:
 	void powell(NRVec< ElementType > &p, NRMat< ElementType > &xi, const ElementType ftol, int &iter,
@@ -45,7 +45,7 @@ private:
 	{
 		Vector< ElementType, dim > v;
 		for ( uint32 i = 0; i < dim; ++i ) v[i] = vec[i];
-		return extern_functor( v );
+		return _filter->OptimizationFunction( v );
 	}
 
 
@@ -60,13 +60,13 @@ private:
 	int ncom;
 	VectorFunc nrfunc;
 	NRVec< ElementType > *pcom_p,*xicom_p;
-	ElementType (*extern_functor)(Vector< ElementType, dim > &);
+	ImageRegistration< RegistrationFilterElementType, dim/3 >* _filter;
 };
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
 
-//include source
+//include implementation
 #include "src/PowellOptimization.tcc"
 
 #endif /*POWELL_OPTIMIZATION_H*/

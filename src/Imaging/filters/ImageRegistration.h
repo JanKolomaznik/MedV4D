@@ -11,6 +11,7 @@
 #include "Imaging/filters/ImageTransform.h"
 #include "Imaging/MultiHistogram.h"
 #include "Imaging/criterion/NormalizedMutualInformation.h"
+#include "Imaging/optimization/PowellOptimization.h"
 #include <boost/shared_ptr.hpp>
 
 #define	HISTOGRAM_MIN_VALUE						0
@@ -50,6 +51,9 @@ public:
 	void
 	SetReferenceImage( typename ImageType::Ptr ref );
 
+	double
+	OptimizationFunction( Vector< double, 3 * dim >& v );
+
 protected:
 	bool
 	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
@@ -69,6 +73,7 @@ private:
 	typename ImageType::Ptr						referenceImage;
 	MultiHistogram< HistCellType, 2 >				jointHistogram;
 	CriterionBase< HistCellType >					*_criterion;
+	OptimizationBase< ElementType, double, 3 * dim >		*_optimization;
 
 };
 

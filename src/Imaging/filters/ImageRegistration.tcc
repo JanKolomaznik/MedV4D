@@ -99,7 +99,8 @@ ImageRegistration< ElementType, dim >
 ::ImageRegistration( typename ImageRegistration< ElementType, dim >::Properties  * prop )
 	: PredecessorType( prop ),
 	  jointHistogram( std::vector< int32 >( 2, HISTOGRAM_MIN_VALUE ), std::vector< int32 >( 2, HISTOGRAM_MAX_VALUE ) ),
-	  _criterion( new NormalizedMutualInformation< HistCellType >() )
+	  _criterion( new NormalizedMutualInformation< HistCellType >() ),
+	  _optimization( new PowellOptimization< ElementType, double, 3 * dim >() )
 {
 	this->_name = "ImageRegistration";
 }
@@ -109,7 +110,8 @@ ImageRegistration< ElementType, dim >
 ::ImageRegistration()
 	: PredecessorType( new Properties() ),
 	  jointHistogram( std::vector< int32 >( 2, HISTOGRAM_MIN_VALUE ), std::vector< int32 >( 2, HISTOGRAM_MAX_VALUE ) ),
-	  _criterion( new NormalizedMutualInformation< HistCellType >() )
+	  _criterion( new NormalizedMutualInformation< HistCellType >() ),
+	  _optimization( new PowellOptimization< ElementType, double, 3 * dim >() )
 {
 	this->_name = "ImageRegistration";
 }
@@ -119,6 +121,38 @@ ImageRegistration< ElementType, dim >
 ::~ImageRegistration()
 {
 	delete _criterion;
+	delete _optimization;
+}
+
+template< typename ElementType, uint32 dim >
+double
+ImageRegistration< ElementType, dim >
+::OptimizationFunction( Vector< double, 3 * dim >& v )
+{
+	Vector< double, dim > v1, v2, v3;
+	for ( uint32 i = 0; i < dim; ++i )
+	{
+		v1[i] = v[i];
+		v2[i] = v[dim + i];
+		v3[i] = v[2 * dim + i];
+	}
+	this->SetRotation( v1 );
+	this->SetScale( v2 );
+	this->SetTranslation( v3 );
+	this->ExecuteTransformation();
+	double res = 1.0;
+	if ( referenceImage )
+	{
+		CalculateHistograms< ElementType > ( jointHistogram, *(this->out), *(referenceImage) );
+		uint32 size = 1;
+		Vector< uint32, dim > sizeVector;
+		Vector< int32, dim > strideVector;
+		referenceImage->GetPointer( sizeVector, strideVector );
+		for ( uint32 i = 0; i < dim; ++i ) size *= sizeVector[i];
+		res = _criterion->compute( jointHistogram, size );
+		std::cout << res << std:: endl;
+	}
+	return 1.0 / res;
 }
 
 template< typename ElementType, uint32 dim >
@@ -131,18 +165,16 @@ ImageRegistration< ElementType, dim >
 		this->_writerBBox->SetState( MS_CANCELED );
 		return false;
 	}
-	bool result = false;
-	result = this->ExecuteTransformation();
-	if ( referenceImage )
+	Vector< double, 3 * dim > v;
+	for ( uint32 i = 0; i < dim; ++i )
 	{
-		CalculateHistograms< ElementType > ( jointHistogram, *(this->out), *(referenceImage) );
-		uint32 size = 1;
-		Vector< uint32, dim > sizeVector;
-		Vector< int32, dim > strideVector;
-		referenceImage->GetPointer( sizeVector, strideVector );
-		for ( uint32 i = 0; i < dim; ++i ) size *= sizeVector[i];
-		std::cout << _criterion->compute( jointHistogram, size ) << std:: endl;
+		v[i] = 0;
+		v[dim + i] = 1;
+		v[2 * dim + i] = 0;
 	}
+	double fret;
+	_optimization->optimize( v, fret, this );
+	bool result = true;
 	if( result ) {
 		this->_writerBBox->SetModified();
 	} else {
