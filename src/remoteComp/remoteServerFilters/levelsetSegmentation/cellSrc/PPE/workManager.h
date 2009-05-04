@@ -53,6 +53,14 @@ public:
 	void AllocateUpdateBuffers();
 	
 	void PrintLists(std::ostream &s);
+	
+	uint32 GetLayer0TotalSize(){
+		uint32 size = 0;
+		for(uint32 i=0; i<_numOfCores; i++)
+			size += m_LayerSegments[i].layers[0]->Size();
+		
+		return size;
+	}
 
 private:
 	typedef SparseFieldLevelSetNode NodeTypeInSPU;

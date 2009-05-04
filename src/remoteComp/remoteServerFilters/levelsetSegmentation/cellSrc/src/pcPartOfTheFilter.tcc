@@ -414,9 +414,10 @@ PCPartOfSegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 //	this->InitCalculateChangeAndUpdActiveLayerConf();
 //	updateSolver.UpdateFunctionProperties();
 //	
-//	TimeStepType dt = updateSolver.CalculateChange();
-//	
-//	return dt;
+	TimeStepType dt;
+//	dt = updateSolver.CalculateChange();
+	
+	return dt;
 }
 ///////////////////////////////////////////////////////////////////////////////
 

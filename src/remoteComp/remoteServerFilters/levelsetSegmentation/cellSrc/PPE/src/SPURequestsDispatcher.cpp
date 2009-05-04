@@ -51,7 +51,7 @@ SPURequestsDispatcher::DispatchUnlinkMessage(uint32 message)
 	uint8 lyerID = (message & MessageLyaerID_MASK) >> MessageLyaerID_SHIFT;
 	
 	uint64 nodeAddress = MyPopMessage();
-	nodeAddress |= ((uint64)MyPopMessage() & (0xffffffff << 32));
+	nodeAddress |= ((uint64) MyPopMessage()) << 32;
 	
 	LayerNodeType *n = (LayerNodeType *) nodeAddress;
 	

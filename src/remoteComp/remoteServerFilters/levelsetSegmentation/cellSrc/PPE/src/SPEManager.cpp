@@ -2,6 +2,8 @@
 #include "../SPEManager.h"
 #include <iostream>
 
+#include <math.h> // sqrt function
+
 
 using namespace M4D::Cell;
 
@@ -31,9 +33,14 @@ void *ppu_pthread_function(void *arg)
 SPEManager::SPEManager() {
 	/* Determine the number of SPE threads to create.   */
 	speCount = 1;//spe_cpu_info_get(SPE_COUNT_USABLE_SPES, -1);
+	
+	_results = new TimeStepType[speCount];
 
 #ifdef FOR_CELL
 	data = new Tppu_pthread_data[speCount];
+#else
+	_SPEProgSim = new SPUProgramSim[speCount];
+	m_requestDispatcher = new SPURequestsDispatcher[speCount];
 #endif
 }
 
@@ -42,19 +49,23 @@ SPEManager::SPEManager() {
 void
 SPEManager::InitProgramProps(void)
 {	
-	m_requestDispatcher._workManager = _workManager;
 	
-	_SPEProgSim.applyUpdateCalc.m_layerGate.dispatcher = &m_requestDispatcher;
+	for(uint32 i = 0; i< speCount; i++)
+	{
+		m_requestDispatcher[i]._workManager = _workManager;
+		
+		_SPEProgSim[i].applyUpdateCalc.m_layerGate.dispatcher = &m_requestDispatcher[i];
 	
 	// setup apply update
-	_SPEProgSim.applyUpdateCalc.commonConf =  &_workManager->GetConfSructs()[0].runConf;
-	_SPEProgSim.applyUpdateCalc.m_stepConfig = &_workManager->GetConfSructs()[0].calcChngApplyUpdateConf;	
-	_SPEProgSim.applyUpdateCalc.m_propLayerValuesConfig = &_workManager->GetConfSructs()[0].propagateValsConf;	
+	_SPEProgSim[i].applyUpdateCalc.commonConf =  &_workManager->GetConfSructs()[i].runConf;
+	_SPEProgSim[i].applyUpdateCalc.m_stepConfig = &_workManager->GetConfSructs()[i].calcChngApplyUpdateConf;	
+	_SPEProgSim[i].applyUpdateCalc.m_propLayerValuesConfig = &_workManager->GetConfSructs()[i].propagateValsConf;	
 	
 	// and update solver
-	_SPEProgSim.updateSolver.m_Conf = &_workManager->GetConfSructs()[0].runConf;
-	_SPEProgSim.updateSolver.m_stepConfig = &_workManager->GetConfSructs()[0].calcChngApplyUpdateConf;
-	_SPEProgSim.updateSolver.Init();
+	_SPEProgSim[i].updateSolver.m_Conf = &_workManager->GetConfSructs()[i].runConf;
+	_SPEProgSim[i].updateSolver.m_stepConfig = &_workManager->GetConfSructs()[i].calcChngApplyUpdateConf;
+	_SPEProgSim[i].updateSolver.Init();
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -82,7 +93,51 @@ SPEManager::~SPEManager() {
 
 
 	delete [] data;
+#else
+	delete [] _SPEProgSim;
+	delete [] m_requestDispatcher;
 #endif
+	
+	delete [] _results;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+TimeStepType
+SPEManager::MergeTimesteps()
+{
+	// get minimum
+	TimeStepType min = _results[0];
+	for (uint32 i=1; i<speCount; i++)
+	{
+		if(_results[i] < min)
+			min = _results[i];
+	}
+	
+	return min;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+TimeStepType
+SPEManager::MergeRMSs()
+{
+	TimeStepType accum = 0;
+	
+	// Determine the average change during this iteration.
+	for (uint32 i=0; i<speCount; i++) 
+	{
+	  if (_results[i] == 0)
+		  return 0; 
+	  else
+	  {
+		  accum  += _results[i];	  
+	  }
+	}
+	
+	TimeStepType retval =  sqrt(accum / _workManager->GetLayer0TotalSize() );
+	
+	return retval;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

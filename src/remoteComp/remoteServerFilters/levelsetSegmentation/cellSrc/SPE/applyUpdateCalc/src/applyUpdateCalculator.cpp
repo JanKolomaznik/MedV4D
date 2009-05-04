@@ -3,7 +3,6 @@
 #include "common/Types.h"
 #include "../applyUpdateCalculator.h"
 #include "../../vnl_math.h"
-#include <math.h>	//sqrt
 #include <string.h>
 #include <fstream>
 #include <iostream>
@@ -77,18 +76,7 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 		ProcessStatusLists(UpList, DownList);
 	}
 	
-	  DL_PRINT(DEBUG_ALG, std::endl << "14rms accum: " << rms_change_accumulator << "counter: " << counter);
-		
-	  ValueType retval;
-	  
-	  // Determine the average change during this iteration.
-	  if (counter == 0)
-		  retval = this->m_ValueZero;
-	  else
-	  {
-		  retval =  static_cast<double>( 
-				  sqrt((double)(rms_change_accumulator / static_cast<ValueType>(counter)) ));			  
-	  }
+	  DL_PRINT(DEBUG_ALG, std::endl << "14rms accum: " << rms_change_accumulator << "counter: " << counter);	  
 	
 //	std::stringstream s3;
 //		  s3 << "afterOutside" << this->m_ElapsedIterations;
@@ -101,8 +89,8 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	
 	m_ElapsedIterations++;
 	
-	DL_PRINT(DEBUG_ALG, "returning: " << retval);
-	return retval;
+	DL_PRINT(DEBUG_ALG, "returning: " << rms_change_accumulator);
+	return rms_change_accumulator;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

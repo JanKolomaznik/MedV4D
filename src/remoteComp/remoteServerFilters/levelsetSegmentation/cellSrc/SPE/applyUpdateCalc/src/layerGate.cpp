@@ -26,7 +26,7 @@ void LayerGate::UnlinkNode(SparseFieldLevelSetNode *node, uint8 layerNum)
 	dispatcher->MyPushMessage(message);
 	// push node address word by word
 	dispatcher->MyPushMessage((uint32) (nodeAddress & 0xffffffff));
-	dispatcher->MyPushMessage((uint32) (nodeAddress & ((uint64)0xffffffff << 32) ));
+	dispatcher->MyPushMessage((uint32) (nodeAddress >> 32));
 	
 	// symulate dispatcher run
 	message = dispatcher->MyPopMessage();

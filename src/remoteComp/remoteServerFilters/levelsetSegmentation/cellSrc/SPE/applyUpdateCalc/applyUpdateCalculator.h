@@ -16,7 +16,7 @@ public:
 	
 	typedef float32 ValueType;
 	
-	ValueType ApplyUpdate(TimeStepType dt);		
+	ValueType ApplyUpdate(TimeStepType dt);
 	
 	typedef GETRemoteArrayCell<TPixelValue, 8> TUpdateBufferArray;	
 	typedef M4D::Cell::SparseFieldLayer<SparseFieldLevelSetNode> MyLayerType;
