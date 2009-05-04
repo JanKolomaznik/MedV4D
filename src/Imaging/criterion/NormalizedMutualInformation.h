@@ -15,7 +15,7 @@ class NormalizedMutualInformation : public CriterionBase< ElementType >
 {
 public:
 
-	double compute( MultiHistogram< ElementType, 2 >& jointHist, uint32 datasetSize );
+	double compute( MultiHistogram< ElementType, 2 >& jointHist );
 
 };
 

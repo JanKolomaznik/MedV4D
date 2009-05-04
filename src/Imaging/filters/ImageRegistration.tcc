@@ -40,15 +40,16 @@ CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 2 
 	int32 refYStride = strides[1];
 	uint32 refWidth = size[0];
 	uint32 refHeight = size[1];
+	typename ImageRegistration< ElementType, 2 >::HistCellType base = 1.0 / (refHeight * refWidth);
 	for ( j = 0; j < refHeight; ++j )
 	{
 		ElementType *in = sin + j*inYStride;
 		ElementType *ref = sref + j*refYStride;
 		for ( i = 0; i < refWidth; ++i )
 		{
-			index[0] = *in;
-			index[1] = *ref;
-			jointHist.IncCell( index );
+			index[0] = *in / HISTOGRAM_DIVISOR;
+			index[1] = *ref / HISTOGRAM_DIVISOR;
+			jointHist.SetValueCell( index, jointHist.Get( index ) + base );
 			in += inXStride;
 			ref += refXStride;
 		}
@@ -78,6 +79,7 @@ CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 3 
 	uint32 refWidth = size[0];
 	uint32 refHeight = size[1];
 	uint32 refDepth = size[2];
+	typename ImageRegistration< ElementType, 3 >::HistCellType base = 1.0 / (refHeight * refWidth * refDepth);
 	for ( k = 0; k < refDepth; ++k )
 		for ( j = 0; j < refHeight; ++j )
 		{
@@ -85,9 +87,9 @@ CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 3 
 			ElementType *ref = sref + k*refZStride + j*refYStride;
 			for ( i = 0; i < refWidth; ++i )
 			{
-				index[0] = *in;
-				index[1] = *ref;
-				jointHist.IncCell( index );
+				index[0] = *in / HISTOGRAM_DIVISOR;
+				index[1] = *ref / HISTOGRAM_DIVISOR;
+				jointHist.SetValueCell( index, jointHist.Get( index ) + base );
 				in += inXStride;
 				ref += refXStride;
 			}
@@ -144,12 +146,7 @@ ImageRegistration< ElementType, dim >
 	if ( referenceImage )
 	{
 		CalculateHistograms< ElementType > ( jointHistogram, *(this->out), *(referenceImage) );
-		uint32 size = 1;
-		Vector< uint32, dim > sizeVector;
-		Vector< int32, dim > strideVector;
-		referenceImage->GetPointer( sizeVector, strideVector );
-		for ( uint32 i = 0; i < dim; ++i ) size *= sizeVector[i];
-		res = _criterion->compute( jointHistogram, size );
+		res = _criterion->compute( jointHistogram );
 		std::cout << res << std:: endl;
 	}
 	return 1.0 / res;

@@ -15,7 +15,8 @@
 #include <boost/shared_ptr.hpp>
 
 #define	HISTOGRAM_MIN_VALUE						0
-#define HISTOGRAM_MAX_VALUE						3000
+#define HISTOGRAM_MAX_VALUE						200
+#define HISTOGRAM_DIVISOR						10
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -35,7 +36,7 @@ class ImageRegistration
 public:
 	typedef Image< ElementType, dim >				ImageType;
 	typedef ImageTransform< ElementType, dim >		 	PredecessorType;
-	typedef uint32							HistCellType;
+	typedef float64							HistCellType;
 
 	struct Properties : public PredecessorType::Properties
 	{

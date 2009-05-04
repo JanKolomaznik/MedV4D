@@ -11,7 +11,7 @@ namespace Imaging
 template< typename ElementType >
 double
 NormalizedMutualInformation< ElementType >
-::compute( MultiHistogram< ElementType, 2 >& jointHist, uint32 datasetSize )
+::compute( MultiHistogram< ElementType, 2 >& jointHist )
 {
 	double H_a = 0, H_b = 0, H_joint = 0;
 	int32 i, j;
@@ -23,12 +23,12 @@ NormalizedMutualInformation< ElementType >
 		separateFreq[1] = 0;
 		for ( j = jointHist[i].GetMin(); j < jointHist[i].GetMax(); ++j )
 		{
-			jointFreq = (double)jointHist[i][j]/(double)datasetSize;
+			jointFreq = jointHist[i][j];
 
 			if ( jointFreq > 0 ) H_joint += jointFreq * std::log( jointFreq );
 
-			separateFreq[0] += (double)jointHist[i][j]/(double)datasetSize;
-			separateFreq[1] += (double)jointHist[j][i]/(double)datasetSize;
+			separateFreq[0] += jointHist[i][j];
+			separateFreq[1] += jointHist[j][i];
 		}
 
 		if ( separateFreq[0] > 0 ) H_a += separateFreq[0] * std::log( separateFreq[0] );
@@ -36,7 +36,7 @@ NormalizedMutualInformation< ElementType >
 		if ( separateFreq[1] > 0 ) H_b += separateFreq[1] * std::log( separateFreq[1] );
 
 	}
-	std::cout << H_a << " " << H_b << " " << H_joint << " " << (double)datasetSize << std::endl;
+	std::cout << H_a << " " << H_b << " " << H_joint << " " << std::endl;
 
 	return ( H_a + H_b ) / H_joint;
 }

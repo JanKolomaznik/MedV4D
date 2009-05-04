@@ -14,7 +14,7 @@ class CriterionBase
 {
 public:
 
-	virtual double compute( MultiHistogram< ElementType, 2 >& jointHist, uint32 datasetSize ) = 0;
+	virtual double compute( MultiHistogram< ElementType, 2 >& jointHist ) = 0;
 
 };
 

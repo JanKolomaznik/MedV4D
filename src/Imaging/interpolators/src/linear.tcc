@@ -56,65 +56,65 @@ LinearInterpolator<ImageType>
 
 	return  (typename ImageType::Element)(
 		*(this->m_dataPointer + (
-			((uint32)std::ceil(coords[0]) * strides[0]) + 
-			((uint32)std::ceil(coords[1]) * strides[1]) +
-			((uint32)std::ceil(coords[2]) * strides[2])
+			((uint32)std::floor(coords[0]) * strides[0]) + 
+			((uint32)std::floor(coords[1]) * strides[1]) +
+			((uint32)std::floor(coords[2]) * strides[2])
 			) ) * w[0]
 
 		+
 
 		*(this->m_dataPointer + (
-			((uint32)std::floor(coords[0]) * strides[0]) + 
-			((uint32)std::ceil(coords[1]) * strides[1]) +
-			((uint32)std::ceil(coords[2]) * strides[2])
+			((uint32)std::ceil(coords[0]) * strides[0]) + 
+			((uint32)std::floor(coords[1]) * strides[1]) +
+			((uint32)std::floor(coords[2]) * strides[2])
 			) ) * w[1]
 
 		+
 
 		*(this->m_dataPointer + (
-			((uint32)std::ceil(coords[0]) * strides[0]) + 
-			((uint32)std::floor(coords[1]) * strides[1]) +
-			((uint32)std::ceil(coords[2]) * strides[2])
+			((uint32)std::floor(coords[0]) * strides[0]) + 
+			((uint32)std::ceil(coords[1]) * strides[1]) +
+			((uint32)std::floor(coords[2]) * strides[2])
 			) ) * w[2]
 
 		+
 
 		*(this->m_dataPointer + (
-			((uint32)std::ceil(coords[0]) * strides[0]) + 
-			((uint32)std::ceil(coords[1]) * strides[1]) +
-			((uint32)std::floor(coords[2]) * strides[2])
+			((uint32)std::floor(coords[0]) * strides[0]) + 
+			((uint32)std::floor(coords[1]) * strides[1]) +
+			((uint32)std::ceil(coords[2]) * strides[2])
 			) ) * w[3]
 
 		+
 
 		*(this->m_dataPointer + (
-			((uint32)std::floor(coords[0]) * strides[0]) + 
-			((uint32)std::ceil(coords[1]) * strides[1]) +
-			((uint32)std::floor(coords[2]) * strides[2])
+			((uint32)std::ceil(coords[0]) * strides[0]) + 
+			((uint32)std::floor(coords[1]) * strides[1]) +
+			((uint32)std::ceil(coords[2]) * strides[2])
 			) ) * w[4]
 
 		+
 
 		*(this->m_dataPointer + (
-			((uint32)std::ceil(coords[0]) * strides[0]) + 
-			((uint32)std::floor(coords[1]) * strides[1]) +
-			((uint32)std::floor(coords[2]) * strides[2])
+			((uint32)std::floor(coords[0]) * strides[0]) + 
+			((uint32)std::ceil(coords[1]) * strides[1]) +
+			((uint32)std::ceil(coords[2]) * strides[2])
 			) ) * w[5]
 
 		+
 
 		*(this->m_dataPointer + (
-			((uint32)std::floor(coords[0]) * strides[0]) + 
-			((uint32)std::floor(coords[1]) * strides[1]) +
-			((uint32)std::ceil(coords[2]) * strides[2])
+			((uint32)std::ceil(coords[0]) * strides[0]) + 
+			((uint32)std::ceil(coords[1]) * strides[1]) +
+			((uint32)std::floor(coords[2]) * strides[2])
 			) ) * w[6]
 
 		+
 
 		*(this->m_dataPointer + (
-			((uint32)std::floor(coords[0]) * strides[0]) + 
-			((uint32)std::floor(coords[1]) * strides[1]) +
-			((uint32)std::floor(coords[2]) * strides[2])
+			((uint32)std::ceil(coords[0]) * strides[0]) + 
+			((uint32)std::ceil(coords[1]) * strides[1]) +
+			((uint32)std::ceil(coords[2]) * strides[2])
 			) ) * w[7]
 
 		);
