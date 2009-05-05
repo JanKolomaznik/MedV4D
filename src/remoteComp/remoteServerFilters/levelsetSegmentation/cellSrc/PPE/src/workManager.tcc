@@ -26,7 +26,7 @@ WorkManager<IndexType, ValueType>::WorkManager(uint32 coreCount)
 template<typename IndexType, typename ValueType>
 WorkManager<IndexType, ValueType>::~WorkManager()
 {
-	delete [] m_configs;	
+	delete [] m_configs;
 	delete [] m_UpdateBuffers;
 	delete [] m_LayerSegments;	
 }
@@ -50,12 +50,12 @@ WorkManager<IndexType, ValueType>
 
 template<typename IndexType, typename ValueType>
 void
-WorkManager<IndexType, ValueType>::UNLINKNode(LayerNodeType *node, uint32 layerNum)
+WorkManager<IndexType, ValueType>::UNLINKNode(LayerNodeType *node, uint32 layerNum, uint32 segmentID)
 {
-	M4D::Multithreading::ScopedLock lock(_layerAccessMutex);
+	//M4D::Multithreading::ScopedLock lock(_layerAccessMutex);
 	
 	// unlink node from segment that have the biggest count of nodes
-	m_LayerSegments[GetLongestLayer(layerNum)].layers[layerNum]->Unlink(node);
+	m_LayerSegments[segmentID].layers[layerNum]->Unlink(node);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -134,20 +134,30 @@ WorkManager<IndexType, ValueType>::AllocateUpdateBuffers()
 
 template<typename IndexType, typename ValueType>
 void
-WorkManager<IndexType, ValueType>::PrintLists(std::ostream &s)
+WorkManager<IndexType, ValueType>::PrintLists(std::ostream &s, bool withMembers)
 {
 	LayerNodeType *begin, *end;
 	
-	for(uint32 i=0; i<LYERCOUNT; i++)
+	for(uint32 coreIt=0; coreIt<_numOfCores; coreIt++)
 	{
-		s << "layer" << i << ", size=" << m_LayerSegments[0].layers[i]->Size() << std::endl;
-		begin = m_LayerSegments[0].layers[i]->Begin().GetPointer();
-		end = m_LayerSegments[0].layers[i]->End().GetPointer();
-		
-		while(begin != end)
+		s << "Core" << coreIt 
+			<< " :::::::::::::::::::::::::::::::::::::" << std::endl;
+		for(uint32 i=0; i<LYERCOUNT; i++)
 		{
-			s << begin->m_Value << std::endl;
-			begin = begin->Next;
+			s << "layer" << i << ", size=" << 
+				m_LayerSegments[coreIt].layers[i]->Size() << std::endl;
+			
+			if(withMembers)
+			{
+				begin = m_LayerSegments[coreIt].layers[i]->Begin().GetPointer();
+				end = m_LayerSegments[coreIt].layers[i]->End().GetPointer();
+				
+				while(begin != end)
+				{
+					s << begin->m_Value << std::endl;
+					begin = begin->Next;
+				}
+			}
 		}
 	}
 }
@@ -158,7 +168,14 @@ template<typename IndexType, typename ValueType>
 uint8
 WorkManager<IndexType, ValueType>::GetShortestLayer(uint8 layerNum)
 {
-	return 0;
+	uint8 shortest = 0;
+	for(uint32 i=1; i<_numOfCores; i++)
+	{
+		if(m_LayerSegments[i].layers[layerNum]->Size() < 
+				m_LayerSegments[shortest].layers[layerNum]->Size())
+			shortest = i;
+	}
+	return shortest;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -167,7 +184,14 @@ template<typename IndexType, typename ValueType>
 uint8
 WorkManager<IndexType, ValueType>::GetLongestLayer(uint8 layerNum)
 {
-	return 0;
+	uint8 longest = 0;
+	for(uint32 i=1; i<_numOfCores; i++)
+	{
+		if(m_LayerSegments[i].layers[layerNum]->Size() > 
+			m_LayerSegments[longest].layers[layerNum]->Size())
+			longest = i;
+	}
+	return longest;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

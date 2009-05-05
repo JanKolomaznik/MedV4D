@@ -167,7 +167,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
     m_runConf.valueImageProps.imageData = (ValueType *)this->GetOutput()->GetBufferPointer();
     m_runConf.valueImageProps.region = 
     	ConvertRegion<OutputImageType, M4D::Cell::TRegion>(*this->GetOutput());
-    m_runConf.featureImageProps.spacing = ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename OutputImageType::SpacingType>(this->GetOutput()->GetSpacing());
+    m_runConf.valueImageProps.spacing = ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename OutputImageType::SpacingType>(this->GetOutput()->GetSpacing());
     //status image
     m_runConf.statusImageProps.imageData = (StatusType *)m_StatusImage->GetBufferPointer();
     m_runConf.statusImageProps.region = 

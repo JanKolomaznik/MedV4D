@@ -46,13 +46,13 @@ RemoteArrayCell<T, BUFSIZE>::SetArray(T *array)
 template<typename T, uint8 BUFSIZE>
 void
 RemoteArrayCell<T, BUFSIZE>::FlushArray()
-	{
-		//CopyData(m_buf[m_currBuf], m_currFlushedPos, m_currPos);
+{
+	//CopyData(m_buf[m_currBuf], m_currFlushedPos, m_currPos);
 	DMAGate::Put(m_buf[m_currBuf], m_currFlushedPos, m_currPos * sizeof(T) );
-		m_currFlushedPos += m_currPos;
-		m_currBuf = !m_currBuf;
-		m_currPos = 0;
-	}
+	m_currFlushedPos += m_currPos;
+	m_currBuf = !m_currBuf;
+	m_currPos = 0;
+}
 ///////////////////////////////////////////////////////////////////////////////
 //template<typename T, uint8 BUFSIZE>
 //void

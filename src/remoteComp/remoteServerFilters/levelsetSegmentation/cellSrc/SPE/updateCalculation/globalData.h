@@ -12,6 +12,11 @@ namespace Cell
 struct GlobalDataStruct
 {
 	typedef TPixelValue ScalarValueType;
+	
+	GlobalDataStruct()
+	{
+		m_MaxAdvectionChange = m_MaxPropagationChange = m_MaxCurvatureChange = 0;
+	}
 
 	ScalarValueType m_MaxAdvectionChange;
 	ScalarValueType m_MaxPropagationChange;

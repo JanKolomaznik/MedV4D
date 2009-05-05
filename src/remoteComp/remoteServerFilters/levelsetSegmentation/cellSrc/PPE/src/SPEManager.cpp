@@ -32,7 +32,7 @@ void *ppu_pthread_function(void *arg)
 
 SPEManager::SPEManager() {
 	/* Determine the number of SPE threads to create.   */
-	speCount = 1;//spe_cpu_info_get(SPE_COUNT_USABLE_SPES, -1);
+	speCount = 2;//spe_cpu_info_get(SPE_COUNT_USABLE_SPES, -1);
 	
 	_results = new TimeStepType[speCount];
 
@@ -54,6 +54,7 @@ SPEManager::InitProgramProps(void)
 	{
 		m_requestDispatcher[i]._workManager = _workManager;
 		
+		m_requestDispatcher[i]._segmentID = i;
 		_SPEProgSim[i].applyUpdateCalc.m_layerGate.dispatcher = &m_requestDispatcher[i];
 	
 	// setup apply update
@@ -89,7 +90,7 @@ SPEManager::~SPEManager() {
 			D_PRINT("Failed destroying context");
 			//exit (1);
 		}
-	}	
+	}
 
 
 	delete [] data;

@@ -10,7 +10,8 @@ template<typename T, uint16 STORESIZE>
 ObjectStoreCell<T, STORESIZE>::ObjectStoreCell()
 	: m_borrowed(0)
 {
-	
+	// reset the alloc map to zeros
+	memset(m_allocMap, 0, sizeof(TAllocMapItem) * ALLOC_MAP_ITEM_COUNT);
 }
 ///////////////////////////////////////////////////////////////////////////////
 template<typename T, uint16 STORESIZE>

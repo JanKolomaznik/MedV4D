@@ -17,7 +17,7 @@ void LayerGate::UnlinkNode(SparseFieldLevelSetNode *node, uint8 layerNum)
 	
 	uint64 nodeAddress = (uint64) node;
 	
-	DL_PRINT(DEBUG_GATE, "Send ULNK, node:" << node << "layer: " << (uint32)layerNum);
+	DL_PRINT(DEBUG_GATE, "Send ULNK, node:" << node << " layer: " << (uint32)layerNum);
 	
 #ifdef FOR_CELL
 	// push to mailbox
@@ -50,7 +50,7 @@ void LayerGate::PushToLayer(SparseFieldLevelSetNode *node, uint8 layerNum)
 	message |= (PUSHED_NODES_PROCESS & MessageID_MASK);
 	message |= ((layerNum << MessageLyaerID_SHIFT) & MessageLyaerID_MASK);
 	
-	DL_PRINT(DEBUG_GATE, "Send PUSH, node:" << node->m_Value << "layer: " << (uint32)layerNum);
+	DL_PRINT(DEBUG_GATE, "Send PUSH, node:" << node->m_Value << " layer: " << (uint32)layerNum);
 	
 	// 1st coord will be passed with message
 	// the two rest along the next word

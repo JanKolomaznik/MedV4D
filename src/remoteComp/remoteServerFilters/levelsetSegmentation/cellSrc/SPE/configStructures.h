@@ -62,6 +62,8 @@ public:
     TImageProperties<TPixelValue> featureImageProps;
     TImageProperties<TPixelValue> valueImageProps;
     TImageProperties<StatusType> statusImageProps;
+    
+    uint32 SPEId;
 	
 	void operator=(const RunConfiguration& o)
 	{
@@ -74,6 +76,7 @@ public:
 		featureImageProps = o.featureImageProps;
 		valueImageProps = o.valueImageProps;
 		statusImageProps = o.statusImageProps;
+		SPEId = o.SPEId;
 	}
 };
 

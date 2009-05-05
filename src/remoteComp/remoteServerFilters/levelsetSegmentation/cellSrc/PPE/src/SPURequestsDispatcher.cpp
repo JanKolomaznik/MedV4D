@@ -55,7 +55,7 @@ SPURequestsDispatcher::DispatchUnlinkMessage(uint32 message)
 	
 	LayerNodeType *n = (LayerNodeType *) nodeAddress;
 	
-	_workManager->UNLINKNode(n, lyerID);
+	_workManager->UNLINKNode(n, lyerID, _segmentID);
 	DL_PRINT(DEBUG_MAILBOX, "ULNK " << n << " layr=" << (uint32)lyerID);
 }
 

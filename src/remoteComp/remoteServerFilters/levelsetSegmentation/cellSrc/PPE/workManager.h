@@ -36,7 +36,7 @@ public:
 	~WorkManager();
 
 	void PUSHNode(const IndexType &index, uint32 layerNum);
-	void UNLINKNode(LayerNodeType *node, uint32 layerNum);
+	void UNLINKNode(LayerNodeType *node, uint32 layerNum, uint32 segmentID);
 
 	void SetupRunConfig(RunConfiguration *conf);
 	LayerListType *GetLayers()
@@ -52,7 +52,7 @@ public:
 	void InitPropagateValuesConf();
 	void AllocateUpdateBuffers();
 	
-	void PrintLists(std::ostream &s);
+	void PrintLists(std::ostream &s, bool withMembers);
 	
 	uint32 GetLayer0TotalSize(){
 		uint32 size = 0;

@@ -34,9 +34,13 @@ public:
 	void MyPushMessage(uint32);
 	uint32 MyPopMessage();
 	
-	M4D::Multithreading::Mutex mutex;
+	M4D::Multithreading::Mutex mutex;	
+	M4D::Multithreading::Mutex mutexRun;
 
 	TWorkManager *_workManager;
+	
+	TimeStepType _result;
+	uint32 _segmentID;
 };
 
 }

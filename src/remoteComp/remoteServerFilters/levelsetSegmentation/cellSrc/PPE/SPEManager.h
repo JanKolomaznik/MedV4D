@@ -53,6 +53,8 @@ public:
 
 			_results[i] = _SPEProgSim[i].updateSolver.CalculateChange();
 		}
+		
+		//_workManager->PrintLists(LOUT, false);
 
 		return MergeTimesteps();
 	}
@@ -65,6 +67,8 @@ public:
 		for (uint32 i = 0; i< speCount; i++)
 		{
 			_results[i] = _SPEProgSim[i].applyUpdateCalc.ApplyUpdate(dt);
+			LOG("i=" << i);
+			_workManager->PrintLists(LOUT, false);
 		}
 		
 		return MergeRMSs();
