@@ -33,7 +33,7 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
      */
     struct Viewer {
       /// Unique ID of the viewer.
-      unsigned ID;
+      //unsigned ID;
       /// Viewer widget.
       M4D::Viewer::m4dGUIAbstractViewerWidget *viewerWidget;
       /// Checked tool (index) for given viewer - for left mouse button.
@@ -82,7 +82,7 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
      *
      * @return ID of the selected viewer
      */
-    unsigned getSelectedViewerID () const { return selectedViewer->ID; }
+    //unsigned getSelectedViewerID () const { return selectedViewer->ID; }
 
     /** 
      * Getter to the selected viewer's viewer widget.

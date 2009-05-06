@@ -14,7 +14,7 @@ using namespace M4D::Imaging;
 namespace M4D {
 namespace GUI {
 
-const unsigned SliceViewerFactory::ID = SLICE_VIEWER_ID;
+/*const unsigned SliceViewerFactory::ID = SLICE_VIEWER_ID;
 const char *SliceViewerFactory::description = "";
 
 m4dGUIAbstractViewerWidget *SliceViewerFactory::newViewer ( ConnectionInterface* conn, unsigned index )
@@ -42,7 +42,7 @@ m4dGUIAbstractViewerWidget *VtkViewerFactory::newViewer ( ConnectionInterface* c
 m4dGUIAbstractViewerWidget *VtkViewerFactory::newViewer ( unsigned index )
 {
   return new m4dGUIVtkViewerWidget( index );
-}
+}*/
 
 } // namespace GUI
 } // namespace M4D

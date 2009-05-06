@@ -417,7 +417,7 @@ void m4dGUIMainWindow::features ( m4dGUIAbstractViewerWidget *prevViewer )
   viewerActs[currentViewerDesktop->getSelectedViewerLeftTool()]->trigger();
   viewerActs[currentViewerDesktop->getSelectedViewerRightTool()]->trigger();
 
-  if ( currentViewerDesktop->getSelectedViewerID() == VTK_VIEWER_ID ) {
+  if ( dynamic_cast< M4D::Viewer::m4dGUIVtkViewerWidget* >( currentViewerDesktop->getSelectedViewerWidget() ) ) {
     replaceAct->setChecked( true );
   }
   else {

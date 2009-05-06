@@ -9,7 +9,9 @@
 #define VIEWER_FACTORY_H
 
 #include "GUI/widgets/m4dGUIAbstractViewerWidget.h"
-
+#include "GUI/widgets/m4dGUISliceViewerWidget.h"
+#include "GUI/widgets/m4dGUIVtkViewerWidget.h"
+#include <string>
 
 namespace M4D {
 namespace GUI {
@@ -19,18 +21,53 @@ namespace GUI {
 
 class ViewerFactory
 { 
-  public:
+public:
+	virtual ~ViewerFactory()
+		{}
 
-    virtual M4D::Viewer::m4dGUIAbstractViewerWidget *newViewer ( M4D::Imaging::ConnectionInterface* conn,
-                                                                 unsigned index ) = 0;
-    virtual M4D::Viewer::m4dGUIAbstractViewerWidget *newViewer ( unsigned index ) = 0;
-    
-    virtual unsigned getID () const = 0;
-    virtual const char *getDescription () const = 0;
+	virtual M4D::Viewer::m4dGUIAbstractViewerWidget *
+	newViewer ( M4D::Imaging::ConnectionInterface* conn, unsigned index ) = 0;
+
+	virtual M4D::Viewer::m4dGUIAbstractViewerWidget *
+	newViewer ( unsigned index ) = 0;
+
+	/*unsigned 
+	getID () const
+		{ return _ID; }*/
+
+	std::string
+	getDescription () const
+		{ return _description; }
+
+protected:
+	ViewerFactory( const std::string &descr ): _description( descr )
+		{}
+
+private:
+	std::string	_description;
 };
 
+template< typename ViewerType >
+class GenericViewerFactory : public ViewerFactory
+{
+public:
+	GenericViewerFactory(): ViewerFactory( "" ) //TODO - set description right
+		{}
 
-class SliceViewerFactory: public ViewerFactory
+	M4D::Viewer::m4dGUIAbstractViewerWidget *
+	newViewer ( M4D::Imaging::ConnectionInterface* conn, unsigned index )
+		{ return new ViewerType( conn, index ); }
+
+	M4D::Viewer::m4dGUIAbstractViewerWidget *
+	newViewer ( unsigned index )
+		{ return new ViewerType( index ); }
+
+};
+
+typedef GenericViewerFactory< M4D::Viewer::m4dGUISliceViewerWidget >	SliceViewerFactory;
+typedef GenericViewerFactory< M4D::Viewer::m4dGUIVtkViewerWidget >	VtkViewerFactory;
+
+/*class SliceViewerFactory: public ViewerFactory
 {
   public:
 
@@ -63,7 +100,8 @@ class VtkViewerFactory: public ViewerFactory
 
     static const unsigned ID; 
     static const char *description;
-};
+};*/
+
 
 } // namespace GUI
 } // namespace M4D

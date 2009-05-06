@@ -77,7 +77,7 @@ void m4dGUIMainViewerDesktopWidget::replaceSelectedViewerWidget ( ViewerFactory 
   connect( widget, SIGNAL(signalSetSelected( unsigned, bool )), this, SLOT(selectedChanged( unsigned )) );
   widget->slotSetSelected( true );
 
-  selectedViewer->ID = viewerFactory->getID();
+  //selectedViewer->ID = viewerFactory->getID();
   selectedViewer->viewerWidget = widget;
   selectedViewer->checkedLeftButtonTool = selectedViewer->checkedRightButtonTool = ACTION_EMPTY;
 
@@ -124,7 +124,7 @@ void m4dGUIMainViewerDesktopWidget::setDesktopLayout( const unsigned rows, const
 
       connect( widget, SIGNAL(signalSetSelected( unsigned, bool )), this, SLOT(selectedChanged( unsigned )) );
       
-      viewer->ID = viewerFactory->getID();
+      //viewer->ID = viewerFactory->getID();
       viewer->viewerWidget = widget;
       viewer->checkedLeftButtonTool = viewer->checkedRightButtonTool = ACTION_EMPTY;
       viewer->sourceIdx = 0;
