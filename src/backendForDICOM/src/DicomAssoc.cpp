@@ -18,6 +18,7 @@ using namespace M4D::Dicom;
 
 // shared address container
 DicomAssociation::AddressContainer DicomAssociation::addressContainer;
+bool DicomAssociation::_configFilePresent = false;
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -118,22 +119,29 @@ DicomAssociation::LoadOneAddress( ifstream &f)
 
 ///////////////////////////////////////////////////////////////////////
 
-void 
+bool 
 DicomAssociation::InitAddressContainer( void) 
 {
 	std::ifstream f("config.cfg");
 	if( f.fail() )
-		throw ExceptionBase("DICOM server Config file not found! (should be in working directory)");
-
-  try {
-	  while( !f.eof())
-	  {
-		  LoadOneAddress( f);
-	  }	
-  } catch( ExceptionBase &e) {
-    LOG( "config.cfg malformed (" << e.what() << ")!" );
-    throw;
-  }
+	{
+		_configFilePresent = false;
+	}
+	else
+	{
+		_configFilePresent = true;
+		try {
+			  while( !f.eof())
+			  {
+				  LoadOneAddress( f);
+			  }	
+		  } catch( ExceptionBase &e) {
+		    LOG( "config.cfg malformed (" << e.what() << ")!" );
+		    throw;
+		  }
+	}
+	f.close();
+	return _configFilePresent;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -150,14 +158,13 @@ DicomAssociation::~DicomAssociation( void)
 
 ///////////////////////////////////////////////////////////////////////
 
-DicomAssociation::DicomAssociation( string assocAddrID)
-	
+DicomAssociation::DicomAssociation( string assocAddrID)	
 {
+	if(! _configFilePresent)
+		throw ExceptionBase(
+				"DICOM server Config file not found thus no assoc can be created");
+	
 	m_assoc = NULL;
-
-	// check if we have loaded config file
-	if( addressContainer.empty() )
-		InitAddressContainer();
 
 	// get address from container
 	this->m_assocAddr = GetAddress( assocAddrID);

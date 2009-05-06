@@ -30,13 +30,19 @@ using namespace M4D::Imaging;
 FindService *g_findService;
 LocalService g_localService;
 MoveService *g_moveService;
+
+bool DcmProvider::_useRemotePart;
 ///////////////////////////////////////////////////////////////////////
 
 void
 DcmProvider::Init(void)
 {
-	g_findService = new FindService();
-	g_moveService = new MoveService();
+	_useRemotePart = DicomAssociation::InitAddressContainer();
+	if(_useRemotePart)
+	{
+		g_findService = new FindService();
+		g_moveService = new MoveService();
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -44,8 +50,11 @@ DcmProvider::Init(void)
 void
 DcmProvider::Shutdown(void)
 {
-	delete g_findService;
-	delete g_moveService;
+	if(_useRemotePart)
+	{
+		delete g_findService;
+		delete g_moveService;
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////

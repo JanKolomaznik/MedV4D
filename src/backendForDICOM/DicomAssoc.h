@@ -60,12 +60,15 @@ private:
 	static DICOMAddress *GetAddress( string addressPointer) ;
 	static void FindNonCommentLine( ifstream &f, string &line);
 	static void LoadOneAddress( ifstream &f) ;
-	static void InitAddressContainer( void) ;	// loads the config.cfg
+	
+	static bool _configFilePresent;
 
 public:
   // ctor, dtor
 	DicomAssociation( string assocID);
 	~DicomAssociation( void);
+	
+	static bool InitAddressContainer( void) ;	// loads the config.cfg
 
 	void Release( void);
 	void Abort( void);

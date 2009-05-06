@@ -209,6 +209,9 @@ public:
 	static void
 	LoadSerieThatFileBelongsTo(const std::string &fileName,
 			const std::string &folder, DicomObjSet &result);
+	
+private:
+	static bool _useRemotePart;
 };
 
 
