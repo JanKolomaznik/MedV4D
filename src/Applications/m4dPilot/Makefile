@@ -1,12 +1,9 @@
-
+srcTop = ../..
 srcdir = .
 
-CXX=g++
-AR=ar
-RM=rm -f
-MKDIR=mkdir
-MOC=moc
-RCC=rcc
+include $(srcTop)/project/ToolchainSelect.mk
+include $(srcTop)/project/pathsDefinitions.mk
+include $(srcTop)/project/configurationSelector.mk
 
 
 ########################################
@@ -26,43 +23,11 @@ M4DLIBS=	../../lib/libm4dWidgets.a\
 		../../lib/libImaging.a\
 		../../lib/libcommon.a
 
-QTLIBS=		-lQtGui\
-		-lQtCore\
-		-lQtOpenGL
-
-VTKLIBS=	-lvtkCommon\
-		-lvtkDICOMParser\
-		-lvtkexoIIc\
-		-lvtkFiltering\
-		-lvtkftgl\
-		-lvtkGenericFiltering\
-		-lvtkGraphics\
-		-lvtkHybrid\
-		-lvtkImaging\
-		-lvtkIO\
-		-lvtkNetCDF\
-		-lvtksys\
-		-lvtkVolumeRendering\
-		-lvtkWidgets\
-		-lQVTK\
-		-lwrap\
-		-lvtkRendering
-
-
-		#-lvtkexpat\
-		#-lvtkfreetype\
-		#-lvtkjpeg\
-		#-lvtkpng\
-		#-lvtktiff\
-		#-lvtkzlib
-
-DCMTKLIBS=	-ldcmnet -ldcmdata -lofstd 
-
 LIBS=		$(M4DLIBS)\
 		$(DCMTKLIBS)\
 		$(VTKLIBS)\
 		$(QTLIBS)\
-		-lboost_thread \
+		-lboost_thread-mt \
 		-lboost_filesystem \
 		-lGLU
 ########################################
@@ -73,40 +38,19 @@ OUTPUTDIR=	../../executables
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	../../tmp/$(NAME)
 
-CXXDEBUG_OPTIONS= -ggdb 
+LIBDIRS=	-L$(srcTop)/lib\
+			$(QTLibDirs)\
+			-L$(DCMTK_LIB_PATH)\
+			-L$(VTKLibsDir)
 
-CXXFLAGS= -Wall -Wno-deprecated $(CXXDEBUG_OPTIONS)
-#Dependecy file creation parameters
-DEP_FILE=	$(TMP_DIR)/depend
-CDEPFLAGS=	-MM 
-
-LDFLAGS=
-ARFLAGS=	-r
-LIBDIRS=	-L../../lib\
-		-L/usr/lib/qt4\
-		-L/usr/local/lib/vtk-5.2\
-		-L/usr/lib/vtk-5.2
-
-INCLUDES=	-I../.. \
-		-I$(srcdir)\
-		-I../../include\
-		-I/usr/include/vtk-5.0\
-		-I/usr/include/qt4\
-		-I/usr/include/qt4/Qt\
-		-I/usr/include/qt4/QtCore\
-		-I/usr/include/qt4/QtGui\
-		-I/usr/local/include/vtk-5.0\
-		-I/usr/include/Qt\
-		-I/usr/include/QtGui\
-		-I/usr/include/QtCore
+INCLUDES= -I$(srcTop)\
+		  -I$(srcdir)\
+		  -I$(VTKIncludeDir)\
+			$(QTIncludDirs)\
+			$(ITKIncludes)
 
 
 MOCOUTPUT=      $(addprefix $(TMP_DIR)/moc_, $(MOCINPUT:.h=.cpp) )
-
-DEBUG_DEFS=	-DDEBUG_LEVEL=10\
-		-DDEBUG_ADITIONAL_INFO
-
-DEFS=		$(DEBUG_DEFS)
 
 
 SRC_FILES=	$(addsuffix .cpp, $(TARGETS) ) 
@@ -114,7 +58,39 @@ OBJ_FILES=	$(addprefix $(TMP_DIR)/,   $(addprefix rcc_, $(RCCINPUT:.qrc=.o ) ) $
 
 
 .PHONY: all
-all:		tmpdir dep $(OUTPUT)
+all:		tmpdir dep Common Imaging DICOM VTKInt GUI $(OUTPUT)
+
+	
+GUI:
+	$(MAKE) --directory=$(srcTop)/GUI/widgets
+	
+VTKInt:
+	$(MAKE) --directory=$(srcTop)/vtkIntegration
+	
+DICOM:
+	$(MAKE) --directory=$(srcTop)/backendForDICOM
+	
+Imaging:
+	$(MAKE) --directory=$(srcTop)/Imaging
+	
+Common:
+	$(MAKE) --directory=$(srcTop)/common
+	
+## CLEANING ##################################
+	
+GUICLEAN:
+	$(MAKE) --directory=$(srcTop)/GUI/widgets clean
+	
+DICOMCLEAN:
+	$(MAKE) --directory=$(srcTop)/backendForDICOM clean
+	
+ImagingCLEAN:
+	$(MAKE) --directory=$(srcTop)/Imaging clean
+	
+CommonCLEAN:
+	$(MAKE) --directory=$(srcTop)/common clean
+
+##############################################
 		
 
 .PHONY: tmpdir
@@ -147,6 +123,6 @@ $(OUTPUT):	$(OBJ_FILES) $(M4DLIBS)
 		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
 
 .PHONY: clean
-clean:
+clean:	DICOMCLEAN #ImagingCLEAN CommonCLEAN GUICLEAN 
 		$(RM) $(OBJ_FILES) $(MOCOUTPUT) $(addprefix $(TMP_DIR)/rcc_, $(RCCINPUT:.qrc=.cpp ) ) $(DEP_FILE)
 		$(RM) $(OUTPUT)

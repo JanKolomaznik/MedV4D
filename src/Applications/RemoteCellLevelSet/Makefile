@@ -27,10 +27,6 @@ M4DLIBS=	$(srcTop)/lib/libm4dWidgets.a\
 			$(srcTop)/lib/libremoteCompCommons.a\
 			$(srcTop)/lib/libremoteClient.a
 
-QTLIBS=		-lQtCore\
-		-lQtGui\
-		-lQtOpenGL
-
 LIBS=		$(M4DLIBS)\
 		$(QTLIBS)\
 		$(VTKLIBS)\

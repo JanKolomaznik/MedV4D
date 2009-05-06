@@ -104,6 +104,10 @@ QTIncludDirs := -I/usr/include/qt4\
 
 QTLibDirs := -L/usr/lib/qt4
 
+QTLIBS=		-lQtCore\
+		-lQtGui\
+		-lQtOpenGL
+
 DCMTK_INCLUDE_PATH := /usr/local/dicom/include
 DCMTK_LIB_PATH := /usr/local/dicom/lib
 DCMTKLIBS=	-ldcmnet -ldcmdata -lofstd
