@@ -217,10 +217,6 @@
 					RelativePath="..\..\GUI\widgets\utils\src\StudyFilter.cpp"
 					>
 				</File>
-				<File
-					RelativePath="..\..\GUI\widgets\utils\src\ViewerFactory.cpp"
-					>
-				</File>
 			</Filter>
 		</Filter>
 		<Filter

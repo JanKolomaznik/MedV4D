@@ -28,12 +28,10 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
   public:
 
     /**
-     * Structure representing a viewer (it contains its unique ID, the viewer widget, which 
+     * Structure representing a viewer (it contains the viewer widget, which 
      * tools were checked for it, index of its source - pipeline connection).
      */
     struct Viewer {
-      /// Unique ID of the viewer.
-      //unsigned ID;
       /// Viewer widget.
       M4D::Viewer::m4dGUIAbstractViewerWidget *viewerWidget;
       /// Checked tool (index) for given viewer - for left mouse button.
@@ -76,13 +74,6 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
      * Main Viewer Desktop destructor.
      */
     ~m4dGUIMainViewerDesktopWidget ();
-
-    /** 
-     * Getter to the selected viewer's ID.
-     *
-     * @return ID of the selected viewer
-     */
-    //unsigned getSelectedViewerID () const { return selectedViewer->ID; }
 
     /** 
      * Getter to the selected viewer's viewer widget.
