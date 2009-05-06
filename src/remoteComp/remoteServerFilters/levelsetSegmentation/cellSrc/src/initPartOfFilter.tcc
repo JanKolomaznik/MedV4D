@@ -16,9 +16,10 @@ namespace itk {
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
 MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 ::MySegmtLevelSetFilter_InitPart()
-	: _workManager(m_SPEManager.GetSPECount())
+	: _workManager(M4D::Cell::SPEManager::GetSPECount())
+	, m_SPEManager(&_workManager)
 {		  
-	m_SPEManager._workManager = &_workManager;
+	//m_SPEManager._workManager = &_workManager;
   m_IsoSurfaceValue = this->m_ValueZero;
   this->SetRMSChange(static_cast<double>(this->m_ValueZero));
   m_BoundsCheckingActive = false;

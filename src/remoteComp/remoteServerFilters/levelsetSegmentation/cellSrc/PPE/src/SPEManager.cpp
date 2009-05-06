@@ -7,36 +7,21 @@
 using namespace M4D::Cell;
 using namespace M4D::Multithreading;
 
+/* Determine the number of SPE threads to create.   */
+uint32 SPEManager::speCount = 1;//spe_cpu_info_get(SPE_COUNT_USABLE_SPES, -1);
 
 ///////////////////////////////////////////////////////////////////////////////
-#ifdef FOR_CELL
-extern spe_program_handle_t SPEMain; // handle to SPE program
-
-///////////////////////////////////////////////////////////////////////////////
-
-void *ppu_pthread_function(void *arg)
+uint32
+SPEManager::GetSPECount()
 {
-	unsigned int entry = SPE_DEFAULT_ENTRY;
-
-	Tppu_pthread_data *datap = (Tppu_pthread_data *)arg;
-
-	std::cout << "Running SPE thread with param=" << datap->argp << std::endl;
-
-	if (spe_context_run(datap->spe_ctx, &entry, 0, datap->argp, NULL, NULL) < 0)
-	{
-		perror("Failed running context");
-		//exit (1);
-	}
-	pthread_exit(NULL);
+	return speCount;
 }
-#endif
+
 ///////////////////////////////////////////////////////////////////////////////
 
-SPEManager::SPEManager()
+SPEManager::SPEManager(SPURequestsDispatcher::TWorkManager *wm)
+	: _workManager(wm)
 {
-	/* Determine the number of SPE threads to create.   */
-	speCount = 4;//spe_cpu_info_get(SPE_COUNT_USABLE_SPES, -1);
-
 	{
 		ScopedLock lock(SPURequestsDispatcher::mutexManagerTurn);
 		DL_PRINT(DEBUG_SYNCHRO, "setting _managerTurn to true for lock the dispatchers");
@@ -46,6 +31,9 @@ SPEManager::SPEManager()
 	SPURequestsDispatcher::InitBarrier(speCount);
 
 	m_requestDispatcher = new SPURequestsDispatcher[speCount];
+	
+	for (uint32 i = 0; i< speCount; i++)
+		m_requestDispatcher[i].Init(_workManager, i);
 	
 	// run dispatchers
 	for (uint32 i = 0; i< speCount; i++)
@@ -60,72 +48,21 @@ SPEManager::SPEManager()
 			LOG("Failed creating thread");
 		}
 	}
-
-#ifdef FOR_CELL
-	data = new Tppu_pthread_data[speCount];
-#endif
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void SPEManager::InitProgramProps(void)
-{
-	for (uint32 i = 0; i< speCount; i++)
-	{
-		m_requestDispatcher[i]._workManager = _workManager;
-
-		m_requestDispatcher[i]._segmentID = i;
-		m_requestDispatcher[i]._applyUpdateCalc.m_layerGate.dispatcher
-				= &m_requestDispatcher[i];
-
-		// setup apply update
-		m_requestDispatcher[i]._applyUpdateCalc.commonConf
-				= &_workManager->GetConfSructs()[i].runConf;
-		m_requestDispatcher[i]._applyUpdateCalc.m_stepConfig
-				= &_workManager->GetConfSructs()[i].calcChngApplyUpdateConf;
-		m_requestDispatcher[i]._applyUpdateCalc.m_propLayerValuesConfig
-				= &_workManager->GetConfSructs()[i].propagateValsConf;
-
-		// and update solver
-		m_requestDispatcher[i]._updateSolver.m_Conf
-				= &_workManager->GetConfSructs()[i].runConf;
-		m_requestDispatcher[i]._updateSolver.m_stepConfig
-				= &_workManager->GetConfSructs()[i].calcChngApplyUpdateConf;
-		m_requestDispatcher[i]._updateSolver.Init();
-	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 SPEManager::~SPEManager()
 {
-	//TODO stop the SPUs
-#ifdef FOR_CELL
-	ESPUCommands quitCommand = QUIT;
-	SendCommand(quitCommand);
+	// stop dispatchers
+	for (uint32 i = 0; i< speCount; i++)
+			m_requestDispatcher[i]._command = QUIT;
 
-	// wait for thread termination
-	for (uint32 i=0; i<speCount; i++)
-	{
-		if (pthread_join(data[i].pthread, NULL))
-		{
-			D_PRINT ("Failed joining thread");
-		}
-	}
-
-	/* Destroy contexts */
-	for (uint32 i=0; i<speCount; i++)
-	{
-		if (spe_context_destroy(data[i].spe_ctx) != 0)
-		{
-			D_PRINT("Failed destroying context");
-			//exit (1);
-		}
-	}
-
-	delete [] data;
+	UnblockDispatchers();
 	
-#endif
+	for (uint32 i = 0; i< speCount; i++)
+		pthread_join(m_requestDispatcher[i]._pthread, NULL);
+		
 	delete [] m_requestDispatcher;
 }
 
@@ -169,14 +106,8 @@ TimeStepType SPEManager::MergeRMSs()
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-SPEManager::RunDispatchers()
+SPEManager::UnblockDispatchers()
 {
-	{
-		M4D::Multithreading::ScopedLock lock(SPURequestsDispatcher::doneCountMutex);
-		SPURequestsDispatcher::_dipatchersYetWorking = speCount;
-		DL_PRINT(DEBUG_SYNCHRO, "setting _dipatchersYetWorking to " << speCount);
-	}
-	
 	//unblock the dispatchers
 	{
 		M4D::Multithreading::ScopedLock lock(SPURequestsDispatcher::mutexManagerTurn);
@@ -185,6 +116,20 @@ SPEManager::RunDispatchers()
 	}
 	// signal to dispatchers
 	SPURequestsDispatcher::managerTurnValidCvar.notify_all();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void
+SPEManager::RunDispatchers()
+{
+	{
+		M4D::Multithreading::ScopedLock lock(SPURequestsDispatcher::doneCountMutex);
+		SPURequestsDispatcher::_dipatchersYetWorking = speCount;
+		DL_PRINT(DEBUG_SYNCHRO, "setting _dipatchersYetWorking to " << speCount);
+	}
+	
+	UnblockDispatchers();
 	
 	// wait until all dispatchers finish their command
 	M4D::Multithreading::ScopedLock lock(SPURequestsDispatcher::doneCountMutex);
@@ -245,62 +190,4 @@ SPEManager::RunPropagateLayerVals()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-#ifdef FOR_CELL
-void SPEManager::SendCommand(enum ESPUCommands &cmd)
-{
-	uint32 result;
-	for (uint32 i=0; i<speCount; i++)
-	{
-		D_PRINT("Write to SPE no: " << i << "'s mailbox, data=" << cmd);
-		result = spe_in_mbox_write(data[i].spe_ctx, (uint32*) &cmd, 1,
-				SPE_MBOX_ANY_NONBLOCKING);
-		if (result == (uint32) -1)
-			; //TODO except
-	}
-}
 
-///////////////////////////////////////////////////////////////////////////////
-
-void SPEManager::WaitForCommanResult()
-{
-	uint32 dataRead;
-	for (uint32 i=0; i<speCount; i++)
-	{
-		D_PRINT("Read mailbox of " << i << "SPU, waiting...");
-		while (spe_out_mbox_status(data[i].spe_ctx) < 1)
-			;
-		spe_out_mbox_read(data[i].spe_ctx, &dataRead, 1);
-		D_PRINT("Read: " << dataRead);
-	}
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void SPEManager::RunSPEs(RunConfiguration *conf)
-{
-	for (uint32 i=0; i<speCount; i++)
-	{
-		/* Create SPE context */
-		if ((data[i].spe_ctx = spe_context_create(0, NULL)) == NULL)
-		{
-			perror("Failed creating context");
-			exit(1);
-		}
-		/* Load SPE program into the SPE context */
-		if (spe_program_load(data[i].spe_ctx, &SPEMain))
-		{
-			perror("Failed loading program");
-			exit(1);
-		}
-		/* Initialize context run data */
-		data[i].argp = conf;
-		/* Create pthread for each of the SPE conexts */
-		if (pthread_create(&data[i].pthread, NULL, &ppu_pthread_function,
-				&data[i]))
-		{
-			perror("Failed creating thread");
-		}
-	}
-}
-#endif
-///////////////////////////////////////////////////////////////////////////////

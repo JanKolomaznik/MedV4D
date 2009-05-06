@@ -18,6 +18,15 @@
 
 #define DEBUG_SYNCHRO 0
 
+#ifdef FOR_CELL
+struct Tspu_pthread_data
+{
+	spe_context_ptr_t spe_ctx;
+	pthread_t pthread;
+	void *argp;
+};
+#endif
+
 void *ppu_pthread_function(void *arg);
 
 namespace M4D
@@ -41,14 +50,6 @@ public:
 	
 	ESPUCommands WaitForCommand();
 	void CommandDone();
-
-	//#define MAX_QUEUE_LEN 4
-	TMessageQueue messageQueue;
-
-	void MyPushMessage(uint32);
-	uint32 MyPopMessage();
-
-	M4D::Multithreading::Mutex mutex;
 	
 	static M4D::Multithreading::Mutex mutexManagerTurn;
 	static M4D::Multithreading::CondVar managerTurnValidCvar;
@@ -64,16 +65,31 @@ public:
 	TWorkManager *_workManager;
 	
 	uint32 DispatcherThreadFunc();
+	void Init(TWorkManager *wm, uint32 id);
 	
 #ifdef FOR_CELL
-	Tppu_pthread_data *data;
+	Tppu_pthread_data _SPE_data;
+	
+	void StopSPE();
+	void StartSPE(ConfigStructures *conf);
+	void SendCommand(ESPUCommands &cmd);
+	void WaitForCommanResult();
 #else
 	UpdateCalculatorSPE _updateSolver;
 	ApplyUpdateSPE _applyUpdateCalc;
+	
+	//#define MAX_QUEUE_LEN 4
+	TMessageQueue messageQueue;
+
+	void MyPushMessage(uint32);
+	uint32 MyPopMessage();
+
+	M4D::Multithreading::Mutex mutex;
 #endif
 
 	TimeStepType _result;
 	uint32 _segmentID;
+	
 	
 	ESPUCommands _command;
 	

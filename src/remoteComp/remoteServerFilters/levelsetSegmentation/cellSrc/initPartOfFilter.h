@@ -141,14 +141,15 @@ public:
 	    
 protected:
 	MySegmtLevelSetFilter_InitPart(void);
-	~MySegmtLevelSetFilter_InitPart(void);	
+	~MySegmtLevelSetFilter_InitPart(void);
 	
 	void InitRunConf();
     
     M4D::Cell::RunConfiguration m_runConf;
     
-    M4D::Cell::SPEManager m_SPEManager;
     TWorkManager _workManager;
+    M4D::Cell::SPEManager m_SPEManager;
+    
 	
 private:
 	PerfCounter cntr_;

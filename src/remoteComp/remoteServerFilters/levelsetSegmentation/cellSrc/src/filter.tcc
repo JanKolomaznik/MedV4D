@@ -27,12 +27,6 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 	
   this->InitRunConf();
   
-  this->m_SPEManager.InitProgramProps();
-        
-#ifdef FOR_CELL
-	m_SPEManager.RunSPEs(&m_Conf);
-#endif
-  
   // Set the values in the output image for the active layer.
   this->InitializeActiveLayerValues();
  

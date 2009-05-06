@@ -14,41 +14,26 @@ namespace M4D
 namespace Cell
 {
 
-#ifdef FOR_CELL
-struct Tppu_pthread_data
-{
-	spe_context_ptr_t spe_ctx;
-	pthread_t pthread;
-	void *argp;
-};
-#endif
-
 class SPEManager
 {
 public:
-	SPEManager();
+	SPEManager(SPURequestsDispatcher::TWorkManager *wm);
 	~SPEManager();
 
-	void RunSPEs(ConfigStructures *conf);
-	void SendCommand(ESPUCommands &cmd);
-	void WaitForCommanResult();
+	static uint32 GetSPECount();
 
-	uint32 GetSPECount()
-	{
-		return speCount;
-	}
-
-	void InitProgramProps();
+	//void InitProgramProps();
 
 	TimeStepType RunUpdateCalc();
 	double ApplyUpdate(TimeStepType dt);
 	void RunPropagateLayerVals();
 
-	SPURequestsDispatcher::TWorkManager *_workManager;
-	
+	SPURequestsDispatcher::TWorkManager *_workManager;	
 
 private:
-	uint32 speCount;
+	static uint32 speCount;
+	
+	void UnblockDispatchers();
 	
 	TimeStepType MergeTimesteps();
 	TimeStepType MergeRMSs();
@@ -56,7 +41,6 @@ private:
 	void RunDispatchers();
 	
 	SPURequestsDispatcher *m_requestDispatcher;
-
 };
 
 }
