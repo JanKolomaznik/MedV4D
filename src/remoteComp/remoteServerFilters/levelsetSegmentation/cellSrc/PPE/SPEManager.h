@@ -1,14 +1,12 @@
 #ifndef SPEMANAGER_H_
 #define SPEMANAGER_H_
 
-#include <pthread.h>
-
 #include "SPURequestsDispatcher.h"
 
 #ifdef FOR_CELL
 #include <libspe2.h>
 #else
-#include "SPEProgramSimulator.h"
+//#include "SPEProgramSimulator.h"
 #endif
 
 namespace M4D
@@ -42,49 +40,12 @@ public:
 
 	void InitProgramProps();
 
-	TimeStepType RunUpdateCalc()
-	{
-		_workManager->AllocateUpdateBuffers();
-		_workManager->InitCalculateChangeAndUpdActiveLayerConf();
-
-		for (uint32 i = 0; i< speCount; i++)
-		{
-			_SPEProgSim[i].updateSolver.UpdateFunctionProperties();
-
-			_results[i] = _SPEProgSim[i].updateSolver.CalculateChange();
-		}
-		
-		//_workManager->PrintLists(LOUT, false);
-
-		return MergeTimesteps();
-	}
-
-	double ApplyUpdate(TimeStepType dt)
-	{
-		_workManager->InitCalculateChangeAndUpdActiveLayerConf();
-		_workManager->InitPropagateValuesConf();
-
-		for (uint32 i = 0; i< speCount; i++)
-		{
-			_results[i] = _SPEProgSim[i].applyUpdateCalc.ApplyUpdate(dt);
-			LOG("i=" << i);
-			_workManager->PrintLists(LOUT, false);
-		}
-		
-		return MergeRMSs();
-	}
-
-	void RunPropagateLayerVals()
-	{
-		_workManager->InitPropagateValuesConf();
-
-		for (uint32 i = 0; i< speCount; i++)
-		{
-			_SPEProgSim[i].applyUpdateCalc.PropagateAllLayerValues();
-		}
-	}
+	TimeStepType RunUpdateCalc();
+	double ApplyUpdate(TimeStepType dt);
+	void RunPropagateLayerVals();
 
 	SPURequestsDispatcher::TWorkManager *_workManager;
+	
 
 private:
 	uint32 speCount;
@@ -92,14 +53,9 @@ private:
 	TimeStepType MergeTimesteps();
 	TimeStepType MergeRMSs();
 	
-	TimeStepType *_results;
-
-#ifdef FOR_CELL
-	Tppu_pthread_data *data;
-#else
-	SPUProgramSim *_SPEProgSim;
+	void RunDispatchers();
+	
 	SPURequestsDispatcher *m_requestDispatcher;
-#endif
 
 };
 

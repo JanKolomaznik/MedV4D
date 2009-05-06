@@ -7,11 +7,14 @@
 
 #ifdef FOR_PC
 #include "common/Common.h"
-#include "../../PPE/SPURequestsDispatcher.h"
 #endif
 
 namespace M4D {
 namespace Cell {
+
+#ifdef FOR_PC
+class SPURequestsDispatcher;
+#endif
 
 class LayerGate
 {

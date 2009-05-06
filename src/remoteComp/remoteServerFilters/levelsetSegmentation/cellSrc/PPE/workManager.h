@@ -61,6 +61,8 @@ public:
 		
 		return size;
 	}
+	
+	TimeStepType _dt;
 
 private:
 	typedef SparseFieldLevelSetNode NodeTypeInSPU;

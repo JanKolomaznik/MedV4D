@@ -8,6 +8,7 @@ namespace Cell {
 
 enum ESPUCommands
 {
+	CALC_PROPAG_VALS,
 	CALC_CHANGE,
 	CALC_UPDATE,
 	QUIT

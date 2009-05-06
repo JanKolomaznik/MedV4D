@@ -3,6 +3,8 @@
 #include "common/Debug.h"
 #include "../layerGate.h"
 
+#include "../../../PPE/SPURequestsDispatcher.h"
+
 using namespace M4D::Cell;
 
 #define DEBUG_GATE 12

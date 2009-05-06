@@ -88,6 +88,7 @@ int main(int argc, char *argv[]) {
 		props->seedX = (uint32)(256 * RATIO);
 		props->seedY = (uint32)(256 * RATIO);
 		props->initialDistance = 100 * RATIO;
+		//props->maxIterations = 2;
 		m_filter =  new FilterType( props);
 		
 		m_filter->SetUpdateInvocationStyle(AbstractPipeFilter::UIS_ON_CHANGE_BEGIN);

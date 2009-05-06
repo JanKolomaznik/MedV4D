@@ -5,6 +5,7 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread/barrier.hpp>
+#include <boost/thread/condition.hpp>
 
 #undef GetMessage
 #undef SendMessage
@@ -38,6 +39,8 @@ typedef boost::recursive_mutex	RecursiveMutex;
 typedef boost::recursive_mutex::scoped_lock	RecursiveScopedLock;
 
 typedef boost::barrier Barrier;
+
+typedef boost::condition CondVar;
 
 void
 yield();
