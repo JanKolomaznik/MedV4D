@@ -72,7 +72,7 @@ TimeStepType SPEManager::MergeTimesteps()
 {
 	// get minimum
 	TimeStepType min = m_requestDispatcher[0]._result;
-	for (uint32 i=1; i<speCount; i++)
+	for(uint32 i=1; i<speCount; i++)
 	{
 		if (m_requestDispatcher[i]._result < min)
 			min = m_requestDispatcher[i]._result;

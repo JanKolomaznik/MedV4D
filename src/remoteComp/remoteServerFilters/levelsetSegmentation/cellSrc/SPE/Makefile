@@ -30,7 +30,6 @@ PROGRAMS_spu 	:= SPEMain
 ########################################################################
 
 MY_SPECIAL_FLAGS = -ffunction-sections -fdata-sections #-g #--param max-unroll-times=1 # needed to keep size of program down
-CFLAGS_gcc:= -g -DFOR_CELL
 #LDFLAGS_gcc= --gc-sections --print-gc-sections --stack-analysis --local-store=0:256	#-Wl,-q -g
 				
 INCLUDE         := -I$(srcTop)

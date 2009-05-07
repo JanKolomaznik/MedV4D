@@ -64,6 +64,9 @@ int main(unsigned long long speid,
 	  case CALC_UPDATE:
 		  printf ("CALC_UPDATE received\n");
 		  break;
+	  case CALC_PROPAG_VALS:
+		  printf ("CALC_UPDATE received\n");
+		  break;
 	  case QUIT:
 		  printf ("QUIT received\n");
 	  	  break;

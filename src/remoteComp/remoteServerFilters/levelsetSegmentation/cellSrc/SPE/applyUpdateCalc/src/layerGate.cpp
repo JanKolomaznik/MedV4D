@@ -3,7 +3,9 @@
 #include "common/Debug.h"
 #include "../layerGate.h"
 
+#ifdef FOR_PC
 #include "../../../PPE/SPURequestsDispatcher.h"
+#endif
 
 using namespace M4D::Cell;
 
