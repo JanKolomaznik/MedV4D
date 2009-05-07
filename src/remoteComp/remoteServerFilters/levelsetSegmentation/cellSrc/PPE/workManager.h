@@ -16,7 +16,8 @@ template<typename IndexType, typename ValueType>
 class WorkManager
 {
 public:
-	typedef itk::SparseFieldLevelSetNode<IndexType> LayerNodeType;
+	//typedef itk::SparseFieldLevelSetNode<IndexType> LayerNodeType;
+	typedef SparseFieldLevelSetNode LayerNodeType;
 	typedef itk::SparseFieldLayer<LayerNodeType> LayerType;
 
 	struct LayerListType

@@ -3,6 +3,7 @@
 
 #include "myFiniteDifferenceFilter.h"
 #include "PPE/SPEManager.h"
+#include "SPE/commonTypes.h"
 //#include "itkThresholdSegmentationLevelSetImageFilter.h"
 
 #include "supportClasses.h"
@@ -28,7 +29,7 @@ public:
 	typedef typename Superclass::TimeStepType TimeStepType;
 	typedef typename Superclass::StatusType StatusType;
 	
-	typedef M4D::Cell::WorkManager<IndexType, ValueType> TWorkManager;
+	typedef M4D::Cell::WorkManager<M4D::Cell::TIndex, ValueType> TWorkManager;
 	typedef typename TWorkManager::LayerType LayerType; 
 	
 	/////////////////
@@ -47,7 +48,8 @@ public:
   typedef Image<StatusType, OutputImageType::ImageDimension>  StatusImageType;
   
   
-  
+  M4D::Cell::TIndex ToMyIndex(const IndexType &i);
+  IndexType ToITKIndex(const M4D::Cell::TIndex &i);
   //////////////
   
 	void SetUpperThreshold(FeaturePixelType upThreshold) { m_runConf.m_upThreshold = upThreshold; }

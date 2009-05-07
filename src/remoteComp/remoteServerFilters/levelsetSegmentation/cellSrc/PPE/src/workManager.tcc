@@ -66,9 +66,9 @@ WorkManager<IndexType, ValueType>::InitCalculateChangeAndUpdActiveLayerConf()
 	for(uint32 spuIt=0; spuIt<_numOfCores; spuIt++)
 		{
 		m_configs[spuIt].calcChngApplyUpdateConf.layer0Begin = 
-		(NodeTypeInSPU *) m_LayerSegments[spuIt].layers[0]->Begin().GetPointer();
+		m_LayerSegments[spuIt].layers[0]->Begin().GetPointer();
 		m_configs[spuIt].calcChngApplyUpdateConf.layer0End = 
-		(NodeTypeInSPU *) m_LayerSegments[spuIt].layers[0]->End().GetPointer();
+		m_LayerSegments[spuIt].layers[0]->End().GetPointer();
     
 		m_configs[spuIt].calcChngApplyUpdateConf.updateBuffBegin = 
 			&m_UpdateBuffers[spuIt][0];
@@ -85,10 +85,10 @@ WorkManager<IndexType, ValueType>::InitPropagateValuesConf()
 		for(uint32 i=0; i<LYERCOUNT; i++)
 	    {
 			m_configs[spuIt].propagateValsConf.layerBegins[i] = 
-				(NodeTypeInSPU *) m_LayerSegments[spuIt].layers[i]->Begin().GetPointer();
+				m_LayerSegments[spuIt].layers[i]->Begin().GetPointer();
 			
 			m_configs[spuIt].propagateValsConf.layerEnds[i] = 
-				(NodeTypeInSPU *) m_LayerSegments[spuIt].layers[i]->End().GetPointer();
+				m_LayerSegments[spuIt].layers[i]->End().GetPointer();
 	    }
 	}
 }

@@ -43,10 +43,10 @@ public:
 	void DispatchPushNodeMess(uint32 message);
 	void DispatchUnlinkMessage(uint32 message);
 
-	typedef itk::Index<DIM> TIndex;
+	//typedef itk::Index<DIM> TIndex;
 	typedef std::queue<uint32> TMessageQueue;
 	typedef WorkManager<TIndex, float32> TWorkManager;
-	typedef itk::SparseFieldLevelSetNode<TIndex> LayerNodeType;
+	//typedef itk::SparseFieldLevelSetNode<TIndex> LayerNodeType;
 	
 	ESPUCommands WaitForCommand();
 	void CommandDone();

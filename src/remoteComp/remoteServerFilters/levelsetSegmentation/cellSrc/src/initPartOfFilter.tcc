@@ -277,7 +277,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
           }
         }
       
-      _workManager.PUSHNode(center_index, 0);
+      _workManager.PUSHNode(ToMyIndex(center_index), 0);
       
       statusIt.SetCenterPixel( 0 );
 
@@ -308,7 +308,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
                              layer_number, bounds_status );
           if ( bounds_status == true ) // In bounds.
             {
-        	  _workManager.PUSHNode(offset_index, layer_number);
+        	  _workManager.PUSHNode( ToMyIndex(offset_index), layer_number);
             } // else do nothing.
           }
         }
@@ -338,7 +338,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
     // unassigned indicies. Push those indicies onto the "to" layer and
     // assign them values in the status image.  Status pixels outside the
     // boundary will be ignored.
-    statusIt.SetLocation( fromIt->m_Value );
+    statusIt.SetLocation( ToITKIndex(fromIt->m_Value) );
     for (i = 0; i < m_NeighborList.GetSize(); ++i)
       {
       if ( statusIt.GetPixel( m_NeighborList.GetArrayIndex(i) )
@@ -348,13 +348,36 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
                           boundary_status);
         if (boundary_status == true) // in bounds
           {
-        	_workManager.PUSHNode(statusIt.GetIndex()
-                    + m_NeighborList.GetNeighborhoodOffset(i), to);
+        	_workManager.PUSHNode( ToMyIndex(statusIt.GetIndex()
+                    + m_NeighborList.GetNeighborhoodOffset(i) ), to);
           }
         }
       }
     }
   }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template<class TInputImage,class TFeatureImage, class TOutputPixelType>
+M4D::Cell::TIndex
+MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>::
+ToMyIndex(const IndexType &i)
+{
+	M4D::Cell::TIndex idx;
+	for(uint32 j=0; j<DIM; j++)
+		idx[j] = i[j];
+	return idx;
+}
+///////////////////////////////////////////////////////////////////////////////
+template<class TInputImage,class TFeatureImage, class TOutputPixelType>
+typename MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>::IndexType
+MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
+::ToITKIndex(const M4D::Cell::TIndex &i)
+{
+	IndexType idx;
+	for(uint32 j=0; j<DIM; j++)
+		idx[j] = i[j];
+	return idx;
 }
 ///////////////////////////////////////////////////////////////////////////////
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
@@ -395,7 +418,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
     {
     // Interpolate on the (shifted) input image values at this index to
     // assign an active layer value in the output image.
-    shiftedIt.SetLocation( activeIt->m_Value );
+    shiftedIt.SetLocation( ToITKIndex(activeIt->m_Value) );
 
     length = this->m_ValueZero;
     for (i = 0; i < OutputImageType::ImageDimension; ++i)
@@ -417,7 +440,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
     length = vcl_sqrt((double)length) + MIN_NORM;
     distance = shiftedIt.GetCenterPixel() / length;
 
-    output->SetPixel( activeIt->m_Value , 
+    output->SetPixel( ToITKIndex(activeIt->m_Value), 
                       vnl_math_min(vnl_math_max(-CHANGE_FACTOR, distance), CHANGE_FACTOR) );
     }
     }

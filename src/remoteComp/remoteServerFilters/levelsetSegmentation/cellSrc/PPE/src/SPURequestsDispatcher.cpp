@@ -165,7 +165,7 @@ void SPURequestsDispatcher::DispatchUnlinkMessage(uint32 message)
 	uint64 nodeAddress = MyPopMessage();
 	nodeAddress |= ((uint64) MyPopMessage()) << 32;
 
-	LayerNodeType *n = (LayerNodeType *) nodeAddress;
+	SparseFieldLevelSetNode *n = (SparseFieldLevelSetNode *) nodeAddress;
 
 	_workManager->UNLINKNode(n, lyerID, _segmentID);
 	DL_PRINT(DEBUG_MAILBOX, "ULNK " << n << " layr=" << (uint32)lyerID);
