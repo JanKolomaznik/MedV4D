@@ -70,7 +70,8 @@ public:
 
 enum MessageID {
 	UNLINKED_NODES_PROCESS,
-	PUSHED_NODES_PROCESS
+	PUSHED_NODES_PROCESS,
+	JOB_DONE
 };
 #define MessageID_MASK 7	// first 3 bit
 

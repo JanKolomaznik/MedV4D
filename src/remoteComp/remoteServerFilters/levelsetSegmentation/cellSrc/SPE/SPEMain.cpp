@@ -53,6 +53,7 @@ int main(unsigned long long speid,
     
     printf ("Run config transfered\n");
     
+    float32 retval;
   do 
   {
 	  mailboxVal = spu_readch(SPU_RdInMbox);
@@ -61,12 +62,18 @@ int main(unsigned long long speid,
 	  case CALC_CHANGE:
 		  printf ("CALC_CHANGE received\n");
 		  // calculate and return retval
-		  spu_writech(SPU_WrOutMbox, (uint32_t) updateCalculator.CalculateChange() );		  
+		  retval = updateCalculator.CalculateChange();
+		  spu_writech(SPU_WrOutMbox, (uint32_t) JOB_DONE);
+		  spu_writech(SPU_WrOutMbox, (uint32_t) retval);
 		  break;
 	  case CALC_UPDATE:
 		  printf ("CALC_UPDATE received\n");
+		  spu_writech(SPU_WrOutMbox, (uint32_t) JOB_DONE);
+		  spu_writech(SPU_WrOutMbox, (uint32_t) retval);
 		  break;
 	  case CALC_PROPAG_VALS:
+		  spu_writech(SPU_WrOutMbox, (uint32_t) JOB_DONE);
+		  spu_writech(SPU_WrOutMbox, (uint32_t) retval);
 		  printf ("CALC_UPDATE received\n");
 		  break;
 	  case QUIT:

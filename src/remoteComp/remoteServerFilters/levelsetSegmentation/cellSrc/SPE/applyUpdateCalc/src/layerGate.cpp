@@ -6,11 +6,6 @@
 #include <spu_mfcio.h>
 #include "../../tools/SPEdebug.h"
 #endif
-#ifdef FOR_PC
-#include "common/Debug.h"
-#error koko
-#include "../../../PPE/SPURequestsDispatcher.h"
-#endif
 
 using namespace M4D::Cell;
 
@@ -34,14 +29,14 @@ void LayerGate::UnlinkNode(SparseFieldLevelSetNode *node, uint8 layerNum)
 	spu_writech(SPU_WrOutMbox, (uint32) (nodeAddress & 0xffffffff));
 	spu_writech(SPU_WrOutMbox, (uint32) (nodeAddress >> 32));
 #else
-	dispatcher->MyPushMessage(message);
+	_mailbox->SPEPush(message);
 	// push node address word by word
-	dispatcher->MyPushMessage((uint32) (nodeAddress & 0xffffffff));
-	dispatcher->MyPushMessage((uint32) (nodeAddress >> 32));
-	
-	// symulate dispatcher run
-	message = dispatcher->MyPopMessage();
-	dispatcher->DispatchMessage(message);
+	_mailbox->SPEPush((uint32) (nodeAddress & 0xffffffff));
+	_mailbox->SPEPush((uint32) (nodeAddress >> 32));
+//	
+//	// symulate dispatcher run
+//	message = dispatcher->MyPopMessage();
+//	dispatcher->DispatchMessage(message);
 #endif
 }
 
@@ -74,7 +69,7 @@ void LayerGate::PushToLayer(SparseFieldLevelSetNode *node, uint8 layerNum)
 #ifdef FOR_CELL
 	spu_writech(SPU_WrOutMbox, message);
 #else
-	dispatcher->MyPushMessage(message);
+	_mailbox->SPEPush(message);
 #endif	
 
 	message = (node->m_Value[1]);
@@ -83,11 +78,11 @@ void LayerGate::PushToLayer(SparseFieldLevelSetNode *node, uint8 layerNum)
 #ifdef FOR_CELL
 	spu_writech(SPU_WrOutMbox, message);
 #else
-	dispatcher->MyPushMessage(message);
+	_mailbox->SPEPush(message);
 	
-	// symulate dispatcher run
-	message = dispatcher->MyPopMessage();
-	dispatcher->DispatchMessage(message);
+//	// symulate dispatcher run
+//	message = dispatcher->MyPopMessage();
+//	dispatcher->DispatchMessage(message);
 #endif
 }
 

@@ -21,6 +21,9 @@ public:
 	~SPEManager();
 
 	static uint32 GetSPECount();
+	
+	void StopSPEs();
+	void StartSPEs();
 
 	//void InitProgramProps();
 
@@ -28,7 +31,7 @@ public:
 	double ApplyUpdate(TimeStepType dt);
 	void RunPropagateLayerVals();
 
-	SPURequestsDispatcher::TWorkManager *_workManager;	
+	SPURequestsDispatcher::TWorkManager *_workManager;
 
 private:
 	static uint32 speCount;
@@ -38,9 +41,9 @@ private:
 	TimeStepType MergeTimesteps();
 	TimeStepType MergeRMSs();
 	
-	void RunDispatchers();
+//	void RunDispatchers();
 	
-	SPURequestsDispatcher *m_requestDispatcher;
+	SPURequestsDispatcher _requestDispatcher;
 };
 
 }

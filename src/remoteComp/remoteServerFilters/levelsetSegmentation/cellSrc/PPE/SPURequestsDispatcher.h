@@ -1,13 +1,13 @@
 #ifndef SPUREQUESTSDISPATCHER_H_
 #define SPUREQUESTSDISPATCHER_H_
 
-#include "common/Thread.h"
+
 
 //to remove
 #include "../supportClasses.h"
 
 #include <pthread.h>
-#include <queue>
+
 
 #include "workManager.h"
 
@@ -15,6 +15,21 @@
 
 #ifdef FOR_CELL
 #include <libspe2.h>
+#else
+#include "../SPE/updateCalculation/updateCalculatorSPE.h"
+#include "../SPE/applyUpdateCalc/applyUpdateCalculator.h"
+#include "mailboxSimulator.h"
+#endif
+
+
+//void *ppu_pthread_function(void *arg);
+
+namespace M4D
+{
+namespace Cell
+{
+
+#ifdef FOR_CELL
 struct Tspu_pthread_data
 {
 	spe_context_ptr_t spe_ctx;
@@ -22,80 +37,72 @@ struct Tspu_pthread_data
 	void *argp;
 };
 #else
-#include "../SPE/updateCalculation/updateCalculatorSPE.h"
-#include "../SPE/applyUpdateCalc/applyUpdateCalculator.h"
+struct Tspu_prog_sim
+{
+	UpdateCalculatorSPE _updateSolver;
+	ApplyUpdateSPE _applyUpdateCalc;
+	
+	pthread_t pthread;
+	MailboxSimulator _mailbox;
+	
+	void SimulateFunc(void);
+};
 #endif
-
-
-void *ppu_pthread_function(void *arg);
-
-namespace M4D
-{
-namespace Cell
-{
 
 class SPURequestsDispatcher
 {
 public:
-	void DispatchMessage(uint32 message);
+	typedef WorkManager<TIndex, float32> TWorkManager;
+	
+	
+	SPURequestsDispatcher(TWorkManager *wm, uint32 numSPE);
+	~SPURequestsDispatcher();
+	
+	void DispatchMessage(uint32 SPENum);
 	//	void SendResponse(uint32 res);
 
-	void DispatchPushNodeMess(uint32 message);
-	void DispatchUnlinkMessage(uint32 message);
+	void DispatchPushNodeMess(uint32 message, uint32 SPENum);
+	void DispatchUnlinkMessage(uint32 message, uint32 SPENum);
 
 	//typedef itk::Index<DIM> TIndex;
-	typedef std::queue<uint32> TMessageQueue;
-	typedef WorkManager<TIndex, float32> TWorkManager;
+
+	
 	//typedef itk::SparseFieldLevelSetNode<TIndex> LayerNodeType;
 	
-	ESPUCommands WaitForCommand();
-	void CommandDone();
+	//ESPUCommands WaitForCommand();
+//	void CommandDone();
 	
-	static M4D::Multithreading::Mutex mutexManagerTurn;
-	static M4D::Multithreading::CondVar managerTurnValidCvar;
-	static M4D::Multithreading::Mutex mutexDispatchersTurn;
-	static M4D::Multithreading::CondVar doneCountCvar;
-	static M4D::Multithreading::Mutex doneCountMutex;
-	static uint32 _dipatchersYetWorking;
-	static bool _managerTurn;
-	
-	static void InitBarrier(uint32 n) { _barrier = new M4D::Multithreading::Barrier(n); }
-	static M4D::Multithreading::Barrier *_barrier;
+//	static M4D::Multithreading::Mutex mutexManagerTurn;
+//	static M4D::Multithreading::CondVar managerTurnValidCvar;
+//	static M4D::Multithreading::Mutex mutexDispatchersTurn;
+//	static M4D::Multithreading::CondVar doneCountCvar;
+//	static M4D::Multithreading::Mutex doneCountMutex;
+//	static uint32 _dipatchersYetWorking;
+//	static bool _managerTurn;
+//	
+//	static void InitBarrier(uint32 n) { _barrier = new M4D::Multithreading::Barrier(n); }
+//	static M4D::Multithreading::Barrier *_barrier;
 
 	TWorkManager *_workManager;
 	
-	uint32 DispatcherThreadFunc();
-	void Init(TWorkManager *wm, uint32 id);
+//	uint32 DispatcherThreadFunc();
+//	void Init(TWorkManager *wm, uint32 id);
 	
-	void MyPushMessage(uint32);
-	uint32 MyPopMessage();
+	void MyPushMessage(uint32, uint32 SPENum);
+	uint32 MyPopMessage(uint32 SPENum);
+	
+	float32 *_results;
+	
+	void SendCommand(ESPUCommands cmd);
+	void WaitForMessages();
 	
 #ifdef FOR_CELL
-	Tspu_pthread_data _SPE_data;
-	
-	void StopSPE();
-	void StartSPE();
-	void SendCommand(ESPUCommands &cmd);
-	void WaitForCommanResult();
+	Tspu_pthread_data *_SPE_data;
 #else
-	UpdateCalculatorSPE _updateSolver;
-	ApplyUpdateSPE _applyUpdateCalc;
-	
-	//#define MAX_QUEUE_LEN 4
-	TMessageQueue messageQueue;
-
-
-
-	M4D::Multithreading::Mutex mutex;
+	Tspu_prog_sim *_progSims;
 #endif
-
-	TimeStepType _result;
-	uint32 _segmentID;
-	
-	
-	ESPUCommands _command;
-	
-	pthread_t _pthread;
+	uint32 _SPEYetRunning;
+	uint32 _numOfSPE;
 };
 
 }

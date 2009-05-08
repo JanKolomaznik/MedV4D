@@ -7,21 +7,19 @@
 
 #ifdef FOR_PC
 #include "common/Common.h"
+#include "../../PPE/mailboxSimulator.h"
 #endif
 
 namespace M4D {
 namespace Cell {
 
-#ifdef FOR_PC
-class SPURequestsDispatcher;
-#endif
 
 class LayerGate
 {
 public:
 	
 #ifdef FOR_PC
-	SPURequestsDispatcher *dispatcher;
+	MailboxSimulator *_mailbox;
 #endif
 	
 //	typedef PUTRemoteArrayCell<TIndex, 8> TPutNodeArray;
