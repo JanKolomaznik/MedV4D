@@ -18,7 +18,7 @@ NeighborhoodCell<PixelType>::NeighborhoodCell()
 	// count size of buffer in linear manner
 	m_size = NEIGHBOURHOOD_SIZE;
 	
-	ComputeStridesFromSize(m_radiusSize, m_radiusStrides);
+	ComputeStridesFromSize<TSize, TStrides>(m_radiusSize, m_radiusStrides);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -6,26 +6,26 @@
 //to remove
 #include "../supportClasses.h"
 
-#include "itkIndex.h"
-
 #include <pthread.h>
 #include <queue>
 
-#include "../SPE/updateCalculation/updateCalculatorSPE.h"
-#include "../SPE/applyUpdateCalc/applyUpdateCalculator.h"
-
 #include "workManager.h"
 
-#define DEBUG_SYNCHRO 0
+#define DEBUG_SYNCHRO 12
 
 #ifdef FOR_CELL
+#include <libspe2.h>
 struct Tspu_pthread_data
 {
 	spe_context_ptr_t spe_ctx;
 	pthread_t pthread;
 	void *argp;
 };
+#else
+#include "../SPE/updateCalculation/updateCalculatorSPE.h"
+#include "../SPE/applyUpdateCalc/applyUpdateCalculator.h"
 #endif
+
 
 void *ppu_pthread_function(void *arg);
 
@@ -67,11 +67,14 @@ public:
 	uint32 DispatcherThreadFunc();
 	void Init(TWorkManager *wm, uint32 id);
 	
+	void MyPushMessage(uint32);
+	uint32 MyPopMessage();
+	
 #ifdef FOR_CELL
-	Tppu_pthread_data _SPE_data;
+	Tspu_pthread_data _SPE_data;
 	
 	void StopSPE();
-	void StartSPE(ConfigStructures *conf);
+	void StartSPE();
 	void SendCommand(ESPUCommands &cmd);
 	void WaitForCommanResult();
 #else
@@ -81,8 +84,7 @@ public:
 	//#define MAX_QUEUE_LEN 4
 	TMessageQueue messageQueue;
 
-	void MyPushMessage(uint32);
-	uint32 MyPopMessage();
+
 
 	M4D::Multithreading::Mutex mutex;
 #endif

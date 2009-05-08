@@ -39,7 +39,7 @@ public:
   
 
   /** Node type used in sparse field layer lists. */
-  typedef SparseFieldLevelSetNode<IndexType> LayerNodeType;
+  typedef M4D::Cell::SparseFieldLevelSetNode LayerNodeType;
   
   typedef typename Superclass::NeighborhoodScalesType NeighborhoodScalesType;
   
@@ -134,7 +134,7 @@ public:
 	  typedef NeighborhoodIterator<OutputImageType> NeighbourIterT;
 	  
 	  /** Connectivity information for examining neighbor pixels.   */
-	    SparseFieldCityBlockNeighborList< typename NeighbourIterT::RadiusType, typename NeighbourIterT::OffsetType, 3 >
+	    M4D::Cell::SparseFieldCityBlockNeighborList< typename NeighbourIterT::RadiusType, typename NeighbourIterT::OffsetType, 3 >
 	    m_NeighborList;
 	    
 	    /** The constant gradient to maintain between isosurfaces in the

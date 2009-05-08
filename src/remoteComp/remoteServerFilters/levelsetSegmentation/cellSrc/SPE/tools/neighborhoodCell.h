@@ -2,6 +2,7 @@
 #define NEIGHBORHOODCELL_H_
 
 #include "DMAGate.h"
+#include "../../supportClasses.h"
 
 namespace M4D {
 namespace Cell {
@@ -40,7 +41,7 @@ public:
 	
 	void SetImageProperties(TImageProperties<PixelType> *props) { 
 		m_imageProps = props;
-		ComputeStridesFromSize(m_imageProps->region.size, m_imageStrides);
+		ComputeStridesFromSize<TSize, TStrides>(m_imageProps->region.size, m_imageStrides);
 		}
 	bool IsWithinImage(const TIndex &pos);
 	TIndex m_currIndex;

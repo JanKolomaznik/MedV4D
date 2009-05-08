@@ -21,7 +21,7 @@ LIBRARY_spu := updateSolver.a
 #			Local Defines
 ########################################################################
 
-CFLAGS_gcc:= -DFOR_CELL #-g #--param max-unroll-times=1 # needed to keep size of program down
+CFLAGS_gcc:= -g -DFOR_CELL #-g #--param max-unroll-times=1 # needed to keep size of program down
 LDFLAGS_gcc= --gc-sections --print-gc-sections --stack-analysis --local-store=0:256	#-Wl,-q -g
 
 INCLUDE         := -I$(srcTop)

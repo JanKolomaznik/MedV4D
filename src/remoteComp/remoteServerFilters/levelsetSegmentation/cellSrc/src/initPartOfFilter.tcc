@@ -161,19 +161,19 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
     m_runConf.featureImageProps.imageData = 
     	(FeaturePixelType *)GetFeatureImage()->GetBufferPointer();
     m_runConf.featureImageProps.region = 
-    	ConvertRegion<TFeatureImage, M4D::Cell::TRegion>(*GetFeatureImage());
+    	M4D::Cell::ConvertRegion<TFeatureImage, M4D::Cell::TRegion>(*GetFeatureImage());
     m_runConf.featureImageProps.spacing = 
-    	ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename TFeatureImage::SpacingType>(GetFeatureImage()->GetSpacing());
+    	M4D::Cell::ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename TFeatureImage::SpacingType>(GetFeatureImage()->GetSpacing());
     // output image
     m_runConf.valueImageProps.imageData = (ValueType *)this->GetOutput()->GetBufferPointer();
     m_runConf.valueImageProps.region = 
-    	ConvertRegion<OutputImageType, M4D::Cell::TRegion>(*this->GetOutput());
-    m_runConf.valueImageProps.spacing = ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename OutputImageType::SpacingType>(this->GetOutput()->GetSpacing());
+    	M4D::Cell::ConvertRegion<OutputImageType, M4D::Cell::TRegion>(*this->GetOutput());
+    m_runConf.valueImageProps.spacing = M4D::Cell::ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename OutputImageType::SpacingType>(this->GetOutput()->GetSpacing());
     //status image
     m_runConf.statusImageProps.imageData = (StatusType *)m_StatusImage->GetBufferPointer();
     m_runConf.statusImageProps.region = 
-    	ConvertRegion<StatusImageType, M4D::Cell::TRegion>(*m_StatusImage);
-    m_runConf.statusImageProps.spacing = ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename StatusImageType::SpacingType>(m_StatusImage->GetSpacing());
+    	M4D::Cell::ConvertRegion<StatusImageType, M4D::Cell::TRegion>(*m_StatusImage);
+    m_runConf.statusImageProps.spacing = M4D::Cell::ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename StatusImageType::SpacingType>(m_StatusImage->GetSpacing());
     
     _workManager.SetupRunConfig(&m_runConf);
 }

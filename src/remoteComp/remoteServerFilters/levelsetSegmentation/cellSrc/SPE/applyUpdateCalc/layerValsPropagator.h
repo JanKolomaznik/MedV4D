@@ -47,7 +47,7 @@ protected:
 	TValueNeighbIterator m_outIter;
 	TStatusNeighbIterator m_statusIter;
 	
-	itk::SparseFieldCityBlockNeighborList< TRadius, TOffset, 3 > m_NeighborList;	
+	SparseFieldCityBlockNeighborList< TRadius, TOffset, 3 > m_NeighborList;	
 	
 	TLayerIterator m_layerIterator;
 	

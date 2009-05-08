@@ -34,11 +34,11 @@ public:
   typedef typename OutputImageType::IndexType IndexType;
 
   /** Node type used in sparse field layer lists. */
-  typedef SparseFieldLevelSetNode<IndexType> LayerNodeType;
+  typedef typename Superclass::LayerNodeType LayerNodeType;
   
   /** A list type used in the algorithm. */
-  typedef SparseFieldLayer<LayerNodeType> LayerType;
-  typedef typename LayerType::Pointer     LayerPointerType;
+  typedef typename Superclass::LayerType LayerType;
+  typedef SmartPointer<LayerType> LayerPointerType;
   
   typedef typename Superclass::NeighborhoodScalesType NeighborhoodScalesType;
 

@@ -21,7 +21,7 @@ TARGET_PROCESSOR := ppu64
 #			Target
 ########################################################################
 
-LIBRARY	:= libPPEStuff.a
+LIBRARY	:= libPPEStuff$(archPostfix).a
 
 # path to source files
 VPATH := src

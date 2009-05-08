@@ -49,14 +49,24 @@ SPURequestsDispatcher::DispatcherThreadFunc()
 		switch (_command)
 		{
 		case CALC_PROPAG_VALS:
+#ifdef FOR_CELL
+#else
 			_applyUpdateCalc.PropagateAllLayerValues();
+#endif
 			break;
 		case CALC_CHANGE:
+#ifdef FOR_CELL
+#else
 			_updateSolver.UpdateFunctionProperties();
 			_result = _updateSolver.CalculateChange();
+#endif
 			break;
 		case CALC_UPDATE:
+#ifdef FOR_CELL
+#else
 			_result = _applyUpdateCalc.ApplyUpdate(_workManager->_dt);
+
+#endif
 			break;
 		default:
 			ASSERT(false);
@@ -75,6 +85,7 @@ SPURequestsDispatcher::Init(TWorkManager *wm, uint32 id)
 	_workManager = wm;
 	_segmentID = id;
 	
+#ifdef FOR_PC
 	_applyUpdateCalc.m_layerGate.dispatcher	= this;
 
 	// setup apply update
@@ -90,6 +101,7 @@ SPURequestsDispatcher::Init(TWorkManager *wm, uint32 id)
 	_updateSolver.m_stepConfig = 
 		&_workManager->GetConfSructs()[_segmentID].calcChngApplyUpdateConf;
 	_updateSolver.Init();
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -172,25 +184,39 @@ void SPURequestsDispatcher::DispatchUnlinkMessage(uint32 message)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-//////////////////////////////// FOR_PC ///////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-#ifdef FOR_PC
+
 void SPURequestsDispatcher::MyPushMessage(uint32 message)
 {
+#ifdef FOR_CELL
+	if ((spe_in_mbox_write(_SPE_data.spe_ctx, &message, 1,
+			SPE_MBOX_ANY_NONBLOCKING)) == 0 )
+		; //TODO except
+#else
 	ScopedLock lock(mutex);
 	messageQueue.push(message);
+#endif	
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 uint32 SPURequestsDispatcher::MyPopMessage()
 {
+#ifdef FOR_CELL
+	uint32 dataRead;
+
+	D_PRINT("Read mailbox of " << _segmentID << "SPU, waiting...");
+	while (spe_out_mbox_status(_SPE_data.spe_ctx) < 1)
+		;
+	spe_out_mbox_read(_SPE_data.spe_ctx, &dataRead, 1);
+	return dataRead;
+#else
 	ScopedLock lock(mutex);
 	uint32 val = messageQueue.front();
 	messageQueue.pop();
 	return val;
-}
 #endif
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// FOR_CELL /////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -242,38 +268,33 @@ SPURequestsDispatcher::StopSPE()
 }
 ///////////////////////////////////////////////////////////////////////////////
 
-void SPEManager::SendCommand(enum ESPUCommands &cmd)
+void SPURequestsDispatcher::SendCommand(enum ESPUCommands &cmd)
 {
 	uint32 result;
-	for (uint32 i=0; i<speCount; i++)
-	{
-		D_PRINT("Write to SPE no: " << i << "'s mailbox, data=" << cmd);
-		result = spe_in_mbox_write(data[i].spe_ctx, (uint32*) &cmd, 1,
-				SPE_MBOX_ANY_NONBLOCKING);
-		if (result == (uint32) -1)
-			; //TODO except
-	}
+	D_PRINT("Write to SPE no: " << _segmentID << "'s mailbox, data=" << cmd);
+	result = spe_in_mbox_write(_SPE_data.spe_ctx, (uint32*) &cmd, 1,
+			SPE_MBOX_ANY_NONBLOCKING);
+	if (result == (uint32) -1)
+		; //TODO except
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void SPEManager::WaitForCommanResult()
+void SPURequestsDispatcher::WaitForCommanResult()
 {
 	uint32 dataRead;
-	for (uint32 i=0; i<speCount; i++)
-	{
-		D_PRINT("Read mailbox of " << i << "SPU, waiting...");
-		while (spe_out_mbox_status(data[i].spe_ctx) < 1)
-			;
-		spe_out_mbox_read(data[i].spe_ctx, &dataRead, 1);
-		D_PRINT("Read: " << dataRead);
-	}
+
+	D_PRINT("Read mailbox of " << _segmentID << "SPU, waiting...");
+	while (spe_out_mbox_status(_SPE_data.spe_ctx) < 1)
+		;
+	spe_out_mbox_read(_SPE_data.spe_ctx, &dataRead, 1);
+	D_PRINT("Read: " << dataRead);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void
-SPEManager::StartSPE()
+SPURequestsDispatcher::StartSPE()
 {
 	/* Create SPE context */
 	if ((_SPE_data.spe_ctx = spe_context_create(0, NULL)) == NULL)
@@ -288,7 +309,7 @@ SPEManager::StartSPE()
 		exit(1);
 	}
 	/* Initialize context run data */
-	_SPE_data.argp = _workManager->GetConfSructs()[_segmentID];
+	_SPE_data.argp = (void *) &_workManager->GetConfSructs()[_segmentID];
 	/* Create pthread for each of the SPE conexts */
 	if(pthread_create(
 			&_SPE_data.pthread, NULL, &spu_pthread_function,	&_SPE_data))

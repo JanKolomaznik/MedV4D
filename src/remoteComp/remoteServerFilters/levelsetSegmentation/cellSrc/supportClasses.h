@@ -3,7 +3,26 @@
 
 #include "SPE/commonTypes.h"
 
-namespace itk {
+namespace M4D
+{
+namespace Cell
+{
+
+///////////////////////////////////////////////////////////////////////////////
+template<typename SizeType, typename StridesType>
+void 
+ComputeStridesFromSize(const SizeType &size, StridesType &strides)
+{
+  unsigned int accum;
+
+  accum = 1;
+  strides[0] = 1;
+  for (unsigned int dim = 1; dim < DIM; ++dim)
+  {
+	  accum *= size[dim-1];
+	  strides[dim] = accum;
+  }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -70,17 +89,6 @@ T1 ConvertIncompatibleVectors(const T2 &v2)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template <class TIndex>
-class SparseFieldLevelSetNode
-{
-public:
-	TIndex               m_Value;
-	SparseFieldLevelSetNode *Next;
-	SparseFieldLevelSetNode *Previous;
-};
-
-///////////////////////////////////////////////////////////////////////////////
-
 template<typename TRadius, typename TOffset, uint8 Dim>
 class SparseFieldCityBlockNeighborList
 {
@@ -116,11 +124,11 @@ private:
 
   /** An internal table for keeping track of stride lengths in a neighborhood,
       i.e. the memory offsets between pixels along each dimensional axis. */
-  M4D::Cell::TStrides m_StrideTable;
+  TStrides m_StrideTable;
 };
 
 
-
+}
 }
 
 //include implementation

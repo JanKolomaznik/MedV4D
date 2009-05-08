@@ -1,6 +1,7 @@
 
 #include "common/Types.h"
-#include "common/Debug.h"
+//#include "common/Debug.h"
+#include "tools/SPEdebug.h"
 //#include "tools/VectorNoExcepts.h"
 //#include "vnl/vnl_vector.h"
 #include "vnl_math.h"
@@ -9,6 +10,7 @@
 //#include "neighborhoodCell.h"
 //#include "neighbourhoodIterator.h"
 
+#include <spu_mfcio.h>
 
 //
 //typedef float32	TFeatureElement;

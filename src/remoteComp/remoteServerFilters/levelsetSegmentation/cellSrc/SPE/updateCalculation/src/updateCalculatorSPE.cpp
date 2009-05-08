@@ -1,6 +1,11 @@
 
-#include "common/Types.h"
+#ifdef FOR_CELL
+#include "../../tools/SPEdebug.h"
+#else
 #include "common/Debug.h"
+#endif
+
+#include "common/Types.h"
 #include "../updateCalculatorSPE.h"
 #include "../../vnl_math.h"
 #include <string.h>
@@ -11,20 +16,6 @@ using namespace M4D::Cell;
 
 
 ///////////////////////////////////////////////////////////////////////////////
-
-void 
-M4D::Cell::ComputeStridesFromSize(const TSize &size, TStrides &strides)
-{
-  unsigned int accum;
-
-  accum = 1;
-  strides[0] = 1;
-  for (unsigned int dim = 1; dim < DIM; ++dim)
-    {
-	  accum *= size[dim-1];
-	  strides[dim] = accum;
-	  }
-}
 
 TIndex M4D::Cell::operator+(const TIndex &i, const TOffset &o)
 {

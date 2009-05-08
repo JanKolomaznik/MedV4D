@@ -1,9 +1,14 @@
 
 #include "common/Types.h"
-#include "common/Debug.h"
 #include "../layerGate.h"
 
+#ifdef FOR_CELL
+#include <spu_mfcio.h>
+#include "../../tools/SPEdebug.h"
+#endif
 #ifdef FOR_PC
+#include "common/Debug.h"
+#error koko
 #include "../../../PPE/SPURequestsDispatcher.h"
 #endif
 
@@ -25,8 +30,10 @@ void LayerGate::UnlinkNode(SparseFieldLevelSetNode *node, uint8 layerNum)
 	
 #ifdef FOR_CELL
 	// push to mailbox
-#endif
-#ifdef FOR_PC
+	spu_writech(SPU_WrOutMbox, message);
+	spu_writech(SPU_WrOutMbox, (uint32) (nodeAddress & 0xffffffff));
+	spu_writech(SPU_WrOutMbox, (uint32) (nodeAddress >> 32));
+#else
 	dispatcher->MyPushMessage(message);
 	// push node address word by word
 	dispatcher->MyPushMessage((uint32) (nodeAddress & 0xffffffff));
@@ -63,15 +70,19 @@ void LayerGate::PushToLayer(SparseFieldLevelSetNode *node, uint8 layerNum)
 	// this limitation is painless
 	uint32 param = node->m_Value[0];	
 	message |= ((param << MessagePARAM_SHIFT) & MessagePARAM_MASK);
-	
-#ifdef FOR_PC
+
+#ifdef FOR_CELL
+	spu_writech(SPU_WrOutMbox, message);
+#else
 	dispatcher->MyPushMessage(message);
 #endif	
 
 	message = (node->m_Value[1]);
 	message |= (node->m_Value[2] << 16);
 
-#ifdef FOR_PC
+#ifdef FOR_CELL
+	spu_writech(SPU_WrOutMbox, message);
+#else
 	dispatcher->MyPushMessage(message);
 	
 	// symulate dispatcher run

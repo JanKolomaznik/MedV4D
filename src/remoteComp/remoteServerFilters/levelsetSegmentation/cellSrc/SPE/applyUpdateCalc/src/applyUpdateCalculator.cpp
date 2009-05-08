@@ -4,8 +4,8 @@
 #include "../applyUpdateCalculator.h"
 #include "../../vnl_math.h"
 #include <string.h>
-#include <fstream>
-#include <iostream>
+//#include <fstream>
+//#include <iostream>
 
 using namespace M4D::Cell;
 

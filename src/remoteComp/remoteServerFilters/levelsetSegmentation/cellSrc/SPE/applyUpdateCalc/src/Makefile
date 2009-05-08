@@ -21,10 +21,10 @@ LIBRARY_spu := applyUpdateCalc.a
 #			Local Defines
 ########################################################################
 #-ffunction-sections -fdata-sections #-g #--param max-unroll-times=1 # needed to keep size of program down
-CFLAGS_gcc:= -DFOR_CELL
+CFLAGS_gcc:= -g -DFOR_CELL
 LDFLAGS_gcc= --gc-sections --print-gc-sections --stack-analysis --local-store=0:256	#-Wl,-q -g
 				
-INCLUDE         := -I$(srcTop) $(ITKIncludes)
+INCLUDE         := -I$(srcTop)
 
 ########################################################################
 #			buildutils/make.footer
