@@ -33,8 +33,7 @@ TARGETS1=	StManagerFilterComp \
 TARGETS2=	fonts
 
 TARGETS3=	LoadingThreads \
-		StudyFilter \
-		ViewerFactory
+		StudyFilter 
 
 MOCINPUT=	m4dGUIAbstractViewerWidget.h \
 		m4dGUIMainWindow.h \
@@ -94,7 +93,7 @@ build:		cleanall all
 
 .PHONY: dep
 dep:		
-		$(CC) $(INCLUDES) $(CDEPFLAGS) $(SRC_FILES) | \
+		$(CXX) $(INCLUDES) $(CDEPFLAGS) $(SRC_FILES) | \
 		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
 
 $(TMP_DIR)/moc_%.cpp:	%.h
@@ -110,19 +109,19 @@ $(TMP_DIR)/rcc_%.cpp:	src/%.qrc
 		$(RCC) -name $(*F) $< -o $@
 
 $(TMP_DIR)/%.o:	src/%.cpp	
-		$(CC) $(CCFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
+		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 $(TMP_DIR)/%.o:	$(SUBDIR1)/%.cpp	
-		$(CC) $(CCFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
+		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 $(TMP_DIR)/%.o:	$(SUBDIR2)/%.cpp	
-		$(CC) $(CCFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
+		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 $(TMP_DIR)/%.o:	$(SUBDIR3)/%.cpp	
-		$(CC) $(CCFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
+		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 $(TMP_DIR)/%.o:	$(TMP_DIR)/%.cpp
-		$(CC) $(CCFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
+		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 -include $(DEP_FILE)
 		

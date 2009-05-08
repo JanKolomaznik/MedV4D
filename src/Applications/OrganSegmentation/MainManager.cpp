@@ -35,13 +35,14 @@ MainManager::Finalize()
 }
 
 void
-MainManager::InitInput( M4D::Dicom::DicomObjSetPtr dicomObjSet )
+MainManager::InitInput( M4D::Imaging::AbstractDataSet::Ptr inputDataSet )
 {
-	_inputDcmSet = dicomObjSet;
+//	_inputDcmSet = dicomObjSet;
 
-	AbstractImagePtr image = M4D::Dicom::DcmProvider::CreateImageFromDICOM( dicomObjSet );
 
 	try {
+		AbstractImagePtr image = boost::static_pointer_cast< M4D::Imaging::AbstractImage >( inputDataSet );
+
 		_inConnection->PutDataset( image );
 
 		_conversionPipeline.ExecuteFirstFilter();

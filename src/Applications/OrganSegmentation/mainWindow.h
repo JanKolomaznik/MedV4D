@@ -1,7 +1,7 @@
 #ifndef MAIN_WINDOW_H
 #define MAIN_WINDOW_H
 
-#include "GUI/widgets/m4dGUIMainWindow2.h"
+#include "GUI/widgets/m4dGUIMainWindow.h"
 #include "SegmentationWidget.h"
 #include "SettingsBox.h"
 #include "SegmentationTypes.h"
@@ -43,7 +43,30 @@ typedef M4D::Imaging::ImageConvertor< ImageType > InImageConvertor;
 //	QWidget	*_owner;
 //};
 
-class mainWindow: public M4D::GUI::m4dGUIMainWindow2
+class mainWindow: public M4D::GUI::m4dGUIMainWindow
+{
+	Q_OBJECT
+
+public:
+
+	mainWindow ();
+
+public slots:
+	void
+	SetSegmentationSlot( uint32 segType );
+
+protected:
+	void
+	process ( M4D::Imaging::AbstractDataSet::Ptr inputDataSet );
+
+	SegmentationViewerWidget	*_segmentationViewerWidget;
+	SettingsBox	*_settings;
+	//Notifier	*_notifier;
+private:
+
+};
+
+/*class mainWindow: public M4D::GUI::m4dGUIMainWindow2
 {
 	Q_OBJECT
 
@@ -64,7 +87,7 @@ protected:
 	//Notifier	*_notifier;
 private:
 
-};
+};*/
 
 
 #endif // MAIN_WINDOW_H

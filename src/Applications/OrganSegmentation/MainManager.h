@@ -34,7 +34,7 @@ public:
 	Finalize();
 
 	void
-	InitInput( M4D::Dicom::DicomObjSetPtr dicomObjSet );
+	InitInput( M4D::Imaging::AbstractDataSet::Ptr inputDataSet );
 
 	ImageConnectionType *
 	GetInputConnection()

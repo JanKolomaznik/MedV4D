@@ -192,7 +192,7 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
      */
     void propagateFeatures ( M4D::Viewer::m4dGUIAbstractViewerWidget *prevViewer );
 
-  private:
+  protected:
 
     /// Default Viewer Factory - for creating viewers.
     ViewerFactory *viewerFactory;
