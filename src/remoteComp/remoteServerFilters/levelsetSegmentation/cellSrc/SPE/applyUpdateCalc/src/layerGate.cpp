@@ -29,10 +29,14 @@ void LayerGate::UnlinkNode(SparseFieldLevelSetNode *node, uint8 layerNum)
 	spu_writech(SPU_WrOutMbox, (uint32) (nodeAddress & 0xffffffff));
 	spu_writech(SPU_WrOutMbox, (uint32) (nodeAddress >> 32));
 #else
-	_mailbox->SPEPush(message);
-	// push node address word by word
-	_mailbox->SPEPush((uint32) (nodeAddress & 0xffffffff));
-	_mailbox->SPEPush((uint32) (nodeAddress >> 32));
+	{
+		ScopedLock lock(_mailbox->fromSPEQMutex);
+		
+		_mailbox->SPEPush(message);
+		// push node address word by word
+		_mailbox->SPEPush((uint32) (nodeAddress & 0xffffffff));
+		_mailbox->SPEPush((uint32) (nodeAddress >> 32));
+	}
 //	
 //	// symulate dispatcher run
 //	message = dispatcher->MyPopMessage();
@@ -68,22 +72,22 @@ void LayerGate::PushToLayer(SparseFieldLevelSetNode *node, uint8 layerNum)
 
 #ifdef FOR_CELL
 	spu_writech(SPU_WrOutMbox, message);
-#else
-	_mailbox->SPEPush(message);
-#endif	
-
+	
 	message = (node->m_Value[1]);
 	message |= (node->m_Value[2] << 16);
-
-#ifdef FOR_CELL
+	
 	spu_writech(SPU_WrOutMbox, message);
 #else
-	_mailbox->SPEPush(message);
-	
-//	// symulate dispatcher run
-//	message = dispatcher->MyPopMessage();
-//	dispatcher->DispatchMessage(message);
-#endif
+	{
+			ScopedLock lock(_mailbox->fromSPEQMutex);
+			_mailbox->SPEPush(message);
+			
+			message = (node->m_Value[1]);
+			message |= (node->m_Value[2] << 16);
+			
+			_mailbox->SPEPush(message);
+	}
+#endif	
 }
 
 ///////////////////////////////////////////////////////////////////////////////

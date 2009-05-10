@@ -22,8 +22,13 @@ public:
 
 	static uint32 GetSPECount();
 	
+#ifdef FOR_CELL
 	void StopSPEs();
 	void StartSPEs();
+#else
+	void StopSims();
+	void StartSims();
+#endif
 
 	//void InitProgramProps();
 

@@ -26,6 +26,7 @@ int main(unsigned long long speid,
 	UpdateCalculatorSPE updateCalculator;
 	
 	uint32_t mailboxVal;
+	uint32 dt;
 
 #ifdef USE_TIMER
   uint64_t start, time_working;
@@ -68,6 +69,8 @@ int main(unsigned long long speid,
 		  break;
 	  case CALC_UPDATE:
 		  printf ("CALC_UPDATE received\n");
+		  dt = spu_readch(SPU_RdInMbox);
+		  //retval = updateCalculator.CalculateChange(*((float32 *) &dt));
 		  spu_writech(SPU_WrOutMbox, (uint32_t) JOB_DONE);
 		  spu_writech(SPU_WrOutMbox, (uint32_t) retval);
 		  break;
@@ -78,6 +81,7 @@ int main(unsigned long long speid,
 		  break;
 	  case QUIT:
 		  printf ("QUIT received\n");
+		  spu_writech(SPU_WrOutMbox, (uint32_t) JOB_DONE);
 	  	  break;
 	  }
   } while(mailboxVal == QUIT);

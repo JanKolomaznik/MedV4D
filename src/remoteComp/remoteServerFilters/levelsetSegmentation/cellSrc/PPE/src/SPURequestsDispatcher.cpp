@@ -5,77 +5,7 @@
 using namespace M4D::Cell;
 using namespace M4D::Multithreading;
 
-//Mutex SPURequestsDispatcher::mutexManagerTurn;
-//CondVar SPURequestsDispatcher::managerTurnValidCvar;
-//Mutex SPURequestsDispatcher::mutexDispatchersTurn;
-//CondVar SPURequestsDispatcher::doneCountCvar;
-//Mutex SPURequestsDispatcher::doneCountMutex;
-//
-//Barrier *SPURequestsDispatcher::_barrier;
-//
-//uint32 SPURequestsDispatcher::_dipatchersYetWorking;
-//bool SPURequestsDispatcher::_managerTurn;
-
 #define DEBUG_MAILBOX 12
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-//void *ppu_pthread_function(void *arg)
-//{
-//	SPURequestsDispatcher *disp = (SPURequestsDispatcher*) arg;
-//	
-//#ifdef FOR_CELL
-//	disp->StartSPE();
-//#endif
-//	
-//	disp->DispatcherThreadFunc();
-//	
-//#ifdef FOR_CELL
-//	disp->StopSPE();
-//#endif
-//	
-//	pthread_exit(NULL);
-//}
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-//uint32
-//SPURequestsDispatcher::DispatcherThreadFunc()
-//{
-//	while( (WaitForCommand()) != QUIT)
-//	{		
-//		switch (_command)
-//		{
-//		case CALC_PROPAG_VALS:
-//#ifdef FOR_CELL
-//#else
-//			_applyUpdateCalc.PropagateAllLayerValues();
-//#endif
-//			break;
-//		case CALC_CHANGE:
-//#ifdef FOR_CELL
-//#else
-//			_updateSolver.UpdateFunctionProperties();
-//			_result = _updateSolver.CalculateChange();
-//#endif
-//			break;
-//		case CALC_UPDATE:
-//#ifdef FOR_CELL
-//#else
-//			_result = _applyUpdateCalc.ApplyUpdate(_workManager->_dt);
-//
-//#endif
-//			break;
-//		default:
-//			ASSERT(false);
-//		}
-//		CommandDone();	// signal command is done
-//		_barrier->wait();	// wait for others
-//	}
-//	return 0;
-//}
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -103,7 +33,7 @@ SPURequestsDispatcher::SPURequestsDispatcher(TWorkManager *wm, uint32 numSPE)
 		_progSims[i]._updateSolver.m_Conf = &_workManager->GetConfSructs()[i].runConf;
 		_progSims[i]._updateSolver.m_stepConfig = 
 			&_workManager->GetConfSructs()[i].calcChngApplyUpdateConf;
-		_progSims[i]._updateSolver.Init();
+		//_progSims[i]._updateSolver.Init();
 	}
 #endif
 	
@@ -124,39 +54,7 @@ SPURequestsDispatcher::~SPURequestsDispatcher()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-//ESPUCommands
-//SPURequestsDispatcher::WaitForCommand()
-//{
-//	DL_PRINT(DEBUG_SYNCHRO, "waiting for command ...");
-//	
-//	ScopedLock lock(mutexManagerTurn);	// wait until mutex is unlocked by SPE manager
-//	while(_managerTurn)
-//		managerTurnValidCvar.wait(lock);
-//	
-//	return _command;
-//}
-
-///////////////////////////////////////////////////////////////////////////////
-
-//void
-//SPURequestsDispatcher::CommandDone()
-//{
-//	{
-//		ScopedLock lock(doneCountMutex);
-//		_dipatchersYetWorking--;
-//		DL_PRINT(DEBUG_SYNCHRO, "decreasing _doneCount to " << _dipatchersYetWorking);
-//		if(_dipatchersYetWorking == 0)
-//		{
-////			// the last from crew give the turn to manager
-////			ScopedLock lock(mutexManagerTurn);
-////			_managerTurn = true;
-////			DL_PRINT(DEBUG_SYNCHRO, "setting _managerTurn=true");
-//			doneCountCvar.notify_all();
-//		}
-//	}
-//}
-
-///////////////////////////////////////////////////////////////////////////////
+float32 toFloat(uint32 val) { return *((float32 *) &val); }
 
 void
 SPURequestsDispatcher::DispatchMessage(uint32 i)
@@ -173,7 +71,7 @@ SPURequestsDispatcher::DispatchMessage(uint32 i)
 		DispatchPushNodeMess(dataRead, i);
 		break;
 	case JOB_DONE:
-		_results[i] = (float32) MyPopMessage(i);
+		_results[i] = toFloat(MyPopMessage(i));
 		_SPEYetRunning--;
 		break;
 	}
@@ -248,7 +146,8 @@ void SPURequestsDispatcher::SendCommand(ESPUCommands cmd)
 		if(cmd == CALC_UPDATE)
 		{
 			// send dt param
-			MyPushMessage(cmdData, (uint32)_workManager->_dt);
+			float32 dt = _workManager->_dt;
+			MyPushMessage(*((uint32 *) &dt), i);
 		}
 	}
 	
@@ -288,29 +187,38 @@ Tspu_prog_sim::SimulateFunc()
 		  switch( (ESPUCommands) mailboxVal)
 		  {
 		  case CALC_CHANGE:
-			  printf ("CALC_CHANGE received\n");
+			  //printf ("CALC_CHANGE received\n");
 			  // calculate and return retval
 			  retval = _updateSolver.CalculateChange();
+			  {
+			  			ScopedLock lock(_mailbox.fromSPEQMutex);
 			  _mailbox.SPEPush((uint32) JOB_DONE);
-			  _mailbox.SPEPush((uint32) retval);
+			  _mailbox.SPEPush(*((uint32 *) &retval));
+			  }
 			  break;
 		  case CALC_UPDATE:
-			  printf ("CALC_UPDATE received\n");
+			  //printf ("CALC_UPDATE received\n");
+			  retval = _applyUpdateCalc.ApplyUpdate(toFloat(_mailbox.SPEPop()));
+			  {
+			  			ScopedLock lock(_mailbox.fromSPEQMutex);
 			  _mailbox.SPEPush((uint32) JOB_DONE);
-			  _mailbox.SPEPush((uint32) retval);
-			  retval = _applyUpdateCalc.ApplyUpdate(_mailbox.SPEPop());
+			  _mailbox.SPEPush(*((uint32 *) &retval));
+			  }
 			  break;
 		  case CALC_PROPAG_VALS:
-			  printf ("CALC_UPDATE received\n");
+			  //printf ("CALC_UPDATE received\n");
+			  _applyUpdateCalc.PropagateAllLayerValues();
+			  {
+			  			ScopedLock lock(_mailbox.fromSPEQMutex);
 			  _mailbox.SPEPush((uint32) JOB_DONE);
 			  _mailbox.SPEPush((uint32) retval);
-			  _applyUpdateCalc.PropagateAllLayerValues();
+			  }
 			  break;
 		  case QUIT:
 			  printf ("QUIT received\n");
 		  	  break;
 		  }
-	} while(mailboxVal == QUIT);
+	} while(mailboxVal != QUIT);
 }
 #endif
 ///////////////////////////////////////////////////////////////////////////////

@@ -34,7 +34,7 @@ void *spu_pthread_function(void *arg)
 
 void SPEManager::StartSPEs()
 {
-	for (uint32 i=1; i<speCount; i++)
+	for (uint32 i=0; i<speCount; i++)
 	{
 		/* Create SPE context */
 		_requestDispatcher._SPE_data[i].spe_ctx = spe_context_create(0, NULL);
@@ -66,10 +66,11 @@ void SPEManager::StartSPEs()
 
 void SPEManager::StopSPEs()
 {
-	_requestDispatcher.SendCommand(QUIT);
+	for (uint32 i=0; i<speCount; i++)
+			_requestDispatcher.MyPushMessage(QUIT, i);
 
 	// wait for thread termination
-	for (uint32 i=1; i<speCount; i++)
+	for (uint32 i=0; i<speCount; i++)
 	{
 		if (pthread_join(_requestDispatcher._SPE_data[i].pthread, NULL))
 		{
@@ -84,11 +85,50 @@ void SPEManager::StopSPEs()
 		}
 	}
 }
+#else
+///////////////////////////////////////////////////////////////////////////////
+void *sim_pthread_function(void *arg)
+{
+	Tspu_prog_sim *sim = (Tspu_prog_sim *) arg;
+	sim->SimulateFunc();
+	
+	pthread_exit(NULL);
+}
+///////////////////////////////////////////////////////////////////////////////
+void SPEManager::StartSims()
+{
+	for (uint32 i=0; i<speCount; i++)
+	{
+		/* Create pthread for each of the SPE conexts */
+		if (pthread_create( &_requestDispatcher._progSims[i].pthread, 
+		NULL, &sim_pthread_function, &_requestDispatcher._progSims[i]))
+		{
+			perror("Failed creating thread");
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void SPEManager::StopSims()
+{
+	for (uint32 i=0; i<speCount; i++)
+		_requestDispatcher.MyPushMessage(QUIT, i);
+
+	// wait for thread termination
+	for (uint32 i=0; i<speCount; i++)
+	{
+		if (pthread_join(_requestDispatcher._progSims[i].pthread, NULL))
+		{
+			D_PRINT ("Failed joining thread");
+		}
+	}
+}
 #endif
 ///////////////////////////////////////////////////////////////////////////////
 
 /* Determine the number of SPE threads to create.   */
-uint32 SPEManager::speCount = 1;//spe_cpu_info_get(SPE_COUNT_USABLE_SPES, -1);
+uint32 SPEManager::speCount = 4;//spe_cpu_info_get(SPE_COUNT_USABLE_SPES, -1);
 
 ///////////////////////////////////////////////////////////////////////////////
 uint32 SPEManager::GetSPECount()
@@ -101,36 +141,10 @@ uint32 SPEManager::GetSPECount()
 SPEManager::SPEManager(SPURequestsDispatcher::TWorkManager *wm) :
 	_workManager(wm), _requestDispatcher(wm, speCount)
 {
-	//	{
-	//		ScopedLock lock(SPURequestsDispatcher::mutexManagerTurn);
-	//		DL_PRINT(DEBUG_SYNCHRO, "setting _managerTurn to true for lock the dispatchers");
-	//		SPURequestsDispatcher::_managerTurn = true;
-	//	}
-	//	
-	//	SPURequestsDispatcher::InitBarrier(speCount);
-	//
-	//	m_requestDispatcher = new SPURequestsDispatcher[speCount];
-	//	
-	//	for (uint32 i = 0; i< speCount; i++)
-	//		m_requestDispatcher[i].Init(_workManager, i);
-	//	
-	//	// run dispatchers
-	//	for (uint32 i = 0; i< speCount; i++)
-	//	{
-	//		if (pthread_create(
-	//			&m_requestDispatcher[i]._pthread, 
-	//			NULL, 
-	//			&ppu_pthread_function,
-	//			&m_requestDispatcher[i])
-	//			)
-	//		{
-	//			LOG("Failed creating thread");
-	//		}
-	//	}
 #ifdef FOR_CELL
 	StartSPEs();
 #else
-	
+	StartSims();
 #endif
 }
 
@@ -138,20 +152,10 @@ SPEManager::SPEManager(SPURequestsDispatcher::TWorkManager *wm) :
 
 SPEManager::~SPEManager()
 {
-	//	// stop dispatchers
-	//	for (uint32 i = 0; i< speCount; i++)
-	//			m_requestDispatcher[i]._command = QUIT;
-	//
-	//	UnblockDispatchers();
-	//	
-	//	for (uint32 i = 0; i< speCount; i++)
-	//		pthread_join(m_requestDispatcher[i]._pthread, NULL);
-	//		
-	//	delete [] m_requestDispatcher;
 #ifdef FOR_CELL
 	StopSPEs();
 #else
-	
+	StopSims();
 #endif
 }
 
@@ -194,56 +198,12 @@ TimeStepType SPEManager::MergeRMSs()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-//void
-//SPEManager::UnblockDispatchers()
-//{
-//	//unblock the dispatchers
-//	{
-//		M4D::Multithreading::ScopedLock lock(SPURequestsDispatcher::mutexManagerTurn);
-//		DL_PRINT(DEBUG_SYNCHRO, "setting _managerTurn to false to unblock the dispatchers");
-//		SPURequestsDispatcher::_managerTurn = false;
-//	}
-//	// signal to dispatchers
-//	SPURequestsDispatcher::managerTurnValidCvar.notify_all();
-//}
-//
-/////////////////////////////////////////////////////////////////////////////////
-//
-//void
-//SPEManager::RunDispatchers()
-//{
-//	{
-//		M4D::Multithreading::ScopedLock lock(SPURequestsDispatcher::doneCountMutex);
-//		SPURequestsDispatcher::_dipatchersYetWorking = speCount;
-//		DL_PRINT(DEBUG_SYNCHRO, "setting _dipatchersYetWorking to " << speCount);
-//	}
-//	
-//	UnblockDispatchers();
-//	
-//	// wait until all dispatchers finish their command
-//	M4D::Multithreading::ScopedLock lock(SPURequestsDispatcher::doneCountMutex);
-//	DL_PRINT(DEBUG_SYNCHRO, "trying cond :" << 
-//			(SPURequestsDispatcher::_dipatchersYetWorking < speCount) );
-//    while(SPURequestsDispatcher::_dipatchersYetWorking > 0)
-//    {
-//    	SPURequestsDispatcher::doneCountCvar.wait(lock);
-//    	DL_PRINT(DEBUG_SYNCHRO, "trying cond :" << 
-//    					(SPURequestsDispatcher::_dipatchersYetWorking < speCount) );
-//    }
-//}
-
-///////////////////////////////////////////////////////////////////////////////
-
 TimeStepType SPEManager::RunUpdateCalc()
 {
 	_workManager->AllocateUpdateBuffers();
 	_workManager->InitCalculateChangeAndUpdActiveLayerConf();
 
 	_requestDispatcher.SendCommand(CALC_CHANGE);
-	//	for (uint32 i = 0; i< speCount; i++)
-	//				m_requestDispatcher[i]._command = CALC_CHANGE;
-	//
-	//	RunDispatchers();
 
 	return MergeTimesteps();
 }
@@ -256,10 +216,6 @@ double SPEManager::ApplyUpdate(TimeStepType dt)
 	_workManager->InitPropagateValuesConf();
 	_workManager->_dt = dt;
 
-	//	for (uint32 i = 0; i< speCount; i++)
-	//		m_requestDispatcher[i]._command = CALC_UPDATE;
-	//
-	//	RunDispatchers();
 	_requestDispatcher.SendCommand(CALC_UPDATE);
 
 	return MergeRMSs();
@@ -269,12 +225,12 @@ double SPEManager::ApplyUpdate(TimeStepType dt)
 
 void SPEManager::RunPropagateLayerVals()
 {
+#ifndef FOR_CELL 
+	for(uint32 i=0; i<speCount;i++)
+		_requestDispatcher._progSims[i]._updateSolver.Init();
+#endif
+	
 	_workManager->InitPropagateValuesConf();
-
-	//	for (uint32 i = 0; i< speCount; i++)
-	//		m_requestDispatcher[i]._command = CALC_PROPAG_VALS;
-	//
-	//	RunDispatchers();
 	_requestDispatcher.SendCommand(CALC_PROPAG_VALS);
 }
 
