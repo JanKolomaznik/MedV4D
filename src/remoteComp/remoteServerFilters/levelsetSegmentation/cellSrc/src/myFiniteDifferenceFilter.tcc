@@ -4,7 +4,10 @@
 
 #define DEBUGMYFINITEFILT 12
 
-namespace itk {
+namespace M4D
+{
+namespace Cell
+{
 
 	///////////////////////////////////////////////////////////////////////////////
 
@@ -15,7 +18,7 @@ namespace itk {
 	{
 		// Test whether the output pixel type (or its components) are not of type
 		// float or double:
-		if( NumericTraits< OutputPixelValueType>::is_integer )
+		if( itk::NumericTraits< OutputPixelValueType>::is_integer )
 		{
 			itkWarningMacro("Output pixel type MUST be float or double to prevent computational errors");
 		}
@@ -48,14 +51,14 @@ namespace itk {
 			this->ApplyUpdate(dt);
 			++m_ElapsedIterations;
 
-			// Invoke the iteration event.
-			this->InvokeEvent( IterationEvent() );
-			if( this->GetAbortGenerateData() )
-			{
-				this->InvokeEvent( IterationEvent() );
-				this->ResetPipeline();
-				throw ProcessAborted(__FILE__,__LINE__);
-			}
+//			// Invoke the iteration event.
+//			this->InvokeEvent( IterationEvent() );
+//			if( this->GetAbortGenerateData() )
+//			{
+//				this->InvokeEvent( IterationEvent() );
+//				this->ResetPipeline();
+//				throw ProcessAborted(__FILE__,__LINE__);
+//			}
 			DL_PRINT(DEBUGMYFINITEFILT, 
 					"Elapsed iters:" << m_ElapsedIterations << ", dt = " << dt);
 			
@@ -146,7 +149,7 @@ namespace itk {
 	{
 		TimeStepType min;
 		bool flag;
-		min = NumericTraits<TimeStepType>::Zero;
+		min = itk::NumericTraits<TimeStepType>::Zero;
 
 		// grab first valid value
 		flag = false;
@@ -162,7 +165,7 @@ namespace itk {
 
 		if (!flag)
 		{ // no values!
-			throw ExceptionObject(__FILE__, __LINE__);
+			throw itk::ExceptionObject(__FILE__, __LINE__);
 		}
 
 		// find minimum value
@@ -203,6 +206,7 @@ namespace itk {
 		}
 	}
 
-} // namespace itk
+}
+}
 
 #endif

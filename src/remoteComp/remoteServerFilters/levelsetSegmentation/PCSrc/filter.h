@@ -11,26 +11,26 @@
 #include "diffFunc.h"
 #include "common/perfCounter.h"
 
-namespace itk
-{
+namespace M4D {
+namespace Cell {
 
 template <class TInputImage,class TFeatureImage, class TOutputPixelType = float >
 class MySegmtLevelSetFilter	
 #ifdef WITH_ORIG_ITKPIPELINE
-	: public itk::ThresholdSegmentationLevelSetImageFilter<TInputImage, Image<TOutputPixelType, TInputImage::ImageDimension> >
+	: public itk::ThresholdSegmentationLevelSetImageFilter<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> >
 #else
-	: public itk::SparseFieldLevelSetImageFilter<TInputImage, Image<TOutputPixelType, TInputImage::ImageDimension> >
+	: public itk::SparseFieldLevelSetImageFilter<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> >
 #endif
 {
 public:
 #ifdef WITH_ORIG_ITKPIPELINE
 	typedef itk::ThresholdSegmentationLevelSetImageFilter<TInputImage, TFeatureImage, TOutputPixelType > Superclass;
 #else
-	typedef itk::SparseFieldLevelSetImageFilter<TInputImage, Image<TOutputPixelType, TInputImage::ImageDimension> > Superclass;
+	typedef itk::SparseFieldLevelSetImageFilter<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> > Superclass;
 #endif
 	typedef MySegmtLevelSetFilter Self;
 	typedef itk::SmartPointer<Self> Pointer;
-	typedef itk::ThresholdLevelSetFunc<TInputImage, TFeatureImage> SegmentationFunctionType;
+	typedef ThresholdLevelSetFunc<TInputImage, TFeatureImage> SegmentationFunctionType;
 	typedef typename TFeatureImage::PixelType FeaturePixelType;
 	
 	typedef typename Superclass::TimeStepType TimeStepType;
@@ -51,7 +51,7 @@ public:
 	
 	void SetFeatureImage(const TFeatureImage *f)
 	  {
-	    this->ProcessObject::SetNthInput( 1, const_cast< TFeatureImage * >(f) );
+	    this->itk::ProcessObject::SetNthInput( 1, const_cast< TFeatureImage * >(f) );
 	    func_->SetFeatureImage(f);
 	  }
 #endif
@@ -67,6 +67,7 @@ private:
 	PerfCounter cntr_;
 };
 
+}
 }
 //include implementation
 #include "src/filter.tcc"

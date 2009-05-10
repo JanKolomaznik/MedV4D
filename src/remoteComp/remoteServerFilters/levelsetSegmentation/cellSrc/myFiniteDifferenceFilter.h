@@ -4,21 +4,22 @@
 #include "itkInPlaceImageFilter.h"
 #include "commonConsts.h"
 
-namespace itk 
+namespace M4D
+{
+namespace Cell
 {
 
 template <class TInputImage, class TOutputImage>
 class MyFiniteDifferenceImageFilter  
-  : public InPlaceImageFilter<TInputImage, TOutputImage>
-  , public M4D::Cell::Consts
+  : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
+  , public Consts
 {
 public:
   /** Standard class typedefs. */
   typedef MyFiniteDifferenceImageFilter                   Self;
-  typedef InPlaceImageFilter<TInputImage, TOutputImage>   Superclass;
+  typedef itk::InPlaceImageFilter<TInputImage, TOutputImage>   Superclass;
   //typedef M4D::Cell::CommonTypes<TOutputImage::ImageDimension>	  		TypeBaseClass;
-  typedef SmartPointer<Self>                              Pointer;
-  typedef SmartPointer<const Self>                        ConstPointer;
+  typedef itk::SmartPointer<Self>                              Pointer;
   
   /** Run-time type information (and related methods) */
   itkTypeMacro(MyFiniteDifferenceImageFilter, InPlaceImageFilter );
@@ -39,8 +40,8 @@ public:
   typedef M4D::Cell::StatusType StatusType;
 
   /** Extract value type in case the pixel is of vector type */
-  typedef typename NumericTraits< OutputPixelType >::ValueType OutputPixelValueType;
-  typedef typename NumericTraits< InputPixelType >::ValueType  InputPixelValueType;
+  typedef typename itk::NumericTraits< OutputPixelType >::ValueType OutputPixelValueType;
+  typedef typename itk::NumericTraits< InputPixelType >::ValueType  InputPixelValueType;
 
 //
 //  typedef typename FiniteDifferenceFunctionType::RadiusType RadiusType;
@@ -108,7 +109,7 @@ protected:
     {
     m_UseImageSpacing    = false;
     m_ElapsedIterations  = 0;
-    m_NumberOfIterations = NumericTraits<unsigned int>::max();
+    m_NumberOfIterations = itk::NumericTraits<unsigned int>::max();
     m_MaximumRMSError = 0.0;
     m_RMSChange = 0.0;
     m_State = UNINITIALIZED;
@@ -216,7 +217,8 @@ private:
   FilterStateType m_State;
 };
   
-  }
+}
+}
 
 //include implementation
 #include "src/myFiniteDifferenceFilter.tcc"

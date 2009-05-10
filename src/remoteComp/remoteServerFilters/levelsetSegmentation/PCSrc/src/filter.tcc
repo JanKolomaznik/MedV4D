@@ -2,7 +2,8 @@
 #error File filter.tcc cannot be included directly!
 #else
 
-namespace itk {
+namespace M4D {
+namespace Cell {
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -16,7 +17,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 	this->SetDifferenceFunction(func_);
 #endif
 	
-	  this->SetIsoSurfaceValue(NumericTraits<ValueType>::Zero);
+	  this->SetIsoSurfaceValue(itk::NumericTraits<ValueType>::Zero);
 	  
 	  // Provide some reasonable defaults which will at least prevent infinite
 	  // looping.
@@ -107,5 +108,6 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+}
 }
 #endif

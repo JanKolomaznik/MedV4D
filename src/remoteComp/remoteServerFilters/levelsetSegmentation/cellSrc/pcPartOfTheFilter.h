@@ -9,19 +9,21 @@
 #include "itkObjectStore.h"
 #include "itkNeighborhoodIterator.h"
 
-namespace itk
+namespace M4D
+{
+namespace Cell
 {
 
 template <class TInputImage, class TFeatureImage, class TOutputPixelType = float >
 class PCPartOfSegmtLevelSetFilter
-	: public itk::MySegmtLevelSetFilter_InitPart<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> >
+	: public MySegmtLevelSetFilter_InitPart<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> >
 {
 public:
-	typedef MySegmtLevelSetFilter_InitPart<TInputImage, Image<TOutputPixelType, TInputImage::ImageDimension> > Superclass;	
+	typedef MySegmtLevelSetFilter_InitPart<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> > Superclass;	
 	typedef PCPartOfSegmtLevelSetFilter Self;
 	typedef itk::SmartPointer<Self> Pointer;
 	typedef typename TFeatureImage::PixelType FeaturePixelType;
-	typedef Image<TOutputPixelType, TInputImage::ImageDimension> OutputImageType;
+	typedef itk::Image<TOutputPixelType, TInputImage::ImageDimension> OutputImageType;
 	  typedef typename OutputImageType::ValueType ValueType;
 	
 	typedef typename Superclass::TimeStepType TimeStepType;
@@ -38,7 +40,7 @@ public:
   
   /** A list type used in the algorithm. */
   typedef typename Superclass::LayerType LayerType;
-  typedef SmartPointer<LayerType> LayerPointerType;
+  typedef itk::SmartPointer<LayerType> LayerPointerType;
   
   typedef typename Superclass::NeighborhoodScalesType NeighborhoodScalesType;
 
@@ -47,11 +49,11 @@ public:
   
   /** The type of the image used to index status information.  Necessary for
    *  the internals of the algorithm. */
-  typedef Image<StatusType, OutputImageType::ImageDimension>  StatusImageType;
+  typedef itk::Image<StatusType, OutputImageType::ImageDimension>  StatusImageType;
 
   /** Memory pre-allocator used to manage layer nodes in a multi-threaded
    *  environment. */
-  typedef ObjectStore<LayerNodeType> LayerNodeStorageType;
+  typedef itk::ObjectStore<LayerNodeType> LayerNodeStorageType;
 
   /** Container type used to store updates to the active layer. */
   typedef std::vector<ValueType> UpdateBufferType;
@@ -119,6 +121,7 @@ private:
 	PerfCounter cntr_;
 };
 
+}
 }
 //include implementation
 #include "src/pcPartOfTheFilter.tcc"

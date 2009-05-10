@@ -2,8 +2,8 @@
 #error File diffFunc.tcc cannot be included directly!
 #else
 
-namespace itk
-{
+namespace M4D {
+namespace Cell {
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -168,14 +168,15 @@ ThresholdLevelSetFunc< ImageType, FeatureImageType >
   dt /= maxScaleCoefficient;
  
   // reset the values  
-  d->m_MaxAdvectionChange   = NumericTraits<PixelType>::Zero;
-  d->m_MaxPropagationChange = NumericTraits<PixelType>::Zero;
-  d->m_MaxCurvatureChange   = NumericTraits<PixelType>::Zero;
+  d->m_MaxAdvectionChange   = itk::NumericTraits<PixelType>::Zero;
+  d->m_MaxPropagationChange = itk::NumericTraits<PixelType>::Zero;
+  d->m_MaxCurvatureChange   = itk::NumericTraits<PixelType>::Zero;
   
   return dt;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
+}
 }
 #endif

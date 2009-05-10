@@ -4,8 +4,8 @@
 #include "globalData.h"
 #include "itkLinearInterpolateImageFunction.h"
 
-namespace itk
-{
+namespace M4D {
+namespace Cell {
 
 template<class FeatureImageType, typename NeighborhoodType, typename FloatOffsetType>
 class SpeedTermSolver
@@ -13,7 +13,7 @@ class SpeedTermSolver
 public:
 	typedef typename FeatureImageType::PixelType FeatureScalarType;
 	typedef typename NeighborhoodType::IndexType IndexType;
-	typedef LinearInterpolateImageFunction<FeatureImageType>  InterpolatorType;
+	typedef itk::LinearInterpolateImageFunction<FeatureImageType>  InterpolatorType;
 	
 	typedef GlobalDataStruct<FeatureScalarType, FeatureImageType::ImageDimension> GlobalDataType;
 	typedef typename InterpolatorType::ContinuousIndexType ContinuousIndexType;
@@ -79,7 +79,7 @@ private:
 };
 
 }
-
+}
 //include implementation
 #include "src/speedTermSolver.tcc"
 

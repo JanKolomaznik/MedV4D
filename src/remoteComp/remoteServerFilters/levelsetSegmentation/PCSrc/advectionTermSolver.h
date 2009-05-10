@@ -3,8 +3,8 @@
 
 #include "globalData.h"
 
-namespace itk
-{
+namespace M4D {
+namespace Cell {
 
 template <class TImageType, typename NeighborhoodType, typename PixelType, typename FloatOffsetType>
 class AdvectionTermSolver
@@ -27,7 +27,7 @@ private:
 };
 
 }
-
+}
 //include implementation
 #include "src/advectionTermSolver.tcc"
 

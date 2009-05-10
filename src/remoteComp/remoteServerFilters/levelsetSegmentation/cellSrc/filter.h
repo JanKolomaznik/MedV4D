@@ -13,15 +13,17 @@
 #include "pcPartOfTheFilter.h"
 #endif
 
-namespace itk
+namespace M4D
+{
+namespace Cell
 {
 
 template <class TInputImage, class TFeatureImage, class TOutputPixelType = float >
 class MySegmtLevelSetFilter	
 #ifdef FOR_CELL
-	: public itk::MySegmtLevelSetFilter_InitPart<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> >
+	: public MySegmtLevelSetFilter_InitPart<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> >
 #else
-	: public itk::PCPartOfSegmtLevelSetFilter<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> >
+	: public PCPartOfSegmtLevelSetFilter<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> >
 #endif
 {
 public:
@@ -29,13 +31,13 @@ public:
 	typedef MySegmtLevelSetFilter Self;
 	typedef itk::SmartPointer<Self> Pointer;
 	typedef typename TFeatureImage::PixelType FeaturePixelType;
-	typedef Image<TOutputPixelType, TInputImage::ImageDimension> OutputImageType;
+	typedef itk::Image<TOutputPixelType, TInputImage::ImageDimension> OutputImageType;
 	  typedef typename OutputImageType::ValueType ValueType;
 	
 #ifdef FOR_CELL
-	typedef MySegmtLevelSetFilter_InitPart<TInputImage, Image<TOutputPixelType, TInputImage::ImageDimension> > Superclass;
+	typedef MySegmtLevelSetFilter_InitPart<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> > Superclass;
 #else
-	typedef PCPartOfSegmtLevelSetFilter<TInputImage, Image<TOutputPixelType, TInputImage::ImageDimension> > Superclass;
+	typedef PCPartOfSegmtLevelSetFilter<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> > Superclass;
 #endif
 	
 	typedef typename Superclass::TimeStepType TimeStepType;
@@ -78,6 +80,7 @@ protected:
 #endif
 };
 
+}
 }
 //include implementation
 #include "src/filter.tcc"

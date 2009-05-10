@@ -10,26 +10,28 @@
 #include "common/perfCounter.h"
 #include "itkNeighborhoodIterator.h"
 
-namespace itk
+namespace M4D
+{
+namespace Cell
 {
 
 template <class TInputImage, class TFeatureImage, class TOutputPixelType = float >
 class MySegmtLevelSetFilter_InitPart	
-	: public itk::MyFiniteDifferenceImageFilter<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> >
+	: public MyFiniteDifferenceImageFilter<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> >
 {
 public:
-	typedef MyFiniteDifferenceImageFilter<TInputImage, Image<TOutputPixelType, TInputImage::ImageDimension> > Superclass;	
+	typedef MyFiniteDifferenceImageFilter<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> > Superclass;	
 	typedef MySegmtLevelSetFilter_InitPart Self;
 	typedef itk::SmartPointer<Self> Pointer;
 	typedef typename TFeatureImage::PixelType FeaturePixelType;
-	typedef Image<TOutputPixelType, TInputImage::ImageDimension> OutputImageType;
+	typedef itk::Image<TOutputPixelType, TInputImage::ImageDimension> OutputImageType;
 	  typedef typename OutputImageType::ValueType ValueType;
 	  typedef typename OutputImageType::IndexType IndexType;
 	
 	typedef typename Superclass::TimeStepType TimeStepType;
 	typedef typename Superclass::StatusType StatusType;
 	
-	typedef M4D::Cell::WorkManager<M4D::Cell::TIndex, ValueType> TWorkManager;
+	typedef WorkManager<TIndex, ValueType> TWorkManager;
 	typedef typename TWorkManager::LayerType LayerType; 
 	
 	/////////////////
@@ -45,7 +47,7 @@ public:
   
   /** The type of the image used to index status information.  Necessary for
    *  the internals of the algorithm. */
-  typedef Image<StatusType, OutputImageType::ImageDimension>  StatusImageType;
+  typedef itk::Image<StatusType, OutputImageType::ImageDimension>  StatusImageType;
   
   
   M4D::Cell::TIndex ToMyIndex(const IndexType &i);
@@ -61,15 +63,14 @@ public:
 	
 	void SetFeatureImage(const TFeatureImage *f)
 	  {
-	    this->ProcessObject::SetNthInput( 1, const_cast< TFeatureImage * >(f) );
+	    this->itk::ProcessObject::SetNthInput( 1, const_cast< TFeatureImage * >(f) );
 	  }
 	
 	TFeatureImage * GetFeatureImage()
-	  	  { return ( static_cast< TFeatureImage *>(this->ProcessObject::GetInput(1)) ); }
+	  	  { return ( static_cast< TFeatureImage *>(this->itk::ProcessObject::GetInput(1)) ); }
 	
 	void PrintStats(std::ostream &s);
-	
-	void PrintUpdateBuf(std::ostream &s);
+
 	
 	// **************************************
 
@@ -131,10 +132,10 @@ public:
 	  
 	  bool m_BoundsCheckingActive;
 	  
-	  typedef NeighborhoodIterator<OutputImageType> NeighbourIterT;
+	  typedef itk::NeighborhoodIterator<OutputImageType> NeighbourIterT;
 	  
 	  /** Connectivity information for examining neighbor pixels.   */
-	    M4D::Cell::SparseFieldCityBlockNeighborList< typename NeighbourIterT::RadiusType, typename NeighbourIterT::OffsetType, 3 >
+	    SparseFieldCityBlockNeighborList< typename NeighbourIterT::RadiusType, typename NeighbourIterT::OffsetType, 3 >
 	    m_NeighborList;
 	    
 	    /** The constant gradient to maintain between isosurfaces in the
@@ -147,16 +148,13 @@ protected:
 	
 	void InitRunConf();
     
-    M4D::Cell::RunConfiguration m_runConf;
+    RunConfiguration m_runConf;
     
     TWorkManager _workManager;
-    M4D::Cell::SPEManager m_SPEManager;
-    
-	
-private:
-	PerfCounter cntr_;
+    SPEManager m_SPEManager;
 };
 
+}
 }
 //include implementation
 #include "src/initPartOfFilter.tcc"

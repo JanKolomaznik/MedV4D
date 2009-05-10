@@ -7,8 +7,8 @@
 //#include "advectionTermSolver.h"
 #include "curvatureTermSolver.h"
 
-namespace itk
-{
+namespace M4D {
+namespace Cell {
 
 template <class ImageType, class FeatureImageType = ImageType>
 class ThresholdLevelSetFunc
@@ -64,7 +64,7 @@ private:
 };
 
 }
-
+}
 //include implementation
 #include "src/diffFunc.tcc"
 

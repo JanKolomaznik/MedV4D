@@ -8,7 +8,10 @@
 #include "itkShiftScaleImageFilter.h"
 #include "itkNeighborhoodAlgorithm.h"
 
-namespace itk {
+namespace M4D
+{
+namespace Cell
+{
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -25,7 +28,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
   m_BoundsCheckingActive = false;
   m_ConstantGradientValue = 1.0;
 
-  this->SetIsoSurfaceValue(NumericTraits<ValueType>::Zero);
+  this->SetIsoSurfaceValue(itk::NumericTraits<ValueType>::Zero);
   
   // Provide some reasonable defaults which will at least prevent infinite
   // looping.
@@ -59,15 +62,15 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
   // position of the zero level set.
 
   // First need to subtract the iso-surface value from the input image.
-  typedef ShiftScaleImageFilter<TInputImage, OutputImageType> ShiftScaleFilterType;
+  typedef itk::ShiftScaleImageFilter<TInputImage, OutputImageType> ShiftScaleFilterType;
   typename ShiftScaleFilterType::Pointer shiftScaleFilter = ShiftScaleFilterType::New();
   shiftScaleFilter->SetInput( this->GetInput()  );
   shiftScaleFilter->SetShift( - m_IsoSurfaceValue );
   // keep a handle to the shifted output
   m_ShiftedImage = shiftScaleFilter->GetOutput();
   
-  typename ZeroCrossingImageFilter<OutputImageType, OutputImageType>::Pointer
-    zeroCrossingFilter = ZeroCrossingImageFilter<OutputImageType,
+  typename itk::ZeroCrossingImageFilter<OutputImageType, OutputImageType>::Pointer
+    zeroCrossingFilter = itk::ZeroCrossingImageFilter<OutputImageType,
     OutputImageType>::New();
   zeroCrossingFilter->SetInput(m_ShiftedImage);
   zeroCrossingFilter->GraftOutput(this->GetOutput());
@@ -89,7 +92,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 
   if (this->GetUseImageSpacing())
     {
-    double minSpacing = NumericTraits<double>::max();
+    double minSpacing = itk::NumericTraits<double>::max();
     for (i=0; i<OutputImageType::ImageDimension; i++)
       {
       minSpacing = vnl_math_min(minSpacing,this->GetInput()->GetSpacing()[i]);
@@ -107,7 +110,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
   m_StatusImage->Allocate();
 
   // Initialize the status image to contain all m_StatusNull values.
-  ImageRegionIterator<StatusImageType>
+  itk::ImageRegionIterator<StatusImageType>
     statusIt(m_StatusImage, m_StatusImage->GetRequestedRegion());
   for (statusIt.GoToBegin(); ! statusIt.IsAtEnd(); ++statusIt)
     {
@@ -117,7 +120,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
   // Initialize the boundary pixels in the status image to
   // m_StatusBoundaryPixel values.  Uses the face calculator to find all of the
   // region faces.
-  typedef NeighborhoodAlgorithm::ImageBoundaryFacesCalculator<StatusImageType>
+  typedef itk::NeighborhoodAlgorithm::ImageBoundaryFacesCalculator<StatusImageType>
     BFCType;
 
   BFCType faceCalculator;
@@ -131,7 +134,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 
   for (++fit; fit != faceList.end(); ++fit) // skip the first (nonboundary) region
     {
-    statusIt = ImageRegionIterator<StatusImageType>(m_StatusImage, *fit);
+    statusIt = itk::ImageRegionIterator<StatusImageType>(m_StatusImage, *fit);
     for (statusIt.GoToBegin(); ! statusIt.IsAtEnd(); ++statusIt)
       {
       statusIt.Set( this->m_StatusBoundaryPixel );
@@ -193,13 +196,13 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
   const ValueType outside_value  = (max_layer+1) * m_ConstantGradientValue;
   const ValueType inside_value = -(max_layer+1) * m_ConstantGradientValue;
  
-  ImageRegionConstIterator<StatusImageType> statusIt(m_StatusImage,
+  itk::ImageRegionConstIterator<StatusImageType> statusIt(m_StatusImage,
                                                      this->GetOutput()->GetRequestedRegion());
 
-  ImageRegionIterator<OutputImageType> outputIt(this->GetOutput(),
+  itk::ImageRegionIterator<OutputImageType> outputIt(this->GetOutput(),
                                                 this->GetOutput()->GetRequestedRegion());
 
-  ImageRegionConstIterator<OutputImageType> shiftedIt(m_ShiftedImage,
+  itk::ImageRegionConstIterator<OutputImageType> shiftedIt(m_ShiftedImage,
                                                       this->GetOutput()->GetRequestedRegion());
   
   for (outputIt = outputIt.Begin(), statusIt = statusIt.Begin(),
@@ -239,13 +242,13 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
   //
   
   unsigned int i;
-  NeighborhoodIterator<OutputImageType>
+  itk::NeighborhoodIterator<OutputImageType>
     shiftedIt(m_NeighborList.GetRadius(), m_ShiftedImage,
               this->GetOutput()->GetRequestedRegion());
-  NeighborhoodIterator<OutputImageType>
+  itk::NeighborhoodIterator<OutputImageType>
     outputIt(m_NeighborList.GetRadius(), this->GetOutput(),
              this->GetOutput()->GetRequestedRegion());
-  NeighborhoodIterator<StatusImageType>
+  itk::NeighborhoodIterator<StatusImageType>
     statusIt(m_NeighborList.GetRadius(), m_StatusImage,
              this->GetOutput()->GetRequestedRegion());
   IndexType center_index, offset_index;
@@ -324,7 +327,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
   unsigned int i;
   bool boundary_status;
   typename LayerType::ConstIterator fromIt;
-  NeighborhoodIterator<StatusImageType>
+  itk::NeighborhoodIterator<StatusImageType>
     statusIt(m_NeighborList.GetRadius(), m_StatusImage,
              this->GetOutput()->GetRequestedRegion() );
   
@@ -389,7 +392,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
   ValueType MIN_NORM      = 1.0e-6;
   if (this->GetUseImageSpacing())
     {
-    double minSpacing = NumericTraits<double>::max();
+    double minSpacing = itk::NumericTraits<double>::max();
     for (unsigned int i=0; i<OutputImageType::ImageDimension; i++)
       {
       minSpacing = vnl_math_min(minSpacing,this->GetInput()->GetSpacing()[i]);
@@ -400,7 +403,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
   unsigned int i, center;
 
   typename LayerType::ConstIterator activeIt;
-  ConstNeighborhoodIterator<OutputImageType>
+  itk::ConstNeighborhoodIterator<OutputImageType>
     shiftedIt( m_NeighborList.GetRadius(), m_ShiftedImage,
                this->GetOutput()->GetRequestedRegion() );
   
@@ -462,10 +465,10 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
   const ValueType inside_value  = (max_layer+1) * m_ConstantGradientValue;
   const ValueType outside_value = -(max_layer+1) * m_ConstantGradientValue;
  
-  ImageRegionConstIterator<StatusImageType> statusIt(m_StatusImage,
+  itk::ImageRegionConstIterator<StatusImageType> statusIt(m_StatusImage,
                                                      this->GetOutput()->GetRequestedRegion());
 
-  ImageRegionIterator<OutputImageType> outputIt(this->GetOutput(),
+  itk::ImageRegionIterator<OutputImageType> outputIt(this->GetOutput(),
                                                 this->GetOutput()->GetRequestedRegion());
 
   for (outputIt = outputIt.Begin(), statusIt = statusIt.Begin();
@@ -505,5 +508,5 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 ///////////////////////////////////////////////////////////////////////////////
 
 }
-
+}
 #endif

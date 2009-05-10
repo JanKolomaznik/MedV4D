@@ -2,7 +2,10 @@
 #error File filter.tcc cannot be included directly!
 #else
 
-namespace itk {
+namespace M4D
+{
+namespace Cell
+{
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -96,5 +99,6 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+}
 }
 #endif

@@ -2,7 +2,10 @@
 #error File pcPartOfTheFilter.tcc cannot be included directly!
 #else
 
-namespace itk {
+namespace M4D
+{
+namespace Cell
+{
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -156,7 +159,7 @@ PCPartOfSegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
   bool bounds_status;
   LayerNodeType *node;
   StatusType neighbor_status;
-  NeighborhoodIterator<StatusImageType>
+  itk::NeighborhoodIterator<StatusImageType>
     statusIt(this->m_NeighborList.GetRadius(), this->m_StatusImage,
              this->GetOutput()->GetRequestedRegion());
 
@@ -232,11 +235,11 @@ PCPartOfSegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 	  typename LayerType::Iterator         layerIt;
 	  typename UpdateBufferType::const_iterator updateIt;
 
-	  NeighborhoodIterator<OutputImageType>
+	  itk::NeighborhoodIterator<OutputImageType>
 	    outputIt(this->m_NeighborList.GetRadius(), this->GetOutput(),
 	             this->GetOutput()->GetRequestedRegion());
 
-	  NeighborhoodIterator<StatusImageType>
+	  itk::NeighborhoodIterator<StatusImageType>
 	    statusIt(this->m_NeighborList.GetRadius(), this->m_StatusImage,
 	             this->GetOutput()->GetRequestedRegion());
 
@@ -563,5 +566,6 @@ PCPartOfSegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 //}
 
 ///////////////////////////////////////////////////////////////////////////////
+}
 }
 #endif

@@ -2,8 +2,8 @@
 #error File advectionTermSolver.tcccannot be included directly!
 #else
 
-namespace itk
-{
+namespace M4D {
+namespace Cell {
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -71,6 +71,7 @@ SegmentationLevelSetFunction<TImageType, TFeatureImageType>
 
 ///////////////////////////////////////////////////////////////////////////////
 
+}
 }
 
 #endif

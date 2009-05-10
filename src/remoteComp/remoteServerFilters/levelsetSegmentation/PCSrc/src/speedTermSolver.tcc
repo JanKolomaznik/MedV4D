@@ -2,8 +2,8 @@
 #error File SpeedTermSolver.tcc cannot be included directly!
 #else
 
-namespace itk
-{
+namespace M4D {
+namespace Cell {
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -133,8 +133,8 @@ SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
 	   * neighbors. The weight for each neighbor is the fraction overlap
 	   * of the neighbor pixel with respect to a pixel centered on point.
 	   */
-	  RealType value = NumericTraits<RealType>::Zero;
-	  RealType totalOverlap = NumericTraits<RealType>::Zero;
+	  RealType value = itk::NumericTraits<RealType>::Zero;
+	  RealType totalOverlap = itk::NumericTraits<RealType>::Zero;
 
 	  for( unsigned int counter = 0; counter < neighborCount; counter++ )
 	    {
@@ -190,7 +190,7 @@ SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
 	  const FloatOffsetType& offset,
 	  GlobalDataType *gd)
 {
-	const FeatureScalarType ZERO = NumericTraits<FeatureScalarType>::Zero;
+	const FeatureScalarType ZERO = itk::NumericTraits<FeatureScalarType>::Zero;
 	uint32 i;
 	
 	if(m_PropagationWeight == 0)
@@ -242,5 +242,5 @@ SpeedTermSolver<FeatureImageType, NeighborhoodType, FloatOffsetType>
 ///////////////////////////////////////////////////////////////////////////////
 
 }
-
+}
 #endif

@@ -2,8 +2,8 @@
 #error File curvatureTermSolver.tcc cannot be included directly!
 #else
 
-namespace itk
-{
+namespace M4D {
+namespace Cell {
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -13,8 +13,8 @@ typename CurvatureTermSolver< ImageType >::ScalarValueType
 CurvatureTermSolver< ImageType >
 ::ComputeCurvatureTerm(GlobalDataType *gd)
 {
-	if ( m_CurvatureWeight == NumericTraits<ScalarValueType>::Zero )
-		return NumericTraits<ScalarValueType>::Zero;
+	if ( m_CurvatureWeight == itk::NumericTraits<ScalarValueType>::Zero )
+		return itk::NumericTraits<ScalarValueType>::Zero;
 
 	ScalarValueType curvature_term =
 	this->ComputeMeanCurvature(gd) * m_CurvatureWeight;
@@ -142,7 +142,7 @@ CurvatureTermSolver< ImageType >
 	::ComputeMeanCurvature(GlobalDataType *gd)
 {
   // Calculate the mean curvature
-  ScalarValueType curvature_term = NumericTraits<ScalarValueType>::Zero;
+  ScalarValueType curvature_term = itk::NumericTraits<ScalarValueType>::Zero;
   unsigned int i, j;
   
   for (i = 0; i < ImageType::ImageDimension; i++)
@@ -162,6 +162,7 @@ CurvatureTermSolver< ImageType >
 
 ///////////////////////////////////////////////////////////////////////////////
 
+}
 }
 
 #endif

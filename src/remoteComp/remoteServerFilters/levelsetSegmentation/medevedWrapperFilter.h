@@ -11,7 +11,7 @@
 #include "itkCastImageFilter.h"
 #include "itkImage.h"
 
-#if( defined(FOR_CELL) || 1)
+#if( defined(FOR_CELL) )// || 1)
 #include "cellSrc/filter.h"
 #else
 #include "PCSrc/filter.h"
@@ -124,7 +124,7 @@ private:
 			FeatureToFloatFilterType;
 		
 	// filter that performs actual levelset segmentation
-	typedef  itk::MySegmtLevelSetFilter< 
+	typedef  M4D::Cell::MySegmtLevelSetFilter< 
 		InternalITKImageType, InternalITKImageType, InternalPixelType >
 			ThresholdSegmentationFilterType;
 		

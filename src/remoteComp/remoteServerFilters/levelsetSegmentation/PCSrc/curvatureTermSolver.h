@@ -3,8 +3,8 @@
 
 #include "globalData.h"
 
-namespace itk
-{
+namespace M4D {
+namespace Cell {
 
 template< class ImageType > 
 class CurvatureTermSolver
@@ -29,7 +29,7 @@ private:
 };
 
 }
-
+}
 #include "src/curvatureTermSolver.tcc"
 
 #endif /*CURVATURETERMSOLVER_H_*/
