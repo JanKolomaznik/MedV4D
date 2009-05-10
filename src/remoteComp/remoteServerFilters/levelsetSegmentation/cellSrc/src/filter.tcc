@@ -2,11 +2,6 @@
 #error File filter.tcc cannot be included directly!
 #else
 
-namespace M4D
-{
-namespace Cell
-{
-
 ///////////////////////////////////////////////////////////////////////////////
 
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
@@ -49,34 +44,17 @@ template<class TInputImage,class TFeatureImage, class TOutputPixelType>
 void
 MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::ApplyUpdate(TimeStepType dt)
-{	  	  		  	
-//#ifdef FOR_CELL
-//	  command = M4D::Cell::CALC_CHANGE;
-//	  m_SPEManager.SendCommand(command);
-//#else	  
-//	  Superclass::ApplyUpdate(dt);
-//#endif
+{
 	this->SetRMSChange(this->m_SPEManager.ApplyUpdate(dt));	
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
-typename
-MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>::TimeStepType
+TimeStepType
 MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::CalculateChange()
 {	  
-	  TimeStepType dt;
-	  
-	  //this->_workManager.PrintLists(LOUT);
-
-//#ifdef FOR_CELL
-//	  command = M4D::Cell::CALC_CHANGE;
-//	  m_SPEManager.SendCommand(command);
-//#else
-	  dt = this->m_SPEManager.RunUpdateCalc();
-//#endif	
-	
+	TimeStepType dt = this->m_SPEManager.RunUpdateCalc();	
 	return dt;
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -86,19 +64,9 @@ void
 MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::PropagateAllLayerValues()
 {
-//	this->InitPropagateValuesConf();
-//	
-//#ifdef FOR_CELL
-//	  command = M4D::Cell::CALC_CHANGE;
-//	  m_SPEManager.SendCommand(command);
-//#else
-//	  Superclass::PropagateAllLayerValues();
-//#endif
-	
 	this->m_SPEManager.RunPropagateLayerVals();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-}
-}
+
 #endif

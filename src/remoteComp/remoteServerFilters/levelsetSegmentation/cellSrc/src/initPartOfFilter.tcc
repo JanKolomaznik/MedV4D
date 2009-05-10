@@ -2,17 +2,6 @@
 #error File initPartOfFilter.tcc cannot be included directly!
 #else
 
-#include "itkZeroCrossingImageFilter.h"
-#include "itkImageRegionIterator.h"
-#include "itkImageRegionConstIterator.h"
-#include "itkShiftScaleImageFilter.h"
-#include "itkNeighborhoodAlgorithm.h"
-
-namespace M4D
-{
-namespace Cell
-{
-
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -326,7 +315,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 {
   unsigned int i;
   bool boundary_status;
-  typename LayerType::ConstIterator fromIt;
+  typename TWorkManager::LayerType::ConstIterator fromIt;
   itk::NeighborhoodIterator<StatusImageType>
     statusIt(m_NeighborList.GetRadius(), m_StatusImage,
              this->GetOutput()->GetRequestedRegion() );
@@ -402,7 +391,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 
   unsigned int i, center;
 
-  typename LayerType::ConstIterator activeIt;
+  typename TWorkManager::LayerType::ConstIterator activeIt;
   itk::ConstNeighborhoodIterator<OutputImageType>
     shiftedIt( m_NeighborList.GetRadius(), m_ShiftedImage,
                this->GetOutput()->GetRequestedRegion() );
@@ -507,6 +496,4 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 
 ///////////////////////////////////////////////////////////////////////////////
 
-}
-}
 #endif
