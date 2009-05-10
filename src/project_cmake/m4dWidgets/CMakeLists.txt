@@ -56,8 +56,7 @@ set(INPUT ${SRC_DIR}/src/m4dGUIMainWindow.cpp
           ${SRC_DIR}/components/src/StManagerHProtocolsComp.cpp
           ${SRC_DIR}/components/src/StManagerStudyListComp.cpp 
           ${SRC_DIR}/utils/src/LoadingThreads.cpp
-          ${SRC_DIR}/utils/src/StudyFilter.cpp
-	  ${SRC_DIR}/utils/src/ViewerFactory.cpp)
+          ${SRC_DIR}/utils/src/StudyFilter.cpp)
 
 add_library(m4dWidgets ${INPUT} ${MOCOUTPUT} ${RCCOUTPUT})
 
