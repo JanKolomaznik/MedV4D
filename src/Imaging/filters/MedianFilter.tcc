@@ -36,14 +36,14 @@ public:
 	{
 		Vector< int32, 2 > idx;
 		unsigned i = 0;
-		if( _lastRow == pos[1] ) {
+/*		if( _lastRow == pos[1] ) {
 			idx[0] = pos[0] + _radius;
 			for( idx[1] = pos[1] - _radius; idx[1] <= pos[1] + _radius; ++idx[1] ) {
 				_array[ i*_size + _lastCol ] = accessor( idx );
 				++i;
 			}
 			_lastCol = (_lastCol + 1) % _size;
-		} else {
+		} else {*/
 			for( idx[1] = pos[1] - _radius; idx[1] <= pos[1] + _radius; ++idx[1] ) {
 				for( idx[0] = pos[0] - _radius; idx[0] <= pos[0] + _radius; ++idx[0] ) {
 					_array[i++] = accessor( idx );
@@ -51,7 +51,7 @@ public:
 			}
 			_lastCol = 0;
 			_lastRow = pos[1];
-		}
+		//}
 		std::nth_element( &(_array[ 0 ]), &(_array[ _size*_size / 2 ]), &(_array[ _size*_size ]) );
 		return _array[ _size*_size / 2 ];
 	}

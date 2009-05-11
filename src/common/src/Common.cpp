@@ -8,7 +8,26 @@
 
 const float32 Epsilon = 1.0E-10;
 const float32 PI = 3.141592f;
+const float32 PIx2 = PI*2;
+const float32 PIx3 = PI*3;
+const float32 PIx4 = PI*4;
+const float32 PId2 = PI/2;
+const float32 PId3 = PI/3;
+const float32 PId4 = PI/4;
 
+
+#include "common/Direction.h"
+
+Vector<int32,2>	directionOffset[8] = {
+	Vector<int32,2>( 1, 0 ),
+	Vector<int32,2>( 1, -1 ),
+	Vector<int32,2>( 0, -1 ),
+	Vector<int32,2>( -1, -1 ),
+	Vector<int32,2>( -1, 0 ),
+	Vector<int32,2>( -1, 1 ),
+	Vector<int32,2>( 0, 1 ),
+	Vector<int32,2>( 1, 1 )
+	};
 
 
 #include "common/Types.h"

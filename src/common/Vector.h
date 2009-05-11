@@ -1,7 +1,7 @@
 #ifndef COORDINATES_H
 #define COORDINATES_H
 
-#include "ExceptionBase.h"
+#include "common/ExceptionBase.h"
 
 #ifdef DEBUG_LEVEL
 	#define CHECK_INDICES_ENABLED
@@ -99,7 +99,7 @@ public:
 		{ 
 #ifdef CHECK_INDICES_ENABLED
 			if ( idx >= Dim ) { 
-				_THROW_ EBadIndex();
+				_THROW_ M4D::ErrorHandling::EBadIndex();
 			}
 #endif /*CHECK_INDICES_ENABLED*/
 
@@ -111,7 +111,7 @@ public:
 		{ 
 #ifdef CHECK_INDICES_ENABLED
 			if ( idx >= Dim ) { 
-				_THROW_ EBadIndex();
+				_THROW_ M4D::ErrorHandling::EBadIndex();
 			}
 #endif /*CHECK_INDICES_ENABLED*/
 
@@ -138,7 +138,8 @@ public:
 		CoordinateType tmp;
 		for( unsigned i=0; i<Dimension; ++i ) { 
 			tmp = _coordinates[i];
-			BINSTREAM_WRITE_MACRO( stream, tmp );
+			//BINSTREAM_WRITE_MACRO( stream, tmp );
+			stream.write( (char*)&tmp, sizeof(tmp) );
 		}
 	}
 	void
@@ -146,7 +147,8 @@ public:
 	{
 		CoordinateType tmp;
 		for( unsigned i=0; i<Dimension; ++i ) { 
-			BINSTREAM_READ_MACRO( stream, tmp );
+			//BINSTREAM_READ_MACRO( stream, tmp );
+			stream.read( (char*)&tmp, sizeof(tmp) );
 			_coordinates[i] = tmp;
 		}
 	}

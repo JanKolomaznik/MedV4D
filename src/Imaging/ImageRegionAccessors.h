@@ -11,7 +11,9 @@ class AccessorBase
 {
 public:
 	static const unsigned Dimension = RegionType::Dimension;
-	typedef Vector< int32, Dimension > CoordType;
+	typedef typename RegionType::ElementType	ElementType;
+	typedef RegionType				Region;
+	typedef Vector< int32, Dimension > 		CoordType;
 
 	AccessorBase( const RegionType & region ): _region( region ) 
 	{}
