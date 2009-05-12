@@ -71,9 +71,10 @@ CannyEdgeDetection(
 {
 	ComputeQuantizedGradient( smoothInput, gradient );
 
-	NonmaximumSuppression( gradient );
+	//NonmaximumSuppression( gradient );
 
 	//Hysteresis( );
+	
 }
 
 

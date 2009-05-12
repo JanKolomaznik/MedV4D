@@ -76,6 +76,21 @@ extern Vector<int32,2>	directionOffset[8];
 
 //***********************************************************
 
+template< unsigned Dim >
+Vector< int32, Dim >
+StridesFromSize( const Vector< uint32, Dim > &size )
+{
+	Vector< int32, Dim > result;
+
+	result[0] = 1;
+	for( unsigned i = 1; i < Dim; ++i ) {
+		result[i] = result[i-1] * size[i-1];
+	}
+	return result;
+}
+
+//***********************************************************
+
 #define SIMPLE_GET_METHOD( TYPE, NAME, PARAM_NAME ) \
 	TYPE Get##NAME ()const{ return PARAM_NAME ; }
 

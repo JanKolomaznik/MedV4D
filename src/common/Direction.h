@@ -5,7 +5,14 @@
 #include "common/Vector.h"
 
 enum Direction { 
-	dE, dNE, dN, dNW, dW, dSW, dS, dSE   
+	dE	= 0, 
+	dNE	= 1, 
+	dN	= 2, 
+	dNW	= 3, 
+	dW	= 4, 
+	dSW	= 5, 
+	dS	= 6, 
+	dSE	= 7   
 };
 
 
@@ -13,6 +20,12 @@ inline Direction
 OpossiteDirection( Direction dir )
 {
 	return (Direction)((dir + 4) % 8);
+}
+
+inline Direction
+DirectionForgetOrientation( Direction dir )
+{
+	return (Direction)(dir % 4);
 }
 
 template< typename T >

@@ -43,6 +43,29 @@ public:
 	ImageRegion( 
 			ElementType 			*pointer, 
 			Vector< uint32, Dimension >	size,
+			Vector< int32, Dimension >	origin
+		) 
+		{
+			_pointer = pointer;
+			_sourceDimension = Dimension;
+			_pointerCoordinatesInSource = new int32[_sourceDimension];
+		       	
+			for ( unsigned i = 0; i < _sourceDimension; ++i ) {
+				_pointerCoordinatesInSource[i] = 0;
+			}
+			_size = size;
+			_origin = origin;
+			_strides = StridesFromSize( size );
+			_elementExtents = Vector< float32, Dimension >( 1.0 );
+			for ( unsigned i = 0; i < Dimension; ++i ) {
+				_dimOrder[i] = i;
+			}
+			_startPointer = _pointer - _origin * _strides;
+		}
+
+	ImageRegion( 
+			ElementType 			*pointer, 
+			Vector< uint32, Dimension >	size,
 			Vector< int32, Dimension >	strides,
 			Vector< float32, Dimension >	elementExtents,
 			Vector< uint32, Dimension >	dimOrder,
