@@ -10,14 +10,6 @@ LinkedChainIteratorCell<Item>
 : m_end(0)//, m_begin(0), 
 
 {
-#ifdef FOR_CELL
-	/* First, we reserve two MFC tags for use with double buffering */
-	tag = mfc_tag_reserve();
-	if (tag == MFC_TAG_INVALID)
-	{
-		D_PRINT("SPU ERROR, unable to reserve tag\n");
-	}
-#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -46,7 +38,11 @@ LinkedChainIteratorCell<Item>::SetBeginEnd(Address begin, Address end)
 	{
 		m_realAddresses[0] = begin;
 		//			Load(begin, &m_buf[0], sizeof(Item));
+#ifdef FOR_CELL
+		tag = DMAGate::Get(begin, &m_buf[0], sizeof(Item) );
+#else
 		DMAGate::Get(begin, &m_buf[0], sizeof(Item) );
+#endif
 		DL_PRINT(DEBUG_CHAINTOOL, "loading the first node in chain \n");
 		counter = 1;
 	}

@@ -27,11 +27,11 @@ int main(unsigned long long speid,
 	// config structures
 	ConfigStructures _Confs __attribute__ ((aligned (128)));
 	RunConfiguration _runConf __attribute__ ((aligned (128)));	
-	CalculateChangeAndUpdActiveLayerConf _cChangeConfig __attribute__ ((aligned (128)));
+	CalculateChangeAndUpdActiveLayerConf _changeConfig __attribute__ ((aligned (128)));
 	PropagateValuesConf _propValConfig __attribute__ ((aligned (128)));
 	
 	// calculator objects
-	UpdateCalculatorSPE updateCalculator;
+	UpdateCalculatorSPE updateCalculator;	
 	ApplyUpdateSPE _applyUpdateCalc;
 	
 	uint32_t mailboxVal;
@@ -53,7 +53,17 @@ int main(unsigned long long speid,
   tag = DMAGate::Get(_Confs.runConf, &_runConf, sizeof (RunConfiguration));
   mfc_write_tag_mask (1 << tag);
   mfc_read_tag_status_all ();
+  
+  // setup calculators with config object pointers
+  updateCalculator.m_Conf = &_runConf;
+  updateCalculator.m_stepConfig = &_changeConfig;
+  updateCalculator.Init();
+  _applyUpdateCalc.commonConf = &_runConf;
+  _applyUpdateCalc.m_stepConfig = &_changeConfig;
+  _applyUpdateCalc.m_propLayerValuesConfig = &_propValConfig;
+
     
+// do work loops
     float32 retval = 0;
   do 
   {
@@ -62,6 +72,13 @@ int main(unsigned long long speid,
 	  {
 	  case CALC_CHANGE:
 		  printf ("CALC_CHANGE received\n");
+		  tag = DMAGate::Get(
+				  _Confs.calcChngApplyUpdateConf, 
+				  &_changeConfig, 
+				  sizeof (CalculateChangeAndUpdActiveLayerConf));
+		  mfc_write_tag_mask (1 << tag);
+		  mfc_read_tag_status_all ();
+		  
 		  // calculate and return retval
 		  //retval = updateCalculator.CalculateChange();
 		  spu_writech(SPU_WrOutMbox, (uint32_t) JOB_DONE);
@@ -69,13 +86,37 @@ int main(unsigned long long speid,
 		  break;
 	  case CALC_UPDATE:
 		  printf ("CALC_UPDATE received\n");
+		  
+		  // trasfer step configs
+		  tag = DMAGate::Get(
+		  				  _Confs.calcChngApplyUpdateConf, 
+		  				  &_changeConfig, 
+		  				  sizeof (CalculateChangeAndUpdActiveLayerConf));
+		  		  mfc_write_tag_mask (1 << tag);
+		  		  mfc_read_tag_status_all ();
+  		  tag = DMAGate::Get(
+  		  				  _Confs.propagateValsConf, 
+  		  				  &_propValConfig, 
+  		  				  sizeof (PropagateValuesConf));
+  		  		  mfc_write_tag_mask (1 << tag);
+  		  		  mfc_read_tag_status_all ();
+		  		  
 		  dt = spu_readch(SPU_RdInMbox);
-		  //retval = _applyUpdateCalc.ApplyUpdate(*((float32 *) &dt));
+		  retval = _applyUpdateCalc.ApplyUpdate(*((float32 *) &dt));
 		  spu_writech(SPU_WrOutMbox, (uint32_t) JOB_DONE);
 		  spu_writech(SPU_WrOutMbox, (uint32_t) retval);
 		  break;
 	  case CALC_PROPAG_VALS:
-		  //_applyUpdateCalc.PropagateAllLayerValues();
+		  printf ("CALC_PROPAG_VALS received\n");
+		  
+		  tag = DMAGate::Get(
+  				  _Confs.propagateValsConf, 
+  				  &_propValConfig, 
+  				  sizeof (PropagateValuesConf));
+  		  mfc_write_tag_mask (1 << tag);
+  		  mfc_read_tag_status_all ();
+  		  
+		  _applyUpdateCalc.PropagateAllLayerValues();
 		  spu_writech(SPU_WrOutMbox, (uint32_t) JOB_DONE);
 		  spu_writech(SPU_WrOutMbox, (uint32_t) retval);
 		  printf ("CALC_UPDATE received\n");
