@@ -3,6 +3,7 @@
 
 #include "common/MathTools.h"
 #include "common/Vector.h"
+#include <cmath>
 
 enum Direction { 
 	dE	= 0, 
@@ -17,7 +18,7 @@ enum Direction {
 
 
 inline Direction
-OpossiteDirection( Direction dir )
+OppositeDirection( Direction dir )
 {
 	return (Direction)((dir + 4) % 8);
 }
@@ -35,17 +36,28 @@ QuantizeDirectionDegree( T degree )
 	if( degree < 0.0 || degree >= 360.0 ) {
 		degree = degree - ((int)(degree / 360.0)) * 360.0; //TODO test
 	}
-	return ROUND(degree/ 45.0) % 8;
+	return (Direction)(ROUND(degree/ 45.0) % 8);
 }
 
 template< typename T >
 Direction
 QuantizeDirectionRadian( T radian )
 {
-	if( radian < 0.0 || radian >= PIx2 ) {
+	if( radian < 0.0 ) {
+		radian = radian - ((int)(radian / PIx2) - 1) * PIx2; //TODO test
+	}
+
+	if( radian >= PIx2 ) {
 		radian = radian - ((int)(radian / PIx2)) * PIx2; //TODO test
 	}
-	return ROUND(radian/ PId4) % 8;
+	return (Direction)(ROUND(radian/ PId4) % 8);
+}
+
+template< typename T >
+Direction
+VectorDirection( const Vector< T, 2 > &v )
+{
+	return QuantizeDirectionRadian( atan2( v[1], v[0] ) );
 }
 
 

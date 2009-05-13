@@ -18,6 +18,7 @@ TARGETS=	DICOM2ImageDump \
 		GaussianFilter \
 		MedianFilter \
 		SobelEdgeDetector \
+		CannyEdgeDetector \
 		SobelGradientOperator \
 		LaplaceOperator \
 		ImageCrop \

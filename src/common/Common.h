@@ -72,7 +72,7 @@ struct IsSameDimension< Dim, Dim >
 };
 //*****************************************************************************
 
-extern Vector<int32,2>	directionOffset[8];
+extern Vector<int32,2>	directionOffset[];
 
 //***********************************************************
 

@@ -46,6 +46,7 @@ public:
 			Vector< int32, Dimension >	origin
 		) 
 		{
+			//TODO - check
 			_pointer = pointer;
 			_sourceDimension = Dimension;
 			_pointerCoordinatesInSource = new int32[_sourceDimension];

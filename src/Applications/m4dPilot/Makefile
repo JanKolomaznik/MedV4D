@@ -27,7 +27,7 @@ LIBS=		$(M4DLIBS)\
 		$(DCMTKLIBS)\
 		$(VTKLIBS)\
 		$(QTLIBS)\
-		-lboost_thread-mt \
+		-lboost_thread \
 		-lboost_filesystem \
 		-lGLU
 ########################################

@@ -146,6 +146,34 @@ FilterProcessorNeighborhood( Filter &filter, const InputRegion &input, OutputReg
 
 }
 
+template< typename Filter, typename InputRegion, typename OutputRegion  >
+void
+FilterProcessorNeighborhoodSimple( Filter &filter, const InputRegion &input, OutputRegion &output )
+{
+	typedef SimpleAccessor< InputRegion > SimpleAccessorType;
+	SimpleAccessorType simpleAccessor( input );
+	
+	typename OutputRegion::PointType minimum = output.GetMinimum();
+	typename OutputRegion::PointType maximum = output.GetMaximum();
+	typename OutputRegion::PointType leftCorner = minimum - filter.GetLeftCorner();
+	typename OutputRegion::PointType rightCorner = maximum - filter.GetRightCorner();
+
+	/*if( OutputRegion::Dimension == 2 ) {	
+		SolveBoundaryFiltering2D< OutputRegion, BasicFilterApplicator< Filter, AccessorType > >
+			( output, BasicFilterApplicator< Filter, AccessorType >( filter, accessor ), leftCorner, rightCorner );
+	} else {
+		_THROW_ ErrorHandling::ETODO();
+	}*/
+
+	//TODO - put zeroes to boundaries
+	
+	typename OutputRegion::Iterator iterator = output.GetIterator( leftCorner, rightCorner );
+
+	ForEachByIterator( iterator, BasicFilterApplicator< Filter, SimpleAccessorType >( filter, simpleAccessor ) );
+
+}
+
+
 template< typename Filter, typename InputRegion, typename OutputRegion, template< typename Region > class Accessor, template< typename In, typename Out > class Preprocessor  >
 void
 FilterProcessorNeighborhoodPreproc( 

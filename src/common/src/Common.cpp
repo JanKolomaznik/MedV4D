@@ -18,7 +18,7 @@ const float32 PId4 = PI/4;
 
 #include "common/Direction.h"
 
-Vector<int32,2>	directionOffset[8] = {
+Vector<int32,2>	directionOffset[] = {
 	Vector<int32,2>( 1, 0 ),
 	Vector<int32,2>( 1, -1 ),
 	Vector<int32,2>( 0, -1 ),
