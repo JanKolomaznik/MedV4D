@@ -103,8 +103,8 @@ ObjectStoreCell<T>::FindFirstFree(void)
 ///////////////////////////////////////////////////////////////////////////////
 
 template<typename T, uint16 STORESIZE>
-FixedObjectStoreCell<T, STORESIZE>::FixedObjectStoreCell()
-	: ObjectStoreCell<T>(STORESIZE, m_buf, m_allocMap)
+FixedObjectStoreCell<T, STORESIZE>::FixedObjectStoreCell(T *buf)
+	: ObjectStoreCell<T>(STORESIZE, buf, m_allocMap)
 {
 
 }

@@ -19,8 +19,10 @@ public:
 	ValueType ApplyUpdate(TimeStepType dt);
 	
 	typedef GETRemoteArrayCell<TPixelValue, 8> TUpdateBufferArray;	
-	typedef M4D::Cell::SparseFieldLayer<SparseFieldLevelSetNode> MyLayerType;
-	typedef M4D::Cell::FixedObjectStoreCell<SparseFieldLevelSetNode, 2048> TObjectStore; 
+	typedef SparseFieldLayer<SparseFieldLevelSetNode> MyLayerType;
+	
+#define LocalNodeStoreSize 2048
+	typedef FixedObjectStoreCell<SparseFieldLevelSetNode, LocalNodeStoreSize> TObjectStore; 
 	
 	void UpdateActiveLayerValues(TimeStepType dt,
 			MyLayerType *UpList, MyLayerType *DownList,
@@ -52,6 +54,7 @@ private:
 //	}
 	
 
+	SparseFieldLevelSetNode m_localNodeStoreBuffer[LocalNodeStoreSize];
 	TObjectStore m_localNodeStore;
 	TUpdateBufferArray m_updateValuesIt;
 	

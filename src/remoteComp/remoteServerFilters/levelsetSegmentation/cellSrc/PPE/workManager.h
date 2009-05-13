@@ -1,12 +1,15 @@
 #ifndef WORKMANAGER_H_
 #define WORKMANAGER_H_
 
-#include "itkObjectStore.h"
+//#include "itkObjectStore.h"
 //#include "itkSparseFieldLayer.h"
+#include "objectStore.h"
 #include "../SPE/tools/sparesFieldLayer.h"
 #include "../supportClasses.h"
 #include "../SPE/configStructures.h"
 #include "common/Thread.h"
+
+#include <vector>
 
 namespace M4D
 {
@@ -62,13 +65,16 @@ private:
 	typedef float32 ValueType;
 	//typedef SparseFieldLevelSetNode NodeTypeInSPU;
 
-	typedef itk::ObjectStore<LayerNodeType> LayerNodeStorageType;
+	//typedef itk::ObjectStore<LayerNodeType> LayerNodeStorageType;
+#define NodeStoreChunkSize 2048
+	typedef PPEObjectStore<LayerNodeType, NodeStoreChunkSize> LayerNodeStorageType;
 	/** Container type used to store updates to the active layer. */
 	typedef std::vector<ValueType> UpdateBufferType;
 	
 
 	/** Storage for layer node objects. */
-	LayerNodeStorageType::Pointer m_LayerNodeStore;
+	//LayerNodeStorageType::Pointer m_LayerNodeStore;
+	LayerNodeStorageType m_LayerNodeStore;
 	
 	uint8 GetShortestLayer(uint8 layerNum);
 	uint8 GetLongestLayer(uint8 layerNum);

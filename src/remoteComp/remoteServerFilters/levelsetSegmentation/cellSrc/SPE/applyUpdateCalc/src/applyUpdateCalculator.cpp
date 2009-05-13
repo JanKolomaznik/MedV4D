@@ -14,7 +14,7 @@ using namespace M4D::Cell;
 ///////////////////////////////////////////////////////////////////////////////
 
 ApplyUpdateSPE::ApplyUpdateSPE()
-	: m_ElapsedIterations(0)
+	: m_localNodeStore(m_localNodeStoreBuffer), m_ElapsedIterations(0)
 {
 
 }

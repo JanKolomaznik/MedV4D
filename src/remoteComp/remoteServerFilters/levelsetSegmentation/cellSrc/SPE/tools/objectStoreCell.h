@@ -1,6 +1,8 @@
 #ifndef OBJECTSTORECELL_H_
 #define OBJECTSTORECELL_H_
 
+#include <string.h>
+
 namespace M4D
 {
 namespace Cell
@@ -15,9 +17,7 @@ public:
 	 T *Borrow();
 	 void Return(T *p);
 	 
-	 bool IsFull() { return m_borrowed == _size; }
-protected:
-		
+	 bool IsFull() { return m_borrowed == _size; }		
 	ObjectStoreCell(uint32 size, T *buf, TAllocMapItem *allocMap);
 private:
 	void ToggleBitInMap(uint16 bitPos);
@@ -40,10 +40,9 @@ template<typename T, uint16 STORESIZE>
 class FixedObjectStoreCell : public ObjectStoreCell<T>
 {
 public:
-	FixedObjectStoreCell();
+	FixedObjectStoreCell(T *buf);
 private:
 	TAllocMapItem m_allocMap[ALLOC_MAP_ITEM_COUNT(STORESIZE)];
-	T m_buf[STORESIZE];
 };
 
 ///////////////////////////////////////////////////////////////////////////////

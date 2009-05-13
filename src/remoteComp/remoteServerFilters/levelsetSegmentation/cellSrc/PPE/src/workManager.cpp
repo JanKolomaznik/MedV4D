@@ -49,8 +49,8 @@ WorkManager::WorkManager(uint32 coreCount, RunConfiguration *rc) :
 		}
 
 		// layer storeage init
-		m_LayerNodeStore = LayerNodeStorageType::New();
-		m_LayerNodeStore->SetGrowthStrategyToExponential();
+//		m_LayerNodeStore = LayerNodeStorageType::New();
+//		m_LayerNodeStore->SetGrowthStrategyToExponential();
 
 		for(uint32 spuIt=0; spuIt<_numOfCores; spuIt++)
 		{
@@ -90,7 +90,7 @@ void WorkManager::PUSHNode(const TIndex &index, uint32 layerNum)
 {
 	M4D::Multithreading::ScopedLock lock(_layerAccessMutex);
 
-	LayerNodeType *node = m_LayerNodeStore->Borrow();
+	LayerNodeType *node = m_LayerNodeStore.Borrow();
 	node->m_Value = index;
 	// push node into segment that have the least count of nodes
 	m_LayerSegments[GetShortestLayer(layerNum)].layers[layerNum].PushFront(node);
@@ -105,6 +105,7 @@ void WorkManager::UNLINKNode(LayerNodeType *node, uint32 layerNum,
 
 	// unlink node from segment that have the biggest count of nodes
 	m_LayerSegments[segmentID].layers[layerNum].Unlink(node);
+	m_LayerNodeStore.Return(node);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
