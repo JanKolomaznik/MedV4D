@@ -2,23 +2,21 @@
 #error File objectStoreCell.tcc cannot be included directly!
 #else
 
-namespace M4D {
-namespace Cell {
-
 ///////////////////////////////////////////////////////////////////////////////
-template<typename T, uint16 STORESIZE>
-ObjectStoreCell<T, STORESIZE>::ObjectStoreCell()
-	: m_borrowed(0)
+template<typename T>
+ObjectStoreCell<T>
+::ObjectStoreCell(uint32 size, T *buf, TAllocMapItem *allocMap)
+	: m_allocMap(allocMap), m_buf(buf), m_borrowed(0), _size(size)
 {
 	// reset the alloc map to zeros
-	memset(m_allocMap, 0, sizeof(TAllocMapItem) * ALLOC_MAP_ITEM_COUNT);
+	memset(m_allocMap, 0, sizeof(TAllocMapItem) * ALLOC_MAP_ITEM_COUNT(_size));
 }
 ///////////////////////////////////////////////////////////////////////////////
-template<typename T, uint16 STORESIZE>
+template<typename T>
 T *
-ObjectStoreCell<T, STORESIZE>::Borrow()
+ObjectStoreCell<T>::Borrow()
 {
-	if(m_borrowed < STORESIZE)
+	if(m_borrowed < _size)
 	{
 		uint16 pos = FindFirstFree();
 		ToggleBitInMap(pos);
@@ -30,9 +28,9 @@ ObjectStoreCell<T, STORESIZE>::Borrow()
 }	 
 
 ///////////////////////////////////////////////////////////////////////////////
-template<typename T, uint16 STORESIZE> 
+template<typename T> 
 void
-ObjectStoreCell<T, STORESIZE>::Return(T *p)
+ObjectStoreCell<T>::Return(T *p)
 {
 //	if(p < m_buf || p >= &m_buf[STORESIZE] )	// trying put foreign node
 //	{
@@ -51,9 +49,9 @@ ObjectStoreCell<T, STORESIZE>::Return(T *p)
 ///////////////////////////////////////////////////////////////////////////////
 #define TOGGLE_BIT(cell, mask)  ((cell) = (cell) ^ (mask)) 
 
-template<typename T, uint16 STORESIZE> 
+template<typename T> 
 void
-ObjectStoreCell<T, STORESIZE>::ToggleBitInMap(uint16 bitPos)
+ObjectStoreCell<T>::ToggleBitInMap(uint16 bitPos)
 {
 	uint16 cellNum = bitPos / ALLOC_MAP_ITEM_SIZE_IN_BITS;
 	TAllocMapItem *cell = &m_allocMap[cellNum];
@@ -72,22 +70,22 @@ ObjectStoreCell<T, STORESIZE>::ToggleBitInMap(uint16 bitPos)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-template<typename T, uint16 STORESIZE>
+template<typename T>
 uint16
-ObjectStoreCell<T, STORESIZE>::FindFirstFree(void)
+ObjectStoreCell<T>::FindFirstFree(void)
 {
 	TAllocMapItem *it = m_allocMap;
 	uint16 cntr = 0;
 #define searchMask ((TAllocMapItem)-1) /* full = all ones */
 	// search for 0 in alloc map
-	while(*it == searchMask	&& cntr < ALLOC_MAP_ITEM_COUNT)
+	while(*it == searchMask	&& cntr < ALLOC_MAP_ITEM_COUNT(_size))
 	{
 		it++;
 		cntr++;
 	}
 #define BITSINBYTE 8
 #define ALLOCITEMSIZEINBITS (sizeof(TAllocMapItem) * BITSINBYTE)
-	if(cntr < ALLOC_MAP_ITEM_COUNT)
+	if(cntr < ALLOC_MAP_ITEM_COUNT(_size))
 	{
 		cntr *= ALLOCITEMSIZEINBITS;
 		// add bit count in found cell
@@ -104,6 +102,13 @@ ObjectStoreCell<T, STORESIZE>::FindFirstFree(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 
+template<typename T, uint16 STORESIZE>
+FixedObjectStoreCell<T, STORESIZE>::FixedObjectStoreCell()
+	: ObjectStoreCell<T>(STORESIZE, m_buf, m_allocMap)
+{
+
 }
-}
+
+///////////////////////////////////////////////////////////////////////////////
+
 #endif

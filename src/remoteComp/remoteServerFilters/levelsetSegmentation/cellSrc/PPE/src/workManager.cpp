@@ -46,7 +46,7 @@ WorkManager::WorkManager(uint32 coreCount, RunConfiguration *rc) :
 						_numOfCores * sizeof(PropagateValuesConf)) != 0)
 		{
 			throw "bad";
-		}s
+		}
 
 		// layer storeage init
 		m_LayerNodeStore = LayerNodeStorageType::New();
@@ -58,7 +58,6 @@ WorkManager::WorkManager(uint32 coreCount, RunConfiguration *rc) :
 			_configs[spuIt].calcChngApplyUpdateConf = &_calcChngApplyUpdateConf[spuIt];
 			_configs[spuIt].propagateValsConf = &_propagateValsConf[spuIt];
 		}
-
 	}
 	catch(...)
 	{
