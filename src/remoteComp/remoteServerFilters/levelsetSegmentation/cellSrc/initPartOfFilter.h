@@ -34,7 +34,7 @@ public:
 	typedef typename OutputImageType::ValueType ValueType;
 	typedef typename OutputImageType::IndexType IndexType;
 
-	typedef WorkManager<TIndex, ValueType> TWorkManager;
+	//typedef WorkManager<TIndex, ValueType> TWorkManager;
 
 	/** The type of the image used to index status information.  Necessary for
 	 *  the internals of the algorithm. */
@@ -153,9 +153,9 @@ protected:
 
 	void InitRunConf();
 
-	RunConfiguration m_runConf;
+	RunConfiguration m_runConf __attribute__((aligned(RunConfiguration_Allign)));
 
-	TWorkManager _workManager;
+	WorkManager _workManager;
 	SPEManager m_SPEManager;
 };
 

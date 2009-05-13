@@ -1,51 +1,53 @@
-# --------------------------------------------------------------- 
-# Licensed Materials - Property of IBM                            
-# 5724-S84                                                        
-# (C) Copyright IBM Corp. 2008       All Rights Reserved          
-# US Government Users Restricted Rights - Use, duplication or     
-# disclosure restricted by GSA ADP Schedule Contract with         
-# IBM Corp.                                                       
-# --------------------------------------------------------------- 
-# PROLOG END TAG zYx
 
-CELL_TOP=/opt/cell/sdk
 srcTop=../../../../..
 
 include $(srcTop)/project/ToolchainSelect.mk
 include $(srcTop)/project/pathsDefinitions.mk
 include $(srcTop)/project/configurationSelector.mk
 
-TARGET_PROCESSOR := ppu64
+########################################
+#Name of this project part
+NAME=		PPEStuff$(archPostfix)
+########################################
 
-########################################################################
-#			Target
-########################################################################
+#Name of target
+OUTPUTNAME=	lib$(NAME).a
+OUTPUTDIR=	$(srcTop)/lib
+OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
+TMP_DIR=	$(srcTop)/tmp/$(NAME)
 
-LIBRARY	:= libPPEStuff$(archPostfix).a
+INCLUDES=	-I$(srcTop)\
+			$(ITKIncludes)\
+			-I/opt/cell/sysroot/opt/cell/sdk/usr/include
+			
+ALTIVEC= -mabi=altivec -maltivec 
 
-# path to source files
-VPATH := src
+.PHONY: all
+all:		tmpdir $(OUTPUT)
+		
 
-########################################################################
-#			Local Defines
-########################################################################
-#--param max-unroll-times=1 # needed to keep size of program down
-#MY_SPECIAL_FLAGS = -ffunction-sections -fdata-sections -g
-#CFLAGS_gcc:= CXXFLAGS
-#LDFLAGS_gcc= --gc-sections --print-gc-sections --stack-analysis --local-store=0:256	#-Wl,-q -g
-				
-INCLUDE         := -I$(srcTop)\
-					$(ITKIncludes)
+.PHONY: tmpdir
+tmpdir:		
+		$(MKDIR) $(TMP_DIR) 2>/dev/null || true
 
-INSTALL_DIR		= $(srcTop)/lib
-INSTALL_FILES		= $(LIBRARY)
+.PHONY: build
+build:		cleanall all
 
-########################################################################
-#			buildutils/make.footer
-########################################################################
+OBJECT_FILES = 	$(TMP_DIR)/SPEManager.o\
+				$(TMP_DIR)/SPURequestsDispatcher.o\
+				$(TMP_DIR)/workManager.o
+		
+$(OUTPUT): $(OBJECT_FILES)
+		$(AR) $(ARFLAGS) $(OUTPUT) $(OBJECT_FILES)
 
-ifdef CELL_TOP
-	include $(CELL_TOP)/buildutils/make.footer
-else
-	include ../../../../../buildutils/make.footer
-endif
+$(TMP_DIR)/SPEManager.o:
+	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/SPEManager.o src/SPEManager.cpp
+$(TMP_DIR)/SPURequestsDispatcher.o:
+	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/SPURequestsDispatcher.o src/SPURequestsDispatcher.cpp
+$(TMP_DIR)/workManager.o:
+	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) $(ALTIVEC) -c -o $(TMP_DIR)/workManager.o src/workManager.cpp
+
+.PHONY: clean
+clean:
+		$(RM) $(OBJECT_FILES)
+		$(RM) $(OUTPUT)

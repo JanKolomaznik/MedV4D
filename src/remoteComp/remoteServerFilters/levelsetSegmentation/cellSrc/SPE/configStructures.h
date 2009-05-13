@@ -14,10 +14,15 @@ enum ESPUCommands
 	QUIT
 };
 
+///////////////////////////////////////////////////////////////////////////////
+
+#define PropagateValuesConf_Allign 64
+#define PropagateValuesConf_AllignExponent 6
+
 struct PropagateValuesConf
 {
-	SparseFieldLevelSetNode *layerBegins[LYERCOUNT];
-	SparseFieldLevelSetNode *layerEnds[LYERCOUNT];
+	Address layerBegins[LYERCOUNT];
+	Address layerEnds[LYERCOUNT];
 	
 	void operator=(const PropagateValuesConf& o)
 	{
@@ -27,14 +32,19 @@ struct PropagateValuesConf
 		layerEnds[i] = o.layerEnds[i];
 		}
 	}
-};
+} __attribute__((aligned(PropagateValuesConf_Allign)));
+
+///////////////////////////////////////////////////////////////////////////////
+
+#define CalculateChangeAndUpdActiveLayerConf_Allign 32
+#define CalculateChangeAndUpdActiveLayerConf_AllignExponent 5
 
 struct CalculateChangeAndUpdActiveLayerConf
 {
-	SparseFieldLevelSetNode *layer0Begin;
-	SparseFieldLevelSetNode *layer0End;
+	Address layer0Begin;
+	Address layer0End;
 
-	TPixelValue *updateBuffBegin;
+	Address updateBuffBegin;
 	
 	void operator=(const CalculateChangeAndUpdActiveLayerConf& o)
 	{
@@ -42,9 +52,14 @@ struct CalculateChangeAndUpdActiveLayerConf
 		layer0End = o.layer0End;
 		updateBuffBegin = o.updateBuffBegin;
 	}
-};
+} __attribute__((aligned(CalculateChangeAndUpdActiveLayerConf_Allign)));
+
+///////////////////////////////////////////////////////////////////////////////
 
 // geather all configurations that SPE needs to load
+#define RunConfiguration_Allign 128
+#define RunConfiguration_AllignExponent 7
+
 class RunConfiguration
 {
 public:
@@ -65,41 +80,22 @@ public:
     TImageProperties<StatusType> statusImageProps;
     
     uint32 SPEId;
-	
-	void operator=(const RunConfiguration& o)
-	{
-		m_upThreshold = o.m_upThreshold;
-		m_downThreshold = o.m_downThreshold;
-		m_propWeight = o.m_propWeight;
-		m_curvWeight = o.m_curvWeight;
-		m_ConstantGradientValue = o.m_ConstantGradientValue;
-		m_neighbourScales = o.m_neighbourScales;
-		featureImageProps = o.featureImageProps;
-		valueImageProps = o.valueImageProps;
-		statusImageProps = o.statusImageProps;
-		SPEId = o.SPEId;
-	}
-};
+} __attribute__((aligned(RunConfiguration_Allign)));
+
+///////////////////////////////////////////////////////////////////////////////
+
+#define ConfigStructures_Allign 
+#define ConfigStructures_AllignExponent 5
 
 class ConfigStructures
 {
 public:
-	RunConfiguration runConf;
-	CalculateChangeAndUpdActiveLayerConf calcChngApplyUpdateConf;
-	PropagateValuesConf propagateValsConf;
-};
+	Address runConf;
+	Address calcChngApplyUpdateConf;
+	Address propagateValsConf;
+} __attribute__ ((aligned(32)));
 
-//template<typename TNode>
-//class CalculateChangeStepConfiguration
-//{
-//public:
-//	static const uint32 itemCountInOneRun = 10 * 1024;
-//	
-//	TNode *begin;
-//	TNode *end;
-//	
-//	TimeStepType dt;
-//};
+///////////////////////////////////////////////////////////////////////////////
 
 }
 }  // namespace

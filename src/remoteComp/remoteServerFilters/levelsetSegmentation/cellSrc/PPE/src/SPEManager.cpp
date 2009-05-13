@@ -99,6 +99,7 @@ void SPEManager::StartSims()
 {
 	for (uint32 i=0; i<speCount; i++)
 	{
+		_requestDispatcher._progSims[i]._updateSolver.Init();
 		/* Create pthread for each of the SPE conexts */
 		if (pthread_create( &_requestDispatcher._progSims[i].pthread, 
 		NULL, &sim_pthread_function, &_requestDispatcher._progSims[i]))
@@ -128,7 +129,7 @@ void SPEManager::StopSims()
 ///////////////////////////////////////////////////////////////////////////////
 
 /* Determine the number of SPE threads to create.   */
-uint32 SPEManager::speCount = 4;//spe_cpu_info_get(SPE_COUNT_USABLE_SPES, -1);
+uint32 SPEManager::speCount = 1;//spe_cpu_info_get(SPE_COUNT_USABLE_SPES, -1);
 
 ///////////////////////////////////////////////////////////////////////////////
 uint32 SPEManager::GetSPECount()
@@ -138,14 +139,11 @@ uint32 SPEManager::GetSPECount()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-SPEManager::SPEManager(SPURequestsDispatcher::TWorkManager *wm) :
+SPEManager
+::SPEManager(WorkManager *wm) :
+//::SPEManager(SPURequestsDispatcher::TWorkManager *wm) :
 	_workManager(wm), _requestDispatcher(wm, speCount)
 {
-#ifdef FOR_CELL
-	StartSPEs();
-#else
-	StartSims();
-#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -156,6 +154,17 @@ SPEManager::~SPEManager()
 	StopSPEs();
 #else
 	StopSims();
+#endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void SPEManager::Init()
+{
+#ifdef FOR_CELL
+	StartSPEs();
+#else
+	StartSims();
 #endif
 }
 
@@ -224,12 +233,7 @@ double SPEManager::ApplyUpdate(TimeStepType dt)
 ///////////////////////////////////////////////////////////////////////////////
 
 void SPEManager::RunPropagateLayerVals()
-{
-#ifndef FOR_CELL 
-	for(uint32 i=0; i<speCount;i++)
-		_requestDispatcher._progSims[i]._updateSolver.Init();
-#endif
-	
+{	
 	_workManager->InitPropagateValuesConf();
 	_requestDispatcher.SendCommand(CALC_PROPAG_VALS);
 }

@@ -9,7 +9,7 @@ class RemoteArrayCell
 {
 public:
 	RemoteArrayCell();
-	RemoteArrayCell(T *array);
+	RemoteArrayCell(Address array);
 	~RemoteArrayCell();
 	
 	void push_back(T val);
@@ -18,18 +18,18 @@ public:
 	
 	void SetBeginEnd(T *begin, T *end);
 	
-	void SetArray(T *array);
+	void SetArray(Address array);
 	void FlushArray();
 	
 private:
-	void CopyData(T *src, T *dest, size_t size);
+	//void CopyData(T *src, T *dest, size_t size);
 	
 	T m_buf[2][BUFSIZE];
 	bool m_currBuf;
 	uint8 m_currPos;
 	
-	T *m_arrayBegin;
-	T *m_currFlushedPos;
+	Address m_arrayBegin;
+	Address m_currFlushedPos;
 };
 
 template<typename T, uint8 BUFSIZE>
@@ -40,7 +40,7 @@ public:
 	GETRemoteArrayCell();//, T *end);
 	//~GETRemoteArrayCell();
 	
-	void SetArray(T *begin);
+	void SetArray(Address begin);
 	
 	T GetCurrVal();
 	Self &operator++();
@@ -54,9 +54,9 @@ private:
 	bool m_currBuf;
 	uint8 m_currPos;
 	
-	T *m_arrayBegin;
+	Address m_arrayBegin;
 	//T *m_arrayEnd;
-	T *m_currLoadedPos;
+	Address m_currLoadedPos;
 };
 
 // this array has to notify PPU when flushed to process it
@@ -68,7 +68,7 @@ public:
 	
 	void push_back(T val);
 	bool IsFull() { return m_currPos==BUFSIZE; }
-	void FlushArray(T *whereToFLush);
+	void FlushArray(Address whereToFLush);
 	
 private:
 	void CopyData(T *src, T *dest, size_t size);
@@ -77,8 +77,8 @@ private:
 	bool m_currBuf;
 	uint8 m_currPos;
 	
-	T *m_arrayBegin;
-	T *m_currFlushedPos;
+	Address m_arrayBegin;
+	Address m_currFlushedPos;
 	
 	uint32 id;		// identification (of layer)
 };

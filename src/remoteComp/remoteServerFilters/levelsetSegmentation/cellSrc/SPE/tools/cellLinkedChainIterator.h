@@ -15,44 +15,45 @@ public:
 	LinkedChainIteratorCell();
 	~LinkedChainIteratorCell();
 	
-	void SetBeginEnd(Item *begin, Item *end);
+	void SetBeginEnd(Address begin, Address end);
 
 	inline bool HasNext(void) { 
 		return (GetCurrItem()->Next != m_end); 
 		}	
 
 	Item *Next(void);	
-	Item *GetCentralMemAddrrOfCurrProcessedNode() { return m_realAddresses[m_currBufPosition]; }
+	Address GetCentralMemAddrrOfCurrProcessedNode() { return m_realAddresses[m_currBufPosition]; }
 	
 private:
 	
 	Item * GetCurrItem() { return &m_buf[m_currBufPosition]; }
 	
 //	inline bool HasNextForLoad(void) { return (GetCurrItem()->Next != m_end); }
-	void Load(Item *src, Item *dest, size_t size);
+	//void Load(Address src, Item *dest, size_t size);
 	
 	Item m_buf[2];
-	Item *m_realAddresses[2];
+	Address m_realAddresses[2];
 	
 	uint8 m_currBufPosition;
 	
 	//Item *m_begin;
-	Item *m_end;
+	Address m_end;
 	//Item *m_nextForLoad;
 	//Item *m_currToProcess;
 	
 	//Item *m_currProcessedCentralMemAddress;
 	
-	Item *pom;
+	Address pom;
 	uint32 counter;
 	
 	unsigned int tag;
 };
 
+//include implementation
+#include "src/cellLinkedChainIterator.tcc"
 
 }}  // namespace
 
-//include implementation
-#include "src/cellLinkedChainIterator.tcc"
+
 
 #endif /*LINKEDCHAINITERATOR_H_*/

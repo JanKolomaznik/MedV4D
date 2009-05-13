@@ -9,7 +9,7 @@ using namespace M4D::Multithreading;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-SPURequestsDispatcher::SPURequestsDispatcher(TWorkManager *wm, uint32 numSPE)
+SPURequestsDispatcher::SPURequestsDispatcher(WorkManager *wm, uint32 numSPE)
 	: _workManager(wm), _numOfSPE(numSPE)
 {
 #ifdef FOR_CELL
@@ -22,18 +22,18 @@ SPURequestsDispatcher::SPURequestsDispatcher(TWorkManager *wm, uint32 numSPE)
 		_progSims[i]._applyUpdateCalc.m_layerGate._mailbox	= &_progSims[i]._mailbox;
 
 		// setup apply update
-		_progSims[i]._applyUpdateCalc.commonConf	= 
-			&_workManager->GetConfSructs()[i].runConf;
-		_progSims[i]._applyUpdateCalc.m_stepConfig = 
-			&_workManager->GetConfSructs()[i].calcChngApplyUpdateConf;
-		_progSims[i]._applyUpdateCalc.m_propLayerValuesConfig = 
-			&_workManager->GetConfSructs()[i].propagateValsConf;
+		_progSims[i]._applyUpdateCalc.commonConf	= (RunConfiguration *)
+			_workManager->GetConfSructs()[i].runConf.Get64();
+		_progSims[i]._applyUpdateCalc.m_stepConfig = (CalculateChangeAndUpdActiveLayerConf *)
+			_workManager->GetConfSructs()[i].calcChngApplyUpdateConf.Get64();
+		_progSims[i]._applyUpdateCalc.m_propLayerValuesConfig = (PropagateValuesConf *)
+			_workManager->GetConfSructs()[i].propagateValsConf.Get64();
 
 		// and update solver
-		_progSims[i]._updateSolver.m_Conf = &_workManager->GetConfSructs()[i].runConf;
-		_progSims[i]._updateSolver.m_stepConfig = 
-			&_workManager->GetConfSructs()[i].calcChngApplyUpdateConf;
-		//_progSims[i]._updateSolver.Init();
+		_progSims[i]._updateSolver.m_Conf = (RunConfiguration *)
+			_workManager->GetConfSructs()[i].runConf.Get64();
+		_progSims[i]._updateSolver.m_stepConfig = (CalculateChangeAndUpdActiveLayerConf *)
+			_workManager->GetConfSructs()[i].calcChngApplyUpdateConf.Get64();
 	}
 #endif
 	
@@ -139,7 +139,7 @@ uint32 SPURequestsDispatcher::MyPopMessage(uint32 SPENum)
 void SPURequestsDispatcher::SendCommand(ESPUCommands cmd)
 {
 	uint32 cmdData = (uint32) cmd;
-	D_PRINT("Write command: " << cmd);
+	DL_PRINT(DEBUG_MAILBOX, "Write command: " << cmd);
 	for(uint32 i=0; i<_numOfSPE; i++)
 	{
 		MyPushMessage(cmdData, i);
@@ -158,13 +158,22 @@ void SPURequestsDispatcher::SendCommand(ESPUCommands cmd)
 
 void SPURequestsDispatcher::WaitForMessages()
 {
+#ifdef FOR_CELL
+	uint32 mBoxStat;
+#endif
+	
 	_SPEYetRunning = _numOfSPE;
 	while(_SPEYetRunning)
 	{
 		for(uint32 i=0; i<_numOfSPE; i++)
 		{
 #ifdef FOR_CELL
-			if(spe_out_mbox_status(_SPE_data[i].spe_ctx) < 1)
+			mBoxStat = spe_out_mbox_status(_SPE_data[i].spe_ctx);
+			if(mBoxStat == -1)
+			{
+				D_PRINT("spe_out_mbox_status on " << i << "th SPE FAILED!!");
+			}
+			if(mBoxStat > 0)
 				DispatchMessage(i);
 #else
 			if(_progSims[i]._mailbox.spe_queue_status())

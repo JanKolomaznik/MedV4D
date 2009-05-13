@@ -29,9 +29,9 @@ PROGRAMS_spu 	:= SPEMain
 #			Local Defines
 ########################################################################
 
-CFLAGS_gcc = -g
+#CFLAGS_gcc = -g
 MY_SPECIAL_FLAGS = -ffunction-sections -fdata-sections #-g #--param max-unroll-times=1 # needed to keep size of program down
-#LDFLAGS_gcc= --gc-sections --print-gc-sections --stack-analysis --local-store=0:256	#-Wl,-q -g
+LDFLAGS_gcc= --gc-sections --print-gc-sections --stack-analysis --local-store=0:256	#-Wl,-q -g
 				
 INCLUDE         := -I$(srcTop)
 

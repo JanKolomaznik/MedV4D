@@ -1,6 +1,8 @@
 #ifndef COMMONTYPES_H_
 #define COMMONTYPES_H_
 
+#include "tools/address.h"
+
 namespace M4D {
 namespace Cell {
 
@@ -54,15 +56,15 @@ struct TImageProperties
 {
 	TRegion region;
 	TSpacing spacing;
-	PixelType *imageData;
+	Address imageData;
 };
 
 class SparseFieldLevelSetNode
 {
 public:
 	TIndex               m_Value;
-	SparseFieldLevelSetNode *Next;
-	SparseFieldLevelSetNode *Previous;
+	Address Next;
+	Address Previous;
 };
 
 

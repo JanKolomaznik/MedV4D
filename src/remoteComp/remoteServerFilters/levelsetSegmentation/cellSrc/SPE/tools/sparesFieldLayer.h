@@ -32,21 +32,52 @@ public:
 //    };   
 //  
 //  typedef std::vector<RegionType> RegionListType;
+  
+#define Address2Node(add) ((NodeType *)add.Get64())
+  
+  class Iterator
+  {
+  public:
+	  bool HasNext() {
+		  return Address2Node(_it->Next) != _end;
+	  }
+	  
+	  NodeType *Next() { 
+		  NodeType * _tmp = _it;
+		  _it = Address2Node(_it->Next);
+		  return _tmp;
+	  }
+	  NodeType *_it;
+	  NodeType *_end;
+  };
+  
+
+  
+  void InitIterator(Iterator &it)
+  {
+	  it._it = Front();
+	  it._end = &m_HeadNode;
+  }
 
   /** Returns a pointer to the first node in the list.  Constant
    * time. */ 
   NodeType *Front()
-    { return m_HeadNode.Next; }
+    { return Address2Node(m_HeadNode.Next); }
 
   /** Returns a const pointer to the first node in the list. Constant time. */
   const NodeType *Front() const
-    { return m_HeadNode.Next; }
+    { return Address2Node(m_HeadNode.Next); }
+  
+  const NodeType *End() const
+  {
+	  return &m_HeadNode;
+  }
 
   /** Unlinks the first node from the list. Constant time. */
   void PopFront()
     {
-    m_HeadNode.Next = m_HeadNode.Next->Next;
-    m_HeadNode.Next->Previous = &m_HeadNode;
+    m_HeadNode.Next = Address2Node(m_HeadNode.Next)->Next;
+    Address2Node(m_HeadNode.Next)->Previous = &m_HeadNode;
     m_Size -= 1;
     }
   
@@ -55,7 +86,7 @@ public:
     {
     n->Next = m_HeadNode.Next;
     n->Previous = &m_HeadNode;
-    m_HeadNode.Next->Previous = n;
+    Address2Node(m_HeadNode.Next)->Previous = n;
     m_HeadNode.Next = n;
     m_Size += 1;
     }
@@ -63,8 +94,8 @@ public:
   /** Unlinks a node from the list */
   void Unlink(NodeType *n)
     {
-    n->Previous->Next = n->Next;
-    n->Next->Previous = n->Previous;
+	  Address2Node(n->Previous)->Next = n->Next;
+	  Address2Node(n->Next)->Previous = n->Previous;
     m_Size -= 1;
     }
   

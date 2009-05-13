@@ -2,7 +2,7 @@
 #error File myFiniteDifferenceFilter.tcc cannot be included directly!
 #else
 
-#define DEBUGMYFINITEFILT 12
+#define DEBUGMYFINITEFILT 0
 
 ///////////////////////////////////////////////////////////////////////////////
 

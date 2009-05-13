@@ -14,7 +14,7 @@ RemoteArrayCell<T, BUFSIZE>::RemoteArrayCell()
 }
 ///////////////////////////////////////////////////////////////////////////////
 template<typename T, uint8 BUFSIZE>
-RemoteArrayCell<T, BUFSIZE>::RemoteArrayCell(T *array)
+RemoteArrayCell<T, BUFSIZE>::RemoteArrayCell(Address array)
 { 
 	SetArray(array);
 }
@@ -37,7 +37,7 @@ RemoteArrayCell<T, BUFSIZE>::push_back(T val)
 ///////////////////////////////////////////////////////////////////////////////
 template<typename T, uint8 BUFSIZE>
 void
-RemoteArrayCell<T, BUFSIZE>::SetArray(T *array)
+RemoteArrayCell<T, BUFSIZE>::SetArray(Address array)
 	{
 		m_currFlushedPos = m_arrayBegin = array;
 		m_currPos = m_currBuf = 0;
@@ -49,7 +49,7 @@ RemoteArrayCell<T, BUFSIZE>::FlushArray()
 {
 	//CopyData(m_buf[m_currBuf], m_currFlushedPos, m_currPos);
 	DMAGate::Put(m_buf[m_currBuf], m_currFlushedPos, m_currPos * sizeof(T) );
-	m_currFlushedPos += m_currPos;
+	m_currFlushedPos += m_currPos * sizeof(T);
 	m_currBuf = !m_currBuf;
 	m_currPos = 0;
 }
@@ -72,7 +72,7 @@ GETRemoteArrayCell<T, BUFSIZE>::GETRemoteArrayCell()//, T *end)
 ///////////////////////////////////////////////////////////////////////////////
 template<typename T, uint8 BUFSIZE>
 void
-GETRemoteArrayCell<T, BUFSIZE>::SetArray(T *begin)
+GETRemoteArrayCell<T, BUFSIZE>::SetArray(Address begin)
 {
 	m_currBuf = 0;
 	m_currPos = 0;
@@ -116,8 +116,8 @@ void
 GETRemoteArrayCell<T, BUFSIZE>::LoadNextPiece()
 {
 	//CopyData(m_currLoadedPos, m_buf[!m_currBuf], BUFSIZE);
-	DMAGate::Get(m_currLoadedPos, m_buf[!m_currBuf], BUFSIZE* sizeof(T) );
-	m_currLoadedPos += BUFSIZE;
+	DMAGate::Get(m_currLoadedPos, m_buf[!m_currBuf], BUFSIZE * sizeof(T) );
+	m_currLoadedPos += BUFSIZE * sizeof(T);
 }
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -135,11 +135,11 @@ PUTRemoteArrayCell<T, BUFSIZE>::push_back(T val)
 ///////////////////////////////////////////////////////////////////////////////
 template<typename T, uint8 BUFSIZE>
 void
-PUTRemoteArrayCell<T, BUFSIZE>::FlushArray(T *whereToFLush)
+PUTRemoteArrayCell<T, BUFSIZE>::FlushArray(Address whereToFLush)
 {
 	//CopyData(m_buf[m_currBuf], whereToFLush, m_currPos);
-	DMAGate::Put(m_buf[m_currBuf], whereToFLush, m_currPos* sizeof(T) );
-	m_currFlushedPos += m_currPos;
+	DMAGate::Put(m_buf[m_currBuf], whereToFLush, m_currPos * sizeof(T) );
+	m_currFlushedPos += m_currPos * sizeof(T);
 	m_currBuf = !m_currBuf;
 	m_currPos = 0;
 }

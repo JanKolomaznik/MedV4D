@@ -13,29 +13,27 @@ using namespace M4D::Cell;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void LayerGate::UnlinkNode(SparseFieldLevelSetNode *node, uint8 layerNum)
+void LayerGate::UnlinkNode(Address node, uint8 layerNum)
 {
 	uint32 message = 0;
 	message |= (UNLINKED_NODES_PROCESS & MessageID_MASK);
 	message |= ((layerNum << MessageLyaerID_SHIFT) & MessageLyaerID_MASK);
 	
-	uint64 nodeAddress = (uint64) node;
-	
-	DL_PRINT(DEBUG_GATE, "Send ULNK, node:" << node << " layer: " << (uint32)layerNum);
+	DL_PRINT(DEBUG_GATE, "Send ULNK, node:" << node.Get64() << " layer: " << (uint32)layerNum);
 	
 #ifdef FOR_CELL
 	// push to mailbox
 	spu_writech(SPU_WrOutMbox, message);
-	spu_writech(SPU_WrOutMbox, (uint32) (nodeAddress & 0xffffffff));
-	spu_writech(SPU_WrOutMbox, (uint32) (nodeAddress >> 32));
+	spu_writech(SPU_WrOutMbox, (uint32) (node.Get64() & 0xffffffff));
+	spu_writech(SPU_WrOutMbox, (uint32) (node.Get64() >> 32));
 #else
 	{
 		ScopedLock lock(_mailbox->fromSPEQMutex);
 		
 		_mailbox->SPEPush(message);
 		// push node address word by word
-		_mailbox->SPEPush((uint32) (nodeAddress & 0xffffffff));
-		_mailbox->SPEPush((uint32) (nodeAddress >> 32));
+		_mailbox->SPEPush((uint32) (node.Get64() & 0xffffffff));
+		_mailbox->SPEPush((uint32) (node.Get64() >> 32));
 	}
 //	
 //	// symulate dispatcher run

@@ -2,11 +2,13 @@
 #include "common/Types.h"
 //#include "common/Debug.h"
 #include "tools/SPEdebug.h"
+#include "tools/DMAGate.h"
 //#include "tools/VectorNoExcepts.h"
 //#include "vnl/vnl_vector.h"
 #include "vnl_math.h"
 //#include "itkNumericTraits.h"
 #include "updateCalculation/updateCalculatorSPE.h"
+#include "applyUpdateCalc/applyUpdateCalculator.h"
 //#include "neighborhoodCell.h"
 //#include "neighbourhoodIterator.h"
 
@@ -21,9 +23,16 @@ using namespace M4D::Cell;
 int main(unsigned long long speid,
          unsigned long long argp, 
          unsigned long long envp __attribute__ ((unused)))
-{	
-	RunConfiguration m_Conf;
+{
+	// config structures
+	ConfigStructures _Confs __attribute__ ((aligned (128)));
+	RunConfiguration _runConf __attribute__ ((aligned (128)));	
+	CalculateChangeAndUpdActiveLayerConf _cChangeConfig __attribute__ ((aligned (128)));
+	PropagateValuesConf _propValConfig __attribute__ ((aligned (128)));
+	
+	// calculator objects
 	UpdateCalculatorSPE updateCalculator;
+	ApplyUpdateSPE _applyUpdateCalc;
 	
 	uint32_t mailboxVal;
 	uint32 dt;
@@ -37,24 +46,15 @@ int main(unsigned long long speid,
 
   printf ("This is SPE %lld speaking ... \n", speid);
   
-  unsigned int tag;
-  tag = mfc_tag_reserve();
-  if ((tag == MFC_TAG_INVALID))
-	{
-	  printf ("SPU ERROR, unable to reserve tag\n");
-	  return 1;
-	}
-  
-  printf ("Transfer of Run config (address=%lld) initiated ... \n", argp);
-  
-  /* DMA the control block information from system memory */
-    mfc_get (&m_Conf, argp, sizeof (RunConfiguration), tag, 0, 0);
-    mfc_write_tag_mask (1 << tag);
-    mfc_read_tag_status_all ();
+  unsigned int tag = DMAGate::Get((void*)argp, &_Confs, sizeof (ConfigStructures));
+  mfc_write_tag_mask (1 << tag);
+  mfc_read_tag_status_all ();
     
-    printf ("Run config transfered\n");
+  tag = DMAGate::Get(_Confs.runConf, &_runConf, sizeof (RunConfiguration));
+  mfc_write_tag_mask (1 << tag);
+  mfc_read_tag_status_all ();
     
-    float32 retval;
+    float32 retval = 0;
   do 
   {
 	  mailboxVal = spu_readch(SPU_RdInMbox);
@@ -63,18 +63,19 @@ int main(unsigned long long speid,
 	  case CALC_CHANGE:
 		  printf ("CALC_CHANGE received\n");
 		  // calculate and return retval
-		  retval = updateCalculator.CalculateChange();
+		  //retval = updateCalculator.CalculateChange();
 		  spu_writech(SPU_WrOutMbox, (uint32_t) JOB_DONE);
 		  spu_writech(SPU_WrOutMbox, (uint32_t) retval);
 		  break;
 	  case CALC_UPDATE:
 		  printf ("CALC_UPDATE received\n");
 		  dt = spu_readch(SPU_RdInMbox);
-		  //retval = updateCalculator.CalculateChange(*((float32 *) &dt));
+		  //retval = _applyUpdateCalc.ApplyUpdate(*((float32 *) &dt));
 		  spu_writech(SPU_WrOutMbox, (uint32_t) JOB_DONE);
 		  spu_writech(SPU_WrOutMbox, (uint32_t) retval);
 		  break;
 	  case CALC_PROPAG_VALS:
+		  //_applyUpdateCalc.PropagateAllLayerValues();
 		  spu_writech(SPU_WrOutMbox, (uint32_t) JOB_DONE);
 		  spu_writech(SPU_WrOutMbox, (uint32_t) retval);
 		  printf ("CALC_UPDATE received\n");

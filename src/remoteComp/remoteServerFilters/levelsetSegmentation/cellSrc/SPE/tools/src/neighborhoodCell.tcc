@@ -28,7 +28,7 @@ PixelType *
 NeighborhoodCell<PixelType>
 ::ComputeImageDataPointer(const TIndex &pos)
 {
-	PixelType *pointer = m_imageProps->imageData;
+	PixelType *pointer = (PixelType *)m_imageProps->imageData.Get64();
 	for(uint8 i=0; i<DIM; i++)
 	{
 		pointer += pos[i] * m_imageStrides[i];
@@ -75,7 +75,7 @@ NeighborhoodCell<PixelType>
 	{		
 		PixelType *begin = ComputeImageDataPointer(posm);
 		//LoadData(begin, dest, m_radiusSize[dim] * sizeof(PixelType));
-		DMAGate::Get(begin, dest, m_radiusSize[dim] * sizeof(PixelType) );		
+		DMAGate::Get(begin, dest, m_radiusSize[dim] * sizeof(PixelType) );
 	}
 	else
 	{

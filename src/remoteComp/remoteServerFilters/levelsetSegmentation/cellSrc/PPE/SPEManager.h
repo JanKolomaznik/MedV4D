@@ -4,7 +4,7 @@
 #include "SPURequestsDispatcher.h"
 
 #ifdef FOR_CELL
-#include <libspe2.h>
+
 #else
 //#include "SPEProgramSimulator.h"
 #endif
@@ -17,10 +17,13 @@ namespace Cell
 class SPEManager
 {
 public:
-	SPEManager(SPURequestsDispatcher::TWorkManager *wm);
+//	SPEManager(SPURequestsDispatcher::TWorkManager *wm);
+	SPEManager(WorkManager *wm);
 	~SPEManager();
 
 	static uint32 GetSPECount();
+	
+	void Init();
 	
 #ifdef FOR_CELL
 	void StopSPEs();
@@ -30,24 +33,18 @@ public:
 	void StartSims();
 #endif
 
-	//void InitProgramProps();
-
 	TimeStepType RunUpdateCalc();
 	double ApplyUpdate(TimeStepType dt);
 	void RunPropagateLayerVals();
 
-	SPURequestsDispatcher::TWorkManager *_workManager;
-
 private:
 	static uint32 speCount;
-	
-	void UnblockDispatchers();
 	
 	TimeStepType MergeTimesteps();
 	TimeStepType MergeRMSs();
 	
-//	void RunDispatchers();
-	
+//	SPURequestsDispatcher::TWorkManager *_workManager;
+	WorkManager *_workManager;
 	SPURequestsDispatcher _requestDispatcher;
 };
 

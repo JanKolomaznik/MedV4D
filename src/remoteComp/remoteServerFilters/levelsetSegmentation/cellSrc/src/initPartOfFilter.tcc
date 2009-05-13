@@ -8,7 +8,7 @@
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
 MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 ::MySegmtLevelSetFilter_InitPart()
-	: _workManager(M4D::Cell::SPEManager::GetSPECount())
+	: _workManager(M4D::Cell::SPEManager::GetSPECount(), &m_runConf)
 	, m_SPEManager(&_workManager)
 {		  
 	//m_SPEManager._workManager = &_workManager;
@@ -151,23 +151,21 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 {	
 	// feature image
     m_runConf.featureImageProps.imageData = 
-    	(FeaturePixelType *)GetFeatureImage()->GetBufferPointer();
+    	(Address) GetFeatureImage()->GetBufferPointer();
     m_runConf.featureImageProps.region = 
     	M4D::Cell::ConvertRegion<TFeatureImage, M4D::Cell::TRegion>(*GetFeatureImage());
     m_runConf.featureImageProps.spacing = 
     	M4D::Cell::ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename TFeatureImage::SpacingType>(GetFeatureImage()->GetSpacing());
     // output image
-    m_runConf.valueImageProps.imageData = (ValueType *)this->GetOutput()->GetBufferPointer();
+    m_runConf.valueImageProps.imageData = (Address) this->GetOutput()->GetBufferPointer();
     m_runConf.valueImageProps.region = 
     	M4D::Cell::ConvertRegion<OutputImageType, M4D::Cell::TRegion>(*this->GetOutput());
     m_runConf.valueImageProps.spacing = M4D::Cell::ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename OutputImageType::SpacingType>(this->GetOutput()->GetSpacing());
     //status image
-    m_runConf.statusImageProps.imageData = (StatusType *)m_StatusImage->GetBufferPointer();
+    m_runConf.statusImageProps.imageData = (Address) m_StatusImage->GetBufferPointer();
     m_runConf.statusImageProps.region = 
     	M4D::Cell::ConvertRegion<StatusImageType, M4D::Cell::TRegion>(*m_StatusImage);
     m_runConf.statusImageProps.spacing = M4D::Cell::ConvertIncompatibleVectors<M4D::Cell::TSpacing, typename StatusImageType::SpacingType>(m_StatusImage->GetSpacing());
-    
-    _workManager.SetupRunConfig(&m_runConf);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -315,22 +313,28 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 {
   unsigned int i;
   bool boundary_status;
-  typename TWorkManager::LayerType::ConstIterator fromIt;
+  WorkManager::LayerType::Iterator fromIt;
+  
   itk::NeighborhoodIterator<StatusImageType>
     statusIt(m_NeighborList.GetRadius(), m_StatusImage,
              this->GetOutput()->GetRequestedRegion() );
   
+  WorkManager::LayerNodeType *curr;
+  
   for(uint32 spuIt=0; spuIt<m_SPEManager.GetSPECount(); spuIt++)
   {
   // For all indicies in the "from" layer...
-  for (fromIt = _workManager.GetLayers()[spuIt].layers[from]->Begin();
-       fromIt != _workManager.GetLayers()[spuIt].layers[from]->End();  ++fromIt)
+	  
+	  
+	  _workManager.GetLayers()[spuIt].layers[from].InitIterator(fromIt);
+  while(fromIt.HasNext())
     {
+	  curr = fromIt.Next();
     // Search the neighborhood of this index in the status image for
     // unassigned indicies. Push those indicies onto the "to" layer and
     // assign them values in the status image.  Status pixels outside the
     // boundary will be ignored.
-    statusIt.SetLocation( ToITKIndex(fromIt->m_Value) );
+    statusIt.SetLocation( ToITKIndex(curr->m_Value) );
     for (i = 0; i < m_NeighborList.GetSize(); ++i)
       {
       if ( statusIt.GetPixel( m_NeighborList.GetArrayIndex(i) )
@@ -391,7 +395,9 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 
   unsigned int i, center;
 
-  typename TWorkManager::LayerType::ConstIterator activeIt;
+  WorkManager::LayerType::Iterator activeIt;
+  
+  
   itk::ConstNeighborhoodIterator<OutputImageType>
     shiftedIt( m_NeighborList.GetRadius(), m_ShiftedImage,
                this->GetOutput()->GetRequestedRegion() );
@@ -400,17 +406,19 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
   typename OutputImageType::Pointer output = this->GetOutput();
 
   //const NeighborhoodScalesType neighborhoodScales; // = func_->ComputeNeighborhoodScales();
+  WorkManager::LayerNodeType *curr;
 
   ValueType dx_forward, dx_backward, length, distance;
   for(uint32 spuIt=0; spuIt<m_SPEManager.GetSPECount(); spuIt++)
     {
+	  _workManager.GetLayers()[spuIt].layers[0].InitIterator(activeIt);
   // For all indicies in the active layer...
-  for (activeIt = _workManager.GetLayers()[spuIt].layers[0]->Begin();
-       activeIt != _workManager.GetLayers()[spuIt].layers[0]->End(); ++activeIt)
+  while(activeIt.HasNext())
     {
+	  curr = activeIt.Next();
     // Interpolate on the (shifted) input image values at this index to
     // assign an active layer value in the output image.
-    shiftedIt.SetLocation( ToITKIndex(activeIt->m_Value) );
+    shiftedIt.SetLocation( ToITKIndex(curr->m_Value) );
 
     length = this->m_ValueZero;
     for (i = 0; i < OutputImageType::ImageDimension; ++i)
@@ -432,7 +440,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
     length = vcl_sqrt((double)length) + MIN_NORM;
     distance = shiftedIt.GetCenterPixel() / length;
 
-    output->SetPixel( ToITKIndex(activeIt->m_Value), 
+    output->SetPixel( ToITKIndex(curr->m_Value), 
                       vnl_math_min(vnl_math_max(-CHANGE_FACTOR, distance), CHANGE_FACTOR) );
     }
     }

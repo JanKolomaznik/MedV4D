@@ -1,20 +1,48 @@
-#ifndef WORKMANAGER_H_
-#error File workManager.tcc cannot be included directly!
-#else
+//#ifndef WORKMANAGER_H_
+//#error File workManager.tcc cannot be included directly!
+//#else
+//
+//namespace M4D {
+//namespace Cell {
 
-namespace M4D {
-namespace Cell {
+#include "common/Common.h"
+#include "../workManager.h"
+
+#ifdef FOR_CELL
+#include <libspe2.h>
+#include <libmisc.h> 
+#endif
+
+using namespace M4D::Cell;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template<typename IndexType, typename ValueType>
-WorkManager<IndexType, ValueType>::WorkManager(uint32 coreCount)
-	: _numOfCores(coreCount)
+WorkManager::WorkManager(uint32 coreCount, RunConfiguration *rc)
+	: _numOfCores(coreCount), _runConf(rc)
 {
 	// aloc props related to SPEs
 	m_LayerSegments = new LayerListType[_numOfCores];
 	m_UpdateBuffers = new UpdateBufferType[_numOfCores];
-	m_configs = new TConfigStructs[_numOfCores];
+	
+#ifdef FOR_CELL
+	_configs = (ConfigStructures *) malloc_align(
+			_numOfCores, 7);
+	_calcChngApplyUpdateConf = (CalculateChangeAndUpdActiveLayerConf *)
+		malloc_align(_numOfCores, CalculateChangeAndUpdActiveLayerConf_AllignExponent);
+	_propagateValsConf = (PropagateValuesConf *) malloc_align(
+			_numOfCores, PropagateValuesConf_AllignExponent);
+#else
+	_configs = new ConfigStructures[_numOfCores];
+	_calcChngApplyUpdateConf = new CalculateChangeAndUpdActiveLayerConf[_numOfCores];
+	_propagateValsConf = new PropagateValuesConf[_numOfCores];
+#endif
+	
+	for(uint32 spuIt=0; spuIt<_numOfCores; spuIt++)
+	{
+		_configs[spuIt].runConf = _runConf;
+		_configs[spuIt].calcChngApplyUpdateConf = &_calcChngApplyUpdateConf[spuIt];
+		_configs[spuIt].propagateValsConf = &_propagateValsConf[spuIt];
+	}
 	
 	// layer storeage init
 	m_LayerNodeStore = LayerNodeStorageType::New();
@@ -23,93 +51,99 @@ WorkManager<IndexType, ValueType>::WorkManager(uint32 coreCount)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template<typename IndexType, typename ValueType>
-WorkManager<IndexType, ValueType>::~WorkManager()
+WorkManager::~WorkManager()
 {
-	delete [] m_configs;
+#ifdef FOR_CELL
+	free_align(_configs);
+	free_align(_calcChngApplyUpdateConf);
+	free_align(_propagateValsConf);
+#else
+	delete [] _configs;
+	delete [] _calcChngApplyUpdateConf;
+	delete [] _propagateValsConf;
+#endif
 	delete [] m_UpdateBuffers;
-	delete [] m_LayerSegments;	
+	delete [] m_LayerSegments;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template<typename IndexType, typename ValueType>
+
 void
-WorkManager<IndexType, ValueType>
-	::PUSHNode(const IndexType &index, uint32 layerNum)
+WorkManager
+	::PUSHNode(const TIndex &index, uint32 layerNum)
 {
 	M4D::Multithreading::ScopedLock lock(_layerAccessMutex);
 	
 	LayerNodeType *node = m_LayerNodeStore->Borrow();
 	node->m_Value = index;
 	// push node into segment that have the least count of nodes
-	m_LayerSegments[GetShortestLayer(layerNum)].layers[layerNum]->PushFront( node );
+	m_LayerSegments[GetShortestLayer(layerNum)].layers[layerNum].PushFront( node );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template<typename IndexType, typename ValueType>
 void
-WorkManager<IndexType, ValueType>::UNLINKNode(LayerNodeType *node, uint32 layerNum, uint32 segmentID)
+WorkManager::UNLINKNode(LayerNodeType *node, uint32 layerNum, uint32 segmentID)
 {
 	//M4D::Multithreading::ScopedLock lock(_layerAccessMutex);
 	
 	// unlink node from segment that have the biggest count of nodes
-	m_LayerSegments[segmentID].layers[layerNum]->Unlink(node);
+	m_LayerSegments[segmentID].layers[layerNum].Unlink(node);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-template<typename IndexType, typename ValueType>
+
 void
-WorkManager<IndexType, ValueType>::InitCalculateChangeAndUpdActiveLayerConf()
+WorkManager::InitCalculateChangeAndUpdActiveLayerConf()
 {
 	for(uint32 spuIt=0; spuIt<_numOfCores; spuIt++)
-		{
-		m_configs[spuIt].calcChngApplyUpdateConf.layer0Begin = 
-		m_LayerSegments[spuIt].layers[0]->Begin().GetPointer();
-		m_configs[spuIt].calcChngApplyUpdateConf.layer0End = 
-		m_LayerSegments[spuIt].layers[0]->End().GetPointer();
+	{
+		_calcChngApplyUpdateConf[spuIt].layer0Begin = 
+			m_LayerSegments[spuIt].layers[0].Front();
+		_calcChngApplyUpdateConf[spuIt].layer0End = 
+			m_LayerSegments[spuIt].layers[0].End();
     
-		m_configs[spuIt].calcChngApplyUpdateConf.updateBuffBegin = 
+		_calcChngApplyUpdateConf[spuIt].updateBuffBegin = 
 			&m_UpdateBuffers[spuIt][0];
-		}
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-template<typename IndexType, typename ValueType>
+
 void
-WorkManager<IndexType, ValueType>::InitPropagateValuesConf()
+WorkManager::InitPropagateValuesConf()
 {
 	for(uint32 spuIt=0; spuIt<_numOfCores; spuIt++)
 	{
 		for(uint32 i=0; i<LYERCOUNT; i++)
 	    {
-			m_configs[spuIt].propagateValsConf.layerBegins[i] = 
-				m_LayerSegments[spuIt].layers[i]->Begin().GetPointer();
+			_propagateValsConf[spuIt].layerBegins[i] = 
+				m_LayerSegments[spuIt].layers[i].Front();
 			
-			m_configs[spuIt].propagateValsConf.layerEnds[i] = 
-				m_LayerSegments[spuIt].layers[i]->End().GetPointer();
+			_propagateValsConf[spuIt].layerEnds[i] = 
+				m_LayerSegments[spuIt].layers[i].End();
 	    }
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-template<typename IndexType, typename ValueType>
-void
-WorkManager<IndexType, ValueType>::SetupRunConfig(RunConfiguration *conf)
-{
-	// copy it into configs of all SPEs 
-	for(uint32 spuIt=0; spuIt<_numOfCores; spuIt++)
-	{
-		m_configs[spuIt].runConf = *conf;
-	}
-}
+//
+//void
+//WorkManager::SetupRunConfig(RunConfiguration *conf)
+//{
+//	// copy it into configs of all SPEs 
+//	for(uint32 spuIt=0; spuIt<_numOfCores; spuIt++)
+//	{
+//		m_configs[spuIt].runConf = *conf;
+//	}
+//}
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template<typename IndexType, typename ValueType>
+
 void
-WorkManager<IndexType, ValueType>::AllocateUpdateBuffers()
+WorkManager::AllocateUpdateBuffers()
 {
   // Preallocate the update buffer.  NOTE: There is currently no way to
   // downsize a std::vector. This means that the update buffer will grow
@@ -123,8 +157,8 @@ WorkManager<IndexType, ValueType>::AllocateUpdateBuffers()
 	for(uint32 spuIt=0; spuIt<_numOfCores; spuIt++)
 	{	
 		m_UpdateBuffers[spuIt].clear();
-		m_UpdateBuffers[spuIt].reserve(m_LayerSegments[spuIt].layers[0]->Size());
-		memset(&m_UpdateBuffers[spuIt][0], 0, m_LayerSegments[spuIt].layers[0]->Size() * sizeof(ValueType));
+		m_UpdateBuffers[spuIt].reserve(m_LayerSegments[spuIt].layers[0].Size());
+		memset(&m_UpdateBuffers[spuIt][0], 0, m_LayerSegments[spuIt].layers[0].Size() * sizeof(ValueType));
 	}
 //  std::cout << "Update list, after reservation:" << std::endl;
 //  PrintUpdateBuf(std::cout);
@@ -132,11 +166,12 @@ WorkManager<IndexType, ValueType>::AllocateUpdateBuffers()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template<typename IndexType, typename ValueType>
+
 void
-WorkManager<IndexType, ValueType>::PrintLists(std::ostream &s, bool withMembers)
+WorkManager::PrintLists(std::ostream &s, bool withMembers)
 {
-	LayerNodeType *begin, *end;
+	LayerNodeType *begin;
+	const LayerNodeType *end;
 	
 	for(uint32 coreIt=0; coreIt<_numOfCores; coreIt++)
 	{
@@ -145,17 +180,17 @@ WorkManager<IndexType, ValueType>::PrintLists(std::ostream &s, bool withMembers)
 		for(uint32 i=0; i<LYERCOUNT; i++)
 		{
 			s << "layer" << i << ", size=" << 
-				m_LayerSegments[coreIt].layers[i]->Size() << std::endl;
+				m_LayerSegments[coreIt].layers[i].Size() << std::endl;
 			
 			if(withMembers)
 			{
-				begin = m_LayerSegments[coreIt].layers[i]->Begin().GetPointer();
-				end = m_LayerSegments[coreIt].layers[i]->End().GetPointer();
+				begin = m_LayerSegments[coreIt].layers[i].Front();
+				end = m_LayerSegments[coreIt].layers[i].End();
 				
 				while(begin != end)
 				{
 					s << begin->m_Value << std::endl;
-					begin = begin->Next;
+					begin = (LayerNodeType *)begin->Next.Get64();
 				}
 			}
 		}
@@ -164,15 +199,15 @@ WorkManager<IndexType, ValueType>::PrintLists(std::ostream &s, bool withMembers)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template<typename IndexType, typename ValueType>
+
 uint8
-WorkManager<IndexType, ValueType>::GetShortestLayer(uint8 layerNum)
+WorkManager::GetShortestLayer(uint8 layerNum)
 {
 	uint8 shortest = 0;
 	for(uint32 i=1; i<_numOfCores; i++)
 	{
-		if(m_LayerSegments[i].layers[layerNum]->Size() < 
-				m_LayerSegments[shortest].layers[layerNum]->Size())
+		if(m_LayerSegments[i].layers[layerNum].Size() < 
+				m_LayerSegments[shortest].layers[layerNum].Size())
 			shortest = i;
 	}
 	return shortest;
@@ -180,15 +215,15 @@ WorkManager<IndexType, ValueType>::GetShortestLayer(uint8 layerNum)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template<typename IndexType, typename ValueType>
+
 uint8
-WorkManager<IndexType, ValueType>::GetLongestLayer(uint8 layerNum)
+WorkManager::GetLongestLayer(uint8 layerNum)
 {
 	uint8 longest = 0;
 	for(uint32 i=1; i<_numOfCores; i++)
 	{
-		if(m_LayerSegments[i].layers[layerNum]->Size() > 
-			m_LayerSegments[longest].layers[layerNum]->Size())
+		if(m_LayerSegments[i].layers[layerNum].Size() > 
+			m_LayerSegments[longest].layers[layerNum].Size())
 			longest = i;
 	}
 	return longest;
@@ -210,6 +245,6 @@ WorkManager<IndexType, ValueType>::GetLongestLayer(uint8 layerNum)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-}
-}
-#endif
+//}
+//}
+//#endif

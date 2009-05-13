@@ -25,7 +25,7 @@ public:
 //	typedef PUTRemoteArrayCell<TIndex, 8> TPutNodeArray;
 	
 	
-	void UnlinkNode(SparseFieldLevelSetNode *node, uint8 layerNum);
+	void UnlinkNode(Address node, uint8 layerNum);
 	//void ReturnToNodeStore(SparseFieldLevelSetNode *node);
 	void PushToLayer(SparseFieldLevelSetNode *node, uint8 layerNum);
 	

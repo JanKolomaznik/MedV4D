@@ -52,10 +52,10 @@ struct Tspu_prog_sim
 class SPURequestsDispatcher
 {
 public:
-	typedef WorkManager<TIndex, float32> TWorkManager;
+	//typedef WorkManager<TIndex, float32> TWorkManager;
 	
 	
-	SPURequestsDispatcher(TWorkManager *wm, uint32 numSPE);
+	SPURequestsDispatcher(WorkManager *wm, uint32 numSPE);
 	~SPURequestsDispatcher();
 	
 	void DispatchMessage(uint32 SPENum);
@@ -83,7 +83,7 @@ public:
 //	static void InitBarrier(uint32 n) { _barrier = new M4D::Multithreading::Barrier(n); }
 //	static M4D::Multithreading::Barrier *_barrier;
 
-	TWorkManager *_workManager;
+	WorkManager *_workManager;
 	
 //	uint32 DispatcherThreadFunc();
 //	void Init(TWorkManager *wm, uint32 id);

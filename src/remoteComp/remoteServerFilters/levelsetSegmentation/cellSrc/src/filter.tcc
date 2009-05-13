@@ -25,6 +25,8 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 	
   this->InitRunConf();
   
+  this->m_SPEManager.Init();
+  
   // Set the values in the output image for the active layer.
   this->InitializeActiveLayerValues();
  
@@ -54,7 +56,7 @@ TimeStepType
 MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::CalculateChange()
 {	  
-	TimeStepType dt = this->m_SPEManager.RunUpdateCalc();	
+	TimeStepType dt = this->m_SPEManager.RunUpdateCalc();
 	return dt;
 }
 ///////////////////////////////////////////////////////////////////////////////
