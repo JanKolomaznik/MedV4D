@@ -51,7 +51,9 @@ CannyEdgeDetector< ImageType >
 		CannyEdgeDetection( 
 			inRegion,
 			outRegion,
-			gradientRegion
+			gradientRegion,
+			GetLowThreshold(),
+			GetHighThreshold()
 			);
 
 		delete [] array;

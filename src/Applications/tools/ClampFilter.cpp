@@ -1,13 +1,12 @@
 #include "common/Common.h"
 #include "Filtering.h"
-#include "Imaging/filters/CannyEdgeDetector.h"
+#include "Imaging/filters/ClampFilter.h"
 #include <tclap/CmdLine.h>
-
 
 using namespace M4D;
 using namespace M4D::Imaging;
 
-typedef Image< uint8, 2 > ImageType;
+typedef Image< int16, 2 > ImageType;
 
 int
 main( int argc, char **argv )
@@ -18,15 +17,15 @@ main( int argc, char **argv )
         D_COMMAND( std::ofstream debugFile( "Debug.txt" ); );
         SET_DOUT( debugFile );
 
-	TCLAP::CmdLine cmd( "Canny edge detector.", ' ', "");
+	TCLAP::CmdLine cmd( "Clamp filter.", ' ', "");
 	/*---------------------------------------------------------------------*/
 
 		//Define cmd arguments
-	TCLAP::ValueArg<double> lowThresholdArg( "l", "low", "Low threshold value", false, 0.5, "Value relative to high threshold" );
-	cmd.add( lowThresholdArg );
+		TCLAP::ValueArg<double> bottomArg( "b", "bottom", "Bottom clamp value", false, 0, "" );
+		cmd.add( bottomArg );
 
-	TCLAP::ValueArg<double> highThresholdArg( "t", "high", "High threshold value", false, 0.5, "" );
-	cmd.add( highThresholdArg );
+		TCLAP::ValueArg<double>topArg( "t", "top", "Top clamp value", false, 2047, "" );
+		cmd.add( topArg );
 
 	/*---------------------------------------------------------------------*/
 	TCLAP::UnlabeledValueArg<std::string> inFilenameArg( "input", "Input image filename", true, "", "filename1" );
@@ -55,13 +54,13 @@ main( int argc, char **argv )
 	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage > *outConnection = NULL;
 	M4D::Imaging::AbstractPipeFilter *filter = NULL;
 	/*---------------------------------------------------------------------*/
-	double lowThreshold = lowThresholdArg.getValue();
-	double highThreshold = highThresholdArg.getValue();
+	double bottom = bottomArg.getValue();
+	double top = topArg.getValue();
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
-		M4D::Imaging::CannyEdgeDetector< IMAGE_TYPE > *canny = new M4D::Imaging::CannyEdgeDetector< IMAGE_TYPE >();
-		canny->SetLowThreshold( lowThreshold );
-		canny->SetHighThreshold( highThreshold );
-		filter = canny;
+		M4D::Imaging::ClampFilter<IMAGE_TYPE> *tfilter = new M4D::Imaging::ClampFilter<IMAGE_TYPE>();
+		tfilter->SetBottom( static_cast<TTYPE>( bottom ) );
+		tfilter->SetTop( static_cast<TTYPE>( top ) );
+		filter = tfilter;
 	);
 
 	/*---------------------------------------------------------------------*/

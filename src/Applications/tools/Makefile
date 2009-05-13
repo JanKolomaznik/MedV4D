@@ -22,6 +22,7 @@ TARGETS=	DICOM2ImageDump \
 		SobelGradientOperator \
 		LaplaceOperator \
 		ImageCrop \
+		ClampFilter \
 		CreateExampleData \
 		MaxFilter \
 		MinFilter

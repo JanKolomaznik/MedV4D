@@ -60,7 +60,7 @@ public:
 	}
 
 
-	ImageIterator&
+	/*ImageIterator&
 	operator=( const ImageIterator &it )
 	{
 		_pointer = it._pointer;
@@ -71,7 +71,7 @@ public:
 		_position = it._position;
 		_size = it._size;
 		return *this;
-	}
+	}*/
 
 	ImageIterator 
 	Begin() const
@@ -123,6 +123,24 @@ public:
 	operator->() const
 		{
 			return _pointer;
+		}
+
+	ImageIterator
+	operator+( const Vector<int32, Dimension> &v )
+		{
+			ImageIterator result( *this );
+			result._pointer += v * _strides;
+			result._position += v;
+			return result;
+		}
+
+	ImageIterator
+	operator-( const Vector<int32, Dimension> &v )
+		{
+			ImageIterator result( *this );
+			result._pointer -= v * _strides;
+			result._position -= v;
+			return result;
 		}
 
 	ImageIterator &

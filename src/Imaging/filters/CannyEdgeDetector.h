@@ -35,14 +35,17 @@ public:
 
 	struct Properties : public PredecessorType::Properties
 	{
-		Properties(){}
+		Properties(): lowThreshold( 0.5 ), highThreshold( 0.5 ){}
 
+		float32 lowThreshold;
+		float32 highThreshold;
 	};
 
 	CannyEdgeDetector( Properties * prop );
 	CannyEdgeDetector();
 	
-	//GET_SET_PROPERTY_METHOD_MACRO( ElementType, Threshold, threshold );
+	GET_SET_PROPERTY_METHOD_MACRO( float32, LowThreshold, lowThreshold );
+	GET_SET_PROPERTY_METHOD_MACRO( float32, HighThreshold, highThreshold );
 protected:
 	bool
 	Process2D(
