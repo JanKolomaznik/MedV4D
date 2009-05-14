@@ -98,8 +98,8 @@ mainWindow::mainWindow ()
 
 	CreatePipeline();
 
-	_settings = new SettingsBox( _filter, this );
-	addDockWindow( "Bone Segmentation", _settings );
+	_settings = new SettingsBox( currentViewerDesktop, this );
+	addDockWindow( "Volume Data Fusions", _settings );
 	QObject::connect( _notifier, SIGNAL( Notification() ), _settings, SLOT( EndOfExecution() ), Qt::QueuedConnection );
 }
 

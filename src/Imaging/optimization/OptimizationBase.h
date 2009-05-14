@@ -18,7 +18,7 @@ class OptimizationBase
 
 public:
 
-	virtual void optimize(Vector< ElementType, dim > &v, ElementType &fret, ImageRegistration< RegistrationFilterElementType, dim/3 >* fil ) = 0;
+	virtual void optimize(Vector< ElementType, dim > &v, ElementType &fret, ImageRegistration< RegistrationFilterElementType, dim/2 >* fil ) = 0;
 
 };
 

@@ -25,7 +25,7 @@ public:
 	typedef 	ElementType (M4D::Imaging::PowellOptimization< RegistrationFilterElementType, ElementType, dim >::*VectorFunc)(NRVec< ElementType > &);
 	typedef		ElementType (M4D::Imaging::PowellOptimization< RegistrationFilterElementType, ElementType, dim >::*SingleFunc)(const ElementType);
 
-	void optimize(Vector< ElementType, dim > &v, ElementType &fret, ImageRegistration< RegistrationFilterElementType, dim/3 >* filt );
+	void optimize(Vector< ElementType, dim > &v, ElementType &fret, ImageRegistration< RegistrationFilterElementType, dim/2 >* filt );
 
 private:
 	void powell(NRVec< ElementType > &p, NRMat< ElementType > &xi, const ElementType ftol, int &iter,
@@ -60,7 +60,7 @@ private:
 	int ncom;
 	VectorFunc nrfunc;
 	NRVec< ElementType > *pcom_p,*xicom_p;
-	ImageRegistration< RegistrationFilterElementType, dim/3 >* _filter;
+	ImageRegistration< RegistrationFilterElementType, dim/2 >* _filter;
 };
 
 } /*namespace Imaging*/

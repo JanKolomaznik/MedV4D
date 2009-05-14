@@ -16,7 +16,8 @@
 
 #define	HISTOGRAM_MIN_VALUE						0
 #define HISTOGRAM_MAX_VALUE						200
-#define HISTOGRAM_DIVISOR						10
+#define HISTOGRAM_VALUE_DIVISOR						10
+#define HISTOGRAM_SAMPLING_DIVISOR					20
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -53,7 +54,7 @@ public:
 	SetReferenceImage( typename ImageType::Ptr ref );
 
 	double
-	OptimizationFunction( Vector< double, 3 * dim >& v );
+	OptimizationFunction( Vector< double, 2 * dim >& v );
 
 protected:
 	bool
@@ -74,7 +75,7 @@ private:
 	typename ImageType::Ptr						referenceImage;
 	MultiHistogram< HistCellType, 2 >				jointHistogram;
 	CriterionBase< HistCellType >					*_criterion;
-	OptimizationBase< ElementType, double, 3 * dim >		*_optimization;
+	OptimizationBase< ElementType, double, 2 * dim >		*_optimization;
 
 };
 

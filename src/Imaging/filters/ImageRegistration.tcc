@@ -40,18 +40,18 @@ CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 2 
 	int32 refYStride = strides[1];
 	uint32 refWidth = size[0];
 	uint32 refHeight = size[1];
-	typename ImageRegistration< ElementType, 2 >::HistCellType base = 1.0 / (refHeight * refWidth);
-	for ( j = 0; j < refHeight; ++j )
+	typename ImageRegistration< ElementType, 2 >::HistCellType base = 1.0 / ((refHeight/HISTOGRAM_SAMPLING_DIVISOR) * (refWidth/HISTOGRAM_SAMPLING_DIVISOR));
+	for ( j = 0; j < refHeight / HISTOGRAM_SAMPLING_DIVISOR; ++j )
 	{
-		ElementType *in = sin + j*inYStride;
-		ElementType *ref = sref + j*refYStride;
-		for ( i = 0; i < refWidth; ++i )
+		ElementType *in = sin + HISTOGRAM_SAMPLING_DIVISOR*j*inYStride;
+		ElementType *ref = sref + HISTOGRAM_SAMPLING_DIVISOR*j*refYStride;
+		for ( i = 0; i < refWidth / HISTOGRAM_SAMPLING_DIVISOR; ++i )
 		{
-			index[0] = *in / HISTOGRAM_DIVISOR;
-			index[1] = *ref / HISTOGRAM_DIVISOR;
+			index[0] = (*in) / HISTOGRAM_VALUE_DIVISOR;
+			index[1] = (*ref) / HISTOGRAM_VALUE_DIVISOR;
 			jointHist.SetValueCell( index, jointHist.Get( index ) + base );
-			in += inXStride;
-			ref += refXStride;
+			in += HISTOGRAM_SAMPLING_DIVISOR * inXStride;
+			ref += HISTOGRAM_SAMPLING_DIVISOR * refXStride;
 		}
 	}
 }
@@ -79,19 +79,19 @@ CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 3 
 	uint32 refWidth = size[0];
 	uint32 refHeight = size[1];
 	uint32 refDepth = size[2];
-	typename ImageRegistration< ElementType, 3 >::HistCellType base = 1.0 / (refHeight * refWidth * refDepth);
+	typename ImageRegistration< ElementType, 3 >::HistCellType base = 1.0 / ((refHeight/HISTOGRAM_SAMPLING_DIVISOR) * (refWidth/HISTOGRAM_SAMPLING_DIVISOR) * refDepth);
 	for ( k = 0; k < refDepth; ++k )
-		for ( j = 0; j < refHeight; ++j )
+		for ( j = 0; j < refHeight / HISTOGRAM_SAMPLING_DIVISOR; ++j )
 		{
-			ElementType *in = sin + k*inZStride + j*inYStride;
-			ElementType *ref = sref + k*refZStride + j*refYStride;
-			for ( i = 0; i < refWidth; ++i )
+			ElementType *in = sin + k*inZStride + HISTOGRAM_SAMPLING_DIVISOR*j*inYStride;
+			ElementType *ref = sref + k*refZStride + HISTOGRAM_SAMPLING_DIVISOR*j*refYStride;
+			for ( i = 0; i < refWidth / HISTOGRAM_SAMPLING_DIVISOR; ++i )
 			{
-				index[0] = *in / HISTOGRAM_DIVISOR;
-				index[1] = *ref / HISTOGRAM_DIVISOR;
+				index[0] = (*in) / HISTOGRAM_VALUE_DIVISOR;
+				index[1] = (*ref) / HISTOGRAM_VALUE_DIVISOR;
 				jointHist.SetValueCell( index, jointHist.Get( index ) + base );
-				in += inXStride;
-				ref += refXStride;
+				in += HISTOGRAM_SAMPLING_DIVISOR * inXStride;
+				ref += HISTOGRAM_SAMPLING_DIVISOR * refXStride;
 			}
 		}
 }
@@ -102,7 +102,7 @@ ImageRegistration< ElementType, dim >
 	: PredecessorType( prop ),
 	  jointHistogram( std::vector< int32 >( 2, HISTOGRAM_MIN_VALUE ), std::vector< int32 >( 2, HISTOGRAM_MAX_VALUE ) ),
 	  _criterion( new NormalizedMutualInformation< HistCellType >() ),
-	  _optimization( new PowellOptimization< ElementType, double, 3 * dim >() )
+	  _optimization( new PowellOptimization< ElementType, double, 2 * dim >() )
 {
 	this->_name = "ImageRegistration";
 }
@@ -113,7 +113,7 @@ ImageRegistration< ElementType, dim >
 	: PredecessorType( new Properties() ),
 	  jointHistogram( std::vector< int32 >( 2, HISTOGRAM_MIN_VALUE ), std::vector< int32 >( 2, HISTOGRAM_MAX_VALUE ) ),
 	  _criterion( new NormalizedMutualInformation< HistCellType >() ),
-	  _optimization( new PowellOptimization< ElementType, double, 3 * dim >() )
+	  _optimization( new PowellOptimization< ElementType, double, 2 * dim >() )
 {
 	this->_name = "ImageRegistration";
 }
@@ -129,18 +129,16 @@ ImageRegistration< ElementType, dim >
 template< typename ElementType, uint32 dim >
 double
 ImageRegistration< ElementType, dim >
-::OptimizationFunction( Vector< double, 3 * dim >& v )
+::OptimizationFunction( Vector< double, 2 * dim >& v )
 {
-	Vector< double, dim > v1, v2, v3;
+	Vector< double, dim > v1, v2;
 	for ( uint32 i = 0; i < dim; ++i )
 	{
 		v1[i] = v[i];
 		v2[i] = v[dim + i];
-		v3[i] = v[2 * dim + i];
 	}
 	this->SetRotation( v1 );
-	this->SetScale( v2 );
-	this->SetTranslation( v3 );
+	this->SetTranslation( v2 );
 	this->ExecuteTransformation();
 	double res = 1.0;
 	if ( referenceImage )
@@ -162,12 +160,11 @@ ImageRegistration< ElementType, dim >
 		this->_writerBBox->SetState( MS_CANCELED );
 		return false;
 	}
-	Vector< double, 3 * dim > v;
+	Vector< double, 2 * dim > v;
 	for ( uint32 i = 0; i < dim; ++i )
 	{
 		v[i] = 0;
-		v[dim + i] = 1;
-		v[2 * dim + i] = 0;
+		v[dim + i] = 0;
 	}
 	double fret;
 	_optimization->optimize( v, fret, this );

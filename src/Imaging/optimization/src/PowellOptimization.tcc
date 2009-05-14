@@ -13,7 +13,7 @@ namespace Imaging
 template< typename RegistrationFilterElementType, typename ElementType, uint32 dim >
 void
 PowellOptimization< RegistrationFilterElementType, ElementType, dim >
-::optimize(Vector< ElementType, dim > &v, ElementType &fret, ImageRegistration< RegistrationFilterElementType, dim/3 >* fil )
+::optimize(Vector< ElementType, dim > &v, ElementType &fret, ImageRegistration< RegistrationFilterElementType, dim/2 >* fil )
 {
 	_filter = fil;
         const ElementType FTOL=1.0e-6;

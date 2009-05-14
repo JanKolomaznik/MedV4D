@@ -11,7 +11,9 @@
 #include "SettingsBox.h"
 
 #define ORGANIZATION_NAME     "MFF"
-#define APPLICATION_NAME      "BoneSegmentation"
+#define APPLICATION_NAME      "VolumeDataFusions"
+
+#define FUSION_IMAGE_NUMBER			12
 
 typedef int16	ElementType;
 const unsigned Dim = 3;
