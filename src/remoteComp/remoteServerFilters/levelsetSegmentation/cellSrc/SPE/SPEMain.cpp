@@ -26,13 +26,12 @@ int main(unsigned long long speid,
 {
 	// config structures
 	ConfigStructures _Confs __attribute__ ((aligned (128)));
-	RunConfiguration _runConf __attribute__ ((aligned (128)));	
-	CalculateChangeAndUpdActiveLayerConf _changeConfig __attribute__ ((aligned (128)));
-	PropagateValuesConf _propValConfig __attribute__ ((aligned (128)));
+	
+	SharedResources _sharedRes;
 	
 	// calculator objects
-	UpdateCalculatorSPE updateCalculator;	
-	ApplyUpdateSPE _applyUpdateCalc;
+	UpdateCalculatorSPE updateCalculator(&_sharedRes);	
+	ApplyUpdateSPE _applyUpdateCalc(&_sharedRes);	
 	
 	uint32_t mailboxVal;
 	uint32 dt;
@@ -50,17 +49,17 @@ int main(unsigned long long speid,
   mfc_write_tag_mask (1 << tag);
   mfc_read_tag_status_all ();
     
-  tag = DMAGate::Get(_Confs.runConf, &_runConf, sizeof (RunConfiguration));
+  tag = DMAGate::Get(_Confs.runConf, &_sharedRes._runConf, sizeof (RunConfiguration));
   mfc_write_tag_mask (1 << tag);
   mfc_read_tag_status_all ();
   
   // setup calculators with config object pointers
-  updateCalculator.m_Conf = &_runConf;
-  updateCalculator.m_stepConfig = &_changeConfig;
+//  updateCalculator.m_Conf = &_runConf;
+//  updateCalculator.m_stepConfig = &_changeConfig;
   updateCalculator.Init();
-  _applyUpdateCalc.commonConf = &_runConf;
-  _applyUpdateCalc.m_stepConfig = &_changeConfig;
-  _applyUpdateCalc.m_propLayerValuesConfig = &_propValConfig;
+//  _applyUpdateCalc.commonConf = &_runConf;
+//  _applyUpdateCalc.m_stepConfig = &_changeConfig;
+//  _applyUpdateCalc.m_propLayerValuesConfig = &_propValConfig;
 
     
 // do work loops
@@ -74,7 +73,7 @@ int main(unsigned long long speid,
 		  printf ("CALC_CHANGE received\n");
 		  tag = DMAGate::Get(
 				  _Confs.calcChngApplyUpdateConf, 
-				  &_changeConfig, 
+				  &_sharedRes._changeConfig, 
 				  sizeof (CalculateChangeAndUpdActiveLayerConf));
 		  mfc_write_tag_mask (1 << tag);
 		  mfc_read_tag_status_all ();
@@ -90,13 +89,13 @@ int main(unsigned long long speid,
 		  // trasfer step configs
 		  tag = DMAGate::Get(
 		  				  _Confs.calcChngApplyUpdateConf, 
-		  				  &_changeConfig, 
+		  				  &_sharedRes._changeConfig, 
 		  				  sizeof (CalculateChangeAndUpdActiveLayerConf));
 		  		  mfc_write_tag_mask (1 << tag);
 		  		  mfc_read_tag_status_all ();
   		  tag = DMAGate::Get(
   		  				  _Confs.propagateValsConf, 
-  		  				  &_propValConfig, 
+  		  				  &_sharedRes._propValConfig, 
   		  				  sizeof (PropagateValuesConf));
   		  		  mfc_write_tag_mask (1 << tag);
   		  		  mfc_read_tag_status_all ();
@@ -111,7 +110,7 @@ int main(unsigned long long speid,
 		  
 		  tag = DMAGate::Get(
   				  _Confs.propagateValsConf, 
-  				  &_propValConfig, 
+  				  &_sharedRes._propValConfig, 
   				  sizeof (PropagateValuesConf));
   		  mfc_write_tag_mask (1 << tag);
   		  mfc_read_tag_status_all ();

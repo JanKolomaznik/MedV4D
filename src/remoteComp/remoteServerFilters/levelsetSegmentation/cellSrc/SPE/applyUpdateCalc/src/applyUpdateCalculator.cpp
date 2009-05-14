@@ -12,8 +12,12 @@ using namespace M4D::Cell;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ApplyUpdateSPE::ApplyUpdateSPE()
-	: m_localNodeStore(m_localNodeStoreBuffer), m_ElapsedIterations(0)
+ApplyUpdateSPE::ApplyUpdateSPE(SharedResources *shaRes)
+	: LayerValuesPropagator(shaRes)
+	, m_stepConfig(&shaRes->_changeConfig)
+	, m_localNodeStore(m_localNodeStoreBuffer)
+	, m_updateValuesIt(shaRes->_buf)
+	, m_ElapsedIterations(0)
 {
 
 }

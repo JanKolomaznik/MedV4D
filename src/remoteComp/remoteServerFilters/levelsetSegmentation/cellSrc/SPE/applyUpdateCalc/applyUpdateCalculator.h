@@ -2,7 +2,6 @@
 #define APPLYUPDATECALCULATOR_H_
 
 #include "layerValsPropagator.h"
-
 #include "../tools/objectStoreCell.h"
 
 namespace M4D {
@@ -11,24 +10,23 @@ namespace Cell {
 class ApplyUpdateSPE : public LayerValuesPropagator
 {
 public:
-	ApplyUpdateSPE();
+	ApplyUpdateSPE(SharedResources *shaRes);
 	~ApplyUpdateSPE();
 	
 	typedef float32 ValueType;
 	
 	ValueType ApplyUpdate(TimeStepType dt);
 	
-	typedef GETRemoteArrayCell<TPixelValue, 8> TUpdateBufferArray;	
+	typedef GETRemoteArrayCell<TPixelValue, REMOTEARRAY_BUF_SIZE> TUpdateBufferArray;	
 	typedef SparseFieldLayer<SparseFieldLevelSetNode> MyLayerType;
 	
-#define LocalNodeStoreSize 2048
+#define LocalNodeStoreSize 128
 	typedef FixedObjectStoreCell<SparseFieldLevelSetNode, LocalNodeStoreSize> TObjectStore; 
 	
 	void UpdateActiveLayerValues(TimeStepType dt,
 			MyLayerType *UpList, MyLayerType *DownList,
 			uint32 &counter, ValueType &rms_change_accumulator);
 		
-	CalculateChangeAndUpdActiveLayerConf *m_stepConfig;
 			
 	void ProcessOutsideList(MyLayerType *OutsideList, StatusType ChangeToStatus);//, TStatusNeighbIterator &statIter);
 	void ProcessStatusList(MyLayerType *InputList, MyLayerType *OutputList,
@@ -39,7 +37,7 @@ private:
 	ProcessStatusLists(MyLayerType *UpLists, MyLayerType *DownLists);
 	
 	
-	ValueType CalculateUpdateValue(
+	inline ValueType CalculateUpdateValue(
 		    const TimeStepType &dt,
 		    const ValueType &value,
 		    const ValueType &change)
@@ -52,6 +50,8 @@ private:
 //	{
 //		return this->m_layerGate.m_LayerNodeStore->Borrow();
 //	}
+	
+	CalculateChangeAndUpdActiveLayerConf *m_stepConfig;
 	
 
 	SparseFieldLevelSetNode m_localNodeStoreBuffer[LocalNodeStoreSize];

@@ -14,7 +14,7 @@
 #include "../tools/preloadedNeighbourhoods.h"
 
 #include "../../supportClasses.h"
-
+#include "../tools/sharedResources.h"
 
 
 namespace M4D {
@@ -25,15 +25,12 @@ class LayerValuesPropagator : public Consts
 public:
 	
 	void PropagateAllLayerValues();
-			
-	PropagateValuesConf *m_propLayerValuesConfig;
-	RunConfiguration *commonConf;
 	
 	LayerGate m_layerGate;
 	
 protected:
 	
-	LayerValuesPropagator();
+	LayerValuesPropagator(SharedResources *shaRes);
 	
 	typedef LinkedChainIteratorCell<SparseFieldLevelSetNode> TLayerIterator;
 	typedef NeighbourIteratorCell<TPixelValue> TValueNeighbIterator;
@@ -53,6 +50,9 @@ protected:
 	
 	TValueNeighbPreloadeder m_valueNeighPreloader;
 	TStatusNeighbPreloadeder m_statusNeighPreloader;
+	
+	PropagateValuesConf *m_propLayerValuesConfig;
+	RunConfiguration *commonConf;
 	
 private:
 	void PropagateLayerValues(StatusType from, StatusType to,

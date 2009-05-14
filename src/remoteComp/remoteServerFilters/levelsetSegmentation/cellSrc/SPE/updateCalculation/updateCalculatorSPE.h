@@ -2,13 +2,13 @@
 #define SPEHARDWORKER_H_
 
 #include "diffFunc.h"
-//#include "../commonConsts.h"
-#include "../configStructures.h"
 #include "../tools/neighbourhoodIterator.h"
 // tools
 #include "../tools/cellRemoteArray.h"
 #include "../tools/cellLinkedChainIterator.h"
 #include "../tools/preloadedNeighbourhoods.h"
+
+#include "../tools/sharedResources.h"
 
 namespace M4D
 {
@@ -21,7 +21,7 @@ public:
 
 	typedef TPixelValue TFeature;
 
-	typedef RemoteArrayCell<TPixelValue, 8> TUpdateBufferArray;
+	typedef RemoteArrayCell<TPixelValue, REMOTEARRAY_BUF_SIZE> TUpdateBufferArray;
 
 	typedef NeighborhoodCell<TPixelValue> TValueNeighborhood;
 	typedef NeighborhoodCell<TFeature> TFeatureNeighborhood;
@@ -35,13 +35,12 @@ public:
 	typedef LinkedChainIteratorCell<LayerNodeType> TLayerIterator;
 	typedef NeighbourIteratorCell<TPixelValue> TNeighbourIterator;
 
-	UpdateCalculatorSPE();
+	UpdateCalculatorSPE(SharedResources *shaRes);
 
 	void CalculateChangeItem(void);
 	TimeStepType CalculateChange();
 
-	RunConfiguration *m_Conf;
-	CalculateChangeAndUpdActiveLayerConf *m_stepConfig;
+
 
 	void Init(void);
 	void UpdateFunctionProperties();
@@ -58,6 +57,9 @@ private:
 	TNeighbourIterator m_featureIter;
 	TPixelValue MIN_NORM;
 	GlobalDataStruct m_globalData;
+	
+	RunConfiguration *m_Conf;
+	CalculateChangeAndUpdActiveLayerConf *m_stepConfig;
 
 	// tmp variables to avoid repeating allocations on stack
 	TContinuousIndex offset;

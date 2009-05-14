@@ -19,6 +19,7 @@
 #include "../SPE/updateCalculation/updateCalculatorSPE.h"
 #include "../SPE/applyUpdateCalc/applyUpdateCalculator.h"
 #include "mailboxSimulator.h"
+#include "../SPE/tools/sharedResources.h"
 #endif
 
 
@@ -38,12 +39,12 @@ struct Tspu_pthread_data
 };
 #else
 struct Tspu_prog_sim
-{
-	UpdateCalculatorSPE _updateSolver;
-	ApplyUpdateSPE _applyUpdateCalc;
-	
+{	
 	pthread_t pthread;
 	MailboxSimulator _mailbox;
+	
+	WorkManager *_wm;
+	uint32 _speID;
 	
 	void SimulateFunc(void);
 };

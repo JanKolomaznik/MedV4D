@@ -8,8 +8,9 @@ using namespace M4D::Cell;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-LayerValuesPropagator::LayerValuesPropagator()
-	//: m_layerIterator(& m_layerGate)
+LayerValuesPropagator::LayerValuesPropagator(SharedResources *shaRes)
+	: m_propLayerValuesConfig(&shaRes->_propValConfig)
+	, commonConf(&shaRes->_runConf)
 {
 	
 }

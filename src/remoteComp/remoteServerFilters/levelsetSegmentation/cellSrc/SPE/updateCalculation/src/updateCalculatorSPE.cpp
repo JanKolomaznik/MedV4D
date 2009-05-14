@@ -29,7 +29,10 @@ TIndex M4D::Cell::operator+(const TIndex &i, const TOffset &o)
 ///////////////////////////////////////////////////////////////////////////////
 
 UpdateCalculatorSPE
-::UpdateCalculatorSPE()
+::UpdateCalculatorSPE(SharedResources *shaRes)
+	: m_updateBufferArray(shaRes->_buf)
+	, m_Conf(&shaRes->_runConf)
+	, m_stepConfig(&shaRes->_changeConfig)
 {
 	memset(&m_globalData, 0, sizeof(GlobalDataStruct));
 }

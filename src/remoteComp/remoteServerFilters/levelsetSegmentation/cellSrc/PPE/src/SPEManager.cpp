@@ -99,7 +99,6 @@ void SPEManager::StartSims()
 {
 	for (uint32 i=0; i<speCount; i++)
 	{
-		_requestDispatcher._progSims[i]._updateSolver.Init();
 		/* Create pthread for each of the SPE conexts */
 		if (pthread_create( &_requestDispatcher._progSims[i].pthread, 
 		NULL, &sim_pthread_function, &_requestDispatcher._progSims[i]))

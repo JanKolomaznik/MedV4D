@@ -31,7 +31,7 @@ private:
 //	inline bool HasNextForLoad(void) { return (GetCurrItem()->Next != m_end); }
 	//void Load(Address src, Item *dest, size_t size);
 	
-	Item m_buf[2];
+	Item m_buf[2] __attribute__ ((aligned (32)));
 	Address m_realAddresses[2];
 	
 	uint8 m_currBufPosition;
