@@ -18,8 +18,7 @@ OUTPUTDIR=	$(srcTop)/lib
 OUTPUT=		$(OUTPUTDIR)/SPU/$(OUTPUTNAME)
 TMP_DIR=	$(srcTop)/tmp/$(NAME)
 
-INCLUDES=	-I$(srcTop)\
-			$(ITKIncludes)
+INCLUDES=	-I$(srcTop)
 
 #libSrcPath=$(boostTrunk)/$(srcdir)
 

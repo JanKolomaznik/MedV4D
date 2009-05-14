@@ -16,8 +16,7 @@ OUTPUTDIR=	$(srcTop)/lib
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	$(srcTop)/tmp/$(NAME)
 
-INCLUDES=	-I$(srcTop)\
-			$(ITKIncludes)
+INCLUDES=	-I$(srcTop)
 
 .PHONY: all
 all:		tmpdir $(OUTPUT)
