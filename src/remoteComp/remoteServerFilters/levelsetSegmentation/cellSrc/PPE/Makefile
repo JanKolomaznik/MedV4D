@@ -17,10 +17,7 @@ OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	$(srcTop)/tmp/$(NAME)
 
 INCLUDES=	-I$(srcTop)\
-			$(ITKIncludes)\
-			-I/opt/cell/sysroot/opt/cell/sdk/usr/include
-			
-ALTIVEC= -mabi=altivec -maltivec 
+			$(ITKIncludes)
 
 .PHONY: all
 all:		tmpdir $(OUTPUT)
@@ -45,7 +42,7 @@ $(TMP_DIR)/SPEManager.o:
 $(TMP_DIR)/SPURequestsDispatcher.o:
 	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/SPURequestsDispatcher.o src/SPURequestsDispatcher.cpp
 $(TMP_DIR)/workManager.o:
-	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) $(ALTIVEC) -c -o $(TMP_DIR)/workManager.o src/workManager.cpp
+	$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c -o $(TMP_DIR)/workManager.o src/workManager.cpp
 
 .PHONY: clean
 clean:

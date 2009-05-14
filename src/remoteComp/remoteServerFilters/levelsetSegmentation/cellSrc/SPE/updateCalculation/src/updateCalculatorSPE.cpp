@@ -152,9 +152,14 @@ UpdateCalculatorSPE::CalculateChange()
 		
 		m_outIter.SetNeighbourhood( m_valueNeighbPreloader.GetLoaded());
 		m_featureIter.SetNeighbourhood( m_featureNeighbPreloader.GetLoaded());
-		
+
+#ifdef FOR_CELL
+//		DL_PRINT(UPDATE_CALC_DEBUG, 
+//						"node: " <<  << " value=" << m_outIter.GetCenterPixel());
+#else
 		DL_PRINT(UPDATE_CALC_DEBUG, 
 				"node: " << next->m_Value << " value=" << m_outIter.GetCenterPixel());
+#endif
 				
 		CalculateChangeItem();
 	}
@@ -166,8 +171,12 @@ UpdateCalculatorSPE::CalculateChange()
 	// ask it to free the global data memory.
 	TimeStepType timeStep = m_diffFunc.ComputeGlobalTimeStep(&m_globalData);
 	
+#ifdef FOR_CELL
+	DL_PRINT(UPDATE_CALC_DEBUG, "value=%f", timeStep);
+#else
 	DL_PRINT(UPDATE_CALC_DEBUG, "value=" << timeStep);
-
+#endif
+	
 	return timeStep;
 }
 

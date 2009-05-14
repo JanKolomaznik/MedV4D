@@ -159,7 +159,7 @@ void SPURequestsDispatcher::SendCommand(ESPUCommands cmd)
 void SPURequestsDispatcher::WaitForMessages()
 {
 #ifdef FOR_CELL
-	uint32 mBoxStat;
+	int32 mBoxStat;
 #endif
 	
 	_SPEYetRunning = _numOfSPE;

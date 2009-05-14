@@ -1,5 +1,4 @@
 
-#include "common/Common.h"
 #include "common/Types.h"
 #include "../applyUpdateCalculator.h"
 #include "../../vnl_math.h"
@@ -75,8 +74,10 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	// list for the next iteration.
 		ProcessStatusLists(UpList, DownList);
 	}
-	
-	  DL_PRINT(DEBUG_ALG, std::endl << "14rms accum: " << rms_change_accumulator << "counter: " << counter);	  
+#ifdef FOR_CELL
+#else
+	  DL_PRINT(DEBUG_ALG, std::endl << "14rms accum: " << rms_change_accumulator << "counter: " << counter);
+#endif
 	
 //	std::stringstream s3;
 //		  s3 << "afterOutside" << this->m_ElapsedIterations;
@@ -89,7 +90,11 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	
 	m_ElapsedIterations++;
 	
+#ifdef FOR_CELL
+#else
 	DL_PRINT(DEBUG_ALG, "returning: " << rms_change_accumulator);
+#endif
+	
 	return rms_change_accumulator;
 }
 
@@ -163,13 +168,18 @@ ApplyUpdateSPE::ProcessOutsideList(
 	// (ChangeToStatus) and update the status image value at that index.
 	while ( !OutsideList->Empty() )
 	{
+#ifndef FOR_CELL
 		DL_PRINT(DEBUG_ALG, "m_StatusImage->SetPixel(" << OutsideList->Front()->m_Value << ")=" << ((uint32)ChangeToStatus) );
+#endif
 		m_statusIter.SetLocation(OutsideList->Front()->m_Value);
 		m_statusIter.SetCenterPixel(ChangeToStatus);
 		node = OutsideList->Front();
 		
 		OutsideList->PopFront();
+		
+#ifndef FOR_CELL
 		DL_PRINT(DEBUG_ALG, "1: pop ," << OutsideList->Size() << " node " << node->m_Value);
+#endif
 		
 		this->m_layerGate.PushToLayer(node, ChangeToStatus);
 		
@@ -201,11 +211,15 @@ ApplyUpdateSPE::ProcessStatusList(
 		m_statusIter.SetLocation(node->m_Value);		
 		m_statusIter.SetCenterPixel(ChangeToStatus);
 
+#ifndef FOR_CELL
 		DL_PRINT(DEBUG_ALG, "1. node=" << node->m_Value);
-		
+#endif
 		
 		InputList->PopFront(); // Must unlink from the input list  _before_ transferring to another list.
+		
+#ifndef FOR_CELL
 		DL_PRINT(DEBUG_ALG, "2: pop ," << OutputList->Size() << " node " << node->m_Value);
+#endif
 		
 		//m_Layers[ChangeToStatus]->PushFront(node);
 		this->m_layerGate.PushToLayer(node, ChangeToStatus);
@@ -217,7 +231,10 @@ ApplyUpdateSPE::ProcessStatusList(
 			//std::cout << "predIncriminovanym:" << std::endl << m_statusIter.GetNeighborhood() << std::endl;
 			neighbor_status
 					= m_statusIter.GetPixel(m_NeighborList.GetArrayIndex(i), bounds_status);
+			
+#ifndef FOR_CELL
 			DL_PRINT(DEBUG_ALG, "2. neighbor_status=" << ((int32)neighbor_status) );
+#endif
 
 			if (neighbor_status == SearchForStatus)
 			{ // mark this pixel so we don't add it twice. //TODO
@@ -232,9 +249,12 @@ ApplyUpdateSPE::ProcessStatusList(
 					// reuse node from this loop coz it should be returned to local store
 					node->m_Value = m_statusIter.GetIndex()
 							+ m_NeighborList.GetNeighborhoodOffset(i);
+					
+#ifndef FOR_CELL
 					DL_PRINT(DEBUG_ALG, "4. pushing to outList node: " << node->m_Value);					
 		
 					DL_PRINT(DEBUG_ALG, "3: push," << OutputList->Size() << " node " << node->m_Value);
+#endif
 					OutputList->PushFront(node);
 					
 				} // else this index was out of bounds.
@@ -339,11 +359,14 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	      //node = BorrowFromLocalNodeStore();
 	      node = m_localNodeStore.Borrow();
 	      node->m_Value = currNode->m_Value;
+	      
+#ifndef FOR_CELL
 	      DL_PRINT(DEBUG_ALG, "A1. pushing up node:" << node->m_Value);
 	      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	      // tady se do uplistu da adresa z linked chain iteratoru, takze je treba 
 	      // si predtim vzit z local objetStore
 	      DL_PRINT(DEBUG_ALG, "4: push," << UpList->Size() << " node " << node->m_Value);
+#endif
 	      UpList->PushFront(node);
 	      m_statusIter.SetCenterPixel(this->m_StatusActiveChangingUp);
 	
@@ -404,9 +427,11 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	      //node = BorrowFromLocalNodeStore();
 	      node = m_localNodeStore.Borrow();
 	      node->m_Value = currNode->m_Value;
+#ifndef FOR_CELL
 	      DL_PRINT(DEBUG_ALG, "A2. pushing down node:" << node->m_Value );
 	      
 	      DL_PRINT(DEBUG_ALG, "5: push," << DownList->Size() << " node " << node->m_Value);
+#endif
 	      DownList->PushFront(node);
 	      m_statusIter.SetCenterPixel(this->m_StatusActiveChangingDown);
 	

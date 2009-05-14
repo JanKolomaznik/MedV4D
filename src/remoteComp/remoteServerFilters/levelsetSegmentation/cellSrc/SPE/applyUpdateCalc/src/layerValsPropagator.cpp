@@ -1,5 +1,5 @@
 
-#include "common/Common.h"
+#include "common/Types.h"
 #include "common/Log.h"
 
 #include "../layerValsPropagator.h"

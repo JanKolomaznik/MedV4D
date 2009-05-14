@@ -47,7 +47,8 @@ public:
 		{
 			D_PRINT("SPU ERROR, unable to reserve tag\n");
 		}
-		printf ("GET: src=%lld, dest=%p, size=%ld\n", src.Get64(), dest, size);
+		printf ("GET: src=%lld, dest=%p, size=%ld, tag=%d\n", 
+				src.Get64(), dest, size, tag);
 		mfc_get(dest, src.Get64(), size, tag, 0, 0);
 		return tag;
 	}
