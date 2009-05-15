@@ -34,7 +34,7 @@ SettingsBox
 	grid->addWidget( new QLabel( tr( "Fusion Order Number" ) ), 1, 1 );
 	fusionNumber = new QSpinBox();
 	fusionNumber->setAlignment( Qt::AlignRight );
-	fusionNumber->setMaximum( FUSION_IMAGE_NUMBER );
+	fusionNumber->setMaximum( SLICEVIEWER_INPUT_NUMBER );
 	fusionNumber->setMinimum( 1 );
 	grid->addWidget(fusionNumber, 1, 3 );
 	//-------------------------------------------------
@@ -128,7 +128,7 @@ SettingsBox
 	layout->addSpacing( EXECUTE_BUTTON_SPACING );
 
 	//-------------------------------------------------
-	execButton = new QPushButton( tr( "Execute" ) );
+	execButton = new QPushButton( tr( "Show Fusion" ) );
 	QObject::connect( execButton, SIGNAL(clicked()),
                       	this, SLOT(ExecFusion()) );
 	layout->addWidget(execButton);
@@ -137,6 +137,13 @@ SettingsBox
 	layout->addStretch();
 
 	setLayout(layout);	
+}
+
+uint32
+SettingsBox
+::GetInputNumber()
+{
+	return fusionNumber->value();
 }
 
 void

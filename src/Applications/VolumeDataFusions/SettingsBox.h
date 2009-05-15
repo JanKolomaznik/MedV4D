@@ -18,6 +18,10 @@ public:
 	void
 	SetEnabledExecButton( bool val )
 		{ execButton->setEnabled( val ); }
+
+	uint32
+	GetInputNumber();
+
 protected slots:
 
 	void 

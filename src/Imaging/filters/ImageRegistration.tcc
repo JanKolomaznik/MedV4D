@@ -102,7 +102,8 @@ ImageRegistration< ElementType, dim >
 	: PredecessorType( prop ),
 	  jointHistogram( std::vector< int32 >( 2, HISTOGRAM_MIN_VALUE ), std::vector< int32 >( 2, HISTOGRAM_MAX_VALUE ) ),
 	  _criterion( new NormalizedMutualInformation< HistCellType >() ),
-	  _optimization( new PowellOptimization< ElementType, double, 2 * dim >() )
+	  _optimization( new PowellOptimization< ElementType, double, 2 * dim >() ),
+	  _automatic( false )
 {
 	this->_name = "ImageRegistration";
 }
@@ -113,7 +114,8 @@ ImageRegistration< ElementType, dim >
 	: PredecessorType( new Properties() ),
 	  jointHistogram( std::vector< int32 >( 2, HISTOGRAM_MIN_VALUE ), std::vector< int32 >( 2, HISTOGRAM_MAX_VALUE ) ),
 	  _criterion( new NormalizedMutualInformation< HistCellType >() ),
-	  _optimization( new PowellOptimization< ElementType, double, 2 * dim >() )
+	  _optimization( new PowellOptimization< ElementType, double, 2 * dim >() ),
+	  _automatic( false )
 {
 	this->_name = "ImageRegistration";
 }
@@ -124,6 +126,14 @@ ImageRegistration< ElementType, dim >
 {
 	delete _criterion;
 	delete _optimization;
+}
+
+template< typename ElementType, uint32 dim >
+void
+ImageRegistration< ElementType, dim >
+::SetAutomaticMode( bool mode )
+{
+	_automatic = mode;
 }
 
 template< typename ElementType, uint32 dim >
@@ -160,14 +170,18 @@ ImageRegistration< ElementType, dim >
 		this->_writerBBox->SetState( MS_CANCELED );
 		return false;
 	}
-	Vector< double, 2 * dim > v;
-	for ( uint32 i = 0; i < dim; ++i )
+	if ( _automatic )
 	{
-		v[i] = 0;
-		v[dim + i] = 0;
+		Vector< double, 2 * dim > v;
+		for ( uint32 i = 0; i < dim; ++i )
+		{
+			v[i] = 0;
+			v[dim + i] = 0;
+		}
+		double fret;
+		_optimization->optimize( v, fret, this );
 	}
-	double fret;
-	_optimization->optimize( v, fret, this );
+	else this->ExecuteTransformation();
 	bool result = true;
 	if( result ) {
 		this->_writerBBox->SetModified();

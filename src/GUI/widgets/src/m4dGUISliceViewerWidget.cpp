@@ -29,6 +29,7 @@ m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( unsigned index, QWidget *paren
     _inPort = new Imaging::InputPortTyped<Imaging::AbstractImage>();
     resetParameters();
     _inputPorts.AppendPort( _inPort );
+    for ( uint32 i = 1; i < SLICEVIEWER_INPUT_NUMBER; ++i ) _inputPorts.AppendPort( new Imaging::InputPortTyped<Imaging::AbstractImage>() );
     setInputPort( );
 }
 
@@ -39,6 +40,7 @@ m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( Imaging::ConnectionInterface* 
     _inPort = new Imaging::InputPortTyped<Imaging::AbstractImage>();
     resetParameters();
     _inputPorts.AppendPort( _inPort );
+    for ( uint32 i = 1; i < SLICEVIEWER_INPUT_NUMBER; ++i ) _inputPorts.AppendPort( new Imaging::InputPortTyped<Imaging::AbstractImage>() );
     setInputPort( conn );
 }
 

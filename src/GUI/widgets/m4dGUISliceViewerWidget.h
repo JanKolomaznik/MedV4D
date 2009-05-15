@@ -22,6 +22,8 @@
 #define GW 0.6094
 #define BW 0.0820
 
+#define SLICEVIEWER_INPUT_NUMBER			12
+
 namespace M4D
 {
 namespace Viewer

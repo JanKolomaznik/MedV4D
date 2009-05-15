@@ -56,6 +56,9 @@ public:
 	double
 	OptimizationFunction( Vector< double, 2 * dim >& v );
 
+	void
+	SetAutomaticMode( bool mode );
+
 protected:
 	bool
 	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
@@ -76,6 +79,7 @@ private:
 	MultiHistogram< HistCellType, 2 >				jointHistogram;
 	CriterionBase< HistCellType >					*_criterion;
 	OptimizationBase< ElementType, double, 2 * dim >		*_optimization;
+	bool								_automatic;
 
 };
 
