@@ -203,6 +203,8 @@ KidneySegmentationManager::StartSegmentation()
 void
 KidneySegmentationManager::RunFilters()
 {
+	SetReadyToSegmentation( false );
+
 	_medianFilter->ExecuteOnWhole();
 
 	//_gaussianFilter->ExecuteOnWhole();
@@ -211,8 +213,21 @@ KidneySegmentationManager::RunFilters()
 }
 
 void
+KidneySegmentationManager::FiltersFinishedSuccesfully()
+{
+	SetReadyToSegmentation( true );
+}
+
+void
 KidneySegmentationManager::RunSplineSegmentation()
 {
+
+	if( !_readyToStartSegmentation ) {
+		_readyMutex.lock();
+
+		_readyMutex.unlock();
+	}
+
 	//KidneyViewerSpecialState *sState = (KidneyViewerSpecialState*)(_specialState.get());
 
 	LOG( "Poles set to : [" << _poles[0].coordinates << "]; [" << _poles[1].coordinates << "]" );

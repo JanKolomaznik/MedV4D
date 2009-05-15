@@ -30,6 +30,29 @@ struct PoleDefinition {
 	PointType	coordinates;
 };
 
+class Notifier : public QObject, public M4D::Imaging::MessageReceiverInterface
+{
+	Q_OBJECT
+public:
+	Notifier() {}
+	void
+	ReceiveMessage( 
+		M4D::Imaging::PipelineMessage::Ptr 			msg, 
+		M4D::Imaging::PipelineMessage::MessageSendStyle 	/*sendStyle*/, 
+		M4D::Imaging::FlowDirection				/*direction*/
+		)
+	{
+		if( msg->msgID == M4D::Imaging::PMI_FILTER_UPDATED ) {
+			emit Notification();
+		}
+	}
+
+signals:
+	void
+	Notification();
+protected:
+};
+
 class KidneySegmentationManager: public QObject
 {
 	Q_OBJECT
@@ -111,12 +134,27 @@ public slots:
 	void
 	StartSegmentation();
 
+	void
+	FiltersFinishedSuccesfully();
+
 protected:
 	enum SubStates { DEFINING_POLE, MOVING_POLE };
 
 	KidneySegmentationManager();
 	
 	~KidneySegmentationManager();
+
+	void
+	SetReadyToSegmentationFlag( bool ready )
+	{
+		if( ready ) {
+			_readyMutex.unlock();
+		} else {
+			_readyMutex.lock();
+		}
+		_readyToStartSegmentation = ready;
+	}
+	
 
 	int						_computationPrecision;
 
@@ -148,6 +186,10 @@ protected:
 	int						_actualPole;
 	SubStates					_state;
 	GDataSet::Ptr					_dataset;
+
+	volatile bool					_readyToStartSegmentation;
+
+	M4D::Multithreading::RecursiveMutex		_readyMutex;
 };
 
 
