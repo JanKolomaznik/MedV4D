@@ -1,9 +1,9 @@
 #include "SettingsBox.h"
-#include "mainWindow.h"
+#include "Imaging/AbstractFilter.h"
 
 SettingsBox
-::SettingsBox( M4D::GUI::m4dGUIMainViewerDesktopWidget * viewers, QWidget * parent )
-	: _viewers( viewers ), _parent( parent )
+::SettingsBox( M4D::GUI::m4dGUIMainViewerDesktopWidget * viewers, InImageRegistration ** registers, QWidget * parent )
+	: _viewers( viewers ), _registerFilters( registers ), _parent( parent )
 {
 	CreateWidgets();
 }
@@ -61,8 +61,6 @@ SettingsBox
 	xRot->setAlignment( Qt::AlignRight );
 	xRot->setMaximum( 360 );
 	xRot->setMinimum( 0 );
-	QObject::connect( xRot, SIGNAL(valueChanged(int)),
-                      	this, SLOT(xRotValueChanged(int)) );
 	grid->addWidget(xRot, 4, 2 );
 
 	xTrans = new QSpinBox();
@@ -70,8 +68,6 @@ SettingsBox
 	xTrans->setMaximum( 250 );
 	xTrans->setMinimum( -250 );
 	xTrans->setValue( 0 );
-	QObject::connect( xTrans, SIGNAL(valueChanged(int)),
-                      	this, SLOT(xTransValueChanged(int)) );
 	grid->addWidget(xTrans, 4, 3 );
 
 	grid->addWidget( new QLabel( tr( "Y" ) ), 5, 1 );
@@ -79,8 +75,6 @@ SettingsBox
 	yRot->setAlignment( Qt::AlignRight );
 	yRot->setMaximum( 360 );
 	yRot->setMinimum( 0 );
-	QObject::connect( yRot, SIGNAL(valueChanged(int)),
-                      	this, SLOT(yRotValueChanged(int)) );
 	grid->addWidget(yRot, 5, 2 );
 
 	yTrans = new QSpinBox();
@@ -88,8 +82,6 @@ SettingsBox
 	yTrans->setMaximum( 250 );
 	yTrans->setMinimum( -250 );
 	yTrans->setValue( 0 );
-	QObject::connect( yTrans, SIGNAL(valueChanged(int)),
-                      	this, SLOT(yTransValueChanged(int)) );
 	grid->addWidget(yTrans, 5, 3 );
 
 	grid->addWidget( new QLabel( tr( "Z" ) ), 6, 1 );
@@ -97,8 +89,6 @@ SettingsBox
 	zRot->setAlignment( Qt::AlignRight );
 	zRot->setMaximum( 360 );
 	zRot->setMinimum( 0 );
-	QObject::connect( zRot, SIGNAL(valueChanged(int)),
-                      	this, SLOT(zRotValueChanged(int)) );
 	grid->addWidget(zRot, 6, 2 );
 
 	zTrans = new QSpinBox();
@@ -106,17 +96,19 @@ SettingsBox
 	zTrans->setMaximum( 250 );
 	zTrans->setMinimum( -250 );
 	zTrans->setValue( 0 );
-	QObject::connect( zTrans, SIGNAL(valueChanged(int)),
-                      	this, SLOT(zTransValueChanged(int)) );
 	grid->addWidget(zTrans, 6, 3 );
 	
 
 	//-------------------------------------------------
 	fusionType = new QComboBox();
 
-        fusionType->addItem( "Maximum intensity" );
-        fusionType->addItem( "Summed intensity" );
-        fusionType->addItem( "Average intensity" );
+        fusionType->addItem( "Simple" );
+        fusionType->addItem( "RGB fusion" );
+        fusionType->addItem( "Multiple colored fusion" );
+        fusionType->addItem( "Maximum intensity fusion" );
+        fusionType->addItem( "Average intensity fusion" );
+        fusionType->addItem( "Minimum intensity fusion" );
+        fusionType->addItem( "RGB-Max-Avr-Min fusion" );
 
         fusionType->setCurrentIndex( 0 );
 
@@ -124,6 +116,22 @@ SettingsBox
 
 	layout->addLayout( grid );
 	layout->addWidget( fusionType );
+
+	//-------------------------------------------------
+
+	execButton = new QPushButton( tr( "Execute Single Registration" ) );
+	QObject::connect( execButton, SIGNAL(clicked()),
+			this, SLOT(ExecSingleFilter()) );
+	layout->addWidget(execButton);
+
+	//-------------------------------------------------
+
+	execButton = new QPushButton( tr( "Execute All Registrations" ) );
+	QObject::connect( execButton, SIGNAL(clicked()),
+			this, SLOT(ExecAllFilters()) );
+	layout->addWidget(execButton);
+
+	//-------------------------------------------------
 
 	layout->addSpacing( EXECUTE_BUTTON_SPACING );
 
@@ -148,37 +156,7 @@ SettingsBox
 
 void
 SettingsBox
-::xRotValueChanged( int val )
-{
-}
-
-void
-SettingsBox
-::xTransValueChanged( int val )
-{
-}
-
-void
-SettingsBox
-::yRotValueChanged( int val )
-{
-}
-
-void
-SettingsBox
-::yTransValueChanged( int val )
-{
-}
-
-void
-SettingsBox
-::zRotValueChanged( int val )
-{
-}
-
-void
-SettingsBox
-::zTransValueChanged( int val )
+::ClearDataset()
 {
 }
 
@@ -186,10 +164,52 @@ void
 SettingsBox
 ::RegistrationType( int val )
 {
+	xRot->setEnabled( val );
+	xTrans->setEnabled( val );
+	yRot->setEnabled( val );
+	yTrans->setEnabled( val );
+	zRot->setEnabled( val );
+	zTrans->setEnabled( val );
+}
+
+void
+SettingsBox
+::ExecuteFilter( unsigned filterNum )
+{
+	if ( xRot->isEnabled() )
+	{
+		_registerFilters[ filterNum ]->SetAutomaticMode( false );
+		float PI = std::atan(1.0f) * 4.0f;
+		_registerFilters[ filterNum ]->SetRotation( InImageRegistration::CoordType( 2 * PI * xRot->value() / 360, 2 * PI * yRot->value() / 360, 2 * PI * zRot->value() / 360 ) );
+		_registerFilters[ filterNum ]->SetTranslation( InImageRegistration::CoordType( xTrans->value(), yTrans->value(), zTrans->value() ) );
+	}
+	else _registerFilters[ filterNum ]->SetAutomaticMode( true );
+	_registerFilters[ filterNum ]->ExecuteOnWhole();
+}
+
+void
+SettingsBox
+::ExecSingleFilter()
+{
+	ExecuteFilter( fusionNumber->value() - 1 );
+}
+
+void
+SettingsBox
+::ExecAllFilters()
+{
+	for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i ) ExecuteFilter( i );
 }
 
 void
 SettingsBox
 ::ExecFusion()
 {
+}
+
+void
+SettingsBox
+::EndOfExecution( unsigned filterNum )
+{
+        QMessageBox::information( _parent, tr( "Execution finished" ), tr( "Registration Filter #%1 finished its work" ).arg( filterNum ) );
 }

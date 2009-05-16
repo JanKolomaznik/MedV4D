@@ -3,6 +3,7 @@
 
 #include <QtGui>
 #include "GUI/widgets/m4dGUIMainViewerDesktopWidget.h"
+#include "mainWindow.h"
 
 class SettingsBox : public QWidget
 {
@@ -13,7 +14,7 @@ public:
 	static const unsigned ROW_SPACING = 15;
 	
 
-	SettingsBox( M4D::GUI::m4dGUIMainViewerDesktopWidget * viewers, QWidget * parent );
+	SettingsBox( M4D::GUI::m4dGUIMainViewerDesktopWidget * viewers, InImageRegistration ** registers, QWidget * parent );
 	
 	void
 	SetEnabledExecButton( bool val )
@@ -24,35 +25,33 @@ public:
 
 protected slots:
 
-	void 
-	xRotValueChanged( int val );
-
-	void 
-	xTransValueChanged( int val );
-
-	void 
-	yRotValueChanged( int val );
-
-	void 
-	yTransValueChanged( int val );
-
-	void 
-	zRotValueChanged( int val );
-
-	void 
-	zTransValueChanged( int val );
-
 	void
 	RegistrationType( int val );
 
 	void
+	ClearDataset();
+
+	void
+	ExecSingleFilter();
+
+	void
+	ExecAllFilters();
+
+	void
 	ExecFusion();
+
+	void
+        EndOfExecution( unsigned filterNum );
 
 protected:
 	void
 	CreateWidgets();
 
+	void
+	ExecuteFilter( unsigned filterNum );
+
 	M4D::GUI::m4dGUIMainViewerDesktopWidget *_viewers;
+	InImageRegistration **_registerFilters;
 
 	QWidget *_parent;
 

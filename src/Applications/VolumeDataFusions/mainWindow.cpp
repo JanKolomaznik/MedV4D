@@ -7,25 +7,11 @@ using namespace M4D::Imaging;
 
 #define BUF_SIZE		256
 
-class LFNotifier : public M4D::Imaging::MessageReceiverInterface
-{
-public:
-	LFNotifier( AbstractPipeFilter * filter ): _filter( filter ) {}
-	void ReceiveMessage(M4D::Imaging::PipelineMessage::Ptr              msg, 
-                      M4D::Imaging::PipelineMessage::MessageSendStyle /*sendStyle*/, 
-                      M4D::Imaging::FlowDirection				              /*direction*/
-		)
-	{
-		if( msg->msgID == M4D::Imaging::PMI_FILTER_UPDATED ) {
-			_filter->ExecuteOnWhole();	
-		}
-	}
-protected:
-	AbstractPipeFilter * _filter;
-};
-
 void mainWindow::CreatePipeline()
 {
+
+	_settings = new SettingsBox( currentViewerDesktop, _register, this );
+	addDockWindow( "Volume Data Fusions", _settings );
 
 	uint32 i;
 	char buffer[ BUF_SIZE ];
@@ -40,18 +26,19 @@ void mainWindow::CreatePipeline()
 			QMessageBox::critical( this, tr( "Exception" ), tr( "Pipeline error" ) );
 		}
 
+		_notifier[ i ] = new Notifier(i, this);
+		_outConnection[ i ]->SetMessageHook( MessageReceiverInterface::Ptr( _notifier[ i ] ) );
+
+		QObject::connect( _notifier[ i ], SIGNAL( Notification(unsigned) ), _settings, SLOT( EndOfExecution(unsigned) ), Qt::QueuedConnection );
+
 		snprintf( buffer, 255, "Input #%d", i+1 );
 		addSource( _inConnection[ i ], "Segmentation", buffer );
 		
-		snprintf( buffer, 255, "Registered input #%d", i+1 );
+		snprintf( buffer, 255, "Registered Image #%d", i+1 );
 		addSource( _outConnection[ i ], "Segmentation", buffer );
 	}
 
 
-/*
-	_notifier = new Notifier(this);
-	_outConnection->SetMessageHook( MessageReceiverInterface::Ptr( _notifier ) );
-*/
 }
 
 mainWindow::mainWindow ()
@@ -60,10 +47,6 @@ mainWindow::mainWindow ()
 	Q_INIT_RESOURCE( mainWindow ); 
 
 	CreatePipeline();
-
-	_settings = new SettingsBox( currentViewerDesktop, this );
-	addDockWindow( "Volume Data Fusions", _settings );
-	//QObject::connect( _notifier, SIGNAL( Notification() ), _settings, SLOT( EndOfExecution() ), Qt::QueuedConnection );
 }
 
 void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
@@ -72,7 +55,7 @@ void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 		uint32 inputNumber = _settings->GetInputNumber() - 1;
 		_inConnection[ inputNumber ]->PutDataset( inputDataSet );
 
-		currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
+		for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i ) currentViewerDesktop->getSelectedViewerWidget()->InputPort()[ i ].UnPlug();
 		_inConnection[ inputNumber ]->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 
 		if ( inputNumber == 0 )

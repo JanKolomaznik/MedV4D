@@ -266,6 +266,11 @@ ImageTransform< ElementType, dim >
 {
 	PredecessorType::PrepareOutputDatasets();
 
+	//Image of greater dimension cannot convert to image of lesser dimension
+	if( this->in->GetDimension() > ImageTraits< ImageType >::Dimension ) {
+		throw EDatasetTransformImpossible();
+	}
+
 	const unsigned dimension = this->in->GetDimension();
 	int32 minimums[ ImageTraits<ImageType>::Dimension ];
 	int32 maximums[ ImageTraits<ImageType>::Dimension ];
@@ -299,11 +304,6 @@ ImageTransform< ElementType, dim >
 
 	//This kind of filter computes always on whole dataset
 	utype = AbstractPipeFilter::RECALCULATION;
-
-	//Image of greater dimension cannot convert to image of lesser dimension
-	if( this->in->GetDimension() > ImageTraits< ImageType >::Dimension ) {
-		throw EDatasetTransformImpossible();
-	}
 }
 
 template< typename ElementType, uint32 dim >
