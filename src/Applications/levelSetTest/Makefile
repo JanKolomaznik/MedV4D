@@ -22,7 +22,7 @@ LIBS=		$(M4DLIBS) \
 
 ########################################
 #Name of this project part
-NAME=		remoteCompServer$(archPostfix)
+NAME=		levelSetTest$(archPostfix)
 #Names of target sources
 TARGETS=	main
 
@@ -46,7 +46,7 @@ OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )
 
 
 .PHONY: all
-all:		tmpdir Common Imaging libSPEPart PPEStuf dep $(OUTPUT)
+all:		tmpdir Common Imaging libSPEPart libPPEPart dep $(OUTPUT)
 	
 Imaging:
 	$(MAKE) --directory=$(srcTop)/Imaging
@@ -57,7 +57,7 @@ Common:
 libSPEPart:
 	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE
 	
-PPEStuf:
+libPPEPart:
 	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/PPE
 	
 ##################
@@ -68,10 +68,10 @@ ImagingCLEAN:
 CommonCLEAN:
 	$(MAKE) --directory=$(srcTop)/common clean
 	
-libSPUPartCLEAN:
+libSPEPartCLEAN:
 	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE clean
 	
-PPEStufCLEAN:
+libPPEPartCLEAN:
 	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/PPE clean
 
 ##################
@@ -97,6 +97,6 @@ $(OUTPUT):	$(OBJ_FILES)
 		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
 
 .PHONY: clean
-clean: libSPUPartCLEAN PPEStufCLEAN #libSPUPartCLEAN serverRCPartCLEAN ImagingCLEAN CommonCLEAN
+clean: libSPEPartCLEAN libPPEPartCLEAN #ImagingCLEAN CommonCLEAN
 		$(RM) $(TMP_DIR)/*.o $(DEP_FILE)
 		$(RM) $(OUTPUT)

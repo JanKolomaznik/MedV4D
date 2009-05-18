@@ -24,14 +24,14 @@ NeighborhoodCell<PixelType>::NeighborhoodCell()
 ///////////////////////////////////////////////////////////////////////////////
 
 template<typename PixelType>
-PixelType *
+Address
 NeighborhoodCell<PixelType>
 ::ComputeImageDataPointer(const TIndex &pos)
 {
-	PixelType *pointer = (PixelType *)m_imageProps->imageData.Get64();
+	Address pointer = m_imageProps->imageData;
 	for(uint8 i=0; i<DIM; i++)
 	{
-		pointer += pos[i] * m_imageStrides[i];
+		pointer += pos[i] * m_imageStrides[i] * sizeof(PixelType);
 	}
 	return pointer;
 }
@@ -73,9 +73,19 @@ NeighborhoodCell<PixelType>
 	posm[dim] -= RADIUS;
 	if(dim == 0)
 	{		
-		PixelType *begin = ComputeImageDataPointer(posm);
-		//LoadData(begin, dest, m_radiusSize[dim] * sizeof(PixelType));
+		Address begin = ComputeImageDataPointer(posm);
+#ifdef FOR_CELL
+		// insert into DMA list
+		for(uint32 i=0; i<m_radiusSize[dim]; i++)
+		{
+			dma_list[_dmaListIter].notify = 0;
+			dma_list[_dmaListIter].eal = begin.GetLo() + i * sizeof(PixelType);
+			dma_list[_dmaListIter].size = sizeof(PixelType);
+			_dmaListIter++;
+		}
+#else
 		DMAGate::Get(begin, dest, m_radiusSize[dim] * sizeof(PixelType) );
+#endif
 	}
 	else
 	{
@@ -95,7 +105,7 @@ template<typename PixelType>
 void
 NeighborhoodCell<PixelType>::SetCenterPixel(PixelType val)
 {
-	PixelType *begin = ComputeImageDataPointer(m_currIndex);
+	PixelType *begin = (PixelType *) ComputeImageDataPointer(m_currIndex).Get64();
 	*begin = val;
 	// change the buffer as well
 	m_buf[static_cast<uint32>(m_size/2)] = val;
@@ -110,7 +120,7 @@ NeighborhoodCell<PixelType>::SetPixel(PixelType val, TOffset pos)
 	TIndex i = m_currIndex + pos;
 	if(IsWithinImage(i))
 	{
-		PixelType *begin = ComputeImageDataPointer(i);
+		PixelType *begin = (PixelType *) ComputeImageDataPointer(i).Get64();
 		*begin = val;
 	}
 	// change the buffer as well !!!!!!!!
@@ -131,6 +141,10 @@ NeighborhoodCell<PixelType>
 	// fill the buff
 	memset((void*)m_buf, DEFAULT_VAL, m_size * sizeof(PixelType));
 	
+#ifdef FOR_CELL
+	_dmaListIter = 0;
+#endif
+	
 	TIndex iteratingIndex(pos);
 	iteratingIndex[DIM-1] -= RADIUS;
 	for(uint32 i=0; i<m_radiusSize[DIM-1]; i++)
@@ -139,6 +153,16 @@ NeighborhoodCell<PixelType>
 			LoadSlice(iteratingIndex, DIM-2, m_buf + (i * m_radiusStrides[DIM-1]));
 		iteratingIndex[DIM-1] += 1;	// move in iteration  direction
 	}
+	
+#ifdef FOR_CELL
+	// issue the list
+	uint32 tag = DMAGate::GetList(
+			m_imageProps->imageData.GetHi(), 
+			(void *)m_buf, dma_list, _dmaListIter);
+	
+	mfc_write_tag_mask (1 << tag);
+		mfc_read_tag_status_all ();
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////

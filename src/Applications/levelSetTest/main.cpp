@@ -84,11 +84,11 @@ int main(int argc, char *argv[]) {
 		
 		FilterType::Properties *props = new FilterType::Properties();
 		
-#define  RATIO 0.5f
+#define  RATIO 0.125f
 		props->seedX = (uint32)(256 * RATIO);
 		props->seedY = (uint32)(256 * RATIO);
 		props->initialDistance = 100 * RATIO;
-		//props->maxIterations = 2;
+		props->maxIterations = 800;
 		m_filter =  new FilterType( props);
 		
 		m_filter->SetUpdateInvocationStyle(AbstractPipeFilter::UIS_ON_CHANGE_BEGIN);

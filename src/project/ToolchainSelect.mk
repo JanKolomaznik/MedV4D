@@ -15,7 +15,8 @@ CXXFLAGS += -DFOR_CELL
 
 CXX=$(binUtilsPath)/ppu-g++
 SPU_LD_PROFILE_OPTS= -Wl,-q -g
-SPUCXX=$(binUtilsPath)/spu-g++ -g --param max-unroll-times=1
+SPUCXX=$(binUtilsPath)/spu-g++
+EMBEDSPU=$(binUtilsPath)/ppu-embedspu -m64
 AR=$(binUtilsPath)/ppu-ar
 SPU_AR=$(binUtilsPath)/spu-ar
 archPostfix=CELL

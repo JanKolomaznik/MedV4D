@@ -18,8 +18,6 @@ public:
 	
 	void push_back(T val);
 	
-	
-	
 	void SetBeginEnd(T *begin, T *end);
 	
 	void SetArray(Address array);

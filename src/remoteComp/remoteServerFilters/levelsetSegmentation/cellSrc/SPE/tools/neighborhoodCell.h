@@ -51,7 +51,7 @@ public:
 	
 protected:
 	
-	PixelType *ComputeImageDataPointer(const TIndex &pos);
+	Address ComputeImageDataPointer(const TIndex &pos);
 	void LoadData(PixelType *src, PixelType *dest, size_t size);
 	void LoadSlice(TIndex posm, uint8 dim, PixelType *dest);
 	
@@ -60,8 +60,17 @@ protected:
 	TImageProperties<PixelType> *m_imageProps;
 	TStrides m_imageStrides;
 	
-	PixelType m_buf[NEIGHBOURHOOD_SIZE];
+	PixelType m_buf[NEIGHBOURHOOD_SIZE] __attribute__ ((aligned (128)));
 	size_t m_size;
+	
+#ifdef FOR_CELL
+	/* here we reserve space for the dma list.
+	 * This array is aligned on 16 byte boundary */
+#define DMA_LIST_SIZE (SIZEIN1DIM*SIZEIN1DIM*SIZEIN1DIM)
+	mfc_list_element_t dma_list[DMA_LIST_SIZE] __attribute__ ((aligned (16)));
+	
+	uint32 _dmaListIter;
+#endif
 };
 
 template<typename PixelType>
