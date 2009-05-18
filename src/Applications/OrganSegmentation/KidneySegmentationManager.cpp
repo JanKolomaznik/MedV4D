@@ -53,11 +53,19 @@ KidneySegmentationManager::KidneySegmentationManager()
 		_container.MakeConnection( *_medianFilter, 0, *_segmentationFilter, 0 );
 
 	//_edgeConnection = (ImageConnectionType*)&(_container.MakeConnection( *_edgeFilter, 0, *_segmentationFilter, 1 ) );
-		_container.MakeConnection( *filter, 0, *_edgeFilter, 0 );
+	ConnectionInterface &conn = _container.MakeConnection( *filter, 0, *_edgeFilter, 0 );
 		_container.MakeConnection( *_edgeFilter, 0, *_segmentationFilter, 1 );
 
 	_outGeomConnection = (OutputGeomConnection*)&(_container.MakeOutputConnection( *_segmentationFilter, 0, true ) );
-		
+
+
+
+	Notifier * notifier = new Notifier();
+
+	QObject::connect( notifier, SIGNAL( Notify() ), this, SLOT( FiltersFinishedSuccesfully() ), Qt::QueuedConnection );
+
+	conn.SetMessageHook( MessageReceiverInterface::Ptr( notifier ) );
+
 }
 
 KidneySegmentationManager::~KidneySegmentationManager()
@@ -194,16 +202,40 @@ KidneySegmentationManager::PolesSet()
 	//_inConnection->PutDataset( _edgeConnection->GetDatasetPtrTyped() );
 }
 
+struct SegmentationExecutionThread
+{
+	SegmentationExecutionThread( 
+		KidneySegmentationManager	*manager 
+		)
+		: _manager( manager ) 
+	{ /*empty*/ }
+
+	/**
+	 * Method executed by thread, which has copy of this object.
+	 **/
+	void
+	operator()()
+	{
+		D_PRINT( "Entering RunSplineSegmentation()" );
+		_manager->RunSplineSegmentation();
+	}
+private:
+	KidneySegmentationManager	*_manager;
+
+};
+
 void
 KidneySegmentationManager::StartSegmentation()
 {
-	RunSplineSegmentation();
+	/*RunSplineSegmentation();*/
+	D_PRINT( "Executing thread for spline segmentation wait" );
+	Multithreading::Thread thread( SegmentationExecutionThread( this ) );
 }
 
 void
 KidneySegmentationManager::RunFilters()
 {
-	SetReadyToSegmentation( false );
+	SetReadyToSegmentationFlag( false );
 
 	_medianFilter->ExecuteOnWhole();
 
@@ -215,7 +247,7 @@ KidneySegmentationManager::RunFilters()
 void
 KidneySegmentationManager::FiltersFinishedSuccesfully()
 {
-	SetReadyToSegmentation( true );
+	SetReadyToSegmentationFlag( true );
 }
 
 void
@@ -223,9 +255,9 @@ KidneySegmentationManager::RunSplineSegmentation()
 {
 
 	if( !_readyToStartSegmentation ) {
-		_readyMutex.lock();
-
-		_readyMutex.unlock();
+		D_PRINT( "RunSplineSegmentation() waiting." );
+		Multithreading::ScopedLock lock( _readyMutex );
+		D_PRINT( "RunSplineSegmentation() waiting finished." );
 	}
 
 	//KidneyViewerSpecialState *sState = (KidneyViewerSpecialState*)(_specialState.get());
@@ -251,7 +283,7 @@ KidneySegmentationManager::RunSplineSegmentation()
 
 	while( _segmentationFilter->IsRunning() ){ /*std::cout << ".";*/ }
 
-	QMessageBox::information( NULL, "Execution finished", "Filter finished its work" );
+	//QMessageBox::information( NULL, "Execution finished", "Filter finished its work" );
 
 
 

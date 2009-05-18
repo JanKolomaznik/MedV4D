@@ -43,13 +43,13 @@ public:
 		)
 	{
 		if( msg->msgID == M4D::Imaging::PMI_FILTER_UPDATED ) {
-			emit Notification();
+			emit Notify();
 		}
 	}
 
 signals:
 	void
-	Notification();
+	Notify();
 protected:
 };
 
@@ -189,7 +189,7 @@ protected:
 
 	volatile bool					_readyToStartSegmentation;
 
-	M4D::Multithreading::RecursiveMutex		_readyMutex;
+	M4D::Multithreading::Mutex		_readyMutex;
 };
 
 
