@@ -121,6 +121,7 @@ Lets call it XULDIR
 \item edit the file
 
 /opt/cell/ide/eclipse/eclipse.ini file as follows:
+\label{XULLFIX}
 \begin{verbatim}
 ...
 -vmargs
@@ -190,6 +191,14 @@ And then copy whatever you want.
 You can ssh to running simulator. It is better to use real bash that the console within IDE.
 You have all the bash advantages like command and path completion available in contrast to 'text mode' of the IDE console.
 
+\par
+Sometimes root user is needed for an operation performed in the simulator.
+Its password should be disabled.
+It can be done when sysroot\_image is mouned.
+Under host machine root account the sysroot\_image\_mount\_point/etc/passwd file should be edited.
+The first line is the root's so deletion of '*' characted from the second field (after the second ':' character) will disable the root's password.
+Note that this action must be performed when the simulator is not running otherwise the changes will be overwritten by the simulator.
+
 \section{Setup CellIDE}
 
 \section{Using examples}
@@ -231,3 +240,9 @@ After disabling all unnecessary services we got about 130MB of free space.
 
 Yellow dog distributions goes even beyond. They can access other 256MB in PS3 locked for graphics.
 Special device is created and the graphic memory is the used as a swap partition. For details see \url{http://us.fixstars.com/products/ydl/}.
+
+\section{Visual Performance Analyzer - VPA}
+
+Another useful tool is VPA. It is not part of SDK so it should be downloaded separately.
+Visit \url{http://www.alphaworks.ibm.com/tech/vpa} for details.
+After installing (actually unpacking) the downloaded file similar fix in ini file to eclipse.ini file (see\ref{XULLFIX}) should be done to run the VPA correctly.
