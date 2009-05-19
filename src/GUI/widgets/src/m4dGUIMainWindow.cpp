@@ -790,7 +790,9 @@ void m4dGUIMainWindow::process ( AbstractDataSet::Ptr inputDataSet )
     ConnectionInterfaceTyped< AbstractImage > *conn = new ConnectionTyped< AbstractImage >;
 		conn->PutDataset( inputDataSet );
 
-		currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
+		for ( unsigned i = 0; i < currentViewerDesktop->getSelectedViewerWidget()->InputPort().Size(); i++ ) {
+      currentViewerDesktop->getSelectedViewerWidget()->InputPort()[i].UnPlug();
+    }
 		conn->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 
 	} 

@@ -185,7 +185,9 @@ void m4dGUIMainViewerDesktopWidget::sourceSelected ( int index )
 { 
   selectedViewer->sourceIdx = index;
 
-  selectedViewer->viewerWidget->InputPort()[0].UnPlug();
+  for ( unsigned i = 0; i < selectedViewer->viewerWidget->InputPort().Size(); i++ ) {
+    selectedViewer->viewerWidget->InputPort()[i].UnPlug();
+  }
   sources[index].conn->ConnectConsumer( selectedViewer->viewerWidget->InputPort()[0] );
 
   selectedViewer->viewerWidget->setViewerEventHandler( sources[index].hnd );

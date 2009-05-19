@@ -641,7 +641,9 @@ void m4dGUIMainWindow2::process ( M4D::Dicom::DicomObjSetPtr dicomObjSet )
     ConnectionInterfaceTyped< AbstractImage > *conn = new ConnectionTyped< AbstractImage >;
 		conn->PutDataset( inputImage );
 
-		currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
+    for ( unsigned i = 0; i < currentViewerDesktop->getSelectedViewerWidget()->InputPort().Size(); i++ ) {
+      currentViewerDesktop->getSelectedViewerWidget()->InputPort()[i].UnPlug();
+    }
 		conn->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 	} 
 	catch ( ... ) {

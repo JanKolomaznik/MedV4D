@@ -352,7 +352,7 @@ public:
 
 
 	size_t
-	Size()
+	Size() const
 	{ return _size; }
 protected:
 	virtual ~PortList() {}
