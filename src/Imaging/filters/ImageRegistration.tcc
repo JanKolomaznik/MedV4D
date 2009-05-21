@@ -210,6 +210,10 @@ ImageRegistration< ElementType, dim >
 
 		typedef typename PredecessorType::CoordType::CoordinateType		CoordType;
 
+		Vector< CoordType, dim > scale;
+		for ( uint32 i = 0; i < dim; ++i ) scale[i] = static_cast< CoordType >( inSize[i] * this->in->GetDimensionExtents( i ).elementExtent )/static_cast< CoordType >( refSize[i] * referenceImage->GetDimensionExtents( i ).elementExtent );
+		this->SetScale( scale );
+
 		Vector< CoordType, dim > sampling;
 
 		for ( uint32 i = 0; i < dim; ++i ) sampling[i] = static_cast< CoordType >( refSize[i] )/static_cast< CoordType >( inSize[i] );

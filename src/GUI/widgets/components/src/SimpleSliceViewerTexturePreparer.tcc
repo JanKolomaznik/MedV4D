@@ -185,6 +185,9 @@ SimpleSliceViewerTexturePreparer< ElementType >
 
         glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
                       GL_LUMINANCE, this->oglType(), pixel );
+	
+	delete[] pixel;
+
         return true;
     }
 

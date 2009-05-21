@@ -234,6 +234,16 @@ ImageTransform< ElementType, dim >
 ::ExecuteTransformation()
 {
 	bool result = false;
+	int32 minimums[ dim ];
+        int32 maximums[ dim ];
+	float32 voxelExtents[ dim ];
+	for ( uint32 d = 0; d < dim; ++d )
+	{
+		minimums[ d ] = this->out->GetDimensionExtents( d ).minimum;
+		maximums[ d ] = this->out->GetDimensionExtents( d ).maximum;
+		voxelExtents[ d ] = this->out->GetDimensionExtents( d ).elementExtent / static_cast< Properties* >( this->_properties )->_scale[ d ];
+	}
+	this->SetOutputImageSize( minimums, maximums, voxelExtents );
 	LinearInterpolator< ImageType > interpolator( this->in );
 	result = TransformImage< ElementType >( *(this->in), *(this->out), this->_properties,static_cast< InterpolatorBase< ImageType >* >( &interpolator ) );
 	return result;

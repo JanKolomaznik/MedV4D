@@ -7,6 +7,11 @@ namespace M4D
 namespace Viewer
 {
 
+/*template< typename ElementType >
+ElementType*
+RGBSliceViewerTexturePreparer< ElementType >
+::RGBChannelArrenger( 
+*/
 template< typename ElementType >
 bool
 RGBSliceViewerTexturePreparer< ElementType >
@@ -62,6 +67,12 @@ RGBSliceViewerTexturePreparer< ElementType >
 
         glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
                       GL_RGB, this->oglType(), texture );
+
+	delete[] texture;
+	if ( pixel[0] ) delete[] pixel[0];
+	if ( pixel[1] ) delete[] pixel[1];
+	if ( pixel[2] ) delete[] pixel[2];
+
         return true;
     }
 
