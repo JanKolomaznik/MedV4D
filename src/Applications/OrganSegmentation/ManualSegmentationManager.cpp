@@ -57,6 +57,10 @@ void
 ManualSegmentationManager::Draw( int32 sliceNum, double zoomRate )
 {
 	try{
+		float32 tmp;
+		glGetFloatv( GL_LINE_WIDTH, &tmp );
+		glLineWidth( 3.0f );
+
 		const GDataSet::ObjectsInSlice &slice = _dataset->GetSlice( sliceNum );
 		switch( _state ) {
 		
@@ -72,6 +76,8 @@ ManualSegmentationManager::Draw( int32 sliceNum, double zoomRate )
 				}
 			}
 		};
+
+		glLineWidth( tmp );
 	} catch (...) {
 
 	}

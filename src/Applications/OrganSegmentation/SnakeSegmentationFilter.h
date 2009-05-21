@@ -151,7 +151,10 @@ protected:
 			M4D::Imaging::Algorithms::InternalCurveEnergy< CurveType >,
 			M4D::Imaging::Algorithms::DummyEnergy3 >			EnergyModel;
 
-	typedef M4D::Imaging::Algorithms::EnergicSnake< CurveType, EnergyModel >	SnakeAlgorithm;
+	typedef M4D::Imaging::Algorithms::EnergicSnake< 
+			CurveType, 
+			EnergyModel, 
+			M4D::Imaging::Algorithms::StepScaleConvergenceCriterion >	SnakeAlgorithm;
 
 	CurveType
 	CreateSquareControlPoints( float32 radius );

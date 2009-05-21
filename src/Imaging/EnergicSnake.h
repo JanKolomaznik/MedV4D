@@ -81,6 +81,35 @@ private:
 	unsigned _calmDownInterval;
 };
 
+class StepScaleConvergenceCriterion
+{
+public:
+	StepScaleConvergenceCriterion(): _maxStepCount( 50 ), _calmDownInterval( 10 ), _stepScaleLimit( 0.05 )
+		{}
+	bool
+	Converged( EnergicSnakeParameters &params, EnergicSnakeStats &stats )
+	{
+		if( (params._stepScale < _stepScaleLimit) && (stats._lastStructureChange >= _calmDownInterval) ) {
+			return true;
+		}
+		if( (stats._stepCount >= _maxStepCount) && (stats._lastStructureChange >= _calmDownInterval) ) {
+			return true;
+		}
+		if( stats._stepCount >= 2*_maxStepCount ) {
+			return true;
+		}
+		return false;
+	}
+
+	SIMPLE_GET_SET_METHODS( unsigned, MaxStepCount, _maxStepCount );
+	SIMPLE_GET_SET_METHODS( unsigned, CalmDownInterval, _calmDownInterval );
+	SIMPLE_GET_SET_METHODS( float32, StepScaleLimit, _stepScaleLimit );
+private:
+	unsigned	_maxStepCount;
+	unsigned	_calmDownInterval;
+	float32		_stepScaleLimit;
+};
+
 template< typename ContourType, typename EnergyModel, typename ConvergenceCriterion = DefaultConvergenceCriterion >
 class EnergicSnake: public EnergyModel, public ConvergenceCriterion
 {

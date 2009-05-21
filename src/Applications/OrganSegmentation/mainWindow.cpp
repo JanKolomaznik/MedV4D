@@ -23,7 +23,7 @@ mainWindow::mainWindow ()
 	QObject::connect( _settings, SIGNAL( SetSegmentationSignal( uint32 )),
 		this, SLOT(SetSegmentationSlot( uint32 )) );
 
-	addDockWindow( "Organ Segmentation", _settings );
+	addDockWindow( "Organ Segmentation", _settings, DOCKED_DOCK_WINDOW );
 
 	/*_segmentationWidget = new SegmentationWidget();
 	addDesktopWidget( _segmentationWidget );*/

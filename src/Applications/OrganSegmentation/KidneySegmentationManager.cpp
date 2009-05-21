@@ -123,7 +123,11 @@ KidneySegmentationManager::Draw( int32 sliceNum, double zoomRate )
 		}
 		if( _dataset ) {
 			const GDataSet::ObjectsInSlice &slice = _dataset->GetSlice( sliceNum );
+			float32 tmp;
+			glGetFloatv( GL_LINE_WIDTH, &tmp );
+			glLineWidth( 3.0f );
 			std::for_each( slice.begin(), slice.end(), GLDrawBSplineCP );
+			glLineWidth( tmp );
 		}
 	} catch (...) {
 

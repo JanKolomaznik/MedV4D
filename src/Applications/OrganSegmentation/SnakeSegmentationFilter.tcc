@@ -252,8 +252,9 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 	algorithm.SetRegionEdge( inEdge->GetSlice( sliceNumber ) );
 	algorithm.SetAlpha( GetEdgeRegionBalance() );
 
-	algorithm.SetCalmDownInterval( 20 );
-	algorithm.SetMaxStepCount( 60 );
+	algorithm.SetCalmDownInterval( 40 );
+	algorithm.SetStepScaleLimit( 0.01 );
+	algorithm.SetMaxStepCount( 200 );
 
 
 	
