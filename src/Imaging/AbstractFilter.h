@@ -527,8 +527,14 @@ const DatasetType&
 AbstractPipeFilter::GetInputDataSet( uint32 idx )const
 {
 	_inputPorts[ idx ].LockDataset();
-	const DatasetType* dataset = dynamic_cast< const DatasetType* >(&( _inputPorts.GetPort( idx ).GetDataset() ));
-	if( dataset ) return *dataset;
+	try {
+		const DatasetType* dataset = dynamic_cast< const DatasetType* >(&( _inputPorts.GetPort( idx ).GetDataset() ));
+		if( dataset ) return *dataset;
+	}
+	catch (...){
+		_inputPorts[ idx ].ReleaseDatasetLock();
+		throw;
+	}
 	
 	_inputPorts[ idx ].ReleaseDatasetLock();
 	_THROW_ ErrorHandling::ECastProblem(); 
@@ -539,8 +545,14 @@ DatasetType &
 AbstractPipeFilter::GetOutputDataSet( uint32 idx )const
 {
 	_outputPorts[ idx ].LockDataset();
-	DatasetType* dataset = dynamic_cast< DatasetType* >(&( _outputPorts.GetPort( idx ).GetDataset() ));
-	if( dataset ) return *dataset;
+	try {
+		DatasetType* dataset = dynamic_cast< DatasetType* >(&( _outputPorts.GetPort( idx ).GetDataset() ));
+		if( dataset ) return *dataset;
+	}
+	catch (...){
+		_outputPorts[ idx ].ReleaseDatasetLock();
+		throw;
+	}
 
 	_outputPorts[ idx ].ReleaseDatasetLock();
 	_THROW_ ErrorHandling::ECastProblem(); 

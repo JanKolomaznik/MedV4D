@@ -115,6 +115,8 @@ AbstractImageFilter< InputImageType, OutputImageType >
 {
 	PredecessorType::BeforeComputation( utype );	
 	
+	this->in = NULL;
+	this->out = NULL;
 	this->in = &(this->GetInputImage());
 	this->out = &(this->GetOutputImage());
 
@@ -164,13 +166,17 @@ AbstractImageFilter< InputImageType, OutputImageType >
 ::AfterComputation( bool successful )
 {
 	//We store actual timestamps of input and output - for next execution
-	_inEditTimestamp = in->GetModificationManager().GetActualTimestamp();
-	_outEditTimestamp = out->GetModificationManager().GetActualTimestamp();
-	_inTimestamp = in->GetStructureTimestamp();
-	_outTimestamp = out->GetStructureTimestamp();
+	if( this->in ) {
+		_inEditTimestamp = in->GetModificationManager().GetActualTimestamp();
+		_inTimestamp = in->GetStructureTimestamp();
+		this->ReleaseInputImage();
+	}
 
-	this->ReleaseInputImage();
-	this->ReleaseOutputImage();
+	if( this->out ) {
+		_outEditTimestamp = out->GetModificationManager().GetActualTimestamp();
+		_outTimestamp = out->GetStructureTimestamp();
+		this->ReleaseOutputImage();
+	}
 
 	PredecessorType::AfterComputation( successful );	
 }
