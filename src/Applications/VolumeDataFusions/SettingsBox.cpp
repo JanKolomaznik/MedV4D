@@ -199,9 +199,12 @@ void
 SettingsBox
 ::ExecFusion()
 {
+	M4D::Viewer::m4dGUISliceViewerWidget* sliceViewer = dynamic_cast< M4D::Viewer::m4dGUISliceViewerWidget* >( _viewers->getSelectedViewerWidget() );
+	if ( ! sliceViewer ) return;
 	for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i )
 	{
-		_viewers->getSelectedViewerWidget()->InputPort()[ i ].UnPlug();
+		sliceViewer->InputPort()[ i ].UnPlug();
+		sliceViewer->setTexturePreparerType( M4D::Viewer::rgb );
 		static_cast< mainWindow* >( _parent )->OutConnectionToViewerPort( i, i );
 	}
 }

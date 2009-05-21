@@ -34,7 +34,7 @@ public:
      *  @param dimension dimense
      *  @return true, if texture preparing was successful, false otherwise
      */
-    bool prepare( const Imaging::InputPortList& inputPorts,
+    virtual bool prepare( const Imaging::InputPortList& inputPorts,
       uint32& width,
       uint32& height,
       GLint brightnessRate,
@@ -43,7 +43,7 @@ public:
       uint32 slice,
       unsigned& dimension );
 
-private:
+protected:
 
     /**
      * Function that arranges the voxels in correct order.
@@ -63,6 +63,27 @@ private:
         for ( i = 0; i < height; i++ )
             for ( j = 0; j < width; j++ ) dst[ i * newWidth + j ] = src[ j * xstride + i * ystride + depth * zstride ];
     }
+
+    /**
+     * Prepares the texture of the image to be mapped to the following OpenGL surface.
+     *  @param inPort the input port to get the image from
+     *  @param width reference to set the width of the texture
+     *  @param height reference to set the height of the texture
+     *  @param brightnessRate the rate of brightness to adjust the image with
+     *  @param contrastRate the rate of contrast to adjust the image with
+     *  @param so the orientation of the slices (xy, yz, zx)
+     *  @param slice the number of the slice to be drawn
+     *  @param dimension dimense
+     *  @return pointer to the resulting texture array, if texture preparing was successful, NULL otherwise
+     */
+    ElementType* prepareSingle( Imaging::InputPortTyped<Imaging::AbstractImage>* inPort,
+      uint32& width,
+      uint32& height,
+      GLint brightnessRate,
+      GLint contrastRate,
+      SliceOrientation so,
+      uint32 slice,
+      unsigned& dimension );
 
     SimpleSliceViewerTexturePreparer( const SimpleSliceViewerTexturePreparer& ); // not implemented
     const SimpleSliceViewerTexturePreparer& operator=( const SimpleSliceViewerTexturePreparer& ); // not implemented

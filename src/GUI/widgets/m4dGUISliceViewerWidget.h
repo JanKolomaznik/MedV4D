@@ -32,12 +32,12 @@ namespace Viewer
 typedef enum
 {
 	simple,
-	RGB,
+	rgb,
 	multiColor,
 	maxint,
 	avrint,
 	minint,
-	RGBmam
+	rgbmam
 } SliceViewerTexturePreparerType;
 
 /**

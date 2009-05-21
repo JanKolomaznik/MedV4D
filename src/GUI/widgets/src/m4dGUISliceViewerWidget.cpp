@@ -4,7 +4,7 @@
  *  @brief some brief
  */
 #include "GUI/widgets/m4dGUISliceViewerWidget.h"
-#include "GUI/widgets/components/SimpleSliceViewerTexturePreparer.h"
+#include "GUI/widgets/components/RGBSliceViewerTexturePreparer.h"
 
 #include <QtGui>
 #include "GUI/widgets/ogl/fonts.h"
@@ -495,8 +495,20 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
     glScalef( _flipH * zoomRate, _flipV * zoomRate, 0. );
     
     // prepare texture
-    INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
-    	_imageID, { SimpleSliceViewerTexturePreparer<TTYPE> texturePreparer; _ready = texturePreparer.prepare( this->InputPort(), width, height, _brightnessRate, _contrastRate, _sliceOrientation, sliceNum - _minimum[ ( _sliceOrientation + 2 ) % 3 ], _dimension ); } )
+    switch ( texturePreparer )
+    {
+
+	case rgb:
+        INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
+    	    _imageID, { RGBSliceViewerTexturePreparer<TTYPE> texturePreparer; _ready = texturePreparer.prepare( this->InputPort(), width, height, _brightnessRate, _contrastRate, _sliceOrientation, sliceNum - _minimum[ ( _sliceOrientation + 2 ) % 3 ], _dimension ); } );
+	break;
+
+	default:
+	INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
+            _imageID, { SimpleSliceViewerTexturePreparer<TTYPE> texturePreparer; _ready = texturePreparer.prepare( this->InputPort(), width, height, _brightnessRate, _contrastRate, _sliceOrientation, sliceNum - _minimum[ ( _sliceOrientation + 2 ) % 3 ], _dimension ); } );
+        break;
+
+    }
 
     if ( !_ready ) return;
     

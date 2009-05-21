@@ -8,9 +8,9 @@ namespace Viewer
 {
 
 template< typename ElementType >
-bool
+ElementType*
 SimpleSliceViewerTexturePreparer< ElementType >
-::prepare( const Imaging::InputPortList& inputPorts,
+::prepareSingle( Imaging::InputPortTyped<Imaging::AbstractImage>* inPort,
       uint32& width,
       uint32& height,
       GLint brightnessRate,
@@ -19,11 +19,9 @@ SimpleSliceViewerTexturePreparer< ElementType >
       uint32 slice,
       unsigned& dimension )
     {
-        Imaging::InputPortTyped<Imaging::AbstractImage>* inPort = inputPorts.GetPortTypedSafe< Imaging::InputPortTyped<Imaging::AbstractImage> >( 0 );
-
+        bool ready = true;
         int32 xstride, ystride, zstride;
         uint32 depth;
-        bool ready = true;
         ElementType* pixel, *original;
         try
         {
@@ -102,16 +100,16 @@ SimpleSliceViewerTexturePreparer< ElementType >
 
                 } catch (...) { ready = false; }
                 inPort->ReleaseDatasetLock();
-                if ( !ready ) return ready;
+                if ( !ready ) return NULL;
             }
             else
             {
                 ready = false;
-                return ready;
+                return NULL;
             }
         }
         catch (...) { ready = false; }
-        if ( !ready ) return ready;
+        if ( !ready ) return NULL;
 
         // check to see if modification is required for power of 2 long and wide texture
         float power_of_two_width_ratio=std::log((float)(width))/std::log(2.0);
@@ -164,10 +162,30 @@ SimpleSliceViewerTexturePreparer< ElementType >
         width = newWidth;
         height = newHeight;
 
+	return pixel;
+    }
+
+template< typename ElementType >
+bool
+SimpleSliceViewerTexturePreparer< ElementType >
+::prepare( const Imaging::InputPortList& inputPorts,
+      uint32& width,
+      uint32& height,
+      GLint brightnessRate,
+      GLint contrastRate,
+      SliceOrientation so,
+      uint32 slice,
+      unsigned& dimension )
+    {
+        Imaging::InputPortTyped<Imaging::AbstractImage>* inPort = inputPorts.GetPortTypedSafe< Imaging::InputPortTyped<Imaging::AbstractImage> >( 0 );
+
+	ElementType* pixel = prepareSingle( inPort, width, height, brightnessRate, contrastRate, so, slice, dimension );
+
+	if ( ! pixel ) return false;
+
         glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
                       GL_LUMINANCE, this->oglType(), pixel );
-        delete[] pixel;
-        return ready;
+        return true;
     }
 
 } /*namespace Viewer*/
