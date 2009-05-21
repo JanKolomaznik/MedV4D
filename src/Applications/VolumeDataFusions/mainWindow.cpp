@@ -32,10 +32,10 @@ void mainWindow::CreatePipeline()
 		QObject::connect( _notifier[ i ], SIGNAL( Notification(unsigned) ), _settings, SLOT( EndOfExecution(unsigned) ), Qt::QueuedConnection );
 
 		snprintf( buffer, 255, "Input #%d", i+1 );
-		addSource( _inConnection[ i ], "Segmentation", buffer );
+		addSource( _inConnection[ i ], "Volume Data Fusions", buffer );
 		
-		snprintf( buffer, 255, "Registered Image #%d", i+1 );
-		addSource( _outConnection[ i ], "Segmentation", buffer );
+		snprintf( buffer, 255, "Transformed Image #%d", i+1 );
+		addSource( _outConnection[ i ], "Volume Data Fusions", buffer );
 	}
 
 
@@ -55,7 +55,7 @@ void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 		uint32 inputNumber = _settings->GetInputNumber() - 1;
 		_inConnection[ inputNumber ]->PutDataset( inputDataSet );
 
-		for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i ) currentViewerDesktop->getSelectedViewerWidget()->InputPort()[ i ].UnPlug();
+		for ( uint32 i = 0; i < currentViewerDesktop->getSelectedViewerWidget()->InputPort().Size(); ++i ) currentViewerDesktop->getSelectedViewerWidget()->InputPort()[ i ].UnPlug();
 		_inConnection[ inputNumber ]->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 
 		if ( inputNumber == 0 )
@@ -67,3 +67,19 @@ void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 	}
 }
 
+void mainWindow::ClearDataset ()
+{
+	uint32 inputNumber = _settings->GetInputNumber() - 1;
+	ImageType::Ptr ptr;
+	_inConnection[ inputNumber ]->PutDataset( ptr );
+}
+
+void mainWindow::OutConnectionToViewerPort( uint32 inputNumber, uint32 portNumber )
+{
+	if ( inputNumber >= SLICEVIEWER_INPUT_NUMBER ||
+	     portNumber >= currentViewerDesktop->getSelectedViewerWidget()->InputPort().Size() )
+	{
+		_THROW_ M4D::ErrorHandling::EBadIndex();
+	}
+	_outConnection[ inputNumber ]->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[ portNumber ] );
+}

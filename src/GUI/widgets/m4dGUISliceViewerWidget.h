@@ -29,6 +29,17 @@ namespace M4D
 namespace Viewer
 {
 
+typedef enum
+{
+	simple,
+	RGB,
+	multiColor,
+	maxint,
+	avrint,
+	minint,
+	RGBmam
+} SliceViewerTexturePreparerType;
+
 /**
  * Class that shows the image dataset slice-by-slice.
  */
@@ -37,6 +48,11 @@ class m4dGUISliceViewerWidget : public m4dGUIAbstractViewerWidget, public QGLWid
     Q_OBJECT
 
 public:
+
+    /**
+     * Type of texture preparer
+     */
+    SliceViewerTexturePreparerType texturePreparer;
     
     /**
      * Type of method for handling mouse movement events.
@@ -73,6 +89,15 @@ public:
      *  @param conn the connection that connects the viewer
      */
     virtual void setInputPort( Imaging::ConnectionInterface* conn );
+
+    /**
+     * Set the type of the texture preparer
+     *  @param tpType texture preparer type to set
+     */
+    void setTexturePreparerType( SliceViewerTexturePreparerType tpType )
+    {
+	texturePreparer = tpType;
+    }
 
     
     /**
@@ -389,7 +414,7 @@ protected:
      * Method inherited from QGLWidget. It is called whenever the widget is
      * to be updated or updateGL() is called.
      */
-    void paintGL();
+    virtual void paintGL();
 
     /**
      * Method inherited from QGLWidget. It is called whenever the widget is resized.

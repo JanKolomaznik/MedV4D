@@ -29,9 +29,6 @@ protected slots:
 	RegistrationType( int val );
 
 	void
-	ClearDataset();
-
-	void
 	ExecSingleFilter();
 
 	void

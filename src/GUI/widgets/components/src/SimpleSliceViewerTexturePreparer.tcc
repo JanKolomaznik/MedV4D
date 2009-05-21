@@ -19,24 +19,10 @@ SimpleSliceViewerTexturePreparer< ElementType >
       uint32 slice,
       unsigned& dimension )
     {
-        uint32 depth;
-        double maxvalue;
-        bool unsgn;
         Imaging::InputPortTyped<Imaging::AbstractImage>* inPort = inputPorts.GetPortTypedSafe< Imaging::InputPortTyped<Imaging::AbstractImage> >( 0 );
 
-        // get the maximum value of the given element type
-        if ( typeid( ElementType ) == typeid( uint8 ) || typeid( ElementType ) == typeid( uint16 ) || typeid( ElementType ) == typeid( uint32 ) || typeid( ElementType ) == typeid( uint64 ) )
-        {
-            maxvalue = std::pow( (double)256, (double)sizeof( ElementType ) ) - 1;
-            unsgn = true;
-        }
-        else
-        {
-            maxvalue = (int)( std::pow( (double)256, (double)sizeof( ElementType ) ) / 2 - 1 );
-            unsgn = false;
-        }
-
         int32 xstride, ystride, zstride;
+        uint32 depth;
         bool ready = true;
         ElementType* pixel, *original;
         try
@@ -149,13 +135,13 @@ SimpleSliceViewerTexturePreparer< ElementType >
                 // if inside the image
                 if ( i < height && j < width )
                 {
-                    if ( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, brightnessRate, 1 ) > maxvalue ) pixel[ i * newWidth + j ] = (ElementType)maxvalue;
-                    else if ( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, brightnessRate, 1 ) < ( unsgn ? 0 : -maxvalue ) ) pixel[ i * newWidth + j ] = ( unsgn ? 0 : (ElementType)(-maxvalue) );
+                    if ( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, brightnessRate, 1 ) > TypeTraits< ElementType >::Max ) pixel[ i * newWidth + j ] = TypeTraits< ElementType >::Max;
+                    else if ( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, brightnessRate, 1 ) < TypeTraits< ElementType >::Min ) pixel[ i * newWidth + j ] = TypeTraits< ElementType >::Min;
                     else pixel[ i * newWidth + j ] = (ElementType)( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, brightnessRate, 1 ) );
                 }
                 // if extra pixels are reached
                 else
-                    pixel[ i * newWidth + j ] = ( unsgn ? 0 : (ElementType)(-maxvalue) );
+                    pixel[ i * newWidth + j ] = TypeTraits< ElementType >::Min;
             }
 
         mean = 0.;
@@ -170,8 +156,8 @@ SimpleSliceViewerTexturePreparer< ElementType >
         for ( i = 0; i < height; i++ )
             for ( j = 0; j < width; j++ )
             {
-                if ( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, 0, cont ) > maxvalue ) pixel[ i * newWidth + j ] = (ElementType)maxvalue;
-                else if ( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, 0, cont ) < ( unsgn ? 0 : -maxvalue ) ) pixel[ i * newWidth + j ] = ( unsgn ? 0 : (ElementType)(-maxvalue) );
+                if ( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, 0, cont ) > TypeTraits< ElementType >::Max ) pixel[ i * newWidth + j ] = TypeTraits< ElementType >::Max;
+                else if ( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, 0, cont ) < TypeTraits< ElementType >::Min ) pixel[ i * newWidth + j ] = TypeTraits< ElementType >::Min;
                 else pixel[ i * newWidth + j ] = (ElementType)( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, 0, cont ) );
             }
 

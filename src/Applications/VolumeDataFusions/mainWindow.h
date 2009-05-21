@@ -48,6 +48,13 @@ public:
 
 	mainWindow ();
 
+	void
+	OutConnectionToViewerPort( uint32 inputNumber, uint32 portNumber );
+
+public slots:
+	void
+	ClearDataset();
+
 protected:
 	void
 	process( M4D::Imaging::AbstractDataSet::Ptr inputDataSet );

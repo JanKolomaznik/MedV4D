@@ -91,6 +91,7 @@ m4dGUISliceViewerWidget::resetParameters()
     _sliceOrientation = xy;
     _ready = false;
     _dimension = 0;
+    texturePreparer = simple;
     if ( _inPort->IsPlugged() )
     {
         try

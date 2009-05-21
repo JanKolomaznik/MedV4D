@@ -24,7 +24,7 @@ SettingsBox
 	clearButton = new QPushButton( tr( "Clear Selected Dataset" ) );
 	layout->addWidget( clearButton );
 	QObject::connect( clearButton, SIGNAL(clicked()),
-		this, SLOT(ClearDataset()) );
+		static_cast< mainWindow* >( _parent ), SLOT(ClearDataset()) );
 
 	grid = new QGridLayout;
 
@@ -156,12 +156,6 @@ SettingsBox
 
 void
 SettingsBox
-::ClearDataset()
-{
-}
-
-void
-SettingsBox
 ::RegistrationType( int val )
 {
 	xRot->setEnabled( val );
@@ -205,6 +199,11 @@ void
 SettingsBox
 ::ExecFusion()
 {
+	for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i )
+	{
+		_viewers->getSelectedViewerWidget()->InputPort()[ i ].UnPlug();
+		static_cast< mainWindow* >( _parent )->OutConnectionToViewerPort( i, i );
+	}
 }
 
 void
