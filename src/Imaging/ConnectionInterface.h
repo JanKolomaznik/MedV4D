@@ -101,6 +101,9 @@ public:
 	virtual void
 	PutDataset( AbstractDataSet::Ptr dataset )=0;
 
+	void
+	ResetDataset()
+		{ PutDataset( AbstractDataSet::Ptr() ); }
 	/**
 	 * \return Reference to dataset under control.
 	 **/
@@ -255,13 +258,23 @@ public:
 	void
 	PutDataset( AbstractDataSet::Ptr dataset )
 		{
-			_dataset = DatasetType::Cast( dataset );
+			if( dataset ) {
+				_dataset = DatasetType::Cast( dataset );
 
-			this->RouteMessage( 
-				MsgDatasetPut::CreateMsg(), 
-				PipelineMessage::MSS_NORMAL,
-				FD_BOTH	
-			);
+				this->RouteMessage( 
+					MsgDatasetPut::CreateMsg(), 
+					PipelineMessage::MSS_NORMAL,
+					FD_BOTH	
+				);
+			} else {
+				_dataset = typename DatasetType::Ptr();
+
+				this->RouteMessage( 
+					MsgDatasetRemoved::CreateMsg(), 
+					PipelineMessage::MSS_NORMAL,
+					FD_BOTH	
+				);
+			}
 		}
 
 	AbstractDataSet &

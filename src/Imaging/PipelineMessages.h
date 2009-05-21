@@ -33,6 +33,7 @@ enum PipelineMsgID
 	PMI_FILTER_CANCELED,
 	PMI_PORT_PLUGGED,
 	PMI_DATASET_PUT,
+	PMI_DATASET_REMOVED,
 	PMI_PROGRESS_INFO,
 
 	PMI_END_SYSMSG = 1000
@@ -154,6 +155,22 @@ public:
 	}
 
 };
+
+class MsgDatasetRemoved: public PipelineMessage
+{
+public:
+	MsgDatasetRemoved(): PipelineMessage( PMI_DATASET_REMOVED )
+		{ /*empty*/ }
+
+	static PipelineMessage::Ptr
+	CreateMsg()
+	{
+		//TODO improve
+		return PipelineMessage::Ptr( new MsgDatasetRemoved() );
+	}
+
+};
+
 
 class MsgProgressInfo: public PipelineMessage
 {
