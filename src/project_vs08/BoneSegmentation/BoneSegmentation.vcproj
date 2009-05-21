@@ -167,7 +167,7 @@
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\..\lib\;..\..\lib\qt;..\..\lib\vtk;..\..\lib\dcmtkLibs;&quot;$(VCInstallDir)\PlatformSDK\Lib&quot;"
+				AdditionalLibraryDirectories="..\..\lib\;..\..\lib\qt;..\..\lib\vtk;..\..\lib\dcmtkLibs;&quot;$(VCInstallDir)\PlatformSDK\Lib&quot;;..\..\lib\boost"
 				GenerateDebugInformation="false"
 				ProgramDatabaseFile=""
 				SubSystem="2"
@@ -315,7 +315,7 @@
 				RelativePath="$(IntDir)\generated\moc\moc_mainWindow.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
+					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -327,18 +327,6 @@
 				RelativePath="$(IntDir)\generated\moc\moc_mainWindow.cpp"
 				>
 				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="$(IntDir)\generated\moc\moc_SettingsBox.cpp"
-				>
-				<FileConfiguration
 					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
@@ -360,7 +348,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="$(IntDir)\generated\rcc\qrc_mainWindow.cpp"
+				RelativePath="$(IntDir)\generated\moc\moc_SettingsBox.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -376,6 +364,18 @@
 				>
 				<FileConfiguration
 					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="$(IntDir)\generated\rcc\qrc_mainWindow.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
