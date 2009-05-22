@@ -250,8 +250,8 @@ SimpleSliceViewerTexturePreparer< ElementType >
 		tmpwidth = tmpheight = 0;
 		inPort = inputPorts.GetPortTypedSafe< Imaging::InputPortTyped<Imaging::AbstractImage> >( i );
             	result[i] = this->prepareSingle( inPort, tmpwidth, tmpheight, brightnessRate, contrastRate, so, slice, dimension );
-            	if ( ( result[i] && tmpwidth < width && tmpwidth > 0 ) || width == 0 ) width = tmpwidth;
-            	if ( ( result[i] && tmpheight < height && tmpheight > 0 ) || height == 0 ) height = tmpheight;
+            	if ( result[i] && ( ( tmpwidth < width && tmpwidth > 0 ) || width == 0 ) ) width = tmpwidth;
+            	if ( result[i] && ( ( tmpheight < height && tmpheight > 0 ) || height == 0 ) ) height = tmpheight;
 	    }
 	}
 
