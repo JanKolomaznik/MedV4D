@@ -17,18 +17,10 @@ namespace M4D
 namespace Viewer
 {
 
-template< typename ElementType >
 class AbstractSliceViewerTexturePreparer
 {
 
 public:
-
-    /**
-     * Get the OpenGL enum constant for a given type - different implementation
-     * for each template specialization.
-     *  @return OpenGL enum constant for the given type
-     */
-    GLenum oglType();
 
     /**
      * Prepares the texture of the image to be mapped to the following OpenGL surface.
@@ -51,64 +43,6 @@ public:
       uint32 slice,
       unsigned& dimension ) = 0;
 };
-
-template<>
-GLenum
-AbstractSliceViewerTexturePreparer<uint8>::oglType()
-{
-    return GL_UNSIGNED_BYTE;
-}
-
-template<>
-GLenum
-AbstractSliceViewerTexturePreparer<int8>::oglType()
-{
-    return GL_BYTE;
-}
-
-template<>
-GLenum
-AbstractSliceViewerTexturePreparer<uint16>::oglType()
-{
-    return GL_UNSIGNED_SHORT;
-}
-
-template<>
-GLenum
-AbstractSliceViewerTexturePreparer<int16>::oglType()
-{
-    return GL_SHORT;
-}
-
-template<>
-GLenum
-AbstractSliceViewerTexturePreparer<uint32>::oglType()
-{
-    return GL_UNSIGNED_INT;
-}
-
-template<>
-GLenum
-AbstractSliceViewerTexturePreparer<int32>::oglType()
-{
-    return GL_INT;
-}
-
-template<>
-GLenum
-AbstractSliceViewerTexturePreparer<uint64>::oglType()
-{
-    throw ErrorHandling::ExceptionBase( "64-bit numbers are not supported." );
-    return GL_UNSIGNED_INT;
-}
-
-template<>
-GLenum
-AbstractSliceViewerTexturePreparer<int64>::oglType()
-{
-    throw ErrorHandling::ExceptionBase( "64-bit numbers are not supported." );
-    return GL_INT;
-}
 
 } /*namespace Viewer*/
 } /*namespace M4D*/

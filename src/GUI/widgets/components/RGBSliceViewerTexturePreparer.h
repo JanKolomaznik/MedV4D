@@ -34,7 +34,7 @@ public:
      *  @param dimension dimense
      *  @return true, if texture preparing was successful, false otherwise
      */
-    bool prepare( const Imaging::InputPortList& inputPorts,
+    virtual bool prepare( const Imaging::InputPortList& inputPorts,
       uint32& width,
       uint32& height,
       GLint brightnessRate,
@@ -42,6 +42,24 @@ public:
       SliceOrientation so,
       uint32 slice,
       unsigned& dimension );
+
+protected:
+
+    /**
+     * Arranges the input arrays into one array of RGB colored image.
+     *  @param channelR the values of the red channel
+     *  @param channelG the values of the blue channel
+     *  @param channelB the values of the green channel
+     *  @param width the width of the image
+     *  @param height the height of the image
+     *  @return the prepared RGB texture array
+     */
+    ElementType* RGBChannelArranger(
+        ElementType* channelR,
+        ElementType* channelG,
+        ElementType* channelB,
+        uint32 width,
+        uint32 height );
 
 private:
 

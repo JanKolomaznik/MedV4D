@@ -15,12 +15,19 @@ namespace Viewer
 {
 
 template< typename ElementType >
-class SimpleSliceViewerTexturePreparer : public AbstractSliceViewerTexturePreparer< ElementType >
+class SimpleSliceViewerTexturePreparer : public AbstractSliceViewerTexturePreparer
 {
 
 public:
 
     SimpleSliceViewerTexturePreparer() {}
+
+    /**
+     * Get the OpenGL enum constant for a given type - different implementation
+     * for each template specialization.
+     *  @return OpenGL enum constant for the given type
+     */
+    GLenum oglType();
 
     /**
      * Prepares the texture of the image to be mapped to the following OpenGL surface.
@@ -84,6 +91,31 @@ protected:
       SliceOrientation so,
       uint32 slice,
       unsigned& dimension );
+
+    /**
+     * Prepares several texture arrays of datasets
+     *  @param inputPorts the input pipeline port list to get the image from
+     *  @param numberOfDatasets the number of datasets to be arranged and returned
+     *  @param width reference to set the width of the texture
+     *  @param height reference to set the height of the texture
+     *  @param brightnessRate the rate of brightness to adjust the image with
+     *  @param contrastRate the rate of contrast to adjust the image with
+     *  @param so the orientation of the slices (xy, yz, zx)
+     *  @param slice the number of the slice to be drawn
+     *  @param dimension dimense
+     *  @return array of arrays of the prepared textures
+     */
+    ElementType** getDatasetArrays( const Imaging::InputPortList& inputPorts,
+      uint32 numberOfDatasets,
+      uint32& width,
+      uint32& height,
+      GLint brightnessRate,
+      GLint contrastRate,
+      SliceOrientation so,
+      uint32 slice,
+      unsigned& dimension );
+
+private:
 
     SimpleSliceViewerTexturePreparer( const SimpleSliceViewerTexturePreparer& ); // not implemented
     const SimpleSliceViewerTexturePreparer& operator=( const SimpleSliceViewerTexturePreparer& ); // not implemented

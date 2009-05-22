@@ -62,9 +62,9 @@ TransformImage( const Image< ElementType, 2 > &in, Image< ElementType, 2 > &out,
 			point[1] /= prop->_sampling[1];
 
 			if ( ( point[0] < 0 ) |
-			     ( point[0] >= oldwidth ) |
+			     ( point[0] > ( oldwidth - 1 ) ) |
 			     ( point[1] < 0 ) |
-			     ( point[1] >= oldheight ) ) *pointer = 0;
+			     ( point[1] > ( oldheight - 1 ) ) ) *pointer = 0;
 
 			else *pointer = interpolator->Get( point );
 
@@ -170,11 +170,11 @@ public:
 				point[2] /= prop->_sampling[2];
 
 				if ( ( point[0] < 0 ) |
-				     ( point[0] >= oldwidth ) |
+				     ( point[0] > ( oldwidth - 1 ) ) |
 				     ( point[1] < 0 ) |
-			   	     ( point[1] >= oldheight ) |
+			   	     ( point[1] > ( oldheight - 1 ) ) |
 			   	     ( point[2] < 0 ) |
-			   	     ( point[2] >= olddepth ) ) *pointer = 0;
+			   	     ( point[2] > ( olddepth - 1 ) ) ) *pointer = 0;
 
 				else *pointer = interpolator->Get( point );
 			
@@ -200,11 +200,11 @@ TransformImage( const Image< ElementType, 3 > &in, Image< ElementType, 3 > &out,
 	Vector< uint32, 3 > size;
 	Vector< int32, 3 > strides;
 	out.GetPointer( size, strides );
-	Multithreading::Thread* thr[size[2]];
+	//Multithreading::Thread* thr[size[2]];
 	uint32 i;
-	for ( i = 0; i < size[2]; ++i ) thr[i] = new Multithreading::Thread( TransformSlice< ElementType >( in, out, prop, interpolator, i ) );
-	for ( i = 0; i < size[2]; ++i )	thr[i]->join();
-	for ( i = 0; i < size[2]; ++i )	delete thr[i];
+	for ( i = 0; i < size[2]; ++i ) /*thr[i] = new Multithreading::Thread(*/{ TransformSlice< ElementType > ts( in, out, prop, interpolator, i ); ts();}// );
+	/*for ( i = 0; i < size[2]; ++i )	thr[i]->join();
+	for ( i = 0; i < size[2]; ++i )	delete thr[i];*/
 	
 	return true;
 }

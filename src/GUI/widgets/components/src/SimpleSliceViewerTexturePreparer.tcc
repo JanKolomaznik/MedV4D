@@ -7,6 +7,64 @@ namespace M4D
 namespace Viewer
 {
 
+template<>
+GLenum
+SimpleSliceViewerTexturePreparer<uint8>::oglType()
+{
+    return GL_UNSIGNED_BYTE;
+}
+
+template<>
+GLenum
+SimpleSliceViewerTexturePreparer<int8>::oglType()
+{
+    return GL_BYTE;
+}
+
+template<>
+GLenum
+SimpleSliceViewerTexturePreparer<uint16>::oglType()
+{
+    return GL_UNSIGNED_SHORT;
+}
+
+template<>
+GLenum
+SimpleSliceViewerTexturePreparer<int16>::oglType()
+{
+    return GL_SHORT;
+}
+
+template<>
+GLenum
+SimpleSliceViewerTexturePreparer<uint32>::oglType()
+{
+    return GL_UNSIGNED_INT;
+}
+
+template<>
+GLenum
+SimpleSliceViewerTexturePreparer<int32>::oglType()
+{
+    return GL_INT;
+}
+
+template<>
+GLenum
+SimpleSliceViewerTexturePreparer<uint64>::oglType()
+{
+    throw ErrorHandling::ExceptionBase( "64-bit numbers are not supported." );
+    return GL_UNSIGNED_INT;
+}
+
+template<>
+GLenum
+SimpleSliceViewerTexturePreparer<int64>::oglType()
+{
+    throw ErrorHandling::ExceptionBase( "64-bit numbers are not supported." );
+    return GL_INT;
+}
+
 template< typename ElementType >
 ElementType*
 SimpleSliceViewerTexturePreparer< ElementType >
@@ -166,6 +224,42 @@ SimpleSliceViewerTexturePreparer< ElementType >
     }
 
 template< typename ElementType >
+ElementType**
+SimpleSliceViewerTexturePreparer< ElementType >
+::getDatasetArrays( const Imaging::InputPortList& inputPorts,
+      uint32 numberOfDatasets,
+      uint32& width,
+      uint32& height,
+      GLint brightnessRate,
+      GLint contrastRate,
+      SliceOrientation so,
+      uint32 slice,
+      unsigned& dimension )
+    {
+	uint32 i, tmpwidth, tmpheight;
+	Imaging::InputPortTyped<Imaging::AbstractImage>* inPort;
+	ElementType** result = new ElementType*[ numberOfDatasets ];
+
+	width = height = 0;
+
+	for ( i = 0; i < numberOfDatasets; i++ )
+	{
+	    if ( inputPorts.Size() <= i ) result[i] = NULL;
+	    else
+	    {
+		tmpwidth = tmpheight = 0;
+		inPort = inputPorts.GetPortTypedSafe< Imaging::InputPortTyped<Imaging::AbstractImage> >( i );
+            	result[i] = this->prepareSingle( inPort, tmpwidth, tmpheight, brightnessRate, contrastRate, so, slice, dimension );
+            	if ( ( result[i] && tmpwidth < width && tmpwidth > 0 ) || width == 0 ) width = tmpwidth;
+            	if ( ( result[i] && tmpheight < height && tmpheight > 0 ) || height == 0 ) height = tmpheight;
+	    }
+	}
+
+	return result;
+
+    }
+
+template< typename ElementType >
 bool
 SimpleSliceViewerTexturePreparer< ElementType >
 ::prepare( const Imaging::InputPortList& inputPorts,
@@ -177,15 +271,19 @@ SimpleSliceViewerTexturePreparer< ElementType >
       uint32 slice,
       unsigned& dimension )
     {
-        Imaging::InputPortTyped<Imaging::AbstractImage>* inPort = inputPorts.GetPortTypedSafe< Imaging::InputPortTyped<Imaging::AbstractImage> >( 0 );
+	ElementType** pixel = getDatasetArrays( inputPorts, 1, width, height, brightnessRate, contrastRate, so, slice, dimension );
 
-	ElementType* pixel = prepareSingle( inPort, width, height, brightnessRate, contrastRate, so, slice, dimension );
-
-	if ( ! pixel ) return false;
+	if ( ! *pixel )
+	{
+	    delete[] pixel;
+	    return false;
+	}
 
         glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
-                      GL_LUMINANCE, this->oglType(), pixel );
-	
+                      GL_LUMINANCE, this->oglType(), *pixel );
+
+	delete[] *pixel;
+
 	delete[] pixel;
 
         return true;
