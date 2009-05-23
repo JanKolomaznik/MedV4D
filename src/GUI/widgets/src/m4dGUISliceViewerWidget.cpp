@@ -4,7 +4,7 @@
  *  @brief some brief
  */
 #include "GUI/widgets/m4dGUISliceViewerWidget.h"
-#include "GUI/widgets/components/MultiChannelRGBSliceViewerTexturePreparer.h"
+#include "GUI/widgets/components/MaximumIntensitySliceViewerTexturePreparer.h"
 
 #include <QtGui>
 #include "GUI/widgets/ogl/fonts.h"
@@ -500,7 +500,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 
 	case rgb:
         INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
-    	    _imageID, { MultiChannelRGBSliceViewerTexturePreparer<TTYPE> texturePreparer; _ready = texturePreparer.prepare( this->InputPort(), width, height, _brightnessRate, _contrastRate, _sliceOrientation, sliceNum - _minimum[ ( _sliceOrientation + 2 ) % 3 ], _dimension ); } );
+    	    _imageID, { MaximumIntensitySliceViewerTexturePreparer<TTYPE> texturePreparer; _ready = texturePreparer.prepare( this->InputPort(), width, height, _brightnessRate, _contrastRate, _sliceOrientation, sliceNum - _minimum[ ( _sliceOrientation + 2 ) % 3 ], _dimension ); } );
 	break;
 
 	default:

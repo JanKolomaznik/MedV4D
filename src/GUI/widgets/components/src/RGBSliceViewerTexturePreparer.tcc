@@ -49,13 +49,17 @@ RGBSliceViewerTexturePreparer< ElementType >
       unsigned& dimension )
     {
 
-	ElementType** pixel = this->getDatasetArrays( inputPorts, 3, width, height, brightnessRate, contrastRate, so, slice, dimension );
+	ElementType** pixel = this->getDatasetArrays( inputPorts, 3, width, height, so, slice, dimension );
 
 	if ( ! pixel[0] && ! pixel[1] && ! pixel[2] )
 	{
 	    delete[] pixel;
 	    return false;
 	}
+
+	this->equalizeArray( pixel[0], width, height, brightnessRate, contrastRate );
+	this->equalizeArray( pixel[1], width, height, brightnessRate, contrastRate );
+	this->equalizeArray( pixel[2], width, height, brightnessRate, contrastRate );
 
 	ElementType* texture = RGBChannelArranger( pixel[0], pixel[1], pixel[2], width, height );
 

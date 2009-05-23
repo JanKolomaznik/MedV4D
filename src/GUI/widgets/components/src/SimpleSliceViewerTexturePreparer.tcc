@@ -71,8 +71,6 @@ SimpleSliceViewerTexturePreparer< ElementType >
 ::prepareSingle( Imaging::InputPortTyped<Imaging::AbstractImage>* inPort,
       uint32& width,
       uint32& height,
-      GLint brightnessRate,
-      GLint contrastRate,
       SliceOrientation so,
       uint32 slice,
       unsigned& dimension )
@@ -178,44 +176,7 @@ SimpleSliceViewerTexturePreparer< ElementType >
 
         pixel = new ElementType[ newHeight * newWidth ];
 
-        copy( pixel, original, width, height, newWidth, slice, xstride, ystride, zstride );
-        uint32 i, j;
-        double mean, cont;
-        mean = 0.;
-        for ( i = 0; i < height; i++ )
-            for ( j = 0; j < width; j++ ) mean += (double)pixel[ i * newWidth + j ] / (double)(width*height);
-        brightnessRate -= (int)mean;
-        for ( i = 0; i < newHeight; ++i )
-            for ( j = 0; j < newWidth; j++ )
-            {
-                // if inside the image
-                if ( i < height && j < width )
-                {
-                    if ( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, brightnessRate, 1 ) > TypeTraits< ElementType >::Max ) pixel[ i * newWidth + j ] = TypeTraits< ElementType >::Max;
-                    else if ( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, brightnessRate, 1 ) < TypeTraits< ElementType >::Min ) pixel[ i * newWidth + j ] = TypeTraits< ElementType >::Min;
-                    else pixel[ i * newWidth + j ] = (ElementType)( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, brightnessRate, 1 ) );
-                }
-                // if extra pixels are reached
-                else
-                    pixel[ i * newWidth + j ] = TypeTraits< ElementType >::Min;
-            }
-
-        mean = 0.;
-        for ( i = 0; i < height; i++ )
-            for ( j = 0; j < width; j++ ) mean += (double)pixel[ i * newWidth + j ] / (double)(width*height);
-
-        cont = 0.;
-        for ( i = 0; i < height; i++ )
-            for ( j = 0; j < width; j++ ) cont += std::abs( (double)( pixel[ i * newWidth + j ] - mean ) ) / (double)(width*height);
-
-        if ( cont != 0 ) cont = (double)contrastRate/cont;
-        for ( i = 0; i < height; i++ )
-            for ( j = 0; j < width; j++ )
-            {
-                if ( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, 0, cont ) > TypeTraits< ElementType >::Max ) pixel[ i * newWidth + j ] = TypeTraits< ElementType >::Max;
-                else if ( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, 0, cont ) < TypeTraits< ElementType >::Min ) pixel[ i * newWidth + j ] = TypeTraits< ElementType >::Min;
-                else pixel[ i * newWidth + j ] = (ElementType)( DISPLAY_PIXEL_VALUE( pixel[ i * newWidth + j ], mean, 0, cont ) );
-            }
+        copy( pixel, original, width, height, newWidth, newHeight, slice, xstride, ystride, zstride );
 
         width = newWidth;
         height = newHeight;
@@ -224,14 +185,57 @@ SimpleSliceViewerTexturePreparer< ElementType >
     }
 
 template< typename ElementType >
+void
+SimpleSliceViewerTexturePreparer< ElementType >
+::equalizeArray( ElementType* pixel,
+      uint32 width,
+      uint32 height,
+      GLint brightnessRate,
+      GLint contrastRate )
+    {
+
+	if ( ! pixel ) return;
+
+        uint32 i, j;
+        double mean, cont;
+        mean = 0.;
+        for ( i = 0; i < height; i++ )
+            for ( j = 0; j < width; j++ ) mean += (double)pixel[ i * width + j ] / (double)(width*height);
+        brightnessRate -= (int)mean;
+        for ( i = 0; i < height; ++i )
+            for ( j = 0; j < width; j++ )
+            {
+                if ( DISPLAY_PIXEL_VALUE( pixel[ i * width + j ], mean, brightnessRate, 1 ) > TypeTraits< ElementType >::Max ) pixel[ i * width + j ] = TypeTraits< ElementType >::Max;
+                else if ( DISPLAY_PIXEL_VALUE( pixel[ i * width + j ], mean, brightnessRate, 1 ) < TypeTraits< ElementType >::Min ) pixel[ i * width + j ] = TypeTraits< ElementType >::Min;
+                else pixel[ i * width + j ] = (ElementType)( DISPLAY_PIXEL_VALUE( pixel[ i * width + j ], mean, brightnessRate, 1 ) );
+            }
+
+        mean = 0.;
+        for ( i = 0; i < height; i++ )
+            for ( j = 0; j < width; j++ ) mean += (double)pixel[ i * width + j ] / (double)(width*height);
+
+        cont = 0.;
+        for ( i = 0; i < height; i++ )
+            for ( j = 0; j < width; j++ ) cont += std::abs( (double)( pixel[ i * width + j ] - mean ) ) / (double)(width*height);
+
+        if ( cont != 0 ) cont = (double)contrastRate/cont;
+        for ( i = 0; i < height; i++ )
+            for ( j = 0; j < width; j++ )
+            {
+                if ( DISPLAY_PIXEL_VALUE( pixel[ i * width + j ], mean, 0, cont ) > TypeTraits< ElementType >::Max ) pixel[ i * width + j ] = TypeTraits< ElementType >::Max;
+                else if ( DISPLAY_PIXEL_VALUE( pixel[ i * width + j ], mean, 0, cont ) < TypeTraits< ElementType >::Min ) pixel[ i * width + j ] = TypeTraits< ElementType >::Min;
+                else pixel[ i * width + j ] = (ElementType)( DISPLAY_PIXEL_VALUE( pixel[ i * width + j ], mean, 0, cont ) );
+            }
+    }
+      
+
+template< typename ElementType >
 ElementType**
 SimpleSliceViewerTexturePreparer< ElementType >
 ::getDatasetArrays( const Imaging::InputPortList& inputPorts,
       uint32 numberOfDatasets,
       uint32& width,
       uint32& height,
-      GLint brightnessRate,
-      GLint contrastRate,
       SliceOrientation so,
       uint32 slice,
       unsigned& dimension )
@@ -249,7 +253,7 @@ SimpleSliceViewerTexturePreparer< ElementType >
 	    {
 		tmpwidth = tmpheight = 0;
 		inPort = inputPorts.GetPortTypedSafe< Imaging::InputPortTyped<Imaging::AbstractImage> >( i );
-            	result[i] = this->prepareSingle( inPort, tmpwidth, tmpheight, brightnessRate, contrastRate, so, slice, dimension );
+            	result[i] = this->prepareSingle( inPort, tmpwidth, tmpheight, so, slice, dimension );
             	if ( result[i] && ( ( tmpwidth < width && tmpwidth > 0 ) || width == 0 ) ) width = tmpwidth;
             	if ( result[i] && ( ( tmpheight < height && tmpheight > 0 ) || height == 0 ) ) height = tmpheight;
 	    }
@@ -271,13 +275,15 @@ SimpleSliceViewerTexturePreparer< ElementType >
       uint32 slice,
       unsigned& dimension )
     {
-	ElementType** pixel = getDatasetArrays( inputPorts, 1, width, height, brightnessRate, contrastRate, so, slice, dimension );
+	ElementType** pixel = getDatasetArrays( inputPorts, 1, width, height, so, slice, dimension );
 
 	if ( ! *pixel )
 	{
 	    delete[] pixel;
 	    return false;
 	}
+
+	equalizeArray( *pixel, width, height, brightnessRate, contrastRate );
 
         glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
                       GL_LUMINANCE, this->oglType(), *pixel );

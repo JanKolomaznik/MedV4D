@@ -59,16 +59,19 @@ protected:
      *  @param width the width of the image
      *  @param height the height of the image
      *  @param newWidth the new width of the image after texture correction ( to be a power of 2 )
+     *  @param newHeight the new height of the image after texture correction ( to be a power of 2 )
      *  @param depth the depth at which the slice lies
      *  @param xstride the steps between two neighbor voxels according to coordinate x
      *  @param ystride the steps between two neighbor voxels according to coordinate y
      *  @param zstride the steps between two neighbor voxels according to coordinate z
      */
-    void copy( ElementType* dst, ElementType* src, uint32 width, uint32 height, uint32 newWidth, uint32 depth, int32 xstride, int32 ystride, int32 zstride )
+    void copy( ElementType* dst, ElementType* src, uint32 width, uint32 height, uint32 newWidth, uint32 newHeight, uint32 depth, int32 xstride, int32 ystride, int32 zstride )
     {
         uint32 i, j;
-        for ( i = 0; i < height; i++ )
-            for ( j = 0; j < width; j++ ) dst[ i * newWidth + j ] = src[ j * xstride + i * ystride + depth * zstride ];
+        for ( i = 0; i < newHeight; i++ )
+            for ( j = 0; j < newWidth; j++ )
+		if ( i < newHeight && j < newWidth ) dst[ i * newWidth + j ] = src[ j * xstride + i * ystride + depth * zstride ];
+		else dst[ i * newWidth + j ] = 0;
     }
 
     /**
@@ -76,8 +79,6 @@ protected:
      *  @param inPort the input port to get the image from
      *  @param width reference to set the width of the texture
      *  @param height reference to set the height of the texture
-     *  @param brightnessRate the rate of brightness to adjust the image with
-     *  @param contrastRate the rate of contrast to adjust the image with
      *  @param so the orientation of the slices (xy, yz, zx)
      *  @param slice the number of the slice to be drawn
      *  @param dimension dimense
@@ -86,8 +87,6 @@ protected:
     ElementType* prepareSingle( Imaging::InputPortTyped<Imaging::AbstractImage>* inPort,
       uint32& width,
       uint32& height,
-      GLint brightnessRate,
-      GLint contrastRate,
       SliceOrientation so,
       uint32 slice,
       unsigned& dimension );
@@ -98,8 +97,6 @@ protected:
      *  @param numberOfDatasets the number of datasets to be arranged and returned
      *  @param width reference to set the width of the texture
      *  @param height reference to set the height of the texture
-     *  @param brightnessRate the rate of brightness to adjust the image with
-     *  @param contrastRate the rate of contrast to adjust the image with
      *  @param so the orientation of the slices (xy, yz, zx)
      *  @param slice the number of the slice to be drawn
      *  @param dimension dimense
@@ -109,11 +106,22 @@ protected:
       uint32 numberOfDatasets,
       uint32& width,
       uint32& height,
-      GLint brightnessRate,
-      GLint contrastRate,
       SliceOrientation so,
       uint32 slice,
       unsigned& dimension );
+
+    /** Equlizes the histogram of the image array to the given brightness and contrast rates
+     *  @param width the width of the image array
+     *  @param height the height of the image array
+     *  @param brightnessRate the rate of brightness to adjust the image with
+     *  @param contrastRate the rate of contrast to adjust the image with
+     */
+    void equalizeArray( ElementType* pixel,
+      uint32 width,
+      uint32 height,
+      GLint brightnessRate,
+      GLint contrastRate );
+
 
 private:
 

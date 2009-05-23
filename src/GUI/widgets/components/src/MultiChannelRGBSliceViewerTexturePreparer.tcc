@@ -20,12 +20,16 @@ MultiChannelRGBSliceViewerTexturePreparer< ElementType >
       unsigned& dimension )
     {
 
-	ElementType** pixel = this->getDatasetArrays( inputPorts, SLICEVIEWER_INPUT_NUMBER, width, height, brightnessRate, contrastRate, so, slice, dimension );
+	ElementType** pixel = this->getDatasetArrays( inputPorts, SLICEVIEWER_INPUT_NUMBER, width, height, so, slice, dimension );
 
 	uint32 i, j, k, textureCount = 0;
 
 	for ( i = 0; i < SLICEVIEWER_INPUT_NUMBER; i++ )
-	    if ( pixel[i] ) textureCount++;
+	    if ( pixel[i] )
+	    {
+		this->equalizeArray( pixel[i], width, height, brightnessRate, contrastRate );
+		textureCount++;
+	    }
 
 	if ( ! textureCount ) return false;
 
