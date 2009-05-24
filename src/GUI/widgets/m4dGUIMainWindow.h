@@ -250,9 +250,21 @@ class m4dGUIMainWindow: public QMainWindow
     void features ( M4D::Viewer::m4dGUIAbstractViewerWidget *prevViewer );
 
     /**
+     * Slot for managing viewer handler menu adaptation.
+     */
+    void updateHandler ();
+
+    /**
      * Slot for layout settings - to show Screen Layout Dialog.
      */
     void layout ();
+
+    /**
+     * Slot for changing viewer handler.
+     * 
+     * @param checked flag whether the menu action is checked. 
+     */
+    void handler ( bool checked );
 
     /**
      * Slot for replacing selected viewers (toggle 3D viewer) - with updates (features).
@@ -367,7 +379,7 @@ class m4dGUIMainWindow: public QMainWindow
     static const char *actionIconNames[];
     /// Texts of the actions.
     static const char *actionTexts[];
-    /// Tool types of the actions - information also used for weather the connection is direct to the viewer.
+    /// Tool types of the actions - information also used for whether the connection is direct to the viewer.
     static const ToolType   actionToolTypes[];
     /// Types of the mouse button for the actions (checkable tools).
     static const ButtonType actionButtonTypes[];
@@ -400,6 +412,7 @@ class m4dGUIMainWindow: public QMainWindow
     QAction **viewerActs;
     QAction *layoutAct;
     QAction *replaceAct;
+    QAction *handlerAct;
     
     /// ToolBars.
     QToolBar *searchToolBar;

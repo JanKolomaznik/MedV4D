@@ -33,6 +33,16 @@ m4dGUIMainViewerDesktopWidget::~m4dGUIMainViewerDesktopWidget ()
 }
 
 
+m4dGUIViewerEventHandlerInterface *m4dGUIMainViewerDesktopWidget::getSelectedViewerSourceHandler () const
+{
+  if ( sources.empty() ) {
+    return 0;
+  }
+
+	return sources[selectedViewer->sourceIdx].hnd;
+}
+
+
 void m4dGUIMainViewerDesktopWidget::setDefaultConnection ( ConnectionInterface *conn )
 {
 	defaultConnection = conn;
@@ -191,6 +201,8 @@ void m4dGUIMainViewerDesktopWidget::sourceSelected ( int index )
   sources[index].conn->ConnectConsumer( selectedViewer->viewerWidget->InputPort()[0] );
 
   selectedViewer->viewerWidget->setViewerEventHandler( sources[index].hnd );
+
+  emit sourceChanged(); 
 }
 
 } // namespace GUI

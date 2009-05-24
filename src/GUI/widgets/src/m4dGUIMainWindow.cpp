@@ -136,6 +136,8 @@ int m4dGUIMainWindow::addViewerDesktop ( m4dGUIMainViewerDesktopWidget *viewerDe
 {
   connect( viewerDesktop, SIGNAL(propagateFeatures( M4D::Viewer::m4dGUIAbstractViewerWidget * )), 
            this, SLOT(features( M4D::Viewer::m4dGUIAbstractViewerWidget * )) );
+  connect( viewerDesktop, SIGNAL(sourceChanged()), 
+           this, SLOT(updateHandler()) );
 
   return mainDesktopStackedWidget->addWidget( viewerDesktop );
 }
@@ -194,6 +196,8 @@ void m4dGUIMainWindow::addSource ( ConnectionInterface *conn,
   sourcesComboBox->addItem( QString( pipelineDescription ) + " - " + QString( connectionDescription ) );
 
   sourcesToolBar->show();
+
+  updateHandler();
 }
 
 
@@ -417,7 +421,7 @@ void m4dGUIMainWindow::features ( m4dGUIAbstractViewerWidget *prevViewer )
   viewerActs[currentViewerDesktop->getSelectedViewerLeftTool()]->trigger();
   viewerActs[currentViewerDesktop->getSelectedViewerRightTool()]->trigger();
 
-  if ( dynamic_cast< M4D::Viewer::m4dGUIVtkViewerWidget* >( currentViewerDesktop->getSelectedViewerWidget() ) ) {
+  if ( dynamic_cast< M4D::Viewer::m4dGUIVtkViewerWidget* >( actViewer ) ) {
     replaceAct->setChecked( true );
   }
   else {
@@ -425,12 +429,32 @@ void m4dGUIMainWindow::features ( m4dGUIAbstractViewerWidget *prevViewer )
   }
 
   sourcesComboBox->setCurrentIndex( currentViewerDesktop->getSelectedViewerSourceIdx() );
+
+  // special handler updates
+  updateHandler();
+}
+
+
+void m4dGUIMainWindow::updateHandler ()
+{
+  handlerAct->setEnabled( currentViewerDesktop->getSelectedViewerSourceHandler() ? true : false );
+  handlerAct->setChecked( currentViewerDesktop->getSelectedViewerWidget()->getViewerEventHandler() ? true : false );
 }
 
 
 void m4dGUIMainWindow::layout ()
 {
   screenLayoutDialog->show();
+}
+
+
+void m4dGUIMainWindow::handler ( bool checked )
+{
+  if ( checked ) {
+    currentViewerDesktop->setViewerEventHandlerForSelected( currentViewerDesktop->getSelectedViewerSourceHandler() );
+  } else {
+    currentViewerDesktop->setViewerEventHandlerForSelected( 0 );
+  }
 }
 
 
@@ -671,6 +695,13 @@ void m4dGUIMainWindow::createActions ()
   layoutAct->setStatusTip( tr( "Redisplay series and images in various layouts" ) );
   connect( layoutAct, SIGNAL(triggered()), this, SLOT(layout()) );
 
+  handlerAct = new QAction( tr( "Special input handler" ), this );
+  handlerAct->setStatusTip( tr( "Switch to special input handler"  ) );
+  handlerAct->setCheckable( true );
+  connect( handlerAct, SIGNAL(triggered( bool )), this, SLOT(handler( bool )) );
+  handlerAct->setChecked( false );
+  handlerAct->setEnabled( false );
+
   replaceAct = new QAction( QIcon( ":/icons/swap.png" ), tr( "Rep&lace Viewer" ), this );
   replaceAct->setCheckable( true );
   replaceAct->setShortcut( tr( "Ctrl+L" ) );
@@ -711,6 +742,8 @@ void m4dGUIMainWindow::createMenus ()
   for ( unsigned i = 1; i < VIEWER_ACTIONS_NUMBER; i++ ) {
     toolsMenu->addAction( viewerActs[i] );
   }
+  toolsMenu->addSeparator();
+  toolsMenu->addAction( handlerAct );
   toolsMenu->addSeparator();
   toolsMenu->addAction( replaceAct );
 

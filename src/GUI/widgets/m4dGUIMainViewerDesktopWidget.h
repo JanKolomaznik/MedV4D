@@ -103,6 +103,8 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
      */
     int getSelectedViewerSourceIdx () const { return selectedViewer->sourceIdx; }
 
+    M4D::Viewer::m4dGUIViewerEventHandlerInterface *getSelectedViewerSourceHandler () const;
+
     /** 
      * Getter to the previously selected viewer's viewer widget.
      *
@@ -191,6 +193,12 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
      * @param prevViewer pointer to the previously selected viewer - to disconnect it
      */
     void propagateFeatures ( M4D::Viewer::m4dGUIAbstractViewerWidget *prevViewer );
+
+    /**
+     * Signal indicating new source selection - should be connected to main window's 
+     * handler slot - to update the viewer handler menu.
+     */
+    void sourceChanged ();
 
   protected:
 
