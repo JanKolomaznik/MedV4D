@@ -26,7 +26,21 @@ ImageDataTemplate< ElementType >::ImageDataTemplate(
 			unsigned short		dimension,
 			size_t			elementCount
 			) 
-	: AbstractImageData( parameters, dimension, elementCount ), _data( data ) 	
+	: AbstractImageData( parameters, dimension, elementCount ), _data( data ), _arrayPointer( data, data )
+{
+	if ( _data == NULL ) {
+		//TODO handle problem
+	}
+}
+
+template < typename ElementType >
+ImageDataTemplate< ElementType >::ImageDataTemplate( 
+			AlignedArrayPointer< ElementType >	data, 
+			DimensionInfo		*parameters,
+			unsigned short		dimension,
+			size_t			elementCount
+			) 
+	: AbstractImageData( parameters, dimension, elementCount ), _data( data.aligned ), _arrayPointer( data ) 	
 {
 	if ( _data == NULL ) {
 		//TODO handle problem
@@ -37,7 +51,7 @@ template < typename ElementType >
 ImageDataTemplate< ElementType >::~ImageDataTemplate()
 {
 	if ( _data ) {
-		delete[] _data;
+		delete[] _arrayPointer.original;
 	}
 	if ( _parameters ) {
 		delete[] _parameters;

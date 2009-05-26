@@ -207,15 +207,25 @@ FilterProcessorNeighborhoodPreproc(
 
 }
 
-/*template< typename Filter, typename Region, template< typename Region > class Accessor  >
+/*
+template< typename Filter, typename Region >
 void
-FilterProcessorInPlace( Filter &filter, OutputRegion &region )
+FilterProcessorInPlace( Filter &filter, Region &region )
 {
 	typedef Accessor< InputRegion > AccessorType;
 	AccessorType accessor( region );
 
 	ForEachInRegion( output, FilterApplicator< Filter, AccessorType >( filter, accessor ) );
 
+}
+
+template< typename ColFilter, typename RowFilter, typename InputRegion,typename OutputRegion >
+void
+SeparableFiltering2D( const InputRegion &input, OutputRegion &output, ColFilter &colFilter, RowFilter &rowFilter )
+{
+	FilterProcessorNeighborhood( colFilter, input, output );
+
+	FilterProcessorInPlace( rowFilter, output );
 }*/
 
 } /*namespace Imaging*/

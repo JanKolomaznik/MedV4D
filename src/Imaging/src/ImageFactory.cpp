@@ -204,7 +204,7 @@ ImageFactory::PrepareElementArrayFromTypeID(
 {
 	//We will generate switch over common numerical types. For more see Common.h
 	TYPE_TEMPLATE_SWITCH_MACRO( 
-		typeId, dataArray = (uint8 *) PrepareElementArray< TTYPE >( imageSize ) );
+		typeId, dataArray = (uint8 *) PrepareElementArraySimple< TTYPE >( imageSize ) );
 }
 
 

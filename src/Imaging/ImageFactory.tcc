@@ -67,6 +67,8 @@ ImageFactory::SerializeImage( M4D::IO::OutStream &stream, const Image< ElementTy
 	stream.Put<uint32>( DUMP_END_MAGIC_NUMBER );
 }
 
+
+
 /**
  * Function creating templated array of desired size.
  * @param ElementType 
@@ -74,8 +76,33 @@ ImageFactory::SerializeImage( M4D::IO::OutStream &stream, const Image< ElementTy
  * @exception EFailedArrayAllocation If array couldn't be allocated.
  **/
 template< typename ElementType >
-ElementType*
+AlignedArrayPointer< ElementType >
 PrepareElementArray( uint32 size )
+{
+	try
+	{
+		//TODO
+#ifdef CELL_DEFINED
+		return AlignedNew< ElementType, 7 >( size );
+#else
+		ElementType *arrayP = NULL;
+		arrayP = new ElementType[size];
+		
+		D_PRINT( "******** Allocating array - size:= " << size << "; pointer:= " 
+			<< (int*)arrayP << "; end:= " << (int*)(arrayP + size) );
+
+		return AlignedArrayPointer< ElementType >( arrayP, arrayP );
+#endif
+	}
+	catch( ... )
+	{
+		_THROW_ EFailedArrayAllocation();
+	}
+}
+
+template< typename ElementType >
+ElementType*
+PrepareElementArraySimple( uint32 size )
 {
 	try
 	{
@@ -304,7 +331,8 @@ ImageFactory::CreateEmptyImageData2DTyped(
 		info[1].Set( height, width, elementHeight );
 
 		//Creating place for data storage.
-		ElementType *array = PrepareElementArray< ElementType >( size );
+		//ElementType *array = PrepareElementArray< ElementType >( size );
+		AlignedArrayPointer< ElementType > array = PrepareElementArray< ElementType >( size );
 		
 		//Creating new image, which is using allocated data storage.
 		newImage = new ImageDataTemplate< ElementType >( array, info, 2, size );
@@ -362,7 +390,8 @@ ImageFactory::CreateEmptyImageData3DTyped(
 	info[2].Set( depth, (width * height), elementDepth );
 
 	//Creating place for data storage.
-	ElementType *array = PrepareElementArray< ElementType >( size );
+	//ElementType *array = PrepareElementArray< ElementType >( size );
+	AlignedArrayPointer< ElementType > array = PrepareElementArray< ElementType >( size );
 	
 	//Creating new image, which is using allocated data storage.
 	ImageDataTemplate< ElementType > *newImage = 
@@ -391,7 +420,8 @@ ImageFactory::CreateEmptyImageDataTyped(
 	}
 
 	//Creating place for data storage.
-	ElementType *array = PrepareElementArray< ElementType >( elementCount );
+	//ElementType *array = PrepareElementArray< ElementType >( elementCount );
+	AlignedArrayPointer< ElementType > array = PrepareElementArray< ElementType >( elementCount );
 	
 	//Creating new image, which is using allocated data storage.
 	ImageDataTemplate< ElementType > *newImage = 

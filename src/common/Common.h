@@ -44,6 +44,35 @@
 	STREAM.read( (char*)&VARIABLE, sizeof(VARIABLE) );
 
 //*****************************************************************************
+
+
+template< typename T >
+struct AlignedArrayPointer
+{
+	//TODO improve
+	AlignedArrayPointer( T *p_original, T *p_aligned ) : original( p_original ), aligned( p_aligned )
+		{}
+
+	/*AlignedArrayPointer( const AlignedArrayPointer &cp ) : original( cp.original ), aligned( cp.aligned )
+		{}*/
+
+	T	*original;
+	T	*aligned;
+};
+
+template< typename T, unsigned ExpTwo >
+AlignedArrayPointer< T >
+AlignedNew( uint32 size )
+{
+	unsigned alignment = 1 << ExpTwo;
+	T * pointer = new T[ size +((alignment / sizeof( T )) + 1 ) ];
+	size_t tmp = static_cast< size_t >( pointer ) + alignment - 1;
+	T * aligned = static_cast< T* >((tmp >> ExpTwo) << ExpTwo );
+
+	return AlignedArrayPointer< T >( pointer, aligned );
+}
+//*****************************************************************************
+
 /**
  * Macro for easy generic programing - mixing static and dynamic polymorhism.
  * Create switch command with cases over dimension numbers.

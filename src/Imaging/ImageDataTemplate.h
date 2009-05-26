@@ -8,7 +8,7 @@
 #ifndef _IMAGE_DATA_TEMPLATE_H
 #define _IMAGE_DATA_TEMPLATE_H
 
-#include "common/ExceptionBase.h"
+#include "common/Common.h"
 
 #include "Imaging/AbstractImageData.h"
 #include "Imaging/ModificationManager.h"
@@ -221,6 +221,13 @@ protected:
 			size_t			elementCount
 			);	
 
+	ImageDataTemplate( 
+			AlignedArrayPointer< ElementType >	data, 
+			DimensionInfo				*parameters,
+			unsigned short				dimension,
+			size_t					elementCount
+			);	
+
 	mutable ModificationManager	_modificationManager;
 private:
 	ImageDataTemplate();
@@ -229,6 +236,7 @@ private:
 
 
 	ElementType		*_data;
+	AlignedArrayPointer< ElementType > _arrayPointer;
 
 public:
 	class EIndexOutOfBounds: public ErrorHandling::ExceptionBase
