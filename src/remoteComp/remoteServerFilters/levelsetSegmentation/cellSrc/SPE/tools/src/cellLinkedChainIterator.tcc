@@ -32,7 +32,7 @@ LinkedChainIteratorCell<Item>::SetBeginEnd(Address begin, Address end)
 
 	// load the first item
 	m_currBufPosition = 1; // 1 because its inverted at the begining of next		
-	m_buf[1].Next = Address(m_buf); // to make the first call to HasNext not to return false
+	m_buf[1].Next = Address((uint64)m_buf); // to make the first call to HasNext not to return false
 
 	if(HasNext())
 	{
@@ -48,7 +48,7 @@ LinkedChainIteratorCell<Item>::SetBeginEnd(Address begin, Address end)
 	}
 	else
 	{
-		m_buf[!m_currBufPosition].Next = NULL;
+		m_buf[!m_currBufPosition].Next = 0;
 	}
 
 }

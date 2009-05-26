@@ -54,9 +54,10 @@ WorkManager::WorkManager(uint32 coreCount, RunConfiguration *rc) :
 
 		for(uint32 spuIt=0; spuIt<_numOfCores; spuIt++)
 		{
-			_configs[spuIt].runConf = _runConf;
-			_configs[spuIt].calcChngApplyUpdateConf = &_calcChngApplyUpdateConf[spuIt];
-			_configs[spuIt].propagateValsConf = &_propagateValsConf[spuIt];
+			_configs[spuIt].runConf = (uint64) _runConf;
+			_configs[spuIt].calcChngApplyUpdateConf = 
+				(uint64)&_calcChngApplyUpdateConf[spuIt];
+			_configs[spuIt].propagateValsConf = (uint64) &_propagateValsConf[spuIt];
 		}
 	}
 	catch(...)
@@ -115,12 +116,12 @@ void WorkManager::InitCalculateChangeAndUpdActiveLayerConf()
 	for (uint32 spuIt=0; spuIt<_numOfCores; spuIt++)
 	{
 		_calcChngApplyUpdateConf[spuIt].layer0Begin
-				= m_LayerSegments[spuIt].layers[0].Front();
+				= (uint64) m_LayerSegments[spuIt].layers[0].Front();
 		_calcChngApplyUpdateConf[spuIt].layer0End
-				= m_LayerSegments[spuIt].layers[0].End();
+				= (uint64) m_LayerSegments[spuIt].layers[0].End();
 
 		_calcChngApplyUpdateConf[spuIt].updateBuffBegin
-				= &m_UpdateBuffers[spuIt][0];
+				= (uint64) &m_UpdateBuffers[spuIt][0];
 	}
 }
 
@@ -133,10 +134,10 @@ void WorkManager::InitPropagateValuesConf()
 		for (uint32 i=0; i<LYERCOUNT; i++)
 		{
 			_propagateValsConf[spuIt].layerBegins[i]
-					= m_LayerSegments[spuIt].layers[i].Front();
+					= (uint64) m_LayerSegments[spuIt].layers[i].Front();
 
 			_propagateValsConf[spuIt].layerEnds[i]
-					= m_LayerSegments[spuIt].layers[i].End();
+					= (uint64) m_LayerSegments[spuIt].layers[i].End();
 		}
 	}
 }

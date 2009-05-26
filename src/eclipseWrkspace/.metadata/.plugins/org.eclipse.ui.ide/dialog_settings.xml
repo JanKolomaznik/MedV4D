@@ -7,6 +7,10 @@
 			<item value="org.eclipse.cdt.ui.newCCWizards"/>
 		</list>
 	</section>
+	<section name="WORKBENCH_SETTINGS">
+		<list key="ENABLED_TRANSFERS">
+		</list>
+	</section>
 	<section name="org.eclipse.ui.views.problem">
 	</section>
 	<section name="ChooseWorkspaceDialogSettings">

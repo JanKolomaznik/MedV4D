@@ -4,12 +4,15 @@
 #include "DMAGate.h"
 #include "../../supportClasses.h"
 
-namespace M4D {
-namespace Cell {
+namespace M4D 
+{
+namespace Cell 
+{
 
 #define RADIUS 1
 #define SIZEIN1DIM ((RADIUS * 2) + 1)
-#define NEIGHBOURHOOD_SIZE (SIZEIN1DIM * SIZEIN1DIM * SIZEIN1DIM)
+#define NEIGHBOURHOOD_SLICE_SIZE (SIZEIN1DIM * SIZEIN1DIM)
+#define NEIGHBOURHOOD_SIZE (NEIGHBOURHOOD_SLICE_SIZE * SIZEIN1DIM)
 
 template<typename PixelType>
 class NeighborhoodCell
@@ -24,11 +27,11 @@ public:
 	
 	void SetPosition(const TIndex &pos);
 	
-	inline PixelType GetPixel(uint32 pos) { return m_buf[pos]; }
+	inline PixelType GetPixel(uint32 pos) { return m_buf[traslationTable_[pos]]; }
 	
 	void SetPixel(PixelType val, TOffset pos);
 	void SetCenterPixel(PixelType val);
-	inline PixelType *GetPixelPointer(uint32 pos) { return &m_buf[pos]; }
+	inline PixelType *GetPixelPointer(uint32 pos) { return &m_buf[traslationTable_[pos]]; }
 	
 	TStrides GetStrides() { return m_radiusStrides; }
 	uint32 GetStride(const uint32 axis)
@@ -42,6 +45,7 @@ public:
 	void SetImageProperties(TImageProperties<PixelType> *props) { 
 		m_imageProps = props;
 		ComputeStridesFromSize<TSize, TStrides>(m_imageProps->region.size, m_imageStrides);
+		ComputeAlignStrides();
 		}
 	bool IsWithinImage(const TIndex &pos);
 	TIndex m_currIndex;
@@ -60,17 +64,30 @@ protected:
 	TImageProperties<PixelType> *m_imageProps;
 	TStrides m_imageStrides;
 	
-	PixelType m_buf[NEIGHBOURHOOD_SIZE] __attribute__ ((aligned (128)));
+	int32 traslationTable_[NEIGHBOURHOOD_SIZE];
+	int8 transIdxIter_;
+	
+	uint32 alignStrideTable_[DIM-1];
+	
+#define DMA_LIST_SET_SIZE (SIZEIN1DIM*SIZEIN1DIM)	// maximal count
+#define LIST_SET_NUM (16 / sizeof(PixelType))
+#define BUFFER_SIZE (DMA_LIST_SET_SIZE * LIST_SET_NUM)
+	
+	PixelType m_buf[BUFFER_SIZE] __attribute__ ((aligned (128)));
 	size_t m_size;
 	
 #ifdef FOR_CELL
 	/* here we reserve space for the dma list.
-	 * This array is aligned on 16 byte boundary */
-#define DMA_LIST_SIZE (SIZEIN1DIM*SIZEIN1DIM*SIZEIN1DIM)
-	mfc_list_element_t dma_list[DMA_LIST_SIZE] __attribute__ ((aligned (16)));
+	 * This array is aligned on 16 byte boundary */	
+	mfc_list_element_t dma_list[LIST_SET_NUM][DMA_LIST_SET_SIZE] __attribute__ ((aligned (16)));
 	
-	uint32 _dmaListIter;
+	uint32 _dmaListIter[LIST_SET_NUM];
+	
+	void PutIntoList(uint64 address, uint32 size);
 #endif
+	
+private:
+	void ComputeAlignStrides();
 };
 
 template<typename PixelType>

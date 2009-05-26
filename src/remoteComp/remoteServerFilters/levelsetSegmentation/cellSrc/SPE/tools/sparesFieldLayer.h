@@ -77,7 +77,7 @@ public:
   void PopFront()
     {
     m_HeadNode.Next = Address2Node(m_HeadNode.Next)->Next;
-    Address2Node(m_HeadNode.Next)->Previous = &m_HeadNode;
+    Address2Node(m_HeadNode.Next)->Previous = (uint64)&m_HeadNode;
     m_Size -= 1;
     }
   
@@ -85,9 +85,9 @@ public:
   void PushFront(NodeType *n)
     {
     n->Next = m_HeadNode.Next;
-    n->Previous = &m_HeadNode;
-    Address2Node(m_HeadNode.Next)->Previous = n;
-    m_HeadNode.Next = n;
+    n->Previous = (uint64)&m_HeadNode;
+    Address2Node(m_HeadNode.Next)->Previous = (uint64)n;
+    m_HeadNode.Next = (uint64)n;
     m_Size += 1;
     }
   
@@ -136,8 +136,8 @@ public:
 
   SparseFieldLayer()
   {
-	  m_HeadNode.Next = &m_HeadNode;
-	  m_HeadNode.Previous = &m_HeadNode;
+	  m_HeadNode.Next = (uint64)&m_HeadNode;
+	  m_HeadNode.Previous = (uint64)&m_HeadNode;
 	  m_Size = 0;
   }
   ~SparseFieldLayer()

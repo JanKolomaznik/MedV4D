@@ -45,7 +45,7 @@ int main(unsigned long long speid,
 
   printf ("This is SPE %lld speaking ... \n", speid);
   
-  unsigned int tag = DMAGate::Get((void*)argp, &_Confs, sizeof (ConfigStructures));
+  unsigned int tag = DMAGate::Get(argp, &_Confs, sizeof (ConfigStructures));
   mfc_write_tag_mask (1 << tag);
   mfc_read_tag_status_all ();
     

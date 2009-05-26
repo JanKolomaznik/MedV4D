@@ -68,24 +68,96 @@ NeighborhoodCell<PixelType>
 template<typename PixelType>
 void
 NeighborhoodCell<PixelType>
+::ComputeAlignStrides()
+{
+	for(uint i=0; i<DIM-2; i++)
+	{
+		alignStrideTable_[i] = 
+			(m_imageStrides[i+1] - ((SIZEIN1DIM * m_imageStrides[i]) % 16)) % 16;
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+template<typename PixelType>
+void
+NeighborhoodCell<PixelType>
+::PutIntoList(uint64 address, uint32 size)
+{
+	// align within quadword
+	uint32 _alignIter = (uint32) (address & 0xF) / sizeof(PixelType);
+	dma_list[_alignIter][_dmaListIter[_alignIter]].notify = 0;
+	dma_list[_alignIter][_dmaListIter[_alignIter]].eal = address;
+	dma_list[_alignIter][_dmaListIter[_alignIter]].size = size;
+	
+	// setup translation table
+	uint32 beginInBuf = _alignIter + (_dmaListIter[_alignIter] * 16);
+	for(uint32 i=0; i<size; i++)
+		traslationTable_[transIdxIter_++] = beginInBuf + i;
+	
+	_dmaListIter[_alignIter]++;
+}
+///////////////////////////////////////////////////////////////////////////////
+template<typename PixelType>
+void
+NeighborhoodCell<PixelType>
 ::LoadSlice(TIndex posm, uint8 dim, PixelType *dest)
 {
 	posm[dim] -= RADIUS;
 	if(dim == 0)
-	{		
-		Address begin = ComputeImageDataPointer(posm);
-#ifdef FOR_CELL
-		// insert into DMA list
-		for(uint32 i=0; i<m_radiusSize[dim]; i++)
+	{
+		Address begin;
+		if(posm[0] < 0)
 		{
-			dma_list[_dmaListIter].notify = 0;
-			dma_list[_dmaListIter].eal = begin.GetLo() + i * sizeof(PixelType);
-			dma_list[_dmaListIter].size = sizeof(PixelType);
-			_dmaListIter++;
-		}
+			// begin of array is -1, so ...
+			// load the array from 0 ...
+			posm[0] = 0;
+			transIdxIter_++;	// skip the out of image elem
+			begin = ComputeImageDataPointer(posm);
+			// ... and only SIZEIN1DIM-1 elems
+#ifdef FOR_CELL
+			PutIntoList(begin.Get64(), sizeof(PixelType) * (SIZEIN1DIM-1));
 #else
-		DMAGate::Get(begin, dest, m_radiusSize[dim] * sizeof(PixelType) );
+			DMAGate::Get(begin, dest, (SIZEIN1DIM-1) * sizeof(PixelType) );
+			for(uint32 i=0; i<(SIZEIN1DIM-1); i++)
+			{
+				traslationTable_[transIdxIter_] = transIdxIter_;
+				transIdxIter_++;
+			}
 #endif
+		}
+		else if((posm[0]+m_radiusSize[dim]) >= m_imageProps->region.size[0])
+		{
+			// end of array is out of omage, so ...
+			begin = ComputeImageDataPointer(posm);
+			// ... load only SIZEIN1DIM-1 elems			
+#ifdef FOR_CELL
+			PutIntoList(begin.Get64(), sizeof(PixelType) * (SIZEIN1DIM-1));			
+#else
+			DMAGate::Get(begin, dest, (SIZEIN1DIM-1) * sizeof(PixelType) );
+			for(uint32 i=0; i<(SIZEIN1DIM-1); i++)
+			{
+				traslationTable_[transIdxIter_] = transIdxIter_;
+				transIdxIter_++;
+			}
+#endif
+			transIdxIter_++;	// skip the out of image elem
+		}
+		else
+		{
+			// load whole SIZEIN1DIM-1 elems of array
+#ifdef FOR_CELL
+			PutIntoList(begin.Get64(), sizeof(PixelType) * (SIZEIN1DIM-1));
+			PutIntoList(begin.Get64() + (sizeof(PixelType) * (SIZEIN1DIM-1)), sizeof(PixelType));
+#else
+			DMAGate::Get(begin, dest, SIZEIN1DIM * sizeof(PixelType) );
+			for(uint32 i=0; i<(SIZEIN1DIM-1); i++)
+			{
+				traslationTable_[transIdxIter_] = transIdxIter_;
+				transIdxIter_++;
+			}
+#endif
+		}
 	}
 	else
 	{
@@ -93,7 +165,13 @@ NeighborhoodCell<PixelType>
 		for(uint32 i=0; i<m_radiusSize[dim]; i++)
 		{
 			if(IsWithinImage(iteratingIndex))
-				LoadSlice(iteratingIndex, dim-1, dest + (i * m_radiusStrides[dim]));
+			{
+				LoadSlice(iteratingIndex, dim-1, dest + (i * m_radiusStrides[dim]));				
+			}
+			else
+			{
+				transIdxIter_ += SIZEIN1DIM;  // one slice's row
+			}
 			iteratingIndex[dim] += 1;	// move in iteration  direction
 		}
 	}
@@ -139,29 +217,51 @@ NeighborhoodCell<PixelType>
 	
 #define DEFAULT_VAL 0
 	// fill the buff
-	memset((void*)m_buf, DEFAULT_VAL, m_size * sizeof(PixelType));
+	memset((void*)m_buf, DEFAULT_VAL, m_size * sizeof(PixelType));	
 	
 #ifdef FOR_CELL
-	_dmaListIter = 0;
-#endif
+	memset((void*)_dmaListIter, 0, LIST_SET_NUM * sizeof(uint32));
+	memset((void*)traslationTable_, 0xFF, m_size * sizeof(int32));
+	transIdxIter_ = 0;
+#endif	
 	
 	TIndex iteratingIndex(pos);
 	iteratingIndex[DIM-1] -= RADIUS;
 	for(uint32 i=0; i<m_radiusSize[DIM-1]; i++)
 	{
 		if(IsWithinImage(iteratingIndex))
+		{
 			LoadSlice(iteratingIndex, DIM-2, m_buf + (i * m_radiusStrides[DIM-1]));
+		}
+		else
+		{
+			transIdxIter_ += NEIGHBOURHOOD_SLICE_SIZE;
+		}
 		iteratingIndex[DIM-1] += 1;	// move in iteration  direction
 	}
 	
-#ifdef FOR_CELL
-	// issue the list
-	uint32 tag = DMAGate::GetList(
-			m_imageProps->imageData.GetHi(), 
-			(void *)m_buf, dma_list, _dmaListIter);
+#ifdef FOR_CELL	
+	// issue the lists
+	uint32 tags[LIST_SET_NUM];
+	uint32 mask = 0;
+	for(uint32 i=0; i<LIST_SET_NUM; i++)
+	{
+		if(_dmaListIter[i])
+		{
+			tags[i] = DMAGate::GetList(
+						m_imageProps->imageData.Get64(), 
+						m_buf, dma_list[i], _dmaListIter[i]);
+			mask |= (1 << tags[i]);
+		}
+	}
 	
-	mfc_write_tag_mask (1 << tag);
-		mfc_read_tag_status_all ();
+	mfc_write_tag_mask(mask);
+	mfc_read_tag_status_all();
+	
+	// TODO return tags into gate
+	
+//	for(uint i=0; i<BUFFER_SIZE; i++)
+//		D_PRINT("%u = %u\n", i, m_buf[i]);
 #endif
 }
 
