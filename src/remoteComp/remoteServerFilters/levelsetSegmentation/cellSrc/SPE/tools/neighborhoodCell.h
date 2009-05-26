@@ -45,7 +45,7 @@ public:
 	void SetImageProperties(TImageProperties<PixelType> *props) { 
 		m_imageProps = props;
 		ComputeStridesFromSize<TSize, TStrides>(m_imageProps->region.size, m_imageStrides);
-		ComputeAlignStrides();
+		//ComputeAlignStrides();
 		}
 	bool IsWithinImage(const TIndex &pos);
 	TIndex m_currIndex;
@@ -67,7 +67,7 @@ protected:
 	int32 traslationTable_[NEIGHBOURHOOD_SIZE];
 	int8 transIdxIter_;
 	
-	uint32 alignStrideTable_[DIM-1];
+	//uint32 alignStrideTable_[DIM-1];
 	
 #define DMA_LIST_SET_SIZE (SIZEIN1DIM*SIZEIN1DIM)	// maximal count
 #define LIST_SET_NUM (16 / sizeof(PixelType))
@@ -87,7 +87,7 @@ protected:
 #endif
 	
 private:
-	void ComputeAlignStrides();
+	//void ComputeAlignStrides();
 };
 
 template<typename PixelType>

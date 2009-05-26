@@ -22,7 +22,7 @@ class WorkManager
 public:
 	//typedef itk::SparseFieldLevelSetNode<IndexType> LayerNodeType;
 	typedef SparseFieldLevelSetNode LayerNodeType;
-	typedef M4D::Cell::SparseFieldLayer<LayerNodeType> LayerType;
+	typedef SparseFieldLayer<LayerNodeType> LayerType;
 
 	struct LayerListType
 	{

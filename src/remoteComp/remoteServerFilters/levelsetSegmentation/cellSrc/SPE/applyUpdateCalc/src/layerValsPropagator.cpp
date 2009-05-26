@@ -157,7 +157,7 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 		}
 	}
 	
-	// save to propaget changes in neighbourhoods
+	// save to propagte changes in neighbourhoods
 	m_valueNeighPreloader.SaveCurrItem();
 	m_statusNeighPreloader.SaveCurrItem();
 	

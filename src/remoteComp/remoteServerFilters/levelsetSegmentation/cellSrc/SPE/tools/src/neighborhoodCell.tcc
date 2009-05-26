@@ -65,20 +65,20 @@ NeighborhoodCell<PixelType>
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template<typename PixelType>
-void
-NeighborhoodCell<PixelType>
-::ComputeAlignStrides()
-{
-	for(uint i=0; i<DIM-2; i++)
-	{
-		alignStrideTable_[i] = 
-			(m_imageStrides[i+1] - ((SIZEIN1DIM * m_imageStrides[i]) % 16)) % 16;
-	}
-}
+//template<typename PixelType>
+//void
+//NeighborhoodCell<PixelType>
+//::ComputeAlignStrides()
+//{
+//	for(uint i=0; i<DIM-2; i++)
+//	{
+//		alignStrideTable_[i] = 
+//			(m_imageStrides[i+1] - ((SIZEIN1DIM * m_imageStrides[i]) % 16)) % 16;
+//	}
+//}
 
 ///////////////////////////////////////////////////////////////////////////////
-
+#ifdef FOR_CELL
 template<typename PixelType>
 void
 NeighborhoodCell<PixelType>
@@ -97,6 +97,7 @@ NeighborhoodCell<PixelType>
 	
 	_dmaListIter[_alignIter]++;
 }
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PixelType>
 void
@@ -145,13 +146,14 @@ NeighborhoodCell<PixelType>
 		}
 		else
 		{
+			begin = ComputeImageDataPointer(posm);
 			// load whole SIZEIN1DIM-1 elems of array
 #ifdef FOR_CELL
 			PutIntoList(begin.Get64(), sizeof(PixelType) * (SIZEIN1DIM-1));
 			PutIntoList(begin.Get64() + (sizeof(PixelType) * (SIZEIN1DIM-1)), sizeof(PixelType));
 #else
 			DMAGate::Get(begin, dest, SIZEIN1DIM * sizeof(PixelType) );
-			for(uint32 i=0; i<(SIZEIN1DIM-1); i++)
+			for(uint32 i=0; i<SIZEIN1DIM; i++)
 			{
 				traslationTable_[transIdxIter_] = transIdxIter_;
 				transIdxIter_++;
@@ -217,12 +219,12 @@ NeighborhoodCell<PixelType>
 	
 #define DEFAULT_VAL 0
 	// fill the buff
-	memset((void*)m_buf, DEFAULT_VAL, m_size * sizeof(PixelType));	
+	memset((void*)m_buf, DEFAULT_VAL, m_size * sizeof(PixelType));
+	transIdxIter_ = 0;
 	
 #ifdef FOR_CELL
 	memset((void*)_dmaListIter, 0, LIST_SET_NUM * sizeof(uint32));
 	memset((void*)traslationTable_, 0xFF, m_size * sizeof(int32));
-	transIdxIter_ = 0;
 #endif	
 	
 	TIndex iteratingIndex(pos);
