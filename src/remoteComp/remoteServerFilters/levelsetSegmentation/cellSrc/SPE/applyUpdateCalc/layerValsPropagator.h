@@ -38,8 +38,8 @@ protected:
 	
 	typedef NeighborhoodCell<TPixelValue> TValueNeighborhood;
 	typedef NeighborhoodCell<StatusType> TStatusNeighborhood;
-	typedef PreloadedNeigborhoods<TValueNeighborhood, 4> TValueNeighbPreloadeder;
-	typedef PreloadedNeigborhoods<TStatusNeighborhood, 4> TStatusNeighbPreloadeder;
+	typedef PreloadedNeigborhoods<TPixelValue, 3> TValueNeighbPreloadeder;
+	typedef PreloadedNeigborhoods<StatusType, 3> TStatusNeighbPreloadeder;
 	
 	TValueNeighbIterator m_outIter;
 	TStatusNeighbIterator m_statusIter;
@@ -56,7 +56,12 @@ protected:
 	
 private:
 	void PropagateLayerValues(StatusType from, StatusType to,
-				                       StatusType promote, uint32 InOrOut);
+				                       StatusType promote);
+	
+	void DoTheWork(SparseFieldLevelSetNode *currNode, StatusType from, StatusType to,
+			StatusType promote);
+	
+	TPixelValue value, value_temp, _delta;
 };
 
 }

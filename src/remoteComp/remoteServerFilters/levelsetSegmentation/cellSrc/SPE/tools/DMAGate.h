@@ -11,7 +11,8 @@
 #include <string.h>
 #endif
 
-#define DEBUG_MFC 1
+//#define DEBUG_MFC 1
+#define VERBOSE_GATE 1
 
 namespace M4D
 {
@@ -21,6 +22,8 @@ namespace Cell
 class DMAGate
 {
 public:
+	
+	/vyresit jak s vraceni tagu pro dobihani iteraci pres layery
 
 	///////////////////////////////////////////////////////////////////////////////
 #ifdef FOR_CELL
@@ -43,10 +46,14 @@ public:
 			mfc_list_element_t *list, size_t listSize)
 	{
 		unsigned int tag = GetTag();
+#ifdef VERBOSE_GATE
 		printf(
 				"GETL: src=%lX, dest=%p, listSize=%lu, listSizePutInto=%ld, tag=%d\n",
 				(long unsigned int) src, dest, listSize, listSize
 						* sizeof(mfc_list_element_t), tag);
+#endif
+#ifdef DEBUG_MFC
+
 		uint32 totalSize=0;
 		for (uint32 i=0; i<listSize; i++)
 		{
@@ -65,7 +72,7 @@ public:
 			totalSize += list[i].size;
 		}
 		printf("total size=%u\n", totalSize);
-#ifdef DEBUG_MFC
+
 		if (((uint32)list & 0x7) != 0)
 		{
 			printf("Wrong list address!!");
@@ -82,10 +89,14 @@ public:
 			mfc_list_element_t *list, size_t listSize)
 	{
 		unsigned int tag = GetTag();
+
+#ifdef VERBOSE_GATE
 		printf(
 				"PUTL: localBuf=%p, EA_dest=%lx, listSize=%lu, listSizePutInto=%lu, tag=%d\n",
 				locaBuf, (long unsigned int) dest, listSize, listSize
 						* sizeof(mfc_list_element_t), tag);
+#endif
+#ifdef DEBUG_MFC
 		uint32 totalSize=0;
 		for (uint32 i=0; i<listSize; i++)
 		{
@@ -94,7 +105,7 @@ public:
 			totalSize += list[i].size;
 		}
 		printf("total size=%u\n", totalSize);
-#ifdef DEBUG_MFC
+
 		if (((uint32)list & 0x7) != 0)
 		{
 			printf("Wrong list address!!");
@@ -110,9 +121,12 @@ public:
 	static unsigned int Get(Address src, void *dest, size_t size)
 	{
 		unsigned int tag = GetTag();
-#ifdef DEBUG_MFC
+#ifdef VERBOSE_GATE
 		printf("GET: src=%p, dest=%p, size=%ld, tag=%d\n", (void*)src.Get64(),
 				dest, size, tag);
+#endif
+#ifdef DEBUG_MFC
+		
 
 		// check trasfer size
 		if ( ! ( (size == 1) || (size == 2) || (size == 4) || (size == 8)
@@ -140,11 +154,11 @@ public:
 		}
 #endif
 		mfc_get(dest, src.Get64(), size, tag, 0, 0);
-#if DEBUG_MFC
-		// When debugging we can force the transfer to complete immediately to keep things simple
-		mfc_write_tag_mask(1 << tag);
-		mfc_read_tag_status_all();
-#endif
+//#if DEBUG_MFC
+//		// When debugging we can force the transfer to complete immediately to keep things simple
+//		mfc_write_tag_mask(1 << tag);
+//		mfc_read_tag_status_all();
+//#endif
 		return tag;
 	}
 #else

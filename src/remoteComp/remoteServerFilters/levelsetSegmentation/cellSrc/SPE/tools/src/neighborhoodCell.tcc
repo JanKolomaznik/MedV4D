@@ -2,8 +2,6 @@
 #error File neighborhoodCell.tcc cannot be included directly!
 #else
 
-namespace M4D {
-namespace Cell {
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -86,17 +84,17 @@ NeighborhoodCell<PixelType>
 {
 	// align within quadword
 	uint32 _alignIter = (uint32) (address & 0xF) / sizeof(PixelType);
-	dma_list[_alignIter][_dmaListIter[_alignIter]].notify = 0;
-	dma_list[_alignIter][_dmaListIter[_alignIter]].eal = address;
-	dma_list[_alignIter][_dmaListIter[_alignIter]].size = size * sizeof(PixelType);
+	_loadingCtx->dma_list[_alignIter][_loadingCtx->_dmaListIter[_alignIter]].notify = 0;
+	_loadingCtx->dma_list[_alignIter][_loadingCtx->_dmaListIter[_alignIter]].eal = address;
+	_loadingCtx->dma_list[_alignIter][_loadingCtx->_dmaListIter[_alignIter]].size = size * sizeof(PixelType);
 	
 	// setup translation table
 	uint32 beginInBuf = 
-		_alignIter + (_dmaListIter[_alignIter] * 16 / sizeof(PixelType));
+		_alignIter + (_loadingCtx->_dmaListIter[_alignIter] * 16 / sizeof(PixelType));
 	for(uint32 i=0; i<size; i++)
 		traslationTable_[transIdxIter_++] = beginInBuf + i;
 	
-	_dmaListIter[_alignIter]++;
+	_loadingCtx->_dmaListIter[_alignIter]++;
 }
 #endif
 ///////////////////////////////////////////////////////////////////////////////
@@ -150,8 +148,17 @@ NeighborhoodCell<PixelType>
 			begin = ComputeImageDataPointer(posm);
 			// load whole SIZEIN1DIM-1 elems of array
 #ifdef FOR_CELL
-			PutIntoList(begin.Get64(), SIZEIN1DIM-1);
-			PutIntoList(begin.Get64() + (sizeof(PixelType) * (SIZEIN1DIM-1)), 1);
+#define BIT_CNT_NEED_TO_BE_EQUAL_FOR_TRASFER_SIZE(x) ((sizeof(PixelType)*(x))-1)
+			if((begin.Get64() & BIT_CNT_NEED_TO_BE_EQUAL_FOR_TRASFER_SIZE(2)) == 0)
+			{
+				PutIntoList(begin.Get64(), SIZEIN1DIM-1);
+				PutIntoList(begin.Get64() + (sizeof(PixelType) * (SIZEIN1DIM-1)), 1);
+			}
+			else
+			{
+				PutIntoList(begin.Get64(), 1);	// put into list in reverse order
+				PutIntoList(begin.Get64() + sizeof(PixelType), SIZEIN1DIM-1);
+			}
 #else
 			DMAGate::Get(begin, dest, SIZEIN1DIM * sizeof(PixelType) );
 			for(uint32 i=0; i<SIZEIN1DIM; i++)
@@ -233,7 +240,8 @@ NeighborhoodCell<PixelType>
 	_dirtyElems = 0;
 	
 #ifdef FOR_CELL
-	memset((void*)_dmaListIter, 0, LIST_SET_NUM * sizeof(uint32));
+	memset((void*)_loadingCtx->tags, 0, LIST_SET_NUM * sizeof(uint32));
+	memset((void*)_loadingCtx->_dmaListIter, 0, LIST_SET_NUM * sizeof(TDmaListIter));
 	memset((void*)traslationTable_, 0xFF, m_size * sizeof(int32));
 #endif	
 	
@@ -254,21 +262,19 @@ NeighborhoodCell<PixelType>
 	
 #ifdef FOR_CELL	
 	// issue the lists
-	uint32 tags[LIST_SET_NUM];
-	uint32 mask = 0;
 	for(uint32 i=0; i<LIST_SET_NUM; i++)
 	{
-		if(_dmaListIter[i])
+		if(_loadingCtx->_dmaListIter[i])
 		{
-			tags[i] = DMAGate::GetList(
+			_loadingCtx->tags[i] = DMAGate::GetList(
 						m_imageProps->imageData.Get64(), 
-						m_buf, dma_list[i], _dmaListIter[i]);
-			mask |= (1 << tags[i]);
+						m_buf, _loadingCtx->dma_list[i], _loadingCtx->_dmaListIter[i]);
+			_loadingCtx->tagMask |= (1 << _loadingCtx->tags[i]);
 		}
 	}
 	
-	mfc_write_tag_mask(mask);
-	mfc_read_tag_status_all();
+//	mfc_write_tag_mask(mask);
+//	mfc_read_tag_status_all();
 	
 	// TODO return tags into gate
 	
@@ -280,13 +286,11 @@ NeighborhoodCell<PixelType>
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PixelType>
 void
-NeighborhoodCell<PixelType>::SaveChanges()
+NeighborhoodCell<PixelType>::SaveChanges(SavingCtx *ctx)
 {
-#ifdef FOR_CELL
 	uint32 cnt = 0;
-	memset((void*)_dmaListIter, 0, LIST_SET_NUM * sizeof(uint32));
-	
-	PixelType tmpBuf[BUFFER_SIZE] __attribute__ ((aligned (128)));
+	memset((void*)ctx->_dmaListIter, 0, LIST_SET_NUM * sizeof(TDmaListIter));
+	memset((void*)ctx->tags, 0, LIST_SET_NUM * sizeof(uint32));
 	
 	uint64 address;
 	while((cnt < 27))
@@ -295,19 +299,19 @@ NeighborhoodCell<PixelType>::SaveChanges()
 		{
 			address = 
 				ComputeImageDataPointer(m_currIndex + OffsetFromPos(cnt)).Get64();
-			uint32 _alignIter = (uint32) (address & 0xF) / sizeof(PixelType);				
+			uint32 _alignIter = (uint32) (address & 0xF) / sizeof(PixelType);
 				
-			dma_list[_alignIter][_dmaListIter[_alignIter]].notify = 0;
-			dma_list[_alignIter][_dmaListIter[_alignIter]].eal = address;
-			dma_list[_alignIter][_dmaListIter[_alignIter]].size = sizeof(PixelType);
+			ctx->dma_list[_alignIter][ctx->_dmaListIter[_alignIter]].notify = 0;
+			ctx->dma_list[_alignIter][ctx->_dmaListIter[_alignIter]].eal = address;
+			ctx->dma_list[_alignIter][ctx->_dmaListIter[_alignIter]].size = sizeof(PixelType);
 			
 			// move to the front of buff because DMA list transfer continuous 
 			// local store array part
 			uint32 beginInBuf = 
-					_alignIter + (_dmaListIter[_alignIter] * 16 / sizeof(PixelType));
-			tmpBuf[beginInBuf] = m_buf[traslationTable_[cnt]];
+					_alignIter + (ctx->_dmaListIter[_alignIter] * 16 / sizeof(PixelType));
+			ctx->tmpBuf[beginInBuf] = m_buf[traslationTable_[cnt]];
 			
-			_dmaListIter[_alignIter]++;
+			ctx->_dmaListIter[_alignIter]++;
 		}
 		
 		_dirtyElems >>= 1;	// shift right
@@ -317,23 +321,22 @@ NeighborhoodCell<PixelType>::SaveChanges()
 //	for(uint i=_dmaListIter[0]; i<BUFFER_SIZE; i++)
 //		m_buf[i] = -((float32)i);
 	
-	// issue the lists
-	uint32 tags[LIST_SET_NUM];
-	uint32 mask = 0;
-	for(uint32 i=0; i<LIST_SET_NUM; i++)
-	{
-		if(_dmaListIter[i])
-		{
-			tags[i] = DMAGate::PutList(
-						m_imageProps->imageData.Get64(), 
-						tmpBuf, dma_list[i], _dmaListIter[i]);
-			mask |= (1 << tags[i]);
-		}
-	}
-		
-	mfc_write_tag_mask(mask);
-	mfc_read_tag_status_all();
-#endif
+//	// issue the lists
+//	uint32 tags[LIST_SET_NUM];
+//	uint32 mask = 0;
+//	for(uint32 i=0; i<LIST_SET_NUM; i++)
+//	{
+//		if(_dmaListIter[i])
+//		{
+//			tags[i] = DMAGate::PutList(
+//						m_imageProps->imageData.Get64(), 
+//						tmpBuf, dma_list[i], _dmaListIter[i]);
+//			mask |= (1 << tags[i]);
+//		}
+//	}
+//		
+//	mfc_write_tag_mask(mask);
+//	mfc_read_tag_status_all();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -441,6 +444,4 @@ NeighborhoodCell<PixelType>::PrintImage(std::ostream &s)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-}
-}
 #endif

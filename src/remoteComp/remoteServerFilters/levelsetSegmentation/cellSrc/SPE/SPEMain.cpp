@@ -82,7 +82,7 @@ int main(unsigned long long speid,
 		  DMAGate::ReturnTag(tag);
 		  
 		  // calculate and return retval
-		  //retval = updateCalculator.CalculateChange();
+		  retval = updateCalculator.CalculateChange();
 		  spu_writech(SPU_WrOutMbox, (uint32_t) JOB_DONE);
 		  spu_writech(SPU_WrOutMbox, (uint32_t) retval);
 		  break;
@@ -124,21 +124,21 @@ int main(unsigned long long speid,
 		  _applyUpdateCalc.PropagateAllLayerValues();
 		  spu_writech(SPU_WrOutMbox, (uint32_t) JOB_DONE);
 		  spu_writech(SPU_WrOutMbox, (uint32_t) retval);
-		  printf ("CALC_UPDATE received\n");
 		  break;
 	  case QUIT:
 		  printf ("QUIT received\n");
 		  spu_writech(SPU_WrOutMbox, (uint32_t) JOB_DONE);
 	  	  break;
 	  }
-  } while(mailboxVal == QUIT);
-
+  } while(mailboxVal != QUIT);
 
 #ifdef USE_TIMER
   time_working = (spu_clock_read() - start);
   spu_clock_stop();
   printf ("SPE time_working = %lld\n", time_working);
 #endif /* USE_TIMER */
+  
+  printf ("SPE %lld quitting ... \n", speid);
 
   return 0;
 }

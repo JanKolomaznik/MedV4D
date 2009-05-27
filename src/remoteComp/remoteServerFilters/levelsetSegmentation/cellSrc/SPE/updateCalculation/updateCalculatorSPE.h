@@ -26,9 +26,8 @@ public:
 	typedef NeighborhoodCell<TPixelValue> TValueNeighborhood;
 	typedef NeighborhoodCell<TFeature> TFeatureNeighborhood;
 
-	typedef PreloadedNeigborhoods<TValueNeighborhood, 4> TValueNeighbPreloadeder;
-	typedef PreloadedNeigborhoods<TFeatureNeighborhood, 4>
-			TFeatureNeighbPreloadeder;
+	typedef PreloadedNeigborhoods<TPixelValue, 3> TValueNeighbPreloadeder;
+	typedef PreloadedNeigborhoods<TFeature, 3>	TFeatureNeighbPreloadeder;
 
 	typedef SparseFieldLevelSetNode LayerNodeType;
 

@@ -19,6 +19,28 @@ class NeighborhoodCell
 {
 public:
 	
+	typedef uint8 TDmaListIter;
+	
+#define DMA_LIST_SET_SIZE (SIZEIN1DIM*SIZEIN1DIM)	// maximal count
+#define LIST_SET_NUM (16 / sizeof(PixelType))
+#define BUFFER_SIZE (DMA_LIST_SET_SIZE * LIST_SET_NUM)
+	
+#ifdef FOR_CELL	
+	struct LoadingCtx
+	{
+		uint32 tags[LIST_SET_NUM];
+		TDmaListIter _dmaListIter[LIST_SET_NUM];
+		uint32 tagMask;
+		/* here we reserve space for the dma list.
+		 * This array is aligned on 16 byte boundary */	
+		mfc_list_element_t dma_list[LIST_SET_NUM][DMA_LIST_SET_SIZE] __attribute__ ((aligned (16)));
+	};
+	struct SavingCtx : public LoadingCtx
+	{
+		PixelType tmpBuf[BUFFER_SIZE] __attribute__ ((aligned (128)));
+	};
+#endif
+	
 	typedef PixelType TPixel;
 	typedef TImageProperties<PixelType> TImageProps;
 	
@@ -53,7 +75,9 @@ public:
 	
 	void HowMuchCrossesBoundary(TOffset &howMuch);
 	
-	void SaveChanges();
+	void SaveChanges(SavingCtx *ctx);
+	
+	LoadingCtx *_loadingCtx;
 	
 protected:
 	
@@ -71,22 +95,12 @@ protected:
 	
 	uint32 _dirtyElems;
 	
-#define DMA_LIST_SET_SIZE (SIZEIN1DIM*SIZEIN1DIM)	// maximal count
-#define LIST_SET_NUM (16 / sizeof(PixelType))
-#define BUFFER_SIZE (DMA_LIST_SET_SIZE * LIST_SET_NUM)
-	
 	PixelType m_buf[BUFFER_SIZE] __attribute__ ((aligned (128)));
 	size_t m_size;
 	
 	TOffset OffsetFromPos(uint32 pos);
 	
-#ifdef FOR_CELL
-	/* here we reserve space for the dma list.
-	 * This array is aligned on 16 byte boundary */	
-	mfc_list_element_t dma_list[LIST_SET_NUM][DMA_LIST_SET_SIZE] __attribute__ ((aligned (16)));
-	
-	uint32 _dmaListIter[LIST_SET_NUM];
-	
+#ifdef FOR_CELL	
 	void PutIntoList(uint64 address, uint32 size);
 #endif
 	
@@ -97,10 +111,10 @@ private:
 template<typename PixelType>
 std::ostream & operator<<(std::ostream &stream, NeighborhoodCell<PixelType> &n);
 
-}  // namespace
-} // namespace
-
 //include implementation
 #include "src/neighborhoodCell.tcc"
+
+}  // namespace
+} // namespace
 
 #endif /*NEIGHBORHOODCELL_H_*/

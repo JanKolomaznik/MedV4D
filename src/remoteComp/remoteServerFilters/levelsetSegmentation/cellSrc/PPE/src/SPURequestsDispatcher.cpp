@@ -253,7 +253,7 @@ void Tspu_prog_sim::SimulateFunc()
 			printf("QUIT received\n");
 			break;
 		}
-	} while (mailboxVal != QUIT);
+	} while(mailboxVal != QUIT);
 }
 #endif
 ///////////////////////////////////////////////////////////////////////////////
