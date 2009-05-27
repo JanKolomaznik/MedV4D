@@ -207,8 +207,8 @@ FilterProcessorNeighborhoodPreproc(
 
 }
 
-/*
-template< typename Filter, typename Region >
+
+/*template< typename Filter, typename Region >
 void
 FilterProcessorInPlace( Filter &filter, Region &region )
 {
@@ -217,16 +217,37 @@ FilterProcessorInPlace( Filter &filter, Region &region )
 
 	ForEachInRegion( output, FilterApplicator< Filter, AccessorType >( filter, accessor ) );
 
-}
+}*/
 
-template< typename ColFilter, typename RowFilter, typename InputRegion,typename OutputRegion >
+template< typename ColFilter, typename RowFilter, typename Region >
 void
-SeparableFiltering2D( const InputRegion &input, OutputRegion &output, ColFilter &colFilter, RowFilter &rowFilter )
+SeparableFiltering2D( const Region &input, Region &output, ColFilter &colFilter, RowFilter &rowFilter )
 {
 	FilterProcessorNeighborhood( colFilter, input, output );
 
-	FilterProcessorInPlace( rowFilter, output );
-}*/
+	MirrorAccessor< Region > mirrorAccessor( output );
+	SimpleAccessor< Region > simpleAccessor( output );
+
+	Vector< int32, 2 > min = output.GetMinimum();
+	Vector< int32, 2 > max = output.GetMinimum();
+	typename Region::ElementType *buffer = new typename Region::ElementType[ max[0]-min[0] ];
+
+
+	Vector< int32, 2 > pos( min );
+	Vector< int32, 2 > oldPos;
+	for( int32 col = min[0]; col < max[0]; ++pos[0], ++col ) {
+		buffer[col-min[0]] = rowFilter.Apply( pos, mirrorAccessor );
+	}
+	for( int32 row = min[1]+1; row < max[1]; ++row ){
+		for( int32 col = min[0]; col < max[0]; ++pos[0], ++col ) {
+			buffer[col-min[0]] = rowFilter.Apply( pos, mirrorAccessor );
+			output.GetElement( oldPos ) = buffer[col-min[0]];
+		}
+	}
+	for( int32 col = min[0]; col < max[0]; ++pos[0], ++col ) {
+		output.GetElement( oldPos ) = buffer[col-min[0]];
+	}
+}
 
 } /*namespace Imaging*/
 } /*namespace M4D*/
