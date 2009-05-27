@@ -22,7 +22,7 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 	featureToFloatCaster = FeatureToFloatFilterType::New();
 	//floatToFeature = FloatToFeatureFilterType::New();
 	 
-	featureToFloatCaster->SetInput( this->GetInputITKImage() );
+	featureToFloatCaster->SetInput( this->GetInputITKImage() );	
 	thresholdSegmentation->SetFeatureImage( featureToFloatCaster->GetOutput() );
 	thresholdSegmentation->SetInput( fastMarching->GetOutput() );
 	thresholder->SetInput( thresholdSegmentation->GetOutput() );
@@ -87,14 +87,60 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 	SetOutImageSize(region, spacing);
 	PredecessorType::PrepareOutputDatasets();
 	
-	// set fast marching size
-//	FastMarchingFilterType::InputImageRegionType::SizeType size;
-//	size[0]	= this->GetInputITKImage()->GetLargestPossibleRegion().GetSize()[0];
-//	size[1]	= this->GetInputITKImage()->GetLargestPossibleRegion().GetSize()[1];
+#ifdef FOR_CELL
+	AlocateAlignedImageData(region.GetSize());
+#endif
 	
 	fastMarching->SetOutputSize(
 			this->GetInputITKImage()->GetLargestPossibleRegion().GetSize());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+#ifdef FOR_CELL
+template< typename InputElementType, typename OutputElementType >
+void
+ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
+::AlocateAlignedImageData(const typename ITKOutputImageType::SizeType &size)
+{
+	size_t sizeOfData = 1;	// size in elements (not in bytes)
+	// count num of elems
+	for( uint32 i=0; i< InputImageType::Dimension; i++)
+		sizeOfData *= size[i];
+		
+	// alocate aligned image data
+	typedef typename FeatureToFloatFilterType::OutputImageType TFeatureConvImage;
+	TFeatureConvImage *o = featureToFloatCaster->GetOutput();	
+	
+	// alocate new (aligned buffer)
+	typedef typename FeatureToFloatFilterType::OutputImageType::PixelType TFeatureConvPixel;
+	TFeatureConvPixel *dataPointer;
+	if( posix_memalign((void**)(&dataPointer), 128,
+			sizeOfData * sizeof(TFeatureConvPixel) ) != 0)
+	{
+		throw "bad";
+	}
+	o->GetPixelContainer()->SetImportPointer(
+				dataPointer,
+				sizeOfData,
+				true);
+	
+	typedef typename ThresholdSegmentationFilterType::OutputImageType TSegmOutImage;
+	TSegmOutImage *o2 = thresholdSegmentation->GetOutput();	
+	
+	// alocate new (aligned buffer)
+	typedef typename ThresholdSegmentationFilterType::OutputImageType::PixelType TSegmOImPixel;
+	TSegmOImPixel *data2Pointer;
+	if( posix_memalign((void**)(&data2Pointer), 128,
+			sizeOfData * sizeof(TSegmOImPixel) ) != 0)
+	{
+		throw "bad";
+	}
+	o2->GetPixelContainer()->SetImportPointer(
+				data2Pointer,
+				(typename ITKInputImageType::PixelContainer::ElementIdentifier) sizeOfData,
+				true);
+}
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 template< typename InputElementType, typename OutputElementType >
 void

@@ -53,7 +53,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
   // First need to subtract the iso-surface value from the input image.
   typedef itk::ShiftScaleImageFilter<TInputImage, OutputImageType> ShiftScaleFilterType;
   typename ShiftScaleFilterType::Pointer shiftScaleFilter = ShiftScaleFilterType::New();
-  shiftScaleFilter->SetInput( this->GetInput()  );
+  shiftScaleFilter->SetInput( this->GetInput() );
   shiftScaleFilter->SetShift( - m_IsoSurfaceValue );
   // keep a handle to the shifted output
   m_ShiftedImage = shiftScaleFilter->GetOutput();
@@ -96,7 +96,23 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
   // Allocate the status image.
   m_StatusImage = StatusImageType::New();
   m_StatusImage->SetRegions(this->GetOutput()->GetRequestedRegion());
-  m_StatusImage->Allocate();
+  
+  size_t sizeOfData = 1;	// size in elements (not in bytes)
+	// count num of elems
+	for( uint32 i=0; i< OutputImageType::ImageDimension; i++)
+		sizeOfData *= this->GetOutput()->GetRequestedRegion().GetSize()[i];
+  	
+  	// alocate new (aligned buffer)
+  	typename StatusImageType::PixelType *dataPointer;
+  	if( posix_memalign((void**)(&dataPointer), 128,
+  			sizeOfData * sizeof(typename StatusImageType::PixelType) ) != 0)
+  	{
+  		throw "bad";
+  	}
+  	m_StatusImage->GetPixelContainer()->SetImportPointer(
+  				dataPointer,
+  				(typename StatusImageType::PixelContainer::ElementIdentifier) sizeOfData,
+  				true);
 
   // Initialize the status image to contain all m_StatusNull values.
   itk::ImageRegionIterator<StatusImageType>

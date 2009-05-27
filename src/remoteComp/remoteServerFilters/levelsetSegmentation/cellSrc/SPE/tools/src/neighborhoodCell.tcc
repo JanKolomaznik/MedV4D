@@ -88,10 +88,11 @@ NeighborhoodCell<PixelType>
 	uint32 _alignIter = (uint32) (address & 0xF) / sizeof(PixelType);
 	dma_list[_alignIter][_dmaListIter[_alignIter]].notify = 0;
 	dma_list[_alignIter][_dmaListIter[_alignIter]].eal = address;
-	dma_list[_alignIter][_dmaListIter[_alignIter]].size = size;
+	dma_list[_alignIter][_dmaListIter[_alignIter]].size = size * sizeof(PixelType);
 	
 	// setup translation table
-	uint32 beginInBuf = _alignIter + (_dmaListIter[_alignIter] * 16);
+	uint32 beginInBuf = 
+		_alignIter + (_dmaListIter[_alignIter] * 16 / sizeof(PixelType));
 	for(uint32 i=0; i<size; i++)
 		traslationTable_[transIdxIter_++] = beginInBuf + i;
 	
@@ -117,9 +118,9 @@ NeighborhoodCell<PixelType>
 			begin = ComputeImageDataPointer(posm);
 			// ... and only SIZEIN1DIM-1 elems
 #ifdef FOR_CELL
-			PutIntoList(begin.Get64(), sizeof(PixelType) * (SIZEIN1DIM-1));
+			PutIntoList(begin.Get64(), SIZEIN1DIM-1);
 #else
-			DMAGate::Get(begin, dest, (SIZEIN1DIM-1) * sizeof(PixelType) );
+			DMAGate::Get(begin, dest, sizeof(PixelType) * (SIZEIN1DIM-1) );
 			for(uint32 i=0; i<(SIZEIN1DIM-1); i++)
 			{
 				traslationTable_[transIdxIter_] = transIdxIter_;
@@ -133,7 +134,7 @@ NeighborhoodCell<PixelType>
 			begin = ComputeImageDataPointer(posm);
 			// ... load only SIZEIN1DIM-1 elems			
 #ifdef FOR_CELL
-			PutIntoList(begin.Get64(), sizeof(PixelType) * (SIZEIN1DIM-1));			
+			PutIntoList(begin.Get64(), SIZEIN1DIM-1);			
 #else
 			DMAGate::Get(begin, dest, (SIZEIN1DIM-1) * sizeof(PixelType) );
 			for(uint32 i=0; i<(SIZEIN1DIM-1); i++)
@@ -149,8 +150,8 @@ NeighborhoodCell<PixelType>
 			begin = ComputeImageDataPointer(posm);
 			// load whole SIZEIN1DIM-1 elems of array
 #ifdef FOR_CELL
-			PutIntoList(begin.Get64(), sizeof(PixelType) * (SIZEIN1DIM-1));
-			PutIntoList(begin.Get64() + (sizeof(PixelType) * (SIZEIN1DIM-1)), sizeof(PixelType));
+			PutIntoList(begin.Get64(), SIZEIN1DIM-1);
+			PutIntoList(begin.Get64() + (sizeof(PixelType) * (SIZEIN1DIM-1)), 1);
 #else
 			DMAGate::Get(begin, dest, SIZEIN1DIM * sizeof(PixelType) );
 			for(uint32 i=0; i<SIZEIN1DIM; i++)
@@ -185,10 +186,14 @@ template<typename PixelType>
 void
 NeighborhoodCell<PixelType>::SetCenterPixel(PixelType val)
 {
+#ifdef FOR_CELL
+	_dirtyElems |= (1 << (m_size/2));	// set dirty flag
+#else
 	PixelType *begin = (PixelType *) ComputeImageDataPointer(m_currIndex).Get64();
-	*begin = val;
+		*begin = val;
+#endif
 	// change the buffer as well
-	m_buf[static_cast<uint32>(m_size/2)] = val;
+	m_buf[traslationTable_[static_cast<uint32>(m_size/2)]] = val;	
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -200,12 +205,16 @@ NeighborhoodCell<PixelType>::SetPixel(PixelType val, TOffset pos)
 	TIndex i = m_currIndex + pos;
 	if(IsWithinImage(i))
 	{
+#ifdef FOR_CELL
+		_dirtyElems |= (1 << GetNeighborhoodIndex(pos));	// set dirty flag
+#else
 		PixelType *begin = (PixelType *) ComputeImageDataPointer(i).Get64();
 		*begin = val;
+#endif
+		// change the buffer as well !!!!!!!!
+		//std::cout << "setting" << i << "=" << val << std::endl;
+		m_buf[traslationTable_[GetNeighborhoodIndex(pos)]] = val;
 	}
-	// change the buffer as well !!!!!!!!
-	//std::cout << "setting" << i << "=" << val << std::endl;
-	m_buf[GetNeighborhoodIndex(pos)] = val;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -221,6 +230,7 @@ NeighborhoodCell<PixelType>
 	// fill the buff
 	memset((void*)m_buf, DEFAULT_VAL, m_size * sizeof(PixelType));
 	transIdxIter_ = 0;
+	_dirtyElems = 0;
 	
 #ifdef FOR_CELL
 	memset((void*)_dmaListIter, 0, LIST_SET_NUM * sizeof(uint32));
@@ -263,12 +273,115 @@ NeighborhoodCell<PixelType>
 	// TODO return tags into gate
 	
 //	for(uint i=0; i<BUFFER_SIZE; i++)
-//		D_PRINT("%u = %u\n", i, m_buf[i]);
+//		D_PRINT("%u = %u\n", i, (uint32)m_buf[i]);
 #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+template<typename PixelType>
+void
+NeighborhoodCell<PixelType>::SaveChanges()
+{
+#ifdef FOR_CELL
+	uint32 cnt = 0;
+	memset((void*)_dmaListIter, 0, LIST_SET_NUM * sizeof(uint32));
+	
+	PixelType tmpBuf[BUFFER_SIZE] __attribute__ ((aligned (128)));
+	
+	uint64 address;
+	while((cnt < 27))
+	{
+		if(_dirtyElems & 0x1)
+		{
+			address = 
+				ComputeImageDataPointer(m_currIndex + OffsetFromPos(cnt)).Get64();
+			uint32 _alignIter = (uint32) (address & 0xF) / sizeof(PixelType);				
+				
+			dma_list[_alignIter][_dmaListIter[_alignIter]].notify = 0;
+			dma_list[_alignIter][_dmaListIter[_alignIter]].eal = address;
+			dma_list[_alignIter][_dmaListIter[_alignIter]].size = sizeof(PixelType);
+			
+			// move to the front of buff because DMA list transfer continuous 
+			// local store array part
+			uint32 beginInBuf = 
+					_alignIter + (_dmaListIter[_alignIter] * 16 / sizeof(PixelType));
+			tmpBuf[beginInBuf] = m_buf[traslationTable_[cnt]];
+			
+			_dmaListIter[_alignIter]++;
+		}
+		
+		_dirtyElems >>= 1;	// shift right
+		cnt++;
+	}
+	
+//	for(uint i=_dmaListIter[0]; i<BUFFER_SIZE; i++)
+//		m_buf[i] = -((float32)i);
+	
+	// issue the lists
+	uint32 tags[LIST_SET_NUM];
+	uint32 mask = 0;
+	for(uint32 i=0; i<LIST_SET_NUM; i++)
+	{
+		if(_dmaListIter[i])
+		{
+			tags[i] = DMAGate::PutList(
+						m_imageProps->imageData.Get64(), 
+						tmpBuf, dma_list[i], _dmaListIter[i]);
+			mask |= (1 << tags[i]);
+		}
+	}
+		
+	mfc_write_tag_mask(mask);
+	mfc_read_tag_status_all();
+#endif
+}
 
+///////////////////////////////////////////////////////////////////////////////
+template<typename PixelType>
+TOffset
+NeighborhoodCell<PixelType>::OffsetFromPos(uint32 pos)
+{
+	TOffset idx;
+	uint acc = pos;
+	for(int32 i=DIM-1; i>=0; i--)
+	{
+		idx[i] = (acc / m_radiusStrides[i]) - 1;
+		acc %= m_radiusStrides[i];
+	}
+	return idx;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template<typename PixelType>
+uint32 
+NeighborhoodCell<PixelType>::GetNeighborhoodIndex(const TOffset &o) const
+{
+  uint32 idx = (m_size/2);
+  for (unsigned i = 0; i < DIM; ++i)
+    {      idx+=o[i] * static_cast<long>(m_radiusStrides[i]);    }
+  return idx;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+template<typename PixelType>
+void
+NeighborhoodCell<PixelType>
+::HowMuchCrossesBoundary(TOffset &howMuch)
+{
+	TIndex pos = m_currIndex + howMuch;
+	for(uint32 i=0; i<DIM; i++)
+	{
+		if(pos[i] < m_imageProps->region.offset[i])
+			howMuch[i] = m_imageProps->region.offset[i] - pos[i];
+		else if(pos[i] >= (m_imageProps->region.offset[i] + (int32)m_imageProps->region.size[i]) )
+			howMuch[i] = (m_imageProps->region.offset[i] + (int32)m_imageProps->region.size[i] - 1) - pos[i];
+		else
+			howMuch[i] = 0;
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 template<typename PixelType>
 std::ostream & operator<<(std::ostream &stream, NeighborhoodCell<PixelType> &n)
@@ -323,37 +436,6 @@ NeighborhoodCell<PixelType>::PrintImage(std::ostream &s)
 				s << "[" << ind[0] << "," << ind[1] << "," << ind[2] << "]"  << "= " << ((int32)*data) << std::endl;
 			}
 		}
-	}
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-template<typename PixelType>
-uint32 
-NeighborhoodCell<PixelType>::GetNeighborhoodIndex(const TOffset &o) const
-{
-  uint32 idx = (m_size/2);
-  for (unsigned i = 0; i < DIM; ++i)
-    {      idx+=o[i] * static_cast<long>(m_radiusStrides[i]);    }
-  return idx;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-template<typename PixelType>
-void
-NeighborhoodCell<PixelType>
-::HowMuchCrossesBoundary(TOffset &howMuch)
-{
-	TIndex pos = m_currIndex + howMuch;
-	for(uint32 i=0; i<DIM; i++)
-	{
-		if(pos[i] < m_imageProps->region.offset[i])
-			howMuch[i] = m_imageProps->region.offset[i] - pos[i];
-		else if(pos[i] >= (m_imageProps->region.offset[i] + (int32)m_imageProps->region.size[i]) )
-			howMuch[i] = (m_imageProps->region.offset[i] + (int32)m_imageProps->region.size[i] - 1) - pos[i];
-		else
-			howMuch[i] = 0;
 	}
 }
 

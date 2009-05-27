@@ -152,6 +152,10 @@ private:
 	typedef FastMarchingFilterType::NodeType                NodeType;
 	
 	NodeType *initSeedNode_;
+	
+#ifdef FOR_CELL
+	void AlocateAlignedImageData(const typename ITKOutputImageType::SizeType &size);
+#endif
 };
 
 }
