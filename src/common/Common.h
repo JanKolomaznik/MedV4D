@@ -66,8 +66,9 @@ AlignedNew( uint32 size )
 {
 	unsigned alignment = 1 << ExpTwo;
 	T * pointer = new T[ size +((alignment / sizeof( T )) + 1 ) ];
-	size_t tmp = static_cast< size_t >( pointer ) + alignment - 1;
-	T * aligned = static_cast< T* >((tmp >> ExpTwo) << ExpTwo );
+//	size_t tmp = static_cast< size_t >( pointer ) + alignment - 1;
+	uint32 align = (uint64)pointer & (alignment-1);	// the last ExpTwo bits
+	T * aligned = static_cast< T* >(pointer + ((alignment - align) / sizeof( T )) );
 
 	return AlignedArrayPointer< T >( pointer, aligned );
 }
