@@ -48,10 +48,12 @@ int main(unsigned long long speid,
   unsigned int tag = DMAGate::Get(argp, &_Confs, sizeof (ConfigStructures));
   mfc_write_tag_mask (1 << tag);
   mfc_read_tag_status_all ();
+  DMAGate::ReturnTag(tag);
     
   tag = DMAGate::Get(_Confs.runConf, &_sharedRes._runConf, sizeof (RunConfiguration));
   mfc_write_tag_mask (1 << tag);
   mfc_read_tag_status_all ();
+  DMAGate::ReturnTag(tag);
   
   // setup calculators with config object pointers
 //  updateCalculator.m_Conf = &_runConf;
@@ -77,6 +79,7 @@ int main(unsigned long long speid,
 				  sizeof (CalculateChangeAndUpdActiveLayerConf));
 		  mfc_write_tag_mask (1 << tag);
 		  mfc_read_tag_status_all ();
+		  DMAGate::ReturnTag(tag);
 		  
 		  // calculate and return retval
 		  //retval = updateCalculator.CalculateChange();
@@ -93,12 +96,14 @@ int main(unsigned long long speid,
 		  				  sizeof (CalculateChangeAndUpdActiveLayerConf));
 		  		  mfc_write_tag_mask (1 << tag);
 		  		  mfc_read_tag_status_all ();
+		  		DMAGate::ReturnTag(tag);
   		  tag = DMAGate::Get(
   		  				  _Confs.propagateValsConf, 
   		  				  &_sharedRes._propValConfig, 
   		  				  sizeof (PropagateValuesConf));
   		  		  mfc_write_tag_mask (1 << tag);
   		  		  mfc_read_tag_status_all ();
+  		  		DMAGate::ReturnTag(tag);
 		  		  
 		  dt = spu_readch(SPU_RdInMbox);
 		  retval = _applyUpdateCalc.ApplyUpdate(*((float32 *) &dt));
@@ -114,6 +119,7 @@ int main(unsigned long long speid,
   				  sizeof (PropagateValuesConf));
   		  mfc_write_tag_mask (1 << tag);
   		  mfc_read_tag_status_all ();
+  		DMAGate::ReturnTag(tag);
   		  
 		  _applyUpdateCalc.PropagateAllLayerValues();
 		  spu_writech(SPU_WrOutMbox, (uint32_t) JOB_DONE);

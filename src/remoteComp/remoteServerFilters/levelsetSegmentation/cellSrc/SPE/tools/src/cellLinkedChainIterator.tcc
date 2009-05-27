@@ -63,6 +63,7 @@ LinkedChainIteratorCell<Item>::Next(void)
 	// wait for current DMA to complete
 	mfc_write_tag_mask (1 << tag);
 	mfc_read_tag_status_all ();
+	DMAGate::ReturnTag(tag);
 #endif
 	m_currBufPosition = ! m_currBufPosition;
 

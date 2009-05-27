@@ -53,6 +53,8 @@ public:
 	
 	void HowMuchCrossesBoundary(TOffset &howMuch);
 	
+	void SaveChanges();
+	
 protected:
 	
 	Address ComputeImageDataPointer(const TIndex &pos);
@@ -67,7 +69,7 @@ protected:
 	int32 traslationTable_[NEIGHBOURHOOD_SIZE];
 	int8 transIdxIter_;
 	
-	//uint32 alignStrideTable_[DIM-1];
+	uint32 _dirtyElems;
 	
 #define DMA_LIST_SET_SIZE (SIZEIN1DIM*SIZEIN1DIM)	// maximal count
 #define LIST_SET_NUM (16 / sizeof(PixelType))
@@ -75,6 +77,8 @@ protected:
 	
 	PixelType m_buf[BUFFER_SIZE] __attribute__ ((aligned (128)));
 	size_t m_size;
+	
+	TOffset OffsetFromPos(uint32 pos);
 	
 #ifdef FOR_CELL
 	/* here we reserve space for the dma list.
