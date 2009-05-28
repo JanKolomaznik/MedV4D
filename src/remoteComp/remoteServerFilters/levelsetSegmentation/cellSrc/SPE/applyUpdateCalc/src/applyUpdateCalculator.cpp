@@ -68,7 +68,7 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 //		  std::ofstream b(s.str().c_str());
 //		  m_outIter.GetNeighborhood().PrintImage(b);
 		
-	while(m_layerIterator.HasNext())  
+	while(m_layerIterator.HasNext())
 	{
 		// do one run
 		UpdateActiveLayerValues(dt, &UpList[0], &DownList[0], counter, rms_change_accumulator);
@@ -82,6 +82,8 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 #else
 	  DL_PRINT(DEBUG_ALG, std::endl << "14rms accum: " << rms_change_accumulator << "counter: " << counter);
 #endif
+	  
+	  this->m_updateValuesIt.WaitForTransfer();
 	
 //	std::stringstream s3;
 //		  s3 << "afterOutside" << this->m_ElapsedIterations;

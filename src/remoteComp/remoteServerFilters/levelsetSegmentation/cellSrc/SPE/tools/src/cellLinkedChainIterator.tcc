@@ -7,8 +7,7 @@
 template<typename Item>
 LinkedChainIteratorCell<Item>
 ::LinkedChainIteratorCell()
-: m_end(0)//, m_begin(0), 
-
+: m_end(0)
 {
 }
 
@@ -39,7 +38,11 @@ LinkedChainIteratorCell<Item>::SetBeginEnd(Address begin, Address end)
 		m_realAddresses[0] = begin;
 		//			Load(begin, &m_buf[0], sizeof(Item));
 #ifdef FOR_CELL
-		tag = DMAGate::Get(begin, &m_buf[0], sizeof(Item) );
+		tag = DMAGate::GetTag();
+		DMAGate::Get(begin, &m_buf[0], sizeof(Item), tag);
+#ifdef TAG_RETURN_DEBUG
+		D_PRINT("TAG_GET:LinkedChainIteratorCell:%d\n", tag);
+#endif
 #else
 		DMAGate::Get(begin, &m_buf[0], sizeof(Item) );
 #endif
@@ -61,9 +64,8 @@ LinkedChainIteratorCell<Item>::Next(void)
 {
 #ifdef FOR_CELL
 	// wait for current DMA to complete
-	mfc_write_tag_mask (1 << tag);
-	mfc_read_tag_status_all ();
-	DMAGate::ReturnTag(tag);
+	mfc_write_tag_mask(1 << tag);
+	mfc_read_tag_status_all();
 #endif
 	m_currBufPosition = ! m_currBufPosition;
 
@@ -80,8 +82,7 @@ LinkedChainIteratorCell<Item>::Next(void)
 	if(HasNext())
 	{
 		m_realAddresses[!m_currBufPosition] = GetCurrItem()->Next;
-		//Load(GetCurrItem()->Next, &m_buf[!m_currBufPosition], sizeof(Item));
-		DMAGate::Get(GetCurrItem()->Next, &m_buf[!m_currBufPosition], sizeof(Item) );
+		DMAGate::Get(GetCurrItem()->Next, &m_buf[!m_currBufPosition], sizeof(Item), tag);		
 #ifdef FOR_CELL
 		DL_PRINT(DEBUG_CHAINTOOL, "loading node %d", counter);
 #else
@@ -89,24 +90,19 @@ LinkedChainIteratorCell<Item>::Next(void)
 #endif
 		counter++;
 	}
+	else
+	{
+#ifdef TAG_RETURN_DEBUG
+		D_PRINT("TAG_RET:LinkedChainIteratorCell:%d\n", tag);
+#endif
+		//return tag
+		DMAGate::ReturnTag(tag);
+	}
 
 	pom = ( (Item *)pom.Get64() )->Next;
 
 	return GetCurrItem();
 }
-
-///////////////////////////////////////////////////////////////////////////////
-
-//template<typename Item>
-//void
-//LinkedChainIteratorCell<Item>::Load(Item *src, Item *dest, size_t size)
-//	{
-//#ifdef FOR_CELL
-//			mfc_get(src, dest, size, tag, 0, 0);
-//#else
-//			memcpy(dest, src, size);
-//#endif
-//	}
 
 ///////////////////////////////////////////////////////////////////////////////
 

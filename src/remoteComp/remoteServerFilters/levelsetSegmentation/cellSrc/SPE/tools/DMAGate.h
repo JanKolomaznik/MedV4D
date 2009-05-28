@@ -12,7 +12,8 @@
 #endif
 
 //#define DEBUG_MFC 1
-#define VERBOSE_GATE 1
+//#define VERBOSE_GATE 1
+#define TAG_RETURN_DEBUG 1
 
 namespace M4D
 {
@@ -22,16 +23,16 @@ namespace Cell
 class DMAGate
 {
 public:
-	
-	/vyresit jak s vraceni tagu pro dobihani iteraci pres layery
 
 	///////////////////////////////////////////////////////////////////////////////
 #ifdef FOR_CELL
-	static unsigned int Put(void *src, Address dest, size_t size)
+	static void Put(void *src, Address dest, size_t size, uint32 tag)
 	{
-		unsigned int tag = GetTag();
+#ifdef VERBOSE_GATE
+		printf("PUT: LA=%p, EA=0x%lx, size=%ld, tag=%d\n", src,
+						dest.Get64(), size, tag);
+#endif
 		mfc_put(src, dest.Get64(), size, tag, 0, 0);
-		return tag;
 	}
 #else
 	static void Put(void *src, Address dest, size_t size)
@@ -42,10 +43,9 @@ public:
 	///////////////////////////////////////////////////////////////////////////////
 
 #ifdef FOR_CELL
-	static unsigned int GetList(uint64 src, void *dest,
-			mfc_list_element_t *list, size_t listSize)
+	static void GetList(uint64 src, void *dest,
+			mfc_list_element_t *list, size_t listSize, uint32 tag)
 	{
-		unsigned int tag = GetTag();
 #ifdef VERBOSE_GATE
 		printf(
 				"GETL: src=%lX, dest=%p, listSize=%lu, listSizePutInto=%ld, tag=%d\n",
@@ -80,15 +80,13 @@ public:
 #endif
 		mfc_getl(dest, src, list, listSize * sizeof(mfc_list_element_t), tag,
 				0, 0);
-		return tag;
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	static unsigned int PutList(uint64 dest, void *locaBuf,
-			mfc_list_element_t *list, size_t listSize)
+	static void PutList(uint64 dest, void *locaBuf,
+			mfc_list_element_t *list, size_t listSize, uint32 tag)
 	{
-		unsigned int tag = GetTag();
 
 #ifdef VERBOSE_GATE
 		printf(
@@ -113,14 +111,12 @@ public:
 #endif
 		mfc_putl(locaBuf, dest, list, listSize * sizeof(mfc_list_element_t), tag,
 				0, 0);
-		return tag;
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	static unsigned int Get(Address src, void *dest, size_t size)
+	static void Get(Address src, void *dest, size_t size, uint32 tag)
 	{
-		unsigned int tag = GetTag();
 #ifdef VERBOSE_GATE
 		printf("GET: src=%p, dest=%p, size=%ld, tag=%d\n", (void*)src.Get64(),
 				dest, size, tag);
@@ -159,7 +155,6 @@ public:
 //		mfc_write_tag_mask(1 << tag);
 //		mfc_read_tag_status_all();
 //#endif
-		return tag;
 	}
 #else
 	static void Get(Address src, void *dest, size_t size)
@@ -174,7 +169,7 @@ public:
 	{
 		mfc_tag_release(tag);
 	}
-private:
+	
 	static unsigned int GetTag()
 	{
 		unsigned int tag = mfc_tag_reserve();

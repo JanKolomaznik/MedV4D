@@ -53,6 +53,9 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 	m_valueNeighPreloader.SetImageProps(&commonConf->valueImageProps);
 	m_statusNeighPreloader.SetImageProps(&commonConf->statusImageProps);
 	
+	m_valueNeighPreloader.Init();
+	m_statusNeighPreloader.Init();
+	
 	m_layerIterator.SetBeginEnd(
 			m_propLayerValuesConfig->layerBegins[to], 
 			m_propLayerValuesConfig->layerEnds[to]);
@@ -90,7 +93,10 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 		currNode = currNodeInLoadingNighbors;
 	}
 	
-	// NOTE: wait until save is complete ?
+	// wait for ops to guarantee all is complete before this method ends
+	// and to return its tags back to gate
+	m_valueNeighPreloader.Fini();
+	m_statusNeighPreloader.Fini();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

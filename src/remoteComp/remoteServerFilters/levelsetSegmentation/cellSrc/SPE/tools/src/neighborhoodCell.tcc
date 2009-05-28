@@ -266,9 +266,12 @@ NeighborhoodCell<PixelType>
 	{
 		if(_loadingCtx->_dmaListIter[i])
 		{
-			_loadingCtx->tags[i] = DMAGate::GetList(
+			DMAGate::GetList(
 						m_imageProps->imageData.Get64(), 
-						m_buf, _loadingCtx->dma_list[i], _loadingCtx->_dmaListIter[i]);
+						m_buf, 
+						_loadingCtx->dma_list[i], 
+						_loadingCtx->_dmaListIter[i],
+						_loadingCtx->tags[i]);
 			_loadingCtx->tagMask |= (1 << _loadingCtx->tags[i]);
 		}
 	}

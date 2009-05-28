@@ -5,8 +5,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PixelType, uint16 MYSIZE>
 PreloadedNeigborhoods<PixelType, MYSIZE>::PreloadedNeigborhoods()
-	: _loading(0), _loaded(0), _saving(0), _loadingInProgress(false)
-	, _savingInProgress(false)
+	: _loading(0), _loaded(0), _saving(0)
+//	, _loadingInProgress(false)
+//	, _savingInProgress(false)
 {
 	for(uint i=0; i<MYSIZE; i++)
 		m_buf[i]._loadingCtx = &_loadingCtx;
@@ -33,51 +34,17 @@ void
 PreloadedNeigborhoods<PixelType, MYSIZE>
 ::Load(const TIndex &pos)
 {
-	if(_loadingInProgress)
+	if(_loadingCtx.tagMask > 0)
 		WaitForLoading();
 	// change pointers
 	_loaded = _loading;
 	_loading++;
 	_loading = _loading % MYSIZE;
 	m_buf[_loading].SetPosition(pos);
-	_loadingInProgress = true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-template<typename PixelType, uint16 MYSIZE>
-void
-PreloadedNeigborhoods<PixelType, MYSIZE>::WaitForLoading()
-{
-	// wait until loading is finished
-	mfc_write_tag_mask(_loadingCtx.tagMask);
-	mfc_read_tag_status_all();
-	
-	// return tags
-	for(uint32 i=0; i<LIST_SET_NUM; i++)
-	{
-		if(_loadingCtx.tags[i])
-			DMAGate::ReturnTag(_loadingCtx.tags[i]);
-	}
-}
 
-///////////////////////////////////////////////////////////////////////////////
-template<typename PixelType, uint16 MYSIZE>
-void
-PreloadedNeigborhoods<PixelType, MYSIZE>::WaitForSaving()
-{
-	// wait until loading is finished
-	mfc_write_tag_mask(_savingCtx.tagMask);
-	mfc_read_tag_status_all();
-	
-	// return tags
-	for(uint32 i=0; i<LIST_SET_NUM; i++)
-	{
-		if(_savingCtx.tags[i])
-			DMAGate::ReturnTag(_savingCtx.tags[i]);
-	}
-}
-
-///////////////////////////////////////////////////////////////////////////////
 template<typename PixelType, uint16 MYSIZE>
 typename PreloadedNeigborhoods<PixelType, MYSIZE>::TNeigborhood *
 PreloadedNeigborhoods<PixelType, MYSIZE>
@@ -93,34 +60,104 @@ PreloadedNeigborhoods<PixelType, MYSIZE>::SaveCurrItem()
 {	
 	// do nothing if we are on PC
 #ifdef FOR_CELL
-	if(_savingInProgress)
+	if(_savingCtx.tagMask > 0)
 			WaitForSaving();
 	
 	m_buf[_loaded].SaveChanges(&_savingCtx);
 	
-	// issue the lists
-	_savingCtx.tagMask = 0;
+	// issue the lists	
 	for(uint32 i=0; i<LIST_SET_NUM; i++)
 	{
 		if(_savingCtx._dmaListIter[i])
 		{
-			_savingCtx.tags[i] = DMAGate::PutList(
+			DMAGate::PutList(
 						_imageProps->imageData.Get64(), 
 						_savingCtx.tmpBuf, 
 						_savingCtx.dma_list[i], 
-						_savingCtx._dmaListIter[i]);
+						_savingCtx._dmaListIter[i],
+						_savingCtx.tags[i]);
 			_savingCtx.tagMask |= (1 << _savingCtx.tags[i]);
 		}
 	}
 	
-	if(_savingCtx.tagMask > 0)
-		_savingInProgress = true;
-	else
-		_savingInProgress = false;
-	
 	// change pointers
 	_saving = _loaded;
 #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+template<typename PixelType, uint16 MYSIZE>
+void
+PreloadedNeigborhoods<PixelType, MYSIZE>::Init()
+{
+	// reserve necessary tags
+	for(uint32 i=0; i<LIST_SET_NUM; i++)
+	{
+		_loadingCtx.tags[i] = DMAGate::GetTag();
+#ifdef TAG_RETURN_DEBUG
+		D_PRINT("TAG_GET:NeighborhoodCell:%d\n", _loadingCtx.tags[i]);
+#endif
+	}
+	
+	for(uint32 i=0; i<LIST_SET_NUM; i++)
+	{
+		_savingCtx.tags[i] = DMAGate::GetTag();
+#ifdef TAG_RETURN_DEBUG
+		D_PRINT("TAG_GET:NeighborhoodCell:%d\n", _savingCtx.tags[i]);
+#endif
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template<typename PixelType, uint16 MYSIZE>
+void
+PreloadedNeigborhoods<PixelType, MYSIZE>::Fini()
+{
+	WaitForLoading();
+	WaitForSaving();
+	
+	// return loading tags
+	for(uint32 i=0; i<LIST_SET_NUM; i++)
+	{
+#ifdef TAG_RETURN_DEBUG
+		D_PRINT("TAG_RET:PreloadedNeigborhoods:%d\n", _loadingCtx.tags[i]);
+#endif
+		DMAGate::ReturnTag(_loadingCtx.tags[i]);
+	}
+	
+	// return saving tags
+	for(uint32 i=0; i<LIST_SET_NUM; i++)
+	{
+#ifdef TAG_RETURN_DEBUG
+		D_PRINT("TAG_RET:PreloadedNeigborhoods:%d\n", _savingCtx.tags[i]);
+#endif
+		DMAGate::ReturnTag(_savingCtx.tags[i]);
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template<typename PixelType, uint16 MYSIZE>
+void
+PreloadedNeigborhoods<PixelType, MYSIZE>::WaitForLoading()
+{
+	// wait until loading is finished
+	mfc_write_tag_mask(_loadingCtx.tagMask);
+	mfc_read_tag_status_all();
+	
+	_loadingCtx.tagMask = 0;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template<typename PixelType, uint16 MYSIZE>
+void
+PreloadedNeigborhoods<PixelType, MYSIZE>::WaitForSaving()
+{
+	// wait until loading is finished
+	mfc_write_tag_mask(_savingCtx.tagMask);
+	mfc_read_tag_status_all();
+	
+	_savingCtx.tagMask = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

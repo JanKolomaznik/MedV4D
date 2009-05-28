@@ -23,6 +23,10 @@ public:
 	void SetArray(Address array);
 	void FlushArray();
 	
+#ifdef FOR_CELL
+	void WaitForTransfer();
+#endif
+	
 private:
 	//void CopyData(T *src, T *dest, size_t size);
 	
@@ -32,6 +36,8 @@ private:
 	
 	Address m_arrayBegin;
 	Address m_currFlushedPos;
+	
+	int8 _tag;
 };
 
 template<typename T, uint8 BUFSIZE>
@@ -50,6 +56,10 @@ public:
 	Self &operator++();
 	//bool HasNext() { return (m_currPos != m_arrayEnd); }
 	
+#ifdef FOR_CELL
+	void WaitForTransfer();
+#endif
+	
 private:
 	void LoadNextPiece();
 	void CopyData(T *src, T *dest, size_t size);
@@ -61,6 +71,8 @@ private:
 	Address m_arrayBegin;
 	//T *m_arrayEnd;
 	Address m_currLoadedPos;
+	
+	int8 _tag;
 };
 
 //// this array has to notify PPU when flushed to process it

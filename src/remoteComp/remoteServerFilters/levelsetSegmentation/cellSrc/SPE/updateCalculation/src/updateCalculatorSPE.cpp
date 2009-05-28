@@ -136,6 +136,9 @@ UpdateCalculatorSPE::CalculateChange()
 	m_updateBufferArray.SetArray(m_stepConfig->updateBuffBegin);
 	m_layerIterator.SetBeginEnd(m_stepConfig->layer0Begin, m_stepConfig->layer0End);
 	
+	m_valueNeighbPreloader.Init();
+	m_featureNeighbPreloader.Init();	
+	
 	// prepare neighbour preloaders
 	m_valueNeighbPreloader.SetImageProps(& m_Conf->valueImageProps);
 	m_featureNeighbPreloader.SetImageProps(& m_Conf->featureImageProps);
@@ -144,14 +147,29 @@ UpdateCalculatorSPE::CalculateChange()
 	// iteration.  Iterates through the active layer index list, applying 
 	// the level set function to the output image (level set image) at each
 	// index.  Update values are stored in the update buffer.
-	LayerNodeType *next;
-	while(m_layerIterator.HasNext())
+	LayerNodeType *next, *nextBeingLoadedInNeigbs;
+	
+	uint32 counter = 0;
+	
+	// first step in flow scenario - load the first
+	if(m_layerIterator.HasNext())
 	{
 		next = m_layerIterator.Next();
-		
 		// load approp neigborhood
 		m_valueNeighbPreloader.Load(next->m_Value);
 		m_featureNeighbPreloader.Load(next->m_Value);
+	}
+	
+	// and then immediately load next to be transferred while computing current 
+	while(m_layerIterator.HasNext())
+	{
+		if(m_layerIterator.HasNext())
+		{
+			nextBeingLoadedInNeigbs = m_layerIterator.Next();
+			// load approp neigborhood
+			m_valueNeighbPreloader.Load(next->m_Value);
+			m_featureNeighbPreloader.Load(next->m_Value);
+		}
 		
 		m_outIter.SetNeighbourhood( m_valueNeighbPreloader.GetLoaded());
 		m_featureIter.SetNeighbourhood( m_featureNeighbPreloader.GetLoaded());
@@ -165,9 +183,18 @@ UpdateCalculatorSPE::CalculateChange()
 #endif
 				
 		CalculateChangeItem();
+		counter++;
+		
+		next = nextBeingLoadedInNeigbs;
 	}
 	
 	m_updateBufferArray.FlushArray();
+	
+	// wait for ops to guarantee all is complete before this method ends
+	// and to return its tags back to gate
+	m_valueNeighbPreloader.Fini();
+	m_featureNeighbPreloader.Fini();	
+	m_updateBufferArray.WaitForTransfer();
 
 	// Ask the finite difference function to compute the time step for
 	// this iteration.  We give it the global data pointer to use, then

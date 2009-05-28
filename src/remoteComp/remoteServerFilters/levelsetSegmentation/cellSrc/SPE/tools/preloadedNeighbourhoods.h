@@ -22,20 +22,24 @@ public:
 	void Load(const TIndex &pos);
 	TNeigborhood *GetLoaded();
 	void SaveCurrItem();
+	
+	void Init();
+	void Fini();
+		
 private:
 	TNeigborhood m_buf[MYSIZE];
 	
 	typename TNeigborhood::LoadingCtx _loadingCtx;
 	typename TNeigborhood::SavingCtx _savingCtx;
 	
-	void WaitForLoading();
-	void WaitForSaving();
-	
-	bool _loadingInProgress;
-	bool _savingInProgress;
+//	bool _loadingInProgress;
+//	bool _savingInProgress;
 	uint8 _loading, _loaded, _saving;
 	
 	TImageProps *_imageProps;
+	
+	void WaitForLoading();
+	void WaitForSaving();
 };
 
 #include "src/preloadedNeighbourhoods.tcc"
