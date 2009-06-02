@@ -49,6 +49,9 @@ public:
 		mfc_list_element_t dma_list[SAVE_DMA_LIST_CNT][DMA_LIST_SET_SIZE] __attribute__ ((aligned (16)));
 		PixelType tmpBuf[BUFFER_SIZE] __attribute__ ((aligned (128)));
 	};
+	
+	void SaveChanges(SavingCtx *ctx);	
+	LoadingCtx *_loadingCtx;
 #endif
 	
 	typedef TImageProperties<PixelType> TImageProps;
@@ -84,9 +87,7 @@ public:
 	
 	void HowMuchCrossesBoundary(TOffset &howMuch);
 	
-	void SaveChanges(SavingCtx *ctx);
-	
-	LoadingCtx *_loadingCtx;
+
 	
 protected:
 	

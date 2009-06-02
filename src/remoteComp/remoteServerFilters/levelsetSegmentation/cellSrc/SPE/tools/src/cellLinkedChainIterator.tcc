@@ -36,15 +36,12 @@ LinkedChainIteratorCell<Item>::SetBeginEnd(Address begin, Address end)
 	if(HasNext())
 	{
 		m_realAddresses[0] = begin;
-		//			Load(begin, &m_buf[0], sizeof(Item));
 #ifdef FOR_CELL
 		tag = DMAGate::GetTag();
+#endif
 		DMAGate::Get(begin, &m_buf[0], sizeof(Item), tag);
 #ifdef TAG_RETURN_DEBUG
 		D_PRINT("TAG_GET:LinkedChainIteratorCell:%d\n", tag);
-#endif
-#else
-		DMAGate::Get(begin, &m_buf[0], sizeof(Item) );
 #endif
 		DL_PRINT(DEBUG_CHAINTOOL, "loading the first node in chain \n");
 		counter = 1;
@@ -90,6 +87,7 @@ LinkedChainIteratorCell<Item>::Next(void)
 #endif
 		counter++;
 	}
+#ifdef FOR_CELL
 	else
 	{
 #ifdef TAG_RETURN_DEBUG
@@ -98,6 +96,7 @@ LinkedChainIteratorCell<Item>::Next(void)
 		//return tag
 		DMAGate::ReturnTag(tag);
 	}
+#endif
 
 	pom = ( (Item *)pom.Get64() )->Next;
 

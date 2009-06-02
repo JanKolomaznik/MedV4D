@@ -198,7 +198,7 @@ void Tspu_prog_sim::SimulateFunc()
 	ApplyUpdateSPE _applyUpdateCalc(&_sharedRes);
 
 	_applyUpdateCalc.m_layerGate._mailbox = &_mailbox;
-	DMAGate::Get(_wm->GetConfSructs()[_speID].runConf, &_sharedRes._runConf, sizeof(RunConfiguration));
+	DMAGate::Get(_wm->GetConfSructs()[_speID].runConf, &_sharedRes._runConf, sizeof(RunConfiguration), 0);
 
 	_updateSolver.Init();
 
@@ -211,7 +211,7 @@ void Tspu_prog_sim::SimulateFunc()
 		case CALC_CHANGE:
 			DMAGate::Get(_wm->GetConfSructs()[_speID].calcChngApplyUpdateConf,
 					&_sharedRes._changeConfig,
-					sizeof(CalculateChangeAndUpdActiveLayerConf));
+					sizeof(CalculateChangeAndUpdActiveLayerConf), 0);
 			//printf ("CALC_CHANGE received\n");
 			// calculate and return retval
 			retval = _updateSolver.CalculateChange();
@@ -224,9 +224,9 @@ void Tspu_prog_sim::SimulateFunc()
 		case CALC_UPDATE:
 			DMAGate::Get(_wm->GetConfSructs()[_speID].calcChngApplyUpdateConf,
 					&_sharedRes._changeConfig,
-					sizeof(CalculateChangeAndUpdActiveLayerConf));
+					sizeof(CalculateChangeAndUpdActiveLayerConf), 0);
 			DMAGate::Get(_wm->GetConfSructs()[_speID].propagateValsConf, &_sharedRes._propValConfig,
-					sizeof(PropagateValuesConf));
+					sizeof(PropagateValuesConf), 0);
 			//printf ("CALC_UPDATE received\n");
 			retval = _applyUpdateCalc.ApplyUpdate(toFloat(_mailbox.SPEPop()));
 			{
@@ -237,7 +237,7 @@ void Tspu_prog_sim::SimulateFunc()
 			break;
 		case CALC_PROPAG_VALS:
 			DMAGate::Get(_wm->GetConfSructs()[_speID].propagateValsConf, &_sharedRes._propValConfig,
-					sizeof(PropagateValuesConf));
+					sizeof(PropagateValuesConf), 0);
 			//printf ("CALC_UPDATE received\n");
 			_applyUpdateCalc.PropagateAllLayerValues();
 			{

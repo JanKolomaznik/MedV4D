@@ -136,8 +136,10 @@ UpdateCalculatorSPE::CalculateChange()
 	m_updateBufferArray.SetArray(m_stepConfig->updateBuffBegin);
 	m_layerIterator.SetBeginEnd(m_stepConfig->layer0Begin, m_stepConfig->layer0End);
 	
+#ifdef FOR_CELL
 	m_valueNeighbPreloader.Init();
-	m_featureNeighbPreloader.Init();	
+	m_featureNeighbPreloader.Init();
+#endif
 	
 	// prepare neighbour preloaders
 	m_valueNeighbPreloader.SetImageProps(& m_Conf->valueImageProps);
@@ -192,11 +194,13 @@ UpdateCalculatorSPE::CalculateChange()
 	
 	m_updateBufferArray.FlushArray();
 	
+#ifdef FOR_CELL
 	// wait for ops to guarantee all is complete before this method ends
 	// and to return its tags back to gate
 	m_valueNeighbPreloader.Fini();
 	m_featureNeighbPreloader.Fini();	
 	m_updateBufferArray.WaitForTransfer();
+#endif
 
 	// Ask the finite difference function to compute the time step for
 	// this iteration.  We give it the global data pointer to use, then

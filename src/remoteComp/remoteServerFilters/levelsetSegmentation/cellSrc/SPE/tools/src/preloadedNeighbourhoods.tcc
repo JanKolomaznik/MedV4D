@@ -7,8 +7,10 @@ template<typename PixelType, uint16 MYSIZE>
 PreloadedNeigborhoods<PixelType, MYSIZE>::PreloadedNeigborhoods()
 	: _loading(0), _loaded(0), _saving(0)
 {
-	for(uint i=0; i<MYSIZE; i++)
+#ifdef FOR_CELL
+	for(uint32 i=0; i<MYSIZE; i++)
 		m_buf[i]._loadingCtx = &_loadingCtx;
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -32,8 +34,10 @@ void
 PreloadedNeigborhoods<PixelType, MYSIZE>
 ::Load(const TIndex &pos)
 {
+#ifdef FOR_CELL
 	if(_loadingCtx.tagMask > 0)
 		WaitForLoading();
+#endif
 	// change pointers
 	_loaded = _loading;
 	_loading++;

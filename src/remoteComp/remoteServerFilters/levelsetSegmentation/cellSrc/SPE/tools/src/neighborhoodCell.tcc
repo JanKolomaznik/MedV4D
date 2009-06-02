@@ -96,7 +96,7 @@ NeighborhoodCell<PixelType>
 			PutIntoList(begin.Get64(), SIZEIN1DIM-1);
 			_whichDMAList = ! _whichDMAList;
 #else
-			DMAGate::Get(begin, dest, sizeof(PixelType) * (SIZEIN1DIM-1) );
+			DMAGate::Get(begin, dest, sizeof(PixelType) * (SIZEIN1DIM-1), 0);
 			for(uint32 i=0; i<(SIZEIN1DIM-1); i++)
 			{
 				traslationTable_[transIdxIter_] = transIdxIter_;
@@ -113,7 +113,7 @@ NeighborhoodCell<PixelType>
 			PutIntoList(begin.Get64(), SIZEIN1DIM-1);
 			_whichDMAList = ! _whichDMAList;
 #else
-			DMAGate::Get(begin, dest, (SIZEIN1DIM-1) * sizeof(PixelType) );
+			DMAGate::Get(begin, dest, (SIZEIN1DIM-1) * sizeof(PixelType), 0);
 			for(uint32 i=0; i<(SIZEIN1DIM-1); i++)
 			{
 				traslationTable_[transIdxIter_] = transIdxIter_;
@@ -139,7 +139,7 @@ NeighborhoodCell<PixelType>
 				PutIntoList(begin.Get64() + sizeof(PixelType), SIZEIN1DIM-1);
 			}
 #else
-			DMAGate::Get(begin, dest, SIZEIN1DIM * sizeof(PixelType) );
+			DMAGate::Get(begin, dest, SIZEIN1DIM * sizeof(PixelType), 0);
 			for(uint32 i=0; i<SIZEIN1DIM; i++)
 			{
 				traslationTable_[transIdxIter_] = transIdxIter_;
@@ -213,10 +213,10 @@ NeighborhoodCell<PixelType>
 {
 	m_currIndex = pos;
 	
-	if(_loadingCtx->tags[0] == _loadingCtx->tags[1])
-	{
-		int i=10; i++;
-	}
+//	if(_loadingCtx->tags[0] == _loadingCtx->tags[1])
+//	{
+//		int i=10; i++;
+//	}
 	
 #define DEFAULT_VAL 0
 	// fill the buff
@@ -229,10 +229,10 @@ NeighborhoodCell<PixelType>
 	memset((void*)traslationTable_, 0xFF, NEIGHBOURHOOD_SIZE * sizeof(int32));
 #endif
 	
-	if(_loadingCtx->tags[0] == _loadingCtx->tags[1])
-	{
-		int i=10; i++;
-	}
+//	if(_loadingCtx->tags[0] == _loadingCtx->tags[1])
+//	{
+//		int i=10; i++;
+//	}
 	
 	TIndex iteratingIndex(pos);
 	iteratingIndex[DIM-1] -= RADIUS;
@@ -270,6 +270,7 @@ NeighborhoodCell<PixelType>
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+#ifdef FOR_CELL
 template<typename PixelType>
 void
 NeighborhoodCell<PixelType>::SaveChanges(SavingCtx *ctx)
@@ -308,14 +309,14 @@ NeighborhoodCell<PixelType>::SaveChanges(SavingCtx *ctx)
 		cnt++;
 	}
 }
-
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PixelType>
 TOffset
 NeighborhoodCell<PixelType>::OffsetFromPos(uint32 pos)
 {
 	TOffset idx;
-	uint acc = pos;
+	uint32 acc = pos;
 	for(int32 i=DIM-1; i>=0; i--)
 	{
 		idx[i] = (acc / m_radiusStrides[i]) - 1;

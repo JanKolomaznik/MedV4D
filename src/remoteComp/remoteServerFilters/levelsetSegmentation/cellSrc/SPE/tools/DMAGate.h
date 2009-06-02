@@ -203,15 +203,17 @@ private:
 #else	/* FOR_PC */
 	
 public:
-	static void Put(void *src, Address dest, size_t size)
+	static void Put(void *src, Address dest, size_t size, uint32 tag)
 	{
 		memcpy((void *)dest.Get64(), src, size);
+		tag++; // to prevent warns
 	}
 	
-	static void Get(Address src, void *dest, size_t size)
+	static void Get(Address src, void *dest, size_t size, uint32 tag)
 	{
 		memcpy(dest, (void *)src.Get64(), size);
-	}
+		tag++;	// to prevent warns
+	}	
 #endif
 };
 

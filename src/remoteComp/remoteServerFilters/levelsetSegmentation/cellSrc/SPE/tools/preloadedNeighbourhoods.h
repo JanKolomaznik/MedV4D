@@ -29,8 +29,10 @@ public:
 private:
 	TNeigborhood m_buf[MYSIZE];
 	
+#ifdef FOR_CELL
 	typename TNeigborhood::LoadingCtx _loadingCtx;
 	typename TNeigborhood::SavingCtx _savingCtx;
+#endif
 	
 //	bool _loadingInProgress;
 //	bool _savingInProgress;

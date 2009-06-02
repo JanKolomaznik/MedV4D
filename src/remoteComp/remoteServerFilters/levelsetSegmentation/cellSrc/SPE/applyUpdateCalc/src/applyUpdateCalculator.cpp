@@ -79,11 +79,11 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 		ProcessStatusLists(UpList, DownList);
 	}
 #ifdef FOR_CELL
+	DL_PRINT(DEBUG_ALG, "\n14rms accum: %f, counter: %f\n", rms_change_accumulator, counter);
+	this->m_updateValuesIt.WaitForTransfer();
 #else
 	  DL_PRINT(DEBUG_ALG, std::endl << "14rms accum: " << rms_change_accumulator << "counter: " << counter);
 #endif
-	  
-	  this->m_updateValuesIt.WaitForTransfer();
 	
 //	std::stringstream s3;
 //		  s3 << "afterOutside" << this->m_ElapsedIterations;
