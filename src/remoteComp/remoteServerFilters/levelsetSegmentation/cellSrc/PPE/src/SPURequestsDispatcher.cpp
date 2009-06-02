@@ -5,7 +5,7 @@
 using namespace M4D::Cell;
 using namespace M4D::Multithreading;
 
-#define DEBUG_MAILBOX 12
+#define DEBUG_MAILBOX 0
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -92,7 +92,7 @@ void SPURequestsDispatcher::DispatchUnlinkMessage(uint32 message, uint32 SPENum)
 	SparseFieldLevelSetNode *n = (SparseFieldLevelSetNode *) nodeAddress;
 
 	_workManager->UNLINKNode(n, lyerID, SPENum);
-	DL_PRINT(DEBUG_MAILBOX, "ULNK " << n << " layr=" << (uint32)lyerID);
+	DL_PRINT(DEBUG_MAILBOX, "ULNK " << n->m_Value << " layr=" << (uint32)lyerID);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -153,13 +153,28 @@ void SPURequestsDispatcher::WaitForMessages()
 	_SPEYetRunning = _numOfSPE;
 	while (_SPEYetRunning)
 	{
+		// poll the SPUs in round robin manner
 		for (uint32 i=0; i<_numOfSPE; i++)
 		{
 #ifdef FOR_CELL
 			mBoxStat = spe_out_mbox_status(_SPE_data[i].spe_ctx);
 			if (mBoxStat == -1)
 			{
-				D_PRINT("spe_out_mbox_status on " << i << "th SPE FAILED!!");
+				D_PRINT("spe_out_mbox_status on " << i << "th SPE error");
+				switch(errno)
+				{
+				case ESRCH:
+					D_PRINT("ESRCH = The specified SPE context is invalid.");
+					break;
+					
+				case EIO:
+					D_PRINT("EIO = The I/O error occurred.");
+					break;
+					
+				default:
+					D_PRINT("Unknown error");
+					break;
+				}
 			}
 			if (mBoxStat > 0)
 				DispatchMessage(i);
@@ -183,24 +198,6 @@ void Tspu_prog_sim::SimulateFunc()
 	ApplyUpdateSPE _applyUpdateCalc(&_sharedRes);
 
 	_applyUpdateCalc.m_layerGate._mailbox = &_mailbox;
-	//	{
-	//		
-	//
-	//		// setup apply update
-	//		_applyUpdateCalc.commonConf
-	//				= (RunConfiguration *) _wm->GetConfSructs()[i].runConf.Get64();
-	//		_applyUpdateCalc.m_stepConfig
-	//				= (CalculateChangeAndUpdActiveLayerConf *) _wm->GetConfSructs()[i].calcChngApplyUpdateConf.Get64();
-	//		_applyUpdateCalc.m_propLayerValuesConfig
-	//				= (PropagateValuesConf *) _wm->GetConfSructs()[i].propagateValsConf.Get64();
-	//
-	//		// and update solver
-	//		_updateSolver.m_Conf
-	//				= (RunConfiguration *) _wm->GetConfSructs()[i].runConf.Get64();
-	//		_updateSolver.m_stepConfig
-	//				= (CalculateChangeAndUpdActiveLayerConf *) _wm->GetConfSructs()[i].calcChngApplyUpdateConf.Get64();
-	//	}
-
 	DMAGate::Get(_wm->GetConfSructs()[_speID].runConf, &_sharedRes._runConf, sizeof(RunConfiguration));
 
 	_updateSolver.Init();

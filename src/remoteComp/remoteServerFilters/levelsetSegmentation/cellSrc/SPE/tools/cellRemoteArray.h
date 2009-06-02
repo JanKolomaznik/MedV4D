@@ -1,8 +1,6 @@
 #ifndef CELLREMOTEARRAY_H_
 #define CELLREMOTEARRAY_H_
 
-#define REMOTEARRAY_BUF_SIZE 8
-
 namespace M4D {
 namespace Cell {
 

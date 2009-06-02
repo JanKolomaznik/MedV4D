@@ -12,6 +12,9 @@ typedef float32 TPixelValue;
 // NUM_LAYERS inward and NUM_LAYERS outward + active layer
 #define LYERCOUNT ((NUM_LAYERS * 2) + 1)
 
+// size of data chunk that remote array uses
+#define REMOTEARRAY_BUF_SIZE 8
+
 typedef double  TimeStepType;
 /** Type used for storing status information */
 typedef signed char StatusType;

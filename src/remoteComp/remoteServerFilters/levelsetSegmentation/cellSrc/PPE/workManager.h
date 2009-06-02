@@ -9,7 +9,8 @@
 #include "../SPE/configStructures.h"
 #include "common/Thread.h"
 
-#include <vector>
+//#include <vector>
+#include "updateValsAllocator.h"
 
 namespace M4D
 {
@@ -69,7 +70,8 @@ private:
 #define NodeStoreChunkSize 2048
 	typedef PPEObjectStore<LayerNodeType, NodeStoreChunkSize> LayerNodeStorageType;
 	/** Container type used to store updates to the active layer. */
-	typedef std::vector<ValueType> UpdateBufferType;
+	//typedef std::vector<ValueType> UpdateBufferType;
+	typedef UpdateValsAllocator<ValueType> UpdateBufferType;
 	
 
 	/** Storage for layer node objects. */

@@ -149,7 +149,7 @@ UpdateCalculatorSPE::CalculateChange()
 	// index.  Update values are stored in the update buffer.
 	LayerNodeType *next, *nextBeingLoadedInNeigbs;
 	
-	uint32 counter = 0;
+//	uint32 counter = 0;
 	
 	// first step in flow scenario - load the first
 	if(m_layerIterator.HasNext())
@@ -159,10 +159,10 @@ UpdateCalculatorSPE::CalculateChange()
 		m_valueNeighbPreloader.Load(next->m_Value);
 		m_featureNeighbPreloader.Load(next->m_Value);
 	}
-	
-	// and then immediately load next to be transferred while computing current 
-	while(m_layerIterator.HasNext())
+	 
+	while(next->Next != m_stepConfig->layer0End)
 	{
+		// and then immediately load next to be transferred while computing current
 		if(m_layerIterator.HasNext())
 		{
 			nextBeingLoadedInNeigbs = m_layerIterator.Next();
@@ -183,7 +183,9 @@ UpdateCalculatorSPE::CalculateChange()
 #endif
 				
 		CalculateChangeItem();
-		counter++;
+		
+//		D_PRINT("Counter=%u\n", counter);
+//		counter++;
 		
 		next = nextBeingLoadedInNeigbs;
 	}

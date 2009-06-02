@@ -54,7 +54,8 @@ template<typename T, uint8 BUFSIZE>
 void
 RemoteArrayCell<T, BUFSIZE>::FlushArray()
 {
-	DMAGate::Put(m_buf[m_currBuf], m_currFlushedPos, m_currPos * sizeof(T), _tag);
+	//DMAGate::Put(m_buf[m_currBuf], m_currFlushedPos, m_currPos * sizeof(T), _tag);
+	DMAGate::Put(m_buf[m_currBuf], m_currFlushedPos, BUFSIZE * sizeof(T), _tag);
 	m_currFlushedPos += m_currPos * sizeof(T);
 	m_currBuf = !m_currBuf;
 	m_currPos = 0;

@@ -59,6 +59,9 @@ void SPEManager::StartSPEs()
 		{
 			perror("Failed creating thread");
 		}
+		
+		// send SPE number
+		_requestDispatcher.MyPushMessage(i, i);
 	}
 }
 

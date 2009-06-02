@@ -121,7 +121,7 @@ void WorkManager::InitCalculateChangeAndUpdActiveLayerConf()
 				= (uint64) m_LayerSegments[spuIt].layers[0].End();
 
 		_calcChngApplyUpdateConf[spuIt].updateBuffBegin
-				= (uint64) &m_UpdateBuffers[spuIt][0];
+				= (uint64) m_UpdateBuffers[spuIt].GetArray();
 	}
 }
 
@@ -158,10 +158,11 @@ void WorkManager::AllocateUpdateBuffers()
 	//	}
 	for (uint32 spuIt=0; spuIt<_numOfCores; spuIt++)
 	{
-		m_UpdateBuffers[spuIt].clear();
-		m_UpdateBuffers[spuIt].reserve(m_LayerSegments[spuIt].layers[0].Size());
-		memset(&m_UpdateBuffers[spuIt][0], 0,
-				m_LayerSegments[spuIt].layers[0].Size() * sizeof(ValueType));
+//		m_UpdateBuffers[spuIt].clear();
+//		m_UpdateBuffers[spuIt].reserve(m_LayerSegments[spuIt].layers[0].Size());
+//		memset(&m_UpdateBuffers[spuIt][0], 0,
+//				m_LayerSegments[spuIt].layers[0].Size() * sizeof(ValueType));
+		m_UpdateBuffers[spuIt].AllocArray(m_LayerSegments[spuIt].layers[0].Size());
 	}
 	//  std::cout << "Update list, after reservation:" << std::endl;
 	//  PrintUpdateBuf(std::cout);

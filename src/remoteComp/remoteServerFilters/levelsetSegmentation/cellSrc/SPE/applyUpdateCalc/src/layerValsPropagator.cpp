@@ -45,7 +45,7 @@ void LayerValuesPropagator::PropagateAllLayerValues()
 void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 		StatusType promote)
 {	
-	uint32 counter = 0;
+//	uint32 counter = 0;
 	SparseFieldLevelSetNode *currNode;
 	SparseFieldLevelSetNode *currNodeInLoadingNighbors;
 	
@@ -68,7 +68,7 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 		m_statusNeighPreloader.Load(currNode->m_Value);
 	}
 	
-	while (m_layerIterator.HasNext())
+	while (currNode->Next != m_propLayerValuesConfig->layerEnds[to])
 	{
 		// load next portion
 		if(m_layerIterator.HasNext())
@@ -82,7 +82,12 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 		m_outIter.SetNeighbourhood( m_valueNeighPreloader.GetLoaded());
 		m_statusIter.SetNeighbourhood( m_statusNeighPreloader.GetLoaded());
 		
-		counter++;
+//		counter++;
+//		printf("counter: %d\n", counter);
+//		if(counter == 91 || counter == 5)
+//		{
+//			int i=10; i++;
+//		}
 
 		DoTheWork(currNode, from, to, promote);
 		

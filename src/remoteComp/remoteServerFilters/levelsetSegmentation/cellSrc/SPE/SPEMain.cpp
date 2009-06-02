@@ -13,10 +13,14 @@
 
 #include <spu_mfcio.h>
 
+FILE *debugFile;
+
 using namespace M4D::Cell;
 
 #define INT_TO_FLOAT(x) (*((float32 *) &x))
 #define FLOAT_TO_INT(x) (*((uint32_t *) &x))
+
+#define DEBUG_MANAGING_MAILBOX_COMM 12
 
 int main(unsigned long long speid, unsigned long long argp,
 		unsigned long long envp __attribute__ ((unused)))
@@ -39,8 +43,14 @@ int main(unsigned long long speid, unsigned long long argp,
 	spu_clock_start();
 	start = spu_clock_read();
 #endif /* USE_TIMER */
+	
+	uint32 SPENum = spu_readch(SPU_RdInMbox);
 
-	printf("This is SPE %lld speaking ... \n", speid);
+	printf("This is SPE%d speaking ... \n", SPENum);
+	char fileName[32];
+	sprintf(fileName, "SPEdeb%d.txt", SPENum);
+	
+	debugFile = fopen(fileName,"w");
 
 	unsigned int tag = DMAGate::GetTag();
 	DMAGate::Get(argp, &_Confs, sizeof(ConfigStructures), tag);
@@ -63,7 +73,7 @@ int main(unsigned long long speid, unsigned long long argp,
 		switch ( (ESPUCommands) mailboxVal)
 		{
 		case CALC_CHANGE:
-			printf("CALC_CHANGE received\n");
+			DL_PRINT(DEBUG_MANAGING_MAILBOX_COMM,"CALC_CHANGE received\n");
 			tag = DMAGate::GetTag();
 			DMAGate::Get(_Confs.calcChngApplyUpdateConf,
 					&_sharedRes._changeConfig,
@@ -80,7 +90,7 @@ int main(unsigned long long speid, unsigned long long argp,
 			break;
 
 		case CALC_UPDATE:
-			printf("CALC_UPDATE received\n");
+			DL_PRINT(DEBUG_MANAGING_MAILBOX_COMM,"CALC_UPDATE received\n");
 			// trasfer step configs
 			tag = DMAGate::GetTag();
 			DMAGate::Get(_Confs.calcChngApplyUpdateConf,
@@ -103,7 +113,7 @@ int main(unsigned long long speid, unsigned long long argp,
 			break;
 
 		case CALC_PROPAG_VALS:
-			printf("CALC_PROPAG_VALS received\n");
+			DL_PRINT(DEBUG_MANAGING_MAILBOX_COMM, "CALC_PROPAG_VALS received\n");
 			DMAGate::GetTag();
 			DMAGate::Get(_Confs.propagateValsConf,
 					&_sharedRes._propValConfig, sizeof(PropagateValuesConf),
@@ -115,11 +125,11 @@ int main(unsigned long long speid, unsigned long long argp,
 			_applyUpdateCalc.PropagateAllLayerValues();
 			spu_writech(SPU_WrOutMbox, (uint32_t) JOB_DONE);
 			// just for something to be writen
-			spu_writech(SPU_WrOutMbox, (uint32_t) retval);	
+			spu_writech(SPU_WrOutMbox, (uint32_t) retval);
 			break;
 
 		case QUIT:
-			printf("QUIT received\n");
+			DL_PRINT(DEBUG_MANAGING_MAILBOX_COMM, "QUIT received\n");
 			spu_writech(SPU_WrOutMbox, (uint32_t) JOB_DONE);
 			break;
 		}
@@ -130,8 +140,10 @@ int main(unsigned long long speid, unsigned long long argp,
 	spu_clock_stop();
 	printf ("SPE time_working = %lld\n", time_working);
 #endif /* USE_TIMER */
+	
+	fclose(debugFile);
 
-	printf("SPE %lld quitting ... \n", speid);
+	printf("SPE%d quitting ... \n", SPENum);
 
 	return 0;
 }

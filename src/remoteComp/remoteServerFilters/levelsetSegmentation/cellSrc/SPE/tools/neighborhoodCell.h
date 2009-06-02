@@ -22,26 +22,35 @@ public:
 	typedef uint8 TDmaListIter;
 	
 #define DMA_LIST_SET_SIZE (SIZEIN1DIM*SIZEIN1DIM)	// maximal count
-#define LIST_SET_NUM (16 / sizeof(PixelType))
-#define BUFFER_SIZE (DMA_LIST_SET_SIZE * LIST_SET_NUM)
+#define SAVE_DMA_LIST_CNT (16 / sizeof(PixelType))
+#define LIST_SET_NUM 2
+#define SIZE_FOR_STORE_ONE_ALIGNED_ITEM_SET (16 / sizeof(PixelType))
+#define BUFFER_SIZE (DMA_LIST_SET_SIZE * SIZE_FOR_STORE_ONE_ALIGNED_ITEM_SET)
 	
-#ifdef FOR_CELL	
-	struct LoadingCtx
+#ifdef FOR_CELL
+	struct DMACtx 
 	{
-		uint32 tags[LIST_SET_NUM];
-		TDmaListIter _dmaListIter[LIST_SET_NUM];
+		DMACtx() {tagMask = 0;}
 		uint32 tagMask;
+		uint32 tags[LIST_SET_NUM];
+	};
+	struct LoadingCtx : public DMACtx
+	{
+		TDmaListIter _dmaListIter[LIST_SET_NUM];
 		/* here we reserve space for the dma list.
 		 * This array is aligned on 16 byte boundary */	
 		mfc_list_element_t dma_list[LIST_SET_NUM][DMA_LIST_SET_SIZE] __attribute__ ((aligned (16)));
 	};
-	struct SavingCtx : public LoadingCtx
+	struct SavingCtx : public DMACtx
 	{
+		TDmaListIter _dmaListIter[SAVE_DMA_LIST_CNT];
+		/* here we reserve space for the dma list.
+		 * This array is aligned on 16 byte boundary */	
+		mfc_list_element_t dma_list[SAVE_DMA_LIST_CNT][DMA_LIST_SET_SIZE] __attribute__ ((aligned (16)));
 		PixelType tmpBuf[BUFFER_SIZE] __attribute__ ((aligned (128)));
 	};
 #endif
 	
-	typedef PixelType TPixel;
 	typedef TImageProperties<PixelType> TImageProps;
 	
 	//ctor
@@ -105,7 +114,9 @@ protected:
 #endif
 	
 private:
-	//void ComputeAlignStrides();
+	bool _whichDMAList;
+	uint32 numOfLoadings;
+	uint32 numOfSavings;
 };
 
 template<typename PixelType>

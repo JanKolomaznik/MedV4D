@@ -3,20 +3,20 @@
 
 #include "stdio.h"
 
+//#define SPE_DEBUG_TO_FILE 1
+
+#if defined(DEBUG_LEVEL) && defined(SPE_DEBUG_TO_FILE)
+extern FILE *debugFile;
+#endif
+
 #ifdef DEBUG_LEVEL
-/*
-	#ifdef DEBUG_ADITIONAL_INFO
-		#define D_PRINT( ARG )	\
-			DOUT << __FILE__ \
-			<< ":" << __LINE__ \
-			<< ":" << ARG << std::endl;
-	#else
-	*/
+#ifdef SPE_DEBUG_TO_FILE
+		#define D_PRINT( ... )	\
+			fprintf(debugFile, __VA_ARGS__);
+#else
 		#define D_PRINT( ... )	\
 			printf(__VA_ARGS__);
-			//DOUT << ARG << std::endl;
-//	#endif /*DEBUG_ADITIONAL_INFO*/
-
+#endif	/*SPE_DEBUG_TO_FILE*/
 #else
 #define	D_PRINT( ... )
 #endif /*DEBUG_LEVEL*/

@@ -7,7 +7,7 @@
 
 template<typename PixelType>
 NeighborhoodCell<PixelType>::NeighborhoodCell()
-		: m_imageProps(0)
+		: m_imageProps(0), _whichDMAList(0), numOfLoadings(0), numOfSavings(0)
 {
 	// set size
 	for (unsigned int i=0; i<DIM; ++i)
@@ -36,17 +36,6 @@ NeighborhoodCell<PixelType>
 
 ///////////////////////////////////////////////////////////////////////////////
 
-//template<typename PixelType>
-//void
-//NeighborhoodCell<PixelType>
-//::LoadData(PixelType *src, PixelType *dest, size_t size)
-//{
-//	// copy the memory
-//	memcpy((void*)dest, (void*)src, size);
-//}
-
-///////////////////////////////////////////////////////////////////////////////
-
 template<typename PixelType>
 bool
 NeighborhoodCell<PixelType>
@@ -62,20 +51,6 @@ NeighborhoodCell<PixelType>
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-//template<typename PixelType>
-//void
-//NeighborhoodCell<PixelType>
-//::ComputeAlignStrides()
-//{
-//	for(uint i=0; i<DIM-2; i++)
-//	{
-//		alignStrideTable_[i] = 
-//			(m_imageStrides[i+1] - ((SIZEIN1DIM * m_imageStrides[i]) % 16)) % 16;
-//	}
-//}
-
-///////////////////////////////////////////////////////////////////////////////
 #ifdef FOR_CELL
 template<typename PixelType>
 void
@@ -84,17 +59,19 @@ NeighborhoodCell<PixelType>
 {
 	// align within quadword
 	uint32 _alignIter = (uint32) (address & 0xF) / sizeof(PixelType);
-	_loadingCtx->dma_list[_alignIter][_loadingCtx->_dmaListIter[_alignIter]].notify = 0;
-	_loadingCtx->dma_list[_alignIter][_loadingCtx->_dmaListIter[_alignIter]].eal = address;
-	_loadingCtx->dma_list[_alignIter][_loadingCtx->_dmaListIter[_alignIter]].size = size * sizeof(PixelType);
+	// use approp list based on _alignIter
+	_loadingCtx->dma_list[_whichDMAList][_loadingCtx->_dmaListIter[_whichDMAList]].notify = 0;
+	_loadingCtx->dma_list[_whichDMAList][_loadingCtx->_dmaListIter[_whichDMAList]].eal = address;
+	_loadingCtx->dma_list[_whichDMAList][_loadingCtx->_dmaListIter[_whichDMAList]].size = size * sizeof(PixelType);
 	
 	// setup translation table
 	uint32 beginInBuf = 
-		_alignIter + (_loadingCtx->_dmaListIter[_alignIter] * 16 / sizeof(PixelType));
+		_alignIter + (_loadingCtx->_dmaListIter[_whichDMAList] * 16 / sizeof(PixelType));
 	for(uint32 i=0; i<size; i++)
 		traslationTable_[transIdxIter_++] = beginInBuf + i;
 	
-	_loadingCtx->_dmaListIter[_alignIter]++;
+	_loadingCtx->_dmaListIter[_whichDMAList]++;	// increase curr list count
+	_whichDMAList = ! _whichDMAList;	// swap the lists
 }
 #endif
 ///////////////////////////////////////////////////////////////////////////////
@@ -117,6 +94,7 @@ NeighborhoodCell<PixelType>
 			// ... and only SIZEIN1DIM-1 elems
 #ifdef FOR_CELL
 			PutIntoList(begin.Get64(), SIZEIN1DIM-1);
+			_whichDMAList = ! _whichDMAList;
 #else
 			DMAGate::Get(begin, dest, sizeof(PixelType) * (SIZEIN1DIM-1) );
 			for(uint32 i=0; i<(SIZEIN1DIM-1); i++)
@@ -132,7 +110,8 @@ NeighborhoodCell<PixelType>
 			begin = ComputeImageDataPointer(posm);
 			// ... load only SIZEIN1DIM-1 elems			
 #ifdef FOR_CELL
-			PutIntoList(begin.Get64(), SIZEIN1DIM-1);			
+			PutIntoList(begin.Get64(), SIZEIN1DIM-1);
+			_whichDMAList = ! _whichDMAList;
 #else
 			DMAGate::Get(begin, dest, (SIZEIN1DIM-1) * sizeof(PixelType) );
 			for(uint32 i=0; i<(SIZEIN1DIM-1); i++)
@@ -196,6 +175,7 @@ NeighborhoodCell<PixelType>::SetCenterPixel(PixelType val)
 #ifdef FOR_CELL
 	_dirtyElems |= (1 << (m_size/2));	// set dirty flag
 #else
+	// change the actual image directly if we are on PC
 	PixelType *begin = (PixelType *) ComputeImageDataPointer(m_currIndex).Get64();
 		*begin = val;
 #endif
@@ -215,11 +195,11 @@ NeighborhoodCell<PixelType>::SetPixel(PixelType val, TOffset pos)
 #ifdef FOR_CELL
 		_dirtyElems |= (1 << GetNeighborhoodIndex(pos));	// set dirty flag
 #else
+		// change the actual image directly if we are on PC
 		PixelType *begin = (PixelType *) ComputeImageDataPointer(i).Get64();
 		*begin = val;
 #endif
-		// change the buffer as well !!!!!!!!
-		//std::cout << "setting" << i << "=" << val << std::endl;
+		// and change the buffer as well
 		m_buf[traslationTable_[GetNeighborhoodIndex(pos)]] = val;
 	}
 }
@@ -233,17 +213,26 @@ NeighborhoodCell<PixelType>
 {
 	m_currIndex = pos;
 	
+	if(_loadingCtx->tags[0] == _loadingCtx->tags[1])
+	{
+		int i=10; i++;
+	}
+	
 #define DEFAULT_VAL 0
 	// fill the buff
-	memset((void*)m_buf, DEFAULT_VAL, m_size * sizeof(PixelType));
+	memset((void*)m_buf, DEFAULT_VAL, BUFFER_SIZE * sizeof(PixelType));
 	transIdxIter_ = 0;
 	_dirtyElems = 0;
 	
 #ifdef FOR_CELL
-	memset((void*)_loadingCtx->tags, 0, LIST_SET_NUM * sizeof(uint32));
 	memset((void*)_loadingCtx->_dmaListIter, 0, LIST_SET_NUM * sizeof(TDmaListIter));
-	memset((void*)traslationTable_, 0xFF, m_size * sizeof(int32));
-#endif	
+	memset((void*)traslationTable_, 0xFF, NEIGHBOURHOOD_SIZE * sizeof(int32));
+#endif
+	
+	if(_loadingCtx->tags[0] == _loadingCtx->tags[1])
+	{
+		int i=10; i++;
+	}
 	
 	TIndex iteratingIndex(pos);
 	iteratingIndex[DIM-1] -= RADIUS;
@@ -276,13 +265,7 @@ NeighborhoodCell<PixelType>
 		}
 	}
 	
-//	mfc_write_tag_mask(mask);
-//	mfc_read_tag_status_all();
-	
-	// TODO return tags into gate
-	
-//	for(uint i=0; i<BUFFER_SIZE; i++)
-//		D_PRINT("%u = %u\n", i, (uint32)m_buf[i]);
+	numOfLoadings++;
 #endif
 }
 
@@ -292,17 +275,21 @@ void
 NeighborhoodCell<PixelType>::SaveChanges(SavingCtx *ctx)
 {
 	uint32 cnt = 0;
-	memset((void*)ctx->_dmaListIter, 0, LIST_SET_NUM * sizeof(TDmaListIter));
-	memset((void*)ctx->tags, 0, LIST_SET_NUM * sizeof(uint32));
+	// clear list iters
+	memset((void*)ctx->_dmaListIter, 0, SAVE_DMA_LIST_CNT * sizeof(TDmaListIter));
 	
 	uint64 address;
 	while((cnt < 27))
 	{
 		if(_dirtyElems & 0x1)
 		{
+			numOfSavings++;
+			
 			address = 
 				ComputeImageDataPointer(m_currIndex + OffsetFromPos(cnt)).Get64();
 			uint32 _alignIter = (uint32) (address & 0xF) / sizeof(PixelType);
+			
+			//printf("SaveChanges: align=%d\n", _alignIter);
 				
 			ctx->dma_list[_alignIter][ctx->_dmaListIter[_alignIter]].notify = 0;
 			ctx->dma_list[_alignIter][ctx->_dmaListIter[_alignIter]].eal = address;
@@ -320,26 +307,6 @@ NeighborhoodCell<PixelType>::SaveChanges(SavingCtx *ctx)
 		_dirtyElems >>= 1;	// shift right
 		cnt++;
 	}
-	
-//	for(uint i=_dmaListIter[0]; i<BUFFER_SIZE; i++)
-//		m_buf[i] = -((float32)i);
-	
-//	// issue the lists
-//	uint32 tags[LIST_SET_NUM];
-//	uint32 mask = 0;
-//	for(uint32 i=0; i<LIST_SET_NUM; i++)
-//	{
-//		if(_dmaListIter[i])
-//		{
-//			tags[i] = DMAGate::PutList(
-//						m_imageProps->imageData.Get64(), 
-//						tmpBuf, dma_list[i], _dmaListIter[i]);
-//			mask |= (1 << tags[i]);
-//		}
-//	}
-//		
-//	mfc_write_tag_mask(mask);
-//	mfc_read_tag_status_all();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

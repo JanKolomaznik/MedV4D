@@ -6,8 +6,6 @@
 template<typename PixelType, uint16 MYSIZE>
 PreloadedNeigborhoods<PixelType, MYSIZE>::PreloadedNeigborhoods()
 	: _loading(0), _loaded(0), _saving(0)
-//	, _loadingInProgress(false)
-//	, _savingInProgress(false)
 {
 	for(uint i=0; i<MYSIZE; i++)
 		m_buf[i]._loadingCtx = &_loadingCtx;
@@ -61,22 +59,29 @@ PreloadedNeigborhoods<PixelType, MYSIZE>::SaveCurrItem()
 	// do nothing if we are on PC
 #ifdef FOR_CELL
 	if(_savingCtx.tagMask > 0)
-			WaitForSaving();
+		WaitForSaving();
 	
 	m_buf[_loaded].SaveChanges(&_savingCtx);
 	
+	uint32 tagIter = 0;
 	// issue the lists	
-	for(uint32 i=0; i<LIST_SET_NUM; i++)
+	for(uint32 i=0; i<SAVE_DMA_LIST_CNT; i++)
 	{
 		if(_savingCtx._dmaListIter[i])
 		{
+			if(tagIter == 3)
+			{
+				uint32 i=10; i++;
+				D_PRINT("Sem Neeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee!!!!!!!!!!!!!!!!!!!!");
+			}
 			DMAGate::PutList(
 						_imageProps->imageData.Get64(), 
 						_savingCtx.tmpBuf, 
 						_savingCtx.dma_list[i], 
 						_savingCtx._dmaListIter[i],
-						_savingCtx.tags[i]);
-			_savingCtx.tagMask |= (1 << _savingCtx.tags[i]);
+						_savingCtx.tags[tagIter]);
+			_savingCtx.tagMask |= (1 << _savingCtx.tags[tagIter]);
+			tagIter++;
 		}
 	}
 	
@@ -86,6 +91,9 @@ PreloadedNeigborhoods<PixelType, MYSIZE>::SaveCurrItem()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// CELL only part
+///////////////////////////////////////////////////////////////////////////////
+#ifdef FOR_CELL
 
 template<typename PixelType, uint16 MYSIZE>
 void
@@ -159,7 +167,7 @@ PreloadedNeigborhoods<PixelType, MYSIZE>::WaitForSaving()
 	
 	_savingCtx.tagMask = 0;
 }
-
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 
 #endif
