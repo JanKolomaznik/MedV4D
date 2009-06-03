@@ -682,6 +682,17 @@
 						Outputs="$(IntDir)\generated\rcc\rcc_$(InputName).cpp"
 					/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="RCC $(InputFileName)"
+						CommandLine="..\..\bin\qt\rcc.exe -name $(InputName) ..\..\GUI\widgets\src\$(InputName).qrc -o $(IntDir)\generated\rcc\qrc_$(InputName).cpp"
+						AdditionalDependencies="..\..\bin\qt\rcc.exe;$(InputName).qrc"
+						Outputs="$(IntDir)\generated\rcc\rcc_$(InputName).cpp"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\GUI\widgets\src\m4dGUIMainWindow2.qrc"
@@ -693,6 +704,17 @@
 						Name="VCCustomBuildTool"
 						Description="RCC $(InputFileName)"
 						CommandLine="..\..\bin\qt\rcc.exe -name $(InputName) ..\..\GUI\widgets\src\$(InputName).qrc -o $(IntDir)\generated\rcc\qrc_$(InputName).cpp&#x0D;&#x0A;"
+						AdditionalDependencies="..\..\bin\qt\rcc.exe;$(InputName).qrc"
+						Outputs="$(IntDir)\generated\rcc\rcc_$(InputName).cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="RCC $(InputFileName)"
+						CommandLine="..\..\bin\qt\rcc.exe -name $(InputName) ..\..\GUI\widgets\src\$(InputName).qrc -o $(IntDir)\generated\rcc\qrc_$(InputName).cpp"
 						AdditionalDependencies="..\..\bin\qt\rcc.exe;$(InputName).qrc"
 						Outputs="$(IntDir)\generated\rcc\rcc_$(InputName).cpp"
 					/>
@@ -712,6 +734,17 @@
 						Outputs="$(IntDir)\generated\rcc\rcc_$(InputName).cpp"
 					/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="RCC $(InputFileName)"
+						CommandLine="..\..\bin\qt\rcc.exe -name $(InputName) ..\..\GUI\widgets\src\$(InputName).qrc -o $(IntDir)\generated\rcc\qrc_$(InputName).cpp"
+						AdditionalDependencies="..\..\bin\qt\rcc.exe;$(InputName).qrc"
+						Outputs="$(IntDir)\generated\rcc\rcc_$(InputName).cpp"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\GUI\widgets\src\m4dGUIStudyManagerWidget.qrc"
@@ -727,6 +760,17 @@
 						Outputs="$(IntDir)\generated\rcc\rcc_$(InputName).cpp"
 					/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="RCC $(InputFileName)"
+						CommandLine="..\..\bin\qt\rcc.exe -name $(InputName) ..\..\GUI\widgets\src\$(InputName).qrc -o $(IntDir)\generated\rcc\qrc_$(InputName).cpp"
+						AdditionalDependencies="..\..\bin\qt\rcc.exe;$(InputName).qrc"
+						Outputs="$(IntDir)\generated\rcc\rcc_$(InputName).cpp"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\GUI\widgets\src\m4dGUIToolBarCustomizerWidget.qrc"
@@ -738,6 +782,17 @@
 						Name="VCCustomBuildTool"
 						Description="RCC $(InputFileName)"
 						CommandLine="..\..\bin\qt\rcc.exe -name $(InputName) ..\..\GUI\widgets\src\$(InputName).qrc -o $(IntDir)\generated\rcc\qrc_$(InputName).cpp&#x0D;&#x0A;"
+						AdditionalDependencies="..\..\bin\qt\rcc.exe;$(InputName).qrc"
+						Outputs="$(IntDir)\generated\rcc\rcc_$(InputName).cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="RCC $(InputFileName)"
+						CommandLine="..\..\bin\qt\rcc.exe -name $(InputName) ..\..\GUI\widgets\src\$(InputName).qrc -o $(IntDir)\generated\rcc\qrc_$(InputName).cpp"
 						AdditionalDependencies="..\..\bin\qt\rcc.exe;$(InputName).qrc"
 						Outputs="$(IntDir)\generated\rcc\rcc_$(InputName).cpp"
 					/>
