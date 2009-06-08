@@ -43,8 +43,8 @@ protected:
 	
 	typedef NeighborhoodCell<TPixelValue> TValueNeighborhood;
 	typedef NeighborhoodCell<StatusType> TStatusNeighborhood;
-	typedef PreloadedNeigborhoods<TPixelValue, 3> TValueNeighbPreloadeder;
-	typedef PreloadedNeigborhoods<StatusType, 3> TStatusNeighbPreloadeder;
+	typedef PreloadedNeigborhoods<TPixelValue, 4> TValueNeighbPreloadeder;
+	typedef PreloadedNeigborhoods<StatusType, 4> TStatusNeighbPreloadeder;
 	
 	TValueNeighbIterator m_outIter;
 	TStatusNeighbIterator m_statusIter;

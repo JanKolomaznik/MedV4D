@@ -73,10 +73,13 @@ ApplyUpdateSPE::ValueType ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	m_valueNeighPreloader.Reset();
 	m_statusNeighPreloader.Reset();
 
+	if(m_layerIterator.HasNextToLoad())
+			{
 	// pre-load first bunch of neighbs
 	_loaded = m_layerIterator.GetLoaded();
 	m_valueNeighPreloader.Load(*_loaded);
 	m_statusNeighPreloader.Load(*_loaded);
+			}
 
 	while (m_valueNeighPreloader.GetCurrNodesNext() != m_stepConfig->layer0End)
 	{
@@ -313,11 +316,13 @@ void ApplyUpdateSPE::UpdateActiveLayerValues(TimeStepType dt,
 				"UpdateActiveLayerValues node: " << currNode->m_Value << "="
 				<< (SparseFieldLevelSetNode *)this->m_layerIterator.GetCentralMemAddrrOfCurrProcessedNode().Get64());
 #endif
-
+		if(m_layerIterator.HasNextToLoad())
+				{
 		// pre-load next neigborhoods
 		_loaded = m_layerIterator.GetLoaded();
-		m_valueNeighPreloader.Load(*_loaded);//->m_Value);
-		m_statusNeighPreloader.Load(*_loaded);//->m_Value);
+		m_valueNeighPreloader.Load(*_loaded);
+		m_statusNeighPreloader.Load(*_loaded);
+				}
 
 		m_outIter.SetNeighbourhood(m_valueNeighPreloader.GetLoaded());
 		m_statusIter.SetNeighbourhood(m_statusNeighPreloader.GetLoaded());

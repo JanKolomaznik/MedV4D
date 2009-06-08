@@ -103,7 +103,8 @@ template<typename PixelType, uint16 MYSIZE>
 void
 PreloadedNeigborhoods<PixelType, MYSIZE>::Reset()
 {
-	_loading = _loaded = _saving = 0;
+	//_loading = _loaded = _saving = 0;
+	_loaded = _loading;
 	memset(_loadedNodeNexts, 0, MYSIZE * sizeof(Address));
 }
 

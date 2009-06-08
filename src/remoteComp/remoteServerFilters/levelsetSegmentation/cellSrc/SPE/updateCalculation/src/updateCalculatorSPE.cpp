@@ -163,18 +163,24 @@ UpdateCalculatorSPE::CalculateChange()
 	
 	uint32 counter = 0;
 	
+	if(m_layerIterator.HasNextToLoad())
+			{
 	// first step in flow scenario - load the first
 	loaded = m_layerIterator.GetLoaded();
 		// load approp neigborhood
 		m_valueNeighbPreloader.Load(*loaded);
 		m_featureNeighbPreloader.Load(*loaded);
+			}
 	 
 	while(m_valueNeighbPreloader.GetCurrNodesNext() != m_stepConfig->layer0End)
 	{
+		if(m_layerIterator.HasNextToLoad())
+				{
 		loaded = m_layerIterator.GetLoaded();
 			// load approp neigborhood
 			m_valueNeighbPreloader.Load(*loaded);
 			m_featureNeighbPreloader.Load(*loaded);
+				}
 
 		
 		m_outIter.SetNeighbourhood( m_valueNeighbPreloader.GetLoaded());

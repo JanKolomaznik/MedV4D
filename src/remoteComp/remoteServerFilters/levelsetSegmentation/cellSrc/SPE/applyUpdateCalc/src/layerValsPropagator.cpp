@@ -1,4 +1,3 @@
-
 #include "common/Types.h"
 #include "common/Log.h"
 
@@ -10,11 +9,11 @@ using namespace M4D::Cell;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-LayerValuesPropagator::LayerValuesPropagator(SharedResources *shaRes)
-	: m_propLayerValuesConfig(&shaRes->_propValConfig)
-	, commonConf(&shaRes->_runConf)
+LayerValuesPropagator::LayerValuesPropagator(SharedResources *shaRes) :
+	m_propLayerValuesConfig(&shaRes->_propValConfig),
+			commonConf(&shaRes->_runConf)
 {
-	
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -44,16 +43,16 @@ void LayerValuesPropagator::PropagateAllLayerValues()
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////
-void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
-		StatusType promote)
-{	
+void LayerValuesPropagator::PropagateLayerValues(StatusType from,
+		StatusType to, StatusType promote)
+{
 	uint32 counter = 0;
 	SparseFieldLevelSetNode *currNode;
-	
+
 	// prepare neighbour preloaders
 	m_valueNeighPreloader.SetImageProps(&commonConf->valueImageProps);
 	m_statusNeighPreloader.SetImageProps(&commonConf->statusImageProps);
-	
+
 	m_valueNeighPreloader.Reset();
 	m_statusNeighPreloader.Reset();
 
@@ -61,38 +60,43 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 	DL_PRINT(DBG_LAYER_IT,
 			"PropagateLayerValues, layer " << (uint32)to << ": ......." );
 #endif
-	
-	m_layerIterator.SetBeginEnd(
-			m_propLayerValuesConfig->layerBegins[to], 
-			m_propLayerValuesConfig->layerEnds[to]);
-	
-		currNode = m_layerIterator.GetLoaded();
-		// load approp neigborhood
-		m_valueNeighPreloader.Load(*currNode);
-		m_statusNeighPreloader.Load(*currNode);
 
-	while(m_valueNeighPreloader.GetCurrNodesNext() != m_propLayerValuesConfig->layerEnds[to])
+	m_layerIterator.SetBeginEnd(m_propLayerValuesConfig->layerBegins[to],
+			m_propLayerValuesConfig->layerEnds[to]);
+
+	if(m_layerIterator.HasNextToLoad())
+			{
+	currNode = m_layerIterator.GetLoaded();
+	// load approp neigborhood
+	m_valueNeighPreloader.Load(*currNode);
+	m_statusNeighPreloader.Load(*currNode);
+			}
+
+	while (m_valueNeighPreloader.GetCurrNodesNext()
+			!= m_propLayerValuesConfig->layerEnds[to])
 	{
-		
-		m_outIter.SetNeighbourhood( m_valueNeighPreloader.GetLoaded());
-		m_statusIter.SetNeighbourhood( m_statusNeighPreloader.GetLoaded());
-		
-		// load next portion
-		currNode = m_layerIterator.GetLoaded();
+		m_outIter.SetNeighbourhood(m_valueNeighPreloader.GetLoaded());
+		m_statusIter.SetNeighbourhood(m_statusNeighPreloader.GetLoaded());
+
+		if(m_layerIterator.HasNextToLoad())
+		{
+			// load next portion
+			currNode = m_layerIterator.GetLoaded();
 			// load approp neigborhood
 			m_valueNeighPreloader.Load(*currNode);
 			m_statusNeighPreloader.Load(*currNode);
-		
+		}
+
 		counter++;
-		
+
 		DoTheWork(from, to, promote);
-		
+
 #ifdef FOR_CELL
 		// save to propagte changes in neighbourhoods
 		m_valueNeighPreloader.SaveCurrItem();
 		m_statusNeighPreloader.SaveCurrItem();
 #endif
-		
+
 		this->m_layerIterator.Next();
 	}
 }
@@ -106,17 +110,17 @@ void LayerValuesPropagator::DoTheWork(StatusType from, StatusType to,
 	value = 0; // warnings
 	bool found_neighbor_flag;
 	StatusType past_end = static_cast<StatusType>( LYERCOUNT ) - 1;
-	
+
 	SparseFieldLevelSetNode *tmp;
 	SparseFieldLevelSetNode *currNode = this->m_layerIterator.GetCurrItem();
-	
+
 #ifndef FOR_CELL
-	DL_PRINT(DBG_LAYER_IT, 
+	DL_PRINT(DBG_LAYER_IT,
 			"DoTheWork node: " << currNode->m_Value << "="
 			<< (SparseFieldLevelSetNode *)this->m_layerIterator.GetCentralMemAddrrOfCurrProcessedNode().Get64()
 			<< "Neigb: " << m_outIter.GetNeighborhood().m_currIndex);
 #endif
-	
+
 	// Is this index marked for deletion? If the status image has
 	// been marked with another layer's value, we need to delete this node
 	// from the current list then skip to the next iteration.
@@ -125,7 +129,8 @@ void LayerValuesPropagator::DoTheWork(StatusType from, StatusType to,
 		tmp = currNode;
 
 		m_layerGate.UnlinkNode(
-				this->m_layerIterator.GetCentralMemAddrrOfCurrProcessedNode(), to);
+				this->m_layerIterator.GetCentralMemAddrrOfCurrProcessedNode(),
+				to);
 		return;
 	}
 
@@ -137,8 +142,7 @@ void LayerValuesPropagator::DoTheWork(StatusType from, StatusType to,
 		// that will cause the next layer to be closest to the zero level set.
 		if (m_statusIter.GetPixel(m_NeighborList.GetArrayIndex(i) ) == from)
 		{
-			value_temp
-					= m_outIter.GetPixel(m_NeighborList.GetArrayIndex(i) );
+			value_temp = m_outIter.GetPixel(m_NeighborList.GetArrayIndex(i) );
 
 			if (found_neighbor_flag == false)
 			{
@@ -180,7 +184,8 @@ void LayerValuesPropagator::DoTheWork(StatusType from, StatusType to,
 		// status image accordingly.
 		tmp = currNode;
 		m_layerGate.UnlinkNode(
-				this->m_layerIterator.GetCentralMemAddrrOfCurrProcessedNode(), to);
+				this->m_layerIterator.GetCentralMemAddrrOfCurrProcessedNode(),
+				to);
 		if (promote > past_end)
 		{
 			//m_layerGate.ReturnToNodeStore(tmp);
@@ -196,21 +201,19 @@ void LayerValuesPropagator::DoTheWork(StatusType from, StatusType to,
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifdef FOR_CELL
-void
-LayerValuesPropagator::InitPreloaders()
+void LayerValuesPropagator::InitPreloaders()
 {
 	this->m_layerIterator.ReserveTag();
 	m_valueNeighPreloader.ReserveTags();
 	m_statusNeighPreloader.ReserveTags();
 }
 
-void
-LayerValuesPropagator::FiniPreloaders()
-{ 
+void LayerValuesPropagator::FiniPreloaders()
+{
 	this->m_layerIterator.ReturnTag();
 	m_valueNeighPreloader.ReturnTags();
 	m_statusNeighPreloader.ReturnTags();
-	
+
 	// wait for ops to guarantee all is complete before this method ends
 	// and to return its tags back to gate
 	m_valueNeighPreloader.WaitForSaving();

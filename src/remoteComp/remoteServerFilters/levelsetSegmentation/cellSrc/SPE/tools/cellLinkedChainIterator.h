@@ -17,9 +17,7 @@ public:
 	
 	void SetBeginEnd(Address begin, Address end);
 
-	inline bool HasNextToLoad(void) { 
-		return (GetCurrItem()->Next != m_end);
-		}
+	inline bool HasNextToLoad(void) { return m_buf[_loadedPos].Next != m_end; }
 	
 	bool HasNext()
 	{
