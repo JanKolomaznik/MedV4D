@@ -58,7 +58,7 @@ private:
 	void PropagateLayerValues(StatusType from, StatusType to,
 				                       StatusType promote);
 	
-	void DoTheWork(SparseFieldLevelSetNode *currNode, StatusType from, StatusType to,
+	void DoTheWork(StatusType from, StatusType to,
 			StatusType promote);
 	
 	TPixelValue value, value_temp, _delta;

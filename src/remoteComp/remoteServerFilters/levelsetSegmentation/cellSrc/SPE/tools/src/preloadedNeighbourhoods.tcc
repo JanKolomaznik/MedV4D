@@ -32,17 +32,19 @@ PreloadedNeigborhoods<PixelType, MYSIZE>
 template<typename PixelType, uint16 MYSIZE>
 void
 PreloadedNeigborhoods<PixelType, MYSIZE>
-::Load(const TIndex &pos)
+::Load(const SparseFieldLevelSetNode &node)
 {
 #ifdef FOR_CELL
 	if(_loadingCtx.tagMask > 0)
 		WaitForLoading();
 #endif
+	
 	// change pointers
-	_loaded = _loading;
 	_loading++;
 	_loading = _loading % MYSIZE;
-	m_buf[_loading].SetPosition(pos);
+	
+	_loadedNodeNexts[_loading] = node.Next;
+	m_buf[_loading].SetPosition(node.m_Value);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -52,6 +54,8 @@ typename PreloadedNeigborhoods<PixelType, MYSIZE>::TNeigborhood *
 PreloadedNeigborhoods<PixelType, MYSIZE>
 ::GetLoaded()
 {
+	_loaded++;
+	_loaded = _loaded % MYSIZE;
 	return &m_buf[_loaded];
 }
 
@@ -97,12 +101,14 @@ PreloadedNeigborhoods<PixelType, MYSIZE>::SaveCurrItem()
 ///////////////////////////////////////////////////////////////////////////////
 // CELL only part
 ///////////////////////////////////////////////////////////////////////////////
-#ifdef FOR_CELL
-
 template<typename PixelType, uint16 MYSIZE>
 void
 PreloadedNeigborhoods<PixelType, MYSIZE>::Init()
 {
+	_loading = _loaded = _saving = 0;
+	memset(_loadedNodeNexts, 0, MYSIZE * sizeof(Address));
+	
+#ifdef FOR_CELL
 	// reserve necessary tags
 	for(uint32 i=0; i<LIST_SET_NUM; i++)
 	{
@@ -119,6 +125,7 @@ PreloadedNeigborhoods<PixelType, MYSIZE>::Init()
 		D_PRINT("TAG_GET:NeighborhoodCell:%d\n", _savingCtx.tags[i]);
 #endif
 	}
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -126,6 +133,7 @@ template<typename PixelType, uint16 MYSIZE>
 void
 PreloadedNeigborhoods<PixelType, MYSIZE>::Fini()
 {
+#ifdef FOR_CELL
 	WaitForLoading();
 	WaitForSaving();
 	
@@ -146,9 +154,11 @@ PreloadedNeigborhoods<PixelType, MYSIZE>::Fini()
 #endif
 		DMAGate::ReturnTag(_savingCtx.tags[i]);
 	}
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+#ifdef FOR_CELL
 template<typename PixelType, uint16 MYSIZE>
 void
 PreloadedNeigborhoods<PixelType, MYSIZE>::WaitForLoading()

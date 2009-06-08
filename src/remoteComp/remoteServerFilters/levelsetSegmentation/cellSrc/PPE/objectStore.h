@@ -18,6 +18,9 @@ public:
 	typedef std::vector<T*> VecChunksBegin;
 	typedef std::vector<TChunk*> VecChunks;
 	
+	PPEObjectStore()
+		: borrowed(0), maxBorrowed(0) {}
+	
 	~PPEObjectStore()
 	{		
 		for(typename VecChunksBegin::iterator it=_chunksBegin.begin();
@@ -34,6 +37,9 @@ public:
 	
 	T *Borrow()
 	{
+		//borrowed++;
+		//if(borrowed > maxBorrowed)
+		//	maxBorrowed = borrowed;
 		if(_freeChunks.empty())
 			AllocNewChunk();
 		TChunk *chunk = _freeChunks.back();
@@ -49,18 +55,7 @@ public:
 		if(chunk->IsFull())
 			_freeChunks.push_back(chunk);
 		chunk->Return(p);
-	}
-protected:
-	
-	void AllocNewChunk()
-	{
-		T *newArray = NULL;
-		if( posix_memalign((void**)(&newArray), 128, CHUNKSIZE * sizeof(T)) != 0)
-			throw std::bad_alloc();
-		TChunk *newChunk = new TChunk(newArray);
-		_chunks.push_back(newChunk);
-		_freeChunks.push_back(newChunk);
-		_chunksBegin.push_back(newArray);
+		//borrowed--;
 	}
 	
 	TChunk *FindItemsChunk(T *item)
@@ -77,6 +72,42 @@ protected:
 		}
 		return NULL;
 	}
+	
+	void Print(std::ostream &str)
+	{
+		uint cnt=0;
+		str << "Chunks: " << std::endl;
+		for(typename VecChunks::iterator it=_chunks.begin();
+			it != _chunks.end(); it++)
+		{
+			str << *it << ",_chunks[" << cnt << "]=" << _chunks[cnt] << std::endl;
+			cnt++;
+		}
+		str << "ChunkBegins: " << std::endl;
+		cnt = 0;
+		for(typename VecChunksBegin::iterator it=_chunksBegin.begin();
+			it != _chunksBegin.end(); it++)
+		{
+			str << *it << ",_chunksBegin[" << cnt << "]=" << _chunksBegin[cnt] << std::endl;
+			cnt++;
+		}
+	}
+	
+protected:
+	
+	void AllocNewChunk()
+	{
+		T *newArray = NULL;
+		if( posix_memalign((void**)(&newArray), 128, CHUNKSIZE * sizeof(T)) != 0)
+			throw std::bad_alloc();
+		TChunk *newChunk = new TChunk(newArray);
+		_chunks.push_back(newChunk);
+		_freeChunks.push_back(newChunk);
+		_chunksBegin.push_back(newArray);
+	}
+	
+//	uint32 borrowed;
+//	uint32 maxBorrowed;
 	
 	VecChunks _freeChunks;
 	VecChunks _chunks;

@@ -47,6 +47,8 @@ void
 MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::ApplyUpdate(TimeStepType dt)
 {
+	//this->_workManager.PrintLists(DOUT, true);
+	//this->_workManager.m_LayerNodeStore.Print(DOUT);
 	this->SetRMSChange(this->m_SPEManager.ApplyUpdate(dt));	
 }
 
@@ -56,6 +58,8 @@ TimeStepType
 MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::CalculateChange()
 {	  
+//	this->_workManager.PrintLists(DOUT, true);
+	//this->_workManager.m_LayerNodeStore.Print(DOUT);
 	TimeStepType dt = this->m_SPEManager.RunUpdateCalc();
 	return dt;
 }
@@ -66,6 +70,7 @@ void
 MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 ::PropagateAllLayerValues()
 {
+	//this->_workManager.PrintLists(DOUT, true);
 	this->m_SPEManager.RunPropagateLayerVals();
 }
 

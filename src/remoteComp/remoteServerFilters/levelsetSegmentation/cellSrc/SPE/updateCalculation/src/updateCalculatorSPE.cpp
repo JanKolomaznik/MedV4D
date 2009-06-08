@@ -11,6 +11,7 @@
 #include <string.h>
 
 #define UPDATE_CALC_DEBUG 12
+#define DBG_LAYER_IT 12
 
 using namespace M4D::Cell;
 
@@ -72,6 +73,8 @@ void
 UpdateCalculatorSPE
 ::CalculateChangeItem(void)
 {		
+	DL_PRINT(DBG_LAYER_IT, 
+			"Curr neighb.center=" << m_outIter.GetNeighborhood().m_currIndex);
 	// Calculate the offset to the surface from the center of this
 	// neighborhood.  This is used by some level set functions in sampling a
 	// speed, advection, or curvature term.
@@ -136,10 +139,10 @@ UpdateCalculatorSPE::CalculateChange()
 	m_updateBufferArray.SetArray(m_stepConfig->updateBuffBegin);
 	m_layerIterator.SetBeginEnd(m_stepConfig->layer0Begin, m_stepConfig->layer0End);
 	
-#ifdef FOR_CELL
+
 	m_valueNeighbPreloader.Init();
 	m_featureNeighbPreloader.Init();
-#endif
+
 	
 	// prepare neighbour preloaders
 	m_valueNeighbPreloader.SetImageProps(& m_Conf->valueImageProps);
@@ -149,29 +152,23 @@ UpdateCalculatorSPE::CalculateChange()
 	// iteration.  Iterates through the active layer index list, applying 
 	// the level set function to the output image (level set image) at each
 	// index.  Update values are stored in the update buffer.
-	LayerNodeType *next, *nextBeingLoadedInNeigbs;
+	LayerNodeType *loaded;
 	
-//	uint32 counter = 0;
+	uint32 counter = 0;
 	
 	// first step in flow scenario - load the first
-	if(m_layerIterator.HasNext())
-	{
-		next = m_layerIterator.Next();
+	loaded = m_layerIterator.GetLoaded();
 		// load approp neigborhood
-		m_valueNeighbPreloader.Load(next->m_Value);
-		m_featureNeighbPreloader.Load(next->m_Value);
-	}
+		m_valueNeighbPreloader.Load(*loaded);
+		m_featureNeighbPreloader.Load(*loaded);
 	 
-	while(next->Next != m_stepConfig->layer0End)
+	while(m_valueNeighbPreloader.GetCurrNodesNext() != m_stepConfig->layer0End)
 	{
-		// and then immediately load next to be transferred while computing current
-		if(m_layerIterator.HasNext())
-		{
-			nextBeingLoadedInNeigbs = m_layerIterator.Next();
+		loaded = m_layerIterator.GetLoaded();
 			// load approp neigborhood
-			m_valueNeighbPreloader.Load(next->m_Value);
-			m_featureNeighbPreloader.Load(next->m_Value);
-		}
+			m_valueNeighbPreloader.Load(*loaded);//->m_Value);
+			m_featureNeighbPreloader.Load(*loaded);//->m_Value);
+
 		
 		m_outIter.SetNeighbourhood( m_valueNeighbPreloader.GetLoaded());
 		m_featureIter.SetNeighbourhood( m_featureNeighbPreloader.GetLoaded());
@@ -181,24 +178,22 @@ UpdateCalculatorSPE::CalculateChange()
 //						"node: " <<  << " value=" << m_outIter.GetCenterPixel());
 #else
 		DL_PRINT(UPDATE_CALC_DEBUG, 
-				"node: " << next->m_Value << " value=" << m_outIter.GetCenterPixel());
+				"node: " << loaded->m_Value << " value=" << m_outIter.GetCenterPixel());
 #endif
 				
 		CalculateChangeItem();
 		
-//		D_PRINT("Counter=%u\n", counter);
-//		counter++;
-		
-		next = nextBeingLoadedInNeigbs;
+		counter++;
 	}
 	
 	m_updateBufferArray.FlushArray();
 	
-#ifdef FOR_CELL
 	// wait for ops to guarantee all is complete before this method ends
 	// and to return its tags back to gate
 	m_valueNeighbPreloader.Fini();
-	m_featureNeighbPreloader.Fini();	
+	m_featureNeighbPreloader.Fini();
+	
+#ifdef FOR_CELL	
 	m_updateBufferArray.WaitForTransfer();
 #endif
 
@@ -206,6 +201,11 @@ UpdateCalculatorSPE::CalculateChange()
 	// this iteration.  We give it the global data pointer to use, then
 	// ask it to free the global data memory.
 	TimeStepType timeStep = m_diffFunc.ComputeGlobalTimeStep(&m_globalData);
+	
+	D_COMMAND(
+			if(timeStep == 0) 
+				D_PRINT("WARNING: CalculateChange: returning 0")
+			);
 	
 #ifdef FOR_CELL
 	DL_PRINT(UPDATE_CALC_DEBUG, "value=%f", timeStep);

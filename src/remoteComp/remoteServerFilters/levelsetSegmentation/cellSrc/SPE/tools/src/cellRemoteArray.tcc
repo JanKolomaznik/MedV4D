@@ -55,7 +55,11 @@ void
 RemoteArrayCell<T, BUFSIZE>::FlushArray()
 {
 	//DMAGate::Put(m_buf[m_currBuf], m_currFlushedPos, m_currPos * sizeof(T), _tag);
+#ifdef FOR_CELL
 	DMAGate::Put(m_buf[m_currBuf], m_currFlushedPos, BUFSIZE * sizeof(T), _tag);
+#else
+	DMAGate::Put(m_buf[m_currBuf], m_currFlushedPos, BUFSIZE * sizeof(T));
+#endif
 	m_currFlushedPos += m_currPos * sizeof(T);
 	m_currBuf = !m_currBuf;
 	m_currPos = 0;
@@ -139,7 +143,11 @@ template<typename T, uint8 BUFSIZE>
 void
 GETRemoteArrayCell<T, BUFSIZE>::LoadNextPiece()
 {
+#ifdef FOR_CELL
 	DMAGate::Get(m_currLoadedPos, m_buf[!m_currBuf], BUFSIZE * sizeof(T), _tag);
+#else
+	DMAGate::Get(m_currLoadedPos, m_buf[!m_currBuf], BUFSIZE * sizeof(T));
+#endif
 	m_currLoadedPos += BUFSIZE * sizeof(T);
 }
 ///////////////////////////////////////////////////////////////////////////////

@@ -19,19 +19,27 @@ public:
 	
 	void SetImageProps(TImageProps *properties);
 	
-	void Load(const TIndex &pos);
+//	void Load(const TIndex &pos);
+	void Load(const SparseFieldLevelSetNode &node);
 	TNeigborhood *GetLoaded();
 	void SaveCurrItem();
 	
 	void Init();
 	void Fini();
+	
+	Address GetCurrNodesNext() { return _loadedNodeNexts[_loaded]; }
 		
 private:
 	TNeigborhood m_buf[MYSIZE];
 	
+	Address _loadedNodeNexts[MYSIZE];
+	
 #ifdef FOR_CELL
 	typename TNeigborhood::LoadingCtx _loadingCtx;
 	typename TNeigborhood::SavingCtx _savingCtx;
+	
+	void WaitForLoading();
+	void WaitForSaving();
 #endif
 	
 //	bool _loadingInProgress;
@@ -40,8 +48,7 @@ private:
 	
 	TImageProps *_imageProps;
 	
-	void WaitForLoading();
-	void WaitForSaving();
+
 };
 
 #include "src/preloadedNeighbourhoods.tcc"

@@ -12,7 +12,7 @@ namespace Cell
 /**
  * Size of one allocation. Prevents repeating allocation of similar size
  */
-#define ALLOC_CHUNK_SIZE 256 
+#define ALLOC_CHUNK_SIZE 512
 
 #define ZERO_BUFFER 1
 

@@ -23,8 +23,8 @@ void LayerGate::UnlinkNode(Address node, uint8 layerNum)
 	DL_PRINT(DEBUG_GATE, "Send ULNK, node: %lld layer: %d",
 			node.Get64(), (uint32)layerNum);
 #else
-	DL_PRINT(DEBUG_GATE, "Send ULNK, node:" << node.Get64() << 
-			" layer: " << (uint32)layerNum);
+	DL_PRINT(DEBUG_GATE, "Send ULNK, node:" << (void*) node.Get64() 
+			<< " layer: " << (uint32)layerNum);
 #endif
 	
 #ifdef FOR_CELL

@@ -5,7 +5,8 @@
 using namespace M4D::Cell;
 using namespace M4D::Multithreading;
 
-#define DEBUG_MAILBOX 0
+#define DEBUG_MAILBOX 12
+#define DEBUG_MANAGING_MAILBOX_COMM 0
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -198,7 +199,7 @@ void Tspu_prog_sim::SimulateFunc()
 	ApplyUpdateSPE _applyUpdateCalc(&_sharedRes);
 
 	_applyUpdateCalc.m_layerGate._mailbox = &_mailbox;
-	DMAGate::Get(_wm->GetConfSructs()[_speID].runConf, &_sharedRes._runConf, sizeof(RunConfiguration), 0);
+	DMAGate::Get(_wm->GetConfSructs()[_speID].runConf, &_sharedRes._runConf, sizeof(RunConfiguration));
 
 	_updateSolver.Init();
 
@@ -211,8 +212,8 @@ void Tspu_prog_sim::SimulateFunc()
 		case CALC_CHANGE:
 			DMAGate::Get(_wm->GetConfSructs()[_speID].calcChngApplyUpdateConf,
 					&_sharedRes._changeConfig,
-					sizeof(CalculateChangeAndUpdActiveLayerConf), 0);
-			//printf ("CALC_CHANGE received\n");
+					sizeof(CalculateChangeAndUpdActiveLayerConf));
+			DL_PRINT(DEBUG_MANAGING_MAILBOX_COMM, "CALC_CHANGE received\n");
 			// calculate and return retval
 			retval = _updateSolver.CalculateChange();
 			{
@@ -224,10 +225,10 @@ void Tspu_prog_sim::SimulateFunc()
 		case CALC_UPDATE:
 			DMAGate::Get(_wm->GetConfSructs()[_speID].calcChngApplyUpdateConf,
 					&_sharedRes._changeConfig,
-					sizeof(CalculateChangeAndUpdActiveLayerConf), 0);
+					sizeof(CalculateChangeAndUpdActiveLayerConf));
 			DMAGate::Get(_wm->GetConfSructs()[_speID].propagateValsConf, &_sharedRes._propValConfig,
-					sizeof(PropagateValuesConf), 0);
-			//printf ("CALC_UPDATE received\n");
+					sizeof(PropagateValuesConf));
+			DL_PRINT(DEBUG_MANAGING_MAILBOX_COMM, "CALC_UPDATE received\n");
 			retval = _applyUpdateCalc.ApplyUpdate(toFloat(_mailbox.SPEPop()));
 			{
 				ScopedLock lock(_mailbox.fromSPEQMutex);
@@ -237,8 +238,8 @@ void Tspu_prog_sim::SimulateFunc()
 			break;
 		case CALC_PROPAG_VALS:
 			DMAGate::Get(_wm->GetConfSructs()[_speID].propagateValsConf, &_sharedRes._propValConfig,
-					sizeof(PropagateValuesConf), 0);
-			//printf ("CALC_UPDATE received\n");
+					sizeof(PropagateValuesConf));
+			DL_PRINT(DEBUG_MANAGING_MAILBOX_COMM, "CALC_UPDATE received\n");
 			_applyUpdateCalc.PropagateAllLayerValues();
 			{
 				ScopedLock lock(_mailbox.fromSPEQMutex);
@@ -247,7 +248,7 @@ void Tspu_prog_sim::SimulateFunc()
 			}
 			break;
 		case QUIT:
-			printf("QUIT received\n");
+			DL_PRINT(DEBUG_MANAGING_MAILBOX_COMM, "QUIT received\n");
 			break;
 		}
 	} while(mailboxVal != QUIT);

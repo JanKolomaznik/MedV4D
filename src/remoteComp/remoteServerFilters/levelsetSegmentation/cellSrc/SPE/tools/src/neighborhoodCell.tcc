@@ -96,7 +96,7 @@ NeighborhoodCell<PixelType>
 			PutIntoList(begin.Get64(), SIZEIN1DIM-1);
 			_whichDMAList = ! _whichDMAList;
 #else
-			DMAGate::Get(begin, dest, sizeof(PixelType) * (SIZEIN1DIM-1), 0);
+			DMAGate::Get(begin, dest, sizeof(PixelType) * (SIZEIN1DIM-1));
 			for(uint32 i=0; i<(SIZEIN1DIM-1); i++)
 			{
 				traslationTable_[transIdxIter_] = transIdxIter_;
@@ -113,7 +113,7 @@ NeighborhoodCell<PixelType>
 			PutIntoList(begin.Get64(), SIZEIN1DIM-1);
 			_whichDMAList = ! _whichDMAList;
 #else
-			DMAGate::Get(begin, dest, (SIZEIN1DIM-1) * sizeof(PixelType), 0);
+			DMAGate::Get(begin, dest, (SIZEIN1DIM-1) * sizeof(PixelType));
 			for(uint32 i=0; i<(SIZEIN1DIM-1); i++)
 			{
 				traslationTable_[transIdxIter_] = transIdxIter_;
@@ -139,7 +139,7 @@ NeighborhoodCell<PixelType>
 				PutIntoList(begin.Get64() + sizeof(PixelType), SIZEIN1DIM-1);
 			}
 #else
-			DMAGate::Get(begin, dest, SIZEIN1DIM * sizeof(PixelType), 0);
+			DMAGate::Get(begin, dest, SIZEIN1DIM * sizeof(PixelType));
 			for(uint32 i=0; i<SIZEIN1DIM; i++)
 			{
 				traslationTable_[transIdxIter_] = transIdxIter_;

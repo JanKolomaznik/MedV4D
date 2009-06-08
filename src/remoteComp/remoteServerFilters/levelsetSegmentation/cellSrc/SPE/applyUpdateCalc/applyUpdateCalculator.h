@@ -59,6 +59,9 @@ private:
 	TUpdateBufferArray m_updateValuesIt;
 	
 	uint32 m_ElapsedIterations;
+	
+	// supp members
+	SparseFieldLevelSetNode *_loaded;
 };
 
 }

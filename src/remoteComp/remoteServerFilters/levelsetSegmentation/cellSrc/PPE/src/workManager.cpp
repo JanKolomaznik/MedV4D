@@ -25,6 +25,8 @@ WorkManager::WorkManager(uint32 coreCount, RunConfiguration *rc) :
 	_propagateValsConf = NULL;
 	m_LayerSegments = NULL;
 	m_UpdateBuffers = NULL;
+	
+	std::cout << "sizeof SparseFieldLevelSetNode = " << sizeof(SparseFieldLevelSetNode) << std::endl;
 
 	try
 	{
@@ -122,6 +124,8 @@ void WorkManager::InitCalculateChangeAndUpdActiveLayerConf()
 
 		_calcChngApplyUpdateConf[spuIt].updateBuffBegin
 				= (uint64) m_UpdateBuffers[spuIt].GetArray();
+//		_calcChngApplyUpdateConf[spuIt].updateBuffBegin
+//						= (uint64) &m_UpdateBuffers[spuIt][0];
 	}
 }
 
@@ -192,7 +196,7 @@ void WorkManager::PrintLists(std::ostream &s, bool withMembers)
 
 				while (begin != end)
 				{
-					s << begin->m_Value << std::endl;
+					s << begin->m_Value << "=" << begin << std::endl;
 					begin = (LayerNodeType *)begin->Next.Get64();
 				}
 			}

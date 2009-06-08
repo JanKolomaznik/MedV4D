@@ -17,24 +17,35 @@ public:
 	
 	void SetBeginEnd(Address begin, Address end);
 
-	inline bool HasNext(void) { 
-		return (GetCurrItem()->Next != m_end); 
-		}	
-
-	Item *Next(void);	
-	Address GetCentralMemAddrrOfCurrProcessedNode() { return m_realAddresses[m_currBufPosition]; }
+	inline bool HasNextToLoad(void) { 
+		return (GetCurrItem()->Next != m_end);
+		}
 	
-private:
+	bool HasNext()
+	{
+		return m_buf[m_currBufPosition].Next != m_end;
+	}
+
+	Item *GetLoaded(void);
+	void Next();
+	Address GetCentralMemAddrrOfCurrProcessedNode() { 
+		return m_realAddresses[m_currBufPosition]; 
+		}
 	
 	Item * GetCurrItem() { return &m_buf[m_currBufPosition]; }
 	
+private:
+	
+	
 //	inline bool HasNextForLoad(void) { return (GetCurrItem()->Next != m_end); }
 	//void Load(Address src, Item *dest, size_t size);
-	
-	Item m_buf[2] __attribute__ ((aligned (32)));
-	Address m_realAddresses[2];
+#define BUF_SIZE 3
+	Item m_buf[BUF_SIZE] __attribute__ ((aligned (128)));
+	Address m_realAddresses[BUF_SIZE];
 	
 	uint8 m_currBufPosition;
+	uint8 _loadingPos;
+	uint8 _loadedPos;
 	
 	//Item *m_begin;
 	Address m_end;
@@ -43,7 +54,8 @@ private:
 	
 	//Item *m_currProcessedCentralMemAddress;
 	
-	Address pom;
+	Address loadedIter;
+	Address processedIter;
 	uint32 counter;
 	
 	unsigned int tag;

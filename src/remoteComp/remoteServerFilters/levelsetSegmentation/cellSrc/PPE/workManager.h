@@ -62,7 +62,7 @@ public:
 	
 	TimeStepType _dt;
 
-private:
+//private:
 	typedef float32 ValueType;
 	//typedef SparseFieldLevelSetNode NodeTypeInSPU;
 
@@ -70,7 +70,7 @@ private:
 #define NodeStoreChunkSize 2048
 	typedef PPEObjectStore<LayerNodeType, NodeStoreChunkSize> LayerNodeStorageType;
 	/** Container type used to store updates to the active layer. */
-	//typedef std::vector<ValueType> UpdateBufferType;
+//	typedef std::vector<ValueType> UpdateBufferType;
 	typedef UpdateValsAllocator<ValueType> UpdateBufferType;
 	
 

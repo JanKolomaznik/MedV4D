@@ -9,6 +9,7 @@
 using namespace M4D::Cell;
 
 #define DEBUG_ALG 12
+#define DBG_LAYER_IT 12
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -34,6 +35,8 @@ ApplyUpdateSPE::~ApplyUpdateSPE()
 ApplyUpdateSPE::ValueType
 ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 {
+	D_COMMAND(if(dt == 0) D_PRINT("WARNING: ApplyUpdate: dt=0"));
+	
 	MyLayerType UpList[2];
 	MyLayerType DownList[2];
 
@@ -67,8 +70,18 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 //		  s << "before" << this->m_ElapsedIterations;
 //		  std::ofstream b(s.str().c_str());
 //		  m_outIter.GetNeighborhood().PrintImage(b);
+	
+	m_valueNeighPreloader.Init();
+	m_statusNeighPreloader.Init();
+	
+	
+	// pre-load first bunch of neighbs
+	_loaded = m_layerIterator.GetLoaded();
+	m_valueNeighPreloader.Load(*_loaded);//->m_Value);
+	m_statusNeighPreloader.Load(*_loaded);//->m_Value);
+	
 		
-	while(m_layerIterator.HasNext())
+	while(m_valueNeighPreloader.GetCurrNodesNext() != m_stepConfig->layer0End)//m_layerIterator.HasNext())
 	{
 		// do one run
 		UpdateActiveLayerValues(dt, &UpList[0], &DownList[0], counter, rms_change_accumulator);
@@ -95,6 +108,11 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	this->PropagateAllLayerValues();
 	
 	m_ElapsedIterations++;
+	
+	// wait for ops to guarantee all is complete before this method ends
+	// and to return its tags back to gate
+	m_valueNeighPreloader.Fini();
+	m_statusNeighPreloader.Fini();
 	
 #ifdef FOR_CELL
 #else
@@ -291,14 +309,20 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	
 	uint16 turnCounter = 0;
 	  
-		while (this->m_layerIterator.HasNext() && turnCounter < MAX_TURN_LENGHT)
+		//while (this->m_layerIterator.HasNext() && turnCounter < MAX_TURN_LENGHT)
+	    while(m_valueNeighPreloader.GetCurrNodesNext() != m_stepConfig->layer0End && turnCounter < MAX_TURN_LENGHT)
 		{
-			currNode = this->m_layerIterator.Next();
+			currNode = this->m_layerIterator.GetCurrItem();
 			turnCounter ++;
 			
-			// load approp neigborhood
-			m_valueNeighPreloader.Load(currNode->m_Value);
-			m_statusNeighPreloader.Load(currNode->m_Value);
+			DL_PRINT(DBG_LAYER_IT, 
+					"UpdateActiveLayerValues node: " << currNode->m_Value << "="
+						<< (SparseFieldLevelSetNode *)this->m_layerIterator.GetCentralMemAddrrOfCurrProcessedNode().Get64());
+			
+			// pre-load next neigborhoods
+			_loaded = m_layerIterator.GetLoaded();
+			m_valueNeighPreloader.Load(*_loaded);//->m_Value);
+			m_statusNeighPreloader.Load(*_loaded);//->m_Value);
 			
 			m_outIter.SetNeighbourhood( m_valueNeighPreloader.GetLoaded());
 			m_statusIter.SetNeighbourhood( m_statusNeighPreloader.GetLoaded());
@@ -336,6 +360,7 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	        {
 	        //++layerIt;
 	        ++m_updateValuesIt;
+	        this->m_layerIterator.Next();
 	        continue;
 	        }
 	
@@ -404,6 +429,7 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	        {
 	        //++layerIt;
 	        ++m_updateValuesIt;
+	        this->m_layerIterator.Next();
 	        continue;
 	        }
 	      
@@ -457,6 +483,7 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	      //++layerIt;
 	      }
 	    ++m_updateValuesIt;
+	    this->m_layerIterator.Next();
 	    ++counter;
 	    }
   
