@@ -99,16 +99,23 @@ PreloadedNeigborhoods<PixelType, MYSIZE>::SaveCurrItem()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// CELL only part
-///////////////////////////////////////////////////////////////////////////////
 template<typename PixelType, uint16 MYSIZE>
 void
-PreloadedNeigborhoods<PixelType, MYSIZE>::Init()
+PreloadedNeigborhoods<PixelType, MYSIZE>::Reset()
 {
 	_loading = _loaded = _saving = 0;
 	memset(_loadedNodeNexts, 0, MYSIZE * sizeof(Address));
-	
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// CELL only part
+///////////////////////////////////////////////////////////////////////////////
 #ifdef FOR_CELL
+
+template<typename PixelType, uint16 MYSIZE>
+void
+PreloadedNeigborhoods<PixelType, MYSIZE>::ReserveTags()
+{
 	// reserve necessary tags
 	for(uint32 i=0; i<LIST_SET_NUM; i++)
 	{
@@ -125,18 +132,12 @@ PreloadedNeigborhoods<PixelType, MYSIZE>::Init()
 		D_PRINT("TAG_GET:NeighborhoodCell:%d\n", _savingCtx.tags[i]);
 #endif
 	}
-#endif
 }
-
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PixelType, uint16 MYSIZE>
 void
-PreloadedNeigborhoods<PixelType, MYSIZE>::Fini()
+PreloadedNeigborhoods<PixelType, MYSIZE>::ReturnTags()
 {
-#ifdef FOR_CELL
-	WaitForLoading();
-	WaitForSaving();
-	
 	// return loading tags
 	for(uint32 i=0; i<LIST_SET_NUM; i++)
 	{
@@ -154,11 +155,19 @@ PreloadedNeigborhoods<PixelType, MYSIZE>::Fini()
 #endif
 		DMAGate::ReturnTag(_savingCtx.tags[i]);
 	}
-#endif
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
-#ifdef FOR_CELL
+//template<typename PixelType, uint16 MYSIZE>
+//void
+//PreloadedNeigborhoods<PixelType, MYSIZE>::Fini()
+//{
+//	WaitForLoading();
+//	WaitForSaving();
+//}
+
+///////////////////////////////////////////////////////////////////////////////
 template<typename PixelType, uint16 MYSIZE>
 void
 PreloadedNeigborhoods<PixelType, MYSIZE>::WaitForLoading()

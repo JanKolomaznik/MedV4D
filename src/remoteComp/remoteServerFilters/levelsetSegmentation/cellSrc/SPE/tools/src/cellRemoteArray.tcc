@@ -105,7 +105,8 @@ GETRemoteArrayCell<T, BUFSIZE>::SetArray(Address begin)
 
 #ifdef FOR_CELL
 #ifdef TAG_RETURN_DEBUG
-		D_PRINT("TAG_GET:GETRemoteArrayCell:%d\n", _tag);
+	_tag = DMAGate::GetTag();
+	D_PRINT("TAG_GET:GETRemoteArrayCell:%d\n", _tag);
 #endif
 #endif
 	
@@ -155,7 +156,7 @@ GETRemoteArrayCell<T, BUFSIZE>::WaitForTransfer()
 	mfc_write_tag_mask(1 << _tag);
 	mfc_read_tag_status_all();
 #ifdef TAG_RETURN_DEBUG
-		D_PRINT("TAG_GET:GETRemoteArrayCell:%d\n", _tag);
+		D_PRINT("TAG_RET:GETRemoteArrayCell:%d\n", _tag);
 #endif
 	DMAGate::ReturnTag(_tag);
 }

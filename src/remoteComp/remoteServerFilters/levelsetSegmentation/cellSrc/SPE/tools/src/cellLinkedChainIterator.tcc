@@ -41,7 +41,7 @@ LinkedChainIteratorCell<Item>::SetBeginEnd(Address begin, Address end)
 		m_realAddresses[_loadingPos] = begin;
 		//			Load(begin, &m_buf[0], sizeof(Item));
 #ifdef FOR_CELL
-		DMAGate::Get(begin, &m_buf[_loadingPos], sizeof(Item), tag);
+		DMAGate::Get(begin, &m_buf[_loadingPos], sizeof(Item), _tag);
 #else
 		DMAGate::Get(begin, &m_buf[_loadingPos], sizeof(Item) );
 #endif
@@ -64,7 +64,7 @@ LinkedChainIteratorCell<Item>::GetLoaded(void)
 {
 #ifdef FOR_CELL
 	// wait for current DMA to complete
-	mfc_write_tag_mask (1 << tag);
+	mfc_write_tag_mask (1 << _tag);
 	mfc_read_tag_status_all ();
 #endif
 	//m_currBufPosition = ! m_currBufPosition;
@@ -91,7 +91,7 @@ LinkedChainIteratorCell<Item>::GetLoaded(void)
 		
 #ifdef FOR_CELL
 		DL_PRINT(DEBUG_CHAINTOOL, "loading node %d", counter);
-		DMAGate::Get(m_buf[_loadedPos].Next, &m_buf[_loadingPos], sizeof(Item), tag);
+		DMAGate::Get(m_buf[_loadedPos].Next, &m_buf[_loadingPos], sizeof(Item), _tag);
 #else
 		DL_PRINT(DEBUG_CHAINTOOL, "loading node " << counter);
 		DMAGate::Get(m_buf[_loadedPos].Next, &m_buf[_loadingPos], sizeof(Item) );
@@ -114,5 +114,31 @@ LinkedChainIteratorCell<Item>::Next(void)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+#ifdef FOR_CELL
 
+template<typename Item>
+void
+LinkedChainIteratorCell<Item>::ReserveTag()
+{
+#ifdef TAG_RETURN_DEBUG
+	_tag = DMAGate::GetTag();
+	D_PRINT("TAG_GET:LinkedChainIteratorCell:%d\n", _tag);
 #endif
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+template<typename Item>
+void
+LinkedChainIteratorCell<Item>::ReturnTag()
+{
+#ifdef TAG_RETURN_DEBUG
+	DMAGate::ReturnTag(_tag);
+	D_PRINT("TAG_RET:LinkedChainIteratorCell:%d\n", _tag);
+#endif
+}
+
+#endif // FOR_CELL
+///////////////////////////////////////////////////////////////////////////////
+
+#endif // whole file

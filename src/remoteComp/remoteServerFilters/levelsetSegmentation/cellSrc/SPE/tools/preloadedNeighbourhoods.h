@@ -24,8 +24,18 @@ public:
 	TNeigborhood *GetLoaded();
 	void SaveCurrItem();
 	
-	void Init();
-	void Fini();
+	void Reset();
+	
+#ifdef FOR_CELL
+	typename TNeigborhood::LoadingCtx _loadingCtx;
+	typename TNeigborhood::SavingCtx _savingCtx;
+	
+	void WaitForLoading();
+	void WaitForSaving();
+	
+	void ReserveTags();
+	void ReturnTags();
+#endif
 	
 	Address GetCurrNodesNext() { return _loadedNodeNexts[_loaded]; }
 		
@@ -34,13 +44,7 @@ private:
 	
 	Address _loadedNodeNexts[MYSIZE];
 	
-#ifdef FOR_CELL
-	typename TNeigborhood::LoadingCtx _loadingCtx;
-	typename TNeigborhood::SavingCtx _savingCtx;
-	
-	void WaitForLoading();
-	void WaitForSaving();
-#endif
+
 	
 //	bool _loadingInProgress;
 //	bool _savingInProgress;

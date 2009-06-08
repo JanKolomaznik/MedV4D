@@ -26,6 +26,11 @@ public:
 	
 	void PropagateAllLayerValues();
 	
+#ifdef FOR_CELL
+	void InitPreloaders();
+	void FiniPreloaders();
+#endif
+	
 	LayerGate m_layerGate;
 	
 protected:

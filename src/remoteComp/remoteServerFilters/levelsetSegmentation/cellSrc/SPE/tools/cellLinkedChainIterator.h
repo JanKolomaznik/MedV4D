@@ -34,6 +34,11 @@ public:
 	
 	Item * GetCurrItem() { return &m_buf[m_currBufPosition]; }
 	
+#ifdef FOR_CELL
+	void ReserveTag();
+	void ReturnTag();
+#endif
+	
 private:
 	
 	
@@ -58,7 +63,7 @@ private:
 	Address processedIter;
 	uint32 counter;
 	
-	unsigned int tag;
+	int8 _tag;
 };
 
 //include implementation

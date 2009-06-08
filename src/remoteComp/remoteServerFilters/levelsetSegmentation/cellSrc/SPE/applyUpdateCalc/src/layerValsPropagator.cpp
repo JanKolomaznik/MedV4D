@@ -53,9 +53,9 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 	// prepare neighbour preloaders
 	m_valueNeighPreloader.SetImageProps(&commonConf->valueImageProps);
 	m_statusNeighPreloader.SetImageProps(&commonConf->statusImageProps);
-
-	m_valueNeighPreloader.Init();
-	m_statusNeighPreloader.Init();
+	
+	m_valueNeighPreloader.Reset();
+	m_statusNeighPreloader.Reset();
 
 #ifndef FOR_CELL
 	DL_PRINT(DBG_LAYER_IT,
@@ -94,12 +94,7 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from, StatusType to,
 #endif
 		
 		this->m_layerIterator.Next();
-	}	
-
-	// wait for ops to guarantee all is complete before this method ends
-	// and to return its tags back to gate
-	m_valueNeighPreloader.Fini();
-	m_statusNeighPreloader.Fini();
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -198,4 +193,29 @@ void LayerValuesPropagator::DoTheWork(StatusType from, StatusType to,
 		}
 	}
 }
+///////////////////////////////////////////////////////////////////////////////
+
+#ifdef FOR_CELL
+void
+LayerValuesPropagator::InitPreloaders()
+{
+	this->m_layerIterator.ReserveTag();
+	m_valueNeighPreloader.ReserveTags();
+	m_statusNeighPreloader.ReserveTags();
+}
+
+void
+LayerValuesPropagator::FiniPreloaders()
+{ 
+	this->m_layerIterator.ReturnTag();
+	m_valueNeighPreloader.ReturnTags();
+	m_statusNeighPreloader.ReturnTags();
+	
+	// wait for ops to guarantee all is complete before this method ends
+	// and to return its tags back to gate
+	m_valueNeighPreloader.WaitForSaving();
+	m_statusNeighPreloader.WaitForSaving();
+}
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////

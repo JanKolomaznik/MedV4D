@@ -141,9 +141,14 @@ UpdateCalculatorSPE::CalculateChange()
 	m_updateBufferArray.SetArray(m_stepConfig->updateBuffBegin);
 	m_layerIterator.SetBeginEnd(m_stepConfig->layer0Begin, m_stepConfig->layer0End);
 	
-
-	m_valueNeighbPreloader.Init();
-	m_featureNeighbPreloader.Init();
+#ifdef FOR_CELL
+	m_layerIterator.ReserveTag();
+	m_valueNeighbPreloader.ReserveTags();	
+	m_featureNeighbPreloader.ReserveTags();
+#endif
+	
+	m_valueNeighbPreloader.Reset();
+	m_featureNeighbPreloader.Reset();
 
 	
 	// prepare neighbour preloaders
@@ -190,15 +195,6 @@ UpdateCalculatorSPE::CalculateChange()
 	
 	if(m_updateBufferArray.IsFlushNeeded())
 		m_updateBufferArray.FlushArray();
-	
-	// wait for ops to guarantee all is complete before this method ends
-	// and to return its tags back to gate
-	m_valueNeighbPreloader.Fini();
-	m_featureNeighbPreloader.Fini();
-	
-#ifdef FOR_CELL	
-	m_updateBufferArray.WaitForTransfer();
-#endif
 
 	// Ask the finite difference function to compute the time step for
 	// this iteration.  We give it the global data pointer to use, then
@@ -214,6 +210,19 @@ UpdateCalculatorSPE::CalculateChange()
 	DL_PRINT(UPDATE_CALC_DEBUG, "value=%f", timeStep);
 #else
 	DL_PRINT(UPDATE_CALC_DEBUG, "value=" << timeStep);
+#endif
+	
+#ifdef FOR_CELL
+	m_valueNeighbPreloader.ReturnTags();
+	m_featureNeighbPreloader.ReturnTags();
+	
+	// wait for ops to guarantee all is complete before this method ends
+	// and to return its tags back to gate
+	m_valueNeighbPreloader.WaitForSaving();
+	m_featureNeighbPreloader.WaitForSaving();
+	m_layerIterator.ReturnTag();
+
+	m_updateBufferArray.WaitForTransfer();
 #endif
 	
 	return timeStep;

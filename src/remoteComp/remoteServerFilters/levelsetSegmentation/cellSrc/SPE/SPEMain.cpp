@@ -20,9 +20,10 @@ using namespace M4D::Cell;
 #define INT_TO_FLOAT(x) (*((float32 *) &x))
 #define FLOAT_TO_INT(x) (*((uint32_t *) &x))
 
-#define DEBUG_MANAGING_MAILBOX_COMM 12
+#define DEBUG_MANAGING_MAILBOX_COMM 0
 
-int main(unsigned long long speid, unsigned long long argp,
+int main(unsigned long long speid __attribute__ ((unused)), 
+		unsigned long long argp,
 		unsigned long long envp __attribute__ ((unused)))
 {
 	// config structures
@@ -107,7 +108,10 @@ int main(unsigned long long speid, unsigned long long argp,
 			DMAGate::ReturnTag(tag);
 
 			dt = spu_readch(SPU_RdInMbox);
+			
+			_applyUpdateCalc.InitPreloaders();
 			retval = _applyUpdateCalc.ApplyUpdate(INT_TO_FLOAT(dt));
+			_applyUpdateCalc.FiniPreloaders();
 			spu_writech(SPU_WrOutMbox, (uint32_t) JOB_DONE);
 			spu_writech(SPU_WrOutMbox, FLOAT_TO_INT(retval));
 			break;
@@ -122,7 +126,9 @@ int main(unsigned long long speid, unsigned long long argp,
 			mfc_read_tag_status_all();
 			DMAGate::ReturnTag(tag);
 
+			_applyUpdateCalc.InitPreloaders();
 			_applyUpdateCalc.PropagateAllLayerValues();
+			_applyUpdateCalc.FiniPreloaders();
 			spu_writech(SPU_WrOutMbox, (uint32_t) JOB_DONE);
 			// just for something to be writen
 			spu_writech(SPU_WrOutMbox, (uint32_t) retval);

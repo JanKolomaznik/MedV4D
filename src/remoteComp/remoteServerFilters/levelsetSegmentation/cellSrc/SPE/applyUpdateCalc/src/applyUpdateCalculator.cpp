@@ -68,8 +68,10 @@ ApplyUpdateSPE::ValueType ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	//		  std::ofstream b(s.str().c_str());
 	//		  m_outIter.GetNeighborhood().PrintImage(b);
 
-	m_valueNeighPreloader.Init();
-	m_statusNeighPreloader.Init();
+//	m_valueNeighPreloader.Init();
+//	m_statusNeighPreloader.Init();
+	m_valueNeighPreloader.Reset();
+	m_statusNeighPreloader.Reset();
 
 	// pre-load first bunch of neighbs
 	_loaded = m_layerIterator.GetLoaded();
@@ -107,8 +109,8 @@ ApplyUpdateSPE::ValueType ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 
 	// wait for ops to guarantee all is complete before this method ends
 	// and to return its tags back to gate
-	m_valueNeighPreloader.Fini();
-	m_statusNeighPreloader.Fini();
+//	m_valueNeighPreloader.Fini();
+//	m_statusNeighPreloader.Fini();
 
 #ifdef FOR_CELL
 #else
