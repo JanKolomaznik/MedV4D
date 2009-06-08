@@ -168,8 +168,8 @@ UpdateCalculatorSPE::CalculateChange()
 	{
 		loaded = m_layerIterator.GetLoaded();
 			// load approp neigborhood
-			m_valueNeighbPreloader.Load(*loaded);//->m_Value);
-			m_featureNeighbPreloader.Load(*loaded);//->m_Value);
+			m_valueNeighbPreloader.Load(*loaded);
+			m_featureNeighbPreloader.Load(*loaded);
 
 		
 		m_outIter.SetNeighbourhood( m_valueNeighbPreloader.GetLoaded());
@@ -188,7 +188,8 @@ UpdateCalculatorSPE::CalculateChange()
 		counter++;
 	}
 	
-	m_updateBufferArray.FlushArray();
+	if(m_updateBufferArray.IsFlushNeeded())
+		m_updateBufferArray.FlushArray();
 	
 	// wait for ops to guarantee all is complete before this method ends
 	// and to return its tags back to gate

@@ -11,7 +11,6 @@ public:
 	typedef T TRemoteArrayCellBuf[2][REMOTEARRAY_BUF_SIZE];
 	
 	RemoteArrayCell(TRemoteArrayCellBuf &buffer);
-	//RemoteArrayCell(Address array);
 	~RemoteArrayCell();
 	
 	void push_back(T val);
@@ -19,6 +18,7 @@ public:
 	void SetBeginEnd(T *begin, T *end);
 	
 	void SetArray(Address array);
+	bool IsFlushNeeded() { return m_currPos != 0; }
 	void FlushArray();
 	
 #ifdef FOR_CELL
@@ -26,7 +26,6 @@ public:
 #endif
 	
 private:
-	//void CopyData(T *src, T *dest, size_t size);
 	
 	TRemoteArrayCellBuf &m_buf;
 	bool m_currBuf;

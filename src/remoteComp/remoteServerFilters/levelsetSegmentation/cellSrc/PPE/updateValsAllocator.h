@@ -12,7 +12,7 @@ namespace Cell
 /**
  * Size of one allocation. Prevents repeating allocation of similar size
  */
-#define ALLOC_CHUNK_SIZE 32
+#define ALLOC_CHUNK_SIZE 256
 
 #define ZERO_BUFFER 1
 
@@ -42,9 +42,6 @@ public:
 				free(_array);
 			}
 			
-			
-//			// aligned to chunks that SPE process
-//			_howMany = size + (size % REMOTEARRAY_BUF_SIZE);
 			_howMany = (1 + (size / ALLOC_CHUNK_SIZE)) * ALLOC_CHUNK_SIZE;
 			
 			if( posix_memalign((void **)&_array, 128, _howMany * sizeof(T)) != 0)
