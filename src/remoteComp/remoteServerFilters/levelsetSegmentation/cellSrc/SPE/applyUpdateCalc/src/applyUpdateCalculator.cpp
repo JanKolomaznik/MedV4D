@@ -1,4 +1,3 @@
-
 #include "common/Types.h"
 #include "../applyUpdateCalculator.h"
 #include "../../vnl_math.h"
@@ -13,12 +12,10 @@ using namespace M4D::Cell;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ApplyUpdateSPE::ApplyUpdateSPE(SharedResources *shaRes)
-	: LayerValuesPropagator(shaRes)
-	, m_stepConfig(&shaRes->_changeConfig)
-	, m_localNodeStore(m_localNodeStoreBuffer)
-	, m_updateValuesIt(shaRes->_buf)
-	, m_ElapsedIterations(0)
+ApplyUpdateSPE::ApplyUpdateSPE(SharedResources *shaRes) :
+	LayerValuesPropagator(shaRes), m_stepConfig(&shaRes->_changeConfig),
+			m_localNodeStore(m_localNodeStoreBuffer),
+			m_updateValuesIt(shaRes->_buf), m_ElapsedIterations(0)
 {
 
 }
@@ -32,11 +29,10 @@ ApplyUpdateSPE::~ApplyUpdateSPE()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ApplyUpdateSPE::ValueType
-ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
+ApplyUpdateSPE::ValueType ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 {
 	D_COMMAND(if(dt == 0) D_PRINT("WARNING: ApplyUpdate: dt=0"));
-	
+
 	MyLayerType UpList[2];
 	MyLayerType DownList[2];
 
@@ -44,95 +40,94 @@ ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	//  for(typename UpdateBufferType::iterator it = m_UpdateBuffer.begin(); it != m_UpdateBuffer.end(); it++)
 	//	  LOUT << *it << ", ";
 	//  LOG("");
-	
+
 	// prepare neighbour preloaders
-		m_valueNeighPreloader.SetImageProps(&commonConf->valueImageProps);
-		m_statusNeighPreloader.SetImageProps(&commonConf->statusImageProps);
-		
-//	
-//	NeighborhoodCell<TPixelValue> outNeigh;
-//	outNeigh.SetImageProperties( &commonConf->valueImageProps);
-//	NeighborhoodCell<StatusType> statusNeigh;
-//	statusNeigh.SetImageProperties( &commonConf->statusImageProps);
-//
-//	m_outIter.SetNeighbourhood( &outNeigh);
-//	m_statusIter.SetNeighbourhood( &statusNeigh);
-	
+	m_valueNeighPreloader.SetImageProps(&commonConf->valueImageProps);
+	m_statusNeighPreloader.SetImageProps(&commonConf->statusImageProps);
+
+	//	
+	//	NeighborhoodCell<TPixelValue> outNeigh;
+	//	outNeigh.SetImageProperties( &commonConf->valueImageProps);
+	//	NeighborhoodCell<StatusType> statusNeigh;
+	//	statusNeigh.SetImageProperties( &commonConf->statusImageProps);
+	//
+	//	m_outIter.SetNeighbourhood( &outNeigh);
+	//	m_statusIter.SetNeighbourhood( &statusNeigh);
+
 	// prepare iterator over update value list
-	this->m_updateValuesIt.SetArray(m_stepConfig->updateBuffBegin);	
+	this->m_updateValuesIt.SetArray(m_stepConfig->updateBuffBegin);
 	// prepare iterator over active layer
-	this->m_layerIterator.SetBeginEnd(m_stepConfig->layer0Begin, m_stepConfig->layer0End);
-		
+	this->m_layerIterator.SetBeginEnd(m_stepConfig->layer0Begin,
+			m_stepConfig->layer0End);
+
 	uint32 counter = 0;
 	ValueType rms_change_accumulator = this->m_ValueZero;
-	
-//	std::stringstream s;
-//		  s << "before" << this->m_ElapsedIterations;
-//		  std::ofstream b(s.str().c_str());
-//		  m_outIter.GetNeighborhood().PrintImage(b);
-	
+
+	//	std::stringstream s;
+	//		  s << "before" << this->m_ElapsedIterations;
+	//		  std::ofstream b(s.str().c_str());
+	//		  m_outIter.GetNeighborhood().PrintImage(b);
+
 	m_valueNeighPreloader.Init();
 	m_statusNeighPreloader.Init();
-	
-	
+
 	// pre-load first bunch of neighbs
 	_loaded = m_layerIterator.GetLoaded();
-	m_valueNeighPreloader.Load(*_loaded);//->m_Value);
-	m_statusNeighPreloader.Load(*_loaded);//->m_Value);
-	
-		
-	while(m_valueNeighPreloader.GetCurrNodesNext() != m_stepConfig->layer0End)//m_layerIterator.HasNext())
+	m_valueNeighPreloader.Load(*_loaded);
+	m_statusNeighPreloader.Load(*_loaded);
+
+	while (m_valueNeighPreloader.GetCurrNodesNext() != m_stepConfig->layer0End)
 	{
 		// do one run
-		UpdateActiveLayerValues(dt, &UpList[0], &DownList[0], counter, rms_change_accumulator);
+		UpdateActiveLayerValues(dt, &UpList[0], &DownList[0], counter,
+				rms_change_accumulator);
 
-	// Process the status up/down lists.  This is an iterative process which
-	// proceeds outwards from the active layer.  Each iteration generates the
-	// list for the next iteration.
+		// Process the status up/down lists.  This is an iterative process which
+		// proceeds outwards from the active layer.  Each iteration generates the
+		// list for the next iteration.
 		ProcessStatusLists(UpList, DownList);
 	}
 #ifdef FOR_CELL
-	DL_PRINT(DEBUG_ALG, "\n14rms accum: %f, counter: %f\n", rms_change_accumulator, counter);
+	DL_PRINT(DEBUG_ALG, "\n14rms accum: %f, counter: %u\n", rms_change_accumulator, counter);
 	this->m_updateValuesIt.WaitForTransfer();
 #else
-	  DL_PRINT(DEBUG_ALG, std::endl << "14rms accum: " << rms_change_accumulator << "counter: " << counter);
+	DL_PRINT(DEBUG_ALG, std::endl << "14rms accum: " << rms_change_accumulator << "counter: " << counter);
 #endif
-	
-//	std::stringstream s3;
-//		  s3 << "afterOutside" << this->m_ElapsedIterations;
-//		  std::ofstream a1(s3.str().c_str());
-//		  m_outIter.GetNeighborhood().PrintImage(a1);
+
+	//	std::stringstream s3;
+	//		  s3 << "afterOutside" << this->m_ElapsedIterations;
+	//		  std::ofstream a1(s3.str().c_str());
+	//		  m_outIter.GetNeighborhood().PrintImage(a1);
 
 	// Finally, we update all of the layer values (excluding the active layer,
 	// which has already been updated).
 	this->PropagateAllLayerValues();
-	
+
 	m_ElapsedIterations++;
-	
+
 	// wait for ops to guarantee all is complete before this method ends
 	// and to return its tags back to gate
 	m_valueNeighPreloader.Fini();
 	m_statusNeighPreloader.Fini();
-	
+
 #ifdef FOR_CELL
 #else
 	DL_PRINT(DEBUG_ALG, "returning: " << rms_change_accumulator);
 #endif
-	
+
 	return rms_change_accumulator;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void
-ApplyUpdateSPE::ProcessStatusLists(
-		MyLayerType *UpLists, MyLayerType *DownLists)
+void ApplyUpdateSPE::ProcessStatusLists(MyLayerType *UpLists,
+		MyLayerType *DownLists)
 {
 	unsigned int j, k, t;
 
 	StatusType up_to, up_search;
 	StatusType down_to, down_search;
-	
+
 	// First process the status lists generated on the active layer.
 	this->ProcessStatusList(&UpLists[0], &UpLists[1], 2, 1);
 	this->ProcessStatusList(&DownLists[0], &DownLists[1], 1, 2);
@@ -145,7 +140,8 @@ ApplyUpdateSPE::ProcessStatusLists(
 	while (down_search < static_cast<StatusType>( LYERCOUNT ) )
 	{
 		this->ProcessStatusList(&UpLists[j], &UpLists[k], up_to, up_search);
-		this->ProcessStatusList(&DownLists[j], &DownLists[k], down_to, down_search);
+		this->ProcessStatusList(&DownLists[j], &DownLists[k], down_to,
+				down_search);
 
 		if (up_to == 0)
 			up_to += 1;
@@ -164,12 +160,13 @@ ApplyUpdateSPE::ProcessStatusLists(
 
 	// Process the outermost inside/outside layers in the sparse field.
 	this->ProcessStatusList(&UpLists[j], &UpLists[k], up_to, this->m_StatusNull);
-	this->ProcessStatusList(&DownLists[j], &DownLists[k], down_to, this->m_StatusNull);
-	
-//	 std::stringstream s2;
-//			  s2 << "beforeOutside" << this->m_ElapsedIterations;
-//			  std::ofstream b1(s2.str().c_str());
-//	m_statusIter.GetNeighborhood().PrintImage(b1);
+	this->ProcessStatusList(&DownLists[j], &DownLists[k], down_to,
+			this->m_StatusNull);
+
+	//	 std::stringstream s2;
+	//			  s2 << "beforeOutside" << this->m_ElapsedIterations;
+	//			  std::ofstream b1(s2.str().c_str());
+	//	m_statusIter.GetNeighborhood().PrintImage(b1);
 
 	// Now we are left with the lists of indicies which must be
 	// brought into the outermost layers.  Bring UpList into last inside layer
@@ -180,12 +177,11 @@ ApplyUpdateSPE::ProcessStatusLists(
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void
-ApplyUpdateSPE::ProcessOutsideList(
-		MyLayerType *OutsideList, StatusType ChangeToStatus)
+void ApplyUpdateSPE::ProcessOutsideList(MyLayerType *OutsideList,
+		StatusType ChangeToStatus)
 {
 	SparseFieldLevelSetNode *node;
-	
+
 	//LOUT << "ProcessOutsideList" << std::endl << std::endl;
 
 	// Push each index in the input list into its appropriate status layer
@@ -198,32 +194,26 @@ ApplyUpdateSPE::ProcessOutsideList(
 		m_statusIter.SetLocation(OutsideList->Front()->m_Value);
 		m_statusIter.SetCenterPixel(ChangeToStatus);
 		node = OutsideList->Front();
-		
+
 		OutsideList->PopFront();
-		
+
 #ifndef FOR_CELL
 		DL_PRINT(DEBUG_ALG, "1: pop ," << OutsideList->Size() << " node " << node->m_Value);
 #endif
-		
+
 		this->m_layerGate.PushToLayer(node, ChangeToStatus);
-		
 		m_localNodeStore.Return(node);
-//		m_Layers[ChangeToStatus]->PushFront(node);
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////
-void
-ApplyUpdateSPE::ProcessStatusList(
-		MyLayerType *InputList, MyLayerType *OutputList, StatusType ChangeToStatus,
+void ApplyUpdateSPE::ProcessStatusList(MyLayerType *InputList,
+		MyLayerType *OutputList, StatusType ChangeToStatus,
 		StatusType SearchForStatus)
 {
 	unsigned int i;
 	bool bounds_status;
 	SparseFieldLevelSetNode *node;
 	StatusType neighbor_status;
-//	NeighborhoodIterator<StatusImageType> statusIt(m_NeighborList.GetRadius(),
-//			m_StatusImage, this->GetOutput()->GetRequestedRegion());
-		
 
 	// Push each index in the input list into its appropriate status layer
 	// (ChangeToStatus) and update the status image value at that index.
@@ -232,19 +222,19 @@ ApplyUpdateSPE::ProcessStatusList(
 	while ( !InputList->Empty() )
 	{
 		node = InputList->Front();
-		m_statusIter.SetLocation(node->m_Value);		
+		m_statusIter.SetLocation(node->m_Value);
 		m_statusIter.SetCenterPixel(ChangeToStatus);
 
 #ifndef FOR_CELL
 		DL_PRINT(DEBUG_ALG, "1. node=" << node->m_Value);
 #endif
-		
+
 		InputList->PopFront(); // Must unlink from the input list  _before_ transferring to another list.
-		
+
 #ifndef FOR_CELL
 		DL_PRINT(DEBUG_ALG, "2: pop ," << OutputList->Size() << " node " << node->m_Value);
 #endif
-		
+
 		//m_Layers[ChangeToStatus]->PushFront(node);
 		this->m_layerGate.PushToLayer(node, ChangeToStatus);
 		// and return it to local store
@@ -253,9 +243,9 @@ ApplyUpdateSPE::ProcessStatusList(
 		for (i = 0; i < m_NeighborList.GetSize(); ++i)
 		{
 			//std::cout << "predIncriminovanym:" << std::endl << m_statusIter.GetNeighborhood() << std::endl;
-			neighbor_status
-					= m_statusIter.GetPixel(m_NeighborList.GetArrayIndex(i), bounds_status);
-			
+			neighbor_status = m_statusIter.GetPixel(
+					m_NeighborList.GetArrayIndex(i), bounds_status);
+
 #ifndef FOR_CELL
 			DL_PRINT(DEBUG_ALG, "2. neighbor_status=" << ((int32)neighbor_status) );
 #endif
@@ -269,18 +259,18 @@ ApplyUpdateSPE::ProcessStatusList(
 				{
 					node = m_localNodeStore.Borrow();
 					//node = BorrowFromLocalNodeStore();
-					
+
 					// reuse node from this loop coz it should be returned to local store
 					node->m_Value = m_statusIter.GetIndex()
 							+ m_NeighborList.GetNeighborhoodOffset(i);
-					
+
 #ifndef FOR_CELL
-					DL_PRINT(DEBUG_ALG, "4. pushing to outList node: " << node->m_Value);					
-		
+					DL_PRINT(DEBUG_ALG, "4. pushing to outList node: " << node->m_Value);
+
 					DL_PRINT(DEBUG_ALG, "3: push," << OutputList->Size() << " node " << node->m_Value);
 #endif
 					OutputList->PushFront(node);
-					
+
 				} // else this index was out of bounds.
 			}
 		}
@@ -289,110 +279,112 @@ ApplyUpdateSPE::ProcessStatusList(
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void
-ApplyUpdateSPE::UpdateActiveLayerValues(
-		TimeStepType dt, MyLayerType *UpList, MyLayerType *DownList, 
-		uint32 &counter, ValueType &rms_change_accumulator)
-{	
-	  const ValueType LOWER_ACTIVE_THRESHOLD = - (commonConf->m_ConstantGradientValue / 2.0);
-	  const ValueType UPPER_ACTIVE_THRESHOLD =    commonConf->m_ConstantGradientValue / 2.0;
-	  ValueType new_value, temp_value;
-	  StatusType neighbor_status;
-	  unsigned int i, idx;
-	  SparseFieldLevelSetNode *node;
-	  bool flag; //bounds_status, 
-	  
-	  ValueType centerVal;
-	  SparseFieldLevelSetNode *currNode;	  
-	  
+void ApplyUpdateSPE::UpdateActiveLayerValues(TimeStepType dt,
+		MyLayerType *UpList, MyLayerType *DownList, uint32 &counter,
+		ValueType &rms_change_accumulator)
+{
+	const ValueType LOWER_ACTIVE_THRESHOLD =
+			- (commonConf->m_ConstantGradientValue / 2.0);
+	const ValueType UPPER_ACTIVE_THRESHOLD =
+			commonConf->m_ConstantGradientValue / 2.0;
+	ValueType new_value, temp_value;
+	StatusType neighbor_status;
+	unsigned int i, idx;
+	SparseFieldLevelSetNode *node;
+	bool flag; //bounds_status, 
+
+	ValueType centerVal;
+	SparseFieldLevelSetNode *currNode;
+
 #define MAX_TURN_LENGHT 2
-	
+
 	uint16 turnCounter = 0;
-	  
-		//while (this->m_layerIterator.HasNext() && turnCounter < MAX_TURN_LENGHT)
-	    while(m_valueNeighPreloader.GetCurrNodesNext() != m_stepConfig->layer0End && turnCounter < MAX_TURN_LENGHT)
-		{
-			currNode = this->m_layerIterator.GetCurrItem();
-			turnCounter ++;
-			
-			DL_PRINT(DBG_LAYER_IT, 
-					"UpdateActiveLayerValues node: " << currNode->m_Value << "="
-						<< (SparseFieldLevelSetNode *)this->m_layerIterator.GetCentralMemAddrrOfCurrProcessedNode().Get64());
-			
-			// pre-load next neigborhoods
-			_loaded = m_layerIterator.GetLoaded();
-			m_valueNeighPreloader.Load(*_loaded);//->m_Value);
-			m_statusNeighPreloader.Load(*_loaded);//->m_Value);
-			
-			m_outIter.SetNeighbourhood( m_valueNeighPreloader.GetLoaded());
-			m_statusIter.SetNeighbourhood( m_statusNeighPreloader.GetLoaded());
-		  
-		  centerVal = m_outIter.GetCenterPixel();
-	
-	    new_value = this->CalculateUpdateValue(dt, centerVal, m_updateValuesIt.GetCurrVal());
-	
-	    // If this index needs to be moved to another layer, then search its
-	    // neighborhood for indicies that need to be pulled up/down into the
-	    // active layer. Set those new active layer values appropriately,
-	    // checking first to make sure they have not been set by a more
-	    // influential neighbor.
-	
-	    //   ...But first make sure any neighbors in the active layer are not
-	    // moving to a layer in the opposite direction.  This step is necessary
-	    // to avoid the creation of holes in the active layer.  The fix is simply
-	    // to not change this value and leave the index in the active set.
-	
-	    if (new_value >= UPPER_ACTIVE_THRESHOLD)
-	      { // This index will move UP into a positive (outside) layer.
-	      // First check for active layer neighbors moving in the opposite
-	      // direction.
-	      flag = false;
-	      for (i = 0; i < m_NeighborList.GetSize(); ++i)
-	        {
-	        if (m_statusIter.GetPixel(m_NeighborList.GetArrayIndex(i))
-	            == this->m_StatusActiveChangingDown)
-	          {
-	          flag = true;
-	          break;
-	          }
-	        }
-	      if (flag == true)
-	        {
-	        //++layerIt;
-	        ++m_updateValuesIt;
-	        this->m_layerIterator.Next();
-	        continue;
-	        }
-	
-	      rms_change_accumulator += vnl_math_sqr(new_value- centerVal );
-	
-	      // Search the neighborhood for inside indicies.
-	      temp_value = new_value - commonConf->m_ConstantGradientValue;
-	      for (i = 0; i < m_NeighborList.GetSize(); ++i)
-	        {
-	        idx = m_NeighborList.GetArrayIndex(i);
-	        neighbor_status = m_statusIter.GetPixel( idx );
-	        char tmp[2]; tmp[1] = 0;
-	               tmp[0] = (neighbor_status + '0');
-	        if (neighbor_status == 1)
-	          {
-	          // Keep the smallest possible value for the new active node.  This
-	          // places the new active layer node closest to the zero level-set.
-	        	ValueType pix = m_outIter.GetPixel(idx);
-	          if ( pix < LOWER_ACTIVE_THRESHOLD ||
-	               ::vnl_math_abs(temp_value) < ::vnl_math_abs(pix) )
-	            {
-	            m_outIter.SetPixel(idx, temp_value);
-	            }
-	          }
-	        }
-//	      node = m_LayerNodeStore->Borrow();
-	      //node = BorrowFromLocalNodeStore();
-	      node = m_localNodeStore.Borrow();
-	      node->m_Value = currNode->m_Value;
-	      
+
+	while (m_valueNeighPreloader.GetCurrNodesNext() != m_stepConfig->layer0End
+			&& turnCounter < MAX_TURN_LENGHT)
+	{
+		currNode = this->m_layerIterator.GetCurrItem();
+		turnCounter ++;
+
 #ifndef FOR_CELL
-	      DL_PRINT(DEBUG_ALG, "A1. pushing up node:" << node->m_Value);
+		DL_PRINT(DBG_LAYER_IT,
+				"UpdateActiveLayerValues node: " << currNode->m_Value << "="
+				<< (SparseFieldLevelSetNode *)this->m_layerIterator.GetCentralMemAddrrOfCurrProcessedNode().Get64());
+#endif
+
+		// pre-load next neigborhoods
+		_loaded = m_layerIterator.GetLoaded();
+		m_valueNeighPreloader.Load(*_loaded);//->m_Value);
+		m_statusNeighPreloader.Load(*_loaded);//->m_Value);
+
+		m_outIter.SetNeighbourhood(m_valueNeighPreloader.GetLoaded());
+		m_statusIter.SetNeighbourhood(m_statusNeighPreloader.GetLoaded());
+
+		centerVal = m_outIter.GetCenterPixel();
+
+		new_value = this->CalculateUpdateValue(dt, centerVal,
+				m_updateValuesIt.GetCurrVal());
+
+		// If this index needs to be moved to another layer, then search its
+		// neighborhood for indicies that need to be pulled up/down into the
+		// active layer. Set those new active layer values appropriately,
+		// checking first to make sure they have not been set by a more
+		// influential neighbor.
+
+		//   ...But first make sure any neighbors in the active layer are not
+		// moving to a layer in the opposite direction.  This step is necessary
+		// to avoid the creation of holes in the active layer.  The fix is simply
+		// to not change this value and leave the index in the active set.
+
+		if (new_value >= UPPER_ACTIVE_THRESHOLD)
+		{ // This index will move UP into a positive (outside) layer.
+			// First check for active layer neighbors moving in the opposite
+			// direction.
+			flag = false;
+			for (i = 0; i < m_NeighborList.GetSize(); ++i)
+			{
+				if (m_statusIter.GetPixel(m_NeighborList.GetArrayIndex(i))
+						== this->m_StatusActiveChangingDown)
+				{
+					flag = true;
+					break;
+				}
+			}
+			if (flag == true)
+			{
+				//++layerIt;
+				++m_updateValuesIt;
+				this->m_layerIterator.Next();
+				continue;
+			}
+
+			rms_change_accumulator += vnl_math_sqr(new_value- centerVal);
+
+			// Search the neighborhood for inside indicies.
+			temp_value = new_value - commonConf->m_ConstantGradientValue;
+			for (i = 0; i < m_NeighborList.GetSize(); ++i)
+			{
+				idx = m_NeighborList.GetArrayIndex(i);
+				neighbor_status = m_statusIter.GetPixel(idx);
+				char tmp[2];
+				tmp[1] = 0;
+				tmp[0] = (neighbor_status + '0');
+				if (neighbor_status == 1)
+				{
+					// Keep the smallest possible value for the new active node.  This
+					// places the new active layer node closest to the zero level-set.
+					ValueType pix = m_outIter.GetPixel(idx);
+					if (pix < LOWER_ACTIVE_THRESHOLD ||:: vnl_math_abs(temp_value) < ::vnl_math_abs(pix) )
+					{
+						m_outIter.SetPixel(idx, temp_value);
+					}
+				}
+			}
+			node = m_localNodeStore.Borrow();
+			node->m_Value = currNode->m_Value;
+
+#ifndef FOR_CELL
+							DL_PRINT(DEBUG_ALG, "A1. pushing up node:" << node->m_Value);
 	      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	      // tady se do uplistu da adresa z linked chain iteratoru, takze je treba 
 	      // si predtim vzit z local objetStore
@@ -402,13 +394,8 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	      m_statusIter.SetCenterPixel(this->m_StatusActiveChangingUp);
 	
 	      // Now remove this index from the active list.
-	      //release_node = layerIt.GetPointer();
-	      //++layerIt;
-	      //m_Layers[0]->Unlink(release_node);
 	      this->m_layerGate.UnlinkNode(
 	    		  this->m_layerIterator.GetCentralMemAddrrOfCurrProcessedNode(), 0);
-	      //m_LayerNodeStore->Return( release_node );
-	      //this->m_layerGate.ReturnToNodeStore(currNode);
 	      }
 	
 	    else if (new_value < LOWER_ACTIVE_THRESHOLD)
@@ -455,8 +442,6 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	            }
 	          }
 	        }
-//	      node = m_LayerNodeStore->Borrow();
-	      //node = BorrowFromLocalNodeStore();
 	      node = m_localNodeStore.Borrow();
 	      node->m_Value = currNode->m_Value;
 #ifndef FOR_CELL
@@ -468,12 +453,8 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	      m_statusIter.SetCenterPixel(this->m_StatusActiveChangingDown);
 	
 	      // Now remove this index from the active list.
-	      //release_node = layerIt.GetPointer();
-	      //++layerIt;
-	      //m_Layers[0]->Unlink(release_node);
-	      this->m_layerGate.UnlinkNode(this->m_layerIterator.GetCentralMemAddrrOfCurrProcessedNode(), 0);
-//	      m_LayerNodeStore->Return( release_node );
-	      //this->m_layerGate.ReturnToNodeStore(currNode);
+	      this->m_layerGate.UnlinkNode(
+	    		  this->m_layerIterator.GetCentralMemAddrrOfCurrProcessedNode(), 0);
 	      }
 	    else
 	      {
@@ -485,9 +466,7 @@ ApplyUpdateSPE::UpdateActiveLayerValues(
 	    ++m_updateValuesIt;
 	    this->m_layerIterator.Next();
 	    ++counter;
-	    }
-  
-	
+	}	
 }
 
 ///////////////////////////////////////////////////////////////////////////////

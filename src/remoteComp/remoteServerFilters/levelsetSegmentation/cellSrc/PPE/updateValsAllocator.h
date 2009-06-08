@@ -12,7 +12,7 @@ namespace Cell
 /**
  * Size of one allocation. Prevents repeating allocation of similar size
  */
-#define ALLOC_CHUNK_SIZE 512
+#define ALLOC_CHUNK_SIZE 32
 
 #define ZERO_BUFFER 1
 
@@ -48,7 +48,7 @@ public:
 			_howMany = (1 + (size / ALLOC_CHUNK_SIZE)) * ALLOC_CHUNK_SIZE;
 			
 			if( posix_memalign((void **)&_array, 128, _howMany * sizeof(T)) != 0)
-				throw "bad";
+				throw std::bad_alloc();
 			
 			D_PRINT("UpdateValsAllocator: NEW=" << _array);
 		}

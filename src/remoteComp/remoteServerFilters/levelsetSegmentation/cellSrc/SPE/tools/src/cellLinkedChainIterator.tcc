@@ -41,7 +41,7 @@ LinkedChainIteratorCell<Item>::SetBeginEnd(Address begin, Address end)
 		m_realAddresses[_loadingPos] = begin;
 		//			Load(begin, &m_buf[0], sizeof(Item));
 #ifdef FOR_CELL
-		tag = DMAGate::Get(begin, &m_buf[_loadingPos], sizeof(Item) );
+		DMAGate::Get(begin, &m_buf[_loadingPos], sizeof(Item), tag);
 #else
 		DMAGate::Get(begin, &m_buf[_loadingPos], sizeof(Item) );
 #endif
@@ -71,7 +71,7 @@ LinkedChainIteratorCell<Item>::GetLoaded(void)
 
 #ifdef FOR_CELL
 	DL_PRINT(DEBUG_CHAINTOOL, "normal: %lld, iterator's: %lld"
-			,( (Item *)pom.Get64() )->Next.Get64(),
+			,( (Item *)loadedIter.Get64() )->Next.Get64(),
 			m_buf[_loadingPos].Next.Get64() );
 #else
 	DL_PRINT(DEBUG_CHAINTOOL, "normal: " << ( (Item *)loadedIter.Get64() )->Next.Get64()
@@ -88,11 +88,13 @@ LinkedChainIteratorCell<Item>::GetLoaded(void)
 		
 		m_realAddresses[_loadingPos] = m_buf[_loadedPos].Next;
 		//Load(GetCurrItem()->Next, &m_buf[!m_currBufPosition], sizeof(Item));
-		DMAGate::Get(m_buf[_loadedPos].Next, &m_buf[_loadingPos], sizeof(Item) );
+		
 #ifdef FOR_CELL
 		DL_PRINT(DEBUG_CHAINTOOL, "loading node %d", counter);
+		DMAGate::Get(m_buf[_loadedPos].Next, &m_buf[_loadingPos], sizeof(Item), tag);
 #else
 		DL_PRINT(DEBUG_CHAINTOOL, "loading node " << counter);
+		DMAGate::Get(m_buf[_loadedPos].Next, &m_buf[_loadingPos], sizeof(Item) );
 #endif
 		counter++;
 	}

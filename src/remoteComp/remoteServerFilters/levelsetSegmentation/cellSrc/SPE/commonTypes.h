@@ -68,7 +68,7 @@ public:
 	TIndex               m_Value;
 	Address Next;
 	Address Previous;
-};
+} __attribute__ ((aligned (32)));
 
 
 #define LAYERGATE_ARRAY_SIZE 8

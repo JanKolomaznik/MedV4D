@@ -31,4 +31,10 @@ extern FILE *debugFile;
 #define	DL_PRINT( LEVEL, ... )
 #endif /*DEBUG_LEVEL*/
 
+#ifdef DEBUG_LEVEL
+#define D_COMMAND( ARG )	ARG
+#else
+#define	D_COMMAND(ARG)
+#endif /*DEBUG_LEVEL*/
+
 #endif /*SPEDEBUG_H_*/

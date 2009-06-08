@@ -72,9 +72,11 @@ void UpdateCalculatorSPE::UpdateFunctionProperties()
 void
 UpdateCalculatorSPE
 ::CalculateChangeItem(void)
-{		
+{
+#ifndef FOR_CELL
 	DL_PRINT(DBG_LAYER_IT, 
 			"Curr neighb.center=" << m_outIter.GetNeighborhood().m_currIndex);
+#endif
 	// Calculate the offset to the surface from the center of this
 	// neighborhood.  This is used by some level set functions in sampling a
 	// speed, advection, or curvature term.
