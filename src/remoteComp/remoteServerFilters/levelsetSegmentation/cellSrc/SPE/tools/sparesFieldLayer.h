@@ -39,7 +39,7 @@ public:
   {
   public:
 	  bool HasNext() {
-		  return Address2Node(_it->Next) != _end;
+		  return _it != _end;
 	  }
 	  
 	  NodeType *Next() { 

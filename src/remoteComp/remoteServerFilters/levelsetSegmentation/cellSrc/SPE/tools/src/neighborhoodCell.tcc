@@ -199,6 +199,7 @@ NeighborhoodCell<PixelType>::SetPixel(PixelType val, TOffset pos)
 		PixelType *begin = (PixelType *) ComputeImageDataPointer(i).Get64();
 		*begin = val;
 #endif
+		//D_PRINT("ShouldSave:" << (void*) ComputeImageDataPointer(i).Get64());
 		// and change the buffer as well
 		m_buf[traslationTable_[GetNeighborhoodIndex(pos)]] = val;
 	}
@@ -226,8 +227,8 @@ NeighborhoodCell<PixelType>
 	
 #ifdef FOR_CELL
 	memset((void*)_loadingCtx->_dmaListIter, 0, LIST_SET_NUM * sizeof(TDmaListIter));
-	memset((void*)traslationTable_, 0xFF, NEIGHBOURHOOD_SIZE * sizeof(int32));
 #endif
+	memset((void*)traslationTable_, 0xFF, NEIGHBOURHOOD_SIZE * sizeof(int32));
 	
 //	if(_loadingCtx->tags[0] == _loadingCtx->tags[1])
 //	{
@@ -286,6 +287,7 @@ NeighborhoodCell<PixelType>::SaveChanges(SavingCtx *ctx)
 		{
 			numOfSavings++;
 			
+
 			address = 
 				ComputeImageDataPointer(m_currIndex + OffsetFromPos(cnt)).Get64();
 			uint32 _alignIter = (uint32) (address & 0xF) / sizeof(PixelType);
@@ -303,6 +305,30 @@ NeighborhoodCell<PixelType>::SaveChanges(SavingCtx *ctx)
 			ctx->tmpBuf[beginInBuf] = m_buf[traslationTable_[cnt]];
 			
 			ctx->_dmaListIter[_alignIter]++;
+		}
+		
+		_dirtyElems >>= 1;	// shift right
+		cnt++;
+	}
+}
+#else
+template<typename PixelType>
+void
+NeighborhoodCell<PixelType>::SaveChanges()
+{
+	uint32 cnt = 0;
+	
+	uint64 address;
+	while(_dirtyElems && (cnt < 27))
+	{
+		if(_dirtyElems & 0x1)
+		{
+			numOfSavings++;
+			
+
+			address = 
+				ComputeImageDataPointer(m_currIndex + OffsetFromPos(cnt)).Get64();
+			//D_PRINT("Eventually:" << (void *) address);
 		}
 		
 		_dirtyElems >>= 1;	// shift right
@@ -391,6 +417,40 @@ std::ostream & operator<<(std::ostream &stream, NeighborhoodCell<PixelType> &n)
 
 ///////////////////////////////////////////////////////////////////////////////
 
+
+template<typename PixelType>
+void
+NeighborhoodCell<PixelType>::Print()
+{
+#ifdef FOR_CELL
+	D_PRINT("m_currIndex: [%d, %d, %d]\n", m_currIndex[0], m_currIndex[1], m_currIndex[2]);
+#else
+	
+#endif
+	
+	int8 pos;
+	
+	for(uint32 i=0; i<NEIGHBOURHOOD_SIZE; i++)
+	{
+		pos = traslationTable_[i];
+		if(pos != -1)
+		{
+#ifdef FOR_CELL
+		D_PRINT("%f\n", (float32) m_buf[pos]);
+#else
+		D_PRINT((float32) m_buf[pos]);
+#endif
+		}
+	}
+	
+#ifdef FOR_CELL
+	D_PRINT("\n");
+#else
+	D_PRINT("");
+#endif
+}
+///////////////////////////////////////////////////////////////////////////////
+#ifndef FOR_CELL
 template<typename PixelType>
 void
 NeighborhoodCell<PixelType>::PrintImage(std::ostream &s)
@@ -412,7 +472,7 @@ NeighborhoodCell<PixelType>::PrintImage(std::ostream &s)
 		}
 	}
 }
-
+#endif //FOR_CELL
 ///////////////////////////////////////////////////////////////////////////////
 
 #endif

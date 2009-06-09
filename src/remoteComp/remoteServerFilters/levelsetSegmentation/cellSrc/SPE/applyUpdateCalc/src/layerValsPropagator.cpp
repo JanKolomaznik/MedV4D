@@ -64,13 +64,13 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from,
 	m_layerIterator.SetBeginEnd(m_propLayerValuesConfig->layerBegins[to],
 			m_propLayerValuesConfig->layerEnds[to]);
 
-	if(m_layerIterator.HasNextToLoad())
-			{
-	currNode = m_layerIterator.GetLoaded();
-	// load approp neigborhood
-	m_valueNeighPreloader.Load(*currNode);
-	m_statusNeighPreloader.Load(*currNode);
-			}
+	if (m_layerIterator.HasNextToLoad())
+	{
+		currNode = m_layerIterator.GetLoaded();
+		// load approp neigborhood
+		m_valueNeighPreloader.Load(*currNode);
+		m_statusNeighPreloader.Load(*currNode);
+	}
 
 	while (m_valueNeighPreloader.GetCurrNodesNext()
 			!= m_propLayerValuesConfig->layerEnds[to])
@@ -78,7 +78,7 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from,
 		m_outIter.SetNeighbourhood(m_valueNeighPreloader.GetLoaded());
 		m_statusIter.SetNeighbourhood(m_statusNeighPreloader.GetLoaded());
 
-		if(m_layerIterator.HasNextToLoad())
+		if (m_layerIterator.HasNextToLoad())
 		{
 			// load next portion
 			currNode = m_layerIterator.GetLoaded();
@@ -91,11 +91,9 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from,
 
 		DoTheWork(from, to, promote);
 
-#ifdef FOR_CELL
 		// save to propagte changes in neighbourhoods
 		m_valueNeighPreloader.SaveCurrItem();
 		m_statusNeighPreloader.SaveCurrItem();
-#endif
 
 		this->m_layerIterator.Next();
 	}
@@ -120,6 +118,10 @@ void LayerValuesPropagator::DoTheWork(StatusType from, StatusType to,
 			<< (SparseFieldLevelSetNode *)this->m_layerIterator.GetCentralMemAddrrOfCurrProcessedNode().Get64()
 			<< "Neigb: " << m_outIter.GetNeighborhood().m_currIndex);
 #endif
+	
+//	m_outIter.GetNeighborhood().Print();
+//	m_statusIter.GetNeighborhood().Print();
+
 
 	// Is this index marked for deletion? If the status image has
 	// been marked with another layer's value, we need to delete this node

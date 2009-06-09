@@ -92,10 +92,13 @@ PreloadedNeigborhoods<PixelType, MYSIZE>::SaveCurrItem()
 			tagIter++;
 		}
 	}
+#else
+	m_buf[_loaded].SaveChanges();
+#endif
 	
 	// change pointers
 	_saving = _loaded;
-#endif
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////

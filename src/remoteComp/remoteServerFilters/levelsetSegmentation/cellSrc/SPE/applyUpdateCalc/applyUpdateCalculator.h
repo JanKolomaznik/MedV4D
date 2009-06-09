@@ -50,6 +50,7 @@ private:
 //	{
 //		return this->m_layerGate.m_LayerNodeStore->Borrow();
 //	}
+	LayerValuesPropagator::TStatusNeighbPreloadeder m_statusUpdatePreloader;
 	
 	CalculateChangeAndUpdActiveLayerConf *m_stepConfig;
 	

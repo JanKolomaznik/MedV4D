@@ -44,6 +44,7 @@ ApplyUpdateSPE::ValueType ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	// prepare neighbour preloaders
 	m_valueNeighPreloader.SetImageProps(&commonConf->valueImageProps);
 	m_statusNeighPreloader.SetImageProps(&commonConf->statusImageProps);
+	m_statusUpdatePreloader.SetImageProps(&commonConf->statusImageProps);
 
 	//	
 	//	NeighborhoodCell<TPixelValue> outNeigh;
@@ -68,18 +69,22 @@ ApplyUpdateSPE::ValueType ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	//		  std::ofstream b(s.str().c_str());
 	//		  m_outIter.GetNeighborhood().PrintImage(b);
 
-//	m_valueNeighPreloader.Init();
-//	m_statusNeighPreloader.Init();
+	//	m_valueNeighPreloader.Init();
+	//	m_statusNeighPreloader.Init();
 	m_valueNeighPreloader.Reset();
 	m_statusNeighPreloader.Reset();
+	
+#ifdef FOR_CELL
+	m_statusUpdatePreloader.ReserveTags();
+#endif
 
-	if(m_layerIterator.HasNextToLoad())
-			{
-	// pre-load first bunch of neighbs
-	_loaded = m_layerIterator.GetLoaded();
-	m_valueNeighPreloader.Load(*_loaded);
-	m_statusNeighPreloader.Load(*_loaded);
-			}
+	if (m_layerIterator.HasNextToLoad())
+	{
+		// pre-load first bunch of neighbs
+		_loaded = m_layerIterator.GetLoaded();
+		m_valueNeighPreloader.Load(*_loaded);
+		m_statusNeighPreloader.Load(*_loaded);
+	}
 
 	while (m_valueNeighPreloader.GetCurrNodesNext() != m_stepConfig->layer0End)
 	{
@@ -95,6 +100,8 @@ ApplyUpdateSPE::ValueType ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 #ifdef FOR_CELL
 	DL_PRINT(DEBUG_ALG, "\n14rms accum: %f, counter: %u\n", rms_change_accumulator, counter);
 	this->m_updateValuesIt.WaitForTransfer();
+	
+	m_statusUpdatePreloader.ReturnTags();
 #else
 	DL_PRINT(DEBUG_ALG, std::endl << "14rms accum: " << rms_change_accumulator << "counter: " << counter);
 #endif
@@ -112,8 +119,8 @@ ApplyUpdateSPE::ValueType ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 
 	// wait for ops to guarantee all is complete before this method ends
 	// and to return its tags back to gate
-//	m_valueNeighPreloader.Fini();
-//	m_statusNeighPreloader.Fini();
+	//	m_valueNeighPreloader.Fini();
+	//	m_statusNeighPreloader.Fini();
 
 #ifdef FOR_CELL
 #else
@@ -187,6 +194,14 @@ void ApplyUpdateSPE::ProcessOutsideList(MyLayerType *OutsideList,
 {
 	SparseFieldLevelSetNode *node;
 
+	MyLayerType::Iterator it;
+		
+	m_statusUpdatePreloader.Reset();
+	
+	OutsideList->InitIterator(it);
+	if(it.HasNext())
+		m_statusUpdatePreloader.Load(*it.Next());
+		
 	//LOUT << "ProcessOutsideList" << std::endl << std::endl;
 
 	// Push each index in the input list into its appropriate status layer
@@ -196,7 +211,12 @@ void ApplyUpdateSPE::ProcessOutsideList(MyLayerType *OutsideList,
 #ifndef FOR_CELL
 		DL_PRINT(DEBUG_ALG, "m_StatusImage->SetPixel(" << OutsideList->Front()->m_Value << ")=" << ((uint32)ChangeToStatus) );
 #endif
-		m_statusIter.SetLocation(OutsideList->Front()->m_Value);
+		//m_statusIter.SetLocation(OutsideList->Front()->m_Value);
+		m_statusIter.SetNeighbourhood(m_statusUpdatePreloader.GetLoaded());
+		
+		if(it.HasNext())
+				m_statusUpdatePreloader.Load(*it.Next());
+		
 		m_statusIter.SetCenterPixel(ChangeToStatus);
 		node = OutsideList->Front();
 
@@ -208,6 +228,8 @@ void ApplyUpdateSPE::ProcessOutsideList(MyLayerType *OutsideList,
 
 		this->m_layerGate.PushToLayer(node, ChangeToStatus);
 		m_localNodeStore.Return(node);
+		
+		m_statusUpdatePreloader.SaveCurrItem();
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -219,6 +241,19 @@ void ApplyUpdateSPE::ProcessStatusList(MyLayerType *InputList,
 	bool bounds_status;
 	SparseFieldLevelSetNode *node;
 	StatusType neighbor_status;
+	MyLayerType::Iterator it;
+	
+	m_statusUpdatePreloader.Reset();
+	
+//	if(!InputList->Empty())
+//	{
+//		int i=10;
+//		i++;
+//	}
+	
+	InputList->InitIterator(it);
+	if(it.HasNext())
+		m_statusUpdatePreloader.Load(*it.Next());
 
 	// Push each index in the input list into its appropriate status layer
 	// (ChangeToStatus) and update the status image value at that index.
@@ -226,8 +261,16 @@ void ApplyUpdateSPE::ProcessStatusList(MyLayerType *InputList,
 	// the output list (search for SearchForStatus).
 	while ( !InputList->Empty() )
 	{
+		m_statusIter.SetNeighbourhood(m_statusUpdatePreloader.GetLoaded());
+		
+		if(it.HasNext())
+				m_statusUpdatePreloader.Load(*it.Next());
+		
 		node = InputList->Front();
-		m_statusIter.SetLocation(node->m_Value);
+		D_PRINT("currnode" << "=" << node->m_Value
+				<< " x nigb.node=" << m_statusIter.GetNeighborhood().m_currIndex);
+		//m_statusIter.SetLocation(node->m_Value);
+		
 		m_statusIter.SetCenterPixel(ChangeToStatus);
 
 #ifndef FOR_CELL
@@ -279,6 +322,8 @@ void ApplyUpdateSPE::ProcessStatusList(MyLayerType *InputList,
 				} // else this index was out of bounds.
 			}
 		}
+		
+		m_statusUpdatePreloader.SaveCurrItem();
 	}
 }
 
@@ -316,13 +361,13 @@ void ApplyUpdateSPE::UpdateActiveLayerValues(TimeStepType dt,
 				"UpdateActiveLayerValues node: " << currNode->m_Value << "="
 				<< (SparseFieldLevelSetNode *)this->m_layerIterator.GetCentralMemAddrrOfCurrProcessedNode().Get64());
 #endif
-		if(m_layerIterator.HasNextToLoad())
-				{
-		// pre-load next neigborhoods
-		_loaded = m_layerIterator.GetLoaded();
-		m_valueNeighPreloader.Load(*_loaded);
-		m_statusNeighPreloader.Load(*_loaded);
-				}
+		if (m_layerIterator.HasNextToLoad())
+		{
+			// pre-load next neigborhoods
+			_loaded = m_layerIterator.GetLoaded();
+			m_valueNeighPreloader.Load(*_loaded);
+			m_statusNeighPreloader.Load(*_loaded);
+		}
 
 		m_outIter.SetNeighbourhood(m_valueNeighPreloader.GetLoaded());
 		m_statusIter.SetNeighbourhood(m_statusNeighPreloader.GetLoaded());
@@ -362,6 +407,9 @@ void ApplyUpdateSPE::UpdateActiveLayerValues(TimeStepType dt,
 				//++layerIt;
 				++m_updateValuesIt;
 				this->m_layerIterator.Next();
+				// save to propagte changes in neighbourhoods
+						m_valueNeighPreloader.SaveCurrItem();
+						m_statusNeighPreloader.SaveCurrItem();
 				continue;
 			}
 
@@ -424,6 +472,9 @@ void ApplyUpdateSPE::UpdateActiveLayerValues(TimeStepType dt,
 	        //++layerIt;
 	        ++m_updateValuesIt;
 	        this->m_layerIterator.Next();
+	        // save to propagte changes in neighbourhoods
+	        		m_valueNeighPreloader.SaveCurrItem();
+	        		m_statusNeighPreloader.SaveCurrItem();
 	        continue;
 	        }
 	      
@@ -472,6 +523,9 @@ void ApplyUpdateSPE::UpdateActiveLayerValues(TimeStepType dt,
 	      }
 	    ++m_updateValuesIt;
 	    this->m_layerIterator.Next();
+	    // save to propagte changes in neighbourhoods
+	    		m_valueNeighPreloader.SaveCurrItem();
+	    		m_statusNeighPreloader.SaveCurrItem();
 	    ++counter;
 	}	
 }

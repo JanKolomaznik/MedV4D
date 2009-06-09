@@ -52,6 +52,8 @@ public:
 	
 	void SaveChanges(SavingCtx *ctx);	
 	LoadingCtx *_loadingCtx;
+#else
+	void SaveChanges();
 #endif
 	
 	typedef TImageProperties<PixelType> TImageProps;
@@ -83,11 +85,13 @@ public:
 		}
 	bool IsWithinImage(const TIndex &pos);
 	TIndex m_currIndex;
+
+	void Print();
+#ifndef FOR_CELL
 	void PrintImage(std::ostream &s);
+#endif
 	
 	void HowMuchCrossesBoundary(TOffset &howMuch);
-	
-
 	
 protected:
 	

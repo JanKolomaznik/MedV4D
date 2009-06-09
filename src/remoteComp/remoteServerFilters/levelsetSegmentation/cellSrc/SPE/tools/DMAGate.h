@@ -12,7 +12,7 @@
 #endif
 
 //#define DEBUG_MFC 1
-#define TAG_RETURN_DEBUG 1
+//#define TAG_RETURN_DEBUG 1
 
 namespace M4D
 {
