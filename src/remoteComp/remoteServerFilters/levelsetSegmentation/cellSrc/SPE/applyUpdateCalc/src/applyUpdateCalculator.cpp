@@ -2,8 +2,6 @@
 #include "../applyUpdateCalculator.h"
 #include "../../vnl_math.h"
 #include <string.h>
-//#include <fstream>
-//#include <iostream>
 
 using namespace M4D::Cell;
 
@@ -267,8 +265,8 @@ void ApplyUpdateSPE::ProcessStatusList(MyLayerType *InputList,
 				m_statusUpdatePreloader.Load(*it.Next());
 		
 		node = InputList->Front();
-		D_PRINT("currnode" << "=" << node->m_Value
-				<< " x nigb.node=" << m_statusIter.GetNeighborhood().m_currIndex);
+//		D_PRINT("currnode" << "=" << node->m_Value
+//				<< " x nigb.node=" << m_statusIter.GetNeighborhood().m_currIndex);
 		//m_statusIter.SetLocation(node->m_Value);
 		
 		m_statusIter.SetCenterPixel(ChangeToStatus);

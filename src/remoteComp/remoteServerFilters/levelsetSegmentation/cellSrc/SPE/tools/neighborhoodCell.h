@@ -26,16 +26,17 @@ public:
 #define LIST_SET_NUM 2
 #define SIZE_FOR_STORE_ONE_ALIGNED_ITEM_SET (16 / sizeof(PixelType))
 #define BUFFER_SIZE (DMA_LIST_SET_SIZE * SIZE_FOR_STORE_ONE_ALIGNED_ITEM_SET)
+#define TAG_CNT_NEED_FOR_SAVE 3
 	
 #ifdef FOR_CELL
 	struct DMACtx 
 	{
 		DMACtx() {tagMask = 0;}
 		uint32 tagMask;
-		uint32 tags[LIST_SET_NUM];
 	};
 	struct LoadingCtx : public DMACtx
 	{
+		uint32 tags[LIST_SET_NUM];
 		TDmaListIter _dmaListIter[LIST_SET_NUM];
 		/* here we reserve space for the dma list.
 		 * This array is aligned on 16 byte boundary */	
@@ -43,6 +44,7 @@ public:
 	};
 	struct SavingCtx : public DMACtx
 	{
+		uint32 tags[TAG_CNT_NEED_FOR_SAVE];
 		TDmaListIter _dmaListIter[SAVE_DMA_LIST_CNT];
 		/* here we reserve space for the dma list.
 		 * This array is aligned on 16 byte boundary */	

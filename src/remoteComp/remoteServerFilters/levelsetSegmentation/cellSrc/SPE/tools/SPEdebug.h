@@ -3,7 +3,7 @@
 
 #include "stdio.h"
 
-#define SPE_DEBUG_TO_FILE 1
+//#define SPE_DEBUG_TO_FILE 1
 
 #if defined(DEBUG_LEVEL) && defined(SPE_DEBUG_TO_FILE)
 extern FILE *debugFile;

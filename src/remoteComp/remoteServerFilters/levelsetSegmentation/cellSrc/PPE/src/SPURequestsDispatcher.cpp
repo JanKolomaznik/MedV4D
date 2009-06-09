@@ -116,7 +116,6 @@ uint32 SPURequestsDispatcher::MyPopMessage(uint32 SPENum)
 #ifdef FOR_CELL
 	uint32 dataRead;
 	spe_out_mbox_read(_SPE_data[SPENum].spe_ctx, &dataRead, 1);
-	D_PRINT("Read: " << dataRead);
 	return dataRead;
 #else
 	return _progSims[SPENum]._mailbox.PPEPop();

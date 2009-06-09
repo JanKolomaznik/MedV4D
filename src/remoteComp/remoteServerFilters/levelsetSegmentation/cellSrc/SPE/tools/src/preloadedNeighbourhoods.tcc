@@ -77,7 +77,7 @@ PreloadedNeigborhoods<PixelType, MYSIZE>::SaveCurrItem()
 	{
 		if(_savingCtx._dmaListIter[i])
 		{
-			if(tagIter == 3)
+			if(tagIter > 2)
 			{
 				uint32 i=10; i++;
 				D_PRINT("Sem Neeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee!!!!!!!!!!!!!!!!!!!!");
@@ -129,7 +129,7 @@ PreloadedNeigborhoods<PixelType, MYSIZE>::ReserveTags()
 #endif
 	}
 	
-	for(uint32 i=0; i<LIST_SET_NUM; i++)
+	for(uint32 i=0; i<TAG_CNT_NEED_FOR_SAVE; i++)
 	{
 		_savingCtx.tags[i] = DMAGate::GetTag();
 #ifdef TAG_RETURN_DEBUG
@@ -152,7 +152,7 @@ PreloadedNeigborhoods<PixelType, MYSIZE>::ReturnTags()
 	}
 	
 	// return saving tags
-	for(uint32 i=0; i<LIST_SET_NUM; i++)
+	for(uint32 i=0; i<TAG_CNT_NEED_FOR_SAVE; i++)
 	{
 #ifdef TAG_RETURN_DEBUG
 		D_PRINT("TAG_RET:PreloadedNeigborhoods:%d\n", _savingCtx.tags[i]);

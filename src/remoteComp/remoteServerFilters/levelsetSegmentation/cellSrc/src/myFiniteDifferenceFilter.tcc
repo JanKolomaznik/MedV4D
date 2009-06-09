@@ -49,7 +49,7 @@ MyFiniteDifferenceImageFilter<TInputImage, TOutputImage>
 		DL_PRINT(DEBUGMYFINITEFILT,
 				"Elapsed iters:" << m_ElapsedIterations << ", dt = " << dt);
 
-		if( (m_ElapsedIterations % 100) == 0)
+		//if( (m_ElapsedIterations % 100) == 0)
 		std::cout << "elapsed iters .. " << m_ElapsedIterations << std::endl;
 	}
 

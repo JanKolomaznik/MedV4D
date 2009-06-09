@@ -192,13 +192,13 @@ NeighborhoodCell<PixelType>::SetPixel(PixelType val, TOffset pos)
 	TIndex i = m_currIndex + pos;
 	if(IsWithinImage(i))
 	{
-#ifdef FOR_CELL
+//#ifdef FOR_CELL
 		_dirtyElems |= (1 << GetNeighborhoodIndex(pos));	// set dirty flag
-#else
-		// change the actual image directly if we are on PC
-		PixelType *begin = (PixelType *) ComputeImageDataPointer(i).Get64();
-		*begin = val;
-#endif
+//#else
+//		// change the actual image directly if we are on PC
+//		PixelType *begin = (PixelType *) ComputeImageDataPointer(i).Get64();
+//		*begin = val;
+//#endif
 		//D_PRINT("ShouldSave:" << (void*) ComputeImageDataPointer(i).Get64());
 		// and change the buffer as well
 		m_buf[traslationTable_[GetNeighborhoodIndex(pos)]] = val;
@@ -318,7 +318,7 @@ NeighborhoodCell<PixelType>::SaveChanges()
 {
 	uint32 cnt = 0;
 	
-	uint64 address;
+	Address address;
 	while(_dirtyElems && (cnt < 27))
 	{
 		if(_dirtyElems & 0x1)
@@ -327,8 +327,9 @@ NeighborhoodCell<PixelType>::SaveChanges()
 			
 
 			address = 
-				ComputeImageDataPointer(m_currIndex + OffsetFromPos(cnt)).Get64();
+				ComputeImageDataPointer(m_currIndex + OffsetFromPos(cnt));
 			//D_PRINT("Eventually:" << (void *) address);
+			DMAGate::Put(&m_buf[cnt], address, sizeof(PixelType));
 		}
 		
 		_dirtyElems >>= 1;	// shift right

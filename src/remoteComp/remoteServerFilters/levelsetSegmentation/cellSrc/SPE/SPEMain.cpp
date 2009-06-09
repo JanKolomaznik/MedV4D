@@ -20,7 +20,7 @@ using namespace M4D::Cell;
 #define INT_TO_FLOAT(x) (*((float32 *) &x))
 #define FLOAT_TO_INT(x) (*((uint32_t *) &x))
 
-#define DEBUG_MANAGING_MAILBOX_COMM 0
+#define DEBUG_MANAGING_MAILBOX_COMM 12
 
 int main(unsigned long long speid __attribute__ ((unused)), 
 		unsigned long long argp,

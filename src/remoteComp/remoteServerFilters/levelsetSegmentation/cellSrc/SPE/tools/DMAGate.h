@@ -24,14 +24,14 @@ class DMAGate
 #ifdef FOR_CELL
 public:
 
-	static void Put(void *src, Address dest, size_t size, uint32 tag)
+	static inline void Put(void *src, Address dest, size_t size, uint32 tag)
 	{
 #ifdef DEBUG_MFC
 		D_PRINT("PUT: LA=%p, EA=0x%llx, size=%ld, tag=%u\n", src,
-						dest.Get64(), size, tag);
-		CheckTag(tag);
+						dest.Get64(), size, tag);		
 		CheckTransferSize(size);
 #endif
+		D_COMMAND(CheckTag(tag));
 		mfc_put(src, dest.Get64(), size, tag, 0, 0);
 	}
 	
@@ -45,11 +45,10 @@ public:
 				"GETL: src=%lX, dest=%p, listSize=%lu, listSizePutInto=%ld, tag=%u\n",
 				(long unsigned int) src, dest, listSize, listSize
 						* sizeof(mfc_list_element_t), tag);
-
-		CheckTag(tag);
 		PrintListContent(list, listSize, true);
 		CheckLSListAddress(list);
 #endif
+		D_COMMAND(CheckTag(tag));
 		mfc_getl(dest, src, list, listSize * sizeof(mfc_list_element_t), tag,
 				0, 0);
 	}
@@ -63,10 +62,10 @@ public:
 		D_PRINT("PUTL: localBuf=%p, EA_dest=%lx, listSize=%lu, listSizePutInto=%lu, tag=%u\n",
 						locaBuf, (long unsigned int) dest, listSize, listSize
 								* sizeof(mfc_list_element_t), tag);
-		CheckTag(tag);
 		PrintListContent(list, listSize, false);
 		CheckLSListAddress(list);
 #endif
+		D_COMMAND(CheckTag(tag));
 		mfc_putl(locaBuf, dest, list, listSize * sizeof(mfc_list_element_t), tag,
 				0, 0);
 	}
@@ -78,10 +77,10 @@ public:
 #ifdef DEBUG_MFC
 		D_PRINT("GET: src=%p, dest=%p, size=%ld, tag=%u\n", (void*)src.Get64(),
 				dest, size, tag);
-		CheckTag(tag);
 		CheckTransferSize(size);
 		CheckAlign(src, dest, size);		
 #endif
+		D_COMMAND(CheckTag(tag));
 		mfc_get(dest, src.Get64(), size, tag, 0, 0);
 //#if DEBUG_MFC
 //		// When debugging we can force the transfer to complete immediately to keep things simple
@@ -107,11 +106,11 @@ public:
 
 private:
 	
-	static bool CheckTag(uint32 tag)
+	static bool CheckTag(int32 tag)
 	{
-		if(tag > 32)
+		if(tag >= 32)
 		{
-			D_PRINT("Using wrong tag = %u\n", tag);
+			D_PRINT("Using wrong tag = %d\n", tag);
 			return false;
 		}
 		return true;
