@@ -131,7 +131,7 @@ void SPEManager::StopSims()
 ///////////////////////////////////////////////////////////////////////////////
 
 /* Determine the number of SPE threads to create.   */
-uint32 SPEManager::speCount = 1;//spe_cpu_info_get(SPE_COUNT_USABLE_SPES, -1);
+uint32 SPEManager::speCount = 4;//spe_cpu_info_get(SPE_COUNT_USABLE_SPES, -1);
 
 ///////////////////////////////////////////////////////////////////////////////
 uint32 SPEManager::GetSPECount()

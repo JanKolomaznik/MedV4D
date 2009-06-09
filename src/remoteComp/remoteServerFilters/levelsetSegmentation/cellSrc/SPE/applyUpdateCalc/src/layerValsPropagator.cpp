@@ -105,7 +105,6 @@ void LayerValuesPropagator::DoTheWork(StatusType from, StatusType to,
 		StatusType promote)
 {
 	unsigned int i;
-	value = 0; // warnings
 	bool found_neighbor_flag;
 	StatusType past_end = static_cast<StatusType>( LYERCOUNT ) - 1;
 
@@ -136,6 +135,7 @@ void LayerValuesPropagator::DoTheWork(StatusType from, StatusType to,
 		return;
 	}
 
+	value = 0; // warnings
 	found_neighbor_flag = false;
 	for (i = 0; i < m_NeighborList.GetSize(); ++i)
 	{

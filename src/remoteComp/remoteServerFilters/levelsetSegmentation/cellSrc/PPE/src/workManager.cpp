@@ -25,8 +25,6 @@ WorkManager::WorkManager(uint32 coreCount, RunConfiguration *rc) :
 	_propagateValsConf = NULL;
 	m_LayerSegments = NULL;
 	m_UpdateBuffers = NULL;
-	
-	std::cout << "sizeof SparseFieldLevelSetNode = " << sizeof(SparseFieldLevelSetNode) << std::endl;
 
 	try
 	{
@@ -37,17 +35,17 @@ WorkManager::WorkManager(uint32 coreCount, RunConfiguration *rc) :
 		if( posix_memalign((void**)(&_configs), 128,
 						_numOfCores * sizeof(ConfigStructures)) != 0)
 		{
-			throw "bad";
+			throw std::bad_alloc();
 		}
 		if( posix_memalign((void**)(&_calcChngApplyUpdateConf), 128,
 						_numOfCores * sizeof(CalculateChangeAndUpdActiveLayerConf)) != 0)
 		{
-			throw "bad";
+			throw std::bad_alloc();
 		}
 		if( posix_memalign((void**)(&_propagateValsConf), 128,
 						_numOfCores * sizeof(PropagateValuesConf)) != 0)
 		{
-			throw "bad";
+			throw std::bad_alloc();
 		}
 
 		// layer storeage init
@@ -70,7 +68,7 @@ WorkManager::WorkManager(uint32 coreCount, RunConfiguration *rc) :
 		if(m_LayerSegments) delete [] m_LayerSegments;
 		if(m_UpdateBuffers) delete [] m_UpdateBuffers;
 
-		throw std::bad_alloc();
+		throw;
 	}
 }
 

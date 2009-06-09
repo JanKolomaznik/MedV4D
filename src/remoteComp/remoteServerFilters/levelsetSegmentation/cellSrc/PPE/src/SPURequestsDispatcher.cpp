@@ -6,7 +6,7 @@ using namespace M4D::Cell;
 using namespace M4D::Multithreading;
 
 #define DEBUG_MAILBOX 12
-#define DEBUG_MANAGING_MAILBOX_COMM 0
+#define DEBUG_MANAGING_MAILBOX_COMM 12
 
 ///////////////////////////////////////////////////////////////////////////////
 
