@@ -48,7 +48,8 @@ public:
 	
 	LevelSetFilterProperties properties_;
 	
-	typedef M4D::Imaging::ImageConvertor< ImageType > InImageConvertor;
+	typedef M4D::Imaging::Image< uint16, 3 > VeiwImageType;
+	typedef M4D::Imaging::ImageConvertor< VeiwImageType > ViewImageConvertor;
 
 protected:
 	void
@@ -63,10 +64,16 @@ protected:
 	M4D::Imaging::PipelineContainer			_pipeline;
 	M4D::Imaging::AbstractPipeFilter		*_filter;
 	M4D::Imaging::AbstractPipeFilter		*_convertor;
+	M4D::Imaging::AbstractPipeFilter		*_decimatedImConvertor;
+	M4D::Imaging::AbstractPipeFilter		*_resultImConvertor;
 	M4D::Imaging::AbstractPipeFilter		*_decimator;
 	M4D::Imaging::ConnectionInterfaceTyped<M4D::Imaging::AbstractImage>	*_inConnection;
 	M4D::Imaging::ConnectionInterfaceTyped<M4D::Imaging::AbstractImage>	*_outConnection;
 	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage >	*_tmpConnection;
+	
+	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage >	*_decim2castConnection;
+	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage >	*_castOutConnection;
+	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage >	*_remote2castConnection;
 
 private:
 

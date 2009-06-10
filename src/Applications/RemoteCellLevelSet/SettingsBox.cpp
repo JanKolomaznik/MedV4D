@@ -5,11 +5,12 @@
 
 
 using namespace M4D::Imaging;
+using namespace M4D::IO;
 
 SettingsBox
 ::SettingsBox( RemoteFilterType *filter, LevelSetFilterProperties *props, 
-		QWidget * parent )
-	: filter_( filter ), props_(props), _parent( parent )
+		QWidget * parent, const AbstractDataSet &decimDS)
+	: filter_( filter ), props_(props), _parent( parent ), _decimatedDataset(decimDS)
 {
 	CreateWidgets();
 	SetEnabledExecButton( false );
@@ -165,6 +166,10 @@ void
 SettingsBox
 ::ExecuteFilter()
 {
+	// save inner for-cell-prepared dataset
+	FOutStream stream("decimated.mv4d");
+	DataSetFactory::SerializeDataset(stream, _decimatedDataset);
+	
 	filter_->ExecuteOnWhole();
 }
 

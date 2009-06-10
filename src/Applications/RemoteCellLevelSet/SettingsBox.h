@@ -5,7 +5,7 @@
 #include "remoteComp/remoteFilter.h"
 #include "remoteComp/remoteServerFilters/levelsetSegmentation/medevedWrapperFilter.h"
 
-typedef int16	ElementType;
+typedef float32	ElementType;
 typedef M4D::RemoteComputing::ThreshLSSegMedvedWrapper< ElementType, ElementType >::Properties
 	LevelSetFilterProperties;
 
@@ -22,7 +22,8 @@ public:
 	static const unsigned ROW_SPACING = 15;
 	
 
-	SettingsBox( RemoteFilterType *filter, LevelSetFilterProperties *props, QWidget * parent );
+	SettingsBox( RemoteFilterType *filter, LevelSetFilterProperties *props, QWidget * parent,
+			const M4D::Imaging::AbstractDataSet &decimDS);
 	
 	void
 	SetEnabledExecButton( bool val )
@@ -68,6 +69,8 @@ protected:
 	QDoubleSpinBox *curvatureScaling;
 	QDoubleSpinBox *propagationScaling;
 	QDoubleSpinBox *advectionScaling;
+	
+	const M4D::Imaging::AbstractDataSet &_decimatedDataset;
 };
 
 #endif /*_SETTINGS_BOX_H*/
