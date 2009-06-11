@@ -157,6 +157,8 @@ protected:
 
 	WorkManager _workManager;
 	SPEManager m_SPEManager;
+	
+	typename StatusImageType::PixelType *_statusImageData;
 };
 
 //include implementation

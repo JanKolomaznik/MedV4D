@@ -115,12 +115,11 @@ void SPEManager::StartSims()
 
 void SPEManager::StopSims()
 {
-	for (uint32 i=0; i<speCount; i++)
-		_requestDispatcher.MyPushMessage(QUIT, i);
-
 	// wait for thread termination
 	for (uint32 i=0; i<speCount; i++)
 	{
+		_requestDispatcher.MyPushMessage(QUIT, i);
+		
 		if (pthread_join(_requestDispatcher._progSims[i].pthread, NULL))
 		{
 			D_PRINT ("Failed joining thread");
@@ -131,7 +130,7 @@ void SPEManager::StopSims()
 ///////////////////////////////////////////////////////////////////////////////
 
 /* Determine the number of SPE threads to create.   */
-uint32 SPEManager::speCount = 4;//spe_cpu_info_get(SPE_COUNT_USABLE_SPES, -1);
+uint32 SPEManager::speCount = 1;//spe_cpu_info_get(SPE_COUNT_USABLE_SPES, -1);
 
 ///////////////////////////////////////////////////////////////////////////////
 uint32 SPEManager::GetSPECount()
@@ -152,11 +151,6 @@ SPEManager
 
 SPEManager::~SPEManager()
 {
-#ifdef FOR_CELL
-	StopSPEs();
-#else
-	StopSims();
-#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////

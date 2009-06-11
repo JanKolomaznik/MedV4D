@@ -19,6 +19,9 @@ SparseFieldCityBlockNeighborList<TRadius, TOffset, Dim>
 	TOffset zero_offset;
 
 	m_size = SIZE;
+	
+	D_COMMAND( memset((void*)m_ArrayIndex, 0, SIZE * sizeof(unsigned int)); )
+	D_COMMAND( memset((void*)m_NeighborhoodOffset, 0, SIZE * sizeof(TOffset)); )
 
 	TSize size;
 

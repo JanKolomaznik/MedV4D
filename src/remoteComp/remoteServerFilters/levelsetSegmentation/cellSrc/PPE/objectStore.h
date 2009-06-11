@@ -32,7 +32,7 @@ public:
 		for(typename VecChunks::iterator it=_chunks.begin();
 			it != _chunks.end(); it++)
 		{
-			free(*it);
+			delete(*it);
 		}
 	}
 	

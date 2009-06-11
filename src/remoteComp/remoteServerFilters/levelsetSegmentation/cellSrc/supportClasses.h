@@ -2,6 +2,8 @@
 #define SUPPORTCLASSES_H_
 
 #include "SPE/commonTypes.h"
+#include <string.h>
+
 
 namespace M4D
 {

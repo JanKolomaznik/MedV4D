@@ -110,6 +110,12 @@ protected:
 				OutputImageType		&out
 			    );
 	
+	/**
+	 * Performs data set checking as well as properties checkings
+	 * @return true on sucess, false otherwise
+	 */
+	bool CheckRun();
+	
 private:
 	Properties *properties_;
 	
@@ -120,8 +126,8 @@ private:
 	typedef  itk::FastMarchingImageFilter< InternalITKImageType, InternalITKImageType >
 	    FastMarchingFilterType;
 	
-	typedef itk::CastImageFilter< ITKInputImageType, InternalITKImageType > 
-			FeatureToFloatFilterType;
+//	typedef itk::CastImageFilter< ITKInputImageType, InternalITKImageType > 
+//			FeatureToFloatFilterType;
 		
 	// filter that performs actual levelset segmentation
 	typedef  M4D::Cell::MySegmtLevelSetFilter< 
@@ -132,16 +138,16 @@ private:
 	typedef itk::BinaryThresholdImageFilter<InternalITKImageType, typename PredecessorType::ITKOutputImageType>
 	    ThresholdingFilterType;
 	
-	typedef itk::CastImageFilter< InternalITKImageType, ITKOutputImageType > 
-		FloatToFeatureFilterType;
+//	typedef itk::CastImageFilter< InternalITKImageType, ITKOutputImageType > 
+//		FloatToFeatureFilterType;
 
 	
 	FastMarchingFilterType::Pointer fastMarching;
 	typename ThresholdingFilterType::Pointer thresholder;
 	typename ThresholdSegmentationFilterType::Pointer thresholdSegmentation;
 	
-	typename FeatureToFloatFilterType::Pointer featureToFloatCaster;
-	typename FloatToFeatureFilterType::Pointer floatToFeature;
+//	typename FeatureToFloatFilterType::Pointer featureToFloatCaster;
+//	typename FloatToFeatureFilterType::Pointer floatToFeature;
 	
 	void SetupFastMarchingFilter(void);
 	void SetupBinaryThresholder(void);

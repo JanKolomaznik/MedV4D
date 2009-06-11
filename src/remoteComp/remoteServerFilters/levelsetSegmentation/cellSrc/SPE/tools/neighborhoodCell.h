@@ -65,7 +65,15 @@ public:
 	
 	void SetPosition(const TIndex &pos);
 	
-	inline PixelType GetPixel(uint32 pos) { return m_buf[traslationTable_[pos]]; }
+	inline PixelType GetPixel(uint32 pos) 
+	{
+		D_COMMAND(
+			if(pos > NEIGHBOURHOOD_SIZE) 
+				D_PRINT("ERR(bad param): NeighborhoodCell::GetPixel(" 
+						<< pos << ")");
+		)
+		return m_buf[traslationTable_[pos]];
+	}
 	
 	void SetPixel(PixelType val, TOffset pos);
 	void SetCenterPixel(PixelType val);

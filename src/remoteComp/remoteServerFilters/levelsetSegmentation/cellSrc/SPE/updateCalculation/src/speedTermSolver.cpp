@@ -119,6 +119,13 @@ SpeedTermSolver
 
 	      }
 	    
+	    // workaround to guarantee index coord vals be from <-1,1> interval
+	    for(uint32 i=0; i<DIM; i++)
+	    {
+	    	if(neighIndex[i] < -1) neighIndex[i] = -1;
+	    	if(neighIndex[i] > 1) neighIndex[i] = 1;
+	    }
+	    
 	    // get neighbor value only if overlap is not zero
 	    if( overlap )
 	      {

@@ -26,6 +26,7 @@ SPURequestsDispatcher::SPURequestsDispatcher(WorkManager *wm, uint32 numSPE) :
 #endif
 
 	_results = new float32[_numOfSPE];
+	D_COMMAND( memset((void*)_results, 0, _numOfSPE * sizeof(float32)); )
 }
 
 ///////////////////////////////////////////////////////////////////////////////

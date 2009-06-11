@@ -37,13 +37,17 @@ protected:
 			ITKOutputImageType;
 	
 	ITKFilter();
-	~ITKFilter() {}
+	~ITKFilter() {}	
 	
-	const ITKInputImageType *
-	GetInputITKImage(void) { return inITKImage.GetPointer(); }	
-	void
+	inline const ITKInputImageType *
+		GetInputITKImage(void) { return inITKImage.GetPointer(); }	
+	
+	inline void
 	SetOutputITKImage(const ITKOutputImageType *outImage) { 
 		outITKImage = (ITKOutputImageType *) outImage; }
+	
+	inline ITKOutputImageType *
+	GetOutputITKImage(void) { return inITKImage.GetPointer(); }
 	
 	void PrepareOutputDatasets(void);
 	

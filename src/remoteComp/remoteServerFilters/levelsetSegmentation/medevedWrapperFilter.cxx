@@ -19,11 +19,11 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 	SetupFastMarchingFilter();  
 	SetupLevelSetSegmentator();
 	
-	featureToFloatCaster = FeatureToFloatFilterType::New();
+//	featureToFloatCaster = FeatureToFloatFilterType::New();
 	//floatToFeature = FloatToFeatureFilterType::New();
 	 
-	featureToFloatCaster->SetInput( this->GetInputITKImage() );	
-	thresholdSegmentation->SetFeatureImage( featureToFloatCaster->GetOutput() );
+//	featureToFloatCaster->SetInput( this->GetInputITKImage() );	
+	thresholdSegmentation->SetFeatureImage( this->GetInputITKImage() );
 	thresholdSegmentation->SetInput( fastMarching->GetOutput() );
 	thresholder->SetInput( thresholdSegmentation->GetOutput() );
 	//floatToFeature->SetInput(thresholdSegmentation->GetOutput());
@@ -87,12 +87,13 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 	SetOutImageSize(region, spacing);
 	PredecessorType::PrepareOutputDatasets();
 	
-#ifdef FOR_CELL
-	AlocateAlignedImageData(region.GetSize());
-#endif
+//#ifdef FOR_CELL
+//	AlocateAlignedImageData(region.GetSize());
+//#endif
 	
 	fastMarching->SetOutputSize(
 			this->GetInputITKImage()->GetLargestPossibleRegion().GetSize());
+	fastMarching->GraftOutput(this->GetOutputITKImage());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -102,43 +103,53 @@ void
 ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 ::AlocateAlignedImageData(const typename ITKOutputImageType::SizeType &size)
 {
+	typedef typename ThresholdSegmentationFilterType::OutputImageType::PixelType TSegmOImPixel;
+	TSegmOImPixel *data2Pointer = NULL;
+	
+	try {
 	size_t sizeOfData = 1;	// size in elements (not in bytes)
 	// count num of elems
 	for( uint32 i=0; i< InputImageType::Dimension; i++)
 		sizeOfData *= size[i];
 		
-	// alocate aligned image data
-	typedef typename FeatureToFloatFilterType::OutputImageType TFeatureConvImage;
-	TFeatureConvImage *o = featureToFloatCaster->GetOutput();	
-	
-	// alocate new (aligned buffer)
-	typedef typename FeatureToFloatFilterType::OutputImageType::PixelType TFeatureConvPixel;
-	TFeatureConvPixel *dataPointer;
-	if( posix_memalign((void**)(&dataPointer), 128,
-			sizeOfData * sizeof(TFeatureConvPixel) ) != 0)
-	{
-		throw "bad";
-	}
-	o->GetPixelContainer()->SetImportPointer(
-				dataPointer,
-				sizeOfData,
-				true);
+//	// alocate aligned image data
+//	typedef typename FeatureToFloatFilterType::OutputImageType TFeatureConvImage;
+//	TFeatureConvImage *o = featureToFloatCaster->GetOutput();	
+//	
+//	// alocate new (aligned buffer)
+//	typedef typename FeatureToFloatFilterType::OutputImageType::PixelType TFeatureConvPixel;
+//	TFeatureConvPixel *dataPointer = NULL;
+//	if( posix_memalign((void**)(&dataPointer), 128,
+//			sizeOfData * sizeof(TFeatureConvPixel) ) != 0)
+//	{
+//		throw std::bad_alloc();
+//	}
+//	o->GetPixelContainer()->SetImportPointer(
+//				dataPointer,
+//				sizeOfData,
+//				true);
 	
 	typedef typename ThresholdSegmentationFilterType::OutputImageType TSegmOutImage;
 	TSegmOutImage *o2 = thresholdSegmentation->GetOutput();	
 	
 	// alocate new (aligned buffer)
-	typedef typename ThresholdSegmentationFilterType::OutputImageType::PixelType TSegmOImPixel;
-	TSegmOImPixel *data2Pointer;
+
+	
 	if( posix_memalign((void**)(&data2Pointer), 128,
 			sizeOfData * sizeof(TSegmOImPixel) ) != 0)
 	{
-		throw "bad";
+		throw std::bad_alloc();
 	}
 	o2->GetPixelContainer()->SetImportPointer(
 				data2Pointer,
 				(typename ITKInputImageType::PixelContainer::ElementIdentifier) sizeOfData,
 				true);
+	} catch(...) {
+//		if(dataPointer) free(dataPointer);
+		if(data2Pointer) free(data2Pointer);
+		
+		throw;
+	}
 }
 #endif
 ///////////////////////////////////////////////////////////////////////////////
@@ -190,11 +201,52 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 ///////////////////////////////////////////////////////////////////////////////
 template< typename InputElementType, typename OutputElementType >
 bool
+ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>::CheckRun()
+{
+	typename ITKInputImageType::RegionType::SizeType size = 
+		this->GetInputITKImage()->GetLargestPossibleRegion().GetSize();
+	bool good = true;
+	
+	// check dataset
+	if(size[0] < 32 || size[1] < 32
+			|| (size[0] % 32) != 0 || (size[1] % 32) != 0)
+	{
+		std::cout << "Wrong dataset size!" << std::endl;
+		good = false;
+	}
+			
+	if( (properties_->seedX < 0 || properties_->seedX >= size[0])
+			|| (properties_->seedY < 0 || properties_->seedY >= size[1])
+			|| (properties_->seedZ < 0 || properties_->seedZ >= size[2]) )
+	{
+		std::cout << "Wrong seed!" << std::endl;
+		good = false;
+	}
+	if(properties_->maxIterations < 1)
+	{
+		std::cout << "Wrong maxIterations!" << std::endl;
+		good = false;
+	}
+	if(properties_->initialDistance < 1 || properties_->initialDistance > (size[0] / 2))
+	{
+		std::cout << "Wrong initial size!" << std::endl;
+		good = false;
+	}
+	
+	return good;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template< typename InputElementType, typename OutputElementType >
+bool
 ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 	::ProcessImage(const InputImageType &in, OutputImageType &out)
 {
 	ApplyProperties();
-	try {
+	
+	if(! CheckRun())
+			return false;
+	try {		
 		PrintRunInfo(std::cout);
 		thresholder->ResetPipeline();
 		thresholder->Update();		
@@ -213,6 +265,12 @@ void
 ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 	::PrintRunInfo(std::ostream &stream)
 {
+	stream << "==============================================" << std::endl;
+	stream << "Dataset info:" << std::endl;
+	stream << "size: " 
+		<< this->GetInputITKImage()->GetLargestPossibleRegion().GetSize() 
+		<< std::endl;
+	stream << "==============================================" << std::endl;
 	stream << "Filter started with these values:" << std::endl;
 	stream << "Seed: " << properties_->seedX << ", " << properties_->seedY << ", " << properties_->seedZ << std::endl;
 	stream << "Init distance: " << properties_->initialDistance << std::endl;
@@ -220,6 +278,7 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 	stream << "Max iteration: " << properties_->maxIterations << std::endl;
 	stream << "Speed scaling: " << properties_->propagationScaling << std::endl;
 	stream << "Curvature scaling: " << properties_->curvatureScaling << std::endl;
+	stream << "==============================================" << std::endl;
 	
 	//fastMarching->PrintSelf(stream, NULL);
 	//thresholdSegmentation->PrintSelf(stream, NULL);
