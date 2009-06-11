@@ -3,7 +3,8 @@
 
 #include "common/Common.h"
 #include "Imaging/AbstractImageFilterWholeAtOnce.h"
-#include "Imaging/interpolators/nearestNeighbor.h"
+//#include "Imaging/interpolators/nearestNeighbor.h"
+#include "Imaging/interpolators/linear.h"
 
 namespace M4D
 {

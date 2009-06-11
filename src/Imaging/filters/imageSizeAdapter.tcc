@@ -100,7 +100,8 @@ void
 ImageSizeAdapter<ImageType>
 	::Process3DImage(Self *self)
 {
-	typedef NearestNeighborInterpolator<ImageType> InterpolatorType;
+	//typedef NearestNeighborInterpolator<ImageType> InterpolatorType;
+	typedef LinearInterpolator<ImageType> InterpolatorType;
 	InterpolatorType interpolator(self->in);
 		
 	typename OutImageType::PointType outStrides;

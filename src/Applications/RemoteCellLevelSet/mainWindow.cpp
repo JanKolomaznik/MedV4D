@@ -81,7 +81,7 @@ mainWindow::CreatePipeline()
 	
 //	_decimator = new Decimator( new Decimator::Properties(0.5f) );
 	
-#define DESIRED_IMAGE_SIZE_FOR_CELL (30*1024*1024) // 30M
+#define DESIRED_IMAGE_SIZE_FOR_CELL (60*1024*1024) // 60M
 	_decimator = new ForCellSizeAdapter( 
 			new ForCellSizeAdapter::Properties(DESIRED_IMAGE_SIZE_FOR_CELL) );
 	_decimator->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
