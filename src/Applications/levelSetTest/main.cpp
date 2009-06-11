@@ -4,6 +4,7 @@
 #include "Imaging/AbstractFilter.h"
 #include "Imaging/DataSetFactory.h"
 #include "Imaging/PipelineContainer.h"
+#include "Imaging/filters/ImageConvertor.h"
 #include "common/IOStreams.h"
 #include "remoteComp/remoteServerFilters/levelsetSegmentation/medevedWrapperFilter.h"
 
@@ -72,6 +73,7 @@ int main(int argc, char *argv[]) {
 	SET_DOUT( debugFile );
 	
 	M4D::Imaging::AbstractPipeFilter *m_filter;
+//	M4D::Imaging::AbstractPipeFilter *_convertor;
     M4D::Imaging::ConnectionInterface *m_connWithOutputDataSet;
     M4D::Imaging::PipelineContainer m_pipeLine;    
 
@@ -80,28 +82,38 @@ int main(int argc, char *argv[]) {
 		M4D::IO::FInStream inStr(INFILE);		
 		AbstractDataSet::Ptr inputDataSet = DataSetFactory::DeserializeDataset(inStr);
 		
-		typedef ThreshLSSegMedvedWrapper< int16, int16> FilterType;
+		typedef ThreshLSSegMedvedWrapper< float32, float32 > FilterType;
 		
 		FilterType::Properties *props = new FilterType::Properties();
 		
-#define  RATIO 0.125f
+#define  RATIO 0.5f
 		props->seedX = (uint32)(256 * RATIO);
 		props->seedY = (uint32)(256 * RATIO);
+		props->seedZ = 1;
 		props->initialDistance = 100 * RATIO;
-		props->maxIterations = 800;
+		props->maxIterations = 1;
 		m_filter =  new FilterType( props);
 		
 		m_filter->SetUpdateInvocationStyle(AbstractPipeFilter::UIS_ON_CHANGE_BEGIN);
 		m_pipeLine.AddFilter(m_filter);
+		
+//		typedef M4D::Imaging::Image< uint16, 3 > VeiwImageType;
+//		_convertor = new M4D::Imaging::ImageConvertor<VeiwImageType>();
+//		_convertor->SetUpdateInvocationStyle(AbstractPipeFilter::UIS_ON_CHANGE_BEGIN);
+//		m_pipeLine.AddFilter( _convertor );
 
 		D_PRINT("Connecting recieved dataset into pipeline");
 		// connect it to pipeline
 		m_pipeLine.MakeInputConnection( *m_filter, 0, inputDataSet);
+		
+//		m_pipeLine.MakeConnection( *m_filter, 0, *_convertor, 0 );	
 
 		// create and connect created output dataSet
 		D_PRINT("Creating output connection")
 		m_connWithOutputDataSet = &m_pipeLine.MakeOutputConnection( *m_filter, 0,
 				true);
+		
+		
 
 		// add message listener to be able catch execution done or failed messages
 		ExecutionDoneCallback *callback = 
