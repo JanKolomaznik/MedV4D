@@ -4,7 +4,7 @@
  *  @brief some brief
  */
 #include "GUI/widgets/m4dGUISliceViewerWidget.h"
-#include "GUI/widgets/components/MaximumIntensitySliceViewerTexturePreparer.h"
+#include "GUI/widgets/components/RGBSliceViewerTexturePreparer.h"
 
 #include <QtGui>
 #include "GUI/widgets/ogl/fonts.h"
@@ -85,13 +85,35 @@ m4dGUISliceViewerWidget::setInputPort( Imaging::ConnectionInterface* conn )
 }
 
 void
+m4dGUISliceViewerWidget::setTexturePreparerToSimple()
+{
+    texturePreparerType = simple;
+}
+
+void
+m4dGUISliceViewerWidget::setTexturePreparerToRGB()
+{
+    texturePreparerType = rgb;
+}
+
+void
+m4dGUISliceViewerWidget::setTexturePreparerToCustom(AbstractSliceViewerTexturePreparer* ctp)
+{
+    if ( ctp )
+    {
+        texturePreparerType = custom;
+        customTexturePreparer = ctp;
+    }
+}
+
+void
 m4dGUISliceViewerWidget::resetParameters()
 {
     _selected = false;
     _sliceOrientation = xy;
     _ready = false;
     _dimension = 0;
-    texturePreparer = simple;
+    texturePreparerType = simple;
     if ( _inPort->IsPlugged() )
     {
         try
@@ -495,12 +517,23 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
     glScalef( _flipH * zoomRate, _flipV * zoomRate, 0. );
     
     // prepare texture
-    switch ( texturePreparer )
+    if ( texturePreparerType == custom || texturePreparerType == rgb )
+	for ( uint32 i = 1; i < SLICEVIEWER_INPUT_NUMBER; i++ )
+	{
+	    if ( this->InputPort()[i].IsPlugged() ) break;
+	    if ( i == SLICEVIEWER_INPUT_NUMBER - 1 ) texturePreparerType = simple;
+	}
+
+    switch ( texturePreparerType )
     {
 
 	case rgb:
         INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
-    	    _imageID, { MaximumIntensitySliceViewerTexturePreparer<TTYPE> texturePreparer; _ready = texturePreparer.prepare( this->InputPort(), width, height, _brightnessRate, _contrastRate, _sliceOrientation, sliceNum - _minimum[ ( _sliceOrientation + 2 ) % 3 ], _dimension ); } );
+    	    _imageID, { RGBSliceViewerTexturePreparer<TTYPE> texturePreparer; _ready = texturePreparer.prepare( this->InputPort(), width, height, _brightnessRate, _contrastRate, _sliceOrientation, sliceNum - _minimum[ ( _sliceOrientation + 2 ) % 3 ], _dimension ); } );
+	break;
+
+	case custom:
+	_ready = customTexturePreparer->prepare( this->InputPort(), width, height, _brightnessRate, _contrastRate, _sliceOrientation, sliceNum - _minimum[ ( _sliceOrientation + 2 ) % 3 ], _dimension );
 	break;
 
 	default:

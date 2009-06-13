@@ -17,6 +17,7 @@
 #include "common/ExceptionBase.h"
 #include "m4dSelection.h"
 #include "m4dGUIAbstractViewerWidget.h"
+#include "components/AbstractSliceViewerTexturePreparer.h"
 
 #define RW 0.3086
 #define GW 0.6094
@@ -33,11 +34,7 @@ typedef enum
 {
 	simple,
 	rgb,
-	multiColor,
-	maxint,
-	avrint,
-	minint,
-	rgbmam
+	custom
 } SliceViewerTexturePreparerType;
 
 /**
@@ -49,11 +46,6 @@ class m4dGUISliceViewerWidget : public m4dGUIAbstractViewerWidget, public QGLWid
 
 public:
 
-    /**
-     * Type of texture preparer
-     */
-    SliceViewerTexturePreparerType texturePreparer;
-    
     /**
      * Type of method for handling mouse movement events.
      */
@@ -91,13 +83,20 @@ public:
     virtual void setInputPort( Imaging::ConnectionInterface* conn );
 
     /**
-     * Set the type of the texture preparer
-     *  @param tpType texture preparer type to set
+     * Set the type of the texture preparer to simple
      */
-    void setTexturePreparerType( SliceViewerTexturePreparerType tpType )
-    {
-	texturePreparer = tpType;
-    }
+    void setTexturePreparerToSimple();
+
+    /**
+     * Set the type of the texture preparer to rgb
+     */
+    void setTexturePreparerToRGB();
+
+    /**
+     * Set the type of the texture preparer to custom
+     *  @param tp pointer to the custom texture preparer
+     */
+    void setTexturePreparerToCustom(AbstractSliceViewerTexturePreparer* ctp);
 
     
     /**
@@ -634,7 +633,16 @@ protected:
      */
     Imaging::InputPortTyped< Imaging::AbstractImage >	*_inPort;
 
-    
+    /**
+     * Type of texture preparer
+     */
+    SliceViewerTexturePreparerType		texturePreparerType;
+
+    /**
+     * Custom texture preparer
+     */
+    AbstractSliceViewerTexturePreparer*		customTexturePreparer;
+
     /**
      * The list of selected shapes
      */

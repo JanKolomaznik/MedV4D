@@ -204,7 +204,7 @@ SettingsBox
 	for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i )
 	{
 		sliceViewer->InputPort()[ i ].UnPlug();
-		sliceViewer->setTexturePreparerType( M4D::Viewer::rgb );
+		sliceViewer->setTexturePreparerToRGB();
 		static_cast< mainWindow* >( _parent )->OutConnectionToViewerPort( i, i );
 	}
 }
@@ -213,5 +213,5 @@ void
 SettingsBox
 ::EndOfExecution( unsigned filterNum )
 {
-        QMessageBox::information( _parent, tr( "Execution finished" ), tr( "Registration Filter #%1 finished its work" ).arg( filterNum ) );
+        QMessageBox::information( _parent, tr( "Execution finished" ), tr( "Registration Filter #%1 finished its work" ).arg( filterNum + 1 ) );
 }
