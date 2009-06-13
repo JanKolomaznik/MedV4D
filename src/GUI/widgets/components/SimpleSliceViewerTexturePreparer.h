@@ -70,7 +70,7 @@ protected:
         uint32 i, j;
         for ( i = 0; i < newHeight; i++ )
             for ( j = 0; j < newWidth; j++ )
-		if ( i < newHeight && j < newWidth ) dst[ i * newWidth + j ] = src[ j * xstride + i * ystride + depth * zstride ];
+		if ( i < height && j < width ) dst[ i * newWidth + j ] = src[ j * xstride + i * ystride + depth * zstride ];
 		else dst[ i * newWidth + j ] = 0;
     }
 
