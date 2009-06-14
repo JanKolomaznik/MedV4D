@@ -50,6 +50,8 @@ public:
 	void InitPropagateValuesConf();
 	void AllocateUpdateBuffers();
 	
+	void CheckLayerSizes();
+	
 	void PrintLists(std::ostream &s, bool withMembers);
 	
 	uint32 GetLayer0TotalSize(){

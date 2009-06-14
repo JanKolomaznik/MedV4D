@@ -108,7 +108,7 @@ protected:
 		m_RMSChange = 0.0;
 		m_State = UNINITIALIZED;
 		m_ManualReinitialization = false;
-		this->InPlaceOn();
+		this->InPlaceOff();
 	}
 	~MyFiniteDifferenceImageFilter()
 	{

@@ -37,7 +37,7 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 ::~MySegmtLevelSetFilter_InitPart()
 {
 	if(_statusImageData)
-	free(_statusImageData);
+		free(_statusImageData);
 }
 ///////////////////////////////////////////////////////////////////////////////
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
@@ -164,6 +164,9 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 	{
 		this->ConstructLayer(i, i+2);
 	}
+	
+	_workManager.CheckLayerSizes();
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -232,8 +235,8 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 		}
 	}
 
-	// release shifted image
-	m_ShiftedImage->ReleaseData();
+	// release shifted image (set to NULL call unregister & thus delete)
+	m_ShiftedImage = NULL;
 };
 ///////////////////////////////////////////////////////////////////////////////
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>

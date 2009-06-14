@@ -111,6 +111,31 @@ void WorkManager::UNLINKNode(LayerNodeType *node, uint32 layerNum,
 
 ///////////////////////////////////////////////////////////////////////////////
 
+void WorkManager::CheckLayerSizes()
+{
+	bool good = true;
+	for (uint32 coreIt=0; coreIt<_numOfCores; coreIt++)
+	{
+		for (uint32 i=0; i<LYERCOUNT; i++)
+		{
+			if(m_LayerSegments[coreIt].layers[i].Size() <= 0)
+			{
+				std::cout << "WARNING: layer" << i << "(seg" << coreIt 
+				<< ") has wrong size(" 
+				<< m_LayerSegments[coreIt].layers[i].Size() << ")" 
+				<< std::endl;
+				
+				good = false;
+			}
+		}
+	}
+	if(!good)
+	{
+		std::cout << "some layer segments has wrong size !!" << std::endl;
+		throw std::exception();
+	}
+}
+
 void WorkManager::InitCalculateChangeAndUpdActiveLayerConf()
 {
 	for (uint32 spuIt=0; spuIt<_numOfCores; spuIt++)
