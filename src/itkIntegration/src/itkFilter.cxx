@@ -62,7 +62,8 @@ ITKFilter<InputImageType, OutputImageType>::SetOutImageSize(
 		
 	outITKImage->GetPixelContainer()->SetImportPointer(
 			dataPointer, 
-			(typename ITKInputImageType::PixelContainer::ElementIdentifier) sizeOfData);
+			(typename ITKInputImageType::PixelContainer::ElementIdentifier) sizeOfData,
+			false);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -131,7 +132,8 @@ ITKFilter<InputImageType, OutputImageType>
 	
 	inITKImage->GetPixelContainer()->SetImportPointer(
 			dataPointer, 
-			(typename ITKInputImageType::PixelContainer::ElementIdentifier) sizeOfData);	
+			(typename ITKInputImageType::PixelContainer::ElementIdentifier) sizeOfData,
+			false);	
 	
 	typename ITKInputImageType::RegionType::SizeType &regionSize = 
 		(typename ITKInputImageType::RegionType::SizeType &) 

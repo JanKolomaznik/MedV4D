@@ -26,10 +26,11 @@ class Server
     
     void OnExecutionDone( void);
     void OnExecutionFailed( void);
+    
+    void AcceptLoop();
 
   private:
-    void Accept();
-    
+	  void Accept();
     void ReadCommand(void);
     
     void OnClientDisconnected();
@@ -48,6 +49,8 @@ class Server
     iRemoteFilterProperties *m_props;
     M4D::Imaging::ConnectionInterface *m_connWithOutputDataSet;
     M4D::Imaging::PipelineContainer m_pipeLine;
+    
+    asio::error_code _error;
 };
 
 } // CellBE namespace

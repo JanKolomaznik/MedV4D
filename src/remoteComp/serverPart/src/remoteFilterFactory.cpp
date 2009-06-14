@@ -9,7 +9,7 @@ using namespace M4D::RemoteComputing;
 using namespace M4D::Imaging;
 using namespace M4D::IO;
 
-typedef M4D::Imaging::Image<int16, 3> TImage;
+//typedef M4D::Imaging::Image<int16, 3> TImage;
 
 ///////////////////////////////////////////////////////////////////////////////
 template< typename InputPixelType, typename OutputPixelType>
@@ -19,7 +19,7 @@ CreateFilterStage2(uint16 filterID, iRemoteFilterProperties **props)
 	switch( (FilterID) filterID)
 	{
 	case FID_LevelSetSegmentation:
-		typedef ThreshLSSegMedvedWrapper<int16, int16> Filter;
+		typedef ThreshLSSegMedvedWrapper<float32, float32> Filter;
 		*props = new Filter::Properties();
 		return new Filter(dynamic_cast<Filter::Properties *>(*props));
 		break;

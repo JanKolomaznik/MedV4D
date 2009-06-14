@@ -20,25 +20,35 @@ using namespace M4D::IO;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Server::Server(asio::io_service &io_service) :
-	m_acceptor(io_service, tcp::endpoint(tcp::v4(), (uint16) SERVER_PORT) ),
-			m_socket_(io_service), netAccessor_(m_socket_) {
-	// start server accepting
-	Accept();
+Server::Server(asio::io_service &io_service) 
+	: m_acceptor(io_service, tcp::endpoint(tcp::v4(), (uint16) SERVER_PORT) )
+	, m_socket_(io_service), netAccessor_(m_socket_) 
+{
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void Server::Accept(void) {	
+void
+Server::AcceptLoop()
+{
+	while(1)
+	{
+		Accept();
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void Server::Accept(void) 
+{	
 	try {
-		asio::error_code error;
 		
 		// and start accepting
-		m_acceptor.accept(m_socket_, error);
+		m_acceptor.accept(m_socket_, _error);
 
-		if(error)
+		if(_error)
 		{
-			LOG("Accept failed!, " << error.message());
+			LOG("Accept failed!, " << _error.message());
 			return;
 		}
 
@@ -48,11 +58,11 @@ void Server::Accept(void) {
 		ReadCommand();
 
 	} catch (asio::system_error &e) {
-		LOG( "asio::system_error caught" << e.what() );
-		return;
+		LOG( "asio::system_error: " << e.what() );
 		
 		if(m_socket_.is_open())
 			m_socket_.close();
+		
 		if(e.code() == asio::error::eof )
 		{
 			OnClientDisconnected();
@@ -102,7 +112,6 @@ void Server::ReadCommand(void) {
 void Server::OnClientDisconnected() {
 	LOG( "Client disconnected, reseting pipe and accepting");
 	m_pipeLine.Reset();
-	Accept();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -110,8 +119,10 @@ void Server::OnClientDisconnected() {
 void Server::CreatePipeline(void) {
 	InStream stream(&netAccessor_);
 
+	D_PRINT("Deserializing filter definition ...");	
 	// perform deserialization    
 	m_filter = RemoteFilterFactory::DeserializeFilterClassID(stream, &m_props);
+	D_PRINT("done");
 	// set starting by message
 	m_filter->SetUpdateInvocationStyle(Imaging::AbstractPipeFilter::UIS_ON_CHANGE_BEGIN);
 	m_pipeLine.AddFilter(m_filter);
@@ -123,14 +134,14 @@ void Server::ReadDataSet(void) {
 	InStream stream(&netAccessor_);
 
 	// create the dataSet
+	D_PRINT("Deserializing data set");
 	AbstractDataSet::Ptr inputDataSet = DataSetFactory::DeserializeDataset(stream);
-
-	D_PRINT("Connecting recieved dataset into pipeline");
+	D_PRINT("done");
+	
 	// connect it to pipeline
 	m_pipeLine.MakeInputConnection( *m_filter, 0, inputDataSet);
 
 	// create and connect created output dataSet
-	D_PRINT("Creating output connection")
 	m_connWithOutputDataSet = &m_pipeLine.MakeOutputConnection( *m_filter, 0,
 			true);
 
@@ -143,7 +154,9 @@ void Server::ReadDataSet(void) {
 void Server::ReadFilterProperties(void) {
 	InStream stream(&netAccessor_);
 
+	D_PRINT("Deserializing filter properties");
 	RemoteFilterFactory::DeSerializeFilterProperties(stream, *m_props);
+	D_PRINT("done");
 
 	// and execute the pipeline. Actual exectution will wait to whole
 	// dataSet unlock when whole dataSet is read (don't forget to do it!!)
@@ -155,17 +168,19 @@ void Server::OnExecutionDone(void) {
 	// send resulting dataSet back
 	uint8 result = (eRemoteComputationResult) OK;
 	OutStream stream(&netAccessor_);
+	D_PRINT("Sending result:" << OK);
 	stream.Put<uint8>(result);
 
+	D_PRINT("Serializing OUT data set");
 	DataSetFactory::SerializeDataset(stream, m_connWithOutputDataSet->GetDataset());
-//	m_connWithOutputDataSet->GetDataset().SerializeProperties(stream);
-//	m_connWithOutputDataSet->GetDataset().SerializeData(stream);
+	D_PRINT("done");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 void Server::OnExecutionFailed(void) {
 	uint8 result = (eRemoteComputationResult) FAILED;
 	OutStream stream(&netAccessor_);
+	D_PRINT("Sending result:" << FAILED);
 	stream.Put<uint8>(result);
 }
 
