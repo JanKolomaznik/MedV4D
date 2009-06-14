@@ -163,14 +163,24 @@ SettingsBox
 }
 
 void
+SettingsBox::SetSeed(const Vector<uint32, 3> &size)
+{
+	seedXValueChanged(size[0]);
+	seedYValueChanged(size[1]);
+	seedZValueChanged(size[2]);
+}
+
+void
 SettingsBox
 ::ExecuteFilter()
 {
+	SetEnabledExecButton( false );
+	
 	// save inner for-cell-prepared dataset
 	FOutStream stream("decimated.mv4d");
 	DataSetFactory::SerializeDataset(stream, _decimatedDataset);
 	
-	filter_->ExecuteOnWhole();
+	filter_->ExecuteOnWhole();	
 }
 
 void
@@ -178,4 +188,5 @@ SettingsBox
 ::EndOfExecution()
 {
 	QMessageBox::information( _parent, tr( "Execution finished" ), tr( "Filter finished its work" ) );
+	SetEnabledExecButton( true );
 }

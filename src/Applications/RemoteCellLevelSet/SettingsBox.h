@@ -25,9 +25,10 @@ public:
 	SettingsBox( RemoteFilterType *filter, LevelSetFilterProperties *props, QWidget * parent,
 			const M4D::Imaging::AbstractDataSet &decimDS);
 	
-	void
-	SetEnabledExecButton( bool val )
-		{ execButton->setEnabled( val ); }
+	void SetEnabledExecButton( bool val ) { execButton->setEnabled( val ); }
+	
+	void SetSeed(const Vector<uint32, 3> &size);
+	
 protected slots:
 
 	// events callbacks
@@ -42,11 +43,9 @@ protected slots:
 	void propagationScalingValueChanged( double val ) {props_->propagationScaling = val;}
 	void advectionScalingValueChanged( double val ) {props_->advectionScaling = val;}
 
-	void
-	ExecuteFilter();
+	void ExecuteFilter();
 
-	void
-	EndOfExecution();
+	void EndOfExecution();
 protected:
 	void
 	CreateWidgets();

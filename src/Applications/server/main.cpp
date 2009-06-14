@@ -16,18 +16,11 @@ int main(int argc, char *argv[]) {
 	SET_DOUT( debugFile );
 
 	try {
-		
-//		TimeStamp *ts = new TimeStamp();
-//		
-//		for(uint32 i = 0; i<10; i++)
-//		{
-//			*ts++;
-//		}
-//		
 		asio::io_service asioService;
 
 		Server server(asioService);
-		asioService.run();
+		server.AcceptLoop();
+		//asioService.run();
 	}
 	catch (std::exception& e)
 	{

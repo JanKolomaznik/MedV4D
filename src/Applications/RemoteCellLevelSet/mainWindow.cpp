@@ -5,8 +5,6 @@
 #include "mainWindow.h"
 #include "SettingsBox.h"
 
-
-
 using namespace std;
 using namespace M4D::Imaging;
 
@@ -43,6 +41,15 @@ mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 //
 //				currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
 //				conn->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
+		Vector<uint32, 3> dsSize;
+		Image<float32, 3> *im = static_cast<Image<float32, 3> *>(inputDataSet.get());
+		
+		for(uint32 i=0; i<im->Dimension; i++)
+		{
+			dsSize[i] =	
+				(im->GetDimensionExtents(i).maximum - im->GetDimensionExtents(i).minimum) / 2;
+		}
+		_settings->SetSeed(dsSize);
 
 		_inConnection->PutDataset( inputDataSet );
 
@@ -63,6 +70,7 @@ mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 void
 mainWindow::CreatePipeline()
 {
+	// Create filters
 	_convertor = new ViewImageConvertor();
 	_pipeline.AddFilter( _convertor );
 	
@@ -71,17 +79,12 @@ mainWindow::CreatePipeline()
 	_pipeline.AddFilter( _decimatedImConvertor );
 	
 	_resultImConvertor = new ViewImageConvertor();
-	_resultImConvertor->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
+	_resultImConvertor->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_UPDATE_FINISHED );
 	_pipeline.AddFilter( _resultImConvertor );
 	
-//	typedef M4D::Imaging::NearestNeighborInterpolator<ImageType> Interpolator;
-//	typedef M4D::Imaging::DecimationFilter<ImageType, Interpolator> Decimator;
 	typedef ImageSizeAdapter<VeiwImageType> ForCellSizeAdapter;
 	
-	
-//	_decimator = new Decimator( new Decimator::Properties(0.5f) );
-	
-#define DESIRED_IMAGE_SIZE_FOR_CELL (60*1024*1024) // 60M
+#define DESIRED_IMAGE_SIZE_FOR_CELL (10*1024*1024) // 40M
 	_decimator = new ForCellSizeAdapter( 
 			new ForCellSizeAdapter::Properties(DESIRED_IMAGE_SIZE_FOR_CELL) );
 	_decimator->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
@@ -89,23 +92,24 @@ mainWindow::CreatePipeline()
 	
 	_filter = new RemoteFilterType(& properties_);
 	_pipeline.AddFilter( _filter );
-
+	
+	
+	// create connections
 	_inConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( 
 			&_pipeline.MakeInputConnection( *_convertor, 0, false ) );
-	_pipeline.MakeConnection( *_convertor, 0, *_decimator, 0 );	
-//		_pipeline.MakeConnection( *_convertor, 0, *_filter, 0 );
+	_pipeline.MakeConnection( *_convertor, 0, *_decimator, 0 );
 	
 	_tmpConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( 
 			&_pipeline.MakeConnection( *_decimator, 0, *_filter, 0 ) );
 	
-	_decim2castConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( 
-				&_pipeline.MakeConnection( *_decimator, 0, *_decimatedImConvertor, 0 ) );
-	
 	_remote2castConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( 
-			&_pipeline.MakeConnection( *_filter, 0, *_resultImConvertor, 0 ) );
+				&_pipeline.MakeConnection( *_filter, 0, *_resultImConvertor, 0 ) );	
 	
 	_outConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( 
 			&_pipeline.MakeOutputConnection( *_resultImConvertor, 0, true ) );
+	
+	_decim2castConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( 
+					&_pipeline.MakeConnection( *_decimator, 0, *_decimatedImConvertor, 0 ) );
 	
 	_castOutConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( 
 			&_pipeline.MakeOutputConnection( *_decimatedImConvertor, 0, true ) );

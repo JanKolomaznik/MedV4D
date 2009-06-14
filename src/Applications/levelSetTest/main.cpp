@@ -78,19 +78,29 @@ int main(int argc, char *argv[]) {
     M4D::Imaging::PipelineContainer m_pipeLine;    
 
 	try {
+		AbstractDataSet::Ptr inputDataSet;
 		
-		M4D::IO::FInStream inStr(INFILE);		
-		AbstractDataSet::Ptr inputDataSet = DataSetFactory::DeserializeDataset(inStr);
+		{
+			M4D::IO::FInStream inStr(INFILE);		
+			inputDataSet = DataSetFactory::DeserializeDataset(inStr);
+		}
 		
 		typedef ThreshLSSegMedvedWrapper< float32, float32 > FilterType;
 		
 		FilterType::Properties *props = new FilterType::Properties();
 		
-#define  RATIO 0.5f
-		props->seedX = (uint32)(256 * RATIO);
-		props->seedY = (uint32)(256 * RATIO);
-		props->seedZ = 1;
-		props->initialDistance = 100 * RATIO;
+		Image<float32, 3> *im = (Image<float32, 3> *) inputDataSet.get();
+		
+		props->seedX = 
+			(im->GetDimensionExtents( 0 ).maximum - im->GetDimensionExtents( 0 ).minimum) / 2;
+		props->seedY = 
+			(im->GetDimensionExtents( 1 ).maximum - im->GetDimensionExtents( 1 ).minimum) / 2;		
+		props->seedZ = 
+			(im->GetDimensionExtents( 2 ).maximum - im->GetDimensionExtents( 2 ).minimum) / 2;
+		
+		props->initialDistance = (double)
+			(im->GetDimensionExtents( 0 ).maximum - im->GetDimensionExtents( 0 ).minimum) / 2.2;
+		
 		props->maxIterations = 1;
 		m_filter =  new FilterType( props);
 		
