@@ -3,43 +3,54 @@
 #error File medevedWrapperFilter.cxx cannot be included directly!
 #else
 
-namespace M4D
-{
-namespace RemoteComputing
-{
 ///////////////////////////////////////////////////////////////////////////////
 template< typename InputElementType, typename OutputElementType >
 ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 	::ThreshLSSegMedvedWrapper(Properties *props)
 	: properties_(props)
-	, initSeedNode_(NULL)
+	, _levelSetImageData(NULL)
+	//, initSeedNode_(NULL)
 {
+		// crete seed node as begining for fast marching filter		  
+		FastMarchingFilterType::NodeType node;
+		  
+		  _seeds = NodeContainer::New();
+		  _seeds->Initialize();
+		  _seeds->InsertElement( 0, node );
+		  
+		  _levelSetImage = TLevelSetImage::New();
+		  
 	// setup filters
 	SetupBinaryThresholder();	
-	SetupFastMarchingFilter();  
-	SetupLevelSetSegmentator();
-	
-//	featureToFloatCaster = FeatureToFloatFilterType::New();
-	//floatToFeature = FloatToFeatureFilterType::New();
+	//SetupFastMarchingFilter();  
+//	SetupLevelSetSegmentator();
 	 
-//	featureToFloatCaster->SetInput( this->GetInputITKImage() );	
-	thresholdSegmentation->SetFeatureImage( this->GetInputITKImage() );
-	thresholdSegmentation->SetInput( fastMarching->GetOutput() );
-	thresholder->SetInput( thresholdSegmentation->GetOutput() );
-	//floatToFeature->SetInput(thresholdSegmentation->GetOutput());
+//	thresholdSegmentation->SetFeatureImage( this->GetInputITKImage() );
+//	thresholdSegmentation->SetInput( _levelSetImage );
+////	thresholdSegmentation->SetInput(this->GetOutputITKImage());
+//	thresholder->SetInput( thresholdSegmentation->GetOutput() );
+	
+//	thresholder->SetInput( _levelSetImage );
 	  
 	// connect the pipeline into in/out of the ITKFilter
-	//SetOutputITKImage( floatToFeature->GetOutput() );
 	SetOutputITKImage( thresholder->GetOutput() );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template< typename InputElementType, typename OutputElementType >
+ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
+::~ThreshLSSegMedvedWrapper()
+{
+	if(_levelSetImageData) free(_levelSetImageData);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 template< typename InputElementType, typename OutputElementType >
 void
 ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
-	::SetupFastMarchingFilter(void)
+	::RunFastMarchingFilter(void)
 {
-  fastMarching = FastMarchingFilterType::New();
+	FastMarchingFilterType::Pointer fastMarching = FastMarchingFilterType::New();
   //
   //  The FastMarchingImageFilter requires the user to provide a seed
   //  point from which the level set will be generated. The user can actually
@@ -52,24 +63,38 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
   //  container is defined as \code{NodeContainer} among the
   //  FastMarchingImageFilter traits.
   //
-  typedef FastMarchingFilterType::NodeContainer           NodeContainer;
-
-  // crete seed node as begining for fast marching filter		  
-  NodeType node;
   
-  NodeContainer::Pointer seeds = NodeContainer::New();
-  seeds->Initialize();
-  seeds->InsertElement( 0, node );
+	 FastMarchingFilterType::NodeType::IndexType index;  
+	  index[0] = properties_->seedX;
+	  index[1] = properties_->seedY;
+	  index[2] = properties_->seedZ;
+	  _seeds->ElementAt(0).SetIndex(index);
+	  _seeds->ElementAt(0).SetValue(- properties_->initialDistance);
   
-  initSeedNode_ = &seeds->ElementAt(0);
+  
+//  initSeedNode_ = &seeds->ElementAt(0);
 
-  fastMarching->SetTrialPoints(  seeds  );
+  fastMarching->SetTrialPoints(_seeds);
 
   //  Since the FastMarchingImageFilter is used here just as a
   //  Distance Map generator. It does not require a speed image as input.
   //  Instead the constant value $1.0$ is passed using the
   //  SetSpeedConstant() method.  
   fastMarching->SetSpeedConstant( 1.0 );
+  
+  fastMarching->SetOutputSize(
+  			this->GetInputITKImage()->GetLargestPossibleRegion().GetSize());
+  
+  // set OutputITKImage as output for fast marching (FM) 
+  fastMarching->GraftOutput(_levelSetImage);
+  //fastMarching->GraftOutput(this->GetOutputITKImage());
+  
+  // let the FM to generate data in to OutputITKImage
+  fastMarching->Update();
+  
+//  M4D::Cell::PrintITKImage<TLevelSetImage>(*_levelSetImage, LOUT);
+  
+  // now output of the FM should be in OutputITKImage
 }
 ///////////////////////////////////////////////////////////////////////////////
 template< typename InputElementType, typename OutputElementType >
@@ -87,24 +112,16 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 	SetOutImageSize(region, spacing);
 	PredecessorType::PrepareOutputDatasets();
 	
-//#ifdef FOR_CELL
-//	AlocateAlignedImageData(region.GetSize());
-//#endif
-	
-	fastMarching->SetOutputSize(
-			this->GetInputITKImage()->GetLargestPossibleRegion().GetSize());
-	fastMarching->GraftOutput(this->GetOutputITKImage());
+	AlocateAlignedImageData(region.GetSize());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-#ifdef FOR_CELL
 template< typename InputElementType, typename OutputElementType >
 void
 ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 ::AlocateAlignedImageData(const typename ITKOutputImageType::SizeType &size)
-{
-	typedef typename ThresholdSegmentationFilterType::OutputImageType::PixelType TSegmOImPixel;
-	TSegmOImPixel *data2Pointer = NULL;
+{	
+	_levelSetImage->CopyInformation(this->GetInputITKImage());
 	
 	try {
 	size_t sizeOfData = 1;	// size in elements (not in bytes)
@@ -129,29 +146,30 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 //				sizeOfData,
 //				true);
 	
-	typedef typename ThresholdSegmentationFilterType::OutputImageType TSegmOutImage;
-	TSegmOutImage *o2 = thresholdSegmentation->GetOutput();	
+//	typedef typename ThresholdSegmentationFilterType::OutputImageType TSegmOutImage;
+//	TSegmOutImage *o2 = thresholdSegmentation->GetOutput();	
 	
-	// alocate new (aligned buffer)
-
-	
-	if( posix_memalign((void**)(&data2Pointer), 128,
-			sizeOfData * sizeof(TSegmOImPixel) ) != 0)
+	// alocate new (aligned buffer)	
+	if( posix_memalign((void**)(&_levelSetImageData), 128,
+			sizeOfData * sizeof(TLSImaPixel) ) != 0)
 	{
 		throw std::bad_alloc();
 	}
-	o2->GetPixelContainer()->SetImportPointer(
-				data2Pointer,
-				(typename ITKInputImageType::PixelContainer::ElementIdentifier) sizeOfData,
-				true);
+	_levelSetImage->GetPixelContainer()->SetImportPointer(
+			_levelSetImageData,
+				(typename TLevelSetImage::PixelContainer::ElementIdentifier) sizeOfData,
+				false);
 	} catch(...) {
 //		if(dataPointer) free(dataPointer);
-		if(data2Pointer) free(data2Pointer);
+		if(_levelSetImageData) free(_levelSetImageData);
 		
 		throw;
 	}
+	
+	_levelSetImage->SetBufferedRegion(
+			_levelSetImage->GetLargestPossibleRegion());
+	_levelSetImage->Allocate();
 }
-#endif
 ///////////////////////////////////////////////////////////////////////////////
 template< typename InputElementType, typename OutputElementType >
 void
@@ -159,6 +177,7 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 	::SetupBinaryThresholder(void)
 {
   thresholder = ThresholdingFilterType::New();
+  thresholder->SetInput(_levelSetImage);
 		                        
   thresholder->SetLowerThreshold( -1000.0 );
   thresholder->SetUpperThreshold(     0.0 );
@@ -170,18 +189,35 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 template< typename InputElementType, typename OutputElementType >
 void
 ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
-	::SetupLevelSetSegmentator(void)
+	::RunLevelSetSegmentator(void)
 {
-  thresholdSegmentation = ThresholdSegmentationFilterType::New();  
+  typename ThresholdSegmentationFilterType::Pointer thresholdSegmentation = 
+	  			ThresholdSegmentationFilterType::New();  
+  
+  ApplyProperties(thresholdSegmentation);
+  
   // and set some properties	  
-  thresholdSegmentation->SetMaximumRMSError( 0.02 );  
-  thresholdSegmentation->SetIsoSurfaceValue(0.0);
+  thresholdSegmentation->SetMaximumRMSError(0.02);  		
+  
+  thresholdSegmentation->SetFeatureImage( this->GetInputITKImage() );
+  thresholdSegmentation->SetInput( _levelSetImage );
+  thresholdSegmentation->GraftOutput(_levelSetImage); 
+  
+  PrintRunInfo(std::cout);
+  
+  thresholdSegmentation->Update();
+  
+  
+ // thresholder->Update();
+  
+  thresholdSegmentation->PrintStats(std::cout);
 }
 ///////////////////////////////////////////////////////////////////////////////
 template< typename InputElementType, typename OutputElementType >
 void
 ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
-	::ApplyProperties(void)
+	::ApplyProperties(
+			typename ThresholdSegmentationFilterType::Pointer &thresholdSegmentation)
 {
   thresholdSegmentation->SetNumberOfIterations( properties_->maxIterations );
   thresholdSegmentation->SetUpperThreshold( properties_->upperThreshold );
@@ -190,12 +226,16 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
   //thresholdSegmentation->GetDiffFunction()->SetAdvectionScaling( properties_->advectionScaling);
   thresholdSegmentation->SetCurvatureScaling( properties_->curvatureScaling);
   
-  NodeType::IndexType index;  
-  index[0] = properties_->seedX;
-  index[1] = properties_->seedY;
-  index[2] = properties_->seedZ;
-  initSeedNode_->SetIndex(index);
-  initSeedNode_->SetValue(- properties_->initialDistance);
+  thresholdSegmentation->Modified();
+  
+//  FastMarchingFilterType::NodeType::IndexType index;  
+//  index[0] = properties_->seedX;
+//  index[1] = properties_->seedY;
+//  index[2] = properties_->seedZ;
+//  _seeds->ElementAt(0).SetIndex(index);
+//  _seeds->ElementAt(0).SetValue(- properties_->initialDistance);
+  
+  //fastMarching->Modified();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -242,15 +282,19 @@ bool
 ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 	::ProcessImage(const InputImageType &in, OutputImageType &out)
 {
-	ApplyProperties();
 	
 	if(! CheckRun())
 			return false;
-	try {		
-		PrintRunInfo(std::cout);
-		thresholder->ResetPipeline();
-		thresholder->Update();		
-		thresholdSegmentation->PrintStats(std::cout);
+	try {
+		RunFastMarchingFilter();		
+		RunLevelSetSegmentator();
+		
+		  // berform binary thresholding to distinguish inner and outer part of LS
+		//  		thresholder->SetInput(_levelSetImage);		
+		 
+		thresholder->Modified();	// to force recalculation 
+		 thresholder->Update();
+		 
 	} catch (itk::ExceptionObject &ex) {
 		LOUT << ex << std::endl;
 		std::cerr << ex << std::endl;
@@ -285,8 +329,6 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-}
-}
 
 #endif
 

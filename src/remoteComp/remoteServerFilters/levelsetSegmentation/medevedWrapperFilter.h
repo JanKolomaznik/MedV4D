@@ -11,6 +11,8 @@
 #include "itkCastImageFilter.h"
 #include "itkImage.h"
 
+#include "cellSrc/supportClasses.h"
+
 #if( defined(FOR_CELL) || 1)
 #include "cellSrc/filter.h"
 #else
@@ -100,9 +102,10 @@ public:
 	};
 	
 	ThreshLSSegMedvedWrapper(Properties *props);
+	~ThreshLSSegMedvedWrapper();
 	
 	void PrepareOutputDatasets(void);
-	void ApplyProperties(void);
+	
 	
 protected:
 	bool ProcessImage(
@@ -125,9 +128,6 @@ private:
 	// filter that creates initial level set
 	typedef  itk::FastMarchingImageFilter< InternalITKImageType, InternalITKImageType >
 	    FastMarchingFilterType;
-	
-//	typedef itk::CastImageFilter< ITKInputImageType, InternalITKImageType > 
-//			FeatureToFloatFilterType;
 		
 	// filter that performs actual levelset segmentation
 	typedef  M4D::Cell::MySegmtLevelSetFilter< 
@@ -138,36 +138,39 @@ private:
 	typedef itk::BinaryThresholdImageFilter<InternalITKImageType, typename PredecessorType::ITKOutputImageType>
 	    ThresholdingFilterType;
 	
-//	typedef itk::CastImageFilter< InternalITKImageType, ITKOutputImageType > 
-//		FloatToFeatureFilterType;
-
 	
-	FastMarchingFilterType::Pointer fastMarching;
 	typename ThresholdingFilterType::Pointer thresholder;
-	typename ThresholdSegmentationFilterType::Pointer thresholdSegmentation;
+//	typename ThresholdSegmentationFilterType::Pointer thresholdSegmentation;
 	
-//	typename FeatureToFloatFilterType::Pointer featureToFloatCaster;
-//	typename FloatToFeatureFilterType::Pointer floatToFeature;
+	void ApplyProperties(
+				typename ThresholdSegmentationFilterType::Pointer &thresholdSegmentation);
 	
-	void SetupFastMarchingFilter(void);
+	void RunFastMarchingFilter(void);
 	void SetupBinaryThresholder(void);
-	void SetupLevelSetSegmentator(void);
+	
+	void RunLevelSetSegmentator(void);
 	
 	void PrintRunInfo(std::ostream &stream);
 	
-	typedef FastMarchingFilterType::NodeType                NodeType;
+//	typedef FastMarchingFilterType::NodeType                NodeType;
 	
-	NodeType *initSeedNode_;
+	typedef FastMarchingFilterType::NodeContainer           NodeContainer;
+	NodeContainer::Pointer _seeds;
 	
-#ifdef FOR_CELL
+	typedef FastMarchingFilterType::LevelSetImageType TLevelSetImage;
+	TLevelSetImage::Pointer _levelSetImage;
+	
+	typedef TLevelSetImage::PixelType TLSImaPixel;
+	TLSImaPixel *_levelSetImageData;
+//	NodeType *initSeedNode_;
+	
 	void AlocateAlignedImageData(const typename ITKOutputImageType::SizeType &size);
-#endif
 };
-
-}
-}
-
+	
 //include implementation
 #include "medevedWrapperFilter.cxx"
+
+}
+}
 
 #endif /*SERVERLEVELSETSEGMENTATION_H_*/
