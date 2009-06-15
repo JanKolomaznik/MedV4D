@@ -57,9 +57,12 @@ protected:
 
 	void
 	CreatePipeline();
+	
+	void OnAdapterDone();
 
 	SettingsBox	*_settings;
 	Notifier	*_notifier;
+	Notifier	*_adapterDoneNotifier;
 
 	M4D::Imaging::PipelineContainer			_pipeline;
 	M4D::Imaging::AbstractPipeFilter		*_filter;

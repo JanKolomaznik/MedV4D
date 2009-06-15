@@ -31,8 +31,17 @@ mainWindow::mainWindow ()
 	addDockWindow( "Simple MIP", _settings, DOCKED_DOCK_WINDOW);
 
 	QObject::connect( _notifier, SIGNAL( Notification() ), _settings, SLOT( EndOfExecution() ), Qt::QueuedConnection );
+	
+	QObject::connect( _adapterDoneNotifier, SIGNAL( Notification() ), this, SLOT( OnAdapterDone() ), Qt::QueuedConnection );
 }
 
+void
+mainWindow::OnAdapterDone()
+{
+	// todle chci zavolat, kdyz dobehne ten _decimator
+	int i=0;
+	i++;
+}
 
 void 
 mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
@@ -124,5 +133,9 @@ mainWindow::CreatePipeline()
 
 	_notifier =  new Notifier( this );
 	_outConnection->SetMessageHook( MessageReceiverInterface::Ptr( _notifier ) );
+	
+	_adapterDoneNotifier = new Notifier(this);
+	_tmpConnection->SetMessageHook(
+			MessageReceiverInterface::Ptr(_adapterDoneNotifier));
 }
 
