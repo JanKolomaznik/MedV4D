@@ -166,8 +166,11 @@ void
 SettingsBox::SetSeed(const Vector<uint32, 3> &size)
 {
 	seedXValueChanged(size[0]);
+	seedX->setValue(props_->seedX);
 	seedYValueChanged(size[1]);
+	seedY->setValue(props_->seedY);
 	seedZValueChanged(size[2]);
+	seedZ->setValue(props_->seedZ);
 }
 
 void

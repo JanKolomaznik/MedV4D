@@ -38,9 +38,16 @@ mainWindow::mainWindow ()
 void
 mainWindow::OnAdapterDone()
 {
-	// todle chci zavolat, kdyz dobehne ten _decimator
-	int i=0;
-	i++;
+	Vector<uint32, 3> dsSize;
+	Image<float32, 3> &im = 
+		static_cast<Image<float32, 3> &>(_tmpConnection->GetDataset());
+	
+	for(uint32 i=0; i<im.Dimension; i++)
+	{
+		dsSize[i] =	
+			(im.GetDimensionExtents(i).maximum - im.GetDimensionExtents(i).minimum) / 2;
+	}
+	_settings->SetSeed(dsSize);
 }
 
 void 
@@ -50,15 +57,6 @@ mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 //
 //				currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
 //				conn->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
-		Vector<uint32, 3> dsSize;
-		Image<float32, 3> *im = static_cast<Image<float32, 3> *>(inputDataSet.get());
-		
-		for(uint32 i=0; i<im->Dimension; i++)
-		{
-			dsSize[i] =	
-				(im->GetDimensionExtents(i).maximum - im->GetDimensionExtents(i).minimum) / 2;
-		}
-		_settings->SetSeed(dsSize);
 
 		_inConnection->PutDataset( inputDataSet );
 

@@ -57,8 +57,6 @@ protected:
 
 	void
 	CreatePipeline();
-	
-	void OnAdapterDone();
 
 	SettingsBox	*_settings;
 	Notifier	*_notifier;
@@ -77,7 +75,10 @@ protected:
 	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage >	*_decim2castConnection;
 	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage >	*_castOutConnection;
 	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage >	*_remote2castConnection;
-
+	
+protected slots:
+	void OnAdapterDone();
+	
 private:
 
 };
