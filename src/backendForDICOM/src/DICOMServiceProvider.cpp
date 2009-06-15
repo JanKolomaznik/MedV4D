@@ -60,7 +60,7 @@ DcmProvider::Shutdown(void)
 ///////////////////////////////////////////////////////////////////////
 
 void
-DcmProvider::Find( 
+DcmProvider::Find(
 		ResultSet &result,
     const std::string &patientForeName,
     const std::string &patientSureName,
@@ -68,9 +68,9 @@ DcmProvider::Find(
 		const std::string &dateFrom,
 		const std::string &dateTo,
     const std::string &referringMD,
-    const std::string &description) 
+    const std::string &description)
 {
-	g_findService->FindForFilter( 
+	g_findService->FindForFilter(
     result, patientForeName, patientSureName, patientID,
     dateFrom, dateTo, referringMD, description);
 }
@@ -78,7 +78,7 @@ DcmProvider::Find(
 ///////////////////////////////////////////////////////////////////////
 
 void
-DcmProvider::LocalFind( 
+DcmProvider::LocalFind(
 			ResultSet &result,
       const std::string &path)
 {
@@ -88,12 +88,12 @@ DcmProvider::LocalFind(
 ///////////////////////////////////////////////////////////////////////
 
 void
-DcmProvider::LocalFindStudyInfo( 
+DcmProvider::LocalFindStudyInfo(
       const std::string &patientID,
 			const std::string &studyID,
       SerieInfoVector &info)
 {
-	g_localService.FindStudyInfo( 
+	g_localService.FindStudyInfo(
     info, patientID, studyID);
 }
 
@@ -106,7 +106,7 @@ DcmProvider::LocalGetImageSet(
 			const std::string &serieID,
 			DicomObjSet &result)
 {
-	g_localService.GetImageSet( 
+	g_localService.GetImageSet(
     patientID, studyID, serieID, result);
 
   // sort the vector of images
@@ -119,7 +119,7 @@ void
 DcmProvider::FindStudyInfo(
     const std::string &patientID,
 		const std::string &studyID,
-		SerieInfoVector &info) 
+		SerieInfoVector &info)
 {
 	g_findService->FindStudyInfo(
 		patientID, studyID, info);
@@ -131,7 +131,7 @@ void
 DcmProvider::FindStudyAndImageInfo(
 		const std::string &patientID,
 		const std::string &studyID,
-		StudyInfo &info) 
+		StudyInfo &info)
 {
 	g_findService->FindWholeStudyInfo(
 		patientID, studyID, info);
@@ -140,11 +140,11 @@ DcmProvider::FindStudyAndImageInfo(
 ///////////////////////////////////////////////////////////////////////
 
 void
-DcmProvider::FindAllPatientStudies(  
+DcmProvider::FindAllPatientStudies(
 		const std::string &patientID,
-		ResultSet &result) 
+		ResultSet &result)
 {
-	g_findService->FindStudiesAboutPatient( 
+	g_findService->FindStudiesAboutPatient(
 		patientID, result);
 }
 
@@ -156,9 +156,9 @@ DcmProvider::GetImage(
 		const std::string &studyID,
 		const std::string &serieID,
 		const std::string &imageID,
-		DicomObj &object) 
+		DicomObj &object)
 {
-	g_moveService->MoveImage( 
+	g_moveService->MoveImage(
 		patientID, studyID, serieID, imageID, object);
 }
 
@@ -170,9 +170,9 @@ DcmProvider::GetImageSet(
 		const std::string &studyID,
 		const std::string &serieID,
 		DicomObjSet &result,
-    DicomObj::ImageLoadedCallback on_loaded) 
+    DicomObj::ImageLoadedCallback on_loaded)
 {
-	g_moveService->MoveImageSet( 
+	g_moveService->MoveImageSet(
 		patientID, studyID, serieID, result, on_loaded);
 
   // sort the vector of images
@@ -181,7 +181,7 @@ DcmProvider::GetImageSet(
 
 ///////////////////////////////////////////////////////////////////////
 
-AbstractImage::Ptr 
+AbstractImage::Ptr
 DcmProvider::CreateImageFromDICOM( DicomObjSetPtr dicomObjects )
 {
 	//TODO exceptions
@@ -196,28 +196,28 @@ DcmProvider::CreateImageFromDICOM( DicomObjSetPtr dicomObjects )
 
 ///////////////////////////////////////////////////////////////////////
 
-AbstractImageData::APtr 
-DcmProvider::CreateImageDataFromDICOM( 
+AbstractImageData::APtr
+DcmProvider::CreateImageDataFromDICOM(
 		DicomObjSetPtr dicomObjects )
 {
 		D_PRINT( LogDelimiter( '*' ) );
 		D_PRINT( "-- Entering CreateImageFromDICOM()" );
-	
+
 	//Do we have valid pointer to dicom object set??
 	if( !dicomObjects  ) {
 		D_PRINT( "-----WRONG DICOM OBJECTS SET POINTER -> THROWING EXCEPTION----" );
-		throw ImageFactory::EWrongPointer();	
+		throw ImageFactory::EWrongPointer();
 	}
 
 	//We need something to work with, otherwise throw exception.
 	if( dicomObjects->empty() ) {
 		D_PRINT( "-----EMPTY DICOM OBJECTS SET -> THROWING EXCEPTION----" );
-		throw ImageFactory::EEmptyDicomObjSet();	
+		throw ImageFactory::EEmptyDicomObjSet();
 	}
 
 	// first we have sort the images into right order !
 	std::sort(dicomObjects->begin(), dicomObjects->end());
-		
+
 		D_PRINT( "---- DICOM OBJECT SET size = " << dicomObjects->size() );
 
 
@@ -225,15 +225,15 @@ DcmProvider::CreateImageDataFromDICOM(
 	//TODO - consider getting parameters from first one.
 
 	uint16 elementSize = (*dicomObjects)[0].GetPixelSize(); //in bytes
-	bool sign = (*dicomObjects)[0].IsDataSigned(); 
+	bool sign = (*dicomObjects)[0].IsDataSigned();
 
 	int elementTypeID = GetNTIDFromSizeAndSign( elementSize, sign );
 	if( elementTypeID == NTID_VOID ) {
 		throw ImageFactory::EUnknowDataType( elementSize, sign );
 	}
 	//Input tests finished. ------------------------------------------------------
-	
-	try 
+
+	try
 	{
 		//Get parameters of final image.
 		uint32	width	= (*dicomObjects)[0].GetWidth();
@@ -251,20 +251,24 @@ DcmProvider::CreateImageDataFromDICOM(
 		(*dicomObjects)[1].GetSliceLocation( tmp2 );
 		voxelDepth = Abs( tmp1 - tmp2 );
 
+		if(voxelWidth <= 0.0f) voxelWidth = 1.0f;
+		if(voxelHeight <= 0.0f) voxelHeight = 1.0f;
+		if(voxelDepth <= 0.0f) voxelDepth = 1.0f;
+
 		uint32	sliceSize = width * height;	//Count of elements in one slice.
 		uint32	imageSize = sliceSize * depth;	//Count of elements in whole image.
 
 		uint8*	dataArray = NULL;
-		
+
 		//How many bytes is needed to skip between two slices.
 		uint32 sliceStride = elementSize * sliceSize;
 
 			D_PRINT( "---- Preparing memory for data." );
 		//Create array for image elements.
-		ImageFactory::PrepareElementArrayFromTypeID( 
-				elementTypeID, 
-				imageSize, 
-				dataArray	/*output*/ 
+		ImageFactory::PrepareElementArrayFromTypeID(
+				elementTypeID,
+				imageSize,
+				dataArray	/*output*/
 		       		);
 
 			D_PRINT( "------ Image size     = " << imageSize );
@@ -285,11 +289,11 @@ DcmProvider::CreateImageDataFromDICOM(
 
 		D_PRINT( "---- Creating resulting image." );
 		AbstractImageData::APtr result( (AbstractImageData*)
-				ImageFactory::CreateImageFromDataAndTypeID( elementTypeID, imageSize, dataArray, info ) 
+				ImageFactory::CreateImageFromDataAndTypeID( elementTypeID, imageSize, dataArray, info )
 					);
-		
 
-		//We now copy data from dicom objects to prepared array. 
+
+		//We now copy data from dicom objects to prepared array.
 		//TODO - will be asynchronous.
 	 		D_PRINT( "---- Array start = " << (unsigned int*)dataArray << " array end = " << (unsigned int*)(dataArray + imageSize*elementSize) );
 		FlushDicomObjects( dicomObjects, elementTypeID, imageSize, sliceStride, dataArray );
@@ -308,7 +312,7 @@ DcmProvider::CreateImageDataFromDICOM(
 ///////////////////////////////////////////////////////////////////////
 
 //TODO - improve this function
-/** 
+/**
  * @param dicomObjects Set of DICOM objects which are flushed into the array.
  * @param imageSize How many elements of size 'pixelSize' can be stored in array.
  * @param stride Number of BYTES!!! used per one object flush (size of one layer in bytes).
@@ -327,7 +331,7 @@ FlushDicomObjectsHelper(
 {
 	//Copy each slice into image to its place.
 	uint32 i = 0;
-	for( 
+	for(
 		DicomObjSet::iterator it = dicomObjects->begin();
 		it != dicomObjects->end();
 		++it, ++i
@@ -351,15 +355,15 @@ FlushDicomObjectsHelper(
 void
 DcmProvider::FlushDicomObjects(
 		DicomObjSetPtr	&dicomObjects,
-		int 					elementTypeID, 
+		int 					elementTypeID,
 		uint32 					imageSize,
 		uint32					stride,
 		uint8					* dataArray
 		)
 {
 		D_PRINT( "---- Flushing DObjects to array" );
-	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( 
-		elementTypeID, 
+	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
+		elementTypeID,
 		FlushDicomObjectsHelper< TTYPE >( dicomObjects, imageSize, stride, dataArray )
 	);
 }
@@ -372,14 +376,14 @@ DcmProvider::LoadSerieThatFileBelongsTo(const std::string &fileName,
 {
 	DicomObj o;
 	o.Load(fileName);
-	
+
 	std::string seriesUID;
 	o.GetTagValue(0x0020, 0x000e, seriesUID);
 	std::string studyUID;
-	o.GetTagValue(0x0020, 0x000d, studyUID);	
+	o.GetTagValue(0x0020, 0x000d, studyUID);
 	std::string patientID;
 	o.GetTagValue(0x0010, 0x0020, patientID);
-	
+
 	g_localService.GetSeriesFromFolder(
 			folder, patientID, studyUID, seriesUID, result);
 }
