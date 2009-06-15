@@ -18,8 +18,7 @@ M4DLIBS=	$(srcTop)/lib/libremoteCompServer$(archPostfix).a\
 
 LIBS=		$(M4DLIBS) \
 		$(ITKLIBS) \
-		-lboost_thread\
-		-lboost_filesystem\
+		-lboost_thread-mt\
 		-ldl\
 		-lspe2
 
@@ -47,9 +46,17 @@ INCLUDES=	-I$(srcTop) \
 SRC_FILES=	$(addprefix $(SRC_DIR)/, $(addsuffix .cpp, $(TARGETS)) )
 OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )
 
+printInfo:
+	@echo "*************************"
+	@echo "*"
+	@echo "configuration: $(CONF)"
+	@echo "architecture: $(ARCH)"
+	@echo "*"
+	@echo "*************************"
+
 
 .PHONY: all
-all:		tmpdir Common Imaging commonRCPart serverRCPart libSPUPart PPEStuf dep $(OUTPUT)
+all:		printInfo tmpdir Common Imaging commonRCPart serverRCPart libSPUPart PPEStuf dep $(OUTPUT)
 
 commonRCPart:
 	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart

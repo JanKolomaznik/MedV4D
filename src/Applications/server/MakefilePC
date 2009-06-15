@@ -18,7 +18,6 @@ M4DLIBS=	$(srcTop)/lib/libremoteCompServer$(archPostfix).a\
 LIBS=		$(M4DLIBS) \
 			$(ITKLIBS) \
 			-lboost_thread-mt\
-			-lboost_filesystem\
 			-ldl
 
 ########################################
