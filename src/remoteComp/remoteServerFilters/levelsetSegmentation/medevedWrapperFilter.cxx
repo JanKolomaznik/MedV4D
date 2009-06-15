@@ -11,6 +11,8 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 	, _levelSetImageData(NULL)
 	//, initSeedNode_(NULL)
 {
+	this->_name = "KlecLevelSet Filter";
+		
 		// crete seed node as begining for fast marching filter		  
 		FastMarchingFilterType::NodeType node;
 		  
@@ -90,7 +92,9 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
   //fastMarching->GraftOutput(this->GetOutputITKImage());
   
   // let the FM to generate data in to OutputITKImage
+  std::cout << "Running fast marching filter ..." << std::endl;
   fastMarching->Update();
+  std::cout << "done" << std::endl;
   
 //  M4D::Cell::PrintITKImage<TLevelSetImage>(*_levelSetImage, LOUT);
   
@@ -203,12 +207,7 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
   thresholdSegmentation->SetInput( _levelSetImage );
   thresholdSegmentation->GraftOutput(_levelSetImage); 
   
-  PrintRunInfo(std::cout);
-  
   thresholdSegmentation->Update();
-  
-  
- // thresholder->Update();
   
   thresholdSegmentation->PrintStats(std::cout);
 }
@@ -265,7 +264,7 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>::CheckRun()
 	if(properties_->maxIterations < 1)
 	{
 		std::cout << "Wrong maxIterations!" << std::endl;
-		good = false;
+		good = false;	
 	}
 	if(properties_->initialDistance < 1 || properties_->initialDistance > (size[0] / 2))
 	{
@@ -282,6 +281,7 @@ bool
 ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 	::ProcessImage(const InputImageType &in, OutputImageType &out)
 {
+	PrintRunInfo(std::cout);
 	
 	if(! CheckRun())
 			return false;
@@ -293,13 +293,18 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 		//  		thresholder->SetInput(_levelSetImage);		
 		 
 		thresholder->Modified();	// to force recalculation 
-		 thresholder->Update();
+		thresholder->Update();
 		 
 	} catch (itk::ExceptionObject &ex) {
 		LOUT << ex << std::endl;
 		std::cerr << ex << std::endl;
 		return false;
 	}
+	
+	// newlines into output to separate particular runs
+	for(uint32 i=0; i<10; i++)
+		std::cout << std::endl;
+	
 	return true;
 }
 

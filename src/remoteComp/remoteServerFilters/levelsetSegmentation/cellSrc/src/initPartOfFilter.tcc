@@ -52,8 +52,6 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 	// adjusted in the Initialize() step to more accurately represent the
 	// position of the zero level set.
 
-	std::cout << "Preparing output started ..." << std::endl;
-
 	// First need to subtract the iso-surface value from the input image.
 	typedef itk::ShiftScaleImageFilter<TInputImage, OutputImageType> ShiftScaleFilterType;
 	typename ShiftScaleFilterType::Pointer shiftScaleFilter = ShiftScaleFilterType::New();
@@ -61,9 +59,6 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 	shiftScaleFilter->SetShift( - m_IsoSurfaceValue );
 	// keep a handle to the shifted output
 	m_ShiftedImage = shiftScaleFilter->GetOutput();
-
-	std::cout << "done ..." << std::endl;
-	std::cout << "ZeroCrossingImageFilter preparation started ..." << std::endl;
 
 	typename itk::ZeroCrossingImageFilter<OutputImageType, OutputImageType>::Pointer
 	zeroCrossingFilter = itk::ZeroCrossingImageFilter<OutputImageType,
@@ -73,10 +68,11 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 	zeroCrossingFilter->SetBackgroundValue(this->m_ValueOne);
 	zeroCrossingFilter->SetForegroundValue(this->m_ValueZero);
 
+	std::cout << "output preparation filters started ..." << std::endl;
 	zeroCrossingFilter->Update();
+	std::cout << "done ..." << std::endl;
 
 	this->GraftOutput(zeroCrossingFilter->GetOutput());
-	std::cout << "done ..." << std::endl;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

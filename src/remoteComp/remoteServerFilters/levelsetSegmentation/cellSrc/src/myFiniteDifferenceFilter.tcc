@@ -2,7 +2,7 @@
 #error File myFiniteDifferenceFilter.tcc cannot be included directly!
 #else
 
-#define DEBUGMYFINITEFILT 0
+#define DEBUGMYFINITEFILT 12
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -42,6 +42,12 @@ MyFiniteDifferenceImageFilter<TInputImage, TOutputImage>
 		//this->InitializeIteration(); // An optional method for precalculating
 		// global values, or otherwise setting up
 		// for the next iteration
+		
+//		if(m_ElapsedIterations == 418)
+//		{
+//			uint32 i;
+//			i++;
+//		}
 		dt = this->CalculateChange();
 		this->ApplyUpdate(dt);
 		++m_ElapsedIterations;

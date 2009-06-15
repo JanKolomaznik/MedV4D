@@ -34,6 +34,7 @@ Server::AcceptLoop()
 	while(1)
 	{
 		Accept();
+		break;
 	}
 }
 
