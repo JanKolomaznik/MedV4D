@@ -48,12 +48,15 @@ mainWindow::OnAdapterDone()
 			(im.GetDimensionExtents(i).maximum - im.GetDimensionExtents(i).minimum) / 2;
 	}
 	_settings->SetSeed(dsSize);
+	
+	_settings->SetEnabledExecButton( true );
 }
 
 void 
 mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 {
 	try {
+		_settings->SetEnabledExecButton( false );
 //
 //				currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
 //				conn->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
@@ -64,8 +67,6 @@ mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 
 		currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
 		_inConnection->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
-
-		_settings->SetEnabledExecButton( true );
 
 	} 
 	catch( ... ) {
