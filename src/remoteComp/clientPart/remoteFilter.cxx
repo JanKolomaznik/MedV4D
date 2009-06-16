@@ -26,12 +26,23 @@ RemoteFilter< InputImageType, OutputImageType >
 {
 	this->_name = "Remote Filter";
 	
-	Connect();
+	try {
+		Connect();
 	
-	SendCommand(CREATE);	
+		SendCommand(CREATE);
 	
-	IO::OutStream stream(&netAccessor_);
-	properties_->SerializeClassInfo(stream);
+		IO::OutStream stream(&netAccessor_);
+		properties_->SerializeClassInfo(stream);
+	} catch (asio::system_error &e) {		
+		if(e.code() == asio::error::eof )
+		{
+			LOG("Server disconnected ...");
+		}
+		else
+		{
+			LOG("ASIO system exception, code" << e.code());
+		}
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -85,7 +96,15 @@ RemoteFilter< InputImageType, OutputImageType >
 		IO::OutStream stream(&netAccessor_);
 		properties_->SerializeProperties(stream);
 		return RecieveDataSet();
-	} catch (NetException &e) {
+	} catch (asio::system_error &e) {		
+		if(e.code() == asio::error::eof )
+		{
+			LOG("Server disconnected ...");
+		}
+		else
+		{
+			LOG("ASIO system exception, code" << e.code());
+		}
 		return false;
 	}
 }
@@ -127,12 +146,19 @@ template< typename InputImageType, typename OutputImageType >
 void
 RemoteFilter< InputImageType, OutputImageType >::SendDataSet(void)
 {
-	IO::OutStream stream(&netAccessor_);
-	M4D::Imaging::DataSetFactory::SerializeDataset(stream, *this->in);
-//	InputImageType &in = (InputImageType &) this->GetInputImage();
-//	in.SerializeClassInfo(stream);
-//	in.SerializeProperties(stream);
-//	in.SerializeData(stream);
+	try {
+		IO::OutStream stream(&netAccessor_);
+		M4D::Imaging::DataSetFactory::SerializeDataset(stream, *this->in);
+	} catch (asio::system_error &e) {		
+		if(e.code() == asio::error::eof )
+		{
+			LOG("Server disconnected ...");
+		}
+		else
+		{
+			LOG("ASIO system exception, code" << e.code());
+		}
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -167,8 +193,19 @@ template< typename InputImageType, typename OutputImageType >
 void
 RemoteFilter< InputImageType, OutputImageType >::SendCommand( eCommand command)
 {
-	m_socket_.write_some( 
+	try {
+		m_socket_.write_some( 
 				asio::buffer( (uint8*)&command, sizeof(uint8)) );
+	} catch (asio::system_error &e) {		
+		if(e.code() == asio::error::eof )
+		{
+			LOG("Server disconnected ...");
+		}
+		else
+		{
+			LOG("ASIO system exception, code" << e.code());
+		}
+	}
 }
 ///////////////////////////////////////////////////////////////////////////////
 

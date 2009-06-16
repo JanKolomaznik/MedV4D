@@ -21,22 +21,13 @@ NetAccessor::~NetAccessor()
 void
 NetAccessor::PutData(const void *data, size_t length)
 {
-	try {
-			asio::write(
-					m_socket_, asio::buffer(data, length));
-	} catch (asio::system_error &e) {
-		if(e.code() == asio::error::eof )
-			throw DisconnectedException();
-		else
-			throw NetException();
-	}
+	asio::write(m_socket_, asio::buffer(data, length));	
 }
 
 /////////////////////////////////////////////////////////////////////////////
 void
 NetAccessor::GetData(void *data, size_t length)	
 {
-	//size_t transferred = 
 	asio::read( 
 			m_socket_, asio::buffer(data, length), asio::transfer_all());
 }
