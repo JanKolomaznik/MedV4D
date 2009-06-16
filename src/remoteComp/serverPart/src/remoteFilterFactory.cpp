@@ -33,6 +33,7 @@ CreateFilterStage2(uint16 filterID, iRemoteFilterProperties **props)
 	default:
 		ASSERT(false);
 	}
+	return NULL;	// just to remove warns
 }
 ///////////////////////////////////////////////////////////////////////////////
 template< typename InputPixelType>
@@ -43,6 +44,7 @@ CreateFilterStage1(
 	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( outElemType,
 		return CreateFilterStage2< InputPixelType, TTYPE>(filterID, props)		
 	);
+	return NULL;	// just to remove warns
 }
 ///////////////////////////////////////////////////////////////////////////////
 AbstractPipeFilter* 
@@ -60,6 +62,7 @@ RemoteFilterFactory::DeserializeFilterClassID(
 			inElemType,
 			return CreateFilterStage1<TTYPE>(outElemType, filterID, props)
 		);
+	return NULL;	// just to remove warns
 }
 
 ///////////////////////////////////////////////////////////////////////////////

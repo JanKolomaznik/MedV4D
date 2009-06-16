@@ -9,6 +9,8 @@ namespace M4D
 namespace Cell
 {
 
+#define DEBUG_VALS_ALOCATOR 12
+
 /**
  * Size of one allocation. Prevents repeating allocation of similar size
  */
@@ -25,7 +27,8 @@ public:
 	{
 		if(_array)
 		{
-			D_PRINT("UpdateValsAllocator: DEL=" << _array);
+			DL_PRINT(DEBUG_VALS_ALOCATOR,
+					"UpdateValsAllocator: DEL=" << _array);
 			free(_array);
 		}
 	}
@@ -38,7 +41,8 @@ public:
 		{
 			if(_array)
 			{
-				D_PRINT("UpdateValsAllocator: DEL=" << _array);
+				DL_PRINT(DEBUG_VALS_ALOCATOR,
+						"UpdateValsAllocator: DEL=" << _array);
 				free(_array);
 			}
 			
@@ -47,7 +51,8 @@ public:
 			if( posix_memalign((void **)&_array, 128, _howMany * sizeof(T)) != 0)
 				throw std::bad_alloc();
 			
-			D_PRINT("UpdateValsAllocator: NEW=" << _array);
+			DL_PRINT(DEBUG_VALS_ALOCATOR,
+					"UpdateValsAllocator: NEW=" << _array);
 		}
 		
 #ifdef ZERO_BUFFER

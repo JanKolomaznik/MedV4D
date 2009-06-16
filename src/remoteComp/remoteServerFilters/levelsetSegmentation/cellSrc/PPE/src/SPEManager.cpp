@@ -27,6 +27,16 @@ void *spu_pthread_function(void *arg)
 		perror("Failed running context");
 		//exit (1);
 	}
+	
+	/* Destroy context */
+	D_PRINT("Ctx destroy of SPE");
+	if (spe_context_destroy(datap->spe_ctx) != 0)
+	{
+		D_PRINT("Failed destroying context");
+		//exit (1);
+	}
+	
+	D_PRINT("SPE thread exiting (value=" << (uint32) NULL << ")");
 	pthread_exit(NULL);
 }
 
@@ -69,24 +79,29 @@ void SPEManager::StartSPEs()
 
 void SPEManager::StopSPEs()
 {
-	for (uint32 i=0; i<speCount; i++)
-			_requestDispatcher.MyPushMessage(QUIT, i);
-
 	// wait for thread termination
 	for (uint32 i=0; i<speCount; i++)
 	{
-		if (pthread_join(_requestDispatcher._SPE_data[i].pthread, NULL))
-		{
-			D_PRINT ("Failed joining thread");
-		}
-
-		/* Destroy context */
-		if (spe_context_destroy(_requestDispatcher._SPE_data[i].spe_ctx) != 0)
-		{
-			D_PRINT("Failed destroying context");
-			//exit (1);
-		}
+		D_PRINT("Sending QUIT to SPE" << i);
+		_requestDispatcher.MyPushMessage(QUIT, i);
 	}
+		
+//		D_PRINT("Join SPE" << i);
+//		if (pthread_join(_requestDispatcher._SPE_data[i].pthread, NULL))
+//		{
+//			D_PRINT ("Failed joining thread");
+//		}
+//
+//		/* Destroy context */
+//		D_PRINT("Ctx destroy of SPE" << i);
+//		if (spe_context_destroy(_requestDispatcher._SPE_data[i].spe_ctx) != 0)
+//		{
+//			D_PRINT("Failed destroying context");
+//			//exit (1);
+//		}
+//		
+//		D_PRINT("SPE"  << i << " NOT running anymore");
+//	}
 }
 #else
 ///////////////////////////////////////////////////////////////////////////////
@@ -106,7 +121,7 @@ void SPEManager::StartSims()
 		if (pthread_create( &_requestDispatcher._progSims[i].pthread, 
 		NULL, &sim_pthread_function, &_requestDispatcher._progSims[i]))
 		{
-			perror("Failed creating thread");
+			D_PRINT("Failed creating thread");
 		}
 	}
 }
@@ -122,7 +137,7 @@ void SPEManager::StopSims()
 		
 		if (pthread_join(_requestDispatcher._progSims[i].pthread, NULL))
 		{
-			D_PRINT ("Failed joining thread");
+			D_PRINT("Failed joining thread");
 		}
 	}
 }
@@ -133,7 +148,7 @@ void SPEManager::StopSims()
 #ifdef FOR_CELL
 uint32 SPEManager::speCount = spe_cpu_info_get(SPE_COUNT_USABLE_SPES, -1);
 #else
-uint32 SPEManager::speCount = 4;
+uint32 SPEManager::speCount = 6;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////

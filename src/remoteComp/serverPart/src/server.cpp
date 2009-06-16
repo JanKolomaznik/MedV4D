@@ -18,6 +18,8 @@ using namespace M4D::RemoteComputing;
 using namespace M4D::Imaging;
 using namespace M4D::IO;
 
+#define ONLY_1_ACCEPT 1
+
 ///////////////////////////////////////////////////////////////////////////////
 
 Server::Server(asio::io_service &io_service) 
@@ -34,7 +36,9 @@ Server::AcceptLoop()
 	while(1)
 	{
 		Accept();
+#ifdef ONLY_1_ACCEPT
 		break;
+#endif
 	}
 }
 

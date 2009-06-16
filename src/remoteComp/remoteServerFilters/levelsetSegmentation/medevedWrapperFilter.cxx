@@ -295,10 +295,12 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 		thresholder->Modified();	// to force recalculation 
 		thresholder->Update();
 		 
-	} catch (itk::ExceptionObject &ex) {
+	} catch(itk::ExceptionObject &ex) {
 		LOUT << ex << std::endl;
 		std::cerr << ex << std::endl;
 		return false;
+	} catch(...) {
+		LOG("exception thrown during Medved filter exec, returning false");
 	}
 	
 	// newlines into output to separate particular runs

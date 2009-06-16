@@ -76,12 +76,12 @@ WorkManager::WorkManager(uint32 coreCount, RunConfiguration *rc) :
 
 WorkManager::~WorkManager()
 {
-	free(_configs);
-	free(_calcChngApplyUpdateConf);
-	free(_propagateValsConf);
+	if(_configs) free(_configs);
+	if(_calcChngApplyUpdateConf) free(_calcChngApplyUpdateConf);
+	if(_propagateValsConf) free(_propagateValsConf);
 
-	delete [] m_UpdateBuffers;
-	delete [] m_LayerSegments;
+	if(m_LayerSegments) delete [] m_UpdateBuffers;
+	if(m_UpdateBuffers) delete [] m_LayerSegments;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -120,10 +120,9 @@ void WorkManager::CheckLayerSizes()
 		{
 			if(m_LayerSegments[coreIt].layers[i].Size() <= 0)
 			{
-				std::cout << "WARNING: layer" << i << "(seg" << coreIt 
+				D_PRINT("WARNING: layer" << i << "(seg" << coreIt 
 				<< ") has wrong size(" 
-				<< m_LayerSegments[coreIt].layers[i].Size() << ")" 
-				<< std::endl;
+				<< m_LayerSegments[coreIt].layers[i].Size() << ")");
 				
 				good = false;
 			}
@@ -131,7 +130,7 @@ void WorkManager::CheckLayerSizes()
 	}
 	if(!good)
 	{
-		std::cout << "some layer segments has wrong size !!" << std::endl;
+		D_PRINT("some layer segments has wrong size !!");
 		throw std::exception();
 	}
 }
