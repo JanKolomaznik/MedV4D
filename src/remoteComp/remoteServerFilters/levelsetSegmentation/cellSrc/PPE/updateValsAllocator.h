@@ -48,7 +48,8 @@ public:
 			
 			_howMany = (1 + (size / ALLOC_CHUNK_SIZE)) * ALLOC_CHUNK_SIZE;
 			
-			if( posix_memalign((void **)&_array, 128, _howMany * sizeof(T)) != 0)
+			UConvToVoidPtr uConv; uConv.sp = &_array;
+			if( posix_memalign(uConv.vp, 128, _howMany * sizeof(T)) != 0)
 				throw std::bad_alloc();
 			
 			DL_PRINT(DEBUG_VALS_ALOCATOR,
@@ -62,6 +63,11 @@ public:
 private:
 	T *_array;
 	size_t _howMany;
+	
+	typedef union {
+		T **sp;
+		void **vp;
+	} UConvToVoidPtr;
 };
 
 }

@@ -15,6 +15,22 @@
 
 using namespace M4D::Cell;
 
+// casting unions
+typedef union {
+	ConfigStructures **csp;
+	void **vp;
+} UConfigStructuresToVoid;
+
+typedef union {
+	CalculateChangeAndUpdActiveLayerConf **csp;
+	void **vp;
+} UCalculateChangeConfToVoid;
+
+typedef union {
+	PropagateValuesConf **csp;
+	void **vp;
+} UPropagateValuesConfToVoid;
+
 ///////////////////////////////////////////////////////////////////////////////
 
 WorkManager::WorkManager(uint32 coreCount, RunConfiguration *rc) :
@@ -32,17 +48,25 @@ WorkManager::WorkManager(uint32 coreCount, RunConfiguration *rc) :
 		m_LayerSegments = new LayerListType[_numOfCores];
 		m_UpdateBuffers = new UpdateBufferType[_numOfCores];
 
-		if( posix_memalign((void**)(&_configs), 128,
+		UConfigStructuresToVoid uCSTV;
+		uCSTV.csp = &_configs;
+		if( posix_memalign(uCSTV.vp, 128,
 						_numOfCores * sizeof(ConfigStructures)) != 0)
 		{
 			throw std::bad_alloc();
 		}
-		if( posix_memalign((void**)(&_calcChngApplyUpdateConf), 128,
-						_numOfCores * sizeof(CalculateChangeAndUpdActiveLayerConf)) != 0)
+		
+		UCalculateChangeConfToVoid uCCCTV;
+		uCCCTV.csp = &_calcChngApplyUpdateConf;
+		if( posix_memalign(uCCCTV.vp, 128,
+				_numOfCores * sizeof(CalculateChangeAndUpdActiveLayerConf)) != 0)
 		{
 			throw std::bad_alloc();
 		}
-		if( posix_memalign((void**)(&_propagateValsConf), 128,
+		
+		UPropagateValuesConfToVoid uPVCTV;
+		uPVCTV.csp = &_propagateValsConf;
+		if( posix_memalign(uPVCTV.vp, 128,
 						_numOfCores * sizeof(PropagateValuesConf)) != 0)
 		{
 			throw std::bad_alloc();

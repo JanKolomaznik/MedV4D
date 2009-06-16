@@ -8,17 +8,14 @@
 //#include "itkNumericTraits.h"
 #include "updateCalculation/updateCalculatorSPE.h"
 #include "applyUpdateCalc/applyUpdateCalculator.h"
+
+#include "tools/support.h"
 //#include "neighborhoodCell.h"
 //#include "neighbourhoodIterator.h"
 
 #include <spu_mfcio.h>
 
-FILE *debugFile;
-
 using namespace M4D::Cell;
-
-#define INT_TO_FLOAT(x) (*((float32 *) &x))
-#define FLOAT_TO_INT(x) (*((uint32_t *) &x))
 
 #define DEBUG_MANAGING_MAILBOX_COMM 12
 
@@ -47,11 +44,14 @@ int main(unsigned long long speid __attribute__ ((unused)),
 	
 	uint32 SPENum = spu_readch(SPU_RdInMbox);
 
+#ifdef SPE_DEBUG_TO_FILE
+	FILE *debugFile;
 	printf("This is SPE%d speaking ... \n", SPENum);
 	char fileName[32];
 	sprintf(fileName, "SPEdeb%d.txt", SPENum);
 	
 	debugFile = fopen(fileName,"w");
+#endif
 
 	unsigned int tag = DMAGate::GetTag();
 	DMAGate::Get(argp, &_Confs, sizeof(ConfigStructures), tag);
@@ -146,8 +146,10 @@ int main(unsigned long long speid __attribute__ ((unused)),
 	spu_clock_stop();
 	printf ("SPE time_working = %lld\n", time_working);
 #endif /* USE_TIMER */
-	
+
+#ifdef SPE_DEBUG_TO_FILE
 	fclose(debugFile);
+#endif
 
 	printf("SPE%d quitting ... \n", SPENum);
 

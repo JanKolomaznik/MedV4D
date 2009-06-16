@@ -1,6 +1,7 @@
 #include "common/Common.h"
 #include "../../SPE/commonTypes.h"
 #include "../SPURequestsDispatcher.h"
+#include "../../SPE/tools/support.h"
 
 using namespace M4D::Cell;
 using namespace M4D::Multithreading;
@@ -43,11 +44,6 @@ SPURequestsDispatcher::~SPURequestsDispatcher()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-float32 toFloat(uint32 val)
-{
-	return *((float32 *) &val);
-}
-
 void SPURequestsDispatcher::DispatchMessage(uint32 i)
 {
 	uint32 dataRead = MyPopMessage(i);
@@ -62,13 +58,14 @@ void SPURequestsDispatcher::DispatchMessage(uint32 i)
 		DispatchPushNodeMess(dataRead, i);
 		break;
 	case JOB_DONE:
-		_results[i] = toFloat(MyPopMessage(i));
+		_results[i] = INT_TO_FLOAT(MyPopMessage(i));
 		_SPEYetRunning--;
 		break;
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////
-void SPURequestsDispatcher::DispatchPushNodeMess(uint32 message, uint32 SPENum)
+void
+SPURequestsDispatcher::DispatchPushNodeMess(uint32 message, uint32 SPENum)
 {
 	uint8 lyerID = (message & MessageLyaerID_MASK) >> MessageLyaerID_SHIFT;
 	uint32 param = (message & MessagePARAM_MASK) >> MessagePARAM_SHIFT;
@@ -134,9 +131,7 @@ void SPURequestsDispatcher::SendCommand(ESPUCommands cmd)
 		MyPushMessage(cmdData, i);
 		if (cmd == CALC_UPDATE)
 		{
-			// send dt param
-			float32 dt = _workManager->_dt;
-			MyPushMessage(*((uint32 *) &dt), i);
+			MyPushMessage(FLOAT_TO_INT(_workManager->_dt), i);
 		}
 	}
 
@@ -229,11 +224,11 @@ void Tspu_prog_sim::SimulateFunc()
 			DMAGate::Get(_wm->GetConfSructs()[_speID].propagateValsConf, &_sharedRes._propValConfig,
 					sizeof(PropagateValuesConf));
 			DL_PRINT(DEBUG_MANAGING_MAILBOX_COMM, "CALC_UPDATE received\n");
-			retval = _applyUpdateCalc.ApplyUpdate(toFloat(_mailbox.SPEPop()));
+			retval = _applyUpdateCalc.ApplyUpdate(INT_TO_FLOAT(_mailbox.SPEPop()));
 			{
 				ScopedLock lock(_mailbox.fromSPEQMutex);
 				_mailbox.SPEPush((uint32) JOB_DONE);
-				_mailbox.SPEPush(*((uint32 *) &retval));
+				_mailbox.SPEPush(FLOAT_TO_INT(retval));
 			}
 			break;
 		case CALC_PROPAG_VALS:

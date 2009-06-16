@@ -96,10 +96,16 @@ public:
 	
 protected:
 	
+	typedef union {
+		T **sp;
+		void **vp;
+	} UConvToVoidPtr;
+	
 	void AllocNewChunk()
 	{
 		T *newArray = NULL;
-		if( posix_memalign((void**)(&newArray), 128, CHUNKSIZE * sizeof(T)) != 0)
+		UConvToVoidPtr uConv; uConv.sp = &newArray;
+		if( posix_memalign(uConv.vp, 128, CHUNKSIZE * sizeof(T)) != 0)
 			throw std::bad_alloc();
 		TChunk *newChunk = new TChunk(newArray);
 		_chunks.push_back(newChunk);

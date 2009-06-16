@@ -153,8 +153,14 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 //	typedef typename ThresholdSegmentationFilterType::OutputImageType TSegmOutImage;
 //	TSegmOutImage *o2 = thresholdSegmentation->GetOutput();	
 	
-	// alocate new (aligned buffer)	
-	if( posix_memalign((void**)(&_levelSetImageData), 128,
+	typedef union {
+		TLSImaPixel **sp;
+		void **vp;
+	} UTLSImaPixelToInt;
+	
+	UTLSImaPixelToInt uConv; uConv.sp = &_levelSetImageData;
+	// alocate new (aligned buffer)
+	if( posix_memalign(uConv.vp, 128,
 			sizeOfData * sizeof(TLSImaPixel) ) != 0)
 	{
 		throw std::bad_alloc();

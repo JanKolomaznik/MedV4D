@@ -107,15 +107,25 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 	sizeOfData *= this->GetOutput()->GetRequestedRegion().GetSize()[i];
 
 	// alocate new (aligned buffer)
-	if( posix_memalign((void**)(&_statusImageData), 128,
-					sizeOfData * sizeof(typename StatusImageType::PixelType) ) != 0)
 	{
-		throw std::bad_alloc();
+		// conversion union
+		typedef union {
+			typename StatusImageType::PixelType **sp;
+			void **vp;
+		} UStatImTypeToVP;
+		
+		UStatImTypeToVP uConv;
+		uConv.sp = &_statusImageData;
+		if( posix_memalign(uConv.vp, 128,
+						sizeOfData * sizeof(typename StatusImageType::PixelType) ) != 0)
+		{
+			throw std::bad_alloc();
+		}
+		m_StatusImage->GetPixelContainer()->SetImportPointer(
+				_statusImageData,
+				(typename StatusImageType::PixelContainer::ElementIdentifier) sizeOfData,
+				false);
 	}
-	m_StatusImage->GetPixelContainer()->SetImportPointer(
-			_statusImageData,
-			(typename StatusImageType::PixelContainer::ElementIdentifier) sizeOfData,
-			false);
 
 	// Initialize the status image to contain all m_StatusNull values.
 	itk::ImageRegionIterator<StatusImageType>
