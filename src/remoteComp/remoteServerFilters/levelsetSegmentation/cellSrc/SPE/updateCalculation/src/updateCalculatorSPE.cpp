@@ -163,7 +163,7 @@ UpdateCalculatorSPE::CalculateChange()
 	
 	uint32 counter = 0;
 	
-	if(m_layerIterator.HasNextToLoad())
+	if(m_layerIterator.IsLoading())
 			{
 	// first step in flow scenario - load the first
 	loaded = m_layerIterator.GetLoaded();
@@ -174,7 +174,7 @@ UpdateCalculatorSPE::CalculateChange()
 	 
 	while(m_valueNeighbPreloader.GetCurrNodesNext() != m_stepConfig->layer0End)
 	{
-		if(m_layerIterator.HasNextToLoad())
+		if(m_layerIterator.IsLoading())
 				{
 		loaded = m_layerIterator.GetLoaded();
 			// load approp neigborhood

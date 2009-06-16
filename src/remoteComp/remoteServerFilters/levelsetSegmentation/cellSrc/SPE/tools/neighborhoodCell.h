@@ -68,9 +68,13 @@ public:
 	inline PixelType GetPixel(uint32 pos) 
 	{
 		D_COMMAND(
-			if(pos > NEIGHBOURHOOD_SIZE) 
-				D_PRINT("ERR(bad param): NeighborhoodCell::GetPixel(" 
-						<< pos << ")");
+			if(pos > NEIGHBOURHOOD_SIZE)
+#ifdef FOR_CELL
+			D_PRINT("ERR(bad param): NeighborhoodCell::GetPixel(%d)", pos);
+#else
+			D_PRINT("ERR(bad param): NeighborhoodCell::GetPixel("
+					<< pos << ")" );
+#endif
 		)
 		return m_buf[traslationTable_[pos]];
 	}

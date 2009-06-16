@@ -64,7 +64,7 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from,
 	m_layerIterator.SetBeginEnd(m_propLayerValuesConfig->layerBegins[to],
 			m_propLayerValuesConfig->layerEnds[to]);
 
-	if (m_layerIterator.HasNextToLoad())
+	if (m_layerIterator.IsLoading())
 	{
 		currNode = m_layerIterator.GetLoaded();
 		// load approp neigborhood
@@ -78,7 +78,7 @@ void LayerValuesPropagator::PropagateLayerValues(StatusType from,
 		m_outIter.SetNeighbourhood(m_valueNeighPreloader.GetLoaded());
 		m_statusIter.SetNeighbourhood(m_statusNeighPreloader.GetLoaded());
 
-		if (m_layerIterator.HasNextToLoad())
+		if (m_layerIterator.IsLoading())
 		{
 			// load next portion
 			currNode = m_layerIterator.GetLoaded();

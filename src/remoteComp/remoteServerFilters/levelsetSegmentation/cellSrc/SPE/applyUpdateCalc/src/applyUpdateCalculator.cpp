@@ -76,7 +76,7 @@ ApplyUpdateSPE::ValueType ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	m_statusUpdatePreloader.ReserveTags();
 #endif
 
-	if (m_layerIterator.HasNextToLoad())
+	if (m_layerIterator.IsLoading())
 	{
 		// pre-load first bunch of neighbs
 		_loaded = m_layerIterator.GetLoaded();
@@ -359,7 +359,7 @@ void ApplyUpdateSPE::UpdateActiveLayerValues(TimeStepType dt,
 				"UpdateActiveLayerValues node: " << currNode->m_Value << "="
 				<< (SparseFieldLevelSetNode *)this->m_layerIterator.GetCentralMemAddrrOfCurrProcessedNode().Get64());
 #endif
-		if (m_layerIterator.HasNextToLoad())
+		if (m_layerIterator.IsLoading())
 		{
 			// pre-load next neigborhoods
 			_loaded = m_layerIterator.GetLoaded();

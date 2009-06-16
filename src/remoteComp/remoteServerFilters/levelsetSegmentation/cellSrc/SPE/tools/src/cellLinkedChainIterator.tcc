@@ -85,7 +85,7 @@ LinkedChainIteratorCell<Item>::GetLoaded(void)
 	if(loadedIter != m_end)
 	{
 		_loadingPos = (_loadingPos + 1) % BUF_SIZE;
-		loadedIter = ( (Item *)loadedIter.Get64() )->Next;
+		loadedIter = m_buf[_loadedPos].Next;
 		
 		m_realAddresses[_loadingPos] = m_buf[_loadedPos].Next;
 		//Load(GetCurrItem()->Next, &m_buf[!m_currBufPosition], sizeof(Item));

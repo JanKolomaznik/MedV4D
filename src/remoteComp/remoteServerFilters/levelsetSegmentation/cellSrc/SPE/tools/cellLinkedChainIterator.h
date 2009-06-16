@@ -17,9 +17,17 @@ public:
 	
 	void SetBeginEnd(Address begin, Address end);
 
-	inline bool HasNextToLoad(void) { return m_buf[_loadedPos].Next != m_end; }
+//	inline bool IsLoading(void) 
+//	{ 
+//		return m_buf[_loadedPos].Next != m_end; 
+//	}
 	
-	bool HasNext()
+	inline bool IsLoading(void) 
+	{ 
+		return loadedIter != m_end; 
+	}
+	
+	inline bool HasNext()
 	{
 		return m_buf[m_currBufPosition].Next != m_end;
 	}
