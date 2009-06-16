@@ -2,7 +2,7 @@ ifndef CONF
 CONF = Debug
 endif
 
-CXXFLAGS += -Wall -Wno-deprecated
+CXXFLAGS += -Wall -Wno-deprecated -fstrict-aliasing -Wstrict-aliasing=2
 # verbose compiler
 #CXXFLAGS += -v
 
@@ -12,7 +12,7 @@ CXXFLAGS += -g -DDEBUG_LEVEL=10 -DDEBUG_ADITIONAL_INFO
 endif
 
 ifeq "$(CONF)" "Release"
-CXXFLAGS += -DDEBUG_LEVEL=1
+CXXFLAGS += -O3
 endif
 
 ifeq "$(CONF)" "Profile"
