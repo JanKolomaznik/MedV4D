@@ -194,6 +194,10 @@
 				Name="components"
 				>
 				<File
+					RelativePath="..\..\GUI\widgets\components\src\SimpleSliceViewerTexturePreparer.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\GUI\widgets\components\src\StManagerFilterComp.cpp"
 					>
 				</File>
