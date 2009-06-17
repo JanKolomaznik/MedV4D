@@ -8,6 +8,7 @@
 
 #include <QtOpenGL>
 #include <Imaging/Imaging.h>
+#include <GUI/widgets/m4dSelection.h>
 
 #define DISPLAY_PIXEL_VALUE( PIXEL, MEAN, BRIGHTNESS, CONTRAST )\
                                         ( CONTRAST * ( PIXEL- MEAN + BRIGHTNESS ) + MEAN )

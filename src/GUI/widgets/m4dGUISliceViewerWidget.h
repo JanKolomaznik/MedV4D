@@ -778,7 +778,7 @@ protected:
     /**
      * The value of the recently picked voxel's color.
      */
-    int64					_colorPicked;
+    float64					_colorPicked;
 
     /**
      * The position on display of the recently picked voxel.

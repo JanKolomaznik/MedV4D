@@ -204,7 +204,7 @@ SettingsBox
 	for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i )
 	{
 		sliceViewer->InputPort()[ i ].UnPlug();
-		sliceViewer->setTexturePreparerToRGB();
+		sliceViewer->setTexturePreparerToCustom(&averageTexturePreparer);
 		static_cast< mainWindow* >( _parent )->OutConnectionToViewerPort( i, i );
 	}
 }

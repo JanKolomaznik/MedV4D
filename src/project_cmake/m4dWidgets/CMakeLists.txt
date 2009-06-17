@@ -55,6 +55,7 @@ set(INPUT ${SRC_DIR}/src/m4dGUIMainWindow.cpp
           ${SRC_DIR}/components/src/StManagerFilterComp.cpp
           ${SRC_DIR}/components/src/StManagerHProtocolsComp.cpp
           ${SRC_DIR}/components/src/StManagerStudyListComp.cpp 
+          ${SRC_DIR}/components/src/SimpleSliceViewerTexturePreparer.cpp 
           ${SRC_DIR}/utils/src/LoadingThreads.cpp
           ${SRC_DIR}/utils/src/StudyFilter.cpp)
 

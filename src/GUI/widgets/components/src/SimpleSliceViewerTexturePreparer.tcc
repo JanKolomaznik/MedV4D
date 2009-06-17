@@ -7,64 +7,6 @@ namespace M4D
 namespace Viewer
 {
 
-template<>
-GLenum
-SimpleSliceViewerTexturePreparer<uint8>::oglType()
-{
-    return GL_UNSIGNED_BYTE;
-}
-
-template<>
-GLenum
-SimpleSliceViewerTexturePreparer<int8>::oglType()
-{
-    return GL_BYTE;
-}
-
-template<>
-GLenum
-SimpleSliceViewerTexturePreparer<uint16>::oglType()
-{
-    return GL_UNSIGNED_SHORT;
-}
-
-template<>
-GLenum
-SimpleSliceViewerTexturePreparer<int16>::oglType()
-{
-    return GL_SHORT;
-}
-
-template<>
-GLenum
-SimpleSliceViewerTexturePreparer<uint32>::oglType()
-{
-    return GL_UNSIGNED_INT;
-}
-
-template<>
-GLenum
-SimpleSliceViewerTexturePreparer<int32>::oglType()
-{
-    return GL_INT;
-}
-
-template<>
-GLenum
-SimpleSliceViewerTexturePreparer<uint64>::oglType()
-{
-    throw ErrorHandling::ExceptionBase( "64-bit numbers are not supported." );
-    return GL_UNSIGNED_INT;
-}
-
-template<>
-GLenum
-SimpleSliceViewerTexturePreparer<int64>::oglType()
-{
-    throw ErrorHandling::ExceptionBase( "64-bit numbers are not supported." );
-    return GL_INT;
-}
-
 template< typename ElementType >
 ElementType*
 SimpleSliceViewerTexturePreparer< ElementType >
@@ -201,7 +143,7 @@ SimpleSliceViewerTexturePreparer< ElementType >
         mean = 0.;
         for ( i = 0; i < height; i++ )
             for ( j = 0; j < width; j++ ) mean += (double)pixel[ i * width + j ] / (double)(width*height);
-        brightnessRate -= (int)mean;
+        brightnessRate -= (GLint)mean;
         for ( i = 0; i < height; ++i )
             for ( j = 0; j < width; j++ )
             {

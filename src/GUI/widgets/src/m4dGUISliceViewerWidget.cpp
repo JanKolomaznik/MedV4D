@@ -148,7 +148,7 @@ m4dGUISliceViewerWidget::resetParameters()
 		    }
 		    unsigned typeSize;
 		    bool unsgn;
-		    INTEGER_TYPE_TEMPLATE_SWITCH_MACRO( _imageID, { typeSize = sizeof( TTYPE ); unsgn = ( typeid( TTYPE ) == typeid( uint8 ) || typeid( TTYPE ) == typeid( uint16 ) || typeid( TTYPE ) == typeid( uint32 ) || typeid( TTYPE ) == typeid( uint64 ) ); } );
+		    NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( _imageID, { typeSize = sizeof( TTYPE ); unsgn = ( typeid( TTYPE ) == typeid( uint8 ) || typeid( TTYPE ) == typeid( uint16 ) || typeid( TTYPE ) == typeid( uint32 ) || typeid( TTYPE ) == typeid( uint64 ) ); } );
 		    typeSize = (unsigned)std::pow( (double)256, (double)(typeSize - 1) );
                     _brightnessRate = 12 * typeSize;
                     _contrastRate = 20 * typeSize;
@@ -247,7 +247,7 @@ m4dGUISliceViewerWidget::setParameters()
 		    }
 		    unsigned typeSize;
 		    bool unsgn;
-		    INTEGER_TYPE_TEMPLATE_SWITCH_MACRO( _imageID, { typeSize = sizeof( TTYPE ); unsgn = ( typeid( TTYPE ) == typeid( uint8 ) || typeid( TTYPE ) == typeid( uint16 ) || typeid( TTYPE ) == typeid( uint32 ) || typeid( TTYPE ) == typeid( uint64 ) ); } );
+		    NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( _imageID, { typeSize = sizeof( TTYPE ); unsgn = ( typeid( TTYPE ) == typeid( uint8 ) || typeid( TTYPE ) == typeid( uint16 ) || typeid( TTYPE ) == typeid( uint32 ) || typeid( TTYPE ) == typeid( uint64 ) ); } );
 		    typeSize = (unsigned)std::pow( (double)256, (double)(typeSize - 1) );
                     _brightnessRate = 12 * typeSize;
                     _contrastRate = 20 * typeSize;
@@ -528,7 +528,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
     {
 
 	case rgb:
-        INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
+        NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
     	    _imageID, { RGBSliceViewerTexturePreparer<TTYPE> texturePreparer; _ready = texturePreparer.prepare( this->InputPort(), width, height, _brightnessRate, _contrastRate, _sliceOrientation, sliceNum - _minimum[ ( _sliceOrientation + 2 ) % 3 ], _dimension ); } );
 	break;
 
@@ -537,7 +537,7 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 	break;
 
 	default:
-	INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
+	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
             _imageID, { SimpleSliceViewerTexturePreparer<TTYPE> texturePreparer; _ready = texturePreparer.prepare( this->InputPort(), width, height, _brightnessRate, _contrastRate, _sliceOrientation, sliceNum - _minimum[ ( _sliceOrientation + 2 ) % 3 ], _dimension ); } );
         break;
 
@@ -1114,7 +1114,7 @@ void
 m4dGUISliceViewerWidget::adjustContrastBrightness( int amountC, int amountB )
 {
     unsigned typeSize;
-    INTEGER_TYPE_TEMPLATE_SWITCH_MACRO( _imageID, typeSize = sizeof( TTYPE ) );
+    NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( _imageID, typeSize = sizeof( TTYPE ) );
     typeSize = (unsigned)std::pow( (double)256, (double)(typeSize - 1.5) );
     _brightnessRate += amountB * typeSize;
     _contrastRate += amountC * typeSize;
@@ -1223,12 +1223,12 @@ m4dGUISliceViewerWidget::colorPicker( double x, double y, double z )
 	    {
 		if ( _inPort->GetDatasetTyped().GetDimension() == 3 )
 		{
-		    INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
+		    NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
 		        _imageID, result = Imaging::Image< TTYPE, 3 >::CastAbstractImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >( (int)coords[0], (int)coords[1], (int)coords[2] ) ) );
 		}
 	        else if ( _inPort->GetDatasetTyped().GetDimension() == 2 )
 	        {
-		    INTEGER_TYPE_TEMPLATE_SWITCH_MACRO(
+		    NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
 		        _imageID, result = Imaging::Image< TTYPE, 2 >::CastAbstractImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >( (int)coords[0], (int)coords[1] ) ) );
 	        }
 	        else
@@ -1471,7 +1471,7 @@ m4dGUISliceViewerWidget::slotMessageHandler( Imaging::PipelineMsgID msgID )
 	    {
 		unsigned typeSize;
 		bool unsgn;
-		INTEGER_TYPE_TEMPLATE_SWITCH_MACRO( _imageID, { typeSize = sizeof( TTYPE ); unsgn = ( typeid( TTYPE ) == typeid( uint8 ) || typeid( TTYPE ) == typeid( uint16 ) || typeid( TTYPE ) == typeid( uint32 ) || typeid( TTYPE ) == typeid( uint64 ) ); } );
+		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( _imageID, { typeSize = sizeof( TTYPE ); unsgn = ( typeid( TTYPE ) == typeid( uint8 ) || typeid( TTYPE ) == typeid( uint16 ) || typeid( TTYPE ) == typeid( uint32 ) || typeid( TTYPE ) == typeid( uint64 ) ); } );
 		typeSize = (unsigned)std::pow( (double)256, (double)(typeSize - 1) );
                 _brightnessRate = 12 * typeSize;
                 _contrastRate = 20 * typeSize;

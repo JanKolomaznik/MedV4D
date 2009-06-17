@@ -28,7 +28,8 @@ SUBDIR3=	utils/src
 
 TARGETS1=	StManagerFilterComp \
 		StManagerHProtocolsComp \
-		StManagerStudyListComp
+		StManagerStudyListComp \
+		SimpleSliceViewerTexturePreparer
 		
 TARGETS2=	fonts
 
