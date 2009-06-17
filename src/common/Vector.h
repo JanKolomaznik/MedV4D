@@ -2,6 +2,7 @@
 #define COORDINATES_H
 
 #include "common/ExceptionBase.h"
+#include <istream>
 
 #ifdef DEBUG_LEVEL
 	#define CHECK_INDICES_ENABLED
