@@ -24,7 +24,7 @@ OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	$(srcTop)/tmp/$(CONF)/$(NAME)
 SRC_DIR=	./src
 
-INCLUDES=	-I$(srcTop) \
+INCLUDES+= -I$(srcTop) \
 			$(ITKIncludes)
 
 SRC_FILES=	$(addprefix $(SRC_DIR)/, $(addsuffix .cpp, $(TARGETS)) )

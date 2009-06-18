@@ -18,7 +18,7 @@ OUTPUTDIR=	$(srcTop)/lib/$(CONF)
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	$(srcTop)/tmp/$(CONF)/$(NAME)
 
-INCLUDES=	-I$(srcTop)
+INCLUDES+=	-I$(srcTop)
 
 #libSrcPath=$(boostTrunk)/$(srcdir)
 

@@ -2,13 +2,14 @@
 ##########################################
 ifeq "$(ARCH)" "CellCross"
 
-# path to ITK libraries and includes
-ITKIncludeDir=/usr/local/include/InsightToolkit
+# path to ITK libraries
 ifeq "$(CONF)" "Release"
-ITKLibsDir=/data/cell/ITK/CellRelease
+ITKLibsDir=$(srcTop)/lib/3rdParty/Release/ITK.ppc64
 else
-ITKLibsDir=/data/cell/ITK/LIBCell/bin
+ITKLibsDir=$(srcTop)/lib/3rdParty/Debug/ITK.ppc64
 endif
+
+INCLUDES += $(srcTop)/include/3rdParty/asio-devel.ppc64
 
 # path to VTK libraries & includes
 VTKLibsDir=/usr/local/lib/vtk-5.0
@@ -16,9 +17,8 @@ VTKIncludeDir=/usr/local/include/vtk-5.0
 endif
 ##########################################
 ifeq "$(ARCH)" "CellPCTest"
-# path to ITK libraries and includes
-ITKIncludeDir=/usr/local/include/InsightToolkit
-ITKLibsDir=/data/cell/ITK/LIBCell/bin
+# path to ITK libraries
+ITKLibsDir=$(srcTop)/lib/3rdParty/Debug/ITK.i686
 
 # path to VTK libraries & includes
 VTKLibsDir=/usr/local/lib/vtk-5.0
@@ -27,9 +27,12 @@ endif
 ##########################################
 ifeq "$(ARCH)" "CellNative"
 
-# path to ITK libraries and includes
-ITKIncludeDir=/usr/local/include/InsightToolkit
-ITKLibsDir=/data/cell/ITK/LIBCell/bin
+# path to ITK libraries
+ifeq "$(CONF)" "Release"
+ITKLibsDir=$(srcTop)/lib/3rdParty/Release/ITK.ppc64
+else
+ITKLibsDir=$(srcTop)/lib/3rdParty/Debug/ITK.ppc64
+endif
 
 # path to VTK libraries & includes
 VTKLibsDir=/usr/local/lib/vtk-5.0
@@ -37,21 +40,21 @@ VTKIncludeDir=/usr/local/include/vtk-5.0
 endif
 ##########################################
 ifeq "$(ARCH)" "PC"
-# path to ITK libraries and includes
-ITKIncludeDir=/usr/local/include/InsightToolkit
+# path to ITK libraries
 
 ifeq "$(CONF)" "Release"
-#TODO
-ITKLibsDir=/data/cell/ITK/LIBCell/bin
+ITKLibsDir=$(srcTop)/lib/3rdParty/Release/ITK.i686
+else
+ITKLibsDir=$(srcTop)/lib/3rdParty/Debug/ITK.i686
+#ITKLibsDir=/usr/local/lib/InsightToolkit
 endif
-ITKLibsDir=/usr/local/lib/InsightToolkit
-
 # path to VTK libraries & includes
 VTKLibsDir=/usr/local/lib/vtk-5.0
 VTKIncludeDir=/usr/local/include/vtk-5.0
 endif
 ##########################################
 
+ITKIncludeDir=$(srcTop)/include/3rdParty/ITK.noarch
 ITKIncludes=	-I$(ITKIncludeDir)\
 		-I$(ITKIncludeDir)/Common\
 		-I$(ITKIncludeDir)/Algorithms\
@@ -117,6 +120,6 @@ QTLIBS=		-lQtCore\
 		-lQtGui\
 		-lQtOpenGL
 
-DCMTK_INCLUDE_PATH := /usr/local/dicom/include
-DCMTK_LIB_PATH := /usr/local/dicom/lib
+DCMTK_INCLUDE_PATH := $(srcTop)/include/3rdParty/dcmtk.noarch
+DCMTK_LIB_PATH := $(srcTop)/lib/3rdParty/Debug/dcmtk.i686
 DCMTKLIBS=	-ldcmnet -ldcmdata -lofstd

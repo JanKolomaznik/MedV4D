@@ -37,7 +37,7 @@ LIBS=		$(M4DLIBS) \
 LIBDIRS=	-L$(srcTop)/lib/$(CONF)\
 			-L$(ROOT)/lib64
 			
-INCLUDES=	-I$(srcTop) \
+INCLUDES+=	-I$(srcTop) \
 		$(ITKIncludes)
 
 SRC_FILES=	$(addprefix $(SRC_DIR)/, $(addsuffix .cpp, $(TARGETS)) )
