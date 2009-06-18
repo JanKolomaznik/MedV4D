@@ -3,24 +3,8 @@ srcdir = .
 srcTop = ../..
 
 include $(srcTop)/project/ToolchainSelect.mk
-include $(srcTop)/project/pathsDefinitions.mk
 include $(srcTop)/project/configurationSelector.mk
-
-RM=rm -f
-MKDIR=mkdir
-				
-M4DLIBS=	$(srcTop)/lib/libremoteCompServer$(archPostfix).a\
-		$(srcTop)/lib/libremoteCompCommons$(archPostfix).a \
-		$(srcTop)/lib/libImaging$(archPostfix).a\
-		$(srcTop)/lib/libcommon$(archPostfix).a\
-		$(srcTop)/lib/libPPEStuff$(archPostfix).a \
-		$(srcTop)/lib/SPU/libSPEPart$(archPostfix).a
-
-LIBS=		$(M4DLIBS) \
-		$(ITKLIBS) \
-		-lboost_thread-mt\
-		-ldl\
-		-lspe2
+include $(srcTop)/project/pathsDefinitions.mk
 
 ########################################
 #Name of this project part
@@ -32,12 +16,25 @@ TARGETS=	main
 
 #Name of target
 OUTPUTNAME=	$(NAME)
-OUTPUTDIR=	$(srcTop)/executables
+OUTPUTDIR=	$(srcTop)/executables/$(CONF)
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
-TMP_DIR=	$(srcTop)/tmp/$(NAME)
+TMP_DIR=	$(srcTop)/tmp/$(CONF)/$(NAME)
 SRC_DIR=	.
 
-LIBDIRS=	-L$(srcTop)/lib\
+M4DLIBS=	-lremoteCompServer$(archPostfix)\
+		-lremoteCompCommons$(archPostfix) \
+		-lImaging$(archPostfix)\
+		-lcommon$(archPostfix)\
+		-lPPEStuff$(archPostfix) \
+		-lSPEPart$(archPostfix)
+
+LIBS=		$(M4DLIBS) \
+		$(ITKLIBS) \
+		-lboost_thread-mt\
+		-ldl\
+		-lspe2
+
+LIBDIRS=	-L$(srcTop)/lib/$(CONF)\
 			-L$(ROOT)/lib64
 			
 INCLUDES=	-I$(srcTop) \
@@ -49,8 +46,8 @@ OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )
 printInfo:
 	@echo "*************************"
 	@echo "*"
-	@echo "configuration: $(CONF)"
-	@echo "architecture: $(ARCH)"
+	@echo "* configuration: $(CONF)"
+	@echo "* architecture: $(ARCH)"
 	@echo "*"
 	@echo "*************************"
 
@@ -59,22 +56,22 @@ printInfo:
 all:		printInfo tmpdir Common Imaging commonRCPart serverRCPart libSPUPart PPEStuf dep $(OUTPUT)
 
 commonRCPart:
-	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart
+	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart all
 	
 serverRCPart:
-	$(MAKE) --directory=$(srcTop)/remoteComp/serverPart
+	$(MAKE) --directory=$(srcTop)/remoteComp/serverPart all
 	
 Imaging:
-	$(MAKE) --directory=$(srcTop)/Imaging
+	$(MAKE) --directory=$(srcTop)/Imaging all
 	
 Common:
-	$(MAKE) --directory=$(srcTop)/common
+	$(MAKE) --directory=$(srcTop)/common all
 	
 libSPUPart:
-	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE
+	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE all
 	
 PPEStuf:
-	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/PPE
+	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/PPE all
 	
 ##################
 
@@ -98,10 +95,6 @@ PPEStufCLEAN:
 
 ##################
 
-.PHONY: tmpdir
-tmpdir:		
-		$(MKDIR) $(TMP_DIR) 2>/dev/null || true
-
 .PHONY: build
 build:		cleanall all
 
@@ -119,6 +112,6 @@ $(OUTPUT):	$(OBJ_FILES)
 		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
 
 .PHONY: clean
-clean: libSPUPartCLEAN PPEStufCLEAN # serverRCPartCLEAN ImagingCLEAN CommonCLEAN
+clean: libSPUPartCLEAN PPEStufCLEAN serverRCPartCLEAN ImagingCLEAN CommonCLEAN
 		$(RM) $(TMP_DIR)/*.o $(DEP_FILE)
 		$(RM) $(OUTPUT)

@@ -1,18 +1,14 @@
 #include "common/Types.h"
-//#include "common/Debug.h"
 #include "tools/SPEdebug.h"
 #include "tools/DMAGate.h"
-//#include "tools/VectorNoExcepts.h"
-//#include "vnl/vnl_vector.h"
 #include "vnl_math.h"
-//#include "itkNumericTraits.h"
 #include "updateCalculation/updateCalculatorSPE.h"
 #include "applyUpdateCalc/applyUpdateCalculator.h"
-
 #include "tools/support.h"
-//#include "neighborhoodCell.h"
-//#include "neighbourhoodIterator.h"
 
+#ifdef SPU_TIMING_TOOL_PROFILING
+#include <profile.h>
+#endif
 #include <spu_mfcio.h>
 
 using namespace M4D::Cell;
@@ -23,6 +19,11 @@ int main(unsigned long long speid __attribute__ ((unused)),
 		unsigned long long argp,
 		unsigned long long envp __attribute__ ((unused)))
 {
+#ifdef SPU_TIMING_TOOL_PROFILING
+	prof_clear();
+	prof_start();
+#endif
+		
 	// config structures
 	ConfigStructures _Confs __attribute__ ((aligned (128)));
 
@@ -70,7 +71,15 @@ int main(unsigned long long speid __attribute__ ((unused)),
 	float32 retval = 0;
 	do
 	{
+#ifdef SPU_TIMING_TOOL_PROFILING
+	prof_stop();
+#endif
+	
 		mailboxVal = spu_readch(SPU_RdInMbox);
+		
+#ifdef SPU_TIMING_TOOL_PROFILING
+	prof_start();
+#endif
 		switch ( (ESPUCommands) mailboxVal)
 		{
 		case CALC_CHANGE:
@@ -152,6 +161,10 @@ int main(unsigned long long speid __attribute__ ((unused)),
 #endif
 
 	printf("SPE%d quitting ... \n", SPENum);
+	
+#ifdef SPU_TIMING_TOOL_PROFILING
+	prof_stop();
+#endif
 
 	return 0;
 }

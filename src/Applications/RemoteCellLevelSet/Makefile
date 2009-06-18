@@ -19,31 +19,16 @@ MOCINPUT=	mainWindow.h \
 
 RCCINPUT=	mainWindow.qrc
 
-M4DLIBS=	$(srcTop)/lib/libm4dWidgets.a\
-			$(srcTop)/lib/libvtkIntegration.a\
-			$(srcTop)/lib/libbackendForDICOM.a\
-			$(srcTop)/lib/libImaging.a\
-			$(srcTop)/lib/libcommon.a\
-			$(srcTop)/lib/libremoteCompCommons.a\
-			$(srcTop)/lib/libremoteClient.a
-
-LIBS=		$(M4DLIBS)\
-		$(QTLIBS)\
-		$(VTKLIBS)\
-		$(DCMTKLIBS)\
-		-lboost_thread-mt \
-		-lboost_filesystem \
-		-lGLU
 ########################################
 
 #Name of target
 OUTPUTNAME=	$(NAME)
-OUTPUTDIR=	$(srcTop)/executables
+OUTPUTDIR=	$(srcTop)/executables/$(CONF)
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
-TMP_DIR=	$(srcTop)/tmp/$(NAME)
+TMP_DIR=	$(srcTop)/tmp/$(CONF)/$(NAME)
 
 
-LIBDIRS=	-L$(srcTop)/lib\
+LIBDIRS=	-L$(srcTop)/lib/$(CONF)\
 			$(QTLibDirs)\
 			-L$(DCMTK_LIB_PATH)\
 			-L$(VTKLibsDir)
@@ -53,6 +38,22 @@ INCLUDES=	-I$(srcTop) \
 			-I$(VTKIncludeDir)\
 			$(QTIncludDirs)\
 			$(ITKIncludes)
+			
+M4DLIBS=	-lm4dWidgets\
+			-lvtkIntegration\
+			-lbackendForDICOM\
+			-lImaging\
+			-lcommon\
+			-lremoteCompCommons\
+			-lremoteClient
+
+LIBS=		$(M4DLIBS)\
+		$(QTLIBS)\
+		$(VTKLIBS)\
+		$(DCMTKLIBS)\
+		-lboost_thread-mt \
+		-lboost_filesystem \
+		-lGLU
 
 
 MOCOUTPUT=      $(addprefix $(TMP_DIR)/moc_, $(MOCINPUT:.h=.cpp) )
@@ -62,28 +63,28 @@ OBJ_FILES=	$(addprefix $(TMP_DIR)/,   $(addprefix rcc_, $(RCCINPUT:.qrc=.o ) ) $
 
 
 .PHONY: all
-all:		tmpdir Common Imaging DICOM VTKInt GUI commonRCPart clientRCPart dep $(OUTPUT)
+all:		outDir tmpdir Common Imaging DICOM VTKInt GUI commonRCPart clientRCPart dep $(OUTPUT)
 
 commonRCPart:
-	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart
+	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart all
 	
 clientRCPart:
-	$(MAKE) --directory=$(srcTop)/remoteComp/clientPart
+	$(MAKE) --directory=$(srcTop)/remoteComp/clientPart all
 	
 GUI:
-	$(MAKE) --directory=$(srcTop)/GUI/widgets
+	$(MAKE) --directory=$(srcTop)/GUI/widgets all
 	
 VTKInt:
-	$(MAKE) --directory=$(srcTop)/vtkIntegration
+	$(MAKE) --directory=$(srcTop)/vtkIntegration all
 	
 DICOM:
-	$(MAKE) --directory=$(srcTop)/backendForDICOM
+	$(MAKE) --directory=$(srcTop)/backendForDICOM all
 	
 Imaging:
-	$(MAKE) --directory=$(srcTop)/Imaging
+	$(MAKE) --directory=$(srcTop)/Imaging all
 	
 Common:
-	$(MAKE) --directory=$(srcTop)/common
+	$(MAKE) --directory=$(srcTop)/common all
 	
 ## CLEANING ##################################
 
@@ -107,10 +108,6 @@ CommonCLEAN:
 
 ##############################################	
 
-.PHONY: tmpdir
-tmpdir:		
-		$(MKDIR) $(TMP_DIR) 2>/dev/null || true
-
 .PHONY: build
 build:		cleanall all
 
@@ -133,10 +130,10 @@ $(TMP_DIR)/%.o:	$(TMP_DIR)/%.cpp
 
 -include $(DEP_FILE)
 		
-$(OUTPUT):	$(OBJ_FILES) $(M4DLIBS)
+$(OUTPUT):	$(OBJ_FILES)
 		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
 
 .PHONY: clean
-clean: #commonRCPartCLEAN clientRCPartCLEAN GUICLEAN DICOMCLEAN ImagingCLEAN CommonCLEAN
+clean: commonRCPartCLEAN clientRCPartCLEAN DICOMCLEAN GUICLEAN ImagingCLEAN CommonCLEAN
 		$(RM) $(OBJ_FILES) $(MOCOUTPUT) $(addprefix $(TMP_DIR)/rcc_, $(RCCINPUT:.qrc=.cpp ) ) $(DEP_FILE)
 		$(RM) $(OUTPUT)

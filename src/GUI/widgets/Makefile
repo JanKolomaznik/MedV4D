@@ -30,11 +30,11 @@ TARGETS1=	StManagerFilterComp \
 		StManagerHProtocolsComp \
 		StManagerStudyListComp \
 		SimpleSliceViewerTexturePreparer
-		
+
 TARGETS2=	fonts
 
 TARGETS3=	LoadingThreads \
-		StudyFilter 
+		StudyFilter
 
 MOCINPUT=	m4dGUIAbstractViewerWidget.h \
 		m4dGUIMainWindow.h \
@@ -64,9 +64,9 @@ RCCINPUT=	m4dGUIMainWindow.qrc \
 
 #Name of target
 OUTPUTNAME=	lib$(NAME).a
-OUTPUTDIR=	../../lib
+OUTPUTDIR=	$(srcTop)/lib/$(CONF)
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
-TMP_DIR=	../../tmp/$(NAME)
+TMP_DIR=	$(srcTop)/tmp/$(CONF)/$(NAME)
 
 
 INCLUDES=	-I$(srcTop)\
@@ -82,18 +82,13 @@ OBJ_FILES=	$(addprefix $(TMP_DIR)/,  $(addprefix moc_, $(MOCINPUT:.h=.o) )  $(ad
 
 
 .PHONY: all
-all:		tmpdir dep $(OUTPUT)
-		
-
-.PHONY: tmpdir
-tmpdir:		
-		$(MKDIR) $(TMP_DIR) 2>/dev/null || true
+all:		tmpdir outDir dep $(OUTPUT)
 
 .PHONY: build
 build:		cleanall all
 
 .PHONY: dep
-dep:		
+dep:
 		$(CXX) $(INCLUDES) $(CDEPFLAGS) $(SRC_FILES) | \
 		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
 
@@ -109,23 +104,23 @@ $(TMP_DIR)/moc_%.cpp:	utils/%.h
 $(TMP_DIR)/rcc_%.cpp:	src/%.qrc
 		$(RCC) -name $(*F) $< -o $@
 
-$(TMP_DIR)/%.o:	src/%.cpp	
+$(TMP_DIR)/%.o:	src/%.cpp
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
-$(TMP_DIR)/%.o:	$(SUBDIR1)/%.cpp	
+$(TMP_DIR)/%.o:	$(SUBDIR1)/%.cpp
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
-$(TMP_DIR)/%.o:	$(SUBDIR2)/%.cpp	
+$(TMP_DIR)/%.o:	$(SUBDIR2)/%.cpp
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
-$(TMP_DIR)/%.o:	$(SUBDIR3)/%.cpp	
+$(TMP_DIR)/%.o:	$(SUBDIR3)/%.cpp
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 $(TMP_DIR)/%.o:	$(TMP_DIR)/%.cpp
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 -include $(DEP_FILE)
-		
+
 $(OUTPUT):	$(OBJ_FILES)
 		$(AR) $(ARFLAGS) $(OUTPUT) $(OBJ_FILES)
 

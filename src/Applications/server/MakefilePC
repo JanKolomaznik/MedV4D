@@ -6,20 +6,6 @@ include $(srcTop)/project/ToolchainSelect.mk
 include $(srcTop)/project/pathsDefinitions.mk
 include $(srcTop)/project/configurationSelector.mk
 
-RM=rm -f
-MKDIR=mkdir
-				
-M4DLIBS=	$(srcTop)/lib/libremoteCompServer$(archPostfix).a\
-			$(srcTop)/lib/libremoteCompCommons$(archPostfix).a \
-			$(srcTop)/lib/libImaging$(archPostfix).a\
-			$(srcTop)/lib/libcommon$(archPostfix).a\
-			$(srcTop)/lib/SPU/libSPEPart$(archPostfix).a
-
-LIBS=		$(M4DLIBS) \
-			$(ITKLIBS) \
-			-lboost_thread-mt\
-			-ldl
-
 ########################################
 #Name of this project part
 NAME=		remoteCompServer$(archPostfix)
@@ -30,12 +16,23 @@ TARGETS=	main
 
 #Name of target
 OUTPUTNAME=	$(NAME)
-OUTPUTDIR=	$(srcTop)/executables
+OUTPUTDIR=	$(srcTop)/executables/$(CONF)
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
-TMP_DIR=	$(srcTop)/tmp/$(NAME)
+TMP_DIR=	$(srcTop)/tmp/$(CONF)/$(NAME)
 SRC_DIR=	.
 
-LIBDIRS=	-L$(srcTop)/lib\
+M4DLIBS=	-lremoteCompServer$(archPostfix)\
+			-lremoteCompCommons$(archPostfix) \
+			-lImaging$(archPostfix)\
+			-lcommon$(archPostfix)\
+			-lSPEPart$(archPostfix)
+
+LIBS=		$(M4DLIBS) \
+			$(ITKLIBS) \
+			-lboost_thread-mt\
+			-ldl
+
+LIBDIRS=	-L$(srcTop)/lib/$(CONF)\
 			-L$(ROOT)/lib64
 			
 INCLUDES=	-I$(srcTop)\
@@ -51,19 +48,19 @@ all:		tmpdir Common Imaging commonRCPart serverRCPart libSPEPart dep $(OUTPUT)
 
 
 commonRCPart:
-	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart
+	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart all
 	
 serverRCPart:
-	$(MAKE) --directory=$(srcTop)/remoteComp/serverPart
+	$(MAKE) --directory=$(srcTop)/remoteComp/serverPart all
 	
 Imaging:
-	$(MAKE) --directory=$(srcTop)/Imaging
+	$(MAKE) --directory=$(srcTop)/Imaging all
 	
 Common:
-	$(MAKE) --directory=$(srcTop)/common
+	$(MAKE) --directory=$(srcTop)/common all
 	
 libSPEPart:
-	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE -f Makefile.PC
+	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE -f Makefile.PC all
 	
 ##################
 
@@ -84,10 +81,6 @@ libSPEPartCLEAN:
 
 ##################
 
-.PHONY: tmpdir
-tmpdir:		
-		$(MKDIR) $(TMP_DIR) 2>/dev/null || true
-
 .PHONY: build
 build:		cleanall all
 
@@ -105,6 +98,6 @@ $(OUTPUT):	$(OBJ_FILES)
 		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
 
 .PHONY: clean
-clean: libSPEPartCLEAN serverRCPartCLEAN #commonRCPartCLEAN ImagingCLEAN CommonCLEAN
+clean: libSPEPartCLEAN serverRCPartCLEAN commonRCPartCLEAN ImagingCLEAN CommonCLEAN
 		$(RM) $(TMP_DIR)/*.o $(DEP_FILE)
 		$(RM) $(OUTPUT)

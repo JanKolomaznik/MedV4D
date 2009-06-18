@@ -12,19 +12,14 @@ NAME=		PPEStuff$(archPostfix)
 
 #Name of target
 OUTPUTNAME=	lib$(NAME).a
-OUTPUTDIR=	$(srcTop)/lib
+OUTPUTDIR=	$(srcTop)/lib/$(CONF)
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
-TMP_DIR=	$(srcTop)/tmp/$(NAME)
+TMP_DIR=	$(srcTop)/tmp/$(CONF)/$(NAME)
 
 INCLUDES=	-I$(srcTop)
 
 .PHONY: all
-all:		tmpdir $(OUTPUT)
-		
-
-.PHONY: tmpdir
-tmpdir:		
-		$(MKDIR) $(TMP_DIR) 2>/dev/null || true
+all:		outDir tmpdir $(OUTPUT)
 
 .PHONY: build
 build:		cleanall all

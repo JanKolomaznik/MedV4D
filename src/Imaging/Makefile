@@ -4,6 +4,7 @@ srcTop=..
 
 include $(srcTop)/project/ToolchainSelect.mk
 include $(srcTop)/project/configurationSelector.mk
+include $(srcTop)/project/pathsDefinitions.mk
 
 ########################################
 #Name of this project part
@@ -22,15 +23,15 @@ TARGETS=	AbstractDataSet \
 		Ports\
 		DataSetFactory
 
-#		ImageConnection 
-#		ImagePorts 
+#		ImageConnection
+#		ImagePorts
 ########################################
 
 #Name of target
 OUTPUTNAME=	lib$(NAME).a
-OUTPUTDIR=	$(srcTop)/lib
+OUTPUTDIR=	$(srcTop)/lib/$(CONF)
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
-TMP_DIR=	$(srcTop)/tmp/$(NAME)
+TMP_DIR=	$(srcTop)/tmp/$(CONF)/$(NAME)
 SRC_DIR=	./src
 
 INCLUDES=	-I$(srcTop)
@@ -41,12 +42,7 @@ OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )
 
 
 .PHONY: all
-all:		tmpdir dep $(OUTPUT)
-		
-
-.PHONY: tmpdir
-tmpdir:		
-		$(MKDIR) $(TMP_DIR) 2>/dev/null || true
+all:		tmpdir outDir dep $(OUTPUT)
 
 .PHONY: build
 build:		cleanall all
@@ -56,11 +52,11 @@ dep:
 		$(CXX) $(INCLUDES) $(CDEPFLAGS) $(DEFS) $(SRC_FILES) | \
 		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
 
-$(TMP_DIR)/%.o:	$(SRC_DIR)/%.cpp	
+$(TMP_DIR)/%.o:	$(SRC_DIR)/%.cpp
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 -include $(DEP_FILE)
-		
+
 $(OUTPUT):	$(OBJ_FILES)
 		$(AR) $(ARFLAGS) $(OUTPUT) $(OBJ_FILES)
 

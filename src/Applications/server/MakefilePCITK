@@ -8,7 +8,7 @@ include $(srcTop)/project/configurationSelector.mk
 
 ########################################
 #Name of this project part
-NAME=		levelSetTest$(archPostfix)
+NAME=		remoteCompServer$(archPostfix)
 #Names of target sources
 TARGETS=	main
 
@@ -21,9 +21,10 @@ OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	$(srcTop)/tmp/$(CONF)/$(NAME)
 SRC_DIR=	.
 
-M4DLIBS=	-lImaging$(archPostfix)\
-			-lcommon$(archPostfix)\
-			-lSPEPart$(archPostfix)
+M4DLIBS=	-lremoteCompServer$(archPostfix)\
+			-lremoteCompCommons$(archPostfix) \
+			-lImaging$(archPostfix)\
+			-lcommon$(archPostfix)
 
 LIBS=		$(M4DLIBS) \
 			$(ITKLIBS) \
@@ -33,7 +34,7 @@ LIBS=		$(M4DLIBS) \
 LIBDIRS=	-L$(srcTop)/lib/$(CONF)\
 			-L$(ROOT)/lib64
 			
-INCLUDES=	-I$(srcTop) \
+INCLUDES=	-I$(srcTop)\
 			$(ITKIncludes)
 
 
@@ -42,7 +43,14 @@ OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )
 
 
 .PHONY: all
-all:		tmpdir outDir Common Imaging libSPEPart dep $(OUTPUT)
+all:		tmpdir Common Imaging commonRCPart serverRCPart dep $(OUTPUT)
+
+
+commonRCPart:
+	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart all
+	
+serverRCPart:
+	$(MAKE) --directory=$(srcTop)/remoteComp/serverPart all
 	
 Imaging:
 	$(MAKE) --directory=$(srcTop)/Imaging all
@@ -50,19 +58,19 @@ Imaging:
 Common:
 	$(MAKE) --directory=$(srcTop)/common all
 	
-libSPEPart:
-	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE -f Makefile.PC all
-	
 ##################
+
+commonRCPartCLEAN:
+	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart clean
+	
+serverRCPartCLEAN:
+	$(MAKE) --directory=$(srcTop)/remoteComp/serverPart clean
 	
 ImagingCLEAN:
 	$(MAKE) --directory=$(srcTop)/Imaging clean
 	
 CommonCLEAN:
 	$(MAKE) --directory=$(srcTop)/common clean
-	
-libSPEPartCLEAN:
-	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE -f ./Makefile.PC clean
 
 ##################
 
@@ -83,6 +91,6 @@ $(OUTPUT):	$(OBJ_FILES)
 		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
 
 .PHONY: clean
-clean: libSPEPartCLEAN #ImagingCLEAN CommonCLEAN
+clean: serverRCPartCLEAN commonRCPartCLEAN ImagingCLEAN CommonCLEAN
 		$(RM) $(TMP_DIR)/*.o $(DEP_FILE)
 		$(RM) $(OUTPUT)

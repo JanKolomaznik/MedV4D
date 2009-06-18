@@ -15,25 +15,50 @@ TARGETS=	main
 
 #Name of target
 OUTPUTNAME=	lib$(NAME).a
-OUTPUTDIR=	$(srcTop)/lib
-OUTPUT=		$(OUTPUTDIR)/SPU/$(OUTPUTNAME)
-TMP_DIR=	$(srcTop)/tmp/$(NAME)
+OUTPUTDIR=	$(srcTop)/lib/$(CONF)
+OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
+TMP_DIR=	$(srcTop)/tmp/$(CONF)/$(NAME)
 
-INCLUDES=	-I$(srcTop)\
-			-I /opt/cell/sysroot/opt/cell/sdk/usr/spu/include
+INCLUDES +=	-I$(srcTop)\
+			-I $(ROOT)/opt/cell/sdk/usr/spu/include
 			
+LIBS :=
+LIB_PATH :=
+	
+###################### SPE configuration setup ###################		
 SPU_LINKER_OPTS = -Wl,-N --gc-sections --print-gc-sections --stack-analysis --local-store=0:256
+SPUCXXFLAGS = -W -Wall -Winline -Wno-deprecated -Wstrict-aliasing=2
+SPUCXXFLAGS += -fno-exceptions -fno-rtti -fstrict-aliasing 
+SPUCXXFLAGS += -DFOR_CELL
 
-CXXFLAGS += -W -Winline -fno-exceptions -fno-rtti
-#SPU_COMPILER_OPTS += --param max-unroll-times=1
+ifeq "$(CONF)" "Debug"
+SPUCXXFLAGS += -g -DDEBUG_LEVEL=10 -DDEBUG_ADITIONAL_INFO
+endif
+
+ifeq "$(CONF)" "Release"
+SPUCXXFLAGS += -O3 --param max-unroll-times=1
+endif
+
+ifeq "$(CONF)" "PDTProfile"
+SPUCXXFLAGS += -g --param max-unroll-times=1 
+SPUCXXFLAGS += -Dmain=_pdt_main -Dexit=_pdt_exit -DMFCIO_TRACE -DLIBSYNC_TRACE
+SPU_LINKER_OPTS += -Wl,-q -g
+INCLUDES += -I$(ROOT)/usr/spu/include/trace
+LIB_PATH += -L$(ROOT)/usr/spu/lib/trace
+LIBS += -ltrace
+endif
+ifeq "$(CONF)" "CPCProfile"
+SPUCXXFLAGS += -g --param max-unroll-times=1
+SPU_LINKER_OPTS += -Wl,-q -g
+endif
+ifeq "$(CONF)" "SPUTimingToolProfile"
+SPUCXXFLAGS += -g -DSPU_TIMING_TOOL_PROFILING
+INCLUDES += -I/opt/ibm/systemsim-cell/include/callthru/spu
+endif
+###################################################################
 
 .PHONY: all
 all:		tmpdir SPEbin $(OUTPUT)
-
-
-.PHONY: tmpdir
-tmpdir:
-		$(MKDIR) $(TMP_DIR) 2>/dev/null || true
 
 .PHONY: build
 build:		cleanall all
@@ -52,27 +77,27 @@ $(OUTPUT): SPEbin
 	$(AR) -qcs $(OUTPUT) $(TMP_DIR)/SPEMain-embed64.o
 
 SPEbin: $(OBJECT_FILES)
-	$(SPUCXX) $(SPU_LINKER_OPTS) -o $(TMP_DIR)/SPEMain $(OBJECT_FILES)  
+	$(SPUCXX) $(SPU_LINKER_OPTS) $(LIB_PATH) $(LIBS) -o $(TMP_DIR)/SPEMain $(OBJECT_FILES)  
 
 ## update calc #############
 $(TMP_DIR)/curvatureTermSolver.o:
-	$(SPUCXX) $(CXXFLAGS) $(INCLUDES) -c -o $(TMP_DIR)/curvatureTermSolver.o updateCalculation/src/curvatureTermSolver.cpp
+	$(SPUCXX) $(SPUCXXFLAGS) $(INCLUDES) -c -o $(TMP_DIR)/curvatureTermSolver.o updateCalculation/src/curvatureTermSolver.cpp
 $(TMP_DIR)/diffFunc.o:
-	$(SPUCXX) $(CXXFLAGS) $(INCLUDES) -c -o $(TMP_DIR)/diffFunc.o updateCalculation/src/diffFunc.cpp
+	$(SPUCXX) $(SPUCXXFLAGS) $(INCLUDES) -c -o $(TMP_DIR)/diffFunc.o updateCalculation/src/diffFunc.cpp
 $(TMP_DIR)/speedTermSolver.o:
-	$(SPUCXX) $(CXXFLAGS) $(INCLUDES) -c -o $(TMP_DIR)/speedTermSolver.o updateCalculation/src/speedTermSolver.cpp
+	$(SPUCXX) $(SPUCXXFLAGS) $(INCLUDES) -c -o $(TMP_DIR)/speedTermSolver.o updateCalculation/src/speedTermSolver.cpp
 $(TMP_DIR)/updateCalculatorSPE.o:
-	$(SPUCXX) $(CXXFLAGS) $(INCLUDES) -c -o $(TMP_DIR)/updateCalculatorSPE.o updateCalculation/src/updateCalculatorSPE.cpp
+	$(SPUCXX) $(SPUCXXFLAGS) $(INCLUDES) -c -o $(TMP_DIR)/updateCalculatorSPE.o updateCalculation/src/updateCalculatorSPE.cpp
 ## apply update calc #############
 $(TMP_DIR)/applyUpdateCalculator.o:
-	$(SPUCXX) $(CXXFLAGS) $(INCLUDES) -c -o $(TMP_DIR)/applyUpdateCalculator.o applyUpdateCalc/src/applyUpdateCalculator.cpp
+	$(SPUCXX) $(SPUCXXFLAGS) $(INCLUDES) -c -o $(TMP_DIR)/applyUpdateCalculator.o applyUpdateCalc/src/applyUpdateCalculator.cpp
 $(TMP_DIR)/layerValsPropagator.o:
-	$(SPUCXX) $(CXXFLAGS) $(INCLUDES) -c -o $(TMP_DIR)/layerValsPropagator.o applyUpdateCalc/src/layerValsPropagator.cpp
+	$(SPUCXX) $(SPUCXXFLAGS) $(INCLUDES) -c -o $(TMP_DIR)/layerValsPropagator.o applyUpdateCalc/src/layerValsPropagator.cpp
 $(TMP_DIR)/layerGate.o:
-	$(SPUCXX) $(CXXFLAGS) $(INCLUDES) -c -o $(TMP_DIR)/layerGate.o applyUpdateCalc/src/layerGate.cpp
+	$(SPUCXX) $(SPUCXXFLAGS) $(INCLUDES) -c -o $(TMP_DIR)/layerGate.o applyUpdateCalc/src/layerGate.cpp
 ## main #############
 $(TMP_DIR)/SPEMain.o:
-	$(SPUCXX) $(CXXFLAGS) $(INCLUDES) -c -o $(TMP_DIR)/SPEMain.o SPEMain.cpp
+	$(SPUCXX) $(SPUCXXFLAGS) $(INCLUDES) -c -o $(TMP_DIR)/SPEMain.o SPEMain.cpp
 
 .PHONY: clean
 clean:

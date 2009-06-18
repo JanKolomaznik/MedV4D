@@ -55,7 +55,15 @@ endif
 ##########################################
 
 RM=rm -f
-MKDIR=mkdir
+MKDIR=mkdir -p
 MOC=moc
 RCC=rcc
 ARFLAGS=	-r
+
+.PHONY: tmpdir
+tmpdir:
+	$(MKDIR) $(TMP_DIR) 2>/dev/null && true
+
+.PHONY: outDir
+outDir:
+	$(MKDIR) $(OUTPUTDIR) 2>/dev/null && true

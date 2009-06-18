@@ -4,7 +4,11 @@ ifeq "$(ARCH)" "CellCross"
 
 # path to ITK libraries and includes
 ITKIncludeDir=/usr/local/include/InsightToolkit
+ifeq "$(CONF)" "Release"
+ITKLibsDir=/data/cell/ITK/CellRelease
+else
 ITKLibsDir=/data/cell/ITK/LIBCell/bin
+endif
 
 # path to VTK libraries & includes
 VTKLibsDir=/usr/local/lib/vtk-5.0
@@ -35,6 +39,11 @@ endif
 ifeq "$(ARCH)" "PC"
 # path to ITK libraries and includes
 ITKIncludeDir=/usr/local/include/InsightToolkit
+
+ifeq "$(CONF)" "Release"
+#TODO
+ITKLibsDir=/data/cell/ITK/LIBCell/bin
+endif
 ITKLibsDir=/usr/local/lib/InsightToolkit
 
 # path to VTK libraries & includes

@@ -16,12 +16,12 @@ TARGETS=	\
 
 #Name of target
 OUTPUTNAME=	lib$(NAME).a
-OUTPUTDIR=	../lib
+OUTPUTDIR=	$(srcTop)/lib/$(CONF)
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
-TMP_DIR=	../tmp/$(NAME)
+TMP_DIR=	$(srcTop)/tmp/$(CONF)/$(NAME)
 SRC_DIR=	./src
 
-INCLUDES=	-I.. \
+INCLUDES=	-I$(srcTop) \
 		-I$(VTKIncludeDir)
 
 SRC_FILES=	$(addprefix $(SRC_DIR)/, $(addsuffix .cpp, $(TARGETS)) )
@@ -29,12 +29,7 @@ OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )
 
 
 .PHONY: all
-all:		tmpdir dep $(OUTPUT)
-
-
-.PHONY: tmpdir
-tmpdir:
-		$(MKDIR) $(TMP_DIR) 2>/dev/null || true
+all:		tmpdir outDir dep $(OUTPUT)
 
 .PHONY: build
 build:		cleanall all
