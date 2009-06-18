@@ -98,10 +98,16 @@ int main(int argc, char *argv[]) {
 		props->seedZ = 
 			(im->GetDimensionExtents( 2 ).maximum - im->GetDimensionExtents( 2 ).minimum) / 2;
 		
-		props->initialDistance = (double)
-			(im->GetDimensionExtents( 0 ).maximum - im->GetDimensionExtents( 0 ).minimum) / 2.2;
 		
+		
+#ifdef SPU_TIMING_TOOL_PROFILING
 		props->maxIterations = 1;
+		props->initialDistance = 5;
+#else
+		props->maxIterations = 10;
+		props->initialDistance = (double)
+					(im->GetDimensionExtents( 0 ).maximum - im->GetDimensionExtents( 0 ).minimum) / 2.2;
+#endif
 		m_filter =  new FilterType( props);
 		
 		m_filter->SetUpdateInvocationStyle(AbstractPipeFilter::UIS_ON_CHANGE_BEGIN);
