@@ -1,19 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
-	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item value="172" key="DIALOG_Y_ORIGIN"/>
-		<item value="809" key="DIALOG_X_ORIGIN"/>
-		<item value="1|Sans|10.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
-		<item value="435" key="DIALOG_HEIGHT"/>
-		<item value="337" key="DIALOG_WIDTH"/>
-	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item value="true" key="wholeword"/>
-		<item value="false" key="casesensitive"/>
-		<item value="false" key="wrap"/>
-		<item value="false" key="incremental"/>
-		<item value="m_signed" key="selection"/>
-		<item value="false" key="isRegEx"/>
+		<item key="selection" value=""/>
+		<item key="wholeword" value="true"/>
+		<item key="incremental" value="false"/>
+		<item key="isRegEx" value="false"/>
+		<item key="casesensitive" value="false"/>
+		<item key="wrap" value="false"/>
 		<list key="replacehistory">
 			<item value="ThreshLSSegMedvedWrapper"/>
 			<item value="ThresholdSegmentationFilterType"/>
@@ -25,6 +18,7 @@
 			<item value="stream"/>
 		</list>
 		<list key="findhistory">
+			<item value="PostProcess"/>
 			<item value="m_signed"/>
 			<item value="ServerLevelsetSegmentation"/>
 			<item value="ThresholdSegmentationLevelSetImageFilterType"/>
@@ -32,7 +26,13 @@
 			<item value="CellThresholdLevelSetFiniteDifferenceFunction"/>
 			<item value="SetSegmentationFunction"/>
 			<item value="operator[]"/>
-			<item value="ComputeUpdate"/>
 		</list>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item key="DIALOG_FONT_NAME" value="1|Sans|10.0|0|GTK|1|"/>
+		<item key="DIALOG_HEIGHT" value="435"/>
+		<item key="DIALOG_X_ORIGIN" value="809"/>
+		<item key="DIALOG_Y_ORIGIN" value="172"/>
+		<item key="DIALOG_WIDTH" value="337"/>
 	</section>
 </section>

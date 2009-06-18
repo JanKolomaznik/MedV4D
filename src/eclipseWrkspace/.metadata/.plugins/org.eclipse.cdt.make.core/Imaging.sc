@@ -1,4 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?><?scdStore version="2"?><scannerInfo id="org.eclipse.cdt.make.core.discoveredScannerInfo">
+<?xml version="1.0" encoding="UTF-8"?>
+<?scdStore version="2"?>
+
+<scannerInfo id="org.eclipse.cdt.make.core.discoveredScannerInfo">
 <instance id="0.1158464744">
 <collector id="org.eclipse.cdt.make.core.PerProjectSICollector">
 <includePath path="/usr/local/include/boost-1_38"/>
@@ -10,10 +13,14 @@
 <includePath path="/usr/lib/gcc/i386-redhat-linux/4.3.0/../../../../include/c++/4.3.0/i386-redhat-linux"/>
 <includePath path="/usr/lib/gcc/i386-redhat-linux/4.3.0/../../../../include/c++/4.3.0/backward"/>
 <includePath path="/usr/local/include"/>
+<includePath path="/usr/lib/gcc/i386-redhat-linux/4.3.2/include"/>
 <includePath path="/usr/lib/gcc/i386-redhat-linux/4.3.0/include"/>
 <includePath path="/usr/include"/>
 <includePath path="/data/prg/medved/src"/>
 <includePath path="/data/prg/medved/src/include"/>
+<includePath path="/usr/lib/gcc/i386-redhat-linux/4.3.2/../../../../include/c++/4.3.2"/>
+<includePath path="/usr/lib/gcc/i386-redhat-linux/4.3.2/../../../../include/c++/4.3.2/i386-redhat-linux"/>
+<includePath path="/usr/lib/gcc/i386-redhat-linux/4.3.2/../../../../include/c++/4.3.2/backward"/>
 <definedSymbol symbol="__STDC__=1"/>
 <definedSymbol symbol="__cplusplus=1"/>
 <definedSymbol symbol="__STDC_HOSTED__=1"/>
@@ -21,7 +28,9 @@
 <definedSymbol symbol="__GNUG__=4"/>
 <definedSymbol symbol="__GNUC_MINOR__=3"/>
 <definedSymbol symbol="__GNUC_PATCHLEVEL__=0"/>
+<definedSymbol symbol="__GNUC_PATCHLEVEL__=2"/>
 <definedSymbol symbol="__GNUC_RH_RELEASE__=8"/>
+<definedSymbol symbol="__GNUC_RH_RELEASE__=7"/>
 <definedSymbol symbol="__SIZE_TYPE__=unsigned int"/>
 <definedSymbol symbol="__PTRDIFF_TYPE__=int"/>
 <definedSymbol symbol="__WCHAR_TYPE__=long int"/>
@@ -108,6 +117,7 @@
 <definedSymbol symbol="__REGISTER_PREFIX__"/>
 <definedSymbol symbol="__USER_LABEL_PREFIX__"/>
 <definedSymbol symbol="__VERSION__=&quot;4.3.0 20080428 (Red Hat 4.3.0-8)&quot;"/>
+<definedSymbol symbol="__VERSION__=&quot;4.3.2 20081105 (Red Hat 4.3.2-7)&quot;"/>
 <definedSymbol symbol="__GNUC_GNU_INLINE__=1"/>
 <definedSymbol symbol="__NO_INLINE__=1"/>
 <definedSymbol symbol="__FINITE_MATH_ONLY__=0"/>
