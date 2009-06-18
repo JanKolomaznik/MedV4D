@@ -15,7 +15,7 @@ namespace Viewer
 {
 
 template< typename ElementType >
-class MultiChannelRGBSliceViewerTexturePreparer : public RGBSliceViewerTexturePreparer< ElementType >
+class MultiChannelRGBSliceViewerTexturePreparer : public virtual RGBSliceViewerTexturePreparer< ElementType >
 {
 
 public:

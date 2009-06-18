@@ -25,7 +25,7 @@ public:
 };
 
 template< typename ElementType >
-class IntensitySelectorSliceViewerTexturePreparer : public IntensitySummarizerSliceViewerTexturePreparer< ElementType >
+class IntensitySelectorSliceViewerTexturePreparer : public virtual IntensitySummarizerSliceViewerTexturePreparer< ElementType >
 {
 
 public:
@@ -42,7 +42,7 @@ protected:
      *  @param height the height of the image
      *  @return the prepared texture array
      */
-    ElementType* IntensityArranger(
+    virtual ElementType* IntensityArranger(
         ElementType** channels,
 	uint32 channelNumber,
         uint32 width,

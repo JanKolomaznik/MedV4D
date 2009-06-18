@@ -1,12 +1,15 @@
 /**
  *  @ingroup gui
- *  @file IntensitySummarizerSliceViewerTexturePreparer.h
+ *  @file MaxAvrMinRGBSliceViewerTexturePreparer.h
  *  @brief some brief
  */
-#ifndef INTENSITY_SUMMARIZER_SLICEVIEWER_TEXTURE_PREPARER_H
-#define INTENSITY_SUMMARIZER_SLICEVIEWER_TEXTURE_PREPARER_H
+#ifndef MAX_AVR_MIN_RGB_SLICEVIEWER_TEXTURE_PREPARER_H
+#define MAX_AVR_MIN_RGB_SLICEVIEWER_TEXTURE_PREPARER_H
 
-#include "GUI/widgets/components/SimpleSliceViewerTexturePreparer.h"
+#include "GUI/widgets/components/RGBSliceViewerTexturePreparer.h"
+#include "GUI/widgets/components/MaximumIntensitySliceViewerTexturePreparer.h"
+#include "GUI/widgets/components/MinimumIntensitySliceViewerTexturePreparer.h"
+#include "GUI/widgets/components/AverageIntensitySliceViewerTexturePreparer.h"
 
 
 namespace M4D
@@ -15,12 +18,15 @@ namespace Viewer
 {
 
 template< typename ElementType >
-class IntensitySummarizerSliceViewerTexturePreparer : public virtual SimpleSliceViewerTexturePreparer< ElementType >
+class MaxAvrMinRGBSliceViewerTexturePreparer :	public RGBSliceViewerTexturePreparer< ElementType >,
+						public MaximumIntensitySliceViewerTexturePreparer< ElementType >,
+						public MinimumIntensitySliceViewerTexturePreparer< ElementType >,
+						public AverageIntensitySliceViewerTexturePreparer< ElementType >
 {
 
 public:
 
-    IntensitySummarizerSliceViewerTexturePreparer() {}
+    MaxAvrMinRGBSliceViewerTexturePreparer() {}
 
     /**
      * Prepares the texture of the image to be mapped to the following OpenGL surface.
@@ -43,26 +49,28 @@ public:
       uint32 slice,
       unsigned& dimension );
 
-protected:
+private:
 
     /**
      * Arranges the input arrays into one array of image that contains one of the input values of each position
+     * NOT usable in this class, only in predecessors!
      *  @param channels the values of the images in the channels
      *  @param channelNumber the number of the channels
      *  @param width the width of the image
      *  @param height the height of the image
      *  @return the prepared texture array
      */
-    virtual ElementType* IntensityArranger(
+    ElementType* IntensityArranger(
         ElementType** channels,
-	uint32 channelNumber,
+        uint32 channelNumber,
         uint32 width,
-        uint32 height ) = 0;
+        uint32 height )
+        {
+	    return 0;
+        }
 
-private:
-
-    IntensitySummarizerSliceViewerTexturePreparer( const IntensitySummarizerSliceViewerTexturePreparer& ); // not implemented
-    const IntensitySummarizerSliceViewerTexturePreparer& operator=( const IntensitySummarizerSliceViewerTexturePreparer& ); // not implemented
+    MaxAvrMinRGBSliceViewerTexturePreparer( const MaxAvrMinRGBSliceViewerTexturePreparer& ); // not implemented
+    const MaxAvrMinRGBSliceViewerTexturePreparer& operator=( const MaxAvrMinRGBSliceViewerTexturePreparer& ); // not implemented
 
 };
 
@@ -70,6 +78,6 @@ private:
 } /*namespace M4D*/
 
 //include source
-#include "src/IntensitySummarizerSliceViewerTexturePreparer.tcc"
+#include "src/MaxAvrMinRGBSliceViewerTexturePreparer.tcc"
 
-#endif /*INTENSITY_SUMMARIZER_SLICEVIEWER_TEXTURE_PREPARER_H*/
+#endif /*MAX_AVR_MIN_RGB_SLICEVIEWER_TEXTURE_PREPARER_H*/

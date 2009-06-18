@@ -1,10 +1,10 @@
 /**
  *  @ingroup gui
- *  @file AverageIntensitySliceViewerTexturePreparer.h
+ *  @file MedianIntensitySliceViewerTexturePreparer.h
  *  @brief some brief
  */
-#ifndef AVERAGE_INTENSITY_SLICEVIEWER_TEXTURE_PREPARER_H
-#define AVERAGE_INTENSITY_SLICEVIEWER_TEXTURE_PREPARER_H
+#ifndef MEDIAN_INTENSITY_SLICEVIEWER_TEXTURE_PREPARER_H
+#define MEDIAN_INTENSITY_SLICEVIEWER_TEXTURE_PREPARER_H
 
 #include "GUI/widgets/components/IntensitySummarizerSliceViewerTexturePreparer.h"
 
@@ -15,12 +15,12 @@ namespace Viewer
 {
 
 template< typename ElementType >
-class AverageIntensitySliceViewerTexturePreparer : public virtual IntensitySummarizerSliceViewerTexturePreparer< ElementType >
+class MedianIntensitySliceViewerTexturePreparer : public virtual IntensitySummarizerSliceViewerTexturePreparer< ElementType >
 {
 
 public:
 
-    AverageIntensitySliceViewerTexturePreparer() {}
+    MedianIntensitySliceViewerTexturePreparer() {}
 
 protected:
 
@@ -32,7 +32,7 @@ protected:
      *  @param height the height of the image
      *  @return the prepared texture array
      */
-    virtual ElementType* IntensityArranger(
+    ElementType* IntensityArranger(
         ElementType** channels,
 	uint32 channelNumber,
         uint32 width,
@@ -40,8 +40,8 @@ protected:
 
 private:
 
-    AverageIntensitySliceViewerTexturePreparer( const AverageIntensitySliceViewerTexturePreparer& ); // not implemented
-    const AverageIntensitySliceViewerTexturePreparer& operator=( const AverageIntensitySliceViewerTexturePreparer& ); // not implemented
+    MedianIntensitySliceViewerTexturePreparer( const MedianIntensitySliceViewerTexturePreparer& ); // not implemented
+    const MedianIntensitySliceViewerTexturePreparer& operator=( const MedianIntensitySliceViewerTexturePreparer& ); // not implemented
 
 };
 
@@ -49,6 +49,6 @@ private:
 } /*namespace M4D*/
 
 //include source
-#include "src/AverageIntensitySliceViewerTexturePreparer.tcc"
+#include "src/MedianIntensitySliceViewerTexturePreparer.tcc"
 
-#endif /*AVERAGE_INTENSITY_SLICEVIEWER_TEXTURE_PREPARER_H*/
+#endif /*MEDIAN_INTENSITY_SLICEVIEWER_TEXTURE_PREPARER_H*/

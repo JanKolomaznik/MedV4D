@@ -3,7 +3,7 @@
 
 #include <QtGui>
 #include "GUI/widgets/m4dGUIMainViewerDesktopWidget.h"
-#include "GUI/widgets/components/AverageIntensitySliceViewerTexturePreparer.h"
+#include "GUI/widgets/components/MaxAvrMinRGBSliceViewerTexturePreparer.h"
 #include "mainWindow.h"
 
 class SettingsBox : public QWidget
@@ -58,7 +58,7 @@ protected:
 	QComboBox *fusionType;
 	QPushButton *clearButton;
 	QPushButton *execButton;
-	M4D::Viewer::AverageIntensitySliceViewerTexturePreparer< ElementType > averageTexturePreparer;
+	M4D::Viewer::MaxAvrMinRGBSliceViewerTexturePreparer< ElementType > averageTexturePreparer;
 };
 
 #endif /*_SETTINGS_BOX_H*/
