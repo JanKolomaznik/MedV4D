@@ -55,6 +55,12 @@ DicomAssociation::FindNonCommentLine( ifstream &f, string &line)
 
 ///////////////////////////////////////////////////////////////////////
 
+// pointer conversion union
+typedef union {
+	E_TransferSyntax *tsp;
+	int *ip;
+} UTrasferSyntaxToInt;
+
 void
 DicomAssociation::LoadOneAddress( ifstream &f) 
 {
@@ -103,7 +109,9 @@ DicomAssociation::LoadOneAddress( ifstream &f)
 		// read desired transfer syntax
 		FindNonCommentLine( f, line);
 		if( f.eof() ) throw ExceptionBase("Unexpected EOF!");
-		sscanf( line.c_str(), "%d ", (int *)&addr->transferSyntax);
+		
+		UTrasferSyntaxToInt uConv; uConv.tsp = &addr->transferSyntax; 
+		sscanf( line.c_str(), "%d ", uConv.ip);
 		if( (int) addr->transferSyntax < 0 ||
 			(int) addr->transferSyntax > 3)
 			throw ExceptionBase("Transfer syntax is incorrect!");

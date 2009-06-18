@@ -374,6 +374,11 @@ MoveService::StoreSCPCallback(
 
 ///////////////////////////////////////////////////////////////////////
 
+typedef union {
+	DcmDataset **dsp;
+	void **vp;
+} UDcmDatasetToVoid;
+
 void
 MoveService::SubTransferOperationSCP(
 	T_ASC_Association **subAssoc, void *data, eCallType type) 
@@ -427,11 +432,12 @@ MoveService::SubTransferOperationSCP(
 			}
 
 #define WRITE_METAHEADER false
-
+			UDcmDatasetToVoid uConv; uConv.vp = &result->m_dataset;
+			
 			cond = DIMSE_storeProvider(
 				*subAssoc, presID, req, 
 				(char *)NULL, WRITE_METAHEADER,
-				(DcmDataset **)&result->m_dataset, 
+				uConv.dsp, 
 				StoreSCPCallback, (void *)result,
 				m_mode, MOVE_OPER_TIMEOUT);
             break;
