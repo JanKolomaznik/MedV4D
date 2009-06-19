@@ -183,11 +183,11 @@ ImageRegistration< ElementType, dim >
 	}
 	else this->ExecuteTransformation();
 	bool result = true;
-	if( result ) {
+	/*if( result ) {
 		this->_writerBBox->SetModified();
 	} else {
 		this->_writerBBox->SetState( MS_CANCELED );
-	}
+	}*/
 	return result;
 }
 

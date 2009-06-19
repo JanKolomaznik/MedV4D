@@ -3,7 +3,9 @@
 
 #include <QtGui>
 #include "GUI/widgets/m4dGUIMainViewerDesktopWidget.h"
+#include "GUI/widgets/components/MaxAvrMinRGBSliceViewerTexturePreparer.h"
 #include "GUI/widgets/components/MaxMedMinRGBSliceViewerTexturePreparer.h"
+#include "GUI/widgets/components/MultiChannelRGBSliceViewerTexturePreparer.h"
 #include "mainWindow.h"
 
 class SettingsBox : public QWidget
@@ -58,7 +60,13 @@ protected:
 	QComboBox *fusionType;
 	QPushButton *clearButton;
 	QPushButton *execButton;
-	M4D::Viewer::MaxMedMinRGBSliceViewerTexturePreparer< ElementType > averageTexturePreparer;
+	M4D::Viewer::MultiChannelRGBSliceViewerTexturePreparer< ElementType > multiChannelRGBTexturePreparer;
+	M4D::Viewer::MaximumIntensitySliceViewerTexturePreparer< ElementType > maximumIntensityTexturePreparer;
+	M4D::Viewer::MinimumIntensitySliceViewerTexturePreparer< ElementType > minimumIntensityTexturePreparer;
+	M4D::Viewer::AverageIntensitySliceViewerTexturePreparer< ElementType > averageIntensityTexturePreparer;
+	M4D::Viewer::MedianIntensitySliceViewerTexturePreparer< ElementType > medianIntensityTexturePreparer;
+	M4D::Viewer::MaxAvrMinRGBSliceViewerTexturePreparer< ElementType > maxAvrMinRGBTexturePreparer;
+	M4D::Viewer::MaxMedMinRGBSliceViewerTexturePreparer< ElementType > maxMedMinRGBTexturePreparer;
 };
 
 #endif /*_SETTINGS_BOX_H*/

@@ -70,8 +70,7 @@ void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 void mainWindow::ClearDataset ()
 {
 	uint32 inputNumber = _settings->GetInputNumber() - 1;
-	ImageType::Ptr ptr;
-	_inConnection[ inputNumber ]->PutDataset( ptr );
+	_inConnection[ inputNumber ]->ResetDataset();
 }
 
 void mainWindow::OutConnectionToViewerPort( uint32 inputNumber, uint32 portNumber )

@@ -102,13 +102,14 @@ SettingsBox
 	//-------------------------------------------------
 	fusionType = new QComboBox();
 
-        fusionType->addItem( "Simple" );
         fusionType->addItem( "RGB fusion" );
         fusionType->addItem( "Multiple colored fusion" );
         fusionType->addItem( "Maximum intensity fusion" );
-        fusionType->addItem( "Average intensity fusion" );
         fusionType->addItem( "Minimum intensity fusion" );
+        fusionType->addItem( "Average intensity fusion" );
+        fusionType->addItem( "Median intensity fusion" );
         fusionType->addItem( "RGB-Max-Avr-Min fusion" );
+        fusionType->addItem( "RGB-Max-Med-Min fusion" );
 
         fusionType->setCurrentIndex( 0 );
 
@@ -204,7 +205,43 @@ SettingsBox
 	for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i )
 	{
 		sliceViewer->InputPort()[ i ].UnPlug();
-		sliceViewer->setTexturePreparerToCustom(&averageTexturePreparer);
+		switch ( fusionType->currentIndex() )
+		{
+
+			case 0:
+			sliceViewer->setTexturePreparerToRGB();
+			break;
+
+			case 1:
+			sliceViewer->setTexturePreparerToCustom(&multiChannelRGBTexturePreparer);
+			break;
+
+			case 2:
+			sliceViewer->setTexturePreparerToCustom(&maximumIntensityTexturePreparer);
+			break;
+			
+			case 3:
+			sliceViewer->setTexturePreparerToCustom(&minimumIntensityTexturePreparer);
+			break;
+			
+			case 4:
+			sliceViewer->setTexturePreparerToCustom(&averageIntensityTexturePreparer);
+			break;
+			
+			case 5:
+			sliceViewer->setTexturePreparerToCustom(&medianIntensityTexturePreparer);
+			break;
+			
+			case 6:
+			sliceViewer->setTexturePreparerToCustom(&maxAvrMinRGBTexturePreparer);
+			break;
+			
+			case 7:
+			sliceViewer->setTexturePreparerToCustom(&maxMedMinRGBTexturePreparer);
+			break;
+
+		}
+
 		static_cast< mainWindow* >( _parent )->OutConnectionToViewerPort( i, i );
 	}
 }
