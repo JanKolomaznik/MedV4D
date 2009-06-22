@@ -254,11 +254,73 @@ It is reachable through extern struct variable, that contains pointer to SPE bin
 
 \section {Process of porting application for Cell B.E.}
 
+Common process of porting an application for Cell B.E. processor (figure \ref{fg:appPorting}).
+\begin{enumerate}
+\item Hotspots localisation
 \par
-The most common process of porting an application for Cell B.E. system (figure \ref{fg:appPorting}) begins with localization of compute intensive parts, hotspots (by profiling of the application on PPE).
- Hotspot computation is then moved to the SPEs.
- Then the SIMDation (i.e. rewriting scalar code into vectorised to be able to use SIMD instruction) of the hotspots and data movement tuning can be performed until satisfactory performance is obtained.
- The whole process is repeated for every single hotspot.
+Through profiling of the application on PPE we find most compute intensive parts, hotspots.
+
+\item Hotspots porting for SPE
+\par
+Hotspot code is then moved to the SPEs.
+This mean adaptation the code for SPE (DMA trasfers instead of direct memory access, appropriate data structures, etc.).
+Data movement tuning (using different data structures) can be performed until satisfactory performance is obtained.
+\end{enumerate}
+
+Following steps are neccessary for application speedup.
+They optimises utilisation of all the SPU features that means whole register set utilisation, dual-issue of instructions, SIMD execution and DMA transfers.
+More detail in \cite{writingPerfApps} part 4:
+\begin{enumerate}
+\item{Multi buffering}
+\par
+Data that resides within central memory and are processed by SPE should be copied onto local store buffer before actual computation.
+When there are more these buffers program can take advantage from asynchronous DMA transfer and process current buffer while next data are transferred to another buffer.
+Then the buffers are simpli swapped and SPU need not to wait until transfer of next data is complete.
+
+\item{Branch elimination}
+\par
+Elimination of branches elongates instruction chain where no branch is performed.
+In such chain all data always go through the same instructions that makes possible to perform SIMDation.
+This step brings more advantage because branching is problem for every processor.
+Branch elimination is probabbly the most complicated step of the porting process.
+
+\item{SIMDation}
+\par
+Rewriting scalar code into vectorised to be able to use SIMD instruction.
+
+\item{Loop unroling}
+Means putting more loop bodies serialy into code.
+This decrease loop count and elongate the loop body.
+Example:
+\begin{verbatim}
+for(uint32 i=0; i<32; i++)
+{
+    std::cout << ".";
+}
+\end{verbatim}
+become (by loop unroling with factor 2)
+\begin{verbatim}
+for(uint32 i=0; i<16; i++)
+{
+    std::cout << ".";
+    std::cout << ".";
+}
+\end{verbatim}
+This is positive for compiler that can do more optimisations (better instruction sheduling and register utilisation).
+
+\item{Instruction scheduling}
+\par
+Proper reorganization of instructions can give us some more perfomance in some cases.
+This step is performed by the compiler but can be performed manualy in assembly language.
+
+\item{Branch hinting}
+\par
+Give the processor hint what result will be after future branch.
+It is done through insertion of special instructions.
+This step should be again performed by the compiler but can be performed manualy in assembly language.
+
+The whole process is repeated for every single hotspot.
+\end{enumerate}
 
 \begin{figure}
     \centering

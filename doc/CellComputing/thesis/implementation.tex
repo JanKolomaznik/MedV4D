@@ -5,13 +5,13 @@ Starts with listings frameworks that were used and describes process of incorpor
 Then few design details concerning the incorporation is described.
 After that results of profiling of the application are summarized.
 Followed by new design description which was neccessary due to unexpected profiling results.
-The rest of chapter will present actual porting process with all its specifics.
+The rest of chapter will present actual porting process with all its problems and solutions.
 
 \section{Used frameworks}
 
 \par
 We decided to take ITK (\url{www.itk.org}) implementation of level set method as a base.
-So i have to get familiar with this huge project.
+So we have to get familiar with this huge project.
 It contains many algorithm implementations as well as necessary infrastructure content such as loading and saving variety of formats.
 Base concept of this project is pipeline and filters.
 To get some work done pipeline has to be build from filters.
@@ -22,7 +22,7 @@ Output from one filter is input of the following.
 Filters thus create a building blocks for some more complicated method.
 
 \par
-After some first test with example implementation we wrote my own testing application (originally with code name 'pok').
+After some first test with example implementation we wrote our own testing application (originally with code name 'pok').
 It was able load image, run the level set filter and save the results.
 Some reasonable parameter values were found with the pok application.
 It was controlled via bash scripts that is not much easy nor user friendly.
@@ -187,7 +187,7 @@ Parameters of this filter are threshold interval (thresholding level set segment
 It is thresholding that select pixels with values less that zero that corresponds to inner part of the resulting level set.
 \end{enumerate}
 
-We have chosen ITK sparse field method implementation as a starting point.
+We have chosen ITK sparse field method implementation to port to Cell B.E.
 This implementation uses linked lists to represent the sparse field layers.
 Actual algorithm, as described higher (\ref{alg:sparseFileld}), is implemented in several classes.
 Due to mapping the algorithm to Cell B.E. radical changes in code was necessary even in ITK code.
@@ -262,12 +262,14 @@ Tabulka:::
 \begin{center}
 \begin{tabular}{|l|c|p{3.5in}|}
 \hline
-\multicolumn{3}{|c|}{Nazev tabulky}\\
-\hline cell 1&cell 2&cell 3\\&todle bude pod cell 2, protoze to je mezi dvema'\&' &\\
-\hline Big Basin&1.5&Very nice overnight to Berry Creek Falls from
-either Headquarters or ocean side.\\
-\hline Sunol&1&Technicolor green in the spring. Watch out for the cows.\\
-\hline Henry Coe&1.5&Large wilderness nearby suitable for multi-day treks.\\
+\multicolumn{3}{|c|}{Porfiling results}\\
+\hline function name&time spend in calculations&percent\\
+\hline MySegmtLevelSetFilter::ApplyUpdate()&20.15&75.21\\
+\hline (sub)SparseFieldLevelSetImageFilter::PropagateAllLayerValues()&16.64&62.11\\
+\hline (sub)SparseFieldLevelSetImageFilter::UpdateActiveLayerValues()&2.27&8.47\\
+\hline MySegmtLevelSetFilter::CalculateChange()&6.11&22.8\\
+\hline (sub)ThresholdLevelSetFunc::ComputeUpdate()&3.97&14.82\\
+\hline TOTAL&26.79&100\\
 \hline
 \end{tabular}
 \end{center}
@@ -329,7 +331,7 @@ method.
 In porting process is necessary to know the data flow i.e. find out what data are sent and where.
 What data are there produced and especially the size of all the data.
 This is because of decision where they will be stored.
-If only in SPE local store or in central memory.
+Whether in SPE local store or in central memory.
 For the first case their size has to be somehow limited because of limitation of local store.
 For the second case communication via DMA will be necessary but the data size is not limited to small local store.
 
@@ -395,14 +397,17 @@ In this case SPE is client of central memory.
 This case is prefered because the PPE is only one and would be able to manage all the SPU.
 
 \subsection{Tools}
-I implemented some tools that performs the PPE - SPE communication.
+Some tools that performs data transfer between PPE and SPE was designed.
+All these tools perform multibuffering to avoid waiting for data.
 
 \begin{enumerate}
-\item NeighbourhoodCell
+\item \emph{NeighbourhoodCell}
 \par
-Represent the part of an image needed for one node computation.
+Represent the part of an image ($$3^3$$ voxel matrix) needed for one node computation.
+It uses transfer list that allow data handling in scatter-gather manner.
+Neigbourhoods are grouped within PreloadedNeigborhoods container that manages which neigbourhood is being loaded, used in computation or saved (actually performs multibuffering)
 
-\item RemoteArrayCell
+\item \emph{RemoteArrayCell}
 \par
 Represent an array stored in main memory.
 This tool is used for UpdateCalculator to save computed update values and in ApplyUpdateCalculator to retrieve the values which UpdateCalculator stored.
@@ -411,19 +416,24 @@ Its role is to perform DMA transfers not along each value save but on a buffer o
 \item \emph{LinkedChainIteratorCell}
 \par
 It traverse over a layer which is linked list data structure.
-When one item is retrieved transfer of the next one is immediately started.
-//TODO DMA lists scatter-gather
+As soon as one item is retrieved, transfer of the next one is immediately started.
+\end{enumerate}
 
-\item \emph{PUSH} and \emph{UNLINK} operations
 \par
-This is simple operations that has small parameters so I decided to implement it via mailboxes.
-Actual operation is done by the PPE that has central memory accessible directly.
+We decided to implement the \emph{PUSH} and \emph{UNLINK} operations through mailboxes.
+Actual operation parameters are sent to PPE which performs the operation.
+There are linked list manipulations performed within these operations and PPE can perform them directly (since it has direct access to central memory).
+We believe that the linked list manipulations would be much more difficult and time consuming if performed by SPU because the indirect central memory access.
+
+\begin{enumerate}
+\item \emph{PUSH}
 \par
-\emph{PUSH} has to push a node into specified layer.
+Has to push a node into specified layer.
 So only voxel coordinates and number of layer is send over mailbox to PPE that creates new node and puts it into the layer.
 
+\item \emph{UNLINK}
 \par
-\emph{UNLINK} operation has to unlink a node from a specified list.
+Operation has to unlink a node from a specified list.
 Address of that node along the layer number are the parameters.
 Address is transferred in 32 bits parts (because mailbox has 32 bit size) and is completed on the PPE side.
 \end{enumerate}
@@ -445,7 +455,7 @@ Its goal is to ensure that all the layers are divided among SPE uniformly.
 
 For this purpose the \emph{UNLINK} and \emph{PUSH} operations implemented using mailboxes fits well.
 The idea behind is that actual operation on the linked list is delegated to the \emph{Work manager}.
-It decides which layer segment (resp. SPE that the segment process) should the node append into (resp. remove from).
+It decides which layer segment (resp. SPE that the segment process) should the node append into.
 
 \begin{figure}	//TODO obrazek
     \centering
@@ -459,13 +469,50 @@ The whole process can be //TODO prirovnat to
 
 \section{Actual porting process}
 
-Because work with PS3 is quite time consuming because of small amount of memory (see \ref{ps3MemoryUsage}) we decided to left actual porting to the very end of process.
-Into the original code was gradually added features that is needed for running on SPE.
+\subsection{PC as simulator}
+Because remote debugging program running on PS3 is quite time consuming (seconds for basic commands like step into) and because of small amount of memory (see \ref{ps3MemoryUsage}) we decided to left actual porting to the very end of process.
+Features (and tools) that are needed for running on SPE were gradually added into the original code.
 Some parts was rewritten (e.g. the \emph{UpdateActiveLayerValues} turn) to allow some data to live in SPE local store.
-All the changes have not change the programs output, so I can say that the all the programs in every step are equivalent.
+All the changes have not change the programs' output, so one can say that the all the programs in every step are equivalent.
 All the debugging was performed on PC platform locally and thus quickly.
 The Cell B.E. special features like DMA transfer was simulated by memcpy or the mailbox issues trough simple queue.
 
+\par
+This step was really time consuming due to fact that tools operates with stack memory.
+Debuging such parts need extra care for what is where rewritten.
+Since we are on stack some part of call stack would become corrupted and program becomes undefined.
+The worst thing is that it can continue without crash or to crash on totaly different code that the error occured.
+Errors of this type is always hard to track.
+There is need of usage of some checking tools.
+For us memcheck tool, part of Valgrind, proved to be useful to detect stack corruption.
 
+\subsection{Moving to PPE}
 
-//popsat process jak celou dobu pro PC a jenom casti, ktery spolu komunikujou (tooly) jsou simulovany memcp()
+\par
+It seems that moving the code to PPE is easy and there could be no problem.
+But we faced a problem that is worth to mention.
+Because our code uses lot of third party libraries there is quite much paths to include folders.
+It is neccessary to manage them well and not to mix alchitecture dependent ones.
+We have mixed up include files of boost library when crosscompiling and experienced totally strange behavior.
+We thaught that we can use includes for boost that come from repository for i686 architecture.
+The code creashed on boost code that is debugged and stable.
+Openning of a file have also crashed for unknown reason.
+When program was compiled with includes from ppc(64) repository all problems disappeared.
+
+\subsection{Tools porting}
+
+\par
+Next step was to port the tools for SPE.
+In fact is to rewrite usage of memcpy that simulate the DMA trasfer to use real DMA transfer.
+
+\par
+Data that trasfered through DMA (DMAed) within Cell B.E. should meet size and align conditions (see \cite{programmersGuide}, Chapter 4).
+Data that does not meet this condition will generate BUS error.
+This condition forced that all data that are DMAed should be alocated onto aligned adresses (see objectStore.h or updateValsAllocator.h).
+
+\par
+Debuging within this step is performed already on Cell B.E. mashine.
+We used both PS3 and systemsim.
+Systemsim can detect which DMA transfer brakes align rules and thus cause the BUS error but it is really slow.
+Instead using systemsim we have implement DMAGate (see DMAGate.h) that all DMA transfer go through and where are all the conditions checked.
+Such central point for all DMA transfer is really important part of Cell B.E. program because it geathers all DMA stuff into one place making debuging much more easier.
