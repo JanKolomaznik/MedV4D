@@ -266,17 +266,17 @@ Server application with the thresholding level set filter within was build and t
 function name&subroutine&time spend&percent\\&&in calculations&\%\\&&(in seconds)&\\
 \hline
 \hline
-ApplyUpdate()&&20.15&75.21\\
+ApplyUpdate()	&				&	20.15&	75.21\\
 \hline
-&PropagateAllLayerValues()&16.64&62.11\\
+		&PropagateAllLayerValues()	&	16.64&	62.11\\
 \hline
-&UpdateActiveLayerValues()&2.27&8.47\\
+		&UpdateActiveLayerValues()	&	2.27&	8.47\\
 \hline
-CalculateChange()&&6.11&22.8\\
+CalculateChange()&				&	6.11&	22.8\\
 \hline
-&ComputeUpdate()&3.97&14.82\\
+		&ComputeUpdate()		&	3.97&	14.82\\
 \hline
-TOTAL&&26.79&100\\
+TOTAL		&				&	26.79&	100\\
 \hline
 \end{tabular}
 \par
@@ -304,7 +304,11 @@ Further figure shows structure of the new design:
 \begin{figure}
     \centering
     \includegraphics[width=0.9\textwidth]{data/newDesign}
-    \caption[Diagram of new design components]{//TODO}
+    \caption[Diagram of new design components]
+{
+Diagram of new design components. Calculation only the initial states is performed by PPE.
+And the rest is moved to SPEs through SPEManager that perform all necessary steps to run the SPEs.
+}
     \label{fg:newDesign}
 \end{figure}
 
@@ -314,7 +318,7 @@ It is responsible for SPE thread initialization and run, and SPEs synchronizatio
 
 SPE part consists of two main parts.
 UpdateCalculator, performing \emph{apply update calculation} and ApplyUpdateCalculator, performing \emph{apply update calculation}.
-The UpdateCalculator contains //TODO. It traverse over \emph{layer0} and computes update values for points in that layer which are stored in \emph{update buffer}.
+The UpdateCalculator traverse over \emph{layer0} and computes update values for points in the layer which are stored in \emph{update buffer}.
 Then is the ApplyUpdateCalculator's turn.
 It takes the update values from the \emph{update buffer} and performs all the steps from the sparse field algorithm \ref{alg:sparseFileld}.
 This means:
@@ -348,7 +352,7 @@ Whether in SPE local store or in central memory.
 For the first case their size has to be somehow limited because of limitation of local store.
 For the second case communication via DMA will be necessary but the data size is not limited to small local store.
 
-In my application following data flow:
+Data flow in our application:
 \begin{enumerate}
 \item UpdateCalculator
 \par
@@ -380,7 +384,7 @@ During processing this list nodes are linked into appropriate layer, this is ano
 Lets call it \emph{PUSH}.
 One status list processing empty the list so after \emph{ProcessStatusLists} run all status lists remains empty and are ready for next \emph{UpdateActiveLayerValues} turn.
 
-\item \emph{ProcessStatusLists}
+\item \emph{PropagateAllLayerValues}
 \par
 This method traverse over all the layers and performs moving nodes among layers.
 This means operations \emph{PUSH} and \emph{UNLINK}.
@@ -393,7 +397,7 @@ This means operations \emph{PUSH} and \emph{UNLINK}.
     \label{fg:updateActiveLayerValues}
 \end{figure}
 
-Status and actual level set values are stored within status and output images.
+Statuses, actual level set values and features are stored within status, output and feature images.
 So for methods described above is necessary to load and store parts of that images.
 Computation is performed on small neighbourhood of voxels 3x3x3.
 So 27 voxels (resp. statuses) has to be transferred for one node processing.

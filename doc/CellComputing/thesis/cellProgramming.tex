@@ -328,3 +328,48 @@ The whole process is repeated for every single hotspot.
     \caption[Application for Cell B.E. porting process]{Diagram shows all stages of the process and loops for better performance tuning and other hotspots}
     \label{fg:appPorting}
 \end{figure}
+
+\section {SPE porting considerations}
+
+\par
+Main SPE feature that everithing spin around while porting code to SPE is local store size.
+On the one side are decisions about data trasfers.
+This means how the data that has to be processed by the SPE will be transferred into local store and vice versa.
+What will be the sizes of data chunks.
+How many buffers will be used in case of multibuffering.
+On the other side is code complexity of the solved problem that influence the size of final binary (alternative is SPE overlays, runtime download program kernels).
+All these things has programmer take into consideration to make the final binary smaller than local store.
+Everithing is big tradeof between processed data chunk sizes with number of buffers of that chunks and code complexity (how large algorithm can be).
+\par
+When compiling the SPU binary from ported code the final executable will brobably increase the local store size.
+Even when the code seems not as large as the final binary size.
+Then begins big searching what causes this huge size.
+We have gone through some problems with code that is common in non SPE code but cause problems in SPE code.
+Here is the list:
+\begin{enumerate}
+\item usage of keyword new
+\par
+There is no memory alocation on SPE. So new is meaningless.
+But compiler accepts it without complain.
+
+\item usage of std streams
+\par
+This code:
+\begin{verbatim}
+#include <iostream>
+std::cout << "Hallo" << std::endl;
+\end{verbatim}
+goes through the compiler without complaints but makes the final binary to big.
+
+\end{enumerate}
+
+\section {Speed and compiler options}
+
+\par
+There is variety of compiler options.
+Usage of some of them is worth nothing but can increase performance and avoid some kind of bugs.
+
+\par
+Mike Acton explains in \cite{strictAliasing} the strict aliasing and its impact for performance.
+Another advantage to let this checked by the compiler is fact that it can avoid bugs that would appear as far as in release stage when optimizations flags are used in compilation.
+In this stage is this kind of bugs really hard to track and debug.
