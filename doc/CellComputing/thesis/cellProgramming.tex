@@ -180,7 +180,7 @@ One disadvantage is that configuration is static.
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.7\textwidth]{data/streamingModel}
+    \includegraphics[width=0.9\textwidth]{data/streamingModel}
     \caption[Streaming SPE configuration]{All SPE run the same code creating farm of processor that process same type of data.}
     \label{fg:streamingModel}
 \end{figure}
@@ -194,7 +194,7 @@ The configuration is also static which means no SPU context switch.
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.7\textwidth]{data/pipelineModel}
+    \includegraphics[width=0.9\textwidth]{data/pipelineModel}
     \caption[Pipeline SPE configuration]{SPE creates pipeline. Each spe represent one stage of that pipeline. Data are transferred only via SPE to SPE DMA transfers benefiting the speed of bus.}
     \label{fg:pipelineModel}
 \end{figure}
@@ -243,7 +243,7 @@ Both ways has its pros but even cons which are the same as with shared vs. stati
 
 \begin{figure}
     \centering
-    \includegraphics[height=\textwidth]{data/SPEEmbedding}
+    \includegraphics[width=0.8\textwidth]{data/SPEEmbedding}
     \caption[SPE binary embedding]{Illustration how is SPE binary 'embedded' into a PPE binary.
 SPE binary is another section of PPE binary.
 It is reachable through extern struct variable, that contains pointer to SPE binary.}
@@ -324,7 +324,7 @@ The whole process is repeated for every single hotspot.
 
 \begin{figure}
     \centering
-    \includegraphics[height=\textwidth]{data/portingCycle}
+    \includegraphics[width=0.5\textwidth]{data/portingCycle}
     \caption[Application for Cell B.E. porting process]{Diagram shows all stages of the process and loops for better performance tuning and other hotspots}
     \label{fg:appPorting}
 \end{figure}

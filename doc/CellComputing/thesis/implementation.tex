@@ -51,7 +51,7 @@ See figure \ref{fg:computationProcess} showing how the application with code nam
 
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{data/computationProcess}
+    \includegraphics[width=0.7\textwidth]{data/computationProcess}
     \caption[RemoteCellLevelSet application computation process]{Client acts like GUI for the server side that performs actual computation}
     \label{fg:computationProcess}
 \end{figure}
@@ -78,7 +78,7 @@ Actual data of this ITK images point to data of containing Medv4D wrapper filter
 
 \begin{figure}
     \centering
-    \includegraphics[width=12cm]{data/ITKFilter}
+    \includegraphics[width=0.9\textwidth]{data/ITKFilter}
     \caption[ITK wrapper Medv4D filter]{Basic elements are the two ITK images whose data are actually Medv4D images' data}
     \label{fg:ITKWrapping}
 \end{figure}
@@ -125,7 +125,7 @@ Whole cycle shows figure \ref{fg:RCClientCycle}.
 
 \begin{figure}
     \centering
-    \includegraphics[width=12cm]{data/RCClientCycle}
+    \includegraphics[width=0.8\textwidth]{data/RCClientCycle}
     \caption[Remote Medv4D filter]{Shows three basic states of remote filter and when particular command are sent to server.}
     \label{fg:RCClientCycle}
 \end{figure}
@@ -143,7 +143,7 @@ In context of a session command from client are parsed and appropriate actions p
 
 \begin{figure}
     \centering
-    \includegraphics[width=12cm]{data/RCServerCycle}
+    \includegraphics[width=0.9\textwidth]{data/RCServerCycle}
     \caption[MedV4D server cycle]{}
     \label{fg:RCServerCycle}
 \end{figure}
@@ -228,7 +228,7 @@ The second reason was to simplify the structure of hierarchy and some code clean
 
 \begin{figure}
     \centering
-    \includegraphics[width=15cm]{data/originalHierarchy}
+    \includegraphics[width=0.9\textwidth]{data/originalHierarchy}
     \caption[Original ITK thresholding level set filter class hierarchy]
 {Illustrates the FiniteDifferenceFunction hierarchy and the FiniteDifferenceImageFilter hierarchy and their relationship}
     \label{fg:originalHierarchy}
@@ -244,7 +244,7 @@ Some function implementation from the SparseFieldLevelSetImageFilter was borrowe
 
 \begin{figure}
     \centering
-    \includegraphics[width=15cm]{data/resultingFilter}
+    \includegraphics[width=0.9\textwidth]{data/resultingFilter}
     \caption[Resulting level set filter ready to be ported to Cell B.E.]
     {
 Show result of original LS hierarchy rebuilding.
@@ -257,25 +257,38 @@ Some unnecessary parts was omited to clean-up the code and to change behaviour t
 
 Server application with the thresholding level set filter within was build and then profiled. As the first step of the porting process.
 
-//TODO tabulka s vysledky
-Tabulka:::
-\begin{center}
-\begin{tabular}{|l|c|p{3.5in}|}
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|}
 \hline
-\multicolumn{3}{|c|}{Porfiling results}\\
-\hline function name&time spend in calculations&percent\\
-\hline MySegmtLevelSetFilter::ApplyUpdate()&20.15&75.21\\
-\hline (sub)SparseFieldLevelSetImageFilter::PropagateAllLayerValues()&16.64&62.11\\
-\hline (sub)SparseFieldLevelSetImageFilter::UpdateActiveLayerValues()&2.27&8.47\\
-\hline MySegmtLevelSetFilter::CalculateChange()&6.11&22.8\\
-\hline (sub)ThresholdLevelSetFunc::ComputeUpdate()&3.97&14.82\\
-\hline TOTAL&26.79&100\\
+\multicolumn{4}{|c|}{Profiling results}\\
+\hline
+function name&subroutine&time spend&percent\\&&in calculations&\%\\&&(in seconds)&\\
+\hline
+\hline
+ApplyUpdate()&&20.15&75.21\\
+\hline
+&PropagateAllLayerValues()&16.64&62.11\\
+\hline
+&UpdateActiveLayerValues()&2.27&8.47\\
+\hline
+CalculateChange()&&6.11&22.8\\
+\hline
+&ComputeUpdate()&3.97&14.82\\
+\hline
+TOTAL&&26.79&100\\
 \hline
 \end{tabular}
-\end{center}
+\par
+\caption[Profiling results]
+{
+  Results of profiling showed that ComputeUpdate step that was originaly thought to be hotspot takes only 14.82\% of computation time.
+}
+\label{tab:profilingresults}
+\end{table}
 
-The profiling shows that the most time consuming parts of the program is not the difference solving in update calculation step but the update application step.
-The original idea was to offload only the difference solving within the update calculation step which is performed on $$3^3$$ voxel matrix and calculated independently of the others which makes this job perfectly suited for offloading to SPE.
+The profiling (see Table \ref{tab:profilingresults}) shows that the most time consuming parts of the program is not the difference solving in update calculation step but the update application step.
+The original idea was to offload only the difference solving within the update calculation step which is performed on $3^3$ voxel matrix and calculated independently of the others which makes this job perfectly suited for offloading to SPE.
 But the time taken for computation of this part is only the fragment of the whole.
 This is the reason for another changes to the ITK class hierarchy and new level set filter design.
 Actually the whole program is rebuild and from original ITK class hierarchy last nothing.
@@ -290,7 +303,7 @@ Further figure shows structure of the new design:
 
 \begin{figure}
     \centering
-    \includegraphics[width=15cm]{data/newDesign}
+    \includegraphics[width=0.9\textwidth]{data/newDesign}
     \caption[Diagram of new design components]{//TODO}
     \label{fg:newDesign}
 \end{figure}
@@ -375,7 +388,7 @@ This means operations \emph{PUSH} and \emph{UNLINK}.
 
 \begin{figure}	//TODO
     \centering
-    \includegraphics[width=15cm]{data/updateActiveLayerValues}
+    \includegraphics[width=0.9\textwidth]{data/updateActiveLayerValues}
     \caption[Diagram of new design components]{//TODO}
     \label{fg:updateActiveLayerValues}
 \end{figure}
@@ -403,7 +416,7 @@ All these tools perform multibuffering to avoid waiting for data.
 \begin{enumerate}
 \item \emph{NeighbourhoodCell}
 \par
-Represent the part of an image ($$3^3$$ voxel matrix) needed for one node computation.
+Represent the part of an image ($3^3$ voxel matrix) needed for one node computation.
 It uses transfer list that allow data handling in scatter-gather manner.
 Neigbourhoods are grouped within PreloadedNeigborhoods container that manages which neigbourhood is being loaded, used in computation or saved (actually performs multibuffering)
 
@@ -459,13 +472,12 @@ It decides which layer segment (resp. SPE that the segment process) should the n
 
 \begin{figure}	//TODO obrazek
     \centering
-    \includegraphics[width=15cm]{data/updateActiveLayerValues}
+    \includegraphics[width=0.9\textwidth]{data/updateActiveLayerValues}
     \caption[Diagram of new design components]{//TODO}
     \label{fg:updateActiveLayerValues}
 \end{figure}
 
-The whole process can be //TODO prirovnat to
-//analogie s pracovnikama a managerama
+The whole process can be compared with company department where are several workers do actual work and one manager who distribute the work among the workers.
 
 \section{Actual porting process}
 

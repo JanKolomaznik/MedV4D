@@ -226,7 +226,7 @@ Process can be imagined as a tram that lays down tracks before it and picks them
 
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{data/sparsefield}
+    \includegraphics[width=0.9\textwidth]{data/sparsefield}
     \caption[Sparse fields method computation illustration]{Embedding is calculated only at points that are covered by the level set (the white line). Those point (active set) are coloured in black forms the zero layer. Other layers embrace the zero layer from both inner and outer side, formed like onion peels}
     \label{fg:sparseFilelds}
 \end{figure}
@@ -270,8 +270,12 @@ where $V(\vec{x})$ is pixel value in point $\vec{x}$ and $T_{mid}$ is the middle
 
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{data/speedFunction}
-    \caption[Graph of thresholding based speed function]{Gray rectangle encloses interval, where is the speed function positive (i.e. the model expands). The fastest expansion is in $T_{mid}$ point}
+    \includegraphics[width=0.9\textwidth]{data/speedFunction}
+    \caption[Graph of thresholding based speed function]
+    {
+      Gray rectangle encloses interval, where is the speed function positive (i.e. the model expands).
+      The fastest expansion is in $T_{mid}$ point
+    }
     \label{fg:speedFunction}
 \end{figure}
 

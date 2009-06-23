@@ -8,66 +8,67 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="744.09448819"
-   height="1052.3622047"
+   width="744.09448"
+   height="1052.3622"
    id="svg2"
    sodipodi:version="0.32"
    inkscape:version="0.46"
    sodipodi:docname="SPEEmbedding.svg"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   version="1.0">
   <defs
      id="defs4">
     <marker
        inkscape:stockid="Arrow1Mend"
        orient="auto"
-       refY="0.0"
-       refX="0.0"
+       refY="0"
+       refX="0"
        id="Arrow1Mend"
-       style="overflow:visible;">
+       style="overflow:visible">
       <path
          id="path3708"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none;"
-         transform="scale(0.4) rotate(180) translate(10,0)" />
+         d="M 0,0 L 5,-5 L -12.5,0 L 5,5 L 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(-0.4,0,0,-0.4,-4,0)" />
     </marker>
     <marker
        inkscape:stockid="Arrow1Mstart"
        orient="auto"
-       refY="0.0"
-       refX="0.0"
+       refY="0"
+       refX="0"
        id="Arrow1Mstart"
        style="overflow:visible">
       <path
          id="path3705"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none"
-         transform="scale(0.4) translate(10,0)" />
+         d="M 0,0 L 5,-5 L -12.5,0 L 5,5 L 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(0.4,0,0,0.4,4,0)" />
     </marker>
     <marker
        inkscape:stockid="Arrow1Lstart"
        orient="auto"
-       refY="0.0"
-       refX="0.0"
+       refY="0"
+       refX="0"
        id="Arrow1Lstart"
        style="overflow:visible">
       <path
          id="path3699"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none"
-         transform="scale(0.8) translate(12.5,0)" />
+         d="M 0,0 L 5,-5 L -12.5,0 L 5,5 L 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(0.8,0,0,0.8,10,0)" />
     </marker>
     <marker
        inkscape:stockid="Arrow1Lend"
        orient="auto"
-       refY="0.0"
-       refX="0.0"
+       refY="0"
+       refX="0"
        id="Arrow1Lend"
-       style="overflow:visible;">
+       style="overflow:visible">
       <path
          id="path3702"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none;"
-         transform="scale(0.8) rotate(180) translate(12.5,0)" />
+         d="M 0,0 L 5,-5 L -12.5,0 L 5,5 L 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(-0.8,0,0,-0.8,-10,0)" />
     </marker>
     <inkscape:perspective
        sodipodi:type="inkscape:persp3d"
@@ -87,16 +88,18 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.248813"
-     inkscape:cx="208.09922"
-     inkscape:cy="763.5533"
+     inkscape:zoom="2"
+     inkscape:cx="261.53511"
+     inkscape:cy="793.94158"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1440"
      inkscape:window-height="843"
      inkscape:window-x="-5"
-     inkscape:window-y="-3" />
+     inkscape:window-y="-3"
+     borderlayer="true"
+     height="1052.36px" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -111,141 +114,141 @@
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(-70.693408,-202.81673)">
+    <rect
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.51287305px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="rect2383"
+       width="169.09966"
+       height="371.30942"
+       x="406.10907"
+       y="-580.24213"
+       transform="matrix(0,1,-1,0,0,0)" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:0.61890543;stroke-opacity:1"
+       id="rect3155"
+       width="156.8748"
+       height="70.221977"
+       x="411.81705"
+       y="-317.43875"
+       transform="matrix(0,1,-1,0,0,0)" />
+    <rect
+       y="-467.16855"
+       x="411.7504"
+       height="40.897724"
+       width="157.00807"
+       id="rect3157"
+       style="fill:none;stroke:#000000;stroke-width:0.47252166;stroke-opacity:1"
+       transform="matrix(0,1,-1,0,0,0)" />
+    <text
+       xml:space="preserve"
+       style="font-size:14.7821312px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
+       x="524.92169"
+       y="-446.7124"
+       id="text3163"
+       sodipodi:linespacing="125%"
+       transform="matrix(0,0.9103252,-1.0985086,0,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan3165"
+         x="524.92169"
+         y="-446.7124">...</tspan></text>
+    <text
+       sodipodi:linespacing="125%"
+       id="text3167"
+       y="-336.5994"
+       x="525.49384"
+       style="font-size:14.7821312px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
+       xml:space="preserve"
+       transform="matrix(0,0.9103252,-1.0985086,0,0,0)"><tspan
+         y="-336.5994"
+         x="525.49384"
+         id="tspan3169"
+         sodipodi:role="line">...</tspan></text>
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:0.33684537;stroke-opacity:1"
+       id="rect3171"
+       width="157.15009"
+       height="20.764635"
+       x="411.67941"
+       y="-573.2818"
+       transform="matrix(0,1,-1,0,0,0)" />
     <g
-       id="g6161">
-      <rect
-         transform="matrix(0,1,-1,0,0,0)"
-         y="-345.29688"
-         x="203.0249"
-         height="274.39529"
-         width="150.79617"
-         id="rect2383"
-         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.41634566px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-      <rect
-         transform="matrix(0,1,-1,0,0,0)"
-         y="-151.08684"
-         x="208.11504"
-         height="51.893597"
-         width="139.89456"
-         id="rect3155"
-         style="fill:none;stroke:#000000;stroke-width:0.5024218;stroke-opacity:1" />
-      <rect
-         transform="matrix(0,1,-1,0,0,0)"
-         style="fill:none;stroke:#000000;stroke-width:0.38358876;stroke-opacity:1"
-         id="rect3157"
-         width="140.0134"
-         height="30.223158"
-         x="208.05562"
-         y="-261.73624" />
+       id="g4474"
+       transform="matrix(0,1.354145,-1.673579,0,866.21278,224.90952)">
       <text
-         transform="matrix(0,1,-1,0,0,0)"
-         sodipodi:linespacing="125%"
-         id="text3163"
-         y="-273.74997"
-         x="267.46448"
-         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
-         xml:space="preserve"><tspan
-           y="-273.74997"
-           x="267.46448"
-           id="tspan3165"
-           sodipodi:role="line">...</tspan></text>
-      <text
-         transform="matrix(0,1,-1,0,0,0)"
          xml:space="preserve"
-         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
-         x="267.46448"
-         y="-189.74995"
-         id="text3167"
-         sodipodi:linespacing="125%"><tspan
+         style="font-size:7.97123337px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
+         x="135.93533"
+         y="280.76498"
+         id="text2631"
+         sodipodi:linespacing="100%"
+         transform="scale(1.1117074,0.8995172)"><tspan
            sodipodi:role="line"
-           id="tspan3169"
-           x="267.46448"
-           y="-189.74995">...</tspan></text>
-      <rect
-         transform="matrix(0,1,-1,0,0,0)"
-         y="-339.70755"
-         x="208.08429"
-         height="39.948765"
-         width="139.95607"
-         id="rect3171"
-         style="fill:none;stroke:#000000;stroke-width:0.44091889;stroke-opacity:1" />
-      <text
-         transform="matrix(0,1,-1,0,0,0)"
-         sodipodi:linespacing="125%"
-         id="text3173"
-         y="-315.22534"
-         x="228.34309"
-         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
-         xml:space="preserve"><tspan
-           y="-315.22534"
-           x="228.34309"
-           id="tspan3175"
-           sodipodi:role="line">PPE - ELF header</tspan></text>
-      <g
-         transform="matrix(0,1,-1,0,496.9081,80.709663)"
-         id="g4474">
-        <text
-           sodipodi:linespacing="125%"
-           id="text3177"
-           y="254.38672"
-           x="140.0739"
-           style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
-           xml:space="preserve"><tspan
-             y="254.38672"
-             x="140.0739"
-             id="tspan3179"
-             sodipodi:role="line">SPE program struct</tspan></text>
-      </g>
-      <text
-         transform="matrix(0,1,-1,0,0,0)"
-         sodipodi:linespacing="125%"
-         id="text3181"
-         y="-120.45802"
-         x="243.67502"
-         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
-         xml:space="preserve"><tspan
-           y="-120.45802"
-           x="243.67502"
-           id="tspan3183"
-           sodipodi:role="line">SPE binary</tspan></text>
-      <path
-         sodipodi:nodetypes="cc"
-         id="path3185"
-         d="M 234.29587,330.17466 L 144.02603,330.17466"
-         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-mid:none;marker-end:url(#Arrow1Lend);stroke-opacity:1" />
-      <g
-         transform="translate(68.27439,120.24439)"
-         id="g4478">
-        <text
-           xml:space="preserve"
-           style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
-           x="140.0739"
-           y="254.38672"
-           id="text4480"
-           sodipodi:linespacing="125%"><tspan
-             sodipodi:role="line"
-             id="tspan4482"
-             x="140.0739"
-             y="254.38672">data section</tspan></text>
-      </g>
-      <path
-         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.03008306px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Mstart);marker-mid:none;marker-end:url(#Arrow1Mend);stroke-opacity:1"
-         d="M 292.5976,363.52559 L 196.89406,363.52559"
-         id="path4486"
-         sodipodi:nodetypes="cc" />
-      <text
-         sodipodi:linespacing="125%"
-         id="text6157"
-         y="-83.749947"
-         x="267.46448"
-         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
-         xml:space="preserve"
-         transform="matrix(0,1,-1,0,0,0)"><tspan
-           y="-83.749947"
-           x="267.46448"
-           id="tspan6159"
-           sodipodi:role="line">...</tspan></text>
+           id="tspan2633"
+           x="135.93533"
+           y="280.76498">SPE program struct</tspan></text>
     </g>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.9891094px;stroke-linecap:butt;stroke-linejoin:miter;marker-mid:none;marker-end:url(#Arrow1Lend);stroke-opacity:1"
+       d="M 425.99107,550.77553 L 295.26235,550.77553"
+       id="path3185"
+       sodipodi:nodetypes="cc" />
+    <g
+       id="g4478"
+       transform="matrix(1.673579,0,0,1.354145,153.54802,253.96534)">
+      <text
+         xml:space="preserve"
+         style="font-size:7.97123384px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
+         x="170.89015"
+         y="229.827"
+         id="text2627"
+         sodipodi:linespacing="100%"
+         transform="scale(0.8995172,1.1117075)"><tspan
+           sodipodi:role="line"
+           id="tspan2629"
+           x="170.89015"
+           y="229.827">data section</tspan></text>
+    </g>
+    <path
+       sodipodi:nodetypes="cc"
+       id="path4486"
+       d="M 530.71437,586.09116 L 379.64023,586.09116"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.35590744px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Mstart);marker-mid:none;marker-end:url(#Arrow1Mend);stroke-opacity:1" />
+    <text
+       transform="matrix(0,0.9103252,-1.0985086,0,0,0)"
+       xml:space="preserve"
+       style="font-size:14.7821312px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
+       x="525.49384"
+       y="-206.0239"
+       id="text6157"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6159"
+         x="525.49384"
+         y="-206.0239">...</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
+       x="439.56573"
+       y="-558.97375"
+       id="text2635"
+       sodipodi:linespacing="100%"
+       transform="matrix(0,1,-1,0,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan2637"
+         x="439.56573"
+         y="-558.97375">PPE - ELF header</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
+       x="454.39044"
+       y="-277.8631"
+       id="text2639"
+       sodipodi:linespacing="100%"
+       transform="matrix(0,1,-1,0,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan2641"
+         x="454.39044"
+         y="-277.8631">SPE binary</tspan></text>
   </g>
 </svg>

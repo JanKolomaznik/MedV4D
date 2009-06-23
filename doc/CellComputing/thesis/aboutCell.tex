@@ -4,7 +4,7 @@ Since first processors of x86 platform were released big race for who introduce 
 This was conditioned to research new production technoligies that allow to integrated more transistors onto smaller area.
 In the process manunfacturers started to realize that it is impossible to continue this frequency race forever.
 This results integration of more computing units into single processor.
-This first among common desktop processors was Intel's \textregistered{Pentium} with hyper threading.
+This first among common desktop processors was Intel's Pentium\textsuperscript{\textregistered} with hyper threading.
 This processors was able to execute two threads at a time.
 Since then qick boom of multi core integration started even among other biggest processor manufacturers.
 Integration of more execution cores allows less power consumption.
@@ -36,7 +36,7 @@ Particular Cell B.E. processor will be desribed and illustrated.
 \section{About the processor}
 
 Cell B.E. processor is representative of a new generation of IBM's Cell B.E. platform family.
-Cell B.E. is an asymmetric, high-performance multi-core processor that combines eight synergistic processing elements (SPEs) and a Power Processing Element (PPE), which is a general-purpose IBM \textregistered{PowerPC} core.
+Cell B.E. is an asymmetric, high-performance multi-core processor that combines eight synergistic processing elements (SPEs) and a Power Processing Element (PPE), which is a general-purpose IBM Power PC\textsuperscript{\textregistered} core.
 Next part is a central memory element.
 PPE can operate with the central memory directly while SPE indirectly, see below.
 In Cell B.E. are several kinds of memories.
@@ -45,7 +45,7 @@ Whole layout is on figure \ref{fg:processorLayout}.
 
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{data/cellLayout}
+    \includegraphics[width=0.7\textwidth]{data/cellLayout}
     \caption[Cell B.E. processor layout]{One PPE unit along with eight SPE stream processor units and system memory connected together with high speed EIB bus}
     \label{fg:processorLayout}
 \end{figure}
@@ -56,22 +56,27 @@ While a conventional microprocessor may deliver about 20+GFlops of single-precis
 
 A number of signal processing and media applications have been implemented on Cell with excellent results.
 Advanced visualization such as ray-casting, ray-tracing, and volume rendering.
-Streaming applications such as media encoders and decoders and streaming encryption and decryption standards have also been demonstrated to perform about an order of magnitude better on Cell than on conventional PC.
+Or streaming applications such as media encoders, decoders or encryption and decryption standards have also been demonstrated to perform about an order of magnitude better than conventional PC.
 
-\subsection{PPE - \textregistered{PowerPC} Processing Element}
-PPE is derived from IBM \textregistered{PowerPC} core. Has 512kB L2 cache on die.
+
+\subsection{PPE - Power Processing Element}
+PPE is derived from IBM Power PC\textsuperscript{\textregistered} core. Has 512kB L2 cache on die.
 It supports the Power Architecture ISA, inherits the memory translation, protection, and SMP coherence model of mainstream 64-bit Power processors.
 CBEA also supports virtualization (logical partitioning), large pages, and other recent innovations in the Power architecture.
 Programming for the PPE is the same as for conventional processors due to direct access to central memory.
 
 \subsection{SPE - Synergistic Processing Element}
+
+\par
 SPE is an autonomous processor (sometimes called accelerator) targeted for computational intensive applications.
 Each SPE has a SIMD core (SPU), a high-speed private local store memory and a direct memory access (DMA) engine.
 The SPU unit has 128 128-bit wide unified general purpose (in contrast from traditional RISCs where registers are divided according data types) registers to store all types of data.
 It supports a SIMD-RISC instruction set.
 It can execute two instruction at one clocktick in some conditions (dual-issue).
 Vectorized operations in various data types configurations can be performed with these registers.
-E.g. two double-precision floats or 8 32bit integers can be processed at single clock tick.
+E.g. two double-precision floats or eight 32bit integers can be processed at single clock tick.
+
+\par
 Unlike conventional microprocessors, SPE does not have a hardware cache.
 Its function supply the small on-chip local store memory under programmer's control.
 This allow code optimizations that can reduce cache misses.
@@ -84,8 +89,10 @@ Synchronous, asynchronous, in scatter-gather manner through DMA lists.
 Therefore, this Cell B.E. can be viewed as a distributed memory multiprocessor.
 This memory management is another big part of programming for Cell B.E..
 
+\par
 Programming for SPE has some differences over programming for conventional processor.
 Programmer have always to count with the fact that have only 256kB for the program and data.
 
+\par
 This processor is embeded in Sony Playstation 3 game console as well as IBM Blade servers where two or more such processors (as building blocks) connected by high speed bus creates powerfull and modular machine.
 We have Play Station 3 (PS3) machine available for this work.
