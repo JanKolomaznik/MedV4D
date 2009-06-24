@@ -13,10 +13,16 @@
 
 #include "cellSrc/supportClasses.h"
 
-#if( defined(FOR_CELL) || 1)
+/**
+ * Here is compilation split according selected architecture or test
+ * FOR_CELL - for CellBE architecture
+ * FOR_CELL_TEST -  for PC but simulating CellBE arch features 
+ * 					(used in porting phase)
+ */ 
+#if( defined(FOR_CELL) || defined(FOR_CELL_TEST) )
 #include "cellSrc/filter.h"
 #else
-#include "PCSrc/filter.h"
+#include "PCITKImpl/filter.h"
 #endif
 
 namespace M4D
@@ -162,7 +168,6 @@ private:
 	
 	typedef TLevelSetImage::PixelType TLSImaPixel;
 	TLSImaPixel *_levelSetImageData;
-//	NodeType *initSeedNode_;
 	
 	void AlocateAlignedImageData(const typename ITKOutputImageType::SizeType &size);
 };

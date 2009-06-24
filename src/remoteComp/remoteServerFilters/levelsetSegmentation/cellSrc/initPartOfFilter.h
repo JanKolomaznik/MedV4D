@@ -159,6 +159,9 @@ protected:
 	SPEManager m_SPEManager;
 	
 	typename StatusImageType::PixelType *_statusImageData;
+	
+private:
+	PerfCounter cntr_;
 };
 
 //include implementation

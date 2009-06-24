@@ -214,7 +214,7 @@ void Tspu_prog_sim::SimulateFunc()
 			{
 				ScopedLock lock(_mailbox.fromSPEQMutex);
 				_mailbox.SPEPush((uint32) JOB_DONE);
-				_mailbox.SPEPush(*((uint32 *) &retval));
+				_mailbox.SPEPush(FLOAT_TO_INT(retval));
 			}
 			break;
 		case CALC_UPDATE:

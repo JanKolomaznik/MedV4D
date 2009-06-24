@@ -23,9 +23,11 @@ MyFiniteDifferenceImageFilter<TInputImage, TOutputImage>
 		// Allocate the output image
 		this->AllocateOutputs();
 
+#ifndef NO_COPY_INPUT_TO_OUTPUT
 		// Copy the input image to the output image.  Algorithms will operate
 		// directly on the output image and the update buffer.
 		this->CopyInputToOutput();
+#endif
 
 		// Perform any other necessary pre-iteration initialization.
 		this->Initialize();
@@ -39,24 +41,11 @@ MyFiniteDifferenceImageFilter<TInputImage, TOutputImage>
 
 	while ( ! this->Halt() )
 	{
-		//this->InitializeIteration(); // An optional method for precalculating
-		// global values, or otherwise setting up
-		// for the next iteration
-		
-//		if(m_ElapsedIterations == 418)
-//		{
-//			uint32 i;
-//			i++;
-//		}
 		dt = this->CalculateChange();
 		this->ApplyUpdate(dt);
 		++m_ElapsedIterations;
 
-		DL_PRINT(DEBUGMYFINITEFILT,
-				"Elapsed iters:" << m_ElapsedIterations << ", dt = " << dt);
-
-		if( (m_ElapsedIterations % 2) == 0)
-		std::cout << "elapsed iters .. " << m_ElapsedIterations << std::endl;
+		LOG("Elapsed iters:" << m_ElapsedIterations << ", dt = " << dt);
 	}
 
 	if (m_ManualReinitialization == false)

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<workbench progressCount="28" version="2.0">
+<workbench progressCount="31" version="2.0">
 <workbenchAdvisor/>
 <window height="761" maximized="true" width="1028" x="0" y="0">
 <fastViewData fastViewLocation="1024"/>
@@ -12,89 +12,28 @@
 <coolItem id="additions" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.cdt.ui.CElementCreationActionSet" itemType="typeToolBarContribution" x="154" y="28"/>
 <coolItem id="org.eclipse.cdt.ui.buildConfigActionSet" itemType="typeToolBarContribution" x="80" y="28"/>
-<coolItem id="org.eclipse.debug.ui.launchActionSet" itemType="typeToolBarContribution" x="118" y="28"/>
-<coolItem id="org.eclipse.search.searchActionSet" itemType="typeToolBarContribution" x="38" y="28"/>
+<coolItem id="org.eclipse.debug.ui.launchActionSet" itemType="typeToolBarContribution" x="154" y="28"/>
+<coolItem id="org.eclipse.search.searchActionSet" itemType="typeToolBarContribution" x="66" y="28"/>
 <coolItem id="org.eclipse.ui.edit.text.actionSet.presentation" itemType="typeToolBarContribution" x="66" y="28"/>
 <coolItem id="group.nav" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.workbench.navigate" itemType="typeToolBarContribution" x="182" y="28"/>
 <coolItem id="group.editor" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.uml2.diagram.clazz.part.UMLDiagramEditorID" itemType="typePlaceholder" x="955" y="28"/>
-<coolItem id="org.eclipse.cdt.make.editor" itemType="typeToolBarContribution" x="-1" y="-1"/>
-<coolItem id="org.eclipse.ui.DefaultTextEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
-<coolItem id="org.eclipse.cdt.ui.editor.CEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
+<coolItem id="org.eclipse.cdt.make.editor" itemType="typePlaceholder" x="-1" y="-1"/>
+<coolItem id="org.eclipse.ui.DefaultTextEditor" itemType="typePlaceholder" x="-1" y="-1"/>
+<coolItem id="org.eclipse.cdt.ui.editor.CEditor" itemType="typePlaceholder" x="-1" y="-1"/>
 <coolItem id="group.help" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.workbench.help" itemType="typeToolBarContribution" x="-1" y="-1"/>
 </coolbarLayout>
-<page focus="true" label="remoteCellLevelSet - Debug">
+<page focus="true" label="remoteCellLevelSet - C/C++">
 <editors>
 <editorArea activeWorkbook="DefaultEditorWorkbook">
 <info part="DefaultEditorWorkbook">
 <folder appearance="1" expanded="2">
-<presentation id="org.eclipse.ui.internal.presentations.r33.WorkbenchPresentationFactory_33">
-<part id="0"/>
-<part id="1"/>
-<part id="2"/>
-<part id="3"/>
-<part id="4"/>
-<part id="5"/>
-<part id="6"/>
-<part id="7"/>
-<part id="8"/>
-<part id="9"/>
-<part id="10"/>
-<part id="11"/>
-</presentation>
+<presentation id="org.eclipse.ui.internal.presentations.r33.WorkbenchPresentationFactory_33"/>
 </folder>
 </info>
 </editorArea>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="filter.tcc" partName="filter.tcc" path="/data/prg/medved/src/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/src/filter.tcc" title="filter.tcc" tooltip="LevelsetServer/levelsetSegmentation/cellSrc/src/filter.tcc" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/LevelsetServer/levelsetSegmentation/cellSrc/src/filter.tcc"/>
-<editorState selectionHPixel="0" selectionLength="0" selectionOffset="0"/>
-</editor>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="myFiniteDifferenceFilter.tcc" partName="myFiniteDifferenceFilter.tcc" path="/data/prg/medved/src/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/src/myFiniteDifferenceFilter.tcc" title="myFiniteDifferenceFilter.tcc" tooltip="LevelsetServer/levelsetSegmentation/cellSrc/src/myFiniteDifferenceFilter.tcc" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/LevelsetServer/levelsetSegmentation/cellSrc/src/myFiniteDifferenceFilter.tcc"/>
-<editorState selectionHPixel="0" selectionLength="0" selectionOffset="1315"/>
-</editor>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="initPartOfFilter.tcc" partName="initPartOfFilter.tcc" path="/data/prg/medved/src/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/src/initPartOfFilter.tcc" title="initPartOfFilter.tcc" tooltip="LevelsetServer/levelsetSegmentation/cellSrc/src/initPartOfFilter.tcc" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/LevelsetServer/levelsetSegmentation/cellSrc/src/initPartOfFilter.tcc"/>
-<editorState selectionHPixel="0" selectionLength="0" selectionOffset="17614"/>
-</editor>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="initPartOfFilter.h" partName="initPartOfFilter.h" path="/data/prg/medved/src/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/initPartOfFilter.h" title="initPartOfFilter.h" tooltip="LevelsetServer/levelsetSegmentation/cellSrc/initPartOfFilter.h" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/LevelsetServer/levelsetSegmentation/cellSrc/initPartOfFilter.h"/>
-<editorState selectionHPixel="0" selectionLength="0" selectionOffset="4155"/>
-</editor>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="filter.h" partName="filter.h" path="/data/prg/medved/src/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/filter.h" title="filter.h" tooltip="LevelsetServer/levelsetSegmentation/cellSrc/filter.h" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/LevelsetServer/levelsetSegmentation/cellSrc/filter.h"/>
-<editorState selectionHPixel="0" selectionLength="0" selectionOffset="2187"/>
-</editor>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="myFiniteDifferenceFilter.h" partName="myFiniteDifferenceFilter.h" path="/data/prg/medved/src/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/myFiniteDifferenceFilter.h" title="myFiniteDifferenceFilter.h" tooltip="LevelsetServer/levelsetSegmentation/cellSrc/myFiniteDifferenceFilter.h" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/LevelsetServer/levelsetSegmentation/cellSrc/myFiniteDifferenceFilter.h"/>
-<editorState selectionHPixel="0" selectionLength="24" selectionOffset="7041"/>
-</editor>
-<editor id="org.eclipse.cdt.make.editor" name="Makefile" partName="Makefile" path="/data/prg/medved/src/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE/Makefile" title="Makefile" tooltip="LevelsetServer/levelsetSegmentation/cellSrc/SPE/Makefile" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/LevelsetServer/levelsetSegmentation/cellSrc/SPE/Makefile"/>
-<editorState selectionHPixel="0" selectionLength="0" selectionOffset="1323"/>
-</editor>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="medevedWrapperFilter.h" partName="medevedWrapperFilter.h" path="/data/prg/medved/src/remoteComp/remoteServerFilters/levelsetSegmentation/medevedWrapperFilter.h" title="medevedWrapperFilter.h" tooltip="LevelsetServer/levelsetSegmentation/medevedWrapperFilter.h" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/LevelsetServer/levelsetSegmentation/medevedWrapperFilter.h"/>
-<editorState selectionHPixel="0" selectionLength="0" selectionOffset="5067"/>
-</editor>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="filter.h" partName="filter.h" path="/data/prg/medved/src/remoteComp/remoteServerFilters/levelsetSegmentation/PCITKImpl/filter.h" title="filter.h" tooltip="LevelsetServer/levelsetSegmentation/PCITKImpl/filter.h" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/LevelsetServer/levelsetSegmentation/PCITKImpl/filter.h"/>
-<editorState selectionHPixel="0" selectionLength="0" selectionOffset="928"/>
-</editor>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="itkFastMarchingImageFilter.h" partName="itkFastMarchingImageFilter.h" title="itkFastMarchingImageFilter.h" tooltip="/data/prg/medved/src/include/3rdParty/ITK.noarch/Algorithms/itkFastMarchingImageFilter.h" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.cdt.ui.ExternalEditorInputFactory" path="/data/prg/medved/src/include/3rdParty/ITK.noarch/Algorithms/itkFastMarchingImageFilter.h" project="LevelsetServer"/>
-<editorState selectionHPixel="0" selectionLength="0" selectionOffset="15194"/>
-</editor>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="itkFastMarchingImageFilter.h" partName="itkFastMarchingImageFilter.h" title="itkFastMarchingImageFilter.h" tooltip="/data/prg/medved/src/include/3rdParty/ITK.noarch/Algorithms/itkFastMarchingImageFilter.h" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.cdt.ui.ExternalEditorInputFactory" path="/data/prg/medved/src/include/3rdParty/ITK.noarch/Algorithms/itkFastMarchingImageFilter.h" project="LevelsetServer"/>
-<editorState selectionHPixel="0" selectionLength="0" selectionOffset="15195"/>
-</editor>
-<editor focus="true" id="org.eclipse.ui.DefaultTextEditor" name="itkFastMarchingImageFilter.txx" partName="itkFastMarchingImageFilter.txx" title="itkFastMarchingImageFilter.txx" tooltip="/data/prg/medved/src/include/3rdParty/ITK.noarch/Algorithms/itkFastMarchingImageFilter.txx" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.cdt.ui.ExternalEditorInputFactory" path="/data/prg/medved/src/include/3rdParty/ITK.noarch/Algorithms/itkFastMarchingImageFilter.txx" project="LevelsetServer"/>
-<editorState selectionHPixel="0" selectionLength="0" selectionOffset="4935"/>
-</editor>
 </editors>
 <views>
 <view id="org.eclipse.ui.console.ConsoleView" partName="Console">
@@ -149,13 +88,14 @@
 <view id="org.eclipse.search.ui.views.SearchView" partName="Search">
 <viewState isPinned="false">
 <view IMemento.internal.id="" org.eclipse.search.lastActivation="0"/>
+<view IMemento.internal.id="org.eclipse.cdt.ui.pdomSearchViewPage" org.eclipse.search.lastActivation="1" org.eclipse.search.resultpage.layout="2"/>
 </viewState>
 </view>
 <view id="org.eclipse.ui.views.ProgressView" partName="Progress">
 <viewState/>
 </view>
 </views>
-<perspectives activePart="org.eclipse.debug.ui.DebugView" activePerspective="org.eclipse.debug.ui.DebugPerspective">
+<perspectives activePart="org.eclipse.ui.navigator.ProjectExplorer" activePerspective="org.eclipse.cdt.ui.CPerspective">
 <perspective editorAreaTrimState="2" editorAreaVisible="1" fixed="0" version="0.016">
 <descriptor class="org.eclipse.debug.internal.ui.DebugPerspectiveFactory" id="org.eclipse.debug.ui.DebugPerspective" label="Debug"/>
 <alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.annotationNavigation"/>
@@ -172,6 +112,8 @@
 <alwaysOnActionSet id="org.eclipse.cdt.debug.ui.debugActionSet"/>
 <alwaysOnActionSet id="org.eclipse.ui.NavigateActionSet"/>
 <alwaysOnActionSet id="org.eclipse.debug.ui.breakpointActionSet"/>
+<alwaysOnActionSet id="org.eclipse.jdt.debug.ui.JDTDebugActionSet"/>
+<alwaysOnActionSet id="org.eclipse.jdt.ui.JavaActionSet"/>
 <alwaysOnActionSet id="org.eclipse.debug.ui.debugActionSet"/>
 <show_view_action id="org.eclipse.debug.ui.DebugView"/>
 <show_view_action id="org.eclipse.debug.ui.VariableView"/>
@@ -196,7 +138,7 @@
 <fastViewBars>
 <fastViewBar fastViewLocation="1024" id="org.eclipse.debug.internal.ui.ConsoleFolderView" orientation="256" selectedTabId="org.eclipse.ui.console.ConsoleView" style="0">
 <fastViews>
-<view id="org.eclipse.ui.console.ConsoleView" ratio="0.3"/>
+<view id="org.eclipse.ui.console.ConsoleView" ratio="0.5364865"/>
 <view id="org.eclipse.ui.views.TaskList" ratio="0.3"/>
 <view id="org.eclipse.ui.views.ProblemView" ratio="0.3"/>
 </fastViews>
@@ -264,9 +206,10 @@
 <presentation id="org.eclipse.ui.internal.presentations.r33.WorkbenchPresentationFactory_33"/>
 </folder>
 </info>
-<info folder="true" part="org.eclipse.ui.internal.ViewStack@3b103b10" ratio="0.6284896" ratioLeft="878" ratioRight="519" relationship="2" relative="org.eclipse.ui.editorss">
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@3b103b10" ratio="0.7258411" ratioLeft="1014" ratioRight="383" relationship="2" relative="org.eclipse.ui.editorss">
 <folder activePageID="org.eclipse.debug.ui.DebugView" appearance="2" expanded="2">
 <page content="org.eclipse.debug.ui.DebugView" label="Debug"/>
+<page content="org.eclipse.search.ui.views.SearchView" label="LabelNotFound"/>
 <presentation id="org.eclipse.ui.internal.presentations.r33.WorkbenchPresentationFactory_33">
 <part id="0"/>
 </presentation>
@@ -323,7 +266,7 @@
 <perspective_action id="org.eclipse.team.ui.TeamSynchronizingPerspective"/>
 <view id="org.eclipse.ui.navigator.ProjectExplorer"/>
 <fastViewBars>
-<fastViewBar fastViewLocation="1024" id="bottom" orientation="256" selectedTabId="org.eclipse.ptp.remotetools.environment.ui.views.RemoteEnvironmentsView" style="0">
+<fastViewBar fastViewLocation="1024" id="bottom" orientation="256" selectedTabId="org.eclipse.ui.console.ConsoleView" style="0">
 <fastViews>
 <view id="org.eclipse.ui.views.ProblemView" ratio="0.56357926"/>
 <view id="org.eclipse.ui.views.TaskList" ratio="0.299843"/>
@@ -366,7 +309,7 @@
 <presentation id="org.eclipse.ui.internal.presentations.r33.WorkbenchPresentationFactory_33"/>
 </folder>
 </info>
-<info part="org.eclipse.ui.editorss" ratio="0.23979957" ratioLeft="335" ratioRight="1062" relationship="2" relative="topLeft"/>
+<info part="org.eclipse.ui.editorss" ratio="0.30422333" ratioLeft="425" ratioRight="972" relationship="2" relative="topLeft"/>
 <info folder="true" part="bottom" ratio="0.7492837" ratioLeft="523" ratioRight="175" relationship="4" relative="org.eclipse.ui.editorss">
 <folder appearance="2" expanded="2">
 <page content="org.eclipse.ui.views.ProblemView" label="LabelNotFound"/>
@@ -396,181 +339,7 @@
 </perspective>
 </perspectives>
 <workingSets/>
-<navigationHistory>
-<editors>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.make.editor" path="/LevelsetServer/server/Makefile"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/LevelsetServer/levelsetSegmentation/cellSrc/src/filter.tcc"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/LevelsetServer/levelsetSegmentation/PCITKImpl/filter.h"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/LevelsetServer/levelsetSegmentation/cellSrc/filter.h"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/LevelsetServer/levelsetSegmentation/cellSrc/src/myFiniteDifferenceFilter.tcc"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/LevelsetServer/levelsetSegmentation/PCITKImpl/src/filter.cxx"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/LevelsetServer/levelsetSegmentation/cellSrc/src/initPartOfFilter.tcc"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/LevelsetServer/levelsetSegmentation/cellSrc/initPartOfFilter.h"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/LevelsetServer/levelsetSegmentation/cellSrc/myFiniteDifferenceFilter.h"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.DefaultTextEditor" path="/LevelsetServer/levelsetSegmentation/cellSrc/SPE/Makefile.PC"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.make.editor" path="/LevelsetServer/levelsetSegmentation/cellSrc/SPE/Makefile"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.DefaultTextEditor" path="/LevelsetServer/server/MakefilePC"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.DefaultTextEditor" path="/LevelsetServer/server/MakefilePCITK"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/LevelsetServer/levelsetSegmentation/medevedWrapperFilter.h"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/LevelsetServer/levelsetSegmentation/medevedWrapperFilter.cxx"/>
-<editor factoryID="org.eclipse.cdt.ui.ExternalEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/data/prg/medved/src/include/3rdParty/ITK.noarch/Algorithms/itkFastMarchingImageFilter.h" project="LevelsetServer"/>
-<editor factoryID="org.eclipse.cdt.ui.ExternalEditorInputFactory" id="org.eclipse.ui.DefaultTextEditor" path="/data/prg/medved/src/include/3rdParty/ITK.noarch/Algorithms/itkFastMarchingImageFilter.txx" project="LevelsetServer"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/LevelsetServer/levelsetSegmentation/cellSrc/src/filter.tcc"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/LevelsetServer/levelsetSegmentation/cellSrc/src/myFiniteDifferenceFilter.tcc"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/LevelsetServer/levelsetSegmentation/medevedWrapperFilter.cxx"/>
-<editor factoryID="org.eclipse.cdt.ui.ExternalEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/data/prg/medved/src/include/3rdParty/ITK.noarch/Algorithms/itkFastMarchingImageFilter.h" project="LevelsetServer"/>
-</editors>
-<item historyLabel="filter.h" index="3">
-<position/>
-</item>
-<item historyLabel="initPartOfFilter.h" index="7">
-<position/>
-</item>
-<item historyLabel="filter.h" index="3">
-<position info="not_deleted" x="2187" y="0"/>
-</item>
-<item historyLabel="filter.tcc" index="1">
-<position info="not_deleted" x="1500" y="0"/>
-</item>
-<item historyLabel="initPartOfFilter.tcc" index="6">
-<position info="not_deleted" x="9200" y="0"/>
-</item>
-<item historyLabel="filter.cxx" index="5">
-<position info="not_deleted" x="2328" y="65"/>
-</item>
-<item historyLabel="initPartOfFilter.tcc" index="6">
-<position info="not_deleted" x="9200" y="0"/>
-</item>
-<item historyLabel="myFiniteDifferenceFilter.tcc" index="4">
-<position info="not_deleted" x="1021" y="0"/>
-</item>
-<item historyLabel="initPartOfFilter.tcc" index="6">
-<position info="not_deleted" x="9200" y="0"/>
-</item>
-<item historyLabel="myFiniteDifferenceFilter.h" index="8">
-<position/>
-</item>
-<item historyLabel="initPartOfFilter.tcc" index="6">
-<position/>
-</item>
-<item historyLabel="myFiniteDifferenceFilter.h" index="8">
-<position info="not_deleted" x="7041" y="24"/>
-</item>
-<item historyLabel="initPartOfFilter.h" index="7">
-<position info="not_deleted" x="4155" y="0"/>
-</item>
-<item historyLabel="initPartOfFilter.tcc" index="6">
-<position/>
-</item>
-<item historyLabel="filter.h" index="3">
-<position info="not_deleted" x="2187" y="0"/>
-</item>
-<item historyLabel="initPartOfFilter.h" index="7">
-<position info="not_deleted" x="4155" y="0"/>
-</item>
-<item historyLabel="initPartOfFilter.tcc" index="6">
-<position info="not_deleted" x="17563" y="0"/>
-</item>
-<item historyLabel="Makefile.PC" index="9">
-<position/>
-</item>
-<item historyLabel="Makefile" index="10">
-<position/>
-</item>
-<item historyLabel="Makefile" index="0">
-<position/>
-</item>
-<item historyLabel="MakefilePC" index="11">
-<position/>
-</item>
-<item historyLabel="MakefilePCITK" index="12">
-<position/>
-</item>
-<item historyLabel="MakefilePC" index="11">
-<position/>
-</item>
-<item historyLabel="Makefile" index="0">
-<position info="not_deleted" x="394" y="0"/>
-</item>
-<item historyLabel="Makefile" index="10">
-<position info="not_deleted" x="1484" y="0"/>
-</item>
-<item historyLabel="Makefile.PC" index="9">
-<position info="not_deleted" x="504" y="0"/>
-</item>
-<item historyLabel="Makefile" index="0">
-<position info="not_deleted" x="394" y="0"/>
-</item>
-<item historyLabel="MakefilePCITK" index="12">
-<position/>
-</item>
-<item historyLabel="Makefile" index="0">
-<position info="not_deleted" x="394" y="0"/>
-</item>
-<item historyLabel="MakefilePC" index="11">
-<position/>
-</item>
-<item historyLabel="Makefile" index="0">
-<position info="not_deleted" x="394" y="0"/>
-</item>
-<item historyLabel="Makefile.PC" index="9">
-<position/>
-</item>
-<item historyLabel="Makefile" index="0">
-<position info="not_deleted" x="394" y="0"/>
-</item>
-<item historyLabel="Makefile" index="10">
-<position info="not_deleted" x="1323" y="0"/>
-</item>
-<item historyLabel="medevedWrapperFilter.h" index="13">
-<position/>
-</item>
-<item historyLabel="filter.h" index="2">
-<position/>
-</item>
-<item historyLabel="myFiniteDifferenceFilter.tcc" index="4">
-<position info="not_deleted" x="1241" y="74"/>
-</item>
-<item historyLabel="initPartOfFilter.tcc" index="6">
-<position info="not_deleted" x="17562" y="0"/>
-</item>
-<item historyLabel="medevedWrapperFilter.h" index="13">
-<position info="not_deleted" x="5067" y="0"/>
-</item>
-<item historyLabel="medevedWrapperFilter.cxx" index="14">
-<position/>
-</item>
-<item historyLabel="initPartOfFilter.tcc" index="6">
-<position info="not_deleted" x="17614" y="0"/>
-</item>
-<item historyLabel="medevedWrapperFilter.cxx" index="14">
-<position/>
-</item>
-<item historyLabel="medevedWrapperFilter.cxx" index="14">
-<position info="not_deleted" x="1806" y="0"/>
-</item>
-<item historyLabel="itkFastMarchingImageFilter.h" index="15">
-<position info="not_deleted" x="15195" y="0"/>
-</item>
-<item historyLabel="itkFastMarchingImageFilter.txx" index="16">
-<position/>
-</item>
-<item historyLabel="filter.tcc" index="17">
-<position/>
-</item>
-<item historyLabel="myFiniteDifferenceFilter.tcc" index="18">
-<position info="not_deleted" x="1315" y="0"/>
-</item>
-<item historyLabel="medevedWrapperFilter.cxx" index="19">
-<position info="not_deleted" x="1806" y="0"/>
-</item>
-<item historyLabel="itkFastMarchingImageFilter.h" index="20">
-<position info="not_deleted" x="15194" y="0"/>
-</item>
-<item active="true" historyLabel="itkFastMarchingImageFilter.txx" index="16">
-<position/>
-</item>
-</navigationHistory>
+<navigationHistory/>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/remoteCellLevelSet" type="4"/>
 </page>
 <workbenchWindowAdvisor/>
@@ -588,53 +357,50 @@
 <trimItem IMemento.internal.id="org.eclise.ui.internal.FastViewBar"/>
 <trimItem IMemento.internal.id="org.eclipse.jface.action.StatusLineManager"/>
 <trimItem IMemento.internal.id="org.eclipse.ui.internal.progress.ProgressRegion"/>
-<trimItem IMemento.internal.id="org.eclipse.debug.internal.ui.ConsoleFolderView"/>
 <trimItem IMemento.internal.id="bottom"/>
+<trimItem IMemento.internal.id="org.eclipse.debug.internal.ui.ConsoleFolderView"/>
 </trimArea>
 </trimLayout>
 </window>
 <mruList>
-<file factoryID="org.eclipse.cdt.ui.ExternalEditorInputFactory" id="org.eclipse.ui.DefaultTextEditor" name="itkFastMarchingImageFilter.txx" tooltip="/data/prg/medved/src/include/3rdParty/ITK.noarch/Algorithms/itkFastMarchingImageFilter.txx">
-<persistable path="/data/prg/medved/src/include/3rdParty/ITK.noarch/Algorithms/itkFastMarchingImageFilter.txx" project="LevelsetServer"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.DefaultTextEditor" name="Debug.txt" tooltip="LevelsetServer/Debug.txt">
+<persistable path="/LevelsetServer/Debug.txt"/>
 </file>
-<file factoryID="org.eclipse.cdt.ui.ExternalEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="itkFastMarchingImageFilter.h" tooltip="/data/prg/medved/src/include/3rdParty/ITK.noarch/Algorithms/itkFastMarchingImageFilter.h">
-<persistable path="/data/prg/medved/src/include/3rdParty/ITK.noarch/Algorithms/itkFastMarchingImageFilter.h" project="LevelsetServer"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.DefaultTextEditor" name="Log.txt" tooltip="LevelsetServer/Log.txt">
+<persistable path="/LevelsetServer/Log.txt"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="medevedWrapperFilter.cxx" tooltip="LevelsetServer/levelsetSegmentation/medevedWrapperFilter.cxx">
-<persistable path="/LevelsetServer/levelsetSegmentation/medevedWrapperFilter.cxx"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="server.cpp" tooltip="LevelsetClient/remoteComp/serverPart/src/server.cpp">
+<persistable path="/LevelsetClient/remoteComp/serverPart/src/server.cpp"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="filter.h" tooltip="LevelsetServer/levelsetSegmentation/PCITKImpl/filter.h">
-<persistable path="/LevelsetServer/levelsetSegmentation/PCITKImpl/filter.h"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="server.cpp" tooltip="LevelsetServer/serverPart/src/server.cpp">
+<persistable path="/LevelsetServer/serverPart/src/server.cpp"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="remoteFilter.h" tooltip="LevelsetClient/remoteComp/remoteFilter.h">
+<persistable path="/LevelsetClient/remoteComp/remoteFilter.h"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="remoteFilter.cxx" tooltip="LevelsetClient/clientPart/remoteFilter.cxx">
+<persistable path="/LevelsetClient/clientPart/remoteFilter.cxx"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.DefaultTextEditor" name="itkBinaryThresholdImageFilter.txx" tooltip="LevelsetServer/ITK.noarch/BasicFilters/itkBinaryThresholdImageFilter.txx">
+<persistable path="/LevelsetServer/ITK.noarch/BasicFilters/itkBinaryThresholdImageFilter.txx"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="itkBinaryThresholdImageFilter.h" tooltip="LevelsetServer/ITK.noarch/BasicFilters/itkBinaryThresholdImageFilter.h">
+<persistable path="/LevelsetServer/ITK.noarch/BasicFilters/itkBinaryThresholdImageFilter.h"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="itkImageSource.txx" tooltip="LevelsetServer/ITK.noarch/Common/itkImageSource.txx">
+<persistable path="/LevelsetServer/ITK.noarch/Common/itkImageSource.txx"/>
+</file>
+<file factoryID="org.eclipse.cdt.ui.ExternalEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="itkFilter.cxx" tooltip="/data/prg/medved/src/itkIntegration/src/itkFilter.cxx">
+<persistable path="/data/prg/medved/src/itkIntegration/src/itkFilter.cxx" project="LevelsetServer"/>
+</file>
+<file factoryID="org.eclipse.cdt.ui.ExternalEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="itkFilter.h" tooltip="/data/prg/medved/src/itkIntegration/itkFilter.h">
+<persistable path="/data/prg/medved/src/itkIntegration/itkFilter.h" project="LevelsetServer"/>
 </file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="medevedWrapperFilter.h" tooltip="LevelsetServer/levelsetSegmentation/medevedWrapperFilter.h">
 <persistable path="/LevelsetServer/levelsetSegmentation/medevedWrapperFilter.h"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.DefaultTextEditor" name="MakefilePC" tooltip="LevelsetServer/server/MakefilePC">
-<persistable path="/LevelsetServer/server/MakefilePC"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.DefaultTextEditor" name="MakefilePCITK" tooltip="LevelsetServer/server/MakefilePCITK">
-<persistable path="/LevelsetServer/server/MakefilePCITK"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.make.editor" name="Makefile" tooltip="LevelsetServer/server/Makefile">
-<persistable path="/LevelsetServer/server/Makefile"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.make.editor" name="Makefile" tooltip="LevelsetServer/levelsetSegmentation/cellSrc/SPE/Makefile">
-<persistable path="/LevelsetServer/levelsetSegmentation/cellSrc/SPE/Makefile"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.DefaultTextEditor" name="Makefile.PC" tooltip="LevelsetServer/levelsetSegmentation/cellSrc/SPE/Makefile.PC">
-<persistable path="/LevelsetServer/levelsetSegmentation/cellSrc/SPE/Makefile.PC"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="myFiniteDifferenceFilter.h" tooltip="LevelsetServer/levelsetSegmentation/cellSrc/myFiniteDifferenceFilter.h">
-<persistable path="/LevelsetServer/levelsetSegmentation/cellSrc/myFiniteDifferenceFilter.h"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="filter.h" tooltip="LevelsetServer/levelsetSegmentation/cellSrc/filter.h">
-<persistable path="/LevelsetServer/levelsetSegmentation/cellSrc/filter.h"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="initPartOfFilter.h" tooltip="LevelsetServer/levelsetSegmentation/cellSrc/initPartOfFilter.h">
-<persistable path="/LevelsetServer/levelsetSegmentation/cellSrc/initPartOfFilter.h"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="initPartOfFilter.tcc" tooltip="LevelsetServer/levelsetSegmentation/cellSrc/src/initPartOfFilter.tcc">
-<persistable path="/LevelsetServer/levelsetSegmentation/cellSrc/src/initPartOfFilter.tcc"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="itkConstNeighborhoodIterator.h" tooltip="LevelsetServer/ITK.noarch/Common/itkConstNeighborhoodIterator.h">
+<persistable path="/LevelsetServer/ITK.noarch/Common/itkConstNeighborhoodIterator.h"/>
 </file>
 </mruList>
 </workbench>

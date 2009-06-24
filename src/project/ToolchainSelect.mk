@@ -23,13 +23,12 @@ archPostfix=CELL
 endif
 ##########################################
 #used in porting phase
-ifeq "$(ARCH)" "CellPCTest"
-binUtilsPath=/opt/cell/toolchain/bin
-ROOT=/opt/cell/sysroot
-CXX=$(binUtilsPath)/ppu-g++
-AR=$(binUtilsPath)/ppu-ar
-archPostfix=CELL
-CXXFLAGS += -DFOR_PC
+ifeq "$(ARCH)" "Cell_PCSimulation"
+CXX=g++
+AR=ar
+ROOT=
+archPostfix=PCSIM
+CXXFLAGS += -DFOR_PC -DFOR_CELL_TEST
 endif
 ##########################################
 ifeq "$(ARCH)" "CellNative"
@@ -49,8 +48,6 @@ ROOT=
 archPostfix=
 
 CXXFLAGS += -DFOR_PC
-
-CXXDEBUG_OPTIONS= -ggdb
 endif
 ##########################################
 

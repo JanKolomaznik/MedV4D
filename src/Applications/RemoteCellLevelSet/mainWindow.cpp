@@ -92,7 +92,7 @@ mainWindow::CreatePipeline()
 	
 	typedef ImageSizeAdapter<VeiwImageType> ForCellSizeAdapter;
 	
-#define DESIRED_IMAGE_SIZE_FOR_CELL (10*1024*1024) // 40M
+#define DESIRED_IMAGE_SIZE_FOR_CELL (20*1024*1024) // 40M
 	_decimator = new ForCellSizeAdapter( 
 			new ForCellSizeAdapter::Properties(DESIRED_IMAGE_SIZE_FOR_CELL) );
 	_decimator->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );

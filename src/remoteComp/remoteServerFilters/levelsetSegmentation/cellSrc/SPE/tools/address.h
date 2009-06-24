@@ -23,9 +23,9 @@ public:
 ////			long_addr.ui[1] = (unsigned int) p;
 ////		}
 //	}
-	unsigned long long Get64() const { return long_addr.ull; }
-	uint32 GetLo() { return long_addr.ui[1]; }
-	uint32 GetHi() { return long_addr.ui[0]; }
+	inline unsigned long long Get64() const { return long_addr.ull; }
+	inline uint32 GetLo() { return long_addr.ui[1]; }
+	inline uint32 GetHi() { return long_addr.ui[0]; }
 	
 	inline bool operator !=(const Address &other) 
 	{ 

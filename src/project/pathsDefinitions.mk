@@ -9,7 +9,16 @@ else
 ITKLibsDir=$(srcTop)/lib/3rdParty/Debug/ITK.ppc64
 endif
 
-INCLUDES += $(srcTop)/include/3rdParty/asio-devel.ppc64
+INCLUDES += -I$(srcTop)/include/3rdParty/asio-devel.ppc64
+
+# path to VTK libraries & includes
+VTKLibsDir=/usr/local/lib/vtk-5.0
+VTKIncludeDir=/usr/local/include/vtk-5.0
+endif
+##########################################
+ifeq "$(ARCH)" "Cell_PCSimulation"
+# path to ITK libraries
+ITKLibsDir=$(srcTop)/lib/3rdParty/Debug/ITK.i686
 
 # path to VTK libraries & includes
 VTKLibsDir=/usr/local/lib/vtk-5.0

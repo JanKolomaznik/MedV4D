@@ -79,6 +79,43 @@ PrintITKImage(const ImageType &image, std::ostream &s)
     }
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+template<typename ImageType>
+void 
+PrintITKImageAsArrayInitializer(const ImageType &image, std::ostream &s)
+{
+	//image.Print( s);
+	    
+	typename ImageType::RegionType::IndexType index;
+	typename ImageType::RegionType::SizeType size = 
+    	image.GetLargestPossibleRegion().GetSize();
+	
+	typename ImageType::PixelType pixel;
+	
+	s << "{" << std::endl;
+    
+    for( unsigned int i=0; i<size[2]; i++)
+    { 
+    	for( unsigned int j=0; j<size[1]; j++)
+    	{
+    		for( unsigned int k=0; k< size[0]; k++)
+    		{
+    			index[0] = k;
+    			index[1] = j;
+    			index[2] = i;
+    			
+    			pixel = image.GetPixel(index);
+    			s << pixel << ",";
+    		}
+    		s << std::endl;
+    	}
+    }
+    s << "}" << std::endl;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 template<typename T1, typename T2>
 T1 ConvertIncompatibleVectors(const T2 &v2)
 {

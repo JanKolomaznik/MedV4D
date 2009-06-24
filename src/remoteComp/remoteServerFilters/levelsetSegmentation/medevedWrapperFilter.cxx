@@ -96,7 +96,7 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
   fastMarching->Update();
   std::cout << "done" << std::endl;
   
-//  M4D::Cell::PrintITKImage<TLevelSetImage>(*_levelSetImage, LOUT);
+  M4D::Cell::PrintITKImage<TLevelSetImage>(*_levelSetImage, LOUT);
   
   // now output of the FM should be in OutputITKImage
 }
@@ -127,31 +127,14 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 {	
 	_levelSetImage->CopyInformation(this->GetInputITKImage());
 	
+	// free old
+	if(_levelSetImageData) free(_levelSetImageData);
+	
 	try {
 	size_t sizeOfData = 1;	// size in elements (not in bytes)
 	// count num of elems
 	for( uint32 i=0; i< InputImageType::Dimension; i++)
 		sizeOfData *= size[i];
-		
-//	// alocate aligned image data
-//	typedef typename FeatureToFloatFilterType::OutputImageType TFeatureConvImage;
-//	TFeatureConvImage *o = featureToFloatCaster->GetOutput();	
-//	
-//	// alocate new (aligned buffer)
-//	typedef typename FeatureToFloatFilterType::OutputImageType::PixelType TFeatureConvPixel;
-//	TFeatureConvPixel *dataPointer = NULL;
-//	if( posix_memalign((void**)(&dataPointer), 128,
-//			sizeOfData * sizeof(TFeatureConvPixel) ) != 0)
-//	{
-//		throw std::bad_alloc();
-//	}
-//	o->GetPixelContainer()->SetImportPointer(
-//				dataPointer,
-//				sizeOfData,
-//				true);
-	
-//	typedef typename ThresholdSegmentationFilterType::OutputImageType TSegmOutImage;
-//	TSegmOutImage *o2 = thresholdSegmentation->GetOutput();	
 	
 	typedef union {
 		TLSImaPixel **sp;
@@ -170,14 +153,12 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 				(typename TLevelSetImage::PixelContainer::ElementIdentifier) sizeOfData,
 				false);
 	} catch(...) {
-//		if(dataPointer) free(dataPointer);
 		if(_levelSetImageData) free(_levelSetImageData);
 		
 		throw;
 	}
 	
-	_levelSetImage->SetBufferedRegion(
-			_levelSetImage->GetLargestPossibleRegion());
+	_levelSetImage->SetRegions(_levelSetImage->GetLargestPossibleRegion());
 	_levelSetImage->Allocate();
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -307,11 +288,12 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 		return false;
 	} catch(...) {
 		LOG("exception thrown during Medved filter exec, returning false");
+		std::cout << "exception thrown during Medved filter exec" << std::endl;
 	}
 	
-	// newlines into output to separate particular runs
-	for(uint32 i=0; i<10; i++)
-		std::cout << std::endl;
+	// separate particular runs
+	std::cout << "############################################################"
+	<< std::endl;
 	
 	return true;
 }

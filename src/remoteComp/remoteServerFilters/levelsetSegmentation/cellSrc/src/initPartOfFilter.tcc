@@ -243,6 +243,10 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 
 	// release shifted image (set to NULL call unregister & thus delete)
 	m_ShiftedImage = NULL;
+	
+	std::cout << "Time measure start ..." << std::endl;
+    cntr_.Reset();
+    cntr_.Start();
 };
 ///////////////////////////////////////////////////////////////////////////////
 template<class TInputImage,class TFeatureImage, class TOutputPixelType>
@@ -490,6 +494,9 @@ void
 MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 ::PostProcessOutput()
 {
+	cntr_.Stop();
+	std::cout << "Time measure stop  ..." << std::endl;
+			
 	// stop the SPEs
 #ifdef FOR_CELL
 	m_SPEManager.StopSPEs();
@@ -540,9 +547,8 @@ MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
 	s << "Max. RMS error: " << this->GetMaximumRMSError() << std::endl;
 	s << "No. elpased iterations: " << this->GetElapsedIterations() << std::endl;
 	s << "RMS change: " << this->GetRMSChange() << std::endl;
-	//	s << std::endl;
-	//	s << "Time spent in solver: " << cntr_ << std::endl;
-	//	s << "Time spent in difference solving: " << func_->cntr_ << std::endl;
+	s << std::endl;
+	s << "Time measurement: " << cntr_ << std::endl;
 	s << "===========================" << std::endl;
 }
 

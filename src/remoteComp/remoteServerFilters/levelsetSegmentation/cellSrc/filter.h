@@ -1,14 +1,9 @@
 #ifndef CELLREADYTHRESHOLDSEGMENTATIONLEVELSETIMAGEFILTER_H_
 #define CELLREADYTHRESHOLDSEGMENTATIONLEVELSETIMAGEFILTER_H_
 
-//#ifdef FOR_CELL
 #include "PPE/SPEManager.h"
 #include "initPartOfFilter.h"
-//#else	/* PC */
-//#include "common/Common.h"
-//
-//#include "pcPartOfTheFilter.h"
-//#endif
+#include "common/perfCounter.h"
 
 namespace M4D
 {
@@ -17,11 +12,7 @@ namespace Cell
 
 template <class TInputImage, class TFeatureImage, class TOutputPixelType =float > 
 class MySegmtLevelSetFilter
-//#ifdef FOR_CELL
 :	public MySegmtLevelSetFilter_InitPart<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> >
-//#else
-//	: public PCPartOfSegmtLevelSetFilter<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> >
-//#endif
 {
 public:
 
@@ -32,12 +23,8 @@ public:
 			OutputImageType;
 	typedef typename OutputImageType::ValueType ValueType;
 
-	//#ifdef FOR_CELL
 	typedef MySegmtLevelSetFilter_InitPart<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> >
 			Superclass;
-	//#else
-	//	typedef PCPartOfSegmtLevelSetFilter<TInputImage, itk::Image<TOutputPixelType, TInputImage::ImageDimension> > Superclass;
-	//#endif
 
 	itkNewMacro(Self)
 	;

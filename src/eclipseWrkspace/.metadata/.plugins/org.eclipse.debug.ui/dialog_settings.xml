@@ -5,9 +5,9 @@
 		<item key="DIALOG_FONT_NAME" value="1|Sans|10.0|0|GTK|1|"/>
 		<item key="org.eclipse.debug.ui.DIALOG_SASH_WEIGHTS_1" value="237"/>
 		<item key="DIALOG_HEIGHT" value="640"/>
-		<item key="DIALOG_X_ORIGIN" value="173"/>
-		<item key="org.eclipse.debug.ui.EXPANDED_NODES" value="com.ibm.celldt.environment.launcher.cellLaunch, "/>
-		<item key="DIALOG_Y_ORIGIN" value="3"/>
+		<item key="DIALOG_X_ORIGIN" value="185"/>
+		<item key="org.eclipse.debug.ui.EXPANDED_NODES" value="com.ibm.celldt.environment.launcher.cellLaunch, org.eclipse.cdt.launch.localCLaunch, "/>
+		<item key="DIALOG_Y_ORIGIN" value="143"/>
 		<item key="DIALOG_WIDTH" value="1080"/>
 	</section>
 </section>

@@ -148,6 +148,7 @@
 <definedSymbol symbol="_GNU_SOURCE=1"/>
 <definedSymbol symbol="DEBUG_LEVEL=10"/>
 <definedSymbol symbol="DEBUG_ADITIONAL_INFO"/>
+<definedSymbol symbol="FOR_PC"/>
 </collector>
 </instance>
 </scannerInfo>
