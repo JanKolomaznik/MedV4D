@@ -3,7 +3,7 @@
 
 #include "SPE/commonTypes.h"
 #include <string.h>
-
+#include <fstream>
 
 namespace M4D
 {
@@ -73,10 +73,21 @@ PrintITKImage(const ImageType &image, std::ostream &s)
     			
     			s << "[" << i << "," << j << "," << k << "]= ";
     			pixel = image.GetPixel(index);
-    			s << ((int32) pixel) << std::endl;
+    			s << ((float32) pixel) << std::endl;
     		}
     	}
     }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+template<typename ImageType>
+void 
+PrintITKImageToFile(const ImageType &image, const char *s)
+{
+	std::ofstream out(s);
+	PrintITKImage<ImageType>(image, out);
+	out.close();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -26,6 +26,13 @@ public:
 	
 	void Reset();
 	
+	/**
+	 * The currently saved item has some changes that would not propagate
+	 * to currently laded item if the both represent image parts that
+	 * has nonempty intersection. So manual propagation is needed.
+	 */
+	void PropagateChangesWithinSavedItemWithLoaded();
+	
 #ifdef FOR_CELL
 	typename TNeigborhood::LoadingCtx _loadingCtx;
 	typename TNeigborhood::SavingCtx _savingCtx;

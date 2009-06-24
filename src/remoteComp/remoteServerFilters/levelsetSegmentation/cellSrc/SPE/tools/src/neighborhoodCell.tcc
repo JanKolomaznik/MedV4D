@@ -176,12 +176,15 @@ void
 NeighborhoodCell<PixelType>::SetCenterPixel(PixelType val)
 {
 #ifdef FOR_CELL
-	_dirtyElems |= (1 << (m_size/2));	// set dirty flag
-#else
+	
+#else	
 	// change the actual image directly if we are on PC
-	PixelType *begin = (PixelType *) ComputeImageDataPointer(m_currIndex).Get64();
-		*begin = val;
+//	PixelType *begin = (PixelType *) ComputeImageDataPointer(m_currIndex).Get64();
+//		*begin = val;
 #endif
+	
+	D_PRINT("SET center: " << val);
+	_dirtyElems |= (1 << (m_size/2));	// set dirty flag
 	// change the buffer as well
 	m_buf[traslationTable_[static_cast<uint32>(m_size/2)]] = val;	
 }
@@ -279,14 +282,16 @@ template<typename PixelType>
 void
 NeighborhoodCell<PixelType>::SaveChanges(SavingCtx *ctx)
 {
-	uint32 cnt = 0;
+	register uint32 cnt = 0;
+	register uint32 dirtyMask = _dirtyElems;
+	
 	// clear list iters
 	memset((void*)ctx->_dmaListIter, 0, SAVE_DMA_LIST_CNT * sizeof(TDmaListIter));
 	
 	uint64 address;
 	while((cnt < 27))
 	{
-		if(_dirtyElems & 0x1)
+		if(dirtyMask & 0x1)
 		{
 			numOfSavings++;
 			
@@ -310,7 +315,7 @@ NeighborhoodCell<PixelType>::SaveChanges(SavingCtx *ctx)
 			ctx->_dmaListIter[_alignIter]++;
 		}
 		
-		_dirtyElems >>= 1;	// shift right
+		dirtyMask >>= 1;	// shift right
 		cnt++;
 	}
 }
@@ -319,12 +324,13 @@ template<typename PixelType>
 void
 NeighborhoodCell<PixelType>::SaveChanges()
 {
-	uint32 cnt = 0;
+	register uint32 cnt = 0;
+	register uint32 dirtyMask = _dirtyElems;
 	
 	Address address;
-	while(_dirtyElems && (cnt < 27))
+	while(dirtyMask && (cnt < 27))
 	{
-		if(_dirtyElems & 0x1)
+		if(dirtyMask & 0x1)
 		{
 			numOfSavings++;
 			
@@ -335,11 +341,58 @@ NeighborhoodCell<PixelType>::SaveChanges()
 			DMAGate::Put(&m_buf[cnt], address, sizeof(PixelType));
 		}
 		
-		_dirtyElems >>= 1;	// shift right
+		dirtyMask >>= 1;	// shift right
 		cnt++;
 	}
 }
 #endif
+
+///////////////////////////////////////////////////////////////////////////////
+template<typename PixelType>
+bool
+NeighborhoodCell<PixelType>::IsWithinNeigbourhood(const TIndex &pos)
+{
+		if( 
+				(pos[0] >= (m_currIndex[0] - RADIUS))
+		&& 		(pos[0] <= (m_currIndex[0] + RADIUS)) 
+		&&		(pos[1] >= (m_currIndex[1] - RADIUS))
+		&& 		(pos[1] <= (m_currIndex[1] + RADIUS))
+		&&		(pos[2] >= (m_currIndex[2] - RADIUS))
+		&& 		(pos[2] <= (m_currIndex[2] + RADIUS))
+		)
+		{
+			return true;
+		}
+		else			
+			return false;
+}
+///////////////////////////////////////////////////////////////////////////////
+template<typename PixelType>
+void
+NeighborhoodCell<PixelType>::PropagateChangesWithinSavedItem(Self& saved)
+{
+	uint32 cnt = 0;
+	uint32 savedDirty = saved._dirtyElems;
+	
+	Address address;
+	while(savedDirty && (cnt < NEIGHBOURHOOD_SIZE))
+	{
+		if(savedDirty & 0x1)
+		{
+			TIndex savedsPos = saved.m_currIndex + OffsetFromPos(cnt);
+			// if savedsPos overlap with our neighb bbox
+			if(IsWithinNeigbourhood(savedsPos))
+			{
+				TOffset ourPos = savedsPos - m_currIndex;
+				uint32 ourIndex = GetNeighborhoodIndex(ourPos);
+				m_buf[traslationTable_[ourIndex]] = saved.GetPixel(cnt);
+			}			
+		}
+		
+		savedDirty >>= 1;	// shift right
+		cnt++;
+	}
+}
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PixelType>
 TOffset
@@ -429,7 +482,8 @@ NeighborhoodCell<PixelType>::Print()
 #ifdef FOR_CELL
 	D_PRINT("m_currIndex: [%d, %d, %d]\n", m_currIndex[0], m_currIndex[1], m_currIndex[2]);
 #else
-	
+	D_PRINT("m_currIndex: [" << m_currIndex[0] << ", " << m_currIndex[1] <<
+			", " << m_currIndex[2] << "]");
 #endif
 	
 	int8 pos;
@@ -440,9 +494,9 @@ NeighborhoodCell<PixelType>::Print()
 		if(pos != -1)
 		{
 #ifdef FOR_CELL
-		D_PRINT("%f\n", (float32) m_buf[pos]);
+		D_PRINT("%f,", (float32) m_buf[pos]);
 #else
-		D_PRINT((float32) m_buf[pos]);
+		D_PRINT_NOENDL((float32) m_buf[pos] << ",");
 #endif
 		}
 	}

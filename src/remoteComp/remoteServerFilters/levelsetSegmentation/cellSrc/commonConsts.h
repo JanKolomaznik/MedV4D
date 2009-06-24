@@ -45,7 +45,7 @@ protected:
 		 m_StatusActiveChangingUp = -2;
 		 m_StatusActiveChangingDown = -3;
 		m_StatusBoundaryPixel = -4;
-		m_StatusNull = -127;//itk::NumericTraits<StatusType>::NonpositiveMin();
+		m_StatusNull = -128;//itk::NumericTraits<StatusType>::NonpositiveMin();
 	}
 };
 

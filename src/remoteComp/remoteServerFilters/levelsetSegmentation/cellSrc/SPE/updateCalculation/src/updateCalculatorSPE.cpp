@@ -29,6 +29,17 @@ TIndex M4D::Cell::operator+(const TIndex &i, const TOffset &o)
 
 ///////////////////////////////////////////////////////////////////////////////
 
+TIndex M4D::Cell::operator-(const TIndex &i, const TOffset &o)
+{
+	TIndex ret;
+	ret[0] = i[0] - o[0];
+	ret[1] = i[1] - o[1];
+	ret[2] = i[2] - o[2];
+	return ret;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 UpdateCalculatorSPE
 ::UpdateCalculatorSPE(SharedResources *shaRes)
 	: m_updateBufferArray(shaRes->_buf)

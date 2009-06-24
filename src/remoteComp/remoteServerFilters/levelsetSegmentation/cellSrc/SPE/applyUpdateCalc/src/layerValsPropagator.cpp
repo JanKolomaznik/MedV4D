@@ -26,9 +26,13 @@ void LayerValuesPropagator::PropagateAllLayerValues()
 	// active layer as a seed. Inside layers are odd numbers, outside layers are
 	// even numbers. 
 	_delta = -commonConf->m_ConstantGradientValue;
+	D_PRINT("layer" << 0 << "->" << 1);
 	this->PropagateLayerValues(0, 1, 3); // first inside
+	
 	_delta = commonConf->m_ConstantGradientValue;
+	D_PRINT("layer" << 0 << "->" << 2);
 	this->PropagateLayerValues(0, 2, 4); // first outside
+	
 
 	// Update the rest of the layers.
 	for (i = 1; i < (uint32) LYERCOUNT - 2; ++i)
@@ -39,7 +43,9 @@ void LayerValuesPropagator::PropagateAllLayerValues()
 			_delta = -commonConf->m_ConstantGradientValue;
 		else
 			_delta = commonConf->m_ConstantGradientValue;
+		D_PRINT("layer" << i << "->" << i+2);
 		this->PropagateLayerValues(i, i+2, i+4);
+		
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -110,6 +116,10 @@ void LayerValuesPropagator::DoTheWork(StatusType from, StatusType to,
 
 	SparseFieldLevelSetNode *tmp;
 	SparseFieldLevelSetNode *currNode = this->m_layerIterator.GetCurrItem();
+	
+	D_PRINT("node:" << currNode->m_Value);
+	m_statusIter.GetNeighborhood().Print();
+	m_outIter.GetNeighborhood().Print();
 
 #ifndef FOR_CELL
 	DL_PRINT(DBG_LAYER_IT,

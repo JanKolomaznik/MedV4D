@@ -40,6 +40,7 @@ typedef MyVector<float32> TSpacing;
 
 void ComputeStridesFromSize(const TSize &size, TStrides &strides);
 TIndex operator+(const TIndex &i, const TOffset &o);
+TIndex operator-(const TIndex &i, const TOffset &o);
 
 template<typename T>
 std::ostream &operator<<(std::ostream &s, const MyVector<T> &v)

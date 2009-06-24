@@ -56,6 +56,9 @@ PreloadedNeigborhoods<PixelType, MYSIZE>
 {
 	_loaded++;
 	_loaded = _loaded % MYSIZE;
+	
+	PropagateChangesWithinSavedItemWithLoaded();
+	
 	return &m_buf[_loaded];
 }
 
@@ -99,6 +102,15 @@ PreloadedNeigborhoods<PixelType, MYSIZE>::SaveCurrItem()
 	// change pointers
 	_saving = _loaded;
 
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template<typename PixelType, uint16 MYSIZE>
+void
+PreloadedNeigborhoods<PixelType, MYSIZE>
+::PropagateChangesWithinSavedItemWithLoaded()
+{
+	m_buf[_loaded].PropagateChangesWithinSavedItem(m_buf[_saving]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

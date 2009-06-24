@@ -148,7 +148,7 @@ void SPEManager::StopSims()
 #ifdef FOR_CELL
 uint32 SPEManager::speCount = spe_cpu_info_get(SPE_COUNT_USABLE_SPES, -1);
 #else
-uint32 SPEManager::speCount = 6;
+uint32 SPEManager::speCount = 1;
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////

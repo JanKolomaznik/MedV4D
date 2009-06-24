@@ -96,8 +96,6 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
   fastMarching->Update();
   std::cout << "done" << std::endl;
   
-  M4D::Cell::PrintITKImage<TLevelSetImage>(*_levelSetImage, LOUT);
-  
   // now output of the FM should be in OutputITKImage
 }
 ///////////////////////////////////////////////////////////////////////////////

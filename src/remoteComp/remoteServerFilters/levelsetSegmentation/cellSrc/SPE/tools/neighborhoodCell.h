@@ -18,7 +18,7 @@ template<typename PixelType>
 class NeighborhoodCell
 {
 public:
-	
+	typedef NeighborhoodCell<PixelType> Self;
 	typedef uint8 TDmaListIter;
 	
 #define DMA_LIST_SET_SIZE (SIZEIN1DIM*SIZEIN1DIM)	// maximal count
@@ -98,6 +98,7 @@ public:
 		//ComputeAlignStrides();
 		}
 	bool IsWithinImage(const TIndex &pos);
+	bool IsWithinNeigbourhood(const TIndex &pos);
 	TIndex m_currIndex;
 
 	void Print();
@@ -107,6 +108,11 @@ public:
 	
 	void HowMuchCrossesBoundary(TOffset &howMuch);
 	
+	void PropagateChangesWithinSavedItem(Self& saved);
+	
+	TOffset OffsetFromPos(uint32 pos);
+	
+	uint32 _dirtyElems;
 protected:
 	
 	Address ComputeImageDataPointer(const TIndex &pos);
@@ -121,12 +127,10 @@ protected:
 	int32 traslationTable_[NEIGHBOURHOOD_SIZE];
 	int8 transIdxIter_;
 	
-	uint32 _dirtyElems;
-	
 	PixelType m_buf[BUFFER_SIZE] __attribute__ ((aligned (128)));
 	size_t m_size;
 	
-	TOffset OffsetFromPos(uint32 pos);
+	
 	
 #ifdef FOR_CELL	
 	void PutIntoList(uint64 address, uint32 size);

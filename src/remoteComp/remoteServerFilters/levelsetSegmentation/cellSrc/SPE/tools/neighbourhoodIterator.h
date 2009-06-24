@@ -65,7 +65,12 @@ public:
 
 	PixelType GetPixel(const unsigned i) const
 	{
-		return m_neighbourhood->GetPixel(i);
+		const TOffset o = m_neighbourhood->OffsetFromPos(i);
+		TIndex idx = m_neighbourhood->m_currIndex + o;
+		if(m_neighbourhood->IsWithinImage(idx))
+			return m_neighbourhood->GetPixel(i);
+		else
+			return OnBehindBoundary(o);
 	}
 	PixelType GetPixel(const TOffset &o) const
 	{
@@ -73,7 +78,7 @@ public:
 	}
 
 	PixelType GetPixel(uint32 pos, bool &isWithin);
-	PixelType OnBehindBoundary(const TOffset &off);
+	PixelType OnBehindBoundary(const TOffset &off) const;
 
 	/** Returns the pixel value located i pixels distant from the neighborhood 
 	 *  center in the positive specified ``axis'' direction. No bounds checking 

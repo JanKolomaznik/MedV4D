@@ -89,7 +89,7 @@ NeighbourIteratorCell<PixelType>::GetPixel(uint32 pos, bool &isWithin)
 template<typename PixelType>
 PixelType
 NeighbourIteratorCell<PixelType>
-::OnBehindBoundary(const TOffset &off)
+::OnBehindBoundary(const TOffset &off) const
 {
 	TOffset o = off;
 	m_neighbourhood->HowMuchCrossesBoundary(o);
