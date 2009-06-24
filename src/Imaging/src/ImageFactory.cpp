@@ -120,11 +120,12 @@ template< typename ElementType, uint32 Dimension >
 void
 LoadSerializedImageData( M4D::IO::InStream &stream, Image< ElementType, Dimension >& image )
 {
-	typename Image< ElementType, Dimension >::Iterator iterator = image.GetIterator();
-	while( !iterator.IsEnd() && !stream.eof() ) {
-		stream.Get< ElementType >( *iterator );
-		++iterator;
-	}
+//	typename Image< ElementType, Dimension >::Iterator iterator = image.GetIterator();
+//	while( !iterator.IsEnd() && !stream.eof() ) {
+//		stream.Get< ElementType >( *iterator );
+//		++iterator;
+//	}
+	image.DeSerializeData(stream);
 }
 
 AbstractImage::Ptr

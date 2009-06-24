@@ -449,7 +449,7 @@ Image< ElementType, Dim >::SerializeProperties(M4D::IO::OutStream &stream)
 ///////////////////////////////////////////////////////////////////////////////
 template< typename ElementType, unsigned Dim >
 void
-Image< ElementType, Dim >::SerializeData(M4D::IO::OutStream &stream)
+Image< ElementType, Dim >::SerializeData(M4D::IO::OutStream &stream) const
 {
 	// actual data
 	PointType stride;
@@ -459,19 +459,26 @@ Image< ElementType, Dim >::SerializeData(M4D::IO::OutStream &stream)
 
 	M4D::IO::DataBuff buff;
 
+	D_PRINT("SerializeData begin");
 	// note: this expects image that represent the WHOLE buffer NOT only window
 	switch(this->GetDimension())
 	{
 	case 3:
-		for( uint32 i = 0; i < size[2]; i++ ) 
+		for( register uint32 i = 0; i < size[2]; i++ ) 
 		{
-		    buff.data = (void*) pointer;
-		    buff.len = size[0] * size[1] * sizeof( ElementType);// whole slice
-		    stream.PutDataBuf( buff);
-		
-		    pointer += stride[2]; // move on next slice
+			for( register uint32 j = 0; j < size[1]; j++ ) 
+			{
+			    buff.data = (void*) pointer;
+			    buff.len = size[0] * sizeof( ElementType);	// 1 row
+			    stream.PutDataBuf( buff);
+			
+			    D_PRINT(j << "th row of " << i <<"th slice");
+			    pointer += stride[1]; // move on next row
+			}
 		}
 	}
+	
+	D_PRINT("SerializeData done");
 }
 	
 ///////////////////////////////////////////////////////////////////////////////
@@ -485,20 +492,27 @@ Image< ElementType, Dim >::DeSerializeData(M4D::IO::InStream &stream)
 
 	ElementType *pointer = GetPointer( size, stride );
 
+	D_PRINT("DeSerializeData begin");
 	M4D::IO::DataBuff buff;
 	// note: this expects image that represent the WHOLE buffer NOT only window
 	switch(this->GetDimension())
 	{
 	case 3:
-		for( uint32 i = 0; i < size[2]; i++ ) 
+		for( register uint32 i = 0; i < size[2]; i++ ) 
 		{
-		    buff.data = (void*) pointer;
-		    buff.len = size[0] * size[1] * sizeof( ElementType);// whole slice
-		    stream.GetDataBuf( buff);
-		
-		    pointer += stride[2]; // move on next slice
+			for( register uint32 j = 0; j < size[1]; j++ ) 
+			{
+			    buff.data = (void*) pointer;
+			    buff.len = size[0] * sizeof( ElementType); // 1 row
+			    stream.GetDataBuf( buff);
+			
+			    pointer += stride[1]; // move on next slice
+			    
+			    D_PRINT(j << "th row of " << i <<"th slice");
+			}
 		}
-	}	
+	}
+	D_PRINT("DeSerializeData done");
 }
 
 ///////////////////////////////////////////////////////////////////////////////

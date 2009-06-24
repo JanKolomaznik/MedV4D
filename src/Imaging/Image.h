@@ -223,7 +223,7 @@ public:
 	
 	void SerializeClassInfo(M4D::IO::OutStream &stream);
 	void SerializeProperties(M4D::IO::OutStream &stream);
-	void SerializeData(M4D::IO::OutStream &stream);
+	void SerializeData(M4D::IO::OutStream &stream) const;
 	void DeSerializeData(M4D::IO::InStream &stream);	
 	//void DeSerializeProperties(M4D::IO::InStream &stream);
 
