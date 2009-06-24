@@ -48,6 +48,7 @@ class Server
     M4D::Imaging::AbstractPipeFilter *m_filter;
     iRemoteFilterProperties *m_props;
     M4D::Imaging::ConnectionInterface *m_connWithOutputDataSet;
+    M4D::Imaging::ConnectionInterface *_inputConnection;
     M4D::Imaging::PipelineContainer m_pipeLine;
     
     asio::error_code _error;

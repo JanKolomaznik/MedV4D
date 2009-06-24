@@ -18,7 +18,7 @@ using namespace M4D::RemoteComputing;
 using namespace M4D::Imaging;
 using namespace M4D::IO;
 
-#define ONLY_1_ACCEPT 1
+//#define ONLY_1_ACCEPT 1
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -65,9 +65,6 @@ void Server::Accept(void)
 	} catch (asio::system_error &e) {
 		LOG( "asio::system_error: " << e.what() );
 		
-		if(m_socket_.is_open())
-			m_socket_.close();
-		
 		if(e.code() == asio::error::eof )
 		{
 			OnClientDisconnected();
@@ -79,6 +76,9 @@ void Server::Accept(void)
 	} catch( ... ) {
 		LOG( "UNKNOWN exception in Server::EndPrimaryHeaderRead");
 	}
+	
+	if(m_socket_.is_open())
+		m_socket_.close();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -131,11 +131,22 @@ void Server::CreatePipeline(void) {
 	// set starting by message
 	m_filter->SetUpdateInvocationStyle(Imaging::AbstractPipeFilter::UIS_ON_CHANGE_BEGIN);
 	m_pipeLine.AddFilter(m_filter);
+	
+	// create and connect created output dataSet
+	m_connWithOutputDataSet = &m_pipeLine.MakeOutputConnection( *m_filter, 0,
+			true);
+
+	// add message listener to be able catch execution done or failed messages
+	m_connWithOutputDataSet->SetMessageHook(MessageReceiverInterface::Ptr(new ExecutionDoneCallback(this)) );
+	
+	// create input connection
+	_inputConnection = &m_pipeLine.MakeInputConnection( *m_filter, 0, false);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void Server::ReadDataSet(void) {
+void Server::ReadDataSet(void) 
+{
 	InStream stream(&netAccessor_);
 
 	// create the dataSet
@@ -143,15 +154,7 @@ void Server::ReadDataSet(void) {
 	AbstractDataSet::Ptr inputDataSet = DataSetFactory::DeserializeDataset(stream);
 	D_PRINT("done");
 	
-	// connect it to pipeline
-	m_pipeLine.MakeInputConnection( *m_filter, 0, inputDataSet);
-
-	// create and connect created output dataSet
-	m_connWithOutputDataSet = &m_pipeLine.MakeOutputConnection( *m_filter, 0,
-			true);
-
-	// add message listener to be able catch execution done or failed messages
-	m_connWithOutputDataSet->SetMessageHook(MessageReceiverInterface::Ptr(new ExecutionDoneCallback(this)) );
+	_inputConnection->PutDataset(inputDataSet);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -170,6 +173,12 @@ void Server::ReadFilterProperties(void) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void Server::OnExecutionDone(void) {
+	// save DS to file
+	{
+		M4D::IO::FOutStream outStr("out.mv4d");		
+		DataSetFactory::SerializeDataset(
+				outStr, m_connWithOutputDataSet->GetDataset());
+	}
 	// send resulting dataSet back
 	uint8 result = (eRemoteComputationResult) OK;
 	OutStream stream(&netAccessor_);
