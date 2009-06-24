@@ -16,30 +16,30 @@ TARGETS=	main\
 MOCINPUT=	mainWindow.h
 
 RCCINPUT=	mainWindow.qrc
+########################################
 
-M4DLIBS=	../../lib/libm4dWidgets.a\
-		../../lib/libvtkIntegration.a\
-		../../lib/libbackendForDICOM.a\
-		../../lib/libImaging.a\
-		../../lib/libcommon.a
+#Name of target
+OUTPUTNAME=	$(NAME)
+OUTPUTDIR=	../../executables/$(CONF)
+OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
+TMP_DIR=	../../tmp/$(CONF)/$(NAME)
+
+M4DLIBS=	-lm4dWidgets\
+		-lvtkIntegration\
+		-lbackendForDICOM\
+		-lImaging\
+		-lcommon
 
 LIBS=		$(M4DLIBS)\
 		$(DCMTKLIBS)\
 		$(VTKLIBS)\
 		$(QTLIBS)\
-		-lboost_thread \
+		-lboost_thread-mt \
 		-lboost_filesystem \
 		-lGLU
-########################################
 
-#Name of target
-OUTPUTNAME=	$(NAME)
-OUTPUTDIR=	../../executables
-OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
-TMP_DIR=	../../tmp/$(NAME)
-
-LIBDIRS=	-L$(srcTop)/lib\
-			$(QTLibDirs)\
+LIBDIRS=	-L$(srcTop)/lib/$(CONF)\
+		$(QTLibDirs)\
 			-L$(DCMTK_LIB_PATH)\
 			-L$(VTKLibsDir)
 
@@ -53,55 +53,50 @@ INCLUDES= -I$(srcTop)\
 MOCOUTPUT=      $(addprefix $(TMP_DIR)/moc_, $(MOCINPUT:.h=.cpp) )
 
 
-SRC_FILES=	$(addsuffix .cpp, $(TARGETS) ) 
+SRC_FILES=	$(addsuffix .cpp, $(TARGETS) )
 OBJ_FILES=	$(addprefix $(TMP_DIR)/,   $(addprefix rcc_, $(RCCINPUT:.qrc=.o ) ) $(addprefix moc_, $(MOCINPUT:.h=.o) ) $(addsuffix .o, $(TARGETS) ) )
 
 
 .PHONY: all
-all:		tmpdir dep Common Imaging DICOM VTKInt GUI $(OUTPUT)
+all:		outDir tmpdir dep Common Imaging DICOM VTKInt GUI $(OUTPUT)
 
-	
+
 GUI:
-	$(MAKE) --directory=$(srcTop)/GUI/widgets
-	
+	$(MAKE) --directory=$(srcTop)/GUI/widgets all
+
 VTKInt:
-	$(MAKE) --directory=$(srcTop)/vtkIntegration
-	
+	$(MAKE) --directory=$(srcTop)/vtkIntegration all
+
 DICOM:
-	$(MAKE) --directory=$(srcTop)/backendForDICOM
-	
+	$(MAKE) --directory=$(srcTop)/backendForDICOM all
+
 Imaging:
-	$(MAKE) --directory=$(srcTop)/Imaging
-	
+	$(MAKE) --directory=$(srcTop)/Imaging all
+
 Common:
-	$(MAKE) --directory=$(srcTop)/common
-	
+	$(MAKE) --directory=$(srcTop)/common all
+
 ## CLEANING ##################################
-	
+
 GUICLEAN:
 	$(MAKE) --directory=$(srcTop)/GUI/widgets clean
-	
+
 DICOMCLEAN:
 	$(MAKE) --directory=$(srcTop)/backendForDICOM clean
-	
+
 ImagingCLEAN:
 	$(MAKE) --directory=$(srcTop)/Imaging clean
-	
+
 CommonCLEAN:
 	$(MAKE) --directory=$(srcTop)/common clean
 
 ##############################################
-		
-
-.PHONY: tmpdir
-tmpdir:		
-		$(MKDIR) $(TMP_DIR) 2>/dev/null || true
 
 .PHONY: build
 build:		cleanall all
 
 .PHONY: dep
-dep:		
+dep:
 		$(CXX) $(INCLUDES) $(CDEPFLAGS) $(SRC_FILES) | \
 		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
 
@@ -111,18 +106,18 @@ $(TMP_DIR)/moc_%.cpp:   %.h
 $(TMP_DIR)/rcc_%.cpp:   $(RCCINPUT)
 		$(RCC) -name $(*F) $< -o $@
 
-$(TMP_DIR)/%.o:	%.cpp	
+$(TMP_DIR)/%.o:	%.cpp
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 $(TMP_DIR)/%.o:	$(TMP_DIR)/%.cpp
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 -include $(DEP_FILE)
-		
-$(OUTPUT):	$(OBJ_FILES) $(M4DLIBS)
-		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
+
+$(OUTPUT):	$(OBJ_FILES)
+		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT)
 
 .PHONY: clean
-clean:	DICOMCLEAN #ImagingCLEAN CommonCLEAN GUICLEAN 
+clean:	DICOMCLEAN #ImagingCLEAN CommonCLEAN GUICLEAN
 		$(RM) $(OBJ_FILES) $(MOCOUTPUT) $(addprefix $(TMP_DIR)/rcc_, $(RCCINPUT:.qrc=.cpp ) ) $(DEP_FILE)
 		$(RM) $(OUTPUT)

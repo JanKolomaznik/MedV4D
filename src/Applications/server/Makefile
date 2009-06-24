@@ -112,6 +112,6 @@ $(OUTPUT):	$(OBJ_FILES)
 		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
 
 .PHONY: clean
-clean: libSPUPartCLEAN PPEStufCLEAN serverRCPartCLEAN ImagingCLEAN CommonCLEAN
+clean: libSPUPartCLEAN PPEStufCLEAN serverRCPartCLEAN #ImagingCLEAN CommonCLEAN
 		$(RM) $(TMP_DIR)/*.o $(DEP_FILE)
 		$(RM) $(OUTPUT)
