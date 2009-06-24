@@ -25,24 +25,6 @@ RemoteFilter< InputImageType, OutputImageType >
   , netAccessor_(m_socket_)
 {
 	this->_name = "Remote Filter";
-	
-	try {
-		Connect();
-	
-		SendCommand(CREATE);
-	
-		IO::OutStream stream(&netAccessor_);
-		properties_->SerializeClassInfo(stream);
-	} catch (asio::system_error &e) {		
-		if(e.code() == asio::error::eof )
-		{
-			LOG("Server disconnected ...");
-		}
-		else
-		{
-			LOG("ASIO system exception, code" << e.code());
-		}
-	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -77,8 +59,31 @@ RemoteFilter< InputImageType, OutputImageType >::PrepareOutputDatasets(void)
 		this->SetOutputImageSize( minimums, maximums, voxelExtents );
 	}
 	
-	SendCommand(DATASET);
-	SendDataSet();
+	try {
+		// discart old connection
+		Disconnect();
+		
+		// create new
+		Connect();
+	
+		SendCommand(CREATE);
+	
+		IO::OutStream stream(&netAccessor_);
+		properties_->SerializeClassInfo(stream);
+		
+		SendCommand(DATASET);
+		SendDataSet();
+			
+	} catch (asio::system_error &e) {		
+		if(e.code() == asio::error::eof )
+		{
+			LOG("Server disconnected ...");
+		}
+		else
+		{
+			LOG("ASIO system exception, code" << e.code());
+		}
+	}	
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -141,6 +146,15 @@ RemoteFilter< InputImageType, OutputImageType >::Connect(void)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+template< typename InputImageType, typename OutputImageType >
+void
+RemoteFilter< InputImageType, OutputImageType >::Disconnect()
+{
+	if(m_socket_.is_open())
+		m_socket_.close();
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 template< typename InputImageType, typename OutputImageType >
 void
@@ -184,7 +198,8 @@ RemoteFilter< InputImageType, OutputImageType >::RecieveDataSet(void)
 			break;
 		default:
 			ASSERT(false);
-	}	
+	}
+	return false;	// toremove WARNING about no val returning
 }
 
 ///////////////////////////////////////////////////////////////////////////////

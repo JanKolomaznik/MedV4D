@@ -1,8 +1,8 @@
 /**
- * @ingroup cellbe 
- * @author Vaclav Klecanda 
- * @file netStream.h 
- * @{ 
+ * @ingroup cellbe
+ * @author Vaclav Klecanda
+ * @file netStream.h
+ * @{
  **/
 
 #ifndef NETSTREAM_H
@@ -32,10 +32,10 @@ class NetAccessor : public IO::MediumAccessor
 public:
 	NetAccessor(asio::ip::tcp::socket &socket);
 	~NetAccessor();
-	
+
 	void PutData(const void *data, size_t length);
 	void GetData(void *data, size_t length);
-	bool eof() { return false; }
+	bool eof() { return ! m_socket_.is_open(); }
 protected:
 	asio::ip::tcp::socket &m_socket_;
 };

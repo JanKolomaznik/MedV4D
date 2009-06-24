@@ -81,6 +81,7 @@ private:
 	NetAccessor netAccessor_;
 	
 	void Connect(void);
+	void Disconnect();
 	void SendDataSet(void);
 	bool RecieveDataSet(void);
 	
