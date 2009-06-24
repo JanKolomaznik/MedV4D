@@ -53,9 +53,9 @@ ITKFilter<InputImageType, OutputImageType>::SetOutImageSize(
 	typename OutputImageType::PointType strides;
 	typename OutputImageType::SizeType size;
 	size_t sizeOfData = 1;	// size in elements (not in bytes) 
-	const OutputImageType &outMedImage = this->GetOutputImage();
+	//const OutputImageType &outMedImage = this->GetOutputImage();
 	typename OutputImageType::Element *dataPointer = 
-		outMedImage.GetPointer(size, strides);
+		this->out->GetPointer(size, strides);
 	// count num of elems
 	for( uint32 i=0; i< InputImageType::Dimension; i++)
 		sizeOfData *= size[i];
@@ -64,6 +64,8 @@ ITKFilter<InputImageType, OutputImageType>::SetOutImageSize(
 			dataPointer, 
 			(typename ITKInputImageType::PixelContainer::ElementIdentifier) sizeOfData,
 			false);
+	
+	outITKImage->Allocate();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -120,14 +122,13 @@ void
 ITKFilter<InputImageType, OutputImageType>
 	::SetupInITKImageAccordingInMedevedImage(void)
 {
-	const InputImageType &inMedImage = *this->in;
 	typename InputImageType::PointType strides;
 	typename InputImageType::SizeType size;
 	size_t sizeOfData = 1;	// size in elements (not in bytes) 
 	typename InputImageType::Element *dataPointer = 
-		inMedImage.GetPointer(size, strides);
+		this->in->GetPointer(size, strides);
 	// count num of elems
-	for( uint32 i=0; i< InputImageType::Dimension; i++)
+	for( uint32 i=0; i<InputImageType::Dimension; i++)
 		sizeOfData *= size[i];
 	
 	inITKImage->GetPixelContainer()->SetImportPointer(
@@ -149,13 +150,13 @@ ITKFilter<InputImageType, OutputImageType>
 	// copy info from input medved image into input ITK image
 	for(uint32 i=0; i<InputImageType::Dimension; i++)
 	{
-		regionSize[i] = inMedImage.GetDimensionExtents(i).maximum -
-			inMedImage.GetDimensionExtents(i).minimum;
-		regionIndex[i] = inMedImage.GetDimensionExtents(i).minimum;
-		spacing[i] = inMedImage.GetDimensionExtents(i).elementExtent;		
+		regionSize[i] = this->in->GetDimensionExtents(i).maximum -
+			this->in->GetDimensionExtents(i).minimum;
+		regionIndex[i] = this->in->GetDimensionExtents(i).minimum;
+		spacing[i] = this->in->GetDimensionExtents(i).elementExtent;		
 	}
 	
-	inITKImage->SetBufferedRegion( inITKImage->GetLargestPossibleRegion() );
+	inITKImage->SetRegions(inITKImage->GetLargestPossibleRegion());
 }
 ///////////////////////////////////////////////////////////////////////////////
 }
