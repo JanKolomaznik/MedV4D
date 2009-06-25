@@ -55,6 +55,17 @@ SpeedTermSolver
 	unsigned int neighborCount = 1 << DIM;
 	
 	typedef float32 RealType;
+	
+	TContinuousIndexDouble cdx;
+	for (unsigned i = 0; i < DIM; ++i)
+	    {
+	    cdx[i] = static_cast<double>(neighb.GetNeighborhood().m_currIndex[i]) - index[i];
+	    }
+	
+	if(! neighb.GetNeighborhood().IsWithinImageContinuos(cdx))
+	{
+		return GetSpeedInPoint(neighb.GetCenterPixel());
+	}
 
 	  /**
 	   * Compute base index = closet index below point
@@ -69,20 +80,20 @@ SpeedTermSolver
 	    // The following "if" block is equivalent to the following line without
 	    // having to call floor.
 	    //    baseIndex[dim] = (long) vcl_floor(index[dim] );
-	    if (index[dim] >= 0.0)
+	    if (cdx[dim] >= 0.0)
 	      {
-	      baseIndex[dim] = (long) index[dim];
+	      baseIndex[dim] = (long) cdx[dim];
 	      }
 	    else
 	      {
-	      tIndex = (long) index[dim];
-	      if (double(tIndex) != index[dim])
+	      tIndex = (long) cdx[dim];
+	      if (double(tIndex) != cdx[dim])
 	        {
 	        tIndex--;
 	        }
 	      baseIndex[dim] = tIndex;
 	      }
-	    distance[dim] = index[dim] - double( baseIndex[dim] );
+	    distance[dim] = cdx[dim] - double( baseIndex[dim] );
 	    }
 	  
 	  /**
@@ -120,16 +131,19 @@ SpeedTermSolver
 	      }
 	    
 	    // workaround to guarantee index coord vals be from <-1,1> interval
-	    for(uint32 i=0; i<DIM; i++)
-	    {
-	    	if(neighIndex[i] < -1) neighIndex[i] = -1;
-	    	if(neighIndex[i] > 1) neighIndex[i] = 1;
-	    }
+//	    for(uint32 i=0; i<DIM; i++)
+//	    {
+//	    	if(neighIndex[i] < -1) neighIndex[i] = -1;
+//	    	if(neighIndex[i] > 1) neighIndex[i] = 1;
+//	    }
 	    
 	    // get neighbor value only if overlap is not zero
 	    if( overlap )
 	      {
-	      value += overlap * static_cast<RealType>( GetSpeedInPoint(neighb.GetPixel(neighIndex)) );
+	    	TOffset o = neighIndex - neighb.GetNeighborhood().m_currIndex;
+	    	float pixel = GetSpeedInPoint(neighb.GetPixel(o));
+	    		//D_PRINT("Speed at" << neighIndex << "=" << pixel);
+	      value += overlap * static_cast<RealType>( pixel );
 	      totalOverlap += overlap;
 	      }
 

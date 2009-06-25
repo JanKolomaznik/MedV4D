@@ -100,10 +100,13 @@ public:
 	bool IsWithinImage(const TIndex &pos);
 	bool IsWithinNeigbourhood(const TIndex &pos);
 	TIndex m_currIndex;
+	
+	bool IsWithinImageContinuos( const TContinuousIndexDouble & index ) const;
 
 	void Print();
 #ifndef FOR_CELL
 	void PrintImage(std::ostream &s);
+	void PrintImageToFile(const char *fileName);
 #endif
 	
 	void HowMuchCrossesBoundary(TOffset &howMuch);

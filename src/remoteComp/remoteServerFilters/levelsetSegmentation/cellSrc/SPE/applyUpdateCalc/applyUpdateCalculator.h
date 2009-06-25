@@ -20,7 +20,7 @@ public:
 	typedef GETRemoteArrayCell<TPixelValue, REMOTEARRAY_BUF_SIZE> TUpdateBufferArray;	
 	typedef SparseFieldLayer<SparseFieldLevelSetNode> MyLayerType;
 	
-#define LocalNodeStoreSize 128
+#define LocalNodeStoreSize 64
 	typedef FixedObjectStoreCell<SparseFieldLevelSetNode, LocalNodeStoreSize> TObjectStore; 
 	
 	void UpdateActiveLayerValues(TimeStepType dt,

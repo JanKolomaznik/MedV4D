@@ -54,6 +54,46 @@ NeighborhoodCell<PixelType>
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+template<typename PixelType>
+bool
+NeighborhoodCell<PixelType>
+::IsWithinImageContinuos( const TContinuousIndexDouble & index ) const
+{
+	  if( (index[0] >= m_imageProps->region.offset[0] )
+		&& (index[0] <= (m_imageProps->region.offset[0] + m_imageProps->region.size[0] -1))
+		
+	    && (index[1] >= m_imageProps->region.offset[1] )
+	    && (index[1] <= (m_imageProps->region.offset[1] + m_imageProps->region.size[1] -1))
+	    
+	    && (index[2] >= m_imageProps->region.offset[2] )
+	    && (index[2] <= (m_imageProps->region.offset[2] + m_imageProps->region.size[2] -1)) 
+	    )
+		  return true;
+	  else
+		  return false;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template<typename PixelType>
+bool
+NeighborhoodCell<PixelType>::IsWithinNeigbourhood(const TIndex &pos)
+{
+		if( 
+				(pos[0] >= (m_currIndex[0] - RADIUS))
+		&& 		(pos[0] <= (m_currIndex[0] + RADIUS)) 
+		&&		(pos[1] >= (m_currIndex[1] - RADIUS))
+		&& 		(pos[1] <= (m_currIndex[1] + RADIUS))
+		&&		(pos[2] >= (m_currIndex[2] - RADIUS))
+		&& 		(pos[2] <= (m_currIndex[2] + RADIUS))
+		)
+		{
+			return true;
+		}
+		else			
+			return false;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 #ifdef FOR_CELL
 template<typename PixelType>
 void
@@ -183,7 +223,7 @@ NeighborhoodCell<PixelType>::SetCenterPixel(PixelType val)
 //		*begin = val;
 #endif
 	
-	D_PRINT("SET center: " << val);
+	//D_PRINT("SET center: " << val);
 	_dirtyElems |= (1 << (m_size/2));	// set dirty flag
 	// change the buffer as well
 	m_buf[traslationTable_[static_cast<uint32>(m_size/2)]] = val;	
@@ -349,25 +389,6 @@ NeighborhoodCell<PixelType>::SaveChanges()
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PixelType>
-bool
-NeighborhoodCell<PixelType>::IsWithinNeigbourhood(const TIndex &pos)
-{
-		if( 
-				(pos[0] >= (m_currIndex[0] - RADIUS))
-		&& 		(pos[0] <= (m_currIndex[0] + RADIUS)) 
-		&&		(pos[1] >= (m_currIndex[1] - RADIUS))
-		&& 		(pos[1] <= (m_currIndex[1] + RADIUS))
-		&&		(pos[2] >= (m_currIndex[2] - RADIUS))
-		&& 		(pos[2] <= (m_currIndex[2] + RADIUS))
-		)
-		{
-			return true;
-		}
-		else			
-			return false;
-}
-///////////////////////////////////////////////////////////////////////////////
-template<typename PixelType>
 void
 NeighborhoodCell<PixelType>::PropagateChangesWithinSavedItem(Self& saved)
 {
@@ -524,11 +545,19 @@ NeighborhoodCell<PixelType>::PrintImage(std::ostream &s)
 			for(uint32 k=0; k<m_imageProps->region.size[2]; k++)
 			{
 				ind[0] = i; ind[1] = j; ind[2] = k;
-				data = ComputeImageDataPointer(ind);
-				s << "[" << ind[0] << "," << ind[1] << "," << ind[2] << "]"  << "= " << ((int32)*data) << std::endl;
+				data = (PixelType *)ComputeImageDataPointer(ind).Get64();
+				s << "[" << ind[0] << "," << ind[1] << "," << ind[2] << "]"  << "= " << (float32)(*data) << std::endl;
 			}
 		}
 	}
+}
+template<typename PixelType>
+void
+NeighborhoodCell<PixelType>::PrintImageToFile(const char *fileName)
+{
+	std::ofstream s(fileName);
+	PrintImage(s);
+	s.close();
 }
 #endif //FOR_CELL
 ///////////////////////////////////////////////////////////////////////////////

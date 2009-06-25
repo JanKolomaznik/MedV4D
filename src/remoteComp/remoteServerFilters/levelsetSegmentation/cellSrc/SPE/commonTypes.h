@@ -36,6 +36,7 @@ typedef MyVector<float32> TNeighborhoodScales;
 typedef MyVector<uint32> TSize;
 typedef MyVector<uint32> TStrides;
 typedef MyVector<float32> TContinuousIndex;
+typedef MyVector<float64> TContinuousIndexDouble;
 typedef MyVector<float32> TSpacing;
 
 void ComputeStridesFromSize(const TSize &size, TStrides &strides);

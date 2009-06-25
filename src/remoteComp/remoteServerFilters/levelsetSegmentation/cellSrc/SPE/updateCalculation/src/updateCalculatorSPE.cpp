@@ -57,12 +57,12 @@ UpdateCalculatorSPE
 {
 	MIN_NORM = 1.0e-6;
 
-	double minSpacing = 1000000;//itk::NumericTraits<double>::max();
-	for (uint8 i=0; i<DIM; i++)
-	{
-		minSpacing = vnl_math_min(minSpacing, (double) m_Conf->valueImageProps.spacing[i]);
-	}
-	MIN_NORM *= minSpacing;
+//	double minSpacing = 1000000;//itk::NumericTraits<double>::max();
+//	for (uint8 i=0; i<DIM; i++)
+//	{
+//		minSpacing = vnl_math_min(minSpacing, (double) m_Conf->valueImageProps.spacing[i]);
+//	}
+//	MIN_NORM *= minSpacing;
 
 	UpdateFunctionProperties();
 }
@@ -138,9 +138,10 @@ UpdateCalculatorSPE
 		{
 			offset[i] = (offset[i] * centerValue) / (norm_grad_phi_squared + MIN_NORM);
 		}
-
-		m_updateBufferArray.push_back( 
-				m_diffFunc.ComputeUpdate(m_outIter, m_featureIter, &m_globalData, offset) );
+		float diff = m_diffFunc.ComputeUpdate(m_outIter, m_featureIter, &m_globalData, offset);
+		//D_PRINT("diff:" << diff);
+		
+		m_updateBufferArray.push_back( diff );
 	}
 }
 
@@ -241,7 +242,7 @@ UpdateCalculatorSPE::CalculateChange()
 
 	m_updateBufferArray.WaitForTransfer();
 #endif
-	
+	 D_PRINT("timestep:" << timeStep);
 	return timeStep;
 }
 
