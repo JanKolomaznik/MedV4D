@@ -58,7 +58,6 @@ ImageFactory::SerializeImage( M4D::IO::OutStream &stream, const Image< ElementTy
 
 	stream.Put<uint32>( DUMP_HEADER_END_MAGIC_NUMBER );
 	
-	D_PRINT("Starting serializing actual data ...")
 //	uint32 cntr = 0;
 //#define SIZE_X (image.GetDimensionExtents(0).maximum - image.GetDimensionExtents(0).minimum)
 //
@@ -74,8 +73,6 @@ ImageFactory::SerializeImage( M4D::IO::OutStream &stream, const Image< ElementTy
 //	}
 	image.SerializeData(stream);
 	
-
-	D_PRINT("actual data serialization DONE...")
 	stream.Put<uint32>( DUMP_END_MAGIC_NUMBER );
 }
 

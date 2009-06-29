@@ -21,8 +21,20 @@ GetEndianess( void)
     return End_BIG_ENDIAN;
 }
 
+union Uswap2bytes {
+	uint16 u16;
+	uint8  u8[2];
+	Uswap2bytes(uint16 x) { u16 = x; }
+	void Swap()
+	{
+		uint8 tmp = u8[0];
+		u8[0] = u8[1];
+		u8[1] = tmp;
+	}
+};
+
 inline void Swap2Bytes(uint16 &what)
-{
+{	
 	uint16 tmp = what;
 	uint8 *ptrSrc = (uint8*)&tmp;
 	uint8 *ptrDest = (uint8*)&what;

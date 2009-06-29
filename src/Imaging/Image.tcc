@@ -14,6 +14,8 @@
 	#define WARNING_4355_DISABLED
 #endif
 
+#define DEBUG_DATASET_SERIALIZATION 12
+
 namespace M4D
 {
 namespace Imaging
@@ -459,7 +461,7 @@ Image< ElementType, Dim >::SerializeData(M4D::IO::OutStream &stream) const
 
 	M4D::IO::DataBuff buff;
 
-	D_PRINT("SerializeData begin");
+	DL_PRINT(DEBUG_DATASET_SERIALIZATION, "SerializeData begin");
 	// note: this expects image that represent the WHOLE buffer NOT only window
 	switch(this->GetDimension())
 	{
@@ -472,13 +474,13 @@ Image< ElementType, Dim >::SerializeData(M4D::IO::OutStream &stream) const
 			    buff.len = size[0] * sizeof( ElementType);	// 1 row
 			    stream.PutDataBuf( buff);
 			
-			    D_PRINT(j << "th row of " << i <<"th slice");
+			    DL_PRINT(DEBUG_DATASET_SERIALIZATION, j << "th row of " << i <<"th slice");
 			    pointer += stride[1]; // move on next row
 			}
 		}
 	}
 	
-	D_PRINT("SerializeData done");
+	DL_PRINT(DEBUG_DATASET_SERIALIZATION, "SerializeData done");
 }
 	
 ///////////////////////////////////////////////////////////////////////////////
@@ -492,7 +494,7 @@ Image< ElementType, Dim >::DeSerializeData(M4D::IO::InStream &stream)
 
 	ElementType *pointer = GetPointer( size, stride );
 
-	D_PRINT("DeSerializeData begin");
+	DL_PRINT(DEBUG_DATASET_SERIALIZATION, "DeSerializeData begin");
 	M4D::IO::DataBuff buff;
 	// note: this expects image that represent the WHOLE buffer NOT only window
 	switch(this->GetDimension())
@@ -504,15 +506,15 @@ Image< ElementType, Dim >::DeSerializeData(M4D::IO::InStream &stream)
 			{
 			    buff.data = (void*) pointer;
 			    buff.len = size[0] * sizeof( ElementType); // 1 row
-			    stream.GetDataBuf( buff);
+			    stream.GetDataBuf<ElementType>( buff);
 			
 			    pointer += stride[1]; // move on next slice
 			    
-			    D_PRINT(j << "th row of " << i <<"th slice");
+			    DL_PRINT(DEBUG_DATASET_SERIALIZATION, j << "th row of " << i <<"th slice");
 			}
 		}
 	}
-	D_PRINT("DeSerializeData done");
+	DL_PRINT(DEBUG_DATASET_SERIALIZATION, "DeSerializeData done");
 }
 
 ///////////////////////////////////////////////////////////////////////////////

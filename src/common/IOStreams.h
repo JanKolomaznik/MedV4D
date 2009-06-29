@@ -28,9 +28,7 @@ struct DataBuff
   size_t len;
 };
 
-class DataBuffs : public std::vector< DataBuff >
-{
-};
+typedef std::vector< DataBuff > DataBuffs;
 
 /**
  * Interface that provides access to dataSet. It can use network
@@ -66,8 +64,29 @@ class InStream
 public:
 	InStream(MediumAccessor *accessor);
 
-	void GetDataBuf( DataBuffs &bufs);
-	void GetDataBuf( DataBuff &buf);
+	template< typename T>
+	void GetDataBuf( DataBuffs &bufs)
+	{
+		for( DataBuffs::const_iterator it=bufs.begin(); it != bufs.end(); it++)
+		{
+			accessor_->GetData(it->data, it->len);
+			if(needSwapBytes_)
+			{
+				SwapDataBuf<T>(*it);
+			}
+		}
+	}
+	
+	template< typename T>
+	void GetDataBuf( DataBuff &buf)
+	{
+		accessor_->GetData(buf.data, buf.len);
+			
+		if(needSwapBytes_)
+		{
+			SwapDataBuf<T>(buf);
+		}
+	}
 
 	template< typename T>
 	void Get( T &what)
@@ -82,6 +101,15 @@ public:
 	eof()
 	{ return accessor_->eof(); }
 protected:
+	template< typename T>
+	void SwapDataBuf( DataBuff &buf)
+	{
+		register uint32 bufSize = buf.len / sizeof(T);
+		T *data = (T *) buf.data;
+		for(register uint32 i=0; i<bufSize; i++)
+			SwapBytes<T>(data[i]);
+	}
+	
 	uint8 needSwapBytes_;
 	MediumAccessor *accessor_;
 };
