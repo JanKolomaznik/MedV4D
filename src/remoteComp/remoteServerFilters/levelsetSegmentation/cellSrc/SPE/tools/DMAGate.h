@@ -29,8 +29,9 @@ public:
 #ifdef DEBUG_MFC
 		D_PRINT("PUT: LA=%p, EA=0x%llx, size=%ld, tag=%u\n", src,
 						dest.Get64(), size, tag);		
-		CheckTransferSize(size);
 #endif
+		D_COMMAND(CheckAlign(dest, src, size));		
+		D_COMMAND(CheckTransferSize(size));
 		D_COMMAND(CheckTag(tag));
 		mfc_put(src, dest.Get64(), size, tag, 0, 0);
 	}
@@ -46,8 +47,8 @@ public:
 				(long unsigned int) src, dest, listSize, listSize
 						* sizeof(mfc_list_element_t), tag);
 		PrintListContent(list, listSize, true);
-		CheckLSListAddress(list);
 #endif
+		D_COMMAND(CheckLSListAddress(list));
 		D_COMMAND(CheckTag(tag));
 		mfc_getl(dest, src, list, listSize * sizeof(mfc_list_element_t), tag,
 				0, 0);
@@ -63,8 +64,8 @@ public:
 						locaBuf, (long unsigned int) dest, listSize, listSize
 								* sizeof(mfc_list_element_t), tag);
 		PrintListContent(list, listSize, false);
-		CheckLSListAddress(list);
-#endif
+#endif		
+		D_COMMAND(CheckLSListAddress(list));
 		D_COMMAND(CheckTag(tag));
 		mfc_putl(locaBuf, dest, list, listSize * sizeof(mfc_list_element_t), tag,
 				0, 0);
@@ -76,17 +77,12 @@ public:
 	{
 #ifdef DEBUG_MFC
 		D_PRINT("GET: src=%p, dest=%p, size=%ld, tag=%u\n", (void*)src.Get64(),
-				dest, size, tag);
-		CheckTransferSize(size);
-		CheckAlign(src, dest, size);		
+				dest, size, tag);		
 #endif
 		D_COMMAND(CheckTag(tag));
+		D_COMMAND(CheckTransferSize(size));
+		D_COMMAND(CheckAlign(src, dest, size));		
 		mfc_get(dest, src.Get64(), size, tag, 0, 0);
-//#if DEBUG_MFC
-//		// When debugging we can force the transfer to complete immediately to keep things simple
-//		mfc_write_tag_mask(1 << tag);
-//		mfc_read_tag_status_all();
-//#endif
 	}
 
 	static void ReturnTag(uint32 tag)
@@ -123,33 +119,33 @@ private:
 		if ( ! ( (size == 1) || (size == 2) || (size == 4) || (size == 8)
 				|| ((size % 16) == 0) ))
 		{
-			D_PRINT("Wrong trasfer size!!");
+			D_PRINT("Wrong trasfer size!!\n");
 			ok = false;
 		}
 #define MAX_TRANSFER_SIZE (1024 * 16)	// 16 kB
 		if (size > MAX_TRANSFER_SIZE)
 		{
-			D_PRINT("Trasfer size too long!!");
+			D_PRINT("Trasfer size too long!!\n");
 			ok = false;
 		}
 		return ok;
 	}
 	
-	static bool CheckAlign(Address src, void *dest, size_t size)
+	static bool CheckAlign(Address EA, void *LA, size_t size)
 	{
 		bool ok = true;
 		// check aligns
-		if ( ( (size == 2) && (((uint32)dest & 0x1) != 0) ) || ( (size == 4)
-				&& (((uint32)dest & 0x3) != 0) ) || ( (size == 8)
-				&& (((uint32)dest & 0x7) != 0) ) || ( (size >= 16)
-				&& (((uint32)dest & 0xF) != 0) ))
+		if ( ( (size == 2) && (((uint32)LA & 0x1) != 0) ) || ( (size == 4)
+				&& (((uint32)LA & 0x3) != 0) ) || ( (size == 8)
+				&& (((uint32)LA & 0x7) != 0) ) || ( (size >= 16)
+				&& (((uint32)LA & 0xF) != 0) ))
 		{
-			D_PRINT("Wrong align!!");
+			D_PRINT("Wrong align!!\n");
 			ok = false;
 		}
-		if ((src.Get64() & 0x7) != ((uint32)dest & 0x7))
+		if ((EA.Get64() & 0x7) != ((uint32)LA & 0x7))
 		{
-			D_PRINT("Wrong align address tails not equal!!");
+			D_PRINT("Wrong align address tails not equal!!\n");
 			ok = false;
 		}
 		return ok;
@@ -162,7 +158,7 @@ private:
 	{
 		if (((uint32)list & 0x7) != 0)
 		{
-			D_PRINT("Wrong list address!!");
+			D_PRINT("Wrong list address!!\n");
 			return false;
 		}
 		return true;
