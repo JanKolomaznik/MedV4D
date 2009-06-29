@@ -522,7 +522,7 @@ Next step was to port the tools for SPE.
 In fact is to rewrite usage of memcpy that simulate the DMA trasfer to use real DMA transfer.
 
 \par
-Data that trasfered through DMA (DMAed) within Cell B.E. should meet size and align conditions (see \cite{programmersGuide}, Chapter 4).
+Data that are trasfered through DMA (DMAed) within Cell B.E. should meet size and align conditions (see \cite{programmersGuide}, Chapter 4).
 Data that does not meet this condition will generate BUS error.
 This condition forced that all data that are DMAed should be alocated onto aligned adresses (see objectStore.h or updateValsAllocator.h).
 
