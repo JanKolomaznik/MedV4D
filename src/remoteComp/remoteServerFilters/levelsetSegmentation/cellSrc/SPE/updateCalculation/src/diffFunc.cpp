@@ -94,6 +94,12 @@ TPixelValue ThresholdLevelSetFunc::ComputeUpdate(
 			- this->ComputePropagationTerm(featureNeib, offset, globalData)
 			//- ComputeAdvectionTerm()
 	);
+	
+//#ifdef FOR_CELL
+//	D_PRINT("result=%f\n", result);
+//#else
+//	D_PRINT("result=" << result);
+//#endif
 
 	return result;
 }

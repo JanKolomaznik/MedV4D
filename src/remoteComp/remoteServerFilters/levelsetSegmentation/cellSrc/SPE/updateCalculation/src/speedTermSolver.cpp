@@ -103,6 +103,8 @@ SpeedTermSolver
 	   */
 	  RealType value = 0;//itk::NumericTraits<RealType>::Zero;
 	  RealType totalOverlap = 0;//itk::NumericTraits<RealType>::Zero;
+	  
+	  //neighb.GetNeighborhood().Print();
 
 	  for( unsigned int counter = 0; counter < neighborCount; counter++ )
 	    {
@@ -142,7 +144,11 @@ SpeedTermSolver
 	      {
 	    	TOffset o = neighIndex - neighb.GetNeighborhood().m_currIndex;
 	    	float pixel = GetSpeedInPoint(neighb.GetPixel(o));
-	    		//D_PRINT("Speed at" << neighIndex << "=" << pixel);
+//#ifdef FOR_CELL
+//	    	D_PRINT("Speed at[%d, %d, %d]=%f\n", neighIndex[0], neighIndex[1], neighIndex[2], pixel);
+//#else	    	
+//	    	D_PRINT("Speed at" << neighIndex << "=" << pixel);
+//#endif
 	      value += overlap * static_cast<RealType>( pixel );
 	      totalOverlap += overlap;
 	      }

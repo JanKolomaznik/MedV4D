@@ -8,6 +8,8 @@ using namespace M4D::Cell;
 #define DEBUG_ALG 12
 #define DBG_LAYER_IT 12
 
+//#define DEEP_DEBUG
+
 ///////////////////////////////////////////////////////////////////////////////
 
 ApplyUpdateSPE::ApplyUpdateSPE(SharedResources *shaRes) :
@@ -84,8 +86,8 @@ ApplyUpdateSPE::ValueType ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 		m_statusNeighPreloader.Load(*_loaded);
 	}
 	
-	m_statusIter.GetNeighborhood().PrintImageToFile("statusbeforeUpdateActiveVals");
-	m_outIter.GetNeighborhood().PrintImageToFile("beforeUpdateActiveVals");
+	//m_statusIter.GetNeighborhood().PrintImageToFile("statusbeforeUpdateActiveVals");
+	//m_outIter.GetNeighborhood().PrintImageToFile("beforeUpdateActiveVals");
 
 	while (m_valueNeighPreloader.GetCurrNodesNext() != m_stepConfig->layer0End)
 	{
@@ -100,7 +102,7 @@ ApplyUpdateSPE::ValueType ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 		// list for the next iteration.
 		ProcessStatusLists(UpList, DownList);
 	}
-	m_outIter.GetNeighborhood().PrintImageToFile("afterUpdateActiveVals");
+	//m_outIter.GetNeighborhood().PrintImageToFile("afterUpdateActiveVals");
 #ifdef FOR_CELL
 	DL_PRINT(DEBUG_ALG, "\n14rms accum: %f, counter: %u\n", rms_change_accumulator, counter);
 	this->m_updateValuesIt.WaitForTransfer();
@@ -110,7 +112,7 @@ ApplyUpdateSPE::ValueType ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	DL_PRINT(DEBUG_ALG, std::endl << "14rms accum: " << rms_change_accumulator << "counter: " << counter);
 #endif
 	
-	m_statusIter.GetNeighborhood().PrintImageToFile("statusafterUpdateActiveVals");
+	//m_statusIter.GetNeighborhood().PrintImageToFile("statusafterUpdateActiveVals");
 
 	//	std::stringstream s3;
 	//		  s3 << "afterOutside" << this->m_ElapsedIterations;
@@ -225,7 +227,7 @@ void ApplyUpdateSPE::ProcessOutsideList(MyLayerType *OutsideList,
 		
 		m_statusIter.SetCenterPixel(ChangeToStatus);
 		node = OutsideList->Front();
-		D_PRINT("currnode" << "=" << node->m_Value);
+		//D_PRINT("currnode" << "=" << node->m_Value);
 		OutsideList->PopFront();
 
 #ifndef FOR_CELL
@@ -273,7 +275,7 @@ void ApplyUpdateSPE::ProcessStatusList(MyLayerType *InputList,
 				m_statusUpdatePreloader.Load(*it.Next());
 		
 		node = InputList->Front();
-		D_PRINT("currnode" << "=" << node->m_Value);
+		//D_PRINT("currnode" << "=" << node->m_Value);
 //				<< " x nigb.node=" << m_statusIter.GetNeighborhood().m_currIndex);
 		//m_statusIter.SetLocation(node->m_Value);
 		
@@ -378,9 +380,15 @@ void ApplyUpdateSPE::UpdateActiveLayerValues(TimeStepType dt,
 		m_outIter.SetNeighbourhood(m_valueNeighPreloader.GetLoaded());
 		m_statusIter.SetNeighbourhood(m_statusNeighPreloader.GetLoaded());
 		
-//		D_PRINT("node:" << currNode->m_Value);
-//		m_statusIter.GetNeighborhood().Print();
-//		m_outIter.GetNeighborhood().Print();
+#ifdef DEEP_DEBUG
+#ifdef FOR_CELL
+		D_PRINT("node:[%d,%d,%d]\n", currNode->m_Value[0], currNode->m_Value[1], currNode->m_Value[2]);
+#else
+		D_PRINT("node:" << currNode->m_Value);
+#endif
+		m_statusIter.GetNeighborhood().Print();
+		m_outIter.GetNeighborhood().Print();
+#endif
 
 		centerVal = m_outIter.GetCenterPixel();
 
@@ -442,7 +450,7 @@ void ApplyUpdateSPE::UpdateActiveLayerValues(TimeStepType dt,
 					if (pix < LOWER_ACTIVE_THRESHOLD ||:: vnl_math_abs(temp_value) < ::vnl_math_abs(pix) )
 					{
 						m_outIter.SetPixel(idx, temp_value);
-						D_PRINT("Setting" << idx << "to" << temp_value);
+						//D_PRINT("Setting" << idx << "to" << temp_value);
 					}
 				}
 			}
@@ -508,7 +516,7 @@ void ApplyUpdateSPE::UpdateActiveLayerValues(TimeStepType dt,
 	               ::vnl_math_abs(temp_value) < ::vnl_math_abs(pix) )
 	            {
 	            m_outIter.SetPixel(idx, temp_value);
-	            D_PRINT("Setting" << idx << "to" << temp_value);
+	            //D_PRINT("Setting" << idx << "to" << temp_value);
 	            }
 	          }
 	        }
@@ -530,7 +538,7 @@ void ApplyUpdateSPE::UpdateActiveLayerValues(TimeStepType dt,
 	      {
 	      rms_change_accumulator += vnl_math_sqr(new_value - centerVal);
 	      //rms_change_accumulator += (*updateIt) * (*updateIt);
-	      D_PRINT("Setting" << m_outIter.GetNeighborhood().m_currIndex << "to" << new_value);
+	      //D_PRINT("Setting" << m_outIter.GetNeighborhood().m_currIndex << "to" << new_value);
 	      m_outIter.SetCenterPixel( new_value );
 	      //++layerIt;
 	      }

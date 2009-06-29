@@ -59,7 +59,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 	//this->_workManager.m_LayerNodeStore.Print(DOUT);
 	this->SetRMSChange(this->m_SPEManager.ApplyUpdate(dt));
 	
-	M4D::Cell::PrintITKImageToFile<OutputImageType>(*this->GetOutput(), "afterApplyUpdate");
+	//M4D::Cell::PrintITKImageToFile<OutputImageType>(*this->GetOutput(), "afterApplyUpdate");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -71,7 +71,7 @@ MySegmtLevelSetFilter<TInputImage, TFeatureImage, TOutputPixelType>
 //	this->_workManager.PrintLists(DOUT, true);
 	//this->_workManager.m_LayerNodeStore.Print(DOUT);
 	TimeStepType dt = this->m_SPEManager.RunUpdateCalc();
-	M4D::Cell::PrintITKImageToFile<OutputImageType>(*this->GetOutput(), "afterCalcChange");
+	//M4D::Cell::PrintITKImageToFile<OutputImageType>(*this->GetOutput(), "afterCalcChange");
 	return dt;
 }
 ///////////////////////////////////////////////////////////////////////////////

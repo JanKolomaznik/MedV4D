@@ -117,7 +117,11 @@ void LayerValuesPropagator::DoTheWork(StatusType from, StatusType to,
 	SparseFieldLevelSetNode *tmp;
 	SparseFieldLevelSetNode *currNode = this->m_layerIterator.GetCurrItem();
 	
+//#ifdef FOR_CELL
+//	D_PRINT("node:[%d,%d,%d]\n", currNode->m_Value[0], currNode->m_Value[1], currNode->m_Value[2]);
+//#else
 //	D_PRINT("node:" << currNode->m_Value);
+//#endif
 //	m_statusIter.GetNeighborhood().Print();
 //	m_outIter.GetNeighborhood().Print();
 
