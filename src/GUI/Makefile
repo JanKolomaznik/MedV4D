@@ -10,7 +10,7 @@ clean-all:	clean-widgets
 #------------------------------------------------------------------------------
 .PHONY:widgets
 widgets:
-	 $(MAKE) --directory=$@
+	 $(MAKE) --directory=$@ all
 
 #.PHONY:selectors
 #selectors:

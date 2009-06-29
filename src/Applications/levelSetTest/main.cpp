@@ -100,11 +100,11 @@ int main(int argc, char *argv[]) {
 		
 		
 		
-#ifdef SPU_TIMING_TOOL_PROFILING
+#if( defined(SPU_TIMING_TOOL_PROFILING) )
 		props->maxIterations = 1;
 		props->initialDistance = 5;
 #else
-		props->maxIterations = 10;
+		props->maxIterations = 800;
 		props->initialDistance = (double)
 					(im->GetDimensionExtents( 0 ).maximum - im->GetDimensionExtents( 0 ).minimum) / 2.2;
 #endif
