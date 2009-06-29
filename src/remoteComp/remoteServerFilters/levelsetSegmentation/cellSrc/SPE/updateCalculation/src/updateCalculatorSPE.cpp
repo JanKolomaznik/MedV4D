@@ -132,11 +132,11 @@ UpdateCalculatorSPE
 		}
 		float diff = m_diffFunc.ComputeUpdate(m_outIter, m_featureIter, &m_globalData, offset);
 		
-#ifdef FOR_CELL
-		D_PRINT("diff:%f\n", diff);
-#else
-		D_PRINT("diff:" << diff);
-#endif
+//#ifdef FOR_CELL
+//		D_PRINT("diff:%f\n", diff);
+//#else
+//		D_PRINT("diff:" << diff);
+//#endif
 		
 		m_updateBufferArray.push_back( diff );
 	}

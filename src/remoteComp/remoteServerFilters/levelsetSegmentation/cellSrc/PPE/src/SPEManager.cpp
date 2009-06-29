@@ -6,6 +6,8 @@
 using namespace M4D::Cell;
 using namespace M4D::Multithreading;
 
+#define MERGE_DEBUG 12
+
 ///////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// FOR_CELL /////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -146,7 +148,7 @@ void SPEManager::StopSims()
 
 /* Determine the number of SPE threads to create.   */
 #ifdef FOR_CELL
-uint32 SPEManager::speCount = 1;//spe_cpu_info_get(SPE_COUNT_USABLE_SPES, -1);
+uint32 SPEManager::speCount = spe_cpu_info_get(SPE_COUNT_USABLE_SPES, -1);
 #else
 uint32 SPEManager::speCount = 6;
 #endif
@@ -190,19 +192,19 @@ TimeStepType SPEManager::MergeTimesteps()
 	TimeStepType accum = _requestDispatcher._results[0];;
 	// get minimum
 	TimeStepType min = _requestDispatcher._results[0];
-	D_PRINT("timestep0=" << min);
+	DL_PRINT(MERGE_DEBUG, "timestep0=" << min);
 	for (uint32 i=1; i<speCount; i++)
 	{
-		D_PRINT("timestep" << i << "=" << _requestDispatcher._results[i]);
+		DL_PRINT(MERGE_DEBUG, "timestep" << i << "=" << _requestDispatcher._results[i]);
 		if (_requestDispatcher._results[i] < min)
 			min = _requestDispatcher._results[i];
 		
 		accum += _requestDispatcher._results[i];
 	}
 	
-	D_PRINT("accum=" << (accum / speCount) );
+	DL_PRINT(MERGE_DEBUG, "accum=" << (accum / speCount) );
 
-	D_PRINT("min=" << min);
+	DL_PRINT(MERGE_DEBUG, "min=" << min);
 	return min;
 }
 
