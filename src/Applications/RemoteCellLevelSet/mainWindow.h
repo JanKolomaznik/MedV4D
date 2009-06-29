@@ -10,7 +10,7 @@
 #include "SettingsBox.h"
 
 #define ORGANIZATION_NAME     "MFF"
-#define APPLICATION_NAME      "SimpleProjection"
+#define APPLICATION_NAME      "Levelset Client"
 
 
 

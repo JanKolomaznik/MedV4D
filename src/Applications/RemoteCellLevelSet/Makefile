@@ -32,13 +32,13 @@ LIBDIRS=	-L$(srcTop)/lib/$(CONF)\
 			$(QTLibDirs)\
 			-L$(DCMTK_LIB_PATH)\
 			-L$(VTKLibsDir)
-		
+
 INCLUDES=	-I$(srcTop) \
 			-I$(srcdir)\
 			-I$(VTKIncludeDir)\
 			$(QTIncludDirs)\
 			$(ITKIncludes)
-			
+
 M4DLIBS=	-lm4dWidgets\
 			-lvtkIntegration\
 			-lbackendForDICOM\
@@ -58,61 +58,18 @@ LIBS=		$(M4DLIBS)\
 
 MOCOUTPUT=      $(addprefix $(TMP_DIR)/moc_, $(MOCINPUT:.h=.cpp) )
 
-SRC_FILES=	$(addsuffix .cpp, $(TARGETS) ) 
+SRC_FILES=	$(addsuffix .cpp, $(TARGETS) )
 OBJ_FILES=	$(addprefix $(TMP_DIR)/,   $(addprefix rcc_, $(RCCINPUT:.qrc=.o ) ) $(addprefix moc_, $(MOCINPUT:.h=.o) ) $(addsuffix .o, $(TARGETS) ) )
 
 
 .PHONY: all
-all:		outDir tmpdir Common Imaging DICOM VTKInt GUI commonRCPart clientRCPart dep $(OUTPUT)
-
-commonRCPart:
-	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart all
-	
-clientRCPart:
-	$(MAKE) --directory=$(srcTop)/remoteComp/clientPart all
-	
-GUI:
-	$(MAKE) --directory=$(srcTop)/GUI/widgets all
-	
-VTKInt:
-	$(MAKE) --directory=$(srcTop)/vtkIntegration all
-	
-DICOM:
-	$(MAKE) --directory=$(srcTop)/backendForDICOM all
-	
-Imaging:
-	$(MAKE) --directory=$(srcTop)/Imaging all
-	
-Common:
-	$(MAKE) --directory=$(srcTop)/common all
-	
-## CLEANING ##################################
-
-commonRCPartCLEAN:
-	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart clean
-	
-clientRCPartCLEAN:
-	$(MAKE) --directory=$(srcTop)/remoteComp/clientPart clean
-	
-GUICLEAN:
-	$(MAKE) --directory=$(srcTop)/GUI/widgets clean
-	
-DICOMCLEAN:
-	$(MAKE) --directory=$(srcTop)/backendForDICOM clean
-	
-ImagingCLEAN:
-	$(MAKE) --directory=$(srcTop)/Imaging clean
-	
-CommonCLEAN:
-	$(MAKE) --directory=$(srcTop)/common clean
-
-##############################################	
+all:		outDir tmpdir dep $(OUTPUT)
 
 .PHONY: build
 build:		cleanall all
 
 .PHONY: dep
-dep:		
+dep:
 		$(CXX) $(INCLUDES) $(CDEPFLAGS) $(SRC_FILES) | \
 		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
 
@@ -122,18 +79,18 @@ $(TMP_DIR)/moc_%.cpp:   %.h
 $(TMP_DIR)/rcc_%.cpp:   $(RCCINPUT)
 		$(RCC) -name $(*F) $< -o $@
 
-$(TMP_DIR)/%.o:	%.cpp	
+$(TMP_DIR)/%.o:	%.cpp
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 $(TMP_DIR)/%.o:	$(TMP_DIR)/%.cpp
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 -include $(DEP_FILE)
-		
+
 $(OUTPUT):	$(OBJ_FILES)
-		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
+		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT)
 
 .PHONY: clean
-clean: commonRCPartCLEAN clientRCPartCLEAN #DICOMCLEAN GUICLEAN ImagingCLEAN CommonCLEAN
+clean:
 		$(RM) $(OBJ_FILES) $(MOCOUTPUT) $(addprefix $(TMP_DIR)/rcc_, $(RCCINPUT:.qrc=.cpp ) ) $(DEP_FILE)
 		$(RM) $(OUTPUT)

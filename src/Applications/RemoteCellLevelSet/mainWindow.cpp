@@ -8,6 +8,7 @@
 using namespace std;
 using namespace M4D::Imaging;
 
+#define SETTINGS_WINDOW_NAME "Algorithm settigs"
 
 mainWindow::mainWindow ()
   : m4dGUIMainWindow( APPLICATION_NAME, ORGANIZATION_NAME )
@@ -28,7 +29,7 @@ mainWindow::mainWindow ()
 	// add your own settings widgets
 	_settings = new SettingsBox( (RemoteFilterType *)_filter, &properties_, this, _tmpConnection->GetDataset() );
 
-	addDockWindow( "Simple MIP", _settings, DOCKED_DOCK_WINDOW);
+	addDockWindow( SETTINGS_WINDOW_NAME, _settings, DOCKED_DOCK_WINDOW);
 
 	QObject::connect( _notifier, SIGNAL( Notification() ), _settings, SLOT( EndOfExecution() ), Qt::QueuedConnection );
 	
@@ -92,7 +93,7 @@ mainWindow::CreatePipeline()
 	
 	typedef ImageSizeAdapter<VeiwImageType> ForCellSizeAdapter;
 	
-#define DESIRED_IMAGE_SIZE_FOR_CELL (20*1024*1024) // 40M
+#define DESIRED_IMAGE_SIZE_FOR_CELL (20*1024*1024) // 20M
 	_decimator = new ForCellSizeAdapter( 
 			new ForCellSizeAdapter::Properties(DESIRED_IMAGE_SIZE_FOR_CELL) );
 	_decimator->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
@@ -126,9 +127,9 @@ mainWindow::CreatePipeline()
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Pipeline error" ) );
 	}
 
-	addSource( _inConnection, "Simple MIP", "Input" );
-	addSource( _castOutConnection, "Simple MIP", "Decimated image" );
-	addSource( _outConnection, "Simple MIP", "Result" );
+	addSource( _inConnection, SETTINGS_WINDOW_NAME, "Input" );
+	addSource( _castOutConnection, SETTINGS_WINDOW_NAME, "Decimated image" );
+	addSource( _outConnection, SETTINGS_WINDOW_NAME, "Result" );
 
 	_notifier =  new Notifier( this );
 	_outConnection->SetMessageHook( MessageReceiverInterface::Ptr( _notifier ) );
