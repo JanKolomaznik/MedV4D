@@ -2,7 +2,7 @@
 
 In this chapter segmentation will be described. Several basic segmentation techniques will be explained.
 Subsequently level set techniques will be introduced, defined and explained in more detail.
-Then level set computation issues will be descirbed along with mentioning of two basic speed-up approaches.
+Then level set computation issues will be described along with mentioning of two basic speed-up approaches.
 After that level set method relation to segmentation will be mentioned.
 After all some features of level set computation on streaming architectures will be listed along with comparison of Cell B.E. features.
 
@@ -42,8 +42,8 @@ Segmentation methods can be divided into following basic categories:
 They covers the entire image.
 Two main subsets of methods are bottom-up and top-bottom.
 The first one takes each pixel as separate cluster and then iterate joining these initial clusters (pixels) based on some criterion until there are N cluster in cluster set.
-The second one pick N (randomly or heuristic based) chosen cluster centres.
-And then repeats these two step until some convergence condition is met (e.g. no pixels change clusters): assign pixels to clusters based minimalisation of the variance between the pixel and the cluster centre and re-compute the cluster centres by averaging all of the pixels in the cluster.
+The second one pick N (randomly or heuristic based) chosen cluster centers.
+And then repeats these two step until some convergence condition is met (e.g. no pixels change clusters): assign pixels to clusters based minimalization of the variance between the pixel and the cluster center and re-compute the cluster centers by averaging all of the pixels in the cluster.
 
   \item Histogram-based
 
@@ -64,18 +64,18 @@ Discontinuities of found edges that form the segmented object must be overcome s
 It takes a set of seed points and a segmented image.
 Each seed point is something like pointer to segmented object on the image.
 Seed points forms initial set of segments.
-Then iteration through the neighbouring pixels of an segment is performed.
-In every step of that iteration an neighbour pixel is compared with region - similarity function is calculated.
+Then iteration through the neighboring pixels of an segment is performed.
+In every step of that iteration an neighbor pixel is compared with region - similarity function is calculated.
 If it is similar enough, the pixel is added to the region.
   Method is highly noise sensitive.
 The initial seeds can be misplaced due to the noise.
 So there is another algorithm that is seedless.
 It starts with a single pixel (region).
 Its location does not significantly influence final result.
-Then the iteration over neighbouring pixels are taken just as in seeded growing.
+Then the iteration over neighboring pixels are taken just as in seeded growing.
 If it is different enough (some threshold value is applied), new segment is created.
   Particular approaches differs in definition of the similarity function.
-While one group uses pixel's properties (intensity, colour) directly, another computes some statistical test and the candidate pixel is processed according the test was accepted or rejected.
+While one group uses pixel's properties (intensity, color) directly, another computes some statistical test and the candidate pixel is processed according the test was accepted or rejected.
 
   \item Graph partitioning
 
@@ -200,7 +200,7 @@ In case of pictures with size about $512^3$ voxels the level set computation tak
 
 Because of computational burden of straightforward level set solving some speed-up approaches has been proposed.
 They are useful only when only single level set is computed (that is the case of segmentation).
-In that case us unnecessary compute solution for given time step over whole domain but only in those parts that are adjacent to the level set (in its neighbourhood).
+In that case us unnecessary compute solution for given time step over whole domain but only in those parts that are adjacent to the level set (in its neighborhood).
 The most known and used are Narrow Bands and Sparse Fields.
 
 Narrow Bands (proposed by Adalsteinsson and Sethian \cite{sethianFastLS}) computes embedding only within narrow band (tube).
@@ -243,12 +243,12 @@ Decide if it falls into [-$\frac{1}{2}$,$\frac{1}{2}$] interval.
 If so, put the $\vec(x)$ into appropriate status lists (list of points, that are changing status) to lower status list if $\phi_{i,j,k}^{n+1}$ moved under the interval and vice versa.
 
 3) Visit points in other layers $L_i$ in order $i=\pm 1,\ldots, \pm N$, and update the grid point values based on the values (by adding and subtracting one unit) of the next inner layer $L_{i\pm1}$.
-If more than one $L_{i\pm1}$ neighbour exists then use the neighbour that indicates a level curve closest to that grid point. i.e., use the maximum for the outside layers and minimum for the inside ones.
-If a grid point in layer $L_i$ has no $L_{i\pm1}$ neighbours, then it gets demoted to $L_{i\pm1}$ (the next layer away from the active set).
+If more than one $L_{i\pm1}$ neighbor exists then use the neighbor that indicates a level curve closest to that grid point. i.e., use the maximum for the outside layers and minimum for the inside ones.
+If a grid point in layer $L_i$ has no $L_{i\pm1}$ neighbors, then it gets demoted to $L_{i\pm1}$ (the next layer away from the active set).
 
 4) For each status list $S_{\pm1}$, $S_{\pm2}$, \ldots, $S_{\pmN}$ do the following:
   a) For each element $x_j$ on the status list $S_i$, remove $x_j$ from the list $L_{i\pm1}$ and add it to the $L_{i}$ layer, or in the case of $i\eq \pm ( N + 1)$, remove it from all layers.
-  b) Add all $L_{i\pm1}$ neighbours to the $S_{\pm1}$ list.
+  b) Add all $L_{i\pm1}$ neighbors to the $S_{\pm1}$ list.
 
 Even faster method that perform extension and distance reinitialization is $O(N)$ is presented by Peng et al. \cite{pengSparseFields}.
 

@@ -1,37 +1,37 @@
 \chapter{Introduction}
 
 Since first processors of x86 platform were released big race for who introduce processor with operating on higher frequency started.
-This was conditioned to research new production technoligies that allow to integrated more transistors onto smaller area.
-In the process manunfacturers started to realize that it is impossible to continue this frequency race forever.
+This was conditioned to research new production technologies that allow to integrated more transistors onto smaller area.
+In the process manufacturers started to realize that it is impossible to continue this frequency race forever.
 This results integration of more computing units into single processor.
 This first among common desktop processors was Intel's Pentium\textsuperscript{\textregistered} with hyper threading.
 This processors was able to execute two threads at a time.
-Since then qick boom of multi core integration started even among other biggest processor manufacturers.
+Since then quick boom of multi-core integration started even among other biggest processor manufacturers.
 Integration of more execution cores allows less power consumption.
-This factor is nowadays especially important due to processor integration into labtops and even due to environmental issues.
-Thats why current efforts of processor manufacturers is to gain the best performance to power consumption ratio.
+This factor is nowadays especially important due to processor integration into laptops and even due to environmental issues.
+That's why current efforts of processor manufacturers is to gain the best performance to power consumption ratio.
 
-Cores that are ingreated into the current processors are general purpose.
-This means thay have pipeline for instruction execution with several stages.
+Cores that are integrated into the current processors are general purpose.
+This means they have pipeline for instruction execution with several stages.
 Instruction can be with several states within such pipeline, e.g. fetched, awaiting operands, ready, executed.
 Instruction flows among the stages not in the order they are within the program.
 Order is decided by the processor based on variety factors and predictions.
 One of the pipeline stages is branch prediction unit that has to predict the most probable flow of the executed program.
-When this predicion is false whole pipeline has to be discarded and execution of the right branch of program has to be started.
-Processors suffer heavily from mispredicions because they lead into big holes in which the processor pipeline stalls or is being reset.
+When this prediction is false whole pipeline has to be discarded and execution of the right branch of program has to be started.
+Processors suffer heavily from mispredictions because they lead into big holes in which the processor pipeline stalls or is being reset.
 
 Another general purpose processor suffering is from cache misses.
 This occurs when requested data are not within processor cache and have to be load from memory.
 
 Altough many of improvements were implemented into the general purpose processors they still suffer from the described problems.
 This is one of the reasons why collaboration of three big companies IBM, Sony, and Toshiba started development of Cell B.E. processor.
-Processor that is multicore, has good performance to power consumption ratio and is able to overcome the problems that the general purpose processors suffer.
+Processor that is multi-core, has good performance to power consumption ratio and is able to overcome the problems that the general purpose processors suffer.
 Because it allow the programmer to somewhat manage processor cache and branch prediction unit.
 
 \chapter{Cell B.E. platform}
 
 This chapter will introduce Cell Broadband Engine processor (Cell B.E.) and the whole platform and its specific details.
-Particular Cell B.E. processor will be desribed and illustrated.
+Particular Cell B.E. processor will be described and illustrated.
 
 \section{About the processor}
 
@@ -72,7 +72,7 @@ SPE is an autonomous processor (sometimes called accelerator) targeted for compu
 Each SPE has a SIMD core (SPU), a high-speed private local store memory and a direct memory access (DMA) engine.
 The SPU unit has 128 128-bit wide unified general purpose (in contrast from traditional RISCs where registers are divided according data types) registers to store all types of data.
 It supports a SIMD-RISC instruction set.
-It can execute two instruction at one clocktick in some conditions (dual-issue).
+It can execute two instruction at one clock tick in some conditions (dual-issue).
 Vectorized operations in various data types configurations can be performed with these registers.
 E.g. two double-precision floats or eight 32bit integers can be processed at single clock tick.
 
@@ -82,7 +82,7 @@ Its function supply the small on-chip local store memory under programmer's cont
 This allow code optimizations that can reduce cache misses.
 The local store is separated from the main memory (on which the PPE operates), so SPE has its own address space.
 Therefore any synchronization with other cores is not necessary.
-The local store is attached to a larger (central) shared memory through DMA engine that manages transfering data from central memory to local store and vice versa as well as between two local stores.
+The local store is attached to a larger (central) shared memory through DMA engine that manages transferring data from central memory to local store and vice versa as well as between two local stores.
 We say that data is "DMAed" from source to destination.
 DMA commands can be issued in many ways.
 Synchronous, asynchronous, in scatter-gather manner through DMA lists.

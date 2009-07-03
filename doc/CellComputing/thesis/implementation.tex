@@ -1,23 +1,40 @@
 \chapter{Design and implementation}
 
-This chapter will describe details of implementation and design of my test application.
+This chapter will describe details of implementation and design of our test application.
 Starts with listings frameworks that were used and describes process of incorporation of the application into that frameworks.
 Then few design details concerning the incorporation is described.
 After that results of profiling of the application are summarized.
-Followed by new design description which was neccessary due to unexpected profiling results.
-The rest of chapter will present actual porting process with all its problems and solutions.
+Followed by new design description which was necessary due to unexpected profiling results.
+The rest of chapter will present actual porting process with all its problems, solutions, recommendations and all the usable information that we discovered in the porting process.
 
-\section{Used frameworks}
+\section{Our idea how to perform the porting process}
+
+We wanted to follow the common scenario of porting process as described in \ref{sect:portingProcess}.
+In our case this means:
+\begin{enumerate}
+\item{choose base implementation}
+\item{clean up it}
+\item{port it to PPE}
+\item{profile to find hotspots}
+\item{offload hotspots to SPEs and right away to use multi-buffering technique for DMA transfers}
+\item{optionally try some optimization steps if the results were not satisfactory}
+\end{enumerate}
+
+\section{Chosen algorithm and frameworks}
 
 \par
-We decided to take ITK (\url{www.itk.org}) implementation of level set method as a base.
+We decided to choose sparse field algorithm for level set solving for porting to Cell B.E.
+It is quite complex image processing algorithm that could test the Cell B.E. programming as a whole.
+
+\par
+We took ITK (\url{www.itk.org}) implementation of that algorithm as a base.
 So we have to get familiar with this huge project.
 It contains many algorithm implementations as well as necessary infrastructure content such as loading and saving variety of formats.
 Base concept of this project is pipeline and filters.
 To get some work done pipeline has to be build from filters.
 Filter is entity that represent an algorithm.
 When pipeline is created the last filter is started.
-Starting event then propagate towards the begining of the pipeline where actual computation starts.
+Starting event then propagate towards the beginning of the pipeline where actual computation starts.
 Output from one filter is input of the following.
 Filters thus create a building blocks for some more complicated method.
 
@@ -36,7 +53,7 @@ Instead the programmer should focus on actual problem solution.
 Basic building block is also a filter.
 The filter can be merged into pipeline just like in ITK.
 But the Medv4D filters are more low-level and thus faster that ITK ones (speed was another goal of the framework).
-The pipeline then offer some implicit locking of dataset parts to allow parallel computation.
+The pipeline then offer some implicit locking of data set parts to allow parallel computation.
 
 \section{Incorporation into Medv4D framework}
 
@@ -99,8 +116,8 @@ Server parses the command message and instantiate appropriate filter along with 
 
   \item{DATASET}
   \par
-  Tells the server to read actual dataset that the computation will be performed on.
-The dataset is parameter of the command.
+  Tells the server to read actual data set that the computation will be performed on.
+The data set is parameter of the command.
 
   \item{EXEC}
 \par
@@ -111,8 +128,8 @@ After the parsing and association of filter parameters with actual filter is the
 
 \par
 Purpose of the commands is to divide actual execution into stages and thus to define a state of remote execution.
-This is because when actual dataset is send to server it would be worthless to send it again when user wants to execute remote pipeline again only with different parameters.
-So commands allow this because remote pipeline has state telling 'data already recieved now waiting for EXEC command as many times as wanted without no more input data transmission'.
+This is because when actual data set is send to server it would be worthless to send it again when user wants to execute remote pipeline again only with different parameters.
+So commands allow this because remote pipeline has state telling 'data already received now waiting for EXEC command as many times as wanted without no more input data transmission'.
 \par
 The Medv4D pipeline filter defines also some stages that the behaviour of remote filter benefits.
 That is there are method that is called only when input data changes (PrepareOutputDataset).
@@ -131,7 +148,7 @@ Whole cycle shows figure \ref{fg:RCClientCycle}.
 \end{figure}
 
 Server response can be either OK or FIALED.
-In case of OK resulting dataset is received in contrast to FAILED case when no dataset is expected.
+In case of OK resulting data set is received in contrast to FAILED case when no data set is expected.
 
 \subsection{Server RC part}
 
@@ -154,26 +171,26 @@ Goal of the methods is ensure that data that the client sends will be received i
 Good example is the CREATE request.
 In this request identifier of remote filter are send along with template parameters identifiers (because filter classes are templated).
 In case of mismatch of that identifiers completely different class would be instantiated.
-Hierarchy of virtual methods on dataset classes defines interface for such stubs.
+Hierarchy of virtual methods on data set classes defines interface for such stubs.
 Interface on remote filter properties class hierarchy does the same for remote filter.
 
 Another issue is endianess.
 Endianess identifier is sent along with every command. On the other side is made decision if byte swapping should be performed.
 This allows to perform byte swapping only when it is really needed.
 
-Currently only remote filter is implemented, the level set segmentation.
+Currently only remote filter is implemented - the level set segmentation.
 But other filters can be easily added by appending one switch branch in remoteFilterFactory.cpp source.
 The level set segmentation filter is implemented as successor of ITK filter that contains appropriate ITK pipeline within.
 This pipeline is most interresting part related to this work so further content will be about it.
 
-\section{Level set segmentation pipeline}
+\section{Level set segmentation pipeline and pre-porting steps}
 
 This pipeline contains three ITK filters.
 \begin{enumerate}
   \item{fast marching filter}
   \par
   Is responsible for computation of initial level set.
-Parameters of this filter are point $\vec{x}$ in dataset and distance $d$.
+Parameters of this filter are point $\vec{x}$ in data set and distance $d$.
 Output is then level set that corresponds to ball shaped level set with radius $d$.
 
   \item{level set segmentation filter (LS Filter)}
@@ -187,12 +204,16 @@ Parameters of this filter are threshold interval (thresholding level set segment
 It is thresholding that select pixels with values less that zero that corresponds to inner part of the resulting level set.
 \end{enumerate}
 
-We have chosen ITK sparse field method implementation to port to Cell B.E.
-This implementation uses linked lists to represent the sparse field layers.
+The fast marching and binary thresholding filter have not been changed and are used as part of ITK framework.
+The only filter that is changed is the level set segmentation (LS) filter.
+This filter perform the algorithm we have chosen to port to Cell B.E., sparse field level set.
+This algorithm uses linked lists to represent the sparse field layers.
 Actual algorithm, as described higher (\ref{alg:sparseFileld}), is implemented in several classes.
-Due to mapping the algorithm to Cell B.E. radical changes in code was necessary even in ITK code.
-We decided to rebuild appropriate part of ITK class hierarchy responsible for the sparse field level set computation (LS hierarchy) to create actual LS Filter.
-We borrowed some part of original code and inherited my classes from classes close to finite difference solver (FDS) class, see figure\ref{fg:originalHierarchy}.
+
+\par
+Due to mapping the algorithm to Cell B.E. and poor lucidity and commonness of ITK code radical changes was necessary.
+We decided to rebuild appropriate part of ITK class hierarchy responsible for the sparse field level set computation (LS hierarchy) to create our own LS Filter.
+We borrowed few part of original code and inherited our classes from classes close to finite difference solver (FDS) class, see figure\ref{fg:originalHierarchy}.
 In the original LS hierarchy are actually two class hierarchies.
 One represents the filter that performs level set algorithm, the filter hierarchy.
 The other finite \emph{difference function} that computes the finite differences (the upwind scheme), the function hierarchy.
@@ -213,16 +234,16 @@ provides speed image computation infrastrucutre
 computes actual speed image
 \end{enumerate}
 
-In the filter hierarchy, everything starts with FiniteDifferenceImageFilter that computes main loop of level set calculation (see step 1 in \ref{alg:sparseFileld}).
-Virtual methods of its successors are used (just like in function hierarchy) to implement sub steps.
-Successor is the SparseFieldLevelSetImageFilter providing implementation of Step 1a through \emph{update calculation} function.
+FiniteDifferenceImageFilter, the base of filter hierarchy, computes main loop of level set calculation (see step 1 in \ref{alg:sparseFileld}).
+Virtual methods of its successors are used to implement sub steps.
+Successor is the SparseFieldLevelSetImageFilter providing implementation of algorithm's Step 1a through \emph{update calculation} function.
 Other steps is performed by \emph{apply update calculation} function.
 Next successors, SegmentationLevelSetImageFilter and ThresholdSegmentationLevelSetImageFilter only manage \emph{difference function} in their own manner.
 In case ThresholdSegmentationLevelSetImageFilter manages speed function as described in \ref{eq:speedFunction}.
-It preallocates another image for pre-calculation of the speed function.
-This another image is another notable amount of memory that can not be accepted for my purpose (see \ref{ps3MemoryUsage}).
+It preallocate another image for pre-calculation of the speed function.
+This another image is another notable amount of memory that can not be accepted for our purpose (see \ref{ps3MemoryUsage}).
 This pre-calculation was one reason of inheritance from classes close to FDS.
-Speed function is calculated every time it is needed without any pre-calculations in my approach.
+Speed function is calculated every time it is needed without any pre-calculations in our approach.
 This approach could be even better for Cell B.E. streaming nature.
 The second reason was to simplify the structure of hierarchy and some code clean-up and refactorization.
 
@@ -234,13 +255,13 @@ The second reason was to simplify the structure of hierarchy and some code clean
     \label{fg:originalHierarchy}
 \end{figure}
 
-Result of this changes is our own filter (ThreshSegLevelSetFilter) that omits all unnecessary part of original LS hierarchy, uses reasonable parts of the original ITK level set segmentation filter and is ready to be ported for Cell B.E. (see figure\ref{fg:resultingFilter}).
+Result of this changes is our own filter (ThreshSegLevelSetFilter, OOF) that omits all unnecessary part of original LS hierarchy, uses reasonable parts of the original ITK level set segmentation filter and is ready to be ported for Cell B.E. (see figure\ref{fg:resultingFilter}).
 In the function hierarchy stayed only the base class that the resulting ThresholdLevelSetFunc class is derived.
-This new class does the same job as original LS function hierarchy but in manner closer to streaming architecture (the pre-allocation of the speed image is omited).
+This new class does the same job as original LS function hierarchy but in manner closer to streaming architecture (the pre-allocation of the speed image is omitted).
 The computation of particular up-wind scheme terms was separated into stand alone classes for more code readability and modularity.
 The filter hierarchy was shorted and begins already in SparseFieldLevelSetImageFilter.
-All the successors in original hierarchy was omited since they did anything reasonable.
-Some function implementation from the SparseFieldLevelSetImageFilter was borrowed into the new ThreshSegLevelSetFilter to be tuned for Cell B.E.
+All the successors in original hierarchy was omitted since they did anything reasonable.
+Some function implementation from the SparseFieldLevelSetImageFilter was borrowed into the new OOF to be ported for Cell B.E.
 
 \begin{figure}
     \centering
@@ -248,7 +269,7 @@ Some function implementation from the SparseFieldLevelSetImageFilter was borrowe
     \caption[Resulting level set filter ready to be ported to Cell B.E.]
     {
 Show result of original LS hierarchy rebuilding.
-Some unnecessary parts was omited to clean-up the code and to change behaviour towards streaming architecture as well as term computation was separated into supporting classes for modularity
+Some unnecessary parts was omitted to clean-up the code and to change behavior towards streaming architecture as well as term computation was separated into supporting classes for modularity
     }
     \label{fg:resultingFilter}
 \end{figure}
@@ -282,22 +303,24 @@ TOTAL		&				&	26.79&	100\\
 \par
 \caption[Profiling results]
 {
-  Results of profiling showed that ComputeUpdate step that was originaly thought to be hotspot takes only 14.82\% of computation time.
+  Results of profiling showed that ComputeUpdate step that was originally thought to be hotspot takes only 14.82\% of computation time.
 }
 \label{tab:profilingresults}
 \end{table}
 
+\par
 The profiling (see Table \ref{tab:profilingresults}) shows that the most time consuming parts of the program is not the difference solving in update calculation step but the update application step.
 The original idea was to offload only the difference solving within the update calculation step which is performed on $3^3$ voxel matrix and calculated independently of the others which makes this job perfectly suited for offloading to SPE.
 But the time taken for computation of this part is only the fragment of the whole.
-This is the reason for another changes to the ITK class hierarchy and new level set filter design.
-Actually the whole program is rebuild and from original ITK class hierarchy last nothing.
-Everything replaced by the ThreshSegLevelSetFilter in conjunction with my version of original FinititeDifferenceImageFilter (FDIF) where the main loop of the algorithm as well as stopping conditions resides.
-The reason of replacing even the FDIF is that it suppose usage of a difference function.
-It had appropriate virtual methodes that expects it.
-But in the new design the difference function will be offloaded as well so it was taken out completely through the MyFDIF.
+This is the reason for another changes to our level set filter.
 
 \section{New design}
+
+\par
+Actually the whole OOF had to be rebuild and from original ITK class hierarchy last nothing.
+Everything replaced by the OOF and our own version of original FinititeDifferenceImageFilter (FDIF) where the main loop of the algorithm as well as stopping conditions resides.
+The reason of replacing even the FDIF is that it suppose usage of a difference function and its virtual methods.
+But in the new design the difference function will be offloaded as well so it was taken out completely through the our FDIF.
 
 Further figure shows structure of the new design:
 
@@ -309,7 +332,7 @@ Further figure shows structure of the new design:
 Diagram of new design components. Calculation only the initial states is performed by PPE.
 And the rest is moved to SPEs through SPEManager that perform all necessary steps to run the SPEs.
 }
-    \label{fg:newDesign}
+\label{fg:newDesign}
 \end{figure}
 
 On the figure \ref{fg:newDesign} can be noticed that almost whole original ITK pipeline is offloaded to SPE.
@@ -331,7 +354,7 @@ This is performed by \emph{UpdateActiveLayerValues} method.
 
 \item STEP 3
 \par
-Is performed by subcomponent of ApplyUpdateCalculator, the LayerValuesPropagator.
+Is performed by sub component of ApplyUpdateCalculator, the LayerValuesPropagator.
 This traverses over all layers, process their values and remove nodes eventually if they are no longer in a layer.
 Step processed by \emph{PropagateAllLayerValues}.
 
@@ -345,6 +368,7 @@ method.
 
 \subsection{Data flow}
 
+\par
 In porting process is necessary to know the data flow i.e. find out what data are sent and where.
 What data are there produced and especially the size of all the data.
 This is because of decision where they will be stored.
@@ -390,28 +414,18 @@ This method traverse over all the layers and performs moving nodes among layers.
 This means operations \emph{PUSH} and \emph{UNLINK}.
 \end{enumerate}
 
-\begin{figure}	//TODO
-    \centering
-    \includegraphics[width=0.9\textwidth]{data/updateActiveLayerValues}
-    \caption[Diagram of new design components]{//TODO}
-    \label{fg:updateActiveLayerValues}
-\end{figure}
+%\begin{figure}	//TODO {data/updateActiveLayerValues}
 
+\par
 Statuses, actual level set values and features are stored within status, output and feature images.
 So for methods described above is necessary to load and store parts of that images.
-Computation is performed on small neighbourhood of voxels 3x3x3.
+Computation is performed on small neighborhood of voxels 3x3x3.
 So 27 voxels (resp. statuses) has to be transferred for one node processing.
 
+\par
 There are some actions and operations defined above that need communication with central memory.
 This is parts of program where cell PPE - SPE communication features take place.
 Other SPE code need not to know if it is run on SPE or PPE (except case of vector intrinsics usage).
-
-Because of separation of address spaces programming of SPE is very similar to client - server application design.
-Roles depends on how the work is started.
-In case PPU initiate the transfers the PPU is a client and SPE is a server (SPE receive some data for computation).
-Another possibility that SPE grab the data from the central memory.
-In this case SPE is client of central memory.
-This case is prefered because the PPE is only one and would be able to manage all the SPU.
 
 \subsection{Tools}
 Some tools that performs data transfer between PPE and SPE was designed.
@@ -422,7 +436,7 @@ All these tools perform multibuffering to avoid waiting for data.
 \par
 Represent the part of an image ($3^3$ voxel matrix) needed for one node computation.
 It uses transfer list that allow data handling in scatter-gather manner.
-Neigbourhoods are grouped within PreloadedNeigborhoods container that manages which neigbourhood is being loaded, used in computation or saved (actually performs multibuffering)
+Neighborhoods are grouped within PreloadedNeigborhoods container that manages which neighborhood is being loaded, used in computation or saved (actually performs multi-buffering)
 
 \item \emph{RemoteArrayCell}
 \par
@@ -455,37 +469,37 @@ Address of that node along the layer number are the parameters.
 Address is transferred in 32 bits parts (because mailbox has 32 bit size) and is completed on the PPE side.
 \end{enumerate}
 
+\par
 Another support tool that is worth mention is \emph{ObjectStore} which is simple memory allocator templated with class that provides and size.
 Provides two main methods, \emph{Borrow} and \emph{Return}.
 It is used for allocation of status field nodes.
 They resides in local store and thus should be allocated on stack.
 
+\par
 Great advantage of the tools is also that the whole code uses only the tools (as instruments for central memory comunication).
-So debuging transfer issues means debuging the tool.
+So debugging transfer issues means debugging the tool.
 
 \subsection{Work balancing}
 
+\par
 The sparse field layers are central part that defines amount of work to be performed.
 So it is necessary to balance their length among the SPE that process them.
 This work is left to \emph{Work manager}.
 Its goal is to ensure that all the layers are divided among SPE uniformly.
 
+\par
 For this purpose the \emph{UNLINK} and \emph{PUSH} operations implemented using mailboxes fits well.
 The idea behind is that actual operation on the linked list is delegated to the \emph{Work manager}.
 It decides which layer segment (resp. SPE that the segment process) should the node append into.
 
-\begin{figure}	//TODO obrazek
-    \centering
-    \includegraphics[width=0.9\textwidth]{data/updateActiveLayerValues}
-    \caption[Diagram of new design components]{//TODO}
-    \label{fg:updateActiveLayerValues}
-\end{figure}
-
+\par
 The whole process can be compared with company department where are several workers do actual work and one manager who distribute the work among the workers.
 
 \section{Actual porting process}
 
 \subsection{PC as simulator}
+
+\par
 Because remote debugging program running on PS3 is quite time consuming (seconds for basic commands like step into) and because of small amount of memory (see \ref{ps3MemoryUsage}) we decided to left actual porting to the very end of process.
 Features (and tools) that are needed for running on SPE were gradually added into the original code.
 Some parts was rewritten (e.g. the \emph{UpdateActiveLayerValues} turn) to allow some data to live in SPE local store.
@@ -497,7 +511,7 @@ The Cell B.E. special features like DMA transfer was simulated by memcpy or the 
 This step was really time consuming due to fact that tools operates with stack memory.
 Debuging such parts need extra care for what is where rewritten.
 Since we are on stack some part of call stack would become corrupted and program becomes undefined.
-The worst thing is that it can continue without crash or to crash on totaly different code that the error occured.
+The worst thing is that it can continue without crash or to crash on totally different code that the error occurred.
 Errors of this type is always hard to track.
 There is need of usage of some checking tools.
 For us memcheck tool, part of Valgrind, proved to be useful to detect stack corruption.
@@ -508,10 +522,10 @@ For us memcheck tool, part of Valgrind, proved to be useful to detect stack corr
 It seems that moving the code to PPE is easy and there could be no problem.
 But we faced a problem that is worth to mention.
 Because our code uses lot of third party libraries there is quite much paths to include folders.
-It is neccessary to manage them well and not to mix alchitecture dependent ones.
-We have mixed up include files of boost library when crosscompiling and experienced totally strange behavior.
-We thaught that we can use includes for boost that come from repository for i686 architecture.
-The code creashed on boost code that is debugged and stable.
+It is necessary to manage them well and not to mix architecture dependent ones.
+We have mixed up include files of boost library when cross-compiling and experienced totally strange behavior.
+We thought that we can use includes for boost that come from repository for i686 architecture.
+The code crashed on boost code that is debugged and stable.
 Openning of a file have also crashed for unknown reason.
 When program was compiled with includes from ppc(64) repository all problems disappeared.
 
@@ -519,16 +533,38 @@ When program was compiled with includes from ppc(64) repository all problems dis
 
 \par
 Next step was to port the tools for SPE.
-In fact is to rewrite usage of memcpy that simulate the DMA trasfer to use real DMA transfer.
+In fact is to rewrite usage of memcpy that simulate the DMA transfer to use real DMA transfer.
 
 \par
-Data that are trasfered through DMA (DMAed) within Cell B.E. should meet size and align conditions (see \cite{programmersGuide}, Chapter 4).
+Data that are transferred through DMA (DMAed) within Cell B.E. should meet size and align conditions (see \cite{programmersGuide}, Chapter 4).
 Data that does not meet this condition will generate BUS error.
-This condition forced that all data that are DMAed should be alocated onto aligned adresses (see objectStore.h or updateValsAllocator.h).
+This condition forced that all data that are DMAed should be allocated onto aligned addresses (see objectStore.h or updateValsAllocator.h).
 
 \par
-Debuging within this step is performed already on Cell B.E. mashine.
+Debugging within this step is performed already on Cell B.E. machine.
 We used both PS3 and systemsim.
 Systemsim can detect which DMA transfer brakes align rules and thus cause the BUS error but it is really slow.
 Instead using systemsim we have implement DMAGate (see DMAGate.h) that all DMA transfer go through and where are all the conditions checked.
-Such central point for all DMA transfer is really important part of Cell B.E. program because it geathers all DMA stuff into one place making debuging much more easier.
+Such central point for all DMA transfer is really important part of Cell B.E. program because it gathers all DMA stuff into one place making debugging much more easier.
+
+\subsection{Memory protection tools}
+
+\par
+Usage of DMA transfers (or memcpy) is quite dangerous.
+It rewrites destination memory without checking what is within that memory.
+Then many errors causing of segmentation faults arise.
+When the error shows up immediately when it occurs it is good but it is possible to rewrite stack memory and thus call stack and then the error can show up completely elsewhere than it has arisen.
+We have spent lots of time debugging many of such errors.
+Even in resulting application can occur some errors of this kind.
+Debugging every single this kind error is a never ending story.
+So we recommend to write additional tools that will check such errors or to use memory checking software such as Valgrind.
+We used the Valgrind but not from the beginning.
+So when we check the program there was too much warnings of the same kind.
+Solving them was in that time impossible.
+
+\par
+Checking the program with memory checking tools is necessary already from the very beginning of the development and quite often.
+It is advisable not to make huge code changes not only due to memory checking but due to actual process as such.
+It is better to develop gradually in small steps.
+One can then find error more simply.
+This is universal rule for programming but we believe it is valid specially for Cell B.E. porting.
