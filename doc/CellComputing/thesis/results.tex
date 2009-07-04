@@ -41,16 +41,17 @@ All of them was CT images of skull.
 \hline
 \multicolumn{7}{|c|}{Measurement results}\\
 \hline
-data set		&size		&seed		&initial	&max. 		&architecture	&time\\
-			&		&		&distance	&iterations	&		&spend\\
+data set		&size		&seed		&init.		&max. 		&arch.		&time\\
+			&		&		&dist-		&itera-		&		&spend\\
+			&		&		&ance		&tions		&		&(sec)\\
 \hline
 \hline
-3slices from skull 3	&512x512x3	&[256,256,1]	&40		&800		&Cell B.E.	&16.48\\
-3slices from skull 3	&512x512x3	&[256,256,1]	&40		&800		&i686	.	&1.89\\
+3slices 		&512x512x3	&[256,256,1]	&40		&800		&Cell B.E.	&16.48\\
+(skull 1)		&512x512x3	&[256,256,1]	&40		&800		&i686	.	&1.89\\
 \hline
 \hline
 skull 1			&256x256x80	&[128,110,20]	&20		&500		&Cell B.E.	&471.89\\
-skull 1			&256x256x80	&[128,110,20]	&20		&500		&i686		&95.23\\
+			&256x256x80	&[128,110,20]	&20		&500		&i686		&95.23\\
 \hline
 \hline
 skull 1			&256x256x80	&[128,110,20]	&4		&500		&i686		&61.74\\
@@ -90,7 +91,7 @@ When data smaller than 16 bytes (quad-word) are being transferred, every single 
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.5\textwidth]{data/automaticAlignOfSmallData}
+    \includegraphics[width=0.8\textwidth]{data/automaticAlignOfSmallData}
     \caption[automatic align of small data]
 {
   Illustration of transfer of data that are smaller that quad-word.
@@ -106,7 +107,7 @@ For details see \cite{DMAListIssues}.
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.5\textwidth]{data/multipleDMAList}
+    \includegraphics[width=0.95\textwidth]{data/multipleDMAList}
     \caption[multiple DMA list workaround]
 {
   Workaround for transfer in smaller than quad-word chunks.

@@ -37,7 +37,7 @@ Now install the downloaded installation rpm.
 rpm -ivh ISODIR/cell-install-3.1.0-0.0.noarch.rpm
 \end{verbatim}
 
-After this step you have new stuff in /opt/cell installed. There is SDK installation script (cellsdk) located as well.
+After this step you have new stuff in \url{/opt/cell} installed. There is SDK installation script (cellsdk) located as well.
 It is wrapper for YUM that manages the SDK packages. Run it with parameter --help to see the usage.
 So next step is to run it.
 
@@ -147,7 +147,7 @@ The last is to fix actual tcl script that manages loading the sysroot\_image (21
 It is cause by wrong triggers that are triggerd when some text is output from console by the sysroot\_image loading.
 There is probably triggers that wait for text from previous version of SDK that is never output in the current version.
 That is why the loading freezes on 21\%.
-To fix it you have to edit /opt/cell/ide/eclipse/plugins/ com.ibm.celldt.simulator.profile.default\_3.1.0.200809010950/ simulator\_init.tcl file.
+To fix it you have to edit \url{/opt/cell/ide/eclipse/plugins/ com.ibm.celldt.simulator.profile.default_3.1.0.200809010950/ simulator_init.tcl} file.
 Replace the "Welcome to Fedora Core" string with "Welcome to Fedora" and "INIT: Entering runlevel: 2" with "Starting login process".
 
 It is useful to create starting script. That solve the stack issue and add systemsim directory to PATH (needed for running).
@@ -166,12 +166,13 @@ Because sysroot\_image is provided as image of installed Fedora 9 without Cell B
 /opt/cell/cellsdk_sync_simulator install
 \end{verbatim}
 
-This shell script installs all rpms for ppc and ppc64 platforms that finds in /tmp/cellsdk/rpms.
-By default these rpms are copied into /tmp/cellsdk/rpms during the install process.
+This shell script installs all rpms for ppc and ppc64 platforms that finds in \url{/tmp/cellsdk/rpms}.
+By default these rpms are copied into \url{/tmp/cellsdk/rpms} during the install process.
 If they are not still there (or in installed subdirectory) you have to copy them by hand from ISOs (note: ISOs has to be mounted).
 
 \begin{verbatim}
-cp /opt/cell/yum-repos/CellSDK-Devel-Fedora/rpms/*.{ppc,ppc64}.rpm\
+cp \
+/opt/cell/yum-repos/CellSDK-Devel-Fedora/rpms/*.{ppc,ppc64}.rpm\
 /tmp/cellsdk/rpms
 \end{verbatim}
 
@@ -181,7 +182,8 @@ Sysroot\_image is common binary image that can mounted and thus some additional 
 This is useful when extra library that are not part of the default image need to be used.
 In my case that was some boost libraries. So to mount the sysroot\_image issue:
 \begin{verbatim}
-mount -o loop /opt/ibm/systemsim-cell/images/cell/sysroot_disk <your mount point>
+mount -o loop /opt/ibm/systemsim-cell/images/cell/sysroot_disk\
+<your mount point>
 \end{verbatim}
 And then copy whatever you want.
 
@@ -195,7 +197,7 @@ You have all the bash advantages like command and path completion available in c
 Sometimes root user is needed for an operation performed in the simulator.
 Its password should be disabled.
 It can be done when sysroot\_image is mouned.
-Under host machine root account the sysroot\_image\_mount\_point/etc/passwd file should be edited.
+Under host machine root account the \url{<sysroot_image_mount_point>/etc/passwd} file should be edited.
 The first line is the root's so deletion of '*' characted from the second field (after the second ':' character) will disable the root's password.
 Note that this action must be performed when the simulator is not running otherwise the changes will be overwritten by the simulator.
 
@@ -209,10 +211,10 @@ Each folder has its own makefile that manages makefiles in its sub folders.
  So you can call only the top level one to build all projects in sub folders or any from the sub folders to build particular projects.
 
 It is convenient to use the sample sources in CellIDE where you can build it as well and create run/debug configuration for running within cell environment.
-To use the example code (for example /opt/cell/sdk/src/tutorial/simple) create new c++ makefile project.
+To use the example code (for example \url{/opt/cell/sdk/src/tutorial/simple}) create new c++ makefile project.
 Click right button on it to get into properties.
 C/C++ general tab $\rightarrow$ Paths and Symbols $\rightarrow$ Source location.
-Here you have to add the folder with the sources (/opt/cell/sdk/src/tutorial/simple) by 'create / link folder' button $\rightarrow$advanced $\rightarrow$ link to folder in filesystem.
+Here you have to add the folder with the sources (\url{/opt/cell/sdk/src/tutorial/simple}) by 'create / link folder' button $\rightarrow$advanced $\rightarrow$ link to folder in filesystem.
 Now you have two folders in list. The first one is the original, created during project creation and the other newly linked folder with the source.
 You can delete the original one since you are not going to use it.
 Next is necessary to set up 'Build directory' to tell the IDE where shall search for makefile.
@@ -227,7 +229,7 @@ It is insufficient for either debugging and compilation.
 So some of resources has to be switched off.
 Our PS3s are accessed remotely via ssh so there is no need for X server.
 So this is the first you can turn off. This is performed by change of runlevel from 5 to 3.
-Run level setting is in /etc/inittab file:
+Run level setting is in \url{/etc/inittab} file:
 \begin{verbatim}
 change in line "id:5:initdefault:" the 5 to 3
 \end{verbatim}
@@ -235,7 +237,7 @@ Another resource are services.
 Here you have to consider if the service you want to turn off is really unnecesary.
 In Our PS3 NeworkManger and Wireless supplicant was turn off.
 NOTE: when you turn off network manager, you have to turn on network service otherwise the networking will not run properly.
-For service management within ssh console /usr/sbin/ntsysv manager is quite useful.
+For service management within ssh console \url{/usr/sbin/ntsysv} manager is quite useful.
 After disabling all unnecessary services we got about 130MB of free space.
 
 Yellow dog distributions goes even beyond. They can access other 256MB in PS3 locked for graphics.

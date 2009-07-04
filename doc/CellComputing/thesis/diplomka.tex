@@ -19,7 +19,16 @@
 
 \usepackage{pslatex}
 \usepackage{url}
-\usepackage{hyperref} 
+%% Define a new 'leo' style for the package that will use a smaller font.
+\makeatletter
+\def\url@leostyle{%
+  \@ifundefined{selectfont}{\def\UrlFont{\sf}}{\def\UrlFont{\small\ttfamily}}}
+\makeatother
+%% Now actually use the newly defined style.
+\urlstyle{leo}
+
+%\usepackage{hyperref}
+%\usepackage{html}
 
 \usepackage{listings}
 \usepackage{array}
@@ -82,8 +91,8 @@
 %vkladani headeru
 \pagestyle{headings}
 
-%\setlength{\parindent}{0pt} 
-\setlength{\parskip}{2ex} 
+%\setlength{\parindent}{0pt}
+\setlength{\parskip}{2ex}
 
 \include{aboutCell}
 \include{cellProgramming}
@@ -91,15 +100,15 @@
 \include{implementation}
 \include{results}
 
-\appendix
-\include{sdkInstallation}
-\include{cdContAndInstruction}
-
 %--------------------------------------------------------
 %-------------          REFERENCE           -------------
 %--------------------------------------------------------
 
 \bibliographystyle{plain}
 \bibliography{references}
+
+\appendix
+\include{sdkInstallation}
+\include{cdContAndInstruction}
 
 \end{document}

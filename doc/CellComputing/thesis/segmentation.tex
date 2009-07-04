@@ -121,18 +121,13 @@ On borders on the object propagation stops (forces are zero there).
     \label{fg:flooding}
 \end{figure}
 
-Another illustration uses landscape with a lake (in figure \ref{fg:shore}).
+\par
+Another illustration uses landscape with a lake.
 Water is always at constant altitude and the surface of an landscape changes in time.
 With the changes of the landscape shoreline of the lake changes as well.
 Landscape represents the LS function and water surface represent the surface i.e. k-level set.
 
-\begin{figure}
-    \centering
-    \includegraphics[width=15cm]{data/shore}
-    \caption[Shore illustration of moving level set]{Picture A illustrates a lake with an island with a small rock on the right side. Level set is represent by the shore of that lake (thick line). As the level set moves it involves into picture B, the rock on the right suddenly grows to the left pushing the shoreline accordingly and make the island disappear.}
-    \label{fg:shore}
-\end{figure}
-
+\par
 Advantages of the level set method is that it is implicit (no special stuff needed for merging and splitting surfaces), has only few intuitive parameters, can change the topology and can be performed in all dimension without explicit changes in method.
 
 \end{enumerate}
@@ -231,23 +226,24 @@ Process can be imagined as a tram that lays down tracks before it and picks them
     \label{fg:sparseFilelds}
 \end{figure}
 
-
+\par
 Algorithm:
 \label{alg:sparseFileld}
-1) FOREACH(point $\in$ active set (zero layer)
-  a) compute level set geometry $\vec(x)$
+\par
+1) FOREACH(point $\in$ active set (zero layer)\\
+  a) compute level set geometry $\vec(x)$\\
   b) compute change using upwind scheme in point $\vec(x)$
-
-2) FOREACH(point $\in$ active set compute new embedding value $\phi_{i,j,k}^{n+1}$ (compute \ref{deformEqApprox}).
+\par
+2) FOREACH(point $\in$ active set compute new embedding value $\phi_{i,j,k}^{n+1}$ (compute \ref{deformEqApprox}).\\
 Decide if it falls into [-$\frac{1}{2}$,$\frac{1}{2}$] interval.
 If so, put the $\vec(x)$ into appropriate status lists (list of points, that are changing status) to lower status list if $\phi_{i,j,k}^{n+1}$ moved under the interval and vice versa.
-
-3) Visit points in other layers $L_i$ in order $i=\pm 1,\ldots, \pm N$, and update the grid point values based on the values (by adding and subtracting one unit) of the next inner layer $L_{i\pm1}$.
+\par
+3) Visit points in other layers $L_i$ in order $i=\pm 1,\ldots, \pm N$, and update the grid point values based on the values (by adding and subtracting one unit) of the next inner layer $L_{i\pm1}$.\\
 If more than one $L_{i\pm1}$ neighbor exists then use the neighbor that indicates a level curve closest to that grid point. i.e., use the maximum for the outside layers and minimum for the inside ones.
 If a grid point in layer $L_i$ has no $L_{i\pm1}$ neighbors, then it gets demoted to $L_{i\pm1}$ (the next layer away from the active set).
-
-4) For each status list $S_{\pm1}$, $S_{\pm2}$, \ldots, $S_{\pmN}$ do the following:
-  a) For each element $x_j$ on the status list $S_i$, remove $x_j$ from the list $L_{i\pm1}$ and add it to the $L_{i}$ layer, or in the case of $i\eq \pm ( N + 1)$, remove it from all layers.
+\par
+4) For each status list $S_{\pm1}$, $S_{\pm2}$, $\ldots$, $S_{\pm N}$ do the following:\\
+  a) For each element $x_j$ on the status list $S_i$, remove $x_j$ from the list $L_{i\pm1}$ and add it to the $L_{i}$ layer, or in the case of $i=\pm (N + 1)$, remove it from all layers.\\
   b) Add all $L_{i\pm1}$ neighbors to the $S_{\pm1}$ list.
 
 Even faster method that perform extension and distance reinitialization is $O(N)$ is presented by Peng et al. \cite{pengSparseFields}.
@@ -298,9 +294,9 @@ Note: if $\alpha$ = $\beta$ = 0, the result is the same as from flood-fill metho
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.3\textwidth]{data/leaking1}
-    \includegraphics[width=0.3\textwidth]{data/leaking2}
-    \includegraphics[width=0.3\textwidth]{data/leaking3}
+    \includegraphics[width=0.3\textwidth]{data/png/leaking1}
+    \includegraphics[width=0.3\textwidth]{data/png/leaking2}
+    \includegraphics[width=0.3\textwidth]{data/png/leaking3}
     \caption[Leaking]{Illustration of leaking artefacts.
     \textbf{a)} Initial level set - circle.
     \textbf{b)} Without curvature forces, segmentation leaks into unwanted places.
@@ -337,7 +333,7 @@ Another is that the calculation can be directly visualized by the GPU.
 
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{data/gpuVirtMemory}
+    \includegraphics[width=\textwidth]{data/png/gpuVirtMemory}
     \caption[GPU virtual memory]{Illustration of virtual memory system (taken from \cite{lefonhGPUSolver}). 3D space level set domain (that incoming vertices comes from) is mapped via page table to 2D texture coordinate system.}
     \label{fg:virtual memory on GPU}
 \end{figure}

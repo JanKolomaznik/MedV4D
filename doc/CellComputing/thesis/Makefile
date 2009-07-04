@@ -1,16 +1,15 @@
-################################################################################
-#   Makefile aplikace 'segmentation'
-#   sou��st diplomov� pr�ce 'M��en� objemu v 3D datech'
-#
-#   Autor: V�clav 'Vajicek' Kraj��ek
-#
 
-#images
 ################################################################################
 
 DATA=data
 
-PDF_IMAGES=     bspline_example.pdf
+PDF_IMAGES= $(DATA)/automaticAlignOfSmallData.pdf $(DATA)/ITKFilter.pdf $(DATA)/newDesign.pdf\
+	    $(DATA)/portingCycle.pdf $(DATA)/resultingFilter.pdf $(DATA)/SPEEmbedding.pdf\
+	    $(DATA)/cellLayout.pdf $(DATA)/logo.pdf $(DATA)/originalHierarchy.pdf $(DATA)/PPUCentricModel.pdf\
+	    $(DATA)/streamingModel.pdf $(DATA)/computationProcess.pdf         $(DATA)/multipleDMAList.pdf\
+	    $(DATA)/pipelineModel.pdf      $(DATA)/RCClientCycle.pdf    $(DATA)/sparsefield.pdf\
+	    $(DATA)/flooding.pdf $(DATA)/narrowBands.pdf $(DATA)/RCServerCycle.pdf    $(DATA)/speedFunction.pdf
+
 
 EPS_IMAGES=     cellLayout.eps
 
@@ -25,7 +24,7 @@ ps: dvi
 pdf: ps
 	ps2pdf diplomka.ps
 
-pdf2: *.tex ${PDF_IMAGES}
+pdf2: *.tex ${PDF_IMAGES} bib
 	pdflatex diplomka.tex
 
 cover: bookCover.tex
@@ -33,20 +32,18 @@ cover: bookCover.tex
 
 clean:
 	rm *.log *.aux *.tex.aux *.lot *.out *.toc *.pdf *.dvi *.lof *.bbl. *.blg *.tex~
+	data/*.pdf
+
+tmp:
+	mkdir $(TMP_DIR) 2>/dev/null && true
 
 #pictures through pdf & pdf latex
 ################################################################################
 
-trainingSet.pdf: trainingSet.eps
-	epstopdf $<
+#%.pdf: imgs/schemes/%.svg
+#	inkscape -f $< -T -A $@
 
-registration.pdf: registration.eps
-	epstopdf $<
-
-%.pdf: imgs/schemes/%.svg
-	inkscape -f $< -T -A $@
-
-%.pdf: %.eps
+%.pdf: $(DATA)/%.eps
 	epstopdf $<
 
 #diagram
@@ -104,4 +101,4 @@ plot: plotdata/bsplinebase.gnuplot plotdata/regionstatistics.gnuplot plotdata/be
 	cd plotdata && gnuplot benchmarks.gnuplot
 
 
- 
+
