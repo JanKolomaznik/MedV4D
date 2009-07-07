@@ -8,7 +8,7 @@
 \ifpdf
   \RequirePackage[pdftex]{graphicx}
   \RequirePackage[pdftex]{color}
-  \RequirePackage{ps4pdf}
+  %\RequirePackage{ps4pdf}
 \else
   \RequirePackage[dvips]{graphicx}
   \RequirePackage[dvips]{color}
@@ -49,6 +49,9 @@
 
 \newfloat{algorithm}{thp}{loa}
 \floatname{algorithm}{Algoritmus}
+
+\clubpenalty 10000
+\widowpenalty 10000
 
 \newtheorem{definition}{Definice}
 

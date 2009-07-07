@@ -271,6 +271,7 @@ Common process of porting an application for Cell B.E. processor (figure \ref{fg
 \item Hotspots localization
 \par
 Through profiling of the application on PPE we find most compute intensive parts, hotspots.
+How to profile the application see chapter 5 of \cite{programmersGuide}.
 
 \item Hotspots porting for SPE
 \par
@@ -279,9 +280,11 @@ This mean adaptation the code for SPE (DMA transfers instead of direct memory ac
 Data movement tuning (using different data structures) can be performed until satisfactory performance is obtained.
 \end{enumerate}
 
+\par
 Following steps are necessary for application optimization and speed-up.
 They increase utilization of all the SPU features that means whole register set utilization, dual-issue of instructions, SIMD execution and DMA transfers.
 More detail in \cite{writingPerfApps} part 4:
+\\
 \begin{enumerate}
 \item{Multi-buffering}
 \par
@@ -335,9 +338,10 @@ This step is performed by the compiler but can be performed manually in assembly
 Give the processor hint what result will be after future branch.
 It is done through insertion of special instructions.
 This step should be again performed by the compiler but can be performed manually in assembly language.
-
-The whole process is repeated for every single hotspot.
 \end{enumerate}
+
+\par
+The whole process is repeated for every single hotspot.
 
 \begin{figure}
     \centering
@@ -393,3 +397,27 @@ In this stage is this kind of bugs really hard to track and debug.
 
 \par
 Another option advises are in \cite{compilerOptions}
+
+\section{Profiling }
+
+\par
+Profiling of Cell B.E. application means rather profiling SPE part of the application.
+There are variety of profiling tools.
+The basic one is dynamic performance analysis which can provide many of useful information like how much time the SPE stall and what reason, the CPI (cycle per instruction) ratio, branch count, etc.
+The next one is static performance analysis which can illustrate run of SPE in instruction precision.
+These two analysis are evaluated from program run within full system simulator.
+Both the methods are well described in in tutorial within the cell IDE help.
+
+\par
+Another profiling tools are:
+\begin{enumerate}
+\item{PDT - performance debugging tool}
+\item{OProfile}
+\item{CPC - cell performance counter}
+\end{enumerate}
+
+These tools collect profiling data that can be further processed with VPA (visual performance analyzer), external tool provided by IBM.
+This tool can display the collected data in different charts, time lines or can highlight parts of code that are worth to improve and many other useful features.
+Usage of all these performance tools is described in \cite{performanceToolRef}.
+We wanted to test them all but when we follow the manual we experienced obstacles du to fact we worked on PS3.
+Lately we found out on forums that unfortunately there is poor or none support for these performance tools and PS3.
