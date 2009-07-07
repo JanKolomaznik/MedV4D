@@ -24,15 +24,14 @@ ps: dvi
 pdf: ps
 	ps2pdf diplomka.ps
 
-pdf2: *.tex ${PDF_IMAGES} bib
+pdf2: *.tex ${PDF_IMAGES}
 	pdflatex diplomka.tex
 
 cover: bookCover.tex
 	pdflatex bookCover.tex
 
 clean:
-	rm *.log *.aux *.tex.aux *.lot *.out *.toc *.pdf *.dvi *.lof *.bbl. *.blg *.tex~
-	data/*.pdf
+	rm *.log *.aux *.tex.aux *.lot *.out *.toc *.pdf *.dvi *.lof *.bbl. *.blg *~ *.bbl *.bak data/*.pdf
 
 tmp:
 	mkdir $(TMP_DIR) 2>/dev/null && true
@@ -43,7 +42,7 @@ tmp:
 #%.pdf: imgs/schemes/%.svg
 #	inkscape -f $< -T -A $@
 
-%.pdf: $(DATA)/%.eps
+%.pdf: %.eps
 	epstopdf $<
 
 #diagram
