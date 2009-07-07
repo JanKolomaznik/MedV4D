@@ -68,58 +68,6 @@ MyFiniteDifferenceImageFilter<TInputImage,TOutputImage>
 	// copy the output requested region to the input requested region
 	Superclass::GenerateInputRequestedRegion();
 
-	//		// get pointers to the input
-	//		typename Superclass::InputImagePointer inputPtr =
-	//		const_cast< TInputImage *>( this->GetInput());
-	//
-	//		if ( !inputPtr )
-	//		{
-	//			return;
-	//		}
-	//
-	//		// Get the size of the neighborhood on which we are going to operate.  This
-	//		// radius is supplied by the difference function we are using.
-	//		RadiusType radius = this->GetDifferenceFunction()->GetRadius();
-	//
-	//		// Try to set up a buffered region that will accommodate our
-	//		// neighborhood operations.  This may not be possible and we
-	//		// need to be careful not to request a region outside the largest
-	//		// possible region, because the pipeline will give us whatever we
-	//		// ask for.
-	//
-	//		// get a copy of the input requested region (should equal the output
-	//		// requested region)
-	//		typename TInputImage::RegionType inputRequestedRegion;
-	//		inputRequestedRegion = inputPtr->GetRequestedRegion();
-	//
-	//		// pad the input requested region by the operator radius
-	//		inputRequestedRegion.PadByRadius( radius );
-	//
-	//		//     std::cout << "inputRequestedRegion: " << inputRequestedRegion << std::endl;
-	//		//     std::cout << "largestPossibleRegion: " << inputPtr->GetLargestPossibleRegion() << std::endl;
-	//
-	//		// crop the input requested region at the input's largest possible region
-	//		if ( inputRequestedRegion.Crop(inputPtr->GetLargestPossibleRegion()) )
-	//		{
-	//			inputPtr->SetRequestedRegion( inputRequestedRegion );
-	//			return;
-	//		}
-	//		else
-	//		{
-	//			// Couldn't crop the region (requested region is outside the largest
-	//			// possible region).  Throw an exception.
-	//
-	//			// store what we tried to request (prior to trying to crop)
-	//			inputPtr->SetRequestedRegion( inputRequestedRegion );
-	//
-	//			// build an exception
-	//			InvalidRequestedRegionError e(__FILE__, __LINE__);
-	//			e.SetLocation(ITK_LOCATION);
-	//			e.SetDescription("Requested region is (at least partially) outside the largest possible region.");
-	//			e.SetDataObject(inputPtr);
-	//			throw e;
-	//		}
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -1,17 +1,6 @@
-//#ifndef WORKMANAGER_H_
-//#error File workManager.tcc cannot be included directly!
-//#else
-//
-//namespace M4D {
-//namespace Cell {
 
 #include "common/Common.h"
 #include "../workManager.h"
-
-#ifdef FOR_CELL
-//#include <libspe2.h>
-//#include <libmisc.h> 
-#endif
 
 using namespace M4D::Cell;
 
@@ -71,10 +60,6 @@ WorkManager::WorkManager(uint32 coreCount, RunConfiguration *rc) :
 		{
 			throw std::bad_alloc();
 		}
-
-		// layer storeage init
-//		m_LayerNodeStore = LayerNodeStorageType::New();
-//		m_LayerNodeStore->SetGrowthStrategyToExponential();
 
 		for(uint32 spuIt=0; spuIt<_numOfCores; spuIt++)
 		{
@@ -202,16 +187,8 @@ void WorkManager::AllocateUpdateBuffers()
 	// dynamically but not shrink.  In newer implementations there may be a
 	// squeeze method which can do this.  Alternately, we can implement our own
 	// strategy for downsizing.
-	//	if(m_Layers[0]->Size() > 10000)
-	//	{
-	//		int i = 10;
-	//	}
 	for (uint32 spuIt=0; spuIt<_numOfCores; spuIt++)
 	{
-//		m_UpdateBuffers[spuIt].clear();
-//		m_UpdateBuffers[spuIt].reserve(m_LayerSegments[spuIt].layers[0].Size());
-//		memset(&m_UpdateBuffers[spuIt][0], 0,
-//				m_LayerSegments[spuIt].layers[0].Size() * sizeof(ValueType));
 		m_UpdateBuffers[spuIt].AllocArray(m_LayerSegments[spuIt].layers[0].Size());
 	}
 	//  std::cout << "Update list, after reservation:" << std::endl;
@@ -282,20 +259,3 @@ uint8 WorkManager::GetLongestLayer(uint8 layerNum)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-//template<class TInputImage,class TFeatureImage, class TOutputPixelType>
-//void
-//MySegmtLevelSetFilter_InitPart<TInputImage, TFeatureImage, TOutputPixelType>
-//::PrintUpdateBuf(std::ostream &s)
-//{
-//	s << "size=" << m_Layers[0]->Size() << std::endl;
-//	ValueType *updBuffData = &m_UpdateBuffer[0];
-//    for(uint32 i=0; i<m_Layers[0]->Size(); i++, updBuffData++)
-//    	s << *updBuffData << ", ";
-//  	  s << std::endl;
-//}
-
-///////////////////////////////////////////////////////////////////////////////
-
-//}
-//}
-//#endif

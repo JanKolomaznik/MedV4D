@@ -41,19 +41,8 @@ void LayerGate::UnlinkNode(Address node, uint8 layerNum)
 		_mailbox->SPEPush((uint32) (node.Get64() & 0xffffffff));
 		_mailbox->SPEPush((uint32) (node.Get64() >> 32));
 	}
-//	
-//	// symulate dispatcher run
-//	message = dispatcher->MyPopMessage();
-//	dispatcher->DispatchMessage(message);
 #endif
 }
-
-///////////////////////////////////////////////////////////////////////////////
-
-//void LayerGate::ReturnToNodeStore(SparseFieldLevelSetNode *node)
-//{
-//	m_LayerNodeStore->Return(node);
-//}
 
 ///////////////////////////////////////////////////////////////////////////////
 

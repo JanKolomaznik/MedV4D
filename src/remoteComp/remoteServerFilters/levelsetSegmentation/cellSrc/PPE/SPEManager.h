@@ -3,12 +3,6 @@
 
 #include "SPURequestsDispatcher.h"
 
-#ifdef FOR_CELL
-
-#else
-//#include "SPEProgramSimulator.h"
-#endif
-
 namespace M4D
 {
 namespace Cell
@@ -17,7 +11,6 @@ namespace Cell
 class SPEManager
 {
 public:
-//	SPEManager(SPURequestsDispatcher::TWorkManager *wm);
 	SPEManager(WorkManager *wm);
 	~SPEManager();
 
@@ -43,7 +36,6 @@ private:
 	TimeStepType MergeTimesteps();
 	TimeStepType MergeRMSs();
 	
-//	SPURequestsDispatcher::TWorkManager *_workManager;
 	WorkManager *_workManager;
 	SPURequestsDispatcher _requestDispatcher;
 };

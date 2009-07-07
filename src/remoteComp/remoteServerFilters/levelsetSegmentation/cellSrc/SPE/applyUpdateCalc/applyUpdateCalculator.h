@@ -20,7 +20,7 @@ public:
 	typedef GETRemoteArrayCell<TPixelValue, REMOTEARRAY_BUF_SIZE> TUpdateBufferArray;	
 	typedef SparseFieldLayer<SparseFieldLevelSetNode> MyLayerType;
 	
-#define LocalNodeStoreSize 64
+#define LocalNodeStoreSize 128
 	typedef FixedObjectStoreCell<SparseFieldLevelSetNode, LocalNodeStoreSize> TObjectStore; 
 	
 	void UpdateActiveLayerValues(TimeStepType dt,
@@ -46,10 +46,6 @@ private:
 			return val;
 			}
 	
-//	SparseFieldLevelSetNode *BorrowFromLocalNodeStore()
-//	{
-//		return this->m_layerGate.m_LayerNodeStore->Borrow();
-//	}
 	LayerValuesPropagator::TStatusNeighbPreloadeder m_statusUpdatePreloader;
 	
 	CalculateChangeAndUpdActiveLayerConf *m_stepConfig;

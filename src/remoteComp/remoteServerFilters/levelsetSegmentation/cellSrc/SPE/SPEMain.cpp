@@ -158,13 +158,12 @@ int main(unsigned long long speid __attribute__ ((unused)),
 
 #ifdef SPE_DEBUG_TO_FILE
 	fclose(debugFile);
-#endif
-
-	printf("SPE%d quitting ... \n", SPENum);
+#endif	
 	
 #ifdef SPU_TIMING_TOOL_PROFILING
 	prof_stop();
 #endif
 
+	printf("SPE%d quitting ... \n", SPENum);
 	return 0;
 }

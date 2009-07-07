@@ -1,10 +1,7 @@
 #ifndef SPUREQUESTSDISPATCHER_H_
 #define SPUREQUESTSDISPATCHER_H_
 
-
-
-//to remove
-#include "../supportClasses.h"
+//#include "../supportClasses.h"
 
 #include <pthread.h>
 
@@ -21,9 +18,6 @@
 #include "mailboxSimulator.h"
 #include "../SPE/tools/sharedResources.h"
 #endif
-
-
-//void *ppu_pthread_function(void *arg);
 
 namespace M4D
 {
@@ -53,41 +47,17 @@ struct Tspu_prog_sim
 class SPURequestsDispatcher
 {
 public:
-	//typedef WorkManager<TIndex, float32> TWorkManager;
 	
 	
 	SPURequestsDispatcher(WorkManager *wm, uint32 numSPE);
 	~SPURequestsDispatcher();
 	
 	void DispatchMessage(uint32 SPENum);
-	//	void SendResponse(uint32 res);
 
 	void DispatchPushNodeMess(uint32 message, uint32 SPENum);
 	void DispatchUnlinkMessage(uint32 message, uint32 SPENum);
 
-	//typedef itk::Index<DIM> TIndex;
-
-	
-	//typedef itk::SparseFieldLevelSetNode<TIndex> LayerNodeType;
-	
-	//ESPUCommands WaitForCommand();
-//	void CommandDone();
-	
-//	static M4D::Multithreading::Mutex mutexManagerTurn;
-//	static M4D::Multithreading::CondVar managerTurnValidCvar;
-//	static M4D::Multithreading::Mutex mutexDispatchersTurn;
-//	static M4D::Multithreading::CondVar doneCountCvar;
-//	static M4D::Multithreading::Mutex doneCountMutex;
-//	static uint32 _dipatchersYetWorking;
-//	static bool _managerTurn;
-//	
-//	static void InitBarrier(uint32 n) { _barrier = new M4D::Multithreading::Barrier(n); }
-//	static M4D::Multithreading::Barrier *_barrier;
-
 	WorkManager *_workManager;
-	
-//	uint32 DispatcherThreadFunc();
-//	void Init(TWorkManager *wm, uint32 id);
 	
 	void MyPushMessage(uint32, uint32 SPENum);
 	uint32 MyPopMessage(uint32 SPENum);

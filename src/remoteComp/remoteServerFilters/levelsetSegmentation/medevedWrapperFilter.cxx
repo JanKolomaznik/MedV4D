@@ -9,7 +9,6 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 	::ThreshLSSegMedvedWrapper(Properties *props)
 	: properties_(props)
 	, _levelSetImageData(NULL)
-	//, initSeedNode_(NULL)
 {
 	this->_name = "KlecLevelSet Filter";
 		
@@ -23,16 +22,7 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 		  _levelSetImage = TLevelSetImage::New();
 		  
 	// setup filters
-	SetupBinaryThresholder();	
-	//SetupFastMarchingFilter();  
-//	SetupLevelSetSegmentator();
-	 
-//	thresholdSegmentation->SetFeatureImage( this->GetInputITKImage() );
-//	thresholdSegmentation->SetInput( _levelSetImage );
-////	thresholdSegmentation->SetInput(this->GetOutputITKImage());
-//	thresholder->SetInput( thresholdSegmentation->GetOutput() );
-	
-//	thresholder->SetInput( _levelSetImage );
+	SetupBinaryThresholder();
 	  
 	// connect the pipeline into in/out of the ITKFilter
 	SetOutputITKImage( thresholder->GetOutput() );
@@ -89,7 +79,6 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
   
   // set OutputITKImage as output for fast marching (FM) 
   fastMarching->GraftOutput(_levelSetImage);
-  //fastMarching->GraftOutput(this->GetOutputITKImage());
   
   // let the FM to generate data in to OutputITKImage
   std::cout << "Running fast marching filter ..." << std::endl;
@@ -211,15 +200,6 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
   thresholdSegmentation->SetCurvatureScaling( properties_->curvatureScaling);
   
   thresholdSegmentation->Modified();
-  
-//  FastMarchingFilterType::NodeType::IndexType index;  
-//  index[0] = properties_->seedX;
-//  index[1] = properties_->seedY;
-//  index[2] = properties_->seedZ;
-//  _seeds->ElementAt(0).SetIndex(index);
-//  _seeds->ElementAt(0).SetValue(- properties_->initialDistance);
-  
-  //fastMarching->Modified();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -316,9 +296,6 @@ ThreshLSSegMedvedWrapper<InputElementType, OutputElementType>
 	stream << "Speed scaling: " << properties_->propagationScaling << std::endl;
 	stream << "Curvature scaling: " << properties_->curvatureScaling << std::endl;
 	stream << "==============================================" << std::endl;
-	
-	//fastMarching->PrintSelf(stream, NULL);
-	//thresholdSegmentation->PrintSelf(stream, NULL);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

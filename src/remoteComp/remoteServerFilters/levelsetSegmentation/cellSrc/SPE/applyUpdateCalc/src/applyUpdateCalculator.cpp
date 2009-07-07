@@ -46,15 +46,6 @@ ApplyUpdateSPE::ValueType ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	m_statusNeighPreloader.SetImageProps(&commonConf->statusImageProps);
 	m_statusUpdatePreloader.SetImageProps(&commonConf->statusImageProps);
 
-	//	
-	//	NeighborhoodCell<TPixelValue> outNeigh;
-	//	outNeigh.SetImageProperties( &commonConf->valueImageProps);
-	//	NeighborhoodCell<StatusType> statusNeigh;
-	//	statusNeigh.SetImageProperties( &commonConf->statusImageProps);
-	//
-	//	m_outIter.SetNeighbourhood( &outNeigh);
-	//	m_statusIter.SetNeighbourhood( &statusNeigh);
-
 	// prepare iterator over update value list
 	this->m_updateValuesIt.SetArray(m_stepConfig->updateBuffBegin);
 	// prepare iterator over active layer
@@ -64,13 +55,6 @@ ApplyUpdateSPE::ValueType ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 	uint32 counter = 0;
 	ValueType rms_change_accumulator = this->m_ValueZero;
 
-	//	std::stringstream s;
-	//		  s << "before" << this->m_ElapsedIterations;
-	//		  std::ofstream b(s.str().c_str());
-	//		  m_outIter.GetNeighborhood().PrintImage(b);
-
-	//	m_valueNeighPreloader.Init();
-	//	m_statusNeighPreloader.Init();
 	m_valueNeighPreloader.Reset();
 	m_statusNeighPreloader.Reset();
 	
@@ -113,11 +97,6 @@ ApplyUpdateSPE::ValueType ApplyUpdateSPE::ApplyUpdate(TimeStepType dt)
 #endif
 	
 	//m_statusIter.GetNeighborhood().PrintImageToFile("statusafterUpdateActiveVals");
-
-	//	std::stringstream s3;
-	//		  s3 << "afterOutside" << this->m_ElapsedIterations;
-	//		  std::ofstream a1(s3.str().c_str());
-	//		  m_outIter.GetNeighborhood().PrintImage(a1);
 
 	// Finally, we update all of the layer values (excluding the active layer,
 	// which has already been updated).
@@ -183,11 +162,6 @@ void ApplyUpdateSPE::ProcessStatusLists(MyLayerType *UpLists,
 	this->ProcessStatusList(&DownLists[j], &DownLists[k], down_to,
 			this->m_StatusNull);
 
-	//	 std::stringstream s2;
-	//			  s2 << "beforeOutside" << this->m_ElapsedIterations;
-	//			  std::ofstream b1(s2.str().c_str());
-	//	m_statusIter.GetNeighborhood().PrintImage(b1);
-
 	// Now we are left with the lists of indicies which must be
 	// brought into the outermost layers.  Bring UpList into last inside layer
 	// and DownList into last outside layer.
@@ -209,8 +183,6 @@ void ApplyUpdateSPE::ProcessOutsideList(MyLayerType *OutsideList,
 	OutsideList->InitIterator(it);
 	if(it.HasNext())
 		m_statusUpdatePreloader.Load(*it.Next());
-		
-	//LOUT << "ProcessOutsideList" << std::endl << std::endl;
 
 	// Push each index in the input list into its appropriate status layer
 	// (ChangeToStatus) and update the status image value at that index.
@@ -227,7 +199,6 @@ void ApplyUpdateSPE::ProcessOutsideList(MyLayerType *OutsideList,
 		
 		m_statusIter.SetCenterPixel(ChangeToStatus);
 		node = OutsideList->Front();
-		//D_PRINT("currnode" << "=" << node->m_Value);
 		OutsideList->PopFront();
 
 #ifndef FOR_CELL
@@ -252,12 +223,6 @@ void ApplyUpdateSPE::ProcessStatusList(MyLayerType *InputList,
 	MyLayerType::Iterator it;
 	
 	m_statusUpdatePreloader.Reset();
-	
-//	if(!InputList->Empty())
-//	{
-//		int i=10;
-//		i++;
-//	}
 	
 	InputList->InitIterator(it);
 	if(it.HasNext())
@@ -290,15 +255,13 @@ void ApplyUpdateSPE::ProcessStatusList(MyLayerType *InputList,
 #ifndef FOR_CELL
 		DL_PRINT(DEBUG_ALG, "2: pop ," << OutputList->Size() << " node " << node->m_Value);
 #endif
-
-		//m_Layers[ChangeToStatus]->PushFront(node);
+		
 		this->m_layerGate.PushToLayer(node, ChangeToStatus);
 		// and return it to local store
 		m_localNodeStore.Return(node);
 
 		for (i = 0; i < m_NeighborList.GetSize(); ++i)
 		{
-			//std::cout << "predIncriminovanym:" << std::endl << m_statusIter.GetNeighborhood() << std::endl;
 			neighbor_status = m_statusIter.GetPixel(
 					m_NeighborList.GetArrayIndex(i), bounds_status);
 
@@ -314,8 +277,6 @@ void ApplyUpdateSPE::ProcessStatusList(MyLayerType *InputList,
 				if (bounds_status == true)
 				{
 					node = m_localNodeStore.Borrow();
-					//node = BorrowFromLocalNodeStore();
-
 					// reuse node from this loop coz it should be returned to local store
 					node->m_Value = m_statusIter.GetIndex()
 							+ m_NeighborList.GetNeighborhoodOffset(i);
@@ -354,7 +315,7 @@ void ApplyUpdateSPE::UpdateActiveLayerValues(TimeStepType dt,
 	ValueType centerVal;
 	SparseFieldLevelSetNode *currNode;
 
-#define MAX_TURN_LENGHT 32
+#define MAX_TURN_LENGHT 2
 
 	uint16 turnCounter = 0;
 
@@ -422,7 +383,6 @@ void ApplyUpdateSPE::UpdateActiveLayerValues(TimeStepType dt,
 			}
 			if (flag == true)
 			{
-				//++layerIt;
 				++m_updateValuesIt;
 				this->m_layerIterator.Next();
 				// save to propagte changes in neighbourhoods
@@ -458,10 +418,7 @@ void ApplyUpdateSPE::UpdateActiveLayerValues(TimeStepType dt,
 			node->m_Value = currNode->m_Value;
 
 #ifndef FOR_CELL
-							DL_PRINT(DEBUG_ALG, "A1. pushing up node:" << node->m_Value);
-	      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	      // tady se do uplistu da adresa z linked chain iteratoru, takze je treba 
-	      // si predtim vzit z local objetStore
+		  DL_PRINT(DEBUG_ALG, "A1. pushing up node:" << node->m_Value);
 	      DL_PRINT(DEBUG_ALG, "4: push," << UpList->Size() << " node " << node->m_Value);
 #endif
 	      UpList->PushFront(node);
@@ -488,7 +445,6 @@ void ApplyUpdateSPE::UpdateActiveLayerValues(TimeStepType dt,
 	        }
 	      if (flag == true)
 	        {
-	        //++layerIt;
 	        ++m_updateValuesIt;
 	        this->m_layerIterator.Next();
 	        // save to propagte changes in neighbourhoods
@@ -540,7 +496,6 @@ void ApplyUpdateSPE::UpdateActiveLayerValues(TimeStepType dt,
 	      //rms_change_accumulator += (*updateIt) * (*updateIt);
 	      //D_PRINT("Setting" << m_outIter.GetNeighborhood().m_currIndex << "to" << new_value);
 	      m_outIter.SetCenterPixel( new_value );
-	      //++layerIt;
 	      }
 	    ++m_updateValuesIt;
 	    this->m_layerIterator.Next();

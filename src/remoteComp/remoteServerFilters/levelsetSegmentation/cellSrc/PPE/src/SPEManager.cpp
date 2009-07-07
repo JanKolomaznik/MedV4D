@@ -22,12 +22,11 @@ void *spu_pthread_function(void *arg)
 
 	Tspu_pthread_data *datap = (Tspu_pthread_data *)arg;
 
-	std::cout << "Running SPE thread with param=" << datap->argp << std::endl;
+	D_PRINT("Running SPE thread with param=" << datap->argp);
 
 	if (spe_context_run(datap->spe_ctx, &entry, 0, datap->argp, NULL, NULL) < 0)
 	{
 		perror("Failed running context");
-		//exit (1);
 	}
 	
 	/* Destroy context */
@@ -35,7 +34,6 @@ void *spu_pthread_function(void *arg)
 	if (spe_context_destroy(datap->spe_ctx) != 0)
 	{
 		D_PRINT("Failed destroying context");
-		//exit (1);
 	}
 	
 	D_PRINT("SPE thread exiting (value=" << (uint32) NULL << ")");

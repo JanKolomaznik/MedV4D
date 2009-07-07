@@ -2,8 +2,6 @@
 #define LAYERGATE_H_
 
 #include "../commonTypes.h"
-//#include "../configStructures.h"
-//#include "../tools/cellRemoteArray.h"
 
 #ifdef FOR_PC
 #include "common/Common.h"
@@ -20,17 +18,10 @@ public:
 	
 #ifdef FOR_PC
 	MailboxSimulator *_mailbox;
-#endif
-	
-//	typedef PUTRemoteArrayCell<TIndex, 8> TPutNodeArray;
-	
+#endif	
 	
 	void UnlinkNode(Address node, uint8 layerNum);
-	//void ReturnToNodeStore(SparseFieldLevelSetNode *node);
 	void PushToLayer(SparseFieldLevelSetNode *node, uint8 layerNum);
-	
-//	TPutNodeArray putArrays[LYERCOUNT];
-//	TPutNodeArray unlinkArrays[LYERCOUNT];
 };
 
 }

@@ -44,14 +44,12 @@ public:
 	typedef T TRemoteArrayCellBuf[2][REMOTEARRAY_BUF_SIZE];	
 	typedef GETRemoteArrayCell<T, BUFSIZE> Self;
 	
-	GETRemoteArrayCell(TRemoteArrayCellBuf &buffer);//, T *end);
-	//~GETRemoteArrayCell();
+	GETRemoteArrayCell(TRemoteArrayCellBuf &buffer);
 	
 	void SetArray(Address begin);
 	
 	T GetCurrVal();
 	Self &operator++();
-	//bool HasNext() { return (m_currPos != m_arrayEnd); }
 	
 #ifdef FOR_CELL
 	void WaitForTransfer();
@@ -71,30 +69,6 @@ private:
 	
 	int8 _tag;
 };
-
-//// this array has to notify PPU when flushed to process it
-//template<typename T, uint8 BUFSIZE>
-//class PUTRemoteArrayCell
-//{
-//public:
-//	PUTRemoteArrayCell();
-//	
-//	void push_back(T val);
-//	bool IsFull() { return m_currPos==BUFSIZE; }
-//	void FlushArray(Address whereToFLush);
-//	
-//private:
-//	void CopyData(T *src, T *dest, size_t size);
-//	
-//	T m_buf[2][BUFSIZE] __attribute__ ((aligned (128)));
-//	bool m_currBuf;
-//	uint8 m_currPos;
-//	
-//	Address m_arrayBegin;
-//	Address m_currFlushedPos;
-//	
-//	uint32 id;		// identification (of layer)
-//};
 
 }
 }

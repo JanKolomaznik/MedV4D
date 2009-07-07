@@ -80,11 +80,6 @@ PreloadedNeigborhoods<PixelType, MYSIZE>::SaveCurrItem()
 	{
 		if(_savingCtx._dmaListIter[i])
 		{
-			if(tagIter > 2)
-			{
-				uint32 i=10; i++;
-				D_PRINT("Sem Neeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee!!!!!!!!!!!!!!!!!!!!");
-			}
 			DMAGate::PutList(
 						_imageProps->imageData.Get64(), 
 						_savingCtx.tmpBuf, 
@@ -118,7 +113,6 @@ template<typename PixelType, uint16 MYSIZE>
 void
 PreloadedNeigborhoods<PixelType, MYSIZE>::Reset()
 {
-	//_loading = _loaded = _saving = 0;
 	_loaded = _loading;
 	memset(_loadedNodeNexts, 0, MYSIZE * sizeof(Address));
 }
@@ -172,16 +166,6 @@ PreloadedNeigborhoods<PixelType, MYSIZE>::ReturnTags()
 		DMAGate::ReturnTag(_savingCtx.tags[i]);
 	}
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//template<typename PixelType, uint16 MYSIZE>
-//void
-//PreloadedNeigborhoods<PixelType, MYSIZE>::Fini()
-//{
-//	WaitForLoading();
-//	WaitForSaving();
-//}
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PixelType, uint16 MYSIZE>

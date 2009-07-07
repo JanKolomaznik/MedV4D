@@ -19,7 +19,6 @@ public:
 	
 	void SetImageProps(TImageProps *properties);
 	
-//	void Load(const TIndex &pos);
 	void Load(const SparseFieldLevelSetNode &node);
 	TNeigborhood *GetLoaded();
 	void SaveCurrItem();
@@ -50,11 +49,7 @@ private:
 	TNeigborhood m_buf[MYSIZE];
 	
 	Address _loadedNodeNexts[MYSIZE];
-	
 
-	
-//	bool _loadingInProgress;
-//	bool _savingInProgress;
 	uint8 _loading, _loaded, _saving;
 	
 	TImageProps *_imageProps;

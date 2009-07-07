@@ -142,11 +142,9 @@ private:
 		
 	// threshold filter used to threshold final output to zeros and ones
 	typedef itk::BinaryThresholdImageFilter<InternalITKImageType, typename PredecessorType::ITKOutputImageType>
-	    ThresholdingFilterType;
-	
+	    ThresholdingFilterType;	
 	
 	typename ThresholdingFilterType::Pointer thresholder;
-//	typename ThresholdSegmentationFilterType::Pointer thresholdSegmentation;
 	
 	void ApplyProperties(
 				typename ThresholdSegmentationFilterType::Pointer &thresholdSegmentation);
@@ -157,8 +155,6 @@ private:
 	void RunLevelSetSegmentator(void);
 	
 	void PrintRunInfo(std::ostream &stream);
-	
-//	typedef FastMarchingFilterType::NodeType                NodeType;
 	
 	typedef FastMarchingFilterType::NodeContainer           NodeContainer;
 	NodeContainer::Pointer _seeds;

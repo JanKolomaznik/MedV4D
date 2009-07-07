@@ -6,6 +6,11 @@
 namespace M4D {
 namespace Cell {
 
+/**
+ * This struct has to gather all big statically allocated objects
+ * to allow some of them to be reused within both updateCalc and
+ * ApplyUpdate phases
+ */ 
 struct SharedResources
 {
 	RunConfiguration _runConf __attribute__ ((aligned (128)));	

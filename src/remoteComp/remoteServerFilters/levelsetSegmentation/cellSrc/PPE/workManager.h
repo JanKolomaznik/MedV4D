@@ -1,15 +1,11 @@
 #ifndef WORKMANAGER_H_
 #define WORKMANAGER_H_
 
-//#include "itkObjectStore.h"
-//#include "itkSparseFieldLayer.h"
 #include "objectStore.h"
 #include "../SPE/tools/sparesFieldLayer.h"
 #include "../supportClasses.h"
 #include "../SPE/configStructures.h"
 #include "common/Thread.h"
-
-//#include <vector>
 #include "updateValsAllocator.h"
 
 namespace M4D
@@ -17,11 +13,9 @@ namespace M4D
 namespace Cell
 {
 
-//template<typename IndexType, typename ValueType>
 class WorkManager
 {
 public:
-	//typedef itk::SparseFieldLevelSetNode<IndexType> LayerNodeType;
 	typedef SparseFieldLevelSetNode LayerNodeType;
 	typedef SparseFieldLayer<LayerNodeType> LayerType;
 
@@ -36,7 +30,6 @@ public:
 	void PUSHNode(const TIndex &index, uint32 layerNum);
 	void UNLINKNode(LayerNodeType *node, uint32 layerNum, uint32 segmentID);
 
-	//void SetupRunConfig(RunConfiguration *conf);
 	LayerListType *GetLayers()
 	{
 		return m_LayerSegments;
@@ -64,20 +57,13 @@ public:
 	
 	TimeStepType _dt;
 
-//private:
 	typedef float32 ValueType;
-	//typedef SparseFieldLevelSetNode NodeTypeInSPU;
-
-	//typedef itk::ObjectStore<LayerNodeType> LayerNodeStorageType;
 #define NodeStoreChunkSize 2048
 	typedef PPEObjectStore<LayerNodeType, NodeStoreChunkSize> LayerNodeStorageType;
 	/** Container type used to store updates to the active layer. */
-//	typedef std::vector<ValueType> UpdateBufferType;
-	typedef UpdateValsAllocator<ValueType> UpdateBufferType;
-	
+	typedef UpdateValsAllocator<ValueType> UpdateBufferType;	
 
 	/** Storage for layer node objects. */
-	//LayerNodeStorageType::Pointer m_LayerNodeStore;
 	LayerNodeStorageType m_LayerNodeStore;
 	
 	uint8 GetShortestLayer(uint8 layerNum);
@@ -101,8 +87,5 @@ public:
 
 }
 }
-
-////include implementation
-//#include "src/workManager.tcc"
 
 #endif /*WORKMANAGER_H_*/

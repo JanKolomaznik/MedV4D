@@ -214,15 +214,7 @@ NeighborhoodCell<PixelType>
 template<typename PixelType>
 void
 NeighborhoodCell<PixelType>::SetCenterPixel(PixelType val)
-{
-#ifdef FOR_CELL
-	
-#else	
-	// change the actual image directly if we are on PC
-//	PixelType *begin = (PixelType *) ComputeImageDataPointer(m_currIndex).Get64();
-//		*begin = val;
-#endif
-	
+{	
 	//D_PRINT("SET center: " << val);
 	_dirtyElems |= (1 << (m_size/2));	// set dirty flag
 	// change the buffer as well
@@ -238,14 +230,7 @@ NeighborhoodCell<PixelType>::SetPixel(PixelType val, TOffset pos)
 	TIndex i = m_currIndex + pos;
 	if(IsWithinImage(i))
 	{
-//#ifdef FOR_CELL
 		_dirtyElems |= (1 << GetNeighborhoodIndex(pos));	// set dirty flag
-//#else
-//		// change the actual image directly if we are on PC
-//		PixelType *begin = (PixelType *) ComputeImageDataPointer(i).Get64();
-//		*begin = val;
-//#endif
-		//D_PRINT("ShouldSave:" << (void*) ComputeImageDataPointer(i).Get64());
 		// and change the buffer as well
 		m_buf[traslationTable_[GetNeighborhoodIndex(pos)]] = val;
 	}
@@ -260,11 +245,6 @@ NeighborhoodCell<PixelType>
 {
 	m_currIndex = pos;
 	
-//	if(_loadingCtx->tags[0] == _loadingCtx->tags[1])
-//	{
-//		int i=10; i++;
-//	}
-	
 #define DEFAULT_VAL 0
 	// fill the buff
 	memset((void*)m_buf, DEFAULT_VAL, BUFFER_SIZE * sizeof(PixelType));
@@ -275,11 +255,6 @@ NeighborhoodCell<PixelType>
 	memset((void*)_loadingCtx->_dmaListIter, 0, LIST_SET_NUM * sizeof(TDmaListIter));
 #endif
 	memset((void*)traslationTable_, 0xFF, NEIGHBOURHOOD_SIZE * sizeof(int32));
-	
-//	if(_loadingCtx->tags[0] == _loadingCtx->tags[1])
-//	{
-//		int i=10; i++;
-//	}
 	
 	TIndex iteratingIndex(pos);
 	iteratingIndex[DIM-1] -= RADIUS;

@@ -16,11 +16,6 @@ public:
 	~LinkedChainIteratorCell();
 	
 	void SetBeginEnd(Address begin, Address end);
-
-//	inline bool IsLoading(void) 
-//	{ 
-//		return m_buf[_loadedPos].Next != m_end; 
-//	}
 	
 	inline bool IsLoading(void) 
 	{ 
@@ -47,9 +42,6 @@ public:
 	
 private:
 	
-	
-//	inline bool HasNextForLoad(void) { return (GetCurrItem()->Next != m_end); }
-	//void Load(Address src, Item *dest, size_t size);
 #define BUF_SIZE 3
 	Item m_buf[BUF_SIZE] __attribute__ ((aligned (128)));
 	Address m_realAddresses[BUF_SIZE];
@@ -58,12 +50,7 @@ private:
 	uint8 _loadingPos;
 	uint8 _loadedPos;
 	
-	//Item *m_begin;
 	Address m_end;
-	//Item *m_nextForLoad;
-	//Item *m_currToProcess;
-	
-	//Item *m_currProcessedCentralMemAddress;
 	
 	Address loadedIter;
 	Address processedIter;

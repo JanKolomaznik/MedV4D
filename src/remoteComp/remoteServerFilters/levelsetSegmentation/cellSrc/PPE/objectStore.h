@@ -19,7 +19,6 @@ public:
 	typedef std::vector<TChunk*> VecChunks;
 	
 	PPEObjectStore()
-		//: borrowed(0), maxBorrowed(0) 
 		{}
 	
 	~PPEObjectStore()
