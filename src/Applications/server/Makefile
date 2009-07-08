@@ -16,7 +16,7 @@ OUTPUTNAME=	$(NAME)
 OUTPUTDIR=	$(srcTop)/executables/$(CONF)
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	$(srcTop)/tmp/$(CONF)/$(NAME)
-SRC_DIR=	.
+SRCDIR=	.
 
 M4DLIBS=	-lremoteCompServer$(archPostfix)\
 		-lremoteCompCommons$(archPostfix) \
