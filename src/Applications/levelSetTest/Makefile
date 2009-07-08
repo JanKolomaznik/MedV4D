@@ -9,10 +9,7 @@ include $(srcTop)/project/configurationSelector.mk
 ########################################
 #Name of this project part
 NAME=		levelSetTest$(archPostfix)
-#Names of target sources
-TARGETS=	main
-
-########################################
+#######################################
 
 #Name of target
 OUTPUTNAME=	$(NAME)
@@ -22,74 +19,46 @@ TMP_DIR=	$(srcTop)/tmp/$(CONF)/$(NAME)
 SRC_DIR=	.
 
 LIBDIRS +=	-L$(srcTop)/lib/$(CONF)\
-			-L$(ROOT)/lib64			
-				
+			-L$(ROOT)/lib64
+
 M4DLIBS=	-lImaging$(archPostfix)\
 			-lcommon$(archPostfix)\
 			-lPPEStuff$(archPostfix)\
 			-lSPEPart$(archPostfix)
 
 LIBS +=		$(M4DLIBS) \
-			$(ITKLIBS) \
-			-lboost_thread-mt\
-			-ldl\
-			-lspe2
-			
+		$(ITKLIBS) \
+		-lboost_thread-mt\
+		-ldl\
+		-lspe2
+
 INCLUDES +=	-I$(srcTop) \
-			$(ITKIncludes)
+		$(ITKIncludes)
 
-SRC_FILES=	$(addprefix $(SRC_DIR)/, $(addsuffix .cpp, $(TARGETS)) )
-OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )
-
+#Names of target sources
+OBJ_FILES=	$(TMP_DIR)/main.o
 
 .PHONY: all
-all:		outDir tmpdir Common Imaging libSPEPart libPPEPart dep $(OUTPUT)
-	
-Imaging:
-	$(MAKE) --directory=$(srcTop)/Imaging all
-	
-Common:
-	$(MAKE) --directory=$(srcTop)/common all
-	
-libSPEPart:
-	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE all
-	
-libPPEPart:
-	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/PPE all
-	
-##################
-	
-ImagingCLEAN:
-	$(MAKE) --directory=$(srcTop)/Imaging clean
-	
-CommonCLEAN:
-	$(MAKE) --directory=$(srcTop)/common clean
-	
-libSPEPartCLEAN:
-	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE clean
-	
-libPPEPartCLEAN:
-	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/PPE clean
-
-##################
+all:		outDir tmpdir libSPEPart libPPEPart $(OUTPUT)
 
 .PHONY: build
 build:		cleanall all
 
-.PHONY: dep
-dep:
-		$(CXX) $(INCLUDES) $(CDEPFLAGS) $(DEFS) $(SRC_FILES) | \
-		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
+libSPEPart:
+	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE all
 
-$(TMP_DIR)/%.o:	$(SRC_DIR)/%.cpp	
+libPPEPart:
+	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/PPE all
+
+$(TMP_DIR)/%.o:	$(SRCDIR)/%.cpp
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
--include $(DEP_FILE)
-		
 $(OUTPUT):	$(OBJ_FILES)
-		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
+		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT)
 
 .PHONY: clean
-clean: libSPEPartCLEAN libPPEPartCLEAN #ImagingCLEAN CommonCLEAN
-		$(RM) $(TMP_DIR)/*.o $(DEP_FILE)
-		$(RM) $(OUTPUT)
+clean:
+	$(RM) $(TMP_DIR)/*.o
+	$(RM) $(OUTPUT)
+	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE clean
+	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/PPE clean

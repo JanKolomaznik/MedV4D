@@ -9,18 +9,6 @@ include $(srcTop)/project/pathsDefinitions.mk
 ########################################
 #Name of this project part
 NAME=		common$(archPostfix)
-#Names of target sources
-TARGETS=	Common \
-		Debug \
-		ExceptionBase \
-		Log \
-		Functors \
-		TimeStamp \
-		Thread \
-		perfCounter\
-		fileAccessor\
-		IOStreams
-
 ########################################
 
 #Name of target
@@ -28,28 +16,29 @@ OUTPUTNAME=	lib$(NAME).a
 OUTPUTDIR=	$(srcTop)/lib/$(CONF)
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	$(srcTop)/tmp/$(CONF)/$(NAME)
+SRCDIR := src
 
 INCLUDES=	-I$(srcTop)
 
-SRC_FILES=	$(addsuffix .cpp, $(addprefix src/, $(TARGETS)) )
-OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )
-
+OBJ_FILES=	$(TMP_DIR)/Common.o \
+		$(TMP_DIR)/Debug.o \
+		$(TMP_DIR)/ExceptionBase.o \
+		$(TMP_DIR)/Log.o \
+		$(TMP_DIR)/Functors.o \
+		$(TMP_DIR)/TimeStamp.o \
+		$(TMP_DIR)/Thread.o \
+		$(TMP_DIR)/perfCounter.o\
+		$(TMP_DIR)/fileAccessor.o\
+		$(TMP_DIR)/IOStreams.o
 
 .PHONY: all
-all:	outDir tmpdir dep $(OUTPUT)
+all:	outDir tmpdir $(OUTPUT)
 
 .PHONY: build
 build:	cleanall all
 
-.PHONY: dep
-dep:
-		$(CXX) $(INCLUDES) $(CDEPFLAGS) $(DEFS) $(SRC_FILES) | \
-		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
-
-$(TMP_DIR)/%.o:	src/%.cpp
+$(TMP_DIR)/%.o:	$(SRCDIR)/%.cpp
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
-
--include $(DEP_FILE)
 
 $(OUTPUT):	$(OBJ_FILES)
 		$(AR) $(ARFLAGS) $(OUTPUT) $(OBJ_FILES)

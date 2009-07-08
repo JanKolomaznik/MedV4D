@@ -9,9 +9,6 @@ include $(srcTop)/project/configurationSelector.mk
 ########################################
 #Name of this project part
 NAME=		remoteCompCommons$(archPostfix)
-#Names of target sources
-TARGETS=	netAccessor
-
 ########################################
 
 #Name of target
@@ -19,34 +16,25 @@ OUTPUTNAME=	lib$(NAME).a
 OUTPUTDIR=	$(srcTop)/lib/$(CONF)
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	$(srcTop)/tmp/$(CONF)/$(NAME)
-SRC_DIR=	.
+SRCDIR=	.
 
 INCLUDES+=	-I$(srcTop)
 
-SRC_FILES=	$(addprefix $(SRC_DIR)/, $(addsuffix .cpp, $(TARGETS)) )
-OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )
-
+OBJ_FILES=	$(TMP_DIR)/netAccessor.o
 
 .PHONY: all
-all:		tmpdir dep $(OUTPUT)
+all:		tmpdir $(OUTPUT)
 
 .PHONY: build
 build:		cleanall all
 
-.PHONY: dep
-dep:
-		$(CXX) $(INCLUDES) $(CDEPFLAGS) $(DEFS) $(SRC_FILES) | \
-		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
-
-$(TMP_DIR)/%.o:	$(SRC_DIR)/%.cpp
+$(TMP_DIR)/%.o:	$(SRCDIR)/%.cpp
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
-
--include $(DEP_FILE)
 
 $(OUTPUT):	$(OBJ_FILES)
 		$(AR) $(ARFLAGS) $(OUTPUT) $(OBJ_FILES)
 
 .PHONY: clean
 clean:
-		$(RM) $(TMP_DIR)/*.o $(DEP_FILE)
+		$(RM) $(TMP_DIR)/*.o
 		$(RM) $(OUTPUT)

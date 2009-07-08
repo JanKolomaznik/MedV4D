@@ -9,22 +9,6 @@ include $(srcTop)/project/pathsDefinitions.mk
 ########################################
 #Name of this project part
 NAME=		Imaging$(archPostfix)
-#Names of target sources
-TARGETS=	AbstractDataSet \
-		AbstractFilter \
-		AbstractImageData \
-		AbstractImageFilter \
-		ConnectionInterface \
-		Image \
-		ImageFactory \
-		ModificationManager \
-		PipelineContainer \
-		Pipeline \
-		Ports\
-		DataSetFactory
-
-#		ImageConnection
-#		ImagePorts
 ########################################
 
 #Name of target
@@ -32,35 +16,36 @@ OUTPUTNAME=	lib$(NAME).a
 OUTPUTDIR=	$(srcTop)/lib/$(CONF)
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
 TMP_DIR=	$(srcTop)/tmp/$(CONF)/$(NAME)
-SRC_DIR=	./src
+SRCDIR=	./src
 
 INCLUDES=	-I$(srcTop)
 
-
-SRC_FILES=	$(addprefix $(SRC_DIR)/, $(addsuffix .cpp, $(TARGETS)) )
-OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )
-
+OBJ_FILES=	$(TMP_DIR)/AbstractDataSet.o \
+		$(TMP_DIR)/AbstractFilter.o \
+		$(TMP_DIR)/AbstractImageData.o \
+		$(TMP_DIR)/AbstractImageFilter.o \
+		$(TMP_DIR)/ConnectionInterface.o \
+		$(TMP_DIR)/Image.o \
+		$(TMP_DIR)/ImageFactory.o \
+		$(TMP_DIR)/ModificationManager.o \
+		$(TMP_DIR)/PipelineContainer.o \
+		$(TMP_DIR)/Pipeline.o \
+		$(TMP_DIR)/Ports.o\
+		$(TMP_DIR)/DataSetFactory.o
 
 .PHONY: all
-all:		tmpdir outDir dep $(OUTPUT)
+all:		tmpdir outDir $(OUTPUT)
 
 .PHONY: build
 build:		cleanall all
 
-.PHONY: dep
-dep:
-		$(CXX) $(INCLUDES) $(CDEPFLAGS) $(DEFS) $(SRC_FILES) | \
-		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
-
-$(TMP_DIR)/%.o:	$(SRC_DIR)/%.cpp
+$(TMP_DIR)/%.o:	$(SRCDIR)/%.cpp
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
-
--include $(DEP_FILE)
 
 $(OUTPUT):	$(OBJ_FILES)
 		$(AR) $(ARFLAGS) $(OUTPUT) $(OBJ_FILES)
 
 .PHONY: clean
 clean:
-		$(RM) $(TMP_DIR)/*.o $(DEP_FILE)
+		$(RM) $(TMP_DIR)/*.o
 		$(RM) $(OUTPUT)
