@@ -31,11 +31,11 @@ TMP_DIR=	$(srcTop)/tmp/$(CONF)/$(NAME)
 LIBDIRS=	-L$(srcTop)/lib/$(CONF)\
 			$(QTLibDirs)\
 			-L$(DCMTK_LIB_PATH)\
-			-L$(VTKLibsDir)
+			$(VTKLibsDir)
 
 INCLUDES=	-I$(srcTop) \
 			-I$(srcdir)\
-			-I$(VTKIncludeDir)\
+			$(VTKIncludeDir)\
 			$(QTIncludDirs)\
 			$(ITKIncludes)
 

@@ -22,7 +22,7 @@ TMP_DIR=	$(srcTop)/tmp/$(CONF)/$(NAME)
 SRC_DIR=	./src
 
 INCLUDES=	-I$(srcTop) \
-		-I$(VTKIncludeDir)
+		$(VTKIncludeDir)
 
 SRC_FILES=	$(addprefix $(SRC_DIR)/, $(addsuffix .cpp, $(TARGETS)) )
 OBJ_FILES=	$(addprefix $(TMP_DIR)/, $(addsuffix .o, $(TARGETS)) )

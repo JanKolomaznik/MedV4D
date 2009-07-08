@@ -11,27 +11,18 @@ endif
 
 INCLUDES += -I$(srcTop)/include/3rdParty/asio-devel.ppc64
 
-# path to VTK libraries & includes
-VTKLibsDir=/usr/local/lib/vtk-5.0
-VTKIncludeDir=/usr/local/include/vtk-5.0
 endif
 ##########################################
 ifeq "$(ARCH)" "Cell_PCSimulation"
 # path to ITK libraries
 ITKLibsDir=$(srcTop)/lib/3rdParty/Debug/ITK.i686
 
-# path to VTK libraries & includes
-VTKLibsDir=/usr/local/lib/vtk-5.0
-VTKIncludeDir=/usr/local/include/vtk-5.0
 endif
 ##########################################
 ifeq "$(ARCH)" "CellPCTest"
 # path to ITK libraries
 ITKLibsDir=$(srcTop)/lib/3rdParty/Debug/ITK.i686
 
-# path to VTK libraries & includes
-VTKLibsDir=/usr/local/lib/vtk-5.0
-VTKIncludeDir=/usr/local/include/vtk-5.0
 endif
 ##########################################
 ifeq "$(ARCH)" "CellNative"
@@ -43,9 +34,6 @@ else
 ITKLibsDir=$(srcTop)/lib/3rdParty/Debug/ITK.ppc64
 endif
 
-# path to VTK libraries & includes
-VTKLibsDir=/usr/local/lib/vtk-5.0
-VTKIncludeDir=/usr/local/include/vtk-5.0
 endif
 ##########################################
 ifeq "$(ARCH)" "PC"
@@ -57,11 +45,14 @@ else
 ITKLibsDir=$(srcTop)/lib/3rdParty/Debug/ITK.i686
 #ITKLibsDir=/usr/local/lib/InsightToolkit
 endif
-# path to VTK libraries & includes
-VTKLibsDir=/usr/local/lib/vtk-5.0
-VTKIncludeDir=/usr/local/include/vtk-5.0
+
 endif
 ##########################################
+
+# path to VTK libraries & includes
+VTKLibsDir=	-L/usr/local/lib/vtk-5.0
+VTKIncludeDir=	-I/usr/include/vtk\
+		-I/usr/local/include/vtk-5.0
 
 ITKIncludeDir=$(srcTop)/include/3rdParty/ITK.noarch
 ITKIncludes=	-I$(ITKIncludeDir)\

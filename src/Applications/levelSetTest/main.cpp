@@ -104,9 +104,9 @@ int main(int argc, char *argv[]) {
 		props->maxIterations = 1;
 		props->initialDistance = 5;
 #else
-		props->maxIterations = 800;
+		props->maxIterations = 600;
 		props->initialDistance = (double)
-					(im->GetDimensionExtents( 0 ).maximum - im->GetDimensionExtents( 0 ).minimum) / 2.2;
+					(im->GetDimensionExtents( 0 ).maximum - im->GetDimensionExtents( 0 ).minimum) / 4.5;
 #endif
 		m_filter =  new FilterType( props);
 		
