@@ -71,7 +71,7 @@ TMP_DIR=	$(srcTop)/tmp/$(CONF)/$(NAME)
 
 INCLUDES=	-I$(srcTop)\
 			-I$(srcdir)\
-			-I$(VTKIncludeDir)\
+			$(VTKIncludeDir)\
 			$(QTIncludDirs)
 
 MOCOUTPUT=	$(addprefix $(TMP_DIR)/moc_, $(MOCINPUT:.h=.cpp) )
