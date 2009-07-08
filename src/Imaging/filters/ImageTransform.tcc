@@ -229,11 +229,10 @@ ImageTransform< ElementType, dim >
 }
 
 template< typename ElementType, uint32 dim >
-bool
+void
 ImageTransform< ElementType, dim >
-::ExecuteTransformation()
+::Rescale()
 {
-	bool result = false;
 	int32 minimums[ dim ];
         int32 maximums[ dim ];
 	float32 voxelExtents[ dim ];
@@ -244,6 +243,14 @@ ImageTransform< ElementType, dim >
 		voxelExtents[ d ] = this->out->GetDimensionExtents( d ).elementExtent / static_cast< Properties* >( this->_properties )->_scale[ d ];
 	}
 	this->SetOutputImageSize( minimums, maximums, voxelExtents );
+}
+
+template< typename ElementType, uint32 dim >
+bool
+ImageTransform< ElementType, dim >
+::ExecuteTransformation()
+{
+	bool result = false;
 	LinearInterpolator< ImageType > interpolator( this->in );
 	result = TransformImage< ElementType >( *(this->in), *(this->out), this->_properties,static_cast< InterpolatorBase< ImageType >* >( &interpolator ) );
 	return result;
@@ -260,6 +267,7 @@ ImageTransform< ElementType, dim >
 		return false;
 	}
 	bool result = false;
+	Rescale();
 	result = ExecuteTransformation();
 	if( result ) {
 		_writerBBox->SetModified();

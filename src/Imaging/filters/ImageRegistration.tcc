@@ -170,6 +170,7 @@ ImageRegistration< ElementType, dim >
 		this->_writerBBox->SetState( MS_CANCELED );
 		return false;
 	}
+	this->Rescale();
 	if ( _automatic )
 	{
 		Vector< double, 2 * dim > v;

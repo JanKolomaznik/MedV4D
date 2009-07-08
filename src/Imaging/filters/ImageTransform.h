@@ -88,6 +88,9 @@ protected:
 	bool
 	ExecuteTransformation();
 
+	void
+	Rescale();
+
 	virtual bool
 	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
 
