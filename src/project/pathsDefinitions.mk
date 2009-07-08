@@ -50,7 +50,7 @@ endif
 ##########################################
 
 # path to VTK libraries & includes
-VTKLibsDir=	-L/usr/local/lib/vtk-5.0
+VTKLibsDir=	-L$(srcTop)/lib/3rdParty/Debug/VTK.5.0.i686
 VTKIncludeDir=	-I/usr/include/vtk\
 		-I/usr/local/include/vtk-5.0
 
