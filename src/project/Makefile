@@ -4,7 +4,7 @@ srcTop=..
 all:	libs Applications
 
 .PHONY:libs
-libs:	common backendForDICOM Imaging GUI vtkIntegration
+libs:	common backendForDICOM Imaging GUI vtkIntegration commonRCPart clientRCPart serverRCPart
 
 .PHONY:clean-all
 clean-all:	clean-libs clean-Applications

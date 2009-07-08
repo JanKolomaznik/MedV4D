@@ -8,7 +8,7 @@ include $(srcTop)/project/configurationSelector.mk
 
 ########################################
 #Name of this project part
-NAME=		RemoteCellLevelSet
+NAME=		LevelSetClient
 #Names of target sources
 TARGETS=	main \
 		mainWindow \

@@ -8,7 +8,7 @@ include $(srcTop)/project/pathsDefinitions.mk
 
 ########################################
 #Name of this project part
-NAME=		remoteCompServer$(archPostfix)
+NAME=		MedvedServer$(archPostfix)
 #Names of target sources
 TARGETS=	main
 
@@ -36,7 +36,7 @@ LIBS=		$(M4DLIBS) \
 
 LIBDIRS=	-L$(srcTop)/lib/$(CONF)\
 			-L$(ROOT)/lib64
-			
+
 INCLUDES+=	-I$(srcTop) \
 		$(ITKIncludes)
 
@@ -57,39 +57,39 @@ all:		printInfo tmpdir Common Imaging commonRCPart serverRCPart libSPUPart PPESt
 
 commonRCPart:
 	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart all
-	
+
 serverRCPart:
 	$(MAKE) --directory=$(srcTop)/remoteComp/serverPart all
-	
+
 Imaging:
 	$(MAKE) --directory=$(srcTop)/Imaging all
-	
+
 Common:
 	$(MAKE) --directory=$(srcTop)/common all
-	
+
 libSPUPart:
 	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE all
-	
+
 PPEStuf:
 	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/PPE all
-	
+
 ##################
 
 commonRCPartCLEAN:
 	$(MAKE) --directory=$(srcTop)/remoteComp/commonPart clean
-	
+
 serverRCPartCLEAN:
 	$(MAKE) --directory=$(srcTop)/remoteComp/serverPart clean
-	
+
 ImagingCLEAN:
 	$(MAKE) --directory=$(srcTop)/Imaging clean
-	
+
 CommonCLEAN:
 	$(MAKE) --directory=$(srcTop)/common clean
-	
+
 libSPUPartCLEAN:
 	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/SPE clean
-	
+
 PPEStufCLEAN:
 	$(MAKE) --directory=$(srcTop)/remoteComp/remoteServerFilters/levelsetSegmentation/cellSrc/PPE clean
 
@@ -103,13 +103,13 @@ dep:
 		$(CXX) $(INCLUDES) $(CDEPFLAGS) $(DEFS) $(SRC_FILES) | \
 		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
 
-$(TMP_DIR)/%.o:	$(SRC_DIR)/%.cpp	
+$(TMP_DIR)/%.o:	$(SRC_DIR)/%.cpp
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 -include $(DEP_FILE)
-		
+
 $(OUTPUT):	$(OBJ_FILES)
-		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
+		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT)
 
 .PHONY: clean
 clean: libSPUPartCLEAN PPEStufCLEAN serverRCPartCLEAN #ImagingCLEAN CommonCLEAN
