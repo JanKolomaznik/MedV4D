@@ -86,7 +86,7 @@ public:
 
 protected:
 	bool
-	ExecuteTransformation();
+	ExecuteTransformation( uint32 transformSampling );
 
 	void
 	Rescale();

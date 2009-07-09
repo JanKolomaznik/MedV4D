@@ -40,18 +40,18 @@ CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 2 
 	int32 refYStride = strides[1];
 	uint32 refWidth = size[0];
 	uint32 refHeight = size[1];
-	typename ImageRegistration< ElementType, 2 >::HistCellType base = 1.0 / ((refHeight/HISTOGRAM_SAMPLING_DIVISOR) * (refWidth/HISTOGRAM_SAMPLING_DIVISOR));
-	for ( j = 0; j < refHeight / HISTOGRAM_SAMPLING_DIVISOR; ++j )
+	typename ImageRegistration< ElementType, 2 >::HistCellType base = 1.0 / ( ( refWidth < TRANSFORM_SAMPLING ? refWidth : TRANSFORM_SAMPLING ) * ( refHeight < TRANSFORM_SAMPLING ? refHeight : TRANSFORM_SAMPLING ) );
+	for ( j = 0; j < ( refHeight < TRANSFORM_SAMPLING ? refHeight : TRANSFORM_SAMPLING ); ++j )
 	{
-		ElementType *in = sin + HISTOGRAM_SAMPLING_DIVISOR*j*inYStride;
-		ElementType *ref = sref + HISTOGRAM_SAMPLING_DIVISOR*j*refYStride;
-		for ( i = 0; i < refWidth / HISTOGRAM_SAMPLING_DIVISOR; ++i )
+		ElementType *in = sin + ( refHeight < TRANSFORM_SAMPLING ? 1 : refHeight / TRANSFORM_SAMPLING ) * j * inYStride;
+		ElementType *ref = sref + ( refHeight < TRANSFORM_SAMPLING ? 1 : refHeight / TRANSFORM_SAMPLING ) * j * refYStride;
+		for ( i = 0; i < ( refWidth < TRANSFORM_SAMPLING ? refWidth : TRANSFORM_SAMPLING ); ++i )
 		{
 			index[0] = (*in) / HISTOGRAM_VALUE_DIVISOR;
 			index[1] = (*ref) / HISTOGRAM_VALUE_DIVISOR;
 			jointHist.SetValueCell( index, jointHist.Get( index ) + base );
-			in += HISTOGRAM_SAMPLING_DIVISOR * inXStride;
-			ref += HISTOGRAM_SAMPLING_DIVISOR * refXStride;
+			in += ( refWidth < TRANSFORM_SAMPLING ? 1 : refWidth / TRANSFORM_SAMPLING ) * inXStride;
+			ref += ( refWidth < TRANSFORM_SAMPLING ? 1 : refWidth / TRANSFORM_SAMPLING ) * refXStride;
 		}
 	}
 }
@@ -79,19 +79,19 @@ CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 3 
 	uint32 refWidth = size[0];
 	uint32 refHeight = size[1];
 	uint32 refDepth = size[2];
-	typename ImageRegistration< ElementType, 3 >::HistCellType base = 1.0 / ((refHeight/HISTOGRAM_SAMPLING_DIVISOR) * (refWidth/HISTOGRAM_SAMPLING_DIVISOR) * refDepth);
+	typename ImageRegistration< ElementType, 3 >::HistCellType base = 1.0 / ( ( refWidth < TRANSFORM_SAMPLING ? refWidth : TRANSFORM_SAMPLING ) * ( refHeight < TRANSFORM_SAMPLING ? refHeight : TRANSFORM_SAMPLING ) * refDepth );
 	for ( k = 0; k < refDepth; ++k )
-		for ( j = 0; j < refHeight / HISTOGRAM_SAMPLING_DIVISOR; ++j )
+		for ( j = 0; j < ( refHeight < TRANSFORM_SAMPLING ? refHeight : TRANSFORM_SAMPLING ); ++j )
 		{
-			ElementType *in = sin + k*inZStride + HISTOGRAM_SAMPLING_DIVISOR*j*inYStride;
-			ElementType *ref = sref + k*refZStride + HISTOGRAM_SAMPLING_DIVISOR*j*refYStride;
-			for ( i = 0; i < refWidth / HISTOGRAM_SAMPLING_DIVISOR; ++i )
+			ElementType *in = sin + k*inZStride + ( refHeight < TRANSFORM_SAMPLING ? 1 :  refHeight / TRANSFORM_SAMPLING ) * j * inYStride;
+			ElementType *ref = sref + k*refZStride + ( refHeight < TRANSFORM_SAMPLING ? 1 : refHeight / TRANSFORM_SAMPLING ) * j * refYStride;
+			for ( i = 0; i < ( refWidth < TRANSFORM_SAMPLING ? refWidth : TRANSFORM_SAMPLING ); ++i )
 			{
 				index[0] = (*in) / HISTOGRAM_VALUE_DIVISOR;
 				index[1] = (*ref) / HISTOGRAM_VALUE_DIVISOR;
 				jointHist.SetValueCell( index, jointHist.Get( index ) + base );
-				in += HISTOGRAM_SAMPLING_DIVISOR * inXStride;
-				ref += HISTOGRAM_SAMPLING_DIVISOR * refXStride;
+				in += ( refWidth < TRANSFORM_SAMPLING ? 1 : refWidth / TRANSFORM_SAMPLING ) * inXStride;
+				ref += ( refWidth < TRANSFORM_SAMPLING ? 1 : refWidth / TRANSFORM_SAMPLING ) * refXStride;
 			}
 		}
 }
@@ -149,7 +149,7 @@ ImageRegistration< ElementType, dim >
 	}
 	this->SetRotation( v1 );
 	this->SetTranslation( v2 );
-	this->ExecuteTransformation();
+	this->ExecuteTransformation( TRANSFORM_SAMPLING );
 	double res = 1.0;
 	if ( referenceImage )
 	{
@@ -182,7 +182,7 @@ ImageRegistration< ElementType, dim >
 		double fret;
 		_optimization->optimize( v, fret, this );
 	}
-	else this->ExecuteTransformation();
+	this->ExecuteTransformation();
 	bool result = true;
 	/*if( result ) {
 		this->_writerBBox->SetModified();

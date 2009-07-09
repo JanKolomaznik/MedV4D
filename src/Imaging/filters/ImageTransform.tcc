@@ -22,7 +22,7 @@ namespace Imaging
 
 template< typename ElementType >
 bool
-TransformImage( const Image< ElementType, 2 > &in, Image< ElementType, 2 > &out, AbstractFilter::Properties* properties, InterpolatorBase< Image< ElementType, 2 > >* interpolator, int32 sliceNum )
+TransformImage( const Image< ElementType, 2 > &in, Image< ElementType, 2 > &out, AbstractFilter::Properties* properties, InterpolatorBase< Image< ElementType, 2 > >* interpolator, int32 sliceNum, uint32 transformSampling )
 {
 	
 	ElementType *sPointer;
@@ -78,8 +78,8 @@ template< typename ElementType >
 class TransformSlice
 {
 public:
-	TransformSlice( const Image< ElementType, 3 > &input, Image< ElementType, 3 > &output, typename ImageTransform< ElementType, 3 >::Properties* properties, InterpolatorBase< Image< ElementType, 3 > >* interp, int32 sNum )
-		: in( input ), out( output ), prop( properties ), interpolator( interp ), sliceNum( sNum )
+	TransformSlice( const Image< ElementType, 3 > &input, Image< ElementType, 3 > &output, typename ImageTransform< ElementType, 3 >::Properties* properties, InterpolatorBase< Image< ElementType, 3 > >* interp, int32 sNum, uint32 tSampling )
+		: in( input ), out( output ), prop( properties ), interpolator( interp ), sliceNum( sNum ), transformSampling( tSampling )
 	{}
 	void operator()()
 	{
@@ -122,7 +122,7 @@ public:
 						);
 
 		Vector< CoordType, 3 > RotationMatrixY(
-						CoordType( std::cos( -prop->_rotation[1] ), 0.0, -std::sin( -prop->_rotation[1] ) ),
+						CoordType( std::cos( -prop->_rotation[0] ), 0.0, -std::sin( -prop->_rotation[0] ) ),
 						CoordType( 0.0, 1.0, 0.0 ),
 						CoordType( std::sin( -prop->_rotation[1] ), 0.0,  std::cos( -prop->_rotation[1] ) )
 						);
@@ -135,15 +135,15 @@ public:
 
 		int32 k = sliceNum;
 		if ( k >= depth ) return;
-		for( int32 j = 0; j < height; ++j ) {
+		for( int32 j = 0; j < (int32)( ( transformSampling == 0 || height < transformSampling ) ? height : transformSampling ); ++j ) {
 
-			pointer = sPointer + k*zStride + j*yStride;
+			pointer = sPointer + k*zStride + j * ( ( transformSampling == 0 || height < transformSampling ) ? 1 : height / transformSampling ) * yStride;
 
-			for( int32 i = 0; i < (int32)width; ++i ) {
+			for( int32 i = 0; i < (int32)( ( transformSampling == 0 || width < transformSampling ) ? width : transformSampling ); ++i ) {
 
-				CoordType point( ( xExtent * i - newwidth/2 ) * RotationMatrixX[0][0] + ( yExtent * j - newheight/2 ) * RotationMatrixX[0][1] + ( zExtent * k - newdepth/2 ) * RotationMatrixX[0][2], 
-						 ( xExtent * i - newwidth/2 ) * RotationMatrixX[1][0] + ( yExtent * j - newheight/2 ) * RotationMatrixX[1][1] + ( zExtent * k - newdepth/2 ) * RotationMatrixX[1][2],
-						 ( xExtent * i - newwidth/2 ) * RotationMatrixX[2][0] + ( yExtent * j - newheight/2 ) * RotationMatrixX[2][1] + ( zExtent * k - newdepth/2 ) * RotationMatrixX[2][2] );
+				CoordType point( ( xExtent * ( ( transformSampling == 0 || width < transformSampling ) ? i : i * width / transformSampling ) - newwidth/2 ) * RotationMatrixX[0][0] + ( yExtent * ( ( transformSampling == 0 || height < transformSampling ) ? j : j * height / transformSampling ) - newheight/2 ) * RotationMatrixX[0][1] + ( zExtent * k - newdepth/2 ) * RotationMatrixX[0][2], 
+						 ( xExtent * ( ( transformSampling == 0 || width < transformSampling ) ? i : i * width / transformSampling ) - newwidth/2 ) * RotationMatrixX[1][0] + ( yExtent * ( ( transformSampling == 0 || height < transformSampling ) ? j : j * height / transformSampling ) - newheight/2 ) * RotationMatrixX[1][1] + ( zExtent * k - newdepth/2 ) * RotationMatrixX[1][2],
+						 ( xExtent * ( ( transformSampling == 0 || width < transformSampling ) ? i : i * width / transformSampling ) - newwidth/2 ) * RotationMatrixX[2][0] + ( yExtent * ( ( transformSampling == 0 || height < transformSampling ) ? j : j * height / transformSampling ) - newheight/2 ) * RotationMatrixX[2][1] + ( zExtent * k - newdepth/2 ) * RotationMatrixX[2][2] );
 
 				CoordType  tmp( point[0] * RotationMatrixY[0][0] + point[1] * RotationMatrixY[0][1] + point[2] * RotationMatrixY[0][2],
 						point[0] * RotationMatrixY[1][0] + point[1] * RotationMatrixY[1][1] + point[2] * RotationMatrixY[1][2],
@@ -178,7 +178,7 @@ public:
 
 				else *pointer = interpolator->Get( point );
 			
-				pointer += xStride;
+				pointer += ( ( transformSampling == 0 || width < transformSampling ) ? 1 : width / transformSampling ) * xStride;
 			}
 		}
 	}
@@ -188,12 +188,13 @@ private:
 	typename ImageTransform< ElementType, 3 >::Properties* prop;
 	InterpolatorBase< Image< ElementType, 3 > >* interpolator;
 	int32 sliceNum;
+	uint32 transformSampling;
 	
 };
 
 template< typename ElementType >
 bool
-TransformImage( const Image< ElementType, 3 > &in, Image< ElementType, 3 > &out, AbstractFilter::Properties* properties, InterpolatorBase< Image< ElementType, 3 > >* interpolator )
+TransformImage( const Image< ElementType, 3 > &in, Image< ElementType, 3 > &out, AbstractFilter::Properties* properties, InterpolatorBase< Image< ElementType, 3 > >* interpolator, uint32 transformSampling )
 {
 	typename ImageTransform< ElementType, 3 >::Properties* prop = dynamic_cast< typename ImageTransform< ElementType, 3 >::Properties* >( properties );
 	
@@ -202,7 +203,7 @@ TransformImage( const Image< ElementType, 3 > &in, Image< ElementType, 3 > &out,
 	out.GetPointer( size, strides );
 	//Multithreading::Thread* thr[size[2]];
 	uint32 i;
-	for ( i = 0; i < size[2]; ++i ) /*thr[i] = new Multithreading::Thread(*/{ TransformSlice< ElementType > ts( in, out, prop, interpolator, i ); ts();}// );
+	for ( i = 0; i < size[2]; ++i ) /*thr[i] = new Multithreading::Thread(*/{ TransformSlice< ElementType > ts( in, out, prop, interpolator, i, transformSampling ); ts();}// );
 	/*for ( i = 0; i < size[2]; ++i )	thr[i]->join();
 	for ( i = 0; i < size[2]; ++i )	delete thr[i];*/
 	
@@ -248,11 +249,11 @@ ImageTransform< ElementType, dim >
 template< typename ElementType, uint32 dim >
 bool
 ImageTransform< ElementType, dim >
-::ExecuteTransformation()
+::ExecuteTransformation( uint32 transformSampling = 0 )
 {
 	bool result = false;
 	LinearInterpolator< ImageType > interpolator( this->in );
-	result = TransformImage< ElementType >( *(this->in), *(this->out), this->_properties,static_cast< InterpolatorBase< ImageType >* >( &interpolator ) );
+	result = TransformImage< ElementType >( *(this->in), *(this->out), this->_properties,static_cast< InterpolatorBase< ImageType >* >( &interpolator ), transformSampling );
 	return result;
 }
 
