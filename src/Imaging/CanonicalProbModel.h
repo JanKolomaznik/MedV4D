@@ -91,6 +91,10 @@ struct GridPointRecord
 		BINSTREAM_WRITE_MACRO( stream, inProbabilityPos );
 		BINSTREAM_WRITE_MACRO( stream, outProbabilityPos );
 		BINSTREAM_WRITE_MACRO( stream, logRatioPos );
+
+		inHistogram.Save( stream );
+		outHistogram.Save( stream );
+		logHistogram.Save( stream );
 	}
 
 	void
@@ -99,11 +103,19 @@ struct GridPointRecord
 		BINSTREAM_READ_MACRO( stream, inProbabilityPos );
 		BINSTREAM_READ_MACRO( stream, outProbabilityPos );
 		BINSTREAM_READ_MACRO( stream, logRatioPos );
+
+		inHistogram.LoadTo( stream );
+		outHistogram.LoadTo( stream );
+		logHistogram.LoadTo( stream );
 	}
 
 	float32	inProbabilityPos;
 	float32	outProbabilityPos;
 	float32	logRatioPos;
+
+	Histogram< float32 >	inHistogram;
+	Histogram< float32 >	outHistogram;
+	Histogram< float32 >	logHistogram;
 };
 
 struct LayerStats
@@ -152,6 +164,24 @@ public:
 	LogRatioProbabilityPosition( const Coordinates &pos )
 	{
 		return GetPointRecord( GetClosestPoint( pos ) ).logRatioPos;
+	}
+
+	float32
+	InProbabilityIntensityPosition( const Coordinates &pos, IntensityType intensity )
+	{
+		return GetPointRecord( GetClosestPoint( pos ) ).inHistogram[ intensity ];
+	}
+
+	float32
+	OutProbabilityIntensityPosition( const Coordinates &pos, IntensityType intensity )
+	{
+		return GetPointRecord( GetClosestPoint( pos ) ).outHistogram[ intensity ];
+	}
+
+	float32
+	LogRatioProbabilityIntensityPosition( const Coordinates &pos, IntensityType intensity )
+	{
+		return GetPointRecord( GetClosestPoint( pos ) ).logHistogram[ intensity ];
 	}
 
 	Vector< float32, 3 >

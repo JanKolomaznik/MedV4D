@@ -23,7 +23,7 @@ template< typename CellType >
 class Histogram
 {
 public:
-	Histogram( int32 min, int32 max, bool storeOutliers = true ) :
+	Histogram( int32 min=0, int32 max=255, bool storeOutliers = true ) :
 		_minCell( min ), _maxCell( max ), _storeOutliers( storeOutliers ), _sum( 0 )
 	{
 		_cells.resize( _maxCell - _minCell + 2 );
@@ -57,6 +57,8 @@ public:
 		 	_maxCell = histogram._maxCell;
 			_storeOutliers = histogram._storeOutliers;
 			_sum = histogram._sum;
+			
+			return *this;
 		}
 
 	void
@@ -171,6 +173,28 @@ public:
 		result->_sum = sum;
 
 		return result;
+	}
+
+	void
+	LoadTo( std::istream &stream )
+	{
+		//int32		minCell;
+		//int32		maxCell;
+		//bool		storeOutliers;
+		//CellType	sum;
+
+		BINSTREAM_READ_MACRO( stream, _minCell );
+		BINSTREAM_READ_MACRO( stream, _maxCell );
+		BINSTREAM_READ_MACRO( stream, _storeOutliers );
+		BINSTREAM_READ_MACRO( stream, _sum );
+		
+		_cells.resize( _maxCell - _minCell + 2 );
+
+		CellType tmp;
+		for( unsigned i = 0; i < _cells.size(); ++i ) {
+			BINSTREAM_READ_MACRO( stream, tmp );
+			_cells[i] = tmp;
+		}
 	}
 protected:
 	typedef std::vector<CellType> CellVector;
