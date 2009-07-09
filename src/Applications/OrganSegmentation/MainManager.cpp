@@ -60,7 +60,7 @@ MainManager::InitInput( M4D::Imaging::AbstractDataSet::Ptr inputDataSet )
 }
 
 void
-MainManager::ProcessResultDatasets( InputImagePtr image, GDataSet::Ptr splines )
+MainManager::ProcessResultDatasets( InputImageType::Ptr image, GDataSet::Ptr splines )
 {
 	_inResultGDatasetConnection->PutDataset( splines );
 	

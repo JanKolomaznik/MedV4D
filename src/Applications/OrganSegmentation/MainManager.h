@@ -6,17 +6,7 @@
 #include <QtCore>
 #include "SliceSplineFill.h"
 
-typedef M4D::Imaging::AbstractImage::Ptr		AbstractImagePtr;
-typedef M4D::Imaging::Image< int16, 3 >			InputImageType;
-typedef M4D::Imaging::Geometry::BSpline<float32,2>	CurveType;
-typedef M4D::Imaging::SlicedGeometry< CurveType >	GDataSet;
-
-typedef InputImageType::Ptr	InputImagePtr;
-
-typedef M4D::Imaging::ConnectionTyped< M4D::Imaging::AbstractImage >	InImageConnection;
-typedef M4D::Imaging::ConnectionTyped< InputImageType >			ImageConnectionType;
-typedef M4D::Imaging::ConnectionTyped< GDataSet >			GDatasetConnectionType;
-typedef M4D::Imaging::ConnectionTyped< M4D::Imaging::Mask3D >		Mask3DConnectionType;
+#include "TypeDeclarations.h"
 
 class MainManager;
 
@@ -40,18 +30,18 @@ public:
 	GetInputConnection()
 		{ return _inConvConnection; }
 
-	InputImagePtr
+	InputImageType::Ptr
 	GetInputImage()
 		{ return _inputImage = _inConvConnection->GetDatasetPtrTyped(); }
 
 	void
-	ProcessResultDatasets( InputImagePtr image, GDataSet::Ptr splines );
+	ProcessResultDatasets( InputImageType::Ptr image, GDataSet::Ptr splines );
 protected:
 	void
 	CreateResultProcessPipeline();
 
 	M4D::Dicom::DicomObjSetPtr		_inputDcmSet;
-	InputImagePtr 					_inputImage;
+	InputImageType::Ptr 					_inputImage;
 	InImageConnection				*_inConnection;
 	ImageConnectionType				*_inConvConnection;
 	M4D::Imaging::PipelineContainer			_conversionPipeline;

@@ -47,7 +47,7 @@ public:
 	GetOutputGeometry()
 		{ return _dataset; }
 
-	InputImagePtr
+	InputImageType::Ptr
 	GetInputImage()
 		{ return _inputImage; }
 
@@ -100,7 +100,7 @@ protected:
 
 	ImageConnectionType				*_inConnection;
 	M4D::Viewer::SliceViewerSpecialStateOperatorPtr 	_specialState;
-	InputImagePtr				 	_inputImage;
+	InputImageType::Ptr				 	_inputImage;
 	GDataSet::Ptr					_dataset;
 
 	static ManualSegmentationManager		*_instance;

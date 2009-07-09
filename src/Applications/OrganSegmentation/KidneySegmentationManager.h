@@ -89,7 +89,7 @@ public:
 	GetOutputGeometry()
 		{ return _outGeomConnection->GetDatasetPtrTyped(); }
 
-	InputImagePtr
+	InputImageType::Ptr
 	GetInputImage()
 		{ return _inputImage; }
 
@@ -164,7 +164,7 @@ protected:
 	OutputGeomConnection				*_outGeomConnection;
 	M4D::Imaging::PipelineContainer			_container;
 	M4D::Viewer::SliceViewerSpecialStateOperatorPtr 	_specialState;
-	InputImagePtr				 	_inputImage;
+	InputImageType::Ptr				 	_inputImage;
 	PoleDefinition					_poles[2];
 	SegmentationFilter				*_segmentationFilter;
 	//Gaussian					*_gaussianFilter;
