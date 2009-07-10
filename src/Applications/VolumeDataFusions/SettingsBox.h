@@ -38,6 +38,12 @@ protected slots:
 	ExecAllFilters();
 
 	void
+	StopSingleFilter();
+
+	void
+	StopAllFilters();
+
+	void
 	ExecFusion();
 
 	void
@@ -57,6 +63,7 @@ protected:
 
 	QSpinBox *fusionNumber;
 	QSpinBox *xRot, *yRot, *zRot, *xTrans, *yTrans, *zTrans;
+	QSpinBox *accuracy;
 	QComboBox *fusionType;
 	QPushButton *clearButton;
 	QPushButton *execButton;

@@ -57,6 +57,9 @@ public:
 	OptimizationFunction( Vector< double, 2 * dim >& v );
 
 	void
+	SetTransformSampling( uint32 tSampling );
+
+	void
 	SetAutomaticMode( bool mode );
 
 protected:
@@ -80,6 +83,7 @@ private:
 	CriterionBase< HistCellType >					*_criterion;
 	OptimizationBase< ElementType, double, 2 * dim >		*_optimization;
 	bool								_automatic;
+	uint32								_transformSampling;
 
 };
 

@@ -53,8 +53,8 @@ SettingsBox
 
 	QObject::connect( radioButtons, SIGNAL( buttonClicked( int ) ), this, SLOT( RegistrationType( int ) ) );
 	
-	grid->addWidget( new QLabel( tr( "Rotation" ) ), 3, 2 );
-	grid->addWidget( new QLabel( tr( "Translation" ) ), 3, 3 );
+	grid->addWidget( new QLabel( tr( "Rotation (degrees)" ) ), 3, 2 );
+	grid->addWidget( new QLabel( tr( "Translation (pixels)" ) ), 3, 3 );
 
 	grid->addWidget( new QLabel( tr( "X" ) ), 4, 1 );
 	xRot = new QSpinBox();
@@ -97,6 +97,15 @@ SettingsBox
 	zTrans->setMinimum( -250 );
 	zTrans->setValue( 0 );
 	grid->addWidget(zTrans, 6, 3 );
+
+	grid->addWidget( new QLabel( tr( "Registration Sampling" ) ), 7, 1 );
+	accuracy = new QSpinBox();
+	accuracy->setAlignment( Qt::AlignRight );
+	accuracy->setMaximum( 2048 );
+	accuracy->setMinimum( 2 );
+	accuracy->setValue( TRANSFORM_SAMPLING );
+	accuracy->setEnabled( false );
+	grid->addWidget(accuracy, 7, 3 );
 	
 
 	//-------------------------------------------------
@@ -134,6 +143,20 @@ SettingsBox
 
 	//-------------------------------------------------
 
+	execButton = new QPushButton( tr( "Stop Single Registration" ) );
+	QObject::connect( execButton, SIGNAL(clicked()),
+			this, SLOT(StopSingleFilter()) );
+	layout->addWidget(execButton);
+
+	//-------------------------------------------------
+
+	execButton = new QPushButton( tr( "Stop All Registrations" ) );
+	QObject::connect( execButton, SIGNAL(clicked()),
+			this, SLOT(StopAllFilters()) );
+	layout->addWidget(execButton);
+
+	//-------------------------------------------------
+
 	layout->addSpacing( EXECUTE_BUTTON_SPACING );
 
 	//-------------------------------------------------
@@ -165,20 +188,31 @@ SettingsBox
 	yTrans->setEnabled( val );
 	zRot->setEnabled( val );
 	zTrans->setEnabled( val );
+	accuracy->setEnabled( !val );
 }
 
 void
 SettingsBox
 ::ExecuteFilter( unsigned filterNum )
 {
-	if ( xRot->isEnabled() )
+	if ( filterNum == 0 )
+	{
+		_registerFilters[ filterNum ]->SetAutomaticMode( false );
+		_registerFilters[ filterNum ]->SetRotation( InImageRegistration::CoordType( 0, 0, 0 ) );
+		_registerFilters[ filterNum ]->SetTranslation( InImageRegistration::CoordType( 0, 0, 0 ) );
+	}
+	else if ( xRot->isEnabled() )
 	{
 		_registerFilters[ filterNum ]->SetAutomaticMode( false );
 		float PI = std::atan(1.0f) * 4.0f;
 		_registerFilters[ filterNum ]->SetRotation( InImageRegistration::CoordType( 2 * PI * xRot->value() / 360, 2 * PI * yRot->value() / 360, 2 * PI * zRot->value() / 360 ) );
 		_registerFilters[ filterNum ]->SetTranslation( InImageRegistration::CoordType( xTrans->value(), yTrans->value(), zTrans->value() ) );
 	}
-	else _registerFilters[ filterNum ]->SetAutomaticMode( true );
+	else
+	{
+		_registerFilters[ filterNum ]->SetAutomaticMode( true );
+		_registerFilters[ filterNum ]->SetTransformSampling( accuracy->value() );
+	}
 	_registerFilters[ filterNum ]->ExecuteOnWhole();
 }
 
@@ -194,6 +228,20 @@ SettingsBox
 ::ExecAllFilters()
 {
 	for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i ) ExecuteFilter( i );
+}
+
+void
+SettingsBox
+::StopSingleFilter()
+{
+	_registerFilters[ fusionNumber->value() - 1 ]->StopExecution();
+}
+
+void
+SettingsBox
+::StopAllFilters()
+{
+	for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i ) _registerFilters[ i ]->StopExecution();
 }
 
 void

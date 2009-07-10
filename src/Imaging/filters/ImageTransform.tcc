@@ -135,15 +135,15 @@ public:
 
 		int32 k = sliceNum;
 		if ( k >= depth ) return;
-		for( int32 j = 0; j < (int32)( ( transformSampling == 0 || height < transformSampling ) ? height : transformSampling ); ++j ) {
+		for( int32 j = 0; j < (int32)( ( transformSampling == 0 || height < (int32)transformSampling ) ? height : transformSampling ); ++j ) {
 
-			pointer = sPointer + k*zStride + j * ( ( transformSampling == 0 || height < transformSampling ) ? 1 : height / transformSampling ) * yStride;
+			pointer = sPointer + k*zStride + j * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? 1 : height / transformSampling ) * yStride;
 
-			for( int32 i = 0; i < (int32)( ( transformSampling == 0 || width < transformSampling ) ? width : transformSampling ); ++i ) {
+			for( int32 i = 0; i < (int32)( ( transformSampling == 0 || width < (int32)transformSampling ) ? width : transformSampling ); ++i ) {
 
-				CoordType point( ( xExtent * ( ( transformSampling == 0 || width < transformSampling ) ? i : i * width / transformSampling ) - newwidth/2 ) * RotationMatrixX[0][0] + ( yExtent * ( ( transformSampling == 0 || height < transformSampling ) ? j : j * height / transformSampling ) - newheight/2 ) * RotationMatrixX[0][1] + ( zExtent * k - newdepth/2 ) * RotationMatrixX[0][2], 
-						 ( xExtent * ( ( transformSampling == 0 || width < transformSampling ) ? i : i * width / transformSampling ) - newwidth/2 ) * RotationMatrixX[1][0] + ( yExtent * ( ( transformSampling == 0 || height < transformSampling ) ? j : j * height / transformSampling ) - newheight/2 ) * RotationMatrixX[1][1] + ( zExtent * k - newdepth/2 ) * RotationMatrixX[1][2],
-						 ( xExtent * ( ( transformSampling == 0 || width < transformSampling ) ? i : i * width / transformSampling ) - newwidth/2 ) * RotationMatrixX[2][0] + ( yExtent * ( ( transformSampling == 0 || height < transformSampling ) ? j : j * height / transformSampling ) - newheight/2 ) * RotationMatrixX[2][1] + ( zExtent * k - newdepth/2 ) * RotationMatrixX[2][2] );
+				CoordType point( ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * width / transformSampling ) - newwidth/2 ) * RotationMatrixX[0][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * height / transformSampling ) - newheight/2 ) * RotationMatrixX[0][1] + ( zExtent * k - newdepth/2 ) * RotationMatrixX[0][2], 
+						 ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * width / transformSampling ) - newwidth/2 ) * RotationMatrixX[1][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * height / transformSampling ) - newheight/2 ) * RotationMatrixX[1][1] + ( zExtent * k - newdepth/2 ) * RotationMatrixX[1][2],
+						 ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * width / transformSampling ) - newwidth/2 ) * RotationMatrixX[2][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * height / transformSampling ) - newheight/2 ) * RotationMatrixX[2][1] + ( zExtent * k - newdepth/2 ) * RotationMatrixX[2][2] );
 
 				CoordType  tmp( point[0] * RotationMatrixY[0][0] + point[1] * RotationMatrixY[0][1] + point[2] * RotationMatrixY[0][2],
 						point[0] * RotationMatrixY[1][0] + point[1] * RotationMatrixY[1][1] + point[2] * RotationMatrixY[1][2],
@@ -178,7 +178,7 @@ public:
 
 				else *pointer = interpolator->Get( point );
 			
-				pointer += ( ( transformSampling == 0 || width < transformSampling ) ? 1 : width / transformSampling ) * xStride;
+				pointer += ( ( transformSampling == 0 || width < (int32)transformSampling ) ? 1 : width / transformSampling ) * xStride;
 			}
 		}
 	}

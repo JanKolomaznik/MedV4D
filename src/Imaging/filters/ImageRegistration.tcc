@@ -24,7 +24,8 @@ template< typename ElementType >
 void
 CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 2 >::HistCellType, 2 >& jointHist,
 		 Image< ElementType, 2 >& inputImage,
-		 Image< ElementType, 2 >& refImage )
+		 Image< ElementType, 2 >& refImage,
+		 uint32 transformSampling )
 {
 	jointHist.Reset();
 	std::vector< int32 > index(2);
@@ -40,18 +41,18 @@ CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 2 
 	int32 refYStride = strides[1];
 	uint32 refWidth = size[0];
 	uint32 refHeight = size[1];
-	typename ImageRegistration< ElementType, 2 >::HistCellType base = 1.0 / ( ( refWidth < TRANSFORM_SAMPLING ? refWidth : TRANSFORM_SAMPLING ) * ( refHeight < TRANSFORM_SAMPLING ? refHeight : TRANSFORM_SAMPLING ) );
-	for ( j = 0; j < ( refHeight < TRANSFORM_SAMPLING ? refHeight : TRANSFORM_SAMPLING ); ++j )
+	typename ImageRegistration< ElementType, 2 >::HistCellType base = 1.0 / ( ( refWidth < transformSampling ? refWidth : transformSampling ) * ( refHeight < transformSampling ? refHeight : transformSampling ) );
+	for ( j = 0; j < ( refHeight < transformSampling ? refHeight : transformSampling ); ++j )
 	{
-		ElementType *in = sin + ( refHeight < TRANSFORM_SAMPLING ? 1 : refHeight / TRANSFORM_SAMPLING ) * j * inYStride;
-		ElementType *ref = sref + ( refHeight < TRANSFORM_SAMPLING ? 1 : refHeight / TRANSFORM_SAMPLING ) * j * refYStride;
-		for ( i = 0; i < ( refWidth < TRANSFORM_SAMPLING ? refWidth : TRANSFORM_SAMPLING ); ++i )
+		ElementType *in = sin + ( refHeight < transformSampling ? 1 : refHeight / transformSampling ) * j * inYStride;
+		ElementType *ref = sref + ( refHeight < transformSampling ? 1 : refHeight / transformSampling ) * j * refYStride;
+		for ( i = 0; i < ( refWidth < transformSampling ? refWidth : transformSampling ); ++i )
 		{
 			index[0] = (*in) / HISTOGRAM_VALUE_DIVISOR;
 			index[1] = (*ref) / HISTOGRAM_VALUE_DIVISOR;
 			jointHist.SetValueCell( index, jointHist.Get( index ) + base );
-			in += ( refWidth < TRANSFORM_SAMPLING ? 1 : refWidth / TRANSFORM_SAMPLING ) * inXStride;
-			ref += ( refWidth < TRANSFORM_SAMPLING ? 1 : refWidth / TRANSFORM_SAMPLING ) * refXStride;
+			in += ( refWidth < transformSampling ? 1 : refWidth / transformSampling ) * inXStride;
+			ref += ( refWidth < transformSampling ? 1 : refWidth / transformSampling ) * refXStride;
 		}
 	}
 }
@@ -60,7 +61,8 @@ template< typename ElementType >
 void
 CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 3 >::HistCellType, 2 >& jointHist,
 		 Image< ElementType, 3 >& inputImage,
-		 Image< ElementType, 3 >& refImage )
+		 Image< ElementType, 3 >& refImage,
+		 uint32 transformSampling )
 {
 	jointHist.Reset();
 	std::vector< int32 > index(2);
@@ -79,19 +81,19 @@ CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 3 
 	uint32 refWidth = size[0];
 	uint32 refHeight = size[1];
 	uint32 refDepth = size[2];
-	typename ImageRegistration< ElementType, 3 >::HistCellType base = 1.0 / ( ( refWidth < TRANSFORM_SAMPLING ? refWidth : TRANSFORM_SAMPLING ) * ( refHeight < TRANSFORM_SAMPLING ? refHeight : TRANSFORM_SAMPLING ) * refDepth );
+	typename ImageRegistration< ElementType, 3 >::HistCellType base = 1.0 / ( ( refWidth < transformSampling ? refWidth : transformSampling ) * ( refHeight < transformSampling ? refHeight : transformSampling ) * refDepth );
 	for ( k = 0; k < refDepth; ++k )
-		for ( j = 0; j < ( refHeight < TRANSFORM_SAMPLING ? refHeight : TRANSFORM_SAMPLING ); ++j )
+		for ( j = 0; j < ( refHeight < transformSampling ? refHeight : transformSampling ); ++j )
 		{
-			ElementType *in = sin + k*inZStride + ( refHeight < TRANSFORM_SAMPLING ? 1 :  refHeight / TRANSFORM_SAMPLING ) * j * inYStride;
-			ElementType *ref = sref + k*refZStride + ( refHeight < TRANSFORM_SAMPLING ? 1 : refHeight / TRANSFORM_SAMPLING ) * j * refYStride;
-			for ( i = 0; i < ( refWidth < TRANSFORM_SAMPLING ? refWidth : TRANSFORM_SAMPLING ); ++i )
+			ElementType *in = sin + k*inZStride + ( refHeight < transformSampling ? 1 :  refHeight / transformSampling ) * j * inYStride;
+			ElementType *ref = sref + k*refZStride + ( refHeight < transformSampling ? 1 : refHeight / transformSampling ) * j * refYStride;
+			for ( i = 0; i < ( refWidth < transformSampling ? refWidth : transformSampling ); ++i )
 			{
 				index[0] = (*in) / HISTOGRAM_VALUE_DIVISOR;
 				index[1] = (*ref) / HISTOGRAM_VALUE_DIVISOR;
 				jointHist.SetValueCell( index, jointHist.Get( index ) + base );
-				in += ( refWidth < TRANSFORM_SAMPLING ? 1 : refWidth / TRANSFORM_SAMPLING ) * inXStride;
-				ref += ( refWidth < TRANSFORM_SAMPLING ? 1 : refWidth / TRANSFORM_SAMPLING ) * refXStride;
+				in += ( refWidth < transformSampling ? 1 : refWidth / transformSampling ) * inXStride;
+				ref += ( refWidth < transformSampling ? 1 : refWidth / transformSampling ) * refXStride;
 			}
 		}
 }
@@ -103,7 +105,8 @@ ImageRegistration< ElementType, dim >
 	  jointHistogram( std::vector< int32 >( 2, HISTOGRAM_MIN_VALUE ), std::vector< int32 >( 2, HISTOGRAM_MAX_VALUE ) ),
 	  _criterion( new NormalizedMutualInformation< HistCellType >() ),
 	  _optimization( new PowellOptimization< ElementType, double, 2 * dim >() ),
-	  _automatic( false )
+	  _automatic( false ),
+	  _transformSampling( TRANSFORM_SAMPLING )
 {
 	this->_name = "ImageRegistration";
 }
@@ -115,7 +118,8 @@ ImageRegistration< ElementType, dim >
 	  jointHistogram( std::vector< int32 >( 2, HISTOGRAM_MIN_VALUE ), std::vector< int32 >( 2, HISTOGRAM_MAX_VALUE ) ),
 	  _criterion( new NormalizedMutualInformation< HistCellType >() ),
 	  _optimization( new PowellOptimization< ElementType, double, 2 * dim >() ),
-	  _automatic( false )
+	  _automatic( false ),
+	  _transformSampling( TRANSFORM_SAMPLING )
 {
 	this->_name = "ImageRegistration";
 }
@@ -137,6 +141,14 @@ ImageRegistration< ElementType, dim >
 }
 
 template< typename ElementType, uint32 dim >
+void
+ImageRegistration< ElementType, dim >
+::SetTransformSampling( uint32 tSampling )
+{
+	_transformSampling = tSampling;
+}
+
+template< typename ElementType, uint32 dim >
 double
 ImageRegistration< ElementType, dim >
 ::OptimizationFunction( Vector< double, 2 * dim >& v )
@@ -149,13 +161,13 @@ ImageRegistration< ElementType, dim >
 	}
 	this->SetRotation( v1 );
 	this->SetTranslation( v2 );
-	this->ExecuteTransformation( TRANSFORM_SAMPLING );
+	this->ExecuteTransformation( _transformSampling );
 	double res = 1.0;
 	if ( referenceImage )
 	{
-		CalculateHistograms< ElementType > ( jointHistogram, *(this->out), *(referenceImage) );
+		CalculateHistograms< ElementType > ( jointHistogram, *(this->out), *(referenceImage), _transformSampling );
 		res = _criterion->compute( jointHistogram );
-		std::cout << res << std:: endl;
+		D_PRINT( "Mutual Information value: " << res );
 	}
 	return 1.0 / res;
 }
