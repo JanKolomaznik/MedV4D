@@ -5,6 +5,7 @@
 #include "SegmentationWidget.h"
 #include "SettingsBox.h"
 #include "SegmentationTypes.h"
+#include "SegmentationManager.h"
 
 #define ORGANIZATION_NAME     "MFF"
 #define APPLICATION_NAME      "OrganSegmentation"
@@ -52,9 +53,17 @@ public:
 	mainWindow ();
 
 public slots:
-	void
-	SetSegmentationSlot( uint32 segType );
+	/*void
+	SetSegmentationSlot( uint32 segType );*/
 
+	void
+	SetToDefaultSlot();
+
+	void
+	ManagerActivatedSlot( ManagerActivationInfo info );
+
+	void
+	ProcessResults( ResultsInfo info );
 protected:
 	void
 	process ( M4D::Imaging::AbstractDataSet::Ptr inputDataSet );
@@ -66,28 +75,6 @@ private:
 
 };
 
-/*class mainWindow: public M4D::GUI::m4dGUIMainWindow2
-{
-	Q_OBJECT
-
-public:
-
-	mainWindow ();
-
-public slots:
-	void
-	SetSegmentationSlot( uint32 segType );
-
-protected:
-	void
-	process( M4D::Dicom::DicomObjSetPtr dicomObjSet );
-
-	SegmentationWidget	*_segmentationWidget;
-	SettingsBox	*_settings;
-	//Notifier	*_notifier;
-private:
-
-};*/
 
 
 #endif // MAIN_WINDOW_H

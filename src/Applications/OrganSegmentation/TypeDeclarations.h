@@ -12,6 +12,7 @@ typedef M4D::Imaging::SlicedGeometry< CurveType >	GDataSet;
 
 typedef M4D::Imaging::ConnectionTyped< M4D::Imaging::AbstractImage >	InImageConnection;
 typedef M4D::Imaging::ConnectionTyped< InputImageType >			ImageConnectionType;
+typedef ImageConnectionType 						*ImageConnectionTypePtr;
 typedef M4D::Imaging::ConnectionTyped< GDataSet >			GDatasetConnectionType;
 typedef M4D::Imaging::ConnectionTyped< M4D::Imaging::Mask3D >		Mask3DConnectionType;
 

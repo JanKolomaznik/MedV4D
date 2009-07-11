@@ -1,5 +1,6 @@
 
 #include "ManualSegmentationManager.h"
+#include "ManualSegmentationControlPanel.h"
 #include "Imaging/Imaging.h"
 #include "OGLDrawing.h"
 
@@ -43,6 +44,8 @@ ManualSegmentationManager::Initialize()
 
 	ViewerSpecialState *sState = new ViewerSpecialState( ManualSegmentationManager::Instance() );
 	_specialState = M4D::Viewer::SliceViewerSpecialStateOperatorPtr( sState );
+
+	_controlPanel = new ManualSegmentationControlPanel( this );
 
 	_wasInitialized = true;
 }
@@ -217,6 +220,22 @@ ManualSegmentationManager::Activate( InputImageType::Ptr inImage, GDataSet::Ptr 
 	_inputImage = inImage;
 	_dataset = geometry;
 	_inConnection->PutDataset( _inputImage );
+}
+
+void
+ManualSegmentationManager::ActivateManagerInit( InputImageType::Ptr inImage, GDataSet::Ptr geometry )
+{
+	SegmentationManager::ActivateManager();
+
+	Activate( inImage, geometry );
+}
+
+void
+ManualSegmentationManager::ActivateManager()
+{
+	SegmentationManager::ActivateManager();
+
+	Activate( MainManager::Instance().GetInputImage() );
 }
 
 void

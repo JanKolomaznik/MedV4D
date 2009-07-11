@@ -5,14 +5,13 @@
 #include "MainManager.h"
 #include "ManagerViewerSpecialState.h"
 #include "common/Common.h"
+#include "SegmentationManager.h"
 
 #include <QtCore>
 
 static const float32 DISTANCE_TOLERATION_SQUARED = 3.0f;
 
-class ManualSegmentationManager;
-
-class ManualSegmentationManager: public QObject
+class ManualSegmentationManager: public SegmentationManager
 {
 	Q_OBJECT
 public:
@@ -26,16 +25,16 @@ public:
 
 	static ManualSegmentationManager &
 	Instance();
+	
+	std::string
+	GetName()
+		{ return "Manual Segmentation"; }
 
 	void
 	Initialize();
 
 	void
 	Finalize();
-
-	ImageConnectionType *
-	GetInputConnection()
-		{ return _inConnection; }
 
 	M4D::Viewer::SliceViewerSpecialStateOperatorPtr
 	GetSpecialState()
@@ -70,7 +69,12 @@ public:
 	Activate( InputImageType::Ptr inImage );
 	void
 	Activate( InputImageType::Ptr inImage, GDataSet::Ptr geometry );
+	void
+	ActivateManagerInit( InputImageType::Ptr inImage, GDataSet::Ptr geometry );
 public slots:
+	void
+	ActivateManager();
+
 	void
 	SetCreatingState( bool enable );
 
@@ -97,10 +101,7 @@ protected:
 	void
 	PrepareNewCurve( int32 sliceNum );
 
-
-	ImageConnectionType				*_inConnection;
-	M4D::Viewer::SliceViewerSpecialStateOperatorPtr 	_specialState;
-	InputImageType::Ptr				 	_inputImage;
+	InputImageType::Ptr			 	_inputImage;
 	GDataSet::Ptr					_dataset;
 
 	static ManualSegmentationManager		*_instance;

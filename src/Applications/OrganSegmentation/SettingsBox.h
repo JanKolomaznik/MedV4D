@@ -5,6 +5,7 @@
 #include "Imaging/filters/ThresholdingFilter.h"
 #include "SegmentationTypes.h"
 
+
 class SettingsBox : public QStackedWidget
 {
 	Q_OBJECT
@@ -17,20 +18,20 @@ public:
 	SettingsBox( QWidget * parent );
 
 public slots:
-	void
-	ManualSegmentationUpdate();
+	/*void
+	ManualSegmentationUpdate();*/
 
 	void
 	SetToDefault();
 
 signals:
 	
-	void
-	SetSegmentationSignal( uint32 type );	
+	/*void
+	SetSegmentationSignal( uint32 type );*/
 
 protected slots:
 
-	void
+	/*void
 	SetToManualSegmentation();
 
 	void
@@ -46,23 +47,25 @@ protected slots:
 	BeginManualCorrection();
 
 	void
-	ProcessResultsManual();
+	ProcessResultsManual();*/
 protected:
+
 	void
+	InitializeSementationGUI();
+
+	/*void
 	CreateWidgets();
 	
 	void
-	CreateManualGUI();
+	CreateManualGUI();*/
 
 	QWidget *_parent;
 
 	QWidget *_mainSettings;
-	QWidget *_manualSegmSettings;
-	QWidget *_kidneySegmSettings;
 
-	QPushButton	*_deleteCurveButton;
-	QAction		*_createSplineButton;
-	QAction		*_editPointsButton;
+	/*QWidget *_manualSegmSettings;
+	QWidget *_kidneySegmSettings;*/
+
 };
 
 #endif /*_SETTINGS_BOX_H*/

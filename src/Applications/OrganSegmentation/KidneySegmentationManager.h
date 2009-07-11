@@ -5,6 +5,8 @@
 #include "MainManager.h"
 #include "SnakeSegmentationFilter.h"
 #include "ManagerViewerSpecialState.h"
+#include "SegmentationManager.h"
+
 
 typedef M4D::Imaging::Geometry::BSpline< float32, 2 >	CurveType;
 typedef CurveType::PointType				PointType;
@@ -53,12 +55,24 @@ signals:
 protected:
 };
 
-class KidneySegmentationManager: public QObject
+class KidneySegmentationManager: public SegmentationManager
 {
 	Q_OBJECT
 public:
+	enum InternalState {
+		SET_POLES,
+		SET_LAST_POLE,
+		SET_SEGMENTATION_PARAMS,
+		SEGMENTATION_EXECUTED_WAITING,
+		SEGMENTATION_EXECUTED_RUNNING
+	};
+
 	static KidneySegmentationManager &
 	Instance();
+
+	std::string
+	GetName()
+		{ return "Kidney Segmentation"; }
 
 	void
 	Initialize();
@@ -67,17 +81,10 @@ public:
 	Finalize();
 
 	void
-	PolesSet();
-
-	void
 	RunSplineSegmentation();
 
 	void
 	RunFilters();
-
-	ImageConnectionType *
-	GetInputConnection()
-		{ return _inConnection; }
 
 	M4D::Viewer::SliceViewerSpecialStateOperatorPtr
 	GetSpecialState()
@@ -107,6 +114,16 @@ public:
 	void
 	Activate( InputImageType::Ptr inImage );
 public slots:
+
+	void
+	ActivateManager();
+
+	void
+	BeginManualCorrection();
+
+	void
+	PolesSet();
+
 	void
 	SetComputationPrecision( int value )
 	{
@@ -138,6 +155,7 @@ public slots:
 	FiltersFinishedSuccesfully();
 
 protected:
+	InternalState	_state;
 	enum SubStates { DEFINING_POLE, MOVING_POLE };
 
 	KidneySegmentationManager();
@@ -158,12 +176,10 @@ protected:
 
 	int						_computationPrecision;
 
-	ImageConnectionType				*_inConnection;
 	ImageConnectionType				*_gaussianConnection;
 	ImageConnectionType				*_edgeConnection;
 	OutputGeomConnection				*_outGeomConnection;
 	M4D::Imaging::PipelineContainer			_container;
-	M4D::Viewer::SliceViewerSpecialStateOperatorPtr 	_specialState;
 	InputImageType::Ptr				 	_inputImage;
 	PoleDefinition					_poles[2];
 	SegmentationFilter				*_segmentationFilter;
@@ -190,6 +206,7 @@ protected:
 	volatile bool					_readyToStartSegmentation;
 
 	M4D::Multithreading::Mutex		_readyMutex;
+
 };
 
 

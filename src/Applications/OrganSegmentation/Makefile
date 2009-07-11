@@ -15,6 +15,9 @@ TARGETS=	main \
 		SegmentationWidget \
 		ManualSegmentationManager \
 		KidneySegmentationManager \
+		KidneySegmentationControlPanel \
+		ManualSegmentationControlPanel \
+		SegmentationManager \
 		MainManager \
 		SettingsBox
 
@@ -23,6 +26,9 @@ MOCINPUT=	mainWindow.h \
 		SettingsBox.h \
 		ManualSegmentationManager.h \
 		MainManager.h \
+		KidneySegmentationControlPanel.h \
+		ManualSegmentationControlPanel.h \
+		SegmentationManager.h \
 		KidneySegmentationManager.h
 
 RCCINPUT=	mainWindow.qrc

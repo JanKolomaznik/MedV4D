@@ -2,6 +2,8 @@
 #include "Imaging/Imaging.h"
 #include <cmath>
 #include "KidneySegmentationManager.h"
+#include "KidneySegmentationControlPanel.h"
+#include "ManualSegmentationManager.h"
 #include <QtGui>
 #include "OGLDrawing.h"
 
@@ -66,6 +68,8 @@ KidneySegmentationManager::KidneySegmentationManager()
 
 	conn.SetMessageHook( MessageReceiverInterface::Ptr( notifier ) );
 
+	
+
 }
 
 KidneySegmentationManager::~KidneySegmentationManager()
@@ -104,6 +108,9 @@ KidneySegmentationManager::Initialize()
 	//int32 min = _inputImage->GetDimensionExtents(2).minimum;
 	//int32 max = _inputImage->GetDimensionExtents(2).maximum;
 	//_dataset = M4D::Imaging::DataSetFactory::CreateSlicedGeometry< M4D::Imaging::Geometry::BSpline<float32, 2> >( min, max );
+	
+	_controlPanel = new KidneySegmentationControlPanel( this );
+	
 	_wasInitialized = true;
 }
 
@@ -318,3 +325,19 @@ KidneySegmentationManager::Activate( InputImageType::Ptr inImage )
 	_dataset = GDataSet::Ptr();
 }
 
+void
+KidneySegmentationManager::ActivateManager()
+{
+	SegmentationManager::ActivateManager();
+
+	Activate( MainManager::Instance().GetInputImage() );
+}
+
+void
+KidneySegmentationManager::BeginManualCorrection()
+{
+	ManualSegmentationManager::Instance().ActivateManagerInit(
+			GetInputImage(), 
+			GetOutputGeometry()
+			);
+}
