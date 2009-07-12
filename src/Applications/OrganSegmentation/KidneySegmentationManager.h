@@ -106,6 +106,9 @@ public:
 	GetInputImage()
 		{ return _inputImage; }
 
+	const ModelInfoVector &
+	GetModelInfos() const
+		{ return _modelInfos; }
 	void
 	Draw( int32 sliceNum, double zoomRate );
 	void
@@ -161,6 +164,12 @@ public slots:
 	SetSeparateSliceInit( bool value )
 	{
 		_separateSliceInit = value;
+	}
+
+	void
+	SetModelID( int value )
+	{
+		_modelID = value;
 	}
 
 	void
@@ -221,6 +230,10 @@ protected:
 	GDataSet::Ptr					_dataset;
 
 	volatile bool					_readyToStartSegmentation;
+
+	ModelInfoVector					_modelInfos;
+	int						_previousModelID;
+	int						_modelID;
 
 	M4D::Multithreading::Mutex		_readyMutex;
 

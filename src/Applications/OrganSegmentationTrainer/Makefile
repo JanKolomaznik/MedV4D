@@ -1,12 +1,9 @@
-
+srcTop = ../..
 srcdir = .
 
-CXX=g++
-AR=ar
-RM=rm -f
-MKDIR=mkdir
-MOC=moc
-RCC=rcc
+include $(srcTop)/project/ToolchainSelect.mk
+include $(srcTop)/project/pathsDefinitions.mk
+include $(srcTop)/project/configurationSelector.mk
 
 
 ########################################
@@ -22,105 +19,87 @@ MOCINPUT=	MainWindow.h
 
 RCCINPUT=	MainWindow.qrc
 
-M4DLIBS=	../../lib/libImaging.a\
-		../../lib/libcommon.a
-
-#../../lib/libm4dWidgets.a\
-#../../lib/libvtkIntegration.a\
-#../../lib/libbackendForDICOM.a\
-
-QTLIBS=		-lQtCore\
-		-lQtGui\
-		-lQtOpenGL
-VTKLIBS=	-lvtkCommon\
-		-lvtkDICOMParser\
-		-lvtkexoIIc\
-		-lvtkFiltering\
-		-lvtkftgl\
-		-lvtkGenericFiltering\
-		-lvtkGraphics\
-		-lvtkHybrid\
-		-lvtkImaging\
-		-lvtkIO\
-		-lvtkNetCDF\
-		-lvtkRendering\
-		-lvtksys\
-		-lvtkVolumeRendering\
-		-lvtkWidgets\
-		-lQVTK\
-		-lwrap
-
-		#-lvtkexpat\
-		#-lvtkfreetype\
-		#-lvtkjpeg\
-		#-lvtkpng\
-		#-lvtktiff\
-		#-lvtkzlib
-
-DCMTKLIBS=	-ldcmnet -ldcmdata -lofstd
-
-LIBS=		$(M4DLIBS)\
-		$(QTLIBS)\
-		-lboost_thread \
-		-lboost_filesystem \
-		-lGLU
-#$(VTKLIBS)\
-#$(DCMTKLIBS)\
-
 ########################################
 
 #Name of target
 OUTPUTNAME=	$(NAME)
-OUTPUTDIR=	../../executables
+OUTPUTDIR=	../../executables/$(CONF)
 OUTPUT=		$(OUTPUTDIR)/$(OUTPUTNAME)
-TMP_DIR=	../../tmp/$(NAME)
+TMP_DIR=	../../tmp/$(CONF)/$(NAME)
 
-CXXDEBUG_OPTIONS= -ggdb 
+M4DLIBS=	-lm4dWidgets\
+		-lvtkIntegration\
+		-lbackendForDICOM\
+		-lImaging\
+		-lcommon
 
-CXXFLAGS= -Wall -Wno-deprecated $(CXXDEBUG_OPTIONS)
-#Dependecy file creation parameters
-DEP_FILE=	$(TMP_DIR)/depend
-CDEPFLAGS=	-MM 
+LIBS=		$(M4DLIBS)\
+		$(DCMTKLIBS)\
+		$(VTKLIBS)\
+		$(QTLIBS)\
+		-lboost_thread-mt \
+		-lboost_filesystem-mt \
+		-lGLU
 
-LDFLAGS=
-ARFLAGS=	-r
-LIBDIRS=	-L../../lib\
-		-L/usr/lib/qt4
-INCLUDES=	-I../.. \
-		-I$(srcdir)\
-		-I../../include\
-		-I/usr/include/vtk-5.0\
-		-I/usr/include/qt4\
-		-I/usr/include/qt4/Qt\
-		-I/usr/include/qt4/QtCore\
-		-I/usr/include/qt4/QtGui
+LIBDIRS=	-L$(srcTop)/lib/$(CONF)\
+		$(QTLibDirs)\
+			-L$(DCMTK_LIB_PATH)\
+			-L$(VTKLibsDir)
+
+INCLUDES= -I$(srcTop)\
+		  -I$(srcdir)\
+		  -I$(VTKIncludeDir)\
+			$(QTIncludDirs)\
+			$(ITKIncludes)
 
 
 MOCOUTPUT=      $(addprefix $(TMP_DIR)/moc_, $(MOCINPUT:.h=.cpp) )
 
-DEBUG_DEFS=	-DDEBUG_LEVEL=10\
-		-DDEBUG_ADITIONAL_INFO
 
-DEFS=		$(DEBUG_DEFS)
-
-
-SRC_FILES=	$(addsuffix .cpp, $(TARGETS) ) 
+SRC_FILES=	$(addsuffix .cpp, $(TARGETS) )
 OBJ_FILES=	$(addprefix $(TMP_DIR)/,   $(addprefix rcc_, $(RCCINPUT:.qrc=.o ) ) $(addprefix moc_, $(MOCINPUT:.h=.o) ) $(addsuffix .o, $(TARGETS) ) )
 
 
 .PHONY: all
-all:		tmpdir dep $(OUTPUT)
-		
+all:		outDir tmpdir dep Common Imaging DICOM VTKInt GUI $(OUTPUT)
 
-.PHONY: tmpdir
-tmpdir:		
-		$(MKDIR) $(TMP_DIR) 2>/dev/null || true
+
+GUI:
+	$(MAKE) --directory=$(srcTop)/GUI/widgets all
+
+VTKInt:
+	$(MAKE) --directory=$(srcTop)/vtkIntegration all
+
+DICOM:
+	$(MAKE) --directory=$(srcTop)/backendForDICOM all
+
+Imaging:
+	$(MAKE) --directory=$(srcTop)/Imaging all
+
+Common:
+	$(MAKE) --directory=$(srcTop)/common all
+
+## CLEANING ##################################
+
+GUICLEAN:
+	$(MAKE) --directory=$(srcTop)/GUI/widgets clean
+
+DICOMCLEAN:
+	$(MAKE) --directory=$(srcTop)/backendForDICOM clean
+
+ImagingCLEAN:
+	$(MAKE) --directory=$(srcTop)/Imaging clean
+
+CommonCLEAN:
+	$(MAKE) --directory=$(srcTop)/common clean
+
+##############################################
 
 .PHONY: build
 build:		cleanall all
 
 .PHONY: dep
-dep:		
+dep:
 		$(CXX) $(INCLUDES) $(CDEPFLAGS) $(SRC_FILES) | \
 		sed 's/\(.*\)\.o:/$$(TMP_DIR)\/\1\.o:/' > $(DEP_FILE)
 
@@ -130,18 +109,18 @@ $(TMP_DIR)/moc_%.cpp:   %.h
 $(TMP_DIR)/rcc_%.cpp:   $(RCCINPUT)
 		$(RCC) -name $(*F) $< -o $@
 
-$(TMP_DIR)/%.o:	%.cpp	
+$(TMP_DIR)/%.o:	%.cpp
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 $(TMP_DIR)/%.o:	$(TMP_DIR)/%.cpp
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 -include $(DEP_FILE)
-		
-$(OUTPUT):	$(OBJ_FILES) $(M4DLIBS)
-		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT) 
+
+$(OUTPUT):	$(OBJ_FILES)
+		$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(LIBDIRS) $(LIBS) -o $(OUTPUT)
 
 .PHONY: clean
-clean:
+clean:	
 		$(RM) $(OBJ_FILES) $(MOCOUTPUT) $(addprefix $(TMP_DIR)/rcc_, $(RCCINPUT:.qrc=.cpp ) ) $(DEP_FILE)
 		$(RM) $(OUTPUT)

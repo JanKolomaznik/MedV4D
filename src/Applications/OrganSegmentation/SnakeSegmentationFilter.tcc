@@ -212,7 +212,7 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 		typename SnakeSegmentationFilter< ElementType, SecondElementType >::CurveType &initialization 
 		)
 {
-	static const unsigned ResultSampleRate = 8;
+	static const unsigned ResultSampleRate = 5;
 
 	ObjectsInSlice &slice = this->out->GetSlice( sliceNumber );
 	slice.clear();
@@ -292,7 +292,7 @@ void
 SnakeSegmentationFilter< ElementType, SecondElementType >
 ::ProcessSlice( int32 sliceNumber )
 {
-	static const unsigned ResultSampleRate = 8;
+	static const unsigned ResultSampleRate = 5;
 
 	ObjectsInSlice &slice = this->out->GetSlice( sliceNumber );
 	slice.clear();

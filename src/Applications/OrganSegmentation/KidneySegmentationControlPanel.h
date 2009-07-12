@@ -24,6 +24,7 @@ protected:
 	QFrame				*_segmentationSettings;
 	QFrame				*_resultButtons;
 
+	QComboBox			*_modelsCombo;
 	QLabel				*_infoBox;
 };
 

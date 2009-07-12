@@ -12,6 +12,7 @@ NAME=		OrganSegmentation
 #Names of target sources
 TARGETS=	main \
 		mainWindow \
+		AnalyseResults \
 		SegmentationWidget \
 		ManualSegmentationManager \
 		KidneySegmentationManager \
@@ -19,6 +20,7 @@ TARGETS=	main \
 		ManualSegmentationControlPanel \
 		SegmentationManager \
 		MainManager \
+		ResultsPage \
 		SettingsBox
 
 MOCINPUT=	mainWindow.h \
@@ -29,6 +31,7 @@ MOCINPUT=	mainWindow.h \
 		KidneySegmentationControlPanel.h \
 		ManualSegmentationControlPanel.h \
 		SegmentationManager.h \
+		ResultsPage.h \
 		KidneySegmentationManager.h
 
 RCCINPUT=	mainWindow.qrc

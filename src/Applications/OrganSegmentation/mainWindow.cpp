@@ -31,12 +31,16 @@ mainWindow::mainWindow ()
 	_segmentationViewerWidget = new SegmentationViewerWidget();
 	addViewerDesktop( _segmentationViewerWidget );
 
+	//Add desktop for viewing results
+	addDesktopWidget( MainManager::Instance().GetResultsPage() );
+
 	//Connect segmentation managers to mainWindow
 	SegmentationManagersList::iterator it;
 	for( it = segmentationManagers.begin(); it != segmentationManagers.end(); ++it ) {
 
 		QObject::connect( *it, SIGNAL(ManagerActivated( ManagerActivationInfo )), this, SLOT( ManagerActivatedSlot( ManagerActivationInfo ) ) );
 		QObject::connect( *it, SIGNAL(WantsViewerUpdate()), _segmentationViewerWidget, SLOT( UpdateViewers() ) );
+		QObject::connect( *it, SIGNAL(ProcessResults( ResultsInfo )), this, SLOT( ProcessResults( ResultsInfo ) ) );
 
 	}
 }
@@ -63,9 +67,10 @@ mainWindow::ManagerActivatedSlot( ManagerActivationInfo info )
 void
 mainWindow::ProcessResults( ResultsInfo info )
 {
-	//TODO process results
+	MainManager::Instance().ProcessResultDatasets( info.image, info.geometry );
 
 	switchToDesktopWidget();
+	_settings->SetToResults();
 }
 
 void

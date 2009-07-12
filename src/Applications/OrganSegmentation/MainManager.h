@@ -3,12 +3,14 @@
 
 #include "backendForDICOM/DICOMServiceProvider.h"
 #include "Imaging/Imaging.h"
-#include <QtCore>
+#include <QtGui>
 #include "SliceSplineFill.h"
 
 #include "TypeDeclarations.h"
+#include "AnalyseResults.h"
+#include "common/Thread.h"
 
-class MainManager;
+class ResultsPage;
 
 class MainManager: public QObject
 {
@@ -36,6 +38,22 @@ public:
 
 	void
 	ProcessResultDatasets( InputImageType::Ptr image, GDataSet::Ptr splines );
+
+	QWidget *
+	GetResultsPage();
+
+	void
+	ProcessResultDatasetsThreadMethod();
+
+public slots:
+	void
+	SaveResultDatasets();
+signals:
+	void
+	ResultProcessingStarted();
+
+	void
+	ShowResultsSignal( AnalysisRecord record );
 protected:
 	void
 	CreateResultProcessPipeline();
@@ -51,9 +69,15 @@ protected:
 	GDatasetConnectionType				*_inResultGDatasetConnection;
 	Mask3DConnectionType				*_resultProcessMaskConnection;
 
-	M4D::Imaging::SliceSplineFill< float32 >			*_splineFillFilter;
+	M4D::Imaging::SliceSplineFill< float32 >	*_splineFillFilter;
 
+	ResultsPage					*_resultsPage;
 	static MainManager * _instance;
+
+
+	InputImageType::Ptr 		_tmpImage;
+	M4D::Imaging::Mask3D::Ptr 	_tmpMask;
+	GDataSet::Ptr 			_tmpSplines;
 };
 
 #endif //MAIN_MANAGER_H

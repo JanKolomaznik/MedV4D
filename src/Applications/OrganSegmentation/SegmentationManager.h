@@ -83,7 +83,7 @@ signals:
 	ManagerActivated( ManagerActivationInfo info );
 
 	void
-	ProcessResults( ResultsInfo );
+	ProcessResults( ResultsInfo info );
 
 	void
 	WantsViewerUpdate();

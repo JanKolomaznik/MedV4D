@@ -41,6 +41,16 @@ KidneySegmentationControlPanel
 	{
 		QVBoxLayout *tmpLayout = new QVBoxLayout;
 
+		_modelsCombo = new QComboBox();
+		const ModelInfoVector & infos = _manager->GetModelInfos();
+		for( unsigned i = 0; i < infos.size(); ++i ) {
+			_modelsCombo->addItem( QString::fromStdString( infos[i].modelName ) );
+		}
+		QObject::connect( _modelsCombo, SIGNAL( currentIndexChanged( int ) ), 
+				_manager, SLOT( SetModelID( int ) ) );
+		_modelsCombo->setCurrentIndex( 0 );
+		tmpLayout->addWidget( _modelsCombo );
+
 		QSlider *slider = new QSlider();
 		slider->setOrientation( Qt::Horizontal );
 		slider->setMinimum( 4 );

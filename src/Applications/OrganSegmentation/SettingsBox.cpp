@@ -11,31 +11,45 @@ SettingsBox
 {
 	setMinimumWidth( MINIMUM_WIDTH );
 
-	InitializeSementationGUI();	
+	InitializeSegmentationGUI();	
 }
 
 void
 SettingsBox
-::InitializeSementationGUI()
+::InitializeSegmentationGUI()
 {
 	_mainSettings = new QWidget;
-	QVBoxLayout *layout = new QVBoxLayout;
-
-	_mainSettings->setLayout(layout);
 	addWidget( _mainSettings );
+	{
+		QVBoxLayout *layout = new QVBoxLayout;
+		_mainSettings->setLayout(layout);
 
-	SegmentationManagersList::iterator it;
-	for( it = segmentationManagers.begin(); it != segmentationManagers.end(); ++it ) {
-		//Add activating button for segmentation manager
-		QPushButton *button = new QPushButton( tr( (*it)->GetName().data() ) );
-		layout->addWidget( button );
-		QObject::connect( button, SIGNAL(clicked()), *it, SLOT( ActivateManager() ) );
+		SegmentationManagersList::iterator it;
+		for( it = segmentationManagers.begin(); it != segmentationManagers.end(); ++it ) {
+			//Add activating button for segmentation manager
+			QPushButton *button = new QPushButton( tr( (*it)->GetName().data() ) );
+			layout->addWidget( button );
+			QObject::connect( button, SIGNAL(clicked()), *it, SLOT( ActivateManager() ) );
 
-		//Add manager's GUI
-		addWidget( (*it)->GetGUI() );
+			//Add manager's GUI
+			addWidget( (*it)->GetGUI() );
+		}
+		layout->addStretch( 5 );
 	}
 
-	layout->addStretch( 5 );
+	_resultPageOptions = new QWidget();
+	addWidget( _resultPageOptions );
+	{
+		QVBoxLayout *layout = new QVBoxLayout;
+		_resultPageOptions->setLayout(layout);
+
+		QPushButton *button = new QPushButton( tr( "Save for training ..." ) );
+		layout->addWidget( button );
+		QObject::connect( button, SIGNAL(clicked()), &(MainManager::Instance()), SLOT( SaveResultDatasets() ) );
+
+		layout->addStretch( 5 );
+	}
+
 }
 
 void
@@ -46,6 +60,13 @@ SettingsBox
 	setCurrentWidget( _mainSettings );
 }
 
+void
+SettingsBox
+::SetToResults()
+{
+	//emit SetSegmentationSignal( stDefault );
+	setCurrentWidget( _resultPageOptions );
+}
 
 /*void
 SettingsBox

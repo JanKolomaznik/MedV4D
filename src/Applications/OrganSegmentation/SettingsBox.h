@@ -18,53 +18,26 @@ public:
 	SettingsBox( QWidget * parent );
 
 public slots:
-	/*void
-	ManualSegmentationUpdate();*/
-
 	void
 	SetToDefault();
 
+	void
+	SetToResults();
+
 signals:
 	
-	/*void
-	SetSegmentationSignal( uint32 type );*/
-
 protected slots:
 
-	/*void
-	SetToManualSegmentation();
-
-	void
-	SetToKidneySegmentation();
-
-	void
-	PolesSetKidneySegm();
-
-	void
-	StartSegmentationKidneySegm();
-
-	void
-	BeginManualCorrection();
-
-	void
-	ProcessResultsManual();*/
 protected:
 
 	void
-	InitializeSementationGUI();
+	InitializeSegmentationGUI();
 
-	/*void
-	CreateWidgets();
-	
-	void
-	CreateManualGUI();*/
 
 	QWidget *_parent;
 
 	QWidget *_mainSettings;
-
-	/*QWidget *_manualSegmSettings;
-	QWidget *_kidneySegmSettings;*/
+	QWidget *_resultPageOptions;
 
 };
 

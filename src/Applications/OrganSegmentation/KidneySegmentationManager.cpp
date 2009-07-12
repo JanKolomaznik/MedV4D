@@ -19,6 +19,13 @@ const int SAMPLE_RATE = 5;
 
 typedef ManagerViewerSpecialState< KidneySegmentationManager >	KidneyViewerSpecialState;
 
+void
+LoadModelInfos( ModelInfoVector &_modelInfos )
+{
+	_modelInfos.push_back( ModelInfo( "Left kidney", "KidneyLeft.mdl" ) );
+	_modelInfos.push_back( ModelInfo( "Right kidney", "KidneyRight.mdl" ) );
+}
+
 KidneySegmentationManager::KidneySegmentationManager()
 	: _wasInitialized( false )
 {
@@ -98,16 +105,12 @@ KidneySegmentationManager::Initialize()
 	KidneyViewerSpecialState *sState = new KidneyViewerSpecialState( KidneySegmentationManager::Instance() );
 	_specialState = M4D::Viewer::SliceViewerSpecialStateOperatorPtr( sState );
 	
-	_probModel = CanonicalProbModel::LoadFromFile( "KidneyModel.mdl" );
+	//_probModel = CanonicalProbModel::LoadFromFile( "KidneyModel.mdl" );
 	
-	//_inputImage = MainManager::Instance().GetInputImage();
-	//_inConnection->PutDataset( _inputImage );
-
-
-
-	//int32 min = _inputImage->GetDimensionExtents(2).minimum;
-	//int32 max = _inputImage->GetDimensionExtents(2).maximum;
-	//_dataset = M4D::Imaging::DataSetFactory::CreateSlicedGeometry< M4D::Imaging::Geometry::BSpline<float32, 2> >( min, max );
+	//Prepare list of available models	
+	LoadModelInfos( _modelInfos );
+	_modelID = 0;
+	_previousModelID = -1;
 	
 	_controlPanel = new KidneySegmentationControlPanel( this );
 	
@@ -288,6 +291,10 @@ KidneySegmentationManager::SegmentationFinished()
 void
 KidneySegmentationManager::RunSplineSegmentation()
 {
+	if( _previousModelID != _modelID ) {
+		_probModel = CanonicalProbModel::LoadFromFile( _modelInfos[_modelID].modelFilename );
+	}
+	_previousModelID = _modelID;
 
 	if( !_readyToStartSegmentation ) {
 		D_PRINT( "RunSplineSegmentation() waiting." );

@@ -1,8 +1,10 @@
 
 #include "MainManager.h"
+#include "ResultsPage.h"
 #include <QtGui>
 
 #include <boost/filesystem.hpp>
+
 typedef boost::filesystem::path	Path;
 
 MainManager 	* MainManager::_instance;
@@ -19,6 +21,8 @@ MainManager::Instance()
 void
 MainManager::Initialize()
 {
+	qRegisterMetaType<AnalysisRecord>();
+
 	M4D::Imaging::AbstractPipeFilter *filter = new M4D::Imaging::ImageConvertor< InputImageType >();
 	_conversionPipeline.AddFilter( filter );
 	_inConnection =  static_cast< InImageConnection * >(&(_conversionPipeline.MakeInputConnection( *filter, 0, false )));
@@ -26,12 +30,25 @@ MainManager::Initialize()
 
 
 	CreateResultProcessPipeline();
+
+	_resultsPage = new ResultsPage( *this );
+	
+	QObject::connect( this, SIGNAL(ResultProcessingStarted()), _resultsPage, SLOT( WaitForData() ), Qt::QueuedConnection );
+	QObject::connect( this, SIGNAL(ShowResultsSignal( AnalysisRecord )), _resultsPage, SLOT( ShowResults( AnalysisRecord ) ), Qt::QueuedConnection );
+
+	//TODO
 }
 
 void
 MainManager::Finalize()
 {
 
+}
+
+QWidget *
+MainManager::GetResultsPage()
+{ 
+	return _resultsPage; 
 }
 
 void
@@ -59,38 +76,38 @@ MainManager::InitInput( M4D::Imaging::AbstractDataSet::Ptr inputDataSet )
 
 }
 
+struct ResultProcessingThread
+{
+	ResultProcessingThread( 
+		MainManager	*manager 
+		)
+		: _manager( manager ) 
+	{ /*empty*/ }
+
+	/**
+	 * Method executed by thread, which has copy of this object.
+	 **/
+	void
+	operator()()
+	{
+		D_PRINT( "Entering ProcessResultDatasetsThreadMethod()" );
+		_manager->ProcessResultDatasetsThreadMethod();
+	}
+private:
+	MainManager	*_manager;
+
+};
+
 void
 MainManager::ProcessResultDatasets( InputImageType::Ptr image, GDataSet::Ptr splines )
 {
-	_inResultGDatasetConnection->PutDataset( splines );
-	
-	_splineFillFilter->SetMinimum( image->GetMinimum() );
-	_splineFillFilter->SetMaximum( image->GetMaximum() );
-	_splineFillFilter->SetElementExtents( image->GetElementExtents() );
+	emit ResultProcessingStarted();
 
-	D_PRINT( "Processing results - min = " << image->GetMinimum() << " max = " << image->GetMaximum() << " elemExtents = " << image->GetElementExtents() );
+	_tmpImage = image;
+	_tmpSplines = splines;
 
-	_splineFillFilter->ExecuteOnWhole();
+	M4D::Multithreading::Thread thread( ResultProcessingThread( this ) );
 
-	QString name = QFileDialog::getSaveFileName();
-
-	while( _splineFillFilter->IsRunning() ) { }
-
-	Path maskName = TO_STRING( name.toStdString() << "Mask.dump" );
-	Path dataName = TO_STRING( name.toStdString() << "Data.dump" );
-	Path indexName = TO_STRING( name.toStdString() << ".idx" );
-
-	M4D::Imaging::ImageFactory::DumpImage( maskName.file_string(), _resultProcessMaskConnection->GetDatasetTyped() );
-	M4D::Imaging::ImageFactory::DumpImage( dataName.file_string(), *image );
-
-	std::ofstream indexFile( indexName.file_string().data() );
-
-	indexFile << dataName.filename() << std::endl;
-	indexFile << maskName.filename() << std::endl;
-
-	indexFile.close();
-	
-	QMessageBox::information( NULL, "Saving finished", "Results saved" );
 }
 
 void
@@ -104,3 +121,50 @@ MainManager::CreateResultProcessPipeline()
 
 }
 
+void
+MainManager::ProcessResultDatasetsThreadMethod()
+{
+	_inResultGDatasetConnection->PutDataset( _tmpSplines );
+	
+	_splineFillFilter->SetMinimum( _tmpImage->GetMinimum() );
+	_splineFillFilter->SetMaximum( _tmpImage->GetMaximum() );
+	_splineFillFilter->SetElementExtents( _tmpImage->GetElementExtents() );
+
+	D_PRINT( "Processing results - min = " << _tmpImage->GetMinimum() << " max = " << _tmpImage->GetMaximum() << " elemExtents = " << _tmpImage->GetElementExtents() );
+
+	_splineFillFilter->ExecuteOnWhole();
+
+
+	while( _splineFillFilter->IsRunning() ) { }
+
+	_tmpMask = _resultProcessMaskConnection->GetDatasetPtrTyped();
+
+	AnalysisRecord record;
+	AnalyseResults( *_tmpImage, *_tmpMask, record );
+
+	emit ShowResultsSignal( record );
+
+}
+
+void
+MainManager::SaveResultDatasets()
+{
+	QString name = QFileDialog::getSaveFileName();
+
+	Path maskName = TO_STRING( name.toStdString() << "Mask.dump" );
+	Path dataName = TO_STRING( name.toStdString() << "Data.dump" );
+	Path indexName = TO_STRING( name.toStdString() << ".idx" );
+
+	M4D::Imaging::ImageFactory::DumpImage( maskName.file_string(), *_tmpMask );
+	M4D::Imaging::ImageFactory::DumpImage( dataName.file_string(), *_tmpImage );
+
+	std::ofstream indexFile( indexName.file_string().data() );
+
+	indexFile << dataName.filename() << std::endl;
+	indexFile << maskName.filename() << std::endl;
+
+	indexFile.close();
+	
+	QMessageBox::information( NULL, "Saving finished", "Results saved" );
+
+}
