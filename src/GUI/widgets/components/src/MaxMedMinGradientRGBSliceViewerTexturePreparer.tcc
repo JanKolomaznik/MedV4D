@@ -1,5 +1,5 @@
-#ifndef MAX_AVR_MIN_RGB_SLICEVIEWER_TEXTURE_PREPARER_H
-#error File MaxAvrMinRGBSliceViewerTexturePreparer.tcc cannot be included directly!
+#ifndef MAX_MED_MIN_GRADIENT_RGB_SLICEVIEWER_TEXTURE_PREPARER_H
+#error File MaxMedMinGradientRGBSliceViewerTexturePreparer.tcc cannot be included directly!
 #else
 
 namespace M4D
@@ -9,7 +9,7 @@ namespace Viewer
 
 template< typename ElementType >
 bool
-MaxAvrMinRGBSliceViewerTexturePreparer< ElementType >
+MaxMedMinGradientRGBSliceViewerTexturePreparer< ElementType >
 ::prepare( const Imaging::InputPortList& inputPorts,
       uint32& width,
       uint32& height,
@@ -20,7 +20,8 @@ MaxAvrMinRGBSliceViewerTexturePreparer< ElementType >
       unsigned& dimension )
     {
 
-	ElementType** pixel = this->getDatasetArrays( inputPorts, SLICEVIEWER_INPUT_NUMBER, width, height, so, slice, dimension );
+	ElementType** pixel = SimpleSliceViewerTexturePreparer< ElementType >::getDatasetArrays( inputPorts, SLICEVIEWER_INPUT_NUMBER, width, height, so, slice, dimension );
+	ElementType** gradient = GradientSliceViewerTexturePreparer< ElementType >::getDatasetArrays( inputPorts, SLICEVIEWER_INPUT_NUMBER, width, height, so, slice, dimension );
 
 	uint32 i,textureCount = 0;
 
@@ -33,7 +34,7 @@ MaxAvrMinRGBSliceViewerTexturePreparer< ElementType >
 	if ( ! textureCount ) return false;
 
 	ElementType* channelR = MaximumIntensitySliceViewerTexturePreparer< ElementType >::IntensityArranger( pixel, SLICEVIEWER_INPUT_NUMBER, width, height );
-	ElementType* channelG = AverageIntensitySliceViewerTexturePreparer< ElementType >::IntensityArranger( pixel, SLICEVIEWER_INPUT_NUMBER, width, height );
+	ElementType* channelG = MedianGradientSliceViewerTexturePreparer< ElementType >::IntensityArranger( gradient, SLICEVIEWER_INPUT_NUMBER, width, height );
 	ElementType* channelB = MinimumIntensitySliceViewerTexturePreparer< ElementType >::IntensityArranger( pixel, SLICEVIEWER_INPUT_NUMBER, width, height );
 
 	this->equalizeArray( channelR, width, height, brightnessRate, contrastRate );
@@ -53,7 +54,11 @@ MaxAvrMinRGBSliceViewerTexturePreparer< ElementType >
 	for ( i = 0; i < SLICEVIEWER_INPUT_NUMBER; i++ )
 	    if ( pixel[i] ) delete[] pixel[i];
 
+	for ( i = 0; i < SLICEVIEWER_INPUT_NUMBER; i++ )
+	    if ( gradient[i] ) delete[] gradient[i];
+
 	delete[] pixel;
+	delete[] gradient;
 
         return true;
     }

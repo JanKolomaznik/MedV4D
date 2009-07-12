@@ -6,7 +6,7 @@
 #ifndef GRADIENT_SLICEVIEWER_TEXTURE_PREPARER_H
 #define GRADIENT_SLICEVIEWER_TEXTURE_PREPARER_H
 
-#include "GUI/widgets/components/AbstractSliceViewerTexturePreparer.h"
+#include "GUI/widgets/components/SimpleSliceViewerTexturePreparer.h"
 
 
 namespace M4D

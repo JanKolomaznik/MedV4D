@@ -5,6 +5,10 @@
 #include "GUI/widgets/m4dGUIMainViewerDesktopWidget.h"
 #include "GUI/widgets/components/MaxAvrMinRGBSliceViewerTexturePreparer.h"
 #include "GUI/widgets/components/MaxMedMinRGBSliceViewerTexturePreparer.h"
+#include "GUI/widgets/components/MaxAvrMinGradientRGBSliceViewerTexturePreparer.h"
+#include "GUI/widgets/components/MaxMedMinGradientRGBSliceViewerTexturePreparer.h"
+#include "GUI/widgets/components/MaxMaxMinGradientRGBSliceViewerTexturePreparer.h"
+#include "GUI/widgets/components/MaxMinMinGradientRGBSliceViewerTexturePreparer.h"
 #include "GUI/widgets/components/MultiChannelGradientRGBSliceViewerTexturePreparer.h"
 #include "mainWindow.h"
 
@@ -74,6 +78,10 @@ protected:
 	M4D::Viewer::MedianIntensitySliceViewerTexturePreparer< ElementType > medianIntensityTexturePreparer;
 	M4D::Viewer::MaxAvrMinRGBSliceViewerTexturePreparer< ElementType > maxAvrMinRGBTexturePreparer;
 	M4D::Viewer::MaxMedMinRGBSliceViewerTexturePreparer< ElementType > maxMedMinRGBTexturePreparer;
+	M4D::Viewer::MaxAvrMinGradientRGBSliceViewerTexturePreparer< ElementType > maxAvrMinGradientRGBTexturePreparer;
+	M4D::Viewer::MaxMedMinGradientRGBSliceViewerTexturePreparer< ElementType > maxMedMinGradientRGBTexturePreparer;
+	M4D::Viewer::MaxMaxMinGradientRGBSliceViewerTexturePreparer< ElementType > maxMaxMinGradientRGBTexturePreparer;
+	M4D::Viewer::MaxMinMinGradientRGBSliceViewerTexturePreparer< ElementType > maxMinMinGradientRGBTexturePreparer;
 	M4D::Viewer::MultiChannelGradientRGBSliceViewerTexturePreparer< ElementType > multiChannelGradientRGBTexturePreparer;
 };
 

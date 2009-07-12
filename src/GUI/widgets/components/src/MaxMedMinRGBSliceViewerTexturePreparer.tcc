@@ -27,7 +27,6 @@ MaxMedMinRGBSliceViewerTexturePreparer< ElementType >
 	for ( i = 0; i < SLICEVIEWER_INPUT_NUMBER; i++ )
 	    if ( pixel[i] )
 	    {
-		this->equalizeArray( pixel[i], width, height, brightnessRate, contrastRate );
 		textureCount++;
 	    }
 
@@ -36,6 +35,10 @@ MaxMedMinRGBSliceViewerTexturePreparer< ElementType >
 	ElementType* channelR = MaximumIntensitySliceViewerTexturePreparer< ElementType >::IntensityArranger( pixel, SLICEVIEWER_INPUT_NUMBER, width, height );
 	ElementType* channelG = MedianIntensitySliceViewerTexturePreparer< ElementType >::IntensityArranger( pixel, SLICEVIEWER_INPUT_NUMBER, width, height );
 	ElementType* channelB = MinimumIntensitySliceViewerTexturePreparer< ElementType >::IntensityArranger( pixel, SLICEVIEWER_INPUT_NUMBER, width, height );
+
+	this->equalizeArray( channelR, width, height, brightnessRate, contrastRate );
+        this->equalizeArray( channelG, width, height, brightnessRate, contrastRate );
+        this->equalizeArray( channelB, width, height, brightnessRate, contrastRate );
 
 	ElementType* texture = RGBChannelArranger( channelR, channelG, channelB, width, height );
 
