@@ -46,18 +46,18 @@ MultiChannelRGBSliceViewerTexturePreparer< ElementType >
 		    if ( ! pixel[k] ) continue;
 		    if ( k < SLICEVIEWER_INPUT_NUMBER / 3 )
 		    {
-			channelR[ i * width + j ] += (ElementType)( ( ( (float32)( k % ( SLICEVIEWER_INPUT_NUMBER / 3 ) ) / (float32)( SLICEVIEWER_INPUT_NUMBER / 3 ) ) * pixel[k][ i * width + j ] ) / textureCount );
-			channelG[ i * width + j ] += (ElementType)( ( ( 1.0 - (float32)( k % ( SLICEVIEWER_INPUT_NUMBER / 3 ) ) / (float32)( SLICEVIEWER_INPUT_NUMBER / 3 ) ) * pixel[k][ i * width + j ] ) / textureCount );
+			channelR[ i * width + j ] += (ElementType)( ( ( 1.0 - (float32)( k % ( SLICEVIEWER_INPUT_NUMBER / 3 ) ) / (float32)( SLICEVIEWER_INPUT_NUMBER / 3 ) ) * pixel[k][ i * width + j ] ) / textureCount );
+			channelG[ i * width + j ] += (ElementType)( ( ( (float32)( k % ( SLICEVIEWER_INPUT_NUMBER / 3 ) ) / (float32)( SLICEVIEWER_INPUT_NUMBER / 3 ) ) * pixel[k][ i * width + j ] ) / textureCount );
 		    }
 		    else if ( k < 2 * SLICEVIEWER_INPUT_NUMBER / 3 )
 		    {
-			channelG[ i * width + j ] += (ElementType)( ( ( (float32)( k % ( SLICEVIEWER_INPUT_NUMBER / 3 ) ) / (float32)( SLICEVIEWER_INPUT_NUMBER / 3 ) ) * pixel[k][ i * width + j ] ) / textureCount );
-			channelB[ i * width + j ] += (ElementType)( ( ( 1.0 - (float32)( k % ( SLICEVIEWER_INPUT_NUMBER / 3 ) ) / (float32)( SLICEVIEWER_INPUT_NUMBER / 3 ) ) * pixel[k][ i * width + j ] ) / textureCount );
+			channelG[ i * width + j ] += (ElementType)( ( ( 1.0 - (float32)( k % ( SLICEVIEWER_INPUT_NUMBER / 3 ) ) / (float32)( SLICEVIEWER_INPUT_NUMBER / 3 ) ) * pixel[k][ i * width + j ] ) / textureCount );
+			channelB[ i * width + j ] += (ElementType)( ( ( (float32)( k % ( SLICEVIEWER_INPUT_NUMBER / 3 ) ) / (float32)( SLICEVIEWER_INPUT_NUMBER / 3 ) ) * pixel[k][ i * width + j ] ) / textureCount );
 		    }
 		    else
 		    {
-			channelB[ i * width + j ] += (ElementType)( ( ( (float32)( k % ( SLICEVIEWER_INPUT_NUMBER / 3 ) ) / (float32)( SLICEVIEWER_INPUT_NUMBER / 3 ) ) * pixel[k][ i * width + j ] ) / textureCount );
-			channelR[ i * width + j ] += (ElementType)( ( ( 1.0 - (float32)( k % ( SLICEVIEWER_INPUT_NUMBER / 3 ) ) / (float32)( SLICEVIEWER_INPUT_NUMBER / 3 ) ) * pixel[k][ i * width + j ] ) / textureCount );
+			channelB[ i * width + j ] += (ElementType)( ( ( 1.0 - (float32)( k % ( SLICEVIEWER_INPUT_NUMBER / 3 ) ) / (float32)( SLICEVIEWER_INPUT_NUMBER / 3 ) ) * pixel[k][ i * width + j ] ) / textureCount );
+			channelR[ i * width + j ] += (ElementType)( ( ( (float32)( k % ( SLICEVIEWER_INPUT_NUMBER / 3 ) ) / (float32)( SLICEVIEWER_INPUT_NUMBER / 3 ) ) * pixel[k][ i * width + j ] ) / textureCount );
 		    }
 		}
 	    }

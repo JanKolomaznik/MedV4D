@@ -119,6 +119,7 @@ SettingsBox
         fusionType->addItem( "Median intensity fusion" );
         fusionType->addItem( "RGB-Max-Avr-Min fusion" );
         fusionType->addItem( "RGB-Max-Med-Min fusion" );
+        fusionType->addItem( "Multiple colored gradient fusion" );
 
         fusionType->setCurrentIndex( 0 );
 
@@ -286,6 +287,10 @@ SettingsBox
 			
 			case 7:
 			sliceViewer->setTexturePreparerToCustom(&maxMedMinRGBTexturePreparer);
+			break;
+
+			case 8:
+			sliceViewer->setTexturePreparerToCustom(&multiChannelGradientRGBTexturePreparer);
 			break;
 
 		}

@@ -5,7 +5,7 @@
 #include "GUI/widgets/m4dGUIMainViewerDesktopWidget.h"
 #include "GUI/widgets/components/MaxAvrMinRGBSliceViewerTexturePreparer.h"
 #include "GUI/widgets/components/MaxMedMinRGBSliceViewerTexturePreparer.h"
-#include "GUI/widgets/components/MultiChannelRGBSliceViewerTexturePreparer.h"
+#include "GUI/widgets/components/MultiChannelGradientRGBSliceViewerTexturePreparer.h"
 #include "mainWindow.h"
 
 class SettingsBox : public QWidget
@@ -74,6 +74,7 @@ protected:
 	M4D::Viewer::MedianIntensitySliceViewerTexturePreparer< ElementType > medianIntensityTexturePreparer;
 	M4D::Viewer::MaxAvrMinRGBSliceViewerTexturePreparer< ElementType > maxAvrMinRGBTexturePreparer;
 	M4D::Viewer::MaxMedMinRGBSliceViewerTexturePreparer< ElementType > maxMedMinRGBTexturePreparer;
+	M4D::Viewer::MultiChannelGradientRGBSliceViewerTexturePreparer< ElementType > multiChannelGradientRGBTexturePreparer;
 };
 
 #endif /*_SETTINGS_BOX_H*/

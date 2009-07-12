@@ -102,7 +102,7 @@ protected:
      *  @param dimension dimense
      *  @return array of arrays of the prepared textures
      */
-    ElementType** getDatasetArrays( const Imaging::InputPortList& inputPorts,
+    virtual ElementType** getDatasetArrays( const Imaging::InputPortList& inputPorts,
       uint32 numberOfDatasets,
       uint32& width,
       uint32& height,
