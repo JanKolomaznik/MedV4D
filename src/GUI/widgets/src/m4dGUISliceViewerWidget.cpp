@@ -1456,6 +1456,12 @@ m4dGUISliceViewerWidget::slotColorPicker( double x, double y, double z )
 }
 
 void
+m4dGUISliceViewerWidget::updateViewer()
+{
+	updateGL();
+}
+
+void
 m4dGUISliceViewerWidget::slotMessageHandler( Imaging::PipelineMsgID msgID )
 {
     switch( msgID )

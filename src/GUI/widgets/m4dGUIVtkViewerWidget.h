@@ -301,6 +301,8 @@ public slots:
      */
     virtual void slotColorPicker( double x, double y, double z );
 
+    void updateViewer()
+	    { /*TODO*/ }
 protected slots:
     
     /**

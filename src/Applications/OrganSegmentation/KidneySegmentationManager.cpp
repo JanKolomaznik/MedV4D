@@ -161,7 +161,13 @@ KidneySegmentationManager::LeftButtonDown( Vector< float32, 2 > pos, int32 slice
 	switch( _state ) {
 	case DEFINING_POLE:
 		++_actualPole;
-		if( _actualPole >= 2 ) return;
+		if( _actualPole >= 2 ) {
+			SetState( POLES_SET );
+			return;
+		}
+		if( _actualPole == 1 ) {
+			SetState( POLES_SET );
+		}
 
 		_poles[_actualPole].defined = true;
 		_poles[_actualPole].slice = sliceNum;
@@ -207,10 +213,21 @@ KidneySegmentationManager::PolesSet()
 
 	_inConnection->PutDataset( _inputImage );
 
+	SetState( SET_SEGMENTATION_PARAMS_PREPROCESSING );
+
 	RunFilters();
 
 	//_inConnection->PutDataset( _gaussianConnection->GetDatasetPtrTyped() );
 	//_inConnection->PutDataset( _edgeConnection->GetDatasetPtrTyped() );
+}
+
+void
+KidneySegmentationManager::SetNewPoles()
+{
+	_actualPole = -1;
+	_poles[0].defined = false;	
+	_poles[1].defined = false;	
+	SetState( DEFINING_POLE );
 }
 
 struct SegmentationExecutionThread
@@ -258,7 +275,14 @@ KidneySegmentationManager::RunFilters()
 void
 KidneySegmentationManager::FiltersFinishedSuccesfully()
 {
+	SetState( SET_SEGMENTATION_PARAMS );
 	SetReadyToSegmentationFlag( true );
+}
+
+void
+KidneySegmentationManager::SegmentationFinished()
+{
+	SetState( SEGMENTATION_FINISHED );
 }
 
 void
@@ -267,10 +291,12 @@ KidneySegmentationManager::RunSplineSegmentation()
 
 	if( !_readyToStartSegmentation ) {
 		D_PRINT( "RunSplineSegmentation() waiting." );
+		SetState( SEGMENTATION_EXECUTED_WAITING );
 		Multithreading::ScopedLock lock( _readyMutex );
 		D_PRINT( "RunSplineSegmentation() waiting finished." );
 	}
 
+	SetState( SEGMENTATION_EXECUTED_RUNNING );
 	//KidneyViewerSpecialState *sState = (KidneyViewerSpecialState*)(_specialState.get());
 
 	LOG( "Poles set to : [" << _poles[0].coordinates << "]; [" << _poles[1].coordinates << "]" );
@@ -293,6 +319,8 @@ KidneySegmentationManager::RunSplineSegmentation()
 	_segmentationFilter->ExecuteOnWhole();
 
 	while( _segmentationFilter->IsRunning() ){ /*std::cout << ".";*/ }
+
+	SegmentationFinished();
 
 	//QMessageBox::information( NULL, "Execution finished", "Filter finished its work" );
 
@@ -318,10 +346,7 @@ KidneySegmentationManager::Activate( InputImageType::Ptr inImage )
 	_inputImage = inImage;
 	_inConnection->PutDataset( _inputImage );
 
-	_actualPole = -1;
-	_poles[0].defined = false;	
-	_poles[1].defined = false;	
-	_state = DEFINING_POLE;
+	SetNewPoles();
 	_dataset = GDataSet::Ptr();
 }
 
@@ -340,4 +365,32 @@ KidneySegmentationManager::BeginManualCorrection()
 			GetInputImage(), 
 			GetOutputGeometry()
 			);
+}
+
+void
+KidneySegmentationManager::SetState( KidneySegmentationManager::InternalState state )
+{
+	switch( _state ) {
+	case DEFINING_POLE:
+		break;
+	case POLES_SET:
+		break;
+	case SET_SEGMENTATION_PARAMS_PREPROCESSING:
+		break;
+	case SET_SEGMENTATION_PARAMS:
+		break;
+	case SEGMENTATION_EXECUTED_WAITING:
+		break;
+	case SEGMENTATION_EXECUTED_RUNNING:
+		break;
+	case SEGMENTATION_FINISHED:
+		break;
+	default:
+		ASSERT( false );
+	}
+	D_PRINT( "Kidney segmentation state changed from : " << _state << " to : " << state );
+	_state = state;
+	
+	emit StateUpdated();
+	emit WantsViewerUpdate();
 }

@@ -19,6 +19,12 @@ protected:
 	CreateWidgets();
 
 	KidneySegmentationManager	*_manager;
+
+	QFrame				*_polesButtons;
+	QFrame				*_segmentationSettings;
+	QFrame				*_resultButtons;
+
+	QLabel				*_infoBox;
 };
 
 #endif /*KIDNEY_SEGMENTATION_CONTROL_PANEL_H*/

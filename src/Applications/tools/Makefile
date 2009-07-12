@@ -1,12 +1,9 @@
-
+srcTop = ../..
 srcdir = .
 
-CXX=g++
-AR=ar
-RM=rm -f
-MKDIR=mkdir
-MOC=moc
-RCC=rcc
+include $(srcTop)/project/ToolchainSelect.mk
+include $(srcTop)/project/pathsDefinitions.mk
+include $(srcTop)/project/configurationSelector.mk
 
 
 ########################################
@@ -27,11 +24,11 @@ TARGETS=	DICOM2ImageDump \
 		MaxFilter \
 		MinFilter
 
-M4DLIBS=	../../lib/libm4dWidgets.a\
-		../../lib/libImaging.a\
-		../../lib/libvtkIntegration.a\
-		../../lib/libbackendForDICOM.a\
-		../../lib/libcommon.a
+M4DLIBS=	-lm4dWidgets\
+		-lvtkIntegration\
+		-lbackendForDICOM\
+		-lImaging\
+		-lcommon
 
 QTLIBS=		-lQtCore\
 		-lQtGui\
@@ -41,8 +38,8 @@ DCMTKLIBS=	-ldcmnet -ldcmdata -lofstd
 
 OTHERLIBS=	-lz\
 		-lwrap\
-		-lboost_thread \
-		-lboost_filesystem \
+		-lboost_thread-mt \
+		-lboost_filesystem-mt \
 		-lGLU
 
 LIBS=		$(M4DLIBS)\
@@ -59,16 +56,11 @@ TMP_DIR=		../../tmp/tools
 
 OUTPUTS= $(addprefix $(OUTPUTDIR)/, $(TARGETS) )
 
-CXXDEBUG_OPTIONS= -ggdb 
-
-CXXFLAGS= -Wall -Wno-deprecated $(CXXDEBUG_OPTIONS)
 #Dependecy file creation parameters
 DEP_FILE=	$(TMP_DIR)/depend
-CDEPFLAGS=	-MM 
 
-LDFLAGS=
-ARFLAGS=	-r
-LIBDIRS=	-L../../lib
+LIBDIRS=	-L$(srcTop)/lib/$(CONF)\
+		-L../../lib
 INCLUDES=	-I../.. \
 		-I$(srcdir)\
 		-I../../include\
@@ -78,18 +70,9 @@ INCLUDES=	-I../.. \
 		-I/usr/include/qt4/QtCore\
 		-I/usr/include/qt4/QtGui
 
-DEBUG_DEFS=	-DDEBUG_LEVEL=10\
-		-DDEBUG_ADITIONAL_INFO
-
-DEFS=		$(DEBUG_DEFS)
 
 .PHONY: all
 all:		tmpdir $(OUTPUTS)
-
-.PHONY: tmpdir
-tmpdir:         
-		$(MKDIR) $(TMP_DIR) 2>/dev/null || true
-		$(MKDIR) $(OUTPUTDIR) 2>/dev/null || true
 
 .PHONY: build
 build:		cleanall all
@@ -105,7 +88,8 @@ $(TMP_DIR)/%.o: %.cpp
 		$(CXX) $(CXXFLAGS) $(DEFS) $(INCLUDES) -c $< -o $@
 
 
-$(OUTPUTDIR)/%:	$(TMP_DIR)/%.o $(M4DLIBS) 
+$(OUTPUTDIR)/%:	$(TMP_DIR)/%.o 
+		#$(M4DLIBS) 
 		$(CXX) $(CXXFLAGS) $< $(LIBDIRS) $(LIBS) -o $@
 
 .PHONY: clean

@@ -269,7 +269,7 @@ ManualSegmentationManager::DeleteSelectedCurve()
 }
 
 void
-ManualSegmentationManager::SetState( InternalState state )
+ManualSegmentationManager::SetState( ManualSegmentationManager::InternalState state )
 {
 	switch( _state ) {
 	case CREATING:
@@ -287,5 +287,6 @@ ManualSegmentationManager::SetState( InternalState state )
 	_state = state;
 	
 	emit StateUpdated();
+	emit WantsViewerUpdate();
 }
 

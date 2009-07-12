@@ -205,5 +205,12 @@ void m4dGUIMainViewerDesktopWidget::sourceSelected ( int index )
   emit sourceChanged(); 
 }
 
+void m4dGUIMainViewerDesktopWidget::UpdateViewers()
+{
+	for ( unsigned i = 0; i < viewers.size(); ++i ) {
+		viewers[i]->viewerWidget->updateViewer();
+	}
+}
+
 } // namespace GUI
 } // namespace M4D

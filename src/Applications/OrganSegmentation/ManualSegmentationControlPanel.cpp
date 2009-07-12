@@ -56,7 +56,7 @@ ManualSegmentationControlPanel
 	verticalLayout->addStretch( 3 );
 
 	button = new QPushButton( tr( "Process Results" ) );
-	QObject::connect( button, SIGNAL(clicked()), _manager, SLOT( WantProcessResults() ) );
+	QObject::connect( button, SIGNAL(clicked()), _manager, SLOT( WantsProcessResults() ) );
 	verticalLayout->addWidget( button );
 
 	QObject::connect( _manager, SIGNAL(StateUpdated()), this, SLOT( PanelUpdate()) );

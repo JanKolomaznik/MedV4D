@@ -18,7 +18,7 @@ InitializeSegmentationManagers()
 }
 
 void
-SegmentationManager::WantProcessResults()
+SegmentationManager::WantsProcessResults()
 {
 	emit ProcessResults( ResultsInfo( GetInputImage(), GetOutputGeometry() ) );
 }

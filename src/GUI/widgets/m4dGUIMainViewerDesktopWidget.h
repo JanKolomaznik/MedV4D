@@ -159,6 +159,10 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
     void addSource ( Imaging::ConnectionInterface *conn, 
                      M4D::Viewer::m4dGUIViewerEventHandlerInterface *viewerEventHandler );
 
+  public slots:
+    void
+    UpdateViewers();
+
   private slots:
 
     /** 

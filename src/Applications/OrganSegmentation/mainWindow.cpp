@@ -36,6 +36,7 @@ mainWindow::mainWindow ()
 	for( it = segmentationManagers.begin(); it != segmentationManagers.end(); ++it ) {
 
 		QObject::connect( *it, SIGNAL(ManagerActivated( ManagerActivationInfo )), this, SLOT( ManagerActivatedSlot( ManagerActivationInfo ) ) );
+		QObject::connect( *it, SIGNAL(WantsViewerUpdate()), _segmentationViewerWidget, SLOT( UpdateViewers() ) );
 
 	}
 }

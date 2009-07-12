@@ -60,11 +60,13 @@ class KidneySegmentationManager: public SegmentationManager
 	Q_OBJECT
 public:
 	enum InternalState {
-		SET_POLES,
-		SET_LAST_POLE,
+		DEFINING_POLE,
+		POLES_SET,
+		SET_SEGMENTATION_PARAMS_PREPROCESSING,
 		SET_SEGMENTATION_PARAMS,
 		SEGMENTATION_EXECUTED_WAITING,
-		SEGMENTATION_EXECUTED_RUNNING
+		SEGMENTATION_EXECUTED_RUNNING,
+		SEGMENTATION_FINISHED
 	};
 
 	static KidneySegmentationManager &
@@ -91,6 +93,10 @@ public:
 	{
 		return _specialState;
 	}
+	
+	InternalState
+	GetInternalState()const
+		{ return _state; }
 
 	GDataSet::Ptr
 	GetOutputGeometry()
@@ -125,6 +131,15 @@ public slots:
 	PolesSet();
 
 	void
+	SetNewPoles();
+
+	void
+	FiltersFinishedSuccesfully();
+
+	void
+	SegmentationFinished();
+
+	void
 	SetComputationPrecision( int value )
 	{
 		_computationPrecision = value;
@@ -151,16 +166,18 @@ public slots:
 	void
 	StartSegmentation();
 
-	void
-	FiltersFinishedSuccesfully();
-
+signals:
+	void StateUpdated();
 protected:
 	InternalState	_state;
-	enum SubStates { DEFINING_POLE, MOVING_POLE };
+	//enum SubStates { DEFINING_POLE, MOVING_POLE };
 
 	KidneySegmentationManager();
 	
 	~KidneySegmentationManager();
+
+	void
+	SetState( InternalState state );
 
 	void
 	SetReadyToSegmentationFlag( bool ready )
@@ -200,7 +217,7 @@ protected:
 	bool						_wasInitialized;
 
 	int						_actualPole;
-	SubStates					_state;
+	//SubStates					_state;
 	GDataSet::Ptr					_dataset;
 
 	volatile bool					_readyToStartSegmentation;

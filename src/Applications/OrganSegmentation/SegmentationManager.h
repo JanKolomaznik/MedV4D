@@ -76,7 +76,7 @@ public slots:
 		{ emit ManagerActivated( ManagerActivationInfo( GetInputConnection(), GetGUI(), GetSpecialState() ) ); }
 
 	void
-	WantProcessResults();
+	WantsProcessResults();
 signals:
 
 	void
@@ -85,6 +85,8 @@ signals:
 	void
 	ProcessResults( ResultsInfo );
 
+	void
+	WantsViewerUpdate();
 protected:
 	SegmentationManager(): _controlPanel( NULL )
 		{ /*empty*/ }

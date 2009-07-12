@@ -58,6 +58,8 @@ ComputeProbRecord( Vector< float32, 3 > pos, Vector< float32, 3 > hStep, const I
 		rmax[i] = Min( ROUND( max[i] / extents[i] ), rmax[i]-1 ) ;
 	}
 	
+	GridPointRecord result( 0.0, 0.0f, 0.0f );
+
 	Vector< int32, 3 > idx;
 	int32 counter = 0;
 	int32 inCounter = 0;
@@ -66,6 +68,9 @@ ComputeProbRecord( Vector< float32, 3 > pos, Vector< float32, 3 > hStep, const I
 			for( idx[2] = rmin[2]; idx[2] <= rmax[2]; ++idx[2] ) {
 				if( mask.GetElement( idx ) != 0 ) {
 					++inCounter;
+					result.inHistogram.IncCell( image.GetElement( idx ) );
+				} else {
+					result.outHistogram.IncCell( image.GetElement( idx ) );
 				}	
 				++counter;
 			}
@@ -76,7 +81,10 @@ ComputeProbRecord( Vector< float32, 3 > pos, Vector< float32, 3 > hStep, const I
 	}
 	float32 inProb = static_cast<float32>( inCounter ) / static_cast<float32>( counter );
 
-	return GridPointRecord( inProb, 1.0f - inProb, 0.0f );
+	result.inProbabilityPos = inProb;
+	result.outProbabilityPos = 1.0f - inProb;
+
+	return result;
 }
 
 void
@@ -187,8 +195,41 @@ IncorporateGrids( const GridType &last, GridType &general )
 				GridPointRecord &genRec = general.GetPointRecord( idx );
 				genRec.inProbabilityPos += rec.inProbabilityPos;
 				genRec.outProbabilityPos += rec.outProbabilityPos;
+
+				genRec.inHistogram += rec.inHistogram;
+				genRec.outHistogram += rec.outHistogram;
 			}
 		}
+	}
+}
+
+void
+ConsolidateGeneralGridRecord( GridPointRecord &rec, int32 count )
+{
+	rec.inProbabilityPos /= count;
+	rec.outProbabilityPos /= count;
+
+	//TODO - check extremes
+	if( rec.inProbabilityPos < Epsilon ) {
+		rec.inProbabilityPos = Epsilon;
+	}
+	if( rec.outProbabilityPos < Epsilon ) {
+		rec.outProbabilityPos = Epsilon;
+	}
+	rec.logRatioPos = log( rec.inProbabilityPos / rec.outProbabilityPos );
+
+	double histogramSum = 0;
+	int32 min = rec.inHistogram.GetMin();
+	int32 max = rec.inHistogram.GetMax();
+
+	for( int32 i = min; i < max; ++i ) {
+		histogramSum += rec.inHistogram[i];
+		histogramSum += rec.outHistogram[i];
+	}
+	for( int32 i = min; i < max; ++i ) {
+		rec.inHistogram.SetValueCell( i, rec.inHistogram[i] / histogramSum );
+		rec.outHistogram.SetValueCell( i, rec.outHistogram[i] / histogramSum );
+		rec.logHistogram.SetValueCell( i, log( rec.inHistogram[i] / rec.outHistogram[i] ) );
 	}
 }
 
@@ -200,18 +241,9 @@ ConsolidateGeneralGrid( GridType &grid, int32 count )
 	for( idx[0] = 0; idx[0] < size[0]; ++idx[0] ) {
 		for( idx[1] = 0; idx[1] < size[1]; ++idx[1] ) {
 			for( idx[2] = 0; idx[2] < size[2]; ++idx[2] ) {
-				GridPointRecord &rec = grid.GetPointRecord( idx );
-				rec.inProbabilityPos /= count;
-				rec.outProbabilityPos /= count;
 
-				//TODO - check extremes
-				if( rec.inProbabilityPos < Epsilon ) {
-					rec.inProbabilityPos = Epsilon;
-				}
-				if( rec.outProbabilityPos < Epsilon ) {
-					rec.outProbabilityPos = Epsilon;
-				}
-				rec.logRatioPos = log( rec.inProbabilityPos / rec.outProbabilityPos );
+				ConsolidateGeneralGridRecord( grid.GetPointRecord( idx ), count );
+
 			}
 		}
 	}

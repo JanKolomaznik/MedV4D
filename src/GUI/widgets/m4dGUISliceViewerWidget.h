@@ -535,6 +535,8 @@ protected:
      */
     void colorPicker( double x, double y, double z );
 
+    void updateViewer();
+
 protected:
 
     /**

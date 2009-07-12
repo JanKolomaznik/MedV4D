@@ -433,6 +433,8 @@ public slots:
      */
     virtual void slotColorPicker( double x, double y, double z )=0;
 
+    virtual void updateViewer()=0;
+
 protected slots:
     
     /**
