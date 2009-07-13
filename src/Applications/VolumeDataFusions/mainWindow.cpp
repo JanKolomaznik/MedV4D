@@ -71,6 +71,8 @@ void mainWindow::ClearDataset ()
 {
 	uint32 inputNumber = _settings->GetInputNumber() - 1;
 	_inConnection[ inputNumber ]->ResetDataset();
+	_register[ inputNumber ]->OutputPort().GetPort( 0 ).GetConnection()->ResetDataset();
+	currentViewerDesktop->UpdateViewers();
 }
 
 void mainWindow::OutConnectionToViewerPort( uint32 inputNumber, uint32 portNumber )
