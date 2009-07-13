@@ -13,6 +13,8 @@
 #include "Imaging/interpolators/base.h"
 #include "Imaging/interpolators/linear.h"
 
+#define MULTITHREAD_TRANSFORM			5
+
 /**
  *  @addtogroup imaging Imaging Library
  *  @{

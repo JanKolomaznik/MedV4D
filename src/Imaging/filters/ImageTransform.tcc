@@ -201,12 +201,41 @@ TransformImage( const Image< ElementType, 3 > &in, Image< ElementType, 3 > &out,
 	Vector< uint32, 3 > size;
 	Vector< int32, 3 > strides;
 	out.GetPointer( size, strides );
-	//Multithreading::Thread* thr[size[2]];
+
+#if defined( MULTITHREAD_TRANSFORM ) && MULTITHREAD_TRANSFORM > 1
+   
+
+	const uint32 thread_num = MULTITHREAD_TRANSFORM < size[2] ? MULTITHREAD_TRANSFORM : size[2];
+	Multithreading::Thread* thr[ thread_num ];
+	uint32 i = 0, j;
+
+	for ( i = 0; i < thread_num; i++ ) thr[i] = new Multithreading::Thread( TransformSlice< ElementType >( in, out, prop, interpolator, i, transformSampling ) );
+
+	j = i;
+
+	while ( j < size[2] )
+	{
+		i = i % thread_num;
+		thr[i]->join();
+		thr[i] = new Multithreading::Thread( TransformSlice< ElementType >( in, out, prop, interpolator, j, transformSampling ) );
+		i++;
+		j++;
+	}
+
+	for ( i = 0; i < thread_num; ++i )	thr[i]->join();
+	for ( i = 0; i < thread_num; ++i )	delete thr[i];
+
+#else
+
 	uint32 i;
-	for ( i = 0; i < size[2]; ++i ) /*thr[i] = new Multithreading::Thread(*/{ TransformSlice< ElementType > ts( in, out, prop, interpolator, i, transformSampling ); ts();}// );
-	/*for ( i = 0; i < size[2]; ++i )	thr[i]->join();
-	for ( i = 0; i < size[2]; ++i )	delete thr[i];*/
-	
+	for ( i = 0; i < size[2]; ++i )
+	{
+		TransformSlice< ElementType > ts( in, out, prop, interpolator, i, transformSampling );
+		ts();
+	}
+
+#endif
+
 	return true;
 }
 
