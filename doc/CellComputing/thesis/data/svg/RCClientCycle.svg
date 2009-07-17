@@ -51,7 +51,7 @@
     </rdf:RDF>
   </metadata>
   <sodipodi:namedview
-     inkscape:window-height="843"
+     inkscape:window-height="850"
      inkscape:window-width="1440"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
@@ -63,9 +63,9 @@
      pagecolor="#ffffff"
      id="base"
      showgrid="false"
-     inkscape:zoom="0.81307486"
-     inkscape:cx="140.75511"
-     inkscape:cy="324.90764"
+     inkscape:zoom="1.2729124"
+     inkscape:cx="298.33919"
+     inkscape:cy="341.61996"
      inkscape:window-x="-5"
      inkscape:window-y="-3"
      inkscape:current-layer="svg2" />
@@ -448,36 +448,6 @@
   </defs>
   <rect
      x="88"
-     y="127"
-     clip-path="url(#clipPath3)"
-     width="89"
-     rx="8"
-     ry="8"
-     height="50"
-     id="rect172"
-     style="font-size:13px;fill:#ffffff;stroke:none;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="translate(9.8391924,-49.195962)" />
-  <rect
-     x="88"
-     y="127"
-     clip-path="url(#clipPath3)"
-     width="88"
-     rx="8"
-     ry="8"
-     height="49"
-     id="rect174"
-     style="font-size:13px;fill:none;stroke:#b0b0b0;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="translate(9.8391924,-49.195962)" />
-  <text
-     x="93"
-     y="159"
-     clip-path="url(#clipPath4)"
-     xml:space="preserve"
-     id="text176"
-     style="font-size:13px;fill:#000000;stroke:none;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="translate(9.8391924,-49.195962)">constructor</text>
-  <rect
-     x="88"
      y="283"
      clip-path="url(#clipPath5)"
      width="169"
@@ -509,15 +479,9 @@
   <polygon
      clip-path="url(#clipPath7)"
      points="322,127 445,127 475,151 445,175 322,175 322,127 "
-     id="polygon184"
-     style="font-size:13px;fill:#ffffff;stroke:none;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="translate(9.8391924,-49.195962)" />
-  <polygon
-     clip-path="url(#clipPath7)"
-     points="322,127 445,127 475,151 445,175 322,175 322,127 "
      id="polygon186"
      style="font-size:13px;fill:none;stroke:#b0b0b0;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="matrix(0.9919874,0,0,1.0000828,12.417259,-49.208461)" />
+     transform="matrix(0.9919874,0,0,1.0000828,12.417259,76.791539)" />
   <text
      x="332"
      y="158"
@@ -525,7 +489,7 @@
      xml:space="preserve"
      id="text188"
      style="font-size:13px;fill:#000000;stroke:none;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="translate(9.8391924,-49.195962)">CREATE command</text>
+     transform="translate(9.8391924,76.804038)">CREATE command</text>
   <rect
      x="88"
      y="439"
@@ -561,13 +525,13 @@
      points="322,283 442,283 472,307 442,331 322,331 322,283 "
      id="polygon196"
      style="font-size:13px;fill:#ffffff;stroke:none;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="translate(9.8391924,-49.195962)" />
+     transform="translate(9.8391924,-31.195962)" />
   <polygon
      clip-path="url(#clipPath11)"
      points="322,283 442,283 472,307 442,331 322,331 322,283 "
      id="polygon198"
      style="font-size:13px;fill:none;stroke:#b0b0b0;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="matrix(1.0081724,0,0,0.9999159,7.2096902,-49.17015)" />
+     transform="matrix(1.0081724,0,0,0.9999159,7.2096902,-31.17015)" />
   <text
      x="327"
      y="314"
@@ -575,7 +539,7 @@
      xml:space="preserve"
      id="text200"
      style="font-size:13px;fill:#000000;stroke:none;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="translate(9.8391924,-49.195962)">DATASET command</text>
+     transform="translate(9.8391924,-31.195962)">DATASET command</text>
   <polygon
      clip-path="url(#clipPath13)"
      points="322,439 423,439 448,463 423,487 322,487 322,439 "
@@ -664,7 +628,7 @@
      height="375"
      id="rect220"
      style="font-size:13px;fill:#ffffcb;stroke:none;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="translate(5.8391924,-49.195962)" />
+     transform="matrix(1,0,0,0.8407851,5.8391924,28.66014)" />
   <rect
      x="478"
      y="114"
@@ -673,7 +637,7 @@
      height="375"
      id="rect222"
      style="font-size:13px;fill:none;stroke:#ffcc66;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="translate(5.8391924,-49.195962)" />
+     transform="matrix(1.0016663,0,0,0.8389123,5.001037,29.617577)" />
   <text
      x="481"
      y="308"
@@ -768,7 +732,7 @@
      y2="152"
      id="line244"
      style="font-size:13px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="translate(9.8391924,-49.195962)" />
+     transform="matrix(0.4403133,0,0,1.003231,189.10233,90.084248)" />
   <line
      clip-path="url(#clipPath27)"
      x1="308"
@@ -777,7 +741,7 @@
      y2="152"
      id="line246"
      style="font-size:13px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="translate(9.8391924,-49.195962)" />
+     transform="matrix(0.9532286,0,0,1.003231,23.687136,90.084248)" />
   <line
      clip-path="url(#clipPath27)"
      x1="322"
@@ -786,7 +750,7 @@
      y2="155"
      id="line248"
      style="font-size:13px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="translate(9.8391924,-49.195962)" />
+     transform="matrix(0.9532286,0,0,1.003231,23.687136,90.084248)" />
   <text
      x="250"
      y="237"
@@ -838,7 +802,7 @@
      y2="310"
      id="line260"
      style="font-size:13px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="translate(9.8391924,-49.195962)" />
+     transform="translate(9.8391924,-39.195962)" />
   <line
      clip-path="url(#clipPath31)"
      x1="308"
@@ -847,7 +811,7 @@
      y2="310"
      id="line262"
      style="font-size:13px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="translate(9.8391924,-49.195962)" />
+     transform="translate(9.8391924,-39.195962)" />
   <line
      clip-path="url(#clipPath31)"
      x1="322"
@@ -856,7 +820,7 @@
      y2="313"
      id="line264"
      style="font-size:13px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="translate(9.8391924,-49.195962)" />
+     transform="translate(9.8391924,-39.195962)" />
   <text
      x="290"
      y="395"
@@ -1207,33 +1171,6 @@
      id="text346"
      style="font-size:13px;fill:#000000;stroke:none;stroke-linejoin:round;stroke-miterlimit:0"
      transform="translate(9.8391924,-49.195962)" />
-  <line
-     clip-path="url(#clipPath26)"
-     x1="132"
-     x2="132"
-     y1="103"
-     y2="127"
-     id="line348"
-     style="font-size:13px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="translate(9.8391924,-49.195962)" />
-  <line
-     clip-path="url(#clipPath51)"
-     x1="135"
-     x2="132"
-     y1="113"
-     y2="127"
-     id="line350"
-     style="font-size:13px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="translate(9.8391924,-49.195962)" />
-  <line
-     clip-path="url(#clipPath51)"
-     x1="132"
-     x2="129"
-     y1="127"
-     y2="113"
-     id="line352"
-     style="font-size:13px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="translate(9.8391924,-49.195962)" />
   <text
      x="52"
      y="120"
@@ -1249,7 +1186,7 @@
      xml:space="preserve"
      id="text3798"
      style="font-size:13px;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;stroke:none;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="translate(182.13402,20.076509)"
+     transform="translate(182.13402,30.076509)"
      sodipodi:linespacing="125%"><tspan
        sodipodi:role="line"
        id="tspan3800"

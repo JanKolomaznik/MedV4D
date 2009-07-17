@@ -17,14 +17,14 @@ CellSDK-Extras-Fedora\_3.1.0.0.0.iso  (34MB), contains some extra packages for F
 \end{enumerate}
 
 Download it wherever you want (even though in documentation is /tmp/cellsdkiso).
-Lets call the folder, you download it into, ISODIR.
+Lets call the folder ISODIR.
 First you shall stop the YUM updater daemon.
 
 \begin{verbatim}
 /etc/init.d/yum-updatesd stop
 \end{verbatim}
 
-If this outputs: bash: /etc/init.d/yum-updatesd: No such file or directory, you do not have any YUM updater daemon installed so you can skip this step.
+If this outputs: "bash: /etc/init.d/yum-updatesd: No such file or directory", you do not have any YUM updater daemon installed so you can skip this step.
 Now issue following command to install required utilities for SDK installation
 
 \begin{verbatim}
@@ -38,7 +38,8 @@ rpm -ivh ISODIR/cell-install-3.1.0-0.0.noarch.rpm
 \end{verbatim}
 
 After this step you have new stuff in \url{/opt/cell} installed. There is SDK installation script (cellsdk) located as well.
-It is wrapper for YUM that manages the SDK packages. Run it with parameter --help to see the usage.
+It is wrapper for YUM that manages the SDK packages.
+Run it with parameter --help to see the usage.
 So next step is to run it.
 
 \begin{verbatim}
@@ -103,7 +104,7 @@ Now you have simulator installed. But it has nothing to simulate.
 Image with image of simulated Fedora 9 system is needed (sysroot image).
 It is among SDK rpms so install it using yumex (Cell Development Tools$\rightarrow$sysroot\_image).
 Now all necessary stuff is installed.
- You could start the IDE and start development. But there are some bugs to fix yet.
+You could start the IDE and start development. But there are some bugs to fix yet.
 
 \subsection{Bug fixing}
 
@@ -116,7 +117,7 @@ e.g. from: \url{http://releases.mozilla.org/pub/mozilla.org/xulrunner/ releases/
 
 \item untar to accessible directory
 
-Lets call it XULDIR
+Lets call it XULDIR.
 
 \item edit the file
 
@@ -205,10 +206,11 @@ Note that this action must be performed when the simulator is not running otherw
 
 \section{Using examples}
 
-Examples are installed into /opt/cell/sdk/src as tarball. So you have to untar each you want to use.
+Examples are installed into /opt/cell/sdk/src as tarball.
+So you have to untar each you want to use.
 It is good to start with examples and tutorial sources.
 Each folder has its own makefile that manages makefiles in its sub folders.
- So you can call only the top level one to build all projects in sub folders or any from the sub folders to build particular projects.
+So you can call only the top level one to build all projects in sub folders or any from the sub folders to build particular projects.
 
 It is convenient to use the sample sources in CellIDE where you can build it as well and create run/debug configuration for running within cell environment.
 To use the example code (for example \url{/opt/cell/sdk/src/tutorial/simple}) create new c++ makefile project.
@@ -223,7 +225,8 @@ It is C/C++ Build tab. Use 'Workspace' button to specify the folder because it w
 \section{Tuning memory usage on PS3}
 \label{ps3MemoryUsage}
 
-PS3 has only 256MB RAM memory. This is very small amount for operating system and programs together.
+PS3 has only 256MB RAM memory.
+This is very small amount for operating system and programs together.
 When install fedora system with default state and boot up it, the amount of remaining free memory is about 10MB.
 It is insufficient for either debugging and compilation.
 So some of resources has to be switched off.
@@ -254,3 +257,15 @@ yum groupinfo "Cell Performance Tools"
 Another useful tool is VPA. It is not part of SDK so it should be downloaded separately.
 Visit \url{http://www.alphaworks.ibm.com/tech/vpa} for details.
 After installing (actually unpacking) the downloaded file similar fix in ini file to eclipse.ini file (see\ref{XULLFIX}) should be done to run the VPA correctly.
+
+\section{Cell B.E. cross compilation}
+
+
+When building a Cell B.E. program which uses lot of third party libraries, such as the ours, it is good idea to share some folders on actual Cell B.E. machine.
+You can then use directly the stuff for different architecture.
+So there is not necessary to copy different architecture stuff to the machine where the cross compilation is performed as we did.
+In our application we wanted to use repository versions of the third party libraries.
+So the first thing we tried was to install appropriate packages of different architecture to the cross compilation computer.
+But we have not found a way how to do it.
+Every try has failed due to architecture mismatch.
+So we believe that mounting shared folders on remote Cell B.E. machine is the only way how to use repository content directly.

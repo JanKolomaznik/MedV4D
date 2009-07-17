@@ -1,13 +1,13 @@
 \chapter{Design and implementation}
 
 This chapter will describe details of implementation and design of our test application.
-Starts with listings frameworks that were used and describes process of incorporation of the application into that frameworks.
+Starts with listing of used frameworks and describes process of incorporation of the application into them.
 Then few design details concerning the incorporation is described.
 After that results of profiling of the application are summarized.
 Followed by new design description which was necessary due to unexpected profiling results.
 The rest of chapter will present actual porting process with all its problems, solutions, recommendations and all the usable information that we discovered in the porting process.
 
-\section{Our idea how to perform the porting process}
+\section{Our idea of the porting process}
 
 We wanted to follow the common scenario of porting process as described in \ref{sect:portingProcess}.
 In our case this means:
@@ -30,7 +30,7 @@ It is quite complex image processing algorithm that could test the Cell B.E. pro
 We took ITK (\url{www.itk.org}) implementation of that algorithm as a base.
 So we have to get familiar with this huge project.
 It contains many algorithm implementations as well as necessary infrastructure content such as loading and saving variety of formats.
-Base concept of this project is pipeline and filters.
+Base concept of this project is a pipeline and filters.
 To get some work done pipeline has to be build from filters.
 Filter is entity that represent an algorithm.
 When pipeline is created the last filter is started.
@@ -44,7 +44,7 @@ It was able load image, run the level set filter and save the results.
 Some reasonable parameter values were found with the pok application.
 It was controlled via bash scripts that is not much easy nor user friendly.
 There was also no way how to visualize the results.
-So we decided to use another framework to overcome this problems, the Medv4D project (\url{http://cgg.mff.cuni.cz/trac/medv4d}).
+So we decided to use another framework to overcome these problems, the MedV4D project (\url{http://cgg.mff.cuni.cz/trac/medv4d}).
 
 \par
 This project that was originally started as software project and is basically framework for creation of medical applications.
@@ -52,14 +52,14 @@ Its purpose is to simplify process of GUI creation as well as actual computation
 Instead the programmer should focus on actual problem solution.
 Basic building block is also a filter.
 The filter can be merged into pipeline just like in ITK.
-But the Medv4D filters are more low-level and thus faster that ITK ones (speed was another goal of the framework).
+But the MedV4D filters are more low-level and thus faster that ITK ones (speed was another goal of the framework).
 The pipeline then offer some implicit locking of data set parts to allow parallel computation.
 
-\section{Incorporation into Medv4D framework}
+\section{Incorporation into MedV4D framework}
 
 \par
-The most convenient way how to incorporate ITK pipeline that is to be run on Cell B.E. seemed client/server architecture.
-So the part of the application that has to be run on Cell B.E. is server.
+The most convenient way how to incorporate ITK pipeline that is to be run on the Cell B.E. seemed the client/server architecture.
+So the part of the application that has to be run on the Cell B.E. is a server.
 While client part loads initial data (and saves the results), visualize the results and act as GUI with controls for parameter tuning.
 Whole process can be described this way: client loads the input data sends them to server and waits for the results.
 As soon as the results is read it is visualized.
@@ -75,44 +75,44 @@ See figure \ref{fg:computationProcess} showing how the application with code nam
 
 \par
 There were two main goals which were necessary for incorporation 'pok' into
-Medv4D framework:
+MedV4D framework:
 \begin{enumerate}
 
   \item{Remote computing infrastructure}
   \par
-  Infrastructure for sending commands to server along with data or parameter values as well receiving response messages along with resulting data had to be implemented into Medv4D.
-It lead into designing whole new library of Medv4D called remote computing.
+  Infrastructure for sending commands to server along with data or parameter values as well receiving response messages along with resulting data had to be implemented into MedV4D.
+It lead into designing whole new library of MedV4D called remote computing (RC).
 On client side it is representing by a remote filter that encapsulate whole infrastructure necessary for sending part of pipeline that the filter represents to server as well as result handling.
 Server side had to be designed completely as a whole.
 
   \item{ITK integration}
   \par
-  This is performed by wrapper Medv4D filter that is connected into Medv4D pipeline.
+  This is performed by wrapper MedV4D filter that is connected into MedV4D pipeline.
 Within this filter are two ITK images that serves as input and output for inner ITK pipeline.
-Actual data of this ITK images point to data of containing Medv4D wrapper filter (see figure \ref{fg:ITKWrapping} for details).
+Actual data of this ITK images point to data of containing MedV4D wrapper filter (see figure \ref{fg:ITKWrapping} for details).
 
 \end{enumerate}
 
 \begin{figure}
     \centering
     \includegraphics[width=0.9\textwidth]{data/ITKFilter}
-    \caption[ITK wrapper Medv4D filter]{Basic elements are the two ITK images whose data are actually Medv4D images' data}
+    \caption[ITK wrapper MedV4D filter]{Basic elements are the two ITK images whose data are actually MedV4D images' data}
     \label{fg:ITKWrapping}
 \end{figure}
 
-\subsection{Client remote computing (RC) part}
+\subsection{Client part}
 
-As mentioned above base element of client RC part is remote filter.
+As mentioned above the base element of client RC part is a remote filter.
 It implements actual command sending and result receiving functionality.
-It is derived from pipeline Medv4D filter so it can be added into pipeline.
-This part of pipeline that the remote filter represents thus run on remote server.
+It is derived from pipeline MedV4D filter so it can be added into pipeline.
+This part of pipeline that the remote filter represents thus run on the remote server.
 Listing of commands that the remote filter issue to the server:
 \begin{enumerate}
   \item{CREATE}
   \par
-  This command is create request.
+  This command is a create request.
 It identify the type of the filter that the remote filter represents and that should be instantiated on the server.
-Server parses the command message and instantiate appropriate filter along with whole pipeline (remote pipeline).
+Server parses the command message and instantiate appropriate filter along with the whole pipeline (remote pipeline).
 
   \item{DATASET}
   \par
@@ -121,36 +121,38 @@ The data set is parameter of the command.
 
   \item{EXEC}
 \par
-  Is request for actual execution of the remote pipeline.
-But before that parameter of this command which are filter parameter values should be parsed.
-After the parsing and association of filter parameters with actual filter is the remote pipeline executed.
+  This command requests actual execution of the remote pipeline.
+But filter parameter values should be parsed before the actual execution.
+These values are within the only parameter of this command.
+After the parsing and association of filter parameters with the actual filter the remote pipeline is executed.
 \end{enumerate}
 
 \par
 Purpose of the commands is to divide actual execution into stages and thus to define a state of remote execution.
-This is because when actual data set is send to server it would be worthless to send it again when user wants to execute remote pipeline again only with different parameters.
+This is because it would be worthless to send actual data set to server again when user wants to execute the remote pipeline again only with different parameters.
 So commands allow this because remote pipeline has state telling 'data already received now waiting for EXEC command as many times as wanted without no more input data transmission'.
 \par
-The Medv4D pipeline filter defines also some stages that the behaviour of remote filter benefits.
-That is there are method that is called only when input data changes (PrepareOutputDataset).
+The MedV4D pipeline filter defines also some stages that the behaviour of remote filter benefits.
+One of them is a method that is called only when input data changes (PrepareOutputDataset).
 This is perfect place to send DATASET command to server.
 Because this is called only on input data change thus DATASET command will be issued on input data change as well.
+But CREATE command has to be sent before the DATASET commnad to build the remote pipeline before data set is transmited.
+CREATE command is sent with DATASET one because remote pipeline has to be recreated everytime a new dataset arrives.
 \par
-CREATE command is sent in constructor of remote filter thus when pipeline is constructed which is usually at program startup.
-And EXEC command is then send within function that is called when pipeline is executed and that should perform actual computation (ProcessImage).
+And the EXEC command is then send within function that is called when pipeline is executed and that should perform actual computation (ProcessImage).
 Whole cycle shows figure \ref{fg:RCClientCycle}.
 
 \begin{figure}
     \centering
     \includegraphics[width=0.8\textwidth]{data/RCClientCycle}
-    \caption[Remote Medv4D filter]{Shows three basic states of remote filter and when particular command are sent to server.}
+    \caption[Remote MedV4D filter]{Shows three basic states of remote filter and when particular command are sent to server.}
     \label{fg:RCClientCycle}
 \end{figure}
 
 Server response can be either OK or FIALED.
 In case of OK resulting data set is received in contrast to FAILED case when no data set is expected.
 
-\subsection{Server RC part}
+\subsection{Server part}
 
 Server part is counter part of client one so the design reflects it.
 Goal of server is to sit and wait for incoming connection.
@@ -167,12 +169,12 @@ In context of a session command from client are parsed and appropriate actions p
 
 Like in every client/server application some kind of stubs are needed.
 In context of RemoteCellLevelSet application client/server pair the meaning of the stubs are serialization and de-serialization methods.
-Goal of the methods is ensure that data that the client sends will be received in exactly the same order and data types.
+Goal of the methods is to ensure that data that the client sends will be received in exactly the same order and data types.
 Good example is the CREATE request.
-In this request identifier of remote filter are send along with template parameters identifiers (because filter classes are templated).
+In this request identifier of remote filter are sent along with template parameters identifiers (because filter classes are templated).
 In case of mismatch of that identifiers completely different class would be instantiated.
 Hierarchy of virtual methods on data set classes defines interface for such stubs.
-Interface on remote filter properties class hierarchy does the same for remote filter.
+Interface on remote filter properties class hierarchy does the same for the remote filter.
 
 Another issue is endianess.
 Endianess identifier is sent along with every command. On the other side is made decision if byte swapping should be performed.
@@ -183,7 +185,7 @@ But other filters can be easily added by appending one switch branch in remoteFi
 The level set segmentation filter is implemented as successor of ITK filter that contains appropriate ITK pipeline within.
 This pipeline is most interresting part related to this work so further content will be about it.
 
-\section{Level set segmentation pipeline and pre-porting steps}
+\section{Level set segmentation pipeline}
 
 This pipeline contains three ITK filters.
 \begin{enumerate}
@@ -206,10 +208,11 @@ It is thresholding that select pixels with values less that zero that correspond
 
 The fast marching and binary thresholding filter have not been changed and are used as part of ITK framework.
 The only filter that is changed is the level set segmentation (LS) filter.
-This filter perform the algorithm we have chosen to port to Cell B.E., sparse field level set.
+This filter performs the algorithm we have chosen to port to Cell B.E., sparse field level set.
 This algorithm uses linked lists to represent the sparse field layers.
-Actual algorithm, as described higher (\ref{alg:sparseFileld}), is implemented in several classes.
+The actual algorithm, as described higher (\ref{alg:sparseFileld}), is implemented in several classes.
 
+\section{Pre-porting steps}
 \par
 Due to mapping the algorithm to Cell B.E. and poor lucidity and commonness of ITK code radical changes was necessary.
 We decided to rebuild appropriate part of ITK class hierarchy responsible for the sparse field level set computation (LS hierarchy) to create our own LS Filter.
@@ -234,17 +237,17 @@ provides speed image computation infrastrucutre
 computes actual speed image
 \end{enumerate}
 
-FiniteDifferenceImageFilter, the base of filter hierarchy, computes main loop of level set calculation (see step 1 in \ref{alg:sparseFileld}).
+FiniteDifferenceImageFilter, the base of filter hierarchy, computes the main loop of level set calculation (see step 1 in \ref{alg:sparseFileld}).
 Virtual methods of its successors are used to implement sub steps.
 Successor is the SparseFieldLevelSetImageFilter providing implementation of algorithm's Step 1a through \emph{update calculation} function.
 Other steps is performed by \emph{apply update calculation} function.
 Next successors, SegmentationLevelSetImageFilter and ThresholdSegmentationLevelSetImageFilter only manage \emph{difference function} in their own manner.
 In case ThresholdSegmentationLevelSetImageFilter manages speed function as described in \ref{eq:speedFunction}.
 It preallocate another image for pre-calculation of the speed function.
-This another image is another notable amount of memory that can not be accepted for our purpose (see \ref{ps3MemoryUsage}).
+This another image is another notable amount of memory that cannot be accepted for our purpose (see \ref{ps3MemoryUsage}).
 This pre-calculation was one reason of inheritance from classes close to FDS.
 Speed function is calculated every time it is needed without any pre-calculations in our approach.
-This approach could be even better for Cell B.E. streaming nature.
+This approach could be even better for the Cell B.E. streaming nature.
 The second reason was to simplify the structure of hierarchy and some code clean-up and refactorization.
 
 \begin{figure}
@@ -255,13 +258,13 @@ The second reason was to simplify the structure of hierarchy and some code clean
     \label{fg:originalHierarchy}
 \end{figure}
 
-Result of this changes is our own filter (ThreshSegLevelSetFilter, OOF) that omits all unnecessary part of original LS hierarchy, uses reasonable parts of the original ITK level set segmentation filter and is ready to be ported for Cell B.E. (see figure\ref{fg:resultingFilter}).
+Result of these changes is our own filter (ThreshSegLevelSetFilter, OOF) that omits all unnecessary part of original LS hierarchy, uses reasonable parts of the original ITK level set segmentation filter and is ready to be ported for the Cell B.E. (see figure\ref{fg:resultingFilter}).
 In the function hierarchy stayed only the base class that the resulting ThresholdLevelSetFunc class is derived.
 This new class does the same job as original LS function hierarchy but in manner closer to streaming architecture (the pre-allocation of the speed image is omitted).
-The computation of particular up-wind scheme terms was separated into stand alone classes for more code readability and modularity.
+The computation of particular up-wind scheme terms was separated into standalone classes for more code readability and modularity.
 The filter hierarchy was shorted and begins already in SparseFieldLevelSetImageFilter.
-All the successors in original hierarchy was omitted since they did anything reasonable.
-Some function implementation from the SparseFieldLevelSetImageFilter was borrowed into the new OOF to be ported for Cell B.E.
+All the successors in the original hierarchy was omitted since they did anything reasonable.
+Some function implementation from the SparseFieldLevelSetImageFilter was borrowed into the new OOF to be ported for the Cell B.E.
 
 \begin{figure}
     \centering
@@ -405,7 +408,7 @@ We have defined the limit with constant MAX\_TURN\_LENGHT and call processing th
 \par
 Works on the status lists that reside within SPE's local store and are somehow limited in size (since the \emph{UpdateActiveLayerValues} run produce limited nodes into this status lists.
 During processing this list nodes are linked into appropriate layer, this is another special operation communicating with central memory.
-Lets call it \emph{PUSH}.
+Let's call it \emph{PUSH}.
 One status list processing empty the list so after \emph{ProcessStatusLists} run all status lists remains empty and are ready for next \emph{UpdateActiveLayerValues} turn.
 
 \item \emph{PropagateAllLayerValues}
@@ -460,7 +463,7 @@ We believe that the linked list manipulations would be much more difficult and t
 \item \emph{PUSH}
 \par
 Has to push a node into specified layer.
-So only voxel coordinates and number of layer is send over mailbox to PPE that creates new node and puts it into the layer.
+So only voxel coordinates and number of layer is sent over mailbox to PPE that creates a new node and puts it into the layer.
 
 \item \emph{UNLINK}
 \par
@@ -473,7 +476,7 @@ Address is transferred in 32 bits parts (because mailbox has 32 bit size) and is
 Another support tool that is worth mention is \emph{ObjectStore} which is simple memory allocator templated with class that provides and size.
 Provides two main methods, \emph{Borrow} and \emph{Return}.
 It is used for allocation of status field nodes.
-They resides in local store and thus should be allocated on stack.
+They reside in local store and thus should be allocated on the stack.
 
 \par
 Great advantage of the tools is also that the whole code uses only the tools (as instruments for central memory comunication).
@@ -482,7 +485,7 @@ So debugging transfer issues means debugging the tool.
 \subsection{Work balancing}
 
 \par
-The sparse field layers are central part that defines amount of work to be performed.
+The sparse field layers are central part that defines the amount of work to be performed.
 So it is necessary to balance their length among the SPE that process them.
 This work is left to \emph{Work manager}.
 Its goal is to ensure that all the layers are divided among SPE uniformly.
@@ -497,20 +500,20 @@ The whole process can be compared with company department where are several work
 
 \section{Actual porting process}
 
-\subsection{PC as simulator}
+\subsection{PC as Cell B.E. simulator}
 
 \par
 Because remote debugging program running on PS3 is quite time consuming (seconds for basic commands like step into) and because of small amount of memory (see \ref{ps3MemoryUsage}) we decided to left actual porting to the very end of process.
 Features (and tools) that are needed for running on SPE were gradually added into the original code.
-Some parts was rewritten (e.g. the \emph{UpdateActiveLayerValues} turn) to allow some data to live in SPE local store.
-All the changes have not change the programs' output, so one can say that the all the programs in every step are equivalent.
+Some parts were rewritten (e.g. the \emph{UpdateActiveLayerValues} turn) to allow some data to live in SPE local store.
+All the changes have not changed the programs' output, so one can say that the all the programs in every step are equivalent.
 All the debugging was performed on PC platform locally and thus quickly.
 The Cell B.E. special features like DMA transfer was simulated by memcpy or the mailbox issues trough simple queue.
 
 \par
-This step was really time consuming due to fact that tools operates with stack memory.
+This step was really time consuming due to fact that tools operates with a stack memory.
 Debuging such parts need extra care for what is where rewritten.
-Since we are on stack some part of call stack would become corrupted and program becomes undefined.
+Since we are using a stack memory some part of call stack would become corrupted and program becomes undefined.
 The worst thing is that it can continue without crash or to crash on totally different code that the error occurred.
 Errors of this type is always hard to track.
 There is need of usage of some checking tools.
@@ -523,8 +526,8 @@ It seems that moving the code to PPE is easy and there could be no problem.
 But we faced a problem that is worth to mention.
 Because our code uses lot of third party libraries there is quite much paths to include folders.
 It is necessary to manage them well and not to mix architecture dependent ones.
-We have mixed up include files of boost library when cross-compiling and experienced totally strange behavior.
-We thought that we can use includes for boost that come from repository for i686 architecture.
+We have mixed up include files of the boost library when cross-compiling and experienced totally strange behavior.
+We thought that we can use boost library includes that come from repository for i686 architecture.
 The code crashed on boost code that is debugged and stable.
 Openning of a file have also crashed for unknown reason.
 When program was compiled with includes from ppc(64) repository all problems disappeared.
@@ -536,15 +539,15 @@ Next step was to port the tools for SPE.
 In fact is to rewrite usage of memcpy that simulate the DMA transfer to use real DMA transfer.
 
 \par
-Data that are transferred through DMA (DMAed) within Cell B.E. should meet size and align conditions (see \cite{programmersGuide}, Chapter 4).
+Data that are transferred through DMA (DMAed) within the Cell B.E. should meet size and align conditions (see \cite{programmersGuide}, Chapter 4).
 Data that does not meet this condition will generate BUS error.
 This condition forced that all data that are DMAed should be allocated onto aligned addresses (see objectStore.h or updateValsAllocator.h).
 
 \par
-Debugging within this step is performed already on Cell B.E. machine.
+Debugging within this step is performed already on a Cell B.E. machine.
 We used both PS3 and systemsim.
 Systemsim can detect which DMA transfer brakes align rules and thus cause the BUS error but it is really slow.
-Instead using systemsim we have implement DMAGate (see DMAGate.h) that all DMA transfer go through and where are all the conditions checked.
+Instead using systemsim we have implemented DMAGate (see DMAGate.h) that all DMA transfer go through and where are all the conditions checked.
 Such central point for all DMA transfer is really important part of Cell B.E. program because it gathers all DMA stuff into one place making debugging much more easier.
 
 \subsection{Memory protection tools}
@@ -567,4 +570,4 @@ Checking the program with memory checking tools is necessary already from the ve
 It is advisable not to make huge code changes not only due to memory checking but due to actual process as such.
 It is better to develop gradually in small steps.
 One can then find error more simply.
-This is universal rule for programming but we believe it is valid specially for Cell B.E. porting.
+This is universal rule for programming but we believe it is valid specially for the Cell B.E. porting process.

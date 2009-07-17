@@ -1,36 +1,36 @@
 \chapter{Results}
 
 In this chapter speed measurements of our application will be presented as well as few pictures of results.
-Because we have not speedup the computation over traditional processors discussion of the reasons will follow the results.
+Because we have not accelerated the computation over traditional processors discussion of the reasons will follow.
 We will mention possible changes in design to speed up the execution.
-Then some consideration how shall look the algorithm that is well suited for Cell B.E. like.
-Chapter will be finished with comparison of complexity of programming for Cell B.E. and conventional processors.
+Then some consideration how shall look the algorithm that is well suited for the Cell B.E. like.
+Chapter will be finished with comparison of complexity of programming for the Cell B.E. and conventional processors.
 
 \section{Speed measurements}
 
 \par
 Actual speed measurement is performed within \emph{GenerateData} method of the FiniteDifferenceFilter.
 Counter is started right after initialization phase (i.e. before main algorithm loop) and stopped right after the loop.
-Program memory usage was tuned to use only really necessary amount of memory within measured interval.
+Program memory usage was tuned to use only really necessary amount of memory within the measured interval.
 Valgrind's massive tool was used for the memory usage tuning.
 This was necessary because of the PS3 small memory and because we want to leave swap file untouched during the speed measurement.
 
 \par
-Meanwhile this server memory usage tuning some changes was made also within client part.
-There was special filter developped.
-That filter shrinks data set to given size and cast its voxels to float.
+Meanwhile this server memory usage tuning, some changes was made also within client part.
+There has been a special filter developped.
+The filter shrinks data set to given size and cast its voxels to float.
 Shrinking is performed by linear interpolation.
 The purpose of the float casting is avoiding allocation of additional memory to perform it on the server side.
 
 \par
 It is strange that command top shows far bigger memory usage than Valgrind's massif.
-We have not care much about it but the idea is that top shows all memory requested from system while massif shows exact memory used by process.
+We have not cared much about it but the idea is that top shows all memory requested from system while massif shows exact memory used by process.
 
 \par
 Results of the speed measurement is summarized within Table \ref{tab:runresults}.
 Every measurement was run with the same curvature and speed-scaling factors.
 But with different initial distance, maximum iterations and seed parameters.
-These parameter was set according data set size.
+These parameters were set according data set size.
 
 Three different data sets were measured.
 All of them was CT images of skull.
@@ -80,12 +80,12 @@ The rest of measurements, performed on different data set and parameter configur
 \section{Reasons of slowdown and possible improvements}
 
 \par
-Porting the code to run on SPEs is not sufficient to get more speed from Cell B.E. over traditional processors.
-Additional speedup porting phases are necessary.
+Porting the code to run on SPEs is not sufficient to get more speed from the Cell B.E. over traditional processors.
+An additional speedup porting phases are necessary.
 But our program has another speed pitfalls.
 
 \par
-The biggest of them is CellNeighbourhood that represent small segment of an image (the $3^3$ voxel matrix).
+The biggest of them is CellNeighbourhood that represent a small segment of an image (the $3^3$ voxel matrix).
 It is transferred for every layer (linked chain of nodes) item.
 In some parts the both output and status image neighborhoods are transferred.
 We wanted to perform the transfer in scatter-gather manner through the DMA lists but we have faced some problems concerning this way of transfer.
@@ -96,7 +96,7 @@ When data smaller than 16 bytes (quad-word) are being transferred, every single 
 \begin{figure}
     \centering
     \includegraphics[width=0.8\textwidth]{data/automaticAlignOfSmallData}
-    \caption[automatic align of small data]
+    \caption[Automatic align of small data]
 {
   Illustration of transfer of data that are smaller that quad-word.
   Hardware automatically increase address within local store buffer in such way that every transferred item is quad-word aligned.
@@ -106,13 +106,13 @@ When data smaller than 16 bytes (quad-word) are being transferred, every single 
 
 This increase required size of buffer that is needed for the transfer.
 This can be partially solved by usage of multiple DMA lists (one for each quadword align).
-This is illustrated on Figure \ref{fg:multipleDMAList}.
+This is illustrated on the Figure \ref{fg:multipleDMAList}.
 For details see \cite{DMAListIssues}.
 
 \begin{figure}
     \centering
     \includegraphics[width=0.95\textwidth]{data/multipleDMAList}
-    \caption[multiple DMA list workaround]
+    \caption[Multiple DMA list workaround]
 {
   Workaround for transfer in smaller than quad-word chunks.
   Uses more that one DMA list.
@@ -137,8 +137,8 @@ This coerced another changes to neighborhood transfer and made the actual transf
 
 \par
 \label{workDependecy}
-Additional pitfall is the situation when sibling nodes are processed by two different SPEs.
-Adding nodes to layers is based on information from currently processed node's neighbors.
+Another pitfall is the situation when sibling nodes are processed by two different SPEs.
+Adding nodes to layers is based on information from neighbors of the currently processed node.
 So it is possible that two different SPE inserts the same nodes more time into one layer because they process sibling nodes (i.e. overlapping neighborhoods).
 This makes no changes to output but additional overhead due to processing multiplied nodes.
 Solution to this problem would be synchronization among the SPEs.
@@ -147,11 +147,11 @@ Solution to this problem would be synchronization among the SPEs.
     \centering
     \includegraphics[width=0.45\textwidth]{data/png/pcSlice}
     \includegraphics[width=0.45\textwidth]{data/png/cellSlice}
-    \caption[Slice comparison]{Comparison of one slice segmentation on different architectures.
+    \caption[Comparison of one slice segmented on different architectures]{Comparison of one slice segmentation on different architectures.
     \textbf{a)} on PC (i686).
     \textbf{b)} on Cell B.E.
 Although the segmentation was run with the same parameters there is small difference between those two images.
-The Cell B.E. level set has not reach as far as the PC one.
+The Cell B.E. level set has not reached as far as the PC one.
 It is because of duplicate nodes within layers.
 }
     \label{fg:sliceComparison}
@@ -177,9 +177,9 @@ With another limitation which is the local store size is design of Cell B.E. app
 
 \par
 Cell B.E. is designed for intensive computation programs.
-For programmer this means utilize all SPEs and all their features at maximum level.
+For a programmer this means utilize all SPEs and all their features at maximum level.
 It is only possible for certain class of algorithm.
-Lets call them streaming parallel algorithm.
+Let's call them streaming parallel algorithm.
 But what is it? What is the definition?
 Work on our application has showed us what is not the streaming parallel algorithm.
 So by negation of features that slow down our program we could get definition of such streaming parallel algorithm:
@@ -194,9 +194,9 @@ And when this chunk is once processed is stored and never retrieved for processi
 \par
 For our application this is not true.
 At least not for all the input data.
-Processing of a sparse field layer (linked chain of nodes) meets the streaming nature.
-But processing of parts of underlying images (neighborhoods) associated with this nodes does not.
-Neighbourhoods are mutually dependent see \ref{neighbourhoodDependecy}.
+Processing of a sparse field layer, linked chain of nodes, meets the streaming nature.
+But processing of parts of underlying images (neighborhoods) associated with these nodes does not.
+The neighbourhoods are mutually dependent see \ref{neighbourhoodDependecy}.
 
 \item{Paralel nature}
 \par
@@ -218,30 +218,28 @@ But then this would be the original algorithm any more.
 \par
 In contrast there are algorithms that fits the streaming paralel algorithm definition.
 Among the examples within SDK e.g. thresholding is one of them.
-It operates on image that has uniform data - pixels.
+It operates on an image that has uniform data - pixels.
 It apply simple condition on each pixel which result depends only on the processed pixel.
 Processing can be divided into chunks.
 These three features meets the streaming condition.
 Moreover the data can be divided into independent sets that can be processed by multiple cores (the parallel nature).
-Implementation of this algorithm can therefore result huge performance gain on Cell B.E. than conventional processors.
+Implementation of this algorithm can therefore result huge performance gain on the Cell B.E. than conventional processors.
 
 \par
 Our work has showed importance of initial consideration and design phase.
-When there is more algorithms that are solving desirable problem programmer should think carefully which one will be the best for porting to Cell B.E.
+When there are more algorithms that are solving desirable problem programmer should think carefully which one will be the best for porting to Cell B.E.
 First stage of the initial consideration should be model of the application implementing chosen algorithm.
 Thing what kind of data are processed.
 If they are uniform.
 If they are divisible into chunks.
 If the computing can be divided into independent parts i.e. what entity defines amount of work to be done.
 These are question that leads to answer if the chosen algorithm is or is not the streaming parallel.
-If the answer is no, implementation of that algorithm is rather worthless and will result such suboptimal program as the ours.
+If the answer is no, implementation of that algorithm is rather worthless and will result such a suboptimal program as the ours.
 
 \par
 Another thing is the code complexity.
-Performing the optimisation porting cycle steps utilise leanguage intrinsics for differend kind of special instructions usage of macros for variety of purposes.
+Performing the optimisation porting cycle steps utilise leanguage intrinsics for differend kind of special instruction usage of macros for variety of purposes.
 These techniques increase actual code complexity whereas may decrease code readability.
-
-\subsection{Algorithm complexity}
 
 \par
 There is still another question to be answered.
@@ -269,7 +267,7 @@ This is quite complex algorithm to test the platform's potential.
 We adopted ITK implementation of that algorithm.
 So we had to study ITK toolkit and its internals.
 We have also incorporated the whole program into MedV4D framework.
-That means we have implemented some new modules that allows using ITK and can offload some part of processing to another machine (that run on Cell B.E.).
+That means we have implemented some new modules that allows using ITK and can offload some part of processing to another machine (that run on the Cell B.E.).
 
 \par
 Actual porting process started with profiling of existing application.
@@ -295,12 +293,12 @@ We think the pallet of tools and features of the Cell B.E. can make it interrest
 Cell B.E.'s great potential has already been proven but it is still waiting for wider spectrum of programmers.
 
 \par
-If the process of starting developing on Cell B.E. would become simpler we believe much more new programmers would be start.
-Nowadays there are plenty of information about Cell B.E. but somehow unsorted or out of date.
+If the process of starting developing on the Cell B.E. would become simpler we believe much more new programmers would be start.
+Nowadays there are plenty of information about the Cell B.E. but somehow unsorted or out of date.
 The best information source are documents shipped along the SDK.
 But they are targeted to contain all the information regardless the level of experience of the reader.
-So when a programmer wants to start developing applications on Cell B.E. he would go trough plenty of that information before he can start actual work.
-It's a pity there are total lack of information for PS3 users within SDK docs.
+So when a programmer wants to start developing applications on the Cell B.E. he would go trough plenty of that information before he can start actual work.
+It's a pity there is total lack of information for PS3 users within SDK docs.
 This is quite problem when big part of beginners has PS3 available.
-There is simply lack of some "cookbook for beginners" with practical information and some howtos.
-We believe is such cookbook with some of practical information that potentially may help to some other programmers who would like to start developing for Cell B.E.
+There is simply lack of some "The cookbook for beginners" with practical information and some howtos.
+We believe is such cookbook with some of practical information that potentially may help to some other programmers who would like to start developing for the Cell B.E.
