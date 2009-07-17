@@ -98,7 +98,7 @@ SettingsBox
 	zTrans->setValue( 0 );
 	grid->addWidget(zTrans, 6, 3 );
 
-	grid->addWidget( new QLabel( tr( "Registration Sampling" ) ), 7, 1 );
+	grid->addWidget( new QLabel( tr( "Registration Sampling" ) ), 7, 1, 1, 2 );
 	accuracy = new QSpinBox();
 	accuracy->setAlignment( Qt::AlignRight );
 	accuracy->setMaximum( 2048 );
@@ -106,6 +106,14 @@ SettingsBox
 	accuracy->setValue( TRANSFORM_SAMPLING );
 	accuracy->setEnabled( false );
 	grid->addWidget(accuracy, 7, 3 );
+	
+	grid->addWidget( new QLabel( tr( "Level of parallelization (number of processors)" ) ), 8, 1, 1, 2 );
+	threadNum = new QSpinBox();
+	threadNum->setAlignment( Qt::AlignRight );
+	threadNum->setMaximum( 256 );
+	threadNum->setMinimum( 1 );
+	threadNum->setValue( 1 );
+	grid->addWidget(threadNum, 8, 3 );
 	
 
 	//-------------------------------------------------
@@ -200,24 +208,25 @@ void
 SettingsBox
 ::ExecuteFilter( unsigned filterNum )
 {
-	if ( filterNum == 0 )
-	{
-		_registerFilters[ filterNum ]->SetAutomaticMode( false );
-		_registerFilters[ filterNum ]->SetRotation( InImageRegistration::CoordType( 0, 0, 0 ) );
-		_registerFilters[ filterNum ]->SetTranslation( InImageRegistration::CoordType( 0, 0, 0 ) );
-	}
-	else if ( xRot->isEnabled() )
+	if ( xRot->isEnabled() )
 	{
 		_registerFilters[ filterNum ]->SetAutomaticMode( false );
 		float PI = std::atan(1.0f) * 4.0f;
 		_registerFilters[ filterNum ]->SetRotation( InImageRegistration::CoordType( 2 * PI * xRot->value() / 360, 2 * PI * yRot->value() / 360, 2 * PI * zRot->value() / 360 ) );
 		_registerFilters[ filterNum ]->SetTranslation( InImageRegistration::CoordType( xTrans->value(), yTrans->value(), zTrans->value() ) );
 	}
+	else if ( filterNum == 0 )
+	{
+		_registerFilters[ filterNum ]->SetAutomaticMode( false );
+		_registerFilters[ filterNum ]->SetRotation( InImageRegistration::CoordType( 0, 0, 0 ) );
+		_registerFilters[ filterNum ]->SetTranslation( InImageRegistration::CoordType( 0, 0, 0 ) );
+	}
 	else
 	{
 		_registerFilters[ filterNum ]->SetAutomaticMode( true );
 		_registerFilters[ filterNum ]->SetTransformSampling( accuracy->value() );
 	}
+	_registerFilters[ filterNum ]->SetThreadNumber( threadNum->value() );
 	_registerFilters[ filterNum ]->ExecuteOnWhole();
 }
 

@@ -68,6 +68,7 @@ protected:
 	QSpinBox *fusionNumber;
 	QSpinBox *xRot, *yRot, *zRot, *xTrans, *yTrans, *zTrans;
 	QSpinBox *accuracy;
+	QSpinBox *threadNum;
 	QComboBox *fusionType;
 	QPushButton *clearButton;
 	QPushButton *execButton;

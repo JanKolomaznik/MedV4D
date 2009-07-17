@@ -22,7 +22,7 @@ namespace Imaging
 
 template< typename ElementType >
 bool
-TransformImage( const Image< ElementType, 2 > &in, Image< ElementType, 2 > &out, AbstractFilter::Properties* properties, InterpolatorBase< Image< ElementType, 2 > >* interpolator, int32 sliceNum, uint32 transformSampling )
+TransformImage( const Image< ElementType, 2 > &in, Image< ElementType, 2 > &out, AbstractFilter::Properties* properties, InterpolatorBase< Image< ElementType, 2 > >* interpolator, int32 sliceNum, uint32 transformSampling, uint32 threadNumber )
 {
 	
 	ElementType *sPointer;
@@ -78,8 +78,8 @@ template< typename ElementType >
 class TransformSlice
 {
 public:
-	TransformSlice( const Image< ElementType, 3 > &input, Image< ElementType, 3 > &output, typename ImageTransform< ElementType, 3 >::Properties* properties, InterpolatorBase< Image< ElementType, 3 > >* interp, int32 sNum, uint32 tSampling )
-		: in( input ), out( output ), prop( properties ), interpolator( interp ), sliceNum( sNum ), transformSampling( tSampling )
+	TransformSlice( const Image< ElementType, 3 > &input, Image< ElementType, 3 > &output, typename ImageTransform< ElementType, 3 >::Properties* properties, InterpolatorBase< Image< ElementType, 3 > >* interp, int32 sNum, uint32 tSampling, Vector< typename InterpolatorBase< Image< ElementType, 3 > >::CoordType, 3 >& rotMatrix )
+		: in( input ), out( output ), prop( properties ), interpolator( interp ), sliceNum( sNum ), transformSampling( tSampling ), RotationMatrix( rotMatrix )
 	{}
 	void operator()()
 	{
@@ -113,25 +113,15 @@ public:
 		newwidth = width * xExtent;
 		newheight = height * yExtent;
 		newdepth = depth * zExtent;
+
+		Vector< int32, 3 > scaleBias(
+			( width / 2 - width / ( 2 * prop->_scale[0] ) ),
+			( height / 2 - height / ( 2 * prop->_scale[1] ) ),
+			( depth / 2 - depth / ( 2 * prop->_scale[2] ) )
+		);
 		
 
-		Vector< CoordType, 3 > RotationMatrixX(
-						CoordType( 1.0, 0.0, 0.0 ),
-						CoordType( 0.0, std::cos( -prop->_rotation[0] ), -std::sin( -prop->_rotation[0] ) ),
-						CoordType( 0.0, std::sin( -prop->_rotation[0] ),  std::cos( -prop->_rotation[0] ) )
-						);
-
-		Vector< CoordType, 3 > RotationMatrixY(
-						CoordType( std::cos( -prop->_rotation[0] ), 0.0, -std::sin( -prop->_rotation[0] ) ),
-						CoordType( 0.0, 1.0, 0.0 ),
-						CoordType( std::sin( -prop->_rotation[1] ), 0.0,  std::cos( -prop->_rotation[1] ) )
-						);
-
-		Vector< CoordType, 3 > RotationMatrixZ(
-						CoordType( std::cos( -prop->_rotation[2] ), -std::sin( -prop->_rotation[2] ), 0.0 ),
-						CoordType( std::sin( -prop->_rotation[2] ),  std::cos( -prop->_rotation[2] ), 0.0 ),
-						CoordType( 0.0, 0.0, 1.0 )
-						);
+		CoordType point( 0.0, 0.0, 0.0 );
 
 		int32 k = sliceNum;
 		if ( k >= depth ) return;
@@ -141,29 +131,21 @@ public:
 
 			for( int32 i = 0; i < (int32)( ( transformSampling == 0 || width < (int32)transformSampling ) ? width : transformSampling ); ++i ) {
 
-				CoordType point( ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * width / transformSampling ) - newwidth/2 ) * RotationMatrixX[0][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * height / transformSampling ) - newheight/2 ) * RotationMatrixX[0][1] + ( zExtent * k - newdepth/2 ) * RotationMatrixX[0][2], 
-						 ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * width / transformSampling ) - newwidth/2 ) * RotationMatrixX[1][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * height / transformSampling ) - newheight/2 ) * RotationMatrixX[1][1] + ( zExtent * k - newdepth/2 ) * RotationMatrixX[1][2],
-						 ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * width / transformSampling ) - newwidth/2 ) * RotationMatrixX[2][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * height / transformSampling ) - newheight/2 ) * RotationMatrixX[2][1] + ( zExtent * k - newdepth/2 ) * RotationMatrixX[2][2] );
+				point[0] = ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * width / transformSampling ) - newwidth/2 ) * RotationMatrix[0][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * height / transformSampling ) - newheight/2 ) * RotationMatrix[0][1] + ( zExtent * k - newdepth/2 ) * RotationMatrix[0][2] + newwidth/2;
+				point[1] = ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * width / transformSampling ) - newwidth/2 ) * RotationMatrix[1][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * height / transformSampling ) - newheight/2 ) * RotationMatrix[1][1] + ( zExtent * k - newdepth/2 ) * RotationMatrix[1][2] + newheight/2;
+				point[2] = ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * width / transformSampling ) - newwidth/2 ) * RotationMatrix[2][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * height / transformSampling ) - newheight/2 ) * RotationMatrix[2][1] + ( zExtent * k - newdepth/2 ) * RotationMatrix[2][2] + newdepth/2;
 
-				CoordType  tmp( point[0] * RotationMatrixY[0][0] + point[1] * RotationMatrixY[0][1] + point[2] * RotationMatrixY[0][2],
-						point[0] * RotationMatrixY[1][0] + point[1] * RotationMatrixY[1][1] + point[2] * RotationMatrixY[1][2],
-						point[0] * RotationMatrixY[2][0] + point[1] * RotationMatrixY[2][1] + point[2] * RotationMatrixY[2][2] );
-
-				point = tmp;
-
-				tmp = CoordType( point[0] * RotationMatrixZ[0][0] + point[1] * RotationMatrixZ[0][1] + point[2] * RotationMatrixZ[0][2] + newwidth/2,
-						 point[0] * RotationMatrixZ[1][0] + point[1] * RotationMatrixZ[1][1] + point[2] * RotationMatrixZ[1][2] + newheight/2,
-						 point[0] * RotationMatrixZ[2][0] + point[1] * RotationMatrixZ[2][1] + point[2] * RotationMatrixZ[2][2] + newdepth/2 );
-
-				point = CoordType ( tmp[0] / xExtent, tmp[1] / yExtent, tmp[2] / zExtent );
+				point[0] /= xExtent;
+				point[1] /= yExtent;
+				point[2] /= zExtent;
 
 				point[0] -= prop->_translation[0];
 				point[1] -= prop->_translation[1];
 				point[2] -= prop->_translation[2];
 
-				point[0] = ( point[0] / prop->_scale[0] + ( width / 2 - width / ( 2 * prop->_scale[0] ) ) );
-				point[1] = ( point[1] / prop->_scale[1] + ( height / 2 - height / ( 2 * prop->_scale[1] ) ) );
-				point[2] = ( point[2] / prop->_scale[2] + ( depth / 2 - depth / ( 2 * prop->_scale[2] ) ) );
+				point[0] = ( point[0] / prop->_scale[0] + scaleBias[0] );
+				point[1] = ( point[1] / prop->_scale[1] + scaleBias[1] );
+				point[2] = ( point[2] / prop->_scale[2] + scaleBias[2] );
 
 				point[0] /= prop->_sampling[0];
 				point[1] /= prop->_sampling[1];
@@ -189,27 +171,70 @@ private:
 	InterpolatorBase< Image< ElementType, 3 > >* interpolator;
 	int32 sliceNum;
 	uint32 transformSampling;
+	Vector< typename InterpolatorBase< Image< ElementType, 3 > >::CoordType, 3 >& RotationMatrix;
 	
 };
 
 template< typename ElementType >
 bool
-TransformImage( const Image< ElementType, 3 > &in, Image< ElementType, 3 > &out, AbstractFilter::Properties* properties, InterpolatorBase< Image< ElementType, 3 > >* interpolator, uint32 transformSampling )
+TransformImage( const Image< ElementType, 3 > &in, Image< ElementType, 3 > &out, AbstractFilter::Properties* properties, InterpolatorBase< Image< ElementType, 3 > >* interpolator, uint32 transformSampling, uint32 threadNumber )
 {
 	typename ImageTransform< ElementType, 3 >::Properties* prop = dynamic_cast< typename ImageTransform< ElementType, 3 >::Properties* >( properties );
+
+	typedef typename InterpolatorBase< Image< ElementType, 3 > >::CoordType CoordType;
 	
 	Vector< uint32, 3 > size;
 	Vector< int32, 3 > strides;
 	out.GetPointer( size, strides );
+		
+	Vector< CoordType, 3 > RotationMatrixX(
+					CoordType( 1.0, 0.0, 0.0 ),
+					CoordType( 0.0, std::cos( -prop->_rotation[0] ), -std::sin( -prop->_rotation[0] ) ),
+					CoordType( 0.0, std::sin( -prop->_rotation[0] ),  std::cos( -prop->_rotation[0] ) )
+					);
 
-#if defined( MULTITHREAD_TRANSFORM ) && MULTITHREAD_TRANSFORM > 1
-   
+	Vector< CoordType, 3 > RotationMatrixY(
+					CoordType( std::cos( -prop->_rotation[0] ), 0.0,  std::sin( -prop->_rotation[0] ) ),
+					CoordType( 0.0, 1.0, 0.0 ),
+					CoordType( -std::sin( -prop->_rotation[1] ), 0.0, std::cos( -prop->_rotation[1] ) )
+					);
 
-	const uint32 thread_num = MULTITHREAD_TRANSFORM < size[2] ? MULTITHREAD_TRANSFORM : size[2];
+	Vector< CoordType, 3 > RotationMatrixZ(
+					CoordType( std::cos( -prop->_rotation[2] ), -std::sin( -prop->_rotation[2] ), 0.0 ),
+					CoordType( std::sin( -prop->_rotation[2] ),  std::cos( -prop->_rotation[2] ), 0.0 ),
+					CoordType( 0.0, 0.0, 1.0 )
+					);
+
+	Vector< CoordType, 3 > RotationMatrix(
+					CoordType( RotationMatrixX[0][0] * RotationMatrixY[0][0] + RotationMatrixX[0][1] * RotationMatrixY[1][0] + RotationMatrixX[0][2] * RotationMatrixY[2][0],
+						   RotationMatrixX[0][0] * RotationMatrixY[0][1] + RotationMatrixX[0][1] * RotationMatrixY[1][1] + RotationMatrixX[0][2] * RotationMatrixY[2][1],
+						   RotationMatrixX[0][0] * RotationMatrixY[0][2] + RotationMatrixX[0][1] * RotationMatrixY[1][2] + RotationMatrixX[0][2] * RotationMatrixY[2][2] ),
+					CoordType( RotationMatrixX[1][0] * RotationMatrixY[0][0] + RotationMatrixX[1][1] * RotationMatrixY[1][0] + RotationMatrixX[1][2] * RotationMatrixY[2][0],
+                                                   RotationMatrixX[1][0] * RotationMatrixY[0][1] + RotationMatrixX[1][1] * RotationMatrixY[1][1] + RotationMatrixX[1][2] * RotationMatrixY[2][1],
+                                                   RotationMatrixX[1][0] * RotationMatrixY[0][2] + RotationMatrixX[1][1] * RotationMatrixY[1][2] + RotationMatrixX[1][2] * RotationMatrixY[2][2] ),
+					CoordType( RotationMatrixX[2][0] * RotationMatrixY[0][0] + RotationMatrixX[2][1] * RotationMatrixY[1][0] + RotationMatrixX[2][2] * RotationMatrixY[2][0],
+                                                   RotationMatrixX[2][0] * RotationMatrixY[0][1] + RotationMatrixX[2][1] * RotationMatrixY[1][1] + RotationMatrixX[2][2] * RotationMatrixY[2][1],
+                                                   RotationMatrixX[2][0] * RotationMatrixY[0][2] + RotationMatrixX[2][1] * RotationMatrixY[1][2] + RotationMatrixX[2][2] * RotationMatrixY[2][2] )
+					);
+
+	RotationMatrix = Vector< CoordType, 3 >(
+					CoordType( RotationMatrix[0][0] * RotationMatrixZ[0][0] + RotationMatrix[0][1] * RotationMatrixZ[1][0] + RotationMatrix[0][2] * RotationMatrixZ[2][0],
+						   RotationMatrix[0][0] * RotationMatrixZ[0][1] + RotationMatrix[0][1] * RotationMatrixZ[1][1] + RotationMatrix[0][2] * RotationMatrixZ[2][1],
+						   RotationMatrix[0][0] * RotationMatrixZ[0][2] + RotationMatrix[0][1] * RotationMatrixZ[1][2] + RotationMatrix[0][2] * RotationMatrixZ[2][2] ),
+					CoordType( RotationMatrix[1][0] * RotationMatrixZ[0][0] + RotationMatrix[1][1] * RotationMatrixZ[1][0] + RotationMatrix[1][2] * RotationMatrixZ[2][0],
+                                                   RotationMatrix[1][0] * RotationMatrixZ[0][1] + RotationMatrix[1][1] * RotationMatrixZ[1][1] + RotationMatrix[1][2] * RotationMatrixZ[2][1],
+                                                   RotationMatrix[1][0] * RotationMatrixZ[0][2] + RotationMatrix[1][1] * RotationMatrixZ[1][2] + RotationMatrix[1][2] * RotationMatrixZ[2][2] ),
+					CoordType( RotationMatrix[2][0] * RotationMatrixZ[0][0] + RotationMatrix[2][1] * RotationMatrixZ[1][0] + RotationMatrix[2][2] * RotationMatrixZ[2][0],
+                                                   RotationMatrix[2][0] * RotationMatrixZ[0][1] + RotationMatrix[2][1] * RotationMatrixZ[1][1] + RotationMatrix[2][2] * RotationMatrixZ[2][1],
+                                                   RotationMatrix[2][0] * RotationMatrixZ[0][2] + RotationMatrix[2][1] * RotationMatrixZ[1][2] + RotationMatrix[2][2] * RotationMatrixZ[2][2] )
+					);
+
+
+	const uint32 thread_num = threadNumber < size[2] ? threadNumber : size[2];
 	Multithreading::Thread* thr[ thread_num ];
 	uint32 i = 0, j;
 
-	for ( i = 0; i < thread_num; i++ ) thr[i] = new Multithreading::Thread( TransformSlice< ElementType >( in, out, prop, interpolator, i, transformSampling ) );
+	for ( i = 0; i < thread_num; i++ ) thr[i] = new Multithreading::Thread( TransformSlice< ElementType >( in, out, prop, interpolator, i, transformSampling, RotationMatrix ) );
 
 	j = i;
 
@@ -217,24 +242,13 @@ TransformImage( const Image< ElementType, 3 > &in, Image< ElementType, 3 > &out,
 	{
 		i = i % thread_num;
 		thr[i]->join();
-		thr[i] = new Multithreading::Thread( TransformSlice< ElementType >( in, out, prop, interpolator, j, transformSampling ) );
+		thr[i] = new Multithreading::Thread( TransformSlice< ElementType >( in, out, prop, interpolator, j, transformSampling, RotationMatrix ) );
 		i++;
 		j++;
 	}
 
 	for ( i = 0; i < thread_num; ++i )	thr[i]->join();
 	for ( i = 0; i < thread_num; ++i )	delete thr[i];
-
-#else
-
-	uint32 i;
-	for ( i = 0; i < size[2]; ++i )
-	{
-		TransformSlice< ElementType > ts( in, out, prop, interpolator, i, transformSampling );
-		ts();
-	}
-
-#endif
 
 	return true;
 }
@@ -244,7 +258,8 @@ TransformImage( const Image< ElementType, 3 > &in, Image< ElementType, 3 > &out,
 template< typename ElementType, uint32 dim >
 ImageTransform< ElementType, dim >
 ::ImageTransform( typename ImageTransform< ElementType, dim >::Properties  * prop )
-	: PredecessorType( prop )
+	: PredecessorType( prop ),
+	  _threadNumber( 1 )
 {
 	this->_name = "ImageTransform";
 }
@@ -252,7 +267,8 @@ ImageTransform< ElementType, dim >
 template< typename ElementType, uint32 dim >
 ImageTransform< ElementType, dim >
 ::ImageTransform()
-	: PredecessorType( new Properties() )
+	: PredecessorType( new Properties() ),
+	  _threadNumber( 1 )
 	
 {
 	this->_name = "ImageTransform";
@@ -282,7 +298,7 @@ ImageTransform< ElementType, dim >
 {
 	bool result = false;
 	LinearInterpolator< ImageType > interpolator( this->in );
-	result = TransformImage< ElementType >( *(this->in), *(this->out), this->_properties,static_cast< InterpolatorBase< ImageType >* >( &interpolator ), transformSampling );
+	result = TransformImage< ElementType >( *(this->in), *(this->out), this->_properties, static_cast< InterpolatorBase< ImageType >* >( &interpolator ), transformSampling, _threadNumber );
 	return result;
 }
 
@@ -305,6 +321,14 @@ ImageTransform< ElementType, dim >
 		_writerBBox->SetState( MS_CANCELED );
 	}
 	return result;
+}
+
+template< typename ElementType, uint32 dim >
+void
+ImageTransform< ElementType, dim >
+::SetThreadNumber( uint32 tNumber )
+{
+	_threadNumber = tNumber;
 }
 
 template< typename ElementType, uint32 dim >

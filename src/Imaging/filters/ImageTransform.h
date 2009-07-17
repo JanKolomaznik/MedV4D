@@ -66,6 +66,8 @@ public:
 	ImageTransform( Properties  * prop );
 	ImageTransform();
 
+	void SetThreadNumber( uint32 tNumber );
+
 	void SetRotation(CoordType rotation)
 	{
 		dynamic_cast< Properties* >( this->_properties )->_rotation = rotation;
@@ -125,6 +127,8 @@ protected:
 
 	ReaderBBoxInterface::Ptr	_readerBBox;
 	WriterBBoxInterface		*_writerBBox;
+
+	uint32				_threadNumber;
 
 private:
 	GET_PROPERTIES_DEFINITION_MACRO;
