@@ -127,13 +127,13 @@ public:
 		if ( k >= depth ) return;
 		for( int32 j = 0; j < (int32)( ( transformSampling == 0 || height < (int32)transformSampling ) ? height : transformSampling ); ++j ) {
 
-			pointer = sPointer + k*zStride + j * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? 1 : height / transformSampling ) * yStride;
+			pointer = sPointer + k*zStride + j * yStride * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? 1 : height / transformSampling );
 
 			for( int32 i = 0; i < (int32)( ( transformSampling == 0 || width < (int32)transformSampling ) ? width : transformSampling ); ++i ) {
 
-				point[0] = ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * width / transformSampling ) - newwidth/2 ) * RotationMatrix[0][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * height / transformSampling ) - newheight/2 ) * RotationMatrix[0][1] + ( zExtent * k - newdepth/2 ) * RotationMatrix[0][2] + newwidth/2;
-				point[1] = ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * width / transformSampling ) - newwidth/2 ) * RotationMatrix[1][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * height / transformSampling ) - newheight/2 ) * RotationMatrix[1][1] + ( zExtent * k - newdepth/2 ) * RotationMatrix[1][2] + newheight/2;
-				point[2] = ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * width / transformSampling ) - newwidth/2 ) * RotationMatrix[2][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * height / transformSampling ) - newheight/2 ) * RotationMatrix[2][1] + ( zExtent * k - newdepth/2 ) * RotationMatrix[2][2] + newdepth/2;
+				point[0] = ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * ( width / transformSampling ) ) - newwidth/2 ) * RotationMatrix[0][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * ( height / transformSampling ) ) - newheight/2 ) * RotationMatrix[0][1] + ( zExtent * k - newdepth/2 ) * RotationMatrix[0][2] + newwidth/2;
+				point[1] = ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * ( width / transformSampling ) ) - newwidth/2 ) * RotationMatrix[1][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * ( height / transformSampling ) ) - newheight/2 ) * RotationMatrix[1][1] + ( zExtent * k - newdepth/2 ) * RotationMatrix[1][2] + newheight/2;
+				point[2] = ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * ( width / transformSampling ) ) - newwidth/2 ) * RotationMatrix[2][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * ( height / transformSampling ) ) - newheight/2 ) * RotationMatrix[2][1] + ( zExtent * k - newdepth/2 ) * RotationMatrix[2][2] + newdepth/2;
 
 				point[0] /= xExtent;
 				point[1] /= yExtent;
@@ -160,7 +160,7 @@ public:
 
 				else *pointer = interpolator->Get( point );
 			
-				pointer += ( ( transformSampling == 0 || width < (int32)transformSampling ) ? 1 : width / transformSampling ) * xStride;
+				pointer += xStride * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? 1 : width / transformSampling );
 			}
 		}
 	}
@@ -242,6 +242,7 @@ TransformImage( const Image< ElementType, 3 > &in, Image< ElementType, 3 > &out,
 	{
 		i = i % thread_num;
 		thr[i]->join();
+		delete thr[i];
 		thr[i] = new Multithreading::Thread( TransformSlice< ElementType >( in, out, prop, interpolator, j, transformSampling, RotationMatrix ) );
 		i++;
 		j++;
