@@ -266,7 +266,6 @@ SettingsBox
 	if ( ! sliceViewer ) return;
 	for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i )
 	{
-		sliceViewer->InputPort()[ i ].UnPlug();
 		switch ( fusionType->currentIndex() )
 		{
 
@@ -326,6 +325,8 @@ SettingsBox
 
 		static_cast< mainWindow* >( _parent )->OutConnectionToViewerPort( i, i );
 	}
+
+	_viewers->UpdateViewers();
 }
 
 void

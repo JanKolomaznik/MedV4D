@@ -1207,7 +1207,7 @@ m4dGUISliceViewerWidget::colorPicker( double x, double y, double z )
     coords[2] = z;
     _pickedPosition = QPoint( (int)coords[ _sliceOrientation ], (int)coords[ ( _sliceOrientation + 1 ) % 3 ] );
     if ( !_inPort->IsPlugged() ) return;
-    int64 result;
+    int64 result = 0;
     resolveFlips( coords[ _sliceOrientation ], coords[ ( _sliceOrientation + 1 ) % 3 ] );
     if ( checkOutOfBounds( coords[ _sliceOrientation ], coords[ ( _sliceOrientation + 1 ) % 3 ] ) ) return;
     if ( !_ready ) setParameters();

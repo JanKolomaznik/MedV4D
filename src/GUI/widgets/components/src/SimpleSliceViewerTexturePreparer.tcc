@@ -18,9 +18,9 @@ SimpleSliceViewerTexturePreparer< ElementType >
       unsigned& dimension )
     {
         bool ready = true;
-        int32 xstride, ystride, zstride;
-        uint32 depth;
-        ElementType* pixel, *original;
+        int32 xstride = 0, ystride = 0, zstride = 0;
+        uint32 depth = 0;
+        ElementType* pixel = 0, *original = 0;
         try
         {
             // need to lock dataset first

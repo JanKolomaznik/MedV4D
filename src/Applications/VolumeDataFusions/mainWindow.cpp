@@ -82,5 +82,9 @@ void mainWindow::OutConnectionToViewerPort( uint32 inputNumber, uint32 portNumbe
 	{
 		_THROW_ M4D::ErrorHandling::EBadIndex();
 	}
-	_outConnection[ inputNumber ]->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[ portNumber ] );
+	if ( _outConnection[ inputNumber ] != currentViewerDesktop->getSelectedViewerWidget()->InputPort()[ portNumber ].GetConnection() )
+	{
+		currentViewerDesktop->getSelectedViewerWidget()->InputPort()[ portNumber ].UnPlug();
+		_outConnection[ inputNumber ]->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[ portNumber ] );
+	}
 }
