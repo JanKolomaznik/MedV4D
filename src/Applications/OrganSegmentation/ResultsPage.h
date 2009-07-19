@@ -21,6 +21,7 @@ protected:
 	MainManager &_manager;
 
 	QLabel	*_volumeValueLabel;
+	QLabel	*_voxelCountLabel;
 };
 
 #endif /*RESULTS_PAGE_H*/

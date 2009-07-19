@@ -61,17 +61,17 @@ ImageFactory::SerializeImage( M4D::IO::OutStream &stream, const Image< ElementTy
 //	uint32 cntr = 0;
 //#define SIZE_X (image.GetDimensionExtents(0).maximum - image.GetDimensionExtents(0).minimum)
 //
-//	typename Image< ElementType, Dimension >::Iterator iterator = image.GetIterator();
-//	while( !iterator.IsEnd() ) {
-//		stream.Put<ElementType>( *iterator );
-//		++iterator;
+	typename Image< ElementType, Dimension >::Iterator iterator = image.GetIterator();
+	while( !iterator.IsEnd() ) {
+		stream.Put<ElementType>( *iterator );
+		++iterator;
 //		
 //		if((cntr % SIZE_X) == 0)
 //			D_PRINT("processed pixels: " << cntr);
 //		
 //		cntr++;
-//	}
-	image.SerializeData(stream);
+	}
+//	image.SerializeData(stream);
 	
 	stream.Put<uint32>( DUMP_END_MAGIC_NUMBER );
 }

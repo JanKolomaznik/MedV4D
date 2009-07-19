@@ -220,6 +220,41 @@ operator<<( std::ostream &stream, const Histogram< CellType > &histogram )
 	return stream;
 }
 
+template< typename CellType >
+CellType
+ComputeSmoothedValue( const Histogram< CellType > &histogram, std::vector< float32 > &weights, int32 cell, unsigned radius )
+{
+	double tmp = 0.0;
+	
+	for( int32 i = 0; i <= 2*radius; ++i ) {
+		tmp += histogram[cell + i - radius] * weights[i];
+	}
+	return (CellType) tmp;
+
+}
+
+template< typename CellType >
+Histogram< CellType >
+HistogramPyramidSmooth( const Histogram< CellType > &histogram, unsigned radius )
+{
+	std::vector< float32 > weights;
+	Histogram< CellType > result( histogram );
+	float32 sum = 0;
+
+	for( unsigned i = 0; i <= 2*radius; ++i ){
+		weights.push_back( 1.0 / ((float32) 2*radius +1 ) );
+	}
+	//TODO - pyramid weigths
+	int32 min = histogram.GetMin();
+	int32 max = histogram.GetMax();
+
+	for( int32 i = min; i < max; ++i ) {
+		result.SetValueCell( i, ComputeSmoothedValue( histogram, weights, i, radius ) );
+	}
+	
+	return result;
+}
+
 }/*namespace Imaging*/
 }/*namespace M4D*/
 

@@ -19,6 +19,7 @@ TARGETS=	DICOM2ImageDump \
 		SobelGradientOperator \
 		LaplaceOperator \
 		ImageCrop \
+		SaveModelVisualization \
 		ClampFilter \
 		CreateExampleData \
 		MaxFilter \

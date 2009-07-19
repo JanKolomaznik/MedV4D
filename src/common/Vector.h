@@ -425,12 +425,13 @@ VectorAbs( Vector< CoordType, Dim > &v )
 
 template< typename CoordType, unsigned Dim >
 CoordType
-VectorCoordinateProduct( Vector< CoordType, Dim > &v )
+VectorCoordinateProduct( const Vector< CoordType, Dim > &v )
 {
 	CoordType result = v[0];
 	for( unsigned i=1; i < Dim; ++i ) {
 		result *= v[ i ];
 	}
+	return result;
 }
 typedef Vector< int32, 2 > CoordInt2D;
 typedef Vector< int32, 3 > CoordInt3D;

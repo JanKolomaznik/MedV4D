@@ -25,7 +25,9 @@ AnalyseResults( const InputImageType &image, const M4D::Imaging::Mask3D &mask, A
 		++it1;
 		++it2;
 	}
-
+	
+	record.voxelCount = voxelCount;
+	record.elementVolume = elementVolume;
 	record.organVolume = voxelCount * elementVolume;
 	LOG( "Voxel count = " << voxelCount );
 	LOG( "Organ volume = " << voxelCount << " * " << elementVolume << " = " << record.organVolume );

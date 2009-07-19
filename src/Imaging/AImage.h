@@ -139,6 +139,9 @@ public:
 	GetMaximum()const
 		{ return _maximum; }
 
+	SizeType
+	GetSize()const
+		{ return _size; }
 
 protected:
 	PointType	_minimum;

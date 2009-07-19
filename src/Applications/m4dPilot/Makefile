@@ -35,7 +35,7 @@ LIBS=		$(M4DLIBS)\
 		$(VTKLIBS)\
 		$(QTLIBS)\
 		-lboost_thread-mt \
-		-lboost_filesystem \
+		-lboost_filesystem-mt \
 		-lGLU
 
 LIBDIRS=	-L$(srcTop)/lib/$(CONF)\

@@ -4,6 +4,23 @@
 using namespace M4D::Imaging;
 using namespace boost::filesystem;
 
+static const float32 MaxLogarithm = 1.0e4f;
+
+float32
+RatioLogarithm( float32 a, float32 b )
+{
+	float32 tmp = log( a / b );
+	if( isnan( tmp ) )
+		return 0.0f;
+
+	if( tmp < -MaxLogarithm )
+		return -MaxLogarithm;
+
+	if( tmp > MaxLogarithm )
+		return MaxLogarithm;
+
+	return tmp;
+}
 
 void
 TrainingStep( 
@@ -216,7 +233,7 @@ ConsolidateGeneralGridRecord( GridPointRecord &rec, int32 count )
 	if( rec.outProbabilityPos < Epsilon ) {
 		rec.outProbabilityPos = Epsilon;
 	}
-	rec.logRatioPos = log( rec.inProbabilityPos / rec.outProbabilityPos );
+	rec.logRatioPos = RatioLogarithm( rec.inProbabilityPos, rec.outProbabilityPos );
 
 	double histogramSum = 0;
 	int32 min = rec.inHistogram.GetMin();
@@ -229,7 +246,12 @@ ConsolidateGeneralGridRecord( GridPointRecord &rec, int32 count )
 	for( int32 i = min; i < max; ++i ) {
 		rec.inHistogram.SetValueCell( i, rec.inHistogram[i] / histogramSum );
 		rec.outHistogram.SetValueCell( i, rec.outHistogram[i] / histogramSum );
-		rec.logHistogram.SetValueCell( i, log( rec.inHistogram[i] / rec.outHistogram[i] ) );
+		rec.logHistogram.SetValueCell( i, RatioLogarithm( rec.inHistogram[i], rec.outHistogram[i] ) );
+	}
+	rec.inHistogram = HistogramPyramidSmooth( rec.inHistogram, 3 );
+	rec.outHistogram = HistogramPyramidSmooth( rec.outHistogram, 3 );
+	for( int32 i = min; i < max; ++i ) {
+		rec.logHistogram.SetValueCell( i, RatioLogarithm( rec.inHistogram[i], rec.outHistogram[i] ) );
 	}
 }
 
@@ -301,8 +323,7 @@ NormalizeHistograms(
 		inHistogram.SetValueCell( i, static_cast<float32>(generalInHistogram.Get( i )) / static_cast<float32>(generalInHistogram.GetSum()) );
 		outHistogram.SetValueCell( i, static_cast<float32>(generalOutHistogram.Get( i )) / static_cast<float32>(generalOutHistogram.GetSum()) );
 
-		float32 tmp = inHistogram.Get( i )/outHistogram.Get( i );
-		logRatioHistogram.SetValueCell( i, log( tmp )  );
+		logRatioHistogram.SetValueCell( i, RatioLogarithm( inHistogram.Get( i ), outHistogram.Get( i ) )  );
 	}
 	inHistogram.SetValueCell( min-1, 0.0f );
 	inHistogram.SetValueCell( max, 0.0f );

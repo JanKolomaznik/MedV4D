@@ -365,6 +365,12 @@ public:
 		return balance * _logRatioIntensity->Get( intensity ) 
 			+ (1.0f-balance) * _grid->LogRatioProbabilityPosition( pos ); 
 	}
+
+	float32
+	LogRatioProbabilityIntesityPositionDependent( IntensityType intensity, const Coordinates &pos )
+	{ 
+		return _grid->LogRatioProbabilityIntensityPosition( pos, intensity ); 
+	}
 	//***********************************************************************
 
 	//***********************************************************************

@@ -28,6 +28,9 @@ struct TrainingDataInfo
 
 typedef std::vector< TrainingDataInfo >		TrainingDataInfos;
 
+float32
+RatioLogarithm( float32 a, float32 b );
+
 void
 GetPoles( const MaskType & mask, MaskType::PointType &north, MaskType::PointType &south );
 

@@ -12,13 +12,6 @@ ManualSegmentationControlPanel
 ::CreateWidgets()
 {
 	QVBoxLayout *verticalLayout;
-	QStackedWidget *stackedWidget;
-	QWidget *page;
-	QWidget *verticalLayoutWidget_2;
-	QVBoxLayout *verticalLayout_2;
-	QWidget *page_2;
-	QWidget *verticalLayoutWidget_3;
-	QVBoxLayout *verticalLayout_3;
 	QPushButton *button;
 
 	verticalLayout = new QVBoxLayout();

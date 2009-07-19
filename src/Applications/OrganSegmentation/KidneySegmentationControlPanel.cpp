@@ -40,6 +40,7 @@ KidneySegmentationControlPanel
 	layout->addWidget( _segmentationSettings );
 	{
 		QVBoxLayout *tmpLayout = new QVBoxLayout;
+		QLabel *label;
 
 		_modelsCombo = new QComboBox();
 		const ModelInfoVector & infos = _manager->GetModelInfos();
@@ -55,30 +56,56 @@ KidneySegmentationControlPanel
 		slider->setOrientation( Qt::Horizontal );
 		slider->setMinimum( 4 );
 		slider->setMaximum( 35 );
-		slider->setValue( 15 );
-		KidneySegmentationManager::Instance().SetComputationPrecision( 15 );
+		_manager->SetComputationPrecision( 15 );
 		QObject::connect( slider, SIGNAL( valueChanged( int ) ), 
 				_manager, SLOT( SetComputationPrecision( int ) ) );
+		slider->setValue( 15 );
 		tmpLayout->addWidget( slider );
 
 		slider = new QSlider();
 		slider->setOrientation( Qt::Horizontal );
 		slider->setMinimum( 0 );
 		slider->setMaximum( 1000 );
-		slider->setValue( 750 );
-		KidneySegmentationManager::Instance().SetShapeIntensityBalance( 750 );
+		_manager->SetShapeIntensityBalance( 750 );
 		QObject::connect( slider, SIGNAL( valueChanged( int ) ), 
 				_manager, SLOT( SetShapeIntensityBalance( int ) ) );
+		slider->setValue( 750 );
 		tmpLayout->addWidget( slider );
 
 		slider = new QSlider();
 		slider->setOrientation( Qt::Horizontal );
 		slider->setMinimum( 0 );
 		slider->setMaximum( 1000 );
-		slider->setValue( 800 );
-		KidneySegmentationManager::Instance().SetEdgeRegionBalance( 800 );
+		_manager->SetEdgeRegionBalance( 800 );
 		QObject::connect( slider, SIGNAL( valueChanged( int ) ), 
 				_manager, SLOT( SetEdgeRegionBalance( int ) ) );
+		slider->setValue( 800 );
+		tmpLayout->addWidget( slider );
+
+		label = new QLabel( "Internal energy balance:" );
+		tmpLayout->addWidget( label );
+
+		slider = new QSlider();
+		slider->setOrientation( Qt::Horizontal );
+		slider->setMinimum( 0 );
+		slider->setMaximum( 1000 );
+		_manager->SetInternalEnergyBalance( 0 );
+		QObject::connect( slider, SIGNAL( valueChanged( int ) ), 
+				_manager, SLOT( SetInternalEnergyBalance( int ) ) );
+		slider->setValue( 0 );
+		tmpLayout->addWidget( slider );
+
+		label = new QLabel( "Internal energy gamma:" );
+		tmpLayout->addWidget( label );
+
+		slider = new QSlider();
+		slider->setOrientation( Qt::Horizontal );
+		slider->setMinimum( 0 );
+		slider->setMaximum( 1000 );
+		_manager->SetInternalEnergyGamma( 0 );
+		QObject::connect( slider, SIGNAL( valueChanged( int ) ), 
+				_manager, SLOT( SetInternalEnergyGamma( int ) ) );
+		slider->setValue( 0 );
 		tmpLayout->addWidget( slider );
 
 		QCheckBox *box = new QCheckBox( "Separate slice init" );

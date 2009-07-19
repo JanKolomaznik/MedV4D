@@ -192,12 +192,16 @@ void
 ManualSegmentationManager::FinishCurveCreating()
 {
 	if( _curve == NULL ) {
+		D_PRINT( "Finishing curve creation - NULL curve pointer." );
 		return;
 	}
 	if( _curve->Size() < 4 ) {
+		D_PRINT( "Finishing curve creation - deleting for low point count." );
 		delete _curve;
+		_curve = NULL;
 		return;
 	}
+	D_PRINT( "Finishing curve creation - adding new curve." );
 	_dataset->AddObject( _curveSlice, *_curve );
 	_curve = NULL;
 }

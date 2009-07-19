@@ -176,6 +176,13 @@ KidneySegmentationManager::LeftButtonDown( Vector< float32, 2 > pos, int32 slice
 		_poles[_actualPole].slice = sliceNum;
 		_poles[_actualPole].coordinates = pos;
 		break;
+	case POLES_SET:
+	case SET_SEGMENTATION_PARAMS_PREPROCESSING:
+	case SET_SEGMENTATION_PARAMS:
+	case SEGMENTATION_EXECUTED_WAITING:
+	case SEGMENTATION_EXECUTED_RUNNING:
+	case SEGMENTATION_FINISHED:
+		break;
 	default:
 		ASSERT( false );
 		break;
@@ -188,7 +195,7 @@ KidneySegmentationManager::PolesSet()
 	//std::cout << "Slice1 = " << _poles[0].slice << "; Slice2 = " << _poles[1].slice << "\n";
 	float32 sX = _inputImage->GetDimensionExtents(0).elementExtent;
 	float32 sY = _inputImage->GetDimensionExtents(1).elementExtent;
-	InputImageType::PointType pom( 80, 60, 0 );
+	InputImageType::PointType pom( 100, 80, 0 );
 	InputImageType::PointType minP( 
 				Min(_poles[0].coordinates[0]/sX,_poles[1].coordinates[0]/sX),
 				Min(_poles[0].coordinates[1]/sY,_poles[1].coordinates[1]/sY),
@@ -266,6 +273,8 @@ KidneySegmentationManager::StartSegmentation()
 void
 KidneySegmentationManager::RunFilters()
 {
+	D_PRINT( "RunFilters() executed" );
+
 	SetReadyToSegmentationFlag( false );
 
 	_medianFilter->ExecuteOnWhole();
@@ -278,6 +287,8 @@ KidneySegmentationManager::RunFilters()
 void
 KidneySegmentationManager::FiltersFinishedSuccesfully()
 {
+	D_PRINT( "FiltersFinishedSuccesfully() executed" );
+
 	SetState( SET_SEGMENTATION_PARAMS );
 	SetReadyToSegmentationFlag( true );
 }
@@ -320,6 +331,8 @@ KidneySegmentationManager::RunSplineSegmentation()
 
 	_segmentationFilter->SetPrecision( _computationPrecision );
 	_segmentationFilter->SetEdgeRegionBalance( _edgeRegionBalance );
+	_segmentationFilter->SetInternalEnergyBalance( _internalEnergyBalance );
+	_segmentationFilter->SetInternalEnergyGamma( _internalEnergyGamma );
 	_segmentationFilter->SetShapeIntensityBalance( _shapeIntensityBalance );
 	_segmentationFilter->SetSeparateSliceInit( _separateSliceInit );
 
@@ -398,6 +411,7 @@ KidneySegmentationManager::SetState( KidneySegmentationManager::InternalState st
 	D_PRINT( "Kidney segmentation state changed from : " << _state << " to : " << state );
 	_state = state;
 	
+	D_PRINT( "Emiting signals after state change." );
 	emit StateUpdated();
 	emit WantsViewerUpdate();
 }

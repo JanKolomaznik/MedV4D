@@ -7,6 +7,8 @@
 struct AnalysisRecord
 {
 	float32 organVolume;
+	float32 elementVolume;
+	int64	voxelCount;
 };
 
 Q_DECLARE_METATYPE( AnalysisRecord );

@@ -244,9 +244,11 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 	algorithm.SetSelfIntersectionTestPeriod( 1 );
 	algorithm.SetSegmentLengthsTestPeriod( 3 );
 
-	algorithm.SetGamma( 0.8f );
 	algorithm.SetImageEnergyBalance( 1.0f );
-	algorithm.SetInternalEnergyBalance( 0.0f );
+	
+	algorithm.SetInternalEnergyBalance( GetInternalEnergyBalance() );
+	algorithm.SetGamma( GetInternalEnergyGamma() );
+
 	algorithm.SetConstrainEnergyBalance( 0.0f );
 	algorithm.SetRegionStat( in->GetSlice( sliceNumber ) );
 	algorithm.SetRegionEdge( inEdge->GetSlice( sliceNumber ) );
@@ -367,9 +369,10 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 	algorithm.SetSelfIntersectionTestPeriod( 3 );
 	algorithm.SetSegmentLengthsTestPeriod( 4 );
 
-	algorithm.SetGamma( 0.8f );
+	algorithm.SetInternalEnergyBalance( GetInternalEnergyBalance() );
+	algorithm.SetGamma( GetInternalEnergyGamma() );
+
 	algorithm.SetImageEnergyBalance( 1.0f );
-	algorithm.SetInternalEnergyBalance( 0.0f );
 	algorithm.SetConstrainEnergyBalance( 0.3f );
 	algorithm.SetAlpha( 1.0f );
 
@@ -397,9 +400,9 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 	algorithm.SetSelfIntersectionTestPeriod( 1 );
 	algorithm.SetSegmentLengthsTestPeriod( 1 );
 
-	algorithm.SetGamma( 0.8f );
+	//algorithm.SetGamma( 0.8f );
 	algorithm.SetImageEnergyBalance( 1.0f );
-	algorithm.SetInternalEnergyBalance( 0.0f );
+	//algorithm.SetInternalEnergyBalance( 0.0f );
 	algorithm.SetConstrainEnergyBalance( 0.0f );
 	algorithm.SetAlpha( 0.75f );
 
@@ -431,9 +434,9 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 	algorithm.SetSelfIntersectionTestPeriod( 1 );
 	algorithm.SetSegmentLengthsTestPeriod( 1 );
 
-	algorithm.SetGamma( 0.8f );
+	//algorithm.SetGamma( 0.8f );
 	algorithm.SetImageEnergyBalance( 1.0f );
-	algorithm.SetInternalEnergyBalance( 0.0f );
+	//algorithm.SetInternalEnergyBalance( 0.0f );
 	algorithm.SetConstrainEnergyBalance( 0.0f );
 	algorithm.SetAlpha( GetEdgeRegionBalance() * 0.5 );
 

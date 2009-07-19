@@ -28,9 +28,8 @@ public:
 		_tmp[1] = pos[1];
 		_tmp[2] = _zCoord; //TODO - set with _zCoord
 
-		//return _model->LogRatioProbabilityPosition( _transformation( _tmp ) ); 
 		return _model->LogRatioProbabilityIntesityPosition( value, _transformation( _tmp ), _balance ); 
-		//return _model->LogRatioProbabilityIntesity( value ); 
+		//return _model->LogRatioProbabilityIntesityPositionDependent( value, _transformation( _tmp ) ); 
 	}
 	SIMPLE_GET_SET_METHODS( CanonicalProbModel*, Model, _model );
 	SIMPLE_GET_SET_METHODS( float32, ZCoordinate, _zCoord );
@@ -118,7 +117,11 @@ public:
 		int32			precision;
 		float32			shapeIntensityBalance;
 		float32			edgeRegionBalance;
+		float32			internalEnergyBalance;
+		float32			internalEnergyGamma;
+
 		CanonicalProbModel*	probModel;
+
 
 		bool			separateSliceInit;
 	};
@@ -136,6 +139,8 @@ public:
 	GET_SET_PROPERTY_METHOD_MACRO( int32, Precision, precision );
 	GET_SET_PROPERTY_METHOD_MACRO( float32, ShapeIntensityBalance, shapeIntensityBalance );
 	GET_SET_PROPERTY_METHOD_MACRO( float32, EdgeRegionBalance, edgeRegionBalance );
+	GET_SET_PROPERTY_METHOD_MACRO( float32, InternalEnergyBalance, internalEnergyBalance );
+	GET_SET_PROPERTY_METHOD_MACRO( float32, InternalEnergyGamma, internalEnergyGamma );
 	GET_SET_PROPERTY_METHOD_MACRO( CanonicalProbModel*, ProbabilityModel, probModel );
 	GET_SET_PROPERTY_METHOD_MACRO( bool, SeparateSliceInit, separateSliceInit );
 

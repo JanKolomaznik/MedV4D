@@ -161,6 +161,18 @@ public slots:
 	}
 
 	void
+	SetInternalEnergyBalance( int value )
+	{
+		_internalEnergyBalance = static_cast<float32>(value) / 1000.0f;
+	}
+
+	void
+	SetInternalEnergyGamma( int value )
+	{
+		_internalEnergyGamma = static_cast<float32>(value) / 1000.0f;
+	}
+
+	void
 	SetSeparateSliceInit( bool value )
 	{
 		_separateSliceInit = value;
@@ -220,6 +232,8 @@ protected:
 
 	float32						_shapeIntensityBalance;
 	float32						_edgeRegionBalance;
+	float32						_internalEnergyBalance;
+	float32						_internalEnergyGamma;
 	bool						_separateSliceInit;
 
 	static KidneySegmentationManager		*_instance;
