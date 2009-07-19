@@ -31,6 +31,9 @@ public slots:
 
 	void
 	SaveModelVisualization();
+
+	/*void
+	UpdateProgress( float p );*/
 protected:
 	void
 	CreateWidgets();

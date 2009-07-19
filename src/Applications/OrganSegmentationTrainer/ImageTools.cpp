@@ -28,7 +28,9 @@ TrainingStep(
 		DiscreteHistogram	&generalOutHistogram,
 		const ImageType		&image, 
 		const MaskType		&mask,
-		GridType		&generalGrid
+		GridType		&generalGrid,
+		int32 			minHist,
+		int32			maxHist
 	    )
 {
 	MaskType::PointType north;
@@ -53,7 +55,7 @@ TrainingStep(
 	GridType grid( generalGrid.GetOrigin(), generalGrid.GetSize(), generalGrid.GetGridStep() );
 	
 	D_PRINT( "Filling grid..." );
-	FillGrid( tr, image, mask, grid );
+	FillGrid( tr, image, mask, grid, minHist, maxHist );
 
 	D_PRINT( "Incorporating grids..." );
 	IncorporateGrids( grid, generalGrid );
@@ -61,7 +63,7 @@ TrainingStep(
 }
 
 GridPointRecord
-ComputeProbRecord( Vector< float32, 3 > pos, Vector< float32, 3 > hStep, const ImageType &image, const MaskType &mask )
+ComputeProbRecord( Vector< float32, 3 > pos, Vector< float32, 3 > hStep, const ImageType &image, const MaskType &mask, int32 minHist, int32 maxHist )
 {
 	Vector< float32, 3 > min = pos - hStep;
 	Vector< float32, 3 > max = pos + hStep;
@@ -75,7 +77,7 @@ ComputeProbRecord( Vector< float32, 3 > pos, Vector< float32, 3 > hStep, const I
 		rmax[i] = Min( ROUND( max[i] / extents[i] ), rmax[i]-1 ) ;
 	}
 	
-	GridPointRecord result( 0.0, 0.0f, 0.0f );
+	GridPointRecord result( 0.0, 0.0f, 0.0f, minHist, maxHist );
 
 	Vector< int32, 3 > idx;
 	int32 counter = 0;
@@ -94,7 +96,7 @@ ComputeProbRecord( Vector< float32, 3 > pos, Vector< float32, 3 > hStep, const I
 		}
 	}
 	if( counter == 0 ) {
-		return GridPointRecord( 0.0f, 1.0f, 0.0f );
+		return GridPointRecord( 0.0f, 1.0f, 0.0f, minHist, maxHist );
 	}
 	float32 inProb = static_cast<float32>( inCounter ) / static_cast<float32>( counter );
 
@@ -105,7 +107,7 @@ ComputeProbRecord( Vector< float32, 3 > pos, Vector< float32, 3 > hStep, const I
 }
 
 void
-FillGrid( Transformation tr, const ImageType &image, const MaskType &mask, GridType &grid )
+FillGrid( Transformation tr, const ImageType &image, const MaskType &mask, GridType &grid, int32 minHist, int32 maxHist )
 {
 	Vector< uint32, 3 > size = grid.GetSize();
 	Vector< float32, 3 > step = grid.GetGridStep();
@@ -124,7 +126,7 @@ FillGrid( Transformation tr, const ImageType &image, const MaskType &mask, GridT
 					tmp[i] = idx[i]*step[i];
 				}
 				tmp -= origin;
-				grid.GetPointRecord( idx ) = ComputeProbRecord( tr.GetInversion( tmp ), halfStep, image, mask );
+				grid.GetPointRecord( idx ) = ComputeProbRecord( tr.GetInversion( tmp ), halfStep, image, mask, minHist, maxHist );
 			}
 		}
 	}
@@ -246,7 +248,7 @@ ConsolidateGeneralGridRecord( GridPointRecord &rec, int32 count )
 	for( int32 i = min; i < max; ++i ) {
 		rec.inHistogram.SetValueCell( i, rec.inHistogram[i] / histogramSum );
 		rec.outHistogram.SetValueCell( i, rec.outHistogram[i] / histogramSum );
-		rec.logHistogram.SetValueCell( i, RatioLogarithm( rec.inHistogram[i], rec.outHistogram[i] ) );
+		//rec.logHistogram.SetValueCell( i, RatioLogarithm( rec.inHistogram[i], rec.outHistogram[i] ) );
 	}
 	rec.inHistogram = HistogramPyramidSmooth( rec.inHistogram, 3 );
 	rec.outHistogram = HistogramPyramidSmooth( rec.outHistogram, 3 );
@@ -264,8 +266,13 @@ ConsolidateGeneralGrid( GridType &grid, int32 count )
 		for( idx[1] = 0; idx[1] < size[1]; ++idx[1] ) {
 			for( idx[2] = 0; idx[2] < size[2]; ++idx[2] ) {
 
+				if( idx == Vector< uint32, 3 >( 20, 20, 10 ) ) {
+					LOUT << grid.GetPointRecord( idx ).inHistogram << "\n\n\n---------------------------------------------------------------\n";
+				}
 				ConsolidateGeneralGridRecord( grid.GetPointRecord( idx ), count );
-
+				if( idx == Vector< uint32, 3 >( 20, 20, 10 ) ) {
+					LOUT << grid.GetPointRecord( idx ).inHistogram << "\n";
+				}
 			}
 		}
 	}
@@ -343,6 +350,19 @@ Train( const TrainingDataInfos &infos, Vector< uint32, 3 > size, Vector< float32
 
 	GridType *generalGrid = new GridType( origin, size, step );
 
+	//Set grid records two right values
+	Vector< uint32, 3 > idx;
+	GridPointRecord tmpRec( 0.0, 0.0f, 0.0f, minHist, maxHist );
+	for( idx[0] = 0; idx[0] < size[0]; ++idx[0] ) {
+		for( idx[1] = 0; idx[1] < size[1]; ++idx[1] ) {
+			for( idx[2] = 0; idx[2] < size[2]; ++idx[2] ) {
+
+				generalGrid->GetPointRecord( idx ) = tmpRec;
+			}
+		}
+	}
+
+
 	unsigned counter = 0;
 	for( unsigned i = 0; i < infos.size(); ++i ) {
 		ImageType::Ptr image;
@@ -364,7 +384,7 @@ Train( const TrainingDataInfos &infos, Vector< uint32, 3 > size, Vector< float32
 		}
 
 		++counter;
-		TrainingStep( generalInHistogram, generalOutHistogram, *image, *mask, *generalGrid );
+		TrainingStep( generalInHistogram, generalOutHistogram, *image, *mask, *generalGrid, minHist, maxHist );
 	}	
 	D_PRINT( "Consolidate general grid ..." );
 	ConsolidateGeneralGrid( *generalGrid, counter );

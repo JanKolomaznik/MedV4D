@@ -23,7 +23,7 @@ template< typename CellType >
 class Histogram
 {
 public:
-	Histogram( int32 min=0, int32 max=255, bool storeOutliers = true ) :
+	Histogram( int32 min, int32 max, bool storeOutliers = true ) :
 		_minCell( min ), _maxCell( max ), _storeOutliers( storeOutliers ), _sum( 0 )
 	{
 		_cells.resize( _maxCell - _minCell + 2 );
@@ -226,7 +226,7 @@ ComputeSmoothedValue( const Histogram< CellType > &histogram, std::vector< float
 {
 	double tmp = 0.0;
 	
-	for( int32 i = 0; i <= 2*radius; ++i ) {
+	for( uint32 i = 0; i <= 2*radius; ++i ) {
 		tmp += histogram[cell + i - radius] * weights[i];
 	}
 	return (CellType) tmp;
@@ -239,7 +239,7 @@ HistogramPyramidSmooth( const Histogram< CellType > &histogram, unsigned radius 
 {
 	std::vector< float32 > weights;
 	Histogram< CellType > result( histogram );
-	float32 sum = 0;
+	//float32 sum = 0;
 
 	for( unsigned i = 0; i <= 2*radius; ++i ){
 		weights.push_back( 1.0 / ((float32) 2*radius +1 ) );

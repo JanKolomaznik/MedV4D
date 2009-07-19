@@ -74,16 +74,24 @@ struct GridPointRecord
 	GridPointRecord() 
 		: inProbabilityPos( 0 ),
 		outProbabilityPos( 0 ),
-		logRatioPos( 0.0 )
+		logRatioPos( 0.0 ),
+		inHistogram( 0, 256, false ),
+		outHistogram( 0, 256, true ),
+		logHistogram( 0, 256, true )
 	{}
 	GridPointRecord( 
 		float32	pinProbabilityPos,
 		float32	poutProbabilityPos,
-		float32	plogRatioPos
+		float32	plogRatioPos,
+		int32 minHist, 
+		int32 maxHist
 		) 
 		: inProbabilityPos( pinProbabilityPos ),
 		outProbabilityPos( poutProbabilityPos ),
-		logRatioPos( plogRatioPos )
+		logRatioPos( plogRatioPos ),
+		inHistogram( minHist, maxHist, false ),
+		outHistogram( minHist, maxHist, true ),
+		logHistogram( minHist, maxHist, true )
 	{}
 	void
 	ToBinStream( std::ostream &stream )

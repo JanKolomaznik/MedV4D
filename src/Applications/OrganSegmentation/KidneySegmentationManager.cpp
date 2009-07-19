@@ -24,6 +24,8 @@ LoadModelInfos( ModelInfoVector &_modelInfos )
 {
 	_modelInfos.push_back( ModelInfo( "Left kidney", "KidneyLeft.mdl" ) );
 	_modelInfos.push_back( ModelInfo( "Right kidney", "KidneyRight.mdl" ) );
+	_modelInfos.push_back( ModelInfo( "Right kidney - contrast", "KidneyContrastRight.mdl" ) );
+	_modelInfos.push_back( ModelInfo( "Left kidney - contrast", "KidneyContrastLeft.mdl" ) );
 }
 
 KidneySegmentationManager::KidneySegmentationManager()

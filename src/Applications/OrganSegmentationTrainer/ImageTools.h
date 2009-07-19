@@ -41,7 +41,7 @@ void
 FillInOutHistograms( DiscreteHistogram &inHistogram, DiscreteHistogram &outHistogram, const ImageType &image, const MaskType &mask );
 
 void
-FillGrid( M4D::Imaging::Transformation tr, const ImageType &image, const MaskType &mask, GridType &grid );
+FillGrid( M4D::Imaging::Transformation tr, const ImageType &image, const MaskType &mask, GridType &grid, int32 minHist, int32 maxHist );
 
 void
 IncorporateGrids( const GridType &last, GridType &general );
@@ -52,7 +52,9 @@ TrainingStep(
 		DiscreteHistogram	&generalOutHistogram,
 		const ImageType		&image, 
 		const MaskType		&mask,
-		GridType		&generalGrid
+		GridType		&generalGrid,
+		int32 			minHist,
+		int32			maxHist
 	    );
 
 M4D::Imaging::CanonicalProbModel::Ptr

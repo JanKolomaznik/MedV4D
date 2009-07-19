@@ -10,25 +10,27 @@ using namespace M4D::Imaging;
 typedef M4D::Imaging::Image< int16, 3 > ImageType;
 
 
-struct InModelVisualizationAccessor
+struct ModelVisualizationAccessor
 {
-	InModelVisualizationAccessor( unsigned val ): _val( val ) {}
+	ModelVisualizationAccessor( bool inSet, unsigned inVal,  bool outSet, unsigned outVal )
+		: _inSet( inSet ), _inVal( inVal ), _outSet( outSet ), _outVal( outVal ) {}
 
 	int16
 	operator()( const GridPointRecord & rec ) 
 	{
-		return (int16)( 4096 * rec.inHistogram[ _val ] );
+		int16 result = 0;
+		if( _inSet ) {
+			result += (int16)( 4096 * rec.inHistogram[ _inVal ] );
+		}
+		if( _outSet ) {
+			result += (int16)( 4096 * rec.outHistogram[ _outVal ] );
+		}
+		return result;
 	}
-	unsigned _val;
-};
-
-struct OutModelVisualizationAccessor
-{
-	int16
-	operator()( const GridPointRecord & rec ) 
-	{
-		return (int16)( 4096 * rec.inProbabilityPos );
-	}
+	bool		_inSet;
+	unsigned 	_inVal;
+	bool		_outSet;
+	unsigned	_outVal;
 };
 
 
@@ -71,12 +73,10 @@ main( int argc, char **argv )
 
 	std::cout << "Creating image..."; std::cout.flush();
 	ImageType::Ptr tmp;
-	if ( inHistogramValArg.isSet() ) {
-	 	tmp = MakeImageFromProbabilityGrid<InModelVisualizationAccessor>( probModel->GetGrid(), InModelVisualizationAccessor( inHistogramValArg.getValue() ) );
-	} else {
-		std::cerr << "Unfinished options !!!\n";
-		return 1;
-	}
+	tmp = MakeImageFromProbabilityGrid<ModelVisualizationAccessor>( 
+			probModel->GetGrid(), 
+			ModelVisualizationAccessor( inHistogramValArg.isSet(), inHistogramValArg.getValue(), outHistogramValArg.isSet(), outHistogramValArg.getValue() ) 
+			);
 	//TODO
 	std::cout << "Done\n";
 
