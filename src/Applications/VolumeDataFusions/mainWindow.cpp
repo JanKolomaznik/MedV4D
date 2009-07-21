@@ -52,7 +52,7 @@ mainWindow::mainWindow ()
 void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 {
 	try {
-		uint32 inputNumber = _settings->GetInputNumber() - 1;
+		uint32 inputNumber = _settings->GetInputNumber();
 		_inConnection[ inputNumber ]->PutDataset( inputDataSet );
 
 		for ( uint32 i = 0; i < currentViewerDesktop->getSelectedViewerWidget()->InputPort().Size(); ++i ) currentViewerDesktop->getSelectedViewerWidget()->InputPort()[ i ].UnPlug();
@@ -69,7 +69,7 @@ void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 
 void mainWindow::ClearDataset ()
 {
-	uint32 inputNumber = _settings->GetInputNumber() - 1;
+	uint32 inputNumber = _settings->GetInputNumber();
 	_inConnection[ inputNumber ]->ResetDataset();
 	_register[ inputNumber ]->OutputPort().GetPort( 0 ).GetConnection()->ResetDataset();
 	currentViewerDesktop->UpdateViewers();

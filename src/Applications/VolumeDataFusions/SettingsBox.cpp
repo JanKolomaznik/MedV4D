@@ -31,89 +31,82 @@ SettingsBox
 	grid->setRowMinimumHeight( 0, ROW_SPACING );
 
 	//-------------------------------------------------
-	grid->addWidget( new QLabel( tr( "Fusion Order Number" ) ), 1, 1 );
-	fusionNumber = new QSpinBox();
-	fusionNumber->setAlignment( Qt::AlignRight );
-	fusionNumber->setMaximum( SLICEVIEWER_INPUT_NUMBER );
-	fusionNumber->setMinimum( 1 );
-	grid->addWidget(fusionNumber, 1, 3 );
-	//-------------------------------------------------
 	
 	grid->setRowMinimumHeight( 2, ROW_SPACING );
-	grid->addWidget( new QLabel( tr( "Registration" ) ), 2, 1 );
+	grid->addWidget( new QLabel( tr( "Registration" ) ), 1, 1 );
 	radioButtons = new QButtonGroup( this );
 	rbutton = new QRadioButton( "Automatic" );
-	grid->addWidget( rbutton, 2, 2 );
+	grid->addWidget( rbutton, 1, 2 );
 	radioButtons->addButton( rbutton, 0 );
 	
 	rbutton = new QRadioButton( "Manual" );
 	rbutton->setChecked( true );
-	grid->addWidget( rbutton, 2, 3 );
+	grid->addWidget( rbutton, 1, 3 );
 	radioButtons->addButton( rbutton, 1 );
 
 	QObject::connect( radioButtons, SIGNAL( buttonClicked( int ) ), this, SLOT( RegistrationType( int ) ) );
 	
-	grid->addWidget( new QLabel( tr( "Rotation (degrees)" ) ), 3, 2 );
-	grid->addWidget( new QLabel( tr( "Translation (pixels)" ) ), 3, 3 );
+	grid->addWidget( new QLabel( tr( "Rotation (degrees)" ) ), 2, 2 );
+	grid->addWidget( new QLabel( tr( "Translation (pixels)" ) ), 2, 3 );
 
-	grid->addWidget( new QLabel( tr( "X" ) ), 4, 1 );
+	grid->addWidget( new QLabel( tr( "X" ) ), 3, 1 );
 	xRot = new QSpinBox();
 	xRot->setAlignment( Qt::AlignRight );
 	xRot->setMaximum( 360 );
 	xRot->setMinimum( 0 );
-	grid->addWidget(xRot, 4, 2 );
+	grid->addWidget(xRot, 3, 2 );
 
 	xTrans = new QSpinBox();
 	xTrans->setAlignment( Qt::AlignRight );
 	xTrans->setMaximum( 250 );
 	xTrans->setMinimum( -250 );
 	xTrans->setValue( 0 );
-	grid->addWidget(xTrans, 4, 3 );
+	grid->addWidget(xTrans, 3, 3 );
 
-	grid->addWidget( new QLabel( tr( "Y" ) ), 5, 1 );
+	grid->addWidget( new QLabel( tr( "Y" ) ), 4, 1 );
 	yRot = new QSpinBox();
 	yRot->setAlignment( Qt::AlignRight );
 	yRot->setMaximum( 360 );
 	yRot->setMinimum( 0 );
-	grid->addWidget(yRot, 5, 2 );
+	grid->addWidget(yRot, 4, 2 );
 
 	yTrans = new QSpinBox();
 	yTrans->setAlignment( Qt::AlignRight );
 	yTrans->setMaximum( 250 );
 	yTrans->setMinimum( -250 );
 	yTrans->setValue( 0 );
-	grid->addWidget(yTrans, 5, 3 );
+	grid->addWidget(yTrans, 4, 3 );
 
-	grid->addWidget( new QLabel( tr( "Z" ) ), 6, 1 );
+	grid->addWidget( new QLabel( tr( "Z" ) ), 5, 1 );
 	zRot = new QSpinBox();
 	zRot->setAlignment( Qt::AlignRight );
 	zRot->setMaximum( 360 );
 	zRot->setMinimum( 0 );
-	grid->addWidget(zRot, 6, 2 );
+	grid->addWidget(zRot, 5, 2 );
 
 	zTrans = new QSpinBox();
 	zTrans->setAlignment( Qt::AlignRight );
 	zTrans->setMaximum( 250 );
 	zTrans->setMinimum( -250 );
 	zTrans->setValue( 0 );
-	grid->addWidget(zTrans, 6, 3 );
+	grid->addWidget(zTrans, 5, 3 );
 
-	grid->addWidget( new QLabel( tr( "Registration Sampling" ) ), 7, 1, 1, 2 );
+	grid->addWidget( new QLabel( tr( "Registration Sampling" ) ), 6, 1, 1, 2 );
 	accuracy = new QSpinBox();
 	accuracy->setAlignment( Qt::AlignRight );
 	accuracy->setMaximum( 2048 );
 	accuracy->setMinimum( 2 );
 	accuracy->setValue( TRANSFORM_SAMPLING );
 	accuracy->setEnabled( false );
-	grid->addWidget(accuracy, 7, 3 );
+	grid->addWidget(accuracy, 6, 3 );
 	
-	grid->addWidget( new QLabel( tr( "Level of parallelization (number of processors)" ) ), 8, 1, 1, 2 );
+	grid->addWidget( new QLabel( tr( "Level of parallelization (number of processors)" ) ), 7, 1, 1, 2 );
 	threadNum = new QSpinBox();
 	threadNum->setAlignment( Qt::AlignRight );
 	threadNum->setMaximum( 256 );
 	threadNum->setMinimum( 1 );
 	threadNum->setValue( 1 );
-	grid->addWidget(threadNum, 8, 3 );
+	grid->addWidget(threadNum, 7, 3 );
 	
 
 	//-------------------------------------------------
@@ -188,7 +181,7 @@ uint32
 SettingsBox
 ::GetInputNumber()
 {
-	return fusionNumber->value();
+	return _viewers->getSelectedViewerSourceIdx() / 2;
 }
 
 void
@@ -234,7 +227,7 @@ void
 SettingsBox
 ::ExecSingleFilter()
 {
-	ExecuteFilter( fusionNumber->value() - 1 );
+	ExecuteFilter( GetInputNumber() );
 }
 
 void
@@ -248,7 +241,7 @@ void
 SettingsBox
 ::StopSingleFilter()
 {
-	_registerFilters[ fusionNumber->value() - 1 ]->StopExecution();
+	_registerFilters[ GetInputNumber() ]->StopExecution();
 }
 
 void
