@@ -41,6 +41,7 @@ KidneySegmentationControlPanel
 	{
 		QVBoxLayout *tmpLayout = new QVBoxLayout;
 		QLabel *label;
+		QFrame *frame;
 
 		_modelsCombo = new QComboBox();
 		const ModelInfoVector & infos = _manager->GetModelInfos();
@@ -62,15 +63,58 @@ KidneySegmentationControlPanel
 		slider->setValue( 15 );
 		tmpLayout->addWidget( slider );
 
+		//**************************************************
+		//***** MODEL BALANCES *****************************
+		frame = new QFrame;
+		frame->setFrameShape( QFrame::HLine );
+		tmpLayout->addWidget( frame );
+
+		label = new QLabel( "Intensity distribution balance:" );
+		tmpLayout->addWidget( label );
+
 		slider = new QSlider();
 		slider->setOrientation( Qt::Horizontal );
 		slider->setMinimum( 0 );
 		slider->setMaximum( 1000 );
-		_manager->SetShapeIntensityBalance( 750 );
+		_manager->SetDistBalance( 250 );
 		QObject::connect( slider, SIGNAL( valueChanged( int ) ), 
-				_manager, SLOT( SetShapeIntensityBalance( int ) ) );
+				_manager, SLOT( SetDistBalance( int ) ) );
+		slider->setValue( 250 );
+		tmpLayout->addWidget( slider );
+
+		label = new QLabel( "Shape model balance:" );
+		tmpLayout->addWidget( label );
+
+		slider = new QSlider();
+		slider->setOrientation( Qt::Horizontal );
+		slider->setMinimum( 0 );
+		slider->setMaximum( 1000 );
+		_manager->SetShapeBalance( 250 );
+		QObject::connect( slider, SIGNAL( valueChanged( int ) ), 
+				_manager, SLOT( SetShapeBalance( int ) ) );
+		slider->setValue( 250 );
+		tmpLayout->addWidget( slider );
+
+		label = new QLabel( "General model balance:" );
+		tmpLayout->addWidget( label );
+
+		slider = new QSlider();
+		slider->setOrientation( Qt::Horizontal );
+		slider->setMinimum( 0 );
+		slider->setMaximum( 1000 );
+		_manager->SetGeneralBalance( 750 );
+		QObject::connect( slider, SIGNAL( valueChanged( int ) ), 
+				_manager, SLOT( SetGeneralBalance( int ) ) );
 		slider->setValue( 750 );
 		tmpLayout->addWidget( slider );
+
+		frame = new QFrame;
+		frame->setFrameShape( QFrame::HLine );
+		tmpLayout->addWidget( frame );
+		//**************************************************
+		//**************************************************
+		label = new QLabel( "Edge importance:" );
+		tmpLayout->addWidget( label );
 
 		slider = new QSlider();
 		slider->setOrientation( Qt::Horizontal );
@@ -82,15 +126,15 @@ KidneySegmentationControlPanel
 		slider->setValue( 800 );
 		tmpLayout->addWidget( slider );
 
-		label = new QLabel( "Internal energy balance:" );
+		/*label = new QLabel( "Internal energy balance:" );
 		tmpLayout->addWidget( label );
 
 		slider = new QSlider();
 		slider->setOrientation( Qt::Horizontal );
 		slider->setMinimum( 0 );
-		slider->setMaximum( 1000 );
+		slider->setMaximum( 1000 );*/
 		_manager->SetInternalEnergyBalance( 0 );
-		QObject::connect( slider, SIGNAL( valueChanged( int ) ), 
+		/*QObject::connect( slider, SIGNAL( valueChanged( int ) ), 
 				_manager, SLOT( SetInternalEnergyBalance( int ) ) );
 		slider->setValue( 0 );
 		tmpLayout->addWidget( slider );
@@ -101,19 +145,19 @@ KidneySegmentationControlPanel
 		slider = new QSlider();
 		slider->setOrientation( Qt::Horizontal );
 		slider->setMinimum( 0 );
-		slider->setMaximum( 1000 );
+		slider->setMaximum( 1000 );*/
 		_manager->SetInternalEnergyGamma( 0 );
-		QObject::connect( slider, SIGNAL( valueChanged( int ) ), 
+		/*QObject::connect( slider, SIGNAL( valueChanged( int ) ), 
 				_manager, SLOT( SetInternalEnergyGamma( int ) ) );
 		slider->setValue( 0 );
 		tmpLayout->addWidget( slider );
 
 		QCheckBox *box = new QCheckBox( "Separate slice init" );
-		box->setChecked( true );
+		box->setChecked( true );*/
 		KidneySegmentationManager::Instance().SetSeparateSliceInit( true );
-		QObject::connect( box, SIGNAL( toggled( bool ) ), 
+		/*QObject::connect( box, SIGNAL( toggled( bool ) ), 
 				_manager, SLOT( SetSeparateSliceInit( bool ) ) );
-		tmpLayout->addWidget( box );
+		tmpLayout->addWidget( box );*/
 
 
 		button = new QPushButton( tr( "Start segmentation" ) );

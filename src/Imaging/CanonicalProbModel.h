@@ -192,6 +192,13 @@ public:
 		return GetPointRecord( GetClosestPoint( pos ) ).logHistogram[ intensity ];
 	}
 
+	float32
+	LogRatioCombination( const Coordinates &pos, IntensityType intensity, float32 shapeBalance, float32 generalBalance )
+	{
+		const GridPointRecord & rec = GetPointRecord( GetClosestPoint( pos ) );
+		return shapeBalance * rec.logRatioPos + generalBalance * rec.logHistogram[ intensity ];
+	}
+
 	Vector< float32, 3 >
 	GetLayerProbCenter( const Coordinates &pos )const
 	{
@@ -391,6 +398,12 @@ public:
 	float32
 	LogRatioProbabilityPosition( const Coordinates &pos )
 	{ return _grid->LogRatioProbabilityPosition( pos ); }
+
+	float32
+	LogRatioCombination( const Coordinates &pos, IntensityType intensity, float32 distributionBalance, float32 shapeBalance, float32 generalBalance )
+	{
+		return distributionBalance * _logRatioIntensity->Get( intensity ) + _grid->LogRatioCombination( pos, intensity, shapeBalance, generalBalance );
+	}
 
 	Vector< float32, 3 >
 	GetLayerProbCenter( const Coordinates &pos )const

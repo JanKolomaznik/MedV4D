@@ -17,9 +17,11 @@ private:
 	float32 		_zCoord;
 	Transformation		_transformation;
 	Vector< float32, 3 >	_tmp;
-	float32			_balance;
+	float32			_distBalance;
+	float32			_shapeBalance;
+	float32			_generalBalance;
 public:
-	ProbabilityFromModel():_model( NULL ), _balance( 0.5 ) {}
+	ProbabilityFromModel():_model( NULL ), _distBalance( 0.5 ), _shapeBalance( 0.5 ), _generalBalance( 0.5 ) {}
 
 	float32
 	LogProbabilityRatio( int16 value, const Vector< float32, 2 > &pos )
@@ -28,12 +30,15 @@ public:
 		_tmp[1] = pos[1];
 		_tmp[2] = _zCoord; //TODO - set with _zCoord
 
-		return _model->LogRatioProbabilityIntesityPosition( value, _transformation( _tmp ), _balance ); 
+		//return _model->LogRatioProbabilityIntesityPosition( value, _transformation( _tmp ), _balance ); 
 		//return _model->LogRatioProbabilityIntesityPositionDependent( value, _transformation( _tmp ) ); 
+		return _model->LogRatioCombination( _transformation( _tmp ), value, _distBalance, _shapeBalance, _generalBalance ); 
 	}
 	SIMPLE_GET_SET_METHODS( CanonicalProbModel*, Model, _model );
 	SIMPLE_GET_SET_METHODS( float32, ZCoordinate, _zCoord );
-	SIMPLE_GET_SET_METHODS( float32, Balance, _balance );
+	SIMPLE_GET_SET_METHODS( float32, DistBalance, _distBalance );
+	SIMPLE_GET_SET_METHODS( float32, ShapeBalance, _shapeBalance );
+	SIMPLE_GET_SET_METHODS( float32, GeneralBalance, _generalBalance );
 	SIMPLE_GET_SET_METHODS( Transformation, Transformation, _transformation );
 };
 
@@ -107,7 +112,7 @@ public:
 
 	struct Properties : public PredecessorType::Properties
 	{
-		Properties(): precision( -1 ), shapeIntensityBalance( 0.5 ), edgeRegionBalance( 0.5 ), probModel( NULL ), separateSliceInit(true) {}
+		Properties(): precision( -1 ), distBalance( 0.5 ), shapeBalance( 0.5 ), generalBalance( 0.5 ), edgeRegionBalance( 0.5 ), probModel( NULL ), separateSliceInit(true) {}
 
 		Coordinates		firstPoint;
 		int32			firstSlice;
@@ -115,7 +120,9 @@ public:
 		int32			secondSlice;
 
 		int32			precision;
-		float32			shapeIntensityBalance;
+		float32			distBalance;
+		float32			shapeBalance;
+		float32			generalBalance;
 		float32			edgeRegionBalance;
 		float32			internalEnergyBalance;
 		float32			internalEnergyGamma;
@@ -137,7 +144,10 @@ public:
 	GET_SET_PROPERTY_METHOD_MACRO( int32, SecondSlice, secondSlice );
 
 	GET_SET_PROPERTY_METHOD_MACRO( int32, Precision, precision );
-	GET_SET_PROPERTY_METHOD_MACRO( float32, ShapeIntensityBalance, shapeIntensityBalance );
+	//GET_SET_PROPERTY_METHOD_MACRO( float32, ShapeIntensityBalance, shapeIntensityBalance );
+	GET_SET_PROPERTY_METHOD_MACRO( float32, DistBalance, distBalance );
+	GET_SET_PROPERTY_METHOD_MACRO( float32, ShapeBalance, shapeBalance );
+	GET_SET_PROPERTY_METHOD_MACRO( float32, GeneralBalance, generalBalance );
 	GET_SET_PROPERTY_METHOD_MACRO( float32, EdgeRegionBalance, edgeRegionBalance );
 	GET_SET_PROPERTY_METHOD_MACRO( float32, InternalEnergyBalance, internalEnergyBalance );
 	GET_SET_PROPERTY_METHOD_MACRO( float32, InternalEnergyGamma, internalEnergyGamma );

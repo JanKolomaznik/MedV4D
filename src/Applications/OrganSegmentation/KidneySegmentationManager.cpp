@@ -212,6 +212,10 @@ KidneySegmentationManager::PolesSet()
 				);
 	//std::cout << maxP << "\n";
 	maxP += pom;
+	for( unsigned i = 0; i < 3; ++i ) {
+		minP[i] = Max( minP[i], _inputImage->GetMinimum()[i] );
+		maxP[i] = Min( maxP[i], _inputImage->GetMaximum()[i] );
+	}
 	_inputImage = _inputImage->GetRestrictedImage( 
 			_inputImage->GetSubRegion( minP, maxP )
 			);
@@ -326,16 +330,18 @@ KidneySegmentationManager::RunSplineSegmentation()
 	_segmentationFilter->SetSecondSlice( _poles[1].slice );
 	_segmentationFilter->SetProbabilityModel( _probModel.get() );
 
-	/*_segmentationFilter->SetInsidePoint( sState->_insidePoint );
-	_segmentationFilter->SetInsidePointSlice( sState->_insidePointSlice );
-	_segmentationFilter->SetOutsidePoint( sState->_outsidePoint );
-	_segmentationFilter->SetOutsidePointSlice( sState->_outsidePointSlice );*/
+	
 
 	_segmentationFilter->SetPrecision( _computationPrecision );
 	_segmentationFilter->SetEdgeRegionBalance( _edgeRegionBalance );
 	_segmentationFilter->SetInternalEnergyBalance( _internalEnergyBalance );
 	_segmentationFilter->SetInternalEnergyGamma( _internalEnergyGamma );
-	_segmentationFilter->SetShapeIntensityBalance( _shapeIntensityBalance );
+	
+	//_segmentationFilter->SetShapeIntensityBalance( _shapeIntensityBalance );
+	_segmentationFilter->SetDistBalance( _distBalance );
+	_segmentationFilter->SetShapeBalance( _shapeBalance );
+	_segmentationFilter->SetGeneralBalance( _generalBalance );
+
 	_segmentationFilter->SetSeparateSliceInit( _separateSliceInit );
 
 	_segmentationFilter->ExecuteOnWhole();
@@ -344,22 +350,9 @@ KidneySegmentationManager::RunSplineSegmentation()
 
 	SegmentationFinished();
 
-	//QMessageBox::information( NULL, "Execution finished", "Filter finished its work" );
-
-
-
-	//std::cout << "Done\n";
 
 	_dataset = _outGeomConnection->GetDatasetPtrTyped();
 
-	/*D_PRINT( "Go to Process results." );
-
-	MainManager::Instance().ProcessResultDatasets( _inputImage, ptr );
-	*/
-
-	//sState->ShowGeometryDataset( ptr );
-	
-	
 }
 
 void

@@ -149,9 +149,21 @@ public slots:
 	}
 
 	void
-	SetShapeIntensityBalance( int value )
+	SetDistBalance( int value )
 	{
-		_shapeIntensityBalance = static_cast<float32>(value) / 1000.0f;
+		_distBalance = static_cast<float32>(value) / 1000.0f;
+	}
+
+	void
+	SetShapeBalance( int value )
+	{
+		_shapeBalance = static_cast<float32>(value) / 1000.0f;
+	}
+	
+	void
+	SetGeneralBalance( int value )
+	{
+		_generalBalance = static_cast<float32>(value) / 1000.0f;
 	}
 
 	void
@@ -230,7 +242,11 @@ protected:
 
 	M4D::Imaging::CanonicalProbModel::Ptr		_probModel;
 
-	float32						_shapeIntensityBalance;
+	//float32					_shapeIntensityBalance;
+	float32						_distBalance;
+	float32						_shapeBalance;
+	float32						_generalBalance;
+
 	float32						_edgeRegionBalance;
 	float32						_internalEnergyBalance;
 	float32						_internalEnergyGamma;

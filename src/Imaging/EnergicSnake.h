@@ -84,7 +84,7 @@ private:
 class StepScaleConvergenceCriterion
 {
 public:
-	StepScaleConvergenceCriterion(): _maxStepCount( 50 ), _calmDownInterval( 10 ), _stepScaleLimit( 0.05 )
+	StepScaleConvergenceCriterion(): _maxStepCount( 50 ), _calmDownInterval( 10 ), _stepScaleLimit( 0.01 )
 		{}
 	bool
 	Converged( EnergicSnakeParameters &params, EnergicSnakeStats &stats )
