@@ -1473,6 +1473,7 @@ m4dGUISliceViewerWidget::slotMessageHandler( Imaging::PipelineMsgID msgID )
 	    setParameters();
             calculateOptimalZoomRate();
             updateGL();
+	    if ( ! _ready ) return;
 	    if ( msgID != Imaging::PMI_FILTER_UPDATED )
 	    {
 		unsigned typeSize;
