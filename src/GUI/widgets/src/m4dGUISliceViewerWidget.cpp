@@ -146,6 +146,7 @@ m4dGUISliceViewerWidget::resetParameters()
 			_sliceOrientation = xy;
 			_dimension = 2;
 		    }
+		    _oldTimeStamp = _inPort->GetDatasetTyped().GetStructureTimestamp();
 		    unsigned typeSize;
 		    bool unsgn;
 		    NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( _imageID, { typeSize = sizeof( TTYPE ); unsgn = ( typeid( TTYPE ) == typeid( uint8 ) || typeid( TTYPE ) == typeid( uint16 ) || typeid( TTYPE ) == typeid( uint32 ) || typeid( TTYPE ) == typeid( uint64 ) ); } );
@@ -245,6 +246,7 @@ m4dGUISliceViewerWidget::setParameters()
 			_sliceOrientation = xy;
 			_dimension = 2;
 		    }
+		    _oldTimeStamp = _inPort->GetDatasetTyped().GetStructureTimestamp();
 		    unsigned typeSize;
 		    bool unsgn;
 		    NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( _imageID, { typeSize = sizeof( TTYPE ); unsgn = ( typeid( TTYPE ) == typeid( uint8 ) || typeid( TTYPE ) == typeid( uint16 ) || typeid( TTYPE ) == typeid( uint32 ) || typeid( TTYPE ) == typeid( uint64 ) ); } );
@@ -430,7 +432,8 @@ void
 m4dGUISliceViewerWidget::paintGL()
 {
     glClear( GL_COLOR_BUFFER_BIT );
-    if ( !_ready ) setParameters();
+    if ( !_ready || 
+         _inPort->GetDatasetTyped().GetStructureTimestamp() != _oldTimeStamp ) setParameters();
     if ( _inPort->IsPlugged() && _ready )
     {
         unsigned i;

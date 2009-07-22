@@ -650,6 +650,8 @@ protected:
      */
     std::list< Selection::m4dShape<double> >	_shapes;
 
+    Common::TimeStamp				_oldTimeStamp;
+
     
     /**
      * < 0 value indicates horizontal flip.
