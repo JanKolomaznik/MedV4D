@@ -144,7 +144,7 @@ ManualSegmentationManager::LeftButtonDown( Vector< float32, 2 > pos, int32 slice
 				SetState( SELECTED );
 				_curveSlice = sliceNum;
 				_curveIdx = f.idx;
-				_curve = &(_dataset->GetObject(sliceNum, _curveIdx));
+				_curve = &(_dataset->GetObjectInSlice(sliceNum, _curveIdx));
 			} else {
 				SetState( SELECT );
 			}
@@ -202,7 +202,7 @@ ManualSegmentationManager::FinishCurveCreating()
 		return;
 	}
 	D_PRINT( "Finishing curve creation - adding new curve." );
-	_dataset->AddObject( _curveSlice, *_curve );
+	_dataset->AddObjectToSlice( _curveSlice, *_curve );
 	_curve = NULL;
 }
 
@@ -266,7 +266,7 @@ void
 ManualSegmentationManager::DeleteSelectedCurve()
 {
 	if( SELECTED == _state ) {
-		_dataset->RemoveObject( _curveSlice, _curveIdx );
+		_dataset->RemoveObjectFromSlice( _curveSlice, _curveIdx );
 		_curve = NULL;
 		SetState( SELECT );
 	}

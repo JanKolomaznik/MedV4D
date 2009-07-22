@@ -201,6 +201,8 @@ public slots:
 
 signals:
 	void StateUpdated();
+
+	//ChangeInputConnection( ManagerActivationInfo info );
 protected:
 	InternalState	_state;
 	//enum SubStates { DEFINING_POLE, MOVING_POLE };

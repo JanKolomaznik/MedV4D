@@ -520,6 +520,9 @@ private:
 		const BFValVector &values = curve.GetLastBasisFunctionValues();
 		const BFValVector &derivValues = curve.GetLastBasisFunctionDerivationValues();
 		_sampleFrequency = curve.GetLastSampleFrequency();
+		
+		ASSERT( derivValues.size() == _sampleFrequency );
+		ASSERT( values.size() == _sampleFrequency );
 
 		Q.resize( Degree+1 );
 		for( int i = 0; i <= (int)Degree; ++i ) {
@@ -641,7 +644,7 @@ private:
 	{
 		static const int32 SampleFrequency = 10;
 		typename ContourType::BFValVector basisFunctionValues;
-		basisFunctionValues.reserve( SampleFrequency );
+		basisFunctionValues.resize( SampleFrequency );
 		float32 t = 0.0f;
 		float32 dt = 1.0f / SampleFrequency;
 		for( int32 i=0; i < SampleFrequency; ++i, t += dt ) {

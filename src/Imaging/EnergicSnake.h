@@ -38,9 +38,9 @@ struct EnergicSnakeParameters
 		_sampleRate( 5 ),
 		_minSegmentLength( 3 ),
 		_maxSegmentLength( 45 ),
-		_stepScale( 5.0 ),
-		_stepScaleAlpha( 0.95 ),
-		_stepScaleBeta( 0.1 ),
+		_stepScale( 5.0f ),
+		_stepScaleAlpha( 0.95f ),
+		_stepScaleBeta( 0.1f ),
 		_maxStepScale( 100.0f )
 	{
 	}
@@ -84,7 +84,7 @@ private:
 class StepScaleConvergenceCriterion
 {
 public:
-	StepScaleConvergenceCriterion(): _maxStepCount( 50 ), _calmDownInterval( 10 ), _stepScaleLimit( 0.01 )
+	StepScaleConvergenceCriterion(): _maxStepCount( 50 ), _calmDownInterval( 10 ), _stepScaleLimit( 0.01f )
 		{}
 	bool
 	Converged( EnergicSnakeParameters &params, EnergicSnakeStats &stats )
@@ -148,9 +148,16 @@ public:
 	GetCurrentGradientSize()const
 		{ return _stats._lastGradientSize; }
 
+	SIMPLE_GET_METHOD( unsigned, SampleRate, _parameters._sampleRate );
+	void
+	SetSampleRate( unsigned rate )
+		{
+			_curve.Sample( _parameters._sampleRate );
+			_curve.SampleWithDerivations( _parameters._sampleRate );
+		}
+
 	SIMPLE_GET_SET_METHODS( unsigned, SelfIntersectionTestPeriod, _parameters._selfIntersectionTestPeriod );
 	SIMPLE_GET_SET_METHODS( unsigned, SegmentLengthsTestPeriod, _parameters._segmentLengthsTestPeriod );
-	SIMPLE_GET_SET_METHODS( unsigned, SampleRate, _parameters._sampleRate );
 	SIMPLE_GET_SET_METHODS( float32, MinSegmentLength, _parameters._minSegmentLength );
 	SIMPLE_GET_SET_METHODS( float32, MaxSegmentLength, _parameters._maxSegmentLength );
 	SIMPLE_GET_SET_METHODS( float32, StepScale, _parameters._stepScale );

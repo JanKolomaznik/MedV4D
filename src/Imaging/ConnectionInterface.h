@@ -258,23 +258,27 @@ public:
 	void
 	PutDataset( AbstractDataSet::Ptr dataset )
 		{
+			DatasetType::Ptr newDataset;
 			if( dataset ) {
-				_dataset = DatasetType::Cast( dataset );
-
-				this->RouteMessage( 
-					MsgDatasetPut::CreateMsg(), 
-					PipelineMessage::MSS_NORMAL,
-					FD_BOTH	
-				);
-			} else {
-				_dataset = typename DatasetType::Ptr();
-
-				this->RouteMessage( 
-					MsgDatasetRemoved::CreateMsg(), 
-					PipelineMessage::MSS_NORMAL,
-					FD_BOTH	
-				);
+				newDataset = DatasetType::Cast( dataset );
+				
 			}
+
+			if( _dataset ) {
+				_dataset->ExclusiveLockDataset();
+				DatasetType::Ptr tmp = _dataset;
+				_dataset = newDataset;
+				tmp->ExclusiveUnlockDataset();
+			} else {
+				_dataset = newDataset;
+			}
+			
+
+			this->RouteMessage( 
+				MsgDatasetPut::CreateMsg(), 
+				PipelineMessage::MSS_NORMAL,
+				FD_BOTH	
+			);
 		}
 
 	AbstractDataSet &

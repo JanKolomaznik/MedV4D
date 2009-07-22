@@ -86,7 +86,7 @@ public:
 	Vector( const Vector< CType, Dimension > &coord ) 
 		{ 
 			for( unsigned i=0; i<Dimension; ++i ) 
-			{ _coordinates[i] = coord[i]; } 
+			{ _coordinates[i] = static_cast<CoordType>(coord[i]); } 
 		}
 
 	Vector( const CoordType coords[] ) 
@@ -123,7 +123,7 @@ public:
 	Vector< CoordType, Dimension > &
 	operator=( const Vector< CType, Dimension > &coord )
 		{ 
-			for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = coord[i]; } 
+			for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = static_cast<CoordType>(coord[i]); } 
 			return *this;
 		}
 

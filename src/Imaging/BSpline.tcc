@@ -105,7 +105,7 @@ BSpline< CoordType, Dim >
 	}
 	
 	//Precompute basis functions values
-	_lastBasisFunctionValues.reserve( _lastSampleFrequency );
+	_lastBasisFunctionValues.resize( _lastSampleFrequency );
 	double dt = 1.0 / _lastSampleFrequency;
 	double t = 0.0;
 	for( unsigned i=0; i < _lastSampleFrequency; ++i, t += dt ) {
@@ -232,7 +232,7 @@ BSpline< CoordType, Dim >
 	}
 	
 	//Precompute basis functions values
-	_lastBasisFunctionDerivationValues.reserve( _lastSampleFrequency );
+	_lastBasisFunctionDerivationValues.resize( _lastSampleFrequency );
 	double dt = 1.0 / _lastSampleFrequency;
 	double t = 0.0;
 	for( unsigned i=0; i < _lastSampleFrequency; ++i, t += dt ) {

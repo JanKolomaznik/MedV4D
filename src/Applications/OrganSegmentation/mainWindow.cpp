@@ -41,6 +41,7 @@ mainWindow::mainWindow ()
 		QObject::connect( *it, SIGNAL(ManagerActivated( ManagerActivationInfo )), this, SLOT( ManagerActivatedSlot( ManagerActivationInfo ) ) );
 		QObject::connect( *it, SIGNAL(WantsViewerUpdate()), _segmentationViewerWidget, SLOT( UpdateViewers() ) );
 		QObject::connect( *it, SIGNAL(ProcessResults( ResultsInfo )), this, SLOT( ProcessResults( ResultsInfo ) ) );
+		QObject::connect( *it, SIGNAL(ErrorMessageSignal( const QString & )), this, SLOT( ErrorMessageSlot( const QString & ) ) );
 
 	}
 }

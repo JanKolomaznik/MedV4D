@@ -17,7 +17,7 @@ CreateGaussianFilterMask( uint32 radius )
 	D_PRINT( "Creating gaussian convolution mask. Radius = " << radius );
 	Vector<uint32,2> pom;
 	Vector<uint32,2> size = Vector<uint32,2>( 2*radius + 1, 2*radius + 1 );
-	float32 std = static_cast<float32>( radius )/3.0;
+	float32 std = static_cast<float32>( radius )/3.0f;
 	float32 *buff = new float32[size[0]*size[1]];
 	
 	double sum = 0.0;

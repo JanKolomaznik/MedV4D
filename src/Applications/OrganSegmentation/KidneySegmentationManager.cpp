@@ -29,7 +29,7 @@ LoadModelInfos( ModelInfoVector &_modelInfos )
 }
 
 KidneySegmentationManager::KidneySegmentationManager()
-	: _wasInitialized( false )
+: _wasInitialized( false ), _state( DEFINING_POLE )
 {
 
 	/*_gaussianFilter = new Gaussian();
@@ -168,6 +168,7 @@ KidneySegmentationManager::LeftButtonDown( Vector< float32, 2 > pos, int32 slice
 		++_actualPole;
 		if( _actualPole >= 2 ) {
 			SetState( POLES_SET );
+			emit WantsViewerUpdate();
 			return;
 		}
 		if( _actualPole == 1 ) {
@@ -189,6 +190,7 @@ KidneySegmentationManager::LeftButtonDown( Vector< float32, 2 > pos, int32 slice
 		ASSERT( false );
 		break;
 	}
+	emit WantsViewerUpdate();
 }
 //********************************************************************************************
 void
@@ -244,6 +246,7 @@ KidneySegmentationManager::SetNewPoles()
 	_poles[0].defined = false;	
 	_poles[1].defined = false;	
 	SetState( DEFINING_POLE );
+	emit WantsViewerUpdate();
 }
 
 struct SegmentationExecutionThread
@@ -303,13 +306,19 @@ void
 KidneySegmentationManager::SegmentationFinished()
 {
 	SetState( SEGMENTATION_FINISHED );
+	emit WantsViewerUpdate();
 }
 
 void
 KidneySegmentationManager::RunSplineSegmentation()
 {
 	if( _previousModelID != _modelID ) {
-		_probModel = CanonicalProbModel::LoadFromFile( _modelInfos[_modelID].modelFilename );
+		try {
+			_probModel = CanonicalProbModel::LoadFromFile( _modelInfos[_modelID].modelFilename );
+		} catch( ... ) {
+			emit ErrorMessageSignal( "Model loading problem - file not found." );
+			throw;
+		}
 	}
 	_previousModelID = _modelID;
 
@@ -408,5 +417,5 @@ KidneySegmentationManager::SetState( KidneySegmentationManager::InternalState st
 	
 	D_PRINT( "Emiting signals after state change." );
 	emit StateUpdated();
-	emit WantsViewerUpdate();
+	//emit WantsViewerUpdate();
 }

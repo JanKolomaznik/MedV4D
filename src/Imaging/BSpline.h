@@ -66,10 +66,10 @@ public:
 			
 			double scale = 1.0/6.0;
 
-			values[ 0 ] = scale * ( -   v[2] + 3*v[1] - 3*v[0] + 1 );
-			values[ 1 ] = scale * (   3*v[2] - 6*v[1]          + 4 );
-			values[ 2 ] = scale * ( - 3*v[2] + 3*v[1] + 3*v[0] + 1 );
-			values[ 3 ] = scale * (     v[2]                       );
+			values[ 0 ] = static_cast<ValueType>( scale * ( -   v[2] + 3*v[1] - 3*v[0] + 1 ) );
+			values[ 1 ] = static_cast<ValueType>( scale * (   3*v[2] - 6*v[1]          + 4 ) );
+			values[ 2 ] = static_cast<ValueType>( scale * ( - 3*v[2] + 3*v[1] + 3*v[0] + 1 ) );
+			values[ 3 ] = static_cast<ValueType>( scale * (     v[2]                       ) );
 
 		}
 
@@ -172,11 +172,17 @@ public:
 
 	const BFValVector &
 	GetLastBasisFunctionValues() const
-		{ return _lastBasisFunctionValues; }
+		{ 
+			ASSERT( _lastBasisFunctionValues.size() == _lastSampleFrequency );
+			return _lastBasisFunctionValues; 
+		}
 
 	const BFValVector &
 	GetLastBasisFunctionDerivationValues() const
-		{ return _lastBasisFunctionDerivationValues; }
+		{ 
+			ASSERT( _lastBasisFunctionDerivationValues.size() == _lastSampleFrequency );
+			return _lastBasisFunctionDerivationValues; 
+		}
 
 	void
 	SetCyclic( bool cyclic = true )

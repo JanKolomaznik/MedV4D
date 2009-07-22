@@ -445,6 +445,9 @@ public:
 	{
 		std::fstream input( filename.data(), std::ios::in | std::ios::binary );
 
+		if( ! input.is_open() )
+			_THROW_ ExceptionBase( TO_STRING( "Could't open file " << filename ) );
+
 		Histogram< float32 > *inIntensity = Histogram< float32 >::Load( input );
 		Histogram< float32 > *outIntensity = Histogram< float32 >::Load( input );
 		Histogram< float32 > *logRatioIntensity = Histogram< float32 >::Load( input );

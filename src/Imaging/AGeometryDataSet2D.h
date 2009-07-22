@@ -139,7 +139,7 @@ public:
 		}
 
 	ObjectType &
-	GetObject( int32 sliceNumber, uint32 objectNumber )
+	GetObjectInSlice( int32 sliceNumber, uint32 objectNumber )
 		{
 			ObjectsInSlice &slice = GetSlice( sliceNumber );
 			if( objectNumber >= slice.size() ) {
@@ -149,7 +149,7 @@ public:
 		}
 
 	const ObjectType &
-	GetObject( int32 sliceNumber, uint32 objectNumber )const
+	GetObjectInSlice( int32 sliceNumber, uint32 objectNumber )const
 		{
 			const ObjectsInSlice &slice = GetSlice( sliceNumber );
 			if( objectNumber >= slice.size() ) {
@@ -159,7 +159,7 @@ public:
 		}
 
 	uint32
-	AddObject( int32 sliceNumber, const ObjectType &obj )
+	AddObjectToSlice( int32 sliceNumber, const ObjectType &obj )
 		{
 			ObjectsInSlice &slice = GetSlice( sliceNumber );
 			slice.push_back( obj );
@@ -167,7 +167,7 @@ public:
 		}
 
 	void
-	RemoveObject( int32 sliceNumber, uint32 objectNumber )
+	RemoveObjectFromSlice( int32 sliceNumber, uint32 objectNumber )
 		{
 			ObjectsInSlice &slice = GetSlice( sliceNumber );
 			if( objectNumber >= slice.size() ) {

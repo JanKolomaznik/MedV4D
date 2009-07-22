@@ -64,6 +64,12 @@ public slots:
 
 	void
 	ProcessResults( ResultsInfo info );
+
+	void
+	ErrorMessageSlot( const QString &message )
+	{
+		QMessageBox::critical( this, "Problem...", message );
+	}
 protected:
 	void
 	process ( M4D::Imaging::AbstractDataSet::Ptr inputDataSet );

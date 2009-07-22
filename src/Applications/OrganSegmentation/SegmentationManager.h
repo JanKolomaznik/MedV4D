@@ -87,6 +87,9 @@ signals:
 
 	void
 	WantsViewerUpdate();
+	
+	void
+	ErrorMessageSignal( const QString &message );
 protected:
 	SegmentationManager(): _controlPanel( NULL )
 		{ /*empty*/ }

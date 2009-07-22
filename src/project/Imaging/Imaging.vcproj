@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1250"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="Imaging"
 	ProjectGUID="{A5A68502-8A1D-44AC-AB98-199CE76FFB8A}"
 	RootNamespace="Imaging"
@@ -282,6 +282,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\CannyEdgeDetection.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\CanonicalProbModel.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\ConnectionInterface.h"
 				>
 			</File>
@@ -318,7 +326,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\EnergyModels2.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\FilterComputation.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filterIDsEnum.h"
 				>
 			</File>
 			<File
@@ -331,6 +347,10 @@
 			</File>
 			<File
 				RelativePath="..\..\Imaging\GeometryDataSetFactory.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\Histogram.h"
 				>
 			</File>
 			<File
@@ -370,6 +390,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\ImageRegionAccessors.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\ImageTraits.h"
 				>
 			</File>
@@ -379,6 +403,10 @@
 			</File>
 			<File
 				RelativePath="..\..\Imaging\ModificationManager.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\MultiHistogram.h"
 				>
 			</File>
 			<File
@@ -430,11 +458,31 @@
 			Name="Filters"
 			>
 			<File
+				RelativePath="..\..\Imaging\filters\CannyEdgeDetector.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\CannyEdgeDetector.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\ClampFilter.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\filters\ConvolutionFilter.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\Imaging\filters\ConvolutionFilter.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\decimation.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\decimation.tcc"
 				>
 			</File>
 			<File
@@ -450,6 +498,30 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\filters\ImageRegistration.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\ImageRegistration.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\imageSizeAdapter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\imageSizeAdapter.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\ImageTransform.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\ImageTransform.tcc"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\filters\LaplaceOperator.h"
 				>
 			</File>
@@ -462,6 +534,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\filters\MaxFilter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\MaxFilter.tcc"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\filters\MedianFilter.h"
 				>
 			</File>
@@ -470,11 +550,27 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\filters\MinFilter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\MinFilter.tcc"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\filters\SimpleProjection.h"
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\filters\SimpleProjection.tcc"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\filters\SobelEdgeDetector.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\SobelEdgeDetector.tcc"
 				>
 			</File>
 			<File
