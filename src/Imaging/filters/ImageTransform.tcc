@@ -79,25 +79,15 @@ class TransformSlice
 {
 public:
 	TransformSlice( const Image< ElementType, 3 > &input, Image< ElementType, 3 > &output, typename ImageTransform< ElementType, 3 >::Properties* properties, InterpolatorBase< Image< ElementType, 3 > >* interp, int32 sNum, uint32 tSampling, Vector< typename InterpolatorBase< Image< ElementType, 3 > >::CoordType, 3 >& rotMatrix )
-		: in( input ), out( output ), prop( properties ), interpolator( interp ), sliceNum( sNum ), transformSampling( tSampling ), RotationMatrix( rotMatrix )
-	{}
-	void operator()()
+		: in( input ),
+		  out( output ),
+		  prop( properties ),
+		  interpolator( interp ),
+		  sliceNum( sNum ),
+		  transformSampling( tSampling ),
+		  RotationMatrix( rotMatrix )
 	{
-	
-		ElementType *sPointer, *pointer;
-		int32 xStride;
-		int32 yStride;
-		int32 zStride;
-		int32 height, oldheight;
-		int32 width, oldwidth;
-		int32 depth, olddepth;
-		float32 xExtent, yExtent, zExtent;
-		float32 newwidth, newheight, newdepth;
-
-		Vector< uint32, 3 > size;
-		Vector< int32, 3 > strides;
 		sPointer = out.GetPointer( size, strides );
-		typedef typename InterpolatorBase< Image< ElementType, 3 > >::CoordType CoordType;
 		width = (int32)size[0];
 		height = (int32)size[1];
 		depth = (int32)size[2];
@@ -114,42 +104,50 @@ public:
 		newheight = height * yExtent;
 		newdepth = depth * zExtent;
 
-		Vector< int32, 3 > scaleBias(
+		
+		scaleBias = Vector< int32, 3 >(
 			( width / 2 - width / ( 2 * prop->_scale[0] ) ),
 			( height / 2 - height / ( 2 * prop->_scale[1] ) ),
 			( depth / 2 - depth / ( 2 * prop->_scale[2] ) )
 		);
-		
+	}
 
-		CoordType point( 0.0, 0.0, 0.0 );
+	void operator()()
+	{
+		typedef typename InterpolatorBase< Image< ElementType, 3 > >::CoordType CoordType;
 
 		int32 k = sliceNum;
 		if ( k >= depth ) return;
+
+		CoordType startpoint = calculatePoint( 0.0, 0.0, k );
+		CoordType xdiff = calculatePoint( 1.0, 0.0, k );
+		CoordType ydiff = calculatePoint( 0.0, 1.0, k );
+
+		xdiff[0] -= startpoint[0];
+		xdiff[1] -= startpoint[1];
+		xdiff[2] -= startpoint[2];
+
+		ydiff[0] -= startpoint[0];
+		ydiff[1] -= startpoint[1];
+		ydiff[2] -= startpoint[2];
+
+		CoordType point( 0.0, 0.0, 0.0 );
+
+		CoordType rowstartpoint( 0.0, 0.0, 0.0 );
+
 		for( int32 j = 0; j < (int32)( ( transformSampling == 0 || height < (int32)transformSampling ) ? height : transformSampling ); ++j ) {
 
 			pointer = sPointer + k*zStride + j * yStride * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? 1 : height / transformSampling );
 
+			rowstartpoint[0] = startpoint[0] + j * ydiff[0];
+			rowstartpoint[1] = startpoint[1] + j * ydiff[1];
+			rowstartpoint[2] = startpoint[2] + j * ydiff[2];
+
 			for( int32 i = 0; i < (int32)( ( transformSampling == 0 || width < (int32)transformSampling ) ? width : transformSampling ); ++i ) {
 
-				point[0] = ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * ( width / transformSampling ) ) - newwidth/2 ) * RotationMatrix[0][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * ( height / transformSampling ) ) - newheight/2 ) * RotationMatrix[0][1] + ( zExtent * k - newdepth/2 ) * RotationMatrix[0][2] + newwidth/2;
-				point[1] = ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * ( width / transformSampling ) ) - newwidth/2 ) * RotationMatrix[1][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * ( height / transformSampling ) ) - newheight/2 ) * RotationMatrix[1][1] + ( zExtent * k - newdepth/2 ) * RotationMatrix[1][2] + newheight/2;
-				point[2] = ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * ( width / transformSampling ) ) - newwidth/2 ) * RotationMatrix[2][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * ( height / transformSampling ) ) - newheight/2 ) * RotationMatrix[2][1] + ( zExtent * k - newdepth/2 ) * RotationMatrix[2][2] + newdepth/2;
-
-				point[0] /= xExtent;
-				point[1] /= yExtent;
-				point[2] /= zExtent;
-
-				point[0] -= prop->_translation[0];
-				point[1] -= prop->_translation[1];
-				point[2] -= prop->_translation[2];
-
-				point[0] = ( point[0] / prop->_scale[0] + scaleBias[0] );
-				point[1] = ( point[1] / prop->_scale[1] + scaleBias[1] );
-				point[2] = ( point[2] / prop->_scale[2] + scaleBias[2] );
-
-				point[0] /= prop->_sampling[0];
-				point[1] /= prop->_sampling[1];
-				point[2] /= prop->_sampling[2];
+				point[0] = rowstartpoint[0] + i * xdiff[0];
+				point[1] = rowstartpoint[1] + i * xdiff[1];
+				point[2] = rowstartpoint[2] + i * xdiff[2];
 
 				if ( ( point[0] < 0 ) |
 				     ( point[0] > ( oldwidth - 1 ) ) |
@@ -165,6 +163,41 @@ public:
 		}
 	}
 private:
+
+	typename InterpolatorBase< Image< ElementType, 3 > >::CoordType calculatePoint( int32 xcoord, int32 ycoord, int32 zcoord )
+	{
+		typedef typename InterpolatorBase< Image< ElementType, 3 > >::CoordType CoordType;
+
+		int32 i = xcoord;
+		int32 j = ycoord;
+		int32 k = zcoord;
+		
+		CoordType point( 0.0, 0.0, 0.0 );
+				
+		point[0] = ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * ( width / transformSampling ) ) - newwidth/2 ) * RotationMatrix[0][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * ( height / transformSampling ) ) - newheight/2 ) * RotationMatrix[0][1] + ( zExtent * k - newdepth/2 ) * RotationMatrix[0][2] + newwidth/2;
+		point[1] = ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * ( width / transformSampling ) ) - newwidth/2 ) * RotationMatrix[1][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * ( height / transformSampling ) ) - newheight/2 ) * RotationMatrix[1][1] + ( zExtent * k - newdepth/2 ) * RotationMatrix[1][2] + newheight/2;
+		point[2] = ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * ( width / transformSampling ) ) - newwidth/2 ) * RotationMatrix[2][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * ( height / transformSampling ) ) - newheight/2 ) * RotationMatrix[2][1] + ( zExtent * k - newdepth/2 ) * RotationMatrix[2][2] + newdepth/2;
+
+		point[0] /= xExtent;
+		point[1] /= yExtent;
+		point[2] /= zExtent;
+
+		point[0] -= prop->_translation[0];
+		point[1] -= prop->_translation[1];
+		point[2] -= prop->_translation[2];
+
+		point[0] = ( point[0] / prop->_scale[0] + scaleBias[0] );
+		point[1] = ( point[1] / prop->_scale[1] + scaleBias[1] );
+		point[2] = ( point[2] / prop->_scale[2] + scaleBias[2] );
+
+		point[0] /= prop->_sampling[0];
+		point[1] /= prop->_sampling[1];
+		point[2] /= prop->_sampling[2];
+
+		return point;
+
+	}
+
 	const Image< ElementType, 3 > &in;
 	Image< ElementType, 3 > &out;
 	typename ImageTransform< ElementType, 3 >::Properties* prop;
@@ -172,7 +205,19 @@ private:
 	int32 sliceNum;
 	uint32 transformSampling;
 	Vector< typename InterpolatorBase< Image< ElementType, 3 > >::CoordType, 3 >& RotationMatrix;
-	
+	ElementType *sPointer, *pointer;
+	int32 xStride;
+	int32 yStride;
+	int32 zStride;
+	int32 height, oldheight;
+	int32 width, oldwidth;
+	int32 depth, olddepth;
+	float32 xExtent, yExtent, zExtent;
+	float32 newwidth, newheight, newdepth;
+
+	Vector< uint32, 3 > size;
+	Vector< int32, 3 > strides;
+	Vector< int32, 3 > scaleBias;
 };
 
 template< typename ElementType >
