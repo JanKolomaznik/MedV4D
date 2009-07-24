@@ -16,9 +16,9 @@ NearestNeighborInterpolator<ImageType>
 	::Get(CoordType &coords)
 {
 	return *(this->m_dataPointer + (
-			((uint32)coords[0] * this->m_strides[0]) + 
-			((uint32)coords[1] * this->m_strides[1]) +
-			((uint32)coords[2] * this->m_strides[2])
+			((uint32)round(coords[0]) * this->m_strides[0]) + 
+			((uint32)round(coords[1]) * this->m_strides[1]) +
+			((uint32)round(coords[2]) * this->m_strides[2])
 			) );
 }
 

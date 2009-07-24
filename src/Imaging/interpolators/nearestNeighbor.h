@@ -1,6 +1,7 @@
 #ifndef NEARESTNEIGHBOR_H_
 #define NEARESTNEIGHBOR_H_
 
+#include <math.h>
 #include "base.h"
 
 namespace M4D
