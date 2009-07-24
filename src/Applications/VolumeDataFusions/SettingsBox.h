@@ -2,6 +2,8 @@
 #define _SETTINGS_BOX_H
 
 #include <QtGui>
+#include "Imaging/interpolators/nearestNeighbor.h"
+#include "Imaging/interpolators/linear.h"
 #include "GUI/widgets/m4dGUIMainViewerDesktopWidget.h"
 #include "GUI/widgets/components/MaxAvrMinRGBSliceViewerTexturePreparer.h"
 #include "GUI/widgets/components/MaxMedMinRGBSliceViewerTexturePreparer.h"
@@ -69,6 +71,7 @@ protected:
 	QSpinBox *accuracy;
 	QSpinBox *threadNum;
 	QComboBox *fusionType;
+	QComboBox *interpolatorType;
 	QPushButton *clearButton;
 	QPushButton *execButton;
 	M4D::Viewer::MultiChannelRGBSliceViewerTexturePreparer< ElementType > multiChannelRGBTexturePreparer;
@@ -83,6 +86,10 @@ protected:
 	M4D::Viewer::MaxMaxMinGradientRGBSliceViewerTexturePreparer< ElementType > maxMaxMinGradientRGBTexturePreparer;
 	M4D::Viewer::MaxMinMinGradientRGBSliceViewerTexturePreparer< ElementType > maxMinMinGradientRGBTexturePreparer;
 	M4D::Viewer::MultiChannelGradientRGBSliceViewerTexturePreparer< ElementType > multiChannelGradientRGBTexturePreparer;
+
+	M4D::Imaging::NearestNeighborInterpolator< ImageType >			nearestNeighborInterpolator[ SLICEVIEWER_INPUT_NUMBER ];
+	M4D::Imaging::LinearInterpolator< ImageType >				linearInterpolator[ SLICEVIEWER_INPUT_NUMBER ];
+
 };
 
 #endif /*_SETTINGS_BOX_H*/

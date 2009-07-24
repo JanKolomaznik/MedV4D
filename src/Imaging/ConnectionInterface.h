@@ -258,7 +258,7 @@ public:
 	void
 	PutDataset( AbstractDataSet::Ptr dataset )
 		{
-			DatasetType::Ptr newDataset;
+			typename DatasetType::Ptr newDataset;
 			if( dataset ) {
 				newDataset = DatasetType::Cast( dataset );
 				
@@ -266,7 +266,7 @@ public:
 
 			if( _dataset ) {
 				_dataset->ExclusiveLockDataset();
-				DatasetType::Ptr tmp = _dataset;
+				typename DatasetType::Ptr tmp = _dataset;
 				_dataset = newDataset;
 				tmp->ExclusiveUnlockDataset();
 			} else {

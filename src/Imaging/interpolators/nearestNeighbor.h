@@ -17,6 +17,9 @@ public:
 	typedef InterpolatorBase<ImageType> PredecessorType;
 	typedef typename PredecessorType::CoordType CoordType;
 	
+	NearestNeighborInterpolator() 
+		: PredecessorType() {}
+	
 	NearestNeighborInterpolator(const ImageType *image) 
 		: PredecessorType(image) {}
 	

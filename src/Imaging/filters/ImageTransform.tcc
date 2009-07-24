@@ -305,7 +305,8 @@ template< typename ElementType, uint32 dim >
 ImageTransform< ElementType, dim >
 ::ImageTransform( typename ImageTransform< ElementType, dim >::Properties  * prop )
 	: PredecessorType( prop ),
-	  _threadNumber( 1 )
+	  _threadNumber( 1 ),
+	  _interpolator( NULL )
 {
 	this->_name = "ImageTransform";
 }
@@ -314,7 +315,8 @@ template< typename ElementType, uint32 dim >
 ImageTransform< ElementType, dim >
 ::ImageTransform()
 	: PredecessorType( new Properties() ),
-	  _threadNumber( 1 )
+	  _threadNumber( 1 ),
+	  _interpolator( NULL )
 	
 {
 	this->_name = "ImageTransform";
@@ -338,13 +340,25 @@ ImageTransform< ElementType, dim >
 }
 
 template< typename ElementType, uint32 dim >
+void
+ImageTransform< ElementType, dim >
+::SetInterpolator( InterpolatorBase< ImageType >* interpolator )
+{
+	_interpolator = interpolator;
+}
+
+template< typename ElementType, uint32 dim >
 bool
 ImageTransform< ElementType, dim >
 ::ExecuteTransformation( uint32 transformSampling = 0 )
 {
 	bool result = false;
-	LinearInterpolator< ImageType > interpolator( this->in );
-	result = TransformImage< ElementType >( *(this->in), *(this->out), this->_properties, static_cast< InterpolatorBase< ImageType >* >( &interpolator ), transformSampling, _threadNumber );
+	if ( _interpolator == NULL )
+	{
+		_THROW_ ENULLPointer( "Interpolator not set in ImageTransform!" );
+	}
+	_interpolator->SetImage( this->in );
+	result = TransformImage< ElementType >( *(this->in), *(this->out), this->_properties, _interpolator, transformSampling, _threadNumber );
 	return result;
 }
 

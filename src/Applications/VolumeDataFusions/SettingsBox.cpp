@@ -110,6 +110,15 @@ SettingsBox
 	
 
 	//-------------------------------------------------
+
+	interpolatorType = new QComboBox();
+        interpolatorType->addItem( "Nearest Neighbor interpolator" );
+        interpolatorType->addItem( "Linear interpolator" );
+
+        interpolatorType->setCurrentIndex( 0 );
+
+	//-------------------------------------------------
+
 	fusionType = new QComboBox();
 
         fusionType->addItem( "RGB fusion" );
@@ -131,6 +140,7 @@ SettingsBox
 	//-------------------------------------------------
 
 	layout->addLayout( grid );
+	layout->addWidget( interpolatorType );
 	layout->addWidget( fusionType );
 
 	//-------------------------------------------------
@@ -201,6 +211,10 @@ void
 SettingsBox
 ::ExecuteFilter( unsigned filterNum )
 {
+
+	if ( interpolatorType->currentIndex() == 0 )	_registerFilters[ filterNum ]->SetInterpolator( &nearestNeighborInterpolator[ filterNum ] );
+	else						_registerFilters[ filterNum ]->SetInterpolator( &linearInterpolator[ filterNum ] );
+	
 	if ( xRot->isEnabled() )
 	{
 		_registerFilters[ filterNum ]->SetAutomaticMode( false );
@@ -219,6 +233,7 @@ SettingsBox
 		_registerFilters[ filterNum ]->SetAutomaticMode( true );
 		_registerFilters[ filterNum ]->SetTransformSampling( accuracy->value() );
 	}
+
 	_registerFilters[ filterNum ]->SetThreadNumber( threadNum->value() );
 	_registerFilters[ filterNum ]->ExecuteOnWhole();
 }

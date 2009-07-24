@@ -20,6 +20,9 @@ public:
 	typedef InterpolatorBase<ImageType> PredecessorType;
 	typedef typename PredecessorType::CoordType CoordType;
 	
+	LinearInterpolator() 
+		: PredecessorType() {}
+	
 	LinearInterpolator(const ImageType *image) 
 		: PredecessorType(image) {}
 	

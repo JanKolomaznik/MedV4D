@@ -65,6 +65,8 @@ public:
 	ImageTransform();
 
 	void SetThreadNumber( uint32 tNumber );
+
+	void SetInterpolator( InterpolatorBase< ImageType >* interpolator );
 	
 	void SetRotation(CoordType rotation)
 	{
@@ -127,6 +129,8 @@ protected:
 	WriterBBoxInterface		*_writerBBox;
 
 	uint32				_threadNumber;
+
+	InterpolatorBase< ImageType >*	_interpolator;
 
 private:
 	GET_PROPERTIES_DEFINITION_MACRO;
