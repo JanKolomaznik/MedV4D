@@ -239,7 +239,7 @@ TransformImage( const Image< ElementType, 3 > &in, Image< ElementType, 3 > &out,
 					);
 
 	Vector< CoordType, 3 > RotationMatrixY(
-					CoordType( std::cos( -prop->_rotation[0] ), 0.0,  std::sin( -prop->_rotation[0] ) ),
+					CoordType( std::cos( -prop->_rotation[1] ), 0.0,  std::sin( -prop->_rotation[1] ) ),
 					CoordType( 0.0, 1.0, 0.0 ),
 					CoordType( -std::sin( -prop->_rotation[1] ), 0.0, std::cos( -prop->_rotation[1] ) )
 					);
