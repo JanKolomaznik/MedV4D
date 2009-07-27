@@ -110,6 +110,11 @@ public:
 			( height / 2 - height / ( 2 * prop->_scale[1] ) ),
 			( depth / 2 - depth / ( 2 * prop->_scale[2] ) )
 		);
+
+		heightBorder = (int32)( ( transformSampling == 0 || height < (int32)transformSampling ) ? height : transformSampling );
+		widthBorder = (int32)( ( transformSampling == 0 || width < (int32)transformSampling ) ? width : transformSampling );
+		heightMultiplicator = ( ( transformSampling == 0 || height < (int32)transformSampling ) ? 1 : height / transformSampling );
+		widthMultiplicator = ( ( transformSampling == 0 || width < (int32)transformSampling ) ? 1 : width / transformSampling );
 	}
 
 	void operator()()
@@ -133,21 +138,19 @@ public:
 
 		CoordType point( 0.0, 0.0, 0.0 );
 
-		CoordType rowstartpoint( 0.0, 0.0, 0.0 );
+		CoordType rowstartpoint = startpoint;
 
-		for( int32 j = 0; j < (int32)( ( transformSampling == 0 || height < (int32)transformSampling ) ? height : transformSampling ); ++j ) {
+		int32 stridedHeightMultiplicator = yStride * heightMultiplicator;
 
-			pointer = sPointer + k*zStride + j * yStride * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? 1 : height / transformSampling );
+		int32 stridedWidthMultiplicator = xStride * widthMultiplicator;
 
-			rowstartpoint[0] = startpoint[0] + j * ydiff[0];
-			rowstartpoint[1] = startpoint[1] + j * ydiff[1];
-			rowstartpoint[2] = startpoint[2] + j * ydiff[2];
+		for( int32 j = 0; j < heightBorder; ++j ) {
 
-			for( int32 i = 0; i < (int32)( ( transformSampling == 0 || width < (int32)transformSampling ) ? width : transformSampling ); ++i ) {
+			pointer = sPointer + k*zStride + j * stridedHeightMultiplicator;
 
-				point[0] = rowstartpoint[0] + i * xdiff[0];
-				point[1] = rowstartpoint[1] + i * xdiff[1];
-				point[2] = rowstartpoint[2] + i * xdiff[2];
+			point = rowstartpoint;
+
+			for( int32 i = 0; i < widthBorder; ++i ) {
 
 				if ( ( point[0] < 0 ) |
 				     ( point[0] > ( oldwidth - 1 ) ) |
@@ -158,8 +161,12 @@ public:
 
 				else *pointer = interpolator->Get( point );
 			
-				pointer += xStride * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? 1 : width / transformSampling );
+				pointer += stridedWidthMultiplicator;
+
+				point += xdiff;
 			}
+
+			rowstartpoint += ydiff;
 		}
 	}
 private:
@@ -168,15 +175,11 @@ private:
 	{
 		typedef typename InterpolatorBase< Image< ElementType, 3 > >::CoordType CoordType;
 
-		int32 i = xcoord;
-		int32 j = ycoord;
-		int32 k = zcoord;
-		
 		CoordType point( 0.0, 0.0, 0.0 );
 				
-		point[0] = ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * ( width / transformSampling ) ) - newwidth/2 ) * RotationMatrix[0][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * ( height / transformSampling ) ) - newheight/2 ) * RotationMatrix[0][1] + ( zExtent * k - newdepth/2 ) * RotationMatrix[0][2] + newwidth/2;
-		point[1] = ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * ( width / transformSampling ) ) - newwidth/2 ) * RotationMatrix[1][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * ( height / transformSampling ) ) - newheight/2 ) * RotationMatrix[1][1] + ( zExtent * k - newdepth/2 ) * RotationMatrix[1][2] + newheight/2;
-		point[2] = ( xExtent * ( ( transformSampling == 0 || width < (int32)transformSampling ) ? i : i * ( width / transformSampling ) ) - newwidth/2 ) * RotationMatrix[2][0] + ( yExtent * ( ( transformSampling == 0 || height < (int32)transformSampling ) ? j : j * ( height / transformSampling ) ) - newheight/2 ) * RotationMatrix[2][1] + ( zExtent * k - newdepth/2 ) * RotationMatrix[2][2] + newdepth/2;
+		point[0] = ( xExtent * xcoord * widthMultiplicator - newwidth/2 ) * RotationMatrix[0][0] + ( yExtent * ycoord * heightMultiplicator - newheight/2 ) * RotationMatrix[0][1] + ( zExtent * zcoord - newdepth/2 ) * RotationMatrix[0][2] + newwidth/2;
+		point[1] = ( xExtent * xcoord * widthMultiplicator - newwidth/2 ) * RotationMatrix[1][0] + ( yExtent * ycoord * heightMultiplicator - newheight/2 ) * RotationMatrix[1][1] + ( zExtent * zcoord - newdepth/2 ) * RotationMatrix[1][2] + newheight/2;
+		point[2] = ( xExtent * xcoord * widthMultiplicator - newwidth/2 ) * RotationMatrix[2][0] + ( yExtent * ycoord * heightMultiplicator - newheight/2 ) * RotationMatrix[2][1] + ( zExtent * zcoord - newdepth/2 ) * RotationMatrix[2][2] + newdepth/2;
 
 		point[0] /= xExtent;
 		point[1] /= yExtent;
@@ -209,8 +212,8 @@ private:
 	int32 xStride;
 	int32 yStride;
 	int32 zStride;
-	int32 height, oldheight;
-	int32 width, oldwidth;
+	int32 height, oldheight, heightBorder, heightMultiplicator;
+	int32 width, oldwidth, widthBorder, widthMultiplicator;
 	int32 depth, olddepth;
 	float32 xExtent, yExtent, zExtent;
 	float32 newwidth, newheight, newdepth;
