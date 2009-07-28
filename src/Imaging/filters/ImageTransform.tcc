@@ -20,9 +20,25 @@ namespace M4D
 namespace Imaging
 {
 
+/**
+ * Transform a 2D image
+ *  @param in reference to the input image
+ *  @param out reference to the output image
+ *  @param properties pointer to a properties structure
+ *  @param sliceNum the slice number (irrelevant in this case)
+ *  @param transformSampling the subsampling to use for transformation (irrelevant in this case)
+ *  @param threadNumber the number of parallel slice-computing threads to use at once (irrelevant in this case)
+ *  @return true on success, false otherwise
+ */
 template< typename ElementType >
 bool
-TransformImage( const Image< ElementType, 2 > &in, Image< ElementType, 2 > &out, AbstractFilter::Properties* properties, InterpolatorBase< Image< ElementType, 2 > >* interpolator, int32 sliceNum, uint32 transformSampling, uint32 threadNumber )
+TransformImage( const Image< ElementType, 2 > &in,
+		Image< ElementType, 2 > &out,
+		AbstractFilter::Properties* properties,
+		InterpolatorBase< Image< ElementType, 2 > >* interpolator,
+		int32 sliceNum,
+		uint32 transformSampling,
+		uint32 threadNumber )
 {
 	
 	ElementType *sPointer;
@@ -45,6 +61,8 @@ TransformImage( const Image< ElementType, 2 > &in, Image< ElementType, 2 > &out,
 					CoordType( std::sin( -prop->_rotation[0] ),  std::cos( -prop->_rotation[0] ) )
 					);
 
+	// for each pixel, use the rotation matrix, translation and scale
+	// to calculate the translated coordinate, and interpolate the value
 	for( int32 j = 0; j < (int32)height; ++j ) {
 		ElementType *pointer = sPointer + j*yStride;
 
@@ -74,11 +92,31 @@ TransformImage( const Image< ElementType, 2 > &in, Image< ElementType, 2 > &out,
 	return true;
 }
 
+/**
+ * Class for threads to do the transformation of each slice
+ */
 template< typename ElementType >
 class TransformSlice
 {
 public:
-	TransformSlice( const Image< ElementType, 3 > &input, Image< ElementType, 3 > &output, typename ImageTransform< ElementType, 3 >::Properties* properties, InterpolatorBase< Image< ElementType, 3 > >* interp, int32 sNum, uint32 tSampling, Vector< typename InterpolatorBase< Image< ElementType, 3 > >::CoordType, 3 >& rotMatrix )
+
+	/**
+	 * Constructor
+ 	 *  @param input reference to the input image
+	 *  @param output reference to the output image
+	 *  @param properties pointer to a properties structure
+	 *  @param interp pointer to the interpolator to use
+	 *  @param sNum the slice number
+	 *  @param tSampling the subsampling to use for transformation
+	 *  @param rotMatrix the rotation matrix to use for transformation
+	 */
+	TransformSlice( const Image< ElementType, 3 > &input,
+			Image< ElementType, 3 > &output,
+			typename ImageTransform< ElementType, 3 >::Properties* properties,
+			InterpolatorBase< Image< ElementType, 3 > >* interp,
+			int32 sNum,
+			uint32 tSampling,
+			Vector< typename InterpolatorBase< Image< ElementType, 3 > >::CoordType, 3 >& rotMatrix )
 		: in( input ),
 		  out( output ),
 		  prop( properties ),
@@ -87,6 +125,8 @@ public:
 		  transformSampling( tSampling ),
 		  RotationMatrix( rotMatrix )
 	{
+
+		// initialize parameters
 		sPointer = out.GetPointer( size, strides );
 		width = (int32)size[0];
 		height = (int32)size[1];
@@ -124,10 +164,12 @@ public:
 		int32 k = sliceNum;
 		if ( k >= depth ) return;
 
+		// initialize starting points by transforming them
 		CoordType startpoint = calculatePoint( 0.0, 0.0, k );
 		CoordType xdiff = calculatePoint( 1.0, 0.0, k );
 		CoordType ydiff = calculatePoint( 0.0, 1.0, k );
 
+		// calculate differences
 		xdiff[0] -= startpoint[0];
 		xdiff[1] -= startpoint[1];
 		xdiff[2] -= startpoint[2];
@@ -144,6 +186,8 @@ public:
 
 		int32 stridedWidthMultiplicator = xStride * widthMultiplicator;
 
+		// for each pixel on the slice, get the transformation using
+		// the starting point and the x and y differences, and interpolate the value
 		for( int32 j = 0; j < heightBorder; ++j ) {
 
 			pointer = sPointer + k*zStride + j * stridedHeightMultiplicator;
@@ -171,28 +215,40 @@ public:
 	}
 private:
 
+	/**
+	 * Calculate the transformation of a single coordinate
+	 *  @param xcoord the x coordinate
+	 *  @param ycoord the y coordinate
+	 *  @param zcoord the z coordinate
+	 *  @return the interpolated coordinates
+	 */
 	typename InterpolatorBase< Image< ElementType, 3 > >::CoordType calculatePoint( int32 xcoord, int32 ycoord, int32 zcoord )
 	{
 		typedef typename InterpolatorBase< Image< ElementType, 3 > >::CoordType CoordType;
 
 		CoordType point( 0.0, 0.0, 0.0 );
-				
+
+		// rotate the coordinates
 		point[0] = ( xExtent * xcoord * widthMultiplicator - newwidth/2 ) * RotationMatrix[0][0] + ( yExtent * ycoord * heightMultiplicator - newheight/2 ) * RotationMatrix[0][1] + ( zExtent * zcoord - newdepth/2 ) * RotationMatrix[0][2] + newwidth/2;
 		point[1] = ( xExtent * xcoord * widthMultiplicator - newwidth/2 ) * RotationMatrix[1][0] + ( yExtent * ycoord * heightMultiplicator - newheight/2 ) * RotationMatrix[1][1] + ( zExtent * zcoord - newdepth/2 ) * RotationMatrix[1][2] + newheight/2;
 		point[2] = ( xExtent * xcoord * widthMultiplicator - newwidth/2 ) * RotationMatrix[2][0] + ( yExtent * ycoord * heightMultiplicator - newheight/2 ) * RotationMatrix[2][1] + ( zExtent * zcoord - newdepth/2 ) * RotationMatrix[2][2] + newdepth/2;
 
+		// resize according to extents
 		point[0] /= xExtent;
 		point[1] /= yExtent;
 		point[2] /= zExtent;
 
+		// translate the point
 		point[0] -= prop->_translation[0];
 		point[1] -= prop->_translation[1];
 		point[2] -= prop->_translation[2];
 
+		// rescale the point
 		point[0] = ( point[0] / prop->_scale[0] + scaleBias[0] );
 		point[1] = ( point[1] / prop->_scale[1] + scaleBias[1] );
 		point[2] = ( point[2] / prop->_scale[2] + scaleBias[2] );
 
+		// resample the point
 		point[0] /= prop->_sampling[0];
 		point[1] /= prop->_sampling[1];
 		point[2] /= prop->_sampling[2];
@@ -201,31 +257,74 @@ private:
 
 	}
 
+	// input image
 	const Image< ElementType, 3 > &in;
+
+	// output image
 	Image< ElementType, 3 > &out;
+
+	// properties structure
 	typename ImageTransform< ElementType, 3 >::Properties* prop;
+
+	// interpolator
 	InterpolatorBase< Image< ElementType, 3 > >* interpolator;
+
+	// slice number
 	int32 sliceNum;
+
+	// transform sampling
 	uint32 transformSampling;
+
+	// rotation matrix
 	Vector< typename InterpolatorBase< Image< ElementType, 3 > >::CoordType, 3 >& RotationMatrix;
+
+	// pointers to positions in the value array of the dataset
 	ElementType *sPointer, *pointer;
+
+	//strides
 	int32 xStride;
 	int32 yStride;
 	int32 zStride;
+
+	// height and height-connected values
 	int32 height, oldheight, heightBorder, heightMultiplicator;
+
+	// width and width-connected values
 	int32 width, oldwidth, widthBorder, widthMultiplicator;
+
+	// depth
 	int32 depth, olddepth;
+
+	// extents
 	float32 xExtent, yExtent, zExtent;
+
+	// recalculated values for width, height, depth
 	float32 newwidth, newheight, newdepth;
 
+	// sizes, strides and scale biases
 	Vector< uint32, 3 > size;
 	Vector< int32, 3 > strides;
 	Vector< int32, 3 > scaleBias;
 };
 
+/**
+ * Transform a 3D image
+ *  @param in reference to the input image
+ *  @param out reference to the output image
+ *  @param properties pointer to a properties structure
+ *  @param sliceNum the slice number
+ *  @param transformSampling the subsampling to use for transformation
+ *  @param threadNumber the number of parallel slice-computing threads to use at once
+ *  @return true on success, false otherwise
+ */
 template< typename ElementType >
 bool
-TransformImage( const Image< ElementType, 3 > &in, Image< ElementType, 3 > &out, AbstractFilter::Properties* properties, InterpolatorBase< Image< ElementType, 3 > >* interpolator, uint32 transformSampling, uint32 threadNumber )
+TransformImage( const Image< ElementType, 3 > &in,
+		Image< ElementType, 3 > &out,
+		AbstractFilter::Properties* properties,
+		InterpolatorBase< Image< ElementType, 3 > >* interpolator,
+		uint32 transformSampling,
+		uint32 threadNumber )
 {
 	typename ImageTransform< ElementType, 3 >::Properties* prop = dynamic_cast< typename ImageTransform< ElementType, 3 >::Properties* >( properties );
 
@@ -234,7 +333,8 @@ TransformImage( const Image< ElementType, 3 > &in, Image< ElementType, 3 > &out,
 	Vector< uint32, 3 > size;
 	Vector< int32, 3 > strides;
 	out.GetPointer( size, strides );
-		
+
+	// rotation matrices	
 	Vector< CoordType, 3 > RotationMatrixX(
 					CoordType( 1.0, 0.0, 0.0 ),
 					CoordType( 0.0, std::cos( -prop->_rotation[0] ), -std::sin( -prop->_rotation[0] ) ),
@@ -253,6 +353,7 @@ TransformImage( const Image< ElementType, 3 > &in, Image< ElementType, 3 > &out,
 					CoordType( 0.0, 0.0, 1.0 )
 					);
 
+	// multiply rotation matrices
 	Vector< CoordType, 3 > RotationMatrix(
 					CoordType( RotationMatrixX[0][0] * RotationMatrixY[0][0] + RotationMatrixX[0][1] * RotationMatrixY[1][0] + RotationMatrixX[0][2] * RotationMatrixY[2][0],
 						   RotationMatrixX[0][0] * RotationMatrixY[0][1] + RotationMatrixX[0][1] * RotationMatrixY[1][1] + RotationMatrixX[0][2] * RotationMatrixY[2][1],
@@ -282,10 +383,12 @@ TransformImage( const Image< ElementType, 3 > &in, Image< ElementType, 3 > &out,
 	Multithreading::Thread* thr[ thread_num ];
 	uint32 i = 0, j;
 
+	// execute transformation of slices one by one
 	for ( i = 0; i < thread_num; i++ ) thr[i] = new Multithreading::Thread( TransformSlice< ElementType >( in, out, prop, interpolator, i, transformSampling, RotationMatrix ) );
 
 	j = i;
 
+	// keep in mind the maximum number of thread and the number of slices while distributing the transformation jobs among threads
 	while ( j < size[2] )
 	{
 		i = i % thread_num;
@@ -333,6 +436,8 @@ ImageTransform< ElementType, dim >
 	int32 minimums[ dim ];
         int32 maximums[ dim ];
 	float32 voxelExtents[ dim ];
+
+	// reset voxel extents according to scale
 	for ( uint32 d = 0; d < dim; ++d )
 	{
 		minimums[ d ] = this->out->GetDimensionExtents( d ).minimum;
@@ -360,6 +465,8 @@ ImageTransform< ElementType, dim >
 	{
 		_THROW_ ENULLPointer( "Interpolator not set in ImageTransform!" );
 	}
+
+	// set interpolator input image and execute transformation according to dimension
 	_interpolator->SetImage( this->in );
 	result = TransformImage< ElementType >( *(this->in), *(this->out), this->_properties, _interpolator, transformSampling, _threadNumber );
 	return result;
@@ -376,6 +483,8 @@ ImageTransform< ElementType, dim >
 		return false;
 	}
 	bool result = false;
+
+	// rescale and execute transformation
 	Rescale();
 	result = ExecuteTransformation();
 	if( result ) {
@@ -412,6 +521,7 @@ ImageTransform< ElementType, dim >
 	float32 voxelExtents[ ImageTraits<ImageType>::Dimension ];
 	Properties* prop = dynamic_cast< Properties* >( this->_properties );
 
+	// set dimension minimums, maximums and voxel extents
 	for( unsigned i=0; i < dimension; ++i ) {
 		const DimensionExtents & dimExt = this->in->GetDimensionExtents( i );
 

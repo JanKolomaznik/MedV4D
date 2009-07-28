@@ -15,6 +15,9 @@ void
 PowellOptimization< RegistrationFilterElementType, ElementType, dim >
 ::optimize(Vector< ElementType, dim > &v, ElementType &fret, ImageRegistration< RegistrationFilterElementType, dim/2 >* fil )
 {
+
+	// prepare the input parameters in order to be
+	// usable for the external module, and execute the powell optimization module
 	_filter = fil;
         const ElementType FTOL=1.0e-6;
         ElementType p_d[dim];

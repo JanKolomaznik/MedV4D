@@ -20,6 +20,7 @@ MaxMedMinRGBSliceViewerTexturePreparer< ElementType >
       unsigned& dimension )
     {
 
+	// get the original values
 	ElementType** pixel = this->getDatasetArrays( inputPorts, SLICEVIEWER_INPUT_NUMBER, width, height, so, slice, dimension );
 
 	uint32 i,textureCount = 0;
@@ -32,19 +33,24 @@ MaxMedMinRGBSliceViewerTexturePreparer< ElementType >
 
 	if ( ! textureCount ) return false;
 
+	// prepare the channels according to show the maximum, median gradient and minimum of the input dataset values
 	ElementType* channelR = MaximumIntensitySliceViewerTexturePreparer< ElementType >::IntensityArranger( pixel, SLICEVIEWER_INPUT_NUMBER, width, height );
 	ElementType* channelG = MedianIntensitySliceViewerTexturePreparer< ElementType >::IntensityArranger( pixel, SLICEVIEWER_INPUT_NUMBER, width, height );
 	ElementType* channelB = MinimumIntensitySliceViewerTexturePreparer< ElementType >::IntensityArranger( pixel, SLICEVIEWER_INPUT_NUMBER, width, height );
 
+	// equalize arrays
 	this->equalizeArray( channelR, width, height, brightnessRate, contrastRate );
         this->equalizeArray( channelG, width, height, brightnessRate, contrastRate );
         this->equalizeArray( channelB, width, height, brightnessRate, contrastRate );
 
+	// set array values as RGB channel values
 	ElementType* texture = RGBChannelArranger( channelR, channelG, channelB, width, height );
 
+	// prepare texture
         glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
                       GL_RGB, this->oglType(), texture );
 
+	// free temporary allocated space
 	delete[] texture;
 	delete[] channelR;
 	delete[] channelG;

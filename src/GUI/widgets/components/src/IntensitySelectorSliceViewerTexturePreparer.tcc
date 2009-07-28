@@ -20,6 +20,7 @@ IntensitySelectorSliceViewerTexturePreparer< ElementType >
 
         bool pixelSet = false;
 
+	// loop through the input datasets for each position
         for ( uint32 i = 0; i < height; i++ )
             for ( uint32 j = 0; j < width; j++ )
             {
@@ -28,6 +29,9 @@ IntensitySelectorSliceViewerTexturePreparer< ElementType >
                 for ( uint32 k = 0; k < channelNumber; k++ )
                 {
                     if ( ! channels[k] ) continue;
+
+		    // if the pixel is not yet set or the comparator says that the next value is better than
+		    // the one that has been set until now, set the new value as the resulting pixel value
                     if ( ! pixelSet || (*_comparator)( texture[ i * width + j ], channels[k][ i * width + j ] ) )
                     {
                         texture[ i * width + j ] = channels[k][ i * width + j ];

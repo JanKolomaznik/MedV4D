@@ -40,6 +40,9 @@ protected:
 	QWidget	*_owner;
 };
 
+/**
+ * MedV4D GUI main window
+ */
 class mainWindow: public M4D::GUI::m4dGUIMainWindow
 {
 	Q_OBJECT
@@ -48,27 +51,50 @@ public:
 
 	mainWindow ();
 
+	/**
+	 * Plug the output connection to an input connection of a viewer
+	 *  @param inputNumber the number of the input image (respectively the number of the output connection) 
+	 *  @param portNumber the viewer's input port number
+	 */
 	void
 	OutConnectionToViewerPort( uint32 inputNumber, uint32 portNumber );
 
 public slots:
+
+	/**
+	 * Clear selected dataset
+	 */
 	void
 	ClearDataset();
 
 protected:
+
+	/**
+	 * Process dataset
+	 *  @param inputDataSet smart pointer to the dataset to be processed
+	 */
 	void
 	process( M4D::Imaging::AbstractDataSet::Ptr inputDataSet );
 
+	/**
+	 * Create Pipeline
+	 */
 	void
 	CreatePipeline();
 
+	// settings box
 	SettingsBox								*_settings;
+
+	// notifiers about compatition
 	Notifier								*_notifier[ SLICEVIEWER_INPUT_NUMBER ];
 
+	// pipeline
 	M4D::Imaging::PipelineContainer						_pipeline;
 
+	// registration filters
 	InImageRegistration							*_register[ SLICEVIEWER_INPUT_NUMBER ];
 
+	// connections
 	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage >	*_inConnection[ SLICEVIEWER_INPUT_NUMBER ];
 	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage >	*_outConnection[ SLICEVIEWER_INPUT_NUMBER ];
 

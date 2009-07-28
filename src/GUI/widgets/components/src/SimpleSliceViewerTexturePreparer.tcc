@@ -143,6 +143,8 @@ SimpleSliceViewerTexturePreparer< ElementType >
         mean = 0.;
         for ( i = 0; i < height; i++ )
             for ( j = 0; j < width; j++ ) mean += (double)pixel[ i * width + j ] / (double)(width*height);
+
+	// adjust the brightness of the image according to parameter
         brightnessRate -= (GLint)mean;
         for ( i = 0; i < height; ++i )
             for ( j = 0; j < width; j++ )
@@ -160,6 +162,7 @@ SimpleSliceViewerTexturePreparer< ElementType >
         for ( i = 0; i < height; i++ )
             for ( j = 0; j < width; j++ ) cont += std::abs( (double)( pixel[ i * width + j ] - mean ) ) / (double)(width*height);
 
+	// adjust the contrast rate of the image according to parameter
         if ( cont != 0 ) cont = (double)contrastRate/cont;
         for ( i = 0; i < height; i++ )
             for ( j = 0; j < width; j++ )
@@ -188,12 +191,15 @@ SimpleSliceViewerTexturePreparer< ElementType >
 
 	width = height = 0;
 
+	// loop through the input ports
 	for ( i = 0; i < numberOfDatasets; i++ )
 	{
 	    if ( inputPorts.Size() <= i ) result[i] = NULL;
 	    else
 	    {
 		tmpwidth = tmpheight = 0;
+
+		// get the port and drag the data out of the port
 		inPort = inputPorts.GetPortTypedSafe< Imaging::InputPortTyped<Imaging::AbstractImage> >( i );
             	result[i] = this->prepareSingle( inPort, tmpwidth, tmpheight, so, slice, dimension );
             	if ( result[i] && ( ( tmpwidth < width && tmpwidth > 0 ) || width == 0 ) ) width = tmpwidth;
@@ -217,6 +223,8 @@ SimpleSliceViewerTexturePreparer< ElementType >
       uint32 slice,
       unsigned& dimension )
     {
+
+	// get the input datasets
 	ElementType** pixel = getDatasetArrays( inputPorts, 1, width, height, so, slice, dimension );
 
 	if ( ! *pixel )
@@ -225,11 +233,14 @@ SimpleSliceViewerTexturePreparer< ElementType >
 	    return false;
 	}
 
+	// equalize the first input array
 	equalizeArray( *pixel, width, height, brightnessRate, contrastRate );
 
+	// prepare texture
         glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
                       GL_LUMINANCE, this->oglType(), *pixel );
 
+	// free temporary allocated space
 	delete[] *pixel;
 
 	delete[] pixel;

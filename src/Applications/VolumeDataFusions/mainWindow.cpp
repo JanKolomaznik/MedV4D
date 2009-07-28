@@ -15,6 +15,8 @@ void mainWindow::CreatePipeline()
 
 	uint32 i;
 	char buffer[ BUF_SIZE ];
+
+	// create the connections, register filters and sources
 	for ( i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i )
 	{
 		_register[ i ] = new InImageRegistration();
@@ -51,6 +53,8 @@ mainWindow::mainWindow ()
 
 void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 {
+
+	// set the dataset as the input of the selected viewer and as input of the selected registration filter's
 	try {
 		uint32 inputNumber = _settings->GetInputNumber();
 		_inConnection[ inputNumber ]->PutDataset( inputDataSet );
@@ -69,6 +73,8 @@ void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 
 void mainWindow::ClearDataset ()
 {
+
+	// clear the input of the selected connection and registration filter
 	uint32 inputNumber = _settings->GetInputNumber();
 	_inConnection[ inputNumber ]->ResetDataset();
 	_register[ inputNumber ]->OutputPort().GetPort( 0 ).GetConnection()->ResetDataset();
@@ -82,6 +88,8 @@ void mainWindow::OutConnectionToViewerPort( uint32 inputNumber, uint32 portNumbe
 	{
 		_THROW_ M4D::ErrorHandling::EBadIndex();
 	}
+
+	// connect the given outconnection to the viewers input connection at the given position
 	if ( _outConnection[ inputNumber ] != currentViewerDesktop->getSelectedViewerWidget()->InputPort()[ portNumber ].GetConnection() )
 	{
 		currentViewerDesktop->getSelectedViewerWidget()->InputPort()[ portNumber ].UnPlug();

@@ -15,6 +15,8 @@ typename ImageType::Element
 NearestNeighborInterpolator<ImageType>
 	::Get(CoordType &coords)
 {
+
+	// calculate the interpolated value and return
 	return *(this->m_dataPointer + (
 			((uint32)round(coords[0]) * this->m_strides[0]) + 
 			((uint32)round(coords[1]) * this->m_strides[1]) +

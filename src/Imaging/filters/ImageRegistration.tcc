@@ -20,6 +20,13 @@ namespace M4D
 namespace Imaging
 {
 
+/**
+ * Calculate joint histogram of 2D image
+ *  @param jointHist reference to the joint histogram's structure
+ *  @param inputImage reference to input image
+ *  @param refImage reference to reference image
+ *  @param transformSampling the sampling of transformation and histogram calculation
+ */
 template< typename ElementType >
 void
 CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 2 >::HistCellType, 2 >& jointHist,
@@ -27,6 +34,8 @@ CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 2 
 		 Image< ElementType, 2 >& refImage,
 		 uint32 transformSampling )
 {
+
+	// set initial values
 	jointHist.Reset();
 	std::vector< int32 > index(2);
 	uint32 i, j;
@@ -42,12 +51,16 @@ CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 2 
 	uint32 refWidth = size[0];
 	uint32 refHeight = size[1];
 	typename ImageRegistration< ElementType, 2 >::HistCellType base = 1.0 / ( ( refWidth < transformSampling ? refWidth : transformSampling ) * ( refHeight < transformSampling ? refHeight : transformSampling ) );
+
+	// loop through the transformed values and increase the histogram's value at the given position
 	for ( j = 0; j < ( refHeight < transformSampling ? refHeight : transformSampling ); ++j )
 	{
 		ElementType *in = sin + ( refHeight < transformSampling ? 1 : refHeight / transformSampling ) * j * inYStride;
 		ElementType *ref = sref + ( refHeight < transformSampling ? 1 : refHeight / transformSampling ) * j * refYStride;
 		for ( i = 0; i < ( refWidth < transformSampling ? refWidth : transformSampling ); ++i )
 		{
+
+			// divide the values so that the histogram's size would be smaller
 			index[0] = (*in) / HISTOGRAM_VALUE_DIVISOR;
 			index[1] = (*ref) / HISTOGRAM_VALUE_DIVISOR;
 			jointHist.SetValueCell( index, jointHist.Get( index ) + base );
@@ -57,6 +70,13 @@ CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 2 
 	}
 }
 
+/**
+ * Calculate joint histogram of 3D image
+ *  @param jointHist reference to the joint histogram's structure
+ *  @param inputImage reference to input image
+ *  @param refImage reference to reference image
+ *  @param transformSampling the sampling of transformation and histogram calculation
+ */
 template< typename ElementType >
 void
 CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 3 >::HistCellType, 2 >& jointHist,
@@ -64,6 +84,8 @@ CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 3 
 		 Image< ElementType, 3 >& refImage,
 		 uint32 transformSampling )
 {
+
+	// set initial values
 	jointHist.Reset();
 	std::vector< int32 > index(2);
 	uint32 i, j, k;
@@ -82,6 +104,8 @@ CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 3 
 	uint32 refHeight = size[1];
 	uint32 refDepth = size[2];
 	typename ImageRegistration< ElementType, 3 >::HistCellType base = 1.0 / ( ( refWidth < transformSampling ? refWidth : transformSampling ) * ( refHeight < transformSampling ? refHeight : transformSampling ) * refDepth );
+
+	// loop through the transformed values and increase the histogram's value at the given position
 	for ( k = 0; k < refDepth; ++k )
 		for ( j = 0; j < ( refHeight < transformSampling ? refHeight : transformSampling ); ++j )
 		{
@@ -89,6 +113,8 @@ CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 3 
 			ElementType *ref = sref + k*refZStride + ( refHeight < transformSampling ? 1 : refHeight / transformSampling ) * j * refYStride;
 			for ( i = 0; i < ( refWidth < transformSampling ? refWidth : transformSampling ); ++i )
 			{
+
+				// divide the values so that the histogram's size would be smaller
 				index[0] = (*in) / HISTOGRAM_VALUE_DIVISOR;
 				index[1] = (*ref) / HISTOGRAM_VALUE_DIVISOR;
 				jointHist.SetValueCell( index, jointHist.Get( index ) + base );
@@ -154,13 +180,19 @@ ImageRegistration< ElementType, dim >
 ::OptimizationFunction( Vector< double, 2 * dim >& v )
 {
 	Vector< double, dim > v1, v2;
+
+	// reset parameters
 	for ( uint32 i = 0; i < dim; ++i )
 	{
 		v1[i] = v[i];
 		v2[i] = v[dim + i];
 	}
+
+	// reset rotation and translation
 	this->SetRotation( v1 );
 	this->SetTranslation( v2 );
+
+	// transform image and calculate criterion if a reference image is present
 	this->ExecuteTransformation( _transformSampling );
 	double res = 1.0;
 	if ( referenceImage )
@@ -182,7 +214,11 @@ ImageRegistration< ElementType, dim >
 		this->_writerBBox->SetState( MS_CANCELED );
 		return false;
 	}
+
+	// rescale
 	this->Rescale();
+
+	// if automatic is set, optimize the criterion function
 	if ( _automatic )
 	{
 		Vector< double, 2 * dim > v;
@@ -194,6 +230,8 @@ ImageRegistration< ElementType, dim >
 		double fret;
 		_optimization->optimize( v, fret, this );
 	}
+
+	// transform the image according to properties
 	this->ExecuteTransformation();
 	bool result = true;
 	/*if( result ) {
@@ -223,10 +261,12 @@ ImageRegistration< ElementType, dim >
 
 		typedef typename PredecessorType::CoordType::CoordinateType		CoordType;
 
+		// set the scale
 		Vector< CoordType, dim > scale;
 		for ( uint32 i = 0; i < dim; ++i ) scale[i] = static_cast< CoordType >( inSize[i] * this->in->GetDimensionExtents( i ).elementExtent )/static_cast< CoordType >( refSize[i] * referenceImage->GetDimensionExtents( i ).elementExtent );
 		this->SetScale( scale );
 
+		// set the sampling
 		Vector< CoordType, dim > sampling;
 
 		for ( uint32 i = 0; i < dim; ++i ) sampling[i] = static_cast< CoordType >( refSize[i] )/static_cast< CoordType >( inSize[i] );

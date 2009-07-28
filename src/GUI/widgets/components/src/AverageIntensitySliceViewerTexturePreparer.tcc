@@ -19,9 +19,11 @@ AverageIntensitySliceViewerTexturePreparer< ElementType >
         ElementType* texture = new ElementType[ width * height ];
 	uint32 realChannelNumber = 0;
 
+	// count the number of inputs that are present
 	for ( uint32 k = 0; k < channelNumber; k++ )
 	    if ( channels[k] ) realChannelNumber++;
 
+	// loop through the pixels of the slice, sum up the values and divide by the number of inputs present
         for ( uint32 i = 0; i < height; i++ )
             for ( uint32 j = 0; j < width; j++ )
             {

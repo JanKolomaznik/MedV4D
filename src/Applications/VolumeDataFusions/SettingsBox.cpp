@@ -12,6 +12,9 @@ void
 SettingsBox
 ::CreateWidgets()
 {
+
+	// create and add the widgets
+
 	setMinimumWidth( MINIMUM_WIDTH );
 
 	QVBoxLayout *layout;
@@ -212,9 +215,11 @@ SettingsBox
 ::ExecuteFilter( unsigned filterNum )
 {
 
+	// set the interpolator
 	if ( interpolatorType->currentIndex() == 0 )	_registerFilters[ filterNum ]->SetInterpolator( &nearestNeighborInterpolator[ filterNum ] );
 	else						_registerFilters[ filterNum ]->SetInterpolator( &linearInterpolator[ filterNum ] );
-	
+
+	// if manual registration is needed, set the parameters of the transformation
 	if ( xRot->isEnabled() )
 	{
 		_registerFilters[ filterNum ]->SetAutomaticMode( false );
@@ -222,18 +227,23 @@ SettingsBox
 		_registerFilters[ filterNum ]->SetRotation( InImageRegistration::CoordType( 2 * PI * xRot->value() / 360, 2 * PI * yRot->value() / 360, 2 * PI * zRot->value() / 360 ) );
 		_registerFilters[ filterNum ]->SetTranslation( InImageRegistration::CoordType( xTrans->value(), yTrans->value(), zTrans->value() ) );
 	}
+
+	// if reference image is to be registered automatically, simply copy the image
 	else if ( filterNum == 0 )
 	{
 		_registerFilters[ filterNum ]->SetAutomaticMode( false );
 		_registerFilters[ filterNum ]->SetRotation( InImageRegistration::CoordType( 0, 0, 0 ) );
 		_registerFilters[ filterNum ]->SetTranslation( InImageRegistration::CoordType( 0, 0, 0 ) );
 	}
+
+	// if automatic registration is requested, set automatic mode and sampling rate
 	else
 	{
 		_registerFilters[ filterNum ]->SetAutomaticMode( true );
 		_registerFilters[ filterNum ]->SetTransformSampling( accuracy->value() );
 	}
 
+	// set thread number and execute fusion
 	_registerFilters[ filterNum ]->SetThreadNumber( threadNum->value() );
 	_registerFilters[ filterNum ]->ExecuteOnWhole();
 }
@@ -256,6 +266,8 @@ void
 SettingsBox
 ::StopSingleFilter()
 {
+
+	// execute registration filter with the number of the source selected
 	_registerFilters[ GetInputNumber() ]->StopExecution();
 }
 
@@ -272,6 +284,8 @@ SettingsBox
 {
 	M4D::Viewer::m4dGUISliceViewerWidget* sliceViewer = dynamic_cast< M4D::Viewer::m4dGUISliceViewerWidget* >( _viewers->getSelectedViewerWidget() );
 	if ( ! sliceViewer ) return;
+
+	// select the fusion that is required
 	for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i )
 	{
 		switch ( fusionType->currentIndex() )
@@ -341,5 +355,7 @@ void
 SettingsBox
 ::EndOfExecution( unsigned filterNum )
 {
+
+	// print message about the completition of registration
         QMessageBox::information( _parent, tr( "Execution finished" ), tr( "Registration Filter #%1 finished its work" ).arg( filterNum + 1 ) );
 }

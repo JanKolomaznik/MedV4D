@@ -20,6 +20,7 @@ IntensitySummarizerSliceViewerTexturePreparer< ElementType >
       unsigned& dimension )
     {
 
+	// get the dataset pixels
 	ElementType** pixel = this->getDatasetArrays( inputPorts, SLICEVIEWER_INPUT_NUMBER, width, height, so, slice, dimension );
 
 	bool datasetPresent = false;
@@ -39,13 +40,17 @@ IntensitySummarizerSliceViewerTexturePreparer< ElementType >
 	    return false;
 	}
 
+	// arrange their intensities
 	ElementType* texture = IntensityArranger( pixel, SLICEVIEWER_INPUT_NUMBER, width, height );
 
+	// equalize intensities according to brightness- and contrastrate
 	this->equalizeArray( texture, width, height, brightnessRate, contrastRate );
 
+	// prepare texture
         glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
                       GL_LUMINANCE, this->oglType(), texture );
 
+	// free temporary allocated space
 	delete[] texture;
 
 	for ( i = 0; i < SLICEVIEWER_INPUT_NUMBER; i++ )

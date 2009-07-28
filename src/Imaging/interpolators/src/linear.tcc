@@ -19,6 +19,7 @@ LinearInterpolator<ImageType>
 	typename ImageType::PointType strides;
 	double temp;
 
+	// calculate the racional part of the coordinate values
 	double cx = std::modf((double)coords[0],&temp);
 	strides[0] = this->m_strides[0];
 	
@@ -28,6 +29,7 @@ LinearInterpolator<ImageType>
 	double cz = std::modf((double)coords[2],&temp);
 	strides[2] = this->m_strides[2];
 
+	// calculate the proportions of each point
 	double w[8];
 
 	w[0] = (1 - cx) * (1 - cy) * (1 - cz);
@@ -42,14 +44,17 @@ LinearInterpolator<ImageType>
 	uint32 floor[3];
 	uint32 ceil[3];
 
+	// calculate floor positions
 	floor[0] = ((uint32)std::floor(coords[0])) * strides[0];
 	floor[1] = ((uint32)std::floor(coords[1])) * strides[1];
 	floor[2] = ((uint32)std::floor(coords[2])) * strides[2];
 
+	// calculate ceil positions
 	ceil[0] = ((uint32)std::ceil(coords[0])) * strides[0];
 	ceil[1] = ((uint32)std::ceil(coords[1])) * strides[1];
 	ceil[2] = ((uint32)std::ceil(coords[2])) * strides[2];
 
+	// calculate the interpolated value and return
 	return  (typename ImageType::Element)(
 		*(this->m_dataPointer + (
 			floor[0] + 

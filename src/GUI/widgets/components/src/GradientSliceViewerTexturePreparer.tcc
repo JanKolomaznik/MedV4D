@@ -18,6 +18,8 @@ GradientSliceViewerTexturePreparer< ElementType >
       uint32 slice,
       unsigned& dimension )
     {
+
+	// get the original datasets
 	ElementType** image = SimpleSliceViewerTexturePreparer< ElementType >::getDatasetArrays( inputPorts,
 										   numberOfDatasets,
 										   width,
@@ -25,11 +27,13 @@ GradientSliceViewerTexturePreparer< ElementType >
 										   so,
 										   slice,
 										   dimension );
+
 	ElementType** result = new ElementType*[ numberOfDatasets ];
 
 	int32 i, k, l;
 	ElementType* tmp = 0;
 
+	// loop through the datasets and calculate the differences between the pixels at each position
 	for ( i = (int32)numberOfDatasets - 1; i >= 0; i-- )
 	{
 	    if ( image[i] == 0 )
@@ -55,7 +59,7 @@ GradientSliceViewerTexturePreparer< ElementType >
 	    }
 	}
 
-
+	// delete temporary allocated memory
 	for ( i = 0; i < (int32)numberOfDatasets; i++ )
 	    if ( image[i] ) delete image[i];
 

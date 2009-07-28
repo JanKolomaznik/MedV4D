@@ -24,6 +24,7 @@ MultiChannelRGBSliceViewerTexturePreparer< ElementType >
 
 	uint32 i, j, k, textureCount = 0;
 
+	// equalize arrays
 	for ( i = 0; i < SLICEVIEWER_INPUT_NUMBER; i++ )
 	    if ( pixel[i] )
 	    {
@@ -37,10 +38,13 @@ MultiChannelRGBSliceViewerTexturePreparer< ElementType >
 	ElementType* channelG = new ElementType[ width * height ];
 	ElementType* channelB = new ElementType[ width * height ];
 
+	// loop through all the pixels
 	for ( i = 0; i < height; i++ )
 	    for ( j = 0; j < width; j++ )
 	    {
 		channelR[ i * width + j ] = channelG[ i * width + j ] = channelB[ i * width + j ] = 0;
+
+		// give each channel's pixels a color, sum them up and divide them by the number of input datasets present
 		for ( k = 0; k < SLICEVIEWER_INPUT_NUMBER; k++ )
 		{
 		    if ( ! pixel[k] ) continue;
@@ -62,11 +66,14 @@ MultiChannelRGBSliceViewerTexturePreparer< ElementType >
 		}
 	    }
 
+	// arrange the channels of RGB
 	ElementType* texture = RGBChannelArranger( channelR, channelG, channelB, width, height );
 
+	// prepare texture
         glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
                       GL_RGB, this->oglType(), texture );
 
+	// free temporary allocated space
 	delete[] texture;
 	delete[] channelR;
 	delete[] channelG;
