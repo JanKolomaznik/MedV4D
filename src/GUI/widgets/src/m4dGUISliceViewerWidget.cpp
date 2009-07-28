@@ -432,8 +432,13 @@ void
 m4dGUISliceViewerWidget::paintGL()
 {
     glClear( GL_COLOR_BUFFER_BIT );
-    if ( !_ready || 
-         _inPort->GetDatasetTyped().GetStructureTimestamp() != _oldTimeStamp ) setParameters();
+
+    try
+    {
+         if ( !_ready ||
+             _inPort->GetDatasetTyped().GetStructureTimestamp() != _oldTimeStamp ) setParameters();
+    } catch (...) { _ready = false; }
+
     if ( _inPort->IsPlugged() && _ready )
     {
         unsigned i;
