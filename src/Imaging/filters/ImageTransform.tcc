@@ -463,7 +463,7 @@ ImageTransform< ElementType, dim >
 	}
 
 	// set interpolator input image and execute transformation according to dimension
-	_interpolator->SetImage( this->in );
+	_interpolator->SetImage( static_cast< const ImageType* >( this->in ) );
 	result = TransformImage( *(this->out), this->_properties, _interpolator, transformSampling, _threadNumber );
 	return result;
 }

@@ -256,7 +256,7 @@ ImageRegistration< ElementType, dim >
 		Vector< uint32, dim > inSize;
 		Vector< uint32, dim > refSize;
  		Vector< int32, dim > strides;
-		this->in->GetPointer( inSize, strides );
+		(static_cast< const Image< ElementType, dim > & >( *(this->in) )).GetPointer( inSize, strides );
 		(static_cast< Image< ElementType, dim > & >( *referenceImage )).GetPointer( refSize, strides );
 
 		typedef typename PredecessorType::CoordType::CoordinateType		CoordType;

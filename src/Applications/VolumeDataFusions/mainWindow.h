@@ -5,7 +5,6 @@
 #include "Imaging/PipelineContainer.h"
 #include "Imaging/ImageFactory.h"
 #include "Imaging/filters/ImageRegistration.h"
-#include "Imaging/filters/ImageConvertor.h"
 
 
 #define ORGANIZATION_NAME     "MFF"
@@ -16,7 +15,6 @@ const unsigned Dim = 3;
 typedef M4D::Imaging::Image< ElementType, Dim > ImageType;
 typedef M4D::Imaging::ConnectionTyped< ImageType > InConnection;
 typedef M4D::Imaging::ImageRegistration< ElementType, Dim > InImageRegistration;
-typedef M4D::Imaging::ImageConvertor< ImageType > InImageConvertor;
 
 class SettingsBox;
 
@@ -93,9 +91,6 @@ protected:
 
 	// pipeline
 	M4D::Imaging::PipelineContainer								_pipeline;
-
-	// convertors
-	M4D::Imaging::AbstractPipeFilter								*_convertor[ SLICEVIEWER_INPUT_NUMBER ];
 
 	// registration filters
 	M4D::Imaging::AbstractPipeFilter								*_register[ SLICEVIEWER_INPUT_NUMBER ];

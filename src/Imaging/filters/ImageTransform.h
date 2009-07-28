@@ -29,11 +29,11 @@ namespace Imaging
  */
 template< typename ElementType, uint32 dim >
 class ImageTransform
-	: public AbstractImageFilter< Image< ElementType, dim >, Image< ElementType, dim > >
+	: public AbstractImageFilter< AbstractImage, Image< ElementType, dim > >
 {
 public:
 	typedef Image< ElementType, dim >			ImageType;
-	typedef AbstractImageFilter< ImageType, ImageType > 	PredecessorType;
+	typedef AbstractImageFilter< AbstractImage, ImageType > 	PredecessorType;
 	typedef typename InterpolatorBase< ImageType >::CoordType	CoordType;
 
 	class EDatasetTransformImpossible
