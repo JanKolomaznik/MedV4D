@@ -10,11 +10,19 @@ namespace M4D
 namespace Imaging
 {
 
+/**
+ * Normalized Mutual Information criterion
+ */
 template< typename ElementType >
 class NormalizedMutualInformation : public CriterionBase< ElementType >
 {
 public:
 
+	/**
+         * Calculate the normalized mutual information
+         *  @param jointHist the joint histogram of the two images
+	 *  @return the normalized mutual information
+         */
 	double compute( MultiHistogram< ElementType, 2 >& jointHist );
 
 };

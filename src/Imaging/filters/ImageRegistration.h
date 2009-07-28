@@ -30,6 +30,9 @@ namespace M4D
 namespace Imaging
 {
 
+/**
+ * Class that registers one image to another
+ */
 template< typename ElementType, uint32 dim >
 class ImageRegistration
 	: public ImageTransform< ElementType, dim >
@@ -39,30 +42,68 @@ public:
 	typedef ImageTransform< ElementType, dim >		 	PredecessorType;
 	typedef float64							HistCellType;
 
+	/**
+	 * Object properties
+	 */
 	struct Properties : public PredecessorType::Properties
 	{
 		Properties() {}
 
 	};
 
+	/**
+         * Constructor
+         *  @param prop pointer to the properties structure
+         */
 	ImageRegistration( Properties  * prop );
+
+	/**
+         * Constructor
+         *  @param prop pointer to the properties structure
+         */
 	ImageRegistration();
 
+	/**
+	 * Destructor
+	 */
 	~ImageRegistration();
 
+	/**
+	 * Set the reference image to which the input image from the input port will be registered
+	 *  @param ref smart pointer to the reference image
+	 */
 	void
 	SetReferenceImage( typename ImageType::Ptr ref );
 
+	/**
+	 * The optimization function that is to be optimized to align the images
+	 *  @param v the vector of input parameters of the optimization function
+	 *  @return the return value of the optimization function
+	 */
 	double
 	OptimizationFunction( Vector< double, 2 * dim >& v );
 
+	/**
+	 * Set the transform sampling while the registration is running
+	 *  @param tSampling transform sampling
+	 */
 	void
 	SetTransformSampling( uint32 tSampling );
 
+	/**
+	 * Set if automatic registration is requested
+	 *  @param mode true if automatic registration is needed, false otherwise
+	 */
 	void
 	SetAutomaticMode( bool mode );
 
 protected:
+
+	/**
+	 * The method executed by the pipeline's filter execution thread
+	 *  @param  utype update type
+         *  @return true if the filter finished successfully, false otherwise
+         */
 	bool
 	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
 
@@ -78,11 +119,34 @@ protected:
 private:
 	GET_PROPERTIES_DEFINITION_MACRO;
 
+	/**
+	 * Smart pointer to the reference image
+	 */
 	typename ImageType::Ptr						referenceImage;
+
+	/**
+	 * Joint histogram of the two images
+	 */
 	MultiHistogram< HistCellType, 2 >				jointHistogram;
+
+	/**
+	 * Pointer to the criterion component
+	 */
 	CriterionBase< HistCellType >					*_criterion;
+
+	/**
+	 * Pointer to the optimization component
+	 */
 	OptimizationBase< ElementType, double, 2 * dim >		*_optimization;
+
+	/**
+	 * Automatic mode request indicator
+	 */
 	bool								_automatic;
+
+	/**
+	 * Transform sampling while the registration is calculated
+	 */
 	uint32								_transformSampling;
 
 };

@@ -24,6 +24,9 @@ namespace M4D
 namespace Imaging
 {
 
+/**
+ * Filter that transforms the input dataset
+ */
 template< typename ElementType, uint32 dim >
 class ImageTransform
 	: public AbstractImageFilter< Image< ElementType, dim >, Image< ElementType, dim > >
@@ -38,16 +41,35 @@ public:
 		//TODO
 	};
 
+	/**
+         * Object properties
+         */
 	struct Properties : public PredecessorType::Properties
 	{
+
+		/**
+                 * Rotation
+                 */
 		CoordType _rotation;
 
+		/**
+		 * Sampling
+		 */
 		CoordType _sampling;
 
+		/**
+		 * Scaling
+		 */
 		CoordType _scale;
 
+		/**
+		 * Translation
+		 */
 		CoordType _translation;
 
+		/**
+		 * Constructor - fills up the properties with default values
+		 */
 		Properties()
 		{
 			for ( uint32 i = 0; i < dim; i++ )
@@ -61,40 +83,87 @@ public:
 
 	};
 
+	/**
+	 * Constructor
+	 *  @param prop pointer to the properties structure
+	 */
 	ImageTransform( Properties  * prop );
+
+	/**
+	 * Constructor
+	 */
 	ImageTransform();
 
+	/**
+	 * Set the number of threads performing slice transformations at once
+	 *  @param tNumber the number of threads to run simultaneously
+	 */
 	void SetThreadNumber( uint32 tNumber );
 
+	/**
+	 * Set the interpolator to be used during transformation
+	 *  @param interpolator pointer to the interpolator to be used
+	 */
 	void SetInterpolator( InterpolatorBase< ImageType >* interpolator );
-	
+
+	/**
+	 * Set the rotation
+	 *  @param rotation the rotation to be set
+	 */
 	void SetRotation(CoordType rotation)
 	{
 		dynamic_cast< Properties* >( this->_properties )->_rotation = rotation;
 	}
 
+	/**
+	 * Set the sampling 
+	 *  @param sampling the sampling to be set
+	 */
 	void SetSampling(CoordType sampling)
 	{
 		dynamic_cast< Properties* >( this->_properties )->_sampling = sampling;
 	}
 
+	/**
+	 * Set the scale
+	 *  @param scale the scale to be set
+	 */
 	void SetScale(CoordType scale)
 	{
 		dynamic_cast< Properties* >( this->_properties )->_scale = scale;
 	}
 
+	/**
+	 * Set the translation
+	 *  @param translation the translation to be set
+	 */
 	void SetTranslation(CoordType translation)
 	{
 		dynamic_cast< Properties* >( this->_properties )->_translation = translation;
 	}
 
 protected:
+
+	/**
+	 * Execute the transformation
+	 *  @param transformSampling how many voxels should be left out in a row and in a column after
+	 *         one interation of voxel transformation
+	 *  @return true if the transformation was successful, false otherwise
+	 */
 	bool
 	ExecuteTransformation( uint32 transformSampling );
 
+	/**
+	 * Rescale the output image according to the scaling parameter
+	 */
 	void
 	Rescale();
 
+	/**
+	 * This method is executed by the pipeline's filter thread
+	 *  @param utype update type
+	 *  @return true if the filter finished successfully, false otherwise
+	 */
 	virtual bool
 	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
 
@@ -128,8 +197,14 @@ protected:
 	ReaderBBoxInterface::Ptr	_readerBBox;
 	WriterBBoxInterface		*_writerBBox;
 
+	/**
+	 * The number of threads running simultaneously transforming slices
+	 */
 	uint32				_threadNumber;
 
+	/**
+	 * The interpolator used for transformation
+	 */
 	InterpolatorBase< ImageType >*	_interpolator;
 
 private:
