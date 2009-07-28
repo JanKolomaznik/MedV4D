@@ -50,7 +50,7 @@ public:
     /**
      * Destructor
      */
-    virutal ~MaximumIntensitySliceViewerTexturePreparer()
+    virtual ~MaximumIntensitySliceViewerTexturePreparer()
     {
 	delete this->_comparator;
     }
