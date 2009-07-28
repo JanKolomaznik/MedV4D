@@ -96,6 +96,25 @@ SimpleSliceViewerTexturePreparer< ElementType >
 
                     if ( !original ) ready = false;
 
+        	    else
+		    {
+
+			// check to see if modification is required for power of 2 long and wide texture
+		        float power_of_two_width_ratio=std::log((float)(width))/std::log(2.0);
+        		float power_of_two_height_ratio=std::log((float)(height))/std::log(2.0);
+
+       			uint32 newWidth=(uint32)std::pow( (double)2.0, (double)std::ceil(power_of_two_width_ratio) );
+        		uint32 newHeight=(uint32)std::pow( (double)2.0, (double)std::ceil(power_of_two_height_ratio) );
+
+        		pixel = new ElementType[ newHeight * newWidth ];
+
+        		copy( pixel, original, width, height, newWidth, newHeight, slice, xstride, ystride, zstride );
+
+        		width = newWidth;
+        		height = newHeight;
+
+		    }
+
                 } catch (...) { ready = false; }
                 inPort->ReleaseDatasetLock();
                 if ( !ready ) return NULL;
@@ -108,20 +127,6 @@ SimpleSliceViewerTexturePreparer< ElementType >
         }
         catch (...) { ready = false; }
         if ( !ready ) return NULL;
-
-        // check to see if modification is required for power of 2 long and wide texture
-        float power_of_two_width_ratio=std::log((float)(width))/std::log(2.0);
-        float power_of_two_height_ratio=std::log((float)(height))/std::log(2.0);
-
-        uint32 newWidth=(uint32)std::pow( (double)2.0, (double)std::ceil(power_of_two_width_ratio) );
-        uint32 newHeight=(uint32)std::pow( (double)2.0, (double)std::ceil(power_of_two_height_ratio) );
-
-        pixel = new ElementType[ newHeight * newWidth ];
-
-        copy( pixel, original, width, height, newWidth, newHeight, slice, xstride, ystride, zstride );
-
-        width = newWidth;
-        height = newHeight;
 
 	return pixel;
     }
