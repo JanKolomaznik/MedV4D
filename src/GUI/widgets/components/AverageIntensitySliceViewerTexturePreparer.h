@@ -14,12 +14,18 @@ namespace M4D
 namespace Viewer
 {
 
+/**
+ * Sliceviewer's texture preparer component that calculates the average value of each pixel position
+ */
 template< typename ElementType >
 class AverageIntensitySliceViewerTexturePreparer : public virtual IntensitySummarizerSliceViewerTexturePreparer< ElementType >
 {
 
 public:
 
+    /**
+     * Constructor
+     */
     AverageIntensitySliceViewerTexturePreparer() {}
 
 protected:

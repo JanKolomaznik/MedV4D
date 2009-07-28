@@ -14,12 +14,18 @@ namespace M4D
 namespace Viewer
 {
 
+/**
+ * Sliceviewer's texture preparer that shows the first input dataset as a greyscale image
+ */
 template< typename ElementType >
 class SimpleSliceViewerTexturePreparer : public AbstractSliceViewerTexturePreparer
 {
 
 public:
 
+    /**
+     * Constructor
+     */
     SimpleSliceViewerTexturePreparer() {}
 
     /**
@@ -38,7 +44,7 @@ public:
      *  @param contrastRate the rate of contrast to adjust the image with
      *  @param so the orientation of the slices (xy, yz, zx)
      *  @param slice the number of the slice to be drawn
-     *  @param dimension dimense
+     *  @param dimension dataset's number of dimensions
      *  @return true, if texture preparing was successful, false otherwise
      */
     virtual bool prepare( const Imaging::InputPortList& inputPorts,
@@ -81,7 +87,7 @@ protected:
      *  @param height reference to set the height of the texture
      *  @param so the orientation of the slices (xy, yz, zx)
      *  @param slice the number of the slice to be drawn
-     *  @param dimension dimense
+     *  @param dimension dataset's number of dimensions
      *  @return pointer to the resulting texture array, if texture preparing was successful, NULL otherwise
      */
     ElementType* prepareSingle( Imaging::InputPortTyped<Imaging::AbstractImage>* inPort,
@@ -99,7 +105,7 @@ protected:
      *  @param height reference to set the height of the texture
      *  @param so the orientation of the slices (xy, yz, zx)
      *  @param slice the number of the slice to be drawn
-     *  @param dimension dimense
+     *  @param dimension dataset's number of dimensions
      *  @return array of arrays of the prepared textures
      */
     virtual ElementType** getDatasetArrays( const Imaging::InputPortList& inputPorts,

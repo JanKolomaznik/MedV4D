@@ -15,6 +15,9 @@ namespace M4D
 namespace Viewer
 {
 
+/**
+ * Sliceviewer's texture preparer component that selects the maximum gradient value of the input dataset pixels
+ */
 template< typename ElementType >
 class MaximumGradientSliceViewerTexturePreparer : public virtual MaximumIntensitySliceViewerTexturePreparer< ElementType >,
 						  public virtual GradientSliceViewerTexturePreparer< ElementType >
@@ -22,6 +25,9 @@ class MaximumGradientSliceViewerTexturePreparer : public virtual MaximumIntensit
 
 public:
 
+    /**
+     * Constructor
+     */
     MaximumGradientSliceViewerTexturePreparer() {}
 
 private:

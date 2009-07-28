@@ -14,12 +14,18 @@ namespace M4D
 namespace Viewer
 {
 
+/**
+ * Sliceviewer's texture preparer component that selects the median intensity of the input pixel values
+ */
 template< typename ElementType >
 class MedianIntensitySliceViewerTexturePreparer : public virtual IntensitySummarizerSliceViewerTexturePreparer< ElementType >
 {
 
 public:
 
+    /**
+     * Constructor
+     */
     MedianIntensitySliceViewerTexturePreparer() {}
 
 protected:

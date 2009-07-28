@@ -18,6 +18,9 @@ namespace M4D
 namespace Viewer
 {
 
+/**
+ * Interface for sliceviewer's texture preparer component
+ */
 class AbstractSliceViewerTexturePreparer
 {
 
@@ -32,7 +35,7 @@ public:
      *  @param contrastRate the rate of contrast to adjust the image with
      *  @param so the orientation of the slices (xy, yz, zx)
      *  @param slice the number of the slice to be drawn
-     *  @param dimension dimense
+     *  @param dimension dataset's number of dimensions
      *  @return true, if texture preparing was successful, false otherwise
      */
     virtual bool prepare( const Imaging::InputPortList& inputPorts,

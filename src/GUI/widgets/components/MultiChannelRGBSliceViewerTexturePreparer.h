@@ -14,12 +14,19 @@ namespace M4D
 namespace Viewer
 {
 
+/**
+ * Sliceviewer's texture preparer that gives a color to each of the input datasets and
+ * summarizes them according to the pixel values at each position
+ */
 template< typename ElementType >
 class MultiChannelRGBSliceViewerTexturePreparer : public virtual RGBSliceViewerTexturePreparer< ElementType >
 {
 
 public:
 
+    /**
+     * Constructor
+     */
     MultiChannelRGBSliceViewerTexturePreparer() {}
 
     /**
@@ -31,7 +38,7 @@ public:
      *  @param contrastRate the rate of contrast to adjust the image with
      *  @param so the orientation of the slices (xy, yz, zx)
      *  @param slice the number of the slice to be drawn
-     *  @param dimension dimense
+     *  @param dimension dataset's number of dimensions
      *  @return true, if texture preparing was successful, false otherwise
      */
     virtual bool prepare( const Imaging::InputPortList& inputPorts,

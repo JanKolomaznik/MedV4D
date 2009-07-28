@@ -15,6 +15,9 @@ namespace M4D
 namespace Viewer
 {
 
+/**
+ * Sliceviewer's texture preparer component that calculates the average gradient for each pixel
+ */
 template< typename ElementType >
 class AverageGradientSliceViewerTexturePreparer : public virtual AverageIntensitySliceViewerTexturePreparer< ElementType >,
 						  public virtual GradientSliceViewerTexturePreparer< ElementType >
@@ -22,6 +25,9 @@ class AverageGradientSliceViewerTexturePreparer : public virtual AverageIntensit
 
 public:
 
+    /**
+     * Constructor
+     */
     AverageGradientSliceViewerTexturePreparer() {}
 
 private:

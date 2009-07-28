@@ -14,12 +14,18 @@ namespace M4D
 namespace Viewer
 {
 
+/**
+ * Sliceviewer's texture preparer component that calculates the gradient of the input datasets
+ */
 template< typename ElementType >
 class GradientSliceViewerTexturePreparer : public virtual SimpleSliceViewerTexturePreparer< ElementType >
 {
 
 public:
 
+    /**
+     * Constructor
+     */
     GradientSliceViewerTexturePreparer() {}
 
 protected:
@@ -32,7 +38,7 @@ protected:
      *  @param height reference to set the height of the texture
      *  @param so the orientation of the slices (xy, yz, zx)
      *  @param slice the number of the slice to be drawn
-     *  @param dimension dimense
+     *  @param dimension dataset's number of dimensions
      *  @return array of arrays of the prepared textures
      */
     ElementType** getDatasetArrays( const Imaging::InputPortList& inputPorts,

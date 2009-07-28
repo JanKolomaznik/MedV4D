@@ -17,6 +17,10 @@ namespace M4D
 namespace Viewer
 {
 
+/**
+ * Sliceviewer's texture preparer component that selects the maximum intensity, median intensity and
+ * minimum intensity of the pixels at a given position, and sets them as the channels of RGB
+ */
 template< typename ElementType >
 class MaxMedMinRGBSliceViewerTexturePreparer :	public RGBSliceViewerTexturePreparer< ElementType >,
 						public MaximumIntensitySliceViewerTexturePreparer< ElementType >,
@@ -26,6 +30,9 @@ class MaxMedMinRGBSliceViewerTexturePreparer :	public RGBSliceViewerTexturePrepa
 
 public:
 
+    /**
+     * Constructor
+     */
     MaxMedMinRGBSliceViewerTexturePreparer() {}
 
     /**
@@ -37,7 +44,7 @@ public:
      *  @param contrastRate the rate of contrast to adjust the image with
      *  @param so the orientation of the slices (xy, yz, zx)
      *  @param slice the number of the slice to be drawn
-     *  @param dimension dimense
+     *  @param dimension dataset's number of dimensions
      *  @return true, if texture preparing was successful, false otherwise
      */
     virtual bool prepare( const Imaging::InputPortList& inputPorts,

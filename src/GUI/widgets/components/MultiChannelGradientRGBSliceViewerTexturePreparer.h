@@ -15,12 +15,19 @@ namespace M4D
 namespace Viewer
 {
 
+/**
+ * Sliceviewer's texture preparer that gives a color to each of the input datasets and
+ * summarizes them according to the pixel gradients at each position
+ */
 template< typename ElementType >
 class MultiChannelGradientRGBSliceViewerTexturePreparer : public MultiChannelRGBSliceViewerTexturePreparer< ElementType >, GradientSliceViewerTexturePreparer< ElementType >
 {
 
 public:
 
+    /**
+     * Constructor
+     */
     MultiChannelGradientRGBSliceViewerTexturePreparer() {}
 
 private:

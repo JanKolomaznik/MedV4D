@@ -15,6 +15,9 @@ namespace M4D
 namespace Viewer
 {
 
+/**
+ * Sliceviewer's texture preparer component that selects the median of the input pixel gradients
+ */
 template< typename ElementType >
 class MinimumGradientSliceViewerTexturePreparer : public virtual MinimumIntensitySliceViewerTexturePreparer< ElementType >,
 						  public virtual GradientSliceViewerTexturePreparer< ElementType >
@@ -22,6 +25,9 @@ class MinimumGradientSliceViewerTexturePreparer : public virtual MinimumIntensit
 
 public:
 
+    /**
+     * Constructor
+     */
     MinimumGradientSliceViewerTexturePreparer() {}
 
 private:
