@@ -1,6 +1,16 @@
 \chapter{Tools setup}
 \label{toolsSetup}
 
+\par
+This part is a cookbook how to install all the necessary content to be able to begin development for Cell/B.E.
+It also covers some bugs fixing as well as usefull hints how to use partial SDK content.
+The instruction concerning the SDK installation was based on installation on i686 machine.
+But shall be the same for the other architectures since it operates on the same oprating system and repository versions of third party software.
+
+\par
+The first step is installation of Fedora system.
+For details see fedora official site \cite{fedorasite}.
+
 \section{SDK installation}
 
 As first you have to do is to download actual SDK.
@@ -83,6 +93,47 @@ To run the ide you have to specify folder where the JRE is (through -vm param).
 /opt/cell/ide/eclipse/eclipse -vm /opt/ibm/java2-i386-50/jre/bin/
 \end{verbatim}
 
+\subsection{Bug fixing}
+\label{XULLFIX}
+
+If you start IDE and it crashes with unhandled exception it is probably caused by xulrunner library.
+It is usually installed with Firefox3. There is following workaround:
+\begin{enumerate}
+\item download an older version of xulrunner
+
+e.g. from: \url{http://releases.mozilla.org/pub/mozilla.org/xulrunner/ releases/1.8.1.3/contrib/linux-i686/ xulrunner-1.8.1.3.en-US.linux-i686-20080128.tar.gz}
+
+\item untar to an accessible directory
+
+Lets call it XULDIR.
+
+\item edit the file
+
+/opt/cell/ide/eclipse/eclipse.ini file as follows:
+\begin{verbatim}
+...
+-vmargs
+-Dorg.eclipse.swt.browser.XULRunnerPath=XULDIR
+...
+\end{verbatim}
+\end{enumerate}
+Now you should start the IDE without the crash, screenshot of welcome page is on the Figure \ref{fg:eclipseWelcome}.
+Screenshot of common eclipse view is on the Figure \ref{fg:eclipse}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.95\textwidth]{data/png/eclipseWelcome}
+    \caption[Cell/B.E. based machines]{Sreenshot with opened source, project explorer and remote environments windows}
+    \label{fg:eclipseWelcome}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.95\textwidth]{data/png/eclipse}
+    \caption[Cell/B.E. based machines]{Screenshot of Eclipse cellide welcome page after the first successful startup.}
+    \label{fg:eclipse}
+\end{figure}
+
 \section{IBM Full-System Simulator}
 
 The last part of development environment is IBM Full-System Simulator (systemsim).
@@ -107,30 +158,6 @@ Now all necessary stuff is installed.
 You could start the IDE and start development. But there are some bugs to fix yet.
 
 \subsection{Bug fixing}
-
-If you start IDE and it crashes with unhandled exception it is probably caused by xulrunner library.
-It is usually installed with Firefox3. There is following workaround:
-\begin{enumerate}
-\item download an older version of xulrunner
-
-e.g. from: \url{http://releases.mozilla.org/pub/mozilla.org/xulrunner/ releases/1.8.1.3/contrib/linux-i686/ xulrunner-1.8.1.3.en-US.linux-i686-20080128.tar.gz}
-
-\item untar to accessible directory
-
-Lets call it XULDIR.
-
-\item edit the file
-
-/opt/cell/ide/eclipse/eclipse.ini file as follows:
-\label{XULLFIX}
-\begin{verbatim}
-...
--vmargs
--Dorg.eclipse.swt.browser.XULRunnerPath=XULDIR
-...
-\end{verbatim}
-\end{enumerate}
-Now you should start the IDE without the crash.
 
 \par
 Another issue (stack issue) is with tcl (scripting language that is used for configuration of the systemsim).
@@ -159,9 +186,19 @@ PATH=/opt/ibm/systemsim-cell/bin:\$PATH
 /opt/cell/ide/eclipse/eclipse -vm /opt/ibm/java2-i386-50/jre/bin
 \end{verbatim}
 
+Startup of the simulator shall finish to paused state after application of the fixes.
+Screenshot of started simulator is on the Figure \ref{fg:eclipseSIMStarted}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.95\textwidth]{data/png/eclipseSIMStarted}
+    \caption[Cell/B.E. based machines]{Screenshot of Eclipse cellide after simulator startup. Remote environments window contain Local Cell Simulator item that is in paused state. Above this window is simulator console with few last outputs. On the upper left side is part of simulator control window.}
+    \label{fg:eclipseSIMStarted}
+\end{figure}
+
 \subsection{Installation of libraries into sysroot\_image}
 
-Because sysroot\_image is provided as image of installed Fedora 9 without Cell B.E. libraries so next step is to install them into sysroot\_image.
+Because sysroot\_image is provided as image of installed Fedora 9 without any Cell/B.E. libraries so next step is to install them into sysroot\_image.
 
 \begin{verbatim}
 /opt/cell/cellsdk_sync_simulator install
@@ -202,8 +239,6 @@ Under host machine root account the \url{<sysroot_image_mount_point>/etc/passwd}
 The first line is the root's so deletion of '*' characted from the second field (after the second ':' character) will disable the root's password.
 Note that this action must be performed when the simulator is not running otherwise the changes will be overwritten by the simulator.
 
-\section{Setup CellIDE}
-
 \section{Using examples}
 
 Examples are installed into /opt/cell/sdk/src as tarball.
@@ -225,17 +260,20 @@ It is C/C++ Build tab. Use 'Workspace' button to specify the folder because it w
 \section{Tuning memory usage on PS3}
 \label{ps3MemoryUsage}
 
-PS3 has only 256MB RAM memory.
+PS3 has only 256MB RAM memory and even not the whole is visible for operating system.
 This is very small amount for operating system and programs together.
 When install fedora system with default state and boot up it, the amount of remaining free memory is about 10MB.
 It is insufficient for either debugging and compilation.
 So some of resources has to be switched off.
 Our PS3s are accessed remotely via ssh so there is no need for X server.
 So this is the first you can turn off. This is performed by change of runlevel from 5 to 3.
-Run level setting is in \url{/etc/inittab} file:
+Run level setting is in \url{/etc/inittab} file. So change in line
 \begin{verbatim}
-change in line "id:5:initdefault:" the 5 to 3
+"id:5:initdefault:"
 \end{verbatim}
+the 5 to 3.
+
+\par
 Another resource are services.
 Here you have to consider if the service you want to turn off is really unnecesary.
 In Our PS3 NeworkManger and Wireless supplicant was turn off.
@@ -243,29 +281,34 @@ NOTE: when you turn off network manager, you have to turn on network service oth
 For service management within ssh console \url{/usr/sbin/ntsysv} manager is quite useful.
 After disabling all unnecessary services we got about 130MB of free space.
 
+\par
 Yellow dog distributions goes even beyond. They can access other 256MB in PS3 locked for graphics.
 Special device is created and the graphic memory is the used as a swap partition. For details see \url{http://us.fixstars.com/products/ydl/}.
 
 \section{Performance tools}
 
+Information about packages concerning performance tools can be obtained by:
 \begin{verbatim}
 yum groupinfo "Cell Performance Tools"
+\end{verbatim}
+If they are not already installed issue following command to install them.
+\begin{verbatim}
+yum groupinstall "Cell Performance Tools"
 \end{verbatim}
 
 \section{Visual Performance Analyzer - VPA}
 
 Another useful tool is VPA. It is not part of SDK so it should be downloaded separately.
 Visit \url{http://www.alphaworks.ibm.com/tech/vpa} for details.
-After installing (actually unpacking) the downloaded file similar fix in ini file to eclipse.ini file (see\ref{XULLFIX}) should be done to run the VPA correctly.
+After installing (actually unpacking) the downloaded file similar fix in ini file to eclipse.ini file (see paragraph \ref{XULLFIX}) should be done to run the VPA correctly.
 
-\section{Cell B.E. cross compilation}
+\section{Cell/B.E. cross compilation}
 
-
-When building a Cell B.E. program which uses lot of third party libraries, such as the ours, it is good idea to share some folders on actual Cell B.E. machine.
-You can then use directly the stuff for different architecture.
-So there is not necessary to copy different architecture stuff to the machine where the cross compilation is performed as we did.
-In our application we wanted to use repository versions of the third party libraries.
-So the first thing we tried was to install appropriate packages of different architecture to the cross compilation computer.
+When crosscopiling a Cell/B.E. program which uses lot of third party libraries it is good idea to share some folders on actual Cell/B.E. machine.
+There is not necessary to copy different architecture stuff to the machine where the cross compilation is performed as we did.
+In our case it was boost and ITK libraries and we performed crosscompilation for Cell/B.E. on a i686 machine.
+We wanted to use repository versions of the Cell/B.E. resp. ppc64 libraries on our i686 machine.
+So the first thing we tried was to install appropriate packages of different architecture.
 But we have not found a way how to do it.
 Every try has failed due to architecture mismatch.
-So we believe that mounting shared folders on remote Cell B.E. machine is the only way how to use repository content directly.
+So we believe that mounting remote Cell/B.E. machine shared folders is the only way how to use repository content directly and avoid copying different architecture content.

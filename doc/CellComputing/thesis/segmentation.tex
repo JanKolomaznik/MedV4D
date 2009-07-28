@@ -1,13 +1,13 @@
-\chapter{Segmentation}
+\chapter{Image segmentation}
 
-In this chapter segmentation will be described. Several basic segmentation techniques will be explained.
+Image segmentation will be described in this chapter as well as several basic segmentation techniques will be listed.
 Subsequently level set techniques will be introduced, defined and explained in more detail.
 Then level set computation issues will be described along with mentioning of two basic speed-up approaches.
-After that level set method relation to segmentation will be mentioned.
-After all some features of level set computation on streaming architectures will be listed along with comparison to the Cell B.E. features.
+After that level set method relation to image segmentation will be mentioned.
+After all some features of level set computation on streaming architectures will be listed along with comparison to the Cell/B.E. features.
 
 \section{Problem formulation}
-Segmentation is process when pixels of input image are split into several subsets (partitions) based on their characteristics or computed properties, such as color, intensity, or texture.
+Image segmentation is process when pixels of input image are split into several subsets, partitions, based on their characteristics or computed properties, such as color, intensity, or texture.
 Pixels within such partition then have similar features and compose some object in the image.
 
 In more formal way it is a function that assign a segment to pixel:
@@ -16,23 +16,25 @@ S: S(p) = k
 \end{equation}
 where p $\in$ pixels of an image and k $\in$ set of segments
 
-Segmentation is used in many domains such as medicine (locating organs, tumors, bones, etc.), parsing images from a satellite for maps (location buildings, roads, etc.), machine vision (fingerprint recognition, face, eyes, or other features recognition).
-Or such a simple tool as the well known "magic-stick" tool in popular graphics editing software (Photoshop, GIMP) that performs thresholding segmentation.
+Image segmentation is used in many domains such as medicine (locating organs, tumors, bones, etc.), satellite images clasification for maps (location buildings, roads, etc.), machine vision (fingerprint recognition, face, eyes, or other features recognition).
+Or such a simple tool as the well known "magic-stick" tool in popular graphics editing software like Photoshop.
 
 Although there were some attempts to find general-purpose segmentation solution, results were not satisfactory.
-So there is not yet such general solution. Each domain needs extra approach how to perform the segmentation.
-Some of them are not even fully automatic so they need assistance of operator (semi-autonomous approaches).
-In this kind of segmentation, the user (operator) inputs some region and thus give a hint to the algorithm.
-This is favorite approach in segmentation of structures (organs, etc.) on medical images.
+So there is not yet such general solution.
+Each domain needs extra approach how to perform the segmentation.
+Some of them are not even fully automatic so they need assistance of operator.
+They are called semi-autonomous approaches.
+These methods need an operator who inputs some region and thus gives a hint to the algorithm.
+This is favorite approach in segmentation of structures on medical images like organs, tumors, vessels, etc.
 A physician then plays the role of the operator because of his knowledge of images' content.
 Some are autonomous but needs some a priory knowledge of some properties of segmented object.
 
-Sometimes segmentation methods are performed on different resolutions and then combined together.
-Which means solution from lower resolution is taken as another input (some criterion, etc.) for solution of higher resolution.
+Sometimes image segmentation methods are performed on different resolutions and then combined together.
+Solution in lower resolution is taken as another input or some criterion for solution in higher resolution.
 
-\section{Segmentation methods overview}
+\section{Image segmentation methods overview}
 
-Segmentation methods can be divided according \cite{wiki} into following basic categories:
+Image segmentation methods can be divided into following basic categories (information based on \cite{wiki}):
 
 \begin{enumerate}
 
@@ -41,22 +43,22 @@ Segmentation methods can be divided according \cite{wiki} into following basic c
   These methodes are used do cluster an image into N clusters.
 They cover the entire image.
 Two main subsets of methods are bottom-up and top-bottom.
-The first one takes each pixel as separate cluster and then iterate joining these initial clusters (pixels) based on some criterion until there are N cluster in cluster set.
-The second one pick N (randomly or heuristic based) chosen cluster centers.
-Then these two steps are repeated until some convergence condition is met (e.g. no pixels change clusters): assign pixels to clusters based minimalization of the variance between the pixel and the cluster center and re-compute the cluster centers by averaging all of the pixels in the cluster.
+The first one takes each pixel as separate cluster and then iterate joining these initial clusters based on some criterion until there are N cluster in cluster set.
+The second one pick N randomly or heuristic based chosen cluster centers.
+Then these two steps are repeated until some convergence condition is met e.g. no pixels change clusters: assign pixels to clusters based minimalization of the variance between the pixel and the cluster center and re-compute the cluster centers by averaging all of the pixels in the cluster.
 
   \item Histogram-based
 
-  As first, histogram is computed from pixels of the image.
-Then peaks and valleys in the histogram creates the clusters in the image.
+  At first, histogram is computed from pixels of the image.
+Then peaks and valleys in the histogram creates the segments in the image.
 Result can be refined by recursively repeated the process.
 Recursion is stopped when no new more segments appears.
 
   \item Edge detection
 
-  These methods segment an image based on its edges.
-So core of such methodes is some edge-detection algorithm (Canny, Sobel, ...).
-Discontinuities of found edges that form the segmented object must be overcome some other technique (i.e. based on distance among edges, when two edges are close to each other they are considered to form boundary of segmented object).
+  These methods segment an image based on edges within it.
+So core of such methodes is some edge-detection algorithm such as Canny, Sobel.
+Discontinuities of found edges that form the segmented object must be overcome some other technique i.e. based on distance among edges, when two edges are close to each other they are considered to form boundary of segmented object.
 
   \item Region growing
 
@@ -70,38 +72,33 @@ If it is similar enough, the pixel is added to the region.
   Method is highly noise-sensitive.
 The initial seeds can be misplaced due to the noise.
 So there is another algorithm that is seedless.
-It starts with a single pixel (region).
+It starts with a single pixel that is initial region.
 Its location does not significantly influence final result.
 Then the iteration over neighboring pixels are taken just as in seeded growing.
-If it is different enough (some threshold value is applied), new segment is created.
-  Particular approaches differs in definition of the similarity function.
-While one group uses pixel's properties (intensity, color) directly, another computes some statistical test and the candidate pixel is processed according the test was accepted or rejected.
+If a neighbour is different enough new segment is created.
+A threshold value is used as similarity measurement but particular approaches differs in definition of the similarity function.
+While one group uses pixel's properties like intensity or color directly, another computes some statistical test and the candidate pixel is processed according the test was accepted or rejected.
 
   \item Graph partitioning
 
-  This approach converts an image into a graph (pixels corresponds the vertices.
-There is edge between every pair of pixels and edges are weighted with similarity function of the two connected pixels).
-Then some graph algorithm that cuts off edges and thus partition the graph (image) is then run.
+  This approach converts an image into a graph.
+Pixels correspond to the vertices.
+There is edge between every pair of pixels and edges are weighted with similarity function of the two connected pixels.
+Then a graph algorithm that cuts off edges is run partitionin the graph resp. image.
 Popular algorithms of this category are the random walker, minimum mean cut, minimum spanning tree-based algorithm, normalized cut, etc.
 
   \item Watershed transformation
 
   The watershed transformation considers the gradient magnitude of an image as a topographic surface.
-Pixels having the highest gradient magnitude intensities (GMIs) correspond to watershed lines, which represent the region boundaries.
+Pixels having the highest gradient magnitude intensities (GMI) correspond to watershed lines, which represent the region boundaries.
 Water placed on any pixel enclosed by a common watershed line flows downhill to a common local intensity minimum (LMI).
 Pixels draining to a common minimum form a catch basin, which represents a segment.
 
   \item Model based segmentation
 
-  The main idea of this method is to describe the segmented object statistically (construct a probabilistic model) explaining the variation of the shape of the object.
+  The main idea of this method is to describe the segmented object statistically constructing a probabilistic model that explains the variation of the object shape.
 In segmentation phase is the model used to impose constraints as prior.
 Searching for such model contains steps like: registration of the training examples to a common pose, probabilistic representation of the variation of the registered samples and statistical correspondence between the model and the image.
-
-  \item  Neural networks segmentation
-
-  Neural Network segmentation relies on processing small areas of an image using a neural network or a set of neural networks.
-After such processing the decision-making mechanism marks the areas of an image accordingly to the category recognized by the neural network.
-A type of network designed especially for this, is the Kohonen map.
 
   \item Level set
 
@@ -110,14 +107,15 @@ It is represented as a surface of level set (LS) function defined on volume.
 Surface is then deformed with forces that are computed from segmented image resulting actual segmentation of the object.
 
 Whole process can be illustrated in very similar way to flood-filling, see figure \ref{fg:flooding}.
-Initial surface (e.g. a simple circle, for 2D case, as a surface of a distance function from given point) is deformed with forces that has direction of surface normals.
-When it approaches borders of the object propagation slows down.
-On borders on the object propagation stops (forces are zero there).
+Initial surface is deformed with forces that has direction of surface normals.
+It can be e.g. a simple circle, for 2D case, as a surface of a distance function from given point.
+When it approaches object borders propagation slows down.
+On the object borders propagation stops because forces are zero there.
 
 \begin{figure}
     \centering
     \includegraphics[width=12cm]{data/flooding}
-    \caption[Flooding an object]{Initial shape (the circle) grows and fills (floods) the object on the background. In contrast to common flood-fill approach, level set method has several parameters that can e.g. prevent flooding beyond the object borders through small holes.}
+    \caption[Flooding an object]{Initial shape, the circle, grows and floods the object on the background. In contrast to common flood-fill approach, level set method has several parameters that can e.g. prevent flooding beyond the object borders through small holes.}
     \label{fg:flooding}
 \end{figure}
 
@@ -128,40 +126,43 @@ With the changes of the landscape shoreline of the lake changes as well.
 Landscape represents the LS function and water surface represent the surface i.e. k-level set.
 
 \par
-Advantages of the level set method is that it is implicit (no special stuff needed for merging and splitting surfaces), has only few intuitive parameters, can change the topology and can be performed in all dimension without explicit changes in method.
+Advantages of the level set method are lack of special treatment of merging and splitting surfaces necessity, few intuitive parameters, ability of topology changing and ability of performance in all dimension without explicit changes in method.
 
 \end{enumerate}
 
 \subsection{Level set formulation}
 
 Level set method as proposed by Osher and Sethian \cite{sethianLS} provide numerical and mathematical mechanisms how to compute surface deformation as time varying iso-values of LS function using partial differential equations (PDE).
-According to \cite{insightIntoImages} LS function is a signed scalar (distance) function
+Following information are based on \cite{insightIntoImages}.
+LS function is a signed scalar distance function
 \begin{equation}
 \phi : U_{x,y,z} \rightarrow \mathbb R,
 \end{equation}
 where $U \subset R^3$ is the domain of the volume (note: every definitions will be for 2D case).
-$\phi$ can be sometimes called embedding. LS is implicit representation of a surface of the segmented object.
+$\phi$ can be sometimes called embedding.
+LS is implicit representation of a surface of the segmented object.
 Surface is then subset of the LS function values
 \begin{equation}
 \vec{S} = \{\vec{x}\mid \phi(\vec{x}) = k\}
 \end{equation}
-S is then called a k-isosurface or k-level set of $\phi$. k can be chosen freely, but in most cases it is zero.
+Variable $S$ is then called a k-isosurface or k-level set of $\phi$. Variable $k$ can be chosen freely, but in most cases it is zero.
 Surface is then called zero isosurface, zero LS or front in some contexts and corresponds to the actual object contour.
 
 Surface can be also defined as local mapping $\vec{S}$:
 \begin{equation}
 \vec{S}: V_r \times V_s \rightarrow \mathbb R^3_{x,y,z},
 \end{equation}
-where $V \times V \subset \mathbb R^2$. Because of deformation time variable $t\in \mathbb R^+$ has to be added resulting function S = S(r,s,t).
-Deformation (propagation) of the surface is then described by an evolution equation i.e. differential equation on S.
-One approach (dynamic) is to use one-parameter family of $\phi$ i.e. $\phi(\vec{x},t)$ changes over time, $\vec{x}$ remains on the k-level set of $\phi$ as it moves and k remains constant.
+where $V \times V \subset \mathbb R^2$.
+Because of deformation time variable $t\in \mathbb R^+$ has to be added resulting function $S = S(r,s,t)$.
+Propagation of the surface is then described by an evolution equation i.e. differential equation on $S$.
+One approach, dynamic, uses one-parameter family of $\phi$ i.e. $\phi(\vec{x},t)$ changes over time, $\vec{x}$ remains on the k-level set of $\phi$ as it moves and $k$ remains constant.
 Resulting equation is
 \begin{equation}
 \label{deformEq}
 \phi(\vec{x}(t),t) = k \Rightarrow \frac{\delta \phi}{\delta t} = - \Delta \phi
 \cdot \vec{v}.
 \end{equation}
-Where v represents movement of point x on deforming surface i.e. positions in time.
+Where $v$ represents movement of point $x$ on deforming surface i.e. positions in time.
 All surface movements depend on forces that are based on LS geometry.
 And LS geometry can be expressed in terms of differential structure of $\phi$.
 So following version of equation \ref{deformEq} link formulated:
@@ -175,55 +176,58 @@ This equation can apply to every values of k i.e. every LS of function $\phi$ an
 
 \subsection{Level set computation}
 
-Computation of surface deformation has to be discretized. So it is performed on discretized volume i.e. grid.
-Equation converts the problem to solving nonlinear partial differential equations (PDE).
-Surface deformation (propagation, movement) is then computed from initial model in cycles representing discrete time steps using this update equation:
+Computation of surface deformation has to be discretized.
+So it is performed on discretized volume i.e. grid.
+Equation converts the problem to solving nonlinear PDE.
+Surface propagation is then computed from initial model in cycles representing discrete time steps using this update equation:
 \begin{equation}
 \label{deformEqApprox}
 \phi_{i,j,k}^{n+1} = \phi_{i,j,k}^{n} + \Delta t \Delta \phi_{i,j,k}^{n},
 \end{equation}
-where the term $\phi_{i,j,k}^{n}$ is discrete approximation of $\frac{\delta\phi}{\delta t}$ refering to the n-th time step at discrete position i,j,k (which has a counter part in a continuous domain $\phi(x_i, y_j, z_k)$ ) and $\Delta t \Delta \phi_{i,j,k}^{n}$ is finite forward difference term representing approximation of the forces influencing the LS (update term). The solution is then succession of steps where new solution is obtained as current solution plus update term.
+where the term $\phi_{i,j,k}^{n}$ is discrete approximation of $\frac{\delta\phi}{\delta t}$ refering to the n-th time step at discrete position i,j,k which has a counter part in a continuous domain $\phi(x_i, y_j, z_k)$.
+$\Delta t \Delta \phi_{i,j,k}^{n}$ is finite forward difference term representing approximation of the forces influencing the LS, the update term.
+The solution is then succession of steps where new solution is obtained as current solution plus update term.
 
 Discretization of the LS solution brings two problems.
-Fist one is need of stable and accurate numeric scheme for solving PDE equations.
-This is solved by 'upwind scheme' proposed by Osher and Sethian\cite{sethianLS}.
-The second one is high computational complexity caused by conversion surface problem into (one dimension higher) volume problem.
+Fist one is need of stable and accurate numeric scheme for solving PDEs.
+This is solved by 'upwind scheme' proposed by Osher and Sethian \cite{sethianLS}.
+The second one is high computational complexity caused by conversion surface problem into volume problem which is one dimension higher.
 Straightforward implementation via d-dimensional array of values, results in both time and storage complexity of $O(n^d)$, where n is the cross sectional resolution and d is the dimension of the image.
 In case of pictures with size about $512^3$ voxels the level set computation takes very long time.
 
 \subsection{Speed-up approaches}
 
 Because of computational burden of straightforward level set solving some speed-up approaches has been proposed.
-They are useful only when only single level set is computed (that is the case of segmentation).
-In that case us unnecessary compute solution for given time step over whole domain but only in those parts that are adjacent to the level set (in its neighborhood).
-The most known and used are Narrow Bands and Sparse Fields.
+They are useful only when only single level set is computed which is the case of image segmentation.
+Then is unnecessary to compute solution for given time step over whole domain but only in those parts that are adjacent to the level set.
+Beside the most known and used Narrow Bands and Sparse Fields there is an octree based method proposed by Droske et al. \cite{octree}.
 
-Narrow Band (proposed by Adalsteinsson and Sethian \cite{sethianFastLS}) computes embedding only within narrow band (tube).
+Narrow Band, proposed by Adalsteinsson and Sethian \cite{sethianFastLS}, computes embedding only within narrow band, tube.
 Remaining points are set constant to indicate that they are not in the tube.
 When LS reach the border of the tube, new tube has to be recalculated based on current LS and new run of embedding computations are performed on this new tube until envolving LS reaches tube borders.
 
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{data/narrowBands}
-    \caption[Narrow band computation illustration]{Embedding computation is performed only within narrow band (highlighted in grey). When level set touches (highlighted by the circle) the border or the band, new band has to be computed (reinitialized).}
+    \caption[Narrow band computation illustration]{Embedding computation is performed only within narrow band (highlighted in grey). When level set touches (highlighted by the circle) the border or the band, new band has to be computed i.e. reinitialized.}
     \label{fg:narrowBands}
 \end{figure}
 
 \par
-Sparse Fields method (proposed by Whitaker \cite{sparseFilelds}) introduces a scheme in which updates of an embedding are calculated only on the level set.
+Sparse Fields method, proposed by Whitaker \cite{sparseFilelds}, introduces a scheme in which updates of an embedding are calculated only on the level set.
 This means that it performs exactly the number of calculations that is needed to calculate next position of the level set.
-This is the biggest advantage of the method. Points that are adjacent to the level set are called active points (forming active set).
+This is the biggest advantage of the method. Points that are adjacent to the level set are called active points and they form active set.
 Because active points must be adjacent to the LS their positions lie within certain range from the LS.
-Therefore even values of an embedding in active set positions must lie on certain range (active range).
+Therefore even values of an embedding in active set positions must lie on certain range, the active range.
 When active point value move out from this active range it is no longer the active point and is removed from the active set.
 And vice versa, the point whose value comes into active range is added into active set.
-Along the active set there is few layers of points adjacent to the active set organized like peels of an onion, see figure\ref{fg:sparseFilelds}.
-Process can be imagined as a tram that lays down tracks before it and picks them up behind.
+Along the active set there are few layers of points adjacent to the active set organized like peels of an onion, see figure\ref{fg:sparseFilelds}.
+Process of front propagation can be imagined as a tram that lays down tracks before it and picks them up behind.
 
 \begin{figure}
     \centering
     \includegraphics[width=0.9\textwidth]{data/sparsefield}
-    \caption[Sparse fields method computation illustration]{Embedding is calculated only at points that are covered by the level set (the white line). Those point (active set) are coloured in black forms the zero layer. Other layers embrace the zero layer from both inner and outer side, formed like onion peels}
+    \caption[Sparse fields method computation illustration]{Embedding is calculated only at points that are covered by the level set (the white line). Those points (active set) are coloured in black forms the zero layer. Other layers embrace the zero layer from both inner and outer side, formed like onion peels}
     \label{fg:sparseFilelds}
 \end{figure}
 
@@ -231,28 +235,37 @@ Process can be imagined as a tram that lays down tracks before it and picks them
 Algorithm:
 \label{alg:sparseFileld}
 \par
-1) FOREACH(point $\in$ active set (zero layer)\\
-  a) compute level set geometry $\vec(x)$\\
-  b) compute change using upwind scheme in point $\vec(x)$
+DO WHILE a stop condition is met:
 \par
-2) FOREACH(point $\in$ active set compute new embedding value $\phi_{i,j,k}^{n+1}$ (compute \ref{deformEqApprox}).\\
+1) FOREACH (point $\in$ active set, the zero layer (ZL)\\
+  a) compute level set geometry $(\vec x)$\\
+  b) compute change using upwind scheme in point $(\vec x)$
+\par
+2) FOREACH (point $\in$ active set compute new embedding value $\phi_{i,j,k}^{n+1}$, which means computing \ref{deformEqApprox}.\\
 Decide if it falls into [-$\frac{1}{2}$,$\frac{1}{2}$] interval.
-If so, put the $\vec(x)$ into appropriate status lists (list of points, that are changing status) to lower status list if $\phi_{i,j,k}^{n+1}$ moved under the interval and vice versa.
+If so, put the $(\vec x)$ into appropriate status lists, i.e. list of points that are changing status, to lower status list if $\phi_{i,j,k}^{n+1}$ moved under the interval and vice versa.
 \par
-3) Visit points in other layers $L_i$ in order $i=\pm 1,\ldots, \pm N$, and update the grid point values based on the values (by adding and subtracting one unit) of the next inner layer $L_{i\pm1}$.\\
-If more than one $L_{i\pm1}$ neighbor exists then use the neighbor that indicates a level curve closest to that grid point. i.e., use the maximum for the outside layers and minimum for the inside ones.
-If a grid point in layer $L_i$ has no $L_{i\pm1}$ neighbors, then it gets demoted to $L_{i\pm1}$ (the next layer away from the active set).
+3) Visit points in other layers $L_i$ in order $i=\pm 1,\ldots, \pm N$, and update the grid point values based on the values of the next inner layer $L_{i\pm1}$ by adding resp. subtracting one unit.\\
+If more than one $L_{i\pm1}$ neighbor exists then use the neighbor that indicates a level curve closest to that grid point. i.e., use the maximum for the outside layers resp. minimum for the inside ones.
+If a grid point in layer $L_i$ has no $L_{i\pm1}$ neighbors, then it gets denoted to the next layer away from the active set, $L_{i\pm1}$.
 \par
 4) For each status list $S_{\pm1}$, $S_{\pm2}$, $\ldots$, $S_{\pm N}$ do the following:\\
-  a) For each element $x_j$ on the status list $S_i$, remove $x_j$ from the list $L_{i\pm1}$ and add it to the $L_{i}$ layer, or in the case of $i=\pm (N + 1)$, remove it from all layers.\\
+  a) For each element $x_j$ on the status list $S_i$, remove $x_j$ from the list $L_{i\pm1}$ and add it to the $L_{i}$ layer.
+Or in the case of $i=\pm (N + 1)$, remove it from all layers.\\
   b) Add all $L_{i\pm1}$ neighbors to the $S_{\pm1}$ list.
 
-\subsection{Level set segmentation}
+\par
+Stop condition is based on measurement of front movement.
+As a next stopping criterium is usually given the maximal count of iterations,
 
-Segmentation using LS method is performed based on a speed function that is calculated from input (segmented image) and that encourages the mode to grow into direction where the object lies.
-There is variety of speed functions. In this work I use speed function based on a threshold $T_{low}$ and $T_{hi}$ of the intensities from the input image.
-If pixel has intensity value that is within the threshold interval (for maximum speed in the middle of threshold interval), the level set model grows (see figure \ref{fg:speedFunction}).
-Otherwise it contracts as fast as the pixel has value further from the interval. The function $D$ is defined as:
+\subsection{Level set image segmentation}
+
+Image segmentation using LS method is performed based on a speed function that is calculated from segmented image and that encourages the mode to grow into direction where the object lies.
+There is variety of speed functions.
+In this work I use speed function based on a threshold $T_{low}$ and $T_{hi}$ of the intensities from the input image.
+If pixel has intensity value that is within the threshold interval the level set model grows (see figure \ref{fg:speedFunction}).
+Otherwise it contracts as fast as the pixel has value further from the interval.
+The function $D$ is defined as:
 \begin{equation}
 \label{eq:speedFunction}
 D(\vec{x}) =
@@ -268,7 +281,7 @@ where $V(\vec{x})$ is pixel value in point $\vec{x}$ and $T_{mid}$ is the middle
     \includegraphics[width=0.9\textwidth]{data/speedFunction}
     \caption[Graph of thresholding based speed function]
     {
-      Gray rectangle encloses interval, where is the speed function positive (i.e. the model expands).
+      Gray rectangle encloses interval, where is the speed function positive, i.e. the model expands.
       The fastest expansion is in $T_{mid}$ point
     }
     \label{fg:speedFunction}
@@ -286,9 +299,9 @@ The update term from equation \ref{deformEqApprox} can be rewritten into followi
 where $|\bigtriangledown \phi|D$ represents speed function term, $\bigtriangledown|\bigtriangledown I|$ is edge term that is and $|\bigtriangledown \phi| H$ represent curvature term. $\alpha$, $\beta$ and $\gamma$ are weights of particular terms.
 
 Edge term is computed from second order derivatives just like Canny and Marr-Hildreth algorithms for edge detection.
-It shall to push level set towards edges (i.e. border of segmented object).
+It shall to push level set towards edges, i.e. border of segmented object.
 
-Curvature forces resulting level set model to have less surface and thus protect negative effects like levelset leaking into unwanted places like figure \ref{fg:leaking} shows.
+Curvature forces resulting level set model to have less surface area and thus protect negative effects like levelset leaking into unwanted places like figure \ref{fg:leaking} shows.
 Note: if $\alpha$ = $\beta$ = 0, the result is the same as from flood-fill method because there is only speed term taking place.
 
 \begin{figure}
@@ -304,7 +317,7 @@ Note: if $\alpha$ = $\beta$ = 0, the result is the same as from flood-fill metho
     \label{fg:leaking}
 \end{figure}
 
-I omit the edge term so there is only two parameters of the method.
+We omited the edge term so there is only two parameters of the method.
 Tuning of the term weights has to be performed in order to have best results.
 
 \section{Level set methods on streaming architectures}
@@ -317,10 +330,11 @@ Thus the points in discrete grid near the level-set surface must be packed into 
 Another difficulty is that the level set moves with each time step, and thus the packed representation must be quickly adapted.
 
 \par
-For example Cates at al. \cite{GIST} or Lefohn at al. \cite{lefonhGPUSolver} mapped level set segmentation method onto GPU.
-GPU is a streaming architecture with many (hundreds) of streaming cores. They run short programs called shaders.
-In mapping to GPU architecture texture memory is used to store input data (in large continuous block) and actual computation is managed by vertices that flows into the shader and plays role of some pointers to texture memory.
-This is some kind of trick because the texture memory is not addressed directly by address number (like in single dimension continuous address space in common processors) but instead by a 2D coordinate to texture.
+For example Cates at al. \cite{GIST} or Lefohn at al. \cite{lefonhGPUSolver} ported level set segmentation method to GPU.
+GPU is a streaming architecture with many, nowadays hundreds, of streaming cores. They run short programs called shaders.
+In porting to GPU architecture texture memory is used to store input data in large continuous block.
+Actual computation is then managed by vertices that flows into the shader and plays role of some pointers to texture memory.
+This is some kind of trick because the texture memory is not addressed directly by address number like in single dimension continuous address space in common processors but instead by a 2D coordinate to texture.
 Because vertices comes as 3D points, virtual memory system that map 3D vertices to 2D texture coordinates has to be created.
 Such system propose Lefonh at al. \cite{lefonhGPUSolver}. See figure \ref{fg:virtual memory on GPU}.
 Another workaround has to be performed when computed data is transferred back to CPU.
@@ -338,8 +352,8 @@ Another is that the calculation can be directly visualized by the GPU.
 \end{figure}
 
 \par
-Although the Cell B.E. has some parts of the approach in common with GPU, such as streaming processors and thus need to pack the input data into larger continuous parts some GPU obstacles need not to overcome.
+Although the Cell/B.E. has some parts of the approach in common with GPU, such as streaming processors and thus need to pack the input data into larger continuous parts some GPU obstacles need not to overcome.
 That means no virtual memory system need to be implemented because the SPE has its own flat address space by default.
 Also the result packing for sending back to CPU is not necessary because transmission of data from and to SPE has the same speed and can be performed directly.
-All these Cell B.E. processor features could result easier and more straightforward process of mapping of level set method.
+All these Cell/B.E. processor features could result easier and more straightforward process of porting of level set method.
 But probably at cost of lower speed than GPU.

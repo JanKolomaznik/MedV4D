@@ -1,25 +1,25 @@
-\chapter {Cell B.E. programming}
+\chapter {Cell/B.E. programming}
 \par
-Cell B.E. platform development tools will be described in this chapter.
+Cell/B.E. platform development tools will be described in this chapter.
 Our experience with the tools will be mentioned as well.
 Then particular SDK content and tools will be listed.
-Parallel systems and models will be mentioned later on as well as the relationship to Cell B.E. development along with a few design patterns.
-At the end core configurations and their pros and cons will be listed finishing with few practical approaches to Cell B.E. porting process.
+Parallel systems and models will be mentioned later on as well as the relationship to Cell/B.E. development along with a few design patterns.
+At the end core configurations and their advantages and disadvantages will be listed finishing with few practical approaches to Cell/B.E. porting process.
 
-\section{Cell B.E. platform development}
+\section{Cell/B.E. platform development}
 \par
-IBM delivers SDK for development of programs for the Cell B.E programming.
+IBM delivers SDK for development of programs for the Cell/B.E. programming.
 It made for Linux platform, in the concrete for Fedora or Red Hat distribution.
 It comes in two flavors.
-The first is the official non free SDK which has all the features needed for development for the Cell B.E. even for hybrid systems.
+The first is the official non free SDK which has all the features needed for development for the Cell/B.E. even for hybrid systems.
 The purchaser has also a support team ready to help.
 Next is the free one that is open to wide public and everybody can download it and start developing.
 The free one does not have full support for hybrid systems nor for development in other languages than C/C++.
-Wee have used the free one since we have developed only in C/C++ and for clean Cell B.E. processor.
+Wee have used the free one since we have developed only in C/C++ and for clean Cell/B.E. processor.
 
 \par
 Because the SDK is for Linux operation system its user has to have already deeper knowledge about this system.
-There are a few bugs and parts that are not fully finished (see \ref{toolsSetup}) and without this deeper system knowledge is practically impossible to react on some unexpected behavior during installation or development phase.
+There are a few bugs and parts that are not fully finished (see Appendix \ref{toolsSetup}) and without this deeper system knowledge is practically impossible to react on unexpected behavior during installation or development phase.
 
 \par
 We have begun with SDK version 3.0 and Fedora version 8 which were the current version of needed tools.
@@ -35,7 +35,7 @@ We have spent number of days on this discovery.
 The SDK is huge package of software dependent on lots of third party libraries and solutions.
 They are treated differently within particular distributions and sometimes even versions of the same distribution.
 So the result is not to combine system versions nor SDK versions nor particular libraries that the SDK components are dependent on.
-Repository versions should be used, see \ref{toolsSetup}.
+Repository versions should be used, see Appendix \ref{toolsSetup}.
 
 \par
 Although there are too much of troubles when different version are combined, few efforts to get the SDK run on another distributions than Fedora were made.
@@ -46,18 +46,16 @@ Finally we installed Fedora 9 Sulphur and SDK 3.1.
 This combination is declared by IBM as tested.
 Altough we have run into few bugs and errors.
 The process of installation is described in the Appendix \ref{toolsSetup}.
-Installation of Fedora is omitted.
-For details see fedora official site \cite{fedorasite}.
 
 \section {SDK content}
 
-Cell B.E. SDK is divided into variety of components.
+Cell/B.E. SDK is divided into variety of components.
 Each component is contained in one or more rpm package for easy intallation purposes.
 Here is list of most important available components:
 \begin{enumerate}
   \item {Tool chain}
   \par
-  Set of tools like compilers, linkers etc. necessary for actual code generation.
+  Set of tools such as compilers, linkers etc. necessary for actual code generation.
 There are two tool chains.
 One is for PPU and the other for SPU.
 
@@ -69,17 +67,17 @@ Code of these libraries is debugged, highly optimized for running on SPEs and SI
 
   \item {Full system simulator}
   \par
-  Program that can simulate the Cell B.E. processor on other hardware platforms.
+  Program that can simulate the Cell/B.E. processor on other hardware platforms.
 It is used mostly in profiling stage because simulator can simulate actual computation of a code in cycle precision.
-It can be of course used when programmer has an actual Cell B.E. hardware available, but simulation is incredibly slow.
+It can be of course used when programmer has an actual Cell/B.E. hardware available, but simulation is incredibly slow.
 
   \item {IDE}
   \par
-  IDE is in fact verstion 3.2 of Eclipse with integration of debugging, profiling, Cell B.E. machine management and other features that makes development for the Cell B.E. easier and more comfortable.
+  IDE is in fact verstion 3.2 of Eclipse with integration of debugging, profiling, Cell/B.E. machine management and other features that makes development for the Cell/B.E. easier and more comfortable.
 \end{enumerate}
 
 
-\section{Parallel systems \& Cell B.E.}
+\section{Parallel systems \& Cell/B.E.}
 
 Parallelism depends also on type of system where the program will be run.
 There are two basic kind of parallel systems:
@@ -95,11 +93,11 @@ Is system where each processor has its own private memory.
 There is no need for synchronization.
 \end{enumerate}
 
-In context of parallel systems, Cell B.E. is a kind of hybrid system.
+In context of parallel systems, Cell/B.E. is a kind of hybrid system.
 SPEs matches the distributed-memory system due to private local stores while PPE is shared-memory system.
-Sometimes is Cell B.E. called heterogeneous multi-core, with distributed memory.
-Because Cell B.E. processors can be gathered into bigger units such as blade server, with two Cell B.E. chips they can be viewed as either 16 + 2 cores in SMP mode or two non-uniform memory access machines connected together.
-Programmer has then to decide which view of the Cell B.E. processor is better for the solved problem.
+Sometimes is Cell/B.E. called heterogeneous multi-core, with distributed memory.
+Because Cell/B.E. processors can be gathered into bigger units such as blade server, with two Cell/B.E. chips they can be viewed as either 16 + 2 cores in SMP mode or two non-uniform memory access machines connected together.
+Programmer has then to decide which view of the Cell/B.E. processor is better for the solved problem.
 
 \par
 Because of separation of address spaces programming of SPE is very similar to client/server application design.
@@ -109,7 +107,7 @@ Another possibility is that SPE grabs the data from the central memory.
 In this case, SPE is a client of central memory.
 This case is preferred because the PPE is only one and would not be able to manage all the SPU.
 
-\section{Cell B.E. programming models}
+\section{Cell/B.E. programming models}
 
 \par
 Implementation of parallel algorithms rely on parallel programming model.
@@ -118,16 +116,16 @@ Programming model is programmer's point of view to the hardware.
 So another decision that programmer has to make is to choose a programming model or mixture of them that will best fit for the solved problem.
 
 \par
-For Cell B.E. there is variety of parallel programming models.
+For Cell/B.E. there is variety of parallel programming models.
 Models differ from each other in view of the hardware and thus how many actions are performed implicitly by the model.
 The actions can be e.g. task distribution management, data distribution management or synchronization.
 The most abstract ones can perform many actions implicitly.
 Their advantage is ease of implementation but at cost there can be no performance tuning done.
-On the other side are the most concrete models that see the Cell B.E. processor with all the low level details.
-The advantage is performance tuning that can be performed in all the application parts but at cost of more development.
+Differently act the most concrete models that see the Cell/B.E. processor with all the low level details.
+Their advantage is performance tuning that can be performed in all the application parts but at cost of more development.
 
 \par
-There are several models that are determined only for the Cell B.E. platform and are contained in SDK.
+There are several models that are determined only for the Cell/B.E. platform and are contained in SDK.
 While there are other models such as MPI, OpenMP that can be used as well but they would expose only PPE.
 These will not be further described.
 
@@ -138,6 +136,7 @@ List of the programming models (frameworks) follows in order from most concrete 
 This library provides the most low level functionality.
 Offer SPE context creating, running, scheduling or deleting.
 DMA primitives for data transfer, mailboxes, signal, events, and synchronization functions for PPE to SPE and SPE to SPE dialogs are also provided by this library.
+More information can be found in \cite{performanceToolRef} within "SPE Runtime Management Library" document.
 
 \item {Data Communication and Synchronization - DaCS}
 \par
@@ -145,6 +144,7 @@ Defines program entity for PPE or SPE.
 These are HE (Host Element program) for PPE and AE (Accelerator Element program) for SPE.
 It provides services for that programs.
 The services are e.g. resource and process management, where an HE manipulates its AEs or group management, for defining groups in which synchronization events like barriers can happen or message passing by using send and receive primitives.
+More information can be found in \cite{performanceToolRef} within "DACS Programmer's Guide and API Reference" document.
 
 \item {Accelerated Library Framework - ALF}
 \par
@@ -156,15 +156,16 @@ The host and the accelerator one.
 On the accelerator side, the programmer only has to code the computational kernel, unwrap the input data, and pack the output data when the kernel finishes.
 The ALF offer clear separation between host accelerator sides of program parts.
 Providing the following services: work blocks queue management, load balancing between accelerators, transparent DMA transfers etc.
+More information can be found in \cite{performanceToolRef} within "ALF Programmer's Guide and API Reference" document.
 
 \end{enumerate}
 
-Choosing a framework is important decision of writing Cell B.E. application.
+Choosing a framework is important decision of writing Cell/B.E. application.
 It should be considered enough.
 
-\subsection {Cell B.E. parallelism levels}
+\subsection {Cell/B.E. parallelism levels}
 
-The Cell B.E. processor offers many opportunities for parallel processing.
+The Cell/B.E. processor offers many opportunities for parallel processing.
 That is because it is composed of heterogeneous elements, SPE and PPE and possibility of particular composition of more processors into more complex systems.
  Levels are:
 \begin{enumerate}
@@ -173,11 +174,11 @@ That is because it is composed of heterogeneous elements, SPE and PPE and possib
 Parallelism on this level means task distribution among multiple servers like within a server farm.
 This is possible in a hybrid environment at the cluster level using MPI or some other grid computing middle-ware.
 
-\item Cell B.E. chips level
+\item Cell/B.E. chips level
 \par
-On this level tasks can be divided among multiple Cell B.E. processors.
+On this level tasks can be divided among multiple Cell/B.E. processors.
 This is possible if there are more such processors in one machine.
-This is in e.g. blade server with two Cell B.E. chips.
+This is in e.g. blade server with two Cell/B.E. chips.
 ALF or DaCS for hybrid can be used for task distribution.
 
 \item SPE level
@@ -196,7 +197,7 @@ This will be explained later in part devoted to "SIMDation".
 \subsection{Computation configurations}
 
 \par
-Because of heterogeneous nature of Cell B.E. there are few computation configurations that can be used.
+Because of heterogeneous nature of Cell/B.E. there are few computation configurations that can be used.
 Each of them differs in usage of SPEs and has its own pros and cons:
 \begin{enumerate}
 \item Streaming configuration
@@ -217,7 +218,6 @@ This configuration is well suited for streaming application for example filters 
 SPE server as stages of a pipeline (see figure \ref{fg:pipelineModel}).
 Data are passed through from one to other of the SPEs.
 The SPE to SPE transfer are faster than SPE to PPE so this can be benefit.
-The configuration is also static which means no SPE context switch.
 
 \begin{figure}
     \centering
@@ -228,7 +228,7 @@ The configuration is also static which means no SPE context switch.
 
 \item PPE centric
 \par
-This configuration is common approach with the Cell B.E.
+This configuration is common approach with the Cell/B.E.
 Program runs on PPE (see figure \ref{fg:PPUCentricModel}) and only selected, highly demanding computational kernels (hotspots) are offloaded to SPEs.
 This method is the easiest from a program development perspective because it limits the scope of source code changes and does not require much re-engineering at the application logic level.
 One disadvantage is dynamic changes of SPE contexts that is quite expensive operation.
@@ -248,24 +248,27 @@ This is requires the code to be small enough to fit into the SPU local store alo
 
 \end{enumerate}
 
-\section {Building for the Cell B.E.}
+\section {Building for the Cell/B.E.}
 \par
 Actual compilation process is performed using appropriate tool chain.
 PPE code using of PPE tool chain and SPE code using SPE one.
 But there is difference between management of code in linking stage between PPU and SPU object files.
 It is caused by difference of actual code usage.
-While PPU code resides in central memory (just like in common architectures) SPU code is loaded into SPE dynamically and shall be somehow separated.
+While PPU code resides in central memory, like in common architectures, SPU code is loaded into SPE dynamically and shall be somehow separated.
 It is similar to shader programs for graphic accelerators.
 They are also loaded into appropriate processors when they are needed so they live separated.
 
 \par
 There are two options for SPE code management.
 One is to build shared library and load it explicitly when it is used.
-Another way is to build a static library and include it into PPU executable using Cell B.E. Embedded SPE Object Format (CESOF).
-This allows PPE executable objects to contain SPE executable i.e. SPE binary is contained within PPE binary. See figure\ref{fg:SPEEmbedding}.
+Another way is to build a static library and include it into PPU executable using Cell/B.E. Embedded SPE Object Format (CESOF).
+This allows PPE executable objects to contain SPE executable i.e. SPE binary is contained within PPE binary.
+See figure \ref{fg:SPEEmbedding} how is SPE binary included into PPE binary.
 This inclusion is called embedding and is performed with extra tool from tool chain.
 The SPU program is then referenced as special external structure direct from PPU code, instead of performing shared libraries loading.
-Both ways have its pros but even cons which are the same as with shared vs. static libraries on other platforms.
+Both ways have advantages and disadvantages which are the same as shared vs. static library usage ones on other platforms.
+Shared library means better modularity and possibility of code alternation without whole executable rebuilding.
+On the other hand additional management of such library is necessary in contrast to static SPE code into PPE binary embedding.
 
 
 \begin{figure}
@@ -279,10 +282,10 @@ It is reachable through extern struct variable, that contains a pointer to the S
 
 
 
-\subsection {Process of porting application for the Cell B.E.}
+\subsection {Process of porting application for the Cell/B.E.}
 \label{sect:portingProcess}
 
-Common process of porting an application for the Cell B.E. processor (figure \ref{fg:appPorting}) consists of next few steps:
+Common process of porting an application for the Cell/B.E. processor (figure \ref{fg:appPorting}) consists of next few steps:
 \begin{enumerate}
 \item Hotspot localization
 \par
@@ -293,12 +296,12 @@ How to profile the application see chapter 5 of \cite{programmersGuide}.
 \par
 Hotspot code is then moved to the SPEs i.e. the code adaptation for SPE features shall be performed.
 This means DMA transfers instead of direct memory access, appropriate data structures or other changes utilization.
-Data movement tuning (using different data structures) can be then performed until satisfactory performance is obtained.
+Data movement tuning, e.g. using different data structures, can be then performed until satisfactory performance is obtained.
 \end{enumerate}
 
 \par
 Following steps are necessary for application optimization and speed-up.
-They increase utilization of all the SPU features that means whole register set utilization, dual-issuing of instructions, SIMD execution and DMA transfers.
+Application of these steps leads to utilization of all the SPU features such as whole register set utilization, dual-issuing of instructions, SIMD execution and DMA transfers.
 More detail in \cite{writingPerfApps} part 4:
 \\
 \begin{enumerate}
@@ -306,27 +309,39 @@ More detail in \cite{writingPerfApps} part 4:
 \par
 Data that resides within central memory and are processed by SPE should be copied onto local store buffer before actual computation.
 When there are more of these buffers the program can take advantage from asynchronous DMA transfer and can process current buffer while the next data are transferred to another buffer.
-Then the buffers are simply swapped and the SPU need not to wait until the transfer of next data is complete (see figure in the paragraph named "Hiding data-access latencies" in \cite{compilerOptions} for illustration).
+Then the buffers are simply swapped and the SPU need not to wait until the transfer of next data is complete.
+See figure in the paragraph named "Hiding data-access latencies" in \cite{compilerOptions} for illustration.
 
 \item{Branch elimination}
 \par
-Elimination of branches elongates branch less instruction chain e.i. instruction order where no branch is performed.
+Branchless instruction chain is succession of instructions without any conditional jump.
+In other words there is no decision where to continue performed within such succession.
+Elimination of branches elongates branchless instruction chain.
 In such a chain all data always go through the same instructions that makes possible to perform SIMDation.
+There is variety branch elimination methods.
+Good information resource provides \cite{cellPerformance}.
 This step brings more advantage because branching is problem for every processor.
 Branch elimination is probabbly the most complicated step of the porting process.
 
 \item{SIMDation}
 \par
-means rewriting scalar code into vectorized to be able to use SIMD instruction.
+Means rewriting scalar code into vectorized to be able to use SIMD instruction.
 In this step the most performance gain could be achieved because of multiple data processing by one instruction.
-But it is conditioned by well performed the previous step.
-This is because when SIMD instruction are used every single piece of data should go through the exactly same order of instructions.
-The most important method of this step is arrays of structure to structure of arrays conversion.
-The figure in the paragraph called "SIMDizing" in \cite{compilerOptions} shall illustrate this method.
+Every single piece of data should go through the exactly same order of instructions in SIMDized code.
+Therefore is necessary to have long branchless instruction chain.
+The most important method is arrays of structure to structure of arrays conversion.
+The figure in the paragraph called "SIMDizing" in \cite{compilerOptions} shall illustrate processing data with SIMD instruction.
+
+\par
+SIMDizing brings also avoidance of usage rotation instructions which are necessary to move unaligned data into preferred slot.
+Preferred slot is beginning of a register e.g. for short int it is the first 16 bits.
 
 \item{Loop unrolling}
-Means putting more loop bodies serially into code.
-This decrease loop count and elongate the loop body.
+\par
+Loop body is the code inside curly brackets of the loop.
+This code is executed repeatedly until the loop condition is valid.
+Loop unrolling means putting more loop bodies serially into code.
+This decrease loop count and elongate the loop body letting the compiler to make more optimizations.
 Example:
 \begin{verbatim}
 for(uint32 i=0; i<32; i++)
@@ -342,18 +357,18 @@ for(uint32 i=0; i<16; i++)
     printf(".");
 }
 \end{verbatim}
-This is positive for compiler that can do more optimizations (better instruction scheduling and register utilization).
+The compiler can do more optimizations e.g. better instruction scheduling and register utilization.
 
 \item{Instruction scheduling}
 \par
 Proper reorganization of instructions can give us more performance in some cases.
-This step is performed by the compiler but can be performed manually in assembly language.
+This step is performed by the compiler but it is possible to rearrange instructions manually in assembly language.
 
 \item{Branch hinting}
 \par
 Give the processor hint where the program is rather going to continue after future branch.
 It is done through insertion of special instructions.
-This step should be again performed by the compiler but can be performed manually in assembly language.
+This step should be again accomplished by the compiler but is possible to use apropriate assembly language instruction directly within the code.
 \end{enumerate}
 
 \par
@@ -370,17 +385,20 @@ The whole process is repeated for every single hotspot.
 
 \par
 Local store size is the main SPE feature that everything spins around while porting code to SPE.
-On the one side are decisions about data transfers.
+On the one hand are decisions about data transfers.
 This means how the data that has to be processed by the SPE will be transferred into local store and vice versa.
 What will be the sizes of data chunks.
 How many buffers will be used in case of multi-buffering.
-On the other side is code complexity of the solved problem that influence the size of final binary (alternative is SPE overlays, run-time download program kernels).
-Programmer has to take into consideration all these things to make the final binary smaller than local store.
-Everything is big tradeoff between processed data chunk sizes with number of buffers of that chunks and code complexity (how large algorithm can be).
+On the other hand is code complexity of the solved problem that influence the size of final binary.
+There is one solution how to use bigger binaries than the local store, SPE overlays.
+It is based on division of the binary into segments that are loaded into SPE on demand in run-time.
 
 \par
-When compiling the SPU binary from ported code the final executable will probably increase the local store size.
-Even when the code seems not as large as the final binary size.
+Programmer has to take into consideration all these things to make the final binary smaller than local store.
+Everything is big tradeoff between processed data chunk sizes with number of buffers of that chunks and code complexity i.e. how large algorithm can be.
+
+\par
+When compiling the SPU binary from ported code the final executable will probably increase the local store size even when the code seems not as large as the final binary size.
 Then begins big searching what causes this huge size.
 We have gone through several problems with code that is common in non SPE code but cause problems in SPE code.
 Here is the list:
@@ -395,9 +413,10 @@ But compiler accepts it without any complain.
 This code:
 \begin{verbatim}
 #include <iostream>
-std::cout << "Hallo" << std::endl;
+std::cout << "Hello" << std::endl;
 \end{verbatim}
 goes through the compiler without complaints but makes the final binary too big.
+The reason why the resulting code is too big is probably size of the code within headers that are included when using described features.
 
 \end{enumerate}
 
@@ -405,11 +424,12 @@ goes through the compiler without complaints but makes the final binary too big.
 
 \par
 There is variety of compiler options.
-Usage of some of them is worth nothing but can increase performance and avoid some kind of bugs.
+Usage of them is worth nothing but can increase performance and avoid some kind of bugs.
 
 \par
-Mike Acton explains in \cite{strictAliasing} the strict aliasing and its impact for performance.
-Another advantage to let this checked by the compiler is fact that it can avoid bugs that would appear as far as in release stage when optimizations flags are used in compilation.
+Mike Acton explains in \cite{strictAliasing} the strict aliasing.
+One advantage of usage of this option is its positive impact on performance.
+Another advantage is fact that it can avoid bugs that would appear as far as in release stage when optimizations flags are used in compilation.
 In this stage is this kind of bugs really hard to track and debug.
 
 \par
@@ -418,12 +438,12 @@ Another option advises are in \cite{compilerOptions}
 \section{Profiling}
 
 \par
-Profiling of Cell B.E. application means rather profiling SPE part of the application.
+Profiling of Cell/B.E. application means rather profiling SPE part of the application.
 There is variety of profiling tools.
-The basic one is dynamic performance analysis which can provide many of useful information like how much time the SPE stall and what reason, the CPI (cycle per instruction) ratio, branch count, etc.
+The basic one is dynamic performance analysis which can provide many of useful information such as how much time the SPE stall and what reason, the CPI (cycle per instruction) ratio, branch count, etc.
 The next one is static performance analysis which can illustrate run of SPE in instruction precision.
 These two analysis are evaluated from program run within full system simulator.
-Both the methods are well described in tutorial within the cell IDE help.
+Both the methods are well described in tutorial in the cell IDE help which is accessible through menu $\rightarrow$ Help $\rightarrow$ Help Content in IDE.
 
 \par
 Another profiling tools are:
@@ -435,6 +455,6 @@ Another profiling tools are:
 
 These tools collect profiling data that can be further processed with VPA (visual performance analyzer), external tool provided by IBM.
 This tool can display the collected data in different charts, time lines or can highlight parts of code that are worth to improve and many other useful features.
-Usage of all these performance tools is described in \cite{performanceToolRef}.
-We wanted to test them all but when we follow the manual we experienced obstacles due to fact we worked on PS3.
+Usage of all these performance tools is described in SDK document "Performance Tools Reference" in \cite{performanceToolRef}.
+We wanted to test them all but when we follow the manual we experienced obstacles because we worked on PS3.
 Lately, we found out on forums that unfortunately there is poor or none support for these performance tools on PS3.

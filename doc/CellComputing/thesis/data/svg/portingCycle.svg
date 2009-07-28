@@ -42,7 +42,7 @@
     </rdf:RDF>
   </metadata>
   <sodipodi:namedview
-     inkscape:window-height="843"
+     inkscape:window-height="850"
      inkscape:window-width="1440"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
@@ -55,8 +55,8 @@
      id="base"
      showgrid="false"
      inkscape:zoom="2.2720588"
-     inkscape:cx="369"
-     inkscape:cy="818.81553"
+     inkscape:cx="284.41645"
+     inkscape:cy="803.38551"
      inkscape:window-x="-5"
      inkscape:window-y="-3"
      inkscape:current-layer="svg2" />
@@ -277,15 +277,6 @@
      id="rect96"
      style="font-size:14px;fill:none;stroke:#b0b0b0;stroke-linejoin:round;stroke-miterlimit:0"
      transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.326786)" />
-  <text
-     x="131"
-     font-size="18"
-     y="178"
-     clip-path="url(#clipPath4)"
-     xml:space="preserve"
-     id="text98"
-     style="font-size:18px;fill:#000000;stroke:none;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.326786)">find hotspots</text>
   <rect
      x="80"
      y="304"
@@ -361,7 +352,7 @@
      height="50"
      id="rect112"
      style="font-size:14px;fill:#ffffff;stroke:none;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.326786)" />
+     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-140.0706)" />
   <rect
      x="80"
      y="66"
@@ -372,7 +363,7 @@
      height="49"
      id="rect114"
      style="font-size:14px;fill:none;stroke:#b0b0b0;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.326786)" />
+     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-140.0706)" />
   <text
      x="140"
      font-size="18"
@@ -381,19 +372,19 @@
      xml:space="preserve"
      id="text116"
      style="font-size:18px;fill:#000000;stroke:none;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.326786)">port to PPE</text>
+     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-140.0706)">port to PPE</text>
   <polygon
      clip-path="url(#clipPath11)"
      points="184,388 205,408 184,429 164,408 184,388 "
      id="polygon118"
      style="font-size:14px;fill:#ffffff;stroke:none;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.326786)" />
+     transform="matrix(0.6246519,0,0,0.6246519,175.71913,-90.326786)" />
   <polygon
      clip-path="url(#clipPath11)"
      points="184,388 205,408 184,429 164,408 184,388 "
      id="polygon120"
      style="font-size:14px;fill:none;stroke:#b0b0b0;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.326786)" />
+     transform="matrix(0.6246519,0,0,0.6246519,175.71913,-90.326786)" />
   <line
      clip-path="url(#clipPath12)"
      x1="186"
@@ -436,7 +427,7 @@
      y2="388"
      id="line130"
      style="font-size:14px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.326786)" />
+     transform="matrix(0.6246519,0,0,0.6246519,174.9699,-90.326786)" />
   <line
      clip-path="url(#clipPath15)"
      x1="188"
@@ -445,7 +436,7 @@
      y2="388"
      id="line132"
      style="font-size:14px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.326786)" />
+     transform="matrix(0.6246519,0,0,0.6246519,174.9699,-90.326786)" />
   <line
      clip-path="url(#clipPath15)"
      x1="185"
@@ -454,7 +445,7 @@
      y2="374"
      id="line134"
      style="font-size:14px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.326786)" />
+     transform="matrix(0.6246519,0,0,0.6246519,174.9699,-90.326786)" />
   <text
      x="105"
      y="377"
@@ -470,7 +461,7 @@
      y2="304"
      id="line138"
      style="font-size:14px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.326786)" />
+     transform="matrix(0.6246519,0,0,0.6246519,174.05332,-90.326786)" />
   <line
      clip-path="url(#clipPath17)"
      x1="191"
@@ -479,7 +470,7 @@
      y2="304"
      id="line140"
      style="font-size:14px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.326786)" />
+     transform="matrix(0.6246519,0,0,0.6246519,174.05332,-90.326786)" />
   <line
      clip-path="url(#clipPath17)"
      x1="188"
@@ -488,7 +479,7 @@
      y2="290"
      id="line142"
      style="font-size:14px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.326786)" />
+     transform="matrix(0.6246519,0,0,0.6246519,174.05332,-90.326786)" />
   <text
      x="108"
      y="293"
@@ -504,7 +495,7 @@
      y2="144"
      id="line146"
      style="font-size:14px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.326786)" />
+     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-140.0706)" />
   <line
      clip-path="url(#clipPath19)"
      x1="189"
@@ -513,7 +504,7 @@
      y2="144"
      id="line148"
      style="font-size:14px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.326786)" />
+     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-140.0706)" />
   <line
      clip-path="url(#clipPath19)"
      x1="186"
@@ -522,7 +513,7 @@
      y2="130"
      id="line150"
      style="font-size:14px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.326786)" />
+     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-140.0706)" />
   <text
      x="106"
      y="136"
@@ -601,7 +592,7 @@
      y2="410"
      id="line168"
      style="font-size:14px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="matrix(0.6282251,0,0,0.6246519,175.49969,-90.326786)" />
+     transform="matrix(0.6282251,0,0,0.6246519,175.49969,-91.327019)" />
   <line
      clip-path="url(#clipPath12)"
      x1="62"
@@ -610,7 +601,7 @@
      y2="165"
      id="line170"
      style="font-size:14px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.326786)" />
+     transform="matrix(0.6246519,0,0,0.8110036,175.71944,-167.55685)" />
   <line
      clip-path="url(#clipPath12)"
      x1="62"
@@ -619,7 +610,7 @@
      y2="165"
      id="line172"
      style="font-size:14px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.326786)" />
+     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-136.98764)" />
   <line
      clip-path="url(#clipPath24)"
      x1="66"
@@ -628,7 +619,7 @@
      y2="165"
      id="line174"
      style="font-size:14px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.326786)" />
+     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-136.98764)" />
   <line
      clip-path="url(#clipPath24)"
      x1="80"
@@ -637,7 +628,7 @@
      y2="168"
      id="line176"
      style="font-size:14px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
-     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.326786)" />
+     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-136.98764)" />
   <text
      x="52"
      y="432"
@@ -653,4 +644,79 @@
      xml:space="preserve"
      id="text180"
      style="font-size:14px;fill:#000000;stroke:none;stroke-linejoin:round;stroke-miterlimit:0" />
+  <text
+     sodipodi:linespacing="100%"
+     transform="matrix(0.6246519,0,0,0.6246519,205.68335,-191.17698)"
+     style="font-size:18px;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;stroke:none;stroke-linejoin:round;stroke-miterlimit:0"
+     id="text2479"
+     xml:space="preserve"
+     clip-path="url(#clipPath6)"
+     y="337"
+     font-size="18"
+     x="87"><tspan
+       sodipodi:role="line"
+       id="tspan2497"
+       x="87"
+       y="337">port to SPE</tspan></text>
+  <rect
+     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.32679)"
+     style="font-size:14px;fill:#ffffff;stroke:none;stroke-linejoin:round;stroke-miterlimit:0"
+     id="rect2485"
+     height="50"
+     ry="8"
+     rx="8"
+     width="225"
+     clip-path="url(#clipPath9)"
+     y="66"
+     x="80" />
+  <rect
+     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.32679)"
+     style="font-size:14px;fill:none;stroke:#b0b0b0;stroke-linejoin:round;stroke-miterlimit:0"
+     id="rect2487"
+     height="49"
+     ry="8"
+     rx="8"
+     width="224"
+     clip-path="url(#clipPath9)"
+     y="66"
+     x="80" />
+  <text
+     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.32679)"
+     style="font-size:18px;fill:#000000;stroke:none;stroke-linejoin:round;stroke-miterlimit:0;text-anchor:start;text-align:start;writing-mode:lr;line-height:125%"
+     id="text2489"
+     xml:space="preserve"
+     clip-path="url(#clipPath10)"
+     y="100"
+     font-size="18"
+     x="140"
+     sodipodi:linespacing="125%"><tspan
+       sodipodi:role="line"
+       id="tspan2499">find hotspot</tspan></text>
+  <line
+     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.32679)"
+     style="font-size:14px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
+     id="line2491"
+     y2="144"
+     y1="116"
+     x2="186"
+     x1="186"
+     clip-path="url(#clipPath12)" />
+  <line
+     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.32679)"
+     style="font-size:14px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
+     id="line2493"
+     y2="144"
+     y1="130"
+     x2="186"
+     x1="189"
+     clip-path="url(#clipPath19)" />
+  <line
+     transform="matrix(0.6246519,0,0,0.6246519,175.71944,-90.32679)"
+     style="font-size:14px;fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:0"
+     id="line2495"
+     y2="130"
+     y1="144"
+     x2="183"
+     x1="186"
+     clip-path="url(#clipPath19)" />
 </svg>

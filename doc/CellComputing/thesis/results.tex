@@ -3,8 +3,8 @@
 In this chapter speed measurements of our application will be presented as well as few pictures of results.
 Because we have not accelerated the computation over traditional processors discussion of the reasons will follow.
 We will mention possible changes in design to speed up the execution.
-Then some consideration how shall look the algorithm that is well suited for the Cell B.E. like.
-Chapter will be finished with comparison of complexity of programming for the Cell B.E. and conventional processors.
+Then some consideration how shall look the algorithm that is well suited for the Cell/B.E. like.
+Chapter will be finished with comparison of complexity of programming for the Cell/B.E. and conventional processors.
 
 \section{Speed measurements}
 
@@ -13,27 +13,30 @@ Actual speed measurement is performed within \emph{GenerateData} method of the F
 Counter is started right after initialization phase (i.e. before main algorithm loop) and stopped right after the loop.
 Program memory usage was tuned to use only really necessary amount of memory within the measured interval.
 Valgrind's massive tool was used for the memory usage tuning.
-This was necessary because of the PS3 small memory and because we want to leave swap file untouched during the speed measurement.
+This was necessary because of the PS3 limited memory, see \ref{ps3MemoryUsage}
 
 \par
-Meanwhile this server memory usage tuning, some changes was made also within client part.
+Beside this server memory usage tuning, some changes was made also within client part.
 There has been a special filter developped.
 The filter shrinks data set to given size and cast its voxels to float.
 Shrinking is performed by linear interpolation.
-The purpose of the float casting is avoiding allocation of additional memory to perform it on the server side.
+The purpose of the float casting is avoiding allocation of additional memory needed for float data set if performed on the server side.
 
 \par
-It is strange that command top shows far bigger memory usage than Valgrind's massif.
-We have not cared much about it but the idea is that top shows all memory requested from system while massif shows exact memory used by process.
+It is strange that command \emph{top} shows far bigger memory usage than Valgrind's massif.
+We have not cared much about it but the idea is that \emph{top} shows all memory requested from system while massif shows exact memory used by process.
 
 \par
-Results of the speed measurement is summarized within Table \ref{tab:runresults}.
+Results of the speed measurement is summarized in Table \ref{tab:runresults}.
 Every measurement was run with the same curvature and speed-scaling factors.
 But with different initial distance, maximum iterations and seed parameters.
-These parameters were set according data set size.
+These parameters were set according to data set size.
 
 Three different data sets were measured.
-All of them was CT images of skull.
+All of them was CT images of skull that were scanned for antropological purposes.
+Measurement of some volumetric parameters of such images is valuable source of data for antropologist.
+Method implemented in our application could be used in praxis for such purposes if the application is quick enough.
+Therefore speedup of current methodes is necessary.
 
 \begin{table}
 \centering
@@ -46,23 +49,23 @@ data set		&size		&seed		&init.		&max. 		&arch.		&time\\
 			&		&		&ance		&tions		&		&(sec)\\
 \hline
 \hline
-3slices 		&512x512x3	&[256,256,1]	&40		&800		&Cell B.E.	&16.48\\
+3slices 		&512x512x3	&[256,256,1]	&40		&800		&Cell/B.E.	&16.48\\
 (skull 1)		&		&		&		&		&i686	.	&1.89\\
 \hline
 \hline
-skull 1			&256x256x80	&[128,110,20]	&20		&500		&Cell B.E.	&471.89\\
+skull 1			&256x256x80	&[128,110,20]	&20		&500		&Cell/B.E.	&471.89\\
 			&		&		&		&		&i686		&95.23\\
 \hline
 \hline
-skull 1			&256x256x80	&[128,110,20]	&4		&500		&Cell B.E.	&325.93\\
+skull 1			&256x256x80	&[128,110,20]	&4		&500		&Cell/B.E.	&325.93\\
 			&		&		&		&		&i686		&61.74\\
 \hline
 \hline
-skull 2			&256x256x80	&[128,110,20]	&4		&500		&Cell B.E.	&319.47\\
+skull 2			&256x256x80	&[128,110,20]	&4		&500		&Cell/B.E.	&319.47\\
 			&		&		&		&		&i686		&55.88\\
 \hline
 \hline
-skull 2			&256x256x80	&[128,128,40]	&4		&500		&Cell B.E.	&366.63\\
+skull 2			&256x256x80	&[128,128,40]	&4		&500		&Cell/B.E.	&366.63\\
 			&		&		&		&		&i686		&76.9\\
 \hline
 \end{tabular}
@@ -80,17 +83,17 @@ The rest of measurements, performed on different data set and parameter configur
 \section{Reasons of slowdown and possible improvements}
 
 \par
-Porting the code to run on SPEs is not sufficient to get more speed from the Cell B.E. over traditional processors.
+Porting the code to run on SPEs is not sufficient to get more speed from the Cell/B.E. over traditional processors.
 An additional speedup porting phases are necessary.
 But our program has another speed pitfalls.
 
 \par
-The biggest of them is CellNeighbourhood that represent a small segment of an image (the $3^3$ voxel matrix).
-It is transferred for every layer (linked chain of nodes) item.
+The biggest problem is CellNeighbourhood that represent a small segment of an image (the $3^3$ voxel matrix).
+It is transferred for every layer item.
 In some parts the both output and status image neighborhoods are transferred.
 We wanted to perform the transfer in scatter-gather manner through the DMA lists but we have faced some problems concerning this way of transfer.
-The DMA transfers (and specially using DMA lists) are designed for bigger amount of aligned data.
-When used for small amounts (smaller that 16bytes per list item) performance goes down because transfer of unaligned data.
+The DMA transfers and specially using DMA lists are designed for bigger amount of aligned data.
+When used for small amounts (smaller that 16bytes per list item) performance goes down because of unaligned data transfer.
 When data smaller than 16 bytes (quad-word) are being transferred, every single item is automatically aligned to quad-word address within local store buffer (see Figure \ref{fg:automaticAlignOfSmallData}).
 
 \begin{figure}
@@ -122,7 +125,8 @@ For details see \cite{DMAListIssues}.
 \end{figure}
 
 We have adopted this workaround and used it within the neighborhood transfer.
-Because if automatic local store quadword address aligning we had to use a translation table that maps position of actual neigbourhood members into the local store buffer which had to be enlarged appropriately based on data type that stores.
+Because of automatic local store quadword address aligning we had to use a translation table.
+This table maps position of actual neigbourhood members into the local store buffer.
 This is working solution but overhead for SPE is incredible and thus useless (see cellNeigbourhood.tcc for details).
 
 \par
@@ -148,18 +152,17 @@ Solution to this problem would be synchronization among the SPEs.
     \includegraphics[width=0.45\textwidth]{data/png/pcSlice}
     \includegraphics[width=0.45\textwidth]{data/png/cellSlice}
     \caption[Comparison of one slice segmented on different architectures]{Comparison of one slice segmentation on different architectures.
-    \textbf{a)} on PC (i686).
-    \textbf{b)} on Cell B.E.
+The left was computed on PC (i686), the right on Cell/B.E.
 Although the segmentation was run with the same parameters there is small difference between those two images.
-The Cell B.E. level set has not reached as far as the PC one.
+The Cell/B.E. level set has not reached as far as the PC one.
 It is because of duplicate nodes within layers.
 }
     \label{fg:sliceComparison}
 \end{figure}
 
 \par
-To speed up the execution improvement of neighbourhood transfers should be done.
-This corresponds to data transfer optimization step of porting process (see \ref{fg:appPorting})
+Aditional improvements of neighbourhood transfers should be done to speed up the execution.
+This corresponds to data transfer optimization step of porting process (see paragraph \ref{fg:appPorting}).
 In our case this means radical simplification of neighborhood transfers.
 This transfers should take only a few instructions to be effective.
 Within SDK examples they are performed by simple macros which is probably the most effective way.
@@ -171,18 +174,18 @@ But such computation scheme would coerce complete redesign of application.
 \section{Code and design complexity}
 
 \par
-Cell B.E. programming means mainly programming for SPEs because of their performance and count.
+Cell/B.E. programming means mainly programming for SPEs because of their performance and count.
 Because of indirect memory access and need of usage of some multi-bufferring memory transfer scheme the design is quite more complex over common processor.
-With another limitation which is the local store size is design of Cell B.E. application a challenge.
+With another limitation which is the local store size is design of Cell/B.E. application a challenge.
 
 \par
-Cell B.E. is designed for intensive computation programs.
+Cell/B.E. is designed for intensive computation programs.
 For a programmer this means utilize all SPEs and all their features at maximum level.
 It is only possible for certain class of algorithm.
 Let's call them streaming parallel algorithm.
 But what is it? What is the definition?
-Work on our application has showed us what is not the streaming parallel algorithm.
-So by negation of features that slow down our program we could get definition of such streaming parallel algorithm:
+Work on our application has showed us what the streaming parallel algorithm is not.
+So by negation of features that slow down our program we could get definition of the streaming parallel algorithm:
 \begin{enumerate}
 
 \item{Streaming nature}
@@ -223,11 +226,11 @@ It apply simple condition on each pixel which result depends only on the process
 Processing can be divided into chunks.
 These three features meets the streaming condition.
 Moreover the data can be divided into independent sets that can be processed by multiple cores (the parallel nature).
-Implementation of this algorithm can therefore result huge performance gain on the Cell B.E. than conventional processors.
+Implementation of this algorithm can therefore result huge performance gain on the Cell/B.E. than conventional processors.
 
 \par
 Our work has showed importance of initial consideration and design phase.
-When there are more algorithms that are solving desirable problem programmer should think carefully which one will be the best for porting to Cell B.E.
+When there are more algorithms that are solving desirable problem programmer should think carefully which one will be the best for porting to Cell/B.E.
 First stage of the initial consideration should be model of the application implementing chosen algorithm.
 Thing what kind of data are processed.
 If they are uniform.
@@ -244,61 +247,61 @@ These techniques increase actual code complexity whereas may decrease code reada
 \par
 There is still another question to be answered.
 Is implementation of an algorithm worth at all?
-Since only some special products is equipped with Cell B.E. actual data has to be sent to such mashine for computing and results has to ber sent back.
+Since only some special products is equipped with Cell/B.E. actual data has to be sent to such mashine for computing and results has to ber sent back.
 So only complex algorithm where performance gain would be bigger than the time spent in transfer of actual data set are worth to port.
 The algorithm we have tried to implement is complex enough to be offloaded to compute on remote machine while the mentioned thresholding would not.
-As soon as common machines such as notebooks, desktops are equipped with the Cell B.E. processor even class of such simple image processing algorithms that is implemented in everyday-use software (such as the thresholding or variety of masking, edge detections) could take advantage of the processor.
+As soon as common machines such as notebooks, desktops are equipped with the Cell/B.E. processor even class of such simple image processing algorithms that is implemented in everyday-use software (such as the thresholding or variety of masking, edge detections) could take advantage of the processor.
 
 \chapter{Conclusion}
 
 \par
-At the beginning we studied available literature to find out what is actually Cell B.E., what benefits it brings for what price.
-What special features it have and what are they good for.
+At the beginning we studied available literature to find out what is actually Cell/B.E., what benefits it brings for what price.
+What special features it have and what they are good for.
 Then we have been trying to install SDK to start actual development process.
-During this phase we faced some obstacles like bugs, incompatibilities among tools, libraries that the tools use and even operating system vs. SDK incompatibilities.
+During this phase we faced some obstacles such as bugs, incompatibilities among tools, libraries that the tools use and even operating system vs. SDK incompatibilities.
 So we had to go through variety of forums and other sources to find the solution.
 As a side effect we improved our Linux knowledge.
 Eventually we managed to install SDK and was able to start developing.
 Then we tested variety of libraries, tools and other feature that the SDK brings.
 
 \par
-We have chosen sparse field algorithm implementing level set based segmentation to port to Cell B.E. platform.
+We have chosen sparse field algorithm implementing level set based segmentation to port to Cell/B.E. platform.
 This is quite complex algorithm to test the platform's potential.
 We adopted ITK implementation of that algorithm.
 So we had to study ITK toolkit and its internals.
 We have also incorporated the whole program into MedV4D framework.
-That means we have implemented some new modules that allows using ITK and can offload some part of processing to another machine (that run on the Cell B.E.).
+That means we have implemented some new modules that allows using ITK and can offload some part of processing to another machine (that run on the Cell/B.E.).
 
 \par
 Actual porting process started with profiling of existing application.
-This step have found out hot spots of the code which can be in turn offloaded to SPE to take advantage of Cell B.E. potential.
+This step have found out hot spots of the code which can be in turn offloaded to SPE to take advantage of Cell/B.E. potential.
 But results was quite unexpected so another redesign of application followed.
 In this new design almost whole original ITK pipeline was offloaded into SPE.
-Big code restructuring was necessary to allow to perform actual computations on SPE.
-Finnaly we have able to run the whole algorithm on SPE and thus to measure time need for computations.
+Big code restructuring was necessary to allow us to perform actual computations on SPE.
+Finnaly we have been able to run the whole algorithm on SPE and thus to measure time need for computations.
 
 \par
-The result of measurement showed that simple move the computation to SPE slows down the computations because of insufficient utilization of Cell B.E. features.
+The result of measurement showed that simple move the computation to SPE slows down the computations because of insufficient utilization of Cell/B.E. features.
 We have identified some bottlenecks of the application and discussed possible solutions.
 Implementation of these solutions would require whole application redesign using another data structure.
 This changes would actually mean change of used algorithm.
 
 \par
-We have also discussed differences between programming conventional processors and Cell B.E.
-As well as question of actual algorithm complexity and worthiness of porting them to Cell B.E.
+We have also discussed differences between programming conventional processors and Cell/B.E.
+As well as question of actual algorithm complexity and worthiness of porting them to Cell/B.E.
 
 \par
-The Cell B.E. platform is very interesting for its variations of use scenarios and ability of program tuning and customization.
-We think the pallet of tools and features of the Cell B.E. can make it interresting alternative to conventional processors whose lifetime gets shorter due to limitations in manufacturing process.
-Cell B.E.'s great potential has already been proven but it is still waiting for wider spectrum of programmers.
+The Cell/B.E. platform is very interesting for its variations of use scenarios and ability of program tuning and customization.
+We think the pallet of tools and features of the Cell/B.E. can make it interresting alternative to conventional processors whose lifetime gets shorter due to limitations in manufacturing process.
+Cell/B.E.'s great potential has already been proven but it is still waiting for wider spectrum of programmers.
 
 \par
-If the process of starting developing on the Cell B.E. would become simpler we believe much more new programmers would be start.
-Nowadays there are plenty of information about the Cell B.E. but somehow unsorted or out of date.
-The best information source are documents shipped along the SDK.
+If the process of starting developing on the Cell/B.E. became simpler we believe much more new programmers would start.
+Nowadays there are plenty of information about the Cell/B.E. but somehow unsorted or out of date.
+The best information source are documents shipped along with the SDK.
 But they are targeted to contain all the information regardless the level of experience of the reader.
-So when a programmer wants to start developing applications on the Cell B.E. he would go trough plenty of that information before he can start actual work.
+So when a programmer wants to start developing applications on the Cell/B.E. he would go trough plenty of that information before he can start actual work.
 It's a pity there is total lack of information for PS3 users within SDK docs.
 This is quite problem when big part of beginners has PS3 available.
 There is simply lack of some "The cookbook for beginners" with practical information and some howtos.
-We believe is such cookbook with some of practical information that potentially may help to some other programmers who would like to start developing for the Cell B.E.
+We believe this work is such a cookbook with some of practical information that potentially may help to some other programmers who would like to start developing for the Cell/B.E.
