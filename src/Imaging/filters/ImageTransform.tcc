@@ -22,21 +22,17 @@ namespace Imaging
 
 /**
  * Transform a 2D image
- *  @param in reference to the input image
  *  @param out reference to the output image
  *  @param properties pointer to a properties structure
- *  @param sliceNum the slice number (irrelevant in this case)
  *  @param transformSampling the subsampling to use for transformation (irrelevant in this case)
  *  @param threadNumber the number of parallel slice-computing threads to use at once (irrelevant in this case)
  *  @return true on success, false otherwise
  */
 template< typename ElementType >
 bool
-TransformImage( const Image< ElementType, 2 > &in,
-		Image< ElementType, 2 > &out,
+TransformImage( Image< ElementType, 2 > &out,
 		AbstractFilter::Properties* properties,
 		InterpolatorBase< Image< ElementType, 2 > >* interpolator,
-		int32 sliceNum,
 		uint32 transformSampling,
 		uint32 threadNumber )
 {
@@ -47,10 +43,17 @@ TransformImage( const Image< ElementType, 2 > &in,
 	int32 height, oldheight;
 	int32 width, oldwidth;
 	float32 xExtent, yExtent;
+	
+	Vector< uint32, 2 > size;
+	Vector< int32, 2 > strides;
 
 	typename ImageTransform< ElementType, 2 >::Properties* prop = dynamic_cast< typename ImageTransform< ElementType, 2 >::Properties* >( properties );
 	typedef typename InterpolatorBase< Image< ElementType, 2 > >::CoordType CoordType;
-	sPointer = out.GetPointer( (uint32&)width, (uint32&)height, xStride, yStride );
+	sPointer = out.GetPointer( size, strides );
+	width = size[0];
+	height = size[1];
+	xStride = strides[0];
+	yStride = strides[1];
 	oldwidth = (int32)(width / prop->_sampling[0]);
 	oldheight = (int32)(height / prop->_sampling[1]);
 	xExtent = out.GetDimensionExtents( 0 ).elementExtent;
@@ -102,7 +105,6 @@ public:
 
 	/**
 	 * Constructor
- 	 *  @param input reference to the input image
 	 *  @param output reference to the output image
 	 *  @param properties pointer to a properties structure
 	 *  @param interp pointer to the interpolator to use
@@ -110,15 +112,13 @@ public:
 	 *  @param tSampling the subsampling to use for transformation
 	 *  @param rotMatrix the rotation matrix to use for transformation
 	 */
-	TransformSlice( const Image< ElementType, 3 > &input,
-			Image< ElementType, 3 > &output,
+	TransformSlice( Image< ElementType, 3 > &output,
 			typename ImageTransform< ElementType, 3 >::Properties* properties,
 			InterpolatorBase< Image< ElementType, 3 > >* interp,
 			int32 sNum,
 			uint32 tSampling,
 			Vector< typename InterpolatorBase< Image< ElementType, 3 > >::CoordType, 3 >& rotMatrix )
-		: in( input ),
-		  out( output ),
+		: out( output ),
 		  prop( properties ),
 		  interpolator( interp ),
 		  sliceNum( sNum ),
@@ -257,9 +257,6 @@ private:
 
 	}
 
-	// input image
-	const Image< ElementType, 3 > &in;
-
 	// output image
 	Image< ElementType, 3 > &out;
 
@@ -309,18 +306,15 @@ private:
 
 /**
  * Transform a 3D image
- *  @param in reference to the input image
  *  @param out reference to the output image
  *  @param properties pointer to a properties structure
- *  @param sliceNum the slice number
  *  @param transformSampling the subsampling to use for transformation
  *  @param threadNumber the number of parallel slice-computing threads to use at once
  *  @return true on success, false otherwise
  */
 template< typename ElementType >
 bool
-TransformImage( const Image< ElementType, 3 > &in,
-		Image< ElementType, 3 > &out,
+TransformImage(  Image< ElementType, 3 > &out,
 		AbstractFilter::Properties* properties,
 		InterpolatorBase< Image< ElementType, 3 > >* interpolator,
 		uint32 transformSampling,
@@ -379,12 +373,12 @@ TransformImage( const Image< ElementType, 3 > &in,
 					);
 
 
-	const uint32 thread_num = threadNumber < size[2] ? threadNumber : size[2];
-	Multithreading::Thread* thr[ thread_num ];
+	uint32 thread_num = (threadNumber < size[2]) ? (threadNumber > 1 ? threadNumber : 1) : size[2];
+	Multithreading::Thread** thr = new Multithreading::Thread*[ thread_num ];
 	uint32 i = 0, j;
 
 	// execute transformation of slices one by one
-	for ( i = 0; i < thread_num; i++ ) thr[i] = new Multithreading::Thread( TransformSlice< ElementType >( in, out, prop, interpolator, i, transformSampling, RotationMatrix ) );
+	for ( i = 0; i < thread_num; i++ ) thr[i] = new Multithreading::Thread( TransformSlice< ElementType >( out, prop, interpolator, i, transformSampling, RotationMatrix ) );
 
 	j = i;
 
@@ -394,13 +388,15 @@ TransformImage( const Image< ElementType, 3 > &in,
 		i = i % thread_num;
 		thr[i]->join();
 		delete thr[i];
-		thr[i] = new Multithreading::Thread( TransformSlice< ElementType >( in, out, prop, interpolator, j, transformSampling, RotationMatrix ) );
+		thr[i] = new Multithreading::Thread( TransformSlice< ElementType >( out, prop, interpolator, j, transformSampling, RotationMatrix ) );
 		i++;
 		j++;
 	}
 
 	for ( i = 0; i < thread_num; ++i )	thr[i]->join();
 	for ( i = 0; i < thread_num; ++i )	delete thr[i];
+	
+	delete[] thr;
 
 	return true;
 }
@@ -468,7 +464,7 @@ ImageTransform< ElementType, dim >
 
 	// set interpolator input image and execute transformation according to dimension
 	_interpolator->SetImage( this->in );
-	result = TransformImage< ElementType >( *(this->in), *(this->out), this->_properties, _interpolator, transformSampling, _threadNumber );
+	result = TransformImage( *(this->out), this->_properties, _interpolator, transformSampling, _threadNumber );
 	return result;
 }
 
@@ -486,7 +482,7 @@ ImageTransform< ElementType, dim >
 
 	// rescale and execute transformation
 	Rescale();
-	result = ExecuteTransformation();
+	result = ExecuteTransformation( 0 );
 	if( result ) {
 		_writerBBox->SetModified();
 	} else {

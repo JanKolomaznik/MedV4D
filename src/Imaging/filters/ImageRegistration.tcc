@@ -31,7 +31,7 @@ template< typename ElementType >
 void
 CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 2 >::HistCellType, 2 >& jointHist,
 		 Image< ElementType, 2 >& inputImage,
-		 Image< ElementType, 2 >& refImage,
+		 AbstractImage& refImage,
 		 uint32 transformSampling )
 {
 
@@ -45,7 +45,7 @@ CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 2 
 	sin = inputImage.GetPointer( size, strides );
 	int32 inXStride = strides[0];
 	int32 inYStride = strides[1];
-	sref = refImage.GetPointer( size, strides );
+	sref = (static_cast< Image< ElementType, 2 > & >( refImage )).GetPointer( size, strides );
 	int32 refXStride = strides[0];
 	int32 refYStride = strides[1];
 	uint32 refWidth = size[0];
@@ -81,7 +81,7 @@ template< typename ElementType >
 void
 CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 3 >::HistCellType, 2 >& jointHist,
 		 Image< ElementType, 3 >& inputImage,
-		 Image< ElementType, 3 >& refImage,
+		 AbstractImage& refImage,
 		 uint32 transformSampling )
 {
 
@@ -96,7 +96,7 @@ CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 3 
 	int32 inXStride = strides[0];
 	int32 inYStride = strides[1];
 	int32 inZStride = strides[2];
-	sref = refImage.GetPointer( size, strides );
+	sref = (static_cast< Image< ElementType, 3 > & >( refImage )).GetPointer( size, strides );
 	int32 refXStride = strides[0];
 	int32 refYStride = strides[1];
 	int32 refZStride = strides[2];
@@ -232,7 +232,7 @@ ImageRegistration< ElementType, dim >
 	}
 
 	// transform the image according to properties
-	this->ExecuteTransformation();
+	this->ExecuteTransformation( 0 );
 	bool result = true;
 	/*if( result ) {
 		this->_writerBBox->SetModified();
@@ -257,7 +257,7 @@ ImageRegistration< ElementType, dim >
 		Vector< uint32, dim > refSize;
  		Vector< int32, dim > strides;
 		this->in->GetPointer( inSize, strides );
-		referenceImage->GetPointer( refSize, strides );
+		(static_cast< Image< ElementType, dim > & >( *referenceImage )).GetPointer( refSize, strides );
 
 		typedef typename PredecessorType::CoordType::CoordinateType		CoordType;
 
@@ -281,7 +281,7 @@ ImageRegistration< ElementType, dim >
 template< typename ElementType, uint32 dim >
 void
 ImageRegistration< ElementType, dim >
-::SetReferenceImage( typename ImageType::Ptr ref )
+::SetReferenceImage( AbstractImage::Ptr ref )
 {
 	referenceImage = ref;
 }

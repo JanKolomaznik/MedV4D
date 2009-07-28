@@ -2,7 +2,7 @@
 #include "Imaging/AbstractFilter.h"
 
 SettingsBox
-::SettingsBox( M4D::GUI::m4dGUIMainViewerDesktopWidget * viewers, InImageRegistration ** registers, QWidget * parent )
+::SettingsBox( M4D::GUI::m4dGUIMainViewerDesktopWidget * viewers,  M4D::Imaging::AbstractPipeFilter** registers, QWidget * parent )
 	: _viewers( viewers ), _registerFilters( registers ), _parent( parent )
 {
 	CreateWidgets();
@@ -215,37 +215,39 @@ SettingsBox
 ::ExecuteFilter( unsigned filterNum )
 {
 
+	InImageRegistration* regFilter = static_cast< InImageRegistration* >( _registerFilters[ filterNum ] );
+
 	// set the interpolator
-	if ( interpolatorType->currentIndex() == 0 )	_registerFilters[ filterNum ]->SetInterpolator( &nearestNeighborInterpolator[ filterNum ] );
-	else						_registerFilters[ filterNum ]->SetInterpolator( &linearInterpolator[ filterNum ] );
+	if ( interpolatorType->currentIndex() == 0 )	regFilter->SetInterpolator( &nearestNeighborInterpolator[ filterNum ] );
+	else						regFilter->SetInterpolator( &linearInterpolator[ filterNum ] );
 
 	// if manual registration is needed, set the parameters of the transformation
 	if ( xRot->isEnabled() )
 	{
-		_registerFilters[ filterNum ]->SetAutomaticMode( false );
+		regFilter->SetAutomaticMode( false );
 		float PI = std::atan(1.0f) * 4.0f;
-		_registerFilters[ filterNum ]->SetRotation( InImageRegistration::CoordType( 2 * PI * xRot->value() / 360, 2 * PI * yRot->value() / 360, 2 * PI * zRot->value() / 360 ) );
-		_registerFilters[ filterNum ]->SetTranslation( InImageRegistration::CoordType( xTrans->value(), yTrans->value(), zTrans->value() ) );
+		regFilter->SetRotation( InImageRegistration::CoordType( 2 * PI * xRot->value() / 360, 2 * PI * yRot->value() / 360, 2 * PI * zRot->value() / 360 ) );
+		regFilter->SetTranslation( InImageRegistration::CoordType( xTrans->value(), yTrans->value(), zTrans->value() ) );
 	}
 
 	// if reference image is to be registered automatically, simply copy the image
 	else if ( filterNum == 0 )
 	{
-		_registerFilters[ filterNum ]->SetAutomaticMode( false );
-		_registerFilters[ filterNum ]->SetRotation( InImageRegistration::CoordType( 0, 0, 0 ) );
-		_registerFilters[ filterNum ]->SetTranslation( InImageRegistration::CoordType( 0, 0, 0 ) );
+		regFilter->SetAutomaticMode( false );
+		regFilter->SetRotation( InImageRegistration::CoordType( 0, 0, 0 ) );
+		regFilter->SetTranslation( InImageRegistration::CoordType( 0, 0, 0 ) );
 	}
 
 	// if automatic registration is requested, set automatic mode and sampling rate
 	else
 	{
-		_registerFilters[ filterNum ]->SetAutomaticMode( true );
-		_registerFilters[ filterNum ]->SetTransformSampling( accuracy->value() );
+		regFilter->SetAutomaticMode( true );
+		regFilter->SetTransformSampling( accuracy->value() );
 	}
 
 	// set thread number and execute fusion
-	_registerFilters[ filterNum ]->SetThreadNumber( threadNum->value() );
-	_registerFilters[ filterNum ]->ExecuteOnWhole();
+	regFilter->SetThreadNumber( threadNum->value() );
+	regFilter->ExecuteOnWhole();
 }
 
 void

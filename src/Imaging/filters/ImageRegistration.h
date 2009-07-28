@@ -73,7 +73,7 @@ public:
 	 *  @param ref smart pointer to the reference image
 	 */
 	void
-	SetReferenceImage( typename ImageType::Ptr ref );
+	SetReferenceImage( AbstractImage::Ptr ref );
 
 	/**
 	 * The optimization function that is to be optimized to align the images
@@ -122,7 +122,7 @@ private:
 	/**
 	 * Smart pointer to the reference image
 	 */
-	typename ImageType::Ptr						referenceImage;
+	AbstractImage::Ptr						referenceImage;
 
 	/**
 	 * Joint histogram of the two images

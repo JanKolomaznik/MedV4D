@@ -1,11 +1,34 @@
 #include "mainWindow.h"
 #include "SettingsBox.h"
 #include "Imaging/PipelineMessages.h"
+#include "common/ExceptionBase.h"
+
 
 using namespace std;
 using namespace M4D::Imaging;
 
 #define BUF_SIZE		256
+
+#if WIN32
+#define snprintf sprintf_s
+#endif 
+
+class LFNotifier : public M4D::Imaging::MessageReceiverInterface
+{
+public:
+	LFNotifier( AbstractPipeFilter * filter ): _filter( filter ) {}
+	void ReceiveMessage(M4D::Imaging::PipelineMessage::Ptr              msg, 
+                      M4D::Imaging::PipelineMessage::MessageSendStyle /*sendStyle*/, 
+                      M4D::Imaging::FlowDirection				              /*direction*/
+		)
+	{
+		if( msg->msgID == M4D::Imaging::PMI_FILTER_UPDATED ) {
+			_filter->ExecuteOnWhole();	
+		}
+	}
+protected:
+	AbstractPipeFilter * _filter;
+};
 
 void mainWindow::CreatePipeline()
 {
@@ -19,9 +42,16 @@ void mainWindow::CreatePipeline()
 	// create the connections, register filters and sources
 	for ( i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i )
 	{
+		_convertor[ i ] = new InImageConvertor();
+		_pipeline.AddFilter( _convertor[ i ] );
+		
 		_register[ i ] = new InImageRegistration();
 		_pipeline.AddFilter( _register[ i ] );
-		_inConnection[ i ] = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeInputConnection( *_register[ i ], 0, false ) );
+
+		_inConnection[ i ] = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeInputConnection( *_convertor[ i ], 0, false ) );
+
+		_pipeline.MakeConnection( *_convertor[ i ], 0, *_register[ i ], 0 );
+
 		_outConnection[ i ] = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeOutputConnection( *_register[ i ], 0, true ) );
 
 		if( _inConnection[ i ] == NULL || _outConnection[ i ] == NULL ) {
@@ -54,17 +84,17 @@ mainWindow::mainWindow ()
 void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 {
 
-	// set the dataset as the input of the selected viewer and as input of the selected registration filter's
+	// set the dataset as the input of the selected viewer and convert it to the input of the selected registration filter
 	try {
 		uint32 inputNumber = _settings->GetInputNumber();
 		_inConnection[ inputNumber ]->PutDataset( inputDataSet );
+		_convertor[ inputNumber ]->Execute();
 
 		for ( uint32 i = 0; i < currentViewerDesktop->getSelectedViewerWidget()->InputPort().Size(); ++i ) currentViewerDesktop->getSelectedViewerWidget()->InputPort()[ i ].UnPlug();
 		_inConnection[ inputNumber ]->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 
 		if ( inputNumber == 0 )
-			for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i ) dynamic_cast< InImageRegistration* >( _register[ i ] )->SetReferenceImage( ImageType::Cast( inputDataSet ) );
-
+			for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i ) dynamic_cast< InImageRegistration* >( _register[ i ] )->SetReferenceImage( M4D::Imaging::AbstractImage::Cast( inputDataSet ) );
 	} 
 	catch( ... ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Some exception" ) );

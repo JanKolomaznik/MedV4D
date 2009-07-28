@@ -3,6 +3,10 @@
 #error File nearestNeighbour.tcc cannot be included directly!
 #else
 
+#if WIN32
+#define round(X)	floor((X) + 0.5)
+#endif
+
 namespace M4D
 {
 namespace Imaging
