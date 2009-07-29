@@ -264,9 +264,9 @@ This approach could be even better for the Cell/B.E. streaming nature.
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.9\textwidth]{data/originalHierarchy}
+    \includegraphics[width=0.95\textwidth]{data/originalHierarchy}
     \caption[Original ITK thresholding level set filter class hierarchy]
-{Illustrates the FiniteDifferenceFunction hierarchy and the FiniteDifferenceImageFilter hierarchy and their relationship}
+{Illustrates the original ITK FiniteDifferenceFunction hierarchy and the FiniteDifferenceImageFilter hierarchy and their relationship}
     \label{fg:originalHierarchy}
 \end{figure}
 
@@ -281,13 +281,14 @@ It is also ready to be ported for the Cell/B.E.
 In the function hierarchy only the base class that the resulting ThresholdLevelSetFunc class is derived has left.
 This new class does the same job as original LS function hierarchy but in manner closer to streaming architecture (the pre-allocation of the speed image is omitted).
 The computation of particular up-wind scheme terms was separated into standalone classes for more code readability and modularity.
+\par
 The filter hierarchy was shorted and begins already in SparseFieldLevelSetImageFilter.
 All the successors in the original hierarchy was omitted since they did anything reasonable.
 Some function implementation from the SparseFieldLevelSetImageFilter was borrowed into the new OOF to be ported for the Cell/B.E.
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.9\textwidth]{data/resultingFilter}
+    \includegraphics[width=0.95\textwidth]{data/resultingFilter}
     \caption[Resulting level set filter ready to be ported to Cell/B.E.]
     {
 Show result of original LS hierarchy rebuilding.

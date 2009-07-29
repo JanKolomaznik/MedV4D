@@ -45,7 +45,7 @@ They cover the entire image.
 Two main subsets of methods are bottom-up and top-bottom.
 The first one takes each pixel as separate cluster and then iterate joining these initial clusters based on some criterion until there are N cluster in cluster set.
 The second one pick N randomly or heuristic based chosen cluster centers.
-Then these two steps are repeated until some convergence condition is met e.g. no pixels change clusters: assign pixels to clusters based minimalization of the variance between the pixel and the cluster center and re-compute the cluster centers by averaging all of the pixels in the cluster.
+Then these two steps are repeated until some convergence condition is met e.g. no pixels change clusters: assign pixeles to clusters based minimalization of the variance between the pixel and the cluster center and re-compute the cluster centers by averaging all of the pixels in the cluster.
 
   \item Histogram-based
 
@@ -102,13 +102,15 @@ Searching for such model contains steps like: registration of the training examp
 
   \item Level set
 
+\par
 Is method that uses mathematical implicit model of the segmented object.
-It is represented as a surface of level set (LS) function defined on volume.
-Surface is then deformed with forces that are computed from segmented image resulting actual segmentation of the object.
+It is represented by level set function.
+Segmentation is performed by deformation of initial isoline (for 2D case), hyperplane of level set function, with forces that are computed from segmented image.
 
+\par
 Whole process can be illustrated in very similar way to flood-filling, see figure \ref{fg:flooding}.
-Initial surface is deformed with forces that has direction of surface normals.
-It can be e.g. a simple circle, for 2D case, as a surface of a distance function from given point.
+Initial isoline is deformed with forces that has direction of isoline normal.
+For 2D case initial isoline can be e.g. a simple circle as a hyperplane of a distance function from given point.
 When it approaches object borders propagation slows down.
 On the object borders propagation stops because forces are zero there.
 
@@ -123,76 +125,73 @@ On the object borders propagation stops because forces are zero there.
 Another illustration uses landscape with a lake.
 Water is always at a constant altitude and the surface of a landscape changes in time.
 With the changes of the landscape shoreline of the lake changes as well.
-Landscape represents the LS function and water surface represent the surface i.e. k-level set.
+Landscape represents the level set function and water surface represent the surface i.e. $k$-level set.
 
 \par
-Advantages of the level set method are lack of special treatment of merging and splitting surfaces necessity, few intuitive parameters, ability of topology changing and ability of performance in all dimension without explicit changes in method.
+Advantages of the level set method are lack of special treatment of merging and splitting surfaces necessity, few intuitive parameters, ability of topology changing.
+The most suiting advantage for our purpose is ability of performance in all dimension without explicit changes in method because we will perform volume segmentation i.e. 3D case of level set.
 
 \end{enumerate}
 
-\subsection{Level set formulation}
+\section{Level set}
 
-Level set method as proposed by Osher and Sethian \cite{sethianLS} provide numerical and mathematical mechanisms how to compute surface deformation as time varying iso-values of LS function using partial differential equations (PDE).
-Following information are based on \cite{insightIntoImages}.
-LS function is a signed scalar distance function
-\begin{equation}
-\phi : U_{x,y,z} \rightarrow \mathbb R,
-\end{equation}
-where $U \subset R^3$ is the domain of the volume (note: every definitions will be for 2D case).
-$\phi$ can be sometimes called embedding.
-LS is implicit representation of a surface of the segmented object.
-Surface is then subset of the LS function values
-\begin{equation}
-\vec{S} = \{\vec{x}\mid \phi(\vec{x}) = k\}
-\end{equation}
-Variable $S$ is then called a k-isosurface or k-level set of $\phi$. Variable $k$ can be chosen freely, but in most cases it is zero.
-Surface is then called zero isosurface, zero LS or front in some contexts and corresponds to the actual object contour.
+Level set method as proposed by Osher and Sethian \cite{sethianLS} provide numerical and mathematical mechanisms how to compute surface deformation as time varying iso-values of level set function using partial differential equations (PDE).
 
-Surface can be also defined as local mapping $\vec{S}$:
+\subsection{Level set theory}
+
+Following information are based on \cite{insightIntoImages} and definitions will be for 2D case.
+level set function is a signed scalar distance function
 \begin{equation}
-\vec{S}: V_r \times V_s \rightarrow \mathbb R^3_{x,y,z},
+\phi : U_{x,y} \rightarrow \mathbb R,
 \end{equation}
-where $V \times V \subset \mathbb R^2$.
-Because of deformation time variable $t\in \mathbb R^+$ has to be added resulting function $S = S(r,s,t)$.
-Propagation of the surface is then described by an evolution equation i.e. differential equation on $S$.
-One approach, dynamic, uses one-parameter family of $\phi$ i.e. $\phi(\vec{x},t)$ changes over time, $\vec{x}$ remains on the k-level set of $\phi$ as it moves and $k$ remains constant.
+where $U \subset R^2$ is the domain of the function.
+$\phi$ is called embedding and is implicit representation of the segmented object.
+Isoline is then subset of the level set function values, hyperplane
+\begin{equation}
+S = \{\vec{x}\mid \phi(\vec{x}) = k\}
+\end{equation}
+Symbol $S$ represents a $k$-isoline or $k$-level set of $\phi$. 
+Variable $k$ can be chosen freely, but in most cases it is zero.
+Isoline is then called zero isoline, zero level set or dimension insensitively front (will be used further).
+
+\par
+Deformation of the front is then described by an evolution equation.
+One approach, dynamic, uses one-parameter family of $\phi$ i.e. $\phi(\vec{x},t)$ changes over time, $\vec{x}$ remains on the $k$-level set of $\phi$ as it moves and $k$ remains constant.
 Resulting equation is
 \begin{equation}
 \label{deformEq}
 \phi(\vec{x}(t),t) = k \Rightarrow \frac{\delta \phi}{\delta t} = - \Delta \phi
 \cdot \vec{v}.
 \end{equation}
-Where $v$ represents movement of point $x$ on deforming surface i.e. positions in time.
-All surface movements depend on forces that are based on LS geometry.
-And LS geometry can be expressed in terms of differential structure of $\phi$.
+Where $v$ represents movement of point $x$ on deforming front i.e. positions in time.
+All front movements depend on forces that are based on level set geometry which can be expressed in terms of differential structure of $\phi$.
 So following version of equation \ref{deformEq} link formulated:
 \begin{equation}
 \frac{\delta\phi}{\delta t} = - \Delta \phi \cdot \vec{v} = - \Delta \phi
 \cdot F(\vec{x}, D\phi, D^2\phi, ...),
 \end{equation}
-where $D^n\phi$ is the set of n-order derivatives of $\phi$ evaluated at x.
-The term $F(\vec{x}, D\phi, D^2\phi, ...)$ represents some force that influence the movement of a surface point.
-This equation can apply to every values of k i.e. every LS of function $\phi$ and is basic equation of LS method.
+where $D^n\phi$ is the set of $n$-order derivatives of $\phi$ evaluated at $\vec{x}$.
+The term $F(\vec{x}, D\phi, D^2\phi, ...)$ represents the force that influence the movement of a surface point.
+This equation can apply to every values of k i.e. every level set of function $\phi$ and is basic equation of level set method.
 
 \subsection{Level set computation}
 
-Computation of surface deformation has to be discretized.
-So it is performed on discretized volume i.e. grid.
+Computation of surface deformation has to be discretized which means it is performed on discretized volume i.e. grid.
 Equation converts the problem to solving nonlinear PDE.
-Surface propagation is then computed from initial model in cycles representing discrete time steps using this update equation:
+Front propagation is then computed from initial model in cycles representing discrete time steps using this update equation:
 \begin{equation}
 \label{deformEqApprox}
-\phi_{i,j,k}^{n+1} = \phi_{i,j,k}^{n} + \Delta t \Delta \phi_{i,j,k}^{n},
+\phi_{i,j}^{n+1} = \phi_{i,j}^{n} + \Delta t \Delta \phi_{i,j}^{n},
 \end{equation}
-where the term $\phi_{i,j,k}^{n}$ is discrete approximation of $\frac{\delta\phi}{\delta t}$ refering to the n-th time step at discrete position i,j,k which has a counter part in a continuous domain $\phi(x_i, y_j, z_k)$.
-$\Delta t \Delta \phi_{i,j,k}^{n}$ is finite forward difference term representing approximation of the forces influencing the LS, the update term.
+where the term $\phi_{i,j}^{n}$ is discrete approximation of $\frac{\delta\phi}{\delta t}$ refering to the $n$-th time step at discrete position $i$,$j$ which has a counter part in a continuous domain $\phi(x_i, y_j)$.
+$\Delta t \Delta \phi_{i,j}^{n}$ is finite forward difference term representing approximation of the forces influencing the level set, the update term.
 The solution is then succession of steps where new solution is obtained as current solution plus update term.
 
-Discretization of the LS solution brings two problems.
+Discretization of the level set solution brings two problems.
 Fist one is need of stable and accurate numeric scheme for solving PDEs.
 This is solved by 'upwind scheme' proposed by Osher and Sethian \cite{sethianLS}.
 The second one is high computational complexity caused by conversion surface problem into volume problem which is one dimension higher.
-Straightforward implementation via d-dimensional array of values, results in both time and storage complexity of $O(n^d)$, where n is the cross sectional resolution and d is the dimension of the image.
+Straightforward implementation via $d$-dimensional array of values, results in both time and storage complexity of $O(n^d)$, where $n$ is the cross sectional resolution and $d$ is the dimension of the image.
 In case of pictures with size about $512^3$ voxels the level set computation takes very long time.
 
 \subsection{Speed-up approaches}
@@ -204,7 +203,7 @@ Beside the most known and used Narrow Bands and Sparse Fields there is an octree
 
 Narrow Band, proposed by Adalsteinsson and Sethian \cite{sethianFastLS}, computes embedding only within narrow band, tube.
 Remaining points are set constant to indicate that they are not in the tube.
-When LS reach the border of the tube, new tube has to be recalculated based on current LS and new run of embedding computations are performed on this new tube until envolving LS reaches tube borders.
+When level set reach the border of the tube, new tube has to be recalculated based on current level set and new run of embedding computations are performed on this new tube until envolving level set reaches tube borders.
 
 \begin{figure}
     \centering
@@ -217,7 +216,7 @@ When LS reach the border of the tube, new tube has to be recalculated based on c
 Sparse Fields method, proposed by Whitaker \cite{sparseFilelds}, introduces a scheme in which updates of an embedding are calculated only on the level set.
 This means that it performs exactly the number of calculations that is needed to calculate next position of the level set.
 This is the biggest advantage of the method. Points that are adjacent to the level set are called active points and they form active set.
-Because active points must be adjacent to the LS their positions lie within certain range from the LS.
+Because active points must be adjacent to the level set their positions lie within certain range from the level set.
 Therefore even values of an embedding in active set positions must lie on certain range, the active range.
 When active point value move out from this active range it is no longer the active point and is removed from the active set.
 And vice versa, the point whose value comes into active range is added into active set.
@@ -232,10 +231,13 @@ Process of front propagation can be imagined as a tram that lays down tracks bef
 \end{figure}
 
 \par
-Algorithm:
+Algorithm (from \cite{insightIntoImages}):\\
 \label{alg:sparseFileld}
+\emph{layer, $L_i$} - set of points that are close to the level set. $i$ is order of a layer, negative for inner layers, positive for outer ones. Zero for active set. See figure\ref{fg:sparseFilelds}\\
+\emph{statuslist, $S_{i}$} - list of points within $i$-th layer that are changing status
+
 \par
-DO WHILE a stop condition is met:
+DO WHILE (stop condition is met):
 \par
 1) FOREACH (point $\in$ active set, the zero layer (ZL)\\
   a) compute level set geometry $(\vec x)$\\
@@ -243,10 +245,10 @@ DO WHILE a stop condition is met:
 \par
 2) FOREACH (point $\in$ active set compute new embedding value $\phi_{i,j,k}^{n+1}$, which means computing \ref{deformEqApprox}.\\
 Decide if it falls into [-$\frac{1}{2}$,$\frac{1}{2}$] interval.
-If so, put the $(\vec x)$ into appropriate status lists, i.e. list of points that are changing status, to lower status list if $\phi_{i,j,k}^{n+1}$ moved under the interval and vice versa.
+If $\phi_{i,j,k}^{n+1}$ moved under the interval, put the $(\vec x)$ into lower status list, resp. into higher if $\phi_{i,j,k}^{n+1}$ moved above the interval.
 \par
 3) Visit points in other layers $L_i$ in order $i=\pm 1,\ldots, \pm N$, and update the grid point values based on the values of the next inner layer $L_{i\pm1}$ by adding resp. subtracting one unit.\\
-If more than one $L_{i\pm1}$ neighbor exists then use the neighbor that indicates a level curve closest to that grid point. i.e., use the maximum for the outside layers resp. minimum for the inside ones.
+If more than one $L_{i\pm1}$ neighbor exists then use the neighbor that indicates a level curve closest to that grid point. i.e. use the point with maximal value for the outside layers resp. point with minimal value for the inside ones.
 If a grid point in layer $L_i$ has no $L_{i\pm1}$ neighbors, then it gets denoted to the next layer away from the active set, $L_{i\pm1}$.
 \par
 4) For each status list $S_{\pm1}$, $S_{\pm2}$, $\ldots$, $S_{\pm N}$ do the following:\\
@@ -260,7 +262,7 @@ As a next stopping criterium is usually given the maximal count of iterations,
 
 \subsection{Level set image segmentation}
 
-Image segmentation using LS method is performed based on a speed function that is calculated from segmented image and that encourages the mode to grow into direction where the object lies.
+Image segmentation using level set method is performed based on a speed function that is calculated from segmented image and that encourages the mode to grow into direction where the object lies.
 There is variety of speed functions.
 In this work I use speed function based on a threshold $T_{low}$ and $T_{hi}$ of the intensities from the input image.
 If pixel has intensity value that is within the threshold interval the level set model grows (see figure \ref{fg:speedFunction}).
@@ -301,7 +303,7 @@ where $|\bigtriangledown \phi|D$ represents speed function term, $\bigtriangledo
 Edge term is computed from second order derivatives just like Canny and Marr-Hildreth algorithms for edge detection.
 It shall to push level set towards edges, i.e. border of segmented object.
 
-Curvature forces resulting level set model to have less surface area and thus protect negative effects like levelset leaking into unwanted places like figure \ref{fg:leaking} shows.
+Curvature forces resulting level set model to have less surface area and thus protect negative effects like leaking into unwanted places shown in figure \ref{fg:leaking} shows.
 Note: if $\alpha$ = $\beta$ = 0, the result is the same as from flood-fill method because there is only speed term taking place.
 
 \begin{figure}
@@ -320,7 +322,7 @@ Note: if $\alpha$ = $\beta$ = 0, the result is the same as from flood-fill metho
 We omited the edge term so there is only two parameters of the method.
 Tuning of the term weights has to be performed in order to have best results.
 
-\section{Level set methods on streaming architectures}
+\subsection{Level set methods on streaming architectures}
 
 \par
 There was some attempts for mapping level set method onto special stream device.
