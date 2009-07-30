@@ -219,7 +219,7 @@ ImageRegistration< ElementType, dim >
 	this->Rescale();
 
 	// if automatic is set, optimize the criterion function
-	if ( _automatic )
+	if ( _automatic && referenceImage )
 	{
 		Vector< double, 2 * dim > v;
 		for ( uint32 i = 0; i < dim; ++i )

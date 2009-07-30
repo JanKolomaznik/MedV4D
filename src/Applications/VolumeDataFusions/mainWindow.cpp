@@ -86,6 +86,10 @@ void mainWindow::ClearDataset ()
 	uint32 inputNumber = _settings->GetInputNumber();
 	_inConnection[ inputNumber ]->ResetDataset();
 	_register[ inputNumber ]->OutputPort().GetPort( 0 ).GetConnection()->ResetDataset();
+
+	if ( inputNumber == 0 )
+		for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i ) dynamic_cast< InImageRegistration* >( _register[ i ] )->SetReferenceImage( M4D::Imaging::AbstractImage::Ptr() );
+
 	currentViewerDesktop->UpdateViewers();
 }
 
