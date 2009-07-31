@@ -134,7 +134,7 @@ SimpleSliceViewerTexturePreparer< ElementType >
 template< typename ElementType >
 void
 SimpleSliceViewerTexturePreparer< ElementType >
-::equalizeArray( ElementType* pixel,
+::adjustArrayContrastBrightness( ElementType* pixel,
       uint32 width,
       uint32 height,
       GLint brightnessRate,
@@ -239,7 +239,7 @@ SimpleSliceViewerTexturePreparer< ElementType >
 	}
 
 	// equalize the first input array
-	equalizeArray( *pixel, width, height, brightnessRate, contrastRate );
+	adjustArrayContrastBrightness( *pixel, width, height, brightnessRate, contrastRate );
 
 	// prepare texture
         glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,

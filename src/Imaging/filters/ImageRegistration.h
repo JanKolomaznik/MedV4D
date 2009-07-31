@@ -19,6 +19,8 @@
 #define HISTOGRAM_VALUE_DIVISOR						10
 #define TRANSFORM_SAMPLING						20
 
+#define MIN_SAMPLING							20
+
 /**
  *  @addtogroup imaging Imaging Library
  *  @{

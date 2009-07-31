@@ -27,7 +27,7 @@ public:
     /**
      * Constructor
      */
-    RGBSliceViewerTexturePreparer() {}
+    RGBSliceViewerTexturePreparer();
 
     /**
      * Prepares the texture of the image to be mapped to the following OpenGL surface.
@@ -50,6 +50,24 @@ public:
       uint32 slice,
       unsigned& dimension );
 
+    /**
+     * Set brightness and contrast modifications
+     *  @param multiply red channel's brightness
+     *  @param multiply green channel's brightness
+     *  @param multiply blue channel's brightness
+     *  @param multiply red channel's contrast
+     *  @param multiply green channel's contrast
+     *  @param multiply blue channel's contrast
+     */
+    void setAdjustBrightnessContrast(
+      double brightnessAdjustRed,
+      double brightnessAdjustGreen,
+      double brightnessAdjustBlue,
+      double contrastAdjustRed,
+      double contrastAdjustGreen,
+      double contrastAdjustBlue );
+
+
 protected:
 
     /**
@@ -66,7 +84,28 @@ protected:
         ElementType* channelG,
         ElementType* channelB,
         uint32 width,
-        uint32 height );
+        uint32 height,
+        GLint brightnessRate,
+        GLint contrastRate,
+	bool adjustBrightnessContrast = true );
+
+    /** multiply red channel's brightness */
+    double _brightnessAdjustRed;
+
+    /** multiply green channel's brightness */
+    double _brightnessAdjustGreen;
+
+    /** multiply blue channel's brightness */
+    double _brightnessAdjustBlue;
+
+    /** multiply red channel's contrast */
+    double _contrastAdjustRed;
+
+    /** multiply green channel's contrast */
+    double _contrastAdjustGreen;
+
+    /** multiply blue channel's contrast */
+    double _contrastAdjustBlue;
 
 private:
 

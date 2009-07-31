@@ -467,7 +467,7 @@ ImageTransform< ElementType, dim >
 template< typename ElementType, uint32 dim >
 bool
 ImageTransform< ElementType, dim >
-::ExecuteTransformation( uint32 transformSampling = 0 )
+::ExecuteTransformation( uint32 transformSampling )
 {
 	bool result = false;
 	if ( _interpolator == NULL )

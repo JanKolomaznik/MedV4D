@@ -226,7 +226,7 @@ ImageRegistration< ElementType, dim >
 	{
 		uint32 maxSampling = _transformSampling;
 
-		for ( _transformSampling = 10; _transformSampling < maxSampling && this->IsRunning(); _transformSampling *= 2 )
+		for ( _transformSampling = MIN_SAMPLING; _transformSampling <= maxSampling && this->IsRunning(); _transformSampling *= 2 )
 		{
 			LOG( "Resolution: " << _transformSampling );
 			Vector< double, 2 * dim > v;

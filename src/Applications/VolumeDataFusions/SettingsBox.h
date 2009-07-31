@@ -5,6 +5,8 @@
 #include "Imaging/interpolators/nearestNeighbor.h"
 #include "Imaging/interpolators/linear.h"
 #include "GUI/widgets/m4dGUIMainViewerDesktopWidget.h"
+#include "GUI/widgets/components/SobelOperatorSliceViewerTexturePreparer.h"
+#include "GUI/widgets/components/StandardDeviationSliceViewerTexturePreparer.h"
 #include "GUI/widgets/components/MaxAvrMinRGBSliceViewerTexturePreparer.h"
 #include "GUI/widgets/components/MaxMedMinRGBSliceViewerTexturePreparer.h"
 #include "GUI/widgets/components/MaxAvrMinGradientRGBSliceViewerTexturePreparer.h"
@@ -53,6 +55,13 @@ protected slots:
 	 */
 	void
 	RegistrationType( int val );
+
+	/**
+	 * Set the fusion's type
+	 *  @param val the fusion's type
+	 */
+	void
+	FusionType( int val );
 
 	/**
 	 * Execute a single filter
@@ -118,6 +127,9 @@ protected:
 	// rotation and translation setters
 	QSpinBox *xRot, *yRot, *zRot, *xTrans, *yTrans, *zTrans;
 
+	// brightness and contrast adjustaers for RGB channels in colored fusion
+	QSpinBox *bRed, *bGreen, *bBlue, *cRed, *cGreen, *cBlue;
+
 	// accuracy setter
 	QSpinBox *accuracy;
 
@@ -149,6 +161,8 @@ protected:
 	M4D::Viewer::MaxMaxMinGradientRGBSliceViewerTexturePreparer< ElementType > maxMaxMinGradientRGBTexturePreparer;
 	M4D::Viewer::MaxMinMinGradientRGBSliceViewerTexturePreparer< ElementType > maxMinMinGradientRGBTexturePreparer;
 	M4D::Viewer::MultiChannelGradientRGBSliceViewerTexturePreparer< ElementType > multiChannelGradientRGBTexturePreparer;
+	M4D::Viewer::SobelOperatorSliceViewerTexturePreparer< ElementType > sobelOperatorTexturePreparer;
+	M4D::Viewer::StandardDeviationSliceViewerTexturePreparer< ElementType > standardDeviationTexturePreparer;
 
 	// interpolators for different types of interpolation
 	M4D::Imaging::NearestNeighborInterpolator< ImageType >			nearestNeighborInterpolator[ SLICEVIEWER_INPUT_NUMBER ];

@@ -38,13 +38,8 @@ MaxAvrMinRGBSliceViewerTexturePreparer< ElementType >
 	ElementType* channelG = AverageIntensitySliceViewerTexturePreparer< ElementType >::IntensityArranger( pixel, SLICEVIEWER_INPUT_NUMBER, width, height );
 	ElementType* channelB = MinimumIntensitySliceViewerTexturePreparer< ElementType >::IntensityArranger( pixel, SLICEVIEWER_INPUT_NUMBER, width, height );
 
-	// equalize arrays
-	this->equalizeArray( channelR, width, height, brightnessRate, contrastRate );
-        this->equalizeArray( channelG, width, height, brightnessRate, contrastRate );
-        this->equalizeArray( channelB, width, height, brightnessRate, contrastRate );
-
 	// arrange the intensities as RGB channels
-	ElementType* texture = RGBChannelArranger( channelR, channelG, channelB, width, height );
+	ElementType* texture = RGBChannelArranger( channelR, channelG, channelB, width, height, brightnessRate, contrastRate );
 
 	// prepare texture
         glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,

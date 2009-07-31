@@ -8,6 +8,36 @@ namespace Viewer
 {
 
 template< typename ElementType >
+RGBSliceViewerTexturePreparer< ElementType >
+::RGBSliceViewerTexturePreparer()
+  : _brightnessAdjustRed( 1.0 ),
+    _brightnessAdjustGreen( 1.0 ),
+    _brightnessAdjustBlue( 1.0 ),
+    _contrastAdjustRed( 1.0 ),
+    _contrastAdjustGreen( 1.0 ),
+    _contrastAdjustBlue( 1.0 )
+{}
+
+template< typename ElementType >
+void
+RGBSliceViewerTexturePreparer< ElementType >
+::setAdjustBrightnessContrast(
+      double brightnessAdjustRed,
+      double brightnessAdjustGreen,
+      double brightnessAdjustBlue,
+      double contrastAdjustRed,
+      double contrastAdjustGreen,
+      double contrastAdjustBlue )
+    {
+      _brightnessAdjustRed = brightnessAdjustRed;
+      _brightnessAdjustGreen = brightnessAdjustGreen;
+      _brightnessAdjustBlue = brightnessAdjustBlue;
+      _contrastAdjustRed = contrastAdjustRed;
+      _contrastAdjustGreen = contrastAdjustGreen;
+      _contrastAdjustBlue = contrastAdjustBlue;
+    }
+
+template< typename ElementType >
 ElementType*
 RGBSliceViewerTexturePreparer< ElementType >
 ::RGBChannelArranger( 
@@ -15,8 +45,20 @@ RGBSliceViewerTexturePreparer< ElementType >
 	ElementType* channelG,
 	ElementType* channelB,
 	uint32 width,
-	uint32 height )
+	uint32 height,
+        GLint brightnessRate,
+        GLint contrastRate,
+	bool adjustContrastBrightness )
     {
+	if ( adjustContrastBrightness )
+	{
+		// equalize arrays
+		this->adjustArrayContrastBrightness( channelR, width, height, _brightnessAdjustRed * brightnessRate, _contrastAdjustRed * contrastRate );
+		this->adjustArrayContrastBrightness( channelG, width, height, _brightnessAdjustGreen * brightnessRate, _contrastAdjustGreen * contrastRate );
+		this->adjustArrayContrastBrightness( channelB, width, height, _brightnessAdjustBlue * brightnessRate, _contrastAdjustBlue * contrastRate );
+	}
+
+
 	ElementType* texture = new ElementType[ width * height * 3 ];
 
 	// Set the RGB values one after another just like OpenGL requires
@@ -59,13 +101,8 @@ RGBSliceViewerTexturePreparer< ElementType >
 	    return false;
 	}
 
-	// equalize arrays
-	this->equalizeArray( pixel[0], width, height, brightnessRate, contrastRate );
-	this->equalizeArray( pixel[1], width, height, brightnessRate, contrastRate );
-	this->equalizeArray( pixel[2], width, height, brightnessRate, contrastRate );
-
 	// set the first three input datasets as the channels of RGB
-	ElementType* texture = RGBChannelArranger( pixel[0], pixel[1], pixel[2], width, height );
+	ElementType* texture = RGBChannelArranger( pixel[0], pixel[1], pixel[2], width, height, brightnessRate, contrastRate );
 
 	// prepare texture
         glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
@@ -81,6 +118,8 @@ RGBSliceViewerTexturePreparer< ElementType >
 
         return true;
     }
+
+
 
 } /*namespace Viewer*/
 } /*namespace M4D*/

@@ -122,7 +122,7 @@ protected:
      *  @param brightnessRate the rate of brightness to adjust the image with
      *  @param contrastRate the rate of contrast to adjust the image with
      */
-    void equalizeArray( ElementType* pixel,
+    void adjustArrayContrastBrightness( ElementType* pixel,
       uint32 width,
       uint32 height,
       GLint brightnessRate,

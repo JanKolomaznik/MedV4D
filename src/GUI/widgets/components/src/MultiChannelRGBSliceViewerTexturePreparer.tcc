@@ -28,7 +28,7 @@ MultiChannelRGBSliceViewerTexturePreparer< ElementType >
 	for ( i = 0; i < SLICEVIEWER_INPUT_NUMBER; i++ )
 	    if ( pixel[i] )
 	    {
-		this->equalizeArray( pixel[i], width, height, brightnessRate, contrastRate );
+		this->adjustArrayContrastBrightness( pixel[i], width, height, brightnessRate, contrastRate );
 		textureCount++;
 	    }
 
@@ -67,7 +67,7 @@ MultiChannelRGBSliceViewerTexturePreparer< ElementType >
 	    }
 
 	// arrange the channels of RGB
-	ElementType* texture = RGBChannelArranger( channelR, channelG, channelB, width, height );
+	ElementType* texture = RGBChannelArranger( channelR, channelG, channelB, width, height, brightnessRate, contrastRate, false );
 
 	// prepare texture
         glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,

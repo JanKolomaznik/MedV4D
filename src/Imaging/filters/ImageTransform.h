@@ -151,7 +151,7 @@ protected:
 	 *  @return true if the transformation was successful, false otherwise
 	 */
 	bool
-	ExecuteTransformation( uint32 transformSampling );
+	ExecuteTransformation( uint32 transformSampling = 0 );
 
 	/**
 	 * Rescale the output image according to the scaling parameter

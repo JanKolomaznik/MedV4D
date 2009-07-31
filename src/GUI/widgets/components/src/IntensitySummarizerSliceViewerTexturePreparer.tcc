@@ -33,7 +33,7 @@ IntensitySummarizerSliceViewerTexturePreparer< ElementType >
 		datasetPresent = true;
 
 		// equalize intensities according to brightness- and contrastrate
-		this->equalizeArray( pixel[i], width, height, brightnessRate, contrastRate );
+		this->adjustArrayContrastBrightness( pixel[i], width, height, brightnessRate, contrastRate );
 	    }
 
 	if ( ! datasetPresent )
@@ -46,7 +46,7 @@ IntensitySummarizerSliceViewerTexturePreparer< ElementType >
 	ElementType* texture = IntensityArranger( pixel, SLICEVIEWER_INPUT_NUMBER, width, height );
 
 	// equalize intensities of the resulting array according to brightness- and contrastrate
-	this->equalizeArray( texture, width, height, brightnessRate, contrastRate );
+	this->adjustArrayContrastBrightness( texture, width, height, brightnessRate, contrastRate );
 
 	// prepare texture
         glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,

@@ -94,12 +94,12 @@ SettingsBox
 	zTrans->setValue( 0 );
 	grid->addWidget(zTrans, 5, 3 );
 
-	grid->addWidget( new QLabel( tr( "Registration Sampling" ) ), 6, 1, 1, 2 );
+	grid->addWidget( new QLabel( tr( "Registration Resolution" ) ), 6, 1, 1, 2 );
 	accuracy = new QSpinBox();
 	accuracy->setAlignment( Qt::AlignRight );
 	accuracy->setMaximum( 2048 );
-	accuracy->setMinimum( 2 );
-	accuracy->setValue( TRANSFORM_SAMPLING );
+	accuracy->setMinimum( MIN_SAMPLING );
+	accuracy->setValue( 100 );
 	accuracy->setEnabled( false );
 	grid->addWidget(accuracy, 6, 3 );
 	
@@ -111,6 +111,64 @@ SettingsBox
 	threadNum->setValue( 1 );
 	grid->addWidget(threadNum, 7, 3 );
 	
+	grid->addWidget( new QLabel( tr( "RGB channel adjusters" ) ), 8, 1 );
+	grid->addWidget( new QLabel( tr( "Brightness" ) ), 8, 2 );
+	grid->addWidget( new QLabel( tr( "Contrast" ) ), 8, 3 );
+
+	grid->addWidget( new QLabel( tr( "Red x (1/1000)" ) ), 9, 1 );
+	bRed = new QSpinBox();
+	bRed->setAlignment( Qt::AlignRight );
+	bRed->setMaximum( 10000 );
+	bRed->setMinimum( 0 );
+	bRed->setValue( 1000 );
+	bRed->setEnabled( false );
+	grid->addWidget(bRed, 9, 2 );
+
+	cRed = new QSpinBox();
+	cRed->setAlignment( Qt::AlignRight );
+	cRed->setMaximum( 10000 );
+	cRed->setMinimum( 0 );
+	cRed->setValue( 0 );
+	cRed->setValue( 1000 );
+	cRed->setEnabled( false );
+	grid->addWidget(cRed, 9, 3 );
+
+	grid->addWidget( new QLabel( tr( "Green x (1/1000)" ) ), 10, 1 );
+	bGreen = new QSpinBox();
+	bGreen->setAlignment( Qt::AlignRight );
+	bGreen->setMaximum( 10000 );
+	bGreen->setMinimum( 0 );
+	bGreen->setValue( 1000 );
+	bGreen->setEnabled( false );
+	grid->addWidget(bGreen, 10, 2 );
+
+	cGreen = new QSpinBox();
+	cGreen->setAlignment( Qt::AlignRight );
+	cGreen->setMaximum( 10000 );
+	cGreen->setMinimum( 0 );
+	cGreen->setValue( 0 );
+	cGreen->setValue( 1000 );
+	cGreen->setEnabled( false );
+	grid->addWidget(cGreen, 10, 3 );
+
+	grid->addWidget( new QLabel( tr( "Blue x (1/1000)" ) ), 11, 1 );
+	bBlue = new QSpinBox();
+	bBlue->setAlignment( Qt::AlignRight );
+	bBlue->setMaximum( 10000 );
+	bBlue->setMinimum( 0 );
+	bBlue->setValue( 1000 );
+	bBlue->setEnabled( false );
+	grid->addWidget(bBlue, 11, 2 );
+
+	cBlue = new QSpinBox();
+	cBlue->setAlignment( Qt::AlignRight );
+	cBlue->setMaximum( 10000 );
+	cBlue->setMinimum( 0 );
+	cBlue->setValue( 0 );
+	cBlue->setValue( 1000 );
+	cBlue->setEnabled( false );
+	grid->addWidget(cBlue, 11, 3 );
+
 
 	//-------------------------------------------------
 
@@ -137,8 +195,12 @@ SettingsBox
         fusionType->addItem( "RGB-Max-Med-Min gradient fusion" );
         fusionType->addItem( "RGB-Max-Max-Min gradient fusion" );
         fusionType->addItem( "RGB-Max-Min-Min gradient fusion" );
+        fusionType->addItem( "Sobel operator fusion" );
+        fusionType->addItem( "Standard deviation fusion" );
 
         fusionType->setCurrentIndex( 0 );
+	
+	QObject::connect( fusionType, SIGNAL( currentIndexChanged( int ) ), this, SLOT( FusionType( int ) ) );
 
 	//-------------------------------------------------
 
@@ -208,6 +270,20 @@ SettingsBox
 	zRot->setEnabled( val );
 	zTrans->setEnabled( val );
 	accuracy->setEnabled( !val );
+}
+
+void
+SettingsBox
+::FusionType( int val )
+{
+	bool rgb = val == 1 || ( val > 5 && val < 13 );
+
+	bRed->setEnabled( rgb );
+	cRed->setEnabled( rgb );
+	bGreen->setEnabled( rgb );
+	cGreen->setEnabled( rgb );
+	bBlue->setEnabled( rgb );
+	cBlue->setEnabled( rgb );
 }
 
 void
@@ -287,67 +363,89 @@ SettingsBox
 	M4D::Viewer::m4dGUISliceViewerWidget* sliceViewer = dynamic_cast< M4D::Viewer::m4dGUISliceViewerWidget* >( _viewers->getSelectedViewerWidget() );
 	if ( ! sliceViewer ) return;
 
-	// select the fusion that is required
 	for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i )
-	{
-		switch ( fusionType->currentIndex() )
-		{
-
-			case 0:
-			sliceViewer->setTexturePreparerToRGB();
-			break;
-
-			case 1:
-			sliceViewer->setTexturePreparerToCustom(&multiChannelRGBTexturePreparer);
-			break;
-
-			case 2:
-			sliceViewer->setTexturePreparerToCustom(&maximumIntensityTexturePreparer);
-			break;
-			
-			case 3:
-			sliceViewer->setTexturePreparerToCustom(&minimumIntensityTexturePreparer);
-			break;
-			
-			case 4:
-			sliceViewer->setTexturePreparerToCustom(&averageIntensityTexturePreparer);
-			break;
-			
-			case 5:
-			sliceViewer->setTexturePreparerToCustom(&medianIntensityTexturePreparer);
-			break;
-			
-			case 6:
-			sliceViewer->setTexturePreparerToCustom(&maxAvrMinRGBTexturePreparer);
-			break;
-			
-			case 7:
-			sliceViewer->setTexturePreparerToCustom(&maxMedMinRGBTexturePreparer);
-			break;
-
-			case 8:
-			sliceViewer->setTexturePreparerToCustom(&multiChannelGradientRGBTexturePreparer);
-			break;
-
-			case 9:
-			sliceViewer->setTexturePreparerToCustom(&maxAvrMinGradientRGBTexturePreparer);
-			break;
-
-			case 10:
-			sliceViewer->setTexturePreparerToCustom(&maxMedMinGradientRGBTexturePreparer);
-			break;
-
-			case 11:
-			sliceViewer->setTexturePreparerToCustom(&maxMaxMinGradientRGBTexturePreparer);
-			break;
-
-			case 12:
-			sliceViewer->setTexturePreparerToCustom(&maxMinMinGradientRGBTexturePreparer);
-			break;
-
-		}
-
 		static_cast< mainWindow* >( _parent )->OutConnectionToViewerPort( i, i );
+
+	// select the fusion that is required
+	switch ( fusionType->currentIndex() )
+	{
+
+		case 0:
+		sliceViewer->setTexturePreparerToRGB();
+		break;
+
+		case 1:
+		sliceViewer->setTexturePreparerToCustom(&multiChannelRGBTexturePreparer);
+		multiChannelRGBTexturePreparer.setAdjustBrightnessContrast( (double)bRed->value() / 1000.0, (double)bGreen->value() / 1000.0, (double)bBlue->value() / 1000.0,
+									    (double)cRed->value() / 1000.0, (double)cGreen->value() / 1000.0, (double)cBlue->value() / 1000.0 );
+		break;
+
+		case 2:
+		sliceViewer->setTexturePreparerToCustom(&maximumIntensityTexturePreparer);
+		break;
+		
+		case 3:
+		sliceViewer->setTexturePreparerToCustom(&minimumIntensityTexturePreparer);
+		break;
+		
+		case 4:
+		sliceViewer->setTexturePreparerToCustom(&averageIntensityTexturePreparer);
+		break;
+		
+		case 5:
+		sliceViewer->setTexturePreparerToCustom(&medianIntensityTexturePreparer);
+		break;
+		
+		case 6:
+		sliceViewer->setTexturePreparerToCustom(&maxAvrMinRGBTexturePreparer);
+		maxAvrMinRGBTexturePreparer.setAdjustBrightnessContrast( (double)bRed->value() / 1000.0, (double)bGreen->value() / 1000.0, (double)bBlue->value() / 1000.0,
+									    (double)cRed->value() / 1000.0, (double)cGreen->value() / 1000.0, (double)cBlue->value() / 1000.0 );
+		break;
+		
+		case 7:
+		sliceViewer->setTexturePreparerToCustom(&maxMedMinRGBTexturePreparer);
+		maxMedMinRGBTexturePreparer.setAdjustBrightnessContrast( (double)bRed->value() / 1000.0, (double)bGreen->value() / 1000.0, (double)bBlue->value() / 1000.0,
+									    (double)cRed->value() / 1000.0, (double)cGreen->value() / 1000.0, (double)cBlue->value() / 1000.0 );
+		break;
+
+		case 8:
+		sliceViewer->setTexturePreparerToCustom(&multiChannelGradientRGBTexturePreparer);
+		multiChannelGradientRGBTexturePreparer.setAdjustBrightnessContrast( (double)bRed->value() / 1000.0, (double)bGreen->value() / 1000.0, (double)bBlue->value() / 1000.0,
+									    (double)cRed->value() / 1000.0, (double)cGreen->value() / 1000.0, (double)cBlue->value() / 1000.0 );
+		break;
+
+		case 9:
+		sliceViewer->setTexturePreparerToCustom(&maxAvrMinGradientRGBTexturePreparer);
+		maxAvrMinGradientRGBTexturePreparer.setAdjustBrightnessContrast( (double)bRed->value() / 1000.0, (double)bGreen->value() / 1000.0, (double)bBlue->value() / 1000.0,
+									    (double)cRed->value() / 1000.0, (double)cGreen->value() / 1000.0, (double)cBlue->value() / 1000.0 );
+		break;
+
+		case 10:
+		sliceViewer->setTexturePreparerToCustom(&maxMedMinGradientRGBTexturePreparer);
+		maxMedMinGradientRGBTexturePreparer.setAdjustBrightnessContrast( (double)bRed->value() / 1000.0, (double)bGreen->value() / 1000.0, (double)bBlue->value() / 1000.0,
+									    (double)cRed->value() / 1000.0, (double)cGreen->value() / 1000.0, (double)cBlue->value() / 1000.0 );
+		break;
+
+		case 11:
+		sliceViewer->setTexturePreparerToCustom(&maxMaxMinGradientRGBTexturePreparer);
+		maxMaxMinGradientRGBTexturePreparer.setAdjustBrightnessContrast( (double)bRed->value() / 1000.0, (double)bGreen->value() / 1000.0, (double)bBlue->value() / 1000.0,
+									    (double)cRed->value() / 1000.0, (double)cGreen->value() / 1000.0, (double)cBlue->value() / 1000.0 );
+		break;
+
+		case 12:
+		sliceViewer->setTexturePreparerToCustom(&maxMinMinGradientRGBTexturePreparer);
+		maxMinMinGradientRGBTexturePreparer.setAdjustBrightnessContrast( (double)bRed->value() / 1000.0, (double)bGreen->value() / 1000.0, (double)bBlue->value() / 1000.0,
+									    (double)cRed->value() / 1000.0, (double)cGreen->value() / 1000.0, (double)cBlue->value() / 1000.0 );
+		break;
+
+		case 13:
+		sliceViewer->setTexturePreparerToCustom(&sobelOperatorTexturePreparer);
+		break;
+
+		case 14:
+		sliceViewer->setTexturePreparerToCustom(&standardDeviationTexturePreparer);
+		break;
+
 	}
 
 	_viewers->UpdateViewers();
