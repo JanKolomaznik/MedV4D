@@ -1,4 +1,4 @@
-\chapter{Image segmentation}
+﻿\chapter{Image segmentation}
 
 Image segmentation will be described in this chapter as well as several basic segmentation techniques will be listed.
 Subsequently level set techniques will be introduced, defined and explained in more detail.
@@ -7,7 +7,7 @@ After that level set method relation to image segmentation will be mentioned.
 After all some features of level set computation on streaming architectures will be listed along with comparison to the Cell/B.E. features.
 
 \section{Problem formulation}
-Image segmentation is process when pixels of input image are split into several subsets, partitions, based on their characteristics or computed properties, such as color, intensity, or texture.
+Image segmentation is process when pixels of input image are split into several subsets, partitions, based on their characteristics or computed properties, such as colour, intensity, or texture.
 Pixels within such partition then have similar features and compose some object in the image.
 
 In more formal way it is a function that assign a segment to pixel:
@@ -16,7 +16,7 @@ S: S(p) = k
 \end{equation}
 where p $\in$ pixels of an image and k $\in$ set of segments
 
-Image segmentation is used in many domains such as medicine (locating organs, tumors, bones, etc.), satellite images clasification for maps (location buildings, roads, etc.), machine vision (fingerprint recognition, face, eyes, or other features recognition).
+Image segmentation is used in many domains such as medicine (locating organs, tumors, bones, etc.), satellite images classification for maps (location buildings, roads, etc.), machine vision (fingerprint recognition, face, eyes, or other features recognition).
 Or such a simple tool as the well known "magic-stick" tool in popular graphics editing software like Photoshop.
 
 Although there were some attempts to find general-purpose segmentation solution, results were not satisfactory.
@@ -25,7 +25,7 @@ Each domain needs extra approach how to perform the segmentation.
 Some of them are not even fully automatic so they need assistance of operator.
 They are called semi-autonomous approaches.
 These methods need an operator who inputs some region and thus gives a hint to the algorithm.
-This is favorite approach in segmentation of structures on medical images like organs, tumors, vessels, etc.
+This is favourite approach in segmentation of structures on medical images like organs, tumors, vessels, etc.
 A physician then plays the role of the operator because of his knowledge of images' content.
 Some are autonomous but needs some a priory knowledge of some properties of segmented object.
 
@@ -40,12 +40,12 @@ Image segmentation methods can be divided into following basic categories (infor
 
   \item Clustering
 
-  These methodes are used do cluster an image into N clusters.
+  These methods are used do cluster an image into N clusters.
 They cover the entire image.
 Two main subsets of methods are bottom-up and top-bottom.
 The first one takes each pixel as separate cluster and then iterate joining these initial clusters based on some criterion until there are N cluster in cluster set.
-The second one pick N randomly or heuristic based chosen cluster centers.
-Then these two steps are repeated until some convergence condition is met e.g. no pixels change clusters: assign pixeles to clusters based minimalization of the variance between the pixel and the cluster center and re-compute the cluster centers by averaging all of the pixels in the cluster.
+The second one pick N randomly or heuristic based chosen cluster centres.
+Then these two steps are repeated until some convergence condition is met e.g. no pixels change clusters: assign pixels to clusters based minimalization of the variance between the pixel and the cluster centre and re-compute the cluster centres by averaging all of the pixels in the cluster.
 
   \item Histogram-based
 
@@ -57,7 +57,7 @@ Recursion is stopped when no new more segments appears.
   \item Edge detection
 
   These methods segment an image based on edges within it.
-So core of such methodes is some edge-detection algorithm such as Canny, Sobel.
+So core of such methods is some edge-detection algorithm such as Canny, Sobel.
 Discontinuities of found edges that form the segmented object must be overcome some other technique i.e. based on distance among edges, when two edges are close to each other they are considered to form boundary of segmented object.
 
   \item Region growing
@@ -66,25 +66,25 @@ Discontinuities of found edges that form the segmented object must be overcome s
 It takes a set of seed points and a segmented image.
 Each seed point is something like pointer to segmented object on the image.
 Seed points forms initial set of segments.
-Then iteration through the neighboring pixels of a segment is performed.
-In every step of that iteration a neighbor pixel is compared with region - similarity function is calculated.
+Then iteration through the neighbouring pixels of a segment is performed.
+In every step of that iteration a neighbour pixel is compared with region - similarity function is calculated.
 If it is similar enough, the pixel is added to the region.
   Method is highly noise-sensitive.
 The initial seeds can be misplaced due to the noise.
 So there is another algorithm that is seedless.
 It starts with a single pixel that is initial region.
 Its location does not significantly influence final result.
-Then the iteration over neighboring pixels are taken just as in seeded growing.
+Then the iteration over neighbouring pixels are taken just as in seeded growing.
 If a neighbour is different enough new segment is created.
 A threshold value is used as similarity measurement but particular approaches differs in definition of the similarity function.
-While one group uses pixel's properties like intensity or color directly, another computes some statistical test and the candidate pixel is processed according the test was accepted or rejected.
+While one group uses pixel's properties like intensity or colour directly, another computes some statistical test and the candidate pixel is processed according the test was accepted or rejected.
 
   \item Graph partitioning
 
   This approach converts an image into a graph.
 Pixels correspond to the vertices.
 There is edge between every pair of pixels and edges are weighted with similarity function of the two connected pixels.
-Then a graph algorithm that cuts off edges is run partitionin the graph resp. image.
+Then a graph algorithm that cuts off edges is run partitioning the graph resp. image.
 Popular algorithms of this category are the random walker, minimum mean cut, minimum spanning tree-based algorithm, normalized cut, etc.
 
   \item Watershed transformation
@@ -177,13 +177,13 @@ This equation can apply to every values of k i.e. every level set of function $\
 \subsection{Level set computation}
 
 Computation of surface deformation has to be discretized which means it is performed on discretized volume i.e. grid.
-Equation converts the problem to solving nonlinear PDE.
+Equation converts the problem to solving non-linear PDE.
 Front propagation is then computed from initial model in cycles representing discrete time steps using this update equation:
 \begin{equation}
 \label{deformEqApprox}
 \phi_{i,j}^{n+1} = \phi_{i,j}^{n} + \Delta t \Delta \phi_{i,j}^{n},
 \end{equation}
-where the term $\phi_{i,j}^{n}$ is discrete approximation of $\frac{\delta\phi}{\delta t}$ refering to the $n$-th time step at discrete position $i$,$j$ which has a counter part in a continuous domain $\phi(x_i, y_j)$.
+where the term $\phi_{i,j}^{n}$ is discrete approximation of $\frac{\delta\phi}{\delta t}$ referring to the $n$-th time step at discrete position $i$,$j$ which has a counter part in a continuous domain $\phi(x_i, y_j)$.
 $\Delta t \Delta \phi_{i,j}^{n}$ is finite forward difference term representing approximation of the forces influencing the level set, the update term.
 The solution is then succession of steps where new solution is obtained as current solution plus update term.
 
@@ -203,7 +203,7 @@ Beside the most known and used Narrow Bands and Sparse Fields there is an octree
 
 Narrow Band, proposed by Adalsteinsson and Sethian \cite{sethianFastLS}, computes embedding only within narrow band, tube.
 Remaining points are set constant to indicate that they are not in the tube.
-When level set reach the border of the tube, new tube has to be recalculated based on current level set and new run of embedding computations are performed on this new tube until envolving level set reaches tube borders.
+When level set reach the border of the tube, new tube has to be recalculated based on current level set and new run of embedding computations are performed on this new tube until involving level set reaches tube borders.
 
 \begin{figure}
     \centering
@@ -248,17 +248,17 @@ Decide if it falls into [-$\frac{1}{2}$,$\frac{1}{2}$] interval.
 If $\phi_{i,j,k}^{n+1}$ moved under the interval, put the $(\vec x)$ into lower status list, resp. into higher if $\phi_{i,j,k}^{n+1}$ moved above the interval.
 \par
 3) Visit points in other layers $L_i$ in order $i=\pm 1,\ldots, \pm N$, and update the grid point values based on the values of the next inner layer $L_{i\pm1}$ by adding resp. subtracting one unit.\\
-If more than one $L_{i\pm1}$ neighbor exists then use the neighbor that indicates a level curve closest to that grid point. i.e. use the point with maximal value for the outside layers resp. point with minimal value for the inside ones.
-If a grid point in layer $L_i$ has no $L_{i\pm1}$ neighbors, then it gets denoted to the next layer away from the active set, $L_{i\pm1}$.
+If more than one $L_{i\pm1}$ neighbour exists then use the neighbour that indicates a level curve closest to that grid point. i.e. use the point with maximal value for the outside layers resp. point with minimal value for the inside ones.
+If a grid point in layer $L_i$ has no $L_{i\pm1}$ neighbours, then it gets denoted to the next layer away from the active set, $L_{i\pm1}$.
 \par
 4) For each status list $S_{\pm1}$, $S_{\pm2}$, $\ldots$, $S_{\pm N}$ do the following:\\
   a) For each element $x_j$ on the status list $S_i$, remove $x_j$ from the list $L_{i\pm1}$ and add it to the $L_{i}$ layer.
 Or in the case of $i=\pm (N + 1)$, remove it from all layers.\\
-  b) Add all $L_{i\pm1}$ neighbors to the $S_{\pm1}$ list.
+  b) Add all $L_{i\pm1}$ neighbours to the $S_{\pm1}$ list.
 
 \par
 Stop condition is based on measurement of front movement.
-As a next stopping criterium is usually given the maximal count of iterations,
+As a next stopping criterion is usually given the maximal count of iterations,
 
 \subsection{Level set image segmentation}
 
@@ -319,14 +319,14 @@ Note: if $\alpha$ = $\beta$ = 0, the result is the same as from flood-fill metho
     \label{fg:leaking}
 \end{figure}
 
-We omited the edge term so there is only two parameters of the method.
+We omitted the edge term so there is only two parameters of the method.
 Tuning of the term weights has to be performed in order to have best results.
 
 \subsection{Level set methods on streaming architectures}
 
 \par
 There was some attempts for mapping level set method onto special stream device.
-There are some obstacles due to streaming architecture that has to be overcomed to efficiently solve the problem.
+There are some obstacles due to streaming architecture that has to be overcome to efficiently solve the problem.
 The first is that in order to take advantage streaming architecture, the streams of data must be large, contiguous blocks.
 Thus the points in discrete grid near the level-set surface must be packed into data blocks that can be further processed by streaming processors.
 Another difficulty is that the level set moves with each time step, and thus the packed representation must be quickly adapted.

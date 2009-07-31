@@ -1,4 +1,4 @@
-\chapter {Cell/B.E. programming}
+﻿\chapter {Cell/B.E. programming}
 \par
 Cell/B.E. platform development tools will be described in this chapter.
 Our experience with the tools will be mentioned as well.
@@ -10,7 +10,7 @@ At the end core configurations and their advantages and disadvantages will be li
 \par
 IBM delivers SDK for development of programs for the Cell/B.E. programming.
 It made for Linux platform, in the concrete for Fedora or Red Hat distribution.
-It comes in two flavors.
+It comes in two flavours.
 The first is the official non free SDK which has all the features needed for development for the Cell/B.E. even for hybrid systems.
 The purchaser has also a support team ready to help.
 Next is the free one that is open to wide public and everybody can download it and start developing.
@@ -19,7 +19,7 @@ Wee have used the free one since we have developed only in C/C++ and for clean C
 
 \par
 Because the SDK is for Linux operation system its user has to have already deeper knowledge about this system.
-There are a few bugs and parts that are not fully finished (see Appendix \ref{toolsSetup}) and without this deeper system knowledge is practically impossible to react on unexpected behavior during installation or development phase.
+There are a few bugs and parts that are not fully finished (see Appendix \ref{toolsSetup}) and without this deeper system knowledge is practically impossible to react on unexpected behaviour during installation or development phase.
 
 \par
 We have begun with SDK version 3.0 and Fedora version 8 which were the current version of needed tools.
@@ -44,13 +44,13 @@ But we think the time spent on this goal is not worth the result.
 \par
 Finally we installed Fedora 9 Sulphur and SDK 3.1.
 This combination is declared by IBM as tested.
-Altough we have run into few bugs and errors.
+Although we have run into few bugs and errors.
 The process of installation is described in the Appendix \ref{toolsSetup}.
 
 \section {SDK content}
 
 Cell/B.E. SDK is divided into variety of components.
-Each component is contained in one or more rpm package for easy intallation purposes.
+Each component is contained in one or more rpm package for easy installation purposes.
 Here is list of most important available components:
 \begin{enumerate}
   \item {Tool chain}
@@ -73,7 +73,7 @@ It can be of course used when programmer has an actual Cell/B.E. hardware availa
 
   \item {IDE}
   \par
-  IDE is in fact verstion 3.2 of Eclipse with integration of debugging, profiling, Cell/B.E. machine management and other features that makes development for the Cell/B.E. easier and more comfortable.
+  IDE is in fact version 3.2 of Eclipse with integration of debugging, profiling, Cell/B.E. machine management and other features that makes development for the Cell/B.E. easier and more comfortable.
 \end{enumerate}
 
 
@@ -135,7 +135,7 @@ List of the programming models (frameworks) follows in order from most concrete 
 \par
 This library provides the most low level functionality.
 Offer SPE context creating, running, scheduling or deleting.
-DMA primitives for data transfer, mailboxes, signal, events, and synchronization functions for PPE to SPE and SPE to SPE dialogs are also provided by this library.
+DMA primitives for data transfer, mailboxes, signal, events, and synchronization functions for PPE to SPE and SPE to SPE dialogues are also provided by this library.
 More information can be found in \cite{performanceToolRef} within "SPE Runtime Management Library" document.
 
 \item {Data Communication and Synchronization - DaCS}
@@ -189,7 +189,7 @@ Libspe, ALF, DaCS can be used to perform the distribution.
 \item SIMD instruction level
 \par
 This level can increase the speed the most.
-Paralelism is achieved on instruction level that means more data are processed at a time by single instruction.
+Parallelism is achieved on instruction level that means more data are processed at a time by single instruction.
 Language intrinsics are used for this purpose.
 This will be explained later in part devoted to "SIMDation".
 \end{enumerate}
@@ -314,21 +314,21 @@ See figure in the paragraph named "Hiding data-access latencies" in \cite{compil
 
 \item{Branch elimination}
 \par
-Branchless instruction chain is succession of instructions without any conditional jump.
+Branch less instruction chain is succession of instructions without any conditional jump.
 In other words there is no decision where to continue performed within such succession.
-Elimination of branches elongates branchless instruction chain.
+Elimination of branches elongates branch less instruction chain.
 In such a chain all data always go through the same instructions that makes possible to perform SIMDation.
 There is variety branch elimination methods.
 Good information resource provides \cite{cellPerformance}.
 This step brings more advantage because branching is problem for every processor.
-Branch elimination is probabbly the most complicated step of the porting process.
+Branch elimination is probably the most complicated step of the porting process.
 
 \item{SIMDation}
 \par
 Means rewriting scalar code into vectorized to be able to use SIMD instruction.
 In this step the most performance gain could be achieved because of multiple data processing by one instruction.
 Every single piece of data should go through the exactly same order of instructions in SIMDized code.
-Therefore is necessary to have long branchless instruction chain.
+Therefore is necessary to have long branch less instruction chain.
 The most important method is arrays of structure to structure of arrays conversion.
 The figure in the paragraph called "SIMDizing" in \cite{compilerOptions} shall illustrate processing data with SIMD instruction.
 
@@ -368,7 +368,7 @@ This step is performed by the compiler but it is possible to rearrange instructi
 \par
 Give the processor hint where the program is rather going to continue after future branch.
 It is done through insertion of special instructions.
-This step should be again accomplished by the compiler but is possible to use apropriate assembly language instruction directly within the code.
+This step should be again accomplished by the compiler but is possible to use appropriate assembly language instruction directly within the code.
 \end{enumerate}
 
 \par
@@ -395,7 +395,7 @@ It is based on division of the binary into segments that are loaded into SPE on 
 
 \par
 Programmer has to take into consideration all these things to make the final binary smaller than local store.
-Everything is big tradeoff between processed data chunk sizes with number of buffers of that chunks and code complexity i.e. how large algorithm can be.
+Everything is big trade-off between processed data chunk sizes with number of buffers of that chunks and code complexity i.e. how large algorithm can be.
 
 \par
 When compiling the SPU binary from ported code the final executable will probably increase the local store size even when the code seems not as large as the final binary size.
@@ -453,7 +453,7 @@ Another profiling tools are:
 \item{CPC - cell performance counter}
 \end{enumerate}
 
-These tools collect profiling data that can be further processed with VPA (visual performance analyzer), external tool provided by IBM.
+These tools collect profiling data that can be further processed with VPA (visual performance analyser), external tool provided by IBM.
 This tool can display the collected data in different charts, time lines or can highlight parts of code that are worth to improve and many other useful features.
 Usage of all these performance tools is described in SDK document "Performance Tools Reference" in \cite{performanceToolRef}.
 We wanted to test them all but when we follow the manual we experienced obstacles because we worked on PS3.

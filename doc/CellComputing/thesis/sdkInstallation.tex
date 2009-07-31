@@ -1,11 +1,11 @@
-\chapter{Tools setup}
+﻿\chapter{Tools setup}
 \label{toolsSetup}
 
 \par
 This part is a cookbook how to install all the necessary content to be able to begin development for Cell/B.E.
-It also covers some bugs fixing as well as usefull hints how to use partial SDK content.
+It also covers some bugs fixing as well as useful hints how to use partial SDK content.
 The instruction concerning the SDK installation was based on installation on i686 machine.
-But shall be the same for the other architectures since it operates on the same oprating system and repository versions of third party software.
+But shall be the same for the other architectures since it operates on the same operating system and repository versions of third party software.
 
 \par
 The first step is installation of Fedora system.
@@ -145,7 +145,7 @@ Be sure to download fedora 9 version of the simulator (cell-3.1-8.f9.*). Then in
 rpm -ivh ISODIR/systemsim-cell-3.1-8.f9.i386.rpm
 \end{verbatim}
 
-Maybe some dependencies will be missing. So you have to install it. In my case ot was libBLT24 and libtk8.5.
+Maybe some dependencies will be missing. So you have to install it. In my case it was libBLT24 and libtk8.5.
 
 \begin{verbatim}
 yum install blt tk
@@ -171,7 +171,7 @@ ulimit -s unlimited
 causes that stack is unlimited.
 
 \par
-The last is to fix actual tcl script that manages loading the sysroot\_image (21\% issue - loading of the sysroot\_image freezes on 21\% so is not started and thats why unusable).
+The last is to fix actual tcl script that manages loading the sysroot\_image (21\% issue - loading of the sysroot\_image freezes on 21\% so is not started and that's why unusable).
 It is cause by wrong triggers that are triggerd when some text is output from console by the sysroot\_image loading.
 There is probably triggers that wait for text from previous version of SDK that is never output in the current version.
 That is why the loading freezes on 21\%.
@@ -234,9 +234,9 @@ You have all the bash advantages like command and path completion available in c
 \par
 Sometimes root user is needed for an operation performed in the simulator.
 Its password should be disabled.
-It can be done when sysroot\_image is mouned.
+It can be done when sysroot\_image is mounted.
 Under host machine root account the \url{<sysroot_image_mount_point>/etc/passwd} file should be edited.
-The first line is the root's so deletion of '*' characted from the second field (after the second ':' character) will disable the root's password.
+The first line is the root's so deletion of '*' character from the second field (after the second ':' character) will disable the root's password.
 Note that this action must be performed when the simulator is not running otherwise the changes will be overwritten by the simulator.
 
 \section{Using examples}
@@ -275,7 +275,7 @@ the 5 to 3.
 
 \par
 Another resource are services.
-Here you have to consider if the service you want to turn off is really unnecesary.
+Here you have to consider if the service you want to turn off is really unnecessary.
 In Our PS3 NeworkManger and Wireless supplicant was turn off.
 NOTE: when you turn off network manager, you have to turn on network service otherwise the networking will not run properly.
 For service management within ssh console \url{/usr/sbin/ntsysv} manager is quite useful.
@@ -296,7 +296,7 @@ If they are not already installed issue following command to install them.
 yum groupinstall "Cell Performance Tools"
 \end{verbatim}
 
-\section{Visual Performance Analyzer - VPA}
+\section{Visual Performance Analyser - VPA}
 
 Another useful tool is VPA. It is not part of SDK so it should be downloaded separately.
 Visit \url{http://www.alphaworks.ibm.com/tech/vpa} for details.

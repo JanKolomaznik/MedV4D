@@ -1,4 +1,4 @@
-\chapter{Design and implementation}
+﻿\chapter{Design and implementation}
 
 This chapter will describe details of implementation and design of our test application.
 Starts with listing of used frameworks and describes process of incorporation of the application into them.
@@ -135,8 +135,8 @@ The MedV4D pipeline filter defines also some stages that the behaviour of remote
 One of them is a method that is called only when input data changes (PrepareOutputDataset).
 This is perfect place to send DATASET command to server.
 Because this is called only on input data change thus DATASET command will be issued on input data change as well.
-But CREATE command has to be sent before the DATASET commnad to build the remote pipeline before data set is transmited.
-CREATE command is sent with DATASET one because remote pipeline has to be recreated everytime a new dataset arrives.
+But CREATE command has to be sent before the DATASET command to build the remote pipeline before data set is transmitted.
+CREATE command is sent with DATASET one because remote pipeline has to be recreated every time a new dataset arrives.
 \par
 And the EXEC command is then send within function that is called when pipeline is executed and that should perform actual computation (ProcessImage).
 Whole cycle shows figure \ref{fg:RCClientCycle}.
@@ -186,7 +186,7 @@ This allows to perform byte swapping only when it is really needed.
 Currently only remote filter is implemented - the level set segmentation.
 But other filters can be easily added by appending one switch branch in remoteFilterFactory.cpp source.
 The level set segmentation filter is implemented as successor of ITK filter that contains appropriate ITK pipeline within.
-This pipeline is most interresting part related to this work so further content will be about it.
+This pipeline is most interesting part related to this work so further content will be about it.
 
 \section{Level set segmentation pipeline}
 
@@ -226,7 +226,7 @@ Our own LS image segmentation filter should be the result of that changes.
 \par
 There are actually two class hierarchies in the OLSH.
 One represents the filter that performs level set algorithm, filter hierarchy.
-And the other computes the FDE using the upwind sheme \cite{sethianLS}, finite \emph{difference function} hierarchy.
+And the other computes the FDE using the upwind scheme \cite{sethianLS}, finite \emph{difference function} hierarchy.
 
 \par
 At the top of the function hierarchy there is FiniteDifferenceFunction that computes the upwind scheme with assistance of virtual methods that are implemented in successors.
@@ -238,7 +238,7 @@ Successors are:
 
 \item{SegmentationLevelSetFunction}
 \par
-provides speed image computation infrastrucutre
+provides speed image computation infrastructure
 
 \item{ThresholdSegmentationLevelSetFunction}
 \par
@@ -248,13 +248,13 @@ computes actual speed image
 \par
 The base of the filter hierarchy is FiniteDifferenceImageFilter.
 It computes the main loop of level set calculation (see step 1 in \ref{alg:sparseFileld}).
-Virtual methods of its successors are used to implement the apropriate sub steps.
+Virtual methods of its successors are used to implement the appropriate sub steps.
 
 \par
 The first successor is the SparseFieldLevelSetImageFilter providing implementation of algorithm's Step 1a through \emph{update calculation} function.
 Other steps are performed by \emph{apply update} function.
-Next successors, SegmentationLevelSetImageFilter and ThresholdSegmentationLevelSetImageFilter only manage \emph{difference function} in apropriate manner.
-In case of ThresholdSegmentationLevelSetImageFilter this maeans speed function calculation as described in \ref{eq:speedFunction}.
+Next successors, SegmentationLevelSetImageFilter and ThresholdSegmentationLevelSetImageFilter only manage \emph{difference function} in appropriate manner.
+In case of ThresholdSegmentationLevelSetImageFilter this means speed function calculation as described in \ref{eq:speedFunction}.
 The function is computed at the beginning for the whole data set into preallocated image.
 This image is another notable amount of memory that cannot be accepted for our purpose (see \ref{ps3MemoryUsage}).
 
@@ -271,7 +271,7 @@ This approach could be even better for the Cell/B.E. streaming nature.
 \end{figure}
 
 \par
-We have simplified these two hiearchies.
+We have simplified these two hierarchies.
 One reason of the simplification was the removal of the pre-calculated image and the other was code clean-up and refactorization.
 Result of these changes is our own filter (ThreshSegLevelSetFilter, OOF).
 It omits all unnecessary part of original LS hierarchy, uses reasonable parts of the original ITK level set segmentation filter (see figure\ref{fg:resultingFilter}).
@@ -292,7 +292,7 @@ Some function implementation from the SparseFieldLevelSetImageFilter was borrowe
     \caption[Resulting level set filter ready to be ported to Cell/B.E.]
     {
 Show result of original LS hierarchy rebuilding.
-Some unnecessary parts was omitted to clean-up the code and to change behavior towards streaming architecture as well as term computation was separated into supporting classes for modularity
+Some unnecessary parts was omitted to clean-up the code and to change behaviour towards streaming architecture as well as term computation was separated into supporting classes for modularity
     }
     \label{fg:resultingFilter}
 \end{figure}
@@ -364,7 +364,7 @@ SPE part consists of two main parts.
 UpdateCalculator, performing \emph{update calculation} and ApplyUpdateCalculator, performing \emph{update application}.
 The UpdateCalculator traverse over \emph{layer0} and computes update values for its points.
 The computed values are stored in \emph{update buffer}.
-The UpdateCalculator performs STEP 1 of sparse fields alogrithm \ref{alg:sparseFileld}.
+The UpdateCalculator performs STEP 1 of sparse fields algorithm \ref{alg:sparseFileld}.
 Then is the ApplyUpdateCalculator's turn that performs the rest of that algorithm on the calculated update values within the \emph{update buffer}.
 In context of our implementation the particular steps mean:
 \begin{enumerate}
@@ -403,16 +403,16 @@ There are both cases in our application.
 But the rest of processed data is too big and can not reside within the SPE and has to be DMAed in chunks from central memory.
 The big data are statuses, actual level set values and features that are stored within status, output and feature images.
 So it is necessary to load and store parts of that images for methods described above.
-Computation is performed on small neighborhood of voxels 3x3x3 (neighborhood).
+Computation is performed on small neighbourhood of voxels 3x3x3 (neighbourhood).
 So 27 voxels (resp. statuses) has to be transferred for one node processing.
 Another big data are nodes within actual layers, linked list chains of nodes.
-Traversal over such chains is performed sequetial by loading one node after another.
-For each loaded node one or more neighborhoods shall be loaded.
-The computation is then performed on those neighborhoods.
+Traversal over such chains is performed sequential by loading one node after another.
+For each loaded node one or more neighbourhoods shall be loaded.
+The computation is then performed on those neighbourhoods.
 
 \par
 There are other data that have to be stored within central memory and that contribute to the data flow as well.
-Next list describe what data are processed in most important methodes resp. steps within our application:
+Next list describe what data are processed in most important methods resp. steps within our application:
 \begin{enumerate}
 \item UpdateCalculator
 \par
@@ -433,13 +433,13 @@ So no special operation communicating with central memory has to be defined.
 But processing of the list0 has to be changed.
 In original ITK code the \emph{UpdateActiveLayerValues} operates on the whole layer0.
 This one call can produce too long status lists that will not fit into local store.
-So iteration over layer0 has to be limited to produce limited lenght status lists.
+So iteration over layer0 has to be limited to produce limited length status lists.
 We have defined the limit with constant MAX\_TURN\_LENGHT and call processing the limited segment of layer0 a 'turn'.
 %See figure \ref{fg:updateActiveLayerValues}.
 
 \item \emph{ProcessStatusLists}
 \par
-Works on the limited lenght status lists.
+Works on the limited length status lists.
 During the lists processing some nodes are moved from one to another layer which means they have to be unlinked from one and linked into another.
 Linking to another layer defines another layer operation, \emph{PUSH}.
 One status list is processed while not empty so all status lists remains empty ready for next \emph{UpdateActiveLayerValues} turn after \emph{ProcessStatusLists}.
@@ -447,7 +447,7 @@ One status list is processed while not empty so all status lists remains empty r
 \item \emph{PropagateAllLayerValues}
 \par
 This method traverse over all the layers and performs moving nodes among layers.
-This means operations \emph{PUSH} and \emph{UNLINK} as well as layer traversal and apropriate neighborhoods loading.
+This means operations \emph{PUSH} and \emph{UNLINK} as well as layer traversal and appropriate neighbourhoods loading.
 \end{enumerate}
 
 %\begin{figure}	//TODO {data/updateActiveLayerValues}
@@ -460,14 +460,14 @@ Therefore set of tools that performs PPE - SPE communication was developed.
 
 \subsection{Tools}
 Tools are parts of the program that perform data transfer between PPE and SPE.
-All these tools perform multibuffering to avoid waiting for data.
+All these tools perform multi-buffering to avoid waiting for data.
 
 \begin{enumerate}
 \item \emph{NeighbourhoodCell}
 \par
 Represent the part of an image ($3^3$ voxel matrix) needed for one node computation.
 It uses transfer list that allow data handling in scatter-gather manner.
-Neighborhoods are grouped within PreloadedNeigborhoods container that manages which neighborhood is being loaded, used in computation or saved (actually performs multi-buffering)
+Neighbourhoods are grouped within PreloadedNeigborhoods container that manages which neighbourhood is being loaded, used in computation or saved (actually performs multi-buffering)
 
 \item \emph{RemoteArrayCell}
 \par
@@ -494,13 +494,13 @@ Because of the 32bit integers transfer limitation actual \emph{PUSH} and \emph{U
 \par
 Has to push a node into specified layer.
 Voxel coordinates and number of layer is encoded and sent over mailbox to PPE.
-On the other side the PPE creates a new node apropriately and puts it into specified layer.
+On the other side the PPE creates a new node appropriately and puts it into specified layer.
 
 \item \emph{UNLINK}
 \par
 Operation has to unlink a node from a specified list.
 Address of that node along the layer number are the parameters.
-Address is transferred in 32 bit chunks (because mailbox has 32 bit size) which are decoded on the PPE side to actual node address that is then unliked from specified layer.
+Address is transferred in 32 bit chunks (because mailbox has 32 bit size) which are decoded on the PPE side to actual node address that is then unlinked from specified layer.
 \end{enumerate}
 
 \par
@@ -510,7 +510,7 @@ It is used for allocation of status field nodes.
 They reside in local store and thus should be allocated on the stack.
 
 \par
-Great advantage of the tools is also that the whole code uses only the tools (as instruments for central memory comunication).
+Great advantage of the tools is also that the whole code uses only the tools (as instruments for central memory communication).
 So debugging transfer issues means debugging the tool.
 
 \subsection{Work balancing}
@@ -546,7 +546,7 @@ The Cell/B.E. special features like DMA transfer was simulated by memcpy or the 
 
 \par
 This step was really time consuming due to fact that tools operates with a stack memory.
-Debuging such parts need extra care for what is where rewritten.
+Debugging such parts need extra care for what is where rewritten.
 Since we are using a stack memory some part of call stack would become corrupted and program becomes undefined.
 The worst thing is that it can continue without crash or to crash on totally different code that the error occurred.
 Errors of this type is always hard to track.
@@ -560,10 +560,10 @@ It seems that moving the code to PPE is easy and there could be no problem.
 But we faced a problem that is worth to mention.
 Because our code uses lot of third party libraries there is quite much paths to include folders.
 It is necessary to manage them well and not to mix architecture dependent ones.
-We have mixed up include files of the boost library when cross-compiling and experienced totally strange behavior.
+We have mixed up include files of the boost library when cross-compiling and experienced totally strange behaviour.
 We thought that we can use boost library includes that come from repository for i686 architecture.
 The code crashed on boost code that is debugged and stable.
-Openning of a file have also crashed for unknown reason.
+Opening of a file have also crashed for unknown reason.
 When program was compiled with includes from ppc(64) repository all problems disappeared.
 
 \subsection{Tools porting}
