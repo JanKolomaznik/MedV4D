@@ -19,7 +19,7 @@ PowellOptimization< RegistrationFilterElementType, ElementType, dim >
 	// prepare the input parameters in order to be
 	// usable for the external module, and execute the powell optimization module
 	_filter = fil;
-        const ElementType FTOL=1.0e-6;
+        const ElementType FTOL=1.0e-1;
         ElementType p_d[dim];
         uint32 i,j;
 	int iter;
@@ -91,7 +91,7 @@ PowellOptimization< RegistrationFilterElementType, ElementType, dim >
 ::linmin(NRVec< ElementType > &p, NRVec< ElementType > &xi, ElementType &fret, VectorFunc func)
 {
         int j;
-        const ElementType TOL=1.0e-8;
+        const ElementType TOL=1.0e-1;
         ElementType xx,xmin,fx,fb,fa,bx,ax;
 
         int n=p.size();
@@ -122,7 +122,7 @@ PowellOptimization< RegistrationFilterElementType, ElementType, dim >
 ::mnbrak(ElementType &ax, ElementType &bx, ElementType &cx, ElementType &fa, ElementType &fb, ElementType &fc,
         SingleFunc func)
 {
-        const ElementType GOLD=1.618034,GLIMIT=100.0,TINY=1.0e-20;
+        const ElementType GOLD=1.618034,GLIMIT=100.0,TINY=1.0e-25;
         ElementType ulim,u,r,q,fu;
 
         fa=(this->*func)(ax);
@@ -195,7 +195,7 @@ PowellOptimization< RegistrationFilterElementType, ElementType, dim >
 {
         const int ITMAX=100;
         const ElementType CGOLD=0.3819660;
-        const ElementType ZEPS=numeric_limits<ElementType>::epsilon()*1.0e-3;
+        const ElementType ZEPS=1.0e-10;//numeric_limits<ElementType>::epsilon()*1.0e-3;
         int iter;
         ElementType a,b,d=0.0,etemp,fu,fv,fw,fx;
         ElementType p,q,r,tol1,tol2,u,v,w,x,xm;

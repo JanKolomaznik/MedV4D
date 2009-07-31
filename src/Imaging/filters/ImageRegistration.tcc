@@ -106,11 +106,11 @@ CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 3 
 	typename ImageRegistration< ElementType, 3 >::HistCellType base = 1.0 / ( ( refWidth < transformSampling ? refWidth : transformSampling ) * ( refHeight < transformSampling ? refHeight : transformSampling ) * refDepth );
 
 	// loop through the transformed values and increase the histogram's value at the given position
-	for ( k = 0; k < refDepth; ++k )
+	for ( k = 0; k < ( refDepth < transformSampling ? refDepth : transformSampling ); ++k )
 		for ( j = 0; j < ( refHeight < transformSampling ? refHeight : transformSampling ); ++j )
 		{
-			ElementType *in = sin + k*inZStride + ( refHeight < transformSampling ? 1 :  refHeight / transformSampling ) * j * inYStride;
-			ElementType *ref = sref + k*refZStride + ( refHeight < transformSampling ? 1 : refHeight / transformSampling ) * j * refYStride;
+			ElementType *in = sin + ( refDepth < transformSampling ? 1 :  refDepth / transformSampling ) * k * inZStride + ( refHeight < transformSampling ? 1 :  refHeight / transformSampling ) * j * inYStride;
+			ElementType *ref = sref + ( refDepth < transformSampling ? 1 :  refDepth / transformSampling ) * k * refZStride + ( refHeight < transformSampling ? 1 : refHeight / transformSampling ) * j * refYStride;
 			for ( i = 0; i < ( refWidth < transformSampling ? refWidth : transformSampling ); ++i )
 			{
 
@@ -192,6 +192,8 @@ ImageRegistration< ElementType, dim >
 	this->SetRotation( v1 );
 	this->SetTranslation( v2 );
 
+	LOG( "Current registration parameters: rotation - " << static_cast< Properties* >( this->_properties )->_rotation << ", translation - " << static_cast< Properties* >( this->_properties )->_translation );
+
 	// transform image and calculate criterion if a reference image is present
 	this->ExecuteTransformation( _transformSampling );
 	double res = 1.0;
@@ -199,7 +201,7 @@ ImageRegistration< ElementType, dim >
 	{
 		CalculateHistograms< ElementType > ( jointHistogram, *(this->out), *(referenceImage), _transformSampling );
 		res = _criterion->compute( jointHistogram );
-		D_PRINT( "Mutual Information value: " << res );
+		LOG( "Mutual Information value: " << res );
 	}
 	return 1.0 / res;
 }
@@ -221,14 +223,23 @@ ImageRegistration< ElementType, dim >
 	// if automatic is set, optimize the criterion function
 	if ( _automatic && referenceImage )
 	{
-		Vector< double, 2 * dim > v;
-		for ( uint32 i = 0; i < dim; ++i )
+		uint32 maxSampling = _transformSampling;
+
+		for ( _transformSampling = 10; _transformSampling < maxSampling; _transformSampling *= 2 )
 		{
-			v[i] = 0;
-			v[dim + i] = 0;
+			LOG( "Resolution: " << _transformSampling );
+			Vector< double, 2 * dim > v;
+			for ( uint32 i = 0; i < dim; ++i )
+			{
+				v[i] = static_cast< Properties* >( this->_properties )->_rotation[i];
+				v[dim + i] = static_cast< Properties* >( this->_properties )->_translation[i];
+			}
+			double fret;
+			_optimization->optimize( v, fret, this );
 		}
-		double fret;
-		_optimization->optimize( v, fret, this );
+
+		_transformSampling = maxSampling;
+
 	}
 
 	// transform the image according to properties

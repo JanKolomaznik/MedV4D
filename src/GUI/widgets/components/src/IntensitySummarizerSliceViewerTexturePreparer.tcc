@@ -31,7 +31,9 @@ IntensitySummarizerSliceViewerTexturePreparer< ElementType >
 	    if ( pixel[i] )
 	    {
 		datasetPresent = true;
-		break;
+
+		// equalize intensities according to brightness- and contrastrate
+		this->equalizeArray( pixel[i], width, height, brightnessRate, contrastRate );
 	    }
 
 	if ( ! datasetPresent )
@@ -43,7 +45,7 @@ IntensitySummarizerSliceViewerTexturePreparer< ElementType >
 	// arrange their intensities
 	ElementType* texture = IntensityArranger( pixel, SLICEVIEWER_INPUT_NUMBER, width, height );
 
-	// equalize intensities according to brightness- and contrastrate
+	// equalize intensities of the resulting array according to brightness- and contrastrate
 	this->equalizeArray( texture, width, height, brightnessRate, contrastRate );
 
 	// prepare texture

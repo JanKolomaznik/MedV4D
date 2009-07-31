@@ -328,6 +328,8 @@ TransformImage(  Image< ElementType, 3 > &out,
 	Vector< int32, 3 > strides;
 	out.GetPointer( size, strides );
 
+	int32 depth = size[2];
+
 	// rotation matrices	
 	Vector< CoordType, 3 > RotationMatrixX(
 					CoordType( 1.0, 0.0, 0.0 ),
@@ -377,18 +379,29 @@ TransformImage(  Image< ElementType, 3 > &out,
 	Multithreading::Thread** thr = new Multithreading::Thread*[ thread_num ];
 	uint32 i = 0, j;
 
-	// execute transformation of slices one by one
-	for ( i = 0; i < thread_num; i++ ) thr[i] = new Multithreading::Thread( TransformSlice< ElementType >( out, prop, interpolator, i, transformSampling, RotationMatrix ) );
+	int32 depthBorder = (int32)( ( transformSampling == 0 || depth < (int32)transformSampling ) ? depth : transformSampling );
+	int32 depthMultiplicator = ( ( transformSampling == 0 || depth < (int32)transformSampling ) ? 1 : depth / transformSampling );
 
-	j = i;
+	// execute transformation of slices one by one
+	for ( i = 0, j = 0; i < thread_num && j < (uint32)depthBorder; i++, j++ ) thr[i] = new Multithreading::Thread( TransformSlice< ElementType >( out, prop, interpolator, j * depthMultiplicator, transformSampling, RotationMatrix ) );
+
+	if ( i < thread_num )
+	{
+		for ( i = 0; i < j; ++i )
+		{
+			thr[i]->join();
+			delete thr[i];
+		}
+		return true;
+	}
 
 	// keep in mind the maximum number of thread and the number of slices while distributing the transformation jobs among threads
-	while ( j < size[2] )
+	while ( j < (uint32)depthBorder )
 	{
 		i = i % thread_num;
 		thr[i]->join();
 		delete thr[i];
-		thr[i] = new Multithreading::Thread( TransformSlice< ElementType >( out, prop, interpolator, j, transformSampling, RotationMatrix ) );
+		thr[i] = new Multithreading::Thread( TransformSlice< ElementType >( out, prop, interpolator, j * depthMultiplicator, transformSampling, RotationMatrix ) );
 		i++;
 		j++;
 	}
