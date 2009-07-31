@@ -194,11 +194,12 @@ ImageRegistration< ElementType, dim >
 
 	LOG( "Current registration parameters: rotation - " << static_cast< Properties* >( this->_properties )->_rotation << ", translation - " << static_cast< Properties* >( this->_properties )->_translation );
 
-	// transform image and calculate criterion if a reference image is present
-	this->ExecuteTransformation( _transformSampling );
 	double res = 1.0;
-	if ( referenceImage )
+	if ( referenceImage && this->IsRunning() )
 	{
+		// transform image and calculate criterion if a reference image is present
+		this->ExecuteTransformation( _transformSampling );
+
 		CalculateHistograms< ElementType > ( jointHistogram, *(this->out), *(referenceImage), _transformSampling );
 		res = _criterion->compute( jointHistogram );
 		LOG( "Mutual Information value: " << res );
@@ -225,7 +226,7 @@ ImageRegistration< ElementType, dim >
 	{
 		uint32 maxSampling = _transformSampling;
 
-		for ( _transformSampling = 10; _transformSampling < maxSampling; _transformSampling *= 2 )
+		for ( _transformSampling = 10; _transformSampling < maxSampling && this->IsRunning(); _transformSampling *= 2 )
 		{
 			LOG( "Resolution: " << _transformSampling );
 			Vector< double, 2 * dim > v;
@@ -239,6 +240,8 @@ ImageRegistration< ElementType, dim >
 		}
 
 		_transformSampling = maxSampling;
+
+		if ( !this->IsRunning() ) return false;
 
 	}
 
