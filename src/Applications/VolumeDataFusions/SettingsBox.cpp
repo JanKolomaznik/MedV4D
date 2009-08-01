@@ -115,57 +115,57 @@ SettingsBox
 	grid->addWidget( new QLabel( tr( "Brightness" ) ), 8, 2 );
 	grid->addWidget( new QLabel( tr( "Contrast" ) ), 8, 3 );
 
-	grid->addWidget( new QLabel( tr( "Red x (1/1000)" ) ), 9, 1 );
+	grid->addWidget( new QLabel( tr( "Red (in %)" ) ), 9, 1 );
 	bRed = new QSpinBox();
 	bRed->setAlignment( Qt::AlignRight );
-	bRed->setMaximum( 10000 );
+	bRed->setMaximum( 1000 );
 	bRed->setMinimum( 0 );
-	bRed->setValue( 1000 );
+	bRed->setValue( 100 );
 	bRed->setEnabled( false );
 	grid->addWidget(bRed, 9, 2 );
 
 	cRed = new QSpinBox();
 	cRed->setAlignment( Qt::AlignRight );
-	cRed->setMaximum( 10000 );
+	cRed->setMaximum( 1000 );
 	cRed->setMinimum( 0 );
 	cRed->setValue( 0 );
-	cRed->setValue( 1000 );
+	cRed->setValue( 100 );
 	cRed->setEnabled( false );
 	grid->addWidget(cRed, 9, 3 );
 
-	grid->addWidget( new QLabel( tr( "Green x (1/1000)" ) ), 10, 1 );
+	grid->addWidget( new QLabel( tr( "Green (in %)" ) ), 10, 1 );
 	bGreen = new QSpinBox();
 	bGreen->setAlignment( Qt::AlignRight );
-	bGreen->setMaximum( 10000 );
+	bGreen->setMaximum( 1000 );
 	bGreen->setMinimum( 0 );
-	bGreen->setValue( 1000 );
+	bGreen->setValue( 100 );
 	bGreen->setEnabled( false );
 	grid->addWidget(bGreen, 10, 2 );
 
 	cGreen = new QSpinBox();
 	cGreen->setAlignment( Qt::AlignRight );
-	cGreen->setMaximum( 10000 );
+	cGreen->setMaximum( 1000 );
 	cGreen->setMinimum( 0 );
 	cGreen->setValue( 0 );
-	cGreen->setValue( 1000 );
+	cGreen->setValue( 100 );
 	cGreen->setEnabled( false );
 	grid->addWidget(cGreen, 10, 3 );
 
-	grid->addWidget( new QLabel( tr( "Blue x (1/1000)" ) ), 11, 1 );
+	grid->addWidget( new QLabel( tr( "Blue (in %)" ) ), 11, 1 );
 	bBlue = new QSpinBox();
 	bBlue->setAlignment( Qt::AlignRight );
-	bBlue->setMaximum( 10000 );
+	bBlue->setMaximum( 1000 );
 	bBlue->setMinimum( 0 );
-	bBlue->setValue( 1000 );
+	bBlue->setValue( 100 );
 	bBlue->setEnabled( false );
 	grid->addWidget(bBlue, 11, 2 );
 
 	cBlue = new QSpinBox();
 	cBlue->setAlignment( Qt::AlignRight );
-	cBlue->setMaximum( 10000 );
+	cBlue->setMaximum( 1000 );
 	cBlue->setMinimum( 0 );
 	cBlue->setValue( 0 );
-	cBlue->setValue( 1000 );
+	cBlue->setValue( 100 );
 	cBlue->setEnabled( false );
 	grid->addWidget(cBlue, 11, 3 );
 
@@ -408,14 +408,14 @@ SettingsBox
 		
 		case 6:
 		sliceViewer->setTexturePreparerToCustom(&maxAvrMinRGBTexturePreparer);
-		maxAvrMinRGBTexturePreparer.setAdjustBrightnessContrast( (double)bRed->value() / 1000.0, (double)bGreen->value() / 1000.0, (double)bBlue->value() / 1000.0,
-									    (double)cRed->value() / 1000.0, (double)cGreen->value() / 1000.0, (double)cBlue->value() / 1000.0 );
+		maxAvrMinRGBTexturePreparer.setAdjustBrightnessContrast( (double)bRed->value() / 100.0, (double)bGreen->value() / 100.0, (double)bBlue->value() / 100.0,
+									    (double)cRed->value() / 100.0, (double)cGreen->value() / 100.0, (double)cBlue->value() / 100.0 );
 		break;
 		
 		case 7:
 		sliceViewer->setTexturePreparerToCustom(&maxMedMinRGBTexturePreparer);
-		maxMedMinRGBTexturePreparer.setAdjustBrightnessContrast( (double)bRed->value() / 1000.0, (double)bGreen->value() / 1000.0, (double)bBlue->value() / 1000.0,
-									    (double)cRed->value() / 1000.0, (double)cGreen->value() / 1000.0, (double)cBlue->value() / 1000.0 );
+		maxMedMinRGBTexturePreparer.setAdjustBrightnessContrast( (double)bRed->value() / 100.0, (double)bGreen->value() / 100.0, (double)bBlue->value() / 100.0,
+									    (double)cRed->value() / 100.0, (double)cGreen->value() / 100.0, (double)cBlue->value() / 100.0 );
 		break;
 
 		case 8:
@@ -424,26 +424,26 @@ SettingsBox
 
 		case 9:
 		sliceViewer->setTexturePreparerToCustom(&maxAvrMinGradientRGBTexturePreparer);
-		maxAvrMinGradientRGBTexturePreparer.setAdjustBrightnessContrast( (double)bRed->value() / 1000.0, (double)bGreen->value() / 1000.0, (double)bBlue->value() / 1000.0,
-									    (double)cRed->value() / 1000.0, (double)cGreen->value() / 1000.0, (double)cBlue->value() / 1000.0 );
+		maxAvrMinGradientRGBTexturePreparer.setAdjustBrightnessContrast( (double)bRed->value() / 100.0, (double)bGreen->value() / 100.0, (double)bBlue->value() / 100.0,
+									    (double)cRed->value() / 100.0, (double)cGreen->value() / 100.0, (double)cBlue->value() / 100.0 );
 		break;
 
 		case 10:
 		sliceViewer->setTexturePreparerToCustom(&maxMedMinGradientRGBTexturePreparer);
-		maxMedMinGradientRGBTexturePreparer.setAdjustBrightnessContrast( (double)bRed->value() / 1000.0, (double)bGreen->value() / 1000.0, (double)bBlue->value() / 1000.0,
-									    (double)cRed->value() / 1000.0, (double)cGreen->value() / 1000.0, (double)cBlue->value() / 1000.0 );
+		maxMedMinGradientRGBTexturePreparer.setAdjustBrightnessContrast( (double)bRed->value() / 100.0, (double)bGreen->value() / 100.0, (double)bBlue->value() / 100.0,
+									    (double)cRed->value() / 100.0, (double)cGreen->value() / 100.0, (double)cBlue->value() / 100.0 );
 		break;
 
 		case 11:
 		sliceViewer->setTexturePreparerToCustom(&maxMaxMinGradientRGBTexturePreparer);
-		maxMaxMinGradientRGBTexturePreparer.setAdjustBrightnessContrast( (double)bRed->value() / 1000.0, (double)bGreen->value() / 1000.0, (double)bBlue->value() / 1000.0,
-									    (double)cRed->value() / 1000.0, (double)cGreen->value() / 1000.0, (double)cBlue->value() / 1000.0 );
+		maxMaxMinGradientRGBTexturePreparer.setAdjustBrightnessContrast( (double)bRed->value() / 100.0, (double)bGreen->value() / 100.0, (double)bBlue->value() / 100.0,
+									    (double)cRed->value() / 100.0, (double)cGreen->value() / 100.0, (double)cBlue->value() / 100.0 );
 		break;
 
 		case 12:
 		sliceViewer->setTexturePreparerToCustom(&maxMinMinGradientRGBTexturePreparer);
-		maxMinMinGradientRGBTexturePreparer.setAdjustBrightnessContrast( (double)bRed->value() / 1000.0, (double)bGreen->value() / 1000.0, (double)bBlue->value() / 1000.0,
-									    (double)cRed->value() / 1000.0, (double)cGreen->value() / 1000.0, (double)cBlue->value() / 1000.0 );
+		maxMinMinGradientRGBTexturePreparer.setAdjustBrightnessContrast( (double)bRed->value() / 100.0, (double)bGreen->value() / 100.0, (double)bBlue->value() / 100.0,
+									    (double)cRed->value() / 100.0, (double)cGreen->value() / 100.0, (double)cBlue->value() / 100.0 );
 		break;
 
 		case 13:
