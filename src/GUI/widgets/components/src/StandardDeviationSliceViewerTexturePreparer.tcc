@@ -61,21 +61,25 @@ StandardDeviationSliceViewerTexturePreparer< ElementType >
         uint32 width,
         uint32 height )
     {
-	if ( (int32)xcoord < _range ||
-	     (int32)ycoord < _range ||
-	     xcoord >= width - _range ||
-	     ycoord >= height - _range ) return 0;
+	if ( (int32)xcoord < _radius ||
+	     (int32)ycoord < _radius ||
+	     xcoord >= width - _radius ||
+	     ycoord >= height - _radius ) return 0;
 
 	int32 i, j;
 
 	double SDvalue = 0;
-	double region = ( 2 * _range + 1 ) * ( 2 * _range + 1 );
-	double center = channel[ ycoord * width + xcoord ];
+	double expectedValue = 0;
+	double region = ( 2 * _radius + 1 ) * ( 2 * _radius + 1 );
 
-	for ( i = -_range; i <= _range; ++i )
-	    for ( j = -_range; j <= _range; ++j )
-		SDvalue += ( (double)( channel[ ( ycoord + j ) * width + ( xcoord + i ) ] - center ) *
-			   ( (double)channel[ ( ycoord + j ) * width + ( xcoord + i ) ] - center ) ) / region;
+	for ( i = -_radius; i <= _radius; ++i )
+	    for ( j = -_radius; j <= _radius; ++j )
+		expectedValue += ( (double)channel[ ( ycoord + j ) * width + ( xcoord + i ) ] ) / region;
+
+	for ( i = -_radius; i <= _radius; ++i )
+	    for ( j = -_radius; j <= _radius; ++j )
+		SDvalue += ( (double)( channel[ ( ycoord + j ) * width + ( xcoord + i ) ] - expectedValue ) *
+			   ( (double)channel[ ( ycoord + j ) * width + ( xcoord + i ) ] - expectedValue ) ) / region;
 
 	return SDvalue;
 

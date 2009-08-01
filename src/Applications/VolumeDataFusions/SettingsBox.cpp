@@ -169,6 +169,15 @@ SettingsBox
 	cBlue->setEnabled( false );
 	grid->addWidget(cBlue, 11, 3 );
 
+	grid->addWidget( new QLabel( tr( "Radius (for SD fusion)" ) ), 12, 1, 1, 2 );
+	SDradius = new QSpinBox();
+	SDradius->setAlignment( Qt::AlignRight );
+	SDradius->setMaximum( 5 );
+	SDradius->setMinimum( 1 );
+	SDradius->setValue( 1 );
+	SDradius->setEnabled( false );
+	grid->addWidget(SDradius, 12, 3 );
+	
 
 	//-------------------------------------------------
 
@@ -276,7 +285,7 @@ void
 SettingsBox
 ::FusionType( int val )
 {
-	bool rgb = val == 1 || ( val > 5 && val < 13 );
+	bool rgb = ( val > 5 && val < 13 && val != 8 );
 
 	bRed->setEnabled( rgb );
 	cRed->setEnabled( rgb );
@@ -284,6 +293,9 @@ SettingsBox
 	cGreen->setEnabled( rgb );
 	bBlue->setEnabled( rgb );
 	cBlue->setEnabled( rgb );
+
+	if ( val == 14 ) SDradius->setEnabled( true );
+	else SDradius->setEnabled( false );
 }
 
 void
@@ -294,24 +306,24 @@ SettingsBox
 	InImageRegistration* regFilter = static_cast< InImageRegistration* >( _registerFilters[ filterNum ] );
 
 	// set the interpolator
-	if ( interpolatorType->currentIndex() == 0 )	regFilter->SetInterpolator( &nearestNeighborInterpolator[ filterNum ] );
-	else						regFilter->SetInterpolator( &linearInterpolator[ filterNum ] );
+	if ( filterNum == 0 || interpolatorType->currentIndex() == 0 )	regFilter->SetInterpolator( &nearestNeighborInterpolator[ filterNum ] );
+	else								regFilter->SetInterpolator( &linearInterpolator[ filterNum ] );
+
+	// if reference image is to be registered automatically, simply copy the image
+	if ( filterNum == 0 )
+	{
+		regFilter->SetAutomaticMode( false );
+		regFilter->SetRotation( InImageRegistration::CoordType( 0, 0, 0 ) );
+		regFilter->SetTranslation( InImageRegistration::CoordType( 0, 0, 0 ) );
+	}
 
 	// if manual registration is needed, set the parameters of the transformation
-	if ( xRot->isEnabled() )
+	else if ( xRot->isEnabled() )
 	{
 		regFilter->SetAutomaticMode( false );
 		float PI = std::atan(1.0f) * 4.0f;
 		regFilter->SetRotation( InImageRegistration::CoordType( 2 * PI * xRot->value() / 360, 2 * PI * yRot->value() / 360, 2 * PI * zRot->value() / 360 ) );
 		regFilter->SetTranslation( InImageRegistration::CoordType( xTrans->value(), yTrans->value(), zTrans->value() ) );
-	}
-
-	// if reference image is to be registered automatically, simply copy the image
-	else if ( filterNum == 0 )
-	{
-		regFilter->SetAutomaticMode( false );
-		regFilter->SetRotation( InImageRegistration::CoordType( 0, 0, 0 ) );
-		regFilter->SetTranslation( InImageRegistration::CoordType( 0, 0, 0 ) );
 	}
 
 	// if automatic registration is requested, set automatic mode and sampling rate
@@ -376,8 +388,6 @@ SettingsBox
 
 		case 1:
 		sliceViewer->setTexturePreparerToCustom(&multiChannelRGBTexturePreparer);
-		multiChannelRGBTexturePreparer.setAdjustBrightnessContrast( (double)bRed->value() / 1000.0, (double)bGreen->value() / 1000.0, (double)bBlue->value() / 1000.0,
-									    (double)cRed->value() / 1000.0, (double)cGreen->value() / 1000.0, (double)cBlue->value() / 1000.0 );
 		break;
 
 		case 2:
@@ -410,8 +420,6 @@ SettingsBox
 
 		case 8:
 		sliceViewer->setTexturePreparerToCustom(&multiChannelGradientRGBTexturePreparer);
-		multiChannelGradientRGBTexturePreparer.setAdjustBrightnessContrast( (double)bRed->value() / 1000.0, (double)bGreen->value() / 1000.0, (double)bBlue->value() / 1000.0,
-									    (double)cRed->value() / 1000.0, (double)cGreen->value() / 1000.0, (double)cBlue->value() / 1000.0 );
 		break;
 
 		case 9:
@@ -444,6 +452,7 @@ SettingsBox
 
 		case 14:
 		sliceViewer->setTexturePreparerToCustom(&standardDeviationTexturePreparer);
+		standardDeviationTexturePreparer.SetRadius( SDradius->value() );
 		break;
 
 	}
@@ -457,5 +466,5 @@ SettingsBox
 {
 
 	// print message about the completition of registration
-        QMessageBox::information( _parent, tr( "Execution finished" ), tr( "Registration Filter #%1 finished its work" ).arg( filterNum + 1 ) );
+        if ( filterNum > 0 ) QMessageBox::information( _parent, tr( "Execution finished" ), tr( "Registration Filter #%1 finished its work" ).arg( filterNum + 1 ) );
 }

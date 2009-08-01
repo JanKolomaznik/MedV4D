@@ -72,7 +72,10 @@ void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 		_inConnection[ inputNumber ]->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 
 		if ( inputNumber == 0 )
+		{
+			_settings->ExecuteFilter( 0 );
 			for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i ) dynamic_cast< InImageRegistration* >( _register[ i ] )->SetReferenceImage( M4D::Imaging::AbstractImage::Cast( inputDataSet ) );
+		}
 	} 
 	catch( ... ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Some exception" ) );

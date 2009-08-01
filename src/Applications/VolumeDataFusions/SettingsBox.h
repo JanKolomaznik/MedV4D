@@ -47,6 +47,13 @@ public:
 	uint32
 	GetInputNumber();
 
+	/**
+	 * Execute a filter with the given number
+	 *  @param filterNum the number of the filter to be executed
+	 */
+	void
+	ExecuteFilter( unsigned filterNum );
+
 protected slots:
 
 	/**
@@ -108,13 +115,6 @@ protected:
 	void
 	CreateWidgets();
 
-	/**
-	 * Execute a filter with the given number
-	 *  @param filterNum the number of the filter to be executed
-	 */
-	void
-	ExecuteFilter( unsigned filterNum );
-
 	// viewer desktop widget
 	M4D::GUI::m4dGUIMainViewerDesktopWidget *_viewers;
 
@@ -135,6 +135,9 @@ protected:
 
 	// number of threads setter
 	QSpinBox *threadNum;
+
+	// radius of SD fusion
+	QSpinBox *SDradius;
 
 	// fusion type selector
 	QComboBox *fusionType;

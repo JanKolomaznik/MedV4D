@@ -15,7 +15,7 @@ namespace Viewer
 {
 
 /**
- * Sliceviewer's texture preparer component that sets the output pixel value according to the standard deviation within a given range of the input images
+ * Sliceviewer's texture preparer component that sets the output pixel value according to the standard deviation within a given radius of the input images
  */
 template< typename ElementType >
 class StandardDeviationSliceViewerTexturePreparer : public virtual IntensitySummarizerSliceViewerTexturePreparer< ElementType >
@@ -26,14 +26,14 @@ public:
     /**
      * Constructor
      */
-    StandardDeviationSliceViewerTexturePreparer() : _range( 1 ) {}
+    StandardDeviationSliceViewerTexturePreparer() : _radius( 1 ) {}
 
     /**
-     * Set the range of edge value calculation
-     *  @param range the new range of the edge value calculation
+     * Set the radius of edge value calculation
+     *  @param radius the new radius of the edge value calculation
      */
-    void SetRange( uint32 range )
-	{ _range = range; }
+    void SetRadius( uint32 radius )
+	{ _radius = radius; }
 
 protected:
 
@@ -67,8 +67,8 @@ protected:
         uint32 width,
         uint32 height );
 
-    /** The range of the standard deviation calculation */
-    int32 _range;
+    /** The radius of the standard deviation calculation */
+    int32 _radius;
 
 private:
 
