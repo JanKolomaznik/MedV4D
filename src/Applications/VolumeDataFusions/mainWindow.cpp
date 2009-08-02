@@ -68,13 +68,16 @@ void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 		uint32 inputNumber = _settings->GetInputNumber();
 		_inConnection[ inputNumber ]->PutDataset( inputDataSet );
 
+                static_cast< InImageRegistration* >( _register[ inputNumber ] )->SetRotation( InImageRegistration::CoordType( 0, 0, 0 ) );
+                static_cast< InImageRegistration* >( _register[ inputNumber ] )->SetTranslation( InImageRegistration::CoordType( 0, 0, 0 ) );
+
 		for ( uint32 i = 0; i < currentViewerDesktop->getSelectedViewerWidget()->InputPort().Size(); ++i ) currentViewerDesktop->getSelectedViewerWidget()->InputPort()[ i ].UnPlug();
 		_inConnection[ inputNumber ]->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 
 		if ( inputNumber == 0 )
 		{
 			_settings->ExecuteFilter( 0 );
-			for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i ) dynamic_cast< InImageRegistration* >( _register[ i ] )->SetReferenceImage( M4D::Imaging::AbstractImage::Cast( inputDataSet ) );
+			for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i ) static_cast< InImageRegistration* >( _register[ i ] )->SetReferenceImage( M4D::Imaging::AbstractImage::Cast( inputDataSet ) );
 		}
 	} 
 	catch( ... ) {
@@ -91,7 +94,7 @@ void mainWindow::ClearDataset ()
 	_register[ inputNumber ]->OutputPort().GetPort( 0 ).GetConnection()->ResetDataset();
 
 	if ( inputNumber == 0 )
-		for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i ) dynamic_cast< InImageRegistration* >( _register[ i ] )->SetReferenceImage( M4D::Imaging::AbstractImage::Ptr() );
+		for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i ) static_cast< InImageRegistration* >( _register[ i ] )->SetReferenceImage( M4D::Imaging::AbstractImage::Ptr() );
 
 	currentViewerDesktop->UpdateViewers();
 }
