@@ -80,7 +80,7 @@ SobelOperatorSliceViewerTexturePreparer< ElementType >
 			 2 * channel[ ycoord  * width + ( xcoord - 1 ) ] -
 			 channel[ ( ycoord - 1 ) * width + ( xcoord - 1 ) ];
 
-	return std::sqrt( Gx * Gx + Gy * Gy );
+	return std::sqrt( (double)(Gx * Gx + Gy * Gy) );
 
     }
 
