@@ -1,21 +1,21 @@
-\chapter {Cell/B.E. programming}
+\chapter {\mbox{Cell/B.E.} programming}
 \par
-Cell/B.E. platform development tools will be described in this chapter.
+\mbox{Cell/B.E.} platform development tools will be described in this chapter.
 Our experience with the tools will be mentioned as well.
 Then particular SDK content and tools will be listed.
-Parallel systems and models will be mentioned later on as well as the relationship to Cell/B.E. development along with a few design patterns.
-At the end core configurations and their advantages and disadvantages will be listed finishing with few practical approaches to Cell/B.E. porting process.
+Parallel systems and models will be mentioned later on as well as the relationship to \mbox{Cell/B.E.} development along with a few design patterns.
+At the end core configurations and their advantages and disadvantages will be listed finishing with few practical approaches to \mbox{Cell/B.E.} porting process.
 
-\section{Cell/B.E. platform development}
+\section{\mbox{Cell/B.E.} platform development}
 \par
-IBM delivers SDK for development of programs for the Cell/B.E. programming.
+IBM delivers SDK for development of programs for the \mbox{Cell/B.E.} programming.
 It made for Linux platform, in the concrete for Fedora or Red Hat distribution.
 It comes in two flavours.
-The first is the official non free SDK which has all the features needed for development for the Cell/B.E. even for hybrid systems.
+The first is the official non free SDK which has all the features needed for development for the \mbox{Cell/B.E.} even for hybrid systems.
 The purchaser has also a support team ready to help.
 Next is the free one that is open to wide public and everybody can download it and start developing.
 The free one does not have full support for hybrid systems nor for development in other languages than C/C++.
-Wee have used the free one since we have developed only in C/C++ and for clean Cell/B.E. processor.
+Wee have used the free one since we have developed only in C/C++ and for clean \mbox{Cell/B.E.} processor.
 
 \par
 Because the SDK is for Linux operation system its user has to have already deeper knowledge about this system.
@@ -49,7 +49,7 @@ The process of installation is described in the Appendix \ref{toolsSetup}.
 
 \section {SDK content}
 
-Cell/B.E. SDK is divided into variety of components.
+\mbox{Cell/B.E.} SDK is divided into variety of components.
 Each component is contained in one or more rpm package for easy installation purposes.
 Here is list of most important available components:
 \begin{enumerate}
@@ -67,17 +67,17 @@ Code of these libraries is debugged, highly optimized for running on SPEs and SI
 
   \item {Full system simulator}
   \par
-  Program that can simulate the Cell/B.E. processor on other hardware platforms.
+  Program that can simulate the \mbox{Cell/B.E.} processor on other hardware platforms.
 It is used mostly in profiling stage because simulator can simulate actual computation of a code in cycle precision.
-It can be of course used when programmer has an actual Cell/B.E. hardware available, but simulation is incredibly slow.
+It can be of course used when programmer has an actual \mbox{Cell/B.E.} hardware available, but simulation is incredibly slow.
 
   \item {IDE}
   \par
-  IDE is in fact version 3.2 of Eclipse with integration of debugging, profiling, Cell/B.E. machine management and other features that makes development for the Cell/B.E. easier and more comfortable.
+  IDE is in fact version 3.2 of Eclipse with integration of debugging, profiling, \mbox{Cell/B.E.} machine management and other features that makes development for the \mbox{Cell/B.E.} easier and more comfortable.
 \end{enumerate}
 
 
-\section{Parallel systems \& Cell/B.E.}
+\section{Parallel systems \& \mbox{Cell/B.E.}}
 
 Parallelism depends also on type of system where the program will be run.
 There are two basic kind of parallel systems:
@@ -93,11 +93,11 @@ Is system where each processor has its own private memory.
 There is no need for synchronization.
 \end{enumerate}
 
-In context of parallel systems, Cell/B.E. is a kind of hybrid system.
+In context of parallel systems, \mbox{Cell/B.E.} is a kind of hybrid system.
 SPEs matches the distributed-memory system due to private local stores while PPE is shared-memory system.
-Sometimes is Cell/B.E. called heterogeneous multi-core, with distributed memory.
-Because Cell/B.E. processors can be gathered into bigger units such as blade server, with two Cell/B.E. chips they can be viewed as either \mbox{16 + 2} cores in SMP mode or two non-uniform memory access machines connected together.
-Programmer has then to decide which view of the Cell/B.E. processor is better for the solved problem.
+Sometimes is \mbox{Cell/B.E.} called heterogeneous multi-core, with distributed memory.
+Because \mbox{Cell/B.E.} processors can be gathered into bigger units such as blade server, with two \mbox{Cell/B.E.} chips they can be viewed as either \mbox{16 + 2} cores in SMP mode or two non-uniform memory access machines connected together.
+Programmer has then to decide which view of the \mbox{Cell/B.E.} processor is better for the solved problem.
 
 \par
 Because of separation of address spaces programming of SPE is very similar to client/server application design.
@@ -107,7 +107,7 @@ Another possibility is that SPE grabs the data from the central memory.
 In this case, SPE is a client of central memory.
 This case is preferred because the PPE is only one and would not be able to manage all the SPU.
 
-\section{Cell/B.E. programming models}
+\section{\mbox{Cell/B.E.} programming models}
 
 \par
 Implementation of parallel algorithms rely on parallel programming model.
@@ -116,16 +116,16 @@ Programming model is programmer's point of view to the hardware.
 So another decision that programmer has to make is to choose a programming model or mixture of them that will best fit for the solved problem.
 
 \par
-For Cell/B.E. there is variety of parallel programming models.
+For \mbox{Cell/B.E.} there is variety of parallel programming models.
 Models differ from each other in view of the hardware and thus how many actions are performed implicitly by the model.
 The actions can be e.g. task distribution management, data distribution management or synchronization.
 The most abstract ones can perform many actions implicitly.
 Their advantage is ease of implementation but at cost there can be no performance tuning done.
-Differently act the most concrete models that see the Cell/B.E. processor with all the low level details.
+Differently act the most concrete models that see the \mbox{Cell/B.E.} processor with all the low level details.
 Their advantage is performance tuning that can be performed in all the application parts but at cost of more development.
 
 \par
-There are several models that are determined only for the Cell/B.E. platform and are contained in SDK.
+There are several models that are determined only for the \mbox{Cell/B.E.} platform and are contained in SDK.
 While there are other models such as MPI, OpenMP that can be used as well but they would expose only PPE.
 These will not be further described.
 
@@ -160,12 +160,12 @@ More information can be found in \cite{performanceToolRef} within "ALF Programme
 
 \end{enumerate}
 
-Choosing a framework is important decision of writing Cell/B.E. application.
+Choosing a framework is important decision of writing \mbox{Cell/B.E.} application.
 It should be considered enough.
 
-\subsection {Cell/B.E. parallelism levels}
+\subsection {\mbox{Cell/B.E.} parallelism levels}
 
-The Cell/B.E. processor offers many opportunities for parallel processing.
+The \mbox{Cell/B.E.} processor offers many opportunities for parallel processing.
 That is because it is composed of heterogeneous elements, SPE and PPE and possibility of particular composition of more processors into more complex systems.
  Levels are:
 \begin{enumerate}
@@ -174,11 +174,11 @@ That is because it is composed of heterogeneous elements, SPE and PPE and possib
 Parallelism on this level means task distribution among multiple servers like within a server farm.
 This is possible in a hybrid environment at the cluster level using MPI or some other grid computing middle-ware.
 
-\item Cell/B.E. chips level
+\item \mbox{Cell/B.E.} chips level
 \par
-On this level tasks can be divided among multiple Cell/B.E. processors.
+On this level tasks can be divided among multiple \mbox{Cell/B.E.} processors.
 This is possible if there are more such processors in one machine.
-This is in e.g. blade server with two Cell/B.E. chips.
+This is in e.g. blade server with two \mbox{Cell/B.E.} chips.
 ALF or DaCS for hybrid can be used for task distribution.
 
 \item SPE level
@@ -197,7 +197,7 @@ This will be explained later in part devoted to "SIMDation".
 \subsection{Computation configurations}
 
 \par
-Because of heterogeneous nature of Cell/B.E. there are few computation configurations that can be used.
+Because of heterogeneous nature of \mbox{Cell/B.E.} there are few computation configurations that can be used.
 Each of them differs in usage of SPEs and has its own pros and cons:
 \begin{enumerate}
 \item Streaming configuration
@@ -228,7 +228,7 @@ The SPE to SPE transfer are faster than SPE to PPE so this can be benefit.
 
 \item PPE centric
 \par
-This configuration is common approach with the Cell/B.E.
+This configuration is common approach with the \mbox{Cell/B.E.}
 Program runs on PPE (see figure \ref{fg:PPUCentricModel}) and only selected, highly demanding computational kernels (hotspots) are offloaded to SPEs.
 This method is the easiest from a program development perspective because it limits the scope of source code changes and does not require much re-engineering at the application logic level.
 One disadvantage is dynamic changes of SPE contexts that is quite expensive operation.
@@ -248,7 +248,7 @@ This is requires the code to be small enough to fit into the SPU local store alo
 
 \end{enumerate}
 
-\section {Building for the Cell/B.E.}
+\section {Building for the \mbox{Cell/B.E.}}
 \par
 Actual compilation process is performed using appropriate tool chain.
 PPE code using of PPE tool chain and SPE code using SPE one.
@@ -261,7 +261,7 @@ They are also loaded into appropriate processors when they are needed so they li
 \par
 There are two options for SPE code management.
 One is to build shared library and load it explicitly when it is used.
-Another way is to build a static library and include it into PPU executable using Cell/B.E. Embedded SPE Object Format (CESOF).
+Another way is to build a static library and include it into PPU executable using \mbox{Cell/B.E.} Embedded SPE Object Format (CESOF).
 This allows PPE executable objects to contain SPE executable i.e. SPE binary is contained within PPE binary.
 See figure \ref{fg:SPEEmbedding} how is SPE binary included into PPE binary.
 This inclusion is called embedding and is performed with extra tool from tool chain.
@@ -282,10 +282,10 @@ It is reachable through extern struct variable, that contains a pointer to the S
 
 
 
-\subsection {Process of application porting for the Cell/B.E.}
+\subsection {Process of application porting for the \mbox{Cell/B.E.}}
 \label{sect:portingProcess}
 
-Common process of porting an application for the Cell/B.E. processor (figure \ref{fg:appPorting}) consists of next few steps:
+Common process of porting an application for the \mbox{Cell/B.E.} processor (figure \ref{fg:appPorting}) consists of next few steps:
 \begin{enumerate}
 \item Hotspot localization
 \par
@@ -438,7 +438,7 @@ Another option advises are in \cite{compilerOptions}
 \section{Profiling}
 
 \par
-Profiling of Cell/B.E. application means rather profiling SPE part of the application.
+Profiling of \mbox{Cell/B.E.} application means rather profiling SPE part of the application.
 There is variety of profiling tools.
 The basic one is dynamic performance analysis which can provide many of useful information such as how much time the SPE stall and what reason, the CPI (cycle per instruction) ratio, branch count, etc.
 The next one is static performance analysis which can illustrate run of SPE in instruction precision.

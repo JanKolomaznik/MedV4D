@@ -1,16 +1,17 @@
 \chapter{Images}
 
-\begin{figure}
+\begin{figure}[h]
     \centering
-    \includegraphics[width=0.95\textwidth]{data/png/merged}
-    \caption[3d blending of original and segmentationed images]{
-Original skull data set was blended (the red background) with result of segmentation (the bluegreen overlay).
-VTK viewer was used to visualize the data sets.
+    \includegraphics[width=0.6\textwidth]{data/png/3d}
+    \caption[3D view of segmented skull data set]
+{
+3D View of segmented data set.
+VTK viewer used to visualize the data set.
 On the left part there is parietal part of the skull.
-This part is quite well segmented as illustrates the figure \ref{fg:parietalSlicesSegmentation}
-The segmentation of the front skull part (on the right side) is poor due to leaking through eye sockets (see figure \ref{fg:frontSlicesSegmentation}).
+This part is quite well segmented as illustrate Figure \ref{fg:parietalSlicesSegmentation}
+The segmentation of the front skull part (on the right side) is poor due to leaking through eye sockets (see Figure \ref{fg:frontSlicesSegmentation}).
 }
-    \label{fg:merged}
+    \label{fg:series3d}
 \end{figure}
 
 \begin{figure}
@@ -62,4 +63,13 @@ These three images illustrate the leaking of level set through throat hole, cavi
 This slice is really poorly segmented due the leaking of level set through previous slices (see Figure \ref{fg:frontSlicesSegmentation}).
 }
     \label{fg:noseSlicesSegmentation}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.95\textwidth]{data/png/merged}
+    \caption[3d blending of original and segmentationed images]{
+Original skull data set was blended (the red background) with result of segmentation (the bluegreen overlay).
+}
+    \label{fg:merged}
 \end{figure}

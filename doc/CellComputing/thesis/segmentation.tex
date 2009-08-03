@@ -4,7 +4,7 @@ Image segmentation will be described in this chapter as well as several basic se
 Subsequently level set techniques will be introduced, defined and explained in more detail.
 Then level set computation issues will be described along with mentioning of two basic speed-up approaches.
 After that level set method relation to image segmentation will be mentioned.
-After all some features of level set computation on streaming architectures will be listed along with comparison to the Cell/B.E. features.
+After all some features of level set computation on streaming architectures will be listed along with comparison to the \mbox{Cell/B.E.} features.
 
 \section{Problem formulation}
 Image segmentation is process when pixels of input image are split into several subsets, partitions, based on their characteristics or computed properties, such as colour, intensity, or texture.
@@ -354,8 +354,8 @@ Another is that the calculation can be directly visualized by the GPU.
 \end{figure}
 
 \par
-Although the Cell/B.E. has some parts of the approach in common with GPU, such as streaming processors and thus need to pack the input data into larger continuous parts some GPU obstacles need not to overcome.
+Although the \mbox{Cell/B.E.} has some parts of the approach in common with GPU, such as streaming processors and thus need to pack the input data into larger continuous parts some GPU obstacles need not to overcome.
 That means no virtual memory system need to be implemented because the SPE has its own flat address space by default.
 Also the result packing for sending back to CPU is not necessary because transmission of data from and to SPE has the same speed and can be performed directly.
-All these Cell/B.E. processor features could result easier and more straightforward process of porting of level set method.
+All these \mbox{Cell/B.E.} processor features could result easier and more straightforward process of porting of level set method.
 But probably at cost of lower speed than GPU.

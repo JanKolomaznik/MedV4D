@@ -2,7 +2,7 @@
 \label{toolsSetup}
 
 \par
-This part is a cookbook how to install all the necessary content to be able to begin development for Cell/B.E.
+This part is a cookbook how to install all the necessary content to be able to begin development for \mbox{Cell/B.E.}
 It also covers some bugs fixing as well as useful hints how to use partial SDK content.
 The instruction concerning the SDK installation was based on installation on i686 machine.
 But shall be the same for the other architectures since it operates on the same operating system and repository versions of third party software.
@@ -117,15 +117,8 @@ Lets call it XULDIR.
 ...
 \end{verbatim}
 \end{enumerate}
-Now you should start the IDE without the crash, screenshot of welcome page is on the figure \ref{fg:eclipseWelcome}.
+Now you should start the IDE without the crash.
 Screenshot of common eclipse view is on the figure \ref{fg:eclipse}.
-
-\begin{figure}
-    \centering
-    \includegraphics[width=0.95\textwidth]{data/png/eclipseWelcome}
-    \caption[Screenshot cellide after successful startup]{Screenshot of Eclipse cellide welcome page after the first successful startup.}
-    \label{fg:eclipseWelcome}
-\end{figure}
 
 \begin{figure}
     \centering
@@ -198,7 +191,7 @@ Screenshot of started simulator is on the figure \ref{fg:eclipseSIMStarted}.
 
 \subsection{Installation of libraries into sysroot\_image}
 
-Because sysroot\_image is provided as image of installed Fedora 9 without any Cell/B.E. libraries so next step is to install them into sysroot\_image.
+Because sysroot\_image is provided as image of installed Fedora 9 without any \mbox{Cell/B.E.} libraries so next step is to install them into sysroot\_image.
 
 \begin{verbatim}
 /opt/cell/cellsdk_sync_simulator install
@@ -302,13 +295,13 @@ Another useful tool is VPA. It is not part of SDK so it should be downloaded sep
 Visit \url{http://www.alphaworks.ibm.com/tech/vpa} for details.
 After installing (actually unpacking) the downloaded file similar fix in ini file to eclipse.ini file (see paragraph \ref{XULLFIX}) should be done to run the VPA correctly.
 
-\section{Cell/B.E. cross compilation}
+\section{\mbox{Cell/B.E.} cross compilation}
 
-When crosscopiling a Cell/B.E. program which uses lot of third party libraries it is good idea to share some folders on actual Cell/B.E. machine.
+When crosscopiling a \mbox{Cell/B.E.} program which uses lot of third party libraries it is good idea to share some folders on actual \mbox{Cell/B.E.} machine.
 There is not necessary to copy different architecture stuff to the machine where the cross compilation is performed as we did.
-In our case it was boost and ITK libraries and we performed crosscompilation for Cell/B.E. on a i686 machine.
-We wanted to use repository versions of the Cell/B.E. resp. ppc64 libraries on our i686 machine.
+In our case it was boost and ITK libraries and we performed crosscompilation for \mbox{Cell/B.E.} on a i686 machine.
+We wanted to use repository versions of the \mbox{Cell/B.E.} resp. ppc64 libraries on our i686 machine.
 So the first thing we tried was to install appropriate packages of different architecture.
 But we have not found a way how to do it.
 Every try has failed due to architecture mismatch.
-So we believe that mounting remote Cell/B.E. machine shared folders is the only way how to use repository content directly and avoid copying different architecture content.
+So we believe that mounting remote \mbox{Cell/B.E.} machine shared folders is the only way how to use repository content directly and avoid copying different architecture content.

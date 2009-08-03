@@ -34,20 +34,20 @@ Cache miss occurs when requested data are not within processor cache and have to
 
 \par
 Although many improvements were implemented into the general purpose processors they still suffer from the described problems.
-This is one of the reasons why collaboration of three big companies IBM, Sony, and Toshiba started development of Cell/B.E. processor.
+This is one of the reasons why collaboration of three big companies IBM, Sony, and Toshiba started development of \mbox{Cell/B.E.} processor.
 A processor which is multi-core, has high performance to power consumption ratio and is able to overcome the problems that the general purpose processors suffer from.
 That is because it allows a programmer to manage processor cache and branch prediction unit to a certain degree.
 Next chapter will describe the processor in more details.
 
-\chapter{Cell/B.E. platform}
+\chapter{\mbox{Cell/B.E.} platform}
 
-This chapter will introduce Cell Broadband Engine processor (Cell/B.E.), the whole platform and its specific details.
-The particular Cell/B.E. processor will be described and illustrated.
+This chapter will introduce Cell Broadband Engine processor (\mbox{Cell/B.E.}), the whole platform and its specific details.
+The particular \mbox{Cell/B.E.} processor will be described and illustrated.
 All the information were taken from \cite{cbeCenter}.
 
 \par
-Cell/B.E. processor is representative of a new generation of IBM's Cell/B.E. platform family.
-Cell/B.E. is an asymmetric, high-performance multi-core processor that combines eight synergistic processing elements (SPE) and a Power Processing Element (PPE), which is a general-purpose IBM Power PC\textsuperscript{\textregistered} core.
+\mbox{Cell/B.E.} processor is representative of a new generation of IBM's \mbox{Cell/B.E.} platform family.
+\mbox{Cell/B.E.} is an asymmetric, high-performance multi-core processor that combines eight synergistic processing elements (SPE) and a Power Processing Element (PPE), which is a general-purpose IBM Power PC\textsuperscript{\textregistered} core.
 The next important part is a central memory element.
 The PPE can operate with the central memory directly while the SPE can access the memory indirectly through DMA.
 All the elements are connected through high speed bus (EIB - Element Interconnect Bus).
@@ -56,15 +56,15 @@ Whole layout is in the figure \ref{fg:processorLayout}.
 \begin{figure}
     \centering
     \includegraphics[width=0.7\textwidth]{data/cellLayout}
-    \caption[Cell/B.E. processor layout]{One PPE unit along with eight SPE stream processor units and system memory connected together with high speed EIB bus}
+    \caption[\mbox{Cell/B.E.} processor layout]{One PPE unit along with eight SPE stream processor units and system memory connected together with high speed EIB bus}
     \label{fg:processorLayout}
 \end{figure}
 
-Cell/B.E. achieves a significantly better performance per Watt and performance per chip area ratios than conventional high-performance processors.
+\mbox{Cell/B.E.} achieves a significantly better performance per Watt and performance per chip area ratios than conventional high-performance processors.
 It is more flexible and programmable than single-function and other optimized processors such as graphics processors, or conventional digital signal processors.
 While a conventional microprocessor may deliver about 20+GFlops of single-precision (32b) floating-point performance, Cell delivers 200+ GFlops (under ideal conditions) at comparable power consumption.
 
-A number of signal processing and media applications have been implemented on the Cell/B.E. with excellent results.
+A number of signal processing and media applications have been implemented on the \mbox{Cell/B.E.} with excellent results.
 Advanced visualization such as ray-casting, ray-tracing, and volume rendering or streaming applications such as media encoders, decoders or encryption and decryption standards have also been demonstrated to perform about an order of magnitude better than conventional PC.
 
 
@@ -95,8 +95,8 @@ The local store is attached to a larger (central) shared memory through DMA engi
 We say that data is "DMAed" from source to destination.
 DMA commands can be issued in many ways like in synchronous, asynchronous or in scatter-gather manner through DMA lists which is an array of pointer-size pairs that defines pieces of memory that shall be transferred within one DMA request.
 The pieces must not necessarily be continuous.
-Therefore the Cell/B.E. processor can be viewed as a distributed memory multiprocessor.
-This memory management is another big part of programming for the Cell/B.E.
+Therefore the \mbox{Cell/B.E.} processor can be viewed as a distributed memory multiprocessor.
+This memory management is another big part of programming for the \mbox{Cell/B.E.}
 
 \par
 Programming for the SPE is a bit different compared to programming for a conventional processor.
@@ -104,7 +104,7 @@ Programmer have always to count with the fact that he has only 256kB for the pro
 More details about this topic will be described in the next chapter.
 
 \par
-The Cell/B.E. is embedded in game console Sony PlayStation 3 (PS3) as well as IBM Blade servers where are two processors on one board, building block.
+The \mbox{Cell/B.E.} is embedded in game console Sony PlayStation 3 (PS3) as well as IBM Blade servers where are two processors on one board, building block.
 There can be more boards connected in one system forming a powerful and modular machine.
 We have two PS3 machines available for this work.
 
@@ -112,7 +112,7 @@ We have two PS3 machines available for this work.
     \centering
     \includegraphics[width=0.3\textwidth]{data/png/PS3}
     \includegraphics[width=0.6\textwidth]{data/png/ibm-cell-board}
-    \caption[Cell/B.E. based machines]{Images of Cell/B.E. based machines.
+    \caption[\mbox{Cell/B.E.} based machines]{Images of \mbox{Cell/B.E.} based machines.
 Sony's Play Station 3, on the left (image taken from www.boygeniusreport.com), IMB Cell Blade board, on the right (image taken from www.ps3tester.com)
 }
     \label{fg:cellmachines}

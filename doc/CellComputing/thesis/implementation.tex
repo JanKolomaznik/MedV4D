@@ -23,8 +23,8 @@ In our case this means:
 \section{Chosen algorithm and frameworks}
 
 \par
-We decided to choose sparse field algorithm of level set solving for porting to Cell/B.E.
-It is a quite complex image processing algorithm that could test the Cell/B.E. programming as a whole.
+We decided to choose sparse field algorithm of level set solving for porting to \mbox{Cell/B.E.}
+It is a quite complex image processing algorithm that could test the \mbox{Cell/B.E.} programming as a whole.
 
 \par
 We took ITK \cite{itk} implementation of that algorithm as a base.
@@ -58,8 +58,8 @@ The pipeline then offer some implicit locking of data set parts to allow paralle
 \section{Incorporation into MedV4D framework}
 
 \par
-The most convenient way how to use an ITK pipeline that can be run on the Cell/B.E. seemed the client/server architecture.
-So the part of the application that has to be run on the Cell/B.E. is a server.
+The most convenient way how to use an ITK pipeline that can be run on the \mbox{Cell/B.E.} seemed the client/server architecture.
+So the part of the application that has to be run on the \mbox{Cell/B.E.} is a server.
 While client part loads initial data or saves the results, visualize the results and act as GUI with controls for parameter setting.
 Whole process can be described this way: client loads the input data sends them to server and waits for the results.
 As soon as the results is read it is visualized.
@@ -212,14 +212,14 @@ It is thresholding that select pixels with values less that zero that correspond
 
 The fast marching and binary thresholding filter have not been changed and are used as is, part of ITK framework.
 The only filter that has been changed was the level set segmentation (LS) filter.
-This filter performs the algorithm we have chosen to port to Cell/B.E., sparse field level set solving.
+This filter performs the algorithm we have chosen to port to \mbox{Cell/B.E.}, sparse field level set solving.
 This algorithm uses linked lists to represent the sparse field layers.
 The actual algorithm, as described higher (\ref{alg:sparseFileld}), is implemented in several classes.
 These classes form the original LS hierarchy (OLSH).
 
 \section{Pre-porting steps}
 \par
-Due to the mapping of the algorithm to Cell/B.E. and due to poor lucidity and commonness of ITK code radical changes was necessary.
+Due to the mapping of the algorithm to \mbox{Cell/B.E.} and due to poor lucidity and commonness of ITK code radical changes was necessary.
 We decided to rebuild appropriate part of OLSH responsible for the sparse field level set computation.
 Our own LS image segmentation filter should be the result of that changes.
 
@@ -260,7 +260,7 @@ This image is another notable amount of memory that cannot be accepted for our p
 
 \par
 Our approach calculates the speed function every time it is needed without any pre-calculations.
-This approach could be even better for the Cell/B.E. streaming nature.
+This approach could be even better for the \mbox{Cell/B.E.} streaming nature.
 
 \begin{figure}
     \centering
@@ -275,7 +275,7 @@ We have simplified these two hierarchies.
 One reason of the simplification was the removal of the pre-calculated image and the other was code clean-up and refactorization.
 Result of these changes is our own filter (ThreshSegLevelSetFilter, OOF).
 It omits all unnecessary part of original LS hierarchy, uses reasonable parts of the original ITK level set segmentation filter (see figure\ref{fg:resultingFilter}).
-It is also ready to be ported for the Cell/B.E.
+It is also ready to be ported for the \mbox{Cell/B.E.}
 
 \par
 In the function hierarchy only the base class that the resulting ThresholdLevelSetFunc class is derived has left.
@@ -284,12 +284,12 @@ The computation of particular up-wind scheme terms was separated into standalone
 \par
 The filter hierarchy was shorted and begins already in SparseFieldLevelSetImageFilter.
 All the successors in the original hierarchy was omitted since they did anything reasonable.
-Some function implementation from the SparseFieldLevelSetImageFilter was borrowed into the new OOF to be ported for the Cell/B.E.
+Some function implementation from the SparseFieldLevelSetImageFilter was borrowed into the new OOF to be ported for the \mbox{Cell/B.E.}
 
 \begin{figure}
     \centering
     \includegraphics[width=0.95\textwidth]{data/resultingFilter}
-    \caption[Resulting level set filter ready to be ported to Cell/B.E.]
+    \caption[Resulting level set filter ready to be ported to \mbox{Cell/B.E.}]
     {
 Show result of original LS hierarchy rebuilding.
 Some unnecessary parts was omitted to clean-up the code and to change behaviour towards streaming architecture as well as term computation was separated into supporting classes for modularity
@@ -534,7 +534,7 @@ The whole process can be compared with company department where are several work
 \par
 Here we will describe our experience with actual porting procedure, problems that the procedure has brought and our solutions of those problems.
 
-\subsection{PC as Cell/B.E. simulator}
+\subsection{PC as \mbox{Cell/B.E.} simulator}
 
 \par
 Because remote debugging program running on PS3 is quite time consuming (seconds for basic commands like step into) and because of small amount of memory (see \ref{ps3MemoryUsage}) we decided to left actual porting to the very end of process.
@@ -542,7 +542,7 @@ Features (and tools) that are needed for running on SPE were gradually added int
 Some parts were rewritten (e.g. the \emph{UpdateActiveLayerValues} turn) to allow some data to live in SPE local store.
 All the changes have not changed the programs' output, so one can say that the all the programs in every step are equivalent.
 All the debugging was performed on PC platform locally and thus quickly.
-The Cell/B.E. special features like DMA transfer was simulated by memcpy or the mailbox issues trough simple queue.
+The \mbox{Cell/B.E.} special features like DMA transfer was simulated by memcpy or the mailbox issues trough simple queue.
 
 \par
 This step was really time consuming due to fact that tools operates with a stack memory.
@@ -573,16 +573,16 @@ Next step was to port the tools for SPE.
 In fact is to rewrite usage of memcpy that simulate the DMA transfer to use real DMA transfer.
 
 \par
-Data that are transferred through DMA (DMAed) within the Cell/B.E. should meet size and align conditions (see \cite{programmersGuide}, Chapter 4).
+Data that are transferred through DMA (DMAed) within the \mbox{Cell/B.E.} should meet size and align conditions (see \cite{programmersGuide}, Chapter 4).
 Data that does not meet this condition will generate BUS error.
 This condition forced that all data that are DMAed should be allocated onto aligned addresses (see objectStore.h or updateValsAllocator.h).
 
 \par
-Debugging within this step is performed already on a Cell/B.E. machine.
+Debugging within this step is performed already on a \mbox{Cell/B.E.} machine.
 We used both PS3 and systemsim.
 Systemsim can detect which DMA transfer brakes align rules and thus cause the BUS error but it is really slow.
 Instead using systemsim we have implemented DMAGate (see DMAGate.h) that all DMA transfer go through and where are all the conditions checked.
-Such central point for all DMA transfer is really important part of Cell/B.E. program because it gathers all DMA stuff into one place making debugging much more easier.
+Such central point for all DMA transfer is really important part of \mbox{Cell/B.E.} program because it gathers all DMA stuff into one place making debugging much more easier.
 
 \subsection{Memory protection tools}
 
@@ -604,4 +604,4 @@ Checking the program with memory checking tools is necessary already from the ve
 It is advisable not to make huge code changes not only due to memory checking but due to actual process as such.
 It is better to develop gradually in small steps.
 One can then find error more simply.
-This is universal rule for programming but we believe it is valid specially for the Cell/B.E. porting process.
+This is universal rule for programming but we believe it is valid specially for the \mbox{Cell/B.E.} porting process.
