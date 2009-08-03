@@ -1,4 +1,4 @@
-﻿\chapter{Design and implementation}
+f\chapter{Design and implementation}
 
 This chapter will describe details of implementation and design of our test application.
 Starts with listing of used frameworks and describes process of incorporation of the application into them.
@@ -64,7 +64,7 @@ While client part loads initial data or saves the results, visualize the results
 Whole process can be described this way: client loads the input data sends them to server and waits for the results.
 As soon as the results is read it is visualized.
 Then the result can be saved or sent to server again for computation with another parameters.
-See figure \ref{fg:computationProcess} showing how the application with code name 'LevelSetClient' works.
+See the figure \ref{fg:computationProcess} showing how the application with code name 'LevelSetClient' works.
 
 \begin{figure}
     \centering
@@ -139,7 +139,7 @@ But CREATE command has to be sent before the DATASET command to build the remote
 CREATE command is sent with DATASET one because remote pipeline has to be recreated every time a new dataset arrives.
 \par
 And the EXEC command is then send within function that is called when pipeline is executed and that should perform actual computation (ProcessImage).
-Whole cycle shows figure \ref{fg:RCClientCycle}.
+Whole cycle shows the figure \ref{fg:RCClientCycle}.
 
 \begin{figure}
     \centering
@@ -356,7 +356,7 @@ And the rest is moved to SPEs through SPEManager that perform all necessary step
 \label{fg:newDesign}
 \end{figure}
 
-On the figure \ref{fg:newDesign} can be noticed that almost whole original ITK pipeline is offloaded to SPE.
+In the figure \ref{fg:newDesign} can be noticed that almost whole original ITK pipeline is offloaded to SPE.
 Only initialization routines are left to PPE. This lead to create the SPE program manager that will manage computations on SPEs.
 It is responsible for SPE thread initialization and run, and SPEs synchronization.
 
@@ -382,7 +382,7 @@ Step processed by \emph{PropagateAllLayerValues}.
 
 \item STEP 4
 \par
-Traverse over status lists in innermost to outermost order and process their nodes. 
+Traverse over status lists in innermost to outermost order and process their nodes.
 If needed a node is moved to inward (outward) status list and simultaneously appropriate layer.
 This is performed by \emph{ProcessStatusLists} method.
 \end{enumerate}

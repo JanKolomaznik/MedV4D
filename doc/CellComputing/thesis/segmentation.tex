@@ -1,4 +1,4 @@
-﻿\chapter{Image segmentation}
+\chapter{Image segmentation}
 
 Image segmentation will be described in this chapter as well as several basic segmentation techniques will be listed.
 Subsequently level set techniques will be introduced, defined and explained in more detail.
@@ -108,7 +108,7 @@ It is represented by level set function.
 Segmentation is performed by deformation of initial isoline (for 2D case), hyperplane of level set function, with forces that are computed from segmented image.
 
 \par
-Whole process can be illustrated in very similar way to flood-filling, see figure \ref{fg:flooding}.
+Whole process can be illustrated in very similar way to flood-filling, see the figure \ref{fg:flooding}.
 Initial isoline is deformed with forces that has direction of isoline normal.
 For 2D case initial isoline can be e.g. a simple circle as a hyperplane of a distance function from given point.
 When it approaches object borders propagation slows down.
@@ -150,7 +150,7 @@ Isoline is then subset of the level set function values, hyperplane
 \begin{equation}
 S = \{\vec{x}\mid \phi(\vec{x}) = k\}
 \end{equation}
-Symbol $S$ represents a $k$-isoline or $k$-level set of $\phi$. 
+Symbol $S$ represents a $k$-isoline or $k$-level set of $\phi$.
 Variable $k$ can be chosen freely, but in most cases it is zero.
 Isoline is then called zero isoline, zero level set or dimension insensitively front (will be used further).
 
@@ -220,7 +220,7 @@ Because active points must be adjacent to the level set their positions lie with
 Therefore even values of an embedding in active set positions must lie on certain range, the active range.
 When active point value move out from this active range it is no longer the active point and is removed from the active set.
 And vice versa, the point whose value comes into active range is added into active set.
-Along the active set there are few layers of points adjacent to the active set organized like peels of an onion, see figure\ref{fg:sparseFilelds}.
+Along the active set there are few layers of points adjacent to the active set organized like peels of an onion, see the figure\ref{fg:sparseFilelds}.
 Process of front propagation can be imagined as a tram that lays down tracks before it and picks them up behind.
 
 \begin{figure}
@@ -233,7 +233,7 @@ Process of front propagation can be imagined as a tram that lays down tracks bef
 \par
 Algorithm (from \cite{insightIntoImages}):\\
 \label{alg:sparseFileld}
-\emph{layer, $L_i$} - set of points that are close to the level set. $i$ is order of a layer, negative for inner layers, positive for outer ones. Zero for active set. See figure\ref{fg:sparseFilelds}\\
+\emph{layer, $L_i$} - set of points that are close to the level set. $i$ is order of a layer, negative for inner layers, positive for outer ones. Zero for active set. See the figure\ref{fg:sparseFilelds}\\
 \emph{statuslist, $S_{i}$} - list of points within $i$-th layer that are changing status
 
 \par
@@ -265,7 +265,7 @@ As a next stopping criterion is usually given the maximal count of iterations,
 Image segmentation using level set method is performed based on a speed function that is calculated from segmented image and that encourages the mode to grow into direction where the object lies.
 There is variety of speed functions.
 In this work I use speed function based on a threshold $T_{low}$ and $T_{hi}$ of the intensities from the input image.
-If pixel has intensity value that is within the threshold interval the level set model grows (see figure \ref{fg:speedFunction}).
+If pixel has intensity value that is within the threshold interval the level set model grows, see the figure \ref{fg:speedFunction}.
 Otherwise it contracts as fast as the pixel has value further from the interval.
 The function $D$ is defined as:
 \begin{equation}
@@ -303,7 +303,7 @@ where $|\bigtriangledown \phi|D$ represents speed function term, $\bigtriangledo
 Edge term is computed from second order derivatives just like Canny and Marr-Hildreth algorithms for edge detection.
 It shall to push level set towards edges, i.e. border of segmented object.
 
-Curvature forces resulting level set model to have less surface area and thus protect negative effects like leaking into unwanted places shown in figure \ref{fg:leaking} shows.
+Curvature forces resulting level set model to have less surface area and thus protect negative effects like leaking into unwanted places shown in the figure \ref{fg:leaking} shows.
 Note: if $\alpha$ = $\beta$ = 0, the result is the same as from flood-fill method because there is only speed term taking place.
 
 \begin{figure}
@@ -338,7 +338,7 @@ In porting to GPU architecture texture memory is used to store input data in lar
 Actual computation is then managed by vertices that flows into the shader and plays role of some pointers to texture memory.
 This is some kind of trick because the texture memory is not addressed directly by address number like in single dimension continuous address space in common processors but instead by a 2D coordinate to texture.
 Because vertices comes as 3D points, virtual memory system that map 3D vertices to 2D texture coordinates has to be created.
-Such system propose Lefonh at al. \cite{lefonhGPUSolver}. See figure \ref{fg:virtual memory on GPU}.
+Such system propose Lefonh at al. \cite{lefonhGPUSolver}. See the figure \ref{fg:virtual memory on GPU}.
 Another workaround has to be performed when computed data is transferred back to CPU.
 This direction is much slower than CPU to GPU direction and thus the results has to be packed somehow.
 Lefonh at al. \cite{lefonhGPUSolver} describes this packaging as well.

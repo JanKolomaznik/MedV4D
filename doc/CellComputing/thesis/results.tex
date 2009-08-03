@@ -1,4 +1,4 @@
-﻿\chapter{Results}
+\chapter{Results}
 
 In this chapter speed measurements of our application will be presented as well as few pictures of results.
 Because we have not accelerated the computation over traditional processors discussion of the reasons will follow.
@@ -94,7 +94,7 @@ In some parts the both output and status image neighbourhoods are transferred.
 We wanted to perform the transfer in scatter-gather manner through the DMA lists but we have faced some problems concerning this way of transfer.
 The DMA transfers and specially using DMA lists are designed for bigger amount of aligned data.
 When used for small amounts (smaller that 16bytes per list item) performance goes down because of unaligned data transfer.
-When data smaller than 16 bytes (quad-word) are being transferred, every single item is automatically aligned to quad-word address within local store buffer (see Figure \ref{fg:automaticAlignOfSmallData}).
+When data smaller than 16 bytes (quad-word) are being transferred, every single item is automatically aligned to quad-word address within local store buffer (see figure \ref{fg:automaticAlignOfSmallData}).
 
 \begin{figure}
     \centering
@@ -109,7 +109,7 @@ When data smaller than 16 bytes (quad-word) are being transferred, every single 
 
 This increase required size of buffer that is needed for the transfer.
 This can be partially solved by usage of multiple DMA lists (one for each quadword align).
-This is illustrated on the Figure \ref{fg:multipleDMAList}.
+This is illustrated in the figure \ref{fg:multipleDMAList}.
 For details see \cite{DMAListIssues}.
 
 \begin{figure}
