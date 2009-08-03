@@ -1,22 +1,22 @@
 \chapter{Results}
 
-In this chapter speed measurements of our application will be presented as well as few pictures of results.
+In this chapter speed measurements of our application will be presented as well as a few pictures of results.
 Because we have not accelerated the computation over traditional processors discussion of the reasons will follow.
 We will mention possible changes in design to speed up the execution.
-Then some consideration how shall look the algorithm that is well suited for the \mbox{Cell/B.E.} like.
+Then some consideration how shall the algorithm that is well suited for the \mbox{Cell/B.E.} look like.
 Chapter will be finished with comparison of complexity of programming for the \mbox{Cell/B.E.} and conventional processors.
 
 \section{Speed measurements}
 
 \par
-Actual speed measurement is performed within \emph{GenerateData} method of the FiniteDifferenceFilter.
+Actual speed measurement is performed within \mbox{\emph{GenerateData}} method of the \mbox{\emph{FiniteDifferenceFilter}}.
 Counter is started right after initialization phase (i.e. before main algorithm loop) and stopped right after the loop.
 Program memory usage was tuned to use only really necessary amount of memory within the measured interval.
 Valgrind's massive tool was used for the memory usage tuning.
 This was necessary because of the PS3 limited memory, see \ref{ps3MemoryUsage}
 
 \par
-Beside this server memory usage tuning, some changes was made also within client part.
+Beside this server memory usage tuning some changes was made also within client part.
 There has been a special filter developed.
 The filter shrinks data set to given size and cast its voxels to float.
 Shrinking is performed by linear interpolation.
@@ -32,6 +32,7 @@ Every measurement was run with the same curvature and speed-scaling factors.
 But with different initial distance, maximum iterations and seed parameters.
 These parameters were set according to data set size.
 
+\par
 Three different data sets were measured.
 All of them was CT images of skull that were scanned for anthropological purposes.
 Measurement of some volumetric parameters of such images is valuable source of data for anthropologist.
@@ -75,7 +76,7 @@ skull 2			&256x256x80	&[128,128,40]	&4		&500		&\mbox{Cell/B.E.}	&366.63\\
 Results of speed measurement.
 The first difference is big probably because of the small data set and insufficient time to take advantage of parallelism of six SPE.
 The second measurement shows that PC implementation is about five times faster.
-The rest of measurements, performed on different data set and parameter configurations, prove the coefficient five.
+The rest of measurements, performed on different data set and parameter configurations prove the coefficient five.
 }
 \label{tab:runresults}
 \end{table}
@@ -83,15 +84,15 @@ The rest of measurements, performed on different data set and parameter configur
 \section{Reasons of slowdown and possible improvements}
 
 \par
-Porting the code to run on SPEs is not sufficient to get more speed from the \mbox{Cell/B.E.} over traditional processors.
-An additional speed-up porting phases are necessary.
+Porting the code to run on SPEs and distribution the calculations among the available SPEs is not sufficient to get more speed from the \mbox{Cell/B.E.} over traditional processors.
+The additional speed-up porting phases are necessary to be performed.
 But our program has another speed pitfalls.
 
 \par
 The biggest problem is CellNeighbourhood that represent a small segment of an image (the $3^3$ voxel matrix).
 It is transferred for every layer item.
 In some parts the both output and status image neighbourhoods are transferred.
-We wanted to perform the transfer in scatter-gather manner through the DMA lists but we have faced some problems concerning this way of transfer.
+We wanted to perform the transfer in scatter-gather manner through the DMA lists but we have faced some problems.
 The DMA transfers and specially using DMA lists are designed for bigger amount of aligned data.
 When used for small amounts (smaller that 16bytes per list item) performance goes down because of unaligned data transfer.
 When data smaller than 16 bytes (quad-word) are being transferred, every single item is automatically aligned to quad-word address within local store buffer (see figure \ref{fg:automaticAlignOfSmallData}).
@@ -131,7 +132,7 @@ This is working solution but overhead for SPE is incredible and thus useless (se
 
 \par
 \label{neighbourhoodDependecy}
-Another problem is order of layer nodes (and thus neighbourhoods) processing.
+Another problem is order of layer nodes and thus neighbourhoods processing.
 When there are two nodes within one layer that are next to each other and processed subsequently.
 Changes made to the first processed neighbourhood would not appear to already preloaded next one.
 So another merging need to be performed.
@@ -143,7 +144,7 @@ This coerced another changes to neighbourhood transfer and made the actual trans
 \label{workDependecy}
 Another pitfall is the situation when sibling nodes are processed by two different SPEs.
 Adding nodes to layers is based on information from neighbours of the currently processed node.
-So it is possible that two different SPE inserts the same nodes more time into one layer because they process sibling nodes (i.e. overlapping neighbourhoods).
+So it is possible that two different SPE inserts the same nodes more time into one layer because they process sibling nodes i.e. overlapping neighbourhoods.
 This makes no changes to output but additional overhead due to processing multiplied nodes.
 Solution to this problem would be synchronization among the SPEs.
 
@@ -176,11 +177,11 @@ But such computation scheme would coerce complete redesign of application.
 \par
 \mbox{Cell/B.E.} programming means mainly programming for SPEs because of their performance and count.
 Because of indirect memory access and need of usage of some multi-buffering memory transfer scheme the design is quite more complex over common processor.
-With another limitation which is the local store size is design of \mbox{Cell/B.E.} application a challenge.
+With another limitation which is the local store size is the design of \mbox{Cell/B.E.} application a challenge.
 
 \par
 \mbox{Cell/B.E.} is designed for intensive computation programs.
-For a programmer this means utilize all SPEs and all their features at maximum level.
+For a programmer this means utilize all SPEs and all their features at the maximum level.
 It is only possible for certain class of algorithm.
 Let's call them streaming parallel algorithm.
 But what is it? What is the definition?
@@ -190,8 +191,8 @@ So by negation of features that slow down our program we could get definition of
 
 \item{Streaming nature}
 \par
-Data of that program are uniform and can be processed in small pieces (chunks) which are mutually independent which can fit in local store memory.
-This means that for one chunk processing is only necessary this chunk and not any part of other chunks.
+Data of that program are uniform and can be processed in small pieces (chunks) which are mutually independent and which can fit in local store memory.
+This means that for a one chunk processing only this chunk is necessary and not any part of other chunks.
 And when this chunk is once processed is stored and never retrieved for processing again.
 
 \par
@@ -213,14 +214,14 @@ See \ref{workDependecy} what causes problems.
 \end{enumerate}
 
 \par
-When algorithm does not meet the streaming parallel definition then it should not be implemented or changed.
+When algorithm does not meet the streaming parallel definition then it should not be implemented or it must be changed.
 This means e.g. to use different data structures.
 In our case, change of the data structure to somehow gather node processing to specific image part would be the change of algorithm we implemented leading to performance gain.
-But then this would be the original algorithm any more.
+But then it would not be the original algorithm any more.
 
 \par
 In contrast there are algorithms that fits the streaming parallel algorithm definition.
-Among the examples within SDK e.g. thresholding is one of them.
+Except the examples in SDK that fits the definition e.g. thresholding fits the streaming parallel algorithm definition.
 It operates on an image that has uniform data - pixels.
 It apply simple condition on each pixel which result depends only on the processed pixel.
 Processing can be divided into chunks.
@@ -250,13 +251,13 @@ Is implementation of an algorithm worth at all?
 Since only some special products is equipped with \mbox{Cell/B.E.} actual data has to be sent to such machine for computing and results has to be sent back.
 So only complex algorithm where performance gain would be bigger than the time spent in transfer of actual data set are worth to port.
 The algorithm we have tried to implement is complex enough to be offloaded to compute on remote machine while the mentioned thresholding would not.
-As soon as common machines such as notebooks, desktops are equipped with the \mbox{Cell/B.E.} processor even class of such simple image processing algorithms that is implemented in everyday-use software (such as the thresholding or variety of masking, edge detections) could take advantage of the processor.
+As soon as common machines such as notebooks, desktops are equipped with the \mbox{Cell/B.E.} processor even class of such simple image processing algorithms that is implemented in everyday-use software such as the thresholding or variety of masking, edge detections could take advantage of the processor.
 
 \chapter{Conclusion}
 
 \par
-At the beginning we studied available literature to find out what is actually \mbox{Cell/B.E.}, what benefits it brings for what price.
-What special features it have and what they are good for.
+At the beginning we studied available literature to find out what is actually the \mbox{Cell/B.E.} what benefits it brings for what price.
+What special features it has and what they are good for.
 Then we have been trying to install SDK to start actual development process.
 During this phase we faced some obstacles such as bugs, incompatibilities among tools, libraries that the tools use and even operating system vs. SDK incompatibilities.
 So we had to go through variety of forums and other sources to find the solution.
@@ -278,7 +279,9 @@ This step have found out hot spots of the code which can be in turn offloaded to
 But results was quite unexpected so another redesign of application followed.
 In this new design almost whole original ITK pipeline was offloaded into SPE.
 Big code restructuring was necessary to allow us to perform actual computations on SPE.
-Finally we have been able to run the whole algorithm on SPE and thus to measure time need for computations.
+We have repeatedly debugged same kind of errors due to corruptions of stack memory caused by DMA transfers.
+This has proved importance of usage memory checking tools.
+Finally we have been able to run the whole algorithm on SPE and to measure time need for computations.
 
 \par
 The result of measurement showed that simple move the computation to SPE slows down the computations because of insufficient utilization of \mbox{Cell/B.E.} features.
@@ -292,16 +295,16 @@ As well as question of actual algorithm complexity and worthiness of porting the
 
 \par
 The \mbox{Cell/B.E.} platform is very interesting for its variations of use scenarios and ability of program tuning and customization.
-We think the pallet of tools and features of the \mbox{Cell/B.E.} can make it interesting alternative to conventional processors whose lifetime gets shorter due to limitations in manufacturing process.
+We think the pallet of tools and features of the \mbox{Cell/B.E.} can make it interesting alternative to conventional processors whose lifetime is getting shorter due to limitations in manufacturing process.
 \mbox{Cell/B.E.}'s great potential has already been proven but it is still waiting for wider spectrum of programmers.
 
 \par
-If the process of starting developing on the \mbox{Cell/B.E.} became simpler we believe much more new programmers would start.
+If the process of starting developing on the \mbox{Cell/B.E.} became simpler we believe much more new programmers would start using and programming it.
 Nowadays there are plenty of information about the \mbox{Cell/B.E.} but somehow unsorted or out of date.
 The best information source are documents shipped along with the SDK.
 But they are targeted to contain all the information regardless the level of experience of the reader.
 So when a programmer wants to start developing applications on the \mbox{Cell/B.E.} he would go trough plenty of that information before he can start actual work.
-It's a pity there is total lack of information for PS3 users within SDK docs.
-This is quite problem when big part of beginners has PS3 available.
-There is simply lack of some "The cookbook for beginners" with practical information and some howtos.
-We believe this work is such a cookbook with some of practical information that potentially may help to some other programmers who would like to start developing for the \mbox{Cell/B.E.}
+It is a pity there is total lack of information for PS3 users within SDK docs.
+This is quite problem when a big part of beginners has PS3 available.
+There is simply lack of some "cookbook for beginners" with practical information and some howtos.
+We believe this work can be such a cookbook with some of practical information that potentially may help to some other programmers who would like to start developing for the \mbox{Cell/B.E.}
