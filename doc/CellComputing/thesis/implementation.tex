@@ -373,8 +373,9 @@ The \mbox{\emph{UpdateCalculator}} traverse over \emph{layer0} and computes upda
 The computed values are stored in \emph{update buffer}.
 It performs STEP 1 of sparse fields algorithm \ref{alg:sparseFileld}.
 Then is the \mbox{\emph{ApplyUpdateCalculator}}'s turn that performs the rest of that algorithm on the calculated update values within the \emph{update buffer}.
-In context of our implementation the particular steps mean:
-\begin{enumerate}
+In context of our implementation the particular steps mean:\\
+
+\begin{itemize}
 \item STEP 2
 \par
 For every \emph{layer0} compute new level set value and perform test if it stays in the interval [-$\frac{1}{2}$,$\frac{1}{2}$].
@@ -383,7 +384,7 @@ This is performed by \mbox{\emph{UpdateActiveLayerValues}} method.
 
 \item STEP 3
 \par
-Is performed by sub component of \mbox{\emph{ApplyUpdateCalculator}}, the \mbox{\emph{LayerValuesPropagator}}.
+Is performed by sub-component of \mbox{\emph{ApplyUpdateCalculator}}, the \mbox{\emph{LayerValuesPropagator}}.
 This traverses over all layers, process their values and remove nodes eventually if they are no longer in a layer.
 Step processed by \mbox{\emph{PropagateAllLayerValues}}.
 
@@ -392,7 +393,7 @@ Step processed by \mbox{\emph{PropagateAllLayerValues}}.
 Traverse over status lists in innermost to outermost order and process their nodes.
 If needed a node is moved to inward (outward) status list and simultaneously appropriate layer.
 This is performed by \mbox{\emph{ProcessStatusLists}} method.
-\end{enumerate}
+\end{itemize}
 
 \subsection{Data flow}
 
@@ -419,8 +420,9 @@ The computation is then performed on those neighbourhoods.
 
 \par
 There are other data that have to be stored within central memory and that contribute to the data flow as well.
-Next list describe what data are processed in most important methods resp. steps within our application:
-\begin{enumerate}
+Next list describe what data are processed in most important methods resp. steps within our application:\\
+
+\begin{itemize}
 \item UpdateCalculator
 \par
 Needs an array which is as long as the layer0.
@@ -455,7 +457,7 @@ One status list is processed untill empty so all status lists remains empty and 
 \par
 This method traverse over all the layers and performs moving nodes among the layers.
 This means operations \emph{PUSH} and \emph{UNLINK} as well as layer traversal and appropriate neighbourhoods loading.
-\end{enumerate}
+\end{itemize}
 
 %\begin{figure}	//TODO {data/updateActiveLayerValues}
 
@@ -544,7 +546,7 @@ Here we will describe our experience with actual porting procedure, problems tha
 \subsection{PC as \mbox{Cell/B.E.} simulator}
 
 \par
-Because remote debugging program running on PS3 is quite time consuming (seconds step into command and the like) and because of small amount of memory (see \ref{ps3MemoryUsage}) we decided to left actual porting to the very end of the process.
+Because remote debugging program running on PS3 is quite time consuming (seconds step into command and the like) and because of small amount of memory (see paragraph \ref{ps3MemoryUsage}) we decided to left actual porting to the very end of the process.
 Features that are needed for running on SPE were gradually added into the original code.
 Some parts were rewritten (e.g. the \emph{UpdateActiveLayerValues} turn) to allow some data to live in SPE local store.
 All the changes have not changed the programs' output, so one can say that the all the programs in every step are equivalent.

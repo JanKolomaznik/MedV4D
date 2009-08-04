@@ -155,13 +155,11 @@ You could start the IDE and start development. But there are some bugs to fix ye
 \par
 Another issue (stack issue) is with tcl (scripting language that is used for configuration of the systemsim).
 There is bug with stack size checking that causes cycling of tcl code.
-To workaround this problem you should use ulimit command that changes default environment of Linux programs
+To workaround this problem use ulimit command that changes default environment of Linux programs and disables the stacksize checkings.
 
 \begin{verbatim}
 ulimit -s unlimited
 \end{verbatim}
-
-causes that stack is unlimited.
 
 \par
 The last is to fix actual tcl script that manages loading the sysroot\_image (21\% issue - loading of the sysroot\_image freezes on 21\% so is not started and that's why unusable).
@@ -275,7 +273,7 @@ For service management within ssh console \url{/usr/sbin/ntsysv} manager is quit
 After disabling all unnecessary services we got about 130MB of free space.
 
 \par
-Yellow dog distributions goes even beyond. They can access other 256MB in PS3 locked for graphics.
+Yellow dog distributions goes even beyond. They can access another 256MB in PS3 locked for graphics.
 Special device is created and the graphic memory is the used as a swap partition. For details see \url{http://us.fixstars.com/products/ydl/}.
 
 \section{Performance tools}
