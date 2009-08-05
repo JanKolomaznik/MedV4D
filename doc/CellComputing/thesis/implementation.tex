@@ -125,7 +125,7 @@ The data set is parameter of the command.
   This command requests actual execution of the remote pipeline.
 But filter parameter values should be parsed before the actual execution.
 These values are within the only parameter of this command.
-After the parsing and association of the filter parameters with actual filter the remote pipeline is executed.
+After the parsing and association of the filter parameters with the actual filter the remote pipeline is executed.
 \end{enumerate}
 
 \par
@@ -142,7 +142,7 @@ CREATE command has to be sent before the DATASET command to build the remote pip
 CREATE command is sent with DATASET command because remote pipeline has to be recreated every time a new dataset arrives.
 
 \par
-The EXEC command is send within a function that is called when the pipeline is executed making actual computation started (\mbox{\emph{ProcessImage}}).
+The EXEC command is sent within a function that is called when the pipeline is executed making actual computation started (\mbox{\emph{ProcessImage}}).
 Whole cycle shows the figure \ref{fg:RCClientCycle}.
 
 \begin{figure}
@@ -482,7 +482,7 @@ Therefore set of tools that performs the PPE - SPE communication was developed.
 
 \subsection{Tools}
 Tools are parts of the program that perform data transfer between the PPE and the SPE.
-All these tools perform multi-buffering to avoid waiting for data.
+All these tools perform multi-buffering to avoid waiting for data.\\
 
 \begin{enumerate}
 \item \emph{NeighbourhoodCell}

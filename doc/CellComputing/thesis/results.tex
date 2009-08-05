@@ -16,10 +16,10 @@ Valgrind's massive tool was used for the memory usage tuning.
 This was necessary because of the PS3 limited memory, see paragraph \ref{ps3MemoryUsage}
 
 \par
-Beside this server memory usage tuning some changes was made also within the client part.
+Beside the server memory usage tuning other changes was made also within the client part.
 There has been a special filter developed.
 The filter shrinks a data set to a given size and cast its voxels to float.
-The shrinking is performed by linear interpolator.
+The shrinking is performed by a linear interpolator.
 The purpose of the float casting is avoidance of allocation of additional memory on the server side that would be necessary for float data set.
 
 \par
@@ -27,7 +27,7 @@ It is strange that the command \emph{top} shows far bigger memory usage than the
 We have not cared much about it but the idea is that the \emph{top} shows all memory requested from the system while the massif shows exact memory used by the process.
 
 \par
-Results of the speed measurement is summarized in Table \ref{tab:runresults}.
+Results of the speed measurement is summarized in the table \ref{tab:runresults}.
 Every measurement was run with the same curvature and speed-scaling factors.
 But with different initial distance, maximum iterations and seed parameters.
 These parameters were set according to data set size.
@@ -35,8 +35,8 @@ These parameters were set according to data set size.
 \par
 Three different data sets were measured.
 All of them was CT images of a skull that were scanned for anthropological purposes.
-Measurement of some volumetric parameters of such images is valuable source of data for anthropologist.
-Method implemented in our application could be used in praxis for such purposes if the application is quick enough.
+Measurement of some volumetric parameters of such images is a valuable source of data for the anthropologist.
+Method implemented in our application could be used in the praxis for such purposes if the application is quick enough.
 Therefore speed-up of the current methods is necessary.
 
 \begin{table}
@@ -318,7 +318,7 @@ If the process of the \mbox{Cell/B.E.} development starting became simpler we be
 Nowadays there are plenty of information about the \mbox{Cell/B.E.} but they are somehow unsorted or out of date.
 The best information source are documents shipped along with the SDK.
 But they are targeted to contain all the information regardless the level of experience of the reader.
-So when a programmer wants to start developing applications on the \mbox{Cell/B.E.} he/she would go trough a plenty of that information before he/she can start actual work.
+That means when a programmer wants to start developing applications on the \mbox{Cell/B.E.} he/she would go trough a plenty of that information before he/she can start actual work.
 It is a pity there is total lack of information for PS3 users within SDK documentation.
 This is quite problem when a major part of beginners has a PS3 available.
 There is simply lack of some 'cookbook for beginners' with practical information and some howtos.

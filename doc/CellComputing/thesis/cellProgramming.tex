@@ -60,9 +60,10 @@ One is for PPU and the other for SPU.
 
   \item {Libraries}
   \par
-  IBM provides with the SDK several useful libraries for mathematical purposes e.g. linear algebra, FFT, Monte Carlo.
-Another libraries set is for cryptography or run-time management.
+  IBM provides several useful libraries for mathematical purposes e.g. linear algebra, FFT, Monte Carlo with the SDK.
+Another libraries set is for cryptography or SPE run-time management.
 Code of these libraries is debugged, highly optimized for running on SPEs and SIMDized.
+It is highly advisible to use the libraries i.e. adapt a code for using the libraries instead of programming own solution.\\
 
   \item {Full system simulator}
   \par
@@ -143,7 +144,7 @@ Defines a program entity for the PPE or the SPE.
 It is a HE (Host Element program) for the PPE and an AE (Accelerator Element program) for the SPE.
 It provides variety of services for that programs.
 The services are e.g. resource and process management where an HE manipulates its AEs or group management, for defining groups in which synchronization events like barriers can happen or message passing by using send and receive primitives.
-More information can be found in \cite{performanceToolRef} within "DACS Programmer's Guide and API Reference" document.
+More information can be found in \cite{performanceToolRef} within "DACS Programmer's Guide and API Reference" document.\\\\
 
 \item {Accelerated Library Framework - ALF}
 \par
@@ -153,7 +154,7 @@ They are described by a computational kernel, the input and the output data.
 Programming with the ALF is divided into two sides.
 The host and the accelerator one.
 On the accelerator side the programmer has only to code the computational kernel, unwrap the input data, and pack the output data when the kernel finishes.
-The ALF offers clear separation between host and accelerator sides of program parts.
+The ALF offers clear separation between the host and the accelerator sides of program parts.
 It provides following services: work blocks queue management, load balancing between accelerators, transparent DMA transfers etc.
 More information can be found in \cite{performanceToolRef} within "ALF Programmer's Guide and API Reference" document.
 
@@ -230,7 +231,7 @@ This configuration makes use of the fact that transfer among SPEs is faster than
 This configuration is common approach to use the \mbox{Cell/B.E.}
 A program runs on the PPE (see figure \ref{fg:PPUCentricModel}) and only selected, highly computational intensive parts (hotspots) are offloaded to SPEs.
 This method is the easiest from a program development perspective because it limits the scope of source code changes and does not require much re-engineering at the application logic level.
-A disadvantage is frequent changes of SPE contexts that is quite expensive operation.
+A disadvantage is frequent changes of SPE contexts that is quite expensive operation.\\
 
 \begin{figure}
     \centering
@@ -288,7 +289,7 @@ Common process of application porting for the \mbox{Cell/B.E.} processor (figure
 \item Hotspots localization
 \par
 Through profiling of the application on the PPE we find most compute intensive parts, hotspots.
-How to profile the application see chapter 5 of \cite{programmersGuide}.
+How to profile the application see chapter 5 of \cite{programmersGuide}.\\
 
 \item Hotspot porting for SPE
 \par
@@ -312,7 +313,7 @@ More detail in \cite{writingPerfApps}, part 4:
 Data that resides within central memory and are processed by the SPE should be copied into local store before actual computation.
 When there are more of the places for the data (buffers) the program can take advantage from asynchronous DMA transfer and can process current buffer while the next data are being transferred into another buffer.
 Then the buffers are simply swapped and the SPU need not to wait until the transfer of next data is complete.
-See the figure in the paragraph named "Hiding data-access latencies" in \cite{compilerOptions} for illustration.
+See the figure in the paragraph named "Hiding data-access latencies" in \cite{compilerOptions} for illustration.\\
 
 \item{Branch elimination}
 \par

@@ -5,11 +5,11 @@
     \includegraphics[width=0.6\textwidth]{data/png/3d}
     \caption[3D view of segmented skull data set]
 {
-3D View of segmented data set.
+3D View of the segmented data set.
 VTK viewer used to visualize the data set.
-On the left part there is parietal part of the skull.
-This part is quite well segmented as illustrate Figure \ref{fg:parietalSlicesSegmentation}
-The segmentation of the front skull part (on the right side) is poor due to leaking through eye sockets (see Figure \ref{fg:frontSlicesSegmentation}).
+On the left part there is the parietal part of the skull.
+This part is quite well segmented as illustrate the figure \ref{fg:parietalSlicesSegmentation}
+The segmentation of the front skull part (on the right side) is poor due to leaking through the eye sockets (see the figure \ref{fg:frontSlicesSegmentation}).
 }
     \label{fg:series3d}
 \end{figure}
@@ -21,10 +21,10 @@ The segmentation of the front skull part (on the right side) is poor due to leak
     \includegraphics[width=0.95\textwidth]{data/png/7}
     \caption[Result of segmentation of parietal part of a skull]
 {
-Here is illustration of segmentation of the parental part of a skull.
+Here is an illustration of the parental part of a skull segmentation.
 Cavities that should be segmented are small enough to let the level set reach all the edges.
-The segmentation has not completely leaked through the holes on both sides due to curvature term.
-But if the holes were wider there would be leaking similar to the ones showed on following figures.
+The segmentation has not completely leaked through the holes on both sides due to the curvature term.
+But if the holes were wider there would be leakings similar to the ones showed on the following figures.
 }
     \label{fg:parietalSlicesSegmentation}
 \end{figure}
@@ -36,9 +36,9 @@ But if the holes were wider there would be leaking similar to the ones showed on
     \includegraphics[width=0.95\textwidth]{data/png/18}
     \caption[Result of segmentation middle slices of the skull data set]
 {
-This image set shows segmentation of middle slices of the skull data set.
+This image set shows middle slices of the skull data set segmentation.
 Some edges are reached by the level set (on the right side of the skull mostly) while some are not.
-This is caused by insufficient of algorithm iterations (500) or improper initial level set placement.
+This is caused by insufficient count of algorithm iterations (500) or improper initial level set placement.
 It proves that result is highly initial parameters setting sensitive.
 }
     \label{fg:middleSlicesSegmentation}
@@ -60,7 +60,7 @@ These three images illustrate the leaking of level set through throat hole, cavi
     \centering
     \includegraphics[width=0.95\textwidth]{data/png/29}
     \caption[Result of segmentation of slices near nose]{
-This slice is really poorly segmented due the leaking of level set through previous slices (see Figure \ref{fg:frontSlicesSegmentation}).
+This slice is really poorly segmented due the leaking of the level set through the previous slices (see the figure \ref{fg:frontSlicesSegmentation}).
 }
     \label{fg:noseSlicesSegmentation}
 \end{figure}
@@ -69,7 +69,7 @@ This slice is really poorly segmented due the leaking of level set through previ
     \centering
     \includegraphics[width=0.95\textwidth]{data/png/merged}
     \caption[3d blending of original and segmentationed images]{
-Original skull data set was blended (the red background) with result of segmentation (the bluegreen overlay).
+The original skull data set was blended (the red background) with the result of segmentation (the bluegreen overlay).
 }
     \label{fg:merged}
 \end{figure}
