@@ -1,33 +1,34 @@
 \chapter{Image segmentation}
 
-Image segmentation will be described in this chapter as well as several basic segmentation techniques will be listed.
+Image segmentation will be described in this chapter as well as several basic segmentation techniques.
 Subsequently level set techniques will be introduced, defined and explained in more detail.
 Then level set computation issues will be described along with mentioning of two basic speed-up approaches.
 After that level set method relation to image segmentation will be mentioned.
-After all some features of level set computation on streaming architectures will be listed along with comparison to the \mbox{Cell/B.E.} features.
+After all some features of the level set computation on streaming architectures will be listed along with comparison to the \mbox{Cell/B.E.} features.
 
 \section{Problem formulation}
-Image segmentation is process when pixels of input image are split into several subsets, segments, based on their characteristics or computed properties, such as colour, intensity, or texture.
-Pixels in such segments have similar features and compose an object in the image.
+Image segmentation is process when pixels of an input image are split into several subsets, segments, based on their characteristics or computed properties, such as colour, intensity, or texture.
+The pixels in such segments have similar features and compose an object in the image.
 
-In more formal way it is a function that assign a segment to pixel:
+In more formal way it is a function that assign a segment to a pixel:
 \begin{equation}
 S: S(p) = k
 \end{equation}
-where $p \in$ pixels of an image and $k \in$ set of segments.
+where $p \in$ pixels of the image and $k \in$ set of segments.
 
 Image segmentation is used in many domains such as medicine (locating organs, tumors, bones, etc.), satellite images classification for maps (location buildings, roads, etc.), machine vision (fingerprint recognition, face, eyes, or other features recognition).
 Other example of image processing application can be a simple tool as the well known "magic-stick" tool in popular graphics editing software like Photoshop.
 
+\par
 Although there were some attempts to find general-purpose segmentation solution, results were not satisfactory.
-So there is not yet such general solution.
+So there is not yet a general solution.
 Each domain needs extra approach how to perform the segmentation.
-Some of them are not even fully automatic so they need assistance of operator.
+Some of them are not even fully automatic so they need assistance of an operator.
 They are called semi-autonomous approaches.
 These methods need an operator who inputs some region and thus gives a hint to the algorithm.
-This is favourite approach in segmentation of structures on medical images like organs, tumors, vessels, etc.
+This is favourite approach in segmentation of structures in medical images like organs, tumors, vessels, etc.
 A physician then plays the role of the operator because of his knowledge of images' content.
-Some are autonomous but needs some apriory knowledge of segmented object properties.
+Some methods are autonomous but need some apriory knowledge of the segmented object properties.
 
 \section{Image segmentation methods overview}
 
@@ -45,10 +46,10 @@ Then these two steps are repeated until some convergence condition is met e.g. n
 
   \item Histogram-based
 
-  At first, histogram is computed from pixels of the image.
+  Firstly a histogram is computed from pixels of the image.
 Then peaks and valleys in the histogram creates the segments in the image.
 Result can be refined by recursively repeating the process.
-Recursion is stopped when no more new segments appear.
+The recursion is stopped when no more new segments appear.
 
   \item Edge detection
 
@@ -57,28 +58,29 @@ Therefore core of such methods is an edge-detection algorithm such as Canny, Sob
 
   \item Region growing
 
-  This set of methods are very similar to flood-fill algorithm.
+  This set of methods are very similar to the flood-fill algorithm.
 It takes a set of seed points and a segmented image.
 Each seed point is something like pointer to segmented object on the image.
-Seed points forms initial set of segments.
-Then iteration through the neighbouring pixels of a segment is performed.
-In every step of that iteration a neighbour pixel is compared with region i.e. similarity function is calculated.
-If the pixel is considered similar enough it is added to the region.
+Seed points form an initial set of segments.
+Then iteration through the neighbouring pixels of the segments is performed.
+In every step of that iteration a neighbour pixels of a segment is compared with the segment i.e. similarity function is calculated.
+If the pixel is considered similar enough it is added to the segment.
 Method is highly noise-sensitive.
 The initial seeds can be misplaced due to the noise.
-So there is another algorithm that is seedless.
-It starts with a single pixel that is initial region.
-Its location does not significantly influence final result.
-Then the iteration over neighbouring pixels are taken just as in seeded growing.
+Therefore there is another algorithm that is seedless.
+It starts with a single pixel that is an initial region.
+Its location does not significantly influence the final result.
+Then the iteration over the neighbouring pixels are taken just as in seeded growing.
 If a neighbour is different enough new segment is created.
 A threshold value is used as similarity measurement but particular approaches differs in definition of the similarity function.
-While one group uses pixel's properties like intensity or colour directly, another computes some statistical test and the candidate pixel is processed according the test was accepted or rejected.
+While one group uses pixel's properties like intensity or colour directly another computes some statistical test from the properties and the candidate pixel is processed according the test is accepted or rejected.
 
   \item Graph partitioning
 
 This approach converts an image into a graph.
-Pixels correspond to the vertices.
-There is edge between every pair of pixels and edges are weighted with similarity function of the two connected pixels.
+The pixels correspond to the vertices.
+There is edge between every pair of the pixels.
+Edges are weighted with similarity function of the two connected pixels.
 Then a graph algorithm that cuts off edges is run partitioning the graph resp. image.
 Popular algorithms of this category are the random walker, minimum mean cut, minimum spanning tree-based algorithm, normalized cut, etc.
 
@@ -98,30 +100,30 @@ Searching for such model contains steps like: registration of the training examp
   \item Level set
 
 \par
-Is method that uses mathematical model of the segmented object.
+It is a method that uses a mathematical model of the segmented object.
 It is represented by a level set function.
-Segmentation is performed by deformation of initial isoline (for 2D case), hyperplane of level set function, with forces that are computed from segmented image.
+Segmentation is performed by deformation of an initial isoline (for 2D case), hyperplane of the level set function, with forces that are computed from the segmented image.
 
 \par
-Whole process can be illustrated in very similar way to flood-filling, see the figure \ref{fg:flooding}.
-Initial isoline is deformed with forces that has direction of isoline normal.
-For 2D case initial isoline can be e.g. a simple circle as a hyperplane of a distance function from given point.
-When it approaches object borders propagation slows down.
-On the object borders propagation stops because forces are zero there.
+Whole process can be illustrated in very similar way to the flood-filling, see the figure \ref{fg:flooding}.
+The initial isoline is deformed with forces that has direction of an isoline normal.
+For 2D case the initial isoline can be e.g. a simple circle as a hyperplane of a distance function from a given point.
+When it approaches object borders the propagation slows down.
+On the object borders the propagation stops because the forces are zero there.
 
 \begin{figure}
     \centering
     \includegraphics[width=12cm]{data/flooding}
-    \caption[Flooding an object]{Initial shape, the circle, grows and floods the object on the background.
+    \caption[Flooding an object]{An initial shape, the circle, grows and floods the object on the background.
 In contrast to common flood-fill approach, level set method has several parameters that can e.g. prevent flooding beyond the object borders through small holes.}
     \label{fg:flooding}
 \end{figure}
 
 \par
-Another illustration uses landscape with a lake.
-Water is always at a constant altitude and the surface of a landscape changes in time.
-With the changes of the landscape shoreline of the lake changes as well.
-Landscape represents the level set function and water surface represent the surface i.e. $k$-level set.
+Another illustration uses a landscape with a lake.
+Water is always at a constant altitude and the surface of the landscape changes in time.
+With the changes of the landscape the shoreline of the lake changes as well.
+The landscape represents the level set function and the water surface represent the isoline i.e. $k$-level set.
 
 \par
 Advantages of the level set method are lack of special treatment of merging and splitting surfaces necessity, few intuitive parameters, ability of topology changing.
@@ -136,31 +138,31 @@ Level set method as proposed by Osher and Sethian \cite{sethianLS} provides nume
 \subsection{Level set theory}
 
 Information in this and following paragraphs are based on \cite{insightIntoImages} and definitions will be for 2D case.
-level set function is a signed scalar distance function
+The level set function is a signed scalar distance function
 \begin{equation}
 \phi : U_{x,y} \rightarrow \mathbb R,
 \end{equation}
 where $U \subset R^2$ is the domain of the function.
 $\phi$ is called embedding and is implicit representation of the segmented object.
-Isoline is then subset of the level set function values, hyperplane
+Isoline is then a subset of the level set function values, a hyperplane
 \begin{equation}
 S = \{\vec{x}\mid \phi(\vec{x}) = k\}
 \end{equation}
-Symbol $S$ represents a $k$-isoline or $k$-level set of $\phi$.
-Variable $k$ can be chosen freely, but in most cases it is zero.
-Isoline is then called zero isoline, zero level set or dimension insensitively front (will be used further).
+The symbol $S$ represents a $k$-isoline or $k$-level set of $\phi$.
+The variable $k$ can be chosen freely, but in most cases it is zero.
+The isoline is then called zero isoline, zero level set or dimension insensitively front (will be used further).
 
 \par
 Deformation of the front is then described by an evolution equation.
-One approach, dynamic, uses one-parameter family of $\phi$ i.e. $\phi(\vec{x},t)$ changes over time, $\vec{x}$ remains on the $k$-level set of $\phi$ as it moves and $k$ remains constant.
+One approach, dynamic, uses one-parameter family of $\phi$ function i.e. $\phi(\vec{x},t)$ changes over time, $\vec{x}$ remains on the $k$-level set of $\phi$ as it moves and $k$ remains constant.
 Resulting equation is
 \begin{equation}
 \label{deformEq}
 \phi(\vec{x}(t),t) = k \Rightarrow \frac{\delta \phi}{\delta t} = - \Delta \phi
 \cdot \vec{v}.
 \end{equation}
-Where $v$ represents movement of point $x$ on deforming front i.e. positions in time.
-All front movements depend on forces that are based on level set geometry which can be expressed in terms of differential structure of $\phi$.
+Where $v$ represents movement of a point $x$ on the deforming front i.e. positions in time.
+All front movements depend on forces that are based on level set geometry which can be expressed in terms of the differential structure of $\phi$.
 So following version of equation \ref{deformEq} link formulated:
 \begin{equation}
 \frac{\delta\phi}{\delta t} = - \Delta \phi \cdot \vec{v} = - \Delta \phi
@@ -168,26 +170,25 @@ So following version of equation \ref{deformEq} link formulated:
 \end{equation}
 where $D^n\phi$ is the set of $n$-order derivatives of $\phi$ evaluated at $\vec{x}$.
 The term $F(\vec{x}, D\phi, D^2\phi, ...)$ represents the force that influence the movement of a surface point.
-This equation can apply to every values of k i.e. every level set of function $\phi$ and is basic equation of level set method.
+This equation can apply to every values of $k$ i.e. every level set of function $\phi$ and is basic equation of level set method.
 
 \subsection{Level set computation}
 
-Computation of surface deformation has to be discretized which means it is performed on discretized space i.e. grid.
-Equation converts the problem to solving non-linear PDE.
+Computation of surface deformations has to be discretized which means it is performed on discretized space i.e. grid.
 Front propagation is then computed from initial model in cycles representing discrete time steps using this update equation:
 \begin{equation}
 \label{deformEqApprox}
 \phi_{i,j}^{n+1} = \phi_{i,j}^{n} + \Delta t \Delta \phi_{i,j}^{n},
 \end{equation}
-where the term $\phi_{i,j}^{n}$ is discrete approximation of $\frac{\delta\phi}{\delta t}$ referring to the $n$-th time step at discrete position $i$,$j$ which has a counter part in a continuous domain $\phi(x_i, y_j)$.
-$\Delta t \Delta \phi_{i,j}^{n}$ is finite forward difference term representing approximation of the forces influencing the level set, the update term.
+where the term $\phi_{i,j}^{n}$ is discrete approximation of $\frac{\delta\phi}{\delta t}$ referring to the $n$-th time step at a discrete position $i$,$j$ which has a counter part in continuous domain $\phi(x_i, y_j)$.
+$\Delta t \Delta \phi_{i,j}^{n}$ is a finite forward difference term representing approximation of the forces influencing the level set, the update term.
 The solution is then succession of steps where new solution is obtained as current solution plus update term.
 
 \par
 Discretization of the level set solution brings two problems.
 Fist one is need of stable and accurate numeric scheme for solving PDEs.
-This is solved by 'upwind scheme' proposed by Osher and Sethian \cite{sethianLS}.
-The second one is high computational complexity caused by conversion surface problem into volume problem which is one dimension higher.
+This is solved by the 'upwind scheme' proposed by Osher and Sethian \cite{sethianLS}.
+The second one is high computational complexity caused by conversion problem one dimension higher.
 Straightforward implementation via $d$-dimensional array of values, results in both time and storage complexity of $O(n^d)$, where $n$ is the cross sectional resolution and $d$ is the dimension of the image.
 In case of pictures with size about $512^3$ voxels the level set computation takes very long time.
 
@@ -202,7 +203,8 @@ Beside the most known and used Narrow Bands and Sparse Fields there is an octree
 \par
 Narrow Band, proposed by Adalsteinsson and Sethian \cite{sethianFastLS}, computes embedding only within narrow band, tube.
 Remaining points are set constant to indicate that they are not in the tube.
-When level set reach the border of the tube, new tube has to be recalculated based on current level set and new run of embedding computations are performed on this new tube until involving level set reaches tube borders.
+When level set reach the border of the tube, a new tube has to be calculated based on current level set.
+Then new run of computations are performed on this new tube until involving level set reaches tube borders again or the computation is stopped.
 
 \begin{figure}
     \centering
@@ -213,13 +215,13 @@ When level set reach the border of the tube, new tube has to be recalculated bas
 
 \par
 Sparse Fields method, proposed by Whitaker \cite{sparseFilelds}, introduces a scheme in which updates of an embedding are calculated only on the level set.
-This means that it performs exactly the number of calculations that is needed to calculate next position of the level set.
+This means that it performs exactly the number of calculations that is needed to calculate the next position of the level set.
 This is the biggest advantage of the method.
 
 \par
-Points that are adjacent to the level set are called active points and they form active set.
+Points that are adjacent to the level set are called active points and they form an active set.
 Because active points are adjacent to the level set, their positions must lie within certain range from the level set.
-Therefore values of an embedding in active set positions must lie on certain range, the active range.
+Therefore the values of an embedding in active set positions must lie on certain range, the active range.
 
 \par
 When active point value move out from the active range, it is no longer the active point and is removed from the active set.
@@ -240,7 +242,7 @@ Process of front propagation can be imagined as a tram that lays down tracks bef
 Algorithm (from \cite{insightIntoImages}):\\
 \label{alg:sparseFileld}
 \emph{layer, $L_i$} - set of points that are close to the level set. $i$ is order of a layer, negative for inner layers, positive for outer ones. 
-Zero is for active set layer. See the figure\ref{fg:sparseFilelds}\\
+Zero is for the active set layer. See the figure\ref{fg:sparseFilelds}\\
 \emph{statuslist, $S_{i}$} - list of points within $i$-th layer that are changing status
 
 \par
@@ -248,7 +250,7 @@ DO WHILE (stop condition is met):
 \par
 1) FOREACH (point $\in$ active set, the zero layer (ZL)\\
   a) compute level set geometry $(\vec x)$\\
-  b) compute change using upwind scheme in point $(\vec x)$
+  b) compute change using the upwind scheme in point $(\vec x)$
 \par
 2) FOREACH (point $\in$ active set compute new embedding value $\phi_{i,j,k}^{n+1}$, which means computing \ref{deformEqApprox}.\\
 Decide if it falls into [-$\frac{1}{2}$,$\frac{1}{2}$] interval.
@@ -264,15 +266,15 @@ Or in the case of $i=\pm (N + 1)$, remove it from all layers.\\
   b) Add all $L_{i\pm1}$ neighbours to the $S_{\pm1}$ list.
 
 \par
-Stop condition is specified by maximal count of iterations.
-Another stopping criterion is based on a measurement of front movement.
-When front does not move anymore, calcultation is stopped before maximal count of iterations is reached.
+The stop condition is specified by maximal count of iterations.
+Another stopping criterion is based on a measurement of the front movement.
+When the front does not move anymore, calcultation is stopped before maximal count of iterations is reached.
 
 \subsection{Level set image segmentation}
 
-Image segmentation using level set method is performed based on a speed function that is calculated from input image and that encourages the model to grow into direction where the object lies.
-There is variety of speed functions.
-In this work I use speed function based on a threshold $T_{low}$ and $T_{hi}$ of the intensities from the input image.
+Image segmentation using a level set method is performed based on a speed function that is calculated from the input image and that encourages the model to grow into directions where the segmented object lies.
+There is variety of the speed functions.
+In this work we used speed function based on a threshold $T_{low}$ and $T_{hi}$ of the intensities if pixels from the input image.
 If a pixel has intensity value that is within the threshold interval the level set model grows, see the figure \ref{fg:speedFunction}.
 Otherwise it contracts as fast as the pixel has value further from the interval.
 The function $D$ is defined as:
@@ -292,13 +294,13 @@ where $V(\vec{x})$ is pixel value in point $\vec{x}$ and $T_{mid}$ is the middle
     \caption[Graph of thresholding based speed function]
     {
       Gray rectangle encloses interval where the speed function is positive, i.e. the model expands.
-      The fastest expansion is in $T_{mid}$ point
+      The fastest expansion is in the $T_{mid}$ point
     }
     \label{fg:speedFunction}
 \end{figure}
 
-This is quite natural definition of what we need from the process.
-Grow as fast as possible where the segmented object lies and contract otherwise.
+\par
+This is quite natural definition of what we need from the process i.e. grow as fast as possible where the segmented object lies and contract otherwise.
 
 The update term from equation \ref{deformEqApprox} can be rewritten into following form that consist of few terms:
 \begin{equation}
@@ -311,8 +313,8 @@ where $|\bigtriangledown \phi|D$ represents speed function term, $\bigtriangledo
 Edge term is computed from second order derivatives just like Canny and Marr-Hildreth algorithms for edge detection.
 It shall to push level set towards edges, i.e. border of segmented object.
 
-Curvature forces resulting level set model to have less surface area and thus protect negative effects like leaking into unwanted places shown in the figure \ref{fg:leaking} shows.
-Note: if $\alpha$ = $\beta$ = 0, the result is the same as from flood-fill method because there is only speed term taking place.
+Curvature forces the resulting level set model to have less surface area and thus protect negative effects like leaking into unwanted places shown in the figure \ref{fg:leaking}.
+Note: if $\alpha$ = $\beta$ = 0, the result is the same as flood-fill method result because there is only the speed term taking place in the calculations.
 
 \begin{figure}
     \centering
@@ -327,13 +329,13 @@ Note: if $\alpha$ = $\beta$ = 0, the result is the same as from flood-fill metho
     \label{fg:leaking}
 \end{figure}
 
-We omitted the edge term so there are only two parameters of the our method.
-Tuning of the term weights has to be performed in order to have best results.
+We omitted the edge term so there are only two parameters in our method.
+Tuning of the term weights has to be performed in order to have the best results.
 
 \subsection{Level set methods on streaming architectures}
 
 \par
-There was some attempts for porting level set method onto special stream device.
+There were some attempts for porting level set method onto special stream device.
 There are some obstacles due to streaming architecture that has to be overcomed to efficiently solve the problem.
 Firstly the streams of data must be large, contiguous blocks in order to take advantage of streaming architecture.
 Thus the points in discrete grid near the level-set surface must be packed into data blocks that can be further processed by streaming processors.
@@ -343,15 +345,15 @@ Another difficulty is that the level set moves with each time step, and thus the
 For example Cates at al. \cite{GIST} or Lefohn at al. \cite{lefonhGPUSolver} ported level set segmentation method to GPU.
 GPU is a streaming architecture with many, nowadays hundreds, of streaming cores.
 They run short programs called shaders.
-In porting to GPU architecture texture memory is used to store input data in large continuous block.
-Actual computation is then managed by vertices that flows into the shader and plays role of some pointers to texture memory.
-This is some kind of trick because the texture memory is not addressed directly by address number like in single dimension continuous address space in common processors but instead by a 2D coordinate to texture.
+In porting to GPU architecture a texture memory is used to store input data in a large continuous block.
+Actual computation is then managed by vertices that flow into the shader and play a role of pointers to the texture memory.
+This is some kind of trick because the texture memory is not addressed directly by address number like in single dimension continuous address space in common processors but instead by a 2D coordinate vector.
 Because vertices comes as 3D points, virtual memory system that map 3D vertices to 2D texture coordinates has to be created.
-Such system propose Lefonh at al. \cite{lefonhGPUSolver}. See the figure \ref{fg:virtual memory on GPU}.
+Such system proposed Lefonh at al. \cite{lefonhGPUSolver}. See the figure \ref{fg:virtual memory on GPU}.
 
 \par
-Another workaround has to be performed when computed data is transferred back to CPU.
-This direction is much slower than CPU to GPU direction and thus the results has to be packed somehow.
+Another workaround has to be performed when computed data is transferred back to the CPU.
+This direction is much slower than the CPU to GPU direction and thus the results has to be somehow packed.
 Lefonh at al. \cite{lefonhGPUSolver} describes this packaging as well.
 There are although some advantages.
 One is the high count of the processors and extreme fast dedicated memory so the results can be impressive.
@@ -365,7 +367,7 @@ Another is that the calculation can be directly visualized by the GPU.
 \end{figure}
 
 \par
-Although the \mbox{Cell/B.E.} has some parts of the approach in common with GPU it need not to overcome some GPU obstacles.
+Although the \mbox{Cell/B.E.} has some parts of the approach in common with GPU it need not to overcome the GPU obstacles.
 For instance no virtual memory system need to be implemented because the SPE has its own flat address space by default.
 Also the result packing for sending back to CPU is not necessary because transmission of data from and to SPE has the same speed and can be performed directly.
 All these \mbox{Cell/B.E.} processor features could result easier and more straightforward process of porting of level set method.
