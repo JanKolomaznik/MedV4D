@@ -1,0 +1,44 @@
+FIND_PACKAGE(Boost REQUIRED COMPONENTS filesystem system thread)
+FIND_PACKAGE(OpenGL REQUIRED)
+
+
+IF( ${WIN32} )
+	SET( WIN32_USE_PREPARED_PACKAGES TRUE )
+ENDIF( ${WIN32} )
+
+IF( WIN32_USE_PREPARED_PACKAGES )
+	#FIND_PACKAGE(Qt4 REQUIRED)
+	#FIND_PACKAGE(Qt4 REQUIRED COMPONENTS QtCore QtGui)
+	get_filename_component(QT_MOC_EXECUTABLE ${CMAKE_SOURCE_DIR}/../bin/qt/moc.exe ABSOLUTE)
+	get_filename_component(QT_UIC_EXECUTABLE ${CMAKE_SOURCE_DIR}/../bin/qt/uic.exe ABSOLUTE)
+	get_filename_component(QT_RCC_EXECUTABLE ${CMAKE_SOURCE_DIR}/../bin/qt/rcc.exe ABSOLUTE)
+	get_filename_component(QT_QMAKE_EXECUTABLE ${CMAKE_SOURCE_DIR}/../bin/qt/qmake.exe ABSOLUTE)
+	SET(QT_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/../include/qt/headers")
+	SET(QT_QT_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/../include/qt/headers")
+	SET(QT_QTCORE_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/../include/qt/headers/QtCore")
+	SET(QT_QTGUI_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/../include/qt/headers/QtGui")
+	SET(QT_QTOPENGL_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/../include/qt/headers/QtOpenGL")
+	FILE( GLOB QT_LIBRARIES ../lib/qt/* )
+	#SET(QT_LIBRARIES ../lib/qt/QtOpenGLd.lib 
+	#                ../lib/qt/QtGuid.lib
+	#                ../lib/qt/QtCored.lib)
+	
+	FIND_PACKAGE(Qt4 REQUIRED)
+
+	SET(VTK_LIBRARY_DIRS "${CMAKE_SOURCE_DIR}/../lib/vtk")
+	SET(VTK_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/../include/vtk")
+
+	SET(DCMTK_LIBRARY_DIRS "${CMAKE_SOURCE_DIR}/../lib/dcmtkLibs")
+	SET(DCMTK_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/../include/dcmtk")
+
+	SET( DCMTK_OPTIONS "" )
+ELSE( WIN32_USE_PREPARED_PACKAGES )
+
+	FIND_PACKAGE(Qt4 REQUIRED)
+	FIND_PACKAGE(VTK REQUIRED)
+	FIND_PACKAGE(DCMTK REQUIRED)
+	SET( DCMTK_OPTIONS "HAVE_CONFIG_H" )
+ENDIF( WIN32_USE_PREPARED_PACKAGES )
+
+SET(QT_USE_QTOPENGL 1)
+

@@ -221,7 +221,7 @@ DicomAssociation::DicomAssociation( string assocAddrID)
 void
 DicomAssociation::Request( T_ASC_Network *net) 
 {
-#ifdef _DEBUG
+#ifdef DEBUG_LEVEL
   // dump presentation contexts if required
   D_PRINT("Request Parameters");
   ASC_dumpParameters(m_assocParams, DOUT);

@@ -1,0 +1,23 @@
+#MedV4D Project "solution"
+
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+PROJECT(MEDV4D)
+
+SET(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/../lib)
+SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/../executables)
+SET(CMAKE_DEBUG_POSTFIX, "d") 
+
+INCLUDE( "FindPackages.cmake" )
+
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/.. ${CMAKE_SOURCE_DIR}/../include 
+	/usr/local/include ${DCMTK_INCLUDE_DIR} ${VTK_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} )
+LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/../lib /usr/local/lib ${DCMTK_LIBRARIES})
+
+
+INCLUDE(${QT_USE_FILE})
+
+INCLUDE( "Functions.cmake" )
+
+
+INCLUDE( "SourcesManagement.cmake" )
+message("---------------- ${CMAKE_BINARY_DIR}" )
