@@ -6,7 +6,7 @@
 #include "common/Common.h"
 
 
-const float32 Epsilon = 1.0E-10;
+const float32 Epsilon = 1.0E-10f;
 const float32 PI = 3.141592f;
 const float32 PIx2 = PI*2;
 const float32 PIx3 = PI*3;

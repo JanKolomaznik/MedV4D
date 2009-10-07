@@ -197,7 +197,7 @@ MainExecutionThread::operator()()
 		D_PRINT( "++++++ " << _filter->GetName() << " - MarkChanges()" );
 		_filter->MarkChanges( _updateType );
 	} 
-	catch( ErrorHandling::ExceptionBase &e ) {
+	catch( ErrorHandling::ExceptionBase & ) {
 		D_PRINT( "------ " << _filter->GetName() << " - EXCEPTION OCCURED : " << e );
 		_filter->_outputPorts.SendMessage( 
 			MsgFilterExecutionCanceled::CreateMsg(), PipelineMessage::MSS_NORMAL );

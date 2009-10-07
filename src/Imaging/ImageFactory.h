@@ -419,17 +419,17 @@ public:
 class ImageFactory::EUnknowDataType
 {
 public:
-	EUnknowDataType( uint8 size, bool sign ): _size( size ), _sign( sign ) {}
+	EUnknowDataType( unsigned size, bool sign ): _size( size ), _sign( sign ) {}
 
-	uint8
+	unsigned
 	GetSize()const 
 		{ return _size; }
-	uint8
+	bool
 	GetSign()const 
 		{ return _sign; }
 private:
-	uint8 _size;
-	bool _sign;
+	unsigned	_size;
+	bool		_sign;
 };
 
 class ImageFactory::EWrongDICOMObjIndex

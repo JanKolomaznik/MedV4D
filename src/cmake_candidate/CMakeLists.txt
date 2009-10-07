@@ -20,4 +20,3 @@ INCLUDE( "Functions.cmake" )
 
 
 INCLUDE( "SourcesManagement.cmake" )
-message("---------------- ${CMAKE_BINARY_DIR}" )

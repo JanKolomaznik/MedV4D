@@ -187,7 +187,7 @@ void m4dGUIMainWindow::addSource ( ConnectionInterface *conn,
                                    const char *pipelineDescription, const char *connectionDescription,
                                    m4dGUIViewerEventHandlerInterface *viewerEventHandler )
 {
-  for ( unsigned i = 1; i < mainDesktopStackedWidget->count(); i++ ) 
+  for ( int i = 1; i < mainDesktopStackedWidget->count(); i++ ) 
   {
     m4dGUIMainViewerDesktopWidget *desktop = (m4dGUIMainViewerDesktopWidget *)mainDesktopStackedWidget->widget( i );
     desktop->addSource( conn, viewerEventHandler );

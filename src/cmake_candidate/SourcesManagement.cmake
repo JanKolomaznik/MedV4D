@@ -33,7 +33,7 @@ SOURCE_GROUP( backendForDICOM_Headers FILES ${backendForDICOMHeader_files} )
 SOURCE_GROUP( backendForDICOM_Sources FILES ${backendForDICOMSrc} )
 
 ADD_LIBRARY(backendForDICOM ${backendForDICOMSrc} ${backendForDICOMHeader_files})
-ADD_DEPENDENCIES(backendForDICOM Common Imaging)
+ADD_DEPENDENCIES(backendForDICOM Common Imaging )
 #--------------------------------------------------------
 #       vtkIntegration
 AUX_SOURCE_DIRECTORY(../vtkIntegration/src vtkIntegrationSrc )
@@ -58,7 +58,7 @@ FILE( GLOB GUI_header_files ../GUI/widgets/*.h ../GUI/widgets/components/*.h )
 FILTER_HEADERS_FOR_MOC( "${GUI_header_files}" mocinput )
 
 QT4_WRAP_CPP(mocoutput ${mocinput})
-QT4_ADD_RESOURCES(rccoutput ${rccinput})
+QT4_ADD_RESOURCES(rccoutput ${rccinput} ) #OPTIONS --root ../tmp
 
 SOURCE_GROUP( GUI_Sources FILES ${WidgetsSrc} ${WidgetsOglSrc} ${WidgetsUtilsSrc} ${WidgetsComponentsSrc} )
 SOURCE_GROUP( GUI_Resources FILES  ${rccinput} )
