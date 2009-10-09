@@ -52,6 +52,7 @@ endif
 # path to VTK libraries & includes
 VTKLibsDir=	-L$(srcTop)/lib/3rdParty/Debug/VTK.5.0.i686
 VTKIncludeDir=	-I/usr/include/vtk\
+		-I/usr/include/vtk-5.0\
 		-I/usr/local/include/vtk-5.0
 
 ITKIncludeDir=$(srcTop)/include/3rdParty/ITK.noarch

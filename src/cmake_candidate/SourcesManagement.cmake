@@ -23,10 +23,6 @@ ADD_DEPENDENCIES(Imaging Common)
 #--------------------------------------------------------
 #       backendForDICOM
 AUX_SOURCE_DIRECTORY(../backendForDICOM/src backendForDICOMSrc )
-IF( ${DCMTK_OPTIONS} )
-	SET_TARGET_PROPERTIES( backendForDICOM PROPERTIES COMPILE_DEFINITIONS ${DCMTK_OPTIONS} )
-	#SET_TARGET_PROPERTIES( backendForDICOM PROPERTIES COMPILE_DEFINITIONS "HAVE_SSTREAM" )
-ENDIF( ${DCMTK_OPTIONS} )
 
 FILE( GLOB backendForDICOMHeader_files ../backendForDICOM/*.h ../backendForDICOM/*tcc )
 SOURCE_GROUP( backendForDICOM_Headers FILES ${backendForDICOMHeader_files} )
@@ -34,6 +30,11 @@ SOURCE_GROUP( backendForDICOM_Sources FILES ${backendForDICOMSrc} )
 
 ADD_LIBRARY(backendForDICOM ${backendForDICOMSrc} ${backendForDICOMHeader_files})
 ADD_DEPENDENCIES(backendForDICOM Common Imaging )
+
+IF( DCMTK_OPTIONS )
+	SET_TARGET_PROPERTIES( backendForDICOM PROPERTIES COMPILE_DEFINITIONS ${DCMTK_OPTIONS} )
+	#SET_TARGET_PROPERTIES( backendForDICOM PROPERTIES COMPILE_DEFINITIONS "HAVE_SSTREAM" )
+ENDIF( DCMTK_OPTIONS )
 #--------------------------------------------------------
 #       vtkIntegration
 AUX_SOURCE_DIRECTORY(../vtkIntegration/src vtkIntegrationSrc )
@@ -51,10 +52,10 @@ ADD_DEPENDENCIES(vtkIntegration Common Imaging)
 AUX_SOURCE_DIRECTORY(../GUI/widgets/src WidgetsSrc )
 AUX_SOURCE_DIRECTORY(../GUI/widgets/ogl/src WidgetsOglSrc )
 AUX_SOURCE_DIRECTORY(../GUI/widgets/utils/src WidgetsUtilsSrc )
-AUX_SOURCE_DIRECTORY(../GUI/widgets/Components/src WidgetsComponentsSrc )
+AUX_SOURCE_DIRECTORY(../GUI/widgets/components/src WidgetsComponentsSrc )
 
 FILE( GLOB rccinput ../GUI/widgets/src/*.qrc )
-FILE( GLOB GUI_header_files ../GUI/widgets/*.h ../GUI/widgets/components/*.h )
+FILE( GLOB GUI_header_files ../GUI/widgets/*.h ../GUI/widgets/components/*.h ../GUI/widgets/utils/*.h )
 FILTER_HEADERS_FOR_MOC( "${GUI_header_files}" mocinput )
 
 QT4_WRAP_CPP(mocoutput ${mocinput})

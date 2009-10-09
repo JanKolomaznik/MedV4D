@@ -392,7 +392,7 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 
 
 	unsigned i = 0;
-	while( 55 > i && i >= 0 ) {
+	while( 25 > i && i >= 0 ) {
 		i = algorithm.Step();
 	}
 }
