@@ -154,13 +154,13 @@ OutputPort::SendMessage(
 bool
 InputPortTyped< AbstractDataSet >::IsConnectionCompatible( ConnectionInterface &conn )
 { 
-	return dynamic_cast< IdealConnectionInterface * >( &conn ); 
+	return dynamic_cast< IdealConnectionInterface * >( &conn ) != NULL; 
 }
 
 bool
 OutputPortTyped< AbstractDataSet >::IsConnectionCompatible( ConnectionInterface &conn )
 { 
-	return dynamic_cast< IdealConnectionInterface * >( &conn ); 
+	return dynamic_cast< IdealConnectionInterface * >( &conn ) != NULL; 
 }
 //******************************************************************************
 template< typename PortPointer >
