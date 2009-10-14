@@ -258,7 +258,6 @@ protected:
 	bool						_wasInitialized;
 
 	int						_actualPole;
-	//SubStates					_state;
 	GDataSet::Ptr					_dataset;
 
 	volatile bool					_readyToStartSegmentation;

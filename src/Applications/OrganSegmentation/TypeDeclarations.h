@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "Imaging/Imaging.h"
+#include "common/Common.h"
 
 typedef M4D::Imaging::AbstractImage::Ptr		AbstractImagePtr;
 typedef M4D::Imaging::Image< int16, 3 >			InputImageType;
@@ -22,11 +23,13 @@ typedef M4D::Imaging::ConnectionTyped< M4D::Imaging::Mask3D >		Mask3DConnectionT
 struct ModelInfo
 {
 	ModelInfo() {}
-	ModelInfo( std::string name, std::string filename ) : modelName( name ), modelFilename( filename )
+	//ModelInfo( std::string name, std::string filename ) : modelName( name ), modelFilename( filename )
+	//	{}
+	ModelInfo( std::string name, Path filename ) : modelName( name ), modelFilename( filename )
 		{}
 
 	std::string	modelName;
-	std::string	modelFilename;
+	Path		modelFilename;
 };
 
 typedef std::vector< ModelInfo >	ModelInfoVector;

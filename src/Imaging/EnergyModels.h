@@ -521,8 +521,8 @@ private:
 		const BFValVector &derivValues = curve.GetLastBasisFunctionDerivationValues();
 		_sampleFrequency = curve.GetLastSampleFrequency();
 		
-		ASSERT( derivValues.size() == _sampleFrequency );
-		ASSERT( values.size() == _sampleFrequency );
+		ASSERT( derivValues.size() == static_cast<unsigned>(_sampleFrequency) );
+		ASSERT( values.size() == static_cast<unsigned>(_sampleFrequency) );
 
 		Q.resize( Degree+1 );
 		for( int i = 0; i <= (int)Degree; ++i ) {

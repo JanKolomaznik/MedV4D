@@ -37,6 +37,10 @@
 #include <iomanip>
 #include <sstream>
 
+#include <boost/filesystem.hpp>
+
+typedef boost::filesystem::path	Path;
+
 #define BINSTREAM_WRITE_MACRO( STREAM, VARIABLE ) \
 	STREAM.write( (char*)&VARIABLE, sizeof(VARIABLE) );
 

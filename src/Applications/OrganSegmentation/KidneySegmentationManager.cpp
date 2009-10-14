@@ -22,14 +22,15 @@ typedef ManagerViewerSpecialState< KidneySegmentationManager >	KidneyViewerSpeci
 void
 LoadModelInfos( ModelInfoVector &_modelInfos )
 {
-	_modelInfos.push_back( ModelInfo( "Left kidney", "KidneyLeft.mdl" ) );
-	_modelInfos.push_back( ModelInfo( "Right kidney", "KidneyRight.mdl" ) );
-	_modelInfos.push_back( ModelInfo( "Right kidney - contrast", "KidneyContrastRight.mdl" ) );
-	_modelInfos.push_back( ModelInfo( "Left kidney - contrast", "KidneyContrastLeft.mdl" ) );
+	Path current = boost::filesystem::current_path<Path>();
+	_modelInfos.push_back( ModelInfo( "Left kidney", current / "KidneyLeft.mdl" ) );
+	_modelInfos.push_back( ModelInfo( "Right kidney", current / "KidneyRight.mdl" ) );
+	_modelInfos.push_back( ModelInfo( "Right kidney - contrast", current / "KidneyContrastRight.mdl" ) );
+	_modelInfos.push_back( ModelInfo( "Left kidney - contrast", current / "KidneyContrastLeft.mdl" ) );
 }
 
 KidneySegmentationManager::KidneySegmentationManager()
-: _wasInitialized( false ), _state( DEFINING_POLE )
+: _state( DEFINING_POLE ), _wasInitialized( false )
 {
 
 	/*_gaussianFilter = new Gaussian();
@@ -314,10 +315,12 @@ KidneySegmentationManager::RunSplineSegmentation()
 {
 	if( _previousModelID != _modelID ) {
 		try {
-			_probModel = CanonicalProbModel::LoadFromFile( _modelInfos[_modelID].modelFilename );
+			//std::cout << boost::filesystem::current_path<Path>() << "\n\n";
+			_probModel = CanonicalProbModel::LoadFromFile( _modelInfos[_modelID].modelFilename.filename() );
 		} catch( ... ) {
-			emit ErrorMessageSignal( "Model loading problem - file not found." );
-			throw;
+			std::string tmp = TO_STRING( "Model loading problem - file not found. \"" << _modelInfos[_modelID].modelFilename << "\"" );
+			emit ErrorMessageSignal( QString( tmp.data() ) );
+			return;//throw;
 		}
 	}
 	_previousModelID = _modelID;
