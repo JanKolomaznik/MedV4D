@@ -2,7 +2,7 @@
 #       COMMON
 AUX_SOURCE_DIRECTORY(${CMAKE_SOURCE_DIR}/../common/src commonSrc )
 
-FILE( GLOB commonHeader_files RELATIVE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/../common/*.h ${CMAKE_SOURCE_DIR}/../common/*tcc )
+FILE( GLOB commonHeader_files ${CMAKE_SOURCE_DIR}/../common/*.h ${CMAKE_SOURCE_DIR}/../common/*tcc )
 
 SOURCE_GROUP( Common_Headers FILES ${commonHeader_files} )
 SOURCE_GROUP( Common_Sources FILES ${commonSrc}  )

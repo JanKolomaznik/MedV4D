@@ -44,5 +44,5 @@ ELSE( WIN32_USE_PREPARED_PACKAGES_VTK )
 	SET( VTK_LIBRARIES ${VTK_Components} )
 ENDIF( WIN32_USE_PREPARED_PACKAGES_VTK )
 
-message( "${VTK_LIBRARIES}" )
-message( "${VTK_USE_FILE}" )
+#message( "${VTK_LIBRARIES}" )
+#message( "${VTK_USE_FILE}" )

@@ -19,10 +19,10 @@ INCLUDE( "FindPackages.cmake" )
 
 
 
-INCLUDE( "SourcesManagement.cmake" )
+#INCLUDE( "SourcesManagement.cmake" )
 
 
-ADD_SUBDIRECTORY(m4dPilot)
-ADD_SUBDIRECTORY(OrganSegmentation)
+ADD_SUBDIRECTORY(Medv4DLibs)
+ADD_SUBDIRECTORY(Applications)
 
 
