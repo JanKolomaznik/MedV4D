@@ -348,6 +348,8 @@ class PortList: public MessageSenderInterface
 {
 
 public:
+	class EWrongPortIndex;
+
 	PortList(): _size( 0 ) {}
 
 
@@ -453,6 +455,13 @@ private:
 	std::vector< OutputPort* >	_ports;
 
 	MessageReceiverInterface	*_msgReceiver;	
+};
+
+class PortList::EWrongPortIndex: public ErrorHandling::EBadIndex
+{
+public:
+	EWrongPortIndex( int32 idx ): ErrorHandling::EBadIndex( "Accessing port in portlist by wrong index", idx )
+	{}
 };
 
 

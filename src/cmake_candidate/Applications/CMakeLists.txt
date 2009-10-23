@@ -1,0 +1,4 @@
+ADD_SUBDIRECTORY(m4dPilot)
+ADD_SUBDIRECTORY(OrganSegmentation)
+
+

@@ -394,10 +394,10 @@ Image< ElementType, Dim >::GetSubRegion(
 
 template< typename ElementType, unsigned Dim >
 typename Image< ElementType, Dim >::SliceRegion
-Image< ElementType, Dim >::GetSlice( int32 slice )const
+Image< ElementType, Dim >::GetSlice( int32 slice, uint32 perpAxis )const
 {
 	SubRegion region = GetRegion();
-	return region.GetSlice( slice );
+	return region.GetSlice( slice, perpAxis );
 }
 
 

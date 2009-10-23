@@ -39,10 +39,9 @@ ENDFUNCTION(INSERT_KEYWORD_BEFORE_EACH_MEMBER)
 
 
 
-MACRO(TARGET_MEDV4D_APPLICATION app_name)
-
-	SET(SRC_DIR ${APPLICATION_DIR}/${app_name})
-	SET(OUTPUT ${app_name})
+FUNCTION(TARGET_MEDV4D_PROGRAM prog_name source_dir )
+	SET(SRC_DIR ${source_dir})
+	SET(OUTPUT ${prog_name})
 	SET( mocinput )
 	SET( mocoutput )
 	SET( rccinput )
@@ -62,9 +61,9 @@ MACRO(TARGET_MEDV4D_APPLICATION app_name)
 	QT4_ADD_RESOURCES(rccoutput ${rccinput} )
 
 
-	SOURCE_GROUP( ${app_name}_Sources FILES ${sources} )
-	SOURCE_GROUP( ${app_name}_Resources FILES  ${rccinput} )
-	SOURCE_GROUP( ${app_name}_Header FILES  ${header_files} )
+	SOURCE_GROUP( ${prog_name}_Sources FILES ${sources} )
+	SOURCE_GROUP( ${prog_name}_Resources FILES  ${rccinput} )
+	SOURCE_GROUP( ${prog_name}_Header FILES  ${header_files} )
 
 	ADD_EXECUTABLE(${OUTPUT} ${sources} ${mocoutput} ${rccoutput})
 	TARGET_LINK_LIBRARIES(${OUTPUT} ${MEDV4D_ALL_LIBRARIES})
@@ -73,5 +72,12 @@ MACRO(TARGET_MEDV4D_APPLICATION app_name)
 	IF( DCMTK_OPTIONS )
 		SET_TARGET_PROPERTIES( ${OUTPUT} PROPERTIES COMPILE_DEFINITIONS ${DCMTK_OPTIONS} )	
 	ENDIF( DCMTK_OPTIONS )
+ENDFUNCTION(TARGET_MEDV4D_PROGRAM prog_name source_dir)
 
+
+
+MACRO(TARGET_MEDV4D_APPLICATION app_name)
+	TARGET_MEDV4D_PROGRAM( ${app_name} ${APPLICATION_DIR}/${app_name} )
 ENDMACRO(TARGET_MEDV4D_APPLICATION app_name)
+
+

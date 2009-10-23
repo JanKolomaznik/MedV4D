@@ -621,6 +621,8 @@ int16 GetNumericTypeID< SimpleVector< Type, Dim> >()
 int16
 GetNTIDFromSizeAndSign( uint16 size, bool sign );
 
+uint32
+GetByteCountFromNTID( int16 ntid );
 
 template< typename NumType, unsigned Dim >
 struct TypeTraits< SimpleVector<NumType, Dim> >

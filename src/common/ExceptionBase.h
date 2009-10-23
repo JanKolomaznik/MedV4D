@@ -4,6 +4,8 @@
 #include <exception>
 #include <ostream>
 #include <string>
+#include "common/StringTools.h"
+#include "common/Types.h"
 
 /**
  *  @ingroup common
@@ -121,9 +123,15 @@ private:
 class EBadIndex: public ExceptionBase
 {
 public:
-	EBadIndex( std::string name ) throw(): ExceptionBase( name ) {}
-	EBadIndex() throw(): ExceptionBase( "Wrong index" ) {}
+	EBadIndex( std::string name) throw(): ExceptionBase( name ), _idx( -1 ) {}
+	EBadIndex( std::string name, int32 idx ) throw(): ExceptionBase( TO_STRING( name << ": " << idx ) ), _idx( idx ) {}
+	EBadIndex() throw(): ExceptionBase( "Wrong index" ), _idx( -1 ) {}
+
+	int32
+	GetIndex() const
+	{ return _idx; }
 private:
+	int32	_idx;
 
 };
 

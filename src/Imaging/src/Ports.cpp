@@ -201,7 +201,8 @@ InputPort &
 InputPortList::GetPort( size_t idx )const
 {
 	if( _ports.size() <= idx ) {
-		_THROW_ ErrorHandling::EBadIndex();
+		//_THROW_ ErrorHandling::EBadIndex();
+		_THROW_ PortList::EWrongPortIndex( idx );
 	}
 	return *_ports[ idx ];
 }
@@ -245,7 +246,8 @@ OutputPort &
 OutputPortList::GetPort( size_t idx )const
 {
 	if( _ports.size() <= idx ) {
-		_THROW_ ErrorHandling::EBadIndex();
+		//_THROW_ ErrorHandling::EBadIndex();
+		_THROW_ PortList::EWrongPortIndex( idx );
 	}
 	return *_ports[ idx ];
 }

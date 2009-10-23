@@ -18,10 +18,20 @@ namespace Imaging
 {
 
 
+class AImageRegion
+{
+public:
+	virtual ~AImageRegion() {}
 
+	virtual uint32 
+	GetDimension()const = 0;
+
+	virtual int16 
+	GetElementTypeID()const = 0;
+};
 
 template< typename EType, uint32 Dim >
-class ImageRegion
+class ImageRegion: public AImageRegion
 {
 public:
 	static const uint32 Dimension = Dim;
@@ -209,31 +219,46 @@ public:
 
 
 	ImageRegion< ElementType, Dimension - 1 >
-	GetSlice( int32 sliceCoord )const
+	GetSlice( int32 sliceCoord, uint32 perpAxis = Dimension - 1 )const
 		{
-			return GetSliceRel( sliceCoord - _origin[ Dimension-1 ] );
+			return GetSliceRel( sliceCoord - _origin[ perpAxis ], perpAxis );
 		}
 
 	ImageRegion< ElementType, Dimension - 1 >
-	GetSliceRel( int32 sliceCoord )const
+	GetSliceRel( int32 sliceCoord, uint32 perpAxis = Dimension - 1 )const
 		{
-			if( sliceCoord < 0 || sliceCoord >= (int32)_size[Dimension-1] ) {
+			if( perpAxis >= Dimension ) {
+				_THROW_ ErrorHandling::EBadDimension();
+			}
+			if( sliceCoord < 0 || sliceCoord >= (int32)_size[perpAxis] ) {
 				_THROW_	ErrorHandling::EBadParameter( 
-						TO_STRING( "Wrong relative 'sliceCoord = " << sliceCoord << "'. Must in interval <0, " << _size[Dimension-1] << ")." )
+						TO_STRING( "Wrong relative 'sliceCoord = " << sliceCoord << "'. Must in interval <0, " << _size[perpAxis] 
+							<< ") for dimension index " << perpAxis <<"." )
 						);
 			}
-			ElementType *pointer = _pointer + sliceCoord*_strides[Dimension-1];
+			ElementType *pointer = _pointer + sliceCoord*_strides[perpAxis];
 
 			int32 *pom = new int32[ _sourceDimension ];
 			for( unsigned i=0; i<_sourceDimension; ++i ) {
 				pom[i] = _pointerCoordinatesInSource[i];
 			}
-			pom[ _dimOrder[Dimension-1] ] += sliceCoord * Sgn(_strides[Dimension-1]);
+			pom[ _dimOrder[perpAxis] ] += sliceCoord * Sgn(_strides[perpAxis]);
 
-			Vector<uint32, Dimension-1> size( _size.GetData() );
-			Vector<int32, Dimension-1> strides( _strides.GetData() );
-			Vector<float32, Dimension-1> elementExtents( _elementExtents.GetData() );
-			Vector<uint32, Dimension-1> dimOrder( _dimOrder.GetData() );
+			Vector<uint32, Dimension-1> size;
+			Vector<int32, Dimension-1> strides;
+			Vector<float32, Dimension-1> elementExtents;
+			Vector<uint32, Dimension-1> dimOrder;
+
+			unsigned j = 0;
+			for( unsigned i = 0; i < Dimension; ++i ) {
+				if( i != perpAxis ) {
+					size[j] = _size[i];
+					strides[j] = _strides[i];
+					elementExtents[j] = _elementExtents[i];
+					dimOrder[j] = _dimOrder[i];
+					++j;
+				}
+			}
 
 			ImageRegion< ElementType, Dimension-1 > result = 
 				ImageRegion< ElementType, Dimension-1 >( pointer, size, strides, elementExtents, dimOrder, _sourceDimension, pom );
@@ -351,6 +376,14 @@ public:
 	Vector< float32, Dimension >
 	GetElementExtents()const
 		{ return _elementExtents; }
+
+	int16
+	GetElementTypeID()const
+		{ return GetNumericTypeID<ElementType>(); }
+
+	uint32 
+	GetDimension()const
+		{ return Dimension; }
 protected:
 	
 private:

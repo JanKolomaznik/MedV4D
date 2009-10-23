@@ -22,7 +22,7 @@ namespace M4D
 namespace Imaging
 {
 
-#define IMAGE_TYPE_TEMPLATE_CASE_MACRO( AIMAGE_PTR, ... )\
+#define IMAGE_TYPE_PTR_TEMPLATE_CASE_MACRO( AIMAGE_PTR, ... )\
 	{ \
 		typedef M4D::Imaging::Image< TTYPE, DIM > IMAGE_TYPE; \
 		IMAGE_TYPE::Ptr IMAGE = IMAGE_TYPE::CastAbstractImage( AIMAGE_PTR ); \
@@ -31,13 +31,50 @@ namespace Imaging
 
 	//usage function< IMAGE_TYPE >( IMAGE )
 #define IMAGE_TYPE_PTR_SWITCH_MACRO( AIMAGE_PTR, ... ) \
-		TYPE_TEMPLATE_SWITCH_MACRO( AIMAGE_PTR->GetElementTypeID(), \
-			DIMENSION_TEMPLATE_SWITCH_MACRO( AIMAGE_PTR->GetDimension(), IMAGE_TYPE_TEMPLATE_CASE_MACRO( AIMAGE_PTR, __VA_ARGS__ ) ) )
+		TYPE_TEMPLATE_SWITCH_MACRO( (AIMAGE_PTR)->GetElementTypeID(), \
+			DIMENSION_TEMPLATE_SWITCH_MACRO( (AIMAGE_PTR)->GetDimension(), IMAGE_TYPE_PTR_TEMPLATE_CASE_MACRO( AIMAGE_PTR, __VA_ARGS__ ) ) )
 
 	//usage function< IMAGE_TYPE >( IMAGE )
 #define IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( AIMAGE_PTR, ... ) \
-		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( AIMAGE_PTR->GetElementTypeID(), \
-			DIMENSION_TEMPLATE_SWITCH_MACRO( AIMAGE_PTR->GetDimension(), IMAGE_TYPE_TEMPLATE_CASE_MACRO( AIMAGE_PTR, __VA_ARGS__ ) ) )
+		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( (AIMAGE_PTR)->GetElementTypeID(), \
+			DIMENSION_TEMPLATE_SWITCH_MACRO( (AIMAGE_PTR)->GetDimension(), IMAGE_TYPE_PTR_TEMPLATE_CASE_MACRO( AIMAGE_PTR, __VA_ARGS__ ) ) )
+//*********************************************************************************************
+#define IMAGE_TYPE_REF_TEMPLATE_CASE_MACRO( AIMAGE_REF, ... )\
+	{ \
+		typedef M4D::Imaging::Image< TTYPE, DIM > IMAGE_TYPE; \
+		IMAGE_TYPE &IMAGE = IMAGE_TYPE::CastAbstractImage( AIMAGE_REF ); \
+		__VA_ARGS__; \
+	};
+
+	//usage function< IMAGE_TYPE >( IMAGE )
+#define IMAGE_TYPE_REF_SWITCH_MACRO( AIMAGE_REF, ... ) \
+		TYPE_TEMPLATE_SWITCH_MACRO( (AIMAGE_REF).GetElementTypeID(), \
+			DIMENSION_TEMPLATE_SWITCH_MACRO( (AIMAGE_REF).GetDimension(), IMAGE_TYPE_REF_TEMPLATE_CASE_MACRO( AIMAGE_REF, __VA_ARGS__ ) ) )
+
+	//usage function< IMAGE_TYPE >( IMAGE )
+#define IMAGE_NUMERIC_TYPE_REF_SWITCH_MACRO( AIMAGE_REF, ... ) \
+		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( (AIMAGE_REF).GetElementTypeID(), \
+			DIMENSION_TEMPLATE_SWITCH_MACRO( (AIMAGE_REF).GetDimension(), IMAGE_TYPE_REF_TEMPLATE_CASE_MACRO( AIMAGE_REF, __VA_ARGS__ ) ) )
+//*********************************************************************************************
+#define IMAGE_TYPE_CONST_REF_TEMPLATE_CASE_MACRO( AIMAGE_REF, ... )\
+	{ \
+		typedef M4D::Imaging::Image< TTYPE, DIM > IMAGE_TYPE; \
+		const IMAGE_TYPE &IMAGE = IMAGE_TYPE::CastAbstractImage( AIMAGE_REF ); \
+		__VA_ARGS__; \
+	};
+
+	//usage function< IMAGE_TYPE >( IMAGE )
+#define IMAGE_TYPE_CONST_REF_SWITCH_MACRO( AIMAGE_REF, ... ) \
+		TYPE_TEMPLATE_SWITCH_MACRO( (AIMAGE_REF).GetElementTypeID(), \
+			DIMENSION_TEMPLATE_SWITCH_MACRO( (AIMAGE_REF).GetDimension(), IMAGE_TYPE_CONST_REF_TEMPLATE_CASE_MACRO( AIMAGE_REF, __VA_ARGS__ ) ) )
+
+	//usage function< IMAGE_TYPE >( IMAGE )
+#define IMAGE_NUMERIC_TYPE_CONST_REF_SWITCH_MACRO( AIMAGE_REF, ... ) \
+		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( (AIMAGE_REF).GetElementTypeID(), \
+			DIMENSION_TEMPLATE_SWITCH_MACRO( (AIMAGE_REF).GetDimension(), IMAGE_TYPE_CONST_REF_TEMPLATE_CASE_MACRO( AIMAGE_REF, __VA_ARGS__ ) ) )
+//*********************************************************************************************
+
+
 /**
  * Templated class made for storing raster image data of certain type. 
  * It has specialization for each used dimension.
@@ -219,7 +256,7 @@ public:
 			)const;
 
 	SliceRegion
-	GetSlice( int32 slice )const;
+	GetSlice( int32 slice, uint32 perpAxis = Dimension - 1 )const;
 	
 	void SerializeClassInfo(M4D::IO::OutStream &stream);
 	void SerializeProperties(M4D::IO::OutStream &stream);

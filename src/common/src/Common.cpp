@@ -103,6 +103,13 @@ GetNTIDFromSizeAndSign( uint16 size, bool sign )
 	}
 }
 
+uint32
+GetByteCountFromNTID( int16 ntid )
+{
+	TYPE_TEMPLATE_SWITCH_MACRO( ntid, return sizeof( TTYPE ); )
+}
+
+
 /*
 template<>
 int16 GetNumericTypeID<int8>()

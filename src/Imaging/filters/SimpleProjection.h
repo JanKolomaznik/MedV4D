@@ -17,12 +17,6 @@ namespace M4D
 namespace Imaging
 {
 
-enum CartesianPlanes{
-	XY_PLANE,
-	XZ_PLANE,
-	YZ_PLANE
-};	
-
 enum ProjectionType{
 	PT_MAX,
 	PT_SUM,
