@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="BoneSegmentation"
-	ProjectGUID="{3A340571-046C-4BE8-9F29-33DFDE22E9AF}"
-	RootNamespace="BoneSegmentation"
+	Name="TransferFunctions"
+	ProjectGUID="{CEA7C5A4-0C75-42E3-9D3A-406B308D21CA}"
+	RootNamespace="TransferFunctions"
 	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
@@ -45,7 +45,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="-Zm200 -w34100 -w34189 -Zm200 -w34100 -w34189 -w34100 -w34189"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\;..\..\include\qt\headers\QtCore;..\..\include\qt\headers\QtGui;..\..\include\qt\headers\QtOpenGL;..\..\include\qt\headers;.;&quot;.\qt\win32-msvc2005&quot;;..\..\include;..\..\include\qt;..\..\include\vtk"
+				AdditionalIncludeDirectories="..\..\;..\..\include\qt\headers\QtCore;..\..\include\qt\headers\QtGui;..\..\include\qt\headers\QtOpenGL;..\..\include\qt\headers;.;&quot;.\qt\win32-msvc2005&quot;;..\..\include;..\..\include\qt;..\..\include\vtk;&quot;$(IntDir)\generated\uic&quot;"
 				PreprocessorDefinitions="_WINDOWS;_DEBUG;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_GUI_LIB;QT_CORE_LIB;QT_THREAD_SUPPORT;&quot;DEBUG_LEVEL=10&quot;;"
 				GeneratePreprocessedFile="0"
 				ExceptionHandling="1"
@@ -135,7 +135,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="-Zm200 -w34100 -w34189 -Zm200 -w34100 -w34189 -w34100 -w34189"
 				Optimization="2"
-				AdditionalIncludeDirectories="..\..\;..\..\include\qt\headers\QtCore;..\..\include\qt\headers\QtGui;..\..\include\qt\headers\QtOpenGL;..\..\include\qt\headers;.;&quot;.\qt\win32-msvc2005&quot;;..\..\include;..\..\include\qt;..\..\include\vtk"
+				AdditionalIncludeDirectories="..\..\;..\..\include\qt\headers\QtCore;..\..\include\qt\headers\QtGui;..\..\include\qt\headers\QtOpenGL;..\..\include\qt\headers;.;&quot;.\qt\win32-msvc2005&quot;;..\..\include;..\..\include\qt;..\..\include\vtk;&quot;$(IntDir)\generated\uic\&quot;"
 				PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_NO_DEBUG,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT,NDEBUG"
 				GeneratePreprocessedFile="0"
 				ExceptionHandling="1"
@@ -206,15 +206,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\Applications\BoneSegmentation\main.cpp"
+				RelativePath="..\..\Applications\TransferFunctions\main.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Applications\BoneSegmentation\mainWindow.cpp"
+				RelativePath="..\..\Applications\TransferFunctions\mainWindow.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Applications\BoneSegmentation\SettingsBox.cpp"
+				RelativePath="..\..\Applications\TransferFunctions\SettingsBox.cpp"
 				>
 			</File>
 		</Filter>
@@ -224,7 +224,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\Applications\BoneSegmentation\mainWindow.h"
+				RelativePath="..\..\Applications\TransferFunctions\mainWindow.h"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -243,14 +243,14 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="MOC mainWindow.h"
-						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\Applications\BoneSegmentation\mainWindow.h -o $(IntDir)\generated\moc\moc_mainWindow.cpp&#x0D;&#x0A;"
+						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\release; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 ..\..\Applications\TransferFunctions\mainWindow.h -o $(IntDir)\generated\moc\moc_mainWindow.cpp&#x0D;&#x0A;"
 						AdditionalDependencies="moc.exe,mainWindow.h"
 						Outputs="$(IntDir)\generated\moc\moc_mainWindow.cpp"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\Applications\BoneSegmentation\SettingsBox.h"
+				RelativePath="..\..\Applications\TransferFunctions\SettingsBox.h"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -282,7 +282,7 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath="..\..\Applications\BoneSegmentation\mainWindow.qrc"
+				RelativePath="..\..\Applications\TransferFunctions\mainWindow.qrc"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -304,6 +304,20 @@
 						CommandLine="..\..\bin\qt\rcc.exe -name mainWindow $(InputPath) -o $(IntDir)\generated\rcc\qrc_$(InputName).cpp&#x0D;&#x0A;"
 						AdditionalDependencies="..\..\bin\qt\rcc.exe;$(InputFileName)"
 						Outputs="$(IntDir)\generated\rcc\qrc_$(InputName).cpp"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\Applications\TransferFunctions\SettingsBox.ui"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						CommandLine="..\..\bin\qt\uic.exe $(InputPath) -o $(IntDir)\generated\uic\uic_$(InputName).h&#x0D;&#x0A;"
+						AdditionalDependencies="..\..\bin\qt\uic.exe;$(InputFileName)"
+						Outputs="$(IntDir)\generated\uic\qrc_$(InputName).h"
 					/>
 				</FileConfiguration>
 			</File>
@@ -315,18 +329,6 @@
 				RelativePath="$(IntDir)\generated\moc\moc_mainWindow.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="$(IntDir)\generated\moc\moc_mainWindow.cpp"
-				>
-				<FileConfiguration
 					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
@@ -336,16 +338,8 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="$(IntDir)\generated\rcc\qrc_mainWindow.cpp"
+				RelativePath="..\..\tmp\TransferFunctionsDebug\generated\moc\moc_SettingsBox.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="$(IntDir)\generated\rcc\qrc_mainWindow.cpp"
@@ -358,6 +352,10 @@
 						Name="VCCLCompilerTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\tmp\TransferFunctionsDebug\generated\uic\uic_SettingsBox.h"
+				>
 			</File>
 		</Filter>
 	</Files>
