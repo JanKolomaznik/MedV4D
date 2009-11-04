@@ -65,6 +65,7 @@ FUNCTION(TARGET_MEDV4D_PROGRAM prog_name source_dir )
 	SOURCE_GROUP( ${prog_name}_Resources FILES  ${rccinput} )
 	SOURCE_GROUP( ${prog_name}_Header FILES  ${header_files} )
 
+	#Message( "---------- ${OUTPUT} ${sources} ${mocoutput} ${rccoutput}" )
 	ADD_EXECUTABLE(${OUTPUT} ${sources} ${mocoutput} ${rccoutput})
 	TARGET_LINK_LIBRARIES(${OUTPUT} ${MEDV4D_ALL_LIBRARIES})
 
@@ -74,10 +75,16 @@ FUNCTION(TARGET_MEDV4D_PROGRAM prog_name source_dir )
 	ENDIF( DCMTK_OPTIONS )
 ENDFUNCTION(TARGET_MEDV4D_PROGRAM prog_name source_dir)
 
+MACRO(MEDV4D_LIBRARY_TARGET_PREPARATION libName libSrcDir libHeaderDir)
 
+	AUX_SOURCE_DIRECTORY(${libSrcDir} SrcFiles )
 
-MACRO(TARGET_MEDV4D_APPLICATION app_name)
-	TARGET_MEDV4D_PROGRAM( ${app_name} ${APPLICATION_DIR}/${app_name} )
-ENDMACRO(TARGET_MEDV4D_APPLICATION app_name)
+	FILE( GLOB Header_files ${libHeaderDirs}/*.h ${libHeaderDirs}/*tcc )
 
+	SOURCE_GROUP( ${libName}_Headers FILES ${Header_files} )
+	SOURCE_GROUP( ${libName}_Sources FILES ${SrcFiles}  )
+
+	ADD_LIBRARY(${libName} ${SrcFiles} ${Header_files})
+
+ENDMACRO(MEDV4D_LIBRARY_TARGET_PREPARATION)
 

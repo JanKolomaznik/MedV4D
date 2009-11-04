@@ -12,11 +12,11 @@ IF( WIN32_USE_PREPARED_PACKAGES_VTK )
 	vtksys vtktiff vtkVolumeRendering vtkWidgets vtkzlib QVTK ) 
 
 	# The VTK include file directories.
-	SET(VTK_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/../include/vtk")
+	SET(VTK_INCLUDE_DIRS "${MEDV4D_CMAKE_SOURCE_DIR}/../include/vtk")
 
 	# The VTK library directories.
-	SET(VTK_LIBRARY_DIRS "${CMAKE_SOURCE_DIR}/../lib/vtk")
-	SET(VTK_LIBRARY_DIR "${CMAKE_SOURCE_DIR}/../lib/vtk")
+	SET(VTK_LIBRARY_DIRS "${MEDV4D_CMAKE_SOURCE_DIR}/../lib/vtk")
+	SET(VTK_LIBRARY_DIR "${MEDV4D_CMAKE_SOURCE_DIR}/../lib/vtk")
 
 	# The VTK version number
 	SET(VTK_MAJOR_VERSION "5")
