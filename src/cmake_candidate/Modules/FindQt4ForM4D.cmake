@@ -12,7 +12,7 @@ IF( WIN32_USE_PREPARED_PACKAGES_QT )
 	get_filename_component(QT_UIC_EXECUTABLE ${MEDV4D_CMAKE_SOURCE_DIR}/../bin/qt/uic.exe ABSOLUTE)
 	get_filename_component(QT_RCC_EXECUTABLE ${MEDV4D_CMAKE_SOURCE_DIR}/../bin/qt/rcc.exe ABSOLUTE)
 	get_filename_component(QT_QMAKE_EXECUTABLE ${MEDV4D_CMAKE_SOURCE_DIR}/../bin/qt/qmake.exe ABSOLUTE)	
-	FIND_PACKAGE(Qt4 REQUIRED COMPONENTS ${QtComponentList} )
+	FIND_PACKAGE(Qt4 COMPONENTS ${QtComponentList} )
 	
 	SET(QT_INCLUDE_DIR "${MEDV4D_CMAKE_SOURCE_DIR}/../include/qt/headers")
 	SET(QT_QT_INCLUDE_DIR "${MEDV4D_CMAKE_SOURCE_DIR}/../include/qt/headers")

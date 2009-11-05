@@ -82,10 +82,10 @@ public:
 
 			double scale = 1.0/6.0;
 
-			values[ 0 ] = scale * ( - 3*v[1] +  6*v[0] - 3 );
-			values[ 1 ] = scale * (   9*v[1] - 12*v[0]     );
-			values[ 2 ] = scale * ( - 9*v[1] +  6*v[0] + 3 );
-			values[ 3 ] = scale * (   3*v[1]               );
+			values[ 0 ] = static_cast<float32>( scale * ( - 3*v[1] +  6*v[0] - 3 ) );
+			values[ 1 ] = static_cast<float32>( scale * (   9*v[1] - 12*v[0]     ) );
+			values[ 2 ] = static_cast<float32>( scale * ( - 9*v[1] +  6*v[0] + 3 ) );
+			values[ 3 ] = static_cast<float32>( scale * (   3*v[1]               ) );
 
 			return true;
 		}

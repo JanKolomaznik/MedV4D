@@ -77,7 +77,7 @@ void
 SettingsBox
 ::ChangeProjPlane( int val )
 {
-	static_cast<SimpleProjectionFilter*>(_filter)->SetPlane( (M4D::Imaging::CartesianPlanes)val );
+	static_cast<SimpleProjectionFilter*>(_filter)->SetPlane( (CartesianPlanes)val );
 }
 
 void

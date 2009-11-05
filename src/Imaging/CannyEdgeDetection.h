@@ -161,9 +161,9 @@ Hysteresis( ImageRegion< Gradient<float32>, 2 > &gradient, float32 lowThreshold,
 	for( unsigned i = 1; i <= HISTOGRAM_SIZE; ++i ) {
 		count += histogram[i];
 	}
-	uint64 t = highThreshold * count; 
+	uint64 t = static_cast<uint64>( highThreshold * count ); 
 
-	float32 tHigh = max * 0.8;
+	float32 tHigh = max * 0.8f;
 	count = 0;
 	for( unsigned i = 1; i <= HISTOGRAM_SIZE; ++i ) {
 		count += histogram[i];

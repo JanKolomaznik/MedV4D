@@ -1,5 +1,10 @@
 #include "ImageTools.h"
+#include <cmath>
 
+#ifdef _MSC_VER 
+	#include <cfloat>
+	#define isnan _isnan
+#endif
 
 using namespace M4D::Imaging;
 using namespace boost::filesystem;

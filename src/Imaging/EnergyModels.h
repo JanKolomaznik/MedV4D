@@ -551,8 +551,8 @@ public:
 	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > 	GradientType;
 	typedef Vector< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
 	typedef typename ContourType::BFValVector	BFValVector;
-	static const unsigned Degree = ContourType::Degree;
-	static const unsigned TableRowSize = 2*Degree - 1;
+	static const int32 Degree = ContourType::Degree;
+	static const int32 TableRowSize = 2*Degree - 1;
 
 	InternalCurveEnergy(): _gamma( 1.0f )
 		{

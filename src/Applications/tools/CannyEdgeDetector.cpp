@@ -1,8 +1,8 @@
 #include "common/Common.h"
 #include "Filtering.h"
 #include "Imaging/filters/CannyEdgeDetector.h"
+#undef min
 #include <tclap/CmdLine.h>
-
 
 using namespace M4D;
 using namespace M4D::Imaging;
@@ -55,8 +55,8 @@ main( int argc, char **argv )
 	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage > *outConnection = NULL;
 	M4D::Imaging::AbstractPipeFilter *filter = NULL;
 	/*---------------------------------------------------------------------*/
-	double lowThreshold = lowThresholdArg.getValue();
-	double highThreshold = highThresholdArg.getValue();
+	float32 lowThreshold = static_cast<float32>( lowThresholdArg.getValue() );
+	float32 highThreshold = static_cast<float32>( highThresholdArg.getValue() );
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
 		M4D::Imaging::CannyEdgeDetector< IMAGE_TYPE > *canny = new M4D::Imaging::CannyEdgeDetector< IMAGE_TYPE >();
 		canny->SetLowThreshold( lowThreshold );

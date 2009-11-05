@@ -644,6 +644,27 @@ struct TypeTraits< SimpleVector<NumType, Dim> >
 	typedef SimpleVector< typename TypeTraits< NumType >::SuperiorFloatType, Dim >	SuperiorFloatType;
 };
 
+template< typename T >
+struct TypeTraits
+{
+	typedef T			Type;
+	static const int16	NTID = NTID_UNKNOWN;
+
+	//static const bool	Signed = false;
+	static const uint16	BitCount = sizeof( Type )*8;
+	/*static const Type	Max = true;
+	static const Type	Min = false;
+	static const Type	Zero = false;
+	static const Type	One = true;
+
+	static const Type	CentralValue = false;
+
+	typedef int8		SignedClosestType;
+	typedef int8		SuperiorType;
+	typedef int8		SuperiorSignedType;
+	typedef float32		SuperiorFloatType;*/
+};
+
 template<>
 struct TypeTraits< bool >
 {
