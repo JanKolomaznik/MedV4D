@@ -66,7 +66,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>scheme 1</string>
+     <string>Default scheme</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -106,17 +106,12 @@
     </property>
     <item>
      <property name="text">
-      <string>f1</string>
+      <string>default_function</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>f2</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>f3</string>
+      <string>add function</string>
      </property>
     </item>
    </widget>
@@ -193,7 +188,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>f1</string>
+     <string>default_function</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -215,7 +210,7 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="functionNew">
+   <widget class="QPushButton" name="functionSave">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -225,7 +220,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>new function</string>
+     <string>save function</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="pointYValue">
@@ -255,7 +250,12 @@
     </property>
     <item>
      <property name="text">
-      <string>point_1</string>
+      <string>point(0,0)</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>add point</string>
      </property>
     </item>
    </widget>
@@ -285,7 +285,7 @@
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
-   <widget class="QPushButton" name="pointNew">
+   <widget class="QPushButton" name="pointSave">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -295,7 +295,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>new point</string>
+     <string>save point</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pointDelete">
