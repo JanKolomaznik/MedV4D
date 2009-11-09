@@ -29,6 +29,7 @@ ADD_DEPENDENCIES(backendForDICOM Common Imaging )
 IF( DCMTK_OPTIONS )
 	SET_TARGET_PROPERTIES( backendForDICOM PROPERTIES COMPILE_DEFINITIONS ${DCMTK_OPTIONS} )
 ENDIF( DCMTK_OPTIONS )
+
 #--------------------------------------------------------
 #       vtkIntegration
 MEDV4D_LIBRARY_TARGET_PREPARATION(vtkIntegration "${MEDV4D_CMAKE_SOURCE_DIR}/../vtkIntegration/src" "${MEDV4D_CMAKE_SOURCE_DIR}/../vtkIntegration")
