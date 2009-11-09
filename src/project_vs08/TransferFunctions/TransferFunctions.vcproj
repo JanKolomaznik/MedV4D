@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1250"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="TransferFunctions"
 	ProjectGUID="{CEA7C5A4-0C75-42E3-9D3A-406B308D21CA}"
 	RootNamespace="TransferFunctions"
@@ -217,12 +217,24 @@
 				RelativePath="..\..\Applications\TransferFunctions\SettingsBox.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\..\Applications\TransferFunctions\TF\TFFunction.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Applications\TransferFunctions\TF\TFScheme.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath="..\..\Applications\TransferFunctions\TF\Convert.h"
+				>
+			</File>
 			<File
 				RelativePath="..\..\Applications\TransferFunctions\mainWindow.h"
 				>
@@ -274,6 +286,14 @@
 						Outputs="$(IntDir)\generated\moc\moc_$(InputName).cpp"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\Applications\TransferFunctions\TF\TFFunction.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Applications\TransferFunctions\TF\TFScheme.h"
+				>
 			</File>
 		</Filter>
 		<Filter
