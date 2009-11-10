@@ -46,27 +46,32 @@ FUNCTION(TARGET_MEDV4D_PROGRAM prog_name source_dir )
 	SET( mocoutput )
 	SET( rccinput )
 	SET( rccoutput )
+	SET( uiinput )
+	SET( uioutput )
 	
 	AUX_SOURCE_DIRECTORY( ${SRC_DIR} sources )
-
-	FILE( GLOB rccinput ${SRC_DIR}/*.qrc )
-	FILE( GLOB header_files ${SRC_DIR}/*.h )
-	SET_SOURCE_FILES_PROPERTIES(${header_files} PROPERTIES HEADER_FILE_ONLY TRUE)
-
+	#FILE( GLOB rccinput ${SRC_DIR}/*.qrc )
+	#FILE( GLOB uiinput ${SRC_DIR}/*.ui )
+	#FILE( GLOB header_files ${SRC_DIR}/*.h )
+	FILE( GLOB_RECURSE rccinput ${SRC_DIR}/*.qrc )
+	FILE( GLOB_RECURSE uiinput ${SRC_DIR}/*.ui )
+	FILE( GLOB_RECURSE header_files ${SRC_DIR}/*.h )
+	#message( "------------------${header_files}" )
 	
+	SET_SOURCE_FILES_PROPERTIES(${header_files} PROPERTIES HEADER_FILE_ONLY TRUE)
 	FILTER_HEADERS_FOR_MOC( "${header_files}" mocinput )
-
 	
 	QT4_WRAP_CPP(mocoutput ${mocinput})
 	QT4_ADD_RESOURCES(rccoutput ${rccinput} )
-
+	QT4_WRAP_UI(uioutput ${uiinput} )
 
 	SOURCE_GROUP( ${prog_name}_Sources FILES ${sources} )
 	SOURCE_GROUP( ${prog_name}_Resources FILES  ${rccinput} )
+	SOURCE_GROUP( ${prog_name}_UI FILES  ${uiinput} )
 	SOURCE_GROUP( ${prog_name}_Header FILES  ${header_files} )
 
 	#Message( "---------- ${OUTPUT} ${sources} ${mocoutput} ${rccoutput}" )
-	ADD_EXECUTABLE(${OUTPUT} ${sources} ${mocoutput} ${rccoutput})
+	ADD_EXECUTABLE(${OUTPUT} ${sources} ${mocoutput} ${rccoutput} ${uioutput})
 	TARGET_LINK_LIBRARIES(${OUTPUT} ${MEDV4D_ALL_LIBRARIES})
 
 	ADD_DEPENDENCIES(${OUTPUT} ${MEDV4D_LIBRARIES})
