@@ -87,10 +87,28 @@ public:
    */
   inline float32 OrderInSet( void) const { return m_orderInSet; }
 
-  /// For sorting issues.
+  /**
+   *  For sorting issues
+   *  check even AcquisitionTime to right sort multi-scan data set
+   */
   inline bool operator<( const DicomObj &b) const
   {
-    return OrderInSet() < b.OrderInSet();
+    std::string aTime;
+    std::string bTime;
+
+    this->GetAcquisitionTime( aTime);
+    b.GetAcquisitionTime( bTime);
+
+    // convert times to integer to be comparable ..
+ 
+    // compare the times
+    // if they are the same dicide according order in set
+    if(aTime == bTime)
+      return OrderInSet() < b.OrderInSet();
+    // else return comparison of acquisition times to sort good
+    // subsets within multi-scan
+    else
+      return aTime < bTime;
   }
 
   // load & save
@@ -109,6 +127,7 @@ public:
   void GetTagValue( uint16 group, uint16 tagNum, std::string &) ;
   void GetTagValue( uint16 group, uint16 tagNum, int32 &);
   void GetTagValue( uint16 group, uint16 tagNum, float32 &);
+  void GetAcquisitionTime(std::string &acqTime);
 	
   ////////////////////////////////////////////////////////////
 

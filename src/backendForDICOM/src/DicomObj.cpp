@@ -102,6 +102,17 @@ DicomObj::GetTagValue(
 ///////////////////////////////////////////////////////////////////////
 
 void
+DicomObj::GetAcquisitionTime(std::string &acqTime)
+{
+  // DICOM tag Acquisition Time (0008 0032)
+  DcmDataset *ds = static_cast<DcmDataset *>(m_dataset);
+
+  ds->findAndGetFloat32(DcmTagKey(0008, 0032), acqTime);
+}
+
+///////////////////////////////////////////////////////////////////////
+
+void
 DicomObj::Init()
 {
 	DcmDataset* dataSet = static_cast<DcmDataset *>(m_dataset);
