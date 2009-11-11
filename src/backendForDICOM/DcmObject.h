@@ -91,7 +91,7 @@ public:
    *  For sorting issues
    *  check even AcquisitionTime to right sort multi-scan data set
    */
-  inline bool operator<( const DicomObj &b) const
+  inline bool operator<( DicomObj &b)
   {
     std::string aTime;
     std::string bTime;
