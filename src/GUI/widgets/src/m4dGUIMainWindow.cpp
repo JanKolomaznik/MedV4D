@@ -240,7 +240,7 @@ void m4dGUIMainWindow::open ()
   actualStudy.leftOverlayInfo.clear();
   actualStudy.rightOverlayInfo.clear();
 
-  QString path( QFileDialog::getOpenFileName( this, tr( "Open" ), currentOpenPath, "*.dcm" ) );
+  QString path( QFileDialog::getOpenFileName( this, tr( "Open" ), currentOpenPath, "*.dcm\n*.*" ) );
   
   if ( !path.isNull() ) 
   {
