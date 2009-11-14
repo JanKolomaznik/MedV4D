@@ -13,10 +13,12 @@ namespace M4D
 		m4dGUIOpenGlViewerWidget::m4dGUIOpenGlViewerWidget( Imaging::ConnectionInterface* conn, unsigned index, QWidget *parent) : QGLWidget(parent)
 		{
 			_index = index;
+			updateGL();
 		}
 		m4dGUIOpenGlViewerWidget::m4dGUIOpenGlViewerWidget(unsigned int index, QWidget *parent) : QGLWidget(parent)
 		{
 			_index = index;
+			updateGL();
 		}
 		m4dGUIOpenGlViewerWidget::~m4dGUIOpenGlViewerWidget()
 		{
@@ -48,6 +50,41 @@ namespace M4D
 		void m4dGUIOpenGlViewerWidget::ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imaging::PipelineMessage::MessageSendStyle sendStyle, Imaging::FlowDirection direction )
 		{
 			emit signalMessageHandler( msg->msgID );
+		}
+		void m4dGUIOpenGlViewerWidget::paintGL()
+		{
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);// Vymaže obrazovku a hloubkový buffer
+			glClearColor(1.0, 0.8, 0.0, 0.0);
+			glLoadIdentity();// Reset matice								
+			glTranslatef(-1.5f,0.0f,-6.0f);// Posun doleva a do hloubky
+			
+			glBegin(GL_TRIANGLES);// Zaèátek kreslení trojúhelníkù
+			glColor3f(1.0f, 0.0f, 0.0f);
+			glVertex3f( 0.0f, 1.0f, 0.0f);// Horní bod
+			glVertex3f(-1.0f,-1.0f, 0.0f);// Levý dolní bod
+			glVertex3f( 1.0f,-1.0f, 0.0f);// Pravý dolní bod
+			glEnd();// Ukonèení kreslení trojúhelníkù
+
+			glTranslatef(3.0f,0.0f,0.0f);// Posun o 3 jednotky doprava
+
+			glBegin(GL_QUADS);// Zaèátek kreslení obdélníkù
+			glVertex3f(-1.0f, 1.0f, 0.0f);// Levý horní bod
+			glVertex3f( 1.0f, 1.0f, 0.0f);// Pravý horní bod
+			glVertex3f( 1.0f,-1.0f, 0.0f);// Pravý dolní bod
+			glVertex3f(-1.0f,-1.0f, 0.0f);// Levý dolní bod
+			glEnd();// Konec kreslení obdélníkù
+
+			glFlush();
+
+		}
+		void m4dGUIOpenGlViewerWidget::resizeGL(int winW, int winH)
+		{
+			glViewport(0, 0, width(), height());
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			gluPerspective(45.0f,(GLfloat)width()/(GLfloat)height(),0.1f,100.0f);
+			glMatrixMode(GL_MODELVIEW);
+			updateGL();
 		}
 		void m4dGUIOpenGlViewerWidget::slotSetButtonHandler( ButtonHandler hnd, MouseButton btn )
 		{

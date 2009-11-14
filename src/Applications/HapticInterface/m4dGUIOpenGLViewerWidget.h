@@ -82,6 +82,10 @@ namespace M4D
 
 			virtual void ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imaging::PipelineMessage::MessageSendStyle sendStyle, Imaging::FlowDirection direction );
 
+			virtual void paintGL();
+
+			virtual void resizeGL(int winW, int winH);
+
 			AvailableSlots				_availableSlots;
 
 			virtual void updateViewer();
