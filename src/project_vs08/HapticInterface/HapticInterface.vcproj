@@ -207,11 +207,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\Applications\HapticInterface\main.cpp"
+				RelativePath="..\..\Applications\HapticInterface\m4dGUIOGLHapticViewerWidget.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\tmp\HapticInterfaceDebug\generated\moc\moc_m4dGUIOGLHapticViewerWidget.cpp"
+				RelativePath="..\..\Applications\HapticInterface\main.cpp"
 				>
 			</File>
 			<File
@@ -254,7 +254,7 @@
 			Name="Generated Files"
 			>
 			<File
-				RelativePath="..\..\Applications\HapticInterface\m4dGUIOGLHapticViewerWidget.cpp"
+				RelativePath="..\..\tmp\HapticInterfaceDebug\generated\moc\moc_m4dGUIOGLHapticViewerWidget.cpp"
 				>
 			</File>
 		</Filter>
