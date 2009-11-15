@@ -98,17 +98,37 @@ namespace M4D
 				return;
 			}
 
-			float zOffset = 2.0;
+			float zOffset = -2.0;
 
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);// Vymaže obrazovku a hloubkový buffer
+			glClearColor(0.0, 0.0, 0.0, 0.0);
+			glLoadIdentity();
+			
+			glPointSize(3.0f);
+			glColor3f(1.0f,1.0f,1.0f);
+			glBegin(GL_POINTS);
+
+			float var = 15.0 / ((float)_inPort->GetDatasetTyped().GetDimensionExtents(0).maximum-(float)_inPort->GetDatasetTyped().GetDimensionExtents(0).minimum);
+			
 			if (_inPort->GetDatasetTyped().GetDimension() == 2)
 			{
-				Imaging::Image< TTYPE, 3 >::CastAbstractImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >( (int)coords[0], (int)coords[1], (int)coords[2] ) )
+				for (int i = _inPort->GetDatasetTyped().GetDimensionExtents(0).minimum; i < _inPort->GetDatasetTyped().GetDimensionExtents(0).maximum; i++)
+				{
+					for (int j = _inPort->GetDatasetTyped().GetDimensionExtents(1).minimum; j < _inPort->GetDatasetTyped().GetDimensionExtents(1).maximum; j++)
+					{
+						if (Imaging::Image< unsigned short, 2 >::CastAbstractImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >( i, j) ))
+						{
+							glVertex3f(-7.5+(float)(i*var), -7.5+(float)(j*var), zOffset);
+						}
+					}
+				}
 			}
 			else
 				if (_inPort->GetDatasetTyped().GetDimension() == 3)
 				{
-					zOffset = 1.0;
 				}
+
+			glEnd();
 
 			glFlush();
 
