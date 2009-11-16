@@ -75,7 +75,7 @@ struct UpdateEdgeFunctor
 		if( even ) {
 			lastX = rec.x;
 		} else {
-			intervals->push_back( IntervalRecord( lastX, rec.x, rec.yTop ) );
+			intervals->push_back( IntervalRecord( static_cast< int32 >( lastX ), static_cast< int32 >( rec.x ), rec.yTop ) );
 		}
 		even = !even;
 

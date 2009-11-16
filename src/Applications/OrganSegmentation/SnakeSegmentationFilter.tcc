@@ -239,7 +239,7 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 	algorithm.SetMinSegmentLength( 10 );*/
 
 	algorithm.SetSampleRate( 6 );
-	algorithm.SetMaxStepScale( 1.2 );
+	algorithm.SetMaxStepScale( 1.2f );
 	algorithm.SetStepScale( algorithm.GetMaxStepScale() / 2.0 );
 	algorithm.SetMaxSegmentLength( GetPrecision() * _extent * 2.0 );
 	algorithm.SetMinSegmentLength( GetPrecision() * _extent );
@@ -258,7 +258,7 @@ SnakeSegmentationFilter< ElementType, SecondElementType >
 	algorithm.SetAlpha( GetEdgeRegionBalance() );
 
 	algorithm.SetCalmDownInterval( 40 );
-	algorithm.SetStepScaleLimit( 0.01 );
+	algorithm.SetStepScaleLimit( 0.01f );
 	algorithm.SetMaxStepCount( 200 );
 
 

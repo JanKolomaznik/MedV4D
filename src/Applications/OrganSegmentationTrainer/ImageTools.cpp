@@ -251,8 +251,8 @@ ConsolidateGeneralGridRecord( GridPointRecord &rec, int32 count )
 		histogramSum += rec.outHistogram[i];
 	}
 	for( int32 i = min; i < max; ++i ) {
-		rec.inHistogram.SetValueCell( i, rec.inHistogram[i] / histogramSum );
-		rec.outHistogram.SetValueCell( i, rec.outHistogram[i] / histogramSum );
+		rec.inHistogram.SetValueCell( i, static_cast<float32>( rec.inHistogram[i] / histogramSum ) );
+		rec.outHistogram.SetValueCell( i, static_cast<float32>( rec.outHistogram[i] / histogramSum ) );
 		//rec.logHistogram.SetValueCell( i, RatioLogarithm( rec.inHistogram[i], rec.outHistogram[i] ) );
 	}
 	rec.inHistogram = HistogramPyramidSmooth( rec.inHistogram, 3 );
@@ -384,7 +384,7 @@ Train( const TrainingDataInfos &infos, Vector< uint32, 3 > size, Vector< float32
 			D_PRINT( "Loading training mask number '" << i << "' from file '" << maskFile.string() <<"'." );
 			aimage = ImageFactory::LoadDumpedImage( maskFile.string() );
 			mask = MaskType::CastAbstractImage( aimage );
-		} catch ( const M4D::ErrorHandling::ExceptionBase & e ) {
+		} catch ( const M4D::ErrorHandling::ExceptionBase & /*e*/ ) {
 			continue;
 		}
 

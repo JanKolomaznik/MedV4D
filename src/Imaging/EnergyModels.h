@@ -48,7 +48,7 @@ public:
 	float32
 	GetParametersGradient( ContourType &curve, GradientType &gradient )
 	{
-		static const float32 Epsilon = 0.0001;
+		static const float32 Epsilon = 0.0001f;
 
 		if( curve.Size() != gradient.Size() ) {
 			//TODO - solve problem
@@ -499,7 +499,7 @@ private:
 	Qki( int32 k, int32 i, int32 tR )
 	{
 		//int32 tLow = tR / _sampleFrequency;
-		int32 tLow = floor( (float)tR / (float)_sampleFrequency );
+		int32 tLow = static_cast< int32 >( floor( (float)tR / (float)_sampleFrequency ) );
 		int32 nk = k - tLow;
 		int32 ni = i - tLow;
 		int32 t = tR - tLow * _sampleFrequency;

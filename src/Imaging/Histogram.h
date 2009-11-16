@@ -242,7 +242,7 @@ HistogramPyramidSmooth( const Histogram< CellType > &histogram, unsigned radius 
 	//float32 sum = 0;
 
 	for( unsigned i = 0; i <= 2*radius; ++i ){
-		weights.push_back( 1.0 / ((float32) 2*radius +1 ) );
+		weights.push_back( 1.0f / ( 2*radius +1 ) );
 	}
 	//TODO - pyramid weigths
 	int32 min = histogram.GetMin();

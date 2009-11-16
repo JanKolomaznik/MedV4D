@@ -47,15 +47,15 @@ public:
 			for( unsigned i=0; i<Dimension; ++i ) 
 			{ _coordinates[i] = x; } 
 		}
-
-	Vector( CoordType x, CoordType y )
+	template< typename CType >
+	Vector( CType x, CType y )
 		{
 			if( Dimension != 2 ) { 
 				_THROW_ M4D::ErrorHandling::EBadDimension();
 			}
 
-			_coordinates[0] = x; 
-			_coordinates[1] = y; 
+			_coordinates[0] = static_cast< CoordType >( x ); 
+			_coordinates[1] = static_cast< CoordType >( y ); 
 		}
 
 	Vector( CoordType x, CoordType y, CoordType z )

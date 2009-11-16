@@ -65,9 +65,9 @@ ManualSegmentationManager::Draw( int32 sliceNum, double zoomRate )
 		glLineWidth( 3.0f );
 
 		const GDataSet::ObjectsInSlice &slice = _dataset->GetSlice( sliceNum );
-		switch( _state ) {
+		/*switch( _state )*/ {
 		
-		default:
+		/*default:*/
 			glColor3f( 0.0f, 0.0f, 1.0f );
 			std::for_each( slice.begin(), slice.end(), GLDrawBSpline );
 			if( sliceNum == _curveSlice && _curve ) {

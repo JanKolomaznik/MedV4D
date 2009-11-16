@@ -78,13 +78,13 @@ class ConvolutionFilterFtor: public FilterFunctorBase< ElType >
 public:
 	ConvolutionFilterFtor( const ConvolutionMask<2, float32> &mask ) : _mask( mask ), _size( mask.size ), _center( mask.center )
 	{ 
-		_leftCorner = Vector< int32, 2 >( -_center[0], -_center[1] );
+		_leftCorner = -1 * Vector< int32, 2 >( _center[0], _center[1] );
 		_rightCorner = Vector< int32, 2 >( _size[0] - _center[0] - 1, _size[1] - _center[1] - 1 );
 	}
 
 	ConvolutionFilterFtor( const ConvolutionFilterFtor &ftor ) : _mask( ftor._mask ), _size( ftor._size )
 	{ 
-		_leftCorner = Vector< int32, 2 >( -_center[0], -_center[1] );
+		_leftCorner = -1 * Vector< int32, 2 >( _center[0], _center[1] );
 		_rightCorner = Vector< int32, 2 >( _size[0] - _center[0] - 1, _size[1] - _center[1] - 1 );
 	}
 

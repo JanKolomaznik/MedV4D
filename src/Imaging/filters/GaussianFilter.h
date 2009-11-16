@@ -20,12 +20,12 @@ CreateGaussianFilterMask( uint32 radius )
 	float32 std = static_cast<float32>( radius )/3.0f;
 	float32 *buff = new float32[size[0]*size[1]];
 	
-	double sum = 0.0;
+	float32 sum = 0.0;
 	unsigned idx = 0;
 	for( pom[0] = 0; pom[0] < size[0]; ++pom[0] ) {
 		for( pom[1] = 0; pom[1] < size[0]; ++pom[1] ) {
-			sum += buff[ idx ] = 
-				exp( - static_cast<float32>( PWR(pom[0]-radius) + PWR(pom[1]-radius) ) / (2.0*PWR(std)) );
+			sum += buff[ idx ] = static_cast< float32 > (
+				exp( - static_cast<float32>( PWR(pom[0]-radius) + PWR(pom[1]-radius) ) / (2.0*PWR(std)) ) );
 			++idx;
 		}
 	}
