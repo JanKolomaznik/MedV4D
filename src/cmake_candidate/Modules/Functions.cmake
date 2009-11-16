@@ -82,13 +82,20 @@ ENDFUNCTION(TARGET_MEDV4D_PROGRAM prog_name source_dir)
 
 MACRO(MEDV4D_LIBRARY_TARGET_PREPARATION libName libSrcDir libHeaderDir)
 
-	AUX_SOURCE_DIRECTORY(${libSrcDir} SrcFiles )
+	Message( "${libName}" )
+	Message( "${libSrcDir}" )
+	Message( "${libHeaderDir}" )
+	Message( "-------------------------------------" )
+	#AUX_SOURCE_DIRECTORY(${libSrcDir} SrcFiles )
+	FILE( GLOB SrcFiles "${libSrcDir}/*.cpp" )
+	FILE( GLOB Header_files "${libHeaderDir}/*.h" )
 
-	FILE( GLOB Header_files ${libHeaderDirs}/*.h ${libHeaderDirs}/*tcc )
-
+	#message( "${Header_files}" )
+	#message( "${SrcFiles}" )
 	SOURCE_GROUP( ${libName}_Headers FILES ${Header_files} )
+	#SOURCE_GROUP( ${libName}_Sources FILES ${SrcFiles}  )
 	SOURCE_GROUP( ${libName}_Sources FILES ${SrcFiles}  )
-
+	
 	ADD_LIBRARY(${libName} ${SrcFiles} ${Header_files})
 
 ENDMACRO(MEDV4D_LIBRARY_TARGET_PREPARATION)

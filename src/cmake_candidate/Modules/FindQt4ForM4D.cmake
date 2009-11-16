@@ -12,15 +12,21 @@ IF( WIN32_USE_PREPARED_PACKAGES_QT )
 	get_filename_component(QT_UIC_EXECUTABLE ${MEDV4D_CMAKE_SOURCE_DIR}/../bin/qt/uic.exe ABSOLUTE)
 	get_filename_component(QT_RCC_EXECUTABLE ${MEDV4D_CMAKE_SOURCE_DIR}/../bin/qt/rcc.exe ABSOLUTE)
 	get_filename_component(QT_QMAKE_EXECUTABLE ${MEDV4D_CMAKE_SOURCE_DIR}/../bin/qt/qmake.exe ABSOLUTE)	
-	FIND_PACKAGE(Qt4 COMPONENTS ${QtComponentList} )
+	
+	SET(QT_QTGUI_LIB_DEPENDENCIES ${QT_QTGUI_LIB_DEPENDENCIES} imm32 winmm)
+	SET(QT_QTCORE_LIB_DEPENDENCIES ${QT_QTCORE_LIB_DEPENDENCIES} ws2_32)
+
+	INCLUDE( "${MEDV4D_CMAKE_MODULES_DIR}/QtMacros.cmake" )
 	
 	SET(QT_INCLUDE_DIR "${MEDV4D_CMAKE_SOURCE_DIR}/../include/qt/headers")
 	SET(QT_QT_INCLUDE_DIR "${MEDV4D_CMAKE_SOURCE_DIR}/../include/qt/headers")
 	SET(QT_LIBRARY_DIR "${MEDV4D_CMAKE_SOURCE_DIR}/../lib/qt" )	
 	
 	FOREACH( component ${QtComponentList} )
+		#MESSAGE( "Adding info for Qt component ${component}" )
 		STRING( TOUPPER ${component} _COMPONENT )
 		SET( QT_USE_${_COMPONENT} 1 )
+		SET( QT_${_COMPONENT}_FOUND 1 )
 		SET(QT_${_COMPONENT}_LIBRARY "optimized" "${QT_LIBRARY_DIR}/${component}.lib" "debug" "${QT_LIBRARY_DIR}/${component}d.lib" )
 		SET(QT_${_COMPONENT}_INCLUDE_DIR "${MEDV4D_CMAKE_SOURCE_DIR}/../include/qt/headers/${component}")
 	ENDFOREACH( component )
@@ -40,4 +46,5 @@ ELSE( WIN32_USE_PREPARED_PACKAGES_QT )
 	FIND_PACKAGE(Qt4 REQUIRED COMPONENTS ${ComponentList})
 ENDIF( WIN32_USE_PREPARED_PACKAGES_QT )
 
+#MESSAGE( "Including QT_USE_FILE" )
 INCLUDE(${QT_USE_FILE})
