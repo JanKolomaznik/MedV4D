@@ -1,13 +1,14 @@
 
 FUNCTION(FILTER_HEADERS_FOR_MOC inputlist outputlist)
-	SET(${outputlist} "" PARENT_SCOPE)
+	#SET(${outputlist} "" PARENT_SCOPE)
 	SET(tmp_list "" )
 	FOREACH(header ${inputlist})
 		FILE(STRINGS ${header} file_strings REGEX "Q_OBJECT")
 		IF( "${file_strings}" MATCHES "Q_OBJECT" )
-			SET( tmp_list "${tmp_list}" "${header}" )
+			SET( tmp_list ${tmp_list} "${header}" )
 		ENDIF( "${file_strings}" MATCHES "Q_OBJECT" )
 	ENDFOREACH(header ${inputlist})
+	#message( "+++++++++++++++++++++++${tmp_list}" )
 	SET(${outputlist} ${tmp_list} PARENT_SCOPE)
 ENDFUNCTION(FILTER_HEADERS_FOR_MOC)
 
@@ -56,22 +57,34 @@ FUNCTION(TARGET_MEDV4D_PROGRAM prog_name source_dir )
 	FILE( GLOB_RECURSE rccinput "${SRC_DIR}/*.qrc" )
 	FILE( GLOB_RECURSE uiinput "${SRC_DIR}/*.ui" )
 	FILE( GLOB_RECURSE header_files "${SRC_DIR}/*.h" )
+	FILE( GLOB_RECURSE tcc_files "${SRC_DIR}/*.tcc" )
 	
-	SET_SOURCE_FILES_PROPERTIES(${header_files} PROPERTIES HEADER_FILE_ONLY TRUE)
+	
+	
+	SET_SOURCE_FILES_PROPERTIES(${tcc_files} PROPERTIES HEADER_FILE_ONLY TRUE)
 	FILTER_HEADERS_FOR_MOC( "${header_files}" mocinput )
+	
 	
 	QT4_WRAP_CPP(mocoutput ${mocinput})
 	QT4_ADD_RESOURCES(rccoutput ${rccinput} )
 	QT4_WRAP_UI(uioutput ${uiinput} )
-
-	SOURCE_GROUP( ${prog_name}_Sources FILES "${sources}" )
-	SOURCE_GROUP( ${prog_name}_Resources FILES  "${rccinput}" )
-	SOURCE_GROUP( ${prog_name}_UI FILES  "${uiinput} ")
-	SOURCE_GROUP( ${prog_name}_Header FILES  "${header_files}" )
-	SOURCE_GROUP( ${prog_name}_Generated FILES "${mocoutput} ${rccoutput} ${uioutput}" )
-
-	#Message( "---------- ${OUTPUT} ${sources} ${mocoutput} ${rccoutput}" )
-	ADD_EXECUTABLE(${OUTPUT_NAME} ${sources} ${uioutput} ${uiinput} ${rccinput} ${header_files} ${mocoutput} ${rccoutput} )
+	
+	#message( "++++Sources: ${sources}" )
+	#message( "++++Rccinput: ${rccinput}" )
+	#message( "++++Mocinput: ${mocinput}" )
+	#message( "++++UIinput: ${uiinput}" )
+	#message( "++++HeaderFiles: ${header_files}" )
+	#message( "++++TCCFiles: ${tcc_files}" )
+	#message( "++++Rccoutput: ${rccoutput}" )
+	#message( "++++UIoutput: ${uioutput}" )
+	
+	SOURCE_GROUP( ${prog_name}_Sources FILES "" ${sources} )
+	SOURCE_GROUP( ${prog_name}_Header FILES  "" ${header_files} ${tcc_files} )
+	SOURCE_GROUP( ${prog_name}_UI FILES  "" ${uiinput})
+	SOURCE_GROUP( ${prog_name}_Resources FILES  "" ${rccinput} )
+	SOURCE_GROUP( ${prog_name}_Generated FILES "" ${mocoutput} ${rccoutput} ${uioutput} )
+	
+	ADD_EXECUTABLE(${OUTPUT_NAME} ${sources} ${uioutput}  ${header_files} ${tcc_files} ${mocoutput} ${rccoutput} ) #${uiinput} ${rccinput} )
 	TARGET_LINK_LIBRARIES(${OUTPUT_NAME} ${MEDV4D_ALL_LIBRARIES})
 
 	ADD_DEPENDENCIES(${OUTPUT_NAME} ${MEDV4D_LIBRARIES})
