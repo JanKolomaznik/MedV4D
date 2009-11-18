@@ -121,4 +121,19 @@ Sgn( NType a ) {
 }
 
 
+template< typename NType >
+inline NType
+ClampToInterval( NType a, NType b, NType val ) {
+	if( val < a ) {
+		return a;
+	} 
+	if( val > b ) {
+		return b;
+	} 
+
+	return val;
+}
+
+
+
 #endif /*MATH_TOOLS_H*/

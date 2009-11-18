@@ -433,6 +433,18 @@ VectorCoordinateProduct( const Vector< CoordType, Dim > &v )
 	}
 	return result;
 }
+
+template< typename CoordType, unsigned Dim >
+Vector< CoordType, Dim >
+VectorMemberProduct( const Vector< CoordType, Dim > &a, const Vector< CoordType, Dim > &b )
+{
+	Vector< CoordType, Dim > result = a;
+	for( unsigned i=1; i < Dim; ++i ) {
+		result *= b[ i ];
+	}
+	return result;
+}
+
 typedef Vector< int32, 2 > CoordInt2D;
 typedef Vector< int32, 3 > CoordInt3D;
 typedef Vector< int32, 4 > CoordInt4D;
