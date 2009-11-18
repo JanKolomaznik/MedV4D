@@ -40,122 +40,159 @@ class DicomObj
 
 public:
 
-  /// Typedef for callbacks for events
-  typedef void (*ImageLoadedCallback)(void);
+	/// Typedef for callbacks for events
+	typedef void (*ImageLoadedCallback)(void);
 
-  inline void SetLoadedCallback( ImageLoadedCallback c) 
-	  { m_loadedCallBack = c; }
+	inline void 
+	SetLoadedCallback( ImageLoadedCallback c) 
+		{ m_loadedCallBack = c; }
 
-  /// Pointer to actual dataset container.
-  /**   Void is used because of unimportance
-   *  of files that use (and include) this file to know something about dataSet
-   *  that is defined in DCMTK libraries that are quite bad organized and large.
-   */
-  void *m_dataset;
+	/** 
+	 * Pointer to actual dataset container.  
+	 * Void is used because of unimportance
+	 * of files that use (and include) this file to know something about dataSet
+	 * that is defined in DCMTK libraries that are quite bad organized and large.
+	 **/
+	void *m_dataset;
 
-  // support for loading & saving
-  void *m_fileFormat;
-  
-  //  Basic image information members.
-  /// Retuerns size(in bytes) of one element
-  inline uint8 GetPixelSize( void) { return m_pixelSize; }
-  inline uint16 GetWidth( void) { return m_width; }
-  inline uint16 GetHeight( void) { return m_height; }
-  inline bool IsDataSigned( void) { return m_signed; }
+	/// support for loading & saving
+	void *m_fileFormat;
 
-  void GetSliceThickness( float32 &f);
-  void GetPixelSpacing( float32 &horizSpacing, float32 &vertSpacing);
-  void GetSliceLocation( float32 &location);
-  void GetImagePosition( float32 &x, float32 &y, float32 &z );
-
-  /// Converts from special dicom data stream
-  /** to steam of normal data types like uint16. See DICOM spec.
-   *	08-05pu.pdf (AnnexD).
-   *  \note Type T should corespond to size of pixel determined from GetPixelSize
-   *  method or NOTE: UNSPECIFIED behaviour will follow !!!!! .
-   *  \param dest = destination buffer where to unpack the DICOM data stream.
-   */
-  template< typename T>
-  void FlushIntoArray( const T *dest);
-
-  void FlushIntoArrayNTID( void*dest, int elementTypeID );
-
-  /// Returns order number in set.
-  /** according that images can be sorted
-   *  in order they were accuired by the mashine.
-   *  Currently SliceLocation tag is used.
-   */
-  inline float32 OrderInSet( void) const { return m_orderInSet; }
-
-  /**
-   *  For sorting issues
-   *  check even AcquisitionTime to right sort multi-scan data set
-   */
-  inline bool operator<( DicomObj &b)
-  {
-    std::string aTime;
-    std::string bTime;
-
-    this->GetAcquisitionTime( aTime);
-    b.GetAcquisitionTime( bTime);
-
-    // convert times to integer to be comparable ..
- 
-    // compare the times
-    // if they are the same dicide according order in set
-    if(aTime == bTime)
-      return OrderInSet() < b.OrderInSet();
-    // else return comparison of acquisition times to sort good
-    // subsets within multi-scan
-    else
-      return aTime < bTime;
-  }
-
-  // load & save
-  void Load( const std::string &path);
-  void Save( const std::string &path);
-
-  /// Called when image arrive. 
-  /** Inits basic info to member variables.
-   *  These are returned via basic image information members.
-   */
-  void Init();
-
-  /// Gets values from data set container
-  /**   (other that the basic) 
-   */
-  void GetTagValue( uint16 group, uint16 tagNum, std::string &) ;
-  void GetTagValue( uint16 group, uint16 tagNum, int32 &);
-  void GetTagValue( uint16 group, uint16 tagNum, float32 &);
-  void GetAcquisitionTime(std::string &acqTime);
+	//  Basic image information members.
 	
-  ////////////////////////////////////////////////////////////
+	/**
+	 * \return size (in bytes) of one element
+	 **/
+	inline uint8 
+	GetPixelSize( void) { return m_pixelSize; }
+	
+	inline uint16 
+	GetWidth( void) { return m_width; }
+	
+	inline uint16 
+	GetHeight( void) { return m_height; }
+	
+	inline bool 
+	IsDataSigned( void) { return m_signed; }
 
-  DicomObj();
+	void 
+	GetSliceThickness( float32 &f);
+	
+	void 
+	GetPixelSpacing( float32 &horizSpacing, float32 &vertSpacing);
+	
+	void 
+	GetSliceLocation( float32 &location);
+	
+	void 
+	GetImagePosition( float32 &x, float32 &y, float32 &z );
+
+	/// Converts from special dicom data stream
+	/** to steam of normal data types like uint16. See DICOM spec.
+	*	08-05pu.pdf (AnnexD).
+	*  \note Type T should corespond to size of pixel determined from GetPixelSize
+	*  method or NOTE: UNSPECIFIED behaviour will follow !!!!! .
+	*  \param dest = destination buffer where to unpack the DICOM data stream.
+	*/
+	template< typename T>
+	void 
+	FlushIntoArray( const T *dest);
+
+	void 
+	FlushIntoArrayNTID( void*dest, int elementTypeID );
+
+	/// Returns order number in set.
+	/** according that images can be sorted
+	*  in order they were accuired by the mashine.
+	*  Currently SliceLocation tag is used.
+	*/
+	inline float32 
+	OrderInSet( void) const { return m_orderInSet; }
+
+	/**
+	*  For sorting issues
+	*  check even AcquisitionTime to right sort multi-scan data set
+	*/
+	inline bool 
+	operator<( const DicomObj &b) const
+		{
+			std::string aTime;
+			std::string bTime;
+
+			this->GetAcquisitionTime( aTime);
+			b.GetAcquisitionTime( bTime);
+
+			// convert times to integer to be comparable ..
+
+			// compare the times
+			// if they are the same dicide according order in set
+			if (aTime == bTime) {
+				return OrderInSet() < b.OrderInSet();
+			} else {
+				// else return comparison of acquisition times to sort good
+				// subsets within multi-scan
+				return aTime < bTime;
+			}
+		}
+
+	// load & save
+	void 
+	Load( const std::string &path);
+	
+	void 
+	Save( const std::string &path);
+
+	/// Called when image arrive. 
+	/** Inits basic info to member variables.
+	*  These are returned via basic image information members.
+	*/
+	void 
+	Init();
+
+	/// Gets values from data set container
+	/**   (other that the basic) 
+	*/
+	void 
+	GetTagValue( uint16 group, uint16 tagNum, std::string &) ;
+	
+	void 
+	GetTagValue( uint16 group, uint16 tagNum, int32 &);
+	
+	void 
+	GetTagValue( uint16 group, uint16 tagNum, float32 &);
+	
+	void 
+	GetAcquisitionTime(std::string &acqTime)const;
+
+	////////////////////////////////////////////////////////////
+
+	DicomObj();
 
 private:
 
-  enum Status {
+	enum Status {
 	  Loaded,
 	  Loading,
 	  Failed,
-  };
+	};
 
-  // image info (basic set of information retrieved from data set.
-  // others are to be retrieved via GetTagValue method
-  uint16 m_width, m_height;
-  uint8 m_pixelSize;
-  bool m_signed;
-  float32 m_orderInSet;
+	// image info (basic set of information retrieved from data set.
+	// others are to be retrieved via GetTagValue method
+	uint16		m_width;
+	uint16		m_height;
+	uint8		m_pixelSize;
+	bool		m_signed;
+	float32		m_orderInSet;
 
-  Status m_status;
+	Status		m_status;
 
-  // on loaded event callback
-  ImageLoadedCallback m_loadedCallBack;
+	// on loaded event callback
+	ImageLoadedCallback m_loadedCallBack;
 };
 
 /// Container for one serie of images
 typedef std::vector<DicomObj> DicomObjSet;
+
 /// shared pointer to DicomObjSet type
 typedef boost::shared_ptr< DicomObjSet> DicomObjSetPtr;
 

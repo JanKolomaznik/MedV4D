@@ -102,7 +102,7 @@ DicomObj::GetTagValue(
 ///////////////////////////////////////////////////////////////////////
 
 void
-DicomObj::GetAcquisitionTime(std::string &acqTime)
+DicomObj::GetAcquisitionTime(std::string &acqTime)const
 {
   // DICOM tag Acquisition Time (0008 0032)
   OFString str;

@@ -71,6 +71,7 @@ public:
 	// METHODs ////////////////////////////////////////////////////////////
 	static void Init(void);
 	static void Shutdown(void);
+	
 	/**
 	 * Creates image from given dicomObject set.
 	 * @param dicomObjects Given set of dicom objects.
@@ -114,104 +115,117 @@ public:
 		uint8					* dataArray
 		);
 
-	/// Send C-FIND request to DICOM server.
-  /** Based on given filter params:
-	 *	@param result - reference to result set object
-	 *	@param patientForeName - reference to string containing fore name
-   *  @param patientSureName - same with sure name
-	 *	@param patientID   -   patient ID search mask
-	 *	@param dateFrom		 - ref. to string containing date in yyyyMMdd format
-   *  @param dateTo     - the same for to
-   *	@param referringMD  - referring medician name
-   *	@param description  - item decsription
-	 */
+	/** 
+	 * Send C-FIND request to DICOM server.
+	 * Based on given filter params:
+	 * @param result reference to result set object
+	 * @param patientForeName reference to string containing fore name
+	 * @param patientSureName same with sure name
+	 * @param patientID patient ID search mask
+	 * @param dateFrom ref. to string containing date in yyyyMMdd format
+	 * @param dateTothe same for to
+	 * @param referringMD referring medician name
+	 * @param description item decsription
+	 **/
 	static void Find( 
-		ResultSet &result,
-    const std::string &patientForeName,
-    const std::string &patientSureName,
-    const std::string &patientID,
-		const std::string &dateFrom,
-		const std::string &dateTo,
-    const std::string &referringMD,
-    const std::string &description) ;
+			ResultSet &result,
+			const std::string &patientForeName,
+			const std::string &patientSureName,
+			const std::string &patientID,
+			const std::string &dateFrom,
+			const std::string &dateTo,
+			const std::string &referringMD,
+			const std::string &description
+			);
 
-  /**
-   *  Search given path recursively.
-   *  @param result - result set containing results
-   *  @param path   - given path
-   */
+	/**
+	 * Search given path recursively.
+	 * @param result - result set containing results
+	 * @param path   - given path
+	 **/
 	static void LocalFind( 
-		ResultSet &result,
-    const std::string &path);
+			ResultSet 		&result,
+			const std::string 	&path
+			);
 
 	/**
-   *  Find provides informations about patient and study. But there can be more series in one study. So this member returns ID of all series of given study (seriesInstanceUIDs). There is normally only one.
-   */
+	 * Find provides informations about patient and study. But there can be more series in one study. So this member returns ID of all series of given study (seriesInstanceUIDs). There is normally only one.
+	 **/
 	static void FindStudyInfo(
-		const std::string &patientID,
-		const std::string &studyID,
-		SerieInfoVector &info) ;
+			const std::string	&patientID,
+			const std::string	&studyID,
+			SerieInfoVector 	&info
+			);
 
-  /**
-   *  The same as FindStudyInfo. Works with local filesystem.
-   */
+	/**
+	 * The same as FindStudyInfo. Works with local filesystem.
+	 **/
 	static void LocalFindStudyInfo(
-		const std::string &patientID,
-		const std::string &studyID,
-		SerieInfoVector &info) ;
+			const std::string	&patientID,
+			const std::string	&studyID,
+			SerieInfoVector		&info
+			);
 
 	/**
-   *  The same as FindStudyInfo but gets even imageIDs. Rarely used.
-   */
+	 * The same as FindStudyInfo but gets even imageIDs. Rarely used.
+	 **/
 	static void FindStudyAndImageInfo(
-		const std::string &patientID,
-		const std::string &studyID,
-		StudyInfo &info) ;
+			const std::string 	&patientID,
+			const std::string 	&studyID,
+			StudyInfo 		&info
+			);
 
 	/**
-   *  Finds all studies concerning given patient. Construct special query
-   *  to DICOM server to retrieve all patient's studies.
-   */
+	 * Finds all studies concerning given patient. Construct special query
+	 * to DICOM server to retrieve all patient's studies.
+	 **/
 	static void FindAllPatientStudies(  
-		const std::string &patientID,
-		ResultSet &result) ;
+			const std::string 	&patientID,
+			ResultSet 		&result
+	);
 
-  /**
-   *  Send C-MOVE request to DICOM server to retrieve specified image.
-   *  Image has to be specified through all level of IDs (patient, study, set, image)
-   */
+	/**
+	 * Send C-MOVE request to DICOM server to retrieve specified image.
+	 * Image has to be specified through all level of IDs (patient, study, set, image)
+	 **/
 	static void GetImage(
-		const std::string &patientID,
-		const std::string &studyID,
-		const std::string &serieID,
-		const std::string &imageID,
-		DicomObj &object) ;
+			const std::string 	&patientID,
+			const std::string 	&studyID,
+			const std::string 	&serieID,
+			const std::string 	&imageID,
+			DicomObj 		&object
+			);
 
-  /**
-   *  Send C-MOVE request to retrieve all images in set.
-   */
+	/**
+	 * Send C-MOVE request to retrieve all images in set.
+	 **/
 	static void GetImageSet(
-		const std::string &patientID,
-		const std::string &studyID,
-		const std::string &serieID,
-		DicomObjSet &result,
-    DicomObj::ImageLoadedCallback on_loaded = NULL);
+			const std::string 		&patientID,
+			const std::string 		&studyID,
+			const std::string 		&serieID,
+			DicomObjSet 			&result,
+			DicomObj::ImageLoadedCallback	on_loaded = NULL
+			);
 
-  /**
-   *  Retrieve images from local filesystem.
-   */
+	/**
+	 * Retrieve images from local filesystem.
+	 **/
 	static void LocalGetImageSet(
-    const std::string &patientID,
-		const std::string &studyID,
-		const std::string &serieID,
-		DicomObjSet &result);
-	
+			const std::string 	&patientID,
+			const std::string 	&studyID,
+			const std::string 	&serieID,
+			DicomObjSet 		&result
+			);
+
 	static void
-	LoadSerieThatFileBelongsTo(const std::string &fileName,
-			const std::string &folder, DicomObjSet &result);
-	
+	LoadSerieThatFileBelongsTo(
+			const std::string 	&fileName,
+			const std::string 	&folder, 
+			DicomObjSet 		&result
+			);
+
 private:
-	static bool _useRemotePart;
+	static bool	_useRemotePart;
 };
 
 
