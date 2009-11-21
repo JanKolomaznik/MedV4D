@@ -1,7 +1,7 @@
 #ifndef TF_SCHEME
 #define TF_SCHEME
 
-#include "TFFunction.h"
+#include <TF/TFFunction.h>
 
 #include <map>
 
@@ -18,10 +18,10 @@ public:
 	TFScheme(TFName schemeName);
 	~TFScheme();
 
-	void addFunction(TFName functionName, vector<TFPoint*> points);
-	void addFunction(TFFunction* function);
+	void addFunction(TFName functionName, vector<TFPoint*> points, bool destroySource = true);
+	void addFunction(TFFunction* function, bool destroySource = true);
 
-	void addFunctionsFromSet(vector<TFFunction*> functions);
+	void addFunctionsFromSet(vector<TFFunction*> functions, bool destroySource = true);
 
 	bool containsFunction(TFName functionName);
 

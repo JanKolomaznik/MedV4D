@@ -17,25 +17,35 @@ TFScheme::~TFScheme(){
 	delete _functions;
 }
 
-void TFScheme::addFunction(TFName functionName, vector<TFPoint*> points){
+void TFScheme::addFunction(TFName functionName, vector<TFPoint*> points, bool destroySource){
 
 	TFFunction* functionToAdd = new TFFunction(functionName);
-	functionToAdd->addPointsFromSet(points);
+	functionToAdd->addPointsFromSet(points, destroySource);
 
 	_functions->insert( make_pair(functionName, functionToAdd) );
 }
 
-void TFScheme::addFunction(TFFunction* function){
+void TFScheme::addFunction(TFFunction* function, bool destroySource){
 
-	_functions->insert( make_pair(function->name, function) );
+	_functions->insert( make_pair(function->name, new TFFunction(*function)) );
+	if(destroySource)
+	{
+		delete function;
+	}
 }
 
-void TFScheme::addFunctionsFromSet(vector<TFFunction*> functions){
+void TFScheme::addFunctionsFromSet(vector<TFFunction*> functions, bool destroySource){
 
-	int functionCount = functions.size();
-	for(int i = 0; i < functionCount; ++i)
+	vector<TFFunction*>::iterator first = functions.begin();
+	vector<TFFunction*>::iterator end = functions.end();
+	vector<TFFunction*>::iterator it = first;
+	for(it; it != end; ++it)
 	{
-		addFunction(functions[i]);
+		addFunction(*it, destroySource);
+	}
+	if(destroySource)
+	{
+		functions.clear();
 	}
 }
 
@@ -50,7 +60,7 @@ bool TFScheme::removeFunction(TFName functionName){
 	{
 		TFFunctionsIterator toRemove = _functions->find(functionName);
 		delete toRemove->second;
-		_functions->erase(functionName);
+		_functions->erase(toRemove);
 		return true;
 	}
 	return false;
@@ -67,7 +77,7 @@ TFFunction* TFScheme::getFunction(TFName functionName){
 
 	if(containsFunction(functionName))
 	{
-		return _functions->find(functionName)->second;
+		return new TFFunction( *(_functions->find(functionName)->second) );
 	}
 	return NULL;
 }

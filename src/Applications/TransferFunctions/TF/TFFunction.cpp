@@ -8,6 +8,7 @@ TFFunction::TFFunction(TFName functionName):
 	colourRGB[0] = 0;
 	colourRGB[1] = 0;
 	colourRGB[2] = 0;
+
 	_points = new TFPoints();
 }
 
@@ -17,6 +18,7 @@ TFFunction::TFFunction(TFName functionName, int colour[3]):
 	colourRGB[0] = colour[0];
 	colourRGB[1] = colour[1];
 	colourRGB[2] = colour[2];
+
 	_points = new TFPoints();
 }
 
@@ -26,7 +28,20 @@ TFFunction::TFFunction(TFName functionName, int r, int g, int b):
 	colourRGB[0] = r;
 	colourRGB[1] = g;
 	colourRGB[2] = b;
+
 	_points = new TFPoints();
+}
+
+TFFunction::TFFunction(TFFunction &function){
+	name = function.name;
+
+	colourRGB[0] = function.colourRGB[0];
+	colourRGB[1] = function.colourRGB[1];
+	colourRGB[2] = function.colourRGB[2];
+
+	_points = new TFPoints();
+
+	addPointsFromSet(function.getAllPoints());
 }
 
 TFFunction::~TFFunction(){
@@ -46,67 +61,82 @@ void TFFunction::addPoint(int x, int y){
 	addPoint(new TFPoint(x,y));
 }
 
-void TFFunction::addPoint(TFPoint* point){
+void TFFunction::addPoint(TFPoint* point, bool destroySource){
 
-	_points->insert(make_pair(TFPoint::makePointName(point), point));
-}
-
-void TFFunction::addPointsFromSet(vector<TFPoint*> points){
-
-	int pointCount = points.size();
-	for(int i = 0; i < pointCount; ++i)
+	TFPointsIterator added = _points->find(point->x);
+	if(added == _points->end())
 	{
-		addPoint(points[i]);
+		_points->insert(make_pair(point->x, new TFPoint(*point)));
+	}
+	else
+	{
+		added->second->y = point->y;
+	}
+	if(destroySource)
+	{
+		delete point;
 	}
 }
 
-bool TFFunction::containsPoint(TFName name){
+void TFFunction::addPointsFromSet(vector<TFPoint*> points, bool destroySource){
 
-	return _points->find(name) != _points->end();
+	vector<TFPoint*>::iterator first = points.begin();
+	vector<TFPoint*>::iterator end = points.end();
+	vector<TFPoint*>::iterator it = first;
+	for(it; it != end; ++it)
+	{
+		addPoint(*it, destroySource);
+	}
+	if(destroySource)
+	{
+		points.clear();
+	}
 }
 
-bool TFFunction::removePoint(TFName name){
+bool TFFunction::containsPoint(int coordX){
 
-	if(containsPoint(name))
+	return _points->find(coordX) != _points->end();
+}
+
+bool TFFunction::removePoint(int coordX){
+
+	if(containsPoint(coordX))
 	{
-		TFPointsIterator toRemove = _points->find(name);
+		TFPointsIterator toRemove = _points->find(coordX);
 		delete toRemove->second;
-		_points->erase(name);
+		_points->erase(toRemove);
 		return true;
 	}
 	return false;
 }
 
-TFName TFFunction::updatePoint(TFName pointName){
-	TFPoint* temp = _points->find(pointName)->second;
-	_points->erase(pointName);
+TFPoint* TFFunction::getPoint(int coordX){
 
-	TFName newName = TFPoint::makePointName(temp);
-
-	_points->insert( make_pair(newName, temp) );
-
-	return newName;
-}
-
-TFPoint* TFFunction::getPoint(TFName name){
-
-	if(containsPoint(name))
+	if(containsPoint(coordX))
 	{
-		return _points->find(name)->second;
+		return new TFPoint(*(_points->find(coordX)->second));
 	}
 	return NULL;
 }
 
-vector<TFName> TFFunction::getPointNames(){
+TFPointsIterator TFFunction::begin(){
+	return _points->begin();
+}
+
+TFPointsIterator TFFunction::end(){
+	return _points->end();
+}
+
+vector<TFPoint*> TFFunction::getAllPoints(){
 
 	TFPointsIterator first = _points->begin();
 	TFPointsIterator end = _points->end();
 
-	vector<TFName> names;
+	vector<TFPoint*> points;
 	for(TFPointsIterator it = first; it != end; ++it)
 	{
-		names.push_back(it->first);
+		points.push_back(new TFPoint(*(it->second)));
 	}
 
-	return names;
+	return points;
 }

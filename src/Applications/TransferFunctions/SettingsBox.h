@@ -1,12 +1,13 @@
-#ifndef SETTINGSBOX_H
-#define SETTINGSBOX_H
+#ifndef SETTINGSBOX
+#define SETTINGSBOX
 
 #include <QtGui/QWidget>
 
 #include <map>
 
-#include "TF/TFScheme.h"
-#include "TF/Convert.h"
+#include <TF/TFScheme.h>
+#include <TF/Convert.h>
+#include <TF/TFPaintingWidget.h>
 
 using namespace std;
 
@@ -24,21 +25,19 @@ public:
     ~SettingsBox();
 
 private:
-    Ui::SettingsBox *ui;
+    Ui::SettingsBox* ui;
 
-	TFScheme* currentScheme;
+	TFScheme* savedFunctions;
 	TFFunction* currentFunction;
-	TFPoint* currentPoint;
+
+	PaintingWidget* painter;
 
 private slots:
-    void on_pointDelete_clicked();
-    void on_pointSave_clicked();
     void on_schemeUse_clicked();
     void on_actionExit_triggered();
-    void on_pointBox_currentIndexChanged(int index);
     void on_functionBox_currentIndexChanged(int index);
     void on_functionDelete_clicked();
     void on_functionSave_clicked();
 };
 
-#endif SETTINGSBOX_H
+#endif //SETTINGSBOX

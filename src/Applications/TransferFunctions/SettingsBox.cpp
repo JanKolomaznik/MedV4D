@@ -4,19 +4,6 @@
 #include <cassert>
 
 /*
- * support methods
- */
-
-QString makeQStringFromInt(int value, string prefix = ""){
-
-    QString name = QString::fromStdString(prefix);
-
-     name.append( QString::fromStdString( convert<int,string>(value) ) );
-
-    return name;
-}
-
-/*
  * constructor, destructor
  */
 
@@ -29,18 +16,22 @@ SettingsBox::SettingsBox()
     ui->progressLabel->hide();
     ui->progressBar->hide();
 
-    currentScheme = new TFScheme("Default Scheme");
+    savedFunctions = new TFScheme("Default Scheme");
 	currentFunction = new TFFunction("default_function");
-	currentPoint = new TFPoint(0,0);
 
-	currentFunction->addPoint(currentPoint);
+	savedFunctions->addFunction(currentFunction, false);
 
-	currentScheme->addFunction(currentFunction);
+	painter = new PaintingWidget(this);
+    painter->setObjectName(QString::fromUtf8("painter"));
+    painter->setGeometry(QRect(220, 80, 350, 280));
+
+	painter->setView(&currentFunction);
 }
 
 SettingsBox::~SettingsBox(){
 
-	delete currentScheme;	//includes delete of currentFunction and currentPoint
+	delete savedFunctions;	//includes delete of currentFunction and currentPoint
+	delete painter;
     delete ui;
 }
 
@@ -50,32 +41,23 @@ SettingsBox::~SettingsBox(){
 
 void SettingsBox::on_functionSave_clicked(){
 
+	if(ui->functionName->text() == "unsaved_function")
+	{
+		//cannot save
+		//error dialog shows
+		//TODO
+		return;
+	}
+
 	QString newName = ui->functionName->text();
-	int currentIndex = ui->functionBox->currentIndex();
 
-	currentFunction = currentScheme->getFunction(ui->functionBox->currentText().toStdString());
-	if(currentFunction == NULL)
-	{
-		if(ui->functionName->text() == "unsaved_function")
-		{
-			//cannot save
-			//error dialog shows
-			//TODO
-			return;
-		}
-		currentFunction = new TFFunction( newName.toStdString() );
-		currentScheme->addFunction(currentFunction);
+	savedFunctions->removeFunction(currentFunction->name);
+	currentFunction->name = newName.toStdString();
+	savedFunctions->addFunction(currentFunction, false);
 
-		ui->functionBox->setItemText(currentIndex, newName);
-		on_functionBox_currentIndexChanged(currentIndex);
-	}
-	else
-	{
-		currentScheme->changeFunctionName(currentFunction->name, newName.toStdString());
-		//currentFunction->colourRGB = ui->functionColour->
-
-		ui->functionBox->setItemText( currentIndex, newName );
-	}
+	ui->functionBox->setItemText( ui->functionBox->currentIndex(), newName );
+	
+	painter->repaint();
 }
 
 void SettingsBox::on_functionDelete_clicked(){
@@ -96,11 +78,15 @@ void SettingsBox::on_functionDelete_clicked(){
         }
     }
 
-	currentScheme->removeFunction(currentFunction->name);
-	currentFunction = currentScheme->getFunction(ui->functionBox->itemText(newIndex).toStdString());
+	savedFunctions->removeFunction(currentFunction->name);
+
+	delete currentFunction;
+	currentFunction = savedFunctions->getFunction(ui->functionBox->itemText(newIndex).toStdString());
 
 	ui->functionBox->setCurrentIndex(newIndex);
     ui->functionBox->removeItem(removeIndex);
+	
+	painter->repaint();
 }
 
 void SettingsBox::on_functionBox_currentIndexChanged(int index){
@@ -120,12 +106,6 @@ void SettingsBox::on_functionBox_currentIndexChanged(int index){
 		--count;
 	}
 
-	int pointCount = ui->pointBox->count();
-	for(int i = (pointCount-1); i > 0; --i)
-	{
-		ui->pointBox->removeItem(i);
-	}
-
     if(index == count-1)
     {
         ui->functionBox->addItem(QString::fromStdString("add function"));
@@ -137,147 +117,18 @@ void SettingsBox::on_functionBox_currentIndexChanged(int index){
 		ui->functionName->setText(QString::fromStdString("unsaved_function"));
 		ui->functionName->setFocus();
 
-		ui->pointBox->setItemText(0,QString::fromStdString("unsaved_point"));
-		ui->pointBox->addItem(QString::fromStdString("add point"));
-		
-		ui->pointXValue->setText( QString::fromStdString("-1") );
-		ui->pointYValue->setText( QString::fromStdString("-1") );
-
-		return;
+		delete currentFunction;
+		currentFunction = new TFFunction("unsaved_function");
     }	
-
-	currentFunction = currentScheme->getFunction(ui->functionBox->currentText().toStdString());
-	ui->functionName->setText( QString::fromStdString(currentFunction->name) );
-
-	vector<TFName> currentFunctionPoints = currentFunction->getPointNames();
-
-	if(currentFunctionPoints.size() > 0)
-	{
-		vector<TFName>::iterator first = currentFunctionPoints.begin();
-		vector<TFName>::iterator end = currentFunctionPoints.end();
-		vector<TFName>::iterator it = first;
-
-		ui->pointBox->setItemText(0, QString::fromStdString(*it++));
-		for(it; it != end; ++it)
-		{
-			ui->pointBox->addItem( QString::fromStdString(*it) );
-		}
-
-		ui->pointBox->addItem(QString::fromStdString("add point"));
-	}
 	else
 	{
-		ui->pointBox->setItemText(0, QString::fromStdString("add point"));
+		delete currentFunction;
+		currentFunction = savedFunctions->getFunction(currentText.toStdString());
+
+		ui->functionName->setText( QString::fromStdString(currentFunction->name) );
 	}
-
-	on_pointBox_currentIndexChanged(0);
-}
-
-/*
- * point methods
- */
-
-void SettingsBox::on_pointSave_clicked(){
-
-	if( currentScheme->getFunction(ui->functionBox->currentText().toStdString()) == NULL)
-	{
-		//cannot save point in unsaved function
-		//TODO
-		return;
-	}
-
-	int valueX = convert<string,int>(ui->pointXValue->text().toStdString());
-
-	int valueY = convert<string,int>(ui->pointYValue->text().toStdString());
-
-	TFName pointName = ui->pointBox->currentText().toStdString();
-	currentPoint = currentFunction->getPoint(pointName);
-	if(currentPoint == NULL)
-	{
-		if(valueX < 0 || valueY < 0)
-		{
-			//cannot save
-			//error dialog shows
-			//TODO
-			return;
-		}
-		currentPoint = new TFPoint( valueX, valueY );
-		currentFunction->addPoint(currentPoint);
-	}
-	else
-	{
-		currentPoint->x = valueX;
-		currentPoint->y = valueY;
-	}
-
-	ui->pointBox->setItemText(
-		ui->pointBox->currentIndex(),
-		QString::fromStdString( TFPoint::makePointName(currentPoint) ) );
-}
-
-void SettingsBox::on_pointDelete_clicked(){
-
-    int removeIndex = ui->pointBox->currentIndex();
-    int count = ui->pointBox->count( );
-	int newIndex = 0;
-
-    if(removeIndex != 0)
-    {      
-        if(removeIndex < (count - 2))
-        {
-            newIndex = removeIndex;
-        }
-        else
-        {
-            newIndex = removeIndex - 1;
-        }
-    }
-
-	currentFunction->removePoint(ui->pointBox->currentText().toStdString());
-	currentPoint = currentFunction->getPoint(ui->pointBox->itemText(newIndex).toStdString());
-
-    ui->pointBox->removeItem(removeIndex);
-	ui->pointBox->setCurrentIndex(newIndex);
-}
-
-void SettingsBox::on_pointBox_currentIndexChanged(int index){
-
-    int count = ui->pointBox->count();
-	QString currentText = ui->pointBox->currentText();
-
-	int unsaved = ui->pointBox->findText(QString::fromStdString("unsaved_point"));
-	if(0 <= unsaved)
-	{
-		if(index == count - 1)
-		{
-			ui->pointBox->removeItem(count - 2);
-			return;
-		}
-		ui->pointBox->removeItem(unsaved);
-		--count;
-	}
-
-	if(index == count -1)
-    {
-        ui->pointBox->addItem(QString::fromStdString("add point"));
-        
-        ui->pointBox->setItemText(count-1, QString::fromStdString("unsaved_point"));;
-
-		ui->pointXValue->setText( QString::fromStdString("-1") );
-		ui->pointYValue->setText( QString::fromStdString("-1") );
-        ui->pointBox->setCurrentIndex(count-1);
-
-		return;
-    }
-
-	currentPoint = currentFunction->getPoint(currentText.toStdString());
-
-	assert(currentPoint != NULL);
-
-	ui->pointXValue->setText( QString::fromStdString( convert<int,string>(currentPoint->x) ) );
-	ui->pointYValue->setText( QString::fromStdString( convert<int,string>(currentPoint->y) ) );
-
-	ui->pointBox->setCurrentIndex(ui->pointBox->findText(currentText));
+	
+	painter->repaint();
 }
 
 /*

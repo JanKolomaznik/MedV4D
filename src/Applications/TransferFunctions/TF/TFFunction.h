@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <string>
 
-#include "Convert.h"
+#include <TF/Convert.h>
 
 using namespace std;
 
@@ -21,16 +21,9 @@ struct TFPoint{
 	TFPoint(): x(0), y(0){}
 	TFPoint(const TFPoint &point): x(point.x), y(point.y){}
 	TFPoint(int x, int y): x(x), y(y){}
-
-	static TFName makePointName(TFPoint* point){
-
-		return "point("
-			+ convert<int,string>(point->x) + "," + convert<int,string>(point->y)
-			+ ")";
-	}
 };
 
-typedef map <TFName, TFPoint*> TFPoints;
+typedef map <int, TFPoint*> TFPoints;
 typedef TFPoints::iterator TFPointsIterator;
 
 class TFFunction{
@@ -42,23 +35,26 @@ public:
 	TFFunction(TFName functionName);
 	TFFunction(TFName functionName, int colour[3]);
 	TFFunction(TFName functionName, int r, int g, int b);
+	TFFunction(TFFunction &function);
 
 	~TFFunction();
 
 	void addPoint(int x, int y);
-	void addPoint(TFPoint* point);
+	void addPoint(TFPoint* point, bool destroySource = true);
 
-	void addPointsFromSet(vector<TFPoint*> points);
+	void addPointsFromSet(vector<TFPoint*> points, bool destroySource = true);
 
-	bool containsPoint(TFName pointName);
+	bool containsPoint(int coordX);
 
-	bool removePoint(TFName pointName);
+	bool removePoint(int coordX);
 
-	TFName updatePoint(TFName pointName);
+	TFPoint* getPoint(int coordX);
 
-	TFPoint* getPoint(TFName pointName);
+	TFPointsIterator begin();
 
-	vector<TFName> getPointNames();
+	TFPointsIterator end();
+
+	vector<TFPoint *> getAllPoints();
 	
 private:	
 	TFPoints* _points;
