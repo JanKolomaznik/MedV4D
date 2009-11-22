@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <string>
+#include <fstream>
 
 #include <TF/Convert.h>
 
@@ -55,6 +56,8 @@ public:
 	TFPointsIterator end();
 
 	vector<TFPoint *> getAllPoints();
+
+	void save(ofstream &outFile);
 	
 private:	
 	TFPoints* _points;

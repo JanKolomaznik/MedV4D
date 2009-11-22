@@ -34,10 +34,13 @@ private:
 
 private slots:
     void on_schemeUse_clicked();
-    void on_actionExit_triggered();
+
     void on_functionBox_currentIndexChanged(int index);
     void on_functionDelete_clicked();
     void on_functionSave_clicked();
+
+    void on_actionExit_triggered();
+    void on_saveScheme_triggered();
 };
 
 #endif //SETTINGSBOX

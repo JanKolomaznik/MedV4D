@@ -81,3 +81,29 @@ TFFunction* TFScheme::getFunction(TFName functionName){
 	}
 	return NULL;
 }
+
+void TFScheme::save(/*string path*/){
+
+	string path = "..\\..\\Applications\\TransferFunctions\\data";	//*****
+	string separator = "\\";	//TODO
+	string fileType = ".xml";
+	string fileName = path + separator + name + fileType;
+	ofstream outFile(fileName.c_str());
+
+	outFile << "<?xml version=\"1.0\" encoding=\"utf-8\"?>" << endl
+		<< "<!DOCTYPE TFScheme SYSTEM \"..\\TF\\TFScheme.dtd\">" << endl
+		<< endl
+		<< "<TFScheme name = \"" + name + "\">" << endl;
+
+	TFFunctionsIterator first = _functions->begin();
+	TFFunctionsIterator end = _functions->end();
+	TFFunctionsIterator it = first;
+	for(it; it != end; ++it)
+	{
+		it->second->save(outFile);
+	}
+
+	outFile << "</TFScheme>";
+
+	outFile.close();
+}

@@ -154,3 +154,10 @@ void SettingsBox::on_actionExit_triggered(){
 
     close();
 }
+
+void SettingsBox::on_saveScheme_triggered(){
+
+	savedFunctions->name = ui->schemeName->text().toStdString();
+	on_functionSave_clicked();
+	savedFunctions->save();
+}

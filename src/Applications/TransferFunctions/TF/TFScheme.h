@@ -4,6 +4,7 @@
 #include <TF/TFFunction.h>
 
 #include <map>
+#include <fstream>
 
 using namespace std;
 
@@ -30,6 +31,8 @@ public:
 	void changeFunctionName(TFName from, TFName to);
 
 	TFFunction* getFunction(TFName functionName);
+
+	void save(/*string path = ""*/);
 
 private:
 	TFFunctions* _functions;
