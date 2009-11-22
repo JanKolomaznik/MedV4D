@@ -83,6 +83,8 @@ namespace M4D
 			*/
 			virtual QWidget* operator()();
 
+			void DrawTriangle(float x, float y, float z, float size);
+
 			virtual void initializeGL();
 
 			virtual void ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imaging::PipelineMessage::MessageSendStyle sendStyle, Imaging::FlowDirection direction );
@@ -90,6 +92,48 @@ namespace M4D
 			virtual void paintGL();
 
 			virtual void resizeGL(int winW, int winH);
+
+			virtual void mousePressEvent(QMouseEvent *event);
+
+			/**
+			* Method inherited from QGLWidget. It is called whenever a mouse button is released
+			* above the widget.
+			*  @param event the mouse release event to be handled
+			*/
+			virtual void mouseReleaseEvent(QMouseEvent *event);
+
+			/**
+			* Method inherited from QGLWidget. It is called whenever the mouse is moved above a widget.
+			*  @param event the mouse move event to be handled
+			*/
+			virtual void mouseMoveEvent(QMouseEvent *event);
+
+			/**
+			* Method inherited from QGLWidget. It is called whenever the wheel is moved above the widget.
+			*  @param event the wheel event to be handled.
+			*/
+			virtual void wheelEvent(QWheelEvent *event);
+
+			/**
+			* Method inherited from QGLWidget. It is called whenever a mouse button is double-clicked
+			* above the widget.
+			*  @param event the mouse double-click event to be handled
+			*/
+			virtual void mouseDoubleClickEvent ( QMouseEvent * event );
+
+			/**
+			* Method inherited from QGLWidget. It is called whenever a keyboard key is pressed
+			* above the widget.
+			*  @param event the key press event to be handled
+			*/
+			virtual void keyPressEvent ( QKeyEvent * event );
+
+			/**
+			* Method inherited from QGLWidget. It is called whenever a keyboard key is released
+			* above the widget.
+			*  @param event the key release event to be handled
+			*/
+			virtual void keyReleaseEvent ( QKeyEvent * event );
 
 			AvailableSlots				_availableSlots;
 
@@ -253,6 +297,18 @@ namespace M4D
 				*  @param z the z coordinate
 				*/
 				virtual void slotColorPicker( double x, double y, double z );
+
+			protected:
+
+				QPoint _lastMousePosition;
+				bool _leftButton;
+				bool _rightButton;
+				float _imageSize;
+				float _imageWidth;
+				float _imageHeight;
+				float _zoom;
+				float _rotateX;
+				float _rotateY;
 
 			protected slots:
 
