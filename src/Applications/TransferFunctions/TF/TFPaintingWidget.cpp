@@ -34,6 +34,10 @@ void PaintingWidget::paintEvent(QPaintEvent *){
 	painter.drawLine(point1.x, point1.y, point2.x, point2.y);
 }
 
+void PaintingWidget::mousePressEvent(QMouseEvent *e){
+	mouseMoveEvent(e);
+}
+
 void PaintingWidget::mouseMoveEvent(QMouseEvent *e){
 
 	TFPoint size = TFPoint(this->width(), this->height());
