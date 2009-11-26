@@ -1,9 +1,14 @@
 #include "mainWindow.h"
 #include "SettingsBox.h"
+#include "m4dMySliceViewerWidget.h"
 #include "Imaging/PipelineMessages.h"
+#include "GUI/widgets/utils/ViewerFactory.h"
 
 using namespace std;
 using namespace M4D::Imaging;
+
+typedef M4D::GUI::GenericViewerFactory< M4D::Viewer::m4dMySliceViewerWidget >	MySliceViewerFactory;
+
 
 class LFNotifier : public M4D::Imaging::MessageReceiverInterface
 {
@@ -97,17 +102,31 @@ void mainWindow::CreatePipeline()
 	_outConnection->SetMessageHook( MessageReceiverInterface::Ptr( _notifier ) );
 }
 
-mainWindow::mainWindow ()
-  : m4dGUIMainWindow( APPLICATION_NAME, ORGANIZATION_NAME ), _inConnection( NULL ), _outConnection( NULL )
+void mainWindow::createDefaultViewerDesktop ()
 {
+  currentViewerDesktop = new M4D::GUI::m4dGUIMainViewerDesktopWidget( 1, 2, new MySliceViewerFactory() );
+}
+
+mainWindow::mainWindow ()
+  : m4dGUIMainWindow(), _inConnection( NULL ), _outConnection( NULL )
+{
+}
+
+void mainWindow::build(){
+  M4D::GUI::m4dGUIMainWindow::build(APPLICATION_NAME, ORGANIZATION_NAME );
+
 	Q_INIT_RESOURCE( mainWindow ); 
+//  currentViewerDesktop = new M4D::GUI::m4dGUIMainViewerDesktopWidget( 1, 2, new MySliceViewerFactory() );
 
 	CreatePipeline();
+
+//  this->currentViewerDesktop->replaceSelectedViewerWidget
 
 	_settings = new SettingsBox( _filter, this );
 	addDockWindow( "Bone Segmentation", _settings );
 	QObject::connect( _notifier, SIGNAL( Notification() ), _settings, SLOT( EndOfExecution() ), Qt::QueuedConnection );
 }
+
 
 void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 {

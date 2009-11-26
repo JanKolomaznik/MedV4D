@@ -45,6 +45,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "m4dPilot", "m4dPilot\m4dPil
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HapticInterface", "HapticInterface\HapticInterface.vcproj", "{88C5320D-CAA1-480B-B846-88B7181CED29}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TissueDensityAnalysis", "TissueDensityAnalysis\TissueDensityAnalysis.vcproj", "{1F55A46B-3BEC-4998-A180-2A89CAE8FBD0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -81,9 +83,12 @@ Global
 		{CAFBCE49-21C9-3A1D-995B-E6FFF641C6E6}.Release|Win32.ActiveCfg = Release|Win32
 		{CAFBCE49-21C9-3A1D-995B-E6FFF641C6E6}.Release|Win32.Build.0 = Release|Win32
 		{88C5320D-CAA1-480B-B846-88B7181CED29}.Debug|Win32.ActiveCfg = Debug|Win32
-		{88C5320D-CAA1-480B-B846-88B7181CED29}.Debug|Win32.Build.0 = Debug|Win32
 		{88C5320D-CAA1-480B-B846-88B7181CED29}.Release|Win32.ActiveCfg = Release|Win32
 		{88C5320D-CAA1-480B-B846-88B7181CED29}.Release|Win32.Build.0 = Release|Win32
+		{1F55A46B-3BEC-4998-A180-2A89CAE8FBD0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1F55A46B-3BEC-4998-A180-2A89CAE8FBD0}.Debug|Win32.Build.0 = Debug|Win32
+		{1F55A46B-3BEC-4998-A180-2A89CAE8FBD0}.Release|Win32.ActiveCfg = Release|Win32
+		{1F55A46B-3BEC-4998-A180-2A89CAE8FBD0}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

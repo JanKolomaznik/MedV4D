@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1250"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="TissueDensityAnalysis"
 	ProjectGUID="{1F55A46B-3BEC-4998-A180-2A89CAE8FBD0}"
 	RootNamespace="TissueDensityAnalysis"
@@ -206,6 +206,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\..\Applications\TissueDensityAnalysis\m4dMySliceViewerWidget.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Applications\TissueDensityAnalysis\main.cpp"
 				>
 			</File>
@@ -223,6 +227,20 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath="..\..\Applications\TissueDensityAnalysis\m4dMySliceViewerWidget.h"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						CommandLine="..\..\bin\qt\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I..\..\include\qt\headers\QtCore; -I..\..\include\qt\headers\QtGui; -I..\..\include\qt\headers; -I.; -I.\debug; -I\qt\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 $(InputPath) -o $(IntDir)\generated\moc\moc_$(InputName).cpp"
+						AdditionalDependencies="moc.exe,$(InputFileName)"
+						Outputs="$(IntDir)\generated\moc\moc_$(InputName).cpp"
+					/>
+				</FileConfiguration>
+			</File>
 			<File
 				RelativePath="..\..\Applications\TissueDensityAnalysis\mainWindow.h"
 				>
@@ -312,16 +330,8 @@
 			Name="Generated Files"
 			>
 			<File
-				RelativePath="$(IntDir)\generated\moc\moc_mainWindow.cpp"
+				RelativePath="..\..\tmp\TissueDensityAnalysisDebug\generated\moc\moc_m4dMySliceViewerWidget.cpp"
 				>
-				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="$(IntDir)\generated\moc\moc_mainWindow.cpp"
@@ -336,7 +346,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="$(IntDir)\generated\moc\moc_SettingsBox.cpp"
+				RelativePath="$(IntDir)\generated\moc\moc_mainWindow.cpp"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -360,7 +370,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="$(IntDir)\generated\rcc\qrc_mainWindow.cpp"
+				RelativePath="$(IntDir)\generated\moc\moc_SettingsBox.cpp"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -376,6 +386,18 @@
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="$(IntDir)\generated\rcc\qrc_mainWindow.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
