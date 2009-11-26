@@ -87,10 +87,18 @@ const int m4dGUIMainWindow::slotsToActions[] = { ACTION_EMPTY, ACTION_EMPTY, ACT
                   ACTION_NEW_POINT, ACTION_NEW_SHAPE, ACTION_CLEAR_POINT, ACTION_CLEAR_SHAPE, ACTION_CLEAR_ALL, 
                   ACTION_ROTATE_3D, ACTION_ROTATE_3D, ACTION_ROTATE_3D, ACTION_SLICE_ORIENTATION, ACTION_PROBE };
 
-m4dGUIMainWindow::m4dGUIMainWindow ( const char *appName, const char *orgName, const QIcon &icon )
+m4dGUIMainWindow::m4dGUIMainWindow ( )
 {
-  QCoreApplication::setApplicationName( appName );
-  QCoreApplication::setOrganizationName( orgName );
+}
+
+m4dGUIMainWindow::m4dGUIMainWindow( const char *appName, const char *orgName,
+                                    const QIcon &icon = QIcon( ":/icons/app.png" ))
+{
+  build(appName, orgName, icon );
+}
+
+void m4dGUIMainWindow::build(const char *appName, const char *orgName, const QIcon &icon )
+{
 
   initMainWindowResource();
 
@@ -122,7 +130,6 @@ m4dGUIMainWindow::m4dGUIMainWindow ( const char *appName, const char *orgName, c
   // update availability of features (according to selected viewer - first one is init.)
   features( currentViewerDesktop->getPrevSelectedViewerWidget() );
 }
-
 
 void m4dGUIMainWindow::addDesktopWidget ( QWidget *widget )
 {

@@ -90,6 +90,10 @@ class m4dGUIMainWindow: public QMainWindow
       std::list< std::string > leftOverlayInfo, rightOverlayInfo;
     };
 
+    /** 
+     * Main Window constructor.
+     */
+    m4dGUIMainWindow ();
 
     /** 
      * Main Window constructor.
@@ -97,11 +101,14 @@ class m4dGUIMainWindow: public QMainWindow
      * @param appName name of the application - for title and QSettings prefix
      * @param orgName name of the organization - for QSettings prefix
      * @param icon reference to the icon of the main window, application - default
+     * @DEPRECATED
      * is universal app.png from incons directory
      */
-    m4dGUIMainWindow ( const char *appName, const char *orgName,
-                       const QIcon &icon = QIcon( ":/icons/app.png" ) );
+    m4dGUIMainWindow( const char *appName, const char *orgName,
+                      const QIcon &icon = QIcon( ":/icons/app.png" ));
 
+    virtual void build( const char *appName, const char *orgName,
+                       const QIcon &icon = QIcon( ":/icons/app.png" ));
 
     /**
      * Returns flag indicating wheather the build was successful - construction of the 
@@ -295,7 +302,7 @@ class m4dGUIMainWindow: public QMainWindow
     /**
      * Creates default Viewer Desktop and connects it with other widgets.
      */
-    void createDefaultViewerDesktop ();
+    virtual void createDefaultViewerDesktop ();
 
     /**
      * Creates Study Manager Dialog with Study Manager Widget and connects it with other widgets.
