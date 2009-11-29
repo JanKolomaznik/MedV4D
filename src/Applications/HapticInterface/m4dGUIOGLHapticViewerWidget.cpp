@@ -274,8 +274,8 @@ namespace M4D
 							glRotatef(_rotateY*cos(_rotateX*PI/180.0f), 0.0f, 1.0f, 0.0f);
 							glRotatef(_rotateY*sin(_rotateX*PI/180.0f), 0.0f, 0.0f, 1.0f);
 							glTranslatef( - _imageSize / 2.0 + i * _varX,  - _imageSize / 2.0 + j * _varY,  - _imageSize / 2.0 + k * _varZ);
-							glRotatef(_rotateY*(-sin(_rotateX*PI/180.0f)), 0.0f, 0.0f, 1.0f);
-							glRotatef(_rotateY*(-cos(_rotateX*PI/180.0f)), 0.0f, 1.0f, 0.0f);
+							glRotatef(-_rotateY*sin(_rotateX*PI/180.0f), 0.0f, 0.0f, 1.0f);
+							glRotatef(-_rotateY*cos(_rotateX*PI/180.0f), 0.0f, 1.0f, 0.0f);
 							glRotatef(_rotateX, -1.0f, 0.0f, 0.0f);
 							glColor3f(0.0f + (GLfloat)((double)result / (double)(_maxValue - _minValue)),0.0f,0.0f);
 							DrawTriangle(0.0f, 0.0f, 0.0f, _trianglSize);
