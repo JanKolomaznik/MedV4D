@@ -46,7 +46,7 @@
 				AdditionalOptions="-Zm200 -w34100 -w34189 -Zm200 -w34100 -w34189 -w34100 -w34189"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\Applications\TransferFunctions;..\..\;..\..\include\qt\headers\QtCore;..\..\include\qt\headers\QtGui;..\..\include\qt\headers\QtOpenGL;..\..\include\qt\headers;.;&quot;.\qt\win32-msvc2005&quot;;..\..\include;..\..\include\qt;..\..\include\vtk;&quot;$(IntDir)\generated\uic&quot;"
-				PreprocessorDefinitions="_WINDOWS;_DEBUG;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_GUI_LIB;QT_CORE_LIB;QT_THREAD_SUPPORT;&quot;DEBUG_LEVEL=10&quot;;"
+				PreprocessorDefinitions="_WINDOWS;_DEBUG;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_GUI_LIB;QT_CORE_LIB;QT_THREAD_SUPPORT;&quot;DEBUG_LEVEL=10&quot;"
 				GeneratePreprocessedFile="0"
 				ExceptionHandling="1"
 				RuntimeLibrary="1"
@@ -229,6 +229,10 @@
 				RelativePath="..\..\Applications\TransferFunctions\TF\TFScheme.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\..\Applications\TransferFunctions\TF\TFXmlReader.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -301,6 +305,10 @@
 			</File>
 			<File
 				RelativePath="..\..\Applications\TransferFunctions\TF\TFScheme.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Applications\TransferFunctions\TF\TFXmlReader.h"
 				>
 			</File>
 		</Filter>
