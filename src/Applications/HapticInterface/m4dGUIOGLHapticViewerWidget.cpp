@@ -8,6 +8,8 @@
 #include <sstream>
 #include <QtGui>
 
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+
 namespace M4D
 {
 	namespace Viewer
@@ -97,11 +99,16 @@ namespace M4D
 			}
 			if (_leftButton)
 			{
-				float xMove = ((float)(event->x() - _lastMousePosition.x())) / ((float)(width()));
-				float yMove = ((float)(event->y() - _lastMousePosition.y())) / ((float)(height()));
+				float xMove = ((float)(event->x() - _lastMousePosition.x())) / ((float)(height()));
+				float yMove = ((float)(event->y() - _lastMousePosition.y())) / ((float)(width()));
 
 				_rotateY += xMove * 5.0;
+				_rotateY = _rotateY > 360.0 ? _rotateY - 360.0 : _rotateY;
+				_rotateY = _rotateY < -360.0 ? _rotateY + 360.0 : _rotateY;
+
 				_rotateX += yMove * 5.0; // TODO
+				_rotateX = _rotateX > 360.0 ? _rotateX - 360.0 : _rotateX;
+				_rotateX = _rotateX < 360.0 ? _rotateX + 360.0 : _rotateX;
 			}
 			updateGL();
 		}
@@ -249,16 +256,13 @@ namespace M4D
 
 			glEnd();*/
 
-			float size = ((float)_inPort->GetDatasetTyped().GetDimensionExtents(0).maximum-(float)_inPort->GetDatasetTyped().GetDimensionExtents(0).minimum);
-			float var = _imageSize / size;
-			int _imageID = _inPort->GetDatasetTyped().GetElementTypeID();
 			int64 result = 0;
 			
-			for (int i = _inPort->GetDatasetTyped().GetDimensionExtents(0).minimum; i < _inPort->GetDatasetTyped().GetDimensionExtents(0).maximum; i++)
+			for (int i = _minX; i < _minX + _sizeX; i++)
 			{
-				for (int j = _inPort->GetDatasetTyped().GetDimensionExtents(1).minimum; j < _inPort->GetDatasetTyped().GetDimensionExtents(1).maximum; j++)
+				for (int j = _minY; j < _minY + _sizeY; j++)
 				{
-					for (int k = _inPort->GetDatasetTyped().GetDimensionExtents(2).minimum; k < _inPort->GetDatasetTyped().GetDimensionExtents(2).maximum; k++)
+					for (int k = _minZ; k < _minZ + _sizeZ; k++)
 					{
 						NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
 							_imageID, result = Imaging::Image< TTYPE, 3 >::CastAbstractImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >(i, j, k) ) );
@@ -267,10 +271,14 @@ namespace M4D
 							glLoadIdentity();
 							glTranslatef(0.0f, 0.0f, _zoom);
 							glRotatef(_rotateX, 1.0f, 0.0f, 0.0f);
-							glRotatef(_rotateY, 0.0f, 1.0f, 0.0f);
-							glTranslatef( - _imageSize / 2.0 + i * var,  - _imageSize / 2.0 + j * var,  - _imageSize / 2.0 + k * var);
-							glColor3f(0.0f + ((GLfloat)result / 32.0),0.0f,0.0f);
-							DrawTriangle(0.0f, 0.0f, 0.0f, var / _imageSize);
+							glRotatef(_rotateY*cos(_rotateX*PI/180.0f), 0.0f, 1.0f, 0.0f);
+							glRotatef(_rotateY*sin(_rotateX*PI/180.0f), 0.0f, 0.0f, 1.0f);
+							glTranslatef( - _imageSize / 2.0 + i * _varX,  - _imageSize / 2.0 + j * _varY,  - _imageSize / 2.0 + k * _varZ);
+							glRotatef(_rotateY*(-sin(_rotateX*PI/180.0f)), 0.0f, 0.0f, 1.0f);
+							glRotatef(_rotateY*(-cos(_rotateX*PI/180.0f)), 0.0f, 1.0f, 0.0f);
+							glRotatef(_rotateX, -1.0f, 0.0f, 0.0f);
+							glColor3f(0.0f + (GLfloat)((double)result / (double)(_maxValue - _minValue)),0.0f,0.0f);
+							DrawTriangle(0.0f, 0.0f, 0.0f, _trianglSize);
 						}
 					}
 				}
@@ -291,6 +299,8 @@ namespace M4D
 			{
 				winH = 1;
 			}
+
+			loadImageParams();
 			
 			glViewport(0, 0, winW, winH);
 			glMatrixMode(GL_PROJECTION);
@@ -300,11 +310,59 @@ namespace M4D
 			glLoadIdentity();
 			updateGL();
 		}
-		void m4dGUIOGLHapticViewerWidget::initializeGL()
+		void m4dGUIOGLHapticViewerWidget::loadImageParams()
 		{
 			_imageSize = 10.0;
 			_imageHeight = _imageSize;
 			_imageWidth = _imageSize;
+			_imageID = _inPort->GetDatasetTyped().GetElementTypeID();
+			
+			if (_inPort->GetDatasetTyped().GetDimension() == 3)
+			{
+				_minX = (float)_inPort->GetDatasetTyped().GetDimensionExtents(0).minimum;
+				_minY = (float)_inPort->GetDatasetTyped().GetDimensionExtents(1).minimum;
+				_minZ = (float)_inPort->GetDatasetTyped().GetDimensionExtents(2).minimum;
+
+				_sizeX = ((float)_inPort->GetDatasetTyped().GetDimensionExtents(0).maximum-_minX);
+				_sizeY = ((float)_inPort->GetDatasetTyped().GetDimensionExtents(1).maximum-_minY);
+				_sizeZ = ((float)_inPort->GetDatasetTyped().GetDimensionExtents(2).maximum-_minZ);
+			}
+
+			_varX = _imageSize / _sizeX;
+			_varY = _imageSize / _sizeY;
+			_varZ = _imageSize / _sizeZ;
+
+			_trianglSize = MIN(MIN(_varX, _varY), MIN(_varX, _varZ)) / 10.0;
+
+			uint64 min = MAX_INT64;
+			uint64 max = 0;
+			uint64 result = 0;
+
+			for (int i = _minX; i < _minX + _sizeX; i++)
+			{
+				for (int j = _minY; j < _minY + _sizeY; j++)
+				{
+					for (int k = _minZ; k < _minZ + _sizeZ; k++)
+					{
+						NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
+							_imageID, result = Imaging::Image< TTYPE, 3 >::CastAbstractImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >(i, j, k) ) );
+						if (result > max)
+						{
+							max = result;
+						}
+						if (result < min)
+						{
+							min = result;
+						}
+					}
+				}
+			}
+			_minValue = min;
+			_maxValue = max;
+		}
+		void m4dGUIOGLHapticViewerWidget::initializeGL()
+		{
+			loadImageParams();
 
 			_zoom = -_imageSize;
 			_rotateY = 0.0;

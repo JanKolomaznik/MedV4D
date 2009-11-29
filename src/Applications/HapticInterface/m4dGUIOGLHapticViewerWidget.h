@@ -87,6 +87,8 @@ namespace M4D
 
 			virtual void initializeGL();
 
+			virtual void loadImageParams();
+
 			virtual void ReceiveMessage( Imaging::PipelineMessage::Ptr msg, Imaging::PipelineMessage::MessageSendStyle sendStyle, Imaging::FlowDirection direction );
 
 			virtual void paintGL();
@@ -307,8 +309,13 @@ namespace M4D
 				float _imageWidth;
 				float _imageHeight;
 				float _zoom;
-				float _rotateX;
-				float _rotateY;
+				float _rotateX, _rotateZ, _rotateY;
+				int _imageID;
+				float _sizeX, _sizeY, _sizeZ;
+				float _minX, _minY, _minZ;
+				float _varX, _varY, _varZ;
+				float _trianglSize;
+				int64 _minValue, _maxValue;
 
 			protected slots:
 
