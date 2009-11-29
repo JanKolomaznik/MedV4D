@@ -9,6 +9,11 @@
 #include <TF/Convert.h>
 #include <TF/TFPaintingWidget.h>
 
+#include <TF/TFXmlReader.h>
+#include <QtGui/QWidget>
+#include <QtGui/QFileDialog>
+#include <QtGui/QMessageBox>
+
 using namespace std;
 
 namespace Ui{
@@ -41,6 +46,7 @@ private slots:
 
     void on_actionExit_triggered();
     void on_saveScheme_triggered();
+    void on_loadScheme_triggered();
 };
 
 #endif //SETTINGSBOX

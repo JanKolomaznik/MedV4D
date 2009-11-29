@@ -16,16 +16,16 @@ SettingsBox::SettingsBox()
     ui->progressLabel->hide();
     ui->progressBar->hide();
 
-    savedFunctions = new TFScheme("Default Scheme");
-	currentFunction = new TFFunction("default_function");
-
-	savedFunctions->addFunction(currentFunction, false);
+    savedFunctions = new TFScheme();
+	currentFunction = savedFunctions->getFirstFunction();
 
 	painter = new PaintingWidget(this);
     painter->setObjectName(QString::fromUtf8("painter"));
     painter->setGeometry(QRect(220, 80, 350, 280));
 
 	painter->setView(&currentFunction);
+
+	setFocus();
 }
 
 SettingsBox::~SettingsBox(){
@@ -160,4 +160,62 @@ void SettingsBox::on_saveScheme_triggered(){
 	savedFunctions->name = ui->schemeName->text().toStdString();
 	on_functionSave_clicked();
 	savedFunctions->save();
+}
+
+void SettingsBox::on_loadScheme_triggered(){
+
+	QString fileName =
+		QFileDialog::getOpenFileName(this, QObject::tr("Open Transfer Function"),
+								  QDir::currentPath(),
+								  QObject::tr("TF Files (*.tf *.xml)"));
+	if (fileName.isEmpty())
+	 return;
+
+	QFile file(fileName);
+	if (!file.open(QFile::ReadOnly | QFile::Text)) {
+	 QMessageBox::warning(this, QObject::tr("QXmlStream TransferFunctions"),
+						  QObject::tr("Cannot read file %1:\n%2.")
+						  .arg(fileName)
+						  .arg(file.errorString()));
+	 return;
+	}
+
+	TFScheme* loaded = NULL;
+	TFXmlReader reader;
+	if (!reader.read(&file, &loaded)) {
+		QMessageBox::warning(this, QObject::tr("QXmlStream TransferFunctions"),
+						  QObject::tr("Parse error in file %1 at line %2, column %3:\n%4")
+						  .arg(fileName)
+						  .arg(reader.lineNumber())
+						  .arg(reader.columnNumber())
+						  .arg(reader.errorString()));
+	}
+	else
+	{
+		delete savedFunctions;
+		savedFunctions = loaded;
+		currentFunction = savedFunctions->getFirstFunction();
+
+		int toRemove = ui->functionBox->count()-1;
+
+		for(int i = 0; i < toRemove; ++i)
+		{
+			ui->functionBox->removeItem(ui->functionBox->count()-2);
+		}
+
+		TFFunctionsIterator first = savedFunctions->begin();
+		TFFunctionsIterator end = savedFunctions->end();		
+		TFFunctionsIterator it = first;
+		if(it != end)
+		{
+			ui->functionBox->setItemText(0, QString::fromStdString(it->first));
+			++it;
+		}
+		for(it; it != end; ++it)
+		{
+			ui->functionBox->insertItem(ui->functionBox->count()-1, QString::fromStdString(it->first));
+		}
+		ui->schemeName->setText(QString::fromStdString(savedFunctions->name));
+		on_functionBox_currentIndexChanged(0);
+	}
 }
