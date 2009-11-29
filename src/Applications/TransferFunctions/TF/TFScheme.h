@@ -4,7 +4,7 @@
 #include <TF/TFFunction.h>
 
 #include <map>
-#include <fstream>
+#include <fstream>	
 
 using namespace std;
 
@@ -16,6 +16,7 @@ class TFScheme{
 public:
 	TFName name;
 
+	TFScheme();
 	TFScheme(TFName schemeName);
 	~TFScheme();
 
@@ -32,8 +33,13 @@ public:
 
 	TFFunction* getFunction(TFName functionName);
 
-	void save(/*string path = ""*/);
+	TFFunction* getFirstFunction();
 
+	TFFunctionsIterator begin();
+
+	TFFunctionsIterator end();
+
+	void save(/*string path = ""*/);
 private:
 	TFFunctions* _functions;
 };

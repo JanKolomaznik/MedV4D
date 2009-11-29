@@ -33,6 +33,7 @@ public:
 	TFName name;
 	int colourRGB[3];
 
+	TFFunction();
 	TFFunction(TFName functionName);
 	TFFunction(TFName functionName, int colour[3]);
 	TFFunction(TFName functionName, int r, int g, int b);

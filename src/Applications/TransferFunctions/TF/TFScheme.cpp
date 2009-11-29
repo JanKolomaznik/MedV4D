@@ -1,5 +1,13 @@
 #include "TFScheme.h"
 
+TFScheme::TFScheme(){
+
+	name = "Default Scheme";
+	_functions = new TFFunctions();
+	TFFunction* defaultFunction = new TFFunction();
+	_functions->insert(make_pair(defaultFunction->name, defaultFunction));
+}
+
 TFScheme::TFScheme(TFName schemeName): name(schemeName){
 
 	_functions = new TFFunctions();
@@ -80,6 +88,21 @@ TFFunction* TFScheme::getFunction(TFName functionName){
 		return new TFFunction( *(_functions->find(functionName)->second) );
 	}
 	return NULL;
+}
+
+TFFunction* TFScheme::getFirstFunction(){
+
+	return new TFFunction( *(_functions->begin()->second) );
+}
+
+TFFunctionsIterator TFScheme::begin(){
+
+	return _functions->begin();
+}
+
+TFFunctionsIterator TFScheme::end(){
+
+	return _functions->end();
 }
 
 void TFScheme::save(/*string path*/){

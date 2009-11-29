@@ -2,6 +2,17 @@
 
 using namespace std;
 
+TFFunction::TFFunction(){
+
+	name = "default_function";
+
+	colourRGB[0] = 0;
+	colourRGB[1] = 0;
+	colourRGB[2] = 0;
+
+	_points = new TFPoints();
+}
+
 TFFunction::TFFunction(TFName functionName):
 	name(functionName){
 
