@@ -2,6 +2,7 @@
 #include "Filtering.h"
 #include "Imaging/filters/CannyEdgeDetector.h"
 #undef min
+#undef max
 #include <tclap/CmdLine.h>
 
 using namespace M4D;

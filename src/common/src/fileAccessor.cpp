@@ -7,26 +7,20 @@ using namespace M4D::IO;
 
 /////////////////////////////////////////////////////////////////////////////
 FileAccessor::FileAccessor(const char *file, OpenMode mode) {
-	if(mode == MODE_READ)
-	{
-		stream_.open(file, 
-			fstream::in | fstream::binary);
-		if(stream_.fail())
-		{
-			stream_.close();
-			LOG("Cannont create FileAccessor - " << file);
-			throw exception();
-		}
+	switch( mode ) {
+	case MODE_READ:
+		stream_.open(file, fstream::in | fstream::binary);
+		break;		
+	case MODE_WRITE:
+		stream_.open(file, fstream::out | fstream::binary | fstream::trunc);
+		break;
+	default:
+		ASSERT( false );
 	}
-	else {
-		stream_.open(file, 
-			fstream::out | fstream::binary | fstream::trunc);
-		if(stream_.fail())
-		{
-			stream_.close();
-			LOG("Cannont create FileAccessor - " << file);
-			throw exception();
-		}
+	if(stream_.fail()) {
+		stream_.close();
+		_THROW_ ErrorHandling::ExceptionBase( 
+			TO_STRING( "Cannot create FileAccessor (mode = " << mode << ") - " << file ) );
 	}
 }
 /////////////////////////////////////////////////////////////////////////////
