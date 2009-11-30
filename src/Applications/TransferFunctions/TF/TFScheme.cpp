@@ -95,14 +95,18 @@ TFFunction* TFScheme::getFirstFunction(){
 	return new TFFunction( *(_functions->begin()->second) );
 }
 
-TFFunctionsIterator TFScheme::begin(){
+vector<TFName> TFScheme::getFunctionNames(){
 
-	return _functions->begin();
-}
+	vector<TFName> names;
 
-TFFunctionsIterator TFScheme::end(){
+	TFFunctionsIterator first = _functions->begin();
+	TFFunctionsIterator end = _functions->end();
+	for(TFFunctionsIterator it = first; it != end; ++it)
+	{
+		names.push_back(it->second->name);
+	}
 
-	return _functions->end();
+	return names;
 }
 
 void TFScheme::save(/*string path*/){

@@ -9,10 +9,12 @@
 #include <TF/Convert.h>
 #include <TF/TFPaintingWidget.h>
 
-#include <TF/TFXmlReader.h>
 #include <QtGui/QWidget>
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
+
+#include <TF/TFXmlReader.h>
+#include <TF/TFXmlWriter.h>
 
 using namespace std;
 

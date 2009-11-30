@@ -14,24 +14,23 @@ void PaintingWidget::paintEvent(QPaintEvent *){
 	painter.setPen(Qt::white);
 	painter.fillRect(rect(), QBrush(Qt::black));
 	
-	TFPointsIterator first = (*currentView)->begin();
-	TFPointsIterator end = (*currentView)->end();	
-	TFPointsIterator it = first;
+	vector<TFPoint*> points = (*currentView)->getAllPoints();
+	vector<TFPoint*>::iterator first = points.begin();
+	vector<TFPoint*>::iterator end = points.end();
+	vector<TFPoint*>::iterator it = first;
 
 	TFPoint origin = TFPoint(_marginH, this->height() - _marginV);
-
-	TFPoint point1 = origin;
-	TFPoint point2;
+	TFPoint* point1 = new TFPoint(origin);
 
 	for(it; it != end; ++it)
 	{
-		point2 = TFPoint(origin.x + it->second->x, origin.y - it->second->y);
-
-		painter.drawLine(point1.x, point1.y, point2.x, point2.y);
-		point1 = point2;
+		painter.drawLine(point1->x, point1->y, origin.x + (*it)->x, origin.y - (*it)->y);
+		delete point1;
+		point1 = *it;
 	}
-	point2 = TFPoint(this->width() - 10, origin.y);
-	painter.drawLine(point1.x, point1.y, point2.x, point2.y);
+
+	painter.drawLine(point1->x, point1->y, this->width() - _marginH, origin.y);
+	delete point1;
 }
 
 void PaintingWidget::mousePressEvent(QMouseEvent *e){

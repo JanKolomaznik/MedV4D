@@ -52,9 +52,9 @@ public:
 
 	TFPoint* getPoint(int coordX);
 
-	TFPointsIterator begin();
+	//TFPointsIterator begin();
 
-	TFPointsIterator end();
+	//TFPointsIterator end();
 
 	vector<TFPoint *> getAllPoints();
 

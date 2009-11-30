@@ -84,8 +84,6 @@ void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 
 		currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
 		_inConnection->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
-
-		//_settings->SetEnabledExecButton( true );
 	} 
 	catch( ... ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Some exception" ) );

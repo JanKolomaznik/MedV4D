@@ -35,9 +35,7 @@ public:
 
 	TFFunction* getFirstFunction();
 
-	TFFunctionsIterator begin();
-
-	TFFunctionsIterator end();
+	vector<TFName> getFunctionNames();
 
 	void save(/*string path = ""*/);
 private:

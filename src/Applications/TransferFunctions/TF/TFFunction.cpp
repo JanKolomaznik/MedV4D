@@ -129,7 +129,7 @@ TFPoint* TFFunction::getPoint(int coordX){
 	}
 	return NULL;
 }
-
+/*
 TFPointsIterator TFFunction::begin(){
 	return _points->begin();
 }
@@ -137,7 +137,7 @@ TFPointsIterator TFFunction::begin(){
 TFPointsIterator TFFunction::end(){
 	return _points->end();
 }
-
+*/
 vector<TFPoint*> TFFunction::getAllPoints(){
 
 	TFPointsIterator first = _points->begin();

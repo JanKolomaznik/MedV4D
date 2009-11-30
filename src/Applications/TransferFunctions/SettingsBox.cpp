@@ -159,7 +159,28 @@ void SettingsBox::on_saveScheme_triggered(){
 
 	savedFunctions->name = ui->schemeName->text().toStdString();
 	on_functionSave_clicked();
-	savedFunctions->save();
+	//savedFunctions->save();
+
+     QString fileName =
+         QFileDialog::getSaveFileName(this, tr("Save Transfer Function"),
+                                      QDir::currentPath(),
+                                      tr("TF Files (*.tf *.xml)"));
+     if (fileName.isEmpty())
+         return;
+
+     QFile file(fileName);
+     if (!file.open(QFile::WriteOnly | QFile::Text)) {
+         QMessageBox::warning(this, tr("QXmlStream TransferFunctions"),
+                              tr("Cannot write file %1:\n%2.")
+                              .arg(fileName)
+                              .arg(file.errorString()));
+         return;
+     }
+
+	 TFXmlWriter writer;
+     writer.write(&file, &savedFunctions);
+
+         //statusBar()->showMessage(tr("File saved"), 2000);
 }
 
 void SettingsBox::on_loadScheme_triggered(){
@@ -203,17 +224,19 @@ void SettingsBox::on_loadScheme_triggered(){
 			ui->functionBox->removeItem(ui->functionBox->count()-2);
 		}
 
-		TFFunctionsIterator first = savedFunctions->begin();
-		TFFunctionsIterator end = savedFunctions->end();		
-		TFFunctionsIterator it = first;
+		vector<TFName> points = savedFunctions->getFunctionNames();
+		vector<TFName>::iterator first = points.begin();
+		vector<TFName>::iterator end = points.end();
+		vector<TFName>::iterator it = first;
+
 		if(it != end)
 		{
-			ui->functionBox->setItemText(0, QString::fromStdString(it->first));
+			ui->functionBox->setItemText(0, QString::fromStdString(*it));
 			++it;
 		}
 		for(it; it != end; ++it)
 		{
-			ui->functionBox->insertItem(ui->functionBox->count()-1, QString::fromStdString(it->first));
+			ui->functionBox->insertItem(ui->functionBox->count()-1, QString::fromStdString(*it));
 		}
 		ui->schemeName->setText(QString::fromStdString(savedFunctions->name));
 		on_functionBox_currentIndexChanged(0);
