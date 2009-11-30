@@ -1,6 +1,8 @@
 #include "common/Common.h"
 #include "Filtering.h"
 #include "Imaging/filters/SobelEdgeDetector.h"
+#undef min
+#undef max
 #include <tclap/CmdLine.h>
 
 

@@ -1,6 +1,8 @@
 #include "common/Common.h"
 #include "Filtering.h"
 #include "Imaging/filters/LaplaceOperator.h"
+#undef min
+#undef max
 #include <tclap/CmdLine.h>
 
 using namespace M4D;

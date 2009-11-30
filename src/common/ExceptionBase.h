@@ -170,6 +170,16 @@ private:
 
 };
 
+class EFileProblem : public ExceptionBase
+{
+public:
+	EFileProblem( std::string name, std::string fileName ) throw() : ExceptionBase( name ), _fileName( fileName ) {}
+	EFileProblem( std::string fileName ) throw() : ExceptionBase( TO_STRING( "Problem with file" << fileName ) ), _fileName( fileName ) {}
+	~EFileProblem() throw(){}
+protected:
+	std::string _fileName;
+};
+
 std::ostream& operator<<( std::ostream &out, ExceptionBase &exception );
 
 } /*namespace ErrorHandling*/

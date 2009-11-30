@@ -1,6 +1,8 @@
 #include "common/Common.h"
 #include "Filtering.h"
 #include "Imaging/filters/MedianFilter.h"
+#undef min
+#undef max
 #include <tclap/CmdLine.h>
 #include "Imaging/Imaging.h"
 

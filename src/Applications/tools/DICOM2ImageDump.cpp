@@ -21,22 +21,25 @@ main( int argc, char** argv )
 	try {
 		TCLAP::CmdLine cmd("Tool for conversion DICOM files to dump format.", ' ', "");
 
-		TCLAP::ValueArg<std::string> prefixArg( "p", "prefix", "Prefix of files created from inputs.", false, "DICOMSerie", "Prefix" );
+		TCLAP::ValueArg<std::string> prefixArg( "p", "prefix", "Prefix of files created from inputs.", false, "DICOMSeries", "Prefix" );
 		cmd.add( prefixArg );
 
-		TCLAP::UnlabeledValueArg<std::string> inFilenameArg( "input", "Input directory containing DICOM files", true, "", "dirname" );
+		TCLAP::UnlabeledValueArg<std::string> inDirArg( "input", "Input directory containing DICOM files", true, "", "dirname" );
 		//TCLAP::ValueArg<std::string> inFilenameArg( "i", "input", "Input image filename", true, "", "filename1" );
-		cmd.add( inFilenameArg );
+		cmd.add( inDirArg );
 
-		TCLAP::UnlabeledValueArg<std::string> outFilenameArg( "output", "Directory, where all converted images will be put.", true, "", "dirname" );
-		//TCLAP::ValueArg<std::string> outFilenameArg( "o", "output", "Output image filename", true, "", "filename2" );
-		cmd.add( outFilenameArg );
+		TCLAP::UnlabeledValueArg<std::string> outDirArg( "output", "Directory, where all converted images will be put.", true, "", "dirname" );
+		cmd.add( outDirArg );
+
+		TCLAP::SwitchArg forceArg("f", "force", "Enables overwriting of already existing files.", false );
+		cmd.add( forceArg );
 
 		cmd.parse( argc, argv );
 
-		filesystem::path inpath = inFilenameArg.getValue();
-		filesystem::path outpath = outFilenameArg.getValue();
+		filesystem::path inpath = inDirArg.getValue();
+		filesystem::path outpath = outDirArg.getValue();
 		std::string prefix = prefixArg.getValue();
+		bool force = forceArg.getValue();
 
 		if ( !filesystem::exists( outpath ) ) {
 			std::cout << "Error : Output directory doesn't exists!!!";
@@ -69,7 +72,12 @@ main( int argc, char** argv )
 				}
 				filesystem::path filePath = outpath;
 				filePath /= fileNameStream.str();
-
+				
+				if ( !filesystem::exists( filePath ) && !force ) {
+					//_THROW_ ErrorHangling::EFileProblem( "File already exists", filePath )
+					std::cout << "Error : File \"" << filePath << "\"already exists!!! Add --force argument to enable overwriting.";
+					return 1;
+				}
 
 				std::cout << "Converting to file '" << fileNameStream.str() << "' ... ";
 				
