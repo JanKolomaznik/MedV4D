@@ -50,7 +50,7 @@ FUNCTION(TARGET_MEDV4D_PROGRAM prog_name source_dir )
 	SET( uiinput )
 	SET( uioutput )
 	
-	MESSAGE( STATUS "Preparing build system for ${prog_name}" )
+	MESSAGE( STATUS "Preparing build system for ${prog_name} (source directory : ${SRC_DIR})" )
 	
 	#AUX_SOURCE_DIRECTORY( ${SRC_DIR} sources )
 	FILE( GLOB_RECURSE sources "${SRC_DIR}/*.cpp" )
@@ -84,7 +84,7 @@ FUNCTION(TARGET_MEDV4D_PROGRAM prog_name source_dir )
 	SOURCE_GROUP( ${prog_name}_Resources FILES  "" ${rccinput} )
 	SOURCE_GROUP( ${prog_name}_Generated FILES "" ${mocoutput} ${rccoutput} ${uioutput} )
 	
-	INCLUDE_DIRECTORIES( "" ${SRC_DIR} )
+	INCLUDE_DIRECTORIES( ${SRC_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
 	ADD_EXECUTABLE(${OUTPUT_NAME} ${sources} ${uioutput}  ${header_files} ${tcc_files} ${mocoutput} ${rccoutput} ) #${uiinput} ${rccinput} )
 	TARGET_LINK_LIBRARIES(${OUTPUT_NAME} ${MEDV4D_ALL_LIBRARIES})
 
