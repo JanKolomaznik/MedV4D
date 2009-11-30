@@ -1,5 +1,5 @@
 #include "SettingsBox.h"
-#include "uic_SettingsBox.h"
+#include "ui_SettingsBox.h"
 
 #include <cassert>
 

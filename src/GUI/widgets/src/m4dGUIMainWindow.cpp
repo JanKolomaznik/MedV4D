@@ -92,7 +92,7 @@ m4dGUIMainWindow::m4dGUIMainWindow ( )
 }
 
 m4dGUIMainWindow::m4dGUIMainWindow( const char *appName, const char *orgName,
-                                    const QIcon &icon = QIcon( ":/icons/app.png" ))
+                                    const QIcon &icon)
 {
   build(appName, orgName, icon );
 }
