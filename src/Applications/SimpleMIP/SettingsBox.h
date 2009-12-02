@@ -13,7 +13,7 @@ public:
 	static const unsigned ROW_SPACING = 15;
 	
 
-	SettingsBox( M4D::Imaging::AbstractPipeFilter * filter, QWidget * parent );
+	SettingsBox( M4D::Imaging::APipeFilter * filter, QWidget * parent );
 	
 	void
 	SetEnabledExecButton( bool val )
@@ -35,7 +35,7 @@ protected:
 	void
 	CreateWidgets();
 
-	M4D::Imaging::AbstractPipeFilter *_filter;
+	M4D::Imaging::APipeFilter *_filter;
 
   QWidget *_parent;
 	

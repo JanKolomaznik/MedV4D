@@ -37,7 +37,7 @@ main( int argc, char **argv )
 	std::string outFilename = outFilenameArg.getValue();
 
 	std::cout << "Loading file..."; std::cout.flush();
-	M4D::Imaging::AbstractImage::Ptr image = 
+	M4D::Imaging::AImage::Ptr image = 
 			M4D::Imaging::ImageFactory::LoadDumpedImage( inFilename );
 	std::cout << "Done\n";
 
@@ -45,8 +45,8 @@ main( int argc, char **argv )
 	std::cout << "Initializing..."; std::cout.flush();
 	M4D::Imaging::PipelineContainer *container = NULL;
 	FinishHook  *hook = new FinishHook;
-	M4D::Imaging::ConnectionInterfaceTyped<AbstractImage> *inConnection = NULL;
-	M4D::Imaging::ConnectionInterfaceTyped<AbstractImage> *outConnection = NULL;
+	M4D::Imaging::ConnectionInterfaceTyped<AImage> *inConnection = NULL;
+	M4D::Imaging::ConnectionInterfaceTyped<AImage> *outConnection = NULL;
 	M4D::Imaging::AbstractPipeFilter *filter = NULL;
 	/*---------------------------------------------------------------------*/
 	
@@ -69,7 +69,7 @@ main( int argc, char **argv )
 		std::cout << "Done\n";
 
 		std::cout << "Saving file..."; std::cout.flush();
-		M4D::Imaging::ImageFactory::DumpImage( outFilename, outConnection->GetAbstractImageReadOnly() );
+		M4D::Imaging::ImageFactory::DumpImage( outFilename, outConnection->GetAImageReadOnly() );
 		std::cout << "Done\n";
 	} else {
 		std::cout << "FAILED\n";

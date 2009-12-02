@@ -72,7 +72,7 @@ public slots:
 	}
 protected:
 	void
-	process ( M4D::Imaging::AbstractDataSet::Ptr inputDataSet );
+	process ( M4D::Imaging::ADataset::Ptr inputDataset );
 
 	SegmentationViewerWidget	*_segmentationViewerWidget;
 	SettingsBox	*_settings;

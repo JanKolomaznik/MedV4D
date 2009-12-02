@@ -10,7 +10,7 @@
 
 #include "common/Common.h"
 
-#include "Imaging/AbstractImageData.h"
+#include "Imaging/AImageData.h"
 #include "Imaging/ModificationManager.h"
 
 /**
@@ -29,7 +29,7 @@ class ImageFactory;
 
 
 template < typename ElementType >
-class ImageDataTemplate: public AbstractImageData
+class ImageDataTemplate: public AImageData
 {
 public:
 	/**
@@ -205,7 +205,7 @@ public:
 				{ return Get( index ); }
 
 	static Ptr
-	CastAbstractPointer(  AbstractImageData::APtr aptr );
+	CastAbstractPointer(  AImageData::APtr aptr );
 
 	ModificationManager &
 	GetModificationManager()const

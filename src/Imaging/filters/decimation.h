@@ -2,7 +2,7 @@
 #define DECIMATION_H_
 
 #include "common/Common.h"
-#include "Imaging/AbstractImageFilterWholeAtOnce.h"
+#include "Imaging/AImageFilterWholeAtOnce.h"
 
 namespace M4D
 {
@@ -19,11 +19,11 @@ namespace Imaging
 
 template< typename ImageType, typename InterpolatorType>
 class DecimationFilter
-	: public AbstractImageFilterWholeAtOnce< ImageType, ImageType >
+	: public AImageFilterWholeAtOnce< ImageType, ImageType >
 {
 public:	
 	typedef DecimationFilter<ImageType, InterpolatorType> Self;
-	typedef AbstractImageFilterWholeAtOnce< ImageType, ImageType > PredecessorType;
+	typedef AImageFilterWholeAtOnce< ImageType, ImageType > PredecessorType;
 	typedef typename ImageTraits< ImageType >::ElementType ElementType;
 
 	struct Properties : public PredecessorType::Properties

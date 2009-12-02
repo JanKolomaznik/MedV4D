@@ -26,7 +26,7 @@ ImageDataTemplate< ElementType >::ImageDataTemplate(
 			unsigned short		dimension,
 			size_t			elementCount
 			) 
-	: AbstractImageData( parameters, dimension, elementCount ), _data( data ), _arrayPointer( data, data )
+	: AImageData( parameters, dimension, elementCount ), _data( data ), _arrayPointer( data, data )
 {
 	if ( _data == NULL ) {
 		//TODO handle problem
@@ -40,7 +40,7 @@ ImageDataTemplate< ElementType >::ImageDataTemplate(
 			unsigned short		dimension,
 			size_t			elementCount
 			) 
-	: AbstractImageData( parameters, dimension, elementCount ), _data( data.aligned ), _arrayPointer( data ) 	
+	: AImageData( parameters, dimension, elementCount ), _data( data.aligned ), _arrayPointer( data ) 	
 {
 	if ( _data == NULL ) {
 		//TODO handle problem
@@ -157,7 +157,7 @@ ImageDataTemplate< ElementType >::Get( size_t x, size_t y, size_t z, size_t t )
 //4D end--------------------------------------------
 template < typename ElementType >
 typename ImageDataTemplate< ElementType >::Ptr
-ImageDataTemplate< ElementType >::CastAbstractPointer( AbstractImageData::APtr aptr )
+ImageDataTemplate< ElementType >::CastAbstractPointer( AImageData::APtr aptr )
 {
 	if( dynamic_cast< ImageDataTemplate< ElementType > * >( aptr.get() ) == NULL ) {
 		//TODO _THROW_ exception

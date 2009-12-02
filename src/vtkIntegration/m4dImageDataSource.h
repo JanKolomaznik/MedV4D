@@ -8,7 +8,7 @@
  */
 
 #include "common/ExceptionBase.h"
-#include "Imaging/AbstractImageData.h"
+#include "Imaging/AImageData.h"
 #include "Imaging/Image.h"
 
 #include "vtkImageAlgorithm.h"
@@ -26,10 +26,10 @@ public:
 	vtkTypeRevisionMacro(m4dImageDataSource,vtkImageAlgorithm);
 
 	void
-	SetImageData( Imaging::AbstractImage::Ptr imageData );
+	SetImageData( Imaging::AImage::Ptr imageData );
 
 	void
-	TemporarySetImageData( const Imaging::AbstractImage & imageData );
+	TemporarySetImageData( const Imaging::AImage & imageData );
 
 	void
 	TemporaryUnsetImageData();
@@ -51,8 +51,8 @@ protected:
 		vtkInformationVector *
 		);
 
-	Imaging::AbstractImage::Ptr	_imageData;
-	const Imaging::AbstractImage		*_tmpImageData;
+	Imaging::AImage::Ptr	_imageData;
+	const Imaging::AImage		*_tmpImageData;
 
 	int				_wholeExtent[6];
 	double				_spacing[3];

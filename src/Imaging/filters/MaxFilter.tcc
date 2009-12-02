@@ -91,14 +91,14 @@ MaxFilter2D< InputImageType >
 template< typename InputImageType >
 void
 MaxFilter2D< InputImageType >
-::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
+::BeforeComputation( APipeFilter::UPDATE_TYPE &utype )
 {
 	PredecessorType::BeforeComputation( utype );
 
-	if( utype != AbstractPipeFilter::RECALCULATION 
+	if( utype != APipeFilter::RECALCULATION 
 		&& this->_propertiesTimestamp != GetProperties().GetTimestamp() )
 	{
-		utype = AbstractPipeFilter::RECALCULATION;
+		utype = APipeFilter::RECALCULATION;
 	}
 }
 

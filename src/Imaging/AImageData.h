@@ -1,7 +1,7 @@
 /**
  * @ingroup imaging 
  * @author Jan Kolomaznik 
- * @file AbstractImageData.h 
+ * @file AImageData.h 
  * @{ 
  **/
 
@@ -69,13 +69,13 @@ struct DimensionInfo
 	float32		elementExtent;
 };
 
-class AbstractImageData
+class AImageData
 {
 public:
 	/**
-	 * Smart pointer type for accesing AbstractImageData instance (child).
+	 * Smart pointer type for accesing AImageData instance (child).
 	 **/
-	typedef boost::shared_ptr< AbstractImageData > APtr;
+	typedef boost::shared_ptr< AImageData > APtr;
 
 	/**
 	 * Constructor used for initialization by successors.
@@ -83,13 +83,13 @@ public:
 	 * @param dimension Number of dimensions - length of parameters array.
 	 * @param elementCount Number of elements contained in image.
 	 **/
-	AbstractImageData( 
+	AImageData( 
 			DimensionInfo		*parameters,
 			unsigned short		dimension,
 			size_t			elementCount
 			);
 
-	virtual ~AbstractImageData()=0;
+	virtual ~AImageData()=0;
 
 	/**
 	 * @return ID of element type.
@@ -136,15 +136,15 @@ private:
 	/**
 	 * Not implemented - usage prohibited.
 	 **/
-	AbstractImageData();
+	AImageData();
 	/**
 	 * Not implemented - usage prohibited.
 	 **/
-	AbstractImageData( const AbstractImageData &);
+	AImageData( const AImageData &);
 	/**
 	 * Not implemented - usage prohibited.
 	 **/
-	AbstractImageData &operator=( const AbstractImageData &);
+	AImageData &operator=( const AImageData &);
 
 public:
 	class EBadDimension: public ErrorHandling::ExceptionBase

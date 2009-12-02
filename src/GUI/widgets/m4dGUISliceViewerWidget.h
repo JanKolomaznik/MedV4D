@@ -633,7 +633,7 @@ protected:
     /**
      * The input port that can be connected to the pipeline.
      */
-    Imaging::InputPortTyped< Imaging::AbstractImage >	*_inPort;
+    Imaging::InputPortTyped< Imaging::AImage >	*_inPort;
 
     /**
      * Type of texture preparer

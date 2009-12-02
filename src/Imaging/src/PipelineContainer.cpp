@@ -45,8 +45,8 @@ CreateConnectionObjectFromPorts( OutputPort& outPort, InputPort& inPort, bool ow
 	}
 	/*try {
 		//checking if we have image ports
-		OutputPortAbstractImage & oPort = dynamic_cast< OutputPortAbstractImage &> ( outPort );
-		InputPortAbstractImage & iPort = dynamic_cast< InputPortAbstractImage &> ( inPort ); 
+		OutputPortAImage & oPort = dynamic_cast< OutputPortAImage &> ( outPort );
+		InputPortAImage & iPort = dynamic_cast< InputPortAImage &> ( inPort ); 
 		
 		int typeID = oPort.ImageGetElementTypeID();
 		unsigned dim = oPort.ImageGetDimension();
@@ -74,14 +74,14 @@ CreateConnectionObjectFromInputPort( InputPort& inPort, bool ownsDataset )
 	ConnectionInterface *connection = NULL;
 	connection = inPort.CreateIdealConnectionObject( ownsDataset );
 	/*try {
-		InputPortAbstractImage & iPort = dynamic_cast< InputPortAbstractImage &> ( inPort ); 
+		InputPortAImage & iPort = dynamic_cast< InputPortAImage &> ( inPort ); 
 		
 		int typeID = iPort.ImageGetElementTypeID();
 		unsigned dim = iPort.ImageGetDimension();
 
 		if( dim == 0 || typeID == NTID_UNKNOWN ) 
 		{
-			connection = new AbstractImageConnection();
+			connection = new AImageConnection();
 		} else {
 			TYPE_TEMPLATE_SWITCH_MACRO( typeID, 
 				DIMENSION_TEMPLATE_SWITCH_MACRO( dim, connection = new ImageConnection< Image< TTYPE, DIM > >( ownsDataset ); ) );
@@ -100,7 +100,7 @@ CreateConnectionObjectFromOutputPort( OutputPort& outPort, bool ownsDataset )
 	ConnectionInterface *connection = NULL;
 	connection = outPort.CreateIdealConnectionObject( ownsDataset );
 	/*try {
-		OutputPortAbstractImage & oPort = dynamic_cast< OutputPortAbstractImage &> ( outPort );
+		OutputPortAImage & oPort = dynamic_cast< OutputPortAImage &> ( outPort );
 		
 		int typeID = oPort.ImageGetElementTypeID();
 		unsigned dim = oPort.ImageGetDimension();
@@ -129,7 +129,7 @@ PipelineContainer::PipelineContainer()
 
 PipelineContainer::~PipelineContainer()
 {
-	std::for_each( _filters.begin(), _filters.end(), Functors::Deletor< AbstractPipeFilter *>() );
+	std::for_each( _filters.begin(), _filters.end(), Functors::Deletor< APipeFilter *>() );
 
 	std::for_each( _connections.begin(), _connections.end(), Functors::Deletor< ConnectionInterface *>() );
 }
@@ -137,7 +137,7 @@ PipelineContainer::~PipelineContainer()
 void
 PipelineContainer::Reset()
 {
-	std::for_each( _filters.begin(), _filters.end(), Functors::Deletor< AbstractPipeFilter *>() );
+	std::for_each( _filters.begin(), _filters.end(), Functors::Deletor< APipeFilter *>() );
 	_filters.clear();
 
 	std::for_each( _connections.begin(), _connections.end(), Functors::Deletor< ConnectionInterface *>() );
@@ -146,7 +146,7 @@ PipelineContainer::Reset()
 }
 
 void
-PipelineContainer::AddFilter( AbstractPipeFilter *filter )
+PipelineContainer::AddFilter( APipeFilter *filter )
 {
 	if( filter == NULL ) {
 		_THROW_ ErrorHandling::ENULLPointer();
@@ -204,8 +204,8 @@ PipelineContainer::MakeConnection( M4D::Imaging::OutputPort& outPort, M4D::Imagi
 }
 
 ConnectionInterface &
-PipelineContainer::MakeConnection( M4D::Imaging::AbstractPipeFilter& producer, unsigned producerPortNumber, 
-		M4D::Imaging::AbstractPipeFilter& consumer, unsigned consumerPortNumber )
+PipelineContainer::MakeConnection( M4D::Imaging::APipeFilter& producer, unsigned producerPortNumber, 
+		M4D::Imaging::APipeFilter& consumer, unsigned consumerPortNumber )
 {
 	return MakeConnection( producer.OutputPort()[ producerPortNumber ], consumer.InputPort()[ consumerPortNumber ] );
 }
@@ -227,13 +227,13 @@ PipelineContainer::MakeInputConnection( M4D::Imaging::InputPort& inPort, bool ow
 }
 
 ConnectionInterface &
-PipelineContainer::MakeInputConnection(  M4D::Imaging::AbstractPipeFilter& consumer, unsigned consumerPortNumber, bool ownsDataset )
+PipelineContainer::MakeInputConnection(  M4D::Imaging::APipeFilter& consumer, unsigned consumerPortNumber, bool ownsDataset )
 {
 	return MakeInputConnection( consumer.InputPort()[ consumerPortNumber ], ownsDataset );
 }
 
 ConnectionInterface &
-PipelineContainer::MakeInputConnection(  M4D::Imaging::AbstractPipeFilter& consumer, unsigned consumerPortNumber, AbstractDataSet::Ptr dataset )
+PipelineContainer::MakeInputConnection(  M4D::Imaging::APipeFilter& consumer, unsigned consumerPortNumber, ADataset::Ptr dataset )
 {
 	ConnectionInterface &conn =  MakeInputConnection( consumer.InputPort()[ consumerPortNumber ], false );
 	conn.PutDataset( dataset );
@@ -257,13 +257,13 @@ PipelineContainer::MakeOutputConnection( M4D::Imaging::OutputPort& outPort, bool
 }
 
 ConnectionInterface &
-PipelineContainer::MakeOutputConnection( M4D::Imaging::AbstractPipeFilter& producer, unsigned producerPortNumber, bool ownsDataset )
+PipelineContainer::MakeOutputConnection( M4D::Imaging::APipeFilter& producer, unsigned producerPortNumber, bool ownsDataset )
 {
 	return MakeOutputConnection( producer.OutputPort()[ producerPortNumber ], ownsDataset );
 }
 
 ConnectionInterface &
-PipelineContainer::MakeOutputConnection( M4D::Imaging::AbstractPipeFilter& producer, unsigned producerPortNumber, AbstractDataSet::Ptr dataset )
+PipelineContainer::MakeOutputConnection( M4D::Imaging::APipeFilter& producer, unsigned producerPortNumber, ADataset::Ptr dataset )
 {
 	ConnectionInterface &conn = MakeOutputConnection( producer.OutputPort()[ producerPortNumber ], false );
 	conn.PutDataset( dataset );

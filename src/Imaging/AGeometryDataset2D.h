@@ -1,17 +1,17 @@
 /**
  * @ingroup imaging 
  * @author Jan Kolomaznik 
- * @file AGeometryDataSet2D.h 
+ * @file AGeometryDataset2D.h 
  * @{ 
  **/
 
 #ifndef _AGEOMETRY_DATA_SET_2D_H
 #define _AGEOMETRY_DATA_SET_2D_H
 
-#include "Imaging/AGeometryDataSet.h"
+#include "Imaging/AGeometryDataset.h"
 #include <vector>
 #include "common/Common.h"
-#include "Imaging/GeometryDataSetFactory.h"
+#include "Imaging/GeometryDatasetFactory.h"
 #include "Imaging/ModificationManager.h"
 
 /**
@@ -24,25 +24,25 @@ namespace M4D
 namespace Imaging
 {
 
-class AGeometryDataSet2D: public AGeometryDataSet
+class AGeometryDataset2D: public AGeometryDataset
 {
 public:
-	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( AGeometryDataSet2D );
-	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AGeometryDataSet );
+	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( AGeometryDataset2D );
+	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AGeometryDataset );
 	PREPARE_CAST_METHODS_MACRO;
 	IS_NOT_CONSTRUCTABLE_MACRO;
 
 protected:
-	AGeometryDataSet2D( DataSetType datasetType ): AGeometryDataSet( datasetType ) 
+	AGeometryDataset2D( DatasetType datasetType ): AGeometryDataset( datasetType ) 
 		{}
 };
 
 
-class ASlicedGeometry: public AGeometryDataSet2D
+class ASlicedGeometry: public AGeometryDataset2D
 {
 public:
 	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( ASlicedGeometry );
-	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AGeometryDataSet2D );
+	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AGeometryDataset2D );
 	PREPARE_CAST_METHODS_MACRO;
 	IS_NOT_CONSTRUCTABLE_MACRO;
 	
@@ -77,7 +77,7 @@ public:
 	GetSliceMax()const
 		{ return _maxSlice; }
 protected:
-	ASlicedGeometry( int32 minSlice, int32 maxSlice ): AGeometryDataSet2D( DATASET_SLICED_GEOMETRY ), _minSlice( minSlice ), _maxSlice( maxSlice )
+	ASlicedGeometry( int32 minSlice, int32 maxSlice ): AGeometryDataset2D( DATASET_SLICED_GEOMETRY ), _minSlice( minSlice ), _maxSlice( maxSlice )
 		{}
 
 	int32 _minSlice;
@@ -92,7 +92,7 @@ template< typename OType >
 class SlicedGeometry: public ASlicedGeometry
 {
 public:
-	friend class GeometryDataSetFactory;
+	friend class GeometryDatasetFactory;
 
 	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( SlicedGeometry< OType > );
 	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( ASlicedGeometry );
@@ -209,6 +209,7 @@ protected:
 }/*namespace Imaging*/
 }/*namespace M4D*/
 
+/** @} */
 /** @} */
 
 #endif /*_AGEOMETRY_DATA_SET_2D_H*/

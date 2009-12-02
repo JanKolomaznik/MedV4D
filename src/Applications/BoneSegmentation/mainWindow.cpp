@@ -8,7 +8,7 @@ using namespace M4D::Imaging;
 class LFNotifier : public M4D::Imaging::MessageReceiverInterface
 {
 public:
-	LFNotifier( AbstractPipeFilter * filter ): _filter( filter ) {}
+	LFNotifier( APipeFilter * filter ): _filter( filter ) {}
 	void ReceiveMessage(M4D::Imaging::PipelineMessage::Ptr              msg, 
                       M4D::Imaging::PipelineMessage::MessageSendStyle /*sendStyle*/, 
                       M4D::Imaging::FlowDirection				              /*direction*/
@@ -19,7 +19,7 @@ public:
 		}
 	}
 protected:
-	AbstractPipeFilter * _filter;
+	APipeFilter * _filter;
 };
 
 void mainWindow::CreatePipeline()
@@ -32,22 +32,22 @@ void mainWindow::CreatePipeline()
 
 	Median2D *medianFilter = new Median2D();
 
-	medianFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
+	medianFilter->SetUpdateInvocationStyle( APipeFilter::UIS_ON_CHANGE_BEGIN );
 	medianFilter->SetRadius( 4 );
 	_pipeline.AddFilter( medianFilter );
 
 	MaskSelectionFilter *maskSelection = new MaskSelectionFilter();
 	_pipeline.AddFilter( maskSelection );
 
-	_inConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeInputConnection( *_convertor, 0, false ) );
+	_inConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeInputConnection( *_convertor, 0, false ) );
 	_pipeline.MakeConnection( *_convertor, 0, *_filter, 0 );
-	_tmpConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeConnection( *_filter, 0, *medianFilter, 0 ) );
+	_tmpConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeConnection( *_filter, 0, *medianFilter, 0 ) );
 	
 	_pipeline.MakeConnection( *_convertor, 0, *maskSelection, 0 );
 
 	ConnectionInterface* tmpStage2 = &(_pipeline.MakeConnection( *medianFilter, 0, *maskSelection, 1 ) );
 	tmpStage2->SetMessageHook( MessageReceiverInterface::Ptr( new LFNotifier( maskSelection ) ) );
-	_outConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeOutputConnection( *maskSelection, 0, true ) );
+	_outConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeOutputConnection( *maskSelection, 0, true ) );
 
 	if( _inConnection == NULL || _outConnection == NULL ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Pipeline error" ) );
@@ -74,7 +74,7 @@ mainWindow::mainWindow ()
 	QObject::connect( _notifier, SIGNAL( Notification() ), _settings, SLOT( EndOfExecution() ), Qt::QueuedConnection );
 }
 
-void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
+void mainWindow::process ( ADataset::Ptr inputDataSet )
 {
 	try {
 		_inConnection->PutDataset( inputDataSet );

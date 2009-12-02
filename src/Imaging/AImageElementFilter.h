@@ -1,7 +1,7 @@
 /**
  * @ingroup imaging 
  * @author Jan Kolomaznik 
- * @file AbstractImageElementFilter.h 
+ * @file AImageElementFilter.h 
  * @{ 
  **/
 
@@ -9,7 +9,7 @@
 #define _ABSTRACT_IMAGE_ELEMENT_FILTER_H
 
 #include "common/Common.h"
-#include "Imaging/AbstractImage2DFilter.h"
+#include "Imaging/AImage2DFilter.h"
 #include <vector>
 
 /**
@@ -37,11 +37,11 @@ namespace Imaging
  * Specialization for processing 2D images.
  **/
 template< typename InputImageType, typename OutputImageType, typename ElementFilter >
-class AbstractImageElementFilter
-	 : public AbstractImage2DFilter< InputImageType, OutputImageType >
+class AImageElementFilter
+	 : public AImage2DFilter< InputImageType, OutputImageType >
 {
 public:
-	typedef AbstractImage2DFilter< InputImageType, OutputImageType >	PredecessorType;
+	typedef AImage2DFilter< InputImageType, OutputImageType >	PredecessorType;
 	typedef typename ImageTraits< InputImageType >::ElementType 		InputElementType;
 	typedef typename ImageTraits< OutputImageType >::ElementType 		OutputElementType;
 	
@@ -51,8 +51,8 @@ public:
 
 	};
 	
-	AbstractImageElementFilter( Properties *prop );
-	~AbstractImageElementFilter() {}
+	AImageElementFilter( Properties *prop );
+	~AImageElementFilter() {}
 
 protected:
 
@@ -74,7 +74,7 @@ private:
 	/**
 	 * Prohibition of copying.
 	 **/
-	PROHIBIT_COPYING_OF_OBJECT_MACRO( AbstractImageElementFilter );
+	PROHIBIT_COPYING_OF_OBJECT_MACRO( AImageElementFilter );
 };
 
 ///**
@@ -90,11 +90,11 @@ private:
 // * Specialization for processing 3D images.
 // **/
 //template< typename InputElementType, typename OutputElementType, typename ElementFilter >
-//class AbstractImageElementFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 >, ElementFilter >
+//class AImageElementFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 >, ElementFilter >
 //	 : public AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 //{
 //public:
-//	typedef typename Imaging::AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >	PredecessorType;
+//	typedef typename Imaging::AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >	PredecessorType;
 //	
 //	struct Properties : public PredecessorType::Properties
 //	{
@@ -102,8 +102,8 @@ private:
 //
 //	};
 //	
-//	AbstractImageElementFilter( Properties *prop );
-//	~AbstractImageElementFilter() {}
+//	AImageElementFilter( Properties *prop );
+//	~AImageElementFilter() {}
 //
 //protected:
 //
@@ -126,7 +126,7 @@ private:
 //	/**
 //	 * Prohibition of copying.
 //	 **/
-//	PROHIBIT_COPYING_OF_OBJECT_MACRO( AbstractImageElementFilter );
+//	PROHIBIT_COPYING_OF_OBJECT_MACRO( AImageElementFilter );
 //};
 
 
@@ -136,7 +136,7 @@ private:
 /** @} */
 
 //include implementation
-#include "Imaging/AbstractImageElementFilter.tcc"
+#include "Imaging/AImageElementFilter.tcc"
 
 #endif /*_ABSTRACT_IMAGE_ELEMENT_FILTER_H*/
 

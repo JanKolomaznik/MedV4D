@@ -9,7 +9,7 @@
 #define _CONVOLUTION_FILTER_H
 
 #include "common/Common.h"
-#include "Imaging/AbstractImage2DFilter.h"
+#include "Imaging/AImage2DFilter.h"
 #include <boost/shared_array.hpp>
 #include "Imaging/Convolution.h"
 
@@ -27,12 +27,12 @@ namespace Imaging
 
 template< typename ImageType, typename MatrixElement = float32 >
 class ConvolutionFilter2D 
-	: public AbstractImage2DFilter< ImageType, ImageType >
+	: public AImage2DFilter< ImageType, ImageType >
 {
 public:	
 	static const unsigned Dimension = ImageTraits< ImageType >::Dimension;
 	typedef typename ImageTraits< ImageType >::ElementType ElementType;
-	typedef AbstractImage2DFilter< ImageType, ImageType > PredecessorType;
+	typedef AImage2DFilter< ImageType, ImageType > PredecessorType;
 	typedef typename ConvolutionMask<2,MatrixElement>::Ptr	MaskPtr;
 	typedef ImageRegion< ElementType, 2 >		Region;
 

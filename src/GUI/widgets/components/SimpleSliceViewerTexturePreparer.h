@@ -90,7 +90,7 @@ protected:
      *  @param dimension dataset's number of dimensions
      *  @return pointer to the resulting texture array, if texture preparing was successful, NULL otherwise
      */
-    ElementType* prepareSingle( Imaging::InputPortTyped<Imaging::AbstractImage>* inPort,
+    ElementType* prepareSingle( Imaging::InputPortTyped<Imaging::AImage>* inPort,
       uint32& width,
       uint32& height,
       SliceOrientation so,

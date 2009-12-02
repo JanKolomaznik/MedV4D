@@ -23,7 +23,7 @@ MainManager::Initialize()
 {
 	qRegisterMetaType<AnalysisRecord>();
 
-	M4D::Imaging::AbstractPipeFilter *filter = new M4D::Imaging::ImageConvertor< InputImageType >();
+	M4D::Imaging::APipeFilter *filter = new M4D::Imaging::ImageConvertor< InputImageType >();
 	_conversionPipeline.AddFilter( filter );
 	_inConnection =  static_cast< InImageConnection * >(&(_conversionPipeline.MakeInputConnection( *filter, 0, false )));
 	_inConvConnection =  static_cast< ImageConnectionType * >(&(_conversionPipeline.MakeOutputConnection( *filter, 0, true ) ));
@@ -52,13 +52,13 @@ MainManager::GetResultsPage()
 }
 
 void
-MainManager::InitInput( M4D::Imaging::AbstractDataSet::Ptr inputDataSet )
+MainManager::InitInput( M4D::Imaging::ADataset::Ptr inputDataset )
 {
 //	_inputDcmSet = dicomObjSet;
 
 
 	try {
-		AbstractImagePtr image = boost::static_pointer_cast< M4D::Imaging::AbstractImage >( inputDataSet );
+		AImagePtr image = boost::static_pointer_cast< M4D::Imaging::AImage >( inputDataset );
 
 		_inConnection->PutDataset( image );
 
@@ -99,7 +99,7 @@ private:
 };
 
 void
-MainManager::ProcessResultDatasets( InputImageType::Ptr image, GDataSet::Ptr splines )
+MainManager::ProcessResultDatasets( InputImageType::Ptr image, GDataset::Ptr splines )
 {
 	emit ResultProcessingStarted();
 

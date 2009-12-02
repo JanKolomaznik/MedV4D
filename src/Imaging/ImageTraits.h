@@ -8,7 +8,7 @@
 #ifndef _IMAGE_TRAITS_H
 #define _IMAGE_TRAITS_H
 
-#include "Imaging/AbstractDataSet.h"
+#include "Imaging/ADataset.h"
 #include "Imaging/Image.h"
 #include "common/Types.h"
 #include "Imaging/ConnectionInterface.h"
@@ -28,14 +28,14 @@ template< typename ImageType >
 class ImageTraits;
 
 template<>
-class ImageTraits< AbstractImage >
+class ImageTraits< AImage >
 {
 public:
 	typedef void	ElementType;
 
 	static const unsigned	Dimension = 0;
 
-	typedef	AbstractImage 		ClassName;
+	typedef	AImage 		ClassName;
 	typedef ConnectionTyped< ClassName > 	Connection;
 	typedef ConnectionInterfaceTyped< ClassName > 	IConnection;
 	typedef InputPortTyped< ClassName > 	InputPort;
@@ -44,14 +44,14 @@ public:
 };
 
 template< unsigned Dim >
-class ImageTraits< AbstractImageDim< Dim > >
+class ImageTraits< AImageDim< Dim > >
 {
 public:
 	typedef void	ElementType;
 
 	static const unsigned	Dimension = Dim;
 
-	typedef	AbstractImageDim< Dim > 		ClassName;
+	typedef	AImageDim< Dim > 		ClassName;
 	typedef ConnectionTyped< ClassName > 	Connection;
 	typedef ConnectionInterfaceTyped< ClassName > 	IConnection;
 	typedef InputPortTyped< ClassName > 	InputPort;

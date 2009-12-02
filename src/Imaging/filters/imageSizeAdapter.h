@@ -2,7 +2,7 @@
 #define IMAGE_SIZE_ADAPTER_H_
 
 #include "common/Common.h"
-#include "Imaging/AbstractImageFilterWholeAtOnce.h"
+#include "Imaging/AImageFilterWholeAtOnce.h"
 //#include "Imaging/interpolators/nearestNeighbor.h"
 #include "Imaging/interpolators/linear.h"
 
@@ -26,7 +26,7 @@ namespace Imaging
  */
 template< typename ImageType >
 class ImageSizeAdapter
-	: public AbstractImageFilterWholeAtOnce< ImageType, Image<float32, ImageType::Dimension> >
+	: public AImageFilterWholeAtOnce< ImageType, Image<float32, ImageType::Dimension> >
 {
 public:	
 	typedef ImageSizeAdapter<ImageType> Self;
@@ -34,7 +34,7 @@ public:
 	typedef Image<float32, ImageType::Dimension> OutImageType;
 	//typedef typename ImageType::Element TOutPixel;
 	//typedef Image<TOutPixel, ImageType::Dimension> OutImageType;
-	typedef AbstractImageFilterWholeAtOnce< ImageType, OutImageType > PredecessorType;
+	typedef AImageFilterWholeAtOnce< ImageType, OutImageType > PredecessorType;
 	typedef typename ImageTraits< ImageType >::ElementType ElementType;
 
 	struct Properties : public PredecessorType::Properties

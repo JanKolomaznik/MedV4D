@@ -15,7 +15,7 @@ SegmentationViewerWidget::SegmentationViewerWidget( QWidget * parent )
 }
 
 void
-SegmentationViewerWidget::Activate( M4D::Imaging::ConnectionInterfaceTyped<M4D::Imaging::AbstractImage> *conn, M4D::Viewer::SliceViewerSpecialStateOperatorPtr specialState )
+SegmentationViewerWidget::Activate( M4D::Imaging::ConnectionInterfaceTyped<M4D::Imaging::AImage> *conn, M4D::Viewer::SliceViewerSpecialStateOperatorPtr specialState )
 {
 	setConnectionForAll( NULL );
 	setConnectionForAll( conn );

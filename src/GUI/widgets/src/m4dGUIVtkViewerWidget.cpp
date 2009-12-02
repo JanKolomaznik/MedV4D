@@ -17,7 +17,7 @@ m4dGUIVtkViewerWidget::m4dGUIVtkViewerWidget( Imaging::ConnectionInterface* conn
 {
     _index = index;
     setParameters();
-    _inPort = new Imaging::InputPortTyped< Imaging::AbstractImage >();
+    _inPort = new Imaging::InputPortTyped< Imaging::AImage >();
     _inputPorts.AppendPort( _inPort );
     setInputPort( conn );
 }
@@ -27,7 +27,7 @@ m4dGUIVtkViewerWidget::m4dGUIVtkViewerWidget( unsigned index, QWidget *parent )
 {
     _index = index;
     setParameters();
-    _inPort = new Imaging::InputPortTyped< Imaging::AbstractImage >();
+    _inPort = new Imaging::InputPortTyped< Imaging::AImage >();
     _inputPorts.AppendPort( _inPort );
     setInputPort( );
 }

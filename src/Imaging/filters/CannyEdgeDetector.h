@@ -9,7 +9,7 @@
 #define _CANNY_EDGE_DETECTOR_H
 
 #include "common/Common.h"
-#include "Imaging/AbstractImage2DFilter.h"
+#include "Imaging/AImage2DFilter.h"
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -25,12 +25,12 @@ namespace Imaging
 
 template< typename ImageType >
 class CannyEdgeDetector 
-	: public AbstractImage2DFilter< ImageType, ImageType >
+	: public AImage2DFilter< ImageType, ImageType >
 {
 public:	
 	static const unsigned Dimension = ImageTraits< ImageType >::Dimension;
 	typedef typename ImageTraits< ImageType >::ElementType 		ElementType;
-	typedef AbstractImage2DFilter< ImageType, ImageType > 		PredecessorType;
+	typedef AImage2DFilter< ImageType, ImageType > 		PredecessorType;
 	typedef ImageRegion< ElementType, 2 >				Region;
 
 	struct Properties : public PredecessorType::Properties

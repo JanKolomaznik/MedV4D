@@ -48,9 +48,9 @@ mainWindow::mainWindow ()
 
 
 void 
-mainWindow::process ( M4D::Imaging::AbstractDataSet::Ptr inputDataSet )
+mainWindow::process ( M4D::Imaging::ADataset::Ptr inputDataset )
 {
-	MainManager::Instance().InitInput( inputDataSet );
+	MainManager::Instance().InitInput( inputDataset );
 
 	SetToDefaultSlot();
 }

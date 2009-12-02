@@ -5,7 +5,7 @@
 #include "Imaging/ImageDataTemplate.h"
 #include <boost/shared_ptr.hpp>
 #include "Imaging/ModificationManager.h"
-#include "Imaging/AbstractDataSet.h"
+#include "Imaging/ADataset.h"
 #include "Imaging/ImageIterator.h"
 #include "Imaging/ImageRegion.h"
 #include <iostream>
@@ -25,7 +25,7 @@ namespace Imaging
 #define IMAGE_TYPE_PTR_TEMPLATE_CASE_MACRO( AIMAGE_PTR, ... )\
 	{ \
 		typedef M4D::Imaging::Image< TTYPE, DIM > IMAGE_TYPE; \
-		IMAGE_TYPE::Ptr IMAGE = IMAGE_TYPE::CastAbstractImage( AIMAGE_PTR ); \
+		IMAGE_TYPE::Ptr IMAGE = IMAGE_TYPE::CastAImage( AIMAGE_PTR ); \
 		__VA_ARGS__; \
 	};
 
@@ -42,7 +42,7 @@ namespace Imaging
 #define IMAGE_TYPE_REF_TEMPLATE_CASE_MACRO( AIMAGE_REF, ... )\
 	{ \
 		typedef M4D::Imaging::Image< TTYPE, DIM > IMAGE_TYPE; \
-		IMAGE_TYPE &IMAGE = IMAGE_TYPE::CastAbstractImage( AIMAGE_REF ); \
+		IMAGE_TYPE &IMAGE = IMAGE_TYPE::CastAImage( AIMAGE_REF ); \
 		__VA_ARGS__; \
 	};
 
@@ -59,7 +59,7 @@ namespace Imaging
 #define IMAGE_TYPE_CONST_REF_TEMPLATE_CASE_MACRO( AIMAGE_REF, ... )\
 	{ \
 		typedef M4D::Imaging::Image< TTYPE, DIM > IMAGE_TYPE; \
-		const IMAGE_TYPE &IMAGE = IMAGE_TYPE::CastAbstractImage( AIMAGE_REF ); \
+		const IMAGE_TYPE &IMAGE = IMAGE_TYPE::CastAImage( AIMAGE_REF ); \
 		__VA_ARGS__; \
 	};
 
@@ -90,7 +90,7 @@ class Image;*/
  * Partial specialization of image template for two dimensional case.
  **/
 template< typename ElementType, unsigned Dim >
-class Image: public AbstractImageDim< Dim >
+class Image: public AImageDim< Dim >
 {
 public:
 	friend class ImageFactory;
@@ -98,14 +98,14 @@ public:
 	static const unsigned				Dimension = Dim;
 
 	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( Image< ElementType, Dimension > );
-	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AbstractImageDim< Dimension > );
+	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AImageDim< Dimension > );
 	PREPARE_CAST_METHODS_MACRO;
 	IS_CONSTRUCTABLE_MACRO;
 
 	/**
 	 * Dataset contained in this class.
 	 **/
-	typedef ImageDataTemplate< ElementType >	DataSet;
+	typedef ImageDataTemplate< ElementType >	Dataset;
 
 	/**
 	 * Type of elements stored in this image.
@@ -127,11 +127,11 @@ public:
 	Image();
 
 	/**
-	 * Constructor from AbstractImageData - if not possible from some
+	 * Constructor from AImageData - if not possible from some
 	 * reason, throwing exception.
 	 * \param imageData Dataset storing image data.
 	 **/
-	Image( AbstractImageData::APtr imageData );
+	Image( AImageData::APtr imageData );
 
 	/**
 	 * Constructor from typed ImageData - if not possible from some
@@ -151,7 +151,7 @@ public:
 	 * \exception ExceptionCastProblem When casting impossible.
 	 **/	
 	static Image< ElementType, Dimension > &
-	CastAbstractImage( AbstractImage & image )
+	CastAImage( AImage & image )
 		{
 			try {
 				return dynamic_cast< Image< ElementType, Dimension > & >( image );
@@ -165,7 +165,7 @@ public:
 	 * \exception ExceptionCastProblem When casting impossible.
 	 **/	
 	static const Image< ElementType, Dimension > &
-	CastAbstractImage( const AbstractImage & image )
+	CastAImage( const AImage & image )
 		{
 			try {
 				return dynamic_cast< const Image< ElementType, Dimension > & >( image );
@@ -179,7 +179,7 @@ public:
 	 * \exception ExceptionCastProblem When casting impossible.
 	 **/	
 	static typename Image< ElementType, Dimension >::Ptr 
-	CastAbstractImage( AbstractImage::Ptr & image )
+	CastAImage( AImage::Ptr & image )
 		{
 			if( dynamic_cast< Image< ElementType, Dimension > * >( image.get() ) == NULL ) {
 				_THROW_ ErrorHandling::ExceptionCastProblem();

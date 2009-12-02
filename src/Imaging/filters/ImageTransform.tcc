@@ -484,7 +484,7 @@ ImageTransform< ElementType, dim >
 template< typename ElementType, uint32 dim >
 bool
 ImageTransform< ElementType, dim >
-::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
+::ExecutionThreadMethod( APipeFilter::UPDATE_TYPE utype )
 {
 	utype = utype;
 	if ( !( _readerBBox->WaitWhileDirty() == MS_MODIFIED ) ) {
@@ -551,19 +551,19 @@ ImageTransform< ElementType, dim >
 template< typename ElementType, uint32 dim >
 void
 ImageTransform< ElementType, dim >
-::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
+::BeforeComputation( APipeFilter::UPDATE_TYPE &utype )
 {
 
 	PredecessorType::BeforeComputation( utype );
 
 	//This kind of filter computes always on whole dataset
-	utype = AbstractPipeFilter::RECALCULATION;
+	utype = APipeFilter::RECALCULATION;
 }
 
 template< typename ElementType, uint32 dim >
 void
 ImageTransform< ElementType, dim >
-::MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype )
+::MarkChanges( APipeFilter::UPDATE_TYPE utype )
 {
 	utype = utype;
 

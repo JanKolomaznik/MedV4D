@@ -1,7 +1,7 @@
 /**
  * @ingroup imaging 
  * @author Jan Kolomaznik 
- * @file AbstractImageFilter.h 
+ * @file AImageFilter.h 
  * @{ 
  **/
 
@@ -13,7 +13,7 @@
 #include "Imaging/Ports.h"
 #include "Imaging/ImageDataTemplate.h"
 #include "Imaging/ImageFactory.h"
-#include "Imaging/AbstractFilter.h"
+#include "Imaging/AFilter.h"
 #include "Imaging/ModificationManager.h"
 #include "Imaging/ImageTraits.h"
 
@@ -34,10 +34,10 @@ namespace Imaging
  * Template for abstract image filter with one input and one output.
  **/
 template< typename InputImageType, typename OutputImageType >
-class AbstractImageFilter: public AbstractPipeFilter
+class AImageFilter: public APipeFilter
 {
 public:
-	typedef AbstractPipeFilter	PredecessorType;
+	typedef APipeFilter	PredecessorType;
 
 	typedef typename ImageTraits< InputImageType >::InputPort
 		InputPortType;
@@ -48,9 +48,9 @@ public:
 
 	typedef PredecessorType::Properties Properties;
 
-	~AbstractImageFilter() {}
+	~AImageFilter() {}
 protected:
-	AbstractImageFilter( Properties * prop );
+	AImageFilter( Properties * prop );
 
 	const InputImageType&
 	GetInputImage()const;
@@ -72,7 +72,7 @@ protected:
 		    );
 
 	void
-	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
+	BeforeComputation( APipeFilter::UPDATE_TYPE &utype );
 
 	void
 	PrepareOutputDatasets();
@@ -95,7 +95,7 @@ private:
 	/**
 	 * Prohibition of copying.
 	 **/
-	PROHIBIT_COPYING_OF_OBJECT_MACRO( AbstractImageFilter );
+	PROHIBIT_COPYING_OF_OBJECT_MACRO( AImageFilter );
 };
 
 } /*namespace Imaging*/
@@ -104,7 +104,7 @@ private:
 /** @} */
 
 //include implementation
-#include "Imaging/AbstractImageFilter.tcc"
+#include "Imaging/AImageFilter.tcc"
 
 #endif /*_ABSTRACT_IMAGE_FILTER_H*/
 

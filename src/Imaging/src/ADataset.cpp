@@ -1,12 +1,12 @@
 /**
  * @ingroup imaging 
  * @author Jan Kolomaznik 
- * @file AbstractDataSet.cpp 
+ * @file ADataset.cpp 
  * @{ 
  **/
 
-#include "Imaging/AbstractDataSet.h"
-#include "Imaging/DataSetFactory.h"
+#include "Imaging/ADataset.h"
+#include "Imaging/DatasetFactory.h"
 /**
  *  @addtogroup imaging Imaging Library
  *  @{
@@ -148,61 +148,61 @@ ReadWriteLock::ExclusiveUnlockDataset()
 //******************************************************************************
 
 void 
-AbstractDataSet::Serialize(M4D::IO::OutStream &stream)
+ADataset::Serialize(M4D::IO::OutStream &stream)
 {
-	DataSetFactory::SerializeDataset( stream, *this );
+	DatasetFactory::SerializeDataset( stream, *this );
 }
 
 void 
-AbstractDataSet::Deserialize(M4D::IO::InStream &stream)
+ADataset::Deserialize(M4D::IO::InStream &stream)
 {
-	DataSetFactory::DeserializeDataset( stream, *this );
+	DatasetFactory::DeserializeDataset( stream, *this );
 }
 
 bool 
-AbstractDataSet::TryLockDataset()const
+ADataset::TryLockDataset()const
 {
 	return _structureLock.TryLockDataset();
 }
 
 void
-AbstractDataSet::LockDataset()const
+ADataset::LockDataset()const
 {
 	_structureLock.LockDataset();
 }
 
 void
-AbstractDataSet::UnlockDataset()const
+ADataset::UnlockDataset()const
 {
 	_structureLock.UnlockDataset();
 }
 
 void
-AbstractDataSet::UpgradeToExclusiveLock()const
+ADataset::UpgradeToExclusiveLock()const
 {
 	_structureLock.UpgradeToExclusiveLock();
 }
 
 void
-AbstractDataSet::DowngradeFromExclusiveLock()const
+ADataset::DowngradeFromExclusiveLock()const
 {
 	_structureLock.DowngradeFromExclusiveLock();
 }
 
 bool
-AbstractDataSet::TryExclusiveLockDataset()const
+ADataset::TryExclusiveLockDataset()const
 {
 	return 	_structureLock.TryExclusiveLockDataset();
 }
 
 void
-AbstractDataSet::ExclusiveLockDataset()const
+ADataset::ExclusiveLockDataset()const
 {
 	_structureLock.ExclusiveLockDataset();
 }
 
 void
-AbstractDataSet::ExclusiveUnlockDataset()const
+ADataset::ExclusiveUnlockDataset()const
 {
 	_structureLock.ExclusiveUnlockDataset();
 }

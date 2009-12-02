@@ -46,11 +46,11 @@ KidneySegmentationManager::KidneySegmentationManager()
 	_edgeFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_UPDATE_FINISHED );
 	_container.AddFilter( _edgeFilter );*/
 
-	M4D::Imaging::AbstractPipeFilter *filter = new Sobel();
-	filter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_UPDATE_FINISHED );
+	M4D::Imaging::APipeFilter *filter = new Sobel();
+	filter->SetUpdateInvocationStyle( APipeFilter::UIS_ON_UPDATE_FINISHED );
 	_container.AddFilter( filter );
 	_edgeFilter = new EdgeFilter();
-	_edgeFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_UPDATE_FINISHED );
+	_edgeFilter->SetUpdateInvocationStyle( APipeFilter::UIS_ON_UPDATE_FINISHED );
 	_container.AddFilter( _edgeFilter );
 
 	_segmentationFilter = new SegmentationFilter();
@@ -135,7 +135,7 @@ KidneySegmentationManager::Draw( int32 sliceNum, double zoomRate )
 			}
 		}
 		if( _dataset ) {
-			const GDataSet::ObjectsInSlice &slice = _dataset->GetSlice( sliceNum );
+			const GDataset::ObjectsInSlice &slice = _dataset->GetSlice( sliceNum );
 			float32 tmp;
 			glGetFloatv( GL_LINE_WIDTH, &tmp );
 			glLineWidth( 3.0f );
@@ -374,7 +374,7 @@ KidneySegmentationManager::Activate( InputImageType::Ptr inImage )
 	_inConnection->PutDataset( _inputImage );
 
 	SetNewPoles();
-	_dataset = GDataSet::Ptr();
+	_dataset = GDataset::Ptr();
 }
 
 void

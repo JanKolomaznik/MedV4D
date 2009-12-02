@@ -1,12 +1,12 @@
 /**
  * @ingroup imaging 
  * @author Jan Kolomaznik 
- * @file AbstractImage2DFilter.tcc 
+ * @file AImage2DFilter.tcc 
  * @{ 
  **/
 
 #ifndef _ABSTRACT_IMAGE_2D_FILTER_H
-#error File AbstractImage2DFilter.tcc cannot be included directly!
+#error File AImage2DFilter.tcc cannot be included directly!
 #else
 
 namespace M4D
@@ -14,8 +14,8 @@ namespace M4D
 namespace Imaging
 {
 template< typename InputElementType, typename OutputElementType >
-AbstractImage2DFilter< Image< InputElementType, 2 >, Image< OutputElementType, 2 > >
-::AbstractImage2DFilter( typename AbstractImage2DFilter< Image< InputElementType, 2 >, Image< OutputElementType, 2 > >::Properties *prop ) 
+AImage2DFilter< Image< InputElementType, 2 >, Image< OutputElementType, 2 > >
+::AImage2DFilter( typename AImage2DFilter< Image< InputElementType, 2 >, Image< OutputElementType, 2 > >::Properties *prop ) 
 	: PredecessorType( prop )
 {
 	
@@ -23,7 +23,7 @@ AbstractImage2DFilter< Image< InputElementType, 2 >, Image< OutputElementType, 2
 
 template< typename InputElementType, typename OutputElementType >
 bool
-AbstractImage2DFilter< Image< InputElementType, 2 >, Image< OutputElementType, 2 > >
+AImage2DFilter< Image< InputElementType, 2 >, Image< OutputElementType, 2 > >
 ::ProcessImage(
 			const Image< InputElementType, 2 >	&in,
 			Image< OutputElementType, 2 >		&out
@@ -41,7 +41,7 @@ AbstractImage2DFilter< Image< InputElementType, 2 >, Image< OutputElementType, 2
 /*
 template< typename InputElementType, typename OutputElementType >
 bool
-AbstractImage2DFilter< Image< InputElementType, 2 >, Image< OutputElementType, 2 > >
+AImage2DFilter< Image< InputElementType, 2 >, Image< OutputElementType, 2 > >
 ::ProcessImage(
 			const Image< InputElementType, 2 >	&in,
 			Image< OutputElementType, 2 >		&out
@@ -75,8 +75,8 @@ AbstractImage2DFilter< Image< InputElementType, 2 >, Image< OutputElementType, 2
 
 
 template< typename InputElementType, typename OutputElementType >
-AbstractImage2DFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
-::AbstractImage2DFilter( typename AbstractImage2DFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >::Properties *prop ) 
+AImage2DFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
+::AImage2DFilter( typename AImage2DFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >::Properties *prop ) 
 	: PredecessorType( prop )
 {
 	
@@ -84,7 +84,7 @@ AbstractImage2DFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3
 
 template< typename InputElementType, typename OutputElementType >
 bool
-AbstractImage2DFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
+AImage2DFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 ::ProcessSlice(
 			const ImageRegion< InputElementType, 3 >	&inRegion,
 			ImageRegion< OutputElementType, 2 > 		&outRegion,

@@ -1,14 +1,14 @@
 /**
  * @ingroup imaging 
  * @author Jan Kolomaznik 
- * @file AbstractPipeline.h 
+ * @file APipeline.h 
  * @{ 
  **/
 
 #ifndef _ABSTRACT_PIPELINE_H
 #define _ABSTRACT_PIPELINE_H
 
-#include "Imaging/AbstractFilter.h"
+#include "Imaging/AFilter.h"
 #include "Imaging/ConnectionInterface.h"
 #include "Imaging/Ports.h"
 #include <boost/shared_ptr.hpp>
@@ -23,18 +23,18 @@ namespace M4D
 namespace Imaging
 {
 
-class AbstractPipeline : public AbstractPipeFilter
+class APipeline : public APipeFilter
 {
 public:
-	struct Properties : public AbstractPipeFilter::Properties
+	struct Properties : public APipeFilter::Properties
 	{
 
 	};
 	//TODO
-	AbstractPipeline(): AbstractPipeFilter( new Properties ) {}
+	APipeline(): APipeFilter( new Properties ) {}
 
 	virtual void
-	AddFilter( AbstractPipeFilter *filter ) = 0;
+	AddFilter( APipeFilter *filter ) = 0;
 
 	virtual void
 	FillingFinished() = 0;

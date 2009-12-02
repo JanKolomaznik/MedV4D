@@ -2,7 +2,7 @@
 #include "mainWindow.h"
 
 SettingsBox
-::SettingsBox( M4D::Imaging::AbstractPipeFilter * filter, QWidget * parent )
+::SettingsBox( M4D::Imaging::APipeFilter * filter, QWidget * parent )
 	: _filter( filter ), _parent( parent )
 {
 	CreateWidgets();	

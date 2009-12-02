@@ -11,8 +11,8 @@
 typedef M4D::Imaging::Geometry::BSpline< float32, 2 >	CurveType;
 typedef CurveType::PointType				PointType;
 
-typedef M4D::Imaging::SlicedGeometry< M4D::Imaging::Geometry::BSpline<float32,2> >	GDataSet;
-typedef	M4D::Imaging::ConnectionTyped< GDataSet >	OutputGeomConnection;
+typedef M4D::Imaging::SlicedGeometry< M4D::Imaging::Geometry::BSpline<float32,2> >	GDataset;
+typedef	M4D::Imaging::ConnectionTyped< GDataset >	OutputGeomConnection;
 typedef M4D::Imaging::SnakeSegmentationFilter< int16, SimpleVector< int16, 2 > > SegmentationFilter;
 typedef M4D::Imaging::GaussianFilter2D< InputImageType >	Gaussian;
 typedef M4D::Imaging::MedianFilter2D< InputImageType >		Median;
@@ -98,7 +98,7 @@ public:
 	GetInternalState()const
 		{ return _state; }
 
-	GDataSet::Ptr
+	GDataset::Ptr
 	GetOutputGeometry()
 		{ return _outGeomConnection->GetDatasetPtrTyped(); }
 
@@ -258,7 +258,7 @@ protected:
 	bool						_wasInitialized;
 
 	int						_actualPole;
-	GDataSet::Ptr					_dataset;
+	GDataset::Ptr					_dataset;
 
 	volatile bool					_readyToStartSegmentation;
 

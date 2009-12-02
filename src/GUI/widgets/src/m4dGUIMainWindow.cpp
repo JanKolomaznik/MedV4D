@@ -274,7 +274,7 @@ void m4dGUIMainWindow::load ()
     QFileInfo pathInfo( path );
 
     FInStream inStr( pathInfo.absoluteFilePath().toStdString() );		
-    actualStudy.abstractDataSet = DataSetFactory::DeserializeDataset( inStr );
+    actualStudy.abstractDataSet = DatasetFactory::DeserializeDataset( inStr );
 
     process( actualStudy.abstractDataSet );
   } 
@@ -292,7 +292,7 @@ void m4dGUIMainWindow::save ()
     FOutStream stream( pathInfo.absoluteFilePath().toStdString() );
 
     try {
-      DataSetFactory::SerializeDataset( stream, currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0].GetDataset() );
+      DatasetFactory::SerializeDataset( stream, currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0].GetDataset() );
     }
     catch ( Port::EDisconnected &e ) {
       QMessageBox::critical( this, tr( "Exception" ), e.what() ); 
@@ -823,11 +823,11 @@ void m4dGUIMainWindow::delegateAction ( unsigned actionIdx, m4dGUIAbstractViewer
 }
 
 
-void m4dGUIMainWindow::process ( AbstractDataSet::Ptr inputDataSet )
+void m4dGUIMainWindow::process ( ADataset::Ptr inputDataSet )
 {
   try {
 
-    ConnectionInterfaceTyped< AbstractImage > *conn = new ConnectionTyped< AbstractImage >;
+    ConnectionInterfaceTyped< AImage > *conn = new ConnectionTyped< AImage >;
 		conn->PutDataset( inputDataSet );
 
 		for ( unsigned i = 0; i < currentViewerDesktop->getSelectedViewerWidget()->InputPort().Size(); i++ ) {

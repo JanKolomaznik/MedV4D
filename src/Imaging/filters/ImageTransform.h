@@ -9,7 +9,7 @@
 #define IMAGE_TRANSFORM_H_
 
 #include "common/Common.h"
-#include "Imaging/AbstractImageFilter.h"
+#include "Imaging/AImageFilter.h"
 #include "Imaging/interpolators/base.h"
 #include "Imaging/interpolators/linear.h"
 
@@ -29,11 +29,11 @@ namespace Imaging
  */
 template< typename ElementType, uint32 dim >
 class ImageTransform
-	: public AbstractImageFilter< AbstractImage, Image< ElementType, dim > >
+	: public AImageFilter< AImage, Image< ElementType, dim > >
 {
 public:
 	typedef Image< ElementType, dim >			ImageType;
-	typedef AbstractImageFilter< AbstractImage, ImageType > 	PredecessorType;
+	typedef AImageFilter< AImage, ImageType > 	PredecessorType;
 	typedef typename InterpolatorBase< ImageType >::CoordType	CoordType;
 
 	class EDatasetTransformImpossible
@@ -165,7 +165,7 @@ protected:
 	 *  @return true if the filter finished successfully, false otherwise
 	 */
 	virtual bool
-	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
+	ExecutionThreadMethod( APipeFilter::UPDATE_TYPE utype );
 
 	/**
 	 * Method which will prepare datasets connected by output ports.
@@ -181,10 +181,10 @@ protected:
 	 * desired update method can't be used - right type is put as output value.
 	 **/
 	virtual void
-	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
+	BeforeComputation( APipeFilter::UPDATE_TYPE &utype );
 
 	void
-	MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype );
+	MarkChanges( APipeFilter::UPDATE_TYPE utype );
 
 	/**
 	 * Method called in execution methods after computation.

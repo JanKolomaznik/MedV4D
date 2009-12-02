@@ -25,7 +25,7 @@ namespace Imaging
 
 template< typename ElementType, unsigned Dim >
 Image< ElementType, Dim >::Image()
-: AbstractImageDim< Dim >( this->_dimExtents )
+: AImageDim< Dim >( this->_dimExtents )
 {
 	for( unsigned i = 0; i < Dimension; ++i ) {
 		this->_minimum[i] = _dimExtents[i].minimum = 0;
@@ -42,8 +42,8 @@ Image< ElementType, Dim >::Image()
 }
 
 template< typename ElementType, unsigned Dim >
-Image< ElementType, Dim >::Image( AbstractImageData::APtr imageData )
-: AbstractImageDim< Dim >( this->_dimExtents )
+Image< ElementType, Dim >::Image( AImageData::APtr imageData )
+: AImageDim< Dim >( this->_dimExtents )
 {
 	try 
 	{
@@ -61,7 +61,7 @@ Image< ElementType, Dim >::Image( AbstractImageData::APtr imageData )
 
 template< typename ElementType, unsigned Dim >
 Image< ElementType, Dim >::Image( typename ImageDataTemplate< ElementType >::Ptr imageData )
-: AbstractImageDim< Dim >( this->_dimExtents )
+: AImageDim< Dim >( this->_dimExtents )
 {
 	_imageData = imageData;
 	
@@ -71,7 +71,7 @@ Image< ElementType, Dim >::Image( typename ImageDataTemplate< ElementType >::Ptr
 	
 template< typename ElementType, unsigned Dim >
 Image< ElementType, Dim >::Image( typename ImageDataTemplate< ElementType >::Ptr imageData, typename Image< ElementType, Dim >::SubRegion region )
-: AbstractImageDim< Dim >( this->_dimExtents )
+: AImageDim< Dim >( this->_dimExtents )
 {
 	_imageData = imageData;
 	if( _imageData->GetDimension() < Dimension ) {
@@ -102,7 +102,7 @@ Image< ElementType, Dim >::Image(
 		typename Image< ElementType, Dim >::PointType	minimum, 
 		typename Image< ElementType, Dim >::PointType	maximum 
 		)
-: AbstractImageDim< Dim >( this->_dimExtents )
+: AImageDim< Dim >( this->_dimExtents )
 {
 	if( imageData->GetDimension() != Dimension ) {
 			_THROW_ ErrorHandling::EBadParameter( "Creating image from buffer of wrong dimension." );

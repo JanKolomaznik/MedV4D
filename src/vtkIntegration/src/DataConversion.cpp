@@ -33,7 +33,7 @@ ConvertNumericTypeIDToVTKScalarType( int NumericTypeID )
 
 template< typename ElementType >
 void
-TryFillVTKImageFromM4DImage( vtkImageData *vtkImage, const Imaging::AbstractImage &m4dImage )
+TryFillVTKImageFromM4DImage( vtkImageData *vtkImage, const Imaging::AImage &m4dImage )
 {
 	const Imaging::Image<ElementType, 3>* castedImage = 
 			dynamic_cast<const Imaging::Image<ElementType,3>*>( &m4dImage );
@@ -45,7 +45,7 @@ TryFillVTKImageFromM4DImage( vtkImageData *vtkImage, const Imaging::AbstractImag
 }
 
 void
-FillVTKImageFromM4DImage( vtkImageData *vtkImage, const Imaging::AbstractImage &m4dImage )
+FillVTKImageFromM4DImage( vtkImageData *vtkImage, const Imaging::AImage &m4dImage )
 {
 	DL_PRINT( 8, "FillVTKImageFromM4DImage(), element ID " << m4dImage.GetElementTypeID() );
 	NUMERIC_TYPE_TEMPLATE_SWITCH_DEFAULT_MACRO(

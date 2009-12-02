@@ -18,7 +18,7 @@ namespace M4D
 namespace Imaging
 {
 
-enum DataSetType
+enum DatasetType
 {
   DATASET_IMAGE = 10,
   DATASET_TRIANGLE_MESH = 15, // TODO

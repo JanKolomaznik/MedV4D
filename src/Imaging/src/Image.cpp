@@ -19,19 +19,19 @@ namespace M4D
 namespace Imaging
 {
 
-AbstractImage::AbstractImage( uint16 dim, DimensionExtents *dimExtents )
-: AbstractDataSet( DATASET_IMAGE ), _dimCount( dim ), _dimensionExtents( dimExtents )
+AImage::AImage( uint16 dim, DimensionExtents *dimExtents )
+: ADataset( DATASET_IMAGE ), _dimCount( dim ), _dimensionExtents( dimExtents )
 {
 
 }
 
-AbstractImage::~AbstractImage()
+AImage::~AImage()
 {
 
 }
 
 const DimensionExtents &
-AbstractImage::GetDimensionExtents( unsigned dimension )const
+AImage::GetDimensionExtents( unsigned dimension )const
 {
 	if( dimension >= _dimCount ) {
 		_THROW_ EBadDimension();

@@ -6,7 +6,7 @@
 #include "itkImage.h"
 
 //#include "itkDataContainerWrapper.h"
-#include "Imaging/AbstractImageFilterWholeAtOnce.h"
+#include "Imaging/AImageFilterWholeAtOnce.h"
 #include "Imaging/ImageFactory.h"
 #include "conversions.h"
 /**
@@ -22,10 +22,10 @@ namespace ITKIntegration
 // currently only for image types ...
 template< typename InputImageType, typename OutputImageType >
 class ITKFilter 
-	: public Imaging::AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
+	: public Imaging::AImageFilterWholeAtOnce< InputImageType, OutputImageType >
 {
 public:
-	typedef M4D::Imaging::AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType > PredecessorType;
+	typedef M4D::Imaging::AImageFilterWholeAtOnce< InputImageType, OutputImageType > PredecessorType;
 	typedef ITKFilter< InputImageType, OutputImageType > SelfType;
 
 protected:

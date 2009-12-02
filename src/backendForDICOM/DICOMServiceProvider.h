@@ -81,7 +81,7 @@ public:
 	 * @exception ImageFactory::EUnknowDataType Thrown when type for element with 
 	 * parameters from dicomObject doesn't exist.
 	 **/
-	static M4D::Imaging::AbstractImage::Ptr 
+	static M4D::Imaging::AImage::Ptr 
 	CreateImageFromDICOM( DicomObjSetPtr dicomObjects );
 
 	/**
@@ -93,7 +93,7 @@ public:
 	 * @exception ImageFactory::EUnknowDataType Thrown when type for element with 
 	 * parameters from dicomObject doesn't exist.
 	 **/
-	static M4D::Imaging::AbstractImageData::APtr 
+	static M4D::Imaging::AImageData::APtr 
 	CreateImageDataFromDICOM( DicomObjSetPtr dicomObjects );
 	
 	//TODO - make this function asynchronous. Add locking of array in image.

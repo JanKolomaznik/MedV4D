@@ -26,7 +26,7 @@ public:
 	Finalize();
 
 	void
-	InitInput( M4D::Imaging::AbstractDataSet::Ptr inputDataSet );
+	InitInput( M4D::Imaging::ADataset::Ptr inputDataset );
 
 	ImageConnectionType *
 	GetInputConnection()
@@ -37,7 +37,7 @@ public:
 		{ return _inputImage = _inConvConnection->GetDatasetPtrTyped(); }
 
 	void
-	ProcessResultDatasets( InputImageType::Ptr image, GDataSet::Ptr splines );
+	ProcessResultDatasets( InputImageType::Ptr image, GDataset::Ptr splines );
 
 	QWidget *
 	GetResultsPage();
@@ -77,7 +77,7 @@ protected:
 
 	InputImageType::Ptr 		_tmpImage;
 	M4D::Imaging::Mask3D::Ptr 	_tmpMask;
-	GDataSet::Ptr 			_tmpSplines;
+	GDataset::Ptr 			_tmpSplines;
 };
 
 #endif //MAIN_MANAGER_H

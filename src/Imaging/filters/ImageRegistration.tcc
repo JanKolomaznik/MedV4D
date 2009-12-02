@@ -31,7 +31,7 @@ template< typename ElementType >
 void
 CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 2 >::HistCellType, 2 >& jointHist,
 		 Image< ElementType, 2 >& inputImage,
-		 AbstractImage& refImage,
+		 AImage& refImage,
 		 uint32 transformSampling )
 {
 
@@ -81,7 +81,7 @@ template< typename ElementType >
 void
 CalculateHistograms( MultiHistogram< typename ImageRegistration< ElementType, 3 >::HistCellType, 2 >& jointHist,
 		 Image< ElementType, 3 >& inputImage,
-		 AbstractImage& refImage,
+		 AImage& refImage,
 		 uint32 transformSampling )
 {
 
@@ -210,7 +210,7 @@ ImageRegistration< ElementType, dim >
 template< typename ElementType, uint32 dim >
 bool
 ImageRegistration< ElementType, dim >
-::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
+::ExecutionThreadMethod( APipeFilter::UPDATE_TYPE utype )
 {
 	utype = utype;
 	if ( !( this->_readerBBox->WaitWhileDirty() == MS_MODIFIED ) ) {
@@ -259,7 +259,7 @@ ImageRegistration< ElementType, dim >
 template< typename ElementType, uint32 dim >
 void
 ImageRegistration< ElementType, dim >
-::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
+::BeforeComputation( APipeFilter::UPDATE_TYPE &utype )
 {
 
         PredecessorType::BeforeComputation( utype );
@@ -295,7 +295,7 @@ ImageRegistration< ElementType, dim >
 template< typename ElementType, uint32 dim >
 void
 ImageRegistration< ElementType, dim >
-::SetReferenceImage( AbstractImage::Ptr ref )
+::SetReferenceImage( AImage::Ptr ref )
 {
 	referenceImage = ref;
 }

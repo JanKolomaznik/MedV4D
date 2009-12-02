@@ -181,22 +181,22 @@ DcmProvider::GetImageSet(
 
 ///////////////////////////////////////////////////////////////////////
 
-AbstractImage::Ptr
+AImage::Ptr
 DcmProvider::CreateImageFromDICOM( DicomObjSetPtr dicomObjects )
 {
 	//TODO exceptions
-	AbstractImageData::APtr data = CreateImageDataFromDICOM( dicomObjects );
+	AImageData::APtr data = CreateImageDataFromDICOM( dicomObjects );
 
-	AbstractImage *imagePtr = NULL;
+	AImage *imagePtr = NULL;
 	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
 			data->GetElementTypeID(), imagePtr = new Image< TTYPE, 3 >( data ) );
 
-	return AbstractImage::Ptr( imagePtr );
+	return AImage::Ptr( imagePtr );
 }
 
 ///////////////////////////////////////////////////////////////////////
 
-AbstractImageData::APtr
+AImageData::APtr
 DcmProvider::CreateImageDataFromDICOM(
 		DicomObjSetPtr dicomObjects )
 {
@@ -288,7 +288,7 @@ DcmProvider::CreateImageDataFromDICOM(
 		info[2].Set( depth, width * height, voxelDepth );
 
 		D_PRINT( "---- Creating resulting image." );
-		AbstractImageData::APtr result( (AbstractImageData*)
+		AImageData::APtr result( (AImageData*)
 				ImageFactory::CreateImageFromDataAndTypeID( elementTypeID, imageSize, dataArray, info )
 					);
 

@@ -2,8 +2,8 @@
 #define _GEOMETRY_DATASET_FACTORY_H
 
 #include "common/Common.h"
-#include "Imaging/AbstractDataSet.h"
-#include "AGeometryDataSet2D.h"
+#include "Imaging/ADataset.h"
+#include "AGeometryDataset2D.h"
 
 #include <iostream>
 #include <fstream>
@@ -22,7 +22,7 @@ namespace M4D
 namespace Imaging
 {
 
-class GeometryDataSetFactory
+class GeometryDatasetFactory
 {
 public:
 

@@ -1,7 +1,7 @@
 /**
  * @ingroup imaging 
  * @author Jan Kolomaznik 
- * @file AbstractImage2DFilter.h 
+ * @file AImage2DFilter.h 
  * @{ 
  **/
 
@@ -10,7 +10,7 @@
 
 #include "common/Common.h"
 #include "Imaging/AImageSliceFilter.h"
-#include "Imaging/AbstractImageFilterWholeAtOnce.h"
+#include "Imaging/AImageFilterWholeAtOnce.h"
 #include <vector>
 
 namespace M4D
@@ -21,7 +21,7 @@ namespace Imaging
 
 // We disallow general usage of template - only specializations.
 template< typename InputImageType, typename OutputImageType >
-class AbstractImage2DFilter;
+class AImage2DFilter;
 
 /**
  * This template is planned to be used as predecessor for filters procesing on two dimensional data.
@@ -32,19 +32,19 @@ class AbstractImage2DFilter;
  * This is specialization for 2D images.
  **/
 template< typename InputElementType, typename OutputElementType >
-class AbstractImage2DFilter< Image< InputElementType, 2 >, Image< OutputElementType, 2 > >
-	 : public AbstractImageFilterWholeAtOnceIExtents< Image< InputElementType, 2 >, Image< OutputElementType, 2 > >
+class AImage2DFilter< Image< InputElementType, 2 >, Image< OutputElementType, 2 > >
+	 : public AImageFilterWholeAtOnceIExtents< Image< InputElementType, 2 >, Image< OutputElementType, 2 > >
 {
 public:
-	typedef AbstractImageFilterWholeAtOnceIExtents< Image< InputElementType, 2 >, Image< OutputElementType, 2 > >	PredecessorType;
+	typedef AImageFilterWholeAtOnceIExtents< Image< InputElementType, 2 >, Image< OutputElementType, 2 > >	PredecessorType;
 	
 	struct Properties : public PredecessorType::Properties
 	{
 		Properties() {}
 	};
 	
-	AbstractImage2DFilter( Properties *prop );
-	~AbstractImage2DFilter() {}
+	AImage2DFilter( Properties *prop );
+	~AImage2DFilter() {}
 
 protected:
 	/**
@@ -88,7 +88,7 @@ private:
  * This is specialization for 3D images.
  **/
 template< typename InputElementType, typename OutputElementType >
-class AbstractImage2DFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
+class AImage2DFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 	 : public AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 {
 public:
@@ -99,8 +99,8 @@ public:
 		Properties() : PredecessorType::Properties( 0, 10 ) {}
 	};
 	
-	AbstractImage2DFilter( Properties *prop );
-	~AbstractImage2DFilter() {}
+	AImage2DFilter( Properties *prop );
+	~AImage2DFilter() {}
 
 protected:
 
@@ -140,7 +140,7 @@ private:
 } /*namespace M4D*/
 
 //include implementation
-#include "Imaging/AbstractImage2DFilter.tcc"
+#include "Imaging/AImage2DFilter.tcc"
 
 #endif /*_ABSTRACT_IMAGE_SLICE_FILTER_H*/
 

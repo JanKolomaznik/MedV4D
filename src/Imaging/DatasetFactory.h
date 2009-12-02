@@ -1,9 +1,9 @@
 #ifndef DATASETFACTORY_H_
 #define DATASETFACTORY_H_
 
-#include "AbstractDataSet.h"
+#include "ADataset.h"
 #include "Imaging/ImageFactory.h"
-#include "Imaging/GeometryDataSetFactory.h"
+#include "Imaging/GeometryDatasetFactory.h"
 
 
 namespace M4D
@@ -14,24 +14,24 @@ namespace Imaging
 /**
  * Factory class that creates data sets of all kind. 
  */
-class DataSetFactory : public ImageFactory, public GeometryDataSetFactory
+class DatasetFactory : public ImageFactory, public GeometryDatasetFactory
 {
 public:
 	/**
 	 * Creates data set based on atributes that reads from stream
 	 */
-	static AbstractDataSet::Ptr 
+	static ADataset::Ptr 
 	DeserializeDataset(M4D::IO::InStream &stream);
 
 	static void
-	DeserializeDataset(M4D::IO::InStream &stream, AbstractDataSet &dataset);
+	DeserializeDataset(M4D::IO::InStream &stream, ADataset &dataset);
 
 	static void 
-	SerializeDataset(M4D::IO::OutStream &stream, const AbstractDataSet &dataset);
+	SerializeDataset(M4D::IO::OutStream &stream, const ADataset &dataset);
 	
 	
 private:	// helpers
-	/*static AbstractDataSet::Ptr 
+	/*static ADataset::Ptr 
 	CreateImage(M4D::IO::InStream &stream);*/
 };
 

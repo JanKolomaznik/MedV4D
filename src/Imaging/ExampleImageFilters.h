@@ -13,7 +13,7 @@
 #include "Imaging/Ports.h"
 #include "Imaging/ImageDataTemplate.h"
 #include "Imaging/ImageFactory.h"
-#include "Imaging/AbstractImageFilter.h"
+#include "Imaging/AImageFilter.h"
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -31,10 +31,10 @@ class CopyImageFilter;
 
 template< typename InputElementType, typename OutputElementType >
 class CopyImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
-: public AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
+: public AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 {
 public:
-	typedef AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > > PredecessorType;
+	typedef AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > > PredecessorType;
 
 	CopyImageFilter();
 	~CopyImageFilter(){}
@@ -94,10 +94,10 @@ class SimpleThresholdingImageFilter;
 
 template< typename InputElementType >
 class SimpleThresholdingImageFilter< Image< InputElementType, 3 > >
-: public AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
+: public AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
 {
 public:
-	typedef typename Imaging::AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
+	typedef typename Imaging::AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
 
 	SimpleThresholdingImageFilter();
 	~SimpleThresholdingImageFilter(){}
@@ -130,10 +130,10 @@ class SimpleConvolutionImageFilter;
 
 template< typename InputElementType >
 class SimpleConvolutionImageFilter< Image< InputElementType, 3 > >
-: public AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
+: public AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< InputElementType, 3 > >
 {
 public:
-	typedef typename Imaging::AbstractImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
+	typedef typename Imaging::AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< InputElementType, 3 > > PredecessorType;
 
 	SimpleConvolutionImageFilter();
 	~SimpleConvolutionImageFilter(){ delete _matrix; }

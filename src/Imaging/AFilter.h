@@ -4,7 +4,7 @@
 
 /**
  * @ingroup imaging 
- * @file AbstractFilter.h 
+ * @file AFilter.h 
  * @author Jan Kolomaznik 
  * @{ 
  **/
@@ -13,7 +13,7 @@
 #define _ABSTRACT_FILTER_H
 
 #include "common/Common.h"
-#include "Imaging/AbstractProcessingUnit.h"
+#include "Imaging/AProcessingUnit.h"
 #include "Imaging/Ports.h"
 #include "Imaging/ConnectionInterface.h"
 #include <boost/shared_ptr.hpp>
@@ -167,8 +167,8 @@ private:
  * Its purpose is just ensure common predecessor of pipeline filters and filters with 
  * different computation logic.
  **/
-class AbstractFilter 
-  : public AbstractProcessingUnit
+class AFilter 
+  : public AProcessingUnit
 {
 public:
 	struct Properties
@@ -189,7 +189,7 @@ public:
 		/**
 		 * returns ID of the filter used in filter serialization
 		 */
-		virtual FilterID GetID(void) { return FID_AbstractFilterNOT_USE; }
+		virtual FilterID GetID(void) { return FID_AFilterNOT_USE; }
 		
 	private:
 		M4D::Common::TimeStamp	_timestamp;
@@ -198,13 +198,13 @@ public:
 	/**
 	 * Smart pointer to filter with this interface.
 	 **/
-	typedef boost::shared_ptr< AbstractFilter > AbstractFilterPtr;
-	typedef boost::shared_ptr< AbstractFilter > Ptr;
+	typedef boost::shared_ptr< AFilter > AFilterPtr;
+	typedef boost::shared_ptr< AFilter > Ptr;
 
 	/**
 	 * Destructor - virtual - can be polymorphically destroyed.
 	 **/
-	~AbstractFilter() 
+	~AFilter() 
 	{ 
 		delete _properties;
 	}
@@ -239,7 +239,7 @@ public:
 		{ return _name; }
 protected:
 
-  	AbstractFilter( AbstractFilter::Properties * prop ): _properties( prop ), _name( "Filter" ) {}
+  	AFilter( AFilter::Properties * prop ): _properties( prop ), _name( "Filter" ) {}
 
 	Properties *_properties;
 
@@ -249,7 +249,7 @@ private:
 	/**
 	 * Prohibition of copying.
 	 **/
-	PROHIBIT_COPYING_OF_OBJECT_MACRO( AbstractFilter );
+	PROHIBIT_COPYING_OF_OBJECT_MACRO( AFilter );
 };
 
 /**
@@ -263,10 +263,10 @@ private:
  * override these methods : ExecutionThreadMethod(), PrepareOutputDatasets(), BeforeComputation(), MarkChanges(),
  * AfterComputation().
  **/
-class AbstractPipeFilter : public AbstractFilter, public MessageReceiverInterface
+class APipeFilter : public AFilter, public MessageReceiverInterface
 {
 public:
-	typedef AbstractFilter	PredecessorType;
+	typedef AFilter	PredecessorType;
 
 	typedef PredecessorType::Properties Properties;
 
@@ -283,13 +283,13 @@ public:
 	/**
 	 * Smart pointer to filter with this interface.
 	 **/
-	typedef boost::shared_ptr< AbstractPipeFilter > AbstractPipeFilterPtr;
+	typedef boost::shared_ptr< APipeFilter > APipeFilterPtr;
 
 
 	/**
 	 * Destructor - virtual - can be polymorphically destroyed.
 	 **/
-	~AbstractPipeFilter() {}
+	~APipeFilter() {}
 
 	/**
 	 * @return Returns list of all available input ports.
@@ -307,17 +307,17 @@ public:
 	
 	template< typename DatasetType >
 	const DatasetType&
-	GetInputDataSet( uint32 idx )const;
+	GetInputDataset( uint32 idx )const;
 
 	void
-	ReleaseInputDataSet( uint32 idx )const;
+	ReleaseInputDataset( uint32 idx )const;
 
 	template< typename DatasetType >
 	DatasetType &
-	GetOutputDataSet( uint32 idx )const;
+	GetOutputDataset( uint32 idx )const;
 
 	void
-	ReleaseOutputDataSet( uint32 idx )const;
+	ReleaseOutputDataset( uint32 idx )const;
 
 	/**
 	 * Start computing only on modified data.
@@ -391,7 +391,7 @@ protected:
 	friend struct MainExecutionThread;
 
 
-	AbstractPipeFilter( AbstractPipeFilter::Properties *prop );
+	APipeFilter( APipeFilter::Properties *prop );
 	
 	/**
 	 * Method running in execution thread - this method will be 
@@ -403,7 +403,7 @@ protected:
 	 * \return True if execution wasn't stopped, false otherwise.
 	 **/
 	virtual bool
-	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )=0;
+	ExecutionThreadMethod( APipeFilter::UPDATE_TYPE utype )=0;
 
 	/**
 	 * Method used for checking whether execution can continue.
@@ -448,10 +448,10 @@ protected:
 	 * desired update method can't be used - right type is put as output value.
 	 **/
 	virtual void
-	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
+	BeforeComputation( APipeFilter::UPDATE_TYPE &utype );
 
 	virtual void
-	MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype ) = 0;
+	MarkChanges( APipeFilter::UPDATE_TYPE utype ) = 0;
 
 	/**
 	 * Method called in execution methods after computation.
@@ -516,15 +516,15 @@ private:
 	/**
 	 * Prohibition of copying.
 	 **/
-	PROHIBIT_COPYING_OF_OBJECT_MACRO( AbstractPipeFilter );
+	PROHIBIT_COPYING_OF_OBJECT_MACRO( APipeFilter );
 
 };
 
-typedef AbstractPipeFilter APipeFilter;
+typedef APipeFilter APipeFilter;
 
 template< typename DatasetType >
 const DatasetType&
-AbstractPipeFilter::GetInputDataSet( uint32 idx )const
+APipeFilter::GetInputDataset( uint32 idx )const
 {
 	_inputPorts[ idx ].LockDataset();
 	try {
@@ -542,7 +542,7 @@ AbstractPipeFilter::GetInputDataSet( uint32 idx )const
 
 template< typename DatasetType >
 DatasetType &
-AbstractPipeFilter::GetOutputDataSet( uint32 idx )const
+APipeFilter::GetOutputDataset( uint32 idx )const
 {
 	_outputPorts[ idx ].LockDataset();
 	try {

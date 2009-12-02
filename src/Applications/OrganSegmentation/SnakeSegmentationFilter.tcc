@@ -60,23 +60,23 @@ SnakeSegmentationFilter< ElementType, SecondElementType >::PrepareOutputDatasets
 	_maxSlice = Min( _maxSlice, inEdge->GetDimensionExtents(2).maximum );
 
 	this->out->UpgradeToExclusiveLock();
-		GeometryDataSetFactory::ChangeSliceCount( (*this->out), _minSlice, _maxSlice );
+		GeometryDatasetFactory::ChangeSliceCount( (*this->out), _minSlice, _maxSlice );
 	this->out->DowngradeFromExclusiveLock();
 }
 
 template < typename ElementType, typename SecondElementType >
 void
-SnakeSegmentationFilter< ElementType, SecondElementType >::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
+SnakeSegmentationFilter< ElementType, SecondElementType >::BeforeComputation( APipeFilter::UPDATE_TYPE &utype )
 {
 	PredecessorType::BeforeComputation( utype );
 
-	utype = AbstractPipeFilter::RECALCULATION;
+	utype = APipeFilter::RECALCULATION;
 	this->_callPrepareOutputDatasets = true;
 
-	in = &(this->GetInputDataSet< InputImageType >( 0 ));
-	inEdge = &(this->GetInputDataSet< EdgeImageType >( 1 ));
+	in = &(this->GetInputDataset< InputImageType >( 0 ));
+	inEdge = &(this->GetInputDataset< EdgeImageType >( 1 ));
 	
-	out = &(this->GetOutputDataSet<OutputDatasetType>(0));
+	out = &(this->GetOutputDataset<OutputDatasetType>(0));
 
 	_northPole[ 0 ] = GetSecondPoint()[ 0 ];
 	_northPole[ 1 ] = GetSecondPoint()[ 1 ];
@@ -90,7 +90,7 @@ SnakeSegmentationFilter< ElementType, SecondElementType >::BeforeComputation( Ab
 
 template < typename ElementType, typename SecondElementType >
 void
-SnakeSegmentationFilter< ElementType, SecondElementType >::MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype )
+SnakeSegmentationFilter< ElementType, SecondElementType >::MarkChanges( APipeFilter::UPDATE_TYPE utype )
 {
 	readerBBox[0] = in->GetWholeDirtyBBox();
 	readerBBox[1] = inEdge->GetWholeDirtyBBox();
@@ -106,9 +106,9 @@ SnakeSegmentationFilter< ElementType, SecondElementType >::AfterComputation( boo
 	/*	_inTimestamp[ i ] = in[ i ]->GetStructureTimestamp();
 		_inEditTimestamp[ i ] = in[ i ]->GetEditTimestamp();*/
 		
-		this->ReleaseInputDataSet( i );
+		this->ReleaseInputDataset( i );
 	}
-	this->ReleaseOutputDataSet( 0 );
+	this->ReleaseOutputDataset( 0 );
 	PredecessorType::AfterComputation( successful );	
 }
 
@@ -145,7 +145,7 @@ SnakeSegmentationFilter< ElementType, SecondElementType >::CreateCircleControlPo
 
 template < typename ElementType, typename SecondElementType >
 bool
-SnakeSegmentationFilter< ElementType, SecondElementType >::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
+SnakeSegmentationFilter< ElementType, SecondElementType >::ExecutionThreadMethod( APipeFilter::UPDATE_TYPE utype )
 {
 	if( !CanContinue() ) return false;
 

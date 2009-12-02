@@ -1,12 +1,12 @@
 /**
  * @ingroup imaging 
  * @author Jan Kolomaznik 
- * @file AbstractImageElementFilter.tcc 
+ * @file AImageElementFilter.tcc 
  * @{ 
  **/
 
 #ifndef _ABSTRACT_IMAGE_ELEMENT_FILTER_H
-#error File AbstractImageElementFilter.tcc cannot be included directly!
+#error File AImageElementFilter.tcc cannot be included directly!
 #else
 
 /**
@@ -20,8 +20,8 @@ namespace Imaging
 {
 
 template< typename InputImageType, typename OutputImageType, typename ElementFilter >
-AbstractImageElementFilter< InputImageType, OutputImageType, ElementFilter >
-::AbstractImageElementFilter( typename AbstractImageElementFilter< InputImageType, OutputImageType, ElementFilter >::Properties *prop ) 
+AImageElementFilter< InputImageType, OutputImageType, ElementFilter >
+::AImageElementFilter( typename AImageElementFilter< InputImageType, OutputImageType, ElementFilter >::Properties *prop ) 
 	: PredecessorType( prop )
 {
 	
@@ -29,10 +29,10 @@ AbstractImageElementFilter< InputImageType, OutputImageType, ElementFilter >
 
 template< typename InputImageType, typename OutputImageType, typename ElementFilter >
 bool
-AbstractImageElementFilter< InputImageType, OutputImageType, ElementFilter >
+AImageElementFilter< InputImageType, OutputImageType, ElementFilter >
 ::Process2D(
-		const ImageRegion< typename AbstractImageElementFilter< InputImageType, OutputImageType, ElementFilter >::InputElementType, 2 >	&inRegion,
-		ImageRegion< typename AbstractImageElementFilter< InputImageType, OutputImageType, ElementFilter >::OutputElementType, 2 >	&outRegion
+		const ImageRegion< typename AImageElementFilter< InputImageType, OutputImageType, ElementFilter >::InputElementType, 2 >	&inRegion,
+		ImageRegion< typename AImageElementFilter< InputImageType, OutputImageType, ElementFilter >::OutputElementType, 2 >	&outRegion
 	    )
 {
 	if( !this->CanContinue() ) {

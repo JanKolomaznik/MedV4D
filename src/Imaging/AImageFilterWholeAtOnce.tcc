@@ -1,12 +1,12 @@
 /**
  * @ingroup imaging 
  * @author Jan Kolomaznik 
- * @file AbstractImageFilterWholeAtOnce.tcc 
+ * @file AImageFilterWholeAtOnce.tcc 
  * @{ 
  **/
 
 #ifndef _ABSTRACT_IMAGE_FILTER_WHOLEATONCE_H
-#error File AbstractImageFilterWholeAtOnce.tcc cannot be included directly!
+#error File AImageFilterWholeAtOnce.tcc cannot be included directly!
 #else
 
 /**
@@ -20,8 +20,8 @@ namespace Imaging
 {
 
 template< typename InputImageType, typename OutputImageType >
-AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
-::AbstractImageFilterWholeAtOnce( typename AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >::Properties *prop )
+AImageFilterWholeAtOnce< InputImageType, OutputImageType >
+::AImageFilterWholeAtOnce( typename AImageFilterWholeAtOnce< InputImageType, OutputImageType >::Properties *prop )
 	: PredecessorType( prop )
 {
 
@@ -29,11 +29,11 @@ AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
 
 template< typename InputImageType, typename OutputImageType >
 bool
-AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
-::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
+AImageFilterWholeAtOnce< InputImageType, OutputImageType >
+::ExecutionThreadMethod( APipeFilter::UPDATE_TYPE utype )
 {
 	utype = utype;
-	D_BLOCK_COMMENT( "++++ Entering ExecutionThreadMethod() - AbstractImageFilterWholeAtOnce", "----- Leaving MainExecutionThread() - AbstractImageFilterWholeAtOnce" );
+	D_BLOCK_COMMENT( "++++ Entering ExecutionThreadMethod() - AImageFilterWholeAtOnce", "----- Leaving MainExecutionThread() - AImageFilterWholeAtOnce" );
 	if ( !( _readerBBox->WaitWhileDirty() == MS_MODIFIED ) ) {
 		_writerBBox->SetState( MS_CANCELED );
 		return false;
@@ -50,19 +50,19 @@ AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
 
 template< typename InputImageType, typename OutputImageType >
 void
-AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
-::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
+AImageFilterWholeAtOnce< InputImageType, OutputImageType >
+::BeforeComputation( APipeFilter::UPDATE_TYPE &utype )
 {
 	PredecessorType::BeforeComputation( utype );
 	
 	//This kind of filter computes always on whole dataset
-	utype = AbstractPipeFilter::RECALCULATION;
+	utype = APipeFilter::RECALCULATION;
 }
 
 template< typename InputImageType, typename OutputImageType >
 void
-AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
-::MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype )
+AImageFilterWholeAtOnce< InputImageType, OutputImageType >
+::MarkChanges( APipeFilter::UPDATE_TYPE utype )
 {
 	utype = utype;
 
@@ -72,7 +72,7 @@ AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
 
 template< typename InputImageType, typename OutputImageType >
 void
-AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
+AImageFilterWholeAtOnce< InputImageType, OutputImageType >
 ::AfterComputation( bool successful )
 {
 	_readerBBox = ReaderBBoxInterface::Ptr();
@@ -175,7 +175,7 @@ ApplyWriterBBoxFunc( Image< ElementType, 4 > &out )
 //*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 /*template< typename InputImageType, typename OutputImageType >
 ReaderBBoxInterface::Ptr
-AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
+AImageFilterWholeAtOnce< InputImageType, OutputImageType >
 ::ApplyReaderBBox( const InputImageType &in )
 {
 	return ApplyReaderBBoxFunc< InputImageType::Element, InputImageType::Dimension >( in );
@@ -183,7 +183,7 @@ AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
 
 template< typename InputImageType, typename OutputImageType >
 WriterBBoxInterface &
-AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
+AImageFilterWholeAtOnce< InputImageType, OutputImageType >
 ::ApplyWriterBBox( OutputImageType &out )
 {
 	return ApplyWriterBBoxFunc< OutputImageType::Element, OutputImageType::Dimension >( out );
@@ -195,8 +195,8 @@ AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
 
 
 template< typename InputImageType, typename OutputImageType >
-AbstractImageFilterWholeAtOnceIExtents< InputImageType, OutputImageType >
-::AbstractImageFilterWholeAtOnceIExtents( typename AbstractImageFilterWholeAtOnceIExtents< InputImageType, OutputImageType >::Properties *prop )
+AImageFilterWholeAtOnceIExtents< InputImageType, OutputImageType >
+::AImageFilterWholeAtOnceIExtents( typename AImageFilterWholeAtOnceIExtents< InputImageType, OutputImageType >::Properties *prop )
 	: PredecessorType( prop )
 {
 	
@@ -204,7 +204,7 @@ AbstractImageFilterWholeAtOnceIExtents< InputImageType, OutputImageType >
 
 template< typename InputImageType, typename OutputImageType >
 void
-AbstractImageFilterWholeAtOnceIExtents< InputImageType, OutputImageType >
+AImageFilterWholeAtOnceIExtents< InputImageType, OutputImageType >
 ::PrepareOutputDatasets()
 {
 	PredecessorType::PrepareOutputDatasets();

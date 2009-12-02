@@ -2,7 +2,7 @@
 #define _MASK_MEDIAN_FILTER_H
 
 #include "common/Common.h"
-#include "Imaging/AbstractImage2DFilter.h"
+#include "Imaging/AImage2DFilter.h"
 
 namespace M4D
 {
@@ -19,10 +19,10 @@ namespace Imaging
 
 template< unsigned Dim >
 class MaskMedianFilter2D
-	: public AbstractImage2DFilter< Image< uint8, Dim >, Image< uint8, Dim > >
+	: public AImage2DFilter< Image< uint8, Dim >, Image< uint8, Dim > >
 {
 public:	
-	typedef AbstractImage2DFilter< Image< uint8, Dim >, Image< uint8, Dim > > 	PredecessorType;
+	typedef AImage2DFilter< Image< uint8, Dim >, Image< uint8, Dim > > 	PredecessorType;
 	typedef uint8									ElementType;
 
 	struct Properties : public PredecessorType::Properties
@@ -39,7 +39,7 @@ public:
 protected:
 
 	void
-	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
+	BeforeComputation( APipeFilter::UPDATE_TYPE &utype );
 
 	bool
 	Process2D(

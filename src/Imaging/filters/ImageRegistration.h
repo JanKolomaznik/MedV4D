@@ -75,7 +75,7 @@ public:
 	 *  @param ref smart pointer to the reference image
 	 */
 	void
-	SetReferenceImage( AbstractImage::Ptr ref );
+	SetReferenceImage( AImage::Ptr ref );
 
 	/**
 	 * The optimization function that is to be optimized to align the images
@@ -107,7 +107,7 @@ protected:
          *  @return true if the filter finished successfully, false otherwise
          */
 	bool
-	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
+	ExecutionThreadMethod( APipeFilter::UPDATE_TYPE utype );
 
 	/**
          * Method called in execution methods before actual computation.
@@ -116,7 +116,7 @@ protected:
          * desired update method can't be used - right type is put as output value.
          **/
         void
-        BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
+        BeforeComputation( APipeFilter::UPDATE_TYPE &utype );
 
 private:
 	GET_PROPERTIES_DEFINITION_MACRO;
@@ -124,7 +124,7 @@ private:
 	/**
 	 * Smart pointer to the reference image
 	 */
-	AbstractImage::Ptr						referenceImage;
+	AImage::Ptr						referenceImage;
 
 	/**
 	 * Joint histogram of the two images

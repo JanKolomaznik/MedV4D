@@ -12,14 +12,14 @@ using namespace M4D::Imaging;
 typedef Image< int16, 3 > ImageType;
 
 template< typename ElementType >
-M4D::Imaging::AbstractImage::Ptr
+M4D::Imaging::AImage::Ptr
 GetSlice( typename M4D::Imaging::Image<ElementType, 3>::Ptr image, int slice )
 {
 	return image->GetRestrictedImage( image->GetRegion().GetSlice( slice ) );
 }
 
 template< typename ImageType >
-M4D::Imaging::AbstractImage::Ptr
+M4D::Imaging::AImage::Ptr
 CropImage( typename ImageType::Ptr image, const std::vector<int> &firstCorner, const std::vector<int> &secondCorner )
 {
 	typedef Vector< int, ImageTraits< ImageType >::Dimension > CornerType;
@@ -69,11 +69,11 @@ main( int argc, char **argv )
 
 
 	std::cout << "Loading file..."; std::cout.flush();
-	M4D::Imaging::AbstractImage::Ptr image = 
+	M4D::Imaging::AImage::Ptr image = 
 			M4D::Imaging::ImageFactory::LoadDumpedImage( inFilename );
 	std::cout << "Done\n";
 
-	//M4D::Imaging::AbstractImage::Ptr outImage;
+	//M4D::Imaging::AImage::Ptr outImage;
 	
 	if( sliceNumber.isSet() ) {
 		if( image->GetDimension() > 2 ) {
@@ -82,7 +82,7 @@ main( int argc, char **argv )
 			
 			TYPE_TEMPLATE_SWITCH_MACRO( 
 					image->GetElementTypeID(), 
-					image = GetSlice<TTYPE>( M4D::Imaging::Image<TTYPE, 3>::CastAbstractImage( image ), slice ) 
+					image = GetSlice<TTYPE>( M4D::Imaging::Image<TTYPE, 3>::CastAImage( image ), slice ) 
 					);
 		} else {
 			throw M4D::ErrorHandling::EBadDimension();

@@ -10,7 +10,7 @@
 
 #include "common/Common.h"
 #include "common/Types.h"
-#include "Imaging/AbstractImage2DFilter.h"
+#include "Imaging/AImage2DFilter.h"
 #include "Imaging/Convolution.h"
 
 /**
@@ -27,12 +27,12 @@ namespace Imaging
 
 template< typename ImageType >
 class SobelEdgeDetector 
-	: public AbstractImage2DFilter< ImageType, ImageType >
+	: public AImage2DFilter< ImageType, ImageType >
 {
 public:	
 	static const unsigned Dimension = ImageTraits< ImageType >::Dimension;
 	typedef typename ImageTraits< ImageType >::ElementType 		ElementType;
-	typedef AbstractImage2DFilter< ImageType, ImageType > 		PredecessorType;
+	typedef AImage2DFilter< ImageType, ImageType > 		PredecessorType;
 	typedef ConvolutionMask<2,float32>				Mask;
 	typedef typename ConvolutionMask<2,float32>::Ptr		MaskPtr;
 	typedef ImageRegion< ElementType, 2 >				Region;
@@ -69,7 +69,7 @@ class SobelGradientOperator;
 
 template< typename ImageType, typename OutType >
 class SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
-	: public AbstractImage2DFilter< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
+	: public AImage2DFilter< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
 {
 public:	
 	static const unsigned Dimension = ImageTraits< ImageType >::Dimension;
@@ -77,7 +77,7 @@ public:
 	typedef SimpleVector< OutType, 2 >				OutElementType;
 	typedef OutType							OutScalarType;
 	typedef Image< OutElementType, ImageTraits< ImageType >::Dimension > OutImageType;
-	typedef AbstractImage2DFilter< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > > 		PredecessorType;
+	typedef AImage2DFilter< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > > 		PredecessorType;
 	typedef ConvolutionMask<2,float32>				Mask;
 	typedef typename ConvolutionMask<2,float32>::Ptr		MaskPtr;
 	typedef ImageRegion< ElementType, 2 >				IRegion;

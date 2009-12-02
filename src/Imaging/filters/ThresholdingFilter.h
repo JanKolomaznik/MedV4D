@@ -10,7 +10,7 @@
 
 #include "common/Common.h"
 #include "Imaging/ImageTraits.h"
-#include "Imaging/AbstractImageElementFilter.h"
+#include "Imaging/AImageElementFilter.h"
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -46,11 +46,11 @@ public:
 
 template< typename ImageType >
 class ThresholdingFilter
-	: public AbstractImageElementFilter< ImageType, ImageType, ThresholdingFunctor< typename ImageTraits< ImageType >::ElementType > >
+	: public AImageElementFilter< ImageType, ImageType, ThresholdingFunctor< typename ImageTraits< ImageType >::ElementType > >
 {
 public:
 	typedef ThresholdingFunctor< typename ImageTraits< ImageType >::ElementType > 		Functor;
-	typedef AbstractImageElementFilter< ImageType, ImageType, Functor >			PredecessorType;
+	typedef AImageElementFilter< ImageType, ImageType, Functor >			PredecessorType;
 	typedef typename ImageTraits< ImageType >::ElementType 					InputElementType;
 
 	struct Properties : public PredecessorType::Properties
@@ -110,11 +110,11 @@ public:
 
 template< typename ImageType >
 class ThresholdingMaskFilter
-	: public AbstractImageElementFilter< ImageType, Image3DUnsigned8b, ThresholdingMaskFunctor< typename ImageTraits< ImageType >::ElementType > >
+	: public AImageElementFilter< ImageType, Image3DUnsigned8b, ThresholdingMaskFunctor< typename ImageTraits< ImageType >::ElementType > >
 {
 public:
 	typedef ThresholdingMaskFunctor< typename ImageTraits< ImageType >::ElementType > 	Functor;
-	typedef Imaging::AbstractImageElementFilter< ImageType, Image3DUnsigned8b, Functor >	PredecessorType;
+	typedef Imaging::AImageElementFilter< ImageType, Image3DUnsigned8b, Functor >	PredecessorType;
 	typedef typename ImageTraits< ImageType >::ElementType 					InputElementType;
 
 	struct Properties : public PredecessorType::Properties

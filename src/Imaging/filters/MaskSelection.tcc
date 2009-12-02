@@ -55,7 +55,7 @@ MaskSelection< ImageType >
 template< typename ImageType >
 bool
 MaskSelection< ImageType >
-::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
+::ExecutionThreadMethod( APipeFilter::UPDATE_TYPE utype )
 {
 	return ExecutionThreadMethodHelper< ImageTraits< ImageType >::Dimension >( utype );
 
@@ -92,7 +92,7 @@ MaskSelection< ImageType >
 template< typename ImageType >
 void
 MaskSelection< ImageType >
-::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
+::BeforeComputation( APipeFilter::UPDATE_TYPE &utype )
 {
 	PredecessorType::BeforeComputation( utype );
 }
@@ -100,7 +100,7 @@ MaskSelection< ImageType >
 template< typename ImageType >
 void
 MaskSelection< ImageType >
-::MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype )
+::MarkChanges( APipeFilter::UPDATE_TYPE utype )
 {
 	MarkChangesHelper< ImageTraits< ImageType >::Dimension >( utype );
 }
@@ -117,7 +117,7 @@ template< typename ImageType >
 template< uint32 Dim >
 void
 MaskSelection< ImageType >
-::MarkChangesHelper( AbstractPipeFilter::UPDATE_TYPE utype )
+::MarkChangesHelper( APipeFilter::UPDATE_TYPE utype )
 {
 	utype = utype;
 	_helper._imageReaderBBox = this->in[0]->GetWholeDirtyBBox();
@@ -129,7 +129,7 @@ template< typename ImageType >
 template< uint32 Dim >
 bool
 MaskSelection< ImageType >
-::ExecutionThreadMethodHelper( AbstractPipeFilter::UPDATE_TYPE utype )
+::ExecutionThreadMethodHelper( APipeFilter::UPDATE_TYPE utype )
 {
 	if ( !( _helper._imageReaderBBox->WaitWhileDirty() == MS_MODIFIED ) 
 		||  !( _helper._maskReaderBBox->WaitWhileDirty() == MS_MODIFIED )  ) 

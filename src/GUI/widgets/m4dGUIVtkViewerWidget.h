@@ -392,7 +392,7 @@ private:
     /**
      * The input port that can be connected to the pipeline.
      */
-    Imaging::InputPortTyped< Imaging::AbstractImage >	*_inPort;
+    Imaging::InputPortTyped< Imaging::AImage >	*_inPort;
     
     /**
      * The object that converts m4d image to vtk image.

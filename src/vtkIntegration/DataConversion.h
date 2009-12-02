@@ -42,7 +42,7 @@ int
 ConvertNumericTypeIDToVTKScalarType( int NumericTypeID );
 
 void
-FillVTKImageFromM4DImage( vtkImageData *vtkImage, const Imaging::AbstractImage &m4dImage );
+FillVTKImageFromM4DImage( vtkImageData *vtkImage, const Imaging::AImage &m4dImage );
 
 
 

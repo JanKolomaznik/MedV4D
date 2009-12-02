@@ -2,7 +2,7 @@
 #define _MASK_SELECTION_H
 
 #include "common/Common.h"
-#include "Imaging/AbstractMultiImageFilter.h"
+#include "Imaging/AMultiImageFilter.h"
 
 namespace M4D
 {
@@ -28,10 +28,10 @@ struct MaskSelectionHelper
 
 template< typename ImageType >
 class MaskSelection
-	: public AbstractMultiImageFilter< 2, 1 >
+	: public AMultiImageFilter< 2, 1 >
 {
 public:
-	typedef AbstractMultiImageFilter< 2, 1 > 			PredecessorType;
+	typedef AMultiImageFilter< 2, 1 > 				PredecessorType;
 	typedef typename ImageTraits< ImageType >::ElementType 		ElementType;
 	typedef Image< uint8, ImageTraits<ImageType>::Dimension >	InMaskType;
 	typedef typename ImageTraits< ImageType >::InputPort 		ImageInPort;
@@ -58,7 +58,7 @@ public:
 	GET_SET_PROPERTY_METHOD_MACRO( ElementType, Background, background );
 protected:
 	bool
-	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
+	ExecutionThreadMethod( APipeFilter::UPDATE_TYPE utype );
 
 	/**
 	 * Method which will prepare datasets connected by output ports.
@@ -74,10 +74,10 @@ protected:
 	 * desired update method can't be used - right type is put as output value.
 	 **/
 	void
-	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
+	BeforeComputation( APipeFilter::UPDATE_TYPE &utype );
 
 	void
-	MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype );
+	MarkChanges( APipeFilter::UPDATE_TYPE utype );
 
 	/**
 	 * Method called in execution methods after computation.
@@ -92,11 +92,11 @@ protected:
 private:
 	template< uint32 Dim >
 	void
-	MarkChangesHelper( AbstractPipeFilter::UPDATE_TYPE utype );
+	MarkChangesHelper( APipeFilter::UPDATE_TYPE utype );
 
 	template< uint32 Dim >
 	bool
-	ExecutionThreadMethodHelper( AbstractPipeFilter::UPDATE_TYPE utype );
+	ExecutionThreadMethodHelper( APipeFilter::UPDATE_TYPE utype );
 
 	bool
 	Process();

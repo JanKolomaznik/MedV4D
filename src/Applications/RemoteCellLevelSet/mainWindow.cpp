@@ -104,23 +104,23 @@ mainWindow::CreatePipeline()
 	
 	
 	// create connections
-	_inConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( 
+	_inConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( 
 			&_pipeline.MakeInputConnection( *_convertor, 0, false ) );
 	_pipeline.MakeConnection( *_convertor, 0, *_decimator, 0 );
 	
-	_tmpConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( 
+	_tmpConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( 
 			&_pipeline.MakeConnection( *_decimator, 0, *_filter, 0 ) );
 	
-	_remote2castConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( 
+	_remote2castConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( 
 				&_pipeline.MakeConnection( *_filter, 0, *_resultImConvertor, 0 ) );	
 	
-	_outConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( 
+	_outConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( 
 			&_pipeline.MakeOutputConnection( *_resultImConvertor, 0, true ) );
 	
-	_decim2castConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( 
+	_decim2castConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( 
 					&_pipeline.MakeConnection( *_decimator, 0, *_decimatedImConvertor, 0 ) );
 	
-	_castOutConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( 
+	_castOutConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( 
 			&_pipeline.MakeOutputConnection( *_decimatedImConvertor, 0, true ) );
 	
 	if( _inConnection == NULL || _outConnection == NULL ) {

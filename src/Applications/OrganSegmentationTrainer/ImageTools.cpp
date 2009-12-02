@@ -378,12 +378,12 @@ Train( const TrainingDataInfos &infos, Vector< uint32, 3 > size, Vector< float32
 		maskFile /= infos[i].second;
 		try {
 			D_PRINT( "Loading training image number '" << i << "' from file '" << imageFile.string() <<"'." );
-			AbstractImage::Ptr aimage = ImageFactory::LoadDumpedImage( imageFile.string() );
-			image = ImageType::CastAbstractImage( aimage );
+			AImage::Ptr aimage = ImageFactory::LoadDumpedImage( imageFile.string() );
+			image = ImageType::CastAImage( aimage );
 
 			D_PRINT( "Loading training mask number '" << i << "' from file '" << maskFile.string() <<"'." );
 			aimage = ImageFactory::LoadDumpedImage( maskFile.string() );
-			mask = MaskType::CastAbstractImage( aimage );
+			mask = MaskType::CastAImage( aimage );
 		} catch ( const M4D::ErrorHandling::ExceptionBase & /*e*/ ) {
 			continue;
 		}

@@ -1,5 +1,5 @@
 #ifndef _ABSTRACT_MULTI_IMAGE_FILTER_H
-#error File AbstractMultiImageFilter.tcc cannot be included directly!
+#error File AMultiImageFilter.tcc cannot be included directly!
 #else
 
 
@@ -8,7 +8,7 @@ namespace M4D
 /**
  * @ingroup imaging 
  * @author Jan Kolomaznik 
- * @file AbstractMultiImageFilter.tcc 
+ * @file AMultiImageFilter.tcc 
  * @{ 
  **/
 
@@ -17,47 +17,47 @@ namespace Imaging
 
 
 template< uint32 InCount, uint32 OutCount >
-AbstractMultiImageFilter< InCount, OutCount >::AbstractMultiImageFilter( typename AbstractMultiImageFilter< InCount, OutCount >::Properties * prop )
-:	AbstractPipeFilter( prop ) 
+AMultiImageFilter< InCount, OutCount >::AMultiImageFilter( typename AMultiImageFilter< InCount, OutCount >::Properties * prop )
+:	APipeFilter( prop ) 
 {
 
 }
 
 template< uint32 InCount, uint32 OutCount >
-const AbstractImage&
-AbstractMultiImageFilter< InCount, OutCount >::GetInputImage( uint32 idx )const
+const AImage&
+AMultiImageFilter< InCount, OutCount >::GetInputImage( uint32 idx )const
 {
 	/*_inputPorts[ idx ].LockDataset();
-	return _inputPorts.GetPortTyped< InputPortAbstractImage >( idx ).GetAbstractImage();*/
-	return this->GetInputDataSet< AbstractImage >( idx );
+	return _inputPorts.GetPortTyped< InputPortAImage >( idx ).GetAImage();*/
+	return this->GetInputDataset< AImage >( idx );
 }
 
 template< uint32 InCount, uint32 OutCount >
 void 
-AbstractMultiImageFilter< InCount, OutCount >::ReleaseInputImage( uint32 idx )const
+AMultiImageFilter< InCount, OutCount >::ReleaseInputImage( uint32 idx )const
 {
-	this->ReleaseInputDataSet( idx );
+	this->ReleaseInputDataset( idx );
 }
 
 template< uint32 InCount, uint32 OutCount >
 void
-AbstractMultiImageFilter< InCount, OutCount >::ReleaseOutputImage( uint32 idx )const
+AMultiImageFilter< InCount, OutCount >::ReleaseOutputImage( uint32 idx )const
 {
-	this->ReleaseOutputDataSet( idx );
+	this->ReleaseOutputDataset( idx );
 }
 
 template< uint32 InCount, uint32 OutCount >
-AbstractImage&
-AbstractMultiImageFilter< InCount, OutCount >::GetOutputImage( uint32 idx )const
+AImage&
+AMultiImageFilter< InCount, OutCount >::GetOutputImage( uint32 idx )const
 {
 	/*_outputPorts[ idx ].LockDataset();
-	return _outputPorts.GetPortTyped< OutputPortAbstractImage >( idx ).GetAbstractImage();*/
-	return this->GetOutputDataSet< AbstractImage >( idx );
+	return _outputPorts.GetPortTyped< OutputPortAImage >( idx ).GetAImage();*/
+	return this->GetOutputDataset< AImage >( idx );
 }
 
 template< uint32 InCount, uint32 OutCount >
 void
-AbstractMultiImageFilter< InCount, OutCount >
+AMultiImageFilter< InCount, OutCount >
 ::SetOutputImageSize( 
 		uint32		idx,
 		uint32		dim,
@@ -70,7 +70,7 @@ AbstractMultiImageFilter< InCount, OutCount >
 	DIMENSION_TEMPLATE_SWITCH_MACRO( dim,
 		ImageFactory::ChangeImageSize( 
 				*(this->out[idx]),
-				//_outputPorts.GetPortTyped< OutputPortTyped<AbstractImage> >( idx ).GetDatasetTyped(),
+				//_outputPorts.GetPortTyped< OutputPortTyped<AImage> >( idx ).GetDatasetTyped(),
 				Vector< int32, DIM >( minimums ), 
 				Vector< int32, DIM >( maximums ), 
 				Vector< float32, DIM >( elementExtents )
@@ -81,8 +81,8 @@ AbstractMultiImageFilter< InCount, OutCount >
 
 template< uint32 InCount, uint32 OutCount >
 void
-AbstractMultiImageFilter< InCount, OutCount >
-::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
+AMultiImageFilter< InCount, OutCount >
+::BeforeComputation( APipeFilter::UPDATE_TYPE &utype )
 {
 	PredecessorType::BeforeComputation( utype );	
 
@@ -116,22 +116,22 @@ AbstractMultiImageFilter< InCount, OutCount >
 		}
 	}
 	if( structureChanged ) {
-		utype = AbstractPipeFilter::RECALCULATION;
+		utype = APipeFilter::RECALCULATION;
 		this->_callPrepareOutputDatasets = true;
 	}
 
-	if( utype == AbstractPipeFilter::ADAPTIVE_CALCULATION ) {
+	if( utype == APipeFilter::ADAPTIVE_CALCULATION ) {
 		for( unsigned i=0; i < InCount; ++i ) {
 			Common::TimeStamp inEditTS = in[i]->GetModificationManager().GetLastStoredTimestamp();
 			if( !inEditTS.IdenticalID( _inEditTimestamp[i] ) || inEditTS > _inEditTimestamp[i] ) 	{
-				utype = AbstractPipeFilter::RECALCULATION;
+				utype = APipeFilter::RECALCULATION;
 				goto finish;
 			}	
 		}
 		for( unsigned i=0; i < OutCount; ++i ) {
 			Common::TimeStamp outEditTS = out[i]->GetModificationManager().GetLastStoredTimestamp();
 			if( !outEditTS.IdenticalID( _outEditTimestamp[i] ) || outEditTS != _outEditTimestamp[i] ) 	{
-				utype = AbstractPipeFilter::RECALCULATION;
+				utype = APipeFilter::RECALCULATION;
 				goto finish;
 			}	
 		}
@@ -143,7 +143,7 @@ finish:
 
 template< uint32 InCount, uint32 OutCount >
 void
-AbstractMultiImageFilter< InCount, OutCount >
+AMultiImageFilter< InCount, OutCount >
 ::AfterComputation( bool successful )
 {
 	//We store actual timestamps of input and output - for next execution

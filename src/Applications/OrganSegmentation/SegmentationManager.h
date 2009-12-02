@@ -23,11 +23,11 @@ struct ResultsInfo
 {
 	ResultsInfo() {}
 
-	ResultsInfo( const InputImageType::Ptr &im, const GDataSet::Ptr &geom )
+	ResultsInfo( const InputImageType::Ptr &im, const GDataset::Ptr &geom )
 		: image( im ), geometry( geom ) {}
 
 	InputImageType::Ptr	image;
-	GDataSet::Ptr		geometry;
+	GDataset::Ptr		geometry;
 };
 
 Q_DECLARE_METATYPE( ManagerActivationInfo );
@@ -63,7 +63,7 @@ public:
 	GetInputConnection()
 		{ return _inConnection; }
 
-	virtual GDataSet::Ptr
+	virtual GDataset::Ptr
 	GetOutputGeometry() = 0;
 
 	virtual InputImageType::Ptr

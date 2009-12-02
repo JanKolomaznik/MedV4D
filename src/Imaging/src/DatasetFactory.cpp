@@ -1,17 +1,17 @@
 
 #include "common/Common.h"
 
-#include "../DataSetFactory.h"
-#include "../dataSetClassEnum.h"
-#include "../ImageFactory.h"
+#include "Imaging/DatasetFactory.h"
+#include "Imaging/DatasetClassEnum.h"
+#include "Imaging/ImageFactory.h"
 
 
 using namespace M4D::ErrorHandling;
 using namespace M4D::Imaging;
 using namespace M4D::IO;
 
-AbstractDataSet::Ptr
-DataSetFactory::DeserializeDataset(InStream &stream)
+ADataset::Ptr
+DatasetFactory::DeserializeDataset(InStream &stream)
 {
 	uint32 startMAGIC = 0;
 	uint32 datasetType = 0;
@@ -31,7 +31,7 @@ DataSetFactory::DeserializeDataset(InStream &stream)
 	stream.Get<uint32>( datasetType );
 		
 	// main switch acording data set type
-	switch((DataSetType) datasetType )
+	switch((DatasetType) datasetType )
 	{
 	case DATASET_IMAGE:
 		D_PRINT("D-Set factory: Creating Image");
@@ -41,16 +41,16 @@ DataSetFactory::DeserializeDataset(InStream &stream)
 	default:
 		ASSERT(false);
 	}
-	return AbstractDataSet::Ptr();
+	return ADataset::Ptr();
 }
 
 void 
-DataSetFactory::DeserializeDataset(M4D::IO::InStream &stream, AbstractDataSet &dataset)
+DatasetFactory::DeserializeDataset(M4D::IO::InStream &stream, ADataset &dataset)
 {
 	switch( dataset.GetDatasetType() )
 	{
 	case DATASET_IMAGE:
-		return DeserializeImage( stream, static_cast<AbstractImage &>( dataset ) );
+		return DeserializeImage( stream, static_cast<AImage &>( dataset ) );
 		break;
 		
 	default:
@@ -59,12 +59,12 @@ DataSetFactory::DeserializeDataset(M4D::IO::InStream &stream, AbstractDataSet &d
 
 }
 void 
-DataSetFactory::SerializeDataset(M4D::IO::OutStream &stream, const AbstractDataSet &dataset)
+DatasetFactory::SerializeDataset(M4D::IO::OutStream &stream, const ADataset &dataset)
 {
 	switch( dataset.GetDatasetType() )
 	{
 	case DATASET_IMAGE:
-		return SerializeImage( stream, static_cast<const AbstractImage &>( dataset ) );
+		return SerializeImage( stream, static_cast<const AImage &>( dataset ) );
 		break;
 		
 	default:
@@ -73,10 +73,10 @@ DataSetFactory::SerializeDataset(M4D::IO::OutStream &stream, const AbstractDataS
 
 }
 
-/*AbstractDataSet::Ptr
-DataSetFactory::CreateImage(InStream &stream)
+/*ADataset::Ptr
+DatasetFactory::CreateImage(InStream &stream)
 {
-	AbstractDataSet::Ptr ds;
+	ADataset::Ptr ds;
 	
 	uint16 dim, elemType;
 	stream.Get<uint16>(elemType);

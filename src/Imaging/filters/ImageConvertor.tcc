@@ -22,11 +22,11 @@ namespace Imaging
 
 /*template< typename InputElementType, typename OutputElementType, unsigned OutputDimension, typename Convertor >
 void
-ConvertImage( const AbstractImage &in, Image< OutputElementType, OutputDimension > );*/
+ConvertImage( const AImage &in, Image< OutputElementType, OutputDimension > );*/
 
 template< typename InputElementType, typename OutputElementType, typename Convertor >
 bool
-ConvertImage( const AbstractImage &in, Image< OutputElementType, 2 > &out )
+ConvertImage( const AImage &in, Image< OutputElementType, 2 > &out )
 {
 	
 	InputElementType *sPointer1;
@@ -55,7 +55,7 @@ ConvertImage( const AbstractImage &in, Image< OutputElementType, 2 > &out )
 
 template< typename InputElementType, typename OutputElementType, typename Convertor >
 bool
-ConvertImage( const AbstractImage &in, Image< OutputElementType, 3 > &out )
+ConvertImage( const AImage &in, Image< OutputElementType, 3 > &out )
 {
 	
 	InputElementType *sPointer1;
@@ -146,7 +146,7 @@ ImageConvertor< OutputImageType, Convertor >
 template< typename OutputImageType, typename Convertor >
 bool
 ImageConvertor< OutputImageType, Convertor >
-::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
+::ExecutionThreadMethod( APipeFilter::UPDATE_TYPE utype )
 {
 	utype = utype;
 	if ( !( _readerBBox->WaitWhileDirty() == MS_MODIFIED ) ) {
@@ -198,12 +198,12 @@ ImageConvertor< OutputImageType, Convertor >
 template< typename OutputImageType, typename Convertor >
 void
 ImageConvertor< OutputImageType, Convertor >
-::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
+::BeforeComputation( APipeFilter::UPDATE_TYPE &utype )
 {
 	PredecessorType::BeforeComputation( utype );
 
 	//This kind of filter computes always on whole dataset
-	utype = AbstractPipeFilter::RECALCULATION;
+	utype = APipeFilter::RECALCULATION;
 
 	//Image of greater dimension cannot convert to image of lesser dimension
 	if( this->in->GetDimension() > ImageTraits< OutputImageType >::Dimension ) {
@@ -214,7 +214,7 @@ ImageConvertor< OutputImageType, Convertor >
 template< typename OutputImageType, typename Convertor >
 void
 ImageConvertor< OutputImageType, Convertor >
-::MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype )
+::MarkChanges( APipeFilter::UPDATE_TYPE utype )
 {
 	utype = utype;
 

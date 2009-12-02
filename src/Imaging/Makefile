@@ -20,10 +20,10 @@ SRCDIR=	./src
 
 INCLUDES=	-I$(srcTop)
 
-OBJ_FILES=	$(TMP_DIR)/AbstractDataSet.o \
+OBJ_FILES=	$(TMP_DIR)/ADataset.o \
 		$(TMP_DIR)/AbstractFilter.o \
-		$(TMP_DIR)/AbstractImageData.o \
-		$(TMP_DIR)/AbstractImageFilter.o \
+		$(TMP_DIR)/AImageData.o \
+		$(TMP_DIR)/AImageFilter.o \
 		$(TMP_DIR)/ConnectionInterface.o \
 		$(TMP_DIR)/Image.o \
 		$(TMP_DIR)/ImageFactory.o \
@@ -31,7 +31,7 @@ OBJ_FILES=	$(TMP_DIR)/AbstractDataSet.o \
 		$(TMP_DIR)/PipelineContainer.o \
 		$(TMP_DIR)/Pipeline.o \
 		$(TMP_DIR)/Ports.o\
-		$(TMP_DIR)/DataSetFactory.o
+		$(TMP_DIR)/DatasetFactory.o
 
 .PHONY: all
 all:		tmpdir outDir $(OUTPUT)

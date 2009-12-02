@@ -9,7 +9,7 @@
 #define _PIPELINE_H
 
 
-#include "Imaging/AbstractPipeline.h"
+#include "Imaging/APipeline.h"
 #include "Imaging/ConnectionInterface.h"
 #include <boost/shared_ptr.hpp>
 #include <vector>
@@ -25,7 +25,7 @@ namespace Imaging
 {
 
 
-class Pipeline : public AbstractPipeline
+class Pipeline : public APipeline
 {
 public:
 	
@@ -34,7 +34,7 @@ public:
 	~Pipeline();
 
 	void
-	AddFilter( AbstractPipeFilter *filter );
+	AddFilter( APipeFilter *filter );
 
 	void
 	FillingFinished();
@@ -47,7 +47,7 @@ public:
 	ConnectionInterface &
 	MakeConnection( M4D::Imaging::OutputPort& outPort, M4D::Imaging::InputPort& inPort );
 protected:
-	typedef std::vector< AbstractPipeFilter * > FilterVector;
+	typedef std::vector< APipeFilter * > FilterVector;
 	typedef std::vector< ConnectionInterface * > ConnectionVector;
 
 	FilterVector		_filters;

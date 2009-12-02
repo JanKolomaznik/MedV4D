@@ -130,7 +130,7 @@ PrepareElementArraySimple( uint32 size )
 }
 
 template< typename ElementType >
-AbstractImage::Ptr 
+AImage::Ptr 
 ImageFactory::CreateEmptyImageFromExtents( 
 		uint32		dim,
 		int32		minimums[], 
@@ -164,7 +164,7 @@ ImageFactory::CreateEmptyImageFromExtents(
 }
 
 template< typename ElementType >
-AbstractImage::Ptr 
+AImage::Ptr 
 ImageFactory::CreateEmptyImage2D( 
 			uint32		width, 
 			uint32		height,
@@ -176,9 +176,9 @@ ImageFactory::CreateEmptyImage2D(
 	typename Image< ElementType, 2 >::Ptr ptr = 
 		ImageFactory::CreateEmptyImage2DTyped< ElementType >( width, height, elementWidth, elementHeight );
 
-	AbstractImage::Ptr aptr = 
+	AImage::Ptr aptr = 
 		boost::static_pointer_cast
-		< AbstractImage, Image<ElementType, 2 > >( ptr );
+		< AImage, Image<ElementType, 2 > >( ptr );
 	return aptr; 
 }
 
@@ -228,7 +228,7 @@ ImageFactory::ReallocateImage2DData(
 }
 
 template< typename ElementType >
-AbstractImage::Ptr 
+AImage::Ptr 
 ImageFactory::CreateEmptyImage3D( 
 			uint32		width, 
 			uint32		height,
@@ -242,9 +242,9 @@ ImageFactory::CreateEmptyImage3D(
 	typename Image< ElementType, 3 >::Ptr ptr = 
 		ImageFactory::CreateEmptyImage3DTyped< ElementType >( width, height, depth, elementWidth, elementHeight, elementDepth );
 
-	AbstractImage::Ptr aptr = 
+	AImage::Ptr aptr = 
 		boost::static_pointer_cast
-		< AbstractImage, Image<ElementType, 3 > >( ptr );
+		< AImage, Image<ElementType, 3 > >( ptr );
 	return aptr; 
 }
 
@@ -302,7 +302,7 @@ ImageFactory::ReallocateImage3DData(
 //**********************************************************************
 
 template< typename ElementType >
-AbstractImageData::APtr 
+AImageData::APtr 
 ImageFactory::CreateEmptyImageData2D( 
 			uint32		width, 
 			uint32		height,
@@ -313,9 +313,9 @@ ImageFactory::CreateEmptyImageData2D(
 	typename ImageDataTemplate< ElementType >::Ptr ptr = 
 		ImageFactory::CreateEmptyImageData2DTyped< ElementType >( width, height, elementWidth, elementHeight );
 
-	AbstractImageData::APtr aptr = 
+	AImageData::APtr aptr = 
 		boost::static_pointer_cast
-		< AbstractImageData, ImageDataTemplate<ElementType> >( ptr );
+		< AImageData, ImageDataTemplate<ElementType> >( ptr );
 
 	return aptr;
 }
@@ -357,7 +357,7 @@ ImageFactory::CreateEmptyImageData2DTyped(
 }
 
 template< typename ElementType >
-AbstractImageData::APtr 
+AImageData::APtr 
 ImageFactory::CreateEmptyImageData3D( 
 			uint32		width, 
 			uint32		height, 
@@ -370,9 +370,9 @@ ImageFactory::CreateEmptyImageData3D(
 	typename ImageDataTemplate< ElementType >::Ptr ptr = 
 		ImageFactory::CreateEmptyImageData3DTyped< ElementType >( width, height, depth, elementWidth, elementHeight, elementDepth );
 
-	AbstractImageData::APtr aptr = 
+	AImageData::APtr aptr = 
 		boost::static_pointer_cast
-		< AbstractImageData, ImageDataTemplate<ElementType> >( ptr );
+		< AImageData, ImageDataTemplate<ElementType> >( ptr );
 
 	return aptr;
 }
@@ -443,7 +443,7 @@ ImageFactory::CreateEmptyImageDataTyped(
 template< unsigned Dim >
 void
 ImageFactory::ChangeImageSize( 
-				AbstractImage			&image,
+				AImage			&image,
 				Vector< int32, Dim > 	minimum,
 				Vector< int32, Dim > 	maximum,
 				Vector< float32, Dim >	elementExtents

@@ -1,11 +1,11 @@
 /**
  * @ingroup imaging 
  * @author Jan Kolomaznik 
- * @file AbstractImageFilter.cpp 
+ * @file AImageFilter.cpp 
  * @{ 
  **/
 
-#include "Imaging/AbstractImageFilter.h"
+#include "Imaging/AImageFilter.h"
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -20,16 +20,16 @@ namespace Imaging
 {
 
 	/*
-const AbstractImage&
-GetInputImageFromPort( InputPortAbstractImage &port )
+const AImage&
+GetInputImageFromPort( InputPortAImage &port )
 {
-	return port.GetAbstractImage();
+	return port.GetAImage();
 }
 
-AbstractImage&
-GetOutputImageFromPort( OutputPortAbstractImage &port )
+AImage&
+GetOutputImageFromPort( OutputPortAImage &port )
 {
-	return port.GetAbstractImage();
+	return port.GetAImage();
 }
 */
 

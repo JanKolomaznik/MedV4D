@@ -51,7 +51,7 @@ m4dImageDataSource::~m4dImageDataSource()
 }
 
 void
-m4dImageDataSource::SetImageData( Imaging::AbstractImage::Ptr imageData )
+m4dImageDataSource::SetImageData( Imaging::AImage::Ptr imageData )
 {
 	D_PRINT( LogDelimiter( '*' ) );
 	D_PRINT( "-- Entering m4dImageDataSource::SetImageData()." );
@@ -71,7 +71,7 @@ m4dImageDataSource::SetImageData( Imaging::AbstractImage::Ptr imageData )
 	if( !imageData ) {
 		D_PRINT( "---- Obtained invalid image pointer." );
 		//Setting to NULL
-		_imageData = Imaging::AbstractImage::Ptr();
+		_imageData = Imaging::AImage::Ptr();
 		_tmpImageData = NULL;
 
 		for( size_t dim = 0; dim < imageDimension; ++dim ) {
@@ -103,7 +103,7 @@ m4dImageDataSource::SetImageData( Imaging::AbstractImage::Ptr imageData )
 }
 
 void
-m4dImageDataSource::TemporarySetImageData( const Imaging::AbstractImage & imageData )
+m4dImageDataSource::TemporarySetImageData( const Imaging::AImage & imageData )
 {
 	
 	D_PRINT( LogDelimiter( '*' ) );
@@ -112,7 +112,7 @@ m4dImageDataSource::TemporarySetImageData( const Imaging::AbstractImage & imageD
 	//TODO - check dimension	
 	size_t imageDimension = 3;
 	_tmpImageData = &imageData;
-	_imageData = Imaging::AbstractImage::Ptr();
+	_imageData = Imaging::AImage::Ptr();
 
 		
 	for( size_t dim = 0; dim < imageDimension; ++dim ) {
@@ -137,7 +137,7 @@ void
 m4dImageDataSource::TemporaryUnsetImageData()
 {
 	_tmpImageData = NULL;
-	_imageData = Imaging::AbstractImage::Ptr();
+	_imageData = Imaging::AImage::Ptr();
 }
 
 int 

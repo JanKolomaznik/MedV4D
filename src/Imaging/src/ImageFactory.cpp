@@ -20,7 +20,7 @@ namespace M4D
 namespace Imaging
 {
 
-AbstractImage::Ptr
+AImage::Ptr
 ImageFactory::DeserializeImage(M4D::IO::InStream &stream)
 {
 	uint32 startMAGIC = 0;
@@ -49,7 +49,7 @@ ImageFactory::DeserializeImage(M4D::IO::InStream &stream)
 }
 
 void
-ImageFactory::DeserializeImage(M4D::IO::InStream &stream, AbstractImage &existingImage )
+ImageFactory::DeserializeImage(M4D::IO::InStream &stream, AImage &existingImage )
 {
 	IMAGE_TYPE_TEMPLATE_SWITCH_MACRO( existingImage, ImageFactory::DeserializeImage< TTYPE, DIM >( stream, static_cast< Image<TTYPE,DIM> &>(existingImage) ) );
 }
@@ -128,7 +128,7 @@ LoadSerializedImageData( M4D::IO::InStream &stream, Image< ElementType, Dimensio
 //	image.DeSerializeData(stream);
 }
 
-AbstractImage::Ptr
+AImage::Ptr
 ImageFactory::DeserializeImageFromStream(M4D::IO::InStream &stream)
 {
 	uint32 dimension;
@@ -155,7 +155,7 @@ ImageFactory::DeserializeImageFromStream(M4D::IO::InStream &stream)
 	//header read
 
 
-	AbstractImage::Ptr image;
+	AImage::Ptr image;
 	TYPE_TEMPLATE_SWITCH_MACRO(
 		elementTypeID,
 		/*image = CreateEmptyImageFromExtents< TTYPE >( 
@@ -191,7 +191,7 @@ ImageFactory::DeserializeImageFromStream(M4D::IO::InStream &stream)
 }
 
 void 
-ImageFactory::SerializeImage( M4D::IO::OutStream &stream, const AbstractImage &image )
+ImageFactory::SerializeImage( M4D::IO::OutStream &stream, const AImage &image )
 {
 	IMAGE_TYPE_TEMPLATE_SWITCH_MACRO( image, ImageFactory::SerializeImage< TTYPE, DIM >( stream, static_cast< const Image<TTYPE,DIM> &>(image) ) );
 }
@@ -209,7 +209,7 @@ ImageFactory::PrepareElementArrayFromTypeID(
 }
 
 
-AbstractImageData*
+AImageData*
 ImageFactory::CreateImageFromDataAndTypeID(
 		int 			typeId, 
 		uint32 			imageSize, 
@@ -217,7 +217,7 @@ ImageFactory::CreateImageFromDataAndTypeID(
 		DimensionInfo		* info
 		)
 {
-	AbstractImageData*	image = NULL;
+	AImageData*	image = NULL;
 
 	//We will generate switch over common numerical types. For more see Common.h
 	TYPE_TEMPLATE_SWITCH_MACRO( 
@@ -227,7 +227,7 @@ ImageFactory::CreateImageFromDataAndTypeID(
 }
 
 void
-ImageFactory::DumpImage( std::string filename, const AbstractImage & image )
+ImageFactory::DumpImage( std::string filename, const AImage & image )
 {
 	IMAGE_TYPE_TEMPLATE_SWITCH_MACRO( image, ImageFactory::DumpImage< TTYPE, DIM >( filename, static_cast< const Image<TTYPE,DIM> &>(image) ) );	
 }
@@ -244,7 +244,7 @@ LoadDumpedImageData( std::istream &stream, Image< ElementType, Dimension >& imag
 }
 
 
-AbstractImage::Ptr
+AImage::Ptr
 ImageFactory::LoadDumpedImage( std::istream &stream )
 {
 	uint32 startMAGIC = 0;
@@ -286,7 +286,7 @@ ImageFactory::LoadDumpedImage( std::istream &stream )
 	//header read
 
 
-	AbstractImage::Ptr image;
+	AImage::Ptr image;
 	TYPE_TEMPLATE_SWITCH_MACRO(
 		elementTypeID,
 		image = CreateEmptyImageFromExtents< TTYPE >( 
@@ -308,7 +308,7 @@ ImageFactory::LoadDumpedImage( std::istream &stream )
 	return image;
 }*/
 
-AbstractImage::Ptr
+AImage::Ptr
 ImageFactory::LoadDumpedImage( std::string filename )
 {
 	//std::fstream input( filename.data(), std::ios::in | std::ios::binary );

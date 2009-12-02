@@ -179,7 +179,7 @@ protected:
 
 
 	bool
-	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
+	ExecutionThreadMethod( APipeFilter::UPDATE_TYPE utype );
 	
 	bool
 	SequentialComputation();
@@ -191,10 +191,10 @@ protected:
 	PrepareOutputDatasets();
 	
 	void
-	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
+	BeforeComputation( APipeFilter::UPDATE_TYPE &utype );
 	
 	void
-	MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype );
+	MarkChanges( APipeFilter::UPDATE_TYPE utype );
 
 	void
 	AfterComputation( bool successful );

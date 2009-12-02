@@ -11,7 +11,7 @@
 #include <sstream>
 #include "netCommons.h"
 #include "netAccessor.h"
-#include "Imaging/AbstractImageFilterWholeAtOnce.h"
+#include "Imaging/AImageFilterWholeAtOnce.h"
 #include "remoteNodesManager.h"
 #include "iRemoteFilterProperties.h"
 
@@ -45,11 +45,11 @@ namespace RemoteComputing
  */
 template< typename InputImageType, typename OutputImageType >
 class RemoteFilter 
-  : public Imaging::AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType >
+  : public Imaging::AImageFilterWholeAtOnce< InputImageType, OutputImageType >
   , public RemoteNodesManager
 {
 public:
-	typedef typename Imaging::AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType > PredecessorType;
+	typedef typename Imaging::AImageFilterWholeAtOnce< InputImageType, OutputImageType > PredecessorType;
 	typedef typename PredecessorType::Properties Properties;
 	
 	RemoteFilter(iRemoteFilterProperties *p);

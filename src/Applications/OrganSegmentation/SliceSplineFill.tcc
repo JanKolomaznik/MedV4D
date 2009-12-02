@@ -57,22 +57,22 @@ SliceSplineFill< CoordType >
 template < typename CoordType >
 void
 SliceSplineFill< CoordType >
-::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
+::BeforeComputation( APipeFilter::UPDATE_TYPE &utype )
 {
 	PredecessorType::BeforeComputation( utype );
 
-	utype = AbstractPipeFilter::RECALCULATION;
+	utype = APipeFilter::RECALCULATION;
 	this->_callPrepareOutputDatasets = true;
 
-	in = &(this->GetInputDataSet< InputDatasetType >( 0 ));
-	out = &(this->GetOutputDataSet< Mask3D >( 0 ));
+	in = &(this->GetInputDataset< InputDatasetType >( 0 ));
+	out = &(this->GetOutputDataset< Mask3D >( 0 ));
 	
 }
 
 template < typename CoordType >
 void
 SliceSplineFill< CoordType >
-::MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype )
+::MarkChanges( APipeFilter::UPDATE_TYPE utype )
 {
 	readerBBox = in->GetWholeDirtyBBox();
 	writerBBox = &(out->SetWholeDirtyBBox());
@@ -86,15 +86,15 @@ SliceSplineFill< CoordType >
 	/*	_inTimestamp[ i ] = in[ i ]->GetStructureTimestamp();
 		_inEditTimestamp[ i ] = in[ i ]->GetEditTimestamp();*/
 		
-	this->ReleaseInputDataSet( 0 );
-	this->ReleaseOutputDataSet( 0 );
+	this->ReleaseInputDataset( 0 );
+	this->ReleaseOutputDataset( 0 );
 	PredecessorType::AfterComputation( successful );	
 }
 
 template < typename CoordType >
 bool
 SliceSplineFill< CoordType >
-::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype )
+::ExecutionThreadMethod( APipeFilter::UPDATE_TYPE utype )
 {
 	if( !CanContinue() ) return false;
 

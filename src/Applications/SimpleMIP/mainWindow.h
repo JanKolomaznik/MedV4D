@@ -50,7 +50,7 @@ public:
 
 protected:
 	void
-	process( M4D::Imaging::AbstractDataSet::Ptr inputDataSet );
+	process( M4D::Imaging::ADataset::Ptr inputDataSet );
 
 	void
 	CreatePipeline();
@@ -59,10 +59,10 @@ protected:
 	Notifier	*_notifier;
 
 	M4D::Imaging::PipelineContainer			_pipeline;
-	M4D::Imaging::AbstractPipeFilter		*_filter;
-	M4D::Imaging::AbstractPipeFilter		*_convertor;
-	M4D::Imaging::ConnectionInterfaceTyped<M4D::Imaging::AbstractImage>	*_inConnection;
-	M4D::Imaging::ConnectionInterfaceTyped<M4D::Imaging::AbstractImage>	*_outConnection;
+	M4D::Imaging::APipeFilter		*_filter;
+	M4D::Imaging::APipeFilter		*_convertor;
+	M4D::Imaging::ConnectionInterfaceTyped<M4D::Imaging::AImage>	*_inConnection;
+	M4D::Imaging::ConnectionInterfaceTyped<M4D::Imaging::AImage>	*_outConnection;
 
 private:
 

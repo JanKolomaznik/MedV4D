@@ -1,7 +1,7 @@
 /**
  * @ingroup imaging 
  * @author Jan Kolomaznik 
- * @file AbstractDataSet.h 
+ * @file ADataset.h 
  * @{ 
  **/
 
@@ -36,21 +36,21 @@ namespace Imaging
 	
 #define PREPARE_CAST_REFERENCE_MACRO	\
 	static ThisClass & \
-	Cast( AbstractDataSet & dataset ) \
+	Cast( ADataset & dataset ) \
 	{	try { return dynamic_cast< ThisClass & >( dataset ); } \
 		catch( ... ) {	_THROW_ ErrorHandling::ExceptionCastProblem();	} \
 	} 
 
 #define PREPARE_CAST_CONST_REFERENCE_MACRO	\
 	static const ThisClass & \
-	Cast( const AbstractDataSet & dataset ) \
+	Cast( const ADataset & dataset ) \
 	{	try { return dynamic_cast< const ThisClass & >( dataset ); } \
 		catch( ... ) {	_THROW_ ErrorHandling::ExceptionCastProblem();	} \
 	} 
 
 #define PREPARE_CAST_SMART_POINTER_MACRO	\
 	static Ptr \
-	Cast( AbstractDataSet::Ptr dataset ) \
+	Cast( ADataset::Ptr dataset ) \
 	{	if( dynamic_cast< ThisClass * >( dataset.get() ) == NULL ) { \
 			_THROW_ ErrorHandling::ExceptionCastProblem();\
 		} \

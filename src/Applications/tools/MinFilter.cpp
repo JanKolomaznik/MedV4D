@@ -41,7 +41,7 @@ main( int argc, char **argv )
 	std::string outFilename = outFilenameArg.getValue();
 
 	std::cout << "Loading file '" << inFilename << "' ..."; std::cout.flush();
-	M4D::Imaging::AbstractImage::Ptr image = 
+	M4D::Imaging::AImage::Ptr image = 
 			M4D::Imaging::ImageFactory::LoadDumpedImage( inFilename );
 	std::cout << "Done\n";
 
@@ -49,8 +49,8 @@ main( int argc, char **argv )
 	std::cout << "Initializing..."; std::cout.flush();
 	M4D::Imaging::PipelineContainer *container = NULL;
 	FinishHook  *hook = new FinishHook;
-	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage > *inConnection = NULL;
-	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage > *outConnection = NULL;
+	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage > *inConnection = NULL;
+	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage > *outConnection = NULL;
 	M4D::Imaging::AbstractPipeFilter *filter = NULL;
 	/*---------------------------------------------------------------------*/
 	unsigned radius = radiusArg.getValue();

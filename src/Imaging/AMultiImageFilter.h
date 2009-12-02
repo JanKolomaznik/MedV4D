@@ -6,7 +6,7 @@
 #include "Imaging/Ports.h"
 #include "Imaging/ImageDataTemplate.h"
 #include "Imaging/ImageFactory.h"
-#include "Imaging/AbstractFilter.h"
+#include "Imaging/AFilter.h"
 #include "Imaging/ModificationManager.h"
 #include "Imaging/ImageTraits.h"
 
@@ -18,7 +18,7 @@ namespace M4D
 /**
  * @ingroup imaging 
  * @author Jan Kolomaznik 
- * @file AbstractMultiImageFilter.h 
+ * @file AMultiImageFilter.h 
  * @{ 
  **/
 
@@ -26,27 +26,27 @@ namespace Imaging
 {
 
 template< uint32 InCount, uint32 OutCount >
-class AbstractMultiImageFilter: public AbstractPipeFilter
+class AMultiImageFilter: public APipeFilter
 {
 public:
-	typedef AbstractPipeFilter	PredecessorType;
+	typedef APipeFilter	PredecessorType;
 
 	struct Properties : public PredecessorType::Properties
 	{
 
 	};
 
-	~AbstractMultiImageFilter() {}
+	~AMultiImageFilter() {}
 protected:
-	AbstractMultiImageFilter( Properties * prop );
+	AMultiImageFilter( Properties * prop );
 
-	const AbstractImage&
+	const AImage&
 	GetInputImage( uint32 idx )const;
 
 	void
 	ReleaseInputImage( uint32 idx )const;
 
-	AbstractImage&
+	AImage&
 	GetOutputImage( uint32 idx )const;
 
 	void
@@ -62,18 +62,18 @@ protected:
 		    );
 
 	void
-	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
+	BeforeComputation( APipeFilter::UPDATE_TYPE &utype );
 
 	void
 	AfterComputation( bool successful );
 
 
-	const AbstractImage	*in[ InCount ];
+	const AImage	*in[ InCount ];
 	Common::TimeStamp	_inTimestamp[ InCount ];
 	Common::TimeStamp	_inEditTimestamp[ InCount ];
 
 
-	AbstractImage		*out[ OutCount ];
+	AImage		*out[ OutCount ];
 	Common::TimeStamp	_outTimestamp[ OutCount ];
 	Common::TimeStamp	_outEditTimestamp[ OutCount ];
 
@@ -82,7 +82,7 @@ private:
 	/**
 	 * Prohibition of copying.
 	 **/
-	PROHIBIT_COPYING_OF_OBJECT_MACRO( AbstractMultiImageFilter );
+	PROHIBIT_COPYING_OF_OBJECT_MACRO( AMultiImageFilter );
 };
 
 } /*namespace Imaging*/
@@ -91,7 +91,7 @@ private:
 } /*namespace M4D*/
 
 //include implementation
-#include "Imaging/AbstractMultiImageFilter.tcc"
+#include "Imaging/AMultiImageFilter.tcc"
 
 #endif /*_ABSTRACT_MULTI_IMAGE_FILTER_H*/
 

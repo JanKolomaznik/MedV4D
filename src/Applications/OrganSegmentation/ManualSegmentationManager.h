@@ -42,7 +42,7 @@ public:
 		return _specialState;
 	}
 
-	GDataSet::Ptr
+	GDataset::Ptr
 	GetOutputGeometry()
 		{ return _dataset; }
 
@@ -68,9 +68,9 @@ public:
 	void
 	Activate( InputImageType::Ptr inImage );
 	void
-	Activate( InputImageType::Ptr inImage, GDataSet::Ptr geometry );
+	Activate( InputImageType::Ptr inImage, GDataset::Ptr geometry );
 	void
-	ActivateManagerInit( InputImageType::Ptr inImage, GDataSet::Ptr geometry );
+	ActivateManagerInit( InputImageType::Ptr inImage, GDataset::Ptr geometry );
 public slots:
 	void
 	ActivateManager();
@@ -102,7 +102,7 @@ protected:
 	PrepareNewCurve( int32 sliceNum );
 
 	InputImageType::Ptr			 	_inputImage;
-	GDataSet::Ptr					_dataset;
+	GDataset::Ptr					_dataset;
 
 	static ManualSegmentationManager		*_instance;
 

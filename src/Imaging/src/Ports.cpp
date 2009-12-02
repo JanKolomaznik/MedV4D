@@ -152,13 +152,13 @@ OutputPort::SendMessage(
 }
 
 bool
-InputPortTyped< AbstractDataSet >::IsConnectionCompatible( ConnectionInterface &conn )
+InputPortTyped< ADataset >::IsConnectionCompatible( ConnectionInterface &conn )
 { 
 	return dynamic_cast< IdealConnectionInterface * >( &conn ) != NULL; 
 }
 
 bool
-OutputPortTyped< AbstractDataSet >::IsConnectionCompatible( ConnectionInterface &conn )
+OutputPortTyped< ADataset >::IsConnectionCompatible( ConnectionInterface &conn )
 { 
 	return dynamic_cast< IdealConnectionInterface * >( &conn ) != NULL; 
 }

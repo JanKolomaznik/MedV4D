@@ -1,7 +1,7 @@
 #ifndef _IMAGE_FACTORY_H
 #define _IMAGE_FACTORY_H
 
-#include "Imaging/AbstractImageData.h"
+#include "Imaging/AImageData.h"
 #include "Imaging/ImageDataTemplate.h"
 #include "Imaging/Image.h"
 
@@ -50,21 +50,21 @@ public:
 	class EWrongDatasetTypeIdentification;
 	class EWrongDatasetType;
 	
-	static AbstractImage::Ptr 
+	static AImage::Ptr 
 	DeserializeImage(M4D::IO::InStream &stream);
 
 	static void
-	DeserializeImage(M4D::IO::InStream &stream, AbstractImage &existingImage );
+	DeserializeImage(M4D::IO::InStream &stream, AImage &existingImage );
 
 	template< typename ElementType, unsigned Dimension >
 	static void
 	DeserializeImage(M4D::IO::InStream &stream, Image< ElementType, Dimension > &existingImage );
 
-	static AbstractImage::Ptr 
+	static AImage::Ptr 
 	DeserializeImageFromStream(M4D::IO::InStream &stream);
 
 	static void 
-	SerializeImage( M4D::IO::OutStream &stream, const AbstractImage &image );
+	SerializeImage( M4D::IO::OutStream &stream, const AImage &image );
 
 	template< typename ElementType, unsigned Dimension >
 	static void 
@@ -78,7 +78,7 @@ public:
 	 * @return Smart pointer to abstract ancestor of created image.
 	 **/
 	template< typename ElementType >
-	static AbstractImage::Ptr 
+	static AImage::Ptr 
 	CreateEmptyImageFromExtents( 
 			uint32		dim,
 			int32		minimums[], 
@@ -105,7 +105,7 @@ public:
 	 * @return Smart pointer to abstract ancestor of created image.
 	 **/
 	template< typename ElementType >
-	static AbstractImage::Ptr 
+	static AImage::Ptr 
 	CreateEmptyImage2D( 
 			uint32		width, 
 			uint32		height,
@@ -156,7 +156,7 @@ public:
 	 * @return Smart pointer to abstract ancestor of created image.
 	 **/
 	template< typename ElementType >
-	static AbstractImage::Ptr 
+	static AImage::Ptr 
 	CreateEmptyImage3D( 
 			uint32		width, 
 			uint32		height, 
@@ -213,7 +213,7 @@ public:
 	 * @return Smart pointer to abstract ancestor of created image buffer.
 	 **/
 	template< typename ElementType >
-	static AbstractImageData::APtr 
+	static AImageData::APtr 
 	CreateEmptyImageData2D( 
 			uint32		width, 
 			uint32		height,
@@ -254,7 +254,7 @@ public:
 	 * @return Smart pointer to abstract ancestor of created image.
 	 **/
 	template< typename ElementType >
-	static AbstractImageData::APtr 
+	static AImageData::APtr 
 	CreateEmptyImageData3D( 
 			uint32		width, 
 			uint32		height, 
@@ -305,7 +305,7 @@ public:
 	template< unsigned Dim >
 	static void
 	ChangeImageSize( 
-				AbstractImage			&image,
+				AImage			&image,
 				Vector< int32, Dim > 	minimum,
 				Vector< int32, Dim > 	maximum,
 				Vector< float32, Dim >	elementExtents
@@ -330,12 +330,12 @@ public:
 	DumpImage( std::string filename, const Image< ElementType, Dimension > & image );
 
 	static void
-	DumpImage( std::string filename, const AbstractImage & image );
+	DumpImage( std::string filename, const AImage & image );
 
-	static AbstractImage::Ptr
+	static AImage::Ptr
 	LoadDumpedImage( std::istream &stream );
 
-	static AbstractImage::Ptr
+	static AImage::Ptr
 	LoadDumpedImage( std::string filename );
 	
 	/*template< typename ElementType, unsigned Dim >
@@ -347,7 +347,7 @@ public:
 	 * @param dataArray Filled array of image elements.
 	 * @param info Filled dimension info array.
 	 **/
-	static AbstractImageData*
+	static AImageData*
 	CreateImageFromDataAndTypeID(
 		int 			typeId,
 		uint32 			imageSize, 

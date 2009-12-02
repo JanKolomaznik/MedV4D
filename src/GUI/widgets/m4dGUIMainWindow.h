@@ -82,8 +82,8 @@ class m4dGUIMainWindow: public QMainWindow
      * Study Manager, loading method are filling it.
      */
     struct Study {
-      /// Pointer to AbstractDataSet.
-      Imaging::AbstractDataSet::Ptr abstractDataSet;
+      /// Pointer to ADataset.
+      Imaging::ADataset::Ptr abstractDataSet;
       /// Pointer to DicomObjSet.
       Dicom::DicomObjSet *dicomObjSet;
       /// Overlay info lists.
@@ -366,7 +366,7 @@ class m4dGUIMainWindow: public QMainWindow
      * 
      * @param inputDataSet pointer to Abstract Data Set to process
      */
-    virtual void process ( Imaging::AbstractDataSet::Ptr inputDataSet );
+    virtual void process ( Imaging::ADataset::Ptr inputDataSet );
 
 
     /// Pointer to the current Viewer Desktop

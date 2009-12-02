@@ -1,11 +1,11 @@
 /**
  * @ingroup imaging 
  * @author Jan Kolomaznik 
- * @file AbstractFilter.cpp 
+ * @file AFilter.cpp 
  * @{ 
  **/
 
-#include "Imaging/AbstractFilter.h"
+#include "Imaging/AFilter.h"
 #include <ctime>
 
 #ifdef _MSC_VER 
@@ -132,7 +132,7 @@ FilterWorkingState::SetOutOfDate()
 
 //******************************************************************************
 /**
- * Functor used in execution thread of filter - it's friend of AbstractPipeFilter.
+ * Functor used in execution thread of filter - it's friend of APipeFilter.
  **/
 struct MainExecutionThread
 {
@@ -142,8 +142,8 @@ struct MainExecutionThread
 	 * @param updateType Which execution method of the filter will be invoked.
 	 **/
 	MainExecutionThread( 
-		AbstractPipeFilter		*filter, 
-		AbstractPipeFilter::UPDATE_TYPE	updateType 
+		APipeFilter		*filter, 
+		APipeFilter::UPDATE_TYPE	updateType 
 		)
 		: _filter( filter ), _updateType( updateType ) 
 	{ /*empty*/ }
@@ -157,11 +157,11 @@ private:
 	/**
 	 * Filter which executed thread with this functor.
 	 **/
-	AbstractPipeFilter		*_filter;
+	APipeFilter		*_filter;
 	/**
 	 * Type of execution method, which will be invoked.
 	 **/
-	AbstractPipeFilter::UPDATE_TYPE	_updateType;
+	APipeFilter::UPDATE_TYPE	_updateType;
 };
 
 void
@@ -215,7 +215,7 @@ MainExecutionThread::operator()()
 	}
 
 	_filter->_outputPorts.SendMessage( 
-			MsgFilterStartModification::CreateMsg( _updateType == AbstractPipeFilter::RECALCULATION ), 
+			MsgFilterStartModification::CreateMsg( _updateType == APipeFilter::RECALCULATION ), 
 			PipelineMessage::MSS_NORMAL 
 			);
 
@@ -229,7 +229,7 @@ MainExecutionThread::operator()()
 	if( result ) {
 		//Send message about finished job	
 		_filter->_outputPorts.SendMessage( 
-				MsgFilterUpdated::CreateMsg( _updateType == AbstractPipeFilter::RECALCULATION ), 
+				MsgFilterUpdated::CreateMsg( _updateType == APipeFilter::RECALCULATION ), 
 				PipelineMessage::MSS_NORMAL 
 				);
 
@@ -251,7 +251,7 @@ MainExecutionThread::operator()()
 
 }
 //******************************************************************************
-AbstractPipeFilter::AbstractPipeFilter( AbstractPipeFilter::Properties *prop )
+APipeFilter::APipeFilter( APipeFilter::Properties *prop )
 	: PredecessorType( prop ), _inputPorts( this ), _outputPorts( this ), 
 	_invocationStyle( UIS_ON_DEMAND ), _propertiesTimestamp( Common::DefaultTimeStamp )
 {
@@ -259,7 +259,7 @@ AbstractPipeFilter::AbstractPipeFilter( AbstractPipeFilter::Properties *prop )
 }
 
 void
-AbstractPipeFilter::Execute()
+APipeFilter::Execute()
 {
 	//TODO
 	
@@ -273,7 +273,7 @@ AbstractPipeFilter::Execute()
 }
 
 void
-AbstractPipeFilter::ExecuteOnWhole()
+APipeFilter::ExecuteOnWhole()
 {
 	//TODO
 
@@ -286,19 +286,19 @@ AbstractPipeFilter::ExecuteOnWhole()
 }
 
 void
-AbstractPipeFilter::ReleaseInputDataSet( uint32 idx )const
+APipeFilter::ReleaseInputDataset( uint32 idx )const
 {
 	_inputPorts[ idx ].ReleaseDatasetLock();
 }
 
 void
-AbstractPipeFilter::ReleaseOutputDataSet( uint32 idx )const
+APipeFilter::ReleaseOutputDataset( uint32 idx )const
 {
 	_outputPorts[ idx ].ReleaseDatasetLock();
 }
 
 bool
-AbstractPipeFilter::StopExecution()
+APipeFilter::StopExecution()
 {
 	//TODO
 	
@@ -306,14 +306,14 @@ AbstractPipeFilter::StopExecution()
 }
 
 bool
-AbstractPipeFilter::CanContinue()
+APipeFilter::CanContinue()
 {
 	//TODO
 	return _workState.IsRunning();
 }
 
 void
-AbstractPipeFilter::ReceiveMessage( 
+APipeFilter::ReceiveMessage( 
 		PipelineMessage::Ptr 			msg, 
 		PipelineMessage::MessageSendStyle 	sendStyle,
 		FlowDirection				direction
@@ -338,7 +338,7 @@ AbstractPipeFilter::ReceiveMessage(
 }
 
 void
-AbstractPipeFilter::InputDatasetUpdatedMsgHandler( MsgFilterUpdated *msg )
+APipeFilter::InputDatasetUpdatedMsgHandler( MsgFilterUpdated *msg )
 {
 	//TODO - improve
 	if( _invocationStyle == UIS_ON_UPDATE_FINISHED )
@@ -352,14 +352,14 @@ AbstractPipeFilter::InputDatasetUpdatedMsgHandler( MsgFilterUpdated *msg )
 }
 
 void
-AbstractPipeFilter::InputDatasetComputationCanceledMsgHandler( MsgFilterExecutionCanceled *msg )
+APipeFilter::InputDatasetComputationCanceledMsgHandler( MsgFilterExecutionCanceled *msg )
 {
 	//TODO
 	StopExecution();
 }
 
 void
-AbstractPipeFilter::InputDatasetStartModificationMsgHandler( MsgFilterStartModification *msg )
+APipeFilter::InputDatasetStartModificationMsgHandler( MsgFilterStartModification *msg )
 {
 	//TODO - improve
 	if( _invocationStyle == UIS_ON_CHANGE_BEGIN )
@@ -373,13 +373,13 @@ AbstractPipeFilter::InputDatasetStartModificationMsgHandler( MsgFilterStartModif
 }
 
  void
-AbstractPipeFilter::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
+APipeFilter::BeforeComputation( APipeFilter::UPDATE_TYPE &utype )
 {
 
 }
 
 void
-AbstractPipeFilter::CleanAfterSuccessfulRun()
+APipeFilter::CleanAfterSuccessfulRun()
 {
 
 	//We delete execution thread structure - thread will be detached.
@@ -395,7 +395,7 @@ AbstractPipeFilter::CleanAfterSuccessfulRun()
 }
 
 void
-AbstractPipeFilter::CleanAfterStoppedRun()
+APipeFilter::CleanAfterStoppedRun()
 {
 	//We delete execution thread structure - thread will be detached.
 	//Another execution thread can be created.

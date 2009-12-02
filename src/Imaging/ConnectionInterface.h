@@ -11,7 +11,7 @@
 #include "common/Common.h"
 //#include "Imaging/Ports.h"
 #include "Imaging/PipelineMessages.h"
-#include "Imaging/AbstractDataSet.h"
+#include "Imaging/ADataset.h"
 
 #include <map>
 #include <algorithm>
@@ -99,24 +99,24 @@ public:
 	 * \param dataset Smart pointer to dataset - must be valid.
 	 **/
 	virtual void
-	PutDataset( AbstractDataSet::Ptr dataset )=0;
+	PutDataset( ADataset::Ptr dataset )=0;
 
 	void
 	ResetDataset()
-		{ PutDataset( AbstractDataSet::Ptr() ); }
+		{ PutDataset( ADataset::Ptr() ); }
 	/**
 	 * \return Reference to dataset under control.
 	 **/
-	virtual AbstractDataSet &
+	virtual ADataset &
 	GetDataset()const = 0;
 
-	virtual AbstractDataSet::Ptr
+	virtual ADataset::Ptr
 	GetDatasetPtr()const = 0;
 
 	/**
 	 * \return Constant reference to dataset under control.
 	 **/
-	virtual const AbstractDataSet &
+	virtual const ADataset &
 	GetDatasetReadOnly()const = 0;
 
 	/**
@@ -241,10 +241,10 @@ protected:
 };
 
 template<>
-class ConnectionInterfaceTyped< AbstractDataSet >: public ConnectionInterface
+class ConnectionInterfaceTyped< ADataset >: public ConnectionInterface
 {
 public:
-	typedef InputPortTyped< AbstractDataSet > ConsumerPortType;
+	typedef InputPortTyped< ADataset > ConsumerPortType;
 
 protected:
 };
@@ -256,7 +256,7 @@ public:
 	ConnectionTyped( bool ownsDataset = true );
 
 	void
-	PutDataset( AbstractDataSet::Ptr dataset )
+	PutDataset( ADataset::Ptr dataset )
 		{
 			typename DatasetType::Ptr newDataset;
 			if( dataset ) {
@@ -281,20 +281,20 @@ public:
 			);
 		}
 
-	AbstractDataSet &
+	ADataset &
 	GetDataset()const
 		{ if( !_dataset ) { _THROW_ ConnectionInterface::ENoDatasetAssociated(); }
 			return *_dataset;
 		}
 
 
-	AbstractDataSet::Ptr
+	ADataset::Ptr
 	GetDatasetPtr()const
 		{ if( !_dataset ) { _THROW_ ConnectionInterface::ENoDatasetAssociated(); }
 			return _dataset;
 		}
 
-	const AbstractDataSet &
+	const ADataset &
 	GetDatasetReadOnly()const
 		{ if( !_dataset ) { _THROW_ ConnectionInterface::ENoDatasetAssociated(); }
 			return *_dataset;

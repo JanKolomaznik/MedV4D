@@ -30,7 +30,7 @@ AImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 template< typename InputElementType, typename OutputImageType >
 bool
 AImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
-::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE /*utype*/ )
+::ExecutionThreadMethod( APipeFilter::UPDATE_TYPE /*utype*/ )
 {
 	size_t i = 0;
 	unsigned sliceComputationNeighbourCount = GetProperties()._sliceComputationNeighbourCount;
@@ -82,14 +82,14 @@ cleanup:
 template< typename InputElementType, typename OutputImageType >
 void
 AImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
-::MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype )
+::MarkChanges( APipeFilter::UPDATE_TYPE utype )
 {
 
 	unsigned computationGrouping = static_cast<Properties*>(this->_properties)->_computationGrouping;
 	unsigned sliceComputationNeighbourCount = static_cast<Properties*>(this->_properties)->_sliceComputationNeighbourCount;
 
 	switch ( utype ) {
-	case AbstractPipeFilter::RECALCULATION:
+	case APipeFilter::RECALCULATION:
 		{
 			DL_PRINT( 5, "SliceFilter recalculation" );
 
@@ -129,7 +129,7 @@ AImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
 		}
 		break;
 
-	case AbstractPipeFilter::ADAPTIVE_CALCULATION:
+	case APipeFilter::ADAPTIVE_CALCULATION:
 		{
 			DL_PRINT( 5, "SliceFilter adaptive calculation" );
 			const ModificationManager &manager = this->in->GetModificationManager();
@@ -178,7 +178,7 @@ AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementTyp
 template< typename InputElementType, typename OutputElementType >
 bool
 AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
-::ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE /*utype*/ )
+::ExecutionThreadMethod( APipeFilter::UPDATE_TYPE /*utype*/ )
 {
 	unsigned sliceComputationNeighbourCount = GetProperties()._sliceComputationNeighbourCount;
 	size_t i = 0;
@@ -248,14 +248,14 @@ cleanup:
 template< typename InputElementType, typename OutputElementType >
 void
 AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
-::MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype )
+::MarkChanges( APipeFilter::UPDATE_TYPE utype )
 {
 
 	unsigned computationGrouping = static_cast<Properties*>(this->_properties)->_computationGrouping;
 	unsigned sliceComputationNeighbourCount = static_cast<Properties*>(this->_properties)->_sliceComputationNeighbourCount;
 
 	switch ( utype ) {
-	case AbstractPipeFilter::RECALCULATION:
+	case APipeFilter::RECALCULATION:
 		{
 			DL_PRINT( 5, "SliceFilter recalculation" );
 
@@ -299,7 +299,7 @@ AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementTyp
 		}
 		break;
 
-	case AbstractPipeFilter::ADAPTIVE_CALCULATION:
+	case APipeFilter::ADAPTIVE_CALCULATION:
 		{
 			DL_PRINT( 5, "SliceFilter adaptive calculation" );
 			const ModificationManager &manager = this->in->GetModificationManager();

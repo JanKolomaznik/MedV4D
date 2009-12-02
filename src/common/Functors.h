@@ -25,6 +25,20 @@ struct Deletor
 	{ delete p; }
 };
 
+template< typename TypeName >
+struct TypeBox
+{
+	typedef TypeName type;
+};
+
+struct MakeTypeBox
+{
+	template< typename TypeName >
+	struct apply {
+		typedef TypeBox< TypeName > type;
+	};
+};
+
 }/*namespace Functors*/
 }/*namespace M4D*/
 

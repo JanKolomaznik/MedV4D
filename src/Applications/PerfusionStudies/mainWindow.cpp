@@ -39,15 +39,15 @@ void mainWindow::CreatePipeline()
 	MaskSelectionFilter *maskSelection = new MaskSelectionFilter();
 	_pipeline.AddFilter( maskSelection );
 
-	_inConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeInputConnection( *_convertor, 0, false ) );
+	_inConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeInputConnection( *_convertor, 0, false ) );
 	_pipeline.MakeConnection( *_convertor, 0, *_filter, 0 );
-	_tmpConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeConnection( *_filter, 0, *medianFilter, 0 ) );
+	_tmpConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeConnection( *_filter, 0, *medianFilter, 0 ) );
 	
 	_pipeline.MakeConnection( *_convertor, 0, *maskSelection, 0 );
 
 	ConnectionInterface* tmpStage2 = &(_pipeline.MakeConnection( *medianFilter, 0, *maskSelection, 1 ) );
 	tmpStage2->SetMessageHook( MessageReceiverInterface::Ptr( new LFNotifier( maskSelection ) ) );
-	_outConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeOutputConnection( *maskSelection, 0, true ) );
+	_outConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeOutputConnection( *maskSelection, 0, true ) );
 
 	if( _inConnection == NULL || _outConnection == NULL ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Pipeline error" ) );

@@ -29,7 +29,7 @@ mainWindow::mainWindow ()
 
 
 void 
-mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
+mainWindow::process ( ADataset::Ptr inputDataSet )
 {
 	try {
 
@@ -59,9 +59,9 @@ mainWindow::CreatePipeline()
 	_pipeline.AddFilter( _convertor );
 	_pipeline.AddFilter( _filter );
 
-	_inConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeInputConnection( *_convertor, 0, false ) );
+	_inConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeInputConnection( *_convertor, 0, false ) );
 	_pipeline.MakeConnection( *_convertor, 0, *_filter, 0 );
-	_outConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeOutputConnection( *_filter, 0, true ) );
+	_outConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeOutputConnection( *_filter, 0, true ) );
 
 	if( _inConnection == NULL || _outConnection == NULL ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Pipeline error" ) );

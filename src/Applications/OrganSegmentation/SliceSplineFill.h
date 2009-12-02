@@ -49,16 +49,16 @@ public:
 	GET_SET_PROPERTY_METHOD_MACRO( ElementExtentsType, ElementExtents, elementExtents );
 protected:
 	bool
-	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
+	ExecutionThreadMethod( APipeFilter::UPDATE_TYPE utype );
 	
 	void
 	PrepareOutputDatasets();
 	
 	void
-	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
+	BeforeComputation( APipeFilter::UPDATE_TYPE &utype );
 	
 	void
-	MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype );
+	MarkChanges( APipeFilter::UPDATE_TYPE utype );
 
 	void
 	AfterComputation( bool successful );

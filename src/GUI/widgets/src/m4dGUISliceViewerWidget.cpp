@@ -26,10 +26,10 @@ m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( unsigned index, QWidget *paren
     : QGLWidget(parent)
 {
     _index = index;
-    _inPort = new Imaging::InputPortTyped<Imaging::AbstractImage>();
+    _inPort = new Imaging::InputPortTyped<Imaging::AImage>();
     resetParameters();
     _inputPorts.AppendPort( _inPort );
-    for ( uint32 i = 1; i < SLICEVIEWER_INPUT_NUMBER; ++i ) _inputPorts.AppendPort( new Imaging::InputPortTyped<Imaging::AbstractImage>() );
+    for ( uint32 i = 1; i < SLICEVIEWER_INPUT_NUMBER; ++i ) _inputPorts.AppendPort( new Imaging::InputPortTyped<Imaging::AImage>() );
     setInputPort( );
 }
 
@@ -37,10 +37,10 @@ m4dGUISliceViewerWidget::m4dGUISliceViewerWidget( Imaging::ConnectionInterface* 
     : QGLWidget(parent)
 {
     _index = index;
-    _inPort = new Imaging::InputPortTyped<Imaging::AbstractImage>();
+    _inPort = new Imaging::InputPortTyped<Imaging::AImage>();
     resetParameters();
     _inputPorts.AppendPort( _inPort );
-    for ( uint32 i = 1; i < SLICEVIEWER_INPUT_NUMBER; ++i ) _inputPorts.AppendPort( new Imaging::InputPortTyped<Imaging::AbstractImage>() );
+    for ( uint32 i = 1; i < SLICEVIEWER_INPUT_NUMBER; ++i ) _inputPorts.AppendPort( new Imaging::InputPortTyped<Imaging::AImage>() );
     setInputPort( conn );
 }
 
@@ -1232,12 +1232,12 @@ m4dGUISliceViewerWidget::colorPicker( double x, double y, double z )
 		if ( _inPort->GetDatasetTyped().GetDimension() == 3 )
 		{
 		    NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
-		        _imageID, result = Imaging::Image< TTYPE, 3 >::CastAbstractImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >( (int)coords[0], (int)coords[1], (int)coords[2] ) ) );
+		        _imageID, result = Imaging::Image< TTYPE, 3 >::CastAImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >( (int)coords[0], (int)coords[1], (int)coords[2] ) ) );
 		}
 	        else if ( _inPort->GetDatasetTyped().GetDimension() == 2 )
 	        {
 		    NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
-		        _imageID, result = Imaging::Image< TTYPE, 2 >::CastAbstractImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >( (int)coords[0], (int)coords[1] ) ) );
+		        _imageID, result = Imaging::Image< TTYPE, 2 >::CastAImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >( (int)coords[0], (int)coords[1] ) ) );
 	        }
 	        else
 		{

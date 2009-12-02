@@ -40,7 +40,7 @@ ManualSegmentationManager::Initialize()
 
 	/*int32 min = _inputImage->GetDimensionExtents(2).minimum;
 	int32 max = _inputImage->GetDimensionExtents(2).maximum;
-	_dataset = M4D::Imaging::DataSetFactory::CreateSlicedGeometry< M4D::Imaging::Geometry::BSpline<float32,2> >( min, max );*/
+	_dataset = M4D::Imaging::DatasetFactory::CreateSlicedGeometry< M4D::Imaging::Geometry::BSpline<float32,2> >( min, max );*/
 
 	ViewerSpecialState *sState = new ViewerSpecialState( ManualSegmentationManager::Instance() );
 	_specialState = M4D::Viewer::SliceViewerSpecialStateOperatorPtr( sState );
@@ -64,7 +64,7 @@ ManualSegmentationManager::Draw( int32 sliceNum, double zoomRate )
 		glGetFloatv( GL_LINE_WIDTH, &tmp );
 		glLineWidth( 3.0f );
 
-		const GDataSet::ObjectsInSlice &slice = _dataset->GetSlice( sliceNum );
+		const GDataset::ObjectsInSlice &slice = _dataset->GetSlice( sliceNum );
 		/*switch( _state )*/ {
 		
 		/*default:*/
@@ -138,7 +138,7 @@ ManualSegmentationManager::LeftButtonDown( Vector< float32, 2 > pos, int32 slice
 	switch( _state ) {
 	case SELECT:
 	case SELECTED: {
-			const GDataSet::ObjectsInSlice &slice = _dataset->GetSlice( sliceNum );
+			const GDataset::ObjectsInSlice &slice = _dataset->GetSlice( sliceNum );
 			ClosestSplineFunctor f = std::for_each( slice.begin(), slice.end(), ClosestSplineFunctor( pos ) );
 			if( f.minDist < DISTANCE_TOLERATION_SQUARED ) {
 				SetState( SELECTED );
@@ -211,13 +211,13 @@ ManualSegmentationManager::Activate( InputImageType::Ptr inImage )
 {
 	int32 min = inImage->GetDimensionExtents(2).minimum;
 	int32 max = inImage->GetDimensionExtents(2).maximum;
-	GDataSet::Ptr dataset = M4D::Imaging::DataSetFactory::CreateSlicedGeometry< CurveType >( min, max );
+	GDataset::Ptr dataset = M4D::Imaging::DatasetFactory::CreateSlicedGeometry< CurveType >( min, max );
 
 	Activate( inImage, dataset );
 }
 
 void
-ManualSegmentationManager::Activate( InputImageType::Ptr inImage, GDataSet::Ptr geometry )
+ManualSegmentationManager::Activate( InputImageType::Ptr inImage, GDataset::Ptr geometry )
 {
 	SetState( SELECT );
 	_curve = NULL;
@@ -227,7 +227,7 @@ ManualSegmentationManager::Activate( InputImageType::Ptr inImage, GDataSet::Ptr 
 }
 
 void
-ManualSegmentationManager::ActivateManagerInit( InputImageType::Ptr inImage, GDataSet::Ptr geometry )
+ManualSegmentationManager::ActivateManagerInit( InputImageType::Ptr inImage, GDataset::Ptr geometry )
 {
 	SegmentationManager::ActivateManager();
 

@@ -22,11 +22,11 @@ mainWindow::mainWindow ()
 }
 
 
-void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
+void mainWindow::process ( ADataset::Ptr inputDataSet )
 {
 	try {
 
-    ConnectionTyped<AbstractImage> *conn = new ConnectionTyped<AbstractImage>();
+    ConnectionTyped<AImage> *conn = new ConnectionTyped<AImage>();
 		conn->PutDataset( inputDataSet );
 
 		currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();

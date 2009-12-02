@@ -13,12 +13,12 @@ class ViewerWindow : public QWidget
 private:
 	M4D::Viewer::m4dGUISliceViewerWidget *viewerWidget;
 public:
-	ViewerWindow( M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage > & conn);
+	ViewerWindow( M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage > & conn);
 	~ViewerWindow();
 };
 
 
-ViewerWindow::ViewerWindow( M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage > & conn )
+ViewerWindow::ViewerWindow( M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage > & conn )
 {
 	viewerWidget = new M4D::Viewer::m4dGUISliceViewerWidget( &conn, 0, NULL );
 	//glWidget->setSelected( true );
@@ -53,12 +53,12 @@ main( int argc, char** argv )
 
 
 	std::cout << "Loading file...";
-	M4D::Imaging::AbstractImage::Ptr image = 
+	M4D::Imaging::AImage::Ptr image = 
 			M4D::Imaging::ImageFactory::LoadDumpedImage( filename );
 	std::cout << "Done\n";
 	
 
-	M4D::Imaging::ConnectionTyped< M4D::Imaging::AbstractImage > prodconn;
+	M4D::Imaging::ConnectionTyped< M4D::Imaging::AImage > prodconn;
 	prodconn.PutDataset( image );
 
 

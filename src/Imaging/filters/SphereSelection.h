@@ -2,7 +2,7 @@
 #define _SPHERE_SELECTION_H
 
 #include "common/Common.h"
-#include "Imaging/AbstractImageFilterWholeAtOnce.h"
+#include "Imaging/AImageFilterWholeAtOnce.h"
 
 namespace M4D
 {
@@ -22,12 +22,12 @@ class SphereSelection;
 
 template< typename ElementType >
 class SphereSelection< Image< ElementType, 3 > >
-	: public AbstractImageFilterWholeAtOnce< Image< ElementType, 3 >, Image< ElementType, 3 > >
+	: public AImageFilterWholeAtOnce< Image< ElementType, 3 >, Image< ElementType, 3 > >
 {
 public:	
 	typedef Image< ElementType, 3 >		InputImageType;
 	typedef Image< ElementType, 3 >		OutputImageType;
-	typedef AbstractImageFilterWholeAtOnce< InputImageType, OutputImageType > PredecessorType;
+	typedef AImageFilterWholeAtOnce< InputImageType, OutputImageType > PredecessorType;
 
 	struct Properties : public PredecessorType::Properties
 	{
@@ -49,7 +49,7 @@ public:
 protected:
 
 	void
-	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
+	BeforeComputation( APipeFilter::UPDATE_TYPE &utype );
 
 	bool
 	ProcessImage(

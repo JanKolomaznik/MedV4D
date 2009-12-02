@@ -9,9 +9,9 @@
 #define _PIPELINE_CONTAINER_H
 
 
-#include "Imaging/AbstractFilter.h"
+#include "Imaging/AFilter.h"
 #include "Imaging/ConnectionInterface.h"
-#include "Imaging/AbstractDataSet.h"
+#include "Imaging/ADataset.h"
 #include <boost/shared_ptr.hpp>
 #include <vector>
 
@@ -34,7 +34,7 @@ public:
 	~PipelineContainer();
 
 	void
-	AddFilter( AbstractPipeFilter *filter );
+	AddFilter( APipeFilter *filter );
 
 	void
 	AddConnection( ConnectionInterface *connection );
@@ -60,28 +60,28 @@ public:
 	MakeConnection( M4D::Imaging::OutputPort& outPort, M4D::Imaging::InputPort& inPort );
 
 	ConnectionInterface &
-	MakeConnection( M4D::Imaging::AbstractPipeFilter& producer, unsigned producerPortNumber, 
-			M4D::Imaging::AbstractPipeFilter& consumer, unsigned consumerPortNumber );
+	MakeConnection( M4D::Imaging::APipeFilter& producer, unsigned producerPortNumber, 
+			M4D::Imaging::APipeFilter& consumer, unsigned consumerPortNumber );
 
 	ConnectionInterface &
 	MakeInputConnection( M4D::Imaging::InputPort& inPort, bool ownsDataset );
 
 	ConnectionInterface &
-	MakeInputConnection( M4D::Imaging::AbstractPipeFilter& consumer, unsigned consumerPortNumber, bool ownsDataset );
+	MakeInputConnection( M4D::Imaging::APipeFilter& consumer, unsigned consumerPortNumber, bool ownsDataset );
 
 	ConnectionInterface &
-	MakeInputConnection( M4D::Imaging::AbstractPipeFilter& consumer, unsigned consumerPortNumber, AbstractDataSet::Ptr dataset );
+	MakeInputConnection( M4D::Imaging::APipeFilter& consumer, unsigned consumerPortNumber, ADataset::Ptr dataset );
 
 	ConnectionInterface &
 	MakeOutputConnection( M4D::Imaging::OutputPort& outPort, bool ownsDataset );
 
 	ConnectionInterface &
-	MakeOutputConnection( M4D::Imaging::AbstractPipeFilter& producer, unsigned producerPortNumber, bool ownsDataset );
+	MakeOutputConnection( M4D::Imaging::APipeFilter& producer, unsigned producerPortNumber, bool ownsDataset );
 
 	ConnectionInterface &
-	MakeOutputConnection( M4D::Imaging::AbstractPipeFilter& producer, unsigned producerPortNumber, AbstractDataSet::Ptr dataset );
+	MakeOutputConnection( M4D::Imaging::APipeFilter& producer, unsigned producerPortNumber, ADataset::Ptr dataset );
 protected:
-	typedef std::vector< AbstractPipeFilter * > FilterVector;
+	typedef std::vector< APipeFilter * > FilterVector;
 	typedef std::vector< ConnectionInterface * > ConnectionVector;
 
 	FilterVector		_filters;

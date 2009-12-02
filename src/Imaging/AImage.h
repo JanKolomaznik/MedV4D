@@ -4,7 +4,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include "Imaging/ModificationManager.h"
-#include "Imaging/AbstractDataSet.h"
+#include "Imaging/ADataset.h"
 #include "common/Vector.h"
 
 namespace M4D
@@ -55,20 +55,20 @@ struct DimensionExtents
  * These informations can be used for casting to right type of image or for
  * generic programming. 
  **/
-class AbstractImage : public AbstractDataSet
+class AImage : public ADataset
 {
 public:
-	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( AbstractImage );
-	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AbstractDataSet );
+	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( AImage );
+	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( ADataset );
 	PREPARE_CAST_METHODS_MACRO;
 	IS_NOT_CONSTRUCTABLE_MACRO;
 	
 		class EBadDimension;
 	
-	AbstractImage( uint16 dim, DimensionExtents *dimExtents );
+	AImage( uint16 dim, DimensionExtents *dimExtents );
 	
 	virtual
-	~AbstractImage()=0;
+	~AImage()=0;
 
 	const DimensionExtents &
 	GetDimensionExtents( unsigned dimension )const;
@@ -103,25 +103,25 @@ private:
 
 };
 
-class AbstractImage::EBadDimension
+class AImage::EBadDimension
 {
 	//TODO
 };
 
 template< unsigned Dim >
-class AbstractImageDim : public AbstractImage
+class AImageDim : public AImage
 {
 public:
 	static const unsigned 		Dimension = Dim;
-	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( AbstractImageDim< Dimension > );
-	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AbstractImage );
+	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( AImageDim< Dimension > );
+	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AImage );
 	PREPARE_CAST_METHODS_MACRO;
 	IS_NOT_CONSTRUCTABLE_MACRO;
 
 	typedef Vector< int32, Dimension >	PointType;
 	typedef Vector< uint32, Dimension >	SizeType;
 
-	AbstractImageDim( DimensionExtents *dimExtents ): AbstractImage( Dimension, dimExtents ) 
+	AImageDim( DimensionExtents *dimExtents ): AImage( Dimension, dimExtents ) 
 		{
 			for( unsigned i = 0; i < Dimension; ++i ) {
 				_minimum[i] = dimExtents[ i ].minimum;

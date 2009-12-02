@@ -1,7 +1,7 @@
 /**
  * @ingroup imaging 
  * @author Jan Kolomaznik 
- * @file AbstractDataSet.h 
+ * @file ADataset.h 
  * @{ 
  **/
 
@@ -11,7 +11,7 @@
 #include <boost/shared_ptr.hpp>
 #include "common/TimeStamp.h"
 #include "common/Thread.h"
-#include "Imaging/dataSetClassEnum.h"
+#include "Imaging/DatasetClassEnum.h"
 #include "common/IOStreams.h"
 #include "Imaging/DatasetDefinitionTools.h"
 
@@ -71,7 +71,7 @@ const uint32 DUMP_END_MAGIC_NUMBER 		= 0x0DEADBEE;
 const uint32 ACTUAL_FORMAT_VERSION 		= 1;
 
 /**
- * AbstractDataSet is predecessor of all datastructures containing data. 
+ * ADataset is predecessor of all datastructures containing data. 
  * Only concept implemented by this class is read/write locking system.
  * This locking system ensure synchronization only on dataset structure 
  * (its extents, allocated buffers, etc.), not on data contained inside.
@@ -86,22 +86,22 @@ const uint32 ACTUAL_FORMAT_VERSION 		= 1;
  * increased - so if you store value from previous access you can easily detect
  * changes.
  **/
-class AbstractDataSet
+class ADataset
 {
 public:
-	MANDATORY_ROOT_DATASET_DEFINITIONS_MACRO( AbstractDataSet );  
+	MANDATORY_ROOT_DATASET_DEFINITIONS_MACRO( ADataset );  
 	PREPARE_CAST_METHODS_MACRO;
 	IS_NOT_CONSTRUCTABLE_MACRO;
 
-	class EAbstractDataSetCastProblem: public ErrorHandling::ExceptionCastProblem
+	class EADatasetCastProblem: public ErrorHandling::ExceptionCastProblem
 	{
 	public:
-		EAbstractDataSetCastProblem() throw() 
-			: ErrorHandling::ExceptionCastProblem( "Cast to AbstractDataSet impossible." ) {}
+		EADatasetCastProblem() throw() 
+			: ErrorHandling::ExceptionCastProblem( "Cast to ADataset impossible." ) {}
 	};
 
 	virtual
-	~AbstractDataSet(){ }
+	~ADataset(){ }
 
 	/**
 	*  Dump data set contents
@@ -127,35 +127,35 @@ public:
 	GetStructureTimestamp()const
 		{ return _structureTimestamp; }
 
-	DataSetType
+	DatasetType
 	GetDatasetType()const
 		{ return _datasetType; }
 
 	/*template< typename DatasetType >
-	static AbstractDataSet &
-	CastDataSet(  DatasetType & dataset )
+	static ADataset &
+	CastDataset(  DatasetType & dataset )
 	{
 		//TODO - handle exception well
-		return dynamic_cast< AbstractDataSet & >( dataset );
+		return dynamic_cast< ADataset & >( dataset );
 	}
 
 	template< typename DatasetType >
-	static const AbstractDataSet &
-	CastDataSet( const DatasetType & dataset )
+	static const ADataset &
+	CastDataset( const DatasetType & dataset )
 	{
 		//TODO - handle exception well
-		return dynamic_cast< const AbstractDataSet & >( dataset );
+		return dynamic_cast< const ADataset & >( dataset );
 	}*/
 
 	template< typename DatasetType >
-	static typename AbstractDataSet::Ptr
-	CastDataSet( boost::shared_ptr< DatasetType > & dataset )
+	static typename ADataset::Ptr
+	CastDataset( boost::shared_ptr< DatasetType > & dataset )
 	{
 		if( dynamic_cast< DatasetType * >( dataset.get() ) == NULL ) {
-			_THROW_ EAbstractDataSetCastProblem();
+			_THROW_ EADatasetCastProblem();
 		}
 
-		return boost::static_pointer_cast< AbstractDataSet >( dataset );
+		return boost::static_pointer_cast< ADataset >( dataset );
 	}
 
 	/**
@@ -214,7 +214,7 @@ protected:
 	 * Protected constructor.
 	 * \param datasetType Type of dataset - this value will be returned by GetDatasetType().
 	 **/
-	AbstractDataSet( DataSetType datasetType ): _datasetType( datasetType ) {}
+	ADataset( DatasetType datasetType ): _datasetType( datasetType ) {}
 
 
 	/**
@@ -235,7 +235,7 @@ protected:
 	 **/
 	mutable ReadWriteLock	_structureLock;
 private:
-	DataSetType	_datasetType;
+	DatasetType	_datasetType;
 };
 
 

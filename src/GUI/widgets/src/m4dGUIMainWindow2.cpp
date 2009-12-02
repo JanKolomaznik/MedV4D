@@ -635,10 +635,10 @@ void m4dGUIMainWindow2::delegateAction ( unsigned actionIdx, m4dGUIAbstractViewe
 
 void m4dGUIMainWindow2::process ( M4D::Dicom::DicomObjSetPtr dicomObjSet )
 {
-  AbstractImage::Ptr inputImage = M4D::Dicom::DcmProvider::CreateImageFromDICOM( dicomObjSet );
+  AImage::Ptr inputImage = M4D::Dicom::DcmProvider::CreateImageFromDICOM( dicomObjSet );
 
 	try {
-    ConnectionInterfaceTyped< AbstractImage > *conn = new ConnectionTyped< AbstractImage >;
+    ConnectionInterfaceTyped< AImage > *conn = new ConnectionTyped< AImage >;
 		conn->PutDataset( inputImage );
 
     for ( unsigned i = 0; i < currentViewerDesktop->getSelectedViewerWidget()->InputPort().Size(); i++ ) {

@@ -39,13 +39,13 @@ SimpleProjection< Image< ElementType, 3 > >
 template< typename ElementType >
 void
 SimpleProjection< Image< ElementType, 3 > >
-::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
+::BeforeComputation( APipeFilter::UPDATE_TYPE &utype )
 {
 	PredecessorType::BeforeComputation( utype );
 
 	if( this->_propertiesTimestamp != GetProperties().GetTimestamp() )
 	{
-		utype = AbstractPipeFilter::RECALCULATION;
+		utype = APipeFilter::RECALCULATION;
 		this->_callPrepareOutputDatasets = true;
 	}
 }
@@ -68,6 +68,7 @@ SimpleProjection< Image< ElementType, 3 > >
 	default:
 		ASSERT( false );
 	}
+	return false;
 }
 
 template< typename ElementType >

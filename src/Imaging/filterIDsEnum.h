@@ -1,7 +1,7 @@
 /**
  * @ingroup cellbe 
  * @author Vaclav Klecanda 
- * @file filterIDEnums.h 
+ * @file filterIDEnum.h 
  * @{ 
  **/
 
@@ -13,7 +13,7 @@
  *	new filter is written
  */
 enum FilterID {
-	FID_AbstractFilterNOT_USE,
+	FID_AFilterNOT_USE,
   FID_Thresholding,
   FID_Median,
   FID_SimpleProjection,

@@ -9,7 +9,7 @@
 #define _PORTS_H
 
 #include <boost/shared_ptr.hpp>
-#include "Imaging/AbstractDataSet.h"
+#include "Imaging/ADataset.h"
 #include <vector>
 #include "Imaging/PipelineMessages.h"
 //#include "Imaging/ConnectionInterface.h"
@@ -195,7 +195,7 @@ public:
 	void
 	UnPlug( bool onlyYourself = false );
 
-	virtual	const AbstractDataSet&
+	virtual	const ADataset&
 	GetDataset()const = 0;
 
 	void
@@ -228,7 +228,7 @@ public:
 	void
 	UnPlug( bool onlyYourself = false );
 	
-	virtual	AbstractDataSet&
+	virtual	ADataset&
 	GetDataset()const = 0;
 
 	void
@@ -263,7 +263,7 @@ public:
 	const DatasetType&
 	GetDatasetTyped()const;
 
-	const AbstractDataSet&
+	const ADataset&
 	GetDataset()const
 		{ return GetDatasetTyped(); }
 
@@ -280,12 +280,12 @@ protected:
 };
 
 template<>
-class InputPortTyped< AbstractDataSet >: public InputPort
+class InputPortTyped< ADataset >: public InputPort
 {
 public:
-	typedef ConnectionInterfaceTyped< AbstractDataSet > IdealConnectionInterface;
+	typedef ConnectionInterfaceTyped< ADataset > IdealConnectionInterface;
 	typedef InputPort PredecessorType;
-	static const unsigned HierarchyDepth = AbstractDataSet::HierarchyDepth;
+	static const unsigned HierarchyDepth = ADataset::HierarchyDepth;
 
 	unsigned
 	GetHierarchyDepth()const
@@ -308,7 +308,7 @@ public:
 	DatasetType&
 	GetDatasetTyped()const;
 
-	AbstractDataSet&
+	ADataset&
 	GetDataset()const
 		{ return GetDatasetTyped(); }
 
@@ -329,12 +329,12 @@ protected:
 };
 
 template<>
-class OutputPortTyped< AbstractDataSet >: public OutputPort
+class OutputPortTyped< ADataset >: public OutputPort
 {
 public:
-	typedef ConnectionInterfaceTyped< AbstractDataSet > IdealConnectionInterface;
+	typedef ConnectionInterfaceTyped< ADataset > IdealConnectionInterface;
 	typedef OutputPort PredecessorType;
-	static const unsigned HierarchyDepth = AbstractDataSet::HierarchyDepth;
+	static const unsigned HierarchyDepth = ADataset::HierarchyDepth;
 
 	unsigned
 	GetHierarchyDepth()const

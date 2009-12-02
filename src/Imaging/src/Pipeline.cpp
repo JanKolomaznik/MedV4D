@@ -42,12 +42,12 @@ Pipeline::~Pipeline()
 	std::for_each(
 		_filters.begin(), 
 		_filters.end(), 
-		M4D::Functors::Deletor< AbstractPipeFilter* >() 
+		M4D::Functors::Deletor< APipeFilter* >() 
 		);
 }
 
 void
-Pipeline::AddFilter( AbstractPipeFilter *filter )
+Pipeline::AddFilter( APipeFilter *filter )
 {
 	if( filter == NULL ) {
 		//TODO _THROW_ exception

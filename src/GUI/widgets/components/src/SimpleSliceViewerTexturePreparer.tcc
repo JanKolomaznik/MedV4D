@@ -10,7 +10,7 @@ namespace Viewer
 template< typename ElementType >
 ElementType*
 SimpleSliceViewerTexturePreparer< ElementType >
-::prepareSingle( Imaging::InputPortTyped<Imaging::AbstractImage>* inPort,
+::prepareSingle( Imaging::InputPortTyped<Imaging::AImage>* inPort,
       uint32& width,
       uint32& height,
       SliceOrientation so,
@@ -33,7 +33,7 @@ SimpleSliceViewerTexturePreparer< ElementType >
                     {
                         Vector< uint32, 2 > size;
                         Vector< int32, 2 > strides;
-                        original = Imaging::Image< ElementType, 2 >::CastAbstractImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
+                        original = Imaging::Image< ElementType, 2 >::CastAImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
                         width = size[0];
                         height = size[1];
                         xstride = strides[0];
@@ -53,7 +53,7 @@ SimpleSliceViewerTexturePreparer< ElementType >
                         {
                             case xy:
                             {
-                                original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
+                                original = Imaging::Image< ElementType, 3 >::CastAImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
                                 width = size[0];
                                 height = size[1];
                                 depth = size[2];
@@ -65,7 +65,7 @@ SimpleSliceViewerTexturePreparer< ElementType >
 
                             case yz:
                             {
-                                original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
+                                original = Imaging::Image< ElementType, 3 >::CastAImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
                                 width = size[1];
                                 height = size[2];
                                 depth = size[0];
@@ -77,7 +77,7 @@ SimpleSliceViewerTexturePreparer< ElementType >
 
                             case zx:
                             {
-                                original = Imaging::Image< ElementType, 3 >::CastAbstractImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
+                                original = Imaging::Image< ElementType, 3 >::CastAImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
                                 width = size[2];
                                 height = size[0];
                                 depth = size[1];
@@ -191,7 +191,7 @@ SimpleSliceViewerTexturePreparer< ElementType >
       unsigned& dimension )
     {
 	uint32 i, tmpwidth, tmpheight;
-	Imaging::InputPortTyped<Imaging::AbstractImage>* inPort;
+	Imaging::InputPortTyped<Imaging::AImage>* inPort;
 	ElementType** result = new ElementType*[ numberOfDatasets ];
 
 	width = height = 0;
@@ -205,7 +205,7 @@ SimpleSliceViewerTexturePreparer< ElementType >
 		tmpwidth = tmpheight = 0;
 
 		// get the port and drag the data out of the port
-		inPort = inputPorts.GetPortTypedSafe< Imaging::InputPortTyped<Imaging::AbstractImage> >( i );
+		inPort = inputPorts.GetPortTypedSafe< Imaging::InputPortTyped<Imaging::AImage> >( i );
             	result[i] = this->prepareSingle( inPort, tmpwidth, tmpheight, so, slice, dimension );
             	if ( result[i] && ( ( tmpwidth < width && tmpwidth > 0 ) || width == 0 ) ) width = tmpwidth;
             	if ( result[i] && ( ( tmpheight < height && tmpheight > 0 ) || height == 0 ) ) height = tmpheight;

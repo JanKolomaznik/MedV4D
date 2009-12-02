@@ -9,7 +9,7 @@
 #define _IMAGE_CONVERTOR_H
 
 #include "common/Common.h"
-#include "Imaging/AbstractImageFilter.h"
+#include "Imaging/AImageFilter.h"
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -36,10 +36,10 @@ public:
 
 template< typename OutputImageType, typename Convertor = DefaultConvertor >
 class ImageConvertor
-	: public AbstractImageFilter< AbstractImage, OutputImageType >
+	: public AImageFilter< AImage, OutputImageType >
 {
 public:
-	typedef AbstractImageFilter< AbstractImage, OutputImageType > 	PredecessorType;
+	typedef AImageFilter< AImage, OutputImageType > 	PredecessorType;
 
 	class EDatasetConversionImpossible
 	{
@@ -56,7 +56,7 @@ public:
 	ImageConvertor();
 protected:
 	bool
-	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE utype );
+	ExecutionThreadMethod( APipeFilter::UPDATE_TYPE utype );
 
 	/**
 	 * Method which will prepare datasets connected by output ports.
@@ -72,10 +72,10 @@ protected:
 	 * desired update method can't be used - right type is put as output value.
 	 **/
 	void
-	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
+	BeforeComputation( APipeFilter::UPDATE_TYPE &utype );
 
 	void
-	MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype );
+	MarkChanges( APipeFilter::UPDATE_TYPE utype );
 
 	/**
 	 * Method called in execution methods after computation.

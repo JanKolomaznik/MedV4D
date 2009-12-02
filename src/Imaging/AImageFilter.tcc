@@ -1,12 +1,12 @@
 /**
  * @ingroup imaging 
  * @author Jan Kolomaznik 
- * @file AbstractImageFilter.tcc 
+ * @file AImageFilter.tcc 
  * @{ 
  **/
 
 #ifndef _ABSTRACT_IMAGE_FILTER_H
-#error File AbstractImageFilter.tcc cannot be included directly!
+#error File AImageFilter.tcc cannot be included directly!
 #else
 
 /**
@@ -21,8 +21,8 @@ namespace Imaging
 
 
 template< typename InputImageType, typename OutputImageType >
-AbstractImageFilter< InputImageType, OutputImageType >::AbstractImageFilter( typename AbstractImageFilter< InputImageType, OutputImageType >::Properties * prop )
-:	AbstractPipeFilter( prop ), 
+AImageFilter< InputImageType, OutputImageType >::AImageFilter( typename AImageFilter< InputImageType, OutputImageType >::Properties * prop )
+:	APipeFilter( prop ), 
 	in( NULL ), _inTimestamp( Common::DefaultTimeStamp ), _inEditTimestamp( Common::DefaultTimeStamp ), 
 	out( NULL ), _outTimestamp( Common::DefaultTimeStamp ), _outEditTimestamp( Common::DefaultTimeStamp )
 {
@@ -34,8 +34,8 @@ AbstractImageFilter< InputImageType, OutputImageType >::AbstractImageFilter( typ
 	_outputPorts.AppendPort( outPort );
 }
 
-/*const AbstractImage&
-GetInputImageFromPort( InputPortAbstractImage &port ); //definition in .cpp
+/*const AImage&
+GetInputImageFromPort( InputPortAImage &port ); //definition in .cpp
 
 template< typename ImageType >
 const ImageType&
@@ -44,8 +44,8 @@ GetInputImageFromPort( InputPortImageFilter< ImageType > &port )
 	return port.GetImage();
 }	
 
-AbstractImage&
-GetOutputImageFromPort( OutputPortAbstractImage &port ); //definition in .cpp
+AImage&
+GetOutputImageFromPort( OutputPortAImage &port ); //definition in .cpp
 
 template< typename ImageType >
 ImageType&
@@ -56,41 +56,41 @@ GetOutputImageFromPort( OutputPortImageFilter< ImageType > &port )
 */
 template< typename InputImageType, typename OutputImageType >
 const InputImageType&
-AbstractImageFilter< InputImageType, OutputImageType >::GetInputImage()const
+AImageFilter< InputImageType, OutputImageType >::GetInputImage()const
 {
 	/*_inputPorts.GetPortTyped< InputPortType >( 0 ).LockDataset();
 	return GetInputImageFromPort( _inputPorts.GetPortTyped< InputPortType >( 0 ) );*/
-	return this->GetInputDataSet< InputImageType >( 0 );
+	return this->GetInputDataset< InputImageType >( 0 );
 }
 
 template< typename InputImageType, typename OutputImageType >
 void 
-AbstractImageFilter< InputImageType, OutputImageType >::ReleaseInputImage()const
+AImageFilter< InputImageType, OutputImageType >::ReleaseInputImage()const
 {
-	this->ReleaseInputDataSet( 0 );
+	this->ReleaseInputDataset( 0 );
 	//_inputPorts.GetPortTyped< InputPortType >( 0 ).ReleaseDatasetLock();
 }
 
 template< typename InputImageType, typename OutputImageType >
 void
-AbstractImageFilter< InputImageType, OutputImageType >::ReleaseOutputImage()const
+AImageFilter< InputImageType, OutputImageType >::ReleaseOutputImage()const
 {
 	//_outputPorts.GetPortTyped< OutputPortType >( 0 ).ReleaseDatasetLock();
-	this->ReleaseOutputDataSet( 0 );
+	this->ReleaseOutputDataset( 0 );
 }
 
 template< typename InputImageType, typename OutputImageType >
 OutputImageType&
-AbstractImageFilter< InputImageType, OutputImageType >::GetOutputImage()const
+AImageFilter< InputImageType, OutputImageType >::GetOutputImage()const
 {
 	/*_outputPorts.GetPortTyped< OutputPortType >( 0 ).LockDataset();
 	return GetOutputImageFromPort( _outputPorts.GetPortTyped< OutputPortType >( 0 ) );*/
-	return this->GetOutputDataSet< OutputImageType >( 0 );
+	return this->GetOutputDataset< OutputImageType >( 0 );
 }
 
 template< typename InputImageType, typename OutputImageType >
 void
-AbstractImageFilter< InputImageType, OutputImageType >
+AImageFilter< InputImageType, OutputImageType >
 ::SetOutputImageSize( 
 		int32 		minimums[ ], 
 		int32 		maximums[ ], 
@@ -110,8 +110,8 @@ AbstractImageFilter< InputImageType, OutputImageType >
 
 template< typename InputImageType, typename OutputImageType >
 void
-AbstractImageFilter< InputImageType, OutputImageType >
-::BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype )
+AImageFilter< InputImageType, OutputImageType >
+::BeforeComputation( APipeFilter::UPDATE_TYPE &utype )
 {
 	PredecessorType::BeforeComputation( utype );	
 	
@@ -133,10 +133,10 @@ AbstractImageFilter< InputImageType, OutputImageType >
 		|| !outTS.IdenticalID( _outTimestamp )
 		|| outTS != _outTimestamp 
 	) {
-		utype = AbstractPipeFilter::RECALCULATION;
+		utype = APipeFilter::RECALCULATION;
 		this->_callPrepareOutputDatasets = true;
 	}
-	if( utype == AbstractPipeFilter::ADAPTIVE_CALCULATION ) {
+	if( utype == APipeFilter::ADAPTIVE_CALCULATION ) {
 		Common::TimeStamp inEditTS = in->GetModificationManager().GetLastStoredTimestamp();
 		Common::TimeStamp outEditTS = out->GetModificationManager().GetActualTimestamp();
 		if( 
@@ -145,14 +145,14 @@ AbstractImageFilter< InputImageType, OutputImageType >
 			|| inEditTS > _inEditTimestamp 
 			|| outEditTS != _outEditTimestamp
 		) {
-			utype = AbstractPipeFilter::RECALCULATION;
+			utype = APipeFilter::RECALCULATION;
 		}
 	}
 }
 
 template< typename InputImageType, typename OutputImageType >
 void
-AbstractImageFilter< InputImageType, OutputImageType >
+AImageFilter< InputImageType, OutputImageType >
 ::PrepareOutputDatasets()
 {
 	PredecessorType::PrepareOutputDatasets();
@@ -162,7 +162,7 @@ AbstractImageFilter< InputImageType, OutputImageType >
 
 template< typename InputImageType, typename OutputImageType >
 void
-AbstractImageFilter< InputImageType, OutputImageType >
+AImageFilter< InputImageType, OutputImageType >
 ::AfterComputation( bool successful )
 {
 	//We store actual timestamps of input and output - for next execution

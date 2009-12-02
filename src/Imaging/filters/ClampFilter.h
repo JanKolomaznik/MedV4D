@@ -3,7 +3,7 @@
 
 #include "common/Common.h"
 #include "Imaging/ImageTraits.h"
-#include "Imaging/AbstractImageElementFilter.h"
+#include "Imaging/AImageElementFilter.h"
 #include <cmath>
 
 namespace M4D
@@ -35,11 +35,11 @@ public:
 
 template< typename ImageType >
 class ClampFilter :
-	public AbstractImageElementFilter< ImageType, ImageType, ClampingFunctor< typename ImageTraits< ImageType >::ElementType > >
+	public AImageElementFilter< ImageType, ImageType, ClampingFunctor< typename ImageTraits< ImageType >::ElementType > >
 {
 public:
 	typedef ClampingFunctor< typename ImageTraits< ImageType >::ElementType > 	Functor;
-	typedef AbstractImageElementFilter< ImageType, ImageType, Functor > 		PredecessorType;
+	typedef AImageElementFilter< ImageType, ImageType, Functor > 		PredecessorType;
 	typedef typename ImageTraits< ImageType >::ElementType	ElementType;
 	
 	struct Properties : public PredecessorType::Properties

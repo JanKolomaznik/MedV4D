@@ -2,7 +2,7 @@
 #define _MEDIAN_FILTER_H
 
 #include "common/Common.h"
-#include "Imaging/AbstractImage2DFilter.h"
+#include "Imaging/AImage2DFilter.h"
 #include <boost/shared_array.hpp>
 #include <map>
 
@@ -23,10 +23,10 @@ namespace Imaging
 
 template< typename InputImageType >
 class MedianFilter2D
-	: public AbstractImage2DFilter< InputImageType, InputImageType >
+	: public AImage2DFilter< InputImageType, InputImageType >
 {
 public:	
-	typedef AbstractImage2DFilter< InputImageType, InputImageType > PredecessorType;
+	typedef AImage2DFilter< InputImageType, InputImageType > PredecessorType;
 	typedef typename ImageTraits< InputImageType >::ElementType InputElementType;
 	typedef ImageRegion< InputElementType, 2 >		Region;
 
@@ -44,7 +44,7 @@ public:
 protected:
 
 	void
-	BeforeComputation( AbstractPipeFilter::UPDATE_TYPE &utype );
+	BeforeComputation( APipeFilter::UPDATE_TYPE &utype );
 
 	bool
 	Process2D(

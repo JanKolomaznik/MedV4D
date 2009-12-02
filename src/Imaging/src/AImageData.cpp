@@ -1,11 +1,11 @@
 /**
  * @ingroup imaging 
  * @author Jan Kolomaznik 
- * @file AbstractImageData.cpp 
+ * @file AImageData.cpp 
  * @{ 
  **/
 
-#include "Imaging/AbstractImageData.h"
+#include "Imaging/AImageData.h"
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -20,7 +20,7 @@ namespace M4D
 namespace Imaging
 {
 
-AbstractImageData::AbstractImageData( 
+AImageData::AImageData( 
 			DimensionInfo		*parameters,
 			unsigned short		dimension,
 			size_t			elementCount
@@ -42,13 +42,13 @@ AbstractImageData::AbstractImageData(
  * Destructor is pure virtual, but definition is needed to
  * avoid compile time errors.
  **/
-AbstractImageData::~AbstractImageData()
+AImageData::~AImageData()
 {
 }
 
 
 const DimensionInfo&
-AbstractImageData::GetDimensionInfo( unsigned short dim )const
+AImageData::GetDimensionInfo( unsigned short dim )const
 {
 	if( dim >= _dimension ) {
 		_THROW_ EBadDimension( dim, _dimension );

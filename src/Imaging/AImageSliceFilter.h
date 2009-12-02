@@ -9,7 +9,7 @@
 #define _A_IMAGE_SLICE_FILTER_H
 
 #include "common/Common.h"
-#include "Imaging/AbstractImageFilter.h"
+#include "Imaging/AImageFilter.h"
 #include <vector>
 
 /**
@@ -39,10 +39,10 @@ class AImageSliceFilter;
 
 template< typename InputElementType, typename OutputImageType >
 class AImageSliceFilter< Image< InputElementType, 3 >, OutputImageType >
-	 : public AbstractImageFilter< Image< InputElementType, 3 >, OutputImageType >
+	 : public AImageFilter< Image< InputElementType, 3 >, OutputImageType >
 {
 public:
-	typedef AbstractImageFilter< Image< InputElementType, 3 >, OutputImageType >	PredecessorType;
+	typedef AImageFilter< Image< InputElementType, 3 >, OutputImageType >	PredecessorType;
 	typedef Image< InputElementType, 3 >	InputImageType;
 	
 	struct Properties : public PredecessorType::Properties
@@ -100,11 +100,11 @@ protected:
 	GetComputationGroupWriterBBox( SliceComputationRecord & record ) = 0;
 
 	bool
-	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE /*utype*/ );
+	ExecutionThreadMethod( APipeFilter::UPDATE_TYPE /*utype*/ );
 
 
 	void
-	MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype );
+	MarkChanges( APipeFilter::UPDATE_TYPE utype );
 
 	
 
@@ -127,10 +127,10 @@ class AImageSliceFilterIExtents;
 
 template< typename InputElementType, typename OutputElementType >
 class AImageSliceFilterIExtents< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
-	 : public AbstractImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
+	 : public AImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >
 {
 public:
-	typedef AbstractImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >	PredecessorType;
+	typedef AImageFilter< Image< InputElementType, 3 >, Image< OutputElementType, 3 > >	PredecessorType;
 	typedef Image< InputElementType, 3 >	InputImageType;
 	typedef Image< OutputElementType, 3 >	OutputImageType;
 	
@@ -192,11 +192,11 @@ protected:
 	GetComputationGroupWriterBBox( SliceComputationRecord & record );
 
 	bool
-	ExecutionThreadMethod( AbstractPipeFilter::UPDATE_TYPE /*utype*/ );
+	ExecutionThreadMethod( APipeFilter::UPDATE_TYPE /*utype*/ );
 
 
 	void
-	MarkChanges( AbstractPipeFilter::UPDATE_TYPE utype );
+	MarkChanges( APipeFilter::UPDATE_TYPE utype );
 
 	
 
