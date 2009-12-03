@@ -3,6 +3,8 @@
 #include "m4dMySliceViewerWidget.h"
 #include "Imaging/PipelineMessages.h"
 #include "GUI/widgets/utils/ViewerFactory.h"
+#include "uic_SettingsBox.h"
+
 
 using namespace std;
 using namespace M4D::Imaging;
@@ -28,66 +30,18 @@ protected:
 };
 
 void mainWindow::CreatePipeline()
-{/*
-	_convertor = new InImageConvertor();
-	_pipeline.AddFilter( _convertor );
-
-	_filter = new Thresholding();
-	_pipeline.AddFilter( _filter );
-
-
-	Median2D *medianFilter = new Median2D();
-	medianFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
-	medianFilter->SetRadius( 4 );
-	_pipeline.AddFilter( medianFilter );
-
-//
-	MyFilter2D *myFilter = new MyFilter2D();
-	myFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
-	myFilter->SetRadius( 120 );
-	_pipeline.AddFilter( myFilter );
-//
-	SphereSelectionFilter *sphereSelection = new SphereSelectionFilter();
-	sphereSelection->SetRadius( 120 );
-	_pipeline.AddFilter( sphereSelection );
-
-	MaskSelectionFilter *maskSelection = new MaskSelectionFilter();
-	_pipeline.AddFilter( maskSelection );
-
-	_inConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeInputConnection( *_convertor, 0, false ) );
-	_pipeline.MakeConnection( *_convertor, 0, *_filter, 0 );
-	//_pipeline.MakeConnection( *_filter, 0, *medianFilter, 0 );
-	_tmpConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeConnection( *_filter, 0, *medianFilter, 0 ) );
-	
-	_pipeline.MakeConnection( *_convertor, 0, *maskSelection, 0 );
-	ConnectionInterface* tmpStage2 = &(_pipeline.MakeConnection( *medianFilter, 0, *maskSelection, 1 ) );
-	tmpStage2->SetMessageHook( MessageReceiverInterface::Ptr( new LFNotifier( maskSelection ) ) );
-	
-	_pipeline.MakeConnection( *maskSelection, 0, *sphereSelection, 0 );
-	_outConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeOutputConnection( *sphereSelection, 0, true ) );
-
-	if( _inConnection == NULL || _outConnection == NULL ) {
-		QMessageBox::critical( this, tr( "Exception" ), tr( "Pipeline error" ) );
-	}
-
-	addSource( _inConnection, "Segmentation", "Input" );
-	addSource( _tmpConnection, "Segmentation", "Stage #1" );
-	addSource( tmpStage2, "Segmentation", "Stage #2" );
-	addSource( _outConnection, "Segmentation", "Result" );
-
-  _notifier = new Notifier(this);
-	_outConnection->SetMessageHook( MessageReceiverInterface::Ptr( _notifier ) );
-*/
+{
 	_convertor = new InImageConvertor();
 
 
 	_filter = new SphereSelectionFilter();
-	_filter->SetRadius( 120 );
+	_filter->SetRadius(120);
 
-	_pipeline.AddFilter( _convertor );
-	_pipeline.AddFilter( _filter );
+	_pipeline.AddFilter(_convertor);
+	_pipeline.AddFilter(_filter);
 
 	_inConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeInputConnection( *_convertor, 0, false ) );
+	//_inConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeInputConnection( *_filter, 1, false ) );
 	_pipeline.MakeConnection( *_convertor, 0, *_filter, 0 );
 	_outConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeOutputConnection( *_filter, 0, true ) );
 
@@ -104,7 +58,7 @@ void mainWindow::CreatePipeline()
 
 void mainWindow::createDefaultViewerDesktop ()
 {
-  currentViewerDesktop = new M4D::GUI::m4dGUIMainViewerDesktopWidget( 1, 2, new MySliceViewerFactory() );
+  currentViewerDesktop = new M4D::GUI::m4dGUIMainViewerDesktopWidget( 1, 1, new MySliceViewerFactory() );
 }
 
 mainWindow::mainWindow ()
@@ -116,14 +70,22 @@ void mainWindow::build(){
   M4D::GUI::m4dGUIMainWindow::build(APPLICATION_NAME, ORGANIZATION_NAME );
 
 	Q_INIT_RESOURCE( mainWindow ); 
-//  currentViewerDesktop = new M4D::GUI::m4dGUIMainViewerDesktopWidget( 1, 2, new MySliceViewerFactory() );
 
 	CreatePipeline();
 
-//  this->currentViewerDesktop->replaceSelectedViewerWidget
+	_settings = new SettingsBox(this);
+	_settings->build();
 
-	_settings = new SettingsBox( _filter, this );
-	addDockWindow( "Bone Segmentation", _settings );
+	 //M4D::Viewer::m4dMySliceViewerWidget *currentViewerWidget = reinterpret_cast<  M4D::Viewer::m4dMySliceViewerWidget *>(currentViewerDesktop->getSelectedViewerWidget());
+	 M4D::Viewer::m4dGUIAbstractViewerWidget *currentViewerWidget = currentViewerDesktop->getSelectedViewerWidget();
+	 currentViewerWidget->setInputPort( _outConnection );
+
+	 QObject::connect(_settings->ui->pushButton , SIGNAL( clicked() ), currentViewerWidget, SLOT( slotSetSpecialStateSelectMethodLeft() ),  Qt::QueuedConnection );
+	 QObject::connect(currentViewerWidget , SIGNAL( signalSphereCenter(double, double, double) ), _settings, SLOT( slotSetSphereCenter(double, double, double) ), Qt::DirectConnection );
+	 QObject::connect(currentViewerWidget , SIGNAL( signalSphereRadius(int, int, double) ), _settings, SLOT( slotSetSphereRadius(int, int, double) ), Qt::DirectConnection );
+	 QObject::connect( _settings->ui->lineEdit_x, SIGNAL( textChanged(QString)), _settings->ui->lineEdit_y, SLOT( setText(QString)), Qt::DirectConnection );
+
+	addDockWindow( "Tissue Density Analysis", _settings );
 	QObject::connect( _notifier, SIGNAL( Notification() ), _settings, SLOT( EndOfExecution() ), Qt::QueuedConnection );
 }
 
@@ -138,7 +100,7 @@ void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 		currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
 		_inConnection->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 
-		_settings->SetEnabledExecButton( true );
+		//_settings->SetEnabledExecButton( true );
 		
 	} 
 	catch( ... ) {
@@ -146,8 +108,4 @@ void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 	}
 }
 
-void mainWindow::switchToDefaultViewerDesktop ()
-{
-  switchToViewerDesktop( 2 );
-}
 

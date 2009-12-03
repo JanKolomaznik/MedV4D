@@ -1,130 +1,46 @@
 #include "SettingsBox.h"
-#include "mainWindow.h"
+#include "uic_SettingsBox.h"
+#include "m4dMySliceViewerWidget.h"
 
-SettingsBox
-::SettingsBox( M4D::Imaging::AbstractPipeFilter * filter, QWidget * parent )
-	: _filter( filter ), _parent( parent )
-{
-	CreateWidgets();	
-	SetEnabledExecButton( false );
+#include <cassert>
+
+/*
+ * constructor, destructor
+ */
+
+
+SettingsBox::SettingsBox(M4D::GUI::m4dGUIMainWindow * parent)
+    : ui(new Ui::SettingsBox), _parent( parent ){
+
+    ui->setupUi(this);
 }
 
-void
-SettingsBox
-::CreateWidgets()
-{
-	setMinimumWidth( MINIMUM_WIDTH );
-
-	QVBoxLayout *layout;
-	QGridLayout *grid;
-	QPushButton *pushButton;
-
-	layout = new QVBoxLayout;
-
-	pushButton = new QPushButton( tr( "Lungs" ) );
-	layout->addWidget( pushButton );
-	QObject::connect( pushButton, SIGNAL(clicked()),
-		this, SLOT(SetToLungs()) );
-
-	pushButton = new QPushButton( tr( "Bones" ) );
-	layout->addWidget( pushButton );
-	QObject::connect( pushButton, SIGNAL(clicked()),
-		this, SLOT(SetToBones()) );
-
-	grid = new QGridLayout;
-
-	grid->setRowMinimumHeight( 0, ROW_SPACING );
-
-	//-------------------------------------------------
-	grid->addWidget( new QLabel( tr( "Top" ) ), 1, 1 );
-	top = new QSpinBox();
-	top->setAlignment( Qt::AlignRight );
-	top->setMaximum( 4095 );
-	QObject::connect( top, SIGNAL(valueChanged(int)),
-                      	this, SLOT(TopValueChanged(int)) );
-	grid->addWidget(top, 1, 3 );
-	//-------------------------------------------------
-	
-	grid->setRowMinimumHeight( 2, ROW_SPACING );
-
-	//-------------------------------------------------
-	grid->addWidget( new QLabel( tr( "Bottom" ) ), 3, 1 );
-	bottom = new QSpinBox();
-	bottom->setAlignment( Qt::AlignRight );
-	bottom->setMaximum( 4095 );
-	QObject::connect( bottom, SIGNAL(valueChanged(int)),
-                      	this, SLOT(BottomValueChanged(int)) );
-	grid->addWidget(bottom, 3, 3 );
-	//-------------------------------------------------
-
-	grid->setRowMinimumHeight( 4, ROW_SPACING );
-
-	//-------------------------------------------------
-	/*grid->addWidget( new QLabel( tr( "In value" ) ), 5, 1 );
-	outValue = new QSpinBox();
-	outValue->setAlignment( Qt::AlignRight );
-	outValue->setMaximum( 4095 );
-	QObject::connect( outValue, SIGNAL(valueChanged(int)),
-                      	this, SLOT(OutValueChanged(int)) );
-	grid->addWidget(outValue, 5, 3 );*/
-	//-------------------------------------------------
-
-	layout->addLayout( grid );
-
-	layout->addSpacing( EXECUTE_BUTTON_SPACING );
-
-	//-------------------------------------------------
-	execButton = new QPushButton( tr( "Execute" ) );
-	QObject::connect( execButton, SIGNAL(clicked()),
-                      	this, SLOT(ExecuteFilter()) );
-	layout->addWidget(execButton);
-	//-------------------------------------------------
-
-	layout->addStretch();
-
-	setLayout(layout);	
+SettingsBox::~SettingsBox(){
+    delete ui;
 }
 
-void
-SettingsBox
-::TopValueChanged( int val )
-{
-	static_cast<Thresholding*>(_filter)->SetTop( val );
+void SettingsBox::build(){
+//	M4D::Viewer::m4dGUIAbstractViewerWidget *selectedViewer = _parent->currentViewerDesktop->setSelectedViewerLeftTool();
+	int a = 32;
 }
 
-void
-SettingsBox
-::BottomValueChanged( int val )
+
+void SettingsBox::slotSetSphereCenter(double x, double y, double z)
 {
-	static_cast<Thresholding*>(_filter)->SetBottom( val );
+	char string[50]; 
+
+	sprintf( string, "%f", x ); 
+	ui->lineEdit_x->setText(string);
+	sprintf( string, "%f", y ); 
+	ui->lineEdit_y->setText(string);
+	sprintf( string, "%f", z+1 ); 
+	ui->lineEdit_z->setText(string);
 }
 
-void
-SettingsBox
-::SetToLungs()
+void SettingsBox::slotSetSphereRadius(int amountA, int amountB, double zoomRate)
 {
-	top->setValue( 800 );
-	bottom->setValue( 0 );
-}
+	char string[100]; 
 
-void
-SettingsBox
-::SetToBones()
-{
-	top->setValue( 4000 );
-	bottom->setValue( 1150 );
-}
-
-void
-SettingsBox
-::ExecuteFilter()
-{
-	_filter->ExecuteOnWhole();
-}
-
-void
-SettingsBox
-::EndOfExecution()
-{
-	QMessageBox::information( _parent, tr( "Execution finished" ), tr( "Filter finished its work" ) );
+	sprintf( string, "AmountA = %d, AmountB = %d, zoomRate = %f", amountA, amountB, zoomRate); 
+	ui->lineEdit_r->setText(string);
 }

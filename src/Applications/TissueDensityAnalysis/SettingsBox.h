@@ -1,56 +1,36 @@
-#ifndef _SETTINGS_BOX_H
-#define _SETTINGS_BOX_H
+#ifndef SETTINGSBOX
+#define SETTINGSBOX
 
-#include <QtGui>
-#include "Imaging/filters/ThresholdingFilter.h"
+#include <QtGui/QWidget>
+#include "GUI/widgets/m4dGUIMainWindow.h"
+#include "m4dMySliceViewerWidget.h"
+#include <map>
 
-class SettingsBox : public QWidget
-{
-	Q_OBJECT
+using namespace std;
+namespace Ui{
+
+    class SettingsBox;
+}
+
+class SettingsBox : public QWidget{
+
+    Q_OBJECT
+
 public:
-	static const unsigned MINIMUM_WIDTH = 200;
-	static const unsigned EXECUTE_BUTTON_SPACING = 80;
-	static const unsigned ROW_SPACING = 15;
-	
+	SettingsBox(M4D::GUI::m4dGUIMainWindow * parent);
+    ~SettingsBox();
 
-	SettingsBox( M4D::Imaging::AbstractPipeFilter * filter, QWidget * parent );
-	
-	void
-	SetEnabledExecButton( bool val )
-		{ execButton->setEnabled( val ); }
+	virtual void build();
+
+    Ui::SettingsBox* ui;
+
 protected slots:
+	void slotSetSphereCenter(double x, double y, double z);
+	void slotSetSphereRadius(int amountA, int amountB, double zoomRate);
 
-	void 
-	TopValueChanged( int val );
-
-	void 
-	BottomValueChanged( int val );
-
-	void
-	SetToLungs();
-
-	void
-	SetToBones();
-
-	void
-	ExecuteFilter();
-
-	void
-	EndOfExecution();
 protected:
-	void
-	CreateWidgets();
+	M4D::GUI::m4dGUIMainWindow *_parent;
 
-	M4D::Imaging::AbstractPipeFilter *_filter;
-
-  QWidget *_parent;
-
-	QSpinBox *top;
-	QSpinBox *bottom;
-	QSpinBox *outValue;
-	QPushButton *execButton;
 };
 
-#endif /*_SETTINGS_BOX_H*/
-
-
+#endif //SETTINGSBOX
