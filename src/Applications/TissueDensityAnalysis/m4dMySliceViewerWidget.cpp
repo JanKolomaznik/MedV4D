@@ -64,7 +64,7 @@ MySimpleSliceViewerTexturePreparer< ElementType >
       unsigned& dimension )
     {
 	uint32 i, tmpwidth, tmpheight;
-	Imaging::InputPortTyped<Imaging::AbstractImage>* inPort;
+	Imaging::InputPortTyped<Imaging::AImage>* inPort;
 	ElementType** result = new ElementType*[ numberOfDatasets ];
 
 	width = height = 0;
@@ -78,7 +78,7 @@ MySimpleSliceViewerTexturePreparer< ElementType >
 			tmpwidth = tmpheight = 0;
 
 			// get the port and drag the data out of the port
-			inPort = inputPorts.GetPortTypedSafe< Imaging::InputPortTyped<Imaging::AbstractImage> >( i );
+			inPort = inputPorts.GetPortTypedSafe< Imaging::InputPortTyped<Imaging::AImage> >( i );
 			result[i] = this->prepareSingle( inPort, tmpwidth, tmpheight, so, slice, dimension );
 			if ( result[i] && ( ( tmpwidth < width && tmpwidth > 0 ) || width == 0 ) ) width = tmpwidth;
 			if ( result[i] && ( ( tmpheight < height && tmpheight > 0 ) || height == 0 ) ) height = tmpheight;	
@@ -97,12 +97,30 @@ SliceViewerSpecialStateOperator::SelectMethodLeft( double x, double y, int slice
 	//emit m4dMySliceViewerWidget::signalSphereCenter(x,  y,  sliceNum);
 }
 
+
+m4dMySliceViewerWidget::m4dMySliceViewerWidget( 
+  Imaging::ConnectionInterface* conn, 
+  Imaging::ConnectionInterface* connMask, unsigned index, QWidget *parent)
+    : m4dGUISliceViewerWidget(parent, index)
+{
+    //TODO: smazat port list
+    _index = index;
+    _inPort = new Imaging::InputPortTyped<Imaging::AImage>();
+    _inMaskPort = new Imaging::InputPortTyped<Imaging::AImage>();
+    resetParameters();
+    _inputPorts.AppendPort( _inPort );
+    _inputPorts.AppendPort( _inMaskPort );
+
+    conn->ConnectConsumer( *_inPort );
+    connMask->ConnectConsumer( *_inMaskPort );
+}
+
 void 
 m4dMySliceViewerWidget::specialStateButtonMethodLeft( int amountA, int amountB )
 {
 	if( _specialState ) {
 		//_specialState->ButtonMethodLeft( amountA, amountB, _zoomRate );
-		emit signalSphereRadius( amountA, amountB, _zoomRate);
+//		emit signalSphereRadius( amountA, amountB, _zoomRate);
 	}
 }
 /*
@@ -155,13 +173,13 @@ m4dMySliceViewerWidget::drawHUD( int sliceNum, double zoomRate, QPoint offset )
 {
 	PredecessorType::drawHUD( sliceNum, zoomRate, offset );
 }
-
+/*
 void 
 m4dMySliceViewerWidget::makeConnections( InputPort& inputPort)
 {
 	_inputPorts.AppendPort(inputPort);
 }
-
+*/
 void 
 m4dMySliceViewerWidget::setButtonHandler( ButtonHandler hnd, MouseButton btn )
 {

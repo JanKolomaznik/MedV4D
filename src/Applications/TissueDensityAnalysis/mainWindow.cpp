@@ -3,7 +3,7 @@
 #include "m4dMySliceViewerWidget.h"
 #include "Imaging/PipelineMessages.h"
 #include "GUI/widgets/utils/ViewerFactory.h"
-#include "uic_SettingsBox.h"
+#include "ui_SettingsBox.h"
 
 
 using namespace std;
@@ -40,10 +40,10 @@ void mainWindow::CreatePipeline()
 	_pipeline.AddFilter(_convertor);
 	_pipeline.AddFilter(_filter);
 
-	_inConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeInputConnection( *_convertor, 0, false ) );
+	_inConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeInputConnection( *_convertor, 0, false ) );
 	//_inConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeInputConnection( *_filter, 1, false ) );
 	_pipeline.MakeConnection( *_convertor, 0, *_filter, 0 );
-	_outConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeOutputConnection( *_filter, 0, true ) );
+	_outConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeOutputConnection( *_filter, 0, true ) );
 
 	if( _inConnection == NULL || _outConnection == NULL ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Pipeline error" ) );
@@ -78,11 +78,13 @@ void mainWindow::build(){
 
 	 //M4D::Viewer::m4dMySliceViewerWidget *currentViewerWidget = reinterpret_cast<  M4D::Viewer::m4dMySliceViewerWidget *>(currentViewerDesktop->getSelectedViewerWidget());
 	 M4D::Viewer::m4dGUIAbstractViewerWidget *currentViewerWidget = currentViewerDesktop->getSelectedViewerWidget();
+   M4D::Viewer::m4dMySliceViewerWidget * v = (M4D::Viewer::m4dMySliceViewerWidget*)currentViewerWidget;
+
 	 currentViewerWidget->setInputPort( _outConnection );
 
 	 QObject::connect(_settings->ui->pushButton , SIGNAL( clicked() ), currentViewerWidget, SLOT( slotSetSpecialStateSelectMethodLeft() ),  Qt::QueuedConnection );
-	 QObject::connect(currentViewerWidget , SIGNAL( signalSphereCenter(double, double, double) ), _settings, SLOT( slotSetSphereCenter(double, double, double) ), Qt::DirectConnection );
-	 QObject::connect(currentViewerWidget , SIGNAL( signalSphereRadius(int, int, double) ), _settings, SLOT( slotSetSphereRadius(int, int, double) ), Qt::DirectConnection );
+	 QObject::connect(v , SIGNAL( signalSphereCenter(double, double, double) ), _settings, SLOT( slotSetSphereCenter(double, double, double) ), Qt::DirectConnection );
+	 //QObject::connect(v , SIGNAL( signalSphereRadius(int, int, double) ), _settings, SLOT( slotSetSphereRadius(int, int, double) ), Qt::DirectConnection );
 	 QObject::connect( _settings->ui->lineEdit_x, SIGNAL( textChanged(QString)), _settings->ui->lineEdit_y, SLOT( setText(QString)), Qt::DirectConnection );
 
 	addDockWindow( "Tissue Density Analysis", _settings );
@@ -90,7 +92,7 @@ void mainWindow::build(){
 }
 
 
-void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
+void mainWindow::process ( ADataset::Ptr inputDataSet )
 {
 	try {
 		_inConnection->PutDataset( inputDataSet );

@@ -55,7 +55,7 @@ public:
      * Type of method for handling mouse press events.
      */
     typedef void (M4D::Viewer::m4dGUISliceViewerWidget::*SelectMethods)( double x, double y, double z );
-    
+
     /**
      * Constructor.
      *  @param index the index of the viewer

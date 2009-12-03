@@ -1,6 +1,11 @@
 #ifndef OGL_TOOLS_H
 #define OGL_TOOLS_H
 
+#ifdef _MSC_VER
+# define WIN32_LEAN_AND_MEAN 1
+# include <windows.h>
+#endif
+
 #include <GL/gl.h>
 #include <GL/glu.h>
 

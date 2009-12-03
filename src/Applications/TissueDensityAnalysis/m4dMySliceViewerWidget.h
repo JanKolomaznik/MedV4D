@@ -176,9 +176,9 @@ public slots:
 
 
 signals:
-	/*
+	
 	void signalSphereCenter(double x, double y, double z );
-	*/
+	
 protected:    
 	void specialStateButtonMethodLeft( int amountA, int amountB );
 /*
