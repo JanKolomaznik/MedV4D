@@ -29,9 +29,9 @@ void mainWindow::CreatePipeline()
 		_register[ i ] = new InImageRegistration();
 		_pipeline.AddFilter( _register[ i ] );
 
-		_inConnection[ i ] = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeInputConnection( *_register[ i ], 0, false ) );
+		_inConnection[ i ] = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeInputConnection( *_register[ i ], 0, false ) );
 
-		_outConnection[ i ] = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeOutputConnection( *_register[ i ], 0, true ) );
+		_outConnection[ i ] = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeOutputConnection( *_register[ i ], 0, true ) );
 
 		if( _inConnection[ i ] == NULL || _outConnection[ i ] == NULL ) {
 			QMessageBox::critical( this, tr( "Exception" ), tr( "Pipeline error" ) );
@@ -60,7 +60,7 @@ mainWindow::mainWindow ()
 	CreatePipeline();
 }
 
-void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
+void mainWindow::process ( ADataset::Ptr inputDataSet )
 {
 
 	// set the dataset as the input of the selected viewer and as the input of the selected registration filter
@@ -77,7 +77,7 @@ void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
 		if ( inputNumber == 0 )
 		{
 			_settings->ExecuteFilter( 0 );
-			for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i ) static_cast< InImageRegistration* >( _register[ i ] )->SetReferenceImage( M4D::Imaging::AbstractImage::Cast( inputDataSet ) );
+			for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i ) static_cast< InImageRegistration* >( _register[ i ] )->SetReferenceImage( M4D::Imaging::AImage::Cast( inputDataSet ) );
 		}
 	} 
 	catch( ... ) {
@@ -94,7 +94,7 @@ void mainWindow::ClearDataset ()
 	_register[ inputNumber ]->OutputPort().GetPort( 0 ).GetConnection()->ResetDataset();
 
 	if ( inputNumber == 0 )
-		for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i ) static_cast< InImageRegistration* >( _register[ i ] )->SetReferenceImage( M4D::Imaging::AbstractImage::Ptr() );
+		for ( uint32 i = 0; i < SLICEVIEWER_INPUT_NUMBER; ++i ) static_cast< InImageRegistration* >( _register[ i ] )->SetReferenceImage( M4D::Imaging::AImage::Ptr() );
 
 	currentViewerDesktop->UpdateViewers();
 }

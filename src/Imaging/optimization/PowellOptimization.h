@@ -34,7 +34,7 @@ public:
          *  @param fret the return value
          *  @param fil pointer to the registration filter that has the criterion function to optimize
          */
-	void optimize(Vector< ElementType, dim > &v, ElementType &fret, ImageRegistration< RegistrationFilterElementType, dim/2 >* filt );
+	void optimize(Vector< ElementType, dim > &v, ElementType &fret, RegistrationFilterElementType* filt );
 
 private:
 
@@ -94,7 +94,7 @@ private:
 	/**
 	 * Image registration filter that contains the function to optimize
 	 */
-	ImageRegistration< RegistrationFilterElementType, dim/2 >* _filter;
+	RegistrationFilterElementType* _filter;
 };
 
 } /*namespace Imaging*/

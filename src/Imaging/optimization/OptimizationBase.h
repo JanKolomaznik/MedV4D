@@ -27,7 +27,7 @@ public:
 	 *  @param fret the return value
 	 *  @param fil pointer to the registration filter that has the criterion function to optimize
 	 */
-	virtual void optimize(Vector< ElementType, dim > &v, ElementType &fret, ImageRegistration< RegistrationFilterElementType, dim/2 >* fil ) = 0;
+	virtual void optimize(Vector< ElementType, dim > &v, ElementType &fret, RegistrationFilterElementType* fil ) = 0;
 
 };
 

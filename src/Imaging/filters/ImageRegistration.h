@@ -139,7 +139,7 @@ private:
 	/**
 	 * Pointer to the optimization component
 	 */
-	OptimizationBase< ElementType, double, 2 * dim >		*_optimization;
+	OptimizationBase< ImageRegistration< ElementType, dim >, double, 2 * dim >		*_optimization;
 
 	/**
 	 * Automatic mode request indicator

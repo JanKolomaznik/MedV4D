@@ -1,8 +1,8 @@
 #include "SettingsBox.h"
-#include "Imaging/AbstractFilter.h"
+#include "Imaging/AFilter.h"
 
 SettingsBox
-::SettingsBox( M4D::GUI::m4dGUIMainViewerDesktopWidget * viewers,  M4D::Imaging::AbstractPipeFilter** registers, QWidget * parent )
+::SettingsBox( M4D::GUI::m4dGUIMainViewerDesktopWidget * viewers,  M4D::Imaging::APipeFilter** registers, QWidget * parent )
 	: _viewers( viewers ), _registerFilters( registers ), _parent( parent )
 {
 	CreateWidgets();

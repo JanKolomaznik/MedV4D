@@ -75,7 +75,7 @@ protected:
 	 *  @param inputDataSet smart pointer to the dataset to be processed
 	 */
 	void
-	process( M4D::Imaging::AbstractDataSet::Ptr inputDataSet );
+	process( M4D::Imaging::ADataset::Ptr inputDataSet );
 
 	/**
 	 * Create Pipeline
@@ -93,11 +93,11 @@ protected:
 	M4D::Imaging::PipelineContainer								_pipeline;
 
 	// registration filters
-	M4D::Imaging::AbstractPipeFilter								*_register[ SLICEVIEWER_INPUT_NUMBER ];
+	M4D::Imaging::APipeFilter								*_register[ SLICEVIEWER_INPUT_NUMBER ];
 
 	// connections
-	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage >	*_inConnection[ SLICEVIEWER_INPUT_NUMBER ];
-	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage >	*_outConnection[ SLICEVIEWER_INPUT_NUMBER ];
+	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage >	*_inConnection[ SLICEVIEWER_INPUT_NUMBER ];
+	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage >	*_outConnection[ SLICEVIEWER_INPUT_NUMBER ];
 
 private:
 

@@ -31,7 +31,7 @@ namespace Imaging
 template< typename ElementType >
 bool
 TransformImage( Image< ElementType, 2 > &out,
-		AbstractFilter::Properties* properties,
+		AFilter::Properties* properties,
 		InterpolatorBase< Image< ElementType, 2 > >* interpolator,
 		uint32 transformSampling,
 		uint32 threadNumber )
@@ -315,7 +315,7 @@ private:
 template< typename ElementType >
 bool
 TransformImage(  Image< ElementType, 3 > &out,
-		AbstractFilter::Properties* properties,
+		AFilter::Properties* properties,
 		InterpolatorBase< Image< ElementType, 3 > >* interpolator,
 		uint32 transformSampling,
 		uint32 threadNumber )

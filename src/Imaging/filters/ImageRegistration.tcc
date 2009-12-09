@@ -130,7 +130,7 @@ ImageRegistration< ElementType, dim >
 	: PredecessorType( prop ),
 	  jointHistogram( std::vector< int32 >( 2, HISTOGRAM_MIN_VALUE ), std::vector< int32 >( 2, HISTOGRAM_MAX_VALUE ) ),
 	  _criterion( new NormalizedMutualInformation< HistCellType >() ),
-	  _optimization( new PowellOptimization< ElementType, double, 2 * dim >() ),
+	  _optimization( new PowellOptimization< ImageRegistration< ElementType, dim >, double, 2 * dim >() ),
 	  _automatic( false ),
 	  _transformSampling( TRANSFORM_SAMPLING )
 {
@@ -143,7 +143,7 @@ ImageRegistration< ElementType, dim >
 	: PredecessorType( new Properties() ),
 	  jointHistogram( std::vector< int32 >( 2, HISTOGRAM_MIN_VALUE ), std::vector< int32 >( 2, HISTOGRAM_MAX_VALUE ) ),
 	  _criterion( new NormalizedMutualInformation< HistCellType >() ),
-	  _optimization( new PowellOptimization< ElementType, double, 2 * dim >() ),
+	  _optimization( new PowellOptimization< ImageRegistration< ElementType, dim >, double, 2 * dim >() ),
 	  _automatic( false ),
 	  _transformSampling( TRANSFORM_SAMPLING )
 {

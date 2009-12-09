@@ -31,7 +31,7 @@ public:
 	 *  @param registers pointer to the array of register filters
 	 *  @param parent pointer to the parent widget
 	 */
-	SettingsBox( M4D::GUI::m4dGUIMainViewerDesktopWidget * viewers, M4D::Imaging::AbstractPipeFilter ** registers, QWidget * parent );
+	SettingsBox( M4D::GUI::m4dGUIMainViewerDesktopWidget * viewers, M4D::Imaging::APipeFilter ** registers, QWidget * parent );
 
 	/**
 	 * Set whether the execute button is enabled
@@ -119,7 +119,7 @@ protected:
 	M4D::GUI::m4dGUIMainViewerDesktopWidget *_viewers;
 
 	// image registration filter
-	M4D::Imaging::AbstractPipeFilter **_registerFilters;
+	M4D::Imaging::APipeFilter **_registerFilters;
 
 	// parent widget
 	QWidget *_parent;
