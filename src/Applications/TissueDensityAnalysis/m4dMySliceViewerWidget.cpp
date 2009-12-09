@@ -51,7 +51,6 @@ MySimpleSliceViewerTexturePreparer< ElementType >
         return true;
     }
 
-
 template< typename ElementType >
 ElementType**
 MySimpleSliceViewerTexturePreparer< ElementType >
@@ -62,9 +61,10 @@ MySimpleSliceViewerTexturePreparer< ElementType >
       SliceOrientation so,
       uint32 slice,
       unsigned& dimension )
-    {
+{
 	uint32 i, tmpwidth, tmpheight;
 	Imaging::InputPortTyped<Imaging::AImage>* inPort;
+	Imaging::InputPortTyped<Imaging::AImage>* inMaskPort;
 	ElementType** result = new ElementType*[ numberOfDatasets ];
 
 	width = height = 0;
@@ -79,15 +79,144 @@ MySimpleSliceViewerTexturePreparer< ElementType >
 
 			// get the port and drag the data out of the port
 			inPort = inputPorts.GetPortTypedSafe< Imaging::InputPortTyped<Imaging::AImage> >( i );
-			result[i] = this->prepareSingle( inPort, tmpwidth, tmpheight, so, slice, dimension );
-			if ( result[i] && ( ( tmpwidth < width && tmpwidth > 0 ) || width == 0 ) ) width = tmpwidth;
-			if ( result[i] && ( ( tmpheight < height && tmpheight > 0 ) || height == 0 ) ) height = tmpheight;	
+			inMaskPort = inputPorts.GetPortTypedSafe< Imaging::InputPortTyped<Imaging::AImage> >( i + 1 );
+			result[i] = this->prepareSingle( inPort, inMaskPort, tmpwidth, tmpheight, so, slice, dimension );
 	    }
 	}
 
 	return result;
+}
 
-    }
+
+template< typename ElementType >
+ElementType*
+MySimpleSliceViewerTexturePreparer< ElementType >
+::prepareSingle(
+		Imaging::InputPortTyped<Imaging::AImage>* inPort,
+		Imaging::InputPortTyped<Imaging::AImage>* inMaskPort,
+		uint32& width,
+		uint32& height,
+		SliceOrientation so,
+		uint32 slice,
+		unsigned& dimension )
+    {
+        bool ready = true;
+        int32 xstride = 0, ystride = 0, zstride = 0;
+        uint32 depth = 0;
+        ElementType* pixel = 0, *original = 0, *mask = 0;
+        try
+        {
+            // need to lock dataset first
+            if ( inPort->TryLockDataset() )
+            {
+                try
+                {
+                    // check dimension
+                    if ( inPort->GetDatasetTyped().GetDimension() == 2 )
+                    {
+                        Vector< uint32, 2 > size;
+                        Vector< int32, 2 > strides;
+                        original = Imaging::Image< ElementType, 2 >::CastAImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
+						mask = Imaging::Image< ElementType, 2 >::CastAImage(inMaskPort->GetDatasetTyped()).GetPointer( size, strides );
+                        width = size[0];
+                        height = size[1];
+                        xstride = strides[0];
+                        ystride = strides[1];
+                        dimension = 2;
+                        depth = zstride = 0;
+                        slice = 0;
+                    }
+                    else if ( inPort->GetDatasetTyped().GetDimension() == 3 )
+                    {
+                        dimension = 3;
+                        Vector< uint32, 3 > size;
+                        Vector< int32, 3 > strides;
+
+                        // check orientation
+                        switch ( so )
+                        {
+                            case xy:
+                            {
+                                original = Imaging::Image< ElementType, 3 >::CastAImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
+								mask = Imaging::Image< ElementType, 3 >::CastAImage(inMaskPort->GetDatasetTyped()).GetPointer( size, strides );
+                                width = size[0];
+                                height = size[1];
+                                depth = size[2];
+                                xstride = strides[0];
+                                ystride = strides[1];
+                                zstride = strides[2];
+                                break;
+                            }
+
+                            case yz:
+                            {
+                                original = Imaging::Image< ElementType, 3 >::CastAImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
+								mask = Imaging::Image< ElementType, 3 >::CastAImage(inMaskPort->GetDatasetTyped()).GetPointer( size, strides );
+                                width = size[1];
+                                height = size[2];
+                                depth = size[0];
+                                xstride = strides[1];
+                                ystride = strides[2];
+                                zstride = strides[0];
+                                break;
+                            }
+
+                            case zx:
+                            {
+                                original = Imaging::Image< ElementType, 3 >::CastAImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
+								mask = Imaging::Image< ElementType, 3 >::CastAImage(inMaskPort->GetDatasetTyped()).GetPointer( size, strides );
+                                width = size[2];
+                                height = size[0];
+                                depth = size[1];
+                                xstride = strides[2];
+                                ystride = strides[0];
+                                zstride = strides[1];
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        ready = false;
+                        original = 0;
+                    }
+
+                    if ( !original ) ready = false;
+
+        	    else
+		    {
+
+			// check to see if modification is required for power of 2 long and wide texture
+		        float power_of_two_width_ratio=std::log((float)(width))/std::log(2.0);
+        		float power_of_two_height_ratio=std::log((float)(height))/std::log(2.0);
+
+       			uint32 newWidth=(uint32)std::pow( (double)2.0, (double)std::ceil(power_of_two_width_ratio) );
+        		uint32 newHeight=(uint32)std::pow( (double)2.0, (double)std::ceil(power_of_two_height_ratio) );
+
+        		pixel = new ElementType[ newHeight * newWidth ];
+
+        		copy( pixel, original, mask, width, height, newWidth, newHeight, slice, xstride, ystride, zstride );
+
+        		width = newWidth;
+        		height = newHeight;
+
+		    }
+
+                } catch (...) { ready = false; }
+                inPort->ReleaseDatasetLock();
+                if ( !ready ) return NULL;
+            }
+            else
+            {
+                ready = false;
+                return NULL;
+            }
+        }
+        catch (...) { ready = false; }
+        if ( !ready ) return NULL;
+
+	return pixel;
+	}
 
 void 
 SliceViewerSpecialStateOperator::SelectMethodLeft( double x, double y, int sliceNum, double zoomRate )
@@ -97,22 +226,38 @@ SliceViewerSpecialStateOperator::SelectMethodLeft( double x, double y, int slice
 	//emit m4dMySliceViewerWidget::signalSphereCenter(x,  y,  sliceNum);
 }
 
-
 m4dMySliceViewerWidget::m4dMySliceViewerWidget( 
-  Imaging::ConnectionInterface* conn, 
-  Imaging::ConnectionInterface* connMask, unsigned index, QWidget *parent)
-    : m4dGUISliceViewerWidget(parent, index)
+  unsigned index, QWidget *parent)
 {
     //TODO: smazat port list
     _index = index;
     _inPort = new Imaging::InputPortTyped<Imaging::AImage>();
-    _inMaskPort = new Imaging::InputPortTyped<Imaging::AImage>();
+	_inMaskPort = new Imaging::InputPortTyped<Imaging::AImage>();
     resetParameters();
     _inputPorts.AppendPort( _inPort );
-    _inputPorts.AppendPort( _inMaskPort );
+	_inputPorts.AppendPort( _inMaskPort );
+}
 
-    conn->ConnectConsumer( *_inPort );
-    connMask->ConnectConsumer( *_inMaskPort );
+m4dMySliceViewerWidget::m4dMySliceViewerWidget( 
+  Imaging::ConnectionInterface* conn, 
+  unsigned index, QWidget *parent)
+{
+    //TODO: smazat port list
+    _index = index;
+    _inPort = new Imaging::InputPortTyped<Imaging::AImage>();
+	_inMaskPort = new Imaging::InputPortTyped<Imaging::AImage>();
+    resetParameters();
+    _inputPorts.AppendPort( _inPort );
+    conn->ConnectConsumer( *_inPort );  
+	_inputPorts.AppendPort( _inMaskPort );
+}
+
+   
+
+void
+m4dMySliceViewerWidget::setMaskConnection(Imaging::ConnectionInterface* connMask)
+{
+  connMask->ConnectConsumer( *_inMaskPort );
 }
 
 void 
@@ -120,7 +265,7 @@ m4dMySliceViewerWidget::specialStateButtonMethodLeft( int amountA, int amountB )
 {
 	if( _specialState ) {
 		//_specialState->ButtonMethodLeft( amountA, amountB, _zoomRate );
-//		emit signalSphereRadius( amountA, amountB, _zoomRate);
+		//emit signalSphereRadius( amountA, amountB, _zoomRate);
 	}
 }
 /*

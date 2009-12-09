@@ -20,7 +20,7 @@ SettingsBox::~SettingsBox(){
 }
 
 void SettingsBox::build(){
-//	M4D::Viewer::m4dGUIAbstractViewerWidget *selectedViewer = _parent->currentViewerDesktop->setSelectedViewerLeftTool();
+//	M4D::Viewer::m4dGUIAViewerWidget *selectedViewer = _parent->currentViewerDesktop->setSelectedViewerLeftTool();
 	int a = 32;
 }
 

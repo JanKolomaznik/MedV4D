@@ -12,6 +12,8 @@ using namespace M4D::Imaging;
 typedef M4D::GUI::GenericViewerFactory< M4D::Viewer::m4dMySliceViewerWidget >	MySliceViewerFactory;
 
 
+
+
 class LFNotifier : public M4D::Imaging::MessageReceiverInterface
 {
 public:
@@ -41,7 +43,7 @@ void mainWindow::CreatePipeline()
 	_pipeline.AddFilter(_filter);
 
 	_inConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeInputConnection( *_convertor, 0, false ) );
-	//_inConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeInputConnection( *_filter, 1, false ) );
+	//_inConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeInputConnection( *_filter, 1, false ) );
 	_pipeline.MakeConnection( *_convertor, 0, *_filter, 0 );
 	_outConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeOutputConnection( *_filter, 0, true ) );
 
@@ -51,6 +53,12 @@ void mainWindow::CreatePipeline()
 
 	addSource( _inConnection, "Simple MIP", "Input" );
 	addSource( _outConnection, "Simple MIP", "Result" );
+
+
+	 M4D::Viewer::m4dGUIAbstractViewerWidget *currentViewerWidget = currentViewerDesktop->getSelectedViewerWidget();
+	 M4D::Viewer::m4dMySliceViewerWidget *v = (M4D::Viewer::m4dMySliceViewerWidget*)currentViewerWidget;
+
+	 v->setMaskConnection(_outConnection);
 
 	_notifier =  new Notifier( this );
 	_outConnection->SetMessageHook( MessageReceiverInterface::Ptr( _notifier ) );
@@ -78,7 +86,7 @@ void mainWindow::build(){
 
 	 //M4D::Viewer::m4dMySliceViewerWidget *currentViewerWidget = reinterpret_cast<  M4D::Viewer::m4dMySliceViewerWidget *>(currentViewerDesktop->getSelectedViewerWidget());
 	 M4D::Viewer::m4dGUIAbstractViewerWidget *currentViewerWidget = currentViewerDesktop->getSelectedViewerWidget();
-   M4D::Viewer::m4dMySliceViewerWidget * v = (M4D::Viewer::m4dMySliceViewerWidget*)currentViewerWidget;
+	 M4D::Viewer::m4dMySliceViewerWidget * v = (M4D::Viewer::m4dMySliceViewerWidget*)currentViewerWidget;
 
 	 currentViewerWidget->setInputPort( _outConnection );
 
@@ -98,9 +106,14 @@ void mainWindow::process ( ADataset::Ptr inputDataSet )
 		_inConnection->PutDataset( inputDataSet );
 
 		_convertor->Execute();
+		
+		//_inMaskConnection->PutDataset( inputDataSet );
 
-		currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
+		for ( unsigned i = 0; i < currentViewerDesktop->getSelectedViewerWidget()->InputPort().Size(); i++ ) {
+      currentViewerDesktop->getSelectedViewerWidget()->InputPort()[i].UnPlug();
+    }
 		_inConnection->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
+		_inMaskConnection->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[1] );
 
 		//_settings->SetEnabledExecButton( true );
 		

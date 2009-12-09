@@ -70,6 +70,7 @@ protected:
 	M4D::Imaging::SphereSelection< ImageType >	*_filter;
 	M4D::Imaging::APipeFilter		*_convertor;
 	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage >	*_inConnection;
+	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage >	*_inMaskConnection;
 	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage >	*_tmpConnection;
 	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage >	*_outConnection;
 

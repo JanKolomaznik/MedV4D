@@ -73,7 +73,7 @@ protected:
      *  @param ystride the steps between two neighbor voxels according to coordinate y
      *  @param zstride the steps between two neighbor voxels according to coordinate z
      */
-    void copy( ElementType* dst, ElementType* src, uint32 width, uint32 height, uint32 newWidth, uint32 newHeight, uint32 depth, int32 xstride, int32 ystride, int32 zstride )
+    void copy( ElementType* dst, ElementType* src, ElementType* mask, uint32 width, uint32 height, uint32 newWidth, uint32 newHeight, uint32 depth, int32 xstride, int32 ystride, int32 zstride )
     {
         uint32 i, j;
         for ( i = 0; i < newHeight; i++ )
@@ -81,6 +81,24 @@ protected:
 		if ( i < height && j < width ) dst[ i * newWidth + j ] = src[ j * xstride + i * ystride + depth * zstride ];
 		else dst[ i * newWidth + j ] = 0;
     }
+
+	/**
+     * Prepares the texture of the image to be mapped to the following OpenGL surface.
+     *  @param inPort the input port to get the image from
+     *  @param width reference to set the width of the texture
+     *  @param height reference to set the height of the texture
+     *  @param so the orientation of the slices (xy, yz, zx)
+     *  @param slice the number of the slice to be drawn
+     *  @param dimension dataset's number of dimensions
+     *  @return pointer to the resulting texture array, if texture preparing was successful, NULL otherwise
+     */
+    ElementType* prepareSingle( Imaging::InputPortTyped<Imaging::AImage>* inPort,
+				Imaging::InputPortTyped<Imaging::AImage>* inMaskPort,
+      uint32& width,
+      uint32& height,
+      SliceOrientation so,
+      uint32 slice,
+      unsigned& dimension );
 
     /**
      * Prepares several texture arrays of datasets
@@ -138,8 +156,7 @@ public:
      *  @param index the index of the viewer
      *  @param parent the parent widget of the viewer
      */
-    m4dMySliceViewerWidget( unsigned index, QWidget *parent = 0 ): PredecessorType( index, parent )
-	{}
+    m4dMySliceViewerWidget( unsigned index, QWidget *parent = 0 );
 
     /**
      * Construtor.
@@ -147,9 +164,9 @@ public:
      *  @param index the index of the viewer
      *  @param parent the parent widget of the viewer
      */
-    m4dMySliceViewerWidget( Imaging::ConnectionInterface* conn, unsigned index, QWidget *parent = 0 ): PredecessorType( conn, index, parent )
-	{}
-
+    m4dMySliceViewerWidget( Imaging::ConnectionInterface* conn, unsigned index, QWidget *parent = 0 );
+	
+	void setMaskConnection(Imaging::ConnectionInterface* connMask);
 
 	//void drawSliceAdditionals( int sliceNum, double zoomRate );
 
