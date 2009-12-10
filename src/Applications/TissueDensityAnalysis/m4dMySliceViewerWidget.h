@@ -196,7 +196,9 @@ signals:
 	
 	void signalSphereCenter(double x, double y, double z );
 	
-protected:    
+protected: 
+  Imaging::InputPortTyped<Imaging::AImage>* _inMaskPort;
+
 	void specialStateButtonMethodLeft( int amountA, int amountB );
 /*
 	void specialStateButtonMethodRight( int amountA, int amountB );

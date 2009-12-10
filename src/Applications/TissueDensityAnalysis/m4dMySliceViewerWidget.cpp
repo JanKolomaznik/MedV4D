@@ -28,7 +28,7 @@ MySimpleSliceViewerTexturePreparer< ElementType >
     {
 
 	// get the input datasets
-	ElementType** pixel = getDatasetArrays( inputPorts, 1, width, height, so, slice, dimension );
+      ElementType** pixel = getDatasetArrays( inputPorts, 1, width, height, so, slice, dimension );
 
 	if ( ! *pixel )
 	{
@@ -80,7 +80,9 @@ MySimpleSliceViewerTexturePreparer< ElementType >
 			// get the port and drag the data out of the port
 			inPort = inputPorts.GetPortTypedSafe< Imaging::InputPortTyped<Imaging::AImage> >( i );
 			inMaskPort = inputPorts.GetPortTypedSafe< Imaging::InputPortTyped<Imaging::AImage> >( i + 1 );
-			result[i] = this->prepareSingle( inPort, inMaskPort, tmpwidth, tmpheight, so, slice, dimension );
+			result[i] = prepareSingle( inPort, inMaskPort, tmpwidth, tmpheight, so, slice, dimension );
+            	if ( result[i] && ( ( tmpwidth < width && tmpwidth > 0 ) || width == 0 ) ) width = tmpwidth;
+            	if ( result[i] && ( ( tmpheight < height && tmpheight > 0 ) || height == 0 ) ) height = tmpheight;
 	    }
 	}
 
@@ -137,6 +139,9 @@ MySimpleSliceViewerTexturePreparer< ElementType >
                         {
                             case xy:
                             {
+                              int it=inPort->GetDatasetTyped().GetElementTypeID();
+                              int imt=inMaskPort->GetDatasetTyped().GetElementTypeID();
+
                                 original = Imaging::Image< ElementType, 3 >::CastAImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
 								mask = Imaging::Image< ElementType, 3 >::CastAImage(inMaskPort->GetDatasetTyped()).GetPointer( size, strides );
                                 width = size[0];

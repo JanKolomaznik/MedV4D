@@ -35,16 +35,15 @@ void mainWindow::CreatePipeline()
 {
 	_convertor = new InImageConvertor();
 
-
 	_filter = new SphereSelectionFilter();
 	_filter->SetRadius(120);
+  _filter->SetUpdateInvocationStyle(APipeFilter::UIS_ON_UPDATE_FINISHED);
 
 	_pipeline.AddFilter(_convertor);
 	_pipeline.AddFilter(_filter);
 
 	_inConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeInputConnection( *_convertor, 0, false ) );
-	//_inConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeInputConnection( *_filter, 1, false ) );
-	_pipeline.MakeConnection( *_convertor, 0, *_filter, 0 );
+	_inMaskConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeConnection( *_convertor, 0, *_filter, 0 ) );
 	_outConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeOutputConnection( *_filter, 0, true ) );
 
 	if( _inConnection == NULL || _outConnection == NULL ) {
@@ -107,13 +106,11 @@ void mainWindow::process ( ADataset::Ptr inputDataSet )
 
 		_convertor->Execute();
 		
-		//_inMaskConnection->PutDataset( inputDataSet );
-
 		for ( unsigned i = 0; i < currentViewerDesktop->getSelectedViewerWidget()->InputPort().Size(); i++ ) {
       currentViewerDesktop->getSelectedViewerWidget()->InputPort()[i].UnPlug();
     }
-		_inConnection->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
-		_inMaskConnection->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[1] );
+		_inMaskConnection->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
+		_outConnection->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[1] );
 
 		//_settings->SetEnabledExecButton( true );
 		
