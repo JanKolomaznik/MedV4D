@@ -1,56 +1,44 @@
-#ifndef _SETTINGS_BOX_H
-#define _SETTINGS_BOX_H
+#ifndef SETTINGS_BOX_H
+#define SETTINGS_BOX_H
 
 #include <QtGui>
-#include "Imaging/filters/ThresholdingFilter.h"
 
-class SettingsBox : public QWidget
+#include "Imaging/filters/MultiscanRegistration.h"
+
+
+class SettingsBox: public QWidget
 {
 	Q_OBJECT
-public:
-	static const unsigned MINIMUM_WIDTH = 200;
-	static const unsigned EXECUTE_BUTTON_SPACING = 80;
-	static const unsigned ROW_SPACING = 15;
-	
 
-	SettingsBox( M4D::Imaging::AbstractPipeFilter * filter, QWidget * parent );
-	
-	void
-	SetEnabledExecButton( bool val )
-		{ execButton->setEnabled( val ); }
-protected slots:
+  public:
 
-	void 
-	TopValueChanged( int val );
+	  static const unsigned MINIMUM_WIDTH = 200;
+	  static const unsigned EXECUTE_BUTTON_SPACING = 40;
+  
+	  SettingsBox ( M4D::Imaging::APipeFilter *filter, QWidget *parent );
+  	
+	  void SetEnabledExecButton ( bool val ) { execButton->setEnabled( val ); }
 
-	void 
-	BottomValueChanged( int val );
+  protected slots:
 
-	void
-	SetToLungs();
+    void InterpolationTypeChanged ( int val );
 
-	void
-	SetToBones();
+	  void ExecuteFilter ();
 
-	void
-	ExecuteFilter();
+	  void EndOfExecution ();
 
-	void
-	EndOfExecution();
-protected:
-	void
-	CreateWidgets();
+  protected:
 
-	M4D::Imaging::AbstractPipeFilter *_filter;
+	  void CreateWidgets ();
 
-  QWidget *_parent;
+	  M4D::Imaging::APipeFilter *filter;
 
-	QSpinBox *top;
-	QSpinBox *bottom;
-	QSpinBox *outValue;
-	QPushButton *execButton;
+    QWidget *parent;
+
+	  QPushButton *execButton;
 };
 
-#endif /*_SETTINGS_BOX_H*/
+
+#endif // SETTINGS_BOX_H
 
 

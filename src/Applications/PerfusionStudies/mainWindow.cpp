@@ -1,92 +1,107 @@
 #include "mainWindow.h"
-#include "SettingsBox.h"
+
 #include "Imaging/PipelineMessages.h"
 
+#include "SettingsBox.h"
+
 using namespace std;
+
 using namespace M4D::Imaging;
 
-class LFNotifier : public M4D::Imaging::MessageReceiverInterface
+
+class LFNotifier: public MessageReceiverInterface
 {
-public:
-	LFNotifier( AbstractPipeFilter * filter ): _filter( filter ) {}
-	void ReceiveMessage(M4D::Imaging::PipelineMessage::Ptr              msg, 
-                      M4D::Imaging::PipelineMessage::MessageSendStyle /*sendStyle*/, 
-                      M4D::Imaging::FlowDirection				              /*direction*/
-		)
-	{
-		if( msg->msgID == M4D::Imaging::PMI_FILTER_UPDATED ) {
-			_filter->ExecuteOnWhole();	
-		}
-	}
-protected:
-	AbstractPipeFilter * _filter;
+  public:
+
+	  LFNotifier ( APipeFilter * filter )
+      : _filter( filter ) 
+    {}
+	  
+    void ReceiveMessage ( PipelineMessage::Ptr msg, PipelineMessage::MessageSendStyle, FlowDirection )
+	  {
+		  if ( msg->msgID == PMI_FILTER_UPDATED ) {
+			  _filter->ExecuteOnWhole();	
+		  }
+	  }
+
+  protected:
+
+	  APipeFilter * _filter;
 };
 
-void mainWindow::CreatePipeline()
+
+void mainWindow::CreatePipeline ()
 {
-	_convertor = new InImageConvertor();
-	_pipeline.AddFilter( _convertor );
+  convertor = new Convertor();
+	_pipeline.AddFilter( convertor );
 
-	_filter = new Thresholding();
-	_pipeline.AddFilter( _filter );
+  registration = new Registration();
+	_pipeline.AddFilter( registration );
 
-	Median2D *medianFilter = new Median2D();
+	thresholding = new Thresholding();
+	//_pipeline.AddFilter( thresholding );
 
-	medianFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
-	medianFilter->SetRadius( 4 );
-	_pipeline.AddFilter( medianFilter );
+	Median2D *median2D = new Median2D();
 
-	MaskSelectionFilter *maskSelection = new MaskSelectionFilter();
-	_pipeline.AddFilter( maskSelection );
+	median2D->SetUpdateInvocationStyle( APipeFilter::UIS_ON_CHANGE_BEGIN );
+	median2D->SetRadius( 4 );
+	//_pipeline.AddFilter( median2D );
 
-	_inConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeInputConnection( *_convertor, 0, false ) );
-	_pipeline.MakeConnection( *_convertor, 0, *_filter, 0 );
-	_tmpConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeConnection( *_filter, 0, *medianFilter, 0 ) );
+	Mask *mask = new Mask();
+	//_pipeline.AddFilter( mask );
+
+	inConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeInputConnection( *convertor, 0, false ) );
+	_pipeline.MakeConnection( *convertor, 0, *registration, 0 );
+  //registrationTresholdConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeConnection( *registration, 0, *thresholding, 0 ) );
+	//tresholdMedianConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeConnection( *thresholding, 0, *median2D, 0 ) );
 	
-	_pipeline.MakeConnection( *_convertor, 0, *maskSelection, 0 );
+	//_pipeline.MakeConnection( *registration, 0, *mask, 0 );
 
-	ConnectionInterface* tmpStage2 = &(_pipeline.MakeConnection( *medianFilter, 0, *maskSelection, 1 ) );
-	tmpStage2->SetMessageHook( MessageReceiverInterface::Ptr( new LFNotifier( maskSelection ) ) );
-	_outConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeOutputConnection( *maskSelection, 0, true ) );
+	//ConnectionInterface* medianMaskConnection = &(_pipeline.MakeConnection( *median2D, 0, *mask, 1 ) );
+	//medianMaskConnection->SetMessageHook( MessageReceiverInterface::Ptr( new LFNotifier( mask ) ) );
+	outConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeOutputConnection( *registration, 0, true ) );
 
-	if( _inConnection == NULL || _outConnection == NULL ) {
+	if( inConnection == NULL || outConnection == NULL ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Pipeline error" ) );
 	}
 
-	addSource( _inConnection, "Segmentation", "Input" );
-	addSource( _tmpConnection, "Segmentation", "Stage #1" );
-	addSource( tmpStage2, "Segmentation", "Stage #2" );
-	addSource( _outConnection, "Segmentation", "Result" );
+	addSource( inConnection, "Perfusion Studies", "Input" );
+  //addSource( registrationTresholdConnection, "Segmentation", "Registration - Treshold" );
+	//addSource( tresholdMedianConnection, "Segmentation", "Treshold - Median" );
+	//addSource( medianMaskConnection, "Segmentation", "Median - Mask" );
+	addSource( outConnection, "Perfusion Studies", "Result" );
 
   _notifier = new Notifier(this);
-	_outConnection->SetMessageHook( MessageReceiverInterface::Ptr( _notifier ) );
+	outConnection->SetMessageHook( MessageReceiverInterface::Ptr( _notifier ) );
 }
 
+
 mainWindow::mainWindow ()
-  : m4dGUIMainWindow( APPLICATION_NAME, ORGANIZATION_NAME ), _inConnection( NULL ), _outConnection( NULL )
+  : m4dGUIMainWindow( APPLICATION_NAME, ORGANIZATION_NAME ), inConnection( NULL ), outConnection( NULL )
 {
 	Q_INIT_RESOURCE( mainWindow ); 
 
 	CreatePipeline();
 
-	_settings = new SettingsBox( _filter, this );
-	addDockWindow( "Bone Segmentation", _settings );
-	QObject::connect( _notifier, SIGNAL( Notification() ), _settings, SLOT( EndOfExecution() ), Qt::QueuedConnection );
+	_settings = new SettingsBox( registration, this );
+	addDockWindow( "Perfusion Studies", _settings );
+	QObject::connect( _notifier, SIGNAL(Notification()), _settings, SLOT(EndOfExecution()), Qt::QueuedConnection );
 }
 
-void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
+
+void mainWindow::process ( ADataset::Ptr inputDataSet )
 {
 	try {
-		_inConnection->PutDataset( inputDataSet );
+		inConnection->PutDataset( inputDataSet );
 
-		_convertor->Execute();
+		convertor->Execute();
 
 		currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
-		_inConnection->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
+		inConnection->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
 
 		_settings->SetEnabledExecButton( true );
 	} 
-	catch( ... ) {
+	catch ( ... ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Some exception" ) );
 	}
 }

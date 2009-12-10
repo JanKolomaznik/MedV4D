@@ -1,9 +1,10 @@
+#include <fstream>
+
 #include <QApplication>
 
-#include "mainWindow.h"
-
 #include "common/Common.h"
-#include <fstream>
+
+#include "mainWindow.h"
 
 
 int main ( int argc, char *argv[] )
