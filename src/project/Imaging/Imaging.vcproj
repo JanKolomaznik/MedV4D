@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1250"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="Imaging"
 	ProjectGUID="{A5A68502-8A1D-44AC-AB98-199CE76FFB8A}"
 	RootNamespace="Imaging"
@@ -136,19 +136,19 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\Imaging\src\AbstractDataSet.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\src\AbstractFilter.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\src\AbstractImageData.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Imaging\src\AbstractImageFilter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\src\ADataset.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\src\AFilter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\src\AImageData.cpp"
 				>
 			</File>
 			<File
@@ -156,7 +156,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\src\DataSetFactory.cpp"
+				RelativePath="..\..\Imaging\src\DatasetFactory.cpp"
 				>
 			</File>
 			<File
@@ -190,63 +190,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\Imaging\AbstractDataSet.h"
+				RelativePath="..\..\Imaging\ADataset.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\AbstractFilter.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\AbstractImage2DFilter.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\AbstractImage2DFilter.tcc"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\AbstractImageData.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\AbstractImageElementFilter.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\AbstractImageElementFilter.tcc"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\AbstractImageFilter.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\AbstractImageFilter.tcc"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\AbstractImageFilterWholeAtOnce.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\AbstractImageFilterWholeAtOnce.tcc"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\AbstractMultiImageFilter.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\AbstractMultiImageFilter.tcc"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\AbstractPipeline.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\AbstractProcessingUnit.h"
+				RelativePath="..\..\Imaging\AFilter.h"
 				>
 			</File>
 			<File
@@ -266,11 +214,63 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\AImage2DFilter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\AImage2DFilter.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\AImageData.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\AImageElementFilter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\AImageElementFilter.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\AImageFilter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\AImageFilter.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\AImageFilterWholeAtOnce.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\AImageFilterWholeAtOnce.tcc"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\AImageSliceFilter.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\Imaging\AImageSliceFilter.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\AMultiImageFilter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\AMultiImageFilter.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\APipeline.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\AProcessingUnit.h"
 				>
 			</File>
 			<File
@@ -306,7 +306,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\dataSetClassEnum.h"
+				RelativePath="..\..\Imaging\DatasetClassEnum.h"
 				>
 			</File>
 			<File
@@ -314,7 +314,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\DataSetFactory.h"
+				RelativePath="..\..\Imaging\DatasetFactory.h"
 				>
 			</File>
 			<File
@@ -346,7 +346,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\GeometryDataSetFactory.h"
+				RelativePath="..\..\Imaging\GeometryDatasetFactory.h"
 				>
 			</File>
 			<File
@@ -555,6 +555,14 @@
 			</File>
 			<File
 				RelativePath="..\..\Imaging\filters\MinFilter.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\MultiscanRegistration.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\filters\MultiscanRegistration.tcc"
 				>
 			</File>
 			<File
