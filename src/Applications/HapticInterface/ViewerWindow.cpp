@@ -1,6 +1,6 @@
 #include "ViewerWindow.h"
 
-ViewerWindow::ViewerWindow( M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage > & conn )
+ViewerWindow::ViewerWindow( M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage > & conn )
 {
 	viewerWidget = new M4D::Viewer::m4dGUIOGLHapticViewerWidget( &conn, 0, NULL);
 	//viewerWidget = new M4D::Viewer::m4dGUISliceViewerWidget( &conn, 0, NULL);

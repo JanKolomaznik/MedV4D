@@ -27,12 +27,12 @@ int main( int argc, char** argv )
 
 
 	std::cout << "Loading file...";
-	M4D::Imaging::AbstractImage::Ptr image = 
+	M4D::Imaging::AImage::Ptr image = 
 		M4D::Imaging::ImageFactory::LoadDumpedImage( filename );
 	std::cout << "Done\n";
 	
 
-	M4D::Imaging::ConnectionTyped< M4D::Imaging::AbstractImage > prodconn;
+	M4D::Imaging::ConnectionTyped< M4D::Imaging::AImage > prodconn;
 	prodconn.PutDataset( image );
 
 
@@ -153,7 +153,7 @@ int main( int argc, char** argv )
 //				*dcmSet 
 //				);
 //
-//			M4D::Imaging::AbstractImage::Ptr image = 
+//			M4D::Imaging::AImage::Ptr image = 
 //				M4D::Dicom::DcmProvider::CreateImageFromDICOM( dcmSet );
 //
 //			M4D::Imaging::ImageFactory::DumpImage( filePath.string(), *image );

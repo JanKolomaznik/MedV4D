@@ -13,6 +13,6 @@ private:
 	M4D::Viewer::m4dGUIOGLHapticViewerWidget *viewerWidget;
 	//M4D::Viewer::m4dGUISliceViewerWidget *viewerWidget;
 public:
-	ViewerWindow( M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AbstractImage > & conn);
+	ViewerWindow( M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage > & conn);
 	~ViewerWindow();
 }; 

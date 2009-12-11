@@ -17,14 +17,14 @@ namespace M4D
 		m4dGUIOGLHapticViewerWidget::m4dGUIOGLHapticViewerWidget( Imaging::ConnectionInterface* conn, unsigned index, QWidget *parent) : QGLWidget(parent)
 		{
 			_index = index;
-			_inPort = new Imaging::InputPortTyped<Imaging::AbstractImage>();
+			_inPort = new Imaging::InputPortTyped<Imaging::AImage>();
 			_inputPorts.AppendPort( _inPort );
 			setInputPort( conn );
 		}
 		m4dGUIOGLHapticViewerWidget::m4dGUIOGLHapticViewerWidget(unsigned int index, QWidget *parent) : QGLWidget(parent)
 		{
 			_index = index;
-			_inPort = new Imaging::InputPortTyped<Imaging::AbstractImage>();
+			_inPort = new Imaging::InputPortTyped<Imaging::AImage>();
 			_inputPorts.AppendPort( _inPort );
 			setInputPort( );
 		}
@@ -221,7 +221,7 @@ namespace M4D
 					for (int j = _inPort->GetDatasetTyped().GetDimensionExtents(1).minimum; j < _inPort->GetDatasetTyped().GetDimensionExtents(1).maximum; j++)
 					{
 						NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
-							_imageID, result = Imaging::Image< TTYPE, 2 >::CastAbstractImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >(i, j) ) );
+							_imageID, result = Imaging::Image< TTYPE, 2 >::CastAImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >(i, j) ) );
 						if (result != 0)
 						{
 							glColor3f(0.0f + ((GLfloat)result / 256.0),0.0f,0.0f);
@@ -242,7 +242,7 @@ namespace M4D
 							for (int k = _inPort->GetDatasetTyped().GetDimensionExtents(2).minimum; k < _inPort->GetDatasetTyped().GetDimensionExtents(2).maximum; k++)
 							{
 								NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
-									_imageID, result = Imaging::Image< TTYPE, 3 >::CastAbstractImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >(i, j, k) ) );
+									_imageID, result = Imaging::Image< TTYPE, 3 >::CastAImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >(i, j, k) ) );
 								if (result != 0)
 								{
 									glColor3f(0.0f + ((GLfloat)result / 32.0),0.0f,0.0f);
@@ -265,7 +265,7 @@ namespace M4D
 					for (int k = _minZ; k < _minZ + _sizeZ; k++)
 					{
 						NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
-							_imageID, result = Imaging::Image< TTYPE, 3 >::CastAbstractImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >(i, j, k) ) );
+							_imageID, result = Imaging::Image< TTYPE, 3 >::CastAImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >(i, j, k) ) );
 						if (result != 0)
 						{
 							glLoadIdentity();
@@ -345,7 +345,7 @@ namespace M4D
 					for (int k = _minZ; k < _minZ + _sizeZ; k++)
 					{
 						NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
-							_imageID, result = Imaging::Image< TTYPE, 3 >::CastAbstractImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >(i, j, k) ) );
+							_imageID, result = Imaging::Image< TTYPE, 3 >::CastAImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >(i, j, k) ) );
 						if (result > max)
 						{
 							max = result;
@@ -372,7 +372,25 @@ namespace M4D
 			glClearDepth(1.0f);
 			glDepthFunc(GL_LEQUAL);
 			glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+			initializeHaptics();
 		}
+
+		void m4dGUIOGLHapticViewerWidget::initializeHaptics()
+		{
+			buttonStatus = false;
+			handler = new cHapticDeviceHandler();
+			/*
+			// read the number of haptic devices currently connected to the computer
+			numHapticDevices = handler->getNumDevices();
+
+			handler->getDevice(hapticDevice, 0);
+			hapticDevice->open();
+			hapticDevice->initialize();
+			info = hapticDevice->getSpecifications();
+			*/
+		}
+
 		void m4dGUIOGLHapticViewerWidget::slotSetButtonHandler( ButtonHandler hnd, MouseButton btn )
 		{
 

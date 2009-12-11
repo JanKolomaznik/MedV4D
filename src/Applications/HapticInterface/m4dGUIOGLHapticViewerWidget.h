@@ -8,6 +8,9 @@
 #ifndef M4D_GUI_OPENGLVIEWERWIDGET_H_
 #define M4D_GUI_OPENGLVIEWERWIDGET_H_
 
+#define _MSVC
+#include <chai3d.h>
+
 #include <QtOpenGL>
 #include <list>
 #include <string>
@@ -316,6 +319,32 @@ namespace M4D
 				float _varX, _varY, _varZ;
 				float _trianglSize;
 				int64 _minValue, _maxValue;
+
+				/**
+				* The input port that can be connected to the pipeline.
+				*/
+				Imaging::InputPortTyped< Imaging::AImage >	*_inPort;
+
+
+				// a haptic device handler
+				cHapticDeviceHandler* handler;
+
+				// a pointer to a haptic device
+				cGenericHapticDevice* hapticDevice;
+
+				// haptic device info
+				cHapticDeviceInfo info;
+
+				// number of haptic devices
+				int numHapticDevices;
+
+				// last position of haptic device
+				cVector3d position;
+
+				// button status of the haptic device
+				bool buttonStatus;
+
+				void initializeHaptics();
 
 			protected slots:
 
