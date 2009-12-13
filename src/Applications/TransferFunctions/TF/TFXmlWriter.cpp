@@ -21,6 +21,7 @@
  void TFXmlWriter::writeScheme(TFScheme** scheme){
 
      writeStartElement("TFScheme");
+	 writeAttribute("name", QString::fromStdString((*scheme)->name));
 
 	vector<TFName> points = (*scheme)->getFunctionNames();
 	vector<TFName>::iterator first = points.begin();
@@ -62,8 +63,8 @@
  void TFXmlWriter::writePoint(TFPoint** point){
 
      writeStartElement("TFPoint");
-     writeAttribute("colourG", QString::fromStdString( convert<int, string>((*point)->x)) );
-     writeAttribute("colourG", QString::fromStdString( convert<int, string>((*point)->y)) );
+     writeAttribute("x", QString::fromStdString( convert<int, string>((*point)->x)) );
+     writeAttribute("y", QString::fromStdString( convert<int, string>((*point)->y)) );
 
      writeEndElement();	//jednorazovy element?
  }

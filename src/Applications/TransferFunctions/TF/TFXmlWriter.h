@@ -18,5 +18,4 @@
      void writePoint(TFPoint** point);
  };
 
-
  #endif	//TF_XMLWRITER
