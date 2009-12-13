@@ -4,14 +4,14 @@
 
 using namespace std;
 using namespace M4D::Imaging;
-
+/*
 class LFNotifier : public M4D::Imaging::MessageReceiverInterface
 {
 public:
-	LFNotifier( AbstractPipeFilter * filter ): _filter( filter ) {}
+	LFNotifier( APipeFilter * filter ): _filter( filter ) {}
 	void ReceiveMessage(M4D::Imaging::PipelineMessage::Ptr              msg, 
-                      M4D::Imaging::PipelineMessage::MessageSendStyle /*sendStyle*/, 
-                      M4D::Imaging::FlowDirection				              /*direction*/
+                      M4D::Imaging::PipelineMessage::MessageSendStyle , //sendStyle
+                      M4D::Imaging::FlowDirection				              //direction
 		)
 	{
 		if( msg->msgID == M4D::Imaging::PMI_FILTER_UPDATED ) {
@@ -19,9 +19,9 @@ public:
 		}
 	}
 protected:
-	AbstractPipeFilter * _filter;
+	APipeFilter * _filter;
 };
-
+*/
 void mainWindow::CreatePipeline()
 {
 	_convertor = new InImageConvertor();
@@ -32,22 +32,22 @@ void mainWindow::CreatePipeline()
 
 	Median2D *medianFilter = new Median2D();
 
-	medianFilter->SetUpdateInvocationStyle( AbstractPipeFilter::UIS_ON_CHANGE_BEGIN );
+	medianFilter->SetUpdateInvocationStyle( APipeFilter::UIS_ON_CHANGE_BEGIN );
 	medianFilter->SetRadius( 4 );
 	_pipeline.AddFilter( medianFilter );
 
 	MaskSelectionFilter *maskSelection = new MaskSelectionFilter();
 	_pipeline.AddFilter( maskSelection );
 
-	_inConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeInputConnection( *_convertor, 0, false ) );
+	_inConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeInputConnection( *_convertor, 0, false ) );
 	_pipeline.MakeConnection( *_convertor, 0, *_filter, 0 );
-	_tmpConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeConnection( *_filter, 0, *medianFilter, 0 ) );
+	_tmpConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeConnection( *_filter, 0, *medianFilter, 0 ) );
 	
 	_pipeline.MakeConnection( *_convertor, 0, *maskSelection, 0 );
 
 	ConnectionInterface* tmpStage2 = &(_pipeline.MakeConnection( *medianFilter, 0, *maskSelection, 1 ) );
-	tmpStage2->SetMessageHook( MessageReceiverInterface::Ptr( new LFNotifier( maskSelection ) ) );
-	_outConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeOutputConnection( *maskSelection, 0, true ) );
+	//tmpStage2->SetMessageHook( MessageReceiverInterface::Ptr( new LFNotifier( maskSelection ) ) );
+	_outConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeOutputConnection( *maskSelection, 0, true ) );
 
 	if( _inConnection == NULL || _outConnection == NULL ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Pipeline error" ) );
@@ -58,23 +58,31 @@ void mainWindow::CreatePipeline()
 	addSource( tmpStage2, "Segmentation", "Stage #2" );
 	addSource( _outConnection, "Segmentation", "Result" );
 
-  _notifier = new Notifier(this);
-	_outConnection->SetMessageHook( MessageReceiverInterface::Ptr( _notifier ) );
+  //_notifier = new Notifier(this);
+	//_outConnection->SetMessageHook( MessageReceiverInterface::Ptr( _notifier ) );
 }
 
 mainWindow::mainWindow ()
-  : m4dGUIMainWindow( APPLICATION_NAME, ORGANIZATION_NAME ), _inConnection( NULL ), _outConnection( NULL )
-{
+  : m4dGUIMainWindow( APPLICATION_NAME, ORGANIZATION_NAME ), _inConnection( NULL ), _outConnection( NULL ){
+	
 	Q_INIT_RESOURCE( mainWindow ); 
 
 	CreatePipeline();
 
-	_settings = new SettingsBox(  );
+	_settings = new SettingsBox();
 	addDockWindow( "Transfer Functions", _settings );
-	QObject::connect( _notifier, SIGNAL( Notification() ), _settings, SLOT( EndOfExecution() ), Qt::QueuedConnection );
 }
 
-void mainWindow::process ( AbstractDataSet::Ptr inputDataSet )
+void mainWindow::createDefaultViewerDesktop (){
+
+	currentViewerDesktop = new M4D::GUI::m4dGUIMainViewerDesktopWidget( 1, 2, new M4D::Viewer::TFViewerFactory() );	
+
+	M4D::Viewer::m4dTFSliceViewerWidget* currentViewer = (M4D::Viewer::m4dTFSliceViewerWidget*)currentViewerDesktop->getSelectedViewerWidget();
+
+	QObject::connect( _settings, SIGNAL(UseTransferFunction(TFAFunction*)),	currentViewer, SLOT(AdjustByTransferFunction(TFAFunction*)));
+}
+
+void mainWindow::process( M4D::Imaging::ADataset::Ptr inputDataSet )
 {
 	try {
 

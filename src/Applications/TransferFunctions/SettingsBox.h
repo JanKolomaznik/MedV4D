@@ -1,8 +1,6 @@
 #ifndef SETTINGSBOX
 #define SETTINGSBOX
 
-#include <QtGui/QWidget>
-
 #include <map>
 
 #include <TF/TFScheme.h>
@@ -28,7 +26,7 @@ class SettingsBox : public QWidget{
     Q_OBJECT
 
 public:
-    SettingsBox();
+	SettingsBox();
     ~SettingsBox();
 
 private:
@@ -37,7 +35,7 @@ private:
 	TFScheme* savedFunctions;
 	TFFunction* currentFunction;
 
-	PaintingWidget* painter;
+	TFPaintingWidget* painter;
 
 private slots:
     void on_schemeUse_clicked();
@@ -49,6 +47,9 @@ private slots:
     void on_actionExit_triggered();
     void on_saveScheme_triggered();
     void on_loadScheme_triggered();
+
+signals:
+	void UseTransferFunction(TFAFunction* transferFunction);
 };
 
 #endif //SETTINGSBOX

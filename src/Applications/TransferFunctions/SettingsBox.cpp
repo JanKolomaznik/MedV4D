@@ -19,10 +19,12 @@ SettingsBox::SettingsBox()
     savedFunctions = new TFScheme();
 	currentFunction = savedFunctions->getFirstFunction();
 
-	painter = new PaintingWidget(this);
+	int marginH = 10;
+	int marginV = 10;
+	painter = new TFPaintingWidget(marginH, marginV);
+	painter->setParent(this);
     painter->setObjectName(QString::fromUtf8("painter"));
-    painter->setGeometry(QRect(220, 80, 350, 280));
-
+	painter->setGeometry(QRect(220, 80, FUNCTION_RANGE + 2*marginH, COLOUR_RANGE + 2*marginV));
 	painter->setView(&currentFunction);
 
 	setFocus();
@@ -148,6 +150,8 @@ void SettingsBox::on_schemeUse_clicked(){
             ui->progressBar->setValue(i);
         }
     //---
+
+	emit UseTransferFunction(savedFunctions);
 }
 
 void SettingsBox::on_actionExit_triggered(){
