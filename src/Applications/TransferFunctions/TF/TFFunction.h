@@ -8,11 +8,9 @@
 #include <fstream>
 
 #include <TF/Convert.h>
+#include <TF/TFAFunction.h>
 
 using namespace std;
-
-
-typedef string TFName;
 
 struct TFPoint{
 

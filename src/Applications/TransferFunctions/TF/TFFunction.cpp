@@ -151,21 +151,3 @@ vector<TFPoint*> TFFunction::getAllPoints(){
 
 	return points;
 }
-
-void TFFunction::save(ofstream &outFile){
-
-	outFile << "\t<TFFunction name = \"" + name + "\" "
-		<< "colourR = \"" + convert<int,string>(colourRGB[0]) + "\" "
-		<< "colourG = \"" + convert<int,string>(colourRGB[1]) + "\" "
-		<< "colourB = \"" + convert<int,string>(colourRGB[2]) + "\" >" << endl;
-
-	TFPointsIterator first = _points->begin();
-	TFPointsIterator end = _points->end();
-	TFPointsIterator it = first;
-	for(it; it != end; ++it)
-	{
-		outFile << "\t\t<TFPoint x = \"" + convert<int,string>(it->second->x) + "\" y = \"" + convert<int,string>(it->second->y) + "\" />" << endl;
-	}
-
-	outFile << "\t</TFFunction>" << endl;
-}

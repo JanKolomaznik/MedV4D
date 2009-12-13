@@ -4,17 +4,16 @@
 #include <QtGui/QWidget>
 #include <QtGui/QPainter>
 #include <QtGui/QMouseEvent>
+#include <QtGui/QPaintEvent>
 
 #include <vector>
 
-#include <TF/TFScheme.h>
+#include <TF/TFFunction.h>
 
-class PaintingWidget: public QWidget{
+class TFPaintingWidget: public QWidget{
+
 public:
-	PaintingWidget(QWidget *parent){
-		setParent(parent);
-		_marginV = _marginH = 10;
-	}
+	inline TFPaintingWidget(int marginH, int marginV): _marginH(marginH), _marginV(marginV){}
 
 	void setView(TFFunction** function);
 

@@ -3,12 +3,12 @@
 
 #include <cassert>
 
-void PaintingWidget::setView(TFFunction** function){
+void TFPaintingWidget::setView(TFFunction** function){
 
 	currentView = function;
 }
 
-void PaintingWidget::paintEvent(QPaintEvent *){
+void TFPaintingWidget::paintEvent(QPaintEvent *){
 
 	QPainter painter(this);
 	painter.setPen(Qt::white);
@@ -20,24 +20,24 @@ void PaintingWidget::paintEvent(QPaintEvent *){
 	vector<TFPoint*>::iterator it = first;
 
 	TFPoint origin = TFPoint(_marginH, this->height() - _marginV);
-	TFPoint* point1 = new TFPoint(origin);
+	TFPoint* point1 = new TFPoint();
 
 	for(it; it != end; ++it)
 	{
-		painter.drawLine(point1->x, point1->y, origin.x + (*it)->x, origin.y - (*it)->y);
+		painter.drawLine(origin.x + point1->x, origin.y - point1->y, origin.x + (*it)->x, origin.y - (*it)->y);
 		delete point1;
 		point1 = *it;
 	}
 
-	painter.drawLine(point1->x, point1->y, this->width() - _marginH, origin.y);
+	painter.drawLine(origin.x + point1->x, origin.y - point1->y, this->width() - _marginH, origin.y);
 	delete point1;
 }
 
-void PaintingWidget::mousePressEvent(QMouseEvent *e){
+void TFPaintingWidget::mousePressEvent(QMouseEvent *e){
 	mouseMoveEvent(e);
 }
 
-void PaintingWidget::mouseMoveEvent(QMouseEvent *e){
+void TFPaintingWidget::mouseMoveEvent(QMouseEvent *e){
 
 	TFPoint size = TFPoint(this->width(), this->height());
 	TFPoint mousePosition = TFPoint(e->pos().x(), e->pos().y());
