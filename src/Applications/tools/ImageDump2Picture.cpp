@@ -110,6 +110,9 @@ main( int argc, char** argv )
 	TCLAP::ValueArg<float> contrastArg( "c", "contrast", "contrast", false, 1.0, "float" );
 	cmd.add( contrastArg );
 
+	TCLAP::SwitchArg forceArg("f", "force", "Enables overwriting of already existing files.", false );
+	cmd.add( forceArg );
+
 	TCLAP::UnlabeledValueArg<std::string> inFilenameArg( "input", "Input image dump filename", true, "", "filename1" );
 	cmd.add( inFilenameArg );
 
@@ -126,6 +129,7 @@ main( int argc, char** argv )
 	float zero = zeroArg.getValue();
 	float contrast = contrastArg.getValue();
 	bool transform = zeroArg.isSet() || contrastArg.isSet();
+	bool force = forceArg.getValue();
 
 	std::cout << "Loading file '" << inFilename << "' ..."; std::cout.flush();
 	M4D::Imaging::AImage::Ptr image = 
@@ -138,6 +142,10 @@ main( int argc, char** argv )
 	ILuint ImgId = 0;
 	ilGenImages(1, &ImgId);
 	ilBindImage(ImgId);
+
+	if( force ) {
+		ilEnable(IL_FILE_OVERWRITE);
+	}
 
 	if( transform ) {
 		M4D::Imaging::AImage::Ptr tmpImage = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< uint8 >( 
