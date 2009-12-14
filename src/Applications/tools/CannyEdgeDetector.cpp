@@ -54,7 +54,7 @@ main( int argc, char **argv )
 	FinishHook  *hook = new FinishHook;
 	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage > *inConnection = NULL;
 	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage > *outConnection = NULL;
-	M4D::Imaging::AbstractPipeFilter *filter = NULL;
+	M4D::Imaging::APipeFilter *filter = NULL;
 	/*---------------------------------------------------------------------*/
 	float32 lowThreshold = static_cast<float32>( lowThresholdArg.getValue() );
 	float32 highThreshold = static_cast<float32>( highThresholdArg.getValue() );

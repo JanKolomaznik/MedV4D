@@ -73,7 +73,7 @@ main( int argc, char** argv )
 				filesystem::path filePath = outpath;
 				filePath /= fileNameStream.str();
 				
-				if ( !filesystem::exists( filePath ) && !force ) {
+				if ( filesystem::exists( filePath ) && !force ) {
 					//_THROW_ ErrorHangling::EFileProblem( "File already exists", filePath )
 					std::cout << "Error : File \"" << filePath << "\"already exists!!! Add --force argument to enable overwriting.";
 					return 1;

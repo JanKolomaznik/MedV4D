@@ -45,11 +45,11 @@ float64 TypeTraits< float64 >::One = 1.0;
 float64 TypeTraits< float64 >::CentralValue = 0.0;
 
 #define INITIALIZE_SIMPLE_VECTOR_CONSTANTS_MACRO( TTYPE, DIM ) \
-		template<> SimpleVector< TTYPE, DIM > TypeTraits< SimpleVector< TTYPE, DIM > >::Max = SimpleVector< TTYPE, DIM >( TypeTraits< TTYPE >::Max ); \
-		template<> SimpleVector< TTYPE, DIM > TypeTraits< SimpleVector< TTYPE, DIM > >::Min = SimpleVector< TTYPE, DIM >( TypeTraits< TTYPE >::Min ); \
-		template<> SimpleVector< TTYPE, DIM > TypeTraits< SimpleVector< TTYPE, DIM > >::Zero = SimpleVector< TTYPE, DIM >( TypeTraits< TTYPE >::Zero ); \
-		template<> SimpleVector< TTYPE, DIM > TypeTraits< SimpleVector< TTYPE, DIM > >::CentralValue = SimpleVector< TTYPE, DIM >( TypeTraits< TTYPE >::CentralValue ); \
-		template<> TTYPE TypeTraits< SimpleVector< TTYPE, DIM > >::One = TypeTraits< TTYPE >::One;
+		template<> Vector< TTYPE, DIM > TypeTraits< Vector< TTYPE, DIM > >::Max = Vector< TTYPE, DIM >( TypeTraits< TTYPE >::Max ); \
+		template<> Vector< TTYPE, DIM > TypeTraits< Vector< TTYPE, DIM > >::Min = Vector< TTYPE, DIM >( TypeTraits< TTYPE >::Min ); \
+		template<> Vector< TTYPE, DIM > TypeTraits< Vector< TTYPE, DIM > >::Zero = Vector< TTYPE, DIM >( TypeTraits< TTYPE >::Zero ); \
+		template<> Vector< TTYPE, DIM > TypeTraits< Vector< TTYPE, DIM > >::CentralValue = Vector< TTYPE, DIM >( TypeTraits< TTYPE >::CentralValue ); \
+		template<> TTYPE TypeTraits< Vector< TTYPE, DIM > >::One = TypeTraits< TTYPE >::One;
 
 
 INITIALIZE_SIMPLE_VECTOR_CONSTANTS_MACRO( int8, 2 )

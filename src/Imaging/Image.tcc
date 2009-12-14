@@ -389,7 +389,7 @@ Image< ElementType, Dim >::GetSubRegion(
 
 	PointType pointerCoordinatesInSource = min;
 
-	return CreateImageRegion<ElementType, Dim, Dim >( pointer, size, _strides, _elementExtents, _dimOrder, pointerCoordinatesInSource );
+	return CreateImageRegion<ElementType, Dim, Dim >( pointer, size, _strides, this->_elementExtents, _dimOrder, pointerCoordinatesInSource );
 }
 
 template< typename ElementType, unsigned Dim >

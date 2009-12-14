@@ -132,10 +132,10 @@ PrepareElementArraySimple( uint32 size )
 template< typename ElementType >
 AImage::Ptr 
 ImageFactory::CreateEmptyImageFromExtents( 
-		uint32		dim,
-		int32		minimums[], 
-		int32		maximums[],
-		float32		elementExtents[]
+		uint32			dim,
+		const int32		minimums[], 
+		const int32		maximums[],
+		const float32		elementExtents[]
 		)
 {
 	DIMENSION_TEMPLATE_SWITCH_MACRO( dim, 

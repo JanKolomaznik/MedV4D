@@ -81,9 +81,9 @@ public:
 	static AImage::Ptr 
 	CreateEmptyImageFromExtents( 
 			uint32		dim,
-			int32		minimums[], 
-			int32		maximums[],
-			float32		elementExtents[]
+			const int32		minimums[], 
+			const int32		maximums[],
+			const float32		elementExtents[]
 			);
 
 	template< typename ElementType, unsigned Dim >

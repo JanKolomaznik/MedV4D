@@ -19,8 +19,8 @@ main( int argc, char** argv )
 	std::string fileName = argv[1];
 
 	unsigned size = 256;
-	M4D::Imaging::Image< int16, 2 >::Ptr image =
-	M4D::Imaging::ImageFactory::CreateEmptyImage2DTyped< int16 >( size, size );
+	M4D::Imaging::Image< uint8, 2 >::Ptr image =
+	M4D::Imaging::ImageFactory::CreateEmptyImage2DTyped< uint8 >( size, size );
 	for( unsigned i=0; i<size; ++i ) {
 		for( unsigned j=0; j<size; ++j ) {
 			//image->GetElement( i, j ) = ((i>>4)+(j>>4)) & 1 ? 0 : 255;

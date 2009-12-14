@@ -49,7 +49,7 @@ main( int argc, char **argv )
 	FinishHook  *hook = new FinishHook;
 	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage > *inConnection = NULL;
 	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage > *outConnection = NULL;
-	M4D::Imaging::AbstractPipeFilter *filter = NULL;
+	M4D::Imaging::APipeFilter *filter = NULL;
 	/*---------------------------------------------------------------------*/
 	//TODO use apropriete type	
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 

@@ -68,16 +68,16 @@ template< typename ImageType, typename OutImageType >
 class SobelGradientOperator;
 
 template< typename ImageType, typename OutType >
-class SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
-	: public AImage2DFilter< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
+class SobelGradientOperator< ImageType, Image< Vector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
+	: public AImage2DFilter< ImageType, Image< Vector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
 {
 public:	
 	static const unsigned Dimension = ImageTraits< ImageType >::Dimension;
 	typedef typename ImageTraits< ImageType >::ElementType 		ElementType;
-	typedef SimpleVector< OutType, 2 >				OutElementType;
+	typedef Vector< OutType, 2 >				OutElementType;
 	typedef OutType							OutScalarType;
 	typedef Image< OutElementType, ImageTraits< ImageType >::Dimension > OutImageType;
-	typedef AImage2DFilter< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > > 		PredecessorType;
+	typedef AImage2DFilter< ImageType, Image< Vector< OutType, 2 >, ImageTraits< ImageType >::Dimension > > 		PredecessorType;
 	typedef ConvolutionMask<2,float32>				Mask;
 	typedef typename ConvolutionMask<2,float32>::Ptr		MaskPtr;
 	typedef ImageRegion< ElementType, 2 >				IRegion;

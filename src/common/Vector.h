@@ -3,6 +3,7 @@
 
 #include "common/ExceptionBase.h"
 #include <istream>
+#include "common/TypeTraits.h"
 
 #ifdef DEBUG_LEVEL
 	#define CHECK_INDICES_ENABLED
@@ -155,6 +156,26 @@ public:
 	}
 private:
 	CoordinateType	_coordinates[ Dimension ];
+};
+
+template< typename NumType, unsigned Dim >
+struct TypeTraits< Vector<NumType, Dim> >
+{
+	typedef	Vector<NumType, Dim>	Type;
+	static const int16	NTID = TypeTraits< NumType >::NTID + NTID_VECTOR_DIM_STEP * Dim;
+
+	static const bool	Signed = TypeTraits< NumType >::Signed;
+	static const uint16	BitCount = sizeof( Type )*8;
+	static Type		Max;
+	static Type		Min;
+	static Type		Zero;
+	static NumType		One;
+	static Type		CentralValue;
+
+	typedef Vector< typename TypeTraits< NumType >::SignedClosestType, Dim > 	SignedClosestType;
+	typedef Vector< typename TypeTraits< NumType >::SuperiorType, Dim > 		SuperiorType;
+	typedef Vector< typename TypeTraits< NumType >::SuperiorSignedType, Dim >	SuperiorSignedType;
+	typedef Vector< typename TypeTraits< NumType >::SuperiorFloatType, Dim >	SuperiorFloatType;
 };
 
 

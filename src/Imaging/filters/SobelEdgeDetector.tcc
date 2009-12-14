@@ -127,12 +127,12 @@ template< typename ValueType, typename OutElementType >
 struct FirstPassGradientFunctor;
 
 template< typename ValueType, typename OutScalarType >
-struct FirstPassGradientFunctor< ValueType, SimpleVector< OutScalarType, 2 > >: public PreprocessorBase< ValueType, SimpleVector< OutScalarType, 2 > >
+struct FirstPassGradientFunctor< ValueType, Vector< OutScalarType, 2 > >: public PreprocessorBase< ValueType, Vector< OutScalarType, 2 > >
 {
 	void
-	operator()( ValueType value, SimpleVector< OutScalarType, 2 > & output )
+	operator()( ValueType value, Vector< OutScalarType, 2 > & output )
 	{
-		output.data[0] = static_cast< OutScalarType >( value );
+		output[0] = static_cast< OutScalarType >( value );
 	}
 };
 
@@ -140,26 +140,26 @@ template< typename ValueType, typename OutElementType >
 struct SecondPassGradientFunctor;
 
 template< typename ValueType, typename OutScalarType >
-struct SecondPassGradientFunctor< ValueType, SimpleVector< OutScalarType, 2 > > : public PreprocessorBase< ValueType, SimpleVector< OutScalarType, 2 > >
+struct SecondPassGradientFunctor< ValueType, Vector< OutScalarType, 2 > > : public PreprocessorBase< ValueType, Vector< OutScalarType, 2 > >
 {
 	void
-	operator()( ValueType value, SimpleVector< OutScalarType, 2 > & output )
+	operator()( ValueType value, Vector< OutScalarType, 2 > & output )
 	{
-		output.data[1] = static_cast< OutScalarType >( value );
+		output[1] = static_cast< OutScalarType >( value );
 	}
 };
 
 
 template< typename ImageType, typename OutType >
-SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
+SobelGradientOperator< ImageType, Image< Vector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
 ::SobelGradientOperator() : PredecessorType( new Properties() )
 {
 	CreateMatrices();
 }
 
 template< typename ImageType, typename OutType >
-SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
-::SobelGradientOperator( typename SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >::Properties *prop ) 
+SobelGradientOperator< ImageType, Image< Vector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
+::SobelGradientOperator( typename SobelGradientOperator< ImageType, Image< Vector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >::Properties *prop ) 
 : PredecessorType( prop ) 
 {
 	CreateMatrices();
@@ -167,10 +167,10 @@ SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits
 
 template< typename ImageType, typename OutType >
 bool
-SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
+SobelGradientOperator< ImageType, Image< Vector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
 ::Process2D(
-		const typename SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >::IRegion	&inRegion,
-		typename SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >::ORegion 		&outRegion
+		const typename SobelGradientOperator< ImageType, Image< Vector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >::IRegion	&inRegion,
+		typename SobelGradientOperator< ImageType, Image< Vector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >::ORegion 		&outRegion
 		)
 {
 	try {
@@ -221,7 +221,7 @@ SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits
 
 template< typename ImageType, typename OutType >
 void
-SobelGradientOperator< ImageType, Image< SimpleVector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
+SobelGradientOperator< ImageType, Image< Vector< OutType, 2 >, ImageTraits< ImageType >::Dimension > >
 ::CreateMatrices()
 {
 	uint32	size[2];

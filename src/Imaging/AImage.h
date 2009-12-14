@@ -78,6 +78,18 @@ public:
 	GetDimension()const
 		{ return _dimCount; }
 
+	virtual const int32*
+	GetMinimumP()const = 0;
+
+	virtual const int32*
+	GetMaximumP()const = 0 ;
+
+	virtual const uint32*
+	GetSizeP()const = 0 ;
+
+	virtual const float32*
+	GetElementExtentsP()const = 0 ;
+
 	/**
 	 * @return ID of element type.
 	 **/
@@ -120,6 +132,7 @@ public:
 
 	typedef Vector< int32, Dimension >	PointType;
 	typedef Vector< uint32, Dimension >	SizeType;
+	typedef Vector< float32, Dimension >	ElementExtentsType;
 
 	AImageDim( DimensionExtents *dimExtents ): AImage( Dimension, dimExtents ) 
 		{
@@ -143,10 +156,31 @@ public:
 	GetSize()const
 		{ return _size; }
 
+	ElementExtentsType 
+	GetElementExtents()const
+		{ return _elementExtents; }
+
+	const int32*
+	GetMinimumP()const
+		{ return _minimum.GetData(); }
+
+	const int32*
+	GetMaximumP()const
+		{ return _maximum.GetData(); }
+
+	const uint32*
+	GetSizeP()const
+		{ return _size.GetData(); }
+
+	const float32*
+	GetElementExtentsP()const
+		{ return _elementExtents.GetData(); }
+
 protected:
-	PointType	_minimum;
-	PointType	_maximum;
-	SizeType	_size;
+	PointType		_minimum;
+	PointType		_maximum;
+	SizeType		_size;
+	ElementExtentsType	_elementExtents;
 };
 
 

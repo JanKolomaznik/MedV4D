@@ -120,9 +120,9 @@ public:
 
 	typedef Vector< int32, Dimension >		PointType;
 
-	typedef Vector< uint32, Dimension >	SizeType;
+	typedef Vector< uint32, Dimension >		SizeType;
 
-	typedef Vector< float32, Dimension >	ElementExtentsType;
+	typedef Vector< float32, Dimension >		ElementExtentsType;
 
 	Image();
 
@@ -270,10 +270,6 @@ public:
 	GetStrides()const
 		{ return _strides;}
 
-	ElementExtentsType 
-	GetElementExtents()const
-		{ return _elementExtents; }
-
 protected:
 	template< unsigned SDim >
 	Vector< int32, SDim >
@@ -292,7 +288,7 @@ protected:
 	DimensionExtents	_dimExtents[Dimension];
 	ElementType		*_pointer;
 	PointType		_strides;
-	ElementExtentsType	_elementExtents;
+	
 	
 	///which source dimension is mapped to each dimension of this image
 	SizeType			_dimOrder;

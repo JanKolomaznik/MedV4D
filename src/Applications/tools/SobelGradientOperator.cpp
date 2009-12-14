@@ -10,7 +10,7 @@ using namespace M4D;
 using namespace M4D::Imaging;
 
 typedef Image< uint8, 2 > ImageType;
-//typedef Image< SimpleVector<int16,2>, 2 > ImageGradientType;
+//typedef Image< Vector<int16,2>, 2 > ImageGradientType;
 
 int
 main( int argc, char **argv )
@@ -51,10 +51,10 @@ main( int argc, char **argv )
 	FinishHook  *hook = new FinishHook;
 	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage > *inConnection = NULL;
 	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage > *outConnection = NULL;
-	M4D::Imaging::AbstractPipeFilter *filter = NULL;
+	M4D::Imaging::APipeFilter *filter = NULL;
 	/*---------------------------------------------------------------------*/
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
-		typedef Image< SimpleVector< TypeTraits< ImageTraits< IMAGE_TYPE >::ElementType >::SuperiorSignedType, 2 >, ImageTraits< IMAGE_TYPE >::Dimension > ImageGradientType;
+		typedef Image< Vector< TypeTraits< ImageTraits< IMAGE_TYPE >::ElementType >::SuperiorSignedType, 2 >, ImageTraits< IMAGE_TYPE >::Dimension > ImageGradientType;
 		M4D::Imaging::SobelGradientOperator< IMAGE_TYPE, ImageGradientType > *sobel = new M4D::Imaging::SobelGradientOperator< IMAGE_TYPE, ImageGradientType >();
 		filter = sobel;
 	);
