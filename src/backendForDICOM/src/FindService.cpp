@@ -113,7 +113,7 @@ FindService::GetStudyInfoQuery(
 FindService::FindService()
 {
 	/* initialize network, i.e. create an instance of T_ASC_Network*. */
-	#define TIME_OUT 30
+	#define TIME_OUT 15
 
 	OFCondition cond = ASC_initializeNetwork(
 		NET_REQUESTOR, 0, TIME_OUT, &m_net);

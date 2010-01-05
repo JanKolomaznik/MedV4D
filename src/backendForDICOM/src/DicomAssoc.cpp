@@ -221,11 +221,11 @@ DicomAssociation::DicomAssociation( string assocAddrID)
 void
 DicomAssociation::Request( T_ASC_Network *net) 
 {
-#ifdef DEBUG_LEVEL
-  // dump presentation contexts if required
+  // dump presentation contexts if in debug mode
   D_PRINT("Request Parameters");
-  ASC_dumpParameters(m_assocParams, DOUT);
-#endif
+  D_COMMAND( 
+		  ASC_dumpParameters(m_assocParams, DOUT); 
+		);
 
   /* create association, i.e. try to establish a network connection to another */
   /* DICOM application. This call creates an instance of T_ASC_Association*. */
@@ -240,10 +240,9 @@ DicomAssociation::Request( T_ASC_Network *net)
       ASC_getRejectParameters(m_assocParams, &rej);
 		  LOG("Association Rejected due this params:");
       ASC_printRejectParameters(LOUT, &rej);
-		  throw ExceptionBase("Assotiation rejected!");
+	  throw ExceptionBase("Assotiation rejected!");
     } else {
-      D_PRINT("Association Request Failed");
-		  throw ExceptionBase("Association Request Failed!");
+      	  throw ExceptionBase("Association Request Failed!");
     }
   }
 
