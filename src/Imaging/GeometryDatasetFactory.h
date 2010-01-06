@@ -42,6 +42,22 @@ public:
 		dataset.Resize( minSlice, maxSlice );
 	}
 
+	static ASlicedGeometry::Ptr
+	DeserializeSlicedGeometryFromStream( M4D::IO::InStream &stream );
+
+	static void
+	DeserializeSlicedGeometryFromStream( M4D::IO::InStream &stream, ASlicedGeometry &geometry );
+
+	static void 
+	SerializeSlicedGeometry(M4D::IO::OutStream &stream, const ASlicedGeometry &dataset);
+
+	template< typename OType >
+	static void 
+	SerializeSlicedGeometry(M4D::IO::OutStream &stream, const SlicedGeometry< OType > &dataset)
+	{
+
+	}
+
 protected:
 
 };

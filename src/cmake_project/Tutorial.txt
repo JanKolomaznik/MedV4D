@@ -1,1 +1,5 @@
 set BOOST_ROOT
+
+cmake parameters
+-DCMAKE_BUILD_TYPE="Debug"
+-DCMAKE_BUILD_TYPE="Release"

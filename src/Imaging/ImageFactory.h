@@ -69,6 +69,25 @@ public:
 	template< typename ElementType, unsigned Dimension >
 	static void 
 	SerializeImage( M4D::IO::OutStream &stream, const Image< ElementType, Dimension > &image );
+
+	/*template< typename ElementType, uint32 Dimension >
+	static void
+	DumpImage( std::ostream &stream, const Image< ElementType, Dimension > & image );*/
+
+	template< typename ElementType, uint32 Dimension >
+	static void
+	DumpImage( std::string filename, const Image< ElementType, Dimension > & image );
+
+	static void
+	DumpImage( std::string filename, const AImage & image );
+
+	static AImage::Ptr
+	LoadDumpedImage( std::istream &stream );
+
+	static AImage::Ptr
+	LoadDumpedImage( std::string filename );
+
+
 	/**
 	 * Create image according to passed information.
 	 * \param dim Dimesnion of desired image.
@@ -321,22 +340,7 @@ public:
 			    );
 	
 
-	/*template< typename ElementType, uint32 Dimension >
-	static void
-	DumpImage( std::ostream &stream, const Image< ElementType, Dimension > & image );*/
-
-	template< typename ElementType, uint32 Dimension >
-	static void
-	DumpImage( std::string filename, const Image< ElementType, Dimension > & image );
-
-	static void
-	DumpImage( std::string filename, const AImage & image );
-
-	static AImage::Ptr
-	LoadDumpedImage( std::istream &stream );
-
-	static AImage::Ptr
-	LoadDumpedImage( std::string filename );
+	
 	
 	/*template< typename ElementType, unsigned Dim >
 	static void AllocateDataAccordingProperties(Image<ElementType, Dim> &image);*/

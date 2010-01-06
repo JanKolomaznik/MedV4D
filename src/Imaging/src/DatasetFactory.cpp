@@ -34,10 +34,13 @@ DatasetFactory::DeserializeDataset(InStream &stream)
 	switch((DatasetType) datasetType )
 	{
 	case DATASET_IMAGE:
-		D_PRINT("D-Set factory: Creating Image");
+		LOG("Dataset factory: Deserializing image from stream.");
 		return DeserializeImageFromStream( stream );
 		break;
-		
+	case DATASET_SLICED_GEOMETRY:
+		LOG("Dataset factory: Deserializing sliced geometry from stream.");
+		return DeserializeSlicedGeometryFromStream( stream );
+		break;
 	default:
 		ASSERT(false);
 	}
@@ -50,9 +53,13 @@ DatasetFactory::DeserializeDataset(M4D::IO::InStream &stream, ADataset &dataset)
 	switch( dataset.GetDatasetType() )
 	{
 	case DATASET_IMAGE:
-		return DeserializeImage( stream, static_cast<AImage &>( dataset ) );
+		LOG("Dataset factory: Deserializing image from stream to prepared dataset.");
+		return DeserializeImage( stream, AImage::Cast( dataset ) );
 		break;
-		
+	case DATASET_SLICED_GEOMETRY:	
+		LOG("Dataset factory: Deserializing sliced geometry from stream to prepared dataset.");
+		return DeserializeSlicedGeometryFromStream( stream, ASlicedGeometry::Cast( dataset ) );
+		break;
 	default:
 		ASSERT(false);
 	}
@@ -64,9 +71,13 @@ DatasetFactory::SerializeDataset(M4D::IO::OutStream &stream, const ADataset &dat
 	switch( dataset.GetDatasetType() )
 	{
 	case DATASET_IMAGE:
-		return SerializeImage( stream, static_cast<const AImage &>( dataset ) );
+		LOG("Dataset factory: Serialize image.");
+		return SerializeImage( stream, AImage::Cast( dataset ) );
 		break;
-		
+	case DATASET_SLICED_GEOMETRY:	
+		LOG("Dataset factory: Serialize sliced geometry.");
+		return SerializeSlicedGeometry( stream, ASlicedGeometry::Cast( dataset ) );
+		break;		
 	default:
 		ASSERT(false);
 	}
