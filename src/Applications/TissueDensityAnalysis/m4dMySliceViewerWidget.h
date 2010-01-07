@@ -73,13 +73,37 @@ protected:
      *  @param ystride the steps between two neighbor voxels according to coordinate y
      *  @param zstride the steps between two neighbor voxels according to coordinate z
      */
-    void copy( ElementType* dst, ElementType* src, ElementType* mask, uint32 width, uint32 height, uint32 newWidth, uint32 newHeight, uint32 depth, int32 xstride, int32 ystride, int32 zstride )
+    void copy( ElementType* dst, ElementType* src, uint32 width, uint32 height, uint32 newWidth, uint32 newHeight, uint32 depth, int32 xstride, int32 ystride, int32 zstride )
     {
         uint32 i, j;
         for ( i = 0; i < newHeight; i++ )
             for ( j = 0; j < newWidth; j++ )
 		if ( i < height && j < width ) dst[ i * newWidth + j ] = src[ j * xstride + i * ystride + depth * zstride ];
 		else dst[ i * newWidth + j ] = 0;
+    }
+
+	/**
+     * Function that arranges the voxels in correct order.
+     *  @param dst pointer to the destination array
+     *  @param src pointer to the source array
+     *  @param width the width of the image
+     *  @param height the height of the image
+     *  @param newWidth the new width of the image after texture correction ( to be a power of 2 )
+     *  @param newHeight the new height of the image after texture correction ( to be a power of 2 )
+     *  @param depth the depth at which the slice lies
+     *  @param xstride the steps between two neighbor voxels according to coordinate x
+     *  @param ystride the steps between two neighbor voxels according to coordinate y
+     *  @param zstride the steps between two neighbor voxels according to coordinate z
+     */
+    void maskCopy( ElementType* dst, ElementType* src, ElementType* mask, uint32 width, uint32 height, uint32 newWidth, uint32 newHeight, uint32 depth, int32 xstride, int32 ystride, int32 zstride )
+    {
+        uint32 i, j;
+        for ( i = 0; i < newHeight; i++ )
+            for ( j = 0; j < newWidth; j++ )
+				if ( i < height && j < width && mask[ j * xstride + i * ystride + depth * zstride ] > 0) 
+					dst[ i * newWidth + j ] = src[ j * xstride + i * ystride + depth * zstride ];
+				else 
+					dst[ i * newWidth + j ] = 0;
     }
 
 	/**

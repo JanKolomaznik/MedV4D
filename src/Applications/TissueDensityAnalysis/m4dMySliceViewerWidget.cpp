@@ -139,8 +139,8 @@ MySimpleSliceViewerTexturePreparer< ElementType >
                         {
                             case xy:
                             {
-                              int it=inPort->GetDatasetTyped().GetElementTypeID();
-                              int imt=inMaskPort->GetDatasetTyped().GetElementTypeID();
+                  //            int it=inPort->GetDatasetTyped().GetElementTypeID();
+                  //            int imt=inMaskPort->GetDatasetTyped().GetElementTypeID();
 
                                 original = Imaging::Image< ElementType, 3 >::CastAImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
 								mask = Imaging::Image< ElementType, 3 >::CastAImage(inMaskPort->GetDatasetTyped()).GetPointer( size, strides );
@@ -200,7 +200,7 @@ MySimpleSliceViewerTexturePreparer< ElementType >
 
         		pixel = new ElementType[ newHeight * newWidth ];
 
-        		copy( pixel, original, mask, width, height, newWidth, newHeight, slice, xstride, ystride, zstride );
+        		maskCopy( pixel, original, mask, width, height, newWidth, newHeight, slice, xstride, ystride, zstride );
 
         		width = newWidth;
         		height = newHeight;

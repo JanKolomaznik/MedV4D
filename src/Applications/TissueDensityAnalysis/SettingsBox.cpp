@@ -44,3 +44,23 @@ void SettingsBox::slotSetSphereRadius(int amountA, int amountB, double zoomRate)
 	sprintf( string, "AmountA = %d, AmountB = %d, zoomRate = %f", amountA, amountB, zoomRate); 
 	ui->lineEdit_r->setText(string);
 }
+
+void SettingsBox::slotCreateMask()
+{
+	uint16 radius = (uint16)((ui->lineEdit_r->text()).toFloat());
+	uint16 cCenter = (uint16)((ui->lineEdit_x->text()).toFloat());
+	uint16 rCenter = (uint16)((ui->lineEdit_y->text()).toFloat());
+	uint16 sCenter = (uint16)((ui->lineEdit_z->text()).toFloat());
+
+	_filter->SetRadius(radius);
+	_filter->SetColumnCenter(cCenter);
+	_filter->SetRowCenter(rCenter);
+	_filter->SetSliceCenter(sCenter);
+	_filter->ExecuteOnWhole();
+}
+
+void SettingsBox::setMaskFilter(M4D::Imaging::SphereSelection< ImageType >	*filter)
+{
+	_filter = filter;
+}
+
