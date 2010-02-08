@@ -4,6 +4,7 @@
 #include "common/Common.h"
 #include "Imaging/ADataset.h"
 #include "AGeometryDataset2D.h"
+#include "Imaging/DatasetSerializationTools.h"
 
 #include <iostream>
 #include <fstream>
@@ -55,7 +56,22 @@ public:
 	static void 
 	SerializeSlicedGeometry(M4D::IO::OutStream &stream, const SlicedGeometry< OType > &dataset)
 	{
+		SerializeHeader( stream, DATASET_SLICED_GEOMETRY );
 
+		stream.Put<uint32>( dataset.GetSlicedGeometryObjectType() );
+
+		stream.Put<int32>( dataset.GetSliceMin() );
+		stream.Put<int32>( dataset.GetSliceMax() );
+
+		stream.Put<uint32>( DUMP_HEADER_END_MAGIC_NUMBER );
+
+		for( int32 i = dataset.GetSliceMin(); i < dataset.GetSliceMax(); ++i ) {
+			stream.Put<uint32>( DUMP_SLICE_BEGIN_MAGIC_NUMBER );
+			const typename SlicedGeometry< OType >::ObjectsInSlice	&slice = dataset.GetSlice( i );
+			stream.Put<uint32>( slice.size() );
+
+			stream.Put<uint32>( DUMP_SLICE_END_MAGIC_NUMBER );
+		}
 	}
 
 protected:

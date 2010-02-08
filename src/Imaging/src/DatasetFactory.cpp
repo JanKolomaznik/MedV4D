@@ -13,22 +13,11 @@ using namespace M4D::IO;
 ADataset::Ptr
 DatasetFactory::DeserializeDataset(InStream &stream)
 {
-	uint32 startMAGIC = 0;
 	uint32 datasetType = 0;
-	uint32 formatVersion = 0;
+
 
 	//Read stream header
-	stream.Get<uint32>( startMAGIC );
-	if( startMAGIC != DUMP_START_MAGIC_NUMBER ) {
-		_THROW_ EWrongStreamBeginning();
-	}
-	
-	stream.Get<uint32>( formatVersion );
-	if( formatVersion != ACTUAL_FORMAT_VERSION ) {
-		_THROW_ EWrongFormatVersion();
-	}
-
-	stream.Get<uint32>( datasetType );
+	datasetType = DeserializeHeader( stream );
 		
 	// main switch acording data set type
 	switch((DatasetType) datasetType )

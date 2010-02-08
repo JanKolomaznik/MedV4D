@@ -29,6 +29,13 @@ public:
 	static void 
 	SerializeDataset(M4D::IO::OutStream &stream, const ADataset &dataset);
 	
+	/*
+	static void
+	DatasetMultiSerialization(M4D::IO::OutStream &stream, const DatasetList &datasetList );
+
+	static void
+	DatasetMultiDeserialization(M4D::IO::InStream &stream, DatasetList &datasetList );
+	*/
 	
 private:	// helpers
 	/*static ADataset::Ptr 

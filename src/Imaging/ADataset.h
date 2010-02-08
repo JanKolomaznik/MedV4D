@@ -65,10 +65,7 @@ private:
 
 };
 
-const uint32 DUMP_START_MAGIC_NUMBER 		= 0xFEEDDEAF;
-const uint32 DUMP_HEADER_END_MAGIC_NUMBER 	= 0xDEADBEAF;
-const uint32 DUMP_END_MAGIC_NUMBER 		= 0x0DEADBEE;
-const uint32 ACTUAL_FORMAT_VERSION 		= 1;
+
 
 /**
  * ADataset is predecessor of all datastructures containing data. 

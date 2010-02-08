@@ -14,6 +14,8 @@
  *  @{
  */
 
+#include "Imaging/DatasetSerializationTools.h"
+
 namespace M4D
 {
 namespace Imaging
@@ -40,9 +42,11 @@ template< typename ElementType, unsigned Dimension >
 void 
 ImageFactory::SerializeImage( M4D::IO::OutStream &stream, const Image< ElementType, Dimension > &image )
 {
-	stream.Put<uint32>( DUMP_START_MAGIC_NUMBER );
+	SerializeHeader( stream, DATASET_IMAGE );
+
+	/*stream.Put<uint32>( DUMP_START_MAGIC_NUMBER );
 	stream.Put<uint32>( ACTUAL_FORMAT_VERSION );
-	stream.Put<uint32>( DATASET_IMAGE );
+	stream.Put<uint32>( DATASET_IMAGE );*/
 	
 	uint32 Dim = Dimension;
 	stream.Put<uint32>( Dim );

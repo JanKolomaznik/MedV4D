@@ -1,6 +1,10 @@
 #ifndef GEOMETRICAL_OBJECT_H
 #define GEOMETRICAL_OBJECT_H
 
+#include "Imaging/GeometricalObjectTypeOperations.h"
+#include "common/Vector.h"
+#include <boost/shared_ptr.hpp>
+
 namespace M4D
 {
 /**
@@ -10,7 +14,6 @@ namespace M4D
  * @{ 
  **/
 
-#include "common/Vector.h"
 
 namespace Imaging
 {
@@ -20,12 +23,27 @@ namespace Geometry
 class AGeometricalObject
 {
 public:
+	static GeometryTypeID
+	GetGeometryObjectTypeID()
+	{
+		return GTID_AGEOMETRICAL_OBJECT;
+	}
+
+	typedef	boost::shared_ptr< AGeometricalObject >	Ptr;
 	virtual ~AGeometricalObject(){}
 };
+
+/*template<>
+GeometryTypeID
+GetGeometryObjectTypeID< AGeometricalObject >()
+{
+	return GTID_AGEOMETRICAL_OBJECT;
+}*/
 
 template< unsigned Dim >
 class AGeometricalObjectDim: public AGeometricalObject
 {
+	typedef	boost::shared_ptr< AGeometricalObjectDim< Dim > >	Ptr;
 public:
 	static const unsigned Dimension = Dim;
 };
@@ -34,6 +52,8 @@ template< typename CoordType, unsigned Dim >
 class AGeometricalObjectDimPrec: public AGeometricalObjectDim< Dim >
 {
 public:
+	typedef	boost::shared_ptr< AGeometricalObjectDimPrec< CoordType, Dim > >	Ptr;
+
 	typedef CoordType			Type;
 	typedef Vector< Type, Dim > 	PointType;
 

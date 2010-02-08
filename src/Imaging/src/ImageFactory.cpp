@@ -23,29 +23,16 @@ namespace Imaging
 AImage::Ptr
 ImageFactory::DeserializeImage(M4D::IO::InStream &stream)
 {
-	uint32 startMAGIC = 0;
 	uint32 datasetType = 0;
-	uint32 formatVersion = 0;
 
 	//Read stream header
-	stream.Get<uint32>( startMAGIC );
-	if( startMAGIC != DUMP_START_MAGIC_NUMBER ) {
-		_THROW_ EWrongStreamBeginning();
-	}
-	
-	stream.Get<uint32>( formatVersion );
-	if( formatVersion != ACTUAL_FORMAT_VERSION ) {
-		_THROW_ EWrongFormatVersion();
-	}
+	datasetType = DeserializeHeader( stream );
 
-	stream.Get<uint32>( datasetType );
 	if( datasetType != DATASET_IMAGE ) {
 		_THROW_ EWrongDatasetTypeIdentification();
 	}
 
 	return ImageFactory::DeserializeImageFromStream(stream);
-
-	
 }
 
 void
@@ -58,22 +45,11 @@ template< typename ElementType, unsigned Dimension >
 void
 ImageFactory::DeserializeImage(M4D::IO::InStream &stream, Image< ElementType, Dimension > &existingImage )
 {
-	uint32 startMAGIC = 0;
 	uint32 datasetType = 0;
-	uint32 formatVersion = 0;
-
-	//Read stream header
-	stream.Get<uint32>( startMAGIC );
-	if( startMAGIC != DUMP_START_MAGIC_NUMBER ) {
-		_THROW_ EWrongStreamBeginning();
-	}
 	
-	stream.Get<uint32>( formatVersion );
-	if( formatVersion != ACTUAL_FORMAT_VERSION ) {
-		_THROW_ EWrongFormatVersion();
-	}
+	//Read stream header
+	datasetType = DeserializeHeader( stream );
 
-	stream.Get<uint32>( datasetType );
 	if( datasetType != DATASET_IMAGE ) {
 		_THROW_ EWrongDatasetTypeIdentification();
 	}

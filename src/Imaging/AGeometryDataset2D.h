@@ -13,6 +13,7 @@
 #include "common/Common.h"
 #include "Imaging/GeometryDatasetFactory.h"
 #include "Imaging/ModificationManager.h"
+#include "Imaging/GeometricalObject.h"
 
 /**
  *  @addtogroup imaging Imaging Library
@@ -76,6 +77,9 @@ public:
 	int32
 	GetSliceMax()const
 		{ return _maxSlice; }
+
+	virtual Geometry::GeometryTypeID
+	GetSlicedGeometryObjectType()const = 0;
 protected:
 	ASlicedGeometry( int32 minSlice, int32 maxSlice ): AGeometryDataset2D( DATASET_SLICED_GEOMETRY ), _minSlice( minSlice ), _maxSlice( maxSlice )
 		{}
@@ -101,7 +105,8 @@ public:
 
 	typedef OType						ObjectType;
 	typedef typename ObjectType::PointType			PointType;
-	typedef std::vector< ObjectType > 			ObjectsInSlice;
+	typedef typename ObjectType::Ptr			ObjectTypePtr;
+	typedef std::vector< ObjectTypePtr > 			ObjectsInSlice;
 	typedef std::vector< ObjectsInSlice >			Slices;
 
 	SlicedGeometry( int32 minSlice, int32 maxSlice ): ASlicedGeometry( minSlice, maxSlice )
@@ -145,7 +150,7 @@ public:
 			if( objectNumber >= slice.size() ) {
 				_THROW_ M4D::ErrorHandling::EBadIndex( "Wrong object in slice index" );
 			}
-			return slice[ objectNumber ];
+			return *(slice[ objectNumber ]);
 		}
 
 	const ObjectType &
@@ -155,11 +160,21 @@ public:
 			if( objectNumber >= slice.size() ) {
 				_THROW_ M4D::ErrorHandling::EBadIndex( "Wrong object in slice index" );
 			}
-			return slice[ objectNumber ];
+			return *(slice[ objectNumber ]);
 		}
 
 	uint32
 	AddObjectToSlice( int32 sliceNumber, const ObjectType &obj )
+		{
+			ObjectsInSlice &slice = GetSlice( sliceNumber );
+			ObjectType *o = new ObjectType( obj );
+
+			slice.push_back( ObjectTypePtr( o ) );
+			return slice.size();
+		}
+
+	uint32
+	AddObjectToSlice( int32 sliceNumber, ObjectTypePtr obj )
 		{
 			ObjectsInSlice &slice = GetSlice( sliceNumber );
 			slice.push_back( obj );
@@ -192,6 +207,10 @@ public:
 	{ _THROW_ ErrorHandling::ETODO();	}
 	void DeSerializeProperties(M4D::IO::InStream &stream)
 	{ _THROW_ ErrorHandling::ETODO();	}
+
+	Geometry::GeometryTypeID
+	GetSlicedGeometryObjectType() const
+		{ return OType::GetGeometryObjectTypeID(); }
 
 protected:
 	void

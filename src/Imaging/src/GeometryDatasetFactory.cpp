@@ -2,6 +2,7 @@
 
 #include "Imaging/GeometryDatasetFactory.h"
 
+
 /**
  * @ingroup imaging 
  * @author Jan Kolomaznik 
@@ -30,7 +31,11 @@ GeometryDatasetFactory::DeserializeSlicedGeometryFromStream( M4D::IO::InStream &
 void 
 GeometryDatasetFactory::SerializeSlicedGeometry(M4D::IO::OutStream &stream, const ASlicedGeometry &dataset)
 {
+	GEOMETRY_TYPE_SWITCH_MACRO( dataset.GetSlicedGeometryObjectType(),
+			GeometryDatasetFactory::SerializeSlicedGeometry( stream, SlicedGeometry< TTYPE >::Cast( dataset ) );
+			);
 
+	
 }
 
 

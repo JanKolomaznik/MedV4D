@@ -35,6 +35,7 @@
 #include "common/MathTools.h"
 #include "common/StringTools.h"
 #include "common/Vector.h"
+#include "common/IOStreams.h"
 #include <iomanip>
 #include <sstream>
 

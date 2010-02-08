@@ -43,12 +43,7 @@ public:
 	class EUnknowDataType;
 	class EWrongDICOMObjIndex;
 
-	class EWrongStreamBeginning;
-	class EWrongStreamEnd;
-	class EWrongFormatVersion;
-	class EWrongHeader;
-	class EWrongDatasetTypeIdentification;
-	class EWrongDatasetType;
+
 	
 	static AImage::Ptr 
 	DeserializeImage(M4D::IO::InStream &stream);
@@ -444,55 +439,6 @@ public:
 	//TODO
 private:
 
-};
-
-
-class ImageFactory::EWrongStreamBeginning
-{
-public:
-	EWrongStreamBeginning() {}
-
-	//TODO
-};
-
-class ImageFactory::EWrongStreamEnd
-{
-public:
-	EWrongStreamEnd() {}
-
-	//TODO
-};
-
-class ImageFactory::EWrongFormatVersion
-{
-public:
-	EWrongFormatVersion() {}
-
-	//TODO
-};
-
-class ImageFactory::EWrongHeader
-{
-public:
-	EWrongHeader() {}
-
-	//TODO
-};
-
-class ImageFactory::EWrongDatasetTypeIdentification
-{
-public:
-	EWrongDatasetTypeIdentification() {}
-
-	//TODO
-};
-
-class ImageFactory::EWrongDatasetType
-{
-public:
-	EWrongDatasetType() {}
-
-	//TODO
 };
 
 
