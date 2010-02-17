@@ -48,11 +48,11 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
      */
     struct Source {
       /// Ctor.
-      Source ( Imaging::ConnectionInterface *conn, M4D::Viewer::m4dGUIViewerEventHandlerInterface *hnd )
+      Source ( std::vector< Imaging::ConnectionInterface * > &conn, M4D::Viewer::m4dGUIViewerEventHandlerInterface *hnd )
         : conn( conn ), hnd( hnd )
       {}
-      /// Pointer to the connection.
-      Imaging::ConnectionInterface *conn;
+      /// Vector of pointers to the connections.
+      std::vector< Imaging::ConnectionInterface * > conn;
       /// Pointer to the viewer event handler.
       M4D::Viewer::m4dGUIViewerEventHandlerInterface *hnd;
     };
@@ -114,6 +114,8 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
    
     Imaging::ConnectionInterface *getDefaultConnection () const { return defaultConnection; }
 
+    void getViewerWidgetsWithSource( int sourceIndex, std::vector< M4D::Viewer::m4dGUIAbstractViewerWidget * > &viewerWidgets ) const;
+
 
     /** 
      * Setter for the selected viewer's checked tool (index) - for left mouse button.
@@ -152,10 +154,13 @@ class m4dGUIMainViewerDesktopWidget: public QWidget
      * Adds source (pipeline connection) to vector of registered sources - possible connections, 
      * where can be plugged a viewer. Can be selected through comboBox in toolBar. 
      *
-     * @param conn pointer to the connection to be added
+     * @param conn vector of pointers to the connections
      * @param viewerEventHandler pointer to event handler, which should be active on the viewer connected
      * to this source
      */
+    void addSource ( std::vector< Imaging::ConnectionInterface * > &conn, 
+                     M4D::Viewer::m4dGUIViewerEventHandlerInterface *viewerEventHandler );
+
     void addSource ( Imaging::ConnectionInterface *conn, 
                      M4D::Viewer::m4dGUIViewerEventHandlerInterface *viewerEventHandler );
 

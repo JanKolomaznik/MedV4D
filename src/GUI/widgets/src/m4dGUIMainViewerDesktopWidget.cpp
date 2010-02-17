@@ -43,6 +43,17 @@ m4dGUIViewerEventHandlerInterface *m4dGUIMainViewerDesktopWidget::getSelectedVie
 }
 
 
+void m4dGUIMainViewerDesktopWidget::getViewerWidgetsWithSource ( int sourceIndex, vector< m4dGUIAbstractViewerWidget * > &viewerWidgets ) const
+{
+  for ( unsigned i = 0; i < viewers.size(); i++ )
+  {
+    if ( viewers[i]->sourceIdx == sourceIndex ) {
+      viewerWidgets.push_back( viewers[i]->viewerWidget );    
+    }
+  }
+}
+
+
 void m4dGUIMainViewerDesktopWidget::setDefaultConnection ( ConnectionInterface *conn )
 {
 	defaultConnection = conn;
@@ -107,11 +118,22 @@ void m4dGUIMainViewerDesktopWidget::replaceSelectedViewerWidget ( ViewerFactory 
 }
 
 
-void m4dGUIMainViewerDesktopWidget::addSource ( ConnectionInterface *conn, 
+void m4dGUIMainViewerDesktopWidget::addSource ( vector< ConnectionInterface * > &conn, 
                                                 m4dGUIViewerEventHandlerInterface *viewerEventHandler )
 {
   sources.push_back( Source( conn, viewerEventHandler ) );
 }
+
+
+void m4dGUIMainViewerDesktopWidget::addSource ( ConnectionInterface *conn, 
+                                                m4dGUIViewerEventHandlerInterface *viewerEventHandler )
+{
+  vector< ConnectionInterface * > connections;
+  connections.push_back( conn );
+  
+  sources.push_back( Source( connections, viewerEventHandler ) );
+}
+
 
 
 void m4dGUIMainViewerDesktopWidget::setDesktopLayout( const unsigned rows, const unsigned columns )
@@ -198,12 +220,15 @@ void m4dGUIMainViewerDesktopWidget::sourceSelected ( int index )
   for ( unsigned i = 0; i < selectedViewer->viewerWidget->InputPort().Size(); i++ ) {
     selectedViewer->viewerWidget->InputPort()[i].UnPlug();
   }
-  sources[index].conn->ConnectConsumer( selectedViewer->viewerWidget->InputPort()[0] );
+  for ( unsigned i = 0; i < sources[index].conn.size(); i++ ) {
+    sources[index].conn[i]->ConnectConsumer( selectedViewer->viewerWidget->InputPort()[i] );
+  }
 
   selectedViewer->viewerWidget->setViewerEventHandler( sources[index].hnd );
 
   emit sourceChanged(); 
 }
+
 
 void m4dGUIMainViewerDesktopWidget::UpdateViewers()
 {

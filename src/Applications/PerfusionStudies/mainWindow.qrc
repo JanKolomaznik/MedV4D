@@ -1,4 +1,7 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
+  <file>./resources/maximum.png</file>
+  <file>./resources/subtraction.png</file>
+  <file>./resources/parameter.png</file>
 </qresource>
 </RCC>

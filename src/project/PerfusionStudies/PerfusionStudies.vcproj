@@ -251,6 +251,38 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\Applications\PerfusionStudies\MultiscanRegistrationFilter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Applications\PerfusionStudies\MultiscanRegistrationFilter.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Applications\PerfusionStudies\MultiscanSegmentationFilter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Applications\PerfusionStudies\MultiscanSegmentationFilter.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Applications\PerfusionStudies\PerfusionAnalysisFilter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Applications\PerfusionStudies\PerfusionAnalysisFilter.tcc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Applications\PerfusionStudies\RGBGradientSliceViewerTexturePreparer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Applications\PerfusionStudies\RGBGradientSliceViewerTexturePreparer.tcc"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Applications\PerfusionStudies\SettingsBox.h"
 				>
 				<FileConfiguration

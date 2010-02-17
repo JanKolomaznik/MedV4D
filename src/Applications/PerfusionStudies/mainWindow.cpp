@@ -9,100 +9,133 @@ using namespace std;
 using namespace M4D::Imaging;
 
 
-class LFNotifier: public MessageReceiverInterface
+mainWindow::mainWindow ()
+  : m4dGUIMainWindow( APPLICATION_NAME, ORGANIZATION_NAME, QIcon( ":/resources/parameter.png" ) ), inConnection( NULL )
 {
-  public:
+	Q_INIT_RESOURCE( mainWindow ); 
 
-	  LFNotifier ( APipeFilter * filter )
-      : _filter( filter ) 
-    {}
-	  
-    void ReceiveMessage ( PipelineMessage::Ptr msg, PipelineMessage::MessageSendStyle, FlowDirection )
-	  {
-		  if ( msg->msgID == PMI_FILTER_UPDATED ) {
-			  _filter->ExecuteOnWhole();	
-		  }
-	  }
+  for ( uint8 i = 0; i < outConnection.size(); i++ ) { 
+    outConnection[i] = NULL;
+  }
 
-  protected:
+  createPipeline();
 
-	  APipeFilter * _filter;
-};
+	settings = new SettingsBox( registration, segmentation, analysis, this );
+	addDockWindow( "Perfusion Studies", settings );
+	connect( notifier, SIGNAL(Notification()), settings, SLOT(EndOfExecution()), Qt::QueuedConnection );
+  connect( settings, SIGNAL(VisualizationDone()), currentViewerDesktop, SLOT(UpdateViewers()) );
+  connect( settings, SIGNAL(SimpleSelected()), this, SLOT(setSelectedViewerToSimple()) );
+  connect( settings, SIGNAL(ParamaterMapsSelected()), this, SLOT(setSelectedViewerToRGB()) );
+  
+  connect( currentViewerDesktop, SIGNAL(sourceChanged()), this, SLOT(sourceSelected()) );
+}
 
 
-void mainWindow::CreatePipeline ()
+void mainWindow::createPipeline ()
 {
   convertor = new Convertor();
-	_pipeline.AddFilter( convertor );
+	pipeline.AddFilter( convertor );
 
   registration = new Registration();
-	_pipeline.AddFilter( registration );
+	pipeline.AddFilter( registration );
 
-	thresholding = new Thresholding();
-	//_pipeline.AddFilter( thresholding );
+	segmentation = new Segmentation();
+  segmentation->SetUpdateInvocationStyle( APipeFilter::UIS_ON_CHANGE_BEGIN );
+	pipeline.AddFilter( segmentation );
 
-	Median2D *median2D = new Median2D();
+  analysis = new Analysis();
+  analysis->SetUpdateInvocationStyle( APipeFilter::UIS_ON_CHANGE_BEGIN );
+	pipeline.AddFilter( analysis );
 
-	median2D->SetUpdateInvocationStyle( APipeFilter::UIS_ON_CHANGE_BEGIN );
-	median2D->SetRadius( 4 );
-	//_pipeline.AddFilter( median2D );
+	inConnection = dynamic_cast< ConnectionType * >( &pipeline.MakeInputConnection( *convertor, 0, false ) );
 
-	Mask *mask = new Mask();
-	//_pipeline.AddFilter( mask );
+	pipeline.MakeConnection( *convertor, 0, *registration, 0 );
+  registrationSegmentationConnection = dynamic_cast< ConnectionType * >( &pipeline.MakeConnection( *registration, 0, *segmentation, 0 ) );
+  segmentationAnalysisConnection = dynamic_cast< ConnectionType * >( &pipeline.MakeConnection( *segmentation, 0, *analysis, 0 ) );
+		
+  for ( uint8 i = 0; i < 3; i++ ) {
+    outConnection.push_back( dynamic_cast< ConnectionType * >( &pipeline.MakeOutputConnection( *analysis, i, true ) ) );
+  }
 
-	inConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeInputConnection( *convertor, 0, false ) );
-	_pipeline.MakeConnection( *convertor, 0, *registration, 0 );
-  //registrationTresholdConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeConnection( *registration, 0, *thresholding, 0 ) );
-	//tresholdMedianConnection = dynamic_cast<ConnectionInterfaceTyped<AbstractImage>*>( &_pipeline.MakeConnection( *thresholding, 0, *median2D, 0 ) );
-	
-	//_pipeline.MakeConnection( *registration, 0, *mask, 0 );
-
-	//ConnectionInterface* medianMaskConnection = &(_pipeline.MakeConnection( *median2D, 0, *mask, 1 ) );
-	//medianMaskConnection->SetMessageHook( MessageReceiverInterface::Ptr( new LFNotifier( mask ) ) );
-	outConnection = dynamic_cast<ConnectionInterfaceTyped<AImage>*>( &_pipeline.MakeOutputConnection( *registration, 0, true ) );
-
-	if( inConnection == NULL || outConnection == NULL ) {
+	if( inConnection == NULL || outConnection.empty() ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Pipeline error" ) );
 	}
 
 	addSource( inConnection, "Perfusion Studies", "Input" );
-  //addSource( registrationTresholdConnection, "Segmentation", "Registration - Treshold" );
-	//addSource( tresholdMedianConnection, "Segmentation", "Treshold - Median" );
-	//addSource( medianMaskConnection, "Segmentation", "Median - Mask" );
+  addSource( registrationSegmentationConnection, "Perfusion Studies", "Registration - Segmentation" );
+  addSource( segmentationAnalysisConnection, "Perfusion Studies", "Segmentation - Analysis" );
 	addSource( outConnection, "Perfusion Studies", "Result" );
 
-  _notifier = new Notifier(this);
-	outConnection->SetMessageHook( MessageReceiverInterface::Ptr( _notifier ) );
-}
-
-
-mainWindow::mainWindow ()
-  : m4dGUIMainWindow( APPLICATION_NAME, ORGANIZATION_NAME ), inConnection( NULL ), outConnection( NULL )
-{
-	Q_INIT_RESOURCE( mainWindow ); 
-
-	CreatePipeline();
-
-	_settings = new SettingsBox( registration, this );
-	addDockWindow( "Perfusion Studies", _settings );
-	QObject::connect( _notifier, SIGNAL(Notification()), _settings, SLOT(EndOfExecution()), Qt::QueuedConnection );
+  notifier = new Notifier( this );
+	outConnection[0]->SetMessageHook( MessageReceiverInterface::Ptr( notifier ) );
 }
 
 
 void mainWindow::process ( ADataset::Ptr inputDataSet )
 {
-	try {
+	try 
+  {
 		inConnection->PutDataset( inputDataSet );
 
 		convertor->Execute();
 
-		currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0].UnPlug();
-		inConnection->ConnectConsumer( currentViewerDesktop->getSelectedViewerWidget()->InputPort()[0] );
+    vector< M4D::Viewer::m4dGUIAbstractViewerWidget * > viewers;
+    currentViewerDesktop->getViewerWidgetsWithSource( 0, viewers );
 
-		_settings->SetEnabledExecButton( true );
+    // loop over all viewers connected to the input
+    for ( uint8 i = 0; i < viewers.size(); i++ ) 
+    {
+		  viewers[i]->InputPort()[0].UnPlug();
+		  inConnection->ConnectConsumer( viewers[i]->InputPort()[0] );      
+      
+      dynamic_cast< M4D::Viewer::m4dGUISliceViewerWidget * >( viewers[i] )->setTexturePreparerToSimple();
+    }
+
+    settings->SetEnabledExecButton( true );
 	} 
 	catch ( ... ) {
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Some exception" ) );
 	}
 }
 
+
+void mainWindow::setSelectedViewerToSimple ()
+{
+  vector< M4D::Viewer::m4dGUIAbstractViewerWidget * > viewers;
+  currentViewerDesktop->getViewerWidgetsWithSource( SOURCE_NUMBER - 1, viewers );
+
+  // loop over all viewers connected to the output
+  for ( uint8 i = 0; i < viewers.size(); i++ ) {
+    dynamic_cast< M4D::Viewer::m4dGUISliceViewerWidget * >( viewers[i] )->setTexturePreparerToSimple();
+  }
+}
+
+
+void mainWindow::setSelectedViewerToRGB ()
+{
+  vector< M4D::Viewer::m4dGUIAbstractViewerWidget * > viewers;
+  currentViewerDesktop->getViewerWidgetsWithSource( SOURCE_NUMBER - 1, viewers );
+
+  texturePreparer.setMinMaxValue( 0, static_cast< Analysis * >( analysis )->GetMaxParameterValue() );
+
+  // loop over all viewers connected to the output
+  for ( uint8 i = 0; i < viewers.size(); i++ ) 
+  {
+    dynamic_cast< M4D::Viewer::m4dGUISliceViewerWidget * >( viewers[i] )->setTexturePreparerToCustom( &texturePreparer );
+    viewers[i]->updateViewer();
+  }
+}
+
+
+void mainWindow::sourceSelected ()
+{
+  if ( static_cast< Analysis * >( analysis )->GetVisualizationType() == VT_PARAM ) 
+  {
+    M4D::Viewer::m4dGUIAbstractViewerWidget *viewer;
+    viewer = currentViewerDesktop->getSelectedViewerWidget();
+
+    texturePreparer.setMinMaxValue( 0, static_cast< Analysis * >( analysis )->GetMaxParameterValue() );
+
+    dynamic_cast< M4D::Viewer::m4dGUISliceViewerWidget * >( viewer )->setTexturePreparerToCustom( &texturePreparer );
+  }
+}

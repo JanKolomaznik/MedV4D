@@ -91,15 +91,14 @@ m4dGUIMainWindow::m4dGUIMainWindow ( )
 {
 }
 
-m4dGUIMainWindow::m4dGUIMainWindow( const char *appName, const char *orgName,
-                                    const QIcon &icon)
+m4dGUIMainWindow::m4dGUIMainWindow ( const char *appName, const char *orgName,
+                                     const QIcon &icon )
 {
-  build(appName, orgName, icon );
+  build( appName, orgName, icon );
 }
 
-void m4dGUIMainWindow::build(const char *appName, const char *orgName, const QIcon &icon )
+void m4dGUIMainWindow::build ( const char *appName, const char *orgName, const QIcon &icon )
 {
-
   initMainWindowResource();
 
   mainDesktopStackedWidget = new QStackedWidget();
@@ -191,6 +190,17 @@ void m4dGUIMainWindow::switchToDefaultViewerDesktop ()
 
 
 void m4dGUIMainWindow::addSource ( ConnectionInterface *conn, 
+                                   const char *pipelineDescription, const char *connectionDescription,
+                                   m4dGUIViewerEventHandlerInterface *viewerEventHandler )
+{
+  vector< ConnectionInterface * > connections;
+  connections.push_back( conn );
+
+  addSource( connections, pipelineDescription, connectionDescription, viewerEventHandler );
+}
+
+
+void m4dGUIMainWindow::addSource ( vector< ConnectionInterface * > &conn, 
                                    const char *pipelineDescription, const char *connectionDescription,
                                    m4dGUIViewerEventHandlerInterface *viewerEventHandler )
 {

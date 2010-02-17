@@ -160,6 +160,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Imaging\src\GeometryDatasetFactory.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Imaging\src\Image.cpp"
 				>
 			</File>
@@ -558,14 +562,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Imaging\filters\MultiscanRegistration.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Imaging\filters\MultiscanRegistration.tcc"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Imaging\filters\SimpleProjection.h"
 				>
 			</File>
@@ -587,6 +583,22 @@
 			</File>
 			<File
 				RelativePath="..\..\Imaging\filters\ThresholdingFilter.tcc"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Optimization"
+			>
+			<File
+				RelativePath="..\..\Imaging\optimization\OptimizationBase.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\optimization\PowellOptimization.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Imaging\optimization\src\PowellOptimization.tcc"
 				>
 			</File>
 		</Filter>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1250"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="common"
 	ProjectGUID="{D300E0F3-DB4D-4B1C-9473-830764C94644}"
 	RootNamespace="common"
@@ -248,6 +248,10 @@
 			</File>
 			<File
 				RelativePath="..\..\common\Types.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\common\TypeTraits.h"
 				>
 			</File>
 			<File

@@ -1,26 +1,27 @@
 /**
- * @ingroup imaging 
  * @author Attila Ulman
- * @file MultiscanRegistration.h 
+ * @file MultiscanRegistrationFilter.h 
  * @{ 
  **/
 
-#ifndef MULTISCAN_REGISTRATION_H
-#define MULTISCAN_REGISTRATION_H
-
-#include "common/Common.h"
-#include "common/Vector.h"
+#ifndef MULTISCAN_REGISTRATION_FILTER_H
+#define MULTISCAN_REGISTRATION_FILTER_H
 
 #include "Imaging/AImageFilterWholeAtOnce.h"
+#include "Imaging/MultiHistogram.h"
+#include "Imaging/criterion/NormalizedMutualInformation.h"
+#include "Imaging/optimization/PowellOptimization.h"
 
-
-/**
- *  @addtogroup imaging Imaging Library
- *  @{
- */
 
 namespace M4D {
 namespace Imaging {
+
+#define	HISTOGRAM_MIN_VALUE						0
+#define HISTOGRAM_MAX_VALUE						200
+#define HISTOGRAM_VALUE_DIVISOR       10
+
+#define MIN_SAMPLING							    128
+#define TRANSFORM_SAMPLING						256
 
 enum InterpolationType {
 	IT_NEAREST,
@@ -28,17 +29,21 @@ enum InterpolationType {
 };
 
 typedef Vector< float32, 2 > CoordType;
+typedef float64 HistCellType;
 
 template< typename ElementType >
 struct SliceInfo;
 
 struct TransformationInfo2D;
 
+template< typename ElementType >
+class Interpolator2D;
+
 template< typename ImageType >
-class MultiscanRegistration;
+class MultiscanRegistrationFilter;
 
 template< typename ElementType >
-class MultiscanRegistration< Image< ElementType, 3 > >
+class MultiscanRegistrationFilter< Image< ElementType, 3 > >
 	: public AImageFilterWholeAtOnceIExtents< Image< ElementType, 3 >, Image< ElementType, 3 > >
 {
   public:	
@@ -50,33 +55,55 @@ class MultiscanRegistration< Image< ElementType, 3 > >
 	  struct Properties: public PredecessorType::Properties
 	  {
 		  Properties ()
-        : examinedSliceNum( 2 ), interpolationType( IT_NEAREST ) 
+        : examinedSliceNum( EXEMINED_SLICE_NUM ), boneDensityBottom( BONE_DENSITY_BOTTOM ), 
+          boneDensityTop( BONE_DENSITY_TOP ), interpolationType( IT_NEAREST ) 
       {}
 
 		  uint32 examinedSliceNum;
+      ElementType	boneDensityBottom, boneDensityTop;
       InterpolationType	interpolationType;
 	  };
 
-	  MultiscanRegistration ( Properties * prop );
-	  MultiscanRegistration ();
+	  MultiscanRegistrationFilter ( Properties * prop );
+	  MultiscanRegistrationFilter ();
+    ~MultiscanRegistrationFilter ();
+
+    /**
+	   * The optimization function that is to be optimized to align the images.
+     *
+	   * @param v the vector of input parameters of the optimization function
+	   * @return the return value of the optimization function
+	   */
+	  double OptimizationFunction ( Vector< double, 3 > &v );
 
 	  GET_SET_PROPERTY_METHOD_MACRO(uint32, ExaminedSliceNum, examinedSliceNum);
+    GET_SET_PROPERTY_METHOD_MACRO(ElementType, BoneDensityBottom, boneDensityBottom);
+    GET_SET_PROPERTY_METHOD_MACRO(ElementType, BoneDensityTop, boneDensityTop);
     GET_SET_PROPERTY_METHOD_MACRO(InterpolationType, InterpolationType, interpolationType);
   
   protected:
 
 	  bool ProcessImage ( const InputImageType &in, OutputImageType &out );
 
-    template< typename InterpolationType >
 	  bool ProcessImageHelper ( const InputImageType &in, OutputImageType &out );
 
-    template< typename InterpolationType >
-	  bool TransformSlice ( SliceInfo< ElementType > &inSlice, SliceInfo< ElementType > &outSlice,
-                          TransformationInfo2D &transInfo );
+    bool RegisterSlice ();
 
   private:
 
 	  GET_PROPERTIES_DEFINITION_MACRO;
+
+    Interpolator2D< ElementType > *interpolator;
+
+    SliceInfo< ElementType > *inSlice, *outSlice, *refSlice;
+
+    TransformationInfo2D transformationInfo;
+
+    MultiHistogram< HistCellType, 2 > jointHistogram;
+
+    CriterionBase< HistCellType > *criterionComponent;
+
+    OptimizationBase< MultiscanRegistrationFilter< InputImageType >, double, 3 > *optimizationComponent;
 };
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -102,19 +129,36 @@ struct TransformationInfo2D
 {
 	TransformationInfo2D () 
   {
-  	for ( uint32 i = 0; i < 2; i++ )
-		  {
-			  rotation[i]    = 0.0f;
-			  translation[i] = 0.0f;
-        sampling[i]    = 1.0f;
-			}
+    Reset();
   }
 
-	TransformationInfo2D ( CoordType &rotation, CoordType &translation, CoordType &sampling )
-    : rotation( rotation ), translation( translation ), sampling( sampling )
+	TransformationInfo2D ( CoordType &translation, float32 rotation, uint32 sampling )
+    : translation( translation ), rotation( rotation ), sampling( sampling )
 	{}
 
-	CoordType rotation, translation, sampling;
+  void SetParams ( CoordType &trans, float32 rot )
+  {
+    for ( uint32 i = 0; i < 2; i++ ) {
+      translation[i] = trans[i];
+    }
+
+    rotation = rot;
+  }
+
+  void Reset ()
+  {
+  	for ( uint32 i = 0; i < 2; i++ ) {
+		  translation[i] = 0.0f;
+    }
+
+    rotation = 0.0f;
+
+    sampling = TRANSFORM_SAMPLING;
+  }
+
+	CoordType translation;
+  float32 rotation;
+  uint32 sampling;
 };
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -128,9 +172,18 @@ class Interpolator2D
       : pointer( NULL )
     {}
 
-	  Interpolator2D ( ElementType *pointer, Vector< int32, 2 > &stride )
-      : pointer( pointer ), stride( stride )
+	  Interpolator2D ( ElementType *p, Vector< int32, 2 > &s )
+      : pointer( p ), stride( s )
 	  {}
+
+    void SetParams ( ElementType *p, Vector< int32, 2 > &s )
+    {
+      pointer = p;
+
+      for ( uint32 i = 0; i < 2; i++ ) {
+		    stride[i] = s[i];
+      }
+    }
 
 	  virtual ElementType Get ( CoordType &coords ) = 0;
 
@@ -211,12 +264,10 @@ class LinearInterpolator2D: public Interpolator2D< ElementType >
 } // namespace Imaging
 } // namespace M4D
 
-/** @} */
 
+// include implementation
+#include "MultiscanRegistrationFilter.tcc"
 
-//include implementation
-#include "Imaging/filters/MultiscanRegistration.tcc"
-
-#endif // MULTISCAN_REGISTRATION_H
+#endif // MULTISCAN_REGISTRATION_FILTER_H
 
 /** @} */

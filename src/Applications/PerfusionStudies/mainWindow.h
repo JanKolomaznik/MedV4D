@@ -6,27 +6,10 @@
 #include "Imaging/PipelineContainer.h"
 #include "Imaging/ImageFactory.h"
 
-#include "Imaging/filters/MultiscanRegistration.h"
-#include "Imaging/filters/ThresholdingFilter.h"
-#include "Imaging/filters/MaskMedianFilter.h"
-#include "Imaging/filters/MaskSelection.h"
-#include "Imaging/filters/ImageConvertor.h"
-
+#include "RGBGradientSliceViewerTexturePreparer.h"
+#include "TypeDeclarations.h"
 #include "SettingsBox.h"
 
-
-#define ORGANIZATION_NAME     "MFF"
-#define APPLICATION_NAME      "PerfusionStudies"
-
-typedef int16	ElementType;
-const unsigned Dim = 3;
-
-typedef M4D::Imaging::Image< ElementType, Dim >           ImageType;
-typedef M4D::Imaging::ImageConvertor< ImageType >         Convertor;
-typedef M4D::Imaging::MultiscanRegistration< ImageType >  Registration;
-typedef M4D::Imaging::ThresholdingMaskFilter< ImageType > Thresholding;
-typedef M4D::Imaging::MaskMedianFilter2D< Dim >           Median2D;
-typedef M4D::Imaging::MaskSelection< ImageType >          Mask;
 
 class Notifier: public QObject, public M4D::Imaging::MessageReceiverInterface
 {
@@ -35,7 +18,7 @@ class Notifier: public QObject, public M4D::Imaging::MessageReceiverInterface
   public:
 
 	  Notifier ( QWidget *owner )
-      : _owner( owner ) 
+      : owner( owner ) 
     {}
 
 	  void ReceiveMessage ( M4D::Imaging::PipelineMessage::Ptr msg, 
@@ -53,8 +36,9 @@ class Notifier: public QObject, public M4D::Imaging::MessageReceiverInterface
 
   protected:
 
-	  QWidget	*_owner;
+	  QWidget	*owner;
 };
+
 
 class mainWindow: public M4D::GUI::m4dGUIMainWindow
 {
@@ -62,29 +46,43 @@ class mainWindow: public M4D::GUI::m4dGUIMainWindow
 
   public:
 
+    typedef M4D::Imaging::PipelineContainer PipelineType;
+    typedef M4D::Imaging::APipeFilter FilterType;
+    typedef M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage > ConnectionType;
+    typedef std::vector< M4D::Imaging::ConnectionInterface * > MultipleConnectionType;
+    
+    typedef M4D::Viewer::RGBGradientSliceViewerTexturePreparer< ElementType > RGBGradientTexturePreparer;
+
+    static const unsigned SOURCE_NUMBER = 4;
+
 	  mainWindow ();
+
+  protected slots:
+
+    void setSelectedViewerToSimple ();
+
+    void setSelectedViewerToRGB ();
+
+    void sourceSelected ();
 
   protected:
 
-	  void process ( M4D::Imaging::ADataset::Ptr inputDataSet );
+    void createPipeline ();
+	  
+    void process ( M4D::Imaging::ADataset::Ptr inputDataSet );
 
-	  void CreatePipeline ();
+	  SettingsBox	*settings;
+    
+    Notifier *notifier;
 
-	  SettingsBox	*_settings;
-    Notifier *_notifier;
+	  PipelineType pipeline;
 
-	  M4D::Imaging::PipelineContainer   _pipeline;
+    FilterType *convertor, *registration, *segmentation, *analysis;
 
-    M4D::Imaging::APipeFilter *convertor;
-    M4D::Imaging::APipeFilter *registration;
-	  M4D::Imaging::APipeFilter *thresholding;
-	  M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage >	*inConnection;
-    M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage >	*registrationTresholdConnection;
-	  M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage >	*tresholdMedianConnection;
-	  M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage >	*outConnection;
+	  ConnectionType *inConnection, *registrationSegmentationConnection, *segmentationAnalysisConnection;
+    MultipleConnectionType outConnection;
 
-  private:
-
+    RGBGradientTexturePreparer texturePreparer;
 };
 
 
