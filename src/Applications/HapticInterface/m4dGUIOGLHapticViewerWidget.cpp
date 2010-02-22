@@ -19,6 +19,7 @@ namespace M4D
 			_index = index;
 			_inPort = new Imaging::InputPortTyped<Imaging::AImage>();
 			_inputPorts.AppendPort( _inPort );
+			_cursor = new cursorInterface(_inPort);
 			setInputPort( conn );
 		}
 		m4dGUIOGLHapticViewerWidget::m4dGUIOGLHapticViewerWidget(unsigned int index, QWidget *parent) : QGLWidget(parent)
@@ -26,6 +27,7 @@ namespace M4D
 			_index = index;
 			_inPort = new Imaging::InputPortTyped<Imaging::AImage>();
 			_inputPorts.AppendPort( _inPort );
+			_cursor = new cursorInterface(_inPort);
 			setInputPort( );
 		}
 		m4dGUIOGLHapticViewerWidget::~m4dGUIOGLHapticViewerWidget()
@@ -164,6 +166,21 @@ namespace M4D
 
 			glEnd();
 		}
+		void m4dGUIOGLHapticViewerWidget::DrawCursor(float x, float y, float z, float size)
+		{
+			glBegin(GL_LINES);
+			
+			glVertex3f(x, y, z - size / 2.0f);
+			glVertex3f(x, y, z + size / 2.0f);
+
+			glVertex3f(x, y - size / 2.0f, z);
+			glVertex3f(x, y + size / 2.0f, z);
+
+			glVertex3f(x - size / 2.0f, y, z);
+			glVertex3f(x + size / 2.0f, y, z);
+
+			glEnd();
+		}
 		void m4dGUIOGLHapticViewerWidget::paintGL()
 		{
 			//////////////////////////////////////////////////////////////////////////
@@ -284,6 +301,11 @@ namespace M4D
 				}
 			}
 			
+			glLoadIdentity();
+			glTranslatef(0.0f, 0.0f, _zoom);
+			glColor3f(0.0f, 1.0f, 0.0f);
+			DrawCursor(_cursor->getX(), _cursor->getY(), _cursor->getZ(), _cursorSize);
+			
 			//glLoadIdentity();
 			//glColor3f(1.0f, 0.0f, 0.0f);
 			//glTranslatef(0.0f, 0.0f, -5.0f);
@@ -313,6 +335,7 @@ namespace M4D
 		void m4dGUIOGLHapticViewerWidget::loadImageParams()
 		{
 			_imageSize = 10.0;
+			_cursorSize = _imageSize / 20.0;
 			_imageHeight = _imageSize;
 			_imageWidth = _imageSize;
 			_imageID = _inPort->GetDatasetTyped().GetElementTypeID();
@@ -373,23 +396,23 @@ namespace M4D
 			glDepthFunc(GL_LEQUAL);
 			glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-			initializeHaptics();
+			//initializeHaptics();
 		}
 
-		void m4dGUIOGLHapticViewerWidget::initializeHaptics()
-		{
-			buttonStatus = false;
-			handler = new cHapticDeviceHandler();
-			/*
-			// read the number of haptic devices currently connected to the computer
-			numHapticDevices = handler->getNumDevices();
+		//void m4dGUIOGLHapticViewerWidget::initializeHaptics()
+		//{
+		//	buttonStatus = false;
+		//	handler = new cHapticDeviceHandler();
+		//	/*
+		//	// read the number of haptic devices currently connected to the computer
+		//	numHapticDevices = handler->getNumDevices();
 
-			handler->getDevice(hapticDevice, 0);
-			hapticDevice->open();
-			hapticDevice->initialize();
-			info = hapticDevice->getSpecifications();
-			*/
-		}
+		//	handler->getDevice(hapticDevice, 0);
+		//	hapticDevice->open();
+		//	hapticDevice->initialize();
+		//	info = hapticDevice->getSpecifications();
+		//	*/
+		//}
 
 		void m4dGUIOGLHapticViewerWidget::slotSetButtonHandler( ButtonHandler hnd, MouseButton btn )
 		{

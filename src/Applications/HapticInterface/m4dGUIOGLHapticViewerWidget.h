@@ -18,6 +18,7 @@
 #include "Imaging/Imaging.h"
 #include "common/Common.h"
 #include "..\..\gui\widgets\m4dGUIAbstractViewerWidget.h"
+#include "cursorInterface.h"
 
 namespace M4D
 {
@@ -87,6 +88,8 @@ namespace M4D
 			virtual QWidget* operator()();
 
 			void DrawTriangle(float x, float y, float z, float size);
+
+			void DrawCursor(float x, float y, float z, float size);
 
 			virtual void initializeGL();
 
@@ -319,32 +322,35 @@ namespace M4D
 				float _varX, _varY, _varZ;
 				float _trianglSize;
 				int64 _minValue, _maxValue;
+				float _cursorSize;
 
+				cursorInterface* _cursor;
+				
 				/**
 				* The input port that can be connected to the pipeline.
 				*/
 				Imaging::InputPortTyped< Imaging::AImage >	*_inPort;
 
 
-				// a haptic device handler
-				cHapticDeviceHandler* handler;
+				//// a haptic device handler
+				//cHapticDeviceHandler* handler;
 
-				// a pointer to a haptic device
-				cGenericHapticDevice* hapticDevice;
+				//// a pointer to a haptic device
+				//cGenericHapticDevice* hapticDevice;
 
-				// haptic device info
-				cHapticDeviceInfo info;
+				//// haptic device info
+				//cHapticDeviceInfo info;
 
-				// number of haptic devices
-				int numHapticDevices;
+				//// number of haptic devices
+				//int numHapticDevices;
 
-				// last position of haptic device
-				cVector3d position;
+				//// last position of haptic device
+				//cVector3d position;
 
-				// button status of the haptic device
-				bool buttonStatus;
+				//// button status of the haptic device
+				//bool buttonStatus;
 
-				void initializeHaptics();
+				//void initializeHaptics();
 
 			protected slots:
 
