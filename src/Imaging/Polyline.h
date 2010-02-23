@@ -18,13 +18,13 @@ namespace Imaging
 namespace Geometry
 {
 
-template < typename CoordType, unsigned Dim >
-class Polyline: public PointSet< CoordType, Dim >
+template < typename VectorType >
+class Polyline: public PointSet< VectorType >
 {
 public:
-	typedef Vector< CoordType, Dim > 	PointType;
-	typedef CoordType			Type;
-	static const unsigned Dimension	= Dim;		
+	typedef VectorType 				PointType;
+	typedef typename VectorType::CoordinateType	Type;
+	static const unsigned 				Dimension = VectorType::Dimension;		
 	
 	Polyline(): _cyclic( false ) {}
 
@@ -42,7 +42,7 @@ protected:
 
 template< typename CoordType >
 CoordType
-PolylineDistanceSquared( const Vector< CoordType, 2 > &pos, const Polyline< CoordType, 2 > &polyline )
+PolylineDistanceSquared( const Vector< CoordType, 2 > &pos, const Polyline< Vector< CoordType, 2 > > &polyline )
 {
 	CoordType dist = PointLineSegmentDistanceSquared( pos, polyline[0] , polyline[1] - polyline[0] );
 	for( unsigned i = 2; i < polyline.Size(); ++i ) {

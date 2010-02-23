@@ -114,7 +114,7 @@ template< typename ContourType, typename EnergyModel, typename ConvergenceCriter
 class EnergicSnake: public EnergyModel, public ConvergenceCriterion
 {
 public:
-	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > 	GradientType;
+	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::PointType > 	GradientType;
 
 	EnergicSnake();
 

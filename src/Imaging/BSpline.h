@@ -113,23 +113,27 @@ protected:
 
 };
 
-template < typename CoordType, unsigned Dim >
-class BSpline: public PointSet< CoordType, Dim >
+template < typename VectorType >
+class BSpline: public PointSet< VectorType >
 {
 public:
+	typedef typename VectorType::CoordinateType			Type;
 	typedef BSplineBasis						CurveBasis;
-	typedef BasisFunctionValues< CoordType, CurveBasis::Degree > 	BFunctionValues;
+	typedef BasisFunctionValues< Type, CurveBasis::Degree > 	BFunctionValues;
 	typedef std::vector< BFunctionValues >				BFValVector;
-	typedef PointSet< CoordType, Dim > 				Predecessor;
-	typedef typename Predecessor::PointType 			PointType;
-	typedef Polyline< CoordType, Dim >				SamplePointSet;
-	typedef CoordType						Type;
+	typedef PointSet< VectorType > 					Predecessor;
+	typedef VectorType 						PointType;
+	typedef Polyline< VectorType >					SamplePointSet;
+	typedef BSpline< VectorType >					ThisType;
 	static const unsigned 						Degree = CurveBasis::Degree;
-	static const unsigned 						Dimension	= Dim;		
+	static const unsigned 						Dimension = VectorType::Dimension;		
+
+	friend void SerializeGeometryObject< VectorType >( M4D::IO::OutStream &stream, const ThisType &obj );
+	friend void DeserializeGeometryObject< VectorType >( M4D::IO::InStream &stream, ThisType * &obj ); 
 
 	BSpline();
 
-	BSpline( const PointSet< CoordType, Dim > & points );
+	BSpline( const PointSet< VectorType > & points );
 
 	PointType
 	PointByParameter( double t )const;
@@ -158,7 +162,7 @@ public:
 	void
 	ResetSamplesDerivations();
 
-	const PointSet< CoordType, Dim > &
+	const PointSet< VectorType > &
 	GetSampleDerivations()const
 		{ return _sampleDerivationCache; }
 
@@ -223,19 +227,19 @@ public:
 protected:
 	
 	void
-	SampleWithFunctionValues( unsigned sampleFrequency, PointSet< CoordType, Dim > &points, const typename BSpline< CoordType, Dim >::BFValVector &values );
+	SampleWithFunctionValues( unsigned sampleFrequency, PointSet< VectorType > &points, const typename BSpline< VectorType >::BFValVector &values );
 
 	unsigned
-	SampleUniformSpline( unsigned firstPoint, PointSet< CoordType, Dim > &points, const BFValVector &values );
+	SampleUniformSpline( unsigned firstPoint, PointSet< VectorType > &points, const BFValVector &values );
 
 	unsigned
-	SampleUniformSplineCyclicEnd( unsigned firstPoint, PointSet< CoordType, Dim > &points, const BFValVector &values );
+	SampleUniformSplineCyclicEnd( unsigned firstPoint, PointSet< VectorType > &points, const BFValVector &values );
 
 	unsigned
-	SampleUniformSplineACyclicBegin( unsigned firstPoint, PointSet< CoordType, Dim > &points, const BFValVector &values );
+	SampleUniformSplineACyclicBegin( unsigned firstPoint, PointSet< VectorType > &points, const BFValVector &values );
 
 	unsigned
-	SampleUniformSplineACyclicEnd( unsigned firstPoint, PointSet< CoordType, Dim > &points, const BFValVector &values );
+	SampleUniformSplineACyclicEnd( unsigned firstPoint, PointSet< VectorType > &points, const BFValVector &values );
 
 	inline PointType
 	EvaluateCurve( int segment, const BFunctionValues &values );
@@ -254,7 +258,7 @@ protected:
 	BFValVector		_lastBasisFunctionValues;
 	BFValVector		_lastBasisFunctionDerivationValues;
 
-	unsigned 		_lastSampleFrequency;
+	uint32	 		_lastSampleFrequency;
 
 };
 
@@ -284,9 +288,9 @@ JoinSegments( CurveType &curve, int segment )
 
 template< typename CoordType >
 bool
-CheckSegmentIntersection( BSpline< CoordType, 2 > &curve, int32 segment1, int32 segment2 )
+CheckSegmentIntersection( BSpline< Vector< CoordType, 2 > > &curve, int32 segment1, int32 segment2 )
 {
-	const typename BSpline< CoordType, 2 >::SamplePointSet &samples = curve.GetSamplePoints();
+	const typename BSpline< Vector< CoordType, 2 > >::SamplePointSet &samples = curve.GetSamplePoints();
 	unsigned frq = curve.GetLastSampleFrequency();
 	if( segment1 > segment2 ) {
 		int32 tmp = segment2;
@@ -317,7 +321,7 @@ CheckSegmentIntersection( BSpline< CoordType, 2 > &curve, int32 segment1, int32 
 
 template< typename CoordType >
 bool
-FindBSplineSelfIntersection( BSpline< CoordType, 2 > &curve, CoordInt2D &segIndices )
+FindBSplineSelfIntersection( BSpline< Vector< CoordType, 2 > > &curve, CoordInt2D &segIndices )
 {
 	segIndices = CoordInt2D( -1, -1 );
 	for( unsigned i = 0; i < curve.GetSegmentCount(); ++i ) {
@@ -333,26 +337,26 @@ FindBSplineSelfIntersection( BSpline< CoordType, 2 > &curve, CoordInt2D &segIndi
 	return false;
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename VectorType >
 float32
-BSplineSegmentLength( BSpline< CoordType, Dim > &curve, unsigned segment )
+BSplineSegmentLength( BSpline< VectorType > &curve, unsigned segment )
 {
-	const typename BSpline< CoordType, Dim >::SamplePointSet &samples = curve.GetSamplePoints();
+	const typename BSpline< VectorType >::SamplePointSet &samples = curve.GetSamplePoints();
 	segment = segment % curve.GetSegmentCount();
 	
 	float32 length = 0;
 	
 	for( unsigned i = segment * curve.GetLastSampleFrequency(); i < (segment+1) * curve.GetLastSampleFrequency(); ++i ) {
-		typename BSpline< CoordType, Dim >::PointType diff = samples[i] - samples[MOD( i+1, samples.Size() )];
+		typename BSpline< VectorType >::PointType diff = samples[i] - samples[MOD( i+1, samples.Size() )];
 		length += sqrt( diff * diff );
 	}
 
 	return length;
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename VectorType >
 float32
-BSplineLength( BSpline< CoordType, Dim > &curve )
+BSplineLength( BSpline< VectorType > &curve )
 {
 	float32 length = 0;
 	for( unsigned i = 0; i < curve.GetSegmentCount(); ++i ) {
@@ -361,9 +365,9 @@ BSplineLength( BSpline< CoordType, Dim > &curve )
 	return length;
 }
 
-template< typename CoordType, unsigned Dim >
+template< typename VectorType >
 void
-FindBSplineSegmentLengthExtremes( BSpline< CoordType, Dim > &curve, unsigned &maxIdx, float32 &maxVal, unsigned &minIdx, float32 &minVal )
+FindBSplineSegmentLengthExtremes( BSpline< VectorType > &curve, unsigned &maxIdx, float32 &maxVal, unsigned &minIdx, float32 &minVal )
 {
 	/*float32	 first = BSplineSegmentLength( curve, 0 );
 	float32	 len = first;
@@ -429,6 +433,31 @@ PrintCurveSegmentPoints( std::ostream &stream, const CurveType &curve )
 	if( curve.Cyclic() && (points.Size() > 0) ) {
 		stream << points[0] << std::endl;
 	}
+}
+
+template< typename VectorType >
+void 
+SerializeGeometryObject( M4D::IO::OutStream &stream, const BSpline< VectorType > &obj )
+{
+		stream.Put<uint32>( GMN_BEGIN_ATRIBUTES );
+			stream.Put( DummySpace< 5 >() );
+			stream.Put<uint32>( obj._pointCount );
+			stream.Put<bool>( obj._cyclic );
+			stream.Put<uint32>( obj._lastSampleFrequency );
+		stream.Put<uint32>( GMN_END_ATRIBUTES );
+
+		stream.Put<uint32>( GMN_BEGIN_DATA );
+			for( uint32 i = 0; i < obj._pointCount; ++i ) {
+				stream.Put< VectorType >( obj._points[i] );
+			}
+		stream.Put<uint32>( GMN_END_DATA );
+}
+
+template< typename VectorType >
+void
+DeserializeGeometryObject( M4D::IO::InStream &stream, BSpline< VectorType > * &obj )
+{
+		_THROW_ M4D::ErrorHandling::ETODO();
 }
 
 }/*namespace Geometry*/

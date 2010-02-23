@@ -17,23 +17,23 @@ namespace Geometry
 {
 
 
-template < typename CoordType, unsigned Dim >
-BSpline< CoordType, Dim >
+template < typename VectorType >
+BSpline< VectorType >
 ::BSpline(): _cyclic( false ), _lastSampleFrequency( 2 )
 {
 	_samplePointCache.SetCyclic( _cyclic );
 }
 
-template < typename CoordType, unsigned Dim >
-BSpline< CoordType, Dim >
-::BSpline( const PointSet< CoordType, Dim > & points ): _cyclic( false ), _lastSampleFrequency( 2 )
+template < typename VectorType >
+BSpline< VectorType >
+::BSpline( const PointSet< VectorType > & points ): _cyclic( false ), _lastSampleFrequency( 2 )
 {
 	_samplePointCache.SetCyclic( _cyclic );
 }
 
-template < typename CoordType, unsigned Dim >
-typename BSpline< CoordType, Dim >::PointType
-BSpline< CoordType, Dim >
+template < typename VectorType >
+typename BSpline< VectorType >::PointType
+BSpline< VectorType >
 ::PointByParameter( double t )const
 {
 	int segment_nmbr = floor( t );
@@ -46,9 +46,9 @@ BSpline< CoordType, Dim >
 	return EvaluateCurve( segment_nmbr, values );
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename VectorType >
 bool
-BSpline< CoordType, Dim >
+BSpline< VectorType >
 ::DerivationAtPoint( double t, PointType &derivation )const
 {
 	int segment_nmbr = floor( t );
@@ -64,9 +64,9 @@ BSpline< CoordType, Dim >
 	return false;
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename VectorType >
 bool
-BSpline< CoordType, Dim >
+BSpline< VectorType >
 ::PointAndDerivationAtPoint( double t, PointType &point, PointType &derivation )const
 {
 	int segment_nmbr = floor( t );
@@ -85,9 +85,9 @@ BSpline< CoordType, Dim >
 	return false;
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename VectorType >
 void
-BSpline< CoordType, Dim >
+BSpline< VectorType >
 ::Sample( unsigned frequency )
 {
 	//TODO check
@@ -95,9 +95,9 @@ BSpline< CoordType, Dim >
 	ReSample();
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename VectorType >
 void
-BSpline< CoordType, Dim >
+BSpline< VectorType >
 ::ReSample()
 {
 	if( this->_pointCount <= 1 ) {
@@ -129,10 +129,10 @@ BSpline< CoordType, Dim >
 	}*/
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename VectorType >
 void
-BSpline< CoordType, Dim >
-::SampleWithFunctionValues( unsigned sampleFrequency, PointSet< CoordType, Dim > &points, const typename BSpline< CoordType, Dim >::BFValVector &values )
+BSpline< VectorType >
+::SampleWithFunctionValues( unsigned sampleFrequency, PointSet< VectorType > &points, const typename BSpline< VectorType >::BFValVector &values )
 {
 	if( _cyclic ) {
 		int32 sampleCount = GetSegmentCount() * sampleFrequency;
@@ -151,10 +151,10 @@ BSpline< CoordType, Dim >
 
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename VectorType >
 unsigned
-BSpline< CoordType, Dim >
-::SampleUniformSpline( unsigned firstPoint, PointSet< CoordType, Dim > &points, const typename BSpline< CoordType, Dim >::BFValVector &values )
+BSpline< VectorType >
+::SampleUniformSpline( unsigned firstPoint, PointSet< VectorType > &points, const typename BSpline< VectorType >::BFValVector &values )
 {
 	unsigned actualSample = firstPoint;
 	for( int i = 0; i < (int)(this->Size()-CurveBasis::Degree); ++i ) {
@@ -165,10 +165,10 @@ BSpline< CoordType, Dim >
 	return actualSample;
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename VectorType >
 unsigned
-BSpline< CoordType, Dim >
-::SampleUniformSplineCyclicEnd( unsigned firstPoint, PointSet< CoordType, Dim > &points, const typename BSpline< CoordType, Dim >::BFValVector &values )
+BSpline< VectorType >
+::SampleUniformSplineCyclicEnd( unsigned firstPoint, PointSet< VectorType > &points, const typename BSpline< VectorType >::BFValVector &values )
 {
 	unsigned actualSample = firstPoint;
 	for( int i = 0; i < CurveBasis::Degree; ++i ) {
@@ -179,10 +179,10 @@ BSpline< CoordType, Dim >
 	return actualSample;
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename VectorType >
 unsigned
-BSpline< CoordType, Dim >
-::SampleUniformSplineACyclicBegin( unsigned firstPoint, PointSet< CoordType, Dim > &points, const typename BSpline< CoordType, Dim >::BFValVector &values )
+BSpline< VectorType >
+::SampleUniformSplineACyclicBegin( unsigned firstPoint, PointSet< VectorType > &points, const typename BSpline< VectorType >::BFValVector &values )
 {
 
 	unsigned actualSample = firstPoint;
@@ -194,10 +194,10 @@ BSpline< CoordType, Dim >
 	return actualSample;
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename VectorType >
 unsigned
-BSpline< CoordType, Dim >
-::SampleUniformSplineACyclicEnd( unsigned firstPoint, PointSet< CoordType, Dim > &points, const typename BSpline< CoordType, Dim >::BFValVector &values )
+BSpline< VectorType >
+::SampleUniformSplineACyclicEnd( unsigned firstPoint, PointSet< VectorType > &points, const typename BSpline< VectorType >::BFValVector &values )
 {
 
 	unsigned actualSample = firstPoint;
@@ -210,9 +210,9 @@ BSpline< CoordType, Dim >
 	return actualSample;
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename VectorType >
 void
-BSpline< CoordType, Dim >
+BSpline< VectorType >
 ::SampleWithDerivations( unsigned frequency )
 {
 	//TODO check
@@ -220,9 +220,9 @@ BSpline< CoordType, Dim >
 	ReSampleWithDerivations();
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename VectorType >
 void
-BSpline< CoordType, Dim >
+BSpline< VectorType >
 ::ReSampleWithDerivations()
 {
 	ReSample();
@@ -243,26 +243,26 @@ BSpline< CoordType, Dim >
 
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename VectorType >
 void
-BSpline< CoordType, Dim >
+BSpline< VectorType >
 ::ResetSamples()
 {
 
 }
 
-template < typename CoordType, unsigned Dim >
+template < typename VectorType >
 void
-BSpline< CoordType, Dim >
+BSpline< VectorType >
 ::ResetSamplesDerivations()
 {
 
 }
 
-template < typename CoordType, unsigned Dim >
-typename BSpline< CoordType, Dim >::PointType
-BSpline< CoordType, Dim >
-::EvaluateCurve( int segment, const typename BSpline< CoordType, Dim >::BFunctionValues &values )
+template < typename VectorType >
+typename BSpline< VectorType >::PointType
+BSpline< VectorType >
+::EvaluateCurve( int segment, const typename BSpline< VectorType >::BFunctionValues &values )
 {
 	PointType result;
 	for( int i = 0; i <= CurveBasis::Degree; ++i ) {
@@ -276,10 +276,10 @@ BSpline< CoordType, Dim >
 	}*/
 }
 
-template < typename CoordType, unsigned Dim >
-typename BSpline< CoordType, Dim >::PointType
-BSpline< CoordType, Dim >
-::EvaluateCyclicCurve( int segment, const typename BSpline< CoordType, Dim >::BFunctionValues &values )
+template < typename VectorType >
+typename BSpline< VectorType >::PointType
+BSpline< VectorType >
+::EvaluateCyclicCurve( int segment, const typename BSpline< VectorType >::BFunctionValues &values )
 { 
 	PointType result;
 	int count = this->_pointCount;
@@ -292,9 +292,9 @@ BSpline< CoordType, Dim >
 	return result;
 }
 
-template < typename CoordType, unsigned Dim >
-typename BSpline< CoordType, Dim >::PointType
-BSpline< CoordType, Dim >
+template < typename VectorType >
+typename BSpline< VectorType >::PointType
+BSpline< VectorType >
 ::EvaluateACyclicCurve( int segment, const BFunctionValues &values )
 { 
 	PointType result;

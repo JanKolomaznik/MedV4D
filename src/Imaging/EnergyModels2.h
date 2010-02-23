@@ -19,8 +19,8 @@ template< typename ContourType >
 class EFConvergeToPoint
 {
 public:
-	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > 	GradientType;
-	typedef Vector< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
+	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::PointType > 	GradientType;
+	typedef typename ContourType::PointType	PointCoordinate;
 
 	float32
 	GetParametersGradient( ContourType &curve, GradientType &gradient )
@@ -53,8 +53,8 @@ template< typename ContourType, typename FirstEnergyModel, typename SecondEnergy
 class DoubleEnergyFunctional : public FirstEnergyModel, public SecondEnergyModel
 {
 public:
-	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > 	GradientType;
-	typedef Vector< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
+	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::PointType > 	GradientType;
+	typedef typename ContourType::PointType	PointCoordinate;
 	
 	DoubleEnergyFunctional(): _alpha( 0.5f )
 		{}

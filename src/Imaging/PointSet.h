@@ -26,16 +26,18 @@ namespace Geometry
 {
 
 	
-template < typename CoordType, unsigned Dim >
-class PointSet: public AGeometricalObjectDimPrec< CoordType, Dim >
+template < typename VectorType >
+class PointSet: public AGeometricalObjectDimPrec< VectorType >
 {
 public:
-	typedef CoordType					CoordinateType;
-	typedef AGeometricalObjectDimPrec< CoordType, Dim >	PredecessorType;
+	typedef AGeometricalObjectDimPrec< VectorType >		PredecessorType;
 	typedef typename PredecessorType::PointType 		PointType;
 	typedef typename PredecessorType::Type			Type;
 	typedef std::vector< PointType >			PointVector;
-	static const unsigned Dimension	= Dim;		
+	typedef PointSet< VectorType >				ThisType;
+	friend void SerializeGeometryObject< VectorType >( M4D::IO::OutStream &stream, const ThisType &obj );
+	//friend void DeserializeGeometryObject< VectorType >( M4D::IO::InStream &stream, ThisType * &obj ); 
+	static const unsigned Dimension	= VectorType::Dimension;		
 
 	PointSet() : _points(), _pointCount( 0 ) 
 		{}
@@ -143,7 +145,7 @@ public:
 		}
 
 	void
-	Scale( Vector< float32, Dim > factors, PointType center )
+	Scale( Vector< float32, Dimension > factors, PointType center )
 		{
 			std::for_each( _points.begin(), _points.end(), ScaleFunctor< PointType >( factors, center ) );
 		}
@@ -153,9 +155,9 @@ protected:
 	uint32		_pointCount;
 };
 
-template < typename CoordType, unsigned Dim >
+template < typename VectorType >
 void
-PrintPointSet( std::ostream &stream, const PointSet< CoordType, Dim > &set, unsigned step = 1 )
+PrintPointSet( std::ostream &stream, const PointSet< VectorType > &set, unsigned step = 1 )
 {
 	if( step == 0 ) {
 		step = 1;
@@ -172,16 +174,40 @@ ClosestPointFromPointSet( const PointSetType &pset, typename PointSetType::Point
 	if( 0 == pset.Size() ) {
 		return -1;
 	}
-	typename PointSetType::CoordinateType distanceSq = (pset[0]-point)*(pset[0]-point);
+	typename PointSetType::Type distanceSq = (pset[0]-point)*(pset[0]-point);
 	int32 idx = 0;
 	for( unsigned i = 1; i < pset.Size(); ++i ) {
-		typename PointSetType::CoordinateType tmp = (pset[i]-point)*(pset[i]-point);
+		typename PointSetType::Type tmp = (pset[i]-point)*(pset[i]-point);
 		if( tmp < distanceSq ) {
 			distanceSq = tmp;
 			idx = i;
 		}
 	}
 	return idx;
+}
+
+template< typename VectorType >
+void 
+SerializeGeometryObject( M4D::IO::OutStream &stream, const PointSet< VectorType > &obj )
+{
+		stream.Put<uint32>( GMN_BEGIN_ATRIBUTES );
+			stream.Put( DummySpace< 5 >() );
+			stream.Put<uint32>( obj._pointCount );
+		stream.Put<uint32>( GMN_END_ATRIBUTES );
+
+		stream.Put<uint32>( GMN_BEGIN_DATA );
+			for( uint32 i = 0; i < obj._pointCount; ++i ) {
+				stream.Put< VectorType >( obj._points[i] );
+			}
+		stream.Put<uint32>( GMN_END_DATA );
+}
+
+template< typename VectorType >
+void
+DeserializeGeometryObject( M4D::IO::InStream &stream, PointSet< VectorType > * &obj )
+{
+		_THROW_ M4D::ErrorHandling::ETODO();
+
 }
 
 }/*namespace Geometry*/

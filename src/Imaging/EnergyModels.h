@@ -34,8 +34,8 @@ template< typename ContourType, typename ImageEnergy, typename InternalEnergy, t
 class SegmentationEnergy: public ImageEnergy, public InternalEnergy, public ConstrainEnergy
 {
 public:
-	typedef M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > 	GradientType;
-	typedef Vector< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
+	typedef M4D::Imaging::Geometry::PointSet< typename ContourType::PointType > 	GradientType;
+	typedef typename ContourType::PointType						PointCoordinate;
 
 	SegmentationEnergy(): 
 			_imageEnergyBalance( 1.0f ),
@@ -158,11 +158,11 @@ template< typename ContourType, typename RegionType >
 class GradientMagnitudeEnergy
 {
 public:
-	typedef M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > 	GradientType;
-	typedef Vector< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
-	typedef typename RegionType::ElementType	ElementType;
-	typedef typename ContourType::SamplePointSet	SamplePointSet;
-	typedef std::vector< ElementType >		ValuesAtSamplesBuffer;
+	typedef M4D::Imaging::Geometry::PointSet< typename ContourType::PointType > 	GradientType;
+	typedef typename ContourType::PointType						PointCoordinate;
+	typedef typename RegionType::ElementType					ElementType;
+	typedef typename ContourType::SamplePointSet					SamplePointSet;
+	typedef std::vector< ElementType >						ValuesAtSamplesBuffer;
 
 	void
 	ResetEnergy() {}
@@ -216,8 +216,8 @@ template< typename ContourType, typename RegionType1, typename RegionType2, type
 class UnifiedImageEnergy : public Distribution
 {
 public:
-	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > 	GradientType;
-	typedef Vector< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
+	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::PointType > 	GradientType;
+	typedef typename ContourType::PointType	PointCoordinate;
 	typedef typename ContourType::BFValVector	BFValVector;
 	//typedef typename RegionType1::ElementType	ElementType1;
 	//typedef typename RegionType2::ElementType	ElementType2;
@@ -399,8 +399,8 @@ template< typename ContourType, typename RegionType, typename Distribution >
 class RegionImageEnergy : public Distribution
 {
 public:
-	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > 	GradientType;
-	typedef Vector< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
+	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::PointType > 	GradientType;
+	typedef typename ContourType::PointType	PointCoordinate;
 	typedef typename ContourType::BFValVector	BFValVector;
 	typedef typename RegionType::ElementType	ElementType;
 	typedef std::vector< float32 >			ValuesAtSamplesBuffer;
@@ -548,8 +548,8 @@ template< typename ContourType >
 class InternalCurveEnergy
 {
 public:
-	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > 	GradientType;
-	typedef Vector< typename ContourType::Type, ContourType::Dimension >	PointCoordinate;
+	typedef  M4D::Imaging::Geometry::PointSet< typename ContourType::PointType > 	GradientType;
+	typedef typename ContourType::PointType	PointCoordinate;
 	typedef typename ContourType::BFValVector	BFValVector;
 	static const int32 Degree = ContourType::Degree;
 	static const int32 TableRowSize = 2*Degree - 1;
@@ -712,7 +712,7 @@ public:
 	template< typename ContourType >
 	float32
 	GetParametersGradient( ContourType &curve, 
-			M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > &gradient )
+			M4D::Imaging::Geometry::PointSet< typename ContourType::PointType > &gradient )
 	{
 		return 0.0f;
 	}
@@ -730,7 +730,7 @@ public:
 	template< typename ContourType >
 	float32
 	GetParametersGradient( ContourType &curve, 
-			M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > &gradient )
+			M4D::Imaging::Geometry::PointSet< typename ContourType::PointType > &gradient )
 	{
 		return 0.0f;
 	}
@@ -748,7 +748,7 @@ public:
 	template< typename ContourType >
 	float32
 	GetParametersGradient( ContourType &curve, 
-			M4D::Imaging::Geometry::PointSet< typename ContourType::Type, ContourType::Dimension > &gradient )
+			M4D::Imaging::Geometry::PointSet< typename ContourType::PointType > &gradient )
 	{
 		return 0.0f;
 	}

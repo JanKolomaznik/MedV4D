@@ -5,6 +5,7 @@
 #include "Imaging/ADataset.h"
 #include "AGeometryDataset2D.h"
 #include "Imaging/DatasetSerializationTools.h"
+#include "Imaging/GeometricalObject.h"
 
 #include <iostream>
 #include <fstream>
@@ -69,6 +70,8 @@ public:
 			stream.Put<uint32>( DUMP_SLICE_BEGIN_MAGIC_NUMBER );
 			const typename SlicedGeometry< OType >::ObjectsInSlice	&slice = dataset.GetSlice( i );
 			stream.Put<uint32>( slice.size() );
+
+				std::for_each( slice.begin(), slice.end(), M4D::Imaging::Geometry::SerializeGeometryObjectFtor< OType >( stream ) );
 
 			stream.Put<uint32>( DUMP_SLICE_END_MAGIC_NUMBER );
 		}

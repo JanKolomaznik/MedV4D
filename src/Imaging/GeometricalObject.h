@@ -2,7 +2,7 @@
 #define GEOMETRICAL_OBJECT_H
 
 #include "Imaging/GeometricalObjectTypeOperations.h"
-#include "common/Vector.h"
+#include "common/Common.h"
 #include <boost/shared_ptr.hpp>
 
 namespace M4D
@@ -19,6 +19,33 @@ namespace Imaging
 {
 namespace Geometry
 {
+
+template< typename GeomObjType >
+void SerializeGeometryObject( M4D::IO::OutStream &stream, const GeomObjType &obj )
+{
+		_THROW_ M4D::ErrorHandling::ETODO( 
+				TO_STRING( "Function specialization for type \"" << 
+					typeid( GeomObjType ).name() << "\" unknown." ) 
+				);
+}
+
+template< typename GeomObjType >
+struct SerializeGeometryObjectFtor
+{
+	SerializeGeometryObjectFtor( M4D::IO::OutStream &stream ): _stream( stream ) {}
+
+	void
+	operator()( const GeomObjType &obj ) {
+		SerializeGeometryObject( _stream, obj );
+	}
+
+	void
+	operator()( typename GeomObjType::Ptr ptr ) {
+		operator()( *ptr );
+	}
+
+	M4D::IO::OutStream 	&_stream;
+};
 
 class AGeometricalObject
 {
@@ -43,25 +70,26 @@ GetGeometryObjectTypeID< AGeometricalObject >()
 template< unsigned Dim >
 class AGeometricalObjectDim: public AGeometricalObject
 {
-	typedef	boost::shared_ptr< AGeometricalObjectDim< Dim > >	Ptr;
 public:
+	typedef	boost::shared_ptr< AGeometricalObjectDim< Dim > >	Ptr;
 	static const unsigned Dimension = Dim;
 };
 
-template< typename CoordType, unsigned Dim >
-class AGeometricalObjectDimPrec: public AGeometricalObjectDim< Dim >
+template< typename VectorType >
+class AGeometricalObjectDimPrec: public AGeometricalObjectDim< VectorType::Dimension >
 {
 public:
-	typedef	boost::shared_ptr< AGeometricalObjectDimPrec< CoordType, Dim > >	Ptr;
+	typedef	boost::shared_ptr< AGeometricalObjectDimPrec< VectorType > >	Ptr;
 
-	typedef CoordType			Type;
-	typedef Vector< Type, Dim > 	PointType;
+	typedef typename VectorType::CoordinateType	Type;
+	static const unsigned 				Dimension = VectorType::Dim;
+	typedef VectorType		 		PointType;
 
 	virtual void
 	Move( PointType t ) = 0;
 
 	virtual void
-	Scale( Vector< float32, Dim > factors, PointType center ) = 0;
+	Scale( Vector< float32, Dimension > factors, PointType center ) = 0;
 	
 };
 
@@ -98,6 +126,8 @@ struct ScaleFunctor
 	ScaleFactor factor;
 	VectorType center;
 };
+
+
 
 }/*namespace Geometry*/
 }/*namespace Imaging*/

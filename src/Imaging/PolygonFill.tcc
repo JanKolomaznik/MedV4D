@@ -21,7 +21,7 @@ ComputeFillIntervals( EdgeRecords & edgeRecords, IntervalRecords & intervals );
 
 template< typename CoordType >
 void
-PolygonFill( const M4D::Imaging::Geometry::Polyline< CoordType, 2 > & polygon, IntervalRecords & intervals, float32 xScale, float32 yScale )
+PolygonFill( const M4D::Imaging::Geometry::Polyline< Vector< CoordType, 2 > > & polygon, IntervalRecords & intervals, float32 xScale, float32 yScale )
 {
 	EdgeRecords edgeRecords;
 	
@@ -38,9 +38,9 @@ PolygonFill( const M4D::Imaging::Geometry::Polyline< CoordType, 2 > & polygon, I
 
 template< typename CoordType >
 void
-PrepareEdgeRecords( const M4D::Imaging::Geometry::Polyline< CoordType, 2 > & polygon, EdgeRecords & edgeRecords, float32 xScale = 1.0f, float32 yScale = 1.0f )
+PrepareEdgeRecords( const M4D::Imaging::Geometry::Polyline< Vector< CoordType, 2 > > & polygon, EdgeRecords & edgeRecords, float32 xScale = 1.0f, float32 yScale = 1.0f )
 {
-	typedef typename M4D::Imaging::Geometry::Polyline< CoordType, 2 >::PointType PointType;
+	typedef typename M4D::Imaging::Geometry::Polyline< Vector< CoordType, 2 > >::PointType PointType;
 
 	PointType points[2];
 	points[1] = polygon[polygon.Size()-1];
@@ -161,7 +161,7 @@ FillRegionFromIntervals( M4D::Imaging::ImageRegion< ElementType, 2 > &region, co
 
 template< typename ElementType, typename CoordType >
 void
-FillRegion( M4D::Imaging::ImageRegion< ElementType, 2 > &region, const M4D::Imaging::Geometry::Polyline< CoordType, 2 > & polygon, ElementType value )
+FillRegion( M4D::Imaging::ImageRegion< ElementType, 2 > &region, const M4D::Imaging::Geometry::Polyline< Vector< CoordType, 2 > > & polygon, ElementType value )
 {
 	IntervalRecords intervals;
 
