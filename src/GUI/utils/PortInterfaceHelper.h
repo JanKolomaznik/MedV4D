@@ -11,7 +11,9 @@
 namespace M4D
 {
 
-
+/**
+ * \tparam DatasetTypeVector mpl::vector of dataset types.
+ **/
 template< typename DatasetTypeVector >
 class PortInterfaceHelper: public M4D::Imaging::MessageReceiverInterface
 {

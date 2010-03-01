@@ -10,7 +10,34 @@
 #include <GL/glu.h>
 
 #include "common/Types.h"
+#include "common/Vector.h"
 //GLenum
+
+#define TYPE_FROM_GL_s	int16
+#define TYPE_FROM_GL_i	int32
+#define TYPE_FROM_GL_f	float32
+#define TYPE_FROM_GL_d	float64
+
+#define GL_VERTEX_VECTOR_MACRO( TYPE_SUFFIX, DIM ) \
+void GLVertexVector( const Vector< TYPE_FROM_GL_##TYPE_SUFFIX, DIM > &coord )\
+{ glVertex##DIM## TYPE_SUFFIX ##v ( coord.GetData() ); }
+
+GL_VERTEX_VECTOR_MACRO( s, 2 )
+GL_VERTEX_VECTOR_MACRO( i, 2 )
+GL_VERTEX_VECTOR_MACRO( f, 2 )
+GL_VERTEX_VECTOR_MACRO( d, 2 )
+
+GL_VERTEX_VECTOR_MACRO( s, 3 )
+GL_VERTEX_VECTOR_MACRO( i, 3 )
+GL_VERTEX_VECTOR_MACRO( f, 3 )
+GL_VERTEX_VECTOR_MACRO( d, 3 )
+
+GL_VERTEX_VECTOR_MACRO( s, 4 )
+GL_VERTEX_VECTOR_MACRO( i, 4 )
+GL_VERTEX_VECTOR_MACRO( f, 4 )
+GL_VERTEX_VECTOR_MACRO( d, 4 )
+
+
 
 template< typename T >
 struct M4DToGLType

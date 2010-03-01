@@ -20,32 +20,6 @@ namespace Imaging
 namespace Geometry
 {
 
-template< typename GeomObjType >
-void SerializeGeometryObject( M4D::IO::OutStream &stream, const GeomObjType &obj )
-{
-		_THROW_ M4D::ErrorHandling::ETODO( 
-				TO_STRING( "Function specialization for type \"" << 
-					typeid( GeomObjType ).name() << "\" unknown." ) 
-				);
-}
-
-template< typename GeomObjType >
-struct SerializeGeometryObjectFtor
-{
-	SerializeGeometryObjectFtor( M4D::IO::OutStream &stream ): _stream( stream ) {}
-
-	void
-	operator()( const GeomObjType &obj ) {
-		SerializeGeometryObject( _stream, obj );
-	}
-
-	void
-	operator()( typename GeomObjType::Ptr ptr ) {
-		operator()( *ptr );
-	}
-
-	M4D::IO::OutStream 	&_stream;
-};
 
 class AGeometricalObject
 {
@@ -57,7 +31,12 @@ public:
 	}
 
 	typedef	boost::shared_ptr< AGeometricalObject >	Ptr;
-	virtual ~AGeometricalObject(){}
+	
+	virtual 
+	~AGeometricalObject(){}
+
+	virtual void
+	UpdateBoundingBox() = 0;
 };
 
 /*template<>
@@ -91,6 +70,9 @@ public:
 	virtual void
 	Scale( Vector< float32, Dimension > factors, PointType center ) = 0;
 	
+	virtual void
+	GetBoundingBox( VectorType &firstCorner, VectorType &secondCorner ) = 0;
+
 };
 
 
@@ -127,6 +109,32 @@ struct ScaleFunctor
 	VectorType center;
 };
 
+template< typename GeomObjType >
+void SerializeGeometryObject( M4D::IO::OutStream &stream, const GeomObjType &obj )
+{
+		_THROW_ M4D::ErrorHandling::ETODO( 
+				TO_STRING( "Function specialization for type \"" << 
+					typeid( GeomObjType ).name() << "\" unknown." ) 
+				);
+}
+
+template< typename GeomObjType >
+struct SerializeGeometryObjectFtor
+{
+	SerializeGeometryObjectFtor( M4D::IO::OutStream &stream ): _stream( stream ) {}
+
+	void
+	operator()( const GeomObjType &obj ) {
+		SerializeGeometryObject( _stream, obj );
+	}
+
+	void
+	operator()( typename GeomObjType::Ptr ptr ) {
+		operator()( *ptr );
+	}
+
+	M4D::IO::OutStream 	&_stream;
+};
 
 
 }/*namespace Geometry*/

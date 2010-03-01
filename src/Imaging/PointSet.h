@@ -35,6 +35,8 @@ public:
 	typedef typename PredecessorType::Type			Type;
 	typedef std::vector< PointType >			PointVector;
 	typedef PointSet< VectorType >				ThisType;
+	typedef typename PointVector::iterator			Iterator;
+	typedef typename PointVector::const_iterator		ConstIterator;
 	friend void SerializeGeometryObject< VectorType >( M4D::IO::OutStream &stream, const ThisType &obj );
 	//friend void DeserializeGeometryObject< VectorType >( M4D::IO::InStream &stream, ThisType * &obj ); 
 	static const unsigned Dimension	= VectorType::Dimension;		
@@ -67,22 +69,6 @@ public:
 			} else 
 				_THROW_ ErrorHandling::EBadIndex( TO_STRING("Index = " << idx << " out of range < 0, " << Size() << " ).") ); 
 		}
-
-	typename PointVector::iterator
-	Begin()
-		{ return _points.begin(); }
-	
-	typename PointVector::const_iterator
-	Begin()const
-		{ return _points.begin(); }
-
-	typename PointVector::iterator
-	End()
-		{ return _points.end(); }
-	
-	typename PointVector::const_iterator
-	End()const
-		{ return _points.end(); }
 
 	PointType &
 	GetPointCyclic( int32 idx ) 
@@ -149,7 +135,19 @@ public:
 		{
 			std::for_each( _points.begin(), _points.end(), ScaleFunctor< PointType >( factors, center ) );
 		}
-	
+
+	Iterator
+	Begin()	{ return _points.begin(); }
+
+	Iterator
+	End()	{ return _points.end(); }
+
+	ConstIterator
+	Begin() const { return _points.begin(); }
+
+	ConstIterator
+	End() const { return _points.end(); }
+
 protected:
 	PointVector	_points;
 	uint32		_pointCount;

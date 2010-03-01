@@ -1,6 +1,7 @@
 #ifndef COORDINATES_H
 #define COORDINATES_H
 
+#include "common/Debug.h"
 #include "common/ExceptionBase.h"
 #include <istream>
 #include "common/TypeTraits.h"
