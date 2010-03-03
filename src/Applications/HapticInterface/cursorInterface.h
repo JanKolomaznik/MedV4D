@@ -14,7 +14,7 @@ namespace M4D
 			virtual float getY();
 			virtual float getZ();
 			cursorInterface(Imaging::InputPortTyped< Imaging::AImage >	*inPort);
-		private: 
+		protected: 
 			Imaging::InputPortTyped< Imaging::AImage >	*_inPort;
 			float x;
 			float y;

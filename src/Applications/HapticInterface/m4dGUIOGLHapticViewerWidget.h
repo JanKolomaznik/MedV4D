@@ -19,6 +19,7 @@
 #include "common/Common.h"
 #include "..\..\gui\widgets\m4dGUIAbstractViewerWidget.h"
 #include "cursorInterface.h"
+#include "hapticCursor.h"
 
 namespace M4D
 {
@@ -317,8 +318,8 @@ namespace M4D
 				float _zoom;
 				float _rotateX, _rotateZ, _rotateY;
 				int _imageID;
-				float _sizeX, _sizeY, _sizeZ;
-				float _minX, _minY, _minZ;
+				int _sizeX, _sizeY, _sizeZ;
+				int _minX, _minY, _minZ;
 				float _varX, _varY, _varZ;
 				float _trianglSize;
 				int64 _minValue, _maxValue;

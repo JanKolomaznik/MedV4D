@@ -19,7 +19,8 @@ namespace M4D
 			_index = index;
 			_inPort = new Imaging::InputPortTyped<Imaging::AImage>();
 			_inputPorts.AppendPort( _inPort );
-			_cursor = new cursorInterface(_inPort);
+			//_cursor = new cursorInterface(_inPort);
+			_cursor = new hapticCursor(_inPort);
 			setInputPort( conn );
 		}
 		m4dGUIOGLHapticViewerWidget::m4dGUIOGLHapticViewerWidget(unsigned int index, QWidget *parent) : QGLWidget(parent)
@@ -27,7 +28,8 @@ namespace M4D
 			_index = index;
 			_inPort = new Imaging::InputPortTyped<Imaging::AImage>();
 			_inputPorts.AppendPort( _inPort );
-			_cursor = new cursorInterface(_inPort);
+			//_cursor = new cursorInterface(_inPort);
+			_cursor = new hapticCursor(_inPort);
 			setInputPort( );
 		}
 		m4dGUIOGLHapticViewerWidget::~m4dGUIOGLHapticViewerWidget()
@@ -304,7 +306,7 @@ namespace M4D
 			glLoadIdentity();
 			glTranslatef(0.0f, 0.0f, _zoom);
 			glColor3f(0.0f, 1.0f, 0.0f);
-			DrawCursor(_cursor->getX(), _cursor->getY(), _cursor->getZ(), _cursorSize);
+			DrawCursor(_cursor->getX()*(_imageSize / 2.0), _cursor->getY()*(_imageSize / 2.0), _cursor->getZ()*(_imageSize / 2.0), _cursorSize);
 			
 			//glLoadIdentity();
 			//glColor3f(1.0f, 0.0f, 0.0f);
@@ -342,13 +344,13 @@ namespace M4D
 			
 			if (_inPort->GetDatasetTyped().GetDimension() == 3)
 			{
-				_minX = (float)_inPort->GetDatasetTyped().GetDimensionExtents(0).minimum;
-				_minY = (float)_inPort->GetDatasetTyped().GetDimensionExtents(1).minimum;
-				_minZ = (float)_inPort->GetDatasetTyped().GetDimensionExtents(2).minimum;
+				_minX = _inPort->GetDatasetTyped().GetDimensionExtents(0).minimum;
+				_minY = _inPort->GetDatasetTyped().GetDimensionExtents(1).minimum;
+				_minZ = _inPort->GetDatasetTyped().GetDimensionExtents(2).minimum;
 
-				_sizeX = ((float)_inPort->GetDatasetTyped().GetDimensionExtents(0).maximum-_minX);
-				_sizeY = ((float)_inPort->GetDatasetTyped().GetDimensionExtents(1).maximum-_minY);
-				_sizeZ = ((float)_inPort->GetDatasetTyped().GetDimensionExtents(2).maximum-_minZ);
+				_sizeX = _inPort->GetDatasetTyped().GetDimensionExtents(0).maximum - _minX;
+				_sizeY = _inPort->GetDatasetTyped().GetDimensionExtents(1).maximum - _minY;
+				_sizeZ = _inPort->GetDatasetTyped().GetDimensionExtents(2).maximum - _minZ;
 			}
 
 			_varX = _imageSize / _sizeX;
