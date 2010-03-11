@@ -28,7 +28,7 @@ public:
     /**
      * Constructor
      */
-    TFSimpleSliceViewerTexturePreparer(): SimpleSliceViewerTexturePreparer< ElementType >() {}
+	TFSimpleSliceViewerTexturePreparer(): SimpleSliceViewerTexturePreparer< ElementType >(), currentTransferFunction(NULL) {}
 
     /**
      * Prepares the texture of the image to be mapped to the following OpenGL surface.
@@ -42,7 +42,8 @@ public:
      *  @param dimension dataset's number of dimensions
      *  @return true, if texture preparing was successful, false otherwise
      */
-    virtual bool prepare( const Imaging::InputPortList& inputPorts,
+    virtual bool prepare(
+		const Imaging::InputPortList& inputPorts,
 		uint32& width,
 		uint32& height,
 		GLint brightnessRate,
@@ -50,21 +51,23 @@ public:
 		SliceOrientation so,
 		uint32 slice,
 		unsigned& dimension );
-
-	bool adjustByTransferFunction( const Imaging::InputPortList& inputPorts,
+/*
+	bool adjustByTransferFunction(
+		ElementType* pixel,
 		uint32& width,
 		uint32& height,
 		GLint brightnessRate,
-		GLint contrastRate,
-		SliceOrientation so,
-		uint32 slice,
-		unsigned& dimension,
-		TFAFunction* transferFunction);
+		GLint contrastRate);*/
+
+	void setTransferFunction(TFAFunction* transferFunction);
+
+private:
+	TFAFunction* currentTransferFunction;
 };
 
 class m4dTFSliceViewerWidget: public m4dGUISliceViewerWidget, public QObject{
 
-	//Q_OBJECT
+	Q_OBJECT
 
 public:
 	
@@ -76,7 +79,6 @@ public:
      *  @param parent the parent widget of the viewer
      */
     m4dTFSliceViewerWidget( unsigned index, QWidget *parent = 0 ): PredecessorType( index, parent ){
-		texturePreparerType = tf;
 	}
 
     /**
@@ -86,7 +88,6 @@ public:
      *  @param parent the parent widget of the viewer
      */
     m4dTFSliceViewerWidget( Imaging::ConnectionInterface* conn, unsigned index, QWidget *parent = 0 ): PredecessorType( conn, index, parent ){
-		texturePreparerType = tf;
 	}
 
 public slots:

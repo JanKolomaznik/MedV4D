@@ -70,6 +70,7 @@ mainWindow::mainWindow ()
 	CreatePipeline();
 
 	_settings = new SettingsBox();
+	_settings->build();
 	addDockWindow( "Transfer Functions", _settings );
 }
 
@@ -77,7 +78,7 @@ void mainWindow::createDefaultViewerDesktop (){
 
 	currentViewerDesktop = new M4D::GUI::m4dGUIMainViewerDesktopWidget( 1, 2, new M4D::Viewer::TFViewerFactory() );	
 
-	M4D::Viewer::m4dTFSliceViewerWidget* currentViewer = (M4D::Viewer::m4dTFSliceViewerWidget*)currentViewerDesktop->getSelectedViewerWidget();
+	M4D::Viewer::m4dTFSliceViewerWidget* currentViewer = (M4D::Viewer::m4dTFSliceViewerWidget*)(currentViewerDesktop->getSelectedViewerWidget());
 
 	QObject::connect( _settings, SIGNAL(UseTransferFunction(TFAFunction*)),	currentViewer, SLOT(AdjustByTransferFunction(TFAFunction*)));
 }

@@ -3,16 +3,14 @@
 
 #include <map>
 
-#include <TF/TFScheme.h>
+#include <TF/TFAFunction.h>
 #include <TF/Convert.h>
-#include <TF/TFPaintingWidget.h>
+#include <TF/TFXmlReader.h>
+#include <TF/TFXmlWriter.h>
 
 #include <QtGui/QWidget>
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
-
-#include <TF/TFXmlReader.h>
-#include <TF/TFXmlWriter.h>
 
 using namespace std;
 
@@ -29,24 +27,25 @@ public:
 	SettingsBox();
     ~SettingsBox();
 
+	virtual void build();
+
 private:
     Ui::SettingsBox* ui;
 
-	TFScheme* savedFunctions;
-	TFFunction* currentFunction;
+protected:
+	TFAFunction* tf;
+	virtual TFAFunction* createDefaultTransferFunction();
+	virtual void setupToolsAndPainter();
 
-	TFPaintingWidget* painter;
+	QWidget* toolsWidget;
+	QWidget* painterWidget;
 
-private slots:
+protected slots:
     void on_schemeUse_clicked();
 
-    void on_functionBox_currentIndexChanged(int index);
-    void on_functionDelete_clicked();
-    void on_functionSave_clicked();
-
     void on_actionExit_triggered();
-    void on_saveScheme_triggered();
-    void on_loadScheme_triggered();
+    void on_saveScheme_triggered();	//TODO abstract
+    void on_loadScheme_triggered();	//TODO abstract
 
 signals:
 	void UseTransferFunction(TFAFunction* transferFunction);

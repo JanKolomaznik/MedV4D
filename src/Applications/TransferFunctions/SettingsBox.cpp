@@ -1,136 +1,50 @@
 #include "SettingsBox.h"
 #include "ui_SettingsBox.h"
 
+#include <TF/TFScheme.h>
+
 #include <cassert>
 
 /*
  * constructor, destructor
  */
 
-SettingsBox::SettingsBox()
-    : ui(new Ui::SettingsBox){
+SettingsBox::SettingsBox(): ui(new Ui::SettingsBox){
 
     ui->setupUi(this);
 
     ui->progressBar->reset();
     ui->progressLabel->hide();
     ui->progressBar->hide();
-
-    savedFunctions = new TFScheme();
-	currentFunction = savedFunctions->getFirstFunction();
-
-	int marginH = 10;
-	int marginV = 10;
-	painter = new TFPaintingWidget(marginH, marginV);
-	painter->setParent(this);
-    painter->setObjectName(QString::fromUtf8("painter"));
-	painter->setGeometry(QRect(220, 80, FUNCTION_RANGE + 2*marginH, COLOUR_RANGE + 2*marginV));
-	painter->setView(&currentFunction);
-
-	setFocus();
 }
 
 SettingsBox::~SettingsBox(){
 
-	delete savedFunctions;	//includes delete of currentFunction and currentPoint
-	delete painter;
+	delete tf;	//includes delete of currentFunction and currentPoint
     delete ui;
 }
 
-/*
- * function methods
- */
+void SettingsBox::build(){
 
-void SettingsBox::on_functionSave_clicked(){
-
-	if(ui->functionName->text() == "unsaved_function")
-	{
-		//cannot save
-		//error dialog shows
-		//TODO
-		return;
-	}
-
-	QString newName = ui->functionName->text();
-
-	savedFunctions->removeFunction(currentFunction->name);
-	currentFunction->name = newName.toStdString();
-	savedFunctions->addFunction(currentFunction, false);
-
-	ui->functionBox->setItemText( ui->functionBox->currentIndex(), newName );
-	
-	painter->repaint();
+	tf = createDefaultTransferFunction();
+	setupToolsAndPainter();
 }
 
-void SettingsBox::on_functionDelete_clicked(){
+void SettingsBox::setupToolsAndPainter(){	
 
-    int removeIndex = ui->functionBox->currentIndex();
-    int count = ui->functionBox->count( );
-	int newIndex = 0;
+	toolsWidget = tf->getTools();
+    toolsWidget->setObjectName(QString::fromUtf8("toolsWidget"));
+    toolsWidget->setGeometry(QRect(10, 70, 220, 290));
+	toolsWidget->setParent(this);
 
-    if(removeIndex != 0)
-    {      
-        if(removeIndex < (count - 2))
-        {
-            newIndex = removeIndex;
-        }
-        else
-        {
-            newIndex = removeIndex - 1;
-        }
-    }
-
-	savedFunctions->removeFunction(currentFunction->name);
-
-	delete currentFunction;
-	currentFunction = savedFunctions->getFunction(ui->functionBox->itemText(newIndex).toStdString());
-
-	ui->functionBox->setCurrentIndex(newIndex);
-    ui->functionBox->removeItem(removeIndex);
-	
-	painter->repaint();
+	painterWidget = tf->getPainter();
+	painterWidget->setObjectName(QString::fromUtf8("painterWidget"));
+	painterWidget->setGeometry(QRect(240, 70, 330, 290));
+	painterWidget->setParent(this);
 }
 
-void SettingsBox::on_functionBox_currentIndexChanged(int index){
-
-    int count = ui->functionBox->count();
-	QString currentText = ui->functionBox->currentText();
-
-	int unsaved = ui->functionBox->findText(QString::fromStdString("unsaved_function"));
-	if(0 <= unsaved)
-	{
-		if(index == count - 1)
-		{
-			ui->functionBox->removeItem(count - 2);
-			return;
-		}
-		ui->functionBox->removeItem(unsaved);
-		--count;
-	}
-
-    if(index == count-1)
-    {
-        ui->functionBox->addItem(QString::fromStdString("add function"));
-        
-        ui->functionBox->setItemText(count-1, QString::fromStdString("unsaved_function"));
-
-        ui->functionBox->setCurrentIndex(count-1);
-
-		ui->functionName->setText(QString::fromStdString("unsaved_function"));
-		ui->functionName->setFocus();
-
-		delete currentFunction;
-		currentFunction = new TFFunction("unsaved_function");
-    }	
-	else
-	{
-		delete currentFunction;
-		currentFunction = savedFunctions->getFunction(currentText.toStdString());
-
-		ui->functionName->setText( QString::fromStdString(currentFunction->name) );
-	}
-	
-	painter->repaint();
+TFAFunction* SettingsBox::createDefaultTransferFunction(){
+	return new TFScheme();
 }
 
 /*
@@ -151,7 +65,7 @@ void SettingsBox::on_schemeUse_clicked(){
         }
     //---
 
-	emit UseTransferFunction(savedFunctions);
+	emit UseTransferFunction(tf);
 }
 
 void SettingsBox::on_actionExit_triggered(){
@@ -161,9 +75,8 @@ void SettingsBox::on_actionExit_triggered(){
 
 void SettingsBox::on_saveScheme_triggered(){
 
-	savedFunctions->name = ui->schemeName->text().toStdString();
-	on_functionSave_clicked();
-	//savedFunctions->save();
+	tf->name = ui->schemeName->text().toStdString();
+	//tf->save(); TODO
 
      QString fileName =
          QFileDialog::getSaveFileName(this, tr("Save Transfer Function"),
@@ -181,8 +94,9 @@ void SettingsBox::on_saveScheme_triggered(){
          return;
      }
 
+	 TFScheme* toWrite = (TFScheme*)tf;
 	 TFXmlWriter writer;
-     writer.write(&file, &savedFunctions);
+     writer.write(&file, &toWrite);
 
          //statusBar()->showMessage(tr("File saved"), 2000);
 }
@@ -217,32 +131,10 @@ void SettingsBox::on_loadScheme_triggered(){
 	}
 	else
 	{
-		delete savedFunctions;
-		savedFunctions = loaded;
-		currentFunction = savedFunctions->getFirstFunction();
-
-		int toRemove = ui->functionBox->count()-1;
-
-		for(int i = 0; i < toRemove; ++i)
-		{
-			ui->functionBox->removeItem(ui->functionBox->count()-2);
-		}
-
-		vector<TFName> points = savedFunctions->getFunctionNames();
-		vector<TFName>::iterator first = points.begin();
-		vector<TFName>::iterator end = points.end();
-		vector<TFName>::iterator it = first;
-
-		if(it != end)
-		{
-			ui->functionBox->setItemText(0, QString::fromStdString(*it));
-			++it;
-		}
-		for(it; it != end; ++it)
-		{
-			ui->functionBox->insertItem(ui->functionBox->count()-1, QString::fromStdString(*it));
-		}
-		ui->schemeName->setText(QString::fromStdString(savedFunctions->name));
-		on_functionBox_currentIndexChanged(0);
+		delete tf;
+		tf = loaded;
+		tf->load();
+		setupToolsAndPainter();
+		ui->schemeName->setText(QString::fromStdString(tf->name));
 	}
 }

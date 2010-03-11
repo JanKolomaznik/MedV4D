@@ -34,6 +34,23 @@ bool TFSimpleSliceViewerTexturePreparer< ElementType >::prepare(
 
 	// equalize the first input array
 	adjustArrayContrastBrightness( *pixel, width, height, brightnessRate, contrastRate );
+	ElementType* pix = *pixel;
+	for(int i = 0; i < width*height; ++i)
+	{
+		*pix = TypeTraits<ElementType>::Max;
+		++pix;
+	}
+	/*
+	if(currentTransferFunction != NULL)
+	{
+		currentTransferFunction->adjustByTransferFunction(
+			(int*)(*pixel),
+			TypeTraits<ElementType>::Min,
+			TypeTraits<ElementType>::Max,
+			width, height,
+			brightnessRate, contrastRate);
+	}
+	*/
 
 	// prepare texture
         glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
@@ -46,69 +63,61 @@ bool TFSimpleSliceViewerTexturePreparer< ElementType >::prepare(
 
     return true;
 }
-
+/*
 template< typename ElementType >
 bool TFSimpleSliceViewerTexturePreparer< ElementType >::adjustByTransferFunction(
-	const M4D::Imaging::InputPortList &inputPorts,
+	ElementType* pixel,
 	uint32 &width,
 	uint32 &height,
 	GLint brightnessRate,
-	GLint contrastRate,
-	M4D::SliceOrientation so,
-	uint32 slice,
-	unsigned int &dimension,
-	TFAFunction *transferFunction){
+	GLint contrastRate){
 
-	// get the input datasets
-	ElementType** pixel = getDatasetArrays( inputPorts, 1, width, height, so, slice, dimension );
-
-	if ( ! *pixel )
+	if ( ! pixel )
 	{
-	    delete[] pixel;
 	    return false;
 	}
-
-	ElementType dataRange = TypeTraits< ElementType >::Max - TypeTraits< ElementType >::Min;
 
 	uint32 i, j;
 
 	for ( i = 0; i < height; ++i )
 	{
-		for ( j = 0; j < width; j++ )
+		for ( j = 0; j < width; ++j )
 		{
-			ElementType pixelValue = (*pixel[ i * width + j ]/contrastRate)-brightnessRate;
-			int newValue = transferFunction->getValue((int)(ROUND(pixelValue/dataRange)*FUNCTION_RANGE ));
-			*pixel[ i * width + j ] = (newValue/FUNCTION_RANGE) * dataRange;
+			ElementType pixelValue = (pixel[ i * width + j ]/contrastRate)-brightnessRate;
+			int newValue = currentTransferFunction->getValue(pixelValue, TypeTraits<ElementType>::Min, TypeTraits<ElementType>::Max);
+			pixel[ i * width + j ] = newValue;
 		}
 	}
 
-	// free temporary allocated space
-	delete[] *pixel;
-
-	delete[] pixel;
-
 	return true;
+}*/
+
+template< typename ElementType >
+void TFSimpleSliceViewerTexturePreparer< ElementType >::setTransferFunction(TFAFunction *transferFunction){
+	currentTransferFunction = transferFunction;
 }
+
+
 
 void m4dTFSliceViewerWidget::AdjustByTransferFunction(TFAFunction *transferFunction){	
 
     uint32 height, width;
 	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
-		_imageID, 
-		{					
-			TFSimpleSliceViewerTexturePreparer<TTYPE> texturePreparer;
-			_ready = texturePreparer.adjustByTransferFunction( 
-				this->InputPort(), 
-				width, 
-				height,
-				_brightnessRate, 
-				_contrastRate,  
-				_sliceOrientation, 
-				_sliceNum,// - _minimum[ ( _sliceOrientation + 2 ) % 3 ], 
-				_dimension,
-				transferFunction);
-		} 
-	);
+				_imageID, 
+				{					
+					TFSimpleSliceViewerTexturePreparer<TTYPE> texturePreparer;
+					texturePreparer.setTransferFunction(transferFunction);
+					_ready = texturePreparer.prepare( 
+						this->InputPort(), 
+						width, 
+						height, 
+						_brightnessRate, 
+						_contrastRate, 
+						_sliceOrientation, 
+						_sliceNum,//sliceNum - _minimum[ ( _sliceOrientation + 2 ) % 3 ], 
+						_dimension ); 
+				} 
+		);
 }
 
 void m4dTFSliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset ){

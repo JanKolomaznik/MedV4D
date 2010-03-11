@@ -14,8 +14,8 @@
 
  private:
      void writeScheme(TFScheme** scheme);
-     void writeFunction(TFFunction** function);
-     void writePoint(TFPoint** point);
+     void writeFunction(TFSchemeFunction** function);
+     void writePoint(TFSchemePoint** point);
  };
 
  #endif	//TF_XMLWRITER

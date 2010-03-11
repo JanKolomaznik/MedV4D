@@ -44,9 +44,9 @@ bool TFXmlReader::readScheme(TFScheme** scheme){
 			break;
 		}
 
-		if (isStartElement() || name() == "TFFunction")
+		if (isStartElement() || name() == "TFSchemeFunction")
 		{
-			TFFunction* loaded = NULL;
+			TFSchemeFunction* loaded = NULL;
 			ok = readFunction(&loaded);
 			(*scheme)->addFunction(loaded);
 
@@ -60,9 +60,9 @@ bool TFXmlReader::readScheme(TFScheme** scheme){
 	return ok && !error();
 }
 
-bool TFXmlReader::readFunction(TFFunction** function){
+bool TFXmlReader::readFunction(TFSchemeFunction** function){
 
-	*function = new TFFunction(
+	*function = new TFSchemeFunction(
 		attributes().value("name").toString().toStdString(),
 		attributes().value("colourR").toString().toInt(),
 		attributes().value("colourG").toString().toInt(),
@@ -79,9 +79,9 @@ bool TFXmlReader::readFunction(TFFunction** function){
 			break;
 		}
 
-		if (isStartElement() || name() == "TFPoint")
+		if (isStartElement() || name() == "TFSchemePoint")
 		{
-			TFPoint* loaded = NULL;
+			TFSchemePoint* loaded = NULL;
 			ok = readPoint(&loaded);
 			(*function)->addPoint(loaded);
 
@@ -95,9 +95,9 @@ bool TFXmlReader::readFunction(TFFunction** function){
 	return ok && !error();
 }
 
-bool TFXmlReader::readPoint(TFPoint** point){
+bool TFXmlReader::readPoint(TFSchemePoint** point){
 
-	*point = new TFPoint(
+	*point = new TFSchemePoint(
 		convert<string,int>( attributes().value("x").toString().toStdString() ),
 		convert<string,int>( attributes().value("y").toString().toStdString() ) );
 

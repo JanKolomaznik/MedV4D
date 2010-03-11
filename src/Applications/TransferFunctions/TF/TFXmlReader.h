@@ -1,11 +1,14 @@
 
 #ifndef TF_XMLREADER
+#define TF_XMLREADER
 
 #include <QtCore/QXmlStreamReader>
 #include <QtCore/QString>
 #include <QtCore/QFile>
 
 #include <TF/TFScheme.h>
+#include <TF/TFSchemePainter.h>
+#include <TF/TFSchemeTools.h>
 
 #include <fstream>
 
@@ -21,8 +24,8 @@ public:
 
 private:
 	bool readScheme(TFScheme** scheme);
-	bool readFunction(TFFunction** function);
-	bool readPoint(TFPoint** point);
+	bool readFunction(TFSchemeFunction** function);
+	bool readPoint(TFSchemePoint** point);
 };
 
 #endif //TF_XMLREADER
