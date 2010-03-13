@@ -334,6 +334,10 @@ m4dGUISliceViewerWidget::setButtonHandler( ButtonHandler hnd, MouseButton btn )
 	setSelectMethod( &M4D::Viewer::m4dGUISliceViewerWidget::colorPicker, btn );
 	break;
 
+  case point_picker:
+	setSelectMethod( &M4D::Viewer::m4dGUISliceViewerWidget::pointPicker, btn );
+	break;
+
 	default:
 	throw ErrorHandling::ExceptionBase( "Unsupported button handler." );
 	break;
@@ -1260,6 +1264,58 @@ m4dGUISliceViewerWidget::colorPicker( double x, double y, double z )
     _colorPicked = result;
     _slicePicked = (int)coords[ ( _sliceOrientation + 2 ) % 3 ];
     emit signalColorPicker( _index, result );
+}
+
+void
+m4dGUISliceViewerWidget::pointPicker( double x, double y, double z )
+{
+    double coords[3];
+    coords[0] = x;
+    coords[1] = y;
+    coords[2] = z;
+
+    _pickedPosition = QPoint( (int)coords[ _sliceOrientation ], (int)coords[ ( _sliceOrientation + 1 ) % 3 ] );
+    
+    if ( !_inPort->IsPlugged() ) return;
+
+    resolveFlips( coords[ _sliceOrientation ], coords[ ( _sliceOrientation + 1 ) % 3 ] );
+    
+    if ( checkOutOfBounds( coords[ _sliceOrientation ], coords[ ( _sliceOrientation + 1 ) % 3 ] ) ) return;
+    
+    if ( !_ready ) setParameters();
+    if ( !_ready ) return;
+    
+    coords[ 0 ] = coords[ 0 ] / _extents[ 0 ];
+    coords[ 1 ] = coords[ 1 ] / _extents[ 1 ];
+    coords[ 2 ] = coords[ 2 ] / _extents[ 2 ];
+    
+    try
+    {
+	    if ( _inPort->TryLockDataset() )
+	    {
+        try
+	      {
+		      if ( _inPort->GetDatasetTyped().GetDimension() != 3 && _inPort->GetDatasetTyped().GetDimension() != 2 )
+		      {
+		        _ready = false;
+          }
+	      }
+	      catch (...) { _ready = false; }
+  	    
+        _inPort->ReleaseDatasetLock();
+	    }
+      else
+	    {
+	      _ready = false;
+          return;
+	    }
+    }
+    catch (...) { _ready = false; }
+    
+    if ( !_ready ) return;
+
+    _slicePicked = (int)coords[ ( _sliceOrientation + 2 ) % 3 ];
+    emit signalDataPointPicker( _index, (int)coords[0], (int)coords[1], (int)coords[2] );
 }
 
 bool

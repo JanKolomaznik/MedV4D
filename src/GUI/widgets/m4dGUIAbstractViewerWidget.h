@@ -82,7 +82,7 @@ public:
     /**
      * Enumeration to pass to the button handler setting method to know which method to use.
      */
-    typedef enum { zoomI, moveI, adjust_bc, switch_slice, new_point, new_shape, rotate_3D, color_picker, specialState } ButtonHandler;
+    typedef enum { zoomI, moveI, adjust_bc, switch_slice, new_point, new_shape, rotate_3D, color_picker, point_picker, specialState } ButtonHandler;
 
     /**
      * Enumeration to pass to the button handler setting method to know which button a given.
@@ -617,7 +617,15 @@ signals:
      *  @param value the value of the color that has been picked
      */
     void signalColorPicker( unsigned index, int64 value );
-    
+
+    /**
+     * Signal indicating that a data point has been picked.
+     *  @param index the index of the viewer
+     *  @param x the x coordinate of the point
+     *  @param y the y coordinate of the point
+     *  @param z the z coordinate of the point
+     */
+    void signalDataPointPicker( unsigned index, int x, int y, int z );
     
     /**
      * Signal indicating that a message has been received.
