@@ -26,6 +26,10 @@ class AbstractSliceViewerTexturePreparer
 
 public:
 
+    /** Constructor */
+    AbstractSliceViewerTexturePreparer() : _lastClickedPositionX( -1 ), _lastClickedPositionY( -1 ), _lastClickedPositionZ( -1 )
+    {}
+
     /**
      * Prepares the texture of the image to be mapped to the following OpenGL surface.
      *  @param inputPorts the input pipeline port list to get the image from
@@ -46,6 +50,31 @@ public:
       SliceOrientation so,
       uint32 slice,
       unsigned& dimension ) = 0;
+
+    /**
+     * Set the last clicked position
+     *  @param lastClickedX the x coordinate of the last clicked position
+     *  @param lastClickedY the y coordinate of the last clicked position
+     *  @param lastClickedZ the z coordinate of the last clicked position
+     */
+    void setLastClickedPosition( int lastClickedX, int lastClickedY, int lastClickedZ )
+    {
+        _lastClickedPositionX = lastClickedX;
+        _lastClickedPositionY = lastClickedY;
+        _lastClickedPositionZ = lastClickedZ;
+    }
+
+protected:
+
+    /** Last clicked X position on the texture */
+    int _lastClickedPositionX;
+
+    /** Last clicked Y position on the texture */
+    int _lastClickedPositionY;
+
+    /** Last clicked Z position on the texture */
+    int _lastClickedPositionZ;
+
 };
 
 } /*namespace Viewer*/

@@ -334,7 +334,11 @@ m4dGUISliceViewerWidget::setButtonHandler( ButtonHandler hnd, MouseButton btn )
 	setSelectMethod( &M4D::Viewer::m4dGUISliceViewerWidget::colorPicker, btn );
 	break;
 
-  case point_picker:
+        case region_picker:
+        setSelectMethod( &M4D::Viewer::m4dGUISliceViewerWidget::regionPicker, btn );
+	break;
+
+        case point_picker:
 	setSelectMethod( &M4D::Viewer::m4dGUISliceViewerWidget::pointPicker, btn );
 	break;
 
@@ -1264,6 +1268,23 @@ m4dGUISliceViewerWidget::colorPicker( double x, double y, double z )
     _colorPicked = result;
     _slicePicked = (int)coords[ ( _sliceOrientation + 2 ) % 3 ];
     emit signalColorPicker( _index, result );
+}
+
+void
+m4dGUISliceViewerWidget::regionPicker( double x, double y, double z )
+{
+    if ( texturePreparerType == custom && customTexturePreparer != 0 )
+    {
+        double coords[3];
+        coords[0] = x;
+        coords[1] = y;
+        coords[2] = z;
+        resolveFlips( coords[ _sliceOrientation ], coords[ ( _sliceOrientation + 1 ) % 3 ] );
+        coords[ 0 ] = coords[ 0 ] / _extents[ 0 ];
+        coords[ 1 ] = coords[ 1 ] / _extents[ 1 ];
+        coords[ 2 ] = coords[ 2 ] / _extents[ 2 ];
+        customTexturePreparer->setLastClickedPosition( coords[ 0 ], coords[ 1 ], coords[ 2 ] );
+    }
 }
 
 void

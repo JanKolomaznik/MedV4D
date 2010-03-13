@@ -82,7 +82,7 @@ public:
     /**
      * Enumeration to pass to the button handler setting method to know which method to use.
      */
-    typedef enum { zoomI, moveI, adjust_bc, switch_slice, new_point, new_shape, rotate_3D, color_picker, point_picker, specialState } ButtonHandler;
+    typedef enum { zoomI, moveI, adjust_bc, switch_slice, new_point, new_shape, rotate_3D, color_picker, point_picker, region_picker, specialState } ButtonHandler;
 
     /**
      * Enumeration to pass to the button handler setting method to know which button a given.

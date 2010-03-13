@@ -535,6 +535,14 @@ protected:
      */
     void colorPicker( double x, double y, double z );
 
+    /**
+     * Pick the center of a region to be shown differently.
+     * @param x the x coordinate of the voxel
+     * @param y the y coordinate of the voxel
+     * @param z the z coordinate of the voxel
+     */
+    void regionPicker( double x, double y, double z );
+
     void pointPicker( double x, double y, double z );
 
     void updateViewer();
