@@ -15,6 +15,7 @@
 #include <list>
 #include <string>
 #include <map>
+#include <vector>
 #include "Imaging/Imaging.h"
 #include "common/Common.h"
 #include "..\..\gui\widgets\m4dGUIAbstractViewerWidget.h"
@@ -25,6 +26,23 @@ namespace M4D
 {
 	namespace Viewer
 	{
+		typedef std::vector< std::vector < std::vector < int > > > dataGrid;
+
+		class floodFillDataContainer 
+		{
+		public:
+			floodFillDataContainer(int px, int py, int pz, int pval, dataGrid *pnewOne)
+			{
+				x = px;
+				y = py;
+				z = pz;
+				val = pval;
+				newOne = pnewOne;
+			}
+			int x, y, z, val;
+			dataGrid *newOne;
+		};
+		
 		/**
 		* Class that shows anything you describe in openGL.
 		*/
@@ -88,7 +106,7 @@ namespace M4D
 			*/
 			virtual QWidget* operator()();
 
-			void DrawTriangle(float x, float y, float z, float size);
+			void DrawBlock(float x, float y, float z, float sizeX, float sizeY, float sizeZ);
 
 			void DrawCursor(float x, float y, float z, float size);
 
@@ -102,7 +120,22 @@ namespace M4D
 
 			virtual void resizeGL(int winW, int winH);
 
+			virtual void preprocessData();
+
 			virtual void mousePressEvent(QMouseEvent *event);
+
+			//virtual dataGrid processAverage();
+			
+			virtual void cropMyImage(const std::vector<int> &firstCorner, const std::vector<int> &secondCorner);
+
+			virtual void medianFilter(int radius);
+
+			virtual void prepareGraphics();
+
+			virtual void floodFillForVolumes(int x, int y, int z, int val, dataGrid *newOne);
+
+
+			//virtual int countAverage(int x, int y, int z);
 
 			/**
 			* Method inherited from QGLWidget. It is called whenever a mouse button is released
@@ -309,28 +342,28 @@ namespace M4D
 
 			protected:
 
-				QPoint _lastMousePosition;
-				bool _leftButton;
-				bool _rightButton;
-				float _imageSize;
-				float _imageWidth;
-				float _imageHeight;
-				float _zoom;
-				float _rotateX, _rotateZ, _rotateY;
-				int _imageID;
-				int _sizeX, _sizeY, _sizeZ;
-				int _minX, _minY, _minZ;
-				float _varX, _varY, _varZ;
-				float _trianglSize;
-				int64 _minValue, _maxValue;
-				float _cursorSize;
-
-				cursorInterface* _cursor;
+				QPoint lastMousePosition;
+				bool leftButton;
+				bool rightButton;
+				float imageSize;
+				float imageWidth;
+				float imageHeight;
+				float zoom;
+				float rotateX, rotateZ, rotateY;
+				float distanceX, distanceY, distanceZ;
+				int imageID;
+				int sizeX, sizeY, sizeZ;
+				int minX, minY, minZ;
+				int64 minValue, maxValue;
+				float cursorSize;
+				std::vector< int > volumeHistogram;
+				dataGrid myData, graphicData;
+				cursorInterface* cursor;
 				
 				/**
 				* The input port that can be connected to the pipeline.
 				*/
-				Imaging::InputPortTyped< Imaging::AImage >	*_inPort;
+				Imaging::InputPortTyped< Imaging::AImage >	*inPort;
 
 
 				//// a haptic device handler

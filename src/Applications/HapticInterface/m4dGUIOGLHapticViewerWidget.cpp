@@ -7,8 +7,11 @@
 #include "m4dGUIOGLHapticViewerWidget.h"
 #include <sstream>
 #include <QtGui>
+#include <string>
+#include <queue>
 
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
 
 namespace M4D
 {
@@ -16,28 +19,42 @@ namespace M4D
 	{
 		m4dGUIOGLHapticViewerWidget::m4dGUIOGLHapticViewerWidget( Imaging::ConnectionInterface* conn, unsigned index, QWidget *parent) : QGLWidget(parent)
 		{
+			std::vector< int > row;
+			std::vector< std::vector < int > > layer;
+			row.push_back(0);
+			layer.push_back(row);
+			myData.push_back(layer);
+			graphicData.push_back(layer);
 			_index = index;
-			_inPort = new Imaging::InputPortTyped<Imaging::AImage>();
-			_inputPorts.AppendPort( _inPort );
-			//_cursor = new cursorInterface(_inPort);
-			_cursor = new hapticCursor(_inPort);
+			inPort = new Imaging::InputPortTyped<Imaging::AImage>();
+			_inputPorts.AppendPort( inPort );
+			//cursor = new cursorInterface(inPort);
+			cursor = new hapticCursor(inPort);
 			setInputPort( conn );
+			preprocessData();
 		}
 		m4dGUIOGLHapticViewerWidget::m4dGUIOGLHapticViewerWidget(unsigned int index, QWidget *parent) : QGLWidget(parent)
 		{
+			std::vector< int > row;
+			std::vector< std::vector < int > > layer;
+			row.push_back(0);
+			layer.push_back(row);
+			myData.push_back(layer);
+			graphicData.push_back(layer);
 			_index = index;
-			_inPort = new Imaging::InputPortTyped<Imaging::AImage>();
-			_inputPorts.AppendPort( _inPort );
-			//_cursor = new cursorInterface(_inPort);
-			_cursor = new hapticCursor(_inPort);
+			inPort = new Imaging::InputPortTyped<Imaging::AImage>();
+			_inputPorts.AppendPort( inPort );
+			//cursor = new cursorInterface(inPort);
+			cursor = new hapticCursor(inPort);
 			setInputPort( );
+			preprocessData();
 		}
 		m4dGUIOGLHapticViewerWidget::~m4dGUIOGLHapticViewerWidget()
 		{
 		}
 		void m4dGUIOGLHapticViewerWidget::setInputPort()
 		{
-			_inPort->UnPlug();
+			inPort->UnPlug();
 			updateGL();
 		}
 		void m4dGUIOGLHapticViewerWidget::setInputPort( Imaging::ConnectionInterface* conn )
@@ -47,7 +64,7 @@ namespace M4D
 				setInputPort();
 				return;
 			}
-			conn->ConnectConsumer( *_inPort );
+			conn->ConnectConsumer( *inPort );
 			updateGL();
 		}
 		void m4dGUIOGLHapticViewerWidget::setUnSelected()
@@ -77,9 +94,9 @@ namespace M4D
 				_eventHandler->mousePressEvent(event);
 				return;
 			}
-			_lastMousePosition = QPoint(event->x(), event->y());
-			_rightButton = event->buttons() == Qt::RightButton;
-			_leftButton = event->buttons() == Qt::LeftButton;
+			lastMousePosition = QPoint(event->x(), event->y());
+			rightButton = event->buttons() == Qt::RightButton;
+			leftButton = event->buttons() == Qt::LeftButton;
 			updateGL();
 
 		}
@@ -90,8 +107,8 @@ namespace M4D
 				_eventHandler->mouseReleaseEvent(event);
 				return;
 			}
-			_rightButton = _rightButton && !(event->buttons() == Qt::RightButton);
-			_leftButton = _leftButton && !(event->buttons() == Qt::LeftButton);
+			rightButton = rightButton && !(event->buttons() == Qt::RightButton);
+			leftButton = leftButton && !(event->buttons() == Qt::LeftButton);
 			updateGL();
 		}
 		void m4dGUIOGLHapticViewerWidget::mouseMoveEvent(QMouseEvent *event)
@@ -101,18 +118,18 @@ namespace M4D
 				_eventHandler->mouseMoveEvent(event);
 				return;
 			}
-			if (_leftButton)
+			if (leftButton)
 			{
-				float xMove = ((float)(event->x() - _lastMousePosition.x())) / ((float)(height()));
-				float yMove = ((float)(event->y() - _lastMousePosition.y())) / ((float)(width()));
+				float xMove = ((float)(event->x() - lastMousePosition.x())) / ((float)(height()));
+				float yMove = ((float)(event->y() - lastMousePosition.y())) / ((float)(width()));
 
-				_rotateY += xMove * 5.0;
-				_rotateY = _rotateY > 360.0 ? _rotateY - 360.0 : _rotateY;
-				_rotateY = _rotateY < -360.0 ? _rotateY + 360.0 : _rotateY;
+				rotateY += xMove * 5.0;
+				rotateY = rotateY > 360.0 ? rotateY - 360.0 : rotateY;
+				rotateY = rotateY < -360.0 ? rotateY + 360.0 : rotateY;
 
-				_rotateX += yMove * 5.0; // TODO
-				_rotateX = _rotateX > 360.0 ? _rotateX - 360.0 : _rotateX;
-				_rotateX = _rotateX < 360.0 ? _rotateX + 360.0 : _rotateX;
+				rotateX += yMove * 5.0; // TODO
+				rotateX = rotateX > 360.0 ? rotateX - 360.0 : rotateX;
+				rotateX = rotateX < 360.0 ? rotateX + 360.0 : rotateX;
 			}
 			updateGL();
 		}
@@ -126,7 +143,7 @@ namespace M4D
 			int numDegrees = event->delta() / 8;
 			int numSteps = numDegrees / 15;
 
-			_zoom += numSteps;
+			zoom += numSteps;
 
 			updateGL();
 		}
@@ -154,17 +171,39 @@ namespace M4D
 				return;
 			}
 		}
-		void m4dGUIOGLHapticViewerWidget::DrawTriangle(float x, float y, float z, float size)
+		void m4dGUIOGLHapticViewerWidget::DrawBlock( float x, float y, float z, float sizeX, float sizeY, float sizeZ )
 		{
-			glBegin(GL_TRIANGLES);
+			glBegin(GL_QUADS);
 
-			float height = size * sqrt(3.0) / 2;
-			float bottom = y - (height / 3);
-			float top = bottom + height;
+			glVertex3f(x, y, z);
+			glVertex3f(x + sizeX, y, z);
+			glVertex3f(x + sizeX, y + sizeY, z);
+			glVertex3f(x, y + sizeY, z);
 
-			glVertex3f(x, top, z);
-			glVertex3f(x - (size / 2.0f), bottom, z);
-			glVertex3f(x + (size / 2.0f), bottom, z);
+			glVertex3f(x, y, z);
+			glVertex3f(x + sizeX, y, z);
+			glVertex3f(x + sizeX, y, z + sizeZ);
+			glVertex3f(x, y, z + sizeZ);
+
+			glVertex3f(x, y, z);
+			glVertex3f(x, y, z + sizeZ);
+			glVertex3f(x, y + sizeY, z + sizeZ);
+			glVertex3f(x, y + sizeY, z);
+
+			glVertex3f(x + sizeX, y, z);
+			glVertex3f(x + sizeX, y, z + sizeZ);
+			glVertex3f(x + sizeX, y + sizeY, z + sizeZ);
+			glVertex3f(x + sizeX, y + sizeY, z);
+
+			glVertex3f(x, y + sizeY, z);
+			glVertex3f(x + sizeX, y + sizeY, z);
+			glVertex3f(x + sizeX, y + sizeY, z + sizeZ);
+			glVertex3f(x, y + sizeY, z + sizeZ);
+
+			glVertex3f(x + sizeX, y, z + sizeZ);
+			glVertex3f(x, y, z + sizeZ);
+			glVertex3f(x, y + sizeY, z + sizeZ);
+			glVertex3f(x + sizeX, y + sizeY, z + sizeZ);
 
 			glEnd();
 		}
@@ -183,135 +222,367 @@ namespace M4D
 
 			glEnd();
 		}
-		void m4dGUIOGLHapticViewerWidget::paintGL()
+		/*dataGrid M4D::Viewer::m4dGUIOGLHapticViewerWidget::processAverage()
 		{
-			//////////////////////////////////////////////////////////////////////////
-			// Testing
-			//////////////////////////////////////////////////////////////////////////
-			//int x = 3;
-			//int y = 2;
-			//
-			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);// Vymaže obrazovku a hloubkový buffer
-			//glClearColor(0.0, 0.0, 0.0, 0.0);
-			//glLoadIdentity();// Reset matice								
-			//
-			////glEnable(GL_POINT_SMOOTH);
-			//
-			//glPointSize(3.0f);
-			//glColor3f(1.0f,1.0f,1.0f);
-			//glBegin(GL_POINTS);
-			//for (float i = -x; i < x; i+=0.2)
-			//{
-			//	for (float j = -y; j < y; j+=0.2)
-			//	{
-			//		for (float k = -x; k < x; k+=0.2)
-			//		{
-			//			glVertex3f((float) i, (float)j, (float)k);
-			//		}
-			//	}
-			//}
-			//glEnd();
+			dataGrid dg;
+			
+			std::vector< int > row;
+			std::vector< std::vector < int > > plane;
 
-			if (! _inPort->IsPlugged() )
+			dg.clear();
+			for (int i = minX; i < minX + sizeX; i++)
+			{	
+				std::cout << i << " \n";
+				plane.clear();
+				for (int j = minY; j < minY + sizeY; j++)
+				{
+					row.clear();
+					for (int k = minZ; k < minZ + sizeZ; k++)
+					{
+						row.push_back(countAverage(i, j, k));
+					}
+					plane.push_back(row);
+				}
+				dg.push_back(plane);
+			}
+			return dg;
+		}*/
+		void m4dGUIOGLHapticViewerWidget::medianFilter(int radius)
+		{
+			dataGrid newOne;
+			for (int i = 0; i < myData.size(); i++)
 			{
-				return;
+				std::cout << i << std::endl;
+				std::vector< std::vector < int > > layer;
+				for (int j = 0; j < myData[0].size(); j++)
+				{
+					std::vector< int > row;
+					for (int k = 0; k < myData[0][0].size(); k++)
+					{
+						std::vector< int > local;
+						for (int x = -radius; x <= radius; x++)
+						{
+							for (int y = -radius; y <= radius; y++)
+							{
+								if ((((y * y) + (x * x)) <= radius * radius) && ((x + i) >= 0) && ((x + i) < myData.size()) && ((y + j) >= 0) && ((y + j) < myData[i].size()))
+								{
+									local.push_back(myData[ i + x ][ j + y ][k]);
+								}
+							}
+						}
+						sort(local.begin(), local.end());
+						row.push_back(local[local.size() / 2]);
+					}
+					layer.push_back(row);
+				}
+				newOne.push_back(layer);
+			}
+			myData = newOne;
+		}
+		void m4dGUIOGLHapticViewerWidget::preprocessData()
+		{
+
+			std::cout << "Preprocessing data...\n";
+			loadImageParams();
+
+			std::cout << "Croping data...\n";
+
+			int left[] = {200, 200, 20};
+			int right[] = {320, 320, 45};
+			std::vector< int > leftCorner(left, left + 3);
+			std::vector< int > rightCorner(right, right + 3);
+			cropMyImage(leftCorner, rightCorner);
+			
+			std::cout << "Filtering data...\n";
+			medianFilter(2);
+			medianFilter(2);
+			medianFilter(2);
+			
+			std::cout << "Making histogram...\n";
+			for (int i = minValue; i <= maxValue; i++)
+			{
+				volumeHistogram.push_back(0);
+			}
+			
+			for (int i = 0; i < myData.size(); i++)
+			{
+				for (int j = 0; j < myData[0].size(); j++)
+				{
+					for (int k = 0; k < myData[0][0].size(); k++)
+					{
+						volumeHistogram[myData[i][j][k]-minValue]++;
+					}
+				}
 			}
 
-			//GLfloat zOffset = -2.0f;
-
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);// Vymaže obrazovku a hloubkový buffer
-			glClearColor(0.0, 0.0, 0.0, 0.0);
-			glLoadIdentity();
-			
-			/*glPointSize(3.0f);
-			glColor3f(1.0f,1.0f,.0f);
-			glBegin(GL_POINTS);
-
-			float var = 3.0 / ((float)_inPort->GetDatasetTyped().GetDimensionExtents(0).maximum-(float)_inPort->GetDatasetTyped().GetDimensionExtents(0).minimum);
-			
-			int _imageID = _inPort->GetDatasetTyped().GetElementTypeID();
-
-			int64 result = 0;
-			
-			if (_inPort->GetDatasetTyped().GetDimension() == 2)
+			while (volumeHistogram[volumeHistogram.size()-1] == 0)
 			{
-				for (int i = _inPort->GetDatasetTyped().GetDimensionExtents(0).minimum; i < _inPort->GetDatasetTyped().GetDimensionExtents(0).maximum; i++)
+				maxValue--;
+				volumeHistogram.pop_back();
+			}
+			
+			int bordersP[] = {80 , 956, 1000, 1060, 1090, 1131}; // DEBUG
+			std::vector< int > borders(bordersP, bordersP+6);
+			
+			for (int i = 0; i < myData.size(); i++)
+			{
+				for (int j = 0; j < myData[0].size(); j++)
 				{
-					for (int j = _inPort->GetDatasetTyped().GetDimensionExtents(1).minimum; j < _inPort->GetDatasetTyped().GetDimensionExtents(1).maximum; j++)
+					for (int k = 0; k < myData[0][0].size(); k++)
 					{
-						NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
-							_imageID, result = Imaging::Image< TTYPE, 2 >::CastAImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >(i, j) ) );
-						if (result != 0)
+						for (int l = 0; l < borders.size(); l++)
 						{
-							glColor3f(0.0f + ((GLfloat)result / 256.0),0.0f,0.0f);
-							glVertex3f(-1.5+(float)(i*var), -1.5+(float)(j*var), zOffset);
+							if (myData[i][j][k] < borders[l])
+							{
+								myData[i][j][k] = l;
+								break;
+							}
+						}
+						if (myData[i][j][k] >= borders[borders.size() - 1])
+						{
+							myData[i][j][k] = borders.size();
 						}
 					}
 				}
 			}
-			else
-				if (_inPort->GetDatasetTyped().GetDimension() == 3)
+
+			std::cout << "Preparing graphics..." << std::endl;
+			prepareGraphics();
+		}
+		/*int M4D::Viewer::m4dGUIOGLHapticViewerWidget::countAverage(int x, int y, int z)
+		{
+			int radius = 3; // constant - does not work with another number !!! Must be 3 !! 1 = DEBUG
+			int center = 0, wrap1 = 0, wrap2 = 0;
+			int centerCount = 0, wrap1Count = 0, wrap2Count = 0;
+			int average;
+
+			////DEBUG
+			//for ( int i = -radius; i <= radius; i++)
+			//{
+			//	for (int j = -radius; j <= radius; j++)
+			//	{
+			//		if ((((x + i) >= minX) && ((x + i) < (minX + sizeX))) && (((y + j) >= minY) && ((y + j) < (minY + sizeY))))
+			//		{
+			//			centerCount++;
+			//			center += imageData[x + i][y + j][z];
+			//		}
+			//	}
+			//}
+			//average = center / centerCount;
+			
+			
+			for ( int i = -radius; i <= radius; i++)
+			{
+				for (int j = -radius; j <= radius; j++)
 				{
-					glTranslatef(0.0f, 0.0f, -10.0f);
-					glRotatef(45.0f, 1.0f, 1.0f, 0.0f);
-					for (int i = _inPort->GetDatasetTyped().GetDimensionExtents(0).minimum; i < _inPort->GetDatasetTyped().GetDimensionExtents(0).maximum; i++)
+					if ((((x + i) >= minX) && ((x + i) < (minX + sizeX))) && (((y + j) >= minY) && ((y + j) < (minY + sizeY))))
 					{
-						for (int j = _inPort->GetDatasetTyped().GetDimensionExtents(1).minimum; j < _inPort->GetDatasetTyped().GetDimensionExtents(1).maximum; j++)
+						if ((i * i + j * j) <= 2)
 						{
-							for (int k = _inPort->GetDatasetTyped().GetDimensionExtents(2).minimum; k < _inPort->GetDatasetTyped().GetDimensionExtents(2).maximum; k++)
+							centerCount++;
+							center += imageData[x + i][y + j][z];
+						}
+						else if ((i * i + j * j) <= 9)
+						{
+							wrap1Count++;
+							wrap1 += imageData[x + i][y + j][z];
+						}
+						else
+						{
+							wrap2Count++;
+							wrap2 += imageData[x + i][y + j][z];
+						}
+					}
+				}
+			}
+
+			average = ((8 * center / centerCount) + (3 * wrap1 / wrap1Count) + (wrap2 / wrap2Count)) / 12;
+
+			
+
+			return average;
+		} */
+		void m4dGUIOGLHapticViewerWidget::cropMyImage(const std::vector<int> &firstCorner, const std::vector<int> &secondCorner)
+		{
+			dataGrid newOne;
+			for (int i = MIN(firstCorner[0], secondCorner[0]); i <= MAX(firstCorner[0], secondCorner[0]); i++)
+			{
+				std::vector< std::vector < int > > layer;
+				for (int j = MIN(firstCorner[1], secondCorner[1]); j <= MAX(firstCorner[1], secondCorner[1]); j++)
+				{
+					std::vector< int > row;
+					for (int k = MIN(firstCorner[2], secondCorner[2]); k <= MAX(firstCorner[2], secondCorner[2]); k++)
+					{
+						NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
+							imageID, row.push_back(Imaging::Image< TTYPE, 3 >::CastAImage(inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >(i, j, k) ) ) );
+					}
+					layer.push_back(row);
+				}
+				newOne.push_back(layer);
+			}
+			myData = newOne;
+		}
+		void m4dGUIOGLHapticViewerWidget::prepareGraphics()
+		{
+			dataGrid newOne;
+
+			for (int i = 0; i < myData.size(); i++)
+			{
+				std::vector< std::vector < int > > layer;
+				for (int j = 0; j < myData[0].size(); j++)
+				{
+					std::vector< int > row;
+					for (int k = 0; k < myData[0][0].size(); k++)
+					{
+						row.push_back(-2);
+					}
+					layer.push_back(row);
+				}
+				newOne.push_back(layer);
+			}
+
+			for (int i = 0; i < myData.size(); i++)
+			{
+				for (int j = 0; j < myData[0].size(); j++)
+				{
+					for (int k = 0; k < myData[0][0].size(); k++)
+					{
+						if (newOne[i][j][k] == -2)
+						{
+							newOne[i][j][k] = -1;
+							floodFillForVolumes(i, j, k, myData[i][j][k], &newOne);
+						}
+					}
+				}
+			}
+
+			for (int i = 0; i < myData.size(); i++)
+			{
+				for (int j = 0; j < myData[0].size(); j++)
+				{
+					newOne[i][j][0] = myData[i][j][0];
+				}
+			}
+			for (int i = 0; i < myData.size(); i++)
+			{
+				for (int j = 0; j < myData[0].size(); j++)
+				{
+					newOne[i][j][newOne[0][0].size() - 1] = myData[i][j][myData[0][0].size() - 1];
+				}
+			}
+
+			for (int i = 0; i < myData.size(); i++)
+			{
+				for (int j = 0; j < myData[0][0].size(); j++)
+				{
+					newOne[i][0][j] = myData[i][0][j];
+				}
+			}
+			for (int i = 0; i < myData.size(); i++)
+			{
+				for (int j = 0; j < myData[0][0].size(); j++)
+				{
+					newOne[i][newOne[0][0].size() - 1][j] = myData[i][myData[0][0].size() - 1][j];
+				}
+			}
+
+
+			for (int i = 0; i < myData[0].size(); i++)
+			{
+				for (int j = 0; j < myData[0][0].size(); j++)
+				{
+					newOne[0][i][j] = myData[0][i][j];
+				}
+			}
+			for (int i = 0; i < myData[0].size(); i++)
+			{
+				for (int j = 0; j < myData[0][0].size(); j++)
+				{
+					newOne[newOne[0][0].size() - 1][i][j] = myData[myData[0][0].size() - 1][i][j];
+				}
+			}
+			
+			graphicData = newOne;
+		}
+		void m4dGUIOGLHapticViewerWidget::floodFillForVolumes( int x, int y, int z, int val, dataGrid *newOne )
+		{
+			std::queue<floodFillDataContainer> myQueue;
+			floodFillDataContainer dc(x, y, z, val, newOne);
+			myQueue.push(dc);
+
+			while (!myQueue.empty())
+			{
+				bool continued = false;
+				floodFillDataContainer &ffc = myQueue.front();
+				for (int i = -1; i <= 1; i++)
+				{
+					for (int j = -1; j <= 1; j++)
+					{
+						for (int k = -1; k <= 1; k++)
+						{
+							if (((ffc.x + i) >= 0) && ((ffc.x + i) < (*newOne).size()) && ((ffc.y + j) >= 0) && ((ffc.y + j) < (*newOne)[0].size()) && ((ffc.z + k) >= 0) && ((ffc.z + k) < (*newOne)[0][0].size()) && ((*newOne)[ffc.x + i][ffc.y + j][ffc.z + k] == -2))
 							{
-								NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
-									_imageID, result = Imaging::Image< TTYPE, 3 >::CastAImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >(i, j, k) ) );
-								if (result != 0)
+								if (myData[ffc.x + i][ffc.y + j][ffc.z + k] == ffc.val)
 								{
-									glColor3f(0.0f + ((GLfloat)result / 32.0),0.0f,0.0f);
-									glVertex3f(-1.5+(float)(i*var), -1.5+(float)(j*var), -1.5+(float)(k*var));
+									continued = true;
+									(*newOne)[ffc.x + i][ffc.y + j][ffc.z + k] = -1;
+									floodFillDataContainer ffdc(ffc.x + i, ffc.y + j, ffc.z + k, ffc.val, newOne);
+									myQueue.push(ffdc);
 								}
 							}
 						}
 					}
-					glLoadIdentity();
 				}
-
-			glEnd();*/
-
-			int64 result = 0;
-			
-			for (int i = _minX; i < _minX + _sizeX; i++)
-			{
-				for (int j = _minY; j < _minY + _sizeY; j++)
+				if (!continued)
 				{
-					for (int k = _minZ; k < _minZ + _sizeZ; k++)
+					(*newOne)[ffc.x][ffc.y][ffc.z] = ffc.val;
+				}
+				myQueue.pop();
+			}
+		}
+		void m4dGUIOGLHapticViewerWidget::paintGL()
+		{
+			float offsetWidth = imageSize / 2.0;
+			float blockWidth = imageSize / (float)myData.size();
+
+			float blockLength = blockWidth / distanceX * distanceZ;
+			float offsetLength = blockLength / 2.0 * (float)myData[0][0].size();
+
+			float colorDif = 1.0 / 7.0;
+			
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);// Vymaže obrazovku a hloubkový buffer
+			glClearColor(0.0, 0.0, 0.0, 0.0);
+			glLoadIdentity();
+
+			glTranslatef(0.0f, 0.0f, zoom);
+			glRotatef(rotateX, 1.0f, 0.0f, 0.0f);
+			glRotatef(rotateY, 0.0f, 1.0f, 0.0f);
+
+			for (int i = 0; i < myData.size(); i++)
+			{
+				for (int j = 0; j < myData[0].size(); j++)
+				{
+					for (int k = 0; k < myData[0][0].size(); k++)
 					{
-						NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
-							_imageID, result = Imaging::Image< TTYPE, 3 >::CastAImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >(i, j, k) ) );
-						if (result != 0)
+						if (graphicData[i][j][k] != -1)
 						{
-							glLoadIdentity();
-							glTranslatef(0.0f, 0.0f, _zoom);
-							glRotatef(_rotateX, 1.0f, 0.0f, 0.0f);
-							glRotatef(_rotateY*cos(_rotateX*PI/180.0f), 0.0f, 1.0f, 0.0f);
-							glRotatef(_rotateY*sin(_rotateX*PI/180.0f), 0.0f, 0.0f, 1.0f);
-							glTranslatef( - _imageSize / 2.0 + i * _varX,  - _imageSize / 2.0 + j * _varY,  - _imageSize / 2.0 + k * _varZ);
-							glRotatef(-_rotateY*sin(_rotateX*PI/180.0f), 0.0f, 0.0f, 1.0f);
-							glRotatef(-_rotateY*cos(_rotateX*PI/180.0f), 0.0f, 1.0f, 0.0f);
-							glRotatef(_rotateX, -1.0f, 0.0f, 0.0f);
-							glColor3f(0.0f + (GLfloat)((double)result / (double)(_maxValue - _minValue)),0.0f,0.0f);
-							DrawTriangle(0.0f, 0.0f, 0.0f, _trianglSize);
+							int val = myData[i][j][k];
+							glColor3f(colorDif * (float)val, colorDif * (float)val, colorDif * (float)val);
+							DrawBlock(blockWidth * (float)i - offsetWidth, blockWidth * (float)j - offsetWidth, blockLength * (float)k - offsetLength, blockWidth, blockWidth, blockLength);
 						}
 					}
 				}
 			}
 			
 			glLoadIdentity();
-			glTranslatef(0.0f, 0.0f, _zoom);
+			glTranslatef(0.0f, 0.0f, zoom);
 			glColor3f(0.0f, 1.0f, 0.0f);
-			DrawCursor(_cursor->getX()*(_imageSize / 2.0), _cursor->getY()*(_imageSize / 2.0), _cursor->getZ()*(_imageSize / 2.0), _cursorSize);
+			DrawCursor(cursor->getX()*(imageSize / 2.0), cursor->getY()*(imageSize / 2.0), cursor->getZ()*(imageSize / 2.0), cursorSize);
 			
 			//glLoadIdentity();
 			//glColor3f(1.0f, 0.0f, 0.0f);
 			//glTranslatef(0.0f, 0.0f, -5.0f);
-			//DrawTriangle(0.0f, 0.0f, -5.0f, 1.0f);
+			//DrawBlock(0.0f, 0.0f, -5.0f, 1.0f);
 			//glLoadIdentity();
 
 			glFlush();
@@ -336,41 +607,39 @@ namespace M4D
 		}
 		void m4dGUIOGLHapticViewerWidget::loadImageParams()
 		{
-			_imageSize = 10.0;
-			_cursorSize = _imageSize / 20.0;
-			_imageHeight = _imageSize;
-			_imageWidth = _imageSize;
-			_imageID = _inPort->GetDatasetTyped().GetElementTypeID();
+			imageSize = 10.0;
+			cursorSize = imageSize / 20.0;
+			imageHeight = imageSize;
+			imageWidth = imageSize;
+			imageID = inPort->GetDatasetTyped().GetElementTypeID();
 			
-			if (_inPort->GetDatasetTyped().GetDimension() == 3)
+			if (inPort->GetDatasetTyped().GetDimension() == 3)
 			{
-				_minX = _inPort->GetDatasetTyped().GetDimensionExtents(0).minimum;
-				_minY = _inPort->GetDatasetTyped().GetDimensionExtents(1).minimum;
-				_minZ = _inPort->GetDatasetTyped().GetDimensionExtents(2).minimum;
+				minX = inPort->GetDatasetTyped().GetDimensionExtents(0).minimum;
+				minY = inPort->GetDatasetTyped().GetDimensionExtents(1).minimum;
+				minZ = inPort->GetDatasetTyped().GetDimensionExtents(2).minimum;
 
-				_sizeX = _inPort->GetDatasetTyped().GetDimensionExtents(0).maximum - _minX;
-				_sizeY = _inPort->GetDatasetTyped().GetDimensionExtents(1).maximum - _minY;
-				_sizeZ = _inPort->GetDatasetTyped().GetDimensionExtents(2).maximum - _minZ;
+				sizeX = inPort->GetDatasetTyped().GetDimensionExtents(0).maximum - minX;
+				sizeY = inPort->GetDatasetTyped().GetDimensionExtents(1).maximum - minY;
+				sizeZ = inPort->GetDatasetTyped().GetDimensionExtents(2).maximum - minZ;
+
+				distanceX = inPort->GetDatasetTyped().GetDimensionExtents(0).elementExtent;
+				distanceY = inPort->GetDatasetTyped().GetDimensionExtents(1).elementExtent;
+				distanceZ = inPort->GetDatasetTyped().GetDimensionExtents(2).elementExtent;
 			}
-
-			_varX = _imageSize / _sizeX;
-			_varY = _imageSize / _sizeY;
-			_varZ = _imageSize / _sizeZ;
-
-			_trianglSize = MIN(MIN(_varX, _varY), MIN(_varX, _varZ)) / 10.0;
 
 			uint64 min = MAX_INT64;
 			uint64 max = 0;
 			uint64 result = 0;
 
-			for (int i = _minX; i < _minX + _sizeX; i++)
+			for (int i = minX; i < minX + sizeX; i++)
 			{
-				for (int j = _minY; j < _minY + _sizeY; j++)
+				for (int j = minY; j < minY + sizeY; j++)
 				{
-					for (int k = _minZ; k < _minZ + _sizeZ; k++)
+					for (int k = minZ; k < minZ + sizeZ; k++)
 					{
 						NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
-							_imageID, result = Imaging::Image< TTYPE, 3 >::CastAImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >(i, j, k) ) );
+							imageID, result = Imaging::Image< TTYPE, 3 >::CastAImage(inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >(i, j, k) ) );
 						if (result > max)
 						{
 							max = result;
@@ -382,16 +651,15 @@ namespace M4D
 					}
 				}
 			}
-			_minValue = min;
-			_maxValue = max;
+			minValue = min;
+			maxValue = max;
 		}
 		void m4dGUIOGLHapticViewerWidget::initializeGL()
 		{
-			loadImageParams();
 
-			_zoom = -_imageSize;
-			_rotateY = 0.0;
-			_rotateX = 0.0;
+			zoom = -imageSize;
+			rotateY = 0.0;
+			rotateX = 0.0;
 			
 			glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
 			glClearDepth(1.0f);
