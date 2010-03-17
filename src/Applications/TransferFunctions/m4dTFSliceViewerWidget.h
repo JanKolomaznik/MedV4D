@@ -7,14 +7,12 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <TF/TFAFunction.h>
+#include <TFAlgorithms.h>
 
 namespace M4D
 {
 namespace Viewer
 {
-
-class SettingsBox;
 
 /**
  * Sliceviewer's texture preparer that shows the first input dataset as a greyscale image
@@ -28,7 +26,7 @@ public:
     /**
      * Constructor
      */
-	TFSimpleSliceViewerTexturePreparer(): SimpleSliceViewerTexturePreparer< ElementType >(), currentTransferFunction(NULL) {}
+	TFSimpleSliceViewerTexturePreparer(): SimpleSliceViewerTexturePreparer< ElementType >(){}
 
     /**
      * Prepares the texture of the image to be mapped to the following OpenGL surface.
@@ -51,18 +49,11 @@ public:
 		SliceOrientation so,
 		uint32 slice,
 		unsigned& dimension );
-/*
-	bool adjustByTransferFunction(
-		ElementType* pixel,
-		uint32& width,
-		uint32& height,
-		GLint brightnessRate,
-		GLint contrastRate);*/
 
-	void setTransferFunction(TFAFunction* transferFunction);
+	void setTransferFunction(TFAbstractFunction &transferFunction);
 
 private:
-	TFAFunction* currentTransferFunction;
+	TFAbstractFunction *_currentTransferFunction;
 };
 
 class m4dTFSliceViewerWidget: public m4dGUISliceViewerWidget, public QObject{
@@ -78,8 +69,8 @@ public:
      *  @param index the index of the viewer
      *  @param parent the parent widget of the viewer
      */
-    m4dTFSliceViewerWidget( unsigned index, QWidget *parent = 0 ): PredecessorType( index, parent ){
-	}
+    m4dTFSliceViewerWidget( unsigned index, QWidget *parent = 0 ):
+		PredecessorType( index, parent ), currentImageID(-1), texturePreparer(NULL){}
 
     /**
      * Construtor.
@@ -87,14 +78,20 @@ public:
      *  @param index the index of the viewer
      *  @param parent the parent widget of the viewer
      */
-    m4dTFSliceViewerWidget( Imaging::ConnectionInterface* conn, unsigned index, QWidget *parent = 0 ): PredecessorType( conn, index, parent ){
+    m4dTFSliceViewerWidget( Imaging::ConnectionInterface* conn, unsigned index, QWidget *parent = 0 ):
+		PredecessorType( conn, index, parent ), currentImageID(-1), texturePreparer(NULL){}
+
+	~m4dTFSliceViewerWidget(){
+		delete texturePreparer;
 	}
 
 public slots:
 
-	void AdjustByTransferFunction(TFAFunction* transferFunction);
+	void adjust_by_transfer_function(TFAbstractFunction &transferFunction);
 	
-protected:    
+protected:   
+	int currentImageID;
+	AbstractSliceViewerTexturePreparer* texturePreparer;
 
     /**
      * Draws a slice.
@@ -102,7 +99,7 @@ protected:
      *  @param zoomRate the zoom rate that is to be applied to the image
      *  @param offset the offset of the image on the viewer
      */
-    void drawSlice( int sliceNum, double zoomRate, QPoint offset );	
+    //void drawSlice( int sliceNum, double zoomRate, QPoint offset );	
 };
 
 typedef M4D::GUI::GenericViewerFactory< M4D::Viewer::m4dTFSliceViewerWidget > TFViewerFactory;

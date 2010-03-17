@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TFSchemePainter</class>
- <widget class="QWidget" name="TFSchemePainter">
+ <class>TFSimplePainter</class>
+ <widget class="QWidget" name="TFSimplePainter">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string/>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../GUI/icons/app.png</normaloff>../../GUI/icons/app.png</iconset>
   </property>
  </widget>
  <resources/>

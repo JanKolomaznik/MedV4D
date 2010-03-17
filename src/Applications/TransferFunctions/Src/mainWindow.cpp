@@ -1,5 +1,4 @@
 #include "mainWindow.h"
-#include "SettingsBox.h"
 #include "Imaging/PipelineMessages.h"
 
 using namespace std;
@@ -53,10 +52,10 @@ void mainWindow::CreatePipeline()
 		QMessageBox::critical( this, tr( "Exception" ), tr( "Pipeline error" ) );
 	}
 
-	addSource( _inConnection, "Segmentation", "Input" );
-	addSource( _tmpConnection, "Segmentation", "Stage #1" );
-	addSource( tmpStage2, "Segmentation", "Stage #2" );
-	addSource( _outConnection, "Segmentation", "Result" );
+	addSource( _inConnection, "Transfer Function", "Input" );
+	addSource( _tmpConnection, "Transfer Function", "Stage #1" );
+	addSource( tmpStage2, "Transfer Function", "Stage #2" );
+	addSource( _outConnection, "Transfer Function", "Result" );
 
   //_notifier = new Notifier(this);
 	//_outConnection->SetMessageHook( MessageReceiverInterface::Ptr( _notifier ) );
@@ -69,7 +68,7 @@ mainWindow::mainWindow ()
 
 	CreatePipeline();
 
-	_settings = new SettingsBox();
+	_settings = new TFWindow();
 	_settings->build();
 	addDockWindow( "Transfer Functions", _settings );
 }
@@ -79,8 +78,8 @@ void mainWindow::createDefaultViewerDesktop (){
 	currentViewerDesktop = new M4D::GUI::m4dGUIMainViewerDesktopWidget( 1, 2, new M4D::Viewer::TFViewerFactory() );	
 
 	M4D::Viewer::m4dTFSliceViewerWidget* currentViewer = (M4D::Viewer::m4dTFSliceViewerWidget*)(currentViewerDesktop->getSelectedViewerWidget());
-
-	QObject::connect( _settings, SIGNAL(UseTransferFunction(TFAFunction*)),	currentViewer, SLOT(AdjustByTransferFunction(TFAFunction*)));
+	
+	QObject::connect( _settings, SIGNAL(AdjustByTransferFunction(TFAbstractFunction&)), currentViewer, SLOT(adjust_by_transfer_function(TFAbstractFunction&)));
 }
 
 void mainWindow::process( M4D::Imaging::ADataset::Ptr inputDataSet )

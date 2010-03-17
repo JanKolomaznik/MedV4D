@@ -10,8 +10,8 @@
 #include "Imaging/filters/ImageConvertor.h"
 #include "GUI/widgets/m4dGUIMainViewerDesktopWidget.h"
 
-#include "SettingsBox.h"
-#include <TF/m4dTFSliceViewerWidget.h>
+#include <m4dTFSliceViewerWidget.h>
+#include <TFWindow.h>
 
 #define ORGANIZATION_NAME     "MFF"
 #define APPLICATION_NAME      "TransferFunctions"
@@ -59,7 +59,7 @@ protected:
 
 	void CreatePipeline();
 
-	SettingsBox	*_settings;
+	TFWindow	*_settings;
 
 	M4D::Imaging::PipelineContainer			_pipeline;
 	M4D::Imaging::APipeFilter		*_filter;
