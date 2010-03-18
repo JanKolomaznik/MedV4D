@@ -568,7 +568,7 @@ namespace M4D
 						{
 							int val = myData[i][j][k];
 							glColor3f(colorDif * (float)val, colorDif * (float)val, colorDif * (float)val);
-							DrawBlock(blockWidth * (float)i - offsetWidth, blockWidth * (float)j - offsetWidth, blockLength * (float)k - offsetLength, blockWidth, blockWidth, blockLength);
+							DrawBlock(blockWidth * (float)i - offsetWidth, blockWidth * (float)j - offsetWidth, blockLength * (float)k - offsetLength, blockWidth - 0.001f, blockWidth - 0.001f, blockLength - 0.001f);
 						}
 					}
 				}
