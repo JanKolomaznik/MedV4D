@@ -65,7 +65,7 @@ void M4D::Viewer::hapticCursor::startHaptics()
 		_maxValue = max;
 
 		hapticsThread = new cThread();
-		hapticsThread->set(&M4D::Viewer::hapticCursor::updateHaptics, CHAI_THREAD_PRIORITY_HAPTICS);
+		//hapticsThread->set(&M4D::Viewer::hapticCursor::updateHaptics, CHAI_THREAD_PRIORITY_HAPTICS);
 
 		LOG("Haptics thread started.");
 	}
