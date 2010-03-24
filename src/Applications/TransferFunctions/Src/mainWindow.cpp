@@ -77,7 +77,7 @@ void mainWindow::createDefaultViewerDesktop (){
 
 	currentViewerDesktop = new M4D::GUI::m4dGUIMainViewerDesktopWidget( 1, 2, new M4D::Viewer::TFViewerFactory() );	
 
-	M4D::Viewer::m4dTFSliceViewerWidget* currentViewer = (M4D::Viewer::m4dTFSliceViewerWidget*)(currentViewerDesktop->getSelectedViewerWidget());
+	M4D::Viewer::TFSliceViewerWidget* currentViewer = (M4D::Viewer::TFSliceViewerWidget*)(currentViewerDesktop->getSelectedViewerWidget());
 	
 	QObject::connect( _settings, SIGNAL(AdjustByTransferFunction(TFAbstractFunction&)), currentViewer, SLOT(adjust_by_transfer_function(TFAbstractFunction&)));
 }

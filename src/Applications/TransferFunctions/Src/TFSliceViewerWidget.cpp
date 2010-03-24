@@ -4,7 +4,7 @@
  *  @brief some brief
  */
 
-#include "m4dTFSliceViewerWidget.h"
+#include "TFSliceViewerWidget.h"
 #include "GUI/widgets/components/RGBSliceViewerTexturePreparer.h"
 
 namespace M4D
@@ -32,18 +32,18 @@ bool TFSimpleSliceViewerTexturePreparer< ElementType >::prepare(
 	    return false;
 	}
 
-	// equalize the first input array
-	adjustArrayContrastBrightness( *pixel, width, height, brightnessRate, contrastRate );
-	
-	if(_currentTransferFunction)
+	ElementType* pixelValue = *pixel;
+	if(_currentTransferFunction.size() > 0)
 	{
-		adjustByTransferFunction<ElementType>(
-			*pixel,
-			TypeTraits<ElementType>::Min,
-			TypeTraits<ElementType>::Max,
-			width*height,
-			_currentTransferFunction);
+		for(unsigned i = 0; i < width*height; ++i)
+		{
+			*pixelValue = _currentTransferFunction[*pixelValue];
+			++pixelValue;
+		}
 	}
+
+	// equalize the first input array
+	//adjustArrayContrastBrightness( *pixel, width, height, brightnessRate, contrastRate );
 
 	// prepare texture
         glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
@@ -60,12 +60,48 @@ bool TFSimpleSliceViewerTexturePreparer< ElementType >::prepare(
 template< typename ElementType >
 void TFSimpleSliceViewerTexturePreparer< ElementType >::setTransferFunction(TFAbstractFunction &transferFunction){
 
-	_currentTransferFunction = transferFunction.clone();
+	_currentTransferFunction = adjustByTransferFunction<ElementType>(
+		TypeTraits<ElementType>::Min,
+		TypeTraits<ElementType>::Max,
+		transferFunction);
+}
+
+TFHistogram TFSimpleSliceViewerTexturePreparer::getHistogram(
+	const Imaging::InputPortList& inputPorts,
+	uint32& width,
+	uint32& height,
+	SliceOrientation so,
+	uint32 slice,
+	unsigned& dimension){
+
+	ElementType** pixel = getDatasetArrays( inputPorts, 1, width, height, so, slice, dimension );
+
+	double range = TypeTraits<ElementType>::Max - TypeTraits<ElementType>::Min;
+	TFHistogram hist(range, 0);
+
+	if ( ! *pixel )
+	{
+	    delete[] pixel;
+	    return hist;
+	}
+
+	ElementType* pix = *pixel;
+	for(long i = 0; i < width*height; ++i)
+	{
+		++hist[*pix];
+		++pix;
+	}
+
+	// free temporary allocated space
+	delete[] *pixel;
+	delete[] pixel;
+
+	return hist;
 }
 
 
 
-void m4dTFSliceViewerWidget::adjust_by_transfer_function(TFAbstractFunction &transferFunction){	
+void TFSliceViewerWidget::adjust_by_transfer_function(TFAbstractFunction &transferFunction){	
 
 	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
 				_imageID, 

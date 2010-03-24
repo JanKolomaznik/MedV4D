@@ -10,7 +10,7 @@
 #include "Imaging/filters/ImageConvertor.h"
 #include "GUI/widgets/m4dGUIMainViewerDesktopWidget.h"
 
-#include <m4dTFSliceViewerWidget.h>
+#include <TFSliceViewerWidget.h>
 #include <TFWindow.h>
 
 #define ORGANIZATION_NAME     "MFF"

@@ -52,11 +52,19 @@ public:
 
 	void setTransferFunction(TFAbstractFunction &transferFunction);
 
+	TFHistogram getHistogram(
+		const Imaging::InputPortList& inputPorts,
+		uint32& width,
+		uint32& height,
+		SliceOrientation so,
+		uint32 slice,
+		unsigned& dimension );
+
 private:
-	TFAbstractFunction *_currentTransferFunction;
+	std::vector<typename std::iterator_traits<ElementType>::value_type> _currentTransferFunction;
 };
 
-class m4dTFSliceViewerWidget: public m4dGUISliceViewerWidget, public QObject{
+class TFSliceViewerWidget: public m4dGUISliceViewerWidget, public QObject{
 
 	Q_OBJECT
 
@@ -69,7 +77,7 @@ public:
      *  @param index the index of the viewer
      *  @param parent the parent widget of the viewer
      */
-    m4dTFSliceViewerWidget( unsigned index, QWidget *parent = 0 ):
+    TFSliceViewerWidget( unsigned index, QWidget *parent = 0 ):
 		PredecessorType( index, parent ), currentImageID(-1), texturePreparer(NULL){}
 
     /**
@@ -78,16 +86,19 @@ public:
      *  @param index the index of the viewer
      *  @param parent the parent widget of the viewer
      */
-    m4dTFSliceViewerWidget( Imaging::ConnectionInterface* conn, unsigned index, QWidget *parent = 0 ):
+    TFSliceViewerWidget( Imaging::ConnectionInterface* conn, unsigned index, QWidget *parent = 0 ):
 		PredecessorType( conn, index, parent ), currentImageID(-1), texturePreparer(NULL){}
 
-	~m4dTFSliceViewerWidget(){
+	~TFSliceViewerWidget(){
 		delete texturePreparer;
 	}
+/*
+signals:
+	void Histogram(TFHistogram hist);*/
 
 public slots:
-
 	void adjust_by_transfer_function(TFAbstractFunction &transferFunction);
+	//void send_histogram();
 	
 protected:   
 	int currentImageID;
@@ -102,7 +113,7 @@ protected:
     //void drawSlice( int sliceNum, double zoomRate, QPoint offset );	
 };
 
-typedef M4D::GUI::GenericViewerFactory< M4D::Viewer::m4dTFSliceViewerWidget > TFViewerFactory;
+typedef M4D::GUI::GenericViewerFactory< M4D::Viewer::TFSliceViewerWidget > TFViewerFactory;
 
 } /*namespace Viewer*/
 } /*namespace M4D*/

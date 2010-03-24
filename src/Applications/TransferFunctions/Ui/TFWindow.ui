@@ -11,18 +11,12 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
   <property name="minimumSize">
-   <size>
-    <width>580</width>
-    <height>440</height>
-   </size>
-  </property>
-  <property name="maximumSize">
    <size>
     <width>580</width>
     <height>440</height>
@@ -52,7 +46,6 @@
      <property name="title">
       <string>New</string>
      </property>
-     <addaction name="simple"/>
     </widget>
     <addaction name="menuNew"/>
     <addaction name="load"/>

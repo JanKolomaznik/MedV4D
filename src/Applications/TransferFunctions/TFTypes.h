@@ -3,6 +3,9 @@
 
 #include <sstream>
 
+#include <QtGui/QAction>
+#include <QtGui/QMenu>
+
 
 typedef std::string TFName;
 
@@ -19,7 +22,9 @@ struct TFPoint{
 typedef std::vector<TFPoint> TFPoints;
 typedef TFPoints::iterator TFPointsIterator;
 
-typedef std::map <int, TFPoint> TFPointMap;
+//typedef std::map <int, TFPoint> TFPointMap;
+//typedef TFPointMap::iterator TFPointMapIterator;
+typedef std::vector<int> TFPointMap;
 typedef TFPointMap::iterator TFPointMapIterator;
 
 
@@ -61,4 +66,43 @@ static TFType convert<std::string, TFType>(const std::string &tfType){
 	}
 	return TFTYPE_UNKNOWN;
 }
+
+class TFAction: public QObject{
+
+	Q_OBJECT
+
+public:
+	TFAction(QWidget* parent, QMenu* menu, TFType tfType){
+		_type = tfType;
+
+		QString name = QString::fromStdString(convert<TFType, std::string>(_type));
+
+		action = new QAction(parent);
+		action->setObjectName(name);
+		action->setText(name);
+		menu->addAction(action);
+
+		QObject::connect( action, SIGNAL(triggered()), this, SLOT(triggered()));
+	}
+
+	~TFAction(){
+		delete action;
+	}
+
+signals:
+	void TFActionClicked(TFType &tfType);
+
+public slots:
+	void triggered(){
+		emit TFActionClicked(_type);
+	}
+
+private:	
+	QAction* action;
+	TFType _type;
+};
+
+typedef std::vector<TFAction*> TFActions;
+typedef std::vector<long> TFHistogram;
+
 #endif //TF_TYPES

@@ -9,7 +9,7 @@
 
 #include <TFAlgorithms.h>
 
-using namespace std;
+#define MENU_SPACE 30
 
 namespace Ui{
 
@@ -35,6 +35,10 @@ public:
 	QWidget* toolsWidget;
 	QWidget* painterWidget;
 */
+signals:
+	void AdjustByTransferFunction(TFAbstractFunction &transferFunction);
+	void ResizeHolder(const QRect rect);
+
 protected slots:
     //void on_schemeUse_clicked();
 
@@ -42,17 +46,17 @@ protected slots:
     void on_save_triggered();
     void on_load_triggered();
 
-	void on_simple_triggered();
+	void on_newTF_triggered(TFType &tfType);
 
 	void modify_data(TFAbstractFunction &transferFunction);
 
-signals:
-	void AdjustByTransferFunction(TFAbstractFunction &transferFunction);
+	void resizeEvent(QResizeEvent *event);
 
 private:	
     Ui::TFWindow* ui;
 
 	TFAbstractHolder* _holder;
+	TFActions tfActions;
 
 	void setupHolder();
 };

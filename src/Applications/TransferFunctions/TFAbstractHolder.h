@@ -59,6 +59,7 @@ public:
 
 protected slots:
     virtual void on_use_clicked() = 0;
+	virtual void size_changed(const QRect rect) = 0;
 
 signals:
 	void UseTransferFunction(TFAbstractFunction &transferFunction);

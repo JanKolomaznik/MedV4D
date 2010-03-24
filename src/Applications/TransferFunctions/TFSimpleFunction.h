@@ -10,20 +10,17 @@
 #include <TFAbstractFunction.h>
 
 
-static const int FUNCTION_RANGE_SIMPLE = 500;
-static const int COLOR_RANGE_SIMPLE = 256;
-
-
 class TFSimpleFunction: public TFAbstractFunction{
 
 public:
-	TFSimpleFunction();
-	TFSimpleFunction(TFName functionName);
+
+	TFSimpleFunction(int functionRange = 500, int colorRange = 280);
+	TFSimpleFunction(TFName functionName, int functionRange = 500, int colorRange = 280);
 	TFSimpleFunction(TFSimpleFunction &function);
 
 	~TFSimpleFunction();
 
-	virtual TFAbstractFunction* clone();
+	TFAbstractFunction* clone();
 
 	void addPoint(int x, int y);
 	void addPoint(TFPoint point);
@@ -34,9 +31,9 @@ public:
 
 	void clear();
 
-	bool containsPoint(int coordX);
+	//bool containsPoint(int coordX);
 
-	bool removePoint(int coordX);
+	//bool removePoint(int coordX);
 
 	TFPoint getPoint(int coordX);
 
@@ -47,10 +44,18 @@ public:
 	TFPoints getAllPoints();
 
 	TFPointMap getPointMap();
+
+	int getFunctionRange();
+
+	int getColorRange();
+
+	void recalculate(int functionRange, int colorRange);
 	
 private:	
 	TFPointMap _points;
 
+	int _functionRange;
+	int _colorRange;
 };
 
 #endif //TF_SIMPLEFUNCTION

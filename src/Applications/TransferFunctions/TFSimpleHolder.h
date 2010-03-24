@@ -16,22 +16,29 @@
 #include <QtGui/QWidget>
 
 
+#define PAINTER_X 30
+#define PAINTER_Y 70
+#define PAINTER_MARGIN_H 10
+#define PAINTER_MARGIN_V 10
+
+
 class TFSimpleHolder: public TFAbstractHolder{
 
     Q_OBJECT
 
 public:
 	TFSimpleHolder();
-	virtual ~TFSimpleHolder();
+	~TFSimpleHolder();
 
-	virtual void setup(QWidget *parent, const QRect rect);
+	void setup(QWidget *parent, const QRect rect);
 
 protected slots:
-    virtual void on_use_clicked();
+    void on_use_clicked();
+	void size_changed(const QRect rect);
 
 protected:
-	virtual void _save(QFile &file);
-	virtual bool _load(QFile &file);
+	void _save(QFile &file);
+	bool _load(QFile &file);
 
 private:
 	TFSimpleFunction _function;

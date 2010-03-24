@@ -6,8 +6,6 @@ TFSimpleHolder::TFSimpleHolder(){
 	_type = TFTYPE_SIMPLE;
 
 	_basicTools->name->setText(QString::fromStdString(_function.name));
-
-	_painter.setup(this, QRect(25, 70, FUNCTION_RANGE_SIMPLE + 20, COLOR_RANGE_SIMPLE + 20));
 }
 
 TFSimpleHolder::~TFSimpleHolder(){
@@ -17,7 +15,8 @@ TFSimpleHolder::~TFSimpleHolder(){
 
 void TFSimpleHolder::setup(QWidget *parent, const QRect rect){
 
-    setGeometry(rect);	
+	_painter.setup(this);
+	size_changed(rect);
 	setParent(parent);
 	show();
 }
@@ -59,4 +58,18 @@ void TFSimpleHolder::on_use_clicked(){
 	_function.setPoints(_painter.getView());
 
 	emit UseTransferFunction(_function);
+}
+
+void TFSimpleHolder::size_changed(const QRect rect){
+
+	setGeometry(rect);
+
+	int newWidth = rect.width() - 2*PAINTER_X;
+	int newHeight = rect.height() - 2*PAINTER_Y;
+
+	_function.setPoints(_painter.getView());
+	_function.recalculate(newWidth - 2*PAINTER_MARGIN_H, newHeight - 2*PAINTER_MARGIN_V);
+
+	_painter.resize(QRect(PAINTER_X, PAINTER_Y, newWidth, newHeight));
+	_painter.setView(_function.getPointMap());
 }

@@ -26,9 +26,11 @@ public:
 
 	~TFSimplePainter();
 
-	void setup(QWidget *parent, const QRect rect);
+	void setup(QWidget *parent);
 
-	void setup(QWidget *parent, const QRect rect, int marginH, int marginV);
+	void setup(QWidget *parent, int marginH, int marginV);
+
+	void resize(const QRect rect);
 
 	void setView(TFPointMap view);
 
@@ -39,17 +41,27 @@ public:
 protected:
 	void paintEvent(QPaintEvent *e);
 	void mousePressEvent(QMouseEvent *e);
+	void mouseReleaseEvent(QMouseEvent *e);
 	void mouseMoveEvent(QMouseEvent *e);
-
+/*
 private slots:
 	void Repaint();
-
+*/
 private:
 	Ui::TFSimplePainter* _painter;
 
 	int _marginV, _marginH;
 
 	TFPointMap _view;	
+
+	TFPoint* _drawHelper;
+
+	TFPoint painterCoords(const TFPoint &point);
+
+	TFPoint painterCoords(int x, int y);
+
+	void addLine(int x1, int y1, int x2, int y2);
+	void addPoint(TFPoint point);
 };
 
 #endif //TF_SIMPLEPAINTER

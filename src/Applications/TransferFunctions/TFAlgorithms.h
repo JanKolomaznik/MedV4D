@@ -3,12 +3,11 @@
 
 #include <QtCore/QString>
 #include <QtCore/QFile>
+#include <QtCore/QXmlStreamReader>
 
 #include <QtGui/QWidget>
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
-#include <QtCore/QXmlStreamReader>
-#include <QtCore/QString>
 
 #include <fstream>
 #include <cassert>
@@ -18,35 +17,35 @@
 
 class TFHolderFactory{
 
-	class TFTypeSwitcher: public QXmlStreamReader{
-
-	public:
-		TFTypeSwitcher(){}
-		~TFTypeSwitcher(){}
-
-		TFType read(QIODevice* device){
-
-			setDevice(device);
-
-			while(!atEnd())
-			{
-				readNext(); 
-
-				if(isEndElement())
-				{
-					break;
-				}
-
-				if (isStartElement() && (name() == "TransferFunction"))
-				{
-					return convert<std::string, TFType>(attributes().value("type").toString().toStdString());
-				}
-			}
-			return TFTYPE_UNKNOWN;
-		}
-	};
-
 public:
+	
+	static TFActions createMenuTFActions(QWidget *owner, QMenu *menu){
+
+		TFActions actions;
+
+		actions.push_back(new TFAction(owner, menu, TFTYPE_SIMPLE));
+
+		return actions;
+	}
+
+	static TFAbstractHolder* create(TFType &holderType){
+
+		switch(holderType)
+		{
+			case TFTYPE_SIMPLE:
+			{
+				return new TFSimpleHolder();
+			}
+			case TFTYPE_UNKNOWN:
+			default:
+			{
+				assert("unknown holder");
+				break;
+			}
+		}
+		return NULL;
+	}
+
 	static TFAbstractHolder* load(QWidget* parent){
 		
 		QString fileName = QFileDialog::getOpenFileName(parent,
@@ -96,23 +95,52 @@ public:
 		return loaded;
 	}
 
+protected:
+
+	class TFTypeSwitcher: public QXmlStreamReader{
+
+	public:
+		TFTypeSwitcher(){}
+		~TFTypeSwitcher(){}
+
+		TFType read(QIODevice* device){
+
+			setDevice(device);
+
+			while(!atEnd())
+			{
+				readNext(); 
+
+				if(isEndElement())
+				{
+					break;
+				}
+
+				if (isStartElement() && (name() == "TransferFunction"))
+				{
+					return convert<std::string, TFType>(attributes().value("type").toString().toStdString());
+				}
+			}
+			return TFTYPE_UNKNOWN;
+		}
+	};
+
 private:
 	TFHolderFactory(){}
 	~TFHolderFactory(){}
 };
 
 template<typename Iterator>
-void adjustByTransferFunction(
-	typename std::iterator_traits<Iterator>::pointer pixel,
+std::vector<typename std::iterator_traits<Iterator>::value_type> adjustByTransferFunction(
 	typename std::iterator_traits<Iterator>::value_type min,
 	typename std::iterator_traits<Iterator>::value_type max,
-	const uint32 length,
-	TFAbstractFunction *transferFunction){
+	TFAbstractFunction &transferFunction){
 
-		switch(transferFunction->getType()){
+	std::vector<typename std::iterator_traits<Iterator>::value_type> pointMap;
+	switch(transferFunction.getType()){
 		case TFTYPE_SIMPLE:
 		{
-			adjustBySimpleFunction<Iterator>(pixel, min, max, length, transferFunction);
+			pointMap = adjustBySimpleFunction<Iterator>(min, max, transferFunction);
 			break;
 		}
 		case TFTYPE_UNKNOWN:
@@ -122,78 +150,65 @@ void adjustByTransferFunction(
 			break;
 		}
 	}
+	return pointMap;
 }
 
 template<typename Iterator>
-void adjustBySimpleFunction(
-	typename std::iterator_traits<Iterator>::pointer pixel,
+std::vector<typename std::iterator_traits<Iterator>::value_type> adjustBySimpleFunction(
 	typename std::iterator_traits<Iterator>::value_type min,
 	typename std::iterator_traits<Iterator>::value_type max,
-	const uint32 length,
-	TFAbstractFunction *transferFunction){
+	TFAbstractFunction &transferFunction){
 
-	if ( !pixel || !transferFunction)
+	TFSimpleFunction *tf = dynamic_cast<TFSimpleFunction*>(&transferFunction);
+	TFPointMap points;	
+	std::vector<typename std::iterator_traits<Iterator>::value_type> computed;
+
+	if ( !tf)
 	{
-		return;
+		return computed;
 	}
 
-	TFSimpleFunction *tf = dynamic_cast<TFSimpleFunction*>(transferFunction);
-
-	std::map<int, typename std::iterator_traits<Iterator>::value_type> computed;
-	TFPoints points = tf->getAllPoints();
+	points = tf->getPointMap();
 
 	if(points.empty())
 	{
-		return;
+		return computed;
 	}
 
 	double range = max - min;
+	double interval = range/tf->getFunctionRange();
+	typename std::iterator_traits<Iterator>::value_type pixelValue = (points[0]/(double)tf->getColorRange())*range;
+	typename std::iterator_traits<Iterator>::value_type nextPixelValue = pixelValue;
+	long intervalCorrection = 0;	//problem - cannot be double because % is needed and will not work for types with greater range
 
-	TFPointsIterator first = points.begin();
-	TFPointsIterator end = points.end();
-	TFPointsIterator it = first;
-
-	for (unsigned i = 0; i < length; ++i )
+	for (int i = 1; i < tf->getFunctionRange(); ++i )
 	{
-		typename std::iterator_traits<Iterator>::value_type pixelValue = pixel[i];
+		pixelValue = nextPixelValue;
+		nextPixelValue = (points[i]/(double)tf->getColorRange())*range;
 
-		std::map<int, typename std::iterator_traits<Iterator>::value_type>::iterator stored = computed.find(pixelValue);
-		if(stored != computed.end())
-		{
-			pixel[i] = stored->second;
-			continue;
-		}
+		double intervalBottom = (interval + intervalCorrection);
+		intervalCorrection = (long)intervalBottom % 1;
+		intervalBottom -= intervalCorrection;
+		double step = (nextPixelValue - pixelValue);
+		if(intervalBottom != 1) step = step/(intervalBottom - 1);
 
-		it = first;
-		TFPoint lesser = *(it++);
-		for(it; it != end; ++it)
+		for(double i = 0; i < intervalBottom; ++i)
 		{
-			if((*it).x/(double)FUNCTION_RANGE_SIMPLE > pixelValue/range)
-			{
-				break;
-			}
-			lesser = *it;
+			computed.push_back(pixelValue + i*step);
 		}
-		double lesserValue, greaterValue;
-		double distance;
-		if(it == end)
-		{
-			greaterValue = min;
-		}
-		else
-		{
-			greaterValue = (*it).y;
-		}
-		
-		lesserValue = (lesser.y/(double)COLOR_RANGE_SIMPLE)*range;
-		distance = ((pixelValue/range)*FUNCTION_RANGE_SIMPLE - lesser.x)/FUNCTION_RANGE_SIMPLE;
-		typename std::iterator_traits<Iterator>::value_type result =
-			(typename std::iterator_traits<Iterator>::value_type) ROUND( ((greaterValue - lesserValue)*distance) + lesserValue );
-
-		computed.insert(std::make_pair(pixelValue, result));
-
-		pixel[i] = result;
 	}
+
+	pixelValue = nextPixelValue;
+	nextPixelValue = (points[tf->getFunctionRange()]/(double)tf->getColorRange())*range;
+	intervalCorrection = range - computed.size();
+	double step = (nextPixelValue - pixelValue);
+	if(intervalCorrection != 0) step = step/intervalCorrection;
+
+	for(double i = 0; i < intervalCorrection; ++i)
+	{
+		computed.push_back(pixelValue + i*step);
+	}
+	return computed;
 }
 
 #endif //TF_ALGORITHMS

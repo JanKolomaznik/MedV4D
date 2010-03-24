@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>560</width>
-    <height>400</height>
+    <width>580</width>
+    <height>410</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,11 +20,17 @@
   <widget class="QPushButton" name="use">
    <property name="geometry">
     <rect>
-     <x>435</x>
-     <y>5</y>
+     <x>460</x>
+     <y>10</y>
      <width>80</width>
      <height>30</height>
     </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
    </property>
    <property name="text">
     <string>use</string>
@@ -33,27 +39,39 @@
   <widget class="QLineEdit" name="name">
    <property name="geometry">
     <rect>
-     <x>100</x>
+     <x>120</x>
      <y>10</y>
-     <width>321</width>
-     <height>21</height>
+     <width>320</width>
+     <height>30</height>
     </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
    </property>
    <property name="text">
     <string/>
    </property>
    <property name="alignment">
-    <set>Qt::AlignCenter</set>
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="nameLabel">
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>0</y>
-     <width>61</width>
-     <height>41</height>
+     <y>10</y>
+     <width>80</width>
+     <height>30</height>
     </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
    </property>
    <property name="text">
     <string>Name:</string>
