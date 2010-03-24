@@ -531,14 +531,6 @@ m4dGUISliceViewerWidget::drawSlice( int sliceNum, double zoomRate, QPoint offset
 
     glTranslatef( offset.x(), offset.y(), 0 );
     glScalef( _flipH * zoomRate, _flipV * zoomRate, 0. );
-    
-    // prepare texture
-    if ( texturePreparerType == custom || texturePreparerType == rgb )
-	for ( uint32 i = 1; i < SLICEVIEWER_INPUT_NUMBER; i++ )
-	{
-	    if ( this->InputPort()[i].IsPlugged() ) break;
-	    if ( i == SLICEVIEWER_INPUT_NUMBER - 1 ) texturePreparerType = simple;
-	}
 
     switch ( texturePreparerType )
     {
