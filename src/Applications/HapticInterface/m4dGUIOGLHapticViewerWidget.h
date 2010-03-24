@@ -30,6 +30,10 @@
 #include "vtkPiecewiseFunction.h"
 #include "vtkColorTransferFunction.h"
 #include "vtkVolumeProperty.h"
+#include "vtkMarchingCubes.h"
+#include "vtkPolyDataNormals.h"
+#include "vtkPolyDataMapper.h"
+#include "vtkProperty.h"
 
 #include "vtkIntegration/m4dImageDataSource.h"
 
@@ -484,6 +488,12 @@ namespace M4D
 			* Renderer to render the whole scene.
 			*/
 			vtkRenderer*				_renImageData;
+
+			vtkMarchingCubes* iso;
+			vtkPolyDataNormals* isoNormals;
+			vtkPolyDataMapper* isoMapper;
+			vtkActor* isoActor;
+			vtkCamera* aCamera;
 
 			/**
 			* List of integers indicating which slots are implemented in this type of viewer.

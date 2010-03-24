@@ -5,11 +5,6 @@
 */
 
 #include "m4dGUIOGLHapticViewerWidget.h"
-#include "vtkMarchingCubes.h"
-#include "vtkPolyDataNormals.h"
-#include "vtkPolyDataMapper.h"
-#include "vtkProperty.h"
-
 #include <QtGui>
 
 namespace M4D
@@ -66,7 +61,8 @@ namespace M4D
 				setInputPort();
 				return;
 			}
-			_renImageData->RemoveViewProp( _volume );
+			//_renImageData->RemoveViewProp( _volume );
+			_renImageData->RemoveActor(isoActor);
 			GetRenderWindow()->RemoveRenderer( _renImageData );
 			_renImageData->Delete();
 			_renImageData = vtkRenderer::New();
@@ -83,7 +79,8 @@ namespace M4D
 					} catch (...) {}
 				}
 			} catch (...) {}
-			_renImageData->AddViewProp( _volume );
+			//_renImageData->AddViewProp( _volume );
+			_renImageData->AddActor(isoActor);
 			GetRenderWindow()->AddRenderer( _renImageData );
 			if ( _selected ) _renImageData->AddViewProp( _actor2DSelected );
 			_renImageData->AddViewProp( _actor2DPlugged );
@@ -198,27 +195,40 @@ namespace M4D
 
 			_selected = false;
 
+			std::cout << "Data integration..." << std::endl; // DEBUG
+
 			_imageData = vtkIntegration::m4dImageDataSource::New();
+
+			std::cout << "Data casting..." << std::endl; // DEBUG
 
 			_iCast = vtkImageCast::New(); 
 			_iCast->SetOutputScalarTypeToUnsignedShort();
 			_iCast->SetInputConnection( _imageData->GetOutputPort() );
 
-			vtkMarchingCubes* iso = vtkMarchingCubes::New();
-			iso->SetInputConnection(_iCast->GetOutputPort());
-			iso->SetValue(0, 1000);
+			std::cout << "Set marching cubes..." << std::endl; // DEBUG
 
-			vtkPolyDataNormals *isoNormals = vtkPolyDataNormals::New();
+			iso = vtkMarchingCubes::New();
+			iso->SetInputConnection(_iCast->GetOutputPort());
+			iso->GenerateValues(1, 1200.0, 1700.0);
+
+			std::cout << "Set poly data..." << std::endl; // DEBUG
+
+			isoNormals = vtkPolyDataNormals::New();
 			isoNormals->SetInputConnection(iso->GetOutputPort());
 			isoNormals->SetFeatureAngle(179.0);
 
-			vtkPolyDataMapper* isoMapper = vtkPolyDataMapper::New();
+			isoMapper = vtkPolyDataMapper::New();
 			isoMapper->SetInput(isoNormals->GetOutput());
 			isoMapper->ScalarVisibilityOff();
 
-			vtkActor *isoActor = vtkActor::New();
+			std::cout << "Create marching mapper..." << std::endl; // DEBUG
+
+			isoActor = vtkActor::New();
 			isoActor->SetMapper(isoMapper);
-			isoActor->GetProperty()->SetColor(0.0, 1.0, 0.0);
+			isoActor->GetProperty()->SetColor(1.0, 1.0, 0.0);
+			isoActor->GetProperty()->SetOpacity(0.3);
+
+			std::cout << "Old..." << std::endl; // DEBUG
 
 			_opacityTransferFunction = vtkPiecewiseFunction::New();
 			_opacityTransferFunction->AddPoint( 0,   0.0 ); 	
@@ -269,25 +279,33 @@ namespace M4D
 			_cellsPlugged = vtkCellArray::New();
 			_pointsDataPlugged->SetLines(_cellsPlugged);
 
+			std::cout << "Create renderer..." << std::endl; // DEBUG
+
 			_renImageData = vtkRenderer::New(); 
 
-			_renImageData->AddViewProp( _volume );
+			//_renImageData->AddViewProp( _volume );
+			_renImageData->AddActor(isoActor);
 
-			vtkCamera* aCamera = vtkCamera::New();
+			std::cout << "Set marching camera..." << std::endl; // DEBUG
+
+			/*aCamera = vtkCamera::New();
 			aCamera->SetViewUp (0, 0, -1);
 			aCamera->SetPosition (0, 1, 0);
 			aCamera->SetFocalPoint (0, 0, 0);
 			aCamera->ComputeViewPlaneNormal();
-			aCamera->Dolly(1.5);
+			aCamera->Dolly(1.5);*/
+
+			std::cout << "Set renderer options..." << std::endl; // DEBUG
 
 			_renImageData = vtkRenderer::New();
-			_renImageData->SetActiveCamera(aCamera);
+			/*_renImageData->SetActiveCamera(aCamera);
 			_renImageData->ResetCamera ();
 			_renImageData->SetBackground(1,1,1);
-			_renImageData->ResetCameraClippingRange ();
-			GetRenderWindow()->AddRenderer( _renImageData );
+			_renImageData->ResetCameraClippingRange ();*/
 
-			_renImageData->AddActor(isoActor);
+			std::cout << "Get renderer..." << std::endl; // DEBUG
+
+			GetRenderWindow()->AddRenderer( _renImageData );
 
 			vtkRenderWindow *rWin;
 			rWin = GetRenderWindow();
@@ -302,6 +320,8 @@ namespace M4D
 			_availableSlots.push_back( ROTATEAXISX );
 			_availableSlots.push_back( ROTATEAXISY );
 			_availableSlots.push_back( ROTATEAXISZ );
+
+			std::cout << "End set parameters..." << std::endl; // DEBUG
 		}
 
 		m4dGUIOGLHapticViewerWidget::AvailableSlots
@@ -401,7 +421,8 @@ namespace M4D
 			case Imaging::PMI_FILTER_UPDATED:
 			case Imaging::PMI_DATASET_PUT:
 			case Imaging::PMI_PORT_PLUGGED:
-				_renImageData->RemoveViewProp( _volume );
+				//_renImageData->RemoveViewProp( _volume );
+				_renImageData->RemoveActor(isoActor);
 				GetRenderWindow()->RemoveRenderer( _renImageData );
 				_renImageData->Delete();
 				_renImageData = vtkRenderer::New();
@@ -417,7 +438,8 @@ namespace M4D
 						_inPort->ReleaseDatasetLock();
 					}
 				} catch (...) {}
-				_renImageData->AddViewProp( _volume );
+				//_renImageData->AddViewProp( _volume );
+				_renImageData->AddActor(isoActor);
 				GetRenderWindow()->AddRenderer( _renImageData );
 				if ( _selected ) _renImageData->AddViewProp( _actor2DSelected );
 				_renImageData->AddViewProp( _actor2DPlugged );
