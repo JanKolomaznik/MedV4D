@@ -1,122 +1,68 @@
 #include "hapticCursor.h"
 
-void M4D::Viewer::hapticCursor::startHaptics()
+namespace M4D
 {
-	numHapticDevices = handler->getNumDevices();
-	LOG("Chai3d: getNumDevices = ", numHapticDevices);
-
-	if (numHapticDevices > 0)
+	namespace Viewer
 	{
-		LOG("Chai3d: using hatpic device #0");
-		handler->getDevice(hapticDevice, 0);
-
-		// open connection to haptic device
-		LOG("Chai3d: open device");
-		hapticDevice->open();
-
-		// initialize haptic device
-		LOG("Chai3d: init device");
-		hapticDevice->initialize();
-
-		// retrieve information about the current haptic device
-		info = hapticDevice->getSpecifications();
-		LOG("Chai3d: ", info.m_manufacturerName, " ", info.m_modelName);
-
-		if (_inPort->GetDatasetTyped().GetDimension() == 3)
+		hapticCursor::hapticDeviceWorker::hapticDeviceWorker(cGenericHapticDevice* hapticDevice, hapticCursor* supervisor, bool* runHaptic)
 		{
-			_minX = _inPort->GetDatasetTyped().GetDimensionExtents(0).minimum;
-			_minY = _inPort->GetDatasetTyped().GetDimensionExtents(1).minimum;
-			_minZ = _inPort->GetDatasetTyped().GetDimensionExtents(2).minimum;
-
-			_sizeX = _inPort->GetDatasetTyped().GetDimensionExtents(0).maximum - _minX;
-			_sizeY = _inPort->GetDatasetTyped().GetDimensionExtents(1).maximum - _minY;
-			_sizeZ = _inPort->GetDatasetTyped().GetDimensionExtents(2).maximum - _minZ;
-
-			maxSize = _sizeX > _sizeY ? _sizeX : _sizeY;
-			maxSize = maxSize > _sizeZ ? maxSize : _sizeZ;
+			this->hapticDevice = hapticDevice;
+			this->supervisor = supervisor;
+			this->runHaptic = runHaptic;
 		}
-
-		position.zero();
-
-		_imageID = _inPort->GetDatasetTyped().GetElementTypeID();
-		uint64 min = MAX_INT64;
-		uint64 max = 0;
-		uint64 result = 0;
-		for (int i = _minX; i < _minX + _sizeX; i++)
+		void hapticCursor::hapticDeviceWorker::StartListen()
 		{
-			for (int j = _minY; j < _minY + _sizeY; j++)
+			boost::thread hapticsThread(*this);
+			hapticsThread.join();
+		}
+		void hapticCursor::hapticDeviceWorker::operator()()
+		{
+			while(*runHaptic)
 			{
-				for (int k = _minZ; k < _minZ + _sizeZ; k++)
-				{
-					NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
-						_imageID, result = Imaging::Image< TTYPE, 3 >::CastAImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >(i, j, k) ) );
-					if (result > max)
-					{
-						max = result;
-					}
-					if (result < min)
-					{
-						min = result;
-					}
-				}
+				cVector3d hapticPosition;
+				hapticDevice->getPosition(hapticPosition);
+				supervisor->SetCursorPosition(hapticPosition);
+				hapticDevice->setForce(supervisor->GetForce());
 			}
 		}
-		_minValue = min;
-		_maxValue = max;
 
-		hapticsThread = new cThread();
-		//hapticsThread->set(&M4D::Viewer::hapticCursor::updateHaptics, CHAI_THREAD_PRIORITY_HAPTICS);
-
-		LOG("Haptics thread started.");
-	}
-}
-
-void M4D::Viewer::hapticCursor::updateHaptics()
-{
-	cVector3d newPosition;
-	cVector3d track;
-	cVector3d force;
-	float fforce;
-	uint64 result = 0;
-
-	while (runHpatics)
-	{
-		bool outx, outy, outz = false;
-		hapticDevice->getPosition(newPosition);
-		track = newPosition - position;
-		newPosition /= info.m_workspaceRadius;
-		position = newPosition;
-		newPosition *= maxSize;
-		track.normalize();
-		force = track;
-		force.negate();
-
-		if ((newPosition.x > (_sizeX / 2.0)) || (newPosition.x < _minX))
+		hapticCursor::hapticCursor(Imaging::InputPortTyped< Imaging::AImage > *inPort) : cursorInterface(inPort)
 		{
-			outx = true;
+			handler = new cHapticDeviceHandler();
+			runHpatics = true;
 		}
-		if ((newPosition.y > (_sizeY / 2.0)) || (newPosition.y < _minY))
+		hapticCursor::~hapticCursor()
 		{
-			outy = true;
+			stop();
+			delete(hapticDevice);
+			delete(handler);
+			delete(deviceWorker);
 		}
-		if ((newPosition.z > (_sizeZ / 2.0)) || (newPosition.z < _minZ))
+		void hapticCursor::startHaptics()
 		{
-			outz = true;
+			numHapticDevices = handler->getNumDevices();
+			if (numHapticDevices > 0)
+			{
+				handler->getDevice(hapticDevice, 0); // get haptic device from handler
+				hapticDevice->open(); // open connection to haptic device
+				hapticDevice->initialize(); // initialize haptic device	
+				info = hapticDevice->getSpecifications(); // retrieve information about the current haptic device
+				std::cout << "Chai3d: " << info.m_manufacturerName << " " << info.m_modelName << std::endl;
+				deviceWorker = new hapticDeviceWorker(hapticDevice, this, &runHpatics);
+				deviceWorker->StartListen();
+			}
+			else
+			{
+				std::cout << "No haptic device found!" << std::endl;
+			}
 		}
-
-		if (outx || outy || outz)
+		cVector3d& hapticCursor::GetForce()
 		{
-			hapticDevice->setForce(force * info.m_maxForce);
+			return force;
 		}
-		else
+		void hapticCursor::stop()
 		{
-			NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
-				_imageID, result = Imaging::Image< TTYPE, 3 >::CastAImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >((int)newPosition.x, (int)newPosition.y, (int)newPosition.z) ) );
-			fforce = result / _maxValue;
-			hapticDevice->setForce(force * fforce * info.m_maxForce);
+			runHpatics = false;
 		}
-		x = position.x;
-		y = position.y;
-		z = position.z;
 	}
 }

@@ -13,29 +13,41 @@ namespace M4D
 		class hapticCursor : public cursorInterface
 		{
 		public:
-			hapticCursor(Imaging::InputPortTyped< Imaging::AImage >	*inPort) : cursorInterface(inPort){};
+			hapticCursor(Imaging::InputPortTyped< Imaging::AImage >	*inPort);
+			~hapticCursor();
 			void startHaptics();
-		private:
-			void updateHaptics();
-			bool runHpatics;
-			// a haptic device handler
-			cHapticDeviceHandler* handler;
-			// a pointer to a haptic device
-			cGenericHapticDevice* hapticDevice;
-			// haptic device info
-			cHapticDeviceInfo info;
-			// number of haptic devices
-			int numHapticDevices;
-			// last position of haptic device
-			cVector3d position;
-			// haptics thread
-			cThread* hapticsThread;
+			void stop();
+		protected:
 
-			int _sizeX, _sizeY, _sizeZ;
-			int _minX, _minY, _minZ;
-			int maxSize;
-			int64 _minValue, _maxValue;
-			int _imageID;
+			class hapticDeviceWorker
+			{
+			public:
+				hapticDeviceWorker(cGenericHapticDevice* hapticDevice, hapticCursor* supervisor, bool* runHaptic);
+				void StartListen();
+				void operator()();
+			protected:
+				cGenericHapticDevice* hapticDevice; // pointer to haptic device that this class communicate with
+				hapticCursor* supervisor; // class of haptic cursor where to pass position
+				bool* runHaptic; // indicates if continue to listen or not
+			};
+
+			virtual void SetCursorPosition(cVector3d& cursorPosition)
+			{
+				// TODO musi se spocitat pozice kurzoru vuci scale a pozici krychle !! zatim spatne
+				cVector3d lastPosition = this->cursorPosition;
+				this->cursorPosition = cursorPosition;
+				cVector3d difference = cursorPosition - lastPosition;
+				difference.normalize();
+				// TODO dopocitat vektor sily - prechodova Fce a nastavit ho do this->force !!
+			}
+			cVector3d& GetForce();
+			bool runHpatics; // indicates if continue to listen or not
+			cHapticDeviceHandler* handler; // a haptic device handler
+			cGenericHapticDevice* hapticDevice; // a pointer to a haptic device
+			cHapticDeviceInfo info; // haptic device infos
+			int numHapticDevices; // number of haptic devices
+			hapticDeviceWorker* deviceWorker; // class which listen to haptic in fact
+			cVector3d force; // force to set to haptic
 		};
 	}
 }

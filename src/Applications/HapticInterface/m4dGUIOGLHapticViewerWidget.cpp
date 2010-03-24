@@ -97,6 +97,7 @@ namespace M4D
 			{
 				_renImageData->RemoveActor((*it).GetActor());
 			}
+			_renImageData->RemoveActor(cursorActor);
 			GetRenderWindow()->RemoveRenderer( _renImageData );
 			_renImageData->Delete();
 			_renImageData = vtkRenderer::New();
@@ -117,6 +118,7 @@ namespace M4D
 			{
 				_renImageData->AddActor((*it).GetActor());
 			}
+			_renImageData->AddActor(cursorActor);
 			GetRenderWindow()->AddRenderer( _renImageData );
 			//if ( _selected ) _renImageData->AddViewProp( _actor2DSelected );
 			//_renImageData->AddViewProp( _actor2DPlugged );
@@ -225,7 +227,7 @@ namespace M4D
 			if ( _eventHandler ) _eventHandler->keyReleaseEvent(event);
 			else QVTKWidget::keyReleaseEvent( event );
 		}
-
+			
 		void m4dGUIOGLHapticViewerWidget::setParameters()
 		{
 
@@ -238,9 +240,10 @@ namespace M4D
 
 			std::cout << "Set marching cubes..." << std::endl; // DEBUG
 
-			tissues.push_back(tissue(_iCast->GetOutputPort(), 600, 1.0, 1.0, 0.4, 0.2)); // Lungs and skin
-			tissues.push_back(tissue(_iCast->GetOutputPort(), 1076, 0.5, 0.5, 1.0, 0.3)); // Water level
-			tissues.push_back(tissue(_iCast->GetOutputPort(), 1300, 0.8, 0.0, 0.0, 0.7)); // Bones
+			tissues.push_back(tissue(_iCast->GetOutputPort(), 600, 1.0, 1.0, 0.4, 0.35)); // Lungs and skin
+			//tissues.push_back(tissue(_iCast->GetOutputPort(), 900, 0.5, 0.5, 1.0, 0.45)); // soft tissue
+			//tissues.push_back(tissue(_iCast->GetOutputPort(), 1080, 1.0, 0.5, 0.5, 0.5)); // Muscles
+			//tissues.push_back(tissue(_iCast->GetOutputPort(), 1300, 0.8, 0.8, 0.8, 1.0)); // Bones
 
 			std::cout << "Old..." << std::endl; // DEBUG
 
@@ -266,6 +269,19 @@ namespace M4D
 			_cellsPlugged = vtkCellArray::New();
 			_pointsDataPlugged->SetLines(_cellsPlugged);
 
+			cursorSphere = vtkSphereSource::New();
+			cursorSphere->SetCenter(0.0, 0.0, 0.0);
+			cursorSphere->SetRadius(2.0);
+
+			cursorMapper = vtkPolyDataMapper::New();
+			cursorMapper->SetInput(cursorSphere->GetOutput());
+
+			cursorActor = vtkActor::New();
+			cursorActor->SetMapper(cursorMapper);
+			cursorActor->GetProperty()->SetColor(0.0, 1.0, 0.0);
+			cursorActor->GetProperty()->SetOpacity(1.0);
+			cursorActor->SetPosition(380.0, 100.0, 200.0);
+
 			std::cout << "Create renderer..." << std::endl; // DEBUG
 
 			_renImageData = vtkRenderer::New(); 
@@ -277,6 +293,7 @@ namespace M4D
 			{
 				_renImageData->AddActor((*it).GetActor());
 			}
+			_renImageData->AddActor(cursorActor);
 
 			vtkRenderWindow *rWin;
 			rWin = GetRenderWindow();
@@ -291,6 +308,8 @@ namespace M4D
 			_availableSlots.push_back( ROTATEAXISX );
 			_availableSlots.push_back( ROTATEAXISY );
 			_availableSlots.push_back( ROTATEAXISZ );
+
+			
 
 			std::cout << "End set parameters..." << std::endl; // DEBUG
 		}
@@ -397,6 +416,7 @@ namespace M4D
 				{
 					_renImageData->RemoveActor((*it).GetActor());
 				}
+				_renImageData->RemoveActor(cursorActor);
 				GetRenderWindow()->RemoveRenderer( _renImageData );
 				_renImageData->Delete();
 				_renImageData = vtkRenderer::New();
@@ -416,6 +436,7 @@ namespace M4D
 				{
 					_renImageData->AddActor((*it).GetActor());
 				}
+				_renImageData->AddActor(cursorActor);
 				GetRenderWindow()->AddRenderer( _renImageData );
 				//if ( _selected ) _renImageData->AddViewProp( _actor2DSelected );
 				//_renImageData->AddViewProp( _actor2DPlugged );

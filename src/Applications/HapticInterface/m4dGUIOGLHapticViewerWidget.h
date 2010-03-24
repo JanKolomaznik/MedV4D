@@ -5,10 +5,10 @@
 * @{ 
 **/
 
-#ifndef M4D_GUI_OPENGLVIEWERWIDGET_H_
-#define M4D_GUI_OPENGLVIEWERWIDGET_H_
+#ifndef M4D_GUI_OPENGLHAPTICVIEWERWIDGET_H_
+#define M4D_GUI_OPENGLHAPTICVIEWERWIDGET_H_
 
-#define _MSVC
+//#define _MSVC
 #include <QWidget>
 #include <QVTKWidget.h>
 #include <vector>
@@ -17,7 +17,6 @@
 #include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkVolume.h"
 #include "vtkActor2D.h"
 #include "vtkPolyDataMapper2D.h"
 #include "vtkProperty2D.h"
@@ -25,16 +24,12 @@
 #include "vtkPolyData.h"
 #include "vtkPoints.h"
 #include "vtkCamera.h"
-#include "vtkVolumeRayCastMapper.h"
-#include "vtkVolumeRayCastCompositeFunction.h"
 #include "vtkImageCast.h"
-#include "vtkPiecewiseFunction.h"
-#include "vtkColorTransferFunction.h"
-#include "vtkVolumeProperty.h"
 #include "vtkMarchingCubes.h"
 #include "vtkPolyDataNormals.h"
 #include "vtkPolyDataMapper.h"
 #include "vtkProperty.h"
+#include "vtkSphereSource.h"
 
 #include "vtkIntegration/m4dImageDataSource.h"
 
@@ -402,6 +397,7 @@ namespace M4D
 			*/
 			void setParameters();
 
+
 			/**
 			* True if the viewer is plugged, false otherwise.
 			*/
@@ -486,6 +482,22 @@ namespace M4D
 			/**
 			* List of integers indicating which slots are implemented in this type of viewer.
 			*/
+
+			/*
+			* Vtk class for model of the sphere which represents cursor
+			*/
+			vtkSphereSource* cursorSphere;
+
+			/*
+			* Mapper for cursor sphere
+			*/
+			vtkPolyDataMapper* cursorMapper;
+
+			/*
+			* Actor for cursor sphere
+			*/
+			vtkActor* cursorActor;
+
 			AvailableSlots				_availableSlots;
 		};
 
