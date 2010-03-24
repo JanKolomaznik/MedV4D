@@ -11,6 +11,7 @@
 #define _MSVC
 #include <QWidget>
 #include <QVTKWidget.h>
+#include <vector>
 
 // VTK includes
 #include "vtkRenderer.h"
@@ -54,6 +55,19 @@ namespace M4D
 			Q_OBJECT
 
 		public:
+
+			struct tissue
+			{
+			public:
+				tissue(vtkAlgorithmOutput* data, double value, double r, double g, double b, double opacity);
+				vtkActor* GetActor();
+				void deleteInnerItems();
+			private:
+				vtkMarchingCubes* iso;
+				vtkPolyDataNormals* isoNormals;
+				vtkPolyDataMapper* isoMapper;
+				vtkActor* isoActor;
+			};
 
 			/**
 			* Constructor.
@@ -410,31 +424,6 @@ namespace M4D
 			vtkImageCast*				_iCast;
 
 			/**
-			* Piecewise function to assign opacities to different voxel values.
-			*/
-			vtkPiecewiseFunction*			_opacityTransferFunction;
-
-			/**
-			* Color transfer function to assign colors to different voxel values.
-			*/
-			vtkColorTransferFunction*			_colorTransferFunction;
-
-			/**
-			* Properties for raycast mapper.
-			*/
-			vtkVolumeProperty*				_volumeProperty;
-
-			/**
-			* Mapper to map volumes into the scene.
-			*/
-			vtkVolumeRayCastMapper*			_volumeMapper;
-
-			/**
-			* Volume object to visualize the image dataset.
-			*/
-			vtkVolume*					_volume;
-
-			/**
 			* 2D actor for "selected" border.
 			*/
 			vtkActor2D*					_actor2DSelected;
@@ -484,16 +473,15 @@ namespace M4D
 			*/
 			vtkCellArray*				_cellsPlugged;
 
+			/*
+			* Vector of tissue struct which holds data for each tissue to render
+			*/
+			std::vector< tissue > tissues;
+
 			/**
 			* Renderer to render the whole scene.
 			*/
 			vtkRenderer*				_renImageData;
-
-			vtkMarchingCubes* iso;
-			vtkPolyDataNormals* isoNormals;
-			vtkPolyDataMapper* isoMapper;
-			vtkActor* isoActor;
-			vtkCamera* aCamera;
 
 			/**
 			* List of integers indicating which slots are implemented in this type of viewer.

@@ -11,7 +11,38 @@ namespace M4D
 {
 	namespace Viewer
 	{
+		m4dGUIOGLHapticViewerWidget::tissue::tissue(vtkAlgorithmOutput* data, double val, double r, double g, double b, double opacity)
+		{
+			iso = vtkMarchingCubes::New();
+			iso->SetInputConnection(data);
+			//iso->GenerateValues(1, val, val + 400.0);
+			iso->SetValue(0, val);
 
+			isoNormals = vtkPolyDataNormals::New();
+			isoNormals->SetInputConnection(iso->GetOutputPort());
+			isoNormals->SetFeatureAngle(179.0);
+
+			isoMapper = vtkPolyDataMapper::New();
+			isoMapper->SetInput(isoNormals->GetOutput());
+			isoMapper->ScalarVisibilityOff();
+
+			isoActor = vtkActor::New();
+			isoActor->SetMapper(isoMapper);
+			isoActor->GetProperty()->SetColor(r, g, b);
+			isoActor->GetProperty()->SetOpacity(opacity);
+
+		}
+		vtkActor* m4dGUIOGLHapticViewerWidget::tissue::GetActor()
+		{
+			return isoActor;
+		}
+		void m4dGUIOGLHapticViewerWidget::tissue::deleteInnerItems()
+		{
+			iso->Delete();
+			isoNormals->Delete();
+			isoMapper->Delete();
+			isoActor->Delete();
+		}
 		m4dGUIOGLHapticViewerWidget::m4dGUIOGLHapticViewerWidget( Imaging::ConnectionInterface* conn, unsigned index, QWidget *parent )
 			: QVTKWidget( parent )
 		{
@@ -36,11 +67,6 @@ namespace M4D
 		{
 			_imageData->Delete();
 			_iCast->Delete();
-			_opacityTransferFunction->Delete();
-			_colorTransferFunction->Delete();
-			_volumeProperty->Delete();
-			_volumeMapper->Delete();
-			_volume->Delete();
 			_renImageData->Delete();
 			_actor2DSelected->Delete();
 			_pointsSelected->Delete();
@@ -52,6 +78,11 @@ namespace M4D
 			_pointsDataPlugged->Delete();
 			_pointsDataMapperPlugged->Delete();
 			_cellsPlugged->Delete();
+			std::vector< tissue >::iterator it;
+			for (it = tissues.begin(); it != tissues.end(); it++)
+			{
+				(*it).deleteInnerItems();
+			}
 		}
 
 		void m4dGUIOGLHapticViewerWidget::setInputPort( Imaging::ConnectionInterface* conn )
@@ -61,8 +92,11 @@ namespace M4D
 				setInputPort();
 				return;
 			}
-			//_renImageData->RemoveViewProp( _volume );
-			_renImageData->RemoveActor(isoActor);
+			std::vector< tissue >::iterator it;
+			for (it = tissues.begin(); it != tissues.end(); it++)
+			{
+				_renImageData->RemoveActor((*it).GetActor());
+			}
 			GetRenderWindow()->RemoveRenderer( _renImageData );
 			_renImageData->Delete();
 			_renImageData = vtkRenderer::New();
@@ -79,11 +113,13 @@ namespace M4D
 					} catch (...) {}
 				}
 			} catch (...) {}
-			//_renImageData->AddViewProp( _volume );
-			_renImageData->AddActor(isoActor);
+			for (it = tissues.begin(); it != tissues.end(); it++)
+			{
+				_renImageData->AddActor((*it).GetActor());
+			}
 			GetRenderWindow()->AddRenderer( _renImageData );
-			if ( _selected ) _renImageData->AddViewProp( _actor2DSelected );
-			_renImageData->AddViewProp( _actor2DPlugged );
+			//if ( _selected ) _renImageData->AddViewProp( _actor2DSelected );
+			//_renImageData->AddViewProp( _actor2DPlugged );
 			GetRenderWindow()->Render();
 			_plugged = true;
 
@@ -93,7 +129,7 @@ namespace M4D
 		{
 			if ( _inPort->IsPlugged() )
 			{
-				_renImageData->RemoveViewProp( _actor2DPlugged );
+				//_renImageData->RemoveViewProp( _actor2DPlugged );
 			}
 			_inPort->UnPlug();
 			_imageData->TemporaryUnsetImageData();
@@ -105,7 +141,7 @@ namespace M4D
 		{
 			if ( _selected )
 			{
-				_renImageData->RemoveViewProp( _actor2DSelected );
+				//_renImageData->RemoveViewProp( _actor2DSelected );
 				GetRenderWindow()->Render();
 			}
 			_selected = false;
@@ -115,7 +151,7 @@ namespace M4D
 		{
 			if ( !_selected )
 			{
-				_renImageData->AddViewProp( _actor2DSelected );
+				//_renImageData->AddViewProp( _actor2DSelected );
 				GetRenderWindow()->Render();
 			}
 			_selected = true;
@@ -194,12 +230,7 @@ namespace M4D
 		{
 
 			_selected = false;
-
-			std::cout << "Data integration..." << std::endl; // DEBUG
-
 			_imageData = vtkIntegration::m4dImageDataSource::New();
-
-			std::cout << "Data casting..." << std::endl; // DEBUG
 
 			_iCast = vtkImageCast::New(); 
 			_iCast->SetOutputScalarTypeToUnsignedShort();
@@ -207,55 +238,11 @@ namespace M4D
 
 			std::cout << "Set marching cubes..." << std::endl; // DEBUG
 
-			iso = vtkMarchingCubes::New();
-			iso->SetInputConnection(_iCast->GetOutputPort());
-			iso->GenerateValues(1, 1200.0, 1700.0);
-
-			std::cout << "Set poly data..." << std::endl; // DEBUG
-
-			isoNormals = vtkPolyDataNormals::New();
-			isoNormals->SetInputConnection(iso->GetOutputPort());
-			isoNormals->SetFeatureAngle(179.0);
-
-			isoMapper = vtkPolyDataMapper::New();
-			isoMapper->SetInput(isoNormals->GetOutput());
-			isoMapper->ScalarVisibilityOff();
-
-			std::cout << "Create marching mapper..." << std::endl; // DEBUG
-
-			isoActor = vtkActor::New();
-			isoActor->SetMapper(isoMapper);
-			isoActor->GetProperty()->SetColor(1.0, 1.0, 0.0);
-			isoActor->GetProperty()->SetOpacity(0.3);
+			tissues.push_back(tissue(_iCast->GetOutputPort(), 600, 1.0, 1.0, 0.4, 0.2)); // Lungs and skin
+			tissues.push_back(tissue(_iCast->GetOutputPort(), 1076, 0.5, 0.5, 1.0, 0.3)); // Water level
+			tissues.push_back(tissue(_iCast->GetOutputPort(), 1300, 0.8, 0.0, 0.0, 0.7)); // Bones
 
 			std::cout << "Old..." << std::endl; // DEBUG
-
-			_opacityTransferFunction = vtkPiecewiseFunction::New();
-			_opacityTransferFunction->AddPoint( 0,   0.0 ); 	
-			_opacityTransferFunction->AddPoint( 169, 0.0 );
-			_opacityTransferFunction->AddPoint( 170, 0.2 );	
-			_opacityTransferFunction->AddPoint( 400, 0.2 );
-			_opacityTransferFunction->AddPoint( 401, 0.0 );
-
-			_colorTransferFunction = vtkColorTransferFunction::New();
-			_colorTransferFunction->AddRGBPoint(    0.0, 0.0, 0.0, 0.0 ); 
-			_colorTransferFunction->AddRGBPoint(  170.0, 1.0, 0.0, 0.0 );
-			_colorTransferFunction->AddRGBPoint(  400.0, 0.8, 0.8, 0.8 );
-			_colorTransferFunction->AddRGBPoint( 2000.0, 1.0, 1.0, 1.0 );
-
-			_volumeProperty = vtkVolumeProperty::New();
-			_volumeProperty->SetColor( _colorTransferFunction );
-			_volumeProperty->SetScalarOpacity( _opacityTransferFunction );
-			//volumeProperty->ShadeOn(); 
-			_volumeProperty->SetInterpolationTypeToLinear();
-
-			_volumeMapper = vtkVolumeRayCastMapper::New();
-			_volumeMapper->SetVolumeRayCastFunction( vtkVolumeRayCastCompositeFunction::New());
-			_volumeMapper->SetInputConnection( _iCast->GetOutputPort() );
-
-			_volume = vtkVolume::New();
-			_volume->SetMapper( _volumeMapper ); 
-			_volume->SetProperty( _volumeProperty );
 
 			_actor2DSelected = vtkActor2D::New();
 			_pointsSelected = vtkPoints::New();
@@ -283,29 +270,13 @@ namespace M4D
 
 			_renImageData = vtkRenderer::New(); 
 
-			//_renImageData->AddViewProp( _volume );
-			_renImageData->AddActor(isoActor);
-
-			std::cout << "Set marching camera..." << std::endl; // DEBUG
-
-			/*aCamera = vtkCamera::New();
-			aCamera->SetViewUp (0, 0, -1);
-			aCamera->SetPosition (0, 1, 0);
-			aCamera->SetFocalPoint (0, 0, 0);
-			aCamera->ComputeViewPlaneNormal();
-			aCamera->Dolly(1.5);*/
-
-			std::cout << "Set renderer options..." << std::endl; // DEBUG
-
-			_renImageData = vtkRenderer::New();
-			/*_renImageData->SetActiveCamera(aCamera);
-			_renImageData->ResetCamera ();
-			_renImageData->SetBackground(1,1,1);
-			_renImageData->ResetCameraClippingRange ();*/
-
-			std::cout << "Get renderer..." << std::endl; // DEBUG
-
 			GetRenderWindow()->AddRenderer( _renImageData );
+
+			std::vector< tissue >::iterator it;
+			for (it = tissues.begin(); it != tissues.end(); it++)
+			{
+				_renImageData->AddActor((*it).GetActor());
+			}
 
 			vtkRenderWindow *rWin;
 			rWin = GetRenderWindow();
@@ -416,13 +387,16 @@ namespace M4D
 
 		void m4dGUIOGLHapticViewerWidget::slotMessageHandler( Imaging::PipelineMsgID msgID )
 		{
+			std::vector< tissue >::iterator it;
 			switch( msgID )
 			{
 			case Imaging::PMI_FILTER_UPDATED:
 			case Imaging::PMI_DATASET_PUT:
 			case Imaging::PMI_PORT_PLUGGED:
-				//_renImageData->RemoveViewProp( _volume );
-				_renImageData->RemoveActor(isoActor);
+				for (it = tissues.begin(); it != tissues.end(); it++)
+				{
+					_renImageData->RemoveActor((*it).GetActor());
+				}
 				GetRenderWindow()->RemoveRenderer( _renImageData );
 				_renImageData->Delete();
 				_renImageData = vtkRenderer::New();
@@ -438,11 +412,13 @@ namespace M4D
 						_inPort->ReleaseDatasetLock();
 					}
 				} catch (...) {}
-				//_renImageData->AddViewProp( _volume );
-				_renImageData->AddActor(isoActor);
+				for (it = tissues.begin(); it != tissues.end(); it++)
+				{
+					_renImageData->AddActor((*it).GetActor());
+				}
 				GetRenderWindow()->AddRenderer( _renImageData );
-				if ( _selected ) _renImageData->AddViewProp( _actor2DSelected );
-				_renImageData->AddViewProp( _actor2DPlugged );
+				//if ( _selected ) _renImageData->AddViewProp( _actor2DSelected );
+				//_renImageData->AddViewProp( _actor2DPlugged );
 				_plugged = true;
 				break;
 
