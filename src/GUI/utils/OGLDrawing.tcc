@@ -88,7 +88,7 @@ GLDrawPointSetPoints( const M4D::Imaging::Geometry::PointSet< VectorType > &poin
 
 template< typename VectorType >
 void
-GLDrawPointSetLines( const M4D::Imaging::Geometry::PointSet< VectorType > &pointset, bool closed = false )
+GLDrawPointSetLines( const M4D::Imaging::Geometry::PointSet< VectorType > &pointset, bool closed )
 {
 	glBegin( closed ? GL_LINE_LOOP : GL_LINE_STRIP );
 		std::for_each( pointset.Begin(), pointset.End(), GLVertexVector );
