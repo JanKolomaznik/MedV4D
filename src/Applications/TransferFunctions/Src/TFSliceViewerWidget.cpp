@@ -33,7 +33,20 @@ bool TFSimpleSliceViewerTexturePreparer< ElementType >::prepare(
 	}
 
 	ElementType* pixelValue = *pixel;
-	if(_currentTransferFunction.size() > 0)
+	/*
+	if(_histSlice != slice)
+	{
+		double range = TypeTraits<ElementType>::Max - TypeTraits<ElementType>::Min;
+		_histogram = std::vector<int>(range, 0);
+		for(unsigned i = 0; i < width*height; ++i)
+		{
+			++_histogram[*pixelValue];
+			++pixelValue;
+		}
+	}
+	pixelValue = *pixel;
+	*/
+	if(_currentTransferFunction.size() == width*height)
 	{
 		for(unsigned i = 0; i < width*height; ++i)
 		{
@@ -41,9 +54,12 @@ bool TFSimpleSliceViewerTexturePreparer< ElementType >::prepare(
 			++pixelValue;
 		}
 	}
-
-	// equalize the first input array
-	//adjustArrayContrastBrightness( *pixel, width, height, brightnessRate, contrastRate );
+	else
+	{
+		// equalize the first input array
+		adjustArrayContrastBrightness( *pixel, width, height, brightnessRate, contrastRate );
+		assert(!"Bad TF");
+	}
 
 	// prepare texture
         glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0,
@@ -66,39 +82,10 @@ void TFSimpleSliceViewerTexturePreparer< ElementType >::setTransferFunction(TFAb
 		transferFunction);
 }
 
-TFHistogram TFSimpleSliceViewerTexturePreparer::getHistogram(
-	const Imaging::InputPortList& inputPorts,
-	uint32& width,
-	uint32& height,
-	SliceOrientation so,
-	uint32 slice,
-	unsigned& dimension){
-
-	ElementType** pixel = getDatasetArrays( inputPorts, 1, width, height, so, slice, dimension );
-
-	double range = TypeTraits<ElementType>::Max - TypeTraits<ElementType>::Min;
-	TFHistogram hist(range, 0);
-
-	if ( ! *pixel )
-	{
-	    delete[] pixel;
-	    return hist;
-	}
-
-	ElementType* pix = *pixel;
-	for(long i = 0; i < width*height; ++i)
-	{
-		++hist[*pix];
-		++pix;
-	}
-
-	// free temporary allocated space
-	delete[] *pixel;
-	delete[] pixel;
-
-	return hist;
+template< typename ElementType >
+std::vector<int> TFSimpleSliceViewerTexturePreparer< ElementType >::getHistogram(){
+	return _histogram;
 }
-
 
 
 void TFSliceViewerWidget::adjust_by_transfer_function(TFAbstractFunction &transferFunction){	

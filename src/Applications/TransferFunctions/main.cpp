@@ -18,7 +18,6 @@ int main ( int argc, char *argv[] )
   app.setQuitOnLastWindowClosed( true );
 
   mainWindow mainWindow;
-  mainWindow.build("TransferFunctions","MFF");
   if ( mainWindow.wasBuildSuccessful() ) 
   {
     mainWindow.show();

@@ -26,7 +26,7 @@ public:
     /**
      * Constructor
      */
-	TFSimpleSliceViewerTexturePreparer(): SimpleSliceViewerTexturePreparer< ElementType >(){}
+	TFSimpleSliceViewerTexturePreparer(): SimpleSliceViewerTexturePreparer< ElementType >(), _histSlice(-1){}
 
     /**
      * Prepares the texture of the image to be mapped to the following OpenGL surface.
@@ -52,16 +52,12 @@ public:
 
 	void setTransferFunction(TFAbstractFunction &transferFunction);
 
-	TFHistogram getHistogram(
-		const Imaging::InputPortList& inputPorts,
-		uint32& width,
-		uint32& height,
-		SliceOrientation so,
-		uint32 slice,
-		unsigned& dimension );
+	std::vector<int> getHistogram();
 
 private:
 	std::vector<typename std::iterator_traits<ElementType>::value_type> _currentTransferFunction;
+	std::vector<int> _histogram;
+	uint32 _histSlice;
 };
 
 class TFSliceViewerWidget: public m4dGUISliceViewerWidget, public QObject{
@@ -94,8 +90,8 @@ public:
 	}
 /*
 signals:
-	void Histogram(TFHistogram hist);*/
-
+	void Histogram(std::vector<int> hist);
+*/
 public slots:
 	void adjust_by_transfer_function(TFAbstractFunction &transferFunction);
 	//void send_histogram();
