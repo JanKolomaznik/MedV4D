@@ -1,6 +1,15 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(MEDV4D)
 
+cmake_policy(SET CMP0012 NEW)
+cmake_policy(SET CMP0011 NEW)
+
+
+SET(VTK_ENABLED true CACHE BOOL "Enable components with VTK dependencies." )
+SET(CG_ENABLED true CACHE BOOL "Enable components with Cg shader dependencies." )
+SET(OLD_M4D_WIDGETS_ENABLED true CACHE BOOL "Enable if you want to use old set of widgets" )
+
+
 IF(NOT MEDV4D_CMAKE_SOURCE_DIR)
 	SET(MEDV4D_CMAKE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/.." )
 	SET(MEDV4D_CMAKE_MODULES_DIR ${MEDV4D_CMAKE_SOURCE_DIR}/Modules)
@@ -31,25 +40,43 @@ IF( DCMTK_OPTIONS )
 	SET_TARGET_PROPERTIES( backendForDICOM PROPERTIES COMPILE_DEFINITIONS ${DCMTK_OPTIONS} )
 ENDIF( DCMTK_OPTIONS )
 
+
 #--------------------------------------------------------
 #       vtkIntegration
-MEDV4D_LIBRARY_TARGET_PREPARATION(vtkIntegration "${MEDV4D_CMAKE_SOURCE_DIR}/../vtkIntegration/src" "${MEDV4D_CMAKE_SOURCE_DIR}/../vtkIntegration")
-ADD_DEPENDENCIES(vtkIntegration Common Imaging)
+IF( ${VTK_ENABLED} )
+	MEDV4D_LIBRARY_TARGET_PREPARATION(vtkIntegration "${MEDV4D_CMAKE_SOURCE_DIR}/../vtkIntegration/src" "${MEDV4D_CMAKE_SOURCE_DIR}/../vtkIntegration")
+	ADD_DEPENDENCIES(vtkIntegration Common Imaging)
+ENDIF( ${VTK_ENABLED} )
 #--------------------------------------------------------
 #       GUI
+IF( ${VTK_ENABLED} )
+	ADD_DEFINITIONS( -DUSE_VTK )
+ENDIF( ${VTK_ENABLED} )
 AUX_SOURCE_DIRECTORY(${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/src WidgetsSrc )
 AUX_SOURCE_DIRECTORY(${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/ogl/src WidgetsOglSrc )
 AUX_SOURCE_DIRECTORY(${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/utils/src WidgetsUtilsSrc )
 AUX_SOURCE_DIRECTORY(${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/utils/src UtilsSrc )
-AUX_SOURCE_DIRECTORY(${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/components/src WidgetsComponentsSrc )
+
+IF( ${OLD_M4D_WIDGETS_ENABLED} )
+	AUX_SOURCE_DIRECTORY(${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/components/src WidgetsComponentsSrc )
+ENDIF( ${OLD_M4D_WIDGETS_ENABLED} )
 
 FILE( GLOB rccinput ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/src/*.qrc )
 FILE( GLOB GUI_header_files ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/utils/*.h ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/*.h ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/components/*.h ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/utils/*.h )
+
+IF( NOT ${OLD_M4D_WIDGETS_ENABLED} )
+	FILTER_FILES_FOR_STRING( "/m4d" "${WidgetsSrc}" tmpList1 tmpList2 )
+	SET( WidgetsSrc ${tmpList2} )
+	FILTER_FILES_FOR_STRING( "/m4d" "${rccinput}" tmpList1 tmpList2 )
+	SET( rccinput ${tmpList2} )
+	FILTER_FILES_FOR_STRING( "/m4d" "${GUI_header_files}" tmpList1 tmpList2 )
+	SET( GUI_header_files ${tmpList2} )
+ENDIF( NOT ${OLD_M4D_WIDGETS_ENABLED} )
+
 FILTER_HEADERS_FOR_MOC( "${GUI_header_files}" mocinput )
 
 QT4_WRAP_CPP(mocoutput ${mocinput})
 QT4_ADD_RESOURCES(rccoutput ${rccinput} ) #OPTIONS --root ../tmp
-
 SOURCE_GROUP( GUI_Sources FILES ${WidgetsSrc} ${WidgetsOglSrc} ${WidgetsUtilsSrc} ${UtilsSrc} ${WidgetsComponentsSrc} )
 SOURCE_GROUP( GUI_Resources FILES  ${rccinput} )
 SOURCE_GROUP( GUI_Generated FILES  ${mocoutput} ${rccoutput} )

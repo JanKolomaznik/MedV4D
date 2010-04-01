@@ -1,3 +1,4 @@
+#ifdef USE_VTK
 /**
  *  @ingroup gui
  *  @file m4dGUIVtkViewerWidget.cpp
@@ -437,3 +438,5 @@ m4dGUIVtkViewerWidget::slotMessageHandler( Imaging::PipelineMsgID msgID )
 
 } /* namespace Viewer */
 } /* namespace M4D */
+
+#endif /*USE_VTK*/
