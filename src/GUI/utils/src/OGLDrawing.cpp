@@ -1,6 +1,8 @@
 #include "GUI/utils/OGLDrawing.h"
 #include <GL/glu.h>
 
+PFNGLTEXIMAGE3DPROC glTexImage3D;
+
 namespace M4D
 {
 

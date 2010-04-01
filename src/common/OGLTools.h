@@ -8,6 +8,15 @@
 
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <GL/glext.h>
+
+extern PFNGLTEXIMAGE3DPROC glTexImage3D;
+
+inline void
+GetGlExtFunctions()
+{
+	glTexImage3D = (PFNGLTEXIMAGE3DPROC)wglGetProcAddress("glTexImage3D");
+}
 
 #include "common/Types.h"
 #include "common/Vector.h"
