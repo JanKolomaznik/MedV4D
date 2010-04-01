@@ -61,6 +61,15 @@ extern std::ostream *pdout;
 
 //----------------------------------------------------------------------------
 #ifdef DEBUG_LEVEL
+#define ASSERT_INFO(EXPR, info) if ( (EXPR) == 0 ) { \
+			DOUT <<"Assertion failed at " <<__FILE__ \
+			<<", on line " <<__LINE__<<", in function \'" \
+			<<__FUNCTION__<<"\'. Reason: " << info <<std::endl; exit(1); }
+#else
+#define ASSERT_INFO(EXPR, info)
+#endif /*DEBUG_LEVEL*/
+//----------------------------------------------------------------------------
+#ifdef DEBUG_LEVEL
 #define ASSERT(EXPR) 	if ( (EXPR) == 0 ) { \
 			DOUT <<"Assertion failed at " <<__FILE__ \
 			<<", on line " <<__LINE__<<", in function \'" \
@@ -113,7 +122,7 @@ extern std::ostream *pdout;
 
 //----------------------------------------------------------------------------
 #ifdef DEBUG_LEVEL
-#define D_COMMAND( ARG )	ARG
+#define D_COMMAND( ... )	__VA_ARGS__
 #else
 #define	D_COMMAND(ARG)
 #endif /*DEBUG_LEVEL*/

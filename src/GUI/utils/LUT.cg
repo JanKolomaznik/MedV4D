@@ -1,0 +1,15 @@
+
+struct LUT_Output {
+  float4 color : COLOR;
+};
+
+LUT_Output LUT_texture( float2 texCoord : TEXCOORD0, 
+			uniform sampler3D texture : TEX0,
+			uniform sampler1D texture : TEX1,
+			)
+{
+  LUT_Output OUT;
+  OUT.color = contrastBrightness.y + contrastBrightness.x * tex2D(texture,texCoord);
+  return OUT;
+}
+

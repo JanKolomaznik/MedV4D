@@ -1,6 +1,7 @@
 #ifndef MATH_TOOLS_H
 #define MATH_TOOLS_H
 
+#include <cmath>
 
 extern const float32 Epsilon;
 extern const float32 PI;
@@ -105,6 +106,12 @@ template< typename NType >
 inline NType
 Sqr( NType a ) {
 	return a*a;
+}
+
+template< typename NType >
+inline NType
+Sqrt( NType a ) {
+	return sqrt( a );
 }
 
 template< typename NType >

@@ -377,7 +377,6 @@ Image< ElementType, Dim >::GetSubRegion(
 		_THROW_ ErrorHandling::EBadParameter( TO_STRING( "Parameter 'min = [" << min << "]' pointing outside of image!" ) ); 
 	}
 	if( !(max <= this->_maximum) ) { 
-		std::cout << max << "   " << this->_maximum << "\n";
 		_THROW_ ErrorHandling::EBadParameter( TO_STRING( "Parameter 'max = [" << max << "]' pointing outside of image!" ) ); 
 	}
 

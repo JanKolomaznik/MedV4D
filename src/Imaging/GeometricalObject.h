@@ -2,6 +2,7 @@
 #define GEOMETRICAL_OBJECT_H
 
 #include "Imaging/GeometricalObjectTypeOperations.h"
+#include "Imaging/VertexInfo.h"
 #include "common/Common.h"
 #include <boost/shared_ptr.hpp>
 
@@ -61,30 +62,49 @@ public:
 	typedef	boost::shared_ptr< AGeometricalObjectDimPrec< VectorType > >	Ptr;
 
 	typedef typename VectorType::CoordinateType	Type;
-	static const unsigned 				Dimension = VectorType::Dim;
-	typedef VectorType		 		PointType;
+	static const unsigned 				Dimension = VectorType::Dimension;
+	//typedef VectorType		 		PointType;
 
 	virtual void
-	Move( PointType t ) = 0;
+	Move( VectorType t ) = 0;
 
 	virtual void
-	Scale( Vector< float32, Dimension > factors, PointType center ) = 0;
+	Scale( Vector< float32, Dimension > factors, VectorType center ) = 0;
 	
 	virtual void
-	GetBoundingBox( VectorType &firstCorner, VectorType &secondCorner ) = 0;
+	GetBoundingBox( VectorType &firstCorner, VectorType &secondCorner )const = 0;
 
 };
 
+template< typename VectorType >
+void
+TranslateVertex( VectorType &v, const VectorType t )
+{
+	v += t;
+}
+
+template< typename VectorType >
+void
+ScaleVertex( VectorType &v, const Vector<float32, VectorType::Dimension> &factor, const VectorType &center )
+{
+	VectorType pom = (v-center);
+	for( unsigned i=0; i<VectorType::Dimension; ++i ){
+		pom[i] = pom[i] * factor[i];
+	}
+	v = pom + center;
+}
 
 template < typename VectorType >
 struct MoveFunctor
 {
 	MoveFunctor( VectorType pt ): t( pt ) {}
 
+
+	template< typename Vertex >
 	void
-	operator()( VectorType &v )const
+	operator()( Vertex &v )const
 		{
-			v = v + t;
+			TranslateVertex( v, t );
 		}
 	VectorType t;
 };
@@ -96,14 +116,11 @@ struct ScaleFunctor
 
 	ScaleFunctor( ScaleFactor pfactor, VectorType pcenter ): factor( pfactor ), center( pcenter ) {}
 
+	template< typename Vertex >
 	void
-	operator()( VectorType &v )const
+	operator()( Vertex &v )const
 		{
-			VectorType pom = (v-center);
-			for( unsigned i=0; i<VectorType::Dimension; ++i ){
-				pom[i] = pom[i] * factor[i];
-			}
-			v = pom + center;
+			ScaleVertex( v, factor, center );
 		}
 	ScaleFactor factor;
 	VectorType center;

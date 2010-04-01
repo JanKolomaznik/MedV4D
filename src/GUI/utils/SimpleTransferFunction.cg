@@ -1,0 +1,16 @@
+
+struct Volume_Output {
+  float4 color : COLOR;
+};
+
+Volume_Output SimpleTransferFunction( float3 texCoord : TEXCOORD0, 
+			uniform sampler3D dataTexture : TEX0,
+			uniform sampler1D transferFunctionTexture : TEX1
+			)
+{
+	Volume_Output OUT;
+	float value = tex3D(dataTexture,texCoord);
+	OUT.color = tex1D(transferFunctionTexture,value);
+	return OUT;
+}
+

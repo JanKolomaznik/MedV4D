@@ -2,7 +2,7 @@
 #define POLYLINE_H
 
 #include "Imaging/PointSet.h"
-#include "Imaging/GeometricAlgorithms.h"
+#include "common/GeometricAlgorithms.h"
 
 namespace M4D
 {

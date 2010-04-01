@@ -4,6 +4,7 @@
 #include "common/Common.h"
 #include "common/Vector.h"
 #include "Imaging/ImageIterator.h"
+#include <memory>
 
 namespace M4D
 {
@@ -30,20 +31,107 @@ public:
 	GetElementTypeID()const = 0;
 };
 
-template< typename EType, uint32 Dim >
-class ImageRegion: public AImageRegion
+template< unsigned Dim >
+class AImageRegionDim: public AImageRegion
 {
 public:
-	static const uint32 Dimension = Dim;
+	typedef Vector< int, Dim >	PointType;
+	static const unsigned Dimension = Dim;
+
+
+	unsigned 
+	GetDimension()const
+		{ return Dimension; }
+
+	unsigned
+	GetSize( unsigned dim )const
+		{
+			return _size[dim];
+		}
+
+	Vector< unsigned, Dimension >
+	GetSize()const
+		{
+			return _size;
+		}
+
+	int
+	GetMinimum( unsigned dim )const
+		{
+			return _origin[dim];
+		}
+
+	PointType
+	GetMinimum()const
+		{
+			return _origin;
+		}
+
+	int
+	GetMaximum( unsigned dim )const
+		{
+			return _origin[dim] + _size[dim];
+		}
+
+	PointType
+	GetMaximum()const
+		{
+			return _origin + PointType( (int32*)_size.GetData() );
+		}
+
+	Vector< float, Dimension >
+	GetElementExtents()const
+		{ return this->_elementExtents; }
+
+	Vector< float, Dimension >
+	GetRealMinimum()const
+		{
+			return VectorMemberProduct( _origin, _elementExtents );
+		}
+
+	Vector< float, Dimension >
+	GetRealMaximum()const
+		{
+			return VectorMemberProduct( GetMaximum(), _elementExtents );
+		}
+
+	Vector< float, Dimension >
+	GetRealSize()const
+		{
+			return VectorMemberProduct( _size, _elementExtents );
+		}
+
+protected:
+	AImageRegionDim(
+			const Vector< unsigned, Dimension >	&size = Vector< unsigned, Dimension >( 0 ),
+			const Vector< int, Dimension >	&origin = Vector< int, Dimension >( 0 ),
+			const Vector< float, Dimension >	&elementExtents = Vector< float, Dimension >( 1.0f )
+		       ): _elementExtents( elementExtents ), _size( size ), _origin( origin )
+	{}
+	
+	AImageRegionDim( const AImageRegionDim &region )
+		: _elementExtents( region._elementExtents ), _size( region._size ), _origin( region._origin )
+	{}
+
+	Vector< float, Dimension >	_elementExtents;
+	Vector< unsigned, Dimension >	_size;
+	Vector< int, Dim >		_origin;
+
+};
+
+template< typename EType, unsigned Dim >
+class ImageRegion: public AImageRegionDim< Dim >
+{
+public:
+	static const unsigned Dimension = Dim;
 	typedef EType					ElementType;
 	typedef ImageIterator< ElementType, Dim >	Iterator;
-	typedef Vector< int32, Dim >			PointType;
+	typedef Vector< int, Dim >			PointType;
 
 	ImageRegion():
-			_pointer( NULL ), _origin( 0 ), _elementExtents( 1.0f ), _sourceDimension( 0 ), _pointerCoordinatesInSource( NULL )
+			AImageRegionDim< Dim >(), _pointer( NULL ), _sourceDimension( 0 ), _pointerCoordinatesInSource( NULL )
 		{
 			for ( unsigned i = 0; i < Dimension; ++i ) {
-				_size[i] = 0;
 				_strides[i] = 0;
 				_dimOrder[i] = 0;
 			}
@@ -51,10 +139,11 @@ public:
 		}
 
 	ImageRegion( 
-			ElementType 			*pointer, 
-			Vector< uint32, Dimension >	size,
-			Vector< int32, Dimension >	origin
-		) 
+			ElementType 				*pointer, 
+			const Vector< unsigned, Dimension >	&size,
+			const Vector< int, Dimension >	&origin,
+			const Vector< float, Dimension >	&elementExtents = Vector< float, Dimension >( 1.0f )
+		) :AImageRegionDim< Dim >( size, origin, elementExtents )
 		{
 			//TODO - check
 			_pointer = pointer;
@@ -64,55 +153,47 @@ public:
 			for ( unsigned i = 0; i < _sourceDimension; ++i ) {
 				_pointerCoordinatesInSource[i] = 0;
 			}
-			_size = size;
-			_origin = origin;
 			_strides = StridesFromSize( size );
-			_elementExtents = Vector< float32, Dimension >( 1.0 );
 			for ( unsigned i = 0; i < Dimension; ++i ) {
 				_dimOrder[i] = i;
 			}
-			_startPointer = _pointer - _origin * _strides;
+			_startPointer = _pointer - this->_origin * _strides;
 		}
 
 	ImageRegion( 
 			ElementType 			*pointer, 
-			Vector< uint32, Dimension >	size,
-			Vector< int32, Dimension >	strides,
-			Vector< float32, Dimension >	elementExtents,
-			Vector< uint32, Dimension >	dimOrder,
-			uint32 				sourceDimension, 
-			const int32*			pointerCoordinatesInSource 
-		) 
+			Vector< unsigned, Dimension >	size,
+			Vector< int, Dimension >	strides,
+			Vector< float, Dimension >	elementExtents,
+			Vector< unsigned, Dimension >	dimOrder,
+			unsigned			sourceDimension, 
+			const int*			pointerCoordinatesInSource 
+		) :AImageRegionDim< Dim >( size, Vector< float, Dimension >( 1.0f ), elementExtents )
 		{
 			_pointer = pointer;
 			_sourceDimension = sourceDimension;
-			_pointerCoordinatesInSource = new int32[_sourceDimension];
+			_pointerCoordinatesInSource = new int[_sourceDimension];
 		       	
 			for ( unsigned i = 0; i < _sourceDimension; ++i ) {
 				_pointerCoordinatesInSource[i] = pointerCoordinatesInSource[i];
 			}
-			_size = size;
 			_strides = strides;
-			_elementExtents = elementExtents;
 			_dimOrder = dimOrder;
 			for ( unsigned i = 0; i < Dimension; ++i ) {
-				_origin[i] = _pointerCoordinatesInSource[ _dimOrder[i] ];
+				this->_origin[i] = _pointerCoordinatesInSource[ _dimOrder[i] ];
 			}
-			_startPointer = _pointer - _origin * _strides;
+			_startPointer = _pointer - this->_origin * _strides;
 		}
 
 	ImageRegion( const ImageRegion& region )
+		: AImageRegionDim< Dim >( region ), 
+			_pointer( region._pointer ),
+			_startPointer( region._startPointer ),
+			_strides( region._strides ),
+			_dimOrder( region._dimOrder ),
+			_sourceDimension( region._sourceDimension )
 		{
-			_pointer = region._pointer;
-			_startPointer = region._startPointer;
-			_sourceDimension = region._sourceDimension;
-			_pointerCoordinatesInSource = new int32[_sourceDimension];
-		       	_origin = region._origin;
-			_size = region._size;
-			_strides = region._strides;
-			_elementExtents = region._elementExtents;
-			_dimOrder = region._dimOrder;
-
+			_pointerCoordinatesInSource = new int[_sourceDimension];
 			for ( unsigned i = 0; i < _sourceDimension; ++i ) {
 				_pointerCoordinatesInSource[i] = region._pointerCoordinatesInSource[i];
 			}
@@ -132,7 +213,7 @@ public:
 	Iterator
 	GetIterator()const
 		{
-			return Iterator( _pointer, GetMinimum(), GetMaximum(), _strides, GetMinimum() );
+			return Iterator( _pointer, this->GetMinimum(), this->GetMaximum(), _strides, this->GetMinimum() );
 			//return Iterator( _pointer, _size.GetData(), _strides.GetData(), pos );
 		}
 
@@ -150,7 +231,7 @@ public:
 	GetIteratorRel( const PointType &firstCorner, const PointType &secondCorner )const
 		{
 			//TODO check extents
-			return GetIterator( firstCorner + _origin, secondCorner + _origin );
+			return GetIterator( firstCorner + this->_origin, secondCorner + this->_origin );
 		}
 
 	ElementType *
@@ -169,43 +250,7 @@ public:
 			return tmp;
 		}
 
-	uint32
-	GetSize( unsigned dim )const
-		{
-			return _size[dim];
-		}
-
-	Vector< uint32, Dimension >
-	GetSize()const
-		{
-			return _size;
-		}
-
-	int32
-	GetMinimum( unsigned dim )const
-		{
-			return _origin[dim];
-		}
-
-	PointType
-	GetMinimum()const
-		{
-			return _origin;
-		}
-
-	int32
-	GetMaximum( unsigned dim )const
-		{
-			return _origin[dim] + _size[dim];
-		}
-
-	PointType
-	GetMaximum()const
-		{
-			return _origin + PointType( (int32*)_size.GetData() );
-		}
-
-	int32
+	int
 	GetStride( unsigned dim )const
 		{
 			return _strides[dim];
@@ -218,21 +263,63 @@ public:
 		}
 
 
-	ImageRegion< ElementType, Dimension - 1 >
-	GetSlice( int32 sliceCoord, uint32 perpAxis = Dimension - 1 )const
+	ImageRegion< ElementType, Dimension >
+	GetSubRegion( const PointType &min, const PointType &max )const
 		{
-			return GetSliceRel( sliceCoord - _origin[ perpAxis ], perpAxis );
+			return GetSubRegionRel( min - this->_origin, max - this->_origin );
+		}
+
+	/*ImageRegion< ElementType, Dimension >
+	GetSubRegionRel( const PointType &min, const PointType &max )const
+		{
+			if( !(min >= PointType()) ) { 
+				_THROW_ ErrorHandling::EBadParameter( TO_STRING( "Parameter 'min = [" << min << "]' pointing outside of image!" ) ); 
+			}
+			if( !(max <= this->_size) ) { 
+				_THROW_ ErrorHandling::EBadParameter( TO_STRING( "Parameter 'max = [" << max << "]' pointing outside of image!" ) ); 
+			}
+
+
+			ElementType * pointer = _pointer;
+			PointType size = max - min;
+
+			pointer += min * _strides;
+
+			int *pointerCoordinatesInSource = new int[_sourceDimension];
+		       	
+			for ( unsigned i = 0; i < _sourceDimension; ++i ) {
+				pointerCoordinatesInSource[i] = _pointerCoordinatesInSource[i];
+			}
+			for ( unsigned i = 0; i < Dimension; ++i ) {
+				this->_origin[i] = _pointerCoordinatesInSource[ _dimOrder[i] ];
+			}
+
+			return ImageRegion( 
+					pointer, 
+					size,
+					_strides,
+					_elementExtents,
+					_dimOrder,
+					_sourceDimension, 
+					pointerCoordinatesInSource 
+				);
+		}*/
+
+	ImageRegion< ElementType, Dimension - 1 >
+	GetSlice( int32 sliceCoord, unsigned perpAxis = Dimension - 1 )const
+		{
+			return GetSliceRel( sliceCoord - this->_origin[ perpAxis ], perpAxis );
 		}
 
 	ImageRegion< ElementType, Dimension - 1 >
-	GetSliceRel( int32 sliceCoord, uint32 perpAxis = Dimension - 1 )const
+	GetSliceRel( int32 sliceCoord, unsigned perpAxis = Dimension - 1 )const
 		{
 			if( perpAxis >= Dimension ) {
 				_THROW_ ErrorHandling::EBadDimension();
 			}
-			if( sliceCoord < 0 || sliceCoord >= (int32)_size[perpAxis] ) {
+			if( sliceCoord < 0 || sliceCoord >= (int32)this->_size[perpAxis] ) {
 				_THROW_	ErrorHandling::EBadParameter( 
-						TO_STRING( "Wrong relative 'sliceCoord = " << sliceCoord << "'. Must in interval <0, " << _size[perpAxis] 
+						TO_STRING( "Wrong relative 'sliceCoord = " << sliceCoord << "'. Must in interval <0, " << this->_size[perpAxis] 
 							<< ") for dimension index " << perpAxis <<"." )
 						);
 			}
@@ -244,17 +331,17 @@ public:
 			}
 			pom[ _dimOrder[perpAxis] ] += sliceCoord * Sgn(_strides[perpAxis]);
 
-			Vector<uint32, Dimension-1> size;
-			Vector<int32, Dimension-1> strides;
-			Vector<float32, Dimension-1> elementExtents;
-			Vector<uint32, Dimension-1> dimOrder;
+			Vector<unsigned, Dimension-1> size;
+			Vector<int, Dimension-1> strides;
+			Vector<float, Dimension-1> elementExtents;
+			Vector<unsigned, Dimension-1> dimOrder;
 
 			unsigned j = 0;
 			for( unsigned i = 0; i < Dimension; ++i ) {
 				if( i != perpAxis ) {
-					size[j] = _size[i];
+					size[j] = this->_size[i];
 					strides[j] = _strides[i];
-					elementExtents[j] = _elementExtents[i];
+					elementExtents[j] = this->_elementExtents[i];
 					dimOrder[j] = _dimOrder[i];
 					++j;
 				}
@@ -274,10 +361,10 @@ public:
 			_startPointer = region._startPointer;
 			_sourceDimension = region._sourceDimension;
 			_pointerCoordinatesInSource = new int32[_sourceDimension];
-		       	_origin = region._origin;
-			_size = region._size;
+		       	this->_origin = region._origin;
+			this->_size = region._size;
 			_strides = region._strides;
-			_elementExtents = region._elementExtents;
+			this->_elementExtents = region._elementExtents;
 			_dimOrder = region._dimOrder;
 
 			for ( unsigned i = 0; i < _sourceDimension; ++i ) {
@@ -295,22 +382,22 @@ public:
 	ElementType &
 	GetElement( const PointType &coords )
 		{ 	
-			return GetElementRel( coords - _origin );
+			return GetElementRel( coords - this->_origin );
 		}
 	ElementType
 	GetElement( const PointType &coords )const
 		{
-			return GetElementRel( coords - _origin );
+			return GetElementRel( coords - this->_origin );
 		}
 
 	ElementType &
 	GetElementRel( const PointType &coords )
 		{
 			for( unsigned i = 0; i < Dim; ++i ) {
-				if( coords[i] < 0 || coords[i] >= (int32)_size[i] ) {
+				if( coords[i] < 0 || coords[i] >= (int32)this->_size[i] ) {
 					_THROW_ ErrorHandling::EBadIndex( 
 							TO_STRING( "Parameter (relative coordinates) 'coords = [" 
-								<< coords << "]' pointing outside of the region. 'size = [" << _size << "]'" )
+								<< coords << "]' pointing outside of the region. 'size = [" << this->_size << "]'" )
 								);
 				}
 			}
@@ -320,10 +407,10 @@ public:
 	GetElementRel( const PointType &coords )const
 		{
 			for( unsigned i = 0; i < Dim; ++i ) {
-				if( coords[i] < 0 || coords[i] >= (int32)_size[i] ) {
+				if( coords[i] < 0 || coords[i] >= (int32)this->_size[i] ) {
 					_THROW_ ErrorHandling::EBadIndex( 
 							TO_STRING( "Parameter (relative coordinates) 'coords = [" 
-								<< coords << "]' pointing outside of the region. 'size = [" << _size << "]'" )
+								<< coords << "]' pointing outside of the region. 'size = [" << this->_size << "]'" )
 							);
 				}
 			}
@@ -342,20 +429,20 @@ public:
 		}
 
 	ElementType
-	GetElementWorldCoords( const Vector< float32, Dimension > &pos )const
+	GetElementWorldCoords( const Vector< float, Dimension > &pos )const
 	{
 		PointType coords;
 		for( unsigned i = 0; i < Dim; ++i ) {
-			coords[i] = ROUND( pos[i] / _elementExtents[i] );
+			coords[i] = ROUND( pos[i] / this->_elementExtents[i] );
 		}
 		return GetElement( coords );
 	}
 
-	uint32
+	unsigned
 	GetSourceDimension()const
 		{ return _sourceDimension; }
 
-	uint32
+	unsigned
 	GetDimensionOrder( unsigned idx )const
 		{ 
 			if( idx >= Dimension ) {
@@ -364,7 +451,7 @@ public:
 			return _dimOrder[idx]; 
 		}
 
-	int32
+	int
 	GetPointerSourceCoordinates( unsigned idx )const
 		{ 
 			if( idx >= _sourceDimension ) {
@@ -373,30 +460,25 @@ public:
 			return _pointerCoordinatesInSource[idx]; 
 		}
 
-	Vector< float32, Dimension >
-	GetElementExtents()const
-		{ return _elementExtents; }
-
+	
 	int16
 	GetElementTypeID()const
 		{ return GetNumericTypeID<ElementType>(); }
 
-	uint32 
-	GetDimension()const
-		{ return Dimension; }
+	
 protected:
 	
 private:
 	ElementType			*_pointer;
 	ElementType			*_startPointer;
-	Vector< uint32, Dimension >	_size;
-	PointType	_strides;
-	PointType	_origin;
+/*	Vector< uint32, Dimension >	_size;
 	Vector< float32, Dimension >	_elementExtents;
+	PointType			_origin;*/
+	PointType			_strides;
 
-	Vector< uint32, Dimension >	_dimOrder;
-	uint32		_sourceDimension;
-	int32		*_pointerCoordinatesInSource;
+	Vector< unsigned, Dimension >	_dimOrder;
+	unsigned			_sourceDimension;
+	int				*_pointerCoordinatesInSource;
 };
 
 //*****************************************************************************
@@ -404,12 +486,12 @@ private:
 template< typename ElementType, unsigned RegDimension, unsigned SourceDimension >
 ImageRegion< ElementType, RegDimension >
 CreateImageRegion(
-			ElementType	*pointer, 
-			Vector< uint32, RegDimension >	size, 
-			Vector< int32, RegDimension >	strides,
-			Vector< float32, RegDimension >	elementExtents,
-			Vector< uint32, RegDimension >	dimOrder,
-			Vector< int32, SourceDimension >	pointerCoordinatesInSource
+			ElementType				*pointer, 
+			Vector< unsigned, RegDimension >	size, 
+			Vector< int, RegDimension >		strides,
+			Vector< float, RegDimension >		elementExtents,
+			Vector< unsigned, RegDimension >	dimOrder,
+			Vector< int, SourceDimension >		pointerCoordinatesInSource
 			)
 {
 	return ImageRegion< ElementType, RegDimension >( 

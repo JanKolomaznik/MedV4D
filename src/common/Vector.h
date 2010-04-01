@@ -5,6 +5,7 @@
 #include "common/ExceptionBase.h"
 #include <istream>
 #include "common/TypeTraits.h"
+#include "common/TypeComparator.h"
 
 #ifdef DEBUG_LEVEL
 	#define CHECK_INDICES_ENABLED
@@ -126,6 +127,13 @@ public:
 	operator=( const Vector< CType, Dimension > &coord )
 		{ 
 			for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = static_cast<CoordType>(coord[i]); } 
+			return *this;
+		}
+
+	Vector< CoordType, Dimension > &
+	operator=( const CoordType coord[] )
+		{ 
+			for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = coord[i]; } 
 			return *this;
 		}
 
@@ -390,6 +398,7 @@ CreateVector( CoordType x, CoordType y, CoordType z )
 	return Vector< CoordType, 3 >( tmp );
 }
 
+
 template< typename CoordType >
 Vector< CoordType, 4 >
 CreateVector( CoordType x, CoordType y, CoordType z, CoordType w )
@@ -446,6 +455,53 @@ VectorAbs( Vector< CoordType, Dim > &v )
 }
 
 template< typename CoordType, unsigned Dim >
+void
+VectorNormalization( Vector< CoordType, Dim > &v )
+{
+	CoordType size = VectorSize( v );
+	size = 1.0 /size;
+	v *= size;
+}
+
+template< typename CoordType, unsigned Dim >
+Vector< CoordType, Dim >
+VectorProduct( const Vector< CoordType, Dim > &a, const Vector< CoordType, Dim > &b )
+{
+	return Vector< CoordType, Dim >( a[1]*b[2] - a[2]*b[1], a[2]*b[0] - a[0]*b[2], a[0]*b[1] - a[1]*b[0] );
+}
+
+template< typename CoordType, unsigned Dim >
+CoordType
+VectorSize( const Vector< CoordType, Dim > &v )
+{
+	CoordType size = v[0] * v[0];
+	for( unsigned i=1; i < Dim; ++i ) {
+		size += v[ i ] * v[ i ];
+	}
+	size = Sqrt( size );
+	return size;
+}
+
+template< typename CoordType, unsigned Dim >
+void
+Ortogonalize( const Vector< CoordType, Dim > &a, Vector< CoordType, Dim > &b )
+{
+	CoordType product = (a * b) /  (a * a);
+	
+	b -= product * a ;
+}
+
+/**
+ * \param u Normalized vector, into which the second will be projected.
+ **/
+template< typename CoordType, unsigned Dim >
+Vector< CoordType, Dim >
+VectorProjection( const Vector< CoordType, Dim > &u, const Vector< CoordType, Dim > &v )
+{
+	return Vector< CoordType, Dim >( (v*u) * u );
+}
+
+template< typename CoordType, unsigned Dim >
 CoordType
 VectorCoordinateProduct( const Vector< CoordType, Dim > &v )
 {
@@ -456,16 +512,33 @@ VectorCoordinateProduct( const Vector< CoordType, Dim > &v )
 	return result;
 }
 
-template< typename CoordType, unsigned Dim >
-Vector< CoordType, Dim >
-VectorMemberProduct( const Vector< CoordType, Dim > &a, const Vector< CoordType, Dim > &b )
+template< typename CoordType1, typename CoordType2, unsigned Dim >
+Vector< typename TypeComparator< CoordType1, CoordType2 >::Superior, Dim >
+VectorMemberProduct( const Vector< CoordType1, Dim > &a, const Vector< CoordType2, Dim > &b )
 {
-	Vector< CoordType, Dim > result = a;
-	for( unsigned i=1; i < Dim; ++i ) {
-		result *= b[ i ];
+	Vector< typename TypeComparator< CoordType1, CoordType2 >::Superior, Dim > result = a;
+	for( unsigned i=0; i < Dim; ++i ) {
+		result[i] *= b[ i ];
 	}
 	return result;
 }
+
+template< typename CoordType, unsigned Dim >
+Vector< CoordType, Dim-1 >
+VectorPurgeDimension( const Vector< CoordType, Dim > &u, unsigned purgedDimension = Dim-1 )
+{
+	ASSERT_INFO( purgedDimension < Dim, "must be valid dimension." );
+
+	CoordType data[Dim-1];
+	unsigned j = 0;
+	for( unsigned i=0; i < Dim; ++i ) {
+		if( i != purgedDimension ) {
+			data[j++] = u[i];
+		}
+	}
+	return Vector< CoordType, Dim-1 >( data );
+}
+
 
 typedef Vector< int32, 2 > CoordInt2D;
 typedef Vector< int32, 3 > CoordInt3D;

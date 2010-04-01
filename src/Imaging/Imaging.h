@@ -24,7 +24,6 @@
 #include "Imaging/EnergyModels.h"
 //#include "Imaging/ExampleImageFilters.h"
 //#include "Imaging/FilterComputation.h"
-#include "Imaging/GeometricAlgorithms.h"
 #include "Imaging/GeometricalObject.h"
 #include "Imaging/GeometryDatasetFactory.h"
 #include "Imaging/Histogram.h"

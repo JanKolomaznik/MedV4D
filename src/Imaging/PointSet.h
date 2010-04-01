@@ -3,7 +3,7 @@
 
 #include "common/Common.h"
 #include "Imaging/GeometricalObject.h"
-#include "Imaging/GeometricAlgorithms.h"
+#include "common/GeometricAlgorithms.h"
 #include "common/Vector.h"
 #include <vector>
 #include <ostream>
@@ -26,19 +26,19 @@ namespace Geometry
 {
 
 	
-template < typename VectorType >
+template < typename PType, typename VectorType = PType >
 class PointSet: public AGeometricalObjectDimPrec< VectorType >
 {
 public:
 	typedef AGeometricalObjectDimPrec< VectorType >		PredecessorType;
-	typedef typename PredecessorType::PointType 		PointType;
+	typedef PType				 		PointType;
 	typedef typename PredecessorType::Type			Type;
-	typedef std::vector< PointType >			PointVector;
-	typedef PointSet< VectorType >				ThisType;
-	typedef typename PointVector::iterator			Iterator;
-	typedef typename PointVector::const_iterator		ConstIterator;
-	friend void SerializeGeometryObject< VectorType >( M4D::IO::OutStream &stream, const ThisType &obj );
-	//friend void DeserializeGeometryObject< VectorType >( M4D::IO::InStream &stream, ThisType * &obj ); 
+	typedef std::vector< PointType >			PointList;
+	typedef PointSet					Self;
+	typedef typename PointList::iterator			PointIterator;
+	typedef typename PointList::const_iterator		ConstPointIterator;
+	//friend void SerializeGeometryObject< PointType, VectorType >( M4D::IO::OutStream &stream, const PointSet< PointType, VectorType > &obj );
+	//friend void DeserializeGeometryObject< VectorType >( M4D::IO::InStream &stream, Self * &obj ); 
 	static const unsigned Dimension	= VectorType::Dimension;		
 
 	PointSet() : _points(), _pointCount( 0 ) 
@@ -125,37 +125,43 @@ public:
 		}
 
 	void
-	Move( PointType t )
+	Move( VectorType t )
 		{
-			std::for_each( _points.begin(), _points.end(), MoveFunctor< PointType >( t ) );
+			std::for_each( _points.begin(), _points.end(), MoveFunctor< VectorType >( t ) );
 		}
 
 	void
-	Scale( Vector< float32, Dimension > factors, PointType center )
+	Scale( Vector< float32, Dimension > factors, VectorType center )
 		{
-			std::for_each( _points.begin(), _points.end(), ScaleFunctor< PointType >( factors, center ) );
+			std::for_each( _points.begin(), _points.end(), ScaleFunctor< VectorType >( factors, center ) );
 		}
 
-	Iterator
+	PointList &
+	GetPoints(){ return _points; }
+
+	const PointList &
+	GetPoints()const{ return _points; }
+
+	PointIterator
 	Begin()	{ return _points.begin(); }
 
-	Iterator
+	PointIterator
 	End()	{ return _points.end(); }
 
-	ConstIterator
+	ConstPointIterator
 	Begin() const { return _points.begin(); }
 
-	ConstIterator
+	ConstPointIterator
 	End() const { return _points.end(); }
 
 protected:
-	PointVector	_points;
+	PointList	_points;
 	uint32		_pointCount;
 };
 
-template < typename VectorType >
+template < typename PType, typename VectorType >
 void
-PrintPointSet( std::ostream &stream, const PointSet< VectorType > &set, unsigned step = 1 )
+PrintPointSet( std::ostream &stream, const PointSet< PType, VectorType > &set, unsigned step = 1 )
 {
 	if( step == 0 ) {
 		step = 1;
@@ -184,11 +190,12 @@ ClosestPointFromPointSet( const PointSetType &pset, typename PointSetType::Point
 	return idx;
 }
 
-template< typename VectorType >
+template < typename PType, typename VectorType >
 void 
-SerializeGeometryObject( M4D::IO::OutStream &stream, const PointSet< VectorType > &obj )
+SerializeGeometryObject( M4D::IO::OutStream &stream, const PointSet< PType, VectorType > &obj )
 {
-		stream.Put<uint32>( GMN_BEGIN_ATRIBUTES );
+		_THROW_ M4D::ErrorHandling::ETODO();
+		/*stream.Put<uint32>( GMN_BEGIN_ATRIBUTES );
 			stream.Put( DummySpace< 5 >() );
 			stream.Put<uint32>( obj._pointCount );
 		stream.Put<uint32>( GMN_END_ATRIBUTES );
@@ -197,12 +204,12 @@ SerializeGeometryObject( M4D::IO::OutStream &stream, const PointSet< VectorType 
 			for( uint32 i = 0; i < obj._pointCount; ++i ) {
 				stream.Put< VectorType >( obj._points[i] );
 			}
-		stream.Put<uint32>( GMN_END_DATA );
+		stream.Put<uint32>( GMN_END_DATA );*/
 }
 
-template< typename VectorType >
+template < typename PType, typename VectorType >
 void
-DeserializeGeometryObject( M4D::IO::InStream &stream, PointSet< VectorType > * &obj )
+DeserializeGeometryObject( M4D::IO::InStream &stream, PointSet< PType, VectorType > * &obj )
 {
 		_THROW_ M4D::ErrorHandling::ETODO();
 

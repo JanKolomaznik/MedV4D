@@ -2,19 +2,15 @@
 #define TYPE_COMPARATOR_H
 
 #include "common/Types.h"
-
+#include <boost/numeric/conversion/conversion_traits.hpp>
 
 template< typename FirstType, typename SecondType >
-struct TypeComparator;
-
-template< typename Type >
-struct TypeComparator< Type, Type >
+struct TypeComparator
 {
-	typedef Type	Superior;
-	typedef Type	Inferior;
+	typedef typename boost::numeric::conversion_traits< FirstType, SecondType>::supertype 	Superior;
+	typedef typename boost::numeric::conversion_traits< FirstType, SecondType>::subtype 	Inferior;
 };
 
-//TODO - finish for all types
 
 
 #endif /*TYPE_COMPARATOR_H*/
