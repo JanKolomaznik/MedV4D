@@ -1,6 +1,9 @@
 #ifndef CG_SHADER_TOOLS_H
 #define CG_SHADER_TOOLS_H
 
+#ifdef USE_CG
+
+
 #include <Cg/cg.h>    /* Can't include this?  Is Cg Toolkit installed! */
 #include <Cg/cgGL.h>
 #include <string>
@@ -103,5 +106,6 @@ struct CgSimpleTransferFunctionShaderConfig : public AShaderConfig
 void 
 CheckForCgError( const std::string &situation, CGcontext &context );
 
+#endif /*USE_CG*/
 
 #endif /*CG_SHADER_TOOLS_H*/

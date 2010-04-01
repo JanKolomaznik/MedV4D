@@ -1,3 +1,5 @@
+#ifdef USE_CG
+
 #include "GUI/utils/CgShaderTools.h"
 
 void
@@ -171,3 +173,5 @@ CheckForCgError( const std::string &situation, CGcontext &context  )
 		_THROW_ CgException( message );
 	}
 }
+
+#endif /*USE_CG*/
