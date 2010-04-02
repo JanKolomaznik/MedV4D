@@ -14,7 +14,7 @@
 #include <vector>
 
 // VTK includes
-#include "vtkRenderer.h"
+#include "vtkOpenGLRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
 #include "vtkActor2D.h"
@@ -30,12 +30,18 @@
 #include "vtkPolyDataMapper.h"
 #include "vtkProperty.h"
 #include "vtkSphereSource.h"
+#include "vtkCubeSource.h"
+#include "vtkOutlineFilter.h"
+#include "vtkTubeFilter.h"
+#include "vtkSphereSource.h"
+#include "aggregationFilterForVTK.h"
 
 #include "vtkIntegration/m4dImageDataSource.h"
 
 #include "common/Common.h"
 #include "Imaging/Imaging.h"
 #include "gui\widgets\m4dGUIAbstractViewerWidget.h"
+#include "hapticCursor.h"
 
 namespace M4D
 {
@@ -397,6 +403,7 @@ namespace M4D
 			*/
 			void setParameters();
 
+			void reloadCursorParameters();
 
 			/**
 			* True if the viewer is plugged, false otherwise.
@@ -418,6 +425,11 @@ namespace M4D
 			* VTK image convertor for actually converting images.
 			*/
 			vtkImageCast*				_iCast;
+			
+			/*
+			* VTK filter for value aggregation
+			*/
+			aggregationFilterForVtk* aggregationFilter;
 
 			/**
 			* 2D actor for "selected" border.
@@ -477,16 +489,12 @@ namespace M4D
 			/**
 			* Renderer to render the whole scene.
 			*/
-			vtkRenderer*				_renImageData;
+			vtkOpenGLRenderer*			_renImageData;
 
 			/**
 			* List of integers indicating which slots are implemented in this type of viewer.
 			*/
-
-			/*
-			* Vtk class for model of the sphere which represents cursor
-			*/
-			vtkSphereSource* cursorSphere;
+			AvailableSlots				_availableSlots;
 
 			/*
 			* Mapper for cursor sphere
@@ -494,11 +502,39 @@ namespace M4D
 			vtkPolyDataMapper* cursorMapper;
 
 			/*
+			* filter for extracting edges from cube model
+			*/
+			vtkOutlineFilter* cursorCubeExtractEdges;
+
+			/*
+			* Mapper for cursor radius cube
+			*/
+			vtkPolyDataMapper* cursorCubeMapper;
+
+			/*
 			* Actor for cursor sphere
 			*/
 			vtkActor* cursorActor;
 
-			AvailableSlots				_availableSlots;
+			/*
+			* Actor for cursor radius cube
+			*/
+			vtkActor* cursorCubeActor;
+
+			/*
+			* Cursor
+			*/
+			hapticCursor* cursor;
+
+			/*
+			* Cursor graphics source
+			*/
+			vtkSphereSource* cursorSource;
+
+			/*
+			* Cursor radius cube source
+			*/
+			vtkCubeSource* cursorRadiusCube;
 		};
 
 	} /* namespace Viewer */

@@ -15,7 +15,6 @@ namespace M4D
 		{
 			iso = vtkMarchingCubes::New();
 			iso->SetInputConnection(data);
-			//iso->GenerateValues(1, val, val + 400.0);
 			iso->SetValue(0, val);
 
 			isoNormals = vtkPolyDataNormals::New();
@@ -51,6 +50,9 @@ namespace M4D
 			_inPort = new Imaging::InputPortTyped< Imaging::AImage >();
 			_inputPorts.AppendPort( _inPort );
 			setInputPort( conn );
+			cursor = new hapticCursor(aggregationFilter->GetOutput());
+			reloadCursorParameters();
+			cursor->startHaptics();
 		}
 
 		m4dGUIOGLHapticViewerWidget::m4dGUIOGLHapticViewerWidget( unsigned index, QWidget *parent )
@@ -60,7 +62,10 @@ namespace M4D
 			setParameters();
 			_inPort = new Imaging::InputPortTyped< Imaging::AImage >();
 			_inputPorts.AppendPort( _inPort );
-			setInputPort( );
+			setInputPort();
+			cursor = new hapticCursor(aggregationFilter->GetOutput());
+			reloadCursorParameters();
+			cursor->startHaptics();
 		}
 
 		m4dGUIOGLHapticViewerWidget::~m4dGUIOGLHapticViewerWidget()
@@ -78,11 +83,15 @@ namespace M4D
 			_pointsDataPlugged->Delete();
 			_pointsDataMapperPlugged->Delete();
 			_cellsPlugged->Delete();
+			cursorCubeExtractEdges->Delete();
+			cursorCubeMapper->Delete();
+			cursorCubeActor->Delete();
 			std::vector< tissue >::iterator it;
 			for (it = tissues.begin(); it != tissues.end(); it++)
 			{
 				(*it).deleteInnerItems();
 			}
+			delete(cursor);
 		}
 
 		void m4dGUIOGLHapticViewerWidget::setInputPort( Imaging::ConnectionInterface* conn )
@@ -98,9 +107,13 @@ namespace M4D
 				_renImageData->RemoveActor((*it).GetActor());
 			}
 			_renImageData->RemoveActor(cursorActor);
+			_renImageData->RemoveActor(cursorCubeActor);
 			GetRenderWindow()->RemoveRenderer( _renImageData );
 			_renImageData->Delete();
-			_renImageData = vtkRenderer::New();
+			_renImageData = vtkOpenGLRenderer::New();
+			_renImageData->SetUseDepthPeeling(1);  //This and next 2 lines enables depth peeling
+			_renImageData->SetMaximumNumberOfPeels(50);
+			_renImageData->SetOcclusionRatio(0.2);
 			conn->ConnectConsumer( *_inPort );
 			try
 			{
@@ -119,6 +132,7 @@ namespace M4D
 				_renImageData->AddActor((*it).GetActor());
 			}
 			_renImageData->AddActor(cursorActor);
+			_renImageData->AddActor(cursorCubeActor);
 			GetRenderWindow()->AddRenderer( _renImageData );
 			//if ( _selected ) _renImageData->AddViewProp( _actor2DSelected );
 			//_renImageData->AddViewProp( _actor2DPlugged );
@@ -227,6 +241,19 @@ namespace M4D
 			if ( _eventHandler ) _eventHandler->keyReleaseEvent(event);
 			else QVTKWidget::keyReleaseEvent( event );
 		}
+
+		void m4dGUIOGLHapticViewerWidget::reloadCursorParameters()
+		{
+			cursorMapper->RemoveAllInputs();
+			cursorSource->Delete();
+			cursorSource = cursor->GetCursor();
+			cursorMapper->SetInput(cursorSource->GetOutput());
+
+			cursorCubeExtractEdges->RemoveAllInputs();
+			cursorRadiusCube->Delete();
+			cursorRadiusCube = cursor->GetRadiusCube();
+			cursorCubeExtractEdges->SetInput(cursorRadiusCube->GetOutput());
+		}
 			
 		void m4dGUIOGLHapticViewerWidget::setParameters()
 		{
@@ -238,14 +265,23 @@ namespace M4D
 			_iCast->SetOutputScalarTypeToUnsignedShort();
 			_iCast->SetInputConnection( _imageData->GetOutputPort() );
 
+			std::cout << "Aggregation data filter setting..." << std::endl; // DEBUG
+
+			aggregationFilter = aggregationFilterForVtk::New();
+			aggregationFilter->SetAggregationPoint(550, 700, 600);
+			//aggregationFilter->SetAggregationPoint(701, 1000, 900);
+			//aggregationFilter->SetAggregationPoint(1001, 1200, 1080);
+			//aggregationFilter->SetAggregationPoint(1201, 2000, 1300);
+			aggregationFilter->SetInputConnection( _iCast->GetOutputPort());
+
 			std::cout << "Set marching cubes..." << std::endl; // DEBUG
 
-			tissues.push_back(tissue(_iCast->GetOutputPort(), 600, 1.0, 1.0, 0.4, 0.35)); // Lungs and skin
-			//tissues.push_back(tissue(_iCast->GetOutputPort(), 900, 0.5, 0.5, 1.0, 0.45)); // soft tissue
-			//tissues.push_back(tissue(_iCast->GetOutputPort(), 1080, 1.0, 0.5, 0.5, 0.5)); // Muscles
-			//tissues.push_back(tissue(_iCast->GetOutputPort(), 1300, 0.8, 0.8, 0.8, 1.0)); // Bones
+			tissues.push_back(tissue(aggregationFilter->GetOutputPort(), 600, 1.0, 1.0, 0.4, 0.35)); // Lungs and skin
+			//tissues.push_back(tissue(aggregationFilter->GetOutputPort(), 900, 0.5, 0.5, 1.0, 0.4)); // soft tissue
+			//tissues.push_back(tissue(aggregationFilter->GetOutputPort(), 1080, 1.0, 0.5, 0.5, 0.5)); // Muscles
+			//tissues.push_back(tissue(aggregationFilter->GetOutputPort(), 1300, 0.8, 0.8, 0.8, 1.0)); // Bones
 
-			std::cout << "Old..." << std::endl; // DEBUG
+#pragma region pointStuffFromOriginalVtkViewer
 
 			_actor2DSelected = vtkActor2D::New();
 			_pointsSelected = vtkPoints::New();
@@ -269,22 +305,50 @@ namespace M4D
 			_cellsPlugged = vtkCellArray::New();
 			_pointsDataPlugged->SetLines(_cellsPlugged);
 
-			cursorSphere = vtkSphereSource::New();
-			cursorSphere->SetCenter(0.0, 0.0, 0.0);
-			cursorSphere->SetRadius(2.0);
+#pragma endregion pointStuffFromOriginalVtkViewer
+
+#pragma region cursorSourceVtkInicialization
+
+			cursorSource = vtkSphereSource::New();
+			cursorSource->SetCenter(0.0, 0.0, 0.0);
+			cursorSource->SetRadius(10.0);
 
 			cursorMapper = vtkPolyDataMapper::New();
-			cursorMapper->SetInput(cursorSphere->GetOutput());
+			cursorMapper->SetInput(cursorSource->GetOutput());
 
 			cursorActor = vtkActor::New();
 			cursorActor->SetMapper(cursorMapper);
 			cursorActor->GetProperty()->SetColor(0.0, 1.0, 0.0);
 			cursorActor->GetProperty()->SetOpacity(1.0);
-			cursorActor->SetPosition(380.0, 100.0, 200.0);
+
+#pragma endregion cursorSphereVtkInicialization
+
+#pragma region cursorCubeVtkInitialization
+
+			cursorRadiusCube = vtkCubeSource::New();
+			cursorRadiusCube->SetCenter(0.0, 0.0, 0.0);
+			cursorRadiusCube->SetXLength(10.0);
+			cursorRadiusCube->SetYLength(10.0);
+			cursorRadiusCube->SetZLength(10.0);
+
+			cursorCubeExtractEdges = vtkOutlineFilter::New();
+			cursorCubeExtractEdges->SetInput(cursorRadiusCube->GetOutput());
+
+			cursorCubeMapper = vtkPolyDataMapper::New();
+			cursorCubeMapper->SetInput(cursorCubeExtractEdges->GetOutput());
+
+			cursorCubeActor = vtkActor::New();
+			cursorCubeActor->SetMapper(cursorCubeMapper);
+			cursorCubeActor->GetProperty()->SetColor(0.1, 0.1, 0.3);
+
+#pragma endregion cursorCubeVtkInitialization
 
 			std::cout << "Create renderer..." << std::endl; // DEBUG
 
-			_renImageData = vtkRenderer::New(); 
+			_renImageData = vtkOpenGLRenderer::New(); 
+			_renImageData->SetUseDepthPeeling(1);  //This and next 2 lines enables depth peeling
+			_renImageData->SetMaximumNumberOfPeels(50);
+			_renImageData->SetOcclusionRatio(0.2);
 
 			GetRenderWindow()->AddRenderer( _renImageData );
 
@@ -294,9 +358,13 @@ namespace M4D
 				_renImageData->AddActor((*it).GetActor());
 			}
 			_renImageData->AddActor(cursorActor);
+			_renImageData->AddActor(cursorCubeActor);
 
 			vtkRenderWindow *rWin;
 			rWin = GetRenderWindow();
+
+			//rWin->SetAlphaBitPlanes(1);  This and next line enables depth peeling
+			//rWin->SetMultiSamples(0);
 
 			vtkRenderWindowInteractor *iren;
 			iren = GetInteractor();
@@ -305,13 +373,10 @@ namespace M4D
 			_availableSlots.clear();
 			_availableSlots.push_back( SETSELECTED );
 			_availableSlots.push_back( ZOOM );
+			_availableSlots.push_back( MOVE );
 			_availableSlots.push_back( ROTATEAXISX );
 			_availableSlots.push_back( ROTATEAXISY );
 			_availableSlots.push_back( ROTATEAXISZ );
-
-			
-
-			std::cout << "End set parameters..." << std::endl; // DEBUG
 		}
 
 		m4dGUIOGLHapticViewerWidget::AvailableSlots
@@ -367,7 +432,10 @@ namespace M4D
 			_renImageData->GetActiveCamera()->Zoom( ((double)amount)/10. );
 		}
 
-		void m4dGUIOGLHapticViewerWidget::slotMove( int amountH, int amountV ) {}
+		void m4dGUIOGLHapticViewerWidget::slotMove( int amountH, int amountV ) 
+		{
+			_renImageData->GetActiveCamera()->SetPosition(((double)amountH)/20.0, ((double)amountV)/20.0, 1.0);
+		}
 
 		void m4dGUIOGLHapticViewerWidget::slotAdjustContrastBrightness( int amountB, int amountC ) {}
 
@@ -417,9 +485,13 @@ namespace M4D
 					_renImageData->RemoveActor((*it).GetActor());
 				}
 				_renImageData->RemoveActor(cursorActor);
+				_renImageData->RemoveActor(cursorCubeActor);
 				GetRenderWindow()->RemoveRenderer( _renImageData );
 				_renImageData->Delete();
-				_renImageData = vtkRenderer::New();
+				_renImageData = vtkOpenGLRenderer::New();
+				_renImageData->SetUseDepthPeeling(1); //This and other 2 lines enables depth peeling
+				_renImageData->SetMaximumNumberOfPeels(50);
+				_renImageData->SetOcclusionRatio(0.2);
 				try
 				{
 					if ( _inPort->TryLockDataset() )
@@ -437,6 +509,7 @@ namespace M4D
 					_renImageData->AddActor((*it).GetActor());
 				}
 				_renImageData->AddActor(cursorActor);
+				_renImageData->AddActor(cursorCubeActor);
 				GetRenderWindow()->AddRenderer( _renImageData );
 				//if ( _selected ) _renImageData->AddViewProp( _actor2DSelected );
 				//_renImageData->AddViewProp( _actor2DPlugged );

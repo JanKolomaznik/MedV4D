@@ -1,9 +1,12 @@
-#ifndef HAPTIC_VIEWER_CURSOR_INTERFACE
-#define HAPTIC_VIEWER_CURSOR_INTERFACE
+#ifndef M4D_GUI_OPENGLHAPTICVIEWERWIDGET_H_HAPTIC_VIEWER_CURSOR_INTERFACE
+#define M4D_GUI_OPENGLHAPTICVIEWERWIDGET_H_HAPTIC_VIEWER_CURSOR_INTERFACE
 #define _MSVC
 
 #include "Imaging/Imaging.h"
 #include "chai3d.h"
+#include "vtkSphereSource.h"
+#include "vtkCubeSource.h"
+#include "vtkImageData.h"
 
 namespace M4D
 {
@@ -15,19 +18,22 @@ namespace M4D
 			virtual float GetX(); // returns X part of coordinates of cursor
 			virtual float GetY(); // returns Y part of coordinates of cursor
 			virtual float GetZ(); // returns Z part of coordinates of cursor
-			virtual const cVector3d& GetCursorPosition(); // returns cursor position as vector
-			virtual const cVector3d& GetCubeCenter(); // returns cube center position as vector
+			virtual vtkSphereSource* GetCursor(); // returns cursor position as vector
+			virtual vtkCubeSource* GetRadiusCube(); // returns cube center position as vector
 			virtual double GetScale(); // returns size of cube where is action radius of cursor
 			virtual void reloadParameters(); // reload image parameters from inPort
-			cursorInterface(Imaging::InputPortTyped< Imaging::AImage >*	inPort);
+			cursorInterface(vtkImageData* input);
+			~cursorInterface();
 		protected: 
-			virtual void SetCursorPosition(cVector3d& cursorPosition);
+			virtual void SetCursorPosition(const cVector3d& position);
 			virtual void SetScale(double scale); // Sets scale
-			Imaging::InputPortTyped< Imaging::AImage >*	inPort; // link to dataset
-			cVector3d cursorPosition; // position of cursor
-			cVector3d cubeCenter; // center of cube where is action radius of cursor
+			vtkImageData* input; // link to dataset
+			vtkSphereSource* cursor;
+			vtkCubeSource* cursorRadiusCube;
+			unsigned short minVolumeValue, maxVolumeValue;
 			double scale; // size of cube where is action radius of cursor
-			float imageRealHeight, imageRealWidth, imageRealDepth; // parameters of volume dataset - size in mm
+			double imageRealHeight, imageRealWidth, imageRealDepth; // parameters of volume dataset - size in mm
+			double imageRealOffsetHeight, imageRealOffsetWidth, imageRealOffsetDepth; // offset which indicates how far VTK starts drawing of object from 0,0,0
 			int imageDataHeight, imageDataWidth, imageDataDepth; // parameters of volume dataset - size in voxels
 		};
 	}

@@ -9,30 +9,71 @@ namespace M4D
 {
 	namespace Viewer
 	{
-		cursorInterface::cursorInterface(Imaging::InputPortTyped< Imaging::AImage >* inPort)
+		cursorInterface::cursorInterface(vtkImageData* input)
 		{
-			this->inPort = inPort;
+			this->input = input;
+			cursor = vtkSphereSource::New();
+			cursor->SetRadius(1.0);
+			cursorRadiusCube = vtkCubeSource::New();
 			reloadParameters();
+		}
+		cursorInterface::~cursorInterface()
+		{
+			cursor->Delete();
+			cursorRadiusCube->Delete();
 		}
 		void cursorInterface::reloadParameters()
 		{
-			if (inPort->GetDatasetTyped().GetDimension() == 3)
+			if (input->GetDataDimension() == 3)
 			{
-				imageDataWidth = inPort->GetDatasetTyped().GetDimensionExtents(0).maximum - inPort->GetDatasetTyped().GetDimensionExtents(0).minimum;
-				imageDataHeight = inPort->GetDatasetTyped().GetDimensionExtents(1).maximum - inPort->GetDatasetTyped().GetDimensionExtents(1).minimum;
-				imageDataDepth = inPort->GetDatasetTyped().GetDimensionExtents(2).maximum - inPort->GetDatasetTyped().GetDimensionExtents(2).minimum;
+				int dimensions[3];
+				input->GetDimensions(dimensions);
 
-				imageRealWidth = ((float)imageDataWidth) * inPort->GetDatasetTyped().GetDimensionExtents(0).elementExtent;
-				imageRealHeight = ((float)imageDataHeight) * inPort->GetDatasetTyped().GetDimensionExtents(1).elementExtent;
-				imageRealDepth = ((float)imageDataDepth) * inPort->GetDatasetTyped().GetDimensionExtents(2).elementExtent;
+				double spacing[3];
+				input->GetSpacing(spacing);
 
-				cursorPosition.x = imageRealWidth / 2.0;
-				cursorPosition.y = imageRealHeight / 2.0;
-				cursorPosition.z = imageRealDepth / 2.0;
-
-				cubeCenter = cursorPosition;
+				int extents[6];
+				input->GetExtent(extents);
 				
-				scale = MAX( MAX(imageRealWidth, imageRealHeight), MAX(imageRealHeight, imageRealDepth)); 							
+				minVolumeValue = (unsigned short)input->GetScalarTypeMax();
+				maxVolumeValue = (unsigned short)input->GetScalarTypeMin();
+				for (int i = extents[0]; i < extents[1]; ++i)
+				{
+					for (int j = extents[2]; j < extents[3]; ++j)
+					{
+						for (int k = extents[4]; k < extents[5]; ++k)
+						{
+							for (int c = 0; c < input->GetNumberOfScalarComponents(); ++c)
+							{
+								if (minVolumeValue > (unsigned short)input->GetScalarComponentAsDouble(i,j,k,c))
+									minVolumeValue = (unsigned short)input->GetScalarComponentAsDouble(i,j,k,c);
+								if (maxVolumeValue < (unsigned short)input->GetScalarComponentAsDouble(i,j,k,c))
+									maxVolumeValue = (unsigned short)input->GetScalarComponentAsDouble(i,j,k,c);
+							}
+						}
+					}
+				}
+
+				imageRealOffsetWidth = extents[0] * spacing[0];
+				imageRealOffsetHeight = extents[2] * spacing[1];
+				imageRealOffsetDepth = extents[4] * spacing[2];
+
+				imageDataWidth = dimensions[0];
+				imageDataHeight = dimensions[1];
+				imageDataDepth = dimensions[2];
+
+				imageRealWidth = imageDataWidth * spacing[0];
+				imageRealHeight = imageDataHeight * spacing[1];
+				imageRealDepth = imageDataDepth * spacing[2];
+
+				double center[3];
+				center[0] = (imageRealWidth / 2.0) + imageRealOffsetWidth;
+				center[1] = (imageRealHeight / 2.0) + imageRealOffsetHeight;
+				center[2] = (imageRealDepth / 2.0) + imageRealOffsetDepth;
+
+				cursor->SetCenter(center);
+
+				SetScale(MAX( MAX(imageRealWidth, imageRealHeight), MAX(imageRealHeight, imageRealDepth)));						
 			}
 			else
 			{
@@ -48,37 +89,48 @@ namespace M4D
 		void cursorInterface::SetScale(double scale)
 		{
 			this->scale = scale;
-			cubeCenter = cursorPosition;
+			double center[3];
+			cursor->GetCenter(center);
+			cursorRadiusCube->SetCenter(center);
+			cursorRadiusCube->SetXLength(scale);
+			cursorRadiusCube->SetYLength(scale);
+			cursorRadiusCube->SetZLength(scale);
 		}
 
-		const cVector3d& cursorInterface::GetCubeCenter()
+		void cursorInterface::SetCursorPosition(const cVector3d& position)
 		{
-			return cubeCenter;
+			cursor->SetCenter(position.x, position.y, position.z); // Bad implementation
 		}
 
-		void cursorInterface::SetCursorPosition(cVector3d& cursorPosition)
+		vtkCubeSource* cursorInterface::GetRadiusCube()
 		{
-			this->cursorPosition = cursorPosition;
+			return cursorRadiusCube;
 		}
 
-		const cVector3d& cursorInterface::GetCursorPosition()
+		vtkSphereSource* cursorInterface::GetCursor()
 		{
-			return cursorPosition;
+			return cursor;
 		}
 
 		float cursorInterface::GetX()
 		{
-			return cursorPosition.x;
+			double center[3];
+			cursor->GetCenter(center);
+			return center[0];
 		}
 
 		float cursorInterface::GetY()
 		{
-			return cursorPosition.y;
+			double center[3];
+			cursor->GetCenter(center);
+			return center[1];
 		}
 
 		float cursorInterface::GetZ()
 		{
-			return cursorPosition.z;
+			double center[3];
+			cursor->GetCenter(center);
+			return center[2];
 		}
 	}
 }
