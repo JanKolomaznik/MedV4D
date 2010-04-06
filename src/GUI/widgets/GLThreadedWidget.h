@@ -1,6 +1,7 @@
 #ifndef _GL_THREADED_WIDGET_H
 #define _GL_THREADED_WIDGET_H
 
+#include "common/OGLTools.h"
 #include <QtOpenGL/QGLWidget>
 #include <QtCore/QWaitCondition>
 #include <QtCore/QMutex>

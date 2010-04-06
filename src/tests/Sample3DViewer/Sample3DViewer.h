@@ -40,7 +40,7 @@ public:
 	void
 	initializeGL()
 	{
-		glClearColor(0,0.5f,0.6,1);
+		glClearColor(0,0.5f,0.6f,1);
 		glShadeModel(GL_FLAT);
 		glEnable(GL_DEPTH_TEST);
 		//glEnable(GL_CULL_FACE);

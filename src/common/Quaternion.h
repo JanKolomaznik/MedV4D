@@ -66,8 +66,8 @@ template< typename T >
 Quaternion< T >
 CreateRotationQuaternion( T angle, const Vector< T, 3 > &axis )
 {
-	T cangle = cos( 0.5 * angle );
-	T sangle = sin( 0.5 * angle );
+	T cangle = cos( 0.5f * angle );
+	T sangle = sin( 0.5f * angle );
 	return Quaternion< T >( cangle, sangle * axis );
 }
 

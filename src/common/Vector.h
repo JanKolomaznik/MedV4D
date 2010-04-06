@@ -459,7 +459,7 @@ void
 VectorNormalization( Vector< CoordType, Dim > &v )
 {
 	CoordType size = VectorSize( v );
-	size = 1.0 /size;
+	size = 1.0f /size;
 	v *= size;
 }
 

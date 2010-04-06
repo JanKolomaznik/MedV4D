@@ -26,7 +26,7 @@ GetOptimalViewConfiguration( const Vector< float, 2 > &regionSize, const Vector<
 	tmp = 0.5f * ( tmp - Vector< float, 2 >( zoom ) );
 	Vector< float, 2 > offset = VectorMemberProduct( tmp, regionSize ); 
 
-	return ViewConfiguration2D( offset, zoom, windowSize[0],  windowSize[1] );
+	return ViewConfiguration2D( offset, zoom, static_cast<float>(windowSize[0]),  static_cast<float>(windowSize[1]) );
 }
 
 ViewConfiguration2D 

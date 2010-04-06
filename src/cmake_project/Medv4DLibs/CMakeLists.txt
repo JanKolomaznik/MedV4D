@@ -1,8 +1,12 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(MEDV4D)
 
-cmake_policy(SET CMP0012 NEW)
-cmake_policy(SET CMP0011 NEW)
+if(POLICY CMP0012)
+	cmake_policy(SET CMP0012 NEW)
+endif(POLICY CMP0012)
+if(POLICY CMP0011)
+	cmake_policy(SET CMP0011 NEW)
+endif(POLICY CMP0011)
 
 
 SET(VTK_ENABLED true CACHE BOOL "Enable components with VTK dependencies." )
@@ -43,38 +47,39 @@ ENDIF( DCMTK_OPTIONS )
 
 #--------------------------------------------------------
 #       vtkIntegration
-IF( ${VTK_ENABLED} )
+IF( ${VTK_ENABLED} MATCHES "ON" )
 	MEDV4D_LIBRARY_TARGET_PREPARATION(vtkIntegration "${MEDV4D_CMAKE_SOURCE_DIR}/../vtkIntegration/src" "${MEDV4D_CMAKE_SOURCE_DIR}/../vtkIntegration")
 	ADD_DEPENDENCIES(vtkIntegration Common Imaging)
-ENDIF( ${VTK_ENABLED} )
+ENDIF( ${VTK_ENABLED} MATCHES "ON" )
 #--------------------------------------------------------
 #       GUI
-IF( ${VTK_ENABLED} )
+
+IF( ${VTK_ENABLED} MATCHES "ON" )
 	ADD_DEFINITIONS( -DUSE_VTK )
-ENDIF( ${VTK_ENABLED} )
-IF( ${CG_ENABLED} )
+ENDIF( ${VTK_ENABLED} MATCHES "ON" )
+IF( ${CG_ENABLED} MATCHES "ON" )
 	ADD_DEFINITIONS( -DUSE_CG )
-ENDIF( ${CG_ENABLED} )
+ENDIF( ${CG_ENABLED} MATCHES "ON" )
 AUX_SOURCE_DIRECTORY(${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/src WidgetsSrc )
 AUX_SOURCE_DIRECTORY(${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/ogl/src WidgetsOglSrc )
 AUX_SOURCE_DIRECTORY(${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/utils/src WidgetsUtilsSrc )
 AUX_SOURCE_DIRECTORY(${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/utils/src UtilsSrc )
 
-IF( ${OLD_M4D_WIDGETS_ENABLED} )
+IF( ${OLD_M4D_WIDGETS_ENABLED} MATCHES "ON" )
 	AUX_SOURCE_DIRECTORY(${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/components/src WidgetsComponentsSrc )
-ENDIF( ${OLD_M4D_WIDGETS_ENABLED} )
+ENDIF( ${OLD_M4D_WIDGETS_ENABLED} MATCHES "ON" )
 
 FILE( GLOB rccinput ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/src/*.qrc )
 FILE( GLOB GUI_header_files ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/utils/*.h ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/*.h ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/components/*.h ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/utils/*.h )
 
-IF( NOT ${OLD_M4D_WIDGETS_ENABLED} )
+IF( ${OLD_M4D_WIDGETS_ENABLED} MATCHES "OFF"  )
 	FILTER_FILES_FOR_STRING( "/m4d" "${WidgetsSrc}" tmpList1 tmpList2 )
 	SET( WidgetsSrc ${tmpList2} )
 	FILTER_FILES_FOR_STRING( "/m4d" "${rccinput}" tmpList1 tmpList2 )
 	SET( rccinput ${tmpList2} )
 	FILTER_FILES_FOR_STRING( "/m4d" "${GUI_header_files}" tmpList1 tmpList2 )
 	SET( GUI_header_files ${tmpList2} )
-ENDIF( NOT ${OLD_M4D_WIDGETS_ENABLED} )
+ENDIF( ${OLD_M4D_WIDGETS_ENABLED} MATCHES "OFF" )
 
 FILTER_HEADERS_FOR_MOC( "${GUI_header_files}" mocinput )
 
