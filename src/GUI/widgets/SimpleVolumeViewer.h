@@ -1,14 +1,15 @@
 #ifndef _SIMPLE_VOLUME_VIEWER_H
 #define _SIMPLE_VOLUME_VIEWER_H
 
+
 #include "GUI/utils/OGLDrawing.h"
+#include "GUI/utils/CgShaderTools.h"
 #include <QtGui/QWidget>
 #include "Imaging/ImageRegion.h"
 #include "GUI/utils/ViewConfiguration.h"
 #include "common/Vector.h"
 #include "common/MathTools.h"
 
-#include "GUI/utils/CgShaderTools.h"
 #include "GUI/utils/DrawingTools.h"
 
 #include <QtGui/QMouseEvent>

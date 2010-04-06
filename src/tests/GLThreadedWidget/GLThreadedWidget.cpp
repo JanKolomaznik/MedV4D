@@ -3,12 +3,12 @@
 #include <fstream>
 #include <sstream>
 
+#include "GUI/widgets/Simple2DViewer.h"
 #include <QtGui/QApplication>
 #include <QtOpenGL/QGLWidget>
 #include <QtGui/QWidget>
 #include <QtGui/QHBoxLayout>
 #include "GUI/widgets/GLThreadedWidget.h"
-#include "GUI/widgets/Simple2DViewer.h"
 #include "Imaging/Imaging.h"
 #include "common/Common.h"
 

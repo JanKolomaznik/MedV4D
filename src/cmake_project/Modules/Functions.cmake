@@ -93,6 +93,8 @@ FUNCTION(TARGET_MEDV4D_PROGRAM prog_name source_dir )
 	#message( "++++Rccoutput: ${rccoutput}" )
 	#message( "++++UIoutput: ${uioutput}" )
 	
+	ADD_DEFINITIONS( ${MEDV4D_COMPILE_DEFINITIONS} )
+	
 	SOURCE_GROUP( ${prog_name}_Sources FILES "" ${sources} )
 	SOURCE_GROUP( ${prog_name}_Header FILES  "" ${header_files} ${tcc_files} )
 	SOURCE_GROUP( ${prog_name}_UI FILES  "" ${uiinput})

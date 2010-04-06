@@ -1,18 +1,20 @@
 //#include "Imaging/ImageFactory.h"
+
+#include "common/Common.h"
+#include "common/OGLTools.h"
+#include "GUI/widgets/GLThreadedWidget.h"
+#include <QtGui/QApplication>
+//#include <QtOpenGL/QGLWidget>
+#include <QtGui/QWidget>
+#include <QtGui/QHBoxLayout>
+#include "GUI/widgets/SimpleVolumeViewer.h"
+#include "Imaging/Imaging.h"
+#include "common/Quaternion.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
-#include <QtGui/QApplication>
-#include <QtOpenGL/QGLWidget>
-#include <QtGui/QWidget>
-#include <QtGui/QHBoxLayout>
-#include "GUI/widgets/GLThreadedWidget.h"
-#include "GUI/widgets/SimpleVolumeViewer.h"
-#include "Imaging/Imaging.h"
-#include "common/Common.h"
 
-#include "common/Quaternion.h"
 
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>  // for XInitThreads() call
@@ -23,8 +25,8 @@ using namespace M4D::Imaging;
 typedef M4D::Imaging::Image< uint8, 3 > ImageType;
 typedef M4D::Imaging::Image< uint8, 2 > MaskType;
 
-typedef SimpleVolumeViewer<GLThreadedWidget> Viewer;
-//typedef SimpleVolumeViewer<QGLWidget> Viewer;
+//typedef SimpleVolumeViewer<GLThreadedWidget> Viewer;
+typedef SimpleVolumeViewer<QGLWidget> Viewer;
 
 
 class ViewerWindow : public QWidget
@@ -58,9 +60,9 @@ ViewerWindow::ViewerWindow(): QWidget( NULL )
 					image->GetElement( Vector< int32, 3 >( i, j, k ) ) = 0;
 				}*/
 
-				float result = Sqr( R - Sqrt( Sqr(i -size/2) + Sqr(j -size/2)) ) + Sqr( k-size/2 );
+				float result = Sqr( R - Sqrt( Sqr((float)(i -size/2)) + Sqr((float)(j -size/2))) ) + Sqr( (float)(k-size/2) );
 				if( result < Sqr( r ) && result > 85 ) {
-					image->GetElement( Vector< int32, 3 >( i, j, k ) ) = 255* Sqr(r)/result;
+					image->GetElement( Vector< int32, 3 >( i, j, k ) ) = 255* Sqr((float)r)/result;
 				} else {
 					image->GetElement( Vector< int32, 3 >( i, j, k ) ) = 0;
 				}
