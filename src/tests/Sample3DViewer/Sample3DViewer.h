@@ -25,7 +25,8 @@ public:
 	Sample3DViewer( QWidget *parent = NULL )
 		: SupportGLWidget( parent ), _camera( Vector<float,3>( 5.0f, 5.0f, 10.0f ), Vector<float,3>( 0.0f, 0.0f, 0.0f ) ), _mouseDown( false )
 	{
-		GetGlExtFunctions();
+		//GetGlExtFunctions();
+		glewInit();
 		_camera.SetFieldOfView( 20.0f );
 		_mesh = LoadMonkey();
 	}

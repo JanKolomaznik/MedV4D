@@ -156,6 +156,8 @@ StridesFromSize( const Vector< uint32, Dim > &size )
 	operator=( const ClassName& ); 
 
 
+void
+Medv4DInit();
 
 using namespace M4D::ErrorHandling;
 

@@ -180,6 +180,14 @@ protected:
 	std::string _fileName;
 };
 
+class EInitError: public ExceptionBase
+{
+public:
+	EInitError( std::string name ) throw(): ExceptionBase( TO_STRING( "Initialization error :" << name ) ) {}
+private:
+
+};
+
 std::ostream& operator<<( std::ostream &out, ExceptionBase &exception );
 
 } /*namespace ErrorHandling*/

@@ -4,6 +4,7 @@
  *  @author Jan Kolomaznik
  */
 #include "common/Common.h"
+#include "common/OGLTools.h"
 
 
 const float32 Epsilon = 1.0E-10f;
@@ -110,6 +111,16 @@ GetByteCountFromNTID( int16 ntid )
 	return 0;
 }
 
+
+void
+Medv4DInit()
+{
+	GLenum err = glewInit();
+	if (GLEW_OK != err) {
+		_THROW_ M4D::ErrorHandling::EInitError( "GLEW" );
+	}
+
+}
 
 /*
 template<>

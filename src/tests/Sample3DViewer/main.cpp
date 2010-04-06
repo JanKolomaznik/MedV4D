@@ -3,12 +3,12 @@
 #include <fstream>
 #include <sstream>
 
+#include "Sample3DViewer.h"
 #include <QtGui/QApplication>
 #include <QtOpenGL/QGLWidget>
 #include <QtGui/QWidget>
 #include <QtGui/QHBoxLayout>
 #include "GUI/widgets/GLThreadedWidget.h"
-#include "Sample3DViewer.h"
 #include "common/Common.h"
 
 #include "common/Quaternion.h"
@@ -66,6 +66,8 @@ main( int argc, char** argv )
         D_COMMAND( std::ofstream debugFile( "Debug.txt" ); );
         SET_DOUT( debugFile );
 	
+	//Medv4DInit();
+
 	QApplication app(argc, argv);
 	ViewerWindow viewer;
 	viewer.show();

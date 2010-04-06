@@ -6,7 +6,8 @@
 # include <windows.h>
 #endif
 
-#include <GL/gl.h>
+#include <GL/glew.h>
+/*#include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glext.h>
 
@@ -16,7 +17,7 @@ inline void
 GetGlExtFunctions()
 {
 	glTexImage3D = (PFNGLTEXIMAGE3DPROC)wglGetProcAddress("glTexImage3D");
-}
+}*/
 
 #include "common/Types.h"
 #include "common/Vector.h"
