@@ -29,6 +29,8 @@ namespace M4D
 				cGenericHapticDevice* hapticDevice; // pointer to haptic device that this class communicate with
 				hapticCursor* supervisor; // class of haptic cursor where to pass position
 				bool* runHaptic; // indicates if continue to listen or not
+				cPrecisionClock* m_clock;
+				int64 count;
 			};
 			virtual void StartListen(); // method which starts new thread where haptics is running
 			virtual void SetCursorPosition(const cVector3d& cursorPosition); // Main method which sets cursor position and counts force for that position

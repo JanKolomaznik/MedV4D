@@ -10,15 +10,25 @@ namespace M4D
 			this->hapticDevice = hapticDevice;
 			this->supervisor = supervisor;
 			this->runHaptic = runHaptic;
+			m_clock = new cPrecisionClock();
+			m_clock->start();
+			count = 0;
 		}
 		void hapticCursor::hapticDeviceWorker::operator()()
 		{
 			while(*runHaptic)
-			{
+			{	
 				cVector3d hapticPosition;
 				hapticDevice->getPosition(hapticPosition);
 				supervisor->SetCursorPosition(hapticPosition);
 				hapticDevice->setForce(supervisor->GetForce());
+
+				double clock = m_clock->getCurrentTimeSeconds();
+				double fps = 1.0 / clock;
+				m_clock->reset();
+				std::cout << fps << std::endl;
+
+				//std::cout << supervisor->GetForce().x << " " << supervisor->GetForce().y << " " << supervisor->GetForce().z << " " << std::endl;
 			}
 		}
 #pragma endregion hapticDeviceWorker
@@ -35,8 +45,6 @@ namespace M4D
 		{
 			stop();
 			delete(handler);
-			if (hapticDevice != NULL)
-				delete(hapticDevice);
 			if (deviceWorker != NULL)
 				delete(deviceWorker);
 			delete(hapticForceTransitionFunction);
@@ -68,7 +76,34 @@ namespace M4D
 			double radiusCubeCenter[3];
 			cursorRadiusCube->GetCenter(radiusCubeCenter);
 			cVector3d radiusCubeCenterChai(radiusCubeCenter[0], radiusCubeCenter[1], radiusCubeCenter[2]);
-			cVector3d newRealPosition = radiusCubeCenterChai + cursorPosition / info.m_workspaceRadius * scale / 2; // radius gets just half of length of cube edge but scale means full length
+			cVector3d realCursorPosition(cursorPosition);
+
+			if (realCursorPosition.x > info.m_workspaceRadius)
+			{
+				realCursorPosition.x = info.m_workspaceRadius;
+			}
+			else if (realCursorPosition.x < -info.m_workspaceRadius)
+			{
+				realCursorPosition.x = -info.m_workspaceRadius;
+			}
+			if (realCursorPosition.y > info.m_workspaceRadius)
+			{
+				realCursorPosition.y = info.m_workspaceRadius;
+			}
+			else if (realCursorPosition.y < -info.m_workspaceRadius)
+			{
+				realCursorPosition.y = -info.m_workspaceRadius;
+			}
+			if (realCursorPosition.z > info.m_workspaceRadius)
+			{
+				realCursorPosition.z = info.m_workspaceRadius;
+			}
+			else if (realCursorPosition.z < -info.m_workspaceRadius)
+			{
+				realCursorPosition.z = -info.m_workspaceRadius;
+			}
+
+			cVector3d newRealPosition = radiusCubeCenterChai + realCursorPosition / info.m_workspaceRadius * scale / 2.0; // radius gets just half of length of cube edge but scale means full length
 			double newRealPositionVTK[3];
 			newRealPositionVTK[0] = newRealPosition.x;
 			newRealPositionVTK[1] = newRealPosition.y;
@@ -76,11 +111,29 @@ namespace M4D
 			cursor->SetCenter(newRealPositionVTK);
 
 			cVector3d newForce = newRealPosition - lastRealPosition;
-			newForce.normalize();
-			unsigned short cursorVolumeValue = (unsigned short)input->GetScalarComponentAsDouble((int)newRealPositionVTK[0], (int)newRealPositionVTK[1], (int)newRealPositionVTK[2], 0);
-			newForce *= hapticForceTransitionFunction->GetValueOnPoint(cursorVolumeValue);
+			std::cout << (newForce) << std::endl;
+			if ((newForce.x != 0) || (newForce.y != 0) || (newForce.z != 0))
+			{
+				newForce.normalize();
+			}
+			newForce *= -1 * info.m_maxForce;
+			int coords[3];
+			coords[0] = (newRealPositionVTK[0] - imageRealOffsetWidth) / imageSpacingWidth + imageOffsetWidth;
+			coords[1] = (newRealPositionVTK[1] - imageRealOffsetHeight) / imageSpacingHeight + imageOffsetHeight;
+			coords[2] = (newRealPositionVTK[2] - imageRealOffsetDepth) / imageSpacingDepth + imageOffsetDepth;
 
-			force = newForce;
+			if ((coords[0] >= imageOffsetWidth) && (coords[0] < (imageOffsetWidth + imageDataWidth)) &&
+				(coords[1] >= imageOffsetHeight) && (coords[1] < (imageOffsetHeight + imageDataHeight)) &&
+				(coords[2] >= imageOffsetDepth) && (coords[2] < (imageOffsetDepth + imageDataDepth)))
+			{
+				unsigned short cursorVolumeValue = (unsigned short)input->GetScalarComponentAsDouble(coords[0], coords[1], coords[2], 0);
+				newForce *= hapticForceTransitionFunction->GetValueOnPoint(cursorVolumeValue);
+				force = newForce;
+			}
+			else
+			{
+				force.zero();
+			}
 		}
 		cVector3d& hapticCursor::GetForce()
 		{

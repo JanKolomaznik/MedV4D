@@ -11,7 +11,10 @@ namespace M4D
 	{
 		cursorInterface::cursorInterface(vtkImageData* input)
 		{
-			this->input = input;
+			this->input = vtkImageData::New();
+			std::cout << "making deep copy";
+			this->input->DeepCopy(input);
+			std::cout << "done." << std::endl;
 			cursor = vtkSphereSource::New();
 			cursor->SetRadius(1.0);
 			cursorRadiusCube = vtkCubeSource::New();
@@ -54,6 +57,14 @@ namespace M4D
 					}
 				}
 
+				imageSpacingWidth = spacing[0];
+				imageSpacingHeight = spacing[1];
+				imageSpacingDepth = spacing[2];
+
+				imageOffsetWidth = extents[0];
+				imageOffsetHeight = extents[2];
+				imageOffsetDepth = extents[4];
+				
 				imageRealOffsetWidth = extents[0] * spacing[0];
 				imageRealOffsetHeight = extents[2] * spacing[1];
 				imageRealOffsetDepth = extents[4] * spacing[2];

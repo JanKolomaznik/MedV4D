@@ -34,6 +34,8 @@ namespace M4D
 			double scale; // size of cube where is action radius of cursor
 			double imageRealHeight, imageRealWidth, imageRealDepth; // parameters of volume dataset - size in mm
 			double imageRealOffsetHeight, imageRealOffsetWidth, imageRealOffsetDepth; // offset which indicates how far VTK starts drawing of object from 0,0,0
+			double imageSpacingWidth, imageSpacingHeight, imageSpacingDepth; // spacing of eachdimension
+			int imageOffsetHeight, imageOffsetWidth, imageOffsetDepth;
 			int imageDataHeight, imageDataWidth, imageDataDepth; // parameters of volume dataset - size in voxels
 		};
 	}
