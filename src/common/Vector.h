@@ -527,7 +527,7 @@ template< typename CoordType, unsigned Dim >
 Vector< CoordType, Dim-1 >
 VectorPurgeDimension( const Vector< CoordType, Dim > &u, unsigned purgedDimension = Dim-1 )
 {
-	ASSERT_INFO( purgedDimension < Dim, "must be valid dimension." );
+	ASSERT_INFO( purgedDimension < Dim, "Must be valid dimension." );
 
 	CoordType data[Dim-1];
 	unsigned j = 0;
@@ -537,6 +537,24 @@ VectorPurgeDimension( const Vector< CoordType, Dim > &u, unsigned purgedDimensio
 		}
 	}
 	return Vector< CoordType, Dim-1 >( data );
+}
+
+template< typename CoordType, unsigned Dim >
+Vector< CoordType, Dim+1 >
+VectorInsertDimension( const Vector< CoordType, Dim > &u, CoordType value, unsigned insertedDimension = Dim )
+{
+	ASSERT_INFO( insertedDimension <= Dim, "Must be valid dimension." );
+
+	CoordType data[Dim+1];
+	unsigned j = 0;
+	for( unsigned i=0; i <= Dim; ++i ) {
+		if( i != insertedDimension ) {
+			data[i] = u[j++];
+		} else {
+			data[i] = value;
+		}
+	}
+	return Vector< CoordType, Dim+1 >( data );
 }
 
 

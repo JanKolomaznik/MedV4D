@@ -20,11 +20,18 @@ void
 SetToViewConfiguration2D( const ViewConfiguration2D &config )
 {
 
-	glOrtho(0.0, (double)config.width, 0.0, (double)config.height, -1.0, 1.0);
+	glOrtho( 
+		(double)config.offset[0], 
+		(double)(config.height * config.aspectRatio), 
+		(double)config.offset[1],
+	        (double)config.height, 
+		-1.0, 
+		1.0
+		);
 
-	glMatrixMode(GL_MODELVIEW);
+	/*glMatrixMode(GL_MODELVIEW);
 	glTranslatef( config.offset[0], config.offset[1], 0 );
-	glScalef( config.zoom * config.hFlip, config.zoom * config.vFlip, 0.0f );
+	glScalef( config.zoom * config.hFlip, config.zoom * config.vFlip, 0.0f );*/
 }
 
 void
@@ -125,6 +132,41 @@ GLDrawVolumeSlices(
 }
 
 void
+GLDrawVolumeSlice(
+		const Vector< float32, 3 > 	&min, 
+		const Vector< float32, 3 > 	&max,
+		float32				sliceCoord,
+		CartesianPlanes			plane
+		)
+{
+	Vector< float32, 2 > point1 = VectorPurgeDimension( min, plane );
+	Vector< float32, 2 > point3 = VectorPurgeDimension( max, plane );
+
+	Vector< float32, 2 > point2( point3[0], point1[1] );
+	Vector< float32, 2 > point4( point1[0], point3[1] );
+
+	Vector< float32, 3 > tex1 = VectorInsertDimension( Vector< float32, 2 >( 0.0f, 0.0f ), sliceCoord, plane );
+	Vector< float32, 3 > tex2 = VectorInsertDimension( Vector< float32, 2 >( 1.0f, 0.0f ), sliceCoord, plane );
+	Vector< float32, 3 > tex3 = VectorInsertDimension( Vector< float32, 2 >( 1.0f, 1.0f ), sliceCoord, plane );
+	Vector< float32, 3 > tex4 = VectorInsertDimension( Vector< float32, 2 >( 0.0f, 1.0f ), sliceCoord, plane );
+
+	glBegin( GL_QUADS );
+		GLTextureVector( tex1 ); 
+		GLVertexVector( point1 );
+
+		GLTextureVector( tex2 ); 
+		GLVertexVector( point2 );
+
+		GLTextureVector( tex3 ); 
+		GLVertexVector( point3 );
+
+		GLTextureVector( tex4 ); 
+		GLVertexVector( point4 );
+	glEnd();
+}
+
+
+void
 GLDrawImageData( const M4D::Imaging::AImageRegionDim< 2 > &image, bool linearInterpolation )
 {
 	TYPE_TEMPLATE_SWITCH_MACRO( image.GetElementTypeID(), GLDrawImageData( static_cast< const M4D::Imaging::ImageRegion< TTYPE, 2 > &>( image ), linearInterpolation ); );
@@ -181,7 +223,6 @@ GLDrawTexturedQuad( const Vector< float, 2 > &point1, const Vector< float, 2 > &
 		glTexCoord2d( 0.0, 1.0 );
 		GLVertexVector( point4 );
 	glEnd();
-
 }
 
 void

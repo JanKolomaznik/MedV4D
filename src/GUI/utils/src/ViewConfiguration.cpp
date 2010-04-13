@@ -5,42 +5,24 @@
 ViewConfiguration2D 
 GetOptimalViewConfiguration( const Vector< float, 2 > &regionSize, const Vector< unsigned, 2 > &windowSize, ZoomType zoomType )
 {	
-	Vector< float, 2 > tmp( static_cast< float >( windowSize[0] ) / regionSize[0], static_cast< float >( windowSize[1] ) / regionSize[1] );
-
-	float32 zoom = 1.0f;
-
-	switch( zoomType ) {
-	case ztFIT:
-		zoom = Min( tmp[0], tmp[1] );
-		break;
-	case ztWIDTH_FIT:
-		zoom = tmp[0];
-		break;
-	case ztHEIGHT_FIT:
-		zoom = tmp[1];
-		break;
-	default:
-		ASSERT( false );
-	}
-
-	tmp = 0.5f * ( tmp - Vector< float, 2 >( zoom ) );
-	Vector< float, 2 > offset = VectorMemberProduct( tmp, regionSize ); 
-
-	return ViewConfiguration2D( offset, zoom, static_cast<float>(windowSize[0]),  static_cast<float>(windowSize[1]) );
+	
+	return GetOptimalViewConfiguration( Vector< float, 2 >( 0.0f ), regionSize, windowSize, zoomType );
 }
 
 ViewConfiguration2D 
 GetOptimalViewConfiguration( const Vector< float, 2 > &regionMin, const Vector< float, 2 > &regionMax, const Vector< unsigned, 2 > &windowSize, ZoomType zoomType )
 {	
 	const Vector< float, 2 > regionSize( regionMax - regionMin );
-	Vector< float, 2 > tmp( static_cast< float >( windowSize[0] ) / regionSize[0], static_cast< float >( windowSize[1] ) / regionSize[1] );
-	Vector< float, 2 > tmp2( static_cast< float >( windowSize[0] ) / regionMax[0], static_cast< float >( windowSize[1] ) / regionMax[1] );
+	Vector< float, 2 > tmp( 
+			regionSize[0] / static_cast< float >( windowSize[0] ), 
+			regionSize[1] / static_cast< float >( windowSize[1] ) 
+			);
 
-	float32 zoom = 1.0f;
-
+	float aspectRatio = static_cast< float >(windowSize[0]) / static_cast< float >(windowSize[1]);
+	float zoom = 1.0f;
 	switch( zoomType ) {
 	case ztFIT:
-		zoom = Min( tmp[0], tmp[1] );
+		zoom = Max( tmp[0], tmp[1] );
 		break;
 	case ztWIDTH_FIT:
 		zoom = tmp[0];
@@ -52,9 +34,11 @@ GetOptimalViewConfiguration( const Vector< float, 2 > &regionMin, const Vector< 
 		ASSERT( false );
 	}
 
-	tmp = 0.5f*( tmp - Vector< float, 2 >( zoom ) );
-	Vector< float, 2 > offset = VectorMemberProduct( tmp, regionSize );
+	float height = windowSize[1] * zoom;
+	float width = windowSize[0] * zoom;
 
-	return ViewConfiguration2D( offset, zoom);
+	Vector< float, 2 > offset;
+
+	return ViewConfiguration2D( offset, height, aspectRatio );
 }
 

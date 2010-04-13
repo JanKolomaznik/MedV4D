@@ -122,6 +122,16 @@ Medv4DInit()
 
 }
 
+void
+InitOpenGL()
+{
+	GLenum err = glewInit();
+	if (GLEW_OK != err) {
+		_THROW_ M4D::ErrorHandling::EInitError( "GLEW" );
+	}
+
+}
+
 /*
 template<>
 int16 GetNumericTypeID<int8>()

@@ -46,6 +46,14 @@ GLDrawVolumeSlices(
 		float		cutPlane = 1.0f
 		);
 
+void
+GLDrawVolumeSlice(
+		const Vector< float32, 3 > 	&min, 
+		const Vector< float32, 3 > 	&max,
+		float32				sliceCoord,
+		CartesianPlanes			plane
+		);
+
 template< typename ImageRegionType >
 void
 GLDrawImageData( const ImageRegionType &image, bool linearInterpolation );

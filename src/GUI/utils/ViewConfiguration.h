@@ -15,21 +15,25 @@ struct ViewConfiguration2D
 {
 	ViewConfiguration2D(	
 			Vector< float, 2 >	_offset = Vector< float, 2 >(),
-			float			_zoom = 1.0f,
-			float			_width = 1.0f,
+			/*float			_zoom = 1.0f,
+			float			_width = 1.0f,*/
 			float			_height = 1.0f,
-			int			_hFlip = 1,
-			int			_vFlip = 1
-			): offset( _offset ), zoom( _zoom ), hFlip( _hFlip ), vFlip( _vFlip ), width( _width ), height( _height )
+			/*int			_hFlip = 1,
+			int			_vFlip = 1*/
+			float			_aspectRatio = 1.0f
+			): offset( _offset ), /*zoom( _zoom ), hFlip( _hFlip ), vFlip( _vFlip ), width( _width ),*/ height( _height ), aspectRatio( _aspectRatio )
 	{
 	}
 
 	Vector< float32, 2 >	offset;
-	float32			zoom;
+	/*float32			zoom;
 	int			hFlip;
 	int			vFlip;
 	float			width;
+	float			height;*/
+
 	float			height;
+	float			aspectRatio;
 };
 
 ViewConfiguration2D 

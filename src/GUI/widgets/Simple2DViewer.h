@@ -74,6 +74,9 @@ public:
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glLoadIdentity();
+		if( !_region ) {
+			return;
+		}
 		_viewConfiguration = GetOptimalViewConfiguration( 
 					_region->GetRealMinimum(),
 					_region->GetRealMaximum(),

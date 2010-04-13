@@ -21,8 +21,8 @@ using namespace M4D::Imaging;
 typedef M4D::Imaging::Image< uint16, 2 > ImageType;
 typedef M4D::Imaging::Image< uint8, 2 > MaskType;
 
-typedef Simple2DViewer<QGLWidget> Viewer;
-//typedef Simple2DViewer<GLThreadedWidget> Viewer;
+//typedef Simple2DViewer<QGLWidget> Viewer;
+typedef Simple2DViewer<GLThreadedWidget> Viewer;
 //typedef GLThreadedWidget		 Viewer;
 
 class ViewerWindow : public QWidget

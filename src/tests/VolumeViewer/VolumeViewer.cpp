@@ -47,9 +47,11 @@ ViewerWindow::ViewerWindow(): QWidget( NULL )
 
 	unsigned size = 128;
 
-	unsigned R = 35;
-	unsigned r = 17;
+	unsigned R = 25;
+	unsigned r = 12;
 
+	Vector<float,3> center1( 50,50,64 );
+	Vector<float,3> center2( 128-50,128-50,64 );
 	image =	M4D::Imaging::ImageFactory::CreateEmptyImage3DTyped< uint8 >( size, size, size );
 	for( unsigned i=0; i <size; ++i ) {
 		for( unsigned j=0; j <size; ++j ) {
@@ -60,9 +62,10 @@ ViewerWindow::ViewerWindow(): QWidget( NULL )
 					image->GetElement( Vector< int32, 3 >( i, j, k ) ) = 0;
 				}*/
 
-				float result = Sqr( R - Sqrt( Sqr((float)(i -size/2)) + Sqr((float)(j -size/2))) ) + Sqr( (float)(k-size/2) );
-				if( result < Sqr( r ) && result > 85 ) {
-					image->GetElement( Vector< int32, 3 >( i, j, k ) ) = 255* Sqr((float)r)/result;
+				float result1 = Sqr( R - Sqrt( Sqr((float)(i -center1[0])) + Sqr((float)(j -center1[1]))) ) + Sqr( (float)(k-center1[2]) );
+				float result2 = Sqr( R - Sqrt( Sqr((float)(i -center2[0])) + Sqr((float)(j -center2[1]))) ) + Sqr( (float)(k-center2[2]) );
+				if( result1 < Sqr( r ) || result2 < Sqr( r ) || (result1 + result2) < Sqr( 2*r )  /*&& result > 85*/ ) {
+					image->GetElement( Vector< int32, 3 >( i, j, k ) ) = 255* Sqr((float)r)/Min(result1,result2);
 				} else {
 					image->GetElement( Vector< int32, 3 >( i, j, k ) ) = 0;
 				}

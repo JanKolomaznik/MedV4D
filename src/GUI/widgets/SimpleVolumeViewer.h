@@ -24,19 +24,23 @@ public:
 	typedef M4D::Imaging::AImageRegionDim< 2 > 	ARegion2D;
 
 	SimpleVolumeViewer( QWidget *parent = NULL )
-		: SupportGLWidget( parent ), _region( NULL ), _linearInterpolation( false ),
-		_camera( Vector<float,3>( 0.0f, 0.0f, -1200.0f ), Vector<float,3>( 0.0f, 0.0f, 0.0f ) )
+		: SupportGLWidget( parent ), _region( NULL ), 
+		_camera( Vector<float,3>( 0.0f, 0.0f, -1200.0f ), Vector<float,3>( 0.0f, 0.0f, 0.0f ) ), _linearInterpolation( false )
 	{
 		_cutPlane = 1.0f;
 		_mouseDown = false;
 		_slicePos = 1900;
 		_texName = 0;
 		_camera.SetFieldOfView( 10.0f );
+		_plane = XY_PLANE;
+		_sliceCoord = 0.5f;
+		_volumeRendering = true;
 	}
 
 	~SimpleVolumeViewer()
 	{
 		_transferFuncShaderConfig.Finalize();
+		_brightnessContrastShaderConfig.Finalize();
 		cgDestroyContext(_cgContext);
 		glDeleteTextures( 1, &_texName );
 	}
@@ -106,6 +110,8 @@ public:
 	void
 	initializeGL()
 	{
+		InitOpenGL();
+
 		glClearColor(0,0,0,1);
 		glShadeModel(GL_FLAT);
 		glEnable(GL_DEPTH_TEST);
@@ -117,6 +123,7 @@ public:
 		_cgContext = cgCreateContext();
 		CheckForCgError("creating context ", _cgContext );
 
+		_brightnessContrastShaderConfig.Initialize( _cgContext, "LUT.cg", "LUT_texture" );
 		_transferFuncShaderConfig.Initialize( _cgContext, "SimpleTransferFunction.cg", "SimpleTransferFunction" );
 
 		_transferFuncShaderConfig.transferFunctionTexture = CreateTransferFunction();
@@ -134,6 +141,20 @@ public:
 	paintGL()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		if( _region == NULL ) {
+			return;
+		}
+		
+		if( _volumeRendering ) {
+			VolumeRender();
+		} else {
+			SliceRender();		
+		}
+	}
+
+	void	
+	VolumeRender()
+	{
 
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
@@ -144,18 +165,16 @@ public:
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		
-		if( _region == NULL ) {
-			return;
-		}
+		
 		Vector< float, 3> size = _region->GetRealSize();
 		Vector< float, 3> minCoord = _region->GetRealMinimum();
 
 		if( _texName == 0 ) {
 			_texName = M4D::GLPrepareTextureFromImageData( *_region, _linearInterpolation );
-			_transferFuncShaderConfig.dataTexture = _texName;
-			//Texture coordinate generation
-			M4D::SetVolumeTextureCoordinateGeneration( minCoord, size );
 		}
+		//Texture coordinate generation
+		M4D::SetVolumeTextureCoordinateGeneration( minCoord, size );
+		_transferFuncShaderConfig.dataTexture = _texName;
 		glBindTexture( GL_TEXTURE_1D, 0 );
 		glBindTexture( GL_TEXTURE_2D, 0 );
 		glBindTexture( GL_TEXTURE_3D, 0 );
@@ -184,6 +203,52 @@ public:
 		M4D::CheckForGLError( "OGL error : " );
 		glFlush();		
 	}
+
+	void	
+	SliceRender()
+	{
+
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		
+		
+		_viewConfiguration = GetOptimalViewConfiguration( 
+					VectorPurgeDimension( _region->GetRealMinimum(), _plane ),
+					VectorPurgeDimension( _region->GetRealMaximum(), _plane ),
+					Vector< unsigned, 2 >( this->width(), this->height() ) ,
+					ztFIT
+					);
+
+		M4D::SetToViewConfiguration2D( _viewConfiguration );
+		
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+
+		if( _texName == 0 ) {
+			_texName = M4D::GLPrepareTextureFromImageData( *_region, _linearInterpolation );
+		}
+			
+		_brightnessContrastShaderConfig.textureName = _texName;
+		_brightnessContrastShaderConfig.brightnessContrast[1] = 1.0f;
+		_brightnessContrastShaderConfig.brightnessContrast[0] = .3f;
+
+		_brightnessContrastShaderConfig.Enable();
+
+		CheckForCgError("Check befor drawing ", _cgContext );
+		glBindTexture ( GL_TEXTURE_3D, _texName );
+		glEnable(GL_TEXTURE_3D);
+		M4D::GLDrawVolumeSlice( 
+				_region->GetRealMinimum(), 
+				_region->GetRealMaximum(),
+			        _sliceCoord,
+				_plane	
+				);
+		
+		//_brightnessContrastShaderConfig.Disable();
+		
+		glFlush();
+		
+	}
 protected:
 	void	mouseMoveEvent ( QMouseEvent * event )
 	{ 
@@ -200,8 +265,14 @@ protected:
 
 
 	void	mousePressEvent ( QMouseEvent * event )
-	{ 	_mouseDown = true; 
-		_lastPoint = event->globalPos();
+	{ 	
+		if( event->button() == Qt::RightButton ) {
+			_volumeRendering = !_volumeRendering;
+			this->update();
+		} else {
+			_mouseDown = true; 
+			_lastPoint = event->globalPos();
+		}
 	}
 
 	void	mouseReleaseEvent ( QMouseEvent * event )
@@ -209,15 +280,28 @@ protected:
 
 	void	wheelEvent ( QWheelEvent * event )
 	{
-		int numDegrees = event->delta() / 8;
-		int numSteps = numDegrees / 15;
+		if( _volumeRendering ) {
+			int numDegrees = event->delta() / 8;
+			int numSteps = numDegrees / 15;
 
-		if (event->orientation() == Qt::Horizontal) {
-			_cutPlane += 0.05*numSteps;
+			if (event->orientation() == Qt::Horizontal) {
+				_cutPlane += 0.05*numSteps;
+			} else {
+				_cutPlane -= 0.05*numSteps;
+			}
+			_cutPlane = Max( 0.0f, Min( 1.0f, _cutPlane ) );
 		} else {
-			_cutPlane -= 0.05*numSteps;
+			int numDegrees = event->delta() / 8;
+			int numSteps = numDegrees / 15;
+
+			if (event->orientation() == Qt::Horizontal) {
+				_sliceCoord += 0.02*numSteps;
+			} else {
+				_sliceCoord -= 0.02*numSteps;
+			}
+			_sliceCoord = Max( 0.0f, Min( 1.0f, _sliceCoord ) );
+			std::cout << _sliceCoord << std::endl;
 		}
-		_cutPlane = Max( 0.0f, Min( 1.0f, _cutPlane ) );
 		event->accept();
 		this->update();
 	}
@@ -230,13 +314,21 @@ protected:
 	QPoint			_lastPoint;
 
 	ARegion3D		*_region;
-	ARegion2D		*_region2D;
 	M4D::BoundingBox3D	_bbox;
 	Camera			_camera;
 	bool			_linearInterpolation;
 
+	ViewConfiguration2D	_viewConfiguration;
+	CartesianPlanes		_plane;
+	float32			_sliceCoord;
+	float			_brightness;
+	float			_contrast;
+	bool			_volumeRendering;
+
 	CGcontext   				_cgContext;
 	CgSimpleTransferFunctionShaderConfig 	_transferFuncShaderConfig;
+	CgBrightnessContrastShaderConfig	_brightnessContrastShaderConfig;
+
 	/*
 	CgBrightnessContrastShaderConfig	_shaderConfig;
 	CgMaskBlendShaderConfig			_blendShaderConfig;*/
