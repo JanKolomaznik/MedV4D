@@ -53,6 +53,8 @@ public:
 
 	mainWindow ();
 
+	void build();
+
 protected:
 
 	void process( M4D::Imaging::ADataset::Ptr inputDataSet );

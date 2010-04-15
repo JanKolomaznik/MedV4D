@@ -46,7 +46,7 @@ bool TFSimpleSliceViewerTexturePreparer< ElementType >::prepare(
 	}
 	pixelValue = *pixel;
 	*/
-	if(_currentTransferFunction.size() == width*height)
+	if(_currentTransferFunction.size() > 0)
 	{
 		for(unsigned i = 0; i < width*height; ++i)
 		{
@@ -56,9 +56,9 @@ bool TFSimpleSliceViewerTexturePreparer< ElementType >::prepare(
 	}
 	else
 	{
+		//no TF used
 		// equalize the first input array
 		adjustArrayContrastBrightness( *pixel, width, height, brightnessRate, contrastRate );
-		assert(!"Bad TF");
 	}
 
 	// prepare texture

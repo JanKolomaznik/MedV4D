@@ -62,8 +62,13 @@ void mainWindow::CreatePipeline()
 }
 
 mainWindow::mainWindow ()
-  : m4dGUIMainWindow( APPLICATION_NAME, ORGANIZATION_NAME ), _inConnection( NULL ), _outConnection( NULL ){
-	
+  : m4dGUIMainWindow(), _inConnection( NULL ), _outConnection( NULL ){
+}
+
+void mainWindow::build(){
+
+	m4dGUIMainWindow::build(APPLICATION_NAME, ORGANIZATION_NAME);
+
 	Q_INIT_RESOURCE( mainWindow ); 
 
 	CreatePipeline();
@@ -71,15 +76,14 @@ mainWindow::mainWindow ()
 	_settings = new TFWindow();
 	_settings->build();
 	addDockWindow( "Transfer Functions", _settings );
+
+	M4D::Viewer::TFSliceViewerWidget* currentViewer = dynamic_cast<M4D::Viewer::TFSliceViewerWidget*>(currentViewerDesktop->getSelectedViewerWidget());	
+	QObject::connect( _settings, SIGNAL(AdjustByTransferFunction(TFAbstractFunction&)), currentViewer, SLOT(adjust_by_transfer_function(TFAbstractFunction&)));
 }
 
 void mainWindow::createDefaultViewerDesktop (){
 
 	currentViewerDesktop = new M4D::GUI::m4dGUIMainViewerDesktopWidget( 1, 2, new M4D::Viewer::TFViewerFactory() );	
-
-	M4D::Viewer::TFSliceViewerWidget* currentViewer = (M4D::Viewer::TFSliceViewerWidget*)(currentViewerDesktop->getSelectedViewerWidget());
-	
-	QObject::connect( _settings, SIGNAL(AdjustByTransferFunction(TFAbstractFunction&)), currentViewer, SLOT(adjust_by_transfer_function(TFAbstractFunction&)));
 }
 
 void mainWindow::process( M4D::Imaging::ADataset::Ptr inputDataSet )
