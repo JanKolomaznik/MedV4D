@@ -18,6 +18,11 @@ namespace Imaging {
 template< typename ImageType >
 class MultiscanSegmentationFilter;
 
+/**
+ * Filter implementing multiscan, times series segmentation. 
+ * Brain segmentation is done on the first slice of times series - region growing (non-recursive scanline floodfill). 
+ * During this step binary mask is created which is used for other slices of the times series.
+ */
 template< typename ElementType >
 class MultiscanSegmentationFilter< Image< ElementType, 3 > >
 	: public AImageFilterWholeAtOnceIExtents< Image< ElementType, 3 >, Image< ElementType, 3 > >
@@ -28,18 +33,41 @@ class MultiscanSegmentationFilter< Image< ElementType, 3 > >
 	  typedef Image< ElementType, 3 > OutputImageType;
 	  typedef AImageFilterWholeAtOnceIExtents< InputImageType, OutputImageType > PredecessorType;
 
+    /**
+     * Properties structure.
+     */
 	  struct Properties: public PredecessorType::Properties
 	  {
+      /**
+       * Properties constructor - fills up the Properties with default values.
+       */
 		  Properties ()
         : examinedSliceNum( EXEMINED_SLICE_NUM ), boneDensityBottom( BONE_DENSITY_BOTTOM ), background( BACKGROUND )
       {}
 
+      /// Number of examined slices (number of time series).
 		  uint32 examinedSliceNum;
-      ElementType	boneDensityBottom, background;
+      /// Lower bound of the interval of values (HU), which are considered as density of bones. 
+      ElementType	boneDensityBottom;
+      /// Background around segmented brain.
+      ElementType	background;
 	  };
 
-	  MultiscanSegmentationFilter ( Properties * prop );
+    /**
+     * Segmentation filter constructor.
+     *
+     * @param prop pointer to the properties structure
+     */
+	  MultiscanSegmentationFilter ( Properties *prop );
+
+    /**
+     * Segmentation filter constructor.
+     */
 	  MultiscanSegmentationFilter ();
+
+    /**
+     * Segmentation filter destructor.
+     */
     ~MultiscanSegmentationFilter ();
 
 	  GET_SET_PROPERTY_METHOD_MACRO(uint32, ExaminedSliceNum, examinedSliceNum);
@@ -48,6 +76,14 @@ class MultiscanSegmentationFilter< Image< ElementType, 3 > >
   
   protected:
 
+    /**
+	   * The method executed by the pipeline's filter execution thread. The main functionality
+     * of the filter is done by this method.
+     *
+	   *  @param in reference to the input image dataset
+     *  @param out reference to the output image dataset
+     *  @return true if finished successfully, false otherwise
+     */
 	  bool ProcessImage ( const InputImageType &in, OutputImageType &out );
 
   private:

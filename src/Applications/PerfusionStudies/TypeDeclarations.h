@@ -14,8 +14,6 @@
 #define BONE_DENSITY_BOTTOM    1300
 #define BONE_DENSITY_TOP       4000
 
-#define DEGTORAD(a)           (a * PI / 180.0) 
-
 
 typedef int16	ElementType;
 const unsigned Dim = 3;
@@ -27,6 +25,7 @@ typedef M4D::Imaging::Image< ElementType, Dim > ImageType;
 #include "MultiscanSegmentationFilter.h"
 #include "PerfusionAnalysisFilter.h"
 
+// Filters
 typedef M4D::Imaging::ImageConvertor< ImageType >              Convertor;
 typedef M4D::Imaging::MultiscanRegistrationFilter< ImageType > Registration;
 typedef M4D::Imaging::MultiscanSegmentationFilter< ImageType > Segmentation;

@@ -197,10 +197,11 @@ class m4dGUIMainWindow: public QMainWindow
      * @param title title of the dockWindow
      * @param widget pointer to the widget, which should be in the added dockWindow
      * @param windowType type of the dockWindow
+     * @return created dockWindow
      */
-    void addDockWindow ( const char *title, QWidget *widget, DockWindowType windowType = FLOATING_DOCK_WINDOW );
+    QDockWidget *addDockWindow ( const char *title, QWidget *widget, DockWindowType windowType = FLOATING_DOCK_WINDOW );
 
-  private slots:
+  protected slots:
 
     /**
      * Slot for search - to show the Study Manager. After closing it (clicking on View) it calls 

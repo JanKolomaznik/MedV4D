@@ -41,8 +41,8 @@ bool RGBGradientSliceViewerTexturePreparer< ElementType >::prepare ( const Imagi
 
 	if ( !channels[0] && !channels[1] && !channels[2] )
 	{
-	    delete [] channels;
-	    return false;
+    delete [] channels;
+    return false;
 	}
 
 	// set the first three input datasets as the channels of RGB
@@ -81,6 +81,16 @@ bool RGBGradientSliceViewerTexturePreparer< ElementType >::prepare ( const Imagi
     this->adjustArrayContrastBrightness( rgb + k * channelSize, width, height, 
                                          mean[k] * 100 + brightnessRate - BRIGHTNESS_FACTOR * (MAX_VALUE + 1), 
                                          cont[k] * 100 + contrastRate   - CONTRAST_FACTOR   * (MAX_VALUE + 1) );
+  }
+
+  // cut tool enabled & click occured -> draw see-through interface
+  if ( _lastClickedPositionX >= 0 ) 
+  {
+    this->adjustArrayContrastBrightness( channels[1], width, height, 
+                                         brightnessRate - BGR_BRIGHTNESS_FACTOR * BRIGHTNESS_FACTOR * (MAX_VALUE + 1), 
+                                         contrastRate + BGR_CONTRAST_FACTOR * CONTRAST_FACTOR * (MAX_VALUE + 1) );
+
+    DrawCut( rgb, channels[1], width, height );
   }
 	
   ElementType *texture = new ElementType[ channelSize * 3 ];
@@ -150,6 +160,33 @@ void RGBGradientSliceViewerTexturePreparer< ElementType >::ColorRamp ( double x,
     rgb[idx += channelSize] = MAX_VALUE + 4 * MAX_VALUE * (0.75 - x);
     rgb[idx += channelSize] = 0;
   }
+}
+
+
+template< typename ElementType >
+void RGBGradientSliceViewerTexturePreparer< ElementType >::DrawCut ( ElementType *rgb, ElementType *background, 
+                                                                     uint32 width, uint32 height )
+{
+  uint32 channelSize = width * height;
+
+  for ( int8 y = -SEE_THROUGH_RADIUS; y <= SEE_THROUGH_RADIUS; y++ ) {
+    for ( int8 x = -SEE_THROUGH_RADIUS; x <= SEE_THROUGH_RADIUS; x++ ) {
+      if ( x * x + y * y <= SEE_THROUGH_RADIUS * SEE_THROUGH_RADIUS ) 
+      {
+        uint32 xPos = _lastClickedPositionX + x;
+        uint32 yPos = _lastClickedPositionY + y;
+
+        if ( xPos < 0 || xPos > width || yPos < 0 || yPos > height ) {
+          continue;
+        }
+
+        uint32 idx = yPos * width + xPos;
+
+        rgb[idx] = rgb[idx + channelSize] = rgb[idx + 2 * channelSize] = background[idx];
+      }
+    }
+  }
+
 }
 
 

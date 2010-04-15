@@ -218,7 +218,7 @@ void m4dGUIMainWindow::addSource ( vector< ConnectionInterface * > &conn,
 }
 
 
-void m4dGUIMainWindow::addDockWindow ( const char *title, QWidget *widget, DockWindowType windowType )
+QDockWidget *m4dGUIMainWindow::addDockWindow ( const char *title, QWidget *widget, DockWindowType windowType )
 {
   QDockWidget *dock = new QDockWidget( tr( title ), this );
 
@@ -236,6 +236,8 @@ void m4dGUIMainWindow::addDockWindow ( const char *title, QWidget *widget, DockW
   viewMenu->addAction( dock->toggleViewAction() );
 
   menuBar()->addMenu( viewMenu );
+
+  return dock;
 }
 
 

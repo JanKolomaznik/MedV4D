@@ -12,6 +12,12 @@
 namespace M4D {
 namespace Imaging {
 
+/**
+ * Copies input slice (inSlice) to output (outSlice). 
+ *
+ *  @param inSlice pointer to the input slice
+ *  @param outSlice pointer to the output slice
+ */
 template< typename ElementType >
 void CopySlice ( SliceInfo< ElementType > *inSlice, SliceInfo< ElementType > *outSlice )
 {
@@ -43,42 +49,15 @@ void CopySlice ( SliceInfo< ElementType > *inSlice, SliceInfo< ElementType > *ou
 }
 
 
-template< typename ElementType >
-void ThresholdSlice ( SliceInfo< ElementType > *inSlice, SliceInfo< ElementType > *outSlice,
-                      ElementType	bottom, ElementType	top )
-{
-  uint32 width  = outSlice->size[0];
-  uint32 height = outSlice->size[1];
-
-  int32 inXStride = inSlice->stride[0];
-  int32 inYStride = inSlice->stride[1];
-  
-  int32 outXStride = outSlice->stride[0];
-  int32 outYStride = outSlice->stride[1];
-  
-  ElementType *inPointer  = inSlice->pointer;
-  ElementType *outPointer = outSlice->pointer;
-
-	for ( uint32 j = 0; j < height; ++j ) 
-  {
-    ElementType *in  = inPointer  + j * inYStride;
-    ElementType *out = outPointer + j * outYStride;
-
-		for ( uint32 i = 0; i < width; ++i ) 
-    {
-      if ( *in < bottom || *in > top ) {
-			  *out = 0;
-		  } else {
-			  *out = *in;
-		  }
-
-			in  += inXStride;
-      out += outXStride;
-		}
-	}
-}
-
-
+/**
+ * Transforms input slice (inSlice) to output (outSlice) according to given transformation 
+ * parameters (transInfo) and interpolator (interpolator). 
+ *
+ *  @param inSlice pointer to the input slice
+ *  @param outSlice pointer to the output slice
+ *  @param transInfo reference to the TransformationInfo2D structure holding actual trans. parameters
+ *  @param interpolator pointer to the interpolator used during the transformation
+ */
 template< typename ElementType >
 void TransformSlice ( SliceInfo< ElementType > *inSlice, SliceInfo< ElementType > *outSlice,
 		                  TransformationInfo2D &transInfo, Interpolator2D< ElementType > *interpolator )
@@ -149,10 +128,11 @@ void TransformSlice ( SliceInfo< ElementType > *inSlice, SliceInfo< ElementType 
 
 
 /**
- * Calculate joint histogram of 2D image
+ * Calculates joint histogram of 2D image.
+ *
  *  @param jointHist reference to the joint histogram's structure
- *  @param inputImage reference to input image
- *  @param refImage reference to reference image
+ *  @param inSlice pointer to the input slice
+ *  @param refSlice pointer to the reference slice
  *  @param transformSampling the sampling of transformation and histogram calculation
  */
 template< typename ElementType >
@@ -253,8 +233,6 @@ template< typename ElementType >
 bool MultiscanRegistrationFilter< Image< ElementType, 3 > >::ProcessImage ( const Image< ElementType, 3 > &in,
 			                                                                            Image< ElementType, 3 >	&out )
 {
-  // cleanup(); // TODO delete interpolator and in, out, ref slices
-
 	switch ( GetInterpolationType() ) 
   {
 	  case IT_NEAREST:
@@ -304,7 +282,7 @@ bool MultiscanRegistrationFilter< Image< ElementType, 3 > >::ProcessImageHelper 
   uint32 times    = (uint32)(depth / sliceNum);
 
   if ( depth % sliceNum ) {
-    // TODO throw exception
+    return false;
   }
 
   for ( uint32 i = 0; i < sliceNum; ++i )
@@ -323,13 +301,18 @@ bool MultiscanRegistrationFilter< Image< ElementType, 3 > >::ProcessImageHelper 
     {
       // register slices - slices in 1 time sequence 
       // (1st one is the reference slice, next slices in the time sequence are transformed according to the first one)
-      // ThresholdSlice( inSlice, outSlice, GetBoneDensityBottom(), GetBoneDensityTop() );
-      CopySlice( inSlice, outSlice );
-      //if ( !RegisterSlice() ) {
-      //  return false;
-      //}
-
-		  inSlice->pointer  += sliceNum * izStride;
+      
+      if ( GetRegistrationNeeded() ) 
+      {
+        if ( !RegisterSlice() ) {
+          return false;
+        }  
+      }
+      else {
+        CopySlice( inSlice, outSlice );
+      }
+      
+  	  inSlice->pointer  += sliceNum * izStride;
 		  outSlice->pointer += ozStride;
 	  }
   }

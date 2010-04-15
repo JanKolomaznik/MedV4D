@@ -12,6 +12,15 @@
 namespace M4D {
 namespace Imaging {
 
+/**
+ * Calculates homogenity criterion - if it's possible to fill the next pixel.
+ *
+ *  @param pointer pointer to the input slice
+ *  @param mask pointer to the binary mask which is about to be created
+ *  @param offset offset determining the position within the input data and mask
+ *  @param boneDensityBottom value for the homogenity criterion - lower bound of the "bone interval"
+ *  @return true if the flood can proceed (criterion holds & not already in mask), false otherwise
+ */
 template< typename ElementType >
 bool canFill ( ElementType *pointer, bool *mask, int32 offset, ElementType boneDensityBottom )
 {
@@ -23,6 +32,14 @@ bool canFill ( ElementType *pointer, bool *mask, int32 offset, ElementType boneD
 }
 
 
+/**
+ * Creates binary mask (parameter mask) - segmented brain shape.
+ * Region growing algorithm - scanline floodfill with stack.
+ *
+ *  @param slice pointer to the input slice
+ *  @param mask pointer to the preallocated space for the mask to be created
+ *  @param boneDensityBottom value for the homogenity criterion - lower bound of the "bone interval"
+ */
 template< typename ElementType >
 void ComputeMask ( SliceInfo< ElementType > *slice, bool *mask, ElementType	boneDensityBottom )
 {
@@ -98,6 +115,14 @@ void ComputeMask ( SliceInfo< ElementType > *slice, bool *mask, ElementType	bone
 }
 
 
+/**
+ * Masks input slice (inSlice) to output (outSlice) by using binary mask (mask) - segmented brain shape.
+ *
+ *  @param inSlice pointer to the input slice
+ *  @param outSlice pointer to the output slice
+ *  @param mask pointer to the binary mask used for masking
+ *  @param background value of the background in the result 
+ */
 template< typename ElementType >
 void Mask ( SliceInfo< ElementType > *inSlice, SliceInfo< ElementType > *outSlice, 
             bool *mask, ElementType	background )

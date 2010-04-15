@@ -17,6 +17,8 @@ PerfusionAnalysisFilter< ImageType >::PerfusionAnalysisFilter ()
   : PredecessorType( new Properties() )
 {
   originalIntensities = smoothedIntensities = NULL;
+
+  inWidth = inHeight = 0;
   
 	this->_inputPorts.AppendPort( new ImageInPort() );
 
@@ -33,6 +35,8 @@ PerfusionAnalysisFilter< ImageType >::PerfusionAnalysisFilter ( typename Perfusi
   : PredecessorType( prop )
 {
   originalIntensities = smoothedIntensities = NULL;
+
+  inWidth = inHeight = 0;
 
   this->_inputPorts.AppendPort( new ImageInPort() );
 
@@ -60,20 +64,20 @@ void PerfusionAnalysisFilter< ImageType >::Visualize ()
 	switch ( GetVisualizationType() ) 
   {
 	  case VT_MAX:
-		  VisualizeHelper( new MaxVisOperator< ElementType >( originalIntensities ) );
+		  VisualizeHelper( new MaxVisOperator< ElementType >( originalIntensities ), 0 );
       break;
 
 	  case VT_SUBTR:
 		  VisualizeHelper( new SubtrVisOperator< ElementType >( originalIntensities,
                                                             GetSubtrIndexLow(), GetSubtrIndexHigh(), 
-                                                            GetMaxCASliceIndex() ) );
+                                                            GetMaxCASliceIndex() ), 0 );
       break;
 
     case VT_PARAM:
       visOperator = new ParamVisOperator< ElementType >( smoothedIntensities, GetParameterType(),
                                                          GetMinValuePercentage(), GetMaxValuePercentage() );
 		  
-      VisualizeHelper( visOperator );
+      VisualizeHelper( visOperator, 0 );
 
       // setting the max/min values - for the viewer to calibrate the color ramp
       SetMaxParameterValue( static_cast< ParamVisOperator< ElementType > * >( visOperator )->maxValue );
@@ -85,32 +89,91 @@ void PerfusionAnalysisFilter< ImageType >::Visualize ()
 	  default:
 		  ASSERT(false);
 	}
+
+  MedianFilter( GetMedianFilterRadius(), 0 );  
+
+  // for see-through: put background image to another output
+  if ( GetBackgroundNeeded() )
+  {
+    VisualizeHelper( new MaxVisOperator< ElementType >( originalIntensities ), 1 );
+
+    MedianFilter( GetMedianFilterRadius(), 1 );  
+  }
 }
 
 
 template< typename ImageType >
-void PerfusionAnalysisFilter< ImageType >::VisualizeHelper ( VisOperator< ElementType > *visOperator )
+IntensitiesType &PerfusionAnalysisFilter< ImageType >::GetSmoothedCurve ( int x, int y, int z )
 {
-	IteratorsType outIt;
+  return smoothedIntensities[z * inWidth * inHeight + y * inWidth + x];    
+}
 
-  for ( uint8 i = 0; i < 3; i++ ) {
-    outIt.push_back( ((ImageType *)this->out[0])->GetIterator() );
-  }
 
-	typename ImageType::Iterator outEnd = outIt[0].End();
+template< typename ImageType >
+void PerfusionAnalysisFilter< ImageType >::VisualizeHelper ( VisOperator< ElementType > *visOperator, uint8 outIdx )
+{
+  Iterator outIt = ((ImageType *)this->out[GetMedianFilterRadius() ? outIdx + 1 : outIdx])->GetIterator();
+  typename Iterator outItEnd = outIt.End();
 
 	uint32 idx = 0;
   
-  while ( outIt[0] != outEnd ) 
+  while ( outIt != outItEnd ) {
+    visOperator->Result( idx++, outIt++ );
+	}
+}
+
+
+template< typename ImageType >
+void PerfusionAnalysisFilter< ImageType >::MedianFilter ( uint8 radius, uint8 outIdx )
+{
+  // output is already in out[0] - no need to copy
+  if ( !radius ) {
+    return;
+  }
+
+  uint8 offset = radius / 2;
+
+  // filtering: out[1] -> out[0]
+  ImageType *inImage  = (ImageType *)this->out[outIdx + 1];
+  ImageType *outImage = (ImageType *)this->out[outIdx];
+
+  Vector< uint32, 3 > size;
+	Vector< int32, 3 > strides;
+	ElementType *inPointer  = inImage->GetPointer( size, strides );
+  ElementType *outPointer = outImage->GetPointer( size, strides );
+
+  int32 xStride = strides[0];
+  int32 yStride = strides[1];
+  int32 zStride = strides[2];
+
+  uint32 width  = size[0];
+  uint32 height = size[1];
+	uint32 depth  = size[2];
+
+  for ( uint32 z = 0; z < depth; ++z )
   {
-    visOperator->Result( idx, outIt );
-		
-    for ( uint8 i = 0; i < 3; i++ ) {
-      ++outIt[i];
+    for ( uint32 y = offset; y < height - offset; ++y ) 
+    {
+	    for ( uint32 x = offset; x < width - offset; ++x ) 
+      {
+		    IntensitiesType region;
+
+        for ( uint32 i = y - offset; i < y + offset + 1; ++i ) {
+          for ( uint32 j = x - offset; j < x + offset + 1; ++j ) {
+            region.push_back( inPointer[i * yStride + j * xStride] );         
+          }
+        }
+
+        uint8 med = region.size() / 2 + 1;
+
+        nth_element( region.begin(), region.begin() + med, region.end() );
+        outPointer[y * yStride + x * xStride] = region[med];
+	    }
     }
 
-    ++idx;
-	}
+    inPointer  += zStride;
+    outPointer += zStride;
+  }
 }
 
 
@@ -214,14 +277,14 @@ bool PerfusionAnalysisFilter< ImageType >::Process ()
   int32 yStride = strides[1];
   int32 zStride = strides[2];
 
-  uint32 width  = size[0];
-  uint32 height = size[1];
+  inWidth  = size[0];
+  inHeight = size[1];
 
-	uint32 depth    = size[2];
+	uint32 inDepth  = size[2];
   uint32 sliceNum = GetExaminedSliceNum();
-  uint32 times    = (uint32)(depth / sliceNum);
+  uint32 times    = (uint32)(inDepth / sliceNum);
 
-  uint32 sliceStride = height * width; 
+  uint32 sliceStride = inHeight * inWidth; 
   originalIntensities = new IntensitiesType[ sliceNum * sliceStride ];
 
   SumType sliceSums;
@@ -236,11 +299,11 @@ bool PerfusionAnalysisFilter< ImageType >::Process ()
       int32 sum = 0;
 
       // loop over 1 timesequence (1 slice in different times)
-	    for ( uint32 y = 0; y < height; ++y ) 
+	    for ( uint32 y = 0; y < inHeight; ++y ) 
       {
         ElementType *in = pointer + y * yStride;
 
-		    for ( uint32 x = 0; x < width; ++x, idx++ ) 
+		    for ( uint32 x = 0; x < inWidth; ++x, idx++ ) 
         {
 			    originalIntensities[idx].push_back( *in );
 

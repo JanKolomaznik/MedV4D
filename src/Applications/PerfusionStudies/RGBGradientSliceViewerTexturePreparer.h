@@ -19,6 +19,8 @@ namespace Viewer {
 
 #define	MAX_VALUE             255
 
+#define	SEE_THROUGH_RADIUS    50
+
 #define	RAMP_POS_X            0.9
 #define	RAMP_POS_Y            0.5
 #define	RAMP_WIDTH            20
@@ -31,9 +33,12 @@ namespace Viewer {
 #define	BRIGHTNESS_FACTOR     12
 #define	CONTRAST_FACTOR       20
 
+#define	BGR_BRIGHTNESS_FACTOR 8
+#define	BGR_CONTRAST_FACTOR   4
+
 /**
- * Sliceviewer's texture preparer that shows the first three input datasets by assigning
- * each one of them to one of the channels of RGB
+ * Sliceviewer's texture preparer that allows displaying parameter maps with see-through 
+ * interface support.
  */
 template< typename ElementType >
 class RGBGradientSliceViewerTexturePreparer 
@@ -42,10 +47,16 @@ class RGBGradientSliceViewerTexturePreparer
   public:
 
     /**
-     * Constructor
+     * Texture preparer constructor.
      */
     RGBGradientSliceViewerTexturePreparer ();
 
+    /**
+     * Sets min. and max. values occuring in the parameter map.
+     *
+     *  @param min the min. value in the parameter map
+     *  @param max the max. value in the parameter map
+     */
     void setMinMaxValue ( uint16 min, uint16 max );
 
     /**
@@ -70,16 +81,48 @@ class RGBGradientSliceViewerTexturePreparer
 
   private:
 
+    /**
+     * Maps scalar value to color map (hot-to-cold).
+     *
+     *  @param x the value to be mapped (0 - 1.0)
+     *  @param rgb pointer to output channels
+     *  @param idx index of the value within the channel
+     *  @param channelSize size of one channel
+     */
     void ColorRamp ( double x, ElementType *rgb, uint32 idx, uint32 channelSize );
 
+    /**
+     * Draws the see-through (circle shaped - at top of the parameter map in the texture).
+     *
+     *  @param rgb pointer to output channels
+     *  @param background the background which can be seen through the cut
+     *  @param width width of the texture
+     *  @param height height of the texture
+     */
+    void DrawCut ( ElementType *rgb, ElementType *background, uint32 width, uint32 height );
+
+    /**
+     * Draws the color ramp to the corner of the texture.
+     *
+     *  @param rgb pointer to output channels
+     *  @param width width of the texture
+     *  @param height height of the texture
+     */
     void DrawRamp ( ElementType *rgb, uint32 width, uint32 height );
 
+    /**
+     * Draws the given text to the texture.
+     *
+     *  @param value the value to be drawn to the texture
+     *  @param xPos the x position of the text
+     *  @param yPos the y position of the text
+     *  @param rgb pointer to output channels
+     *  @param width width of the texture
+     *  @param height height of the texture
+     */
     void DrawValue ( uint16 value, uint32 xPos, uint32 yPos, ElementType *rgb, uint32 width, uint32 height );
 
-    RGBGradientSliceViewerTexturePreparer ( const RGBGradientSliceViewerTexturePreparer &preparer );
-
-    const RGBGradientSliceViewerTexturePreparer &operator = ( const RGBGradientSliceViewerTexturePreparer &preparer );
-
+    /// Min. and max. values occuring in the parameter map (for color ramp calibration).
     uint16 minValue, maxValue;
 };
 

@@ -9,8 +9,11 @@
 #include "RGBGradientSliceViewerTexturePreparer.h"
 #include "TypeDeclarations.h"
 #include "SettingsBox.h"
+#include "PlotBox.h"
 
-
+/**
+ * Notifier for indicating end of the pipeline computation.
+ */
 class Notifier: public QObject, public M4D::Imaging::MessageReceiverInterface
 {
 	Q_OBJECT
@@ -40,7 +43,10 @@ class Notifier: public QObject, public M4D::Imaging::MessageReceiverInterface
 };
 
 
-class mainWindow: public M4D::GUI::m4dGUIMainWindow
+/**
+ * The main window of the application.
+ */
+class MainWindow: public M4D::GUI::m4dGUIMainWindow
 {
 	Q_OBJECT
 
@@ -55,33 +61,78 @@ class mainWindow: public M4D::GUI::m4dGUIMainWindow
 
     static const unsigned SOURCE_NUMBER = 4;
 
-	  mainWindow ();
+    /**
+     * The main window constructor.
+     */
+	  MainWindow ();
 
   protected slots:
 
-    void setSelectedViewerToSimple ();
+    /**
+     * Slot for setting viewers connected to the output to simple mode: setting their 
+     * texture preparer to simple.
+     */
+    void SetSelectedViewerToSimple ();
 
-    void setSelectedViewerToRGB ();
+    /**
+     * Slot for setting viewers connected to the output to RGB (color mapped) mode: setting their 
+     * texture preparer to custom (attribute texturePreparer).
+     */
+    void SetSelectedViewerToRGB ();
 
-    void sourceSelected ();
+    /**
+     * Slot for setting viewers connected to the output to point picker mode (for TIC plot tool).
+     * 
+     * @param toolEnabled flag indicating whether the TIC plot tool is enabled
+     */
+    void SetSelectedViewerToPoint ( bool toolEnabled );
+
+    /**
+     * Slot for setting viewers connected to the output to region picker mode (for see-through tool).
+     * 
+     * @param toolEnabled flag indicating whether the see-through tool is enabled
+     */
+    void SetSelectedViewerToRegion ( bool toolEnabled );
+
+    /**
+     * Slot for modifying source selection behaviour.
+     */
+    void SourceSelected ();
 
   protected:
 
-    void createPipeline ();
+    /**
+	   * Creates Pipeline - filters, connections.
+	   */
+    void CreatePipeline ();
 	  
+    /**
+	   * Processes dataset.
+     *
+	   * @param inputDataSet smart pointer to the dataset to be processed
+	   */
     void process ( M4D::Imaging::ADataset::Ptr inputDataSet );
 
-	  SettingsBox	*settings;
+	  /// Pointer to the Perfusion Studies settings widget.
+    SettingsBox	*settings;
+
+    /// Pointer to TIC plot tool's plotting widget.
+    PlotBox	*plot;
     
+    /// Pointer to notifier for indicating end of the pipeline computation.
     Notifier *notifier;
 
-	  PipelineType pipeline;
+	  /// the pipeline.
+    PipelineType pipeline;
 
+    /// Pointers to the filters.
     FilterType *convertor, *registration, *segmentation, *analysis;
 
-	  ConnectionType *inConnection, *registrationSegmentationConnection, *segmentationAnalysisConnection;
+	  /// Connections between the filters.
+    ConnectionType *inConnection, *registrationSegmentationConnection, *segmentationAnalysisConnection;
     MultipleConnectionType outConnection;
 
+    /// The custom texture preparer - for Parameter Maps type of visualization.
     RGBGradientTexturePreparer texturePreparer;
 };
 

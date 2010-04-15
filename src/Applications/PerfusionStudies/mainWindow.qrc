@@ -3,5 +3,10 @@
   <file>./resources/maximum.png</file>
   <file>./resources/subtraction.png</file>
   <file>./resources/parameter.png</file>
+  <file>./resources/cut.png</file>
+  <file>./resources/plot.png</file>
+  <file>./resources/hold.png</file>
+  <file>./resources/zoomin.png</file>
+  <file>./resources/zoomout.png</file>
 </qresource>
 </RCC>

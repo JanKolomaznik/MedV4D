@@ -4,7 +4,7 @@
 
 #include "common/Common.h"
 
-#include "mainWindow.h"
+#include "MainWindow.h"
 
 
 int main ( int argc, char *argv[] )
@@ -18,7 +18,7 @@ int main ( int argc, char *argv[] )
   QApplication app( argc, argv );
   app.setQuitOnLastWindowClosed( true );
 
-  mainWindow mainWindow;
+  MainWindow mainWindow;
   if ( mainWindow.wasBuildSuccessful() ) 
   {
     mainWindow.show();

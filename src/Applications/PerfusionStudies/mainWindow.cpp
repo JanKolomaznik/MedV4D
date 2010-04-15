@@ -1,15 +1,16 @@
-#include "mainWindow.h"
+#include "MainWindow.h"
 
 #include "Imaging/PipelineMessages.h"
 
 #include "SettingsBox.h"
+#include "PlotBox.h"
 
 using namespace std;
 
 using namespace M4D::Imaging;
 
 
-mainWindow::mainWindow ()
+MainWindow::MainWindow ()
   : m4dGUIMainWindow( APPLICATION_NAME, ORGANIZATION_NAME, QIcon( ":/resources/parameter.png" ) ), inConnection( NULL )
 {
 	Q_INIT_RESOURCE( mainWindow ); 
@@ -18,20 +19,31 @@ mainWindow::mainWindow ()
     outConnection[i] = NULL;
   }
 
-  createPipeline();
+  CreatePipeline();
 
 	settings = new SettingsBox( registration, segmentation, analysis, this );
-	addDockWindow( "Perfusion Studies", settings );
+	QDockWidget *settingsDock = addDockWindow( "Perfusion Studies", settings );
+  settingsDock->move( x() + width() - settingsDock->width() - 30, y() + 135 );
+
 	connect( notifier, SIGNAL(Notification()), settings, SLOT(EndOfExecution()), Qt::QueuedConnection );
   connect( settings, SIGNAL(VisualizationDone()), currentViewerDesktop, SLOT(UpdateViewers()) );
-  connect( settings, SIGNAL(SimpleSelected()), this, SLOT(setSelectedViewerToSimple()) );
-  connect( settings, SIGNAL(ParamaterMapsSelected()), this, SLOT(setSelectedViewerToRGB()) );
+  connect( settings, SIGNAL(SimpleSelected()), this, SLOT(SetSelectedViewerToSimple()) );
+  connect( settings, SIGNAL(ParamaterMapsSelected()), this, SLOT(SetSelectedViewerToRGB()) );
+  connect( settings, SIGNAL(CurveToolSelected( bool )), this, SLOT(SetSelectedViewerToPoint( bool )) );
+  connect( settings, SIGNAL(CutToolSelected( bool )), this, SLOT(SetSelectedViewerToRegion( bool )) );
+
+  plot = new PlotBox( analysis, this );
+  QDockWidget *plotDock = addDockWindow( "TIC plot", plot );
+  plotDock->move( x() + 30, y() + 135 );
+  plotDock->hide();
+
+  connect( settings, SIGNAL(CurveToolSelected( bool )), plotDock, SLOT(setVisible( bool )) );
   
-  connect( currentViewerDesktop, SIGNAL(sourceChanged()), this, SLOT(sourceSelected()) );
+  connect( currentViewerDesktop, SIGNAL(sourceChanged()), this, SLOT(SourceSelected()) );
 }
 
 
-void mainWindow::createPipeline ()
+void MainWindow::CreatePipeline ()
 {
   convertor = new Convertor();
 	pipeline.AddFilter( convertor );
@@ -71,7 +83,7 @@ void mainWindow::createPipeline ()
 }
 
 
-void mainWindow::process ( ADataset::Ptr inputDataSet )
+void MainWindow::process ( ADataset::Ptr inputDataSet )
 {
 	try 
   {
@@ -99,7 +111,7 @@ void mainWindow::process ( ADataset::Ptr inputDataSet )
 }
 
 
-void mainWindow::setSelectedViewerToSimple ()
+void MainWindow::SetSelectedViewerToSimple ()
 {
   vector< M4D::Viewer::m4dGUIAbstractViewerWidget * > viewers;
   currentViewerDesktop->getViewerWidgetsWithSource( SOURCE_NUMBER - 1, viewers );
@@ -111,7 +123,7 @@ void mainWindow::setSelectedViewerToSimple ()
 }
 
 
-void mainWindow::setSelectedViewerToRGB ()
+void MainWindow::SetSelectedViewerToRGB ()
 {
   vector< M4D::Viewer::m4dGUIAbstractViewerWidget * > viewers;
   currentViewerDesktop->getViewerWidgetsWithSource( SOURCE_NUMBER - 1, viewers );
@@ -127,7 +139,47 @@ void mainWindow::setSelectedViewerToRGB ()
 }
 
 
-void mainWindow::sourceSelected ()
+void MainWindow::SetSelectedViewerToPoint ( bool toolEnabled )
+{
+  vector< M4D::Viewer::m4dGUIAbstractViewerWidget * > viewers;
+  currentViewerDesktop->getViewerWidgetsWithSource( SOURCE_NUMBER - 1, viewers );
+
+  // loop over all viewers connected to the output
+  for ( uint8 i = 0; i < viewers.size(); i++ ) 
+  {
+    if ( toolEnabled ) 
+    {
+      viewers[i]->slotSetButtonHandler( M4D::Viewer::m4dGUIAbstractViewerWidget::point_picker, M4D::Viewer::m4dGUIAbstractViewerWidget::left );
+      connect( viewers[i], SIGNAL(signalDataPointPicker( unsigned, int, int, int)), plot, SLOT(pointPicked( unsigned, int, int, int)) );
+    } 
+    else {
+      disconnect( viewers[i], SIGNAL(signalDataPointPicker( unsigned, int, int, int)), plot, SLOT(pointPicked( unsigned, int, int, int)) );
+    }
+  }
+}
+
+
+void MainWindow::SetSelectedViewerToRegion ( bool toolEnabled )
+{
+  vector< M4D::Viewer::m4dGUIAbstractViewerWidget * > viewers;
+  currentViewerDesktop->getViewerWidgetsWithSource( SOURCE_NUMBER - 1, viewers );
+
+  // loop over all viewers connected to the output
+  for ( uint8 i = 0; i < viewers.size(); i++ ) 
+  {
+    if ( toolEnabled ) {
+      viewers[i]->slotSetButtonHandler( M4D::Viewer::m4dGUIAbstractViewerWidget::region_picker, M4D::Viewer::m4dGUIAbstractViewerWidget::left );
+    } 
+    else 
+    {
+      viewers[i]->slotSetButtonHandler( M4D::Viewer::m4dGUIAbstractViewerWidget::point_picker, M4D::Viewer::m4dGUIAbstractViewerWidget::left );
+      texturePreparer.setLastClickedPosition( -1, -1, -1 );
+    }
+  }
+}
+
+
+void MainWindow::SourceSelected ()
 {
   if ( static_cast< Analysis * >( analysis )->GetVisualizationType() == VT_PARAM ) 
   {
