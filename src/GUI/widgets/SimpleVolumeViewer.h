@@ -199,7 +199,7 @@ public:
 		_transferFuncShaderConfig.Disable();
 		//---------- RENDERING FINISHED ------------
 
-
+		M4D::DisableVolumeTextureCoordinateGeneration();
 		M4D::CheckForGLError( "OGL error : " );
 		glFlush();		
 	}
@@ -228,15 +228,21 @@ public:
 			_texName = M4D::GLPrepareTextureFromImageData( *_region, _linearInterpolation );
 		}
 			
+		glBindTexture( GL_TEXTURE_1D, 0 );
+		glBindTexture( GL_TEXTURE_2D, 0 );
+		glBindTexture( GL_TEXTURE_3D, 0 );
+		glDisable(GL_TEXTURE_3D);
+		glDisable(GL_TEXTURE_2D);
+		glDisable(GL_TEXTURE_1D);
+
 		_brightnessContrastShaderConfig.textureName = _texName;
 		_brightnessContrastShaderConfig.brightnessContrast[1] = 1.0f;
-		_brightnessContrastShaderConfig.brightnessContrast[0] = .3f;
+		_brightnessContrastShaderConfig.brightnessContrast[0] = .0f;
 
 		_brightnessContrastShaderConfig.Enable();
 
 		CheckForCgError("Check befor drawing ", _cgContext );
-		glBindTexture ( GL_TEXTURE_3D, _texName );
-		glEnable(GL_TEXTURE_3D);
+
 		M4D::GLDrawVolumeSlice( 
 				_region->GetRealMinimum(), 
 				_region->GetRealMaximum(),
@@ -244,7 +250,7 @@ public:
 				_plane	
 				);
 		
-		//_brightnessContrastShaderConfig.Disable();
+		_brightnessContrastShaderConfig.Disable();
 		
 		glFlush();
 		
@@ -252,7 +258,7 @@ public:
 protected:
 	void	mouseMoveEvent ( QMouseEvent * event )
 	{ 
-		if( _mouseDown ) {
+		if( _mouseDown && _volumeRendering) {
 			QPoint tmp = event->globalPos(); 
 			int x = (tmp - _lastPoint).x();
 			int y = (tmp - _lastPoint).y();

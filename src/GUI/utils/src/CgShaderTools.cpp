@@ -65,7 +65,7 @@ CgBrightnessContrastShaderConfig::Initialize(
 	cgFragmentParam_Texture = cgGetNamedParameter( cgFragmentProgram, "texture" );
 	CheckForCgError("getting 'texture' parameter ", cgContext );
 
-	cgFragmentParam_ContrastBrightness = cgGetNamedParameter( cgFragmentProgram, "contrastBrightness");
+	cgFragmentParam_BrightnessContrast = cgGetNamedParameter( cgFragmentProgram, "brightnessContrast");
 	CheckForCgError("getting 'contrastBrightness' parameter ", cgContext );
 }
 
@@ -77,7 +77,7 @@ CgBrightnessContrastShaderConfig::Enable()
 	cgGLEnableTextureParameter( cgFragmentParam_Texture );
 	cgGLSetTextureParameter( cgFragmentParam_Texture, textureName );
 
-	cgGLSetParameter2f( cgFragmentParam_ContrastBrightness, brightnessContrast[0], brightnessContrast[1] );
+	cgGLSetParameter2f( cgFragmentParam_BrightnessContrast, brightnessContrast[0], brightnessContrast[1] );
 }
 
 void

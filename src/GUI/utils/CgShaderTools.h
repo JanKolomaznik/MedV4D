@@ -56,7 +56,7 @@ struct CgBrightnessContrastShaderConfig : public AShaderConfig
 	Vector< float, 2 >	brightnessContrast;
 
 	CGparameter cgFragmentParam_Texture;
-	CGparameter cgFragmentParam_ContrastBrightness;
+	CGparameter cgFragmentParam_BrightnessContrast;
 };
 
 
