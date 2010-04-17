@@ -5,7 +5,7 @@ namespace M4D
 	namespace Viewer
 	{
 #pragma region hapticDeviceWorker
-		hapticCursor::hapticDeviceWorker::hapticDeviceWorker(cGenericHapticDevice* hapticDevice, hapticCursor* supervisor, bool* runHaptic)
+		hapticCursor::hapticDeviceWorker::hapticDeviceWorker( cGenericHapticDevice* hapticDevice, hapticCursor* supervisor, bool* runHaptic )
 		{
 			this->hapticDevice = hapticDevice;
 			this->supervisor = supervisor;
@@ -14,6 +14,8 @@ namespace M4D
 			m_clock->start();
 			count = 0;
 		}
+
+		
 		void hapticCursor::hapticDeviceWorker::operator()()
 		{
 			while(*runHaptic)
@@ -33,14 +35,17 @@ namespace M4D
 		}
 #pragma endregion hapticDeviceWorker
 
-		hapticCursor::hapticCursor(vtkImageData *input) : cursorInterface(input)
+
+		hapticCursor::hapticCursor(vtkImageData *input, vtkRenderWindow* renderWindow) : cursorInterface(input)
 		{
 			handler = new cHapticDeviceHandler();
 			deviceWorker = NULL;
 			hapticDevice = NULL;
+			this->renderWindow = renderWindow;
 			runHpatics = false;
 			hapticForceTransitionFunction = new transitionFunction(minVolumeValue, maxVolumeValue, 0.0, 1.0);
 		}
+
 		hapticCursor::~hapticCursor()
 		{
 			stop();
@@ -69,6 +74,7 @@ namespace M4D
 		}
 		void hapticCursor::SetCursorPosition(const cVector3d& cursorPosition)
 		{
+			cSleepMs(50);
 			double center[3];
 			cursor->GetCenter(center);
 			cVector3d lastRealPosition(center[0], center[1], center[2]);

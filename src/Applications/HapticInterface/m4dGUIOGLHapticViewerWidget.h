@@ -142,6 +142,11 @@ namespace M4D
 
 			public slots:
 
+				/*
+				* Qt testing slot
+				*/
+				virtual void slotSetScale(double scale);
+
 				/**
 				* Slot to connect a given button to a given handler method
 				* (it has no function in this type of viewer).
@@ -389,6 +394,8 @@ namespace M4D
 			virtual void keyReleaseEvent ( QKeyEvent * event );
 
 		private:
+
+			void update();
 
 			/**
 			* Sets the border points appropriately.

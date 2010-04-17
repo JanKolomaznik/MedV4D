@@ -50,7 +50,7 @@ namespace M4D
 			_inPort = new Imaging::InputPortTyped< Imaging::AImage >();
 			_inputPorts.AppendPort( _inPort );
 			setInputPort( conn );
-			cursor = new hapticCursor(aggregationFilter->GetOutput());
+			cursor = new hapticCursor(aggregationFilter->GetOutput(), GetRenderWindow());
 			reloadCursorParameters();
 			cursor->startHaptics();
 		}
@@ -63,7 +63,7 @@ namespace M4D
 			_inPort = new Imaging::InputPortTyped< Imaging::AImage >();
 			_inputPorts.AppendPort( _inPort );
 			setInputPort();
-			cursor = new hapticCursor(aggregationFilter->GetOutput());
+			cursor = new hapticCursor(aggregationFilter->GetOutput(), GetRenderWindow());
 			reloadCursorParameters();
 			cursor->startHaptics();
 		}
@@ -396,6 +396,11 @@ namespace M4D
 			emit signalMessageHandler( msg->msgID );
 		}
 
+		void m4dGUIOGLHapticViewerWidget::slotSetScale(double scale)
+		{
+			cursor->SetScale(scale);
+		}
+
 		void
 			m4dGUIOGLHapticViewerWidget::slotSetButtonHandler( ButtonHandler hnd, MouseButton btn ) {}
 
@@ -522,5 +527,9 @@ namespace M4D
 			GetRenderWindow()->Render();
 		}
 
+		void m4dGUIOGLHapticViewerWidget::update()
+		{
+
+		}
 	} /* namespace Viewer */
 } /* namespace M4D */

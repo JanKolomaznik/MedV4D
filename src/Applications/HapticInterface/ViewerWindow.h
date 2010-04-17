@@ -1,18 +1,28 @@
+#ifndef M4D_GUI_OPENGLHAPTICVIEWERWIDGET_H_HAPTIC_VIEWER_WINDOW
+#define M4D_GUI_OPENGLHAPTICVIEWERWIDGET_H_HAPTIC_VIEWER_WINDOW
+
 #include "Imaging/ImageFactory.h"
 #include <iostream>
 #include <sstream>
 
 #include <QWidget>
+#include <QMainWindow>
 #include "m4dGUIOGLHapticViewerWidget.h"
 #include "..\..\gui\widgets\m4dGUISliceViewerWidget.h"
+#include "SettingsBox.h"
 
+class SettingsBox;
 
 class ViewerWindow : public QWidget
 {
-private:
-	M4D::Viewer::m4dGUIOGLHapticViewerWidget *viewerWidget;
-	//M4D::Viewer::m4dGUISliceViewerWidget *viewerWidget;
 public:
 	ViewerWindow( M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage > & conn);
 	~ViewerWindow();
+	void build();
+private:
+	M4D::Viewer::m4dGUIOGLHapticViewerWidget *viewerWidget;
+	SettingsBox* settings;
+	//M4D::Viewer::m4dGUISliceViewerWidget *viewerWidget;
 }; 
+
+#endif

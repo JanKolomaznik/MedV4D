@@ -6,6 +6,7 @@
 #include <chai3d.h>
 #include "common/Log.h"
 #include "transitionFunction.h"
+#include "vtkRenderWindow.h"
 
 namespace M4D
 {
@@ -14,7 +15,7 @@ namespace M4D
 		class hapticCursor : public cursorInterface
 		{
 		public:
-			hapticCursor(vtkImageData* input);
+			hapticCursor(vtkImageData* input, vtkRenderWindow* renderWindow);
 			~hapticCursor();
 			void startHaptics();
 			void stop();
@@ -38,6 +39,7 @@ namespace M4D
 			bool runHpatics; // indicates if continue to listen or not
 			cHapticDeviceHandler* handler; // a haptic device handler
 			cGenericHapticDevice* hapticDevice; // a pointer to a haptic device
+			vtkRenderWindow* renderWindow;
 			cHapticDeviceInfo info; // haptic device infos
 			int numHapticDevices; // number of haptic devices
 			hapticDeviceWorker* deviceWorker; // class which listen to haptic in fact

@@ -37,6 +37,7 @@ int main( int argc, char** argv )
 
 
 	QApplication app(argc, argv);
+	
 	ViewerWindow viewer(prodconn);
 	viewer.show();
 	return app.exec();

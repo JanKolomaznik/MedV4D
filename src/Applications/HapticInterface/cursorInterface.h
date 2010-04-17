@@ -22,11 +22,11 @@ namespace M4D
 			virtual vtkCubeSource* GetRadiusCube(); // returns cube center position as vector
 			virtual double GetScale(); // returns size of cube where is action radius of cursor
 			virtual void reloadParameters(); // reload image parameters from inPort
+			virtual void SetScale(double scale); // Sets scale
 			cursorInterface(vtkImageData* input);
 			~cursorInterface();
 		protected: 
 			virtual void SetCursorPosition(const cVector3d& position);
-			virtual void SetScale(double scale); // Sets scale
 			vtkImageData* input; // link to dataset
 			vtkSphereSource* cursor;
 			vtkCubeSource* cursorRadiusCube;
