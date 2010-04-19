@@ -8,8 +8,6 @@
 #include <QWidget>
 #include <QMainWindow>
 #include "m4dGUIOGLHapticViewerWidget.h"
-#include "..\..\gui\widgets\m4dGUISliceViewerWidget.h"
-#include "SettingsBox.h"
 
 class SettingsBox;
 
@@ -21,8 +19,6 @@ public:
 	void build();
 private:
 	M4D::Viewer::m4dGUIOGLHapticViewerWidget *viewerWidget;
-	SettingsBox* settings;
-	//M4D::Viewer::m4dGUISliceViewerWidget *viewerWidget;
 }; 
 
 #endif

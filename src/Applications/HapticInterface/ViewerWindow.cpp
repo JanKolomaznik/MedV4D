@@ -21,14 +21,4 @@ ViewerWindow::~ViewerWindow()
 {} 
 void ViewerWindow::build()
 {
-	settings = new SettingsBox(this);
-
-	M4D::Viewer::m4dGUIAbstractViewerWidget *currentViewerWidget = viewerWidget;
-
-	QObject::connect(settings->ui->steSizeButton, SIGNAL( clicked() ), settings, SLOT( slotChangeScale() ), Qt::QueuedConnection );
-	QObject::connect(settings, SIGNAL( scaleChanged(double) ), currentViewerWidget, SLOT( slotSetScale(double) ), Qt::DirectConnection );
-
-	// zadockuj me
-	//settings->
-	settings->show();
 }

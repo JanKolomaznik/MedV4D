@@ -48,10 +48,11 @@ namespace M4D
 						{
 							for (int c = 0; c < input->GetNumberOfScalarComponents(); ++c)
 							{
-								if (minVolumeValue > (unsigned short)input->GetScalarComponentAsDouble(i,j,k,c))
-									minVolumeValue = (unsigned short)input->GetScalarComponentAsDouble(i,j,k,c);
-								if (maxVolumeValue < (unsigned short)input->GetScalarComponentAsDouble(i,j,k,c))
-									maxVolumeValue = (unsigned short)input->GetScalarComponentAsDouble(i,j,k,c);
+								unsigned short result = (unsigned short)input->GetScalarComponentAsDouble(i,j,k,c);
+								if (minVolumeValue > result)
+									minVolumeValue = result;
+								if (maxVolumeValue < result)
+									maxVolumeValue = result;
 							}
 						}
 					}

@@ -15,7 +15,7 @@ namespace M4D
 		class hapticCursor : public cursorInterface
 		{
 		public:
-			hapticCursor(vtkImageData* input, vtkRenderWindow* renderWindow);
+			hapticCursor(vtkImageData* input, vtkRenderWindow* renderWindow, transitionFunction* hapticForceTransitionFunction);
 			~hapticCursor();
 			void startHaptics();
 			void stop();

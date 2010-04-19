@@ -34,7 +34,9 @@
 #include "vtkOutlineFilter.h"
 #include "vtkTubeFilter.h"
 #include "vtkSphereSource.h"
+#include "vtkCallbackCommand.h"
 #include "aggregationFilterForVTK.h"
+#include "vtkCommand.h"
 
 #include "vtkIntegration/m4dImageDataSource.h"
 
@@ -42,6 +44,7 @@
 #include "Imaging/Imaging.h"
 #include "gui\widgets\m4dGUIAbstractViewerWidget.h"
 #include "hapticCursor.h"
+#include "settingsBoxWidget.h"
 
 namespace M4D
 {
@@ -142,6 +145,7 @@ namespace M4D
 
 			public slots:
 
+				void update();
 				/*
 				* Qt testing slot
 				*/
@@ -328,6 +332,10 @@ namespace M4D
 
 				void updateViewer()
 				{ /*TODO*/ }
+
+		signals:
+				void hapticForceTransitionFunctionChanged();
+				
 				protected slots:
 
 					/**
@@ -335,6 +343,8 @@ namespace M4D
 					*  @param msgID the ID of the message
 					*/
 					virtual void slotMessageHandler( Imaging::PipelineMsgID msgID );
+
+					virtual void slotTransitionFunctionResetDemanded();
 
 		protected:
 
@@ -395,8 +405,6 @@ namespace M4D
 
 		private:
 
-			void update();
-
 			/**
 			* Sets the border points appropriately.
 			*  @param points the points to be set
@@ -411,6 +419,10 @@ namespace M4D
 			void setParameters();
 
 			void reloadCursorParameters();
+
+			void resetTransitionFunction();
+
+			static void cursorSphereModifiedCallback(vtkObject* caller, long unsigned int eventId, void* clientData, void* callData);
 
 			/**
 			* True if the viewer is plugged, false otherwise.
@@ -542,6 +554,10 @@ namespace M4D
 			* Cursor radius cube source
 			*/
 			vtkCubeSource* cursorRadiusCube;
+
+			transitionFunction* hapticForceTransitionFunction;
+
+			SettingsBoxWidget* settings;
 		};
 
 	} /* namespace Viewer */

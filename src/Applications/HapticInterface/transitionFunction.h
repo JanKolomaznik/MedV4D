@@ -2,6 +2,7 @@
 #define M4D_GUI_OPENGLHAPTICVIEWERWIDGET_H_TRANSITION_FUNCTION
 
 #include <vector>
+#include "Imaging/Imaging.h"
 
 class transitionFunction // class for function which has some values on some points and computes lineary between these points
 {
@@ -16,7 +17,11 @@ public:
 	void SetMinPoint(unsigned short point);
 	unsigned short GetMaxPoint();
 	void SetMaxPoint(unsigned short point);
+	std::size_t size();
+	unsigned short GetPointOnPosition(std::size_t pos);
+	void Reset(unsigned short minPoint, unsigned short maxPoint, double minValue, double maxValue);
 	transitionFunction(unsigned short minPoint, unsigned short maxPoint, double minValue, double maxValue);
+	transitionFunction(){}
 protected:
 
 	struct pointValue
@@ -37,6 +42,7 @@ protected:
 		unsigned short point;
 	};
 	std::vector< pointValue > data;
+	boost::mutex accesMutex;
 };
 
 #endif

@@ -6,11 +6,13 @@
 
 #include "m4dGUIOGLHapticViewerWidget.h"
 #include <QtGui>
+#include <QWidget>
 
 namespace M4D
 {
 	namespace Viewer
 	{
+		
 		m4dGUIOGLHapticViewerWidget::tissue::tissue(vtkAlgorithmOutput* data, double val, double r, double g, double b, double opacity)
 		{
 			iso = vtkMarchingCubes::New();
@@ -46,26 +48,44 @@ namespace M4D
 			: QVTKWidget( parent )
 		{
 			_index = index;
+			hapticForceTransitionFunction = new transitionFunction();
 			setParameters();
 			_inPort = new Imaging::InputPortTyped< Imaging::AImage >();
 			_inputPorts.AppendPort( _inPort );
 			setInputPort( conn );
-			cursor = new hapticCursor(aggregationFilter->GetOutput(), GetRenderWindow());
+			cursor = new hapticCursor(aggregationFilter->GetOutput(), GetRenderWindow(), hapticForceTransitionFunction);
 			reloadCursorParameters();
 			cursor->startHaptics();
+			QTimer *timer = new QTimer((QVTKWidget*)this);
+			QObject::connect(timer, SIGNAL(timeout()), (QVTKWidget*)this, SLOT(update()));
+			timer->start(18);
+			settings = new SettingsBoxWidget(hapticForceTransitionFunction);
+			QObject::connect((QVTKWidget*)this, SIGNAL(hapticForceTransitionFunctionChanged()), settings, SLOT(functionChangedSlot()));
+			QObject::connect(settings, SIGNAL(resetFunction()), (QVTKWidget*)this, SLOT(slotTransitionFunctionResetDemanded()));
+			settings->show();
+			resetTransitionFunction();
 		}
 
 		m4dGUIOGLHapticViewerWidget::m4dGUIOGLHapticViewerWidget( unsigned index, QWidget *parent )
 			: QVTKWidget( parent )
 		{
 			_index = index;
+			hapticForceTransitionFunction = new transitionFunction();
 			setParameters();
 			_inPort = new Imaging::InputPortTyped< Imaging::AImage >();
 			_inputPorts.AppendPort( _inPort );
 			setInputPort();
-			cursor = new hapticCursor(aggregationFilter->GetOutput(), GetRenderWindow());
+			cursor = new hapticCursor(aggregationFilter->GetOutput(), GetRenderWindow(), hapticForceTransitionFunction);
 			reloadCursorParameters();
 			cursor->startHaptics();
+			QTimer *timer = new QTimer((QVTKWidget*)this);
+			QObject::connect(timer, SIGNAL(timeout()), (QVTKWidget*)this, SLOT(update()));
+			timer->start(18);
+			settings = new SettingsBoxWidget(hapticForceTransitionFunction);
+			QObject::connect((QVTKWidget*)this, SIGNAL(hapticForceTransitionFunctionChanged()), settings, SLOT(functionChangedSlot()));
+			QObject::connect(settings, SIGNAL(resetFunction()), (QVTKWidget*)this, SLOT(slotTransitionFunctionResetDemanded()));
+			settings->show();
+			resetTransitionFunction();
 		}
 
 		m4dGUIOGLHapticViewerWidget::~m4dGUIOGLHapticViewerWidget()
@@ -92,6 +112,8 @@ namespace M4D
 				(*it).deleteInnerItems();
 			}
 			delete(cursor);
+			delete(hapticForceTransitionFunction);
+			delete(settings);
 		}
 
 		void m4dGUIOGLHapticViewerWidget::setInputPort( Imaging::ConnectionInterface* conn )
@@ -136,9 +158,8 @@ namespace M4D
 			GetRenderWindow()->AddRenderer( _renImageData );
 			//if ( _selected ) _renImageData->AddViewProp( _actor2DSelected );
 			//_renImageData->AddViewProp( _actor2DPlugged );
-			GetRenderWindow()->Render();
 			_plugged = true;
-
+			resetTransitionFunction();
 		}
 
 		void m4dGUIOGLHapticViewerWidget::setInputPort()
@@ -149,7 +170,6 @@ namespace M4D
 			}
 			_inPort->UnPlug();
 			_imageData->TemporaryUnsetImageData();
-			GetRenderWindow()->Render();
 			_plugged = false;
 		}
 
@@ -158,7 +178,6 @@ namespace M4D
 			if ( _selected )
 			{
 				//_renImageData->RemoveViewProp( _actor2DSelected );
-				GetRenderWindow()->Render();
 			}
 			_selected = false;
 		}
@@ -168,7 +187,6 @@ namespace M4D
 			if ( !_selected )
 			{
 				//_renImageData->AddViewProp( _actor2DSelected );
-				GetRenderWindow()->Render();
 			}
 			_selected = true;
 			emit signalSetSelected( _index, false );
@@ -271,7 +289,7 @@ namespace M4D
 			aggregationFilter->SetAggregationPoint(550, 700, 600);
 			//aggregationFilter->SetAggregationPoint(701, 1000, 900);
 			//aggregationFilter->SetAggregationPoint(1001, 1200, 1080);
-			//aggregationFilter->SetAggregationPoint(1201, 2000, 1300);
+			//aggregationFilter->SetAggregationPoint(1201, 2000, 1500);
 			aggregationFilter->SetInputConnection( _iCast->GetOutputPort());
 
 			std::cout << "Set marching cubes..." << std::endl; // DEBUG
@@ -279,7 +297,7 @@ namespace M4D
 			tissues.push_back(tissue(aggregationFilter->GetOutputPort(), 600, 1.0, 1.0, 0.4, 0.35)); // Lungs and skin
 			//tissues.push_back(tissue(aggregationFilter->GetOutputPort(), 900, 0.5, 0.5, 1.0, 0.4)); // soft tissue
 			//tissues.push_back(tissue(aggregationFilter->GetOutputPort(), 1080, 1.0, 0.5, 0.5, 0.5)); // Muscles
-			//tissues.push_back(tissue(aggregationFilter->GetOutputPort(), 1300, 0.8, 0.8, 0.8, 1.0)); // Bones
+			//tissues.push_back(tissue(aggregationFilter->GetOutputPort(), 1500, 0.8, 0.8, 0.8, 1.0)); // Bones
 
 #pragma region pointStuffFromOriginalVtkViewer
 
@@ -519,17 +537,47 @@ namespace M4D
 				//if ( _selected ) _renImageData->AddViewProp( _actor2DSelected );
 				//_renImageData->AddViewProp( _actor2DPlugged );
 				_plugged = true;
-				break;
-
-			default:
+				resetTransitionFunction();
 				break;
 			}
-			GetRenderWindow()->Render();
 		}
 
 		void m4dGUIOGLHapticViewerWidget::update()
 		{
+			GetRenderWindow()->Render();
+		}
 
+		void m4dGUIOGLHapticViewerWidget::resetTransitionFunction()
+		{
+			vtkImageData* input = aggregationFilter->GetOutput();
+			int extents[6];
+			input->GetExtent(extents);
+			unsigned short minVolumeValue = (unsigned short)input->GetScalarTypeMax();
+			unsigned short maxVolumeValue = (unsigned short)input->GetScalarTypeMin();
+			for (int i = extents[0]; i < extents[1]; ++i)
+			{
+				for (int j = extents[2]; j < extents[3]; ++j)
+				{
+					for (int k = extents[4]; k < extents[5]; ++k)
+					{
+						for (int c = 0; c < input->GetNumberOfScalarComponents(); ++c)
+						{
+							unsigned short result = (unsigned short)input->GetScalarComponentAsDouble(i,j,k,c);
+							if (minVolumeValue > result)
+								minVolumeValue = result;
+							if (maxVolumeValue < result)
+								maxVolumeValue = result;
+						}
+					}
+				}
+			}
+			hapticForceTransitionFunction->Reset(minVolumeValue, maxVolumeValue, 0.0, 1.0);
+			emit hapticForceTransitionFunctionChanged();
+		}
+
+		void m4dGUIOGLHapticViewerWidget::slotTransitionFunctionResetDemanded()
+		{
+			resetTransitionFunction();
 		}
 	} /* namespace Viewer */
 } /* namespace M4D */

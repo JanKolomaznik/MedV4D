@@ -28,7 +28,7 @@ namespace M4D
 				double clock = m_clock->getCurrentTimeSeconds();
 				double fps = 1.0 / clock;
 				m_clock->reset();
-				std::cout << fps << std::endl;
+				//std::cout << fps << std::endl;
 
 				//std::cout << supervisor->GetForce().x << " " << supervisor->GetForce().y << " " << supervisor->GetForce().z << " " << std::endl;
 			}
@@ -36,14 +36,14 @@ namespace M4D
 #pragma endregion hapticDeviceWorker
 
 
-		hapticCursor::hapticCursor(vtkImageData *input, vtkRenderWindow* renderWindow) : cursorInterface(input)
+		hapticCursor::hapticCursor(vtkImageData *input, vtkRenderWindow* renderWindow, transitionFunction* hapticForceTransitionFunction) : cursorInterface(input)
 		{
 			handler = new cHapticDeviceHandler();
 			deviceWorker = NULL;
 			hapticDevice = NULL;
 			this->renderWindow = renderWindow;
+			this->hapticForceTransitionFunction = hapticForceTransitionFunction;
 			runHpatics = false;
-			hapticForceTransitionFunction = new transitionFunction(minVolumeValue, maxVolumeValue, 0.0, 1.0);
 		}
 
 		hapticCursor::~hapticCursor()
@@ -52,7 +52,6 @@ namespace M4D
 			delete(handler);
 			if (deviceWorker != NULL)
 				delete(deviceWorker);
-			delete(hapticForceTransitionFunction);
 		}
 		void hapticCursor::startHaptics()
 		{
@@ -117,7 +116,7 @@ namespace M4D
 			cursor->SetCenter(newRealPositionVTK);
 
 			cVector3d newForce = newRealPosition - lastRealPosition;
-			std::cout << (newForce) << std::endl;
+			//std::cout << (newForce) << std::endl;
 			if ((newForce.x != 0) || (newForce.y != 0) || (newForce.z != 0))
 			{
 				newForce.normalize();
@@ -133,6 +132,7 @@ namespace M4D
 				(coords[2] >= imageOffsetDepth) && (coords[2] < (imageOffsetDepth + imageDataDepth)))
 			{
 				unsigned short cursorVolumeValue = (unsigned short)input->GetScalarComponentAsDouble(coords[0], coords[1], coords[2], 0);
+				std::cout << hapticForceTransitionFunction->GetValueOnPoint(cursorVolumeValue) << std::endl;
 				newForce *= hapticForceTransitionFunction->GetValueOnPoint(cursorVolumeValue);
 				force = newForce;
 			}
