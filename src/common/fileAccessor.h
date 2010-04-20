@@ -19,6 +19,8 @@ class FileAccessor : public M4D::IO::MediumAccessor
 {
 public:
 	FileAccessor(const char *file, OpenMode mode);
+	FileAccessor(const std::string &file, OpenMode mode);
+	FileAccessor(const Path &file, OpenMode mode);
 	~FileAccessor();
 	
 	void PutData(const void *data, size_t length);
@@ -27,6 +29,9 @@ public:
 	bool eof()
 	{ return stream_.eof(); }
 private:
+	void
+	Open(const char *file, OpenMode mode);
+
 	std::fstream stream_;
 };
 

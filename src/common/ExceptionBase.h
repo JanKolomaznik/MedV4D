@@ -179,6 +179,8 @@ public:
 
 	const Path &
 	Filename() const
+	{ return _fileName; }
+
 protected:
 	Path _fileName;
 };
@@ -186,7 +188,7 @@ protected:
 class EFileNotFound : public EFileProblem
 {
 public:
-	EFileNotFound( Path fileName ) throw() : EFileProblem( TO_STRING( "File not found: " << fileName ) ), _fileName( fileName ) {}
+	EFileNotFound( Path fileName ) throw() : EFileProblem( TO_STRING( "File not found: " << fileName ), fileName ) {}
 	~EFileNotFound() throw(){}
 
 protected:

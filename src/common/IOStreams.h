@@ -54,7 +54,7 @@ public:
 	template< typename T>
 	void Put(const T what)
 	{
-		accessor_->PutData( (const void *)&what, sizeof(T));
+		_accessor->PutData( (const void *)&what, sizeof(T));
 	}
   
 protected:
@@ -79,8 +79,8 @@ public:
 	{
 		for( DataBuffs::const_iterator it=bufs.begin(); it != bufs.end(); it++)
 		{
-			accessor_->GetData(it->data, it->len);
-			if(needSwapBytes_)
+			_accessor->GetData(it->data, it->len);
+			if( _needSwapBytes )
 			{
 				SwapDataBuf<T>(*it);
 			}
@@ -90,9 +90,9 @@ public:
 	template< typename T>
 	void GetDataBuf( DataBuff &buf)
 	{
-		accessor_->GetData(buf.data, buf.len);
+		_accessor->GetData(buf.data, buf.len);
 			
-		if(needSwapBytes_)
+		if( _needSwapBytes )
 		{
 			SwapDataBuf<T>(buf);
 		}
@@ -101,15 +101,15 @@ public:
 	template< typename T>
 	void Get( T &what)
 	{
-		accessor_->GetData( (void *)&what, sizeof(T));
-		if( needSwapBytes_ ) {
+		_accessor->GetData( (void *)&what, sizeof(T));
+		if( _needSwapBytes ) {
 			SwapBytes<T>( what );
 		}
 	}
 	
 	bool
 	eof()
-	{ return accessor_->eof(); }
+	{ return _accessor->eof(); }
 protected:
 	InStream();
 	

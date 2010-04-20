@@ -27,6 +27,10 @@
  */
 
 #include <ostream>
+#include <boost/filesystem.hpp>
+
+typedef boost::filesystem::path	Path;
+
 /*
  * typedef of basic data types for simplier porting
  */
@@ -56,6 +60,18 @@ static const int64 	MAX_INT64 = 0x7FFFFFFFFFFFFFFFLL;
 static const uint64 	MAX_UINT64 = 0xFFFFFFFFFFFFFFFFULL;
 static const float32	MAX_FLOAT32 = 1E+37f;
 static const float64	MAX_FLOAT64 = 1E+37;
+
+/**
+ * Basic space planes, each constant also defines index of axis perpendicular 
+ * to given plane.
+ **/
+enum CartesianPlanes{
+	YZ_PLANE = 0,
+	XZ_PLANE = 1,
+	XY_PLANE = 2
+};	
+
+//*****************************************************************************
 
 enum NumericTypeIDs{ 
 	//Simple numeric types IDs

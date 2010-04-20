@@ -6,7 +6,23 @@ using namespace std;
 using namespace M4D::IO;
 
 /////////////////////////////////////////////////////////////////////////////
-FileAccessor::FileAccessor(const char *file, OpenMode mode) {
+FileAccessor::FileAccessor(const char *file, OpenMode mode) 
+{
+	Open( file, mode );
+}
+
+FileAccessor::FileAccessor(const std::string &file, OpenMode mode)
+{
+	Open( file.data(), mode );
+}
+
+FileAccessor::FileAccessor(const Path &file, OpenMode mode) {
+	Open( file.filename().data(), mode );
+}
+
+void
+FileAccessor::Open(const char *file, OpenMode mode)
+{
 	switch( mode ) {
 	case MODE_READ:
 		stream_.open(file, fstream::in | fstream::binary);
@@ -23,6 +39,7 @@ FileAccessor::FileAccessor(const char *file, OpenMode mode) {
 			TO_STRING( "Cannot create FileAccessor (mode = " << mode << ") - " << file ) );
 	}
 }
+
 /////////////////////////////////////////////////////////////////////////////
 FileAccessor::~FileAccessor() {
 	stream_.close();

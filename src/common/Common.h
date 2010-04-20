@@ -39,27 +39,11 @@
 #include <iomanip>
 #include <sstream>
 
-#include <boost/filesystem.hpp>
-
-typedef boost::filesystem::path	Path;
-
 #define BINSTREAM_WRITE_MACRO( STREAM, VARIABLE ) \
 	STREAM.write( (char*)&VARIABLE, sizeof(VARIABLE) );
 
 #define BINSTREAM_READ_MACRO( STREAM, VARIABLE ) \
 	STREAM.read( (char*)&VARIABLE, sizeof(VARIABLE) );
-
-//*****************************************************************************
-
-/**
- * Basic space planes, each constant also defines index of axis perpendicular 
- * to given plane.
- **/
-enum CartesianPlanes{
-	YZ_PLANE = 0,
-	XZ_PLANE = 1,
-	XY_PLANE = 2
-};	
 
 //*****************************************************************************
 

@@ -24,7 +24,7 @@ OutStream::~OutStream()
 }
 
 void
-OutStream::Init( MediumAccessor *accessor, bool shared  );
+OutStream::Init( MediumAccessor *accessor, bool shared  )
 {
 	if( accessor == NULL ) {
 		_THROW_ EBadParameter( "NULL pointer" );
@@ -59,7 +59,7 @@ InStream::InStream(MediumAccessor *accessor, bool shared )
 }
 
 InStream::InStream()
-	: _accessor(NULL), _shared( false );
+	: _accessor(NULL), _shared( false )
 {
 
 }
@@ -72,7 +72,7 @@ InStream::~InStream()
 }
 
 void
-InStream::Init( MediumAccessor *accessor, bool shared );
+InStream::Init( MediumAccessor *accessor, bool shared )
 {
 	if( accessor == NULL ) {
 		_THROW_ EBadParameter( "NULL pointer" );
@@ -84,10 +84,11 @@ InStream::Init( MediumAccessor *accessor, bool shared );
 	Endianness endianess = (Endianness) e;
 		
 	// if stream's endian is different from curr machine .. swap bytes
-	if(endianess != GetEndianess())
-		needSwapBytes_ = 1;
-	else
-		needSwapBytes_ = 0;
+	if( endianess != GetEndianess() ) {
+		_needSwapBytes = 1;
+	} else {
+		_needSwapBytes = 0;
+	}
 	
 }
 ///////////////////////////////////////////////////////////////////////////////
