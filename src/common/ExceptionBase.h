@@ -173,12 +173,25 @@ private:
 class EFileProblem : public ExceptionBase
 {
 public:
-	EFileProblem( std::string name, std::string fileName ) throw() : ExceptionBase( name ), _fileName( fileName ) {}
-	EFileProblem( std::string fileName ) throw() : ExceptionBase( TO_STRING( "Problem with file" << fileName ) ), _fileName( fileName ) {}
+	EFileProblem( std::string name, Path fileName ) throw() : ExceptionBase( name ), _fileName( fileName ) {}
+	EFileProblem( Path fileName ) throw() : ExceptionBase( TO_STRING( "Problem with file" << fileName ) ), _fileName( fileName ) {}
 	~EFileProblem() throw(){}
+
+	const Path &
+	Filename() const
 protected:
-	std::string _fileName;
+	Path _fileName;
 };
+
+class EFileNotFound : public EFileProblem
+{
+public:
+	EFileNotFound( Path fileName ) throw() : EFileProblem( TO_STRING( "File not found: " << fileName ) ), _fileName( fileName ) {}
+	~EFileNotFound() throw(){}
+
+protected:
+};
+
 
 class EInitError: public ExceptionBase
 {

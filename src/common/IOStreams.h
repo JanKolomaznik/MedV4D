@@ -44,25 +44,35 @@ typedef std::vector< DataBuff > DataBuffs;
 class OutStream
 {
 public:
-  OutStream(MediumAccessor *accessor);
-  // Serialization support for DataSetSerializators
-  void PutDataBuf( const DataBuffs &bufs);
-  void PutDataBuf( const DataBuff &buf);
-  
-  template< typename T>
-  void Put(const T what)
-  {
-  	accessor_->PutData( (const void *)&what, sizeof(T));
-  }
+	OutStream(MediumAccessor *accessor, bool shared = true);
+
+	virtual ~OutStream();
+	// Serialization support for DataSetSerializators
+	void PutDataBuf( const DataBuffs &bufs);
+	void PutDataBuf( const DataBuff &buf);
+
+	template< typename T>
+	void Put(const T what)
+	{
+		accessor_->PutData( (const void *)&what, sizeof(T));
+	}
   
 protected:
-	MediumAccessor *accessor_;
+  	OutStream();
+
+	void
+	Init( MediumAccessor *accessor, bool shared = true );
+
+	MediumAccessor 	*_accessor;
+	bool		_shared;
 };
 
 class InStream
 {
 public:
-	InStream(MediumAccessor *accessor);
+	InStream(MediumAccessor *accessor, bool shared = true);
+
+	virtual ~InStream();
 
 	template< typename T>
 	void GetDataBuf( DataBuffs &bufs)
@@ -101,6 +111,11 @@ public:
 	eof()
 	{ return accessor_->eof(); }
 protected:
+	InStream();
+	
+	void
+	Init( MediumAccessor *accessor, bool shared = true );
+
 	template< typename T>
 	void SwapDataBuf( DataBuff &buf)
 	{
@@ -110,8 +125,9 @@ protected:
 			SwapBytes<T>(data[i]);
 	}
 	
-	uint8 needSwapBytes_;
-	MediumAccessor *accessor_;
+	uint8 		_needSwapBytes;
+	MediumAccessor 	*_accessor;
+	bool		_shared;
 };
 
 

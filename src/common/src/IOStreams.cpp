@@ -5,35 +5,82 @@
 using namespace M4D::IO;
 
 /////////////////////////////////////////////////////////////////////////////
-OutStream::OutStream(MediumAccessor *accessor)
-	: accessor_(accessor)
+OutStream::OutStream(MediumAccessor *accessor, bool shared )
+	: _accessor(accessor)
 {
-	uint8 endian = (uint8) GetEndianess();
-	accessor_->PutData( (const void *) &endian, sizeof(uint8));
+	Init( accessor );
 }
+
+OutStream::OutStream()
+	: _accessor(NULL)
+{
+}
+
+OutStream::~OutStream()
+{
+	if( !_shared && NULL != _accessor ) {
+		delete _accessor;
+	}
+}
+
+void
+OutStream::Init( MediumAccessor *accessor, bool shared  );
+{
+	if( accessor == NULL ) {
+		_THROW_ EBadParameter( "NULL pointer" );
+	}
+	_accessor = accessor;
+	uint8 endian = (uint8) GetEndianess();
+	_accessor->PutData( (const void *) &endian, sizeof(uint8));
+}
+
 /////////////////////////////////////////////////////////////////////////////
 void
 OutStream::PutDataBuf( const DataBuffs &bufs)
 {
 	for( DataBuffs::const_iterator it=bufs.begin(); it != bufs.end(); it++)
 	{
-		accessor_->PutData(it->data, it->len);
+		_accessor->PutData(it->data, it->len);
 	}
 }
 /////////////////////////////////////////////////////////////////////////////
 void
 OutStream::PutDataBuf( const DataBuff &buf)
 {
-	accessor_->PutData(buf.data, buf.len);
+	_accessor->PutData(buf.data, buf.len);
 }
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
-InStream::InStream(MediumAccessor *accessor)
-	: accessor_(accessor)
+InStream::InStream(MediumAccessor *accessor, bool shared )
+	: _accessor(accessor)
 {
+	Init( accessor, shared );
+}
+
+InStream::InStream()
+	: _accessor(NULL), _shared( false );
+{
+
+}
+
+InStream::~InStream()
+{
+	if( !_shared && NULL != _accessor ) {
+		delete _accessor;
+	}
+}
+
+void
+InStream::Init( MediumAccessor *accessor, bool shared );
+{
+	if( accessor == NULL ) {
+		_THROW_ EBadParameter( "NULL pointer" );
+	}
+	_accessor = accessor;
+
 	uint8 e;
-	accessor_->GetData( &e, sizeof(uint8));
+	_accessor->GetData( &e, sizeof(uint8));
 	Endianness endianess = (Endianness) e;
 		
 	// if stream's endian is different from curr machine .. swap bytes
@@ -41,6 +88,7 @@ InStream::InStream(MediumAccessor *accessor)
 		needSwapBytes_ = 1;
 	else
 		needSwapBytes_ = 0;
+	
 }
 ///////////////////////////////////////////////////////////////////////////////
 //template< typename T>

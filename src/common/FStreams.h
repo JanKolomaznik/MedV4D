@@ -14,31 +14,73 @@ namespace IO
 class FOutStream: public OutStream
 {
 public:
-	FOutStream(const char *file): OutStream( new FileAccessor( file, MODE_WRITE ) )
-	{ _fAccessor = accessor_; }
+	FOutStream(const char *file): OutStream(  )
+	{ 
+		FileAccessor *acc = NULL;
+		try {
+			acc = new FileAccessor( file, MODE_WRITE );
+			Init( acc, false );
+		} catch (...) {
+			if( NULL == acc ) {
+				delete acc;
+			}
+			_THROW_ EFileProblem( file );
+		}
+	}
 
-	FOutStream(std::string file): OutStream( new FileAccessor( file.data(), MODE_WRITE ) )
-	{ _fAccessor = accessor_; }
+	FOutStream(std::string file): OutStream(  )
+	{ 
+		FileAccessor *acc = NULL;
+		try {
+			acc = new FileAccessor( file, MODE_WRITE );
+			Init( acc, false );
+		} catch (...) {
+			if( NULL == acc ) {
+				delete acc;
+			}
+			_THROW_ EFileProblem( file );
+		}
+	}
 
 	~FOutStream()
-	{ delete _fAccessor; }
+	{ }
 protected:
-	MediumAccessor *_fAccessor;
 };
 
 class FInStream: public InStream
 {
 public:
-	FInStream(const char *file): InStream( new FileAccessor( file, MODE_READ ) )
-	{ _fAccessor = accessor_; }
+	FInStream(const char *file): InStream( )
+	{ 
+		FileAccessor *acc = NULL;
+		try {
+			acc = new FileAccessor( file, MODE_READ );
+			Init( acc, false );
+		} catch (...) {
+			if( NULL == acc ) {
+				delete acc;
+			}
+			_THROW_ EFileProblem( file );
+		}
+	}
 
-	FInStream(std::string file): InStream( new FileAccessor( file.data(), MODE_READ ) )
-	{ _fAccessor = accessor_; }
+	FInStream(std::string file): InStream( )
+	{
+		FileAccessor *acc = NULL;
+		try {
+			acc = new FileAccessor( file, MODE_READ );
+			Init( acc, false );
+		} catch (...) {
+			if( NULL == acc ) {
+				delete acc;
+			}
+			_THROW_ EFileProblem( file );
+		}
+       	}
 
 	~FInStream()
-	{ delete _fAccessor; }
+	{  }
 protected:
-	MediumAccessor *_fAccessor;
 };
 
 }
