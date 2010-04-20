@@ -124,17 +124,17 @@ extern std::ostream *pdout;
 #ifdef DEBUG_LEVEL
 #define D_COMMAND( ... )	__VA_ARGS__
 #else
-#define	D_COMMAND(ARG)
+#define	D_COMMAND( ... )
 #endif /*DEBUG_LEVEL*/
 
 //----------------------------------------------------------------------------
 #ifdef DEBUG_LEVEL
-#define DL_COMMAND( LEVEL, ARG )	\
+#define DL_COMMAND( LEVEL, ... )	\
 	if ( (DEBUG_LEVEL >= LEVEL) || (DEBUG_LEVEL == 0)){ \
-				D_COMMAND( ARG );\
+				D_COMMAND( __VA_ARGS__ );\
 	}
 #else
-#define	DL_COMMAND(ARG)
+#define	DL_COMMAND( LEVEL, ... )
 #endif /*DEBUG_LEVEL*/
 
 //----------------------------------------------------------------------------
