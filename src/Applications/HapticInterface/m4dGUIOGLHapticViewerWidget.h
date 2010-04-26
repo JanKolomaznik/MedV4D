@@ -37,6 +37,7 @@
 #include "vtkCallbackCommand.h"
 #include "aggregationFilterForVTK.h"
 #include "vtkCommand.h"
+#include "vtkImageMapper.h"
 
 #include "vtkIntegration/m4dImageDataSource.h"
 
@@ -558,6 +559,14 @@ namespace M4D
 			transitionFunction* hapticForceTransitionFunction;
 
 			SettingsBoxWidget* settings;
+
+			vtkImageData* sliceData;
+
+			vtkImageMapper* sliceMapper;
+
+			vtkActor2D* sliceActor;
+
+			vtkRenderer* sliceRenderer; 
 		};
 
 	} /* namespace Viewer */

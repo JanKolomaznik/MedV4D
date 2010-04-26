@@ -53,6 +53,7 @@ namespace M4D
 			_inPort = new Imaging::InputPortTyped< Imaging::AImage >();
 			_inputPorts.AppendPort( _inPort );
 			setInputPort( conn );
+			aggregationFilter->Update();
 			cursor = new hapticCursor(aggregationFilter->GetOutput(), GetRenderWindow(), hapticForceTransitionFunction);
 			reloadCursorParameters();
 			cursor->startHaptics();
@@ -106,6 +107,9 @@ namespace M4D
 			cursorCubeExtractEdges->Delete();
 			cursorCubeMapper->Delete();
 			cursorCubeActor->Delete();
+			sliceMapper->Delete();
+			sliceActor->Delete();
+			sliceRenderer->Delete();
 			std::vector< tissue >::iterator it;
 			for (it = tissues.begin(); it != tissues.end(); it++)
 			{
@@ -130,7 +134,11 @@ namespace M4D
 			}
 			_renImageData->RemoveActor(cursorActor);
 			_renImageData->RemoveActor(cursorCubeActor);
+			sliceRenderer->RemoveActor(sliceActor);
 			GetRenderWindow()->RemoveRenderer( _renImageData );
+			GetRenderWindow()->RemoveRenderer(sliceRenderer);
+			sliceRenderer->Delete();
+			sliceRenderer = vtkRenderer::New();
 			_renImageData->Delete();
 			_renImageData = vtkOpenGLRenderer::New();
 			_renImageData->SetUseDepthPeeling(1);  //This and next 2 lines enables depth peeling
@@ -155,11 +163,20 @@ namespace M4D
 			}
 			_renImageData->AddActor(cursorActor);
 			_renImageData->AddActor(cursorCubeActor);
+			sliceRenderer->AddActor(sliceActor);
 			GetRenderWindow()->AddRenderer( _renImageData );
+			GetRenderWindow()->AddRenderer(sliceRenderer);
 			//if ( _selected ) _renImageData->AddViewProp( _actor2DSelected );
 			//_renImageData->AddViewProp( _actor2DPlugged );
 			_plugged = true;
 			resetTransitionFunction();
+			double leftViewport[4] = {0.0, 0.0, 0.5, 1.0};
+			double rightViewport[4] = {0.5, 0.0, 1.0, 1.0};
+
+			_renImageData->SetViewport(leftViewport);
+			sliceRenderer->SetViewport(rightViewport);
+			GetRenderWindow()->Render();
+			sliceMapper->SetZSlice(40);
 		}
 
 		void m4dGUIOGLHapticViewerWidget::setInputPort()
@@ -361,6 +378,18 @@ namespace M4D
 
 #pragma endregion cursorCubeVtkInitialization
 
+			sliceData = aggregationFilter->GetOutput();
+
+			sliceMapper = vtkImageMapper::New();
+			sliceMapper->SetInput(sliceData);
+
+			sliceActor = vtkActor2D::New();
+			sliceActor->SetMapper(sliceMapper);
+
+			sliceRenderer = vtkRenderer::New();
+			GetRenderWindow()->AddRenderer(sliceRenderer);
+			sliceRenderer->AddActor(sliceActor);
+
 			std::cout << "Create renderer..." << std::endl; // DEBUG
 
 			_renImageData = vtkOpenGLRenderer::New(); 
@@ -369,6 +398,12 @@ namespace M4D
 			_renImageData->SetOcclusionRatio(0.2);
 
 			GetRenderWindow()->AddRenderer( _renImageData );
+
+			double leftViewport[4] = {0.0, 0.0, 0.5, 1.0};
+			double rightViewport[4] = {0.5, 0.0, 1.0, 1.0};
+
+			_renImageData->SetViewport(leftViewport);
+			sliceRenderer->SetViewport(rightViewport);
 
 			std::vector< tissue >::iterator it;
 			for (it = tissues.begin(); it != tissues.end(); it++)
@@ -509,10 +544,14 @@ namespace M4D
 				}
 				_renImageData->RemoveActor(cursorActor);
 				_renImageData->RemoveActor(cursorCubeActor);
+				sliceRenderer->RemoveActor(sliceActor);
 				GetRenderWindow()->RemoveRenderer( _renImageData );
+				GetRenderWindow()->RemoveRenderer(sliceRenderer);
+				sliceRenderer->Delete();
+				sliceRenderer = vtkRenderer::New();
 				_renImageData->Delete();
 				_renImageData = vtkOpenGLRenderer::New();
-				_renImageData->SetUseDepthPeeling(1); //This and other 2 lines enables depth peeling
+				_renImageData->SetUseDepthPeeling(1);  //This and next 2 lines enables depth peeling
 				_renImageData->SetMaximumNumberOfPeels(50);
 				_renImageData->SetOcclusionRatio(0.2);
 				try
@@ -533,11 +572,20 @@ namespace M4D
 				}
 				_renImageData->AddActor(cursorActor);
 				_renImageData->AddActor(cursorCubeActor);
+				sliceRenderer->AddActor(sliceActor);
 				GetRenderWindow()->AddRenderer( _renImageData );
+				GetRenderWindow()->AddRenderer(sliceRenderer);
 				//if ( _selected ) _renImageData->AddViewProp( _actor2DSelected );
 				//_renImageData->AddViewProp( _actor2DPlugged );
 				_plugged = true;
 				resetTransitionFunction();
+				double leftViewport[4] = {0.0, 0.0, 0.5, 1.0};
+				double rightViewport[4] = {0.5, 0.0, 1.0, 1.0};
+
+				_renImageData->SetViewport(leftViewport);
+				sliceRenderer->SetViewport(rightViewport);
+				GetRenderWindow()->Render();
+				sliceMapper->SetZSlice(40);
 				break;
 			}
 		}
