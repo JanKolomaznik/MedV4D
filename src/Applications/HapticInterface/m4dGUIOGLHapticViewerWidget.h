@@ -38,6 +38,7 @@
 #include "aggregationFilterForVTK.h"
 #include "vtkCommand.h"
 #include "vtkImageMapper.h"
+#include "vtkLineSource.h"
 
 #include "vtkIntegration/m4dImageDataSource.h"
 
@@ -72,6 +73,20 @@ namespace M4D
 				vtkPolyDataNormals* isoNormals;
 				vtkPolyDataMapper* isoMapper;
 				vtkActor* isoActor;
+			};
+
+			struct line
+			{
+			public:
+				line();
+				~line();
+				void SetPoints(double a_point0[3], double a_point1[3]);
+				void SetColor(double a_red, double a_green, double a_blue);
+				vtkActor2D* GetActor();
+			private:
+				vtkLineSource* m_source;
+				vtkPolyDataMapper2D* m_mapper;
+				vtkActor2D* m_actor;
 			};
 
 			/**
@@ -567,6 +582,14 @@ namespace M4D
 			vtkActor2D* sliceActor;
 
 			vtkRenderer* sliceRenderer; 
+
+			line rectangleLine1;
+			line rectangleLine2;
+			line rectangleLine3;
+			line rectangleLine4;
+
+			line cursorLine1;
+			line cursorLine2;
 		};
 
 	} /* namespace Viewer */

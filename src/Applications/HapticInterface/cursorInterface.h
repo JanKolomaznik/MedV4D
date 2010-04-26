@@ -4,8 +4,6 @@
 
 #include "Imaging/Imaging.h"
 #include "chai3d.h"
-#include "vtkSphereSource.h"
-#include "vtkCubeSource.h"
 #include "vtkImageData.h"
 
 namespace M4D
@@ -15,21 +13,22 @@ namespace M4D
 		class cursorInterface
 		{
 		public:
-			virtual float GetX(); // returns X part of coordinates of cursor
-			virtual float GetY(); // returns Y part of coordinates of cursor
-			virtual float GetZ(); // returns Z part of coordinates of cursor
-			virtual vtkSphereSource* GetCursor(); // returns cursor position as vector
-			virtual vtkCubeSource* GetRadiusCube(); // returns cube center position as vector
+			virtual double GetX(); // returns X part of coordinates of cursor
+			virtual double GetY(); // returns Y part of coordinates of cursor
+			virtual double GetZ(); // returns Z part of coordinates of cursor
+			virtual void GetCursorCenter(double center[3]); // returns cursor position as vector
+			virtual void GetRadiusCubeCenter(double center[3]); // returns cube center position as vector
 			virtual double GetScale(); // returns size of cube where is action radius of cursor
 			virtual void reloadParameters(); // reload image parameters from inPort
 			virtual void SetScale(double scale); // Sets scale
+			virtual int GetZSlice();
 			cursorInterface(vtkImageData* input);
-			~cursorInterface();
 		protected: 
+			boost::mutex cursorMutex;
 			virtual void SetCursorPosition(const cVector3d& position);
 			vtkImageData* input; // link to dataset
-			vtkSphereSource* cursor;
-			vtkCubeSource* cursorRadiusCube;
+			double cursorCenter[3];
+			double cursorRadiusCubeCenter[3];
 			unsigned short minVolumeValue, maxVolumeValue;
 			double scale; // size of cube where is action radius of cursor
 			double imageRealHeight, imageRealWidth, imageRealDepth; // parameters of volume dataset - size in mm

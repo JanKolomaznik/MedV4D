@@ -44,6 +44,43 @@ namespace M4D
 			isoMapper->Delete();
 			isoActor->Delete();
 		}
+		m4dGUIOGLHapticViewerWidget::line::line()
+		{
+			m_source = vtkLineSource::New();
+			double p[3] = {0.0, 0.0, 0.0};
+			m_source->SetPoint1(p);
+			m_source->SetPoint2(p);
+
+			m_mapper = vtkPolyDataMapper2D::New();
+			m_mapper->SetInput(m_source->GetOutput());
+
+			m_actor = vtkActor2D::New();
+			m_actor->SetMapper(m_mapper);
+			m_actor->SetLayerNumber(1);
+		}
+		m4dGUIOGLHapticViewerWidget::line::~line()
+		{
+			m_source->Delete();
+			m_mapper->Delete();
+			m_actor->Delete();
+		}
+
+		void m4dGUIOGLHapticViewerWidget::line::SetPoints( double a_point0[3], double a_point1[3] )
+		{
+			m_source->SetPoint1(a_point0);
+			m_source->SetPoint2(a_point1);
+		}
+
+		void m4dGUIOGLHapticViewerWidget::line::SetColor( double a_red, double a_green, double a_blue )
+		{
+			m_actor->GetProperty()->SetColor(a_red, a_green, a_blue);
+		}
+
+		vtkActor2D* m4dGUIOGLHapticViewerWidget::line::GetActor()
+		{
+			return m_actor;
+		}
+
 		m4dGUIOGLHapticViewerWidget::m4dGUIOGLHapticViewerWidget( Imaging::ConnectionInterface* conn, unsigned index, QWidget *parent )
 			: QVTKWidget( parent )
 		{
@@ -135,6 +172,12 @@ namespace M4D
 			_renImageData->RemoveActor(cursorActor);
 			_renImageData->RemoveActor(cursorCubeActor);
 			sliceRenderer->RemoveActor(sliceActor);
+			sliceRenderer->RemoveActor(rectangleLine1.GetActor());
+			sliceRenderer->RemoveActor(rectangleLine2.GetActor());
+			sliceRenderer->RemoveActor(rectangleLine3.GetActor());
+			sliceRenderer->RemoveActor(rectangleLine4.GetActor());
+			sliceRenderer->RemoveActor(cursorLine1.GetActor());
+			sliceRenderer->RemoveActor(cursorLine2.GetActor());
 			GetRenderWindow()->RemoveRenderer( _renImageData );
 			GetRenderWindow()->RemoveRenderer(sliceRenderer);
 			sliceRenderer->Delete();
@@ -164,19 +207,24 @@ namespace M4D
 			_renImageData->AddActor(cursorActor);
 			_renImageData->AddActor(cursorCubeActor);
 			sliceRenderer->AddActor(sliceActor);
+			sliceRenderer->AddActor(rectangleLine1.GetActor());
+			sliceRenderer->AddActor(rectangleLine2.GetActor());
+			sliceRenderer->AddActor(rectangleLine3.GetActor());
+			sliceRenderer->AddActor(rectangleLine4.GetActor());
+			sliceRenderer->AddActor(cursorLine1.GetActor());
+			sliceRenderer->AddActor(cursorLine2.GetActor());
 			GetRenderWindow()->AddRenderer( _renImageData );
 			GetRenderWindow()->AddRenderer(sliceRenderer);
 			//if ( _selected ) _renImageData->AddViewProp( _actor2DSelected );
 			//_renImageData->AddViewProp( _actor2DPlugged );
 			_plugged = true;
-			resetTransitionFunction();
 			double leftViewport[4] = {0.0, 0.0, 0.5, 1.0};
 			double rightViewport[4] = {0.5, 0.0, 1.0, 1.0};
 
 			_renImageData->SetViewport(leftViewport);
 			sliceRenderer->SetViewport(rightViewport);
 			GetRenderWindow()->Render();
-			sliceMapper->SetZSlice(40);
+			resetTransitionFunction();
 		}
 
 		void m4dGUIOGLHapticViewerWidget::setInputPort()
@@ -279,15 +327,59 @@ namespace M4D
 
 		void m4dGUIOGLHapticViewerWidget::reloadCursorParameters()
 		{
-			cursorMapper->RemoveAllInputs();
-			cursorSource->Delete();
-			cursorSource = cursor->GetCursor();
-			cursorMapper->SetInput(cursorSource->GetOutput());
+			double cursorCenter[3];
+			cursor->GetCursorCenter(cursorCenter);
+			cursorSource->SetCenter(cursorCenter);
 
-			cursorCubeExtractEdges->RemoveAllInputs();
-			cursorRadiusCube->Delete();
-			cursorRadiusCube = cursor->GetRadiusCube();
-			cursorCubeExtractEdges->SetInput(cursorRadiusCube->GetOutput());
+			double cubeCenter[3];
+			double scale = cursor->GetScale();
+			cursor->GetRadiusCubeCenter(cubeCenter);
+			cursorRadiusCube->SetCenter(cubeCenter);
+			cursorRadiusCube->SetXLength(scale);
+			cursorRadiusCube->SetYLength(scale);
+			cursorRadiusCube->SetZLength(scale);
+
+			sliceMapper->SetZSlice(cursor->GetZSlice());
+
+			double point0[3], point1[3];
+
+			point0[0] = cursorCenter[0] - 5.0;
+			point0[1] = cursorCenter[1];
+			point0[2] = 0.0;
+			point1[0] = cursorCenter[0] + 5.0;
+			point1[1] = cursorCenter[1];
+			point1[2] = 0.0;
+			cursorLine1.SetPoints(point0, point1);
+			
+			point0[1] = cursorCenter[1] - 5.0;
+			point0[0] = cursorCenter[0];
+			point1[1] = cursorCenter[1] + 5.0;
+			point1[0] = cursorCenter[0];
+			cursorLine2.SetPoints(point0, point1);
+
+			point0[0] = cubeCenter[0] - (scale / 2.0);
+			point0[1] = cubeCenter[1] - (scale / 2.0);
+			point1[0] = cubeCenter[0] + (scale / 2.0);
+			point1[1] = cubeCenter[1] - (scale / 2.0);
+			rectangleLine1.SetPoints(point0, point1);
+
+			point0[0] = cubeCenter[0] + (scale / 2.0);
+			point0[1] = cubeCenter[1] - (scale / 2.0);
+			point1[0] = cubeCenter[0] + (scale / 2.0);
+			point1[1] = cubeCenter[1] + (scale / 2.0);
+			rectangleLine2.SetPoints(point0, point1);
+
+			point0[0] = cubeCenter[0] - (scale / 2.0);
+			point0[1] = cubeCenter[1] + (scale / 2.0);
+			point1[0] = cubeCenter[0] + (scale / 2.0);
+			point1[1] = cubeCenter[1] + (scale / 2.0);
+			rectangleLine3.SetPoints(point0, point1);
+
+			point0[0] = cubeCenter[0] - (scale / 2.0);
+			point0[1] = cubeCenter[1] + (scale / 2.0);
+			point1[0] = cubeCenter[0] - (scale / 2.0);
+			point1[1] = cubeCenter[1] - (scale / 2.0);
+			rectangleLine4.SetPoints(point0, point1);
 		}
 			
 		void m4dGUIOGLHapticViewerWidget::setParameters()
@@ -346,7 +438,7 @@ namespace M4D
 
 			cursorSource = vtkSphereSource::New();
 			cursorSource->SetCenter(0.0, 0.0, 0.0);
-			cursorSource->SetRadius(10.0);
+			cursorSource->SetRadius(1.0);
 
 			cursorMapper = vtkPolyDataMapper::New();
 			cursorMapper->SetInput(cursorSource->GetOutput());
@@ -385,10 +477,25 @@ namespace M4D
 
 			sliceActor = vtkActor2D::New();
 			sliceActor->SetMapper(sliceMapper);
+			sliceActor->SetLayerNumber(0);
+
+			rectangleLine1.SetColor(0.1, 0.1, 0.3);
+			rectangleLine2.SetColor(0.1, 0.1, 0.3);
+			rectangleLine3.SetColor(0.1, 0.1, 0.3);
+			rectangleLine4.SetColor(0.1, 0.1, 0.3);
+
+			cursorLine1.SetColor(0.0, 1.0, 0.0);
+			cursorLine2.SetColor(0.0, 1.0, 0.0);
 
 			sliceRenderer = vtkRenderer::New();
 			GetRenderWindow()->AddRenderer(sliceRenderer);
 			sliceRenderer->AddActor(sliceActor);
+			sliceRenderer->AddActor(rectangleLine1.GetActor());
+			sliceRenderer->AddActor(rectangleLine2.GetActor());
+			sliceRenderer->AddActor(rectangleLine3.GetActor());
+			sliceRenderer->AddActor(rectangleLine4.GetActor());
+			sliceRenderer->AddActor(cursorLine1.GetActor());
+			sliceRenderer->AddActor(cursorLine2.GetActor());
 
 			std::cout << "Create renderer..." << std::endl; // DEBUG
 
@@ -545,6 +652,12 @@ namespace M4D
 				_renImageData->RemoveActor(cursorActor);
 				_renImageData->RemoveActor(cursorCubeActor);
 				sliceRenderer->RemoveActor(sliceActor);
+				sliceRenderer->RemoveActor(rectangleLine1.GetActor());
+				sliceRenderer->RemoveActor(rectangleLine2.GetActor());
+				sliceRenderer->RemoveActor(rectangleLine3.GetActor());
+				sliceRenderer->RemoveActor(rectangleLine4.GetActor());
+				sliceRenderer->RemoveActor(cursorLine1.GetActor());
+				sliceRenderer->RemoveActor(cursorLine2.GetActor());
 				GetRenderWindow()->RemoveRenderer( _renImageData );
 				GetRenderWindow()->RemoveRenderer(sliceRenderer);
 				sliceRenderer->Delete();
@@ -573,25 +686,31 @@ namespace M4D
 				_renImageData->AddActor(cursorActor);
 				_renImageData->AddActor(cursorCubeActor);
 				sliceRenderer->AddActor(sliceActor);
+				sliceRenderer->AddActor(rectangleLine1.GetActor());
+				sliceRenderer->AddActor(rectangleLine2.GetActor());
+				sliceRenderer->AddActor(rectangleLine3.GetActor());
+				sliceRenderer->AddActor(rectangleLine4.GetActor());
+				sliceRenderer->AddActor(cursorLine1.GetActor());
+				sliceRenderer->AddActor(cursorLine2.GetActor());
 				GetRenderWindow()->AddRenderer( _renImageData );
 				GetRenderWindow()->AddRenderer(sliceRenderer);
 				//if ( _selected ) _renImageData->AddViewProp( _actor2DSelected );
 				//_renImageData->AddViewProp( _actor2DPlugged );
 				_plugged = true;
-				resetTransitionFunction();
 				double leftViewport[4] = {0.0, 0.0, 0.5, 1.0};
 				double rightViewport[4] = {0.5, 0.0, 1.0, 1.0};
 
 				_renImageData->SetViewport(leftViewport);
 				sliceRenderer->SetViewport(rightViewport);
 				GetRenderWindow()->Render();
-				sliceMapper->SetZSlice(40);
+				resetTransitionFunction();
 				break;
 			}
 		}
 
 		void m4dGUIOGLHapticViewerWidget::update()
 		{
+			reloadCursorParameters();
 			GetRenderWindow()->Render();
 		}
 

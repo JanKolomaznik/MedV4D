@@ -15,18 +15,17 @@ namespace M4D
 			std::cout << "making deep copy";
 			this->input->DeepCopy(input);
 			std::cout << "done." << std::endl;
-			cursor = vtkSphereSource::New();
-			cursor->SetRadius(1.0);
-			cursorRadiusCube = vtkCubeSource::New();
+			cursorCenter[0] = 0.0;
+			cursorCenter[1] = 0.0;
+			cursorCenter[2] = 0.0;
+			cursorRadiusCubeCenter[0] = 0.0;
+			cursorRadiusCubeCenter[1] = 0.0;
+			cursorRadiusCubeCenter[2] = 0.0;
 			reloadParameters();
-		}
-		cursorInterface::~cursorInterface()
-		{
-			cursor->Delete();
-			cursorRadiusCube->Delete();
 		}
 		void cursorInterface::reloadParameters()
 		{
+			boost::mutex::scoped_lock lck(cursorMutex);
 			if (input->GetDataDimension() == 3)
 			{
 				int dimensions[3];
@@ -78,14 +77,14 @@ namespace M4D
 				imageRealHeight = imageDataHeight * spacing[1];
 				imageRealDepth = imageDataDepth * spacing[2];
 
-				double center[3];
-				center[0] = (imageRealWidth / 2.0) + imageRealOffsetWidth;
-				center[1] = (imageRealHeight / 2.0) + imageRealOffsetHeight;
-				center[2] = (imageRealDepth / 2.0) + imageRealOffsetDepth;
+				cursorCenter[0] = (imageRealWidth / 2.0) + imageRealOffsetWidth;
+				cursorCenter[1] = (imageRealHeight / 2.0) + imageRealOffsetHeight;
+				cursorCenter[2] = (imageRealDepth / 2.0) + imageRealOffsetDepth;
 
-				cursor->SetCenter(center);
-
-				SetScale(MAX( MAX(imageRealWidth, imageRealHeight), MAX(imageRealHeight, imageRealDepth)));						
+				this->scale = MAX( MAX(imageRealWidth, imageRealHeight), MAX(imageRealHeight, imageRealDepth));
+				cursorRadiusCubeCenter[0] = cursorCenter[0];
+				cursorRadiusCubeCenter[1] = cursorCenter[1];
+				cursorRadiusCubeCenter[2] = cursorCenter[2];
 			}
 			else
 			{
@@ -95,54 +94,64 @@ namespace M4D
 
 		double cursorInterface::GetScale()
 		{
+			boost::mutex::scoped_lock lck(cursorMutex);
 			return scale;
 		}
 
 		void cursorInterface::SetScale(double scale)
 		{
+			boost::mutex::scoped_lock lck(cursorMutex);
 			this->scale = scale;
-			double center[3];
-			cursor->GetCenter(center);
-			cursorRadiusCube->SetCenter(center);
-			cursorRadiusCube->SetXLength(scale);
-			cursorRadiusCube->SetYLength(scale);
-			cursorRadiusCube->SetZLength(scale);
+			cursorRadiusCubeCenter[0] = cursorCenter[0];
+			cursorRadiusCubeCenter[1] = cursorCenter[1];
+			cursorRadiusCubeCenter[2] = cursorCenter[2];
 		}
 
 		void cursorInterface::SetCursorPosition(const cVector3d& position)
 		{
-			cursor->SetCenter(position.x, position.y, position.z); // Bad implementation
+			boost::mutex::scoped_lock lck(cursorMutex);
+			cursorCenter[0] = position.x;
+			cursorCenter[1] = position.y;
+			cursorCenter[2] = position.z;
 		}
 
-		vtkCubeSource* cursorInterface::GetRadiusCube()
+		void cursorInterface::GetRadiusCubeCenter(double center[3])
 		{
-			return cursorRadiusCube;
+			boost::mutex::scoped_lock lck(cursorMutex);
+			center[0] = cursorRadiusCubeCenter[0];
+			center[1] = cursorRadiusCubeCenter[1];
+			center[2] = cursorRadiusCubeCenter[2];
 		}
 
-		vtkSphereSource* cursorInterface::GetCursor()
+		void cursorInterface::GetCursorCenter( double center[3] )
 		{
-			return cursor;
+			boost::mutex::scoped_lock lck(cursorMutex);
+			center[0] = cursorCenter[0];
+			center[1] = cursorCenter[1];
+			center[2] = cursorCenter[2];
 		}
 
-		float cursorInterface::GetX()
+		double cursorInterface::GetX()
 		{
-			double center[3];
-			cursor->GetCenter(center);
-			return center[0];
+			boost::mutex::scoped_lock lck(cursorMutex);
+			return cursorCenter[0];
 		}
 
-		float cursorInterface::GetY()
+		double cursorInterface::GetY()
 		{
-			double center[3];
-			cursor->GetCenter(center);
-			return center[1];
+			boost::mutex::scoped_lock lck(cursorMutex);
+			return cursorCenter[1];
 		}
 
-		float cursorInterface::GetZ()
+		double cursorInterface::GetZ()
 		{
-			double center[3];
-			cursor->GetCenter(center);
-			return center[2];
+			boost::mutex::scoped_lock lck(cursorMutex);
+			return cursorCenter[2];
+		}
+
+		int cursorInterface::GetZSlice()
+		{
+			return (int)(cursorCenter[2] / imageSpacingDepth);
 		}
 	}
 }

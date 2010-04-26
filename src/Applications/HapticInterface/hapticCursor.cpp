@@ -73,14 +73,10 @@ namespace M4D
 		}
 		void hapticCursor::SetCursorPosition(const cVector3d& cursorPosition)
 		{
-			cSleepMs(50);
-			double center[3];
-			cursor->GetCenter(center);
-			cVector3d lastRealPosition(center[0], center[1], center[2]);
+			boost::mutex::scoped_lock lck(cursorMutex);
+			cVector3d lastRealPosition(cursorCenter[0], cursorCenter[1], cursorCenter[2]);
 
-			double radiusCubeCenter[3];
-			cursorRadiusCube->GetCenter(radiusCubeCenter);
-			cVector3d radiusCubeCenterChai(radiusCubeCenter[0], radiusCubeCenter[1], radiusCubeCenter[2]);
+			cVector3d radiusCubeCenterChai(cursorRadiusCubeCenter[0], cursorRadiusCubeCenter[1], cursorRadiusCubeCenter[2]);
 			cVector3d realCursorPosition(cursorPosition);
 
 			if (realCursorPosition.x > info.m_workspaceRadius)
@@ -113,10 +109,11 @@ namespace M4D
 			newRealPositionVTK[0] = newRealPosition.x;
 			newRealPositionVTK[1] = newRealPosition.y;
 			newRealPositionVTK[2] = newRealPosition.z;
-			cursor->SetCenter(newRealPositionVTK);
+			cursorCenter[0] = newRealPositionVTK[0];
+			cursorCenter[1] = newRealPositionVTK[1];
+			cursorCenter[2] = newRealPositionVTK[2];
 
 			cVector3d newForce = newRealPosition - lastRealPosition;
-			//std::cout << (newForce) << std::endl;
 			if ((newForce.x != 0) || (newForce.y != 0) || (newForce.z != 0))
 			{
 				newForce.normalize();
@@ -132,7 +129,6 @@ namespace M4D
 				(coords[2] >= imageOffsetDepth) && (coords[2] < (imageOffsetDepth + imageDataDepth)))
 			{
 				unsigned short cursorVolumeValue = (unsigned short)input->GetScalarComponentAsDouble(coords[0], coords[1], coords[2], 0);
-				std::cout << hapticForceTransitionFunction->GetValueOnPoint(cursorVolumeValue) << std::endl;
 				newForce *= hapticForceTransitionFunction->GetValueOnPoint(cursorVolumeValue);
 				force = newForce;
 			}
@@ -143,6 +139,7 @@ namespace M4D
 		}
 		cVector3d& hapticCursor::GetForce()
 		{
+			boost::mutex::scoped_lock lck(cursorMutex);
 			return force;
 		}
 		void hapticCursor::stop()

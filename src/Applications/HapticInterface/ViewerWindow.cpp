@@ -13,7 +13,7 @@ ViewerWindow::ViewerWindow( M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging
 	QHBoxLayout *mainLayout = new QHBoxLayout;
 	mainLayout->addWidget((*viewerWidget)());
 	setLayout(mainLayout);
-	setFixedSize(1024,800);
+	setFixedSize(1300,800);
 	build();
 }
 
