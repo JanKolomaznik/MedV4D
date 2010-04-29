@@ -30,18 +30,20 @@ public:
 	TFSimpleHolder();
 	~TFSimpleHolder();
 
-	void setup(QWidget *parent, const QRect rect);
+	void setUp(QWidget *parent, const QRect rect);
 
 protected slots:
     void on_use_clicked();
 	void size_changed(const QRect rect);
+	void on_autoUpdate_stateChanged(int state);
 
 protected:
-	void _save(QFile &file);
-	bool _load(QFile &file);
+	void save_(QFile &file);
+	bool load_(QFile &file);
 
 private:
-	TFSimpleFunction _function;
-	TFSimplePainter _painter;
+	TFSimpleFunction function_;
+	TFSimplePainter painter_;
+	bool autoUpdate_;
 };
 #endif //TF_SIMPLEHOLDER

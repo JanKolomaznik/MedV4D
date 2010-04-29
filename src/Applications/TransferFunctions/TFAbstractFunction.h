@@ -14,7 +14,7 @@ public:
 	TFName name;
 
 	TFType getType() const{
-		return _type;
+		return type_;
 	}
 
 	virtual ~TFAbstractFunction(){};
@@ -22,9 +22,34 @@ public:
 	virtual TFAbstractFunction* clone() = 0;
 
 protected:
-	TFType _type;
+	TFType type_;
 
-	TFAbstractFunction(): _type(TFTYPE_UNKNOWN){};
+	TFAbstractFunction(): type_(TFTYPE_UNKNOWN){};
 };
+
+
+template<typename ElementType>
+bool adjustByTransferFunction(
+	TFAbstractFunction* transferFunction,
+	std::vector<ElementType>* result,
+	ElementType min,
+	ElementType max,
+	std::size_t resultSize){
+
+	switch(transferFunction->getType()){
+		case TFTYPE_SIMPLE:
+		{
+			return adjustBySimpleFunction<ElementType>(transferFunction, result, min, max, resultSize);
+			break;
+		}
+		case TFTYPE_UNKNOWN:
+		default:
+		{
+			assert("Unknown Transfer Function");
+			break;
+		}
+	}
+	return false;
+}
 
 #endif //TF_ABSTRACTFUNCTION

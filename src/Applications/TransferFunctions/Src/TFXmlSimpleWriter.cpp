@@ -21,6 +21,8 @@ void TFXmlSimpleWriter::writeFunction(TFSimpleFunction &function){
 	writeStartElement("TransferFunction");
 	writeAttribute("type", QString::fromStdString(convert<TFType, std::string>(function.getType())));
 	writeAttribute("name", QString::fromStdString(function.name));
+	writeAttribute("functionRange", QString::fromStdString( convert<int, std::string>(function.getFunctionRange()) ));
+	writeAttribute("colorRange", QString::fromStdString( convert<int, std::string>(function.getColorRange()) ));
 
 	TFPoints points = function.getAllPoints();
 	TFPointsIterator first = points.begin();

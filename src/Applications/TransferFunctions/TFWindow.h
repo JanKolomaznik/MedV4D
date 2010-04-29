@@ -7,7 +7,7 @@
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
 
-#include <TFAlgorithms.h>
+#include <TFHolderFactory.h>
 
 #define MENU_SPACE 30
 
@@ -26,37 +26,27 @@ public:
 
 	virtual void build();
 
-//protected:
-/*
-	TFAFunction* tf;
-	virtual TFAFunction* createDefaultTransferFunction();
-	virtual void setupToolsAndPainter();
-
-	QWidget* toolsWidget;
-	QWidget* painterWidget;
-*/
 signals:
 	void AdjustByTransferFunction(TFAbstractFunction &transferFunction);
 	void ResizeHolder(const QRect rect);
 
 protected slots:
-    //void on_schemeUse_clicked();
-
     void on_exit_triggered();
     void on_save_triggered();
     void on_load_triggered();
 
-	void on_newTF_triggered(TFType &tfType);
+	void newTF_triggered(TFType &tfType);
 
 	void modify_data(TFAbstractFunction &transferFunction);
 
-	void resizeEvent(QResizeEvent *event);
+protected:
+	void resizeEvent(QResizeEvent* e);
 
 private:	
-    Ui::TFWindow* ui;
+    Ui::TFWindow* ui_;
 
-	TFAbstractHolder* _holder;
-	TFActions tfActions;
+	TFAbstractHolder* holder_;
+	TFActions tfActions_;
 
 	void setupHolder();
 };

@@ -7,7 +7,7 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <TFAlgorithms.h>
+#include <TFSimpleFunction.h>
 
 namespace M4D
 {
@@ -23,10 +23,13 @@ class TFSimpleSliceViewerTexturePreparer : public SimpleSliceViewerTexturePrepar
 
 public:
 
-    /**
-     * Constructor
-     */
-	TFSimpleSliceViewerTexturePreparer(): SimpleSliceViewerTexturePreparer< ElementType >(), _histSlice(-1){}
+	TFSimpleSliceViewerTexturePreparer():
+		SimpleSliceViewerTexturePreparer< ElementType >(),
+		tfUsed_(false),
+		histSlice_(-1){
+
+		currentTransferFunction_ = std::vector<ElementType>(TypeTraits<ElementType>::Max);
+	}
 
     /**
      * Prepares the texture of the image to be mapped to the following OpenGL surface.
@@ -55,9 +58,10 @@ public:
 	std::vector<int> getHistogram();
 
 private:
-	std::vector<typename std::iterator_traits<ElementType>::value_type> _currentTransferFunction;
-	std::vector<int> _histogram;
-	uint32 _histSlice;
+	std::vector<ElementType> currentTransferFunction_;
+	bool tfUsed_;
+	std::vector<unsigned> histogram_;
+	uint32 histSlice_;
 };
 
 class TFSliceViewerWidget: public m4dGUISliceViewerWidget, public QObject{
@@ -74,7 +78,7 @@ public:
      *  @param parent the parent widget of the viewer
      */
     TFSliceViewerWidget( unsigned index, QWidget *parent = 0 ):
-		PredecessorType( index, parent ), currentImageID(-1), texturePreparer(NULL){}
+		PredecessorType( index, parent ), currentImageID_(-1), texturePreparer_(NULL){}
 
     /**
      * Construtor.
@@ -83,10 +87,10 @@ public:
      *  @param parent the parent widget of the viewer
      */
     TFSliceViewerWidget( Imaging::ConnectionInterface* conn, unsigned index, QWidget *parent = 0 ):
-		PredecessorType( conn, index, parent ), currentImageID(-1), texturePreparer(NULL){}
+		PredecessorType( conn, index, parent ), currentImageID_(-1), texturePreparer_(NULL){}
 
 	~TFSliceViewerWidget(){
-		delete texturePreparer;
+		delete texturePreparer_;
 	}
 /*
 signals:
@@ -97,8 +101,8 @@ public slots:
 	//void send_histogram();
 	
 protected:   
-	int currentImageID;
-	AbstractSliceViewerTexturePreparer* texturePreparer;
+	int currentImageID_;
+	AbstractSliceViewerTexturePreparer* texturePreparer_;
 
     /**
      * Draws a slice.

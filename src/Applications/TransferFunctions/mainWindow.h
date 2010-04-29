@@ -24,27 +24,7 @@ typedef M4D::Imaging::MaskMedianFilter2D< Dim > Median2D;
 typedef M4D::Imaging::MaskSelection< ImageType > MaskSelectionFilter;
 typedef M4D::Imaging::ConnectionTyped< ImageType > InConnection;
 typedef M4D::Imaging::ImageConvertor< ImageType > InImageConvertor;
-/*
-class Notifier : public QObject, public M4D::Imaging::MessageReceiverInterface
-{
-	Q_OBJECT
-public:
-	Notifier( QWidget *owner ): _owner( owner ) {}
-	void ReceiveMessage(M4D::Imaging::PipelineMessage::Ptr 			        msg, 
-		                  M4D::Imaging::PipelineMessage::MessageSendStyle , //sendStyle
-		                  M4D::Imaging::FlowDirection				        //direction
-		)
-	{
-		if( msg->msgID == M4D::Imaging::PMI_FILTER_UPDATED ) {
-			emit Notification();
-		}
-	}
-signals:
-	void Notification();
-protected:
-	QWidget	*_owner;
-};
-*/
+
 class mainWindow: public M4D::GUI::m4dGUIMainWindow
 {
 	Q_OBJECT
@@ -61,7 +41,7 @@ protected:
 
 	void CreatePipeline();
 
-	TFWindow	*_settings;
+	TFWindow	*settings_;
 
 	M4D::Imaging::PipelineContainer			_pipeline;
 	M4D::Imaging::APipeFilter		*_filter;

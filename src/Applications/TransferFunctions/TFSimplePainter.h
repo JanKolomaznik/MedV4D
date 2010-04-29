@@ -26,35 +26,35 @@ public:
 
 	~TFSimplePainter();
 
-	void setup(QWidget *parent);
+	void setUp(QWidget *parent);
 
-	void setup(QWidget *parent, int marginH, int marginV);
+	void setUp(QWidget *parent, int marginH, int marginV);
 
 	void resize(const QRect rect);
 
 	void setView(TFPointMap view);
 
+	void setAutoUpdate(bool state);
+
 	TFPointMap getView();
 
 	TFPoints getPoints();
+
+signals:
+	void FunctionChanged();
 
 protected:
 	void paintEvent(QPaintEvent *e);
 	void mousePressEvent(QMouseEvent *e);
 	void mouseReleaseEvent(QMouseEvent *e);
 	void mouseMoveEvent(QMouseEvent *e);
-/*
-private slots:
-	void Repaint();
-*/
+
 private:
-	Ui::TFSimplePainter* _painter;
-
-	int _marginV, _marginH;
-
-	TFPointMap _view;	
-
-	TFPoint* _drawHelper;
+	Ui::TFSimplePainter* painter_;
+	int marginV_, marginH_;
+	TFPointMap view_;	
+	TFPoint* drawHelper_;
+	bool autoUpdate_;
 
 	TFPoint painterCoords(const TFPoint &point);
 

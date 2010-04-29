@@ -1,37 +1,39 @@
 
 #include "TFSimpleHolder.h"
 
-TFSimpleHolder::TFSimpleHolder(){
+TFSimpleHolder::TFSimpleHolder(): autoUpdate_(false){
 
-	_type = TFTYPE_SIMPLE;
+	type_ = TFTYPE_SIMPLE;
 
-	_basicTools->name->setText(QString::fromStdString(_function.name));
+	basicTools_->name->setText(QString::fromStdString(function_.name));
 }
 
 TFSimpleHolder::~TFSimpleHolder(){
 
-	if(_basicTools) delete _basicTools;
+	if(basicTools_) delete basicTools_;
 }
 
-void TFSimpleHolder::setup(QWidget *parent, const QRect rect){
+void TFSimpleHolder::setUp(QWidget *parent, const QRect rect){
 
-	_painter.setup(this);
+	painter_.setUp(this);
 	size_changed(rect);
 	setParent(parent);
 	show();
+
+	QObject::connect( &painter_, SIGNAL(FunctionChanged()), this, SLOT(on_use_clicked()));
 }
 
-void TFSimpleHolder::_save(QFile &file){
+void TFSimpleHolder::save_(QFile &file){
 
-	_function.setPoints(_painter.getView());
+	function_.setPoints(painter_.getView());
 
-	_function.name = _basicTools->name->text().toStdString();
+	function_.name = basicTools_->name->text().toStdString();
 
 	 TFXmlSimpleWriter writer;
-     writer.write(&file, _function);
+     writer.write(&file, function_);
 }
 
-bool TFSimpleHolder::_load(QFile &file){
+bool TFSimpleHolder::load_(QFile &file){
 
 	TFXmlSimpleReader reader;
 
@@ -44,20 +46,30 @@ bool TFSimpleHolder::_load(QFile &file){
 		return false;
 	}
 
-	_function = loaded;
+	function_ = loaded;
 
-	_painter.setView(_function.getPointMap());
+	painter_.setView(function_.getPointMap());
 
-	_basicTools->name->setText(QString::fromStdString(_function.name));
+	basicTools_->name->setText(QString::fromStdString(function_.name));
 
 	return true;
 }
 
 void TFSimpleHolder::on_use_clicked(){
 
-	_function.setPoints(_painter.getView());
+	function_.setPoints(painter_.getView());
 
-	emit UseTransferFunction(_function);
+	emit UseTransferFunction(function_);
+}
+
+void TFSimpleHolder::on_autoUpdate_stateChanged(int state){
+
+	autoUpdate_ = (state == Qt::Checked);
+
+	basicTools_->use->setEnabled(!autoUpdate_);
+	painter_.setAutoUpdate(autoUpdate_);
+
+	if(autoUpdate_) on_use_clicked();
 }
 
 void TFSimpleHolder::size_changed(const QRect rect){
@@ -67,9 +79,16 @@ void TFSimpleHolder::size_changed(const QRect rect){
 	int newWidth = rect.width() - 2*PAINTER_X;
 	int newHeight = rect.height() - 2*PAINTER_Y;
 
-	_function.setPoints(_painter.getView());
-	_function.recalculate(newWidth - 2*PAINTER_MARGIN_H, newHeight - 2*PAINTER_MARGIN_V);
+	TFPointMap painterFunction = painter_.getView();
 
-	_painter.resize(QRect(PAINTER_X, PAINTER_Y, newWidth, newHeight));
-	_painter.setView(_function.getPointMap());
+	if(!painterFunction.empty())
+	{
+		function_.setPoints(painterFunction);
+	}
+	function_.recalculate(newWidth - 2*PAINTER_MARGIN_H, newHeight - 2*PAINTER_MARGIN_V);
+
+	painter_.resize(QRect(PAINTER_X, PAINTER_Y, newWidth, newHeight));
+	painter_.setView(function_.getPointMap());
+
+	if(autoUpdate_) on_use_clicked();
 }

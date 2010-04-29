@@ -36,7 +36,9 @@ TFSimpleFunction TFXmlSimpleReader::readFunction(bool &error){
 		return TFSimpleFunction();
 	}
 
-	TFSimpleFunction loaded( attributes().value("name").toString().toStdString() );
+	TFSimpleFunction loaded( attributes().value("name").toString().toStdString(),
+		convert<std::string, int>(attributes().value("functionRange").toString().toStdString()),
+		convert<std::string, int>(attributes().value("colorRange").toString().toStdString()) );
 
 	while (!atEnd())
 	{

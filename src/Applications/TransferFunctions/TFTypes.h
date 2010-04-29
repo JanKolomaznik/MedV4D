@@ -17,13 +17,15 @@ struct TFPoint{
 	TFPoint(): x(0), y(0){}
 	TFPoint(const TFPoint &point): x(point.x), y(point.y){}
 	TFPoint(int x, int y): x(x), y(y){}
+
+	bool operator==(const TFPoint& point){
+		return (x == point.x) && (y == point.y);
+	}
 };
 
 typedef std::vector<TFPoint> TFPoints;
 typedef TFPoints::iterator TFPointsIterator;
 
-//typedef std::map <int, TFPoint> TFPointMap;
-//typedef TFPointMap::iterator TFPointMapIterator;
 typedef std::vector<int> TFPointMap;
 typedef TFPointMap::iterator TFPointMapIterator;
 
@@ -73,20 +75,20 @@ class TFAction: public QObject{
 
 public:
 	TFAction(QWidget* parent, QMenu* menu, TFType tfType){
-		_type = tfType;
+		type_ = tfType;
 
-		QString name = QString::fromStdString(convert<TFType, std::string>(_type));
+		QString name = QString::fromStdString(convert<TFType, std::string>(type_));
 
-		action = new QAction(parent);
-		action->setObjectName(name);
-		action->setText(name);
-		menu->addAction(action);
+		action_ = new QAction(parent);
+		action_->setObjectName(name);
+		action_->setText(name);
+		menu->addAction(action_);
 
-		QObject::connect( action, SIGNAL(triggered()), this, SLOT(triggered()));
+		QObject::connect( action_, SIGNAL(triggered()), this, SLOT(triggered()));
 	}
 
 	~TFAction(){
-		delete action;
+		delete action_;
 	}
 
 signals:
@@ -94,12 +96,12 @@ signals:
 
 public slots:
 	void triggered(){
-		emit TFActionClicked(_type);
+		emit TFActionClicked(type_);
 	}
 
 private:	
-	QAction* action;
-	TFType _type;
+	QAction* action_;
+	TFType type_;
 };
 
 typedef std::vector<TFAction*> TFActions;

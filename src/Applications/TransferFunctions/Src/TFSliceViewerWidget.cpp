@@ -34,23 +34,23 @@ bool TFSimpleSliceViewerTexturePreparer< ElementType >::prepare(
 
 	ElementType* pixelValue = *pixel;
 	/*
-	if(_histSlice != slice)
+	if(histSlice_ != slice)
 	{
 		double range = TypeTraits<ElementType>::Max - TypeTraits<ElementType>::Min;
-		_histogram = std::vector<int>(range, 0);
+		histogram_ = std::vector<int>(range, 0);
 		for(unsigned i = 0; i < width*height; ++i)
 		{
-			++_histogram[*pixelValue];
+			++histogram_[*pixelValue];
 			++pixelValue;
 		}
 	}
 	pixelValue = *pixel;
 	*/
-	if(_currentTransferFunction.size() > 0)
+	if(tfUsed_)
 	{
 		for(unsigned i = 0; i < width*height; ++i)
 		{
-			*pixelValue = _currentTransferFunction[*pixelValue];
+			*pixelValue = currentTransferFunction_[*pixelValue];
 			++pixelValue;
 		}
 	}
@@ -76,15 +76,17 @@ bool TFSimpleSliceViewerTexturePreparer< ElementType >::prepare(
 template< typename ElementType >
 void TFSimpleSliceViewerTexturePreparer< ElementType >::setTransferFunction(TFAbstractFunction &transferFunction){
 
-	_currentTransferFunction = adjustByTransferFunction<ElementType>(
-		TypeTraits<ElementType>::Min,
+	tfUsed_ = adjustByTransferFunction<ElementType>(
+		&transferFunction,
+		&currentTransferFunction_,
+		0,
 		TypeTraits<ElementType>::Max,
-		transferFunction);
+		TypeTraits<ElementType>::Max);
 }
 
 template< typename ElementType >
 std::vector<int> TFSimpleSliceViewerTexturePreparer< ElementType >::getHistogram(){
-	return _histogram;
+	return histogram_;
 }
 
 
@@ -93,20 +95,20 @@ void TFSliceViewerWidget::adjust_by_transfer_function(TFAbstractFunction &transf
 	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
 				_imageID, 
 				{									
-					if(!texturePreparer)
+					if(!texturePreparer_)
 					{
-						texturePreparer = new TFSimpleSliceViewerTexturePreparer<TTYPE>();
-						currentImageID = _imageID;
+						texturePreparer_ = new TFSimpleSliceViewerTexturePreparer<TTYPE>();
+						currentImageID_ = _imageID;
 					}
-					else if(currentImageID != _imageID)
+					else if(currentImageID_ != _imageID)
 					{
-						delete texturePreparer;
-						texturePreparer = new TFSimpleSliceViewerTexturePreparer<TTYPE>();
-						currentImageID = _imageID;
+						delete texturePreparer_;
+						texturePreparer_ = new TFSimpleSliceViewerTexturePreparer<TTYPE>();
+						currentImageID_ = _imageID;
 					}
-					(dynamic_cast<TFSimpleSliceViewerTexturePreparer<TTYPE>*>(texturePreparer))->setTransferFunction(transferFunction);
+					(dynamic_cast<TFSimpleSliceViewerTexturePreparer<TTYPE>*>(texturePreparer_))->setTransferFunction(transferFunction);
 					
-					setTexturePreparerToCustom(texturePreparer);
+					setTexturePreparerToCustom(texturePreparer_);
 
 					updateGL();
 				} 

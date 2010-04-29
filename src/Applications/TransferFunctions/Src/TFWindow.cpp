@@ -5,46 +5,43 @@
 
 #include <TFSimpleHolder.h>
 
-/*
- * constructor, destructor
- */
 
-TFWindow::TFWindow(): ui(new Ui::TFWindow), _holder(NULL){
+TFWindow::TFWindow(): ui_(new Ui::TFWindow), holder_(NULL){
 
-    ui->setupUi(this);
+    ui_->setupUi(this);
 }
 
 TFWindow::~TFWindow(){
 
-	for(unsigned i = 0; i < tfActions.size(); ++i)
+	for(unsigned i = 0; i < tfActions_.size(); ++i)
 	{
-		delete tfActions[i];
+		delete tfActions_[i];
 	}
 
-	if(_holder) delete _holder;
-    if(ui) delete ui;
+	if(holder_) delete holder_;
+    if(ui_) delete ui_;
 }
 
 void TFWindow::build(){
 
-	tfActions = TFHolderFactory::createMenuTFActions(this, ui->menuNew);
+	tfActions_ = TFHolderFactory::createMenuTFActions(this, ui_->menuNew);
 
-	for(int i = 0; i < tfActions.size(); ++i)
+	for(unsigned i = 0; i < tfActions_.size(); ++i)
 	{
-		 bool ok = QObject::connect( tfActions[i], SIGNAL(TFActionClicked(TFType&)), this, SLOT(on_newTF_triggered(TFType&)));
+		 bool ok = QObject::connect( tfActions_[i], SIGNAL(TFActionClicked(TFType&)), this, SLOT(newTF_triggered(TFType&)));
 	}
 }
 
 void TFWindow::setupHolder(){
 
-	_holder->setup(this, QRect(0, MENU_SPACE, width(), height() - MENU_SPACE));
-	QObject::connect( _holder, SIGNAL(UseTransferFunction(TFAbstractFunction&)), this, SLOT(modify_data(TFAbstractFunction&)));
-	QObject::connect( this, SIGNAL(ResizeHolder(const QRect)), _holder, SLOT(size_changed(const QRect)));
+	holder_->setUp(this, QRect(0, MENU_SPACE, width(), height() - MENU_SPACE));
+	QObject::connect( holder_, SIGNAL(UseTransferFunction(TFAbstractFunction&)), this, SLOT(modify_data(TFAbstractFunction&)));
+	QObject::connect( this, SIGNAL(ResizeHolder(const QRect)), holder_, SLOT(size_changed(const QRect)));
 }
 
-void TFWindow::resizeEvent(QResizeEvent *event){
+void TFWindow::resizeEvent(QResizeEvent* e){
 
-	ui->menuBar->setGeometry(QRect(0, 0, width(), ui->menuBar->height()));
+	ui_->menuBar->setGeometry(QRect(0, 0, width(), ui_->menuBar->height()));
 	emit ResizeHolder(QRect(0, MENU_SPACE, width(), height() - MENU_SPACE));
 }
 
@@ -55,26 +52,37 @@ void TFWindow::on_exit_triggered(){
 
 void TFWindow::on_save_triggered(){
 
-	_holder->save();
+	holder_->save();
 }
 
 void TFWindow::on_load_triggered(){
 
-	_holder = TFHolderFactory::load(this);
-	if(_holder) setupHolder();
-	//TODO else error messagebox
+	holder_ = TFHolderFactory::load(this);
+
+	if(!holder_){
+		QMessageBox::warning(this, QObject::tr("Transfer Functions"), QObject::tr("Loading error."));
+		return;
+	}
+
+	setupHolder();
 }
 
-void TFWindow::on_newTF_triggered(TFType &tfType){
+void TFWindow::newTF_triggered(TFType &tfType){
 
-	if(_holder)
+	if(holder_)
 	{
-		delete _holder;
-		_holder = NULL;
+		delete holder_;
+		holder_ = NULL;
 	}
-	_holder = TFHolderFactory::create(tfType);
-	if(_holder) setupHolder();
-	//TODO else error messagebox
+
+	holder_ = TFHolderFactory::create(tfType);
+
+	if(!holder_){
+		QMessageBox::warning(this, QObject::tr("Transfer Functions"), QObject::tr("Creating error."));
+		return;
+	}
+
+	setupHolder();
 }
 
 void TFWindow::modify_data(TFAbstractFunction &transferFunction){

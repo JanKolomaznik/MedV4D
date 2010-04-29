@@ -46,36 +46,36 @@ public:
 			return;
 		}
 
-		_save(file);
+		save_(file);
 
 		file.close();
 	}
 
-	virtual void setup(QWidget *parent, const QRect rect) = 0;
+	virtual void setUp(QWidget *parent, const QRect rect) = 0;
 
 	TFType getType() const{
-		return _type;
+		return type_;
 	}
 
 protected slots:
     virtual void on_use_clicked() = 0;
 	virtual void size_changed(const QRect rect) = 0;
+	virtual void on_autoUpdate_stateChanged(int state) = 0;
 
 signals:
 	void UseTransferFunction(TFAbstractFunction &transferFunction);
 
 protected:
-	TFType _type;
+	TFType type_;
+	Ui::TFAbstractHolder* basicTools_;
+	bool setup_;
 
-	Ui::TFAbstractHolder* _basicTools;
+	virtual bool load_(QFile &file) = 0;
+	virtual void save_(QFile &file) = 0;
 
-	virtual bool _load(QFile &file) = 0;
+	TFAbstractHolder(): basicTools_(new Ui::TFAbstractHolder), type_(TFTYPE_UNKNOWN), setup_(false){
 
-	virtual void _save(QFile &file) = 0;
-
-	TFAbstractHolder(): _basicTools(new Ui::TFAbstractHolder), _type(TFTYPE_UNKNOWN){
-
-		_basicTools->setupUi(this);
+		basicTools_->setupUi(this);
 	}
 };
 #endif //TF_ABSTRACTHOLDER

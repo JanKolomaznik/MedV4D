@@ -2,30 +2,35 @@
 
 TFSimpleFunction::TFSimpleFunction(int functionRange, int colorRange){
 
-	_functionRange = functionRange;
-	_colorRange = colorRange;
-	_type = TFTYPE_SIMPLE;
+	functionRange_ = functionRange;
+	colorRange_ = colorRange;
+	type_ = TFTYPE_SIMPLE;
 	name = "default_function";
 	clear();
 }
 
 TFSimpleFunction::TFSimpleFunction(TFName functionName, int functionRange, int colorRange){
 
-	_functionRange = functionRange;
-	_colorRange = colorRange;
-	_type = TFTYPE_SIMPLE;
+	functionRange_ = functionRange;
+	colorRange_ = colorRange;
+	type_ = TFTYPE_SIMPLE;
 	name = functionName;
 	clear();
 }
 
 TFSimpleFunction::TFSimpleFunction(TFSimpleFunction &function){
 
-	_type = function.getType();
-	name = function.name;
-	_points = function.getPointMap();
+	operator=(function);
 }
 
 TFSimpleFunction::~TFSimpleFunction(){}
+
+void TFSimpleFunction::operator=(TFSimpleFunction &function){
+
+	type_ = function.getType();
+	name = function.name;
+	points_ = function.getPointMap();
+}
 
 TFAbstractFunction* TFSimpleFunction::clone(){
 
@@ -34,21 +39,21 @@ TFAbstractFunction* TFSimpleFunction::clone(){
 
 void TFSimpleFunction::clear(){
 
-	_points.clear();
-	for(int i = 0; i < _functionRange + 1; ++i)
+	points_.clear();
+	for(int i = 0; i < functionRange_; ++i)
 	{
-		_points.push_back(0);
+		points_.push_back(0);
 	}
 }
 
 void TFSimpleFunction::addPoint(int x, int y){
 
-	_points[x] = y;
+	points_[x] = y;
 }
 
 void TFSimpleFunction::addPoint(TFPoint point){
 
-	_points[point.x] = point.y;
+	points_[point.x] = point.y;
 }
 
 void TFSimpleFunction::addPoints(TFPoints points){
@@ -64,44 +69,20 @@ void TFSimpleFunction::addPoints(TFPoints points){
 
 void TFSimpleFunction::setPoints(TFPointMap points){
 
-	_points = points;
-}
-/*
-bool TFSimpleFunction::containsPoint(int coordX){
-
-	return _points.find(coordX) != _points.end();
+	points_ = points;
 }
 
-bool TFSimpleFunction::removePoint(int coordX){
-
-	if(containsPoint(coordX))
-	{
-		TFPointMapIterator toRemove = _points.find(coordX);
-		_points.erase(toRemove);
-		return true;
-	}
-	return false;
-}
-*/
 TFPoint TFSimpleFunction::getPoint(int coordX){
 
-	return TFPoint(coordX, _points[coordX]);
-}
-/*
-TFPointMapIterator TFSimpleFunction::begin(){
-	return _points->begin();
+	return TFPoint(coordX, points_[coordX]);
 }
 
-TFPointMapIterator TFSimpleFunction::end(){
-	return _points->end();
-}
-*/
 TFPoints TFSimpleFunction::getAllPoints(){
 
 	TFPoints points;
-	for(int i = 0; i < _functionRange; ++i)
+	for(int i = 0; i < functionRange_; ++i)
 	{
-		points.push_back(TFPoint(i, _points[i]));
+		points.push_back(TFPoint(i, points_[i]));
 	}
 
 	return points;
@@ -109,34 +90,40 @@ TFPoints TFSimpleFunction::getAllPoints(){
 
 TFPointMap TFSimpleFunction::getPointMap(){
 
-	return _points;
+	return points_;
 }
 
-int TFSimpleFunction::getFunctionRange(){
+unsigned TFSimpleFunction::getFunctionRange(){
 
-	return _functionRange;
+	return functionRange_;
 }
 
-int TFSimpleFunction::getColorRange(){
+unsigned TFSimpleFunction::getColorRange(){
 
-	return _colorRange;
+	return colorRange_;
 }
 
-void TFSimpleFunction::recalculate(int functionRange, int colorRange){	
+void TFSimpleFunction::recalculate(int functionRange, int colorRange){
 
-	_functionRange = functionRange;
-	_colorRange = colorRange;
+	TFPointMap newPoints(functionRange);
+	adjustBySimpleFunction(this, &newPoints, 0, colorRange, functionRange);
 
-	while(_points.size() >= _functionRange)
+	functionRange_ = functionRange;
+	colorRange_ = colorRange;
+	points_ = newPoints;
+
+	/*
+	while(points_.size() >= functionRange_)
 	{
-		_points.pop_back();
+		points_.pop_back();
 	}
-	while(_points.size() <= _functionRange)
+	while(points_.size() <= functionRange_)
 	{
-		_points.push_back(0);
+		points_.push_back(0);
 	}
-	for(int i = 0; i <= _functionRange; ++i)
+	for(int i = 0; i <= functionRange_; ++i)
 	{
-		if(_points[i] > _colorRange) _points[i] = _colorRange;
+		if(points_[i] > colorRange_) points_[i] = colorRange_;
 	}
+	*/
 }

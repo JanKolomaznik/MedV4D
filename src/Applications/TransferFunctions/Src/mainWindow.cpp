@@ -73,12 +73,12 @@ void mainWindow::build(){
 
 	CreatePipeline();
 
-	_settings = new TFWindow();
-	_settings->build();
-	addDockWindow( "Transfer Functions", _settings );
+	settings_ = new TFWindow();
+	settings_->build();
+	addDockWindow( "Transfer Functions", settings_ );
 
 	M4D::Viewer::TFSliceViewerWidget* currentViewer = dynamic_cast<M4D::Viewer::TFSliceViewerWidget*>(currentViewerDesktop->getSelectedViewerWidget());	
-	QObject::connect( _settings, SIGNAL(AdjustByTransferFunction(TFAbstractFunction&)), currentViewer, SLOT(adjust_by_transfer_function(TFAbstractFunction&)));
+	QObject::connect( settings_, SIGNAL(AdjustByTransferFunction(TFAbstractFunction&)), currentViewer, SLOT(adjust_by_transfer_function(TFAbstractFunction&)));
 }
 
 void mainWindow::createDefaultViewerDesktop (){

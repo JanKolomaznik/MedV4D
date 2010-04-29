@@ -5,32 +5,40 @@
 #include <cassert>
 
 
-TFSimplePainter::TFSimplePainter(): _marginH(10), _marginV(10), _drawHelper(NULL), _painter(new Ui::TFSimplePainter){
+TFSimplePainter::TFSimplePainter():
+	marginH_(10), marginV_(10),
+	drawHelper_(NULL),
+	painter_(new Ui::TFSimplePainter),
+	autoUpdate_(false){
 
-	_painter->setupUi(this);
+	painter_->setupUi(this);
 }
 
-TFSimplePainter::TFSimplePainter(int marginH, int marginV): _marginH(marginH), _marginV(marginV), _drawHelper(NULL), _painter(new Ui::TFSimplePainter){
+TFSimplePainter::TFSimplePainter(int marginH, int marginV):
+	marginH_(marginH), marginV_(marginV),
+	drawHelper_(NULL),
+	painter_(new Ui::TFSimplePainter),
+	autoUpdate_(false){
 
-	_painter->setupUi(this);
+	painter_->setupUi(this);
 }
 
 TFSimplePainter::~TFSimplePainter(){
 
-	delete _painter;
-	if(_drawHelper) delete _drawHelper;
+	delete painter_;
+	if(drawHelper_) delete drawHelper_;
 }
 
-void TFSimplePainter::setup(QWidget *parent){
+void TFSimplePainter::setUp(QWidget *parent){
 
 	setParent(parent);
 	show();
 }
 
-void TFSimplePainter::setup(QWidget *parent, int marginH, int marginV){
+void TFSimplePainter::setUp(QWidget *parent, int marginH, int marginV){
 
-	_marginH = marginH;
-	_marginV = marginV;
+	marginH_ = marginH;
+	marginV_ = marginV;
 	setParent(parent);
 	show();
 }
@@ -42,81 +50,90 @@ void TFSimplePainter::resize(const QRect rect){
 
 void TFSimplePainter::setView(TFPointMap view){
 
-	_view = view;
+	view_ = view;
 	repaint(rect());
 }
 
 TFPointMap TFSimplePainter::getView(){
 
-	TFPointMap view = _view;
+	TFPointMap view = view_;
 	return view;
+}
+
+void TFSimplePainter::setAutoUpdate(bool state){
+
+	autoUpdate_ = state;
 }
 
 void TFSimplePainter::paintEvent(QPaintEvent *){
 
-	assert(_view.size() == (width() - 2*_marginH + 1));
+	assert(view_.size() == (width() - 2*marginH_));
 
 	QPainter painter(this);
 	painter.setPen(Qt::white);
 
 	painter.fillRect(rect(), QBrush(Qt::black));
 
-	int beginX = _marginH;
-	int beginY = height() - _marginV;
+	int beginX = marginH_;
+	int beginY = height() - marginV_;
 
 	TFPoint origin(beginX, beginY);
-	int pointCount = _view.size();
-	for(int i = 0; i < pointCount - 1; ++i)
+	int pointCount = view_.size();
+	for(int i = 0; i < pointCount - 2; ++i)
 	{
-		painter.drawLine(origin.x + i, origin.y - _view[i], origin.x + i + 1, origin.y - _view[i + 1]);
+		painter.drawLine(origin.x + i, origin.y - view_[i], origin.x + i + 1, origin.y - view_[i + 1]);
 	}
 }
 
 void TFSimplePainter::mousePressEvent(QMouseEvent *e){
-	//mouseMoveEvent(e);
-	_drawHelper = new TFPoint(e->pos().x(), e->pos().y());
+
+	drawHelper_ = new TFPoint(e->pos().x(), e->pos().y());
+	mouseMoveEvent(e);
 }
 
 void TFSimplePainter::mouseReleaseEvent(QMouseEvent *e){
 
-	if(_drawHelper) delete _drawHelper;
-	_drawHelper = NULL;
+	if(drawHelper_) delete drawHelper_;
+	drawHelper_ = NULL;
 }
 
 void TFSimplePainter::mouseMoveEvent(QMouseEvent *e){
 
-	if(!_drawHelper) return;
+	if(!drawHelper_) return;
 
 	TFPoint mousePosition(e->pos().x(), e->pos().y());
 		
-	TFPoint begin = painterCoords(*_drawHelper);
+	TFPoint begin = painterCoords(*drawHelper_);
 	TFPoint end = painterCoords(mousePosition);
 
-	addLine(begin.x, begin.y, end.x, end.y);
-	/*
-	TFPointMapIterator found = _view.find(newPoint.x);
-	if(found == _view.end())
+	if(begin == end)
 	{
-		_view.insert(std::make_pair(newPoint.x, newPoint));
+		addPoint(begin);
 	}
 	else
 	{
-		found->second.y = newPoint.y;
-	}*/
-	*_drawHelper = mousePosition;
+		addLine(begin.x, begin.y, end.x, end.y);
+	}
+
+	*drawHelper_ = mousePosition;
 	
 	repaint(rect());
+
+	if(autoUpdate_) emit FunctionChanged();
 }
 
 TFPoint TFSimplePainter::painterCoords(int x, int y){
+
 	return painterCoords(TFPoint(x,y));
 }
 
 TFPoint TFSimplePainter::painterCoords(const TFPoint &point){
 
-	int xMax = width() - 2*_marginH;
-	int yMax = height() - 2*_marginV;
-	TFPoint corrected = TFPoint(point.x - _marginH, _marginV + yMax - point.y);
+	int xMax = width() - 2*marginH_ - 1;
+	int yMax = height() - 2*marginV_ - 1;
+	
+	TFPoint corrected = TFPoint(point.x - marginH_, marginV_ + yMax - point.y);
+
 	if( corrected.x < 0 )
 	{
 		corrected.x = 0;
@@ -197,23 +214,5 @@ void TFSimplePainter::addLine(int x1, int y1, int x2, int y2){ // assumes x1<x2,
 
 void TFSimplePainter::addPoint(TFPoint point){
 
-	_view[point.x] = point.y;
-	/*
-	TFPointMapIterator found = _view.find(point.x);
-	if(found == _view.end())
-	{
-		_view.insert(std::make_pair(point.x, point));
-	}
-	else
-	{
-		found->second.y = point.y;
-	}
-	*/
+	view_[point.x] = point.y;
 }
-
-/*
-void TFSimplePainter::Repaint(){
-
-	repaint(rect());
-}
-*/
