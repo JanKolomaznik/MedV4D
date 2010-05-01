@@ -83,6 +83,7 @@ namespace M4D
 		}
 		void hapticCursor::SetCursorPosition(const cVector3d& cursorPosition)
 		{
+			cSleepMs(18); // may be performance issue
 			boost::mutex::scoped_lock lck(cursorMutex);
 			cVector3d lastRealPosition(cursorCenter[0], cursorCenter[1], cursorCenter[2]);
 
