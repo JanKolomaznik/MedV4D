@@ -24,6 +24,14 @@ namespace M4D
 				hapticDevice->getPosition(hapticPosition);
 				supervisor->SetCursorPosition(hapticPosition);
 				hapticDevice->setForce(supervisor->GetForce());
+				bool zoomIn = false;
+				bool zoomOut = false;
+
+				hapticDevice->getUserSwitch(0, zoomIn);
+				hapticDevice->getUserSwitch(1, zoomOut);
+
+				supervisor->SetZoomInButtonPressed(zoomIn);
+				supervisor->SetZoomOutButtonPressed(zoomOut);
 
 				double clock = m_clock->getCurrentTimeSeconds();
 				double fps = 1.0 / clock;
@@ -43,6 +51,8 @@ namespace M4D
 			hapticDevice = NULL;
 			this->renderWindow = renderWindow;
 			this->hapticForceTransitionFunction = hapticForceTransitionFunction;
+			zoomInButtonPressed = false;
+			zoomOutButtonPressed = false;
 			runHpatics = false;
 		}
 
@@ -155,6 +165,22 @@ namespace M4D
 			runHpatics = true;
 			boost::thread t = boost::thread(*deviceWorker);
 			hapticsThread = &t;
+		}
+
+		void hapticCursor::SetZoomInButtonPressed( bool pressed )
+		{
+			if (!pressed && zoomInButtonPressed)
+			{
+				SetScale((scale / 3.0) * 2.0);
+			}
+		}
+
+		void hapticCursor::SetZoomOutButtonPressed( bool pressed )
+		{
+			if (!pressed && zoomOutButtonPressed)
+			{
+				SetScale((scale / 2.0) * 3.0);
+			}
 		}
 	}
 }

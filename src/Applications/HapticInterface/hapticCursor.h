@@ -35,6 +35,8 @@ namespace M4D
 			};
 			virtual void StartListen(); // method which starts new thread where haptics is running
 			virtual void SetCursorPosition(const cVector3d& cursorPosition); // Main method which sets cursor position and counts force for that position
+			virtual void SetZoomInButtonPressed(bool pressed); // set button pressed status
+			virtual void SetZoomOutButtonPressed(bool pressed); // set button pressed status
 			cVector3d& GetForce();
 			bool runHpatics; // indicates if continue to listen or not
 			cHapticDeviceHandler* handler; // a haptic device handler
@@ -46,6 +48,7 @@ namespace M4D
 			cVector3d force; // force to set to haptic
 			boost::thread* hapticsThread; // pointer to thread where haptics is running;
 			transitionFunction* hapticForceTransitionFunction; // transition function for setting force for haptic device
+			bool zoomInButtonPressed, zoomOutButtonPressed; // Indication whether buttons on haptic device are pushed or not
 		};
 	}
 }

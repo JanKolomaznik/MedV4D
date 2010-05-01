@@ -17,8 +17,11 @@ namespace M4D
 			virtual double GetY(); // returns Y part of coordinates of cursor
 			virtual double GetZ(); // returns Z part of coordinates of cursor
 			virtual void GetCursorCenter(double center[3]); // returns cursor position as vector
+			virtual void GetCursorCenterAsIndexes(int center[3]); // returns cursor position as vector of indexes in data file
 			virtual void GetRadiusCubeCenter(double center[3]); // returns cube center position as vector
+			virtual void GetRadiusCubeCenterAsIndexes(int center[3]); // returns cube center position as vector of indexes in data file
 			virtual double GetScale(); // returns size of cube where is action radius of cursor
+			virtual int GetScaleAsIndexDifference(); // returns size of cube where is action radius of cursor as difference of indexes in data file
 			virtual void reloadParameters(); // reload image parameters from inPort
 			virtual void SetScale(double scale); // Sets scale
 			virtual int GetZSlice();

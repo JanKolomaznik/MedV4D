@@ -362,6 +362,10 @@ namespace M4D
 
 					virtual void slotTransitionFunctionResetDemanded();
 
+					virtual void slotZoomInHaptic();
+
+					virtual void slotZoomOutHaptic();
+
 		protected:
 
 			/**
@@ -437,6 +441,8 @@ namespace M4D
 			void reloadCursorParameters();
 
 			void resetTransitionFunction();
+
+			void resetSliceViewPosition();
 
 			static void cursorSphereModifiedCallback(vtkObject* caller, long unsigned int eventId, void* clientData, void* callData);
 

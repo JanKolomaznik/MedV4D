@@ -100,8 +100,11 @@ namespace M4D
 			settings = new SettingsBoxWidget(hapticForceTransitionFunction);
 			QObject::connect((QVTKWidget*)this, SIGNAL(hapticForceTransitionFunctionChanged()), settings, SLOT(functionChangedSlot()));
 			QObject::connect(settings, SIGNAL(resetFunction()), (QVTKWidget*)this, SLOT(slotTransitionFunctionResetDemanded()));
+			QObject::connect(settings, SIGNAL(zoomInHaptic()), (QVTKWidget*)this, SLOT(slotZoomInHaptic()));
+			QObject::connect(settings, SIGNAL(zoomOutHaptic()), (QVTKWidget*)this, SLOT(slotZoomOutHaptic()));
 			settings->show();
 			resetTransitionFunction();
+			resetSliceViewPosition();
 		}
 
 		m4dGUIOGLHapticViewerWidget::m4dGUIOGLHapticViewerWidget( unsigned index, QWidget *parent )
@@ -124,6 +127,7 @@ namespace M4D
 			QObject::connect(settings, SIGNAL(resetFunction()), (QVTKWidget*)this, SLOT(slotTransitionFunctionResetDemanded()));
 			settings->show();
 			resetTransitionFunction();
+			resetSliceViewPosition();
 		}
 
 		m4dGUIOGLHapticViewerWidget::~m4dGUIOGLHapticViewerWidget()
@@ -342,43 +346,48 @@ namespace M4D
 			sliceMapper->SetZSlice(cursor->GetZSlice());
 
 			double point0[3], point1[3];
+			int cursorCenterInt[3];
+			cursor->GetCursorCenterAsIndexes(cursorCenterInt);
+			int scaleInt = cursor->GetScaleAsIndexDifference();
+			int cubeCenterInt[3];
+			cursor->GetRadiusCubeCenterAsIndexes(cubeCenterInt);
 
-			point0[0] = cursorCenter[0] - 5.0;
-			point0[1] = cursorCenter[1];
+			point0[0] = cursorCenterInt[0] - 6;
+			point0[1] = cursorCenterInt[1];
 			point0[2] = 0.0;
-			point1[0] = cursorCenter[0] + 5.0;
-			point1[1] = cursorCenter[1];
+			point1[0] = cursorCenterInt[0] + 5;
+			point1[1] = cursorCenterInt[1];
 			point1[2] = 0.0;
 			cursorLine1.SetPoints(point0, point1);
 			
-			point0[1] = cursorCenter[1] - 5.0;
-			point0[0] = cursorCenter[0];
-			point1[1] = cursorCenter[1] + 5.0;
-			point1[0] = cursorCenter[0];
+			point0[1] = cursorCenterInt[1] - 6;
+			point0[0] = cursorCenterInt[0];
+			point1[1] = cursorCenterInt[1] + 5;
+			point1[0] = cursorCenterInt[0];
 			cursorLine2.SetPoints(point0, point1);
 
-			point0[0] = cubeCenter[0] - (scale / 2.0);
-			point0[1] = cubeCenter[1] - (scale / 2.0);
-			point1[0] = cubeCenter[0] + (scale / 2.0);
-			point1[1] = cubeCenter[1] - (scale / 2.0);
+			point0[0] = cubeCenterInt[0] - (scaleInt / 2);
+			point0[1] = cubeCenterInt[1] - (scaleInt / 2);
+			point1[0] = cubeCenterInt[0] + (scaleInt / 2);
+			point1[1] = cubeCenterInt[1] - (scaleInt / 2);
 			rectangleLine1.SetPoints(point0, point1);
 
-			point0[0] = cubeCenter[0] + (scale / 2.0);
-			point0[1] = cubeCenter[1] - (scale / 2.0);
-			point1[0] = cubeCenter[0] + (scale / 2.0);
-			point1[1] = cubeCenter[1] + (scale / 2.0);
+			point0[0] = cubeCenterInt[0] + (scaleInt / 2);
+			point0[1] = cubeCenterInt[1] - (scaleInt / 2);
+			point1[0] = cubeCenterInt[0] + (scaleInt / 2);
+			point1[1] = cubeCenterInt[1] + (scaleInt / 2);
 			rectangleLine2.SetPoints(point0, point1);
 
-			point0[0] = cubeCenter[0] - (scale / 2.0);
-			point0[1] = cubeCenter[1] + (scale / 2.0);
-			point1[0] = cubeCenter[0] + (scale / 2.0);
-			point1[1] = cubeCenter[1] + (scale / 2.0);
+			point0[0] = cubeCenterInt[0] - (scaleInt / 2);
+			point0[1] = cubeCenterInt[1] + (scaleInt / 2);
+			point1[0] = cubeCenterInt[0] + (scaleInt / 2);
+			point1[1] = cubeCenterInt[1] + (scaleInt / 2);
 			rectangleLine3.SetPoints(point0, point1);
 
-			point0[0] = cubeCenter[0] - (scale / 2.0);
-			point0[1] = cubeCenter[1] + (scale / 2.0);
-			point1[0] = cubeCenter[0] - (scale / 2.0);
-			point1[1] = cubeCenter[1] - (scale / 2.0);
+			point0[0] = cubeCenterInt[0] - (scaleInt / 2);
+			point0[1] = cubeCenterInt[1] + (scaleInt / 2);
+			point1[0] = cubeCenterInt[0] - (scaleInt / 2);
+			point1[1] = cubeCenterInt[1] - (scaleInt / 2);
 			rectangleLine4.SetPoints(point0, point1);
 		}
 			
@@ -483,6 +492,8 @@ namespace M4D
 			rectangleLine2.SetColor(0.1, 0.1, 0.3);
 			rectangleLine3.SetColor(0.1, 0.1, 0.3);
 			rectangleLine4.SetColor(0.1, 0.1, 0.3);
+			rectangleLine4.GetActor()->SetPosition(200.0, 200.0);
+
 
 			cursorLine1.SetColor(0.0, 1.0, 0.0);
 			cursorLine2.SetColor(0.0, 1.0, 0.0);
@@ -745,6 +756,35 @@ namespace M4D
 		void m4dGUIOGLHapticViewerWidget::slotTransitionFunctionResetDemanded()
 		{
 			resetTransitionFunction();
+		}
+
+		void m4dGUIOGLHapticViewerWidget::resetSliceViewPosition()
+		{
+			vtkImageData* i = _imageData->GetOutput();
+			int extent[6];
+			i->GetExtent(extent);
+			int moveX = (width() / 2 - (extent[1] + extent[0])) / 2;
+			int moveY = (height() - (extent[3] + extent[2])) / 2; 
+
+			sliceActor->SetPosition(moveX, moveY);
+			cursorLine1.GetActor()->SetPosition(moveX, moveY);
+			cursorLine2.GetActor()->SetPosition(moveX, moveY);
+			rectangleLine1.GetActor()->SetPosition(moveX, moveY);
+			rectangleLine2.GetActor()->SetPosition(moveX, moveY);
+			rectangleLine3.GetActor()->SetPosition(moveX, moveY);
+			rectangleLine4.GetActor()->SetPosition(moveX, moveY);
+		}
+
+		void m4dGUIOGLHapticViewerWidget::slotZoomInHaptic()
+		{
+			double scale = cursor->GetScale();
+			cursor->SetScale((scale / 3.0) * 2.0);
+		}
+
+		void m4dGUIOGLHapticViewerWidget::slotZoomOutHaptic()
+		{
+			double scale = cursor->GetScale();
+			cursor->SetScale((scale / 2.0) * 3.0);
 		}
 	} /* namespace Viewer */
 } /* namespace M4D */

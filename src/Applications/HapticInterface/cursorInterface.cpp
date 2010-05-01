@@ -101,10 +101,17 @@ namespace M4D
 		void cursorInterface::SetScale(double scale)
 		{
 			boost::mutex::scoped_lock lck(cursorMutex);
+
+			double positionDiff[3];
+			positionDiff[0] = cursorRadiusCubeCenter[0] - cursorCenter[0]; 
+			positionDiff[1] = cursorRadiusCubeCenter[1] - cursorCenter[1];
+			positionDiff[2] = cursorRadiusCubeCenter[2] - cursorCenter[2];
+			
+			double scaleRatio = scale / this->scale;
 			this->scale = scale;
-			cursorRadiusCubeCenter[0] = cursorCenter[0];
-			cursorRadiusCubeCenter[1] = cursorCenter[1];
-			cursorRadiusCubeCenter[2] = cursorCenter[2];
+			cursorRadiusCubeCenter[0] = cursorCenter[0] + positionDiff[0] * scaleRatio;
+			cursorRadiusCubeCenter[1] = cursorCenter[1] + positionDiff[1] * scaleRatio;
+			cursorRadiusCubeCenter[2] = cursorCenter[2] + positionDiff[2] * scaleRatio;
 		}
 
 		void cursorInterface::SetCursorPosition(const cVector3d& position)
@@ -151,7 +158,33 @@ namespace M4D
 
 		int cursorInterface::GetZSlice()
 		{
+			boost::mutex::scoped_lock lck(cursorMutex);
 			return (int)(cursorCenter[2] / imageSpacingDepth);
+		}
+
+		void cursorInterface::GetCursorCenterAsIndexes( int center[3] )
+		{
+			boost::mutex::scoped_lock lck(cursorMutex);
+			center[0] = (int)(cursorCenter[0] / imageSpacingWidth); 
+			center[1] = (int)(cursorCenter[1] / imageSpacingHeight); 
+			center[2] = (int)(cursorCenter
+				[2] / imageSpacingDepth);
+		}
+
+		void cursorInterface::GetRadiusCubeCenterAsIndexes( int center[3] )
+		{
+			boost::mutex::scoped_lock lck(cursorMutex);
+			center[0] = (int)(cursorRadiusCubeCenter[0] / imageSpacingWidth); 
+			center[1] = (int)(cursorRadiusCubeCenter[1] / imageSpacingHeight); 
+			center[2] = (int)(cursorRadiusCubeCenter[2] / imageSpacingDepth); 
+		}
+
+		int cursorInterface::GetScaleAsIndexDifference()
+		{
+			boost::mutex::scoped_lock lck(cursorMutex);
+			double maxRealLength = MAX( MAX(imageRealWidth, imageRealHeight), MAX(imageRealHeight, imageRealDepth));
+			int maxDataLength = MAX( MAX(imageDataWidth, imageDataHeight), MAX(imageDataHeight, imageDataDepth));
+			return (int)(( scale / maxRealLength) * maxDataLength);
 		}
 	}
 }

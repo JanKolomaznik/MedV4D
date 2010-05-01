@@ -12,7 +12,6 @@ class QDoubleSpinBox;
 QT_END_NAMESPACE
 class transitionFunctionRenderAreaWidget;
 
-//! [0]
 class SettingsBoxWidget : public QWidget
 {
     Q_OBJECT
@@ -22,22 +21,28 @@ public:
 
 signals:
 	void resetFunction();
+	void zoomOutHaptic();
+	void zoomInHaptic();
 
 private slots:
     void pointAddedSlot();
 	void resetDemandedSlot();
     void functionChangedSlot();
+	void zoomInHapticSlot();
+	void zoomOutHapticSlot();
 
 private:
     transitionFunctionRenderAreaWidget *renderArea;
 	transitionFunction* functionData;
     QLabel* pointLabel;
     QLabel* valueLabel;
+	QLabel* hapticLabel;
 	QSpinBox* pointSpinBox;
 	QDoubleSpinBox* valueSpinBox;
     QPushButton* addPointButton;
 	QPushButton* resetTransitionFunctionButton;
+	QPushButton* zoomInButton;
+	QPushButton* zoomOutButton;
 };
-//! [0]
 
 #endif
