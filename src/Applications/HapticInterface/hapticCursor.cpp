@@ -1,67 +1,47 @@
 #include "hapticCursor.h"
+#include "boost/bind.hpp"
 
 namespace M4D
 {
 	namespace Viewer
 	{
-#pragma region hapticDeviceWorker
-		hapticCursor::hapticDeviceWorker::hapticDeviceWorker( cGenericHapticDevice* hapticDevice, hapticCursor* supervisor, bool* runHaptic )
-		{
-			this->hapticDevice = hapticDevice;
-			this->supervisor = supervisor;
-			this->runHaptic = runHaptic;
-			m_clock = new cPrecisionClock();
-			m_clock->start();
-			count = 0;
-		}
-
-		
-		void hapticCursor::hapticDeviceWorker::operator()()
-		{
-			while(*runHaptic)
-			{	
-				cVector3d hapticPosition;
-				hapticDevice->getPosition(hapticPosition);
-				supervisor->SetCursorPosition(hapticPosition);
-				hapticDevice->setForce(supervisor->GetForce());
-				bool zoomIn = false;
-				bool zoomOut = false;
-
-				hapticDevice->getUserSwitch(0, zoomIn);
-				hapticDevice->getUserSwitch(1, zoomOut);
-
-				supervisor->SetZoomInButtonPressed(zoomIn);
-				supervisor->SetZoomOutButtonPressed(zoomOut);
-
-				double clock = m_clock->getCurrentTimeSeconds();
-				double fps = 1.0 / clock;
-				m_clock->reset();
-				//std::cout << fps << std::endl;
-
-				//std::cout << supervisor->GetForce().x << " " << supervisor->GetForce().y << " " << supervisor->GetForce().z << " " << std::endl;
-			}
-		}
-#pragma endregion hapticDeviceWorker
-
 
 		hapticCursor::hapticCursor(vtkImageData *input, vtkRenderWindow* renderWindow, transitionFunction* hapticForceTransitionFunction) : cursorInterface(input)
 		{
 			handler = new cHapticDeviceHandler();
-			deviceWorker = NULL;
 			hapticDevice = NULL;
 			this->renderWindow = renderWindow;
 			this->hapticForceTransitionFunction = hapticForceTransitionFunction;
 			zoomInButtonPressed = false;
 			zoomOutButtonPressed = false;
-			runHpatics = false;
+			runHaptics = false;
+			this->hapticDevice = hapticDevice;
+			m_clock = new cPrecisionClock();
+			count = 0;
 		}
 
+		hapticCursor::hapticCursor( vtkRenderWindow* renderWindow, transitionFunction* hapticForceTransitionFunction )
+		{
+			handler = new cHapticDeviceHandler();
+			hapticDevice = NULL;
+			this->renderWindow = renderWindow;
+			this->hapticForceTransitionFunction = hapticForceTransitionFunction;
+			zoomInButtonPressed = false;
+			zoomOutButtonPressed = false;
+			runHaptics = false;
+			this->hapticDevice = hapticDevice;
+			m_clock = new cPrecisionClock();
+			count = 0;
+		}
 		hapticCursor::~hapticCursor()
 		{
 			stop();
+			hapticsThread->join();
+			m_clock->stop();
+			delete(m_clock);
+			delete(hapticsThread);
 			delete(handler);
-			if (deviceWorker != NULL)
-				delete(deviceWorker);
+			delete(hapticDevice);
 		}
 		void hapticCursor::startHaptics()
 		{
@@ -73,7 +53,6 @@ namespace M4D
 				hapticDevice->initialize(); // initialize haptic device	
 				info = hapticDevice->getSpecifications(); // retrieve information about the current haptic device
 				std::cout << "Chai3d: " << info.m_manufacturerName << " " << info.m_modelName << std::endl;
-				deviceWorker = new hapticDeviceWorker(hapticDevice, this, &runHpatics);
 				StartListen();
 			}
 			else
@@ -155,17 +134,17 @@ namespace M4D
 		}
 		void hapticCursor::stop()
 		{
-			if (runHpatics)
+			boost::mutex::scoped_lock l(runMutex);
+			if (runHaptics)
 			{
-				runHpatics = false;
-				hapticsThread->join();
+				runHaptics = false;
 			}
 		}
 		void hapticCursor::StartListen()
 		{
-			runHpatics = true;
-			boost::thread t = boost::thread(*deviceWorker);
-			hapticsThread = &t;
+			m_clock->start();
+			runHaptics = true;
+			hapticsThread = new boost::thread(boost::bind(&hapticCursor::deviecWorker, this));
 		}
 
 		void hapticCursor::SetZoomInButtonPressed( bool pressed )
@@ -181,6 +160,37 @@ namespace M4D
 			if (!pressed && zoomOutButtonPressed)
 			{
 				SetScale((scale / 2.0) * 3.0);
+			}
+		}
+
+		void hapticCursor::deviecWorker()
+		{
+			for (;;)
+			{	
+				cVector3d hapticPosition;
+				hapticDevice->getPosition(hapticPosition);
+				SetCursorPosition(hapticPosition);
+				hapticDevice->setForce(GetForce());
+				bool zoomIn = false;
+				bool zoomOut = false;
+
+				hapticDevice->getUserSwitch(0, zoomIn);
+				hapticDevice->getUserSwitch(1, zoomOut);
+
+				SetZoomInButtonPressed(zoomIn);
+				SetZoomOutButtonPressed(zoomOut);
+
+				double clock = m_clock->getCurrentTimeSeconds();
+				double fps = 1.0 / clock;
+				m_clock->reset();
+				//std::cout << fps << std::endl;
+
+				//std::cout << supervisor->GetForce().x << " " << supervisor->GetForce().y << " " << supervisor->GetForce().z << " " << std::endl;
+				boost::mutex::scoped_lock l(runMutex);
+				if (!runHaptics)
+				{
+					return;
+				}
 			}
 		}
 	}

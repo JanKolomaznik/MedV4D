@@ -13,22 +13,7 @@ SettingsBoxWidget::SettingsBoxWidget(transitionFunction* functionData, QWidget* 
 	this->functionData = functionData;
 	
 	renderArea = new transitionFunctionRenderAreaWidget(functionData);
-	
-	pointSpinBox = new QSpinBox();
-	pointSpinBox->setRange(functionData->GetMinPoint(), functionData->GetMaxPoint());
-	
-	pointLabel = new QLabel(tr("&Point number:"));
-	pointLabel->setBuddy(pointSpinBox);
-
-	valueSpinBox = new QDoubleSpinBox();
-	valueSpinBox->setRange(functionData->GetValueOfMinPoint(), functionData->GetValueOfMaxPoint());
-	valueSpinBox->setDecimals(3);
-	valueSpinBox->setSingleStep(0.01);
-
-	valueLabel = new QLabel(tr("&Value of point:"));
-	valueLabel->setBuddy(valueSpinBox);
-    
-	addPointButton = new QPushButton(tr("&Add point"));
+	connect(renderArea, SIGNAL(addPointSignal(double, double)), this, SLOT(pointAddedSlot(double, double)));
 
 	resetTransitionFunctionButton = new QPushButton(tr("&Reset function"));
 
@@ -38,7 +23,6 @@ SettingsBoxWidget::SettingsBoxWidget(transitionFunction* functionData, QWidget* 
 	hapticLabel = new QLabel(tr("Haptic function:"));
 
     connect(resetTransitionFunctionButton, SIGNAL(clicked()), this, SLOT(resetDemandedSlot()));
-	connect(addPointButton, SIGNAL(clicked()), this, SLOT(pointAddedSlot()));
 	connect(zoomInButton, SIGNAL(clicked()), this, SLOT(zoomInHapticSlot()));
 	connect(zoomOutButton, SIGNAL(clicked()), this, SLOT(zoomOutHapticSlot()));
 	
@@ -48,12 +32,7 @@ SettingsBoxWidget::SettingsBoxWidget(transitionFunction* functionData, QWidget* 
     mainLayout->setColumnStretch(3, 1);
     mainLayout->addWidget(renderArea, 0, 0, 1, 4);
     mainLayout->setRowMinimumHeight(1, 6);
-    mainLayout->addWidget(pointLabel, 2, 1, Qt::AlignRight);
-    mainLayout->addWidget(pointSpinBox, 2, 2);
-    mainLayout->addWidget(valueLabel, 3, 1, Qt::AlignRight);
-    mainLayout->addWidget(valueSpinBox, 3, 2);
-    mainLayout->addWidget(addPointButton, 4, 1, Qt::AlignCenter);
-    mainLayout->addWidget(resetTransitionFunctionButton, 4, 2, Qt::AlignCenter);
+    mainLayout->addWidget(resetTransitionFunctionButton, 4, 1, Qt::AlignCenter);
 	mainLayout->addWidget(hapticLabel, 6, 1, Qt::AlignCenter);
 	mainLayout->addWidget(zoomInButton, 7, 1, Qt::AlignCenter);
 	mainLayout->addWidget(zoomOutButton, 7, 2, Qt::AlignCenter);
@@ -69,15 +48,14 @@ void SettingsBoxWidget::resetDemandedSlot()
 	emit resetFunction();
 }
 
-void SettingsBoxWidget::pointAddedSlot()
+void SettingsBoxWidget::pointAddedSlot(double a_x, double a_y)
 {
-	functionData->SetValueOnPoint((unsigned short)pointSpinBox->value(), valueSpinBox->value());
-	functionChangedSlot();
+	functionData->SetValueOnPoint((unsigned short)(a_x * functionData->GetMaxPoint()), a_y * functionData->GetValueOfMaxPoint());
+	renderArea->update();
 }
 
 void SettingsBoxWidget::functionChangedSlot()
 {
-	pointSpinBox->setRange(functionData->GetMinPoint(), functionData->GetMaxPoint());
 	renderArea->update();
 }
 

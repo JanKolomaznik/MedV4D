@@ -12,15 +12,43 @@ namespace M4D
 		cursorInterface::cursorInterface(vtkImageData* input)
 		{
 			this->input = vtkImageData::New();
-			std::cout << "making deep copy";
 			this->input->DeepCopy(input);
-			std::cout << "done." << std::endl;
 			cursorCenter[0] = 0.0;
 			cursorCenter[1] = 0.0;
 			cursorCenter[2] = 0.0;
 			cursorRadiusCubeCenter[0] = 0.0;
 			cursorRadiusCubeCenter[1] = 0.0;
 			cursorRadiusCubeCenter[2] = 0.0;
+			reloadParameters();
+		}
+		cursorInterface::cursorInterface()
+		{
+			this->input = vtkImageData::New();
+			cursorCenter[0] = 0.0;
+			cursorCenter[1] = 0.0;
+			cursorCenter[2] = 0.0;
+			cursorRadiusCubeCenter[0] = 0.0;
+			cursorRadiusCubeCenter[1] = 0.0;
+			cursorRadiusCubeCenter[2] = 0.0;
+			reloadParameters();
+		}
+		void cursorInterface::SetData( vtkImageData* a_input)
+		{
+			{
+				boost::mutex::scoped_lock l(cursorMutex);
+				if (input)
+				{
+					input->Delete();
+				}
+				this->input = vtkImageData::New();
+				this->input->DeepCopy(a_input);
+				cursorCenter[0] = 0.0;
+				cursorCenter[1] = 0.0;
+				cursorCenter[2] = 0.0;
+				cursorRadiusCubeCenter[0] = 0.0;
+				cursorRadiusCubeCenter[1] = 0.0;
+				cursorRadiusCubeCenter[2] = 0.0;
+			}
 			reloadParameters();
 		}
 		void cursorInterface::reloadParameters()
@@ -186,6 +214,17 @@ namespace M4D
 			int maxDataLength = MAX( MAX(imageDataWidth, imageDataHeight), MAX(imageDataHeight, imageDataDepth));
 			return (int)(( scale / maxRealLength) * maxDataLength);
 		}
+
+		int cursorInterface::GetDataMinValue()
+		{
+			return minVolumeValue;
+		}
+
+		int cursorInterface::GetDataMaxValue()
+		{
+			return maxVolumeValue;
+		}
+
 	}
 }
 

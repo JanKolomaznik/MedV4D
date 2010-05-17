@@ -15,8 +15,12 @@ public:
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
 
+signals:
+	void addPointSignal(double a_x, double a_y);
+
 protected:
     void paintEvent(QPaintEvent *event);
+	void mouseReleaseEvent(QMouseEvent *event);
 
 private:
 	transitionFunction* functionData;

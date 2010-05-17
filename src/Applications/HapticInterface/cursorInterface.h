@@ -25,7 +25,11 @@ namespace M4D
 			virtual void reloadParameters(); // reload image parameters from inPort
 			virtual void SetScale(double scale); // Sets scale
 			virtual int GetZSlice();
+			virtual int GetDataMinValue();
+			virtual int GetDataMaxValue();
+			virtual void SetData( vtkImageData* a_input);
 			cursorInterface(vtkImageData* input);
+			cursorInterface();
 		protected: 
 			boost::mutex cursorMutex;
 			virtual void SetCursorPosition(const cVector3d& position);

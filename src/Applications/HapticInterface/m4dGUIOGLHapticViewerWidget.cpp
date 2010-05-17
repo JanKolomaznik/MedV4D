@@ -87,11 +87,11 @@ namespace M4D
 			_index = index;
 			hapticForceTransitionFunction = new transitionFunction();
 			setParameters();
+			cursor = new hapticCursor( GetRenderWindow(), hapticForceTransitionFunction);
 			_inPort = new Imaging::InputPortTyped< Imaging::AImage >();
 			_inputPorts.AppendPort( _inPort );
 			setInputPort( conn );
 			aggregationFilter->Update();
-			cursor = new hapticCursor(aggregationFilter->GetOutput(), GetRenderWindow(), hapticForceTransitionFunction);
 			reloadCursorParameters();
 			cursor->startHaptics();
 			QTimer *timer = new QTimer((QVTKWidget*)this);
@@ -113,10 +113,10 @@ namespace M4D
 			_index = index;
 			hapticForceTransitionFunction = new transitionFunction();
 			setParameters();
+			cursor = new hapticCursor( GetRenderWindow(), hapticForceTransitionFunction);
 			_inPort = new Imaging::InputPortTyped< Imaging::AImage >();
 			_inputPorts.AppendPort( _inPort );
 			setInputPort();
-			cursor = new hapticCursor(aggregationFilter->GetOutput(), GetRenderWindow(), hapticForceTransitionFunction);
 			reloadCursorParameters();
 			cursor->startHaptics();
 			QTimer *timer = new QTimer((QVTKWidget*)this);
@@ -228,6 +228,8 @@ namespace M4D
 			_renImageData->SetViewport(leftViewport);
 			sliceRenderer->SetViewport(rightViewport);
 			GetRenderWindow()->Render();
+			cursor->SetData(aggregationFilter->GetOutput());
+
 			resetTransitionFunction();
 		}
 
@@ -714,6 +716,7 @@ namespace M4D
 				_renImageData->SetViewport(leftViewport);
 				sliceRenderer->SetViewport(rightViewport);
 				GetRenderWindow()->Render();
+				cursor->SetData(aggregationFilter->GetOutput());
 				resetTransitionFunction();
 				break;
 			}
@@ -727,29 +730,7 @@ namespace M4D
 
 		void m4dGUIOGLHapticViewerWidget::resetTransitionFunction()
 		{
-			vtkImageData* input = aggregationFilter->GetOutput();
-			int extents[6];
-			input->GetExtent(extents);
-			unsigned short minVolumeValue = (unsigned short)input->GetScalarTypeMax();
-			unsigned short maxVolumeValue = (unsigned short)input->GetScalarTypeMin();
-			for (int i = extents[0]; i < extents[1]; ++i)
-			{
-				for (int j = extents[2]; j < extents[3]; ++j)
-				{
-					for (int k = extents[4]; k < extents[5]; ++k)
-					{
-						for (int c = 0; c < input->GetNumberOfScalarComponents(); ++c)
-						{
-							unsigned short result = (unsigned short)input->GetScalarComponentAsDouble(i,j,k,c);
-							if (minVolumeValue > result)
-								minVolumeValue = result;
-							if (maxVolumeValue < result)
-								maxVolumeValue = result;
-						}
-					}
-				}
-			}
-			hapticForceTransitionFunction->Reset(minVolumeValue, maxVolumeValue, 0.0, 1.0);
+			hapticForceTransitionFunction->Reset(cursor->GetDataMinValue(), cursor->GetDataMaxValue(), 0.0, 1.0);
 			emit hapticForceTransitionFunctionChanged();
 		}
 

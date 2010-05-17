@@ -1,6 +1,7 @@
 #include <QtGui>
 
 #include "transitionFunctionRenderArea.h"
+#include <sstream>
 
 transitionFunctionRenderAreaWidget::transitionFunctionRenderAreaWidget(transitionFunction* functionData, QWidget *parent)
     : QWidget(parent)
@@ -45,7 +46,42 @@ void transitionFunctionRenderAreaWidget::paintEvent(QPaintEvent * /* event */)
 
 	painter.restore();
                 
-    painter.setPen(palette().dark().color());
+    painter.setPen(pen);
     painter.setBrush(Qt::NoBrush);
+	painter.save();
     painter.drawRect(QRect(0, 0, width() - 1, height() - 1));
+
+	painter.restore();
+
+	painter.setPen(pen);
+	painter.setBrush(Qt::NoBrush);
+	painter.save();
+	painter.drawText(1, height() - 3, tr("0"));
+
+	painter.restore();
+
+	painter.setPen(pen);
+		painter.setBrush(Qt::NoBrush);
+	painter.save();
+	painter.drawText(1, 11, tr("1.0"));
+
+	painter.restore();
+
+	painter.setPen(pen);
+		painter.setBrush(Qt::NoBrush);
+	painter.save();
+	std::stringstream s;
+	s << functionData->GetMaxPoint();
+	painter.drawText(width() - 26, height() - 3, tr(s.str().c_str()));
+
+}
+
+void transitionFunctionRenderAreaWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+	if (event->button() == Qt::LeftButton) 
+	{
+		double x = (double)event->pos().x() / (double)width();
+		double y = ((double)height() - (double)event->pos().y()) / (double)height();
+		emit addPointSignal(x, y);
+	}
 }

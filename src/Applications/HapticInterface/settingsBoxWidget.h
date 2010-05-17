@@ -25,7 +25,7 @@ signals:
 	void zoomInHaptic();
 
 private slots:
-    void pointAddedSlot();
+	void pointAddedSlot(double a_x, double a_y);
 	void resetDemandedSlot();
     void functionChangedSlot();
 	void zoomInHapticSlot();
@@ -34,12 +34,7 @@ private slots:
 private:
     transitionFunctionRenderAreaWidget *renderArea;
 	transitionFunction* functionData;
-    QLabel* pointLabel;
-    QLabel* valueLabel;
 	QLabel* hapticLabel;
-	QSpinBox* pointSpinBox;
-	QDoubleSpinBox* valueSpinBox;
-    QPushButton* addPointButton;
 	QPushButton* resetTransitionFunctionButton;
 	QPushButton* zoomInButton;
 	QPushButton* zoomOutButton;
