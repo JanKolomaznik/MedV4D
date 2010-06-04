@@ -22,7 +22,8 @@
 
 using namespace M4D::Imaging;
 
-typedef M4D::Imaging::Image< uint8, 3 > ImageType;
+typedef int16 ElementType;
+typedef M4D::Imaging::Image< ElementType, 3 > ImageType;
 typedef M4D::Imaging::Image< uint8, 2 > MaskType;
 
 //typedef SimpleVolumeViewer<GLThreadedWidget> Viewer;
@@ -34,6 +35,7 @@ class ViewerWindow : public QWidget
 private:
 	Viewer *viewerWidget;
 	ImageType::Ptr image;
+	AImage::Ptr aimage;
 	MaskType::Ptr mask;
 public:
 	ViewerWindow();
@@ -45,26 +47,27 @@ ViewerWindow::ViewerWindow(): QWidget( NULL )
 {
 	viewerWidget = new Viewer( NULL );
 
-	unsigned size = 128;
+
+	/*unsigned size = 128;
 
 	unsigned R = 25;
 	unsigned r = 12;
 
 	Vector<float,3> center1( 50,50,64 );
 	Vector<float,3> center2( 128-50,128-50,64 );
-	image =	M4D::Imaging::ImageFactory::CreateEmptyImage3DTyped< uint8 >( size, size, size );
+	image =	M4D::Imaging::ImageFactory::CreateEmptyImage3DTyped< ElementType >( size, size, size );
 	for( unsigned i=0; i <size; ++i ) {
 		for( unsigned j=0; j <size; ++j ) {
 			for( unsigned k=0; k <size; ++k ) {
-				/*if( Sqr(i - size/2)+ Sqr(j - size/2) + Sqr(k - size/2) < 3000 ) {
-					image->GetElement( Vector< int32, 3 >( i, j, k ) ) = 255;
-				} else {
-					image->GetElement( Vector< int32, 3 >( i, j, k ) ) = 0;
-				}*/
+				//if( Sqr(i - size/2)+ Sqr(j - size/2) + Sqr(k - size/2) < 3000 ) {
+				//	image->GetElement( Vector< int32, 3 >( i, j, k ) ) = 255;
+				//} else {
+				//	image->GetElement( Vector< int32, 3 >( i, j, k ) ) = 0;
+				//} 
 
 				float result1 = Sqr( R - Sqrt( Sqr((float)(i -center1[0])) + Sqr((float)(j -center1[1]))) ) + Sqr( (float)(k-center1[2]) );
 				float result2 = Sqr( R - Sqrt( Sqr((float)(i -center2[0])) + Sqr((float)(j -center2[1]))) ) + Sqr( (float)(k-center2[2]) );
-				if( result1 < Sqr( r ) || result2 < Sqr( r ) || (result1 + result2) < Sqr( 2*r )  /*&& result > 85*/ ) {
+				if( result1 < Sqr( r ) || result2 < Sqr( r ) || (result1 + result2) < Sqr( 2*r ) ){
 					image->GetElement( Vector< int32, 3 >( i, j, k ) ) = 255* Sqr((float)r)/Min(result1,result2);
 				} else {
 					image->GetElement( Vector< int32, 3 >( i, j, k ) ) = 0;
@@ -75,9 +78,13 @@ ViewerWindow::ViewerWindow(): QWidget( NULL )
 
 	for( unsigned i=0; i <size; ++i ) {
 		image->GetElement( Vector< int32, 3 >( i, 5, 5 ) ) = 2*i;
-	}
-	ImageRegion< uint8, 3 > *pom = new ImageRegion< uint8, 3 >( image->GetRegion() );
+	}*/
+	//ImageRegion< ElementType, 3 > *pom = new ImageRegion< ElementType, 3 >( image->GetRegion() );
+	
+	aimage = M4D::Imaging::ImageFactory::LoadDumpedImage( "Skull.dump" );
+	AImageRegionDim<3> * pom = dynamic_cast< AImageRegionDim<3>* >( aimage->GetAImageRegion() );
 	viewerWidget->SetImageRegion( pom );
+
 	
 	QHBoxLayout *mainLayout = new QHBoxLayout;
 	mainLayout->addWidget(viewerWidget);

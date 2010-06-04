@@ -25,7 +25,7 @@ public:
 
 	SimpleVolumeViewer( QWidget *parent = NULL )
 		: SupportGLWidget( parent ), _region( NULL ), 
-		_camera( Vector<float,3>( 0.0f, 0.0f, -1200.0f ), Vector<float,3>( 0.0f, 0.0f, 0.0f ) ), _linearInterpolation( false )
+		_camera( Vector<float,3>( 0.0f, 0.0f, 1500.0f ), Vector<float,3>( 0.0f, 0.0f, 0.0f ) ), _linearInterpolation( true )
 	{
 		_cutPlane = 1.0f;
 		_mouseDown = false;
@@ -48,6 +48,10 @@ public:
 	void
 	SetImageRegion( ARegion3D *region )
 		{ 
+			if( region == NULL ) {
+				_THROW_ M4D::ErrorHandling::ENULLPointer( "NULL pointer to ARegion3D" );
+			}
+
 			_region = region; 
 			_bbox = M4D::BoundingBox3D( _region->GetRealMinimum(), _region->GetRealMaximum() );
 
@@ -66,13 +70,19 @@ public:
 		uint32 * func = new uint32[ 256 ];
 
 
-		for( unsigned i=0; i < 256; ++i ) {
+		for( unsigned i=0; i < 5; ++i ) {
+			func[i] = 0;
+		}
+		for( unsigned i=5; i < 256; ++i ) {
+				func[i] =  0x353545FF;
+		}
+		/*for( unsigned i=0; i < 256; ++i ) {
 			if( i < 8 ) {
 				func[i] = 0;
 			} else {
 				func[i] = Min(i+100, (unsigned) 255)<<24 | (i/2) << 16 | 45; //xFF0000FF;
 			}
-		}
+		}*/
 
 		GLuint texName;
 
@@ -124,7 +134,8 @@ public:
 		CheckForCgError("creating context ", _cgContext );
 
 		_brightnessContrastShaderConfig.Initialize( _cgContext, "LUT.cg", "LUT_texture" );
-		_transferFuncShaderConfig.Initialize( _cgContext, "SimpleTransferFunction.cg", "SimpleTransferFunction" );
+		//_transferFuncShaderConfig.Initialize( _cgContext, "SimpleTransferFunction.cg", "TransferFunctionShadingPreintegration" );
+		_transferFuncShaderConfig.Initialize( _cgContext, "SimpleTransferFunction.cg", "TransferFunctionShading" );
 
 		_transferFuncShaderConfig.transferFunctionTexture = CreateTransferFunction();
 	}
@@ -184,6 +195,10 @@ public:
 
 
 
+		_transferFuncShaderConfig.eyePosition = _camera.GetEyePosition();
+		_transferFuncShaderConfig.lightPosition = Vector< float, 3 > ( 3000.0f, 3000.0f, -3000.0f );
+		//_transferFuncShaderConfig.sliceSpacing = 1.0;
+		//_transferFuncShaderConfig.sliceNormal = _camera.GetCenterDirection();
 		
 		//-------------	RENDERING ------------------
 		//Draw bounding box
@@ -194,7 +209,7 @@ public:
 		//Enable right shader
 		_transferFuncShaderConfig.Enable();
 		//Render volume
-		M4D::GLDrawVolumeSlices( _bbox, _camera, 300, _cutPlane );
+		M4D::GLDrawVolumeSlices( _bbox, _camera, 500, _cutPlane );
 		//Disable shader
 		_transferFuncShaderConfig.Disable();
 		//---------- RENDERING FINISHED ------------
@@ -332,7 +347,7 @@ protected:
 	bool			_volumeRendering;
 
 	CGcontext   				_cgContext;
-	CgSimpleTransferFunctionShaderConfig 	_transferFuncShaderConfig;
+	CgTransferFunctionShadingShaderConfig 	_transferFuncShaderConfig;
 	CgBrightnessContrastShaderConfig	_brightnessContrastShaderConfig;
 
 	/*

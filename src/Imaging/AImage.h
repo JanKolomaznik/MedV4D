@@ -6,6 +6,7 @@
 #include "Imaging/ModificationManager.h"
 #include "Imaging/ADataset.h"
 #include "common/Vector.h"
+#include "Imaging/AImageRegion.h"
 
 namespace M4D
 {
@@ -108,6 +109,9 @@ public:
 	M4D::Common::TimeStamp
 	GetEditTimestamp()const
 		{ return GetModificationManager().GetActualTimestamp(); }
+
+	virtual AImageRegion *
+	GetAImageRegion() = 0;
 protected:
 	uint16			_dimCount;
 	DimensionExtents	*_dimensionExtents;
@@ -175,6 +179,13 @@ public:
 	const float32*
 	GetElementExtentsP()const
 		{ return _elementExtents.GetData(); }
+
+	AImageRegion *
+	GetAImageRegion()
+		{ return GetAImageRegionDim(); }
+
+	virtual AImageRegionDim< Dimension > *
+	GetAImageRegionDim() = 0;
 
 protected:
 	PointType		_minimum;

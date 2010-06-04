@@ -46,6 +46,7 @@ GLDrawVolumeSlices(
 		float		cutPlane = 1.0f
 		);
 
+
 void
 GLDrawVolumeSlice(
 		const Vector< float32, 3 > 	&min, 

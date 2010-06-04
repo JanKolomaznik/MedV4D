@@ -249,6 +249,10 @@ public:
 	SubRegion
 	GetRegion()const;
 
+	AImageRegionDim< Dimension > *
+	GetAImageRegionDim()
+		{ return new SubRegion( GetRegion() ); }	//TODO -- error handling, effectivenes
+
 	SubRegion
 	GetSubRegion(
 			PointType min,

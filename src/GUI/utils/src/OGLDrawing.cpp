@@ -123,13 +123,14 @@ GLDrawVolumeSlices(
 
 		//Render n-gon
 		glBegin( GL_POLYGON );
-			for( unsigned i = 0; i < count; ++i ) {
-				GLVertexVector( vertices[ i ] );
+			for( unsigned j = 0; j < count; ++j ) {
+				GLVertexVector( vertices[ j ] );
 			}
 		glEnd();
 	}
 
 }
+
 
 void
 GLDrawVolumeSlice(

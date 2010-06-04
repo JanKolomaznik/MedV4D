@@ -121,7 +121,8 @@ CgMaskBlendShaderConfig::Disable()
 	cgGLDisableTextureParameter(cgFragmentParam_Texture);
 	AShaderConfig::Disable();
 }
-
+//*********************************************************************************
+//*********************************************************************************
 void
 CgSimpleTransferFunctionShaderConfig::Initialize(
 	CGcontext   				&_cgContext,
@@ -158,6 +159,64 @@ CgSimpleTransferFunctionShaderConfig::Disable()
 	AShaderConfig::Disable();
 }
 
+//*********************************************************************************
+//*********************************************************************************
+void
+CgTransferFunctionShadingShaderConfig::Initialize(
+	CGcontext   				&_cgContext,
+	const boost::filesystem::path 		&fragmentProgramFile, 
+	const std::string 			&fragmentProgramName 
+	)
+{
+	AShaderConfig::Initialize( _cgContext, fragmentProgramFile, fragmentProgramName );
+
+	cgFragmentParam_Data = cgGetNamedParameter( cgFragmentProgram, "dataTexture" );
+	CheckForCgError("getting 'dataTexture' parameter ", cgContext );
+
+	cgFragmentParam_TransferFunction = cgGetNamedParameter( cgFragmentProgram, "transferFunctionTexture" );
+	CheckForCgError("getting 'transferFunctionTexture' parameter ", cgContext );
+
+	cgFragmentParam_LightPosition = cgGetNamedParameter( cgFragmentProgram, "lightPosition" );
+	CheckForCgError("getting 'lightPosition' parameter ", cgContext );
+
+	cgFragmentParam_EyePosition = cgGetNamedParameter( cgFragmentProgram, "eyePosition" );
+	CheckForCgError("getting 'eyePosition' parameter ", cgContext );
+
+	cgFragmentParam_SliceSpacing = cgGetNamedParameter( cgFragmentProgram, "sliceSpacing" );
+	CheckForCgError("getting 'sliceSpacing' parameter ", cgContext );
+
+	cgFragmentParam_SliceNormal = cgGetNamedParameter( cgFragmentProgram, "sliceNormal" );
+	CheckForCgError("getting 'sliceNormal' parameter ", cgContext );
+}
+
+void
+CgTransferFunctionShadingShaderConfig::Enable()
+{
+	AShaderConfig::Enable();
+
+	cgGLEnableTextureParameter( cgFragmentParam_Data );
+	cgGLSetTextureParameter( cgFragmentParam_Data, dataTexture );
+
+	cgGLEnableTextureParameter( cgFragmentParam_TransferFunction );
+	cgGLSetTextureParameter( cgFragmentParam_TransferFunction, transferFunctionTexture );
+
+	cgGLSetParameter3f( cgFragmentParam_EyePosition, eyePosition[0], eyePosition[1], eyePosition[2] );
+
+	cgGLSetParameter3f( cgFragmentParam_LightPosition, lightPosition[0], lightPosition[1], lightPosition[2] );
+
+	cgGLSetParameter3f( cgFragmentParam_SliceNormal, sliceNormal[0], sliceNormal[1], sliceNormal[2] );
+
+	cgGLSetParameter1f( cgFragmentParam_SliceSpacing, sliceSpacing );
+}
+
+void
+CgTransferFunctionShadingShaderConfig::Disable()
+{
+	cgGLDisableTextureParameter(cgFragmentParam_Data);
+	cgGLDisableTextureParameter(cgFragmentParam_TransferFunction);
+	AShaderConfig::Disable();
+}
+
 
 void 
 CheckForCgError( const std::string &situation, CGcontext &context  )
@@ -173,5 +232,50 @@ CheckForCgError( const std::string &situation, CGcontext &context  )
 		_THROW_ CgException( message );
 	}
 }
+
+void
+GLDrawVolumeSlicesForVertexShader(
+		M4D::BoundingBox3D	bbox,
+		Camera			camera,
+		unsigned 		numberOfSteps,
+		float			cutPlane
+		)
+{
+	Vector< float, 3> vertices[6];
+
+	float 				min = 0; 
+	float 				max = 0;
+	unsigned			minId = 0;	
+	unsigned			maxId = 0;	
+	GetBBoxMinMaxDistance( 
+		bbox, 
+		camera.GetEyePosition(), 
+		camera.GetCenterDirection(), 
+		min, 
+		max,
+		minId,	
+		maxId	
+		);
+	
+	float stepSize = cutPlane * (max - min) / numberOfSteps;
+	Vector< float, 3> planePoint = camera.GetEyePosition() + camera.GetCenterDirection() * max;
+	for( unsigned i = 0; i < numberOfSteps; ++i ) {
+		//Obtain intersection of the optical axis and the currently rendered plane
+		planePoint -= stepSize * camera.GetCenterDirection();
+		//Get n-gon as intersection of the current plane and bounding box
+		unsigned count = M4D::GetPlaneVerticesInBoundingBox( 
+				bbox, planePoint, camera.GetCenterDirection(), minId, vertices
+				);
+
+		//Render n-gon
+		glBegin( GL_POLYGON );
+			for( unsigned j = 0; j < 6; ++j ) {
+				glVertex2i( j, i );
+			}
+		glEnd();
+	}
+
+}
+
 
 #endif /*USE_CG*/

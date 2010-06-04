@@ -76,7 +76,7 @@ class ENULLPointer : public ExceptionBase
 {
 public:
 	ENULLPointer( std::string name ) throw() : ExceptionBase( name ) {}
-	ENULLPointer() throw() : ExceptionBase( "Obtained NULL pointer." ) {}
+	ENULLPointer() throw() : ExceptionBase( "Passed NULL pointer." ) {}
 	~ENULLPointer() throw(){}
 };
 
