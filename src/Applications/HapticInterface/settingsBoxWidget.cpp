@@ -1,4 +1,6 @@
 #include <QtGui>
+#include <sstream>
+#include <string>
 
 #include "transitionFunctionRenderArea.h"
 #include "settingsBoxWidget.h"
@@ -14,7 +16,11 @@ SettingsBoxWidget::SettingsBoxWidget(transitionFunction* functionData, QWidget* 
 	
 	renderArea = new transitionFunctionRenderAreaWidget(functionData);
 	connect(renderArea, SIGNAL(addPointSignal(double, double)), this, SLOT(pointAddedSlot(double, double)));
+	connect(renderArea, SIGNAL(mouseCoordinatesChangedSignal(double, double)), this, SLOT(mouseCoordinatesChangedSlot(double, double)));
 
+	mouseCoordinatesLabelLabel = new QLabel(tr("Mouse coordinates (x, y):"));
+	mouseCoordinatesLabel = new QLabel(tr("(0, 0)"));
+	
 	resetTransitionFunctionButton = new QPushButton(tr("&Reset function"));
 
 	zoomInButton = new QPushButton(tr("Zoom &in"));
@@ -32,7 +38,9 @@ SettingsBoxWidget::SettingsBoxWidget(transitionFunction* functionData, QWidget* 
     mainLayout->setColumnStretch(3, 1);
     mainLayout->addWidget(renderArea, 0, 0, 1, 4);
     mainLayout->setRowMinimumHeight(1, 6);
-    mainLayout->addWidget(resetTransitionFunctionButton, 4, 1, Qt::AlignCenter);
+	mainLayout->addWidget(mouseCoordinatesLabelLabel, 4, 1, Qt::AlignCenter);
+	mainLayout->addWidget(mouseCoordinatesLabel, 4, 2, Qt::AlignRight);
+    mainLayout->addWidget(resetTransitionFunctionButton, 5, 1, Qt::AlignCenter);
 	mainLayout->addWidget(hapticLabel, 6, 1, Qt::AlignCenter);
 	mainLayout->addWidget(zoomInButton, 7, 1, Qt::AlignCenter);
 	mainLayout->addWidget(zoomOutButton, 7, 2, Qt::AlignCenter);
@@ -67,4 +75,12 @@ void SettingsBoxWidget::zoomInHapticSlot()
 void SettingsBoxWidget::zoomOutHapticSlot()
 {
 	emit zoomOutHaptic();
+}
+
+void SettingsBoxWidget::mouseCoordinatesChangedSlot( double a_x, double a_y )
+{
+	std::stringstream ss;
+	ss << "( " << (unsigned short)(a_x * functionData->GetMaxPoint()) << ", " << a_y * functionData->GetValueOfMaxPoint() << " )";
+	std::string s = ss.str();
+	mouseCoordinatesLabel->setText(tr(s.c_str()));
 }

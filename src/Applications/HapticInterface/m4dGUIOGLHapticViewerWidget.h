@@ -39,6 +39,7 @@
 #include "vtkCommand.h"
 #include "vtkImageMapper.h"
 #include "vtkLineSource.h"
+#include "vtkCornerAnnotation.h"
 
 #include "vtkIntegration/m4dImageDataSource.h"
 
@@ -587,7 +588,9 @@ namespace M4D
 
 			vtkActor2D* sliceActor;
 
-			vtkRenderer* sliceRenderer; 
+			vtkRenderer* sliceRenderer;
+
+			vtkCornerAnnotation* cornerAnnotation;
 
 			line rectangleLine1;
 			line rectangleLine2;

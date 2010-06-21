@@ -20,6 +20,7 @@ namespace M4D
 			~hapticCursor();
 			void startHaptics();
 			void stop();
+			virtual int GetValue(); // returns value of point where the cursor stands
 		protected:
 			virtual void StartListen(); // method which starts new thread where haptics is running
 			virtual void SetCursorPosition(const cVector3d& cursorPosition); // Main method which sets cursor position and counts force for that position
@@ -40,6 +41,7 @@ namespace M4D
 			cPrecisionClock* m_clock;
 			int64 count;
 			boost::mutex runMutex;
+			int value;
 		};
 	}
 }

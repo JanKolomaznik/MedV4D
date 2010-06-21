@@ -7,6 +7,8 @@
 #include "m4dGUIOGLHapticViewerWidget.h"
 #include <QtGui>
 #include <QWidget>
+#include <sstream>
+#include <string>
 
 namespace M4D
 {
@@ -151,6 +153,7 @@ namespace M4D
 			sliceMapper->Delete();
 			sliceActor->Delete();
 			sliceRenderer->Delete();
+			cornerAnnotation->Delete();
 			std::vector< tissue >::iterator it;
 			for (it = tissues.begin(); it != tissues.end(); it++)
 			{
@@ -182,6 +185,7 @@ namespace M4D
 			sliceRenderer->RemoveActor(rectangleLine4.GetActor());
 			sliceRenderer->RemoveActor(cursorLine1.GetActor());
 			sliceRenderer->RemoveActor(cursorLine2.GetActor());
+			sliceRenderer->RemoveActor(cornerAnnotation);
 			GetRenderWindow()->RemoveRenderer( _renImageData );
 			GetRenderWindow()->RemoveRenderer(sliceRenderer);
 			sliceRenderer->Delete();
@@ -217,6 +221,7 @@ namespace M4D
 			sliceRenderer->AddActor(rectangleLine4.GetActor());
 			sliceRenderer->AddActor(cursorLine1.GetActor());
 			sliceRenderer->AddActor(cursorLine2.GetActor());
+			sliceRenderer->AddActor(cornerAnnotation);
 			GetRenderWindow()->AddRenderer( _renImageData );
 			GetRenderWindow()->AddRenderer(sliceRenderer);
 			//if ( _selected ) _renImageData->AddViewProp( _actor2DSelected );
@@ -228,7 +233,7 @@ namespace M4D
 			_renImageData->SetViewport(leftViewport);
 			sliceRenderer->SetViewport(rightViewport);
 			GetRenderWindow()->Render();
-			cursor->SetData(aggregationFilter->GetOutput());
+			cursor->SetData(_iCast->GetOutput());
 
 			resetTransitionFunction();
 		}
@@ -391,6 +396,11 @@ namespace M4D
 			point1[0] = cubeCenterInt[0] - (scaleInt / 2);
 			point1[1] = cubeCenterInt[1] - (scaleInt / 2);
 			rectangleLine4.SetPoints(point0, point1);
+
+			std::stringstream ss;
+			ss << "Cursor on value: " << cursor->GetValue();
+			std::string s = ss.str();
+			cornerAnnotation->SetText(1, s.c_str());
 		}
 			
 		void m4dGUIOGLHapticViewerWidget::setParameters()
@@ -481,7 +491,7 @@ namespace M4D
 
 #pragma endregion cursorCubeVtkInitialization
 
-			sliceData = aggregationFilter->GetOutput();
+			sliceData = _iCast->GetOutput();
 
 			sliceMapper = vtkImageMapper::New();
 			sliceMapper->SetInput(sliceData);
@@ -500,6 +510,13 @@ namespace M4D
 			cursorLine1.SetColor(0.0, 1.0, 0.0);
 			cursorLine2.SetColor(0.0, 1.0, 0.0);
 
+			cornerAnnotation = vtkCornerAnnotation::New();
+			cornerAnnotation->SetLinearFontScaleFactor( 2 );
+			cornerAnnotation->SetNonlinearFontScaleFactor( 1 );
+			cornerAnnotation->SetMaximumFontSize( 12 );
+			cornerAnnotation->SetText( 1, "lower right" );
+			cornerAnnotation->GetProperty()->SetColor(1.0,0.0,0.0);
+
 			sliceRenderer = vtkRenderer::New();
 			GetRenderWindow()->AddRenderer(sliceRenderer);
 			sliceRenderer->AddActor(sliceActor);
@@ -509,6 +526,7 @@ namespace M4D
 			sliceRenderer->AddActor(rectangleLine4.GetActor());
 			sliceRenderer->AddActor(cursorLine1.GetActor());
 			sliceRenderer->AddActor(cursorLine2.GetActor());
+			sliceRenderer->AddActor(cornerAnnotation);
 
 			std::cout << "Create renderer..." << std::endl; // DEBUG
 
@@ -671,6 +689,7 @@ namespace M4D
 				sliceRenderer->RemoveActor(rectangleLine4.GetActor());
 				sliceRenderer->RemoveActor(cursorLine1.GetActor());
 				sliceRenderer->RemoveActor(cursorLine2.GetActor());
+				sliceRenderer->RemoveActor(cornerAnnotation);
 				GetRenderWindow()->RemoveRenderer( _renImageData );
 				GetRenderWindow()->RemoveRenderer(sliceRenderer);
 				sliceRenderer->Delete();
@@ -705,6 +724,7 @@ namespace M4D
 				sliceRenderer->AddActor(rectangleLine4.GetActor());
 				sliceRenderer->AddActor(cursorLine1.GetActor());
 				sliceRenderer->AddActor(cursorLine2.GetActor());
+				sliceRenderer->AddActor(cornerAnnotation);
 				GetRenderWindow()->AddRenderer( _renImageData );
 				GetRenderWindow()->AddRenderer(sliceRenderer);
 				//if ( _selected ) _renImageData->AddViewProp( _actor2DSelected );
@@ -716,7 +736,7 @@ namespace M4D
 				_renImageData->SetViewport(leftViewport);
 				sliceRenderer->SetViewport(rightViewport);
 				GetRenderWindow()->Render();
-				cursor->SetData(aggregationFilter->GetOutput());
+				cursor->SetData(_iCast->GetOutput());
 				resetTransitionFunction();
 				break;
 			}

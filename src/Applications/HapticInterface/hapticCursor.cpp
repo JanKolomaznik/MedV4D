@@ -18,6 +18,7 @@ namespace M4D
 			this->hapticDevice = hapticDevice;
 			m_clock = new cPrecisionClock();
 			count = 0;
+			value = 0;
 		}
 
 		hapticCursor::hapticCursor( vtkRenderWindow* renderWindow, transitionFunction* hapticForceTransitionFunction )
@@ -41,7 +42,6 @@ namespace M4D
 			delete(m_clock);
 			delete(hapticsThread);
 			delete(handler);
-			delete(hapticDevice);
 		}
 		void hapticCursor::startHaptics()
 		{
@@ -119,6 +119,7 @@ namespace M4D
 				(coords[2] >= imageOffsetDepth) && (coords[2] < (imageOffsetDepth + imageDataDepth)))
 			{
 				unsigned short cursorVolumeValue = (unsigned short)input->GetScalarComponentAsDouble(coords[0], coords[1], coords[2], 0);
+				value = cursorVolumeValue;
 				newForce *= hapticForceTransitionFunction->GetValueOnPoint(cursorVolumeValue);
 				force = newForce;
 			}
@@ -192,6 +193,11 @@ namespace M4D
 					return;
 				}
 			}
+		}
+
+		int hapticCursor::GetValue()
+		{
+			return value;
 		}
 	}
 }

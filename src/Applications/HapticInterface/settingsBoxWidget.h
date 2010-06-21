@@ -26,6 +26,7 @@ signals:
 
 private slots:
 	void pointAddedSlot(double a_x, double a_y);
+	void mouseCoordinatesChangedSlot(double a_x, double a_y);
 	void resetDemandedSlot();
     void functionChangedSlot();
 	void zoomInHapticSlot();
@@ -35,6 +36,8 @@ private:
     transitionFunctionRenderAreaWidget *renderArea;
 	transitionFunction* functionData;
 	QLabel* hapticLabel;
+	QLabel* mouseCoordinatesLabelLabel;
+	QLabel* mouseCoordinatesLabel;
 	QPushButton* resetTransitionFunctionButton;
 	QPushButton* zoomInButton;
 	QPushButton* zoomOutButton;

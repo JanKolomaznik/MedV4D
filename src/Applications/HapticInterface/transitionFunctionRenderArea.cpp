@@ -7,6 +7,7 @@ transitionFunctionRenderAreaWidget::transitionFunctionRenderAreaWidget(transitio
     : QWidget(parent)
 {
    this->functionData = functionData;
+   setMouseTracking(true);
 
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
@@ -24,7 +25,7 @@ QSize transitionFunctionRenderAreaWidget::minimumSizeHint() const
 
 QSize transitionFunctionRenderAreaWidget::sizeHint() const
 {
-    return QSize(400, 200);
+    return QSize(800, 200);
 }
 
 void transitionFunctionRenderAreaWidget::paintEvent(QPaintEvent * /* event */)
@@ -84,4 +85,11 @@ void transitionFunctionRenderAreaWidget::mouseReleaseEvent(QMouseEvent *event)
 		double y = ((double)height() - (double)event->pos().y()) / (double)height();
 		emit addPointSignal(x, y);
 	}
+}
+
+void transitionFunctionRenderAreaWidget::mouseMoveEvent( QMouseEvent * event )
+{
+	double x = (double)event->pos().x() / (double)width();
+	double y = ((double)height() - (double)event->pos().y()) / (double)height();
+	emit mouseCoordinatesChangedSignal(x, y);
 }

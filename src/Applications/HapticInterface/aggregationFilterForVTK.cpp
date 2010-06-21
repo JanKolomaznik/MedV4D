@@ -38,7 +38,7 @@ int aggregationFilterForVtk::RequestData(vtkInformation *vtkNotUsed(request), vt
 		outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
 	vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New();
-	image->ShallowCopy(input);
+	image->DeepCopy(input);
 
 	if (!aggregationData.empty())
 	{

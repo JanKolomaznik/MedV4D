@@ -224,7 +224,6 @@ namespace M4D
 		{
 			return maxVolumeValue;
 		}
-
 	}
 }
 
