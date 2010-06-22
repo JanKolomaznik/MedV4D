@@ -7,6 +7,8 @@
 
 namespace M4D
 {
+namespace GUI
+{
 namespace Viewer
 {
 
@@ -154,6 +156,7 @@ void wheelEvent ( QWheelEvent * event )\
 
 
 } /*namespace Viewer*/
+} /*namespace GUI*/
 } /*namespace M4D*/
 
 

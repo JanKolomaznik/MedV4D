@@ -22,8 +22,23 @@ public:
 	~GLException() throw(){}
 };
 
+
+struct GLTextureImage
+{
+	GLuint
+	GetTextureGLID();
+
+	void
+	SetImage( M4D::Imaging::AImage::Ptr image );
+	
+	void
+	Reset();
+private:
+	M4D::Imaging::AImage::Ptr	_image;
+};
+
 void 
-CheckForGLError( const std::string &situation  );
+CheckForGLError( const std::string &situation );
 
 void
 SetToViewConfiguration2D( const ViewConfiguration2D &config );

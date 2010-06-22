@@ -5,6 +5,8 @@
 
 namespace M4D
 {
+namespace GUI
+{
 namespace Viewer
 {
 
@@ -35,6 +37,7 @@ private:
 
 
 } /*namespace Viewer*/
+} /*namespace GUI*/
 } /*namespace M4D*/
 
 
