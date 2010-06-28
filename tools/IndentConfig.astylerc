@@ -1,0 +1,10 @@
+-y
+--indent-blocks
+--indent-brackets
+--pad=oper
+--pad=paren
+--indent=spaces=8
+--indent=tab=8
+--force-indent=tab=8
+--brackets=break
+--mode=c
