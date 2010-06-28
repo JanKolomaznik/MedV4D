@@ -4,6 +4,7 @@
 
 #include "common/Common.h"
 #include "common/OGLTools.h"
+#include "Imaging/AImage.h"
 #include "Imaging/ImageRegion.h"
 #include "Imaging/PointSet.h"
 #include "Imaging/Mesh.h"

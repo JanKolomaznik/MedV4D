@@ -2,6 +2,7 @@
 #define AVIEWER_H
 
 #include "common/Common.h"
+#include "Imaging/Imaging.h"
 #include "GUI/utils/AHUDInfo.h"
 
 namespace M4D
@@ -22,11 +23,11 @@ enum RenderingQuality
 };
 
 
-class AViewer
+class AViewer: public Imaging::MessageReceiverInterface
 {
 
 public:
-	AViewer()
+	AViewer():_inputPorts( this )
 	{
 		_id = ++AViewer::_lastID;
 	}

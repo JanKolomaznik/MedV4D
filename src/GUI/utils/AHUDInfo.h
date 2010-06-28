@@ -19,7 +19,7 @@ class AHUDInfo
 };
 
 
-typedef stl::list< AHUDInfo * >	HUDInfoList;
+typedef std::list< AHUDInfo * >	HUDInfoList;
 
 } /*namespace Viewer*/
 } /*namespace GUI*/

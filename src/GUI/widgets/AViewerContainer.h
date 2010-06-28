@@ -1,7 +1,9 @@
 #ifndef AVIEWER_CONTAINER_H
 #define AVIEWER_CONTAINER_H
 
+#include "GUI/widgets/ADesktopContainer.h"
 #include "GUI/widgets/AGUIViewer.h"
+#include <QtCore>
 #include <QtGui>
 #include <boost/shared_ptr.hpp>
 
