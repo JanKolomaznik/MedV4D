@@ -15,8 +15,28 @@ int main( int argc, char** argv )
 	SET_DOUT( debugFile );
 
 	//////////////////////////////////////////////////////////////////////////
-	// Viewer Testing
+	// MedV4d GUI
 	//////////////////////////////////////////////////////////////////////////
+	//QApplication app( argc, argv );
+	//app.setQuitOnLastWindowClosed( true );
+
+	//MainWindow mainWindow;
+	//mainWindow.build();
+	//if ( mainWindow.wasBuildSuccessful() ) 
+	//{
+	//	mainWindow.show();
+	//	return app.exec();
+	//}
+	//else
+	//{
+	//	QMessageBox::critical( &mainWindow, QObject::tr( "Exception" ), mainWindow.getBuildMessage() + QString( "\n\n" ) +
+	//		QObject::tr( "The application will now terminate..." ) );
+	//	return 1;
+	//} 
+	
+	////////////////////////////////////////////////////////////////////////
+	// Separate Window
+	////////////////////////////////////////////////////////////////////////
 
 	if( argc < 2 || argc > 2 ) {
 		std::cerr << "Wrong argument count - must be in form: 'program file'\n";

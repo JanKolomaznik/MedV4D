@@ -17,6 +17,8 @@ public:
 	void SetMinPoint(unsigned short point);
 	unsigned short GetMaxPoint();
 	void SetMaxPoint(unsigned short point);
+	void SetPointOnPosition(std::size_t pos, unsigned short point);
+	void DeletePointOnPosition(std::size_t position);
 	std::size_t size();
 	unsigned short GetPointOnPosition(std::size_t pos);
 	void Reset(unsigned short minPoint, unsigned short maxPoint, double minValue, double maxValue);

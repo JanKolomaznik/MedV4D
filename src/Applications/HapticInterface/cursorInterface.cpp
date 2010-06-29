@@ -131,15 +131,15 @@ namespace M4D
 			boost::mutex::scoped_lock lck(cursorMutex);
 
 			double positionDiff[3];
-			positionDiff[0] = cursorRadiusCubeCenter[0] - cursorCenter[0]; 
-			positionDiff[1] = cursorRadiusCubeCenter[1] - cursorCenter[1];
-			positionDiff[2] = cursorRadiusCubeCenter[2] - cursorCenter[2];
+			positionDiff[0] = cursorCenter[0] - cursorRadiusCubeCenter[0]; 
+			positionDiff[1] = cursorCenter[1] - cursorRadiusCubeCenter[1];
+			positionDiff[2] = cursorCenter[2] - cursorRadiusCubeCenter[2];
 			
 			double scaleRatio = scale / this->scale;
 			this->scale = scale;
-			cursorRadiusCubeCenter[0] = cursorCenter[0] + positionDiff[0] * scaleRatio;
-			cursorRadiusCubeCenter[1] = cursorCenter[1] + positionDiff[1] * scaleRatio;
-			cursorRadiusCubeCenter[2] = cursorCenter[2] + positionDiff[2] * scaleRatio;
+			cursorRadiusCubeCenter[0] = cursorCenter[0];// + positionDiff[0] * scaleRatio;
+			cursorRadiusCubeCenter[1] = cursorCenter[1];// + positionDiff[1] * scaleRatio;
+			cursorRadiusCubeCenter[2] = cursorCenter[2];// + positionDiff[2] * scaleRatio;
 		}
 
 		void cursorInterface::SetCursorPosition(const cVector3d& position)

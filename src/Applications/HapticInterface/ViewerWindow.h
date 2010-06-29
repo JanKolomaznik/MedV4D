@@ -1,6 +1,10 @@
 #ifndef M4D_GUI_OPENGLHAPTICVIEWERWIDGET_H_HAPTIC_VIEWER_WINDOW
 #define M4D_GUI_OPENGLHAPTICVIEWERWIDGET_H_HAPTIC_VIEWER_WINDOW
 
+//////////////////////////////////////////////////////////////////////////
+// Separate Window
+//////////////////////////////////////////////////////////////////////////
+
 #include "Imaging/ImageFactory.h"
 #include <iostream>
 #include <sstream>
@@ -21,4 +25,32 @@ private:
 	M4D::Viewer::m4dGUIOGLHapticViewerWidget *viewerWidget;
 }; 
 
+
+//////////////////////////////////////////////////////////////////////////
+// Medv4d GUI
+//////////////////////////////////////////////////////////////////////////
+//#include "GUI/widgets/m4dGUIMainWindow.h"
+//#include "GUI/widgets/m4dGUIMainViewerDesktopWidget.h"
+//
+//#include "m4dGUIOGLHapticViewerWidget.h"
+//
+//#define ORGANIZATION_NAME     "MFF"
+//#define APPLICATION_NAME      "Haptic Interface"
+//
+//class MainWindow: public M4D::GUI::m4dGUIMainWindow
+//{
+//	Q_OBJECT
+//
+//public:
+//
+//	void build();
+//
+//private:
+//
+//	virtual void createDefaultViewerDesktop ();
+//};
+
 #endif
+
+
+

@@ -88,8 +88,8 @@ namespace M4D
 		{
 			_index = index;
 			hapticForceTransitionFunction = new transitionFunction();
-			setParameters();
 			cursor = new hapticCursor( GetRenderWindow(), hapticForceTransitionFunction);
+			setParameters();
 			_inPort = new Imaging::InputPortTyped< Imaging::AImage >();
 			_inputPorts.AppendPort( _inPort );
 			setInputPort( conn );
@@ -114,8 +114,8 @@ namespace M4D
 		{
 			_index = index;
 			hapticForceTransitionFunction = new transitionFunction();
-			setParameters();
 			cursor = new hapticCursor( GetRenderWindow(), hapticForceTransitionFunction);
+			setParameters();
 			_inPort = new Imaging::InputPortTyped< Imaging::AImage >();
 			_inputPorts.AppendPort( _inPort );
 			setInputPort();
@@ -398,7 +398,7 @@ namespace M4D
 			rectangleLine4.SetPoints(point0, point1);
 
 			std::stringstream ss;
-			ss << "Cursor on value: " << cursor->GetValue();
+			ss << "Cursor on value: " << cursor->GetValue() << " on slice: " << cursor->GetZSlice();
 			std::string s = ss.str();
 			cornerAnnotation->SetText(1, s.c_str());
 		}

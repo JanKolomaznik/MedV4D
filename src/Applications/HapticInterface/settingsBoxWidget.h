@@ -9,6 +9,8 @@ class QPushButton;
 class QLabel;
 class QSpinBox;
 class QDoubleSpinBox;
+class QCheckBox;
+class QCloseEvent;
 QT_END_NAMESPACE
 class transitionFunctionRenderAreaWidget;
 
@@ -38,9 +40,11 @@ private:
 	QLabel* hapticLabel;
 	QLabel* mouseCoordinatesLabelLabel;
 	QLabel* mouseCoordinatesLabel;
+	QCheckBox* pointStyleCheckBox;
 	QPushButton* resetTransitionFunctionButton;
 	QPushButton* zoomInButton;
 	QPushButton* zoomOutButton;
+	void closeEvent(QCloseEvent *event);
 };
 
 #endif

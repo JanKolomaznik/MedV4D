@@ -19,6 +19,16 @@ namespace M4D
 			m_clock = new cPrecisionClock();
 			count = 0;
 			value = 0;
+			lastPosition.zero();
+			epsilon = 0.1;
+			ksi = 0.3;
+			numberOfVectors = 10;
+			vectors.clear();
+			cVector3d c = cVector3d(0.0, 0.0, 0.0);
+			for (int i = 0; i < 10; ++i)
+			{
+				vectors.push_back(c);
+			}
 		}
 
 		hapticCursor::hapticCursor( vtkRenderWindow* renderWindow, transitionFunction* hapticForceTransitionFunction )
@@ -33,6 +43,17 @@ namespace M4D
 			this->hapticDevice = hapticDevice;
 			m_clock = new cPrecisionClock();
 			count = 0;
+			value = 0;
+			lastPosition.zero();
+			epsilon = 0.1;
+			ksi = 0.3;
+			numberOfVectors = 10;
+			vectors.clear();
+			cVector3d c = cVector3d(0.0, 0.0, 0.0);
+			for (int i = 0; i < 10; ++i)
+			{
+				vectors.push_back(c);
+			}
 		}
 		hapticCursor::~hapticCursor()
 		{
@@ -62,12 +83,10 @@ namespace M4D
 		}
 		void hapticCursor::SetCursorPosition(const cVector3d& cursorPosition)
 		{
-			cSleepMs(18); // may be performance issue
 			boost::mutex::scoped_lock lck(cursorMutex);
-			cVector3d lastRealPosition(cursorCenter[0], cursorCenter[1], cursorCenter[2]);
 
 			cVector3d radiusCubeCenterChai(cursorRadiusCubeCenter[0], cursorRadiusCubeCenter[1], cursorRadiusCubeCenter[2]);
-			cVector3d realCursorPosition(cursorPosition);
+			cVector3d realCursorPosition(cursorPosition.y, cursorPosition.z, cursorPosition.x);
 
 			if (realCursorPosition.x > info.m_workspaceRadius)
 			{
@@ -103,7 +122,13 @@ namespace M4D
 			cursorCenter[1] = newRealPositionVTK[1];
 			cursorCenter[2] = newRealPositionVTK[2];
 
-			cVector3d newForce = newRealPosition - lastRealPosition;
+			cVector3d newForce = cursorPosition - lastPosition;
+			for (int i = 0; i < numberOfVectors - 1; ++i)
+			{
+				vectors[i] = vectors[i + 1];
+			}
+			vectors[numberOfVectors - 1] = newForce;
+			lastPosition = cursorPosition;
 			if ((newForce.x != 0) || (newForce.y != 0) || (newForce.z != 0))
 			{
 				newForce.normalize();
@@ -120,8 +145,51 @@ namespace M4D
 			{
 				unsigned short cursorVolumeValue = (unsigned short)input->GetScalarComponentAsDouble(coords[0], coords[1], coords[2], 0);
 				value = cursorVolumeValue;
-				newForce *= hapticForceTransitionFunction->GetValueOnPoint(cursorVolumeValue);
-				force = newForce;
+				double valueOnPoint = hapticForceTransitionFunction->GetValueOnPoint(cursorVolumeValue);
+				cVector3d hlp;
+				/*newForce *= valueOnPoint;
+				cVector3d delta = newForce - force;
+				if (delta.length() > epsilon)
+				{
+					delta.normalize();
+					delta *= epsilon;
+				}
+				hlp = force + delta;*/
+				/*if (delta.x > epsilon)
+					delta.x = epsilon;
+				if (delta.x < -epsilon)
+					delta.x = -epsilon;
+				if (delta.y > epsilon)
+					delta.y = epsilon;
+				if (delta.y < -epsilon)
+					delta.y = -epsilon;
+				if (delta.z > epsilon)
+					delta.z = epsilon;
+				if (delta.z < -epsilon)
+					delta.z = -epsilon;*/
+				hlp.zero();
+				for (int i = 0; i < numberOfVectors; ++i)
+				{
+					hlp += vectors[i];
+				}
+				if ((hlp.x != 0) || (hlp.y != 0) || (hlp.z != 0))
+				{
+					hlp.normalize();
+				}
+				hlp *= valueOnPoint * -1.0 * info.m_maxForce;
+				//double maxForce = ( valueOnPoint + ksi ) * info.m_maxForce;
+				//double minForce = ( valueOnPoint - ksi ) > 0 ? ( valueOnPoint - ksi ) * info.m_maxForce : 0;
+				//if (hlp.length() > maxForce)
+				//{
+				//	hlp.normalize();
+				//	hlp *= maxForce;
+				//}
+				//if (hlp.length() < minForce)
+				//{
+				//	hlp.normalize();
+				//	hlp *= minForce;
+				//}
+				force = hlp;
 			}
 			else
 			{
@@ -168,8 +236,10 @@ namespace M4D
 		{
 			for (;;)
 			{	
+				cSleepMs(1); // may be performance issue
 				cVector3d hapticPosition;
 				hapticDevice->getPosition(hapticPosition);
+				//std::cout << hapticPosition << std::endl;
 				SetCursorPosition(hapticPosition);
 				hapticDevice->setForce(GetForce());
 				bool zoomIn = false;
@@ -181,12 +251,12 @@ namespace M4D
 				SetZoomInButtonPressed(zoomIn);
 				SetZoomOutButtonPressed(zoomOut);
 
-				double clock = m_clock->getCurrentTimeSeconds();
-				double fps = 1.0 / clock;
-				m_clock->reset();
+				//double clock = m_clock->getCurrentTimeSeconds();
+				//double fps = 1.0 / clock;
+				//m_clock->reset();
 				//std::cout << fps << std::endl;
 
-				//std::cout << supervisor->GetForce().x << " " << supervisor->GetForce().y << " " << supervisor->GetForce().z << " " << std::endl;
+				std::cout << GetForce() << std::endl;
 				boost::mutex::scoped_lock l(runMutex);
 				if (!runHaptics)
 				{

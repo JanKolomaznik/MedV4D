@@ -159,3 +159,22 @@ unsigned short transitionFunction::GetPointOnPosition( std::size_t pos )
 	boost::mutex::scoped_lock l(accesMutex);
 	return data[pos].point;
 }
+
+void transitionFunction::DeletePointOnPosition(std::size_t position)
+{
+	boost::mutex::scoped_lock l(accesMutex);
+	if (position < data.size())
+	{
+		for (int i = position; i < data.size() - 1; ++i)
+		{
+			data[i] = data[i + 1];
+		}
+		data.pop_back();
+	}
+}
+
+void transitionFunction::SetPointOnPosition( std::size_t pos, unsigned short point )
+{
+	boost::mutex::scoped_lock l(accesMutex);
+	data[pos].point = point;
+}

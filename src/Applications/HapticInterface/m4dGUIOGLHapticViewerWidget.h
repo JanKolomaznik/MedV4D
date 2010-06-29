@@ -46,6 +46,7 @@
 #include "common/Common.h"
 #include "Imaging/Imaging.h"
 #include "gui\widgets\m4dGUIAbstractViewerWidget.h"
+#include "GUI/widgets/utils/ViewerFactory.h"
 #include "hapticCursor.h"
 #include "settingsBoxWidget.h"
 
@@ -600,6 +601,8 @@ namespace M4D
 			line cursorLine1;
 			line cursorLine2;
 		};
+
+		typedef M4D::GUI::GenericViewerFactory< M4D::Viewer::m4dGUIOGLHapticViewerWidget > OGLHapticViewerFactory;
 
 	} /* namespace Viewer */
 } /* namespace M4D */

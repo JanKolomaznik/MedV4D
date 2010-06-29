@@ -7,6 +7,7 @@
 #include "common/Log.h"
 #include "transitionFunction.h"
 #include "vtkRenderWindow.h"
+#include <vector>
 
 namespace M4D
 {
@@ -28,6 +29,7 @@ namespace M4D
 			virtual void SetZoomOutButtonPressed(bool pressed); // set button pressed status
 			virtual void deviecWorker();
 			cVector3d& GetForce();
+			cVector3d lastPosition;
 			bool runHaptics; // indicates if continue to listen or not
 			cHapticDeviceHandler* handler; // a haptic device handler
 			cGenericHapticDevice* hapticDevice; // a pointer to a haptic device
@@ -41,7 +43,10 @@ namespace M4D
 			cPrecisionClock* m_clock;
 			int64 count;
 			boost::mutex runMutex;
+			double epsilon, ksi;
 			int value;
+			std::vector< cVector3d > vectors;
+			int numberOfVectors;
 		};
 	}
 }
