@@ -9,7 +9,7 @@
 #define M4D_GUI_VTKVIEWERWIDGET_H_
 
 //In case of disabled VTK skip declarations
-#ifdef USE_VTK
+//#ifdef USE_VTK
 
 #include <QWidget>
 #include <QVTKWidget.h>
@@ -496,7 +496,7 @@ private:
 } /* namespace Viewer */
 } /* namespace M4D */
 
-#endif /*USE_VTK*/
+//#endif /*USE_VTK*/
 
 #endif // M4D_GUI_VTK_VIEWER_WIDGET_H
 

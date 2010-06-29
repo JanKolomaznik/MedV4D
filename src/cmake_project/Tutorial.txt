@@ -3,3 +3,8 @@ set BOOST_ROOT
 cmake parameters
 -DCMAKE_BUILD_TYPE="Debug"
 -DCMAKE_BUILD_TYPE="Release"
+
+make classical output
+CMAKE_VERBOSE_MAKEFILE to ON
+or make parameter VERBOSE=1
+
