@@ -86,7 +86,7 @@ ENDIF( ${OLD_M4D_WIDGETS_ENABLED} MATCHES "OFF" )
 
 FILTER_HEADERS_FOR_MOC( "${GUI_header_files}" mocinput )
 
-QT4_WRAP_CPP(mocoutput ${mocinput})
+QT4_WRAP_CPP(mocoutput ${mocinput} OPTIONS ${EXP_COMPILE_DEFINITIONS} )
 QT4_ADD_RESOURCES(rccoutput ${rccinput} ) #OPTIONS --root ../tmp
 SOURCE_GROUP( GUI_Sources FILES ${WidgetsSrc} ${WidgetsOglSrc} ${WidgetsUtilsSrc} ${UtilsSrc} ${WidgetsComponentsSrc} )
 SOURCE_GROUP( GUI_Resources FILES  ${rccinput} )
