@@ -1,17 +1,16 @@
-#ifndef AVIEWER_DESKTOP_H
-#define AVIEWER_DESKTOP_H
+#ifndef MAIN_WINDOW_H
+#define MAIN_WINDOW_H
 
-#include "GUI/widgets/AGUIViewer.h"
 #include <QtGui>
 #include <boost/shared_ptr.hpp>
+#include "tmp/ui_MainWindow.h"
 
 namespace M4D
 {
 namespace GUI
 {
 
-
-class ADesktop: public QWidget
+class MainWindow: public QMainWindow, public Ui::MainWindow
 {
 	Q_OBJECT;
 public:
@@ -23,9 +22,10 @@ private:
 };
 
 
-
 } /*namespace GUI*/
 } /*namespace M4D*/
 
 
-#endif /*AVIEWER_DESKTOP_H*/
+#endif /*MAIN_WINDOW_H*/
+
+

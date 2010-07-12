@@ -80,7 +80,7 @@ FUNCTION(TARGET_MEDV4D_PROGRAM prog_name source_dir )
 	FILTER_HEADERS_FOR_MOC( "${header_files}" mocinput )
 	
 	
-	message( "++++++++++++++ ${moc_options}" )
+	#message( "++++++++++++++ ${moc_options}" )
 	QT4_WRAP_CPP(mocoutput ${mocinput})
 	QT4_ADD_RESOURCES(rccoutput ${rccinput} )
 	QT4_WRAP_UI(uioutput ${uiinput} )

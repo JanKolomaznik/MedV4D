@@ -3,13 +3,14 @@ struct LUT_Output {
   float4 color : COLOR;
 };
 
-LUT_Output LUT_texture( float2 texCoord : TEXCOORD0, 
+LUT_Output LUT_texture( float3 texCoord : TEXCOORD0, 
 			uniform sampler3D texture : TEX0,
-			uniform sampler1D texture : TEX1,
+			uniform float2 brightnessContrast
 			)
 {
   LUT_Output OUT;
-  OUT.color = contrastBrightness.y + contrastBrightness.x * tex2D(texture,texCoord);
+  OUT.color = (brightnessContrast.x + brightnessContrast.y * tex3D(texture,texCoord));
+  //OUT.color = float4( texCoord.x, texCoord.y, 0.0f, 1.0f )  /* tex3D(texture,texCoord)*/;
   return OUT;
 }
 

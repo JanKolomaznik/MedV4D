@@ -73,6 +73,7 @@ IF( ${OLD_M4D_WIDGETS_ENABLED} MATCHES "ON" )
 ENDIF( ${OLD_M4D_WIDGETS_ENABLED} MATCHES "ON" )
 
 FILE( GLOB rccinput ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/src/*.qrc )
+FILE( GLOB uiinput ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/*.ui )
 FILE( GLOB GUI_header_files ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/utils/*.h ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/*.h ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/components/*.h ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/utils/*.h )
 
 IF( ${OLD_M4D_WIDGETS_ENABLED} MATCHES "OFF"  )
@@ -88,12 +89,14 @@ FILTER_HEADERS_FOR_MOC( "${GUI_header_files}" mocinput )
 
 QT4_WRAP_CPP(mocoutput ${mocinput} OPTIONS ${EXP_COMPILE_DEFINITIONS} )
 QT4_ADD_RESOURCES(rccoutput ${rccinput} ) #OPTIONS --root ../tmp
+QT4_WRAP_UI(uioutput ${uiinput} )
+message( "------------------ ${uiinput} **** ${uioutput}")
 SOURCE_GROUP( GUI_Sources FILES ${WidgetsSrc} ${WidgetsOglSrc} ${WidgetsUtilsSrc} ${UtilsSrc} ${WidgetsComponentsSrc} )
 SOURCE_GROUP( GUI_Resources FILES  ${rccinput} )
-SOURCE_GROUP( GUI_Generated FILES  ${mocoutput} ${rccoutput} )
+SOURCE_GROUP( GUI_Generated FILES  ${mocoutput} ${rccoutput} ${uioutput} )
 SOURCE_GROUP( GUI_Headers FILES ${GUI_header_files} )
 
-ADD_LIBRARY(m4dWidgets ${WidgetsSrc} ${WidgetsOglSrc} ${WidgetsUtilsSrc} ${UtilsSrc} ${WidgetsComponentsSrc} ${mocoutput} ${rccoutput} ${GUI_header_files} ${rccinput} )
+ADD_LIBRARY(m4dWidgets ${WidgetsSrc} ${WidgetsOglSrc} ${WidgetsUtilsSrc} ${UtilsSrc} ${WidgetsComponentsSrc} ${mocoutput} ${rccoutput} ${uioutput} ${GUI_header_files} ${rccinput} )
 ADD_DEPENDENCIES(m4dWidgets Common Imaging backendForDICOM vtkIntegration)
 
 #--------------------------------------------------------

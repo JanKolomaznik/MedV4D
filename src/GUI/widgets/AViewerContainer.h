@@ -2,16 +2,12 @@
 #define AVIEWER_CONTAINER_H
 
 #include "GUI/widgets/ADesktopContainer.h"
-#include "GUI/widgets/AGUIViewer.h"
-#include <QtCore>
 #include <QtGui>
 #include <boost/shared_ptr.hpp>
 
 namespace M4D
 {
 namespace GUI
-{
-namespace Viewer
 {
 
 class AViewerContainer: public ADesktopContainer
@@ -26,7 +22,7 @@ private:
 };
 
 
-} /*namespace Viewer*/
+
 } /*namespace GUI*/
 } /*namespace M4D*/
 
