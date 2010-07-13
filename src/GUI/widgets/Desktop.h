@@ -4,6 +4,7 @@
 #include <QtGui>
 #include <boost/shared_ptr.hpp>
 #include "GUI/widgets/ADesktop.h"
+#include "GUI/widgets/ADesktopContainer.h"
 
 namespace M4D
 {
@@ -15,11 +16,12 @@ class Desktop: public QWidget
 {
 	Q_OBJECT;
 public:
-	Desktop( QWidget *parent = NULL ): QWidget( parent )
-		{}
+	Desktop( QWidget *parent = NULL );
+
+	~Desktop();
 
 protected:
-
+	std::vector< ADesktopContainer * >	_desktopContainers;
 private:
 
 };

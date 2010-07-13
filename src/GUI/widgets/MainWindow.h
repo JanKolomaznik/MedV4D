@@ -14,6 +14,7 @@ class MainWindow: public QMainWindow, public Ui::MainWindow
 {
 	Q_OBJECT;
 public:
+	MainWindow();
 
 protected:
 
