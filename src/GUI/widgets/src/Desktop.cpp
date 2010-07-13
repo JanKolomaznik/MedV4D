@@ -16,6 +16,12 @@ Desktop::~Desktop()
 
 }
 
+void
+Desktop::SetContainerFactory( ADesktopContainerFactory::Ptr factory )
+{
+
+}
+
 } /*namespace GUI*/
 } /*namespace M4D*/
 
