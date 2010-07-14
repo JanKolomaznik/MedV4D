@@ -144,6 +144,24 @@ private:
 
 };
 
+class ENotFound: public ExceptionBase
+{
+public:
+	ENotFound( std::string name ) throw(): ExceptionBase( name ) {}
+	ENotFound() throw(): ExceptionBase( "Not found." ) {}
+private:
+
+};
+
+class EAlreadyPresent: public ExceptionBase
+{
+public:
+	EAlreadyPresent( std::string name ) throw(): ExceptionBase( name ) {}
+	EAlreadyPresent() throw(): ExceptionBase( "Already present." ) {}
+private:
+
+};
+
 class EObjectUnavailable: public ExceptionBase
 {
 public:

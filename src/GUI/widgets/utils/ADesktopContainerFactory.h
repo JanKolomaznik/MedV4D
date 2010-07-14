@@ -4,7 +4,7 @@
 #include <QtGui>
 #include <boost/shared_ptr.hpp>
 #include "GUI/widgets/ADesktopContainer.h"
-//#include "common/Variant.h"
+#include "common/ParameterSet.h"
 
 namespace M4D
 {
@@ -24,8 +24,8 @@ public:
 	virtual ADesktopContainer *
 	Create() = 0;
 
-//	virtual ADesktopContainer *
-//	Create( const Variant &info ) = 0;
+	virtual ADesktopContainer *
+	Create( const ParameterSet &info ) = 0;
 
 protected:
 private:

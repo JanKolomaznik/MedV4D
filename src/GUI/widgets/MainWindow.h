@@ -16,6 +16,10 @@ class MainWindow: public QMainWindow, public Ui::MainWindow
 public:
 	MainWindow();
 
+	virtual void
+	Initialize()
+	{}
+
 protected:
 
 private:
