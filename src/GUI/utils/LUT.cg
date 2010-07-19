@@ -1,16 +1,41 @@
 
-struct LUT_Output {
+struct Output {
   float4 color : COLOR;
 };
 
-LUT_Output LUT_texture( float3 texCoord : TEXCOORD0, 
-			uniform sampler3D texture : TEX0,
+Output SimpleBrightnessContrast3D( 
+			float3 texCoord : TEXCOORD0, 
+			uniform sampler3D dataTexture : TEX0,
 			uniform float2 brightnessContrast
 			)
 {
   LUT_Output OUT;
-  OUT.color = (brightnessContrast.x + brightnessContrast.y * tex3D(texture,texCoord));
-  //OUT.color = float4( texCoord.x, texCoord.y, 0.0f, 1.0f )  /* tex3D(texture,texCoord)*/;
+  OUT.color = (brightnessContrast.x + brightnessContrast.y * tex3D(dataTexture,texCoord));
   return OUT;
 }
+
+Output SimpleLUT3D( 
+			float3 texCoord : TEXCOORD0, 
+			uniform sampler3D dataTexture : TEX0,
+			uniform sampler1D transferFunctionTexture : TEX1
+			)
+{
+	Output OUT;
+	float value = tex3D(dataTexture,texCoord);
+	OUT.color = tex1D(transferFunctionTexture,value);
+	return OUT;
+}
+
+Output MaskBlend3D( 
+			float2 texCoord : TEXCOORD0, 
+			uniform sampler3D texture : TEX0,
+			uniform float4 blendColor : COLOR
+			)
+{
+	Output OUT;
+	OUT.color = blendColor;
+	OUT.color.w = OUT.color.w*tex2D(texture,texCoord).x;
+	return OUT;
+}
+
 
