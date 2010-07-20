@@ -44,10 +44,7 @@ public:
 	OrbitCamera( float32 angle, const Vector<float32,3> &axis ) = 0;
 
 
-	/* TODO Light setup */
-
-
-
+	
 };
 
 } /*namespace Viewer*/

@@ -24,20 +24,6 @@ public:
 };
 
 
-struct GLTextureImage
-{
-	GLuint
-	GetTextureGLID();
-
-	void
-	SetImage( M4D::Imaging::AImage::Ptr image );
-	
-	void
-	Reset();
-private:
-	M4D::Imaging::AImage::Ptr	_image;
-};
-
 void 
 CheckForGLError( const std::string &situation );
 

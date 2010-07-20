@@ -12,7 +12,7 @@ namespace GUI
 namespace Viewer
 {
 
-class A2DViewer: public AGUIViewer
+class A2DViewer: public AGUIViewer, public I3DViewer
 {
 
 };

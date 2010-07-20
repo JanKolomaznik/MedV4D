@@ -1,5 +1,5 @@
-#ifndef A_3D_VIEWER_H
-#define A_3D_VIEWER_H
+#ifndef BASIC_SLICE_VIEWER_H
+#define BASIC_SLICE_VIEWER_H
 
 #include "GUI/widgets/AGUIViewer.h"
 #include <QtGui>
@@ -12,7 +12,7 @@ namespace GUI
 namespace Viewer
 {
 
-class A3DViewer: public AGUIViewer, public I3DViewer
+class BasicSliceViewer
 {
 
 };
@@ -23,7 +23,7 @@ class A3DViewer: public AGUIViewer, public I3DViewer
 
 
 
-#endif /*A_3D_VIEWER_H*/
+#endif /*BASIC_SLICE_VIEWER_H*/
 
 
 
