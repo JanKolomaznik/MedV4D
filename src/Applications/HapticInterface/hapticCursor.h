@@ -44,9 +44,13 @@ namespace M4D
 			int64 count;
 			boost::mutex runMutex;
 			double epsilon, ksi;
+			double springPower;
 			int value;
 			std::vector< cVector3d > vectors;
 			int numberOfVectors;
+			bool proxyMode;
+			cVector3d solidPlaneParams;
+			double dParamOfPlane;
 		};
 	}
 }

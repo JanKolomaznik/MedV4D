@@ -29,10 +29,15 @@ signals:
 private slots:
 	void pointAddedSlot(double a_x, double a_y);
 	void mouseCoordinatesChangedSlot(double a_x, double a_y);
+	void pointAddDemandSlot();
+	void setSolidFromDemandSlot();
+	void unsetSolidFromDemandSlot();
 	void resetDemandedSlot();
     void functionChangedSlot();
 	void zoomInHapticSlot();
 	void zoomOutHapticSlot();
+	void loadFunctionSlot();
+	void saveFunctionSlot();
 
 private:
     transitionFunctionRenderAreaWidget *renderArea;
@@ -40,10 +45,19 @@ private:
 	QLabel* hapticLabel;
 	QLabel* mouseCoordinatesLabelLabel;
 	QLabel* mouseCoordinatesLabel;
+	QLabel* xLabel;
+	QLabel* yLabel;
 	QCheckBox* pointStyleCheckBox;
 	QPushButton* resetTransitionFunctionButton;
 	QPushButton* zoomInButton;
 	QPushButton* zoomOutButton;
+	QPushButton* loadButton;
+	QPushButton* saveButton;
+	QPushButton* addPointButton;
+	QPushButton* setSolidFromButton;
+	QPushButton* unsetSolidFromButton;
+	QSpinBox* xSpinBox;
+	QDoubleSpinBox* ySpinBox;
 	void closeEvent(QCloseEvent *event);
 };
 

@@ -51,7 +51,17 @@ void transitionFunctionRenderAreaWidget::paintEvent(QPaintEvent * /* event */)
 	painter.drawPath(path);
 
 	painter.restore();
-                
+
+	if (functionData->GetSolidFrom() != -1)
+	{
+		painter.setPen(QPen(Qt::red, 1));
+		painter.setBrush(Qt::NoBrush);
+		painter.save();
+		double xpos = ((double)functionData->GetSolidFrom()) * width() / ((double)functionData->GetMaxPoint());
+		painter.drawLine(xpos, 1, xpos, height() - 1);
+		painter.restore();
+	}
+
     painter.setPen(pen);
     painter.setBrush(Qt::NoBrush);
 	painter.save();
@@ -106,17 +116,79 @@ void transitionFunctionRenderAreaWidget::paintEvent(QPaintEvent * /* event */)
 
 		QRect elipse = QRect(mouseX - lengthToPickPoint, mouseY - lengthToPickPoint, lengthToPickPoint * 2, lengthToPickPoint * 2);
 		painter.drawEllipse(elipse);
+
+		QPainterPath hlpLines;
+		bool possible = true;
+		
+		if (selectedPoint != 0)
+		{
+			hlpLines.moveTo(QPoint((int)(xstep * (double)functionData->GetPointOnPosition(selectedPoint - 1)) + 1, height()-((int)((double)(height()-2) * functionData->GetValueOnPoint(functionData->GetPointOnPosition(selectedPoint - 1))) + 1)));
+			hlpLines.lineTo(QPoint(mouseX, mouseY));
+			if (mouseX <= (int)(xstep * (double)functionData->GetPointOnPosition(selectedPoint - 1)) + 1)
+			{
+				possible = false;
+			}
+		}
+		else
+		{	
+			hlpLines.moveTo(QPoint(mouseX, mouseY));
+			if (mouseX <= 1)
+			{
+				possible = false;
+			}
+		}
+		if (selectedPoint < (functionData->size() - 1))
+		{
+			hlpLines.lineTo(QPoint((int)(xstep * (double)functionData->GetPointOnPosition(selectedPoint + 1)) + 1, height()-((int)((double)(height()-2) * functionData->GetValueOnPoint(functionData->GetPointOnPosition(selectedPoint + 1))) + 1)));
+			if (mouseX >= (int)(xstep * (double)functionData->GetPointOnPosition(selectedPoint + 1)) + 1)
+			{
+				possible = false;
+			}
+		}
+		else
+		{
+			if (mouseX >= width() - 1)
+			{
+				possible = false;
+			}
+		}
+
+		if (possible)
+		{
+			pen = QPen(Qt::blue, 1);
+		}
+		else
+		{
+			pen = QPen(Qt::red, 1);
+		}
+		painter.restore();
+		painter.setPen(pen);
+		painter.setBrush(Qt::NoBrush);
+		painter.save();
+		painter.drawPath(hlpLines);
 	}
 }
 
 void transitionFunctionRenderAreaWidget::mouseReleaseEvent(QMouseEvent *event)
 {
+	if ((event->pos().x() < 0) || (event->pos().x() > width()) || (event->pos().y() < 0) || (event->pos().y() > height()))
+	{
+		return;
+	}
 	if (event->button() == Qt::LeftButton) 
 	{
 		if (!pointStyleMoveable)
 		{
 			double x = ((double)event->pos().x() - 1.0)/ ((double)width() - 2);
+			if (x < 0.0)
+			{
+				x = 0.0;
+			}
 			double y = ((double)height() - (double)event->pos().y() + 1.0) / ((double)height() - 2.0);
+			if (y < 0.0)
+			{
+				y = 0.0;
+			}
 			emit addPointSignal(x, y);
 		}
 		else
@@ -126,7 +198,15 @@ void transitionFunctionRenderAreaWidget::mouseReleaseEvent(QMouseEvent *event)
 				if (!deny)
 				{
 					double x = ((double)event->pos().x() - 1.0)/ ((double)width() - 2);
+					if (x < 0.0)
+					{
+						x = 0.0;
+					}
 					double y = ((double)height() - (double)event->pos().y() + 1.0) / ((double)height() - 2.0);
+					if (y < 0.0)
+					{
+						y = 0.0;
+					}
 					emit addPointSignal(x, y);
 				}
 				deny = false;
@@ -185,6 +265,7 @@ void transitionFunctionRenderAreaWidget::mouseReleaseEvent(QMouseEvent *event)
 			}
 		}
 	}
+	update();
 }
 
 void transitionFunctionRenderAreaWidget::mouseMoveEvent( QMouseEvent * event )
@@ -237,7 +318,7 @@ void transitionFunctionRenderAreaWidget::mousePressEvent( QMouseEvent * event )
 				{
 					chosed = true;
 					break;
-				}
+				} 
 			}
 			if (chosed)
 			{

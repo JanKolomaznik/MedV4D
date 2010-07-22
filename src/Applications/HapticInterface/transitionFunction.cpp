@@ -1,5 +1,6 @@
 #include "transitionFunction.h"
 #include <algorithm>
+#include <iostream>
 
 transitionFunction::transitionFunction(unsigned short minPoint, unsigned short maxPoint, double minValue, double maxValue)
 {
@@ -7,6 +8,7 @@ transitionFunction::transitionFunction(unsigned short minPoint, unsigned short m
 	pointValue maxpv(maxPoint, maxValue);
 	data.push_back(minpv);
 	data.push_back(maxpv);
+	solidFrom = -1;
 }
 
 void transitionFunction::Reset(unsigned short minPoint, unsigned short maxPoint, double minValue, double maxValue)
@@ -17,6 +19,7 @@ void transitionFunction::Reset(unsigned short minPoint, unsigned short maxPoint,
 	pointValue maxpv(maxPoint, maxValue);
 	data.push_back(minpv);
 	data.push_back(maxpv);
+	solidFrom = -1;
 }
 
 bool transitionFunction::pointValue::operator !=(const transitionFunction::pointValue &rhs)
@@ -102,6 +105,10 @@ void transitionFunction::SetValueOfMinPoint(double val)
 double transitionFunction::GetValueOnPoint(unsigned short point)
 {
 	boost::mutex::scoped_lock l(accesMutex);
+	//if ((solidFrom != -1) && (point > solidFrom))
+	//{
+	//	return 1.0;
+	//}
 	size_t i;
 	for (i = 0; i < data.size(); ++i)
 	{
@@ -121,6 +128,10 @@ double transitionFunction::GetValueOnPoint(unsigned short point)
 void transitionFunction::SetValueOnPoint(unsigned short point, double val)
 {
 	boost::mutex::scoped_lock l(accesMutex);
+	if (point > data[data.size()- 1].point)
+	{
+		return;
+	}
 	size_t i;
 	for (i = 0; i < data.size(); ++i)
 	{
@@ -165,7 +176,7 @@ void transitionFunction::DeletePointOnPosition(std::size_t position)
 	boost::mutex::scoped_lock l(accesMutex);
 	if (position < data.size())
 	{
-		for (int i = position; i < data.size() - 1; ++i)
+		for (size_t i = position; i < data.size() - 1; ++i)
 		{
 			data[i] = data[i + 1];
 		}
@@ -177,4 +188,46 @@ void transitionFunction::SetPointOnPosition( std::size_t pos, unsigned short poi
 {
 	boost::mutex::scoped_lock l(accesMutex);
 	data[pos].point = point;
+}
+
+void transitionFunction::SaveToFile( std::string fileName )
+{
+	boost::mutex::scoped_lock l(accesMutex);
+	std::ofstream oFile;
+	oFile.open(fileName.c_str());
+	oFile << data.size() << std::endl;
+	for (int i = 0; i < data.size(); ++i)
+	{
+		oFile << data[i].point << " " << data[i].val << std::endl;
+	}
+	oFile << solidFrom << std::endl;
+}
+
+void transitionFunction::LoadFromFile( std::string fileName )
+{
+	boost::mutex::scoped_lock l(accesMutex);
+	std::ifstream iFile;
+	iFile.open(fileName.c_str());
+	size_t dataSize;
+	iFile >> dataSize;
+	unsigned short point;
+	double val;
+	data.clear();
+	for (size_t i = 0; i < dataSize; ++i)
+	{
+		iFile >> point;
+		iFile >> val;
+		data.push_back(pointValue(point, val));
+	}
+	iFile >> solidFrom;
+}
+
+int transitionFunction::GetSolidFrom()
+{
+	return solidFrom;
+}
+
+void transitionFunction::SetSolidFrom( int a_solidFrom )
+{
+	solidFrom = a_solidFrom;
 }
