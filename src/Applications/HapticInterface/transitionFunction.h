@@ -27,8 +27,10 @@ public:
 	void Reset(unsigned short minPoint, unsigned short maxPoint, double minValue, double maxValue);
 	int GetSolidFrom();
 	void SetSolidFrom( int a_solidFrom );
+	int GetSolidTo();
+	void SetSolidTo( int a_solidTo );
 	transitionFunction(unsigned short minPoint, unsigned short maxPoint, double minValue, double maxValue);
-	transitionFunction(){}
+	transitionFunction();
 protected:
 
 	struct pointValue
@@ -51,6 +53,7 @@ protected:
 	std::vector< pointValue > data;
 	boost::mutex accesMutex;
 	int solidFrom;
+	int solidTo;
 };
 
 #endif

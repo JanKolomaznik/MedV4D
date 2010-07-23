@@ -2,6 +2,15 @@
 #include <algorithm>
 #include <iostream>
 
+transitionFunction::transitionFunction()
+{
+	pointValue minpv(0, 0.0);
+	pointValue maxpv(1, 1.0);
+	data.push_back(minpv);
+	data.push_back(maxpv);
+	solidFrom = -1;
+	solidTo = -1;
+}
 transitionFunction::transitionFunction(unsigned short minPoint, unsigned short maxPoint, double minValue, double maxValue)
 {
 	pointValue minpv(minPoint, minValue);
@@ -9,6 +18,7 @@ transitionFunction::transitionFunction(unsigned short minPoint, unsigned short m
 	data.push_back(minpv);
 	data.push_back(maxpv);
 	solidFrom = -1;
+	solidTo = -1;
 }
 
 void transitionFunction::Reset(unsigned short minPoint, unsigned short maxPoint, double minValue, double maxValue)
@@ -20,6 +30,7 @@ void transitionFunction::Reset(unsigned short minPoint, unsigned short maxPoint,
 	data.push_back(minpv);
 	data.push_back(maxpv);
 	solidFrom = -1;
+	solidTo = -1;
 }
 
 bool transitionFunction::pointValue::operator !=(const transitionFunction::pointValue &rhs)
@@ -201,6 +212,7 @@ void transitionFunction::SaveToFile( std::string fileName )
 		oFile << data[i].point << " " << data[i].val << std::endl;
 	}
 	oFile << solidFrom << std::endl;
+	oFile << solidTo << std::endl;
 }
 
 void transitionFunction::LoadFromFile( std::string fileName )
@@ -220,14 +232,29 @@ void transitionFunction::LoadFromFile( std::string fileName )
 		data.push_back(pointValue(point, val));
 	}
 	iFile >> solidFrom;
+	iFile >> solidTo;
 }
 
 int transitionFunction::GetSolidFrom()
 {
+	boost::mutex::scoped_lock l(accesMutex);
 	return solidFrom;
 }
 
 void transitionFunction::SetSolidFrom( int a_solidFrom )
 {
+	boost::mutex::scoped_lock l(accesMutex);
 	solidFrom = a_solidFrom;
+}
+
+int transitionFunction::GetSolidTo()
+{
+	boost::mutex::scoped_lock l(accesMutex);
+	return solidTo;
+}
+
+void transitionFunction::SetSolidTo( int a_solidTo )
+{
+	boost::mutex::scoped_lock l(accesMutex);
+	solidTo = a_solidTo;
 }

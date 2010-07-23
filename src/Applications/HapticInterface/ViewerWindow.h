@@ -22,6 +22,7 @@ public:
 	~ViewerWindow();
 	void build();
 private:
+	void closeEvent(QCloseEvent *event);
 	M4D::Viewer::m4dGUIOGLHapticViewerWidget *viewerWidget;
 }; 
 

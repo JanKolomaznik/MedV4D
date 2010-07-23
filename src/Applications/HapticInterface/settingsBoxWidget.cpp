@@ -9,6 +9,9 @@ const int IdRole = Qt::UserRole;
 
 SettingsBoxWidget::SettingsBoxWidget(transitionFunction* functionData, QWidget* parent) : QWidget(parent)
 {
+	traceLogState = false;
+	closeEnabled = false;
+	
 	setBackgroundRole(QPalette::Base);
 	setAutoFillBackground(true);
 	
@@ -44,8 +47,11 @@ SettingsBoxWidget::SettingsBoxWidget(transitionFunction* functionData, QWidget* 
 	ySpinBox->setSingleStep(0.01);
 
 	addPointButton = new QPushButton(tr("Add new point"));
-	setSolidFromButton = new QPushButton(tr("Set solid border"));
-	unsetSolidFromButton = new QPushButton(tr("Unset solid border"));
+	setSolidFromButton = new QPushButton(tr("Set solid from border"));
+	unsetSolidFromButton = new QPushButton(tr("Unset solid from border"));
+	setSolidToButton = new QPushButton(tr("Set solid to border"));
+	unsetSolidToButton = new QPushButton(tr("Unset solid to border"));
+	setTraceLogOnOffButton = new QPushButton(tr("Start trace log"));
 
     connect(resetTransitionFunctionButton, SIGNAL(clicked()), this, SLOT(resetDemandedSlot()));
 	connect(zoomInButton, SIGNAL(clicked()), this, SLOT(zoomInHapticSlot()));
@@ -58,29 +64,35 @@ SettingsBoxWidget::SettingsBoxWidget(transitionFunction* functionData, QWidget* 
 	connect(addPointButton, SIGNAL(clicked()), this, SLOT(pointAddDemandSlot()));
 	connect(setSolidFromButton, SIGNAL(clicked()), this, SLOT(setSolidFromDemandSlot()));
 	connect(unsetSolidFromButton, SIGNAL(clicked()), this, SLOT(unsetSolidFromDemandSlot()));
+	connect(setSolidToButton, SIGNAL(clicked()), this, SLOT(setSolidToDemandSlot()));
+	connect(unsetSolidToButton, SIGNAL(clicked()), this, SLOT(unsetSolidToDemandSlot()));
+	connect(setTraceLogOnOffButton, SIGNAL(clicked()), this, SLOT(setTraceLogOnOffSlot()));
 	
     QGridLayout *mainLayout = new QGridLayout;
 
     mainLayout->setColumnStretch(0, 1);
     mainLayout->setColumnStretch(3, 1);
-    mainLayout->addWidget(renderArea, 0, 0, 1, 4);
+    mainLayout->addWidget(renderArea, 0, 0, 1, 5);
     mainLayout->setRowMinimumHeight(1, 6);
-	mainLayout->addWidget(xLabel, 2, 1, Qt::AlignCenter);
-	mainLayout->addWidget(xSpinBox, 2, 2, Qt::AlignCenter);
-	mainLayout->addWidget(yLabel, 2, 3, Qt::AlignCenter);
-	mainLayout->addWidget(ySpinBox, 2, 4, Qt::AlignCenter);
-	mainLayout->addWidget(addPointButton, 3, 1, Qt::AlignCenter);
+	mainLayout->addWidget(xLabel, 1, 0, Qt::AlignCenter);
+	mainLayout->addWidget(xSpinBox, 1, 1, Qt::AlignCenter);
+	mainLayout->addWidget(yLabel, 1, 2, Qt::AlignCenter);
+	mainLayout->addWidget(ySpinBox, 1, 3, Qt::AlignCenter);
+	mainLayout->addWidget(addPointButton, 3, 0, Qt::AlignCenter);
 	mainLayout->addWidget(setSolidFromButton, 3, 2, Qt::AlignCenter);
-	mainLayout->addWidget(unsetSolidFromButton, 3, 3, Qt::AlignCenter);
-	mainLayout->addWidget(mouseCoordinatesLabelLabel, 4, 1, Qt::AlignCenter);
-	mainLayout->addWidget(mouseCoordinatesLabel, 4, 2, Qt::AlignRight);
-	mainLayout->addWidget(pointStyleCheckBox, 5, 1, Qt::AlignCenter);
-    mainLayout->addWidget(resetTransitionFunctionButton, 6, 1, Qt::AlignCenter);
-	mainLayout->addWidget(hapticLabel, 7, 1, Qt::AlignCenter);
-	mainLayout->addWidget(zoomInButton, 8, 1, Qt::AlignCenter);
-	mainLayout->addWidget(zoomOutButton, 8, 2, Qt::AlignCenter);
-	mainLayout->addWidget(loadButton, 9, 1, Qt::AlignCenter);
-	mainLayout->addWidget(saveButton, 9, 2, Qt::AlignCenter);
+	mainLayout->addWidget(unsetSolidFromButton, 3, 4, Qt::AlignCenter);
+	mainLayout->addWidget(setSolidToButton, 3, 1, Qt::AlignCenter);
+	mainLayout->addWidget(unsetSolidToButton, 3, 3, Qt::AlignCenter);
+	mainLayout->addWidget(mouseCoordinatesLabelLabel, 4, 0, Qt::AlignCenter);
+	mainLayout->addWidget(mouseCoordinatesLabel, 4, 1, Qt::AlignRight);
+	mainLayout->addWidget(pointStyleCheckBox, 5, 0, Qt::AlignCenter);
+    mainLayout->addWidget(resetTransitionFunctionButton, 6, 0, Qt::AlignCenter);
+	mainLayout->addWidget(setTraceLogOnOffButton, 6, 1, Qt::AlignCenter);
+	mainLayout->addWidget(hapticLabel, 7, 0, Qt::AlignCenter);
+	mainLayout->addWidget(zoomInButton, 8, 0, Qt::AlignCenter);
+	mainLayout->addWidget(zoomOutButton, 8, 1, Qt::AlignCenter);
+	mainLayout->addWidget(loadButton, 9, 0, Qt::AlignCenter);
+	mainLayout->addWidget(saveButton, 9, 1, Qt::AlignCenter);
     setLayout(mainLayout);
 
 	functionChangedSlot();
@@ -126,7 +138,10 @@ void SettingsBoxWidget::mouseCoordinatesChangedSlot( double a_x, double a_y )
 
 void SettingsBoxWidget::closeEvent( QCloseEvent *event )
 {
-	event->ignore();
+	if (!closeEnabled)
+	{
+		event->ignore();
+	}
 }
 
 void SettingsBoxWidget::loadFunctionSlot()
@@ -156,6 +171,10 @@ void SettingsBoxWidget::pointAddDemandSlot()
 
 void SettingsBoxWidget::setSolidFromDemandSlot()
 {
+	if (functionData->GetSolidTo() >= xSpinBox->value())
+	{
+		return;
+	}
 	functionData->SetSolidFrom(xSpinBox->value());
 	renderArea->update();
 }
@@ -164,4 +183,45 @@ void SettingsBoxWidget::unsetSolidFromDemandSlot()
 {
 	functionData->SetSolidFrom(-1);
 	renderArea->update();
+}
+
+void SettingsBoxWidget::setSolidToDemandSlot()
+{
+	if ((functionData->GetSolidFrom() != -1) && (functionData->GetSolidFrom() <= xSpinBox->value()))
+	{
+		return;
+	}
+	functionData->SetSolidTo(xSpinBox->value());
+	renderArea->update();
+}
+
+void SettingsBoxWidget::unsetSolidToDemandSlot()
+{
+	functionData->SetSolidTo(-1);
+	renderArea->update();
+}
+
+void SettingsBoxWidget::setTraceLogOnOffSlot()
+{
+	if (traceLogState)
+	{
+		traceLogState = false;
+		setTraceLogOnOffButton->setText(tr("Start trace log"));
+		emit setTraceLogOff();
+	}
+	else
+	{
+		QString fileName = QFileDialog::getSaveFileName(this, tr("Save trace log"));
+		if (!fileName.isEmpty())
+		{
+			traceLogState = true;
+			setTraceLogOnOffButton->setText(tr("Stop trace log"));
+			emit setTraceLogOn(fileName.toStdString());
+		}
+	}
+}
+
+void SettingsBoxWidget::setCloseEnabled()
+{
+	closeEnabled = true;
 }

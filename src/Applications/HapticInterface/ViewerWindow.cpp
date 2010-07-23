@@ -9,6 +9,7 @@
 
 ViewerWindow::ViewerWindow( M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage > & conn )
 {
+	setAttribute(Qt::WA_QuitOnClose);
 	viewerWidget = new M4D::Viewer::m4dGUIOGLHapticViewerWidget( &conn, 0, NULL);
 	//viewerWidget = new M4D::Viewer::m4dGUISliceViewerWidget( &conn, 0, NULL);
 	//glWidget->setSelected( true );
@@ -28,6 +29,10 @@ void ViewerWindow::build()
 {
 }
 
+void ViewerWindow::closeEvent( QCloseEvent *event )
+{
+	viewerWidget->close();
+}
 
 //////////////////////////////////////////////////////////////////////////
 // MedV4d GUI

@@ -86,8 +86,10 @@ namespace M4D
 		m4dGUIOGLHapticViewerWidget::m4dGUIOGLHapticViewerWidget( Imaging::ConnectionInterface* conn, unsigned index, QWidget *parent )
 			: QVTKWidget( parent )
 		{
+			setAttribute(Qt::WA_QuitOnClose);
 			_index = index;
 			hapticForceTransitionFunction = new transitionFunction();
+			settings = new SettingsBoxWidget(hapticForceTransitionFunction);
 			cursor = new hapticCursor( GetRenderWindow(), hapticForceTransitionFunction);
 			setParameters();
 			_inPort = new Imaging::InputPortTyped< Imaging::AImage >();
@@ -99,11 +101,12 @@ namespace M4D
 			QTimer *timer = new QTimer((QVTKWidget*)this);
 			QObject::connect(timer, SIGNAL(timeout()), (QVTKWidget*)this, SLOT(update()));
 			timer->start(18);
-			settings = new SettingsBoxWidget(hapticForceTransitionFunction);
-			QObject::connect((QVTKWidget*)this, SIGNAL(hapticForceTransitionFunctionChanged()), settings, SLOT(functionChangedSlot()));
+			//QObject::connect((QVTKWidget*)this, SIGNAL(hapticForceTransitionFunctionChanged()), settings, SLOT(functionChangedSlot()));
 			QObject::connect(settings, SIGNAL(resetFunction()), (QVTKWidget*)this, SLOT(slotTransitionFunctionResetDemanded()));
 			QObject::connect(settings, SIGNAL(zoomInHaptic()), (QVTKWidget*)this, SLOT(slotZoomInHaptic()));
 			QObject::connect(settings, SIGNAL(zoomOutHaptic()), (QVTKWidget*)this, SLOT(slotZoomOutHaptic()));
+			QObject::connect(settings, SIGNAL(setTraceLogOn(std::string)), (QVTKWidget*)this, SLOT(slotSetLogOn(std::string)));
+			QObject::connect(settings, SIGNAL(setTraceLogOff()), (QVTKWidget*)this, SLOT(slotSetLogOff()));
 			settings->show();
 			resetTransitionFunction();
 			resetSliceViewPosition();
@@ -112,8 +115,10 @@ namespace M4D
 		m4dGUIOGLHapticViewerWidget::m4dGUIOGLHapticViewerWidget( unsigned index, QWidget *parent )
 			: QVTKWidget( parent )
 		{
+			setAttribute(Qt::WA_QuitOnClose);
 			_index = index;
 			hapticForceTransitionFunction = new transitionFunction();
+			settings = new SettingsBoxWidget(hapticForceTransitionFunction);
 			cursor = new hapticCursor( GetRenderWindow(), hapticForceTransitionFunction);
 			setParameters();
 			_inPort = new Imaging::InputPortTyped< Imaging::AImage >();
@@ -124,9 +129,10 @@ namespace M4D
 			QTimer *timer = new QTimer((QVTKWidget*)this);
 			QObject::connect(timer, SIGNAL(timeout()), (QVTKWidget*)this, SLOT(update()));
 			timer->start(18);
-			settings = new SettingsBoxWidget(hapticForceTransitionFunction);
-			QObject::connect((QVTKWidget*)this, SIGNAL(hapticForceTransitionFunctionChanged()), settings, SLOT(functionChangedSlot()));
+			//QObject::connect((QVTKWidget*)this, SIGNAL(hapticForceTransitionFunctionChanged()), settings, SLOT(functionChangedSlot()));
 			QObject::connect(settings, SIGNAL(resetFunction()), (QVTKWidget*)this, SLOT(slotTransitionFunctionResetDemanded()));
+			QObject::connect(settings, SIGNAL(zoomInHaptic()), (QVTKWidget*)this, SLOT(slotZoomInHaptic()));
+			QObject::connect(settings, SIGNAL(zoomOutHaptic()), (QVTKWidget*)this, SLOT(slotZoomOutHaptic()));
 			settings->show();
 			resetTransitionFunction();
 			resetSliceViewPosition();
@@ -751,7 +757,7 @@ namespace M4D
 		void m4dGUIOGLHapticViewerWidget::resetTransitionFunction()
 		{
 			hapticForceTransitionFunction->Reset(cursor->GetDataMinValue(), cursor->GetDataMaxValue(), 0.0, 1.0);
-			emit hapticForceTransitionFunctionChanged();
+			settings->functionChangedSlot();
 		}
 
 		void m4dGUIOGLHapticViewerWidget::slotTransitionFunctionResetDemanded()
@@ -786,6 +792,25 @@ namespace M4D
 		{
 			double scale = cursor->GetScale();
 			cursor->SetScale((scale / 2.0) * 3.0);
+		}
+
+		void m4dGUIOGLHapticViewerWidget::slotSetLogOn( std::string file )
+		{
+			cursor->SetTraceLogOn( file );
+		}
+
+		void m4dGUIOGLHapticViewerWidget::slotSetLogOff()
+		{
+			cursor->SetTraceLogOff();
+		}
+
+		void m4dGUIOGLHapticViewerWidget::closeEvent( QCloseEvent *event )
+		{
+			if (settings)
+			{
+				settings->setCloseEnabled();
+				settings->close();
+			}
 		}
 	} /* namespace Viewer */
 } /* namespace M4D */

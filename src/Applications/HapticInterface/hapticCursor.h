@@ -8,6 +8,7 @@
 #include "transitionFunction.h"
 #include "vtkRenderWindow.h"
 #include <vector>
+#include <iostream>
 
 namespace M4D
 {
@@ -22,6 +23,8 @@ namespace M4D
 			void startHaptics();
 			void stop();
 			virtual int GetValue(); // returns value of point where the cursor stands
+			virtual void SetTraceLogOn( std::string file );
+			virtual void SetTraceLogOff();
 		protected:
 			virtual void StartListen(); // method which starts new thread where haptics is running
 			virtual void SetCursorPosition(const cVector3d& cursorPosition); // Main method which sets cursor position and counts force for that position
@@ -51,6 +54,8 @@ namespace M4D
 			bool proxyMode;
 			cVector3d solidPlaneParams;
 			double dParamOfPlane;
+			std::ofstream traceLogFile;
+			bool traceLogEnabled;
 		};
 	}
 }

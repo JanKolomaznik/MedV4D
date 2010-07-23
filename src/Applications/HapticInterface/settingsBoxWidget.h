@@ -20,11 +20,17 @@ class SettingsBoxWidget : public QWidget
 
 public:
     SettingsBoxWidget(transitionFunction* functionData, QWidget* parent = 0);
+	void setCloseEnabled();
+
+public slots:
+	void functionChangedSlot();
 
 signals:
 	void resetFunction();
 	void zoomOutHaptic();
 	void zoomInHaptic();
+	void setTraceLogOn( std::string file );
+	void setTraceLogOff();
 
 private slots:
 	void pointAddedSlot(double a_x, double a_y);
@@ -32,12 +38,14 @@ private slots:
 	void pointAddDemandSlot();
 	void setSolidFromDemandSlot();
 	void unsetSolidFromDemandSlot();
+	void setSolidToDemandSlot();
+	void unsetSolidToDemandSlot();
 	void resetDemandedSlot();
-    void functionChangedSlot();
 	void zoomInHapticSlot();
 	void zoomOutHapticSlot();
 	void loadFunctionSlot();
 	void saveFunctionSlot();
+	void setTraceLogOnOffSlot();
 
 private:
     transitionFunctionRenderAreaWidget *renderArea;
@@ -56,9 +64,14 @@ private:
 	QPushButton* addPointButton;
 	QPushButton* setSolidFromButton;
 	QPushButton* unsetSolidFromButton;
+	QPushButton* setSolidToButton;
+	QPushButton* unsetSolidToButton;
+	QPushButton* setTraceLogOnOffButton;
 	QSpinBox* xSpinBox;
 	QDoubleSpinBox* ySpinBox;
 	void closeEvent(QCloseEvent *event);
+	bool traceLogState;
+	bool closeEnabled;
 };
 
 #endif

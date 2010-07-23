@@ -54,10 +54,20 @@ void transitionFunctionRenderAreaWidget::paintEvent(QPaintEvent * /* event */)
 
 	if (functionData->GetSolidFrom() != -1)
 	{
-		painter.setPen(QPen(Qt::red, 1));
+		painter.setPen(QPen(Qt::magenta, 1));
 		painter.setBrush(Qt::NoBrush);
 		painter.save();
 		double xpos = ((double)functionData->GetSolidFrom()) * width() / ((double)functionData->GetMaxPoint());
+		painter.drawLine(xpos, 1, xpos, height() - 1);
+		painter.restore();
+	}
+
+	if (functionData->GetSolidTo() != -1)
+	{
+		painter.setPen(QPen(Qt::cyan, 1));
+		painter.setBrush(Qt::NoBrush);
+		painter.save();
+		double xpos = ((double)functionData->GetSolidTo()) * width() / ((double)functionData->GetMaxPoint());
 		painter.drawLine(xpos, 1, xpos, height() - 1);
 		painter.restore();
 	}
@@ -151,6 +161,11 @@ void transitionFunctionRenderAreaWidget::paintEvent(QPaintEvent * /* event */)
 			{
 				possible = false;
 			}
+		}
+
+		if ((mouseY < 1) || (mouseY > height()))
+		{
+			possible = false;
 		}
 
 		if (possible)

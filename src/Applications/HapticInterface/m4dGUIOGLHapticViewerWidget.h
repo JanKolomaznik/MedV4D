@@ -351,8 +351,8 @@ namespace M4D
 				void updateViewer()
 				{ /*TODO*/ }
 
-		signals:
-				void hapticForceTransitionFunctionChanged();
+		//signals:
+		//		void hapticForceTransitionFunctionChanged();
 				
 				protected slots:
 
@@ -367,6 +367,10 @@ namespace M4D
 					virtual void slotZoomInHaptic();
 
 					virtual void slotZoomOutHaptic();
+
+					virtual void slotSetLogOn(std::string file);
+
+					virtual void slotSetLogOff();
 
 		protected:
 
@@ -445,6 +449,8 @@ namespace M4D
 			void resetTransitionFunction();
 
 			void resetSliceViewPosition();
+
+			void closeEvent(QCloseEvent *event);
 
 			static void cursorSphereModifiedCallback(vtkObject* caller, long unsigned int eventId, void* clientData, void* callData);
 

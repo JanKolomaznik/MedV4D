@@ -13,6 +13,7 @@ namespace M4D
 
 		hapticCursor::hapticCursor(vtkImageData *input, vtkRenderWindow* renderWindow, transitionFunction* hapticForceTransitionFunction) : cursorInterface(input)
 		{
+			traceLogEnabled = false;
 			proxyMode = false;
 			handler = new cHapticDeviceHandler();
 			hapticDevice = NULL;
@@ -41,6 +42,7 @@ namespace M4D
 		hapticCursor::hapticCursor( vtkRenderWindow* renderWindow, transitionFunction* hapticForceTransitionFunction )
 		{
 			proxyMode = false;
+			traceLogEnabled = false;
 			handler = new cHapticDeviceHandler();
 			hapticDevice = NULL;
 			this->renderWindow = renderWindow;
@@ -66,6 +68,10 @@ namespace M4D
 		}
 		hapticCursor::~hapticCursor()
 		{
+			if (traceLogEnabled)
+			{
+				traceLogFile.close();
+			}
 			stop();
 			hapticsThread->join();
 			m_clock->stop();
@@ -129,6 +135,7 @@ namespace M4D
 				newRealPositionVTK[0] = newRealPosition.x;
 				newRealPositionVTK[1] = newRealPosition.y;
 				newRealPositionVTK[2] = newRealPosition.z;
+				if (traceLogEnabled && ((newRealPositionVTK[0] != cursorCenter[0]) || (newRealPositionVTK[1] != cursorCenter[1]) || (newRealPositionVTK[2] != cursorCenter[2])))
 				cursorCenter[0] = newRealPositionVTK[0];
 				cursorCenter[1] = newRealPositionVTK[1];
 				cursorCenter[2] = newRealPositionVTK[2];
@@ -159,6 +166,23 @@ namespace M4D
 					if (hapticForceTransitionFunction->GetSolidFrom() != -1)
 					{
 						if (hapticForceTransitionFunction->GetSolidFrom() < cursorVolumeValue)
+						{
+							solidPlaneParams.zero();
+							for (int i = 0; i < numberOfVectors; ++i)
+							{
+								solidPlaneParams += vectors[i];
+							}
+							if ((solidPlaneParams.x != 0) || (solidPlaneParams.y != 0) || (solidPlaneParams.z != 0))
+							{
+								solidPlaneParams.normalize();
+								proxyMode = true;
+								dParamOfPlane = -(solidPlaneParams * cursorPosition);
+							}
+						}
+					}
+					if (hapticForceTransitionFunction->GetSolidTo() != -1)
+					{
+						if (hapticForceTransitionFunction->GetSolidTo() > cursorVolumeValue)
 						{
 							solidPlaneParams.zero();
 							for (int i = 0; i < numberOfVectors; ++i)
@@ -225,7 +249,7 @@ namespace M4D
 			}
 			else
 			{
-				if (((cursorPosition * solidPlaneParams + dParamOfPlane) >= 0) && (hapticForceTransitionFunction->GetSolidFrom() != -1))
+				if (((cursorPosition * solidPlaneParams + dParamOfPlane) >= 0) && ((hapticForceTransitionFunction->GetSolidFrom() != -1) || (hapticForceTransitionFunction->GetSolidTo() != -1)))
 				{
 					cVector3d forceDirection = lastPosition - cursorPosition;
 					double forcePower = forceDirection.length() * springPower;
@@ -249,11 +273,7 @@ namespace M4D
 		}
 		void hapticCursor::stop()
 		{
-			boost::mutex::scoped_lock l(runMutex);
-			if (runHaptics)
-			{
-				runHaptics = false;
-			}
+			runHaptics = false;
 		}
 		void hapticCursor::StartListen()
 		{
@@ -264,6 +284,7 @@ namespace M4D
 
 		void hapticCursor::SetZoomInButtonPressed( bool pressed )
 		{
+			boost::mutex::scoped_lock lck(cursorMutex);
 			if (!pressed && zoomInButtonPressed)
 			{
 				SetScale((scale / 3.0) * 2.0);
@@ -272,6 +293,7 @@ namespace M4D
 
 		void hapticCursor::SetZoomOutButtonPressed( bool pressed )
 		{
+			boost::mutex::scoped_lock lck(cursorMutex);
 			if (!pressed && zoomOutButtonPressed)
 			{
 				SetScale((scale / 2.0) * 3.0);
@@ -303,7 +325,6 @@ namespace M4D
 				//std::cout << fps << std::endl;
 
 				std::cout << GetForce() << std::endl;
-				boost::mutex::scoped_lock l(runMutex);
 				if (!runHaptics)
 				{
 					return;
@@ -313,7 +334,22 @@ namespace M4D
 
 		int hapticCursor::GetValue()
 		{
+			boost::mutex::scoped_lock lck(cursorMutex);
 			return value;
+		}
+
+		void hapticCursor::SetTraceLogOn( string file )
+		{
+			boost::mutex::scoped_lock lck(cursorMutex);
+			traceLogFile.open(file.c_str());
+			traceLogEnabled = true;
+		}
+
+		void hapticCursor::SetTraceLogOff()
+		{
+			boost::mutex::scoped_lock lck(cursorMutex);
+			traceLogFile.close();
+			traceLogEnabled = false;	
 		}
 	}
 }
