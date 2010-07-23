@@ -135,6 +135,9 @@ namespace M4D
 				newRealPositionVTK[1] = newRealPosition.y;
 				newRealPositionVTK[2] = newRealPosition.z;
 				if (traceLogEnabled && ((newRealPositionVTK[0] != cursorCenter[0]) || (newRealPositionVTK[1] != cursorCenter[1]) || (newRealPositionVTK[2] != cursorCenter[2])))
+				{
+					traceLogFile << newRealPositionVTK[0] << " " << newRealPositionVTK[1] << " " << newRealPositionVTK[2] << std::endl; 
+				}
 				cursorCenter[0] = newRealPositionVTK[0];
 				cursorCenter[1] = newRealPositionVTK[1];
 				cursorCenter[2] = newRealPositionVTK[2];
