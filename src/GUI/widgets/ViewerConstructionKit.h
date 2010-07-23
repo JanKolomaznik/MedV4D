@@ -3,8 +3,8 @@
 
 
 
-template< typename SupportWidget, typename PortInterface, template<typename> DataProcessor >
-class ViewerConstructionKit: public DataProcessor<SupportWidget>, public AGUIViewer
+template< typename SupportWidget, typename PortInterface/*, template<typename> DataProcessor*/ >
+class ViewerConstructionKit: public /*DataProcessor<SupportWidget>*/SupportWidget, public PortInterface, public AGUIViewer
 {
 public:
 	QWidget* 

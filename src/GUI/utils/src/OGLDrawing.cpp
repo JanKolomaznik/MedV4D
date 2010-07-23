@@ -166,6 +166,38 @@ GLDrawVolumeSlice(
 	glEnd();
 }
 
+void
+GLDraw2DImage(
+		const Vector< float32, 2 > 	&min, 
+		const Vector< float32, 2 > 	&max
+		)
+{
+	Vector< float32, 2 > point1 = min;
+	Vector< float32, 2 > point3 = max;
+
+	Vector< float32, 2 > point2( point3[0], point1[1] );
+	Vector< float32, 2 > point4( point1[0], point3[1] );
+
+	Vector< float32, 3 > tex1 = Vector< float32, 2 >( 0.0f, 0.0f );
+	Vector< float32, 3 > tex2 = Vector< float32, 2 >( 1.0f, 0.0f );
+	Vector< float32, 3 > tex3 = Vector< float32, 2 >( 1.0f, 1.0f );
+	Vector< float32, 3 > tex4 = Vector< float32, 2 >( 0.0f, 1.0f );
+
+	glBegin( GL_QUADS );
+		GLTextureVector( tex1 ); 
+		GLVertexVector( point1 );
+
+		GLTextureVector( tex2 ); 
+		GLVertexVector( point2 );
+
+		GLTextureVector( tex3 ); 
+		GLVertexVector( point3 );
+
+		GLTextureVector( tex4 ); 
+		GLVertexVector( point4 );
+	glEnd();
+}
+
 
 void
 GLDrawImageData( const M4D::Imaging::AImageRegionDim< 2 > &image, bool linearInterpolation )

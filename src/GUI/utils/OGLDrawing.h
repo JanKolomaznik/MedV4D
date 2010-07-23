@@ -57,6 +57,12 @@ GLDrawVolumeSlice(
 		CartesianPlanes			plane
 		);
 
+void
+GLDraw2DImage(
+		const Vector< float32, 2 > 	&min, 
+		const Vector< float32, 2 > 	&max
+		);
+
 template< typename ImageRegionType >
 void
 GLDrawImageData( const ImageRegionType &image, bool linearInterpolation );

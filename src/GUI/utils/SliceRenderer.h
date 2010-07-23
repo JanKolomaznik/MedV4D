@@ -13,6 +13,12 @@ public:
 	bool
 	IsRenderingVolume()const;
 
+	virtual void
+	Initialize() = 0;
+
+	virtual void
+	Finalize() = 0;
+
 	void
 	Render();
 protected:

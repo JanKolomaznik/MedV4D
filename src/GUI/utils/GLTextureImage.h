@@ -28,6 +28,9 @@ struct GLTextureImage
 	virtual bool
 	Is3D()const = 0;
 
+	virtual uint32
+	GetDimension()const = 0;
+
 	SIMPLE_GET_SET_METHODS( bool, LinearInterpolation, _linearInterpolation );
 private:
 	bool				_linearInterpolation;
@@ -46,6 +49,10 @@ struct GLTextureImageTyped: public GLTextureImage
 	bool
 	Is3D()const
 	{ return ImageType::Dimension == 3; }
+
+	uint32
+	GetDimension()const
+	{ return ImageType::Dimension; }
 
 	void
 	SetImage( M4D::Imaging::AImage::Ptr image ) = 0;

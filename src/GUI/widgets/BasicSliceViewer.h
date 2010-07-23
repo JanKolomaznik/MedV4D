@@ -12,9 +12,18 @@ namespace GUI
 namespace Viewer
 {
 
-class BasicSliceViewer
+class BasicSliceViewer : 
+	public ViewerConstructionKit<   QGLWidget, 
+					PortInterfaceHelper< mpl::vector< AImage >
+					>
 {
+	Q_OBJECT;
+public:
 
+
+protected:
+
+private:
 };
 
 } /*namespace Viewer*/
