@@ -178,10 +178,10 @@ GLDraw2DImage(
 	Vector< float32, 2 > point2( point3[0], point1[1] );
 	Vector< float32, 2 > point4( point1[0], point3[1] );
 
-	Vector< float32, 3 > tex1 = Vector< float32, 2 >( 0.0f, 0.0f );
-	Vector< float32, 3 > tex2 = Vector< float32, 2 >( 1.0f, 0.0f );
-	Vector< float32, 3 > tex3 = Vector< float32, 2 >( 1.0f, 1.0f );
-	Vector< float32, 3 > tex4 = Vector< float32, 2 >( 0.0f, 1.0f );
+	Vector< float32, 2 > tex1 = Vector< float32, 2 >( 0.0f, 0.0f );
+	Vector< float32, 2 > tex2 = Vector< float32, 2 >( 1.0f, 0.0f );
+	Vector< float32, 2 > tex3 = Vector< float32, 2 >( 1.0f, 1.0f );
+	Vector< float32, 2 > tex4 = Vector< float32, 2 >( 0.0f, 1.0f );
 
 	glBegin( GL_QUADS );
 		GLTextureVector( tex1 ); 

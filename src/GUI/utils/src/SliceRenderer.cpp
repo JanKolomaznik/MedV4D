@@ -1,6 +1,8 @@
 #include "GUI/utils/SliceRenderer.h"
 
-
+namespace M4D
+{
+	
 void
 SliceRenderer::SetData( GLTextureImage::Ptr data )
 {
@@ -10,7 +12,7 @@ SliceRenderer::SetData( GLTextureImage::Ptr data )
 bool
 SliceRenderer::IsRenderingVolume()const
 {
-
+	return false;
 }
 
 void
@@ -28,7 +30,7 @@ SliceRenderer::Finalize()
 void
 SliceRenderer::Render()
 {
-	switch ( _data->GetDimension() )
+	/*switch ( _data->GetDimension() )
 	{
 	case 2:
 		GLDraw2DImage(
@@ -46,6 +48,8 @@ SliceRenderer::Render()
 		break;
 	default:
 		ASSERT( false ); //TODO exception
-	}
+	}*/
 }
+
+} /*namespace M4D*/
 

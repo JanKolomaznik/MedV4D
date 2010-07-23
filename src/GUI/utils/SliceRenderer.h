@@ -3,6 +3,10 @@
 
 
 #include "GUI/utils/GLTextureImage.h"
+#include "GUI/utils/ARenderer.h"
+
+namespace M4D
+{
 
 class SliceRenderer: public ARenderer
 {
@@ -24,6 +28,8 @@ public:
 protected:
 
 };
+
+} /*namespace M4D*/
 
 #endif /*SLICE_RENDERER_H*/
 

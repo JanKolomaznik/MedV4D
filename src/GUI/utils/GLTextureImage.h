@@ -3,6 +3,9 @@
 
 #include <boost/shared_ptr.hpp>
 #include "common/Common.h"
+#include "common/OGLTools.h"
+#include "Imaging/AImage.h"
+
 namespace M4D
 {
 
@@ -58,10 +61,10 @@ struct GLTextureImageTyped: public GLTextureImage
 	SetImage( M4D::Imaging::AImage::Ptr image ) = 0;
 
 	void
-	SetImage( ImageType::Ptr image );
+	SetImage( typename ImageType::Ptr image );
 
 private:
-	ImageType::Ptr	_image;
+	typename ImageType::Ptr	_image;
 };
 
 } /*namespace M4D*/

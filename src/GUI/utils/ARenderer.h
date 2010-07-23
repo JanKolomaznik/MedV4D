@@ -1,7 +1,9 @@
 #ifndef ARENDERER_H
 #define ARENDERER_H
 
-
+namespace M4D
+{
+	
 class ARenderer
 {
 public:
@@ -15,5 +17,7 @@ public:
 	Render() = 0;
 
 };
+
+} /*namespace M4D*/
 
 #endif /*ARENDERER_H*/
