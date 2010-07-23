@@ -52,6 +52,7 @@ SettingsBoxWidget::SettingsBoxWidget(transitionFunction* functionData, QWidget* 
 	setSolidToButton = new QPushButton(tr("Set solid to border"));
 	unsetSolidToButton = new QPushButton(tr("Unset solid to border"));
 	setTraceLogOnOffButton = new QPushButton(tr("Start trace log"));
+	setToOriginalButton = new QPushButton(tr("Reset cursor cube area position"));
 
     connect(resetTransitionFunctionButton, SIGNAL(clicked()), this, SLOT(resetDemandedSlot()));
 	connect(zoomInButton, SIGNAL(clicked()), this, SLOT(zoomInHapticSlot()));
@@ -67,6 +68,7 @@ SettingsBoxWidget::SettingsBoxWidget(transitionFunction* functionData, QWidget* 
 	connect(setSolidToButton, SIGNAL(clicked()), this, SLOT(setSolidToDemandSlot()));
 	connect(unsetSolidToButton, SIGNAL(clicked()), this, SLOT(unsetSolidToDemandSlot()));
 	connect(setTraceLogOnOffButton, SIGNAL(clicked()), this, SLOT(setTraceLogOnOffSlot()));
+	connect(setToOriginalButton, SIGNAL(clicked()), this, SLOT(setToOriginalSlot()));
 	
     QGridLayout *mainLayout = new QGridLayout;
 
@@ -91,6 +93,7 @@ SettingsBoxWidget::SettingsBoxWidget(transitionFunction* functionData, QWidget* 
 	mainLayout->addWidget(hapticLabel, 7, 0, Qt::AlignCenter);
 	mainLayout->addWidget(zoomInButton, 8, 0, Qt::AlignCenter);
 	mainLayout->addWidget(zoomOutButton, 8, 1, Qt::AlignCenter);
+	mainLayout->addWidget(setToOriginalButton, 8, 2, Qt::AlignCenter);
 	mainLayout->addWidget(loadButton, 9, 0, Qt::AlignCenter);
 	mainLayout->addWidget(saveButton, 9, 1, Qt::AlignCenter);
     setLayout(mainLayout);
@@ -224,4 +227,9 @@ void SettingsBoxWidget::setTraceLogOnOffSlot()
 void SettingsBoxWidget::setCloseEnabled()
 {
 	closeEnabled = true;
+}
+
+void SettingsBoxWidget::setToOriginalSlot()
+{
+	emit setToOriginal();
 }

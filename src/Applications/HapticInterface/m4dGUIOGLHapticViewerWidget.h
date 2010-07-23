@@ -372,6 +372,8 @@ namespace M4D
 
 					virtual void slotSetLogOff();
 
+					virtual void slotSetToOriginal();
+
 		protected:
 
 			/**

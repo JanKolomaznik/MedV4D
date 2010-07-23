@@ -73,7 +73,6 @@ namespace M4D
 				traceLogFile.close();
 			}
 			stop();
-			hapticsThread->join();
 			m_clock->stop();
 			delete(m_clock);
 			delete(hapticsThread);
@@ -274,6 +273,7 @@ namespace M4D
 		void hapticCursor::stop()
 		{
 			runHaptics = false;
+			hapticsThread->join();
 		}
 		void hapticCursor::StartListen()
 		{
@@ -302,7 +302,7 @@ namespace M4D
 
 		void hapticCursor::deviecWorker()
 		{
-			for (;;)
+			while (runHaptics)
 			{	
 				cSleepMs(1); // may be performance issue
 				cVector3d hapticPosition;
@@ -325,10 +325,6 @@ namespace M4D
 				//std::cout << fps << std::endl;
 
 				std::cout << GetForce() << std::endl;
-				if (!runHaptics)
-				{
-					return;
-				}
 			}
 		}
 

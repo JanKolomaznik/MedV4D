@@ -31,6 +31,7 @@ signals:
 	void zoomInHaptic();
 	void setTraceLogOn( std::string file );
 	void setTraceLogOff();
+	void setToOriginal();
 
 private slots:
 	void pointAddedSlot(double a_x, double a_y);
@@ -46,6 +47,7 @@ private slots:
 	void loadFunctionSlot();
 	void saveFunctionSlot();
 	void setTraceLogOnOffSlot();
+	void setToOriginalSlot();
 
 private:
     transitionFunctionRenderAreaWidget *renderArea;
@@ -67,6 +69,7 @@ private:
 	QPushButton* setSolidToButton;
 	QPushButton* unsetSolidToButton;
 	QPushButton* setTraceLogOnOffButton;
+	QPushButton* setToOriginalButton;
 	QSpinBox* xSpinBox;
 	QDoubleSpinBox* ySpinBox;
 	void closeEvent(QCloseEvent *event);

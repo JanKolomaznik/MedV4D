@@ -107,6 +107,7 @@ namespace M4D
 			QObject::connect(settings, SIGNAL(zoomOutHaptic()), (QVTKWidget*)this, SLOT(slotZoomOutHaptic()));
 			QObject::connect(settings, SIGNAL(setTraceLogOn(std::string)), (QVTKWidget*)this, SLOT(slotSetLogOn(std::string)));
 			QObject::connect(settings, SIGNAL(setTraceLogOff()), (QVTKWidget*)this, SLOT(slotSetLogOff()));
+			QObject::connect(settings, SIGNAL(setToOriginal()), (QVTKWidget*)this, SLOT(slotSetToOriginal()));
 			settings->show();
 			resetTransitionFunction();
 			resetSliceViewPosition();
@@ -133,6 +134,9 @@ namespace M4D
 			QObject::connect(settings, SIGNAL(resetFunction()), (QVTKWidget*)this, SLOT(slotTransitionFunctionResetDemanded()));
 			QObject::connect(settings, SIGNAL(zoomInHaptic()), (QVTKWidget*)this, SLOT(slotZoomInHaptic()));
 			QObject::connect(settings, SIGNAL(zoomOutHaptic()), (QVTKWidget*)this, SLOT(slotZoomOutHaptic()));
+			QObject::connect(settings, SIGNAL(setTraceLogOn(std::string)), (QVTKWidget*)this, SLOT(slotSetLogOn(std::string)));
+			QObject::connect(settings, SIGNAL(setTraceLogOff()), (QVTKWidget*)this, SLOT(slotSetLogOff()));
+			QObject::connect(settings, SIGNAL(setToOriginal()), (QVTKWidget*)this, SLOT(slotSetToOriginal()));
 			settings->show();
 			resetTransitionFunction();
 			resetSliceViewPosition();
@@ -811,6 +815,11 @@ namespace M4D
 				settings->setCloseEnabled();
 				settings->close();
 			}
+		}
+
+		void m4dGUIOGLHapticViewerWidget::slotSetToOriginal()
+		{
+			cursor->SetToOriginal();
 		}
 	} /* namespace Viewer */
 } /* namespace M4D */

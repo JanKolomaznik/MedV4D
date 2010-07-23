@@ -27,6 +27,7 @@ namespace M4D
 			virtual int GetZSlice();
 			virtual int GetDataMinValue();
 			virtual int GetDataMaxValue();
+			virtual void SetToOriginal();
 			virtual void SetData( vtkImageData* a_input);
 			cursorInterface(vtkImageData* input);
 			cursorInterface();
@@ -36,8 +37,9 @@ namespace M4D
 			vtkImageData* input; // link to dataset
 			double cursorCenter[3];
 			double cursorRadiusCubeCenter[3];
+			double cursorRadiusCubeCenterOriginal[3];
 			unsigned short minVolumeValue, maxVolumeValue;
-			double scale; // size of cube where is action radius of cursor
+			double scale, originalScale; // size of cube where is action radius of cursor
 			double imageRealHeight, imageRealWidth, imageRealDepth; // parameters of volume dataset - size in mm
 			double imageRealOffsetHeight, imageRealOffsetWidth, imageRealOffsetDepth; // offset which indicates how far VTK starts drawing of object from 0,0,0
 			double imageSpacingWidth, imageSpacingHeight, imageSpacingDepth; // spacing of eachdimension

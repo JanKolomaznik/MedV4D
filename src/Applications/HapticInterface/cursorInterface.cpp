@@ -110,9 +110,15 @@ namespace M4D
 				cursorCenter[2] = (imageRealDepth / 2.0) + imageRealOffsetDepth;
 
 				this->scale = MAX( MAX(imageRealWidth, imageRealHeight), MAX(imageRealHeight, imageRealDepth));
+				originalScale = scale;
+
 				cursorRadiusCubeCenter[0] = cursorCenter[0];
 				cursorRadiusCubeCenter[1] = cursorCenter[1];
 				cursorRadiusCubeCenter[2] = cursorCenter[2];
+
+				cursorRadiusCubeCenterOriginal[0] = cursorCenter[0];
+				cursorRadiusCubeCenterOriginal[1] = cursorCenter[1];
+				cursorRadiusCubeCenterOriginal[2] = cursorCenter[2];
 			}
 			else
 			{
@@ -223,6 +229,15 @@ namespace M4D
 		int cursorInterface::GetDataMaxValue()
 		{
 			return maxVolumeValue;
+		}
+
+		void cursorInterface::SetToOriginal()
+		{
+			boost::mutex::scoped_lock lck(cursorMutex);
+			scale = originalScale;
+			cursorRadiusCubeCenter[0] = cursorRadiusCubeCenterOriginal[0];
+			cursorRadiusCubeCenter[1] = cursorRadiusCubeCenterOriginal[1];
+			cursorRadiusCubeCenter[2] = cursorRadiusCubeCenterOriginal[2];
 		}
 	}
 }
