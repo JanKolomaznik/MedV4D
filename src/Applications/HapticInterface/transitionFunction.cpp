@@ -213,6 +213,7 @@ void transitionFunction::SaveToFile( std::string fileName )
 	}
 	oFile << solidFrom << std::endl;
 	oFile << solidTo << std::endl;
+	oFile.close();
 }
 
 void transitionFunction::LoadFromFile( std::string fileName )
@@ -233,6 +234,7 @@ void transitionFunction::LoadFromFile( std::string fileName )
 	}
 	iFile >> solidFrom;
 	iFile >> solidTo;
+	iFile.close();
 }
 
 int transitionFunction::GetSolidFrom()

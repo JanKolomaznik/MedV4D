@@ -174,7 +174,7 @@ void SettingsBoxWidget::pointAddDemandSlot()
 
 void SettingsBoxWidget::setSolidFromDemandSlot()
 {
-	if (functionData->GetSolidTo() >= xSpinBox->value())
+	if (functionData->GetSolidTo() == xSpinBox->value())
 	{
 		return;
 	}
@@ -190,7 +190,7 @@ void SettingsBoxWidget::unsetSolidFromDemandSlot()
 
 void SettingsBoxWidget::setSolidToDemandSlot()
 {
-	if ((functionData->GetSolidFrom() != -1) && (functionData->GetSolidFrom() <= xSpinBox->value()))
+	if (functionData->GetSolidFrom() == xSpinBox->value())
 	{
 		return;
 	}

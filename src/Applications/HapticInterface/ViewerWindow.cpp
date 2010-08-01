@@ -31,7 +31,7 @@ void ViewerWindow::build()
 
 void ViewerWindow::closeEvent( QCloseEvent *event )
 {
-	viewerWidget->close();
+	event->ignore();
 }
 
 //////////////////////////////////////////////////////////////////////////

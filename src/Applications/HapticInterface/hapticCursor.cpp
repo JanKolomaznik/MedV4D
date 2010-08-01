@@ -3,8 +3,8 @@
 
 #define SPRING_POWER 1000.0
 #define EPSILON 0.1
-#define NUMBER_OF_VECTORS 20
-#define MAX_FORCE 14.0
+#define NUMBER_OF_VECTORS 30
+//#define MAX_FORCE 14.0
 
 namespace M4D
 {
@@ -153,7 +153,7 @@ namespace M4D
 				{
 					newForce.normalize();
 				}
-				newForce *= -1 * MAX_FORCE;
+				newForce *= -1 * info.m_maxForce;
 				int coords[3];
 				coords[0] = (newRealPositionVTK[0] - imageRealOffsetWidth) / imageSpacingWidth + imageOffsetWidth;
 				coords[1] = (newRealPositionVTK[1] - imageRealOffsetHeight) / imageSpacingHeight + imageOffsetHeight;
@@ -210,7 +210,7 @@ namespace M4D
 					{
 						hlp.normalize();
 					}
-					hlp *= valueOnPoint * -1.0 * MAX_FORCE;
+					hlp *= valueOnPoint * -1.0 * info.m_maxForce;
 					cVector3d delta = hlp - force;
 					if (delta.length() > epsilon)
 					{
@@ -255,11 +255,14 @@ namespace M4D
 				{
 					cVector3d forceDirection = lastPosition - cursorPosition;
 					double forcePower = forceDirection.length() * springPower;
-					if (forcePower > MAX_FORCE)
+					if (forcePower > info.m_maxForce)
 					{
-						forcePower = MAX_FORCE;
+						forcePower = info.m_maxForce;
 					}
-					forceDirection.normalize();
+					if ((forceDirection.x != 0) || (forceDirection.y != 0) || (forceDirection.z != 0))
+					{
+						forceDirection.normalize();
+					}
 					force = forceDirection * forcePower;
 				}
 				else

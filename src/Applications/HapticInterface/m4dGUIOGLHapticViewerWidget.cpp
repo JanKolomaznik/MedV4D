@@ -97,7 +97,6 @@ namespace M4D
 			setInputPort( conn );
 			aggregationFilter->Update();
 			reloadCursorParameters();
-			cursor->startHaptics();
 			QTimer *timer = new QTimer((QVTKWidget*)this);
 			QObject::connect(timer, SIGNAL(timeout()), (QVTKWidget*)this, SLOT(update()));
 			timer->start(18);
@@ -111,6 +110,7 @@ namespace M4D
 			settings->show();
 			resetTransitionFunction();
 			resetSliceViewPosition();
+			cursor->startHaptics();
 		}
 
 		m4dGUIOGLHapticViewerWidget::m4dGUIOGLHapticViewerWidget( unsigned index, QWidget *parent )
@@ -126,7 +126,6 @@ namespace M4D
 			_inputPorts.AppendPort( _inPort );
 			setInputPort();
 			reloadCursorParameters();
-			cursor->startHaptics();
 			QTimer *timer = new QTimer((QVTKWidget*)this);
 			QObject::connect(timer, SIGNAL(timeout()), (QVTKWidget*)this, SLOT(update()));
 			timer->start(18);
@@ -140,6 +139,7 @@ namespace M4D
 			settings->show();
 			resetTransitionFunction();
 			resetSliceViewPosition();
+			cursor->startHaptics();
 		}
 
 		m4dGUIOGLHapticViewerWidget::~m4dGUIOGLHapticViewerWidget()
@@ -408,7 +408,7 @@ namespace M4D
 			rectangleLine4.SetPoints(point0, point1);
 
 			std::stringstream ss;
-			ss << "Cursor on value: " << cursor->GetValue() << " on slice: " << cursor->GetZSlice();
+			ss << "Cursor on value: " << cursor->GetValue() << " on slice: " << cursor->GetZSlice() << " cursor position: " << cursorCenter[0] << " " << cursorCenter[1] << " " << cursorCenter[2];
 			std::string s = ss.str();
 			cornerAnnotation->SetText(1, s.c_str());
 		}
@@ -428,16 +428,16 @@ namespace M4D
 			aggregationFilter = aggregationFilterForVtk::New();
 			aggregationFilter->SetAggregationPoint(550, 700, 600);
 			//aggregationFilter->SetAggregationPoint(701, 1000, 900);
-			//aggregationFilter->SetAggregationPoint(1001, 1200, 1080);
-			//aggregationFilter->SetAggregationPoint(1201, 2000, 1500);
+			//aggregationFilter->SetAggregationPoint(1040, 1120, 1080);
+			//aggregationFilter->SetAggregationPoint(1300, 2000, 1500);
 			aggregationFilter->SetInputConnection( _iCast->GetOutputPort());
 
 			std::cout << "Set marching cubes..." << std::endl; // DEBUG
 
-			tissues.push_back(tissue(aggregationFilter->GetOutputPort(), 600, 1.0, 1.0, 0.4, 0.35)); // Lungs and skin
+			tissues.push_back(tissue(aggregationFilter->GetOutputPort(), 600, 1.0, 1.0, 0.4, 0.25)); // Lungs and skin
 			//tissues.push_back(tissue(aggregationFilter->GetOutputPort(), 900, 0.5, 0.5, 1.0, 0.4)); // soft tissue
-			//tissues.push_back(tissue(aggregationFilter->GetOutputPort(), 1080, 1.0, 0.5, 0.5, 0.5)); // Muscles
-			//tissues.push_back(tissue(aggregationFilter->GetOutputPort(), 1500, 0.8, 0.8, 0.8, 1.0)); // Bones
+			//tissues.push_back(tissue(aggregationFilter->GetOutputPort(), 1080, 1.0, 0.5, 0.5, 0.4)); // Muscles
+			//tissues.push_back(tissue(aggregationFilter->GetOutputPort(), 1500, 0.8, 0.8, 0.8, 0.6)); // Bones
 
 #pragma region pointStuffFromOriginalVtkViewer
 
@@ -469,7 +469,7 @@ namespace M4D
 
 			cursorSource = vtkSphereSource::New();
 			cursorSource->SetCenter(0.0, 0.0, 0.0);
-			cursorSource->SetRadius(1.0);
+			cursorSource->SetRadius(2.0);
 
 			cursorMapper = vtkPolyDataMapper::New();
 			cursorMapper->SetInput(cursorSource->GetOutput());

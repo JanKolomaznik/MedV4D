@@ -16,7 +16,7 @@ transitionFunctionRenderAreaWidget::transitionFunctionRenderAreaWidget(transitio
 	pen = QPen(Qt::black, 1, style, cap, join);
 	pointStyleMoveable = false;
 	selectedPoint = -1;
-	lengthToPickPoint = 5;
+	lengthToPickPoint = 8;
 	mouseX = 0;
 	mouseY = 0;
 	deny = false;
