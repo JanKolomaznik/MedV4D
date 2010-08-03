@@ -20,3 +20,6 @@ ENDIF(NOT MEDV4D_LIBS_CMAKE_PROCESSED)
 
 SET(EXECUTABLE_OUTPUT_PATH ${MEDV4D_CMAKE_SOURCE_DIR}/../executables)
 TARGET_MEDV4D_PROGRAM( HapticInterface ${MEDV4D_CMAKE_SOURCE_DIR}/../Applications/HapticInterface )
+SET(CHAI3D_LIBS "optimized" "chai3d-release.lib" "debug" "chai3d-debug.lib")
+TARGET_LINK_LIBRARIES( HapticInterface ${CHAI3D_LIBS} )
+TARGET_LINK_LIBRARIES( HapticInterface ${CHAI3D_GLUT_LIBRARY}/glut32.lib )
