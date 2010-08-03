@@ -8,8 +8,8 @@ ENDIF(NOT MEDV4D_CMAKE_SOURCE_DIR)
 
 INCLUDE( "${MEDV4D_CMAKE_MODULES_DIR}/Functions.cmake" )
 INCLUDE( "${MEDV4D_CMAKE_MODULES_DIR}/FindPackages.cmake" )
-INCLUDE( "${MEDV4D_CMAKE_MODULES_DIR}/FindChai3D.cmake" )
 INCLUDE( "${MEDV4D_CMAKE_MODULES_DIR}/StandardCompileOptions.cmake" )
+INCLUDE( "${MEDV4D_CMAKE_MODULES_DIR}/FindChai3D.cmake" )
 
 #Mandatory -- prevents adding targets for Medv4DLibs more than once 
 IF(NOT MEDV4D_LIBS_CMAKE_PROCESSED)
@@ -20,5 +20,3 @@ ENDIF(NOT MEDV4D_LIBS_CMAKE_PROCESSED)
 
 SET(EXECUTABLE_OUTPUT_PATH ${MEDV4D_CMAKE_SOURCE_DIR}/../executables)
 TARGET_MEDV4D_PROGRAM( HapticInterface ${MEDV4D_CMAKE_SOURCE_DIR}/../Applications/HapticInterface )
-TARGET_LINK_LIBRARIES( HapticInterface ${CHAI3D_LIBRARY}/chai3d-release.lib )
-TARGET_LINK_LIBRARIES( HapticInterface ${CHAI3D_GLUT_LIBRARY}/glut32.lib )
