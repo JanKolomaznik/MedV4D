@@ -110,8 +110,11 @@ public:
 	GetEditTimestamp()const
 		{ return GetModificationManager().GetActualTimestamp(); }
 
-	virtual AImageRegion *
+	virtual AImageRegion::Ptr
 	GetAImageRegion() = 0;
+
+	virtual AImageRegion::ConstPtr
+	GetAImageRegion()const = 0;
 protected:
 	uint16			_dimCount;
 	DimensionExtents	*_dimensionExtents;
@@ -156,6 +159,18 @@ public:
 	GetMaximum()const
 		{ return _maximum; }
 
+	Vector< float, Dimension >
+	GetRealMinimum()const
+		{
+			return VectorMemberProduct( _minimum, _elementExtents );
+		}
+
+	Vector< float, Dimension >
+	GetRealMaximum()const
+		{
+			return VectorMemberProduct( _maximum, _elementExtents );
+		}
+
 	SizeType
 	GetSize()const
 		{ return _size; }
@@ -180,12 +195,19 @@ public:
 	GetElementExtentsP()const
 		{ return _elementExtents.GetData(); }
 
-	AImageRegion *
+	AImageRegion::Ptr
 	GetAImageRegion()
 		{ return GetAImageRegionDim(); }
 
-	virtual AImageRegionDim< Dimension > *
+	virtual typename AImageRegionDim< Dimension >::Ptr
 	GetAImageRegionDim() = 0;
+
+	AImageRegion::ConstPtr
+	GetAImageRegion()const
+		{ return GetAImageRegionDim(); }
+
+	virtual typename AImageRegionDim< Dimension >::ConstPtr
+	GetAImageRegionDim()const = 0;
 
 protected:
 	PointType		_minimum;

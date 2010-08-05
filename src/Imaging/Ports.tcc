@@ -29,7 +29,18 @@ InputPortTyped< DatasetType >
 	if( this->_connection == NULL ) {
 		_THROW_ Port::EDisconnected( *this );
 	}
-	return static_cast< IdealConnectionInterface *>(this->_connection)->GetDatasetTyped();
+	return static_cast< IdealConnectionInterface *>(this->_connection)->GetDatasetReadOnlyTyped();
+}
+
+template< typename DatasetType >
+typename DatasetType::ConstPtr
+InputPortTyped< DatasetType >
+::GetDatasetTypedPtr()const
+{
+	if( this->_connection == NULL ) {
+		_THROW_ Port::EDisconnected( *this );
+	}
+	return static_cast< IdealConnectionInterface *>(this->_connection)->GetDatasetReadOnlyTypedPtr();
 }
 
 template< typename DatasetType >
@@ -74,6 +85,17 @@ OutputPortTyped< DatasetType >
 		_THROW_ Port::EDisconnected( *this );
 	}
 	return static_cast< IdealConnectionInterface *>(this->_connection)->GetDatasetTyped();
+}
+
+template< typename DatasetType >
+typename DatasetType::Ptr
+OutputPortTyped< DatasetType >
+::GetDatasetTypedPtr()const
+{
+	if( this->_connection == NULL ) {
+		_THROW_ Port::EDisconnected( *this );
+	}
+	return static_cast< IdealConnectionInterface *>(this->_connection)->GetDatasetTypedPtr();
 }
 
 template< typename DatasetType >

@@ -71,6 +71,13 @@ enum CartesianPlanes{
 	XY_PLANE = 2
 };	
 
+enum ZoomType
+{
+	ztFIT,
+	ztWIDTH_FIT,
+	ztHEIGHT_FIT
+};
+
 //*****************************************************************************
 
 enum NumericTypeIDs{ 

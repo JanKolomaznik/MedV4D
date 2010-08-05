@@ -119,6 +119,10 @@ public:
 	virtual const ADataset &
 	GetDatasetReadOnly()const = 0;
 
+	virtual ADataset::ConstPtr
+	GetDatasetReadOnlyPtr()const = 0;
+
+
 	/**
 	 * Sets object, which will be listening messages going through
 	 * connection. Other listeners are untouched and gets messages too.
@@ -230,12 +234,16 @@ public:
 		{ return DatasetType::Cast( this->GetDataset() ); }
 
 	typename DatasetType::Ptr
-	GetDatasetPtrTyped()const
+	GetDatasetTypedPtr()const
 		{ return DatasetType::Cast( this->GetDatasetPtr() ); }
 
 	const DatasetType &
 	GetDatasetReadOnlyTyped()const
 		{ return DatasetType::Cast( this->GetDatasetReadOnly() ); }
+
+	typename DatasetType::ConstPtr
+	GetDatasetReadOnlyTypedPtr()const
+		{ return DatasetType::Cast( this->GetDatasetReadOnlyPtr() ); }
 
 protected:
 };
@@ -287,11 +295,10 @@ public:
 			return *_dataset;
 		}
 
-
 	ADataset::Ptr
 	GetDatasetPtr()const
 		{ if( !_dataset ) { _THROW_ ConnectionInterface::ENoDatasetAssociated(); }
-			return _dataset;
+			return boost::static_pointer_cast< ADataset >( _dataset );
 		}
 
 	const ADataset &
@@ -299,8 +306,14 @@ public:
 		{ if( !_dataset ) { _THROW_ ConnectionInterface::ENoDatasetAssociated(); }
 			return *_dataset;
 		}
+
+	ADataset::ConstPtr
+	GetDatasetReadOnlyPtr()const
+		{ if( !_dataset ) { _THROW_ ConnectionInterface::ENoDatasetAssociated(); }
+			return boost::static_pointer_cast< const ADataset >( _dataset );
+		}
 protected:
-	typename DatasetType::Ptr _dataset;
+	mutable typename DatasetType::Ptr _dataset;
 };
 
 //******************************************************************************

@@ -19,19 +19,25 @@ CheckForGLError( const std::string &situation  )
 void
 SetToViewConfiguration2D( const ViewConfiguration2D &config )
 {
+	GLint	viewportParams[4];
+	glGetIntegerv( GL_VIEWPORT, viewportParams );
 
+	Vector< float32, 2 > size = ( 0.5f / config.zoom ) *  Vector< float32, 2 >( viewportParams[2], viewportParams[3] );
+	Vector< float32, 2 > min =  config.centerPoint - size;
+	Vector< float32, 2 > max =  config.centerPoint + size;
+	
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
 	glOrtho( 
-		(double)config.offset[0], 
-		(double)(config.height * config.aspectRatio), 
-		(double)config.offset[1],
-	        (double)config.height, 
+		(double) config.hFlip ? max[0] : min[0], 
+		(double) config.hFlip ? min[0] : max[0], 
+		(double) config.vFlip ? max[1] : min[1], 
+		(double) config.vFlip ? min[1] : max[1], 
 		-1.0, 
 		1.0
 		);
 
-	/*glMatrixMode(GL_MODELVIEW);
-	glTranslatef( config.offset[0], config.offset[1], 0 );
-	glScalef( config.zoom * config.hFlip, config.zoom * config.vFlip, 0.0f );*/
+	glMatrixMode(GL_MODELVIEW);
 }
 
 void
@@ -140,17 +146,19 @@ GLDrawVolumeSlice(
 		CartesianPlanes			plane
 		)
 {
+	float32 sliceTexCoord = (sliceCoord - min[plane]) / (max[plane] - min[plane]);
 	Vector< float32, 2 > point1 = VectorPurgeDimension( min, plane );
 	Vector< float32, 2 > point3 = VectorPurgeDimension( max, plane );
 
 	Vector< float32, 2 > point2( point3[0], point1[1] );
 	Vector< float32, 2 > point4( point1[0], point3[1] );
 
-	Vector< float32, 3 > tex1 = VectorInsertDimension( Vector< float32, 2 >( 0.0f, 0.0f ), sliceCoord, plane );
-	Vector< float32, 3 > tex2 = VectorInsertDimension( Vector< float32, 2 >( 1.0f, 0.0f ), sliceCoord, plane );
-	Vector< float32, 3 > tex3 = VectorInsertDimension( Vector< float32, 2 >( 1.0f, 1.0f ), sliceCoord, plane );
-	Vector< float32, 3 > tex4 = VectorInsertDimension( Vector< float32, 2 >( 0.0f, 1.0f ), sliceCoord, plane );
+	Vector< float32, 3 > tex1 = VectorInsertDimension( Vector< float32, 2 >( 0.0f, 0.0f ), sliceTexCoord, plane );
+	Vector< float32, 3 > tex2 = VectorInsertDimension( Vector< float32, 2 >( 1.0f, 0.0f ), sliceTexCoord, plane );
+	Vector< float32, 3 > tex3 = VectorInsertDimension( Vector< float32, 2 >( 1.0f, 1.0f ), sliceTexCoord, plane );
+	Vector< float32, 3 > tex4 = VectorInsertDimension( Vector< float32, 2 >( 0.0f, 1.0f ), sliceTexCoord, plane );
 
+	std::cout << sliceCoord << "  " << sliceTexCoord << " tex\n";
 	glBegin( GL_QUADS );
 		GLTextureVector( tex1 ); 
 		GLVertexVector( point1 );

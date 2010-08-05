@@ -12,7 +12,7 @@ namespace GUI
 namespace Viewer
 {
 
-class AGUIViewer;
+/*class AGUIViewer;
 
 enum{ 
 	EID_KEY_PRESS,
@@ -61,12 +61,11 @@ public:
 
 protected:
 	bool	_handleFlags[ EID_LIMIT ];
-};
+};*/
 
 
-class AGUIViewer: public QObject, public AViewer
+class AGUIViewer: public AViewer
 {
-	Q_OBJECT
 public:
 
 
@@ -81,22 +80,14 @@ public:
 	virtual QWidget* 
 	CastToQWidget()=0;
 
-	void
+	/*void
 	SetEventHandler( AEventHandler::Ptr handler ) 
-	{ _eventHandler = handler; }
-public slots:
-
-
-	virtual void
-	DemandUpdate() {}
-protected slots:
-
-signals:
+	{ _eventHandler = handler; }*/
 
 
 protected:
 
-	AEventHandler::Ptr	_eventHandler;
+	//AEventHandler::Ptr	_eventHandler;
 
 private:
 

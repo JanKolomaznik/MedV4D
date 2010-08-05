@@ -3,7 +3,8 @@
 #include <sstream>
 
 #include <QWidget>
-#include "GUI/widgets/m4dGUISliceViewerWidget.h"
+//#include "GUI/widgets/m4dGUISliceViewerWidget.h"
+#include "GUI/widgets/BasicSliceViewer.h"
 #include "Imaging/Imaging.h"
 #include "common/Common.h"
 
@@ -11,26 +12,49 @@
 class ViewerWindow : public QWidget
 {
 private:
-	M4D::Viewer::m4dGUISliceViewerWidget *viewerWidget;
+	M4D::GUI::Viewer::BasicSliceViewer *viewerWidget;
 public:
 	ViewerWindow( M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage > & conn);
+	//ViewerWindow( M4D::Imaging::AImage::Ptr image );
 	~ViewerWindow();
 };
 
 
 ViewerWindow::ViewerWindow( M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage > & conn )
 {
-	viewerWidget = new M4D::Viewer::m4dGUISliceViewerWidget( &conn, 0, NULL );
-	//glWidget->setSelected( true );
-	viewerWidget->setButtonHandler( M4D::Viewer::m4dGUIAbstractViewerWidget::color_picker, M4D::Viewer::m4dGUIAbstractViewerWidget::right );
-	viewerWidget->setButtonHandler( M4D::Viewer::m4dGUIAbstractViewerWidget::adjust_bc, M4D::Viewer::m4dGUIAbstractViewerWidget::left );
+	viewerWidget = new M4D::GUI::Viewer::BasicSliceViewer();
 
+	conn.ConnectConsumer( viewerWidget->InputPort()[0] );
+	//glWidget->setSelected( true );
+	//viewerWidget->setButtonHandler( M4D::Viewer::m4dGUIAbstractViewerWidget::color_picker, M4D::Viewer::m4dGUIAbstractViewerWidget::right );
+	//viewerWidget->setButtonHandler( M4D::Viewer::m4dGUIAbstractViewerWidget::adjust_bc, M4D::Viewer::m4dGUIAbstractViewerWidget::left );
+
+	viewerWidget->ZoomFit();
 	QHBoxLayout *mainLayout = new QHBoxLayout;
-	mainLayout->addWidget((*viewerWidget)());
+	mainLayout->addWidget(viewerWidget->CastToQWidget());
 	setLayout(mainLayout);
-	setFixedSize(800,800);
+	resize(600,600);
 
 }
+
+/*ViewerWindow::ViewerWindow( M4D::Imaging::AImage::Ptr image )
+{
+	viewerWidget = new M4D::GUI::Viewer::BasicSliceViewer();
+
+	//conn.ConnectConsumer( viewerWidget->InputPort()[0] );
+	//glWidget->setSelected( true );
+	//viewerWidget->setButtonHandler( M4D::Viewer::m4dGUIAbstractViewerWidget::color_picker, M4D::Viewer::m4dGUIAbstractViewerWidget::right );
+	//viewerWidget->setButtonHandler( M4D::Viewer::m4dGUIAbstractViewerWidget::adjust_bc, M4D::Viewer::m4dGUIAbstractViewerWidget::left );
+
+	viewerWidget->SetImage( image );
+
+	viewerWidget->ZoomFit();
+	QHBoxLayout *mainLayout = new QHBoxLayout;
+	mainLayout->addWidget(viewerWidget->CastToQWidget());
+	setLayout(mainLayout);
+	resize(600,600);
+
+}*/
 
 ViewerWindow::~ViewerWindow()
 {}
@@ -63,7 +87,9 @@ main( int argc, char** argv )
 
 
 	QApplication app(argc, argv);
+	std::cout << "Show window\n";
 	ViewerWindow viewer( prodconn );
+	//ViewerWindow viewer( image );
 	viewer.show();
 	return app.exec();
 }

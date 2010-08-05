@@ -26,7 +26,7 @@ main( int argc, char** argv )
 			for ( unsigned k=0; k<size; ++k ) {
 				//image->GetElement( i, j ) = ((i>>4)+(j>>4)) & 1 ? 0 : 255;
 				//image->GetElement( i, j ) = (/*(i>>4)+*/(j)) & 0xf ? 0 : 255;
-				image->GetElement( Vector< int32, 3 >( i, j, k ) ) = (PWR(i-size/2)+PWR(j-size/2)+PWR(k-size/2)) < PWR(size/4) ? 0 : 255;
+				image->GetElement( Vector< int32, 3 >( i, j, k ) ) = i%5 * 45 * k%2;
 			}
 		}
 	}

@@ -198,6 +198,9 @@ public:
 	virtual	const ADataset&
 	GetDataset()const = 0;
 
+	virtual	ADataset::ConstPtr
+	GetDatasetPtr()const = 0;
+
 	void
 	SendMessage( 
 		PipelineMessage::Ptr 			msg, 
@@ -230,6 +233,9 @@ public:
 	
 	virtual	ADataset&
 	GetDataset()const = 0;
+
+	virtual	ADataset::Ptr
+	GetDatasetPtr()const = 0;
 
 	void
 	SendMessage( 
@@ -266,6 +272,13 @@ public:
 	const ADataset&
 	GetDataset()const
 		{ return GetDatasetTyped(); }
+
+	typename DatasetType::ConstPtr
+	GetDatasetTypedPtr()const;
+
+	ADataset::ConstPtr
+	GetDatasetPtr()const
+		{ return GetDatasetTypedPtr(); }
 
 	void
 	Plug( ConnectionInterface & connection );
@@ -311,6 +324,13 @@ public:
 	ADataset&
 	GetDataset()const
 		{ return GetDatasetTyped(); }
+
+	typename DatasetType::Ptr
+	GetDatasetTypedPtr()const;
+
+	ADataset::Ptr
+	GetDatasetPtr()const
+		{ return GetDatasetTypedPtr(); }
 
 	void
 	Plug( ConnectionInterface & connection );

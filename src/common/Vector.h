@@ -92,6 +92,14 @@ public:
 			{ _coordinates[i] = static_cast<CoordType>(coord[i]); } 
 		}
 
+	template< typename CType >
+	Vector( const Vector< CType, Dimension-1 > &coord, CType value ) 
+		{ 
+			for( unsigned i=0; i<Dimension-1; ++i ) 
+			{ _coordinates[i] = static_cast<CoordType>(coord[i]); } 
+			_coordinates[Dimension-1] = value;
+		}
+
 	Vector( const CoordType coords[] ) 
 		{ 
 			for( unsigned i=0; i<Dimension; ++i ) 

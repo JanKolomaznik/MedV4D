@@ -27,6 +27,7 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <cassert>
 
 extern std::string	____EXCEPTION_FILE_NAME;
 extern int		____EXCEPTION_LINE_NUMBER;
@@ -64,7 +65,7 @@ extern std::ostream *pdout;
 #define ASSERT_INFO(EXPR, info) if ( (EXPR) == 0 ) { \
 			DOUT <<"Assertion failed at " <<__FILE__ \
 			<<", on line " <<__LINE__<<", in function \'" \
-			<<__FUNCTION__<<"\'. Reason: " << info <<std::endl; exit(1); }
+			<<__FUNCTION__<<"\'. Reason: " << info <<std::endl; assert(EXPR); }
 #else
 #define ASSERT_INFO(EXPR, info)
 #endif /*DEBUG_LEVEL*/
@@ -73,7 +74,7 @@ extern std::ostream *pdout;
 #define ASSERT(EXPR) 	if ( (EXPR) == 0 ) { \
 			DOUT <<"Assertion failed at " <<__FILE__ \
 			<<", on line " <<__LINE__<<", in function \'" \
-			<<__FUNCTION__<<"\'."<<std::endl; exit(1); }
+			<<__FUNCTION__<<"\'."<<std::endl; assert(EXPR); }
 #else
 #define ASSERT(EXPR)
 #endif /*DEBUG_LEVEL*/

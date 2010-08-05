@@ -3,7 +3,6 @@
 
 #ifdef USE_CG
 
-
 #include "GUI/utils/OGLDrawing.h"
 #include <Cg/cg.h>    /* Can't include this?  Is Cg Toolkit installed! */
 #include <Cg/cgGL.h>

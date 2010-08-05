@@ -3,6 +3,7 @@
 
 #include "common/Common.h"
 #include "common/Vector.h"
+#include "Imaging/DatasetDefinitionTools.h"
 
 namespace M4D
 {
@@ -22,7 +23,16 @@ class AImageRegion
 
 
 public:
+	typedef boost::shared_ptr< AImageRegion > Ptr;
+	typedef boost::shared_ptr< const AImageRegion > ConstPtr;
+
 	virtual ~AImageRegion() {}
+
+	virtual AImageRegion::Ptr
+	Clone() = 0;
+
+	virtual AImageRegion::ConstPtr
+	Clone()const = 0;
 
 	virtual uint32 
 	GetDimension()const = 0;
@@ -35,6 +45,12 @@ template< unsigned Dim >
 class AImageRegionDim: public AImageRegion
 {
 public:
+	typedef AImageRegionDim< Dim >		ThisClass;
+	typedef boost::shared_ptr< AImageRegionDim< Dim > > Ptr;
+	typedef boost::shared_ptr< const AImageRegionDim< Dim > > ConstPtr;
+	
+	CONFIGURABLE_PREPARE_CAST_METHODS_MACRO( Cast, ThisClass, AImageRegion );
+
 	typedef Vector< int, Dim >	PointType;
 	static const unsigned Dimension = Dim;
 

@@ -28,9 +28,9 @@ AShaderConfig::Initialize(
 		cgFragmentProfile,        /* Profile: OpenGL ARB vertex program */
 		fragmentProgramName.data(),      /* Entry function name */
 		NULL);                      /* No extra compiler options */
-	CheckForCgError("creating fragment program from file ", cgContext );
+	CheckForCgError(TO_STRING("creating fragment program from file \"" << fragmentProgramFile.string() << "\"." ), cgContext );
 	cgGLLoadProgram( cgFragmentProgram );
-	CheckForCgError("loading fragment program ", cgContext );
+	CheckForCgError(TO_STRING("loading fragment program \"" << fragmentProgramName << "\"." ), cgContext );
 }
 
 
@@ -62,8 +62,8 @@ CgBrightnessContrastShaderConfig::Initialize(
 {
 	AShaderConfig::Initialize( _cgContext, fragmentProgramFile, fragmentProgramName );
 
-	cgFragmentParam_Texture = cgGetNamedParameter( cgFragmentProgram, "texture" );
-	CheckForCgError("getting 'texture' parameter ", cgContext );
+	cgFragmentParam_Texture = cgGetNamedParameter( cgFragmentProgram, "dataTexture" );
+	CheckForCgError("getting 'dataTexture' parameter ", cgContext );
 
 	cgFragmentParam_BrightnessContrast = cgGetNamedParameter( cgFragmentProgram, "brightnessContrast");
 	CheckForCgError("getting 'contrastBrightness' parameter ", cgContext );
@@ -232,7 +232,7 @@ CheckForCgError( const std::string &situation, CGcontext &context  )
 		_THROW_ CgException( message );
 	}
 }
-
+/*
 void
 GLDrawVolumeSlicesForVertexShader(
 		M4D::BoundingBox3D	bbox,
@@ -275,7 +275,7 @@ GLDrawVolumeSlicesForVertexShader(
 		glEnd();
 	}
 
-}
+}*/
 
 
 #endif /*USE_CG*/

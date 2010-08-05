@@ -4,6 +4,7 @@
 #include "common/Common.h"
 #include "common/Vector.h"
 #include "Imaging/AImageRegion.h"
+#include "Imaging/DatasetDefinitionTools.h"
 #include "Imaging/ImageIterator.h"
 #include <memory>
 
@@ -25,10 +26,16 @@ template< typename EType, unsigned Dim >
 class ImageRegion: public AImageRegionDim< Dim >
 {
 public:
-	static const unsigned Dimension = Dim;
+
+	typedef ImageRegion< EType, Dim >		ThisClass;
+	static const unsigned 				Dimension = Dim;
+	typedef boost::shared_ptr< ThisClass >		Ptr;
+	typedef boost::shared_ptr< const ThisClass >	ConstPtr;
 	typedef EType					ElementType;
 	typedef ImageIterator< ElementType, Dim >	Iterator;
 	typedef Vector< int, Dim >			PointType;
+
+	CONFIGURABLE_PREPARE_CAST_METHODS_MACRO( Cast, ThisClass, AImageRegion );
 
 	ImageRegion():
 			AImageRegionDim< Dim >(), _pointer( NULL ), _sourceDimension( 0 ), _pointerCoordinatesInSource( NULL )
@@ -107,6 +114,20 @@ public:
 				delete [] _pointerCoordinatesInSource;
 			}
 		}
+
+	AImageRegion::Ptr
+	Clone()
+	{
+		ImageRegion< EType, Dim > *copy = new ImageRegion< EType, Dim >( *this );
+		return AImageRegion::Ptr( copy );
+	}
+
+	AImageRegion::ConstPtr
+	Clone()const
+	{
+		ImageRegion< EType, Dim > *copy = new ImageRegion< EType, Dim >( *this );
+		return AImageRegion::ConstPtr( copy );
+	}
 	
 	/**
 	 * Method for obtaining iterator, which can iterate over all elements in this region.

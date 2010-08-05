@@ -9,7 +9,7 @@ Output SimpleBrightnessContrast3D(
 			uniform float2 brightnessContrast
 			)
 {
-  LUT_Output OUT;
+  Output OUT;
   OUT.color = (brightnessContrast.x + brightnessContrast.y * tex3D(dataTexture,texCoord));
   return OUT;
 }

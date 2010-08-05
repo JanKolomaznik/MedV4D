@@ -116,16 +116,6 @@ GLPrepareTextureFromImageData3D( const ImageRegionType &image, bool linearInterp
 	glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, linearInterpolation ? GL_LINEAR : GL_NEAREST );
 	glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, linearInterpolation ? GL_LINEAR : GL_NEAREST );
 
-	/*float scale = 2.0f;
-	float bias = 0.0f;
-	glPixelTransferf( GL_RED_SCALE, scale );
-	glPixelTransferf( GL_GREEN_SCALE, scale );
-	glPixelTransferf( GL_BLUE_SCALE, scale );
-
-	glPixelTransferf( GL_RED_BIAS, bias );
-	glPixelTransferf( GL_GREEN_BIAS, bias );
-	glPixelTransferf( GL_BLUE_BIAS, bias );*/
-
 
 	glEnable( GL_TEXTURE_3D );
 	

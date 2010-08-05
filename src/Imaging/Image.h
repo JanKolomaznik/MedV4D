@@ -151,7 +151,7 @@ public:
 	 * \exception ExceptionCastProblem When casting impossible.
 	 **/	
 	static Image< ElementType, Dimension > &
-	CastAImage( AImage & image )
+	Cast( AImage & image )
 		{
 			try {
 				return dynamic_cast< Image< ElementType, Dimension > & >( image );
@@ -165,7 +165,7 @@ public:
 	 * \exception ExceptionCastProblem When casting impossible.
 	 **/	
 	static const Image< ElementType, Dimension > &
-	CastAImage( const AImage & image )
+	Cast( const AImage & image )
 		{
 			try {
 				return dynamic_cast< const Image< ElementType, Dimension > & >( image );
@@ -179,13 +179,23 @@ public:
 	 * \exception ExceptionCastProblem When casting impossible.
 	 **/	
 	static typename Image< ElementType, Dimension >::Ptr 
-	CastAImage( AImage::Ptr & image )
+	Cast( AImage::Ptr & image )
 		{
 			if( dynamic_cast< Image< ElementType, Dimension > * >( image.get() ) == NULL ) {
 				_THROW_ ErrorHandling::ExceptionCastProblem();
 			}
 
 			return boost::static_pointer_cast< Image< ElementType, Dimension > >( image );
+		}
+
+	static typename Image< ElementType, Dimension >::ConstPtr 
+	Cast( AImage::ConstPtr & image )
+		{
+			if( dynamic_cast< const Image< ElementType, Dimension > * >( image.get() ) == NULL ) {
+				_THROW_ ErrorHandling::ExceptionCastProblem();
+			}
+
+			return boost::static_pointer_cast< const Image< ElementType, Dimension > >( image );
 		}
 	
 
@@ -249,9 +259,14 @@ public:
 	SubRegion
 	GetRegion()const;
 
-	AImageRegionDim< Dimension > *
+	typename AImageRegionDim< Dimension >::Ptr
 	GetAImageRegionDim()
-		{ return new SubRegion( GetRegion() ); }	//TODO -- error handling, effectivenes
+		{ return typename AImageRegionDim< Dimension >::Ptr( new SubRegion( GetRegion() ) ); }	//TODO -- error handling, effectivenes
+
+	typename AImageRegionDim< Dimension >::ConstPtr
+	GetAImageRegionDim()const
+		{ return typename AImageRegionDim< Dimension >::ConstPtr( new SubRegion( GetRegion() ) ); }	//TODO -- error handling, effectivenes
+
 
 	SubRegion
 	GetSubRegion(
