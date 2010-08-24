@@ -70,11 +70,14 @@ protected:
 	void	
 	resizeGL ( int width, int height );
 
+	void	
+	resizeOverlayGL ( int width, int height );
+
 	void
 	mouseMoveEvent ( QMouseEvent * event );
 
 	void	
-	resizeOverlayGL ( int width, int height );
+	mouseDoubleClickEvent ( QMouseEvent * event );
 
 	void
 	mousePressEvent ( QMouseEvent * event );
@@ -99,7 +102,7 @@ protected:
 
 	CartesianPlanes		_plane;
 
-	int32			_currentSlice;
+	Vector< int32, 3 >	_currentSlice;
 
 	GLTextureImage::Ptr	_textureData;
 

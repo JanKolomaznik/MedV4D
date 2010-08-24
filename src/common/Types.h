@@ -1,6 +1,8 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+
+#include "common/Debug.h"
 /**
  *  @ingroup common
  *  @file Types.h
@@ -70,6 +72,21 @@ enum CartesianPlanes{
 	XZ_PLANE = 1,
 	XY_PLANE = 2
 };	
+
+inline CartesianPlanes 
+NextCartesianPlane( CartesianPlanes plane )
+{
+	switch (plane) {
+	case YZ_PLANE:
+		return XZ_PLANE;
+	case XZ_PLANE:
+		return XY_PLANE;
+	case XY_PLANE:
+		return YZ_PLANE;
+	default:
+		ASSERT( false );
+	}
+}
 
 enum ZoomType
 {

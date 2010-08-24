@@ -39,7 +39,7 @@ BasicSliceViewer::SetLUTWindow( Vector< float32, 2 > window )
 void
 BasicSliceViewer::SetCurrentSlice( int32 slice )
 {
-	_currentSlice = Max( Min( _regionMax[_plane], slice ), _regionMin[_plane] );
+	_currentSlice[ _plane ] = Max( Min( _regionMax[_plane], slice ), _regionMin[_plane] );
 }
 
 void	
@@ -119,6 +119,15 @@ BasicSliceViewer::mouseMoveEvent ( QMouseEvent * event )
 	}
 }
 
+void	
+BasicSliceViewer::mouseDoubleClickEvent ( QMouseEvent * event )
+{
+	if( event->button() == Qt::LeftButton ) {
+		_plane = NextCartesianPlane( _plane );
+		this->update();
+		return;
+	}
+}
 
 void	
 BasicSliceViewer::mousePressEvent ( QMouseEvent * event )
@@ -129,6 +138,7 @@ BasicSliceViewer::mousePressEvent ( QMouseEvent * event )
 		_interactionMode = imSETTING_LUT_WINDOW;
 		_oldLUTWindow = GetLUTWindow();
 		this->update();
+		return;
 	}
 }
 
@@ -144,9 +154,9 @@ BasicSliceViewer::wheelEvent ( QWheelEvent * event )
 	int numDegrees = event->delta() / 8;
 	int numSteps = numDegrees / 15;
 	if (event->orientation() == Qt::Horizontal) {
-		SetCurrentSlice( _currentSlice += numSteps );
+		SetCurrentSlice( _currentSlice[ _plane ] -= numSteps );
 	} else {
-		SetCurrentSlice( _currentSlice -= numSteps );
+		SetCurrentSlice( _currentSlice[ _plane ] += numSteps );
 	}
 	event->accept();
 	this->update();
@@ -185,6 +195,8 @@ BasicSliceViewer::PrepareData()
 	_regionRealMax = M4D::Imaging::AImageDim<3>::Cast( _inputDatasets[0] )->GetRealMaximum();
 	_elementExtents = M4D::Imaging::AImageDim<3>::Cast( _inputDatasets[0] )->GetElementExtents();
 
+	_currentSlice = _regionMin;
+
 	/*M4D::Imaging::Image<uint16,3>::Ptr image = M4D::Imaging::Image<uint16,3>::Cast( _inputDatasets[0] );
 	M4D::Imaging::ImageFactory::DumpImage( "pom.dump", *image );
 	*/
@@ -202,6 +214,14 @@ BasicSliceViewer::PrepareData()
 void	
 BasicSliceViewer::RenderOneDataset()
 {
+	glBindTexture( GL_TEXTURE_1D, 0 );
+	glBindTexture( GL_TEXTURE_2D, 0 );
+	glBindTexture( GL_TEXTURE_3D, 0 );
+	glDisable(GL_TEXTURE_3D);
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_TEXTURE_1D);
+
+
 	_shaderConfig.textureName = _textureData->GetTextureGLID();
 	_shaderConfig.brightnessContrast = _lutWindow;
 	_shaderConfig.Enable();
@@ -209,7 +229,7 @@ BasicSliceViewer::RenderOneDataset()
 	CheckForCgError("Check before drawing ", _cgContext );
 	//M4D::GLDrawTexturedQuad( _textureData->GetMinimum3D(), _textureData->GetMaximum3D() );
 	SetToViewConfiguration2D( _viewConfiguration );
-	M4D::GLDrawVolumeSlice( _textureData->GetMinimum3D(), _textureData->GetMaximum3D(), (float32)_currentSlice * _elementExtents[_plane], _plane );
+	M4D::GLDrawVolumeSlice( _textureData->GetMinimum3D(), _textureData->GetMaximum3D(), (float32)_currentSlice[ _plane ] * _elementExtents[_plane], _plane );
 	
 	_shaderConfig.Disable();
 	

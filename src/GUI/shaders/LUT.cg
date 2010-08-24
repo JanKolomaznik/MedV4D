@@ -14,6 +14,21 @@ Output SimpleBrightnessContrast3D(
   return OUT;
 }
 
+Output SimpleLUTWindow3D( 
+			float3 texCoord : TEXCOORD0, 
+			uniform sampler3D dataTexture : TEX0,
+			uniform float2 centerWidth
+			)
+{
+	Output OUT;
+	float hWidth = centerWidth.y * 0.5f;
+	float bottom = centerWidth.x - hWidth;
+	
+	(1.0f/centerWidth.y) * tex3D(dataTexture,texCoord).x - bottom;
+	OUT.color = (brightnessContrast.x + brightnessContrast.y * tex3D(dataTexture,texCoord));
+	return OUT;
+}
+
 Output SimpleLUT3D( 
 			float3 texCoord : TEXCOORD0, 
 			uniform sampler3D dataTexture : TEX0,
