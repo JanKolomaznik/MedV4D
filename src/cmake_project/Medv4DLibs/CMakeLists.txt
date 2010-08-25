@@ -30,6 +30,7 @@ INCLUDE( "${MEDV4D_CMAKE_MODULES_DIR}/StandardCompileOptions.cmake" )
 
 IF( ${VTK_ENABLED} MATCHES "ON" )
 	SET( EXP_COMPILE_DEFINITIONS ${EXP_COMPILE_DEFINITIONS} "-DUSE_VTK" )
+	message( "VTK aaaaaaaaaaa" )
 ENDIF( ${VTK_ENABLED} MATCHES "ON" )
 IF( ${CG_ENABLED} MATCHES "ON" )
 	SET( EXP_COMPILE_DEFINITIONS ${EXP_COMPILE_DEFINITIONS} "-DUSE_CG" )
@@ -56,9 +57,11 @@ ENDIF( DCMTK_OPTIONS )
 
 #--------------------------------------------------------
 #       vtkIntegration
+SET(VTK_INTEGRATION_TARGET "")
 IF( ${VTK_ENABLED} MATCHES "ON" )
 	MEDV4D_LIBRARY_TARGET_PREPARATION(vtkIntegration "${MEDV4D_CMAKE_SOURCE_DIR}/../vtkIntegration/src" "${MEDV4D_CMAKE_SOURCE_DIR}/../vtkIntegration")
 	ADD_DEPENDENCIES(vtkIntegration Common Imaging)
+	SET(VTK_INTEGRATION_TARGET vtkIntegration)
 ENDIF( ${VTK_ENABLED} MATCHES "ON" )
 #--------------------------------------------------------
 #       GUI
@@ -91,14 +94,15 @@ FILTER_HEADERS_FOR_MOC( "${GUI_header_files}" mocinput )
 QT4_WRAP_CPP(mocoutput ${mocinput} OPTIONS ${EXP_COMPILE_DEFINITIONS} )
 QT4_ADD_RESOURCES(rccoutput ${rccinput} ) #OPTIONS --root ../tmp
 QT4_WRAP_UI(uioutput ${uiinput} )
-message( "------------------ ${uiinput} **** ${uioutput}")
+
+
 SOURCE_GROUP( GUI_Sources FILES ${WidgetsSrc} ${WidgetsOglSrc} ${WidgetsUtilsSrc} ${UtilsSrc} ${WidgetsComponentsSrc} )
 SOURCE_GROUP( GUI_Resources FILES  ${rccinput} )
 SOURCE_GROUP( GUI_Generated FILES  ${mocoutput} ${rccoutput} ${uioutput} )
 SOURCE_GROUP( GUI_Headers FILES ${GUI_header_files} )
 
 ADD_LIBRARY(m4dWidgets ${WidgetsSrc} ${WidgetsOglSrc} ${WidgetsUtilsSrc} ${UtilsSrc} ${WidgetsComponentsSrc} ${mocoutput} ${rccoutput} ${uioutput} ${GUI_header_files} ${rccinput} )
-ADD_DEPENDENCIES(m4dWidgets Common Imaging backendForDICOM vtkIntegration)
+ADD_DEPENDENCIES(m4dWidgets Common Imaging backendForDICOM ${VTK_INTEGRATION_TARGET} )
 
 #--------------------------------------------------------
 # Set for parent CMakeLists
