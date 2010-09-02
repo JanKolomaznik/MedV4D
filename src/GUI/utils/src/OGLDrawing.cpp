@@ -220,6 +220,20 @@ GLDrawImageDataContrastBrightness( const M4D::Imaging::AImageRegionDim< 2 > &ima
 }
 
 GLuint
+GLPrepareTextureFromImageData( const M4D::Imaging::AImageRegion &image, bool linearInterpolation )
+{
+	switch ( image.GetDimension() )
+	{
+	case 2:	
+		return GLPrepareTextureFromImageData( M4D::Imaging::AImageRegionDim< 2 >::Cast( image ), linearInterpolation );
+	case 3:
+		return GLPrepareTextureFromImageData( M4D::Imaging::AImageRegionDim< 3 >::Cast( image ), linearInterpolation );
+	default:
+		ASSERT( false );
+	}
+}
+
+GLuint
 GLPrepareTextureFromImageData( const M4D::Imaging::AImageRegionDim< 2 > &image, bool linearInterpolation )
 {
 	TYPE_TEMPLATE_SWITCH_MACRO( image.GetElementTypeID(), return GLPrepareTextureFromImageData2D( static_cast< const M4D::Imaging::ImageRegion< TTYPE, 2 > &>( image ), linearInterpolation ); );

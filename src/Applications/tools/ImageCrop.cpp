@@ -82,7 +82,7 @@ main( int argc, char **argv )
 			
 			TYPE_TEMPLATE_SWITCH_MACRO( 
 					image->GetElementTypeID(), 
-					image = GetSlice<TTYPE>( M4D::Imaging::Image<TTYPE, 3>::CastAImage( image ), slice ) 
+					image = GetSlice<TTYPE>( M4D::Imaging::Image<TTYPE, 3>::Cast( image ), slice ) 
 					);
 		} else {
 			throw M4D::ErrorHandling::EBadDimension();

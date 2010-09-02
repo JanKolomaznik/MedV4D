@@ -156,13 +156,13 @@ main( int argc, char** argv )
 							);
 
 		IMAGE_NUMERIC_TYPE_CONST_REF_SWITCH_MACRO( *image,
-			ConvertTo8Bit( IMAGE_TYPE::CastAImage( *image ), M4D::Imaging::Image< uint8, IMAGE_TYPE::Dimension >::CastAImage( *tmpImage ), zero, contrast );
+			ConvertTo8Bit( IMAGE_TYPE::Cast( *image ), M4D::Imaging::Image< uint8, IMAGE_TYPE::Dimension >::Cast( *tmpImage ), zero, contrast );
 			);
 			image = tmpImage;
 	}
 	
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
-		SaveImage( IMAGE_TYPE::CastAImage( *image ) , outFilename );
+		SaveImage( IMAGE_TYPE::Cast( *image ) , outFilename );
 	);
 
 

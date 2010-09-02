@@ -25,7 +25,7 @@ namespace Imaging
 #define IMAGE_TYPE_PTR_TEMPLATE_CASE_MACRO( AIMAGE_PTR, ... )\
 	{ \
 		typedef M4D::Imaging::Image< TTYPE, DIM > IMAGE_TYPE; \
-		IMAGE_TYPE::Ptr IMAGE = IMAGE_TYPE::CastAImage( AIMAGE_PTR ); \
+		IMAGE_TYPE::Ptr IMAGE = IMAGE_TYPE::Cast( AIMAGE_PTR ); \
 		__VA_ARGS__; \
 	};
 
@@ -42,7 +42,7 @@ namespace Imaging
 #define IMAGE_TYPE_REF_TEMPLATE_CASE_MACRO( AIMAGE_REF, ... )\
 	{ \
 		typedef M4D::Imaging::Image< TTYPE, DIM > IMAGE_TYPE; \
-		IMAGE_TYPE &IMAGE = IMAGE_TYPE::CastAImage( AIMAGE_REF ); \
+		IMAGE_TYPE &IMAGE = IMAGE_TYPE::Cast( AIMAGE_REF ); \
 		__VA_ARGS__; \
 	};
 
@@ -59,7 +59,7 @@ namespace Imaging
 #define IMAGE_TYPE_CONST_REF_TEMPLATE_CASE_MACRO( AIMAGE_REF, ... )\
 	{ \
 		typedef M4D::Imaging::Image< TTYPE, DIM > IMAGE_TYPE; \
-		const IMAGE_TYPE &IMAGE = IMAGE_TYPE::CastAImage( AIMAGE_REF ); \
+		const IMAGE_TYPE &IMAGE = IMAGE_TYPE::Cast( AIMAGE_REF ); \
 		__VA_ARGS__; \
 	};
 
@@ -76,11 +76,10 @@ namespace Imaging
 
 
 /**
- * Templated class made for storing raster image data of certain type. 
+ * Templated class designed for storing raster image data of arbitrary type. 
  * It has specialization for each used dimension.
  * It contains buffer with data, which can be shared among different images - for example 
- * 2D image can share one slice from 3D image. But now this sharing concept isn't finished. And will be available in
- * future versions. 
+ * 2D image can share one slice from 3D image. 
  * Sharing is possible because locking is done on buffer and this class has only wrapper methods for locking.
  **/
 /*template< typename ElementType, unsigned dim >
@@ -112,10 +111,19 @@ public:
 	 **/
 	typedef ElementType				Element;
 
+	/**
+	 * Type of iterator, which can iterate over whole image or its parts.
+	 **/
 	typedef ImageIterator< Element, Dimension >	Iterator;
 
+	/**
+	 * Type of image region representation.
+	 **/
 	typedef ImageRegion< Element, Dimension >	SubRegion;
 
+	/**
+	 * Type of image region, which contains only one slice of the original image in arbitrary dimension.
+	 **/
 	typedef ImageRegion< ElementType, Dimension-1 >	SliceRegion;
 
 	typedef Vector< int32, Dimension >		PointType;
@@ -188,6 +196,10 @@ public:
 			return boost::static_pointer_cast< Image< ElementType, Dimension > >( image );
 		}
 
+	/**
+	 * \param image Smart pointer to const abstract image - predecessor of this class.
+	 * \exception ExceptionCastProblem When casting impossible.
+	 **/
 	static typename Image< ElementType, Dimension >::ConstPtr 
 	Cast( AImage::ConstPtr & image )
 		{
@@ -209,53 +221,100 @@ public:
 		{ return GetNumericTypeID<ElementType>(); }
 
 	
+	/**
+	 * Get reference to element on specified position - allow editation of this element.
+	 * \param pos Coordinates of desired element
+	 * \return Reference to element on given position
+	 **/
 	inline ElementType &
 	GetElement( const PointType &pos );
 
+	/**
+	 * Get const reference to element on specified position - only for read.
+	 * \param pos Coordinates of desired element
+	 * \return Const reference to element on given position
+	 **/
 	inline const ElementType &
 	GetElement( const PointType &pos )const;
 
 	inline ElementType
 	GetElementWorldCoords( const Vector< float32, Dim > &pos )const;
 
-
+	/**
+	 * Method for lowlevel access to image data.
+	 * \param[out] size Size of the image data in number of elements in each dimension.
+	 * \param[out] strides Strides for incrementation of data pointer to move in each dimension
+	 * \return Pointer to first element in buffer.
+	 **/
 	ElementType *
 	GetPointer( 
 			SizeType &size,
 			PointType &strides
 		  )const;
 
+	/**
+	 * Create image, which is sharing some subregion with this image.
+	 * \param[in] region Region, which will be shared among images.
+	 * \return Smart pointer to new image.
+	 **/
 	template< unsigned NewDim >
 	typename Image< ElementType, NewDim >::Ptr
 	GetRestrictedImage( 
 			ImageRegion< ElementType, NewDim > region
 			)const;
 
+	/**
+	 * Mark some part of the image data as dirty - used for synchronization in pipeline filters.
+	 * \param[in] min First corner of bounding box of the marked part - included in the bounding box.
+	 * \param[in] max Second corner of bounding box of the marked part - NOT included in the bounding box.
+	 * \return Handler of dirty state for specified part.
+	 **/
 	WriterBBoxInterface &
 	SetDirtyBBox( 
 			PointType min,
 			PointType max 
 			);
 
+	/**
+	 * Mark whole image as dirty - used for synchronization in pipeline filters.
+	 * \return Handler of dirty state for specified part - whole image.
+	 **/
 	WriterBBoxInterface &
 	SetWholeDirtyBBox();
 
-
+	/**
+	 * Announce that somebody wants to read some part of image data after all changes on this part were applied - used for synchronization in pipeline filters.
+	 * \param[in] min First corner of bounding box of the marked part - included in the bounding box.
+	 * \param[in] max Second corner of bounding box of the marked part - NOT included in the bounding box.
+	 * \return Handler of read dirty state for specified part.
+	 **/
 	ReaderBBoxInterface::Ptr
 	GetDirtyBBox( 
 			PointType min,
 			PointType max
 			)const;
 
+	/**
+	 * Announce that somebody wants to read image data after all changes were applied - used for synchronization in pipeline filters.
+	 * \return Handler of read dirty state for image data.
+	 **/
 	ReaderBBoxInterface::Ptr 
 	GetWholeDirtyBBox()const;
 
 	const ModificationManager &
 	GetModificationManager()const;
 
+	/**
+	 * Get iterator to access all image elements
+	 * \return Iterator, which can iterate over whole image
+	 **/
 	Iterator
 	GetIterator()const;
 
+	/**
+	 * Get region object for whole image
+	 * \return Region representation.
+	 **/
 	SubRegion
 	GetRegion()const;
 
