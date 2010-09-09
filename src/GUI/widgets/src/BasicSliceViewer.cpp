@@ -1,3 +1,5 @@
+#ifdef USE_CG
+
 #include "GUI/utils/OGLDrawing.h"
 #include "GUI/widgets/BasicSliceViewer.h"
 #include "Imaging/ImageFactory.h"
@@ -241,3 +243,4 @@ BasicSliceViewer::RenderOneDataset()
 } /*namespace M4D*/
 
 
+#endif /*USE_CG*/

@@ -33,7 +33,7 @@ SimpleSliceViewerTexturePreparer< ElementType >
                     {
                         Vector< uint32, 2 > size;
                         Vector< int32, 2 > strides;
-                        original = Imaging::Image< ElementType, 2 >::CastAImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
+                        original = Imaging::Image< ElementType, 2 >::Cast(inPort->GetDatasetTyped()).GetPointer( size, strides );
                         width = size[0];
                         height = size[1];
                         xstride = strides[0];
@@ -53,7 +53,7 @@ SimpleSliceViewerTexturePreparer< ElementType >
                         {
                             case xy:
                             {
-                                original = Imaging::Image< ElementType, 3 >::CastAImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
+                                original = Imaging::Image< ElementType, 3 >::Cast(inPort->GetDatasetTyped()).GetPointer( size, strides );
                                 width = size[0];
                                 height = size[1];
                                 depth = size[2];
@@ -65,7 +65,7 @@ SimpleSliceViewerTexturePreparer< ElementType >
 
                             case yz:
                             {
-                                original = Imaging::Image< ElementType, 3 >::CastAImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
+                                original = Imaging::Image< ElementType, 3 >::Cast(inPort->GetDatasetTyped()).GetPointer( size, strides );
                                 width = size[1];
                                 height = size[2];
                                 depth = size[0];
@@ -77,7 +77,7 @@ SimpleSliceViewerTexturePreparer< ElementType >
 
                             case zx:
                             {
-                                original = Imaging::Image< ElementType, 3 >::CastAImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
+                                original = Imaging::Image< ElementType, 3 >::Cast(inPort->GetDatasetTyped()).GetPointer( size, strides );
                                 width = size[2];
                                 height = size[0];
                                 depth = size[1];

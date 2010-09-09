@@ -1,5 +1,8 @@
+#ifdef USE_CG
+
 #ifndef BASIC_SLICE_VIEWER_H
 #define BASIC_SLICE_VIEWER_H
+
 
 #include "GUI/utils/CgShaderTools.h"
 #include "GUI/utils/GLTextureImage.h"
@@ -143,3 +146,4 @@ private:
 
 
 
+#endif /*USE_CG*/

@@ -101,7 +101,7 @@ namespace Imaging
 #define CONFIGURABLE_PREPARE_CAST_SMART_POINTER_MACRO( METHOD_NAME, RETURN_TYPE, INPUT_TYPE )	\
 	static RETURN_TYPE::Ptr \
 	METHOD_NAME( INPUT_TYPE::Ptr input ) \
-	{	if( dynamic_cast< ThisClass * >( input.get() ) == NULL ) { \
+	{	if( dynamic_cast< RETURN_TYPE * >( input.get() ) == NULL ) { \
 			_THROW_ ErrorHandling::ExceptionCastProblem();\
 		} \
 		return boost::static_pointer_cast< RETURN_TYPE >( input ); \
@@ -109,7 +109,7 @@ namespace Imaging
 #define CONFIGURABLE_PREPARE_CAST_CONST_SMART_POINTER_MACRO( METHOD_NAME, RETURN_TYPE, INPUT_TYPE )	\
 	static RETURN_TYPE::ConstPtr \
 	METHOD_NAME( INPUT_TYPE::ConstPtr input ) \
-	{	if( dynamic_cast< const ThisClass * >( input.get() ) == NULL ) { \
+	{	if( dynamic_cast< const RETURN_TYPE * >( input.get() ) == NULL ) { \
 			_THROW_ ErrorHandling::ExceptionCastProblem();\
 		} \
 		return boost::static_pointer_cast< const RETURN_TYPE >( input ); \

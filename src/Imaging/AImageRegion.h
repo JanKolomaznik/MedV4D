@@ -49,7 +49,7 @@ public:
 	typedef boost::shared_ptr< AImageRegionDim< Dim > > Ptr;
 	typedef boost::shared_ptr< const AImageRegionDim< Dim > > ConstPtr;
 	
-	CONFIGURABLE_PREPARE_CAST_METHODS_MACRO( Cast, ThisClass, AImageRegion );
+	CONFIGURABLE_PREPARE_CAST_METHODS_MACRO( Cast, typename ThisClass, AImageRegion );
 
 	typedef Vector< int, Dim >	PointType;
 	static const unsigned Dimension = Dim;

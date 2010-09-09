@@ -1232,12 +1232,12 @@ m4dGUISliceViewerWidget::colorPicker( double x, double y, double z )
 		if ( _inPort->GetDatasetTyped().GetDimension() == 3 )
 		{
 		    NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
-		        _imageID, result = Imaging::Image< TTYPE, 3 >::CastAImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >( (int)coords[0], (int)coords[1], (int)coords[2] ) ) );
+		        _imageID, result = Imaging::Image< TTYPE, 3 >::Cast(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >( (int)coords[0], (int)coords[1], (int)coords[2] ) ) );
 		}
 	        else if ( _inPort->GetDatasetTyped().GetDimension() == 2 )
 	        {
 		    NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
-		        _imageID, result = Imaging::Image< TTYPE, 2 >::CastAImage(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >( (int)coords[0], (int)coords[1] ) ) );
+		        _imageID, result = Imaging::Image< TTYPE, 2 >::Cast(_inPort->GetDatasetTyped()).GetElement( CreateVector< int32 >( (int)coords[0], (int)coords[1] ) ) );
 	        }
 	        else
 		{

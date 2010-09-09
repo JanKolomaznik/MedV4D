@@ -35,7 +35,7 @@ public:
 	typedef ImageIterator< ElementType, Dim >	Iterator;
 	typedef Vector< int, Dim >			PointType;
 
-	CONFIGURABLE_PREPARE_CAST_METHODS_MACRO( Cast, ThisClass, AImageRegion );
+	CONFIGURABLE_PREPARE_CAST_METHODS_MACRO( Cast, typename ThisClass, AImageRegion );
 
 	ImageRegion():
 			AImageRegionDim< Dim >(), _pointer( NULL ), _sourceDimension( 0 ), _pointerCoordinatesInSource( NULL )
