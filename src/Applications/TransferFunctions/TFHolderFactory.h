@@ -21,9 +21,9 @@ public:
 	
 	static TFActions createMenuTFActions(QWidget *owner, QMenu *menu);
 
-	static TFAbstractHolder* create(TFType &holderType);
+	static TFAbstractHolder* createHolder(TFType &holderType);
 
-	static TFAbstractHolder* load(QWidget* parent);
+	static TFAbstractHolder* loadHolder(QWidget* parent);
 
 protected:
 
@@ -37,6 +37,7 @@ protected:
 	};
 
 private:
+
 	TFHolderFactory(){}
 	~TFHolderFactory(){}
 };

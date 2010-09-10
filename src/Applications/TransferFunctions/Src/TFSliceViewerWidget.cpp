@@ -92,6 +92,13 @@ std::vector<int> TFSimpleSliceViewerTexturePreparer< ElementType >::getHistogram
 
 void TFSliceViewerWidget::adjust_by_transfer_function(TFAbstractFunction &transferFunction){	
 
+	if(_imageID == -1)
+	{		
+		QMessageBox::critical(this, QObject::tr("Transfer Functions"),
+						  QObject::tr("No data loaded!"));
+		return;
+	}
+
 	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
 				_imageID, 
 				{									

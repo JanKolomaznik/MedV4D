@@ -24,7 +24,7 @@ public:
 	TFWindow();
     ~TFWindow();
 
-	virtual void build();
+	void build();
 
 signals:
 	void AdjustByTransferFunction(TFAbstractFunction &transferFunction);

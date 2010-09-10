@@ -78,7 +78,9 @@ public:
      *  @param parent the parent widget of the viewer
      */
     TFSliceViewerWidget( unsigned index, QWidget *parent = 0 ):
-		PredecessorType( index, parent ), currentImageID_(-1), texturePreparer_(NULL){}
+		PredecessorType( index, parent ), currentImageID_(-1), texturePreparer_(NULL){
+		_imageID = -1;
+	}
 
     /**
      * Construtor.
@@ -87,7 +89,9 @@ public:
      *  @param parent the parent widget of the viewer
      */
     TFSliceViewerWidget( Imaging::ConnectionInterface* conn, unsigned index, QWidget *parent = 0 ):
-		PredecessorType( conn, index, parent ), currentImageID_(-1), texturePreparer_(NULL){}
+		PredecessorType( conn, index, parent ), currentImageID_(-1), texturePreparer_(NULL){
+		_imageID = -1;
+	}
 
 	~TFSliceViewerWidget(){
 		delete texturePreparer_;

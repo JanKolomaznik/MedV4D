@@ -57,13 +57,14 @@ void TFWindow::on_save_triggered(){
 
 void TFWindow::on_load_triggered(){
 
-	holder_ = TFHolderFactory::load(this);
+	holder_ = TFHolderFactory::loadHolder(this);
 
 	if(!holder_){
 		QMessageBox::warning(this, QObject::tr("Transfer Functions"), QObject::tr("Loading error."));
 		return;
 	}
 
+	ui_->save->setEnabled(true);
 	setupHolder();
 }
 
@@ -75,13 +76,14 @@ void TFWindow::newTF_triggered(TFType &tfType){
 		holder_ = NULL;
 	}
 
-	holder_ = TFHolderFactory::create(tfType);
+	holder_ = TFHolderFactory::createHolder(tfType);
 
 	if(!holder_){
 		QMessageBox::warning(this, QObject::tr("Transfer Functions"), QObject::tr("Creating error."));
 		return;
 	}
 
+	ui_->save->setEnabled(true);
 	setupHolder();
 }
 

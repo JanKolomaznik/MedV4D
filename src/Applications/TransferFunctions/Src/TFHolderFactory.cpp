@@ -5,12 +5,14 @@ TFActions TFHolderFactory::createMenuTFActions(QWidget *owner, QMenu *menu){
 
 	TFActions actions;
 
-	actions.push_back(new TFAction(owner, menu, TFTYPE_SIMPLE));
+	//adding transferfunction types to menu
+	actions.push_back(new TFAction(owner, menu, TFTYPE_SIMPLE));	
+	//actions.push_back(new TFAction(owner, menu, TFTYPE_MYTYPE));
 
 	return actions;
 }
 
-TFAbstractHolder* TFHolderFactory::create(TFType &holderType){
+TFAbstractHolder* TFHolderFactory::createHolder(TFType &holderType){
 
 	switch(holderType)
 	{
@@ -28,7 +30,7 @@ TFAbstractHolder* TFHolderFactory::create(TFType &holderType){
 	return NULL;
 }
 
-TFAbstractHolder* TFHolderFactory::load(QWidget* parent){
+TFAbstractHolder* TFHolderFactory::loadHolder(QWidget* parent){
 	
 	QString fileName = QFileDialog::getOpenFileName(parent,
 		QObject::tr("Open Transfer Function"),
@@ -52,27 +54,18 @@ TFAbstractHolder* TFHolderFactory::load(QWidget* parent){
 	qFile.close();
 
 	qFile.open(QFile::ReadOnly | QFile::Text);
-	TFAbstractHolder* loaded = NULL;
-	switch(tfType)
+	TFAbstractHolder* loaded = createHolder(tfType);
+
+	if(loaded)
 	{
-		case TFTYPE_SIMPLE:
-		{
-			loaded = new TFSimpleHolder();
-			if(!loaded->load_(qFile))
-			{ 
-				QMessageBox::warning(parent,
-					QObject::tr("TFXmlSimpleReader"),
-					QObject::tr("Parse error in file %1").arg(fileName));
-			}
-			break;
-		}
-		case TFTYPE_UNKNOWN:
-		default:
-		{
-			assert("unknown holder");
-			break;
+		if(!loaded->load_(qFile))
+		{ 
+			QMessageBox::warning(parent,
+				QObject::tr("TFXmlSimpleReader"),
+				QObject::tr("Parse error in file %1").arg(fileName));
 		}
 	}
+
 	qFile.close();
 	return loaded;
 }
