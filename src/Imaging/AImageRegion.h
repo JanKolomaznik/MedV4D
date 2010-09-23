@@ -23,8 +23,7 @@ class AImageRegion
 
 
 public:
-	typedef boost::shared_ptr< AImageRegion > Ptr;
-	typedef boost::shared_ptr< const AImageRegion > ConstPtr;
+	STANDARD_DECLARATIONS_MACRO( AImageRegion );
 
 	virtual ~AImageRegion() {}
 
@@ -45,11 +44,9 @@ template< unsigned Dim >
 class AImageRegionDim: public AImageRegion
 {
 public:
-	typedef AImageRegionDim< Dim >		ThisClass;
-	typedef boost::shared_ptr< AImageRegionDim< Dim > > Ptr;
-	typedef boost::shared_ptr< const AImageRegionDim< Dim > > ConstPtr;
+	STANDARD_DECLARATIONS_MACRO( AImageRegionDim< Dim > );
 	
-	CONFIGURABLE_PREPARE_CAST_METHODS_MACRO( Cast, typename ThisClass, AImageRegion );
+	CONFIGURABLE_PREPARE_CAST_METHODS_MACRO( Cast, typename ThisClass, M4D::Imaging::AImageRegion );
 
 	typedef Vector< int, Dim >	PointType;
 	static const unsigned Dimension = Dim;

@@ -21,16 +21,23 @@ namespace M4D
 namespace Imaging
 {
 
-#define MANDATORY_ROOT_DATASET_DEFINITIONS_MACRO( ... ) \
+#define STANDARD_DECLARATIONS_MACRO( ... ) \
 	typedef __VA_ARGS__				ThisClass; \
+	typedef const ThisClass				ConstThisClass; \
 	typedef boost::shared_ptr< __VA_ARGS__ >	Ptr; \
 	typedef boost::shared_ptr< const __VA_ARGS__ >	ConstPtr; \
+	typedef ThisClass &				Reference;\
+	typedef const ThisClass &			ConstReference;\
+	typedef ThisClass *				SimplePointer;\
+	typedef const ThisClass *			ConstSimplePointer;
+
+#define MANDATORY_ROOT_DATASET_DEFINITIONS_MACRO( ... ) \
+	STANDARD_DECLARATIONS_MACRO( __VA_ARGS__ ) \
 	static const unsigned HierarchyDepth = 2;
 
 #define MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( ... ) \
-	typedef __VA_ARGS__				ThisClass; \
-	typedef boost::shared_ptr< __VA_ARGS__ >	Ptr; \
-	typedef boost::shared_ptr< const __VA_ARGS__ >	ConstPtr; \
+	STANDARD_DECLARATIONS_MACRO( __VA_ARGS__ ) \
+	
 	
 #define MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( ... ) \
 	typedef __VA_ARGS__	PredecessorType; \
@@ -85,34 +92,35 @@ namespace Imaging
 
 
 #define CONFIGURABLE_PREPARE_CAST_REFERENCE_MACRO( METHOD_NAME, RETURN_TYPE, INPUT_TYPE )	\
-	static RETURN_TYPE & \
-	METHOD_NAME( INPUT_TYPE & input ) \
-	{	try { return dynamic_cast< RETURN_TYPE & >( input ); } \
+	static RETURN_TYPE::Reference \
+	METHOD_NAME( INPUT_TYPE::Reference input ) \
+	{	try { return dynamic_cast< RETURN_TYPE::Reference >( input ); } \
 		catch( ... ) {	_THROW_ ErrorHandling::ExceptionCastProblem();	} \
 	} 
 
 #define CONFIGURABLE_PREPARE_CAST_CONST_REFERENCE_MACRO( METHOD_NAME, RETURN_TYPE, INPUT_TYPE )	\
-	static const RETURN_TYPE & \
-	METHOD_NAME( const INPUT_TYPE & input ) \
-	{	try { return dynamic_cast< const RETURN_TYPE & >( input ); } \
+	static RETURN_TYPE::ConstReference \
+	METHOD_NAME( INPUT_TYPE::ConstReference input ) \
+	{	try { return dynamic_cast< RETURN_TYPE::ConstReference >( input ); } \
 		catch( ... ) {	_THROW_ ErrorHandling::ExceptionCastProblem();	} \
 	} 
 
 #define CONFIGURABLE_PREPARE_CAST_SMART_POINTER_MACRO( METHOD_NAME, RETURN_TYPE, INPUT_TYPE )	\
 	static RETURN_TYPE::Ptr \
 	METHOD_NAME( INPUT_TYPE::Ptr input ) \
-	{	if( dynamic_cast< RETURN_TYPE * >( input.get() ) == NULL ) { \
+	{	if( dynamic_cast< RETURN_TYPE::SimplePointer >( input.get() ) == NULL ) { \
 			_THROW_ ErrorHandling::ExceptionCastProblem();\
 		} \
-		return boost::static_pointer_cast< RETURN_TYPE >( input ); \
+		return boost::static_pointer_cast< RETURN_TYPE::ThisClass >( input ); \
 	}
+
 #define CONFIGURABLE_PREPARE_CAST_CONST_SMART_POINTER_MACRO( METHOD_NAME, RETURN_TYPE, INPUT_TYPE )	\
 	static RETURN_TYPE::ConstPtr \
 	METHOD_NAME( INPUT_TYPE::ConstPtr input ) \
-	{	if( dynamic_cast< const RETURN_TYPE * >( input.get() ) == NULL ) { \
+	{	if( dynamic_cast< RETURN_TYPE::ConstSimplePointer >( input.get() ) == NULL ) { \
 			_THROW_ ErrorHandling::ExceptionCastProblem();\
 		} \
-		return boost::static_pointer_cast< const RETURN_TYPE >( input ); \
+		return boost::static_pointer_cast< RETURN_TYPE::ConstThisClass >( input ); \
 	}
 
 #define CONFIGURABLE_PREPARE_CAST_METHODS_MACRO( METHOD_NAME, RETURN_TYPE, INPUT_TYPE )	\

@@ -27,10 +27,9 @@ class ImageRegion: public AImageRegionDim< Dim >
 {
 public:
 
-	typedef ImageRegion< EType, Dim >		ThisClass;
+	STANDARD_DECLARATIONS_MACRO( ImageRegion< EType, Dim > );
+
 	static const unsigned 				Dimension = Dim;
-	typedef boost::shared_ptr< ThisClass >		Ptr;
-	typedef boost::shared_ptr< const ThisClass >	ConstPtr;
 	typedef EType					ElementType;
 	typedef ImageIterator< ElementType, Dim >	Iterator;
 	typedef Vector< int, Dim >			PointType;
