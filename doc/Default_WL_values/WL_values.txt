@@ -1,0 +1,40 @@
+	case F2:
+		// my temporary
+		SetWL(256, 127);
+		break;
+	case F3:
+		// chest
+		SetWL(350, 40);
+		break;
+	case _F4:
+		// abdomen/pelvis
+		SetWL(350, 1);		// TODO: check correct value
+		break;
+	case F5:
+		// lung
+		SetWL(1200, -600);
+		break;
+	case F6:
+		// brain
+		SetWL(80, 40);
+		break;
+	case F7:
+		// bone
+		SetWL(2500, 480);
+		break;
+	case F8:
+		// head/neck
+		SetWL(350, 90);
+		break;
+	case F9:
+		// bone2
+		SetWL(1500, 400);
+		break;
+	case F12:
+		// angio
+		SetWL(800, 100);
+		break;
+	case F11:
+		// angio2
+		SetWL(800, 250);
+		break;
