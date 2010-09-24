@@ -73,7 +73,7 @@ GLPrepareTextureFromImageData2D( const ImageRegionType &image, bool linearInterp
 
 	glTexImage2D(	GL_TEXTURE_2D, 
 			0, 
-			GL_LUMINANCE, 
+			GL_LUMINANCE16, 
 			size[0], 
 			size[1], 
 			0, 
@@ -123,7 +123,7 @@ GLPrepareTextureFromImageData3D( const ImageRegionType &image, bool linearInterp
 
 	glTexImage3D(	GL_TEXTURE_3D, 
 			0, 
-			GL_LUMINANCE, 
+			GL_LUMINANCE16, 
 			size[0], 
 			size[1], 
 			size[2], 
