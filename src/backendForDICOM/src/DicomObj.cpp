@@ -144,7 +144,7 @@ DicomObj::Init()
   OFString str;
   //dataSet->findAndGetOFString( DCM_SliceLocation, str);
   dataSet->findAndGetOFStringArray( DCM_ImagePositionPatient, str);
-  int found = str.find_last_of('\\');
+  int found = (int) str.find_last_of('\\');
 		  
 	std::istringstream stream( str.substr(found+1).c_str());
 	stream >> m_orderInSet;

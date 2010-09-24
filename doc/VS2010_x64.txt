@@ -1,0 +1,14 @@
+- build Qt4 for win64 : 
+
+to build just as if it was vs2008, but using the vs2010 tools:
+
+   1. Open vs2010 command prompt. cd into the top-level Qt directory.
+   2. configure.exe -platform win32-msvc2008 -no-webkit -no-phonon -no-phonon-backend -no-script -no-scripttools -no-multimedia -no-qt3support -fast
+   3. nmake
+
+
+- DCMTK - fix CMakeList.txt for VS 2010 (copy 2005 to 2010 "Visual Studio 2010 Win64") 
+
+- GLEW - binary on net only release 
+	rebuild Debug - librarian/target  machine : x64
+

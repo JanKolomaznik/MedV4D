@@ -480,7 +480,7 @@ private:
 class PortList::EWrongPortIndex: public ErrorHandling::EBadIndex
 {
 public:
-	EWrongPortIndex( int32 idx ): ErrorHandling::EBadIndex( "Accessing port in portlist by wrong index", idx )
+	EWrongPortIndex( size_t idx ): ErrorHandling::EBadIndex( "Accessing port in portlist by wrong index", (int32) idx )
 	{}
 };
 
