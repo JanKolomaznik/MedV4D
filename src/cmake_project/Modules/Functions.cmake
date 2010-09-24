@@ -55,8 +55,8 @@ ENDFUNCTION(INSERT_KEYWORD_BEFORE_EACH_MEMBER)
 
 MACRO (CREATE_LIB_NAMES_FROM_TARGET_NAMES arg_input arg_output)
 	SET(${arg_output} )
-	FOREACH(currentName ${${arg_input}})
-		SET( ${arg_output} "optimized" "${currentName}" "debug" "${currentName}${MEDV4D_DEBUG_POSTFIX}" )		
+	FOREACH(currentName ${${arg_input}} )
+		SET( ${arg_output} "optimized" "${currentName}" "debug" "${currentName}${MEDV4D_DEBUG_POSTFIX}" ${${arg_output}} )		
 	ENDFOREACH(currentName) 
 ENDMACRO (CREATE_LIB_NAMES_FROM_TARGET_NAMES)
 
