@@ -85,6 +85,7 @@ NextCartesianPlane( CartesianPlanes plane )
 		return YZ_PLANE;
 	default:
 		ASSERT( false );
+		return XY_PLANE;
 	}
 }
 

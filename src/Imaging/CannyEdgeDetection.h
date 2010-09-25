@@ -37,8 +37,8 @@ public:
 		static const Vector< int32, 2 > yIdx1( 0, -1 );
 		static const Vector< int32, 2 > yIdx2( 0, -1 );
 
-		float32 dx = accessor( pos/* + xIdx2 */) - accessor( pos + xIdx1 );
-		float32 dy = accessor( pos/* + yIdx2 */) - accessor( pos + yIdx1 );
+		float32 dx = (float32) ( accessor( pos/* + xIdx2 */) - accessor( pos + xIdx1 ) );
+		float32 dy = (float32) ( accessor( pos/* + yIdx2 */) - accessor( pos + yIdx1 ) );
 
 		Vector< float32, 2 > v( dx, dy );
 		

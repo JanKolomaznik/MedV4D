@@ -20,9 +20,6 @@ IF(NOT MEDV4D_CMAKE_SOURCE_DIR)
 	SET(CMAKE_MODULE_PATH "${MEDV4D_CMAKE_MODULES_DIR}" "${CMAKE_ROOT}/Modules" )
 ENDIF(NOT MEDV4D_CMAKE_SOURCE_DIR)
 
-SET(LIBRARY_OUTPUT_PATH ${MEDV4D_CMAKE_SOURCE_DIR}/../lib)
-SET(EXECUTABLE_OUTPUT_PATH ${MEDV4D_CMAKE_SOURCE_DIR}/../executables)
-
 
 INCLUDE( "${MEDV4D_CMAKE_MODULES_DIR}/Functions.cmake" )
 INCLUDE( "${MEDV4D_CMAKE_MODULES_DIR}/FindPackages.cmake" )
@@ -102,6 +99,7 @@ SOURCE_GROUP( GUI_Headers FILES ${GUI_header_files} )
 
 ADD_LIBRARY(m4dWidgets ${WidgetsSrc} ${WidgetsOglSrc} ${WidgetsUtilsSrc} ${UtilsSrc} ${WidgetsComponentsSrc} ${mocoutput} ${rccoutput} ${uioutput} ${GUI_header_files} ${rccinput} )
 ADD_DEPENDENCIES(m4dWidgets Common Imaging backendForDICOM ${VTK_INTEGRATION_TARGET} )
+SET_TARGET_PROPERTIES( m4dWidgets PROPERTIES DEBUG_POSTFIX "_d")
 
 #--------------------------------------------------------
 # Set for parent CMakeLists

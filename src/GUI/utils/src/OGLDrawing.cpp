@@ -230,6 +230,7 @@ GLPrepareTextureFromImageData( const M4D::Imaging::AImageRegion &image, bool lin
 		return GLPrepareTextureFromImageData( M4D::Imaging::AImageRegionDim< 3 >::Cast( image ), linearInterpolation );
 	default:
 		ASSERT( false );
+		return 0;
 	}
 }
 
