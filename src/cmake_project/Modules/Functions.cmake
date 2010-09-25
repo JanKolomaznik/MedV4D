@@ -56,7 +56,7 @@ ENDFUNCTION(INSERT_KEYWORD_BEFORE_EACH_MEMBER)
 MACRO (CREATE_LIB_NAMES_FROM_TARGET_NAMES arg_input arg_output)
 	SET(${arg_output} )
 	FOREACH(currentName ${${arg_input}} )
-		SET( ${arg_output} "optimized" "${currentName}" "debug" "${currentName}${MEDV4D_DEBUG_POSTFIX}" ${${arg_output}} )		
+		SET( ${arg_output} ${${arg_output}} "optimized" "${currentName}" "debug" "${currentName}${MEDV4D_DEBUG_POSTFIX}" )		
 	ENDFOREACH(currentName) 
 ENDMACRO (CREATE_LIB_NAMES_FROM_TARGET_NAMES)
 
@@ -119,23 +119,17 @@ ENDFUNCTION(TARGET_MEDV4D_PROGRAM prog_name source_dir)
 
 MACRO(MEDV4D_LIBRARY_TARGET_PREPARATION libName libSrcDir libHeaderDir)
 
-	#Message( "${libName}" )
-	#Message( "${libSrcDir}" )
-	#Message( "${libHeaderDir}" )
-	#Message( "-------------------------------------" )
-	#AUX_SOURCE_DIRECTORY(${libSrcDir} SrcFiles )
 	FILE( GLOB SrcFiles "${libSrcDir}/*.cpp" )
 	FILE( GLOB Header_files "${libHeaderDir}/*.h" )
 	FILE( GLOB Tcc_files "${libHeaderDir}/*.tcc" )
 
-	#message( "${Header_files}" )
-	#message( "${SrcFiles}" )
 	SOURCE_GROUP( ${libName}_Headers FILES ${Header_files} )
 	SOURCE_GROUP( ${libName}_Tcc FILES ${Tcc_files} )
 	SOURCE_GROUP( ${libName}_Sources FILES ${SrcFiles}  )
 	
 	ADD_LIBRARY(${libName} ${SrcFiles} ${Header_files} ${Tcc_files})
-	SET_TARGET_PROPERTIES( ${libName} PROPERTIES DEBUG_POSTFIX "_d") 
+	SET_TARGET_PROPERTIES( ${libName} PROPERTIES DEBUG_POSTFIX ${MEDV4D_DEBUG_POSTFIX} ) 
+	SET_TARGET_PROPERTIES( ${libName} PROPERTIES RELEASE_POSTFIX ${MEDV4D_RELEASE_POSTFIX} ) 
 
 ENDMACRO(MEDV4D_LIBRARY_TARGET_PREPARATION)
 

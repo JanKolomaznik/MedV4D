@@ -99,7 +99,8 @@ SOURCE_GROUP( GUI_Headers FILES ${GUI_header_files} )
 
 ADD_LIBRARY(m4dWidgets ${WidgetsSrc} ${WidgetsOglSrc} ${WidgetsUtilsSrc} ${UtilsSrc} ${WidgetsComponentsSrc} ${mocoutput} ${rccoutput} ${uioutput} ${GUI_header_files} ${rccinput} )
 ADD_DEPENDENCIES(m4dWidgets Common Imaging backendForDICOM ${VTK_INTEGRATION_TARGET} )
-SET_TARGET_PROPERTIES( m4dWidgets PROPERTIES DEBUG_POSTFIX "_d")
+SET_TARGET_PROPERTIES( m4dWidgets PROPERTIES DEBUG_POSTFIX ${MEDV4D_DEBUG_POSTFIX} ) 
+SET_TARGET_PROPERTIES( m4dWidgets PROPERTIES RELEASE_POSTFIX ${MEDV4D_RELEASE_POSTFIX} ) 
 
 #--------------------------------------------------------
 # Set for parent CMakeLists
