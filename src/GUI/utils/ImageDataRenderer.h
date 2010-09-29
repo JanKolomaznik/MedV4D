@@ -1,6 +1,10 @@
 #ifndef IMAGE_DATA_RENDERER_H
 #define IMAGE_DATA_RENDERER_H
 
+#include "common/Common.h"
+#include "GUI/utils/CgShaderTools.h"
+#include "GUI/utils/GLTextureImage.h"
+
 namespace M4D
 {
 namespace GUI
@@ -8,6 +12,18 @@ namespace GUI
 
 
 typedef uint32 RenderingMode;
+
+struct SliceViewConfig
+{
+	SliceViewConfig(): plane( XY_PLANE ), currentSlice( 0 )
+	{}
+
+	CartesianPlanes		plane;
+
+	Vector< int32, 3 >	currentSlice;
+
+	ViewConfiguration2D	viewConfiguration;
+};
 
 class ImageDataRenderer
 {
@@ -31,15 +47,30 @@ public:
 	SetMaskColorMap( GLTextureImage::Ptr aData );
 
 	void
-	SetViewConfiguration( ... );
+	SetRenderingMode( RenderingMode aMode );
 
 	void
-	SetRenderingMode( RenderingMode aMode );
+	SetLUTWindow( const Vector< float32, 2 > &aLUTWindow )
+	{ _lutWindow = aLUTWindow; }
 
 	void
 	Render();
 
+	SliceViewConfig &
+	GetSliceViewConfig()
+	{ return _sliceViewConfig; }
+
 protected:
+
+	SliceViewConfig 			_sliceViewConfig;
+
+	Vector< float32, 2 >			_lutWindow;
+
+
+	GLTextureImage::Ptr			_textureData;
+
+	CGcontext   				_cgContext;
+	CgBrightnessContrastShaderConfig	_shaderConfig;
 
 private:
 

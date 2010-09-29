@@ -11,23 +11,24 @@ namespace Viewer
 {
 
 BasicSliceViewer::BasicSliceViewer( QWidget *parent ) : 
-	PredecessorType( parent ), _renderingMode( rmONE_DATASET ), _plane( XY_PLANE ), _lutWindow( 0.0f, 1.0f ), _interactionMode( imNONE ), _prepared( false )
+	PredecessorType( parent ), _renderingMode( rmONE_DATASET ), _interactionMode( imNONE ), _prepared( false )
 {
 
 }
 
 BasicSliceViewer::~BasicSliceViewer()
 {
-	_shaderConfig.Finalize();
-	cgDestroyContext(_cgContext);
+	_renderer.Finalize();
+	/*_shaderConfig.Finalize();
+	cgDestroyContext(_cgContext);*/
 }
 
 void	
 BasicSliceViewer::ZoomFit( ZoomType zoomType )
 {
-	_viewConfiguration = GetOptimalViewConfiguration(
-			VectorPurgeDimension( _regionRealMin, _plane ), 
-			VectorPurgeDimension( _regionRealMax, _plane ),
+	_renderer.GetSliceViewConfig().viewConfiguration = GetOptimalViewConfiguration(
+			VectorPurgeDimension( _regionRealMin, _renderer.GetSliceViewConfig().plane ), 
+			VectorPurgeDimension( _regionRealMax, _renderer.GetSliceViewConfig().plane ),
 			Vector< uint32, 2 >( (uint32)width(), (uint32)height() ), 
 			zoomType );
 }
@@ -36,12 +37,13 @@ void
 BasicSliceViewer::SetLUTWindow( Vector< float32, 2 > window )
 {
 	_lutWindow = window;
+	_renderer.SetLUTWindow( _lutWindow );
 }
 
 void
 BasicSliceViewer::SetCurrentSlice( int32 slice )
 {
-	_currentSlice[ _plane ] = Max( Min( _regionMax[_plane], slice ), _regionMin[_plane] );
+	_renderer.GetSliceViewConfig().currentSlice[ _renderer.GetSliceViewConfig().plane ] = Max( Min( _regionMax[_renderer.GetSliceViewConfig().plane], slice ), _regionMin[_renderer.GetSliceViewConfig().plane] );
 }
 
 void	
@@ -54,10 +56,12 @@ BasicSliceViewer::initializeGL()
 	//glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	//glDepthFunc(GL_LEQUAL);
 
-	_cgContext = cgCreateContext();
+
+	_renderer.Initialize();
+	/*_cgContext = cgCreateContext();
 	CheckForCgError("creating context ", _cgContext );
 
-	_shaderConfig.Initialize( _cgContext, "LUT.cg", "SimpleBrightnessContrast3D" );
+	_shaderConfig.Initialize( _cgContext, "LUT.cg", "SimpleBrightnessContrast3D" );*/
 }
 
 void	
@@ -77,14 +81,17 @@ BasicSliceViewer::paintGL()
 
 	ZoomFit();
 
-	switch ( _renderingMode )
+	/*switch ( _renderingMode )
 	{
 	case rmONE_DATASET:
 		RenderOneDataset();
 		break;
 	default:
 		ASSERT( false );
-	}
+	}*/
+
+	SetToViewConfiguration2D( _renderer.GetSliceViewConfig().viewConfiguration );
+	_renderer.Render();
 }
 
 void	
@@ -125,7 +132,7 @@ void
 BasicSliceViewer::mouseDoubleClickEvent ( QMouseEvent * event )
 {
 	if( event->button() == Qt::LeftButton ) {
-		_plane = NextCartesianPlane( _plane );
+		_renderer.GetSliceViewConfig().plane = NextCartesianPlane( _renderer.GetSliceViewConfig().plane );
 		this->update();
 		return;
 	}
@@ -156,9 +163,9 @@ BasicSliceViewer::wheelEvent ( QWheelEvent * event )
 	int numDegrees = event->delta() / 8;
 	int numSteps = numDegrees / 15;
 	if (event->orientation() == Qt::Horizontal) {
-		SetCurrentSlice( _currentSlice[ _plane ] -= numSteps );
+		SetCurrentSlice( _renderer.GetSliceViewConfig().currentSlice[ _renderer.GetSliceViewConfig().plane ] -= numSteps );
 	} else {
-		SetCurrentSlice( _currentSlice[ _plane ] += numSteps );
+		SetCurrentSlice( _renderer.GetSliceViewConfig().currentSlice[ _renderer.GetSliceViewConfig().plane ] += numSteps );
 	}
 	event->accept();
 	this->update();
@@ -197,7 +204,7 @@ BasicSliceViewer::PrepareData()
 	_regionRealMax = M4D::Imaging::AImageDim<3>::Cast( _inputDatasets[0] )->GetRealMaximum();
 	_elementExtents = M4D::Imaging::AImageDim<3>::Cast( _inputDatasets[0] )->GetElementExtents();
 
-	_currentSlice = _regionMin;
+	_renderer.GetSliceViewConfig().currentSlice = _regionMin;
 
 	/*M4D::Imaging::Image<uint16,3>::Ptr image = M4D::Imaging::Image<uint16,3>::Cast( _inputDatasets[0] );
 	M4D::Imaging::ImageFactory::DumpImage( "pom.dump", *image );
@@ -209,6 +216,9 @@ BasicSliceViewer::PrepareData()
 
 	ReleaseAllInputs();
 
+
+	_renderer.SetImageData( _textureData );
+
 	_prepared = true;
 	return true;
 }
@@ -216,7 +226,7 @@ BasicSliceViewer::PrepareData()
 void	
 BasicSliceViewer::RenderOneDataset()
 {
-	glBindTexture( GL_TEXTURE_1D, 0 );
+	/*glBindTexture( GL_TEXTURE_1D, 0 );
 	glBindTexture( GL_TEXTURE_2D, 0 );
 	glBindTexture( GL_TEXTURE_3D, 0 );
 	glDisable(GL_TEXTURE_3D);
@@ -235,7 +245,7 @@ BasicSliceViewer::RenderOneDataset()
 	
 	_shaderConfig.Disable();
 	
-	glFlush();
+	glFlush();*/
 }
 
 } /*namespace Viewer*/

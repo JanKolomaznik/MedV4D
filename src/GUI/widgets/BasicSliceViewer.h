@@ -13,6 +13,7 @@
 #include <boost/shared_ptr.hpp>
 #include "Imaging/Imaging.h"
 #include "GUI/utils/ViewConfiguration.h"
+#include "GUI/utils/ImageDataRenderer.h"
 
 namespace M4D
 {
@@ -103,16 +104,18 @@ protected:
 
 	enum {rmONE_DATASET}	_renderingMode;
 
-	CartesianPlanes		_plane;
+	/*CartesianPlanes		_plane;
 
-	Vector< int32, 3 >	_currentSlice;
+	Vector< int32, 3 >	_currentSlice;*/
 
 	GLTextureImage::Ptr	_textureData;
 
-	ViewConfiguration2D	_viewConfiguration;
+	//ViewConfiguration2D	_viewConfiguration;
+	
+	M4D::GUI::ImageDataRenderer	_renderer;
 
-	CGcontext   				_cgContext;
-	CgBrightnessContrastShaderConfig	_shaderConfig;
+/*	CGcontext   				_cgContext;
+	CgBrightnessContrastShaderConfig	_shaderConfig;*/
 
 	Vector< float, 3 > 			_regionRealMin;
 	Vector< float, 3 >			_regionRealMax;

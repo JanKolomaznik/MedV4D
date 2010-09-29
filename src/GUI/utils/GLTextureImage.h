@@ -66,6 +66,10 @@ struct GLTextureImage
 	GetMaximum3D()const
 	{ return _max3D; }
 
+	const Vector< float32, 3 > &
+	GetElementExtents3D()const
+	{ return _elementExtents3D; }
+
 	const Vector< float32, 2 > &
 	GetMinimum2D()const
 	{ return _min2D; }
@@ -74,14 +78,18 @@ struct GLTextureImage
 	GetMaximum2D()const
 	{ return _max2D; }
 
+	const Vector< float32, 2 > &
+	GetElementExtents2D()const
+	{ return _elementExtents2D; }
+
 	SIMPLE_GET_SET_METHODS( bool, LinearInterpolation, _linearInterpolation );
 protected:
 	bool				_linearInterpolation;
 	//M4D::Imaging::AImage::Ptr	_image;
 	GLuint				_gltextureID;
 
-	Vector< float32, 3 >		_min3D, _max3D;
-	Vector< float32, 2 >		_min2D, _max2D;
+	Vector< float32, 3 >		_min3D, _max3D, _elementExtents3D;
+	Vector< float32, 2 >		_min2D, _max2D, _elementExtents2D;
 };
 
 template < uint32 Dim >
@@ -121,13 +129,17 @@ struct GLTextureImageTyped: public GLTextureImage
 		if ( Dim == 2 ) {
 			_min2D = Vector< float32, 2 >( _image->GetRealMinimum().GetData() );
 			_max2D = Vector< float32, 2 >( _image->GetRealMaximum().GetData() );
+			_elementExtents2D = Vector< float32, 2 >( _image->GetElementExtents().GetData() );
 			_min3D = Vector< float32, 3 >( _min2D, 0.0f );
 			_max3D = Vector< float32, 3 >( _max2D, 0.0f );
+			_elementExtents3D = Vector< float32, 3 >( _elementExtents2D, 0.0f );
 		} else {
 			_min3D = Vector< float32, 3 >( _image->GetRealMinimum().GetData() );
 			_max3D = Vector< float32, 3 >( _image->GetRealMaximum().GetData() );
+			_elementExtents3D = Vector< float32, 3 >( _image->GetElementExtents().GetData() );
 			_min2D = Vector< float32, 2 >( _min3D.GetData() );
 			_max2D = Vector< float32, 2 >( _max3D.GetData() );
+			_elementExtents2D = Vector< float32, 2 >( _elementExtents3D.GetData() );
 		}
 	}
 
