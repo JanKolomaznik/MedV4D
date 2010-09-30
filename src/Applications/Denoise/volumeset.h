@@ -2,7 +2,17 @@
 	CVOLUMESET
 ************************************/
 
+#define OPENCL
+//#define MACINTOSH
+
 #include <omp.h>
+#include <algorithm>
+
+#ifdef OPENCL
+
+#include "MyOpenCL.h"
+
+#endif
 
 namespace viewer {
 
@@ -171,12 +181,13 @@ public:
 	};
 
 	// saves volumeset to disk
-	bool saveToDisk(wchar_t *wsFilename, CInfoDialog *info) {
+	bool saveToDisk(const char *wsFilename, CInfoDialog *info) {
 		FILE *fw;
-		if(NULL == (fw = _wfopen(wsFilename, L"wb"))) {
-			std::wstring errstr;
+		if(NULL == (fw = fopen(wsFilename, "wb"))) {
+/*			std::wstring errstr;
 			errstr = std::wstring(L"Could not create file: ") + std::wstring(wsFilename);
-			info->setMessage(errstr);
+			if(info)
+				info->setMessage(errstr);*/
 			return false;
 		}
 
@@ -194,8 +205,12 @@ public:
 
 		const char *name = typeid(T).name();
 		char buff[32];
-		strncpy(buff, name,31);
-		fwrite(name, sizeof(char), 32, fw);
+		// HACK: for macintosh
+		if(name[0] == 'f')
+			strncpy(buff, "float", 31);
+		else
+			strncpy(buff, name,31);
+		fwrite(buff, sizeof(char), 32, fw);
 		
 		for(int k = 0; k < depth; k++)
 		{
@@ -207,13 +222,13 @@ public:
 	}
 
 	// loads volumeset from disk
-	void loadFromDisk(wchar_t *wsFilename, CInfoDialog *info) {
+	void loadFromDisk(const char *wsFilename, CInfoDialog *info) {
 		FILE *fr;
-		if(NULL == (fr = _wfopen(wsFilename, L"rb"))) {
-			std::wstring errstr;
+		if(NULL == (fr = fopen(wsFilename, "rb"))) {
+/*			std::wstring errstr;
 			errstr = std::wstring(L"Could not open file: ") + std::wstring(wsFilename);
 			if(info)
-				info->setMessage(errstr);
+				info->setMessage(errstr);*/
 			return;
 		}
 
@@ -221,11 +236,11 @@ public:
 		fread(header, sizeof(unsigned char), 3, fr);
 		if(header[0] != 'V' || header[1] != 'o' || header[2] != 'l')
 		{
-			std::wstring errstr;
+/*			std::wstring errstr;
 			errstr = std::wstring(L"Wrong file type: ") + std::wstring(wsFilename);
 			if(info)
 				info->setMessage(errstr);
-			fclose(fr);
+			fclose(fr);*/
 			return;
 		}
 
@@ -237,12 +252,12 @@ public:
 
 		char name[32];
 		fread(name, sizeof(char), 32, fr);
-		if(0 != strcmp(name, typeid(T).name()))
+		if(0 != strcmp(name, typeid(T).name()) && name[0] != typeid(T).name()[0])
 		{
-			std::wstring errstr;
+/*			std::wstring errstr;
 			errstr = std::wstring(L"Wrong file type (") + str2wcs(typeid(T).name()) + L"): " + wsFilename + L"(" + str2wcs(name) + L")";
 			if(info)
-				info->setMessage(errstr);
+				info->setMessage(errstr);*/
 			fclose(fr);
 			return;
 		}
@@ -525,7 +540,7 @@ public:
 	void volTreshold2DFloodfill(SPoint3D<unsigned int> seed) {
 		CVolumeSet<unsigned char> *ONLY_FOR_UCHAR_VOLUMESET = this;
 
-		std::list<SPoint2D<unsigned int>> queue;
+		std::list<SPoint2D<unsigned int> > queue;
 		queue.clear();
 
 		// initialize 
@@ -582,7 +597,7 @@ public:
 		copyOrigPos(srcVolume);
 		setZero();
 
-		std::list<SPoint2D<unsigned int>> queue;
+		std::list<SPoint2D<unsigned int> > queue;
 		queue.clear();
 
 		// initialize 
@@ -648,8 +663,8 @@ public:
 		copySize(srcVolume);
 		copyOrigPos(srcVolume);
 		setZero();
-
-		std::list<SPoint3D<unsigned int>> queue;
+ 
+		std::list<SPoint3D<unsigned int> > queue;
 		queue.clear();
 
 		// initialize 
@@ -1302,7 +1317,7 @@ public:
 
 		progress->UpdateProgress(0);
 
-		#pragma omp parallel for //num_threads(1)
+		#pragma omp parallel for schedule(dynamic)//num_threads(1)
 		for(int k = 0; k < depth; k++) {
 			unsigned int thread_num, thread_total;
 			thread_num = omp_get_thread_num();
@@ -1460,7 +1475,6 @@ public:
 		}
 	}
 
-	// performs a blockwise NL means filter on src
 	void volBlockwiseNLMeans(const CVolumeSet<T> &src, double beta, double meanAccept, double sigma1, int radius, int blockNbh, int blockDist, CProgress *progress) {
 		copySize(src);
 		copyOrigPos(src);
@@ -1495,7 +1509,7 @@ public:
 
 		progress->UpdateProgress(0);
 
-		#pragma omp parallel for 
+		#pragma omp parallel for schedule(dynamic)
 		for(int k = blockNbh; k < depth; k += blockDist) {
 			unsigned int thread_num, thread_total;
 			thread_num = omp_get_thread_num();
@@ -1612,6 +1626,207 @@ public:
 		}
 	}
 
+	void getSubVolume(const CVolumeSet<T> &src, SPoint3D<int> &orig, SPoint3D<int> &size) {
+		realloc(size.x, size.y, size.z);
+		origPos = orig;
+
+		for(int z = 0; z < depth; z++) {
+		for(int y = 0; y < height; y++) {
+		for(int x = 0; x < width; x++) {
+			T val;
+			int sx, sy, sz;
+			sx = x + orig.x;
+			sy = y + orig.y;
+			sz = z + orig.z;
+			if(sx < 0 || sx >= src.width || sy < 0 || sy >= src.height || sz < 0 || sz >= src.depth)
+				val = 0;
+			else
+				val = src.getValue(sx, sy, sz);
+			setValue(x, y, z, val);
+		}
+		}
+		}
+	}
+
+	void setSubvolume(const CVolumeSet<T> &subVol, int ignoreBorder) {
+		SPoint3D<int> orig = subVol.origPos;
+
+		for(int z = ignoreBorder; z < subVol.depth - ignoreBorder; z++) {
+		for(int y = ignoreBorder; y < subVol.height - ignoreBorder; y++) {
+		for(int x = ignoreBorder; x < subVol.width - ignoreBorder; x++) {
+			int dx, dy, dz;
+			dx = x + orig.x;
+			dy = y + orig.y;
+			dz = z + orig.z;
+			if(!(dx < 0 || dx >= width || dy < 0 || dy >= height || dz < 0 || dz >= depth)) {
+				T val;
+				val = subVol.getValue(x, y, z);
+				setValue(dx, dy, dz, val);
+			} 
+		}
+		}
+		}
+	}
+
+	// saves subvolume directly to an array
+	void saveSubvolumeToArray(T *pDest, SPoint3D<int> &orig, SPoint3D<int> &size) const {
+		int offset = 0;
+		for(int z = 0; z < size.z; z++) {
+			for(int y = 0; y < size.y; y++) {
+				for(int x = 0; x < size.x; x++) {
+					T val;
+					int sx, sy, sz;
+					sx = x + orig.x;
+					sy = y + orig.y;
+					sz = z + orig.z;
+					if(sx < 0 || sx >= width || sy < 0 || sy >= height || sz < 0 || sz >= depth)
+						val = 0;
+					else
+						val = getValue(sx, sy, sz);
+					pDest[offset++] = val; 
+				}
+			}
+		}
+	}
+	
+	// loads subvolume directly from an array
+	void loadSubvolumeFromArray(const T *pSrc, SPoint3D<int> &orig, SPoint3D<int> &size, int ignoreBorder = 0) {
+		int offset = 0;
+		for(int z = 0; z < size.z ; z++) {
+			for(int y = 0; y < size.y; y++) {
+				for(int x = 0; x < size.x; x++) {
+					int sx, sy, sz;
+					sx = x + orig.x;
+					sy = y + orig.y;
+					sz = z + orig.z;
+					if(false == (sx < 0 || sx >= width || sy < 0 || sy >= height || sz < 0 || sz >= depth)) {
+						if(false == (x < ignoreBorder || x >= size.x - ignoreBorder || 
+						   y < ignoreBorder || y >= size.y - ignoreBorder || 
+						   z < ignoreBorder || z >= size.z - ignoreBorder))
+							setValue(sx, sy, sz, pSrc[offset]);
+					}
+					offset++;
+				}
+			}
+		}
+	}
+	
+	// saves volumeset into array, MUST be allocated to the width*height*depth*sizeof(T) size
+	void saveToArray(T *pDest) {
+		int imgSize = width * height;
+		int destOffset = 0;
+		for (int i = 0; i < depth; i++) {
+			for (int j = 0; j < imgSize; j++)
+				pDest[destOffset++] = planes[i][j];
+		}	
+	}
+
+	// loads volumeset from array, MUST be allocated to the width*height*depth*sizeof(T) size
+	void loadFromArray(const T *pSrc) {
+		int imgSize = width * height;
+		int srcOffset = 0;
+		for (int i = 0; i < depth; i++) {
+			for (int j = 0; j < imgSize; j++)
+				planes[i][j] = pSrc[srcOffset++];
+		}	
+	}
+
+	// performs a blockwise NL means filter on src, subdivides data if necessary
+	void volBlockwiseNLMeansBig(const CVolumeSet<T> &src, const SPoint3D<int> &maxComputeSize, double beta, double meanAccept, double sigma1, int radius, int blockNbh, int blockDist, CProgress *progress) {
+		copySize(src);
+		copyOrigPos(src);
+//		const int maxWidth = 150, maxHeight = 150, maxDepth = 150;
+		std::vector<int> vStartX, vStartY, vStartZ;
+		std::vector<int> vWidthX, vWidthY, vWidthZ;
+		
+		int border = 1 + radius + blockNbh;
+
+		int offset;
+		offset = 0;
+		while(offset < src.width) {
+			vStartX.push_back(offset);
+			vWidthX.push_back(min(maxComputeSize.x, src.width - offset));
+			offset += maxComputeSize.x;
+		}	
+		offset = 0;
+		while(offset < src.height) {
+			vStartY.push_back(offset);
+			vWidthY.push_back(min(maxComputeSize.y, src.height - offset));
+			offset += maxComputeSize.y;
+		}	
+		offset = 0;
+		while(offset < src.depth) {
+			vStartZ.push_back(offset);
+			vWidthZ.push_back(min(maxComputeSize.z, src.depth - offset));
+			offset += maxComputeSize.z;
+		}	
+
+		for(int k = 0; k < (int)vStartZ.size(); k++) 
+		for(int j = 0; j < (int)vStartY.size(); j++) 
+		for(int i = 0; i < (int)vStartX.size(); i++) {
+			SPoint3D<int> orig, size;
+			orig.x = vStartX[i] - border;
+			orig.y = vStartY[j] - border;
+			orig.z = vStartZ[k] - border;
+			size.x = vWidthX[i] + 2*border;
+			size.y = vWidthY[j] + 2*border;
+			size.z = vWidthZ[k] + 2*border;
+
+			CVolumeSet<T> subVol(1,1,1), workVol(1,1,1);
+			subVol.getSubVolume(src, orig, size);
+			workVol.volBlockwiseNLMeans(subVol, beta, meanAccept, sigma1, radius, blockNbh, blockDist, progress);
+			setSubvolume(workVol, border);
+		}
+	}
+
+	// performs a blockwise NL means filter on src, subdivides data if necessary
+	void volNLMeansBig(const CVolumeSet<T> &src, const SPoint3D<int> &maxComputeSize, double beta, int radius, int blockNbh, CProgress *progress) {
+		copySize(src);
+		copyOrigPos(src);
+//		const int maxWidth = 150, maxHeight = 150, maxDepth = 150;
+		std::vector<int> vStartX, vStartY, vStartZ;
+		std::vector<int> vWidthX, vWidthY, vWidthZ;
+		
+		int border = 1 + radius + blockNbh;
+
+		int offset;
+		offset = 0;
+		while(offset < src.width) {
+			vStartX.push_back(offset);
+			vWidthX.push_back(min(maxComputeSize.x, src.width - offset));
+			offset += maxComputeSize.x;
+		}	
+		offset = 0;
+		while(offset < src.height) {
+			vStartY.push_back(offset);
+			vWidthY.push_back(min(maxComputeSize.y, src.height - offset));
+			offset += maxComputeSize.y;
+		}	
+		offset = 0;
+		while(offset < src.depth) {
+			vStartZ.push_back(offset);
+			vWidthZ.push_back(min(maxComputeSize.z, src.depth - offset));
+			offset += maxComputeSize.z;
+		}	
+
+		for(int k = 0; k < (int)vStartZ.size(); k++) 
+		for(int j = 0; j < (int)vStartY.size(); j++) 
+		for(int i = 0; i < (int)vStartX.size(); i++) {
+			SPoint3D<int> orig, size;
+			orig.x = vStartX[i] - border;
+			orig.y = vStartY[j] - border;
+			orig.z = vStartZ[k] - border;
+			size.x = vWidthX[i] + 2*border;
+			size.y = vWidthY[j] + 2*border;
+			size.z = vWidthZ[k] + 2*border;
+
+			CVolumeSet<T> subVol(1,1,1), workVol(1,1,1);
+			subVol.getSubVolume(src, orig, size);
+			workVol.volNLMeans(subVol, (float)beta, radius, blockNbh, progress);
+			setSubvolume(workVol, border);
+		}
+	}
+
 	void volMedianFilter(const CVolumeSet<T> &src, int radius, CProgress *progress) {
 		copySize(src);
 		copyOrigPos(src);
@@ -1654,14 +1869,244 @@ public:
 		}
 	}
 
+#ifdef OPENCL
+	void volNLMeansHW(MyOpenCL &ocl, const CVolumeSet<T> &src,
+							   double beta, int radius, int neighbourhood,
+							   CProgress *progress) {
+		if(ocl.bInitialized == false) {
+			printf("OpenCL not initialized");
+			return;
+		}
+		
+		if(radius > 4) {
+			radius = 4;
+			printf("Radius too large, setting to 4.\n");
+		}
+		if(neighbourhood > 2) {
+			radius = 2;
+			printf("Neighbourhood too large, setting to 2.\n");
+		}
+
+		// create program
+		if(NULL == ocl.ReadNLMProgram("NLMProgram.cl")) {
+			printf("Cannot load program\n");
+			return;
+		}
+		cl_program program = clCreateProgramWithSource(ocl.context, 1, (const char**) &ocl.szNLMProgram, NULL, NULL);
+		if(program == NULL) {
+			printf("Cannot create program\n");
+			return;
+		}
+
+		// bulid program
+		int errcode = clBuildProgram(program, 1, &(ocl.device), NULL, NULL, NULL);
+		if (errcode != CL_SUCCESS) {
+			size_t len;
+			char buffer[10000];
+			printf("Error: Failed to build program executable (%d)\n", errcode);            
+			clGetProgramBuildInfo(program, ocl.device, CL_PROGRAM_BUILD_LOG,
+											  sizeof(buffer), buffer, &len);
+			printf("%s\n", buffer);
+			return;
+		}
+
+		// create kenerl
+		cl_kernel kerNLM = clCreateKernel(program, "NLMeansV2", NULL);
+		cl_kernel kerPseudoRes = clCreateKernel(program, "PseudoRes", NULL);
+//		cl_kernel kerMeanVar = clCreateKernel(program, "LocMeanAndVar", NULL);
+
+		copySize(src);
+		copyOrigPos(src);
+
+		std::vector<int> vStartX, vStartY, vStartZ;
+		std::vector<int> vWidthX, vWidthY, vWidthZ;
+		
+		int border = radius + neighbourhood;
+
+		const int BLOCK_NLOPT=13;
+
+		const int BLOCK_WEIGHTS=9;
+
+		int xkern = BLOCK_NLOPT - 2*border; // size of "kernel", i.e. voxels that are actually computed in X direction
+		int ykern = BLOCK_NLOPT - 2*border; // size of "kernel", i.e. voxels that are actually computed in Y direction
+
+		SPoint3D<int> blockSize, blocks;
+		blocks.init(min(100, (width + xkern - 1)/xkern), min(100, (height + ykern - 1)/ykern), depth);
+		blockSize.init(blocks.x * xkern, blocks.y * ykern, min(100, depth));
+
+		int offset;
+		offset = 0;
+		while(offset < src.width) {
+			vStartX.push_back(offset);
+			vWidthX.push_back(min(blockSize.x, src.width - offset));
+			offset += blockSize.x;
+		}	
+		offset = 0;
+		while(offset < src.height) {
+			vStartY.push_back(offset);
+			vWidthY.push_back(min(blockSize.y, src.height - offset));
+			offset += blockSize.y;
+		}	
+		offset = 0;
+		while(offset < src.depth) {
+			vStartZ.push_back(offset);
+			vWidthZ.push_back(min(blockSize.z, src.depth - offset));
+			offset += blockSize.z;
+		}	
+
+		Timer timer;
+		timer.restart();
+
+		printf("Starting computation\n");
+		printf("Preprocessing pseudoresiduals\n");
+
+		int blocksTotal = vStartX.size() * vStartY.size() * vStartZ.size();
+		int blocksDone = 0;
+		double accum = 0;
+		int accumVals = 0;
+		for(int k = 0; k < (int)vStartZ.size(); k++) 
+		for(int j = 0; j < (int)vStartY.size(); j++) 
+		for(int i = 0; i < (int)vStartX.size(); i++) {
+			printf("Computing Pseudoresiduals block %d/%d\n", ++blocksDone, blocksTotal);
+			
+			int sizeAsArray[4]; // size must be 4-component, because we use it as parameter for kernels
+			SPoint3D<int> &size = *((SPoint3D<int>*)sizeAsArray);
+			SPoint3D<int> orig;
+			int pseudoresBorder = 1;
+			orig.x = vStartX[i] - pseudoresBorder;
+			orig.y = vStartY[j] - pseudoresBorder;
+			orig.z = vStartZ[k] - pseudoresBorder;
+			SPoint3D<int> gpuBlocks;
+			gpuBlocks.init(vWidthX[i], vWidthY[j], vWidthZ[k]);
+			size.x = gpuBlocks.x + 2*pseudoresBorder;
+			size.y = gpuBlocks.y + 2*pseudoresBorder;
+			size.z = gpuBlocks.z + 2*pseudoresBorder;
+
+			int numEntries = size.x * size.y * size.z;
+			int numPseudores = gpuBlocks.x * gpuBlocks.y * gpuBlocks.z;
+
+			size_t iGlobSize = gpuBlocks.y * gpuBlocks.x; // one kernel for each line in X direction
+			size_t iLocSize = gpuBlocks.x;
+
+			float *pVolArray = new float[numEntries];
+			float *pPseudoresArray = new float[numPseudores];
+
+			memset(pPseudoresArray, 0, sizeof(float)*numPseudores);
+			src.saveSubvolumeToArray(pVolArray, orig, size);
+
+			// alloc memory
+			cl_mem memSrc, memPseudores;
+			memSrc = clCreateBuffer(ocl.context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(float)*numEntries, pVolArray, NULL);
+			memPseudores = clCreateBuffer(ocl.context, CL_MEM_READ_WRITE, sizeof(float)*numPseudores, NULL, NULL);
+			
+			//set arguments
+			clSetKernelArg(kerPseudoRes, 0, sizeof(cl_mem), (void*)&memSrc);
+			clSetKernelArg(kerPseudoRes, 1, sizeof(cl_mem), (void*)&memPseudores);
+			clSetKernelArg(kerPseudoRes, 2, sizeof(cl_int4), &size.x);
+			
+			// TODO: make pseudores faster
+			errcode = clEnqueueNDRangeKernel(ocl.queue, kerPseudoRes, 1, NULL, &iGlobSize, NULL, 0, NULL, NULL);
+			clEnqueueReadBuffer(ocl.queue, memPseudores, CL_TRUE, 0, sizeof(float) * numPseudores, pPseudoresArray, 0, NULL, NULL);
+			clReleaseMemObject(memPseudores);
+			clReleaseMemObject(memSrc);
+
+			// compute variance from pseudoresidual
+			int idx = 0;
+			for(idx = 0; idx < numPseudores; idx++) {
+				double val = (double) pPseudoresArray[idx];
+				accum += val*val;
+				accumVals++;
+			}
+
+			//loadSubvolumeFromArray(pPseudoresArray, SPoint3D<int>(vStartX[i],vStartY[j],vStartZ[k]), gpuBlocks, 0);
+			delete[] pPseudoresArray;
+			delete[] pVolArray;
+		}
+
+		float variance = (float)((double)accum / (double)(accumVals));
+		int nbhsize = (neighbourhood*2)+1;
+		nbhsize = nbhsize * nbhsize * nbhsize;
+		float weightConst = (float) (2 * (float)beta * variance * (float)(nbhsize));
+
+		blocksDone = 0;
+		for(int k = 0; k < (int)vStartZ.size(); k++) 
+		for(int j = 0; j < (int)vStartY.size(); j++) 
+		for(int i = 0; i < (int)vStartX.size(); i++) {
+			printf("Computing block %d/%d\n", ++blocksDone, blocksTotal);
+			
+			int sizeAsArray[4]; // size must be 4-component, because we use it as parameter for kernels
+			SPoint3D<int> &size = *((SPoint3D<int>*)sizeAsArray);
+			SPoint3D<int> orig;
+			orig.x = vStartX[i] - border;
+			orig.y = vStartY[j] - border;
+			orig.z = vStartZ[k] - border;
+			SPoint3D<int> gpuBlocks;
+			gpuBlocks.init(vWidthX[i], vWidthY[j], 1);
+			size.x = gpuBlocks.x + 2*border;
+			size.y = gpuBlocks.y + 2*border;
+			size.z = vWidthZ[k] + 2*border;
+
+			int numEntries = size.x * size.y * size.z;
+
+			float *pVolArray = new float[numEntries];
+
+			memset(pVolArray, 0, sizeof(float)*numEntries);
+			src.saveSubvolumeToArray(pVolArray, orig, size);
+
+			cl_mem memSrc = clCreateBuffer(ocl.context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(float)*numEntries, pVolArray, NULL);
+			cl_mem memDest = clCreateBuffer(ocl.context, CL_MEM_READ_WRITE, sizeof(float)*numEntries, NULL, NULL);
+			
+			printf("Computing NM optimized filter...\n");
+			//set arguments
+			clSetKernelArg(kerNLM, 0, sizeof(cl_mem), (void*)&memSrc);
+			clSetKernelArg(kerNLM, 1, sizeof(cl_mem), (void*)&memDest);
+			clSetKernelArg(kerNLM, 2, sizeof(cl_float), &weightConst);
+			clSetKernelArg(kerNLM, 3, sizeof(cl_int), &radius);
+			clSetKernelArg(kerNLM, 4, sizeof(cl_int), &neighbourhood);
+			clSetKernelArg(kerNLM, 5, sizeof(cl_int4), &size.x);
+			clSetKernelArg(kerNLM, 6, sizeof(cl_float) * BLOCK_NLOPT * BLOCK_NLOPT * BLOCK_NLOPT, NULL);
+			clSetKernelArg(kerNLM, 7, sizeof(cl_float) * BLOCK_WEIGHTS * BLOCK_WEIGHTS * BLOCK_WEIGHTS, NULL);
+			clSetKernelArg(kerNLM, 8, sizeof(cl_float) * BLOCK_WEIGHTS * BLOCK_WEIGHTS, NULL);
+			clSetKernelArg(kerNLM, 9, sizeof(cl_float) * BLOCK_WEIGHTS, NULL);
+					
+			size_t globs[3], locs[3];
+			locs[0] = BLOCK_NLOPT; 
+			locs[1] = BLOCK_NLOPT;
+			locs[2] = BLOCK_NLOPT;
+			globs[0] = locs[0] * gpuBlocks.x;
+			globs[1] = locs[1] * gpuBlocks.y;
+			globs[2] = locs[2] * gpuBlocks.z;
+
+			errcode = clEnqueueNDRangeKernel(ocl.queue, kerNLM, 2, NULL, globs, locs, 0, NULL, NULL);
+			memset(pVolArray, 0, sizeof(float) * numEntries);
+			clEnqueueReadBuffer(ocl.queue, memDest, CL_TRUE, 0, sizeof(float) * numEntries, pVolArray, 0, NULL, NULL);
+			
+			printf("Storing results...\n");
+			loadSubvolumeFromArray(pVolArray, orig, size, border);
+
+			delete[] pVolArray;
+
+			clReleaseMemObject(memDest);
+			clReleaseMemObject(memSrc);
+		}
+		
+		timer.measure();
+		int h,m,s,ms;
+		timer.getTime(h, m, s, ms);
+		printf("Time taken: %d:%d:%d.%3d\n", h,m,s,ms);
+	}
+#endif
+
 	CVolumeSet(int sizeX, int sizeY, int sizeZ) {
 		cutXZ = cutYZ = NULL;
 		origPos.x = origPos.y = origPos.z = 0;
 		realloc(sizeX, sizeY, sizeZ);
+		//printf("tajp: %s\n", typeid(T).name());
 	};
 
 	~CVolumeSet() {
 		reset();
+
 	};
 };
 
@@ -1676,7 +2121,7 @@ void volGaussFilterZ(CVolumeSet<float> &dest, const CVolumeSet<float> &src, floa
 // computes gauss lowpass filter in all directions (radius == 1 means no filtering, radius == 2 means filter [1,2,1], radius == 3 means [1,4,6,4,1], etc.)
 void volGaussFilter3D(CVolumeSet<float> &dest, const CVolumeSet<float> &src, float defaultValue, unsigned int radius);
 // computes the gradient of the float volumeset
-void volGradient(CVolumeSet<SPoint3D<float>> &dest, const CVolumeSet<float> &src);
+void volGradient(CVolumeSet<SPoint3D<float> > &dest, const CVolumeSet<float> &src);
 // computes the size of gradient of the float volumeset
 void volGradientSizeApprox(CVolumeSet<float> &dest, const CVolumeSet<float> &src);
 // creates gauss filter of given radius (radius = 1 means [1], radius = 2 means [1,2,1], radius = 3 means [1,4,6,4,1])
@@ -1686,7 +2131,7 @@ std::vector<float> buildGaussFilter(unsigned int radius);
 void dbgWriteMaskToDisk(const CVolumeSet<unsigned char> &mask, CImageSet &imgset, char *szFilename, unsigned char multiplier = 1);
 #endif
 // creates 12-bit test data of size 128x128z128 and a vector of border seeds
-void createTestData(CVolumeSet<short> &result, std::list<SPoint3D<int>> &borderSeeds);
+void createTestData(CVolumeSet<short> &result, std::list<SPoint3D<int> > &borderSeeds);
 
 
 

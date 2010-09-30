@@ -61,7 +61,7 @@ main( int argc, char** argv )
 	}
 	std::cout << "Done\n";
 
-	TImage16x3::Ptr myImg = TImage16x3::CastAImage(image);
+	TImage16x3::Ptr myImg = TImage16x3::Cast(image);
 
 	std::cout << "Getting info about file...\n";
 	TImage16x3::SizeType size;
