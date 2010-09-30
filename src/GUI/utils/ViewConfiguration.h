@@ -9,7 +9,7 @@
 struct ViewConfiguration2D
 {
 	ViewConfiguration2D(	
-			Vector< float, 2 >	aCenterPoint = Vector< float, 2 >(),
+			Vector2f	aCenterPoint = Vector2f(),
 			float32			aZoom = 1.0f,
 			bool			aHFlip = false,
 			bool			aVFlip = false

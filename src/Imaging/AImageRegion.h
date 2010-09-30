@@ -48,9 +48,10 @@ public:
 	
 	CONFIGURABLE_PREPARE_CAST_METHODS_MACRO( Cast, typename ThisClass, M4D::Imaging::AImageRegion );
 
-	typedef Vector< int, Dim >	PointType;
 	static const unsigned Dimension = Dim;
-
+	typedef Vector< int, Dim >			PointType;
+	typedef Vector< float, Dim >		ExtentType; // typedefs for gcc4.2 error that cannot parse these templates as default parameters
+	typedef Vector< unsigned, Dim >		SizeType;
 
 	unsigned 
 	GetDimension()const
@@ -116,9 +117,9 @@ public:
 
 protected:
 	AImageRegionDim(
-			const Vector< unsigned, Dimension >	&size = Vector< unsigned, Dimension >( 0 ),
-			const Vector< int, Dimension >	&origin = Vector< int, Dimension >( 0 ),
-			const Vector< float, Dimension >	&elementExtents = Vector< float, Dimension >( 1.0f )
+			const SizeType	&size = SizeType( 0 ),
+			const PointType	&origin = PointType( 0 ),
+			const ExtentType	&elementExtents = ExtentType( 1.0f )
 		       ): _elementExtents( elementExtents ), _size( size ), _origin( origin )
 	{}
 	

@@ -33,6 +33,8 @@ public:
 	typedef EType					ElementType;
 	typedef ImageIterator< ElementType, Dim >	Iterator;
 	typedef Vector< int, Dim >			PointType;
+	typedef Vector< float, Dim >		ExtentType; // typedefs for gcc4.2 error that cannot parse these templates as default parameters
+	typedef Vector< unsigned, Dim >		SizeType;
 
 	CONFIGURABLE_PREPARE_CAST_METHODS_MACRO( Cast, typename ThisClass, AImageRegion );
 
@@ -50,7 +52,7 @@ public:
 			ElementType 				*pointer, 
 			const Vector< unsigned, Dimension >	&size,
 			const Vector< int, Dimension >	&origin,
-			const Vector< float, Dimension >	&elementExtents = Vector< float, Dimension >( 1.0f )
+			const ExtentType	&elementExtents = ExtentType( 1.0f )
 		) :AImageRegionDim< Dim >( size, origin, elementExtents )
 		{
 			//TODO - check
@@ -76,7 +78,7 @@ public:
 			Vector< unsigned, Dimension >	dimOrder,
 			unsigned			sourceDimension, 
 			const int*			pointerCoordinatesInSource 
-		) :AImageRegionDim< Dim >( size, Vector< float, Dimension >( 1.0f ), elementExtents )
+		) :AImageRegionDim< Dim >( size, ExtentType( 1.0f ), elementExtents )
 		{
 			_pointer = pointer;
 			_sourceDimension = sourceDimension;

@@ -575,4 +575,7 @@ typedef Vector< int32, 2 >			RasterPos;
 typedef Vector< uint32, 2 > Size2D;
 typedef Vector< uint32, 3 > Size3D;
 
+typedef Vector< float, 2> Vector2f;
+typedef Vector< float, 3> Vector3f;
+
 #endif /*COORDINATES_H*/
