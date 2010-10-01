@@ -87,10 +87,20 @@ main( int argc, char** argv )
 
 
 	QApplication app(argc, argv);
-	std::cout << "Show window\n";
-	ViewerWindow viewer( prodconn );
-	//ViewerWindow viewer( image );
-	viewer.show();
-	return app.exec();
+	try {
+		std::cout << "Show window\n";
+		ViewerWindow viewer( prodconn );
+		//ViewerWindow viewer( image );
+		viewer.show();
+		return app.exec();
+	} catch ( std::exception &e )
+	{
+		QMessageBox::critical ( NULL, "Exception", QString( e.what() ) );
+	} 
+	catch (...) {
+		QMessageBox::critical ( NULL, "Exception", "Unknown error" );
+	}
+	
+	return 1;
 }
 

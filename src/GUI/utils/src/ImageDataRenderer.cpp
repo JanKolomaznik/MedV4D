@@ -11,17 +11,21 @@ namespace GUI
 void
 ImageDataRenderer::Initialize()
 {
-	_cgContext = cgCreateContext();
+	/*_cgContext = cgCreateContext();
 	CheckForCgError("creating context ", _cgContext );
 
-	_shaderConfig.Initialize( _cgContext, "LUT.cg", "SimpleBrightnessContrast3D" );
+	_shaderConfig.Initialize( _cgContext, "LUT.cg", "SimpleBrightnessContrast3D" );*/
+
+	InitializeCg();
+	_cgEffect.Initialize( "ImageRender.cgfx" );
 }
 
 void
 ImageDataRenderer::Finalize()
 {
-	_shaderConfig.Finalize();
-	cgDestroyContext(_cgContext);
+	/*_shaderConfig.Finalize();
+	cgDestroyContext(_cgContext);*/
+	_cgEffect.Finalize();
 }
 
 void
@@ -57,6 +61,7 @@ ImageDataRenderer::SetRenderingMode( RenderingMode aMode )
 void
 ImageDataRenderer::Render()
 {
+	/*
 	if( ! _textureData ) return;
 
 	glBindTexture( GL_TEXTURE_1D, 0 );
@@ -68,7 +73,7 @@ ImageDataRenderer::Render()
 
 
 	_shaderConfig.textureName = _textureData->GetTextureGLID();
-	_shaderConfig.brightnessContrast = _lutWindow;
+	_shaderConfig.brightnessContrast = _wlWindow;
 	_shaderConfig.Enable();
 	
 	CheckForCgError("Check before drawing ", _cgContext );
@@ -77,7 +82,11 @@ ImageDataRenderer::Render()
 	M4D::GLDrawVolumeSlice( _textureData->GetMinimum3D(), _textureData->GetMaximum3D(), (float32)_sliceViewConfig.currentSlice[ _sliceViewConfig.plane ] * _textureData->GetElementExtents3D()[_sliceViewConfig.plane], _sliceViewConfig.plane );
 	
 	_shaderConfig.Disable();
+	*/
 	
+	_cgEffect.SetParameter( "gWLWindow", _wlWindow );
+	_cgEffect.SetParameter( "gImageData", *_textureData );
+	_cgEffect.ExecuteTechniquePass( "WLWindow3D", boost::bind( &M4D::GLDrawVolumeSlice, _textureData->GetMinimum3D(), _textureData->GetMaximum3D(), (float32)_sliceViewConfig.currentSlice[ _sliceViewConfig.plane ] * _textureData->GetElementExtents3D()[_sliceViewConfig.plane], _sliceViewConfig.plane ) ); 
 	glFlush();
 }
 

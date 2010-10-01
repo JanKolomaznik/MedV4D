@@ -4,6 +4,7 @@
 #include "common/Common.h"
 #include "GUI/utils/CgShaderTools.h"
 #include "GUI/utils/GLTextureImage.h"
+#include <boost/bind.hpp>
 
 namespace M4D
 {
@@ -51,7 +52,7 @@ public:
 
 	void
 	SetLUTWindow( const Vector< float32, 2 > &aLUTWindow )
-	{ _lutWindow = aLUTWindow; }
+	{ _wlWindow = aLUTWindow; }
 
 	void
 	Render();
@@ -64,13 +65,15 @@ protected:
 
 	SliceViewConfig 			_sliceViewConfig;
 
-	Vector< float32, 2 >			_lutWindow;
+	Vector< float32, 2 >			_wlWindow;
 
 
 	GLTextureImage::Ptr			_textureData;
 
 	CGcontext   				_cgContext;
 	CgBrightnessContrastShaderConfig	_shaderConfig;
+
+	CgEffect				_cgEffect;
 
 private:
 

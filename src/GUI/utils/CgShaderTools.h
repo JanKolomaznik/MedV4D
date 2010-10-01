@@ -9,7 +9,22 @@
 #include <string>
 #include "common/Common.h"
 #include "GUI/utils/DrawingTools.h"
+#include "GUI/utils/OGLDrawing.h"
 #include "GUI/utils/Camera.h"
+#include "GUI/utils/GLTextureImage.h"
+#include <map>
+
+namespace M4D {
+namespace GUI {
+
+extern bool gIsCgInitialized;
+extern CGcontext gCgContext;
+
+void
+InitializeCg();
+
+void
+FinalizeCg();
 
 class CgException: public M4D::ErrorHandling::ExceptionBase
 {
@@ -17,6 +32,75 @@ public:
 	CgException( std::string name ) throw() : ExceptionBase( name ) {}
 	~CgException() throw(){}
 };
+
+void 
+CheckForCgError( const std::string &situation, CGcontext &context = gCgContext );
+
+
+class CgEffect
+{
+public:	
+	void
+	Initialize(	/*CGcontext   				&cgContext,*/
+			const boost::filesystem::path 		&effectFile
+			);
+
+	void
+	Finalize();
+
+	template< typename TGeometryRenderFunctor >
+	void
+	ExecuteTechniquePass( std::string aTechniqueName, TGeometryRenderFunctor aDrawGeometry );
+
+	template< unsigned Dim >
+	void
+	SetParameter( std::string aName, const Vector<float, Dim> &value );
+
+	void
+	SetParameter( std::string aName, const GLTextureImage &aTexture );
+
+protected:
+	virtual void
+	prepareState();
+
+	CGeffect	mCgEffect;
+	std::map< std::string, CGtechnique >	mCgTechniques;
+};
+
+template< typename TGeometryRenderFunctor >
+void
+CgEffect::ExecuteTechniquePass( std::string aTechniqueName, TGeometryRenderFunctor aDrawGeometry )
+{
+	prepareState();
+	
+	std::map< std::string, CGtechnique >::iterator it = mCgTechniques.find( aTechniqueName );
+	if ( it == mCgTechniques.end() ) {
+		_THROW_ CgException( TO_STRING( "Unavailable technique : " << aTechniqueName ) );
+	}
+	CGtechnique cgTechnique = it->second;
+
+	CGpass pass = cgGetFirstPass( cgTechnique );
+	CheckForCgError( TO_STRING( "getting first pass for technique " << cgGetTechniqueName( cgTechnique ) ) );
+	while ( pass ) {
+		cgSetPassState( pass );
+
+		aDrawGeometry();
+
+		cgResetPassState( pass );
+		pass = cgGetNextPass( pass );
+	}
+	CheckForGLError( "After effect application :" );
+}
+
+template< unsigned Dim >
+void
+CgEffect::SetParameter( std::string aName, const Vector<float, Dim> &value )
+{
+	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
+
+//	ASSERT( )	TODO check type;
+	cgSetParameterValuefr( cgParameter, Dim, value.GetData() );	
+}
 
 struct AShaderConfig
 {
@@ -134,9 +218,6 @@ struct CgTransferFunctionShadingShaderConfig : public AShaderConfig
 };
 
 
-void 
-CheckForCgError( const std::string &situation, CGcontext &context );
-
 void
 GLDrawVolumeSlicesForVertexShader(
 		M4D::BoundingBox3D	bbox,
@@ -145,6 +226,9 @@ GLDrawVolumeSlicesForVertexShader(
 		float		cutPlane = 1.0f
 		);
 
+
+} //namespace M4D
+} //namespace GUI
 
 #endif /*USE_CG*/
 

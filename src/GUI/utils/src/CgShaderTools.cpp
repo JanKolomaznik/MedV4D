@@ -2,6 +2,90 @@
 
 #include "GUI/utils/CgShaderTools.h"
 
+namespace M4D {
+namespace GUI {
+
+bool gIsCgInitialized = false;
+CGcontext gCgContext;
+
+void
+InitializeCg()
+{
+	if ( gIsCgInitialized ) {
+		LOG( "Cg already initialized" );
+		return;
+	}
+	gCgContext = cgCreateContext();
+	CheckForCgError("creating context");
+	cgGLSetDebugMode( CG_FALSE );
+	cgSetParameterSettingMode(gCgContext, CG_DEFERRED_PARAMETER_SETTING);
+	cgGLRegisterStates(gCgContext);
+	CheckForCgError("registering standard CgFX states");
+	cgGLSetManageTextureParameters(gCgContext, CG_TRUE);
+	CheckForCgError("manage texture parameters");
+
+	gIsCgInitialized = true;
+	LOG( "Cg initialized" );
+}
+
+void
+FinalizeCg()
+{
+	cgDestroyContext( gCgContext );
+}
+
+
+void
+CgEffect::Initialize(/*CGcontext   				&cgContext,*/
+			const boost::filesystem::path 		&effectFile
+			)
+{
+	mCgEffect = cgCreateEffectFromFile( gCgContext, effectFile.string().data(), NULL );
+	CheckForCgError( TO_STRING("creating cg effect from file \"" << effectFile << "\"." ) );
+
+	LOG( "Cg effect \"" << effectFile.filename() << "\" loaded" );
+
+	CGtechnique cgTechnique = cgGetFirstTechnique(mCgEffect);
+	while (cgTechnique) {
+		if ( cgValidateTechnique(cgTechnique) == CG_FALSE ) {
+			LOG( "\tTechnique " << cgGetTechniqueName(cgTechnique) << " did not validate. Skipping." );
+		} else {
+
+			LOG( "\tTechnique " << cgGetTechniqueName(cgTechnique) << " validated. Enabling." );
+			mCgTechniques[ cgGetTechniqueName(cgTechnique) ] = cgTechnique;
+		}
+		cgTechnique = cgGetNextTechnique( cgTechnique );
+	}
+	if ( mCgTechniques.size() == 0 ) {
+		throw CgException( "No technique validated!" );
+	}
+}
+
+
+void
+CgEffect::Finalize()
+{
+	cgDestroyEffect(mCgEffect);
+}
+
+void
+CgEffect::SetParameter( std::string aName, const GLTextureImage &aTexture )
+{
+	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
+//	ASSERT( )	TODO check type;
+
+	cgGLSetupSampler( cgParameter, aTexture.GetTextureGLID() );
+	cgSetSamplerState( cgParameter );
+}
+
+void
+CgEffect::prepareState()
+{
+
+}
+
+//******************************************************************
+
 void
 AShaderConfig::Initialize(
 	CGcontext   				&_cgContext,
@@ -277,5 +361,7 @@ GLDrawVolumeSlicesForVertexShader(
 
 }*/
 
+} //namespace M4D
+} //namespace GUI
 
 #endif /*USE_CG*/

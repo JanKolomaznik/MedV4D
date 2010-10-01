@@ -27,7 +27,7 @@ struct GLTextureImage
 	}
 
 	GLuint
-	GetTextureGLID()
+	GetTextureGLID() const
 	{ return _gltextureID; }
 
 	virtual void
