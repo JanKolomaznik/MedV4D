@@ -52,7 +52,11 @@ public:
 
 	void
 	SetLUTWindow( const Vector< float32, 2 > &aLUTWindow )
-	{ _wlWindow = aLUTWindow; }
+	{ 
+		_wlWindow = aLUTWindow; 
+		LOG( _wlWindow );
+		_cgEffect.SetParameter( "gWLWindow", _wlWindow );
+	}
 
 	void
 	Render();

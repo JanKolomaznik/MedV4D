@@ -1,0 +1,37 @@
+
+struct FragmentOutput
+{
+	float4 color : COLOR;
+};
+
+//sampler3D gImageData = sampler_state { MinFilter = Nearest; MaxFilter = Nearest; };
+sampler3D gImageData = sampler_state { MinFilter = Linear; MaxFilter = Linear; };
+float2 gWLWindow = { 0.08f, 0.001f };
+float2 gIntervalBands;
+
+
+FragmentOutput fp_WLWindow3D( 
+		float3 aTexCoord : TEXCOORD0, 
+		uniform sampler3D aTextureData : TEX0, 
+		uniform float2 aWLWindow )
+{
+	FragmentOutput OUT;
+
+	float lowBand = gWLWindow.y - (gWLWindow.x * 0.5f);
+	float highBand = gWLWindow.y + (gWLWindow.x * 0.5f);
+	float multiplier = 1.0f / gWLWindow.x;
+
+	float value = ( tex3D( aTextureData, aTexCoord ).x - lowBand ) * multiplier;
+		
+	OUT.color = float4( value.xxx, 1.0f );
+
+	return OUT;
+}
+
+technique WLWindow3D {
+	pass t0 {
+		FragmentProgram = compile fp40 fp_WLWindow3D( gImageData, gWLWindow );
+	}
+}
+
+

@@ -158,7 +158,7 @@ GLDrawVolumeSlice(
 	Vector< float32, 3 > tex3 = VectorInsertDimension( Vector< float32, 2 >( 1.0f, 1.0f ), sliceTexCoord, plane );
 	Vector< float32, 3 > tex4 = VectorInsertDimension( Vector< float32, 2 >( 0.0f, 1.0f ), sliceTexCoord, plane );
 
-	std::cout << sliceCoord << "  " << sliceTexCoord << " tex\n";
+	//std::cout << sliceCoord << "  " << sliceTexCoord << " tex\n";
 	glBegin( GL_QUADS );
 		GLTextureVector( tex1 ); 
 		GLVertexVector( point1 );

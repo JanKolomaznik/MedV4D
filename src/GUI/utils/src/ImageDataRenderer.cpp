@@ -18,6 +18,9 @@ ImageDataRenderer::Initialize()
 
 	InitializeCg();
 	_cgEffect.Initialize( "ImageRender.cgfx" );
+
+	_wlWindow[0] = 0.008f;
+	_wlWindow[1] = 0.007f;
 }
 
 void
@@ -32,6 +35,7 @@ void
 ImageDataRenderer::SetImageData( GLTextureImage::Ptr aData )
 {
 	_textureData = aData;
+	_cgEffect.SetParameter( "gImageData", *_textureData );
 }
 
 void
@@ -84,8 +88,6 @@ ImageDataRenderer::Render()
 	_shaderConfig.Disable();
 	*/
 	
-	_cgEffect.SetParameter( "gWLWindow", _wlWindow );
-	_cgEffect.SetParameter( "gImageData", *_textureData );
 	_cgEffect.ExecuteTechniquePass( "WLWindow3D", boost::bind( &M4D::GLDrawVolumeSlice, _textureData->GetMinimum3D(), _textureData->GetMaximum3D(), (float32)_sliceViewConfig.currentSlice[ _sliceViewConfig.plane ] * _textureData->GetElementExtents3D()[_sliceViewConfig.plane], _sliceViewConfig.plane ) ); 
 	glFlush();
 }
