@@ -1,3 +1,4 @@
+// -*- Mode: c++; c-basic-offset: 4; tab-width: 4; -*-
 
 /******************************************************************************
  *
@@ -45,8 +46,22 @@
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
+#include <stdlib.h> // Needed for exit(), which isn't defined in some envs.
 
 namespace TCLAP {
+
+template<typename T> void DelPtr(T ptr)
+{
+	delete ptr;
+}
+
+template<typename C> void ClearContainer(C &c)
+{
+	typedef typename C::value_type value_type;
+	std::for_each(c.begin(), c.end(), DelPtr<value_type>);
+	c.clear();
+}
+
 
 /**
  * The base class that manages the command line definition and passes
@@ -115,6 +130,16 @@ class CmdLine : public CmdLineInterface
 		CmdLineOutput* _output;
 
 		/**
+		 * Should CmdLine handle parsing exceptions internally?
+		 */
+		bool _handleExceptions;
+
+		/**
+		 * Throws an exception listing the missing args.
+		 */
+		void missingArgsException();
+
+		/**
 		 * Checks whether a name/flag string matches entirely matches
 		 * the Arg::blankChar.  Used when multiple switches are combined
 		 * into a single argument.
@@ -132,13 +157,14 @@ class CmdLine : public CmdLineInterface
 		 */
 		void deleteOnExit(Visitor* ptr);
 
-	private:
+private:
 
 		/**
-		 * Encapsulates the code common to the constructors (which is all
-		 * of it).
+		 * Encapsulates the code common to the constructors
+		 * (which is all of it).
 		 */
 		void _constructor();
+
 
 		/**
 		 * Is set to true when a user sets the output object. We use this so
@@ -207,7 +233,14 @@ class CmdLine : public CmdLineInterface
 		 * \param argc - Number of arguments.
 		 * \param argv - Array of arguments.
 		 */
-		void parse(int argc, char** argv);
+		void parse(int argc, const char * const * argv);
+
+		/**
+		 * Parses the command line.
+		 * \param args - A vector of strings representing the args.
+		 * args[0] is still the program name.
+		 */
+		void parse(std::vector<std::string>& args);
 
 		/**
 		 *
@@ -253,6 +286,27 @@ class CmdLine : public CmdLineInterface
 		 *
 		 */
 		bool hasHelpAndVersion();
+
+		/**
+		 * Disables or enables CmdLine's internal parsing exception handling.
+		 *
+		 * @param state Should CmdLine handle parsing exceptions internally?
+		 */
+		void setExceptionHandling(const bool state);
+
+		/**
+		 * Returns the current state of the internal exception handling.
+		 *
+		 * @retval true Parsing exceptions are handled internally.
+		 * @retval false Parsing exceptions are propagated to the caller.
+		 */
+		bool getExceptionHandling() const;
+
+		/**
+		 * Allows the CmdLine object to be reused.
+		 */
+		void reset();
+
 };
 
 
@@ -261,14 +315,15 @@ class CmdLine : public CmdLineInterface
 ///////////////////////////////////////////////////////////////////////////////
 
 inline CmdLine::CmdLine(const std::string& m,
-				        char delim,
-						const std::string& v,
-						bool help )
+			char delim,
+			const std::string& v,
+			bool help )
 : _progName("not_set_yet"),
   _message(m),
   _version(v),
   _numRequired(0),
   _delimiter(delim),
+  _handleExceptions(true),
   _userSetOutput(false),
   _helpAndVersion(help)
 {
@@ -277,21 +332,13 @@ inline CmdLine::CmdLine(const std::string& m,
 
 inline CmdLine::~CmdLine()
 {
-	ArgListIterator argIter;
-	VisitorListIterator visIter;
+	ClearContainer(_argDeleteOnExitList);
+	ClearContainer(_visitorDeleteOnExitList);
 
-	for( argIter = _argDeleteOnExitList.begin();
-		 argIter != _argDeleteOnExitList.end();
-		 ++argIter)
-		delete *argIter;
-
-	for( visIter = _visitorDeleteOnExitList.begin();
-		 visIter != _visitorDeleteOnExitList.end();
-		 ++visIter)
-		delete *visIter;
-
-	if ( !_userSetOutput )
+	if ( !_userSetOutput ) {
 		delete _output;
+		_output = 0;
+	}
 }
 
 inline void CmdLine::_constructor()
@@ -371,54 +418,87 @@ inline void CmdLine::add( Arg* a )
 		_numRequired++;
 }
 
-inline void CmdLine::parse(int argc, char** argv)
+
+inline void CmdLine::parse(int argc, const char * const * argv)
 {
+		// this step is necessary so that we have easy access to
+		// mutable strings.
+		std::vector<std::string> args;
+		for (int i = 0; i < argc; i++)
+			args.push_back(argv[i]);
+
+		parse(args);
+}
+
+inline void CmdLine::parse(std::vector<std::string>& args)
+{
+	bool shouldExit = false;
+	int estat = 0;
+
 	try {
+		_progName = args.front();
+		args.erase(args.begin());
 
-	_progName = argv[0];
+		int requiredCount = 0;
 
-	// this step is necessary so that we have easy access to mutable strings.
-	std::vector<std::string> args;
-  	for (int i = 1; i < argc; i++)
-		args.push_back(argv[i]);
-
-	int requiredCount = 0;
-
-  	for (int i = 0; static_cast<unsigned int>(i) < args.size(); i++)
-	{
-		bool matched = false;
-		for (ArgListIterator it = _argList.begin(); it != _argList.end(); it++)
-        {
-			if ( (*it)->processArg( &i, args ) )
-			{
-				requiredCount += _xorHandler.check( *it );
-				matched = true;
-				break;
+		for (int i = 0; static_cast<unsigned int>(i) < args.size(); i++) {
+			bool matched = false;
+			for (ArgListIterator it = _argList.begin();
+				 it != _argList.end(); it++) {
+				if ( (*it)->processArg( &i, args ) )
+					{
+						requiredCount += _xorHandler.check( *it );
+						matched = true;
+						break;
+					}
 			}
-        }
 
-		// checks to see if the argument is an empty combined switch ...
-		// and if so, then we've actually matched it
-		if ( !matched && _emptyCombined( args[i] ) )
-			matched = true;
+			// checks to see if the argument is an empty combined
+			// switch and if so, then we've actually matched it
+			if ( !matched && _emptyCombined( args[i] ) )
+				matched = true;
 
-		if ( !matched && !Arg::ignoreRest() )
-			throw(CmdLineParseException("Couldn't find match for argument",
-			                             args[i]));
-    }
+			if ( !matched && !Arg::ignoreRest() )
+				throw(CmdLineParseException("Couldn't find match "
+											"for argument",
+											args[i]));
+		}
 
-	if ( requiredCount < _numRequired )
-		throw(CmdLineParseException("One or more required arguments missing!"));
+		if ( requiredCount < _numRequired )
+			missingArgsException();
 
-	if ( requiredCount > _numRequired )
-		throw(CmdLineParseException("Too many arguments!"));
+		if ( requiredCount > _numRequired )
+			throw(CmdLineParseException("Too many arguments!"));
 
-	} catch ( ArgException e ) { _output->failure(*this,e); exit(1); }
+	} catch ( ArgException& e ) {
+		// If we're not handling the exceptions, rethrow.
+		if ( !_handleExceptions) {
+			throw;
+		}
+
+		try {
+			_output->failure(*this,e);
+		} catch ( ExitException &ee ) {
+			estat = ee.getExitStatus();
+			shouldExit = true;
+		}
+	} catch (ExitException &ee) {
+		// If we're not handling the exceptions, rethrow.
+		if ( !_handleExceptions) {
+			throw;
+		}
+
+		estat = ee.getExitStatus();
+		shouldExit = true;
+	}
+
+	if (shouldExit)
+		exit(estat);
 }
 
 inline bool CmdLine::_emptyCombined(const std::string& s)
 {
-	if ( s[0] != Arg::flagStartChar() )
+	if ( s.length() > 0 && s[0] != Arg::flagStartChar() )
 		return false;
 
 	for ( int i = 1; static_cast<unsigned int>(i) < s.length(); i++ )
@@ -426,6 +506,33 @@ inline bool CmdLine::_emptyCombined(const std::string& s)
 			return false;
 
 	return true;
+}
+
+inline void CmdLine::missingArgsException()
+{
+		int count = 0;
+
+		std::string missingArgList;
+		for (ArgListIterator it = _argList.begin(); it != _argList.end(); it++)
+		{
+			if ( (*it)->isRequired() && !(*it)->isSet() )
+			{
+				missingArgList += (*it)->getName();
+				missingArgList += ", ";
+				count++;
+			}
+		}
+		missingArgList = missingArgList.substr(0,missingArgList.length()-2);
+
+		std::string msg;
+		if ( count > 1 )
+			msg = "Required arguments missing: ";
+		else
+			msg = "Required argument missing: ";
+
+		msg += missingArgList;
+
+		throw(CmdLineParseException(msg));
 }
 
 inline void CmdLine::deleteOnExit(Arg* ptr)
@@ -482,6 +589,26 @@ inline std::string& CmdLine::getMessage()
 inline bool CmdLine::hasHelpAndVersion()
 {
 	return _helpAndVersion;
+}
+
+inline void CmdLine::setExceptionHandling(const bool state)
+{
+	_handleExceptions = state;
+}
+
+inline bool CmdLine::getExceptionHandling() const
+{
+	return _handleExceptions;
+}
+
+inline void CmdLine::reset()
+{
+	for( ArgListIterator it = _argList.begin(); it != _argList.end(); it++ )
+	{
+		(*it)->reset();
+	}
+	
+	_progName.clear();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
