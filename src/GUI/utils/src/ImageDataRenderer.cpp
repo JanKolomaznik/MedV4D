@@ -35,7 +35,7 @@ void
 ImageDataRenderer::SetImageData( GLTextureImage::Ptr aData )
 {
 	_textureData = aData;
-	_cgEffect.SetParameter( "gImageData", *_textureData );
+	_cgEffect.SetParameter( "gImageData3D", *_textureData );
 }
 
 void

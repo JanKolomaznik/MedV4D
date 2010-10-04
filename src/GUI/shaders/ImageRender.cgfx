@@ -5,9 +5,14 @@ struct FragmentOutput
 };
 
 //sampler3D gImageData = sampler_state { MinFilter = Nearest; MaxFilter = Nearest; };
-sampler3D gImageData = sampler_state { MinFilter = Linear; MaxFilter = Linear; };
+sampler3D gImageData3D = sampler_state { MinFilter = Linear; MaxFilter = Linear; };
 float2 gWLWindow = { 0.08f, 0.001f };
 float2 gIntervalBands;
+
+
+sampler3D gMaskData3D;
+sampler1D gColorMap;
+float gMaskAlpha;
 
 
 FragmentOutput fp_WLWindow3D( 
@@ -28,10 +33,34 @@ FragmentOutput fp_WLWindow3D(
 	return OUT;
 }
 
-technique WLWindow3D {
-	pass t0 {
-		FragmentProgram = compile fp40 fp_WLWindow3D( gImageData, gWLWindow );
-	}
+FragmentOutput fp_ColorMappedMask3D( 
+		float3 aTexCoord : TEXCOORD0, 
+		uniform sampler3D aMaskData : TEX0, 
+		uniform sampler1D aColorMap : TEX1, 
+		uniform float aMaskAlpha )
+{
+	FragmentOutput OUT;
+
+	/*float lowBand = gWLWindow.y - (gWLWindow.x * 0.5f);
+	float highBand = gWLWindow.y + (gWLWindow.x * 0.5f);
+	float multiplier = 1.0f / gWLWindow.x;
+
+	float value = ( tex3D( aTextureData, aTexCoord ).x - lowBand ) * multiplier;
+		
+	OUT.color = float4( value.xxx, 1.0f );*/
+
+	return OUT;
 }
 
 
+technique WLWindow3D {
+	pass t0 {
+		FragmentProgram = compile fp40 fp_WLWindow3D( gImageData3D, gWLWindow );
+	}
+}
+
+technique ColorMappedMask3D {
+	pass t0 {
+		FragmentProgram = compile fp40 fp_ColorMappedMask3D( gMaskData3D, gColorMap, gMaskAlpha );
+	}
+}
