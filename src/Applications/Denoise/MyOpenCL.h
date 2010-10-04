@@ -243,6 +243,7 @@ public:
 
 		if((int)ciDeviceCount >= deviceId) {
 			printf("Wrong device ID.\n");
+			clReleaseContext(context);
 			return false;
 		}
 		
@@ -256,6 +257,7 @@ public:
 		queue = clCreateCommandQueue(context, device, 0, NULL);
 		if(queue == NULL) {
 			printf("Cannot create queue\n");
+			clReleaseContext(context);
 			return false;
 		}
 		bInitialized = true;
@@ -268,13 +270,11 @@ public:
 	}
 
 	void DestroyOpenCL() {
-		// TODO: proper destruction
-		clReleaseCommandQueue(queue);
+		if(bInitialized) {
+			clReleaseCommandQueue(queue);
 
-		clReleaseContext(context);
-
-		delete[] szNLMProgram;
-		szNLMProgram = NULL;
+			clReleaseContext(context);
+		}
 	}
 
 public:
@@ -284,6 +284,7 @@ public:
 	}
 
 	~MyOpenCL() {
+		DestroyOpenCL();
 		if(szNLMProgram != NULL)
 			delete szNLMProgram;
 		bInitialized = false;

@@ -1960,7 +1960,7 @@ public:
 		printf("Starting computation\n");
 		printf("Preprocessing pseudoresiduals\n");
 
-		int blocksTotal = vStartX.size() * vStartY.size() * vStartZ.size();
+		int blocksTotal = (int)(vStartX.size() * vStartY.size() * vStartZ.size());
 		int blocksDone = 0;
 		double accum = 0;
 		int accumVals = 0;

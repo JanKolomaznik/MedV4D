@@ -14,17 +14,47 @@
 
 #include "progress.h"
 #include "globals.h"
+#include "timer.h"
 #include "volumeset.h"
+
+#include <list>
+#include <iostream>
 
 #define LOG_ERR(args) LOG("Error: " << args)
 
 typedef M4D::Imaging::Image<uint16, 3> TImage16x3;
 
+class MyOutput : public TCLAP::StdOutput
+{
+	public:
+		virtual void failure(TCLAP::CmdLineInterface& c, TCLAP::ArgException& e)
+		{ 
+			std::cerr << "My special failure message for: " << endl
+				 << e.what() << endl;
+			exit(1);
+		}
+
+		virtual void usage(TCLAP::CmdLineInterface& c)
+		{
+			std::cout << "my usage message:" << endl;
+			std::list<TCLAP::Arg*> args = c.getArgList();
+			for (TCLAP::ArgListIterator it = args.begin(); it != args.end(); it++)
+				std::cout << (*it)->longID() 
+					 << "  (" << (*it)->getDescription() << ")" << endl;
+		}
+
+		virtual void version(TCLAP::CmdLineInterface& c)
+		{
+			std::cout << "my version message: 0.1" << endl;
+		}
+};
+
+
 int
 main( int argc, char** argv )
 {
-	std::ofstream logFile( "Log.txt" );
-        SET_LOUT( logFile );
+//	std::ofstream logFile( "Log.txt" );
+//        SET_LOUT( logFile );
 
         D_COMMAND( std::ofstream debugFile( "Debug.txt" ); );
         SET_DOUT( debugFile );
@@ -34,6 +64,10 @@ main( int argc, char** argv )
 
 	try {  
 		TCLAP::CmdLine cmd("Tool for denoising DICOM files", ' ', "0.1");
+		
+//		MyOutput myOutput;
+//		cmd.setOutput(&myOutput);
+		cmd.setExceptionHandling(false);
 
 		TCLAP::UnlabeledValueArg<std::string> inFilenameArg( "input", "Input image filename", true, "", "filename1" );
 		//TCLAP::ValueArg<std::string> inFilenameArg( "i", "input", "Input image filename", true, "", "filename1" );
@@ -81,8 +115,12 @@ main( int argc, char** argv )
 
 	std::cout << "Denoising...\n";
 
+	MyOpenCL ocl;
+	ocl.InitOpenCL(0, 0);
+
 	viewer::CTextProgress progress;
-	volFRes.volBlockwiseNLMeans(volF, 0.9, 0.1, 0.5, 5, 2, 4, &progress);
+	//volFRes.volBlockwiseNLMeans(volF, 0.9, 0.1, 0.5, 5, 2, 4, &progress);
+	volFRes.volNLMeansHW(ocl, volF, 0.9, 5, 2, &progress);
 
 	std::cout << "Processing result...\n";
 
