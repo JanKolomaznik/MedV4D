@@ -53,7 +53,7 @@ public:
 		return (iFileLen != 0)?szNLMProgram:NULL;
 	}
 
-	bool PrintAvailableDevices(bool bAdvancedInfo) {
+	static bool PrintAvailableDevices(bool bAdvancedInfo) {
 		cl_platform_id clSelectedPlatformID[10];
 		cl_uint numPlatforms = 0;
 		int errcode = clGetPlatformIDs(10, clSelectedPlatformID, &numPlatforms);
@@ -177,7 +177,7 @@ public:
 				printf("    CL_DEVICE_LOCAL_MEM_SIZE: \t\t%d KByte\n", (unsigned int)(mem_size / (1024)));
 
 				clGetDeviceInfo(devices[deviceId], CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE, sizeof(mem_size), &mem_size, NULL);
-				printf("    CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE: \t%d KByte\n", (unsigned int)(mem_size / (1024)));
+				printf("    CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE:\t%d KByte\n", (unsigned int)(mem_size / (1024)));
 
 				cl_command_queue_properties queue_properties;
 				clGetDeviceInfo(devices[deviceId], CL_DEVICE_QUEUE_PROPERTIES, sizeof(queue_properties), &queue_properties, NULL);
@@ -241,7 +241,7 @@ public:
 		cl_uint ciDeviceCount;
 		clGetDeviceIDs(clSelectedPlatformID[platformId], PLATFORM_TYPE, 0, NULL, &ciDeviceCount);
 
-		if((int)ciDeviceCount >= deviceId) {
+		if((int)ciDeviceCount <= deviceId) {
 			printf("Wrong device ID.\n");
 			clReleaseContext(context);
 			return false;

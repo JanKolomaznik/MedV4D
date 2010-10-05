@@ -24,31 +24,23 @@
 
 typedef M4D::Imaging::Image<uint16, 3> TImage16x3;
 
-class MyOutput : public TCLAP::StdOutput
-{
-	public:
-		virtual void failure(TCLAP::CmdLineInterface& c, TCLAP::ArgException& e)
-		{ 
-			std::cerr << "My special failure message for: " << endl
-				 << e.what() << endl;
-			exit(1);
-		}
 
-		virtual void usage(TCLAP::CmdLineInterface& c)
-		{
-			std::cout << "my usage message:" << endl;
-			std::list<TCLAP::Arg*> args = c.getArgList();
-			for (TCLAP::ArgListIterator it = args.begin(); it != args.end(); it++)
-				std::cout << (*it)->longID() 
-					 << "  (" << (*it)->getDescription() << ")" << endl;
-		}
-
-		virtual void version(TCLAP::CmdLineInterface& c)
-		{
-			std::cout << "my version message: 0.1" << endl;
-		}
+class IntMinMaxConstraint : public TCLAP::Constraint<int> {
+	int iMin, iMax;
+public:
+	IntMinMaxConstraint(int iMinimum, int iMaximum) : iMin(iMinimum), iMax(iMaximum) {}
+	virtual std::string description() const { 
+		std::stringstream ss;
+		ss << "must be in interval [" << iMin << ", " << iMax << "]";
+		return ss.str();; 
+	}
+	virtual std::string shortID() const {return "number"; }
+	virtual bool check(const int& value) const {
+		if(value < iMin || value > iMax)
+			return false;
+		return true;
+	}
 };
-
 
 int
 main( int argc, char** argv )
@@ -62,27 +54,92 @@ main( int argc, char** argv )
 	std::string srcfilename;
 	std::string dstfilename;
 
+	double dBeta;
+	int radius;
+	int neighbourhood;
+	bool bPrintOcl, bAdvancedOcl;
+
 	try {  
-		TCLAP::CmdLine cmd("Tool for denoising DICOM files", ' ', "0.1");
+		TCLAP::CmdLine cmd("Tool for denoising Medv4D DICOM dump files", ' ', "0.2");
 		
 //		MyOutput myOutput;
 //		cmd.setOutput(&myOutput);
 		cmd.setExceptionHandling(false);
 
-		TCLAP::UnlabeledValueArg<std::string> inFilenameArg( "input", "Input image filename", true, "", "filename1" );
+		IntMinMaxConstraint csrRadius(1, 4);
+		IntMinMaxConstraint csrNbh(1, 2);
+		TCLAP::ValueArg<float> argBeta("b", "beta", "Beta value for NL-Means computation", false, 0.9f, "float", cmd);
+		TCLAP::ValueArg<int> argRadius("r", "radius", "Radius of searching, must be in [1..4]", false, 4, (TCLAP::Constraint<int> *)&csrRadius, cmd);
+		TCLAP::ValueArg<int> argNeighbourhood("n", "neighbourhood", "Local neighbourhood radius, must be 1 or 2", false, 2, (TCLAP::Constraint<int> *) &csrNbh, cmd);
+		
+		TCLAP::UnlabeledValueArg<std::string> inFilenameArg( "source", "Input image filename", true, "", "source" );
+		TCLAP::SwitchArg argPrintOCL("p", "print_ocl", "Print OpenCL devices");
+		TCLAP::SwitchArg argAdvancedOCL("a", "print_ocl_adv", "Print advanced info about OpenCL devices");
 		//TCLAP::ValueArg<std::string> inFilenameArg( "i", "input", "Input image filename", true, "", "filename1" );
-		cmd.add( inFilenameArg );
+		std::vector<TCLAP::Arg*> xorlist;
+		xorlist.push_back(&argPrintOCL);
+		xorlist.push_back(&argAdvancedOCL);
+		xorlist.push_back(&inFilenameArg);
+		cmd.xorAdd( xorlist );
 
-		TCLAP::UnlabeledValueArg<std::string> outFilenameArg( "output", "Output image filename", true, "", "filename2" );
+		TCLAP::ValueArg<std::string> outFilenameArg("o", "output", "Optional output image filename", false, "", "output" );
 		//TCLAP::ValueArg<std::string> outFilenameArg( "o", "output", "Output image filename", true, "", "filename2" );
 		cmd.add( outFilenameArg );
 
 		cmd.parse( argc, argv );
 
 		srcfilename = inFilenameArg.getValue();
-		dstfilename = outFilenameArg.getValue();
+		dBeta = (double)argBeta.getValue();
+		radius = argRadius.getValue();
+		neighbourhood = argNeighbourhood.getValue();
+		bPrintOcl = argPrintOCL.getValue();
+		bAdvancedOcl = argAdvancedOCL.getValue();
+
+		if(outFilenameArg.isSet()) {
+			dstfilename = outFilenameArg.getValue();
+		} else {
+			int nameLength, totalLength;
+			const char* szFilename = srcfilename.c_str();
+			const char* pDot = strrchr(szFilename, '.');
+			totalLength = (int)srcfilename.length();
+			if(pDot != NULL)
+				nameLength = (int)((pDot - szFilename) / sizeof(char));
+			else
+				nameLength = totalLength;
+
+			std::stringstream ss;
+			ss << srcfilename.substr(0, nameLength) << "_R" << radius << "_N" << neighbourhood << "_b" << dBeta << "_denoised" << srcfilename.substr(nameLength, totalLength - nameLength);
+			dstfilename = ss.str();
+		}
+
 	} catch(TCLAP::ArgException &e) {
-		LOG("error: " << e.error() << " for arg " << e.argId() << std::endl);
+		if(e.argId() != " ") {
+			LOG("Error: " << e.error() << " for " << e.argId() << std::endl);
+		} else {
+			LOG("Error: " << e.error() << std::endl);
+		}
+		return 1;
+	} catch(TCLAP::ExitException &e) {
+		return e.getExitStatus();
+	}
+
+	if(bPrintOcl || bAdvancedOcl) {
+		MyOpenCL::PrintAvailableDevices(bAdvancedOcl);
+		return 0;
+	}
+
+	std::cout << "Running with parameters:" << std::endl;
+	std::cout << "\tSource:\t\t" << srcfilename << std::endl;
+	std::cout << "\tDestination:\t" << dstfilename << std::endl;
+	std::cout << "\tBeta:\t\t" << dBeta << std::endl;
+	std::cout << "\tRadius:\t\t" << radius << std::endl;
+	std::cout << "\tNeighbourhood:\t" << neighbourhood << std::endl;
+
+	MyOpenCL ocl;
+	ocl.InitOpenCL(0, 0);
+	if(ocl.bInitialized == false) {
+		std::cout << "Cannot initialize OpenCL.\n";
+		return 1;
 	}
 
 	M4D::Imaging::AImage::Ptr image;
@@ -115,12 +172,13 @@ main( int argc, char** argv )
 
 	std::cout << "Denoising...\n";
 
-	MyOpenCL ocl;
-	ocl.InitOpenCL(0, 0);
-
 	viewer::CTextProgress progress;
 	//volFRes.volBlockwiseNLMeans(volF, 0.9, 0.1, 0.5, 5, 2, 4, &progress);
-	volFRes.volNLMeansHW(ocl, volF, 0.9, 5, 2, &progress);
+	bool retval = volFRes.volNLMeansHW(ocl, volF, dBeta, radius, neighbourhood, &progress);
+	if (retval == false) {
+		std::cout << "Errors encountered.\n";
+		return 1;
+	}
 
 	std::cout << "Processing result...\n";
 
@@ -132,6 +190,8 @@ main( int argc, char** argv )
 	std::cout << "Saving to disk...\n";
 
 	M4D::Imaging::ImageFactory::DumpImage(dstfilename, *myImg);
+
+	std::cout << "Finished.\n";
 
 	return 0;
 }

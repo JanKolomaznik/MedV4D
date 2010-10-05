@@ -1870,12 +1870,12 @@ public:
 	}
 
 #ifdef OPENCL
-	void volNLMeansHW(MyOpenCL &ocl, const CVolumeSet<T> &src,
+	bool volNLMeansHW(MyOpenCL &ocl, const CVolumeSet<T> &src,
 							   double beta, int radius, int neighbourhood,
 							   CProgress *progress) {
 		if(ocl.bInitialized == false) {
-			printf("OpenCL not initialized");
-			return;
+			printf("OpenCL not initialized\n");
+			return false;
 		}
 		
 		if(radius > 4) {
@@ -1890,12 +1890,12 @@ public:
 		// create program
 		if(NULL == ocl.ReadNLMProgram("NLMProgram.cl")) {
 			printf("Cannot load program\n");
-			return;
+			return false;
 		}
 		cl_program program = clCreateProgramWithSource(ocl.context, 1, (const char**) &ocl.szNLMProgram, NULL, NULL);
 		if(program == NULL) {
 			printf("Cannot create program\n");
-			return;
+			return false;
 		}
 
 		// bulid program
@@ -1907,7 +1907,7 @@ public:
 			clGetProgramBuildInfo(program, ocl.device, CL_PROGRAM_BUILD_LOG,
 											  sizeof(buffer), buffer, &len);
 			printf("%s\n", buffer);
-			return;
+			return false;
 		}
 
 		// create kenerl
@@ -2094,6 +2094,7 @@ public:
 		int h,m,s,ms;
 		timer.getTime(h, m, s, ms);
 		printf("Time taken: %d:%d:%d.%3d\n", h,m,s,ms);
+		return true;
 	}
 #endif
 
