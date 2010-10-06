@@ -37,7 +37,7 @@ struct SPoint3D {
 	SPoint3D operator-(const SPoint3D<T> &b) const { return SPoint3D<T>(x - b.x, y - b.y, z - b.z); }
 	SPoint3D operator+(const SPoint3D<T> &b) const { return SPoint3D<T>(x + b.x, y + b.y, z + b.z); }
 	T dot(const SPoint3D<T> &v2) { return x * v2.x + y * v2.y + z * v2.z; }
-	SPoint3D<T>& operator=(CVector4 &vec) {x = vec.x; y = vec.y; z = vec.z; return *this;}
+//	SPoint3D<T>& operator=(CVector4 &vec) {x = vec.x; y = vec.y; z = vec.z; return *this;}
 
 	SPoint3D() {};
 	SPoint3D(T x, T y, T z) : x(x), y(y), z(z) {};
@@ -61,13 +61,13 @@ public:
 
 float vectSize(const SPoint3D<float> &vect);
 float vectDot(const SPoint3D<float> &v1, const SPoint3D<float> &v2);
-
+/*
 // converts wstring into string
 std::string wcs2str(const std::wstring &wstr);
 
 // converts string into wstring
 std::wstring str2wcs(const std::string &str);
-
+*/
 void exp_fast_prepare();
 
 double exp_fast(double param);

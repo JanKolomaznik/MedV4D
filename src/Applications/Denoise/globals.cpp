@@ -17,7 +17,7 @@ float vectDot(const SPoint3D<float> &v1, const SPoint3D<float> &v2) {
 	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z; 
 }
 
-std::string wcs2str(const std::wstring &wstr) {
+/*std::string wcs2str(const std::wstring &wstr) {
 	std::string retval;
 	char *buff;
 	buff = new char[wstr.size()+1];
@@ -38,7 +38,7 @@ std::wstring str2wcs(const std::string &str) {
 	delete buff;
 	return retval;
 }
-
+*/
 double exp_vals[10000];
 
 // gets numbers from -50 to 50
