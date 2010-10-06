@@ -4,8 +4,8 @@ struct FragmentOutput
 	float4 color : COLOR;
 };
 
-//sampler3D gImageData = sampler_state { MinFilter = Nearest; MaxFilter = Nearest; };
-sampler3D gImageData3D = sampler_state { MinFilter = Linear; MaxFilter = Linear; };
+sampler3D gImageData3D = sampler_state { MinFilter = Nearest; MaxFilter = Nearest; };
+//sampler3D gImageData3D = sampler_state { MinFilter = Linear; MaxFilter = Linear; };
 float2 gWLWindow = { 0.08f, 0.001f };
 float2 gIntervalBands;
 

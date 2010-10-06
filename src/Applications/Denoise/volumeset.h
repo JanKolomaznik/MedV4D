@@ -14,6 +14,8 @@
 
 #endif
 
+#include "common/Common.h"
+
 namespace viewer {
 
 class CInfoDialog;
@@ -49,7 +51,7 @@ inline void inlineConvert<unsigned char, float>(unsigned char &dst, const float 
 template <class T>
 inline T L2Norm(const std::vector<T> &vec1, const std::vector<T> &vec2) {
 	int i, imax;
-	imax = (int)min(vec1.size(), vec2.size());
+	imax = (int)std::min(vec1.size(), vec2.size());
 	double accum = 0;
 	for(i = 0; i < imax; i++) {
 		double val = (double) vec2[i] - (double) vec1[i];
@@ -75,7 +77,7 @@ inline T L2Norm(const T *vec1, const T *vec2, unsigned int size) {
 template <class T>
 inline T L2NormSq(const std::vector<T> &vec1, const std::vector<T> &vec2) {
 	int i, imax;
-	imax = (int)min(vec1.size(), vec2.size());
+	imax = (int)std::min(vec1.size(), vec2.size());
 	double accum = 0;
 	for(i = 0; i < imax; i++) {
 		double val = (double) vec2[i] - (double) vec1[i];
@@ -897,7 +899,7 @@ public:
 		copySize(src);
 		copyOrigPos(src);
 
-		radius = max(0,radius);
+		radius = std::max(0,radius);
 
 		unsigned char finished = 0;
 		unsigned char last_update = 0;
@@ -919,10 +921,10 @@ public:
 				int si, sj, sk;
 				//compute mean
 				double accum = 0;
-				__int64 voxels = 0;
-				for(sk = max(k - radius, 0); sk <= min(k + radius, depth-1); sk++)
-				for(sj = max(j - radius, 0); sj <= min(j + radius, height-1); sj++)
-				for(si = max(i - radius, 0); si <= min(i + radius, width-1); si++) {
+				int64 voxels = 0;
+				for(sk = std::max(k - radius, 0); sk <= std::min(k + radius, depth-1); sk++)
+				for(sj = std::max(j - radius, 0); sj <= std::min(j + radius, height-1); sj++)
+				for(si = std::max(i - radius, 0); si <= std::min(i + radius, width-1); si++) {
 					accum += src.getValue(si,sj,sk);
 					voxels++;
 				}
@@ -930,9 +932,9 @@ public:
 
 				accum = 0;
 				// compute sqrt(var)
-				for(sk = max(k - radius, 0); sk <= min(k + radius, depth-1); sk++)
-				for(sj = max(j - radius, 0); sj <= min(j + radius, height-1); sj++)
-				for(si = max(i - radius, 0); si <= min(i + radius, width-1); si++) {
+				for(sk = std::max(k - radius, 0); sk <= std::min(k + radius, depth-1); sk++)
+				for(sj = std::max(j - radius, 0); sj <= std::min(j + radius, height-1); sj++)
+				for(si = std::max(i - radius, 0); si <= std::min(i + radius, width-1); si++) {
 					double diff = mean - (double) src.getValue(si,sj,sk);
 					accum += diff*diff;
 				}
@@ -945,7 +947,7 @@ public:
 		copySize(src);
 		copyOrigPos(src);
 
-		radius = max(0,radius);
+		radius = std::max(0,radius);
 
 		unsigned char finished = 0;
 		unsigned char last_update = 0;
@@ -968,10 +970,10 @@ public:
 				// TODO: optimize, accept computed mean to prevent subsequent mean computation
 				//compute mean 
 				double accum = 0;
-				__int64 voxels = 0;
-				for(sk = max(k - radius, 0); sk <= min(k + radius, depth-1); sk++)
-				for(sj = max(j - radius, 0); sj <= min(j + radius, height-1); sj++)
-				for(si = max(i - radius, 0); si <= min(i + radius, width-1); si++) {
+				int64 voxels = 0;
+				for(sk = std::max(k - radius, 0); sk <= std::min(k + radius, depth-1); sk++)
+				for(sj = std::max(j - radius, 0); sj <= std::min(j + radius, height-1); sj++)
+				for(si = std::max(i - radius, 0); si <= std::min(i + radius, width-1); si++) {
 					accum += src.getValue(si,sj,sk);
 					voxels++;
 				}
@@ -979,9 +981,9 @@ public:
 
 				accum = 0;
 				// compute sqrt(var)
-				for(sk = max(k - radius, 0); sk <= min(k + radius, depth-1); sk++)
-				for(sj = max(j - radius, 0); sj <= min(j + radius, height-1); sj++)
-				for(si = max(i - radius, 0); si <= min(i + radius, width-1); si++) {
+				for(sk = std::max(k - radius, 0); sk <= std::min(k + radius, depth-1); sk++)
+				for(sj = std::max(j - radius, 0); sj <= std::min(j + radius, height-1); sj++)
+				for(si = std::max(i - radius, 0); si <= std::min(i + radius, width-1); si++) {
 					double diff = mean - (double) src.getValue(si,sj,sk);
 					accum += diff*diff;
 				}
@@ -995,7 +997,7 @@ public:
 		copySize(src);
 		copyOrigPos(src);
 
-		radius = max(0,radius);
+		radius = std::max(0,radius);
 
 		unsigned char finished = 0;
 		unsigned char last_update = 0;
@@ -1017,10 +1019,10 @@ public:
 				int si, sj, sk;
 				//compute mean
 				double accum = 0;
-				__int64 voxels = 0;
-				for(sk = max(k - radius, 0); sk <= min(k + radius, depth-1); sk++)
-				for(sj = max(j - radius, 0); sj <= min(j + radius, height-1); sj++)
-				for(si = max(i - radius, 0); si <= min(i + radius, width-1); si++) {
+				int64 voxels = 0;
+				for(sk = std::max(k - radius, 0); sk <= std::min(k + radius, depth-1); sk++)
+				for(sj = std::max(j - radius, 0); sj <= std::min(j + radius, height-1); sj++)
+				for(si = std::max(i - radius, 0); si <= std::min(i + radius, width-1); si++) {
 					accum += src.getValue(si,sj,sk);
 					voxels++;
 				}
@@ -1150,7 +1152,7 @@ public:
 			for (j = 0; j < imgSize; j++) {
 				T val = planes[i][j];
 				int convVal = (int) (val - min + .5);
-				histo[max(0, min(iVals - 1, convVal))]++;
+				histo[std::max(0, std::min(iVals - 1, convVal))]++;
 			}
 		}
 
@@ -1163,7 +1165,7 @@ public:
 		copySize(src);
 		copyOrigPos(src);
 
-		radius = max(0,radius);
+		radius = std::max(0,radius);
 
 		unsigned int finished = 0;
 		unsigned int last_update = 0; 
@@ -1200,9 +1202,9 @@ public:
 					src.getNeighborhoodFast(targetNbh, SPoint3D<int>(i,j,k), neighborhood);
 
 					int si, sj, sk;
-					int skmin = max(0,k - radius), skmax = min(depth-1,k+radius);
-					int sjmin = max(0,j - radius), sjmax = min(height-1,j+radius);
-					int simin = max(0,i - radius), simax = min(width-1,i+radius);
+					int skmin = std::max(0,k - radius), skmax = std::min(depth-1,k+radius);
+					int sjmin = std::max(0,j - radius), sjmax = std::min(height-1,j+radius);
+					int simin = std::max(0,i - radius), simax = std::min(width-1,i+radius);
 
 					// compute weight for each voxel in the radius
 					for(sk = skmin; sk <= skmax; sk++)
@@ -1310,7 +1312,7 @@ public:
 		double variance = (double) pseudores.getVarianceFromPseudoRes();
 		double weightConst = 2 * beta * variance * nbhsize;
 
-		radius = max(0,radius);
+		radius = std::max(0,radius);
 
 		unsigned int finished = 0;
 		unsigned int last_update = 0; 
@@ -1345,9 +1347,9 @@ public:
 					src.getNeighborhoodFast(targetNbh, SPoint3D<int>(i,j,k), neighborhood);
 
 					int si, sj, sk;
-					int skmin = max(0,k - radius), skmax = min(depth-1,k+radius);
-					int sjmin = max(0,j - radius), sjmax = min(height-1,j+radius);
-					int simin = max(0,i - radius), simax = min(width-1,i+radius);
+					int skmin = std::max(0,k - radius), skmax = std::min(depth-1,k+radius);
+					int sjmin = std::max(0,j - radius), sjmax = std::min(height-1,j+radius);
+					int simin = std::max(0,i - radius), simax = std::min(width-1,i+radius);
 
 					// compute weight for each voxel in the radius
 					for(sk = skmin; sk <= skmax; sk++)
@@ -1393,7 +1395,7 @@ public:
 		means.volLocalMean(src, neighborhood, progress);
 		variances.volLocalVariance(src, neighborhood, progress);
 
-		radius = max(0,radius);
+		radius = std::max(0,radius);
 
 		unsigned int finished = 0;
 		unsigned int last_update = 0; 
@@ -1431,9 +1433,9 @@ public:
 					T var1 = variances.getValue(i,j,k);
 
 					int si, sj, sk;
-					int skmin = max(0,k - radius), skmax = min(depth-1,k+radius);
-					int sjmin = max(0,j - radius), sjmax = min(height-1,j+radius);
-					int simin = max(0,i - radius), simax = min(width-1,i+radius);
+					int skmin = std::max(0,k - radius), skmax = std::min(depth-1,k+radius);
+					int sjmin = std::max(0,j - radius), sjmax = std::min(height-1,j+radius);
+					int simin = std::max(0,i - radius), simax = std::min(width-1,i+radius);
 
 					int computedValues = 0;
 					// compute weight for each voxel in the radius
@@ -1501,7 +1503,7 @@ public:
 		accum.setZero();
 		numAccum.setZero();
 
-		radius = max(0,radius);
+		radius = std::max(0,radius);
 
 		unsigned int finished = 0;
 		unsigned int last_update = 0; 
@@ -1541,9 +1543,9 @@ public:
 					T var1 = variances.getValue(i,j,k);
 
 					int si, sj, sk;
-					int skmin = max(0,k - radius), skmax = min(depth-1,k+radius);
-					int sjmin = max(0,j - radius), sjmax = min(height-1,j+radius);
-					int simin = max(0,i - radius), simax = min(width-1,i+radius);
+					int skmin = std::max(0,k - radius), skmax = std::min(depth-1,k+radius);
+					int sjmin = std::max(0,j - radius), sjmax = std::min(height-1,j+radius);
+					int simin = std::max(0,i - radius), simax = std::min(width-1,i+radius);
 
 					int computedValues = 0;
 					// compute weight for each voxel in the radius
@@ -1572,9 +1574,9 @@ public:
 					for(si = 0; si < computedValues; si++)
 						workValues[si] /= sum;
 
-					skmin = max(0, k - blockNbh); skmax = min(depth-1, k + blockNbh);
-					sjmin = max(0, j - blockNbh); sjmax = min(height-1, j + blockNbh);
-					simin = max(0, i - blockNbh); simax = min(width-1, i + blockNbh);
+					skmin = std::max(0, k - blockNbh); skmax = std::min(depth-1, k + blockNbh);
+					sjmin = std::max(0, j - blockNbh); sjmax = std::min(height-1, j + blockNbh);
+					simin = std::max(0, i - blockNbh); simax = std::min(width-1, i + blockNbh);
 					
 					skmin -= k; skmax -= k;
 					sjmin -= j; sjmax -= j;
@@ -1745,19 +1747,19 @@ public:
 		offset = 0;
 		while(offset < src.width) {
 			vStartX.push_back(offset);
-			vWidthX.push_back(min(maxComputeSize.x, src.width - offset));
+			vWidthX.push_back(std::min(maxComputeSize.x, src.width - offset));
 			offset += maxComputeSize.x;
 		}	
 		offset = 0;
 		while(offset < src.height) {
 			vStartY.push_back(offset);
-			vWidthY.push_back(min(maxComputeSize.y, src.height - offset));
+			vWidthY.push_back(std::min(maxComputeSize.y, src.height - offset));
 			offset += maxComputeSize.y;
 		}	
 		offset = 0;
 		while(offset < src.depth) {
 			vStartZ.push_back(offset);
-			vWidthZ.push_back(min(maxComputeSize.z, src.depth - offset));
+			vWidthZ.push_back(std::min(maxComputeSize.z, src.depth - offset));
 			offset += maxComputeSize.z;
 		}	
 
@@ -1793,19 +1795,19 @@ public:
 		offset = 0;
 		while(offset < src.width) {
 			vStartX.push_back(offset);
-			vWidthX.push_back(min(maxComputeSize.x, src.width - offset));
+			vWidthX.push_back(std::min(maxComputeSize.x, src.width - offset));
 			offset += maxComputeSize.x;
 		}	
 		offset = 0;
 		while(offset < src.height) {
 			vStartY.push_back(offset);
-			vWidthY.push_back(min(maxComputeSize.y, src.height - offset));
+			vWidthY.push_back(std::min(maxComputeSize.y, src.height - offset));
 			offset += maxComputeSize.y;
 		}	
 		offset = 0;
 		while(offset < src.depth) {
 			vStartZ.push_back(offset);
-			vWidthZ.push_back(min(maxComputeSize.z, src.depth - offset));
+			vWidthZ.push_back(std::min(maxComputeSize.z, src.depth - offset));
 			offset += maxComputeSize.z;
 		}	
 
@@ -1931,26 +1933,26 @@ public:
 		int ykern = BLOCK_NLOPT - 2*border; // size of "kernel", i.e. voxels that are actually computed in Y direction
 
 		SPoint3D<int> blockSize, blocks;
-		blocks.init(min(100, (width + xkern - 1)/xkern), min(100, (height + ykern - 1)/ykern), depth);
-		blockSize.init(blocks.x * xkern, blocks.y * ykern, min(100, depth));
+		blocks.init(std::min(100, (width + xkern - 1)/xkern), std::min(100, (height + ykern - 1)/ykern), depth);
+		blockSize.init(blocks.x * xkern, blocks.y * ykern, std::min(100, depth));
 
 		int offset;
 		offset = 0;
 		while(offset < src.width) {
 			vStartX.push_back(offset);
-			vWidthX.push_back(min(blockSize.x, src.width - offset));
+			vWidthX.push_back(std::min(blockSize.x, src.width - offset));
 			offset += blockSize.x;
 		}	
 		offset = 0;
 		while(offset < src.height) {
 			vStartY.push_back(offset);
-			vWidthY.push_back(min(blockSize.y, src.height - offset));
+			vWidthY.push_back(std::min(blockSize.y, src.height - offset));
 			offset += blockSize.y;
 		}	
 		offset = 0;
 		while(offset < src.depth) {
 			vStartZ.push_back(offset);
-			vWidthZ.push_back(min(blockSize.z, src.depth - offset));
+			vWidthZ.push_back(std::min(blockSize.z, src.depth - offset));
 			offset += blockSize.z;
 		}	
 
