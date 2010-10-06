@@ -42,6 +42,23 @@ public:
 	}
 };
 
+class IntMinConstraint : public TCLAP::Constraint<int> {
+	int iMin;
+public:
+	IntMinConstraint(int iMinimum) : iMin(iMinimum) {}
+	virtual std::string description() const { 
+		std::stringstream ss;
+		ss << "must be greater or equal to " << iMin;
+		return ss.str();; 
+	}
+	virtual std::string shortID() const {return "ID"; }
+	virtual bool check(const int& value) const {
+		if(value < iMin)
+			return false;
+		return true;
+	}
+};
+
 int
 main( int argc, char** argv )
 {
@@ -58,6 +75,9 @@ main( int argc, char** argv )
 	int radius;
 	int neighbourhood;
 	bool bPrintOcl, bAdvancedOcl;
+	int iPlatformId;
+	int iDeviceId;
+	bool bVerbose;
 
 	try {  
 		TCLAP::CmdLine cmd("Tool for denoising Medv4D DICOM dump files", ' ', "0.2");
@@ -68,14 +88,18 @@ main( int argc, char** argv )
 
 		IntMinMaxConstraint csrRadius(1, 4);
 		IntMinMaxConstraint csrNbh(1, 2);
+		IntMinConstraint csrIds(0);
 		TCLAP::ValueArg<float> argBeta("b", "beta", "Beta value for NL-Means computation", false, 0.9f, "float", cmd);
 		TCLAP::ValueArg<int> argRadius("r", "radius", "Radius of searching, must be in [1..4]", false, 4, (TCLAP::Constraint<int> *)&csrRadius, cmd);
 		TCLAP::ValueArg<int> argNeighbourhood("n", "neighbourhood", "Local neighbourhood radius, must be 1 or 2", false, 2, (TCLAP::Constraint<int> *) &csrNbh, cmd);
-		
+		TCLAP::ValueArg<int> argPlatform("p", "platform", "Platform ID (see -l or -a for IDs)", false, 0, (TCLAP::Constraint<int> *) &csrIds, cmd);
+		TCLAP::ValueArg<int> argDevice("d", "device", "Device ID (see -l or -a for IDs)", false, 0, (TCLAP::Constraint<int> *) &csrIds, cmd);
+		TCLAP::SwitchArg argVerbose("v", "verbose", "Print parameters", cmd);
+
+
 		TCLAP::UnlabeledValueArg<std::string> inFilenameArg( "source", "Input image filename", true, "", "source" );
-		TCLAP::SwitchArg argPrintOCL("p", "print_ocl", "Print OpenCL devices");
+		TCLAP::SwitchArg argPrintOCL("l", "print_ocl_list", "Print list of OpenCL devices");
 		TCLAP::SwitchArg argAdvancedOCL("a", "print_ocl_adv", "Print advanced info about OpenCL devices");
-		//TCLAP::ValueArg<std::string> inFilenameArg( "i", "input", "Input image filename", true, "", "filename1" );
 		std::vector<TCLAP::Arg*> xorlist;
 		xorlist.push_back(&argPrintOCL);
 		xorlist.push_back(&argAdvancedOCL);
@@ -83,7 +107,6 @@ main( int argc, char** argv )
 		cmd.xorAdd( xorlist );
 
 		TCLAP::ValueArg<std::string> outFilenameArg("o", "output", "Optional output image filename", false, "", "output" );
-		//TCLAP::ValueArg<std::string> outFilenameArg( "o", "output", "Output image filename", true, "", "filename2" );
 		cmd.add( outFilenameArg );
 
 		cmd.parse( argc, argv );
@@ -94,6 +117,9 @@ main( int argc, char** argv )
 		neighbourhood = argNeighbourhood.getValue();
 		bPrintOcl = argPrintOCL.getValue();
 		bAdvancedOcl = argAdvancedOCL.getValue();
+		iPlatformId = argPlatform.getValue();
+		iDeviceId = argDevice.getValue();
+		bVerbose = argVerbose.getValue();
 
 		if(outFilenameArg.isSet()) {
 			dstfilename = outFilenameArg.getValue();
@@ -114,10 +140,11 @@ main( int argc, char** argv )
 
 	} catch(TCLAP::ArgException &e) {
 		if(e.argId() != " ") {
-			LOG("Error: " << e.error() << " for " << e.argId() << std::endl);
+			LOG("Error: " << e.error() << " for " << e.argId());
 		} else {
-			LOG("Error: " << e.error() << std::endl);
+			LOG("Error: " << e.error());
 		}
+		LOG("Use --help for more info.");
 		return 1;
 	} catch(TCLAP::ExitException &e) {
 		return e.getExitStatus();
@@ -128,15 +155,19 @@ main( int argc, char** argv )
 		return 0;
 	}
 
-	std::cout << "Running with parameters:" << std::endl;
-	std::cout << "\tSource:\t\t" << srcfilename << std::endl;
-	std::cout << "\tDestination:\t" << dstfilename << std::endl;
-	std::cout << "\tBeta:\t\t" << dBeta << std::endl;
-	std::cout << "\tRadius:\t\t" << radius << std::endl;
-	std::cout << "\tNeighbourhood:\t" << neighbourhood << std::endl;
+	if(bVerbose) {
+		std::cout << "Running with parameters:" << std::endl;
+		std::cout << "\tSource:\t\t" << srcfilename << std::endl;
+		std::cout << "\tDestination:\t" << dstfilename << std::endl;
+		std::cout << "\tBeta:\t\t" << dBeta << std::endl;
+		std::cout << "\tRadius:\t\t" << radius << std::endl;
+		std::cout << "\tNeighbourhood:\t" << neighbourhood << std::endl;
+		std::cout << "\tPlatform ID:\t" << iPlatformId << std::endl;
+		std::cout << "\tDevice ID:\t" << iDeviceId << std::endl;
+	}
 
 	MyOpenCL ocl;
-	ocl.InitOpenCL(0, 0);
+	ocl.InitOpenCL(iPlatformId, iDeviceId);
 	if(ocl.bInitialized == false) {
 		std::cout << "Cannot initialize OpenCL.\n";
 		return 1;
