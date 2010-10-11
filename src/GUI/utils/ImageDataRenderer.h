@@ -54,8 +54,7 @@ public:
 	SetLUTWindow( const Vector< float32, 2 > &aLUTWindow )
 	{ 
 		_wlWindow = aLUTWindow; 
-		LOG( _wlWindow );
-		_cgEffect.SetParameter( "gWLWindow", _wlWindow );
+		LOG( _wlWindow );	
 	}
 
 	void

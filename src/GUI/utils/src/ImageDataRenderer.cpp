@@ -35,7 +35,7 @@ void
 ImageDataRenderer::SetImageData( GLTextureImage::Ptr aData )
 {
 	_textureData = aData;
-	_cgEffect.SetParameter( "gImageData3D", *_textureData );
+	//_cgEffect.SetParameter( "gImageData3D", *_textureData );
 }
 
 void
@@ -88,6 +88,11 @@ ImageDataRenderer::Render()
 	_shaderConfig.Disable();
 	*/
 	
+	_cgEffect.SetParameter( "gImageData3D", *_textureData );
+	_cgEffect.SetParameter( "gImageDataResolution3D", _textureData->GetDimensionedInterface<3>().GetSize() );
+	_cgEffect.SetParameter( "gMappedIntervalBands", Vector2i( 0, 65535) );
+	_cgEffect.SetParameter( "gWLWindow", _wlWindow );
+
 	_cgEffect.ExecuteTechniquePass( "WLWindow3D", boost::bind( &M4D::GLDrawVolumeSlice, _textureData->GetMinimum3D(), _textureData->GetMaximum3D(), (float32)_sliceViewConfig.currentSlice[ _sliceViewConfig.plane ] * _textureData->GetElementExtents3D()[_sliceViewConfig.plane], _sliceViewConfig.plane ) ); 
 	glFlush();
 }

@@ -123,7 +123,7 @@ BasicSliceViewer::mouseMoveEvent ( QMouseEvent * event )
 		QPoint tmp = event->globalPos(); 
 		int x = (tmp - _clickPosition).x();
 		int y = (tmp - _clickPosition).y();
-		SetLUTWindow( _oldLUTWindow + Vector< float32, 2 >( ((float32)x)/width(), ((float32)y)/height() ) );
+		SetLUTWindow( _oldLUTWindow + Vector< float32, 2 >( 3000*((float32)x)/width(), 3000*((float32)y)/height() ) );
 		this->update();
 	}
 }
@@ -212,7 +212,7 @@ BasicSliceViewer::PrepareData()
 
 
 
-	_textureData = CreateTextureFromImage( *(M4D::Imaging::AImage::Cast( _inputDatasets[0] )->GetAImageRegion()) ) ;
+	_textureData = CreateTextureFromImage( *(M4D::Imaging::AImage::Cast( _inputDatasets[0] )->GetAImageRegion()), false ) ;
 
 	ReleaseAllInputs();
 

@@ -60,6 +60,14 @@ public:
 	void
 	SetParameter( std::string aName, const Vector<double, Dim> &value );
 
+	template< unsigned Dim >
+	void
+	SetParameter( std::string aName, const Vector<unsigned int, Dim> &value );
+
+	template< unsigned Dim >
+	void
+	SetParameter( std::string aName, const Vector<int, Dim> &value );
+
 	void
 	SetParameter( std::string aName, const GLTextureImage &aTexture );
 
@@ -114,6 +122,26 @@ CgEffect::SetParameter( std::string aName, const Vector<double, Dim> &value )
 
 //	ASSERT( )	TODO check type;
 	cgSetParameterValuedr( cgParameter, Dim, value.GetData() );	
+}
+
+template< unsigned Dim >
+void
+CgEffect::SetParameter( std::string aName, const Vector<unsigned int, Dim> &value )
+{
+	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect, aName.data() );
+
+//	ASSERT( )	TODO check type;
+	cgSetParameterValueir( cgParameter, Dim, reinterpret_cast< const int* >( value.GetData() ) );	
+}
+
+template< unsigned Dim >
+void
+CgEffect::SetParameter( std::string aName, const Vector<int, Dim> &value )
+{
+	CGparameter cgParameter = cgGetNamedEffectParameter( mCgEffect, aName.data() );
+
+//	ASSERT( )	TODO check type;
+	cgSetParameterValueir( cgParameter, Dim, value.GetData() );	
 }
 
 struct AShaderConfig

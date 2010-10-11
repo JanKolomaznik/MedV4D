@@ -6,8 +6,9 @@ struct FragmentOutput
 
 sampler3D gImageData3D = sampler_state { MinFilter = Nearest; MaxFilter = Nearest; };
 //sampler3D gImageData3D = sampler_state { MinFilter = Linear; MaxFilter = Linear; };
+int3 gImageDataResolution3D = {0, 0, 0};
 float2 gWLWindow = { 0.08f, 0.001f };
-float2 gIntervalBands;
+float2 gMappedIntervalBands;
 
 
 sampler3D gMaskData3D;
@@ -22,11 +23,15 @@ FragmentOutput fp_WLWindow3D(
 {
 	FragmentOutput OUT;
 
-	float lowBand = gWLWindow.y - (gWLWindow.x * 0.5f);
-	float highBand = gWLWindow.y + (gWLWindow.x * 0.5f);
-	float multiplier = 1.0f / gWLWindow.x;
+	float lowBand = aWLWindow.y - (aWLWindow.x * 0.5f);
+	float highBand = aWLWindow.y + (aWLWindow.x * 0.5f);
+	float multiplier = 1.0f / aWLWindow.x;
 
-	float value = ( tex3D( aTextureData, aTexCoord ).x - lowBand ) * multiplier;
+	float3 coordinates = aTexCoord;
+	//Disable interpolation
+	//coordinates.x = round( coordinates.x * gImageDataResolution3D.x ) / gImageDataResolution3D.x;
+	//coordinates.y = round( coordinates.y * gImageDataResolution3D.y ) / gImageDataResolution3D.y;
+	float value = ( tex3D( aTextureData, coordinates ).x - lowBand ) * multiplier;
 		
 	OUT.color = float4( value.xxx, 1.0f );
 
@@ -41,13 +46,6 @@ FragmentOutput fp_ColorMappedMask3D(
 {
 	FragmentOutput OUT;
 
-	/*float lowBand = gWLWindow.y - (gWLWindow.x * 0.5f);
-	float highBand = gWLWindow.y + (gWLWindow.x * 0.5f);
-	float multiplier = 1.0f / gWLWindow.x;
-
-	float value = ( tex3D( aTextureData, aTexCoord ).x - lowBand ) * multiplier;
-		
-	OUT.color = float4( value.xxx, 1.0f );*/
 
 	return OUT;
 }
@@ -55,7 +53,7 @@ FragmentOutput fp_ColorMappedMask3D(
 
 technique WLWindow3D {
 	pass t0 {
-		FragmentProgram = compile fp40 fp_WLWindow3D( gImageData3D, gWLWindow );
+		FragmentProgram = compile fp40 fp_WLWindow3D( gImageData3D, gWLWindow / (gMappedIntervalBands[1] - gMappedIntervalBands[0]) );
 	}
 }
 

@@ -75,7 +75,7 @@ CgEffect::SetParameter( std::string aName, const GLTextureImage &aTexture )
 //	ASSERT( )	TODO check type;
 
 	cgGLSetupSampler( cgParameter, aTexture.GetTextureGLID() );
-	cgSetSamplerState( cgParameter );
+	//cgSetSamplerState( cgParameter );
 }
 
 void

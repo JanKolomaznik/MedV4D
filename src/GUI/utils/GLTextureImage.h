@@ -2,6 +2,7 @@
 #define GL_TEXTURE_IMAGE_H
 
 #include <boost/shared_ptr.hpp>
+#include <boost/cast.hpp>
 #include "common/Common.h"
 #include "common/OGLTools.h"
 #include "Imaging/AImageRegion.h"
@@ -11,11 +12,15 @@
 namespace M4D
 {
 
+
+template < uint32 Dim >
+struct GLTextureImageTyped;
+
 struct GLTextureImage
 {
 	typedef boost::shared_ptr< GLTextureImage > Ptr;
 
-	GLTextureImage(): _gltextureID( 0 )
+	GLTextureImage(): _linearInterpolation( false ), _gltextureID( 0 )
 	{ }
 
 	virtual
@@ -43,6 +48,11 @@ struct GLTextureImage
 	virtual void
 	PrepareTexture() = 0;
 
+	void
+	SetLinearinterpolation( bool aLinearInterpolation )
+	{ _linearInterpolation = aLinearInterpolation; }
+
+
 	/**
 	 * Check if texture is in sync with image.
 	 **/
@@ -55,8 +65,23 @@ struct GLTextureImage
 	virtual bool
 	Is3D()const = 0;
 
+
 	virtual uint32
 	GetDimension()const = 0;
+
+	template< uint32 Dim >
+	void
+	CheckDimension()
+	{
+		if ( GetDimension() != Dim ) {
+			_THROW_ ErrorHandling::EBadDimension();
+		}
+	}
+
+	template< uint32 Dim >
+	GLTextureImageTyped< Dim > &
+	GetDimensionedInterface();
+	
 
 	const Vector< float32, 3 > &
 	GetMinimum3D()const
@@ -112,6 +137,23 @@ struct GLTextureImageTyped: public GLTextureImage
 	GetDimension()const
 	{ return Dim; }
 
+	Vector< float32, Dim >
+	GetMinimum()const
+	{ return _image->GetRealMinimum(); }
+
+	Vector< float32, Dim > 
+	GetMaximum()const
+	{ return _image->GetRealMaximum(); }
+
+	Vector< float32, Dim > 
+	GetElementExtents()const
+	{ return _image->GetElementExtents(); }
+
+	Vector< uint32, Dim > 
+	GetSize()const
+	{ return _image->GetSize(); }
+
+
 	void
 	SetImage( const M4D::Imaging::AImageRegion &image )
 	{ 
@@ -153,21 +195,41 @@ protected:
 	typename M4D::Imaging::AImageRegionDim<Dim>::ConstPtr	_image;
 };
 
+
+template< uint32 Dim >
+GLTextureImageTyped< Dim > &
+GLTextureImage::GetDimensionedInterface()
+{
+	return *boost::polymorphic_downcast< GLTextureImageTyped< Dim > *>( this );
+}
+
+
+
+
+
+
 GLTextureImage::Ptr
-CreateTextureFromImage( const M4D::Imaging::AImageRegion &image );
+CreateTextureFromImage( const M4D::Imaging::AImageRegion &image, bool aLinearInterpolation = true );
 
 template < uint32 Dim >
 GLTextureImage::Ptr
-CreateTextureFromImageTyped( const M4D::Imaging::AImageRegionDim<Dim> &image )
+CreateTextureFromImageTyped( const M4D::Imaging::AImageRegionDim<Dim> &image, bool aLinearInterpolation = true )
 {
 	typedef GLTextureImageTyped< Dim > TextureImage;
 	TextureImage * texture = new TextureImage;
+	texture->SetLinearinterpolation( aLinearInterpolation );
 
 	texture->SetImage( image );
 	texture->PrepareTexture();
 
 	return GLTextureImage::Ptr( texture );
 }
+
+
+
+
+
+
 
 } /*namespace M4D*/
 
