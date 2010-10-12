@@ -2,6 +2,7 @@
 #define MATH_TOOLS_H
 
 #include <cmath>
+#include "common/Vector.h"
 
 extern const float32 Epsilon;
 extern const float32 PI;
@@ -94,6 +95,30 @@ Min( NType a, NType b, NType c ) {
 	return Min( a, c );
 }
 
+template< typename TNumType, size_t tDim >
+inline TNumType
+Max( const Vector< TNumType, tDim > &a ) {
+	TNumType res = a[0];
+	for( size_t i = 1; i < tDim; ++i ) {
+		if ( res < a[i] ) {
+			res = a[i];
+		}
+	}
+	return res;
+}
+
+template< typename TNumType, size_t tDim >
+inline TNumType
+Min( const Vector< TNumType, tDim > &a ) {
+	TNumType res = a[0];
+	for( size_t i = 1; i < tDim; ++i ) {
+		if ( res > a[i] ) {
+			res = a[i];
+		}
+	}
+	return res;
+}
+
 template< typename NType >
 inline NType
 Abs( NType a ) {
@@ -139,6 +164,18 @@ ClampToInterval( NType a, NType b, NType val ) {
 	} 
 
 	return val;
+}
+
+inline bool
+EpsilonTest( float32 &aValue, float32 aEpsilon = Epsilon )
+{
+	return Abs( aValue ) < aEpsilon;
+}
+
+inline bool
+EpsilonTest( float64 &aValue, float64 aEpsilon = Epsilon )
+{
+	return Abs( aValue ) < aEpsilon;
 }
 
 

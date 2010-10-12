@@ -7,6 +7,8 @@
 #include "common/TypeTraits.h"
 #include "common/TypeComparator.h"
 
+#include <boost/static_assert.hpp>
+
 #ifdef DEBUG_LEVEL
 	#define CHECK_INDICES_ENABLED
 #endif /*DEBUG_LEVEL*/
@@ -109,6 +111,37 @@ public:
 	CoordinateType &
 	operator[]( unsigned idx )
 		{ 
+			return Get( idx );
+		}
+
+	CoordinateType
+	operator[]( unsigned idx )const
+		{ 
+			return Get( idx );
+		}
+
+
+	template< uint32 tIdx >
+	CoordinateType &
+	StaticGet()
+		{ 
+			BOOST_STATIC_ASSERT( tIdx < Dimension );
+			return _coordinates[ tIdx ];
+		}
+
+
+	template< uint32 tIdx >
+	CoordinateType
+	StaticGet()const
+		{ 
+			BOOST_STATIC_ASSERT( tIdx < Dimension );
+			return _coordinates[ tIdx ];
+		}
+
+
+	CoordinateType &
+	Get( unsigned idx )
+		{ 
 #ifdef CHECK_INDICES_ENABLED
 			if ( idx >= Dim ) { 
 				_THROW_ M4D::ErrorHandling::EBadIndex();
@@ -119,7 +152,7 @@ public:
 		}
 
 	CoordinateType
-	operator[]( unsigned idx )const
+	Get( unsigned idx )const
 		{ 
 #ifdef CHECK_INDICES_ENABLED
 			if ( idx >= Dim ) { 
