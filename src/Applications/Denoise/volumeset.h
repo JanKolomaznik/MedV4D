@@ -2100,6 +2100,25 @@ public:
 	}
 #endif
 
+	void volGetLocalMinima(int **pDstIdxArray, int &iDstCnt) const {
+		CVolumeSet<int> volMask;
+		volMask.copySize(*this);
+		volMask.setValue(-1);
+		int iCurrentIdx = 0;
+		for(int k = 0; k < depth; k++) {
+		for(int j = 0; j < height; j++) {
+			float *pData = planes[k] + j * width;
+			int *pMask = volMask.planes[k] + j * width;
+			for(int i = 0; i < width; i++) {
+				if(pMask[i] == -1) { // not visited yet or no local minimum
+					// is local minimum?
+
+				}
+			}
+		}
+		}
+	}
+
 	CVolumeSet(int sizeX, int sizeY, int sizeZ) {
 		cutXZ = cutYZ = NULL;
 		origPos.x = origPos.y = origPos.z = 0;
