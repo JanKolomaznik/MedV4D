@@ -2101,6 +2101,7 @@ public:
 #endif
 
 	void volGetLocalMinima(int **pDstIdxArray, int &iDstCnt) const {
+		// TODO: not currently needed
 		CVolumeSet<int> volMask;
 		volMask.copySize(*this);
 		volMask.setValue(-1);
@@ -2155,7 +2156,21 @@ void dbgWriteMaskToDisk(const CVolumeSet<unsigned char> &mask, CImageSet &imgset
 // creates 12-bit test data of size 128x128z128 and a vector of border seeds
 void createTestData(CVolumeSet<short> &result, std::list<SPoint3D<int> > &borderSeeds);
 
+template<class T>
+struct WatershedCell {
+	T value;
+	int x, y;
+	bool operator<(const WatershedCell &c2) {
+		return value < c2.value;
+	}
+}
 
+template<class T>
+void volWatershedBasic(CVolumeSet<int> &dest, const CVolumeSet<float> &src, const CVolumeSet<int> markers) {
+	// construct queue
+	std::priority_queue<WatershedCell, std::list<WatershedCell> > processQueue;
+
+}
 
 
 }
