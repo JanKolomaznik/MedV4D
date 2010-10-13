@@ -7,7 +7,7 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <TFSimpleFunction.h>
+#include <TFApplicator.h>
 
 namespace M4D
 {
@@ -18,17 +18,17 @@ namespace Viewer
  * Sliceviewer's texture preparer that shows the first input dataset as a greyscale image
  */
 template< typename ElementType >
-class TFSimpleSliceViewerTexturePreparer : public SimpleSliceViewerTexturePreparer< ElementType >
+class TFSliceViewerTexturePreparer : public SimpleSliceViewerTexturePreparer< ElementType >
 {
 
 public:
 
-	TFSimpleSliceViewerTexturePreparer():
+	TFSliceViewerTexturePreparer():
 		SimpleSliceViewerTexturePreparer< ElementType >(),
 		tfUsed_(false),
 		histSlice_(-1){
 
-		currentTransferFunction_ = std::vector<ElementType>(TypeTraits<ElementType>::Max);
+		currentTransferFunction_ = std::vector<ElementType>(5000); //TODO max data value
 	}
 
     /**
@@ -55,12 +55,12 @@ public:
 
 	void setTransferFunction(TFAbstractFunction &transferFunction);
 
-	std::vector<int> getHistogram();
+	const TFHistogram& getHistogram();
 
 private:
 	std::vector<ElementType> currentTransferFunction_;
 	bool tfUsed_;
-	std::vector<unsigned> histogram_;
+	TFHistogram histogram_;
 	uint32 histSlice_;
 };
 
@@ -96,13 +96,13 @@ public:
 	~TFSliceViewerWidget(){
 		delete texturePreparer_;
 	}
-/*
+
 signals:
-	void Histogram(std::vector<int> hist);
-*/
+	void Histogram(const TFHistogram& hist);
+
 public slots:
 	void adjust_by_transfer_function(TFAbstractFunction &transferFunction);
-	//void send_histogram();
+	void histogram_request();
 	
 protected:   
 	int currentImageID_;

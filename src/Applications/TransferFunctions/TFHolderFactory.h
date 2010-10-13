@@ -19,11 +19,11 @@ class TFHolderFactory{
 
 public:
 	
-	static TFActions createMenuTFActions(QWidget *owner, QMenu *menu);
+	static TFActions createMenuTFActions(QMenu *menu);
 
-	static TFAbstractHolder* createHolder(TFType &holderType);
+	static TFAbstractHolder* createHolder(TFWindowI* window, TFType &holderType);
 
-	static TFAbstractHolder* loadHolder(QWidget* parent);
+	static TFAbstractHolder* loadHolder(TFWindowI* window);
 
 protected:
 

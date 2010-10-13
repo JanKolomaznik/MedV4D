@@ -216,3 +216,13 @@ void TFSimplePainter::addPoint(TFPoint point){
 
 	view_[point.x] = point.y;
 }
+
+void TFSimplePainter::setHistogram(const TFHistogram& histogram){
+
+	//TODO
+}
+
+void TFSimplePainter::paintHistogram(const bool paint){
+
+	//TODO
+}

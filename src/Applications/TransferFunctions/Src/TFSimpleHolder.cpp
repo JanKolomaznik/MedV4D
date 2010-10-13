@@ -1,8 +1,9 @@
 
 #include "TFSimpleHolder.h"
 
-TFSimpleHolder::TFSimpleHolder(): autoUpdate_(false){
+TFSimpleHolder::TFSimpleHolder(TFWindowI* window): autoUpdate_(false){
 
+	window_ = window;
 	type_ = TFTYPE_SIMPLE;
 
 	basicTools_->name->setText(QString::fromStdString(function_.name));
@@ -59,7 +60,7 @@ void TFSimpleHolder::on_use_clicked(){
 
 	function_.setPoints(painter_.getView());
 
-	emit UseTransferFunction(function_);
+	window_->modifyData(function_);
 }
 
 void TFSimpleHolder::on_autoUpdate_stateChanged(int state){
@@ -91,4 +92,10 @@ void TFSimpleHolder::size_changed(const QRect rect){
 	painter_.setView(function_.getPointMap());
 
 	if(autoUpdate_) on_use_clicked();
+}
+
+void TFSimpleHolder::receiveHistogram(const TFHistogram& histogram){
+	
+	painter_.setHistogram(histogram);
+	painter_.paintHistogram(true);
 }

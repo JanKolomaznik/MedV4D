@@ -8,6 +8,7 @@
 
 
 typedef std::string TFName;
+typedef unsigned long TFSize;
 
 struct TFPoint{
 
@@ -74,12 +75,12 @@ class TFAction: public QObject{
 	Q_OBJECT
 
 public:
-	TFAction(QWidget* parent, QMenu* menu, TFType tfType){
+	TFAction(QMenu* menu, TFType tfType){
 		type_ = tfType;
 
 		QString name = QString::fromStdString(convert<TFType, std::string>(type_));
 
-		action_ = new QAction(parent);
+		action_ = new QAction(menu);
 		action_->setObjectName(name);
 		action_->setText(name);
 		menu->addAction(action_);
@@ -105,6 +106,6 @@ private:
 };
 
 typedef std::vector<TFAction*> TFActions;
-typedef std::vector<long> TFHistogram;
+typedef std::vector<unsigned> TFHistogram;
 
 #endif //TF_TYPES

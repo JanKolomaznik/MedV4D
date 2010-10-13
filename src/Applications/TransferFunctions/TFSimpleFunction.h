@@ -20,8 +20,8 @@ class TFSimpleFunction: public TFAbstractFunction{
 
 public:
 
-	TFSimpleFunction(int functionRange = 500, int colorRange = 280);
-	TFSimpleFunction(TFName functionName, int functionRange = 500, int colorRange = 280);
+	TFSimpleFunction(unsigned functionRange = 500, unsigned colorRange = 280);
+	TFSimpleFunction(TFName functionName, unsigned functionRange = 500, unsigned colorRange = 280);
 	TFSimpleFunction(TFSimpleFunction &function);
 
 	~TFSimpleFunction();
@@ -49,98 +49,71 @@ public:
 
 	unsigned getColorRange();
 
-	void recalculate(int functionRange, int colorRange);
+	void recalculate(unsigned functionRange, unsigned colorRange);
+
+	template<typename ElementIterator>
+	bool apply(
+		ElementIterator result,
+		TFSize inputRange,
+		TFSize outputRange){
+
+		if(points_.empty())
+		{
+			return false;
+		}
+
+		double colorRange_double = (double)colorRange_;
+
+		double interval = inputRange/(double)functionRange_;
+		TFSize intervalBottom = 0;
+		TFSize intervalTop = 0;
+		double intervalCorrection = 0;
+
+		unsigned int lastFunctionIndexUsed = 0;
+		unsigned int lastResultIndexUsed = 0;
+
+		for (unsigned int i = 1; i < functionRange_; ++i )
+		{
+
+			double newTop = intervalTop + interval + intervalCorrection;
+			intervalTop = (TFSize)(newTop);
+			intervalCorrection = newTop - (double)intervalTop;
+
+			if(intervalTop > intervalBottom)
+			{
+				std::iterator_traits<ElementIterator>::value_type bottomValue = (std::iterator_traits<ElementIterator>::value_type)((points_[lastFunctionIndexUsed]/colorRange_double)*outputRange);
+				std::iterator_traits<ElementIterator>::value_type topValue = (std::iterator_traits<ElementIterator>::value_type)((points_[i]/colorRange_double)*outputRange);
+
+				lastFunctionIndexUsed = i;
+
+				TFSize intervalRange = intervalTop - intervalBottom;
+				double step = (topValue - bottomValue)/(double)intervalRange;
+
+				for(unsigned int j = 0; j < intervalRange; ++j)
+				{
+					result[lastResultIndexUsed + j] = bottomValue + j*step;
+				}
+				lastResultIndexUsed = lastResultIndexUsed + intervalRange;
+
+				intervalBottom = intervalTop;
+			}
+		}
+
+		std::iterator_traits<ElementIterator>::value_type correctionValue = (std::iterator_traits<ElementIterator>::value_type)((points_[lastFunctionIndexUsed]/colorRange_double)*outputRange);
+		TFSize remainingRange = inputRange - intervalBottom;
+		for(unsigned j = 0; j < remainingRange; ++j)
+		{
+			result[lastResultIndexUsed + j] = correctionValue;
+		}
+
+		return true;
+	}
 	
 private:	
 	TFPointMap points_;
 
-	int functionRange_;
-	int colorRange_;
+	unsigned functionRange_;
+	unsigned colorRange_;
 };
-
-
-/*
-template<typename ElementType>
-bool adjustBySimpleFunction(
-	TFAbstractFunction* transferFunction,
-	std::vector<ElementType>* result,
-	ElementType min,
-	ElementType max,
-	std::size_t resultSize){
-
-	return false;
-}
-*/
-
-template<typename ElementType>
-inline bool adjustBySimpleFunction(
-	TFAbstractFunction* transferFunction,
-	std::vector<ElementType>* result,
-	ElementType min,
-	ElementType max,
-	std::size_t resultSize){
-
-	TFSimpleFunction *tf = dynamic_cast<TFSimpleFunction*>(transferFunction);
-
-	if ( !tf)
-	{
-		return false;
-	}
-
-	TFPointMap points = tf->getPointMap();
-
-	if(points.empty())
-	{
-		return false;
-	}
-
-	unsigned functionRange = tf->getFunctionRange();
-	double colorRange_double = (double)tf->getColorRange();
-	int resultRange = (int)max - min;
-
-	double interval = resultSize/(double)functionRange;
-	std::size_t intervalBottom = 0;
-	std::size_t intervalTop = 0;
-	double intervalCorrection = 0;
-
-	unsigned lastFunctionIndexUsed = 0;
-	unsigned lastResultIndexUsed = 0;
-
-	for (unsigned i = 1; i < functionRange; ++i )
-	{
-
-		double newTop = intervalTop + interval + intervalCorrection;
-		intervalTop = (std::size_t)(newTop);
-		intervalCorrection = newTop - (double)intervalTop;
-
-		if(intervalTop > intervalBottom)
-		{
-			ElementType bottomValue = (ElementType)(ROUND((points[lastFunctionIndexUsed]/colorRange_double)*resultRange)) + min;
-			ElementType topValue = (ElementType)(ROUND((points[i]/colorRange_double)*resultRange)) + min;
-
-			lastFunctionIndexUsed = i;
-
-			std::size_t intervalRange = intervalTop - intervalBottom;
-			double step = (topValue - bottomValue)/(double)intervalRange;
-
-			for(unsigned j = 0; j < intervalRange; ++j)
-			{
-				(*result)[lastResultIndexUsed + j] = bottomValue + j*step;
-			}
-			lastResultIndexUsed = lastResultIndexUsed + intervalRange;
-
-			intervalBottom = intervalTop;
-		}
-	}
-
-	ElementType correctionValue = (ElementType)(ROUND((points[lastFunctionIndexUsed]/colorRange_double)*resultRange)) + min;
-	std::size_t remainingRange = resultSize - intervalBottom;
-	for(unsigned j = 0; j < remainingRange; ++j)
-	{
-		(*result)[lastResultIndexUsed + j] = correctionValue;
-	}
-
-	return true;
-}
 
 #endif //TF_SIMPLEFUNCTION

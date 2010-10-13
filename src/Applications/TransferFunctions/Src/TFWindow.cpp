@@ -24,7 +24,7 @@ TFWindow::~TFWindow(){
 
 void TFWindow::build(){
 
-	tfActions_ = TFHolderFactory::createMenuTFActions(this, ui_->menuNew);
+	tfActions_ = TFHolderFactory::createMenuTFActions(ui_->menuNew);
 
 	for(unsigned i = 0; i < tfActions_.size(); ++i)
 	{
@@ -35,7 +35,9 @@ void TFWindow::build(){
 void TFWindow::setupHolder(){
 
 	holder_->setUp(this, QRect(0, MENU_SPACE, width(), height() - MENU_SPACE));
+	
 	QObject::connect( holder_, SIGNAL(UseTransferFunction(TFAbstractFunction&)), this, SLOT(modify_data(TFAbstractFunction&)));
+	
 	QObject::connect( this, SIGNAL(ResizeHolder(const QRect)), holder_, SLOT(size_changed(const QRect)));
 }
 
@@ -76,7 +78,7 @@ void TFWindow::newTF_triggered(TFType &tfType){
 		holder_ = NULL;
 	}
 
-	holder_ = TFHolderFactory::createHolder(tfType);
+	holder_ = TFHolderFactory::createHolder(this, tfType);
 
 	if(!holder_){
 		QMessageBox::warning(this, QObject::tr("Transfer Functions"), QObject::tr("Creating error."));
@@ -87,7 +89,22 @@ void TFWindow::newTF_triggered(TFType &tfType){
 	setupHolder();
 }
 
-void TFWindow::modify_data(TFAbstractFunction &transferFunction){
+void TFWindow::modifyData(TFAbstractFunction &transferFunction){
 
 	emit AdjustByTransferFunction(transferFunction);
+}
+
+void TFWindow::getHistogram(){
+
+	emit HistogramRequest();
+}
+
+void TFWindow::receive_histogram(const TFHistogram& histogram){
+	
+	holder_->receiveHistogram(histogram);
+}
+
+void TFWindow::on_actionTest_triggered(){
+
+	if(holder_) getHistogram();
 }

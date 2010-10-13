@@ -1,24 +1,24 @@
 #include<TFHolderFactory.h>
 
 
-TFActions TFHolderFactory::createMenuTFActions(QWidget *owner, QMenu *menu){
+TFActions TFHolderFactory::createMenuTFActions(QMenu *menu){
 
 	TFActions actions;
 
 	//adding transferfunction types to menu
-	actions.push_back(new TFAction(owner, menu, TFTYPE_SIMPLE));	
-	//actions.push_back(new TFAction(owner, menu, TFTYPE_MYTYPE));
+	actions.push_back(new TFAction(menu, TFTYPE_SIMPLE));	
+	//actions.push_back(new TFAction(menu, TFTYPE_MYTYPE));
 
 	return actions;
 }
 
-TFAbstractHolder* TFHolderFactory::createHolder(TFType &holderType){
+TFAbstractHolder* TFHolderFactory::createHolder(TFWindowI* window, TFType &holderType){
 
 	switch(holderType)
 	{
 		case TFTYPE_SIMPLE:
 		{
-			return new TFSimpleHolder();
+			return new TFSimpleHolder(window);
 		}
 		case TFTYPE_UNKNOWN:
 		default:
@@ -30,9 +30,10 @@ TFAbstractHolder* TFHolderFactory::createHolder(TFType &holderType){
 	return NULL;
 }
 
-TFAbstractHolder* TFHolderFactory::loadHolder(QWidget* parent){
+TFAbstractHolder* TFHolderFactory::loadHolder(TFWindowI* window){
 	
-	QString fileName = QFileDialog::getOpenFileName(parent,
+	QString fileName = QFileDialog::getOpenFileName(
+		window,
 		QObject::tr("Open Transfer Function"),
 		QDir::currentPath(),
 		QObject::tr("TF Files (*.tf *.xml)"));
@@ -42,10 +43,10 @@ TFAbstractHolder* TFHolderFactory::loadHolder(QWidget* parent){
 	QFile qFile(fileName);
 
 	if (!qFile.open(QFile::ReadOnly | QFile::Text)) {
-		QMessageBox::warning(parent, QObject::tr("Transfer Functions"),
-						  QObject::tr("Cannot read file %1:\n%2.")
-						  .arg(fileName)
-						  .arg(qFile.errorString()));
+		QMessageBox::warning(
+			window,
+			QObject::tr("Transfer Functions"),
+			QObject::tr("Cannot read file %1:\n%2.").arg(fileName).arg(qFile.errorString()));
 		return NULL;
 	}
 
@@ -54,13 +55,14 @@ TFAbstractHolder* TFHolderFactory::loadHolder(QWidget* parent){
 	qFile.close();
 
 	qFile.open(QFile::ReadOnly | QFile::Text);
-	TFAbstractHolder* loaded = createHolder(tfType);
+	TFAbstractHolder* loaded = createHolder(window, tfType);
 
 	if(loaded)
 	{
 		if(!loaded->load_(qFile))
 		{ 
-			QMessageBox::warning(parent,
+			QMessageBox::warning(
+				window,
 				QObject::tr("TFXmlSimpleReader"),
 				QObject::tr("Parse error in file %1").arg(fileName));
 		}

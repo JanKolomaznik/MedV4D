@@ -78,7 +78,13 @@ void mainWindow::build(){
 	addDockWindow( "Transfer Functions", settings_ );
 
 	M4D::Viewer::TFSliceViewerWidget* currentViewer = dynamic_cast<M4D::Viewer::TFSliceViewerWidget*>(currentViewerDesktop->getSelectedViewerWidget());	
-	QObject::connect( settings_, SIGNAL(AdjustByTransferFunction(TFAbstractFunction&)), currentViewer, SLOT(adjust_by_transfer_function(TFAbstractFunction&)));
+	
+	QObject::connect( settings_, SIGNAL(AdjustByTransferFunction(TFAbstractFunction&)),
+		currentViewer, SLOT(adjust_by_transfer_function(TFAbstractFunction&)));
+	QObject::connect( settings_, SIGNAL(HistogramRequest()),
+		currentViewer, SLOT(histogram_request()));
+	QObject::connect( currentViewer, SIGNAL(Histogram(TFHistogram)),
+		settings_, SLOT(receive_histogram(TFHistogram)));
 }
 
 void mainWindow::createDefaultViewerDesktop (){

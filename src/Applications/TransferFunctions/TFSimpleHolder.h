@@ -27,10 +27,11 @@ class TFSimpleHolder: public TFAbstractHolder{
     Q_OBJECT
 
 public:
-	TFSimpleHolder();
+	TFSimpleHolder(TFWindowI* window);
 	~TFSimpleHolder();
 
 	void setUp(QWidget *parent, const QRect rect);
+	void receiveHistogram(const TFHistogram& histogram);
 
 protected slots:
     void on_use_clicked();

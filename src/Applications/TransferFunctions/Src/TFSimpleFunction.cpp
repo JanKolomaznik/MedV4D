@@ -1,6 +1,6 @@
 #include "TFSimpleFunction.h"
 
-TFSimpleFunction::TFSimpleFunction(int functionRange, int colorRange){
+TFSimpleFunction::TFSimpleFunction(unsigned functionRange, unsigned colorRange){
 
 	functionRange_ = functionRange;
 	colorRange_ = colorRange;
@@ -9,7 +9,7 @@ TFSimpleFunction::TFSimpleFunction(int functionRange, int colorRange){
 	clear();
 }
 
-TFSimpleFunction::TFSimpleFunction(TFName functionName, int functionRange, int colorRange){
+TFSimpleFunction::TFSimpleFunction(TFName functionName, unsigned functionRange, unsigned colorRange){
 
 	functionRange_ = functionRange;
 	colorRange_ = colorRange;
@@ -40,7 +40,7 @@ TFAbstractFunction* TFSimpleFunction::clone(){
 void TFSimpleFunction::clear(){
 
 	points_.clear();
-	for(int i = 0; i < functionRange_; ++i)
+	for(unsigned i = 0; i < functionRange_; ++i)
 	{
 		points_.push_back(0);
 	}
@@ -80,7 +80,7 @@ TFPoint TFSimpleFunction::getPoint(int coordX){
 TFPoints TFSimpleFunction::getAllPoints(){
 
 	TFPoints points;
-	for(int i = 0; i < functionRange_; ++i)
+	for(unsigned i = 0; i < functionRange_; ++i)
 	{
 		points.push_back(TFPoint(i, points_[i]));
 	}
@@ -103,27 +103,12 @@ unsigned TFSimpleFunction::getColorRange(){
 	return colorRange_;
 }
 
-void TFSimpleFunction::recalculate(int functionRange, int colorRange){
+void TFSimpleFunction::recalculate(unsigned functionRange, unsigned colorRange){	//TODO
 
 	TFPointMap newPoints(functionRange);
-	adjustBySimpleFunction(this, &newPoints, 0, colorRange, functionRange);
+	apply(newPoints.begin(), functionRange, colorRange);
 
 	functionRange_ = functionRange;
 	colorRange_ = colorRange;
 	points_ = newPoints;
-
-	/*
-	while(points_.size() >= functionRange_)
-	{
-		points_.pop_back();
-	}
-	while(points_.size() <= functionRange_)
-	{
-		points_.push_back(0);
-	}
-	for(int i = 0; i <= functionRange_; ++i)
-	{
-		if(points_[i] > colorRange_) points_[i] = colorRange_;
-	}
-	*/
 }

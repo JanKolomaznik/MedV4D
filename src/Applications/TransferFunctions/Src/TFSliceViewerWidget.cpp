@@ -13,7 +13,7 @@ namespace Viewer
 {
 
 template< typename ElementType >
-bool TFSimpleSliceViewerTexturePreparer< ElementType >::prepare(
+bool TFSliceViewerTexturePreparer< ElementType >::prepare(
 	const Imaging::InputPortList& inputPorts,
 	uint32& width,
 	uint32& height,
@@ -33,19 +33,6 @@ bool TFSimpleSliceViewerTexturePreparer< ElementType >::prepare(
 	}
 
 	ElementType* pixelValue = *pixel;
-	/*
-	if(histSlice_ != slice)
-	{
-		double range = TypeTraits<ElementType>::Max - TypeTraits<ElementType>::Min;
-		histogram_ = std::vector<int>(range, 0);
-		for(unsigned i = 0; i < width*height; ++i)
-		{
-			++histogram_[*pixelValue];
-			++pixelValue;
-		}
-	}
-	pixelValue = *pixel;
-	*/
 	if(tfUsed_)
 	{
 		for(unsigned i = 0; i < width*height; ++i)
@@ -74,18 +61,19 @@ bool TFSimpleSliceViewerTexturePreparer< ElementType >::prepare(
 }
 
 template< typename ElementType >
-void TFSimpleSliceViewerTexturePreparer< ElementType >::setTransferFunction(TFAbstractFunction &transferFunction){
+void TFSliceViewerTexturePreparer< ElementType >::setTransferFunction(TFAbstractFunction &transferFunction){
 
-	tfUsed_ = adjustByTransferFunction<ElementType>(
+	tfUsed_ = TFApplicator::apply(
 		&transferFunction,
-		&currentTransferFunction_,
-		0,
-		TypeTraits<ElementType>::Max,
-		TypeTraits<ElementType>::Max);
+		currentTransferFunction_.begin(),
+		currentTransferFunction_.size(),
+		(TFSize)TypeTraits<ElementType>::Max);
 }
 
 template< typename ElementType >
-std::vector<int> TFSimpleSliceViewerTexturePreparer< ElementType >::getHistogram(){
+const TFHistogram& TFSliceViewerTexturePreparer< ElementType >::getHistogram(){
+
+	//TODO
 	return histogram_;
 }
 
@@ -100,27 +88,45 @@ void TFSliceViewerWidget::adjust_by_transfer_function(TFAbstractFunction &transf
 	}
 
 	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
-				_imageID, 
-				{									
-					if(!texturePreparer_)
-					{
-						texturePreparer_ = new TFSimpleSliceViewerTexturePreparer<TTYPE>();
-						currentImageID_ = _imageID;
-					}
-					else if(currentImageID_ != _imageID)
-					{
-						delete texturePreparer_;
-						texturePreparer_ = new TFSimpleSliceViewerTexturePreparer<TTYPE>();
-						currentImageID_ = _imageID;
-					}
-					(dynamic_cast<TFSimpleSliceViewerTexturePreparer<TTYPE>*>(texturePreparer_))->setTransferFunction(transferFunction);
-					
-					setTexturePreparerToCustom(texturePreparer_);
-
-					updateGL();
-				} 
-		);
+		_imageID, 
+		{			
+			if(!texturePreparer_ || currentImageID_ != _imageID)
+			{
+				if(texturePreparer_) delete texturePreparer_;
+				texturePreparer_ = new TFSliceViewerTexturePreparer<TTYPE>();
+				currentImageID_ = _imageID;
+				setTexturePreparerToCustom(texturePreparer_);
+			}
+			(dynamic_cast<TFSliceViewerTexturePreparer<TTYPE>*>(texturePreparer_))->setTransferFunction(transferFunction);
+			updateGL();
+		} 
+	);
 }
+
+void TFSliceViewerWidget::histogram_request(){
+
+	if(_imageID == -1)
+	{		
+		QMessageBox::critical(this, QObject::tr("Transfer Functions"),
+						  QObject::tr("No data loaded!"));
+		return;
+	}
+
+	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO(
+		_imageID, 
+		{		
+			if(!texturePreparer_ || currentImageID_ != _imageID)
+			{
+				if(texturePreparer_) delete texturePreparer_;
+				texturePreparer_ = new TFSliceViewerTexturePreparer<TTYPE>();
+				currentImageID_ = _imageID;
+				setTexturePreparerToCustom(texturePreparer_);
+			}
+			emit Histogram((dynamic_cast<TFSliceViewerTexturePreparer<TTYPE>*>(texturePreparer_))->getHistogram());
+		}
+	);
+}
+
 
 } /*namespace Viewer*/
 } /*namespace M4D*/

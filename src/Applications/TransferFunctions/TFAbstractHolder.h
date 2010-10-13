@@ -13,6 +13,15 @@
 #include <TFTypes.h>
 #include <TFAbstractFunction.h>
 
+class TFWindowI: public QWidget{
+public:
+	virtual void modifyData(TFAbstractFunction &transferFunction) = 0;
+	virtual void getHistogram() = 0;
+protected:
+	TFWindowI(){}
+	~TFWindowI(){}
+};
+
 namespace Ui{
 
     class TFAbstractHolder;
@@ -57,23 +66,27 @@ public:
 		return type_;
 	}
 
+	virtual void receiveHistogram(const TFHistogram& histogram){};
+
 protected slots:
     virtual void on_use_clicked() = 0;
 	virtual void size_changed(const QRect rect) = 0;
 	virtual void on_autoUpdate_stateChanged(int state) = 0;
 
-signals:
-	void UseTransferFunction(TFAbstractFunction &transferFunction);
-
 protected:
 	TFType type_;
 	Ui::TFAbstractHolder* basicTools_;
+	TFWindowI* window_;
 	bool setup_;
 
 	virtual bool load_(QFile &file) = 0;
 	virtual void save_(QFile &file) = 0;
 
-	TFAbstractHolder(): basicTools_(new Ui::TFAbstractHolder), type_(TFTYPE_UNKNOWN), setup_(false){
+	TFAbstractHolder():
+		type_(TFTYPE_UNKNOWN),
+		basicTools_(new Ui::TFAbstractHolder),
+		window_(NULL),
+		setup_(false){
 
 		basicTools_->setupUi(this);
 	}

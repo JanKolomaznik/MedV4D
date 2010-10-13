@@ -16,7 +16,7 @@ namespace Ui{
 	class TFWindow;
 }
 
-class TFWindow : public QWidget{
+class TFWindow : public TFWindowI{
 
     Q_OBJECT
 
@@ -26,18 +26,24 @@ public:
 
 	void build();
 
+	void modifyData(TFAbstractFunction &transferFunction);
+	void getHistogram();
+
 signals:
-	void AdjustByTransferFunction(TFAbstractFunction &transferFunction);
 	void ResizeHolder(const QRect rect);
+	void AdjustByTransferFunction(TFAbstractFunction &transferFunction);
+	void HistogramRequest();
+
+public slots:
+	void receive_histogram(const TFHistogram& histogram);
 
 protected slots:
     void on_exit_triggered();
     void on_save_triggered();
     void on_load_triggered();
-
 	void newTF_triggered(TFType &tfType);
 
-	void modify_data(TFAbstractFunction &transferFunction);
+	void on_actionTest_triggered();
 
 protected:
 	void resizeEvent(QResizeEvent* e);

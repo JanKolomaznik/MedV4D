@@ -40,6 +40,9 @@ public:
 
 	TFPoints getPoints();
 
+	void setHistogram(const TFHistogram& histogram);
+	void paintHistogram(const bool paint);
+
 signals:
 	void FunctionChanged();
 
