@@ -1,4 +1,5 @@
 #include "ViewerWindow.hpp"
+#include "GUI/utils/TransferFunctionBuffer.h"
 
 ViewerWindow::ViewerWindow()
 {

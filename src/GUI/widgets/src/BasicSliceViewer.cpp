@@ -40,6 +40,21 @@ BasicSliceViewer::SetLUTWindow( Vector< float32, 2 > window )
 	_renderer.SetLUTWindow( _lutWindow );
 }
 
+
+void
+BasicSliceViewer::SetTransferFunctionBuffer( TransferFunctionBuffer1D::Ptr aTFunctionBuffer )
+{
+	if ( !aTFunctionBuffer ) {
+		_THROW_ ErrorHandling::EBadParameter();
+	}
+	mTFunctionBuffer = aTFunctionBuffer;
+
+	mTransferFunctionTexture = CreateGLTransferFunctionBuffer1D( *aTFunctionBuffer );
+
+	_renderer.SetTransferFunction( mTransferFunctionTexture );
+
+}
+
 void
 BasicSliceViewer::SetCurrentSlice( int32 slice )
 {

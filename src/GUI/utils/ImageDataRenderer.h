@@ -5,6 +5,7 @@
 #include "GUI/utils/CgShaderTools.h"
 #include "GUI/utils/GLTextureImage.h"
 #include <boost/bind.hpp>
+#include "GUI/utils/TransferFunctionBuffer.h"
 
 namespace M4D
 {
@@ -40,10 +41,10 @@ public:
 
 	void
 	SetMaskData( GLTextureImage::Ptr aData );
-
+	
 	void
-	SetTransferFunction( GLTextureImage::Ptr aData );
-
+	SetTransferFunction( GLTransferFunctionBuffer1D::Ptr aTFunction );
+	
 	void
 	SetMaskColorMap( GLTextureImage::Ptr aData );
 
@@ -68,7 +69,8 @@ protected:
 
 	SliceViewConfig 			_sliceViewConfig;
 
-	Vector< float32, 2 >			_wlWindow;
+	Vector2f				_wlWindow;
+	GLTransferFunctionBuffer1D::Ptr 	mTransferFunctionTexture;
 
 
 	GLTextureImage::Ptr			_textureData;

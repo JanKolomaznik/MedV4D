@@ -46,10 +46,7 @@ public:
 	SetLUTWindow( Vector< float32, 2 > window );
 
 	void
-	SetTransferFunctionBuffer( TransferFunctionBuffer1D::Ptr aTFunctionBuffer )
-	{
-		mTFunctionBuffer = aTFunctionBuffer;
-	}
+	SetTransferFunctionBuffer( TransferFunctionBuffer1D::Ptr aTFunctionBuffer );
 
 	const Vector< float32, 2 > &
 	GetLUTWindow()
@@ -136,6 +133,7 @@ protected:
 	Vector< float32, 2 > 			_oldLUTWindow;
 
 	TransferFunctionBuffer1D::Ptr 		mTFunctionBuffer;
+	GLTransferFunctionBuffer1D::Ptr 	mTransferFunctionTexture;
 
 	 enum InteractionMode { 
 		 imNONE,

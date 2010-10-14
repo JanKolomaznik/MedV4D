@@ -90,7 +90,7 @@ TransferFunctionBuffer1D::SetMappedInterval( TransferFunctionBuffer1D::MappedInt
 
 
 
-GLTransferFunctionBuffer1D
+GLTransferFunctionBuffer1D::Ptr
 CreateGLTransferFunctionBuffer1D( const TransferFunctionBuffer1D &aTransferFunction )
 {
 	if ( aTransferFunction.Size() == 0 ) {
@@ -138,7 +138,7 @@ CreateGLTransferFunctionBuffer1D( const TransferFunctionBuffer1D &aTransferFunct
 		throw;
 	}
 
-	return GLTransferFunctionBuffer1D( texName, aTransferFunction.GetMappedInterval() );
+	return GLTransferFunctionBuffer1D::Ptr( new GLTransferFunctionBuffer1D( texName, aTransferFunction.GetMappedInterval() ) );
 
 }
 
