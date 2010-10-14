@@ -75,7 +75,12 @@ ENDIF( ${OLD_M4D_WIDGETS_ENABLED} MATCHES "ON" )
 
 FILE( GLOB rccinput ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/src/*.qrc )
 FILE( GLOB uiinput ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/*.ui )
-FILE( GLOB GUI_header_files ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/utils/*.h ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/*.h ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/components/*.h ${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/utils/*.h )
+FILE( GLOB GUI_header_files 
+	${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/utils/*.h 
+	${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/*.h 
+	${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/components/*.h 
+	${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/widgets/utils/*.h 
+	)
 
 IF( ${OLD_M4D_WIDGETS_ENABLED} MATCHES "OFF"  )
 	FILTER_FILES_FOR_STRING( "/m4d" "${WidgetsSrc}" tmpList1 tmpList2 )

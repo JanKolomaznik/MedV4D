@@ -13,6 +13,11 @@ public:
 
 	~ViewerWindow();
 
+	void
+	processCommandLine()
+	{
+
+	}
 protected:
 
 private:

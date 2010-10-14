@@ -3,13 +3,13 @@
 #include <sstream>
 
 #include <QWidget>
-//#include "GUI/widgets/m4dGUISliceViewerWidget.h"
 #include "GUI/widgets/BasicSliceViewer.h"
 #include "Imaging/Imaging.h"
 #include "common/Common.h"
+#include "ViewerWindow.hpp"
 
 
-class ViewerWindow : public QWidget
+/*class ViewerWindow : public QWidget
 {
 private:
 	M4D::GUI::Viewer::BasicSliceViewer *viewerWidget;
@@ -35,7 +35,7 @@ ViewerWindow::ViewerWindow( M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging
 	setLayout(mainLayout);
 	resize(600,600);
 
-}
+}*/
 
 /*ViewerWindow::ViewerWindow( M4D::Imaging::AImage::Ptr image )
 {
@@ -56,8 +56,9 @@ ViewerWindow::ViewerWindow( M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging
 
 }*/
 
-ViewerWindow::~ViewerWindow()
+/*ViewerWindow::~ViewerWindow()
 {}
+*/
 
 int
 main( int argc, char** argv )
@@ -76,21 +77,24 @@ main( int argc, char** argv )
 	std::string filename = argv[1];
 
 
-	std::cout << "Loading file...";
+	/*std::cout << "Loading file...";
 	M4D::Imaging::AImage::Ptr image = 
 			M4D::Imaging::ImageFactory::LoadDumpedImage( filename );
 	std::cout << "Done\n";
 	
 
 	M4D::Imaging::ConnectionTyped< M4D::Imaging::AImage > prodconn;
-	prodconn.PutDataset( image );
+	prodconn.PutDataset( image );*/
 
 
 	QApplication app(argc, argv);
 	try {
 		std::cout << "Show window\n";
-		ViewerWindow viewer( prodconn );
-		//ViewerWindow viewer( image );
+		//ViewerWindow viewer( prodconn );
+		ViewerWindow viewer;
+		viewer.processCommandLine();
+
+
 		viewer.show();
 		return app.exec();
 	} catch ( std::exception &e )

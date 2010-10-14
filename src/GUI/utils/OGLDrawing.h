@@ -27,6 +27,8 @@ public:
 void 
 CheckForGLError( const std::string &situation );
 
+#define GL_CHECKED_CALL( ... ) { __VA_ARGS__ ; }
+
 void
 SetToViewConfiguration2D( const ViewConfiguration2D &config );
 

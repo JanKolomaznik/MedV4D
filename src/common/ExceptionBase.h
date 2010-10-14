@@ -101,6 +101,12 @@ public:
 	ENotFinished( std::string name ) throw() : ExceptionBase( name ) {}
 };
 
+class EAllocationFailed: public ExceptionBase
+{
+public:
+	EAllocationFailed() throw() : ExceptionBase( "Allocation failed" ) {}
+};
+
 
 class ExceptionWrongPointer: public ExceptionBase
 {

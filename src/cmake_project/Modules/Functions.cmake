@@ -76,7 +76,7 @@ FUNCTION(TARGET_MEDV4D_PROGRAM prog_name source_dir )
 	FILE( GLOB_RECURSE sources "${SRC_DIR}/*.cpp" )
 	FILE( GLOB_RECURSE rccinput "${SRC_DIR}/*.qrc" )
 	FILE( GLOB_RECURSE uiinput "${SRC_DIR}/*.ui" )
-	FILE( GLOB_RECURSE header_files "${SRC_DIR}/*.h" )
+	FILE( GLOB_RECURSE header_files "${SRC_DIR}/*.h" "${SRC_DIR}/*.hpp" )
 	FILE( GLOB_RECURSE tcc_files "${SRC_DIR}/*.tcc" )
 	
 	
@@ -120,7 +120,7 @@ ENDFUNCTION(TARGET_MEDV4D_PROGRAM prog_name source_dir)
 MACRO(MEDV4D_LIBRARY_TARGET_PREPARATION libName libSrcDir libHeaderDir)
 
 	FILE( GLOB SrcFiles "${libSrcDir}/*.cpp" )
-	FILE( GLOB Header_files "${libHeaderDir}/*.h" )
+	FILE( GLOB Header_files "${libHeaderDir}/*.h" "${libHeaderDir}/*.hpp" )
 	FILE( GLOB Tcc_files "${libHeaderDir}/*.tcc" )
 
 	SOURCE_GROUP( ${libName}_Headers FILES ${Header_files} )

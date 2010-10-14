@@ -14,6 +14,7 @@
 #include "Imaging/Imaging.h"
 #include "GUI/utils/ViewConfiguration.h"
 #include "GUI/utils/ImageDataRenderer.h"
+#include "GUI/utils/TransferFunctionBuffer.h"
 
 namespace M4D
 {
@@ -43,6 +44,12 @@ public:
 
 	void
 	SetLUTWindow( Vector< float32, 2 > window );
+
+	void
+	SetTransferFunctionBuffer( TransferFunctionBuffer1D::Ptr aTFunctionBuffer )
+	{
+		mTFunctionBuffer = aTFunctionBuffer;
+	}
 
 	const Vector< float32, 2 > &
 	GetLUTWindow()
@@ -127,6 +134,8 @@ protected:
 
 	Vector< float32, 2 > 			_lutWindow;
 	Vector< float32, 2 > 			_oldLUTWindow;
+
+	TransferFunctionBuffer1D::Ptr 		mTFunctionBuffer;
 
 	 enum InteractionMode { 
 		 imNONE,

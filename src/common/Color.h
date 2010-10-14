@@ -4,6 +4,10 @@
 #include "common/Vector.h"
 #include "common/MathTools.h"
 
+#ifdef RGB
+	#undef RGB
+#endif /*RGB*/
+
 template < typename TElementType >
 class RGB: public Vector< TElementType, 3 >
 {
@@ -212,14 +216,14 @@ RgbToHsv( const RGBf &aRgb )
 
 	/* Compute hue */
 	if (maxRgb == tmpRgb.Red() ) {
-		hsv.Hue() = 0.0 + 60.0*(tmpRgb.Green() - tmpRgb.Blue());
-		if (hsv.Hue() < 0.0) {
-			hsv.Hue() += 360.0;
+		hsv.Hue() = 0.0f + 60.0f*(tmpRgb.Green() - tmpRgb.Blue());
+		if (hsv.Hue() < 0.0f) {
+			hsv.Hue() += 360.0f;
 		}
 	} else if ( maxRgb == tmpRgb.Green() ) {
-		hsv.Hue() = 120.0 + 60.0*( tmpRgb.Blue() - tmpRgb.Red() );
+		hsv.Hue() = 120.0f + 60.0f*( tmpRgb.Blue() - tmpRgb.Red() );
 	} else /* maxRgb == tmpRgb.Blue() */ {
-		hsv.Hue() = 240.0 + 60.0*( tmpRgb.Red() - tmpRgb.Green() );
+		hsv.Hue() = 240.0f + 60.0f*( tmpRgb.Red() - tmpRgb.Green() );
 	}
 	return hsv;
 }
