@@ -17,6 +17,9 @@ public:
 	ViewerWindow( M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage > & conn);
 	//ViewerWindow( M4D::Imaging::AImage::Ptr image );
 	~ViewerWindow();
+
+	void
+	SetLUTWindow( Vector< float32, 2 > window );
 };
 
 
@@ -37,6 +40,10 @@ ViewerWindow::ViewerWindow( M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging
 
 }
 
+void ViewerWindow::SetLUTWindow( Vector< float32, 2 > window) 
+{
+	viewerWidget->SetLUTWindow(window);	
+}
 /*ViewerWindow::ViewerWindow( M4D::Imaging::AImage::Ptr image )
 {
 	viewerWidget = new M4D::GUI::Viewer::BasicSliceViewer();
@@ -92,6 +99,12 @@ main( int argc, char** argv )
 		ViewerWindow viewer( prodconn );
 		//ViewerWindow viewer( image );
 		viewer.show();
+
+		Vector<float32, 2> wl;
+		wl[0] = (350.0f ) / 65536.0f ;
+		wl[1] = (40 + 1000.0f) / 65536.0f ;
+		viewer.SetLUTWindow(wl);
+
 		return app.exec();
 	} catch ( std::exception &e )
 	{

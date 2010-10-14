@@ -7,6 +7,7 @@
 
 #include <omp.h>
 #include <algorithm>
+#include <queue>
 
 #ifdef OPENCL
 
@@ -20,6 +21,15 @@ namespace viewer {
 
 class CInfoDialog;
 class CProgress;
+
+template <class T>
+class CVolumeSet;
+
+template<class T>
+bool volWatershedBasic(CVolumeSet<T> &dest, const CVolumeSet<T> &src, const CVolumeSet<int> &markers);
+
+template <class T2>
+bool volGetLocalMinima(const CVolumeSet<T2> &src, CVolumeSet<int> &markers);
 
 // converter functions for copying/converting volumesets between different types
 template <class D, class S>
@@ -147,6 +157,7 @@ public:
 	inline int getDepth() const { return depth; }
 	void getSize(SPoint3D<int> &size) const { size.x = width; size.y = height; size.z = depth; }
 	SPoint3D<int> getSize() const { return SPoint3D<int> (width, height, depth); }
+	void getSize(int &iWidth, int &iHeight, int &iDepth) const {iWidth = width; iHeight = height; iDepth = depth; }
 	int getOrigPosX() const { return origPos.x; }
 	int getOrigPosY() const { return origPos.y; }
 	int getOrigPosZ() const { return origPos.z; }
@@ -2100,25 +2111,11 @@ public:
 	}
 #endif
 
-	void volGetLocalMinima(int **pDstIdxArray, int &iDstCnt) const {
-		// TODO: not currently needed
-		CVolumeSet<int> volMask;
-		volMask.copySize(*this);
-		volMask.setValue(-1);
-		int iCurrentIdx = 0;
-		for(int k = 0; k < depth; k++) {
-		for(int j = 0; j < height; j++) {
-			T *pData = planes[k] + j * width;
-			int *pMask = volMask.planes[k] + j * width;
-			for(int i = 0; i < width; i++) {
-				if(pMask[i] == -1) { // not visited yet or no local minimum
-					// is local minimum?
-
-				}
-			}
-		}
-		}
-	}
+	template <class T2>
+	friend bool volGetLocalMinima(const CVolumeSet<T2> &src, CVolumeSet<int> &markers);
+	
+	template <class T2>
+	friend bool volWatershedBasic<T2>(CVolumeSet<T2> &dest, const CVolumeSet<T2> &src, const CVolumeSet<int> &markers);
 
 	CVolumeSet(int sizeX, int sizeY, int sizeZ) {
 		cutXZ = cutYZ = NULL;
@@ -2160,26 +2157,307 @@ template<class T>
 struct WatershedCell {
 	T value;
 	int idx;
-	int x, y;
-	bool operator<(const WatershedCell &c2) {
-		return value < c2.value;
-	}
+	int x, y, z;
+	WatershedCell(T value, int idx, int x, int y, int z) : value(value), idx(idx), x(x), y(y), z(z) {}
 };
 
 template<class T>
-void volWatershedBasic(CVolumeSet<int> &dest, const CVolumeSet<float> &src, const CVolumeSet<int> &markers) {
+bool operator<(const WatershedCell<T> &c1, const WatershedCell<T> &c2) {
+	return c1.value > c2.value; // inverse operator for giving smaller values first in the priority queue
+}
+
+
+template<class T>
+void volGradientSizeApprox(CVolumeSet<T> &dest, const CVolumeSet<T> &src, const T &threshold) {
 	dest.copySize(src);
-	// construct queue
-	std::priority_queue<WatershedCell> processQueue;
+
+	int width = src.getWidth();
+	int height = src.getHeight();
+	int depth = src.getDepth();
+	float defaultValue = 0;
+
+	int i, j, k;
+	for(k = 0; k < depth; k++) {
+		for(j = 0; j < height; j++) {
+			for(i = 0; i < width; i++) {
+				if((k == 0) || (k == depth - 1) || 
+						(j == 0) || (j == height - 1) ||
+						(i == 0) || (i == width - 1)) {
+					dest.setValue(i,j,k, 0);
+				}else {
+					T gradientX, gradientY, gradientZ;
+					gradientX = (src.getValue(i + 1, j, k) - src.getValue(i-1, j, k)) / 2;
+					gradientY = (src.getValue(i, j + 1, k) - src.getValue(i, j - 1, k)) / 2;
+					gradientZ = (src.getValue(i, j, k + 1) - src.getValue(i, j, k - 1)) / 2;
+
+					T gradSize = sqrt(gradientX * gradientX + gradientY * gradientY + gradientZ * gradientZ);
+					if(gradSize <= threshold)
+						gradSize = 0;
+					dest.setValue(i,j,k, gradSize);
+				}
+			}
+		}
+	}
+}
+
+
+#define MARKER_UNDEF -1
+#define MARKER_VISITED -2
+#define MARKER_VALID 0
+
+template<class T>
+bool volGetLocalMinima(const CVolumeSet<T> &src, CVolumeSet<int> &markers) {
+	markers.copySize(src);
+	markers.setValue(MARKER_UNDEF);
+
+	int width, depth, height;
+	src.getSize(width, height, depth);
+
+	int currentIdx = 0;
 
 	for(int k = 0; k < depth; k++) {
 	for(int j = 0; j < height; j++) {
-		T* pMarkers = markers.
-		for(i = 0; i < width; i++) {
-			
+		int offset = width * j;
+
+		std::list<WatershedCell<T> > cellQueue;
+		std::list<WatershedCell<T> > fillQueue;
+		for(int i = 0; i < width; i++) {
+			T value = src.planes[k][offset+i];
+			if(markers.planes[k][offset+i] == MARKER_UNDEF) {
+				cellQueue.push_back(WatershedCell<T>(value, currentIdx, i, j, k));
+
+				bool bMinimum = true;
+
+				while(!cellQueue.empty()) {
+					WatershedCell<T> cell = *cellQueue.begin();
+					cellQueue.pop_front();
+					fillQueue.push_back(cell);
+
+					int cellOffset = width * cell.y;
+
+					if(cell.x>0 && (markers.planes[cell.z][cellOffset+cell.x-1] == MARKER_UNDEF)) {
+						T &destValue = src.planes[cell.z][cellOffset+cell.x-1];
+						if(destValue == value) {
+							cellQueue.push_back(WatershedCell<T>(value, currentIdx, cell.x-1, cell.y, cell.z));
+							markers.planes[cell.z][cellOffset+cell.x-1] = MARKER_VISITED;
+						} else if(destValue < value) {
+							bMinimum = false;
+						}
+					}
+
+					if(cell.x<width-1 && (markers.planes[cell.z][cellOffset+cell.x+1] == MARKER_UNDEF)) {
+						T &destValue = src.planes[cell.z][cellOffset+cell.x+1];
+						if(destValue == value) {
+							cellQueue.push_back(WatershedCell<T>(value, currentIdx, cell.x+1, cell.y, cell.z));
+							markers.planes[cell.z][cellOffset+cell.x+1] = MARKER_VISITED;
+						} else if(destValue < value) {
+							bMinimum = false;
+						}
+					}
+
+					if(cell.y>0 && (markers.planes[cell.z][cellOffset+cell.x-width] == MARKER_UNDEF)) {
+						T &destValue = src.planes[cell.z][cellOffset+cell.x-width];
+						if(destValue == value) {
+							cellQueue.push_back(WatershedCell<T>(value, currentIdx, cell.x, cell.y-1, cell.z));
+							markers.planes[cell.z][cellOffset+cell.x-width] = MARKER_VISITED;
+						} else if(destValue < value) {
+							bMinimum = false;
+						}
+					}
+
+					if(cell.y<height-1 && (markers.planes[cell.z][cellOffset+cell.x+width] == MARKER_UNDEF)) {
+						T &destValue = src.planes[cell.z][cellOffset+cell.x+width];
+						if(destValue == value) {
+							cellQueue.push_back(WatershedCell<T>(value, currentIdx, cell.x, cell.y+1, cell.z));
+							markers.planes[cell.z][cellOffset+cell.x+width] = MARKER_VISITED;
+						} else if(destValue < value) {
+							bMinimum = false;
+						}
+					}
+
+					if(cell.z>0 && (markers.planes[cell.z-1][cellOffset+cell.x] == MARKER_UNDEF)) {
+						T &destValue = src.planes[cell.z-1][cellOffset+cell.x];
+						if(destValue == value) {
+							cellQueue.push_back(WatershedCell<T>(value, currentIdx, cell.x, cell.y, cell.z-1));
+							markers.planes[cell.z-1][cellOffset+cell.x] = MARKER_VISITED;
+						} else if(destValue < value) {
+							bMinimum = false;
+						}
+					}
+
+					if(cell.z<depth-1 && (markers.planes[cell.z+1][cellOffset+cell.x] == MARKER_UNDEF)) {
+						T &destValue = src.planes[cell.z+1][cellOffset+cell.x];
+						if(destValue == value) {
+							cellQueue.push_back(WatershedCell<T>(value, currentIdx, cell.x, cell.y, cell.z+1));
+							markers.planes[cell.z+1][cellOffset+cell.x] = MARKER_VISITED;
+						} else if(destValue < value) {
+							bMinimum = false;
+						}
+					}
+				}
+
+				if(bMinimum) { // paint found voxels with marker id
+					while(!fillQueue.empty()) {
+						WatershedCell<T> cell = *fillQueue.begin();
+						fillQueue.pop_front();
+
+						markers.planes[cell.z][cell.y * width + cell.x] = currentIdx;
+					}
+					currentIdx++;
+				}
+
+				fillQueue.clear();
+			}
 		}
 	}
 	}
+
+
+	// clear temporary VISITED flag
+	for(int k = 0; k < depth; k++) {
+	for(int j = 0; j < height; j++) {
+		int offset = width * j;
+
+		for(int i = 0; i < width; i++) {
+			//dest.setValue(i,j,k, src.getValue(i,j,k));
+			if(markers.planes[k][offset + i] == MARKER_VISITED)
+				markers.planes[k][offset + i] = MARKER_UNDEF;
+			//if(markers.getValue(i,j,k) != MARKER_UNDEF)
+			//	dest.setValue(i,j,k, 3000);
+		}
+	}
+	}
+
+	return true;
+}
+
+template<class T>
+bool volWatershedBasic(CVolumeSet<T> &dest, const CVolumeSet<T> &src, const CVolumeSet<T> &orig, const CVolumeSet<int> &markers) {
+/*	if(!(src.getSize() == markers.getSize()) {
+		printf("Markers not the same size as source volume.");
+		return false;
+	}*/
+	dest.copyVolume(orig);
+	// construct queue
+	std::priority_queue<WatershedCell<T> > processQueue;
+
+	int width, depth, height;
+	src.getSize(width, height, depth);
+
+	for(int k = 0; k < depth; k++) {
+	for(int j = 0; j < height; j++) {
+		int offset = width * j;
+
+		for(int i = 0; i < width; i++) {
+			int markerIdx = markers.planes[k][offset+i];
+			if(markerIdx >= MARKER_VALID) {
+				bool bBorder = false;
+				if(i > 0 && markers.planes[k][offset+i-1] == MARKER_UNDEF) 
+					bBorder = true;
+				if(i < width-1 && markers.planes[k][offset+i+1] == MARKER_UNDEF) 
+					bBorder = true;
+				if(j > 0 && markers.planes[k][offset+i-width] == MARKER_UNDEF) 
+					bBorder = true;
+				if(j < height-1 && markers.planes[k][offset+i+width] == MARKER_UNDEF) 
+					bBorder = true;
+				if(k > 0 && markers.planes[k-1][offset+i] == MARKER_UNDEF) 
+					bBorder = true;
+				if(k < depth-1 && markers.planes[k+1][offset+i] == MARKER_UNDEF) 
+					bBorder = true;
+
+				if(bBorder) {
+					processQueue.push(WatershedCell<T>(src.planes[k][offset+i], markerIdx, i, j, k));
+					markers.planes[k][offset+i] = markerIdx;
+				}
+			}
+		}
+	}
+	}
+
+	int totalProcessed = 0;
+	int mark = 1000;
+	while(!processQueue.empty()) {
+		// get smallest value
+		const WatershedCell<T> cell = processQueue.top();
+		processQueue.pop();
+		totalProcessed++;
+		if(totalProcessed > mark) {
+			printf(".");
+			mark += 1000;
+		}
+
+		int i,j,k;
+		i = cell.x;
+		j = cell.y;
+		k = cell.z;
+		int offset = width * j;
+		int markerIdx = cell.idx;
+
+		if(i > 0) {
+			if(markers.planes[k][offset+i-1] == MARKER_UNDEF) {
+				processQueue.push(WatershedCell<T>(src.planes[k][offset+i-1], markerIdx, i-1, j, k));
+				markers.planes[k][offset+i-1] = markerIdx;
+			} else {
+				if(markers.planes[k][offset+i-1] != markerIdx)
+					dest.planes[k][offset+i] = 3000;
+			}
+		}
+		if(i < width-1) {
+			if(markers.planes[k][offset+i+1] == MARKER_UNDEF) {
+				processQueue.push(WatershedCell<T>(src.planes[k][offset+i+1], markerIdx, i+1, j, k));
+				markers.planes[k][offset+i+1] = markerIdx;
+			}else {
+				if(markers.planes[k][offset+i+1] != markerIdx)
+					dest.planes[k][offset+i] = 3000;
+			}
+		}
+		if(j > 0) {
+			if(markers.planes[k][offset+i-width] == MARKER_UNDEF) {
+				processQueue.push(WatershedCell<T>(src.planes[k][offset+i-width], markerIdx, i, j-1, k));
+				markers.planes[k][offset+i-width] = markerIdx;
+			}else {
+				if(markers.planes[k][offset+i-width] != markerIdx)
+					dest.planes[k][offset+i] = 3000;
+			}
+		}
+		if(j < height-1) {
+			if(markers.planes[k][offset+i+width] == MARKER_UNDEF) {
+				processQueue.push(WatershedCell<T>(src.planes[k][offset+i+width], markerIdx, i, j+1, k));
+				markers.planes[k][offset+i+width] = markerIdx;
+			}else {
+				if(markers.planes[k][offset+i+width] != markerIdx)
+					dest.planes[k][offset+i] = 3000;
+			}
+		}
+		if(k > 0) {
+			if(markers.planes[k-1][offset+i] == MARKER_UNDEF) {
+				processQueue.push(WatershedCell<T>(src.planes[k-1][offset+i], markerIdx, i, j, k-1));
+				markers.planes[k-1][offset+i] = markerIdx;
+			}else {
+				if(markers.planes[k-1][offset+i] != markerIdx)
+					dest.planes[k][offset+i] = 3000;
+			}
+		}
+		if(k < depth-1) {
+			if(markers.planes[k+1][offset+i] == MARKER_UNDEF) {
+				processQueue.push(WatershedCell<T>(src.planes[k+1][offset+i], markerIdx, i, j, k+1));
+				markers.planes[k+1][offset+i] = markerIdx;
+			}else {
+				if(markers.planes[k+1][offset+i] != markerIdx)
+					dest.planes[k][offset+i] = 3000;
+			}
+		}
+	}
+
+	printf("number of voxels: %d\n", totalProcessed);
+/*
+	while(!processQueue.empty() ) {
+		const WatershedCell<T> &cell = processQueue.top();
+		printf("Value: %.1f \tXYZ = %d %d %d \tIDX=%d\n", cell.value, cell.x, cell.y, cell.z, cell.idx);
+		processQueue.pop();
+	}*/
+
+	return true;
 }
 
 
