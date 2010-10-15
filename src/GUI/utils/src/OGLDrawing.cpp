@@ -11,7 +11,7 @@ CheckForGLError( const std::string &situation  )
 	GLenum errorCode = glGetError();
 	if (errorCode != GL_NO_ERROR) {
 		const char *string = (const char *)gluErrorString(errorCode);
-		_THROW_ GLException( TO_STRING( situation << string ) );
+		_THROW_ GLException( TO_STRING( situation << " : " << string ) );
 	}
 }
 

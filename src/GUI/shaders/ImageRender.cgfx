@@ -24,7 +24,8 @@ ApplyTransferFunction1D( float value, sampler1D aTransferFunction1D, float2 aTra
 	float range = aTransferFunction1DInterval[1] - aTransferFunction1DInterval[0];
 	float remappedValue = ( value - aTransferFunction1DInterval[0] ) / range;
 
-	return tex1D( aTransferFunction1D, remappedValue ).x;
+	return tex1D( aTransferFunction1D, remappedValue );
+	//return tex1D( aTransferFunction1D, 0.2 );
 }
 
 FragmentOutput fp_WLWindow_3D( 
@@ -55,14 +56,16 @@ FragmentOutput fp_TransferFunction1D_3D(
 		uniform sampler3D aTextureData : TEX0,
 		uniform sampler1D aTransferFunction1D : TEX1,
 		uniform float2 aTransferFunction1DInterval,
-		uniform float3 aImageDataResolution3D )
+		uniform float3 aImageDataResolution3D,
+		uniform float2 aMappedIntervalBands )
 {
 	FragmentOutput OUT;
 
 	float3 coordinates = aTexCoord;
 	//coordinates.x = round( coordinates.x * aImageDataResolution3D.x ) / aImageDataResolution3D.x;
 	//coordinates.y = round( coordinates.y * aImageDataResolution3D.y ) / aImageDataResolution3D.y;
-	float value = tex3D( aTextureData, coordinates ).x;
+	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
+	float value = (tex3D( aTextureData, coordinates ).x * range) + aMappedIntervalBands[0];
 		
 	OUT.color = ApplyTransferFunction1D( value, aTransferFunction1D, aTransferFunction1DInterval );
 
@@ -90,7 +93,7 @@ technique WLWindow_3D {
 
 technique TransferFunction1D_3D {
 	pass t0 {
-		FragmentProgram = compile fp40 fp_TransferFunction1D_3D( gImageData3D, gTransferFunction1D, gTransferFunction1DInterval, gImageDataResolution3D );
+		FragmentProgram = compile fp40 fp_TransferFunction1D_3D( gImageData3D, gTransferFunction1D, gTransferFunction1DInterval, gImageDataResolution3D, gMappedIntervalBands );
 	}
 }
 

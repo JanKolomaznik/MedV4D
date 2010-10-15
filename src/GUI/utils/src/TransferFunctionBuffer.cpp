@@ -103,7 +103,7 @@ CreateGLTransferFunctionBuffer1D( const TransferFunctionBuffer1D &aTransferFunct
 		GL_CHECKED_CALL( glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ) );
 		GL_CHECKED_CALL( glPixelStorei(GL_PACK_ALIGNMENT, 1) );
 		GL_CHECKED_CALL( glGenTextures( 1, &texName ) );
-		GL_CHECKED_CALL( glBindTexture ( GL_TEXTURE_3D, texName ) );
+		GL_CHECKED_CALL( glBindTexture ( GL_TEXTURE_1D, texName ) );
 		GL_CHECKED_CALL( glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE ) );
 
 		GL_CHECKED_CALL( glTexParameteri( GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE ) );

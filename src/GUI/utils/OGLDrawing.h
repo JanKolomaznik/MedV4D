@@ -27,7 +27,7 @@ public:
 void 
 CheckForGLError( const std::string &situation );
 
-#define GL_CHECKED_CALL( ... ) { __VA_ARGS__ ; }
+#define GL_CHECKED_CALL( ... ) { __VA_ARGS__ ; CheckForGLError( TO_STRING( __FILE__ " on " << __LINE__) ); }
 
 void
 SetToViewConfiguration2D( const ViewConfiguration2D &config );

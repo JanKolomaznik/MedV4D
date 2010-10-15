@@ -55,9 +55,10 @@ public:
 	template< typename CType >
 	Vector( CType x, CType y )
 		{
-			if( Dimension != 2 ) { 
+			/*if( Dimension != 2 ) { 
 				_THROW_ M4D::ErrorHandling::EBadDimension();
-			}
+			}*/
+			BOOST_STATIC_ASSERT( Dim == 2 );
 
 			_coordinates[0] = static_cast< CoordType >( x ); 
 			_coordinates[1] = static_cast< CoordType >( y ); 
@@ -65,9 +66,10 @@ public:
 
 	Vector( CoordType x, CoordType y, CoordType z )
 		{
-			if( Dimension != 3 ) {
+			/*if( Dimension != 3 ) {
 				_THROW_ M4D::ErrorHandling::EBadDimension();
-			}
+			}*/
+			BOOST_STATIC_ASSERT( Dim == 3 );
 
 			_coordinates[0] = x; 
 			_coordinates[1] = y; 
@@ -76,9 +78,10 @@ public:
 
 	Vector( CoordType x, CoordType y, CoordType z , CoordType w )
 		{
-			if( Dimension != 4 ) {
+			/*if( Dimension != 4 ) {
 				_THROW_ M4D::ErrorHandling::EBadDimension();
-			}
+			}*/
+			BOOST_STATIC_ASSERT( Dim == 4 );
 
 			_coordinates[0] = x; 
 			_coordinates[1] = y; 

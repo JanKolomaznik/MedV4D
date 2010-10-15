@@ -105,7 +105,7 @@ main( int argc, char** argv )
 
 
 	QApplication app(argc, argv);
-	try {
+	//try {
 		processCommandLine( argc, argv );
 
 		std::cout << "Show window\n";
@@ -118,13 +118,13 @@ main( int argc, char** argv )
 			viewer.openFile( QString::fromStdString( inFilename ) );
 		}
 		return app.exec();
-	} catch ( std::exception &e )
+	/*} catch ( std::exception &e )
 	{
 		QMessageBox::critical ( NULL, "Exception", QString( e.what() ) );
 	} 
 	catch (...) {
 		QMessageBox::critical ( NULL, "Exception", "Unknown error" );
-	}
+	}*/
 	
 	return 1;
 }

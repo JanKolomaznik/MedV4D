@@ -1,5 +1,6 @@
 #include "ViewerWindow.hpp"
 #include "GUI/utils/TransferFunctionBuffer.h"
+#include <cmath>
 
 ViewerWindow::ViewerWindow()
 {
@@ -45,13 +46,13 @@ ViewerWindow::openFile( const QString aPath )
 
 	M4D::GUI::TransferFunctionBuffer1D::Iterator it;
 	float r,g,b;
-	float step = 1.0f / 3*4096.0f;
+	float step = 1.0f / (3*4096.0f);
 	r = g = b = 0.0f;
 	for( it = transferFunction->Begin(); it != transferFunction->End(); ++it ) {
-		*it = RGBAf( r, g, b, 1.0f );
+		*it = /*RGBAf( 0.0f, 1.0f, 0.0f, 1.0f );*/RGBAf( r, g, b, 1.0f );
 		r += step;
-		g += 2*step;
-		b += 3*step;
+		g += sin( step/50.0f ) * 0.5f + 0.5f;
+		b += cos( step/40.0f ) * 0.5f + 0.5f;
 	}
 	mViewer->SetTransferFunctionBuffer( transferFunction );
 }

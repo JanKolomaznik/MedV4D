@@ -65,7 +65,7 @@ ImageDataRenderer::Render()
 	if( true ) {
 		_cgEffect.SetParameter( "gImageData3D", *_textureData );
 		_cgEffect.SetParameter( "gImageDataResolution3D", _textureData->GetDimensionedInterface<3>().GetSize() );
-		_cgEffect.SetParameter( "gMappedIntervalBands", Vector3f( 0, 65535 )/*_textureData->GetMappedInterval()*/ );
+		_cgEffect.SetParameter( "gMappedIntervalBands", Vector2f( 0, 65535 )/*_textureData->GetMappedInterval()*/ );
 		_cgEffect.SetParameter( "gWLWindow", _wlWindow );
 
 		_cgEffect.ExecuteTechniquePass( 
@@ -83,7 +83,7 @@ ImageDataRenderer::Render()
 
 		_cgEffect.SetParameter( "gImageData3D", *_textureData );
 		_cgEffect.SetParameter( "gImageDataResolution3D", _textureData->GetDimensionedInterface<3>().GetSize() );
-		_cgEffect.SetParameter( "gMappedIntervalBands", Vector3f( 0, 65535 )/*_textureData->GetMappedInterval()*/ );
+		_cgEffect.SetParameter( "gMappedIntervalBands", Vector2f( 0, 65535 )/*_textureData->GetMappedInterval()*/ );
 		_cgEffect.SetTextureParameter( "gTransferFunction1D", mTransferFunctionTexture->GetTextureID() );
 		_cgEffect.SetParameter( "gTransferFunction1DInterval", mTransferFunctionTexture->GetMappedInterval() );
 
