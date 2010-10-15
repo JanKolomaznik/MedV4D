@@ -71,10 +71,16 @@ CgEffect::Finalize()
 void
 CgEffect::SetParameter( std::string aName, const GLTextureImage &aTexture )
 {
+	SetTextureParameter( aName, aTexture.GetTextureGLID() );
+}
+
+void
+CgEffect::SetTextureParameter( std::string aName, GLuint aTexture )
+{
 	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
 //	ASSERT( )	TODO check type;
 
-	cgGLSetupSampler( cgParameter, aTexture.GetTextureGLID() );
+	cgGLSetupSampler( cgParameter, aTexture );
 	//cgSetSamplerState( cgParameter );
 }
 

@@ -71,6 +71,8 @@ public:
 	void
 	SetParameter( std::string aName, const GLTextureImage &aTexture );
 
+	void
+	SetTextureParameter( std::string aName, GLuint aTexture );
 protected:
 	virtual void
 	prepareState();

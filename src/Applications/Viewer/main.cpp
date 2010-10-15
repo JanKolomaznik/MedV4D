@@ -8,6 +8,7 @@
 #include "common/Common.h"
 #include "ViewerWindow.hpp"
 
+#include <tclap/CmdLine.h>
 
 /*class ViewerWindow : public QWidget
 {
@@ -60,6 +61,22 @@ ViewerWindow::ViewerWindow( M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging
 {}
 */
 
+std::string inFilename;
+
+void
+processCommandLine( int argc, char** argv )
+{
+	TCLAP::CmdLine cmd( "Median filter.", ' ', "");
+	/*---------------------------------------------------------------------*/
+
+	TCLAP::UnlabeledValueArg<std::string> inFilenameArg( "input", "Input image filename", true, "", "filename1" );
+	cmd.add( inFilenameArg );
+
+	cmd.parse( argc, argv );
+
+	inFilename = inFilenameArg.getValue();
+}
+
 int
 main( int argc, char** argv )
 {
@@ -69,12 +86,12 @@ main( int argc, char** argv )
         D_COMMAND( std::ofstream debugFile( "Debug.txt" ); );
         SET_DOUT( debugFile );
 
-	if( argc < 2 || argc > 2 ) {
+	/*if( argc < 2 || argc > 2 ) {
 		std::cerr << "Wrong argument count - must be in form: 'program file'\n";
 		return 1;
 	}
 
-	std::string filename = argv[1];
+	std::string filename = argv[1];*/
 
 
 	/*std::cout << "Loading file...";
@@ -89,13 +106,17 @@ main( int argc, char** argv )
 
 	QApplication app(argc, argv);
 	try {
+		processCommandLine( argc, argv );
+
 		std::cout << "Show window\n";
 		//ViewerWindow viewer( prodconn );
 		ViewerWindow viewer;
-		viewer.processCommandLine();
 
 
 		viewer.show();
+		if ( !inFilename.empty() ) {
+			viewer.openFile( QString::fromStdString( inFilename ) );
+		}
 		return app.exec();
 	} catch ( std::exception &e )
 	{

@@ -13,12 +13,15 @@ public:
 
 	~ViewerWindow();
 
-	void
-	processCommandLine()
-	{
 
-	}
+public slots:
+	void
+	openFile();
+
+	void 
+	openFile( const QString aPath );
 protected:
+	M4D::Imaging::ConnectionTyped< M4D::Imaging::AImage > mProdconn;
 
 private:
 

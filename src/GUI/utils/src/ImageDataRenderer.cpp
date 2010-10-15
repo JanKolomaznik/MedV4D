@@ -18,9 +18,6 @@ ImageDataRenderer::Initialize()
 
 	InitializeCg();
 	_cgEffect.Initialize( "ImageRender.cgfx" );
-
-	_wlWindow[0] = 0.008f;
-	_wlWindow[1] = 0.007f;
 }
 
 void
@@ -72,7 +69,7 @@ ImageDataRenderer::Render()
 		_cgEffect.SetParameter( "gWLWindow", _wlWindow );
 
 		_cgEffect.ExecuteTechniquePass( 
-				"WLWindow3D", 
+				"WLWindow_3D", 
 				boost::bind( &M4D::GLDrawVolumeSlice, 
 					_textureData->GetDimensionedInterface< 3 >().GetMinimum(), 
 					_textureData->GetDimensionedInterface< 3 >().GetMaximum(), 
@@ -87,10 +84,11 @@ ImageDataRenderer::Render()
 		_cgEffect.SetParameter( "gImageData3D", *_textureData );
 		_cgEffect.SetParameter( "gImageDataResolution3D", _textureData->GetDimensionedInterface<3>().GetSize() );
 		_cgEffect.SetParameter( "gMappedIntervalBands", Vector3f( 0, 65535 )/*_textureData->GetMappedInterval()*/ );
-		_cgEffect.SetParameter( "gWLWindow", _wlWindow );
+		_cgEffect.SetTextureParameter( "gTransferFunction1D", mTransferFunctionTexture->GetTextureID() );
+		_cgEffect.SetParameter( "gTransferFunction1DInterval", mTransferFunctionTexture->GetMappedInterval() );
 
 		_cgEffect.ExecuteTechniquePass( 
-				"WLWindow3D", 
+				"TransferFunction1D_3D", 
 				boost::bind( &M4D::GLDrawVolumeSlice, 
 					_textureData->GetDimensionedInterface< 3 >().GetMinimum(), 
 					_textureData->GetDimensionedInterface< 3 >().GetMaximum(), 

@@ -13,14 +13,14 @@
   <property name="windowTitle">
    <string>ViewerWindow</string>
   </property>
-  <widget class="M4D::GUI::Viewer::BasicSliceViewer" name="centralwidget"/>
+  <widget class="M4D::GUI::Viewer::BasicSliceViewer" name="mViewer"/>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -48,10 +48,16 @@
    <property name="text">
     <string>Open</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
   </action>
   <action name="actionQuit">
    <property name="text">
     <string>Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
    </property>
   </action>
  </widget>
