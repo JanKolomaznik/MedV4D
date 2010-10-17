@@ -53,6 +53,7 @@ BasicSliceViewer::SetTransferFunctionBuffer( TransferFunctionBuffer1D::Ptr aTFun
 
 	_renderer.SetTransferFunction( mTransferFunctionTexture );
 
+	update();
 }
 
 void
@@ -134,13 +135,22 @@ BasicSliceViewer::resizeOverlayGL( int width, int height )
 void	
 BasicSliceViewer::mouseMoveEvent ( QMouseEvent * event )
 { 
+	QPoint tmp = event->globalPos(); 
 	if( _interactionMode == imSETTING_LUT_WINDOW) {
-		QPoint tmp = event->globalPos(); 
 		int x = (tmp - _clickPosition).x();
 		int y = (tmp - _clickPosition).y();
 		SetLUTWindow( _oldLUTWindow + Vector< float32, 2 >( 3000*((float32)x)/width(), 3000*((float32)y)/height() ) );
 		this->update();
 	}
+	if( _interactionMode == imORBIT_CAMERA) {
+		int x = (tmp - mLastPoint).x();
+		int y = (tmp - mLastPoint).y();
+		mLastPoint = event->globalPos();
+		_renderer.GetViewConfig3D().camera.YawAround( x * -0.05f );
+		_renderer.GetViewConfig3D().camera.PitchAround( y * -0.05f );
+		this->update();
+	}
+
 }
 
 void	
@@ -161,6 +171,13 @@ BasicSliceViewer::mousePressEvent ( QMouseEvent * event )
 	if( event->button() == Qt::RightButton ) {
 		_interactionMode = imSETTING_LUT_WINDOW;
 		_oldLUTWindow = GetLUTWindow();
+		this->update();
+		return;
+	}
+
+	if( event->button() == Qt::LeftButton ) {
+		_interactionMode = imORBIT_CAMERA;
+		mLastPoint = _clickPosition;
 		this->update();
 		return;
 	}

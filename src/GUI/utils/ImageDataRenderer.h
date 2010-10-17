@@ -11,6 +11,19 @@ namespace M4D
 {
 namespace GUI
 {
+enum RendererType
+{
+	rt2DAlignedSlices,
+	rt3DGeneralSlices,
+	rt3D
+};
+
+enum ColorTransform
+{
+	ctLUTWindow,
+	ctTransferFunction1D,
+	ctMaxIntensityProjection
+};
 
 
 typedef uint32 RenderingMode;
@@ -25,6 +38,15 @@ struct SliceViewConfig
 	Vector< int32, 3 >	currentSlice;
 
 	ViewConfiguration2D	viewConfiguration;
+};
+
+struct ViewConfig3D
+{
+	ViewConfig3D(): camera( Vector<float,3>( 0.0f, 0.0f, 1500.0f ), Vector<float,3>( 0.0f, 0.0f, 0.0f ) )
+	{}
+
+
+	Camera		camera;
 };
 
 class ImageDataRenderer
@@ -49,13 +71,15 @@ public:
 	SetMaskColorMap( GLTextureImage::Ptr aData );
 
 	void
-	SetRenderingMode( RenderingMode aMode );
+	SetRendererType( RendererType aRendererType );
+
+	void
+	SetColorTransformType( RendererType aRendererType );
 
 	void
 	SetLUTWindow( const Vector< float32, 2 > &aLUTWindow )
 	{ 
 		_wlWindow = aLUTWindow; 
-		LOG( _wlWindow );	
 	}
 
 	void
@@ -63,11 +87,17 @@ public:
 
 	SliceViewConfig &
 	GetSliceViewConfig()
-	{ return _sliceViewConfig; }
+	{ return mSliceViewConfig; }
+
+	ViewConfig3D &
+	GetViewConfig3D()
+	{ return mViewConfig3D; }
 
 protected:
 
-	SliceViewConfig 			_sliceViewConfig;
+	SliceViewConfig 			mSliceViewConfig;
+
+	ViewConfig3D				mViewConfig3D;
 
 	Vector2f				_wlWindow;
 	GLTransferFunctionBuffer1D::Ptr 	mTransferFunctionTexture;

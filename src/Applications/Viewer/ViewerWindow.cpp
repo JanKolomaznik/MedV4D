@@ -1,5 +1,4 @@
 #include "ViewerWindow.hpp"
-#include "GUI/utils/TransferFunctionBuffer.h"
 #include <cmath>
 
 ViewerWindow::ViewerWindow()
@@ -12,7 +11,18 @@ ViewerWindow::ViewerWindow()
 		QPoint putAt=myRegion.topRight();
 		SetWindowPos(GetConsoleWindow(),winId(),putAt.x()+1,putAt.y(),0,0,SWP_NOSIZE);
 	#endif
+	
+	QDockWidget * dockwidget = new QDockWidget;
+	mTransferFunctionEditor = new M4D::GUI::TransferFunction1DEditor;
+	dockwidget->setWidget( mTransferFunctionEditor );
 
+	mTransferFunctionEditor->SetValueInterval( 0.0f, 3000.0f );
+	mTransferFunctionEditor->SetMappedValueInterval( 0.0f, 1.0f );
+	mTransferFunctionEditor->SetBorderWidth( 5 );
+	addDockWidget (Qt::RightDockWidgetArea, dockwidget );
+
+	mTransFuncTimer.setInterval( 500 );
+	QObject::connect( &mTransFuncTimer, SIGNAL( timeout() ), this, SLOT( applyTransferFunction() ) );
 
 }
 
@@ -20,6 +30,35 @@ ViewerWindow::~ViewerWindow()
 {
 
 }
+
+void
+ViewerWindow::applyTransferFunction()
+{
+	mViewer->SetTransferFunctionBuffer( mTransferFunctionEditor->GetTransferFunctionBuffer() );
+}
+
+void
+ViewerWindow::updateTransferFunction()
+{
+	M4D::Common::TimeStamp timestamp = mTransferFunctionEditor->GetTimeStamp();
+	if ( timestamp != mLastTimeStamp ) {
+		applyTransferFunction();
+		mLastTimeStamp = timestamp;
+	}
+}
+
+void
+ViewerWindow::toggleInteractiveTransferFunction( bool aChecked )
+{
+	if ( aChecked ) {
+		D_PRINT( "Transfer function - interactive manipulation enabled" );
+		mTransFuncTimer.start();
+	} else {
+		D_PRINT( "Transfer function - interactive manipulation disabled" );
+		mTransFuncTimer.stop();
+	}
+}
+
 
 void
 ViewerWindow::openFile()

@@ -37,6 +37,7 @@
 #include "common/Vector.h"
 #include "common/Color.h"
 #include "common/IOStreams.h"
+#include "common/TimeStamp.h"
 #include <iomanip>
 #include <sstream>
 

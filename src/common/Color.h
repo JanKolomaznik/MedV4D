@@ -8,143 +8,203 @@
 	#undef RGB
 #endif /*RGB*/
 
-template < typename TElementType >
-class RGB: public Vector< TElementType, 3 >
+template < typename TChannelType >
+class RGB: public Vector< TChannelType, 3 >
 {
 public:
+	template< unsigned tCoord >
+	struct ValueAccessor
+	{
+		TChannelType &
+		operator()( RGB< TChannelType > & aData ) const
+		{
+			return aData.template StaticGet< tCoord >();
+		}
+		TChannelType
+		operator()( const RGB< TChannelType > & aData ) const
+		{
+			return aData.template StaticGet< tCoord >();
+		}
+	};
 
-	RGB( TElementType r, TElementType g, TElementType b ): Vector< TElementType, 3 >( r, g, b )
+	RGB( TChannelType r, TChannelType g, TChannelType b ): Vector< TChannelType, 3 >( r, g, b )
 	{}
 	RGB()
 	{}
 
-	TElementType &
+	TChannelType &
 	Red()
 		{ return this->template StaticGet< 0 >(); }
-	TElementType
+	TChannelType
 	Red()const
 		{ return this->template StaticGet< 0 >(); }
 
-	TElementType &
+	TChannelType &
 	Green()
 		{ return this->template StaticGet< 1 >(); }
-	TElementType
+	TChannelType
 	Green()const
 		{ return this->template StaticGet< 1 >(); }
 
-	TElementType &
+	TChannelType &
 	Blue()
 		{ return this->template StaticGet< 2 >(); }
-	TElementType
+	TChannelType
 	Blue()const
 		{ return this->template StaticGet< 2 >(); }
 
 };
 
-template < typename TElementType >
-class RGBA: public Vector< TElementType, 4 >
+template < typename TChannelType >
+class RGBA: public Vector< TChannelType, 4 >
 {
 public:
-	RGBA( TElementType r, TElementType g, TElementType b, TElementType a ): Vector< TElementType, 4 >( r, g, b, a )
+	template< unsigned tCoord >
+	struct ValueAccessor
+	{
+		TChannelType &
+		operator()( RGBA< TChannelType > & aData ) const
+		{
+			return aData.template StaticGet< tCoord >();
+		}
+		TChannelType
+		operator()( const RGBA< TChannelType > & aData ) const
+		{
+			return aData.template StaticGet< tCoord >();
+		}
+	};
+
+
+	RGBA( TChannelType r, TChannelType g, TChannelType b, TChannelType a ): Vector< TChannelType, 4 >( r, g, b, a )
 	{}
 	RGBA()
 	{}
 
-	TElementType &
+	TChannelType &
 	Red()
 		{ return this->template StaticGet< 0 >(); }
-	TElementType
+	TChannelType
 	Red()const
 		{ return this->template StaticGet< 0 >(); }
 
-	TElementType &
+	TChannelType &
 	Green()
 		{ return this->template StaticGet< 1 >(); }
-	TElementType
+	TChannelType
 	Green()const
 		{ return this->template StaticGet< 1 >(); }
 
-	TElementType &
+	TChannelType &
 	Blue()
 		{ return this->template StaticGet< 2 >(); }
-	TElementType
+	TChannelType
 	Blue()const
 		{ return this->template StaticGet< 2 >(); }
 
-	TElementType &
+	TChannelType &
 	Alpha()
 		{ return this->template StaticGet< 3 >(); }
-	TElementType
+	TChannelType
 	Alpha()const
 		{ return this->template StaticGet< 3 >(); }
 };
 
-template < typename TElementType >
-class HSV: public Vector< TElementType, 3 >
+template < typename TChannelType >
+class HSV: public Vector< TChannelType, 3 >
 {
 public:
-	HSV( TElementType h, TElementType s, TElementType v ): Vector< TElementType, 3 >( h, s, v )
+	template< unsigned tCoord >
+	struct ValueAccessor
+	{
+		TChannelType &
+		operator()( HSV< TChannelType > & aData ) const
+		{
+			return aData.template StaticGet< tCoord >();
+		}
+		TChannelType
+		operator()( const HSV< TChannelType > & aData ) const
+		{
+			return aData.template StaticGet< tCoord >();
+		}
+	};
+
+	HSV( TChannelType h, TChannelType s, TChannelType v ): Vector< TChannelType, 3 >( h, s, v )
 	{}
 	HSV()
 	{}
 
-	TElementType &
+	TChannelType &
 	Hue()
 		{ return this->template StaticGet< 0 >(); }
-	TElementType
+	TChannelType
 	Hue()const
 		{ return this->template StaticGet< 0 >(); }
 
-	TElementType &
+	TChannelType &
 	Saturation()
 		{ return this->template StaticGet< 1 >(); }
-	TElementType
+	TChannelType
 	Saturation()const
 		{ return this->template StaticGet< 1 >(); }
 
-	TElementType &
+	TChannelType &
 	Value()
 		{ return this->template StaticGet< 2 >(); }
-	TElementType
+	TChannelType
 	Value()const
 		{ return this->template StaticGet< 2 >(); }
 
 };
 
-template < typename TElementType >
-class HSVA: public Vector< TElementType, 4 >
+template < typename TChannelType >
+class HSVA: public Vector< TChannelType, 4 >
 {
 public:
-	HSVA( TElementType h, TElementType s, TElementType v, TElementType a ): Vector< TElementType, 4 >( h, s, v, a )
+	template< unsigned tCoord >
+	struct ValueAccessor
+	{
+		TChannelType &
+		operator()( HSVA< TChannelType > & aData ) const
+		{
+			return aData.template StaticGet< tCoord >();
+		}
+		TChannelType
+		operator()( const HSVA< TChannelType > & aData ) const
+		{
+			return aData.template StaticGet< tCoord >();
+		}
+	};
+
+	HSVA( TChannelType h, TChannelType s, TChannelType v, TChannelType a ): Vector< TChannelType, 4 >( h, s, v, a )
 	{}
 	HSVA()
 	{}
 
-	TElementType &
+	TChannelType &
 	Hue()
 		{ return this->template StaticGet< 0 >(); }
-	TElementType
+	TChannelType
 	Hue()const
 		{ return this->template StaticGet< 0 >(); }
 
-	TElementType &
+	TChannelType &
 	Saturation()
 		{ return this->template StaticGet< 1 >(); }
-	TElementType
+	TChannelType
 	Saturation()const
 		{ return this->template StaticGet< 1 >(); }
 
-	TElementType &
+	TChannelType &
 	Value()
 		{ return this->template StaticGet< 2 >(); }
-	TElementType
+	TChannelType
 	Value()const
 		{ return this->template StaticGet< 2 >(); }
 
-	TElementType &
+	TChannelType &
 	Alpha()
 		{ return this->template StaticGet< 3 >(); }
-	TElementType
+	TChannelType
 	Alpha()const
 		{ return this->template StaticGet< 3 >(); }
 };

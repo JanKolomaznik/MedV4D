@@ -125,6 +125,10 @@ struct GLTextureImageTyped: public GLTextureImage
 	{ return _image->GetRealMaximum(); }
 
 	Vector< float32, Dim > 
+	GetRealSize()const
+	{ return _image->GetRealSize(); }
+
+	Vector< float32, Dim > 
 	GetElementExtents()const
 	{ return _image->GetElementExtents(); }
 

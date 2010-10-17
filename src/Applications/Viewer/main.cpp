@@ -69,7 +69,7 @@ processCommandLine( int argc, char** argv )
 	TCLAP::CmdLine cmd( "Median filter.", ' ', "");
 	/*---------------------------------------------------------------------*/
 
-	TCLAP::UnlabeledValueArg<std::string> inFilenameArg( "input", "Input image filename", true, "", "filename1" );
+	TCLAP::UnlabeledValueArg<std::string> inFilenameArg( "input", "Input image filename", false, "", "filename" );
 	cmd.add( inFilenameArg );
 
 	cmd.parse( argc, argv );
@@ -83,8 +83,8 @@ main( int argc, char** argv )
 	//std::ofstream logFile( "Log.txt" );
         //SET_LOUT( logFile );
 
-        D_COMMAND( std::ofstream debugFile( "Debug.txt" ); );
-        SET_DOUT( debugFile );
+        //D_COMMAND( std::ofstream debugFile( "Debug.txt" ); );
+        //SET_DOUT( debugFile );
 
 	/*if( argc < 2 || argc > 2 ) {
 		std::cerr << "Wrong argument count - must be in form: 'program file'\n";
@@ -117,6 +117,7 @@ main( int argc, char** argv )
 		if ( !inFilename.empty() ) {
 			viewer.openFile( QString::fromStdString( inFilename ) );
 		}
+		viewer.applyTransferFunction();
 		return app.exec();
 	/*} catch ( std::exception &e )
 	{

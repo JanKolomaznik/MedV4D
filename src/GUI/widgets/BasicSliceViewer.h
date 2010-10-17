@@ -23,6 +23,8 @@ namespace GUI
 namespace Viewer
 {
 
+
+
 class BasicSliceViewer : 
 	public ViewerConstructionKit<   QGLWidget, 
 					PortInterfaceHelper< boost::mpl::vector< M4D::Imaging::AImage > >
@@ -57,6 +59,27 @@ public:
 
 	void
 	ZoomFit( ZoomType zoomType = ztFIT );
+
+
+	bool
+	IsColorTransformAvailable( unsigned aTransformType );
+
+public slots:
+	void
+	SetColorTransform( unsigned aTransformType )
+	{
+
+	}
+
+	void
+	SetViewerType( unsigned aViewerType )
+	{
+
+	}
+
+signals:
+	void
+	SettingsChanged();
 
 	/*void
 	SetImage( M4D::Imaging::AImage::Ptr image )
@@ -128,6 +151,7 @@ protected:
 	Vector< int32, 3 >			_regionMax;
 
 	QPoint					_clickPosition;
+	QPoint					mLastPoint;
 
 	Vector< float32, 2 > 			_lutWindow;
 	Vector< float32, 2 > 			_oldLUTWindow;
@@ -136,8 +160,9 @@ protected:
 	GLTransferFunctionBuffer1D::Ptr 	mTransferFunctionTexture;
 
 	 enum InteractionMode { 
-		 imNONE,
-		 imSETTING_LUT_WINDOW 
+		imNONE,
+		imSETTING_LUT_WINDOW,
+		imORBIT_CAMERA 
 	 }					_interactionMode;
 	 bool					_prepared;
 	//M4D::Imaging::AImage::Ptr 		_image;

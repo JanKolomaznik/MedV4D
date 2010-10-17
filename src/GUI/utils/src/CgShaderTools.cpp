@@ -85,6 +85,33 @@ CgEffect::SetTextureParameter( std::string aName, GLuint aTexture )
 }
 
 void
+CgEffect::SetParameter( std::string aName, float aValue )
+{
+	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
+//	ASSERT( )	TODO check type;
+
+	cgSetParameterValuefr( cgParameter, 1, &aValue );
+}
+
+void
+CgEffect::SetParameter( std::string aName, double aValue )
+{
+	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
+//	ASSERT( )	TODO check type;
+
+	cgSetParameterValuedr( cgParameter, 1, &aValue );
+}
+
+void
+CgEffect::SetParameter( std::string aName, int aValue )
+{
+	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );
+//	ASSERT( )	TODO check type;
+
+	cgSetParameterValueir( cgParameter, 1, &aValue );
+}
+
+void
 CgEffect::prepareState()
 {
 

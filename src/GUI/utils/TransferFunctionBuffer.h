@@ -50,6 +50,29 @@ public:
 	MappedInterval
 	GetMappedInterval()const;
 
+	Iterator
+	GetNearest( float32 aValue );
+	
+	ConstIterator
+	GetNearest( float32 aValue )const;
+
+	int
+	GetNearestIndex( float32 aValue )const;
+
+	ValueType &
+	operator[]( size_t aIdx )
+	{
+		ASSERT( aIdx < mSize );
+		return mBuffer[ aIdx ];
+	}
+
+	ValueType
+	operator[]( size_t aIdx ) const
+	{
+		ASSERT( aIdx < mSize );
+		return mBuffer[ aIdx ];
+	}
+
 	void
 	SetMappedInterval( MappedInterval aMappedInterval );
 protected:

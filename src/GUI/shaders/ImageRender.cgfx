@@ -1,22 +1,63 @@
 
+#define DELTA (0.01)
+#define THRESHOLD (0.1)
 struct FragmentOutput
 {
 	float4 color : COLOR;
+};
+
+struct Material
+{
+	float3	Ka;
+	float3	Kd;
+	float3	Ks;
+	float	shininess;
+};
+
+struct Light
+{
+	float3 color;
+	float3 ambient;
 };
 
 sampler3D gImageData3D = sampler_state { MinFilter = Linear; MaxFilter = Linear; };
 int3 gImageDataResolution3D = {0, 0, 0};
 float2 gMappedIntervalBands;
 
+float3 gLightPosition;
+float3 gLightColor;
+float3 gEyePosition;
+
 
 sampler3D gMaskData3D;
 
 sampler1D gTransferFunction1D;
 float2 gTransferFunction1DInterval;
+float gAlphaModulation;
 float2 gWLWindow;
 sampler1D gColorMap;
 float gMaskAlpha;
 
+float3 BlinnPhongShading( float3 N, float3 V, float3 L, Material material, Light light )
+{
+	//half way vector
+	float3 H = normalize( L + V );
+
+	//compute ambient term
+	float3 ambient = material.Ka * light.ambient;
+
+	//compute diffuse term
+	float diffuseLight = max( dot( L, N ), 0 );
+	float3 diffuse = material.Kd * light.color * diffuseLight;
+
+	//compute specular term
+	float specularLight = pow( max( dot( H, N ), 0), material.shininess );
+	if( diffuseLight <= 0.0 )
+		specularLight = 0.0;
+	float3 specular = material.Ks * light.color * specularLight;
+
+	return ambient + diffuse + specular;
+}
 
 float4
 ApplyTransferFunction1D( float value, sampler1D aTransferFunction1D, float2 aTransferFunction1DInterval )
@@ -25,7 +66,6 @@ ApplyTransferFunction1D( float value, sampler1D aTransferFunction1D, float2 aTra
 	float remappedValue = ( value - aTransferFunction1DInterval[0] ) / range;
 
 	return tex1D( aTransferFunction1D, remappedValue );
-	//return tex1D( aTransferFunction1D, 0.2 );
 }
 
 FragmentOutput fp_WLWindow_3D( 
@@ -72,6 +112,61 @@ FragmentOutput fp_TransferFunction1D_3D(
 	return OUT;
 }
 
+FragmentOutput fp_TransferFunction1DShading_3D( 
+		float3 aTexCoord : TEXCOORD0, 
+		uniform sampler3D aTextureData : TEX0,
+		uniform sampler1D aTransferFunction1D : TEX1,
+		uniform float2 aTransferFunction1DInterval,
+		uniform float aAlphaModulation,
+		uniform float3 aImageDataResolution3D,
+		uniform float2 aMappedIntervalBands,
+		uniform	float3 aLightPosition,
+		uniform	float3 aLightColor,
+		uniform	float3 aEyePosition
+		)
+{
+	FragmentOutput OUT;
+
+	float3 coordinates = aTexCoord;
+	float3 position = aTexCoord;
+	//coordinates.x = round( coordinates.x * aImageDataResolution3D.x ) / aImageDataResolution3D.x;
+	//coordinates.y = round( coordinates.y * aImageDataResolution3D.y ) / aImageDataResolution3D.y;
+	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
+	float value = (tex3D( aTextureData, coordinates ).x * range) + aMappedIntervalBands[0];
+	OUT.color = ApplyTransferFunction1D( value, aTransferFunction1D, aTransferFunction1DInterval );
+
+	if( OUT.color.a > THRESHOLD ) {
+		float3 sample1, sample2;
+		
+		sample1.x = tex3D( aTextureData, aTexCoord - half3( DELTA, 0.0, 0.0 ) ).x;
+		sample2.x = tex3D( aTextureData, aTexCoord + half3( DELTA, 0.0, 0.0 ) ).x;
+		sample1.y = tex3D( aTextureData, aTexCoord - half3( 0.0, DELTA, 0.0 ) ).x;
+		sample2.y = tex3D( aTextureData, aTexCoord + half3( 0.0, DELTA, 0.0 ) ).x;
+		sample1.z = tex3D( aTextureData, aTexCoord - half3( 0.0, 0.0, DELTA ) ).x;
+		sample2.z = tex3D( aTextureData, aTexCoord + half3( 0.0, 0.0, DELTA ) ).x;
+
+		float3 N = normalize( sample2 - sample1 );
+
+		float3 L = normalize( aLightPosition - position );
+		float3 V = normalize( aEyePosition - position );
+
+		Material material;
+		material.Ka = float3(0.1,0.1,0.1);
+		material.Kd = float3(0.6,0.6,0.6);
+		material.Ks = float3(0.2,0.2,0.2);
+		material.shininess = 100;
+		
+		Light light;
+		light.color = aLightColor;
+		light.ambient = float3(0.3,0.3,0.3);
+
+		OUT.color.rgb += BlinnPhongShading( N, V, L, material, light );
+	}
+	OUT.color.a *= aAlphaModulation;
+	return OUT;
+}
+
+
 FragmentOutput fp_ColorMappedMask_3D( 
 		float3 aTexCoord : TEXCOORD0, 
 		uniform sampler3D aMaskData : TEX0, 
@@ -81,6 +176,14 @@ FragmentOutput fp_ColorMappedMask_3D(
 	FragmentOutput OUT;
 
 
+	return OUT;
+}
+
+FragmentOutput fp_Test()
+{
+	FragmentOutput OUT;
+
+	OUT.color = float4( 1.0f, 0.0f, 0.0f, 1.0 );
 	return OUT;
 }
 
@@ -94,12 +197,39 @@ technique WLWindow_3D {
 technique TransferFunction1D_3D {
 	pass t0 {
 		FragmentProgram = compile fp40 fp_TransferFunction1D_3D( gImageData3D, gTransferFunction1D, gTransferFunction1DInterval, gImageDataResolution3D, gMappedIntervalBands );
+
+		DepthTestEnable = true;
+		DepthMask = true;
+		CullFaceEnable = false;
+		BlendEnable = false;
+		DepthFunc = LEqual;
 	}
 }
+
+technique TransferFunction1DShading_3D {
+	pass t0 {
+		FragmentProgram = compile fp40 fp_TransferFunction1DShading_3D( gImageData3D, gTransferFunction1D, gTransferFunction1DInterval, gAlphaModulation, gImageDataResolution3D, gMappedIntervalBands, gLightPosition, gLightColor, gEyePosition );
+
+		DepthTestEnable = true;
+		DepthMask = true;
+		CullFaceEnable = false;
+		BlendEnable = true;
+		BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha );
+		DepthFunc = LEqual;
+	}
+}
+
+
 
 
 technique ColorMappedMask_3D {
 	pass t0 {
 		FragmentProgram = compile fp40 fp_ColorMappedMask_3D( gMaskData3D, gColorMap, gMaskAlpha );
+	}
+}
+
+technique Test {
+	pass t0 {
+		FragmentProgram = compile fp40 fp_Test();
 	}
 }

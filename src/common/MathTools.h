@@ -152,6 +152,11 @@ Sgn( NType a ) {
 	return 0;
 }
 
+inline int
+Round( float32 aValue )
+{
+	return ceil( aValue + 0.5f );
+}
 
 template< typename NType >
 inline NType

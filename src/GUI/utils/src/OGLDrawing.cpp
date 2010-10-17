@@ -42,7 +42,9 @@ SetToViewConfiguration2D( const ViewConfiguration2D &config )
 
 void
 SetViewAccordingToCamera( const Camera &camera )
-{
+{	
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
 
 	gluPerspective(
 		camera.GetFieldOfView(), 
@@ -51,6 +53,8 @@ SetViewAccordingToCamera( const Camera &camera )
  		camera.GetZFar()
 		);
 
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 	gluLookAt(	
 		camera.GetEyePosition()[0], 
 		camera.GetEyePosition()[1], 

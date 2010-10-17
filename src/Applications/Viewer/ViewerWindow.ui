@@ -43,6 +43,12 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionOpen"/>
+   <addaction name="action2D"/>
+   <addaction name="action3D"/>
+   <addaction name="actionUse_WLWindow"/>
+   <addaction name="actionUse_Transfer_Function"/>
+   <addaction name="actionApplyTransferFunction"/>
   </widget>
   <action name="actionOpen">
    <property name="text">
@@ -60,6 +66,34 @@
     <string>Ctrl+Q</string>
    </property>
   </action>
+  <action name="actionApplyTransferFunction">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>ApplyTransferFunction</string>
+   </property>
+  </action>
+  <action name="actionUse_WLWindow">
+   <property name="text">
+    <string>Use WLWindow</string>
+   </property>
+  </action>
+  <action name="actionUse_Transfer_Function">
+   <property name="text">
+    <string>Use Transfer Function</string>
+   </property>
+  </action>
+  <action name="action2D">
+   <property name="text">
+    <string>2D</string>
+   </property>
+  </action>
+  <action name="action3D">
+   <property name="text">
+    <string>3D</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -70,5 +104,26 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>actionApplyTransferFunction</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ViewerWindow</receiver>
+   <slot>toggleInteractiveTransferFunction(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>applyTransferFunction()</slot>
+  <slot>toggleInteractiveTransferFunction(bool)</slot>
+ </slots>
 </ui>

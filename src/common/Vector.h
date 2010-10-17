@@ -44,6 +44,21 @@ public:
 
 	typedef CoordType 	CoordinateType;
 
+	template< unsigned tCoord >
+	struct ValueAccessor
+	{
+		CoordType &
+		operator()( Vector< CoordType, Dimension > & aData ) const
+		{
+			return aData.template StaticGet< tCoord >();
+		}
+		CoordType
+		operator()( const Vector< CoordType, Dimension > & aData ) const
+		{
+			return aData.template StaticGet< tCoord >();
+		}
+	};
+
 	Vector()
 		{ for( unsigned i=0; i<Dimension; ++i ) { _coordinates[i] = 0; } }
 
