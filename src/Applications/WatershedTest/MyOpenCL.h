@@ -15,7 +15,7 @@
 #define PLATFORM_TYPE CL_DEVICE_TYPE_ALL
 
 #else
-#include <CL/cl.h>
+#include <OpenCL/cl.h>
 #include <stdio.h>
 //#define PLATFORM_TYPE CL_DEVICE_TYPE_GPU
 #define PLATFORM_TYPE CL_DEVICE_TYPE_ALL
@@ -119,11 +119,11 @@ public:
 
 				size_t workitem_size[3];
 				clGetDeviceInfo(devices[deviceId], CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(workitem_size), &workitem_size, NULL);
-				printf("    CL_DEVICE_MAX_WORK_ITEM_SIZES: \t%d %d %d\n", workitem_size[0], workitem_size[1], workitem_size[2]);
+				printf("    CL_DEVICE_MAX_WORK_ITEM_SIZES: \t%d %d %d\n", (int)workitem_size[0], (int)workitem_size[1], (int)workitem_size[2]);
     
 				size_t workgroup_size;
 				clGetDeviceInfo(devices[deviceId], CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(workgroup_size), &workgroup_size, NULL);
-				printf("    CL_DEVICE_MAX_WORK_GROUP_SIZE: \t%d\n", workgroup_size);
+				printf("    CL_DEVICE_MAX_WORK_GROUP_SIZE: \t%d\n", (int)workgroup_size);
 
 				cl_uint clock_frequency;
 				clGetDeviceInfo(devices[deviceId], CL_DEVICE_MAX_CLOCK_FREQUENCY, sizeof(clock_frequency), &clock_frequency, NULL);
@@ -155,7 +155,7 @@ public:
 				clGetDeviceInfo(devices[deviceId], CL_DEVICE_IMAGE3D_MAX_HEIGHT, sizeof(image3d_max_height), &image3d_max_height, NULL);
 				size_t image3d_max_depth;
 				clGetDeviceInfo(devices[deviceId], CL_DEVICE_IMAGE3D_MAX_DEPTH, sizeof(image3d_max_depth), &image3d_max_depth, NULL);
-				printf("    CL_DEVICE_IMAGE_MAX_WIDTH: \t\t2D (%d, %d), 3D (%d, %d, %d)\n", image2d_max_width, image2d_max_height, image3d_max_width, image3d_max_height, image3d_max_depth);
+				printf("    CL_DEVICE_IMAGE_MAX_WIDTH: \t\t2D (%d, %d), 3D (%d, %d, %d)\n", (int)image2d_max_width, (int)image2d_max_height, (int)image3d_max_width, (int)image3d_max_height, (int)image3d_max_depth);
 
 				cl_ulong max_mem_alloc_size;
 				clGetDeviceInfo(devices[deviceId], CL_DEVICE_MAX_MEM_ALLOC_SIZE, sizeof(max_mem_alloc_size), &max_mem_alloc_size, NULL);

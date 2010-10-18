@@ -11,7 +11,7 @@ public:
 class CTextProgress: public CProgress {
 public:
 	void UpdateProgress(float fraction) {
-		printf("Progress: %.2f%\n", fraction*100);
+		printf("Progress: %.2f%%\n", fraction*100);
 	}
 };
 

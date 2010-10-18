@@ -152,6 +152,8 @@ main( int argc, char** argv )
 	TImage16x3::SizeType size;
 	TImage16x3::PointType stride;
 	uint16 *pData = myImg->GetPointer(size, stride); // ptr na uint16
+	
+	std::cout << "Size of volume: (" << size[0] << ", " << size[1] << ", " << size[2] << ")\n";
 
 	std::cout << "Creating volume...\n";
 
@@ -166,6 +168,8 @@ main( int argc, char** argv )
 
 	std::cout << "Computing gradient...\n";	
 	viewer::volGradientSizeApprox<float>(volFGrad, volF, 30);
+	viewer::volCreateTestData<float>(volF); // HACK;
+	viewer::volCreateTestData<float>(volFGrad); // HACK;
 
 	std::cout << "Computing local minima...\n";
 	viewer::CVolumeSet<int> volMarkers(1,1,1);
