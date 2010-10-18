@@ -53,6 +53,20 @@ ImageDataRenderer::SetMaskColorMap( GLTextureImage::Ptr aData )
 
 }
 
+void
+ImageDataRenderer::SetRendererType( int aRendererType )
+{
+	//TODO 
+	mRendererType = aRendererType;
+}
+
+void
+ImageDataRenderer::SetColorTransformType( int aColorTransform )
+{
+	//TODO 
+	mColorTransform = aColorTransform;
+}
+
 /*void
 ImageDataRenderer::SetRenderingMode( RenderingMode aMode )
 {
@@ -63,103 +77,154 @@ ImageDataRenderer::SetRenderingMode( RenderingMode aMode )
 void
 ImageDataRenderer::Render()
 {
-#define _COMMENT
-#ifdef _COMMENT
-	if( true ) {
-		_cgEffect.SetParameter( "gImageData3D", *_textureData );
-		_cgEffect.SetParameter( "gImageDataResolution3D", _textureData->GetDimensionedInterface<3>().GetSize() );
-		_cgEffect.SetParameter( "gMappedIntervalBands", Vector2f( 0, 65535 )/*_textureData->GetMappedInterval()*/ );
-		_cgEffect.SetParameter( "gWLWindow", _wlWindow );
+	switch ( mRendererType ) {
+	case rt2DAlignedSlices:
+		RenderAlignedSlices();
+		break;
+	case rt3DGeneralSlices:
+		RenderGeneralSlices();
+		break;
+	case rt3D:
+		RenderVolume();
+		break;
+	default:
+		ASSERT( false );
+	};
+}
 
-		_cgEffect.ExecuteTechniquePass( 
-				"WLWindow_3D", 
-				boost::bind( &M4D::GLDrawVolumeSlice, 
-					_textureData->GetDimensionedInterface< 3 >().GetMinimum(), 
-					_textureData->GetDimensionedInterface< 3 >().GetMaximum(), 
-					(float32)mSliceViewConfig.currentSlice[ mSliceViewConfig.plane ] * _textureData->GetDimensionedInterface< 3 >().GetElementExtents()[mSliceViewConfig.plane], 
-					mSliceViewConfig.plane 
-					) 
-				); 
-		glFlush();
+void
+ImageDataRenderer::RenderAlignedSlices()
+{
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	SetToViewConfiguration2D( GetSliceViewConfig().viewConfiguration );
+	_cgEffect.SetParameter( "gImageData3D", *_textureData );
+	_cgEffect.SetParameter( "gImageDataResolution3D", _textureData->GetDimensionedInterface<3>().GetSize() );
+	_cgEffect.SetParameter( "gMappedIntervalBands", Vector2f( 0, 65535 )/*_textureData->GetMappedInterval()*/ );
 
-	} else {
+	std::string techniqueName;
 
-		_cgEffect.SetParameter( "gImageData3D", *_textureData );
-		_cgEffect.SetParameter( "gImageDataResolution3D", _textureData->GetDimensionedInterface<3>().GetSize() );
-		_cgEffect.SetParameter( "gMappedIntervalBands", Vector2f( 0, 65535 )/*_textureData->GetMappedInterval()*/ );
-		_cgEffect.SetTextureParameter( "gTransferFunction1D", mTransferFunctionTexture->GetTextureID() );
-		_cgEffect.SetParameter( "gTransferFunction1DInterval", mTransferFunctionTexture->GetMappedInterval() );
-
-		_cgEffect.ExecuteTechniquePass( 
-				"TransferFunction1D_3D", 
-				boost::bind( &M4D::GLDrawVolumeSlice, 
-					_textureData->GetDimensionedInterface< 3 >().GetMinimum(), 
-					_textureData->GetDimensionedInterface< 3 >().GetMaximum(), 
-					(float32)mSliceViewConfig.currentSlice[ mSliceViewConfig.plane ] * _textureData->GetDimensionedInterface< 3 >().GetElementExtents()[mSliceViewConfig.plane], 
-					mSliceViewConfig.plane 
-					) 
-				); 
-		glFlush();
+	switch ( mColorTransform ) {
+	case ctLUTWindow:
+		{
+			_cgEffect.SetParameter( "gWLWindow", _wlWindow );
+			techniqueName = "WLWindow_3D";
+		} 
+		break;
+	case ctTransferFunction1D:
+		{
+			_cgEffect.SetTextureParameter( "gTransferFunction1D", mTransferFunctionTexture->GetTextureID() );
+			_cgEffect.SetParameter( "gTransferFunction1DInterval", mTransferFunctionTexture->GetMappedInterval() );
+			techniqueName = "TransferFunction1D_3D";
+		}
+		break;
+	case ctMaxIntensityProjection:
+		ASSERT( false );
+		break;
+	default:
+		ASSERT( false );
 	}
-#else
+
+	_cgEffect.ExecuteTechniquePass( 
+			techniqueName, 
+			boost::bind( &M4D::GLDrawVolumeSlice, 
+				_textureData->GetDimensionedInterface< 3 >().GetMinimum(), 
+				_textureData->GetDimensionedInterface< 3 >().GetMaximum(), 
+				(float32)mSliceViewConfig.currentSlice[ mSliceViewConfig.plane ] * _textureData->GetDimensionedInterface< 3 >().GetElementExtents()[mSliceViewConfig.plane], 
+				mSliceViewConfig.plane 
+				) 
+			); 
+	glFlush();
+}
+
+void
+ImageDataRenderer::RenderGeneralSlices()
+{
+	//TODO
+	ASSERT( false );
+}
+
+void
+ImageDataRenderer::RenderVolume()
+{
+
 	mViewConfig3D.camera.SetCenterPosition( 0.5f * (_textureData->GetDimensionedInterface< 3 >().GetMaximum() + _textureData->GetDimensionedInterface< 3 >().GetMinimum()) );
 
-	{
-		glEnable( GL_BLEND );
-		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-		glDepthFunc(GL_LEQUAL);
+	/*glEnable( GL_BLEND );
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+	glDepthFunc(GL_LEQUAL);*/
 
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 
-		//Set viewing parameters
-		M4D::SetViewAccordingToCamera( mViewConfig3D.camera );
+	//Set viewing parameters
+	M4D::SetViewAccordingToCamera( mViewConfig3D.camera );
 
-		glMatrixMode(GL_MODELVIEW);
-		
-		//Texture coordinate generation
-		M4D::SetVolumeTextureCoordinateGeneration( _textureData->GetDimensionedInterface< 3 >().GetMinimum(), _textureData->GetDimensionedInterface< 3 >().GetRealSize() );
-		/*_transferFuncShaderConfig.dataTexture = _texName;
-		glBindTexture( GL_TEXTURE_1D, 0 );
-		glBindTexture( GL_TEXTURE_2D, 0 );
-		glBindTexture( GL_TEXTURE_3D, 0 );
-		glDisable(GL_TEXTURE_3D);
-		glDisable(GL_TEXTURE_2D);
-		glDisable(GL_TEXTURE_1D);*/
+	glMatrixMode(GL_MODELVIEW);
+	
+	//Texture coordinate generation
+	M4D::SetVolumeTextureCoordinateGeneration( _textureData->GetDimensionedInterface< 3 >().GetMinimum(), _textureData->GetDimensionedInterface< 3 >().GetRealSize() );
+	/*_transferFuncShaderConfig.dataTexture = _texName;
+	glBindTexture( GL_TEXTURE_1D, 0 );
+	glBindTexture( GL_TEXTURE_2D, 0 );
+	glBindTexture( GL_TEXTURE_3D, 0 );
+	glDisable(GL_TEXTURE_3D);
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_TEXTURE_1D);*/
 
+	unsigned sliceCount = 250;
 
-		glColor3f( 1.0f, 0.0f, 0.0f );
-		M4D::GLDrawBoundingBox( _textureData->GetDimensionedInterface< 3 >().GetMinimum(), _textureData->GetDimensionedInterface< 3 >().GetMaximum() );
-
-		unsigned sliceCount = 250;
-
-		_cgEffect.SetParameter( "gImageData3D", *_textureData );
-		_cgEffect.SetParameter( "gImageDataResolution3D", _textureData->GetDimensionedInterface<3>().GetSize() );
-		_cgEffect.SetParameter( "gMappedIntervalBands", Vector2f( 0, 65535 )/*_textureData->GetMappedInterval()*/ );
-		_cgEffect.SetTextureParameter( "gTransferFunction1D", mTransferFunctionTexture->GetTextureID() );
-		_cgEffect.SetParameter( "gTransferFunction1DInterval", mTransferFunctionTexture->GetMappedInterval() );
-		_cgEffect.SetParameter( "gAlphaModulation", /*2.0f / (float)sliceCount*/ 1.0f );
-		_cgEffect.SetParameter( "gLightPosition", Vector3f( 3000.0f, 3000.0f, -3000.0f ) );
-		_cgEffect.SetParameter( "gLightColor", Vector3f( 1.0f, 1.0f, 1.0f ) );
-		_cgEffect.SetParameter( "gEyePosition", mViewConfig3D.camera.GetEyePosition() );
-
-		_cgEffect.ExecuteTechniquePass(
-				"TransferFunction1DShading_3D", 
-				boost::bind( &M4D::GLDrawVolumeSlices, 
-					M4D::BoundingBox3D( _textureData->GetDimensionedInterface< 3 >().GetMinimum(), _textureData->GetDimensionedInterface< 3 >().GetMaximum() ),
-					mViewConfig3D.camera,
-					sliceCount,
-					1.0f
-					) 
-				); 
-
-		M4D::DisableVolumeTextureCoordinateGeneration();
-		M4D::CheckForGLError( "OGL error : " );
-		glFlush();		
-
+	if ( mFineRendering ) {
+		sliceCount *=5;
+		mFineRendering = false;
 	}
-#endif
+
+	glColor3f( 1.0f, 0.0f, 0.0f );
+	M4D::GLDrawBoundingBox( _textureData->GetDimensionedInterface< 3 >().GetMinimum(), _textureData->GetDimensionedInterface< 3 >().GetMaximum() );
+
+	switch ( mColorTransform ) {
+	case ctLUTWindow:
+		ASSERT( false );
+		break;
+	case ctTransferFunction1D:
+		{
+
+
+			_cgEffect.SetParameter( "gImageData3D", *_textureData );
+			_cgEffect.SetParameter( "gImageDataResolution3D", _textureData->GetDimensionedInterface<3>().GetSize() );
+			_cgEffect.SetParameter( "gMappedIntervalBands", Vector2f( 0, 65535 )/*_textureData->GetMappedInterval()*/ );
+			_cgEffect.SetTextureParameter( "gTransferFunction1D", mTransferFunctionTexture->GetTextureID() );
+			_cgEffect.SetParameter( "gTransferFunction1DInterval", mTransferFunctionTexture->GetMappedInterval() );
+			_cgEffect.SetParameter( "gAlphaModulation", /*2.0f / (float)sliceCount*/ 1.0f );
+			_cgEffect.SetParameter( "gLightPosition", Vector3f( 3000.0f, 3000.0f, -3000.0f ) );
+			_cgEffect.SetParameter( "gLightColor", Vector3f( 1.0f, 1.0f, 1.0f ) );
+			_cgEffect.SetParameter( "gEyePosition", mViewConfig3D.camera.GetEyePosition() );
+
+			_cgEffect.ExecuteTechniquePass(
+					"TransferFunction1DShading_3D", 
+					boost::bind( &M4D::GLDrawVolumeSlices, 
+						M4D::BoundingBox3D( _textureData->GetDimensionedInterface< 3 >().GetMinimum(), _textureData->GetDimensionedInterface< 3 >().GetMaximum() ),
+						mViewConfig3D.camera,
+						sliceCount,
+						1.0f
+						) 
+					); 
+
+			M4D::DisableVolumeTextureCoordinateGeneration();
+			M4D::CheckForGLError( "OGL error : " );
+			glFlush();
+		}
+		break;
+	case ctMaxIntensityProjection:
+		ASSERT( false );
+		break;
+	default:
+		ASSERT( false );
+	}
 }
+
 
 
 } /*namespace M4D*/

@@ -1,0 +1,29 @@
+#ifndef DEFINITION_MACROS_H
+#define DEFINITION_MACROS_H
+
+#define BINSTREAM_WRITE_MACRO( STREAM, VARIABLE ) \
+	STREAM.write( (char*)&VARIABLE, sizeof(VARIABLE) );
+
+#define BINSTREAM_READ_MACRO( STREAM, VARIABLE ) \
+	STREAM.read( (char*)&VARIABLE, sizeof(VARIABLE) );
+
+
+#define SIMPLE_GET_METHOD( TYPE, NAME, PARAM_NAME ) \
+	TYPE Get##NAME ()const{ return PARAM_NAME ; }
+
+#define SIMPLE_SET_METHOD( TYPE, NAME, PARAM_NAME ) \
+	void Set##NAME ( TYPE value ){ PARAM_NAME = value; }
+		
+#define SIMPLE_GET_SET_METHODS( TYPE, NAME, PARAM_NAME ) \
+	SIMPLE_GET_METHOD( TYPE, NAME, PARAM_NAME ) \
+	SIMPLE_SET_METHOD( TYPE, NAME, PARAM_NAME )
+
+//TODO - move
+#define PROHIBIT_COPYING_OF_OBJECT_MACRO( ClassName ) \
+	ClassName( const ClassName& ); \
+	ClassName& \
+	operator=( const ClassName& ); 
+
+
+
+#endif /*DEFINITION_MACROS_H*/

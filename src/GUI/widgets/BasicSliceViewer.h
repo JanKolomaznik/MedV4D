@@ -32,7 +32,7 @@ class BasicSliceViewer :
 {
 	Q_OBJECT;
 public:
-	typedef ViewerConstructionKit<   QGLWidget, 
+	typedef ViewerConstructionKit<  QGLWidget, 
 					PortInterfaceHelper< boost::mpl::vector< M4D::Imaging::AImage > >
 					>	PredecessorType;
 	
@@ -64,17 +64,40 @@ public:
 	bool
 	IsColorTransformAvailable( unsigned aTransformType );
 
+	int
+	GetRendererType()
+	{
+		return _renderer.GetRendererType();
+	}
+
+	int
+	GetColorTransformType()
+	{
+		return _renderer.GetColorTransformType();
+	}
+
 public slots:
 	void
-	SetColorTransform( unsigned aTransformType )
+	SetRendererType( int aRendererType )
 	{
-
+		//TODO 
+		_renderer.SetRendererType( aRendererType );
+		update();
 	}
 
 	void
-	SetViewerType( unsigned aViewerType )
+	SetColorTransformType( int aColorTransform )
 	{
+		//TODO 
+		_renderer.SetColorTransformType( aColorTransform );
+		update();
+	}
 
+	void
+	FineRender()
+	{
+		_renderer.FineRender();
+		update();
 	}
 
 signals:
@@ -166,6 +189,10 @@ protected:
 	 }					_interactionMode;
 	 bool					_prepared;
 	//M4D::Imaging::AImage::Ptr 		_image;
+	//
+	//
+	
+
 
 private:
 

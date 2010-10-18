@@ -32,6 +32,15 @@ public slots:
 
 	void
 	toggleInteractiveTransferFunction( bool aChecked );
+
+	void
+	updateToolbars();
+
+	void
+	changeViewerType( int aRendererType );
+
+	void
+	changeColorMapType( int aColorMap );
 protected:
 	M4D::Imaging::ConnectionTyped< M4D::Imaging::AImage > mProdconn;
 	M4D::GUI::TransferFunction1DEditor *mTransferFunctionEditor;

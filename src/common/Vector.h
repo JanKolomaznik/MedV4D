@@ -542,6 +542,13 @@ VectorSize( const Vector< CoordType, Dim > &v )
 }
 
 template< typename CoordType, unsigned Dim >
+CoordType
+VectorDistance( const Vector< CoordType, Dim > &a, const Vector< CoordType, Dim > &b )
+{
+	return VectorSize( a - b );
+}
+
+template< typename CoordType, unsigned Dim >
 void
 Ortogonalize( const Vector< CoordType, Dim > &a, Vector< CoordType, Dim > &b )
 {

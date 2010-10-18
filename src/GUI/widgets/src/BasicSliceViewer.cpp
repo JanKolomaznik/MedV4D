@@ -106,7 +106,6 @@ BasicSliceViewer::paintGL()
 		ASSERT( false );
 	}*/
 
-	SetToViewConfiguration2D( _renderer.GetSliceViewConfig().viewConfiguration );
 	_renderer.Render();
 }
 
@@ -122,6 +121,9 @@ BasicSliceViewer::resizeGL( int width, int height )
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
+
+	float x = (float)width / height;
+	_renderer.GetViewConfig3D().camera.SetAspectRatio( x );
 }
 
 void	
@@ -244,7 +246,7 @@ BasicSliceViewer::PrepareData()
 
 
 
-	_textureData = CreateTextureFromImage( *(M4D::Imaging::AImage::Cast( _inputDatasets[0] )->GetAImageRegion()), false ) ;
+	_textureData = CreateTextureFromImage( *(M4D::Imaging::AImage::Cast( _inputDatasets[0] )->GetAImageRegion()), true ) ;
 
 	ReleaseAllInputs();
 

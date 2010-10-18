@@ -42,7 +42,7 @@ struct SliceViewConfig
 
 struct ViewConfig3D
 {
-	ViewConfig3D(): camera( Vector<float,3>( 0.0f, 0.0f, 1500.0f ), Vector<float,3>( 0.0f, 0.0f, 0.0f ) )
+	ViewConfig3D(): camera( Vector<float,3>( 0.0f, 0.0f, 750.0f ), Vector<float,3>( 0.0f, 0.0f, 0.0f ) )
 	{}
 
 
@@ -52,6 +52,9 @@ struct ViewConfig3D
 class ImageDataRenderer
 {
 public:
+	ImageDataRenderer() : mRendererType( rt2DAlignedSlices ), mColorTransform( ctLUTWindow ), mFineRendering( false )
+	{}
+
 	void
 	Initialize();
 
@@ -71,10 +74,23 @@ public:
 	SetMaskColorMap( GLTextureImage::Ptr aData );
 
 	void
-	SetRendererType( RendererType aRendererType );
+	SetRendererType( int aRendererType );
 
 	void
-	SetColorTransformType( RendererType aRendererType );
+	SetColorTransformType( int aColorTransform );
+
+	int
+	GetRendererType()
+	{
+		return mRendererType;
+	}
+
+	int
+	GetColorTransformType()
+	{
+		return mColorTransform;
+	}
+
 
 	void
 	SetLUTWindow( const Vector< float32, 2 > &aLUTWindow )
@@ -85,6 +101,15 @@ public:
 	void
 	Render();
 
+	void
+	RenderAlignedSlices();
+
+	void
+	RenderGeneralSlices();
+	
+	void
+	RenderVolume();
+
 	SliceViewConfig &
 	GetSliceViewConfig()
 	{ return mSliceViewConfig; }
@@ -93,7 +118,15 @@ public:
 	GetViewConfig3D()
 	{ return mViewConfig3D; }
 
+	void
+	FineRender()
+	{
+		mFineRendering = true;
+	}
+	
+
 protected:
+	
 
 	SliceViewConfig 			mSliceViewConfig;
 
@@ -110,6 +143,13 @@ protected:
 
 	CgEffect				_cgEffect;
 
+	int 					mRendererType;
+	int	 				mColorTransform;
+
+
+
+
+	bool	mFineRendering; //TODO delete
 private:
 
 };

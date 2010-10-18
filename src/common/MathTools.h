@@ -119,6 +119,27 @@ Min( const Vector< TNumType, tDim > &a ) {
 	return res;
 }
 
+template< typename TNumType, size_t tDim >
+inline Vector< TNumType, tDim >
+Max( const Vector< TNumType, tDim > &a, const Vector< TNumType, tDim > &b ) {
+	Vector< TNumType, tDim > res;
+	for( size_t i = 0; i < tDim; ++i ) {
+		res[i] = Max( a[i], b[i] );
+	}
+	return res;
+}
+
+
+template< typename TNumType, size_t tDim >
+inline Vector< TNumType, tDim >
+Min( const Vector< TNumType, tDim > &a, const Vector< TNumType, tDim > &b ) {
+	Vector< TNumType, tDim > res;
+	for( size_t i = 0; i < tDim; ++i ) {
+		res[i] = Min( a[i], b[i] );
+	}
+	return res;
+}
+
 template< typename NType >
 inline NType
 Abs( NType a ) {

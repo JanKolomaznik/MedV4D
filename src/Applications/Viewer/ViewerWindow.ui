@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -48,6 +48,7 @@
    <addaction name="action3D"/>
    <addaction name="actionUse_WLWindow"/>
    <addaction name="actionUse_Transfer_Function"/>
+   <addaction name="actionFine_Render"/>
    <addaction name="actionApplyTransferFunction"/>
   </widget>
   <action name="actionOpen">
@@ -75,23 +76,40 @@
    </property>
   </action>
   <action name="actionUse_WLWindow">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Use WLWindow</string>
    </property>
   </action>
   <action name="actionUse_Transfer_Function">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Use Transfer Function</string>
    </property>
   </action>
   <action name="action2D">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>2D</string>
    </property>
   </action>
   <action name="action3D">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>3D</string>
+   </property>
+  </action>
+  <action name="actionFine_Render">
+   <property name="text">
+    <string>Fine Render</string>
    </property>
   </action>
  </widget>
@@ -101,6 +119,9 @@
    <extends>QWidget</extends>
    <header>GUI/widgets/BasicSliceViewer.h</header>
    <container>1</container>
+   <slots>
+    <slot>FineRender()</slot>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -118,6 +139,22 @@
     <hint type="destinationlabel">
      <x>399</x>
      <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFine_Render</sender>
+   <signal>triggered()</signal>
+   <receiver>mViewer</receiver>
+   <slot>FineRender()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>313</y>
     </hint>
    </hints>
   </connection>

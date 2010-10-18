@@ -1,4 +1,5 @@
 #include "ViewerWindow.hpp"
+#include "GUI/utils/ImageDataRenderer.h"
 #include <cmath>
 
 ViewerWindow::ViewerWindow()
@@ -21,14 +22,62 @@ ViewerWindow::ViewerWindow()
 	mTransferFunctionEditor->SetBorderWidth( 5 );
 	addDockWidget (Qt::RightDockWidgetArea, dockwidget );
 
+	mViewer->SetLUTWindow( Vector2f( 500.0f,1000.0f ) );
+
 	mTransFuncTimer.setInterval( 500 );
 	QObject::connect( &mTransFuncTimer, SIGNAL( timeout() ), this, SLOT( applyTransferFunction() ) );
 
+	QActionGroup *viewerTypeSwitch = new QActionGroup( this );
+	QSignalMapper *viewerTypeSwitchSignalMapper = new QSignalMapper( this );
+	viewerTypeSwitch->setExclusive( true );
+	viewerTypeSwitch->addAction( action2D );
+	viewerTypeSwitch->addAction( action3D );
+	viewerTypeSwitchSignalMapper->setMapping( action2D, M4D::GUI::rt2DAlignedSlices );
+	viewerTypeSwitchSignalMapper->setMapping( action3D, M4D::GUI::rt3D );
+	QObject::connect( action2D, SIGNAL( triggered() ), viewerTypeSwitchSignalMapper, SLOT( map() ) );
+	QObject::connect( action3D, SIGNAL( triggered() ), viewerTypeSwitchSignalMapper, SLOT( map() ) );
+	QObject::connect( viewerTypeSwitchSignalMapper, SIGNAL( mapped ( int ) ), this, SLOT( changeViewerType( int ) ) );
+
+	QActionGroup *colorMapTypeSwitch = new QActionGroup( this );
+	QSignalMapper *colorMapTypeSwitchSignalMapper = new QSignalMapper( this );
+	colorMapTypeSwitch->setExclusive( true );
+	colorMapTypeSwitch->addAction( actionUse_WLWindow );
+	colorMapTypeSwitch->addAction( actionUse_Transfer_Function );
+	colorMapTypeSwitchSignalMapper->setMapping( actionUse_WLWindow, M4D::GUI::ctLUTWindow );
+	colorMapTypeSwitchSignalMapper->setMapping( actionUse_Transfer_Function, M4D::GUI::ctTransferFunction1D );
+	QObject::connect( actionUse_WLWindow, SIGNAL( triggered() ), colorMapTypeSwitchSignalMapper, SLOT( map() ) );
+	QObject::connect( actionUse_Transfer_Function, SIGNAL( triggered() ), colorMapTypeSwitchSignalMapper, SLOT( map() ) );
+	QObject::connect( colorMapTypeSwitchSignalMapper, SIGNAL( mapped ( int ) ), this, SLOT( changeColorMapType( int ) ) );
+
+
+	updateToolbars();
 }
 
 ViewerWindow::~ViewerWindow()
 {
 
+}
+
+void
+ViewerWindow::changeViewerType( int aRendererType )
+{
+	D_PRINT( "Change viewer type" );
+	if ( aRendererType == M4D::GUI::rt3D 
+		&& mViewer->GetColorTransformType() == M4D::GUI::ctLUTWindow ) 
+	{
+		mViewer->SetColorTransformType( M4D::GUI::ctTransferFunction1D );
+	}
+
+	mViewer->SetRendererType( aRendererType );
+	updateToolbars();
+}
+
+void
+ViewerWindow::changeColorMapType( int aColorMap )
+{
+	D_PRINT( "Change color map type" );
+	mViewer->SetColorTransformType( aColorMap );
+	updateToolbars();
 }
 
 void
@@ -59,6 +108,44 @@ ViewerWindow::toggleInteractiveTransferFunction( bool aChecked )
 	}
 }
 
+void
+ViewerWindow::updateToolbars()
+{
+	int rendererType = mViewer->GetRendererType();
+
+	switch ( rendererType ) {
+	case M4D::GUI::rt2DAlignedSlices:
+		action2D->setChecked( true );
+		actionUse_WLWindow->setEnabled( true );
+		break;
+	case M4D::GUI::rt3DGeneralSlices:
+		ASSERT( false );
+		break;
+	case M4D::GUI::rt3D:
+		action3D->setChecked( true );
+		actionUse_WLWindow->setEnabled( false );
+		break;
+	default:
+		ASSERT( false );
+	};
+
+
+	int colorTransformType = mViewer->GetColorTransformType();
+
+	switch ( colorTransformType ) {
+	case M4D::GUI::ctLUTWindow:
+		actionUse_WLWindow->setChecked( true );
+		break;
+	case M4D::GUI::ctTransferFunction1D:
+		actionUse_Transfer_Function->setChecked( true );
+		break;
+	case M4D::GUI::ctMaxIntensityProjection:
+		ASSERT( false );
+		break;
+	default:
+		ASSERT( false );
+	}
+}
 
 void
 ViewerWindow::openFile()
