@@ -5,17 +5,14 @@
 #ifndef _MYOPENCL
 #define _MYOPENCL
 
-#ifdef MACINTOSH
+#ifdef __APPLE__
 #include <OpenCL/opencl.h>
 #include <typeinfo>
-#define max(a,b) (a<b?b:a)
-#define min(a,b) (a<b?a:b)
-#define __int64 long long
 //#define PLATFORM_TYPE CL_DEVICE_TYPE_CPU
 #define PLATFORM_TYPE CL_DEVICE_TYPE_ALL
 
 #else
-#include <OpenCL/cl.h>
+#include <CL/cl.h>
 #include <stdio.h>
 //#define PLATFORM_TYPE CL_DEVICE_TYPE_GPU
 #define PLATFORM_TYPE CL_DEVICE_TYPE_ALL

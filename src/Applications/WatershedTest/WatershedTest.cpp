@@ -163,13 +163,15 @@ main( int argc, char** argv )
 
 	std::cout << "Converting data...\n";
 
-	viewer::CVolumeSet<float> volF(1,1,1), volFGrad(1,1,1), volFRes(1,1,1);
+	viewer::CVolumeSet<float> volF(1,1,1), volFiltered(1,1,1), volFGrad(1,1,1), volFRes(1,1,1);
 	volF.copyVolume(vol16);
+	volFiltered.volMedianFilter(volF, 3, NULL);
 
 	std::cout << "Computing gradient...\n";	
-	viewer::volGradientSizeApprox<float>(volFGrad, volF, 30);
-	viewer::volCreateTestData<float>(volF); // HACK;
-	viewer::volCreateTestData<float>(volFGrad); // HACK;
+	viewer::volGradientSizeApprox<float>(volFGrad, volFiltered, 2);
+	//volFGrad.copyVolume(volF);
+	//viewer::volCreateTestData<float>(volF); // HACK;
+	//viewer::volCreateTestData<float>(volFGrad); // HACK;
 
 	std::cout << "Computing local minima...\n";
 	viewer::CVolumeSet<int> volMarkers(1,1,1);
@@ -178,8 +180,7 @@ main( int argc, char** argv )
 	std::cout << "Segmenting...\n";
 
 	viewer::CTextProgress progress;
-	//volFRes.volBlockwiseNLMeans(volF, 0.9, 0.1, 0.5, 5, 2, 4, &progress);
-	//bool retval = volFRes.volNLMeansHW(ocl, volF, dBeta, radius, neighbourhood, &progress);
+	//volF.copyVolume(volFGrad);
 	bool retval = viewer::volWatershedBasic<float>(volFRes, volFGrad, volF, volMarkers);
 
 	if (retval == false) {

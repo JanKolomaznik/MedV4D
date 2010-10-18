@@ -1851,7 +1851,8 @@ public:
 		unsigned int finished = 0;
 		unsigned int last_update = 0; 
 
-		progress->UpdateProgress(0);
+		if(progress)
+			progress->UpdateProgress(0);
 
 		#pragma omp parallel for //num_threads(8)
 		for(int k = 0; k < depth; k ++) {
@@ -1867,7 +1868,8 @@ public:
 				// update progress
 				if(thread_num == 0 && progress != NULL) {
 					last_update = finished;
-					progress->UpdateProgress((float)finished / ((float)(depth)*(float)(height)));
+					if(progress)
+						progress->UpdateProgress((float)finished / ((float)(depth)*(float)(height)));
 				}
 
 				finished++;
@@ -2182,7 +2184,7 @@ void volGradientSizeApprox(CVolumeSet<T> &dest, const CVolumeSet<T> &src, const 
 				if((k == 0) || (k == depth - 1) || 
 						(j == 0) || (j == height - 1) ||
 						(i == 0) || (i == width - 1)) {
-					dest.setValue(i,j,k, 0);
+					dest.setValue(i,j,k, src.getValue(i,j,k));
 				}else {
 					T gradientX, gradientY, gradientZ;
 					gradientX = (src.getValue(i + 1, j, k) - src.getValue(i-1, j, k)) / 2;
@@ -2199,13 +2201,52 @@ void volGradientSizeApprox(CVolumeSet<T> &dest, const CVolumeSet<T> &src, const 
 	}
 }
 
+void getNeighbourIndices(std::vector<SPoint3D<int> > &destIndices) {
+	destIndices.push_back(SPoint3D<int>(-1,-1,-1));
+	destIndices.push_back(SPoint3D<int>( 0,-1,-1));
+	destIndices.push_back(SPoint3D<int>( 1,-1,-1));
+
+	destIndices.push_back(SPoint3D<int>(-1, 0,-1));
+	destIndices.push_back(SPoint3D<int>( 0, 0,-1));
+	destIndices.push_back(SPoint3D<int>( 1, 0,-1));
+
+	destIndices.push_back(SPoint3D<int>(-1, 1,-1));
+	destIndices.push_back(SPoint3D<int>( 0, 1,-1));
+	destIndices.push_back(SPoint3D<int>( 1, 1,-1));
+
+	destIndices.push_back(SPoint3D<int>(-1,-1, 0));
+	destIndices.push_back(SPoint3D<int>( 0,-1, 0));
+	destIndices.push_back(SPoint3D<int>( 1,-1, 0));
+
+	destIndices.push_back(SPoint3D<int>(-1, 0, 0));
+	//destIndices.push_back(SPoint3D<int>( 0, 0, 0));
+	destIndices.push_back(SPoint3D<int>( 1, 0, 0));
+
+	destIndices.push_back(SPoint3D<int>(-1, 1, 0));
+	destIndices.push_back(SPoint3D<int>( 0, 1, 0));
+	destIndices.push_back(SPoint3D<int>( 1, 1, 0));
+
+	destIndices.push_back(SPoint3D<int>(-1,-1, 1));
+	destIndices.push_back(SPoint3D<int>( 0,-1, 1));
+	destIndices.push_back(SPoint3D<int>( 1,-1, 1));
+
+	destIndices.push_back(SPoint3D<int>(-1, 0, 1));
+	destIndices.push_back(SPoint3D<int>( 0, 0, 1));
+	destIndices.push_back(SPoint3D<int>( 1, 0, 1));
+
+	destIndices.push_back(SPoint3D<int>(-1, 1, 1));
+	destIndices.push_back(SPoint3D<int>( 0, 1, 1));
+	destIndices.push_back(SPoint3D<int>( 1, 1, 1));
+}
+
 
 #define MARKER_UNDEF -1
 #define MARKER_VISITED -2
+#define MARKER_BORDER -3
 #define MARKER_VALID 0
 
 template<class T>
-bool volGetLocalMinima(const CVolumeSet<T> &src, CVolumeSet<int> &markers) {
+bool volGetLocalMinima(/*const*/ CVolumeSet<T> &src, CVolumeSet<int> &markers) {
 	markers.copySize(src);
 	markers.setValue(MARKER_UNDEF);
 
@@ -2214,6 +2255,9 @@ bool volGetLocalMinima(const CVolumeSet<T> &src, CVolumeSet<int> &markers) {
 
 	int currentIdx = 0;
 	int totalFilled = 0;
+
+	std::vector<SPoint3D<int> > vNeighbours;
+	getNeighbourIndices(vNeighbours);
 
 	for(int z = 0; z < depth; z++) {
 	for(int y = 0; y < height; y++) {
@@ -2225,6 +2269,7 @@ bool volGetLocalMinima(const CVolumeSet<T> &src, CVolumeSet<int> &markers) {
 			T value = src.planes[z][offset+x];
 			if(markers.planes[z][offset+x] == MARKER_UNDEF) {
 				cellQueue.push_back(WatershedCell<T>(value, currentIdx, x, y, z));
+				markers.planes[z][offset+x] = MARKER_VISITED;
 
 				bool bMinimum = true;
 
@@ -2234,79 +2279,41 @@ bool volGetLocalMinima(const CVolumeSet<T> &src, CVolumeSet<int> &markers) {
 					fillQueue.push_back(cell);
 
 					int cellOffset = width * cell.y + cell.x;
+					
+					int tx, ty, tz;
+					for(int n = 0; n < (int)vNeighbours.size(); n++) {
+						tx = cell.x + vNeighbours[n].x;
+						ty = cell.y + vNeighbours[n].y;
+						tz = cell.z + vNeighbours[n].z;
+						if(tx < 0 || ty < 0 || tz < 0 || tx >= width || ty >= height || tz >= depth)
+							continue;
 
-					if(cell.x>0 && (markers.planes[cell.z][cellOffset-1] == MARKER_UNDEF)) {
-						T &destValue = src.planes[cell.z][cellOffset-1];
-						if(destValue == value) {
-							cellQueue.push_back(WatershedCell<T>(value, currentIdx, cell.x-1, cell.y, cell.z));
-							markers.planes[cell.z][cellOffset-1] = MARKER_VISITED;
-						} else if(destValue < value) {
+						T destValue = src.getValue(tx, ty, tz);
+						if(destValue < value) {
 							bMinimum = false;
-						}
+						} else if(destValue == value && (markers.getValue(tx, ty, tz) == MARKER_UNDEF)) {
+							cellQueue.push_back(WatershedCell<T>(value, currentIdx, tx, ty, tz));
+							markers.setValue(tx, ty, tz, MARKER_VISITED);
+						} 
+
 					}
 
-					if(cell.x<width-1 && (markers.planes[cell.z][cellOffset+1] == MARKER_UNDEF)) {
-						T &destValue = src.planes[cell.z][cellOffset+1];
-						if(destValue == value) {
-							cellQueue.push_back(WatershedCell<T>(value, currentIdx, cell.x+1, cell.y, cell.z));
-							markers.planes[cell.z][cellOffset+1] = MARKER_VISITED;
-						} else if(destValue < value) {
-							bMinimum = false;
-						}
-					}
-
-					if(cell.y>0 && (markers.planes[cell.z][cellOffset-width] == MARKER_UNDEF)) {
-						T &destValue = src.planes[cell.z][cellOffset-width];
-						if(destValue == value) {
-							cellQueue.push_back(WatershedCell<T>(value, currentIdx, cell.x, cell.y-1, cell.z));
-							markers.planes[cell.z][cellOffset-width] = MARKER_VISITED;
-						} else if(destValue < value) {
-							bMinimum = false;
-						}
-					}
-
-					if(cell.y<height-1 && (markers.planes[cell.z][cellOffset+width] == MARKER_UNDEF)) {
-						T &destValue = src.planes[cell.z][cellOffset+width];
-						if(destValue == value) {
-							cellQueue.push_back(WatershedCell<T>(value, currentIdx, cell.x, cell.y+1, cell.z));
-							markers.planes[cell.z][cellOffset+width] = MARKER_VISITED;
-						} else if(destValue < value) {
-							bMinimum = false;
-						}
-					}
-
-					if(cell.z>0 && (markers.planes[cell.z-1][cellOffset] == MARKER_UNDEF)) {
-						T &destValue = src.planes[cell.z-1][cellOffset];
-						if(destValue == value) {
-							cellQueue.push_back(WatershedCell<T>(value, currentIdx, cell.x, cell.y, cell.z-1));
-							markers.planes[cell.z-1][cellOffset] = MARKER_VISITED;
-						} else if(destValue < value) {
-							bMinimum = false;
-						}
-					}
-
-					if(cell.z<depth-1 && (markers.planes[cell.z+1][cellOffset] == MARKER_UNDEF)) {
-						T &destValue = src.planes[cell.z+1][cellOffset];
-						if(destValue == value) {
-							cellQueue.push_back(WatershedCell<T>(value, currentIdx, cell.x, cell.y, cell.z+1));
-							markers.planes[cell.z+1][cellOffset] = MARKER_VISITED;
-						} else if(destValue < value) {
-							bMinimum = false;
-						}
-					}
 				}
 
 				if(bMinimum) { // paint found voxels with marker id
-					totalFilled += fillQueue.size();
-					while(!fillQueue.empty()) {
-						WatershedCell<T> cell = *fillQueue.begin();
-						fillQueue.pop_front();
+					totalFilled += (int)fillQueue.size();
+					std::list<WatershedCell<T> >::iterator itr;
+					for(itr = fillQueue.begin(); itr != fillQueue.end(); itr++) {
+						WatershedCell<T> cell = *itr;
 
+						if(markers.planes[cell.z][cell.y * width + cell.x] >= 0)
+							printf("Voxel already marked! (%d, %d, %d) id=%d newid=%d\n", cell.x, cell.y, cell.z, markers.planes[cell.z][cell.y * width + cell.x], currentIdx);
 						markers.planes[cell.z][cell.y * width + cell.x] = currentIdx;
 					}
 					currentIdx++;
 				}
 
+				cellQueue.clear();
 				fillQueue.clear();
 			}
 		}
@@ -2316,30 +2323,42 @@ bool volGetLocalMinima(const CVolumeSet<T> &src, CVolumeSet<int> &markers) {
 	printf("Total number of markers: %d\n", currentIdx);
 	printf("Total number of marked voxels: %d\n", totalFilled);
 
+	int cleanedVoxels = 0;
+
 	// clear temporary VISITED flag
 	for(int k = 0; k < depth; k++) {
 	for(int j = 0; j < height; j++) {
 		int offset = width * j;
 
 		for(int i = 0; i < width; i++) {
-			//dest.setValue(i,j,k, src.getValue(i,j,k));
 			if(markers.planes[k][offset + i] == MARKER_VISITED)
 				markers.planes[k][offset + i] = MARKER_UNDEF;
-			//if(markers.getValue(i,j,k) != MARKER_UNDEF)
-			//	dest.setValue(i,j,k, 3000);
+
+			// set all voxels on borders to undef marker, otherwise it is connecting our segmented watersheds
+			if(i == 0 || i == width-1 || j == 0 || j == height-1 || k == 0 || k == depth-1) {
+				markers.planes[k][offset+i] = MARKER_UNDEF;
+				cleanedVoxels++;
+			}
+
+//			if(markers.getValue(i,j,k) != MARKER_UNDEF)
+//				src.setValue(i,j,k, 3000);
+
+			
 		}
 	}
 	}
+
+	printf("Cleaned voxels on border = %d\n", cleanedVoxels);
 
 	return true;
 }
 
 template<class T>
-bool volWatershedBasic(CVolumeSet<T> &dest, const CVolumeSet<T> &src, const CVolumeSet<T> &orig, const CVolumeSet<int> &markers) {
-/*	if(!(src.getSize() == markers.getSize()) {
+bool volWatershedBasic(CVolumeSet<T> &dest, const CVolumeSet<T> &src, const CVolumeSet<T> &orig, CVolumeSet<int> &markers) {
+	if(!(src.getSize() == markers.getSize() && (src.getSize() == orig.getSize() ))) {
 		printf("Markers not the same size as source volume.");
 		return false;
-	}*/
+	}
 	dest.copyVolume(orig);
 	// construct queue
 	std::priority_queue<WatershedCell<T> > processQueue;
@@ -2347,35 +2366,61 @@ bool volWatershedBasic(CVolumeSet<T> &dest, const CVolumeSet<T> &src, const CVol
 	int width, depth, height;
 	src.getSize(width, height, depth);
 
+	std::vector<SPoint3D<int> > vNeighbours;
+	getNeighbourIndices(vNeighbours);
+
+	int markerBorders = 0;
+	int markerVoxels = 0;
 	for(int k = 0; k < depth; k++) {
 	for(int j = 0; j < height; j++) {
 		int offset = width * j;
 
 		for(int i = 0; i < width; i++) {
-			int markerIdx = markers.planes[k][offset+i];
+			int markerIdx = markers.getValue(i,j,k);
 			if(markerIdx >= MARKER_VALID) {
+				markerVoxels++;
 				bool bBorder = false;
-				if(i > 0 && markers.planes[k][offset+i-1] == MARKER_UNDEF) 
-					bBorder = true;
-				if(i < width-1 && markers.planes[k][offset+i+1] == MARKER_UNDEF) 
-					bBorder = true;
-				if(j > 0 && markers.planes[k][offset+i-width] == MARKER_UNDEF) 
-					bBorder = true;
-				if(j < height-1 && markers.planes[k][offset+i+width] == MARKER_UNDEF) 
-					bBorder = true;
-				if(k > 0 && markers.planes[k-1][offset+i] == MARKER_UNDEF) 
-					bBorder = true;
-				if(k < depth-1 && markers.planes[k+1][offset+i] == MARKER_UNDEF) 
-					bBorder = true;
+				// find border voxels on defined markers, use them as seeds to priority queue
+				for(int n = 0; n < (int)vNeighbours.size(); n++) {
+					int tx = i + vNeighbours[n].x;
+					int ty = j + vNeighbours[n].y;
+					int tz = k + vNeighbours[n].z;
+					if(tx < 0 || ty < 0 || tz < 0 || tx >= width || ty >= height || tz >= depth)
+						continue;
+
+					if(markers.getValue(tx, ty, tz) == MARKER_UNDEF) 
+						bBorder = true;
+				}
 
 				if(bBorder) {
-					processQueue.push(WatershedCell<T>(src.planes[k][offset+i], markerIdx, i, j, k));
-					markers.planes[k][offset+i] = markerIdx;
+					markerBorders ++;
+					processQueue.push(WatershedCell<T>(src.getValue(i,j,k), markerIdx, i, j, k));
 				}
+
+				// testing - each two regions of local minima should not be neighbours
+				bool bNeighbours = false;
+				for(int n = 0; n < (int)vNeighbours.size(); n++) {
+					int tx = i + vNeighbours[n].x;
+					int ty = j + vNeighbours[n].y;
+					int tz = k + vNeighbours[n].z;
+					if(tx < 0 || ty < 0 || tz < 0 || tx >= width || ty >= height || tz >= depth)
+						continue;
+
+					T value = markers.getValue(tx, ty, tz);
+					if(value >= MARKER_VALID && value != markerIdx) 
+						bNeighbours = true;
+				}
+
+				if (bNeighbours) {
+					printf("Neighbouring markers! at (%d, %d, %d)", i, j, k);
+				}
+				
 			}
 		}
 	}
 	}
+
+	printf("Marker Voxels = %d\nMarker Borders = %d", markerVoxels, markerBorders);
 
 	int totalProcessed = 0;
 	int mark = 1000;
@@ -2396,69 +2441,41 @@ bool volWatershedBasic(CVolumeSet<T> &dest, const CVolumeSet<T> &src, const CVol
 		int offset = width * j;
 		int markerIdx = cell.idx;
 
-		if(i > 0) {
-			if(markers.planes[k][offset+i-1] == MARKER_UNDEF) {
-				processQueue.push(WatershedCell<T>(src.planes[k][offset+i-1], markerIdx, i-1, j, k));
-				markers.planes[k][offset+i-1] = markerIdx;
-			} else {
-				if(markers.planes[k][offset+i-1] != markerIdx)
-					dest.planes[k][offset+i] = 3000;
+		markers.setValue(i,j,k, cell.idx);
+
+		bool bBorder = false;
+
+		for(int n = 0; n < (int) vNeighbours.size(); n++) {
+			int tx = i + vNeighbours[n].x;
+			int ty = j + vNeighbours[n].y;
+			int tz = k + vNeighbours[n].z;
+			if(tx < 0 || ty < 0 || tz < 0 || tx >= width || ty >= height || tz >= depth)
+				continue;
+
+			int destMarker = markers.getValue(tx, ty, tz);
+			if(destMarker == MARKER_UNDEF) {
+				processQueue.push(WatershedCell<T>(src.getValue(tx, ty, tz), markerIdx, tx, ty, tz));
+				//markers.setValue(tx, ty, tz, markerIdx);
+				markers.setValue(tx,ty,tz, MARKER_VISITED);
+			} else if(destMarker >= MARKER_VALID && destMarker != MARKER_BORDER && destMarker != markerIdx) {
+				bBorder = true;
 			}
 		}
-		if(i < width-1) {
-			if(markers.planes[k][offset+i+1] == MARKER_UNDEF) {
-				processQueue.push(WatershedCell<T>(src.planes[k][offset+i+1], markerIdx, i+1, j, k));
-				markers.planes[k][offset+i+1] = markerIdx;
-			}else {
-				if(markers.planes[k][offset+i+1] != markerIdx)
-					dest.planes[k][offset+i] = 3000;
-			}
-		}
-		if(j > 0) {
-			if(markers.planes[k][offset+i-width] == MARKER_UNDEF) {
-				processQueue.push(WatershedCell<T>(src.planes[k][offset+i-width], markerIdx, i, j-1, k));
-				markers.planes[k][offset+i-width] = markerIdx;
-			}else {
-				if(markers.planes[k][offset+i-width] != markerIdx)
-					dest.planes[k][offset+i] = 3000;
-			}
-		}
-		if(j < height-1) {
-			if(markers.planes[k][offset+i+width] == MARKER_UNDEF) {
-				processQueue.push(WatershedCell<T>(src.planes[k][offset+i+width], markerIdx, i, j+1, k));
-				markers.planes[k][offset+i+width] = markerIdx;
-			}else {
-				if(markers.planes[k][offset+i+width] != markerIdx)
-					dest.planes[k][offset+i] = 3000;
-			}
-		}
-		if(k > 0) {
-			if(markers.planes[k-1][offset+i] == MARKER_UNDEF) {
-				processQueue.push(WatershedCell<T>(src.planes[k-1][offset+i], markerIdx, i, j, k-1));
-				markers.planes[k-1][offset+i] = markerIdx;
-			}else {
-				if(markers.planes[k-1][offset+i] != markerIdx)
-					dest.planes[k][offset+i] = 3000;
-			}
-		}
-		if(k < depth-1) {
-			if(markers.planes[k+1][offset+i] == MARKER_UNDEF) {
-				processQueue.push(WatershedCell<T>(src.planes[k+1][offset+i], markerIdx, i, j, k+1));
-				markers.planes[k+1][offset+i] = markerIdx;
-			}else {
-				if(markers.planes[k+1][offset+i] != markerIdx)
-					dest.planes[k][offset+i] = 3000;
-			}
-		}
+		if(bBorder)
+			markers.setValue(i,j,k, MARKER_BORDER);
+	}
+
+
+	for(int z = 0; z < depth; z++) {
+	for(int y = 0; y < height; y++) {
+	for(int x = 0; x < width; x++) {
+		if(markers.getValue(x,y,z) == MARKER_BORDER)
+			dest.setValue(x,y,z, 3000);
+	}
+	}
 	}
 
 	printf("number of voxels: %d\n", totalProcessed);
-/*
-	while(!processQueue.empty() ) {
-		const WatershedCell<T> &cell = processQueue.top();
-		printf("Value: %.1f \tXYZ = %d %d %d \tIDX=%d\n", cell.value, cell.x, cell.y, cell.z, cell.idx);
-		processQueue.pop();
-	}*/
 
 	return true;
 }
@@ -2468,12 +2485,25 @@ void volCreateTestData(CVolumeSet<T> &dest) {
 	int width, height, depth;
 	dest.getSize(width, height, depth);
 	
-	SPoint3D<int> center(width/2, height/2, depth/2);
+	srand(GetTickCount());
+
+	std::vector<SPoint3D<int> > centers;
+//	SPoint3D<int> center(width/2, height/2, depth/2);
+//	SPoint3D<int> center2(width/2 + width/4, height/2, depth/2);
+
+	for(int v = 0; v < 10; v++) {
+		centers.push_back(SPoint3D<int>(rand()%width, rand()%height, rand()%depth));
+	}
 	
 	for(int k = 0; k < depth; k++) {
 		for(int j = 0; j < height; j++) {
 			for(int i = 0; i < width; i++) {
-				T value = (center.x-i)*(center.x-i) + (center.y-j)*(center.y-j) + (center.z-k)*(center.z-k);
+				T value;
+				for(int v = 0; v < centers.size(); v++) {
+					T newValue = (centers[v].x-i)*(centers[v].x-i) + (centers[v].y-j)*(centers[v].y-j) + (centers[v].z-k)*(centers[v].z-k);
+					if(v == 0 || newValue < value)
+						value = newValue;
+				}
 				dest.setValue(i, j, k, value);
 			}
 		}
