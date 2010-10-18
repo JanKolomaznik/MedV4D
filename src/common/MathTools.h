@@ -100,8 +100,8 @@ inline TNumType
 Max( const Vector< TNumType, tDim > &a ) {
 	TNumType res = a[0];
 	for( size_t i = 1; i < tDim; ++i ) {
-		if ( res < a[i] ) {
-			res = a[i];
+		if ( res < a[(unsigned int)i] ) {
+			res = a[(unsigned int)i];
 		}
 	}
 	return res;
@@ -112,8 +112,8 @@ inline TNumType
 Min( const Vector< TNumType, tDim > &a ) {
 	TNumType res = a[0];
 	for( size_t i = 1; i < tDim; ++i ) {
-		if ( res > a[i] ) {
-			res = a[i];
+		if ( res > a[(unsigned int)i] ) {
+			res = a[(unsigned int)i];
 		}
 	}
 	return res;
@@ -155,7 +155,7 @@ Sgn( NType a ) {
 inline int
 Round( float32 aValue )
 {
-	return ceil( aValue + 0.5f );
+	return (int)ceil( aValue + 0.5f );
 }
 
 template< typename NType >

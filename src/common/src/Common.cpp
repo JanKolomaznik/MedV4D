@@ -100,7 +100,7 @@ GetNTIDFromSizeAndSign( uint16 size, bool sign )
 	case 8:
 		return ( sign ? NTID_INT_64 : NTID_UINT_64 );
 	default:
-		return NTID_UNKNOWN;
+		return (int16)NTID_UNKNOWN;
 	}
 }
 
