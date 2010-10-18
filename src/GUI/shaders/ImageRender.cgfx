@@ -33,7 +33,7 @@ sampler3D gMaskData3D;
 
 sampler1D gTransferFunction1D;
 float2 gTransferFunction1DInterval;
-float gAlphaModulation;
+float gRenderingSliceThickness;
 float2 gWLWindow;
 sampler1D gColorMap;
 float gMaskAlpha;
@@ -117,7 +117,7 @@ FragmentOutput fp_TransferFunction1DShading_3D(
 		uniform sampler3D aTextureData : TEX0,
 		uniform sampler1D aTransferFunction1D : TEX1,
 		uniform float2 aTransferFunction1DInterval,
-		uniform float aAlphaModulation,
+		uniform float aRenderingSliceThickness,
 		uniform float3 aImageDataResolution3D,
 		uniform float2 aMappedIntervalBands,
 		uniform	float3 aLightPosition,
@@ -162,7 +162,7 @@ FragmentOutput fp_TransferFunction1DShading_3D(
 
 		OUT.color.rgb += BlinnPhongShading( N, V, L, material, light );
 	}
-	OUT.color.a *= aAlphaModulation;
+	OUT.color.a = 1.0f - pow( 1.0f - OUT.color.a, aRenderingSliceThickness );
 	return OUT;
 }
 
@@ -208,7 +208,7 @@ technique TransferFunction1D_3D {
 
 technique TransferFunction1DShading_3D {
 	pass t0 {
-		FragmentProgram = compile fp40 fp_TransferFunction1DShading_3D( gImageData3D, gTransferFunction1D, gTransferFunction1DInterval, gAlphaModulation, gImageDataResolution3D, gMappedIntervalBands, gLightPosition, gLightColor, gEyePosition );
+		FragmentProgram = compile fp40 fp_TransferFunction1DShading_3D( gImageData3D, gTransferFunction1D, gTransferFunction1DInterval, gRenderingSliceThickness, gImageDataResolution3D, gMappedIntervalBands, gLightPosition, gLightColor, gEyePosition );
 
 		DepthTestEnable = true;
 		DepthMask = true;
@@ -219,7 +219,20 @@ technique TransferFunction1DShading_3D {
 	}
 }
 
+technique WLWindowMIP_3D  {
+	pass t0 {
+		FragmentProgram = compile fp40 fp_WLWindow_3D( gImageData3D, gWLWindow / (gMappedIntervalBands[1] - gMappedIntervalBands[0]), gImageDataResolution3D );
 
+		DepthTestEnable = false;
+		DepthMask = true;
+		CullFaceEnable = false;
+		BlendEnable = true;
+		BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha );
+		BlendEquation = Max;
+
+		DepthFunc = LEqual;
+	}
+}
 
 
 technique ColorMappedMask_3D {

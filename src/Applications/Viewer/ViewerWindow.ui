@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -47,6 +47,7 @@
    <addaction name="action2D"/>
    <addaction name="action3D"/>
    <addaction name="actionUse_WLWindow"/>
+   <addaction name="actionUse_MIP"/>
    <addaction name="actionUse_Transfer_Function"/>
    <addaction name="actionFine_Render"/>
    <addaction name="actionApplyTransferFunction"/>
@@ -110,6 +111,14 @@
   <action name="actionFine_Render">
    <property name="text">
     <string>Fine Render</string>
+   </property>
+  </action>
+  <action name="actionUse_MIP">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Use MIP</string>
    </property>
   </action>
  </widget>

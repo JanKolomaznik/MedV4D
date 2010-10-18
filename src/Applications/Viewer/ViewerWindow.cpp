@@ -42,10 +42,13 @@ ViewerWindow::ViewerWindow()
 	QSignalMapper *colorMapTypeSwitchSignalMapper = new QSignalMapper( this );
 	colorMapTypeSwitch->setExclusive( true );
 	colorMapTypeSwitch->addAction( actionUse_WLWindow );
+	colorMapTypeSwitch->addAction( actionUse_MIP );
 	colorMapTypeSwitch->addAction( actionUse_Transfer_Function );
 	colorMapTypeSwitchSignalMapper->setMapping( actionUse_WLWindow, M4D::GUI::ctLUTWindow );
+	colorMapTypeSwitchSignalMapper->setMapping( actionUse_MIP, M4D::GUI::ctMaxIntensityProjection );
 	colorMapTypeSwitchSignalMapper->setMapping( actionUse_Transfer_Function, M4D::GUI::ctTransferFunction1D );
 	QObject::connect( actionUse_WLWindow, SIGNAL( triggered() ), colorMapTypeSwitchSignalMapper, SLOT( map() ) );
+	QObject::connect( actionUse_MIP, SIGNAL( triggered() ), colorMapTypeSwitchSignalMapper, SLOT( map() ) );
 	QObject::connect( actionUse_Transfer_Function, SIGNAL( triggered() ), colorMapTypeSwitchSignalMapper, SLOT( map() ) );
 	QObject::connect( colorMapTypeSwitchSignalMapper, SIGNAL( mapped ( int ) ), this, SLOT( changeColorMapType( int ) ) );
 
@@ -66,6 +69,12 @@ ViewerWindow::changeViewerType( int aRendererType )
 		&& mViewer->GetColorTransformType() == M4D::GUI::ctLUTWindow ) 
 	{
 		mViewer->SetColorTransformType( M4D::GUI::ctTransferFunction1D );
+	}
+
+	if ( aRendererType == M4D::GUI::rt2DAlignedSlices 
+		&& mViewer->GetColorTransformType() == M4D::GUI::ctMaxIntensityProjection ) 
+	{
+		mViewer->SetColorTransformType( M4D::GUI::ctLUTWindow );
 	}
 
 	mViewer->SetRendererType( aRendererType );
@@ -117,6 +126,7 @@ ViewerWindow::updateToolbars()
 	case M4D::GUI::rt2DAlignedSlices:
 		action2D->setChecked( true );
 		actionUse_WLWindow->setEnabled( true );
+		actionUse_MIP->setEnabled( false );
 		break;
 	case M4D::GUI::rt3DGeneralSlices:
 		ASSERT( false );
@@ -124,6 +134,7 @@ ViewerWindow::updateToolbars()
 	case M4D::GUI::rt3D:
 		action3D->setChecked( true );
 		actionUse_WLWindow->setEnabled( false );
+		actionUse_MIP->setEnabled( true );
 		break;
 	default:
 		ASSERT( false );
@@ -140,7 +151,7 @@ ViewerWindow::updateToolbars()
 		actionUse_Transfer_Function->setChecked( true );
 		break;
 	case M4D::GUI::ctMaxIntensityProjection:
-		ASSERT( false );
+		actionUse_MIP->setChecked( true );
 		break;
 	default:
 		ASSERT( false );
