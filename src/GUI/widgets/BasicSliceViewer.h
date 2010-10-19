@@ -76,6 +76,17 @@ public:
 		return _renderer.GetColorTransformType();
 	}
 
+
+	void
+	ReceiveMessage( 
+		M4D::Imaging::PipelineMessage::Ptr 			msg, 
+		M4D::Imaging::PipelineMessage::MessageSendStyle 	sendStyle, 
+		M4D::Imaging::FlowDirection				direction
+	)
+	{
+		PrepareData();
+	}
+
 public slots:
 	void
 	SetRendererType( int aRendererType )

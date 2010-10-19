@@ -232,21 +232,21 @@ BasicSliceViewer::PrepareData()
 		return false;
 	}
 
-	_regionMin = M4D::Imaging::AImageDim<3>::Cast( _inputDatasets[0] )->GetMinimum();
-	_regionMax = M4D::Imaging::AImageDim<3>::Cast( _inputDatasets[0] )->GetMaximum();
-	_regionRealMin = M4D::Imaging::AImageDim<3>::Cast( _inputDatasets[0] )->GetRealMinimum();
-	_regionRealMax = M4D::Imaging::AImageDim<3>::Cast( _inputDatasets[0] )->GetRealMaximum();
-	_elementExtents = M4D::Imaging::AImageDim<3>::Cast( _inputDatasets[0] )->GetElementExtents();
+	_regionMin = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] )->GetMinimum();
+	_regionMax = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] )->GetMaximum();
+	_regionRealMin = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] )->GetRealMinimum();
+	_regionRealMax = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] )->GetRealMaximum();
+	_elementExtents = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] )->GetElementExtents();
 
 	_renderer.GetSliceViewConfig().currentSlice = _regionMin;
 
-	/*M4D::Imaging::Image<uint16,3>::Ptr image = M4D::Imaging::Image<uint16,3>::Cast( _inputDatasets[0] );
+	/*M4D::Imaging::Image<uint16,3>::Ptr image = M4D::Imaging::Image<uint16,3>::Cast( mInputDatasets[0] );
 	M4D::Imaging::ImageFactory::DumpImage( "pom.dump", *image );
 	*/
 
 
 
-	_textureData = CreateTextureFromImage( *(M4D::Imaging::AImage::Cast( _inputDatasets[0] )->GetAImageRegion()), true ) ;
+	_textureData = CreateTextureFromImage( *(M4D::Imaging::AImage::Cast( mInputDatasets[0] )->GetAImageRegion()), true ) ;
 
 	ReleaseAllInputs();
 

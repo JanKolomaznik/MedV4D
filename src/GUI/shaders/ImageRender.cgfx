@@ -135,7 +135,7 @@ FragmentOutput fp_TransferFunction1DShading_3D(
 	float value = (tex3D( aTextureData, coordinates ).x * range) + aMappedIntervalBands[0];
 	OUT.color = ApplyTransferFunction1D( value, aTransferFunction1D, aTransferFunction1DInterval );
 
-	if( OUT.color.a > THRESHOLD ) {
+	/*if( OUT.color.a > THRESHOLD ) {
 		float3 sample1, sample2;
 		
 		sample1.x = tex3D( aTextureData, aTexCoord - half3( DELTA, 0.0, 0.0 ) ).x;
@@ -161,7 +161,7 @@ FragmentOutput fp_TransferFunction1DShading_3D(
 		light.ambient = float3(0.3,0.3,0.3);
 
 		OUT.color.rgb += BlinnPhongShading( N, V, L, material, light );
-	}
+	}*/
 	OUT.color.a = 1.0f - pow( 1.0f - OUT.color.a, aRenderingSliceThickness );
 	return OUT;
 }

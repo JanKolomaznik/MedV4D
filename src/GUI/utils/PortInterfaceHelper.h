@@ -37,7 +37,7 @@ public:
 	 **/
 	const Imaging::InputPortList &
 	InputPort()const
-		{ return _inputPorts; }
+		{ return mInputPorts; }
 
 	/**
 	 * It tries to fetch dataset from each port in port list and lock it for reading. 
@@ -46,6 +46,12 @@ public:
 	void
 	TryGetAndLockAllInputs();
 
+	/**
+	 * Same as TryGetAndLockAllInputs(), but check only connected ports
+	 **/
+
+	void
+	TryGetAndLockAllAvailableInputs();
 	/**
 	 * Releases all locked datasets and resets pointers
 	 **/
@@ -62,12 +68,13 @@ public:
 protected:
 	//typedef typename boost::fusion::result_of::as_vector<DatasetTypeVector>::type InputDatasetList;
 
-	//InputDatasetList			_inputDatasets;
-	M4D::Imaging::ADataset::ConstPtr		_inputDatasets[boost::mpl::size< DatasetTypeVector >::value];
+	//InputDatasetList			mInputDatasets;
+	M4D::Imaging::ADataset::ConstPtr		mInputDatasets[boost::mpl::size< DatasetTypeVector >::value];
+	M4D::Common::TimeStamp				mTimeStamps[boost::mpl::size< DatasetTypeVector >::value];
 private:
 	struct PortCreator
 	{
-		PortCreator( M4D::Imaging::InputPortList &portList ): _inputPorts( portList ) {}
+		PortCreator( M4D::Imaging::InputPortList &portList ): mInputPorts( portList ) {}
 
 		template< typename DatasetTypeWrapper > 
 		void 
@@ -76,14 +83,14 @@ private:
 			typedef M4D::Imaging::InputPortTyped< typename DatasetTypeWrapper::type > PortType;
 
 			PortType *ptr = new PortType();
-			_inputPorts.AppendPort( ptr );
+			mInputPorts.AppendPort( ptr );
 		}
-		M4D::Imaging::InputPortList		&_inputPorts;
+		M4D::Imaging::InputPortList		&mInputPorts;
 	};
 
 	
 
-	M4D::Imaging::InputPortList		_inputPorts;
+	M4D::Imaging::InputPortList		mInputPorts;
 };
 
 
@@ -91,11 +98,11 @@ private:
 
 template< typename DatasetTypeVector >
 PortInterfaceHelper< DatasetTypeVector >
-::PortInterfaceHelper() : _inputPorts( this )
+::PortInterfaceHelper() : mInputPorts( this )
 {
 	typedef typename boost::mpl::transform< DatasetTypeVector, M4D::Functors::MakeTypeBox >::type wrapedTypes;
 
-	boost::mpl::for_each< wrapedTypes >( PortCreator( _inputPorts ) );
+	boost::mpl::for_each< wrapedTypes >( PortCreator( mInputPorts ) );
 }
 
 template< typename DatasetTypeVector >
@@ -104,7 +111,17 @@ PortInterfaceHelper< DatasetTypeVector >
 ::TryGetAndLockAllInputs()
 {
 	//TODO
-	_inputDatasets[0] = _inputPorts.GetPort(0).GetDatasetPtr();
+	mInputDatasets[0] = mInputPorts.GetPort(0).GetDatasetPtr();
+	//_THROW_ ErrorHandling::ETODO();
+}
+
+template< typename DatasetTypeVector >
+void
+PortInterfaceHelper< DatasetTypeVector >
+::TryGetAndLockAllAvailableInputs()
+{
+	//TODO
+	mInputDatasets[0] = mInputPorts.GetPort(0).GetDatasetPtr();
 	//_THROW_ ErrorHandling::ETODO();
 }
 
