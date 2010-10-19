@@ -3,7 +3,7 @@
 
 #include "common/Vector.h"
 #include "common/MathTools.h"
-
+#undef RGB
 #ifdef RGB
 	#undef RGB
 #endif /*RGB*/

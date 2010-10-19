@@ -118,8 +118,8 @@ MySimpleSliceViewerTexturePreparer< ElementType >
                     {
                         Vector< uint32, 2 > size;
                         Vector< int32, 2 > strides;
-                        original = Imaging::Image< ElementType, 2 >::CastAImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
-						mask = Imaging::Image< ElementType, 2 >::CastAImage(inMaskPort->GetDatasetTyped()).GetPointer( size, strides );
+                        original = Imaging::Image< ElementType, 2 >::Cast(inPort->GetDatasetTyped()).GetPointer( size, strides );
+						mask = Imaging::Image< ElementType, 2 >::Cast(inMaskPort->GetDatasetTyped()).GetPointer( size, strides );
                         width = size[0];
                         height = size[1];
                         xstride = strides[0];
@@ -142,8 +142,8 @@ MySimpleSliceViewerTexturePreparer< ElementType >
                   //            int it=inPort->GetDatasetTyped().GetElementTypeID();
                   //            int imt=inMaskPort->GetDatasetTyped().GetElementTypeID();
 
-                                original = Imaging::Image< ElementType, 3 >::CastAImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
-								mask = Imaging::Image< ElementType, 3 >::CastAImage(inMaskPort->GetDatasetTyped()).GetPointer( size, strides );
+                                original = Imaging::Image< ElementType, 3 >::Cast(inPort->GetDatasetTyped()).GetPointer( size, strides );
+								mask = Imaging::Image< ElementType, 3 >::Cast(inMaskPort->GetDatasetTyped()).GetPointer( size, strides );
                                 width = size[0];
                                 height = size[1];
                                 depth = size[2];
@@ -155,8 +155,8 @@ MySimpleSliceViewerTexturePreparer< ElementType >
 
                             case yz:
                             {
-                                original = Imaging::Image< ElementType, 3 >::CastAImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
-								mask = Imaging::Image< ElementType, 3 >::CastAImage(inMaskPort->GetDatasetTyped()).GetPointer( size, strides );
+                                original = Imaging::Image< ElementType, 3 >::Cast(inPort->GetDatasetTyped()).GetPointer( size, strides );
+								mask = Imaging::Image< ElementType, 3 >::Cast(inMaskPort->GetDatasetTyped()).GetPointer( size, strides );
                                 width = size[1];
                                 height = size[2];
                                 depth = size[0];
@@ -168,8 +168,8 @@ MySimpleSliceViewerTexturePreparer< ElementType >
 
                             case zx:
                             {
-                                original = Imaging::Image< ElementType, 3 >::CastAImage(inPort->GetDatasetTyped()).GetPointer( size, strides );
-								mask = Imaging::Image< ElementType, 3 >::CastAImage(inMaskPort->GetDatasetTyped()).GetPointer( size, strides );
+                                original = Imaging::Image< ElementType, 3 >::Cast(inPort->GetDatasetTyped()).GetPointer( size, strides );
+								mask = Imaging::Image< ElementType, 3 >::Cast(inMaskPort->GetDatasetTyped()).GetPointer( size, strides );
                                 width = size[2];
                                 height = size[0];
                                 depth = size[1];
@@ -232,7 +232,7 @@ SliceViewerSpecialStateOperator::SelectMethodLeft( double x, double y, int slice
 }
 
 m4dMySliceViewerWidget::m4dMySliceViewerWidget( 
-  unsigned index, QWidget *parent)
+  unsigned index, QWidget *parent):m4dGUISliceViewerWidget( 1)
 {
     //TODO: smazat port list
     _index = index;
@@ -245,7 +245,7 @@ m4dMySliceViewerWidget::m4dMySliceViewerWidget(
 
 m4dMySliceViewerWidget::m4dMySliceViewerWidget( 
   Imaging::ConnectionInterface* conn, 
-  unsigned index, QWidget *parent)
+  unsigned index, QWidget *parent):m4dGUISliceViewerWidget( 1)
 {
     //TODO: smazat port list
     _index = index;
