@@ -25,7 +25,7 @@ ViewerWindow::ViewerWindow()
 	mViewer->SetLUTWindow( Vector2f( 500.0f,1000.0f ) );
 
 	mTransFuncTimer.setInterval( 500 );
-	QObject::connect( &mTransFuncTimer, SIGNAL( timeout() ), this, SLOT( applyTransferFunction() ) );
+	QObject::connect( &mTransFuncTimer, SIGNAL( timeout() ), this, SLOT( updateTransferFunction() ) );
 
 	QActionGroup *viewerTypeSwitch = new QActionGroup( this );
 	QSignalMapper *viewerTypeSwitchSignalMapper = new QSignalMapper( this );

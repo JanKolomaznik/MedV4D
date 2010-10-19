@@ -8,6 +8,9 @@ namespace GUI
 	
 TransferFunction1DEditor::TransferFunction1DEditor( QWidget *aParent ): ScaleVisualizer( aParent ), mEditedChannelIdx( 0 )
 {
+	setMinimumSize ( 256, 256 );
+
+
 	mTransferFunctionBuffer = M4D::GUI::TransferFunctionBuffer1D::Ptr( new M4D::GUI::TransferFunctionBuffer1D( 4096, Vector2f( 0.0f, 4096.0f ) ) );
 
 	M4D::GUI::TransferFunctionBuffer1D::Iterator it;
