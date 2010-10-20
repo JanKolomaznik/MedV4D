@@ -1,1 +1,0 @@
-Project file with project that has to test DICOM Provider functionality.
