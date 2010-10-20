@@ -35,6 +35,12 @@ TransferFunction1DEditor::paintEvent( QPaintEvent * event )
 	mPainter.begin( this );
 	mPainter.setTransform( mCanvasTransform );
 
+	mPainter.setWorldMatrixEnabled( false );
+	mPainter.setClipRegion ( QRegion( mBorderWidth, mBorderWidth, width() - 2 * mBorderWidth + 1, height() - 2 * mBorderWidth + 1 ) );
+	mPainter.setWorldMatrixEnabled( true );
+
+	mPainter.setPen ( QApplication::palette().color( QPalette::Midlight ) );
+
 	mPainter.drawRect( QRectF( mMin, mMMin, mMax - mMin, mMMax - mMMin ) );
 
 	double aStep = (mTransferFunctionBuffer->GetMappedInterval()[1]- mTransferFunctionBuffer->GetMappedInterval()[0]) / (float)mTransferFunctionBuffer->Size();
@@ -66,7 +72,7 @@ TransferFunction1DEditor::paintEvent( QPaintEvent * event )
 			aStart,
 			RGBAf::ValueAccessor< 2 >()
 			);
-	mPainter.setPen ( QColor( 255, 255, 255, 255 ) );
+	mPainter.setPen ( QApplication::palette().color( QPalette::BrightText ) );
 	DrawPolyline(
 			mPainter,
 			mTransferFunctionBuffer->Begin(),

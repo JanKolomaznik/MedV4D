@@ -21,7 +21,7 @@ ViewerWindow::ViewerWindow()
 
 	mTransferFunctionEditor->SetValueInterval( 0.0f, 3000.0f );
 	mTransferFunctionEditor->SetMappedValueInterval( 0.0f, 1.0f );
-	mTransferFunctionEditor->SetBorderWidth( 5 );
+	mTransferFunctionEditor->SetBorderWidth( 10 );
 	addDockWidget (Qt::RightDockWidgetArea, dockwidget );
 
 	mViewer->SetLUTWindow( Vector2f( 500.0f,1000.0f ) );
@@ -70,13 +70,13 @@ ViewerWindow::changeViewerType( int aRendererType )
 	if ( aRendererType == M4D::GUI::rt3D 
 		&& mViewer->GetColorTransformType() == M4D::GUI::ctLUTWindow ) 
 	{
-		mViewer->SetColorTransformType( M4D::GUI::ctTransferFunction1D );
+		changeColorMapType( M4D::GUI::ctTransferFunction1D );
 	}
 
 	if ( aRendererType == M4D::GUI::rt2DAlignedSlices 
 		&& mViewer->GetColorTransformType() == M4D::GUI::ctMaxIntensityProjection ) 
 	{
-		mViewer->SetColorTransformType( M4D::GUI::ctLUTWindow );
+		changeColorMapType( M4D::GUI::ctLUTWindow );
 	}
 
 	mViewer->SetRendererType( aRendererType );
@@ -88,6 +88,7 @@ ViewerWindow::changeColorMapType( int aColorMap )
 {
 	D_PRINT( "Change color map type" );
 	mViewer->SetColorTransformType( aColorMap );
+	toggleInteractiveTransferFunction( aColorMap == M4D::GUI::ctTransferFunction1D );
 	updateToolbars();
 }
 

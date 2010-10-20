@@ -129,9 +129,9 @@ protected:
 	template< typename T>
 	void SwapDataBuf( DataBuff &buf)
 	{
-		register uint32 bufSize = buf.len / sizeof(T);
+		register size_t bufSize = buf.len / sizeof(T);
 		T *data = (T *) buf.data;
-		for(register uint32 i=0; i<bufSize; i++)
+		for(register size_t i=0; i<bufSize; i++)
 			SwapBytes<T>(data[i]);
 	}
 	

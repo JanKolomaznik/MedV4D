@@ -50,7 +50,6 @@
    <addaction name="actionUse_MIP"/>
    <addaction name="actionUse_Transfer_Function"/>
    <addaction name="actionFine_Render"/>
-   <addaction name="actionApplyTransferFunction"/>
   </widget>
   <action name="actionOpen">
    <property name="text">
@@ -66,14 +65,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
-   </property>
-  </action>
-  <action name="actionApplyTransferFunction">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>ApplyTransferFunction</string>
    </property>
   </action>
   <action name="actionUse_WLWindow">
@@ -135,22 +126,6 @@
  </customwidgets>
  <resources/>
  <connections>
-  <connection>
-   <sender>actionApplyTransferFunction</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>ViewerWindow</receiver>
-   <slot>toggleInteractiveTransferFunction(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>399</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>actionFine_Render</sender>
    <signal>triggered()</signal>
