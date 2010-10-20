@@ -41,6 +41,8 @@ TransferFunction1DEditor::paintEvent( QPaintEvent * event )
 
 	mPainter.setPen ( QApplication::palette().color( QPalette::Midlight ) );
 
+	QBrush brush( QApplication::palette().color( QPalette::Shadow ) );
+	mPainter.setBrush( brush );
 	mPainter.drawRect( QRectF( mMin, mMMin, mMax - mMin, mMMax - mMMin ) );
 
 	double aStep = (mTransferFunctionBuffer->GetMappedInterval()[1]- mTransferFunctionBuffer->GetMappedInterval()[0]) / (float)mTransferFunctionBuffer->Size();
@@ -83,7 +85,7 @@ TransferFunction1DEditor::paintEvent( QPaintEvent * event )
 			);
 
 
-	mPainter.drawEllipse ( mLastPoint, mPixelSize.x() * 15, mPixelSize.y() * 15 );
+	mPainter.drawEllipse ( mLastPoint, mPixelSize.x() * 5, mPixelSize.y() * 5 );
 
 	mPainter.end();
 }

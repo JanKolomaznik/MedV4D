@@ -33,8 +33,9 @@ public:
 
 	void
 	SetCenterPosition( const Position &pos );
-	
 
+	void
+	SetEyePosition( const Position &pos );
 
 	const Direction &
 	GetUpDirection() const
@@ -84,6 +85,10 @@ protected:
  	FloatType  		_zNear; 
  	FloatType  		_zFar;
 };
+
+
+void
+DollyCamera( Camera &aCamera, float32 aRatio );
 
 
 #endif /*CAMERA_H*/

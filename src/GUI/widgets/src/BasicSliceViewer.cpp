@@ -196,11 +196,22 @@ BasicSliceViewer::wheelEvent ( QWheelEvent * event )
 {
 	int numDegrees = event->delta() / 8;
 	int numSteps = numDegrees / 15;
-	if (event->orientation() == Qt::Horizontal) {
-		SetCurrentSlice( _renderer.GetSliceViewConfig().currentSlice[ _renderer.GetSliceViewConfig().plane ] -= numSteps );
-	} else {
-		SetCurrentSlice( _renderer.GetSliceViewConfig().currentSlice[ _renderer.GetSliceViewConfig().plane ] += numSteps );
+	float dollyRatio = 1.1f;
+	if ( event->delta() > 0 ) {
+		dollyRatio = 1.0f/dollyRatio;
 	}
+	switch ( _renderer.GetRendererType() ) {
+	case rt2DAlignedSlices:
+			SetCurrentSlice( _renderer.GetSliceViewConfig().currentSlice[ _renderer.GetSliceViewConfig().plane ] += numSteps );
+		break;
+	case rt3DGeneralSlices:
+		return;
+	case rt3D:
+		DollyCamera( _renderer.GetViewConfig3D().camera, dollyRatio );
+		break;
+	default:
+		ASSERT( false );
+	};
 	event->accept();
 	this->update();
 }

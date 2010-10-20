@@ -38,7 +38,7 @@ main( int argc, char** argv )
 
 	QApplication app(argc, argv);
 	try {
-		//processCommandLine( argc, argv );
+		processCommandLine( argc, argv );
 
 		std::cout << "Show window\n";
 		//ViewerWindow viewer( prodconn );
@@ -46,9 +46,9 @@ main( int argc, char** argv )
 
 
 		viewer.show();
-		/*if ( !inFilename.empty() ) {
+		if ( !inFilename.empty() ) {
 			viewer.openFile( QString::fromStdString( inFilename ) );
-		}*/
+		}
 		//viewer.applyTransferFunction();
 		return app.exec();
 	} catch ( std::exception &e )

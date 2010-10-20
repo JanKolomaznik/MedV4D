@@ -33,6 +33,18 @@ Camera::SetCenterPosition( const Position &pos )
 }
 
 void
+Camera::SetEyePosition( const Position &pos )
+{
+	_eyePos = pos;
+	_centerDirection = _centerPos - _eyePos;
+	VectorNormalization( _centerDirection );
+	
+	Ortogonalize( _centerDirection, _upDirection );
+	VectorNormalization( _upDirection );
+	_rightDirection = VectorProduct( _centerDirection, _upDirection );
+}
+
+void
 Camera::YawAround( Camera::FloatType angle )
 {
 	Quaternion<Camera::FloatType> q = CreateRotationQuaternion( angle, _upDirection );
@@ -51,4 +63,14 @@ Camera::YawPitchAround( Camera::FloatType yangle, Camera::FloatType pangle )
 {
 	Quaternion<Camera::FloatType> q = CreateRotationQuaternion( yangle, _upDirection ) * CreateRotationQuaternion( pangle, _rightDirection );
 	RotateAroundCenter( q );
+}
+
+void
+DollyCamera( Camera &aCamera, float32 aRatio )
+{
+	Camera::Position center = aCamera.GetCenterPosition();
+	Camera::Position eye = aCamera.GetEyePosition();
+	Camera::Direction moveVector = (1.0f - aRatio) * (center - eye);
+	
+	aCamera.SetEyePosition( eye + moveVector );
 }
