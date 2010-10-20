@@ -25,7 +25,7 @@ public slots:
 	openFile();
 
 	void 
-	openFile( const QString aPath );
+	openFile( const QString &aPath );
 
 	void
 	updateTransferFunction();

@@ -154,13 +154,14 @@ ImageFactory::DeserializeImageFromStream(M4D::IO::InStream &stream)
 
 	uint32 eoDataset = 0;
 	stream.Get<uint32>( eoDataset );
-	if( eoDataset != DUMP_END_MAGIC_NUMBER ) {
-		_THROW_ EWrongStreamEnd();
-	}
 
 	delete [] minimums;
 	delete [] maximums;
 	delete [] elementExtents;
+
+	if( eoDataset != DUMP_END_MAGIC_NUMBER ) {
+		_THROW_ EWrongStreamEnd();
+	}
 
 	return image;
 

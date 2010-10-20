@@ -12,6 +12,8 @@ ViewerWindow::ViewerWindow()
 		QPoint putAt=myRegion.topRight();
 		SetWindowPos(GetConsoleWindow(),winId(),putAt.x()+1,putAt.y(),0,0,SWP_NOSIZE);
 	#endif
+
+	mProdconn.ConnectConsumer( mViewer->InputPort()[0] );
 	
 	QDockWidget * dockwidget = new QDockWidget;
 	mTransferFunctionEditor = new M4D::GUI::TransferFunction1DEditor;
@@ -169,14 +171,15 @@ ViewerWindow::openFile()
 }
 
 void 
-ViewerWindow::openFile( const QString aPath )
+ViewerWindow::openFile( const QString &aPath )
 {
+	{
+		std::string path = std::string( aPath.toLocal8Bit().data() );
 	M4D::Imaging::AImage::Ptr image = 
-		M4D::Imaging::ImageFactory::LoadDumpedImage( aPath.toStdString() );
+		M4D::Imaging::ImageFactory::LoadDumpedImage( path );
 
 	mProdconn.PutDataset( image );
-	mProdconn.ConnectConsumer( mViewer->InputPort()[0] );
-
+	}
 	mViewer->ZoomFit();
 
 	applyTransferFunction();

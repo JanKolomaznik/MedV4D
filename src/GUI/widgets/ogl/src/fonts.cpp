@@ -11,7 +11,19 @@
 #ifdef _MSC_VER
 #  define WIN32_LEAN_AND_MEAN 1
 #  include <windows.h>
+# ifdef GetMessage
+#   undef GetMessage
+# endif
+
+# ifdef SendMessage
+#   undef SendMessage
+# endif
+
+# ifdef RGB
+#   undef RGB
+# endif
 #endif
+
 #include <GL/gl.h>
 #include <GL/glu.h>
 
