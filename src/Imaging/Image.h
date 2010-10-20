@@ -348,6 +348,12 @@ public:
 	GetStrides()const
 		{ return _strides;}
 
+	bool
+	IsDataContinuous()const
+	{
+		return _isDataContinuous;
+	}
+
 protected:
 	template< unsigned SDim >
 	Vector< int32, SDim >
@@ -374,6 +380,8 @@ protected:
 	uint32			_sourceDimension;
 	///coordinates of point specified by _pointer in source data buffer
 	int32			*_pointerCoordinatesInSource;
+
+	bool			_isDataContinuous;
 private:
 	void
 	FillDimensionInfo();

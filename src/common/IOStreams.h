@@ -106,6 +106,16 @@ public:
 			SwapBytes<T>( what );
 		}
 	}
+
+	template< typename T>
+	void Get( T *what, size_t aCount )
+	{
+		ASSERT( what != NULL && aCount > 0 );
+
+		DataBuff buffer = DataBuff( static_cast< void * >( what ), aCount * sizeof( T ) );
+
+		GetDataBuf< T >( buffer );
+	}
 	
 	bool
 	eof()

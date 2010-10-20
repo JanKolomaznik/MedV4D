@@ -39,6 +39,7 @@
 #include "common/IOStreams.h"
 #include "common/TimeStamp.h"
 #include "common/DefinitionMacros.h"
+#include "common/TimeMeasurement.h"
 #include <iomanip>
 #include <sstream>
 

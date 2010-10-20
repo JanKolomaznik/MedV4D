@@ -96,10 +96,20 @@ template< typename ElementType, uint32 Dimension >
 void
 LoadSerializedImageData( M4D::IO::InStream &stream, Image< ElementType, Dimension >& image )
 {
-	typename Image< ElementType, Dimension >::Iterator iterator = image.GetIterator();
-	while( !iterator.IsEnd() && !stream.eof() ) {
-		stream.Get< ElementType >( *iterator );
-		++iterator;
+	if ( image.IsDataContinuous() ) {
+		D_PRINT( "Buffered loading of image" );
+		typename Image< ElementType, Dimension >::SizeType size;
+		typename Image< ElementType, Dimension >::PointType strides;
+		ElementType * pointer = image.GetPointer( size,	strides );
+		//TODO check invariants needed for buffered load
+		stream.Get< ElementType >( pointer, VectorCoordinateProduct( size ) );
+	} else {
+		D_PRINT( "Slow loading of image" );
+		typename Image< ElementType, Dimension >::Iterator iterator = image.GetIterator();
+		while( !iterator.IsEnd() && !stream.eof() ) {
+			stream.Get< ElementType >( *iterator );
+			++iterator;
+		}
 	}
 //	image.DeSerializeData(stream);
 }
@@ -290,9 +300,14 @@ ImageFactory::LoadDumpedImage( std::string filename )
 {
 	//std::fstream input( filename.data(), std::ios::in | std::ios::binary );
 
+	M4D::Common::Clock clock;
+
 	M4D::IO::FInStream input( filename );
 
-	return DeserializeImage( input );
+	AImage::Ptr image = DeserializeImage( input );
+	
+	LOG( "Image '" << filename << "' loaded in " << clock.SecondsPassed() << " seconds." );
+	return image;
 }
 
 

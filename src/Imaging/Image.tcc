@@ -25,7 +25,7 @@ namespace Imaging
 
 template< typename ElementType, unsigned Dim >
 Image< ElementType, Dim >::Image()
-: AImageDim< Dim >( this->_dimExtents )
+: AImageDim< Dim >( this->_dimExtents ), _isDataContinuous( false )
 {
 	for( unsigned i = 0; i < Dimension; ++i ) {
 		this->_minimum[i] = _dimExtents[i].minimum = 0;
@@ -43,14 +43,13 @@ Image< ElementType, Dim >::Image()
 
 template< typename ElementType, unsigned Dim >
 Image< ElementType, Dim >::Image( AImageData::APtr imageData )
-: AImageDim< Dim >( this->_dimExtents )
+: AImageDim< Dim >( this->_dimExtents ), _isDataContinuous( true )
 {
 	try 
 	{
 		_imageData = ImageDataTemplate< ElementType >::CastAbstractPointer( imageData );
 
 		FillDimensionInfo();	
-
 	} 
 	catch ( ... )
 	{
@@ -61,7 +60,7 @@ Image< ElementType, Dim >::Image( AImageData::APtr imageData )
 
 template< typename ElementType, unsigned Dim >
 Image< ElementType, Dim >::Image( typename ImageDataTemplate< ElementType >::Ptr imageData )
-: AImageDim< Dim >( this->_dimExtents )
+: AImageDim< Dim >( this->_dimExtents ), _isDataContinuous( true )
 {
 	_imageData = imageData;
 	
@@ -71,11 +70,11 @@ Image< ElementType, Dim >::Image( typename ImageDataTemplate< ElementType >::Ptr
 	
 template< typename ElementType, unsigned Dim >
 Image< ElementType, Dim >::Image( typename ImageDataTemplate< ElementType >::Ptr imageData, typename Image< ElementType, Dim >::SubRegion region )
-: AImageDim< Dim >( this->_dimExtents )
+: AImageDim< Dim >( this->_dimExtents ), _isDataContinuous( false ) //TODO check if region contains whole buffer
 {
 	_imageData = imageData;
 	if( _imageData->GetDimension() < Dimension ) {
-			//TODO _THROW_ exception
+			_THROW_ ErrorHandling::EBadParameter( "Creating image from buffer of wrong dimension." );
 	}
 		
 	_sourceDimension = region.GetSourceDimension();
@@ -102,7 +101,7 @@ Image< ElementType, Dim >::Image(
 		typename Image< ElementType, Dim >::PointType	minimum, 
 		typename Image< ElementType, Dim >::PointType	maximum 
 		)
-: AImageDim< Dim >( this->_dimExtents )
+: AImageDim< Dim >( this->_dimExtents ), _isDataContinuous( true )
 {
 	if( imageData->GetDimension() != Dimension ) {
 			_THROW_ ErrorHandling::EBadParameter( "Creating image from buffer of wrong dimension." );
@@ -132,7 +131,7 @@ void
 Image< ElementType, Dim >::FillDimensionInfo()
 {
 	if( _imageData->GetDimension() != Dimension ) {
-			//TODO _THROW_ exception
+			_THROW_ ErrorHandling::EBadParameter( "Creating image from buffer of wrong dimension." );
 	}
 		
 	_sourceDimension = Dimension;
