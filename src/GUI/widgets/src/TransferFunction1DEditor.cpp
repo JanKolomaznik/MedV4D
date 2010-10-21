@@ -14,16 +14,23 @@ TransferFunction1DEditor::TransferFunction1DEditor( QWidget *aParent ): ScaleVis
 	mTransferFunctionBuffer = M4D::GUI::TransferFunctionBuffer1D::Ptr( new M4D::GUI::TransferFunctionBuffer1D( 4096, Vector2f( 0.0f, 4096.0f ) ) );
 
 	M4D::GUI::TransferFunctionBuffer1D::Iterator it;
-	float r,g,b;
-	float step = 1.0f / (2048.0f);
+	float r,g,b,a;
+	float step = 1.0f / (4096.0f);
 	int i = 0;
-	r = g = b = 0.0f;
+	r = g = b = a = 0.0f;
+
+	float level, width;
+	level = 1440;
+	width = 350;
+
 	for( it = mTransferFunctionBuffer->Begin(); it != mTransferFunctionBuffer->End(); ++it ) {
-		*it = /*RGBAf( 0.0f, 1.0f, 0.0f, 1.0f );*/RGBAf( r, g, b, ( i < 200 ) ? 0.0f : 1.0f );
+		*it = RGBAf( r, g, b, a );
 		++i;
-		r += step;
-		g = sin( i*step * PI  ) * 0.3f + 0.2f;
-		b = sin( i*step * PIx2 ) * 0.3f + 0.2f;
+		float intensity = ClampToInterval<float>(0.0f, 1.0f, 0.5f + 0.5f*((float)i - level) / width); 
+		r = intensity;
+		g = intensity;
+		b = intensity;
+		a = intensity;
 	}
 }
 
