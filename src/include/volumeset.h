@@ -2111,6 +2111,261 @@ public:
 		printf("Time taken: %d:%d:%d.%3d\n", h,m,s,ms);
 		return true;
 	}
+
+	bool volNLMeansOptHW(MyOpenCL &ocl, const CVolumeSet<T> &src,
+							   double beta, int radius, int neighbourhood,
+							   CProgress *progress) {
+		if(ocl.bInitialized == false) {
+			printf("OpenCL not initialized\n");
+			return false;
+		}
+		
+		if(radius > 4) {
+			radius = 4;
+			printf("Radius too large, setting to 4.\n");
+		}
+		if(neighbourhood > 2) {
+			radius = 2;
+			printf("Neighbourhood too large, setting to 2.\n");
+		}
+
+		// create program
+		if(NULL == ocl.ReadNLMProgram("NLMProgram.cl")) {
+			printf("Cannot load program\n");
+			return false;
+		}
+		cl_program program = clCreateProgramWithSource(ocl.context, 1, (const char**) &ocl.szNLMProgram, NULL, NULL);
+		if(program == NULL) {
+			printf("Cannot create program\n");
+			return false;
+		}
+
+		// bulid program
+		int errcode = clBuildProgram(program, 1, &(ocl.device), NULL, NULL, NULL);
+		if (errcode != CL_SUCCESS) {
+			size_t len;
+			char buffer[10000];
+			printf("Error: Failed to build program executable (%d)\n", errcode);            
+			clGetProgramBuildInfo(program, ocl.device, CL_PROGRAM_BUILD_LOG,
+											  sizeof(buffer), buffer, &len);
+			printf("%s\n", buffer);
+			return false;
+		}
+
+		// create kenerl
+		cl_kernel kerNLM = clCreateKernel(program, "NLMeansOptV2", NULL);
+		cl_kernel kerLocMeanVar = clCreateKernel(program, "LocMeanAndVar", NULL);
+		cl_kernel kerPseudoRes = clCreateKernel(program, "PseudoRes", NULL);
+//		cl_kernel kerMeanVar = clCreateKernel(program, "LocMeanAndVar", NULL);
+
+		copySize(src);
+		copyOrigPos(src);
+
+		std::vector<int> vStartX, vStartY, vStartZ;
+		std::vector<int> vWidthX, vWidthY, vWidthZ;
+		
+		int border = radius + neighbourhood;
+
+		const int BLOCK_NLOPT=13;
+
+		const int BLOCK_WEIGHTS=9;
+
+		int xkern = BLOCK_NLOPT - 2*border; // size of "kernel", i.e. voxels that are actually computed in X direction
+		int ykern = BLOCK_NLOPT - 2*border; // size of "kernel", i.e. voxels that are actually computed in Y direction
+
+		SPoint3D<int> blockSize, blocks;
+		blocks.init(std::min(100, (width + xkern - 1)/xkern), std::min(100, (height + ykern - 1)/ykern), depth);
+		blockSize.init(blocks.x * xkern, blocks.y * ykern, std::min(100, depth));
+
+		int offset;
+		offset = 0;
+		while(offset < src.width) {
+			vStartX.push_back(offset);
+			vWidthX.push_back(std::min(blockSize.x, src.width - offset));
+			offset += blockSize.x;
+		}	
+		offset = 0;
+		while(offset < src.height) {
+			vStartY.push_back(offset);
+			vWidthY.push_back(std::min(blockSize.y, src.height - offset));
+			offset += blockSize.y;
+		}	
+		offset = 0;
+		while(offset < src.depth) {
+			vStartZ.push_back(offset);
+			vWidthZ.push_back(std::min(blockSize.z, src.depth - offset));
+			offset += blockSize.z;
+		}	
+
+		Timer timer;
+		timer.restart();
+
+		printf("Starting computation\n");
+		printf("Preprocessing pseudoresiduals\n");
+
+		int blocksTotal = (int)(vStartX.size() * vStartY.size() * vStartZ.size());
+		int blocksDone = 0;
+		double accum = 0;
+		int accumVals = 0;
+		for(int k = 0; k < (int)vStartZ.size(); k++) 
+		for(int j = 0; j < (int)vStartY.size(); j++) 
+		for(int i = 0; i < (int)vStartX.size(); i++) {
+			printf("Computing Pseudoresiduals block %d/%d\n", ++blocksDone, blocksTotal);
+			
+			int sizeAsArray[4]; // size must be 4-component, because we use it as parameter for kernels
+			SPoint3D<int> &size = *((SPoint3D<int>*)sizeAsArray);
+			SPoint3D<int> orig;
+			int pseudoresBorder = 1;
+			orig.x = vStartX[i] - pseudoresBorder;
+			orig.y = vStartY[j] - pseudoresBorder;
+			orig.z = vStartZ[k] - pseudoresBorder;
+			SPoint3D<int> gpuBlocks;
+			gpuBlocks.init(vWidthX[i], vWidthY[j], vWidthZ[k]);
+			size.x = gpuBlocks.x + 2*pseudoresBorder;
+			size.y = gpuBlocks.y + 2*pseudoresBorder;
+			size.z = gpuBlocks.z + 2*pseudoresBorder;
+
+			int numEntries = size.x * size.y * size.z;
+			int numPseudores = gpuBlocks.x * gpuBlocks.y * gpuBlocks.z;
+
+			size_t iGlobSize = gpuBlocks.y * gpuBlocks.x; // one kernel for each line in X direction
+			size_t iLocSize = gpuBlocks.x;
+
+			float *pVolArray = new float[numEntries];
+			float *pPseudoresArray = new float[numPseudores];
+
+			memset(pPseudoresArray, 0, sizeof(float)*numPseudores);
+			src.saveSubvolumeToArray(pVolArray, orig, size);
+
+			// alloc memory
+			cl_mem memSrc, memPseudores;
+			memSrc = clCreateBuffer(ocl.context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(float)*numEntries, pVolArray, NULL);
+			memPseudores = clCreateBuffer(ocl.context, CL_MEM_READ_WRITE, sizeof(float)*numPseudores, NULL, NULL);
+			
+			//set arguments
+			clSetKernelArg(kerPseudoRes, 0, sizeof(cl_mem), (void*)&memSrc);
+			clSetKernelArg(kerPseudoRes, 1, sizeof(cl_mem), (void*)&memPseudores);
+			clSetKernelArg(kerPseudoRes, 2, sizeof(cl_int4), &size.x);
+			
+			// TODO: make pseudores faster
+			errcode = clEnqueueNDRangeKernel(ocl.queue, kerPseudoRes, 1, NULL, &iGlobSize, NULL, 0, NULL, NULL);
+			clEnqueueReadBuffer(ocl.queue, memPseudores, CL_TRUE, 0, sizeof(float) * numPseudores, pPseudoresArray, 0, NULL, NULL);
+			clReleaseMemObject(memPseudores);
+			clReleaseMemObject(memSrc);
+
+			// compute variance from pseudoresidual
+			int idx = 0;
+			for(idx = 0; idx < numPseudores; idx++) {
+				double val = (double) pPseudoresArray[idx];
+				accum += val*val;
+				accumVals++;
+			}
+
+			//loadSubvolumeFromArray(pPseudoresArray, SPoint3D<int>(vStartX[i],vStartY[j],vStartZ[k]), gpuBlocks, 0);
+			delete[] pPseudoresArray;
+			delete[] pVolArray;
+		}
+
+		float variance = (float)((double)accum / (double)(accumVals));
+		int nbhsize = (neighbourhood*2)+1;
+		nbhsize = nbhsize * nbhsize * nbhsize;
+		float weightConst = (float) (2 * (float)beta * variance * (float)(nbhsize));
+
+		blocksDone = 0;
+		for(int k = 0; k < (int)vStartZ.size(); k++) 
+		for(int j = 0; j < (int)vStartY.size(); j++) 
+		for(int i = 0; i < (int)vStartX.size(); i++) {
+			printf("Computing block %d/%d\n", ++blocksDone, blocksTotal);
+			
+			int sizeAsArray[4]; // size must be 4-component, because we use it as parameter for kernels
+			SPoint3D<int> &size = *((SPoint3D<int>*)sizeAsArray);
+			SPoint3D<int> orig;
+			orig.x = vStartX[i] - border;
+			orig.y = vStartY[j] - border;
+			orig.z = vStartZ[k] - border;
+			SPoint3D<int> gpuBlocks;
+			gpuBlocks.init(vWidthX[i], vWidthY[j], 1);
+			size.x = gpuBlocks.x + 2*border;
+			size.y = gpuBlocks.y + 2*border;
+			size.z = vWidthZ[k] + 2*border;
+
+			int numEntries = size.x * size.y * size.z;
+
+			float *pVolArray = new float[numEntries];
+
+			memset(pVolArray, 0, sizeof(float)*numEntries);
+			src.saveSubvolumeToArray(pVolArray, orig, size);
+
+			cl_mem memSrc = clCreateBuffer(ocl.context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(float)*numEntries, pVolArray, NULL);
+			cl_mem memDest = clCreateBuffer(ocl.context, CL_MEM_READ_WRITE, sizeof(float)*numEntries, NULL, NULL);
+			
+			cl_mem memMean = clCreateBuffer(ocl.context, CL_MEM_READ_WRITE, sizeof(float)*numEntries, NULL, NULL);
+			cl_mem memVar = clCreateBuffer(ocl.context, CL_MEM_READ_WRITE, sizeof(float)*numEntries, NULL, NULL);
+
+			printf("Computing local mean and variance...\n");
+			clSetKernelArg(kerLocMeanVar, 0, sizeof(cl_mem), (void*)&memSrc);
+			clSetKernelArg(kerLocMeanVar, 1, sizeof(cl_mem), (void*)&memMean);
+			clSetKernelArg(kerLocMeanVar, 2, sizeof(cl_mem), (void*)&memVar);
+			clSetKernelArg(kerLocMeanVar, 3, sizeof(cl_int), &radius);
+			clSetKernelArg(kerLocMeanVar, 4, sizeof(cl_int4), &size.x);
+
+			size_t globs[3], locs[3];
+			locs[0] = size.y;
+			globs[0] = size.z * locs[0];
+
+			errcode = clEnqueueNDRangeKernel(ocl.queue, kerLocMeanVar, 1, NULL, globs, locs, 0, NULL, NULL);
+
+			float fMeanAccept = 0.9f;
+			float fSigma = 0.5f;
+
+			printf("Computing NM optimized filter...\n");
+			//set arguments
+			int idxParam = 0;
+			clSetKernelArg(kerNLM, idxParam++, sizeof(cl_mem), (void*)&memSrc);
+			clSetKernelArg(kerNLM, idxParam++, sizeof(cl_mem), (void*)&memDest);
+			clSetKernelArg(kerNLM, idxParam++, sizeof(cl_mem), (void*)&memMean);
+			clSetKernelArg(kerNLM, idxParam++, sizeof(cl_mem), (void*)&memVar);
+			clSetKernelArg(kerNLM, idxParam++, sizeof(cl_int), &radius);
+			clSetKernelArg(kerNLM, idxParam++, sizeof(cl_int), &neighbourhood);
+			clSetKernelArg(kerNLM, idxParam++, sizeof(cl_float), &weightConst);
+			clSetKernelArg(kerNLM, idxParam++, sizeof(cl_float), &fMeanAccept);
+			clSetKernelArg(kerNLM, idxParam++, sizeof(cl_float), &variance);
+			clSetKernelArg(kerNLM, idxParam++, sizeof(cl_float), &fSigma);
+			clSetKernelArg(kerNLM, idxParam++, sizeof(cl_int4), &size.x);
+			clSetKernelArg(kerNLM, idxParam++, sizeof(cl_float) * BLOCK_NLOPT * BLOCK_NLOPT * BLOCK_NLOPT, NULL);
+			clSetKernelArg(kerNLM, idxParam++, sizeof(cl_float) * BLOCK_WEIGHTS * BLOCK_WEIGHTS * BLOCK_WEIGHTS, NULL);
+			clSetKernelArg(kerNLM, idxParam++, sizeof(cl_float) * BLOCK_WEIGHTS * BLOCK_WEIGHTS, NULL);
+			clSetKernelArg(kerNLM, idxParam++, sizeof(cl_float) * BLOCK_WEIGHTS, NULL);
+					
+			locs[0] = BLOCK_NLOPT; 
+			locs[1] = BLOCK_NLOPT;
+			locs[2] = BLOCK_NLOPT;
+			globs[0] = locs[0] * gpuBlocks.x;
+			globs[1] = locs[1] * gpuBlocks.y;
+			globs[2] = locs[2] * gpuBlocks.z;
+
+			errcode = clEnqueueNDRangeKernel(ocl.queue, kerNLM, 2, NULL, globs, locs, 0, NULL, NULL);
+			memset(pVolArray, 0, sizeof(float) * numEntries);
+			clEnqueueReadBuffer(ocl.queue, memDest, CL_TRUE, 0, sizeof(float) * numEntries, pVolArray, 0, NULL, NULL);
+			
+			printf("Storing results...\n");
+			loadSubvolumeFromArray(pVolArray, orig, size, border);
+
+			delete[] pVolArray;
+
+			clReleaseMemObject(memDest);
+			clReleaseMemObject(memSrc);
+			clReleaseMemObject(memMean);
+			clReleaseMemObject(memVar);
+		}
+		
+		timer.measure();
+		int h,m,s,ms;
+		timer.getTime(h, m, s, ms);
+		printf("Time taken: %d:%d:%d.%3d\n", h,m,s,ms);
+		return true;
+	}
+
 #endif
 
 	template <class T2>
