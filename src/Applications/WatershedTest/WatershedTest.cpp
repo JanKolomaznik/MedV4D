@@ -163,15 +163,12 @@ main( int argc, char** argv )
 
 	std::cout << "Converting data...\n";
 
-	viewer::CVolumeSet<float> volF(1,1,1), volFiltered(1,1,1), volFGrad(1,1,1), volFRes(1,1,1);
+	viewer::CVolumeSet<float> volF(1,1,1), /*volFiltered(1,1,1),*/ volFGrad(1,1,1), volFRes(1,1,1);
 	volF.copyVolume(vol16);
-	volFiltered.volMedianFilter(volF, 3, NULL);
+//	volFiltered.volMedianFilter(volF, 3, NULL);
 
 	std::cout << "Computing gradient...\n";	
-	viewer::volGradientSizeApprox<float>(volFGrad, volFiltered, 2);
-	//volFGrad.copyVolume(volF);
-	//viewer::volCreateTestData<float>(volF); // HACK;
-	//viewer::volCreateTestData<float>(volFGrad); // HACK;
+	viewer::volGradientSizeApprox<float>(volFGrad, volF, 2);
 
 	std::cout << "Computing local minima...\n";
 	viewer::CVolumeSet<int> volMarkers(1,1,1);

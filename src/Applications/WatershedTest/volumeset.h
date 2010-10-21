@@ -2471,6 +2471,8 @@ bool volWatershedBasic(CVolumeSet<T> &dest, const CVolumeSet<T> &src, const CVol
 	for(int x = 0; x < width; x++) {
 		if(markers.getValue(x,y,z) == MARKER_BORDER)
 			dest.setValue(x,y,z, 3000);
+		/*else 
+			dest.setValue(x,y,z, -1000);*/
 	}
 	}
 	}

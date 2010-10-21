@@ -389,3 +389,190 @@ __kernel void NLMeansV2(const __global float *srcData,
 		}
 	}
 }
+
+// radius <= 4
+// neighbourhood <= 2
+__kernel void NLMeansOptV2(const __global float *srcData, 					 
+					__global float *dstData, 
+					__global float *srcMean, 
+					__global float *srcVar, 
+					int radius, int neighbourhood,
+					float weightConst,
+					float meanAccept,
+					float variance,
+					float sigma,
+					int4 size,
+					__local float locData[BLOCK_NLOPT][BLOCK_NLOPT][BLOCK_NLOPT],
+					__local float locWeights[BLOCK_WEIGHTS][BLOCK_WEIGHTS][BLOCK_WEIGHTS],
+					__local float locAccWeights[BLOCK_WEIGHTS][BLOCK_WEIGHTS],
+					__local float locOneDimWeights[BLOCK_WEIGHTS]) 
+{
+	int gidX = get_group_id(0);
+	int gidY = get_group_id(1);
+
+	int lidX = get_local_id(0);
+	int lidY = get_local_id(1);
+
+	int zstride = size.x * size.y;
+	int ystride = size.x;
+
+	int nbhsize = neighbourhood * 2 + 1;
+	nbhsize = nbhsize * nbhsize	* nbhsize;
+	int border = radius + neighbourhood;
+	int influenceSize = border * 2 + 1; // influence of each voxel area
+
+	int x, y, z; // top left corner of the view window in source/destination data
+	x = gidX + lidX;
+	y = gidY + lidY;
+
+	int dstX, dstY;	// coords of target processed voxel in source/destination data
+	dstX = gidX + border;
+	dstY = gidY + border;
+
+	// initial data load
+	for(z = 0; z < influenceSize; z++) {
+		locData[z][lidY][lidX] = srcData[zstride * z + ystride * y + x];
+	}
+
+	int center = border;
+
+	int locWeightX = lidX - neighbourhood;
+	int locWeightY = lidY - neighbourhood;
+	
+	barrier(CLK_LOCAL_MEM_FENCE);
+
+	for(z = 0; z < size.z - 2*border; z++) {
+		int dstZ = z + border;
+
+		// get parameters of target voxel
+		float mean1, var1;
+		mean1 = srcMean[zstride * (z+center) + ystride * (y+center) + (x+center)];
+		var1 = srcVar[zstride * (z+center) + ystride * (y+center) + (x+center)];
+		float sigmaRcp = 1./sigma;
+
+		//compute weights
+		////////////////////////////////////////////
+		float accum = 0;
+		if(lidX >= neighbourhood && lidX < BLOCK_NLOPT - neighbourhood &&
+			lidY >= neighbourhood && lidY < BLOCK_NLOPT - neighbourhood)
+		{
+			for(int lidZ = neighbourhood; lidZ < BLOCK_NLOPT - neighbourhood; lidZ++) 
+			{
+				//compute NL weights for each voxel that is being considered
+				 
+				float mean2 = srcMean[zstride * (z+lidZ) + ystride * (y+lidY) + (x+lidX)];
+				float var2 = srcVar[zstride * (z+lidZ) + ystride * (y+lidY) + (x+lidX)];
+				float var1divvar2 = var1 / var2;
+				
+				float weight = 0;
+
+				/*if((fabs(mean1 - mean2) <= variance * meanAccept) &&
+					(sigma < var1divvar2 && var1divvar2 < sigmaRcp)) */{
+					float L2coeffSq = 0;
+					for(int k = -neighbourhood + 1; k <= neighbourhood - 1; k++) {
+						for(int j = -neighbourhood + 1; j <= neighbourhood - 1; j++) {
+							for(int i = -neighbourhood + 1; i <= neighbourhood - 1; i++) {
+								float diff = locData[center+k][center+j][center+i] - locData[lidZ+k][lidY+j][lidX+i];
+								L2coeffSq += diff*diff;
+							}
+						}
+					}
+					weight = exp(- L2coeffSq / weightConst);
+				}
+
+				//float weight = ( L2coeffSq / weightConst);
+				locWeights[lidZ - neighbourhood][locWeightY][locWeightX] = weight;
+				accum += weight;
+			}
+
+			// store accum weights
+			locAccWeights[locWeightY][locWeightX] = accum;
+		}
+
+		// sum weights
+		//////////////////////////////////////////////
+		
+		barrier(CLK_LOCAL_MEM_FENCE);
+		
+		// sum 2D into 1D
+		int maxSumIdx = 2*radius + 1;
+		accum = 0;
+		if(lidY == 0) {
+			for(int j = 0; j< maxSumIdx; j++) {
+				accum += locAccWeights[j][locWeightX];
+			}
+			
+			locOneDimWeights[locWeightX] = accum;			
+		}
+		barrier(CLK_LOCAL_MEM_FENCE);
+
+		// sum 1D into total weight
+		accum = 0;
+		if(lidX == 0 && lidY == 0) {
+			for(int i= 0; i< maxSumIdx; i++) {
+				accum += locOneDimWeights[i];
+			}
+			// distribute accumulated weight into other threads
+			locOneDimWeights[0] = accum;
+		}
+
+		// get accumulated weight
+		barrier(CLK_LOCAL_MEM_FENCE);
+		accum = locOneDimWeights[0];
+		float recpWeightSum = 1.0f/accum;
+
+		// compute final color
+		///////////////////////////////////////////////
+		if(lidX >= neighbourhood && lidX < BLOCK_NLOPT - neighbourhood &&
+			lidY >= neighbourhood && lidY < BLOCK_NLOPT - neighbourhood)
+		{
+			float accum = 0;
+			for(int locWeightZ = 0; locWeightZ <= 2*radius; locWeightZ++) 
+			{
+				//compute NL weights for each voxel that is being considered
+				float weight = locWeights[locWeightZ][locWeightY][locWeightX];
+				float val = locData[locWeightZ+neighbourhood][locWeightY+neighbourhood][locWeightX+neighbourhood];
+				accum += weight * val;
+			}
+			locAccWeights[locWeightY][locWeightX] = accum;
+		}
+
+		// sum 2D array of values into 1D
+		barrier(CLK_LOCAL_MEM_FENCE);
+
+		accum = 0;
+		if(lidY == 0) {
+			for(int j = 0; j< maxSumIdx; j++) {
+				accum += locAccWeights[j][locWeightX];
+			}
+			
+			locOneDimWeights[locWeightX] = accum;			
+		}
+		barrier(CLK_LOCAL_MEM_FENCE);
+
+		// sum 1D into total value
+		accum = 0;
+		if(lidX == 0 && lidY == 0) {
+			for(int i= 0; i< maxSumIdx; i++) {
+				accum += locOneDimWeights[i];
+			}
+			locOneDimWeights[0] = accum;
+		}
+
+		barrier(CLK_LOCAL_MEM_FENCE);
+
+		if(lidX == 0 && lidY == 0)
+			dstData[zstride * dstZ + ystride * dstY + dstX] = locOneDimWeights[0] * recpWeightSum;
+
+		// shift local data one voxel higher if performing next plane
+		barrier(CLK_LOCAL_MEM_FENCE); 
+		if(z < size.z - 2*border - 1) { 
+			int tmpZ;
+			for(tmpZ = 0; tmpZ < influenceSize-1; tmpZ++) {
+				locData[tmpZ][lidY][lidX] = locData[tmpZ + 1][lidY][lidX];
+			}
+			// read new slice
+			locData[influenceSize-1][lidY][lidX] = srcData[zstride * (z + influenceSize) + ystride * y + x];
+		}
+	}
+}
