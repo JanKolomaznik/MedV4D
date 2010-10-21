@@ -56,6 +56,9 @@ TARGET_LINK_LIBRARIES(SobelEdgeDetector ${MEDV4D_ALL_LIBRARIES})
 ADD_EXECUTABLE(SobelGradientOperator ${TOOLS_SRC_DIR}/SobelGradientOperator.cpp)
 TARGET_LINK_LIBRARIES(SobelGradientOperator ${MEDV4D_ALL_LIBRARIES})
 
+ADD_EXECUTABLE(Subtract ${TOOLS_SRC_DIR}/Subtract.cpp)
+TARGET_LINK_LIBRARIES(Subtract ${MEDV4D_ALL_LIBRARIES})
+
 
 IF( DEVIL_FOUND )
 	ADD_EXECUTABLE(ImageDump2Picture ${TOOLS_SRC_DIR}/ImageDump2Picture.cpp)
