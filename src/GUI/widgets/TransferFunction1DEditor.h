@@ -51,6 +51,7 @@ protected:
 
 	M4D::Common::TimeStamp	mEditTimeStamp;
 
+	bool			mIsLineEditing;
 private:
 
 };

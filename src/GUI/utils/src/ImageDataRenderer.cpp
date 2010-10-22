@@ -136,7 +136,7 @@ ImageDataRenderer::RenderAlignedSlices()
 				mSliceViewConfig.plane 
 				) 
 			); 
-	glFlush();
+	//glFlush();
 }
 
 void
@@ -217,7 +217,7 @@ ImageDataRenderer::RenderVolume()
 
 	M4D::DisableVolumeTextureCoordinateGeneration();
 	M4D::CheckForGLError( "OGL error : " );
-	glFlush();
+	//glFlush();
 }
 
 

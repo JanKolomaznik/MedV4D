@@ -137,7 +137,10 @@ TransferFunction1DEditor::mouseMoveEvent ( QMouseEvent * event )
 	if( ! mMouseDown ) {
 		return;
 	}
-	mLastPoint = mCurrentPoint;
+	mIsLineEditing = event->modifiers() & Qt::ControlModifier;
+	if ( !mIsLineEditing ) {
+		mLastPoint = mCurrentPoint;
+	}
 	mCurrentPoint = event->posF()*mInversionTransform;
 
 	float left;
@@ -176,6 +179,9 @@ TransferFunction1DEditor::mousePressEvent ( QMouseEvent * event )
 	mLastPoint = mCurrentPoint = event->posF()*mInversionTransform;
 
 	mMouseDown = true;
+
+	mIsLineEditing = event->modifiers() & Qt::ControlModifier;
+
 	update();
 }
 

@@ -9,4 +9,3 @@ INCLUDE( "${MEDV4D_CMAKE_MODULES_DIR}/ApplicationCMakeListMandatoryInclude.cmake
 SET(EXECUTABLE_OUTPUT_PATH ${MEDV4D_CMAKE_SOURCE_DIR}/../executables)
 
 TARGET_MEDV4D_PROGRAM( Viewer ${MEDV4D_CMAKE_SOURCE_DIR}/../Applications/Viewer )
-

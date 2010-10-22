@@ -83,6 +83,7 @@ GLPrepareTextureFromImageData2D( const ImageRegionType &image, bool linearInterp
 			);
 
 	M4D::CheckForGLError( "OGL building texture : " );
+	D_PRINT( "2D texture created id = " << texName );
 	return texName;
 }
 
@@ -134,6 +135,7 @@ GLPrepareTextureFromImageData3D( const ImageRegionType &image, bool linearInterp
 			);
 
 	M4D::CheckForGLError( "OGL building texture : " );
+	D_PRINT( "3D texture created id = " << texName );
 	return texName;
 }
 

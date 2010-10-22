@@ -24,6 +24,67 @@ namespace Viewer
 {
 
 
+class RenderingThread: public QThread
+{
+public:
+	RenderingThread(): mSize( 100, 100 )
+	{
+
+	}
+	void
+	SetContext( QGLContext &aContext )
+	{
+		mContext = &aContext;
+	}
+
+protected:
+	virtual void
+	run()
+	{
+
+		mContext->makeCurrent();
+		GL_CHECKED_CALL( glGenFramebuffersEXT( 1, &mFrameBufferObject ) );
+		GL_CHECKED_CALL( glGenRenderbuffersEXT( 1, &mDepthBuffer ) );
+
+		GL_CHECKED_CALL( glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mFrameBufferObject ) );
+		GL_CHECKED_CALL( glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, mDepthBuffer ) );
+
+		GL_CHECKED_CALL( glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, mSize.width(), mSize.height() ) );
+
+		GL_CHECKED_CALL( glFramebufferRenderbufferEXT( 
+					GL_FRAMEBUFFER_EXT,
+					GL_DEPTH_ATTACHMENT_EXT,
+					GL_RENDERBUFFER_EXT,
+					mDepthBuffer
+					) );
+
+		/*GL_CHECKED_CALL( glFramebufferTexture2DEXT( 
+					GL_FRAMEBUFFER_EXT,
+					GL_COLOR_ATTACHMENT0_EXT,
+					GL_TEXTURE_2D,
+					mColorTexture,
+					0 
+					) );*/
+		while ( true ) {
+			mContext->makeCurrent();
+
+
+
+		}
+		GL_CHECKED_CALL( glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 ) );
+		GL_CHECKED_CALL( glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, 0 ) );
+
+		GL_CHECKED_CALL( glDeleteRenderbuffersEXT( 1, &mDepthBuffer ) );
+		GL_CHECKED_CALL( glDeleteFramebuffersEXT( 1, &mFrameBufferObject ) );
+
+	}
+	GLuint	mFrameBufferObject, 
+		mDepthBuffer, 
+		mColorTexture;
+	QGLContext	*mContext;
+	QSize	mSize;
+};
+
 
 class BasicSliceViewer : 
 	public ViewerConstructionKit<   QGLWidget, 
@@ -175,9 +236,6 @@ protected:
 	
 	M4D::GUI::ImageDataRenderer	_renderer;
 
-/*	CGcontext   				_cgContext;
-	CgBrightnessContrastShaderConfig	_shaderConfig;*/
-
 	Vector< float, 3 > 			_regionRealMin;
 	Vector< float, 3 >			_regionRealMax;
 	Vector< float, 3 >			_elementExtents;
@@ -203,7 +261,14 @@ protected:
 	//
 	//
 	
+	RenderingThread				mRenderingThread;
+	QGLContext 				*mOtherContext;
 
+
+
+	GLuint	mFrameBufferObject, 
+		mDepthBuffer, 
+		mColorTexture;
 
 private:
 
