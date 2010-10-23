@@ -6,6 +6,7 @@
 
 #include "GUI/utils/CgShaderTools.h"
 #include "GUI/utils/GLTextureImage.h"
+#include "GUI/utils/FrameBufferObject.h"
 #include "GUI/widgets/AGUIViewer.h"
 #include "GUI/widgets/ViewerConstructionKit.h"
 #include <QtGui>
@@ -265,10 +266,11 @@ protected:
 	QGLContext 				*mOtherContext;
 
 
+	FrameBufferObject			mFrameBufferObject;
 
-	GLuint	mFrameBufferObject, 
+	/*GLuint	mFrameBufferObject, 
 		mDepthBuffer, 
-		mColorTexture;
+		mColorTexture;*/
 
 private:
 

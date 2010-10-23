@@ -20,9 +20,9 @@ BasicSliceViewer::~BasicSliceViewer()
 {
 	_renderer.Finalize();
 
-	GL_CHECKED_CALL( glDeleteFramebuffersEXT( 1, &mFrameBufferObject ) );
+	/*GL_CHECKED_CALL( glDeleteFramebuffersEXT( 1, &mFrameBufferObject ) );
 	GL_CHECKED_CALL( glDeleteTextures( 1, &mColorTexture ) );
-	GL_CHECKED_CALL( glDeleteRenderbuffersEXT( 1, &mDepthBuffer ) );
+	GL_CHECKED_CALL( glDeleteRenderbuffersEXT( 1, &mDepthBuffer ) );*/
 }
 
 void	
@@ -76,10 +76,7 @@ BasicSliceViewer::initializeGL()
 
 
 	_renderer.Initialize();
-	/*_cgContext = cgCreateContext();
-	CheckForCgError("creating context ", _cgContext );
-
-	_shaderConfig.Initialize( _cgContext, "LUT.cg", "SimpleBrightnessContrast3D" );*/
+	mFrameBufferObject.Initialize( width(), height() );
 
 
 	//******************************************************************
@@ -92,59 +89,6 @@ BasicSliceViewer::initializeGL()
 
 	mRenderingThread.SetContext( *mOtherContext );
 	mRenderingThread.start();*/
-
-//#define FRAMEBUFFER_TEST
-
-#ifdef FRAMEBUFFER_TEST
-	GL_CHECKED_CALL( glGenFramebuffersEXT( 1, &mFrameBufferObject ) );
-	GL_CHECKED_CALL( glGenRenderbuffersEXT( 1, &mDepthBuffer ) );
-	GL_CHECKED_CALL( glGenTextures( 1, &mColorTexture ) );
-
-	GL_CHECKED_CALL( glBindTexture ( GL_TEXTURE_2D, mColorTexture ) );
-	GL_CHECKED_CALL( glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mFrameBufferObject ) );
-	GL_CHECKED_CALL( glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, mDepthBuffer ) );
-
-	GL_CHECKED_CALL( glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, width(), height() ) );
-	GL_CHECKED_CALL( glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, 0 ) );
-
-	glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-	GL_CHECKED_CALL( glTexImage2D(
-				GL_TEXTURE_2D, 
-				0, 
-				GL_RGBA, 
-				width(), 
-				height(), 
-				0, 
-				GL_RGBA, 
-				GL_FLOAT, 
-				NULL
-				) );
-	GL_CHECKED_CALL( glBindTexture ( GL_TEXTURE_2D, 0 ) );
-
-	GL_CHECKED_CALL( glFramebufferRenderbufferEXT( 
-				GL_FRAMEBUFFER_EXT,
-				GL_DEPTH_ATTACHMENT_EXT,
-				GL_RENDERBUFFER_EXT,
-				mDepthBuffer
-				) );
-
-	GL_CHECKED_CALL( glFramebufferTexture2DEXT( 
-				GL_FRAMEBUFFER_EXT,
-				GL_COLOR_ATTACHMENT0_EXT,
-				GL_TEXTURE_2D,
-				mColorTexture,
-				0 
-				) );
-
-	ASSERT( glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT ) == GL_FRAMEBUFFER_COMPLETE_EXT );
-	
-	GL_CHECKED_CALL( glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 ) );
-	D_PRINT( "Framebuffer texture created id = " << mColorTexture );
-#endif /*FRAMEBUFFER_TEST*/
 }
 
 void	
@@ -156,7 +100,6 @@ BasicSliceViewer::initializeOverlayGL()
 void	
 BasicSliceViewer::paintGL()
 {
-	static int tmp = 235;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	if( !IsDataPrepared() && !PrepareData() ) {
@@ -165,58 +108,17 @@ BasicSliceViewer::paintGL()
 
 	ZoomFit();
 
-	/*switch ( _renderingMode )
-	{
-	case rmONE_DATASET:
-		RenderOneDataset();
-		break;
-	default:
-		ASSERT( false );
-	}*/
 
-//***************************************************************************************************
 
-	//GL_CHECKED_CALL( glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mFrameBufferObject ) );
-	_renderer.Render();
-	/*glBegin( GL_TRIANGLES );
-		glVertex3f( 0.0f,0.0f, 0.0f);
-		glVertex3f( 1000.0f,1000.0f, 0.0f);
-		glVertex3f( 1000.0f,0.0f, 0.0f);
-	glEnd();
-	glFlush();*/
-	//GL_CHECKED_CALL( glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 ) );
-	
-#ifdef FRAMEBUFFER_TEST
-	GL_CHECKED_CALL( glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mFrameBufferObject ) );
-	//glClearColor( float(( tmp += 7 )%500)/500.0f,0,0.5f,1);
+	mFrameBufferObject.Bind();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//_renderer.Render();
-	//glColor3f( 0.0f, 1.0f, 1.0f );
-	//glBegin( GL_TRIANGLES );
-	//	glVertex3f( 0.0f,0.0f, 0.0f);
-	//	glVertex3f( 1000.0f,1000.0f, 0.0f);
-	//	glVertex3f( 1000.0f,0.0f, 0.0f);
-	//glEnd();
-	glFlush();
-	GL_CHECKED_CALL( glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 ) );
-	
+	_renderer.Render();
+	mFrameBufferObject.Unbind();
+
 
 // ***************************************************************************************************
 
-	GL_CHECKED_CALL( glMatrixMode( GL_PROJECTION ) );
-	GL_CHECKED_CALL( glLoadIdentity() );
-	GL_CHECKED_CALL( glMatrixMode( GL_MODELVIEW ) );
-	GL_CHECKED_CALL( glLoadIdentity() );
-	GL_CHECKED_CALL( glBindTexture( GL_TEXTURE_2D, mColorTexture ) );
-	GL_CHECKED_CALL( glEnable( GL_TEXTURE_2D ) );
-
-	GL_CHECKED_CALL( gluOrtho2D( 0, width(), height(), 0 ) );
-
-	GLDraw2DImage(
-		Vector< float32, 2 >( 0.0f, 0.0f ), 
-		0.5f * Vector< float32, 2 >( width(), height() )
-		);
-#endif /*FRAMEBUFFER_TEST*/
+	mFrameBufferObject.Render();	
 
 	M4D::CheckForGLError( "OGL error : " );
 }
@@ -237,52 +139,8 @@ BasicSliceViewer::resizeGL( int width, int height )
 	float x = (float)width / height;
 	_renderer.GetViewConfig3D().camera.SetAspectRatio( x );
 
-#ifdef FRAMEBUFFER_TEST
 
-	GL_CHECKED_CALL( glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mFrameBufferObject ) );
-
-	GL_CHECKED_CALL( glBindTexture ( GL_TEXTURE_2D, mColorTexture ) );
-	GL_CHECKED_CALL( glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, mDepthBuffer ) );
-
-	GL_CHECKED_CALL( glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, width, height ) );
-	GL_CHECKED_CALL( glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, 0 ) );
-
-	glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-	GL_CHECKED_CALL( glTexImage2D(
-				GL_TEXTURE_2D, 
-				0, 
-				GL_RGBA, 
-				width, 
-				height, 
-				0, 
-				GL_RGBA, 
-				GL_FLOAT, 
-				NULL
-				) );
-	GL_CHECKED_CALL( glBindTexture ( GL_TEXTURE_2D, 0 ) );
-	
-	GL_CHECKED_CALL( glFramebufferRenderbufferEXT( 
-				GL_FRAMEBUFFER_EXT,
-				GL_DEPTH_ATTACHMENT_EXT,
-				GL_RENDERBUFFER_EXT,
-				mDepthBuffer
-				) );
-
-	GL_CHECKED_CALL( glFramebufferTexture2DEXT( 
-				GL_FRAMEBUFFER_EXT,
-				GL_COLOR_ATTACHMENT0_EXT,
-				GL_TEXTURE_2D,
-				mColorTexture,
-				0 
-				) );
-
-	GL_CHECKED_CALL( glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 ) );
-
-#endif /*FRAMEBUFFER_TEST*/
+	mFrameBufferObject.Resize( width, height );
 }
 
 void	

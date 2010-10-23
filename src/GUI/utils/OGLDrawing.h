@@ -23,11 +23,13 @@ public:
 	~GLException() throw(){}
 };
 
-
 void 
 CheckForGLError( const std::string &situation );
 
 #define GL_CHECKED_CALL( ... ) { __VA_ARGS__ ; CheckForGLError( TO_STRING( __FILE__ " on " << __LINE__) ); }
+
+
+
 
 void
 SetToViewConfiguration2D( const ViewConfiguration2D &config );
@@ -119,6 +121,8 @@ GLDrawPointSetLines( const M4D::Imaging::Geometry::PointSet< VectorType > &point
 void
 GLDrawBoundingBox( const Vector< float, 3 > &corner1, const Vector< float, 3 > &corner2 );
 
+void
+GLDrawBox( const Vector< float, 3 > &corner1, const Vector< float, 3 > &corner2 );
 
 template< 
 	typename CoordType, 

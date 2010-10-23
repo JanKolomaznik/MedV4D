@@ -157,10 +157,10 @@ GLDrawVolumeSlice(
 	Vector< float32, 2 > point2( point3[0], point1[1] );
 	Vector< float32, 2 > point4( point1[0], point3[1] );
 
-	Vector< float32, 3 > tex1 = VectorInsertDimension( Vector< float32, 2 >( 0.0f, 0.0f ), sliceTexCoord, plane );
-	Vector< float32, 3 > tex2 = VectorInsertDimension( Vector< float32, 2 >( 1.0f, 0.0f ), sliceTexCoord, plane );
-	Vector< float32, 3 > tex3 = VectorInsertDimension( Vector< float32, 2 >( 1.0f, 1.0f ), sliceTexCoord, plane );
-	Vector< float32, 3 > tex4 = VectorInsertDimension( Vector< float32, 2 >( 0.0f, 1.0f ), sliceTexCoord, plane );
+	Vector< float32, 3 > tex1 = VectorInsertDimension( Vector< float32, 2 >( 0.0f, 1.0f ), sliceTexCoord, plane );
+	Vector< float32, 3 > tex2 = VectorInsertDimension( Vector< float32, 2 >( 1.0f, 1.0f ), sliceTexCoord, plane );
+	Vector< float32, 3 > tex3 = VectorInsertDimension( Vector< float32, 2 >( 1.0f, 0.0f ), sliceTexCoord, plane );
+	Vector< float32, 3 > tex4 = VectorInsertDimension( Vector< float32, 2 >( 0.0f, 0.0f ), sliceTexCoord, plane );
 
 	//std::cout << sliceCoord << "  " << sliceTexCoord << " tex\n";
 	glBegin( GL_QUADS );
@@ -320,6 +320,38 @@ GLDrawBoundingBox( const Vector< float, 3 > &corner1, const Vector< float, 3 > &
 
 		GLVertexVector( v5 );
 		GLVertexVector( v8 );
+	glEnd();
+}
+
+void
+GLDrawBox( const Vector< float, 3 > &corner1, const Vector< float, 3 > &corner2 )
+{
+	Vector< float, 3 > v1( corner1 );
+	Vector< float, 3 > v2( corner2[0], corner1[1], corner1[2] );
+	Vector< float, 3 > v3( corner2[0], corner2[1], corner1[2] );
+	Vector< float, 3 > v4( corner1[0], corner2[1], corner1[2] );
+
+	Vector< float, 3 > v5( corner1[0], corner1[1], corner2[2] );
+	Vector< float, 3 > v6( corner2[0], corner1[1], corner2[2] );
+	Vector< float, 3 > v7( corner2 );
+	Vector< float, 3 > v8( corner1[0], corner2[1], corner2[2] );
+
+	ASSERT( false && "NOT FINISHED" );
+	glBegin( GL_QUADS );
+		GLVertexVector( v1 );
+		GLVertexVector( v2 );
+		GLVertexVector( v3 );
+		GLVertexVector( v4 );
+
+		GLVertexVector( v5 );
+		GLVertexVector( v6 );
+		GLVertexVector( v7 );
+		GLVertexVector( v8 );
+
+		GLVertexVector( v5 );
+		GLVertexVector( v6 );
+		GLVertexVector( v2 );
+		GLVertexVector( v1 );
 	glEnd();
 }
 
