@@ -20,7 +20,7 @@ struct Light
 	float3 ambient;
 };
 
-sampler3D gImageData3D = sampler_state { MinFilter = Linear; MaxFilter = Linear; };
+sampler3D gImageData3D;
 int3 gImageDataResolution3D = {0, 0, 0};
 float2 gMappedIntervalBands;
 
@@ -71,14 +71,14 @@ ApplyTransferFunction1D( float value, sampler1D aTransferFunction1D, float2 aTra
 FragmentOutput fp_WLWindow_3D( 
 		float3 aTexCoord : TEXCOORD0, 
 		uniform sampler3D aTextureData : TEX0, 
-		uniform float2 aWLWindow,
+		uniform float3 aWLWindow,
 		uniform float3 aImageDataResolution3D )
 {
 	FragmentOutput OUT;
 
 	float lowBand = aWLWindow.y - (aWLWindow.x * 0.5f);
 	float highBand = aWLWindow.y + (aWLWindow.x * 0.5f);
-	float multiplier = 1.0f / aWLWindow.x;
+	float multiplier = aWLWindow.z;
 
 	float3 coordinates = aTexCoord;
 	//Disable interpolation
@@ -190,7 +190,15 @@ FragmentOutput fp_Test()
 
 technique WLWindow_3D {
 	pass t0 {
-		FragmentProgram = compile fp40 fp_WLWindow_3D( gImageData3D, gWLWindow / (gMappedIntervalBands[1] - gMappedIntervalBands[0]), gImageDataResolution3D );
+		FragmentProgram = compile fp40 fp_WLWindow_3D( 
+											gImageData3D, 
+											float3( 
+												gWLWindow.x / (gMappedIntervalBands[1] - gMappedIntervalBands[0]), 
+												gWLWindow.y / (gMappedIntervalBands[1] - gMappedIntervalBands[0]),
+												(gMappedIntervalBands[1] - gMappedIntervalBands[0])/ gWLWindow.x 
+												), 
+											gImageDataResolution3D 
+											);
 	}
 }
 
@@ -221,7 +229,15 @@ technique TransferFunction1DShading_3D {
 
 technique WLWindowMIP_3D  {
 	pass t0 {
-		FragmentProgram = compile fp40 fp_WLWindow_3D( gImageData3D, gWLWindow / (gMappedIntervalBands[1] - gMappedIntervalBands[0]), gImageDataResolution3D );
+		FragmentProgram = compile fp40 fp_WLWindow_3D( 
+											gImageData3D, 
+											float3( 
+												gWLWindow.x / (gMappedIntervalBands[1] - gMappedIntervalBands[0]), 
+												gWLWindow.y / (gMappedIntervalBands[1] - gMappedIntervalBands[0]),
+												(gMappedIntervalBands[1] - gMappedIntervalBands[0])/ gWLWindow.x 
+												), 
+											gImageDataResolution3D 
+											);
 
 		DepthTestEnable = false;
 		DepthMask = true;
@@ -235,6 +251,7 @@ technique WLWindowMIP_3D  {
 }
 
 
+/*
 technique ColorMappedMask_3D {
 	pass t0 {
 		FragmentProgram = compile fp40 fp_ColorMappedMask_3D( gMaskData3D, gColorMap, gMaskAlpha );
@@ -246,3 +263,4 @@ technique Test {
 		FragmentProgram = compile fp40 fp_Test();
 	}
 }
+*/
