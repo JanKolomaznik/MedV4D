@@ -179,16 +179,22 @@ ViewerWindow::openFile( const QString &aPath )
 	std::string path = std::string( aPath.toLocal8Bit().data() );
 	M4D::Imaging::AImage::Ptr image = M4D::Imaging::ImageFactory::LoadDumpedImage( path );
 	mProdconn.PutDataset( image );
-	/*
+	
 	M4D::Imaging::Histogram64::Ptr histogram = M4D::Imaging::Histogram64::Create( 0, 4065, true );
 	
 	M4D::Common::Clock clock;
-	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
+	/*IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
 		M4D::Imaging::AddRegionToHistogram( *histogram, IMAGE_TYPE::Cast( image )->GetRegion() );
+	);*/ 
+	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
+		IMAGE_TYPE::PointType strides;
+		IMAGE_TYPE::SizeType size;
+		IMAGE_TYPE::Element *pointer = IMAGE_TYPE::Cast( image )->GetPointer( size, strides );
+		M4D::Imaging::AddArrayToHistogram( *histogram, pointer, VectorCoordinateProduct( size )  );
 	); 
 	LOG( "Histogram computed in " << clock.SecondsPassed() );
 	mTransferFunctionEditor->SetBackgroundHistogram( histogram );
-	*/
+	
 
 	mViewer->ZoomFit();
 	applyTransferFunction();

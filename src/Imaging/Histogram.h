@@ -238,6 +238,7 @@ protected:
 	size_t		_size;
 };
 
+typedef Histogram< uint32 > Histogram32;
 typedef Histogram< uint64 > Histogram64;
 
 template< typename CellType >

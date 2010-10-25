@@ -21,6 +21,19 @@ AddRegionToHistogram( THistogram &aHistogram, const TImageRegion &aRegion )
 	}
 }
 
+template< typename THistogram, typename TElementType >
+void
+AddArrayToHistogram( THistogram &aHistogram, const TElementType *aArray, size_t aSize )
+{
+	//TODO - test TImageRegion type
+	int32 min = aHistogram.GetMin() - 1;
+	int32 max = aHistogram.GetMax();
+	const TElementType *end = aArray + aSize;
+	while ( aArray < end ) {
+		aHistogram.FastIncCell( ClampToInterval( min, max, (int32)*aArray ) );
+		++aArray;
+	}
+}
 
 
 } /*namespace Imaging*/
