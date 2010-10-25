@@ -3,6 +3,7 @@
 
 #include "GUI/utils/TransferFunctionBuffer.h"
 #include "GUI/widgets/ScaleVisualizer.h"
+#include "Imaging/Histogram.h"
 
 namespace M4D
 {
@@ -26,12 +27,43 @@ public:
 	{
 		return mEditTimeStamp;
 	}
-
-protected:
 	
 	void
-	UpdateSettings();
+	SetBackgroundHistogram( M4D::Imaging::Histogram64::Ptr aHistogram )
+	{
+		mBackgroundHistogram = aHistogram;
+		if ( mBackgroundHistogram ) {
+			mHistogramMaximum = HistogramGetMaxCount( *mBackgroundHistogram );
+			mHistogramScaling = 1.0f;
+		}
+		update();
+	}
+protected:
+	
+	static void
+	RenderHistogram( QPainter &aPainter, M4D::Imaging::Histogram64 &aHistogram )
+	{
+		float lastX = aHistogram.GetMin()-1;
+		float lastY = (float) aHistogram[ lastX ];
+		for( int32 i = aHistogram.GetMin(); i <= aHistogram.GetMax(); ++i ) {
+			float tmpY = float(aHistogram[i]);
+			aPainter.drawLine( lastX, lastY, float(i), tmpY );
+			lastX = i;
+			lastY = tmpY;
+		}
+	}
 
+	void
+	UpdateSettings();
+	
+	void
+	UpdateTransform();
+
+	void
+	RenderBackground();
+
+	void
+	RenderForeground();
 
 	void
 	paintEvent( QPaintEvent * event );
@@ -41,6 +73,8 @@ protected:
 	mousePressEvent ( QMouseEvent * event );
 	void
 	mouseReleaseEvent ( QMouseEvent * event );
+	void
+	wheelEvent ( QWheelEvent * event );
 
 	
 	void
@@ -52,6 +86,11 @@ protected:
 	M4D::Common::TimeStamp	mEditTimeStamp;
 
 	bool			mIsLineEditing;
+
+	M4D::Imaging::Histogram64::Ptr	mBackgroundHistogram;
+	int64			mHistogramMaximum;
+	float			mHistogramScaling;
+	QTransform		mBackgroundTransform;
 private:
 
 };

@@ -5,6 +5,7 @@
 #include <vector>
 #include <ostream>
 #include <iomanip>
+#include <boost/shared_ptr.hpp>
 
 
 namespace M4D
@@ -23,24 +24,34 @@ template< typename CellType >
 class Histogram
 {
 public:
-	Histogram( int32 min, int32 max, bool storeOutliers = true ) :
+	typedef boost::shared_ptr< Histogram< CellType > > Ptr;
+
+	Histogram( int32 min, int32 max, bool storeOutliers = true ) : _cells( NULL ),
 		_minCell( min ), _maxCell( max ), _storeOutliers( storeOutliers ), _sum( 0 )
 	{
-		_cells.resize( _maxCell - _minCell + 2 );
+		Resize( min, max );
 	}
 	
 	Histogram( const Histogram &histogram ) :
-		 _cells( histogram._cells ), _minCell( histogram._minCell ), 
+		 _cells( NULL ), _minCell( histogram._minCell ), 
 		 _maxCell( histogram._maxCell ), _storeOutliers( histogram._storeOutliers ), _sum( histogram._sum )
-	{ /*empty*/ }
+	{ /*TODO - copy cells*/ }
 
 
+	~Histogram()
+	{ delete [] _cells; }
 	void
 	Resize( int32 min, int32 max )
 	{
 		_minCell = min;
 		_maxCell = max;
-		_cells.resize( _maxCell - _minCell + 2 );
+		if ( _cells ) {
+			delete [] _cells;
+		}
+		_size = _maxCell - _minCell + 2;
+		_cells = new CellType[_size];
+		Reset();
+		//_cells.resize( _maxCell - _minCell + 2 );
 	}
 
 	CellType
@@ -113,6 +124,16 @@ public:
 	IncCell( int32 cell )
 		{ SetValueCell( cell, Get( cell ) + 1 ); }
 
+	/**
+	 * Faster incrementation without bands checking.
+	 **/
+	void
+	FastIncCell( int32 cell )
+		{ 
+			_cells[ cell - _minCell + 1 ] += 1;
+			_sum+=1; 
+		}
+
 	CellType
 	GetSum()const
 		{ return _sum; }
@@ -129,7 +150,7 @@ public:
         Reset()
         {
                 uint32 i;
-                for ( i = 0; i < _cells.size(); ++i ) _cells[ i ] = 0;
+                for ( i = 0; i < _size; ++i ) _cells[ i ] = 0;
         }
 
 
@@ -142,14 +163,20 @@ public:
 		BINSTREAM_WRITE_MACRO( stream, _sum );
 		
 		CellType tmp;
-		for( unsigned i = 0; i < _cells.size(); ++i ) {
+		for( unsigned i = 0; i < _size; ++i ) {
 			tmp = _cells[i];
 			BINSTREAM_WRITE_MACRO( stream, tmp );
 		}
 	}
 
-	
-	static Histogram *
+	static Ptr
+	Create( int32 min, int32 max, bool storeOutliers = true )
+	{
+		Histogram *result = new Histogram( min, max, storeOutliers );
+		return Histogram::Ptr( result );
+	}
+
+	static Ptr
 	Load( std::istream &stream )
 	{
 		int32		minCell;
@@ -162,10 +189,10 @@ public:
 		BINSTREAM_READ_MACRO( stream, storeOutliers );
 		BINSTREAM_READ_MACRO( stream, sum );
 		
-		Histogram *result = new Histogram( minCell, maxCell, storeOutliers );
+		Histogram::Ptr result = Histogram::Create( minCell, maxCell, storeOutliers );
 
 		CellType tmp;
-		for( unsigned i = 0; i < result->_cells.size(); ++i ) {
+		for( unsigned i = 0; i < result->_size; ++i ) {
 			BINSTREAM_READ_MACRO( stream, tmp );
 			result->_cells[i] = tmp;
 		}
@@ -188,16 +215,18 @@ public:
 		BINSTREAM_READ_MACRO( stream, _storeOutliers );
 		BINSTREAM_READ_MACRO( stream, _sum );
 		
-		_cells.resize( _maxCell - _minCell + 2 );
+		Resize( _minCell, _maxCell );
 
 		CellType tmp;
-		for( unsigned i = 0; i < _cells.size(); ++i ) {
+		for( unsigned i = 0; i < _size; ++i ) {
 			BINSTREAM_READ_MACRO( stream, tmp );
 			_cells[i] = tmp;
 		}
 	}
 protected:
-	typedef std::vector<CellType> CellVector;
+	template< typename TCellType > friend TCellType HistogramGetMaxCount( const Histogram< TCellType > &aHistogram );
+
+	typedef CellType* /*std::vector<CellType>*/ CellVector;
 
 	CellVector	_cells;
 
@@ -206,8 +235,24 @@ protected:
 	bool		_storeOutliers;
 
 	CellType	_sum;
+	size_t		_size;
 };
 
+typedef Histogram< uint64 > Histogram64;
+
+template< typename CellType >
+CellType
+HistogramGetMaxCount( const Histogram< CellType > &aHistogram )
+{
+	if ( aHistogram._size == 0 ) {
+		return static_cast< CellType >( 0 );
+	}
+	CellType maximum = aHistogram._cells[0];
+	for( size_t i = 1; i < aHistogram._size; ++i ) {
+		maximum = aHistogram._cells[i] > maximum ? aHistogram._cells[i] : maximum;
+	}
+	return maximum;
+}
 
 template< typename CellType >
 std::ostream &

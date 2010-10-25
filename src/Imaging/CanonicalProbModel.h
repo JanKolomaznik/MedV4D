@@ -7,6 +7,7 @@
 #include <fstream>
 #include <boost/shared_ptr.hpp>
 
+
 namespace M4D
 {
 namespace Imaging
@@ -141,6 +142,7 @@ public:
 
 	typedef Vector< float32, 3 > Vector3F;
 	typedef Vector< uint32, 3 > Vector3UI;
+	typedef boost::shared_ptr< ProbabilityGrid > Ptr;
 
 	ProbabilityGrid( Vector< float32, 3 > origin, Vector< uint32, 3 > gridSize, Vector< float32, 3 > step ) :
 		_gridStep( step ), _originCoordiantes( origin ), _gridSize( gridSize ), _strides( 1, gridSize[0], gridSize[0]*gridSize[1] )
@@ -259,7 +261,7 @@ public:
 
 	}
 
-	static ProbabilityGrid *
+	static Ptr
 	Load( std::istream &stream )
 	{
 		Vector< float32, 3 >	gridStep;
@@ -284,7 +286,7 @@ public:
 			BINSTREAM_READ_MACRO( stream, (result->_layerStats[i]) );
 		}*/
 		result->ComputeLayerStats();
-		return result;
+		return Ptr( result );
 	}
 
 	void
@@ -349,7 +351,7 @@ public:
 
 	typedef boost::shared_ptr< CanonicalProbModel > Ptr;
 
-	CanonicalProbModel( ProbabilityGrid *grid, Histogram< float32 > *inHistogram, Histogram< float32 > *outHistogram, Histogram< float32 > *logRatioHistogram ) : 
+	CanonicalProbModel( ProbabilityGrid::Ptr grid, Histogram< float32 >::Ptr inHistogram, Histogram< float32 >::Ptr outHistogram, Histogram< float32 >::Ptr logRatioHistogram ) : 
 		_inIntensity( inHistogram ),
 		_outIntensity( outHistogram ),
 		_logRatioIntensity( logRatioHistogram ),
@@ -449,11 +451,11 @@ public:
 			_THROW_ ExceptionBase( TO_STRING( "Could't open file " << filename ) );
 		}
 
-		Histogram< float32 > *inIntensity = Histogram< float32 >::Load( input );
-		Histogram< float32 > *outIntensity = Histogram< float32 >::Load( input );
-		Histogram< float32 > *logRatioIntensity = Histogram< float32 >::Load( input );
+		Histogram< float32 >::Ptr inIntensity = Histogram< float32 >::Load( input );
+		Histogram< float32 >::Ptr outIntensity = Histogram< float32 >::Load( input );
+		Histogram< float32 >::Ptr logRatioIntensity = Histogram< float32 >::Load( input );
 
-		ProbabilityGrid *grid = ProbabilityGrid::Load( input );
+		ProbabilityGrid::Ptr grid = ProbabilityGrid::Load( input );
 
 		CanonicalProbModel *result = new CanonicalProbModel( grid, inIntensity, outIntensity, logRatioIntensity );
 
@@ -462,11 +464,11 @@ public:
 protected:
 	
 
-	Histogram< float32 >	*_inIntensity;
-	Histogram< float32 >	*_outIntensity;
-	Histogram< float32 >	*_logRatioIntensity;
+	Histogram< float32 >::Ptr	_inIntensity;
+	Histogram< float32 >::Ptr	_outIntensity;
+	Histogram< float32 >::Ptr	_logRatioIntensity;
 
-	ProbabilityGrid		*_grid;
+	ProbabilityGrid::Ptr		_grid;
 private:
 };
 

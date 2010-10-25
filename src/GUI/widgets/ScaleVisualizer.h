@@ -39,7 +39,7 @@ signals:
 protected:
 	virtual void
 	UpdateSettings();
-	void
+	virtual void
 	UpdateTransform();
 
 	static QTransform

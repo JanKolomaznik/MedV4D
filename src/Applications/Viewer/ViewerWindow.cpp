@@ -1,5 +1,7 @@
 #include "ViewerWindow.hpp"
 #include "GUI/utils/ImageDataRenderer.h"
+#include "Imaging/ImageTools.h"
+#include "Imaging/Histogram.h"
 #include <cmath>
 
 ViewerWindow::ViewerWindow()
@@ -174,14 +176,20 @@ ViewerWindow::openFile()
 void 
 ViewerWindow::openFile( const QString &aPath )
 {
-	{
-		std::string path = std::string( aPath.toLocal8Bit().data() );
-	M4D::Imaging::AImage::Ptr image = 
-		M4D::Imaging::ImageFactory::LoadDumpedImage( path );
-
+	std::string path = std::string( aPath.toLocal8Bit().data() );
+	M4D::Imaging::AImage::Ptr image = M4D::Imaging::ImageFactory::LoadDumpedImage( path );
 	mProdconn.PutDataset( image );
-	}
-	mViewer->ZoomFit();
+	/*
+	M4D::Imaging::Histogram64::Ptr histogram = M4D::Imaging::Histogram64::Create( 0, 4065, true );
+	
+	M4D::Common::Clock clock;
+	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
+		M4D::Imaging::AddRegionToHistogram( *histogram, IMAGE_TYPE::Cast( image )->GetRegion() );
+	); 
+	LOG( "Histogram computed in " << clock.SecondsPassed() );
+	mTransferFunctionEditor->SetBackgroundHistogram( histogram );
+	*/
 
+	mViewer->ZoomFit();
 	applyTransferFunction();
 }

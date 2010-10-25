@@ -35,22 +35,36 @@ TransferFunction1DEditor::TransferFunction1DEditor( QWidget *aParent ): ScaleVis
 }
 
 void
-TransferFunction1DEditor::paintEvent( QPaintEvent * event )
+TransferFunction1DEditor::UpdateTransform()
 {
-	UpdateTransform();
+	ScaleVisualizer::UpdateTransform();
 
-	mPainter.begin( this );
+	if ( mBackgroundHistogram ) {
+		mBackgroundTransform = PrepareCanvasTransform( mMin, mMax, 0.0, double(mHistogramMaximum) * mHistogramScaling, width(), height(), mBorderWidth );
+	}
+}
+
+void
+TransferFunction1DEditor::RenderBackground()
+{
+	if ( mBackgroundHistogram ) {
+		mPainter.setTransform( mBackgroundTransform );
+		
+		mPainter.setPen ( QColor( 0, 255, 255, 255 )/*QApplication::palette().color( QPalette::Background )*/ );
+		RenderHistogram( mPainter, *mBackgroundHistogram );
+	}
+}
+
+void
+TransferFunction1DEditor::RenderForeground()
+{
 	mPainter.setTransform( mCanvasTransform );
-
-	mPainter.setWorldMatrixEnabled( false );
-	mPainter.setClipRegion ( QRegion( mBorderWidth, mBorderWidth, width() - 2 * mBorderWidth + 1, height() - 2 * mBorderWidth + 1 ) );
-	mPainter.setWorldMatrixEnabled( true );
 
 	mPainter.setPen ( QApplication::palette().color( QPalette::Midlight ) );
 
-	QBrush brush( QApplication::palette().color( QPalette::Shadow ) );
+	/*QBrush brush( QApplication::palette().color( QPalette::Shadow ) );
 	mPainter.setBrush( brush );
-	mPainter.drawRect( QRectF( mMin, mMMin, mMax - mMin, mMMax - mMMin ) );
+	mPainter.drawRect( QRectF( mMin, mMMin, mMax - mMin, mMMax - mMMin ) );*/
 
 	double aStep = (mTransferFunctionBuffer->GetMappedInterval()[1]- mTransferFunctionBuffer->GetMappedInterval()[0]) / (float)mTransferFunctionBuffer->Size();
 	double aStart = mTransferFunctionBuffer->GetMappedInterval()[0];
@@ -93,6 +107,25 @@ TransferFunction1DEditor::paintEvent( QPaintEvent * event )
 
 
 	mPainter.drawEllipse ( mLastPoint, mPixelSize.x() * 5, mPixelSize.y() * 5 );
+}
+
+void
+TransferFunction1DEditor::paintEvent( QPaintEvent * event )
+{
+	UpdateTransform();
+
+	mPainter.begin( this );
+	
+	mPainter.setWorldMatrixEnabled( false );
+	mPainter.setClipRegion ( QRegion( mBorderWidth, mBorderWidth, width() - 2 * mBorderWidth + 1, height() - 2 * mBorderWidth + 1 ) );
+	QBrush brush( QApplication::palette().color( QPalette::Shadow ) );
+	mPainter.setBrush( brush );
+	mPainter.drawRect( QRectF( mBorderWidth, mBorderWidth, width() - 2 * mBorderWidth + 1, height() - 2 * mBorderWidth + 1 ) );
+
+	mPainter.setWorldMatrixEnabled( true );
+
+	RenderBackground();
+	RenderForeground();
 
 	mPainter.end();
 }
@@ -190,6 +223,20 @@ TransferFunction1DEditor::mouseReleaseEvent ( QMouseEvent * event )
 {
 	mMouseDown = false;
 	update();
+}
+
+void
+TransferFunction1DEditor::wheelEvent ( QWheelEvent * event )
+{
+	int numDegrees = event->delta() / 8;
+	int numSteps = numDegrees / 15;
+	if ( event->delta() > 0 ) {
+		mHistogramScaling = ClampToInterval( 0.05f, 1.0f, mHistogramScaling * 0.75f );
+	} else {
+		mHistogramScaling = ClampToInterval( 0.05f, 1.0f, mHistogramScaling * 1.333f );
+	}
+	event->accept();
+	this->update();
 }
 
 } /*namespace GUI*/
