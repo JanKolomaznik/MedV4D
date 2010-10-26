@@ -191,7 +191,7 @@ FragmentOutput fp_Test()
 
 technique WLWindow_3D {
 	pass t0 {
-		FragmentProgram = compile fp40 fp_WLWindow_3D( 
+		FragmentProgram = compile glslf fp_WLWindow_3D( 
 											gImageData3D, 
 											float3( 
 												gWLWindow.x / (gMappedIntervalBands[1] - gMappedIntervalBands[0]), 
@@ -205,7 +205,7 @@ technique WLWindow_3D {
 
 technique TransferFunction1D_3D {
 	pass t0 {
-		FragmentProgram = compile fp40 fp_TransferFunction1D_3D( gImageData3D, gTransferFunction1D, gTransferFunction1DInterval, gRenderingSliceThickness, gImageDataResolution3D, gMappedIntervalBands );
+		FragmentProgram = compile glslf fp_TransferFunction1D_3D( gImageData3D, gTransferFunction1D, gTransferFunction1DInterval, gRenderingSliceThickness, gImageDataResolution3D, gMappedIntervalBands );
 
 		DepthTestEnable = true;
 		DepthMask = true;
@@ -218,7 +218,7 @@ technique TransferFunction1D_3D {
 
 technique TransferFunction1DShading_3D {
 	pass t0 {
-		FragmentProgram = compile fp40 fp_TransferFunction1DShading_3D( gImageData3D, gTransferFunction1D, gTransferFunction1DInterval, gRenderingSliceThickness, gImageDataResolution3D, gMappedIntervalBands, gLightPosition, gLightColor, gEyePosition );
+		FragmentProgram = compile glslf fp_TransferFunction1DShading_3D( gImageData3D, gTransferFunction1D, gTransferFunction1DInterval, gRenderingSliceThickness, gImageDataResolution3D, gMappedIntervalBands, gLightPosition, gLightColor, gEyePosition );
 
 		DepthTestEnable = true;
 		DepthMask = true;
@@ -231,7 +231,7 @@ technique TransferFunction1DShading_3D {
 
 technique WLWindowMIP_3D  {
 	pass t0 {
-		FragmentProgram = compile fp40 fp_WLWindow_3D( 
+		FragmentProgram = compile glslf fp_WLWindow_3D( 
 											gImageData3D, 
 											float3( 
 												gWLWindow.x / (gMappedIntervalBands[1] - gMappedIntervalBands[0]), 
@@ -256,13 +256,13 @@ technique WLWindowMIP_3D  {
 /*
 technique ColorMappedMask_3D {
 	pass t0 {
-		FragmentProgram = compile fp40 fp_ColorMappedMask_3D( gMaskData3D, gColorMap, gMaskAlpha );
+		FragmentProgram = compile glslf fp_ColorMappedMask_3D( gMaskData3D, gColorMap, gMaskAlpha );
 	}
 }
 
 technique Test {
 	pass t0 {
-		FragmentProgram = compile fp40 fp_Test();
+		FragmentProgram = compile glslf fp_Test();
 	}
 }
 */
