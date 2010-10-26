@@ -173,6 +173,18 @@ public slots:
 		update();
 	}
 
+	void
+	EnableShading( bool aEnable )
+	{
+		_renderer.EnableShading( aEnable );
+		update();
+	}
+	
+	bool
+	IsShadingEnabled() const
+	{
+		return _renderer.IsShadingEnabled();
+	}
 signals:
 	void
 	SettingsChanged();

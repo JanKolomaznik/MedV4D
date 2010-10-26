@@ -52,7 +52,7 @@ struct ViewConfig3D
 class ImageDataRenderer
 {
 public:
-	ImageDataRenderer() : mRendererType( rt2DAlignedSlices ), mColorTransform( ctLUTWindow ), mFineRendering( false )
+	ImageDataRenderer() : mRendererType( rt2DAlignedSlices ), mColorTransform( ctLUTWindow ), mFineRendering( false ), mShadingEnabled( true )
 	{}
 
 	void
@@ -124,7 +124,17 @@ public:
 		mFineRendering = true;
 	}
 	
+	void
+	EnableShading( bool aEnable )
+	{
+		mShadingEnabled = aEnable;
+	}
 
+	bool
+	IsShadingEnabled() const
+	{
+		return mShadingEnabled;
+	}
 protected:
 	
 
@@ -148,8 +158,8 @@ protected:
 
 
 
-
 	bool	mFineRendering; //TODO delete
+	bool	mShadingEnabled;
 private:
 
 };

@@ -191,7 +191,11 @@ ImageDataRenderer::RenderVolume()
 			_cgEffect.SetTextureParameter( "gTransferFunction1D", mTransferFunctionTexture->GetTextureID() );
 			_cgEffect.SetParameter( "gTransferFunction1DInterval", mTransferFunctionTexture->GetMappedInterval() );
 
-			techniqueName = "TransferFunction1DShading_3D";
+			if ( mShadingEnabled ) {
+				techniqueName = "TransferFunction1DShading_3D";
+			} else {
+				techniqueName = "TransferFunction1D_3D";
+			}
 		}
 		break;
 	case ctMaxIntensityProjection:

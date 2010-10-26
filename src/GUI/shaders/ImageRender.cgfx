@@ -96,6 +96,7 @@ FragmentOutput fp_TransferFunction1D_3D(
 		uniform sampler3D aTextureData : TEX0,
 		uniform sampler1D aTransferFunction1D : TEX1,
 		uniform float2 aTransferFunction1DInterval,
+		uniform float aRenderingSliceThickness,
 		uniform float3 aImageDataResolution3D,
 		uniform float2 aMappedIntervalBands )
 {
@@ -109,6 +110,7 @@ FragmentOutput fp_TransferFunction1D_3D(
 		
 	OUT.color = ApplyTransferFunction1D( value, aTransferFunction1D, aTransferFunction1DInterval );
 
+	OUT.color.a = 1.0f - pow( 1.0f - OUT.color.a, aRenderingSliceThickness );
 	return OUT;
 }
 
@@ -187,6 +189,10 @@ FragmentOutput fp_Test()
 	return OUT;
 }
 
+technique[3] = {
+	
+
+}
 
 technique WLWindow_3D {
 	pass t0 {
@@ -204,12 +210,13 @@ technique WLWindow_3D {
 
 technique TransferFunction1D_3D {
 	pass t0 {
-		FragmentProgram = compile fp40 fp_TransferFunction1D_3D( gImageData3D, gTransferFunction1D, gTransferFunction1DInterval, gImageDataResolution3D, gMappedIntervalBands );
+		FragmentProgram = compile fp40 fp_TransferFunction1D_3D( gImageData3D, gTransferFunction1D, gTransferFunction1DInterval, gRenderingSliceThickness, gImageDataResolution3D, gMappedIntervalBands );
 
 		DepthTestEnable = true;
 		DepthMask = true;
 		CullFaceEnable = false;
-		BlendEnable = false;
+		BlendEnable = true;
+		BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha );
 		DepthFunc = LEqual;
 	}
 }
