@@ -189,11 +189,6 @@ FragmentOutput fp_Test()
 	return OUT;
 }
 
-technique[3] = {
-	
-
-}
-
 technique WLWindow_3D {
 	pass t0 {
 		FragmentProgram = compile fp40 fp_WLWindow_3D( 

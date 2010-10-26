@@ -173,7 +173,7 @@ public:
 	Create( int32 min, int32 max, bool storeOutliers = true )
 	{
 		Histogram *result = new Histogram( min, max, storeOutliers );
-		return Histogram::Ptr( result );
+		return typename Histogram::Ptr( result );
 	}
 
 	static Ptr
@@ -189,7 +189,7 @@ public:
 		BINSTREAM_READ_MACRO( stream, storeOutliers );
 		BINSTREAM_READ_MACRO( stream, sum );
 		
-		Histogram::Ptr result = Histogram::Create( minCell, maxCell, storeOutliers );
+		typename Histogram::Ptr result = Histogram::Create( minCell, maxCell, storeOutliers );
 
 		CellType tmp;
 		for( unsigned i = 0; i < result->_size; ++i ) {
