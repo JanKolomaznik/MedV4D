@@ -115,10 +115,10 @@ GetByteCountFromNTID( int16 ntid )
 void
 Medv4DInit()
 {
-	GLenum err = glewInit();
-	if (GLEW_OK != err) {
-		_THROW_ M4D::ErrorHandling::EInitError( "GLEW" );
-	}
+	#ifdef USE_DEVIL
+	ilInit();
+	iluInit();
+	#endif /*USE_DEVIL*/	
 
 }
 
