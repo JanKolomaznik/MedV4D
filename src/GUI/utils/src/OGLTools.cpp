@@ -1,35 +1,87 @@
 #include "GUI/utils/OGLTools.h"
+#include "GUI/utils/OGLDrawing.h"
+
+#ifdef USE_DEVIL
+#include <IL/il.h>
+#include <IL/ilu.h>
+#endif /*USE_DEVIL*/	
+
 
 namespace M4D
 {
 
+void 
+CheckForGLError( const std::string &situation  )
+{
+	GLenum errorCode = glGetError();
+	if (errorCode != GL_NO_ERROR) {
+		const char *string = (const char *)gluErrorString(errorCode);
+		_THROW_ GLException( TO_STRING( situation << " : " << string ) );
+	}
+}
+
+
 #ifdef USE_DEVIL
+
+void 
+CheckForDevILError( const std::string &situation  )
+{
+	ILenum errorCode = glGetError();
+	if( errorCode != IL_NO_ERROR ) {
+		std::stringstream finalMessage; situation;
+		finalMessage << situation;
+		while (errorCode != IL_NO_ERROR) {
+			const char *string = (const char *)gluErrorString(errorCode);
+			finalMessage << " : " << string << std::endl;
+			errorCode = glGetError();
+		}
+		_THROW_ DevILException( finalMessage.str() );
+	}
+}
+
 void
 SaveTextureToImageFile( uint32 aWidth, uint32 aHeight, GLuint aTexture, std::string aPath, bool aOverwrite )
 {
+	//TODO auto_ptr on textures
 	ILuint imageID; // The image name to return.
-	ilGenImages( 1, &imageID );
-	ilBindImage( imageID );
+	DEVIL_CHECKED_CALL( ilGenImages( 1, &imageID ) );
+	DEVIL_CHECKED_CALL( ilBindImage( imageID ) );
 	if ( aOverwrite ) {
-		ilEnable(IL_FILE_OVERWRITE);
+		DEVIL_CHECKED_CALL( ilEnable(IL_FILE_OVERWRITE) );
+	} else {
+		DEVIL_CHECKED_CALL( ilDisable(IL_FILE_OVERWRITE) );
 	}
 
-	ILboolean result = ilTexImage( aWidth, aHeight, 0, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL );
-	ILubyte* data = ilGetData(ILvoid);
+	DEVIL_CHECKED_CALL( ilTexImage( aWidth, aHeight, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL ) );
+	ILubyte* data = new ILubyte[ 3 * aWidth * aHeight ];
 
-	glBind( GL_TEXTURE_2D, aTexture );
-	glGetTexImage(	GL_TEXTURE_2D, 
-			0, 
-			GL_RGB, 
-			GL_UNSIGNED_BYTE, 
-			(void*)data
-			);
-	glBind( GL_TEXTURE_2D, 0 );
+	GL_CHECKED_CALL( glBindTexture( GL_TEXTURE_2D, aTexture ) );
+	GL_CHECKED_CALL( glGetTexImage(	
+				GL_TEXTURE_2D, 
+				0, 
+				GL_RGB, 
+				GL_UNSIGNED_BYTE, 
+				(void*)data
+				) );
+	GL_CHECKED_CALL( glBindTexture( GL_TEXTURE_2D, 0 ) );
 
-	ilSaveImage( aPath.data() );
-	ilDeleteImages( 1, &imageID);
+	DEVIL_CHECKED_CALL( ilSetPixels( 0, 0, 0, aWidth, aHeight, 1, IL_RGB, IL_UNSIGNED_BYTE, data ) );
+	delete [] data;
+
+	DEVIL_CHECKED_CALL( ilSaveImage( aPath.data() ) );
+	DEVIL_CHECKED_CALL( ilDeleteImages( 1, &imageID) );
 }
 #endif /*USE_DEVIL*/
+
+void
+InitOpenGL()
+{
+	GLenum err = glewInit();
+	if (GLEW_OK != err) {
+		_THROW_ M4D::ErrorHandling::EInitError( "GLEW" );
+	}
+
+}
 
 
 } /*namespace M4D*/

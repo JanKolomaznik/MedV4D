@@ -117,7 +117,7 @@ ImageDataRenderer::RenderAlignedSlices()
 		{
 			_cgEffect.SetTextureParameter( "gTransferFunction1D", mTransferFunctionTexture->GetTextureID() );
 			_cgEffect.SetParameter( "gTransferFunction1DInterval", mTransferFunctionTexture->GetMappedInterval() );
-			techniqueName = "TransferFunction1D_3D";
+			techniqueName = "TransferFunction1D_3DNoBlending";
 		}
 		break;
 	case ctMaxIntensityProjection:
@@ -150,7 +150,8 @@ void
 ImageDataRenderer::RenderVolume()
 {
 
-	mViewConfig3D.camera.SetCenterPosition( 0.5f * (_textureData->GetDimensionedInterface< 3 >().GetMaximum() + _textureData->GetDimensionedInterface< 3 >().GetMinimum()) );
+	mViewConfig3D.camera.SetTargetPosition( 0.5f * (_textureData->GetDimensionedInterface< 3 >().GetMaximum() + _textureData->GetDimensionedInterface< 3 >().GetMinimum()) );
+	mViewConfig3D.camera.SetFieldOfView( 45.0f );
 
 
 	glMatrixMode(GL_MODELVIEW);

@@ -14,10 +14,10 @@ public:
 	typedef Vector< FloatType, 3 > Direction;
 
 	Camera( const Position &eye = Position(), const Position &center = Position() ) 
-		: _centerPos( center ), _eyePos( eye ), _upDirection( 0.0f, 1.0f, 0.0f ), _centerDirection( center - eye ), _rightDirection( 1.0f, 0.0f, 0.0f ),
-		_fieldOfViewY( 45.0f ), _aspectRatio( 1.0f ), _zNear( 0.5f ), _zFar( 10000 )
+		: mTargetPos( center ), mEyePos( eye ), mUpDirection( 0.0f, 1.0f, 0.0f ), mTargetDirection( center - eye ), mRightDirection( 1.0f, 0.0f, 0.0f ),
+		mFieldOfViewY( 45.0f ), mAspectRatio( 1.0f ), mZNear( 0.5f ), mZFar( 10000 )
 	{
-		VectorNormalization( _centerDirection );
+		VectorNormalization( mTargetDirection );
 	}
 
 	void
@@ -25,37 +25,47 @@ public:
 
 	const Position &
 	GetEyePosition() const
-		{ return _eyePos; }
+		{ return mEyePos; }
 
 	const Position &
-	GetCenterPosition() const
-		{ return _centerPos; }
+	GetTargetPosition() const
+		{ return mTargetPos; }
 
 	void
-	SetCenterPosition( const Position &pos );
+	SetTargetPosition( const Position &pos );
+
+	void
+	SetTargetPosition( const Position &aPosition, const Position &aUpDirection );
 
 	void
 	SetEyePosition( const Position &pos );
 
-	const Direction &
-	GetUpDirection() const
-		{ return _upDirection; }
+	void
+	SetEyePosition( const Position &aPosition, const Position &aUpDirection );
 
 	const Direction &
-	GetCenterDirection() const
-		{ return _centerDirection; }
+	GetUpDirection() const
+		{ return mUpDirection; }
+
+	const Direction &
+	GetTargetDirection() const
+		{ return mTargetDirection; }
 
 	const Direction &
 	GetRightDirection() const
-		{ return _rightDirection; }
+		{ return mRightDirection; }
 
-	SIMPLE_GET_SET_METHODS( FloatType, AspectRatio, _aspectRatio );
-	SIMPLE_GET_SET_METHODS( FloatType, FieldOfView, _fieldOfViewY );
-	SIMPLE_GET_SET_METHODS( FloatType, ZNear, _zNear );
-	SIMPLE_GET_SET_METHODS( FloatType, ZFar, _zFar );
+	FloatType
+	GetTargetDistance()
+	{ return mTargetDistance; }
+
+	SIMPLE_GET_SET_METHODS( FloatType, AspectRatio, mFieldOfViewY );
+	SIMPLE_GET_SET_METHODS( FloatType, FieldOfView, mAspectRatio );
+	SIMPLE_GET_SET_METHODS( FloatType, ZNear, mZNear );
+	SIMPLE_GET_SET_METHODS( FloatType, ZFar, mZFar );
 
 	void
-	RotateAroundCenter( const Quaternion<FloatType> &q );
+	RotateAroundTarget( const Quaternion<FloatType> &q );
 
 	void
 	YawAround( FloatType angle );
@@ -67,23 +77,39 @@ public:
 	YawPitchAround( FloatType yangle, FloatType pangle );
 protected:
 	
+	void
+	UpdateDistance()
+	{ 
+		mTargetDistance = VectorDistance( mTargetPos, mEyePos );
+	}
+	void
+	UpdateTargetDirection()
+	{ 
+		mTargetDirection = mTargetPos - mEyePos;
+		VectorNormalization( mTargetDirection );
+	}
+	void
+	UpdateRightDirection()
+	{ 
+		mRightDirection = VectorProduct( mTargetDirection, mUpDirection );
+	}
 	
-	Quaternion<FloatType>	_rotation;
+	Quaternion<FloatType>	mRotation;
 
-	Position		_centerPos;
-	Position		_eyePos;
+	Position		mTargetPos;
+	Position		mEyePos;
 
 	//All normalized
-	Direction		_upDirection;
-	Direction		_centerDirection;
-	Direction		_rightDirection;
+	Direction		mUpDirection;
+	Direction		mTargetDirection;
+	Direction		mRightDirection;
 
-	//FloatType		_distance;
+ 	FloatType  		mTargetDistance; 
 
-	FloatType  		_fieldOfViewY; 
- 	FloatType  		_aspectRatio; 
- 	FloatType  		_zNear; 
- 	FloatType  		_zFar;
+	FloatType  		mFieldOfViewY; 
+ 	FloatType  		mAspectRatio; 
+ 	FloatType  		mZNear; 
+ 	FloatType  		mZFar;
 };
 
 

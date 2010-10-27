@@ -126,6 +126,11 @@ public:
 		mSize[ 0 ] = aWidth;
 		mSize[ 1 ] = aHeight;
 	}
+
+	Vector2u
+	GetSize()const
+	{ return mSize; }
+
 protected:
 	GLuint	mFrameBufferObject, 
 		mDepthBuffer, 

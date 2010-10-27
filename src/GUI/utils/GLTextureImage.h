@@ -4,7 +4,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/cast.hpp>
 #include "common/Common.h"
-#include "common/OGLTools.h"
+#include "GUI/utils/OGLTools.h"
 #include "Imaging/AImageRegion.h"
 #include "Imaging/Image.h"
 #include "GUI/utils/OGLDrawing.h"

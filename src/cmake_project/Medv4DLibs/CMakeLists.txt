@@ -9,9 +9,10 @@ if(POLICY CMP0011)
 endif(POLICY CMP0011)
 
 
-SET(VTK_ENABLED true CACHE BOOL "Enable components with VTK dependencies." )
+SET(VTK_ENABLED false CACHE BOOL "Enable components with VTK dependencies." )
 SET(CG_ENABLED true CACHE BOOL "Enable components with Cg shader dependencies." )
-SET(OLD_M4D_WIDGETS_ENABLED true CACHE BOOL "Enable if you want to use old set of widgets" )
+SET(OLD_M4D_WIDGETS_ENABLED false CACHE BOOL "Enable if you want to use old set of widgets" )
+SET(DEVIL_ENABLED false CACHE BOOL "Enable if you want to use DevIL" )
 
 
 IF(NOT MEDV4D_CMAKE_SOURCE_DIR)
@@ -32,6 +33,9 @@ ENDIF( ${VTK_ENABLED} MATCHES "ON" )
 IF( ${CG_ENABLED} MATCHES "ON" )
 	SET( EXP_COMPILE_DEFINITIONS ${EXP_COMPILE_DEFINITIONS} "-DUSE_CG" )
 ENDIF( ${CG_ENABLED} MATCHES "ON" )
+IF( ${DEVIL_ENABLED} MATCHES "ON" )
+	SET( EXP_COMPILE_DEFINITIONS ${EXP_COMPILE_DEFINITIONS} "-DUSE_DEVIL" )
+ENDIF( ${DEVIL_ENABLED} MATCHES "ON" )
 
 ADD_DEFINITIONS( ${EXP_COMPILE_DEFINITIONS} )
 

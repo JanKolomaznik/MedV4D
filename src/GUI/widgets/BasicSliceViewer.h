@@ -149,6 +149,12 @@ public:
 		PrepareData();
 	}
 
+	bool
+	IsShadingEnabled() const
+	{
+		return _renderer.IsShadingEnabled();
+	}
+
 public slots:
 	void
 	SetRendererType( int aRendererType )
@@ -179,11 +185,30 @@ public slots:
 		_renderer.EnableShading( aEnable );
 		update();
 	}
-	
-	bool
-	IsShadingEnabled() const
+
+	void
+	SaveCurrentView()
 	{
-		return _renderer.IsShadingEnabled();
+		mSaveFile = true;
+		FineRender();
+	}
+
+	void
+	SaveCycle()
+	{
+		mSaveCycle = true;
+		update();
+	}
+	
+	void
+	ResetView()
+	{
+		Vector3f pos = _renderer.GetViewConfig3D().camera.GetTargetPosition();
+		//float dist = _renderer.GetViewConfig3D().camera.GetTargetDistance();
+		pos[1] += -550;
+		_renderer.GetViewConfig3D().camera.SetEyePosition( pos, Vector3f( 0.0f, 0.0f, 1.0f ) );
+		
+		update();
 	}
 signals:
 	void
@@ -280,10 +305,8 @@ protected:
 
 	FrameBufferObject			mFrameBufferObject;
 
-	/*GLuint	mFrameBufferObject, 
-		mDepthBuffer, 
-		mColorTexture;*/
-
+	bool					mSaveFile; //TODO handle differently
+	bool					mSaveCycle; //TODO handle differently
 private:
 
 };

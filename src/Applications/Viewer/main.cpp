@@ -35,6 +35,7 @@ main( int argc, char** argv )
         //D_COMMAND( std::ofstream debugFile( "Debug.txt" ); );
         //SET_DOUT( debugFile );
 
+	Medv4DInit();
 
 	QApplication app(argc, argv);
 	try {

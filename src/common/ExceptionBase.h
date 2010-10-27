@@ -104,6 +104,7 @@ public:
 class EAllocationFailed: public ExceptionBase
 {
 public:
+	EAllocationFailed( std::string name ) throw() : ExceptionBase( name ) {}
 	EAllocationFailed() throw() : ExceptionBase( "Allocation failed" ) {}
 };
 

@@ -3,7 +3,7 @@
 
 
 #include "common/Common.h"
-#include "common/OGLTools.h"
+#include "GUI/utils/OGLTools.h"
 #include "Imaging/AImage.h"
 #include "Imaging/ImageRegion.h"
 #include "Imaging/PointSet.h"
@@ -15,20 +15,6 @@
 #include "GUI/utils/DrawingTools.h"
 
 namespace M4D {
-
-class GLException: public M4D::ErrorHandling::ExceptionBase
-{
-public:
-	GLException( std::string name ) throw() : ExceptionBase( name ) {}
-	~GLException() throw(){}
-};
-
-void 
-CheckForGLError( const std::string &situation );
-
-#define GL_CHECKED_CALL( ... ) { __VA_ARGS__ ; CheckForGLError( TO_STRING( __FILE__ " on " << __LINE__) ); }
-
-
 
 
 void

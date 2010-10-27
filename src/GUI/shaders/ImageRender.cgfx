@@ -216,6 +216,18 @@ technique TransferFunction1D_3D {
 	}
 }
 
+technique TransferFunction1D_3DNoBlending {
+	pass t0 {
+		FragmentProgram = compile glslf fp_TransferFunction1D_3D( gImageData3D, gTransferFunction1D, gTransferFunction1DInterval, gRenderingSliceThickness, gImageDataResolution3D, gMappedIntervalBands );
+
+		DepthTestEnable = true;
+		DepthMask = true;
+		CullFaceEnable = false;
+		BlendEnable = false;
+		DepthFunc = LEqual;
+	}
+}
+
 technique TransferFunction1DShading_3D {
 	pass t0 {
 		FragmentProgram = compile glslf fp_TransferFunction1DShading_3D( gImageData3D, gTransferFunction1D, gTransferFunction1DInterval, gRenderingSliceThickness, gImageDataResolution3D, gMappedIntervalBands, gLightPosition, gLightColor, gEyePosition );

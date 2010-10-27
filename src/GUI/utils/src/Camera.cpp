@@ -1,74 +1,106 @@
 #include "GUI/utils/Camera.h"
 
 void
-Camera::RotateAroundCenter( const Quaternion<Camera::FloatType> &q )
+Camera::RotateAroundTarget( const Quaternion<Camera::FloatType> &q )
 {
-	Position dist( _eyePos - _centerPos );
-	FloatType sizeSqr = dist * dist;
+	/*Position dist( mEyePos - mTargetPos );
+	FloatType sizeSqr = dist * dist;*/
 
-	dist = RotatePoint( dist, q );
-	VectorNormalization( dist );
-	dist *= Sqrt( sizeSqr );
 
-	_eyePos = _centerPos + dist;
-	_upDirection = RotatePoint( _upDirection, q );
-	VectorNormalization( _upDirection );
+	Position direction = RotatePoint( mTargetDirection, q );
+	VectorNormalization( direction );
+	Position dist = -1.0f * direction * mTargetDistance;
 
-	_centerDirection = RotatePoint( _centerDirection, q );
-	VectorNormalization( _centerDirection );
+	mEyePos = mTargetPos + dist;
+	mUpDirection = RotatePoint( mUpDirection, q );
+	VectorNormalization( mUpDirection );
 
-	_rightDirection = VectorProduct( _centerDirection, _upDirection );
+	mTargetDirection = direction;
+	mRightDirection = VectorProduct( mTargetDirection, mUpDirection );
+
+	/*D_PRINT("CAMERA PARAMETERS ------------------------------" );
+	D_PRINT(mTargetPos);
+	D_PRINT(mEyePos);
+
+	//All normalized
+	D_PRINT(mUpDirection);
+	D_PRINT(mTargetDirection);
+	D_PRINT(mRightDirection);
+
+ 	D_PRINT(mTargetDistance); 
+
+	D_PRINT(mFieldOfViewY); 
+ 	D_PRINT(mAspectRatio); 
+ 	D_PRINT(mZNear); 
+ 	D_PRINT(mZFar);
+	D_PRINT("CAMERA PARAMETERS ------------------------------" );*/
 }
 
 void
-Camera::SetCenterPosition( const Position &pos )
+Camera::SetTargetPosition( const Position &pos )
 {
-	_centerPos = pos;
-	_centerDirection = _centerPos - _eyePos;
-	VectorNormalization( _centerDirection );
-	
-	Ortogonalize( _centerDirection, _upDirection );
-	VectorNormalization( _upDirection );
-	_rightDirection = VectorProduct( _centerDirection, _upDirection );
+	SetTargetPosition( pos, mUpDirection );
+}
+
+void
+Camera::SetTargetPosition( const Position &aPosition, const Position &aUpDirection )
+{
+	mTargetPos = aPosition;
+	UpdateDistance();
+	UpdateTargetDirection();
+
+	mUpDirection = aUpDirection;
+	Ortogonalize( mTargetDirection, mUpDirection );
+	VectorNormalization( mUpDirection );
+
+	UpdateRightDirection();
 }
 
 void
 Camera::SetEyePosition( const Position &pos )
 {
-	_eyePos = pos;
-	_centerDirection = _centerPos - _eyePos;
-	VectorNormalization( _centerDirection );
-	
-	Ortogonalize( _centerDirection, _upDirection );
-	VectorNormalization( _upDirection );
-	_rightDirection = VectorProduct( _centerDirection, _upDirection );
+	SetEyePosition( pos, mUpDirection );
+}
+
+void
+Camera::SetEyePosition( const Position &aPosition, const Position &aUpDirection )
+{
+	mEyePos = aPosition;
+	UpdateDistance();
+	UpdateTargetDirection();
+
+	mUpDirection = aUpDirection;
+	Ortogonalize( mTargetDirection, mUpDirection );
+	VectorNormalization( mUpDirection );
+
+	UpdateRightDirection();
 }
 
 void
 Camera::YawAround( Camera::FloatType angle )
 {
-	Quaternion<Camera::FloatType> q = CreateRotationQuaternion( angle, _upDirection );
-	RotateAroundCenter( q );
+	Quaternion<Camera::FloatType> q = CreateRotationQuaternion( angle, mUpDirection );
+	RotateAroundTarget( q );
 }
 
 void
 Camera::PitchAround( Camera::FloatType angle )
 {
-	Quaternion<Camera::FloatType> q = CreateRotationQuaternion( angle, _rightDirection );
-	RotateAroundCenter( q );
+	Quaternion<Camera::FloatType> q = CreateRotationQuaternion( angle, mRightDirection );
+	RotateAroundTarget( q );
 }
 
 void
 Camera::YawPitchAround( Camera::FloatType yangle, Camera::FloatType pangle )
 {
-	Quaternion<Camera::FloatType> q = CreateRotationQuaternion( yangle, _upDirection ) * CreateRotationQuaternion( pangle, _rightDirection );
-	RotateAroundCenter( q );
+	Quaternion<Camera::FloatType> q = CreateRotationQuaternion( yangle, mUpDirection ) * CreateRotationQuaternion( pangle, mRightDirection );
+	RotateAroundTarget( q );
 }
 
 void
 DollyCamera( Camera &aCamera, float32 aRatio )
 {
-	Camera::Position center = aCamera.GetCenterPosition();
+	Camera::Position center = aCamera.GetTargetPosition();
 	Camera::Position eye = aCamera.GetEyePosition();
 	Camera::Direction moveVector = (1.0f - aRatio) * (center - eye);
 	

@@ -2,7 +2,7 @@
 #define TRANSFER_FUNCTION_BUFFER_H
 
 #include "common/Common.h"
-#include "common/OGLTools.h"
+#include "GUI/utils/OGLTools.h"
 
 namespace M4D
 {

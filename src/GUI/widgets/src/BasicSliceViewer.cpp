@@ -11,7 +11,7 @@ namespace Viewer
 {
 
 BasicSliceViewer::BasicSliceViewer( QWidget *parent ) : 
-	PredecessorType( parent ), _renderingMode( rmONE_DATASET ), _interactionMode( imNONE ), _prepared( false )
+	PredecessorType( parent ), _renderingMode( rmONE_DATASET ), _interactionMode( imNONE ), _prepared( false ), mSaveFile( false ), mSaveCycle( false )
 {
 
 }
@@ -107,8 +107,33 @@ BasicSliceViewer::paintGL()
 	}
 
 	ZoomFit();
+//******************************************************* TODO delete
 
+	/*if (mSaveCycle) {
+		static size_t counter = 0;
+		ResetView();
+		
+		size_t stepCount = 125;
+		float rotStep = PIx2 / stepCount;
+		for( size_t i = 0; i < stepCount; ++ i ) {
+			_renderer.FineRender();
+			mFrameBufferObject.Bind();
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			_renderer.Render();
+			mFrameBufferObject.Unbind();
 
+			Vector2u size = mFrameBufferObject.GetSize();
+			std::string filename = TO_STRING( "output_" << counter << "_" << i << ".png" );
+			SaveTextureToImageFile( size[0], size[1], mFrameBufferObject.GetColorBuffer(), filename, true );
+			mSaveFile = false;
+			
+			_renderer.GetViewConfig3D().camera.YawAround( rotStep );
+			LOG( i << " / " << stepCount );
+		}
+		++counter;
+		mSaveCycle = false;
+	}*/
+//*******************************************************
 
 	mFrameBufferObject.Bind();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -116,6 +141,13 @@ BasicSliceViewer::paintGL()
 	mFrameBufferObject.Unbind();
 
 
+#ifdef USE_DEVIL
+	if (mSaveFile) {
+		Vector2u size = mFrameBufferObject.GetSize();
+		SaveTextureToImageFile( size[0], size[1], mFrameBufferObject.GetColorBuffer(), "output.png", true );
+		mSaveFile = false;
+	}
+#endif /*USE_DEVIL*/
 // ***************************************************************************************************
 
 	mFrameBufferObject.Render();	

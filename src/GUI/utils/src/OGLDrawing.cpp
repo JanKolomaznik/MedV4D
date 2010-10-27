@@ -10,15 +10,6 @@
 namespace M4D
 {
 
-void 
-CheckForGLError( const std::string &situation  )
-{
-	GLenum errorCode = glGetError();
-	if (errorCode != GL_NO_ERROR) {
-		const char *string = (const char *)gluErrorString(errorCode);
-		_THROW_ GLException( TO_STRING( situation << " : " << string ) );
-	}
-}
 
 
 void
@@ -64,9 +55,9 @@ SetViewAccordingToCamera( const Camera &camera )
 		camera.GetEyePosition()[0], 
 		camera.GetEyePosition()[1], 
 		camera.GetEyePosition()[2], 
-		camera.GetCenterPosition()[0], 
-		camera.GetCenterPosition()[1], 
-		camera.GetCenterPosition()[2], 
+		camera.GetTargetPosition()[0], 
+		camera.GetTargetPosition()[1], 
+		camera.GetTargetPosition()[2], 
 		camera.GetUpDirection()[0], 
 		camera.GetUpDirection()[1], 
 		camera.GetUpDirection()[2]
@@ -119,7 +110,7 @@ GLDrawVolumeSlices(
 	GetBBoxMinMaxDistance( 
 		bbox, 
 		camera.GetEyePosition(), 
-		camera.GetCenterDirection(), 
+		camera.GetTargetDirection(), 
 		min, 
 		max,
 		minId,	
@@ -127,13 +118,13 @@ GLDrawVolumeSlices(
 		);
 	
 	float stepSize = cutPlane * (max - min) / numberOfSteps;
-	Vector< float, 3> planePoint = camera.GetEyePosition() + camera.GetCenterDirection() * max;
+	Vector< float, 3> planePoint = camera.GetEyePosition() + camera.GetTargetDirection() * max;
 	for( unsigned i = 0; i < numberOfSteps; ++i ) {
 		//Obtain intersection of the optical axis and the currently rendered plane
-		planePoint -= stepSize * camera.GetCenterDirection();
+		planePoint -= stepSize * camera.GetTargetDirection();
 		//Get n-gon as intersection of the current plane and bounding box
 		unsigned count = M4D::GetPlaneVerticesInBoundingBox( 
-				bbox, planePoint, camera.GetCenterDirection(), minId, vertices
+				bbox, planePoint, camera.GetTargetDirection(), minId, vertices
 				);
 
 		//Render n-gon
