@@ -466,8 +466,8 @@ __kernel void NLMeansOptV2(const __global float *srcData,
 				
 				float weight = 0;
 
-				/*if((fabs(mean1 - mean2) <= variance * meanAccept) &&
-					(sigma < var1divvar2 && var1divvar2 < sigmaRcp)) */{
+				if(/*(fabs(mean1 - mean2) <= variance * meanAccept) &&*/
+					(sigma < var1divvar2 && var1divvar2 < sigmaRcp)) {
 					float L2coeffSq = 0;
 					for(int k = -neighbourhood + 1; k <= neighbourhood - 1; k++) {
 						for(int j = -neighbourhood + 1; j <= neighbourhood - 1; j++) {
@@ -479,8 +479,8 @@ __kernel void NLMeansOptV2(const __global float *srcData,
 					}
 					weight = exp(- L2coeffSq / weightConst);
 				}
+				//weight = (lidX == center && lidY == center && lidZ == center)?1:0;
 
-				//float weight = ( L2coeffSq / weightConst);
 				locWeights[lidZ - neighbourhood][locWeightY][locWeightX] = weight;
 				accum += weight;
 			}

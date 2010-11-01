@@ -205,8 +205,8 @@ main( int argc, char** argv )
 
 	viewer::CTextProgress progress;
 	//volFRes.volBlockwiseNLMeans(volF, 0.9, 0.1, 0.5, 5, 2, 4, &progress);
-	bool retval = volFRes.volNLMeansOptHW(ocl, volF, dBeta, radius, neighbourhood, &progress);
-//	bool retval = volFRes.volNLMeansHW(ocl, volF, dBeta, radius, neighbourhood, &progress);
+	//bool retval = volFRes.volNLMeansOptHW(ocl, volF, dBeta, radius, neighbourhood, &progress);
+	bool retval = volFRes.volNLMeansHW(ocl, volF, dBeta, radius, neighbourhood, &progress);
 	if (retval == false) {
 		std::cout << "Errors encountered.\n";
 		return 1;

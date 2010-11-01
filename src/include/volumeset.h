@@ -2315,8 +2315,10 @@ public:
 
 			errcode = clEnqueueNDRangeKernel(ocl.queue, kerLocMeanVar, 1, NULL, globs, locs, 0, NULL, NULL);
 
-			float fMeanAccept = 0.9f;
-			float fSigma = 0.5f;
+			// HACK
+			float fMeanAccept = 0.1f;
+			float fSigma = 0.9999f;
+
 
 			printf("Computing NM optimized filter...\n");
 			//set arguments
