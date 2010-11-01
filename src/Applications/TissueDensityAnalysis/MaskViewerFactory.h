@@ -28,10 +28,6 @@ class GenericViewerFactory: public ViewerFactory
 	  GenericViewerFactory (): ViewerFactory( "" )     // TODO - set description right
 		  {}
 
-	  M4D::Viewer::m4dGUIAbstractViewerWidget *newViewer ( M4D::Imaging::ConnectionInterface* conn,  M4D::Imaging::ConnectionInterface* maskConn, 
-                                                         unsigned index )
-		  { return new ViewerType( conn, maskConn, index ); }
-
 	  M4D::Viewer::m4dGUIAbstractViewerWidget *newViewer ( unsigned index )
 		  { return new ViewerType( index ); }
 

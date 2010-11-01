@@ -3,8 +3,8 @@
 
 #include <QtGui/QWidget>
 #include "GUI/widgets/m4dGUIMainWindow.h"
-#include "m4dMySliceViewerWidget.h"
-#include "Imaging/filters/SphereSelection.h"
+#include "TDASliceViewerWidget.h"
+#include "TDASphereSelection.h"
 #include <map>
 
 
@@ -29,7 +29,7 @@ public:
 	virtual void build();
 
     Ui::SettingsBox* ui;
-	void setMaskFilter(M4D::Imaging::SphereSelection< ImageType >	*filter);
+	void setMaskFilter(M4D::Imaging::TDASphereSelection< ImageType >	*filter);
 
 protected slots:
 	void slotSetSphereCenter(double x, double y, double z);
@@ -38,7 +38,7 @@ protected slots:
 
 protected:
 	M4D::GUI::m4dGUIMainWindow *_parent;
-	M4D::Imaging::SphereSelection< ImageType >	*_filter;
+	M4D::Imaging::TDASphereSelection< ImageType >	*_filter;
 	
 
 	

@@ -1,6 +1,6 @@
 #include "SettingsBox.h"
 #include "ui_SettingsBox.h"
-#include "m4dMySliceViewerWidget.h"
+#include "TDASliceViewerWidget.h"
 
 #include <cassert>
 
@@ -59,7 +59,7 @@ void SettingsBox::slotCreateMask()
 	_filter->ExecuteOnWhole();
 }
 
-void SettingsBox::setMaskFilter(M4D::Imaging::SphereSelection< ImageType >	*filter)
+void SettingsBox::setMaskFilter(M4D::Imaging::TDASphereSelection< ImageType >	*filter)
 {
 	_filter = filter;
 }

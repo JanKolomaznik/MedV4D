@@ -2,13 +2,8 @@
 #define MAIN_WINDOW_H
 
 #include "GUI/widgets/m4dGUIMainWindow.h"
-#include "Imaging/PipelineContainer.h"
-#include "Imaging/ImageFactory.h"
-#include "Imaging/filters/ThresholdingFilter.h"
-//#include "Imaging/filters/MyFilter.h"
-#include "Imaging/filters/SphereSelection.h"
-#include "Imaging/filters/MaskSelection.h"
 #include "Imaging/filters/ImageConvertor.h"
+#include "TDASphereSelection.h"
 #include "SettingsBox.h"
 
 #define ORGANIZATION_NAME     "MFF"
@@ -20,10 +15,11 @@ typedef M4D::Imaging::Image< ElementType, Dim > ImageType;
 typedef M4D::Imaging::ThresholdingMaskFilter< ImageType > Thresholding;
 typedef M4D::Imaging::MaskMedianFilter2D< Dim > Median2D;
 //typedef M4D::Imaging::MaskMyFilter2D< Dim > MyFilter2D;
-typedef M4D::Imaging::SphereSelection< ImageType > SphereSelectionFilter;
+typedef M4D::Imaging::TDASphereSelection< ImageType > SphereSelectionFilter;
 typedef M4D::Imaging::MaskSelection< ImageType > MaskSelectionFilter;
 typedef M4D::Imaging::ConnectionTyped< ImageType > InConnection;
 typedef M4D::Imaging::ImageConvertor< ImageType > InImageConvertor;
+
 
 class Notifier : public QObject, public M4D::Imaging::MessageReceiverInterface
 {
@@ -52,22 +48,24 @@ class mainWindow: public M4D::GUI::m4dGUIMainWindow
 public:
  
 	mainWindow ();
-  void build();
+	void build();
 	void switchToDefaultViewerDesktop ();
 
+
 protected:
-	void
-	process( M4D::Imaging::ADataset::Ptr inputDataSet );
 
-	void
-	CreatePipeline();
-  void createDefaultViewerDesktop ();
-
+	void process ( M4D::Imaging::ADataset::Ptr inputDataSet );
+	
+	// nahradim defaultny viewer vlastni viewrem MySliceViewerWidget
+	void createDefaultViewerDesktop ();
+	
+	void CreatePipeline();
+	
 	SettingsBox	*_settings;
-  Notifier * _notifier;
+	Notifier * _notifier;
 
 	M4D::Imaging::PipelineContainer			_pipeline;
-	M4D::Imaging::SphereSelection< ImageType >	*_filter;
+	M4D::Imaging::TDASphereSelection< ImageType >	*_filter;
 	M4D::Imaging::APipeFilter		*_convertor;
 	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage >	*_inConnection;
 	M4D::Imaging::ConnectionInterfaceTyped< M4D::Imaging::AImage >	*_inMaskConnection;
