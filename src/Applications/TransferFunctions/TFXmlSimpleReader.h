@@ -3,8 +3,12 @@
 
 #include <QtCore/QXmlStreamReader>
 #include <QtCore/QString>
+#include <QtGui/QMessageBox>
 
 #include <TFSimpleFunction.h>
+
+namespace M4D {
+namespace GUI {
 
 class TFXmlSimpleReader: public QXmlStreamReader{
 
@@ -12,11 +16,15 @@ public:
 	TFXmlSimpleReader();
 	~TFXmlSimpleReader();
 
-	TFSimpleFunction read(QIODevice* device, bool &error);
+	void read(QIODevice* device, TFSimpleFunction* function, bool &error);
+	void readTestData(TFSimpleFunction* function);
 
 private:
-	TFSimpleFunction readFunction(bool &error);
-	TFPoint readPoint(bool &error);
+	void readFunction(TFSimpleFunction* function, bool &error);
+	float readPoint(bool &error);
 };
+
+} // namespace GUI
+} // namespace M4D
 
 #endif //TF_XMLSIMPLEREADER

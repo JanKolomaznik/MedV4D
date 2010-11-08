@@ -1,79 +1,49 @@
-#include "TFSimpleHolder.h"
+#include <TFAbstractHolder.h>
 
 namespace M4D {
 namespace GUI {
 
-TFSimpleHolder::TFSimpleHolder(QWidget* window){
+TFAbstractHolder::TFAbstractHolder():
+	type_(TFTYPE_UNKNOWN),
+	basicTools_(new Ui::TFAbstractHolder),
+	setup_(false){
 
-	setParent(window);
-	type_ = TFTYPE_SIMPLE;
+	basicTools_->setupUi(this);
 }
 
-TFSimpleHolder::~TFSimpleHolder(){}
-
-void TFSimpleHolder::setUp(QWidget *parent, const QRect rect){
-
-	painter_.setUp(this, PAINTER_MARGIN);
-	size_changed(rect);
-	setParent(parent);
-	show();
+TFAbstractHolder::~TFAbstractHolder(){
+	if(basicTools_) delete basicTools_;
 }
 
-void TFSimpleHolder::save_(QFile &file){
+void TFAbstractHolder::save(){
 
-	updateFunction_();
+	QString fileName = QFileDialog::getSaveFileName(this,
+		tr("Save Transfer Function"),
+		QDir::currentPath(),
+		tr("TF Files (*.tf)"));
 
-	 TFXmlSimpleWriter writer;
-     writer.write(&file, function_);
-	 //writer.writeTestData(&file);	//testing
-}
+	if (fileName.isEmpty()) return;
 
-bool TFSimpleHolder::load_(QFile &file){
-
-	TFXmlSimpleReader reader;
-
-	bool error = false;
-
-	reader.readTestData(&function_);	//testing
-	//reader.read(&file, &function_, error);
-
-	if (error || reader.error())
+	QFile file(fileName);
+	if (!file.open(QFile::WriteOnly | QFile::Text))
 	{
-		return false;
+		QMessageBox::warning(this, tr("Transfer Functions"),
+			tr("Cannot write file %1:\n%2.")
+			.arg(fileName)
+			.arg(file.errorString()));
+		return;
 	}
 
-	calculate_(function_.getFunction(), painter_.getView());
+	save_(file);
 
-	return true;
+	file.close();
 }
 
-void TFSimpleHolder::updateFunction_(){
-
-	if(!painter_.changed()) return;
-
-	calculate_(painter_.getView(), function_.getFunction());
+TFType TFAbstractHolder::getType() const{
+	return type_;
 }
 
-void TFSimpleHolder::size_changed(const QRect rect){
-	
-	setGeometry(rect);
-
-	int newWidth = rect.width() - 2*PAINTER_X;
-	int newHeight = rect.height() - 2*PAINTER_Y;
-
-	updateFunction_();
-
-	painter_.resize(QRect(PAINTER_X, PAINTER_Y, newWidth, newHeight));
-	
-	calculate_(function_.getFunction(), painter_.getView());
-}
-
-TFAbstractFunction* TFSimpleHolder::getFunction_(){
-
-	return &function_;
-}
-
-void TFSimpleHolder::calculate_(const TFFunctionMapPtr input, TFFunctionMapPtr output){
+void TFAbstractHolder::calculate_(const TFFunctionMapPtr input, TFFunctionMapPtr output){
 
 	if(!(input && output)) tfAbort("calculation error");
 	if(output->begin() == output->end())
@@ -148,13 +118,6 @@ void TFSimpleHolder::calculate_(const TFFunctionMapPtr input, TFFunctionMapPtr o
 		}
 	}
 }
-/*
-void TFSimpleHolder::receiveHistogram(const TFHistogram& histogram){
-	
-	painter_.setHistogram(histogram);
-	painter_.paintHistogram(true);
-}
-*/
 
 } // namespace GUI
 } // namespace M4D

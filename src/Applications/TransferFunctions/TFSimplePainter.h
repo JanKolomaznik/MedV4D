@@ -1,50 +1,24 @@
 #ifndef TF_SIMPLEPAINTER
 #define TF_SIMPLEPAINTER
 
-#include <QtGui/QWidget>
-#include <QtGui/QPainter>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QPaintEvent>
+#include <TFAbstractPainter.h>
 
-#include <vector>
+namespace M4D {
+namespace GUI {
 
-#include <TFSimpleFunction.h>
-
-namespace Ui{
-
-	class TFSimplePainter;
-}
-
-class TFSimplePainter: public QWidget{
-
-	Q_OBJECT
+class TFSimplePainter: public TFAbstractPainter{
 
 public:
 	TFSimplePainter();
 
-	TFSimplePainter(int marginH, int marginV);
-
 	~TFSimplePainter();
 
 	void setUp(QWidget *parent);
+	void setUp(QWidget *parent, int margin);
 
-	void setUp(QWidget *parent, int marginH, int marginV);
+	TFFunctionMapPtr getView();
 
-	void resize(const QRect rect);
-
-	void setView(TFPointMap view);
-
-	void setAutoUpdate(bool state);
-
-	TFPointMap getView();
-
-	TFPoints getPoints();
-
-	void setHistogram(const TFHistogram& histogram);
-	void paintHistogram(const bool paint);
-
-signals:
-	void FunctionChanged();
+	bool changed();
 
 protected:
 	void paintEvent(QPaintEvent *e);
@@ -52,19 +26,18 @@ protected:
 	void mouseReleaseEvent(QMouseEvent *e);
 	void mouseMoveEvent(QMouseEvent *e);
 
+	void resize_();
+
 private:
-	Ui::TFSimplePainter* painter_;
-	int marginV_, marginH_;
-	TFPointMap view_;	
-	TFPoint* drawHelper_;
-	bool autoUpdate_;
 
-	TFPoint painterCoords(const TFPoint &point);
+	bool changed_;
 
-	TFPoint painterCoords(int x, int y);
+	TFFunctionMapPtr view_;	
 
-	void addLine(int x1, int y1, int x2, int y2);
-	void addPoint(TFPoint point);
+	void addPoint(TFPaintingPoint point);
 };
+
+} // namespace GUI
+} // namespace M4D
 
 #endif //TF_SIMPLEPAINTER

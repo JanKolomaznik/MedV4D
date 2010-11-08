@@ -10,25 +10,29 @@
 #include <QtGui/QMessageBox>
 
 #include <fstream>
-#include <cassert>
 
+#include <TFAction.h>
 #include <TFSimpleHolder.h>
+#include <TFGrayscaleTransparencyHolder.h>
+#include <TFRGBHolder.h>
+#include <TFRGBaHolder.h>
 
+namespace M4D {
+namespace GUI {
 
 class TFHolderFactory{
 
 public:
 	
-	static TFActions createMenuTFActions(QMenu *menu);
+	static TFActions createMenuTFActions(QWidget *parent);
 
-	static TFAbstractHolder* createHolder(TFWindowI* window, TFType &holderType);
+	static TFAbstractHolder* createHolder(QWidget* window, const TFType holderType);
 
-	static TFAbstractHolder* loadHolder(TFWindowI* window);
+	static TFAbstractHolder* loadHolder(QWidget* window);
 
 protected:
 
 	class TFTypeSwitcher: public QXmlStreamReader{
-
 	public:
 		TFTypeSwitcher(){}
 		~TFTypeSwitcher(){}
@@ -41,5 +45,8 @@ private:
 	TFHolderFactory(){}
 	~TFHolderFactory(){}
 };
+
+} // namespace GUI
+} // namespace M4D
 
 #endif	//TF_HOLDERFACTORY

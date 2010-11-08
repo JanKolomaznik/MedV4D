@@ -1,13 +1,13 @@
-#ifndef TF_SIMPLEHOLDER
-#define TF_SIMPLEHOLDER
+#ifndef TF_GRAYSCALETRANSPARENCY_HOLDER
+#define TF_GRAYSCALETRANSPARENCY_HOLDER
 
 #include "common/Types.h"
 
 #include <TFAbstractHolder.h>
-#include <TFSimpleFunction.h>
-#include <TFSimplePainter.h>
-#include <TFXmlSimpleReader.h>
-#include <TFXmlSimpleWriter.h>
+#include <TFGrayscaleTransparencyFunction.h>
+#include <TFGrayscaleTransparencyPainter.h>
+//#include <TFXmlSimpleReader.h>
+//#include <TFXmlSimpleWriter.h>
 
 #include <string>
 #include <map>
@@ -20,11 +20,11 @@ namespace GUI {
 #define PAINTER_Y 25
 #define PAINTER_MARGIN 5
 
-class TFSimpleHolder: public TFAbstractHolder{
+class TFGrayscaleTransparencyHolder: public TFAbstractHolder{
 
 public:
-	TFSimpleHolder(QWidget* window);
-	~TFSimpleHolder();
+	TFGrayscaleTransparencyHolder(QWidget* window);
+	~TFGrayscaleTransparencyHolder();
 
 	void setUp(QWidget *parent, const QRect rect);
 
@@ -39,13 +39,11 @@ protected:
 	TFAbstractFunction* getFunction_();
 
 private:
-	TFSimpleFunction function_;
-	TFSimplePainter painter_;
-
-	void calculate_(const TFFunctionMapPtr input, TFFunctionMapPtr output);
+	TFGrayscaleTransparencyFunction function_;
+	TFGrayscaleTransparencyPainter painter_;
 };
 
 } // namespace GUI
 } // namespace M4D
 
-#endif //TF_SIMPLEHOLDER
+#endif //TF_GRAYSCALETRANSPARENCY_HOLDER

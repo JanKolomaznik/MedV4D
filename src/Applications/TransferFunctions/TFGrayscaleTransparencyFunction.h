@@ -1,5 +1,5 @@
-#ifndef TF_SIMPLEFUNCTION
-#define TF_SIMPLEFUNCTION
+#ifndef TF_GRAYSCALETRANSPARENCY_FUNCTION
+#define TF_GRAYSCALETRANSPARENCY_FUNCTION
 
 #include <map>
 #include <vector>
@@ -14,22 +14,20 @@
 namespace M4D {
 namespace GUI {
 
-class TFSimpleFunction: public TFAbstractFunction{
+class TFGrayscaleTransparencyFunction: public TFAbstractFunction{
 
 public:
 
-	TFSimpleFunction(TFSize domain = 4096);
-	TFSimpleFunction(TFSimpleFunction &function);
+	TFGrayscaleTransparencyFunction(TFSize domain = 4096);
+	TFGrayscaleTransparencyFunction(TFGrayscaleTransparencyFunction &function);
 
-	~TFSimpleFunction();
+	~TFGrayscaleTransparencyFunction();
 
-	void operator=(TFSimpleFunction &function);
+	void operator=(TFGrayscaleTransparencyFunction &function);
 	TFAbstractFunction* clone();
 
-	void setPoint(TFSize point, float value);
-	void setFunction(TFFunctionMapPtr function);
-
-	TFFunctionMapPtr getFunction();
+	TFFunctionMapPtr getGrayscaleFunction();
+	TFFunctionMapPtr getTransparencyFunction();
 	TFSize getDomain();
 
 	void clear();
@@ -50,27 +48,27 @@ public:
 	bool apply<TransferFunctionBuffer1D::Iterator>(
 		TransferFunctionBuffer1D::Iterator begin,
 		TransferFunctionBuffer1D::Iterator end){
-
-		tfAssert((end-begin)==points_->size());
 			
 		typedef TransferFunctionBuffer1D::ValueType ValueType;
 
-		TFFunctionMapIt currentPoint = points_->begin();
+		TFFunctionMapIt currentGray = gray_->begin();
+		TFFunctionMapIt currentTransparency = transparency_->begin();
 		for(TransferFunctionBuffer1D::Iterator it = begin; it!=end; ++it)
 		{
-			float value = *currentPoint;
-			*it = ValueType(value, value, value, 1);
-			++currentPoint;
+			*it = ValueType(*currentGray, *currentGray, *currentGray, *currentTransparency);
+			++currentGray;
+			++currentTransparency;
 		}
 
 		return true;
 	}
 
 private:	
-	TFFunctionMapPtr points_;
+	TFFunctionMapPtr gray_;
+	TFFunctionMapPtr transparency_;
 };
 
 } // namespace GUI
 } // namespace M4D
 
-#endif //TF_SIMPLEFUNCTION
+#endif //TF_GRAYSCALETRANSPARENCY_FUNCTION

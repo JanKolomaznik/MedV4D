@@ -1,20 +1,12 @@
 #include "TFSimpleFunction.h"
 
-TFSimpleFunction::TFSimpleFunction(unsigned functionRange, unsigned colorRange){
+namespace M4D {
+namespace GUI {
 
-	functionRange_ = functionRange;
-	colorRange_ = colorRange;
+TFSimpleFunction::TFSimpleFunction(TFSize domain){
+
 	type_ = TFTYPE_SIMPLE;
-	name = "default_function";
-	clear();
-}
-
-TFSimpleFunction::TFSimpleFunction(TFName functionName, unsigned functionRange, unsigned colorRange){
-
-	functionRange_ = functionRange;
-	colorRange_ = colorRange;
-	type_ = TFTYPE_SIMPLE;
-	name = functionName;
+	points_ = TFFunctionMapPtr(new TFFunctionMap(domain));
 	clear();
 }
 
@@ -23,13 +15,21 @@ TFSimpleFunction::TFSimpleFunction(TFSimpleFunction &function){
 	operator=(function);
 }
 
-TFSimpleFunction::~TFSimpleFunction(){}
+TFSimpleFunction::~TFSimpleFunction(){
+}
 
 void TFSimpleFunction::operator=(TFSimpleFunction &function){
 
 	type_ = function.getType();
-	name = function.name;
-	points_ = function.getPointMap();
+	const TFFunctionMapPtr points = function.getFunction();
+
+	points_->clear();
+	TFFunctionMap::const_iterator begin = points->begin();
+	TFFunctionMap::const_iterator end = points->end();
+	for(TFFunctionMap::const_iterator it = begin; it!=end; ++it)
+	{
+		points_->push_back(*it);
+	}
 }
 
 TFAbstractFunction* TFSimpleFunction::clone(){
@@ -39,76 +39,67 @@ TFAbstractFunction* TFSimpleFunction::clone(){
 
 void TFSimpleFunction::clear(){
 
-	points_.clear();
-	for(unsigned i = 0; i < functionRange_; ++i)
+	TFFunctionMapIt begin = points_->begin();
+	TFFunctionMapIt end = points_->end();
+	for(TFFunctionMapIt it = begin; it!=end; ++it)
 	{
-		points_.push_back(0);
+		*it = 0;
 	}
 }
 
-void TFSimpleFunction::addPoint(int x, int y){
+void TFSimpleFunction::setPoint(TFSize point, float value){
 
-	points_[x] = y;
+	if(point > points_->size()) tfAbort("point out of range");
+	(*points_)[point] = value;
 }
 
-void TFSimpleFunction::addPoint(TFPoint point){
+void TFSimpleFunction::setFunction(TFFunctionMapPtr function){
 
-	points_[point.x] = point.y;
+	tfAssert(function->size() == points_->size());
+	points_ = function;
 }
-
-void TFSimpleFunction::addPoints(TFPoints points){
-
-	TFPointsIterator first = points.begin();
-	TFPointsIterator end = points.end();
-	TFPointsIterator it = first;
-	for(it; it != end; ++it)
-	{
-		addPoint(*it);
-	}
-}
-
-void TFSimpleFunction::setPoints(TFPointMap points){
+/*
+void TFSimpleFunction::setPoints(TFFunctionMap points){
 
 	points_ = points;
 }
+float TFSimpleFunction::getPoint(TFSize point){
 
-TFPoint TFSimpleFunction::getPoint(int coordX){
-
-	return TFPoint(coordX, points_[coordX]);
+	return TFPointSimple(point, points_[point]);
 }
 
-TFPoints TFSimpleFunction::getAllPoints(){
 
-	TFPoints points;
-	for(unsigned i = 0; i < functionRange_; ++i)
+TFPointsSimple TFSimpleFunction::getAllPoints(){
+
+	TFPointsSimple points;
+
+	for(TFSize i = 0; i < points_.size(); ++i)
 	{
-		points.push_back(TFPoint(i, points_[i]));
+		points.push_back(TFPointSimple(i, points_[i]));
 	}
 
 	return points;
 }
-
-TFPointMap TFSimpleFunction::getPointMap(){
+*/
+TFFunctionMapPtr TFSimpleFunction::getFunction(){
 
 	return points_;
 }
 
-unsigned TFSimpleFunction::getFunctionRange(){
+TFSize TFSimpleFunction::getDomain(){
 
-	return functionRange_;
+	return points_->size();
 }
-
-unsigned TFSimpleFunction::getColorRange(){
-
-	return colorRange_;
-}
-
+/*
 void TFSimpleFunction::recalculate(unsigned functionRange, unsigned colorRange){	//TODO
 
-	TFPointMap newPoints(functionRange);
-	apply(newPoints.begin(), functionRange, colorRange);
+	TFFunctionMap newPoints(functionRange);
+	apply<TFPointMapIterator>(newPoints.begin(), newPoints.end(), colorRange);
 
 	functionRange_ = functionRange;
 	colorRange_ = colorRange;
 	points_ = newPoints;
 }
+*/
+} // namespace GUI
+} // namespace M4D

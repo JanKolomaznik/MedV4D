@@ -1,5 +1,8 @@
 #include "TFXmlSimpleWriter.h"
 
+namespace M4D {
+namespace GUI {
+
 TFXmlSimpleWriter::TFXmlSimpleWriter(){
 	setAutoFormatting(true);
 }
@@ -16,20 +19,27 @@ void TFXmlSimpleWriter::write(QIODevice *device, TFSimpleFunction &data){
 	writeEndDocument();
 }
 
+void TFXmlSimpleWriter::writeTestData(QIODevice *device){
+	TFSimpleFunction data;
+	TFFunctionMapPtr f = data.getFunction();
+	TFSize domain = data.getDomain();
+	for(TFSize i = 0; i < domain; ++i)
+	{
+		(*f)[i] = (i/4)/1000.0;
+	}
+	write(device, data);
+}
+
 void TFXmlSimpleWriter::writeFunction(TFSimpleFunction &function){
 
 	writeStartElement("TransferFunction");
 	writeAttribute("type", QString::fromStdString(convert<TFType, std::string>(function.getType())));
-	writeAttribute("name", QString::fromStdString(function.name));
-	writeAttribute("functionRange", QString::fromStdString( convert<int, std::string>(function.getFunctionRange()) ));
-	writeAttribute("colorRange", QString::fromStdString( convert<int, std::string>(function.getColorRange()) ));
+	writeAttribute("domain", QString::fromStdString( convert<TFSize, std::string>(function.getDomain()) ));
 
-	TFPoints points = function.getAllPoints();
-	TFPointsIterator first = points.begin();
-	TFPointsIterator end = points.end();
-	TFPointsIterator it = first;
-
-	for(it; it != end; ++it)
+	const TFFunctionMapPtr points = function.getFunction();
+	TFFunctionMap::const_iterator first = points->begin();
+	TFFunctionMap::const_iterator end = points->end();
+	for(TFFunctionMap::const_iterator it = first; it != end; ++it)
 	{
 		writePoint(*it);
 	}
@@ -37,11 +47,13 @@ void TFXmlSimpleWriter::writeFunction(TFSimpleFunction &function){
 	writeEndElement();
 }
 
-void TFXmlSimpleWriter::writePoint(TFPoint &point){
+void TFXmlSimpleWriter::writePoint(float point){
 
-	writeStartElement("TFPoint");
-	writeAttribute("x", QString::fromStdString( convert<int, std::string>(point.x)) );
-	writeAttribute("y", QString::fromStdString( convert<int, std::string>(point.y)) );
+	writeStartElement("TFPointSimple");
+	writeAttribute("point", QString::fromStdString( convert<float, std::string>(point)) );
 
 	writeEndElement();
 }
+
+} // namespace GUI
+} // namespace M4D

@@ -6,17 +6,15 @@
 #include <QtGui/QWidget>
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
+#include <QtGui/QMenuBar>
 
 #include <TFHolderFactory.h>
+#include <ui_TFWindow.h>
 
-#define MENU_SPACE 30
+namespace M4D {
+namespace GUI {
 
-namespace Ui{
-
-	class TFWindow;
-}
-
-class TFWindow : public TFWindowI{
+class TFWindow : public QWidget{
 
     Q_OBJECT
 
@@ -24,18 +22,29 @@ public:
 	TFWindow();
     ~TFWindow();
 
-	void build();
+	template<typename ElementIterator>
+	bool applyTransferFunction(
+		ElementIterator begin,
+		ElementIterator end){
 
-	void modifyData(TFAbstractFunction &transferFunction);
-	void getHistogram();
+		if(!holder_) 
+		{
+			QMessageBox::critical(this, QObject::tr("Transfer Functions"),
+				QObject::tr("No function available!"));
+			return false;
+		}
+		return holder_->applyTransferFunction<ElementIterator>(begin, end);
+	}
+
+	void createMenu(QMenuBar* menubar);
+
+	void setupDefault();
 
 signals:
 	void ResizeHolder(const QRect rect);
-	void AdjustByTransferFunction(TFAbstractFunction &transferFunction);
-	void HistogramRequest();
 
 public slots:
-	void receive_histogram(const TFHistogram& histogram);
+	//void receive_histogram(const TFHistogram& histogram);
 
 protected slots:
     void on_exit_triggered();
@@ -43,7 +52,7 @@ protected slots:
     void on_load_triggered();
 	void newTF_triggered(TFType &tfType);
 
-	void on_actionTest_triggered();
+	void on_menuHistogram_triggered();
 
 protected:
 	void resizeEvent(QResizeEvent* e);
@@ -51,10 +60,19 @@ protected:
 private:	
     Ui::TFWindow* ui_;
 
+	QMenu* menuTF_;
+	QMenu* menuNew_;
+    QAction *actionLoad_;
+    QAction *actionSave_;
+    QAction *actionExit_;
+
 	TFAbstractHolder* holder_;
 	TFActions tfActions_;
 
 	void setupHolder();
 };
+
+} // namespace GUI
+} // namespace M4D
 
 #endif //TF_WINDOW

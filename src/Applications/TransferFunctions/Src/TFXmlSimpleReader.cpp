@@ -1,15 +1,15 @@
 #include "TFXmlSimpleReader.h"
 
+namespace M4D {
+namespace GUI {
 
 TFXmlSimpleReader::TFXmlSimpleReader() {}
 
 TFXmlSimpleReader::~TFXmlSimpleReader(){}
 
-TFSimpleFunction TFXmlSimpleReader::read(QIODevice* device, bool &error){
+void TFXmlSimpleReader::read(QIODevice* device, TFSimpleFunction* function, bool &error){
 
 	setDevice(device);
-	
-	TFSimpleFunction loaded;
 
 	while(!atEnd())
 	{
@@ -22,24 +22,33 @@ TFSimpleFunction TFXmlSimpleReader::read(QIODevice* device, bool &error){
 
 		if (isStartElement() && (name() == "TransferFunction"))
 		{
-			loaded = readFunction(error);
+			readFunction(function, error);
 		}
 	}
-	return loaded;
 }
 
-TFSimpleFunction TFXmlSimpleReader::readFunction(bool &error){
+void TFXmlSimpleReader::readTestData(TFSimpleFunction* function){
+	
+	TFFunctionMapPtr f = function->getFunction();
+	TFSize domain = function->getDomain();
+	for(TFSize i = 0; i < domain; ++i)
+	{
+		(*f)[i] = (i/4)/1000.0;
+	}
+}
+
+void TFXmlSimpleReader::readFunction(TFSimpleFunction* function, bool &error){
 
 	if(convert<std::string, TFType>(attributes().value("type").toString().toStdString()) != TFTYPE_SIMPLE)
 	{
 		error = true;
-		return TFSimpleFunction();
 	}
 
-	TFSimpleFunction loaded( attributes().value("name").toString().toStdString(),
-		convert<std::string, int>(attributes().value("functionRange").toString().toStdString()),
-		convert<std::string, int>(attributes().value("colorRange").toString().toStdString()) );
+	TFSize domain = convert<std::string, TFSize>(attributes().value("domain").toString().toStdString());
+	function = new TFSimpleFunction(domain);
 
+	TFFunctionMapPtr points = function->getFunction();
+	TFSize counter = 0;
 	while (!atEnd())
 	{
 		readNext();
@@ -49,10 +58,16 @@ TFSimpleFunction TFXmlSimpleReader::readFunction(bool &error){
 			break;
 		}
 
-		if (isStartElement() && (name() == "TFPoint"))
+		if (isStartElement() && (name() == "TFPointSimple"))
 		{
-			TFPoint point = readPoint(error);
-			loaded.addPoint(point);
+			if(counter > domain)
+			{
+				error = true;
+				break;
+			}
+
+			(*points)[counter] = readPoint(error);
+			++counter;
 
 			if(error)
 			{
@@ -60,14 +75,11 @@ TFSimpleFunction TFXmlSimpleReader::readFunction(bool &error){
 			}
 		}
 	}
-	return loaded;
 }
 
-TFPoint TFXmlSimpleReader::readPoint(bool &error){
+float TFXmlSimpleReader::readPoint(bool &error){
 
-	TFPoint loaded(
-		convert<std::string,int>( attributes().value("x").toString().toStdString() ),
-		convert<std::string,int>( attributes().value("y").toString().toStdString() ) );
+	float loaded = convert<std::string,float>( attributes().value("point").toString().toStdString() );
 
 	while (!atEnd())
 	{
@@ -81,3 +93,6 @@ TFPoint TFXmlSimpleReader::readPoint(bool &error){
 	error = atEnd();
 	return loaded;
 }
+
+} // namespace GUI
+} // namespace M4D

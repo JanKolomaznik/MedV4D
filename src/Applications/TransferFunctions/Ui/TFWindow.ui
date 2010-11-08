@@ -29,67 +29,6 @@
    <iconset>
     <normaloff>../../../GUI/icons/app.png</normaloff>../../../GUI/icons/app.png</iconset>
   </property>
-  <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>580</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>File</string>
-    </property>
-    <widget class="QMenu" name="menuNew">
-     <property name="title">
-      <string>New</string>
-     </property>
-    </widget>
-    <addaction name="menuNew"/>
-    <addaction name="load"/>
-    <addaction name="save"/>
-    <addaction name="separator"/>
-    <addaction name="exit"/>
-   </widget>
-   <widget class="QMenu" name="menuHistTest">
-    <property name="title">
-     <string>View</string>
-    </property>
-    <addaction name="actionTest"/>
-   </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuHistTest"/>
-  </widget>
-  <action name="load">
-   <property name="text">
-    <string>Load</string>
-   </property>
-  </action>
-  <action name="save">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Save</string>
-   </property>
-  </action>
-  <action name="exit">
-   <property name="text">
-    <string>Exit</string>
-   </property>
-  </action>
-  <action name="simple">
-   <property name="text">
-    <string>Simple</string>
-   </property>
-  </action>
-  <action name="actionTest">
-   <property name="text">
-    <string>Histogram</string>
-   </property>
-  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

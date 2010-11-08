@@ -1,18 +1,23 @@
 #include<TFHolderFactory.h>
 
+namespace M4D {
+namespace GUI {
 
-TFActions TFHolderFactory::createMenuTFActions(QMenu *menu){
+TFActions TFHolderFactory::createMenuTFActions(QWidget *parent){
 
 	TFActions actions;
 
-	//adding transferfunction types to menu
-	actions.push_back(new TFAction(menu, TFTYPE_SIMPLE));	
+	//adds transferfunction types to menu
+	actions.push_back(new TFAction(parent, TFTYPE_SIMPLE));
+	actions.push_back(new TFAction(parent, TFTYPE_GRAYSCALE_TRANSPARENCY));
+	actions.push_back(new TFAction(parent, TFTYPE_RGB));
+	actions.push_back(new TFAction(parent, TFTYPE_RGBA));
 	//actions.push_back(new TFAction(menu, TFTYPE_MYTYPE));
 
 	return actions;
 }
 
-TFAbstractHolder* TFHolderFactory::createHolder(TFWindowI* window, TFType &holderType){
+TFAbstractHolder* TFHolderFactory::createHolder(QWidget* window, const TFType holderType){
 
 	switch(holderType)
 	{
@@ -20,17 +25,29 @@ TFAbstractHolder* TFHolderFactory::createHolder(TFWindowI* window, TFType &holde
 		{
 			return new TFSimpleHolder(window);
 		}
+		case TFTYPE_GRAYSCALE_TRANSPARENCY:
+		{
+			return new TFGrayscaleTransparencyHolder(window);
+		}
+		case TFTYPE_RGB:
+		{
+			return new TFRGBHolder(window);
+		}
+		case TFTYPE_RGBA:
+		{
+			return new TFRGBaHolder(window);
+		}
 		case TFTYPE_UNKNOWN:
 		default:
 		{
-			assert("unknown holder");
+			tfAssert("unknown holder");
 			break;
 		}
 	}
 	return NULL;
 }
 
-TFAbstractHolder* TFHolderFactory::loadHolder(TFWindowI* window){
+TFAbstractHolder* TFHolderFactory::loadHolder(QWidget* window){
 	
 	QString fileName = QFileDialog::getOpenFileName(
 		window,
@@ -92,3 +109,6 @@ TFType TFHolderFactory::TFTypeSwitcher::read(QIODevice* device){
 	}
 	return TFTYPE_UNKNOWN;
 }
+
+} // namespace GUI
+} // namespace M4D

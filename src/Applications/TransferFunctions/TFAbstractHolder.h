@@ -11,21 +11,13 @@
 #include <QtCore/QString>
 
 #include <TFTypes.h>
-#include <TFAbstractFunction.h>
+#include <TFSimpleFunction.h>
+#include <TFGrayscaleTransparencyFunction.h>
+#include <TFRGBFunction.h>
+#include <TFRGBaFunction.h>
 
-class TFWindowI: public QWidget{
-public:
-	virtual void modifyData(TFAbstractFunction &transferFunction) = 0;
-	virtual void getHistogram() = 0;
-protected:
-	TFWindowI(){}
-	~TFWindowI(){}
-};
-
-namespace Ui{
-
-    class TFAbstractHolder;
-}
+namespace M4D {
+namespace GUI {
 
 class TFAbstractHolder : public QWidget{
 
@@ -34,61 +26,76 @@ class TFAbstractHolder : public QWidget{
 	friend class TFHolderFactory;
 
 public:
-	virtual ~TFAbstractHolder(){}
 
-	virtual void save(){
+	virtual ~TFAbstractHolder();
 
-		QString fileName = QFileDialog::getSaveFileName(this,
-			tr("Save Transfer Function"),
-			QDir::currentPath(),
-			tr("TF Files (*.tf)"));
-
-		if (fileName.isEmpty()) return;
-
-		QFile file(fileName);
-		if (!file.open(QFile::WriteOnly | QFile::Text))
-		{
-			QMessageBox::warning(this, tr("Transfer Functions"),
-				tr("Cannot write file %1:\n%2.")
-				.arg(fileName)
-				.arg(file.errorString()));
-			return;
-		}
-
-		save_(file);
-
-		file.close();
-	}
+	virtual void save();
 
 	virtual void setUp(QWidget *parent, const QRect rect) = 0;
 
-	TFType getType() const{
-		return type_;
+	TFType getType() const;
+	
+	template<typename ElementIterator>
+	bool applyTransferFunction(
+		ElementIterator begin,
+		ElementIterator end){
+
+		TFAbstractFunction* transferFunction = getFunction_();
+		updateFunction_();
+		switch(transferFunction->getType()){
+			case TFTYPE_SIMPLE:
+			{
+				TFSimpleFunction* simpleFunction = dynamic_cast<TFSimpleFunction*>(transferFunction);
+				return simpleFunction->apply<ElementIterator>(begin, end);
+			}
+			case TFTYPE_GRAYSCALE_TRANSPARENCY:
+			{
+				TFGrayscaleTransparencyFunction* grayTransFunction = dynamic_cast<TFGrayscaleTransparencyFunction*>(transferFunction);
+				return grayTransFunction->apply<ElementIterator>(begin, end);
+			}
+			case TFTYPE_RGB:
+			{
+				TFRGBFunction* rgbFunction = dynamic_cast<TFRGBFunction*>(transferFunction);
+				return rgbFunction->apply<ElementIterator>(begin, end);
+			}
+			case TFTYPE_RGBA:
+			{
+				TFRGBaFunction* rgbaFunction = dynamic_cast<TFRGBaFunction*>(transferFunction);
+				return rgbaFunction->apply<ElementIterator>(begin, end);
+			}
+			case TFTYPE_UNKNOWN:
+			default:
+			{
+				tfAssert("Unknown Transfer Function");
+				break;
+			}
+		}
+		return false;
 	}
 
-	virtual void receiveHistogram(const TFHistogram& histogram){};
+	//virtual void receiveHistogram(const TFHistogram& histogram){};
 
 protected slots:
-    virtual void on_use_clicked() = 0;
 	virtual void size_changed(const QRect rect) = 0;
-	virtual void on_autoUpdate_stateChanged(int state) = 0;
 
 protected:
 	TFType type_;
 	Ui::TFAbstractHolder* basicTools_;
-	TFWindowI* window_;
 	bool setup_;
 
 	virtual bool load_(QFile &file) = 0;
 	virtual void save_(QFile &file) = 0;
 
-	TFAbstractHolder():
-		type_(TFTYPE_UNKNOWN),
-		basicTools_(new Ui::TFAbstractHolder),
-		window_(NULL),
-		setup_(false){
+	virtual void updateFunction_() = 0;
 
-		basicTools_->setupUi(this);
-	}
+	virtual TFAbstractFunction* getFunction_() = 0;
+
+	void calculate_(const TFFunctionMapPtr input, TFFunctionMapPtr output);
+
+	TFAbstractHolder();
 };
+
+} // namespace GUI
+} // namespace M4D
+
 #endif //TF_ABSTRACTHOLDER

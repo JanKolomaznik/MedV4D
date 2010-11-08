@@ -7,12 +7,12 @@
 
 #include <TFTypes.h>
 
+namespace M4D {
+namespace GUI {
 
 class TFAbstractFunction{
 
 public:
-	TFName name;
-
 	TFType getType() const{
 		return type_;
 	}
@@ -26,5 +26,8 @@ protected:
 
 	TFAbstractFunction(): type_(TFTYPE_UNKNOWN){};
 };
+
+} // namespace GUI
+} // namespace M4D
 
 #endif //TF_ABSTRACTFUNCTION
