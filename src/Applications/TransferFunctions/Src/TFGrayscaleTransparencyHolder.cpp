@@ -25,14 +25,14 @@ void TFGrayscaleTransparencyHolder::save_(QFile &file){	//TODO
 	/*
 	updateFunction_();
 
-	 TFXmlSimpleWriter writer;
+	 TFGrayscaleXmlWriter writer;
      writer.write(&file, function_);*/
 	 //writer.writeTestData(&file);	//testing
 }
 
 bool TFGrayscaleTransparencyHolder::load_(QFile &file){	//TODO
 	/*
-	TFXmlSimpleReader reader;
+	TFGrayscaleXmlREADER reader;
 
 	bool error = false;
 
@@ -57,17 +57,10 @@ void TFGrayscaleTransparencyHolder::updateFunction_(){
 	calculate_(painter_.getTransparencyView(), function_.getTransparencyFunction());
 }
 
-void TFGrayscaleTransparencyHolder::size_changed(const QRect rect){
+void TFGrayscaleTransparencyHolder::updatePainter_(const QRect& rect){
+
+	painter_.resize(rect);
 	
-	setGeometry(rect);
-
-	int newWidth = rect.width() - 2*PAINTER_X;
-	int newHeight = rect.height() - 2*PAINTER_Y;
-
-	updateFunction_();
-
-	painter_.resize(QRect(PAINTER_X, PAINTER_Y, newWidth, newHeight));
-
 	calculate_(function_.getGrayscaleFunction(), painter_.getGrayscaleView());
 	calculate_(function_.getTransparencyFunction(), painter_.getTransparencyView());
 }

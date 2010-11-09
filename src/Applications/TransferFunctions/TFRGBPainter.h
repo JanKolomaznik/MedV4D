@@ -38,8 +38,6 @@ private:
 		ACTIVE_BLUE
 	};
 
-	Ui::TFSimplePainter* painter_;
-
 	ActiveView activeView_;
 	TFFunctionMapPtr redView_, greenView_, blueView_;
 

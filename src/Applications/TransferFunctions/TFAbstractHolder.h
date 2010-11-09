@@ -11,13 +11,17 @@
 #include <QtCore/QString>
 
 #include <TFTypes.h>
-#include <TFSimpleFunction.h>
+#include <TFGrayscaleFunction.h>
 #include <TFGrayscaleTransparencyFunction.h>
 #include <TFRGBFunction.h>
 #include <TFRGBaFunction.h>
 
 namespace M4D {
 namespace GUI {
+
+#define PAINTER_X 25
+#define PAINTER_Y 25
+#define PAINTER_MARGIN 5
 
 class TFAbstractHolder : public QWidget{
 
@@ -43,10 +47,10 @@ public:
 		TFAbstractFunction* transferFunction = getFunction_();
 		updateFunction_();
 		switch(transferFunction->getType()){
-			case TFTYPE_SIMPLE:
+			case TFTYPE_GRAYSCALE:
 			{
-				TFSimpleFunction* simpleFunction = dynamic_cast<TFSimpleFunction*>(transferFunction);
-				return simpleFunction->apply<ElementIterator>(begin, end);
+				TFGrayscaleFunction* grayscaleFunction = dynamic_cast<TFGrayscaleFunction*>(transferFunction);
+				return grayscaleFunction->apply<ElementIterator>(begin, end);
 			}
 			case TFTYPE_GRAYSCALE_TRANSPARENCY:
 			{
@@ -73,10 +77,8 @@ public:
 		return false;
 	}
 
-	//virtual void receiveHistogram(const TFHistogram& histogram){};
-
 protected slots:
-	virtual void size_changed(const QRect rect) = 0;
+	void size_changed(const QRect rect);
 
 protected:
 	TFType type_;
@@ -87,6 +89,7 @@ protected:
 	virtual void save_(QFile &file) = 0;
 
 	virtual void updateFunction_() = 0;
+	virtual void updatePainter_(const QRect& rect) = 0;
 
 	virtual TFAbstractFunction* getFunction_() = 0;
 

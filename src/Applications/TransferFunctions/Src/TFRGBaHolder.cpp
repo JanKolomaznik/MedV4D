@@ -23,14 +23,14 @@ void TFRGBaHolder::save_(QFile &file){	//TODO
 	/*
 	updateFunction_();
 
-	 TFXmlSimpleWriter writer;
+	 TFGrayscaleXmlWriter writer;
      writer.write(&file, function_);*/
 	 //writer.writeTestData(&file);	//testing
 }
 
 bool TFRGBaHolder::load_(QFile &file){	//TODO
 	/*
-	TFXmlSimpleReader reader;
+	TFGrayscaleXmlREADER reader;
 
 	bool error = false;
 
@@ -57,16 +57,9 @@ void TFRGBaHolder::updateFunction_(){
 	calculate_(painter_.getTransparencyView(), function_.getTransparencyFunction());
 }
 
-void TFRGBaHolder::size_changed(const QRect rect){
-	
-	setGeometry(rect);
+void TFRGBaHolder::updatePainter_(const QRect& rect){
 
-	int newWidth = rect.width() - 2*PAINTER_X;
-	int newHeight = rect.height() - 2*PAINTER_Y;
-
-	updateFunction_();
-
-	painter_.resize(QRect(PAINTER_X, PAINTER_Y, newWidth, newHeight));
+	painter_.resize(rect);
 
 	calculate_(function_.getRedFunction(), painter_.getRedView());
 	calculate_(function_.getGreenFunction(), painter_.getGreenView());

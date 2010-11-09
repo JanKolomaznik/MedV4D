@@ -13,7 +13,7 @@ TFWindow::~TFWindow(){
 
 void TFWindow::setupDefault(){
 	
-	holder_ = TFHolderFactory::createHolder(this, TFTYPE_SIMPLE);
+	holder_ = TFHolderFactory::createHolder(this, TFTYPE_GRAYSCALE);
 
 	if(!holder_){
 		QMessageBox::warning(this, QObject::tr("Transfer Functions"), QObject::tr("Creating error."));
@@ -27,8 +27,6 @@ void TFWindow::setupDefault(){
 void TFWindow::setupHolder(){
 
 	holder_->setUp(this, QRect(0, 0, width(), height()));
-	
-	QObject::connect( holder_, SIGNAL(UseTransferFunction(TFAbstractFunction&)), this, SLOT(modify_data(TFAbstractFunction&)));
 	
 	QObject::connect( this, SIGNAL(ResizeHolder(const QRect)), holder_, SLOT(size_changed(const QRect)));
 }
@@ -129,17 +127,6 @@ void TFWindow::newTF_triggered(TFType &tfType){
 	actionSave_->setEnabled(true);
 	setupHolder();
 }
-
-void TFWindow::on_menuHistogram_triggered(){
-
-}
-
-/*
-void TFWindow::receive_histogram(const TFHistogram& histogram){
-	
-	holder_->receiveHistogram(histogram);
-}
-*/
 
 } // namespace GUI
 } // namespace M4D

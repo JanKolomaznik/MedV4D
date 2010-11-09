@@ -6,8 +6,8 @@
 #include <TFAbstractHolder.h>
 #include <TFGrayscaleTransparencyFunction.h>
 #include <TFGrayscaleTransparencyPainter.h>
-//#include <TFXmlSimpleReader.h>
-//#include <TFXmlSimpleWriter.h>
+//#include <TFGrayscaleXmlREADER.h>
+//#include <TFGrayscaleXmlWriter.h>
 
 #include <string>
 #include <map>
@@ -15,10 +15,6 @@
 
 namespace M4D {
 namespace GUI {
-
-#define PAINTER_X 25
-#define PAINTER_Y 25
-#define PAINTER_MARGIN 5
 
 class TFGrayscaleTransparencyHolder: public TFAbstractHolder{
 
@@ -28,13 +24,12 @@ public:
 
 	void setUp(QWidget *parent, const QRect rect);
 
-protected slots:
-	void size_changed(const QRect rect);
-
 protected:
 	void save_(QFile &file);
 	bool load_(QFile &file);
+
 	void updateFunction_();
+	void updatePainter_(const QRect& rect);
 
 	TFAbstractFunction* getFunction_();
 

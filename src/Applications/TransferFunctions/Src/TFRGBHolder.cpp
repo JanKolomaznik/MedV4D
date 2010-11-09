@@ -23,14 +23,14 @@ void TFRGBHolder::save_(QFile &file){	//TODO
 	/*
 	updateFunction_();
 
-	 TFXmlSimpleWriter writer;
+	 TFGrayscaleXmlWriter writer;
      writer.write(&file, function_);*/
 	 //writer.writeTestData(&file);	//testing
 }
 
 bool TFRGBHolder::load_(QFile &file){	//TODO
 	/*
-	TFXmlSimpleReader reader;
+	TFGrayscaleXmlREADER reader;
 
 	bool error = false;
 
@@ -56,17 +56,10 @@ void TFRGBHolder::updateFunction_(){
 	calculate_(painter_.getBlueView(), function_.getBlueFunction());
 }
 
-void TFRGBHolder::size_changed(const QRect rect){
+void TFRGBHolder::updatePainter_(const QRect& rect){
+
+	painter_.resize(rect);
 	
-	setGeometry(rect);
-
-	int newWidth = rect.width() - 2*PAINTER_X;
-	int newHeight = rect.height() - 2*PAINTER_Y;
-
-	updateFunction_();
-
-	painter_.resize(QRect(PAINTER_X, PAINTER_Y, newWidth, newHeight));
-
 	calculate_(function_.getRedFunction(), painter_.getRedView());
 	calculate_(function_.getGreenFunction(), painter_.getGreenView());
 	calculate_(function_.getBlueFunction(), painter_.getBlueView());

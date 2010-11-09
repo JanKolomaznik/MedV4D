@@ -15,10 +15,12 @@ namespace GUI {
 
 enum TFType{
 	TFTYPE_UNKNOWN,
-	TFTYPE_SIMPLE,
+	TFTYPE_GRAYSCALE,
 	TFTYPE_GRAYSCALE_TRANSPARENCY,
 	TFTYPE_RGB,
-	TFTYPE_RGBA
+	TFTYPE_RGBA,
+	TFTYPE_HSV,
+	TFTYPE_HSVA
 };
 
 template<typename From, typename To>
@@ -38,9 +40,9 @@ template<>
 static std::string convert<TFType, std::string>(const TFType &tfType){
 
 	switch(tfType){
-		case TFTYPE_SIMPLE:
+		case TFTYPE_GRAYSCALE:
 		{
-			return "Simple";
+			return "Grayscale";
 		}
 		case TFTYPE_GRAYSCALE_TRANSPARENCY:
 		{
@@ -54,6 +56,14 @@ static std::string convert<TFType, std::string>(const TFType &tfType){
 		{
 			return "RGBa";
 		}
+		case TFTYPE_HSV:
+		{
+			return "HSV";
+		}
+		case TFTYPE_HSVA:
+		{
+			return "HSVa";
+		}
 	}
 	return "Unknown";
 }
@@ -61,8 +71,8 @@ static std::string convert<TFType, std::string>(const TFType &tfType){
 template<>
 static TFType convert<std::string, TFType>(const std::string &tfType){
 
-	if(tfType == "Simple"){
-		return TFTYPE_SIMPLE;
+	if(tfType == "Grayscale"){
+		return TFTYPE_GRAYSCALE;
 	}
 	if(tfType == "Grayscale-transparency"){
 		return TFTYPE_GRAYSCALE_TRANSPARENCY;
@@ -72,6 +82,12 @@ static TFType convert<std::string, TFType>(const std::string &tfType){
 	}
 	if(tfType == "RGBa"){
 		return TFTYPE_RGBA;
+	}
+	if(tfType == "HSV"){
+		return TFTYPE_HSV;
+	}
+	if(tfType == "HSVa"){
+		return TFTYPE_HSVA;
 	}
 	return TFTYPE_UNKNOWN;
 }

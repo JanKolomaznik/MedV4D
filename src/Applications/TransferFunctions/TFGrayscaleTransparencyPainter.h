@@ -36,8 +36,6 @@ private:
 		ACTIVE_TRANSPARENCY
 	};
 
-	Ui::TFSimplePainter* painter_;
-
 	ActiveView activeView_;
 	TFFunctionMapPtr grayView_, transparencyView_;
 

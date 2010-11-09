@@ -43,16 +43,11 @@ public:
 signals:
 	void ResizeHolder(const QRect rect);
 
-public slots:
-	//void receive_histogram(const TFHistogram& histogram);
-
 protected slots:
     void on_exit_triggered();
     void on_save_triggered();
     void on_load_triggered();
 	void newTF_triggered(TFType &tfType);
-
-	void on_menuHistogram_triggered();
 
 protected:
 	void resizeEvent(QResizeEvent* e);

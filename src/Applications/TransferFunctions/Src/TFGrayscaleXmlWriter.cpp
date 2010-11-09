@@ -1,13 +1,13 @@
-#include "TFXmlSimpleWriter.h"
+#include "TFGrayscaleXmlWriter.h"
 
 namespace M4D {
 namespace GUI {
 
-TFXmlSimpleWriter::TFXmlSimpleWriter(){
+TFGrayscaleXmlWriter::TFGrayscaleXmlWriter(){
 	setAutoFormatting(true);
 }
 
-void TFXmlSimpleWriter::write(QIODevice *device, TFSimpleFunction &data){
+void TFGrayscaleXmlWriter::write(QIODevice *device, TFGrayscaleFunction &data){
 
 	setDevice(device);
 
@@ -19,8 +19,8 @@ void TFXmlSimpleWriter::write(QIODevice *device, TFSimpleFunction &data){
 	writeEndDocument();
 }
 
-void TFXmlSimpleWriter::writeTestData(QIODevice *device){
-	TFSimpleFunction data;
+void TFGrayscaleXmlWriter::writeTestData(QIODevice *device){
+	TFGrayscaleFunction data;
 	TFFunctionMapPtr f = data.getFunction();
 	TFSize domain = data.getDomain();
 	for(TFSize i = 0; i < domain; ++i)
@@ -30,7 +30,7 @@ void TFXmlSimpleWriter::writeTestData(QIODevice *device){
 	write(device, data);
 }
 
-void TFXmlSimpleWriter::writeFunction(TFSimpleFunction &function){
+void TFGrayscaleXmlWriter::writeFunction(TFGrayscaleFunction &function){
 
 	writeStartElement("TransferFunction");
 	writeAttribute("type", QString::fromStdString(convert<TFType, std::string>(function.getType())));
@@ -47,9 +47,9 @@ void TFXmlSimpleWriter::writeFunction(TFSimpleFunction &function){
 	writeEndElement();
 }
 
-void TFXmlSimpleWriter::writePoint(float point){
+void TFGrayscaleXmlWriter::writePoint(float point){
 
-	writeStartElement("TFPointSimple");
+	writeStartElement("TFPaintingPoint");
 	writeAttribute("point", QString::fromStdString( convert<float, std::string>(point)) );
 
 	writeEndElement();

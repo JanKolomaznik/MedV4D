@@ -43,6 +43,19 @@ TFType TFAbstractHolder::getType() const{
 	return type_;
 }
 
+void TFAbstractHolder::size_changed(const QRect rect){
+	
+	setGeometry(rect);
+
+	updateFunction_();	
+
+	int newWidth = rect.width() - 2*PAINTER_X;
+	int newHeight = rect.height() - 2*PAINTER_Y;
+	QRect newRect(PAINTER_X, PAINTER_Y, newWidth, newHeight);
+
+	updatePainter_(newRect);
+}
+
 void TFAbstractHolder::calculate_(const TFFunctionMapPtr input, TFFunctionMapPtr output){
 
 	if(!(input && output)) tfAbort("calculation error");

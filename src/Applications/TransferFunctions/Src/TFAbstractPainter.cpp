@@ -4,7 +4,7 @@ namespace M4D {
 namespace GUI {
 
 TFAbstractPainter::TFAbstractPainter():
-	painter_(new Ui::TFSimplePainter),
+	painter_(new Ui::TFAbstractPainter),
 	drawHelper_(NULL),
 	margin_(5){
 
@@ -37,7 +37,7 @@ TFPaintingPoint TFAbstractPainter::correctCoords(const TFPaintingPoint &point){
 TFPaintingPoint TFAbstractPainter::correctCoords(int x, int y){
 
 	int xMax = paintAreaWidth - 1;
-	int yMax = paintAreaHeight - 1;
+	int yMax = paintAreaHeight;
 	
 	TFPaintingPoint corrected = TFPaintingPoint(x - margin_, margin_ + yMax - y);
 

@@ -1,5 +1,5 @@
-#ifndef TF_SIMPLEFUNCTION
-#define TF_SIMPLEFUNCTION
+#ifndef TF_GRAYSCALE_FUNCTION
+#define TF_GRAYSCALE_FUNCTION
 
 #include <map>
 #include <vector>
@@ -14,16 +14,16 @@
 namespace M4D {
 namespace GUI {
 
-class TFSimpleFunction: public TFAbstractFunction{
+class TFGrayscaleFunction: public TFAbstractFunction{
 
 public:
 
-	TFSimpleFunction(TFSize domain = 4096);
-	TFSimpleFunction(TFSimpleFunction &function);
+	TFGrayscaleFunction(TFSize domain = 4096);
+	TFGrayscaleFunction(TFGrayscaleFunction &function);
 
-	~TFSimpleFunction();
+	~TFGrayscaleFunction();
 
-	void operator=(TFSimpleFunction &function);
+	void operator=(TFGrayscaleFunction &function);
 	TFAbstractFunction* clone();
 
 	void setPoint(TFSize point, float value);
@@ -73,4 +73,4 @@ private:
 } // namespace GUI
 } // namespace M4D
 
-#endif //TF_SIMPLEFUNCTION
+#endif //TF_GRAYSCALE_FUNCTION

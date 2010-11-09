@@ -1,24 +1,24 @@
-#include "TFSimpleFunction.h"
+#include "TFGrayscaleFunction.h"
 
 namespace M4D {
 namespace GUI {
 
-TFSimpleFunction::TFSimpleFunction(TFSize domain){
+TFGrayscaleFunction::TFGrayscaleFunction(TFSize domain){
 
-	type_ = TFTYPE_SIMPLE;
+	type_ = TFTYPE_GRAYSCALE;
 	points_ = TFFunctionMapPtr(new TFFunctionMap(domain));
 	clear();
 }
 
-TFSimpleFunction::TFSimpleFunction(TFSimpleFunction &function){
+TFGrayscaleFunction::TFGrayscaleFunction(TFGrayscaleFunction &function){
 
 	operator=(function);
 }
 
-TFSimpleFunction::~TFSimpleFunction(){
+TFGrayscaleFunction::~TFGrayscaleFunction(){
 }
 
-void TFSimpleFunction::operator=(TFSimpleFunction &function){
+void TFGrayscaleFunction::operator=(TFGrayscaleFunction &function){
 
 	type_ = function.getType();
 	const TFFunctionMapPtr points = function.getFunction();
@@ -32,12 +32,12 @@ void TFSimpleFunction::operator=(TFSimpleFunction &function){
 	}
 }
 
-TFAbstractFunction* TFSimpleFunction::clone(){
+TFAbstractFunction* TFGrayscaleFunction::clone(){
 
-	return new TFSimpleFunction(*this);
+	return new TFGrayscaleFunction(*this);
 }
 
-void TFSimpleFunction::clear(){
+void TFGrayscaleFunction::clear(){
 
 	TFFunctionMapIt begin = points_->begin();
 	TFFunctionMapIt end = points_->end();
@@ -47,29 +47,29 @@ void TFSimpleFunction::clear(){
 	}
 }
 
-void TFSimpleFunction::setPoint(TFSize point, float value){
+void TFGrayscaleFunction::setPoint(TFSize point, float value){
 
 	if(point > points_->size()) tfAbort("point out of range");
 	(*points_)[point] = value;
 }
 
-void TFSimpleFunction::setFunction(TFFunctionMapPtr function){
+void TFGrayscaleFunction::setFunction(TFFunctionMapPtr function){
 
 	tfAssert(function->size() == points_->size());
 	points_ = function;
 }
 /*
-void TFSimpleFunction::setPoints(TFFunctionMap points){
+void TFGrayscaleFunction::setPoints(TFFunctionMap points){
 
 	points_ = points;
 }
-float TFSimpleFunction::getPoint(TFSize point){
+float TFGrayscaleFunction::getPoint(TFSize point){
 
 	return TFPointSimple(point, points_[point]);
 }
 
 
-TFPointsSimple TFSimpleFunction::getAllPoints(){
+TFPointsSimple TFGrayscaleFunction::getAllPoints(){
 
 	TFPointsSimple points;
 
@@ -81,17 +81,17 @@ TFPointsSimple TFSimpleFunction::getAllPoints(){
 	return points;
 }
 */
-TFFunctionMapPtr TFSimpleFunction::getFunction(){
+TFFunctionMapPtr TFGrayscaleFunction::getFunction(){
 
 	return points_;
 }
 
-TFSize TFSimpleFunction::getDomain(){
+TFSize TFGrayscaleFunction::getDomain(){
 
 	return points_->size();
 }
 /*
-void TFSimpleFunction::recalculate(unsigned functionRange, unsigned colorRange){	//TODO
+void TFGrayscaleFunction::recalculate(unsigned functionRange, unsigned colorRange){	//TODO
 
 	TFFunctionMap newPoints(functionRange);
 	apply<TFPointMapIterator>(newPoints.begin(), newPoints.end(), colorRange);

@@ -1,13 +1,13 @@
-#ifndef TF_RGB_HOLDER
-#define TF_RGB_HOLDER
+#ifndef TF_GRAYSCALE_HOLDER
+#define TF_GRAYSCALE_HOLDER
 
 #include "common/Types.h"
 
 #include <TFAbstractHolder.h>
-#include <TFRGBFunction.h>
-#include <TFRGBPainter.h>
-//#include <TFGrayscaleXmlREADER.h>
-//#include <TFGrayscaleXmlWriter.h>
+#include <TFGrayscaleFunction.h>
+#include <TFGrayscalePainter.h>
+#include <TFGrayscaleXmlREADER.h>
+#include <TFGrayscaleXmlWriter.h>
 
 #include <string>
 #include <map>
@@ -16,11 +16,11 @@
 namespace M4D {
 namespace GUI {
 
-class TFRGBHolder: public TFAbstractHolder{
+class TFGrayscaleHolder: public TFAbstractHolder{
 
 public:
-	TFRGBHolder(QWidget* window);
-	~TFRGBHolder();
+	TFGrayscaleHolder(QWidget* window);
+	~TFGrayscaleHolder();
 
 	void setUp(QWidget *parent, const QRect rect);
 
@@ -34,11 +34,11 @@ protected:
 	TFAbstractFunction* getFunction_();
 
 private:
-	TFRGBFunction function_;
-	TFRGBPainter painter_;
+	TFGrayscaleFunction function_;
+	TFGrayscalePainter painter_;
 };
 
 } // namespace GUI
 } // namespace M4D
 
-#endif //TF_RGB_HOLDER
+#endif //TF_GRAYSCALE_HOLDER

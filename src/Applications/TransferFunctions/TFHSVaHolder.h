@@ -1,5 +1,5 @@
-#ifndef TF_RGBA_HOLDER
-#define TF_RGBA_HOLDER
+#ifndef TF_HSVA_HOLDER
+#define TF_HSVA_HOLDER
 
 #include "common/Types.h"
 
@@ -16,11 +16,11 @@
 namespace M4D {
 namespace GUI {
 
-class TFRGBaHolder: public TFAbstractHolder{
+class TFHSVaHolder: public TFAbstractHolder{
 
 public:
-	TFRGBaHolder(QWidget* window);
-	~TFRGBaHolder();
+	TFHSVaHolder(QWidget* window);
+	~TFHSVaHolder();
 
 	void setUp(QWidget *parent, const QRect rect);
 
@@ -34,11 +34,25 @@ protected:
 	TFAbstractFunction* getFunction_();
 
 private:
+
+	enum ConversionType{
+		CONVERT_HSV_TO_RGB,
+		CONVERT_RGB_TO_HSV
+	};
+
 	TFRGBaFunction function_;
 	TFRGBaPainter painter_;
+
+	void convert_(const TFFunctionMapPtr sourceComponent1,
+				  const TFFunctionMapPtr sourceComponent2,
+				  const TFFunctionMapPtr sourceComponent3,
+				  TFFunctionMapPtr outcomeComponent1,
+				  TFFunctionMapPtr outcomeComponent2,
+				  TFFunctionMapPtr outcomeComponent3,
+				  ConversionType type);
 };
 
 } // namespace GUI
 } // namespace M4D
 
-#endif //TF_RGBA_HOLDER
+#endif //TF_HSVA_HOLDER

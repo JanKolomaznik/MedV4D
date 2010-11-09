@@ -1,17 +1,17 @@
-#ifndef TF_SIMPLEPAINTER
-#define TF_SIMPLEPAINTER
+#ifndef TF_GRAYSCALE_PAINTER
+#define TF_GRAYSCALE_PAINTER
 
 #include <TFAbstractPainter.h>
 
 namespace M4D {
 namespace GUI {
 
-class TFSimplePainter: public TFAbstractPainter{
+class TFGrayscalePainter: public TFAbstractPainter{
 
 public:
-	TFSimplePainter();
+	TFGrayscalePainter();
 
-	~TFSimplePainter();
+	~TFGrayscalePainter();
 
 	void setUp(QWidget *parent);
 	void setUp(QWidget *parent, int margin);
@@ -40,4 +40,4 @@ private:
 } // namespace GUI
 } // namespace M4D
 
-#endif //TF_SIMPLEPAINTER
+#endif //TF_GRAYSCALE_PAINTER

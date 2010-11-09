@@ -1,5 +1,12 @@
 #include<TFHolderFactory.h>
 
+#include <TFGrayscaleHolder.h>
+#include <TFGrayscaleTransparencyHolder.h>
+#include <TFRGBHolder.h>
+#include <TFRGBaHolder.h>
+#include <TFHSVHolder.h>
+#include <TFHSVaHolder.h>
+
 namespace M4D {
 namespace GUI {
 
@@ -8,10 +15,12 @@ TFActions TFHolderFactory::createMenuTFActions(QWidget *parent){
 	TFActions actions;
 
 	//adds transferfunction types to menu
-	actions.push_back(new TFAction(parent, TFTYPE_SIMPLE));
+	actions.push_back(new TFAction(parent, TFTYPE_GRAYSCALE));
 	actions.push_back(new TFAction(parent, TFTYPE_GRAYSCALE_TRANSPARENCY));
 	actions.push_back(new TFAction(parent, TFTYPE_RGB));
 	actions.push_back(new TFAction(parent, TFTYPE_RGBA));
+	actions.push_back(new TFAction(parent, TFTYPE_HSV));
+	actions.push_back(new TFAction(parent, TFTYPE_HSVA));
 	//actions.push_back(new TFAction(menu, TFTYPE_MYTYPE));
 
 	return actions;
@@ -21,9 +30,9 @@ TFAbstractHolder* TFHolderFactory::createHolder(QWidget* window, const TFType ho
 
 	switch(holderType)
 	{
-		case TFTYPE_SIMPLE:
+		case TFTYPE_GRAYSCALE:
 		{
-			return new TFSimpleHolder(window);
+			return new TFGrayscaleHolder(window);
 		}
 		case TFTYPE_GRAYSCALE_TRANSPARENCY:
 		{
@@ -36,6 +45,14 @@ TFAbstractHolder* TFHolderFactory::createHolder(QWidget* window, const TFType ho
 		case TFTYPE_RGBA:
 		{
 			return new TFRGBaHolder(window);
+		}
+		case TFTYPE_HSV:
+		{
+			return new TFHSVHolder(window);
+		}
+		case TFTYPE_HSVA:
+		{
+			return new TFHSVaHolder(window);
 		}
 		case TFTYPE_UNKNOWN:
 		default:
@@ -80,7 +97,7 @@ TFAbstractHolder* TFHolderFactory::loadHolder(QWidget* window){
 		{ 
 			QMessageBox::warning(
 				window,
-				QObject::tr("TFXmlSimpleReader"),
+				QObject::tr("TFGrayscaleXmlREADER"),
 				QObject::tr("Parse error in file %1").arg(fileName));
 		}
 	}

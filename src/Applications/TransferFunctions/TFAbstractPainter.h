@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include <ui_TFSimplePainter.h>
+#include <ui_TFAbstractPainter.h>
 
 #include <TFTypes.h>
 
@@ -28,7 +28,7 @@ public:
 
 protected:
 
-	Ui::TFSimplePainter* painter_;
+	Ui::TFAbstractPainter* painter_;
 
 	TFSize margin_;
 	TFSize paintAreaWidth, paintAreaHeight;

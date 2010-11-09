@@ -12,10 +12,7 @@
 #include <fstream>
 
 #include <TFAction.h>
-#include <TFSimpleHolder.h>
-#include <TFGrayscaleTransparencyHolder.h>
-#include <TFRGBHolder.h>
-#include <TFRGBaHolder.h>
+#include <TFAbstractHolder.h>
 
 namespace M4D {
 namespace GUI {

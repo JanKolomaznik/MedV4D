@@ -1,23 +1,23 @@
-#include "TFSimplePainter.h"
+#include "TFGrayscalePainter.h"
 
 namespace M4D {
 namespace GUI {
 
-TFSimplePainter::TFSimplePainter():
+TFGrayscalePainter::TFGrayscalePainter():
 	changed_(false){
 
 	view_ = TFFunctionMapPtr(new TFFunctionMap(paintAreaWidth));
 }
 
-TFSimplePainter::~TFSimplePainter(){}
+TFGrayscalePainter::~TFGrayscalePainter(){}
 
-void TFSimplePainter::setUp(QWidget *parent){
+void TFGrayscalePainter::setUp(QWidget *parent){
 
 	setParent(parent);
 	show();
 }
 
-void TFSimplePainter::setUp(QWidget *parent, int margin){
+void TFGrayscalePainter::setUp(QWidget *parent, int margin){
 
 	margin_ = margin;
 	paintAreaWidth = width() - 2*margin_;
@@ -26,23 +26,23 @@ void TFSimplePainter::setUp(QWidget *parent, int margin){
 	setUp(parent);
 }
 
-void TFSimplePainter::resize_(){
+void TFGrayscalePainter::resize_(){
 
 	view_ = TFFunctionMapPtr(new TFFunctionMap(paintAreaWidth));
 }
 
-TFFunctionMapPtr TFSimplePainter::getView(){
+TFFunctionMapPtr TFGrayscalePainter::getView(){
 
 	changed_ = false;
 	return view_;
 }
 
-bool TFSimplePainter::changed(){
+bool TFGrayscalePainter::changed(){
 
 	return changed_;
 }
 
-void TFSimplePainter::paintEvent(QPaintEvent *){
+void TFGrayscalePainter::paintEvent(QPaintEvent *){
 
 	QPainter painter(this);
 	painter.setPen(Qt::white);
@@ -60,19 +60,19 @@ void TFSimplePainter::paintEvent(QPaintEvent *){
 	}
 }
 
-void TFSimplePainter::mousePressEvent(QMouseEvent *e){
+void TFGrayscalePainter::mousePressEvent(QMouseEvent *e){
 
 	drawHelper_ = new TFPaintingPoint(e->pos().x(), e->pos().y());
 	mouseMoveEvent(e);
 }
 
-void TFSimplePainter::mouseReleaseEvent(QMouseEvent *e){
+void TFGrayscalePainter::mouseReleaseEvent(QMouseEvent *e){
 
 	if(drawHelper_) delete drawHelper_;
 	drawHelper_ = NULL;
 }
 
-void TFSimplePainter::mouseMoveEvent(QMouseEvent *e){
+void TFGrayscalePainter::mouseMoveEvent(QMouseEvent *e){
 
 	if(!drawHelper_) return;
 
@@ -95,7 +95,7 @@ void TFSimplePainter::mouseMoveEvent(QMouseEvent *e){
 	if(changed_) repaint(rect());
 }
 
-void TFSimplePainter::addPoint(TFPaintingPoint point){
+void TFGrayscalePainter::addPoint(TFPaintingPoint point){
 
 	float yValue = point.y/(float)paintAreaHeight;
 	(*view_)[point.x] = yValue;

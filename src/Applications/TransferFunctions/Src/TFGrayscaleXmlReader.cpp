@@ -1,13 +1,13 @@
-#include "TFXmlSimpleReader.h"
+#include "TFGrayscaleXmlREADER.h"
 
 namespace M4D {
 namespace GUI {
 
-TFXmlSimpleReader::TFXmlSimpleReader() {}
+TFGrayscaleXmlREADER::TFGrayscaleXmlREADER() {}
 
-TFXmlSimpleReader::~TFXmlSimpleReader(){}
+TFGrayscaleXmlREADER::~TFGrayscaleXmlREADER(){}
 
-void TFXmlSimpleReader::read(QIODevice* device, TFSimpleFunction* function, bool &error){
+void TFGrayscaleXmlREADER::read(QIODevice* device, TFGrayscaleFunction* function, bool &error){
 
 	setDevice(device);
 
@@ -27,7 +27,7 @@ void TFXmlSimpleReader::read(QIODevice* device, TFSimpleFunction* function, bool
 	}
 }
 
-void TFXmlSimpleReader::readTestData(TFSimpleFunction* function){
+void TFGrayscaleXmlREADER::readTestData(TFGrayscaleFunction* function){
 	
 	TFFunctionMapPtr f = function->getFunction();
 	TFSize domain = function->getDomain();
@@ -37,15 +37,15 @@ void TFXmlSimpleReader::readTestData(TFSimpleFunction* function){
 	}
 }
 
-void TFXmlSimpleReader::readFunction(TFSimpleFunction* function, bool &error){
+void TFGrayscaleXmlREADER::readFunction(TFGrayscaleFunction* function, bool &error){
 
-	if(convert<std::string, TFType>(attributes().value("type").toString().toStdString()) != TFTYPE_SIMPLE)
+	if(convert<std::string, TFType>(attributes().value("type").toString().toStdString()) != TFTYPE_GRAYSCALE)
 	{
 		error = true;
 	}
 
 	TFSize domain = convert<std::string, TFSize>(attributes().value("domain").toString().toStdString());
-	function = new TFSimpleFunction(domain);
+	function = new TFGrayscaleFunction(domain);
 
 	TFFunctionMapPtr points = function->getFunction();
 	TFSize counter = 0;
@@ -58,7 +58,7 @@ void TFXmlSimpleReader::readFunction(TFSimpleFunction* function, bool &error){
 			break;
 		}
 
-		if (isStartElement() && (name() == "TFPointSimple"))
+		if (isStartElement() && (name() == "TFPaintingPoint"))
 		{
 			if(counter > domain)
 			{
@@ -77,7 +77,7 @@ void TFXmlSimpleReader::readFunction(TFSimpleFunction* function, bool &error){
 	}
 }
 
-float TFXmlSimpleReader::readPoint(bool &error){
+float TFGrayscaleXmlREADER::readPoint(bool &error){
 
 	float loaded = convert<std::string,float>( attributes().value("point").toString().toStdString() );
 
