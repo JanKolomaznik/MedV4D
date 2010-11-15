@@ -13,7 +13,7 @@ TFWindow::~TFWindow(){
 
 void TFWindow::setupDefault(){
 	
-	holder_ = TFHolderFactory::createHolder(this, TFTYPE_GRAYSCALE);
+	holder_ = TFHolderFactory::createHolder(this, TFHOLDER_GRAYSCALE);
 
 	if(!holder_){
 		QMessageBox::warning(this, QObject::tr("Transfer Functions"), QObject::tr("Creating error."));
@@ -33,7 +33,6 @@ void TFWindow::setupHolder(){
 
 void TFWindow::createMenu(QMenuBar* menubar){
 
-	//menu->setTitle(QString::fromStdString("Transfer Function"));
 	menuTF_ = new QMenu(QString::fromStdString("Transfer Function"), menubar);
 
 	//menu new
@@ -44,7 +43,7 @@ void TFWindow::createMenu(QMenuBar* menubar){
 	TFActionsIt end = tfActions_.end();
 	for(TFActionsIt it = begin; it!=end; ++it)
 	{
-		bool menuActionConnected = QObject::connect( *it, SIGNAL(TFActionClicked(TFType&)), this, SLOT(newTF_triggered(TFType&)));
+		bool menuActionConnected = QObject::connect( *it, SIGNAL(TFActionClicked(TFHolderType&)), this, SLOT(newTF_triggered(TFHolderType&)));
 		tfAssert(menuActionConnected);
 		menuNew_->addAction(*it);
 	}
@@ -108,7 +107,7 @@ void TFWindow::on_load_triggered(){
 	setupHolder();
 }
 
-void TFWindow::newTF_triggered(TFType &tfType){
+void TFWindow::newTF_triggered(TFHolderType &tfType){
 
 	if(holder_)
 	{

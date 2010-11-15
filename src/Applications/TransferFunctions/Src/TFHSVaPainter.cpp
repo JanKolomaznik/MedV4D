@@ -1,29 +1,29 @@
-#include "TFRGBPainter.h"
+#include "TFHSVaPainter.h"
 
 namespace M4D {
 namespace GUI {
 
-TFRGBPainter::TFRGBPainter():
-	activeView_(ACTIVE_RED){}
+TFHSVaPainter::TFHSVaPainter():
+	activeView_(ACTIVE_HUE){}
 
-TFRGBPainter::~TFRGBPainter(){}
+TFHSVaPainter::~TFHSVaPainter(){}
 
-void TFRGBPainter::setUp(QWidget *parent){
+void TFHSVaPainter::setUp(QWidget *parent){
 
 	setParent(parent);
 	show();
 }
 
-void TFRGBPainter::setUp(QWidget *parent, int margin){
+void TFHSVaPainter::setUp(QWidget *parent, int margin){
 
 	setMargin_(margin);
 	setUp(parent);
 }
 
-void TFRGBPainter::paintEvent(QPaintEvent *){
+void TFHSVaPainter::paintEvent(QPaintEvent *){
 
 	QPainter painter(this);
-	paintBackground_(painter);
+	painter.fillRect(rect(), QBrush(Qt::black));
 
 	int beginX = margin_;
 	int beginY = height() - margin_;
@@ -31,40 +31,49 @@ void TFRGBPainter::paintEvent(QPaintEvent *){
 
 	for(TFSize i = 0; i < paintAreaWidth - 2; ++i)
 	{
-		//blue
-		painter.setPen(Qt::blue);
+		//alpha
+		painter.setPen(Qt::yellow);
+		painter.drawLine(origin.x + i, origin.y - (*view_)[i].alpha*paintAreaHeight,
+			origin.x + i + 1, origin.y - (*view_)[i+1].alpha*paintAreaHeight);
+		//value
+		painter.setPen(/*brown*/QColor(139,69,19));	
 		painter.drawLine(origin.x + i, origin.y - (*view_)[i].component3*paintAreaHeight,
 			origin.x + i + 1, origin.y - (*view_)[i+1].component3*paintAreaHeight);
-		//green
-		painter.setPen(Qt::green);
+		//saturation
+		painter.setPen(Qt::lightGray);
 		painter.drawLine(origin.x + i, origin.y - (*view_)[i].component2*paintAreaHeight,
 			origin.x + i + 1, origin.y - (*view_)[i+1].component2*paintAreaHeight);
-		//red
-		painter.setPen(Qt::red);
+		//hue
+		painter.setPen(/*pink*/QColor(255,20,147));
 		painter.drawLine(origin.x + i, origin.y - (*view_)[i].component1*paintAreaHeight,
 			origin.x + i + 1, origin.y - (*view_)[i+1].component1*paintAreaHeight);
 	}
 }
 
-void TFRGBPainter::mousePressEvent(QMouseEvent *e){
+void TFHSVaPainter::mousePressEvent(QMouseEvent *e){
 
 	if(e->button() == Qt::RightButton)
 	{
 		switch(activeView_)
 		{
-			case ACTIVE_RED:
+			case ACTIVE_HUE:
 			{
-				activeView_ = ACTIVE_GREEN;
+				activeView_ = ACTIVE_SATURATION;
 				break;
 			}
-			case ACTIVE_GREEN:
+			case ACTIVE_SATURATION:
 			{
-				activeView_ = ACTIVE_BLUE;
+				activeView_ = ACTIVE_VALUE;
 				break;
 			}
-			case ACTIVE_BLUE:
+			case ACTIVE_VALUE:
 			{
-				activeView_ = ACTIVE_RED;
+				activeView_ = ACTIVE_ALPHA;
+				break;
+			}
+			case ACTIVE_ALPHA:
+			{
+				activeView_ = ACTIVE_HUE;
 				break;
 			}
 		}
@@ -75,13 +84,13 @@ void TFRGBPainter::mousePressEvent(QMouseEvent *e){
 	mouseMoveEvent(e);
 }
 
-void TFRGBPainter::mouseReleaseEvent(QMouseEvent *e){
+void TFHSVaPainter::mouseReleaseEvent(QMouseEvent *e){
 
 	if(drawHelper_) delete drawHelper_;
 	drawHelper_ = NULL;
 }
 
-void TFRGBPainter::mouseMoveEvent(QMouseEvent *e){
+void TFHSVaPainter::mouseMoveEvent(QMouseEvent *e){
 
 	if(!drawHelper_) return;
 
@@ -97,29 +106,33 @@ void TFRGBPainter::mouseMoveEvent(QMouseEvent *e){
 	if(changed()) repaint(rect());
 }
 
-void TFRGBPainter::addPoint(TFPaintingPoint point){
+void TFHSVaPainter::addPoint(TFPaintingPoint point){
 
 	float yValue = point.y/(float)paintAreaHeight;
 	
 	switch(activeView_)
 	{
-		case ACTIVE_RED:
+		case ACTIVE_HUE:
 		{
 			(*view_)[point.x].component1 = yValue;
 			break;
 		}
-		case ACTIVE_GREEN:
+		case ACTIVE_SATURATION:
 		{
 			(*view_)[point.x].component2 = yValue;
 			break;
 		}
-		case ACTIVE_BLUE:
+		case ACTIVE_VALUE:
 		{
 			(*view_)[point.x].component3 = yValue;
 			break;
 		}
+		case ACTIVE_ALPHA:
+		{
+			(*view_)[point.x].alpha = yValue;
+			break;
+		}
 	}
-
 	changed_ = true;
 }
 

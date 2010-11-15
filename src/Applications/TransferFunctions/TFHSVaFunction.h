@@ -1,20 +1,21 @@
-#ifndef TF_RGBA_FUNCTION
-#define TF_RGBA_FUNCTION
+#ifndef TF_HSVA_FUNCTION
+#define TF_HSVA_FUNCTION
 
 #include <TFAbstractFunction.h>
 #include <GUI/utils/TransferFunctionBuffer.h>
+#include <QtGui/QColor>
 
 namespace M4D {
 namespace GUI {
 
-class TFRGBaFunction: public TFAbstractFunction{
+class TFHSVaFunction: public TFAbstractFunction{
 
 public:
 
-	TFRGBaFunction(TFSize domain = 4096);
-	TFRGBaFunction(TFRGBaFunction &function);
+	TFHSVaFunction(TFSize domain = 4096);
+	TFHSVaFunction(TFHSVaFunction &function);
 
-	~TFRGBaFunction();
+	~TFHSVaFunction();
 
 	template<typename ElementIterator>
 	bool apply(
@@ -38,12 +39,14 @@ public:
 		TFColorMapIt currentColor = colorMap_->begin();
 		for(TransferFunctionBuffer1D::Iterator it = begin; it!=end; ++it)
 		{
-			*it = ValueType(
-				currentColor->component1, 
+			QColor color;
+			color.setHsvF(
+				currentColor->component1,
 				currentColor->component2,
 				currentColor->component3,
 				currentColor->alpha);
-
+			
+			*it = ValueType(color.redF(), color.greenF(), color.blueF(), color.alphaF());
 			++currentColor;
 		}
 
@@ -54,4 +57,4 @@ public:
 } // namespace GUI
 } // namespace M4D
 
-#endif //TF_RGBA_FUNCTION
+#endif //TF_HSVA_FUNCTION

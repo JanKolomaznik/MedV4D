@@ -11,17 +11,14 @@
 #include <QtCore/QString>
 
 #include <TFTypes.h>
-#include <TFGrayscaleFunction.h>
-#include <TFGrayscaleTransparencyFunction.h>
-#include <TFRGBFunction.h>
+#include <TFXmlWriter.h>
+#include <TFXmlReader.h>
+
+#include <TFHSVaFunction.h>
 #include <TFRGBaFunction.h>
 
 namespace M4D {
 namespace GUI {
-
-#define PAINTER_X 25
-#define PAINTER_Y 25
-#define PAINTER_MARGIN 5
 
 class TFAbstractHolder : public QWidget{
 
@@ -37,7 +34,7 @@ public:
 
 	virtual void setUp(QWidget *parent, const QRect rect) = 0;
 
-	TFType getType() const;
+	TFHolderType getType() const;
 	
 	template<typename ElementIterator>
 	bool applyTransferFunction(
@@ -47,27 +44,17 @@ public:
 		TFAbstractFunction* transferFunction = getFunction_();
 		updateFunction_();
 		switch(transferFunction->getType()){
-			case TFTYPE_GRAYSCALE:
-			{
-				TFGrayscaleFunction* grayscaleFunction = dynamic_cast<TFGrayscaleFunction*>(transferFunction);
-				return grayscaleFunction->apply<ElementIterator>(begin, end);
-			}
-			case TFTYPE_GRAYSCALE_TRANSPARENCY:
-			{
-				TFGrayscaleTransparencyFunction* grayTransFunction = dynamic_cast<TFGrayscaleTransparencyFunction*>(transferFunction);
-				return grayTransFunction->apply<ElementIterator>(begin, end);
-			}
-			case TFTYPE_RGB:
-			{
-				TFRGBFunction* rgbFunction = dynamic_cast<TFRGBFunction*>(transferFunction);
-				return rgbFunction->apply<ElementIterator>(begin, end);
-			}
-			case TFTYPE_RGBA:
+			case TFFUNCTION_RGBA:
 			{
 				TFRGBaFunction* rgbaFunction = dynamic_cast<TFRGBaFunction*>(transferFunction);
 				return rgbaFunction->apply<ElementIterator>(begin, end);
 			}
-			case TFTYPE_UNKNOWN:
+			case TFFUNCTION_HSVA:
+			{
+				TFHSVaFunction* hsvaFunction = dynamic_cast<TFHSVaFunction*>(transferFunction);
+				return hsvaFunction->apply<ElementIterator>(begin, end);
+			}
+			case TFFUNCTION_UNKNOWN:
 			default:
 			{
 				tfAssert("Unknown Transfer Function");
@@ -81,19 +68,24 @@ protected slots:
 	void size_changed(const QRect rect);
 
 protected:
-	TFType type_;
+	TFHolderType type_;
 	Ui::TFAbstractHolder* basicTools_;
 	bool setup_;
+	TFPaintingPoint painterLeftTop_;
+	TFPaintingPoint painterRightBottom_;
 
-	virtual bool load_(QFile &file) = 0;
-	virtual void save_(QFile &file) = 0;
+	virtual void paintEvent(QPaintEvent *e);
+
+	virtual bool load_(QFile &file);
+	virtual void save_(QFile &file);
 
 	virtual void updateFunction_() = 0;
-	virtual void updatePainter_(const QRect& rect) = 0;
+	virtual void updatePainter_() = 0;
+	virtual void resizePainter_(const QRect& rect) = 0;
 
 	virtual TFAbstractFunction* getFunction_() = 0;
 
-	void calculate_(const TFFunctionMapPtr input, TFFunctionMapPtr output);
+	void calculate_(const TFColorMapPtr input, TFColorMapPtr output);
 
 	TFAbstractHolder();
 };

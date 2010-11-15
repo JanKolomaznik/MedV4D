@@ -1,7 +1,7 @@
 #include<TFHolderFactory.h>
 
 #include <TFGrayscaleHolder.h>
-#include <TFGrayscaleTransparencyHolder.h>
+#include <TFGrayscaleAlphaHolder.h>
 #include <TFRGBHolder.h>
 #include <TFRGBaHolder.h>
 #include <TFHSVHolder.h>
@@ -15,46 +15,46 @@ TFActions TFHolderFactory::createMenuTFActions(QWidget *parent){
 	TFActions actions;
 
 	//adds transferfunction types to menu
-	actions.push_back(new TFAction(parent, TFTYPE_GRAYSCALE));
-	actions.push_back(new TFAction(parent, TFTYPE_GRAYSCALE_TRANSPARENCY));
-	actions.push_back(new TFAction(parent, TFTYPE_RGB));
-	actions.push_back(new TFAction(parent, TFTYPE_RGBA));
-	actions.push_back(new TFAction(parent, TFTYPE_HSV));
-	actions.push_back(new TFAction(parent, TFTYPE_HSVA));
-	//actions.push_back(new TFAction(menu, TFTYPE_MYTYPE));
+	actions.push_back(new TFAction(parent, TFHOLDER_GRAYSCALE));
+	actions.push_back(new TFAction(parent, TFHOLDER_GRAYSCALE_ALPHA));
+	actions.push_back(new TFAction(parent, TFHOLDER_RGB));
+	actions.push_back(new TFAction(parent, TFHOLDER_RGBA));
+	actions.push_back(new TFAction(parent, TFHOLDER_HSV));
+	actions.push_back(new TFAction(parent, TFHOLDER_HSVA));
+	//actions.push_back(new TFAction(menu, TFHOLDER_MYTYPE));
 
 	return actions;
 }
 
-TFAbstractHolder* TFHolderFactory::createHolder(QWidget* window, const TFType holderType){
+TFAbstractHolder* TFHolderFactory::createHolder(QWidget* window, const TFHolderType holderType){
 
 	switch(holderType)
 	{
-		case TFTYPE_GRAYSCALE:
+		case TFHOLDER_GRAYSCALE:
 		{
 			return new TFGrayscaleHolder(window);
 		}
-		case TFTYPE_GRAYSCALE_TRANSPARENCY:
+		case TFHOLDER_GRAYSCALE_ALPHA:
 		{
-			return new TFGrayscaleTransparencyHolder(window);
+			return new TFGrayscaleAlphaHolder(window);
 		}
-		case TFTYPE_RGB:
+		case TFHOLDER_RGB:
 		{
 			return new TFRGBHolder(window);
 		}
-		case TFTYPE_RGBA:
+		case TFHOLDER_RGBA:
 		{
 			return new TFRGBaHolder(window);
 		}
-		case TFTYPE_HSV:
+		case TFHOLDER_HSV:
 		{
 			return new TFHSVHolder(window);
 		}
-		case TFTYPE_HSVA:
+		case TFHOLDER_HSVA:
 		{
 			return new TFHSVaHolder(window);
 		}
-		case TFTYPE_UNKNOWN:
+		case TFHOLDER_UNKNOWN:
 		default:
 		{
 			tfAssert("unknown holder");
@@ -85,11 +85,11 @@ TFAbstractHolder* TFHolderFactory::loadHolder(QWidget* window){
 	}
 
 	TFTypeSwitcher switcher;
-	TFType tfType = switcher.read(&qFile);
+	TFHolderType holderType = switcher.read(&qFile);
 	qFile.close();
 
 	qFile.open(QFile::ReadOnly | QFile::Text);
-	TFAbstractHolder* loaded = createHolder(window, tfType);
+	TFAbstractHolder* loaded = createHolder(window, holderType);
 
 	if(loaded)
 	{
@@ -97,7 +97,7 @@ TFAbstractHolder* TFHolderFactory::loadHolder(QWidget* window){
 		{ 
 			QMessageBox::warning(
 				window,
-				QObject::tr("TFGrayscaleXmlREADER"),
+				QObject::tr("TFXmlReader"),
 				QObject::tr("Parse error in file %1").arg(fileName));
 		}
 	}
@@ -106,7 +106,7 @@ TFAbstractHolder* TFHolderFactory::loadHolder(QWidget* window){
 	return loaded;
 }
 
-TFType TFHolderFactory::TFTypeSwitcher::read(QIODevice* device){
+TFHolderType TFHolderFactory::TFTypeSwitcher::read(QIODevice* device){
 
 	setDevice(device);
 
@@ -121,10 +121,10 @@ TFType TFHolderFactory::TFTypeSwitcher::read(QIODevice* device){
 
 		if (isStartElement() && (name() == "TransferFunction"))
 		{
-			return convert<std::string, TFType>(attributes().value("type").toString().toStdString());
+			return convert<std::string, TFHolderType>(attributes().value("holderType").toString().toStdString());
 		}
 	}
-	return TFTYPE_UNKNOWN;
+	return TFHOLDER_UNKNOWN;
 }
 
 } // namespace GUI

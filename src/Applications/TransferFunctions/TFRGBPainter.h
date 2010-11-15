@@ -10,17 +10,10 @@ class TFRGBPainter: public TFAbstractPainter{
 
 public:
 	TFRGBPainter();
-
 	~TFRGBPainter();
 
 	void setUp(QWidget *parent);
 	void setUp(QWidget *parent, int margin);
-
-	TFFunctionMapPtr getRedView();
-	TFFunctionMapPtr getGreenView();
-	TFFunctionMapPtr getBlueView();
-
-	bool changed();
 
 protected:
 	void paintEvent(QPaintEvent *e);
@@ -28,7 +21,7 @@ protected:
 	void mouseReleaseEvent(QMouseEvent *e);
 	void mouseMoveEvent(QMouseEvent *e);
 
-	void resize_();
+	void addPoint(TFPaintingPoint point);
 
 private:
 
@@ -39,11 +32,6 @@ private:
 	};
 
 	ActiveView activeView_;
-	TFFunctionMapPtr redView_, greenView_, blueView_;
-
-	bool redChanged_, greenChanged_, blueChanged_;
-
-	void addPoint(TFPaintingPoint point);
 };
 
 } // namespace GUI

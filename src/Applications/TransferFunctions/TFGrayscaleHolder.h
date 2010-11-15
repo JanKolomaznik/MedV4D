@@ -1,17 +1,9 @@
 #ifndef TF_GRAYSCALE_HOLDER
 #define TF_GRAYSCALE_HOLDER
 
-#include "common/Types.h"
-
 #include <TFAbstractHolder.h>
-#include <TFGrayscaleFunction.h>
+#include <TFRGBaFunction.h>
 #include <TFGrayscalePainter.h>
-#include <TFGrayscaleXmlREADER.h>
-#include <TFGrayscaleXmlWriter.h>
-
-#include <string>
-#include <map>
-#include <vector>
 
 namespace M4D {
 namespace GUI {
@@ -25,16 +17,14 @@ public:
 	void setUp(QWidget *parent, const QRect rect);
 
 protected:
-	void save_(QFile &file);
-	bool load_(QFile &file);
-
 	void updateFunction_();
-	void updatePainter_(const QRect& rect);
+	void updatePainter_();
+	void resizePainter_(const QRect& rect);
 
 	TFAbstractFunction* getFunction_();
 
 private:
-	TFGrayscaleFunction function_;
+	TFRGBaFunction function_;
 	TFGrayscalePainter painter_;
 };
 

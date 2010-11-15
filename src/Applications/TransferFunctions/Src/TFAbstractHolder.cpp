@@ -4,15 +4,21 @@ namespace M4D {
 namespace GUI {
 
 TFAbstractHolder::TFAbstractHolder():
-	type_(TFTYPE_UNKNOWN),
+	type_(TFHOLDER_UNKNOWN),
 	basicTools_(new Ui::TFAbstractHolder),
-	setup_(false){
+	setup_(false),
+	painterLeftTop_(25,25),
+	painterRightBottom_(25,25){
 
 	basicTools_->setupUi(this);
 }
 
 TFAbstractHolder::~TFAbstractHolder(){
 	if(basicTools_) delete basicTools_;
+}
+
+TFHolderType TFAbstractHolder::getType() const{
+	return type_;
 }
 
 void TFAbstractHolder::save(){
@@ -39,24 +45,48 @@ void TFAbstractHolder::save(){
 	file.close();
 }
 
-TFType TFAbstractHolder::getType() const{
-	return type_;
+void TFAbstractHolder::paintEvent(QPaintEvent* e){}
+
+void TFAbstractHolder::save_(QFile &file){
+	
+	updateFunction_();
+
+	 TFXmlWriter writer;
+	 writer.write(&file, getFunction_(), getType());
+	 //writer.writeTestData(&file);	//testing
+}
+
+bool TFAbstractHolder::load_(QFile &file){
+	
+	TFXmlReader reader;
+
+	bool error = false;
+
+	//reader.readTestData(&function_);	//testing
+	reader.read(&file, getFunction_(), error);
+
+	if (error || reader.error())
+	{
+		return false;
+	}
+
+	updatePainter_();
+	
+	return true;
 }
 
 void TFAbstractHolder::size_changed(const QRect rect){
 	
 	setGeometry(rect);
 
-	updateFunction_();	
+	int newWidth = rect.width() - (painterLeftTop_.x + painterRightBottom_.x);
+	int newHeight = rect.height() - (painterLeftTop_.y + painterRightBottom_.y);
+	QRect newRect(painterLeftTop_.x, painterLeftTop_.y, newWidth, newHeight);
 
-	int newWidth = rect.width() - 2*PAINTER_X;
-	int newHeight = rect.height() - 2*PAINTER_Y;
-	QRect newRect(PAINTER_X, PAINTER_Y, newWidth, newHeight);
-
-	updatePainter_(newRect);
+	resizePainter_(newRect);
 }
 
-void TFAbstractHolder::calculate_(const TFFunctionMapPtr input, TFFunctionMapPtr output){
+void TFAbstractHolder::calculate_(const TFColorMapPtr input, TFColorMapPtr output){
 
 	if(!(input && output)) tfAbort("calculation error");
 	if(output->begin() == output->end())
@@ -81,27 +111,37 @@ void TFAbstractHolder::calculate_(const TFFunctionMapPtr input, TFFunctionMapPtr
 		inOutCorrection -= inOutRatio;
 		float corrStep = inOutCorrection;
 
-		TFFunctionMapIt outIt = output->begin();
+		TFColorMapIt outIt = output->begin();
 
-		TFFunctionMap::const_iterator inBegin = input->begin();
-		TFFunctionMap::const_iterator inEnd = input->end();
+		TFColorMap::const_iterator inBegin = input->begin();
+		TFColorMap::const_iterator inEnd = input->end();
 
-		for(TFFunctionMap::const_iterator it = inBegin; it != inEnd; ++it)
+		for(TFColorMap::const_iterator it = inBegin; it != inEnd; ++it)
 		{
-			float computedValue = 0;
+			TFColor computedValue;
 			TFSize valueCount = inOutRatio + (int)inOutCorrection;
 			for(TFSize i = 0; i < valueCount; ++i)
 			{
 				if(it == inEnd) return;		//TODO fail
-				computedValue += *it;
+
+				computedValue.component1 += it->component1;
+				computedValue.component2 += it->component2;
+				computedValue.component3 += it->component3;
+				computedValue.alpha += it->alpha;
+
 				if(i < (valueCount-1)) ++it;
 			}
 			inOutCorrection -= (int)inOutCorrection;
 			inOutCorrection += corrStep;
 
 			tfAssert(outIt != output->end());
-			float avarage = computedValue/valueCount;
-			*outIt = avarage;
+
+			computedValue.component1 = computedValue.component1/valueCount;
+			computedValue.component2 = computedValue.component2/valueCount;
+			computedValue.component3 = computedValue.component3/valueCount;
+			computedValue.alpha = computedValue.alpha/valueCount;
+
+			*outIt = computedValue;
 			++outIt;
 		}
 	}
@@ -112,12 +152,12 @@ void TFAbstractHolder::calculate_(const TFFunctionMapPtr input, TFFunctionMapPtr
 		outInCorrection -= outInRatio;
 		float corrStep = outInCorrection;
 
-		TFFunctionMapIt outIt = output->begin();
+		TFColorMapIt outIt = output->begin();
 
-		TFFunctionMap::const_iterator inBegin = input->begin();
-		TFFunctionMap::const_iterator inEnd = input->end();
+		TFColorMap::const_iterator inBegin = input->begin();
+		TFColorMap::const_iterator inEnd = input->end();
 
-		for(TFFunctionMap::const_iterator it = inBegin; it != inEnd; ++it)
+		for(TFColorMap::const_iterator it = inBegin; it != inEnd; ++it)
 		{
 			TFSize valueCount = outInRatio + (int)outInCorrection;
 			for(TFSize i = 0; i < valueCount; ++i)

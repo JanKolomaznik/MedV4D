@@ -3,11 +3,7 @@
 namespace M4D {
 namespace GUI {
 
-TFGrayscalePainter::TFGrayscalePainter():
-	changed_(false){
-
-	view_ = TFFunctionMapPtr(new TFFunctionMap(paintAreaWidth));
-}
+TFGrayscalePainter::TFGrayscalePainter(){}
 
 TFGrayscalePainter::~TFGrayscalePainter(){}
 
@@ -19,44 +15,24 @@ void TFGrayscalePainter::setUp(QWidget *parent){
 
 void TFGrayscalePainter::setUp(QWidget *parent, int margin){
 
-	margin_ = margin;
-	paintAreaWidth = width() - 2*margin_;
-	paintAreaHeight = height() - 2*margin_;
-
+	setMargin_(margin);
 	setUp(parent);
-}
-
-void TFGrayscalePainter::resize_(){
-
-	view_ = TFFunctionMapPtr(new TFFunctionMap(paintAreaWidth));
-}
-
-TFFunctionMapPtr TFGrayscalePainter::getView(){
-
-	changed_ = false;
-	return view_;
-}
-
-bool TFGrayscalePainter::changed(){
-
-	return changed_;
 }
 
 void TFGrayscalePainter::paintEvent(QPaintEvent *){
 
 	QPainter painter(this);
-	painter.setPen(Qt::white);
-
-	painter.fillRect(rect(), QBrush(Qt::black));
+	paintBackground_(painter);
 
 	int beginX = margin_;
 	int beginY = height() - margin_;
-
 	TFPaintingPoint origin(beginX, beginY);
+
+	painter.setPen(Qt::lightGray);
 	for(TFSize i = 0; i < paintAreaWidth - 2; ++i)
 	{
-		painter.drawLine(origin.x + i, origin.y - (*view_)[i]*paintAreaHeight,
-			origin.x + i + 1, origin.y - (*view_)[i + 1]*paintAreaHeight);
+		painter.drawLine(origin.x + i, origin.y - (*view_)[i].component1*paintAreaHeight,
+			origin.x + i + 1, origin.y - (*view_)[i+1].component1*paintAreaHeight);
 	}
 }
 
@@ -98,7 +74,12 @@ void TFGrayscalePainter::mouseMoveEvent(QMouseEvent *e){
 void TFGrayscalePainter::addPoint(TFPaintingPoint point){
 
 	float yValue = point.y/(float)paintAreaHeight;
-	(*view_)[point.x] = yValue;
+
+	(*view_)[point.x].component1 = yValue;
+	(*view_)[point.x].component2 = yValue;
+	(*view_)[point.x].component3 = yValue;
+	//(*view_)[point.x].alpha = yValue;	//umoznuje prohlizeni i v 3D
+
 	changed_ = true;
 }
 

@@ -26,9 +26,9 @@ public:
 	void operator=(TFRGBFunction &function);
 	TFAbstractFunction* clone();
 
-	TFFunctionMapPtr getRedFunction();
-	TFFunctionMapPtr getGreenFunction();
-	TFFunctionMapPtr getBlueFunction();
+	TFColorRGBaMapPtr getRedFunction();
+	TFColorRGBaMapPtr getGreenFunction();
+	TFColorRGBaMapPtr getBlueFunction();
 	TFSize getDomain();
 
 	void clear();
@@ -52,9 +52,9 @@ public:
 			
 		typedef TransferFunctionBuffer1D::ValueType ValueType;
 
-		TFFunctionMapIt currentRed = red_->begin();
-		TFFunctionMapIt currentGreen = green_->begin();
-		TFFunctionMapIt currentBlue = blue_->begin();
+		TFColorRGBaMapIt currentRed = red_->begin();
+		TFColorRGBaMapIt currentGreen = green_->begin();
+		TFColorRGBaMapIt currentBlue = blue_->begin();
 		for(TransferFunctionBuffer1D::Iterator it = begin; it!=end; ++it)
 		{
 			*it = ValueType(*currentRed, *currentGreen, *currentBlue, 1);
@@ -67,9 +67,9 @@ public:
 	}
 
 private:	
-	TFFunctionMapPtr red_;
-	TFFunctionMapPtr green_;
-	TFFunctionMapPtr blue_;
+	TFColorRGBaMapPtr red_;
+	TFColorRGBaMapPtr green_;
+	TFColorRGBaMapPtr blue_;
 };
 
 } // namespace GUI

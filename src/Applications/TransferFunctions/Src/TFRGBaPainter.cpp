@@ -4,17 +4,7 @@ namespace M4D {
 namespace GUI {
 
 TFRGBaPainter::TFRGBaPainter():
-	redChanged_(false),
-	greenChanged_(false),
-	blueChanged_(false),
-	transparencyChanged_(false),
-	activeView_(ACTIVE_RED){
-
-	redView_ = TFFunctionMapPtr(new TFFunctionMap(paintAreaWidth));
-	greenView_ = TFFunctionMapPtr(new TFFunctionMap(paintAreaWidth));
-	blueView_ = TFFunctionMapPtr(new TFFunctionMap(paintAreaWidth));
-	transparencyView_ = TFFunctionMapPtr(new TFFunctionMap(paintAreaWidth));
-}
+	activeView_(ACTIVE_RED){}
 
 TFRGBaPainter::~TFRGBaPainter(){}
 
@@ -26,47 +16,8 @@ void TFRGBaPainter::setUp(QWidget *parent){
 
 void TFRGBaPainter::setUp(QWidget *parent, int margin){
 
-	margin_ = margin;
-	paintAreaWidth = width() - 2*margin_;
-	paintAreaHeight = height() - 2*margin_;
-
+	setMargin_(margin);
 	setUp(parent);
-}
-
-void TFRGBaPainter::resize_(){
-
-	redView_ = TFFunctionMapPtr(new TFFunctionMap(paintAreaWidth));
-	greenView_ = TFFunctionMapPtr(new TFFunctionMap(paintAreaWidth));
-	blueView_ = TFFunctionMapPtr(new TFFunctionMap(paintAreaWidth));
-	transparencyView_ = TFFunctionMapPtr(new TFFunctionMap(paintAreaWidth));
-}
-
-TFFunctionMapPtr TFRGBaPainter::getRedView(){
-
-	redChanged_ = false;
-	return redView_;
-}
-
-TFFunctionMapPtr TFRGBaPainter::getGreenView(){
-
-	greenChanged_ = false;
-	return greenView_;
-}
-
-TFFunctionMapPtr TFRGBaPainter::getBlueView(){
-
-	blueChanged_ = false;
-	return blueView_;
-}
-TFFunctionMapPtr TFRGBaPainter::getTransparencyView(){
-
-	transparencyChanged_ = false;
-	return transparencyView_;
-}
-
-bool TFRGBaPainter::changed(){
-
-	return redView_ || greenView_ || blueView_ || transparencyChanged_;
 }
 
 void TFRGBaPainter::paintEvent(QPaintEvent *){
@@ -78,32 +29,24 @@ void TFRGBaPainter::paintEvent(QPaintEvent *){
 	int beginY = height() - margin_;
 	TFPaintingPoint origin(beginX, beginY);
 
-	painter.setPen(Qt::yellow);
 	for(TFSize i = 0; i < paintAreaWidth - 2; ++i)
 	{
-		painter.drawLine(origin.x + i, origin.y - (*transparencyView_)[i]*paintAreaHeight,
-			origin.x + i + 1, origin.y - (*transparencyView_)[i + 1]*paintAreaHeight);
-	}
-
-	painter.setPen(Qt::red);
-	for(TFSize i = 0; i < paintAreaWidth - 2; ++i)
-	{
-		painter.drawLine(origin.x + i, origin.y - (*redView_)[i]*paintAreaHeight,
-			origin.x + i + 1, origin.y - (*redView_)[i + 1]*paintAreaHeight);
-	}
-
-	painter.setPen(Qt::green);
-	for(TFSize i = 0; i < paintAreaWidth - 2; ++i)
-	{
-		painter.drawLine(origin.x + i, origin.y - (*greenView_)[i]*paintAreaHeight,
-			origin.x + i + 1, origin.y - (*greenView_)[i + 1]*paintAreaHeight);
-	}
-
-	painter.setPen(Qt::blue);
-	for(TFSize i = 0; i < paintAreaWidth - 2; ++i)
-	{
-		painter.drawLine(origin.x + i, origin.y - (*blueView_)[i]*paintAreaHeight,
-			origin.x + i + 1, origin.y - (*blueView_)[i + 1]*paintAreaHeight);
+		//alpha
+		painter.setPen(Qt::yellow);
+		painter.drawLine(origin.x + i, origin.y - (*view_)[i].alpha*paintAreaHeight,
+			origin.x + i + 1, origin.y - (*view_)[i+1].alpha*paintAreaHeight);
+		//blue
+		painter.setPen(Qt::blue);	
+		painter.drawLine(origin.x + i, origin.y - (*view_)[i].component3*paintAreaHeight,
+			origin.x + i + 1, origin.y - (*view_)[i+1].component3*paintAreaHeight);
+		//green
+		painter.setPen(Qt::green);
+		painter.drawLine(origin.x + i, origin.y - (*view_)[i].component2*paintAreaHeight,
+			origin.x + i + 1, origin.y - (*view_)[i+1].component2*paintAreaHeight);
+		//red
+		painter.setPen(Qt::red);
+		painter.drawLine(origin.x + i, origin.y - (*view_)[i].component1*paintAreaHeight,
+			origin.x + i + 1, origin.y - (*view_)[i+1].component1*paintAreaHeight);
 	}
 }
 
@@ -125,10 +68,10 @@ void TFRGBaPainter::mousePressEvent(QMouseEvent *e){
 			}
 			case ACTIVE_BLUE:
 			{
-				activeView_ = ACTIVE_TRANSPARENCY;
+				activeView_ = ACTIVE_ALPHA;
 				break;
 			}
-			case ACTIVE_TRANSPARENCY:
+			case ACTIVE_ALPHA:
 			{
 				activeView_ = ACTIVE_RED;
 				break;
@@ -171,29 +114,26 @@ void TFRGBaPainter::addPoint(TFPaintingPoint point){
 	{
 		case ACTIVE_RED:
 		{
-			(*redView_)[point.x] = yValue;
-			redChanged_ = true;
+			(*view_)[point.x].component1 = yValue;
 			break;
 		}
 		case ACTIVE_GREEN:
 		{
-			(*greenView_)[point.x] = yValue;
-			greenChanged_ = true;
+			(*view_)[point.x].component2 = yValue;
 			break;
 		}
 		case ACTIVE_BLUE:
 		{
-			(*blueView_)[point.x] = yValue;
-			blueChanged_ = true;
+			(*view_)[point.x].component3 = yValue;
 			break;
 		}
-		case ACTIVE_TRANSPARENCY:
+		case ACTIVE_ALPHA:
 		{
-			(*transparencyView_)[point.x] = yValue;
-			transparencyChanged_ = true;
+			(*view_)[point.x].alpha = yValue;
 			break;
 		}
 	}
+	changed_ = true;
 }
 
 } // namespace GUI

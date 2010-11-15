@@ -7,8 +7,6 @@
 
 #include <QtGui/QPainter>
 
-#include <vector>
-
 #include <ui_TFAbstractPainter.h>
 
 #include <TFTypes.h>
@@ -22,20 +20,28 @@ class TFAbstractPainter: public QWidget{
 
 public:
 
+	TFColorMapPtr getView();
+
 	void resize(const QRect rect);
 
-	virtual bool changed() = 0;
+	bool changed();
 
 protected:
 
 	Ui::TFAbstractPainter* painter_;
 
+	bool changed_;
 	TFSize margin_;
 	TFSize paintAreaWidth, paintAreaHeight;
 	TFPaintingPoint* drawHelper_;
 
+	TFColorMapPtr view_;
+
 	TFAbstractPainter();
 	virtual ~TFAbstractPainter();
+
+	void setMargin_(TFSize margin);
+	void paintBackground_(QPainter& painter);
 
 	TFPaintingPoint correctCoords(const TFPaintingPoint &point);
 	TFPaintingPoint correctCoords(int x, int y);
@@ -47,8 +53,6 @@ protected:
 	virtual void mousePressEvent(QMouseEvent *e) = 0;
 	virtual void mouseReleaseEvent(QMouseEvent *e) = 0;
 	virtual void mouseMoveEvent(QMouseEvent *e) = 0;
-
-	virtual void resize_() = 0;
 
 	virtual void addPoint(TFPaintingPoint point) = 0;
 };

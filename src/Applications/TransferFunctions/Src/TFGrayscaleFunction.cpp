@@ -6,7 +6,7 @@ namespace GUI {
 TFGrayscaleFunction::TFGrayscaleFunction(TFSize domain){
 
 	type_ = TFTYPE_GRAYSCALE;
-	points_ = TFFunctionMapPtr(new TFFunctionMap(domain));
+	points_ = TFColorRGBaMapPtr(new TFColorRGBaMap(domain));
 	clear();
 }
 
@@ -21,12 +21,12 @@ TFGrayscaleFunction::~TFGrayscaleFunction(){
 void TFGrayscaleFunction::operator=(TFGrayscaleFunction &function){
 
 	type_ = function.getType();
-	const TFFunctionMapPtr points = function.getFunction();
+	const TFColorRGBaMapPtr points = function.getFunction();
 
 	points_->clear();
-	TFFunctionMap::const_iterator begin = points->begin();
-	TFFunctionMap::const_iterator end = points->end();
-	for(TFFunctionMap::const_iterator it = begin; it!=end; ++it)
+	TFColorRGBaMap::const_iterator begin = points->begin();
+	TFColorRGBaMap::const_iterator end = points->end();
+	for(TFColorRGBaMap::const_iterator it = begin; it!=end; ++it)
 	{
 		points_->push_back(*it);
 	}
@@ -39,9 +39,9 @@ TFAbstractFunction* TFGrayscaleFunction::clone(){
 
 void TFGrayscaleFunction::clear(){
 
-	TFFunctionMapIt begin = points_->begin();
-	TFFunctionMapIt end = points_->end();
-	for(TFFunctionMapIt it = begin; it!=end; ++it)
+	TFColorRGBaMapIt begin = points_->begin();
+	TFColorRGBaMapIt end = points_->end();
+	for(TFColorRGBaMapIt it = begin; it!=end; ++it)
 	{
 		*it = 0;
 	}
@@ -53,13 +53,13 @@ void TFGrayscaleFunction::setPoint(TFSize point, float value){
 	(*points_)[point] = value;
 }
 
-void TFGrayscaleFunction::setFunction(TFFunctionMapPtr function){
+void TFGrayscaleFunction::setFunction(TFColorRGBaMapPtr function){
 
 	tfAssert(function->size() == points_->size());
 	points_ = function;
 }
 /*
-void TFGrayscaleFunction::setPoints(TFFunctionMap points){
+void TFGrayscaleFunction::setPoints(TFColorRGBaMap points){
 
 	points_ = points;
 }
@@ -81,7 +81,7 @@ TFPointsSimple TFGrayscaleFunction::getAllPoints(){
 	return points;
 }
 */
-TFFunctionMapPtr TFGrayscaleFunction::getFunction(){
+TFColorRGBaMapPtr TFGrayscaleFunction::getFunction(){
 
 	return points_;
 }
@@ -93,7 +93,7 @@ TFSize TFGrayscaleFunction::getDomain(){
 /*
 void TFGrayscaleFunction::recalculate(unsigned functionRange, unsigned colorRange){	//TODO
 
-	TFFunctionMap newPoints(functionRange);
+	TFColorRGBaMap newPoints(functionRange);
 	apply<TFPointMapIterator>(newPoints.begin(), newPoints.end(), colorRange);
 
 	functionRange_ = functionRange;

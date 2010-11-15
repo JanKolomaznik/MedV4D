@@ -3,8 +3,8 @@
 namespace M4D {
 namespace GUI {
 
-TFAction::TFAction(QObject* parent, TFType tfType):
-	QAction(QString::fromStdString(convert<TFType, std::string>(tfType)), parent),
+TFAction::TFAction(QObject* parent, TFHolderType tfType):
+	QAction(QString::fromStdString(convert<TFHolderType, std::string>(tfType)), parent),
 	type_(tfType){
 
 	bool tfActionEnabled = QObject::connect( this, SIGNAL(triggered()), this, SLOT(action_triggered()));

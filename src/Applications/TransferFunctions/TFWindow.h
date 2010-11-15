@@ -47,7 +47,7 @@ protected slots:
     void on_exit_triggered();
     void on_save_triggered();
     void on_load_triggered();
-	void newTF_triggered(TFType &tfType);
+	void newTF_triggered(TFHolderType &tfType);
 
 protected:
 	void resizeEvent(QResizeEvent* e);

@@ -6,59 +6,38 @@ namespace GUI {
 TFGrayscaleHolder::TFGrayscaleHolder(QWidget* window){
 
 	setParent(window);
-	type_ = TFTYPE_GRAYSCALE;
+	type_ = TFHOLDER_GRAYSCALE;
 }
 
 TFGrayscaleHolder::~TFGrayscaleHolder(){}
 
 void TFGrayscaleHolder::setUp(QWidget *parent, const QRect rect){
 
-	painter_.setUp(this, PAINTER_MARGIN);
+	painter_.setUp(this);
 	size_changed(rect);
 	setParent(parent);
 	show();
-}
-
-void TFGrayscaleHolder::save_(QFile &file){
-
-	updateFunction_();
-
-	 TFGrayscaleXmlWriter writer;
-     writer.write(&file, function_);
-	 //writer.writeTestData(&file);	//testing
-}
-
-bool TFGrayscaleHolder::load_(QFile &file){
-
-	TFGrayscaleXmlREADER reader;
-
-	bool error = false;
-
-	reader.readTestData(&function_);	//testing
-	//reader.read(&file, &function_, error);
-
-	if (error || reader.error())
-	{
-		return false;
-	}
-
-	calculate_(function_.getFunction(), painter_.getView());
-
-	return true;
 }
 
 void TFGrayscaleHolder::updateFunction_(){
 
 	if(!painter_.changed()) return;
 
-	calculate_(painter_.getView(), function_.getFunction());
+	calculate_(painter_.getView(), function_.getColorMap());
 }
 
-void TFGrayscaleHolder::updatePainter_(const QRect& rect){
+void TFGrayscaleHolder::updatePainter_(){
+	
+	calculate_(function_.getColorMap(), painter_.getView());
+}
+
+void TFGrayscaleHolder::resizePainter_(const QRect& rect){
+
+	TFColorMapPtr oldView = painter_.getView();
 
 	painter_.resize(rect);
 	
-	calculate_(function_.getFunction(), painter_.getView());
+	calculate_(oldView, painter_.getView());
 }
 
 TFAbstractFunction* TFGrayscaleHolder::getFunction_(){

@@ -1,16 +1,16 @@
-#ifndef TF_RGBA_PAINTER
-#define TF_RGBA_PAINTER
+#ifndef TF_GRAYSCALEALPHA_PAINTER
+#define TF_GRAYSCALEALPHA_PAINTER
 
 #include <TFAbstractPainter.h>
 
 namespace M4D {
 namespace GUI {
 
-class TFRGBaPainter: public TFAbstractPainter{
+class TFGrayscaleAlphaPainter: public TFAbstractPainter{
 
 public:
-	TFRGBaPainter();
-	~TFRGBaPainter();
+	TFGrayscaleAlphaPainter();
+	~TFGrayscaleAlphaPainter();
 
 	void setUp(QWidget *parent);
 	void setUp(QWidget *parent, int margin);
@@ -26,9 +26,7 @@ protected:
 private:
 
 	enum ActiveView{
-		ACTIVE_RED,
-		ACTIVE_GREEN,
-		ACTIVE_BLUE,
+		ACTIVE_GRAYSCALE,
 		ACTIVE_ALPHA
 	};
 
@@ -38,4 +36,4 @@ private:
 } // namespace GUI
 } // namespace M4D
 
-#endif //TF_RGBA_PAINTER
+#endif //TF_GRAYSCALEALPHA_PAINTER

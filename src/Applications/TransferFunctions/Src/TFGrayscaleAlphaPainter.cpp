@@ -1,26 +1,26 @@
-#include "TFRGBPainter.h"
+#include "TFGrayscaleAlphaPainter.h"
 
 namespace M4D {
 namespace GUI {
 
-TFRGBPainter::TFRGBPainter():
-	activeView_(ACTIVE_RED){}
+TFGrayscaleAlphaPainter::TFGrayscaleAlphaPainter():
+	activeView_(ACTIVE_GRAYSCALE){}
 
-TFRGBPainter::~TFRGBPainter(){}
+TFGrayscaleAlphaPainter::~TFGrayscaleAlphaPainter(){}
 
-void TFRGBPainter::setUp(QWidget *parent){
+void TFGrayscaleAlphaPainter::setUp(QWidget *parent){
 
 	setParent(parent);
 	show();
 }
 
-void TFRGBPainter::setUp(QWidget *parent, int margin){
+void TFGrayscaleAlphaPainter::setUp(QWidget *parent, int margin){
 
 	setMargin_(margin);
 	setUp(parent);
 }
 
-void TFRGBPainter::paintEvent(QPaintEvent *){
+void TFGrayscaleAlphaPainter::paintEvent(QPaintEvent *){
 
 	QPainter painter(this);
 	paintBackground_(painter);
@@ -31,40 +31,31 @@ void TFRGBPainter::paintEvent(QPaintEvent *){
 
 	for(TFSize i = 0; i < paintAreaWidth - 2; ++i)
 	{
-		//blue
-		painter.setPen(Qt::blue);
-		painter.drawLine(origin.x + i, origin.y - (*view_)[i].component3*paintAreaHeight,
-			origin.x + i + 1, origin.y - (*view_)[i+1].component3*paintAreaHeight);
-		//green
-		painter.setPen(Qt::green);
-		painter.drawLine(origin.x + i, origin.y - (*view_)[i].component2*paintAreaHeight,
-			origin.x + i + 1, origin.y - (*view_)[i+1].component2*paintAreaHeight);
-		//red
-		painter.setPen(Qt::red);
+		//alpha
+		painter.setPen(Qt::yellow);
+		painter.drawLine(origin.x + i, origin.y - (*view_)[i].alpha*paintAreaHeight,
+			origin.x + i + 1, origin.y - (*view_)[i+1].alpha*paintAreaHeight);
+		//gray
+		painter.setPen(Qt::lightGray);
 		painter.drawLine(origin.x + i, origin.y - (*view_)[i].component1*paintAreaHeight,
 			origin.x + i + 1, origin.y - (*view_)[i+1].component1*paintAreaHeight);
 	}
 }
 
-void TFRGBPainter::mousePressEvent(QMouseEvent *e){
+void TFGrayscaleAlphaPainter::mousePressEvent(QMouseEvent *e){
 
 	if(e->button() == Qt::RightButton)
 	{
 		switch(activeView_)
 		{
-			case ACTIVE_RED:
+			case ACTIVE_GRAYSCALE:
 			{
-				activeView_ = ACTIVE_GREEN;
+				activeView_ = ACTIVE_ALPHA;
 				break;
 			}
-			case ACTIVE_GREEN:
+			case ACTIVE_ALPHA:
 			{
-				activeView_ = ACTIVE_BLUE;
-				break;
-			}
-			case ACTIVE_BLUE:
-			{
-				activeView_ = ACTIVE_RED;
+				activeView_ = ACTIVE_GRAYSCALE;
 				break;
 			}
 		}
@@ -75,13 +66,13 @@ void TFRGBPainter::mousePressEvent(QMouseEvent *e){
 	mouseMoveEvent(e);
 }
 
-void TFRGBPainter::mouseReleaseEvent(QMouseEvent *e){
+void TFGrayscaleAlphaPainter::mouseReleaseEvent(QMouseEvent *e){
 
 	if(drawHelper_) delete drawHelper_;
 	drawHelper_ = NULL;
 }
 
-void TFRGBPainter::mouseMoveEvent(QMouseEvent *e){
+void TFGrayscaleAlphaPainter::mouseMoveEvent(QMouseEvent *e){
 
 	if(!drawHelper_) return;
 
@@ -97,29 +88,25 @@ void TFRGBPainter::mouseMoveEvent(QMouseEvent *e){
 	if(changed()) repaint(rect());
 }
 
-void TFRGBPainter::addPoint(TFPaintingPoint point){
+void TFGrayscaleAlphaPainter::addPoint(TFPaintingPoint point){
 
 	float yValue = point.y/(float)paintAreaHeight;
 	
 	switch(activeView_)
 	{
-		case ACTIVE_RED:
+		case ACTIVE_GRAYSCALE:
 		{
 			(*view_)[point.x].component1 = yValue;
-			break;
-		}
-		case ACTIVE_GREEN:
-		{
 			(*view_)[point.x].component2 = yValue;
-			break;
-		}
-		case ACTIVE_BLUE:
-		{
 			(*view_)[point.x].component3 = yValue;
 			break;
 		}
+		case ACTIVE_ALPHA:
+		{
+			(*view_)[point.x].alpha = yValue;
+			break;
+		}
 	}
-
 	changed_ = true;
 }
 

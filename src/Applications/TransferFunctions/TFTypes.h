@@ -6,21 +6,25 @@
 #include <iostream>
 #include <ostream>
 
-#include <QtGui/QAction>
-#include <QtGui/QMenu>
 #include "common/Common.h"
 
 namespace M4D {
 namespace GUI {
 
-enum TFType{
-	TFTYPE_UNKNOWN,
-	TFTYPE_GRAYSCALE,
-	TFTYPE_GRAYSCALE_TRANSPARENCY,
-	TFTYPE_RGB,
-	TFTYPE_RGBA,
-	TFTYPE_HSV,
-	TFTYPE_HSVA
+enum TFFunctionType{
+	TFFUNCTION_UNKNOWN,
+	TFFUNCTION_RGBA,
+	TFFUNCTION_HSVA
+};
+
+enum TFHolderType{
+	TFHOLDER_UNKNOWN,
+	TFHOLDER_GRAYSCALE,
+	TFHOLDER_GRAYSCALE_ALPHA,
+	TFHOLDER_RGB,
+	TFHOLDER_RGBA,
+	TFHOLDER_HSV,
+	TFHOLDER_HSVA
 };
 
 template<typename From, typename To>
@@ -37,30 +41,30 @@ static To convert(const From &s){
 }
 
 template<>
-static std::string convert<TFType, std::string>(const TFType &tfType){
+static std::string convert<TFHolderType, std::string>(const TFHolderType &holderType){
 
-	switch(tfType){
-		case TFTYPE_GRAYSCALE:
+	switch(holderType){
+		case TFHOLDER_GRAYSCALE:
 		{
 			return "Grayscale";
 		}
-		case TFTYPE_GRAYSCALE_TRANSPARENCY:
+		case TFHOLDER_GRAYSCALE_ALPHA:
 		{
-			return "Grayscale-transparency";
+			return "Grayscale-alpha";
 		}
-		case TFTYPE_RGB:
+		case TFHOLDER_RGB:
 		{
 			return "RGB";
 		}
-		case TFTYPE_RGBA:
+		case TFHOLDER_RGBA:
 		{
 			return "RGBa";
 		}
-		case TFTYPE_HSV:
+		case TFHOLDER_HSV:
 		{
 			return "HSV";
 		}
-		case TFTYPE_HSVA:
+		case TFHOLDER_HSVA:
 		{
 			return "HSVa";
 		}
@@ -69,27 +73,55 @@ static std::string convert<TFType, std::string>(const TFType &tfType){
 }
 
 template<>
-static TFType convert<std::string, TFType>(const std::string &tfType){
+static TFHolderType convert<std::string, TFHolderType>(const std::string &holderType){
 
-	if(tfType == "Grayscale"){
-		return TFTYPE_GRAYSCALE;
+	if(holderType == "Grayscale"){
+		return TFHOLDER_GRAYSCALE;
 	}
-	if(tfType == "Grayscale-transparency"){
-		return TFTYPE_GRAYSCALE_TRANSPARENCY;
+	if(holderType == "Grayscale-alpha"){
+		return TFHOLDER_GRAYSCALE_ALPHA;
 	}
-	if(tfType == "RGB"){
-		return TFTYPE_RGB;
+	if(holderType == "RGB"){
+		return TFHOLDER_RGB;
 	}
+	if(holderType == "RGBa"){
+		return TFHOLDER_RGBA;
+	}
+	if(holderType == "HSV"){
+		return TFHOLDER_HSV;
+	}
+	if(holderType == "HSVa"){
+		return TFHOLDER_HSVA;
+	}
+	return TFHOLDER_UNKNOWN;
+}
+
+template<>
+static std::string convert<TFFunctionType, std::string>(const TFFunctionType &tfType){
+
+	switch(tfType){
+		case TFFUNCTION_RGBA:
+		{
+			return "RGBa";
+		}
+		case TFFUNCTION_HSVA:
+		{
+			return "HSVa";
+		}
+	}
+	return "Unknown";
+}
+
+template<>
+static TFFunctionType convert<std::string, TFFunctionType>(const std::string &tfType){
+
 	if(tfType == "RGBa"){
-		return TFTYPE_RGBA;
-	}
-	if(tfType == "HSV"){
-		return TFTYPE_HSV;
+		return TFFUNCTION_RGBA;
 	}
 	if(tfType == "HSVa"){
-		return TFTYPE_HSVA;
+		return TFFUNCTION_HSVA;
 	}
-	return TFTYPE_UNKNOWN;
+	return TFFUNCTION_UNKNOWN;
 }
 
 template <typename XType, typename YType>
@@ -112,13 +144,21 @@ typedef TFPoint<int, int> TFPaintingPoint;
 typedef std::string TFName;
 typedef unsigned long TFSize;
 
-typedef std::vector<float> TFFunctionMap;
-typedef TFFunctionMap::iterator TFFunctionMapIt;
-typedef boost::shared_ptr<TFFunctionMap> TFFunctionMapPtr;
-/*
-typedef std::vector<int> TFFunctionMap;
-typedef TFFunctionMap::iterator TFFunctionMapIt;
-*/
+struct TFColor{
+	float component1, component2, component3, alpha;
+
+	TFColor(): component1(0), component2(0), component3(0), alpha(0){}
+	TFColor(const TFColor &color): component1(color.component1), component2(color.component2), component3(color.component3), alpha(color.alpha){}
+	TFColor(float component1, float component2, float component3, float alpha): component1(component1), component2(component2), component3(component3), alpha(alpha){}
+
+	bool operator==(const TFColor& color){
+		return (component1 == color.component1) && (component2 == color.component2) && (component3 == color.component3) && (alpha == color.alpha);
+	}
+};
+typedef std::vector<TFColor> TFColorMap;
+typedef TFColorMap::iterator TFColorMapIt;
+typedef boost::shared_ptr<TFColorMap> TFColorMapPtr;
+
 #ifndef ROUND
 #define ROUND(a) ( (int)(a+0.5) )
 #endif

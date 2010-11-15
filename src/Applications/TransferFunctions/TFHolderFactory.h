@@ -23,7 +23,7 @@ public:
 	
 	static TFActions createMenuTFActions(QWidget *parent);
 
-	static TFAbstractHolder* createHolder(QWidget* window, const TFType holderType);
+	static TFAbstractHolder* createHolder(QWidget* window, const TFHolderType holderType);
 
 	static TFAbstractHolder* loadHolder(QWidget* window);
 
@@ -34,7 +34,7 @@ protected:
 		TFTypeSwitcher(){}
 		~TFTypeSwitcher(){}
 
-		TFType read(QIODevice* device);
+		TFHolderType read(QIODevice* device);
 	};
 
 private:

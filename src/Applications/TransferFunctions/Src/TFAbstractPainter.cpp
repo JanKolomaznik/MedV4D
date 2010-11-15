@@ -5,18 +5,28 @@ namespace GUI {
 
 TFAbstractPainter::TFAbstractPainter():
 	painter_(new Ui::TFAbstractPainter),
+	changed_(true),
 	drawHelper_(NULL),
 	margin_(5){
 
 	painter_->setupUi(this);
+
 	paintAreaWidth = width() - 2*margin_;
 	paintAreaHeight = height() - 2*margin_;
+
+	view_ = TFColorMapPtr(new TFColorMap(paintAreaWidth));
 }
 
 TFAbstractPainter::~TFAbstractPainter(){
 
 	delete painter_;
 	if(drawHelper_) delete drawHelper_;
+}
+
+TFColorMapPtr TFAbstractPainter::getView(){
+
+	changed_ = false;
+	return view_;
 }
 
 void TFAbstractPainter::resize(const QRect rect){
@@ -26,7 +36,24 @@ void TFAbstractPainter::resize(const QRect rect){
 	paintAreaWidth = width() - 2*margin_;
 	paintAreaHeight = height() - 2*margin_;
 
-	resize_();
+	view_ = TFColorMapPtr(new TFColorMap(paintAreaWidth));
+}
+
+bool TFAbstractPainter::changed(){
+
+	return changed_;
+}
+
+void TFAbstractPainter::setMargin_(TFSize margin){
+
+	margin_ = margin;
+	paintAreaWidth = width() - 2*margin_;
+	paintAreaHeight = height() - 2*margin_;
+}
+
+void TFAbstractPainter::paintBackground_(QPainter& painter){
+
+	painter.fillRect(rect(), QBrush(Qt::black));
 }
 
 TFPaintingPoint TFAbstractPainter::correctCoords(const TFPaintingPoint &point){

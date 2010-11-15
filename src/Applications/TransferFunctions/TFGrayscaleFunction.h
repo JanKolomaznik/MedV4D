@@ -27,9 +27,9 @@ public:
 	TFAbstractFunction* clone();
 
 	void setPoint(TFSize point, float value);
-	void setFunction(TFFunctionMapPtr function);
+	void setFunction(TFColorRGBaMapPtr function);
 
-	TFFunctionMapPtr getFunction();
+	TFColorRGBaMapPtr getFunction();
 	TFSize getDomain();
 
 	void clear();
@@ -55,7 +55,7 @@ public:
 			
 		typedef TransferFunctionBuffer1D::ValueType ValueType;
 
-		TFFunctionMapIt currentPoint = points_->begin();
+		TFColorRGBaMapIt currentPoint = points_->begin();
 		for(TransferFunctionBuffer1D::Iterator it = begin; it!=end; ++it)
 		{
 			float value = *currentPoint;
@@ -67,7 +67,7 @@ public:
 	}
 
 private:	
-	TFFunctionMapPtr points_;
+	TFColorRGBaMapPtr points_;
 };
 
 } // namespace GUI

@@ -12,18 +12,18 @@ class TFAction: public QAction{
 	Q_OBJECT
 
 public:
-	TFAction(QObject* parent, TFType tfType);
+	TFAction(QObject* parent, TFHolderType tfType);
 
 	~TFAction();
 
 signals:
-	void TFActionClicked(TFType &tfType);
+	void TFActionClicked(TFHolderType &tfType);
 
 public slots:
 	void action_triggered();
 
 private:	
-	TFType type_;
+	TFHolderType type_;
 };
 
 typedef std::vector<TFAction*> TFActions;

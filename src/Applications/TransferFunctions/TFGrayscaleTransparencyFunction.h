@@ -26,8 +26,8 @@ public:
 	void operator=(TFGrayscaleTransparencyFunction &function);
 	TFAbstractFunction* clone();
 
-	TFFunctionMapPtr getGrayscaleFunction();
-	TFFunctionMapPtr getTransparencyFunction();
+	TFColorRGBaMapPtr getGrayscaleFunction();
+	TFColorRGBaMapPtr getTransparencyFunction();
 	TFSize getDomain();
 
 	void clear();
@@ -51,8 +51,8 @@ public:
 			
 		typedef TransferFunctionBuffer1D::ValueType ValueType;
 
-		TFFunctionMapIt currentGray = gray_->begin();
-		TFFunctionMapIt currentTransparency = transparency_->begin();
+		TFColorRGBaMapIt currentGray = gray_->begin();
+		TFColorRGBaMapIt currentTransparency = transparency_->begin();
 		for(TransferFunctionBuffer1D::Iterator it = begin; it!=end; ++it)
 		{
 			*it = ValueType(*currentGray, *currentGray, *currentGray, *currentTransparency);
@@ -64,8 +64,8 @@ public:
 	}
 
 private:	
-	TFFunctionMapPtr gray_;
-	TFFunctionMapPtr transparency_;
+	TFColorRGBaMapPtr gray_;
+	TFColorRGBaMapPtr transparency_;
 };
 
 } // namespace GUI
