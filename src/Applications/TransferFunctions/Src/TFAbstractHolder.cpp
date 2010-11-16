@@ -75,7 +75,7 @@ bool TFAbstractHolder::load_(QFile &file){
 	return true;
 }
 
-void TFAbstractHolder::size_changed(const QRect rect){
+void TFAbstractHolder::size_changed(const QRect& rect){
 	
 	setGeometry(rect);
 

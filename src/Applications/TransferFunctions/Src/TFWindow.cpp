@@ -3,32 +3,67 @@
 namespace M4D {
 namespace GUI {
 
-TFWindow::TFWindow(): ui_(new Ui::TFWindow), holder_(NULL){
+TFWindow::TFWindow(): ui_(new Ui::TFWindow), activeHolder_(-1){
 
     ui_->setupUi(this);
 }
 
 TFWindow::~TFWindow(){
+
+	TFPaletteIt begin = palette_.begin();
+	TFPaletteIt end = palette_.end();
+	for(TFPaletteIt it = begin; it != end; ++it)
+	{
+		delete (*it);
+	}
 }
 
 void TFWindow::setupDefault(){
 	
-	holder_ = TFHolderFactory::createHolder(this, TFHOLDER_GRAYSCALE);
-
-	if(!holder_){
-		QMessageBox::warning(this, QObject::tr("Transfer Functions"), QObject::tr("Creating error."));
-		return;
-	}
-
-	actionSave_->setEnabled(true);
-	setupHolder();
+	newTF_triggered(TFHOLDER_GRAYSCALE);
 }
 
-void TFWindow::setupHolder(){
-
-	holder_->setUp(this, QRect(0, 0, width(), height()));
+void TFWindow::addToPalette_(TFAbstractHolder* holder){
 	
-	QObject::connect( this, SIGNAL(ResizeHolder(const QRect)), holder_, SLOT(size_changed(const QRect)));
+	bool resizeConnected = QObject::connect( this, SIGNAL(ResizeHolder(const QRect)), holder, SLOT(size_changed(const QRect&)));
+	tfAssert(resizeConnected);
+
+	TFSize addedIndex = palette_.size();
+
+	TFPaletteButton* paletteButton = new TFPaletteButton(ui_->paletteArea, holder, addedIndex);
+	paletteButton->setUpHolder(ui_->holderArea);
+	paletteButton->showHolder();
+	palette_.push_back(paletteButton);
+
+	ui_->paletteLayout->addWidget(paletteButton);
+	
+	bool paletteConnected = QObject::connect( paletteButton, SIGNAL(TFPaletteSignal(const TFSize&)), this, SLOT(change_holder(const TFSize&)));
+	tfAssert(paletteConnected);
+
+	change_holder(addedIndex);
+}
+
+void TFWindow::removeActiveFromPalette_(){
+
+	int paletteSize = palette_.size();
+	if(paletteSize > 1)
+	{		
+		delete palette_[activeHolder_];
+		for(int i = activeHolder_; i < (paletteSize-1); ++i)
+		{
+			palette_[i] = palette_[i+1];
+			palette_[i]->changeIndex(i);
+		}
+		palette_.pop_back();
+
+		int newPaletteSize = palette_.size();
+		if(activeHolder_ >= newPaletteSize) --activeHolder_;
+		change_holder(activeHolder_, true);
+	}
+	else
+	{
+		exit(0);
+	}
 }
 
 void TFWindow::createMenu(QMenuBar* menubar){
@@ -43,7 +78,7 @@ void TFWindow::createMenu(QMenuBar* menubar){
 	TFActionsIt end = tfActions_.end();
 	for(TFActionsIt it = begin; it!=end; ++it)
 	{
-		bool menuActionConnected = QObject::connect( *it, SIGNAL(TFActionClicked(TFHolderType&)), this, SLOT(newTF_triggered(TFHolderType&)));
+		bool menuActionConnected = QObject::connect( *it, SIGNAL(TFActionClicked(const TFHolderType&)), this, SLOT(newTF_triggered(const TFHolderType&)));
 		tfAssert(menuActionConnected);
 		menuNew_->addAction(*it);
 	}
@@ -52,24 +87,27 @@ void TFWindow::createMenu(QMenuBar* menubar){
 
 	//action load
 	actionLoad_ = new QAction(QString::fromStdString("Load"), menuTF_);
-	bool loadConnected = QObject::connect( actionLoad_, SIGNAL(triggered()), this, SLOT(on_load_triggered()));
+	bool loadConnected = QObject::connect( actionLoad_, SIGNAL(triggered()), this, SLOT(load_triggered()));
 	tfAssert(loadConnected);
+	actionLoad_->setShortcut(QKeySequence(QObject::tr("Ctrl+L")));
 	menuTF_->addAction(actionLoad_);
 
 	//action save
 	actionSave_ = new QAction(QString::fromStdString("Save"), menuTF_);
 	actionSave_->setEnabled(false);
-	bool saveConnected = QObject::connect( actionSave_, SIGNAL(triggered()), this, SLOT(on_save_triggered()));
+	bool saveConnected = QObject::connect( actionSave_, SIGNAL(triggered()), this, SLOT(save_triggered()));
 	tfAssert(saveConnected);
+	actionSave_->setShortcut(QKeySequence::Save);
 	menuTF_->addAction(actionSave_);
 
 	//separator
 	menuTF_->addSeparator();	
 
 	//action exit
-	actionExit_ = new QAction(QString::fromStdString("Exit"), menuTF_);
-	bool exitConnected = QObject::connect( actionExit_, SIGNAL(triggered()), this, SLOT(on_exit_triggered()));
+	actionExit_ = new QAction(QString::fromStdString("Close"), menuTF_);
+	bool exitConnected = QObject::connect( actionExit_, SIGNAL(triggered()), this, SLOT(close_triggered()));
 	tfAssert(exitConnected);
+	actionExit_->setShortcut(QKeySequence::Close);
 	menuTF_->addAction(actionExit_);
 	
 	menuTF_->setEnabled(true);
@@ -78,53 +116,62 @@ void TFWindow::createMenu(QMenuBar* menubar){
 
 void TFWindow::resizeEvent(QResizeEvent* e){
 
-	emit ResizeHolder(QRect(0, 0, width(), height()));
+	ui_->holderArea->resize(width(), (3*height())/4); //holder zabira 3/4
+	ui_->paletteArea->resize(width(), height() - ui_->holderArea->height());	//paleta zabira zbytek
+	ui_->paletteArea->move(0, ui_->holderArea->height());
+
+	emit ResizeHolder(ui_->holderArea->rect());
 }
 
-void TFWindow::on_exit_triggered(){
+void TFWindow::close_triggered(){
 
-    close();
+	removeActiveFromPalette_();
 }
 
-void TFWindow::on_save_triggered(){
+void TFWindow::save_triggered(){
 
-	holder_->save();
+	palette_[activeHolder_]->saveHolder();
 }
 
-void TFWindow::on_load_triggered(){
+void TFWindow::load_triggered(){
 
-	TFAbstractHolder* loaded = NULL;
-	loaded = TFHolderFactory::loadHolder(this);
+	TFAbstractHolder* loaded = TFHolderFactory::loadHolder(this);
 	if(!loaded) return;
 	
-	if(holder_)
-	{
-		holder_->hide();
-		delete holder_;
-	}
-	holder_ = loaded;
+	addToPalette_(loaded);
+
 	actionSave_->setEnabled(true);
-	setupHolder();
 }
 
-void TFWindow::newTF_triggered(TFHolderType &tfType){
+void TFWindow::newTF_triggered(const TFHolderType &tfType){
 
-	if(holder_)
-	{
-		delete holder_;
-		holder_ = NULL;
-	}
+	TFAbstractHolder* holder = TFHolderFactory::createHolder(this, tfType);
 
-	if(holder_) holder_->hide();
-	holder_ = TFHolderFactory::createHolder(this, tfType);
-
-	if(!holder_){
+	if(!holder){
 		QMessageBox::warning(this, QObject::tr("Transfer Functions"), QObject::tr("Creating error."));
 		return;
 	}
 
+	addToPalette_(holder);
+
 	actionSave_->setEnabled(true);
-	setupHolder();
+}
+
+void TFWindow::change_holder(const TFSize &index, const bool& forceChange){
+
+	if(!forceChange && index == activeHolder_) return;
+
+	if(index < 0 || index >= palette_.size())
+	{
+		tfAssert(!"palette out of range");
+		return;
+	}
+
+	if(activeHolder_ >= 0) palette_[activeHolder_]->hideHolder();
+
+	activeHolder_ = index;
+
+	palette_[activeHolder_]->showHolder();
 }
 
 } // namespace GUI

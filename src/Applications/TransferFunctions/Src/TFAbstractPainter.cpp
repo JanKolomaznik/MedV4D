@@ -29,7 +29,7 @@ TFColorMapPtr TFAbstractPainter::getView(){
 	return view_;
 }
 
-void TFAbstractPainter::resize(const QRect rect){
+void TFAbstractPainter::resize(const QRect& rect){
 
 	setGeometry(rect);
 

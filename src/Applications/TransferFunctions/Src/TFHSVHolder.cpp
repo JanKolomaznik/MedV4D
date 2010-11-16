@@ -15,7 +15,7 @@ TFHSVHolder::TFHSVHolder(QWidget* window): colorBarWidth_(10), painterMargin_(5)
 
 TFHSVHolder::~TFHSVHolder(){}
 
-void TFHSVHolder::setUp(QWidget *parent, const QRect rect){
+void TFHSVHolder::setUp(QWidget *parent, const QRect& rect){
 
 	painter_.setUp(this);
 	size_changed(rect);
@@ -55,11 +55,11 @@ void TFHSVHolder::updatePainter_(){
 
 void TFHSVHolder::resizePainter_(const QRect& rect){
 
-	TFColorMapPtr oldView = painter_.getView();
+	updateFunction_();
 
 	painter_.resize(rect);
 	
-	calculate_(oldView, painter_.getView());
+	updatePainter_();
 }
 
 TFAbstractFunction* TFHSVHolder::getFunction_(){

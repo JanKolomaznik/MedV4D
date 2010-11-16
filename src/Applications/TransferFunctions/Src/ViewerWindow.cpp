@@ -17,25 +17,18 @@ ViewerWindow::ViewerWindow()
 	mProdconn.ConnectConsumer( mViewer->InputPort()[0] );
 		
 	QDockWidget * dockwidget = new QDockWidget("Transfer Functions");
-	try
-	{
-		mTransferFunctionEditor = new M4D::GUI::TFWindow();
-		dockwidget->setWidget( mTransferFunctionEditor );
-		mTransferFunctionEditor->createMenu(menubar);
 
-		mTransferFunctionEditor->setupDefault();
-		/*
-		mTransferFunctionEditor->SetValueInterval( 0.0f, 3000.0f );
-		mTransferFunctionEditor->SetMappedValueInterval( 0.0f, 1.0f );
-		mTransferFunctionEditor->SetBorderWidth( 5 );
-		*/
-		addDockWidget(Qt::BottomDockWidgetArea, dockwidget );
-	}
-	catch(std::exception e)
-	{
-		std::cout << "exception caught: " << e.what() << std::endl;
-		delete dockwidget;
-	}
+	mTransferFunctionEditor = new M4D::GUI::TFWindow();
+	dockwidget->setWidget( mTransferFunctionEditor );
+	mTransferFunctionEditor->createMenu(menubar);
+
+	mTransferFunctionEditor->setupDefault();
+	/*
+	mTransferFunctionEditor->SetValueInterval( 0.0f, 3000.0f );
+	mTransferFunctionEditor->SetMappedValueInterval( 0.0f, 1.0f );
+	mTransferFunctionEditor->SetBorderWidth( 5 );
+	*/
+	addDockWidget(Qt::BottomDockWidgetArea, dockwidget );
 	
 
 	mViewer->SetLUTWindow( Vector2f( 500.0f,1000.0f ) );

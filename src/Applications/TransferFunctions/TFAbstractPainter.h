@@ -22,7 +22,7 @@ public:
 
 	TFColorMapPtr getView();
 
-	void resize(const QRect rect);
+	void resize(const QRect& rect);
 
 	bool changed();
 

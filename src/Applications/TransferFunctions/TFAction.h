@@ -1,5 +1,5 @@
-#ifndef TFACTION
-#define TFACTION
+#ifndef TF_ACTION
+#define TF_ACTION
 
 #include <TFTypes.h>
 #include <QtGui/QAction>
@@ -17,7 +17,7 @@ public:
 	~TFAction();
 
 signals:
-	void TFActionClicked(TFHolderType &tfType);
+	void TFActionClicked(const TFHolderType &tfType);
 
 public slots:
 	void action_triggered();
@@ -32,4 +32,4 @@ typedef std::vector<TFAction*>::iterator TFActionsIt;
 } // namespace GUI
 } // namespace M4D
 
-#endif	//TFACTION
+#endif	//TF_ACTION

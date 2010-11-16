@@ -11,7 +11,7 @@ TFRGBHolder::TFRGBHolder(QWidget* window){
 
 TFRGBHolder::~TFRGBHolder(){}
 
-void TFRGBHolder::setUp(QWidget *parent, const QRect rect){
+void TFRGBHolder::setUp(QWidget *parent, const QRect& rect){
 
 	painter_.setUp(this);
 	size_changed(rect);
@@ -33,11 +33,11 @@ void TFRGBHolder::updatePainter_(){
 
 void TFRGBHolder::resizePainter_(const QRect& rect){
 
-	TFColorMapPtr oldView = painter_.getView();
+	updateFunction_();
 
 	painter_.resize(rect);
 	
-	calculate_(oldView, painter_.getView());
+	updatePainter_();
 }
 
 TFAbstractFunction* TFRGBHolder::getFunction_(){

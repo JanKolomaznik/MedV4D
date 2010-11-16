@@ -16,7 +16,7 @@ public:
 	TFHSVaHolder(QWidget* window);
 	~TFHSVaHolder();
 
-	void setUp(QWidget *parent, const QRect rect);
+	void setUp(QWidget *parent, const QRect& rect);
 
 protected:
 	void updateFunction_();

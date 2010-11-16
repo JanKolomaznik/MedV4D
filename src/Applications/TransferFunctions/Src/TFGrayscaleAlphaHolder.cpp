@@ -11,7 +11,7 @@ TFGrayscaleAlphaHolder::TFGrayscaleAlphaHolder(QWidget* window){
 
 TFGrayscaleAlphaHolder::~TFGrayscaleAlphaHolder(){}
 
-void TFGrayscaleAlphaHolder::setUp(QWidget *parent, const QRect rect){
+void TFGrayscaleAlphaHolder::setUp(QWidget *parent, const QRect& rect){
 
 	painter_.setUp(this);
 	size_changed(rect);
@@ -35,11 +35,11 @@ void TFGrayscaleAlphaHolder::updatePainter_(){
 
 void TFGrayscaleAlphaHolder::resizePainter_(const QRect& rect){
 
-	TFColorMapPtr oldView = painter_.getView();
+	updateFunction_();
 
 	painter_.resize(rect);
 	
-	calculate_(oldView, painter_.getView());
+	updatePainter_();
 }
 
 TFAbstractFunction* TFGrayscaleAlphaHolder::getFunction_(){

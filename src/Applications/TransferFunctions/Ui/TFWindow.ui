@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>300</height>
+    <height>400</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -29,6 +29,43 @@
    <iconset>
     <normaloff>../../../GUI/icons/app.png</normaloff>../../../GUI/icons/app.png</iconset>
   </property>
+  <widget class="QWidget" name="holderArea" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>300</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QWidget" name="paletteArea" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>300</y>
+     <width>800</width>
+     <height>100</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="paletteLayout">
+    <property name="spacing">
+     <number>20</number>
+    </property>
+    <property name="leftMargin">
+     <number>25</number>
+    </property>
+    <property name="topMargin">
+     <number>5</number>
+    </property>
+    <property name="rightMargin">
+     <number>25</number>
+    </property>
+    <property name="bottomMargin">
+     <number>5</number>
+    </property>
+   </layout>
+  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

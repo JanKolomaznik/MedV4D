@@ -163,6 +163,21 @@ typedef boost::shared_ptr<TFColorMap> TFColorMapPtr;
 #define ROUND(a) ( (int)(a+0.5) )
 #endif
 
+class TFAbortException : public std::exception
+{
+private:
+    virtual const char * what() const throw()
+    {
+		return "TFAbortException";
+    }
+};
+
+inline void TFAbort( const char * s, const char * f, int l)
+{	
+    std::cout << f << "(" << l << "): " << s << std::endl;
+    throw TFAbortException(); 
+}
+
 // if TF_NDEBUG macro is defined, switch off debugging support
 #ifndef TF_NDEBUG
 
@@ -174,22 +189,6 @@ typedef boost::shared_ptr<TFColorMap> TFColorMapPtr;
 #define tfAssert(ignore) ((void)0)
 
 #endif
-
-class TFAbortException : public std::exception
-{
-private:
-    virtual const char * what() const throw()
-    {
-		return "TFAbortException";
-    }
-};
-
-inline void TFAbort( const char * s, const char * f, int l)
-{
-	
-    std::cout << f << "(" << l << "): " << s << std::endl;
-    throw TFAbortException(); 
-}
 
 } // namespace GUI
 } // namespace M4D

@@ -32,7 +32,7 @@ public:
 
 	virtual void save();
 
-	virtual void setUp(QWidget *parent, const QRect rect) = 0;
+	virtual void setUp(QWidget *parent, const QRect& rect) = 0;
 
 	TFHolderType getType() const;
 	
@@ -65,7 +65,7 @@ public:
 	}
 
 protected slots:
-	void size_changed(const QRect rect);
+	void size_changed(const QRect& rect);
 
 protected:
 	TFHolderType type_;
