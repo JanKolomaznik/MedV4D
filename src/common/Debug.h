@@ -51,6 +51,8 @@ extern std::ostream *pdout;
 #define _THROW_ throw
 #endif /*DEBUG_LEVEL*/
 
+#define VAR_TO_STREAM( ARG ) #ARG << " = " << ARG
+#define VAR_TO_STREAM_NL( ARG ) VAR_TO_STREAM( ARG ) << std::endl
 
 //----------------------------------------------------------------------------
 #ifdef DEBUG_LEVEL

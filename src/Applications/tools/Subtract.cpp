@@ -11,7 +11,7 @@ using namespace M4D::Imaging;
 
 template< typename TImage >
 void
-Subtract( typename TImage &aImage1, typename TImage &aImage2 )
+Subtract( TImage &aImage1, TImage &aImage2 )
 {
 	if ( aImage1.GetSize() != aImage2.GetSize() ) {
 		_THROW_ ErrorHandling::EBadParameter(":hl:");

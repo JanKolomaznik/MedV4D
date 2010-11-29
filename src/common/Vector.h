@@ -622,7 +622,27 @@ VectorInsertDimension( const Vector< CoordType, Dim > &u, CoordType value, unsig
 	}
 	return Vector< CoordType, Dim+1 >( data );
 }
-
+/**
+ * \param min Represent closed N-dimensional interval together with max.
+ * \param max Represent closed N-dimensional interval together with min.
+ **/
+template< typename CoordType, unsigned Dim >
+bool
+VectorProjectionToInterval( Vector< CoordType, Dim > &v, const Vector< CoordType, Dim > &min, const Vector< CoordType, Dim > &max )
+{
+	bool result = false;
+	for( unsigned i=0; i < Dim; ++i ) {
+		if ( v[i] < min[i] ) {
+			result |= true;
+			v[i] = min[i];
+		}
+		if ( v[i] > max[i] ) {
+			result |= true;
+			v[i] = max[i];
+		}
+	} 
+	return result;
+}
 
 typedef Vector< int32, 2 > CoordInt2D;
 typedef Vector< int32, 3 > CoordInt3D;

@@ -62,20 +62,22 @@ ImageFactory::SerializeImage( M4D::IO::OutStream &stream, const Image< ElementTy
 
 	stream.Put<uint32>( DUMP_HEADER_END_MAGIC_NUMBER );
 	
-//	uint32 cntr = 0;
-//#define SIZE_X (image.GetDimensionExtents(0).maximum - image.GetDimensionExtents(0).minimum)
-//
-	typename Image< ElementType, Dimension >::Iterator iterator = image.GetIterator();
-	while( !iterator.IsEnd() ) {
-		stream.Put<ElementType>( *iterator );
-		++iterator;
-//		
-//		if((cntr % SIZE_X) == 0)
-//			D_PRINT("processed pixels: " << cntr);
-//		
-//		cntr++;
+	if ( image.IsDataContinuous() ) {
+		D_PRINT( "Buffered saving of image" );
+		typename Image< ElementType, Dimension >::SizeType size;
+		typename Image< ElementType, Dimension >::PointType strides;
+		ElementType * pointer = image.GetPointer( size,	strides );
+		//TODO check invariants needed for buffered load
+		stream.Put< ElementType >( pointer, VectorCoordinateProduct( size ) );
+	} else {
+		D_PRINT( "Slow saving of image" );
+		typename Image< ElementType, Dimension >::Iterator iterator = image.GetIterator();
+		while( !iterator.IsEnd() ) {
+			stream.Put<ElementType>( *iterator );
+			++iterator;
+		}
 	}
-//	image.SerializeData(stream);
+	
 	
 	stream.Put<uint32>( DUMP_END_MAGIC_NUMBER );
 }

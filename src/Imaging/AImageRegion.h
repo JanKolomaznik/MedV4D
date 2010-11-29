@@ -23,7 +23,7 @@ class AImageRegion
 
 
 public:
-	STANDARD_DECLARATIONS_MACRO( AImageRegion );
+	STANDARD_DECLARATIONS_MACRO( AImageRegion )
 
 	virtual ~AImageRegion() {}
 
@@ -44,7 +44,7 @@ template< unsigned Dim >
 class AImageRegionDim: public AImageRegion
 {
 public:
-	STANDARD_DECLARATIONS_MACRO( AImageRegionDim< Dim > );
+	STANDARD_DECLARATIONS_MACRO( AImageRegionDim< Dim > )
 	
 	CONFIGURABLE_PREPARE_CAST_METHODS_MACRO( Cast, typename ThisClass, M4D::Imaging::AImageRegion );
 

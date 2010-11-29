@@ -57,6 +57,15 @@ public:
 		_accessor->PutData( (const void *)&what, sizeof(T));
 	}
   
+	template< typename T>
+	void Put( const T *what, size_t aCount )
+	{
+		ASSERT( what != NULL && aCount > 0 );
+
+		DataBuff buffer = DataBuff( static_cast< void *>( const_cast< T * >( what ) ), aCount * sizeof( T ) );
+
+		PutDataBuf( buffer );
+	}
 protected:
   	OutStream();
 

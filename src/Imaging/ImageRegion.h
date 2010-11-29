@@ -27,7 +27,7 @@ class ImageRegion: public AImageRegionDim< Dim >
 {
 public:
 
-	STANDARD_DECLARATIONS_MACRO( ImageRegion< EType, Dim > );
+	STANDARD_DECLARATIONS_MACRO( ImageRegion< EType, Dim > )
 
 	static const unsigned 				Dimension = Dim;
 	typedef EType					ElementType;
@@ -404,6 +404,10 @@ private:
 	unsigned			_sourceDimension;
 	int				*_pointerCoordinatesInSource;
 };
+//*****************************************************************************
+
+typedef ImageRegion< uint8, 2 >	MaskRegion2D;
+typedef ImageRegion< uint8, 3 >	MaskRegion3D;
 
 //*****************************************************************************
 

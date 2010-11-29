@@ -177,7 +177,7 @@ public:
 				} else {
 					--_position[i];
 					_pointer -= _contStrides[i];
-					return;
+					return *this;
 				}
 			}
 			--_position[Dimension-1];

@@ -1,6 +1,6 @@
 #include "common/Common.h"
 #include "Filtering.h"
-#include "Imaging/filters/SobelEdgeDetector.h"
+#include "Imaging/ImageFactory.h"
 #undef min
 #undef max
 #include <tclap/CmdLine.h>
@@ -8,8 +8,6 @@
 
 using namespace M4D;
 using namespace M4D::Imaging;
-
-typedef Image< uint8, 2 > ImageType;
 
 int
 main( int argc, char **argv )
