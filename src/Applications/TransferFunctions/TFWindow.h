@@ -4,6 +4,8 @@
 #include <map>
 
 #include <QtGui/QWidget>
+#include <QtGui/QMainWindow>
+#include <QtGui/QDockWidget>
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
 #include <QtGui/QMenuBar>
@@ -11,6 +13,7 @@
 
 #include <TFHolderFactory.h>
 #include <TFPaletteButton.h>
+#include <TFDockHolder.h>
 #include <ui_TFWindow.h>
 
 namespace M4D {
@@ -20,8 +23,15 @@ class TFWindow : public QWidget{
 
     Q_OBJECT
 
+	typedef std::map<TFSize, TFDockHolder*> DockHolderMap;
+	typedef DockHolderMap::iterator DockHolderMapIt;
+
+	typedef std::map<TFSize, TFAbstractHolder*> HolderMap;
+	typedef HolderMap::iterator HolderMapIt;
+
 public:
-	TFWindow();
+
+	TFWindow(QMainWindow* parent);
     ~TFWindow();
 
 	template<typename ElementIterator>
@@ -30,7 +40,7 @@ public:
 		ElementIterator end){
 
 		if(activeHolder_ < 0) return false;
-		return palette_[activeHolder_]->applyTransferFunction<ElementIterator>(begin, end);
+		return palette_.find(activeHolder_)->second->applyTransferFunction<ElementIterator>(begin, end);
 	}
 
 	void createMenu(QMenuBar* menubar);
@@ -38,21 +48,48 @@ public:
 	void setupDefault();
 
 signals:
-	void ResizeHolder(const QRect& rect);
+
+	void ResizeHolder(const TFSize& index, const QRect& rect);
 
 protected slots:
+
     void close_triggered();
     void save_triggered();
     void load_triggered();
 	void newTF_triggered(const TFHolderType& tfType);
 
-	void change_holder(const TFSize& index, const bool& forceChange = false);
+	void change_activeHolder(const TFSize& index);
+	void release_triggered();
 
 protected:
-	void resizeEvent(QResizeEvent* e);
+
+	void mousePressEvent(QMouseEvent*);
+	void keyPressEvent(QKeyEvent*);
+	void resizeEvent(QResizeEvent*);
 
 private:	
+
+	class Indexer{
+
+		typedef std::vector<TFSize> Indexes;
+		typedef Indexes::iterator IndexesIt;
+
+	public:
+
+		Indexer();
+		~Indexer();
+
+		TFSize getIndex();
+		void releaseIndex(const TFSize& index);
+
+	private:
+
+		TFSize nextIndex_;
+		Indexes released_;
+	};
+
     Ui::TFWindow* ui_;
+	QMainWindow* mainWindow_;
 
 	QMenu* menuTF_;
 	QMenu* menuNew_;
@@ -60,12 +97,20 @@ private:
     QAction *actionSave_;
     QAction *actionExit_;
 
+	Indexer indexer_;
 	int activeHolder_;
-	TFPalette palette_;
-	TFActions tfActions_;
+	int holderInWindow_;
+	HolderMap palette_;
+	DockHolderMap releasedHolders_;
+	HolderMap inWindowHolders_;
+	
+	TFActions tfActions_;	
 
 	void addToPalette_(TFAbstractHolder* holder);
-	void removeActiveFromPalette_();
+	void removeFromPalette_();
+
+	TFSize getFirstInWindow_();
+	void changeHolderInWindow_(const TFSize& index, const bool& hideOld);
 };
 
 } // namespace GUI

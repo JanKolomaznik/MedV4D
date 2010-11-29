@@ -3,19 +3,18 @@
 namespace M4D {
 namespace GUI {
 
-TFRGBaHolder::TFRGBaHolder(QWidget* window){
+TFRGBaHolder::TFRGBaHolder(QWidget* window): TFAbstractHolder(window){
 
-	setParent(window);
 	type_ = TFHOLDER_RGBA;
 }
 
 TFRGBaHolder::~TFRGBaHolder(){}
 
-void TFRGBaHolder::setUp(QWidget *parent, const QRect& rect){
+void TFRGBaHolder::setUp(const TFSize& index){
 
+	index_ = index;
 	painter_.setUp(this);
-	size_changed(rect);
-	setParent(parent);
+	size_changed(index_, dynamic_cast<QWidget*>(parent())->rect());
 	show();
 }
 

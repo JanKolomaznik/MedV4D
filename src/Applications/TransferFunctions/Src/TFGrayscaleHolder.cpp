@@ -3,19 +3,18 @@
 namespace M4D {
 namespace GUI {
 
-TFGrayscaleHolder::TFGrayscaleHolder(QWidget* window){
+TFGrayscaleHolder::TFGrayscaleHolder(QWidget* window): TFAbstractHolder(window){
 
-	setParent(window);
 	type_ = TFHOLDER_GRAYSCALE;
 }
 
 TFGrayscaleHolder::~TFGrayscaleHolder(){}
 
-void TFGrayscaleHolder::setUp(QWidget *parent, const QRect& rect){
+void TFGrayscaleHolder::setUp(const TFSize& index){
 
+	index_ = index;
 	painter_.setUp(this);
-	size_changed(rect);
-	setParent(parent);
+	size_changed(index_, dynamic_cast<QWidget*>(parent())->rect());
 	show();
 }
 

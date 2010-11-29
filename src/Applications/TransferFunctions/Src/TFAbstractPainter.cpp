@@ -7,14 +7,10 @@ TFAbstractPainter::TFAbstractPainter():
 	painter_(new Ui::TFAbstractPainter),
 	changed_(true),
 	drawHelper_(NULL),
-	margin_(5){
+	margin_(5),
+	colorBarSize_(10){
 
 	painter_->setupUi(this);
-
-	paintAreaWidth = width() - 2*margin_;
-	paintAreaHeight = height() - 2*margin_;
-
-	view_ = TFColorMapPtr(new TFColorMap(paintAreaWidth));
 }
 
 TFAbstractPainter::~TFAbstractPainter(){
@@ -29,44 +25,60 @@ TFColorMapPtr TFAbstractPainter::getView(){
 	return view_;
 }
 
-void TFAbstractPainter::resize(const QRect& rect){
-
-	setGeometry(rect);
-
-	paintAreaWidth = width() - 2*margin_;
-	paintAreaHeight = height() - 2*margin_;
-
-	view_ = TFColorMapPtr(new TFColorMap(paintAreaWidth));
-}
-
 bool TFAbstractPainter::changed(){
 
 	return changed_;
 }
 
+void TFAbstractPainter::resize(const QRect& rect){
+
+	setGeometry(rect);
+	correctView_();
+}
+
 void TFAbstractPainter::setMargin_(TFSize margin){
 
 	margin_ = margin;
-	paintAreaWidth = width() - 2*margin_;
-	paintAreaHeight = height() - 2*margin_;
+	correctView_();
 }
 
-void TFAbstractPainter::paintBackground_(QPainter& painter){
+void TFAbstractPainter::paintBackground_(QPainter* drawer, const QRect& rect, bool hsv){
 
-	painter.fillRect(rect(), QBrush(Qt::black));
+	QRect paintRect = rect;
+	paintRect.setHeight(paintAreaHeight_ + 2*margin_);
+	drawer->fillRect(paintRect, QBrush(Qt::black));
+
+	QColor paintingColor;	
+	TFSize viewSize = view_->size();
+	int xBegin = rect.x() + margin_;
+	int yBegin = rect.height();
+	for(TFSize i = 0; i < viewSize; ++i)
+	{
+		if(hsv) paintingColor.setHsvF((*view_)[i].component1, (*view_)[i].component2, (*view_)[i].component3, 1);
+		else paintingColor.setRgbF((*view_)[i].component1, (*view_)[i].component2, (*view_)[i].component3, 1);
+		drawer->setPen(paintingColor);
+
+		drawer->drawLine(xBegin + i, yBegin, xBegin + i, yBegin - colorBarSize_);
+	}
+
+	drawer->setPen(Qt::black);
+	drawer->drawLine(xBegin, yBegin - 1, xBegin + viewSize, yBegin - 1);
+	drawer->drawLine(xBegin + viewSize, yBegin, xBegin + viewSize, yBegin - colorBarSize_);
+	drawer->drawLine(xBegin, yBegin, xBegin, yBegin - colorBarSize_);
+	drawer->drawLine(xBegin, yBegin - colorBarSize_, xBegin + viewSize, yBegin - colorBarSize_);
 }
 
-TFPaintingPoint TFAbstractPainter::correctCoords(const TFPaintingPoint &point){
+TFPaintingPoint TFAbstractPainter::correctCoords_(const TFPaintingPoint &point){
 
-	return correctCoords(point.x, point.y);
+	return correctCoords_(point.x, point.y);
 }
 
-TFPaintingPoint TFAbstractPainter::correctCoords(int x, int y){
+TFPaintingPoint TFAbstractPainter::correctCoords_(int x, int y){
 
-	int xMax = paintAreaWidth - 1;
-	int yMax = paintAreaHeight;
+	int xMax = paintAreaWidth_ - 1;
+	int yMax = paintAreaHeight_;
 	
-	TFPaintingPoint corrected = TFPaintingPoint(x - margin_, margin_ + yMax - y);
+	TFPaintingPoint corrected = TFPaintingPoint(x - margin_, y - margin_);
 
 	if( corrected.x < 0 )
 	{
@@ -88,15 +100,15 @@ TFPaintingPoint TFAbstractPainter::correctCoords(int x, int y){
 	return corrected;
 }
 
-void TFAbstractPainter::addLine(TFPaintingPoint begin, TFPaintingPoint end){
+void TFAbstractPainter::addLine_(TFPaintingPoint begin, TFPaintingPoint end){
 	
-	addLine(begin.x, begin.y, end.x, end.y);
+	addLine_(begin.x, begin.y, end.x, end.y);
 }
 
-void TFAbstractPainter::addLine(int x1, int y1, int x2, int y2){ // assumes x1<x2, |y2-y1|<|x2-x1|
+void TFAbstractPainter::addLine_(int x1, int y1, int x2, int y2){ // assumes x1<x2, |y2-y1|<|x2-x1|
 	
 	//tfAssert((x1 < x2) && (abs(y2-y1) < abs(x2-x1)));
-	if(x1==x2 && y1==y2) addPoint(TFPaintingPoint(x1,y1));
+	if(x1==x2 && y1==y2) addPoint_(TFPaintingPoint(x1,y1));
 
     int D, ax, ay, sx, sy;
 
@@ -119,7 +131,7 @@ void TFAbstractPainter::addLine(int x1, int y1, int x2, int y2){ // assumes x1<x
 
 		while ( x1 != x2 )
 		{
-			addPoint(TFPaintingPoint(x1,y1));
+			addPoint_(TFPaintingPoint(x1,y1));
 			if ( D >= 0 )                       // lift up the Y coordinate
 			{
 				y1 += sy;
@@ -139,7 +151,7 @@ void TFAbstractPainter::addLine(int x1, int y1, int x2, int y2){ // assumes x1<x
 
 		while ( y1 != y2 )
 		{
-			addPoint(TFPaintingPoint(x1,y1));
+			addPoint_(TFPaintingPoint(x1,y1));
 			if ( D >= 0 )                       // lift up the X coordinate
 			{
 				x1 += sx;

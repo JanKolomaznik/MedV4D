@@ -4,13 +4,15 @@ namespace M4D {
 namespace GUI {
 
 TFGrayscaleAlphaPainter::TFGrayscaleAlphaPainter():
-	activeView_(ACTIVE_GRAYSCALE){}
+	activeView_(ACTIVE_GRAYSCALE){
+}
 
 TFGrayscaleAlphaPainter::~TFGrayscaleAlphaPainter(){}
 
 void TFGrayscaleAlphaPainter::setUp(QWidget *parent){
 
-	setParent(parent);
+	setParent(parent);	
+	correctView_();
 	show();
 }
 
@@ -20,25 +22,37 @@ void TFGrayscaleAlphaPainter::setUp(QWidget *parent, int margin){
 	setUp(parent);
 }
 
-void TFGrayscaleAlphaPainter::paintEvent(QPaintEvent *){
+void TFGrayscaleAlphaPainter::correctView_(){
 
-	QPainter painter(this);
-	paintBackground_(painter);
+	paintAreaWidth_ = width() - 2*margin_;
+	paintAreaHeight_ = height() - 2*margin_	- margin_ - colorBarSize_;
 
-	int beginX = margin_;
-	int beginY = height() - margin_;
-	TFPaintingPoint origin(beginX, beginY);
+	view_ = TFColorMapPtr(new TFColorMap(paintAreaWidth_));
+}
 
-	for(TFSize i = 0; i < paintAreaWidth - 2; ++i)
+void TFGrayscaleAlphaPainter::paintEvent(QPaintEvent *e){
+
+	QPainter drawer(this);
+	paintBackground_(&drawer, rect());
+	paintCurves_(&drawer);
+}
+
+void TFGrayscaleAlphaPainter::paintCurves_(QPainter *drawer){
+
+	int xBegin = margin_;
+	int yBegin = margin_ + paintAreaHeight_;
+	TFPaintingPoint origin(xBegin, yBegin);
+
+	for(TFSize i = 0; i < paintAreaWidth_ - 2; ++i)
 	{
 		//alpha
-		painter.setPen(Qt::yellow);
-		painter.drawLine(origin.x + i, origin.y - (*view_)[i].alpha*paintAreaHeight,
-			origin.x + i + 1, origin.y - (*view_)[i+1].alpha*paintAreaHeight);
+		drawer->setPen(Qt::yellow);
+		drawer->drawLine(origin.x + i, origin.y - (*view_)[i].alpha*paintAreaHeight_,
+			origin.x + i + 1, origin.y - (*view_)[i+1].alpha*paintAreaHeight_);
 		//gray
-		painter.setPen(Qt::lightGray);
-		painter.drawLine(origin.x + i, origin.y - (*view_)[i].component1*paintAreaHeight,
-			origin.x + i + 1, origin.y - (*view_)[i+1].component1*paintAreaHeight);
+		drawer->setPen(Qt::lightGray);
+		drawer->drawLine(origin.x + i, origin.y - (*view_)[i].component1*paintAreaHeight_,
+			origin.x + i + 1, origin.y - (*view_)[i+1].component1*paintAreaHeight_);
 	}
 }
 
@@ -62,8 +76,13 @@ void TFGrayscaleAlphaPainter::mousePressEvent(QMouseEvent *e){
 		return;
 	}
 
-	drawHelper_ = new TFPaintingPoint(e->pos().x(), e->pos().y());
-	mouseMoveEvent(e);
+	TFPaintingPoint mousePosition(e->pos().x(), e->pos().y());
+	if( mousePosition.y > (int)(paintAreaHeight_ + 2*margin_) )
+	{
+		return;
+	}
+	drawHelper_ = new TFPaintingPoint(mousePosition.x,
+		(paintAreaHeight_ + 2*margin_) - mousePosition.y);
 }
 
 void TFGrayscaleAlphaPainter::mouseReleaseEvent(QMouseEvent *e){
@@ -76,21 +95,21 @@ void TFGrayscaleAlphaPainter::mouseMoveEvent(QMouseEvent *e){
 
 	if(!drawHelper_) return;
 
-	TFPaintingPoint mousePosition(e->pos().x(), e->pos().y());
+	TFPaintingPoint mousePosition(e->pos().x(), (paintAreaHeight_ + 2*margin_) - e->pos().y());
 		
-	TFPaintingPoint begin = correctCoords(*drawHelper_);
-	TFPaintingPoint end = correctCoords(mousePosition);
+	TFPaintingPoint begin = correctCoords_(*drawHelper_);
+	TFPaintingPoint end = correctCoords_(mousePosition);
 
-	addLine(begin, end);
+	addLine_(begin, end);
 
 	*drawHelper_ = mousePosition;
 	
 	if(changed()) repaint(rect());
 }
 
-void TFGrayscaleAlphaPainter::addPoint(TFPaintingPoint point){
+void TFGrayscaleAlphaPainter::addPoint_(TFPaintingPoint point){
 
-	float yValue = point.y/(float)paintAreaHeight;
+	float yValue = point.y/(float)paintAreaHeight_;
 	
 	switch(activeView_)
 	{

@@ -9,6 +9,7 @@ namespace GUI {
 class TFGrayscaleAlphaPainter: public TFAbstractPainter{
 
 public:
+
 	TFGrayscaleAlphaPainter();
 	~TFGrayscaleAlphaPainter();
 
@@ -16,12 +17,14 @@ public:
 	void setUp(QWidget *parent, int margin);
 
 protected:
+
 	void paintEvent(QPaintEvent *e);
 	void mousePressEvent(QMouseEvent *e);
 	void mouseReleaseEvent(QMouseEvent *e);
 	void mouseMoveEvent(QMouseEvent *e);
 
-	void addPoint(TFPaintingPoint point);
+	void addPoint_(TFPaintingPoint point);
+	void correctView_();
 
 private:
 
@@ -31,6 +34,8 @@ private:
 	};
 
 	ActiveView activeView_;
+	
+	void paintCurves_(QPainter *drawer);
 };
 
 } // namespace GUI

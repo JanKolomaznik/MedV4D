@@ -22,7 +22,7 @@ public:
 
 	TFColorMapPtr getView();
 
-	void resize(const QRect& rect);
+	void resize(const QRect& rect);	//calls correctView_
 
 	bool changed();
 
@@ -32,7 +32,8 @@ protected:
 
 	bool changed_;
 	TFSize margin_;
-	TFSize paintAreaWidth, paintAreaHeight;
+	TFSize colorBarSize_;
+	TFSize paintAreaWidth_, paintAreaHeight_;
 	TFPaintingPoint* drawHelper_;
 
 	TFColorMapPtr view_;
@@ -40,21 +41,22 @@ protected:
 	TFAbstractPainter();
 	virtual ~TFAbstractPainter();
 
-	void setMargin_(TFSize margin);
-	void paintBackground_(QPainter& painter);
+	void setMargin_(TFSize margin);	//calls correctView_
+	virtual void correctView_() = 0;	//need to refresh view after this call
+	void paintBackground_(QPainter* drawer, const QRect& rect, bool hsv = false);
 
-	TFPaintingPoint correctCoords(const TFPaintingPoint &point);
-	TFPaintingPoint correctCoords(int x, int y);
+	TFPaintingPoint correctCoords_(const TFPaintingPoint &point);
+	TFPaintingPoint correctCoords_(int x, int y);
 
-	void addLine(int x1, int y1, int x2, int y2);
-	void addLine(TFPaintingPoint begin, TFPaintingPoint end);
+	void addLine_(int x1, int y1, int x2, int y2);
+	void addLine_(TFPaintingPoint begin, TFPaintingPoint end);
 
 	virtual void paintEvent(QPaintEvent *e) = 0;
 	virtual void mousePressEvent(QMouseEvent *e) = 0;
 	virtual void mouseReleaseEvent(QMouseEvent *e) = 0;
 	virtual void mouseMoveEvent(QMouseEvent *e) = 0;
 
-	virtual void addPoint(TFPaintingPoint point) = 0;
+	virtual void addPoint_(TFPaintingPoint point) = 0;
 };
 
 } // namespace GUI

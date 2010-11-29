@@ -18,7 +18,7 @@ ViewerWindow::ViewerWindow()
 		
 	QDockWidget * dockwidget = new QDockWidget("Transfer Functions");
 
-	mTransferFunctionEditor = new M4D::GUI::TFWindow();
+	mTransferFunctionEditor = new M4D::GUI::TFWindow(this);
 	dockwidget->setWidget( mTransferFunctionEditor );
 	mTransferFunctionEditor->createMenu(menubar);
 
@@ -28,6 +28,7 @@ ViewerWindow::ViewerWindow()
 	mTransferFunctionEditor->SetMappedValueInterval( 0.0f, 1.0f );
 	mTransferFunctionEditor->SetBorderWidth( 5 );
 	*/
+	dockwidget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 	addDockWidget(Qt::BottomDockWidgetArea, dockwidget );
 	
 

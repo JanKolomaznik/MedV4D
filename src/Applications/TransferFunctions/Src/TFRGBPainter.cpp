@@ -11,6 +11,7 @@ TFRGBPainter::~TFRGBPainter(){}
 void TFRGBPainter::setUp(QWidget *parent){
 
 	setParent(parent);
+	correctView_();
 	show();
 }
 
@@ -20,29 +21,41 @@ void TFRGBPainter::setUp(QWidget *parent, int margin){
 	setUp(parent);
 }
 
-void TFRGBPainter::paintEvent(QPaintEvent *){
+void TFRGBPainter::correctView_(){
 
-	QPainter painter(this);
-	paintBackground_(painter);
+	paintAreaWidth_ = width() - 2*margin_;
+	paintAreaHeight_ = height() - 2*margin_	- margin_ - colorBarSize_;
 
-	int beginX = margin_;
-	int beginY = height() - margin_;
-	TFPaintingPoint origin(beginX, beginY);
+	view_ = TFColorMapPtr(new TFColorMap(paintAreaWidth_));
+}
 
-	for(TFSize i = 0; i < paintAreaWidth - 2; ++i)
+void TFRGBPainter::paintEvent(QPaintEvent *e){
+
+	QPainter drawer(this);
+	paintBackground_(&drawer, rect());
+	paintCurves_(&drawer);
+}
+	
+void TFRGBPainter::paintCurves_(QPainter *drawer){
+
+	int xBegin = margin_;
+	int yBegin = margin_ + paintAreaHeight_;
+	TFPaintingPoint origin(xBegin, yBegin);
+
+	for(TFSize i = 0; i < paintAreaWidth_ - 2; ++i)
 	{
 		//blue
-		painter.setPen(Qt::blue);
-		painter.drawLine(origin.x + i, origin.y - (*view_)[i].component3*paintAreaHeight,
-			origin.x + i + 1, origin.y - (*view_)[i+1].component3*paintAreaHeight);
+		drawer->setPen(Qt::blue);
+		drawer->drawLine(origin.x + i, origin.y - (*view_)[i].component3*paintAreaHeight_,
+			origin.x + i + 1, origin.y - (*view_)[i+1].component3*paintAreaHeight_);
 		//green
-		painter.setPen(Qt::green);
-		painter.drawLine(origin.x + i, origin.y - (*view_)[i].component2*paintAreaHeight,
-			origin.x + i + 1, origin.y - (*view_)[i+1].component2*paintAreaHeight);
+		drawer->setPen(Qt::green);
+		drawer->drawLine(origin.x + i, origin.y - (*view_)[i].component2*paintAreaHeight_,
+			origin.x + i + 1, origin.y - (*view_)[i+1].component2*paintAreaHeight_);
 		//red
-		painter.setPen(Qt::red);
-		painter.drawLine(origin.x + i, origin.y - (*view_)[i].component1*paintAreaHeight,
-			origin.x + i + 1, origin.y - (*view_)[i+1].component1*paintAreaHeight);
+		drawer->setPen(Qt::red);
+		drawer->drawLine(origin.x + i, origin.y - (*view_)[i].component1*paintAreaHeight_,
+			origin.x + i + 1, origin.y - (*view_)[i+1].component1*paintAreaHeight_);
 	}
 }
 
@@ -71,8 +84,13 @@ void TFRGBPainter::mousePressEvent(QMouseEvent *e){
 		return;
 	}
 
-	drawHelper_ = new TFPaintingPoint(e->pos().x(), e->pos().y());
-	mouseMoveEvent(e);
+	TFPaintingPoint mousePosition(e->pos().x(), e->pos().y());
+	if( mousePosition.y > (int)(paintAreaHeight_ + 2*margin_) )
+	{
+		return;
+	}
+	drawHelper_ = new TFPaintingPoint(mousePosition.x,
+		(paintAreaHeight_ + 2*margin_) - mousePosition.y);
 }
 
 void TFRGBPainter::mouseReleaseEvent(QMouseEvent *e){
@@ -85,21 +103,21 @@ void TFRGBPainter::mouseMoveEvent(QMouseEvent *e){
 
 	if(!drawHelper_) return;
 
-	TFPaintingPoint mousePosition(e->pos().x(), e->pos().y());
+	TFPaintingPoint mousePosition(e->pos().x(), (paintAreaHeight_ + 2*margin_) - e->pos().y());
 		
-	TFPaintingPoint begin = correctCoords(*drawHelper_);
-	TFPaintingPoint end = correctCoords(mousePosition);
+	TFPaintingPoint begin = correctCoords_(*drawHelper_);
+	TFPaintingPoint end = correctCoords_(mousePosition);
 
-	addLine(begin, end);
+	addLine_(begin, end);
 
 	*drawHelper_ = mousePosition;
 	
 	if(changed()) repaint(rect());
 }
 
-void TFRGBPainter::addPoint(TFPaintingPoint point){
+void TFRGBPainter::addPoint_(TFPaintingPoint point){
 
-	float yValue = point.y/(float)paintAreaHeight;
+	float yValue = point.y/(float)paintAreaHeight_;
 	
 	switch(activeView_)
 	{

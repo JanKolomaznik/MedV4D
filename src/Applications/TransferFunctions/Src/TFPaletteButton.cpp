@@ -5,9 +5,8 @@
 namespace M4D {
 namespace GUI {
 
-TFPaletteButton::TFPaletteButton(QWidget* parent, TFAbstractHolder* holder, TFSize index):
+TFPaletteButton::TFPaletteButton(QWidget* parent, TFSize index):
 	QPushButton(QString::number(index+1), parent),
-	holder_(holder),
 	index_(index){
 
 	bool buttonEnabled = QObject::connect( this, SIGNAL(clicked()), this, SLOT(button_triggered()));
@@ -19,33 +18,7 @@ TFPaletteButton::TFPaletteButton(QWidget* parent, TFAbstractHolder* holder, TFSi
 	setShortcut( QKeySequence(QString::fromStdString(shortcut)) );
 }
 
-TFPaletteButton::~TFPaletteButton(){
-
-	if(holder_) delete holder_;
-}
-
-void TFPaletteButton::setUpHolder(QWidget* parent){
-
-	holder_->setUp(parent, parent->rect());
-	hideHolder();
-}
-
-void TFPaletteButton::hideHolder(){
-
-	setChecked(false);
-	holder_->hide();
-}
-
-void TFPaletteButton::showHolder(){
-
-	setChecked(true);
-	holder_->show();
-}
-
-void TFPaletteButton::saveHolder(){
-
-	holder_->save();
-}
+TFPaletteButton::~TFPaletteButton(){}
 
 void TFPaletteButton::changeIndex(TFSize index){
 

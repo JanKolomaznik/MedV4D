@@ -11,12 +11,14 @@ namespace GUI {
 class TFGrayscaleHolder: public TFAbstractHolder{
 
 public:
+
 	TFGrayscaleHolder(QWidget* window);
 	~TFGrayscaleHolder();
 
-	void setUp(QWidget *parent, const QRect& rect);
+	void setUp(const TFSize& index);
 
 protected:
+
 	void updateFunction_();
 	void updatePainter_();
 	void resizePainter_(const QRect& rect);
@@ -24,6 +26,7 @@ protected:
 	TFAbstractFunction* getFunction_();
 
 private:
+
 	TFRGBaFunction function_;
 	TFGrayscalePainter painter_;
 };

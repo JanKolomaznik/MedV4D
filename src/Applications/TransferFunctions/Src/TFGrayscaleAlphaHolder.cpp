@@ -3,22 +3,19 @@
 namespace M4D {
 namespace GUI {
 
-TFGrayscaleAlphaHolder::TFGrayscaleAlphaHolder(QWidget* window){
+TFGrayscaleAlphaHolder::TFGrayscaleAlphaHolder(QWidget* window): TFAbstractHolder(window){
 
-	setParent(window);
 	type_ = TFHOLDER_GRAYSCALE_ALPHA;
 }
 
 TFGrayscaleAlphaHolder::~TFGrayscaleAlphaHolder(){}
 
-void TFGrayscaleAlphaHolder::setUp(QWidget *parent, const QRect& rect){
+void TFGrayscaleAlphaHolder::setUp(const TFSize& index){
 
+	index_ = index;
 	painter_.setUp(this);
-	size_changed(rect);
-	setParent(parent);
+	size_changed(index_, dynamic_cast<QWidget*>(parent())->rect());
 	show();
-
-	QObject::connect( &painter_, SIGNAL(FunctionChanged()), this, SLOT(on_use_clicked()));
 }
 
 void TFGrayscaleAlphaHolder::updateFunction_(){

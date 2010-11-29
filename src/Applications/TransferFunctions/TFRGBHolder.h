@@ -1,8 +1,6 @@
 #ifndef TF_RGB_HOLDER
 #define TF_RGB_HOLDER
 
-#include "common/Types.h"
-
 #include <TFAbstractHolder.h>
 #include <TFRGBaFunction.h>
 #include <TFRGBPainter.h>
@@ -13,12 +11,14 @@ namespace GUI {
 class TFRGBHolder: public TFAbstractHolder{
 
 public:
+
 	TFRGBHolder(QWidget* window);
 	~TFRGBHolder();
 
-	void setUp(QWidget *parent, const QRect& rect);
+	void setUp(const TFSize& index);
 
 protected:
+
 	void updateFunction_();
 	void updatePainter_();
 	void resizePainter_(const QRect& rect);
@@ -26,6 +26,7 @@ protected:
 	TFAbstractFunction* getFunction_();
 
 private:
+
 	TFRGBaFunction function_;
 	TFRGBPainter painter_;
 };
