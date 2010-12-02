@@ -153,6 +153,7 @@ __global__ void
 FilterKernel3D( Buffer3D< TInElement > inBuffer, Buffer3D< TOutElement > outBuffer, int3 blockResolution, TFilter filter )
 { 
 	__shared__ TInElement data[MAX_SHARED_MEMORY];
+	
 	int3 radius = filter.radius;
 	uint syStride = blockDim.x+2*radius.x;
 	uint szStride = (blockDim.x+2*radius.x) * (blockDim.y+2*radius.y);
@@ -169,14 +170,23 @@ FilterKernel3D( Buffer3D< TInElement > inBuffer, Buffer3D< TOutElement > outBuff
 	coordinates.z += threadIdx.z;
 	bool projected = ProjectionToInterval( coordinates, make_int3(0,0,0), make_int3( size.x, size.y, size.z ) );
 	
+	if( 3*tid < MAX_SHARED_MEMORY - 2 ) {
+		data[3*tid] = 1000;
+		data[3*tid+1] = 1000;
+		data[3*tid+2] = 1000;
+	}
+	__syncthreads();
+	
+
 	int idx = coordinates.x * strides.x + coordinates.y * strides.y + coordinates.z * strides.z;
 	uint sidx = (threadIdx.y+radius.y) * syStride + (threadIdx.z+radius.z) * szStride + threadIdx.x + radius.x;
 	data[sidx] = inBuffer.mData[ idx ];
 	
+	__syncthreads();
 	bool apply = true;
 	uint3 sIdx;// = threadIdx;
 	int3 mCoordinates = blockOrigin;
-	switch( threadIdx.z/*tid / (blockDim.x * blockDim.y)*/ ) {
+	switch( threadIdx.z ) {
 	case 0:
 		sIdx.x = threadIdx.x + radius.x;
 		sIdx.y = threadIdx.y + radius.y;
@@ -207,24 +217,26 @@ FilterKernel3D( Buffer3D< TInElement > inBuffer, Buffer3D< TOutElement > outBuff
 		sIdx.y = threadIdx.y + radius.y;
 		sIdx.z = threadIdx.x + radius.z;
 		break;
-	/*case 6:
+	case 6:
 		if ( threadIdx.y < 4 ) {
 			sIdx.x = threadIdx.x + radius.x;
-			sIdx.y = (threadIdx.y % 2)*(blockDim.y + radius.y);
-			sIdx.z = (threadIdx.y / 2)*(blockDim.z + radius.z);
+			sIdx.y = (threadIdx.y & 1)*(blockDim.y + radius.y);
+			sIdx.z = (threadIdx.y >> 1)*(blockDim.z + radius.z);
 		} else {
-			sIdx.x = ((threadIdx.y-4) / 2)*(blockDim.x + radius.x);
+			sIdx.x = ((threadIdx.y-4) >> 1)*(blockDim.x + radius.x);
 			sIdx.y = threadIdx.x + radius.x;
-			sIdx.z = (threadIdx.y % 2)*(blockDim.z + radius.z);
+			sIdx.z = (threadIdx.y & 1)*(blockDim.z + radius.z);
 		}
+		break;
 	case 7:
 		if ( threadIdx.y < 4 ) {
-			sIdx.x = (threadIdx.y % 2)*(blockDim.x + radius.x);
-			sIdx.y = ((threadIdx.y) / 2)*(blockDim.y + radius.y);
+			sIdx.x = (threadIdx.y & 1)*(blockDim.x + radius.x);
+			sIdx.y = ((threadIdx.y) >> 1)*(blockDim.y + radius.y);
 			sIdx.z = threadIdx.x + radius.z;
 		} else {	
 			apply = false;
-		}*/
+		}
+		break;
 	default:
 		apply = false;
 		break;
@@ -239,7 +251,7 @@ FilterKernel3D( Buffer3D< TInElement > inBuffer, Buffer3D< TOutElement > outBuff
 	__syncthreads();
 
 	if( !projected ) {
-		outBuffer.mData[idx] = filter( data, sidx, syStride, szStride );
+		outBuffer.mData[idx] = /*((blockCoordinates.x + blockCoordinates.y) % 2) * 1000;*/filter( data, sidx, syStride, szStride );
 	}
 }
 
