@@ -7,6 +7,7 @@
 
 
 #define MAX_BLOCK_SIZE 10
+#define MAX_SHARED_MEMORY 1024
 
 inline int3
 Vector3iToInt3( const Vector3i &v )
@@ -97,7 +98,7 @@ GetBlockCoordinates( int3 blockResolution, uint blockId )
 }
 
 __device__ int3
-GetBlockOrigin( int3 blockSize, int3 blockCoords )
+GetBlockOrigin( dim3 blockSize, int3 blockCoords )
 {
 	return make_int3( 
 			blockSize.x * blockCoords.x, 
@@ -147,34 +148,97 @@ GetBlockResolution( uint3 volumeSize, dim3 blockSize, int3 radius )
 			);
 }
 
-
 template< typename TInElement, typename TOutElement, typename TFilter >
 __global__ void 
 FilterKernel3D( Buffer3D< TInElement > inBuffer, Buffer3D< TOutElement > outBuffer, int3 blockResolution, TFilter filter )
 { 
-	__shared__ TInElement data[MAX_BLOCK_SIZE][MAX_BLOCK_SIZE][MAX_BLOCK_SIZE];
+	__shared__ TInElement data[MAX_SHARED_MEMORY];
+	int3 radius = filter.radius;
+	uint syStride = blockDim.x+2*radius.x;
+	uint szStride = (blockDim.x+2*radius.x) * (blockDim.y+2*radius.y);
 
 	uint3 size = inBuffer.mSize;
 	int3 strides = inBuffer.mStrides;
-	int3 radius = filter.radius;
 	uint blockId = __mul24(blockIdx.y, gridDim.x) + blockIdx.x;
-	int3 blockSize = make_int3( blockDim.x - 2*radius.x, blockDim.y - 2*radius.y, blockDim.z - 2*radius.z );
 	int3 blockCoordinates = GetBlockCoordinates ( blockResolution, blockId );
-	int3 coordinates = GetBlockOrigin( blockSize, blockCoordinates );
-	coordinates.x += threadIdx.x - radius.x;
-	coordinates.y += threadIdx.y - radius.y;
-	coordinates.z += threadIdx.z - radius.z;
+	int3 blockOrigin = GetBlockOrigin( blockDim, blockCoordinates );
+	int3 coordinates = blockOrigin;
+	uint tid = threadIdx.x + blockDim.x * threadIdx.y + blockDim.x * blockDim.y * threadIdx.z;
+	coordinates.x += threadIdx.x;
+	coordinates.y += threadIdx.y;
+	coordinates.z += threadIdx.z;
 	bool projected = ProjectionToInterval( coordinates, make_int3(0,0,0), make_int3( size.x, size.y, size.z ) );
 	
 	int idx = coordinates.x * strides.x + coordinates.y * strides.y + coordinates.z * strides.z;
-	data[threadIdx.x][threadIdx.y][threadIdx.z] = inBuffer.mData[ idx ];
+	uint sidx = (threadIdx.y+radius.y) * syStride + (threadIdx.z+radius.z) * szStride + threadIdx.x + radius.x;
+	data[sidx] = inBuffer.mData[ idx ];
+	
+	uint3 sIdx = threadIdx;
+	int3 mCoordinates = blockOrigin;
+	switch( threadIdx.z/*tid / (blockDim.x * blockDim.y)*/ ) {
+	case 0:
+		sIdx.x += radius.x;
+		sIdx.y += radius.y;
+		sIdx.z = 0;
+		break;
+	case 1:
+		sIdx.x += radius.x;
+		sIdx.y += radius.y;
+		sIdx.z = blockDim.z + radius.z;
+		break;
+	case 2:
+		sIdx.x += radius.x;
+		sIdx.y = 0;
+		sIdx.z = threadIdx.y + radius.z;
+		break;
+	case 3:
+		sIdx.x += radius.x;
+		sIdx.y = blockDim.y + radius.y;
+		sIdx.z = threadIdx.y + radius.z;
+		break;
+	case 4:
+		sIdx.x = 0;
+		sIdx.y = threadIdx.y + radius.y;
+		sIdx.z = threadIdx.x + radius.z;
+		break;
+	case 5:
+		sIdx.x = blockDim.x + radius.x;
+		sIdx.y = threadIdx.y + radius.y;
+		sIdx.z = threadIdx.x + radius.z;
+		break;
+	case 6:
+		if ( threadIdx.y < 4 ) {
+			sIdx.x += radius.x;
+			sIdx.y = (threadIdx.y % 2)*(blockDim.y + radius.y);
+			sIdx.z = (threadIdx.y / 2)*(blockDim.z + radius.z);
+		} else {
+			sIdx.x = ((threadIdx.y-4) / 2)*(blockDim.x + radius.x);
+			sIdx.y = threadIdx.x + radius.x;
+			sIdx.z = (threadIdx.y % 2)*(blockDim.z + radius.z);
+		}
+	case 7:
+		if ( threadIdx.y < 4 ) {
+			/*sIdx.x = (threadIdx.y % 2)*(blockDim.x + radius.x);
+			sIdx.y = ((threadIdx.y) / 2)*(blockDim.y + radius.y);
+			sIdx.z = threadIdx.x + radius.z;*/
+		} else {
+			/*sIdx.x = ((threadIdx.y-4) / 2)*(blockDim.x + radius.x);
+			sIdx.y = threadIdx.x + radius.x;
+			sIdx.z = (threadIdx.y % 2)*(blockDim.z + radius.z);*/
+		}
+	default:
+		break;
+	}
+	mCoordinates.x += sIdx.x - radius.x -1;
+	mCoordinates.y += sIdx.y - radius.y -1;
+	mCoordinates.z += sIdx.z - radius.z -1;
+	ProjectionToInterval( mCoordinates, make_int3(0,0,0), make_int3( size.x, size.y, size.z ) );
+	data[sIdx.y*syStride + sIdx.z*szStride + sIdx.x] = inBuffer.mData[ mCoordinates.x * strides.x + mCoordinates.y * strides.y + mCoordinates.z * strides.z ];
+
 	__syncthreads();
 
-	if( !projected &&
-		threadIdx.x != 0 && threadIdx.y != 0 && threadIdx.z != 0 &&
-		threadIdx.x != blockDim.x - 1 && threadIdx.y != blockDim.y - 1 && threadIdx.z != blockDim.z - 1 
-	  ) {
-		outBuffer.mData[idx] = filter( data, threadIdx );
+	if( !projected ) {
+		outBuffer.mData[idx] = filter( data, sidx, syStride, szStride );
 	}
 }
 

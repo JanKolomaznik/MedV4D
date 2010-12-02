@@ -11,26 +11,26 @@ struct SobelFilter3DFtor
 	{}
 
 	__device__ TElement
-	operator()( TElement data[MAX_BLOCK_SIZE][MAX_BLOCK_SIZE][MAX_BLOCK_SIZE], uint3 idx )
+	operator()( TElement data[], uint idx, uint syStride, uint szStride )
 	{
-		TElement val1 = abs( (2*static_cast<SignedElement>(data[idx.x+1][idx.y][idx.z]) - 2*static_cast<SignedElement>(data[idx.x-1][idx.y][idx.z])) 
-			+ (static_cast<SignedElement>(data[idx.x+1][idx.y+1][idx.z]) - static_cast<SignedElement>(data[idx.x-1][idx.y+1][idx.z]))
-			+ (static_cast<SignedElement>(data[idx.x+1][idx.y-1][idx.z]) - static_cast<SignedElement>(data[idx.x-1][idx.y-1][idx.z])) );
-		TElement val2 = abs( (2*static_cast<SignedElement>(data[idx.x][idx.y+1][idx.z]) - 2*static_cast<SignedElement>(data[idx.x][idx.y-1][idx.z])) 
-			+ (static_cast<SignedElement>(data[idx.x+1][idx.y+1][idx.z]) - static_cast<SignedElement>(data[idx.x+1][idx.y-1][idx.z]))
-			+ (static_cast<SignedElement>(data[idx.x-1][idx.y+1][idx.z]) - static_cast<SignedElement>(data[idx.x-1][idx.y-1][idx.z])) );
-		TElement val3 = abs( (2*static_cast<SignedElement>(data[idx.x][idx.y][idx.z+1]) - 2*static_cast<SignedElement>(data[idx.x][idx.y][idx.z-1])) 
-			+ (static_cast<SignedElement>(data[idx.x][idx.y+1][idx.z+1]) - static_cast<SignedElement>(data[idx.x][idx.y+1][idx.z-1]))
-			+ (static_cast<SignedElement>(data[idx.x][idx.y-1][idx.z+1]) - static_cast<SignedElement>(data[idx.x][idx.y-1][idx.z-1])) );
-		TElement val4 = abs( (2*static_cast<SignedElement>(data[idx.x][idx.y+1][idx.z]) - 2*static_cast<SignedElement>(data[idx.x][idx.y-1][idx.z])) 
-			+ (static_cast<SignedElement>(data[idx.x][idx.y+1][idx.z+1]) - static_cast<SignedElement>(data[idx.x][idx.y-1][idx.z+1]))
-			+ (static_cast<SignedElement>(data[idx.x][idx.y+1][idx.z-1]) - static_cast<SignedElement>(data[idx.x][idx.y-1][idx.z-1])) );
-		TElement val5 = abs( (2*static_cast<SignedElement>(data[idx.x+1][idx.y][idx.z]) - 2*static_cast<SignedElement>(data[idx.x-1][idx.y][idx.z])) 
-			+ (static_cast<SignedElement>(data[idx.x+1][idx.y][idx.z+1]) - static_cast<SignedElement>(data[idx.x-1][idx.y][idx.z+1]))
-			+ (static_cast<SignedElement>(data[idx.x+1][idx.y][idx.z-1]) - static_cast<SignedElement>(data[idx.x-1][idx.y][idx.z-1])) );
-		TElement val6 = abs( (2*static_cast<SignedElement>(data[idx.x][idx.y][idx.z+1]) - 2*static_cast<SignedElement>(data[idx.x][idx.y][idx.z-1])) 
-			+ (static_cast<SignedElement>(data[idx.x+1][idx.y][idx.z+1]) - static_cast<SignedElement>(data[idx.x+1][idx.y][idx.z-1]))
-			+ (static_cast<SignedElement>(data[idx.x-1][idx.y][idx.z+1]) - static_cast<SignedElement>(data[idx.x-1][idx.y][idx.z-1])) );
+		TElement val1 = abs( (2*static_cast<SignedElement>(data[idx+1]) - 2*static_cast<SignedElement>(data[idx-1])) 
+			+ (static_cast<SignedElement>(data[idx+1 + syStride]) - static_cast<SignedElement>(data[idx-1 + syStride]))
+			+ (static_cast<SignedElement>(data[idx+1 - syStride]) - static_cast<SignedElement>(data[idx-1 - syStride])) );
+		TElement val2 = abs( (2*static_cast<SignedElement>(data[idx+syStride]) - 2*static_cast<SignedElement>(data[idx-syStride])) 
+			+ (static_cast<SignedElement>(data[idx+1 + syStride]) - static_cast<SignedElement>(data[idx+1 - syStride]))
+			+ (static_cast<SignedElement>(data[idx-1 + syStride]) - static_cast<SignedElement>(data[idx-1 - syStride])) );
+		TElement val3 = abs( (2*static_cast<SignedElement>(data[idx+szStride]) - 2*static_cast<SignedElement>(data[idx-szStride])) 
+			+ (static_cast<SignedElement>(data[idx + syStride + szStride]) - static_cast<SignedElement>(data[idx + syStride - szStride]))
+			+ (static_cast<SignedElement>(data[idx - syStride + szStride]) - static_cast<SignedElement>(data[idx - syStride - szStride])) );
+		TElement val4 = abs( (2*static_cast<SignedElement>(data[idx + syStride]) - 2*static_cast<SignedElement>(data[idx-syStride])) 
+			+ (static_cast<SignedElement>(data[idx + syStride + szStride]) - static_cast<SignedElement>(data[idx - syStride + szStride]))
+			+ (static_cast<SignedElement>(data[idx + syStride - szStride]) - static_cast<SignedElement>(data[idx - syStride - szStride])) );
+		TElement val5 = abs( (2*static_cast<SignedElement>(data[idx+1]) - 2*static_cast<SignedElement>(data[idx-1])) 
+			+ (static_cast<SignedElement>(data[idx + 1 + szStride]) - static_cast<SignedElement>(data[idx-1 + szStride]))
+			+ (static_cast<SignedElement>(data[idx + 1 - szStride]) - static_cast<SignedElement>(data[idx-1 - szStride])) );
+		TElement val6 = abs( (2*static_cast<SignedElement>(data[idx+szStride]) - 2*static_cast<SignedElement>(data[idx-szStride])) 
+			+ (static_cast<SignedElement>(data[idx + 1 + szStride]) - static_cast<SignedElement>(data[idx +1 - szStride]))
+			+ (static_cast<SignedElement>(data[idx - 1 + szStride]) - static_cast<SignedElement>(data[idx -1 - szStride])) );
 		TElement result = val1 + val2 + val3 + val4 + val5 +val6;
 		return result > threshold ? result : 0;
 	}
@@ -46,13 +46,13 @@ struct LocalMinima3DFtor
 	{}
 
 	__device__ uint8
-	operator()( TElement data[MAX_BLOCK_SIZE][MAX_BLOCK_SIZE][MAX_BLOCK_SIZE], uint3 idx )
+	operator()( TElement data[], uint idx, uint syStride, uint szStride )
 	{
 		bool res = true;
-		for ( int i = idx.x-1; i <= idx.x+1; ++i ) {
-			for ( int j = idx.y-1; j <= idx.y+1; ++j ) {
-				for ( int k = idx.z-1; k <= idx.z+1; ++k ) {
-					res = res && data[i][j][k] >= data[idx.x][idx.y][idx.z];
+		for ( int i = idx-1; i <= idx+1; ++i ) {
+			for ( int j = i-syStride; j <= i+syStride; j+=syStride ) {
+				for ( int k = j-szStride; k <= j+szStride; k+=szStride ) {
+					res = res && data[k] >= data[idx];
 				}
 			}
 		}
@@ -141,7 +141,7 @@ ScanImage( Buffer3D< uint32 > buffer, Buffer1D< uint32 > lut, int3 blockResoluti
 	int3 strides = buffer.mStrides;
 	int3 radius = make_int3( 1, 1, 1 );
 	uint blockId = __mul24(blockIdx.y, gridDim.x) + blockIdx.x;
-	int3 blockSize = make_int3( blockDim.x - 2*radius.x, blockDim.y - 2*radius.y, blockDim.z - 2*radius.z );
+	dim3 blockSize = dim3( blockDim.x - 2*radius.x, blockDim.y - 2*radius.y, blockDim.z - 2*radius.z );
 	int3 blockCoordinates = GetBlockCoordinates ( blockResolution, blockId );
 	int3 coordinates = GetBlockOrigin( blockSize, blockCoordinates );
 	coordinates.x += threadIdx.x - radius.x;
@@ -215,6 +215,7 @@ ConnectedComponentLabeling3D( M4D::Imaging::MaskRegion3D input, M4D::Imaging::Im
 		cudaMemcpyFromSymbol( &lutUpdated, "lutUpdated", sizeof(int), 0, cudaMemcpyDeviceToHost );
 		CheckCudaErrorState( "End of iteration" );
 	}
+	cudaThreadSynchronize();
 	D_PRINT( "Computations took " << clock.SecondsPassed() )
 
 	cudaMemcpy(output.GetPointer(), outBuffer.mData, outBuffer.mLength * sizeof(uint32), cudaMemcpyDeviceToHost );
@@ -245,7 +246,7 @@ WshedEvolution( Buffer3D< uint32 > labeledRegionsBuffer, Buffer3D< TInEType > in
 	int3 strides = labeledRegionsBuffer.mStrides;
 	int3 radius = make_int3( 1, 1, 1 );
 	uint blockId = __mul24(blockIdx.y, gridDim.x) + blockIdx.x;
-	int3 blockSize = make_int3( blockDim.x - 2*radius.x, blockDim.y - 2*radius.y, blockDim.z - 2*radius.z );
+	dim3 blockSize = dim3( blockDim.x - 2*radius.x, blockDim.y - 2*radius.y, blockDim.z - 2*radius.z );
 	int3 blockCoordinates = GetBlockCoordinates ( blockResolution, blockId );
 	int3 coordinates = GetBlockOrigin( blockSize, blockCoordinates );
 	coordinates.x += threadIdx.x - radius.x;
@@ -306,7 +307,7 @@ WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarker
 		cudaMemcpyFromSymbol( &wshedUpdated, "wshedUpdated", sizeof(int), 0, cudaMemcpyDeviceToHost );
 	}
 
-
+	cudaThreadSynchronize();
 	D_PRINT( "Computations took " << clock.SecondsPassed() )
 
 	cudaFree( labeledRegionsBuffer.mData );
@@ -325,10 +326,10 @@ Sobel3D( RegionType input, RegionType output, typename RegionType::ElementType t
 	Buffer outBuffer = CudaBuffer3DFromImageRegion( output );
 
 	SobelFilter3DFtor< TElement > filter( threshold );
-	int3 radius = filter.radius;
+	//int3 radius = filter.radius;
 
-	dim3 blockSize( 10, 10, 10 );
-	int3 blockResolution = GetBlockResolution( inBuffer.mSize, blockSize, radius );
+	dim3 blockSize( 8, 8, 8 );
+	int3 blockResolution = GetBlockResolution( inBuffer.mSize, blockSize, make_int3(0,0,0) );
 	dim3 gridSize( blockResolution.x * blockResolution.y, blockResolution.z, 1 );
 
 	M4D::Common::Clock clock;
@@ -362,10 +363,10 @@ LocalMinima3D( RegionType input, M4D::Imaging::MaskRegion3D output )
 	Buffer3D< uint8 > outBuffer = CudaBuffer3DFromImageRegion( output );
 
 	LocalMinima3DFtor< TElement > filter;
-	int3 radius = filter.radius;
+	//int3 radius = filter.radius;
 
-	dim3 blockSize( 10, 10, 10 );
-	int3 blockResolution = GetBlockResolution( inBuffer.mSize, blockSize, radius );
+	dim3 blockSize( 8, 8, 8 );
+	int3 blockResolution = GetBlockResolution( inBuffer.mSize, blockSize, make_int3(0,0,0) );
 	dim3 gridSize( blockResolution.x * blockResolution.y, blockResolution.z, 1 );
 
 	M4D::Common::Clock clock;
