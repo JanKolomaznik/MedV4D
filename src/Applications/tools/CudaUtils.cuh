@@ -170,21 +170,11 @@ FilterKernel3D( Buffer3D< TInElement > inBuffer, Buffer3D< TOutElement > outBuff
 	coordinates.z += threadIdx.z;
 	bool projected = ProjectionToInterval( coordinates, make_int3(0,0,0), make_int3( size.x, size.y, size.z ) );
 	
-	if( 3*tid < MAX_SHARED_MEMORY - 2 ) {
-		data[3*tid] = 1000;
-		data[3*tid+1] = 1000;
-		data[3*tid+2] = 1000;
-	}
-	__syncthreads();
-	
-
 	int idx = coordinates.x * strides.x + coordinates.y * strides.y + coordinates.z * strides.z;
 	uint sidx = (threadIdx.y+radius.y) * syStride + (threadIdx.z+radius.z) * szStride + threadIdx.x + radius.x;
 	data[sidx] = inBuffer.mData[ idx ];
 	
-	__syncthreads();
-	bool apply = true;
-	uint3 sIdx;// = threadIdx;
+	uint3 sIdx;
 	int3 mCoordinates = blockOrigin;
 	switch( threadIdx.z ) {
 	case 0:
@@ -234,24 +224,24 @@ FilterKernel3D( Buffer3D< TInElement > inBuffer, Buffer3D< TOutElement > outBuff
 			sIdx.y = ((threadIdx.y) >> 1)*(blockDim.y + radius.y);
 			sIdx.z = threadIdx.x + radius.z;
 		} else {	
-			apply = false;
+			sIdx.x = threadIdx.x < 4 ? 0 : (blockDim.x + radius.x);
+			sIdx.y = (threadIdx.x >> 1) & 1 ? 0 : (blockDim.y + radius.y);
+			sIdx.z = threadIdx.x & 1 ? 0 : (blockDim.z + radius.z);
 		}
 		break;
 	default:
-		apply = false;
 		break;
 	}
-	if( apply ) {
 	mCoordinates.x += sIdx.x - radius.x;
 	mCoordinates.y += sIdx.y - radius.y;
 	mCoordinates.z += sIdx.z - radius.z;
 	ProjectionToInterval( mCoordinates, make_int3(0,0,0), make_int3( size.x, size.y, size.z ) );
 	data[sIdx.y*syStride + sIdx.z*szStride + sIdx.x] = inBuffer.mData[ mCoordinates.x * strides.x + mCoordinates.y * strides.y + mCoordinates.z * strides.z ];
-	}
+
 	__syncthreads();
 
 	if( !projected ) {
-		outBuffer.mData[idx] = /*((blockCoordinates.x + blockCoordinates.y) % 2) * 1000;*/filter( data, sidx, syStride, szStride );
+		outBuffer.mData[idx] = filter( data, sidx, syStride, szStride );
 	}
 }
 
