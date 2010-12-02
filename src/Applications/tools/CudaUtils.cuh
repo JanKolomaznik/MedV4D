@@ -173,26 +173,27 @@ FilterKernel3D( Buffer3D< TInElement > inBuffer, Buffer3D< TOutElement > outBuff
 	uint sidx = (threadIdx.y+radius.y) * syStride + (threadIdx.z+radius.z) * szStride + threadIdx.x + radius.x;
 	data[sidx] = inBuffer.mData[ idx ];
 	
-	uint3 sIdx = threadIdx;
+	bool apply = true;
+	uint3 sIdx;// = threadIdx;
 	int3 mCoordinates = blockOrigin;
 	switch( threadIdx.z/*tid / (blockDim.x * blockDim.y)*/ ) {
 	case 0:
-		sIdx.x += radius.x;
-		sIdx.y += radius.y;
+		sIdx.x = threadIdx.x + radius.x;
+		sIdx.y = threadIdx.y + radius.y;
 		sIdx.z = 0;
 		break;
 	case 1:
-		sIdx.x += radius.x;
-		sIdx.y += radius.y;
+		sIdx.x = threadIdx.x + radius.x;
+		sIdx.y = threadIdx.y + radius.y;
 		sIdx.z = blockDim.z + radius.z;
 		break;
 	case 2:
-		sIdx.x += radius.x;
+		sIdx.x = threadIdx.x + radius.x;
 		sIdx.y = 0;
 		sIdx.z = threadIdx.y + radius.z;
 		break;
 	case 3:
-		sIdx.x += radius.x;
+		sIdx.x = threadIdx.x + radius.x;
 		sIdx.y = blockDim.y + radius.y;
 		sIdx.z = threadIdx.y + radius.z;
 		break;
@@ -206,9 +207,9 @@ FilterKernel3D( Buffer3D< TInElement > inBuffer, Buffer3D< TOutElement > outBuff
 		sIdx.y = threadIdx.y + radius.y;
 		sIdx.z = threadIdx.x + radius.z;
 		break;
-	case 6:
+	/*case 6:
 		if ( threadIdx.y < 4 ) {
-			sIdx.x += radius.x;
+			sIdx.x = threadIdx.x + radius.x;
 			sIdx.y = (threadIdx.y % 2)*(blockDim.y + radius.y);
 			sIdx.z = (threadIdx.y / 2)*(blockDim.z + radius.z);
 		} else {
@@ -218,23 +219,23 @@ FilterKernel3D( Buffer3D< TInElement > inBuffer, Buffer3D< TOutElement > outBuff
 		}
 	case 7:
 		if ( threadIdx.y < 4 ) {
-			/*sIdx.x = (threadIdx.y % 2)*(blockDim.x + radius.x);
+			sIdx.x = (threadIdx.y % 2)*(blockDim.x + radius.x);
 			sIdx.y = ((threadIdx.y) / 2)*(blockDim.y + radius.y);
-			sIdx.z = threadIdx.x + radius.z;*/
-		} else {
-			/*sIdx.x = ((threadIdx.y-4) / 2)*(blockDim.x + radius.x);
-			sIdx.y = threadIdx.x + radius.x;
-			sIdx.z = (threadIdx.y % 2)*(blockDim.z + radius.z);*/
-		}
+			sIdx.z = threadIdx.x + radius.z;
+		} else {	
+			apply = false;
+		}*/
 	default:
+		apply = false;
 		break;
 	}
-	mCoordinates.x += sIdx.x - radius.x -1;
-	mCoordinates.y += sIdx.y - radius.y -1;
-	mCoordinates.z += sIdx.z - radius.z -1;
+	if( apply ) {
+	mCoordinates.x += sIdx.x - radius.x;
+	mCoordinates.y += sIdx.y - radius.y;
+	mCoordinates.z += sIdx.z - radius.z;
 	ProjectionToInterval( mCoordinates, make_int3(0,0,0), make_int3( size.x, size.y, size.z ) );
 	data[sIdx.y*syStride + sIdx.z*szStride + sIdx.x] = inBuffer.mData[ mCoordinates.x * strides.x + mCoordinates.y * strides.y + mCoordinates.z * strides.z ];
-
+	}
 	__syncthreads();
 
 	if( !projected ) {
