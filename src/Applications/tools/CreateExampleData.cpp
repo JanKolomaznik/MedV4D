@@ -1,4 +1,5 @@
 #include "Imaging/ImageFactory.h"
+#include "common/Common.h"
 #include <iostream>
 #include <sstream>
 
@@ -18,15 +19,13 @@ main( int argc, char** argv )
 
 	std::string fileName = argv[1];
 
-	unsigned size = 64;
-	M4D::Imaging::Image< uint8, 3 >::Ptr image =
-	M4D::Imaging::ImageFactory::CreateEmptyImage3DTyped< uint8 >( size, size, size );
+	unsigned size = 256;
+	M4D::Imaging::Image< uint16, 3 >::Ptr image =
+	M4D::Imaging::ImageFactory::CreateEmptyImage3DTyped< uint16 >( size, size, size );
 	for( unsigned i=0; i<size; ++i ) {
 		for( unsigned j=0; j<size; ++j ) {
 			for ( unsigned k=0; k<size; ++k ) {
-				//image->GetElement( i, j ) = ((i>>4)+(j>>4)) & 1 ? 0 : 255;
-				//image->GetElement( i, j ) = (/*(i>>4)+*/(j)) & 0xf ? 0 : 255;
-				image->GetElement( Vector< int32, 3 >( i, j, k ) ) = i%5 * 45 * k%2;
+				image->GetElement( Vector< int32, 3 >( i, j, k ) ) = ClampToInterval<uint32>( 10, 1000, Abs( Sqr(i-128) + Sqr(j-128)  - 500 ) );
 			}
 		}
 	}

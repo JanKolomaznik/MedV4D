@@ -66,11 +66,11 @@ __device__ int lutUpdated;
 
 #define min_valid(a, b) (a < b ? a == 0 ? b : a : b == 0 ? a : b)
 __device__ uint32
-ValidMin( uint32 data[MAX_BLOCK_SIZE][MAX_BLOCK_SIZE][MAX_BLOCK_SIZE], uint3 idx )
+ValidMin( uint32 data[], uint idx, uint syStride, uint szStride )
 {
-	uint32 value1 = min_valid( data[idx.x-1][idx.y][idx.z], data[idx.x-1][idx.y][idx.z] );
-	uint32 value2 = min_valid( data[idx.x][idx.y-1][idx.z], data[idx.x][idx.y+1][idx.z] );
-	uint32 value3 = min_valid( data[idx.x][idx.y][idx.z-1], data[idx.x][idx.y][idx.z+1] );
+	uint32 value1 = min_valid( data[idx-1], data[idx+1] );
+	uint32 value2 = min_valid( data[idx-syStride], data[idx+syStride] );
+	uint32 value3 = min_valid( data[idx-szStride], data[idx+szStride] );
 	uint32 value = min_valid( value1, value2 );
 	return min_valid( value, value3 );
 }
@@ -135,31 +135,98 @@ UpdateLabels( Buffer3D< uint32 > buffer, Buffer1D< uint32 > lut )
 __global__ void 
 ScanImage( Buffer3D< uint32 > buffer, Buffer1D< uint32 > lut, int3 blockResolution )
 {
-	__shared__ uint32 data[MAX_BLOCK_SIZE][MAX_BLOCK_SIZE][MAX_BLOCK_SIZE];
+	__shared__ uint32 data[MAX_SHARED_MEMORY];
+	
+	int3 radius = make_int3(1,1,1);
+	uint syStride = blockDim.x+2*radius.x;
+	uint szStride = (blockDim.x+2*radius.x) * (blockDim.y+2*radius.y);
 
 	uint3 size = buffer.mSize;
 	int3 strides = buffer.mStrides;
-	int3 radius = make_int3( 1, 1, 1 );
 	uint blockId = __mul24(blockIdx.y, gridDim.x) + blockIdx.x;
-	dim3 blockSize = dim3( blockDim.x - 2*radius.x, blockDim.y - 2*radius.y, blockDim.z - 2*radius.z );
 	int3 blockCoordinates = GetBlockCoordinates ( blockResolution, blockId );
-	int3 coordinates = GetBlockOrigin( blockSize, blockCoordinates );
-	coordinates.x += threadIdx.x - radius.x;
-	coordinates.y += threadIdx.y - radius.y;
-	coordinates.z += threadIdx.z - radius.z;
+	int3 blockOrigin = GetBlockOrigin( blockDim, blockCoordinates );
+	int3 coordinates = blockOrigin;
+	//uint tid = threadIdx.x + blockDim.x * threadIdx.y + blockDim.x * blockDim.y * threadIdx.z;
+	coordinates.x += threadIdx.x;
+	coordinates.y += threadIdx.y;
+	coordinates.z += threadIdx.z;
 	bool projected = ProjectionToInterval( coordinates, make_int3(0,0,0), make_int3( size.x, size.y, size.z ) );
 	
 	int idx = coordinates.x * strides.x + coordinates.y * strides.y + coordinates.z * strides.z;
-	data[threadIdx.x][threadIdx.y][threadIdx.z] = buffer.mData[ idx ];
+	uint sidx = (threadIdx.y+radius.y) * syStride + (threadIdx.z+radius.z) * szStride + threadIdx.x + radius.x;
+	data[sidx] = buffer.mData[ idx ];
+	
+	uint3 sIdx;
+	int3 mCoordinates = blockOrigin;
+	switch( threadIdx.z ) {
+	case 0:
+		sIdx.x = threadIdx.x + radius.x;
+		sIdx.y = threadIdx.y + radius.y;
+		sIdx.z = 0;
+		break;
+	case 1:
+		sIdx.x = threadIdx.x + radius.x;
+		sIdx.y = threadIdx.y + radius.y;
+		sIdx.z = blockDim.z + radius.z;
+		break;
+	case 2:
+		sIdx.x = threadIdx.x + radius.x;
+		sIdx.y = 0;
+		sIdx.z = threadIdx.y + radius.z;
+		break;
+	case 3:
+		sIdx.x = threadIdx.x + radius.x;
+		sIdx.y = blockDim.y + radius.y;
+		sIdx.z = threadIdx.y + radius.z;
+		break;
+	case 4:
+		sIdx.x = 0;
+		sIdx.y = threadIdx.y + radius.y;
+		sIdx.z = threadIdx.x + radius.z;
+		break;
+	case 5:
+		sIdx.x = blockDim.x + radius.x;
+		sIdx.y = threadIdx.y + radius.y;
+		sIdx.z = threadIdx.x + radius.z;
+		break;
+	case 6:
+		if ( threadIdx.y < 4 ) {
+			sIdx.x = threadIdx.x + radius.x;
+			sIdx.y = (threadIdx.y & 1)*(blockDim.y + radius.y);
+			sIdx.z = (threadIdx.y >> 1)*(blockDim.z + radius.z);
+		} else {
+			sIdx.x = ((threadIdx.y-4) >> 1)*(blockDim.x + radius.x);
+			sIdx.y = threadIdx.x + radius.x;
+			sIdx.z = (threadIdx.y & 1)*(blockDim.z + radius.z);
+		}
+		break;
+	case 7:
+		if ( threadIdx.y < 4 ) {
+			sIdx.x = (threadIdx.y & 1)*(blockDim.x + radius.x);
+			sIdx.y = ((threadIdx.y) >> 1)*(blockDim.y + radius.y);
+			sIdx.z = threadIdx.x + radius.z;
+		} else {	
+			sIdx.x = threadIdx.x < 4 ? 0 : (blockDim.x + radius.x);
+			sIdx.y = (threadIdx.x >> 1) & 1 ? 0 : (blockDim.y + radius.y);
+			sIdx.z = threadIdx.x & 1 ? 0 : (blockDim.z + radius.z);
+		}
+		break;
+	default:
+		break;
+	}
+	mCoordinates.x += sIdx.x - radius.x;
+	mCoordinates.y += sIdx.y - radius.y;
+	mCoordinates.z += sIdx.z - radius.z;
+	ProjectionToInterval( mCoordinates, make_int3(0,0,0), make_int3( size.x, size.y, size.z ) );
+	data[sIdx.y*syStride + sIdx.z*szStride + sIdx.x] = buffer.mData[ mCoordinates.x * strides.x + mCoordinates.y * strides.y + mCoordinates.z * strides.z ];
+
 	__syncthreads();
 
-	if( !projected &&
-		threadIdx.x != 0 && threadIdx.y != 0 && threadIdx.z != 0 &&
-		threadIdx.x != blockDim.x - 1 && threadIdx.y != blockDim.y - 1 && threadIdx.z != blockDim.z - 1 
-	  ) {
-		uint32 current = buffer.mData[idx];
+	if( !projected ) {
+		uint32 current = data[sidx];
 		if ( current != 0 ) {
-			uint32 minLabel = ValidMin( data, threadIdx );
+			uint32 minLabel = ValidMin( data, sidx, syStride, szStride );
 			if ( minLabel < current && minLabel != 0) {
 				lut.mData[current-1] = minLabel < lut.mData[current-1] ? minLabel : lut.mData[current-1];
 				lutUpdated = 1;
@@ -180,19 +247,21 @@ ConnectedComponentLabeling3D( M4D::Imaging::MaskRegion3D input, M4D::Imaging::Im
 	dim3 blockSize1D( 512 );
 	dim3 gridSize1D( (inBuffer.mLength + 64*blockSize1D.x - 1) / (64*blockSize1D.x) , 64 );
 	
-	dim3 blockSize3D( 10, 10, 10 );
-	int3 blockResolution3D = GetBlockResolution( inBuffer.mSize, blockSize3D, radius );
+	dim3 blockSize3D( 8, 8, 8 );
+	int3 blockResolution3D = GetBlockResolution( inBuffer.mSize, blockSize3D, make_int3(0,0,0) );
 	dim3 gridSize3D( blockResolution3D.x * blockResolution3D.y, blockResolution3D.z, 1 );
 
 	M4D::Common::Clock clock;
 
 	CheckCudaErrorState( "Before execution" );
 	CopyMask<<< gridSize1D, blockSize1D >>>( inBuffer, outBuffer );
+	CheckCudaErrorState( "After CopyMask()" );
 	cudaFree( inBuffer.mData );
 
 	Buffer1D< uint32 > lut = CudaAllocateBuffer<uint32>( outBuffer.mLength ); 
 
 	InitLut<<< gridSize1D, blockSize1D >>>( outBuffer, lut );
+	CheckCudaErrorState( "After InitLut()" );
 	ScanImage<<< gridSize3D, blockSize3D >>>( 
 					outBuffer, 
 					lut,
@@ -202,6 +271,7 @@ ConnectedComponentLabeling3D( M4D::Imaging::MaskRegion3D input, M4D::Imaging::Im
 	CheckCudaErrorState( "Before iterations" );
 	cudaMemcpyFromSymbol( &lutUpdated, "lutUpdated", sizeof(int), 0, cudaMemcpyDeviceToHost );
 	while (lutUpdated != 0) {
+		LOG( ">" );
                 cudaMemcpyToSymbol( "lutUpdated", &(lutUpdated = 0), sizeof(int), 0, cudaMemcpyHostToDevice );
 
 		UpdateLut<<< gridSize1D, blockSize1D >>>( outBuffer, lut );
@@ -224,6 +294,9 @@ ConnectedComponentLabeling3D( M4D::Imaging::MaskRegion3D input, M4D::Imaging::Im
 	cudaFree( lut.mData );
 }
 
+
+__device__ int wshedUpdated;
+
 template< typename TEType >
 __global__ void 
 InitWatershedBuffers( Buffer3D< uint32 > labeledRegionsBuffer, Buffer3D< TEType > tmpBuffer, TEType infinity )
@@ -232,7 +305,7 @@ InitWatershedBuffers( Buffer3D< uint32 > labeledRegionsBuffer, Buffer3D< TEType 
 	int idx = blockId * blockDim.x + threadIdx.x;
 
 	if ( idx < tmpBuffer.mLength ) {
-		tmpBuffer.mData[idx] = labeledRegionsBuffer.mData[idx] != 0 ? infinity : 0;
+		tmpBuffer.mData[idx] = labeledRegionsBuffer.mData[idx] == 0 ? infinity : 0;
 	}
 }
 
@@ -253,7 +326,7 @@ WShedEvolution( Buffer3D< uint32 > labeledRegionsBuffer, Buffer3D< TInEType > in
 	int3 blockCoordinates = GetBlockCoordinates ( blockResolution, blockId );
 	int3 blockOrigin = GetBlockOrigin( blockDim, blockCoordinates );
 	int3 coordinates = blockOrigin;
-	uint tid = threadIdx.x + blockDim.x * threadIdx.y + blockDim.x * blockDim.y * threadIdx.z;
+	//uint tid = threadIdx.x + blockDim.x * threadIdx.y + blockDim.x * blockDim.y * threadIdx.z;
 	coordinates.x += threadIdx.x;
 	coordinates.y += threadIdx.y;
 	coordinates.z += threadIdx.z;
@@ -333,7 +406,24 @@ WShedEvolution( Buffer3D< uint32 > labeledRegionsBuffer, Buffer3D< TInEType > in
 	__syncthreads();
 
 	if( !projected ) {
-		//outBuffer.mData[idx] = filter( data, sidx, syStride, szStride );
+		int minIdx = -1;
+		TInEType value = inputBuffer.mData[ idx ];
+		TTmpEType minVal = tmpValues[ sidx ] - value;
+		for ( int i = idx-1; i <= idx+1; ++i ) {
+			for ( int j = i-syStride; j <= i+syStride; j+=syStride ) {
+				for ( int k = j-szStride; k <= j+szStride; k+=szStride ) {
+					if( tmpValues[ k ] < minVal ) {
+						minVal = tmpValues[ k ];
+						minIdx = k;
+					}
+				}
+			}
+		}
+		if( minIdx != -1 ) {
+			labeledRegionsBuffer.mData[ idx ] = labels[ sidx ];
+			tmpBuffer.mData[ idx ] = tmpValues[minIdx] + value;
+			wshedUpdated = 1;
+		}
 	}
 }
 
@@ -352,15 +442,18 @@ WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarker
 	dim3 gridSize1D( (inputBuffer.mLength + 64*blockSize1D.x - 1) / (64*blockSize1D.x) , 64 );
 
 	dim3 blockSize3D( 8, 8, 8 );
-	int3 blockResolution3D = GetBlockResolution( inputBuffer.mSize, blockSize3D, radius );
+	int3 blockResolution3D = GetBlockResolution( inputBuffer.mSize, blockSize3D, make_int3(0,0,0) );
 	dim3 gridSize3D( blockResolution3D.x * blockResolution3D.y, blockResolution3D.z, 1 );
 
 	M4D::Common::Clock clock;
-	InitWatershedBuffers<<< gridSize1D, blockSize1D >>>( labeledRegionsBuffer, tmpBuffer, 100000 );
+	D_PRINT( "InitWatershedBuffers()" );
+	InitWatershedBuffers<<< gridSize1D, blockSize1D >>>( labeledRegionsBuffer, tmpBuffer, TypeTraits<TEType>::Max );
 
-	while (wshedUpdated != 0) {
+	unsigned i = 0;
+	while (wshedUpdated != 0 && i < 150) {
 		cudaMemcpyToSymbol( "wshedUpdated", &(wshedUpdated = 0), sizeof(int), 0, cudaMemcpyHostToDevice );
 
+		//D_PRINT( "WShedEvolution()" );
 		WShedEvolution<<< gridSize3D, blockSize3D >>>( 
 					labeledRegionsBuffer,
 				       	inputBuffer,	
@@ -369,6 +462,7 @@ WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarker
 					);
 
 		cudaMemcpyFromSymbol( &wshedUpdated, "wshedUpdated", sizeof(int), 0, cudaMemcpyDeviceToHost );
+		++i;
 	}
 
 	cudaThreadSynchronize();
@@ -477,3 +571,14 @@ template void LocalMinima3D( M4D::Imaging::ImageRegion< int64, 3 > input, M4D::I
 template void LocalMinima3D( M4D::Imaging::ImageRegion< uint64, 3 > input, M4D::Imaging::MaskRegion3D output );
 template void LocalMinima3D( M4D::Imaging::ImageRegion< float, 3 > input, M4D::Imaging::MaskRegion3D output );
 template void LocalMinima3D( M4D::Imaging::ImageRegion< double, 3 > input, M4D::Imaging::MaskRegion3D output );
+
+template void WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< int8, 3 > aInput, M4D::Imaging::ImageRegion< uint32, 3 > aOutput );
+template void WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< uint8, 3 > aInput, M4D::Imaging::ImageRegion< uint32, 3 > aOutput );
+template void WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< int16, 3 > aInput, M4D::Imaging::ImageRegion< uint32, 3 > aOutput );
+template void WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< uint16, 3 > aInput, M4D::Imaging::ImageRegion< uint32, 3 > aOutput );
+template void WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< int32, 3 > aInput, M4D::Imaging::ImageRegion< uint32, 3 > aOutput );
+template void WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< uint32, 3 > aInput, M4D::Imaging::ImageRegion< uint32, 3 > aOutput );
+template void WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< int64, 3 > aInput, M4D::Imaging::ImageRegion< uint32, 3 > aOutput );
+template void WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< uint64, 3 > aInput, M4D::Imaging::ImageRegion< uint32, 3 > aOutput );
+template void WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< float, 3 > aInput, M4D::Imaging::ImageRegion< uint32, 3 > aOutput );
+template void WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< double, 3 > aInput, M4D::Imaging::ImageRegion< uint32, 3 > aOutput );

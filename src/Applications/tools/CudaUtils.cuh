@@ -164,7 +164,7 @@ FilterKernel3D( Buffer3D< TInElement > inBuffer, Buffer3D< TOutElement > outBuff
 	int3 blockCoordinates = GetBlockCoordinates ( blockResolution, blockId );
 	int3 blockOrigin = GetBlockOrigin( blockDim, blockCoordinates );
 	int3 coordinates = blockOrigin;
-	uint tid = threadIdx.x + blockDim.x * threadIdx.y + blockDim.x * blockDim.y * threadIdx.z;
+	//uint tid = threadIdx.x + blockDim.x * threadIdx.y + blockDim.x * blockDim.y * threadIdx.z;
 	coordinates.x += threadIdx.x;
 	coordinates.y += threadIdx.y;
 	coordinates.z += threadIdx.z;
