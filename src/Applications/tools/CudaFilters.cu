@@ -48,15 +48,15 @@ struct LocalMinima3DFtor
 	__device__ uint8
 	operator()( TElement data[], uint idx, uint syStride, uint szStride )
 	{
-		bool res = true;
+		TElement value = data[idx];
 		for ( int i = idx-1; i <= idx+1; ++i ) {
 			for ( int j = i-syStride; j <= i+syStride; j+=syStride ) {
 				for ( int k = j-szStride; k <= j+szStride; k+=szStride ) {
-					res = res && data[k] >= data[idx];
+					value = min( data[k], value );
 				}
 			}
 		}
-		return res ? 255 : 0;
+		return value >= data[idx] ? 255 : 0;
 	}
 	int3 radius;
 };
@@ -238,38 +238,102 @@ InitWatershedBuffers( Buffer3D< uint32 > labeledRegionsBuffer, Buffer3D< TEType 
 
 template< typename TInEType, typename TTmpEType >
 __global__ void 
-WshedEvolution( Buffer3D< uint32 > labeledRegionsBuffer, Buffer3D< TInEType > inputBuffer, Buffer3D< TTmpEType > tmpBuffer, int3 blockResolution )
+WShedEvolution( Buffer3D< uint32 > labeledRegionsBuffer, Buffer3D< TInEType > inputBuffer, Buffer3D< TTmpEType > tmpBuffer, int3 blockResolution )
 {
-	__shared__ uint32 data[MAX_BLOCK_SIZE][MAX_BLOCK_SIZE][MAX_BLOCK_SIZE];
+	__shared__ uint32 labels[MAX_SHARED_MEMORY];
+	__shared__ TTmpEType tmpValues[MAX_SHARED_MEMORY];
+	
+	int3 radius = make_int3(0,0,0);
+	uint syStride = blockDim.x+2*radius.x;
+	uint szStride = (blockDim.x+2*radius.x) * (blockDim.y+2*radius.y);
 
-	uint3 size = labeledRegionsBuffer.mSize;
-	int3 strides = labeledRegionsBuffer.mStrides;
-	int3 radius = make_int3( 1, 1, 1 );
+	uint3 size = inputBuffer.mSize;
+	int3 strides = inputBuffer.mStrides;
 	uint blockId = __mul24(blockIdx.y, gridDim.x) + blockIdx.x;
-	dim3 blockSize = dim3( blockDim.x - 2*radius.x, blockDim.y - 2*radius.y, blockDim.z - 2*radius.z );
 	int3 blockCoordinates = GetBlockCoordinates ( blockResolution, blockId );
-	int3 coordinates = GetBlockOrigin( blockSize, blockCoordinates );
-	coordinates.x += threadIdx.x - radius.x;
-	coordinates.y += threadIdx.y - radius.y;
-	coordinates.z += threadIdx.z - radius.z;
+	int3 blockOrigin = GetBlockOrigin( blockDim, blockCoordinates );
+	int3 coordinates = blockOrigin;
+	uint tid = threadIdx.x + blockDim.x * threadIdx.y + blockDim.x * blockDim.y * threadIdx.z;
+	coordinates.x += threadIdx.x;
+	coordinates.y += threadIdx.y;
+	coordinates.z += threadIdx.z;
 	bool projected = ProjectionToInterval( coordinates, make_int3(0,0,0), make_int3( size.x, size.y, size.z ) );
 	
 	int idx = coordinates.x * strides.x + coordinates.y * strides.y + coordinates.z * strides.z;
-	data[threadIdx.x][threadIdx.y][threadIdx.z] = labeledRegionsBuffer.mData[ idx ];
+	uint sidx = (threadIdx.y+radius.y) * syStride + (threadIdx.z+radius.z) * szStride + threadIdx.x + radius.x;
+	labels[sidx] = labeledRegionsBuffer.mData[ idx ];
+	tmpValues[sidx] = tmpBuffer.mData[ idx ];
+	
+	uint3 sIdx;
+	int3 mCoordinates = blockOrigin;
+	switch( threadIdx.z ) {
+	case 0:
+		sIdx.x = threadIdx.x + radius.x;
+		sIdx.y = threadIdx.y + radius.y;
+		sIdx.z = 0;
+		break;
+	case 1:
+		sIdx.x = threadIdx.x + radius.x;
+		sIdx.y = threadIdx.y + radius.y;
+		sIdx.z = blockDim.z + radius.z;
+		break;
+	case 2:
+		sIdx.x = threadIdx.x + radius.x;
+		sIdx.y = 0;
+		sIdx.z = threadIdx.y + radius.z;
+		break;
+	case 3:
+		sIdx.x = threadIdx.x + radius.x;
+		sIdx.y = blockDim.y + radius.y;
+		sIdx.z = threadIdx.y + radius.z;
+		break;
+	case 4:
+		sIdx.x = 0;
+		sIdx.y = threadIdx.y + radius.y;
+		sIdx.z = threadIdx.x + radius.z;
+		break;
+	case 5:
+		sIdx.x = blockDim.x + radius.x;
+		sIdx.y = threadIdx.y + radius.y;
+		sIdx.z = threadIdx.x + radius.z;
+		break;
+	case 6:
+		if ( threadIdx.y < 4 ) {
+			sIdx.x = threadIdx.x + radius.x;
+			sIdx.y = (threadIdx.y & 1)*(blockDim.y + radius.y);
+			sIdx.z = (threadIdx.y >> 1)*(blockDim.z + radius.z);
+		} else {
+			sIdx.x = ((threadIdx.y-4) >> 1)*(blockDim.x + radius.x);
+			sIdx.y = threadIdx.x + radius.x;
+			sIdx.z = (threadIdx.y & 1)*(blockDim.z + radius.z);
+		}
+		break;
+	case 7:
+		if ( threadIdx.y < 4 ) {
+			sIdx.x = (threadIdx.y & 1)*(blockDim.x + radius.x);
+			sIdx.y = ((threadIdx.y) >> 1)*(blockDim.y + radius.y);
+			sIdx.z = threadIdx.x + radius.z;
+		} else {	
+			sIdx.x = threadIdx.x < 4 ? 0 : (blockDim.x + radius.x);
+			sIdx.y = (threadIdx.x >> 1) & 1 ? 0 : (blockDim.y + radius.y);
+			sIdx.z = threadIdx.x & 1 ? 0 : (blockDim.z + radius.z);
+		}
+		break;
+	default:
+		break;
+	}
+	mCoordinates.x += sIdx.x - radius.x;
+	mCoordinates.y += sIdx.y - radius.y;
+	mCoordinates.z += sIdx.z - radius.z;
+	ProjectionToInterval( mCoordinates, make_int3(0,0,0), make_int3( size.x, size.y, size.z ) );
+
+	labels[sIdx.y*syStride + sIdx.z*szStride + sIdx.x] = labeledRegionsBuffer.mData[ mCoordinates.x * strides.x + mCoordinates.y * strides.y + mCoordinates.z * strides.z ];
+	tmpValues[sIdx.y*syStride + sIdx.z*szStride + sIdx.x] = tmpBuffer.mData[ mCoordinates.x * strides.x + mCoordinates.y * strides.y + mCoordinates.z * strides.z ];
+
 	__syncthreads();
 
-	if( !projected &&
-		threadIdx.x != 0 && threadIdx.y != 0 && threadIdx.z != 0 &&
-		threadIdx.x != blockDim.x - 1 && threadIdx.y != blockDim.y - 1 && threadIdx.z != blockDim.z - 1 
-	  ) {
-		/*uint32 current = buffer.mData[idx];
-		if ( current != 0 ) {
-			uint32 minLabel = ValidMin( data, threadIdx );
-			if ( minLabel < current && minLabel != 0) {
-				lut.mData[current-1] = minLabel < lut.mData[current-1] ? minLabel : lut.mData[current-1];
-				lutUpdated = 1;
-			}
-		}*/
+	if( !projected ) {
+		//outBuffer.mData[idx] = filter( data, sidx, syStride, szStride );
 	}
 }
 
@@ -287,7 +351,7 @@ WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarker
 	dim3 blockSize1D( 512 );
 	dim3 gridSize1D( (inputBuffer.mLength + 64*blockSize1D.x - 1) / (64*blockSize1D.x) , 64 );
 
-	dim3 blockSize3D( 10, 10, 10 );
+	dim3 blockSize3D( 8, 8, 8 );
 	int3 blockResolution3D = GetBlockResolution( inputBuffer.mSize, blockSize3D, radius );
 	dim3 gridSize3D( blockResolution3D.x * blockResolution3D.y, blockResolution3D.z, 1 );
 
@@ -297,7 +361,7 @@ WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarker
 	while (wshedUpdated != 0) {
 		cudaMemcpyToSymbol( "wshedUpdated", &(wshedUpdated = 0), sizeof(int), 0, cudaMemcpyHostToDevice );
 
-		WshedEvolution<<< gridSize3D, blockSize3D >>>( 
+		WShedEvolution<<< gridSize3D, blockSize3D >>>( 
 					labeledRegionsBuffer,
 				       	inputBuffer,	
 					tmpBuffer,
