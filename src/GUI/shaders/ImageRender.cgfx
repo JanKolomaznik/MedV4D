@@ -38,6 +38,13 @@ float2 gWLWindow;
 sampler1D gColorMap;
 float gMaskAlpha;
 
+
+float3
+PreventInterpolation( float3 aTexCoord, float3 aImageDataResolution3D )
+{
+	return aTexCoord;
+}
+
 float3 BlinnPhongShading( float3 N, float3 V, float3 L, Material material, Light light )
 {
 	//half way vector
@@ -68,7 +75,8 @@ ApplyTransferFunction1D( float value, sampler1D aTransferFunction1D, float2 aTra
 	return tex1D( aTransferFunction1D, remappedValue );
 }
 
-FragmentOutput fp_WLWindow_3D( 
+FragmentOutput 
+fp_WLWindow_3D( 
 		float3 aTexCoord : TEXCOORD0, 
 		uniform sampler3D aTextureData : TEX0, 
 		uniform float3 aWLWindow,
@@ -91,7 +99,8 @@ FragmentOutput fp_WLWindow_3D(
 	return OUT;
 }
 
-FragmentOutput fp_TransferFunction1D_3D( 
+FragmentOutput 
+fp_TransferFunction1D_3D( 
 		float3 aTexCoord : TEXCOORD0, 
 		uniform sampler3D aTextureData : TEX0,
 		uniform sampler1D aTransferFunction1D : TEX1,
@@ -114,7 +123,8 @@ FragmentOutput fp_TransferFunction1D_3D(
 	return OUT;
 }
 
-FragmentOutput fp_TransferFunction1DShading_3D( 
+FragmentOutput 
+fp_TransferFunction1DShading_3D( 
 		float3 aTexCoord : TEXCOORD0, 
 		uniform sampler3D aTextureData : TEX0,
 		uniform sampler1D aTransferFunction1D : TEX1,
@@ -169,7 +179,8 @@ FragmentOutput fp_TransferFunction1DShading_3D(
 }
 
 
-FragmentOutput fp_ColorMappedMask_3D( 
+FragmentOutput 
+fp_ColorMappedMask_3D( 
 		float3 aTexCoord : TEXCOORD0, 
 		uniform sampler3D aMaskData : TEX0, 
 		uniform sampler1D aColorMap : TEX1, 
@@ -189,17 +200,37 @@ FragmentOutput fp_Test()
 	return OUT;
 }
 
+/*FragmentOutput
+SimpleRegionColorMap_3D(
+		float3 aTexCoord : TEXCOORD0, 
+		uniform sampler3D aTextureData : TEX0,
+		uniform float3 aImageDataResolution3D,
+		uniform float2 aMappedIntervalBands )
+{
+	FragmentOutput OUT;
+	float3 coordinates = PreventInterpolation( aTexCoord );
+	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
+	unsigned int value = tex3D( aTextureData, coordinates ).x * range;
+
+	OUT.color.r = float((value % 997) % 256) / 256;
+	OUT.color.g = float((value % 1013) % 256);
+	OUT.color.b = float((value % 1237) % 256);
+	OUT.color.a = 1.0f;
+	return OUT;
+}*/
+
+
 technique WLWindow_3D {
 	pass t0 {
 		FragmentProgram = compile glslf fp_WLWindow_3D( 
-											gImageData3D, 
-											float3( 
-												gWLWindow.x / (gMappedIntervalBands[1] - gMappedIntervalBands[0]), 
-												gWLWindow.y / (gMappedIntervalBands[1] - gMappedIntervalBands[0]),
-												(gMappedIntervalBands[1] - gMappedIntervalBands[0])/ gWLWindow.x 
-												), 
-											gImageDataResolution3D 
-											);
+							gImageData3D, 
+							float3( 
+								gWLWindow.x / (gMappedIntervalBands[1] - gMappedIntervalBands[0]), 
+								gWLWindow.y / (gMappedIntervalBands[1] - gMappedIntervalBands[0]),
+								(gMappedIntervalBands[1] - gMappedIntervalBands[0])/ gWLWindow.x 
+								), 
+							gImageDataResolution3D 
+							);
 	}
 }
 
