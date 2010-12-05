@@ -70,7 +70,8 @@ ViewerWindow::changeViewerType( int aRendererType )
 {
 	D_PRINT( "Change viewer type" );
 	if ( aRendererType == M4D::GUI::rt3D 
-		&& mViewer->GetColorTransformType() == M4D::GUI::ctLUTWindow ) 
+		&& ( mViewer->GetColorTransformType() == M4D::GUI::ctLUTWindow 
+		|| mViewer->GetColorTransformType() == M4D::GUI::ctSimpleColorMap ) ) 
 	{
 		changeColorMapType( M4D::GUI::ctTransferFunction1D );
 	}

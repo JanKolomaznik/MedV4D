@@ -120,6 +120,9 @@ ImageDataRenderer::RenderAlignedSlices()
 			techniqueName = "TransferFunction1D_3DNoBlending";
 		}
 		break;
+	case ctSimpleColorMap:
+		techniqueName = "SimpleRegionColorMap_3D";
+		break;
 	case ctMaxIntensityProjection:
 		ASSERT( false );
 		break;
@@ -184,9 +187,6 @@ ImageDataRenderer::RenderVolume()
 
 	std::string techniqueName;
 	switch ( mColorTransform ) {
-	case ctLUTWindow:
-		ASSERT( false );
-		break;
 	case ctTransferFunction1D:
 		{
 			_cgEffect.SetTextureParameter( "gTransferFunction1D", mTransferFunctionTexture->GetTextureID() );

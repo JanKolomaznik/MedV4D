@@ -42,7 +42,10 @@ float gMaskAlpha;
 float3
 PreventInterpolation( float3 aTexCoord, float3 aImageDataResolution3D )
 {
-	return aTexCoord;
+	float3 elementSize = 1.0f / aImageDataResolution3D;
+	
+	float3 coord = round( aTexCoord / elementSize );
+	return coord + 0.5f * elementSize;
 }
 
 float3 BlinnPhongShading( float3 N, float3 V, float3 L, Material material, Light light )
@@ -200,24 +203,23 @@ FragmentOutput fp_Test()
 	return OUT;
 }
 
-/*FragmentOutput
-SimpleRegionColorMap_3D(
+FragmentOutput
+fp_SimpleRegionColorMap_3D(
 		float3 aTexCoord : TEXCOORD0, 
 		uniform sampler3D aTextureData : TEX0,
 		uniform float3 aImageDataResolution3D,
-		uniform float2 aMappedIntervalBands )
+		uniform float aRange )
 {
 	FragmentOutput OUT;
-	float3 coordinates = PreventInterpolation( aTexCoord );
-	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
-	unsigned int value = tex3D( aTextureData, coordinates ).x * range;
+	float3 coordinates = PreventInterpolation( aTexCoord, aImageDataResolution3D );
+	unsigned int value = tex3D( aTextureData, coordinates ).x * aRange;
 
 	OUT.color.r = float((value % 997) % 256) / 256;
-	OUT.color.g = float((value % 1013) % 256);
-	OUT.color.b = float((value % 1237) % 256);
+	OUT.color.g = float((value % 1013) % 256) / 256;
+	OUT.color.b = float((value % 1237) % 256) / 256;
 	OUT.color.a = 1.0f;
 	return OUT;
-}*/
+}
 
 
 technique WLWindow_3D {
@@ -295,6 +297,15 @@ technique WLWindowMIP_3D  {
 	}
 }
 
+technique SimpleRegionColorMap_3D {
+	pass t0 {
+		FragmentProgram = compile glslf fp_SimpleRegionColorMap_3D( 
+							gImageData3D, 
+							gImageDataResolution3D, 
+							gMappedIntervalBands[1] - gMappedIntervalBands[0] 
+							);
+	}
+}
 
 /*
 technique ColorMappedMask_3D {
