@@ -82,7 +82,7 @@ CopyMask( Buffer3D< uint8 > inBuffer, Buffer3D< uint32 > outBuffer )
 	int idx = blockId * blockDim.x + threadIdx.x;
 
 	if ( idx < inBuffer.mLength ) {
-		outBuffer.mData[idx] = inBuffer.mData[idx]>0?1000:0;
+		outBuffer.mData[idx] = inBuffer.mData[idx]!=0 ? idx+1 : 0;
 	}
 }
 
@@ -93,7 +93,7 @@ InitLut( Buffer3D< uint32 > outBuffer, Buffer1D< uint32 > lut )
 	int idx = blockId * blockDim.x + threadIdx.x;
 
 	if ( idx < outBuffer.mLength ) {
-		lut.mData[idx] = outBuffer.mData[idx] = outBuffer.mData[idx] != 0 ? idx+1 : 0;
+		lut.mData[idx] = outBuffer.mData[idx];// = outBuffer.mData[idx] != 0 ? idx+1 : 0;
 	}
 }
 
@@ -468,6 +468,7 @@ WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarker
 	cudaThreadSynchronize();
 	D_PRINT( "Computations took " << clock.SecondsPassed() )
 
+	cudaMemcpy(aOutput.GetPointer(), labeledRegionsBuffer.mData, labeledRegionsBuffer.mLength * sizeof(uint32), cudaMemcpyDeviceToHost );
 	cudaFree( labeledRegionsBuffer.mData );
 	cudaFree( inputBuffer.mData );
 	cudaFree( tmpBuffer.mData );
