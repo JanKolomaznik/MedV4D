@@ -44,8 +44,9 @@ PreventInterpolation( float3 aTexCoord, float3 aImageDataResolution3D )
 {
 	float3 elementSize = 1.0f / aImageDataResolution3D;
 	
-	float3 coord = round( aTexCoord / elementSize );
+	float3 coord = round( aTexCoord / elementSize ) * elementSize;
 	return coord + 0.5f * elementSize;
+	//return aTexCoord;
 }
 
 float3 BlinnPhongShading( float3 N, float3 V, float3 L, Material material, Light light )
@@ -212,11 +213,11 @@ fp_SimpleRegionColorMap_3D(
 {
 	FragmentOutput OUT;
 	float3 coordinates = PreventInterpolation( aTexCoord, aImageDataResolution3D );
-	unsigned int value = tex3D( aTextureData, coordinates ).x * aRange;
+	unsigned int value = round( tex3D( aTextureData, coordinates ).x * 4200000000 );
 
-	OUT.color.r = float((value % 997) % 256) / 256;
-	OUT.color.g = float((value % 1013) % 256) / 256;
-	OUT.color.b = float((value % 1237) % 256) / 256;
+	OUT.color.r = float(((value * 359) % 901) % 256) / 256;
+	OUT.color.g = float(((value * 617) % 1013) % 256) / 256;
+	OUT.color.b = float(((value *137) % 1237) % 256) / 256;
 	OUT.color.a = 1.0f;
 	return OUT;
 }

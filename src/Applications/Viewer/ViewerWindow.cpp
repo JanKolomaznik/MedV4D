@@ -46,12 +46,15 @@ ViewerWindow::ViewerWindow()
 	QSignalMapper *colorMapTypeSwitchSignalMapper = new QSignalMapper( this );
 	colorMapTypeSwitch->setExclusive( true );
 	colorMapTypeSwitch->addAction( actionUse_WLWindow );
+	colorMapTypeSwitch->addAction( actionUse_Simple_Colormap );
 	colorMapTypeSwitch->addAction( actionUse_MIP );
 	colorMapTypeSwitch->addAction( actionUse_Transfer_Function );
 	colorMapTypeSwitchSignalMapper->setMapping( actionUse_WLWindow, M4D::GUI::ctLUTWindow );
+	colorMapTypeSwitchSignalMapper->setMapping( actionUse_Simple_Colormap, M4D::GUI::ctSimpleColorMap );
 	colorMapTypeSwitchSignalMapper->setMapping( actionUse_MIP, M4D::GUI::ctMaxIntensityProjection );
 	colorMapTypeSwitchSignalMapper->setMapping( actionUse_Transfer_Function, M4D::GUI::ctTransferFunction1D );
 	QObject::connect( actionUse_WLWindow, SIGNAL( triggered() ), colorMapTypeSwitchSignalMapper, SLOT( map() ) );
+	QObject::connect( actionUse_Simple_Colormap, SIGNAL( triggered() ), colorMapTypeSwitchSignalMapper, SLOT( map() ) );
 	QObject::connect( actionUse_MIP, SIGNAL( triggered() ), colorMapTypeSwitchSignalMapper, SLOT( map() ) );
 	QObject::connect( actionUse_Transfer_Function, SIGNAL( triggered() ), colorMapTypeSwitchSignalMapper, SLOT( map() ) );
 	QObject::connect( colorMapTypeSwitchSignalMapper, SIGNAL( mapped ( int ) ), this, SLOT( changeColorMapType( int ) ) );
@@ -132,6 +135,7 @@ ViewerWindow::updateToolbars()
 	case M4D::GUI::rt2DAlignedSlices:
 		action2D->setChecked( true );
 		actionUse_WLWindow->setEnabled( true );
+		actionUse_Simple_Colormap->setEnabled( true );
 		actionUse_MIP->setEnabled( false );
 		break;
 	case M4D::GUI::rt3DGeneralSlices:
@@ -140,6 +144,7 @@ ViewerWindow::updateToolbars()
 	case M4D::GUI::rt3D:
 		action3D->setChecked( true );
 		actionUse_WLWindow->setEnabled( false );
+		actionUse_Simple_Colormap->setEnabled( false );
 		actionUse_MIP->setEnabled( true );
 		break;
 	default:
@@ -152,6 +157,9 @@ ViewerWindow::updateToolbars()
 	switch ( colorTransformType ) {
 	case M4D::GUI::ctLUTWindow:
 		actionUse_WLWindow->setChecked( true );
+		break;
+	case M4D::GUI::ctSimpleColorMap:
+		actionUse_Simple_Colormap->setChecked( true );
 		break;
 	case M4D::GUI::ctTransferFunction1D:
 		actionUse_Transfer_Function->setChecked( true );

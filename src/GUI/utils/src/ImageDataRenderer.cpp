@@ -121,6 +121,7 @@ ImageDataRenderer::RenderAlignedSlices()
 		}
 		break;
 	case ctSimpleColorMap:
+		//_cgEffect.SetParameter( "gMappedIntervalBands", Vector2f( 0, TypeTraits< uint32 >::Max )/*_textureData->GetMappedInterval()*/ );
 		techniqueName = "SimpleRegionColorMap_3D";
 		break;
 	case ctMaxIntensityProjection:
@@ -135,7 +136,7 @@ ImageDataRenderer::RenderAlignedSlices()
 			boost::bind( &M4D::GLDrawVolumeSlice, 
 				_textureData->GetDimensionedInterface< 3 >().GetMinimum(), 
 				_textureData->GetDimensionedInterface< 3 >().GetMaximum(), 
-				(float32)mSliceViewConfig.currentSlice[ mSliceViewConfig.plane ] * _textureData->GetDimensionedInterface< 3 >().GetElementExtents()[mSliceViewConfig.plane], 
+				(float32)(mSliceViewConfig.currentSlice[ mSliceViewConfig.plane ]+0.5f) * _textureData->GetDimensionedInterface< 3 >().GetElementExtents()[mSliceViewConfig.plane], 
 				mSliceViewConfig.plane 
 				) 
 			); 

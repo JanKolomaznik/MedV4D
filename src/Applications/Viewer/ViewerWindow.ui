@@ -69,6 +69,7 @@
    <addaction name="action3D"/>
    <addaction name="separator"/>
    <addaction name="actionUse_WLWindow"/>
+   <addaction name="actionUse_Simple_Colormap"/>
    <addaction name="actionUse_MIP"/>
    <addaction name="actionUse_Transfer_Function"/>
    <addaction name="separator"/>
@@ -163,6 +164,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionUse_Simple_Colormap">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Use Simple Colormap</string>
    </property>
   </action>
  </widget>
