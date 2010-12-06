@@ -124,12 +124,12 @@ GLPrepareTextureFromImageData3D( const ImageRegionType &image, bool linearInterp
 
 	glTexImage3D(	GL_TEXTURE_3D, 
 			0, 
-			GL_LUMINANCE16, 
+			M4DToGLTextureInternal< typename ImageRegionType::ElementType >::GLInternal, 
 			size[0], 
 			size[1], 
 			size[2], 
 			0, 
-			GL_LUMINANCE, 
+			GL_RED, 
 			M4DToGLType< typename ImageRegionType::ElementType >::GLTypeID, 
 			image.GetPointer() 
 			);

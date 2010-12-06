@@ -205,6 +205,74 @@ struct M4DToGLType< float32 >
 {
 	static const GLenum GLTypeID = GL_FLOAT;
 };
+//**************************************************************************
+template< typename T >
+struct M4DToGLTextureInternal
+{
+	static const GLint GLInternal = 0;
+};
+
+template<>
+struct M4DToGLTextureInternal< uint8 >
+{
+	static const GLint GLInternal = GL_LUMINANCE;
+};
+
+template<>
+struct M4DToGLTextureInternal< int8 >
+{
+	static const GLint GLInternal = GL_LUMINANCE;
+};
+
+template<>
+struct M4DToGLTextureInternal< uint16 >
+{
+	static const GLint GLInternal = GL_R16F;
+};
+
+template<>
+struct M4DToGLTextureInternal< int16 >
+{
+	static const GLint GLInternal = GL_R16F;
+};
+
+template<>
+struct M4DToGLTextureInternal< uint32 >
+{
+	static const GLint GLInternal = GL_R32F;
+};
+
+template<>
+struct M4DToGLTextureInternal< int32 >
+{
+	static const GLint GLInternal = GL_R32F;
+};
+
+template<>
+struct M4DToGLTextureInternal< int64 >
+{
+	static const GLint GLInternal = GL_R32F;
+};
+
+template<>
+struct M4DToGLTextureInternal< uint64 >
+{
+	static const GLint GLInternal = GL_R32F;
+};
+
+template<>
+struct M4DToGLTextureInternal< float32 >
+{
+	static const GLint GLInternal = GL_R32F;
+};
+
+template<>
+struct M4DToGLTextureInternal< float64 >
+{
+	static const GLint GLInternal = GL_R32F;
+};
+
+
 } /*namespace M4D*/
 
 #endif /*OGL_TOOLS_H*/
