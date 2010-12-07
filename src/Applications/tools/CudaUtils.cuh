@@ -55,16 +55,24 @@ CudaAllocateBuffer( size_t aLength )
 	return Buffer1D< TElement >( aLength, pointer );
 }
 
+
 template< typename TElement >
 Buffer3D< TElement >
-CudaBuffer3DFromImageRegion( const M4D::Imaging::ImageRegion< TElement, 3 > &region )
+CudaPrepareBuffer( Vector3u aSize )
 {
-	uint3 size = Vector3uToUint3( region.GetSize() );
+	uint3 size = Vector3uToUint3( aSize );
 	int3 strides = make_int3( 1, size.x, size.x * size.y );
 	size_t length = size.x*size.y*size.z;
 	TElement * dataPointer;
 	cudaMalloc( &dataPointer, length * sizeof(TElement) );
 	return Buffer3D< TElement >( size, strides, length, dataPointer );
+}
+
+template< typename TElement >
+Buffer3D< TElement >
+CudaBuffer3DFromImageRegion( const M4D::Imaging::ImageRegion< TElement, 3 > &region )
+{
+	return CudaPrepareBuffer<TElement>( region.GetSize() );
 }
 
 template< typename TElement >

@@ -431,10 +431,11 @@ template< typename TEType >
 void
 WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< TEType, 3 > aInput, M4D::Imaging::ImageRegion< uint32, 3 > aOutput )
 {
+	typedef typename TypeTraits< TEType >::SignedClosestType SignedElement;
 	int wshedUpdated = 1;
 	Buffer3D< uint32 > labeledRegionsBuffer = CudaBuffer3DFromImageRegionCopy( aLabeledMarkerRegions );
 	Buffer3D< TEType > inputBuffer = CudaBuffer3DFromImageRegionCopy( aInput );
-	Buffer3D< TEType > tmpBuffer = CudaBuffer3DFromImageRegion( aInput );
+	Buffer3D< SignedElement > tmpBuffer = CudaPrepareBuffer<SignedElement>( aInput.GetSize() );
 	int3 radius = make_int3( 1, 1, 1 );
 
 
@@ -447,7 +448,7 @@ WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarker
 
 	M4D::Common::Clock clock;
 	D_PRINT( "InitWatershedBuffers()" );
-	InitWatershedBuffers<<< gridSize1D, blockSize1D >>>( labeledRegionsBuffer, tmpBuffer, TypeTraits<TEType>::Max );
+	InitWatershedBuffers<<< gridSize1D, blockSize1D >>>( labeledRegionsBuffer, tmpBuffer, TypeTraits<SignedElement>::Max );
 
 	unsigned i = 0;
 	while (wshedUpdated != 0 && i < 150) {
