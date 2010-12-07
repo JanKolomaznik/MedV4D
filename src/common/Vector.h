@@ -423,9 +423,9 @@ operator-( const Vector< CoordType, Dim > &v )
 	return result;
 }
 
-template< typename StreamType, typename CoordType, unsigned Dim >
-StreamType &
-operator<<( StreamType &stream, const Vector< CoordType, Dim > &coords )
+template<typename CoordType, unsigned Dim >
+std::ostream &
+operator<<( std::ostream &stream, const Vector< CoordType, Dim > &coords )
 {
 	for( unsigned i=0; i < Dim; ++i ) {
 		stream << coords[i];

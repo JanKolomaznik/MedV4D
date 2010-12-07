@@ -311,12 +311,12 @@ InitWatershedBuffers( Buffer3D< uint32 > labeledRegionsBuffer, Buffer3D< TEType 
 
 template< typename TInEType, typename TTmpEType >
 __global__ void 
-WShedEvolution( Buffer3D< uint32 > labeledRegionsBuffer, Buffer3D< TInEType > inputBuffer, Buffer3D< TTmpEType > tmpBuffer, int3 blockResolution )
+WShedEvolution( Buffer3D< uint32 > labeledRegionsBuffer, Buffer3D< TInEType > inputBuffer, Buffer3D< TTmpEType > tmpBuffer, int3 blockResolution, TTmpEType infinity )
 {
 	__shared__ uint32 labels[MAX_SHARED_MEMORY];
 	__shared__ TTmpEType tmpValues[MAX_SHARED_MEMORY];
 	
-	int3 radius = make_int3(0,0,0);
+	int3 radius = make_int3(1,1,1);
 	uint syStride = blockDim.x+2*radius.x;
 	uint szStride = (blockDim.x+2*radius.x) * (blockDim.y+2*radius.y);
 
@@ -407,25 +407,34 @@ WShedEvolution( Buffer3D< uint32 > labeledRegionsBuffer, Buffer3D< TInEType > in
 
 	if( !projected ) {
 		int minIdx = -1;
+		int counter = 0;
+		int minCounter = -1;
 		TInEType value = inputBuffer.mData[ idx ];
-		TTmpEType minVal = tmpValues[ sidx ] - value;
+		TTmpEType minVal = max( tmpValues[ sidx ] - value,TTmpEType(0) );
 		for ( int i = idx-1; i <= idx+1; ++i ) {
 			for ( int j = i-syStride; j <= i+syStride; j+=syStride ) {
 				for ( int k = j-szStride; k <= j+szStride; k+=szStride ) {
 					if( tmpValues[ k ] < minVal ) {
 						minVal = tmpValues[ k ];
 						minIdx = k;
+
+						minCounter = counter;
 					}
+					++counter;
 				}
 			}
 		}
-		if( minIdx != -1 ) {
-			labeledRegionsBuffer.mData[ idx ] = labels[ sidx ];
-			tmpBuffer.mData[ idx ] = tmpValues[minIdx] + value;
+		if( minIdx != -1 && minCounter >= 0) {
+			labeledRegionsBuffer.mData[ idx ] = blockId+5;//labels[ sidx ];
+			//tmpBuffer.mData[ idx ] = tmpValues[minIdx] + value;
 			wshedUpdated = 1;
 		}
 	}
 }
+
+#include "Imaging/Image.h"
+#include "Imaging/ImageFactory.h"
+
 
 template< typename TEType >
 void
@@ -451,7 +460,7 @@ WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarker
 	InitWatershedBuffers<<< gridSize1D, blockSize1D >>>( labeledRegionsBuffer, tmpBuffer, TypeTraits<SignedElement>::Max );
 
 	unsigned i = 0;
-	while (wshedUpdated != 0 && i < 150) {
+	while (wshedUpdated != 0 && i < 1) {
 		cudaMemcpyToSymbol( "wshedUpdated", &(wshedUpdated = 0), sizeof(int), 0, cudaMemcpyHostToDevice );
 
 		//D_PRINT( "WShedEvolution()" );
@@ -459,7 +468,8 @@ WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarker
 					labeledRegionsBuffer,
 				       	inputBuffer,	
 					tmpBuffer,
-					blockResolution3D
+					blockResolution3D, 
+					TypeTraits<SignedElement>::Max
 					);
 
 		cudaMemcpyFromSymbol( &wshedUpdated, "wshedUpdated", sizeof(int), 0, cudaMemcpyDeviceToHost );
@@ -467,11 +477,17 @@ WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarker
 	}
 
 	cudaThreadSynchronize();
-	D_PRINT( "Computations took " << clock.SecondsPassed() )
+	D_PRINT( "Computations took " << clock.SecondsPassed() << " and " << i << " iterations" )
 
 	cudaMemcpy(aOutput.GetPointer(), labeledRegionsBuffer.mData, labeledRegionsBuffer.mLength * sizeof(uint32), cudaMemcpyDeviceToHost );
 	cudaFree( labeledRegionsBuffer.mData );
 	cudaFree( inputBuffer.mData );
+
+
+	typename M4D::Imaging::Image< SignedElement, 3 >::Ptr tmpDebugImage = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< SignedElement, 3 >( aLabeledMarkerRegions.GetMinimum(), aLabeledMarkerRegions.GetMaximum(), aLabeledMarkerRegions.GetElementExtents() );
+	cudaMemcpy(tmpDebugImage->GetRegion().GetPointer(), tmpBuffer.mData, labeledRegionsBuffer.mLength * sizeof(SignedElement), cudaMemcpyDeviceToHost );
+	M4D::Imaging::ImageFactory::DumpImage( "Intermediate.dump", *tmpDebugImage );
+
 	cudaFree( tmpBuffer.mData );
 }
 

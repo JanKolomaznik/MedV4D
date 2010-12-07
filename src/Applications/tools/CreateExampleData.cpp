@@ -25,7 +25,7 @@ main( int argc, char** argv )
 	for( unsigned i=0; i<size; ++i ) {
 		for( unsigned j=0; j<size; ++j ) {
 			for ( unsigned k=0; k<size; ++k ) {
-				image->GetElement( Vector< int32, 3 >( i, j, k ) ) = ClampToInterval<uint32>( 10, 1005, Abs( Sqr(i-128) + Sqr(j-128) ) );
+				image->GetElement( Vector< int32, 3 >( i, j, k ) ) = Abs(5000 + -1*ClampToInterval<uint32>( 10, 5000, Abs( Sqr(i-128) + Sqr(j-128) -2000 ) ) );
 			}
 		}
 	}
