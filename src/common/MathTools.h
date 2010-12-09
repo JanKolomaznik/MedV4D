@@ -173,10 +173,36 @@ Sgn( NType a ) {
 	return 0;
 }
 
-inline int
+inline int32
 Round( float32 aValue )
 {
 	return (int)ceil( aValue + 0.5f );
+}
+
+inline int32
+Round( float64 aValue )
+{
+	return (int)ceil( aValue + 0.5 );
+}
+
+template< size_t tDim >
+inline Vector< int32, tDim >
+Round( const Vector< float32, tDim > &a ) {
+	Vector< int32, tDim > res;
+	for( size_t i = 0; i < tDim; ++i ) {
+		res[i] = Round( a[i] );
+	}
+	return res;
+}
+
+template< size_t tDim >
+inline Vector< int32, tDim >
+Round( const Vector< float64, tDim > &a ) {
+	Vector< int32, tDim > res;
+	for( size_t i = 0; i < tDim; ++i ) {
+		res[i] = Round( a[i] );
+	}
+	return res;
 }
 
 template< typename NType >

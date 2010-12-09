@@ -13,22 +13,29 @@ namespace M4D
 
 
 void
-SetToViewConfiguration2D( const ViewConfiguration2D &config )
+SetToViewConfiguration2D( const ViewConfiguration2D &aConfig )
 {
 	GLint	viewportParams[4];
 	glGetIntegerv( GL_VIEWPORT, viewportParams );
 
-	Vector< float32, 2 > size = ( 0.5f / config.zoom ) *  Vector< float32, 2 >( viewportParams[2], viewportParams[3] );
-	Vector< float32, 2 > min =  config.centerPoint - size;
-	Vector< float32, 2 > max =  config.centerPoint + size;
-	
+	Vector< float32, 2 > hsize = ( 0.5f / aConfig.zoom ) *  Vector< float32, 2 >( viewportParams[2], viewportParams[3] );
+	Vector< float32, 2 > min =  aConfig.centerPoint - hsize;
+	Vector< float32, 2 > max =  aConfig.centerPoint + hsize;
+	if ( aConfig.hFlip ) {
+		std::swap( min[0], max[0] );
+	}
+	if ( aConfig.vFlip ) {
+		std::swap( min[1], max[1] );
+	}
+
+
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glOrtho( 
-		(double) config.hFlip ? max[0] : min[0], 
-		(double) config.hFlip ? min[0] : max[0], 
-		(double) config.vFlip ? max[1] : min[1], 
-		(double) config.vFlip ? min[1] : max[1], 
+		(double)min[0], 
+		(double)max[0], 
+		(double)min[1], 
+		(double)max[1], 
 		-1.0, 
 		1.0
 		);

@@ -161,6 +161,11 @@ ImageFactory::CreateEmptyImageFromExtents(
 		Vector< float32, Dim >	elementExtents
 		)
 {
+	D_BLOCK_COMMENT( "++++++++ Create Empty Image from Extents ++++++++", "++++++++ Create Empty Image finished ++++++++" )
+	D_PRINT( "++++++++ Dimension      = " << Dim );
+	D_PRINT( "++++++++ minimum      = " << minimum );
+	D_PRINT( "++++++++ maximum     = " << maximum );
+	D_PRINT( "++++++++ ElementExt = " << elementExtents );
 	typename ImageDataTemplate< ElementType >::Ptr data = 
 		ImageFactory::CreateEmptyImageDataTyped< ElementType, Dim>( maximum - minimum, elementExtents );
 

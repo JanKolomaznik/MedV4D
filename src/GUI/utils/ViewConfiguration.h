@@ -27,9 +27,12 @@ struct ViewConfiguration2D
 };
 
 ViewConfiguration2D 
-GetOptimalViewConfiguration( const Vector< float32, 2 > &regionSize, const Vector< uint32, 2 > &windowSize, ZoomType zoomType = ztFIT );
+GetOptimalViewConfiguration( const Vector2f &regionSize, const Vector< uint32, 2 > &windowSize, ZoomType zoomType = ztFIT );
 
 ViewConfiguration2D 
-GetOptimalViewConfiguration( const Vector< float32, 2 > &regionMin, const Vector< float32, 2 > &regionMax, const Vector< uint32, 2 > &windowSize, ZoomType zoomType = ztFIT );
+GetOptimalViewConfiguration( const Vector2f &regionMin, const Vector2f &regionMax, const Vector< uint32, 2 > &windowSize, ZoomType zoomType = ztFIT );
+
+Vector2f
+GetRealCoordinatesFromScreen( const Vector2f &aScreenPos, const Vector< uint32, 2 > &windowSize, const ViewConfiguration2D &aConfig );
 
 #endif /*_VIEW_CONFIGURATION_H*/

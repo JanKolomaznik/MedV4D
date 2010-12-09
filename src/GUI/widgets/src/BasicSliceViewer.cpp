@@ -1,6 +1,8 @@
 #ifdef USE_CG
 
 #include "GUI/utils/OGLDrawing.h"
+#include "GUI/utils/QtM4DTools.h"
+#include "common/MathTools.h"
 #include "GUI/widgets/BasicSliceViewer.h"
 #include "Imaging/ImageFactory.h"
 namespace M4D
@@ -192,6 +194,7 @@ BasicSliceViewer::mouseMoveEvent ( QMouseEvent * event )
 		int y = (tmp - _clickPosition).y();
 		SetLUTWindow( _oldLUTWindow + Vector< float32, 2 >( 3000*((float32)x)/width(), 3000*((float32)y)/height() ) );
 		this->update();
+		return;
 	}
 	if( _interactionMode == imORBIT_CAMERA) {
 		int x = (tmp - mLastPoint).x();
@@ -200,8 +203,27 @@ BasicSliceViewer::mouseMoveEvent ( QMouseEvent * event )
 		_renderer.GetViewConfig3D().camera.YawAround( x * -0.05f );
 		_renderer.GetViewConfig3D().camera.PitchAround( y * -0.05f );
 		this->update();
+		return;
 	}
 
+	SliceViewConfig & sliceViewConfig = _renderer.GetSliceViewConfig();
+	Vector2f coords = GetRealCoordinatesFromScreen( 
+						QPointFToVector2f(event->posF()), 
+						QSizeToVector2u( size() ), 
+						sliceViewConfig.viewConfiguration 
+						);
+	QString info;
+	//info += VectorToQString( coords );
+	//info += "DatasetCoords : ";
+
+	Vector2f extents = VectorPurgeDimension( _elementExtents, sliceViewConfig.plane );
+	Vector3i dataCoords = VectorInsertDimension( Round<2>( VectorMemberDivision( coords, extents ) ), sliceViewConfig.currentSlice[sliceViewConfig.plane], sliceViewConfig.plane );
+
+	info += VectorToQString( dataCoords ); 
+	info += " - ";
+	info += GetVoxelInfo( dataCoords );
+
+	emit MouseInfoUpdate( info );
 }
 
 void	
@@ -315,6 +337,31 @@ BasicSliceViewer::PrepareData()
 
 	_prepared = true;
 	return true;
+}
+
+QString
+BasicSliceViewer::GetVoxelInfo( Vector3i aDataCoords )
+{
+	try {
+		TryGetAndLockAllInputs();
+	} catch (...) {
+		return QString("NONE");
+	}
+	M4D::Imaging::AImage::ConstPtr image = M4D::Imaging::AImage::Cast( mInputDatasets[0] );
+	QString result;
+
+	try {
+	NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( image->GetElementTypeID(),
+			typedef M4D::Imaging::Image< TTYPE, 3 > IMAGE_TYPE;
+			IMAGE_TYPE::ConstPtr typedImage = IMAGE_TYPE::Cast( image );
+			result = QString::number( typedImage->GetElement( aDataCoords ) );
+			);
+
+	} catch (...) {
+		result = QString("NONE");
+	}
+	ReleaseAllInputs();
+	return result;
 }
 
 void	

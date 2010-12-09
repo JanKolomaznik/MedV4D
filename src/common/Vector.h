@@ -589,6 +589,18 @@ VectorMemberProduct( const Vector< CoordType1, Dim > &a, const Vector< CoordType
 	return result;
 }
 
+template< typename CoordType1, typename CoordType2, unsigned Dim >
+Vector< typename TypeComparator< CoordType1, CoordType2 >::Superior, Dim >
+VectorMemberDivision( const Vector< CoordType1, Dim > &a, const Vector< CoordType2, Dim > &b )
+{
+	Vector< typename TypeComparator< CoordType1, CoordType2 >::Superior, Dim > result = a;
+	for( unsigned i=0; i < Dim; ++i ) {
+		result[i] /= b[ i ];
+	}
+	return result;
+}
+
+
 template< typename CoordType, unsigned Dim >
 Vector< CoordType, Dim-1 >
 VectorPurgeDimension( const Vector< CoordType, Dim > &u, unsigned purgedDimension = Dim-1 )

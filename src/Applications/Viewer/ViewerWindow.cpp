@@ -61,6 +61,12 @@ ViewerWindow::ViewerWindow()
 
 
 	updateToolbars();
+
+	QLabel *infoLabel = new QLabel();
+	statusbar->addWidget( infoLabel );
+
+	mViewer->setMouseTracking ( true );
+	QObject::connect( mViewer, SIGNAL( MouseInfoUpdate( const QString & ) ), infoLabel, SLOT( setText( const QString & ) ) );
 }
 
 ViewerWindow::~ViewerWindow()

@@ -214,6 +214,8 @@ signals:
 	void
 	SettingsChanged();
 
+	void
+	MouseInfoUpdate( const QString &aInfo );
 	/*void
 	SetImage( M4D::Imaging::AImage::Ptr image )
 	{ _image = image; }*/
@@ -261,6 +263,9 @@ protected:
 
 	void
 	RenderOneDataset();
+
+	QString
+	GetVoxelInfo( Vector3i aDataCoords );
 
 	enum {rmONE_DATASET}	_renderingMode;
 
