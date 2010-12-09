@@ -411,7 +411,8 @@ WShedEvolution( Buffer3D< uint32 > labeledRegionsBuffer, Buffer3D< TInEType > in
 		int minCounter = -1;
 		TInEType value = inputBuffer.mData[ idx ];
 		TTmpEType minVal = max( tmpValues[ sidx ] - value,TTmpEType(0) );
-		for ( int i = idx-1; i <= idx+1; ++i ) {
+		TTmpEType originalMinVal = minVal;
+		for ( int i = sidx-1; i <= sidx+1; ++i ) {
 			for ( int j = i-syStride; j <= i+syStride; j+=syStride ) {
 				for ( int k = j-szStride; k <= j+szStride; k+=szStride ) {
 					if( tmpValues[ k ] < minVal ) {
@@ -424,9 +425,9 @@ WShedEvolution( Buffer3D< uint32 > labeledRegionsBuffer, Buffer3D< TInEType > in
 				}
 			}
 		}
-		if( minIdx != -1 && minCounter >= 0) {
-			labeledRegionsBuffer.mData[ idx ] = blockId+5;//labels[ sidx ];
-			//tmpBuffer.mData[ idx ] = tmpValues[minIdx] + value;
+		if( minIdx != -1 ) {
+			labeledRegionsBuffer.mData[ idx ] = labels[ minIdx ];
+			tmpBuffer.mData[ idx ] = tmpValues[minIdx] + value;
 			wshedUpdated = 1;
 		}
 	}
@@ -460,7 +461,7 @@ WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarker
 	InitWatershedBuffers<<< gridSize1D, blockSize1D >>>( labeledRegionsBuffer, tmpBuffer, TypeTraits<SignedElement>::Max );
 
 	unsigned i = 0;
-	while (wshedUpdated != 0 && i < 1) {
+	while (wshedUpdated != 0 && i < 51) {
 		cudaMemcpyToSymbol( "wshedUpdated", &(wshedUpdated = 0), sizeof(int), 0, cudaMemcpyHostToDevice );
 
 		//D_PRINT( "WShedEvolution()" );

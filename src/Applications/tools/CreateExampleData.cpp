@@ -20,8 +20,8 @@ main( int argc, char** argv )
 	std::string fileName = argv[1];
 
 	unsigned size = 256;
-	M4D::Imaging::Image< uint16, 3 >::Ptr image =
-	M4D::Imaging::ImageFactory::CreateEmptyImage3DTyped< uint16 >( size, size, size );
+	M4D::Imaging::Image< uint32, 3 >::Ptr image =
+	M4D::Imaging::ImageFactory::CreateEmptyImage3DTyped< uint32 >( size, size, size );
 	for( unsigned i=0; i<size; ++i ) {
 		for( unsigned j=0; j<size; ++j ) {
 			for ( unsigned k=0; k<size; ++k ) {

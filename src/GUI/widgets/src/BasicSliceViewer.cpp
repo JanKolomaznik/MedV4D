@@ -220,7 +220,7 @@ BasicSliceViewer::mouseMoveEvent ( QMouseEvent * event )
 	Vector3i dataCoords = VectorInsertDimension( Round<2>( VectorMemberDivision( coords, extents ) ), sliceViewConfig.currentSlice[sliceViewConfig.plane], sliceViewConfig.plane );
 
 	info += VectorToQString( dataCoords ); 
-	info += " - ";
+	info += " : ";
 	info += GetVoxelInfo( dataCoords );
 
 	emit MouseInfoUpdate( info );
