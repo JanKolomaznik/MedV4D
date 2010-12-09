@@ -144,13 +144,14 @@ ImageFactory::CreateEmptyImageFromExtents(
 		const float32		elementExtents[]
 		)
 {
+	AImage::Ptr image;
 	DIMENSION_TEMPLATE_SWITCH_MACRO( dim, 
-			return ImageFactory::CreateEmptyImageFromExtents< ElementType, DIM >(
+			image = ImageFactory::CreateEmptyImageFromExtents< ElementType, DIM >(
 				Vector< int32, DIM >( minimums ),
 				Vector< int32, DIM >( maximums ),
 				Vector< float32, DIM >( elementExtents ) );
 			);
-	_THROW_ ErrorHandling::EShouldntReachThis();
+	return image;
 }
 
 template< typename ElementType, unsigned Dim >

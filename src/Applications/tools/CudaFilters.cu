@@ -61,6 +61,28 @@ struct LocalMinima3DFtor
 	int3 radius;
 };
 
+template< typename TElement >
+struct RegionBorderDetection3DFtor
+{
+	typedef typename TypeTraits< TElement >::SignedClosestType SignedElement;
+
+	RegionBorderDetection3DFtor(): radius( make_int3( 1, 1, 1 ) )
+	{}
+
+	__device__ uint8
+	operator()( TElement data[], uint idx, uint syStride, uint szStride )
+	{
+		TElement val = data[idx];
+		if ( val != data[idx-1] || val != data[idx-syStride] || val != data[idx-szStride] ) {
+			return 255;
+		} else {
+			return 0;
+		}
+	}
+
+	int3 radius;
+};
+
 
 __device__ int lutUpdated;
 
@@ -407,21 +429,15 @@ WShedEvolution( Buffer3D< uint32 > labeledRegionsBuffer, Buffer3D< TInEType > in
 
 	if( !projected ) {
 		int minIdx = -1;
-		int counter = 0;
-		int minCounter = -1;
 		TInEType value = inputBuffer.mData[ idx ];
 		TTmpEType minVal = max( tmpValues[ sidx ] - value,TTmpEType(0) );
-		TTmpEType originalMinVal = minVal;
 		for ( int i = sidx-1; i <= sidx+1; ++i ) {
 			for ( int j = i-syStride; j <= i+syStride; j+=syStride ) {
 				for ( int k = j-szStride; k <= j+szStride; k+=szStride ) {
 					if( tmpValues[ k ] < minVal ) {
 						minVal = tmpValues[ k ];
 						minIdx = k;
-
-						minCounter = counter;
 					}
-					++counter;
 				}
 			}
 		}
@@ -430,6 +446,28 @@ WShedEvolution( Buffer3D< uint32 > labeledRegionsBuffer, Buffer3D< TInEType > in
 			tmpBuffer.mData[ idx ] = tmpValues[minIdx] + value;
 			wshedUpdated = 1;
 		}
+		/*
+		for( unsigned it = 0; it < 2; ++it ) {
+			TTmpEType minVal = max( tmpValues[ sidx ] - value,TTmpEType(0) );
+			for ( int i = sidx-1; i <= sidx+1; ++i ) {
+				for ( int j = i-syStride; j <= i+syStride; j+=syStride ) {
+					for ( int k = j-szStride; k <= j+szStride; k+=szStride ) {
+						if( tmpValues[ k ] < minVal ) {
+							minVal = tmpValues[ k ];
+							minIdx = k;
+						}
+					}
+				}
+			}
+			if( minIdx != -1 ) {
+				labels[ sidx ] = labels[ minIdx ];
+				tmpValues[ sidx ] = tmpValues[minIdx] + value;
+				wshedUpdated = 1;
+			}
+		}
+		labeledRegionsBuffer.mData[ idx ] = labels[ sidx ];
+		tmpBuffer.mData[ idx ] = tmpValues[sidx];
+		*/		
 	}
 }
 
@@ -529,6 +567,43 @@ Sobel3D( RegionType input, RegionType output, typename RegionType::ElementType t
 	CheckCudaErrorState( "Free memory" );
 }
 
+template< typename RegionType >
+void
+RegionBorderDetection3D( RegionType input, M4D::Imaging::MaskRegion3D output )
+{
+	typedef typename RegionType::ElementType TElement;
+	typedef Buffer3D< TElement > Buffer;
+	typedef Buffer3D< uint8 > MaskBuffer;
+
+	Buffer inBuffer = CudaBuffer3DFromImageRegionCopy( input );
+	MaskBuffer outBuffer = CudaBuffer3DFromImageRegion( output );
+
+	RegionBorderDetection3DFtor< TElement > filter;
+	//int3 radius = filter.radius;
+
+	dim3 blockSize( 8, 8, 8 );
+	int3 blockResolution = GetBlockResolution( inBuffer.mSize, blockSize, make_int3(0,0,0) );
+	dim3 gridSize( blockResolution.x * blockResolution.y, blockResolution.z, 1 );
+
+	M4D::Common::Clock clock;
+	CheckCudaErrorState( "Before kernel execution" );
+	FilterKernel3D< TElement, uint8, RegionBorderDetection3DFtor< TElement > >
+		<<< gridSize, blockSize >>>( 
+					inBuffer, 
+					outBuffer, 
+					blockResolution,
+					filter
+					);
+	cudaThreadSynchronize();
+	CheckCudaErrorState( "After kernel execution" );
+	D_PRINT( "Computations took " << clock.SecondsPassed() )
+
+	cudaMemcpy(output.GetPointer(), outBuffer.mData, outBuffer.mLength * sizeof(uint8), cudaMemcpyDeviceToHost );
+	CheckCudaErrorState( "Copy back" );
+	cudaFree( inBuffer.mData );
+	cudaFree( outBuffer.mData );
+	CheckCudaErrorState( "Free memory" );
+}
 
 template< typename RegionType >
 void
@@ -590,6 +665,17 @@ template void LocalMinima3D( M4D::Imaging::ImageRegion< int64, 3 > input, M4D::I
 template void LocalMinima3D( M4D::Imaging::ImageRegion< uint64, 3 > input, M4D::Imaging::MaskRegion3D output );
 template void LocalMinima3D( M4D::Imaging::ImageRegion< float, 3 > input, M4D::Imaging::MaskRegion3D output );
 template void LocalMinima3D( M4D::Imaging::ImageRegion< double, 3 > input, M4D::Imaging::MaskRegion3D output );
+
+template void RegionBorderDetection3D( M4D::Imaging::ImageRegion< int8, 3 > input, M4D::Imaging::MaskRegion3D output );
+template void RegionBorderDetection3D( M4D::Imaging::ImageRegion< uint8, 3 > input, M4D::Imaging::MaskRegion3D output );
+template void RegionBorderDetection3D( M4D::Imaging::ImageRegion< int16, 3 > input, M4D::Imaging::MaskRegion3D output );
+template void RegionBorderDetection3D( M4D::Imaging::ImageRegion< uint16, 3 > input, M4D::Imaging::MaskRegion3D output );
+template void RegionBorderDetection3D( M4D::Imaging::ImageRegion< int32, 3 > input, M4D::Imaging::MaskRegion3D output );
+template void RegionBorderDetection3D( M4D::Imaging::ImageRegion< uint32, 3 > input, M4D::Imaging::MaskRegion3D output );
+template void RegionBorderDetection3D( M4D::Imaging::ImageRegion< int64, 3 > input, M4D::Imaging::MaskRegion3D output );
+template void RegionBorderDetection3D( M4D::Imaging::ImageRegion< uint64, 3 > input, M4D::Imaging::MaskRegion3D output );
+template void RegionBorderDetection3D( M4D::Imaging::ImageRegion< float, 3 > input, M4D::Imaging::MaskRegion3D output );
+template void RegionBorderDetection3D( M4D::Imaging::ImageRegion< double, 3 > input, M4D::Imaging::MaskRegion3D output );
 
 template void WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< int8, 3 > aInput, M4D::Imaging::ImageRegion< uint32, 3 > aOutput );
 template void WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarkerRegions, M4D::Imaging::ImageRegion< uint8, 3 > aInput, M4D::Imaging::ImageRegion< uint32, 3 > aOutput );

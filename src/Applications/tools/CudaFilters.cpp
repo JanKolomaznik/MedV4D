@@ -81,6 +81,17 @@ main( int argc, char **argv )
 			M4D::Imaging::ImageFactory::DumpImage( outFilename, *outputImage );
 			std::cout << "Done\n";
 		);
+	} else if ( operatorName == "BORDERS" ) {
+		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( image->GetElementTypeID(),
+			typedef M4D::Imaging::Image< TTYPE, 3 > IMAGE_TYPE;
+			IMAGE_TYPE::Ptr typedImage = IMAGE_TYPE::Cast( image );
+			M4D::Imaging::Mask3D::Ptr outputImage = ImageFactory::CreateEmptyImageFromExtents< uint8, 3 >( typedImage->GetMinimum(), typedImage->GetMaximum(), typedImage->GetElementExtents() );
+
+			RegionBorderDetection3D( typedImage->GetRegion(), outputImage->GetRegion() );
+			std::cout << "Saving file '" << outFilename << "' ..."; std::cout.flush();
+			M4D::Imaging::ImageFactory::DumpImage( outFilename, *outputImage );
+			std::cout << "Done\n";
+		);
 	} else if ( operatorName == "CCL" ) {
 		M4D::Imaging::Mask3D::Ptr inImage = M4D::Imaging::Mask3D::Cast( image );
 		M4D::Imaging::Image< uint32, 3 >::Ptr outputImage = ImageFactory::CreateEmptyImageFromExtents< uint32, 3 >( inImage->GetMinimum(), inImage->GetMaximum(), inImage->GetElementExtents() );

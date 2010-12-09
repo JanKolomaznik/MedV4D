@@ -96,8 +96,8 @@ public:
 
 	static const unsigned				Dimension = Dim;
 
-	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( Image< ElementType, Dimension > );
-	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AImageDim< Dimension > );
+	MANDATORY_DATASET_DEFINITIONS_THIS_MACRO( Image< ElementType, Dimension > )
+	MANDATORY_DATASET_DEFINITIONS_PREDEC_MACRO( AImageDim< Dimension > )
 	PREPARE_CAST_METHODS_MACRO;
 	IS_CONSTRUCTABLE_MACRO;
 

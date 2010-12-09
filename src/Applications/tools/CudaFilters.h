@@ -11,6 +11,10 @@ template< typename InRegionType >
 void
 LocalMinima3D( InRegionType input,  M4D::Imaging::MaskRegion3D output );
 
+template< typename InRegionType >
+void
+RegionBorderDetection3D( InRegionType input,  M4D::Imaging::MaskRegion3D output );
+
 void
 ConnectedComponentLabeling3D( M4D::Imaging::MaskRegion3D input, M4D::Imaging::ImageRegion< uint32, 3 > output );
 

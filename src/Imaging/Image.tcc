@@ -282,7 +282,7 @@ Image< ElementType, Dim >::SetDirtyBBox(
 		)
 {
 	ModificationManager & modManager = _imageData->GetModificationManager();
-
+	
 	DIMENSION_TEMPLATE_SWITCH_MACRO( _sourceDimension, 
 		{	
 			Vector< int32, DIM > pmin = PosInSource< DIM >( min );
@@ -299,13 +299,15 @@ Image< ElementType, Dim >::GetDirtyBBox(
 		)const
 {
 	ModificationManager & modManager = _imageData->GetModificationManager();
+	ReaderBBoxInterface::Ptr bbox;
 
 	DIMENSION_TEMPLATE_SWITCH_MACRO( _sourceDimension, 
 		{	
 			Vector< int32, DIM > pmin = PosInSource< DIM >( min );
 			Vector< int32, DIM > pmax = PosInSource< DIM >( max );
-			return modManager.GetMod( pmin, pmax );
+			bbox = modManager.GetMod( pmin, pmax );
 		} );
+	return bbox;
 }
 
 template< typename ElementType, unsigned Dim >
