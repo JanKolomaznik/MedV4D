@@ -10,7 +10,7 @@
 namespace M4D {
 namespace GUI {
 
-TFActions TFHolderFactory::createMenuTFActions(QWidget *parent){
+TFActions TFHolderFactory::createMenuTFActions(QObject *parent){
 
 	TFActions actions;
 
@@ -26,33 +26,33 @@ TFActions TFHolderFactory::createMenuTFActions(QWidget *parent){
 	return actions;
 }
 
-TFAbstractHolder* TFHolderFactory::createHolder(QWidget* window, const TFHolderType holderType){
+TFAbstractHolder* TFHolderFactory::createHolder(QMainWindow* mainWindow, const TFHolderType holderType){
 
 	switch(holderType)
 	{
 		case TFHOLDER_GRAYSCALE:
 		{
-			return new TFGrayscaleHolder(window);
+			return new TFGrayscaleHolder(mainWindow);
 		}
 		case TFHOLDER_GRAYSCALE_ALPHA:
 		{
-			return new TFGrayscaleAlphaHolder(window);
+			return new TFGrayscaleAlphaHolder(mainWindow);
 		}
 		case TFHOLDER_RGB:
 		{
-			return new TFRGBHolder(window);
+			return new TFRGBHolder(mainWindow);
 		}
 		case TFHOLDER_RGBA:
 		{
-			return new TFRGBaHolder(window);
+			return new TFRGBaHolder(mainWindow);
 		}
 		case TFHOLDER_HSV:
 		{
-			return new TFHSVHolder(window);
+			return new TFHSVHolder(mainWindow);
 		}
 		case TFHOLDER_HSVA:
 		{
-			return new TFHSVaHolder(window);
+			return new TFHSVaHolder(mainWindow);
 		}
 		case TFHOLDER_UNKNOWN:
 		default:
@@ -64,10 +64,10 @@ TFAbstractHolder* TFHolderFactory::createHolder(QWidget* window, const TFHolderT
 	return NULL;
 }
 
-TFAbstractHolder* TFHolderFactory::loadHolder(QWidget* window){
+TFAbstractHolder* TFHolderFactory::loadHolder(QMainWindow* mainWindow){
 	
 	QString fileName = QFileDialog::getOpenFileName(
-		window,
+		(QWidget*)mainWindow,
 		QObject::tr("Open Transfer Function"),
 		QDir::currentPath(),
 		QObject::tr("TF Files (*.tf *.xml)"));
@@ -78,7 +78,7 @@ TFAbstractHolder* TFHolderFactory::loadHolder(QWidget* window){
 
 	if (!qFile.open(QFile::ReadOnly | QFile::Text)) {
 		QMessageBox::warning(
-			window,
+			(QWidget*)mainWindow,
 			QObject::tr("Transfer Functions"),
 			QObject::tr("Cannot read file %1:\n%2.").arg(fileName).arg(qFile.errorString()));
 		return NULL;
@@ -89,14 +89,14 @@ TFAbstractHolder* TFHolderFactory::loadHolder(QWidget* window){
 	qFile.close();
 
 	qFile.open(QFile::ReadOnly | QFile::Text);
-	TFAbstractHolder* loaded = createHolder(window, holderType);
+	TFAbstractHolder* loaded = createHolder(mainWindow, holderType);
 
 	if(loaded)
 	{
 		if(!loaded->load_(qFile))
 		{ 
 			QMessageBox::warning(
-				window,
+				(QWidget*)mainWindow,
 				QObject::tr("TFXmlReader"),
 				QObject::tr("Parse error in file %1").arg(fileName));
 		}

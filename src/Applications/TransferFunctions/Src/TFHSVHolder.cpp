@@ -3,21 +3,26 @@
 namespace M4D {
 namespace GUI {
 
-TFHSVHolder::TFHSVHolder(QWidget* window): TFAbstractHolder(window){
+TFHSVHolder::TFHSVHolder(QMainWindow* parent):
+	TFAbstractHolder(parent),
+	painter_(basicTools_->painterWidget){
 
 	type_ = TFHOLDER_HSV;
+
+	painter_.correctView();
 }
 
-TFHSVHolder::~TFHSVHolder(){}
-
-void TFHSVHolder::setUp(const TFSize& index){
+TFHSVHolder::~TFHSVHolder(){
+}
+/*
+void TFHSVHolder::setUp(TFSize index){
 
 	index_ = index;
-	painter_.setUp(this);
+	painter_.setUp(basicTools_->painterWidget);
 	size_changed(index_, dynamic_cast<QWidget*>(parent())->rect());
 	show();
 }
-
+*/
 void TFHSVHolder::updateFunction_(){
 
 	if(!painter_.changed()) return;
@@ -30,11 +35,12 @@ void TFHSVHolder::updatePainter_(){
 	calculate_(function_.getColorMap(), painter_.getView());
 }
 
-void TFHSVHolder::resizePainter_(const QRect& rect){
+void TFHSVHolder::resizePainter_(){
 
 	updateFunction_();
 
-	painter_.resize(rect);
+	painter_.resize(basicTools_->painterWidget->size());
+	painter_.correctView();
 	
 	updatePainter_();
 }

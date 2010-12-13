@@ -3,21 +3,27 @@
 namespace M4D {
 namespace GUI {
 
-TFGrayscaleAlphaHolder::TFGrayscaleAlphaHolder(QWidget* window): TFAbstractHolder(window){
+TFGrayscaleAlphaHolder::TFGrayscaleAlphaHolder(QMainWindow* parent):
+	TFAbstractHolder(parent),
+	painter_(basicTools_->painterWidget){
 
 	type_ = TFHOLDER_GRAYSCALE_ALPHA;
+
+	painter_.correctView();
 }
 
-TFGrayscaleAlphaHolder::~TFGrayscaleAlphaHolder(){}
-
-void TFGrayscaleAlphaHolder::setUp(const TFSize& index){
+TFGrayscaleAlphaHolder::~TFGrayscaleAlphaHolder(){
+}
+/*
+void TFGrayscaleAlphaHolder::setUp(TFSize index){
 
 	index_ = index;
-	painter_.setUp(this);
-	size_changed(index_, dynamic_cast<QWidget*>(parent())->rect());
+	painter_.setUp(basicTools_->painterWidget);
+	size_changed(index_, rect());
+	setWindowTitle(convert);
 	show();
 }
-
+*/
 void TFGrayscaleAlphaHolder::updateFunction_(){
 
 	if(!painter_.changed()) return;
@@ -30,11 +36,12 @@ void TFGrayscaleAlphaHolder::updatePainter_(){
 	calculate_(function_.getColorMap(), painter_.getView());
 }
 
-void TFGrayscaleAlphaHolder::resizePainter_(const QRect& rect){
+void TFGrayscaleAlphaHolder::resizePainter_(){
 
 	updateFunction_();
 
-	painter_.resize(rect);
+	painter_.resize(basicTools_->painterWidget->size());
+	painter_.correctView();
 	
 	updatePainter_();
 }

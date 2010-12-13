@@ -3,21 +3,25 @@
 namespace M4D {
 namespace GUI {
 
-TFRGBHolder::TFRGBHolder(QWidget* window): TFAbstractHolder(window){
+TFRGBHolder::TFRGBHolder(QMainWindow* parent):
+	TFAbstractHolder(parent),
+	painter_(basicTools_->painterWidget){
 
 	type_ = TFHOLDER_RGB;
+
+	painter_.correctView();
 }
 
-TFRGBHolder::~TFRGBHolder(){}
-
-void TFRGBHolder::setUp(const TFSize& index){
+TFRGBHolder::~TFRGBHolder(){
+}
+/*
+void TFRGBHolder::setUp(TFSize index){
 
 	index_ = index;
-	painter_.setUp(this);
 	size_changed(index_, dynamic_cast<QWidget*>(parent())->rect());
 	show();
 }
-
+*/
 void TFRGBHolder::updateFunction_(){
 
 	if(!painter_.changed()) return;
@@ -30,11 +34,12 @@ void TFRGBHolder::updatePainter_(){
 	calculate_(function_.getColorMap(), painter_.getView());
 }
 
-void TFRGBHolder::resizePainter_(const QRect& rect){
+void TFRGBHolder::resizePainter_(){
 
 	updateFunction_();
 
-	painter_.resize(rect);
+	painter_.resize(basicTools_->painterWidget->size());
+	painter_.correctView();
 	
 	updatePainter_();
 }

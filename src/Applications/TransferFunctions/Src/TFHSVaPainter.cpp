@@ -3,23 +3,12 @@
 namespace M4D {
 namespace GUI {
 
-TFHSVaPainter::TFHSVaPainter():
-	activeView_(ACTIVE_HUE){}
+TFHSVaPainter::TFHSVaPainter(QWidget* parent):
+	TFAbstractPainter(parent),
+	activeView_(ACTIVE_HUE){
+}
 
 TFHSVaPainter::~TFHSVaPainter(){}
-
-void TFHSVaPainter::setUp(QWidget *parent){
-
-	setParent(parent);
-	correctView_();
-	show();
-}
-
-void TFHSVaPainter::setUp(QWidget *parent, int margin){
-
-	setMargin_(margin);
-	setUp(parent);
-}
 
 void TFHSVaPainter::correctView_(){
 
@@ -29,7 +18,7 @@ void TFHSVaPainter::correctView_(){
 	view_ = TFColorMapPtr(new TFColorMap(paintAreaWidth_));
 }
 
-void TFHSVaPainter::paintEvent(QPaintEvent *e){
+void TFHSVaPainter::paintEvent(QPaintEvent*){
 
 	QPainter drawer(this);
 
@@ -143,7 +132,7 @@ void TFHSVaPainter::mouseMoveEvent(QMouseEvent *e){
 
 	*drawHelper_ = mousePosition;
 	
-	if(changed()) repaint(rect());
+	if(changed()) repaint();
 }
 
 void TFHSVaPainter::addPoint_(TFPaintingPoint point){

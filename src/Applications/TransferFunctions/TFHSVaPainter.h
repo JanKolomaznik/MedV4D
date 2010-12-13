@@ -9,14 +9,13 @@ namespace GUI {
 class TFHSVaPainter: public TFAbstractPainter{
 
 public:
-	TFHSVaPainter();
+
+	TFHSVaPainter(QWidget* parent);
 	~TFHSVaPainter();
 
-	void setUp(QWidget *parent);
-	void setUp(QWidget *parent, int margin);
-
 protected:
-	void paintEvent(QPaintEvent *e);
+
+	void paintEvent(QPaintEvent*);
 	void mousePressEvent(QMouseEvent *e);
 	void mouseReleaseEvent(QMouseEvent *e);
 	void mouseMoveEvent(QMouseEvent *e);

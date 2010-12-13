@@ -1,37 +1,58 @@
 #include "TFPaletteButton.h"
 
-#include <QtGui/QKeySequence>
+#include <QtGui/QPainter>
 
 namespace M4D {
 namespace GUI {
 
 TFPaletteButton::TFPaletteButton(QWidget* parent, TFSize index):
-	QPushButton(QString::number(index+1), parent),
-	index_(index){
-
-	bool buttonEnabled = QObject::connect( this, SIGNAL(clicked()), this, SLOT(button_triggered()));
-	tfAssert(buttonEnabled);
-
-	setCheckable(true);
-
-	std::string shortcut = "F" + convert<TFSize,std::string>(index_+1);
-	setShortcut( QKeySequence(QString::fromStdString(shortcut)) );
+	QWidget(parent),
+	index_(index),
+	active_(false){	
 }
 
 TFPaletteButton::~TFPaletteButton(){}
 
-void TFPaletteButton::changeIndex(TFSize index){
+void TFPaletteButton::activate(){
 
-	index_ = index;
-	setText(QString::number(index_+1));
-
-	std::string shortcut = "F" + convert<TFSize,std::string>(index_+1);
-	setShortcut( QKeySequence(QString::fromStdString(shortcut)) );
+	active_ = true;
+	repaint();
 }
 
-void TFPaletteButton::button_triggered(){
+void TFPaletteButton::deactivate(){
 
-	emit TFPaletteSignal(index_);
+	active_ = false;
+	repaint();
 }
+
+void TFPaletteButton::paintEvent(QPaintEvent*){
+
+	QPainter drawer(this);
+
+	drawer.fillRect(rect(), QBrush(Qt::black));
+	drawer.setPen(Qt::white);
+	drawer.drawText(rect(), Qt::AlignCenter, QObject::tr(convert<TFSize, std::string>(index_).c_str()));
+
+	if(active_)
+	{
+		drawBorder_(&drawer, Qt::red, 2);
+	}
+}
+
+void TFPaletteButton::drawBorder_(QPainter* drawer, QColor color, int brushWidth){
+	
+	drawer->setPen( QPen(color, brushWidth) );
+
+	drawer->drawLine(0, brushWidth - 1, width(), brushWidth - 1);
+	drawer->drawLine(0, height() - (brushWidth - 1), width(), height() - (brushWidth - 1));
+	drawer->drawLine(brushWidth - 1, 0, brushWidth - 1, height());
+	drawer->drawLine(width() - (brushWidth - 1), 0, width() - (brushWidth - 1), height());
+}
+
+void TFPaletteButton::mouseReleaseEvent(QMouseEvent *){
+
+	emit Triggered();
+}
+
 } // namespace GUI
 } // namespace M4D

@@ -1,32 +1,28 @@
 #include <TFAbstractHolder.h>
 
+#include <QtGui/QResizeEvent>
+
 namespace M4D {
 namespace GUI {
 
 TFAbstractHolder::TFAbstractHolder():
-	type_(TFHOLDER_UNKNOWN),
 	basicTools_(new Ui::TFAbstractHolder),
+	type_(TFHOLDER_UNKNOWN),
 	button_(NULL),
 	setup_(false),
-	released_(false),
-	painterLeftTop_(25,50),
-	painterRightBottom_(25,25),
-	colorBarSize_(10),
+	bottomSpace_(20),
 	index_(0){
 
 	basicTools_->setupUi(this);
 }
 
-TFAbstractHolder::TFAbstractHolder(QWidget* parent):
-	QWidget(parent),
+TFAbstractHolder::TFAbstractHolder(QMainWindow* parent):
+	QDockWidget((QWidget*)parent),
 	type_(TFHOLDER_UNKNOWN),
 	basicTools_(new Ui::TFAbstractHolder),
 	button_(NULL),
 	setup_(false),
-	released_(false),
-	painterLeftTop_(25,50),
-	painterRightBottom_(25,25),
-	colorBarSize_(10),
+	bottomSpace_(20),
 	index_(0){
 
 	basicTools_->setupUi(this);
@@ -35,36 +31,39 @@ TFAbstractHolder::TFAbstractHolder(QWidget* parent):
 TFAbstractHolder::~TFAbstractHolder(){
 
 	if(basicTools_) delete basicTools_;
-	if(button_) delete button_;
 }
 
-bool TFAbstractHolder::connectToTFWindow(QObject *tfWindow){
-	
-	bool resizeConnected = QObject::connect( tfWindow, SIGNAL(ResizeHolder(const TFSize&, const QRect)), this, SLOT(size_changed(const TFSize&, const QRect&)));
-	tfAssert(resizeConnected);
+void TFAbstractHolder::setUp(TFSize index){
 
-	bool activateConnected = QObject::connect(this, SIGNAL( ActivateHolder(const TFSize&) ), tfWindow, SLOT( change_activeHolder(const TFSize&) ));
+	index_ = index;
+
+	std::string title = convert<TFHolderType, std::string>(type_) +
+		" #" + convert<TFSize, std::string>(index + 1);
+	setWindowTitle( QObject::tr(title.c_str()) );
+
+	show();
+}
+
+bool TFAbstractHolder::connectToTFPalette(QObject *tfPalette){
+		
+	bool activateConnected = QObject::connect( this, SIGNAL(Activate(TFSize)), tfPalette, SLOT(change_activeHolder(TFSize)));
 	tfAssert(activateConnected);
-	
-	bool paletteConnected = QObject::connect( button_, SIGNAL(TFPaletteSignal(const TFSize&)), tfWindow, SLOT(change_activeHolder(const TFSize&)));
-	tfAssert(paletteConnected);
 
-	bool releaseConnected = QObject::connect( this, SIGNAL(ReleaseHolder()), tfWindow, SLOT(release_triggered()));
-	tfAssert(releaseConnected);
-
-	bool closeConnected = QObject::connect( this, SIGNAL(CloseHolder()), tfWindow, SLOT(close_triggered()));
+	bool closeConnected = QObject::connect( this, SIGNAL(Close(TFSize)), tfPalette, SLOT(close_triggered(TFSize)));
 	tfAssert(closeConnected);
 
-	return resizeConnected &&
-		activateConnected &&
-		paletteConnected &&
-		releaseConnected &&
+	return activateConnected &&
 		closeConnected;
 }
 
-void TFAbstractHolder::createPaletteButton(QWidget *parent){
+bool TFAbstractHolder::createPaletteButton(QWidget *parent){
 
 	button_ = new TFPaletteButton(parent, index_);
+
+	bool buttonConnected = QObject::connect( button_, SIGNAL(Triggered()), this, SLOT(on_activateButton_clicked()));
+	tfAssert(buttonConnected);
+
+	return buttonConnected;
 }
 
 TFHolderType TFAbstractHolder::getType() const{
@@ -77,25 +76,17 @@ TFPaletteButton* TFAbstractHolder::getButton() const{
 	return button_;
 }
 
+TFSize TFAbstractHolder::getIndex(){
+
+	return index_;
+}
+/*
 void TFAbstractHolder::changeIndex(const TFSize &index){
 
 	index_ = index;
 	button_->changeIndex(index_);
 }
-
-bool TFAbstractHolder::isReleased(){
-
-	return released_;
-}
-
-void TFAbstractHolder::setReleased(const bool &released){
-
-	released_ = released;
-	button_->setVisible(!released);
-	if(released_) basicTools_->releaseButton->setText("Join");
-	else basicTools_->releaseButton->setText("Release");
-}
-
+*/
 void TFAbstractHolder::save(){
 
 	QString fileName = QFileDialog::getSaveFileName(this,
@@ -120,54 +111,41 @@ void TFAbstractHolder::save(){
 	file.close();
 }
 
-void TFAbstractHolder::mousePressEvent(QMouseEvent* e){
-
-	emit ActivateHolder(index_);
-	QWidget::mousePressEvent(e);
-}
-
-void TFAbstractHolder::keyPressEvent(QKeyEvent* e){
-
-	emit ActivateHolder(index_);
-	QWidget::keyPressEvent(e);
-}
-
 void TFAbstractHolder::paintEvent(QPaintEvent *e){}
 
 void TFAbstractHolder::resizeEvent(QResizeEvent *e){
-
-	size_changed(index_, rect());
-}
-
-void TFAbstractHolder::size_changed(const TFSize& index, const QRect& rect){
-
-	if(index != index_) return;
 	
-	setGeometry(rect);
-
 	basicTools_->closeButton->move(
-		rect.width() - basicTools_->closeButton->width() - painterRightBottom_.x,
-		(painterLeftTop_.y - basicTools_->closeButton->height())/2 );
-	basicTools_->releaseButton->move(
-		basicTools_->closeButton->x() - basicTools_->releaseButton->width() - painterRightBottom_.x,
-		(painterLeftTop_.y - basicTools_->releaseButton->height())/2 );
+		width() - basicTools_->closeButton->width() - basicTools_->painterWidget->geometry().x(),
+		basicTools_->closeButton->geometry().y() );
 
+	basicTools_->saveButton->move(
+		basicTools_->closeButton->x() - basicTools_->saveButton->width() - basicTools_->painterWidget->geometry().x(),
+		basicTools_->closeButton->y() );
 	
-	int newWidth = rect.width() - (painterLeftTop_.x + painterRightBottom_.x);
-	int newHeight = rect.height() - (painterLeftTop_.y + painterRightBottom_.y);
-	QRect newRect(painterLeftTop_.x, painterLeftTop_.y, newWidth, newHeight);
 	
-	resizePainter_(newRect);
+	int newWidth = basicTools_->holderArea->width() - (2*basicTools_->painterWidget->geometry().x());
+	int newHeight = basicTools_->holderArea->height() -
+		(basicTools_->painterWidget->geometry().y() + bottomSpace_);
+	
+	basicTools_->painterWidget->resize(newWidth, newHeight);
+
+	resizePainter_();
 }
 
 void TFAbstractHolder::on_closeButton_clicked(){
 
-	emit CloseHolder();
+	emit Close(index_);
 }
 
-void TFAbstractHolder::on_releaseButton_clicked(){
+void TFAbstractHolder::on_saveButton_clicked(){
 
-	emit ReleaseHolder();
+	save();
+}
+
+void TFAbstractHolder::on_activateButton_clicked(){
+
+	emit Activate(index_);
 }
 
 void TFAbstractHolder::save_(QFile &file){

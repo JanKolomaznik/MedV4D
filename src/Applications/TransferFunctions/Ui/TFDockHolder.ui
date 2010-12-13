@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string>DockWidget</string>
   </property>
-  <widget class="QWidget" name="dockWidgetArea"/>
+  <widget class="QWidget" name="holderArea"/>
  </widget>
  <resources/>
  <connections/>

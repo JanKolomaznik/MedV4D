@@ -3,22 +3,11 @@
 namespace M4D {
 namespace GUI {
 
-TFGrayscalePainter::TFGrayscalePainter(){}
+TFGrayscalePainter::TFGrayscalePainter(QWidget* parent):
+TFAbstractPainter(parent){
+}
 
 TFGrayscalePainter::~TFGrayscalePainter(){}
-
-void TFGrayscalePainter::setUp(QWidget *parent){
-
-	setParent(parent);
-	correctView_();
-	show();
-}
-
-void TFGrayscalePainter::setUp(QWidget *parent, int margin){
-
-	setMargin_(margin);
-	setUp(parent);
-}
 
 void TFGrayscalePainter::correctView_(){
 
@@ -28,7 +17,7 @@ void TFGrayscalePainter::correctView_(){
 	view_ = TFColorMapPtr(new TFColorMap(paintAreaWidth_));
 }
 
-void TFGrayscalePainter::paintEvent(QPaintEvent *e){
+void TFGrayscalePainter::paintEvent(QPaintEvent*){
 
 	QPainter drawer(this);
 	paintBackground_(&drawer, rect());
@@ -86,7 +75,7 @@ void TFGrayscalePainter::mouseMoveEvent(QMouseEvent *e){
 
 	*drawHelper_ = mousePosition;
 	
-	if(changed_) repaint(rect());
+	if(changed_) repaint();
 }
 
 void TFGrayscalePainter::addPoint_(TFPaintingPoint point){

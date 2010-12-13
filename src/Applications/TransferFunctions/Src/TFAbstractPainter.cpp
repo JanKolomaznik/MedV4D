@@ -3,7 +3,8 @@
 namespace M4D {
 namespace GUI {
 
-TFAbstractPainter::TFAbstractPainter():
+TFAbstractPainter::TFAbstractPainter(QWidget* parent):
+	QWidget(parent),
 	painter_(new Ui::TFAbstractPainter),
 	changed_(true),
 	drawHelper_(NULL),
@@ -11,6 +12,8 @@ TFAbstractPainter::TFAbstractPainter():
 	colorBarSize_(10){
 
 	painter_->setupUi(this);
+	resize(parent->size());
+	show();
 }
 
 TFAbstractPainter::~TFAbstractPainter(){
@@ -30,19 +33,12 @@ bool TFAbstractPainter::changed(){
 	return changed_;
 }
 
-void TFAbstractPainter::resize(const QRect& rect){
+void TFAbstractPainter::correctView(){
 
-	setGeometry(rect);
 	correctView_();
 }
 
-void TFAbstractPainter::setMargin_(TFSize margin){
-
-	margin_ = margin;
-	correctView_();
-}
-
-void TFAbstractPainter::paintBackground_(QPainter* drawer, const QRect& rect, bool hsv){
+void TFAbstractPainter::paintBackground_(QPainter* drawer, QRect rect, bool hsv){
 
 	QRect paintRect = rect;
 	paintRect.setHeight(paintAreaHeight_ + 2*margin_);

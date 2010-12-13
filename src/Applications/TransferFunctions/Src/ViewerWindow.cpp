@@ -15,21 +15,19 @@ ViewerWindow::ViewerWindow()
 	#endif
 
 	mProdconn.ConnectConsumer( mViewer->InputPort()[0] );
-		
-	QDockWidget * dockwidget = new QDockWidget("Transfer Functions");
 
-	mTransferFunctionEditor = new M4D::GUI::TFWindow(this);
-	dockwidget->setWidget( mTransferFunctionEditor );
-	mTransferFunctionEditor->createMenu(menubar);
-
+	mTransferFunctionEditor = new M4D::GUI::TFPalette(this);
 	mTransferFunctionEditor->setupDefault();
-	/*
+	/*	TODO
 	mTransferFunctionEditor->SetValueInterval( 0.0f, 3000.0f );
 	mTransferFunctionEditor->SetMappedValueInterval( 0.0f, 1.0f );
 	mTransferFunctionEditor->SetBorderWidth( 5 );
 	*/
-	dockwidget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-	addDockWidget(Qt::BottomDockWidgetArea, dockwidget );
+	
+	QDockWidget * dockwidget = new QDockWidget("Transfer Functions Palette", this);
+	dockwidget->setWidget( mTransferFunctionEditor );
+	dockwidget->setFeatures(QDockWidget::AllDockWidgetFeatures);
+	addDockWidget(Qt::LeftDockWidgetArea, dockwidget);
 	
 
 	mViewer->SetLUTWindow( Vector2f( 500.0f,1000.0f ) );

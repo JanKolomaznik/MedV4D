@@ -6,7 +6,7 @@
 #include "ui_ViewerWindow.h"
 #include "GUI/utils/TransferFunctionBuffer.h"
 #include "GUI/widgets/TransferFunction1DEditor.h"
-#include <TFWindow.h>
+#include <TFPalette.h>
 
 class ViewerWindow: public QMainWindow, public Ui::ViewerWindow
 {
@@ -45,7 +45,7 @@ public slots:
 
 protected:
 	M4D::Imaging::ConnectionTyped< M4D::Imaging::AImage > mProdconn;
-	M4D::GUI::TFWindow *mTransferFunctionEditor;
+	M4D::GUI::TFPalette *mTransferFunctionEditor;
 
 	QTimer	mTransFuncTimer;
 	M4D::Common::TimeStamp mLastTimeStamp;

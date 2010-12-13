@@ -21,11 +21,11 @@ class TFHolderFactory{
 
 public:
 	
-	static TFActions createMenuTFActions(QWidget *parent);
+	static TFActions createMenuTFActions(QObject *parent);
 
-	static TFAbstractHolder* createHolder(QWidget* window, const TFHolderType holderType);
+	static TFAbstractHolder* createHolder(QMainWindow* mainWindow, const TFHolderType holderType);
 
-	static TFAbstractHolder* loadHolder(QWidget* window);
+	static TFAbstractHolder* loadHolder(QMainWindow* mainWindow);
 
 protected:
 

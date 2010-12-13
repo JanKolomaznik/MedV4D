@@ -9,7 +9,7 @@ TFXmlWriter::TFXmlWriter(){
 	setAutoFormatting(true);
 }
 
-void TFXmlWriter::write(QIODevice *device, TFAbstractFunction* data, const TFHolderType& holderType){
+void TFXmlWriter::write(QIODevice *device, TFAbstractFunction* data, TFHolderType holderType){
 
 	setDevice(device);
 
@@ -21,7 +21,7 @@ void TFXmlWriter::write(QIODevice *device, TFAbstractFunction* data, const TFHol
 	writeEndDocument();
 }
 
-void TFXmlWriter::writeTestData(QIODevice *device, const TFHolderType& holderType){
+void TFXmlWriter::writeTestData(QIODevice *device, TFHolderType holderType){
 	
 	TFRGBaFunction data;
 	TFColorMapPtr f = data.getColorMap();
@@ -36,7 +36,7 @@ void TFXmlWriter::writeTestData(QIODevice *device, const TFHolderType& holderTyp
 	write(device, &data, holderType);	
 }
 
-void TFXmlWriter::writeFunction_(TFAbstractFunction* function, const TFHolderType& holderType){
+void TFXmlWriter::writeFunction_(TFAbstractFunction* function, TFHolderType holderType){
 	
 	writeStartElement("TransferFunction");
 		writeAttribute("holderType", QString::fromStdString(convert<TFHolderType, std::string>(holderType)));

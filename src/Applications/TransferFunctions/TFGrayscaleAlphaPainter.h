@@ -10,15 +10,12 @@ class TFGrayscaleAlphaPainter: public TFAbstractPainter{
 
 public:
 
-	TFGrayscaleAlphaPainter();
+	TFGrayscaleAlphaPainter(QWidget* parent);
 	~TFGrayscaleAlphaPainter();
-
-	void setUp(QWidget *parent);
-	void setUp(QWidget *parent, int margin);
 
 protected:
 
-	void paintEvent(QPaintEvent *e);
+	void paintEvent(QPaintEvent*);
 	void mousePressEvent(QMouseEvent *e);
 	void mouseReleaseEvent(QMouseEvent *e);
 	void mouseMoveEvent(QMouseEvent *e);

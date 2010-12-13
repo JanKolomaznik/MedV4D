@@ -3,23 +3,12 @@
 namespace M4D {
 namespace GUI {
 
-TFRGBaPainter::TFRGBaPainter():
-	activeView_(ACTIVE_RED){}
+TFRGBaPainter::TFRGBaPainter(QWidget* parent):
+	TFAbstractPainter(parent),
+	activeView_(ACTIVE_RED){
+}
 
 TFRGBaPainter::~TFRGBaPainter(){}
-
-void TFRGBaPainter::setUp(QWidget *parent){
-
-	setParent(parent);
-	correctView_();
-	show();
-}
-
-void TFRGBaPainter::setUp(QWidget *parent, int margin){
-
-	setMargin_(margin);
-	setUp(parent);
-}
 
 void TFRGBaPainter::correctView_(){
 
@@ -29,7 +18,7 @@ void TFRGBaPainter::correctView_(){
 	view_ = TFColorMapPtr(new TFColorMap(paintAreaWidth_));
 }
 
-void TFRGBaPainter::paintEvent(QPaintEvent *e){
+void TFRGBaPainter::paintEvent(QPaintEvent*){
 
 	QPainter drawer(this);
 	paintBackground_(&drawer, rect());
@@ -121,7 +110,7 @@ void TFRGBaPainter::mouseMoveEvent(QMouseEvent *e){
 
 	*drawHelper_ = mousePosition;
 	
-	if(changed()) repaint(rect());
+	if(changed()) repaint();
 }
 
 void TFRGBaPainter::addPoint_(TFPaintingPoint point){

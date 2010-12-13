@@ -12,16 +12,16 @@ class TFHSVHolder: public TFAbstractHolder{
 
 public:
 
-	TFHSVHolder(QWidget* window);
+	TFHSVHolder(QMainWindow* parent);
 	~TFHSVHolder();
 
-	void setUp(const TFSize& index);
+	//void setUp(TFSize index);
 
 protected:
 
 	void updateFunction_();
 	void updatePainter_();
-	void resizePainter_(const QRect& rect);
+	void resizePainter_();
 
 	TFAbstractFunction* getFunction_();
 

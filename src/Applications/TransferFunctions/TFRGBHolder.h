@@ -12,16 +12,16 @@ class TFRGBHolder: public TFAbstractHolder{
 
 public:
 
-	TFRGBHolder(QWidget* window);
+	TFRGBHolder(QMainWindow* parent);
 	~TFRGBHolder();
 
-	void setUp(const TFSize& index);
+	//void setUp(TFSize index);
 
 protected:
 
 	void updateFunction_();
 	void updatePainter_();
-	void resizePainter_(const QRect& rect);
+	void resizePainter_();
 
 	TFAbstractFunction* getFunction_();
 

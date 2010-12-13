@@ -12,16 +12,16 @@ class TFGrayscaleHolder: public TFAbstractHolder{
 
 public:
 
-	TFGrayscaleHolder(QWidget* window);
+	TFGrayscaleHolder(QMainWindow* parent);
 	~TFGrayscaleHolder();
 
-	void setUp(const TFSize& index);
+	//void setUp(TFSize index);
 
 protected:
 
 	void updateFunction_();
 	void updatePainter_();
-	void resizePainter_(const QRect& rect);
+	void resizePainter_();
 
 	TFAbstractFunction* getFunction_();
 

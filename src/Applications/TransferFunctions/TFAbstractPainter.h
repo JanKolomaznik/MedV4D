@@ -22,7 +22,7 @@ public:
 
 	TFColorMapPtr getView();
 
-	void resize(const QRect& rect);	//calls correctView_
+	void correctView();	//need to refresh view after this call
 
 	bool changed();
 
@@ -38,12 +38,10 @@ protected:
 
 	TFColorMapPtr view_;
 
-	TFAbstractPainter();
+	TFAbstractPainter(QWidget* parent = NULL);
 	virtual ~TFAbstractPainter();
 
-	void setMargin_(TFSize margin);	//calls correctView_
-	virtual void correctView_() = 0;	//need to refresh view after this call
-	void paintBackground_(QPainter* drawer, const QRect& rect, bool hsv = false);
+	void paintBackground_(QPainter* drawer, QRect rect, bool hsv = false);
 
 	TFPaintingPoint correctCoords_(const TFPaintingPoint &point);
 	TFPaintingPoint correctCoords_(int x, int y);
@@ -51,10 +49,12 @@ protected:
 	void addLine_(int x1, int y1, int x2, int y2);
 	void addLine_(TFPaintingPoint begin, TFPaintingPoint end);
 
-	virtual void paintEvent(QPaintEvent *e) = 0;
-	virtual void mousePressEvent(QMouseEvent *e) = 0;
-	virtual void mouseReleaseEvent(QMouseEvent *e) = 0;
-	virtual void mouseMoveEvent(QMouseEvent *e) = 0;
+	virtual void correctView_() = 0;	//need to refresh view after this call
+
+	virtual void paintEvent(QPaintEvent* e) = 0;
+	virtual void mousePressEvent(QMouseEvent* e) = 0;
+	virtual void mouseReleaseEvent(QMouseEvent* e) = 0;
+	virtual void mouseMoveEvent(QMouseEvent* e) = 0;
 
 	virtual void addPoint_(TFPaintingPoint point) = 0;
 };

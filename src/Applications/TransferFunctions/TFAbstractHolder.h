@@ -4,7 +4,7 @@
 #include "common/Types.h"
 #include "ui_TFAbstractHolder.h"
 
-#include <QtGui/QWidget>
+#include <QtGui/QDockWidget>
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
 #include <QtGui/QPainter>
@@ -22,7 +22,7 @@
 namespace M4D {
 namespace GUI {
 
-class TFAbstractHolder : public QWidget{
+class TFAbstractHolder : public QDockWidget{
 
 	Q_OBJECT
 	
@@ -32,19 +32,16 @@ public:
 
 	virtual ~TFAbstractHolder();
 
-	virtual void save();
+	void save();
 
-	virtual void setUp(const TFSize& index) = 0;
-	bool connectToTFWindow(QObject* tfWindow);	/*	tfWindow has to be TFWindow instance,
-													need to call method createButton in order to connect palette button	*/
-	void createPaletteButton(QWidget* parent);
-	void changeIndex(const TFSize& index);
+	/*virtual*/ void setUp(TFSize index);
+	bool connectToTFPalette(QObject* tfPalette);	//	tfPalette has to be TFPalette instance
+	bool createPaletteButton(QWidget* parent);
+	//void changeIndex(TFSize index);
+	TFSize getIndex();
 
 	TFHolderType getType() const;
 	TFPaletteButton* getButton() const;
-	bool isReleased();
-
-	void setReleased(const bool& released);
 	
 	template<typename ElementIterator>
 	bool applyTransferFunction(
@@ -76,30 +73,24 @@ public:
 
 signals:
 
-	void CloseHolder();
-	void ReleaseHolder();
-	void ActivateHolder(const TFSize& index);
+	void Close(TFSize index);
+	void Activate(TFSize index);
 
 protected slots:
 
-	void size_changed(const TFSize& index, const QRect& rect);
-	void on_releaseButton_clicked();
 	void on_closeButton_clicked();
+	void on_saveButton_clicked();
+	void on_activateButton_clicked();
 
 protected:
 
 	TFHolderType type_;
 	Ui::TFAbstractHolder* basicTools_;
 	bool setup_;
-	TFPaintingPoint painterLeftTop_;
-	TFPaintingPoint painterRightBottom_;
-	TFSize colorBarSize_;
+	const int bottomSpace_;
 	TFPaletteButton* button_;
 	TFSize index_;
-	bool released_;
 
-	void mousePressEvent(QMouseEvent*);
-	void keyPressEvent(QKeyEvent*);
 	virtual void paintEvent(QPaintEvent*);
 	virtual void resizeEvent(QResizeEvent*);
 
@@ -108,14 +99,14 @@ protected:
 
 	virtual void updateFunction_() = 0;
 	virtual void updatePainter_() = 0;
-	virtual void resizePainter_(const QRect& rect) = 0;
+	virtual void resizePainter_() = 0;
 
 	virtual TFAbstractFunction* getFunction_() = 0;
 
 	void calculate_(const TFColorMapPtr input, TFColorMapPtr output);
 
 	TFAbstractHolder();
-	TFAbstractHolder(QWidget* widget);
+	TFAbstractHolder(QMainWindow* widget);
 };
 
 } // namespace GUI

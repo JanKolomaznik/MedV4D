@@ -1,69 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>TFAbstractHolder</class>
- <widget class="QWidget" name="TFAbstractHolder">
+ <widget class="QDockWidget" name="TFAbstractHolder">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>580</width>
-    <height>410</height>
+    <width>400</width>
+    <height>200</height>
    </rect>
   </property>
-  <property name="font">
-   <font>
-    <pointsize>5</pointsize>
-    <weight>50</weight>
-    <bold>false</bold>
-   </font>
+  <property name="minimumSize">
+   <size>
+    <width>400</width>
+    <height>200</height>
+   </size>
+  </property>
+  <property name="features">
+   <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
   </property>
   <property name="windowTitle">
-   <string>Transfer Functions</string>
+   <string>Concrete Transfer Function</string>
   </property>
-  <property name="windowIcon">
-   <iconset>
-    <normaloff>../../../GUI/icons/app.png</normaloff>../../../GUI/icons/app.png</iconset>
-  </property>
-  <widget class="QPushButton" name="closeButton">
-   <property name="geometry">
-    <rect>
-     <x>520</x>
-     <y>10</y>
-     <width>50</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>8</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>Close</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="releaseButton">
-   <property name="geometry">
-    <rect>
-     <x>460</x>
-     <y>10</y>
-     <width>50</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>8</pointsize>
-     <weight>50</weight>
-     <bold>false</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>Release</string>
-   </property>
+  <widget class="QWidget" name="holderArea">
+   <widget class="QPushButton" name="closeButton">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>10</y>
+      <width>50</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Close</string>
+    </property>
+    <property name="shortcut">
+     <string>Ctrl+F4</string>
+    </property>
+   </widget>
+   <widget class="QWidget" name="painterWidget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>40</y>
+      <width>360</width>
+      <height>130</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="saveButton">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>10</y>
+      <width>50</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Save</string>
+    </property>
+    <property name="shortcut">
+     <string>Ctrl+S</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="activateButton">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>10</y>
+      <width>60</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Set active</string>
+    </property>
+    <property name="shortcut">
+     <string>Ctrl+A</string>
+    </property>
+   </widget>
   </widget>
  </widget>
- <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
 </ui>

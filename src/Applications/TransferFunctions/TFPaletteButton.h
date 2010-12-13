@@ -2,34 +2,39 @@
 #define TF_PALETTE_BUTTON
 
 #include <TFTypes.h>
-#include <QtGui/QPushButton>
+#include <QtGui/QWidget>
+#include <QtGui/QAction>
 
 namespace M4D {
 namespace GUI {
 
-class TFPaletteButton: public QPushButton{
+class TFPaletteButton: public QWidget{
 
 	Q_OBJECT
 
 public:
 
 	TFPaletteButton(QWidget* parent, TFSize index);
-
 	~TFPaletteButton();
 
-	void changeIndex(TFSize index);
+	void activate();
+	void deactivate();
 
 signals:
 
-	void TFPaletteSignal(const TFSize &index);
+	void Triggered();
 
-public slots:
+protected:
 
-	void button_triggered();
+	void mouseReleaseEvent(QMouseEvent*);
+	void paintEvent(QPaintEvent*);
 
 private:
 
 	TFSize index_;
+	bool active_;
+
+	void drawBorder_(QPainter* drawer, QColor color, int brushWidth);
 };
 
 } // namespace GUI
