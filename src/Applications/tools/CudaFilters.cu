@@ -42,7 +42,7 @@ struct SobelFilter3DFtor
 template< typename TElement >
 struct LocalMinima3DFtor
 {
-	LocalMinima3DFtor(): radius( make_int3( 1, 1, 1 ) )
+	LocalMinima3DFtor( TElement aThreshold ): radius( make_int3( 1, 1, 1 ) ), mThreshold( aThreshold )
 	{}
 
 	__device__ uint8
@@ -56,9 +56,10 @@ struct LocalMinima3DFtor
 				}
 			}
 		}
-		return value >= data[idx] ? 255 : 0;
+		return ( value >= data[idx] && data[idx] < mThreshold ) ? 255 : 0;
 	}
 	int3 radius;
+	TElement mThreshold;
 };
 
 template< typename TElement >
@@ -471,9 +472,9 @@ WShedEvolution( Buffer3D< uint32 > labeledRegionsBuffer, Buffer3D< TInEType > in
 	}
 }
 
-#include "Imaging/Image.h"
+/*#include "Imaging/Image.h"
 #include "Imaging/ImageFactory.h"
-
+*/
 
 template< typename TEType >
 void
@@ -523,10 +524,10 @@ WatershedTransformation3D( M4D::Imaging::ImageRegion< uint32, 3 > aLabeledMarker
 	cudaFree( inputBuffer.mData );
 
 
-	typename M4D::Imaging::Image< SignedElement, 3 >::Ptr tmpDebugImage = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< SignedElement, 3 >( aLabeledMarkerRegions.GetMinimum(), aLabeledMarkerRegions.GetMaximum(), aLabeledMarkerRegions.GetElementExtents() );
+	/*typename M4D::Imaging::Image< SignedElement, 3 >::Ptr tmpDebugImage = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< SignedElement, 3 >( aLabeledMarkerRegions.GetMinimum(), aLabeledMarkerRegions.GetMaximum(), aLabeledMarkerRegions.GetElementExtents() );
 	cudaMemcpy(tmpDebugImage->GetRegion().GetPointer(), tmpBuffer.mData, labeledRegionsBuffer.mLength * sizeof(SignedElement), cudaMemcpyDeviceToHost );
 	M4D::Imaging::ImageFactory::DumpImage( "Intermediate.dump", *tmpDebugImage );
-
+*/
 	cudaFree( tmpBuffer.mData );
 }
 
@@ -607,14 +608,14 @@ RegionBorderDetection3D( RegionType input, M4D::Imaging::MaskRegion3D output )
 
 template< typename RegionType >
 void
-LocalMinima3D( RegionType input, M4D::Imaging::MaskRegion3D output )
+LocalMinima3D( RegionType input, M4D::Imaging::MaskRegion3D output, typename RegionType::ElementType aThreshold )
 {
 	typedef typename RegionType::ElementType TElement;
 	
 	Buffer3D< TElement > inBuffer = CudaBuffer3DFromImageRegionCopy( input );
 	Buffer3D< uint8 > outBuffer = CudaBuffer3DFromImageRegion( output );
 
-	LocalMinima3DFtor< TElement > filter;
+	LocalMinima3DFtor< TElement > filter( aThreshold );
 	//int3 radius = filter.radius;
 
 	dim3 blockSize( 8, 8, 8 );
@@ -655,16 +656,16 @@ template void Sobel3D( M4D::Imaging::ImageRegion< uint64, 3 > input, M4D::Imagin
 template void Sobel3D( M4D::Imaging::ImageRegion< float, 3 > input, M4D::Imaging::ImageRegion< float, 3 > output, float threshold );
 template void Sobel3D( M4D::Imaging::ImageRegion< double, 3 > input, M4D::Imaging::ImageRegion< double, 3 > output, double threshold );
 
-template void LocalMinima3D( M4D::Imaging::ImageRegion< int8, 3 > input, M4D::Imaging::MaskRegion3D output );
-template void LocalMinima3D( M4D::Imaging::ImageRegion< uint8, 3 > input, M4D::Imaging::MaskRegion3D output );
-template void LocalMinima3D( M4D::Imaging::ImageRegion< int16, 3 > input, M4D::Imaging::MaskRegion3D output );
-template void LocalMinima3D( M4D::Imaging::ImageRegion< uint16, 3 > input, M4D::Imaging::MaskRegion3D output );
-template void LocalMinima3D( M4D::Imaging::ImageRegion< int32, 3 > input, M4D::Imaging::MaskRegion3D output );
-template void LocalMinima3D( M4D::Imaging::ImageRegion< uint32, 3 > input, M4D::Imaging::MaskRegion3D output );
-template void LocalMinima3D( M4D::Imaging::ImageRegion< int64, 3 > input, M4D::Imaging::MaskRegion3D output );
-template void LocalMinima3D( M4D::Imaging::ImageRegion< uint64, 3 > input, M4D::Imaging::MaskRegion3D output );
-template void LocalMinima3D( M4D::Imaging::ImageRegion< float, 3 > input, M4D::Imaging::MaskRegion3D output );
-template void LocalMinima3D( M4D::Imaging::ImageRegion< double, 3 > input, M4D::Imaging::MaskRegion3D output );
+template void LocalMinima3D( M4D::Imaging::ImageRegion< int8, 3 > input, M4D::Imaging::MaskRegion3D output, int8 aThreshold );
+template void LocalMinima3D( M4D::Imaging::ImageRegion< uint8, 3 > input, M4D::Imaging::MaskRegion3D output, uint8 aThreshold );
+template void LocalMinima3D( M4D::Imaging::ImageRegion< int16, 3 > input, M4D::Imaging::MaskRegion3D output, int16 aThreshold );
+template void LocalMinima3D( M4D::Imaging::ImageRegion< uint16, 3 > input, M4D::Imaging::MaskRegion3D output, uint16 aThreshold );
+template void LocalMinima3D( M4D::Imaging::ImageRegion< int32, 3 > input, M4D::Imaging::MaskRegion3D output, int32 aThreshold );
+template void LocalMinima3D( M4D::Imaging::ImageRegion< uint32, 3 > input, M4D::Imaging::MaskRegion3D output, uint32 aThreshold );
+template void LocalMinima3D( M4D::Imaging::ImageRegion< int64, 3 > input, M4D::Imaging::MaskRegion3D output, int64 aThreshold );
+template void LocalMinima3D( M4D::Imaging::ImageRegion< uint64, 3 > input, M4D::Imaging::MaskRegion3D output, uint64 aThreshold );
+template void LocalMinima3D( M4D::Imaging::ImageRegion< float, 3 > input, M4D::Imaging::MaskRegion3D output, float aThreshold );
+template void LocalMinima3D( M4D::Imaging::ImageRegion< double, 3 > input, M4D::Imaging::MaskRegion3D output, double aThreshold );
 
 template void RegionBorderDetection3D( M4D::Imaging::ImageRegion< int8, 3 > input, M4D::Imaging::MaskRegion3D output );
 template void RegionBorderDetection3D( M4D::Imaging::ImageRegion< uint8, 3 > input, M4D::Imaging::MaskRegion3D output );

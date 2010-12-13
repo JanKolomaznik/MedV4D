@@ -51,8 +51,9 @@ FileAccessor::PutData(const void *data, size_t length)
 	stream_.write((const char*)data, length);
 }
 /////////////////////////////////////////////////////////////////////////////
-void 
+size_t 
 FileAccessor::GetData(void *data, size_t length) {
 	stream_.read((char*)data, length);
+	return stream_.gcount();
 }
 /////////////////////////////////////////////////////////////////////////////

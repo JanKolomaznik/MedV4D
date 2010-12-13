@@ -12,7 +12,7 @@ public:
 	virtual ~MediumAccessor() {}
 	
 	virtual void PutData(const void *data, size_t length) = 0;
-	virtual void GetData(void *data, size_t length) = 0;
+	virtual size_t GetData(void *data, size_t length) = 0;
 
 	virtual bool eof() = 0;
 };

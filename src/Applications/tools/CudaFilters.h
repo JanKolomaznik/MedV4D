@@ -9,7 +9,7 @@ Sobel3D( RegionType input, RegionType output, typename RegionType::ElementType t
 
 template< typename InRegionType >
 void
-LocalMinima3D( InRegionType input,  M4D::Imaging::MaskRegion3D output );
+LocalMinima3D( InRegionType input,  M4D::Imaging::MaskRegion3D output, typename InRegionType::ElementType aThreshold );
 
 template< typename InRegionType >
 void
