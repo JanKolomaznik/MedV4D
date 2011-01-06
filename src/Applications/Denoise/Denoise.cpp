@@ -78,6 +78,7 @@ main( int argc, char** argv )
 	int iPlatformId;
 	int iDeviceId;
 	bool bVerbose;
+	int iMethod;
 
 	try {  
 		TCLAP::CmdLine cmd("Tool for denoising Medv4D DICOM dump files", ' ', "0.2");
@@ -87,6 +88,7 @@ main( int argc, char** argv )
 		cmd.setExceptionHandling(false);
 
 		IntMinMaxConstraint csrRadius(1, 4);
+		IntMinMaxConstraint csrMethod(1, 5);
 		IntMinMaxConstraint csrNbh(1, 2);
 		IntMinConstraint csrIds(0);
 		TCLAP::ValueArg<float> argBeta("b", "beta", "Beta value for NL-Means computation", false, 0.9f, "float", cmd);
@@ -94,6 +96,7 @@ main( int argc, char** argv )
 		TCLAP::ValueArg<int> argNeighbourhood("n", "neighbourhood", "Local neighbourhood radius, must be 1 or 2", false, 2, (TCLAP::Constraint<int> *) &csrNbh, cmd);
 		TCLAP::ValueArg<int> argPlatform("p", "platform", "Platform ID (see -l or -a for IDs)", false, 0, (TCLAP::Constraint<int> *) &csrIds, cmd);
 		TCLAP::ValueArg<int> argDevice("d", "device", "Device ID (see -l or -a for IDs)", false, 0, (TCLAP::Constraint<int> *) &csrIds, cmd);
+		TCLAP::ValueArg<int> argMethod("m", "method", "Denoising method \n\t1 = Classic NLM on GPU (default); \n\t2 = Optimized NLM on GPU; \n\t3 = Blockwise NLM on CPU; \n\t4 = Classic NLM on CPU; \n\t5 = Optimized NLM on CPU", false, 1, (TCLAP::Constraint<int> *) &csrMethod, cmd);
 		TCLAP::SwitchArg argVerbose("v", "verbose", "Print parameters", cmd);
 
 
@@ -120,6 +123,7 @@ main( int argc, char** argv )
 		iPlatformId = argPlatform.getValue();
 		iDeviceId = argDevice.getValue();
 		bVerbose = argVerbose.getValue();
+		iMethod = argMethod.getValue();
 
 		if(outFilenameArg.isSet()) {
 			dstfilename = outFilenameArg.getValue();
@@ -134,7 +138,7 @@ main( int argc, char** argv )
 				nameLength = totalLength;
 
 			std::stringstream ss;
-			ss << srcfilename.substr(0, nameLength) << "_R" << radius << "_N" << neighbourhood << "_b" << dBeta << "_denoised" << srcfilename.substr(nameLength, totalLength - nameLength);
+			ss << srcfilename.substr(0, nameLength) << "_R" << radius << "_N" << neighbourhood << "_b" << dBeta << "_denoisedM" << iMethod << srcfilename.substr(nameLength, totalLength - nameLength);
 			dstfilename = ss.str();
 		}
 
@@ -164,6 +168,7 @@ main( int argc, char** argv )
 		std::cout << "\tNeighbourhood:\t" << neighbourhood << std::endl;
 		std::cout << "\tPlatform ID:\t" << iPlatformId << std::endl;
 		std::cout << "\tDevice ID:\t" << iDeviceId << std::endl;
+		std::cout << "\tMethod ID:\t" << iMethod << std::endl;
 	}
 
 	MyOpenCL ocl;
@@ -203,10 +208,34 @@ main( int argc, char** argv )
 
 	std::cout << "Denoising...\n";
 
+	viewer::SPoint3D<int> maxSize;
+	maxSize.init(200,200,200);
+
 	viewer::CTextProgress progress;
-	//volFRes.volBlockwiseNLMeans(volF, 0.9, 0.1, 0.5, 5, 2, 4, &progress);
-	//bool retval = volFRes.volNLMeansOptHW(ocl, volF, dBeta, radius, neighbourhood, &progress);
-	bool retval = volFRes.volNLMeansHW(ocl, volF, dBeta, radius, neighbourhood, &progress);
+	bool retval = false;
+	switch(iMethod) {
+	case 1:
+		retval = volFRes.volNLMeansHW(ocl, volF, dBeta, radius, neighbourhood, &progress);
+		break;
+	case 2:
+		retval = volFRes.volNLMeansOptHW(ocl, volF, dBeta, radius, neighbourhood, &progress);
+		break;
+	case 3: 
+		retval = true;
+		volFRes.volBlockwiseNLMeansBig(volF, maxSize, dBeta, 0.1, 0.5, radius, neighbourhood, 2 * neighbourhood, &progress);
+		break;
+	case 4:
+		retval = true;
+		volFRes.volNLMeansBig(volF, maxSize, dBeta, radius, neighbourhood, &progress);
+		break;
+	case 5:
+		retval = true;
+		volFRes.volNLMeans(volF, dBeta, radius, neighbourhood, &progress);
+		break;
+	default:
+		std::cout << "Method " << iMethod << " not implemented.\n";
+		return 1;
+	}
 	if (retval == false) {
 		std::cout << "Errors encountered.\n";
 		return 1;
