@@ -1,11 +1,15 @@
 #include<TFHolderFactory.h>
 
-#include <TFGrayscaleHolder.h>
-#include <TFGrayscaleAlphaHolder.h>
-#include <TFRGBHolder.h>
-#include <TFRGBaHolder.h>
-#include <TFHSVHolder.h>
-#include <TFHSVaHolder.h>
+#include <TFHolder.h>
+
+#include <TFRGBaFunction.h>
+#include <TFHSVaFunction.h>
+
+#include <TFGrayscaleAlphaPainter.h>
+#include <TFRGBaPainter.h>
+#include <TFHSVaPainter.h>
+
+#include <TFSimpleModifier.h>
 
 namespace M4D {
 namespace GUI {
@@ -15,56 +19,74 @@ TFActions TFHolderFactory::createMenuTFActions(QObject *parent){
 	TFActions actions;
 
 	//adds transferfunction types to menu
-	actions.push_back(new TFAction(parent, TFHOLDER_GRAYSCALE));
-	actions.push_back(new TFAction(parent, TFHOLDER_GRAYSCALE_ALPHA));
-	actions.push_back(new TFAction(parent, TFHOLDER_RGB));
-	actions.push_back(new TFAction(parent, TFHOLDER_RGBA));
-	actions.push_back(new TFAction(parent, TFHOLDER_HSV));
-	actions.push_back(new TFAction(parent, TFHOLDER_HSVA));
+	actions.push_back(new TFAction(parent, TFHolder::TFHolderGrayscale));
+	actions.push_back(new TFAction(parent, TFHolder::TFHolderGrayscaleAlpha));
+	actions.push_back(new TFAction(parent, TFHolder::TFHolderRGB));
+	actions.push_back(new TFAction(parent, TFHolder::TFHolderRGBa));
+	actions.push_back(new TFAction(parent, TFHolder::TFHolderHSV));
+	actions.push_back(new TFAction(parent, TFHolder::TFHolderHSVa));
 	//actions.push_back(new TFAction(menu, TFHOLDER_MYTYPE));
 
 	return actions;
 }
 
-TFAbstractHolder* TFHolderFactory::createHolder(QMainWindow* mainWindow, const TFHolderType holderType){
+TFHolder* TFHolderFactory::createHolder(QMainWindow* mainWindow, const TFHolder::Type holderType, TFSize domain){
 
 	switch(holderType)
 	{
-		case TFHOLDER_GRAYSCALE:
+		case TFHolder::TFHolderGrayscale:
 		{
-			return new TFGrayscaleHolder(mainWindow);
+			return new TFHolder(mainWindow,
+				TFAbstractFunction::Ptr(new TFRGBaFunction(domain)),
+				TFAbstractModifier::Ptr(new TFSimpleModifier(TFAbstractModifier::TFModifierGrayscale)),
+				TFAbstractPainter::Ptr(new TFGrayscaleAlphaPainter(false)),
+				TFHolder::TFHolderGrayscale);
 		}
-		case TFHOLDER_GRAYSCALE_ALPHA:
+		case TFHolder::TFHolderGrayscaleAlpha:
 		{
-			return new TFGrayscaleAlphaHolder(mainWindow);
+			return new TFHolder(mainWindow,
+				TFAbstractFunction::Ptr(new TFRGBaFunction(domain)),
+				TFAbstractModifier::Ptr(new TFSimpleModifier(TFAbstractModifier::TFModifierGrayscaleAlpha)),
+				TFAbstractPainter::Ptr(new TFGrayscaleAlphaPainter(true)),
+				TFHolder::TFHolderGrayscaleAlpha);
 		}
-		case TFHOLDER_RGB:
+		case TFHolder::TFHolderRGB:
 		{
-			return new TFRGBHolder(mainWindow);
+			return new TFHolder(mainWindow,
+				TFAbstractFunction::Ptr(new TFRGBaFunction(domain)),
+				TFAbstractModifier::Ptr(new TFSimpleModifier(TFAbstractModifier::TFModifierRGB)),
+				TFAbstractPainter::Ptr(new TFRGBaPainter(false)),
+				TFHolder::TFHolderRGB);
 		}
-		case TFHOLDER_RGBA:
+		case TFHolder::TFHolderRGBa:
 		{
-			return new TFRGBaHolder(mainWindow);
+			return new TFHolder(mainWindow,
+				TFAbstractFunction::Ptr(new TFRGBaFunction(domain)),
+				TFAbstractModifier::Ptr(new TFSimpleModifier(TFAbstractModifier::TFModifierRGBa)),
+				TFAbstractPainter::Ptr(new TFRGBaPainter(true)),
+				TFHolder::TFHolderRGBa);
 		}
-		case TFHOLDER_HSV:
+		case TFHolder::TFHolderHSV:
 		{
-			return new TFHSVHolder(mainWindow);
+			return new TFHolder(mainWindow,
+				TFAbstractFunction::Ptr(new TFHSVaFunction(domain)),
+				TFAbstractModifier::Ptr(new TFSimpleModifier(TFAbstractModifier::TFModifierHSV)),
+				TFAbstractPainter::Ptr(new TFHSVaPainter(false)),
+				TFHolder::TFHolderHSV);
 		}
-		case TFHOLDER_HSVA:
+		case TFHolder::TFHolderHSVa:
 		{
-			return new TFHSVaHolder(mainWindow);
-		}
-		case TFHOLDER_UNKNOWN:
-		default:
-		{
-			tfAssert("unknown holder");
-			break;
+			return new TFHolder(mainWindow,
+				TFAbstractFunction::Ptr(new TFHSVaFunction(domain)),
+				TFAbstractModifier::Ptr(new TFSimpleModifier(TFAbstractModifier::TFModifierHSVa)),
+				TFAbstractPainter::Ptr(new TFHSVaPainter(true)),
+				TFHolder::TFHolderHSVa);
 		}
 	}
 	return NULL;
 }
 
-TFAbstractHolder* TFHolderFactory::loadHolder(QMainWindow* mainWindow){
+TFHolder* TFHolderFactory::loadHolder(QMainWindow* mainWindow, TFSize domain){
 	
 	QString fileName = QFileDialog::getOpenFileName(
 		(QWidget*)mainWindow,
@@ -85,11 +107,20 @@ TFAbstractHolder* TFHolderFactory::loadHolder(QMainWindow* mainWindow){
 	}
 
 	TFTypeSwitcher switcher;
-	TFHolderType holderType = switcher.read(&qFile);
+	bool error = false;
+	TFHolder::Type holderType = switcher.read(&qFile, error);
 	qFile.close();
 
+	if(error)
+	{
+		QMessageBox::warning(
+			(QWidget*)mainWindow,
+			QObject::tr("TFXmlReader"),
+			QObject::tr("Unknown Transfer Function in file %1").arg(fileName));
+	}
+
 	qFile.open(QFile::ReadOnly | QFile::Text);
-	TFAbstractHolder* loaded = createHolder(mainWindow, holderType);
+	TFHolder* loaded = createHolder(mainWindow, holderType, domain);
 
 	if(loaded)
 	{
@@ -106,8 +137,9 @@ TFAbstractHolder* TFHolderFactory::loadHolder(QMainWindow* mainWindow){
 	return loaded;
 }
 
-TFHolderType TFHolderFactory::TFTypeSwitcher::read(QIODevice* device){
+TFHolder::Type TFHolderFactory::TFTypeSwitcher::read(QIODevice* device, bool& error){
 
+	error = false;
 	setDevice(device);
 
 	while(!atEnd())
@@ -121,10 +153,11 @@ TFHolderType TFHolderFactory::TFTypeSwitcher::read(QIODevice* device){
 
 		if (isStartElement() && (name() == "TransferFunction"))
 		{
-			return convert<std::string, TFHolderType>(attributes().value("holderType").toString().toStdString());
+			return convert<std::string, TFHolder::Type>(attributes().value("holderType").toString().toStdString());
 		}
 	}
-	return TFHOLDER_UNKNOWN;
+	error = true;
+	return TFHolder::TFHolderGrayscale;
 }
 
 } // namespace GUI

@@ -9,6 +9,9 @@ namespace GUI {
 class TFAbstractFunction{
 
 public:
+
+	typedef boost::shared_ptr<TFAbstractFunction> Ptr;
+
 	virtual ~TFAbstractFunction();
 
 	void operator=(TFAbstractFunction &function);
@@ -18,12 +21,14 @@ public:
 	TFSize getDomain();
 
 	TFColorMapPtr getColorMap();
+	
+	virtual TFColor getMappedRGBfColor(TFSize value) = 0;
 
 	void clear();
 
 protected:
-	TFFunctionType type_;
 
+	TFFunctionType type_;
 	TFColorMapPtr colorMap_;
 
 	TFAbstractFunction();

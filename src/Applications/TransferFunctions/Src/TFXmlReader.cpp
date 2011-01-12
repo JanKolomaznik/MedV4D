@@ -10,7 +10,7 @@ TFXmlReader::TFXmlReader() {}
 
 TFXmlReader::~TFXmlReader(){}
 
-void TFXmlReader::read(QIODevice* device, TFAbstractFunction* function, bool &error){
+void TFXmlReader::read(QIODevice* device, TFAbstractFunction::Ptr function, bool &error){
 
 	setDevice(device);
 
@@ -43,8 +43,8 @@ void TFXmlReader::readTestData(TFAbstractFunction* function){
 	}
 }
 
-void TFXmlReader::readFunction_(TFAbstractFunction* function, bool &error){
-
+void TFXmlReader::readFunction_(TFAbstractFunction::Ptr function, bool &error){
+	/*
 	TFFunctionType tfType = convert<std::string, TFFunctionType>(attributes().value("functionType").toString().toStdString());
 	TFSize domain = convert<std::string, TFSize>(attributes().value("domain").toString().toStdString());
 	if(function && domain != function->getDomain())
@@ -101,11 +101,11 @@ void TFXmlReader::readFunction_(TFAbstractFunction* function, bool &error){
 				break;
 			}
 		}
-	}
+	}*/
 }
 
 void TFXmlReader::readPoint_(TFColor* point, bool &error){
-
+/*
 	point->component1 = convert<std::string,float>( attributes().value("component1").toString().toStdString() );
 	point->component2 = convert<std::string,float>( attributes().value("component2").toString().toStdString() );
 	point->component3 = convert<std::string,float>( attributes().value("component3").toString().toStdString() );
@@ -120,7 +120,7 @@ void TFXmlReader::readPoint_(TFColor* point, bool &error){
 			break;
 		}
 	}
-	error = atEnd();
+	error = atEnd();*/
 }
 
 } // namespace GUI

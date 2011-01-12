@@ -13,11 +13,11 @@ class TFXmlWriter : public QXmlStreamWriter
 {
 public:
 	TFXmlWriter();
-	void write(QIODevice* device, TFAbstractFunction* data, TFHolderType holderType);
-	void writeTestData(QIODevice* device, TFHolderType holderType);
+	void write(QIODevice* device, TFAbstractFunction::Ptr data);
+	void writeTestData(QIODevice* device);
 
 private:
-	void writeFunction_(TFAbstractFunction* function, TFHolderType holderType);
+	void writeFunction_(TFAbstractFunction::Ptr function);
 	void writePoint_(TFColor point);
 };
 

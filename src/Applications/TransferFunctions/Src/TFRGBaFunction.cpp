@@ -17,5 +17,10 @@ TFRGBaFunction::TFRGBaFunction(TFRGBaFunction &function){
 
 TFRGBaFunction::~TFRGBaFunction(){}
 
+TFColor TFRGBaFunction::getMappedRGBfColor(TFSize value){
+
+	return (*colorMap_)[value];
+}
+
 } // namespace GUI
 } // namespace M4D

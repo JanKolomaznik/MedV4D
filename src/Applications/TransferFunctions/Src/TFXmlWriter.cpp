@@ -9,23 +9,23 @@ TFXmlWriter::TFXmlWriter(){
 	setAutoFormatting(true);
 }
 
-void TFXmlWriter::write(QIODevice *device, TFAbstractFunction* data, TFHolderType holderType){
+void TFXmlWriter::write(QIODevice *device, TFAbstractFunction::Ptr data){
 
 	setDevice(device);
 
 	writeStartDocument();
 		writeDTD("<!DOCTYPE TransferFunctions>");
 
-		writeFunction_(data, holderType);
+		writeFunction_(data);
 
 	writeEndDocument();
 }
 
-void TFXmlWriter::writeTestData(QIODevice *device, TFHolderType holderType){
+void TFXmlWriter::writeTestData(QIODevice *device){
 	
-	TFRGBaFunction data;
-	TFColorMapPtr f = data.getColorMap();
-	TFSize domain = data.getDomain();
+	TFAbstractFunction::Ptr data(new TFRGBaFunction(3000));
+	TFColorMapPtr f = data->getColorMap();
+	TFSize domain = data->getDomain();
 	for(TFSize i = 0; i < domain; ++i)
 	{
 		(*f)[i].component1 = (i/4)/1000.0;
@@ -33,13 +33,13 @@ void TFXmlWriter::writeTestData(QIODevice *device, TFHolderType holderType){
 		(*f)[i].component3 = (i/4)/1000.0;
 		(*f)[i].alpha = (i/4)/1000.0;
 	}
-	write(device, &data, holderType);	
+	write(device, data);	
 }
 
-void TFXmlWriter::writeFunction_(TFAbstractFunction* function, TFHolderType holderType){
+void TFXmlWriter::writeFunction_(TFAbstractFunction::Ptr function){
 	
 	writeStartElement("TransferFunction");
-		writeAttribute("holderType", QString::fromStdString(convert<TFHolderType, std::string>(holderType)));
+		//writeAttribute("holderType", QString::fromStdString(convert<TFHolder::Type, std::string>(holderType)));
 		writeAttribute("functionType", QString::fromStdString(convert<TFFunctionType, std::string>(function->getType())));
 		writeAttribute("domain", QString::fromStdString( convert<TFSize, std::string>(function->getDomain()) ));
 

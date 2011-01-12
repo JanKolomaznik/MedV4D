@@ -3,11 +3,12 @@
 namespace M4D {
 namespace GUI {
 
-TFPalette::TFPalette(QMainWindow* parent):
+TFPalette::TFPalette(QMainWindow* parent, TFSize domain):
 	QMainWindow(parent),
 	ui_(new Ui::TFPalette),
 	mainWindow_(parent),
-	activeHolder_(-1){
+	activeHolder_(-1),
+	domain_(domain){
 
     ui_->setupUi(this);
 	setWindowTitle("Transfer Functions Palette");
@@ -27,6 +28,11 @@ TFPalette::~TFPalette(){
 	*/
 }
 
+M4D::Common::TimeStamp TFPalette::getTimeStamp(){
+
+	return palette_.find(activeHolder_)->second->getLastChangeTime();
+}
+
 bool TFPalette::connectTFActions_(){
 
 	bool allConnected = true;
@@ -37,7 +43,7 @@ bool TFPalette::connectTFActions_(){
 	TFActionsIt end = tfActions_.end();
 	for(TFActionsIt it = begin; it!=end; ++it)
 	{
-		bool menuActionConnected = QObject::connect( *it, SIGNAL(TFActionClicked(TFHolderType)), this, SLOT(newTF_triggered(TFHolderType)));
+		bool menuActionConnected = QObject::connect( *it, SIGNAL(TFActionClicked(TFHolder::Type)), this, SLOT(newTF_triggered(TFHolder::Type)));
 		tfAssert(menuActionConnected);
 
 		if(menuActionConnected)
@@ -58,15 +64,20 @@ bool TFPalette::connectTFActions_(){
 
 void TFPalette::setupDefault(){
 	
-	newTF_triggered(TFHOLDER_GRAYSCALE);
+	newTF_triggered(TFHolder::TFHolderGrayscale);
 }
 
-void TFPalette::addToPalette_(TFAbstractHolder* holder){
+void TFPalette::setHistogram(HistogramPtr histogram){
+
+	//TODO compute ColorMapPtr from histogram and set it to all holders
+}
+
+void TFPalette::addToPalette_(TFHolder* holder){
 	
 	TFSize addedIndex = indexer_.getIndex();
 
 	holder->setUp(addedIndex);
-	palette_.insert(std::make_pair<TFSize, TFAbstractHolder*>(addedIndex, holder));
+	palette_.insert(std::make_pair<TFSize, TFHolder*>(addedIndex, holder));
 	holder->createPaletteButton(ui_->layoutWidget);
 
 	TFPaletteButton* addedButton = holder->getButton();
@@ -74,10 +85,10 @@ void TFPalette::addToPalette_(TFAbstractHolder* holder){
 	addedButton->show();
 
 	holder->connectToTFPalette(this);
-	mainWindow_->addDockWidget(Qt::BottomDockWidgetArea, holder);
-	holder->setFloating(true);
-	holder->setFeatures(QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable);
 
+	holder->createDockWidget(mainWindow_);	
+	mainWindow_->addDockWidget(Qt::BottomDockWidgetArea, holder->getDockWidget());	
+	
 	change_activeHolder(addedIndex);
 }
 
@@ -86,6 +97,7 @@ void TFPalette::removeFromPalette_(TFSize index){
 	tfAssert(palette_.size() > 1);
 
 	HolderMapIt toRemoveIt = palette_.find(index);
+	mainWindow_->removeDockWidget(toRemoveIt->second->getDockWidget());
 
 	if(index == activeHolder_)
 	{
@@ -129,15 +141,15 @@ void TFPalette::save_triggered(){
 */
 void TFPalette::on_actionLoad_triggered(){
 
-	TFAbstractHolder* loaded = TFHolderFactory::loadHolder(this);
+	TFHolder* loaded = TFHolderFactory::loadHolder(this, domain_);
 	if(!loaded) return;
 	
 	addToPalette_(loaded);
 }
 
-void TFPalette::newTF_triggered(TFHolderType tfType){
+void TFPalette::newTF_triggered(TFHolder::Type tfType){
 
-	TFAbstractHolder* holder = TFHolderFactory::createHolder(this, tfType);
+	TFHolder* holder = TFHolderFactory::createHolder(this, tfType, domain_);
 
 	if(!holder){
 		QMessageBox::warning(this, QObject::tr("Transfer Functions"), QObject::tr("Creating error."));
@@ -155,79 +167,6 @@ void TFPalette::change_activeHolder(TFSize index){
 
 	palette_.find(activeHolder_)->second->getButton()->activate();
 }
-/*
-void TFPalette::release_triggered(){
-	
-	TFAbstractHolder* toRelease = palette_.find(activeHolder_)->second;
-	if(toRelease->isReleased())
-	{
-		toRelease->setParent(this);
-
-		TFDockHolder* dock = (releasedHolders_.find(activeHolder_))->second;
-		dock->setWidget(NULL);
-		delete dock;
-		releasedHolders_.erase(activeHolder_);
-
-		if(inWindowHolders_.size() == 1) ui_->paletteArea->show();	//shows buttons with more TFs in window
-		inWindowHolders_.insert(std::make_pair<TFSize, TFAbstractHolder*>(activeHolder_, toRelease));
-		toRelease->getButton()->show();
-
-		toRelease->setReleased(false);
-
-		changeHolderInWindow_(activeHolder_, true);
-	}
-	else
-	{
-		if(inWindowHolders_.size() <= 1) return;	//cannt release last TF in window
-
-		inWindowHolders_.erase(activeHolder_);
-		toRelease->getButton()->hide();
-
-		if(inWindowHolders_.size() == 1) ui_->paletteArea->hide();	//hides buttons with only 1 TF in window
-
-		TFDockHolder* released = new TFDockHolder("Transfer Function " + activeHolder_, this, activeHolder_);
-		released->setWidget(toRelease);
-		released->connectSignals();
-
-		mainWindow_->addDockWidget(Qt::TopDockWidgetArea, released);
-		released->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-
-		releasedHolders_.insert(std::make_pair<TFSize, TFDockHolder*>(activeHolder_, released));
-
-		toRelease->setReleased(true);
-
-		TFSize index = getFirstInWindow_();
-		changeHolderInWindow_(index, false);
-	}
-}
-
-TFSize TFPalette::getNextActive_(){
-		
-	if(inWindowHolders_.empty())
-	{
-		TFSize active = activeHolder_;
-
-		activeHolder_ = releasedHolders_.begin()->first;
-		release_triggered();
-
-		activeHolder_ = active;
-	}
-	return inWindowHolders_.begin()->first;
-}
-
-void TFPalette::changeHolderInWindow_(TFSize index, bool hideOld){
-
-	if(index == holderInWindow_) return;
-
-	tfAssert(index < palette_.size());
-
-	if(hideOld && (holderInWindow_ >= 0)) palette_.find(holderInWindow_)->second->hide();
-	holderInWindow_ = index;
-	palette_.find(holderInWindow_)->second->show();	
-
-	emit ResizeHolder(index, ui_->holderArea->rect());	
-}
-*/
 
 //---Indexer---
 

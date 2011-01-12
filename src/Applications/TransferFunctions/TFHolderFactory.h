@@ -12,7 +12,7 @@
 #include <fstream>
 
 #include <TFAction.h>
-#include <TFAbstractHolder.h>
+#include <TFHolder.h>
 
 namespace M4D {
 namespace GUI {
@@ -23,9 +23,9 @@ public:
 	
 	static TFActions createMenuTFActions(QObject *parent);
 
-	static TFAbstractHolder* createHolder(QMainWindow* mainWindow, const TFHolderType holderType);
+	static TFHolder* createHolder(QMainWindow* mainWindow, const TFHolder::Type holderType, TFSize domain);
 
-	static TFAbstractHolder* loadHolder(QMainWindow* mainWindow);
+	static TFHolder* loadHolder(QMainWindow* mainWindow, TFSize domain);
 
 protected:
 
@@ -34,7 +34,7 @@ protected:
 		TFTypeSwitcher(){}
 		~TFTypeSwitcher(){}
 
-		TFHolderType read(QIODevice* device);
+		TFHolder::Type read(QIODevice* device, bool& error);
 	};
 
 private:

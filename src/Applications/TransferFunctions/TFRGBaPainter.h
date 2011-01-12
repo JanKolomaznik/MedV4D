@@ -10,31 +10,34 @@ class TFRGBaPainter: public TFAbstractPainter{
 
 public:
 
-	TFRGBaPainter(QWidget* parent);
+	typedef boost::shared_ptr<TFRGBaPainter> Ptr;
+
+	TFRGBaPainter(bool drawAlpha);
 	~TFRGBaPainter();
 
-protected:
+	void setArea(TFArea area);
+	TFArea getInputArea();
 
-	void paintEvent(QPaintEvent*);
-	void mousePressEvent(QMouseEvent *e);
-	void mouseReleaseEvent(QMouseEvent *e);
-	void mouseMoveEvent(QMouseEvent *e);
-
-	void addPoint_(TFPaintingPoint point);
-	void correctView_();
+	void drawBackground(QPainter* drawer);
+	void drawData(QPainter* drawer, TFColorMapPtr workCopy);
 
 private:
 
-	enum ActiveView{
-		ACTIVE_RED,
-		ACTIVE_GREEN,
-		ACTIVE_BLUE,
-		ACTIVE_ALPHA
-	};
+	const TFSize colorBarSize_;
+	const TFSize margin_;
+	const TFSize spacing_;
 
-	ActiveView activeView_;
-	
-	void paintCurves_(QPainter *drawer);
+	const QColor background_;
+	const QColor red_;
+	const QColor green_;
+	const QColor blue_;
+	const QColor alpha_;
+
+	bool drawAlpha_;
+
+	TFArea inputArea_;
+	TFArea backgroundArea_;
+	TFArea bottomBarArea_;
 };
 
 } // namespace GUI

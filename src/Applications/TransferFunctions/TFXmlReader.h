@@ -16,11 +16,11 @@ public:
 	TFXmlReader();
 	~TFXmlReader();
 
-	void read(QIODevice* device, TFAbstractFunction* function, bool &error);
+	void read(QIODevice* device, TFAbstractFunction::Ptr function, bool &error);
 	void readTestData(TFAbstractFunction* function);
 
 private:
-	void readFunction_(TFAbstractFunction* function, bool &error);
+	void readFunction_(TFAbstractFunction::Ptr function, bool &error);
 	void readPoint_(TFColor* point, bool &error);
 };
 

@@ -17,5 +17,17 @@ TFHSVaFunction::TFHSVaFunction(TFHSVaFunction &function){
 
 TFHSVaFunction::~TFHSVaFunction(){}
 
+TFColor TFHSVaFunction::getMappedRGBfColor(TFSize value){
+
+	QColor color;
+	color.setHsvF(
+		(*colorMap_)[value].component1,
+		(*colorMap_)[value].component2,
+		(*colorMap_)[value].component3,
+		(*colorMap_)[value].alpha);
+	
+	return TFColor(color.redF(), color.greenF(), color.blueF(), color.alphaF());
+}
+
 } // namespace GUI
 } // namespace M4D

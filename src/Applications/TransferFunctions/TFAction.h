@@ -2,6 +2,7 @@
 #define TF_ACTION
 
 #include <TFTypes.h>
+#include <TFHolder.h>
 #include <QtGui/QAction>
 
 namespace M4D {
@@ -12,18 +13,18 @@ class TFAction: public QAction{
 	Q_OBJECT
 
 public:
-	TFAction(QObject* parent, TFHolderType tfType);
+	TFAction(QObject* parent, TFHolder::Type tfType);
 
 	~TFAction();
 
 signals:
-	void TFActionClicked(const TFHolderType &tfType);
+	void TFActionClicked(const TFHolder::Type &tfType);
 
 public slots:
 	void action_triggered();
 
 private:	
-	TFHolderType type_;
+	TFHolder::Type type_;
 };
 
 typedef std::vector<TFAction*> TFActions;

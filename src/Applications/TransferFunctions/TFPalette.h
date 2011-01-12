@@ -4,6 +4,7 @@
 #include <map>
 
 #include <QtGui/QWidget>
+#include <QtGui/QDockWidget>
 #include <QtGui/QMainWindow>
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
@@ -11,9 +12,10 @@
 #include <QtGui/QKeySequence>
 #include <QtGui/QKeyEvent>
 
+#include "Imaging/Histogram.h"
+
 #include <TFHolderFactory.h>
 #include <TFPaletteButton.h>
-#include <TFDockHolder.h>
 #include <ui_TFPalette.h>
 
 namespace M4D {
@@ -23,13 +25,16 @@ class TFPalette : public QMainWindow{
 
     Q_OBJECT
 
-	typedef std::map<TFSize, TFAbstractHolder*> HolderMap;
+	typedef std::map<TFSize, TFHolder*> HolderMap;
 	typedef HolderMap::iterator HolderMapIt;
+	typedef M4D::Imaging::Histogram32::Ptr HistogramPtr;
 
 public:
 
-	TFPalette(QMainWindow* parent);
+	TFPalette(QMainWindow* parent, TFSize domain);
     ~TFPalette();
+
+	M4D::Common::TimeStamp getTimeStamp();
 
 	template<typename ElementIterator>
 	bool applyTransferFunction(
@@ -41,20 +46,17 @@ public:
 	}
 
 	void setupDefault();
-/*
-signals:
 
-	void ResizeHolder(TFSize index, QRect rect);
-*/
+	void setHistogram(HistogramPtr histogram);
+
 protected slots:
 
     void close_triggered(TFSize index);
-	void newTF_triggered(TFHolderType tfType);
+	void newTF_triggered(TFHolder::Type tfType);
 
     void on_actionLoad_triggered();
 
 	void change_activeHolder(TFSize index);
-	//void release_triggered();
 
 protected:
 
@@ -84,6 +86,9 @@ private:
     Ui::TFPalette* ui_;
 	QMainWindow* mainWindow_;
 
+	HistogramPtr histogram_;
+	TFSize domain_;
+
 	Indexer indexer_;
 	int activeHolder_;
 	HolderMap palette_;
@@ -92,11 +97,8 @@ private:
 
 	bool connectTFActions_();
 
-	void addToPalette_(TFAbstractHolder* holder);
+	void addToPalette_(TFHolder* holder);
 	void removeFromPalette_(TFSize index);
-
-	//TFSize getFirstInWindow_();
-	//void changeHolderInWindow_(TFSize index, bool hideOld);
 };
 
 } // namespace GUI

@@ -4,7 +4,9 @@
 namespace M4D {
 namespace GUI {
 
-TFAbstractFunction::TFAbstractFunction(): type_(TFFUNCTION_UNKNOWN){}
+TFAbstractFunction::TFAbstractFunction():
+	type_(TFFUNCTION_UNKNOWN){
+}
 
 TFAbstractFunction::~TFAbstractFunction(){}
 

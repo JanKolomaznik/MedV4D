@@ -10,29 +10,32 @@ class TFGrayscaleAlphaPainter: public TFAbstractPainter{
 
 public:
 
-	TFGrayscaleAlphaPainter(QWidget* parent);
+	typedef boost::shared_ptr<TFGrayscaleAlphaPainter> Ptr;
+
+	TFGrayscaleAlphaPainter(bool drawAlpha);
 	~TFGrayscaleAlphaPainter();
 
-protected:
+	void setArea(TFArea area);
+	TFArea getInputArea();
 
-	void paintEvent(QPaintEvent*);
-	void mousePressEvent(QMouseEvent *e);
-	void mouseReleaseEvent(QMouseEvent *e);
-	void mouseMoveEvent(QMouseEvent *e);
-
-	void addPoint_(TFPaintingPoint point);
-	void correctView_();
+	void drawBackground(QPainter* drawer);
+	void drawData(QPainter* drawer, TFColorMapPtr workCopy);
 
 private:
 
-	enum ActiveView{
-		ACTIVE_GRAYSCALE,
-		ACTIVE_ALPHA
-	};
+	const TFSize colorBarSize_;
+	const TFSize margin_;
+	const TFSize spacing_;
 
-	ActiveView activeView_;
-	
-	void paintCurves_(QPainter *drawer);
+	const QColor background_;
+	const QColor grey_;
+	const QColor alpha_;
+
+	bool drawAlpha_;
+
+	TFArea inputArea_;
+	TFArea backgroundArea_;
+	TFArea bottomBarArea_;
 };
 
 } // namespace GUI

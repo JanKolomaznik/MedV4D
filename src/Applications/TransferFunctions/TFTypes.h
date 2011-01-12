@@ -5,6 +5,7 @@
 #include <exception>
 #include <iostream>
 #include <ostream>
+#include <boost/shared_ptr.hpp>
 
 #include "common/Common.h"
 
@@ -15,17 +16,7 @@ enum TFFunctionType{
 	TFFUNCTION_UNKNOWN,
 	TFFUNCTION_RGBA,
 	TFFUNCTION_HSVA
-};
-
-enum TFHolderType{
-	TFHOLDER_UNKNOWN,
-	TFHOLDER_GRAYSCALE,
-	TFHOLDER_GRAYSCALE_ALPHA,
-	TFHOLDER_RGB,
-	TFHOLDER_RGBA,
-	TFHOLDER_HSV,
-	TFHOLDER_HSVA
-};
+};	//TODO remove
 
 template<typename From, typename To>
 static To convert(const From &s){
@@ -41,72 +32,16 @@ static To convert(const From &s){
 }
 
 template<>
-static std::string convert<TFHolderType, std::string>(const TFHolderType &holderType){
-
-	switch(holderType){
-		case TFHOLDER_GRAYSCALE:
-		{
-			return "Grayscale";
-		}
-		case TFHOLDER_GRAYSCALE_ALPHA:
-		{
-			return "Grayscale-alpha";
-		}
-		case TFHOLDER_RGB:
-		{
-			return "RGB";
-		}
-		case TFHOLDER_RGBA:
-		{
-			return "RGBa";
-		}
-		case TFHOLDER_HSV:
-		{
-			return "HSV";
-		}
-		case TFHOLDER_HSVA:
-		{
-			return "HSVa";
-		}
-	}
-	return "Unknown";
-}
-
-template<>
-static TFHolderType convert<std::string, TFHolderType>(const std::string &holderType){
-
-	if(holderType == "Grayscale"){
-		return TFHOLDER_GRAYSCALE;
-	}
-	if(holderType == "Grayscale-alpha"){
-		return TFHOLDER_GRAYSCALE_ALPHA;
-	}
-	if(holderType == "RGB"){
-		return TFHOLDER_RGB;
-	}
-	if(holderType == "RGBa"){
-		return TFHOLDER_RGBA;
-	}
-	if(holderType == "HSV"){
-		return TFHOLDER_HSV;
-	}
-	if(holderType == "HSVa"){
-		return TFHOLDER_HSVA;
-	}
-	return TFHOLDER_UNKNOWN;
-}
-
-template<>
 static std::string convert<TFFunctionType, std::string>(const TFFunctionType &tfType){
 
 	switch(tfType){
 		case TFFUNCTION_RGBA:
 		{
-			return "RGBa";
+			return "TFHolderRGBa";
 		}
 		case TFFUNCTION_HSVA:
 		{
-			return "HSVa";
+			return "TFHolderHSVa";
 		}
 	}
 	return "Unknown";
@@ -115,10 +50,10 @@ static std::string convert<TFFunctionType, std::string>(const TFFunctionType &tf
 template<>
 static TFFunctionType convert<std::string, TFFunctionType>(const std::string &tfType){
 
-	if(tfType == "RGBa"){
+	if(tfType == "TFHolderRGBa"){
 		return TFFUNCTION_RGBA;
 	}
-	if(tfType == "HSVa"){
+	if(tfType == "TFHolderHSVa"){
 		return TFFUNCTION_HSVA;
 	}
 	return TFFUNCTION_UNKNOWN;
@@ -158,6 +93,21 @@ struct TFColor{
 typedef std::vector<TFColor> TFColorMap;
 typedef TFColorMap::iterator TFColorMapIt;
 typedef boost::shared_ptr<TFColorMap> TFColorMapPtr;
+
+struct TFArea{	
+	TFSize x, y, width, height;
+
+	TFArea():
+		x(0), y(0), width(0), height(0){}
+	TFArea(TFSize x, TFSize y, TFSize width, TFSize height):
+		x(x), y(y), width(width), height(height){}
+};
+
+enum MouseButton{
+	MouseButtonLeft,
+	MouseButtonRight,
+	MouseButtonMid
+};
 
 #ifndef ROUND
 #define ROUND(a) ( (int)(a+0.5) )

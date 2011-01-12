@@ -10,32 +10,37 @@ class TFHSVaPainter: public TFAbstractPainter{
 
 public:
 
-	TFHSVaPainter(QWidget* parent);
+	typedef boost::shared_ptr<TFHSVaPainter> Ptr;
+
+	TFHSVaPainter(bool drawAlpha);
 	~TFHSVaPainter();
 
-protected:
+	void setArea(TFArea area);
+	TFArea getInputArea();
 
-	void paintEvent(QPaintEvent*);
-	void mousePressEvent(QMouseEvent *e);
-	void mouseReleaseEvent(QMouseEvent *e);
-	void mouseMoveEvent(QMouseEvent *e);
-
-	void addPoint_(TFPaintingPoint point);
-	void correctView_();
+	void drawBackground(QPainter* drawer);
+	void drawData(QPainter* drawer, TFColorMapPtr workCopy);
 
 private:
 
-	enum ActiveView{
-		ACTIVE_HUE,
-		ACTIVE_SATURATION,
-		ACTIVE_VALUE,
-		ACTIVE_ALPHA
-	};
-	
-	ActiveView activeView_;
+	const TFSize colorBarSize_;
+	const TFSize margin_;
+	const TFSize spacing_;
 
-	void paintSideColorBar_(QPainter* drawer);
-	void paintCurves_(QPainter* drawer);
+	const QColor background_;
+	const QColor hue_;
+	const QColor saturation_;
+	const QColor value_;
+	const QColor alpha_;
+
+	bool drawAlpha_;
+
+	TFArea inputArea_;
+	TFArea backgroundArea_;
+	TFArea sideBarArea_;
+	TFArea bottomBarArea_;
+
+	void drawSideColorBar_(QPainter* drawer);
 };
 
 } // namespace GUI

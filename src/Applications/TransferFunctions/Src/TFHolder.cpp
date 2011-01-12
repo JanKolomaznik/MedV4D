@@ -1,50 +1,49 @@
-#include <TFAbstractHolder.h>
+#include <TFHolder.h>
 
 #include <QtGui/QResizeEvent>
 
 namespace M4D {
 namespace GUI {
 
-TFAbstractHolder::TFAbstractHolder():
-	basicTools_(new Ui::TFAbstractHolder),
-	type_(TFHOLDER_UNKNOWN),
+TFHolder::TFHolder(QMainWindow* mainWindow,
+				   TFAbstractFunction::Ptr function,
+				   TFAbstractModifier::Ptr modifier,
+				   TFAbstractPainter::Ptr painter,
+				   TFHolder::Type type):
+	QMainWindow((QWidget*)mainWindow),
+	basicTools_(new Ui::TFHolder),
+	function_(function),
+	modifier_(modifier),
+	painter_(painter),
 	button_(NULL),
+	type_(type),
 	setup_(false),
-	bottomSpace_(20),
-	index_(0){
+	index_(0),
+	dockWidget_(NULL),
+	painterLeftTop_(20, 40),
+	painterRightBottom_(20, 10){
 
 	basicTools_->setupUi(this);
 }
 
-TFAbstractHolder::TFAbstractHolder(QMainWindow* parent):
-	QDockWidget((QWidget*)parent),
-	type_(TFHOLDER_UNKNOWN),
-	basicTools_(new Ui::TFAbstractHolder),
-	button_(NULL),
-	setup_(false),
-	bottomSpace_(20),
-	index_(0){
-
-	basicTools_->setupUi(this);
-}
-
-TFAbstractHolder::~TFAbstractHolder(){
+TFHolder::~TFHolder(){
 
 	if(basicTools_) delete basicTools_;
 }
 
-void TFAbstractHolder::setUp(TFSize index){
+M4D::Common::TimeStamp TFHolder::getLastChangeTime(){
+
+	return modifier_->getLastChangeTime();
+}
+
+void TFHolder::setUp(TFSize index){
 
 	index_ = index;
-
-	std::string title = convert<TFHolderType, std::string>(type_) +
-		" #" + convert<TFSize, std::string>(index + 1);
-	setWindowTitle( QObject::tr(title.c_str()) );
 
 	show();
 }
 
-bool TFAbstractHolder::connectToTFPalette(QObject *tfPalette){
+bool TFHolder::connectToTFPalette(QObject *tfPalette){
 		
 	bool activateConnected = QObject::connect( this, SIGNAL(Activate(TFSize)), tfPalette, SLOT(change_activeHolder(TFSize)));
 	tfAssert(activateConnected);
@@ -56,7 +55,7 @@ bool TFAbstractHolder::connectToTFPalette(QObject *tfPalette){
 		closeConnected;
 }
 
-bool TFAbstractHolder::createPaletteButton(QWidget *parent){
+bool TFHolder::createPaletteButton(QWidget *parent){
 
 	button_ = new TFPaletteButton(parent, index_);
 
@@ -66,28 +65,37 @@ bool TFAbstractHolder::createPaletteButton(QWidget *parent){
 	return buttonConnected;
 }
 
-TFHolderType TFAbstractHolder::getType() const{
+void TFHolder::createDockWidget(QWidget *parent){
+
+	QString qTitle = QString::fromStdString(convert<TFHolder::Type, std::string>(type_) +
+		" #" + convert<TFSize, std::string>(index_ + 1));
+
+	dockWidget_ = new QDockWidget(qTitle, parent);	
+	dockWidget_->setWidget(this);
+	dockWidget_->setFeatures(QDockWidget::AllDockWidgetFeatures);
+}
+
+TFHolder::Type TFHolder::getType() const{
 
 	return type_;
 }
 
-TFPaletteButton* TFAbstractHolder::getButton() const{
+TFPaletteButton* TFHolder::getButton() const{
 
 	return button_;
 }
 
-TFSize TFAbstractHolder::getIndex(){
+QDockWidget* TFHolder::getDockWidget() const{
+
+	return dockWidget_;
+}
+
+TFSize TFHolder::getIndex(){
 
 	return index_;
 }
-/*
-void TFAbstractHolder::changeIndex(const TFSize &index){
 
-	index_ = index;
-	button_->changeIndex(index_);
-}
-*/
-void TFAbstractHolder::save(){
+void TFHolder::save(){
 
 	QString fileName = QFileDialog::getSaveFileName(this,
 		tr("Save Transfer Function"),
@@ -111,72 +119,123 @@ void TFAbstractHolder::save(){
 	file.close();
 }
 
-void TFAbstractHolder::paintEvent(QPaintEvent *e){}
+void TFHolder::updateFunction_(){
 
-void TFAbstractHolder::resizeEvent(QResizeEvent *e){
+	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
+	if(lastChange == lastChange_) return;
+
+	lastChange_ = lastChange;
+	calculate_(modifier_->getWorkCopy(), function_->getColorMap());
+}
+
+void TFHolder::updateWorkCopy_(){
+	
+	calculate_(function_->getColorMap(), modifier_->getWorkCopy());
+}
+
+void TFHolder::paintEvent(QPaintEvent *e){
+
+	QPainter drawer(this);
+	painter_->drawBackground(&drawer);
+	painter_->drawData(&drawer, modifier_->getWorkCopy());
+	//TODO if histogram enabled
+	//painter_->drawHistogram(&drawer, histogram_);
+}
+
+void TFHolder::mousePressEvent(QMouseEvent *e){
+
+	MouseButton mb(MouseButtonLeft);
+	if(e->button() == Qt::RightButton) mb = MouseButtonRight;
+	if(e->button() == Qt::MidButton) mb = MouseButtonMid;
+
+	modifier_->mousePress(e->pos().x(), e->pos().y(), mb);
+}
+
+void TFHolder::mouseReleaseEvent(QMouseEvent *e){
+
+	modifier_->mouseRelease(e->pos().x(), e->pos().y());
+}
+
+void TFHolder::mouseMoveEvent(QMouseEvent *e){
+	
+	modifier_->mouseMove(e->pos().x(), e->pos().y());
+	repaint();
+}
+
+void TFHolder::resizeEvent(QResizeEvent *e){
 	
 	basicTools_->closeButton->move(
-		width() - basicTools_->closeButton->width() - basicTools_->painterWidget->geometry().x(),
+		width() - basicTools_->closeButton->width() - painterRightBottom_.x,
 		basicTools_->closeButton->geometry().y() );
 
 	basicTools_->saveButton->move(
-		basicTools_->closeButton->x() - basicTools_->saveButton->width() - basicTools_->painterWidget->geometry().x(),
-		basicTools_->closeButton->y() );
-	
-	
-	int newWidth = basicTools_->holderArea->width() - (2*basicTools_->painterWidget->geometry().x());
-	int newHeight = basicTools_->holderArea->height() -
-		(basicTools_->painterWidget->geometry().y() + bottomSpace_);
-	
-	basicTools_->painterWidget->resize(newWidth, newHeight);
+		basicTools_->closeButton->x() - basicTools_->saveButton->width() - painterRightBottom_.x,
+		basicTools_->closeButton->y() );	
 
 	resizePainter_();
 }
 
-void TFAbstractHolder::on_closeButton_clicked(){
+void TFHolder::resizePainter_(){
+
+	updateFunction_();
+
+	TFArea painterArea(painterLeftTop_.x,
+		painterLeftTop_.y,
+		width() - painterLeftTop_.x - painterRightBottom_.x,
+		height() - painterLeftTop_.y - painterRightBottom_.y);
+
+	painter_->setArea(painterArea);
+
+	TFArea inputArea = painter_->getInputArea();
+	modifier_->setInputArea(inputArea);
+	
+	updateWorkCopy_();
+}
+
+void TFHolder::on_closeButton_clicked(){
 
 	emit Close(index_);
 }
 
-void TFAbstractHolder::on_saveButton_clicked(){
+void TFHolder::on_saveButton_clicked(){
 
 	save();
 }
 
-void TFAbstractHolder::on_activateButton_clicked(){
+void TFHolder::on_activateButton_clicked(){
 
 	emit Activate(index_);
 }
 
-void TFAbstractHolder::save_(QFile &file){
+void TFHolder::save_(QFile &file){
 	
 	updateFunction_();
 
 	 TFXmlWriter writer;
-	 writer.write(&file, getFunction_(), getType());
+	 writer.write(&file, function_);
 	 //writer.writeTestData(&file);	//testing
 }
 
-bool TFAbstractHolder::load_(QFile &file){
+bool TFHolder::load_(QFile &file){
 	
 	TFXmlReader reader;
 
 	bool error = false;
 
 	//reader.readTestData(&function_);	//testing
-	reader.read(&file, getFunction_(), error);
+	reader.read(&file, function_, error);
 
 	if (error || reader.error())
 	{
 		return false;
 	}
 
-	updatePainter_();
+	updateWorkCopy_();
 	
 	return true;
 }
 
-void TFAbstractHolder::calculate_(const TFColorMapPtr input, TFColorMapPtr output){
+void TFHolder::calculate_(const TFColorMapPtr input, TFColorMapPtr output){
 
 	if(!(input && output)) tfAbort("calculation error");
 	if(output->begin() == output->end())

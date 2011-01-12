@@ -3,166 +3,140 @@
 namespace M4D {
 namespace GUI {
 
-TFHSVaPainter::TFHSVaPainter(QWidget* parent):
-	TFAbstractPainter(parent),
-	activeView_(ACTIVE_HUE){
+TFHSVaPainter::TFHSVaPainter(bool drawAlpha):
+	margin_(5),
+	spacing_(5),
+	colorBarSize_(10),
+	background_(Qt::black),
+	hue_(Qt::darkMagenta),
+	saturation_(Qt::darkCyan),
+	value_(Qt::lightGray),
+	alpha_(Qt::yellow),
+	drawAlpha_(drawAlpha){
 }
 
 TFHSVaPainter::~TFHSVaPainter(){}
 
-void TFHSVaPainter::correctView_(){
+void TFHSVaPainter::setArea(TFArea area){
+	
+	area_ = area;
 
-	paintAreaWidth_ = width() - 2*margin_ - margin_ - colorBarSize_;
-	paintAreaHeight_ = height() - 2*margin_	- margin_ - colorBarSize_;
+	backgroundArea_= TFArea(
+		area_.x + colorBarSize_ + spacing_,
+		area_.y,
+		area_.width - colorBarSize_ - spacing_,
+		area_.height - colorBarSize_ - spacing_);
 
-	view_ = TFColorMapPtr(new TFColorMap(paintAreaWidth_));
+	inputArea_= TFArea(
+		backgroundArea_.x + margin_,
+		backgroundArea_.y + margin_,
+		backgroundArea_.width - 2*margin_,
+		backgroundArea_.height - 2*margin_);
+	
+	bottomBarArea_= TFArea(
+		inputArea_.x,
+		area_.y + area_.height - colorBarSize_,
+		inputArea_.width,
+		colorBarSize_);
+	
+	sideBarArea_= TFArea(
+		area_.x,
+		inputArea_.y,
+		colorBarSize_,
+		inputArea_.height);
 }
 
-void TFHSVaPainter::paintEvent(QPaintEvent*){
+TFArea TFHSVaPainter::getInputArea(){
 
-	QPainter drawer(this);
-
-	QRect paintingRect(rect().left() + colorBarSize_ + margin_, rect().top(),
-		rect().width() - colorBarSize_ - margin_, rect().height());
-
-	paintSideColorBar_(&drawer);
-	paintBackground_(&drawer, paintingRect, true);
-	paintCurves_(&drawer);
-
+	return inputArea_;
 }
 
-void TFHSVaPainter::paintSideColorBar_(QPainter *drawer){
+void TFHSVaPainter::drawBackground(QPainter* drawer){
 
-	int yBegin = paintAreaHeight_ + margin_;
-	int xBegin = 0;
+	drawSideColorBar_(drawer);
+
+	QRect paintingRect(
+		backgroundArea_.x,
+		backgroundArea_.y,
+		backgroundArea_.width,
+		backgroundArea_.height);
+
+	drawer->fillRect(paintingRect, QBrush(background_));
+
+	QRect bottomBarRect(	//+1 in each direction as border
+		bottomBarArea_.x - 1,
+		bottomBarArea_.y - 1,
+		bottomBarArea_.width + 2,
+		bottomBarArea_.height + 2);
+
+	drawer->fillRect(bottomBarRect, QBrush(background_));
+}
+
+void TFHSVaPainter::drawSideColorBar_(QPainter *drawer){
+
 	QColor color;
-	for(TFSize i = 0; i < paintAreaHeight_; ++i)
+	for(TFSize i = 0; i < sideBarArea_.height; ++i)
 	{
-		color.setHsvF(i/(float)paintAreaHeight_, 1, 1);		
+		color.setHsvF(i/(float)sideBarArea_.height, 1, 1);		
 
 		drawer->setPen(color);
-		drawer->drawLine(xBegin, yBegin - i, xBegin + colorBarSize_, yBegin - i);
+		drawer->drawLine(sideBarArea_.x, sideBarArea_.y + sideBarArea_.height - i,
+			sideBarArea_.x + sideBarArea_.width, sideBarArea_.y + sideBarArea_.height - i);
 	}
 }
 
-void TFHSVaPainter::paintCurves_(QPainter *drawer){
+void TFHSVaPainter::drawData(QPainter* drawer, TFColorMapPtr workCopy){
 
-	int xBegin = colorBarSize_ + 2*margin_;
-	int yBegin = margin_ + paintAreaHeight_;
-	TFPaintingPoint origin(xBegin, yBegin);
+	tfAssert(workCopy->size() == inputArea_.width);
 
-	for(TFSize i = 0; i < paintAreaWidth_ - 2; ++i)
+	QColor color;	
+	
+	TFPaintingPoint origin(inputArea_.x,
+		inputArea_.y + inputArea_.height);
+
+	for(TFSize i = 0; i < inputArea_.width - 1; ++i)
 	{
-		//alpha
-		drawer->setPen(Qt::yellow);
-		drawer->drawLine(origin.x + i, origin.y - (*view_)[i].alpha*paintAreaHeight_,
-			origin.x + i + 1, origin.y - (*view_)[i+1].alpha*paintAreaHeight_);
+		if(drawAlpha_)
+		{
+			//alpha
+			drawer->setPen(alpha_);
+			drawer->drawLine(origin.x + i, origin.y - (*workCopy)[i].alpha*inputArea_.height,
+				origin.x + i + 1, origin.y - (*workCopy)[i+1].alpha*inputArea_.height);
+		}
 		//value
-		drawer->setPen(Qt::lightGray);	
-		drawer->drawLine(origin.x + i, origin.y - (*view_)[i].component3*paintAreaHeight_,
-			origin.x + i + 1, origin.y - (*view_)[i+1].component3*paintAreaHeight_);
+		drawer->setPen(value_);	
+		drawer->drawLine(origin.x + i, origin.y - (*workCopy)[i].component3*inputArea_.height,
+			origin.x + i + 1, origin.y - (*workCopy)[i+1].component3*inputArea_.height);
 		//saturation
-		drawer->setPen(Qt::darkCyan);
-		drawer->drawLine(origin.x + i, origin.y - (*view_)[i].component2*paintAreaHeight_,
-			origin.x + i + 1, origin.y - (*view_)[i+1].component2*paintAreaHeight_);
+		drawer->setPen(saturation_);
+		drawer->drawLine(origin.x + i, origin.y - (*workCopy)[i].component2*inputArea_.height,
+			origin.x + i + 1, origin.y - (*workCopy)[i+1].component2*inputArea_.height);
 		//hue
-		drawer->setPen(Qt::darkMagenta);
-		drawer->drawLine(origin.x + i, origin.y - (*view_)[i].component1*paintAreaHeight_,
-			origin.x + i + 1, origin.y - (*view_)[i+1].component1*paintAreaHeight_);
-	}
-}
+		drawer->setPen(hue_);
+		drawer->drawLine(origin.x + i, origin.y - (*workCopy)[i].component1*inputArea_.height,
+			origin.x + i + 1, origin.y - (*workCopy)[i+1].component1*inputArea_.height);		
 
-void TFHSVaPainter::mousePressEvent(QMouseEvent *e){
+		//TODO draw histogram if enabled
 
-	if(e->button() == Qt::RightButton)
-	{
-		switch(activeView_)
-		{
-			case ACTIVE_HUE:
-			{
-				activeView_ = ACTIVE_SATURATION;
-				break;
-			}
-			case ACTIVE_SATURATION:
-			{
-				activeView_ = ACTIVE_VALUE;
-				break;
-			}
-			case ACTIVE_VALUE:
-			{
-				activeView_ = ACTIVE_ALPHA;
-				break;
-			}
-			case ACTIVE_ALPHA:
-			{
-				activeView_ = ACTIVE_HUE;
-				break;
-			}
-		}
-		return;
+		//bottom bar
+		color.setHsvF((*workCopy)[i].component1, (*workCopy)[i].component2, (*workCopy)[i].component3, 1);
+		drawer->setPen(color);
+		drawer->drawLine(bottomBarArea_.x + i, bottomBarArea_.y,
+			bottomBarArea_.x + i, bottomBarArea_.y + bottomBarArea_.height - 1);
 	}
 
-	TFPaintingPoint mousePosition(e->pos().x(), e->pos().y());
-	if( (mousePosition.x < (int)(colorBarSize_ + margin_))
-		|| (mousePosition.y > (int)(paintAreaHeight_ + 2*margin_)) )
-	{
-		return;
-	}
-	drawHelper_ = new TFPaintingPoint(mousePosition.x - colorBarSize_ - margin_,
-		(paintAreaHeight_ + 2*margin_) - mousePosition.y);
-}
-
-void TFHSVaPainter::mouseReleaseEvent(QMouseEvent *e){
-
-	if(drawHelper_) delete drawHelper_;
-	drawHelper_ = NULL;
-}
-
-void TFHSVaPainter::mouseMoveEvent(QMouseEvent *e){
-
-	if(!drawHelper_) return;
-
-	TFPaintingPoint mousePosition(e->pos().x() - colorBarSize_ - margin_,
-		(paintAreaHeight_ + 2*margin_) - e->pos().y());
-
-	TFPaintingPoint begin = correctCoords_(*drawHelper_);
-	TFPaintingPoint end = correctCoords_(mousePosition);
-
-	addLine_(begin, end);
-
-	*drawHelper_ = mousePosition;
-	
-	if(changed()) repaint();
-}
-
-void TFHSVaPainter::addPoint_(TFPaintingPoint point){
-
-	float yValue = point.y/(float)paintAreaHeight_;
-	
-	switch(activeView_)
-	{
-		case ACTIVE_HUE:
-		{
-			(*view_)[point.x].component1 = yValue;
-			break;
-		}
-		case ACTIVE_SATURATION:
-		{
-			(*view_)[point.x].component2 = yValue;
-			break;
-		}
-		case ACTIVE_VALUE:
-		{
-			(*view_)[point.x].component3 = yValue;
-			break;
-		}
-		case ACTIVE_ALPHA:
-		{
-			(*view_)[point.x].alpha = yValue;
-			break;
-		}
-	}
-	changed_ = true;	
+	//draw last point
+	color.setHsvF(
+		(*workCopy)[inputArea_.width - 1].component1,
+		(*workCopy)[inputArea_.width - 1].component2,
+		(*workCopy)[inputArea_.width - 1].component3,
+		1);
+	drawer->setPen(color);
+	drawer->drawLine(
+		bottomBarArea_.x + inputArea_.width - 1,
+		bottomBarArea_.y,
+		bottomBarArea_.x + inputArea_.width - 1,
+		bottomBarArea_.y + bottomBarArea_.height - 1);
 }
 
 } // namespace GUI

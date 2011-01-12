@@ -3,118 +3,109 @@
 namespace M4D {
 namespace GUI {
 
-TFGrayscaleAlphaPainter::TFGrayscaleAlphaPainter(QWidget* parent):
-	TFAbstractPainter(parent),
-	activeView_(ACTIVE_GRAYSCALE){
+TFGrayscaleAlphaPainter::TFGrayscaleAlphaPainter(bool drawAlpha):
+	margin_(5),
+	spacing_(5),
+	colorBarSize_(10),
+	background_(Qt::black),
+	grey_(Qt::lightGray),
+	alpha_(Qt::yellow),
+	drawAlpha_(drawAlpha){
 }
 
 TFGrayscaleAlphaPainter::~TFGrayscaleAlphaPainter(){}
 
-void TFGrayscaleAlphaPainter::correctView_(){
-
-	paintAreaWidth_ = width() - 2*margin_;
-	paintAreaHeight_ = height() - 2*margin_	- margin_ - colorBarSize_;
-
-	view_ = TFColorMapPtr(new TFColorMap(paintAreaWidth_));
-}
-
-void TFGrayscaleAlphaPainter::paintEvent(QPaintEvent*){
-
-	QPainter drawer(this);
-	paintBackground_(&drawer, rect());
-	paintCurves_(&drawer);
-}
-
-void TFGrayscaleAlphaPainter::paintCurves_(QPainter *drawer){
-
-	int xBegin = margin_;
-	int yBegin = margin_ + paintAreaHeight_;
-	TFPaintingPoint origin(xBegin, yBegin);
-
-	for(TFSize i = 0; i < paintAreaWidth_ - 2; ++i)
-	{
-		//alpha
-		drawer->setPen(Qt::yellow);
-		drawer->drawLine(origin.x + i, origin.y - (*view_)[i].alpha*paintAreaHeight_,
-			origin.x + i + 1, origin.y - (*view_)[i+1].alpha*paintAreaHeight_);
-		//gray
-		drawer->setPen(Qt::lightGray);
-		drawer->drawLine(origin.x + i, origin.y - (*view_)[i].component1*paintAreaHeight_,
-			origin.x + i + 1, origin.y - (*view_)[i+1].component1*paintAreaHeight_);
-	}
-}
-
-void TFGrayscaleAlphaPainter::mousePressEvent(QMouseEvent *e){
-
-	if(e->button() == Qt::RightButton)
-	{
-		switch(activeView_)
-		{
-			case ACTIVE_GRAYSCALE:
-			{
-				activeView_ = ACTIVE_ALPHA;
-				break;
-			}
-			case ACTIVE_ALPHA:
-			{
-				activeView_ = ACTIVE_GRAYSCALE;
-				break;
-			}
-		}
-		return;
-	}
-
-	TFPaintingPoint mousePosition(e->pos().x(), e->pos().y());
-	if( mousePosition.y > (int)(paintAreaHeight_ + 2*margin_) )
-	{
-		return;
-	}
-	drawHelper_ = new TFPaintingPoint(mousePosition.x,
-		(paintAreaHeight_ + 2*margin_) - mousePosition.y);
-}
-
-void TFGrayscaleAlphaPainter::mouseReleaseEvent(QMouseEvent *e){
-
-	if(drawHelper_) delete drawHelper_;
-	drawHelper_ = NULL;
-}
-
-void TFGrayscaleAlphaPainter::mouseMoveEvent(QMouseEvent *e){
-
-	if(!drawHelper_) return;
-
-	TFPaintingPoint mousePosition(e->pos().x(), (paintAreaHeight_ + 2*margin_) - e->pos().y());
-		
-	TFPaintingPoint begin = correctCoords_(*drawHelper_);
-	TFPaintingPoint end = correctCoords_(mousePosition);
-
-	addLine_(begin, end);
-
-	*drawHelper_ = mousePosition;
+void TFGrayscaleAlphaPainter::setArea(TFArea area){
 	
-	if(changed()) repaint();
+	area_ = area;
+
+	backgroundArea_= TFArea(
+		area_.x,
+		area_.y,
+		area_.width,
+		area_.height - colorBarSize_ - spacing_);
+
+	inputArea_= TFArea(
+		backgroundArea_.x + margin_,
+		backgroundArea_.y + margin_,
+		backgroundArea_.width - 2*margin_,
+		backgroundArea_.height - 2*margin_);
+	
+	bottomBarArea_= TFArea(
+		inputArea_.x,
+		area_.y + area_.height - colorBarSize_,
+		inputArea_.width,
+		colorBarSize_);
 }
 
-void TFGrayscaleAlphaPainter::addPoint_(TFPaintingPoint point){
+TFArea TFGrayscaleAlphaPainter::getInputArea(){
 
-	float yValue = point.y/(float)paintAreaHeight_;
+	return inputArea_;
+}
+
+void TFGrayscaleAlphaPainter::drawBackground(QPainter* drawer){
+
+	QRect paintingRect(
+		backgroundArea_.x,
+		backgroundArea_.y,
+		backgroundArea_.width,
+		backgroundArea_.height);
+
+	drawer->fillRect(paintingRect, QBrush(background_));
+
+	QRect bottomBarRect(	//+1 in each direction as border
+		bottomBarArea_.x - 1,
+		bottomBarArea_.y - 1,
+		bottomBarArea_.width + 2,
+		bottomBarArea_.height + 2);
+
+	drawer->fillRect(bottomBarRect, QBrush(background_));
+}
+
+void TFGrayscaleAlphaPainter::drawData(QPainter* drawer, TFColorMapPtr workCopy){
+
+	tfAssert(workCopy->size() == inputArea_.width);
+
+	QColor color;	
 	
-	switch(activeView_)
+	TFPaintingPoint origin(inputArea_.x,
+		inputArea_.y + inputArea_.height);
+
+	for(TFSize i = 0; i < inputArea_.width - 1; ++i)
 	{
-		case ACTIVE_GRAYSCALE:
+		if(drawAlpha_)
 		{
-			(*view_)[point.x].component1 = yValue;
-			(*view_)[point.x].component2 = yValue;
-			(*view_)[point.x].component3 = yValue;
-			break;
+			//alpha
+			drawer->setPen(alpha_);
+			drawer->drawLine(origin.x + i, origin.y - (*workCopy)[i].alpha*inputArea_.height,
+				origin.x + i + 1, origin.y - (*workCopy)[i+1].alpha*inputArea_.height);
 		}
-		case ACTIVE_ALPHA:
-		{
-			(*view_)[point.x].alpha = yValue;
-			break;
-		}
+		//value
+		drawer->setPen(grey_);	
+		drawer->drawLine(origin.x + i, origin.y - (*workCopy)[i].component1*inputArea_.height,
+			origin.x + i + 1, origin.y - (*workCopy)[i+1].component1*inputArea_.height);
+
+		//TODO draw histogram if enabled
+
+		//bottom bar
+		color.setRgbF((*workCopy)[i].component1, (*workCopy)[i].component2, (*workCopy)[i].component3, 1);
+		drawer->setPen(color);
+		drawer->drawLine(bottomBarArea_.x + i, bottomBarArea_.y,
+			bottomBarArea_.x + i, bottomBarArea_.y + bottomBarArea_.height - 1);
 	}
-	changed_ = true;
+
+	//draw last point
+	color.setRgbF(
+		(*workCopy)[inputArea_.width - 1].component1,
+		(*workCopy)[inputArea_.width - 1].component2,
+		(*workCopy)[inputArea_.width - 1].component3,
+		1);
+	drawer->setPen(color);
+	drawer->drawLine(
+		bottomBarArea_.x + inputArea_.width - 1,
+		bottomBarArea_.y,
+		bottomBarArea_.x + inputArea_.width - 1,
+		bottomBarArea_.y + bottomBarArea_.height - 1);
 }
 
 } // namespace GUI

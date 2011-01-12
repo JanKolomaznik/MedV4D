@@ -3,144 +3,119 @@
 namespace M4D {
 namespace GUI {
 
-TFRGBaPainter::TFRGBaPainter(QWidget* parent):
-	TFAbstractPainter(parent),
-	activeView_(ACTIVE_RED){
+TFRGBaPainter::TFRGBaPainter(bool drawAlpha):
+	margin_(5),
+	spacing_(5),
+	colorBarSize_(10),
+	background_(Qt::black),
+	red_(Qt::red),
+	green_(Qt::green),
+	blue_(Qt::blue),
+	alpha_(Qt::yellow),
+	drawAlpha_(drawAlpha){
 }
 
 TFRGBaPainter::~TFRGBaPainter(){}
 
-void TFRGBaPainter::correctView_(){
+void TFRGBaPainter::setArea(TFArea area){
+	
+	area_ = area;
 
-	paintAreaWidth_ = width() - 2*margin_;
-	paintAreaHeight_ = height() - 2*margin_	- margin_ - colorBarSize_;
+	backgroundArea_= TFArea(
+		area_.x,
+		area_.y,
+		area_.width,
+		area_.height - colorBarSize_ - spacing_);
 
-	view_ = TFColorMapPtr(new TFColorMap(paintAreaWidth_));
+	inputArea_= TFArea(
+		backgroundArea_.x + margin_,
+		backgroundArea_.y + margin_,
+		backgroundArea_.width - 2*margin_,
+		backgroundArea_.height - 2*margin_);
+	
+	bottomBarArea_= TFArea(
+		inputArea_.x,
+		area_.y + area_.height - colorBarSize_,
+		inputArea_.width,
+		colorBarSize_);
 }
 
-void TFRGBaPainter::paintEvent(QPaintEvent*){
+TFArea TFRGBaPainter::getInputArea(){
 
-	QPainter drawer(this);
-	paintBackground_(&drawer, rect());
-	paintCurves_(&drawer);
+	return inputArea_;
 }
 
-void TFRGBaPainter::paintCurves_(QPainter *drawer){
+void TFRGBaPainter::drawBackground(QPainter* drawer){
 
-	int xBegin = margin_;
-	int yBegin = margin_ + paintAreaHeight_;
-	TFPaintingPoint origin(xBegin, yBegin);
+	QRect paintingRect(
+		backgroundArea_.x,
+		backgroundArea_.y,
+		backgroundArea_.width,
+		backgroundArea_.height);
 
-	for(TFSize i = 0; i < paintAreaWidth_ - 2; ++i)
+	drawer->fillRect(paintingRect, QBrush(background_));
+
+	QRect bottomBarRect(	//+1 in each direction as border
+		bottomBarArea_.x - 1,
+		bottomBarArea_.y - 1,
+		bottomBarArea_.width + 2,
+		bottomBarArea_.height + 2);
+
+	drawer->fillRect(bottomBarRect, QBrush(background_));
+}
+
+void TFRGBaPainter::drawData(QPainter* drawer, TFColorMapPtr workCopy){
+
+	tfAssert(workCopy->size() == inputArea_.width);
+
+	QColor color;	
+	
+	TFPaintingPoint origin(inputArea_.x,
+		inputArea_.y + inputArea_.height);
+
+	for(TFSize i = 0; i < inputArea_.width - 1; ++i)
 	{
-		//alpha
-		drawer->setPen(Qt::yellow);
-		drawer->drawLine(origin.x + i, origin.y - (*view_)[i].alpha*paintAreaHeight_,
-			origin.x + i + 1, origin.y - (*view_)[i+1].alpha*paintAreaHeight_);
+		if(drawAlpha_)
+		{
+			//alpha
+			drawer->setPen(alpha_);
+			drawer->drawLine(origin.x + i, origin.y - (*workCopy)[i].alpha*inputArea_.height,
+				origin.x + i + 1, origin.y - (*workCopy)[i+1].alpha*inputArea_.height);
+		}
 		//blue
-		drawer->setPen(Qt::blue);	
-		drawer->drawLine(origin.x + i, origin.y - (*view_)[i].component3*paintAreaHeight_,
-			origin.x + i + 1, origin.y - (*view_)[i+1].component3*paintAreaHeight_);
+		drawer->setPen(blue_);	
+		drawer->drawLine(origin.x + i, origin.y - (*workCopy)[i].component3*inputArea_.height,
+			origin.x + i + 1, origin.y - (*workCopy)[i+1].component3*inputArea_.height);
 		//green
-		drawer->setPen(Qt::green);
-		drawer->drawLine(origin.x + i, origin.y - (*view_)[i].component2*paintAreaHeight_,
-			origin.x + i + 1, origin.y - (*view_)[i+1].component2*paintAreaHeight_);
+		drawer->setPen(green_);
+		drawer->drawLine(origin.x + i, origin.y - (*workCopy)[i].component2*inputArea_.height,
+			origin.x + i + 1, origin.y - (*workCopy)[i+1].component2*inputArea_.height);
 		//red
-		drawer->setPen(Qt::red);
-		drawer->drawLine(origin.x + i, origin.y - (*view_)[i].component1*paintAreaHeight_,
-			origin.x + i + 1, origin.y - (*view_)[i+1].component1*paintAreaHeight_);
-	}
-}
+		drawer->setPen(red_);
+		drawer->drawLine(origin.x + i, origin.y - (*workCopy)[i].component1*inputArea_.height,
+			origin.x + i + 1, origin.y - (*workCopy)[i+1].component1*inputArea_.height);		
 
-void TFRGBaPainter::mousePressEvent(QMouseEvent *e){
+		//TODO draw histogram if enabled
 
-	if(e->button() == Qt::RightButton)
-	{
-		switch(activeView_)
-		{
-			case ACTIVE_RED:
-			{
-				activeView_ = ACTIVE_GREEN;
-				break;
-			}
-			case ACTIVE_GREEN:
-			{
-				activeView_ = ACTIVE_BLUE;
-				break;
-			}
-			case ACTIVE_BLUE:
-			{
-				activeView_ = ACTIVE_ALPHA;
-				break;
-			}
-			case ACTIVE_ALPHA:
-			{
-				activeView_ = ACTIVE_RED;
-				break;
-			}
-		}
-		return;
+		//bottom bar
+		color.setRgbF((*workCopy)[i].component1, (*workCopy)[i].component2, (*workCopy)[i].component3, 1);
+		drawer->setPen(color);
+		drawer->drawLine(bottomBarArea_.x + i, bottomBarArea_.y,
+			bottomBarArea_.x + i, bottomBarArea_.y + bottomBarArea_.height - 1);
 	}
 
-	TFPaintingPoint mousePosition(e->pos().x(), e->pos().y());
-	if( mousePosition.y > (int)(paintAreaHeight_ + 2*margin_) )
-	{
-		return;
-	}
-	drawHelper_ = new TFPaintingPoint(mousePosition.x,
-		(paintAreaHeight_ + 2*margin_) - mousePosition.y);
-}
-
-void TFRGBaPainter::mouseReleaseEvent(QMouseEvent *e){
-
-	if(drawHelper_) delete drawHelper_;
-	drawHelper_ = NULL;
-}
-
-void TFRGBaPainter::mouseMoveEvent(QMouseEvent *e){
-
-	if(!drawHelper_) return;
-
-	TFPaintingPoint mousePosition(e->pos().x(), (paintAreaHeight_ + 2*margin_) - e->pos().y());
-		
-	TFPaintingPoint begin = correctCoords_(*drawHelper_);
-	TFPaintingPoint end = correctCoords_(mousePosition);
-
-	addLine_(begin, end);
-
-	*drawHelper_ = mousePosition;
-	
-	if(changed()) repaint();
-}
-
-void TFRGBaPainter::addPoint_(TFPaintingPoint point){
-
-	float yValue = point.y/(float)paintAreaHeight_;
-	
-	switch(activeView_)
-	{
-		case ACTIVE_RED:
-		{
-			(*view_)[point.x].component1 = yValue;
-			break;
-		}
-		case ACTIVE_GREEN:
-		{
-			(*view_)[point.x].component2 = yValue;
-			break;
-		}
-		case ACTIVE_BLUE:
-		{
-			(*view_)[point.x].component3 = yValue;
-			break;
-		}
-		case ACTIVE_ALPHA:
-		{
-			(*view_)[point.x].alpha = yValue;
-			break;
-		}
-	}
-	changed_ = true;	
+	//draw last point
+	color.setRgbF(
+		(*workCopy)[inputArea_.width - 1].component1,
+		(*workCopy)[inputArea_.width - 1].component2,
+		(*workCopy)[inputArea_.width - 1].component3,
+		1);
+	drawer->setPen(color);
+	drawer->drawLine(
+		bottomBarArea_.x + inputArea_.width - 1,
+		bottomBarArea_.y,
+		bottomBarArea_.x + inputArea_.width - 1,
+		bottomBarArea_.y + bottomBarArea_.height - 1);
 }
 
 } // namespace GUI
