@@ -3,16 +3,16 @@
 namespace M4D {
 namespace GUI {
 
-TFAbstractModifier::TFAbstractModifier(): workCopy_(new TFColorMap()){}
+TFAbstractModifier::TFAbstractModifier(){}
 
 TFAbstractModifier::~TFAbstractModifier(){}
-
-void TFAbstractModifier::setWorkCopy(TFColorMapPtr workCopy){
+/*
+void TFAbstractModifier::setWorkCopy(TFWorkCopy::Ptr workCopy){
 
 	workCopy_ = workCopy;
 }
-
-TFColorMapPtr TFAbstractModifier::getWorkCopy(){
+*/
+TFWorkCopy::Ptr TFAbstractModifier::getWorkCopy(){
 
 	return workCopy_;
 }
@@ -20,7 +20,7 @@ TFColorMapPtr TFAbstractModifier::getWorkCopy(){
 void TFAbstractModifier::setInputArea(TFArea inputArea){
 
 	inputArea_ = inputArea;
-	workCopy_->resize(inputArea_.width);
+	workCopy_->resize(inputArea_.width, inputArea_.height);
 }
 
 M4D::Common::TimeStamp TFAbstractModifier::getLastChangeTime(){
@@ -28,7 +28,7 @@ M4D::Common::TimeStamp TFAbstractModifier::getLastChangeTime(){
 	return lastChange_;
 }
 
-TFPaintingPoint TFAbstractModifier::getRelativePoint_(TFSize x, TFSize y){	
+TFPaintingPoint TFAbstractModifier::getRelativePoint_(const TFSize& x, const TFSize& y){	
 
 	int xMax = inputArea_.width - 1;
 	int yMax = inputArea_.height;

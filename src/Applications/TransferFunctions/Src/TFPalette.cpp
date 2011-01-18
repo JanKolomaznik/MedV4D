@@ -3,7 +3,7 @@
 namespace M4D {
 namespace GUI {
 
-TFPalette::TFPalette(QMainWindow* parent, TFSize domain):
+TFPalette::TFPalette(QMainWindow* parent, const TFSize& domain):
 	QMainWindow(parent),
 	ui_(new Ui::TFPalette),
 	mainWindow_(parent),
@@ -92,7 +92,7 @@ void TFPalette::addToPalette_(TFHolder* holder){
 	change_activeHolder(addedIndex);
 }
 
-void TFPalette::removeFromPalette_(TFSize index){
+void TFPalette::removeFromPalette_(const TFSize& index){
 
 	tfAssert(palette_.size() > 1);
 
@@ -127,7 +127,7 @@ void TFPalette::resizeEvent(QResizeEvent* e){
 	ui_->layoutWidget->setGeometry(ui_->paletteArea->rect());
 }
 
-void TFPalette::close_triggered(TFSize index){
+void TFPalette::close_triggered(const TFSize& index){
 
 	if(palette_.size() <= 1) exit(0);
 
@@ -159,7 +159,7 @@ void TFPalette::newTF_triggered(TFHolder::Type tfType){
 	addToPalette_(holder);
 }
 
-void TFPalette::change_activeHolder(TFSize index){
+void TFPalette::change_activeHolder(const TFSize& index){
 
 	if(activeHolder_ >= 0) palette_.find(activeHolder_)->second->getButton()->deactivate();
 
@@ -189,7 +189,7 @@ TFSize TFPalette::Indexer::getIndex(){
 	return index;
 }
 
-void TFPalette::Indexer::releaseIndex(TFSize index){
+void TFPalette::Indexer::releaseIndex(const TFSize& index){
 
 	if(index == (nextIndex_-1))
 	{

@@ -21,9 +21,11 @@ TFHolder::TFHolder(QMainWindow* mainWindow,
 	index_(0),
 	dockWidget_(NULL),
 	painterLeftTop_(20, 40),
-	painterRightBottom_(20, 10){
+	painterRightBottom_(20, 10),
+	zoomMovement_(false){
 
 	basicTools_->setupUi(this);
+	lastChange_ = modifier_->getLastChangeTime();
 }
 
 TFHolder::~TFHolder(){
@@ -36,7 +38,7 @@ M4D::Common::TimeStamp TFHolder::getLastChangeTime(){
 	return modifier_->getLastChangeTime();
 }
 
-void TFHolder::setUp(TFSize index){
+void TFHolder::setUp(const TFSize& index){
 
 	index_ = index;
 
@@ -119,20 +121,6 @@ void TFHolder::save(){
 	file.close();
 }
 
-void TFHolder::updateFunction_(){
-
-	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
-	if(lastChange == lastChange_) return;
-
-	lastChange_ = lastChange;
-	calculate_(modifier_->getWorkCopy(), function_->getColorMap());
-}
-
-void TFHolder::updateWorkCopy_(){
-	
-	calculate_(function_->getColorMap(), modifier_->getWorkCopy());
-}
-
 void TFHolder::paintEvent(QPaintEvent *e){
 
 	QPainter drawer(this);
@@ -146,19 +134,56 @@ void TFHolder::mousePressEvent(QMouseEvent *e){
 
 	MouseButton mb(MouseButtonLeft);
 	if(e->button() == Qt::RightButton) mb = MouseButtonRight;
-	if(e->button() == Qt::MidButton) mb = MouseButtonMid;
+	if(e->button() == Qt::MidButton)
+	{
+		zoomMovement_ = true;
+		zoomMoveHelper_.x = e->x();
+		zoomMoveHelper_.y = e->y();
+		mb = MouseButtonMid;
+	}
 
-	modifier_->mousePress(e->pos().x(), e->pos().y(), mb);
+	modifier_->mousePress(e->x(), e->y(), mb);
 }
 
 void TFHolder::mouseReleaseEvent(QMouseEvent *e){
 
-	modifier_->mouseRelease(e->pos().x(), e->pos().y());
+	if(e->button() == Qt::MidButton) zoomMovement_ = false;
+
+	modifier_->mouseRelease(e->x(), e->y());
+
+	repaint();
 }
 
 void TFHolder::mouseMoveEvent(QMouseEvent *e){
 	
-	modifier_->mouseMove(e->pos().x(), e->pos().y());
+	modifier_->mouseMove(e->x(), e->y());
+
+	if(zoomMovement_)
+	{
+		M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
+		if(lastChange != lastChange_)
+		{
+			modifier_->getWorkCopy()->updateFunction(function_);
+			lastChange_ = lastChange;
+		}
+
+		TFSize x = e->x();
+		TFSize y = e->y();
+		if(x < painter_->getInputArea().x ||
+			x > (painter_->getInputArea().x + painter_->getInputArea().width) ||
+			y < painter_->getInputArea().y ||
+			y > (painter_->getInputArea().y + painter_->getInputArea().height))
+		{
+			return;
+		}
+
+		modifier_->getWorkCopy()->move(zoomMoveHelper_.x - x, y - zoomMoveHelper_.y);
+
+		zoomMoveHelper_.x = x;
+		zoomMoveHelper_.y = y;
+
+		modifier_->getWorkCopy()->update(function_);
+	}
 	repaint();
 }
 
@@ -166,7 +191,7 @@ void TFHolder::resizeEvent(QResizeEvent *e){
 	
 	basicTools_->closeButton->move(
 		width() - basicTools_->closeButton->width() - painterRightBottom_.x,
-		basicTools_->closeButton->geometry().y() );
+		basicTools_->closeButton->y() );
 
 	basicTools_->saveButton->move(
 		basicTools_->closeButton->x() - basicTools_->saveButton->width() - painterRightBottom_.x,
@@ -177,19 +202,56 @@ void TFHolder::resizeEvent(QResizeEvent *e){
 
 void TFHolder::resizePainter_(){
 
-	updateFunction_();
+	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
+	if(lastChange != lastChange_)
+	{
+		modifier_->getWorkCopy()->updateFunction(function_);
+		lastChange_ = lastChange;
+	}
 
 	TFArea painterArea(painterLeftTop_.x,
 		painterLeftTop_.y,
 		width() - painterLeftTop_.x - painterRightBottom_.x,
 		height() - painterLeftTop_.y - painterRightBottom_.y);
-
-	painter_->setArea(painterArea);
-
-	TFArea inputArea = painter_->getInputArea();
-	modifier_->setInputArea(inputArea);
 	
-	updateWorkCopy_();
+	TFSize maxPainterWidth = (TFSize)(function_->getDomain()/modifier_->getWorkCopy()->zoom());
+	if(painterArea.width > maxPainterWidth) painterArea.width = maxPainterWidth;
+	
+	painter_->setArea(painterArea);
+	modifier_->setInputArea(painter_->getInputArea());
+	
+	modifier_->getWorkCopy()->update(function_);
+}
+
+void TFHolder::wheelEvent(QWheelEvent *e){
+
+	int numSteps = e->delta() / 120;
+	if(numSteps == 0) return;
+
+	TFSize x = e->x() - painter_->getInputArea().x;
+	TFSize y = painter_->getInputArea().height - (e->y() - painter_->getInputArea().y);
+	if(x < 0 ||
+		x > painter_->getInputArea().width ||
+		y < 0 ||
+		y > painter_->getInputArea().height)
+	{
+		return;
+	}
+
+	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
+	if(lastChange != lastChange_)
+	{
+		modifier_->getWorkCopy()->updateFunction(function_);
+		lastChange_ = lastChange;
+	}
+
+	if(numSteps > 0) modifier_->getWorkCopy()->zoomIn(numSteps, x, y);
+	else modifier_->getWorkCopy()->zoomOut(-numSteps, x, y);
+
+	//modifier_->getWorkCopy()->update(function_);	//TODO resize ??
+	resizePainter_();
+
+	repaint();
 }
 
 void TFHolder::on_closeButton_clicked(){
@@ -209,7 +271,7 @@ void TFHolder::on_activateButton_clicked(){
 
 void TFHolder::save_(QFile &file){
 	
-	updateFunction_();
+	modifier_->getWorkCopy()->updateFunction(function_);
 
 	 TFXmlWriter writer;
 	 writer.write(&file, function_);
@@ -230,95 +292,9 @@ bool TFHolder::load_(QFile &file){
 		return false;
 	}
 
-	updateWorkCopy_();
+	modifier_->getWorkCopy()->update(function_);
 	
 	return true;
-}
-
-void TFHolder::calculate_(const TFColorMapPtr input, TFColorMapPtr output){
-
-	if(!(input && output)) tfAbort("calculation error");
-	if(output->begin() == output->end())
-	{
-		tfAssert(!"empty output for calculation");
-		return;
-	}
-	if(input->begin() == input->end())
-	{
-		tfAssert(!"empty input for calculation");
-		return;
-	}
-
-	TFSize inputSize = input->size();
-	TFSize outputSize = output->size();
-	float ratio = inputSize/(float)outputSize;
-
-	if(ratio > 1)
-	{
-		float inOutCorrection = ratio;
-		int inOutRatio =  (int)(inOutCorrection);	//how many input values are used for computing 1 output values
-		inOutCorrection -= inOutRatio;
-		float corrStep = inOutCorrection;
-
-		TFColorMapIt outIt = output->begin();
-
-		TFColorMap::const_iterator inBegin = input->begin();
-		TFColorMap::const_iterator inEnd = input->end();
-
-		for(TFColorMap::const_iterator it = inBegin; it != inEnd; ++it)
-		{
-			TFColor computedValue(0,0,0,0);
-			TFSize valueCount = inOutRatio + (int)inOutCorrection;
-			for(TFSize i = 0; i < valueCount; ++i)
-			{
-				if(it == inEnd) return;		//TODO fail
-
-				computedValue.component1 += it->component1;
-				computedValue.component2 += it->component2;
-				computedValue.component3 += it->component3;
-				computedValue.alpha += it->alpha;
-
-				if(i < (valueCount-1)) ++it;
-			}
-			inOutCorrection -= (int)inOutCorrection;
-			inOutCorrection += corrStep;
-
-			tfAssert(outIt != output->end());
-
-			computedValue.component1 = computedValue.component1/valueCount;
-			computedValue.component2 = computedValue.component2/valueCount;
-			computedValue.component3 = computedValue.component3/valueCount;
-			computedValue.alpha = computedValue.alpha/valueCount;
-
-			*outIt = computedValue;
-			++outIt;
-		}
-	}
-	else
-	{
-		float outInCorrection = outputSize/(float)inputSize;
-		int outInRatio = (int)(outInCorrection);	//how many input values are used for computing 1 output values
-		outInCorrection -= outInRatio;
-		float corrStep = outInCorrection;
-
-		TFColorMapIt outIt = output->begin();
-
-		TFColorMap::const_iterator inBegin = input->begin();
-		TFColorMap::const_iterator inEnd = input->end();
-
-		for(TFColorMap::const_iterator it = inBegin; it != inEnd; ++it)
-		{
-			TFSize valueCount = outInRatio + (int)outInCorrection;
-			for(TFSize i = 0; i < valueCount; ++i)
-			{
-				tfAssert(outIt != output->end());
-				*outIt = *it;
-				++outIt;
-			}
-			outInCorrection -= (int)outInCorrection;
-			outInCorrection += corrStep;
-		}
-	}
 }
 
 } // namespace GUI

@@ -5,7 +5,7 @@
 namespace M4D {
 namespace GUI {
 
-TFPaletteButton::TFPaletteButton(QWidget* parent, TFSize index):
+TFPaletteButton::TFPaletteButton(QWidget* parent, const TFSize& index):
 	QWidget(parent),
 	index_(index),
 	active_(false){	

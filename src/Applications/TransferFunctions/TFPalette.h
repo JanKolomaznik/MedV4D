@@ -31,7 +31,7 @@ class TFPalette : public QMainWindow{
 
 public:
 
-	TFPalette(QMainWindow* parent, TFSize domain);
+	TFPalette(QMainWindow* parent, const TFSize& domain);
     ~TFPalette();
 
 	M4D::Common::TimeStamp getTimeStamp();
@@ -51,12 +51,12 @@ public:
 
 protected slots:
 
-    void close_triggered(TFSize index);
+    void close_triggered(const TFSize& index);
 	void newTF_triggered(TFHolder::Type tfType);
 
     void on_actionLoad_triggered();
 
-	void change_activeHolder(TFSize index);
+	void change_activeHolder(const TFSize& index);
 
 protected:
 
@@ -75,7 +75,7 @@ private:
 		~Indexer();
 
 		TFSize getIndex();
-		void releaseIndex(TFSize index);
+		void releaseIndex(const TFSize& index);
 
 	private:
 
@@ -98,7 +98,7 @@ private:
 	bool connectTFActions_();
 
 	void addToPalette_(TFHolder* holder);
-	void removeFromPalette_(TFSize index);
+	void removeFromPalette_(const TFSize& index);
 };
 
 } // namespace GUI

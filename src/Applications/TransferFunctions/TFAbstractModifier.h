@@ -2,6 +2,7 @@
 #define TF_ABSTRACT_MODIFIER
 
 #include <TFTypes.h>
+#include <TFWorkCopy.h>
 
 namespace M4D {
 namespace GUI {
@@ -21,16 +22,13 @@ public:
 		TFModifierHSVa
 	};
 
-	TFAbstractModifier();
-	virtual ~TFAbstractModifier();
-
-	TFColorMapPtr getWorkCopy();
-	void setWorkCopy(TFColorMapPtr workCopy);
+	TFWorkCopy::Ptr getWorkCopy();
+	//void setWorkCopy(TFWorkCopy::Ptr workCopy);
 	void setInputArea(TFArea inputArea);
 
-	virtual void mousePress(TFSize x, TFSize y, MouseButton button) = 0;
-	virtual void mouseRelease(TFSize x, TFSize y) = 0;
-	virtual void mouseMove(TFSize x, TFSize y) = 0;
+	virtual void mousePress(const TFSize& x, const TFSize& y, MouseButton button) = 0;
+	virtual void mouseRelease(const TFSize& x, const TFSize& y) = 0;
+	virtual void mouseMove(const TFSize& x, const TFSize& y) = 0;
 
 	M4D::Common::TimeStamp getLastChangeTime();
 
@@ -38,15 +36,18 @@ protected:
 
 	M4D::Common::TimeStamp lastChange_;
 
-	TFColorMapPtr workCopy_;
+	TFWorkCopy::Ptr workCopy_;
 	TFArea inputArea_;
+
+	TFAbstractModifier();
+	virtual ~TFAbstractModifier();
 
 	void addLine_(int x1, int y1, int x2, int y2);
 	void addLine_(TFPaintingPoint begin, TFPaintingPoint end);
 
-	TFPaintingPoint getRelativePoint_(TFSize x, TFSize y);
+	TFPaintingPoint getRelativePoint_(const TFSize& x, const TFSize& y);
 
-	virtual void addPoint_(TFSize x, TFSize y) = 0;
+	virtual void addPoint_(const TFSize& x, const TFSize& y) = 0;
 };
 
 } // namespace GUI

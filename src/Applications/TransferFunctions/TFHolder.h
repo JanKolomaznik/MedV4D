@@ -13,6 +13,7 @@
 #include <QtGui/QMessageBox>
 #include <QtGui/QPainter>
 #include <QtGui/QMouseEvent>
+#include <QtGui/QWheelEvent>
 #include <QtGui/QPaintEvent>
 
 #include <QtCore/QString>
@@ -25,6 +26,7 @@
 #include <TFAbstractFunction.h>
 #include <TFAbstractModifier.h>
 #include <TFAbstractPainter.h>
+#include <TFWorkCopy.h>
 
 namespace M4D {
 namespace GUI {
@@ -59,7 +61,7 @@ public:
 
 	void save();
 
-	void setUp(TFSize index);
+	void setUp(const TFSize& index);
 	void setHistogram(M4D::Imaging::Histogram32::Ptr histogram);
 
 	bool connectToTFPalette(QObject* tfPalette);	//	tfPalette has to be TFPalette instance
@@ -88,7 +90,7 @@ public:
 		TransferFunctionBuffer1D::Iterator begin,
 		TransferFunctionBuffer1D::Iterator end){
 
-		updateFunction_();
+		modifier_->getWorkCopy()->updateFunction(function_);
 
 		TFSize index = 0;
 		for(TransferFunctionBuffer1D::Iterator it = begin; it!=end; ++it)
@@ -107,8 +109,8 @@ public:
 
 signals:
 
-	void Close(TFSize index);
-	void Activate(TFSize index);
+	void Close(const TFSize& index);
+	void Activate(const TFSize& index);
 
 protected slots:
 
@@ -132,6 +134,9 @@ protected:
 	TFSize index_;
 	QDockWidget* dockWidget_;
 
+	bool zoomMovement_;
+	TFPaintingPoint zoomMoveHelper_;
+
 	const TFPoint<TFSize, TFSize> painterLeftTop_;
 	const TFPoint<TFSize, TFSize> painterRightBottom_;
 
@@ -142,15 +147,17 @@ protected:
 	void mousePressEvent(QMouseEvent *e);
 	void mouseReleaseEvent(QMouseEvent *e);
 	void mouseMoveEvent(QMouseEvent *e);
+	void wheelEvent(QWheelEvent *e);
 
 	bool load_(QFile &file);
 	void save_(QFile &file);
-
+	/*
 	void updateFunction_();
 	void updateWorkCopy_();
+	*/
 	void resizePainter_();
 
-	void calculate_(const TFColorMapPtr input, TFColorMapPtr output);
+	//TFWorkCopy::ZoomProperties computeZoom_(float nextZoom, TFSize inputX, TFSize inputY);
 
 	TFPaintingPoint correctCoords_(const TFPaintingPoint &point);
 	TFPaintingPoint correctCoords_(int x, int y);

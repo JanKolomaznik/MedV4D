@@ -6,7 +6,7 @@
 #include "Imaging/Histogram.h"
 
 #include <TFTypes.h>
-#include <TFAbstractFunction.h>
+#include <TFWorkCopy.h>
 
 namespace M4D {
 namespace GUI {
@@ -17,14 +17,11 @@ public:
 
 	typedef boost::shared_ptr<TFAbstractPainter> Ptr;
 
-	TFAbstractPainter():histogramEnabled_(false){}
-	virtual ~TFAbstractPainter(){};
-
 	virtual void setArea(TFArea area) = 0;
-	virtual TFArea getInputArea() = 0;
+	virtual const TFArea& getInputArea() = 0;
 
 	virtual void drawBackground(QPainter* drawer) = 0;
-	virtual void drawData(QPainter* drawer, TFColorMapPtr workCopy) = 0;
+	virtual void drawData(QPainter* drawer, TFWorkCopy::Ptr workCopy) = 0;
 	void setHistogram(TFColorMapPtr histogram){ histogram_ = histogram; }
 	void drawHistogram(bool enabled){ histogramEnabled_ = true; }
 
@@ -33,6 +30,9 @@ protected:
 	TFArea area_;
 	TFColorMapPtr histogram_;
 	bool histogramEnabled_;
+
+	TFAbstractPainter():histogramEnabled_(false){}
+	virtual ~TFAbstractPainter(){};
 };
 
 } // namespace GUI

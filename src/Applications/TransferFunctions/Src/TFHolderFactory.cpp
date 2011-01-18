@@ -25,12 +25,13 @@ TFActions TFHolderFactory::createMenuTFActions(QObject *parent){
 	actions.push_back(new TFAction(parent, TFHolder::TFHolderRGBa));
 	actions.push_back(new TFAction(parent, TFHolder::TFHolderHSV));
 	actions.push_back(new TFAction(parent, TFHolder::TFHolderHSVa));
+	actions.push_back(new TFAction(parent, TFHolder::TFHolderUnknown));
 	//actions.push_back(new TFAction(menu, TFHOLDER_MYTYPE));
 
 	return actions;
 }
 
-TFHolder* TFHolderFactory::createHolder(QMainWindow* mainWindow, const TFHolder::Type holderType, TFSize domain){
+TFHolder* TFHolderFactory::createHolder(QMainWindow* mainWindow, const TFHolder::Type holderType, const TFSize& domain){
 
 	switch(holderType)
 	{
@@ -38,7 +39,7 @@ TFHolder* TFHolderFactory::createHolder(QMainWindow* mainWindow, const TFHolder:
 		{
 			return new TFHolder(mainWindow,
 				TFAbstractFunction::Ptr(new TFRGBaFunction(domain)),
-				TFAbstractModifier::Ptr(new TFSimpleModifier(TFAbstractModifier::TFModifierGrayscale)),
+				TFAbstractModifier::Ptr(new TFSimpleModifier(TFAbstractModifier::TFModifierGrayscale, domain)),
 				TFAbstractPainter::Ptr(new TFGrayscaleAlphaPainter(false)),
 				TFHolder::TFHolderGrayscale);
 		}
@@ -46,7 +47,7 @@ TFHolder* TFHolderFactory::createHolder(QMainWindow* mainWindow, const TFHolder:
 		{
 			return new TFHolder(mainWindow,
 				TFAbstractFunction::Ptr(new TFRGBaFunction(domain)),
-				TFAbstractModifier::Ptr(new TFSimpleModifier(TFAbstractModifier::TFModifierGrayscaleAlpha)),
+				TFAbstractModifier::Ptr(new TFSimpleModifier(TFAbstractModifier::TFModifierGrayscaleAlpha, domain)),
 				TFAbstractPainter::Ptr(new TFGrayscaleAlphaPainter(true)),
 				TFHolder::TFHolderGrayscaleAlpha);
 		}
@@ -54,7 +55,7 @@ TFHolder* TFHolderFactory::createHolder(QMainWindow* mainWindow, const TFHolder:
 		{
 			return new TFHolder(mainWindow,
 				TFAbstractFunction::Ptr(new TFRGBaFunction(domain)),
-				TFAbstractModifier::Ptr(new TFSimpleModifier(TFAbstractModifier::TFModifierRGB)),
+				TFAbstractModifier::Ptr(new TFSimpleModifier(TFAbstractModifier::TFModifierRGB, domain)),
 				TFAbstractPainter::Ptr(new TFRGBaPainter(false)),
 				TFHolder::TFHolderRGB);
 		}
@@ -62,7 +63,7 @@ TFHolder* TFHolderFactory::createHolder(QMainWindow* mainWindow, const TFHolder:
 		{
 			return new TFHolder(mainWindow,
 				TFAbstractFunction::Ptr(new TFRGBaFunction(domain)),
-				TFAbstractModifier::Ptr(new TFSimpleModifier(TFAbstractModifier::TFModifierRGBa)),
+				TFAbstractModifier::Ptr(new TFSimpleModifier(TFAbstractModifier::TFModifierRGBa, domain)),
 				TFAbstractPainter::Ptr(new TFRGBaPainter(true)),
 				TFHolder::TFHolderRGBa);
 		}
@@ -70,7 +71,7 @@ TFHolder* TFHolderFactory::createHolder(QMainWindow* mainWindow, const TFHolder:
 		{
 			return new TFHolder(mainWindow,
 				TFAbstractFunction::Ptr(new TFHSVaFunction(domain)),
-				TFAbstractModifier::Ptr(new TFSimpleModifier(TFAbstractModifier::TFModifierHSV)),
+				TFAbstractModifier::Ptr(new TFSimpleModifier(TFAbstractModifier::TFModifierHSV, domain)),
 				TFAbstractPainter::Ptr(new TFHSVaPainter(false)),
 				TFHolder::TFHolderHSV);
 		}
@@ -78,7 +79,7 @@ TFHolder* TFHolderFactory::createHolder(QMainWindow* mainWindow, const TFHolder:
 		{
 			return new TFHolder(mainWindow,
 				TFAbstractFunction::Ptr(new TFHSVaFunction(domain)),
-				TFAbstractModifier::Ptr(new TFSimpleModifier(TFAbstractModifier::TFModifierHSVa)),
+				TFAbstractModifier::Ptr(new TFSimpleModifier(TFAbstractModifier::TFModifierHSVa, domain)),
 				TFAbstractPainter::Ptr(new TFHSVaPainter(true)),
 				TFHolder::TFHolderHSVa);
 		}
@@ -86,7 +87,7 @@ TFHolder* TFHolderFactory::createHolder(QMainWindow* mainWindow, const TFHolder:
 	return NULL;
 }
 
-TFHolder* TFHolderFactory::loadHolder(QMainWindow* mainWindow, TFSize domain){
+TFHolder* TFHolderFactory::loadHolder(QMainWindow* mainWindow, const TFSize& domain){
 	
 	QString fileName = QFileDialog::getOpenFileName(
 		(QWidget*)mainWindow,

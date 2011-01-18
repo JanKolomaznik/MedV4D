@@ -11,12 +11,12 @@ class TFRGBaFunction: public TFAbstractFunction{
 
 public:
 
-	TFRGBaFunction(TFSize domain);
+	TFRGBaFunction(const TFSize& domain);
 	TFRGBaFunction(TFRGBaFunction &function);
 
 	~TFRGBaFunction();
 
-	TFColor getMappedRGBfColor(TFSize value);
+	TFColor getMappedRGBfColor(const TFSize& value);
 };
 
 } // namespace GUI

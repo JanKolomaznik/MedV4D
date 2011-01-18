@@ -16,10 +16,10 @@ public:
 	~TFRGBaPainter();
 
 	void setArea(TFArea area);
-	TFArea getInputArea();
+	const TFArea& getInputArea();
 
 	void drawBackground(QPainter* drawer);
-	void drawData(QPainter* drawer, TFColorMapPtr workCopy);
+	void drawData(QPainter* drawer, TFWorkCopy::Ptr workCopy);
 
 private:
 

@@ -15,9 +15,9 @@ TFFunctionType TFAbstractFunction::getType() const{
 	return type_;
 }
 
-TFSize TFAbstractFunction::getDomain(){
+const TFSize& TFAbstractFunction::getDomain(){
 
-	return colorMap_->size();
+	return domain_;
 }
 
 TFColorMapPtr TFAbstractFunction::getColorMap(){

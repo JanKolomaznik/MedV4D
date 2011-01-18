@@ -3,16 +3,20 @@
 namespace M4D {
 namespace GUI {
 
-TFSimpleModifier::TFSimpleModifier(TFAbstractModifier::Type type):
+TFSimpleModifier::TFSimpleModifier(TFAbstractModifier::Type type, const TFSize& domain):
 	type_(type),
 	activeView_(Active1),
 	inputHelper_(),
-	leftMousePressed_(false){}
+	leftMousePressed_(false){
+
+	workCopy_ = TFWorkCopy::Ptr(new TFWorkCopy(domain));
+}
 
 TFSimpleModifier::~TFSimpleModifier(){}
 
-void TFSimpleModifier::mousePress(TFSize x, TFSize y, MouseButton button){
+void TFSimpleModifier::mousePress(const TFSize& x, const TFSize& y, MouseButton button){
 
+	if(button == MouseButtonMid) return;
 	if(button == MouseButtonRight)
 	{
 		switch(activeView_)
@@ -46,7 +50,7 @@ void TFSimpleModifier::mousePress(TFSize x, TFSize y, MouseButton button){
 	inputHelper_.y = y;
 }
 
-void TFSimpleModifier::mouseRelease(TFSize x, TFSize y){
+void TFSimpleModifier::mouseRelease(const TFSize& x, const TFSize& y){
 
 	if(!leftMousePressed_) return;
 
@@ -54,7 +58,7 @@ void TFSimpleModifier::mouseRelease(TFSize x, TFSize y){
 	leftMousePressed_ = false;
 }
 
-void TFSimpleModifier::mouseMove(TFSize x, TFSize y){
+void TFSimpleModifier::mouseMove(const TFSize& x, const TFSize& y){
 
 	if(!leftMousePressed_) return;
 
@@ -64,7 +68,7 @@ void TFSimpleModifier::mouseMove(TFSize x, TFSize y){
 	inputHelper_.y = y;
 }
 
-void TFSimpleModifier::addPoint_(TFSize x, TFSize y){
+void TFSimpleModifier::addPoint_(const TFSize& x, const TFSize& y){
 
 	TFPaintingPoint point = getRelativePoint_(x, y);
 	float yValue = point.y/(float)inputArea_.height;
@@ -73,28 +77,28 @@ void TFSimpleModifier::addPoint_(TFSize x, TFSize y){
 	{
 		case Active1:
 		{
-			(*workCopy_)[point.x].component1 = yValue;
+			workCopy_->setComponent1(point.x, yValue);
 			if(type_ == TFModifierGrayscale ||
 				type_ == TFModifierGrayscaleAlpha)
 			{
-				(*workCopy_)[point.x].component2 = yValue;
-				(*workCopy_)[point.x].component3 = yValue;
+				workCopy_->setComponent2(point.x, yValue);
+				workCopy_->setComponent3(point.x, yValue);
 			}
 			break;
 		}
 		case Active2:
 		{
-			(*workCopy_)[point.x].component2 = yValue;
+			workCopy_->setComponent2(point.x, yValue);
 			break;
 		}
 		case Active3:
 		{
-			(*workCopy_)[point.x].component3 = yValue;
+			workCopy_->setComponent3(point.x, yValue);
 			break;
 		}
 		case ActiveAlpha:
 		{
-			(*workCopy_)[point.x].alpha = yValue;
+			workCopy_->setAlpha(point.x, yValue);
 			break;
 		}
 	}

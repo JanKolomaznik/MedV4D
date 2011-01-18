@@ -7,6 +7,8 @@
 #include <ostream>
 #include <boost/shared_ptr.hpp>
 
+#include <QtGui/QColor>
+
 #include "common/Common.h"
 
 namespace M4D {
@@ -90,6 +92,7 @@ struct TFColor{
 		return (component1 == color.component1) && (component2 == color.component2) && (component3 == color.component3) && (alpha == color.alpha);
 	}
 };
+
 typedef std::vector<TFColor> TFColorMap;
 typedef TFColorMap::iterator TFColorMapIt;
 typedef boost::shared_ptr<TFColorMap> TFColorMapPtr;

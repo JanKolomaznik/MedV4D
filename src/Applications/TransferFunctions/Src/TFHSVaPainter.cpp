@@ -46,7 +46,7 @@ void TFHSVaPainter::setArea(TFArea area){
 		inputArea_.height);
 }
 
-TFArea TFHSVaPainter::getInputArea(){
+const TFArea& TFHSVaPainter::getInputArea(){
 
 	return inputArea_;
 }
@@ -85,14 +85,15 @@ void TFHSVaPainter::drawSideColorBar_(QPainter *drawer){
 	}
 }
 
-void TFHSVaPainter::drawData(QPainter* drawer, TFColorMapPtr workCopy){
+void TFHSVaPainter::drawData(QPainter* drawer, TFWorkCopy::Ptr workCopy){
 
 	tfAssert(workCopy->size() == inputArea_.width);
-
-	QColor color;	
 	
 	TFPaintingPoint origin(inputArea_.x,
 		inputArea_.y + inputArea_.height);
+
+	TFColor tfColor;
+	QColor qColor;
 
 	for(TFSize i = 0; i < inputArea_.width - 1; ++i)
 	{
@@ -100,38 +101,38 @@ void TFHSVaPainter::drawData(QPainter* drawer, TFColorMapPtr workCopy){
 		{
 			//alpha
 			drawer->setPen(alpha_);
-			drawer->drawLine(origin.x + i, origin.y - (*workCopy)[i].alpha*inputArea_.height,
-				origin.x + i + 1, origin.y - (*workCopy)[i+1].alpha*inputArea_.height);
+			drawer->drawLine(origin.x + i, origin.y - workCopy->getAlpha(i)*inputArea_.height,
+				origin.x + i + 1, origin.y - workCopy->getAlpha(i+1)*inputArea_.height);
 		}
 		//value
 		drawer->setPen(value_);	
-		drawer->drawLine(origin.x + i, origin.y - (*workCopy)[i].component3*inputArea_.height,
-			origin.x + i + 1, origin.y - (*workCopy)[i+1].component3*inputArea_.height);
+		drawer->drawLine(origin.x + i, origin.y - workCopy->getComponent3(i)*inputArea_.height,
+			origin.x + i + 1, origin.y - workCopy->getComponent3(i+1)*inputArea_.height);
 		//saturation
 		drawer->setPen(saturation_);
-		drawer->drawLine(origin.x + i, origin.y - (*workCopy)[i].component2*inputArea_.height,
-			origin.x + i + 1, origin.y - (*workCopy)[i+1].component2*inputArea_.height);
+		drawer->drawLine(origin.x + i, origin.y - workCopy->getComponent2(i)*inputArea_.height,
+			origin.x + i + 1, origin.y - workCopy->getComponent2(i+1)*inputArea_.height);
 		//hue
 		drawer->setPen(hue_);
-		drawer->drawLine(origin.x + i, origin.y - (*workCopy)[i].component1*inputArea_.height,
-			origin.x + i + 1, origin.y - (*workCopy)[i+1].component1*inputArea_.height);		
+		drawer->drawLine(origin.x + i, origin.y - workCopy->getComponent1(i)*inputArea_.height,
+			origin.x + i + 1, origin.y - workCopy->getComponent1(i+1)*inputArea_.height);		
 
 		//TODO draw histogram if enabled
 
 		//bottom bar
-		color.setHsvF((*workCopy)[i].component1, (*workCopy)[i].component2, (*workCopy)[i].component3, 1);
-		drawer->setPen(color);
+		tfColor = workCopy->getColor(i);
+		qColor.setHsvF(tfColor.component1, tfColor.component2, tfColor.component3, tfColor.alpha);
+		drawer->setPen(qColor);
+
 		drawer->drawLine(bottomBarArea_.x + i, bottomBarArea_.y,
 			bottomBarArea_.x + i, bottomBarArea_.y + bottomBarArea_.height - 1);
 	}
 
 	//draw last point
-	color.setHsvF(
-		(*workCopy)[inputArea_.width - 1].component1,
-		(*workCopy)[inputArea_.width - 1].component2,
-		(*workCopy)[inputArea_.width - 1].component3,
-		1);
-	drawer->setPen(color);
+	tfColor = workCopy->getColor(inputArea_.width - 1);
+	qColor.setHsvF(tfColor.component1, tfColor.component2, tfColor.component3, tfColor.alpha);
+	drawer->setPen(qColor);
+
 	drawer->drawLine(
 		bottomBarArea_.x + inputArea_.width - 1,
 		bottomBarArea_.y,

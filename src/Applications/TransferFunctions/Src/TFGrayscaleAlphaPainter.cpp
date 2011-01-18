@@ -38,7 +38,7 @@ void TFGrayscaleAlphaPainter::setArea(TFArea area){
 		colorBarSize_);
 }
 
-TFArea TFGrayscaleAlphaPainter::getInputArea(){
+const TFArea& TFGrayscaleAlphaPainter::getInputArea(){
 
 	return inputArea_;
 }
@@ -62,45 +62,45 @@ void TFGrayscaleAlphaPainter::drawBackground(QPainter* drawer){
 	drawer->fillRect(bottomBarRect, QBrush(background_));
 }
 
-void TFGrayscaleAlphaPainter::drawData(QPainter* drawer, TFColorMapPtr workCopy){
+void TFGrayscaleAlphaPainter::drawData(QPainter* drawer, TFWorkCopy::Ptr workCopy){
 
 	tfAssert(workCopy->size() == inputArea_.width);
-
-	QColor color;	
 	
 	TFPaintingPoint origin(inputArea_.x,
 		inputArea_.y + inputArea_.height);
 
+	TFColor tfColor;
+	QColor qColor;
 	for(TFSize i = 0; i < inputArea_.width - 1; ++i)
 	{
 		if(drawAlpha_)
 		{
 			//alpha
 			drawer->setPen(alpha_);
-			drawer->drawLine(origin.x + i, origin.y - (*workCopy)[i].alpha*inputArea_.height,
-				origin.x + i + 1, origin.y - (*workCopy)[i+1].alpha*inputArea_.height);
+			drawer->drawLine(origin.x + i, origin.y - workCopy->getAlpha(i)*inputArea_.height,
+				origin.x + i + 1, origin.y - workCopy->getAlpha(i+1)*inputArea_.height);
 		}
 		//value
 		drawer->setPen(grey_);	
-		drawer->drawLine(origin.x + i, origin.y - (*workCopy)[i].component1*inputArea_.height,
-			origin.x + i + 1, origin.y - (*workCopy)[i+1].component1*inputArea_.height);
+		drawer->drawLine(origin.x + i, origin.y - workCopy->getComponent1(i)*inputArea_.height,
+			origin.x + i + 1, origin.y - workCopy->getComponent1(i+1)*inputArea_.height);
 
 		//TODO draw histogram if enabled
 
 		//bottom bar
-		color.setRgbF((*workCopy)[i].component1, (*workCopy)[i].component2, (*workCopy)[i].component3, 1);
-		drawer->setPen(color);
+		tfColor = workCopy->getColor(i);
+		qColor.setRgbF(tfColor.component1, tfColor.component2, tfColor.component3, tfColor.alpha);
+		drawer->setPen(qColor);
+
 		drawer->drawLine(bottomBarArea_.x + i, bottomBarArea_.y,
 			bottomBarArea_.x + i, bottomBarArea_.y + bottomBarArea_.height - 1);
 	}
 
 	//draw last point
-	color.setRgbF(
-		(*workCopy)[inputArea_.width - 1].component1,
-		(*workCopy)[inputArea_.width - 1].component2,
-		(*workCopy)[inputArea_.width - 1].component3,
-		1);
-	drawer->setPen(color);
+	tfColor = workCopy->getColor(inputArea_.width - 1);
+	qColor.setRgbF(tfColor.component1, tfColor.component2, tfColor.component3, tfColor.alpha);
+	drawer->setPen(qColor);
+
 	drawer->drawLine(
 		bottomBarArea_.x + inputArea_.width - 1,
 		bottomBarArea_.y,

@@ -12,12 +12,12 @@ public:
 
 	typedef boost::shared_ptr<TFSimpleModifier> Ptr;
 
-	TFSimpleModifier(TFAbstractModifier::Type type);
+	TFSimpleModifier(TFAbstractModifier::Type type, const TFSize& domain);
 	~TFSimpleModifier();
 
-	void mousePress(TFSize x, TFSize y, MouseButton button);
-	void mouseRelease(TFSize x, TFSize y);
-	void mouseMove(TFSize x, TFSize y);
+	void mousePress(const TFSize& x, const TFSize& y, MouseButton button);
+	void mouseRelease(const TFSize& x, const TFSize& y);
+	void mouseMove(const TFSize& x, const TFSize& y);
 
 private:
 
@@ -38,7 +38,7 @@ private:
 	TFPaintingPoint inputHelper_;
 	bool leftMousePressed_;
 
-	void addPoint_(TFSize x, TFSize y);
+	void addPoint_(const TFSize& x, const TFSize& y);
 };
 
 } // namespace GUI

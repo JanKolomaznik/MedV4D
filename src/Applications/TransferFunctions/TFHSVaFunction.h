@@ -12,12 +12,12 @@ class TFHSVaFunction: public TFAbstractFunction{
 
 public:
 
-	TFHSVaFunction(TFSize domain);
+	TFHSVaFunction(const TFSize& domain);
 	TFHSVaFunction(TFHSVaFunction &function);
 
 	~TFHSVaFunction();
 
-	TFColor getMappedRGBfColor(TFSize value);
+	TFColor getMappedRGBfColor(const TFSize& value);
 };
 
 } // namespace GUI

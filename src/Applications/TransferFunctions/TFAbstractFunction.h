@@ -12,17 +12,15 @@ public:
 
 	typedef boost::shared_ptr<TFAbstractFunction> Ptr;
 
-	virtual ~TFAbstractFunction();
-
 	void operator=(TFAbstractFunction &function);
 
 	TFFunctionType getType() const;
 
-	TFSize getDomain();
+	const TFSize& getDomain();
 
 	TFColorMapPtr getColorMap();
 	
-	virtual TFColor getMappedRGBfColor(TFSize value) = 0;
+	virtual TFColor getMappedRGBfColor(const TFSize& value) = 0;
 
 	void clear();
 
@@ -30,8 +28,10 @@ protected:
 
 	TFFunctionType type_;
 	TFColorMapPtr colorMap_;
+	TFSize domain_;
 
 	TFAbstractFunction();
+	virtual ~TFAbstractFunction();
 };
 
 } // namespace GUI

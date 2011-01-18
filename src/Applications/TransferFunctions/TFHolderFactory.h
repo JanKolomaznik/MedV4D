@@ -23,9 +23,9 @@ public:
 	
 	static TFActions createMenuTFActions(QObject *parent);
 
-	static TFHolder* createHolder(QMainWindow* mainWindow, const TFHolder::Type holderType, TFSize domain);
+	static TFHolder* createHolder(QMainWindow* mainWindow, const TFHolder::Type holderType, const TFSize& domain);
 
-	static TFHolder* loadHolder(QMainWindow* mainWindow, TFSize domain);
+	static TFHolder* loadHolder(QMainWindow* mainWindow, const TFSize& domain);
 
 protected:
 
