@@ -15,54 +15,52 @@ TFWorkCopy::TFWorkCopy(const TFSize& domain):
 
 TFColor TFWorkCopy::getColor(const TFSize& index){
 
-	TFColor fullColor(
-		(*data_)[index].component1/zoom_.zoom + zoom_.yOffset,
-		(*data_)[index].component2/zoom_.zoom + zoom_.yOffset,
-		(*data_)[index].component3/zoom_.zoom + zoom_.yOffset,
-		1);
+	TFColor fullColor = (*data_)[index];
+	fullColor.alpha = 1;
+
 	return fullColor;
 }
 
 float TFWorkCopy::getComponent1(const TFSize& index){
 
-	return (*data_)[index].component1;
+	return ((*data_)[index].component1 - zoom_.yOffset)*zoom_.zoom;
 }
 
 float TFWorkCopy::getComponent2(const TFSize& index){
 
-	return (*data_)[index].component2;
+	return ((*data_)[index].component2 - zoom_.yOffset)*zoom_.zoom;
 }
 
 float TFWorkCopy::getComponent3(const TFSize& index){
 
-	return (*data_)[index].component3;
+	return ((*data_)[index].component3 - zoom_.yOffset)*zoom_.zoom;
 }
 
 float TFWorkCopy::getAlpha(const TFSize& index){
 
-	return (*data_)[index].alpha;
+	return ((*data_)[index].alpha - zoom_.yOffset)*zoom_.zoom;
 }
 
 //---setters---
 
 void TFWorkCopy::setComponent1(const TFSize& index, const float& value){
 
-	(*data_)[index].component1 = value;
+	(*data_)[index].component1 = value/zoom_.zoom + zoom_.yOffset;
 }
 
 void TFWorkCopy::setComponent2(const TFSize& index, const float& value){
 
-	(*data_)[index].component2 = value;
+	(*data_)[index].component2 = value/zoom_.zoom + zoom_.yOffset;
 }
 
 void TFWorkCopy::setComponent3(const TFSize& index, const float& value){
 
-	(*data_)[index].component3 = value;
+	(*data_)[index].component3 = value/zoom_.zoom + zoom_.yOffset;
 }
 
 void TFWorkCopy::setAlpha(const TFSize& index, const float& value){
 
-	(*data_)[index].alpha = value;
+	(*data_)[index].alpha = value/zoom_.zoom + zoom_.yOffset;
 }
 
 //---size---
@@ -151,17 +149,7 @@ void TFWorkCopy::updateFunction(TFAbstractFunction::Ptr function){
 		{
 			tfAssert((outputIndexer + zoom_.xOffset) < outputSize);
 
-			(*output)[outputIndexer + zoom_.xOffset].component1 =
-				(*input)[inputIndexer].component1/zoom_.zoom + zoom_.yOffset;
-
-			(*output)[outputIndexer + zoom_.xOffset].component2 =
-				(*input)[inputIndexer].component2/zoom_.zoom + zoom_.yOffset;
-
-			(*output)[outputIndexer + zoom_.xOffset].component3 =
-				(*input)[inputIndexer].component3/zoom_.zoom + zoom_.yOffset;
-
-			(*output)[outputIndexer + zoom_.xOffset].alpha =
-				(*input)[inputIndexer].alpha/zoom_.zoom + zoom_.yOffset;
+			(*output)[outputIndexer + zoom_.xOffset] = (*input)[inputIndexer];
 
 			++outputIndexer;
 		}
@@ -183,7 +171,6 @@ void TFWorkCopy::update(TFAbstractFunction::Ptr function){
 	correction -= ratio;
 	float corrStep = correction;
 
-	float increment = 0;
 	TFSize inputIndexer = 0;
 	for(TFSize outputIndexer = 0; outputIndexer < outputSize; ++outputIndexer)
 	{
@@ -193,29 +180,14 @@ void TFWorkCopy::update(TFAbstractFunction::Ptr function){
 		{
 			tfAssert(inputIndexer + zoom_.xOffset < inputSize);
 
-			increment = ((*input)[inputIndexer + zoom_.xOffset].component1 - zoom_.yOffset)*zoom_.zoom;
-			computedValue.component1 += increment;
-
-			increment = ((*input)[inputIndexer + zoom_.xOffset].component2 - zoom_.yOffset)*zoom_.zoom;
-			computedValue.component2 += increment;
-
-			increment = ((*input)[inputIndexer + zoom_.xOffset].component3 - zoom_.yOffset)*zoom_.zoom;
-			computedValue.component3 += increment;
-
-			increment = ((*input)[inputIndexer + zoom_.xOffset].alpha - zoom_.yOffset)*zoom_.zoom;
-			computedValue.alpha += increment;
+			computedValue += (*input)[inputIndexer + zoom_.xOffset];
 
 			++inputIndexer;
 		}
 		correction -= (int)correction;
 		correction += corrStep;
 
-		computedValue.component1 = computedValue.component1/valueCount;
-		computedValue.component2 = computedValue.component2/valueCount;
-		computedValue.component3 = computedValue.component3/valueCount;
-		computedValue.alpha = computedValue.alpha/valueCount;
-
-		(*output)[outputIndexer] = computedValue;
+		(*output)[outputIndexer] = computedValue/valueCount;
 	}
 }
 

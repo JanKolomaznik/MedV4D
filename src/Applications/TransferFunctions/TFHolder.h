@@ -48,6 +48,7 @@ public:
 		TFHolderRGBa,
 		TFHolderHSV,
 		TFHolderHSVa,
+		TFHolderPolygonRGBa,
 		TFHolderUnknown
 	};
 
@@ -151,13 +152,8 @@ protected:
 
 	bool load_(QFile &file);
 	void save_(QFile &file);
-	/*
-	void updateFunction_();
-	void updateWorkCopy_();
-	*/
-	void resizePainter_();
 
-	//TFWorkCopy::ZoomProperties computeZoom_(float nextZoom, TFSize inputX, TFSize inputY);
+	void resizePainter_();
 
 	TFPaintingPoint correctCoords_(const TFPaintingPoint &point);
 	TFPaintingPoint correctCoords_(int x, int y);
@@ -192,6 +188,10 @@ static std::string convert<TFHolder::Type, std::string>(const TFHolder::Type &ho
 		{
 			return "TFHolderHSVa";
 		}
+		case TFHolder::TFHolderPolygonRGBa:
+		{
+			return "TFHolderPolygonRGBa";
+		}
 	}
 	return "Unknown";
 }
@@ -216,6 +216,9 @@ static TFHolder::Type convert<std::string, TFHolder::Type>(const std::string &ho
 	}
 	if(holderType == "TFHolderHSVa"){
 		return TFHolder::TFHolderHSVa;
+	}
+	if(holderType == "TFHolderPolygonRGBa"){
+		return TFHolder::TFHolderPolygonRGBa;
 	}
 	return TFHolder::TFHolderUnknown;
 }

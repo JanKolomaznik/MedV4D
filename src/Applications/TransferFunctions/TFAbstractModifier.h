@@ -47,7 +47,7 @@ protected:
 
 	TFPaintingPoint getRelativePoint_(const TFSize& x, const TFSize& y);
 
-	virtual void addPoint_(const TFSize& x, const TFSize& y) = 0;
+	virtual void addPoint_(const int& x, const int& y) = 0;
 };
 
 } // namespace GUI

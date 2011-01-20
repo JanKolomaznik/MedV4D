@@ -51,12 +51,12 @@ public:
 
 protected slots:
 
-    void close_triggered(const TFSize& index);
+    void close_triggered(TFSize index);
 	void newTF_triggered(TFHolder::Type tfType);
 
     void on_actionLoad_triggered();
 
-	void change_activeHolder(const TFSize& index);
+	void change_activeHolder(TFSize index);
 
 protected:
 
@@ -75,7 +75,7 @@ private:
 		~Indexer();
 
 		TFSize getIndex();
-		void releaseIndex(const TFSize& index);
+		void releaseIndex(TFSize index);
 
 	private:
 
@@ -98,7 +98,7 @@ private:
 	bool connectTFActions_();
 
 	void addToPalette_(TFHolder* holder);
-	void removeFromPalette_(const TFSize& index);
+	void removeFromPalette_(TFSize index);
 };
 
 } // namespace GUI

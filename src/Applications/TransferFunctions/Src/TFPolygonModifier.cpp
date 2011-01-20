@@ -1,20 +1,22 @@
-#include "TFSimpleModifier.h"
+#include "TFPolygonModifier.h"
 
 namespace M4D {
 namespace GUI {
 
-TFSimpleModifier::TFSimpleModifier(TFAbstractModifier::Type type, const TFSize& domain):
+TFPolygonModifier::TFPolygonModifier(TFAbstractModifier::Type type, const TFSize& domain):
 	type_(type),
 	activeView_(Active1),
 	inputHelper_(),
-	leftMousePressed_(false){
+	leftMousePressed_(false),
+	baseRadius_(50),
+	topRadius_(20){
 
 	workCopy_ = TFWorkCopy::Ptr(new TFWorkCopy(domain));
 }
 
-TFSimpleModifier::~TFSimpleModifier(){}
+TFPolygonModifier::~TFPolygonModifier(){}
 
-void TFSimpleModifier::mousePress(const TFSize& x, const TFSize& y, MouseButton button){
+void TFPolygonModifier::mousePress(const TFSize& x, const TFSize& y, MouseButton button){
 
 	if(button == MouseButtonMid) return;
 	if(button == MouseButtonRight)
@@ -50,27 +52,45 @@ void TFSimpleModifier::mousePress(const TFSize& x, const TFSize& y, MouseButton 
 	inputHelper_.y = y;
 }
 
-void TFSimpleModifier::mouseRelease(const TFSize& x, const TFSize& y){
+void TFPolygonModifier::mouseRelease(const TFSize& x, const TFSize& y){
 
 	if(!leftMousePressed_) return;
 
-	addPoint_(x, y);
+	addPolygon_(x, y);
+
 	leftMousePressed_ = false;
 }
 
-void TFSimpleModifier::mouseMove(const TFSize& x, const TFSize& y){
+void TFPolygonModifier::mouseMove(const TFSize& x, const TFSize& y){
 
 	if(!leftMousePressed_) return;
 
-	addLine_(inputHelper_.x, inputHelper_.y, x, y);
+	for(;inputHelper_.x < x; ++inputHelper_.x)
+	{
+		addPoint_(inputHelper_.x - baseRadius_, inputArea_.y + inputArea_.height);
+	}
 
-	inputHelper_.x = x;
-	inputHelper_.y = y;
+	addPolygon_(x, y);
+
+	for(;inputHelper_.x > x; --inputHelper_.x)
+	{
+		addPoint_(inputHelper_.x + baseRadius_, inputArea_.y + inputArea_.height);
+	}
 }
 
-void TFSimpleModifier::addPoint_(const int& x, const int& y){
+void TFPolygonModifier::addPolygon_(const int &x, const int &y){
+
+	addLine_(x - baseRadius_, inputArea_.y + inputArea_.height,	x - topRadius_, y);
+	addLine_(x - topRadius_, y, x + topRadius_, y);
+	addLine_(x + topRadius_, y, x + baseRadius_, inputArea_.y + inputArea_.height);
+}
+
+void TFPolygonModifier::addPoint_(const int& x, const int& y){
+
+	if(x < 0 || x > (int)(inputArea_.x + inputArea_.width)) return;
 
 	TFPaintingPoint point = getRelativePoint_(x, y);
+
 	float yValue = point.y/(float)inputArea_.height;
 	
 	switch(activeView_)
@@ -105,7 +125,7 @@ void TFSimpleModifier::addPoint_(const int& x, const int& y){
 	++lastChange_;	
 }
 
-TFSimpleModifier::ActiveView TFSimpleModifier::active1Next_(){
+TFPolygonModifier::ActiveView TFPolygonModifier::active1Next_(){
 
 	switch(type_)
 	{
@@ -121,7 +141,7 @@ TFSimpleModifier::ActiveView TFSimpleModifier::active1Next_(){
 	return Active2;
 }
 
-TFSimpleModifier::ActiveView TFSimpleModifier::active2Next_(){
+TFPolygonModifier::ActiveView TFPolygonModifier::active2Next_(){
 
 	switch(type_)
 	{
@@ -137,7 +157,7 @@ TFSimpleModifier::ActiveView TFSimpleModifier::active2Next_(){
 	return Active3;
 }
 
-TFSimpleModifier::ActiveView TFSimpleModifier::active3Next_(){
+TFPolygonModifier::ActiveView TFPolygonModifier::active3Next_(){
 
 	if(type_ == TFModifierGrayscale ||
 		type_ == TFModifierRGB ||
@@ -148,7 +168,7 @@ TFSimpleModifier::ActiveView TFSimpleModifier::active3Next_(){
 	return ActiveAlpha;
 }
 
-TFSimpleModifier::ActiveView TFSimpleModifier::activeAlphaNext_(){
+TFPolygonModifier::ActiveView TFPolygonModifier::activeAlphaNext_(){
 
 	return Active1;
 }

@@ -248,7 +248,7 @@ void TFHolder::wheelEvent(QWheelEvent *e){
 	if(numSteps > 0) modifier_->getWorkCopy()->zoomIn(numSteps, x, y);
 	else modifier_->getWorkCopy()->zoomOut(-numSteps, x, y);
 
-	//modifier_->getWorkCopy()->update(function_);	//TODO resize ??
+	//modifier_->getWorkCopy()->update(function_);
 	resizePainter_();
 
 	repaint();

@@ -10,6 +10,7 @@
 #include <TFHSVaPainter.h>
 
 #include <TFSimpleModifier.h>
+#include <TFPolygonModifier.h>
 
 namespace M4D {
 namespace GUI {
@@ -25,7 +26,7 @@ TFActions TFHolderFactory::createMenuTFActions(QObject *parent){
 	actions.push_back(new TFAction(parent, TFHolder::TFHolderRGBa));
 	actions.push_back(new TFAction(parent, TFHolder::TFHolderHSV));
 	actions.push_back(new TFAction(parent, TFHolder::TFHolderHSVa));
-	actions.push_back(new TFAction(parent, TFHolder::TFHolderUnknown));
+	actions.push_back(new TFAction(parent, TFHolder::TFHolderPolygonRGBa));
 	//actions.push_back(new TFAction(menu, TFHOLDER_MYTYPE));
 
 	return actions;
@@ -82,6 +83,14 @@ TFHolder* TFHolderFactory::createHolder(QMainWindow* mainWindow, const TFHolder:
 				TFAbstractModifier::Ptr(new TFSimpleModifier(TFAbstractModifier::TFModifierHSVa, domain)),
 				TFAbstractPainter::Ptr(new TFHSVaPainter(true)),
 				TFHolder::TFHolderHSVa);
+		}
+		case TFHolder::TFHolderPolygonRGBa:
+		{
+			return new TFHolder(mainWindow,
+				TFAbstractFunction::Ptr(new TFRGBaFunction(domain)),
+				TFAbstractModifier::Ptr(new TFPolygonModifier(TFAbstractModifier::TFModifierRGBa, domain)),
+				TFAbstractPainter::Ptr(new TFRGBaPainter(true)),
+				TFHolder::TFHolderPolygonRGBa);
 		}
 	}
 	return NULL;

@@ -28,6 +28,7 @@ protected:
 
 	void mouseReleaseEvent(QMouseEvent*);
 	void paintEvent(QPaintEvent*);
+	void resizeEvent(QResizeEvent*);
 
 private:
 

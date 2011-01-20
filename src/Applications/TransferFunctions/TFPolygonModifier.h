@@ -1,19 +1,19 @@
-#ifndef TF_SIMPLE_MODIFIER
-#define TF_SIMPLE_MODIFIER
+#ifndef TF_POLYGON_MODIFIER
+#define TF_POLYGON_MODIFIER
 
 #include <TFAbstractModifier.h>
 
 namespace M4D {
 namespace GUI {
 
-class TFSimpleModifier: public TFAbstractModifier{
+class TFPolygonModifier: public TFAbstractModifier{
 
 public:
 
-	typedef boost::shared_ptr<TFSimpleModifier> Ptr;
+	typedef boost::shared_ptr<TFPolygonModifier> Ptr;
 
-	TFSimpleModifier(TFAbstractModifier::Type type, const TFSize& domain);
-	~TFSimpleModifier();
+	TFPolygonModifier(TFAbstractModifier::Type type, const TFSize& domain);
+	~TFPolygonModifier();
 
 	void mousePress(const TFSize& x, const TFSize& y, MouseButton button);
 	void mouseRelease(const TFSize& x, const TFSize& y);
@@ -38,10 +38,14 @@ private:
 	TFPaintingPoint inputHelper_;
 	bool leftMousePressed_;
 
+	const TFSize baseRadius_;
+	const TFSize topRadius_;
+
+	void addPolygon_(const int& x, const int& y);
 	void addPoint_(const int& x, const int& y);
 };
 
 } // namespace GUI
 } // namespace M4D
 
-#endif //TF_SIMPLE_MODIFIER
+#endif //TF_POLYGON_MODIFIER

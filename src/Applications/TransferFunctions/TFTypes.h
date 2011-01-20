@@ -14,12 +14,6 @@
 namespace M4D {
 namespace GUI {
 
-enum TFFunctionType{
-	TFFUNCTION_UNKNOWN,
-	TFFUNCTION_RGBA,
-	TFFUNCTION_HSVA
-};	//TODO remove
-
 template<typename From, typename To>
 static To convert(const From &s){
 
@@ -32,6 +26,50 @@ static To convert(const From &s){
 	}
     return NULL;
 }
+
+template <typename XType, typename YType>
+struct TFPoint{
+
+	XType x;
+	YType y;
+
+	TFPoint(): x(0), y(0){}
+	TFPoint(const TFPoint<XType, YType> &point): x(point.x), y(point.y){}
+	TFPoint(XType x, YType y): x(x), y(y){}
+
+	bool operator==(const TFPoint& point){
+		return (x == point.x) && (y == point.y);
+	}
+};
+
+typedef TFPoint<int, int> TFPaintingPoint;
+
+typedef std::string TFName;
+typedef unsigned long TFSize;
+
+struct TFArea{	
+	TFSize x, y, width, height;
+
+	TFArea():
+		x(0), y(0), width(0), height(0){}
+	TFArea(TFSize x, TFSize y, TFSize width, TFSize height):
+		x(x), y(y), width(width), height(height){}
+};
+
+enum MouseButton{
+	MouseButtonLeft,
+	MouseButtonRight,
+	MouseButtonMid
+};
+
+//------------FunctionType-----------------------------------------------
+
+enum TFFunctionType{
+	TFFUNCTION_UNKNOWN,
+	TFFUNCTION_RGBA,
+	TFFUNCTION_HSVA
+};	//TODO remove
+
 
 template<>
 static std::string convert<TFFunctionType, std::string>(const TFFunctionType &tfType){
@@ -61,25 +99,7 @@ static TFFunctionType convert<std::string, TFFunctionType>(const std::string &tf
 	return TFFUNCTION_UNKNOWN;
 }
 
-template <typename XType, typename YType>
-struct TFPoint{
-
-	XType x;
-	YType y;
-
-	TFPoint(): x(0), y(0){}
-	TFPoint(const TFPoint<XType, YType> &point): x(point.x), y(point.y){}
-	TFPoint(XType x, YType y): x(x), y(y){}
-
-	bool operator==(const TFPoint& point){
-		return (x == point.x) && (y == point.y);
-	}
-};
-
-typedef TFPoint<int, int> TFPaintingPoint;
-
-typedef std::string TFName;
-typedef unsigned long TFSize;
+//------------Color------------------------------------------------------
 
 struct TFColor{
 	float component1, component2, component3, alpha;
@@ -91,30 +111,141 @@ struct TFColor{
 	bool operator==(const TFColor& color){
 		return (component1 == color.component1) && (component2 == color.component2) && (component3 == color.component3) && (alpha == color.alpha);
 	}
+
+	TFColor operator+(const TFColor& color){
+
+		return TFColor(component1 + color.component1,
+			component2 + color.component2,
+			component3 + color.component3,
+			alpha + color.alpha);
+	}
+
+	TFColor operator-(const TFColor& color){
+
+		return TFColor(component1 - color.component1,
+			component2 - color.component2,
+			component3 - color.component3,
+			alpha - color.alpha);
+	}
+
+	TFColor operator*(const TFColor& color){
+
+		return TFColor(component1 * color.component1,
+			component2 * color.component2,
+			component3 * color.component3,
+			alpha * color.alpha);
+	}
+
+	TFColor operator/(const TFColor& color){
+
+		return TFColor(component1 / color.component1,
+			component2 / color.component2,
+			component3 / color.component3,
+			alpha / color.alpha);
+	}
+
+	void operator+=(const TFColor& color){
+
+		component1 += color.component1;
+		component2 += color.component2;
+		component3 += color.component3;
+		alpha += color.alpha;
+	}
+
+	void operator-=(const TFColor& color){
+
+		component1 -= color.component1;
+		component2 -= color.component2;
+		component3 -= color.component3;
+		alpha -= color.alpha;
+	}
+
+	void operator*=(const TFColor& color){
+
+		component1 *= color.component1;
+		component2 *= color.component2;
+		component3 *= color.component3;
+		alpha *= color.alpha;
+	}
+
+	void operator/=(const TFColor& color){
+
+		component1 /= color.component1;
+		component2 /= color.component2;
+		component3 /= color.component3;
+		alpha /= color.alpha;
+	}
+
+	TFColor operator+(const float& value){
+
+		return TFColor(component1 + value,
+			component2 + value,
+			component3 + value,
+			alpha + value);
+	}
+
+	TFColor operator-(const float& value){
+
+		return TFColor(component1 - value,
+			component2 - value,
+			component3 - value,
+			alpha - value);
+	}
+
+	TFColor operator*(const float& value){
+
+		return TFColor(component1 * value,
+			component2 * value,
+			component3 * value,
+			alpha * value);
+	}
+
+	TFColor operator/(const float& value){
+
+		return TFColor(component1 / value,
+			component2 / value,
+			component3 / value,
+			alpha / value);
+	}
+
+	void operator+=(const float& value){
+
+		component1 += value;
+		component2 += value;
+		component3 += value;
+		alpha += value;
+	}
+
+	void operator-=(const float& value){
+
+		component1 -= value;
+		component2 -= value;
+		component3 -= value;
+		alpha -= value;
+	}
+
+	void operator*=(const float& value){
+
+		component1 *= value;
+		component2 *= value;
+		component3 *= value;
+		alpha *= value;
+	}
+
+	void operator/=(const float& value){
+
+		component1 /= value;
+		component2 /= value;
+		component3 /= value;
+		alpha /= value;
+	}
 };
 
 typedef std::vector<TFColor> TFColorMap;
 typedef TFColorMap::iterator TFColorMapIt;
 typedef boost::shared_ptr<TFColorMap> TFColorMapPtr;
 
-struct TFArea{	
-	TFSize x, y, width, height;
-
-	TFArea():
-		x(0), y(0), width(0), height(0){}
-	TFArea(TFSize x, TFSize y, TFSize width, TFSize height):
-		x(x), y(y), width(width), height(height){}
-};
-
-enum MouseButton{
-	MouseButtonLeft,
-	MouseButtonRight,
-	MouseButtonMid
-};
-
-#ifndef ROUND
-#define ROUND(a) ( (int)(a+0.5) )
-#endif
+//------------Debug------------------------------------------------------
 
 class TFAbortException : public std::exception
 {
