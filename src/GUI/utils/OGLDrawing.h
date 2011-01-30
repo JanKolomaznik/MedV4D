@@ -135,6 +135,17 @@ template<
 void
 GLDrawMesh( const M4D::Imaging::Geometry::Mesh< VertexType, FaceType > &mesh );
 
+
+void
+DrawCircle( float32 radius );
+
+void
+DrawSphere( float32 radius );
+
+void
+DrawArrow( float32 arrowHeight, float32 bitHeight, float bitRadius, float bodyRadius1, float bodyRadius2 );
+
+
 } /*namespace M4D*/
 
 //include implementation

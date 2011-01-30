@@ -358,6 +358,55 @@ GLDrawBox( const Vector< float, 3 > &corner1, const Vector< float, 3 > &corner2 
 	glEnd();
 }
 
+void
+DrawCircle( float32 radius )
+{
+	size_t segCount = 32;
+	float sAlpha = sin( PI / segCount );
+	float cAlpha = cos( PI / segCount );
+
+	Vector< float, 2 > v( radius, 0.0f );
+	glBegin( GL_POLYGON );
+	for( size_t i = 0; i < segCount-1; ++i ) {
+		GLVertexVector( v );
+		v = Vector< float, 2 >( v[0] * cAlpha - v[1] * sAlpha, v[0] * sAlpha + v[1] * cAlpha );
+	}
+	glEnd();
+}
+
+void
+DrawSphere( float32 radius )
+{
+	GLUquadric* quadratic=gluNewQuadric();			
+	gluQuadricNormals(quadratic, GLU_SMOOTH);
+	gluQuadricTexture(quadratic, GL_TRUE);
+
+	gluSphere(quadratic,radius,32,32);
+
+	gluDeleteQuadric(quadratic);
+}
+
+void
+DrawArrow( float arrowHeight, float bitHeight, float bitRadius, float bodyRadius1, float bodyRadius2 )
+{
+	assert( arrowHeight > bitHeight );
+	assert( bitRadius > bodyRadius1 );
+
+	size_t segCount = 32;
+	GLUquadric* quadratic=gluNewQuadric();			
+	gluQuadricNormals(quadratic, GLU_SMOOTH);
+	gluQuadricTexture(quadratic, GL_TRUE);
+
+	gluCylinder( quadratic, 0.0, bitRadius, bitHeight, segCount, 2 );
+	glPushMatrix();
+	glTranslatef( 0.0f, 0.0f, bitHeight );
+
+	gluCylinder( quadratic, bodyRadius1, bodyRadius2, arrowHeight - bitHeight, segCount, 2 );
+
+	glPopMatrix();
+	gluDeleteQuadric(quadratic);
+}
+
 
 } /*namespace M4D*/
 
