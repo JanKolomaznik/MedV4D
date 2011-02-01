@@ -91,6 +91,8 @@ BasicSliceViewer::initializeGL()
 
 	mRenderingThread.SetContext( *mOtherContext );
 	mRenderingThread.start();*/
+
+	//mDummyGLWidget = new QGLWidget( this, this );
 }
 
 void	

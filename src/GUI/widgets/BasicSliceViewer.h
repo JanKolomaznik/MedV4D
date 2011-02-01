@@ -38,11 +38,9 @@ public:
 		mContext = &aContext;
 	}
 
-protected:
-	virtual void
-	run()
+	void
+	Initialize()
 	{
-
 		mContext->makeCurrent();
 		GL_CHECKED_CALL( glGenFramebuffersEXT( 1, &mFrameBufferObject ) );
 		GL_CHECKED_CALL( glGenRenderbuffersEXT( 1, &mDepthBuffer ) );
@@ -58,6 +56,26 @@ protected:
 					GL_RENDERBUFFER_EXT,
 					mDepthBuffer
 					) );
+	}
+
+	void
+	Finalize()
+	{
+		mContext->makeCurrent();
+		GL_CHECKED_CALL( glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 ) );
+		GL_CHECKED_CALL( glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, 0 ) );
+
+		GL_CHECKED_CALL( glDeleteRenderbuffersEXT( 1, &mDepthBuffer ) );
+		GL_CHECKED_CALL( glDeleteFramebuffersEXT( 1, &mFrameBufferObject ) );
+	}
+protected:
+	virtual void
+	run()
+	{
+
+		
+
+		
 
 		/*GL_CHECKED_CALL( glFramebufferTexture2DEXT( 
 					GL_FRAMEBUFFER_EXT,
@@ -72,11 +90,7 @@ protected:
 
 
 		}
-		GL_CHECKED_CALL( glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 ) );
-		GL_CHECKED_CALL( glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, 0 ) );
-
-		GL_CHECKED_CALL( glDeleteRenderbuffersEXT( 1, &mDepthBuffer ) );
-		GL_CHECKED_CALL( glDeleteFramebuffersEXT( 1, &mFrameBufferObject ) );
+		
 
 	}
 	GLuint	mFrameBufferObject, 
@@ -309,6 +323,8 @@ protected:
 
 
 	FrameBufferObject			mFrameBufferObject;
+
+	QGLWidget				*mDummyGLWidget;
 
 	bool					mSaveFile; //TODO handle differently
 	bool					mSaveCycle; //TODO handle differently
