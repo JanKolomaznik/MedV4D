@@ -162,7 +162,7 @@ protected:
 	bool	mFineRendering; //TODO delete
 	bool	mShadingEnabled;
 private:
-
+	GLuint	mNoiseMap;
 };
 
 } /*namespace M4D*/

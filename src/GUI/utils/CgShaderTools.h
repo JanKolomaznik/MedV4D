@@ -72,6 +72,9 @@ public:
 	SetParameter( std::string aName, const GLTextureImage &aTexture );
 
 	void
+	SetParameter( std::string aName, const GLTextureImage3D &aImage );
+
+	void
 	SetParameter( std::string aName, float aValue );
 
 	void

@@ -75,6 +75,17 @@ CgEffect::SetParameter( std::string aName, const GLTextureImage &aTexture )
 }
 
 void
+CgEffect::SetParameter( std::string aName, const GLTextureImage3D &aImage )
+{
+	SetTextureParameter( TO_STRING( aName << ".data" ), aImage.GetTextureGLID() );
+
+	SetParameter( TO_STRING( aName << ".size" ), aImage.GetSize() );
+
+	SetParameter( TO_STRING( aName << ".realSize" ), aImage.GetRealSize() );
+}
+
+
+void
 CgEffect::SetTextureParameter( std::string aName, GLuint aTexture )
 {
 	CGparameter cgParameter = cgGetNamedEffectParameter(mCgEffect, aName.data() );

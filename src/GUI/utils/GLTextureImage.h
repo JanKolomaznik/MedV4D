@@ -132,6 +132,12 @@ struct GLTextureImageTyped: public GLTextureImage
 	GetElementExtents()const
 	{ return _image->GetElementExtents(); }
 
+	Vector< float32, Dim >
+	GetElementExtentsInTextureSpace()const
+	{
+		return VectorMemberDivision( _image->GetElementExtents() / _image->GetSize() );
+	}
+
 	Vector< uint32, Dim > 
 	GetSize()const
 	{ return _image->GetSize(); }
@@ -190,7 +196,7 @@ CreateTextureFromImageTyped( const M4D::Imaging::AImageRegionDim<Dim> &image, bo
 }
 
 
-
+typedef GLTextureImageTyped< 3 > GLTextureImage3D;
 
 
 

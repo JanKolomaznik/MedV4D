@@ -1,6 +1,14 @@
 
 #define DELTA (0.01)
 #define THRESHOLD (0.1)
+
+struct ImageData3D
+{
+	sampler3D data;
+	int3 size;
+	float3 realSize;
+};
+
 struct FragmentOutput
 {
 	float4 color : COLOR;
@@ -20,8 +28,14 @@ struct Light
 	float3 ambient;
 };
 
-sampler3D gImageData3D;
-int3 gImageDataResolution3D = {0, 0, 0};
+ImageData3D gImageData3D;
+
+float3 gSliceNormalTexCoords;
+sampler2D gNoiseMap;
+float2 gNoiseMapSize;
+
+
+//int3 gImageDataResolution3D = {0, 0, 0};
 float2 gMappedIntervalBands;
 
 float3 gLightPosition;
@@ -40,7 +54,7 @@ float gMaskAlpha;
 
 
 float3
-PreventInterpolation( float3 aTexCoord, float3 aImageDataResolution3D )
+PreventInterpolation( float3 aTexCoord, int3 aImageDataResolution3D )
 {
 	float3 elementSize = 1.0f / aImageDataResolution3D;
 	
@@ -82,9 +96,9 @@ ApplyTransferFunction1D( float value, sampler1D aTransferFunction1D, float2 aTra
 FragmentOutput 
 fp_WLWindow_3D( 
 		float3 aTexCoord : TEXCOORD0, 
-		uniform sampler3D aTextureData : TEX0, 
-		uniform float3 aWLWindow,
-		uniform float3 aImageDataResolution3D )
+		uniform ImageData3D aTextureData, 
+		uniform float3 aWLWindow
+		)
 {
 	FragmentOutput OUT;
 
@@ -96,7 +110,7 @@ fp_WLWindow_3D(
 	//Disable interpolation
 	//coordinates.x = round( coordinates.x * gImageDataResolution3D.x ) / gImageDataResolution3D.x;
 	//coordinates.y = round( coordinates.y * gImageDataResolution3D.y ) / gImageDataResolution3D.y;
-	float value = ( tex3D( aTextureData, coordinates ).x - lowBand ) * multiplier;
+	float value = ( tex3D( aTextureData.data, coordinates ).x - lowBand ) * multiplier;
 		
 	OUT.color = float4( value.xxx, 1.0f );
 
@@ -106,11 +120,10 @@ fp_WLWindow_3D(
 FragmentOutput 
 fp_TransferFunction1D_3D( 
 		float3 aTexCoord : TEXCOORD0, 
-		uniform sampler3D aTextureData : TEX0,
+		uniform ImageData3D aTextureData,
 		uniform sampler1D aTransferFunction1D : TEX1,
 		uniform float2 aTransferFunction1DInterval,
 		uniform float aRenderingSliceThickness,
-		uniform float3 aImageDataResolution3D,
 		uniform float2 aMappedIntervalBands )
 {
 	FragmentOutput OUT;
@@ -119,7 +132,7 @@ fp_TransferFunction1D_3D(
 	//coordinates.x = round( coordinates.x * aImageDataResolution3D.x ) / aImageDataResolution3D.x;
 	//coordinates.y = round( coordinates.y * aImageDataResolution3D.y ) / aImageDataResolution3D.y;
 	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
-	float value = (tex3D( aTextureData, coordinates ).x * range) + aMappedIntervalBands[0];
+	float value = (tex3D( aTextureData.data, coordinates ).x * range) + aMappedIntervalBands[0];
 		
 	OUT.color = ApplyTransferFunction1D( value, aTransferFunction1D, aTransferFunction1DInterval );
 
@@ -130,11 +143,10 @@ fp_TransferFunction1D_3D(
 FragmentOutput 
 fp_TransferFunction1DShading_3D( 
 		float3 aTexCoord : TEXCOORD0, 
-		uniform sampler3D aTextureData : TEX0,
+		uniform ImageData3D aTextureData,
 		uniform sampler1D aTransferFunction1D : TEX1,
 		uniform float2 aTransferFunction1DInterval,
 		uniform float aRenderingSliceThickness,
-		uniform float3 aImageDataResolution3D,
 		uniform float2 aMappedIntervalBands,
 		uniform	float3 aLightPosition,
 		uniform	float3 aLightColor,
@@ -148,18 +160,18 @@ fp_TransferFunction1DShading_3D(
 	//coordinates.x = round( coordinates.x * aImageDataResolution3D.x ) / aImageDataResolution3D.x;
 	//coordinates.y = round( coordinates.y * aImageDataResolution3D.y ) / aImageDataResolution3D.y;
 	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
-	float value = (tex3D( aTextureData, coordinates ).x * range) + aMappedIntervalBands[0];
+	float value = (tex3D( aTextureData.data, coordinates ).x * range) + aMappedIntervalBands[0];
 	OUT.color = ApplyTransferFunction1D( value, aTransferFunction1D, aTransferFunction1DInterval );
 
 	if( OUT.color.a > THRESHOLD ) {
 		float3 sample1, sample2;
 		
-		sample1.x = tex3D( aTextureData, aTexCoord - half3( DELTA, 0.0, 0.0 ) ).x;
-		sample2.x = tex3D( aTextureData, aTexCoord + half3( DELTA, 0.0, 0.0 ) ).x;
-		sample1.y = tex3D( aTextureData, aTexCoord - half3( 0.0, DELTA, 0.0 ) ).x;
-		sample2.y = tex3D( aTextureData, aTexCoord + half3( 0.0, DELTA, 0.0 ) ).x;
-		sample1.z = tex3D( aTextureData, aTexCoord - half3( 0.0, 0.0, DELTA ) ).x;
-		sample2.z = tex3D( aTextureData, aTexCoord + half3( 0.0, 0.0, DELTA ) ).x;
+		sample1.x = tex3D( aTextureData.data, aTexCoord - half3( DELTA, 0.0, 0.0 ) ).x;
+		sample2.x = tex3D( aTextureData.data, aTexCoord + half3( DELTA, 0.0, 0.0 ) ).x;
+		sample1.y = tex3D( aTextureData.data, aTexCoord - half3( 0.0, DELTA, 0.0 ) ).x;
+		sample2.y = tex3D( aTextureData.data, aTexCoord + half3( 0.0, DELTA, 0.0 ) ).x;
+		sample1.z = tex3D( aTextureData.data, aTexCoord - half3( 0.0, 0.0, DELTA ) ).x;
+		sample2.z = tex3D( aTextureData.data, aTexCoord + half3( 0.0, 0.0, DELTA ) ).x;
 
 		float3 N = normalize( sample2 - sample1 );
 
@@ -182,11 +194,69 @@ fp_TransferFunction1DShading_3D(
 	return OUT;
 }
 
+FragmentOutput 
+fp_TransferFunction1DShadingJitter_3D( 
+		float3 aTexCoord : TEXCOORD0, 
+		uniform ImageData3D aTextureData,
+		uniform sampler1D aTransferFunction1D : TEX1,
+		uniform float2 aTransferFunction1DInterval,
+		uniform float aRenderingSliceThickness,
+		uniform float2 aMappedIntervalBands,
+		uniform	float3 aLightPosition,
+		uniform	float3 aLightColor,
+		uniform	float3 aEyePosition,
+		uniform float3 aSliceNormalTexCoords,
+		float3 aWinPos : WPOS
+		)
+{
+	FragmentOutput OUT;
+
+	float offset = tex2D( gNoiseMap, aWinPos.xy / gNoiseMapSize.xy )*aRenderingSliceThickness*3;
+	//float off = (round( dot( aEyePosition, aTexCoord ) * 3000.0f ) %783) / 783.0f;
+	float3 coordinates = aTexCoord + offset *aSliceNormalTexCoords;
+	//float3 coordinates = aTexCoord;
+	float3 position = aTexCoord;
+	//coordinates.x = round( coordinates.x * aImageDataResolution3D.x ) / aImageDataResolution3D.x;
+	//coordinates.y = round( coordinates.y * aImageDataResolution3D.y ) / aImageDataResolution3D.y;
+	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
+	float value = (tex3D( aTextureData.data, coordinates ).x * range) + aMappedIntervalBands[0];
+	OUT.color = ApplyTransferFunction1D( value, aTransferFunction1D, aTransferFunction1DInterval );
+
+	if( OUT.color.a > THRESHOLD ) {
+		float3 sample1, sample2;
+		
+		sample1.x = tex3D( aTextureData.data, coordinates - half3( DELTA, 0.0, 0.0 ) ).x;
+		sample2.x = tex3D( aTextureData.data, coordinates + half3( DELTA, 0.0, 0.0 ) ).x;
+		sample1.y = tex3D( aTextureData.data, coordinates - half3( 0.0, DELTA, 0.0 ) ).x;
+		sample2.y = tex3D( aTextureData.data, coordinates + half3( 0.0, DELTA, 0.0 ) ).x;
+		sample1.z = tex3D( aTextureData.data, coordinates - half3( 0.0, 0.0, DELTA ) ).x;
+		sample2.z = tex3D( aTextureData.data, coordinates + half3( 0.0, 0.0, DELTA ) ).x;
+
+		float3 N = normalize( sample2 - sample1 );
+
+		float3 L = normalize( aLightPosition - position );
+		float3 V = normalize( aEyePosition - position );
+
+		Material material;
+		material.Ka = float3(0.1,0.1,0.1);
+		material.Kd = float3(0.6,0.6,0.6);
+		material.Ks = float3(0.2,0.2,0.2);
+		material.shininess = 100;
+		
+		Light light;
+		light.color = aLightColor;
+		light.ambient = float3(0.3,0.3,0.3);
+
+		OUT.color.rgb += BlinnPhongShading( N, V, L, material, light );
+	}
+	OUT.color.a = 1.0f - pow( 1.0f - OUT.color.a, aRenderingSliceThickness );
+	return OUT;
+}
 
 FragmentOutput 
 fp_ColorMappedMask_3D( 
 		float3 aTexCoord : TEXCOORD0, 
-		uniform sampler3D aMaskData : TEX0, 
+		uniform ImageData3D aMaskData, 
 		uniform sampler1D aColorMap : TEX1, 
 		uniform float aMaskAlpha )
 {
@@ -207,13 +277,12 @@ FragmentOutput fp_Test()
 FragmentOutput
 fp_SimpleRegionColorMap_3D(
 		float3 aTexCoord : TEXCOORD0, 
-		uniform sampler3D aTextureData : TEX0,
-		uniform float3 aImageDataResolution3D,
+		uniform ImageData3D aTextureData,
 		uniform float aRange )
 {
 	FragmentOutput OUT;
-	float3 coordinates = PreventInterpolation( aTexCoord, aImageDataResolution3D );
-	unsigned int value = round( tex3D( aTextureData, coordinates ).x * 4200000000 );
+	float3 coordinates = PreventInterpolation( aTexCoord, aTextureData.size );
+	unsigned int value = round( tex3D( aTextureData.data, coordinates ).x * 4200000000 );
 
 	OUT.color.r = float(((value * 359) % 901) % 256) / 256;
 	OUT.color.g = float(((value * 617) % 1013) % 256) / 256;
@@ -231,15 +300,20 @@ technique WLWindow_3D {
 								gWLWindow.x / (gMappedIntervalBands[1] - gMappedIntervalBands[0]), 
 								gWLWindow.y / (gMappedIntervalBands[1] - gMappedIntervalBands[0]),
 								(gMappedIntervalBands[1] - gMappedIntervalBands[0])/ gWLWindow.x 
-								), 
-							gImageDataResolution3D 
+								) 
 							);
 	}
 }
 
 technique TransferFunction1D_3D {
 	pass t0 {
-		FragmentProgram = compile glslf fp_TransferFunction1D_3D( gImageData3D, gTransferFunction1D, gTransferFunction1DInterval, gRenderingSliceThickness, gImageDataResolution3D, gMappedIntervalBands );
+		FragmentProgram = compile glslf fp_TransferFunction1D_3D( 
+									gImageData3D, 
+									gTransferFunction1D, 
+									gTransferFunction1DInterval, 
+									gRenderingSliceThickness, 
+									gMappedIntervalBands 
+									);
 
 		DepthTestEnable = true;
 		DepthMask = true;
@@ -252,7 +326,13 @@ technique TransferFunction1D_3D {
 
 technique TransferFunction1D_3DNoBlending {
 	pass t0 {
-		FragmentProgram = compile glslf fp_TransferFunction1D_3D( gImageData3D, gTransferFunction1D, gTransferFunction1DInterval, gRenderingSliceThickness, gImageDataResolution3D, gMappedIntervalBands );
+		FragmentProgram = compile glslf fp_TransferFunction1D_3D( 
+									gImageData3D, 
+									gTransferFunction1D, 
+									gTransferFunction1DInterval, 
+									gRenderingSliceThickness, 
+									gMappedIntervalBands 
+									);
 
 		DepthTestEnable = true;
 		DepthMask = true;
@@ -264,7 +344,16 @@ technique TransferFunction1D_3DNoBlending {
 
 technique TransferFunction1DShading_3D {
 	pass t0 {
-		FragmentProgram = compile glslf fp_TransferFunction1DShading_3D( gImageData3D, gTransferFunction1D, gTransferFunction1DInterval, gRenderingSliceThickness, gImageDataResolution3D, gMappedIntervalBands, gLightPosition, gLightColor, gEyePosition );
+		FragmentProgram = compile glslf fp_TransferFunction1DShading_3D( 
+									gImageData3D, 
+									gTransferFunction1D, 
+									gTransferFunction1DInterval, 
+									gRenderingSliceThickness, 
+									gMappedIntervalBands, 
+									gLightPosition, 
+									gLightColor, 
+									gEyePosition 
+									);
 
 		DepthTestEnable = true;
 		DepthMask = true;
@@ -275,17 +364,40 @@ technique TransferFunction1DShading_3D {
 	}
 }
 
+technique TransferFunction1DShadingJitter_3D {
+	pass t0 {
+		FragmentProgram = compile glslf fp_TransferFunction1DShadingJitter_3D( 
+									gImageData3D, 
+									gTransferFunction1D, 
+									gTransferFunction1DInterval, 
+									gRenderingSliceThickness, 
+									gMappedIntervalBands, 
+									gLightPosition, 
+									gLightColor, 
+									gEyePosition,
+									gSliceNormalTexCoords 
+									);
+
+		DepthTestEnable = true;
+		DepthMask = true;
+		CullFaceEnable = false;
+		BlendEnable = true;
+		BlendFunc = int2( SrcAlpha, OneMinusSrcAlpha );
+		DepthFunc = LEqual;
+	}
+}
+
+
 technique WLWindowMIP_3D  {
 	pass t0 {
 		FragmentProgram = compile glslf fp_WLWindow_3D( 
-											gImageData3D, 
-											float3( 
-												gWLWindow.x / (gMappedIntervalBands[1] - gMappedIntervalBands[0]), 
-												gWLWindow.y / (gMappedIntervalBands[1] - gMappedIntervalBands[0]),
-												(gMappedIntervalBands[1] - gMappedIntervalBands[0])/ gWLWindow.x 
-												), 
-											gImageDataResolution3D 
-											);
+								gImageData3D, 
+								float3( 
+									gWLWindow.x / (gMappedIntervalBands[1] - gMappedIntervalBands[0]), 
+									gWLWindow.y / (gMappedIntervalBands[1] - gMappedIntervalBands[0]),
+									(gMappedIntervalBands[1] - gMappedIntervalBands[0])/ gWLWindow.x 
+									) 
+								);
 
 		DepthTestEnable = false;
 		DepthMask = true;
@@ -302,7 +414,6 @@ technique SimpleRegionColorMap_3D {
 	pass t0 {
 		FragmentProgram = compile glslf fp_SimpleRegionColorMap_3D( 
 							gImageData3D, 
-							gImageDataResolution3D, 
 							gMappedIntervalBands[1] - gMappedIntervalBands[0] 
 							);
 	}

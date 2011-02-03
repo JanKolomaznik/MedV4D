@@ -18,6 +18,34 @@ ImageDataRenderer::Initialize()
 
 	InitializeCg();
 	_cgEffect.Initialize( "ImageRender.cgfx" );
+
+	int size = 32;
+	uint8 * buf = new uint8[size*size];
+	srand( (unsigned)time(NULL) );
+	for( int i = 0; i < size*size; ++i ) {
+		buf[i] = 255.0f * rand()/(float)RAND_MAX;
+	}
+	glGenTextures(1, &mNoiseMap );
+	//glActiveTextureARB(GL_TEXTURE3_ARB);
+	glBindTexture( GL_TEXTURE_2D, mNoiseMap );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+	glTexImage2D(
+			GL_TEXTURE_2D,
+			0,
+			GL_LUMINANCE8,
+			size,
+			size,
+			0, 
+			GL_LUMINANCE, 
+			GL_UNSIGNED_BYTE,
+			buf
+		    );
+	glBindTexture( GL_TEXTURE_2D, 0 );
+
+	delete buf;
 }
 
 void
@@ -100,8 +128,9 @@ ImageDataRenderer::RenderAlignedSlices()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	SetToViewConfiguration2D( GetSliceViewConfig().viewConfiguration );
-	_cgEffect.SetParameter( "gImageData3D", *_textureData );
-	_cgEffect.SetParameter( "gImageDataResolution3D", _textureData->GetDimensionedInterface<3>().GetSize() );
+	_cgEffect.SetParameter( "gImageData3D", _textureData->GetDimensionedInterface< 3 >() );
+	//_cgEffect.SetParameter( "gImageData3D", *_textureData );
+	//_cgEffect.SetParameter( "gImageDataResolution3D", _textureData->GetDimensionedInterface<3>().GetSize() );
 	_cgEffect.SetParameter( "gMappedIntervalBands", Vector2f( 0, 65535 )/*_textureData->GetMappedInterval()*/ );
 
 	std::string techniqueName;
@@ -166,10 +195,10 @@ ImageDataRenderer::RenderVolume()
 
 	glMatrixMode(GL_MODELVIEW);
 
-	unsigned sliceCount = 250;
+	unsigned sliceCount = 400;
 	float renderingSliceThickness = 1.0f;
 	if ( mFineRendering ) {
-		sliceCount *=15;
+		sliceCount *=10;
 		renderingSliceThickness /= 15;
 		mFineRendering = false;
 	}
@@ -177,13 +206,22 @@ ImageDataRenderer::RenderVolume()
 	glColor3f( 1.0f, 0.0f, 0.0f );
 	M4D::GLDrawBoundingBox( _textureData->GetDimensionedInterface< 3 >().GetMinimum(), _textureData->GetDimensionedInterface< 3 >().GetMaximum() );
 
-	_cgEffect.SetParameter( "gImageData3D", *_textureData );
-	_cgEffect.SetParameter( "gImageDataResolution3D", _textureData->GetDimensionedInterface<3>().GetSize() );
+	_cgEffect.SetParameter( "gImageData3D", _textureData->GetDimensionedInterface< 3 >() );
+	//_cgEffect.SetParameter( "gImageData3D", *_textureData );
+	//_cgEffect.SetParameter( "gImageDataResolution3D", _textureData->GetDimensionedInterface<3>().GetSize() );
 	_cgEffect.SetParameter( "gMappedIntervalBands", Vector2f( 0, 65535 )/*_textureData->GetMappedInterval()*/ );
 	_cgEffect.SetParameter( "gLightPosition", Vector3f( 3000.0f, 3000.0f, -3000.0f ) );
 	_cgEffect.SetParameter( "gLightColor", Vector3f( 1.0f, 1.0f, 1.0f ) );
 	_cgEffect.SetParameter( "gEyePosition", mViewConfig3D.camera.GetEyePosition() );
 	_cgEffect.SetParameter( "gRenderingSliceThickness", renderingSliceThickness );
+
+	Vector3f tmp = VectorMemberDivision( mViewConfig3D.camera.GetTargetDirection(), _textureData->GetDimensionedInterface<3>().GetSize() );
+	LOG( "tex step : " << tmp );
+
+
+	_cgEffect.SetParameter( "gSliceNormalTexCoords", tmp );
+	_cgEffect.SetTextureParameter( "gNoiseMap", mNoiseMap );
+	_cgEffect.SetParameter( "gNoiseMapSize", Vector2f( 32.0f, 32.0f ) );
 
 
 	std::string techniqueName;
@@ -197,6 +235,7 @@ ImageDataRenderer::RenderVolume()
 				techniqueName = "TransferFunction1DShading_3D";
 			} else {
 				techniqueName = "TransferFunction1D_3D";
+				//techniqueName = "TransferFunction1DShadingJitter_3D";
 			}
 		}
 		break;
