@@ -169,6 +169,12 @@ public:
 		return _renderer.IsShadingEnabled();
 	}
 
+	bool
+	IsJitteringEnabled() const
+	{
+		return _renderer.IsJitteringEnabled();
+	}
+
 public slots:
 	void
 	SetRendererType( int aRendererType )
@@ -197,6 +203,13 @@ public slots:
 	EnableShading( bool aEnable )
 	{
 		_renderer.EnableShading( aEnable );
+		update();
+	}
+
+	void
+	EnableJittering( bool aEnable )
+	{
+		_renderer.EnableJittering( aEnable );
 		update();
 	}
 

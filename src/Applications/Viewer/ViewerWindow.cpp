@@ -60,6 +60,18 @@ ViewerWindow::ViewerWindow()
 	QObject::connect( colorMapTypeSwitchSignalMapper, SIGNAL( mapped ( int ) ), this, SLOT( changeColorMapType( int ) ) );
 
 
+/*	QMenu *menu = new QMenu;
+	menu->addAction( actionEnable_Jittering );
+	menu->addAction( actionEnable_Shading );
+	
+	QToolButton *button = new QToolButton;
+	button->setText( "Settings" );
+	button->setPopupMode( QToolButton::InstantPopup );
+	button->setMenu( menu );
+	viewerToolBar->addWidget( button );*/
+
+
+
 	updateToolbars();
 
 	QLabel *infoLabel = new QLabel();

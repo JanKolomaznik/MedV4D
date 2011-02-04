@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>919</width>
     <height>600</height>
    </rect>
   </property>
@@ -19,7 +19,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>919</width>
      <height>23</height>
     </rect>
    </property>
@@ -44,6 +44,7 @@
     <addaction name="actionUse_Transfer_Function"/>
     <addaction name="separator"/>
     <addaction name="actionEnable_Shading"/>
+    <addaction name="actionEnable_Jittering"/>
     <addaction name="actionFine_Render"/>
     <addaction name="separator"/>
     <addaction name="actionSave_View"/>
@@ -53,7 +54,7 @@
    <addaction name="menuViewer"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QToolBar" name="toolBar">
+  <widget class="QToolBar" name="viewerToolBar">
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
@@ -73,7 +74,6 @@
    <addaction name="actionUse_MIP"/>
    <addaction name="actionUse_Transfer_Function"/>
    <addaction name="separator"/>
-   <addaction name="actionEnable_Shading"/>
    <addaction name="actionFine_Render"/>
   </widget>
   <action name="actionOpen">
@@ -174,6 +174,17 @@
     <string>Use Simple Colormap</string>
    </property>
   </action>
+  <action name="actionEnable_Jittering">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Jittering</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -187,6 +198,7 @@
     <slot>SaveCurrentView()</slot>
     <slot>ResetView()</slot>
     <slot>SaveCycle()</slot>
+    <slot>EnableJittering(bool)</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -284,6 +296,22 @@
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
+     <y>314</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionEnable_Jittering</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mViewer</receiver>
+   <slot>EnableJittering(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>459</x>
      <y>314</y>
     </hint>
    </hints>

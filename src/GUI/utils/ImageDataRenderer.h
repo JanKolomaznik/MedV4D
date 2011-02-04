@@ -53,7 +53,7 @@ struct ViewConfig3D
 class ImageDataRenderer
 {
 public:
-	ImageDataRenderer() : mRendererType( rt2DAlignedSlices ), mColorTransform( ctLUTWindow ), mFineRendering( false ), mShadingEnabled( true )
+	ImageDataRenderer() : mRendererType( rt2DAlignedSlices ), mColorTransform( ctLUTWindow ), mFineRendering( false ), mShadingEnabled( true ), mJitteringEnabled( true )
 	{}
 
 	void
@@ -131,10 +131,22 @@ public:
 		mShadingEnabled = aEnable;
 	}
 
+	void
+	EnableJittering( bool aEnable )
+	{
+		mJitteringEnabled = aEnable;
+	}
+
 	bool
 	IsShadingEnabled() const
 	{
 		return mShadingEnabled;
+	}
+
+	bool
+	IsJitteringEnabled() const
+	{
+		return mJitteringEnabled;
 	}
 protected:
 	
@@ -161,6 +173,7 @@ protected:
 
 	bool	mFineRendering; //TODO delete
 	bool	mShadingEnabled;
+	bool	mJitteringEnabled;
 private:
 	GLuint	mNoiseMap;
 };

@@ -216,9 +216,6 @@ ImageDataRenderer::RenderVolume()
 	_cgEffect.SetParameter( "gRenderingSliceThickness", renderingSliceThickness );
 
 	Vector3f tmp = VectorMemberDivision( mViewConfig3D.camera.GetTargetDirection(), _textureData->GetDimensionedInterface<3>().GetSize() );
-	LOG( "tex step : " << tmp );
-
-
 	_cgEffect.SetParameter( "gSliceNormalTexCoords", tmp );
 	_cgEffect.SetTextureParameter( "gNoiseMap", mNoiseMap );
 	_cgEffect.SetParameter( "gNoiseMapSize", Vector2f( 32.0f, 32.0f ) );
@@ -231,11 +228,18 @@ ImageDataRenderer::RenderVolume()
 			_cgEffect.SetTextureParameter( "gTransferFunction1D", mTransferFunctionTexture->GetTextureID() );
 			_cgEffect.SetParameter( "gTransferFunction1DInterval", mTransferFunctionTexture->GetMappedInterval() );
 
-			if ( mShadingEnabled ) {
-				techniqueName = "TransferFunction1DShading_3D";
+			if ( mJitteringEnabled ) {
+				if ( mShadingEnabled ) {
+					techniqueName = "TransferFunction1DShadingJitter_3D";
+				} else {
+					techniqueName = "TransferFunction1DJitter_3D";
+				}
 			} else {
-				techniqueName = "TransferFunction1D_3D";
-				//techniqueName = "TransferFunction1DShadingJitter_3D";
+				if ( mShadingEnabled ) {
+					techniqueName = "TransferFunction1DShading_3D";
+				} else {
+					techniqueName = "TransferFunction1D_3D";
+				}
 			}
 		}
 		break;
@@ -248,7 +252,7 @@ ImageDataRenderer::RenderVolume()
 	default:
 		ASSERT( false );
 	}
-
+	D_PRINT( techniqueName );
 	M4D::SetVolumeTextureCoordinateGeneration( _textureData->GetDimensionedInterface< 3 >().GetMinimum(), _textureData->GetDimensionedInterface< 3 >().GetRealSize() );
 	_cgEffect.ExecuteTechniquePass(
 			techniqueName, 
