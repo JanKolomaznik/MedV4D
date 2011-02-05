@@ -2,24 +2,36 @@
 #define INTERFACE_USER_EVENTS_H
 
 #include <QtGui>
+#include "common/Common.h"
 
 class IUserEvents
 {
 public:
+	typedef boost::shared_ptr< IUserEvents > Ptr;
+
+	virtual
+	~IUserEvents()
+	{ }
+
 	virtual bool
-	mouseMoveEvent ( QMouseEvent * event ) = 0;
+	mouseMoveEvent ( QSize aWinSize, QMouseEvent * event )
+	{ return false; }
 
 	virtual bool	
-	mouseDoubleClickEvent ( QMouseEvent * event ) = 0;
+	mouseDoubleClickEvent ( QSize aWinSize, QMouseEvent * event )
+	{ return false; }
 
 	virtual bool
-	mousePressEvent ( QMouseEvent * event ) = 0;
+	mousePressEvent ( QSize aWinSize, QMouseEvent * event )
+	{ return false; }
 
 	virtual bool
-	mouseReleaseEvent ( QMouseEvent * event ) = 0;
+	mouseReleaseEvent ( QSize aWinSize, QMouseEvent * event )
+	{ return false; }
 
 	virtual bool
-	wheelEvent ( QWheelEvent * event ) = 0;
+	wheelEvent ( QSize aWinSize, QWheelEvent * event )
+	{ return false; }
 };
 
 

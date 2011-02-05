@@ -120,6 +120,7 @@ InitLut( Buffer3D< uint32 > outBuffer, Buffer1D< uint32 > lut )
 	}
 }
 
+//Group equivalence classes
 __global__ void 
 UpdateLut( Buffer3D< uint32 > buffer, Buffer1D< uint32 > lut )
 { 

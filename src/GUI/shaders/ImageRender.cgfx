@@ -104,6 +104,11 @@ float3 SymmetricDifference( sampler3D aTextureData, float3 aTexCoord, float3 aSt
 	SAMPLE1.z = tex3D( TEX_DATA, COORDINATES - half3( 0.0, 0.0, DELTA ) ).x;\
 	SAMPLE2.z = tex3D( TEX_DATA, COORDINATES + half3( 0.0, 0.0, DELTA ) ).x;
 
+#define DIFFERENCE( SAMPLE, TEX_DATA, COORDINATES )\
+	SAMPLE.x = tex3D( TEX_DATA, COORDINATES - half3( DELTA, 0.0, 0.0 ) ).x;\
+	SAMPLE.y = tex3D( TEX_DATA, COORDINATES - half3( 0.0, DELTA, 0.0 ) ).x;\
+	SAMPLE.z = tex3D( TEX_DATA, COORDINATES - half3( 0.0, 0.0, DELTA ) ).x;\
+
 
 float3 Difference( sampler3D aTextureData, float3 aTexCoord, float3 aStep, float aValue )
 {
@@ -189,7 +194,8 @@ fp_TransferFunction1DShading_3D(
 	float3 coordinates = aTexCoord;
 	float3 position = aTexCoord;
 	float range = aMappedIntervalBands[1] - aMappedIntervalBands[0];
-	float value = (tex3D( aTextureData.data, coordinates ).x * range) + aMappedIntervalBands[0];
+	float raw_value = tex3D( aTextureData.data, coordinates ).x;
+	float value = (raw_value * range) + aMappedIntervalBands[0];
 	OUT.color = ApplyTransferFunction1D( value, aTransferFunction1D, aTransferFunction1DInterval );
 
 	if( OUT.color.a > THRESHOLD ) {
@@ -199,7 +205,8 @@ fp_TransferFunction1DShading_3D(
 
 		float3 sample1, sample2;
  		SYMMETRIC_DIFFERENCE( sample1, sample2, aTextureData.data, coordinates );	
-
+		//DIFFERENCE( sample1, aTextureData.data, coordinates );
+		//sample2 = float3( raw_value, raw_value, raw_value );
 		float3 N = normalize( sample2 - sample1 );
 
 

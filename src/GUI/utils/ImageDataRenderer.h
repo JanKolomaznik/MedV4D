@@ -29,17 +29,6 @@ enum ColorTransform
 
 typedef uint32 RenderingMode;
 
-struct SliceViewConfig
-{
-	SliceViewConfig(): plane( XY_PLANE ), currentSlice( 0 )
-	{}
-
-	CartesianPlanes		plane;
-
-	Vector< int32, 3 >	currentSlice;
-
-	ViewConfiguration2D	viewConfiguration;
-};
 
 struct ViewConfig3D
 {

@@ -252,7 +252,7 @@ ImageDataRenderer::RenderVolume()
 	default:
 		ASSERT( false );
 	}
-	D_PRINT( techniqueName );
+	//D_PRINT( techniqueName );
 	M4D::SetVolumeTextureCoordinateGeneration( _textureData->GetDimensionedInterface< 3 >().GetMinimum(), _textureData->GetDimensionedInterface< 3 >().GetRealSize() );
 	_cgEffect.ExecuteTechniquePass(
 			techniqueName, 

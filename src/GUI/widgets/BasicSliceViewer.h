@@ -16,6 +16,8 @@
 #include "GUI/utils/ViewConfiguration.h"
 #include "GUI/utils/ImageDataRenderer.h"
 #include "GUI/utils/TransferFunctionBuffer.h"
+#include "GUI/utils/IUserEvents.h"
+#include <map>
 
 namespace M4D
 {
@@ -181,7 +183,11 @@ public slots:
 	{
 		//TODO 
 		_renderer.SetRendererType( aRendererType );
+
+		mCurrentEventHandler = mUserEventHandlers[ aRendererType ].get();
 		update();
+
+		emit RendererTypeChanged( aRendererType );
 	}
 
 	void
@@ -190,6 +196,8 @@ public slots:
 		//TODO 
 		_renderer.SetColorTransformType( aColorTransform );
 		update();
+
+		emit ColorTransformTypeChanged( aColorTransform );
 	}
 
 	void
@@ -240,6 +248,12 @@ public slots:
 signals:
 	void
 	SettingsChanged();
+
+	void
+	RendererTypeChanged( int aRendererType );
+
+	void
+	ColorTransformTypeChanged( int aColorTransform );
 
 	void
 	MouseInfoUpdate( const QString &aInfo );
@@ -312,20 +326,12 @@ protected:
 	Vector< int32, 3 > 			_regionMin;
 	Vector< int32, 3 >			_regionMax;
 
-	QPoint					_clickPosition;
-	QPoint					mLastPoint;
-
 	Vector< float32, 2 > 			_lutWindow;
 	Vector< float32, 2 > 			_oldLUTWindow;
 
 	TransferFunctionBuffer1D::Ptr 		mTFunctionBuffer;
 	GLTransferFunctionBuffer1D::Ptr 	mTransferFunctionTexture;
 
-	 enum InteractionMode { 
-		imNONE,
-		imSETTING_LUT_WINDOW,
-		imORBIT_CAMERA 
-	 }					_interactionMode;
 	 bool					_prepared;
 	//M4D::Imaging::AImage::Ptr 		_image;
 	//
@@ -341,6 +347,12 @@ protected:
 
 	bool					mSaveFile; //TODO handle differently
 	bool					mSaveCycle; //TODO handle differently
+
+
+
+	//QStateMachine	mStateMachine;
+	std::map< int, IUserEvents::Ptr>	mUserEventHandlers;
+	IUserEvents				*mCurrentEventHandler;
 private:
 
 };

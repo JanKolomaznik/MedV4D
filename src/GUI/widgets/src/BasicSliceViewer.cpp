@@ -5,6 +5,8 @@
 #include "common/MathTools.h"
 #include "GUI/widgets/BasicSliceViewer.h"
 #include "Imaging/ImageFactory.h"
+#include "GUI/utils/CameraManipulator.h"
+
 namespace M4D
 {
 namespace GUI
@@ -13,9 +15,25 @@ namespace Viewer
 {
 
 BasicSliceViewer::BasicSliceViewer( QWidget *parent ) : 
-	PredecessorType( parent ), _renderingMode( rmONE_DATASET ), _interactionMode( imNONE ), _prepared( false ), mSaveFile( false ), mSaveCycle( false )
+	PredecessorType( parent ), _renderingMode( rmONE_DATASET ), _prepared( false ), mSaveFile( false ), mSaveCycle( false )
 {
+     /*QState *s1 = new QState();
+     QState *s2 = new QState();
+     QState *s3 = new QState();
+     QAbstractTransition *t1 = new IntCheckedSignalTransition( this, SIGNAL( RendererTypeChanged(int) ), rt3D );
+     t1->setTargetState(s2);
+     s1->addTransition(t1);
+     s2->addTransition(button, SIGNAL(clicked()), s3);
+     s3->addTransition(button, SIGNAL(clicked()), s1);
+     mStateMachine.addState(s1);
+     mStateMachine.addState(s2);
+     mStateMachine.addState(s3);
+     mStateMachine.setInitialState(s1);*/
 
+
+	mUserEventHandlers[ rt3D ] = IUserEvents::Ptr( new CameraManipulator( &(_renderer.GetViewConfig3D().camera) ) );
+	mUserEventHandlers[ rt2DAlignedSlices ] = IUserEvents::Ptr( new SliceViewConfigManipulator( &(_renderer.GetSliceViewConfig()) ) );
+	mCurrentEventHandler = mUserEventHandlers[ rt2DAlignedSlices ].get();
 }
 
 BasicSliceViewer::~BasicSliceViewer()
@@ -190,25 +208,11 @@ BasicSliceViewer::resizeOverlayGL( int width, int height )
 void	
 BasicSliceViewer::mouseMoveEvent ( QMouseEvent * event )
 { 
-	QPoint tmp = event->globalPos(); 
-	if( _interactionMode == imSETTING_LUT_WINDOW) {
-		int x = (tmp - _clickPosition).x();
-		int y = (tmp - _clickPosition).y();
-		SetLUTWindow( _oldLUTWindow + Vector< float32, 2 >( 3000*((float32)x)/width(), 3000*((float32)y)/height() ) );
+	if ( mCurrentEventHandler && mCurrentEventHandler->mouseMoveEvent( this->size(), event ) ) {
 		this->update();
 		return;
 	}
-	if( _interactionMode == imORBIT_CAMERA) {
-		int x = (tmp - mLastPoint).x();
-		int y = (tmp - mLastPoint).y();
-		mLastPoint = event->globalPos();
-		_renderer.GetViewConfig3D().camera.YawAround( x * -0.05f );
-		_renderer.GetViewConfig3D().camera.PitchAround( y * -0.05f );
-		this->update();
-		return;
-	}
-
-	SliceViewConfig & sliceViewConfig = _renderer.GetSliceViewConfig();
+	/*SliceViewConfig & sliceViewConfig = _renderer.GetSliceViewConfig();
 	Vector2f coords = GetRealCoordinatesFromScreen( 
 						QPointFToVector2f(event->posF()), 
 						QSizeToVector2u( size() ), 
@@ -225,14 +229,13 @@ BasicSliceViewer::mouseMoveEvent ( QMouseEvent * event )
 	info += " : ";
 	info += GetVoxelInfo( dataCoords );
 
-	emit MouseInfoUpdate( info );
+	emit MouseInfoUpdate( info );*/
 }
 
 void	
 BasicSliceViewer::mouseDoubleClickEvent ( QMouseEvent * event )
 {
-	if( event->button() == Qt::LeftButton ) {
-		_renderer.GetSliceViewConfig().plane = NextCartesianPlane( _renderer.GetSliceViewConfig().plane );
+	if ( mCurrentEventHandler && mCurrentEventHandler->mouseDoubleClickEvent( this->size(), event ) ) {
 		this->update();
 		return;
 	}
@@ -241,18 +244,7 @@ BasicSliceViewer::mouseDoubleClickEvent ( QMouseEvent * event )
 void	
 BasicSliceViewer::mousePressEvent ( QMouseEvent * event )
 { 	
-	_clickPosition = event->globalPos();
-
-	if( event->button() == Qt::RightButton ) {
-		_interactionMode = imSETTING_LUT_WINDOW;
-		_oldLUTWindow = GetLUTWindow();
-		this->update();
-		return;
-	}
-
-	if( event->button() == Qt::LeftButton ) {
-		_interactionMode = imORBIT_CAMERA;
-		mLastPoint = _clickPosition;
+	if ( mCurrentEventHandler && mCurrentEventHandler->mousePressEvent( this->size(), event ) ) {
 		this->update();
 		return;
 	}
@@ -261,32 +253,19 @@ BasicSliceViewer::mousePressEvent ( QMouseEvent * event )
 void	
 BasicSliceViewer::mouseReleaseEvent ( QMouseEvent * event )
 { 
-	_interactionMode = imNONE; 
+	if ( mCurrentEventHandler && mCurrentEventHandler->mouseReleaseEvent( this->size(), event ) ) {
+		this->update();
+		return;
+	}
 }
 
 void	
 BasicSliceViewer::wheelEvent ( QWheelEvent * event )
 {
-	int numDegrees = event->delta() / 8;
-	int numSteps = numDegrees / 15;
-	float dollyRatio = 1.1f;
-	if ( event->delta() > 0 ) {
-		dollyRatio = 1.0f/dollyRatio;
-	}
-	switch ( _renderer.GetRendererType() ) {
-	case rt2DAlignedSlices:
-			SetCurrentSlice( _renderer.GetSliceViewConfig().currentSlice[ _renderer.GetSliceViewConfig().plane ] += numSteps );
-		break;
-	case rt3DGeneralSlices:
+	if ( mCurrentEventHandler && mCurrentEventHandler->wheelEvent( this->size(), event ) ) {
+		this->update();
 		return;
-	case rt3D:
-		DollyCamera( _renderer.GetViewConfig3D().camera, dollyRatio );
-		break;
-	default:
-		ASSERT( false );
-	};
-	event->accept();
-	this->update();
+	}
 }
 
 

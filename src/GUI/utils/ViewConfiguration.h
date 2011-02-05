@@ -26,6 +26,20 @@ struct ViewConfiguration2D
 
 };
 
+struct SliceViewConfig
+{
+	SliceViewConfig(): plane( XY_PLANE ), currentSlice( 0 )
+	{}
+
+	CartesianPlanes		plane;
+
+	Vector< int32, 3 >	currentSlice;
+
+	ViewConfiguration2D	viewConfiguration;
+};
+
+
+
 ViewConfiguration2D 
 GetOptimalViewConfiguration( const Vector2f &regionSize, const Vector< uint32, 2 > &windowSize, ZoomType zoomType = ztFIT );
 
