@@ -31,6 +31,9 @@ BasicSliceViewer::BasicSliceViewer( QWidget *parent ) :
      mStateMachine.setInitialState(s1);*/
 
 
+	mSliceRenderer.Initialize();
+	mVolumeRenderer.Initialize();
+
 	mUserEventHandlers[ rt3D ] = IUserEvents::Ptr( new CameraManipulator( &(_renderer.GetViewConfig3D().camera) ) );
 	mUserEventHandlers[ rt2DAlignedSlices ] = IUserEvents::Ptr( new SliceViewConfigManipulator( &(_renderer.GetSliceViewConfig()) ) );
 	mCurrentEventHandler = mUserEventHandlers[ rt2DAlignedSlices ].get();

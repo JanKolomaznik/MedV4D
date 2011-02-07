@@ -104,9 +104,9 @@ struct GLTextureImageTyped: public GLTextureImage
 	Is3D()const
 	{ return Dim == 3; }
 
-	/*Vector2f
+	Vector2f
 	GetMappedInterval()const
-	{ return mMappedInterval; }*/
+	{ return Vector2f( 0, 65535 );/*mMappedInterval;*/ }
 
 	/*bool
 	IsActual()const

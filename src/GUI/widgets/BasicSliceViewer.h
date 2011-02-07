@@ -19,6 +19,10 @@
 #include "GUI/utils/IUserEvents.h"
 #include <map>
 
+#include "GUI/renderers/SliceRenderer.h"
+#include "GUI/renderers/VolumeRenderer.h"
+
+
 namespace M4D
 {
 namespace GUI
@@ -349,6 +353,11 @@ protected:
 	bool					mSaveCycle; //TODO handle differently
 
 
+	M4D::GUI::Renderer::SliceRenderer	mSliceRenderer;
+	M4D::GUI::Renderer::SliceRenderer::RenderingConfiguration mSliceRenderConfig;
+
+	M4D::GUI::Renderer::VolumeRenderer	mVolumeRenderer;
+	M4D::GUI::Renderer::VolumeRenderer::RenderingConfiguration mVolumeRenderConfig;
 
 	//QStateMachine	mStateMachine;
 	std::map< int, IUserEvents::Ptr>	mUserEventHandlers;
