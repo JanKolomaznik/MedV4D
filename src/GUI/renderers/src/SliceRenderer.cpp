@@ -30,10 +30,9 @@ SliceRenderer::Render( SliceRenderer::RenderingConfiguration & aConfig, bool aSe
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		SetToViewConfiguration2D( aConfig.viewConfig );
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
 	}
-	/*glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();*/
-
 
 	mCgEffect.SetParameter( "gImageData3D", *aConfig.imageData );
 	mCgEffect.SetParameter( "gMappedIntervalBands", aConfig.imageData->GetMappedInterval() );

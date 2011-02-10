@@ -112,6 +112,17 @@ protected:
  	FloatType  		mZFar;
 };
 
+inline std::ostream &
+operator<<( std::ostream & stream, Camera & camera )
+{
+	stream << "Camera info" << std::endl;
+	stream << "   Position : " << camera.GetEyePosition() << std::endl;
+	stream << "   Target :   " << camera.GetTargetPosition() << std::endl;
+	stream << "   Up :       " << camera.GetUpDirection() << std::endl;
+	stream << "   Right :    " << camera.GetRightDirection() << std::endl;
+	stream << "   FOV :      " << camera.GetFieldOfView() << std::endl;
+	return stream;
+}
 
 void
 DollyCamera( Camera &aCamera, float32 aRatio );

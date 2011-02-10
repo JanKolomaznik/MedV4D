@@ -53,16 +53,24 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 {
 	ASSERT( aConfig.imageData != NULL );
 
+	/*aConfig.camera.SetTargetPosition( 0.5f * (aConfig.imageData->GetMaximum() + aConfig.imageData->GetMinimum()) );
+	aConfig.camera.SetFieldOfView( 45.0f );*/
+	//aConfig.camera.SetEyePosition( Vector3f( 0.0f, 0.0f, 750.0f ) );
+	
+	//LOG( aConfig.camera );
 	if( aSetupView ) {
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
 		//Set viewing parameters
 		M4D::SetViewAccordingToCamera( aConfig.camera );
+		glMatrixMode(GL_MODELVIEW);
 	}
 	
 	unsigned sliceCount = aConfig.sampleCount;
 	float renderingSliceThickness = 1.0f;
 
-	/*glColor3f( 1.0f, 0.0f, 0.0f );
-	M4D::GLDrawBoundingBox( _textureData->GetDimensionedInterface< 3 >().GetMinimum(), _textureData->GetDimensionedInterface< 3 >().GetMaximum() );*/
+	glColor3f( 1.0f, 0.0f, 0.0f );
+	M4D::GLDrawBoundingBox( aConfig.imageData->GetMinimum(), aConfig.imageData->GetMaximum() );
 
 	mCgEffect.SetParameter( "gImageData3D", *aConfig.imageData );
 	mCgEffect.SetParameter( "gMappedIntervalBands", aConfig.imageData->GetMappedInterval() );
@@ -108,7 +116,7 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	default:
 		ASSERT( false );
 	}
-	//D_PRINT( techniqueName );
+	//D_PRINT(  aConfig.imageData->GetMinimum() << " ----- " << aConfig.imageData->GetMaximum() << "++++" << sliceCount );
 	M4D::SetVolumeTextureCoordinateGeneration( aConfig.imageData->GetMinimum(), aConfig.imageData->GetRealSize() );
 	mCgEffect.ExecuteTechniquePass(
 			techniqueName, 

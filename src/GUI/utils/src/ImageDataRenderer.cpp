@@ -129,8 +129,6 @@ ImageDataRenderer::RenderAlignedSlices()
 	glLoadIdentity();
 	SetToViewConfiguration2D( GetSliceViewConfig().viewConfiguration );
 	_cgEffect.SetParameter( "gImageData3D", _textureData->GetDimensionedInterface< 3 >() );
-	//_cgEffect.SetParameter( "gImageData3D", *_textureData );
-	//_cgEffect.SetParameter( "gImageDataResolution3D", _textureData->GetDimensionedInterface<3>().GetSize() );
 	_cgEffect.SetParameter( "gMappedIntervalBands", Vector2f( 0, 65535 )/*_textureData->GetMappedInterval()*/ );
 
 	std::string techniqueName;
@@ -150,7 +148,6 @@ ImageDataRenderer::RenderAlignedSlices()
 		}
 		break;
 	case ctSimpleColorMap:
-		//_cgEffect.SetParameter( "gMappedIntervalBands", Vector2f( 0, TypeTraits< uint32 >::Max )/*_textureData->GetMappedInterval()*/ );
 		techniqueName = "SimpleRegionColorMap_3D";
 		break;
 	case ctMaxIntensityProjection:

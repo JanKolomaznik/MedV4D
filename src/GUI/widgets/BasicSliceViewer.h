@@ -14,7 +14,7 @@
 #include <boost/shared_ptr.hpp>
 #include "Imaging/Imaging.h"
 #include "GUI/utils/ViewConfiguration.h"
-#include "GUI/utils/ImageDataRenderer.h"
+//#include "GUI/utils/ImageDataRenderer.h"
 #include "GUI/utils/TransferFunctionBuffer.h"
 #include "GUI/utils/IUserEvents.h"
 #include <map>
@@ -30,6 +30,12 @@ namespace GUI
 namespace Viewer
 {
 
+enum RendererType
+{
+	rt2DAlignedSlices,
+	rt3DGeneralSlices,
+	rt3D
+};
 
 class RenderingThread: public QThread
 {
@@ -127,14 +133,14 @@ public:
 	SetLUTWindow( float32 center, float32 width );
 
 	void
-	SetLUTWindow( Vector< float32, 2 > window );
+	SetLUTWindow( Vector2f window );
 
 	void
 	SetTransferFunctionBuffer( TransferFunctionBuffer1D::Ptr aTFunctionBuffer );
 
-	const Vector< float32, 2 > &
+	/*const Vector2f &
 	GetLUTWindow()
-		{ return _lutWindow; }
+		{ return _lutWindow; }*/
 
 	void
 	SetCurrentSlice( int32 slice );
@@ -149,13 +155,13 @@ public:
 	int
 	GetRendererType()
 	{
-		return _renderer.GetRendererType();
+		return mRendererType;//_renderer.GetRendererType();
 	}
 
 	int
 	GetColorTransformType()
 	{
-		return _renderer.GetColorTransformType();
+		return mSliceRenderConfig.colorTransform;//_renderer.GetColorTransformType();
 	}
 
 
@@ -172,21 +178,21 @@ public:
 	bool
 	IsShadingEnabled() const
 	{
-		return _renderer.IsShadingEnabled();
+		return mVolumeRenderConfig.shadingEnabled;
 	}
 
 	bool
 	IsJitteringEnabled() const
 	{
-		return _renderer.IsJitteringEnabled();
+		return mVolumeRenderConfig.jitterEnabled;
 	}
 
 public slots:
 	void
 	SetRendererType( int aRendererType )
 	{
+		mRendererType = aRendererType;
 		//TODO 
-		_renderer.SetRendererType( aRendererType );
 
 		mCurrentEventHandler = mUserEventHandlers[ aRendererType ].get();
 		update();
@@ -198,7 +204,9 @@ public slots:
 	SetColorTransformType( int aColorTransform )
 	{
 		//TODO 
-		_renderer.SetColorTransformType( aColorTransform );
+		mSliceRenderConfig.colorTransform = aColorTransform;
+		mVolumeRenderConfig.colorTransform = aColorTransform;
+
 		update();
 
 		emit ColorTransformTypeChanged( aColorTransform );
@@ -207,21 +215,21 @@ public slots:
 	void
 	FineRender()
 	{
-		_renderer.FineRender();
+		//_renderer.FineRender();
 		update();
 	}
 
 	void
 	EnableShading( bool aEnable )
 	{
-		_renderer.EnableShading( aEnable );
+		mVolumeRenderConfig.shadingEnabled = aEnable;
 		update();
 	}
 
 	void
 	EnableJittering( bool aEnable )
 	{
-		_renderer.EnableJittering( aEnable );
+		mVolumeRenderConfig.jitterEnabled = aEnable;
 		update();
 	}
 
@@ -242,10 +250,9 @@ public slots:
 	void
 	ResetView()
 	{
-		Vector3f pos = _renderer.GetViewConfig3D().camera.GetTargetPosition();
-		//float dist = _renderer.GetViewConfig3D().camera.GetTargetDistance();
+		Vector3f pos = mVolumeRenderConfig.camera.GetTargetPosition();
 		pos[1] += -550;
-		_renderer.GetViewConfig3D().camera.SetEyePosition( pos, Vector3f( 0.0f, 0.0f, 1.0f ) );
+		mVolumeRenderConfig.camera.SetEyePosition( pos, Vector3f( 0.0f, 0.0f, 1.0f ) );
 		
 		update();
 	}
@@ -306,23 +313,13 @@ protected:
 	bool
 	PrepareData();
 
-	void
-	RenderOneDataset();
-
 	QString
 	GetVoxelInfo( Vector3i aDataCoords );
 
 	enum {rmONE_DATASET}	_renderingMode;
 
-	/*CartesianPlanes		_plane;
-
-	Vector< int32, 3 >	_currentSlice;*/
-
 	GLTextureImage::Ptr	_textureData;
 
-	//ViewConfiguration2D	_viewConfiguration;
-	
-	M4D::GUI::ImageDataRenderer	_renderer;
 
 	Vector< float, 3 > 			_regionRealMin;
 	Vector< float, 3 >			_regionRealMax;
@@ -330,28 +327,24 @@ protected:
 	Vector< int32, 3 > 			_regionMin;
 	Vector< int32, 3 >			_regionMax;
 
-	Vector< float32, 2 > 			_lutWindow;
-	Vector< float32, 2 > 			_oldLUTWindow;
-
 	TransferFunctionBuffer1D::Ptr 		mTFunctionBuffer;
 	GLTransferFunctionBuffer1D::Ptr 	mTransferFunctionTexture;
 
 	 bool					_prepared;
-	//M4D::Imaging::AImage::Ptr 		_image;
-	//
-	//
 	
-	RenderingThread				mRenderingThread;
-	QGLContext 				*mOtherContext;
+	//RenderingThread				mRenderingThread;
+	//QGLContext 				*mOtherContext;
 
 
 	FrameBufferObject			mFrameBufferObject;
 
-	QGLWidget				*mDummyGLWidget;
+	//QGLWidget				*mDummyGLWidget;
 
 	bool					mSaveFile; //TODO handle differently
 	bool					mSaveCycle; //TODO handle differently
 
+
+	int mRendererType;
 
 	M4D::GUI::Renderer::SliceRenderer	mSliceRenderer;
 	M4D::GUI::Renderer::SliceRenderer::RenderingConfiguration mSliceRenderConfig;

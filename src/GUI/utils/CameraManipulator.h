@@ -99,7 +99,7 @@ protected:
 	ViewConfiguration2D 			*mViewConfig;
 };
 
-class SliceViewConfigManipulator: public IUserEvents
+class SliceViewConfigManipulator: public ViewConfiguration2DManipulator
 {
 public:
 	enum InteractionMode { 
@@ -107,15 +107,11 @@ public:
 		imORBIT_CAMERA 
 	 };
 
-	SliceViewConfigManipulator( SliceViewConfig *aViewConfig = NULL )
-		: mViewConfig( aViewConfig )
+	SliceViewConfigManipulator( ViewConfiguration2D *aViewConfig = NULL, Vector3i *aCurrentSlice = NULL, CartesianPlanes *aPlane = NULL )
+		: ViewConfiguration2DManipulator( aViewConfig ), mCurrentSlice( aCurrentSlice ), mPlane( aPlane )
 	{ }
 
-	void
-	SetSliceViewConfig( SliceViewConfig *aViewConfig )
-	{
-		mViewConfig = aViewConfig;
-	}
+	
 
 	/*bool
 	mouseMoveEvent ( QSize aWinSize, QMouseEvent * event );*/
@@ -124,7 +120,8 @@ public:
 	mouseDoubleClickEvent ( QSize aWinSize, QMouseEvent * event )
 	{
 		if( event->button() == Qt::LeftButton ) {
-			mViewConfig->plane = NextCartesianPlane( mViewConfig->plane );
+			ASSERT( mPlane );
+			*mPlane = NextCartesianPlane( *mPlane );
 			return true;
 		}
 		return false;
@@ -139,9 +136,11 @@ public:
 	bool
 	wheelEvent ( QSize aWinSize, QWheelEvent * event )
 	{
+		ASSERT( mCurrentSlice );
+
 		int numDegrees = event->delta() / 8;
 		int numSteps = numDegrees / 15;
-		mViewConfig->currentSlice[ mViewConfig->plane ] += numSteps;
+		(*mCurrentSlice)[ *mPlane ] += numSteps;
 		return true;
 	}
 
@@ -149,7 +148,8 @@ protected:
 	InteractionMode mInteractionMode;
 	QPoint					mClickPosition;
 	QPoint					mLastPoint;
-	SliceViewConfig 			*mViewConfig;
+	Vector3i				*mCurrentSlice;
+	CartesianPlanes				*mPlane;
 };
 
 

@@ -18,6 +18,14 @@ namespace Renderer
 class SliceRenderer
 {
 public:
+	enum ColorTransform
+	{
+		ctLUTWindow,
+		ctTransferFunction1D,
+		ctMaxIntensityProjection,
+		ctSimpleColorMap
+	};
+
 	struct RenderingConfiguration;
 	
 	void
@@ -29,14 +37,6 @@ public:
 	virtual void
 	Render( RenderingConfiguration & aConfig, bool aSetupView = true );
 protected:
-	enum ColorTransform
-	{
-		ctLUTWindow,
-		ctTransferFunction1D,
-		ctMaxIntensityProjection,
-		ctSimpleColorMap
-	};
-
 	CGcontext   				mCgContext;
 	CgEffect				mCgEffect;
 };

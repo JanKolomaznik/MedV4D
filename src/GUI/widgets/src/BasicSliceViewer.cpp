@@ -29,40 +29,41 @@ BasicSliceViewer::BasicSliceViewer( QWidget *parent ) :
      mStateMachine.addState(s2);
      mStateMachine.addState(s3);
      mStateMachine.setInitialState(s1);*/
+	mSliceRenderConfig.colorTransform = M4D::GUI::Renderer::SliceRenderer::ctLUTWindow;
+	mSliceRenderConfig.plane = XY_PLANE;
 
+	mVolumeRenderConfig.colorTransform = M4D::GUI::Renderer::VolumeRenderer::ctMaxIntensityProjection;
+	mVolumeRenderConfig.sampleCount = 200;
+	mVolumeRenderConfig.shadingEnabled = true;
+	mVolumeRenderConfig.jitterEnabled = true;
 
-	mSliceRenderer.Initialize();
-	mVolumeRenderer.Initialize();
+	mUserEventHandlers[ rt2DAlignedSlices ] = IUserEvents::Ptr( new SliceViewConfigManipulator( &(mSliceRenderConfig.viewConfig), &(mSliceRenderConfig.currentSlice), &(mSliceRenderConfig.plane) ) );
+	mUserEventHandlers[ rt3D ] = IUserEvents::Ptr( new CameraManipulator( &(mVolumeRenderConfig.camera) ) );
 
-	mUserEventHandlers[ rt3D ] = IUserEvents::Ptr( new CameraManipulator( &(_renderer.GetViewConfig3D().camera) ) );
-	mUserEventHandlers[ rt2DAlignedSlices ] = IUserEvents::Ptr( new SliceViewConfigManipulator( &(_renderer.GetSliceViewConfig()) ) );
 	mCurrentEventHandler = mUserEventHandlers[ rt2DAlignedSlices ].get();
 }
 
 BasicSliceViewer::~BasicSliceViewer()
 {
-	_renderer.Finalize();
-
-	/*GL_CHECKED_CALL( glDeleteFramebuffersEXT( 1, &mFrameBufferObject ) );
-	GL_CHECKED_CALL( glDeleteTextures( 1, &mColorTexture ) );
-	GL_CHECKED_CALL( glDeleteRenderbuffersEXT( 1, &mDepthBuffer ) );*/
+	mSliceRenderer.Finalize();
+	mVolumeRenderer.Finalize();
 }
 
 void	
 BasicSliceViewer::ZoomFit( ZoomType zoomType )
 {
-	_renderer.GetSliceViewConfig().viewConfiguration = GetOptimalViewConfiguration(
-			VectorPurgeDimension( _regionRealMin, _renderer.GetSliceViewConfig().plane ), 
-			VectorPurgeDimension( _regionRealMax, _renderer.GetSliceViewConfig().plane ),
+	mSliceRenderConfig.viewConfig = GetOptimalViewConfiguration(
+			VectorPurgeDimension( _regionRealMin, mSliceRenderConfig.plane ), 
+			VectorPurgeDimension( _regionRealMax, mSliceRenderConfig.plane ),
 			Vector< uint32, 2 >( (uint32)width(), (uint32)height() ), 
 			zoomType );
 }
 
 void
-BasicSliceViewer::SetLUTWindow( Vector< float32, 2 > window )
+BasicSliceViewer::SetLUTWindow( Vector2f window )
 {
-	_lutWindow = window;
-	_renderer.SetLUTWindow( _lutWindow );
+	mSliceRenderConfig.lutWindow = window;
+	mVolumeRenderConfig.lutWindow = window;
 }
 
 
@@ -76,7 +77,8 @@ BasicSliceViewer::SetTransferFunctionBuffer( TransferFunctionBuffer1D::Ptr aTFun
 
 	mTransferFunctionTexture = CreateGLTransferFunctionBuffer1D( *aTFunctionBuffer );
 
-	_renderer.SetTransferFunction( mTransferFunctionTexture );
+	mSliceRenderConfig.transferFunction = mTransferFunctionTexture.get();
+	mVolumeRenderConfig.transferFunction = mTransferFunctionTexture.get();
 
 	update();
 }
@@ -84,7 +86,7 @@ BasicSliceViewer::SetTransferFunctionBuffer( TransferFunctionBuffer1D::Ptr aTFun
 void
 BasicSliceViewer::SetCurrentSlice( int32 slice )
 {
-	_renderer.GetSliceViewConfig().currentSlice[ _renderer.GetSliceViewConfig().plane ] = Max( Min( _regionMax[_renderer.GetSliceViewConfig().plane]-1, slice ), _regionMin[_renderer.GetSliceViewConfig().plane] );
+	mSliceRenderConfig.currentSlice[ mSliceRenderConfig.plane ] = Max( Min( _regionMax[mSliceRenderConfig.plane]-1, slice ), _regionMin[mSliceRenderConfig.plane] );
 }
 
 void	
@@ -98,7 +100,9 @@ BasicSliceViewer::initializeGL()
 	//glDepthFunc(GL_LEQUAL);
 
 
-	_renderer.Initialize();
+	mSliceRenderer.Initialize();
+	mVolumeRenderer.Initialize();
+	//_renderer.Initialize();
 	mFrameBufferObject.Initialize( width(), height() );
 
 
@@ -162,7 +166,18 @@ BasicSliceViewer::paintGL()
 
 	mFrameBufferObject.Bind();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	_renderer.Render();
+	
+	switch ( mRendererType ) {
+	case rt3D:
+		mVolumeRenderer.Render( mVolumeRenderConfig );
+		break;
+	case rt2DAlignedSlices:
+		mSliceRenderer.Render( mSliceRenderConfig );
+		break;
+	default:
+		ASSERT( false );
+	}
+	
 	mFrameBufferObject.Unbind();
 
 
@@ -194,7 +209,7 @@ BasicSliceViewer::resizeGL( int width, int height )
 	glLoadIdentity();
 
 	float x = (float)width / height;
-	_renderer.GetViewConfig3D().camera.SetAspectRatio( x );
+	mVolumeRenderConfig.camera.SetAspectRatio( x );
 
 
 	mFrameBufferObject.Resize( width, height );
@@ -282,16 +297,6 @@ BasicSliceViewer::IsDataPrepared()
 bool
 BasicSliceViewer::PrepareData()
 {
-
-/*	if ( !_image )
-		return false;
-
-	_textureData = CreateTextureFromImage( *_image->GetAImageRegion() );
-	_regionMin = M4D::Imaging::AImageDim<3>::Cast( boost::static_pointer_cast< M4D::Imaging::ADataset > ( _image ) )->GetRealMinimum();
-	_regionMax = M4D::Imaging::AImageDim<3>::Cast( boost::static_pointer_cast< M4D::Imaging::ADataset > ( _image ) )->GetRealMaximum();
-
-	return true;*/
-
 	try {
 		TryGetAndLockAllInputs();
 	} catch (...) {
@@ -304,20 +309,20 @@ BasicSliceViewer::PrepareData()
 	_regionRealMax = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] )->GetRealMaximum();
 	_elementExtents = M4D::Imaging::AImageDim<3>::Cast( mInputDatasets[0] )->GetElementExtents();
 
-	_renderer.GetSliceViewConfig().currentSlice = _regionMin;
-
-	/*M4D::Imaging::Image<uint16,3>::Ptr image = M4D::Imaging::Image<uint16,3>::Cast( mInputDatasets[0] );
-	M4D::Imaging::ImageFactory::DumpImage( "pom.dump", *image );
-	*/
-
-
+	mSliceRenderConfig.currentSlice = _regionMin;
 
 	_textureData = CreateTextureFromImage( *(M4D::Imaging::AImage::Cast( mInputDatasets[0] )->GetAImageRegion()), true ) ;
 
 	ReleaseAllInputs();
 
 
-	_renderer.SetImageData( _textureData );
+	mSliceRenderConfig.imageData = &(_textureData->GetDimensionedInterface<3>());
+	mVolumeRenderConfig.imageData = &(_textureData->GetDimensionedInterface<3>());
+
+	mVolumeRenderConfig.camera.SetTargetPosition( 0.5f * (_textureData->GetDimensionedInterface< 3 >().GetMaximum() + _textureData->GetDimensionedInterface< 3 >().GetMinimum()) );
+	mVolumeRenderConfig.camera.SetFieldOfView( 45.0f );
+	mVolumeRenderConfig.camera.SetEyePosition( Vector3f( 0.0f, 0.0f, 750.0f ) );
+	ResetView();
 
 	_prepared = true;
 	return true;
@@ -346,31 +351,6 @@ BasicSliceViewer::GetVoxelInfo( Vector3i aDataCoords )
 	}
 	ReleaseAllInputs();
 	return result;
-}
-
-void	
-BasicSliceViewer::RenderOneDataset()
-{
-	/*glBindTexture( GL_TEXTURE_1D, 0 );
-	glBindTexture( GL_TEXTURE_2D, 0 );
-	glBindTexture( GL_TEXTURE_3D, 0 );
-	glDisable(GL_TEXTURE_3D);
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_TEXTURE_1D);
-
-
-	_shaderConfig.textureName = _textureData->GetTextureGLID();
-	_shaderConfig.brightnessContrast = _lutWindow;
-	_shaderConfig.Enable();
-	
-	CheckForCgError("Check before drawing ", _cgContext );
-	//M4D::GLDrawTexturedQuad( _textureData->GetMinimum3D(), _textureData->GetMaximum3D() );
-	SetToViewConfiguration2D( _viewConfiguration );
-	M4D::GLDrawVolumeSlice( _textureData->GetMinimum3D(), _textureData->GetMaximum3D(), (float32)_currentSlice[ _plane ] * _elementExtents[_plane], _plane );
-	
-	_shaderConfig.Disable();
-	
-	glFlush();*/
 }
 
 } /*namespace Viewer*/

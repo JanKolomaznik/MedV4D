@@ -14,8 +14,8 @@ CameraManipulator::mouseMoveEvent ( QSize aWinSize, QMouseEvent * event )
 	switch ( mInteractionMode ) {
 	case imORBIT_CAMERA: {
 			QPoint diff = tmp - mLastPoint;   
-			mCamera->YawAround( diff.x() * -0.05f );
-			mCamera->PitchAround( diff.y() * -0.05f );
+			mCamera->YawAround( diff.x() * -0.02f );
+			mCamera->PitchAround( diff.y() * -0.02f );
 			break;
 		}
 	}
