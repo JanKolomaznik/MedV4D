@@ -60,6 +60,7 @@ bool TFHolder::connectToTFPalette(QObject *tfPalette){
 bool TFHolder::createPaletteButton(QWidget *parent){
 
 	button_ = new TFPaletteButton(parent, index_);
+	button_->setup();
 
 	bool buttonConnected = QObject::connect( button_, SIGNAL(Triggered()), this, SLOT(on_activateButton_clicked()));
 	tfAssert(buttonConnected);
@@ -214,8 +215,10 @@ void TFHolder::resizePainter_(){
 		width() - painterLeftTop_.x - painterRightBottom_.x,
 		height() - painterLeftTop_.y - painterRightBottom_.y);
 	
+	/*
 	TFSize maxPainterWidth = (TFSize)(function_->getDomain()/modifier_->getWorkCopy()->zoom());
 	if(painterArea.width > maxPainterWidth) painterArea.width = maxPainterWidth;
+	*/
 	
 	painter_->setArea(painterArea);
 	modifier_->setInputArea(painter_->getInputArea());

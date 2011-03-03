@@ -11,6 +11,7 @@
 #include <QtGui/QMenuBar>
 #include <QtGui/QKeySequence>
 #include <QtGui/QKeyEvent>
+#include <QtGui/QVBoxLayout>
 
 #include "Imaging/Histogram.h"
 
@@ -85,6 +86,7 @@ private:
 
     Ui::TFPalette* ui_;
 	QMainWindow* mainWindow_;
+	QVBoxLayout* layout_;
 
 	HistogramPtr histogram_;
 	TFSize domain_;

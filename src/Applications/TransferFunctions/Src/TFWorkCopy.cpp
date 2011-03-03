@@ -81,6 +81,7 @@ TFSize TFWorkCopy::size(){
 
 void TFWorkCopy::zoomIn(const TFSize& stepCount, const TFSize& inputX, const TFSize& inputY){
 
+	/*
 	float nextZoom = zoom_.zoom;
 	for(TFSize i = 0; i < stepCount; ++i)
 	{
@@ -93,10 +94,18 @@ void TFWorkCopy::zoomIn(const TFSize& stepCount, const TFSize& inputX, const TFS
 	}
 	if(nextZoom == zoom_.zoom) return;
 	computeZoom_(nextZoom, inputX, inputY);
+	*/
+	if(zoom_.zoom == zoom_.maxZoom) return;
+
+	float nextZoom = zoom_.zoom + stepCount;	
+	if(nextZoom > zoom_.maxZoom) nextZoom = zoom_.maxZoom;
+
+	computeZoom_(nextZoom, inputX, inputY);
 }
 
 void TFWorkCopy::zoomOut(const TFSize& stepCount, const TFSize& inputX, const TFSize& inputY){
 
+	/*
 	if(zoom_.zoom == 1) return;
 
 	float nextZoom = zoom_.zoom;
@@ -109,6 +118,13 @@ void TFWorkCopy::zoomOut(const TFSize& stepCount, const TFSize& inputX, const TF
 			return;
 		}
 	}
+	computeZoom_(nextZoom, inputX, inputY);
+	*/
+	if(zoom_.zoom == 1) return;
+
+	float nextZoom = zoom_.zoom - stepCount;
+	if(nextZoom < 1) zoom_.reset();
+
 	computeZoom_(nextZoom, inputX, inputY);
 }
 
@@ -137,24 +153,61 @@ void TFWorkCopy::updateFunction(TFAbstractFunction::Ptr function){
 	TFSize outputSize = output->size();
 
 	float correction = outputSize/(inputSize*zoom_.zoom);
-	int ratio = (int)(correction);	//how many input values are used for computing 1 output values
-	correction -= ratio;
-	float corrStep = correction;
 
-	TFSize outputIndexer = 0;
-	for(TFSize inputIndexer = 0; inputIndexer < inputSize; ++inputIndexer)
+	if(correction >= 1)
 	{
-		TFSize valueCount = ratio + (int)correction;
-		for(TFSize i = 0; i < valueCount; ++i)
+		int ratio = (int)(correction);	//how many input values are used for computing 1 output values
+		correction -= ratio;
+		float corrStep = correction;
+
+		TFSize outputIndexer = 0;
+		for(TFSize inputIndexer = 0; inputIndexer < inputSize; ++inputIndexer)
 		{
-			tfAssert((outputIndexer + zoom_.xOffset) < outputSize);
+			TFSize valueCount = ratio + (int)correction;
+			for(TFSize i = 0; i < valueCount; ++i)
+			{
+				tfAssert((outputIndexer + zoom_.xOffset) < outputSize);
 
-			(*output)[outputIndexer + zoom_.xOffset] = (*input)[inputIndexer];
+				(*output)[outputIndexer + zoom_.xOffset] = (*input)[inputIndexer];
 
-			++outputIndexer;
+				++outputIndexer;
+			}
+			correction -= (int)correction;
+			correction += corrStep;
 		}
-		correction -= (int)correction;
-		correction += corrStep;
+	}
+	else
+	{
+		correction = (inputSize*zoom_.zoom)/outputSize;
+		int ratio =  (int)(correction);	//how many input values are used for computing 1 output values
+		correction -= ratio;
+		float corrStep = correction;
+
+		TFSize inputIndexer = 0;
+		int zoomAreaSize = outputSize/zoom_.zoom;
+		for(int outputIndexer = 0; outputIndexer < zoomAreaSize; ++outputIndexer)
+		{
+			TFColor computedValue(0,0,0,0);
+			TFSize valueCount = ratio + (int)correction;
+			for(TFSize i = 0; i < valueCount; ++i)
+			{
+				//tfAssert(inputIndexer < inputSize);
+				if(inputIndexer >= inputSize)
+				{
+					tfAssert(outputIndexer == zoomAreaSize - 1);
+					valueCount = i;
+					break;
+				}
+
+				computedValue += (*input)[inputIndexer];
+
+				++inputIndexer;
+			}
+			correction -= (int)correction;
+			correction += corrStep;
+
+			(*output)[outputIndexer + zoom_.xOffset] = computedValue/valueCount;
+		}
 	}
 }
 
@@ -167,27 +220,67 @@ void TFWorkCopy::update(TFAbstractFunction::Ptr function){
 	TFSize outputSize = output->size();
 
 	float correction = inputSize/(outputSize*zoom_.zoom);
-	int ratio =  (int)(correction);	//how many input values are used for computing 1 output values
-	correction -= ratio;
-	float corrStep = correction;
-
-	TFSize inputIndexer = 0;
-	for(TFSize outputIndexer = 0; outputIndexer < outputSize; ++outputIndexer)
+	
+	if(correction >= 1)
 	{
-		TFColor computedValue(0,0,0,0);
-		TFSize valueCount = ratio + (int)correction;
-		for(TFSize i = 0; i < valueCount; ++i)
+		int ratio =  (int)(correction);	//how many input values are used for computing 1 output values
+		correction -= ratio;
+		float corrStep = correction;
+
+		TFSize inputIndexer = 0;
+		for(TFSize outputIndexer = 0; outputIndexer < outputSize; ++outputIndexer)
 		{
-			tfAssert(inputIndexer + zoom_.xOffset < inputSize);
+			TFColor computedValue(0,0,0,0);
+			TFSize valueCount = ratio + (int)correction;
+			for(TFSize i = 0; i < valueCount; ++i)
+			{
+				//tfAssert(inputIndexer + zoom_.xOffset < inputSize);
+				if(inputIndexer + zoom_.xOffset >= inputSize)
+				{
+					tfAssert(outputIndexer == outputSize - 1);
+					valueCount = i;
+					break;
+				}
 
-			computedValue += (*input)[inputIndexer + zoom_.xOffset];
+				computedValue += (*input)[inputIndexer + zoom_.xOffset];
 
-			++inputIndexer;
+				++inputIndexer;
+			}
+			correction -= (int)correction;
+			correction += corrStep;
+
+			(*output)[outputIndexer] = computedValue/valueCount;
 		}
-		correction -= (int)correction;
-		correction += corrStep;
+	}
+	else
+	{
+		correction = (outputSize*zoom_.zoom)/inputSize;
+		int ratio = (int)(correction);	//how many input values are used for computing 1 output values
+		correction -= ratio;
+		float corrStep = correction;
 
-		(*output)[outputIndexer] = computedValue/valueCount;
+		TFSize outputIndexer = 0;
+		int zoomAreaSize = inputSize/zoom_.zoom;
+		for(int inputIndexer = 0; inputIndexer < zoomAreaSize; ++inputIndexer)
+		{
+			TFSize valueCount = ratio + (int)correction;
+			for(TFSize i = 0; i < valueCount; ++i)
+			{
+				//tfAssert(outputIndexer < outputSize);
+				if(outputIndexer >= outputSize)
+				{
+					tfAssert(inputIndexer == zoomAreaSize - 1);
+					valueCount = i;
+					break;
+				}
+
+				(*output)[outputIndexer] = (*input)[inputIndexer + zoom_.xOffset];
+
+				++outputIndexer;
+			}
+			correction -= (int)correction;
+			correction += corrStep;
+		}
 	}
 }
 

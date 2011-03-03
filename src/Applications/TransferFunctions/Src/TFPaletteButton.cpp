@@ -8,10 +8,19 @@ namespace GUI {
 TFPaletteButton::TFPaletteButton(QWidget* parent, const TFSize& index):
 	QWidget(parent),
 	index_(index),
-	active_(false){
+	active_(false),
+	size_(128){
 }
 
 TFPaletteButton::~TFPaletteButton(){}
+
+void TFPaletteButton::setup(){
+
+	QSize fixedSize(size_, size_);
+	resize(fixedSize);
+	setMinimumSize(fixedSize);
+	setMaximumSize(fixedSize);
+}
 
 void TFPaletteButton::activate(){
 
@@ -52,20 +61,6 @@ void TFPaletteButton::drawBorder_(QPainter* drawer, QColor color, int brushWidth
 void TFPaletteButton::mouseReleaseEvent(QMouseEvent *){
 
 	emit Triggered();
-}
-
-void TFPaletteButton::resizeEvent(QResizeEvent*){
-
-	if(width() < height())
-	{
-		setMaximumHeight(width());
-		setMaximumWidth(QWIDGETSIZE_MAX);
-	}
-	else
-	{
-		setMaximumWidth(height());
-		setMaximumHeight(QWIDGETSIZE_MAX);
-	}
 }
 
 } // namespace GUI

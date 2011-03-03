@@ -30,6 +30,7 @@ ViewerWindow::ViewerWindow(){
 	
 	dockWidget->setWidget( mTransferFunctionEditor );
 	dockWidget->setFeatures(QDockWidget::AllDockWidgetFeatures);
+	dockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 	
 	addDockWidget(Qt::LeftDockWidgetArea, dockWidget);	
 

@@ -15,6 +15,10 @@ TFPalette::TFPalette(QMainWindow* parent, const TFSize& domain):
 
 	tfActions_ = TFHolderFactory::createMenuTFActions(ui_->menuNew);
 	connectTFActions_();
+
+	layout_ = new QVBoxLayout;
+	layout_->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
+	ui_->scrollAreaWidget->setLayout(layout_);
 }
 
 TFPalette::~TFPalette(){
@@ -78,10 +82,10 @@ void TFPalette::addToPalette_(TFHolder* holder){
 
 	holder->setUp(addedIndex);
 	palette_.insert(std::make_pair<TFSize, TFHolder*>(addedIndex, holder));
-	holder->createPaletteButton(ui_->layoutWidget);
+	holder->createPaletteButton(ui_->scrollAreaWidget);
 
 	TFPaletteButton* addedButton = holder->getButton();
-	ui_->paletteLayout->addWidget(addedButton);
+	layout_->addWidget(addedButton);
 	addedButton->show();
 
 	holder->connectToTFPalette(this);
@@ -113,7 +117,7 @@ void TFPalette::removeFromPalette_(TFSize index){
 	}
 
 	TFPaletteButton* toRemoveButton = toRemoveIt->second->getButton();
-	ui_->paletteLayout->removeWidget(toRemoveButton);
+	layout_->removeWidget(toRemoveButton);
 	delete toRemoveButton;
 	delete toRemoveIt->second;
 	palette_.erase(toRemoveIt);
@@ -124,7 +128,7 @@ void TFPalette::resizeEvent(QResizeEvent* e){
 
 	QMainWindow::resizeEvent(e);
 
-	ui_->layoutWidget->setGeometry(ui_->paletteArea->rect());
+	ui_->scrollArea->setGeometry(ui_->paletteArea->rect());
 }
 
 void TFPalette::close_triggered(TFSize index){

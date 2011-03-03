@@ -13,11 +13,13 @@ public:
 
 	struct ZoomProperties{
 		float zoom;
+		float maxZoom;
 		TFSize xOffset;
 		float yOffset;
 
 		ZoomProperties():
 			zoom(1),
+			maxZoom(20),
 			xOffset(0),
 			yOffset(0){}
 

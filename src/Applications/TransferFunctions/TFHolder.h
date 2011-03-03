@@ -174,23 +174,23 @@ static std::string convert<TFHolder::Type, std::string>(const TFHolder::Type &ho
 		}
 		case TFHolder::TFHolderRGB:
 		{
-			return "TFHolderRGB";
+			return "RGB";
 		}
 		case TFHolder::TFHolderRGBa:
 		{
-			return "TFHolderRGBa";
+			return "RGBa";
 		}
 		case TFHolder::TFHolderHSV:
 		{
-			return "TFHolderHSV";
+			return "HSV";
 		}
 		case TFHolder::TFHolderHSVa:
 		{
-			return "TFHolderHSVa";
+			return "HSVa";
 		}
 		case TFHolder::TFHolderPolygonRGBa:
 		{
-			return "TFHolderPolygonRGBa";
+			return "Polygon RGBa";
 		}
 	}
 	return "Unknown";
@@ -205,19 +205,19 @@ static TFHolder::Type convert<std::string, TFHolder::Type>(const std::string &ho
 	if(holderType == "Grayscale-alpha"){
 		return TFHolder::TFHolderGrayscaleAlpha;
 	}
-	if(holderType == "TFHolderRGB"){
+	if(holderType == "RGB"){
 		return TFHolder::TFHolderRGB;
 	}
-	if(holderType == "TFHolderRGBa"){
+	if(holderType == "RGBa"){
 		return TFHolder::TFHolderRGBa;
 	}
-	if(holderType == "TFHolderHSV"){
+	if(holderType == "HSV"){
 		return TFHolder::TFHolderHSV;
 	}
-	if(holderType == "TFHolderHSVa"){
+	if(holderType == "HSVa"){
 		return TFHolder::TFHolderHSVa;
 	}
-	if(holderType == "TFHolderPolygonRGBa"){
+	if(holderType == "Polygon RGBa"){
 		return TFHolder::TFHolderPolygonRGBa;
 	}
 	return TFHolder::TFHolderUnknown;

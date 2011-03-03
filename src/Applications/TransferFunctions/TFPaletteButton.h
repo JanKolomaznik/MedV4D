@@ -17,6 +17,8 @@ public:
 	TFPaletteButton(QWidget* parent, const TFSize& index);
 	~TFPaletteButton();
 
+	void setup();
+
 	void activate();
 	void deactivate();
 
@@ -28,12 +30,13 @@ protected:
 
 	void mouseReleaseEvent(QMouseEvent*);
 	void paintEvent(QPaintEvent*);
-	void resizeEvent(QResizeEvent*);
 
 private:
 
 	TFSize index_;
 	bool active_;
+
+	const TFSize size_;
 
 	void drawBorder_(QPainter* drawer, QColor color, int brushWidth);
 };
