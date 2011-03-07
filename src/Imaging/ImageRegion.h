@@ -31,6 +31,7 @@ public:
 
 	static const unsigned 				Dimension = Dim;
 	typedef EType					ElementType;
+	typedef EType					Element;
 	typedef ImageIterator< ElementType, Dim >	Iterator;
 	typedef Vector< int, Dim >			PointType;
 	typedef Vector< float, Dim >		ExtentType; // typedefs for gcc4.2 error that cannot parse these templates as default parameters

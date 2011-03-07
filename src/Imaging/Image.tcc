@@ -39,6 +39,9 @@ Image< ElementType, Dim >::Image()
 	_pointer = NULL;
 	_sourceDimension = 0;
 	_pointerCoordinatesInSource = NULL;
+
+	_minimalValue = TypeTraits< ElementType >::Min;
+	_maximalValue = TypeTraits< ElementType >::Max;
 }
 
 template< typename ElementType, unsigned Dim >
@@ -50,6 +53,9 @@ Image< ElementType, Dim >::Image( AImageData::APtr imageData )
 		_imageData = ImageDataTemplate< ElementType >::CastAbstractPointer( imageData );
 
 		FillDimensionInfo();	
+
+		_minimalValue = TypeTraits< ElementType >::Min;
+		_maximalValue = TypeTraits< ElementType >::Max;
 	} 
 	catch ( ... )
 	{
@@ -65,6 +71,9 @@ Image< ElementType, Dim >::Image( typename ImageDataTemplate< ElementType >::Ptr
 	_imageData = imageData;
 	
 	FillDimensionInfo();
+
+	_minimalValue = TypeTraits< ElementType >::Min;
+	_maximalValue = TypeTraits< ElementType >::Max;
 	//TODO handle exceptions
 }
 	
@@ -93,6 +102,9 @@ Image< ElementType, Dim >::Image( typename ImageDataTemplate< ElementType >::Ptr
 		_strides[i] = _imageData->GetDimensionInfo( _dimOrder[i] ).stride;
 	}
 	_pointer = region.GetPointer();
+
+	_minimalValue = TypeTraits< ElementType >::Min;
+	_maximalValue = TypeTraits< ElementType >::Max;
 }
 
 template< typename ElementType, unsigned Dim >
@@ -124,6 +136,9 @@ Image< ElementType, Dim >::Image(
 		_strides[i] = _imageData->GetDimensionInfo( i ).stride;
 	}
 	_pointer = &_imageData->Get( 0 );
+
+	_minimalValue = TypeTraits< ElementType >::Min;
+	_maximalValue = TypeTraits< ElementType >::Max;
 }
 	
 template< typename ElementType, unsigned Dim >
@@ -162,6 +177,9 @@ Image< ElementType, Dim >::ReallocateData( typename ImageDataTemplate< ElementTy
 	_imageData = imageData;
 
 	FillDimensionInfo();
+
+	_minimalValue = TypeTraits< ElementType >::Min;
+	_maximalValue = TypeTraits< ElementType >::Max;
 }
 
 template< typename ElementType, unsigned Dim >
@@ -194,6 +212,9 @@ Image< ElementType, Dim >::ReallocateData(
 		_strides[i] = _imageData->GetDimensionInfo( i ).stride;
 	}
 	_pointer = &_imageData->Get( 0 );
+
+	_minimalValue = TypeTraits< ElementType >::Min;
+	_maximalValue = TypeTraits< ElementType >::Max;
 }
 
 template< typename ElementType, unsigned Dim >
@@ -263,6 +284,19 @@ Image< ElementType, Dim >::GetPointer(
 	}
 }
 
+
+template< typename ElementType, unsigned Dim >
+ElementType *
+Image< ElementType, Dim >::GetPointer()const
+{
+	if( _imageData ) {
+		return _pointer;
+	} else {
+		return NULL;
+	}
+}
+
+
 template< typename ElementType, unsigned Dim >
 template< unsigned NewDim >
 typename Image< ElementType, NewDim >::Ptr
@@ -273,6 +307,21 @@ Image< ElementType, Dim >::GetRestrictedImage(
 	Image< ElementType, NewDim > *image = new Image< ElementType, NewDim >( this->_imageData, region );
 	return typename Image< ElementType, NewDim >::Ptr( image );
 }
+
+template< typename ElementType, unsigned Dim >
+ElementType
+Image< ElementType, Dim >::GetLowBand()const
+{
+	return _minimalValue;
+}
+
+template< typename ElementType, unsigned Dim >
+ElementType
+Image< ElementType, Dim >::GetHighBand()const
+{
+	return _maximalValue;
+}
+
 
 template< typename ElementType, unsigned Dim >
 WriterBBoxInterface &

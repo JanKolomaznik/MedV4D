@@ -173,6 +173,7 @@ public:
 	Create( int32 min, int32 max, bool storeOutliers = true )
 	{
 		Histogram *result = new Histogram( min, max, storeOutliers );
+		D_PRINT( "Histogram created" );
 		return typename Histogram::Ptr( result );
 	}
 

@@ -1,6 +1,7 @@
 #ifndef _IMAGE_TOOLS_H
 #define _IMAGE_TOOLS_H
 
+#include "common/Common.h"
 #include "Imaging/ImageRegion.h"
 #include "Imaging/Histogram.h"
 
@@ -33,6 +34,36 @@ AddArrayToHistogram( THistogram &aHistogram, const TElementType *aArray, size_t 
 		aHistogram.FastIncCell( ClampToInterval( min, max, (int32)*aArray ) );
 		++aArray;
 	}
+}
+
+template< typename THistogram, typename TElementType >
+typename THistogram::Ptr
+PrepareHistogramForArray( const TElementType *aArray, size_t aSize )
+{
+	//TODO type test, parallelization
+	const TElementType *end = aArray + aSize;
+	const TElementType *ptr = aArray;
+	TElementType minimum = TypeTraits< TElementType >::Max;
+	TElementType maximum = TypeTraits< TElementType >::Min;
+	while ( ptr < end ) {
+		minimum = Min( minimum, *ptr );
+		maximum = Max( maximum, *ptr );
+		++ptr;
+	}
+
+	return THistogram::Create( int32(minimum), int32(maximum), true );
+}
+
+template< typename THistogram, typename TRegion >
+typename THistogram::Ptr
+CreateHistogramForImageRegion( const TRegion &aRegion )
+{
+	const typename TRegion::Element *array = aRegion.GetPointer();
+	typename THistogram::Ptr histogram = PrepareHistogramForArray< THistogram, typename TRegion::Element >( array, VectorCoordinateProduct( aRegion.GetSize() ) );
+
+	AddArrayToHistogram< THistogram, typename TRegion::Element >( *histogram, array, VectorCoordinateProduct( aRegion.GetSize() ) );
+
+	return histogram;
 }
 
 

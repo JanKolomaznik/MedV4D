@@ -252,6 +252,22 @@ public:
 			PointType &strides
 		  )const;
 
+	ElementType *
+	GetPointer()const;
+
+	inline int
+	GetStride( unsigned dim )const
+		{
+			return _strides[dim];
+		}
+
+	inline PointType
+	GetStride()const
+		{
+			return _strides;
+		}
+
+
 	/**
 	 * Create image, which is sharing some subregion with this image.
 	 * \param[in] region Region, which will be shared among images.
@@ -262,6 +278,20 @@ public:
 	GetRestrictedImage( 
 			ImageRegion< ElementType, NewDim > region
 			)const;
+
+	/**
+	 * \return Should be minimal (or lower) value in the image. 
+	 * Without proper initialization or after changing image values it can be outdated or far from actual image minima.
+	 **/
+	ElementType
+	GetLowBand()const;
+
+	/**
+	 * \return Should be maximal (or bigger) value in the image. 
+	 * Without proper initialization or after changing image values it can be outdated or far from actual image maxima.
+	 **/
+	ElementType
+	GetHighBand()const;
 
 	/**
 	 * Mark some part of the image data as dirty - used for synchronization in pipeline filters.
@@ -373,6 +403,8 @@ protected:
 	ElementType		*_pointer;
 	PointType		_strides;
 	
+	ElementType		_minimalValue;
+	ElementType		_maximalValue;
 	
 	///which source dimension is mapped to each dimension of this image
 	SizeType			_dimOrder;
