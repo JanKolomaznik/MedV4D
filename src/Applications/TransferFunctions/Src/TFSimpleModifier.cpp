@@ -5,49 +5,119 @@ namespace GUI {
 
 TFSimpleModifier::TFSimpleModifier(TFAbstractModifier::Type type, const TFSize& domain):
 	type_(type),
+	tools_(new Ui::TFSimpleModifier),
 	activeView_(Active1),
 	inputHelper_(),
 	leftMousePressed_(false){
 
 	workCopy_ = TFWorkCopy::Ptr(new TFWorkCopy(domain));
+
+	toolsWidget_ = new QWidget();
+	tools_->setupUi(toolsWidget_);
+
+	bool changeViewConnected = QObject::connect(tools_->activeViewBox, SIGNAL(currentIndexChanged(int)),
+		this, SLOT(activeViewChanged(int)));
+	tfAssert(changeViewConnected);
+	bool histogramCheckConnected = QObject::connect( tools_->histogramCheck, SIGNAL(toggled(bool)),
+		this, SLOT(histogramCheck(bool)));
+	tfAssert(histogramCheckConnected);
+
+	switch(type_)
+	{
+		case TFModifierGrayscale:
+		{
+			tools_->activeViewBox->addItem(QObject::tr("gray"));
+			break;
+		}
+		case TFModifierGrayscaleAlpha:
+		{
+			tools_->activeViewBox->addItem(QObject::tr("gray"));
+			tools_->activeViewBox->addItem(QObject::tr("opacity"));
+			break;
+		}
+		case TFModifierRGB:
+		{
+			tools_->activeViewBox->addItem(QObject::tr("red"));
+			tools_->activeViewBox->addItem(QObject::tr("green"));
+			tools_->activeViewBox->addItem(QObject::tr("blue"));
+			break;
+		}
+		case TFModifierRGBa:
+		{
+			tools_->activeViewBox->addItem(QObject::tr("red"));
+			tools_->activeViewBox->addItem(QObject::tr("green"));
+			tools_->activeViewBox->addItem(QObject::tr("blue"));
+			tools_->activeViewBox->addItem(QObject::tr("opacity"));
+			break;
+		}
+		case TFModifierHSV:
+		{
+			tools_->activeViewBox->addItem(QObject::tr("hue"));
+			tools_->activeViewBox->addItem(QObject::tr("saturation"));
+			tools_->activeViewBox->addItem(QObject::tr("value"));
+			break;
+		}
+		case TFModifierHSVa:
+		{
+			tools_->activeViewBox->addItem(QObject::tr("hue"));
+			tools_->activeViewBox->addItem(QObject::tr("saturation"));
+			tools_->activeViewBox->addItem(QObject::tr("value"));
+			tools_->activeViewBox->addItem(QObject::tr("opacity"));
+			break;
+		}
+	}
 }
 
 TFSimpleModifier::~TFSimpleModifier(){}
 
+void TFSimpleModifier::histogramCheck(bool enabled){}
+
+void TFSimpleModifier::activeViewChanged(int index){
+
+	switch(index)
+	{
+		case 0:
+		{
+			activeView_ = Active1;
+			break;
+		}
+		case 1:
+		{
+			if(type_ == TFModifierGrayscaleAlpha) activeView_ = ActiveAlpha;
+			else activeView_ = Active2;
+			break;
+		}
+		case 2:
+		{
+			activeView_ = Active3;
+			break;
+		}
+		case 3:
+		{
+			activeView_ = ActiveAlpha;
+			break;
+		}
+		default:
+		{
+			tfAbort(!"Bad view selected.");
+			break;
+		}
+	}
+}
+
 void TFSimpleModifier::mousePress(const TFSize& x, const TFSize& y, MouseButton button){
 
-	if(button == MouseButtonMid) return;
 	if(button == MouseButtonRight)
 	{
-		switch(activeView_)
-		{
-			case Active1:
-			{
-				activeView_ = active1Next_();
-				break;
-			}
-			case Active2:
-			{
-				activeView_ = active2Next_();
-				break;
-			}
-			case Active3:
-			{
-				activeView_ = active3Next_();
-				break;
-			}
-			case ActiveAlpha:
-			{
-				activeView_ = activeAlphaNext_();
-				break;
-			}
-		}
-		return;
+		int nextIndex = (tools_->activeViewBox->currentIndex()+1) % tools_->activeViewBox->count();
+		tools_->activeViewBox->setCurrentIndex(nextIndex);
 	}
-
-	leftMousePressed_ = true;
-	inputHelper_.x = x;
-	inputHelper_.y = y;
+	if(button == MouseButtonLeft)
+	{
+		leftMousePressed_ = true;
+		inputHelper_.x = x;
+		inputHelper_.y = y;
+	}
 }
 
 void TFSimpleModifier::mouseRelease(const TFSize& x, const TFSize& y){
@@ -71,7 +141,7 @@ void TFSimpleModifier::mouseMove(const TFSize& x, const TFSize& y){
 void TFSimpleModifier::addPoint_(const int& x, const int& y){
 
 	TFPaintingPoint point = getRelativePoint_(x, y);
-	float yValue = point.y/(float)inputArea_.height;
+	float yValue = point.y/(float)inputArea_.height();
 	
 	switch(activeView_)
 	{
@@ -103,54 +173,6 @@ void TFSimpleModifier::addPoint_(const int& x, const int& y){
 		}
 	}
 	++lastChange_;	
-}
-
-TFSimpleModifier::ActiveView TFSimpleModifier::active1Next_(){
-
-	switch(type_)
-	{
-		case TFModifierGrayscale:
-		{
-			return Active1;
-		}
-		case TFModifierGrayscaleAlpha:
-		{
-			return ActiveAlpha;
-		}
-	}
-	return Active2;
-}
-
-TFSimpleModifier::ActiveView TFSimpleModifier::active2Next_(){
-
-	switch(type_)
-	{
-		case TFModifierGrayscale:
-		{
-			return Active1;
-		}
-		case TFModifierGrayscaleAlpha:
-		{
-			return ActiveAlpha;
-		}
-	}
-	return Active3;
-}
-
-TFSimpleModifier::ActiveView TFSimpleModifier::active3Next_(){
-
-	if(type_ == TFModifierGrayscale ||
-		type_ == TFModifierRGB ||
-		type_ == TFModifierHSV)
-	{
-		return Active1;
-	}
-	return ActiveAlpha;
-}
-
-TFSimpleModifier::ActiveView TFSimpleModifier::activeAlphaNext_(){
-
-	return Active1;
 }
 
 } // namespace GUI

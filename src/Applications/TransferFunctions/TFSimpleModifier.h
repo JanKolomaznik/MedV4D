@@ -2,11 +2,14 @@
 #define TF_SIMPLE_MODIFIER
 
 #include <TFAbstractModifier.h>
+#include <ui_TFSimpleModifier.h>
 
 namespace M4D {
 namespace GUI {
 
 class TFSimpleModifier: public TFAbstractModifier{
+
+	Q_OBJECT
 
 public:
 
@@ -19,6 +22,11 @@ public:
 	void mouseRelease(const TFSize& x, const TFSize& y);
 	void mouseMove(const TFSize& x, const TFSize& y);
 
+private slots:
+
+	void activeViewChanged(int index);
+	void histogramCheck(bool enabled);
+
 private:
 
 	enum ActiveView{
@@ -29,10 +37,7 @@ private:
 	};	
 	ActiveView activeView_;
 
-	ActiveView active1Next_();
-	ActiveView active2Next_();
-	ActiveView active3Next_();
-	ActiveView activeAlphaNext_();
+	Ui::TFSimpleModifier* tools_;
 
 	TFAbstractModifier::Type type_;
 	TFPaintingPoint inputHelper_;

@@ -8,104 +8,102 @@ TFGrayscaleAlphaPainter::TFGrayscaleAlphaPainter(bool drawAlpha):
 	spacing_(5),
 	colorBarSize_(10),
 	background_(Qt::black),
-	grey_(Qt::lightGray),
+	gray_(Qt::lightGray),
 	alpha_(Qt::yellow),
 	drawAlpha_(drawAlpha){
 }
 
 TFGrayscaleAlphaPainter::~TFGrayscaleAlphaPainter(){}
 
-void TFGrayscaleAlphaPainter::setArea(TFArea area){
+void TFGrayscaleAlphaPainter::setArea(QRect area){
 	
 	area_ = area;
 
-	backgroundArea_= TFArea(
-		area_.x,
-		area_.y,
-		area_.width,
-		area_.height - colorBarSize_ - spacing_);
+	backgroundArea_= QRect(
+		0,
+		0,
+		area_.width(),
+		area_.height() - colorBarSize_ - spacing_);
 
-	inputArea_= TFArea(
-		backgroundArea_.x + margin_,
-		backgroundArea_.y + margin_,
-		backgroundArea_.width - 2*margin_,
-		backgroundArea_.height - 2*margin_);
+	inputArea_= QRect(
+		backgroundArea_.x() + margin_,
+		backgroundArea_.y() + margin_,
+		backgroundArea_.width() - 2*margin_,
+		backgroundArea_.height() - 2*margin_);
 	
-	bottomBarArea_= TFArea(
-		inputArea_.x,
-		area_.y + area_.height - colorBarSize_,
-		inputArea_.width,
-		colorBarSize_);
+	bottomBarArea_= QRect(
+		inputArea_.x() - 1,
+		area_.height() - colorBarSize_ - 1,
+		inputArea_.width() + 2,
+		colorBarSize_ + 2);
 }
 
-const TFArea& TFGrayscaleAlphaPainter::getInputArea(){
+QRect TFGrayscaleAlphaPainter::getInputArea(){
 
-	return inputArea_;
+	return QRect(area_.x() + inputArea_.x(), area_.y() + inputArea_.y(),
+		inputArea_.width(), inputArea_.height());
 }
 
-void TFGrayscaleAlphaPainter::drawBackground(QPainter* drawer){
+void TFGrayscaleAlphaPainter::drawBackground_(QPainter* drawer){
 
-	QRect paintingRect(
-		backgroundArea_.x,
-		backgroundArea_.y,
-		backgroundArea_.width,
-		backgroundArea_.height);
+	drawer->fillRect(backgroundArea_, QBrush(background_));
 
-	drawer->fillRect(paintingRect, QBrush(background_));
-
-	QRect bottomBarRect(	//+1 in each direction as border
-		bottomBarArea_.x - 1,
-		bottomBarArea_.y - 1,
-		bottomBarArea_.width + 2,
-		bottomBarArea_.height + 2);
-
-	drawer->fillRect(bottomBarRect, QBrush(background_));
+	drawer->fillRect(bottomBarArea_, QBrush(background_));
 }
 
 void TFGrayscaleAlphaPainter::drawData(QPainter* drawer, TFWorkCopy::Ptr workCopy){
 
-	tfAssert(workCopy->size() == inputArea_.width);
+	tfAssert(workCopy->size() == inputArea_.width());
 	
-	TFPaintingPoint origin(inputArea_.x,
-		inputArea_.y + inputArea_.height);
-
-	TFColor tfColor;
-	QColor qColor;
-	for(TFSize i = 0; i < inputArea_.width - 1; ++i)
+	if(workCopy->changed())
 	{
-		if(drawAlpha_)
+		dBuffer_ = QPixmap(area_.width(), area_.height());
+
+		QPainter dbPainter(&dBuffer_);
+		//dbPainter.setBackgroundMode(Qt::TransparentMode);
+		
+		drawBackground_(&dbPainter);
+
+		dbPainter.setClipRect(inputArea_.x(), inputArea_.y(),
+			inputArea_.width() + 1, inputArea_.height() + 1);
+
+		TFPaintingPoint origin(inputArea_.x(), inputArea_.y());
+		
+		TFColor tfColor;
+		QColor qColor;
+		for(int i = 0; i < inputArea_.width() - 1; ++i)
 		{
-			//alpha
-			drawer->setPen(alpha_);
-			drawer->drawLine(origin.x + i, origin.y - workCopy->getAlpha(i)*inputArea_.height,
-				origin.x + i + 1, origin.y - workCopy->getAlpha(i+1)*inputArea_.height);
+			if(drawAlpha_)
+			{
+				//alpha
+				dbPainter.setPen(alpha_);
+				dbPainter.drawLine(origin.x + i, origin.y + (1 - workCopy->getAlpha(i))*inputArea_.height(),
+					origin.x + i + 1, origin.y + (1 - workCopy->getAlpha(i+1))*inputArea_.height());
+			}
+			//gray
+			dbPainter.setPen(gray_);	
+			dbPainter.drawLine(origin.x + i, origin.y + (1 - workCopy->getComponent1(i))*inputArea_.height(),
+				origin.x + i + 1, origin.y + (1 - workCopy->getComponent1(i+1))*inputArea_.height());
+
+			//TODO draw histogram if enabled
 		}
-		//value
-		drawer->setPen(grey_);	
-		drawer->drawLine(origin.x + i, origin.y - workCopy->getComponent1(i)*inputArea_.height,
-			origin.x + i + 1, origin.y - workCopy->getComponent1(i+1)*inputArea_.height);
 
-		//TODO draw histogram if enabled
+		dbPainter.setClipRect(bottomBarArea_.x() + 1, bottomBarArea_.y() + 1,
+			bottomBarArea_.width() + 1, bottomBarArea_.height());
 
-		//bottom bar
-		tfColor = workCopy->getColor(i);
-		qColor.setRgbF(tfColor.component1, tfColor.component2, tfColor.component3, tfColor.alpha);
-		drawer->setPen(qColor);
+		for(int i = 0; i < inputArea_.width(); ++i)
+		{
+			//bottom bar
+			tfColor = workCopy->getColor(i);
+			qColor.setRgbF(tfColor.component1, tfColor.component2, tfColor.component3, tfColor.alpha);
+			dbPainter.setPen(qColor);
 
-		drawer->drawLine(bottomBarArea_.x + i, bottomBarArea_.y,
-			bottomBarArea_.x + i, bottomBarArea_.y + bottomBarArea_.height - 1);
+			dbPainter.drawLine(bottomBarArea_.x() + i + 1, bottomBarArea_.y(),
+				bottomBarArea_.x() + i + 1, bottomBarArea_.y() + bottomBarArea_.height() - 1);
+		}
 	}
 
-	//draw last point
-	tfColor = workCopy->getColor(inputArea_.width - 1);
-	qColor.setRgbF(tfColor.component1, tfColor.component2, tfColor.component3, tfColor.alpha);
-	drawer->setPen(qColor);
-
-	drawer->drawLine(
-		bottomBarArea_.x + inputArea_.width - 1,
-		bottomBarArea_.y,
-		bottomBarArea_.x + inputArea_.width - 1,
-		bottomBarArea_.y + bottomBarArea_.height - 1);
+	drawer->drawPixmap(area_.x(), area_.y(), dBuffer_);
 }
 
 } // namespace GUI

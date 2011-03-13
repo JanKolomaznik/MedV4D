@@ -8,7 +8,8 @@ TFWorkCopy::TFWorkCopy(const TFSize& domain):
 	domain_(domain),
 	data_(new TFColorMap()),
 	xSize_(0),
-	ySize_(0){
+	ySize_(0),
+	changed_(true){
 }
 
 //---getters---
@@ -19,6 +20,16 @@ TFColor TFWorkCopy::getColor(const TFSize& index){
 	fullColor.alpha = 1;
 
 	return fullColor;
+}
+
+bool TFWorkCopy::changed(){
+
+	if(changed_)
+	{
+		changed_ = false;
+		return true;
+	}
+	return false;
 }
 
 float TFWorkCopy::getComponent1(const TFSize& index){
@@ -46,21 +57,25 @@ float TFWorkCopy::getAlpha(const TFSize& index){
 void TFWorkCopy::setComponent1(const TFSize& index, const float& value){
 
 	(*data_)[index].component1 = value/zoom_.zoom + zoom_.yOffset;
+	changed_ = true;
 }
 
 void TFWorkCopy::setComponent2(const TFSize& index, const float& value){
 
 	(*data_)[index].component2 = value/zoom_.zoom + zoom_.yOffset;
+	changed_ = true;
 }
 
 void TFWorkCopy::setComponent3(const TFSize& index, const float& value){
 
 	(*data_)[index].component3 = value/zoom_.zoom + zoom_.yOffset;
+	changed_ = true;
 }
 
 void TFWorkCopy::setAlpha(const TFSize& index, const float& value){
 
 	(*data_)[index].alpha = value/zoom_.zoom + zoom_.yOffset;
+	changed_ = true;
 }
 
 //---size---
@@ -70,6 +85,7 @@ void TFWorkCopy::resize(const TFSize& xSize, const TFSize& ySize){
 	xSize_ = xSize;
 	ySize_ = ySize;
 	data_->resize(xSize_);
+	changed_ = true;
 }
 
 TFSize TFWorkCopy::size(){
@@ -101,6 +117,8 @@ void TFWorkCopy::zoomIn(const TFSize& stepCount, const TFSize& inputX, const TFS
 	if(nextZoom > zoom_.maxZoom) nextZoom = zoom_.maxZoom;
 
 	computeZoom_(nextZoom, inputX, inputY);
+
+	changed_ = true;
 }
 
 void TFWorkCopy::zoomOut(const TFSize& stepCount, const TFSize& inputX, const TFSize& inputY){
@@ -126,6 +144,8 @@ void TFWorkCopy::zoomOut(const TFSize& stepCount, const TFSize& inputX, const TF
 	if(nextZoom < 1) zoom_.reset();
 
 	computeZoom_(nextZoom, inputX, inputY);
+	
+	changed_ = true;
 }
 
 void TFWorkCopy::move(int xDirectionIncrement, int yDirectionIncrement){
@@ -135,6 +155,8 @@ void TFWorkCopy::move(int xDirectionIncrement, int yDirectionIncrement){
 	TFSize moveY = ySize_/2 + yDirectionIncrement;
 
 	computeZoom_(zoom_.zoom, moveX, moveY);
+	
+	changed_ = true;
 }
 
 const float& TFWorkCopy::zoom(){
@@ -282,6 +304,8 @@ void TFWorkCopy::update(TFAbstractFunction::Ptr function){
 			correction += corrStep;
 		}
 	}
+	
+	changed_ = true;
 }
 
 void TFWorkCopy::computeZoom_(const float& nextZoom, const TFSize& inputX, const TFSize& inputY){

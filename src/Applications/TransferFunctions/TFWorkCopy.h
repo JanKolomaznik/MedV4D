@@ -37,6 +37,8 @@ public:
 
 	TFColor getColor(const TFSize& index);
 
+	bool changed();
+
 	float getComponent1(const TFSize& index);
 	float getComponent2(const TFSize& index);
 	float getComponent3(const TFSize& index);
@@ -65,6 +67,7 @@ private:
 	TFSize domain_;
 	ZoomProperties zoom_;
 	TFSize xSize_, ySize_;
+	bool changed_;
 
 	void computeZoom_(const float& nextZoom, const TFSize& inputX, const TFSize& inputY);
 

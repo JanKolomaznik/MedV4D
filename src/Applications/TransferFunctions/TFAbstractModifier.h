@@ -4,10 +4,12 @@
 #include <TFTypes.h>
 #include <TFWorkCopy.h>
 
+#include <QtGui/QWidget>
+
 namespace M4D {
 namespace GUI {
 
-class TFAbstractModifier{
+class TFAbstractModifier: public QWidget{
 
 public:
 
@@ -22,22 +24,26 @@ public:
 		TFModifierHSVa
 	};
 
+	QWidget* getTools();
+
 	TFWorkCopy::Ptr getWorkCopy();
 	//void setWorkCopy(TFWorkCopy::Ptr workCopy);
-	void setInputArea(TFArea inputArea);
+	void setInputArea(QRect inputArea);
+
+	M4D::Common::TimeStamp getLastChangeTime();
 
 	virtual void mousePress(const TFSize& x, const TFSize& y, MouseButton button) = 0;
 	virtual void mouseRelease(const TFSize& x, const TFSize& y) = 0;
 	virtual void mouseMove(const TFSize& x, const TFSize& y) = 0;
 
-	M4D::Common::TimeStamp getLastChangeTime();
-
 protected:
+
+	QWidget* toolsWidget_;
 
 	M4D::Common::TimeStamp lastChange_;
 
 	TFWorkCopy::Ptr workCopy_;
-	TFArea inputArea_;
+	QRect inputArea_;
 
 	TFAbstractModifier();
 	virtual ~TFAbstractModifier();

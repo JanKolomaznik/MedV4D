@@ -50,7 +50,7 @@ public:
 
 	void setHistogram(HistogramPtr histogram);
 
-protected slots:
+private slots:
 
     void close_triggered(TFSize index);
 	void newTF_triggered(TFHolder::Type tfType);

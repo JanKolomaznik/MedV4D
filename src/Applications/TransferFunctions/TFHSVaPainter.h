@@ -15,10 +15,9 @@ public:
 	TFHSVaPainter(bool drawAlpha);
 	~TFHSVaPainter();
 
-	void setArea(TFArea area);
-	const TFArea& getInputArea();
+	void setArea(QRect area);
+	QRect getInputArea();
 
-	void drawBackground(QPainter* drawer);
 	void drawData(QPainter* drawer, TFWorkCopy::Ptr workCopy);
 
 private:
@@ -35,11 +34,13 @@ private:
 
 	bool drawAlpha_;
 
-	TFArea inputArea_;
-	TFArea backgroundArea_;
-	TFArea sideBarArea_;
-	TFArea bottomBarArea_;
+	QRect inputArea_;
+	QRect backgroundArea_;
+	QRect bottomBarArea_;
+	QRect sideBarArea_;
 
+	QPixmap dBuffer_;
+	void drawBackground_(QPainter* drawer);
 	void drawSideColorBar_(QPainter* drawer);
 };
 

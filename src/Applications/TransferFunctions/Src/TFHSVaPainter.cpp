@@ -17,127 +17,123 @@ TFHSVaPainter::TFHSVaPainter(bool drawAlpha):
 
 TFHSVaPainter::~TFHSVaPainter(){}
 
-void TFHSVaPainter::setArea(TFArea area){
+void TFHSVaPainter::setArea(QRect area){
 	
 	area_ = area;
 
-	backgroundArea_= TFArea(
-		area_.x + colorBarSize_ + spacing_,
-		area_.y,
-		area_.width - colorBarSize_ - spacing_,
-		area_.height - colorBarSize_ - spacing_);
+	backgroundArea_= QRect(
+		colorBarSize_ + spacing_,
+		0,
+		area_.width() - colorBarSize_ - spacing_,
+		area_.height() - colorBarSize_ - spacing_);
 
-	inputArea_= TFArea(
-		backgroundArea_.x + margin_,
-		backgroundArea_.y + margin_,
-		backgroundArea_.width - 2*margin_,
-		backgroundArea_.height - 2*margin_);
+	inputArea_= QRect(
+		backgroundArea_.x() + margin_,
+		backgroundArea_.y() + margin_,
+		backgroundArea_.width() - 2*margin_,
+		backgroundArea_.height() - 2*margin_);
 	
-	bottomBarArea_= TFArea(
-		inputArea_.x,
-		area_.y + area_.height - colorBarSize_,
-		inputArea_.width,
-		colorBarSize_);
+	bottomBarArea_= QRect(	//+1 in each direction as border
+		inputArea_.x() - 1,
+		area_.height() - colorBarSize_ - 1,
+		inputArea_.width() + 2,
+		colorBarSize_ + 2);
 	
-	sideBarArea_= TFArea(
-		area_.x,
-		inputArea_.y,
+	sideBarArea_= QRect(
+		0,
+		inputArea_.y(),
 		colorBarSize_,
-		inputArea_.height);
+		inputArea_.height());
 }
 
-const TFArea& TFHSVaPainter::getInputArea(){
+QRect TFHSVaPainter::getInputArea(){
 
-	return inputArea_;
+	return QRect(area_.x() + inputArea_.x(), area_.y() + inputArea_.y(),
+		inputArea_.width(), inputArea_.height());
 }
 
-void TFHSVaPainter::drawBackground(QPainter* drawer){
+void TFHSVaPainter::drawBackground_(QPainter* drawer){
 
 	drawSideColorBar_(drawer);
 
-	QRect paintingRect(
-		backgroundArea_.x,
-		backgroundArea_.y,
-		backgroundArea_.width,
-		backgroundArea_.height);
+	drawer->fillRect(backgroundArea_, QBrush(background_));
 
-	drawer->fillRect(paintingRect, QBrush(background_));
-
-	QRect bottomBarRect(	//+1 in each direction as border
-		bottomBarArea_.x - 1,
-		bottomBarArea_.y - 1,
-		bottomBarArea_.width + 2,
-		bottomBarArea_.height + 2);
-
-	drawer->fillRect(bottomBarRect, QBrush(background_));
+	drawer->fillRect(bottomBarArea_, QBrush(background_));
 }
 
 void TFHSVaPainter::drawSideColorBar_(QPainter *drawer){
 
 	QColor color;
-	for(TFSize i = 0; i < sideBarArea_.height; ++i)
+	for(int i = 0; i < sideBarArea_.height(); ++i)
 	{
-		color.setHsvF(i/(float)sideBarArea_.height, 1, 1);		
+		color.setHsvF(i/(float)sideBarArea_.height(), 1, 1);		
 
 		drawer->setPen(color);
-		drawer->drawLine(sideBarArea_.x, sideBarArea_.y + sideBarArea_.height - i,
-			sideBarArea_.x + sideBarArea_.width, sideBarArea_.y + sideBarArea_.height - i);
+		drawer->drawLine(sideBarArea_.x(), sideBarArea_.y() + sideBarArea_.height() - i,
+			sideBarArea_.x() + sideBarArea_.width(), sideBarArea_.y() + sideBarArea_.height() - i);
 	}
 }
 
 void TFHSVaPainter::drawData(QPainter* drawer, TFWorkCopy::Ptr workCopy){
 
-	tfAssert(workCopy->size() == inputArea_.width);
-	
-	TFPaintingPoint origin(inputArea_.x,
-		inputArea_.y + inputArea_.height);
+	tfAssert(workCopy->size() == inputArea_.width());
 
-	TFColor tfColor;
-	QColor qColor;
-
-	for(TFSize i = 0; i < inputArea_.width - 1; ++i)
+	if(workCopy->changed())
 	{
-		if(drawAlpha_)
+		dBuffer_ = QPixmap(area_.width(), area_.height());
+
+		QPainter dbPainter(&dBuffer_);
+		//dbPainter.setBackgroundMode(Qt::TransparentMode);
+		
+		drawBackground_(&dbPainter);
+
+		dbPainter.setClipRect(inputArea_.x(), inputArea_.y(),
+			inputArea_.width() + 1, inputArea_.height() + 1);
+
+		TFPaintingPoint origin(inputArea_.x(), inputArea_.y());
+		TFColor tfColor;
+		QColor qColor;
+		for(int i = 0; i < inputArea_.width() - 1; ++i)
 		{
-			//alpha
-			drawer->setPen(alpha_);
-			drawer->drawLine(origin.x + i, origin.y - workCopy->getAlpha(i)*inputArea_.height,
-				origin.x + i + 1, origin.y - workCopy->getAlpha(i+1)*inputArea_.height);
+			if(drawAlpha_)
+			{
+				//alpha
+				dbPainter.setPen(alpha_);
+				dbPainter.drawLine(origin.x + i, origin.y + (1 - workCopy->getAlpha(i))*inputArea_.height(),
+					origin.x + i + 1, origin.y + (1 - workCopy->getAlpha(i+1))*inputArea_.height());
+			}
+			//value
+			dbPainter.setPen(value_);	
+			dbPainter.drawLine(origin.x + i, origin.y + (1 - workCopy->getComponent3(i))*inputArea_.height(),
+				origin.x + i + 1, origin.y + (1 - workCopy->getComponent3(i+1))*inputArea_.height());
+			//saturation
+			dbPainter.setPen(saturation_);
+			dbPainter.drawLine(origin.x + i, origin.y + (1 - workCopy->getComponent2(i))*inputArea_.height(),
+				origin.x + i + 1, origin.y + (1 - workCopy->getComponent2(i+1))*inputArea_.height());
+			//hue
+			dbPainter.setPen(hue_);
+			dbPainter.drawLine(origin.x + i, origin.y + (1 - workCopy->getComponent1(i))*inputArea_.height(),
+				origin.x + i + 1, origin.y + (1 - workCopy->getComponent1(i+1))*inputArea_.height());	
+
+			//TODO draw histogram if enabled
 		}
-		//value
-		drawer->setPen(value_);	
-		drawer->drawLine(origin.x + i, origin.y - workCopy->getComponent3(i)*inputArea_.height,
-			origin.x + i + 1, origin.y - workCopy->getComponent3(i+1)*inputArea_.height);
-		//saturation
-		drawer->setPen(saturation_);
-		drawer->drawLine(origin.x + i, origin.y - workCopy->getComponent2(i)*inputArea_.height,
-			origin.x + i + 1, origin.y - workCopy->getComponent2(i+1)*inputArea_.height);
-		//hue
-		drawer->setPen(hue_);
-		drawer->drawLine(origin.x + i, origin.y - workCopy->getComponent1(i)*inputArea_.height,
-			origin.x + i + 1, origin.y - workCopy->getComponent1(i+1)*inputArea_.height);		
 
-		//TODO draw histogram if enabled
+		dbPainter.setClipRect(bottomBarArea_.x() + 1, bottomBarArea_.y() + 1,
+			bottomBarArea_.width() + 1, bottomBarArea_.height());
 
-		//bottom bar
-		tfColor = workCopy->getColor(i);
-		qColor.setHsvF(tfColor.component1, tfColor.component2, tfColor.component3, tfColor.alpha);
-		drawer->setPen(qColor);
+		for(int i = 0; i < inputArea_.width(); ++i)
+		{
+			//bottom bar
+			tfColor = workCopy->getColor(i);
+			qColor.setRgbF(tfColor.component1, tfColor.component2, tfColor.component3, tfColor.alpha);
+			dbPainter.setPen(qColor);
 
-		drawer->drawLine(bottomBarArea_.x + i, bottomBarArea_.y,
-			bottomBarArea_.x + i, bottomBarArea_.y + bottomBarArea_.height - 1);
+			dbPainter.drawLine(bottomBarArea_.x() + i + 1, bottomBarArea_.y(),
+				bottomBarArea_.x() + i + 1, bottomBarArea_.y() + bottomBarArea_.height() - 1);
+		}
 	}
 
-	//draw last point
-	tfColor = workCopy->getColor(inputArea_.width - 1);
-	qColor.setHsvF(tfColor.component1, tfColor.component2, tfColor.component3, tfColor.alpha);
-	drawer->setPen(qColor);
-
-	drawer->drawLine(
-		bottomBarArea_.x + inputArea_.width - 1,
-		bottomBarArea_.y,
-		bottomBarArea_.x + inputArea_.width - 1,
-		bottomBarArea_.y + bottomBarArea_.height - 1);
+	drawer->drawPixmap(area_.x(), area_.y(), dBuffer_);
 }
 
 } // namespace GUI

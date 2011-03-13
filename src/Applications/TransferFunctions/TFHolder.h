@@ -31,7 +31,7 @@
 namespace M4D {
 namespace GUI {
 
-class TFHolder : public QMainWindow{
+class TFHolder : public QWidget{
 
 	Q_OBJECT
 	
@@ -61,6 +61,8 @@ public:
 	~TFHolder();
 
 	void save();
+	void activate();
+	void deactivate();
 
 	void setUp(const TFSize& index);
 	void setHistogram(M4D::Imaging::Histogram32::Ptr histogram);
@@ -122,7 +124,12 @@ protected slots:
 protected:
 
 	TFHolder::Type type_;
-	Ui::TFHolder* basicTools_;
+	Ui::TFHolder* ui_;
+	QMainWindow* holder_;
+	QDockWidget* dockHolder_;
+	QDockWidget* dockTools_;
+	
+	QString qTitle_;
 
 	TFAbstractFunction::Ptr function_;
 	TFAbstractModifier::Ptr modifier_;
@@ -133,15 +140,15 @@ protected:
 	M4D::Common::TimeStamp lastChange_;
 
 	TFSize index_;
-	QDockWidget* dockWidget_;
 
 	bool zoomMovement_;
 	TFPaintingPoint zoomMoveHelper_;
 
-	const TFPoint<TFSize, TFSize> painterLeftTop_;
-	const TFPoint<TFSize, TFSize> painterRightBottom_;
+	const TFPoint<TFSize, TFSize> painterLeftTopMargin_;
+	const TFPoint<TFSize, TFSize> painterRightBottomMargin_;
 
 	bool setup_;
+	bool active_;
 
 	void paintEvent(QPaintEvent*);
 	void resizeEvent(QResizeEvent*);

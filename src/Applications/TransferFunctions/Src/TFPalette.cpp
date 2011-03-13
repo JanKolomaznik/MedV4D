@@ -165,11 +165,11 @@ void TFPalette::newTF_triggered(TFHolder::Type tfType){
 
 void TFPalette::change_activeHolder(TFSize index){
 
-	if(activeHolder_ >= 0) palette_.find(activeHolder_)->second->getButton()->deactivate();
+	if(activeHolder_ >= 0) palette_.find(activeHolder_)->second->deactivate();
 
 	activeHolder_ = index;
 
-	palette_.find(activeHolder_)->second->getButton()->activate();
+	palette_.find(activeHolder_)->second->activate();
 }
 
 //---Indexer---

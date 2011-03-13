@@ -2,6 +2,7 @@
 #define TF_GRAYSCALEALPHA_PAINTER
 
 #include <TFAbstractPainter.h>
+#include <QtGui/QPixmap>
 
 namespace M4D {
 namespace GUI {
@@ -15,10 +16,10 @@ public:
 	TFGrayscaleAlphaPainter(bool drawAlpha);
 	~TFGrayscaleAlphaPainter();
 
-	void setArea(TFArea area);
-	const TFArea& getInputArea();
+	void setArea(QRect area);
+	QRect getInputArea();
+	void setWorkCopy(TFWorkCopy::Ptr workCopy);
 
-	void drawBackground(QPainter* drawer);
 	void drawData(QPainter* drawer, TFWorkCopy::Ptr workCopy);
 
 private:
@@ -28,14 +29,17 @@ private:
 	const TFSize spacing_;
 
 	const QColor background_;
-	const QColor grey_;
+	const QColor gray_;
 	const QColor alpha_;
 
 	bool drawAlpha_;
 
-	TFArea inputArea_;
-	TFArea backgroundArea_;
-	TFArea bottomBarArea_;
+	QRect inputArea_;
+	QRect backgroundArea_;
+	QRect bottomBarArea_;
+
+	QPixmap dBuffer_;
+	void drawBackground_(QPainter* drawer);
 };
 
 } // namespace GUI

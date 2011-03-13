@@ -3,7 +3,9 @@
 namespace M4D {
 namespace GUI {
 
-TFAbstractModifier::TFAbstractModifier(){}
+TFAbstractModifier::TFAbstractModifier():
+	toolsWidget_(NULL){
+}
 
 TFAbstractModifier::~TFAbstractModifier(){}
 /*
@@ -12,15 +14,20 @@ void TFAbstractModifier::setWorkCopy(TFWorkCopy::Ptr workCopy){
 	workCopy_ = workCopy;
 }
 */
+QWidget* TFAbstractModifier::getTools(){
+
+	return toolsWidget_;
+}
+
 TFWorkCopy::Ptr TFAbstractModifier::getWorkCopy(){
 
 	return workCopy_;
 }
 
-void TFAbstractModifier::setInputArea(TFArea inputArea){
+void TFAbstractModifier::setInputArea(QRect inputArea){
 
 	inputArea_ = inputArea;
-	workCopy_->resize(inputArea_.width, inputArea_.height);
+	workCopy_->resize(inputArea_.width(), inputArea_.height());
 }
 
 M4D::Common::TimeStamp TFAbstractModifier::getLastChangeTime(){
@@ -30,10 +37,10 @@ M4D::Common::TimeStamp TFAbstractModifier::getLastChangeTime(){
 
 TFPaintingPoint TFAbstractModifier::getRelativePoint_(const TFSize& x, const TFSize& y){	
 
-	int xMax = inputArea_.width - 1;
-	int yMax = inputArea_.height;
+	int xMax = inputArea_.width() - 1;
+	int yMax = inputArea_.height();
 	
-	TFPaintingPoint corrected = TFPaintingPoint(x - inputArea_.x, inputArea_.height - (y - inputArea_.y));
+	TFPaintingPoint corrected = TFPaintingPoint(x - inputArea_.x(), inputArea_.height() - (y - inputArea_.y()));
 
 	if( corrected.x < 0 )
 	{

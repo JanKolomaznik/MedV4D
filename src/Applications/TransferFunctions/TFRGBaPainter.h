@@ -15,10 +15,9 @@ public:
 	TFRGBaPainter(bool drawAlpha);
 	~TFRGBaPainter();
 
-	void setArea(TFArea area);
-	const TFArea& getInputArea();
+	void setArea(QRect area);
+	QRect getInputArea();
 
-	void drawBackground(QPainter* drawer);
 	void drawData(QPainter* drawer, TFWorkCopy::Ptr workCopy);
 
 private:
@@ -35,9 +34,12 @@ private:
 
 	bool drawAlpha_;
 
-	TFArea inputArea_;
-	TFArea backgroundArea_;
-	TFArea bottomBarArea_;
+	QRect inputArea_;
+	QRect backgroundArea_;
+	QRect bottomBarArea_;
+
+	QPixmap dBuffer_;
+	void drawBackground_(QPainter* drawer);
 };
 
 } // namespace GUI

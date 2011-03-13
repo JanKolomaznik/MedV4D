@@ -46,7 +46,7 @@ typedef TFPoint<int, int> TFPaintingPoint;
 
 typedef std::string TFName;
 typedef unsigned long TFSize;
-
+/*
 struct TFArea{	
 	TFSize x, y, width, height;
 
@@ -55,7 +55,7 @@ struct TFArea{
 	TFArea(TFSize x, TFSize y, TFSize width, TFSize height):
 		x(x), y(y), width(width), height(height){}
 };
-
+*/
 enum MouseButton{
 	MouseButtonLeft,
 	MouseButtonRight,
