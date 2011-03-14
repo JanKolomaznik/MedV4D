@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>919</width>
     <height>600</height>
    </rect>
   </property>
@@ -14,8 +14,47 @@
    <string>ViewerWindow</string>
   </property>
   <widget class="M4D::GUI::Viewer::BasicSliceViewer" name="mViewer"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>919</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuViewer">
+    <property name="title">
+     <string>Viewer</string>
+    </property>
+    <addaction name="actionReset_View"/>
+    <addaction name="separator"/>
+    <addaction name="action2D"/>
+    <addaction name="action3D"/>
+    <addaction name="separator"/>
+    <addaction name="actionUse_WLWindow"/>
+    <addaction name="actionUse_MIP"/>
+    <addaction name="actionUse_Transfer_Function"/>
+    <addaction name="separator"/>
+    <addaction name="actionEnable_Shading"/>
+    <addaction name="actionEnable_Jittering"/>
+    <addaction name="actionFine_Render"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave_View"/>
+    <addaction name="actionSave_Cycle"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuViewer"/>
+  </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QToolBar" name="toolBar">
+  <widget class="QToolBar" name="viewerToolBar">
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
@@ -26,31 +65,16 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionOpen"/>
+   <addaction name="separator"/>
    <addaction name="action2D"/>
    <addaction name="action3D"/>
+   <addaction name="separator"/>
    <addaction name="actionUse_WLWindow"/>
+   <addaction name="actionUse_Simple_Colormap"/>
    <addaction name="actionUse_MIP"/>
    <addaction name="actionUse_Transfer_Function"/>
+   <addaction name="separator"/>
    <addaction name="actionFine_Render"/>
-   <addaction name="actionApplyTransferFunction"/>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>800</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>File</string>
-    </property>
-    <addaction name="actionOpen"/>
-    <addaction name="actionQuit"/>
-   </widget>
-   <addaction name="menuFile"/>
   </widget>
   <action name="actionOpen">
    <property name="text">
@@ -66,14 +90,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
-   </property>
-  </action>
-  <action name="actionApplyTransferFunction">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>ApplyTransferFunction</string>
    </property>
   </action>
   <action name="actionUse_WLWindow">
@@ -121,6 +137,54 @@
     <string>Use MIP</string>
    </property>
   </action>
+  <action name="actionEnable_Shading">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Shading</string>
+   </property>
+  </action>
+  <action name="actionSave_View">
+   <property name="text">
+    <string>Save View</string>
+   </property>
+  </action>
+  <action name="actionSave_Cycle">
+   <property name="text">
+    <string>Save Cycle</string>
+   </property>
+  </action>
+  <action name="actionReset_View">
+   <property name="text">
+    <string>Reset View</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionUse_Simple_Colormap">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Use Simple Colormap</string>
+   </property>
+  </action>
+  <action name="actionEnable_Jittering">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Jittering</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -130,27 +194,16 @@
    <container>1</container>
    <slots>
     <slot>FineRender()</slot>
+    <slot>EnableShading(bool)</slot>
+    <slot>SaveCurrentView()</slot>
+    <slot>ResetView()</slot>
+    <slot>SaveCycle()</slot>
+    <slot>EnableJittering(bool)</slot>
    </slots>
   </customwidget>
  </customwidgets>
  <resources/>
  <connections>
-  <connection>
-   <sender>actionApplyTransferFunction</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>ViewerWindow</receiver>
-   <slot>toggleInteractiveTransferFunction(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>399</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>actionFine_Render</sender>
    <signal>triggered()</signal>
@@ -180,6 +233,86 @@
     <hint type="destinationlabel">
      <x>399</x>
      <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionEnable_Shading</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mViewer</receiver>
+   <slot>EnableShading(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>313</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSave_View</sender>
+   <signal>triggered()</signal>
+   <receiver>mViewer</receiver>
+   <slot>SaveCurrentView()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>314</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionReset_View</sender>
+   <signal>triggered()</signal>
+   <receiver>mViewer</receiver>
+   <slot>ResetView()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>314</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSave_Cycle</sender>
+   <signal>triggered()</signal>
+   <receiver>mViewer</receiver>
+   <slot>SaveCycle()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>314</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionEnable_Jittering</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>mViewer</receiver>
+   <slot>EnableJittering(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>459</x>
+     <y>314</y>
     </hint>
    </hints>
   </connection>

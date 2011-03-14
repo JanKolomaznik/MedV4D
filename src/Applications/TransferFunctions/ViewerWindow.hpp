@@ -1,16 +1,23 @@
 #ifndef VIEWER_WINDOW
 #define VIEWER_WINDOW
 
+#include "ui_ViewerWindow.h"
+
+#include "GUI/utils/TransferFunctionBuffer.h"
+#include "GUI/utils/ImageDataRenderer.h"
+#include "Imaging/ImageTools.h"
+#include "Imaging/Histogram.h"
+
+#include <cmath>
+
 #include <QtGui>
 #include <QtCore>
-#include "ui_ViewerWindow.h"
-#include "GUI/utils/TransferFunctionBuffer.h"
-#include "Imaging/Histogram.h"
+
 #include <TFPalette.h>
 
-class ViewerWindow: public QMainWindow, public Ui::ViewerWindow
-{
-	Q_OBJECT;
+class ViewerWindow: public QMainWindow, public Ui::ViewerWindow{
+
+	Q_OBJECT
 
 	typedef M4D::GUI::TransferFunctionBuffer1D Buffer1D;
 	typedef M4D::GUI::TransferFunctionBuffer1D::MappedInterval Interval;
@@ -23,21 +30,17 @@ public:
 
 public slots:
 
-	void applyTransferFunction();
-
 	void openFile();
+	void  openFile( const QString &aPath );
 
-	void openFile( const QString &aPath );
-
-	void updateTransferFunction();
-
+	void applyTransferFunction();
 	void toggleInteractiveTransferFunction( bool aChecked );
 
-	void updateToolbars();
-
 	void changeViewerType( int aRendererType );
-
 	void changeColorMapType( int aColorMap );
+
+	void updateTransferFunction();
+	void updateToolbars();
 
 protected:
 
@@ -46,12 +49,6 @@ protected:
 
 	QTimer	mTransFuncTimer;
 	M4D::Common::TimeStamp mLastTimeStamp;
-
-private:
-
-	M4D::Imaging::Histogram32::Ptr histogram_;
-
-	void sendImageHistogram(M4D::Imaging::AImage::Ptr image);
 
 };
 

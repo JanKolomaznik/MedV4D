@@ -28,7 +28,7 @@ class TFPalette : public QMainWindow{
 
 	typedef std::map<TFSize, TFHolder*> HolderMap;
 	typedef HolderMap::iterator HolderMapIt;
-	typedef M4D::Imaging::Histogram32::Ptr HistogramPtr;
+	typedef M4D::Imaging::Histogram64::Ptr HistogramPtr;
 
 public:
 
