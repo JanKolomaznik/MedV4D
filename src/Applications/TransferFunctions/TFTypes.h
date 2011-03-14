@@ -72,7 +72,7 @@ enum TFFunctionType{
 
 
 template<>
-static std::string convert<TFFunctionType, std::string>(const TFFunctionType &tfType){
+std::string convert<TFFunctionType, std::string>(const TFFunctionType &tfType){
 
 	switch(tfType){
 		case TFFUNCTION_RGBA:
@@ -88,7 +88,7 @@ static std::string convert<TFFunctionType, std::string>(const TFFunctionType &tf
 }
 
 template<>
-static TFFunctionType convert<std::string, TFFunctionType>(const std::string &tfType){
+TFFunctionType convert<std::string, TFFunctionType>(const std::string &tfType){
 
 	if(tfType == "TFHolderRGBa"){
 		return TFFUNCTION_RGBA;

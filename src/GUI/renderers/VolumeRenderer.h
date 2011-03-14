@@ -45,6 +45,8 @@ protected:
 
 struct VolumeRenderer::RenderingConfiguration
 {
+	RenderingConfiguration(): imageData( NULL ), colorTransform( ctMaxIntensityProjection ), transferFunction( NULL ), jitterEnabled( true ), shadingEnabled( true ), sampleCount( 150 )
+	{ }
 	const GLTextureImage3D			*imageData;
 	
 	int					colorTransform;

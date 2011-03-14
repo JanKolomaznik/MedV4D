@@ -43,6 +43,9 @@ protected:
 
 struct SliceRenderer::RenderingConfiguration
 {
+	RenderingConfiguration(): imageData( false ), plane( XY_PLANE ), currentSlice( 0 ), colorTransform( ctLUTWindow ), transferFunction( NULL ), enableInterpolation( true )
+	{}
+
 	const GLTextureImage3D			*imageData;
 	CartesianPlanes				plane;
 	Vector3i				currentSlice;

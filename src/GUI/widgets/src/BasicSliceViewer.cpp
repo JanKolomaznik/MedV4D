@@ -15,7 +15,7 @@ namespace Viewer
 {
 
 BasicSliceViewer::BasicSliceViewer( QWidget *parent ) : 
-	PredecessorType( parent ), _renderingMode( rmONE_DATASET ), _prepared( false ), mSaveFile( false ), mSaveCycle( false )
+	PredecessorType( parent ), _renderingMode( rmONE_DATASET ), _prepared( false ), mSaveFile( false ), mSaveCycle( false ), mRendererType( rt2DAlignedSlices )
 {
      /*QState *s1 = new QState();
      QState *s2 = new QState();

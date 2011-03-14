@@ -31,6 +31,46 @@
 namespace M4D {
 namespace GUI {
 
+namespace Detail 
+{
+template<typename ElementIterator>
+	bool applyTransferFunction(
+		ElementIterator begin,
+		ElementIterator end,
+		TFAbstractModifier::Ptr modifier_,
+		TFAbstractFunction::Ptr function_){
+
+		tfAbort("unsupported buffer type");
+		return false;
+	}
+
+	template<>
+	inline bool applyTransferFunction<TransferFunctionBuffer1D::Iterator>(
+		TransferFunctionBuffer1D::Iterator begin,
+		TransferFunctionBuffer1D::Iterator end,
+		TFAbstractModifier::Ptr modifier_,
+		TFAbstractFunction::Ptr function_
+		){
+
+		modifier_->getWorkCopy()->updateFunction(function_);
+
+		TFSize index = 0;
+		for(TransferFunctionBuffer1D::Iterator it = begin; it!=end; ++it)
+		{
+			tfAssert(index < function_->getDomain());
+			TFColor color = function_->getMappedRGBfColor(index);
+			
+			*it = TransferFunctionBuffer1D::ValueType(
+				color.component1, color.component2, color.component3, color.alpha);
+
+			++index;
+		}
+
+		return true;
+	}
+
+}
+
 class TFHolder : public QWidget{
 
 	Q_OBJECT
@@ -83,31 +123,7 @@ public:
 	bool applyTransferFunction(
 		ElementIterator begin,
 		ElementIterator end){
-
-		tfAbort("unsupported buffer type");
-		return false;
-	}
-
-	template<>
-	bool applyTransferFunction<TransferFunctionBuffer1D::Iterator>(
-		TransferFunctionBuffer1D::Iterator begin,
-		TransferFunctionBuffer1D::Iterator end){
-
-		modifier_->getWorkCopy()->updateFunction(function_);
-
-		TFSize index = 0;
-		for(TransferFunctionBuffer1D::Iterator it = begin; it!=end; ++it)
-		{
-			tfAssert(index < function_->getDomain());
-			TFColor color = function_->getMappedRGBfColor(index);
-			
-			*it = TransferFunctionBuffer1D::ValueType(
-				color.component1, color.component2, color.component3, color.alpha);
-
-			++index;
-		}
-
-		return true;
+		return M4D::GUI::Detail::applyTransferFunction< ElementIterator >( begin, end, modifier_, function_ );
 	}
 
 signals:
@@ -168,7 +184,7 @@ protected:
 };
 
 template<>
-static std::string convert<TFHolder::Type, std::string>(const TFHolder::Type &holderType){
+std::string convert<TFHolder::Type, std::string>(const TFHolder::Type &holderType){
 
 	switch(holderType){
 		case TFHolder::TFHolderGrayscale:
@@ -204,7 +220,7 @@ static std::string convert<TFHolder::Type, std::string>(const TFHolder::Type &ho
 }
 
 template<>
-static TFHolder::Type convert<std::string, TFHolder::Type>(const std::string &holderType){
+TFHolder::Type convert<std::string, TFHolder::Type>(const std::string &holderType){
 
 	if(holderType == "Grayscale"){
 		return TFHolder::TFHolderGrayscale;
