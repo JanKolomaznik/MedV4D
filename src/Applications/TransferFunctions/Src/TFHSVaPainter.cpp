@@ -12,6 +12,7 @@ TFHSVaPainter::TFHSVaPainter(bool drawAlpha):
 	saturation_(Qt::darkCyan),
 	value_(Qt::lightGray),
 	alpha_(Qt::yellow),
+	hist_(Qt::magenta),
 	drawAlpha_(drawAlpha){
 }
 
@@ -76,7 +77,7 @@ void TFHSVaPainter::drawSideColorBar_(QPainter *drawer){
 
 void TFHSVaPainter::drawData(QPainter* drawer, TFWorkCopy::Ptr workCopy){
 
-	tfAssert(workCopy->size() == inputArea_.width());
+	//tfAssert(workCopy->size() == inputArea_.width());
 
 	if(workCopy->changed())
 	{
@@ -95,9 +96,16 @@ void TFHSVaPainter::drawData(QPainter* drawer, TFWorkCopy::Ptr workCopy){
 		QColor qColor;
 		for(int i = 0; i < inputArea_.width() - 1; ++i)
 		{
+			//histogram
+			if(workCopy->histogramEnabled())
+			{
+				dbPainter.setPen(hist_);	
+				dbPainter.drawLine(origin.x + i, origin.y + (1 - workCopy->getHistogramValue(i))*inputArea_.height(),
+					origin.x + i + 1, origin.y + (1 - workCopy->getHistogramValue(i+1))*inputArea_.height());
+			}
+			//alpha
 			if(drawAlpha_)
 			{
-				//alpha
 				dbPainter.setPen(alpha_);
 				dbPainter.drawLine(origin.x + i, origin.y + (1 - workCopy->getAlpha(i))*inputArea_.height(),
 					origin.x + i + 1, origin.y + (1 - workCopy->getAlpha(i+1))*inputArea_.height());
@@ -114,8 +122,6 @@ void TFHSVaPainter::drawData(QPainter* drawer, TFWorkCopy::Ptr workCopy){
 			dbPainter.setPen(hue_);
 			dbPainter.drawLine(origin.x + i, origin.y + (1 - workCopy->getComponent1(i))*inputArea_.height(),
 				origin.x + i + 1, origin.y + (1 - workCopy->getComponent1(i+1))*inputArea_.height());	
-
-			//TODO draw histogram if enabled
 		}
 
 		dbPainter.setClipRect(bottomBarArea_.x() + 1, bottomBarArea_.y() + 1,

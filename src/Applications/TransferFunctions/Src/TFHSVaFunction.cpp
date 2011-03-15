@@ -3,7 +3,7 @@
 namespace M4D {
 namespace GUI {
 
-TFHSVaFunction::TFHSVaFunction(const TFSize& domain){
+TFHSVaFunction::TFHSVaFunction(const TFSize domain){
 
 	type_ = TFFUNCTION_HSVA;
 	colorMap_ = TFColorMapPtr(new TFColorMap(domain));
@@ -18,7 +18,7 @@ TFHSVaFunction::TFHSVaFunction(TFHSVaFunction &function){
 
 TFHSVaFunction::~TFHSVaFunction(){}
 
-TFColor TFHSVaFunction::getMappedRGBfColor(const TFSize& value){
+TFColor TFHSVaFunction::getMappedRGBfColor(const TFSize value){
 
 	QColor color;
 	color.setHsvF(

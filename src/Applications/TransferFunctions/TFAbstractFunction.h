@@ -16,13 +16,15 @@ public:
 
 	TFFunctionType getType() const;
 
-	const TFSize& getDomain();
+	const TFSize getDomain();
 
 	TFColorMapPtr getColorMap();
 	
-	virtual TFColor getMappedRGBfColor(const TFSize& value) = 0;
+	virtual TFColor getMappedRGBfColor(const TFSize value) = 0;
 
 	void clear();
+
+	void resize(const TFSize domain);
 
 protected:
 

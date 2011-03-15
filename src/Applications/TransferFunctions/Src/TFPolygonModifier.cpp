@@ -3,12 +3,13 @@
 namespace M4D {
 namespace GUI {
 
-TFPolygonModifier::TFPolygonModifier(TFAbstractModifier::Type type, const TFSize& domain):
+TFPolygonModifier::TFPolygonModifier(TFAbstractModifier::Type type, const TFSize domain):
 	type_(type),
 	tools_(new Ui::TFPolygonModifier),
 	activeView_(Active1),
 	inputHelper_(),
 	leftMousePressed_(false),
+	zoomMovement_(false),
 	baseRadius_(50),
 	topRadius_(20){
 
@@ -17,17 +18,27 @@ TFPolygonModifier::TFPolygonModifier(TFAbstractModifier::Type type, const TFSize
 	toolsWidget_ = new QWidget();
 	tools_->setupUi(toolsWidget_);
 
+	tools_->maxZoomSpin->setValue((int)workCopy_->getMaxZoom());
+	tools_->ratioValue->setText(QString::number(workCopy_->getZoom()));
+	tools_->zoomXValue->setText(QString::number(domain/2));
+	tools_->zoomYValue->setText(QString::number(0.5));
+
 	bool changeViewConnected = QObject::connect(tools_->activeViewBox, SIGNAL(currentIndexChanged(int)),
-		this, SLOT(activeViewChanged(int)));
+		this, SLOT(activeView_changed(int)));
 	tfAssert(changeViewConnected);
 	bool histogramCheckConnected = QObject::connect(tools_->histogramCheck, SIGNAL(toggled(bool)),
-		this, SLOT(histogramCheck(bool)));
+		this, SLOT(histogram_check(bool)));
 	tfAssert(histogramCheckConnected);
+
+	bool maxZoomSpinConnected = QObject::connect( tools_->maxZoomSpin, SIGNAL(valueChanged(int)),
+		this, SLOT(maxZoomSpin_changed(int)));
+	tfAssert(maxZoomSpinConnected);
+
 	bool topSpinConnected = QObject::connect(tools_->topSpin, SIGNAL(valueChanged(int)),
-		this, SLOT(topSpinChanged(int)));
+		this, SLOT(topSpin_changed(int)));
 	tfAssert(topSpinConnected);
 	bool bottomSpinConnected = QObject::connect(tools_->bottomSpin, SIGNAL(valueChanged(int)),
-		this, SLOT(bottomSpinChanged(int)));
+		this, SLOT(bottomSpin_changed(int)));
 	tfAssert(bottomSpinConnected);
 
 	switch(type_)
@@ -78,9 +89,13 @@ TFPolygonModifier::TFPolygonModifier(TFAbstractModifier::Type type, const TFSize
 
 TFPolygonModifier::~TFPolygonModifier(){}
 
-void TFPolygonModifier::histogramCheck(bool enabled){}
+void TFPolygonModifier::histogram_check(bool enabled){
 
-void TFPolygonModifier::activeViewChanged(int index){
+	workCopy_->setHistogramEnabled(enabled);
+	emit RefreshView();
+}
+
+void TFPolygonModifier::activeView_changed(int index){
 
 	switch(index)
 	{
@@ -113,7 +128,37 @@ void TFPolygonModifier::activeViewChanged(int index){
 	}
 }
 
-void TFPolygonModifier::mousePress(const TFSize& x, const TFSize& y, MouseButton button){
+void TFPolygonModifier::topSpin_changed(int value){
+
+	topRadius_ = value;
+	if(baseRadius_ < topRadius_) tools_->bottomSpin->setValue(topRadius_);
+}
+
+void TFPolygonModifier::bottomSpin_changed(int value){
+
+	baseRadius_ = value;
+	if(baseRadius_ < topRadius_) tools_->topSpin->setValue(baseRadius_);
+}
+
+void TFPolygonModifier::maxZoomSpin_changed(int value){
+
+	workCopy_->setMaxZoom(value);
+}
+
+void TFPolygonModifier::updateZoomTools_(){
+
+	tools_->ratioValue->setText(QString::number(workCopy_->getZoom()));
+
+	TFPoint<int,float> center = workCopy_->getZoomCenter();
+
+	tools_->zoomXValue->setText(QString::number(center.x));
+	tools_->zoomYValue->setText(QString::number(center.y));
+}
+
+void TFPolygonModifier::mousePress(const int x, const int y, MouseButton button){
+
+	TFPaintingPoint relativePoint = getRelativePoint_(x,y);
+	if(relativePoint == ignorePoint_) return;
 
 	if(button == MouseButtonRight)
 	{
@@ -123,93 +168,113 @@ void TFPolygonModifier::mousePress(const TFSize& x, const TFSize& y, MouseButton
 	if(button == MouseButtonLeft)
 	{
 		leftMousePressed_ = true;
-		inputHelper_.x = x;
-		inputHelper_.y = y;
+		inputHelper_ = relativePoint;
 	}
+	if(button == MouseButtonMid)
+	{
+		zoomMovement_ = true;
+		zoomMoveHelper_ = relativePoint;
+	}
+
+	emit RefreshView();
 }
 
-void TFPolygonModifier::mouseRelease(const TFSize& x, const TFSize& y){
+void TFPolygonModifier::mouseRelease(const int x, const int y){
 
-	if(!leftMousePressed_) return;
+	TFPaintingPoint relativePoint = getRelativePoint_(x, y, leftMousePressed_ || zoomMovement_);
+	if(relativePoint == ignorePoint_) return;
 
-	addPolygon_(x, y);
+	if(leftMousePressed_) addPolygon_(relativePoint);
+
 	leftMousePressed_ = false;
+	zoomMovement_ = false;
+
+	emit RefreshView();
 }
 
-void TFPolygonModifier::mouseMove(const TFSize& x, const TFSize& y){
+void TFPolygonModifier::mouseMove(const int x, const int y){
 
-	if(!leftMousePressed_) return;
+	TFPaintingPoint relativePoint = getRelativePoint_(x, y, leftMousePressed_ || zoomMovement_);
+	if(relativePoint == ignorePoint_) return;
 
-	for(;inputHelper_.x < x; ++inputHelper_.x)
+	if(leftMousePressed_)
 	{
-		addPoint_(inputHelper_.x - baseRadius_, inputArea_.y() + inputArea_.height());
+		for(;inputHelper_.x < relativePoint.x; ++inputHelper_.x)
+		{
+			addPoint_(inputHelper_.x - baseRadius_, 0);
+		}
+
+		addPolygon_(relativePoint);
+
+		for(;inputHelper_.x > relativePoint.x; --inputHelper_.x)
+		{
+			addPoint_(inputHelper_.x + baseRadius_, 0);
+		}
 	}
 
-	addPolygon_(x, y);
-
-	for(;inputHelper_.x > x; --inputHelper_.x)
+	if(zoomMovement_)
 	{
-		addPoint_(inputHelper_.x + baseRadius_, inputArea_.y() + inputArea_.height());
+		workCopy_->move(zoomMoveHelper_.x - relativePoint.x, zoomMoveHelper_.y - relativePoint.y);
+		zoomMoveHelper_ = relativePoint;
+		updateZoomTools_();
 	}
+
+	emit RefreshView();
 }
 
-void TFPolygonModifier::addPolygon_(const int &x, const int &y){
+void TFPolygonModifier::mouseWheel(const int steps, const int x, const int y){
 
-	addLine_(x - baseRadius_, inputArea_.y() + inputArea_.height(),	x - topRadius_, y);
-	addLine_(x - topRadius_, y, x + topRadius_, y);
-	addLine_(x + topRadius_, y, x + baseRadius_, inputArea_.y() + inputArea_.height());
+	TFPaintingPoint relativePoint = getRelativePoint_(x,y);
+	if(relativePoint == ignorePoint_) return;
+
+	if(steps > 0) workCopy_->zoomIn(steps, relativePoint.x, relativePoint.y);
+	if(steps < 0) workCopy_->zoomOut(-steps, relativePoint.x, relativePoint.y);
+	
+	updateZoomTools_();
+	emit RefreshView();
 }
 
-void TFPolygonModifier::addPoint_(const int& x, const int& y){
+void TFPolygonModifier::addPolygon_(const TFPaintingPoint point){
 
-	if(x < 0 || x > (int)(inputArea_.x() + inputArea_.width())) return;
+	addLine_(point.x - baseRadius_, 0,	point.x - topRadius_, point.y);
+	addLine_(point.x - topRadius_, point.y, point.x + topRadius_, point.y);
+	addLine_(point.x + topRadius_, point.y, point.x + baseRadius_, 0);
+}
 
-	TFPaintingPoint point = getRelativePoint_(x, y);
+void TFPolygonModifier::addPoint_(const int x, const int y){
 
-	float yValue = point.y/(float)inputArea_.height();
+	float yValue = y/(float)inputArea_.height();
 	
 	switch(activeView_)
 	{
 		case Active1:
 		{
-			workCopy_->setComponent1(point.x, yValue);
+			workCopy_->setComponent1(x, yValue);
 			if(type_ == TFModifierGrayscale ||
 				type_ == TFModifierGrayscaleAlpha)
 			{
-				workCopy_->setComponent2(point.x, yValue);
-				workCopy_->setComponent3(point.x, yValue);
+				workCopy_->setComponent2(x, yValue);
+				workCopy_->setComponent3(x, yValue);
 			}
 			break;
 		}
 		case Active2:
 		{
-			workCopy_->setComponent2(point.x, yValue);
+			workCopy_->setComponent2(x, yValue);
 			break;
 		}
 		case Active3:
 		{
-			workCopy_->setComponent3(point.x, yValue);
+			workCopy_->setComponent3(x, yValue);
 			break;
 		}
 		case ActiveAlpha:
 		{
-			workCopy_->setAlpha(point.x, yValue);
+			workCopy_->setAlpha(x, yValue);
 			break;
 		}
 	}
 	++lastChange_;	
-}
-
-void TFPolygonModifier::topSpinChanged(int value){
-
-	topRadius_ = value;
-	if(baseRadius_ < topRadius_) tools_->bottomSpin->setValue(topRadius_);
-}
-
-void TFPolygonModifier::bottomSpinChanged(int value){
-
-	baseRadius_ = value;
-	if(baseRadius_ < topRadius_) tools_->topSpin->setValue(baseRadius_);
 }
 
 } // namespace GUI

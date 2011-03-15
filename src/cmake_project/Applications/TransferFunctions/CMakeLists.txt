@@ -25,6 +25,7 @@ TARGET_MEDV4D_PROGRAM( TransferFunctions ${MEDV4D_CMAKE_SOURCE_DIR}/../Applicati
 configure_file(${MEDV4D_CMAKE_SOURCE_DIR}/../GUI/shaders/ImageRender.cgfx
     ${CMAKE_CURRENT_BINARY_DIR}/ImageRender.cgfx COPYONLY)
 
+IF(WIN32)
 #copy libs to project debug dir
 configure_file(${MEDV4D_CMAKE_SOURCE_DIR}/../bin/qt/QtCore4.dll
     ${MEDV4D_CMAKE_SOURCE_DIR}/../executables/Debug/QtCore4.dll COPYONLY)
@@ -38,17 +39,4 @@ configure_file(${MEDV4D_CMAKE_SOURCE_DIR}/../bin/qt/QtOpenGL4.dll
     ${MEDV4D_CMAKE_SOURCE_DIR}/../executables/Debug/QtOpenGL4.dll COPYONLY)
 configure_file(${MEDV4D_CMAKE_SOURCE_DIR}/../bin/qt/QtOpenGLd4.dll
     ${MEDV4D_CMAKE_SOURCE_DIR}/../executables/Debug/QtOpenGLd4.dll COPYONLY)
-
-#copy libs to project debug dir
-configure_file(${MEDV4D_CMAKE_SOURCE_DIR}/../bin/qt/QtCore4.dll
-    ${MEDV4D_CMAKE_SOURCE_DIR}/../executables/Release/QtCore4.dll COPYONLY)
-configure_file(${MEDV4D_CMAKE_SOURCE_DIR}/../bin/qt/QtCored4.dll
-    ${MEDV4D_CMAKE_SOURCE_DIR}/../executables/Release/QtCored4.dll COPYONLY)
-configure_file(${MEDV4D_CMAKE_SOURCE_DIR}/../bin/qt/QtGui4.dll
-    ${MEDV4D_CMAKE_SOURCE_DIR}/../executables/Release/QtGui4.dll COPYONLY)
-configure_file(${MEDV4D_CMAKE_SOURCE_DIR}/../bin/qt/QtGuid4.dll
-    ${MEDV4D_CMAKE_SOURCE_DIR}/../executables/Release/QtGuid4.dll COPYONLY)
-configure_file(${MEDV4D_CMAKE_SOURCE_DIR}/../bin/qt/QtOpenGL4.dll
-    ${MEDV4D_CMAKE_SOURCE_DIR}/../executables/Release/QtOpenGL4.dll COPYONLY)
-configure_file(${MEDV4D_CMAKE_SOURCE_DIR}/../bin/qt/QtOpenGLd4.dll
-    ${MEDV4D_CMAKE_SOURCE_DIR}/../executables/Release/QtOpenGLd4.dll COPYONLY)
+ENDIF(WIN32)

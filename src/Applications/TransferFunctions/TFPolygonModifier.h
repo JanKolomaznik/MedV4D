@@ -15,19 +15,23 @@ public:
 
 	typedef boost::shared_ptr<TFPolygonModifier> Ptr;
 
-	TFPolygonModifier(TFAbstractModifier::Type type, const TFSize& domain);
+	TFPolygonModifier(TFAbstractModifier::Type type, const TFSize domain);
 	~TFPolygonModifier();
 
-	void mousePress(const TFSize& x, const TFSize& y, MouseButton button);
-	void mouseRelease(const TFSize& x, const TFSize& y);
-	void mouseMove(const TFSize& x, const TFSize& y);
+	void mousePress(const int x, const int y, MouseButton button);
+	void mouseRelease(const int x, const int y);
+	void mouseMove(const int x, const int y);
+	void mouseWheel(const int steps, const int x, const int y);
 
 private slots:
 
-	void activeViewChanged(int index);
-	void histogramCheck(bool enabled);
-	void bottomSpinChanged(int value);
-	void topSpinChanged(int value);
+	void activeView_changed(int index);
+	void histogram_check(bool enabled);
+
+	void bottomSpin_changed(int value);
+	void topSpin_changed(int value);
+
+	void maxZoomSpin_changed(int value);
 
 private:
 
@@ -47,14 +51,20 @@ private:
 	void activeAlphaNext_();
 
 	TFAbstractModifier::Type type_;
-	TFPoint<TFSize,TFSize> inputHelper_;
+
 	bool leftMousePressed_;
+	TFPaintingPoint inputHelper_;
+
+	bool zoomMovement_;
+	TFPaintingPoint zoomMoveHelper_;
 
 	TFSize baseRadius_;
 	TFSize topRadius_;
 
-	void addPolygon_(const int& x, const int& y);
-	void addPoint_(const int& x, const int& y);
+	void addPolygon_(const TFPaintingPoint point);
+	void addPoint_(const int x, const int y);
+
+	void updateZoomTools_();
 };
 
 } // namespace GUI

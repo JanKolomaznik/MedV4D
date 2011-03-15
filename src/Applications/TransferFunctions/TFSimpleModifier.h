@@ -15,17 +15,20 @@ public:
 
 	typedef boost::shared_ptr<TFSimpleModifier> Ptr;
 
-	TFSimpleModifier(TFAbstractModifier::Type type, const TFSize& domain);
+	TFSimpleModifier(TFAbstractModifier::Type type, const TFSize domain);
 	~TFSimpleModifier();
 
-	void mousePress(const TFSize& x, const TFSize& y, MouseButton button);
-	void mouseRelease(const TFSize& x, const TFSize& y);
-	void mouseMove(const TFSize& x, const TFSize& y);
+	void mousePress(const int x, const int y, MouseButton button);
+	void mouseRelease(const int x, const int y);
+	void mouseMove(const int x, const int y);
+	void mouseWheel(const int steps, const int x, const int y);
 
 private slots:
 
-	void activeViewChanged(int index);
-	void histogramCheck(bool enabled);
+	void activeView_changed(int index);
+	void histogram_check(bool enabled);
+
+	void maxZoomSpin_changed(int value);
 
 private:
 
@@ -40,10 +43,16 @@ private:
 	Ui::TFSimpleModifier* tools_;
 
 	TFAbstractModifier::Type type_;
-	TFPaintingPoint inputHelper_;
-	bool leftMousePressed_;
 
-	void addPoint_(const int& x, const int& y);
+	bool leftMousePressed_;
+	TFPaintingPoint inputHelper_;
+
+	bool zoomMovement_;
+	TFPaintingPoint zoomMoveHelper_;
+
+	void addPoint_(const int x, const int y);
+
+	void updateZoomTools_();
 };
 
 } // namespace GUI

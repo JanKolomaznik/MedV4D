@@ -4,22 +4,13 @@
 namespace M4D {
 namespace GUI {
 
-TFWorkCopy::TFWorkCopy(const TFSize& domain):
+TFWorkCopy::TFWorkCopy(const TFSize domain):
 	domain_(domain),
-	data_(new TFColorMap()),
+	data_(new TFColorMap(domain)),
 	xSize_(0),
 	ySize_(0),
-	changed_(true){
-}
-
-//---getters---
-
-TFColor TFWorkCopy::getColor(const TFSize& index){
-
-	TFColor fullColor = (*data_)[index];
-	fullColor.alpha = 1;
-
-	return fullColor;
+	changed_(true),
+	histogramEnabled_(false){
 }
 
 bool TFWorkCopy::changed(){
@@ -32,289 +23,324 @@ bool TFWorkCopy::changed(){
 	return false;
 }
 
-float TFWorkCopy::getComponent1(const TFSize& index){
+void TFWorkCopy::setHistogram(TFHistogramPtr histogram){
 
-	return ((*data_)[index].component1 - zoom_.yOffset)*zoom_.zoom;
+	histogram_ = histogram;
 }
 
-float TFWorkCopy::getComponent2(const TFSize& index){
+void TFWorkCopy::setHistogramEnabled(bool value){
 
-	return ((*data_)[index].component2 - zoom_.yOffset)*zoom_.zoom;
+	if(histogramEnabled_ != value) changed_ = true;
+	histogramEnabled_ = value;
 }
 
-float TFWorkCopy::getComponent3(const TFSize& index){
+bool TFWorkCopy::histogramEnabled(){
 
-	return ((*data_)[index].component3 - zoom_.yOffset)*zoom_.zoom;
+	return histogramEnabled_;
 }
 
-float TFWorkCopy::getAlpha(const TFSize& index){
+//---getters---
 
-	return ((*data_)[index].alpha - zoom_.yOffset)*zoom_.zoom;
+TFColor TFWorkCopy::getColor(const TFSize index){
+
+	TFColor result(0,0,0,0);
+	int count = 0;
+	int bottom = -zoom_.ratio/2;
+	int top = (zoom_.ratio+1)/2;
+	int indexBase = index*zoom_.xRatio + zoom_.xOffset;
+	int currIndex = indexBase;
+	for(int i = bottom; i < top; ++i)
+	{
+		currIndex = indexBase + i;
+		if(currIndex >= 0 && currIndex < (int)domain_)
+		{
+			result += (*data_)[currIndex];
+			++count;
+		}
+	}
+	result /= count;
+	result.alpha = 1;
+	tfAssert(count > 0);
+	return result;
+}
+
+float TFWorkCopy::getComponent1(const TFSize index){
+
+	float result = 0;
+	int count = 0;
+	int bottom = -zoom_.ratio/2;
+	int top = (zoom_.ratio+1)/2;
+	int indexBase = index*zoom_.xRatio + zoom_.xOffset;
+	int currIndex = indexBase;
+	for(int i = bottom; i < top; ++i)
+	{
+		currIndex = indexBase + i;
+		if(currIndex >= 0 && currIndex < (int)domain_)
+		{
+			result += ((*data_)[currIndex].component1 - zoom_.yOffset)*zoom_.zoom;
+			++count;
+		}
+	}
+	tfAssert(count > 0);
+	return result/count;
+}
+
+float TFWorkCopy::getComponent2(const TFSize index){
+
+	float result = 0;
+	int count = 0;
+	int bottom = -zoom_.ratio/2;
+	int top = (zoom_.ratio+1)/2;
+	int indexBase = index*zoom_.xRatio + zoom_.xOffset;
+	int currIndex = indexBase;
+	for(int i = bottom; i < top; ++i)
+	{
+		currIndex = indexBase + i;
+		if(currIndex >= 0 && currIndex < (int)domain_)
+		{
+			result += ((*data_)[currIndex].component2 - zoom_.yOffset)*zoom_.zoom;
+			++count;
+		}
+	}
+	tfAssert(count > 0);
+	return result/count;
+}
+
+float TFWorkCopy::getComponent3(const TFSize index){
+
+	float result = 0;
+	int count = 0;
+	int bottom = -zoom_.ratio/2;
+	int top = (zoom_.ratio+1)/2;
+	int indexBase = index*zoom_.xRatio + zoom_.xOffset;
+	int currIndex = indexBase;
+	for(int i = bottom; i < top; ++i)
+	{
+		currIndex = indexBase + i;
+		if(currIndex >= 0 && currIndex < (int)domain_)
+		{
+			result += ((*data_)[currIndex].component3 - zoom_.yOffset)*zoom_.zoom;
+			++count;
+		}
+	}
+	tfAssert(count > 0);
+	return result/count;
+}
+
+float TFWorkCopy::getAlpha(const TFSize index){
+
+	float result = 0;
+	int count = 0;
+	int bottom = -zoom_.ratio/2;
+	int top = (zoom_.ratio+1)/2;
+	int indexBase = index*zoom_.xRatio + zoom_.xOffset;
+	int currIndex = indexBase;
+	for(int i = bottom; i < top; ++i)
+	{
+		currIndex = indexBase + i;
+		if(currIndex >= 0 && currIndex < (int)domain_)
+		{
+			result += ((*data_)[currIndex].alpha - zoom_.yOffset)*zoom_.zoom;
+			++count;
+		}
+	}
+	tfAssert(count > 0);
+	return result/count;
+}
+
+float TFWorkCopy::getHistogramValue(const TFSize index){
+
+	if(!histogramEnabled_ || !histogram_) return -1;
+
+	float result = 0;
+	int count = 0;
+	int bottom = -zoom_.ratio/2;
+	int top = (zoom_.ratio+1)/2;
+	int indexBase = index*zoom_.xRatio + zoom_.xOffset + 1;
+	int currIndex = indexBase;
+	float maxHistValue = HistogramGetMaxCount(*histogram_);
+	for(int i = bottom; i < top; ++i)
+	{
+		currIndex = indexBase + i;
+		if(currIndex >= 0 && currIndex < (int)domain_)
+		{
+			result += (((*histogram_)[currIndex]/maxHistValue) - zoom_.yOffset)*zoom_.zoom;
+			++count;
+		}
+	}
+	tfAssert(count > 0);
+	return result/count;
 }
 
 //---setters---
 
-void TFWorkCopy::setComponent1(const TFSize& index, const float& value){
+void TFWorkCopy::setComponent1(const TFSize index, const float value){
 
-	(*data_)[index].component1 = value/zoom_.zoom + zoom_.yOffset;
+	float correctedValue = value/zoom_.zoom + zoom_.yOffset;
+	if(correctedValue < 0) correctedValue = 0;
+	if(correctedValue > 1) correctedValue = 1;
+
+	int bottom = -zoom_.ratio/2;
+	int top = (zoom_.ratio+1)/2;
+	int indexBase = index*zoom_.xRatio + zoom_.xOffset;
+	int currIndex = indexBase;
+
+	for(int i = bottom; i < top; ++i)
+	{
+		currIndex = indexBase + i;
+		if(currIndex >= 0 && currIndex < (int)domain_)
+		{
+			(*data_)[currIndex].component1 = correctedValue;
+		}
+	}
 	changed_ = true;
 }
 
-void TFWorkCopy::setComponent2(const TFSize& index, const float& value){
+void TFWorkCopy::setComponent2(const TFSize index, const float value){
 
-	(*data_)[index].component2 = value/zoom_.zoom + zoom_.yOffset;
+	float correctedValue = value/zoom_.zoom + zoom_.yOffset;
+	if(correctedValue < 0) correctedValue = 0;
+	if(correctedValue > 1) correctedValue = 1;
+
+	int bottom = -zoom_.ratio/2;
+	int top = (zoom_.ratio+1)/2;
+	int indexBase = index*zoom_.xRatio + zoom_.xOffset;
+	int currIndex = indexBase;
+	for(int i = bottom; i < top; ++i)
+	{
+		currIndex = indexBase + i;
+		if(currIndex >= 0 && currIndex < (int)domain_)
+		{
+			(*data_)[currIndex].component2 = correctedValue;
+		}
+	}
 	changed_ = true;
 }
 
-void TFWorkCopy::setComponent3(const TFSize& index, const float& value){
+void TFWorkCopy::setComponent3(const TFSize index, const float value){
 
-	(*data_)[index].component3 = value/zoom_.zoom + zoom_.yOffset;
+	float correctedValue = value/zoom_.zoom + zoom_.yOffset;
+	if(correctedValue < 0) correctedValue = 0;
+	if(correctedValue > 1) correctedValue = 1;
+
+	int bottom = -zoom_.ratio/2;
+	int top = (zoom_.ratio+1)/2;
+	int indexBase = index*zoom_.xRatio + zoom_.xOffset;
+	int currIndex = indexBase;
+	for(int i = bottom; i < top; ++i)
+	{
+		currIndex = indexBase + i;
+		if(currIndex >= 0 && currIndex < (int)domain_)
+		{
+			(*data_)[currIndex].component3 = correctedValue;
+		}
+	}
 	changed_ = true;
 }
 
-void TFWorkCopy::setAlpha(const TFSize& index, const float& value){
+void TFWorkCopy::setAlpha(const TFSize index, const float value){
 
-	(*data_)[index].alpha = value/zoom_.zoom + zoom_.yOffset;
+	float correctedValue = value/zoom_.zoom + zoom_.yOffset;
+	if(correctedValue < 0) correctedValue = 0;
+	if(correctedValue > 1) correctedValue = 1;
+
+	int bottom = -zoom_.ratio/2;
+	int top = (zoom_.ratio+1)/2;
+	int indexBase = index*zoom_.xRatio + zoom_.xOffset;
+	int currIndex = indexBase;
+	for(int i = bottom; i < top; ++i)
+	{
+		currIndex = indexBase + i;
+		if(currIndex >= 0 && currIndex < (int)domain_)
+		{
+			(*data_)[currIndex].alpha = correctedValue;
+		}
+	}
 	changed_ = true;
 }
 
 //---size---
 
-void TFWorkCopy::resize(const TFSize& xSize, const TFSize& ySize){
+void TFWorkCopy::resize(const TFSize xSize, const TFSize ySize){
 
 	xSize_ = xSize;
-	ySize_ = ySize;
-	data_->resize(xSize_);
+	ySize_ = ySize;	
+	computeZoom_(zoom_.zoom, xSize_/2, ySize_/2);
 	changed_ = true;
-}
-
-TFSize TFWorkCopy::size(){
-
-	return data_->size();
 }
 
 //---zoom---
 
-void TFWorkCopy::zoomIn(const TFSize& stepCount, const TFSize& inputX, const TFSize& inputY){
+void TFWorkCopy::zoomIn(const TFSize stepCount, const int zoomX, const int zoomY){
 
-	/*
-	float nextZoom = zoom_.zoom;
-	for(TFSize i = 0; i < stepCount; ++i)
-	{
-		nextZoom *= 2;
-		if(data_->size()*nextZoom > domain_)
-		{
-			nextZoom /= 2;
-			break;
-		}
-	}
-	if(nextZoom == zoom_.zoom) return;
-	computeZoom_(nextZoom, inputX, inputY);
-	*/
-	if(zoom_.zoom == zoom_.maxZoom) return;
+	if(zoom_.zoom == zoom_.max) return;
 
 	float nextZoom = zoom_.zoom + stepCount;	
-	if(nextZoom > zoom_.maxZoom) nextZoom = zoom_.maxZoom;
+	if(nextZoom > zoom_.max) nextZoom = zoom_.max;
 
-	computeZoom_(nextZoom, inputX, inputY);
-
-	changed_ = true;
+	computeZoom_(nextZoom, zoomX, zoomY);
 }
 
-void TFWorkCopy::zoomOut(const TFSize& stepCount, const TFSize& inputX, const TFSize& inputY){
+void TFWorkCopy::zoomOut(const TFSize stepCount, const int zoomX, const int zoomY){
 
-	/*
-	if(zoom_.zoom == 1) return;
-
-	float nextZoom = zoom_.zoom;
-	for(TFSize i = 0; i < stepCount; ++i)
-	{
-		nextZoom /= 2;
-		if(nextZoom == 1)
-		{
-			zoom_.reset();
-			return;
-		}
-	}
-	computeZoom_(nextZoom, inputX, inputY);
-	*/
 	if(zoom_.zoom == 1) return;
 
 	float nextZoom = zoom_.zoom - stepCount;
-	if(nextZoom < 1) zoom_.reset();
+	if(nextZoom > zoom_.max) nextZoom = zoom_.max;
+	if(nextZoom < 1) nextZoom = 1;
 
-	computeZoom_(nextZoom, inputX, inputY);
-	
-	changed_ = true;
+	computeZoom_(nextZoom, zoomX, zoomY);
+}
+
+void TFWorkCopy::zoom(const float zoom, const int zoomX, const float zoomY){
+
+	if(zoom == zoom_.zoom && zoomX == zoom_.center.x && zoomY == zoom_.center.y) return;
+
+	float nextZoom = zoom;
+	if(nextZoom < 1) nextZoom = 1;
+	if(nextZoom > zoom_.max) nextZoom = zoom_.max;
+
+	int xCoord = (zoomX-zoom_.xOffset)/zoom_.xRatio;
+	int yCoord = (int)(((zoomY-zoom_.yOffset)*zoom_.zoom)*ySize_);
+	computeZoom_(nextZoom, xCoord, yCoord);
 }
 
 void TFWorkCopy::move(int xDirectionIncrement, int yDirectionIncrement){
 
 
-	TFSize moveX = xSize_/2 + xDirectionIncrement;
-	TFSize moveY = ySize_/2 + yDirectionIncrement;
+	int moveX = xSize_/2 + xDirectionIncrement;
+	int moveY = ySize_/2 + yDirectionIncrement;
 
-	computeZoom_(zoom_.zoom, moveX, moveY);
-	
-	changed_ = true;
+	computeZoom_(zoom_.zoom, moveX, moveY);	
 }
 
-const float& TFWorkCopy::zoom(){
+float TFWorkCopy::getZoom() const{
 
 	return zoom_.zoom;
 }
 
-//---update---
+float TFWorkCopy::getMaxZoom() const{
 
-void TFWorkCopy::updateFunction(TFAbstractFunction::Ptr function){
-
-	const TFColorMapPtr input = data_;
-	TFColorMapPtr output = function->getColorMap();
-
-	TFSize inputSize = input->size();
-	TFSize outputSize = output->size();
-
-	float correction = outputSize/(inputSize*zoom_.zoom);
-
-	if(correction >= 1)
-	{
-		int ratio = (int)(correction);	//how many input values are used for computing 1 output values
-		correction -= ratio;
-		float corrStep = correction;
-
-		TFSize outputIndexer = 0;
-		for(TFSize inputIndexer = 0; inputIndexer < inputSize; ++inputIndexer)
-		{
-			TFSize valueCount = ratio + (int)correction;
-			for(TFSize i = 0; i < valueCount; ++i)
-			{
-				tfAssert((outputIndexer + zoom_.xOffset) < outputSize);
-
-				(*output)[outputIndexer + zoom_.xOffset] = (*input)[inputIndexer];
-
-				++outputIndexer;
-			}
-			correction -= (int)correction;
-			correction += corrStep;
-		}
-	}
-	else
-	{
-		correction = (inputSize*zoom_.zoom)/outputSize;
-		int ratio =  (int)(correction);	//how many input values are used for computing 1 output values
-		correction -= ratio;
-		float corrStep = correction;
-
-		TFSize inputIndexer = 0;
-		int zoomAreaSize = outputSize/zoom_.zoom;
-		for(int outputIndexer = 0; outputIndexer < zoomAreaSize; ++outputIndexer)
-		{
-			TFColor computedValue(0,0,0,0);
-			TFSize valueCount = ratio + (int)correction;
-			for(TFSize i = 0; i < valueCount; ++i)
-			{
-				//tfAssert(inputIndexer < inputSize);
-				if(inputIndexer >= inputSize)
-				{
-					tfAssert(outputIndexer == zoomAreaSize - 1);
-					valueCount = i;
-					break;
-				}
-
-				computedValue += (*input)[inputIndexer];
-
-				++inputIndexer;
-			}
-			correction -= (int)correction;
-			correction += corrStep;
-
-			(*output)[outputIndexer + zoom_.xOffset] = computedValue/valueCount;
-		}
-	}
+	return zoom_.max;
 }
 
-void TFWorkCopy::update(TFAbstractFunction::Ptr function){
+void TFWorkCopy::setMaxZoom(const float zoom){
 	
-	const TFColorMapPtr input = function->getColorMap();
-	TFColorMapPtr output = data_;
-
-	TFSize inputSize = input->size();
-	TFSize outputSize = output->size();
-
-	float correction = inputSize/(outputSize*zoom_.zoom);
-	
-	if(correction >= 1)
-	{
-		int ratio =  (int)(correction);	//how many input values are used for computing 1 output values
-		correction -= ratio;
-		float corrStep = correction;
-
-		TFSize inputIndexer = 0;
-		for(TFSize outputIndexer = 0; outputIndexer < outputSize; ++outputIndexer)
-		{
-			TFColor computedValue(0,0,0,0);
-			TFSize valueCount = ratio + (int)correction;
-			for(TFSize i = 0; i < valueCount; ++i)
-			{
-				//tfAssert(inputIndexer + zoom_.xOffset < inputSize);
-				if(inputIndexer + zoom_.xOffset >= inputSize)
-				{
-					tfAssert(outputIndexer == outputSize - 1);
-					valueCount = i;
-					break;
-				}
-
-				computedValue += (*input)[inputIndexer + zoom_.xOffset];
-
-				++inputIndexer;
-			}
-			correction -= (int)correction;
-			correction += corrStep;
-
-			(*output)[outputIndexer] = computedValue/valueCount;
-		}
-	}
-	else
-	{
-		correction = (outputSize*zoom_.zoom)/inputSize;
-		int ratio = (int)(correction);	//how many input values are used for computing 1 output values
-		correction -= ratio;
-		float corrStep = correction;
-
-		TFSize outputIndexer = 0;
-		int zoomAreaSize = inputSize/zoom_.zoom;
-		for(int inputIndexer = 0; inputIndexer < zoomAreaSize; ++inputIndexer)
-		{
-			TFSize valueCount = ratio + (int)correction;
-			for(TFSize i = 0; i < valueCount; ++i)
-			{
-				//tfAssert(outputIndexer < outputSize);
-				if(outputIndexer >= outputSize)
-				{
-					tfAssert(inputIndexer == zoomAreaSize - 1);
-					valueCount = i;
-					break;
-				}
-
-				(*output)[outputIndexer] = (*input)[inputIndexer + zoom_.xOffset];
-
-				++outputIndexer;
-			}
-			correction -= (int)correction;
-			correction += corrStep;
-		}
-	}
-	
-	changed_ = true;
+	zoom_.max = zoom;
 }
 
-void TFWorkCopy::computeZoom_(const float& nextZoom, const TFSize& inputX, const TFSize& inputY){
+TFPoint<int, float> TFWorkCopy::getZoomCenter() const{
+
+	return zoom_.center;
+}
+
+void TFWorkCopy::computeZoom_(const float nextZoom, const int zoomX, const int zoomY){
 
 	float relativeZoomedRatioX = (domain_/zoom_.zoom)/xSize_;
 	float relativeZoomedRatioY = (1/zoom_.zoom)/ySize_;
 
 	int xRadius = (int)(domain_/nextZoom/2.0f);
-	int xOffesetInc = zoom_.xOffset + (int)(inputX*relativeZoomedRatioX) - xRadius;
+	int xOffesetInc = zoom_.xOffset + (int)(zoomX*relativeZoomedRatioX) - xRadius;
 
 	int maxXOffset = domain_ - 2*xRadius;
 	
@@ -322,16 +348,42 @@ void TFWorkCopy::computeZoom_(const float& nextZoom, const TFSize& inputX, const
 	if(xOffesetInc > maxXOffset) xOffesetInc = maxXOffset;
 
 	float yRadius = 1/nextZoom/2.0f;
-	float yOffesetInc = zoom_.yOffset + inputY*relativeZoomedRatioY - yRadius;
+	float yOffesetInc = zoom_.yOffset + zoomY*relativeZoomedRatioY - yRadius;
 
 	float maxYOffset = 1 - 2*yRadius;
 
 	if(yOffesetInc < 0) yOffesetInc = 0;
 	if(yOffesetInc > maxYOffset) yOffesetInc = maxYOffset;
 
+	float zoomedDomain = domain_/nextZoom;
+
 	zoom_.zoom = nextZoom;
 	zoom_.xOffset = xOffesetInc;
 	zoom_.yOffset = yOffesetInc;
+	zoom_.xRatio = zoomedDomain/xSize_;
+	zoom_.ratio = (int)(zoom_.xRatio)+1;
+	zoom_.center = TFPoint<int,float>((int)(zoomedDomain/2) + zoom_.xOffset,
+		1.0/zoom_.zoom/2 + zoom_.yOffset);
+
+	changed_ = true;
+}
+
+//---update---
+
+void TFWorkCopy::updateFunction(TFAbstractFunction::Ptr function){
+
+	*(function->getColorMap()) = *data_;
+}
+
+void TFWorkCopy::update(TFAbstractFunction::Ptr function){
+
+	if(domain_ != function->getDomain())
+	{
+		domain_ = function->getDomain();
+		data_ = TFColorMapPtr(new TFColorMap(domain_));
+		computeZoom_(zoom_.zoom, xSize_/2, ySize_/2);
+	}
+	*data_ = *(function->getColorMap());
 }
 
 } // namespace GUI

@@ -4,6 +4,7 @@ namespace M4D {
 namespace GUI {
 
 TFAbstractModifier::TFAbstractModifier():
+	ignorePoint_(-1, -1),
 	toolsWidget_(NULL){
 }
 
@@ -35,30 +36,22 @@ M4D::Common::TimeStamp TFAbstractModifier::getLastChangeTime(){
 	return lastChange_;
 }
 
-TFPaintingPoint TFAbstractModifier::getRelativePoint_(const TFSize& x, const TFSize& y){	
+TFPaintingPoint TFAbstractModifier::getRelativePoint_(const int x, const int y, bool acceptOutOfBounds){	
 
 	int xMax = inputArea_.width() - 1;
 	int yMax = inputArea_.height();
 	
 	TFPaintingPoint corrected = TFPaintingPoint(x - inputArea_.x(), inputArea_.height() - (y - inputArea_.y()));
 
-	if( corrected.x < 0 )
+	bool outOfBounds = false;
+	if( corrected.x < 0 ||
+		corrected.x > xMax ||
+		corrected.y < 0 ||
+		corrected.y > yMax)
 	{
-		corrected.x = 0;
-	}
-	if( corrected.x > xMax )
-	{
-		corrected.x = xMax;
-	}
-	if( corrected.y < 0 )
-	{
-		corrected.y = 0;
-	}
-	if( corrected.y > yMax )
-	{
-		corrected.y = yMax;
-	}
-		
+		outOfBounds = true;
+	}	
+	if(outOfBounds && !acceptOutOfBounds) return ignorePoint_;
 	return corrected;
 }
 

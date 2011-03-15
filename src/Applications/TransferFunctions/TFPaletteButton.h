@@ -14,7 +14,7 @@ class TFPaletteButton: public QWidget{
 
 public:
 
-	TFPaletteButton(QWidget* parent, const TFSize& index);
+	TFPaletteButton(QWidget* parent, const TFSize index);
 	~TFPaletteButton();
 
 	void setup();

@@ -28,11 +28,10 @@ class TFPalette : public QMainWindow{
 
 	typedef std::map<TFSize, TFHolder*> HolderMap;
 	typedef HolderMap::iterator HolderMapIt;
-	typedef M4D::Imaging::Histogram64::Ptr HistogramPtr;
 
 public:
 
-	TFPalette(QMainWindow* parent, const TFSize& domain);
+	TFPalette(QMainWindow* parent);
     ~TFPalette();
 
 	M4D::Common::TimeStamp getTimeStamp();
@@ -48,7 +47,7 @@ public:
 
 	void setupDefault();
 
-	void setHistogram(HistogramPtr histogram);
+	void setHistogram(TFHistogramPtr histogram);
 
 private slots:
 
@@ -88,7 +87,7 @@ private:
 	QMainWindow* mainWindow_;
 	QVBoxLayout* layout_;
 
-	HistogramPtr histogram_;
+	TFHistogramPtr histogram_;
 	TFSize domain_;
 
 	Indexer indexer_;

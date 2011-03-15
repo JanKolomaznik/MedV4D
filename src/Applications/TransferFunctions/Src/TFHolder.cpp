@@ -23,7 +23,6 @@ TFHolder::TFHolder(QMainWindow* mainWindow,
 	dockHolder_(NULL),
 	painterLeftTopMargin_(20, 40),
 	painterRightBottomMargin_(20, 10),
-	zoomMovement_(false),
 	qTitle_(QString::fromStdString(convert<TFHolder::Type, std::string>(type_) +
 		" #" + convert<TFSize, std::string>(index_ + 1))){
 
@@ -31,6 +30,9 @@ TFHolder::TFHolder(QMainWindow* mainWindow,
 	holder_->setCentralWidget(this);
 	
 	lastChange_ = modifier_->getLastChangeTime();
+	
+	bool rereshConnected = QObject::connect( &(*modifier_), SIGNAL(RefreshView()), this, SLOT(refresh_view()));
+	tfAssert(rereshConnected);
 	
 	QWidget* tools = modifier_->getTools();
 	if(tools)
@@ -53,7 +55,17 @@ M4D::Common::TimeStamp TFHolder::getLastChangeTime(){
 	return modifier_->getLastChangeTime();
 }
 
-void TFHolder::setUp(const TFSize& index){
+void TFHolder::setHistogram(TFHistogramPtr histogram){
+
+	if(!histogram) return;
+	modifier_->getWorkCopy()->updateFunction(function_);
+	modifier_->getWorkCopy()->setHistogram(histogram);
+	function_->resize(histogram->GetSize());
+	modifier_->getWorkCopy()->update(function_);
+	repaint();
+}
+
+void TFHolder::setup(const TFSize index){
 
 	index_ = index;
 	qTitle_ = QString::fromStdString(convert<TFHolder::Type, std::string>(type_) +
@@ -154,67 +166,65 @@ void TFHolder::save(){
 void TFHolder::paintEvent(QPaintEvent *e){
 
 	QPainter drawer(this);
-	//painter_->drawBackground(&drawer);
 	painter_->drawData(&drawer, modifier_->getWorkCopy());
-	//TODO if histogram enabled
-	//painter_->drawHistogram(&drawer, histogram_);
 }
 
 void TFHolder::mousePressEvent(QMouseEvent *e){
 
+	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
+	if(lastChange != lastChange_)
+	{
+		modifier_->getWorkCopy()->updateFunction(function_);
+		lastChange_ = lastChange;
+	}
+
 	MouseButton mb(MouseButtonLeft);
 	if(e->button() == Qt::RightButton) mb = MouseButtonRight;
-	if(e->button() == Qt::MidButton)
-	{
-		zoomMovement_ = true;
-		zoomMoveHelper_.x = e->x();
-		zoomMoveHelper_.y = e->y();
-		mb = MouseButtonMid;
-	}
+	if(e->button() == Qt::MidButton) mb = MouseButtonMid;
 
 	modifier_->mousePress(e->x(), e->y(), mb);
 }
 
 void TFHolder::mouseReleaseEvent(QMouseEvent *e){
 
-	if(e->button() == Qt::MidButton) zoomMovement_ = false;
+	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
+	if(lastChange != lastChange_)
+	{
+		modifier_->getWorkCopy()->updateFunction(function_);
+		lastChange_ = lastChange;
+	}
 
 	modifier_->mouseRelease(e->x(), e->y());
-
-	repaint();
 }
 
 void TFHolder::mouseMoveEvent(QMouseEvent *e){
+
+	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
+	if(lastChange != lastChange_)
+	{
+		modifier_->getWorkCopy()->updateFunction(function_);
+		lastChange_ = lastChange;
+	}
 	
 	modifier_->mouseMove(e->x(), e->y());
+}
 
-	if(zoomMovement_)
+void TFHolder::wheelEvent(QWheelEvent *e){
+
+	int numSteps = e->delta() / 120;
+	if(numSteps == 0) return;
+
+	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
+	if(lastChange != lastChange_)
 	{
-		M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
-		if(lastChange != lastChange_)
-		{
-			modifier_->getWorkCopy()->updateFunction(function_);
-			lastChange_ = lastChange;
-		}
-
-		int x = e->x();
-		int y = e->y();
-		if(x < painter_->getInputArea().x() ||
-			x > (painter_->getInputArea().x() + painter_->getInputArea().width()) ||
-			y < painter_->getInputArea().y() ||
-			y > (painter_->getInputArea().y() + painter_->getInputArea().height()))
-		{
-			return;
-		}
-
-		modifier_->getWorkCopy()->move(zoomMoveHelper_.x - x, y - zoomMoveHelper_.y);
-
-		zoomMoveHelper_.x = x;
-		zoomMoveHelper_.y = y;
-
-		modifier_->getWorkCopy()->update(function_);
+		modifier_->getWorkCopy()->updateFunction(function_);
+		lastChange_ = lastChange;
 	}
-	repaint();
+
+	modifier_->mouseWheel(numSteps, e->x(), e->y());
+
+	//modifier_->getWorkCopy()->update(function_);
+	//repaint();
 }
 
 void TFHolder::resizeEvent(QResizeEvent *e){
@@ -236,44 +246,10 @@ void TFHolder::resizePainter_(){
 		painterLeftTopMargin_.y,
 		width() - painterLeftTopMargin_.x - painterRightBottomMargin_.x,
 		height() - painterLeftTopMargin_.y - painterRightBottomMargin_.y);	
-	
-	//TFSize maxPainterWidth = (TFSize)(function_->getDomain()/modifier_->getWorkCopy()->zoom());
-	//if(painterArea.width > maxPainterWidth) painterArea.width = maxPainterWidth;
-		
+			
 	painter_->setArea(painterArea);	
 	modifier_->setInputArea(painter_->getInputArea());
 	modifier_->getWorkCopy()->update(function_);
-}
-
-void TFHolder::wheelEvent(QWheelEvent *e){
-
-	int numSteps = e->delta() / 120;
-	if(numSteps == 0) return;
-
-	int x = e->x() - painter_->getInputArea().x();
-	int y = painter_->getInputArea().height() - (e->y() - painter_->getInputArea().y());
-	if(x < 0 ||
-		x > painter_->getInputArea().width() ||
-		y < 0 ||
-		y > painter_->getInputArea().height())
-	{
-		return;
-	}
-
-	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
-	if(lastChange != lastChange_)
-	{
-		modifier_->getWorkCopy()->updateFunction(function_);
-		lastChange_ = lastChange;
-	}
-
-	if(numSteps > 0) modifier_->getWorkCopy()->zoomIn(numSteps, x, y);
-	else modifier_->getWorkCopy()->zoomOut(-numSteps, x, y);
-
-	//modifier_->getWorkCopy()->update(function_);
-	resizePainter_();
-
-	repaint();
 }
 
 void TFHolder::on_closeButton_clicked(){
@@ -290,6 +266,11 @@ void TFHolder::on_activateButton_clicked(){
 
 	if(!active_) emit Activate(index_);
 	else ui_->activateButton->setChecked(true);
+}
+
+void TFHolder::refresh_view(){
+
+	repaint();
 }
 
 void TFHolder::save_(QFile &file){

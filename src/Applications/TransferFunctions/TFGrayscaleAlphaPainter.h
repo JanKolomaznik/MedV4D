@@ -31,6 +31,7 @@ private:
 	const QColor background_;
 	const QColor gray_;
 	const QColor alpha_;
+	const QColor hist_;
 
 	bool drawAlpha_;
 

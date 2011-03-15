@@ -11,65 +11,79 @@ class TFWorkCopy{
 
 public:
 
-	struct ZoomProperties{
-		float zoom;
-		float maxZoom;
-		TFSize xOffset;
-		float yOffset;
-
-		ZoomProperties():
-			zoom(1),
-			maxZoom(20),
-			xOffset(0),
-			yOffset(0){}
-
-		void reset(){
-			zoom = 1;
-			xOffset = 0;
-			yOffset = 0;
-		}
-	};
-
 	typedef boost::shared_ptr<TFWorkCopy> Ptr;
 
-	TFWorkCopy(const TFSize& domain);
+	TFWorkCopy(const TFSize domain);
 	~TFWorkCopy(){}
 
-	TFColor getColor(const TFSize& index);
-
+	TFColor getColor(const TFSize index);
 	bool changed();
+	TFSize getViewSize();
 
-	float getComponent1(const TFSize& index);
-	float getComponent2(const TFSize& index);
-	float getComponent3(const TFSize& index);
-	float getAlpha(const TFSize& index);
+	float getComponent1(const TFSize index);
+	float getComponent2(const TFSize index);
+	float getComponent3(const TFSize index);
+	float getAlpha(const TFSize index);
+	float getHistogramValue(const TFSize index);
 
-	void setComponent1(const TFSize& index, const float& value);
-	void setComponent2(const TFSize& index, const float& value);
-	void setComponent3(const TFSize& index, const float& value);
-	void setAlpha(const TFSize& index, const float& value);
+	void setComponent1(const TFSize index, const float value);
+	void setComponent2(const TFSize index, const float value);
+	void setComponent3(const TFSize index, const float value);
+	void setAlpha(const TFSize index, const float value);
 
-	void zoomIn(const TFSize& stepCount, const TFSize& inputX, const TFSize& inputY);
-	void zoomOut(const TFSize& stepCount, const TFSize& inputX, const TFSize& inputY);
+	void zoomIn(const TFSize stepCount, const int zoomX, const int zoomY);
+	void zoomOut(const TFSize stepCount, const int zoomX, const int zoomY);
+	void zoom(const float zoom, const int zoomX, const float zoomY);
 	void move(int xDirectionIncrement, int yDirectionIncrement);
 
-	const float& zoom();
+	void setHistogramEnabled(bool value);
+	bool histogramEnabled();
 
-	TFSize size();
-	void resize(const TFSize& xSize, const TFSize& ySize);
+	float getZoom() const;
+	float getMaxZoom() const;
+	void setMaxZoom(const float zoom);
+	TFPoint<int, float> getZoomCenter() const;
+
+	void resize(const TFSize xSize, const TFSize ySize);
 
 	void updateFunction(TFAbstractFunction::Ptr function);
 	void update(TFAbstractFunction::Ptr function);
+
+	void setHistogram(TFHistogramPtr histogram);
 	
 private:
 
-	TFColorMapPtr data_;
-	TFSize domain_;
-	ZoomProperties zoom_;
-	TFSize xSize_, ySize_;
-	bool changed_;
+	struct ZoomProperties{
+		float zoom;
+		float max;
+		TFSize xOffset;
+		float yOffset;
+		float xRatio;
+		int ratio;
+		TFPoint<int,float> center;
 
-	void computeZoom_(const float& nextZoom, const TFSize& inputX, const TFSize& inputY);
+		ZoomProperties():
+			zoom(1),
+			max(40),
+			xOffset(0),
+			yOffset(0),
+			xRatio(1),
+			ratio(1),
+			center(0,0){
+		}
+	};
+
+	TFColorMapPtr data_;
+	TFHistogramPtr histogram_;
+
+	TFSize domain_;
+	TFSize xSize_, ySize_;
+	ZoomProperties zoom_;
+
+	bool changed_;
+	bool histogramEnabled_;
+
+	void computeZoom_(const float nextZoom, const int zoomX, const int zoomY);
 
 };
 

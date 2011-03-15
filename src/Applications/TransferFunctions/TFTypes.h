@@ -10,6 +10,7 @@
 #include <QtGui/QColor>
 
 #include "common/Common.h"
+#include "Imaging/Histogram.h"
 
 namespace M4D {
 namespace GUI {
@@ -72,7 +73,7 @@ enum TFFunctionType{
 
 
 template<>
-std::string convert<TFFunctionType, std::string>(const TFFunctionType &tfType){
+static std::string convert<TFFunctionType, std::string>(const TFFunctionType &tfType){
 
 	switch(tfType){
 		case TFFUNCTION_RGBA:
@@ -88,7 +89,7 @@ std::string convert<TFFunctionType, std::string>(const TFFunctionType &tfType){
 }
 
 template<>
-TFFunctionType convert<std::string, TFFunctionType>(const std::string &tfType){
+static TFFunctionType convert<std::string, TFFunctionType>(const std::string &tfType){
 
 	if(tfType == "TFHolderRGBa"){
 		return TFFUNCTION_RGBA;
@@ -244,6 +245,8 @@ struct TFColor{
 typedef std::vector<TFColor> TFColorMap;
 typedef TFColorMap::iterator TFColorMapIt;
 typedef boost::shared_ptr<TFColorMap> TFColorMapPtr;
+
+typedef M4D::Imaging::Histogram64::Ptr TFHistogramPtr;
 
 //------------Debug------------------------------------------------------
 

@@ -3,24 +3,34 @@
 namespace M4D {
 namespace GUI {
 
-TFSimpleModifier::TFSimpleModifier(TFAbstractModifier::Type type, const TFSize& domain):
+TFSimpleModifier::TFSimpleModifier(TFAbstractModifier::Type type, const TFSize domain):
 	type_(type),
 	tools_(new Ui::TFSimpleModifier),
 	activeView_(Active1),
 	inputHelper_(),
-	leftMousePressed_(false){
+	leftMousePressed_(false),
+	zoomMovement_(false){
 
 	workCopy_ = TFWorkCopy::Ptr(new TFWorkCopy(domain));
 
 	toolsWidget_ = new QWidget();
 	tools_->setupUi(toolsWidget_);
 
+	tools_->maxZoomSpin->setValue((int)workCopy_->getMaxZoom());
+	tools_->ratioValue->setText(QString::number(workCopy_->getZoom()));
+	tools_->zoomXValue->setText(QString::number(domain/2));
+	tools_->zoomYValue->setText(QString::number(0.5));
+
 	bool changeViewConnected = QObject::connect(tools_->activeViewBox, SIGNAL(currentIndexChanged(int)),
-		this, SLOT(activeViewChanged(int)));
+		this, SLOT(activeView_changed(int)));
 	tfAssert(changeViewConnected);
 	bool histogramCheckConnected = QObject::connect( tools_->histogramCheck, SIGNAL(toggled(bool)),
-		this, SLOT(histogramCheck(bool)));
+		this, SLOT(histogram_check(bool)));
 	tfAssert(histogramCheckConnected);
+
+	bool maxZoomSpinConnected = QObject::connect( tools_->maxZoomSpin, SIGNAL(valueChanged(int)),
+		this, SLOT(maxZoomSpin_changed(int)));
+	tfAssert(maxZoomSpinConnected);
 
 	switch(type_)
 	{
@@ -70,9 +80,13 @@ TFSimpleModifier::TFSimpleModifier(TFAbstractModifier::Type type, const TFSize& 
 
 TFSimpleModifier::~TFSimpleModifier(){}
 
-void TFSimpleModifier::histogramCheck(bool enabled){}
+void TFSimpleModifier::histogram_check(bool enabled){
 
-void TFSimpleModifier::activeViewChanged(int index){
+	workCopy_->setHistogramEnabled(enabled);
+	emit RefreshView();
+}
+
+void TFSimpleModifier::activeView_changed(int index){
 
 	switch(index)
 	{
@@ -105,7 +119,25 @@ void TFSimpleModifier::activeViewChanged(int index){
 	}
 }
 
-void TFSimpleModifier::mousePress(const TFSize& x, const TFSize& y, MouseButton button){
+void TFSimpleModifier::maxZoomSpin_changed(int value){
+
+	workCopy_->setMaxZoom(value);
+}
+
+void TFSimpleModifier::updateZoomTools_(){
+
+	tools_->ratioValue->setText(QString::number(workCopy_->getZoom()));
+
+	TFPoint<int,float> center = workCopy_->getZoomCenter();
+
+	tools_->zoomXValue->setText(QString::number(center.x));
+	tools_->zoomYValue->setText(QString::number(center.y));
+}
+
+void TFSimpleModifier::mousePress(const int x, const int y, MouseButton button){
+
+	TFPaintingPoint relativePoint = getRelativePoint_(x, y);
+	if(relativePoint == ignorePoint_) return;
 
 	if(button == MouseButtonRight)
 	{
@@ -115,60 +147,93 @@ void TFSimpleModifier::mousePress(const TFSize& x, const TFSize& y, MouseButton 
 	if(button == MouseButtonLeft)
 	{
 		leftMousePressed_ = true;
-		inputHelper_.x = x;
-		inputHelper_.y = y;
+		inputHelper_ = relativePoint;
 	}
+	if(button == MouseButtonMid)
+	{
+		zoomMovement_ = true;
+		zoomMoveHelper_ = relativePoint;
+	}
+
+	emit RefreshView();
 }
 
-void TFSimpleModifier::mouseRelease(const TFSize& x, const TFSize& y){
+void TFSimpleModifier::mouseRelease(const int x, const int y){
 
-	if(!leftMousePressed_) return;
+	TFPaintingPoint relativePoint = getRelativePoint_(x, y, leftMousePressed_ || zoomMovement_);
+	if(relativePoint == ignorePoint_) return;
 
-	addPoint_(x, y);
+	if(leftMousePressed_) addPoint_(relativePoint.x, relativePoint.y);
+
 	leftMousePressed_ = false;
+	zoomMovement_ = false;
+
+	emit RefreshView();
 }
 
-void TFSimpleModifier::mouseMove(const TFSize& x, const TFSize& y){
+void TFSimpleModifier::mouseMove(const int x, const int y){
+	
+	TFPaintingPoint relativePoint = getRelativePoint_(x, y, leftMousePressed_ || zoomMovement_);
+	if(relativePoint == ignorePoint_) return;
 
-	if(!leftMousePressed_) return;
+	if(leftMousePressed_)
+	{
+		addLine_(inputHelper_, relativePoint);
+		inputHelper_ = relativePoint;
+	}
 
-	addLine_(inputHelper_.x, inputHelper_.y, x, y);
+	if(zoomMovement_)
+	{
+		workCopy_->move(zoomMoveHelper_.x - relativePoint.x, zoomMoveHelper_.y - relativePoint.y);
+		zoomMoveHelper_ = relativePoint;
+		updateZoomTools_();
+	}
 
-	inputHelper_.x = x;
-	inputHelper_.y = y;
+	emit RefreshView();
 }
 
-void TFSimpleModifier::addPoint_(const int& x, const int& y){
+void TFSimpleModifier::mouseWheel(const int steps, const int x, const int y){
 
-	TFPaintingPoint point = getRelativePoint_(x, y);
-	float yValue = point.y/(float)inputArea_.height();
+	TFPaintingPoint relativePoint = getRelativePoint_(x,y);
+	if(relativePoint == ignorePoint_) return;
+
+	if(steps > 0) workCopy_->zoomIn(steps, relativePoint.x, relativePoint.y);
+	if(steps < 0) workCopy_->zoomOut(-steps, relativePoint.x, relativePoint.y);
+	
+	updateZoomTools_();
+	emit RefreshView();
+}
+
+void TFSimpleModifier::addPoint_(const int x, const int y){
+
+	float yValue = y/(float)inputArea_.height();
 	
 	switch(activeView_)
 	{
 		case Active1:
 		{
-			workCopy_->setComponent1(point.x, yValue);
+			workCopy_->setComponent1(x, yValue);
 			if(type_ == TFModifierGrayscale ||
 				type_ == TFModifierGrayscaleAlpha)
 			{
-				workCopy_->setComponent2(point.x, yValue);
-				workCopy_->setComponent3(point.x, yValue);
+				workCopy_->setComponent2(x, yValue);
+				workCopy_->setComponent3(x, yValue);
 			}
 			break;
 		}
 		case Active2:
 		{
-			workCopy_->setComponent2(point.x, yValue);
+			workCopy_->setComponent2(x, yValue);
 			break;
 		}
 		case Active3:
 		{
-			workCopy_->setComponent3(point.x, yValue);
+			workCopy_->setComponent3(x, yValue);
 			break;
 		}
 		case ActiveAlpha:
 		{
-			workCopy_->setAlpha(point.x, yValue);
+			workCopy_->setAlpha(x, yValue);
 			break;
 		}
 	}

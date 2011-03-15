@@ -24,16 +24,11 @@ public:
 	//virtual void drawBackground(QPainter* drawer) = 0;
 	virtual void drawData(QPainter* drawer, TFWorkCopy::Ptr workCopy) = 0;
 
-	void setHistogram(TFColorMapPtr histogram){ histogram_ = histogram; }
-	void drawHistogram(bool enabled){ histogramEnabled_ = true; }
-
 protected:
 
 	QRect area_;
-	TFColorMapPtr histogram_;
-	bool histogramEnabled_;
 
-	TFAbstractPainter(): histogramEnabled_(false){}
+	TFAbstractPainter(){}
 	virtual ~TFAbstractPainter(){};
 };
 

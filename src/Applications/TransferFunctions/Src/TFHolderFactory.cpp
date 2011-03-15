@@ -32,7 +32,7 @@ TFActions TFHolderFactory::createMenuTFActions(QObject *parent){
 	return actions;
 }
 
-TFHolder* TFHolderFactory::createHolder(QMainWindow* mainWindow, const TFHolder::Type holderType, const TFSize& domain){
+TFHolder* TFHolderFactory::createHolder(QMainWindow* mainWindow, const TFHolder::Type holderType, const TFSize domain){
 
 	switch(holderType)
 	{
@@ -96,7 +96,7 @@ TFHolder* TFHolderFactory::createHolder(QMainWindow* mainWindow, const TFHolder:
 	return NULL;
 }
 
-TFHolder* TFHolderFactory::loadHolder(QMainWindow* mainWindow, const TFSize& domain){
+TFHolder* TFHolderFactory::loadHolder(QMainWindow* mainWindow, const TFSize domain){
 	
 	QString fileName = QFileDialog::getOpenFileName(
 		(QWidget*)mainWindow,

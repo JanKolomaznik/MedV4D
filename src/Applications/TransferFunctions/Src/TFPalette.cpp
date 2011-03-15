@@ -3,12 +3,11 @@
 namespace M4D {
 namespace GUI {
 
-TFPalette::TFPalette(QMainWindow* parent, const TFSize& domain):
+TFPalette::TFPalette(QMainWindow* parent):
 	QMainWindow(parent),
 	ui_(new Ui::TFPalette),
 	mainWindow_(parent),
-	activeHolder_(-1),
-	domain_(domain){
+	activeHolder_(-1){
 
     ui_->setupUi(this);
 	setWindowTitle("Transfer Functions Palette");
@@ -68,19 +67,33 @@ bool TFPalette::connectTFActions_(){
 
 void TFPalette::setupDefault(){
 	
-	newTF_triggered(TFHolder::TFHolderGrayscale);
+	domain_ = 4097;
+	newTF_triggered(TFHolder::TFHolderRGBa);
 }
 
-void TFPalette::setHistogram(HistogramPtr histogram){
+void TFPalette::setHistogram(TFHistogramPtr histogram){
 
-	//TODO compute ColorMapPtr from histogram and set it to all holders
+	//---testing code---
+	//int histSize = histogram->GetSize();
+	//------
+
+	histogram_ = histogram;
+	domain_ = histogram_->GetSize();
+
+	HolderMapIt beginPalette = palette_.begin();
+	HolderMapIt endPalette = palette_.end();
+	for(HolderMapIt it = beginPalette; it != endPalette; ++it)
+	{
+		it->second->setHistogram(histogram_);
+	}
 }
 
 void TFPalette::addToPalette_(TFHolder* holder){
 	
 	TFSize addedIndex = indexer_.getIndex();
 
-	holder->setUp(addedIndex);
+	holder->setup(addedIndex);
+	holder->setHistogram(histogram_);
 	palette_.insert(std::make_pair<TFSize, TFHolder*>(addedIndex, holder));
 	holder->createPaletteButton(ui_->scrollAreaWidget);
 

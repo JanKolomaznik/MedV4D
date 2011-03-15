@@ -31,13 +31,12 @@
 namespace M4D {
 namespace GUI {
 
-namespace Detail 
+namespace Apply 
 {
-template<typename ElementIterator>
+	template<typename ElementIterator>
 	bool applyTransferFunction(
 		ElementIterator begin,
 		ElementIterator end,
-		TFAbstractModifier::Ptr modifier_,
 		TFAbstractFunction::Ptr function_){
 
 		tfAbort("unsupported buffer type");
@@ -48,11 +47,8 @@ template<typename ElementIterator>
 	inline bool applyTransferFunction<TransferFunctionBuffer1D::Iterator>(
 		TransferFunctionBuffer1D::Iterator begin,
 		TransferFunctionBuffer1D::Iterator end,
-		TFAbstractModifier::Ptr modifier_,
 		TFAbstractFunction::Ptr function_
 		){
-
-		modifier_->getWorkCopy()->updateFunction(function_);
 
 		TFSize index = 0;
 		for(TransferFunctionBuffer1D::Iterator it = begin; it!=end; ++it)
@@ -104,8 +100,9 @@ public:
 	void activate();
 	void deactivate();
 
-	void setUp(const TFSize& index);
-	void setHistogram(M4D::Imaging::Histogram32::Ptr histogram);
+	void setup(const TFSize index);
+	void setHistogram(TFHistogramPtr histogram);
+	//void setDomain(const TFSize domain);
 
 	bool connectToTFPalette(QObject* tfPalette);	//	tfPalette has to be TFPalette instance
 	bool createPaletteButton(QWidget* parent);
@@ -123,21 +120,25 @@ public:
 	bool applyTransferFunction(
 		ElementIterator begin,
 		ElementIterator end){
-		return M4D::GUI::Detail::applyTransferFunction< ElementIterator >( begin, end, modifier_, function_ );
+
+		modifier_->getWorkCopy()->updateFunction(function_);
+
+		return M4D::GUI::Apply::applyTransferFunction< ElementIterator >( begin, end, function_ );
 	}
 
 signals:
 
-	void Close(const TFSize& index);
-	void Activate(const TFSize& index);
+	void Close(const TFSize index);
+	void Activate(const TFSize index);
 
 protected slots:
 
 	void on_closeButton_clicked();
 	void on_saveButton_clicked();
 	void on_activateButton_clicked();
+	void refresh_view();
 
-protected:
+private:
 
 	TFHolder::Type type_;
 	Ui::TFHolder* ui_;
@@ -150,15 +151,11 @@ protected:
 	TFAbstractFunction::Ptr function_;
 	TFAbstractModifier::Ptr modifier_;
 	TFAbstractPainter::Ptr painter_;
-	M4D::Imaging::Histogram32::Ptr histogram_;
 	TFPaletteButton* button_;
 
 	M4D::Common::TimeStamp lastChange_;
 
 	TFSize index_;
-
-	bool zoomMovement_;
-	TFPaintingPoint zoomMoveHelper_;
 
 	const TFPoint<TFSize, TFSize> painterLeftTopMargin_;
 	const TFPoint<TFSize, TFSize> painterRightBottomMargin_;
@@ -184,7 +181,7 @@ protected:
 };
 
 template<>
-std::string convert<TFHolder::Type, std::string>(const TFHolder::Type &holderType){
+static std::string convert<TFHolder::Type, std::string>(const TFHolder::Type &holderType){
 
 	switch(holderType){
 		case TFHolder::TFHolderGrayscale:
@@ -220,7 +217,7 @@ std::string convert<TFHolder::Type, std::string>(const TFHolder::Type &holderTyp
 }
 
 template<>
-TFHolder::Type convert<std::string, TFHolder::Type>(const std::string &holderType){
+static TFHolder::Type convert<std::string, TFHolder::Type>(const std::string &holderType){
 
 	if(holderType == "Grayscale"){
 		return TFHolder::TFHolderGrayscale;

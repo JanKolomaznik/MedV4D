@@ -31,6 +31,7 @@ private:
 	const QColor saturation_;
 	const QColor value_;
 	const QColor alpha_;
+	const QColor hist_;
 
 	bool drawAlpha_;
 

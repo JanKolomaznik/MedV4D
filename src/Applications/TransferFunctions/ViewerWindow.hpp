@@ -50,6 +50,8 @@ protected:
 	QTimer	mTransFuncTimer;
 	M4D::Common::TimeStamp mLastTimeStamp;
 
+	M4D::GUI::TFSize domain_;
+	bool fileLoaded_;
 };
 
 

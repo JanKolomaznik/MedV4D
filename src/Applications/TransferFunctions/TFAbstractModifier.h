@@ -11,6 +11,8 @@ namespace GUI {
 
 class TFAbstractModifier: public QWidget{
 
+	Q_OBJECT
+
 public:
 
 	typedef boost::shared_ptr<TFAbstractModifier> Ptr;
@@ -32,9 +34,15 @@ public:
 
 	M4D::Common::TimeStamp getLastChangeTime();
 
-	virtual void mousePress(const TFSize& x, const TFSize& y, MouseButton button) = 0;
-	virtual void mouseRelease(const TFSize& x, const TFSize& y) = 0;
-	virtual void mouseMove(const TFSize& x, const TFSize& y) = 0;
+	virtual void mousePress(const int x, const int y, MouseButton button){}
+	virtual void mouseRelease(const int x, const int y){}
+	virtual void mouseMove(const int x, const int y){}
+	virtual void mouseWheel(const int steps, const int x, const int y){}
+	virtual void keyPressed(QKeySequence keySequence){}
+
+signals:
+
+	void RefreshView();
 
 protected:
 
@@ -44,6 +52,7 @@ protected:
 
 	TFWorkCopy::Ptr workCopy_;
 	QRect inputArea_;
+	const TFPaintingPoint ignorePoint_;
 
 	TFAbstractModifier();
 	virtual ~TFAbstractModifier();
@@ -51,9 +60,9 @@ protected:
 	void addLine_(int x1, int y1, int x2, int y2);
 	void addLine_(TFPaintingPoint begin, TFPaintingPoint end);
 
-	TFPaintingPoint getRelativePoint_(const TFSize& x, const TFSize& y);
+	TFPaintingPoint getRelativePoint_(const int x, const int y, bool acceptOutOfBounds = false);
 
-	virtual void addPoint_(const int& x, const int& y) = 0;
+	virtual void addPoint_(const int x, const int y) = 0;
 };
 
 } // namespace GUI

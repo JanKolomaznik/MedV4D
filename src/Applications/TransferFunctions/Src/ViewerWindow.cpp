@@ -1,7 +1,7 @@
 #include "ViewerWindow.hpp"
 
 
-ViewerWindow::ViewerWindow(){
+ViewerWindow::ViewerWindow(): fileLoaded_(false){
 
 	setupUi( this );
 
@@ -18,9 +18,7 @@ ViewerWindow::ViewerWindow(){
 	
 	//---TF Editor---
 
-	int domain = 4096;	//TODO get from ??
-
-	mTransferFunctionEditor = new M4D::GUI::TFPalette(this, domain);
+	mTransferFunctionEditor = new M4D::GUI::TFPalette(this);
 	mTransferFunctionEditor->setupDefault();	
 
 	QDockWidget * dockWidget = new QDockWidget("Transfer Function Palette", this);
@@ -35,6 +33,7 @@ ViewerWindow::ViewerWindow(){
 
 	mTransFuncTimer.setInterval( 500 );
 	QObject::connect( &mTransFuncTimer, SIGNAL( timeout() ), this, SLOT( updateTransferFunction() ) );
+	mTransFuncTimer.start();
 
 	//---Viewer Switch---
 
@@ -119,7 +118,9 @@ void ViewerWindow::changeColorMapType( int aColorMap ){
 
 void ViewerWindow::applyTransferFunction(){
 
-	boost::shared_ptr<Buffer1D> buffer = boost::shared_ptr<Buffer1D>(new Buffer1D(4096, Interval(0.0, 4096.0)));
+	if(!fileLoaded_) return;
+
+	boost::shared_ptr<Buffer1D> buffer = boost::shared_ptr<Buffer1D>(new Buffer1D(domain_, Interval(0.0, 4096.0)));
 	
 	bool tfUsed = mTransferFunctionEditor->applyTransferFunction<Buffer1D::iterator>( buffer->Begin(), buffer->End());
 	
@@ -155,6 +156,8 @@ void
 ViewerWindow::updateToolbars()
 {
 	int rendererType = mViewer->GetRendererType();
+
+	if(rendererType != 0 && rendererType != 2) rendererType = 0;
 
 	switch ( rendererType )
 	{
@@ -218,7 +221,10 @@ ViewerWindow::updateToolbars()
 
 void ViewerWindow::openFile()
 {
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image") );
+	QString fileName = QFileDialog::getOpenFileName(this,
+		tr("Open Image"),
+		QDir::currentPath(),
+		QObject::tr("Dump Files (*.dump)"));
 
 	if ( !fileName.isEmpty() ) {
 		openFile( fileName );
@@ -250,8 +256,9 @@ void ViewerWindow::openFile( const QString &aPath )
 	);
 
 	LOG( "Histogram computed in " << clock.SecondsPassed() );
-	mTransferFunctionEditor->setHistogram( histogram );
-	
+	mTransferFunctionEditor->setHistogram( histogram );	
+	domain_ = histogram->GetSize();
+	fileLoaded_ = true;
 
 	mViewer->ZoomFit();
 	applyTransferFunction();
