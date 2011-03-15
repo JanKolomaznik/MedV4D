@@ -181,7 +181,7 @@ private:
 };
 
 template<>
-static std::string convert<TFHolder::Type, std::string>(const TFHolder::Type &holderType){
+inline std::string convert<TFHolder::Type, std::string>(const TFHolder::Type &holderType){
 
 	switch(holderType){
 		case TFHolder::TFHolderGrayscale:
@@ -217,7 +217,7 @@ static std::string convert<TFHolder::Type, std::string>(const TFHolder::Type &ho
 }
 
 template<>
-static TFHolder::Type convert<std::string, TFHolder::Type>(const std::string &holderType){
+inline TFHolder::Type convert<std::string, TFHolder::Type>(const std::string &holderType){
 
 	if(holderType == "Grayscale"){
 		return TFHolder::TFHolderGrayscale;
