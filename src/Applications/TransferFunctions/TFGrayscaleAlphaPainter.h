@@ -20,7 +20,7 @@ public:
 	QRect getInputArea();
 	void setWorkCopy(TFWorkCopy::Ptr workCopy);
 
-	void drawData(QPainter* drawer, TFWorkCopy::Ptr workCopy);
+	QPixmap getView(TFWorkCopy::Ptr workCopy);
 
 private:
 
@@ -32,15 +32,27 @@ private:
 	const QColor gray_;
 	const QColor alpha_;
 	const QColor hist_;
+	const QColor noColor_;
 
 	bool drawAlpha_;
+	bool sizeChanged_;
 
 	QRect inputArea_;
 	QRect backgroundArea_;
 	QRect bottomBarArea_;
 
-	QPixmap dBuffer_;
-	void drawBackground_(QPainter* drawer);
+	QPixmap viewBuffer_;
+	QPixmap viewBackgroundBuffer_;
+	QPixmap viewHistogramBuffer_;
+	QPixmap viewGrayBuffer_;
+	QPixmap viewAlphaBuffer_;
+	QPixmap viewBottomColorBarBuffer_;
+
+	void updateBackground_();	
+	void updateHistogramView_(TFWorkCopy::Ptr workCopy);
+	void updateGrayView_(TFWorkCopy::Ptr workCopy);
+	void updateAlphaView_(TFWorkCopy::Ptr workCopy);
+	void updateBottomColorBarView_(TFWorkCopy::Ptr workCopy);
 };
 
 } // namespace GUI

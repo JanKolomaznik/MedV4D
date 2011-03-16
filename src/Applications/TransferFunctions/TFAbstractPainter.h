@@ -22,7 +22,7 @@ public:
 	virtual QRect getInputArea() = 0;
 
 	//virtual void drawBackground(QPainter* drawer) = 0;
-	virtual void drawData(QPainter* drawer, TFWorkCopy::Ptr workCopy) = 0;
+	virtual QPixmap getView(TFWorkCopy::Ptr workCopy) = 0;
 
 protected:
 

@@ -67,18 +67,14 @@ bool TFPalette::connectTFActions_(){
 
 void TFPalette::setupDefault(){
 	
-	domain_ = 4097;
+	domain_ = 4095;	//TODO ?
 	newTF_triggered(TFHolder::TFHolderRGBa);
 }
 
 void TFPalette::setHistogram(TFHistogramPtr histogram){
 
-	//---testing code---
-	//int histSize = histogram->GetSize();
-	//------
-
 	histogram_ = histogram;
-	domain_ = histogram_->GetSize();
+	domain_ = histogram_->GetMax() - histogram_->GetMin();
 
 	HolderMapIt beginPalette = palette_.begin();
 	HolderMapIt endPalette = palette_.end();

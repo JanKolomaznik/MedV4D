@@ -17,8 +17,13 @@ public:
 	~TFWorkCopy(){}
 
 	TFColor getColor(const TFSize index);
-	bool changed();
 	TFSize getViewSize();
+
+	bool component1Changed();
+	bool component2Changed();
+	bool component3Changed();
+	bool alphaChanged();
+	bool histogramChanged();
 
 	float getComponent1(const TFSize index);
 	float getComponent2(const TFSize index);
@@ -42,7 +47,7 @@ public:
 	float getZoom() const;
 	float getMaxZoom() const;
 	void setMaxZoom(const float zoom);
-	TFPoint<int, float> getZoomCenter() const;
+	TFPoint<float, float> getZoomCenter() const;
 
 	void resize(const TFSize xSize, const TFSize ySize);
 
@@ -60,7 +65,7 @@ private:
 		float yOffset;
 		float xRatio;
 		int ratio;
-		TFPoint<int,float> center;
+		TFPoint<float,float> center;
 
 		ZoomProperties():
 			zoom(1),
@@ -80,7 +85,12 @@ private:
 	TFSize xSize_, ySize_;
 	ZoomProperties zoom_;
 
-	bool changed_;
+	bool component1Changed_;
+	bool component2Changed_;
+	bool component3Changed_;
+	bool alphaChanged_;
+	bool histogramChanged_;
+
 	bool histogramEnabled_;
 
 	void computeZoom_(const float nextZoom, const int zoomX, const int zoomY);

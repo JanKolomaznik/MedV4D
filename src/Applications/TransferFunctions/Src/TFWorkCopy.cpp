@@ -9,15 +9,59 @@ TFWorkCopy::TFWorkCopy(const TFSize domain):
 	data_(new TFColorMap(domain)),
 	xSize_(0),
 	ySize_(0),
-	changed_(true),
+	component1Changed_(true),
+	component2Changed_(true),
+	component3Changed_(true),
+	alphaChanged_(true),
+	histogramChanged_(true),
 	histogramEnabled_(false){
 }
 
-bool TFWorkCopy::changed(){
+bool TFWorkCopy::component1Changed(){
 
-	if(changed_)
+	if(component1Changed_)
 	{
-		changed_ = false;
+		component1Changed_ = false;
+		return true;
+	}
+	return false;
+}
+
+bool TFWorkCopy::component2Changed(){
+
+	if(component2Changed_)
+	{
+		component2Changed_ = false;
+		return true;
+	}
+	return false;
+}
+
+bool TFWorkCopy::component3Changed(){
+
+	if(component3Changed_)
+	{
+		component3Changed_ = false;
+		return true;
+	}
+	return false;
+}
+
+bool TFWorkCopy::alphaChanged(){
+
+	if(alphaChanged_)
+	{
+		alphaChanged_ = false;
+		return true;
+	}
+	return false;
+}
+
+bool TFWorkCopy::histogramChanged(){
+
+	if(histogramChanged_)
+	{
+		histogramChanged_ = false;
 		return true;
 	}
 	return false;
@@ -25,12 +69,13 @@ bool TFWorkCopy::changed(){
 
 void TFWorkCopy::setHistogram(TFHistogramPtr histogram){
 
+	histogramChanged_ = true;
 	histogram_ = histogram;
 }
 
 void TFWorkCopy::setHistogramEnabled(bool value){
 
-	if(histogramEnabled_ != value) changed_ = true;
+	if(histogramEnabled_ != value) histogramChanged_ = true;
 	histogramEnabled_ = value;
 }
 
@@ -193,7 +238,7 @@ void TFWorkCopy::setComponent1(const TFSize index, const float value){
 			(*data_)[currIndex].component1 = correctedValue;
 		}
 	}
-	changed_ = true;
+	component1Changed_ = true;
 }
 
 void TFWorkCopy::setComponent2(const TFSize index, const float value){
@@ -214,7 +259,7 @@ void TFWorkCopy::setComponent2(const TFSize index, const float value){
 			(*data_)[currIndex].component2 = correctedValue;
 		}
 	}
-	changed_ = true;
+	component2Changed_ = true;
 }
 
 void TFWorkCopy::setComponent3(const TFSize index, const float value){
@@ -235,7 +280,7 @@ void TFWorkCopy::setComponent3(const TFSize index, const float value){
 			(*data_)[currIndex].component3 = correctedValue;
 		}
 	}
-	changed_ = true;
+	component3Changed_ = true;
 }
 
 void TFWorkCopy::setAlpha(const TFSize index, const float value){
@@ -256,7 +301,7 @@ void TFWorkCopy::setAlpha(const TFSize index, const float value){
 			(*data_)[currIndex].alpha = correctedValue;
 		}
 	}
-	changed_ = true;
+	alphaChanged_ = true;
 }
 
 //---size---
@@ -266,7 +311,6 @@ void TFWorkCopy::resize(const TFSize xSize, const TFSize ySize){
 	xSize_ = xSize;
 	ySize_ = ySize;	
 	computeZoom_(zoom_.zoom, xSize_/2, ySize_/2);
-	changed_ = true;
 }
 
 //---zoom---
@@ -329,7 +373,7 @@ void TFWorkCopy::setMaxZoom(const float zoom){
 	zoom_.max = zoom;
 }
 
-TFPoint<int, float> TFWorkCopy::getZoomCenter() const{
+TFPoint<float, float> TFWorkCopy::getZoomCenter() const{
 
 	return zoom_.center;
 }
@@ -362,10 +406,14 @@ void TFWorkCopy::computeZoom_(const float nextZoom, const int zoomX, const int z
 	zoom_.yOffset = yOffesetInc;
 	zoom_.xRatio = zoomedDomain/xSize_;
 	zoom_.ratio = (int)(zoom_.xRatio)+1;
-	zoom_.center = TFPoint<int,float>((int)(zoomedDomain/2) + zoom_.xOffset,
-		1.0/zoom_.zoom/2 + zoom_.yOffset);
+	zoom_.center = TFPoint<float,float>(((zoomedDomain/2.0) + zoom_.xOffset)/domain_,
+		1.0/zoom_.zoom/2.0 + zoom_.yOffset);
 
-	changed_ = true;
+	histogramChanged_ = true;
+	component1Changed_ = true;
+	component2Changed_ = true;
+	component3Changed_ = true;
+	alphaChanged_ = true;
 }
 
 //---update---

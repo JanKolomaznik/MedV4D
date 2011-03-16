@@ -60,7 +60,7 @@ void TFHolder::setHistogram(TFHistogramPtr histogram){
 	if(!histogram) return;
 	modifier_->getWorkCopy()->updateFunction(function_);
 	modifier_->getWorkCopy()->setHistogram(histogram);
-	function_->resize(histogram->GetSize());
+	function_->resize(histogram->GetMax() - histogram->GetMin());
 	modifier_->getWorkCopy()->update(function_);
 	repaint();
 }
@@ -166,7 +166,8 @@ void TFHolder::save(){
 void TFHolder::paintEvent(QPaintEvent *e){
 
 	QPainter drawer(this);
-	painter_->drawData(&drawer, modifier_->getWorkCopy());
+	drawer.drawPixmap(painterLeftTopMargin_.x, painterLeftTopMargin_.y,
+		painter_->getView(modifier_->getWorkCopy()));
 }
 
 void TFHolder::mousePressEvent(QMouseEvent *e){

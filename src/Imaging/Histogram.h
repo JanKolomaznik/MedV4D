@@ -146,10 +146,6 @@ public:
 	GetMax()const
 		{ return _maxCell; }
 
-	size_t
-	GetSize()const
-		{ return _size; }
-
 	void
         Reset()
         {

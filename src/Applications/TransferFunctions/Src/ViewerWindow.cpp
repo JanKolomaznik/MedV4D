@@ -257,7 +257,7 @@ void ViewerWindow::openFile( const QString &aPath )
 
 	LOG( "Histogram computed in " << clock.SecondsPassed() );
 	mTransferFunctionEditor->setHistogram( histogram );	
-	domain_ = histogram->GetSize();
+	domain_ = histogram->GetMax() - histogram->GetMin();
 	fileLoaded_ = true;
 
 	mViewer->ZoomFit();

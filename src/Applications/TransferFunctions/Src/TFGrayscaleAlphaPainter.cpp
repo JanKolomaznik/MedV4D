@@ -10,7 +10,8 @@ TFGrayscaleAlphaPainter::TFGrayscaleAlphaPainter(bool drawAlpha):
 	background_(Qt::black),
 	gray_(Qt::lightGray),
 	alpha_(Qt::yellow),
-	hist_(Qt::magenta),
+	hist_(255,140,0,255),
+	noColor_(0,0,0,0),
 	drawAlpha_(drawAlpha){
 }
 
@@ -45,72 +46,139 @@ QRect TFGrayscaleAlphaPainter::getInputArea(){
 		inputArea_.width(), inputArea_.height());
 }
 
-void TFGrayscaleAlphaPainter::drawBackground_(QPainter* drawer){
+void TFGrayscaleAlphaPainter::updateBackground_(){
 
-	drawer->fillRect(backgroundArea_, QBrush(background_));
+	viewBackgroundBuffer_ = QPixmap(area_.width(), area_.height());
+	viewBackgroundBuffer_.fill(noColor_);
 
-	drawer->fillRect(bottomBarArea_, QBrush(background_));
+	QPainter drawer(&viewBackgroundBuffer_);
+	drawer.fillRect(backgroundArea_, QBrush(background_));
+	drawer.fillRect(bottomBarArea_, QBrush(background_));
 }
 
-void TFGrayscaleAlphaPainter::drawData(QPainter* drawer, TFWorkCopy::Ptr workCopy){
+void TFGrayscaleAlphaPainter::updateHistogramView_(TFWorkCopy::Ptr workCopy){
+		
+	viewHistogramBuffer_ = QPixmap(area_.width(), area_.height());
+	viewHistogramBuffer_.fill(noColor_);
 
-	//tfAssert(workCopy->size() == inputArea_.width());
-	
-	if(workCopy->changed())
+	if(!workCopy->histogramEnabled()) return;
+
+	QPainter drawer(&viewHistogramBuffer_);
+	drawer.setClipRect(inputArea_.x(), inputArea_.y(),
+		inputArea_.width() + 1, inputArea_.height() + 1);
+
+	TFPaintingPoint origin(inputArea_.x(), inputArea_.y());
+
+	for(int i = 0; i < inputArea_.width() - 1; ++i)
 	{
-		dBuffer_ = QPixmap(area_.width(), area_.height());
+		drawer.setPen(hist_);	
+		drawer.drawLine(origin.x + i, origin.y + (1 - workCopy->getHistogramValue(i))*inputArea_.height(),
+			origin.x + i + 1, origin.y + (1 - workCopy->getHistogramValue(i+1))*inputArea_.height());
+	}
+}
 
-		QPainter dbPainter(&dBuffer_);
-		//dbPainter.setBackgroundMode(Qt::TransparentMode);
+void TFGrayscaleAlphaPainter::updateGrayView_(TFWorkCopy::Ptr workCopy){
 		
-		drawBackground_(&dbPainter);
+	viewGrayBuffer_ = QPixmap(area_.width(), area_.height());
+	viewGrayBuffer_.fill(noColor_);
 
-		dbPainter.setClipRect(inputArea_.x(), inputArea_.y(),
-			inputArea_.width() + 1, inputArea_.height() + 1);
+	QPainter drawer(&viewGrayBuffer_);
+	drawer.setClipRect(inputArea_.x(), inputArea_.y(),
+		inputArea_.width() + 1, inputArea_.height() + 1);
 
-		TFPaintingPoint origin(inputArea_.x(), inputArea_.y());
+	TFPaintingPoint origin(inputArea_.x(), inputArea_.y());
+
+	for(int i = 0; i < inputArea_.width() - 1; ++i)
+	{
+		drawer.setPen(gray_);
+		drawer.drawLine(origin.x + i, origin.y + (1 - workCopy->getComponent1(i))*inputArea_.height(),
+			origin.x + i + 1, origin.y + (1 - workCopy->getComponent1(i+1))*inputArea_.height());	
+	}
+}
+
+void TFGrayscaleAlphaPainter::updateAlphaView_(TFWorkCopy::Ptr workCopy){
 		
-		TFColor tfColor;
-		QColor qColor;
-		for(int i = 0; i < inputArea_.width() - 1; ++i)
-		{			
-			//histogram
-			if(workCopy->histogramEnabled())
-			{
-				dbPainter.setPen(hist_);	
-				dbPainter.drawLine(origin.x + i, origin.y + (1 - workCopy->getHistogramValue(i))*inputArea_.height(),
-					origin.x + i + 1, origin.y + (1 - workCopy->getHistogramValue(i+1))*inputArea_.height());
-			}
-			//alpha
-			if(drawAlpha_)
-			{
-				dbPainter.setPen(alpha_);
-				dbPainter.drawLine(origin.x + i, origin.y + (1 - workCopy->getAlpha(i))*inputArea_.height(),
-					origin.x + i + 1, origin.y + (1 - workCopy->getAlpha(i+1))*inputArea_.height());
-			}
+	viewAlphaBuffer_ = QPixmap(area_.width(), area_.height());
+	viewAlphaBuffer_.fill(noColor_);
 
-			//gray
-			dbPainter.setPen(gray_);	
-			dbPainter.drawLine(origin.x + i, origin.y + (1 - workCopy->getComponent1(i))*inputArea_.height(),
-				origin.x + i + 1, origin.y + (1 - workCopy->getComponent1(i+1))*inputArea_.height());
-		}
+	if(!drawAlpha_) return;
 
-		dbPainter.setClipRect(bottomBarArea_.x() + 1, bottomBarArea_.y() + 1,
-			bottomBarArea_.width() + 1, bottomBarArea_.height());
+	QPainter drawer(&viewAlphaBuffer_);
+	drawer.setClipRect(inputArea_.x(), inputArea_.y(),
+		inputArea_.width() + 1, inputArea_.height() + 1);
 
-		for(int i = 0; i < inputArea_.width(); ++i)
-		{
-			//bottom bar
-			tfColor = workCopy->getColor(i);
-			qColor.setRgbF(tfColor.component1, tfColor.component2, tfColor.component3, tfColor.alpha);
-			dbPainter.setPen(qColor);
+	TFPaintingPoint origin(inputArea_.x(), inputArea_.y());
 
-			dbPainter.drawLine(bottomBarArea_.x() + i + 1, bottomBarArea_.y(),
-				bottomBarArea_.x() + i + 1, bottomBarArea_.y() + bottomBarArea_.height() - 1);
-		}
+	for(int i = 0; i < inputArea_.width() - 1; ++i)
+	{
+		drawer.setPen(alpha_);
+		drawer.drawLine(origin.x + i, origin.y + (1 - workCopy->getAlpha(i))*inputArea_.height(),
+			origin.x + i + 1, origin.y + (1 - workCopy->getAlpha(i+1))*inputArea_.height());
+	}
+}
+
+void TFGrayscaleAlphaPainter::updateBottomColorBarView_(TFWorkCopy::Ptr workCopy){
+		
+	viewBottomColorBarBuffer_ = QPixmap(area_.width(), area_.height());
+	viewBottomColorBarBuffer_.fill(noColor_);
+
+	QPainter drawer(&viewBottomColorBarBuffer_);
+	drawer.setClipRect(bottomBarArea_.x() + 1, bottomBarArea_.y() + 1,
+		bottomBarArea_.width() + 1, bottomBarArea_.height());
+
+	TFColor tfColor;
+	QColor qColor;
+	for(int i = 0; i < inputArea_.width(); ++i)
+	{
+		tfColor = workCopy->getColor(i);
+		qColor.setRgbF(tfColor.component1, tfColor.component2, tfColor.component3, tfColor.alpha);
+		drawer.setPen(qColor);
+
+		drawer.drawLine(bottomBarArea_.x() + i + 1, bottomBarArea_.y(),
+			bottomBarArea_.x() + i + 1, bottomBarArea_.y() + bottomBarArea_.height() - 1);
+	}
+}
+
+QPixmap TFGrayscaleAlphaPainter::getView(TFWorkCopy::Ptr workCopy){
+
+	bool change = false;
+	if(sizeChanged_)
+	{
+		updateBackground_();
+		change = true;
+	}
+	if(sizeChanged_ || workCopy->histogramChanged())
+	{
+		updateHistogramView_(workCopy);
+		change = true;
+	}
+	if(sizeChanged_ || workCopy->component1Changed())
+	{
+		updateGrayView_(workCopy);
+		change = true;
+	}
+	if(sizeChanged_ || workCopy->alphaChanged())
+	{
+		updateAlphaView_(workCopy);
+		change = true;
+	}
+	if(change)
+	{
+		updateBottomColorBarView_(workCopy);
+
+		viewBuffer_ = QPixmap(area_.width(), area_.height());
+		viewBuffer_.fill(noColor_);
+		QPainter drawer(&viewBuffer_);
+
+		drawer.drawPixmap(0, 0, viewBackgroundBuffer_);
+		drawer.drawPixmap(0, 0, viewHistogramBuffer_);
+		drawer.drawPixmap(0, 0, viewGrayBuffer_);
+		drawer.drawPixmap(0, 0, viewAlphaBuffer_);
+		drawer.drawPixmap(0, 0, viewBottomColorBarBuffer_);
 	}
 
-	drawer->drawPixmap(area_.x(), area_.y(), dBuffer_);
+	sizeChanged_ = false;
+	return viewBuffer_;
 }
 
 } // namespace GUI

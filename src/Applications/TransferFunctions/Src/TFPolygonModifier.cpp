@@ -20,8 +20,6 @@ TFPolygonModifier::TFPolygonModifier(TFAbstractModifier::Type type, const TFSize
 
 	tools_->maxZoomSpin->setValue((int)workCopy_->getMaxZoom());
 	tools_->ratioValue->setText(QString::number(workCopy_->getZoom()));
-	tools_->zoomXValue->setText(QString::number(domain/2));
-	tools_->zoomYValue->setText(QString::number(0.5));
 
 	bool changeViewConnected = QObject::connect(tools_->activeViewBox, SIGNAL(currentIndexChanged(int)),
 		this, SLOT(activeView_changed(int)));
@@ -149,7 +147,7 @@ void TFPolygonModifier::updateZoomTools_(){
 
 	tools_->ratioValue->setText(QString::number(workCopy_->getZoom()));
 
-	TFPoint<int,float> center = workCopy_->getZoomCenter();
+	TFPoint<float,float> center = workCopy_->getZoomCenter();
 
 	tools_->zoomXValue->setText(QString::number(center.x));
 	tools_->zoomYValue->setText(QString::number(center.y));
