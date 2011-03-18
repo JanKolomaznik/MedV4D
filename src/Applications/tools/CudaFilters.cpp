@@ -78,9 +78,12 @@ main( int argc, char **argv )
 			}
 			typedef M4D::Imaging::Image< TTYPE, 3 > IMAGE_TYPE;
 			IMAGE_TYPE::Ptr typedImage = IMAGE_TYPE::Cast( image );
-			M4D::Imaging::Mask3D::Ptr outputImage = ImageFactory::CreateEmptyImageFromExtents< uint8, 3 >( typedImage->GetMinimum(), typedImage->GetMaximum(), typedImage->GetElementExtents() );
+			M4D::Imaging::Image< uint32, 3 >::Ptr outputImage = ImageFactory::CreateEmptyImageFromExtents< uint32, 3 >( typedImage->GetMinimum(), typedImage->GetMaximum(), typedImage->GetElementExtents() );
 
-			LocalMinima3D( typedImage->GetRegion(), outputImage->GetRegion(), threshold );
+			std::cout << "Finding local minima ..."; std::cout.flush();
+			LocalMinimaRegions3D( typedImage->GetRegion(), outputImage->GetRegion(), threshold );
+			std::cout << "Done\n";
+			//LocalMinima3D( typedImage->GetRegion(), outputImage->GetRegion(), threshold );
 			std::cout << "Saving file '" << outFilename << "' ..."; std::cout.flush();
 			M4D::Imaging::ImageFactory::DumpImage( outFilename, *outputImage );
 			std::cout << "Done\n";
@@ -111,15 +114,19 @@ main( int argc, char **argv )
 			}
 			typedef M4D::Imaging::Image< TTYPE, 3 > IMAGE_TYPE;
 			IMAGE_TYPE::Ptr typedImage = IMAGE_TYPE::Cast( image );
-			M4D::Imaging::Mask3D::Ptr maskImage = ImageFactory::CreateEmptyImageFromExtents< uint8, 3 >( typedImage->GetMinimum(), typedImage->GetMaximum(), typedImage->GetElementExtents() );
+			//M4D::Imaging::Mask3D::Ptr maskImage = ImageFactory::CreateEmptyImageFromExtents< uint8, 3 >( typedImage->GetMinimum(), typedImage->GetMaximum(), typedImage->GetElementExtents() );
 			M4D::Imaging::Image< uint32, 3 >::Ptr labelImage = ImageFactory::CreateEmptyImageFromExtents< uint32, 3 >( typedImage->GetMinimum(), typedImage->GetMaximum(), typedImage->GetElementExtents() );
 			
-			std::cout << "Finding local minima ..."; std::cout.flush();
+			/*std::cout << "Finding local minima ..."; std::cout.flush();
 			LocalMinima3D( typedImage->GetRegion(), maskImage->GetRegion(), threshold );
 			std::cout << "Done\n";
 
 			std::cout << "Connected component labeling ..."; std::cout.flush();
 			ConnectedComponentLabeling3D( maskImage->GetRegion(), labelImage->GetRegion() );
+			std::cout << "Done\n";*/
+
+			std::cout << "Finding local minima ..."; std::cout.flush();
+			LocalMinimaRegions3D( typedImage->GetRegion(), labelImage->GetRegion(), threshold );
 			std::cout << "Done\n";
 
 			std::cout << "Watershed transformation ..."; std::cout.flush();

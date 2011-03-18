@@ -67,7 +67,7 @@ ENDIF( DEVIL_FOUND )
 
 FIND_PACKAGE(CUDA)
 IF( CUDA_FOUND )
-	SET(CUDA_NVCC_FLAGS --use_fast_math;-arch=compute_13;-code=compute_13;--use_fast_math )
+	SET(CUDA_NVCC_FLAGS --compiler-options;-fpermissive;--use_fast_math;-arch=compute_13;-code=compute_13;--use_fast_math )
 	INCLUDE_DIRECTORIES( ${CUDA_INCLUDE_DIRS} )
 
 	CUDA_ADD_EXECUTABLE(CudaFilters ${TOOLS_SRC_DIR}/CudaFilters.cpp ${TOOLS_SRC_DIR}/CudaFilters.cu )

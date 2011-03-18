@@ -63,6 +63,9 @@ public:
 #define LOG( ARGs )	\
 	LOUT << ARGs << std::endl;
 
+#define LOG_CONT( ARGs )	\
+	LOUT << ARGs; LOUT.flush();
+
 /** @} */
 
 #endif /*__LOG_H_*/
