@@ -1,9 +1,11 @@
 #include "ViewerWindow.hpp"
 
 
-ViewerWindow::ViewerWindow(): fileLoaded_(false){
+ViewerWindow::ViewerWindow():
+	fileLoaded_(false){
 
 	setupUi( this );
+	showMaximized();
 
 	#ifdef WIN32
 		//Reposition console window
@@ -21,19 +23,18 @@ ViewerWindow::ViewerWindow(): fileLoaded_(false){
 	mTransferFunctionEditor = new M4D::GUI::TFPalette(this);
 	//mTransferFunctionEditor->setupDefault();	
 
-	QDockWidget * dockWidget = new QDockWidget("Transfer Function Palette", this);
+	QDockWidget* dockWidget = new QDockWidget("Transfer Function Palette", this);
 	
 	dockWidget->setWidget( mTransferFunctionEditor );
 	dockWidget->setFeatures(QDockWidget::AllDockWidgetFeatures);
 	dockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 	
-	addDockWidget(Qt::LeftDockWidgetArea, dockWidget);	
+	addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
 
 	//---Timer---
 
 	mTransFuncTimer.setInterval( 500 );
 	QObject::connect( &mTransFuncTimer, SIGNAL( timeout() ), this, SLOT( updateTransferFunction() ) );
-	mTransFuncTimer.start();
 
 	//---Viewer Switch---
 
@@ -84,6 +85,16 @@ ViewerWindow::ViewerWindow(): fileLoaded_(false){
 
 	mViewer->setMouseTracking ( true );
 	QObject::connect( mViewer, SIGNAL( MouseInfoUpdate( const QString & ) ), infoLabel, SLOT( setText( const QString & ) ) );
+		
+	//---Default buffer---
+
+	buffer_ = Buffer1DPtr(new Buffer1D(4095, Interval(0.0f, 4095.0f)));	
+
+	for(Buffer1D::Iterator it = buffer_->Begin(); it != buffer_->End(); ++it)
+	{		
+		*it = Buffer1D::ValueType(0,0,0,0);
+	}
+	mViewer->SetTransferFunctionBuffer(buffer_);
 }
 
 ViewerWindow::~ViewerWindow(){}
@@ -120,20 +131,23 @@ void ViewerWindow::applyTransferFunction(){
 
 	if(!fileLoaded_) return;
 
-	Buffer1DPtr buffer = Buffer1DPtr(new Buffer1D(mTransferFunctionEditor->getDomain(),
-		Interval(0.0f, (float)mTransferFunctionEditor->getDomain())));
+	if(buffer_ && (buffer_->Size() != mTransferFunctionEditor->getDomain()))
+	{
+		buffer_ = Buffer1DPtr(new Buffer1D(mTransferFunctionEditor->getDomain(),
+			Interval(0.0f, (float)mTransferFunctionEditor->getDomain())));
+	}
 	
-	bool tfUsed = mTransferFunctionEditor->applyTransferFunction<Buffer1D::iterator>( buffer->Begin(), buffer->End());
+	bool tfUsed = mTransferFunctionEditor->applyTransferFunction<Buffer1D::iterator>( buffer_->Begin(), buffer_->End());
 	
-	if(tfUsed) mViewer->SetTransferFunctionBuffer(buffer);
+	if(tfUsed) mViewer->SetTransferFunctionBuffer(buffer_);
 }
 
 void ViewerWindow::updateTransferFunction(){
 
-	bool noTF;
-	const M4D::Common::TimeStamp timestamp = mTransferFunctionEditor->getTimeStamp(noTF);
+	//bool noTF;
+	const M4D::Common::TimeStamp timestamp = mTransferFunctionEditor->getTimeStamp(/*noTF*/);
 
-	if ( !noTF && timestamp != mLastTimeStamp )
+	if (/*!noTF &&*/ timestamp != mLastTimeStamp )
 	{
 		applyTransferFunction();
 		mLastTimeStamp = timestamp;
@@ -224,6 +238,7 @@ ViewerWindow::updateToolbars()
 void ViewerWindow::openFile()
 {	
 	//---TODO-default-buffer---
+	/*
 	bool noTF;
 	mTransferFunctionEditor->getTimeStamp(noTF);
 	if(noTF)
@@ -234,6 +249,7 @@ void ViewerWindow::openFile()
 
 		return;
 	}
+	*/
 	//------
 
 	QString fileName = QFileDialog::getOpenFileName(this,
@@ -266,5 +282,6 @@ void ViewerWindow::openFile( const QString &aPath )
 	assert(histogramSet);
 
 	mViewer->ZoomFit();
-	applyTransferFunction();
+	updateTransferFunction();
+	mTransFuncTimer.start();
 }

@@ -26,8 +26,6 @@ TFHolder::TFHolder(QMainWindow* mainWindow,
 	ui_->setupUi(this);
 	holder_->setCentralWidget(this);
 	
-	lastChange_ = modifier_->getLastChangeTime();
-	
 	bool rereshConnected = QObject::connect( &(*modifier_), SIGNAL(RefreshView()), this, SLOT(refresh_view()));
 	tfAssert(rereshConnected);
 	
@@ -63,9 +61,9 @@ TFHolder::~TFHolder(){
 	//if(ui_) delete ui_;
 }
 
-M4D::Common::TimeStamp TFHolder::getLastChangeTime(){
+bool TFHolder::changed(){
 
-	return modifier_->getLastChangeTime();
+	return modifier_->changed();
 }
 
 void TFHolder::setHistogram(TF::Histogram::Ptr histogram){
@@ -163,11 +161,6 @@ void TFHolder::paintEvent(QPaintEvent *e){
 void TFHolder::mousePressEvent(QMouseEvent *e){
 
 	if(blank_) return;
-	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
-	if(lastChange != lastChange_)
-	{
-		lastChange_ = lastChange;
-	}
 
 	modifier_->mousePress(e->x(), e->y(), e->button());
 }
@@ -175,11 +168,6 @@ void TFHolder::mousePressEvent(QMouseEvent *e){
 void TFHolder::mouseReleaseEvent(QMouseEvent *e){
 
 	if(blank_) return;
-	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
-	if(lastChange != lastChange_)
-	{
-		lastChange_ = lastChange;
-	}
 
 	modifier_->mouseRelease(e->x(), e->y());
 }
@@ -187,11 +175,6 @@ void TFHolder::mouseReleaseEvent(QMouseEvent *e){
 void TFHolder::mouseMoveEvent(QMouseEvent *e){
 
 	if(blank_) return;
-	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
-	if(lastChange != lastChange_)
-	{
-		lastChange_ = lastChange;
-	}
 	
 	modifier_->mouseMove(e->x(), e->y());
 }
@@ -199,14 +182,9 @@ void TFHolder::mouseMoveEvent(QMouseEvent *e){
 void TFHolder::wheelEvent(QWheelEvent *e){
 
 	if(blank_) return;
+
 	int numSteps = e->delta() / 120;
 	if(numSteps == 0) return;
-
-	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
-	if(lastChange != lastChange_)
-	{
-		lastChange_ = lastChange;
-	}
 
 	modifier_->mouseWheel(numSteps, e->x(), e->y());
 }
@@ -214,11 +192,6 @@ void TFHolder::wheelEvent(QWheelEvent *e){
 void TFHolder::resizeEvent(QResizeEvent *e){
 
 	if(blank_) return;
-	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
-	if(lastChange != lastChange_)
-	{
-		lastChange_ = lastChange;
-	}
 
 	resizePainter_();
 }

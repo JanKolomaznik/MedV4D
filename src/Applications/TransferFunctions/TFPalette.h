@@ -38,12 +38,13 @@ public:
 	void setDomain(TF::Size domain);
 	TF::Size getDomain();
 	
-	M4D::Common::TimeStamp getTimeStamp(bool& noFunctionAvailable);
+	M4D::Common::TimeStamp getTimeStamp(/*bool& noFunctionAvailable*/);
 
 	template<typename BufferIterator>
 	bool applyTransferFunction(BufferIterator begin, BufferIterator end){
 
 		if(activeHolder_ < 0) on_actionNew_triggered();
+		if(activeHolder_ < 0) exit(0);
 
 		return palette_.find(activeHolder_)->second->applyTransferFunction<BufferIterator>(begin, end);
 	}
@@ -105,6 +106,8 @@ private:
 
 	TF::Histogram::Ptr histogram_;
 	TF::Size domain_;
+
+	M4D::Common::TimeStamp lastChange_;
 
 	Indexer indexer_;
 	int activeHolder_;

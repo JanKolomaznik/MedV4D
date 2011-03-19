@@ -23,7 +23,7 @@ public:
 	//void setWorkCopy(TFWorkCopy::Ptr workCopy);
 	void setInputArea(QRect inputArea);
 
-	M4D::Common::TimeStamp getLastChangeTime();
+	bool changed();
 
 	virtual void mousePress(const int x, const int y, Qt::MouseButton button){}
 	virtual void mouseRelease(const int x, const int y){}
@@ -39,7 +39,7 @@ protected:
 
 	QWidget* toolsWidget_;
 
-	M4D::Common::TimeStamp lastChange_;
+	bool changed_;
 
 	TFWorkCopy::Ptr workCopy_;
 	QRect inputArea_;

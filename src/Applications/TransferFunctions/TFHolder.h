@@ -65,7 +65,7 @@ public:
 	TFPaletteButton* getButton() const;
 	QDockWidget* getDockWidget() const;
 
-	M4D::Common::TimeStamp getLastChangeTime();
+	bool changed();
 	
 	template<typename ElementIterator>
 	bool applyTransferFunction(
@@ -102,8 +102,6 @@ private:
 	TFAbstractModifier::Ptr modifier_;
 	TFAbstractPainter::Ptr painter_;
 	TFPaletteButton* button_;
-
-	M4D::Common::TimeStamp lastChange_;
 
 	TF::Size index_;
 

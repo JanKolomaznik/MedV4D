@@ -5,7 +5,8 @@ namespace GUI {
 
 TFAbstractModifier::TFAbstractModifier():
 	ignorePoint_(-1, -1),
-	toolsWidget_(NULL){
+	toolsWidget_(NULL),
+	changed_(true){
 }
 
 TFAbstractModifier::~TFAbstractModifier(){}
@@ -26,9 +27,14 @@ void TFAbstractModifier::setInputArea(QRect inputArea){
 	workCopy_->resize(inputArea_.width(), inputArea_.height());
 }
 
-M4D::Common::TimeStamp TFAbstractModifier::getLastChangeTime(){
+bool TFAbstractModifier::changed(){
 
-	return lastChange_;
+	if(changed_)
+	{
+		changed_ = false;
+		return true;
+	}
+	return false;
 }
 
 TF::PaintingPoint TFAbstractModifier::getRelativePoint_(const int x, const int y, bool acceptOutOfBounds){	

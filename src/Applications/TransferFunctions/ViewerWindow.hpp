@@ -50,6 +50,8 @@ protected:
 	M4D::Imaging::ConnectionTyped< M4D::Imaging::AImage > mProdconn;
 	M4D::GUI::TFPalette *mTransferFunctionEditor;
 
+	Buffer1DPtr buffer_;
+
 	QTimer	mTransFuncTimer;
 	M4D::Common::TimeStamp mLastTimeStamp;
 

@@ -224,7 +224,7 @@ void TFSimpleModifier::addPoint_(const int x, const int y){
 			break;
 		}
 	}
-	++lastChange_;	
+	changed_ = true;;	
 }
 
 } // namespace GUI

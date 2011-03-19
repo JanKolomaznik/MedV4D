@@ -44,16 +44,18 @@ TF::Size TFPalette::getDomain(){
 	return domain_;
 }
 
-M4D::Common::TimeStamp TFPalette::getTimeStamp(bool& noFunctionAvailable){
+M4D::Common::TimeStamp TFPalette::getTimeStamp(/*bool& noFunctionAvailable*/){
 
-	noFunctionAvailable = false;
+	//noFunctionAvailable = false;
 	if(palette_.empty())
 	{
-		noFunctionAvailable = true;
-		return M4D::Common::DefaultTimeStamp;
+		//noFunctionAvailable = true;
+		++lastChange_;
+		return lastChange_;
 	}
+	if(palette_.find(activeHolder_)->second->changed()) ++lastChange_;
 
-	return palette_.find(activeHolder_)->second->getLastChangeTime();
+	return lastChange_;
 }
 
 void TFPalette::addToPalette_(TFHolder* holder){
@@ -79,22 +81,29 @@ void TFPalette::addToPalette_(TFHolder* holder){
 
 void TFPalette::removeFromPalette_(TF::Size index){
 
-	tfAssert(palette_.size() > 1);
+	bool last = palette_.size() == 1;
 
 	HolderMapIt toRemoveIt = palette_.find(index);
 	mainWindow_->removeDockWidget(toRemoveIt->second->getDockWidget());
 
 	if(index == activeHolder_)
 	{
-		HolderMapIt nextActiveIt = toRemoveIt;
-		++nextActiveIt;
-		if(nextActiveIt == palette_.end())
+		if(last)
 		{
-			nextActiveIt = toRemoveIt;
-			--nextActiveIt;
+			activeHolder_ = -1;
 		}
-		TF::Size toActivate = nextActiveIt->second->getIndex();
-		change_activeHolder(toActivate);	
+		else
+		{
+			HolderMapIt nextActiveIt = toRemoveIt;
+			++nextActiveIt;
+			if(nextActiveIt == palette_.end())
+			{
+				nextActiveIt = toRemoveIt;
+				--nextActiveIt;
+			}
+			TF::Size toActivate = nextActiveIt->second->getIndex();
+			change_activeHolder(toActivate);
+		}
 	}
 
 	TFPaletteButton* toRemoveButton = toRemoveIt->second->getButton();
@@ -114,7 +123,7 @@ void TFPalette::resizeEvent(QResizeEvent* e){
 
 void TFPalette::close_triggered(TF::Size index){
 
-	if(palette_.size() <= 1) exit(0);
+	//if(palette_.size() <= 1) exit(0);
 
 	removeFromPalette_(index);
 }
