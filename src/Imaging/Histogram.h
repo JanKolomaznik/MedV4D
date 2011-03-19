@@ -26,6 +26,9 @@ class Histogram
 public:
 	typedef boost::shared_ptr< Histogram< CellType > > Ptr;
 
+	typedef CellType* Iterator;
+	typedef Iterator iterator;
+
 	Histogram( int32 min, int32 max, bool storeOutliers = true ) : _cells( NULL ),
 		_minCell( min ), _maxCell( max ), _storeOutliers( storeOutliers ), _sum( 0 )
 	{
@@ -145,6 +148,14 @@ public:
 	int32
 	GetMax()const
 		{ return _maxCell; }
+
+	Iterator
+	Begin()
+		{ return _cells + 1; }
+
+	Iterator
+	End()
+		{ return _cells + _size - 1; }
 
 	void
         Reset()
