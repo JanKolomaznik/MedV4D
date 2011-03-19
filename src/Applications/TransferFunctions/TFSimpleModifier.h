@@ -15,10 +15,16 @@ public:
 
 	typedef boost::shared_ptr<TFSimpleModifier> Ptr;
 
-	TFSimpleModifier(TFAbstractModifier::Type type, const TFSize domain);
+	enum Mode{
+		Grayscale,
+		RGB,
+		HSV
+	};
+
+	TFSimpleModifier(TFWorkCopy::Ptr workCopy, Mode mode, bool alpha);
 	~TFSimpleModifier();
 
-	void mousePress(const int x, const int y, MouseButton button);
+	void mousePress(const int x, const int y, Qt::MouseButton button);
 	void mouseRelease(const int x, const int y);
 	void mouseMove(const int x, const int y);
 	void mouseWheel(const int steps, const int x, const int y);
@@ -42,13 +48,14 @@ private:
 
 	Ui::TFSimpleModifier* tools_;
 
-	TFAbstractModifier::Type type_;
+	Mode mode_;
+	bool alpha_;
 
 	bool leftMousePressed_;
-	TFPaintingPoint inputHelper_;
+	TF::PaintingPoint inputHelper_;
 
 	bool zoomMovement_;
-	TFPaintingPoint zoomMoveHelper_;
+	TF::PaintingPoint zoomMoveHelper_;
 
 	void addPoint_(const int x, const int y);
 

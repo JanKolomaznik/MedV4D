@@ -85,14 +85,9 @@
    </property>
    <widget class="QMenu" name="paletteMenu">
     <property name="title">
-     <string>Menu</string>
+     <string>Add Transfer Function</string>
     </property>
-    <widget class="QMenu" name="menuNew">
-     <property name="title">
-      <string>New</string>
-     </property>
-    </widget>
-    <addaction name="menuNew"/>
+    <addaction name="actionNew"/>
     <addaction name="actionLoad"/>
    </widget>
    <addaction name="paletteMenu"/>
@@ -108,6 +103,14 @@
   <action name="actionA">
    <property name="text">
     <string>a</string>
+   </property>
+  </action>
+  <action name="actionNew">
+   <property name="text">
+    <string>New</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
  </widget>

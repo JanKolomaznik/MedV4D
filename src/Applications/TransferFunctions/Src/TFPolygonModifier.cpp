@@ -3,8 +3,9 @@
 namespace M4D {
 namespace GUI {
 
-TFPolygonModifier::TFPolygonModifier(TFAbstractModifier::Type type, const TFSize domain):
-	type_(type),
+TFPolygonModifier::TFPolygonModifier(TFWorkCopy::Ptr workCopy,  Mode mode, bool alpha):
+	mode_(mode),
+	alpha_(alpha),
 	tools_(new Ui::TFPolygonModifier),
 	activeView_(Active1),
 	inputHelper_(),
@@ -13,7 +14,7 @@ TFPolygonModifier::TFPolygonModifier(TFAbstractModifier::Type type, const TFSize
 	baseRadius_(50),
 	topRadius_(20){
 
-	workCopy_ = TFWorkCopy::Ptr(new TFWorkCopy(domain));
+	workCopy_ = workCopy;
 
 	toolsWidget_ = new QWidget();
 	tools_->setupUi(toolsWidget_);
@@ -39,50 +40,33 @@ TFPolygonModifier::TFPolygonModifier(TFAbstractModifier::Type type, const TFSize
 		this, SLOT(bottomSpin_changed(int)));
 	tfAssert(bottomSpinConnected);
 
-	switch(type_)
+	switch(mode_)
 	{
-		case TFModifierGrayscale:
+		case Grayscale:
 		{
 			tools_->activeViewBox->addItem(QObject::tr("gray"));
 			break;
 		}
-		case TFModifierGrayscaleAlpha:
-		{
-			tools_->activeViewBox->addItem(QObject::tr("gray"));
-			tools_->activeViewBox->addItem(QObject::tr("opacity"));
-			break;
-		}
-		case TFModifierRGB:
+		case RGB:
 		{
 			tools_->activeViewBox->addItem(QObject::tr("red"));
 			tools_->activeViewBox->addItem(QObject::tr("green"));
 			tools_->activeViewBox->addItem(QObject::tr("blue"));
 			break;
 		}
-		case TFModifierRGBa:
-		{
-			tools_->activeViewBox->addItem(QObject::tr("red"));
-			tools_->activeViewBox->addItem(QObject::tr("green"));
-			tools_->activeViewBox->addItem(QObject::tr("blue"));
-			tools_->activeViewBox->addItem(QObject::tr("opacity"));
-			break;
-		}
-		case TFModifierHSV:
+		case HSV:
 		{
 			tools_->activeViewBox->addItem(QObject::tr("hue"));
 			tools_->activeViewBox->addItem(QObject::tr("saturation"));
 			tools_->activeViewBox->addItem(QObject::tr("value"));
 			break;
 		}
-		case TFModifierHSVa:
+		default:
 		{
-			tools_->activeViewBox->addItem(QObject::tr("hue"));
-			tools_->activeViewBox->addItem(QObject::tr("saturation"));
-			tools_->activeViewBox->addItem(QObject::tr("value"));
-			tools_->activeViewBox->addItem(QObject::tr("opacity"));
-			break;
+			tfAssert(!"Painter not supported");
 		}
 	}
+	if(alpha_) tools_->activeViewBox->addItem(QObject::tr("opacity"));
 }
 
 TFPolygonModifier::~TFPolygonModifier(){}
@@ -104,8 +88,14 @@ void TFPolygonModifier::activeView_changed(int index){
 		}
 		case 1:
 		{
-			if(type_ == TFModifierGrayscaleAlpha) activeView_ = ActiveAlpha;
-			else activeView_ = Active2;
+			if(mode_ == Grayscale)
+			{
+				activeView_ = ActiveAlpha;
+			}
+			else
+			{
+				activeView_ = Active2;
+			}
 			break;
 		}
 		case 2:
@@ -120,7 +110,7 @@ void TFPolygonModifier::activeView_changed(int index){
 		}
 		default:
 		{
-			tfAbort(!"Bad view selected.");
+			tfAssert(!"Bad view selected.");
 			break;
 		}
 	}
@@ -147,28 +137,28 @@ void TFPolygonModifier::updateZoomTools_(){
 
 	tools_->ratioValue->setText(QString::number(workCopy_->getZoom()));
 
-	TFPoint<float,float> center = workCopy_->getZoomCenter();
+	TF::Point<float,float> center = workCopy_->getZoomCenter();
 
 	tools_->zoomXValue->setText(QString::number(center.x));
 	tools_->zoomYValue->setText(QString::number(center.y));
 }
 
-void TFPolygonModifier::mousePress(const int x, const int y, MouseButton button){
+void TFPolygonModifier::mousePress(const int x, const int y, Qt::MouseButton button){
 
-	TFPaintingPoint relativePoint = getRelativePoint_(x,y);
+	TF::PaintingPoint relativePoint = getRelativePoint_(x,y);
 	if(relativePoint == ignorePoint_) return;
 
-	if(button == MouseButtonRight)
+	if(button == Qt::RightButton)
 	{
 		int nextIndex = (tools_->activeViewBox->currentIndex()+1) % tools_->activeViewBox->count();
 		tools_->activeViewBox->setCurrentIndex(nextIndex);
 	}
-	if(button == MouseButtonLeft)
+	if(button == Qt::LeftButton)
 	{
 		leftMousePressed_ = true;
 		inputHelper_ = relativePoint;
 	}
-	if(button == MouseButtonMid)
+	if(button == Qt::MidButton)
 	{
 		zoomMovement_ = true;
 		zoomMoveHelper_ = relativePoint;
@@ -179,7 +169,7 @@ void TFPolygonModifier::mousePress(const int x, const int y, MouseButton button)
 
 void TFPolygonModifier::mouseRelease(const int x, const int y){
 
-	TFPaintingPoint relativePoint = getRelativePoint_(x, y, leftMousePressed_ || zoomMovement_);
+	TF::PaintingPoint relativePoint = getRelativePoint_(x, y, leftMousePressed_ || zoomMovement_);
 	if(relativePoint == ignorePoint_) return;
 
 	if(leftMousePressed_) addPolygon_(relativePoint);
@@ -192,7 +182,7 @@ void TFPolygonModifier::mouseRelease(const int x, const int y){
 
 void TFPolygonModifier::mouseMove(const int x, const int y){
 
-	TFPaintingPoint relativePoint = getRelativePoint_(x, y, leftMousePressed_ || zoomMovement_);
+	TF::PaintingPoint relativePoint = getRelativePoint_(x, y, leftMousePressed_ || zoomMovement_);
 	if(relativePoint == ignorePoint_) return;
 
 	if(leftMousePressed_)
@@ -222,7 +212,7 @@ void TFPolygonModifier::mouseMove(const int x, const int y){
 
 void TFPolygonModifier::mouseWheel(const int steps, const int x, const int y){
 
-	TFPaintingPoint relativePoint = getRelativePoint_(x,y);
+	TF::PaintingPoint relativePoint = getRelativePoint_(x,y);
 	if(relativePoint == ignorePoint_) return;
 
 	if(steps > 0) workCopy_->zoomIn(steps, relativePoint.x, relativePoint.y);
@@ -232,7 +222,7 @@ void TFPolygonModifier::mouseWheel(const int steps, const int x, const int y){
 	emit RefreshView();
 }
 
-void TFPolygonModifier::addPolygon_(const TFPaintingPoint point){
+void TFPolygonModifier::addPolygon_(const TF::PaintingPoint point){
 
 	addLine_(point.x - baseRadius_, 0,	point.x - topRadius_, point.y);
 	addLine_(point.x - topRadius_, point.y, point.x + topRadius_, point.y);
@@ -248,8 +238,7 @@ void TFPolygonModifier::addPoint_(const int x, const int y){
 		case Active1:
 		{
 			workCopy_->setComponent1(x, yValue);
-			if(type_ == TFModifierGrayscale ||
-				type_ == TFModifierGrayscaleAlpha)
+			if(mode_ == Grayscale)
 			{
 				workCopy_->setComponent2(x, yValue);
 				workCopy_->setComponent3(x, yValue);

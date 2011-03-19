@@ -38,6 +38,8 @@ void TFGrayscaleAlphaPainter::setArea(QRect area){
 		area_.height() - colorBarSize_ - 1,
 		inputArea_.width() + 2,
 		colorBarSize_ + 2);
+
+	sizeChanged_ = true;
 }
 
 QRect TFGrayscaleAlphaPainter::getInputArea(){
@@ -67,7 +69,7 @@ void TFGrayscaleAlphaPainter::updateHistogramView_(TFWorkCopy::Ptr workCopy){
 	drawer.setClipRect(inputArea_.x(), inputArea_.y(),
 		inputArea_.width() + 1, inputArea_.height() + 1);
 
-	TFPaintingPoint origin(inputArea_.x(), inputArea_.y());
+	TF::PaintingPoint origin(inputArea_.x(), inputArea_.y());
 
 	for(int i = 0; i < inputArea_.width() - 1; ++i)
 	{
@@ -86,7 +88,7 @@ void TFGrayscaleAlphaPainter::updateGrayView_(TFWorkCopy::Ptr workCopy){
 	drawer.setClipRect(inputArea_.x(), inputArea_.y(),
 		inputArea_.width() + 1, inputArea_.height() + 1);
 
-	TFPaintingPoint origin(inputArea_.x(), inputArea_.y());
+	TF::PaintingPoint origin(inputArea_.x(), inputArea_.y());
 
 	for(int i = 0; i < inputArea_.width() - 1; ++i)
 	{
@@ -107,7 +109,7 @@ void TFGrayscaleAlphaPainter::updateAlphaView_(TFWorkCopy::Ptr workCopy){
 	drawer.setClipRect(inputArea_.x(), inputArea_.y(),
 		inputArea_.width() + 1, inputArea_.height() + 1);
 
-	TFPaintingPoint origin(inputArea_.x(), inputArea_.y());
+	TF::PaintingPoint origin(inputArea_.x(), inputArea_.y());
 
 	for(int i = 0; i < inputArea_.width() - 1; ++i)
 	{
@@ -126,7 +128,7 @@ void TFGrayscaleAlphaPainter::updateBottomColorBarView_(TFWorkCopy::Ptr workCopy
 	drawer.setClipRect(bottomBarArea_.x() + 1, bottomBarArea_.y() + 1,
 		bottomBarArea_.width() + 1, bottomBarArea_.height());
 
-	TFColor tfColor;
+	TF::Color tfColor;
 	QColor qColor;
 	for(int i = 0; i < inputArea_.width(); ++i)
 	{

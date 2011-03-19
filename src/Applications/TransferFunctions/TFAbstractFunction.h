@@ -1,7 +1,8 @@
 #ifndef TF_ABSTRACTFUNCTION
 #define TF_ABSTRACTFUNCTION
 
-#include <TFTypes.h>
+#include <TFCommon.h>
+#include <TFColor.h>
 
 namespace M4D {
 namespace GUI {
@@ -12,25 +13,29 @@ public:
 
 	typedef boost::shared_ptr<TFAbstractFunction> Ptr;
 
-	void operator=(TFAbstractFunction &function);
+	static const TF::Size defaultDomain = 4095;	//TODO ?
 
-	TFFunctionType getType() const;
+	void operator=(const TFAbstractFunction &function);
+	virtual TFAbstractFunction::Ptr clone() = 0;
 
-	const TFSize getDomain();
+	TF::Size getDomain() const;
 
-	TFColorMapPtr getColorMap();
+	//TF::ColorMapPtr getColorMap();
+	TF::Color& operator[](const TF::Size index);
 	
-	virtual TFColor getMappedRGBfColor(const TFSize value) = 0;
+	virtual TF::Color getMappedRGBfColor(const TF::Size value) = 0;
+
+	//void save();
+	//void load();
 
 	void clear();
 
-	void resize(const TFSize domain);
+	void resize(const TF::Size domain);
 
 protected:
 
-	TFFunctionType type_;
-	TFColorMapPtr colorMap_;
-	TFSize domain_;
+	TF::ColorMapPtr colorMap_;
+	TF::Size domain_;
 
 	TFAbstractFunction();
 	virtual ~TFAbstractFunction();

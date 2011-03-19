@@ -9,18 +9,13 @@ TFAbstractModifier::TFAbstractModifier():
 }
 
 TFAbstractModifier::~TFAbstractModifier(){}
-/*
-void TFAbstractModifier::setWorkCopy(TFWorkCopy::Ptr workCopy){
 
-	workCopy_ = workCopy;
-}
-*/
 QWidget* TFAbstractModifier::getTools(){
 
 	return toolsWidget_;
 }
 
-TFWorkCopy::Ptr TFAbstractModifier::getWorkCopy(){
+TFWorkCopy::Ptr TFAbstractModifier::getWorkCopy() const{
 
 	return workCopy_;
 }
@@ -36,12 +31,12 @@ M4D::Common::TimeStamp TFAbstractModifier::getLastChangeTime(){
 	return lastChange_;
 }
 
-TFPaintingPoint TFAbstractModifier::getRelativePoint_(const int x, const int y, bool acceptOutOfBounds){	
+TF::PaintingPoint TFAbstractModifier::getRelativePoint_(const int x, const int y, bool acceptOutOfBounds){	
 
 	int xMax = inputArea_.width() - 1;
 	int yMax = inputArea_.height();
 	
-	TFPaintingPoint corrected = TFPaintingPoint(x - inputArea_.x(), inputArea_.height() - (y - inputArea_.y()));
+	TF::PaintingPoint corrected = TF::PaintingPoint(x - inputArea_.x(), inputArea_.height() - (y - inputArea_.y()));
 
 	bool outOfBounds = false;
 	if( corrected.x < 0 ||
@@ -55,7 +50,7 @@ TFPaintingPoint TFAbstractModifier::getRelativePoint_(const int x, const int y, 
 	return corrected;
 }
 
-void TFAbstractModifier::addLine_(TFPaintingPoint begin, TFPaintingPoint end){
+void TFAbstractModifier::addLine_(TF::PaintingPoint begin, TF::PaintingPoint end){
 	
 	addLine_(begin.x, begin.y, end.x, end.y);
 }

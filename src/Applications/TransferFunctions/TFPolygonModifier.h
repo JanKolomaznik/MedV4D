@@ -15,10 +15,16 @@ public:
 
 	typedef boost::shared_ptr<TFPolygonModifier> Ptr;
 
-	TFPolygonModifier(TFAbstractModifier::Type type, const TFSize domain);
+	enum Mode{
+		Grayscale,
+		RGB,
+		HSV
+	};
+
+	TFPolygonModifier(TFWorkCopy::Ptr workCopy, Mode mode, bool alpha);
 	~TFPolygonModifier();
 
-	void mousePress(const int x, const int y, MouseButton button);
+	void mousePress(const int x, const int y, Qt::MouseButton button);
 	void mouseRelease(const int x, const int y);
 	void mouseMove(const int x, const int y);
 	void mouseWheel(const int steps, const int x, const int y);
@@ -50,18 +56,19 @@ private:
 	void active3Next_();
 	void activeAlphaNext_();
 
-	TFAbstractModifier::Type type_;
+	Mode mode_;
+	bool alpha_;
 
 	bool leftMousePressed_;
-	TFPaintingPoint inputHelper_;
+	TF::PaintingPoint inputHelper_;
 
 	bool zoomMovement_;
-	TFPaintingPoint zoomMoveHelper_;
+	TF::PaintingPoint zoomMoveHelper_;
 
-	TFSize baseRadius_;
-	TFSize topRadius_;
+	TF::Size baseRadius_;
+	TF::Size topRadius_;
 
-	void addPolygon_(const TFPaintingPoint point);
+	void addPolygon_(const TF::PaintingPoint point);
 	void addPoint_(const int x, const int y);
 
 	void updateZoomTools_();

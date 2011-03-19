@@ -1,7 +1,7 @@
 #ifndef TF_PALETTE_BUTTON
 #define TF_PALETTE_BUTTON
 
-#include <TFTypes.h>
+#include <TFCommon.h>
 #include <QtGui/QWidget>
 #include <QtGui/QAction>
 
@@ -14,7 +14,7 @@ class TFPaletteButton: public QWidget{
 
 public:
 
-	TFPaletteButton(QWidget* parent, const TFSize index);
+	TFPaletteButton(QWidget* parent, const TF::Size index);
 	~TFPaletteButton();
 
 	void setup();
@@ -33,10 +33,10 @@ protected:
 
 private:
 
-	TFSize index_;
+	TF::Size index_;
 	bool active_;
 
-	const TFSize size_;
+	const TF::Size size_;
 
 	void drawBorder_(QPainter* drawer, QColor color, int brushWidth);
 };

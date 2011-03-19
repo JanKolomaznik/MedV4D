@@ -1,8 +1,9 @@
 #ifndef TF_WORKCOPY
 #define TF_WORKCOPY
 
-#include <TFTypes.h>
+#include <TFCommon.h>
 #include <TFAbstractFunction.h>
+#include <TFHistogram.h>
 
 namespace M4D {
 namespace GUI {
@@ -13,11 +14,11 @@ public:
 
 	typedef boost::shared_ptr<TFWorkCopy> Ptr;
 
-	TFWorkCopy(const TFSize domain);
+	TFWorkCopy(TFAbstractFunction::Ptr function);
 	~TFWorkCopy(){}
 
-	TFColor getColor(const TFSize index);
-	TFSize getViewSize();
+	TF::Color getColor(const TF::Size index);
+	TF::Size getViewSize();
 
 	bool component1Changed();
 	bool component2Changed();
@@ -25,20 +26,20 @@ public:
 	bool alphaChanged();
 	bool histogramChanged();
 
-	float getComponent1(const TFSize index);
-	float getComponent2(const TFSize index);
-	float getComponent3(const TFSize index);
-	float getAlpha(const TFSize index);
-	float getHistogramValue(const TFSize index);
+	float getComponent1(const TF::Size index);
+	float getComponent2(const TF::Size index);
+	float getComponent3(const TF::Size index);
+	float getAlpha(const TF::Size index);
+	float getHistogramValue(const TF::Size index);
 
-	void setComponent1(const TFSize index, const float value);
-	void setComponent2(const TFSize index, const float value);
-	void setComponent3(const TFSize index, const float value);
-	void setAlpha(const TFSize index, const float value);
+	void setComponent1(const TF::Size index, const float value);
+	void setComponent2(const TF::Size index, const float value);
+	void setComponent3(const TF::Size index, const float value);
+	void setAlpha(const TF::Size index, const float value);
 
-	void zoomIn(const TFSize stepCount, const int zoomX, const int zoomY);
-	void zoomOut(const TFSize stepCount, const int zoomX, const int zoomY);
-	void zoom(const float zoom, const int zoomX, const float zoomY);
+	void zoomIn(const TF::Size stepCount, const int zoomX, const int zoomY);
+	void zoomOut(const TF::Size stepCount, const int zoomX, const int zoomY);
+	//void zoom(const float zoom, const int zoomX, const float zoomY);
 	void move(int xDirectionIncrement, int yDirectionIncrement);
 
 	void setHistogramEnabled(bool value);
@@ -47,25 +48,30 @@ public:
 	float getZoom() const;
 	float getMaxZoom() const;
 	void setMaxZoom(const float zoom);
-	TFPoint<float, float> getZoomCenter() const;
+	TF::Point<float, float> getZoomCenter() const;
 
-	void resize(const TFSize xSize, const TFSize ySize);
+	void resize(const TF::Size xSize, const TF::Size ySize);
 
-	void updateFunction(TFAbstractFunction::Ptr function);
-	void update(TFAbstractFunction::Ptr function);
+	TFAbstractFunction::Ptr getFunctionMemento() const;
+	TFAbstractFunction::Ptr getFunction() const;
+	void update(const TFAbstractFunction::Ptr function);
 
-	void setHistogram(TFHistogramPtr histogram);
+	//void save(){data_->save()}
+	//void load(){data_->load()}
+
+	void setHistogram(const TF::Histogram::Ptr histogram);
+	void setDomain(const TF::Size domain);
 	
 private:
 
 	struct ZoomProperties{
 		float zoom;
 		float max;
-		TFSize xOffset;
+		TF::Size xOffset;
 		float yOffset;
 		float xRatio;
 		int ratio;
-		TFPoint<float,float> center;
+		TF::Point<float,float> center;
 
 		ZoomProperties():
 			zoom(1),
@@ -78,11 +84,10 @@ private:
 		}
 	};
 
-	TFColorMapPtr data_;
-	TFHistogramPtr histogram_;
+	TFAbstractFunction::Ptr data_;
+	TF::Histogram::Ptr histogram_;
 
-	TFSize domain_;
-	TFSize xSize_, ySize_;
+	TF::Size xSize_, ySize_;
 	ZoomProperties zoom_;
 
 	bool component1Changed_;
@@ -94,7 +99,6 @@ private:
 	bool histogramEnabled_;
 
 	void computeZoom_(const float nextZoom, const int zoomX, const int zoomY);
-
 };
 
 } // namespace GUI

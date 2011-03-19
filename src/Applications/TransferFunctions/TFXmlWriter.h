@@ -18,7 +18,7 @@ public:
 
 private:
 	void writeFunction_(TFAbstractFunction::Ptr function);
-	void writePoint_(TFColor point);
+	void writePoint_(TF::Color point);
 };
 
 } // namespace GUI

@@ -19,7 +19,7 @@ ViewerWindow::ViewerWindow(): fileLoaded_(false){
 	//---TF Editor---
 
 	mTransferFunctionEditor = new M4D::GUI::TFPalette(this);
-	mTransferFunctionEditor->setupDefault();	
+	//mTransferFunctionEditor->setupDefault();	
 
 	QDockWidget * dockWidget = new QDockWidget("Transfer Function Palette", this);
 	
@@ -120,7 +120,8 @@ void ViewerWindow::applyTransferFunction(){
 
 	if(!fileLoaded_) return;
 
-	boost::shared_ptr<Buffer1D> buffer = boost::shared_ptr<Buffer1D>(new Buffer1D(domain_, Interval(0.0, 4096.0)));
+	Buffer1DPtr buffer = Buffer1DPtr(new Buffer1D(mTransferFunctionEditor->getDomain(),
+		Interval(0.0f, (float)mTransferFunctionEditor->getDomain())));
 	
 	bool tfUsed = mTransferFunctionEditor->applyTransferFunction<Buffer1D::iterator>( buffer->Begin(), buffer->End());
 	
@@ -129,9 +130,10 @@ void ViewerWindow::applyTransferFunction(){
 
 void ViewerWindow::updateTransferFunction(){
 
-	const M4D::Common::TimeStamp timestamp = mTransferFunctionEditor->getTimeStamp();
+	bool noTF;
+	const M4D::Common::TimeStamp timestamp = mTransferFunctionEditor->getTimeStamp(noTF);
 
-	if ( timestamp != mLastTimeStamp )
+	if ( !noTF && timestamp != mLastTimeStamp )
 	{
 		applyTransferFunction();
 		mLastTimeStamp = timestamp;
@@ -220,7 +222,20 @@ ViewerWindow::updateToolbars()
 }
 
 void ViewerWindow::openFile()
-{
+{	
+	//---TODO-default-buffer---
+	bool noTF;
+	mTransferFunctionEditor->getTimeStamp(noTF);
+	if(noTF)
+	{
+		QMessageBox::warning(this,
+			QObject::tr("Error"),
+			QObject::tr("No Transfer Function available!"));
+
+		return;
+	}
+	//------
+
 	QString fileName = QFileDialog::getOpenFileName(this,
 		tr("Open Image"),
 		QDir::currentPath(),
@@ -238,27 +253,17 @@ void ViewerWindow::openFile( const QString &aPath )
 	mProdconn.PutDataset( image );
 	
 	M4D::Common::Clock clock;
-	
-	//M4D::Imaging::Histogram64::Ptr histogram = M4D::Imaging::Histogram64::Create( 0, 4065, true );
-	/*IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
-		M4D::Imaging::AddRegionToHistogram( *histogram, IMAGE_TYPE::Cast( image )->GetRegion() );
-	);*/ 
-	/*IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
-		IMAGE_TYPE::PointType strides;
-		IMAGE_TYPE::SizeType size;
-		IMAGE_TYPE::Element *pointer = IMAGE_TYPE::Cast( image )->GetPointer( size, strides );
-		M4D::Imaging::AddArrayToHistogram( *histogram, pointer, VectorCoordinateProduct( size )  );
-	);*/ 
 
-	M4D::Imaging::Histogram64::Ptr histogram;
+	Histogram::Ptr histogram;
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
-		histogram = M4D::Imaging::CreateHistogramForImageRegion<M4D::Imaging::Histogram64, IMAGE_TYPE >( IMAGE_TYPE::Cast( *image ) );
+		histogram = M4D::Imaging::CreateHistogramForImageRegion<Histogram, IMAGE_TYPE >( IMAGE_TYPE::Cast( *image ) );
 	);
 
 	LOG( "Histogram computed in " << clock.SecondsPassed() );
-	mTransferFunctionEditor->setHistogram( histogram );	
-	domain_ = histogram->GetMax() - histogram->GetMin();
+	bool histogramSet = mTransferFunctionEditor->setHistogram<Histogram::iterator>(histogram->Begin(), histogram->End());	
 	fileLoaded_ = true;
+
+	assert(histogramSet);
 
 	mViewer->ZoomFit();
 	applyTransferFunction();

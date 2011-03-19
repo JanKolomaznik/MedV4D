@@ -5,7 +5,7 @@
 namespace M4D {
 namespace GUI {
 
-TFPaletteButton::TFPaletteButton(QWidget* parent, const TFSize index):
+TFPaletteButton::TFPaletteButton(QWidget* parent, const TF::Size index):
 	QWidget(parent),
 	index_(index),
 	active_(false),
@@ -40,7 +40,7 @@ void TFPaletteButton::paintEvent(QPaintEvent*){
 
 	drawer.fillRect(rect(), QBrush(Qt::black));
 	drawer.setPen(Qt::white);
-	drawer.drawText(rect(), Qt::AlignCenter, QObject::tr(convert<TFSize, std::string>(index_).c_str()));
+	drawer.drawText(rect(), Qt::AlignCenter, QObject::tr(TF::convert<TF::Size, std::string>(index_).c_str()));
 
 	if(active_)
 	{

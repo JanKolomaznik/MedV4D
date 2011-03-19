@@ -20,7 +20,10 @@ class ViewerWindow: public QMainWindow, public Ui::ViewerWindow{
 	Q_OBJECT
 
 	typedef M4D::GUI::TransferFunctionBuffer1D Buffer1D;
-	typedef M4D::GUI::TransferFunctionBuffer1D::MappedInterval Interval;
+	typedef boost::shared_ptr<Buffer1D> Buffer1DPtr;
+	typedef Buffer1D::MappedInterval Interval;
+
+	typedef M4D::Imaging::Histogram64 Histogram;
 
 public:
 
@@ -50,7 +53,6 @@ protected:
 	QTimer	mTransFuncTimer;
 	M4D::Common::TimeStamp mLastTimeStamp;
 
-	M4D::GUI::TFSize domain_;
 	bool fileLoaded_;
 };
 

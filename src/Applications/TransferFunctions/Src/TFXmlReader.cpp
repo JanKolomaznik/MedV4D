@@ -11,7 +11,7 @@ TFXmlReader::TFXmlReader() {}
 TFXmlReader::~TFXmlReader(){}
 
 void TFXmlReader::read(QIODevice* device, TFAbstractFunction::Ptr function, bool &error){
-
+/*
 	setDevice(device);
 
 	while(!atEnd())
@@ -27,26 +27,26 @@ void TFXmlReader::read(QIODevice* device, TFAbstractFunction::Ptr function, bool
 		{
 			readFunction_(function, error);
 		}
-	}
+	}*/
 }
 
 void TFXmlReader::readTestData(TFAbstractFunction* function){
-	
-	TFColorMapPtr f = function->getColorMap();
-	TFSize domain = function->getDomain();
-	for(TFSize i = 0; i < domain; ++i)
+	/*
+	TF::ColorMapPtr f = function->getColorMap();
+	TF::Size domain = function->getDomain();
+	for(TF::Size i = 0; i < domain; ++i)
 	{
 		(*f)[i].component1 = (i/4)/1000.0;
 		(*f)[i].component2 = (i/4)/1000.0;
 		(*f)[i].component3 = (i/4)/1000.0;
 		(*f)[i].alpha = (i/4)/1000.0;
-	}
+	}*/
 }
 
 void TFXmlReader::readFunction_(TFAbstractFunction::Ptr function, bool &error){
 	/*
-	TFFunctionType tfType = convert<std::string, TFFunctionType>(attributes().value("functionType").toString().toStdString());
-	TFSize domain = convert<std::string, TFSize>(attributes().value("domain").toString().toStdString());
+	TF::Types::Function tfType = TF::convert<std::string, TF::Types::Function>(attributes().value("functionType").toString().toStdString());
+	TF::Size domain = TF::convert<std::string, TF::Size>(attributes().value("domain").toString().toStdString());
 	if(function && domain != function->getDomain())
 	{
 		delete function;
@@ -74,8 +74,8 @@ void TFXmlReader::readFunction_(TFAbstractFunction::Ptr function, bool &error){
 		}
 	}
 
-	TFColorMapPtr points = function->getColorMap();
-	TFSize counter = 0;
+	TF::ColorMapPtr points = function->getColorMap();
+	TF::Size counter = 0;
 	while (!atEnd())
 	{
 		readNext();
@@ -85,7 +85,7 @@ void TFXmlReader::readFunction_(TFAbstractFunction::Ptr function, bool &error){
 			break;
 		}
 
-		if (isStartElement() && (name() == "TFColor"))
+		if (isStartElement() && (name() == "TF::Color"))
 		{
 			if(counter >= domain)
 			{
@@ -104,12 +104,12 @@ void TFXmlReader::readFunction_(TFAbstractFunction::Ptr function, bool &error){
 	}*/
 }
 
-void TFXmlReader::readPoint_(TFColor* point, bool &error){
+void TFXmlReader::readPoint_(TF::Color* point, bool &error){
 /*
-	point->component1 = convert<std::string,float>( attributes().value("component1").toString().toStdString() );
-	point->component2 = convert<std::string,float>( attributes().value("component2").toString().toStdString() );
-	point->component3 = convert<std::string,float>( attributes().value("component3").toString().toStdString() );
-	point->alpha = convert<std::string,float>( attributes().value("alpha").toString().toStdString() );
+	point->component1 = TF::convert<std::string,float>( attributes().value("component1").toString().toStdString() );
+	point->component2 = TF::convert<std::string,float>( attributes().value("component2").toString().toStdString() );
+	point->component3 = TF::convert<std::string,float>( attributes().value("component3").toString().toStdString() );
+	point->alpha = TF::convert<std::string,float>( attributes().value("alpha").toString().toStdString() );
 
 	while (!atEnd())
 	{

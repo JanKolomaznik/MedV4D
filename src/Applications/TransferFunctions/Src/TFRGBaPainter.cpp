@@ -72,7 +72,7 @@ void TFRGBaPainter::updateHistogramView_(TFWorkCopy::Ptr workCopy){
 	drawer.setClipRect(inputArea_.x(), inputArea_.y(),
 		inputArea_.width() + 1, inputArea_.height() + 1);
 
-	TFPaintingPoint origin(inputArea_.x(), inputArea_.y());
+	TF::PaintingPoint origin(inputArea_.x(), inputArea_.y());
 
 	for(int i = 0; i < inputArea_.width() - 1; ++i)
 	{
@@ -91,7 +91,7 @@ void TFRGBaPainter::updateRedView_(TFWorkCopy::Ptr workCopy){
 	drawer.setClipRect(inputArea_.x(), inputArea_.y(),
 		inputArea_.width() + 1, inputArea_.height() + 1);
 
-	TFPaintingPoint origin(inputArea_.x(), inputArea_.y());
+	TF::PaintingPoint origin(inputArea_.x(), inputArea_.y());
 
 	for(int i = 0; i < inputArea_.width() - 1; ++i)
 	{
@@ -110,7 +110,7 @@ void TFRGBaPainter::updateGreenView_(TFWorkCopy::Ptr workCopy){
 	drawer.setClipRect(inputArea_.x(), inputArea_.y(),
 		inputArea_.width() + 1, inputArea_.height() + 1);
 
-	TFPaintingPoint origin(inputArea_.x(), inputArea_.y());
+	TF::PaintingPoint origin(inputArea_.x(), inputArea_.y());
 
 	for(int i = 0; i < inputArea_.width() - 1; ++i)
 	{
@@ -129,7 +129,7 @@ void TFRGBaPainter::updateBlueView_(TFWorkCopy::Ptr workCopy){
 	drawer.setClipRect(inputArea_.x(), inputArea_.y(),
 		inputArea_.width() + 1, inputArea_.height() + 1);
 
-	TFPaintingPoint origin(inputArea_.x(), inputArea_.y());
+	TF::PaintingPoint origin(inputArea_.x(), inputArea_.y());
 
 	for(int i = 0; i < inputArea_.width() - 1; ++i)
 	{
@@ -150,7 +150,7 @@ void TFRGBaPainter::updateAlphaView_(TFWorkCopy::Ptr workCopy){
 	drawer.setClipRect(inputArea_.x(), inputArea_.y(),
 		inputArea_.width() + 1, inputArea_.height() + 1);
 
-	TFPaintingPoint origin(inputArea_.x(), inputArea_.y());
+	TF::PaintingPoint origin(inputArea_.x(), inputArea_.y());
 
 	for(int i = 0; i < inputArea_.width() - 1; ++i)
 	{
@@ -169,7 +169,7 @@ void TFRGBaPainter::updateBottomColorBarView_(TFWorkCopy::Ptr workCopy){
 	drawer.setClipRect(bottomBarArea_.x() + 1, bottomBarArea_.y() + 1,
 		bottomBarArea_.width() + 1, bottomBarArea_.height());
 
-	TFColor tfColor;
+	TF::Color tfColor;
 	QColor qColor;
 	for(int i = 0; i < inputArea_.width(); ++i)
 	{

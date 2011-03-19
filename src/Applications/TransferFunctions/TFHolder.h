@@ -3,7 +3,6 @@
 
 #include "common/Types.h"
 #include "Imaging/Histogram.h"
-#include "GUI/utils/TransferFunctionBuffer.h"
 
 #include "ui_TFHolder.h"
 
@@ -18,7 +17,7 @@
 
 #include <QtCore/QString>
 
-#include <TFTypes.h>
+#include <TFCommon.h>
 #include <TFXmlWriter.h>
 #include <TFXmlReader.h>
 #include <TFPaletteButton.h>
@@ -27,72 +26,25 @@
 #include <TFAbstractModifier.h>
 #include <TFAbstractPainter.h>
 #include <TFWorkCopy.h>
+#include <TFAdaptation.h>
 
 namespace M4D {
 namespace GUI {
-
-namespace Apply 
-{
-	template<typename ElementIterator>
-	bool applyTransferFunction(
-		ElementIterator begin,
-		ElementIterator end,
-		TFAbstractFunction::Ptr function_){
-
-		tfAbort("unsupported buffer type");
-		return false;
-	}
-
-	template<>
-	inline bool applyTransferFunction<TransferFunctionBuffer1D::Iterator>(
-		TransferFunctionBuffer1D::Iterator begin,
-		TransferFunctionBuffer1D::Iterator end,
-		TFAbstractFunction::Ptr function_
-		){
-
-		TFSize index = 0;
-		for(TransferFunctionBuffer1D::Iterator it = begin; it!=end; ++it)
-		{
-			tfAssert(index < function_->getDomain());
-			TFColor color = function_->getMappedRGBfColor(index);
-			
-			*it = TransferFunctionBuffer1D::ValueType(
-				color.component1, color.component2, color.component3, color.alpha);
-
-			++index;
-		}
-
-		return true;
-	}
-
-}
 
 class TFHolder : public QWidget{
 
 	Q_OBJECT
 	
-	friend class TFHolderFactory;
+	friend class TFCreator;
 
 public:
 
 	typedef boost::shared_ptr<TFHolder> Ptr;
 
-	enum Type{
-		TFHolderGrayscale,
-		TFHolderGrayscaleAlpha,
-		TFHolderRGB,
-		TFHolderRGBa,
-		TFHolderHSV,
-		TFHolderHSVa,
-		TFHolderPolygonRGBa,
-		TFHolderUnknown
-	};
-
 	TFHolder(QMainWindow* mainWindow,
-		TFAbstractFunction::Ptr function,
-		TFAbstractModifier::Ptr modifier,
 		TFAbstractPainter::Ptr painter,
-		TFHolder::Type);
+		TFAbstractModifier::Ptr modifier,
+		std::string title);
 
 	~TFHolder();
 
@@ -100,16 +52,15 @@ public:
 	void activate();
 	void deactivate();
 
-	void setup(const TFSize index);
-	void setHistogram(TFHistogramPtr histogram);
-	//void setDomain(const TFSize domain);
+	void setup(const TF::Size index);
+	void setHistogram(TF::Histogram::Ptr histogram);
+	void setDomain(const TF::Size domain);
 
 	bool connectToTFPalette(QObject* tfPalette);	//	tfPalette has to be TFPalette instance
 	bool createPaletteButton(QWidget* parent);
 	void createDockWidget(QWidget* parent);
 
-	TFSize getIndex();
-	TFHolder::Type getType() const;
+	TF::Size getIndex();
 
 	TFPaletteButton* getButton() const;
 	QDockWidget* getDockWidget() const;
@@ -121,15 +72,14 @@ public:
 		ElementIterator begin,
 		ElementIterator end){
 
-		modifier_->getWorkCopy()->updateFunction(function_);
-
-		return M4D::GUI::Apply::applyTransferFunction< ElementIterator >( begin, end, function_ );
+		return TF::Adaptation::applyTransferFunction< ElementIterator >( begin, end,
+			modifier_->getWorkCopy()->getFunction());
 	}
 
 signals:
 
-	void Close(const TFSize index);
-	void Activate(const TFSize index);
+	void Close(const TF::Size index);
+	void Activate(const TF::Size index);
 
 protected slots:
 
@@ -140,27 +90,27 @@ protected slots:
 
 private:
 
-	TFHolder::Type type_;
+	TFHolder(QMainWindow* mainWindow);
+
 	Ui::TFHolder* ui_;
 	QMainWindow* holder_;
 	QDockWidget* dockHolder_;
 	QDockWidget* dockTools_;
 	
-	QString qTitle_;
+	std::string title_;
 
-	TFAbstractFunction::Ptr function_;
 	TFAbstractModifier::Ptr modifier_;
 	TFAbstractPainter::Ptr painter_;
 	TFPaletteButton* button_;
 
 	M4D::Common::TimeStamp lastChange_;
 
-	TFSize index_;
+	TF::Size index_;
 
-	const TFPoint<TFSize, TFSize> painterLeftTopMargin_;
-	const TFPoint<TFSize, TFSize> painterRightBottomMargin_;
+	const TF::Point<TF::Size, TF::Size> painterLeftTopMargin_;
+	const TF::Point<TF::Size, TF::Size> painterRightBottomMargin_;
 
-	bool setup_;
+	bool blank_;
 	bool active_;
 
 	void paintEvent(QPaintEvent*);
@@ -170,78 +120,15 @@ private:
 	void mouseMoveEvent(QMouseEvent *e);
 	void wheelEvent(QWheelEvent *e);
 
-	bool load_(QFile &file);
+	bool load(QFile &file);
 	void save_(QFile &file);
 
 	void resizePainter_();
 
-	TFPaintingPoint correctCoords_(const TFPaintingPoint &point);
-	TFPaintingPoint correctCoords_(int x, int y);
+	TF::PaintingPoint correctCoords_(const TF::PaintingPoint &point);
+	TF::PaintingPoint correctCoords_(int x, int y);
 
 };
-
-template<>
-inline std::string convert<TFHolder::Type, std::string>(const TFHolder::Type &holderType){
-
-	switch(holderType){
-		case TFHolder::TFHolderGrayscale:
-		{
-			return "Grayscale";
-		}
-		case TFHolder::TFHolderGrayscaleAlpha:
-		{
-			return "Grayscale-alpha";
-		}
-		case TFHolder::TFHolderRGB:
-		{
-			return "RGB";
-		}
-		case TFHolder::TFHolderRGBa:
-		{
-			return "RGBa";
-		}
-		case TFHolder::TFHolderHSV:
-		{
-			return "HSV";
-		}
-		case TFHolder::TFHolderHSVa:
-		{
-			return "HSVa";
-		}
-		case TFHolder::TFHolderPolygonRGBa:
-		{
-			return "Polygon RGBa";
-		}
-	}
-	return "Unknown";
-}
-
-template<>
-inline TFHolder::Type convert<std::string, TFHolder::Type>(const std::string &holderType){
-
-	if(holderType == "Grayscale"){
-		return TFHolder::TFHolderGrayscale;
-	}
-	if(holderType == "Grayscale-alpha"){
-		return TFHolder::TFHolderGrayscaleAlpha;
-	}
-	if(holderType == "RGB"){
-		return TFHolder::TFHolderRGB;
-	}
-	if(holderType == "RGBa"){
-		return TFHolder::TFHolderRGBa;
-	}
-	if(holderType == "HSV"){
-		return TFHolder::TFHolderHSV;
-	}
-	if(holderType == "HSVa"){
-		return TFHolder::TFHolderHSVa;
-	}
-	if(holderType == "Polygon RGBa"){
-		return TFHolder::TFHolderPolygonRGBa;
-	}
-	return TFHolder::TFHolderUnknown;
-}
 
 } // namespace GUI
 } // namespace M4D

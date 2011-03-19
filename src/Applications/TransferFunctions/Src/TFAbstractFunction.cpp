@@ -4,32 +4,30 @@
 namespace M4D {
 namespace GUI {
 
-TFAbstractFunction::TFAbstractFunction():
-	type_(TFFUNCTION_UNKNOWN){
-}
+TFAbstractFunction::TFAbstractFunction(){}
 
 TFAbstractFunction::~TFAbstractFunction(){}
 
-TFFunctionType TFAbstractFunction::getType() const{
+TF::Color& TFAbstractFunction::operator[](const TF::Size index){
 
-	return type_;
+	return (*colorMap_)[index];
 }
 
-const TFSize TFAbstractFunction::getDomain(){
+TF::Size TFAbstractFunction::getDomain() const{
 
 	return domain_;
 }
-
-TFColorMapPtr TFAbstractFunction::getColorMap(){
+/*
+TF::ColorMapPtr TFAbstractFunction::getColorMap(){
 
 	return colorMap_;
 }
-
+*/
 void TFAbstractFunction::clear(){
 
-	TFColorMapIt begin = colorMap_->begin();
-	TFColorMapIt end = colorMap_->end();
-	for(TFColorMapIt it = begin; it!=end; ++it)
+	TF::ColorMapIt begin = colorMap_->begin();
+	TF::ColorMapIt end = colorMap_->end();
+	for(TF::ColorMapIt it = begin; it!=end; ++it)
 	{
 		it->component1 = 0;
 		it->component2 = 0;
@@ -38,13 +36,13 @@ void TFAbstractFunction::clear(){
 	}
 }
 
-void TFAbstractFunction::resize(const TFSize domain){
+void TFAbstractFunction::resize(const TF::Size domain){
 	
 	if(domain == domain_) return;
 	domain_ = domain;
 
-	const TFColorMapPtr old = colorMap_;
-	TFColorMapPtr resized = TFColorMapPtr(new TFColorMap(domain_));
+	const TF::ColorMapPtr old = colorMap_;
+	TF::ColorMapPtr resized = TF::ColorMapPtr(new TF::ColorMap(domain_));
 
 	int inputSize = old->size();
 	int outputSize = resized->size();
@@ -60,8 +58,8 @@ void TFAbstractFunction::resize(const TFSize domain){
 		int outputIndexer = 0;
 		for(int inputIndexer = 0; inputIndexer < inputSize; ++inputIndexer)
 		{
-			TFSize valueCount = ratio + (int)correction;
-			for(TFSize i = 0; i < valueCount; ++i)
+			TF::Size valueCount = ratio + (int)correction;
+			for(TF::Size i = 0; i < valueCount; ++i)
 			{
 				//tfAssert(outputIndexer < outputSize);
 				if(inputIndexer >= inputSize) break;
@@ -84,9 +82,9 @@ void TFAbstractFunction::resize(const TFSize domain){
 		int inputIndexer = 0;
 		for(int outputIndexer = 0; outputIndexer < outputSize; ++outputIndexer)
 		{
-			TFColor computedValue(0,0,0,0);
-			TFSize valueCount = ratio + (int)correction;
-			for(TFSize i = 0; i < valueCount; ++i)
+			TF::Color computedValue(0,0,0,0);
+			TF::Size valueCount = ratio + (int)correction;
+			for(TF::Size i = 0; i < valueCount; ++i)
 			{
 				//tfAssert(inputIndexer < inputSize);
 				if(inputIndexer >= inputSize)
@@ -110,17 +108,15 @@ void TFAbstractFunction::resize(const TFSize domain){
 	colorMap_ = resized;
 }
 
-void TFAbstractFunction::operator=(TFAbstractFunction &function){
-
-	type_ = function.getType();
+void TFAbstractFunction::operator=(const TFAbstractFunction &function){
 	
 	colorMap_->clear();
 
-	const TFColorMapPtr colorMap = function.getColorMap();
+	const TF::ColorMapPtr colorMap = function.colorMap_;
 
-	TFColorMap::const_iterator begin = colorMap->begin();
-	TFColorMap::const_iterator end = colorMap->end();
-	for(TFColorMap::const_iterator it = begin; it!=end; ++it)
+	TF::ColorMap::const_iterator begin = colorMap->begin();
+	TF::ColorMap::const_iterator end = colorMap->end();
+	for(TF::ColorMap::const_iterator it = begin; it!=end; ++it)
 	{
 		colorMap_->push_back(*it);
 	}

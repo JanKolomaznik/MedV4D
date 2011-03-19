@@ -3,7 +3,7 @@
 
 #include "Imaging/Histogram.h"
 
-#include <TFTypes.h>
+#include <TFCommon.h>
 #include <TFWorkCopy.h>
 
 #include <QtGui/QPainter>
@@ -21,7 +21,6 @@ public:
 	virtual void setArea(QRect area) = 0;
 	virtual QRect getInputArea() = 0;
 
-	//virtual void drawBackground(QPainter* drawer) = 0;
 	virtual QPixmap getView(TFWorkCopy::Ptr workCopy) = 0;
 
 protected:

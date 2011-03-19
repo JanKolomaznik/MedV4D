@@ -3,10 +3,9 @@
 namespace M4D {
 namespace GUI {
 
-TFHSVaFunction::TFHSVaFunction(const TFSize domain){
+TFHSVaFunction::TFHSVaFunction(const TF::Size domain){
 
-	type_ = TFFUNCTION_HSVA;
-	colorMap_ = TFColorMapPtr(new TFColorMap(domain));
+	colorMap_ = TF::ColorMapPtr(new TF::ColorMap(domain));
 	domain_ = domain;
 	clear();
 }
@@ -18,7 +17,7 @@ TFHSVaFunction::TFHSVaFunction(TFHSVaFunction &function){
 
 TFHSVaFunction::~TFHSVaFunction(){}
 
-TFColor TFHSVaFunction::getMappedRGBfColor(const TFSize value){
+TF::Color TFHSVaFunction::getMappedRGBfColor(const TF::Size value){
 
 	QColor color;
 	color.setHsvF(
@@ -27,7 +26,12 @@ TFColor TFHSVaFunction::getMappedRGBfColor(const TFSize value){
 		(*colorMap_)[value].component3,
 		(*colorMap_)[value].alpha);
 	
-	return TFColor(color.redF(), color.greenF(), color.blueF(), color.alphaF());
+	return TF::Color(color.redF(), color.greenF(), color.blueF(), color.alphaF());
+}
+
+TFAbstractFunction::Ptr TFHSVaFunction::clone(){
+
+	return TFAbstractFunction::Ptr(new TFHSVaFunction(*this));
 }
 
 } // namespace GUI

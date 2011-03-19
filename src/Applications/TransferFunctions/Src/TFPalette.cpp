@@ -7,90 +7,62 @@ TFPalette::TFPalette(QMainWindow* parent):
 	QMainWindow(parent),
 	ui_(new Ui::TFPalette),
 	mainWindow_(parent),
+	domain_(TFAbstractFunction::defaultDomain),
 	activeHolder_(-1){
 
     ui_->setupUi(this);
 	setWindowTitle("Transfer Functions Palette");
-
-	tfActions_ = TFHolderFactory::createMenuTFActions(ui_->menuNew);
-	connectTFActions_();
 
 	layout_ = new QVBoxLayout;
 	layout_->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
 	ui_->scrollAreaWidget->setLayout(layout_);
 }
 
-TFPalette::~TFPalette(){
-	/*
+TFPalette::~TFPalette(){}
+/*
+void TFPalette::setupDefault(){
+	
+	domain_ = TFAbstractFunction::defaultDomain;
+	//newTF_triggered(TF::Types::PredefinedCustom);
+}
+*/
+void TFPalette::setDomain(TF::Size domain){
+
+	if(domain_ == domain) return;
+	domain_ = domain;
+	
 	HolderMapIt beginPalette = palette_.begin();
 	HolderMapIt endPalette = palette_.end();
 	for(HolderMapIt it = beginPalette; it != endPalette; ++it)
 	{
-		if(it->second) delete it->second;
+		it->second->setDomain(domain_);
 	}
-	*/
 }
 
-M4D::Common::TimeStamp TFPalette::getTimeStamp(){
+TF::Size TFPalette::getDomain(){
+
+	return domain_;
+}
+
+M4D::Common::TimeStamp TFPalette::getTimeStamp(bool& noFunctionAvailable){
+
+	noFunctionAvailable = false;
+	if(palette_.empty())
+	{
+		noFunctionAvailable = true;
+		return M4D::Common::DefaultTimeStamp;
+	}
 
 	return palette_.find(activeHolder_)->second->getLastChangeTime();
 }
 
-bool TFPalette::connectTFActions_(){
-
-	bool allConnected = true;
-
-	const std::string shortcutBase = "Shift+F";
-	TFSize actionCounter = 1;
-	TFActionsIt begin = tfActions_.begin();
-	TFActionsIt end = tfActions_.end();
-	for(TFActionsIt it = begin; it!=end; ++it)
-	{
-		bool menuActionConnected = QObject::connect( *it, SIGNAL(TFActionClicked(TFHolder::Type)), this, SLOT(newTF_triggered(TFHolder::Type)));
-		tfAssert(menuActionConnected);
-
-		if(menuActionConnected)
-		{
-			ui_->menuNew->addAction(*it);
-
-			std::string strShortcut = shortcutBase;
-			strShortcut.append( convert<TFSize, std::string>(actionCounter) );
-			(*it)->setShortcut( QKeySequence(QObject::tr(strShortcut.c_str())) );
-
-			++actionCounter;
-		}
-		allConnected = allConnected && menuActionConnected;
-	}
-
-	return allConnected;
-}
-
-void TFPalette::setupDefault(){
-	
-	domain_ = 4095;	//TODO ?
-	newTF_triggered(TFHolder::TFHolderRGBa);
-}
-
-void TFPalette::setHistogram(TFHistogramPtr histogram){
-
-	histogram_ = histogram;
-	domain_ = histogram_->GetMax() - histogram_->GetMin();
-
-	HolderMapIt beginPalette = palette_.begin();
-	HolderMapIt endPalette = palette_.end();
-	for(HolderMapIt it = beginPalette; it != endPalette; ++it)
-	{
-		it->second->setHistogram(histogram_);
-	}
-}
-
 void TFPalette::addToPalette_(TFHolder* holder){
 	
-	TFSize addedIndex = indexer_.getIndex();
+	TF::Size addedIndex = indexer_.getIndex();
 
 	holder->setup(addedIndex);
 	holder->setHistogram(histogram_);
-	palette_.insert(std::make_pair<TFSize, TFHolder*>(addedIndex, holder));
+	palette_.insert(std::make_pair<TF::Size, TFHolder*>(addedIndex, holder));
 	holder->createPaletteButton(ui_->scrollAreaWidget);
 
 	TFPaletteButton* addedButton = holder->getButton();
@@ -105,7 +77,7 @@ void TFPalette::addToPalette_(TFHolder* holder){
 	change_activeHolder(addedIndex);
 }
 
-void TFPalette::removeFromPalette_(TFSize index){
+void TFPalette::removeFromPalette_(TF::Size index){
 
 	tfAssert(palette_.size() > 1);
 
@@ -121,7 +93,7 @@ void TFPalette::removeFromPalette_(TFSize index){
 			nextActiveIt = toRemoveIt;
 			--nextActiveIt;
 		}
-		TFSize toActivate = nextActiveIt->second->getIndex();
+		TF::Size toActivate = nextActiveIt->second->getIndex();
 		change_activeHolder(toActivate);	
 	}
 
@@ -140,39 +112,32 @@ void TFPalette::resizeEvent(QResizeEvent* e){
 	ui_->scrollArea->setGeometry(ui_->paletteArea->rect());
 }
 
-void TFPalette::close_triggered(TFSize index){
+void TFPalette::close_triggered(TF::Size index){
 
 	if(palette_.size() <= 1) exit(0);
 
 	removeFromPalette_(index);
 }
-/*
-void TFPalette::save_triggered(){
 
-	palette_.find(activeHolder_)->second->save();
-}
-*/
 void TFPalette::on_actionLoad_triggered(){
 
-	TFHolder* loaded = TFHolderFactory::loadHolder(this, domain_);
+	TFHolder* loaded = TFCreator::loadTransferFunction(this, domain_);
+
 	if(!loaded) return;
 	
 	addToPalette_(loaded);
 }
 
-void TFPalette::newTF_triggered(TFHolder::Type tfType){
+void TFPalette::on_actionNew_triggered(){
 
-	TFHolder* holder = TFHolderFactory::createHolder(this, tfType, domain_);
+	TFHolder* created = TFCreator::createTransferFunction(this, domain_);
 
-	if(!holder){
-		QMessageBox::warning(this, QObject::tr("Transfer Functions"), QObject::tr("Creating error."));
-		return;
-	}
-
-	addToPalette_(holder);
+	if(!created) return;
+	
+	addToPalette_(created);
 }
 
-void TFPalette::change_activeHolder(TFSize index){
+void TFPalette::change_activeHolder(TF::Size index){
 
 	if(activeHolder_ >= 0) palette_.find(activeHolder_)->second->deactivate();
 
@@ -187,9 +152,9 @@ TFPalette::Indexer::Indexer(): nextIndex_(0){}
 
 TFPalette::Indexer::~Indexer(){}
 
-TFSize TFPalette::Indexer::getIndex(){
+TF::Size TFPalette::Indexer::getIndex(){
 
-	TFSize index = nextIndex_;
+	TF::Size index = nextIndex_;
 	if(!released_.empty())
 	{
 		index = released_[released_.size()-1];
@@ -202,7 +167,7 @@ TFSize TFPalette::Indexer::getIndex(){
 	return index;
 }
 
-void TFPalette::Indexer::releaseIndex(TFSize index){
+void TFPalette::Indexer::releaseIndex(TF::Size index){
 
 	if(index == (nextIndex_-1))
 	{

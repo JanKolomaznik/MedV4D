@@ -3,10 +3,9 @@
 namespace M4D {
 namespace GUI {
 
-TFRGBaFunction::TFRGBaFunction(const TFSize domain){
+TFRGBaFunction::TFRGBaFunction(const TF::Size domain){
 
-	type_ = TFFUNCTION_RGBA;
-	colorMap_ = TFColorMapPtr(new TFColorMap(domain));
+	colorMap_ = TF::ColorMapPtr(new TF::ColorMap(domain));
 	domain_ = domain;
 	clear();
 }
@@ -18,9 +17,14 @@ TFRGBaFunction::TFRGBaFunction(TFRGBaFunction &function){
 
 TFRGBaFunction::~TFRGBaFunction(){}
 
-TFColor TFRGBaFunction::getMappedRGBfColor(const TFSize value){
+TF::Color TFRGBaFunction::getMappedRGBfColor(const TF::Size value){
 
 	return (*colorMap_)[value];
+}
+
+TFAbstractFunction::Ptr TFRGBaFunction::clone(){
+
+	return TFAbstractFunction::Ptr(new TFRGBaFunction(*this));
 }
 
 } // namespace GUI

@@ -21,7 +21,7 @@ public:
 
 private:
 	void readFunction_(TFAbstractFunction::Ptr function, bool &error);
-	void readPoint_(TFColor* point, bool &error);
+	void readPoint_(TF::Color* point, bool &error);
 };
 
 } // namespace GUI

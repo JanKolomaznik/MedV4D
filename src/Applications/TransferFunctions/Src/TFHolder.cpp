@@ -6,25 +6,22 @@ namespace M4D {
 namespace GUI {
 
 TFHolder::TFHolder(QMainWindow* mainWindow,
-				   TFAbstractFunction::Ptr function,
-				   TFAbstractModifier::Ptr modifier,
 				   TFAbstractPainter::Ptr painter,
-				   TFHolder::Type type):
+				   TFAbstractModifier::Ptr modifier,
+				   std::string title):
 	holder_(new QMainWindow((QWidget*)mainWindow)),
 	ui_(new Ui::TFHolder),
-	function_(function),
 	modifier_(modifier),
 	painter_(painter),
 	button_(NULL),
-	type_(type),
-	setup_(false),
+	blank_(false),
 	active_(false),
 	index_(0),
 	dockHolder_(NULL),
+	dockTools_(NULL),
 	painterLeftTopMargin_(20, 40),
 	painterRightBottomMargin_(20, 10),
-	qTitle_(QString::fromStdString(convert<TFHolder::Type, std::string>(type_) +
-		" #" + convert<TFSize, std::string>(index_ + 1))){
+	title_(title){
 
 	ui_->setupUi(this);
 	holder_->setCentralWidget(this);
@@ -37,7 +34,7 @@ TFHolder::TFHolder(QMainWindow* mainWindow,
 	QWidget* tools = modifier_->getTools();
 	if(tools)
 	{
-		dockTools_ = new QDockWidget(qTitle_, this);	
+		dockTools_ = new QDockWidget(this);	
 		dockTools_->setWidget(tools);
 		dockTools_->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);	
 		dockTools_->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);	
@@ -45,9 +42,25 @@ TFHolder::TFHolder(QMainWindow* mainWindow,
 	}
 }
 
+TFHolder::TFHolder(QMainWindow* mainWindow):
+	holder_(new QMainWindow((QWidget*)mainWindow)),
+	ui_(new Ui::TFHolder),
+	button_(NULL),
+	blank_(true),
+	active_(false),
+	index_(0),
+	dockHolder_(NULL),
+	dockTools_(NULL),
+	painterLeftTopMargin_(20, 40),
+	painterRightBottomMargin_(20, 10){
+
+	ui_->setupUi(this);
+	holder_->setCentralWidget(this);
+}
+
 TFHolder::~TFHolder(){
 
-	if(ui_) delete ui_;
+	//if(ui_) delete ui_;
 }
 
 M4D::Common::TimeStamp TFHolder::getLastChangeTime(){
@@ -55,32 +68,38 @@ M4D::Common::TimeStamp TFHolder::getLastChangeTime(){
 	return modifier_->getLastChangeTime();
 }
 
-void TFHolder::setHistogram(TFHistogramPtr histogram){
+void TFHolder::setHistogram(TF::Histogram::Ptr histogram){
 
 	if(!histogram) return;
-	modifier_->getWorkCopy()->updateFunction(function_);
+
 	modifier_->getWorkCopy()->setHistogram(histogram);
-	function_->resize(histogram->GetMax() - histogram->GetMin());
-	modifier_->getWorkCopy()->update(function_);
+
 	repaint();
 }
 
-void TFHolder::setup(const TFSize index){
+void TFHolder::setDomain(const TF::Size domain){
+
+	modifier_->getWorkCopy()->setDomain(domain);
+	repaint();
+}
+
+void TFHolder::setup(const TF::Size index){
 
 	index_ = index;
-	qTitle_ = QString::fromStdString(convert<TFHolder::Type, std::string>(type_) +
-		" #" + convert<TFSize, std::string>(index_ + 1));
-	dockTools_->setWindowTitle(qTitle_ + " Tools");
+
+	title_ = title_ + " #" + TF::convert<TF::Size, std::string>(index_ + 1);
+	if(dockHolder_) dockHolder_->setWindowTitle(QString::fromStdString(title_));
+	if(dockTools_) dockTools_->setWindowTitle(QString::fromStdString(title_ + " Tools"));
 
 	show();
 }
 
 bool TFHolder::connectToTFPalette(QObject *tfPalette){
 		
-	bool activateConnected = QObject::connect( this, SIGNAL(Activate(TFSize)), tfPalette, SLOT(change_activeHolder(TFSize)));
+	bool activateConnected = QObject::connect( this, SIGNAL(Activate(TF::Size)), tfPalette, SLOT(change_activeHolder(TF::Size)));
 	tfAssert(activateConnected);
 
-	bool closeConnected = QObject::connect( this, SIGNAL(Close(TFSize)), tfPalette, SLOT(close_triggered(TFSize)));
+	bool closeConnected = QObject::connect( this, SIGNAL(Close(TF::Size)), tfPalette, SLOT(close_triggered(TF::Size)));
 	tfAssert(closeConnected);
 
 	return activateConnected &&	closeConnected;
@@ -99,14 +118,9 @@ bool TFHolder::createPaletteButton(QWidget *parent){
 
 void TFHolder::createDockWidget(QWidget *parent){
 
-	dockHolder_ = new QDockWidget(qTitle_, holder_->parentWidget());	
+	dockHolder_ = new QDockWidget(QString::fromStdString(title_), holder_->parentWidget());	
 	dockHolder_->setWidget(holder_);
 	dockHolder_->setFeatures(QDockWidget::AllDockWidgetFeatures);
-}
-
-TFHolder::Type TFHolder::getType() const{
-
-	return type_;
 }
 
 TFPaletteButton* TFHolder::getButton() const{
@@ -119,7 +133,7 @@ QDockWidget* TFHolder::getDockWidget() const{
 	return dockHolder_;
 }
 
-TFSize TFHolder::getIndex(){
+TF::Size TFHolder::getIndex(){
 
 	return index_;
 }
@@ -136,6 +150,112 @@ void TFHolder::deactivate(){
 	ui_->activateButton->setChecked(false);
 	button_->deactivate();
 	active_ = false;
+}
+
+void TFHolder::paintEvent(QPaintEvent *e){
+
+	if(blank_) return;
+	QPainter drawer(this);
+	drawer.drawPixmap(painterLeftTopMargin_.x, painterLeftTopMargin_.y,
+		painter_->getView(modifier_->getWorkCopy()));
+}
+
+void TFHolder::mousePressEvent(QMouseEvent *e){
+
+	if(blank_) return;
+	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
+	if(lastChange != lastChange_)
+	{
+		lastChange_ = lastChange;
+	}
+
+	modifier_->mousePress(e->x(), e->y(), e->button());
+}
+
+void TFHolder::mouseReleaseEvent(QMouseEvent *e){
+
+	if(blank_) return;
+	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
+	if(lastChange != lastChange_)
+	{
+		lastChange_ = lastChange;
+	}
+
+	modifier_->mouseRelease(e->x(), e->y());
+}
+
+void TFHolder::mouseMoveEvent(QMouseEvent *e){
+
+	if(blank_) return;
+	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
+	if(lastChange != lastChange_)
+	{
+		lastChange_ = lastChange;
+	}
+	
+	modifier_->mouseMove(e->x(), e->y());
+}
+
+void TFHolder::wheelEvent(QWheelEvent *e){
+
+	if(blank_) return;
+	int numSteps = e->delta() / 120;
+	if(numSteps == 0) return;
+
+	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
+	if(lastChange != lastChange_)
+	{
+		lastChange_ = lastChange;
+	}
+
+	modifier_->mouseWheel(numSteps, e->x(), e->y());
+}
+
+void TFHolder::resizeEvent(QResizeEvent *e){
+
+	if(blank_) return;
+	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
+	if(lastChange != lastChange_)
+	{
+		lastChange_ = lastChange;
+	}
+
+	resizePainter_();
+}
+
+void TFHolder::resizePainter_(){
+
+	QRect painterArea(
+		painterLeftTopMargin_.x,
+		painterLeftTopMargin_.y,
+		width() - painterLeftTopMargin_.x - painterRightBottomMargin_.x,
+		height() - painterLeftTopMargin_.y - painterRightBottomMargin_.y);	
+			
+	painter_->setArea(painterArea);	
+	modifier_->setInputArea(painter_->getInputArea());
+}
+
+void TFHolder::on_closeButton_clicked(){
+
+	emit Close(index_);
+}
+
+void TFHolder::on_saveButton_clicked(){
+
+	if(blank_) return;
+	save();
+}
+
+void TFHolder::on_activateButton_clicked(){
+
+	if(blank_) return;
+	if(!active_) emit Activate(index_);
+	else ui_->activateButton->setChecked(true);
+}
+
+void TFHolder::refresh_view(){
+
+	repaint();
 }
 
 void TFHolder::save(){
@@ -163,128 +283,15 @@ void TFHolder::save(){
 	file.close();
 }
 
-void TFHolder::paintEvent(QPaintEvent *e){
-
-	QPainter drawer(this);
-	drawer.drawPixmap(painterLeftTopMargin_.x, painterLeftTopMargin_.y,
-		painter_->getView(modifier_->getWorkCopy()));
-}
-
-void TFHolder::mousePressEvent(QMouseEvent *e){
-
-	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
-	if(lastChange != lastChange_)
-	{
-		modifier_->getWorkCopy()->updateFunction(function_);
-		lastChange_ = lastChange;
-	}
-
-	MouseButton mb(MouseButtonLeft);
-	if(e->button() == Qt::RightButton) mb = MouseButtonRight;
-	if(e->button() == Qt::MidButton) mb = MouseButtonMid;
-
-	modifier_->mousePress(e->x(), e->y(), mb);
-}
-
-void TFHolder::mouseReleaseEvent(QMouseEvent *e){
-
-	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
-	if(lastChange != lastChange_)
-	{
-		modifier_->getWorkCopy()->updateFunction(function_);
-		lastChange_ = lastChange;
-	}
-
-	modifier_->mouseRelease(e->x(), e->y());
-}
-
-void TFHolder::mouseMoveEvent(QMouseEvent *e){
-
-	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
-	if(lastChange != lastChange_)
-	{
-		modifier_->getWorkCopy()->updateFunction(function_);
-		lastChange_ = lastChange;
-	}
-	
-	modifier_->mouseMove(e->x(), e->y());
-}
-
-void TFHolder::wheelEvent(QWheelEvent *e){
-
-	int numSteps = e->delta() / 120;
-	if(numSteps == 0) return;
-
-	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
-	if(lastChange != lastChange_)
-	{
-		modifier_->getWorkCopy()->updateFunction(function_);
-		lastChange_ = lastChange;
-	}
-
-	modifier_->mouseWheel(numSteps, e->x(), e->y());
-
-	//modifier_->getWorkCopy()->update(function_);
-	//repaint();
-}
-
-void TFHolder::resizeEvent(QResizeEvent *e){
-
-	M4D::Common::TimeStamp lastChange = modifier_->getLastChangeTime();
-	if(lastChange != lastChange_)
-	{
-		modifier_->getWorkCopy()->updateFunction(function_);
-		lastChange_ = lastChange;
-	}
-
-	resizePainter_();
-}
-
-void TFHolder::resizePainter_(){
-
-	QRect painterArea(
-		painterLeftTopMargin_.x,
-		painterLeftTopMargin_.y,
-		width() - painterLeftTopMargin_.x - painterRightBottomMargin_.x,
-		height() - painterLeftTopMargin_.y - painterRightBottomMargin_.y);	
-			
-	painter_->setArea(painterArea);	
-	modifier_->setInputArea(painter_->getInputArea());
-	modifier_->getWorkCopy()->update(function_);
-}
-
-void TFHolder::on_closeButton_clicked(){
-
-	emit Close(index_);
-}
-
-void TFHolder::on_saveButton_clicked(){
-
-	save();
-}
-
-void TFHolder::on_activateButton_clicked(){
-
-	if(!active_) emit Activate(index_);
-	else ui_->activateButton->setChecked(true);
-}
-
-void TFHolder::refresh_view(){
-
-	repaint();
-}
-
 void TFHolder::save_(QFile &file){
-	
-	modifier_->getWorkCopy()->updateFunction(function_);
-
+	/*
 	 TFXmlWriter writer;
-	 writer.write(&file, function_);
+	 writer.write(&file, function_);*/
 	 //writer.writeTestData(&file);	//testing
 }
 
-bool TFHolder::load_(QFile &file){
-	
+bool TFHolder::load(QFile &file){
+	/*
 	TFXmlReader reader;
 
 	bool error = false;
@@ -298,8 +305,8 @@ bool TFHolder::load_(QFile &file){
 	}
 
 	modifier_->getWorkCopy()->update(function_);
-	
-	return true;
+	*/
+	return false;	//TODO
 }
 
 } // namespace GUI

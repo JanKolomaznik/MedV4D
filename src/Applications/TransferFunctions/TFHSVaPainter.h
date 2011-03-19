@@ -22,9 +22,9 @@ public:
 
 private:
 
-	const TFSize colorBarSize_;
-	const TFSize margin_;
-	const TFSize spacing_;
+	const TF::Size colorBarSize_;
+	const TF::Size margin_;
+	const TF::Size spacing_;
 
 	const QColor background_;
 	const QColor hue_;
