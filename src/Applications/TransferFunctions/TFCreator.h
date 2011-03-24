@@ -6,6 +6,7 @@
 
 #include <TFCommon.h>
 #include <TFHolder.h>
+#include <TFHolderInterface.h>
 
 #include <TFDialogButtons.h>
 
@@ -14,7 +15,7 @@
 #include <TFModifiers.h>
 #include <TFPredefined.h>
 
-#include "ui_TFCreator.h"
+#include <ui_TFCreator.h>
 
 namespace M4D {
 namespace GUI {
@@ -25,9 +26,9 @@ class TFCreator: public QDialog{
 
 public:
 
-	static TFHolder* createTransferFunction(QMainWindow* mainWindow, const TF::Size domain);
+	static TFHolderInterface* createTransferFunction(QMainWindow* mainWindow, const TF::Size domain);
 
-	static TFHolder* loadTransferFunction(QMainWindow* mainWindow, const TF::Size domain);
+	static TFHolderInterface* loadTransferFunction(QMainWindow* mainWindow, const TF::Size domain);
 
 private slots:
 
@@ -44,7 +45,7 @@ private:
 	TFCreator(QWidget* parent = 0);
 	~TFCreator();
 
-	TF::Types::PredefinedStructure getResult();
+	TF::Types::Structure getResult();
 
 	enum State{
 		Predefined,
@@ -60,7 +61,9 @@ private:
 	QVBoxLayout* functionLayout_;
 	QVBoxLayout* otherLayout_;
 
-	TF::Types::PredefinedStructure structure_;
+	bool predefinedChoice_;
+	TF::Types::Structure customStructure_;
+	TF::Types::Structure predefinedStructure_;
 
 	bool predefinedSet_;
 	bool functionSet_;

@@ -7,8 +7,9 @@ TFPalette::TFPalette(QMainWindow* parent):
 	QMainWindow(parent),
 	ui_(new Ui::TFPalette),
 	mainWindow_(parent),
-	domain_(TFAbstractFunction::defaultDomain),
-	activeHolder_(-1){
+	domain_(TFAbstractFunction<1>::defaultDomain),
+	activeHolder_(-1),
+	activeChanged_(false){
 
     ui_->setupUi(this);
 	setWindowTitle("Transfer Functions Palette");
@@ -22,8 +23,17 @@ TFPalette::~TFPalette(){}
 /*
 void TFPalette::setupDefault(){
 	
-	domain_ = TFAbstractFunction::defaultDomain;
+	domain_ = TFApplyFunctionInterface::defaultDomain;
 	//newTF_triggered(TF::Types::PredefinedCustom);
+}
+*/
+/*
+TF::MultiDColor<dim>::Map::Ptr TFPalette::getColorMap(){
+
+	if(activeHolder_ < 0) on_actionNew_triggered();
+	if(activeHolder_ < 0) exit(0);
+
+	return palette_.find(activeHolder_)->second->getColorMap();
 }
 */
 void TFPalette::setDomain(TF::Size domain){
@@ -39,6 +49,22 @@ void TFPalette::setDomain(TF::Size domain){
 	}
 }
 
+bool TFPalette::setHistogram(TF::Histogram::Ptr histogram, bool adjustDomain){
+
+	histogram_ = histogram;
+	
+	if(adjustDomain) domain_ = histogram_->size();
+	else if(domain_ != histogram_->size()) return false;
+
+	HolderMapIt beginPalette = palette_.begin();
+	HolderMapIt endPalette = palette_.end();
+	for(HolderMapIt it = beginPalette; it != endPalette; ++it)
+	{
+		it->second->setHistogram(histogram_);
+	}
+	return true;
+}
+
 TF::Size TFPalette::getDomain(){
 
 	return domain_;
@@ -46,25 +72,25 @@ TF::Size TFPalette::getDomain(){
 
 M4D::Common::TimeStamp TFPalette::getTimeStamp(/*bool& noFunctionAvailable*/){
 
-	//noFunctionAvailable = false;
 	if(palette_.empty())
 	{
-		//noFunctionAvailable = true;
 		++lastChange_;
 		return lastChange_;
 	}
-	if(palette_.find(activeHolder_)->second->changed()) ++lastChange_;
+	if(activeChanged_ || palette_.find(activeHolder_)->second->changed()) ++lastChange_;
+
+	activeChanged_ = false;
 
 	return lastChange_;
 }
 
-void TFPalette::addToPalette_(TFHolder* holder){
+void TFPalette::addToPalette_(TFHolderInterface* holder){
 	
 	TF::Size addedIndex = indexer_.getIndex();
 
 	holder->setup(addedIndex);
 	holder->setHistogram(histogram_);
-	palette_.insert(std::make_pair<TF::Size, TFHolder*>(addedIndex, holder));
+	palette_.insert(std::make_pair<TF::Size, TFHolderInterface*>(addedIndex, holder));
 	holder->createPaletteButton(ui_->scrollAreaWidget);
 
 	TFPaletteButton* addedButton = holder->getButton();
@@ -79,7 +105,7 @@ void TFPalette::addToPalette_(TFHolder* holder){
 	change_activeHolder(addedIndex);
 }
 
-void TFPalette::removeFromPalette_(TF::Size index){
+void TFPalette::removeFromPalette_(const TF::Size index){
 
 	bool last = palette_.size() == 1;
 
@@ -130,7 +156,7 @@ void TFPalette::close_triggered(TF::Size index){
 
 void TFPalette::on_actionLoad_triggered(){
 
-	TFHolder* loaded = TFCreator::loadTransferFunction(this, domain_);
+	TFHolderInterface* loaded = TFCreator::loadTransferFunction(this, domain_);
 
 	if(!loaded) return;
 	
@@ -139,7 +165,7 @@ void TFPalette::on_actionLoad_triggered(){
 
 void TFPalette::on_actionNew_triggered(){
 
-	TFHolder* created = TFCreator::createTransferFunction(this, domain_);
+	TFHolderInterface* created = TFCreator::createTransferFunction(this, domain_);
 
 	if(!created) return;
 	
@@ -148,11 +174,13 @@ void TFPalette::on_actionNew_triggered(){
 
 void TFPalette::change_activeHolder(TF::Size index){
 
+	if(index == activeHolder_) return;
+
 	if(activeHolder_ >= 0) palette_.find(activeHolder_)->second->deactivate();
 
 	activeHolder_ = index;
-
 	palette_.find(activeHolder_)->second->activate();
+	activeChanged_ = true;
 }
 
 //---Indexer---
@@ -176,7 +204,7 @@ TF::Size TFPalette::Indexer::getIndex(){
 	return index;
 }
 
-void TFPalette::Indexer::releaseIndex(TF::Size index){
+void TFPalette::Indexer::releaseIndex(const TF::Size index){
 
 	if(index == (nextIndex_-1))
 	{

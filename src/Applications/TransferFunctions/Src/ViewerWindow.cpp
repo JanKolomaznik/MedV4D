@@ -144,10 +144,9 @@ void ViewerWindow::applyTransferFunction(){
 
 void ViewerWindow::updateTransferFunction(){
 
-	//bool noTF;
-	const M4D::Common::TimeStamp timestamp = mTransferFunctionEditor->getTimeStamp(/*noTF*/);
+	const M4D::Common::TimeStamp timestamp = mTransferFunctionEditor->getTimeStamp();
 
-	if (/*!noTF &&*/ timestamp != mLastTimeStamp )
+	if (timestamp != mLastTimeStamp )
 	{
 		applyTransferFunction();
 		mLastTimeStamp = timestamp;
@@ -237,21 +236,6 @@ ViewerWindow::updateToolbars()
 
 void ViewerWindow::openFile()
 {	
-	//---TODO-default-buffer---
-	/*
-	bool noTF;
-	mTransferFunctionEditor->getTimeStamp(noTF);
-	if(noTF)
-	{
-		QMessageBox::warning(this,
-			QObject::tr("Error"),
-			QObject::tr("No Transfer Function available!"));
-
-		return;
-	}
-	*/
-	//------
-
 	QString fileName = QFileDialog::getOpenFileName(this,
 		tr("Open Image"),
 		QDir::currentPath(),
@@ -267,6 +251,7 @@ void ViewerWindow::openFile( const QString &aPath )
 	std::string path = std::string( aPath.toLocal8Bit().data() );
 	M4D::Imaging::AImage::Ptr image = M4D::Imaging::ImageFactory::LoadDumpedImage( path );
 	mProdconn.PutDataset( image );
+	fileLoaded_ = true;
 	
 	M4D::Common::Clock clock;
 
@@ -274,11 +259,15 @@ void ViewerWindow::openFile( const QString &aPath )
 	IMAGE_NUMERIC_TYPE_PTR_SWITCH_MACRO( image, 
 		histogram = M4D::Imaging::CreateHistogramForImageRegion<Histogram, IMAGE_TYPE >( IMAGE_TYPE::Cast( *image ) );
 	);
-
 	LOG( "Histogram computed in " << clock.SecondsPassed() );
-	bool histogramSet = mTransferFunctionEditor->setHistogram<Histogram::iterator>(histogram->Begin(), histogram->End());	
-	fileLoaded_ = true;
-
+	
+	TFHistogram::Ptr tfHistogram(new TFHistogram);
+	for(Histogram::iterator it = histogram->Begin(); it != histogram->End(); ++it)
+	{
+		tfHistogram->add(*it);
+	}
+	bool histogramSet = mTransferFunctionEditor->setHistogram(tfHistogram);	
+	
 	assert(histogramSet);
 
 	mViewer->ZoomFit();

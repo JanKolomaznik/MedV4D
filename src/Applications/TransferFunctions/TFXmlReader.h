@@ -15,13 +15,13 @@ class TFXmlReader: public QXmlStreamReader{
 public:
 	TFXmlReader();
 	~TFXmlReader();
-
-	void read(QIODevice* device, TFAbstractFunction::Ptr function, bool &error);
-	void readTestData(TFAbstractFunction* function);
+/*
+	void read(QIODevice* device, TFAbstractFunction<1>::Ptr function, bool &error);
+	void readTestData(TFAbstractFunction<1>* function);
 
 private:
-	void readFunction_(TFAbstractFunction::Ptr function, bool &error);
-	void readPoint_(TF::Color* point, bool &error);
+	void readFunction_(TFAbstractFunction<1>::Ptr function, bool &error);
+	void readPoint_(TF::Color* point, bool &error);*/
 };
 
 } // namespace GUI

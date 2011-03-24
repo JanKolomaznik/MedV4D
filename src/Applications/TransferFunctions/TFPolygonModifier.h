@@ -7,7 +7,9 @@
 namespace M4D {
 namespace GUI {
 
-class TFPolygonModifier: public TFAbstractModifier{
+#define TF_POLYGONMODIFIER_DIMENSION 1
+
+class TFPolygonModifier: public TFAbstractModifier<TF_POLYGONMODIFIER_DIMENSION>{
 
 	Q_OBJECT
 
@@ -21,7 +23,7 @@ public:
 		HSV
 	};
 
-	TFPolygonModifier(TFWorkCopy::Ptr workCopy, Mode mode, bool alpha);
+	TFPolygonModifier(TFWorkCopy<TF_POLYGONMODIFIER_DIMENSION>::Ptr workCopy, Mode mode, bool alpha);
 	~TFPolygonModifier();
 
 	void mousePress(const int x, const int y, Qt::MouseButton button);

@@ -50,19 +50,19 @@ typedef unsigned long Size;
 
 //------------Debug------------------------------------------------------
 
-class AbortException : public std::exception
+class TFException : public std::exception
 {
 private:
     virtual const char * what() const throw()
     {
-		return "TFAbortException";
+		return "TFException";
     }
 };
 
 inline void abort( const char * s, const char * f, int l)
 {	
     std::cout << f << "(" << l << "): " << s << std::endl;
-    throw AbortException(); 
+    throw TFException(); 
 }
 
 // if TF_NDEBUG macro is defined, switch off debugging support

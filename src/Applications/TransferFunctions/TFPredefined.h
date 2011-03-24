@@ -5,6 +5,9 @@
 #include <TFPainters.h>
 #include <TFModifiers.h>
 
+#include <TFHolderInterface.h>
+#include <TFHolder.h>
+
 namespace M4D {
 namespace GUI {
 
@@ -35,19 +38,21 @@ static PredefinedTypesPtr getPredefinedTypes(){
 	return PredefinedTypesPtr(all);
 }
 
-struct PredefinedStructure{
+struct Structure{
 
 	Predefined predefined;
 
+	Size dimension;
 	Function function;
 	Painter painter;
 	Modifier modifier;
 
-	PredefinedStructure():
+	Structure():
 		predefined(PredefinedCustom){
 	}
 
-	PredefinedStructure(Predefined predefined, Function function, Painter painter, Modifier modifier):
+	Structure(Predefined predefined, Size dimension, Function function, Painter painter, Modifier modifier):
+		dimension(dimension),
 		predefined(predefined),
 		function(function),
 		painter(painter),
@@ -55,46 +60,51 @@ struct PredefinedStructure{
 	}
 };
 
-static PredefinedStructure getPredefinedStructure(Predefined predefinedType){
+static Structure getPredefinedStructure(Predefined predefinedType){
 
 	switch(predefinedType)
 	{
 		case PredefinedSimpleGrayscaleAlpha:
 		{
-			return PredefinedStructure(PredefinedSimpleGrayscaleAlpha,
+			return Structure(
+				PredefinedSimpleGrayscaleAlpha,
+				1,
 				FunctionRGB,
 				PainterGrayscaleAlpha,
 				ModifierSimple);
 		}
 		case PredefinedSimpleRGBa:
 		{
-			return PredefinedStructure(PredefinedSimpleRGBa,
+			return Structure(PredefinedSimpleRGBa,
+				1,
 				FunctionRGB,
 				PainterRGBa,
 				ModifierSimple);
 		}
 		case PredefinedSimpleHSVa:
 		{
-			return PredefinedStructure(PredefinedSimpleHSVa,
+			return Structure(PredefinedSimpleHSVa,
+				1,
 				FunctionHSV,
 				PainterHSVa,
 				ModifierSimple);
 		}
 		case PredefinedPolygonRGBa:
 		{
-			return PredefinedStructure(PredefinedPolygonRGBa,
+			return Structure(PredefinedPolygonRGBa,
+				1,
 				FunctionRGB,
 				PainterRGBa,
 				ModifierPolygon);
 		}
 		case PredefinedCustom:
 		{
-			return PredefinedStructure();
+			return Structure();
 		}
 	}
 
 	tfAssert(!"Unknown predefined type");
-	return PredefinedStructure();	//custom
+	return Structure();	//custom
 }
 
 }	//namespace Types
@@ -149,6 +159,32 @@ inline Types::Predefined TF::convert<std::string, Types::Predefined>(const std::
 	tfAssert(!"Unknown predefined type!");
 	return Types::PredefinedCustom;
 }
+
+namespace Types{	
+
+static TFHolderInterface* createHolder(QMainWindow* mainWindow, Size domain, Structure structure){
+	
+	switch(structure.function)
+	{
+		case FunctionRGB:	//TODO holder type
+		case FunctionHSV:
+		{
+			TFAbstractFunction<1>::Ptr function = createFunction<1>(structure.function, domain);
+			TFAbstractPainter<1>::Ptr painter = createPainter<1>(structure.painter);
+			TFWorkCopy<1>::Ptr workCopy = TFWorkCopy<1>::Ptr(new TFWorkCopy<1>(function));
+			TFAbstractModifier<1>::Ptr modifier = createModifier<1>(structure.modifier, workCopy, structure.painter);
+			return new TFHolder(mainWindow,
+				painter,
+				modifier,
+				convert<Predefined, std::string>(structure.predefined));
+		}
+	}
+
+	tfAssert(!"Unknown holder");
+	return NULL;
+}
+
+}	//namespace Types
 
 }	//namespace TF
 

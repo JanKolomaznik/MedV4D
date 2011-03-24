@@ -2,15 +2,14 @@
 #define TF_ABSTRACTHOLDER
 
 #include "common/Types.h"
-#include "Imaging/Histogram.h"
-
-#include "ui_TFHolder.h"
 
 #include <QtGui/QMainWindow>
 #include <QtGui/QDockWidget>
+
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
 #include <QtGui/QPainter>
+
 #include <QtGui/QMouseEvent>
 #include <QtGui/QWheelEvent>
 #include <QtGui/QPaintEvent>
@@ -26,12 +25,15 @@
 #include <TFAbstractModifier.h>
 #include <TFAbstractPainter.h>
 #include <TFWorkCopy.h>
-#include <TFAdaptation.h>
+
+#include <TFHolderInterface.h>
+
+#include <ui_TFHolder.h>
 
 namespace M4D {
 namespace GUI {
 
-class TFHolder : public QWidget{
+class TFHolder : public QWidget, public TFHolderInterface{
 
 	Q_OBJECT
 	
@@ -42,11 +44,13 @@ public:
 	typedef boost::shared_ptr<TFHolder> Ptr;
 
 	TFHolder(QMainWindow* mainWindow,
-		TFAbstractPainter::Ptr painter,
-		TFAbstractModifier::Ptr modifier,
+		TFAbstractPainter<1>::Ptr painter,
+		TFAbstractModifier<1>::Ptr modifier,
 		std::string title);
 
 	~TFHolder();
+	
+	//typename TF::MultiDColor<dim>::Map::Ptr getColorMap();
 
 	void save();
 	void activate();
@@ -66,15 +70,6 @@ public:
 	QDockWidget* getDockWidget() const;
 
 	bool changed();
-	
-	template<typename ElementIterator>
-	bool applyTransferFunction(
-		ElementIterator begin,
-		ElementIterator end){
-
-		return TF::Adaptation::applyTransferFunction< ElementIterator >( begin, end,
-			modifier_->getWorkCopy()->getFunction());
-	}
 
 signals:
 
@@ -99,8 +94,8 @@ private:
 	
 	std::string title_;
 
-	TFAbstractModifier::Ptr modifier_;
-	TFAbstractPainter::Ptr painter_;
+	TFAbstractModifier<1>::Ptr modifier_;
+	TFAbstractPainter<1>::Ptr painter_;
 	TFPaletteButton* button_;
 
 	TF::Size index_;
@@ -110,6 +105,8 @@ private:
 
 	bool blank_;
 	bool active_;
+
+	TFApplyFunctionInterface::Ptr functionToApply_();
 
 	void paintEvent(QPaintEvent*);
 	void resizeEvent(QResizeEvent*);

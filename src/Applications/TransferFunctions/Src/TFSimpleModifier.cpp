@@ -3,7 +3,7 @@
 namespace M4D {
 namespace GUI {
 
-TFSimpleModifier::TFSimpleModifier(TFWorkCopy::Ptr workCopy, Mode mode, bool alpha):
+TFSimpleModifier::TFSimpleModifier(TFWorkCopy<TF_SIMPLEMODIFIER_DIMENSION>::Ptr workCopy, Mode mode, bool alpha):
 	mode_(mode),
 	alpha_(alpha),
 	tools_(new Ui::TFSimpleModifier),
@@ -200,27 +200,27 @@ void TFSimpleModifier::addPoint_(const int x, const int y){
 	{
 		case Active1:
 		{
-			workCopy_->setComponent1(x, yValue);
+			workCopy_->setComponent1(x, TF_SIMPLEMODIFIER_DIMENSION, yValue);
 			if(mode_ == Grayscale)
 			{
-				workCopy_->setComponent2(x, yValue);
-				workCopy_->setComponent3(x, yValue);
+				workCopy_->setComponent2(x, TF_SIMPLEMODIFIER_DIMENSION, yValue);
+				workCopy_->setComponent3(x, TF_SIMPLEMODIFIER_DIMENSION, yValue);
 			}
 			break;
 		}
 		case Active2:
 		{
-			workCopy_->setComponent2(x, yValue);
+			workCopy_->setComponent2(x, TF_SIMPLEMODIFIER_DIMENSION, yValue);
 			break;
 		}
 		case Active3:
 		{
-			workCopy_->setComponent3(x, yValue);
+			workCopy_->setComponent3(x, TF_SIMPLEMODIFIER_DIMENSION, yValue);
 			break;
 		}
 		case ActiveAlpha:
 		{
-			workCopy_->setAlpha(x, yValue);
+			workCopy_->setAlpha(x, TF_SIMPLEMODIFIER_DIMENSION, yValue);
 			break;
 		}
 	}

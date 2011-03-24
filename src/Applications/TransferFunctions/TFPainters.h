@@ -47,38 +47,39 @@ static PaintersPtr getAllowedPainters(Function function){
 	return PaintersPtr(allowed);
 }
 
-static TFAbstractPainter::Ptr createPainter(Painter painter){
+template<Size dim>
+static typename TFAbstractPainter<dim>::Ptr createPainter(Painter painter){
 
 	switch(painter)
 	{
 		case TF::Types::PainterGrayscale:
 		{
-			return TFAbstractPainter::Ptr(new TFGrayscaleAlphaPainter(false));
+			return typename TFAbstractPainter<dim>::Ptr(new TFGrayscaleAlphaPainter(false));
 		}
 		case TF::Types::PainterGrayscaleAlpha:
 		{
-			return TFAbstractPainter::Ptr(new TFGrayscaleAlphaPainter(true));
+			return typename TFAbstractPainter<dim>::Ptr(new TFGrayscaleAlphaPainter(true));
 		}
 		case TF::Types::PainterRGB:
 		{
-			return TFAbstractPainter::Ptr(new TFRGBaPainter(false));
+			return typename TFAbstractPainter<dim>::Ptr(new TFRGBaPainter(false));
 		}
 		case TF::Types::PainterRGBa:
 		{
-			return TFAbstractPainter::Ptr(new TFRGBaPainter(true));
+			return typename TFAbstractPainter<dim>::Ptr(new TFRGBaPainter(true));
 		}
 		case TF::Types::PainterHSV:
 		{
-			return TFAbstractPainter::Ptr(new TFHSVaPainter(false));
+			return typename TFAbstractPainter<dim>::Ptr(new TFHSVaPainter(false));
 		}
 		case TF::Types::PainterHSVa:
 		{
-			return TFAbstractPainter::Ptr(new TFHSVaPainter(true));
+			return typename TFAbstractPainter<dim>::Ptr(new TFHSVaPainter(true));
 		}
 	}
 	
 	tfAssert(!"Unknown painter!");
-	return TFAbstractPainter::Ptr(new TFRGBaPainter(true));
+	return typename TFAbstractPainter<dim>::Ptr(new TFRGBaPainter(true));
 }
 
 }	//namespace Types

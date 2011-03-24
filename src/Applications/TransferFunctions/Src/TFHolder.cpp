@@ -6,8 +6,8 @@ namespace M4D {
 namespace GUI {
 
 TFHolder::TFHolder(QMainWindow* mainWindow,
-				   TFAbstractPainter::Ptr painter,
-				   TFAbstractModifier::Ptr modifier,
+				   TFAbstractPainter<1>::Ptr painter,
+				   TFAbstractModifier<1>::Ptr modifier,
 				   std::string title):
 	holder_(new QMainWindow((QWidget*)mainWindow)),
 	ui_(new Ui::TFHolder),
@@ -56,10 +56,32 @@ TFHolder::TFHolder(QMainWindow* mainWindow):
 	holder_->setCentralWidget(this);
 }
 
+
 TFHolder::~TFHolder(){
 
 	//if(ui_) delete ui_;
 }
+/*
+
+TF::MultiDColor<1>::MapPtr TFHolder::getColorMap(){
+
+	TFAbstractFunction::Ptr function = modifier_->getWorkCopy()->getFunction();
+	TF::Size domain = function->getDomain();
+	TF::MultiDColor<dim>::Map::Ptr colorMap(new TF::MultiDColor<dim>::Map(domain, function->getDimension()));
+	for(TF::Size i = 0; i < domain; ++i)
+	{
+		(*colorMap)[i] = function->getMappedRGBfColor(i);
+	}
+
+	return colorMap;
+}
+*/
+
+TFApplyFunctionInterface::Ptr TFHolder::functionToApply_(){
+
+	return modifier_->getWorkCopy()->getFunction();
+}
+
 
 bool TFHolder::changed(){
 

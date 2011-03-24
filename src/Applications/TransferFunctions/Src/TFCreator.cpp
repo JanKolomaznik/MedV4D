@@ -3,28 +3,18 @@
 namespace M4D {
 namespace GUI {
 
-TFHolder* TFCreator::createTransferFunction(QMainWindow* mainWindow, const TF::Size domain){
+TFHolderInterface* TFCreator::createTransferFunction(QMainWindow* mainWindow, const TF::Size domain){
 
 	TFCreator dialog;
 	dialog.exec();
 
 	if(dialog.result() == QDialog::Rejected) return NULL;
 
-	TF::Types::PredefinedStructure structure = dialog.getResult();
-
-	TFAbstractFunction::Ptr function;
-	TFAbstractPainter::Ptr painter;
-	TFAbstractModifier::Ptr modifier;
-
-	function = TF::Types::createFunction(structure.function, domain);
-	painter = TF::Types::createPainter(structure.painter);
-	modifier = TF::Types::createModifier(structure.modifier, TFWorkCopy::Ptr(new TFWorkCopy(function)), structure.painter);
-
-	return new TFHolder(mainWindow,	painter, modifier, TF::convert<TF::Types::Predefined, std::string>(structure.predefined));
+	return createHolder(mainWindow, domain, dialog.getResult());		
 }
 	
-TFHolder* TFCreator::loadTransferFunction(QMainWindow* mainWindow, const TF::Size domain){
-
+TFHolderInterface* TFCreator::loadTransferFunction(QMainWindow* mainWindow, const TF::Size domain){
+/*
 	QString fileName = QFileDialog::getOpenFileName(
 		(QWidget*)mainWindow,
 		QObject::tr("Open Transfer Function"),
@@ -57,8 +47,8 @@ TFHolder* TFCreator::loadTransferFunction(QMainWindow* mainWindow, const TF::Siz
 		return NULL;
 	}
 	qFile.close();
-
-	return loaded;
+*/
+	return NULL;//loaded;
 }
 
 TFCreator::TFCreator(QWidget* parent):
@@ -127,9 +117,11 @@ TFCreator::TFCreator(QWidget* parent):
 
 TFCreator::~TFCreator(){}
 
-TF::Types::PredefinedStructure TFCreator::getResult(){
+TF::Types::Structure TFCreator::getResult(){
 
-	return structure_;
+	if(predefinedChoice_) return predefinedStructure_;
+
+	return customStructure_;
 }
 
 void TFCreator::on_nextButton_clicked(){
@@ -138,8 +130,8 @@ void TFCreator::on_nextButton_clicked(){
 	{
 		case Predefined:
 		{
-			if(structure_.predefined == TF::Types::PredefinedCustom) setStateFunction_();
-			else accept();
+			if(predefinedChoice_) accept();
+			else setStateFunction_();
 			break;
 		}
 		case Function:
@@ -190,9 +182,8 @@ void TFCreator::on_backButton_clicked(){
 void TFCreator::setStatePredefined_(){
 	
 	ui_->description->setText(QObject::tr("Available Editors"));
-
-	ui_->predefinedScroll->raise();
 	ui_->backButton->setText(QObject::tr("Cancel"));
+	ui_->predefinedScroll->raise();
 	ui_->nextButton->setEnabled(predefinedSet_);
 
 	state_ = Predefined;
@@ -201,7 +192,7 @@ void TFCreator::setStatePredefined_(){
 void TFCreator::setStateFunction_(){
 	
 	ui_->description->setText(QObject::tr("Available Functions"));
-
+	ui_->backButton->setText(QObject::tr("Back"));
 	ui_->functionScroll->raise();
 	ui_->nextButton->setEnabled(functionSet_);
 
@@ -209,8 +200,6 @@ void TFCreator::setStateFunction_(){
 }
 
 void TFCreator::setStatePainter_(){
-
-	ui_->description->setText(QObject::tr("Available Painters"));
 
 	QLayoutItem* layoutIt;
 	while(!otherLayout_->isEmpty())
@@ -220,7 +209,7 @@ void TFCreator::setStatePainter_(){
 		layoutIt->widget()->hide();
 	}
 
-	TF::Types::PaintersPtr allowedPainters = TF::Types::getAllowedPainters(structure_.function);
+	TF::Types::PaintersPtr allowedPainters = TF::Types::getAllowedPainters(customStructure_.function);
 
 	TFPainterDialogButton* toActivate(NULL);
 	TF::Types::Painters::iterator begin = allowedPainters->begin();
@@ -229,7 +218,7 @@ void TFCreator::setStatePainter_(){
 	{
 		TFPainterDialogButton* type = new TFPainterDialogButton(*it);
 		type->setText(QString::fromStdString(TF::convert<TF::Types::Painter, std::string>(*it)));
-		if(painterSet_ && structure_.painter == *it) toActivate = type;
+		if(painterSet_ && customStructure_.painter == *it) toActivate = type;
 
 		bool typeButtonConnected = QObject::connect( type, SIGNAL(Activated(TF::Types::Painter)), this, SLOT(painterButton_clicked(TF::Types::Painter)));
 		tfAssert(typeButtonConnected);
@@ -238,9 +227,9 @@ void TFCreator::setStatePainter_(){
 	}
 	if(toActivate) toActivate->setChecked(true);
 
-	ui_->otherScroll->raise();
-	ui_->backButton->setText(QObject::tr("Back"));
+	ui_->description->setText(QObject::tr("Available Painters"));
 	ui_->nextButton->setText(QObject::tr("Next"));
+	ui_->otherScroll->raise();
 	ui_->nextButton->setEnabled(painterSet_);
 
 	state_ = Painter;
@@ -258,7 +247,7 @@ void TFCreator::setStateModifier_(){
 		layoutIt->widget()->hide();
 	}
 
-	TF::Types::ModifiersPtr allowedModifiers = TF::Types::getAllowedModifiers(structure_.painter);
+	TF::Types::ModifiersPtr allowedModifiers = TF::Types::getAllowedModifiers(customStructure_.painter);
 
 	TFModifierDialogButton* toActivate(NULL);
 	TF::Types::Modifiers::iterator begin = allowedModifiers->begin();
@@ -267,7 +256,7 @@ void TFCreator::setStateModifier_(){
 	{
 		TFModifierDialogButton* type = new TFModifierDialogButton(*it);
 		type->setText(QString::fromStdString(TF::convert<TF::Types::Modifier, std::string>(*it)));
-		if(modifierSet_ && structure_.modifier == *it)  toActivate = type;
+		if(modifierSet_ && customStructure_.modifier == *it)  toActivate = type;
 
 		bool typeButtonConnected = QObject::connect( type, SIGNAL(Activated(TF::Types::Modifier)), this, SLOT(modifierButton_clicked(TF::Types::Modifier)));
 		tfAssert(typeButtonConnected);
@@ -285,24 +274,24 @@ void TFCreator::setStateModifier_(){
 void TFCreator::predefinedButton_clicked(TF::Types::Predefined predefined){
 
 	predefinedSet_ = true;
-	if(predefined != structure_.predefined)
-	{
-		functionSet_ = false;
-		painterSet_ = false;
-		modifierSet_ = false;
-	}
-
-	structure_ = TF::Types::getPredefinedStructure(predefined);
+	predefinedChoice_ = predefined != TF::Types::PredefinedCustom;
 
 	ui_->nextButton->setEnabled(true);
-	if(structure_.predefined == TF::Types::PredefinedCustom) ui_->nextButton->setText(QObject::tr("Next"));
-	else ui_->nextButton->setText(QObject::tr("Finish"));
+	if(predefinedChoice_) 
+	{
+		predefinedStructure_ = TF::Types::getPredefinedStructure(predefined);
+		ui_->nextButton->setText(QObject::tr("Finish"));
+	}
+	else
+	{
+		ui_->nextButton->setText(QObject::tr("Next"));
+	}
 }
 
 void TFCreator::functionButton_clicked(TF::Types::Function function){
 
 	functionSet_ = true;	
-	if(function != structure_.function)
+	if(function != customStructure_.function)
 	{
 		painterSet_ = false;
 		modifierSet_ = false;
@@ -310,20 +299,20 @@ void TFCreator::functionButton_clicked(TF::Types::Function function){
 
 	ui_->nextButton->setEnabled(true);
 
-	structure_.function = function;
+	customStructure_.function = function;
 }
 
 void TFCreator::painterButton_clicked(TF::Types::Painter painter){
 
 	painterSet_ = true;
-	if(painter != structure_.painter)
+	if(painter != customStructure_.painter)
 	{
 		modifierSet_ = false;
 	}
 	
 	ui_->nextButton->setEnabled(true);
 	
-	structure_.painter = painter;
+	customStructure_.painter = painter;
 }
 
 void TFCreator::modifierButton_clicked(TF::Types::Modifier modifier){
@@ -332,7 +321,7 @@ void TFCreator::modifierButton_clicked(TF::Types::Modifier modifier){
 
 	ui_->nextButton->setEnabled(true);
 
-	structure_.modifier = modifier;
+	customStructure_.modifier = modifier;
 }
 //------
 

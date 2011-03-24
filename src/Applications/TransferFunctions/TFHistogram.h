@@ -9,45 +9,48 @@ namespace M4D {
 namespace GUI {	
 namespace TF {
 
-struct Histogram{	//TODO vector wrapper w/ maximum
+class Histogram{	//TODO vector wrapper w/ maximum
 
+public:
 	typedef boost::shared_ptr<Histogram> Ptr;
 
-	std::vector<Size> values;
-	Size maxValue;
-	Size sum;
-	float avarageValue;
+	Histogram(): values_(), maxValue_(0), avarageValue_(0){}
 
-	Histogram(): values(), maxValue(0), avarageValue(0){}
+	void add(const Size value){
 
-	void add(Size value){
-
-		values.push_back(value);
-		if(value > maxValue) maxValue = value;
-		sum += value;
-		avarageValue = sum/(float)values.size();
+		values_.push_back(value);
+		if(value > maxValue_) maxValue_ = value;
+		sum_ += value;
+		avarageValue_ = sum_/(float)values_.size();
 	}
 
-	Size operator[](Size index){
+	Size& operator[](Size index){
 
-		tfAssert(index < values.size());
-		return values[index];
+		tfAssert(index < values_.size());
+		return values_[index];
 	}
 
 	Size size(){
 
-		return values.size();
+		return values_.size();
 	}
 
 	Size maximum(){
 
-		return maxValue;
+		return maxValue_;
 	}
 
 	float avarage(){
 
-		return avarageValue;
+		return avarageValue_;
 	}
+
+private:
+
+	std::vector<Size> values_;
+	Size maxValue_;
+	Size sum_;
+	float avarageValue_;
 };
 
 }

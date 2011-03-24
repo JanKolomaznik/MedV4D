@@ -26,22 +26,23 @@ static FunctionsPtr getAllFunctions(){
 	return FunctionsPtr(all);
 }
 
-static TFAbstractFunction::Ptr createFunction(Function type, TF::Size domain){
+template<Size dim>
+static typename TFAbstractFunction<dim>::Ptr createFunction(Function type, const TF::Size domain){
 
 	switch(type)
 	{
 		case TF::Types::FunctionRGB:
 		{
-			return TFAbstractFunction::Ptr(new TFRGBaFunction(domain));
+			return typename TFAbstractFunction<dim>::Ptr(new TFRGBaFunction<dim>(domain));
 		}
 		case TF::Types::FunctionHSV:
 		{
-			return TFAbstractFunction::Ptr(new TFHSVaFunction(domain));
+			return typename TFAbstractFunction<dim>::Ptr(new TFHSVaFunction<dim>(domain));
 		}
 	}
 
 	tfAssert(!"Unknown function");
-	return TFAbstractFunction::Ptr(new TFRGBaFunction(domain));	//default
+	return typename TFAbstractFunction<dim>::Ptr(new TFRGBaFunction<dim>(domain));	//default
 }
 
 }	//namespace Types

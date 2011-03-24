@@ -4,7 +4,7 @@
 #include "GUI/utils/TransferFunctionBuffer.h"
 
 #include <TFAbstractFunction.h>
-#include <TFHistogram.h>
+#include <TFColor.h>
 
 namespace M4D {
 namespace GUI {
@@ -15,34 +15,46 @@ template<typename BufferIterator>
 bool applyTransferFunction(
 	BufferIterator begin,
 	BufferIterator end,
-	TFAbstractFunction::Ptr function_){
+	TFApplyFunctionInterface::Ptr function_){
 
-	tfAbort("unsupported buffer type");
-	return false;
-}
-
-template<>
-inline bool applyTransferFunction<TransferFunctionBuffer1D::Iterator>(
-	TransferFunctionBuffer1D::Iterator begin,
-	TransferFunctionBuffer1D::Iterator end,
-	TFAbstractFunction::Ptr function_
-	){
+	typedef typename std::iterator_traits<BufferIterator>::value_type MultiDValueType;
+	typedef typename std::iterator_traits<MultiDValueType::iterator>::value_type OneDValueType;
 
 	TF::Size index = 0;
-	for(TransferFunctionBuffer1D::Iterator it = begin; it!=end; ++it)
+	TF::Color color;
+	for(BufferIterator it = begin; it!=end; ++it)
 	{
-		tfAssert(index < function_->getDomain());
-		TF::Color color = function_->getMappedRGBfColor(index);
-		
-		*it = TransferFunctionBuffer1D::ValueType(
-			color.component1, color.component2, color.component3, color.alpha);
+		if(index >= function_->getDomain())
+		{
+			tfAssert("Wrong buffer size");
+			return false;
+		}
+
+		for(Size i = 1; i <= function_->getDimension(); ++i)
+		{
+			color = function_->getMappedRGBfColor(index, 1);
+			
+			(*it)[i] = OneDValueType(color.component1, color.component2, color.component3, color.alpha);
+		}
 
 		++index;
+	}
+	if(index < function_->getDomain())
+	{
+		tfAssert("Wrong buffer size");
+		return false;
 	}
 
 	return true;
 }
 
+template<>
+bool applyTransferFunction<TransferFunctionBuffer1D::iterator>(
+	TransferFunctionBuffer1D::iterator begin,
+	TransferFunctionBuffer1D::iterator end,
+	TFApplyFunctionInterface::Ptr function_);
+
+/*
 template<typename HistogramIterator>
 TF::Histogram::Ptr computeTFHistogram(HistogramIterator begin, HistogramIterator end){
 
@@ -54,10 +66,10 @@ TF::Histogram::Ptr computeTFHistogram(HistogramIterator begin, HistogramIterator
 
 	return tfHistogram;
 }
-
-}
-}
-}
-}
+*/
+}	//namespace Adaptation
+}	//namespace TF
+}	//namespace GUI
+}	//namespace M4D
 
 #endif	//TF_ADAPTATION

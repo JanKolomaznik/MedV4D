@@ -25,6 +25,8 @@ class ViewerWindow: public QMainWindow, public Ui::ViewerWindow{
 
 	typedef M4D::Imaging::Histogram64 Histogram;
 
+	typedef M4D::GUI::TF::Histogram TFHistogram;
+
 public:
 
 	ViewerWindow();

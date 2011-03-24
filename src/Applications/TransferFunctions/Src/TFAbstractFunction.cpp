@@ -3,46 +3,55 @@
 
 namespace M4D {
 namespace GUI {
+/*
+template<TF::Size dim>
+TFAbstractFunction<dim>::TFAbstractFunction(){}
 
-TFAbstractFunction::TFAbstractFunction(){}
+template<TF::Size dim>
+TFAbstractFunction<dim>::~TFAbstractFunction(){}
 
-TFAbstractFunction::~TFAbstractFunction(){}
+template<TF::Size dim>
+TF::Size TFAbstractFunction<dim>::getDimension(){
 
-TF::Color& TFAbstractFunction::operator[](const TF::Size index){
+	return dim;
+}
+
+template<TF::Size dim>
+TF::MultiDColor<dim>& TFAbstractFunction<dim>::operator[](const TF::Size index){
 
 	return (*colorMap_)[index];
 }
 
-TF::Size TFAbstractFunction::getDomain() const{
+template<TF::Size dim>
+TF::Size TFAbstractFunction<dim>::getDomain() const{
 
 	return domain_;
 }
-/*
-TF::ColorMapPtr TFAbstractFunction::getColorMap(){
+
+TF::MultiDColor<dim>::Map::Ptr TFAbstractFunction<dim>::getColorMap(){
 
 	return colorMap_;
 }
-*/
-void TFAbstractFunction::clear(){
 
-	TF::ColorMapIt begin = colorMap_->begin();
-	TF::ColorMapIt end = colorMap_->end();
-	for(TF::ColorMapIt it = begin; it!=end; ++it)
+template<TF::Size dim>
+void TFAbstractFunction<dim>::clear(){
+
+	TF::MultiDColor<dim>::Map::iterator begin = colorMap_->begin();
+	TF::MultiDColor<dim>::Map::iterator end = colorMap_->end();
+	for(TF::MultiDColor<dim>::Map::iterator it = begin; it!=end; ++it)
 	{
-		it->component1 = 0;
-		it->component2 = 0;
-		it->component3 = 0;
-		it->alpha = 0;
-	}
+		*it = TF::MultiDColor<dim>();
+ 	}
 }
 
-void TFAbstractFunction::resize(const TF::Size domain){
+template<TF::Size dim>
+void TFAbstractFunction<dim>::resize(const TF::Size domain){
 	
 	if(domain == domain_) return;
 	domain_ = domain;
 
-	const TF::ColorMapPtr old = colorMap_;
-	TF::ColorMapPtr resized = TF::ColorMapPtr(new TF::ColorMap(domain_));
+	const TF::MultiDColor<dim>::Map::Ptr old = colorMap_;
+	TF::MultiDColor<dim>::Map::Ptr resized(new TF::MultiDColor<dim>::Map(domain_));
 
 	int inputSize = old->size();
 	int outputSize = resized->size();
@@ -82,7 +91,7 @@ void TFAbstractFunction::resize(const TF::Size domain){
 		int inputIndexer = 0;
 		for(int outputIndexer = 0; outputIndexer < outputSize; ++outputIndexer)
 		{
-			TF::Color computedValue(0,0,0,0);
+			TF::MultiDColor computedValue(dimension_);
 			TF::Size valueCount = ratio + (int)correction;
 			for(TF::Size i = 0; i < valueCount; ++i)
 			{
@@ -108,19 +117,12 @@ void TFAbstractFunction::resize(const TF::Size domain){
 	colorMap_ = resized;
 }
 
-void TFAbstractFunction::operator=(const TFAbstractFunction &function){
+template<TF::Size dim>
+void TFAbstractFunction<dim>::operator=(const TFAbstractFunction<dim> &function){
 	
-	colorMap_->clear();
-
-	const TF::ColorMapPtr colorMap = function.colorMap_;
-
-	TF::ColorMap::const_iterator begin = colorMap->begin();
-	TF::ColorMap::const_iterator end = colorMap->end();
-	for(TF::ColorMap::const_iterator it = begin; it!=end; ++it)
-	{
-		colorMap_->push_back(*it);
-	}
+	*colorMap_ = *function.colorMap_;
+	domain_ = function.domain_;
 }
-
+*/
 } // namespace GUI
 } // namespace M4D

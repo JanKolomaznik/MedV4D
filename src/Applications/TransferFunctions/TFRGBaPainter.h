@@ -6,7 +6,9 @@
 namespace M4D {
 namespace GUI {
 
-class TFRGBaPainter: public TFAbstractPainter{
+#define TF_RGBPAINTER_DIMENSION 1
+
+class TFRGBaPainter: public TFAbstractPainter<TF_RGBPAINTER_DIMENSION>{
 
 public:
 
@@ -18,7 +20,7 @@ public:
 	void setArea(QRect area);
 	QRect getInputArea();
 
-	QPixmap getView(TFWorkCopy::Ptr workCopy);
+	QPixmap getView(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr workCopy);
 
 private:
 
@@ -51,12 +53,12 @@ private:
 	QPixmap viewBottomColorBarBuffer_;
 
 	void updateBackground_();	
-	void updateHistogramView_(TFWorkCopy::Ptr workCopy);
-	void updateRedView_(TFWorkCopy::Ptr workCopy);
-	void updateGreenView_(TFWorkCopy::Ptr workCopy);
-	void updateBlueView_(TFWorkCopy::Ptr workCopy);
-	void updateAlphaView_(TFWorkCopy::Ptr workCopy);
-	void updateBottomColorBarView_(TFWorkCopy::Ptr workCopy);
+	void updateHistogramView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr workCopy);
+	void updateRedView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr workCopy);
+	void updateGreenView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr workCopy);
+	void updateBlueView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr workCopy);
+	void updateAlphaView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr workCopy);
+	void updateBottomColorBarView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr workCopy);
 };
 
 } // namespace GUI

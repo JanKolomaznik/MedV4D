@@ -7,7 +7,9 @@
 namespace M4D {
 namespace GUI {
 
-class TFGrayscaleAlphaPainter: public TFAbstractPainter{
+#define TF_GRAYSCALEPAINTER_DIMENSION 1
+
+class TFGrayscaleAlphaPainter: public TFAbstractPainter<TF_GRAYSCALEPAINTER_DIMENSION>{
 
 public:
 
@@ -18,9 +20,8 @@ public:
 
 	void setArea(QRect area);
 	QRect getInputArea();
-	void setWorkCopy(TFWorkCopy::Ptr workCopy);
 
-	QPixmap getView(TFWorkCopy::Ptr workCopy);
+	QPixmap getView(TFWorkCopy<TF_GRAYSCALEPAINTER_DIMENSION>::Ptr workCopy);
 
 private:
 
@@ -49,10 +50,10 @@ private:
 	QPixmap viewBottomColorBarBuffer_;
 
 	void updateBackground_();	
-	void updateHistogramView_(TFWorkCopy::Ptr workCopy);
-	void updateGrayView_(TFWorkCopy::Ptr workCopy);
-	void updateAlphaView_(TFWorkCopy::Ptr workCopy);
-	void updateBottomColorBarView_(TFWorkCopy::Ptr workCopy);
+	void updateHistogramView_(TFWorkCopy<TF_GRAYSCALEPAINTER_DIMENSION>::Ptr workCopy);
+	void updateGrayView_(TFWorkCopy<TF_GRAYSCALEPAINTER_DIMENSION>::Ptr workCopy);
+	void updateAlphaView_(TFWorkCopy<TF_GRAYSCALEPAINTER_DIMENSION>::Ptr workCopy);
+	void updateBottomColorBarView_(TFWorkCopy<TF_GRAYSCALEPAINTER_DIMENSION>::Ptr workCopy);
 };
 
 } // namespace GUI

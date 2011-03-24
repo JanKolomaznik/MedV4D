@@ -39,7 +39,8 @@ static ModifiersPtr getAllowedModifiers(Painter painter){
 	return ModifiersPtr(allowed);
 }
 
-static TFAbstractModifier::Ptr createModifier(Modifier type, TFWorkCopy::Ptr workCopy, Painter painterUsed){
+template<Size dim>
+static typename TFAbstractModifier<dim>::Ptr createModifier(Modifier type, typename TFWorkCopy<dim>::Ptr workCopy, Painter painterUsed){
 
 	switch(type)
 	{
@@ -49,27 +50,33 @@ static TFAbstractModifier::Ptr createModifier(Modifier type, TFWorkCopy::Ptr wor
 			{
 				case TF::Types::PainterGrayscale:
 				{
-					return TFAbstractModifier::Ptr(new TFSimpleModifier(workCopy, TFSimpleModifier::Grayscale, false));
+					return typename TFAbstractModifier<dim>::Ptr(
+						new TFSimpleModifier(workCopy, TFSimpleModifier::Grayscale, false));
 				}
 				case TF::Types::PainterGrayscaleAlpha:
 				{
-					return TFAbstractModifier::Ptr(new TFSimpleModifier(workCopy, TFSimpleModifier::Grayscale, true));
+					return typename TFAbstractModifier<dim>::Ptr(
+						new TFSimpleModifier(workCopy, TFSimpleModifier::Grayscale, true));
 				}
 				case TF::Types::PainterRGB:
 				{
-					return TFAbstractModifier::Ptr(new TFSimpleModifier(workCopy, TFSimpleModifier::RGB, false));
+					return typename TFAbstractModifier<dim>::Ptr(
+						new TFSimpleModifier(workCopy, TFSimpleModifier::RGB, false));
 				}
 				case TF::Types::PainterRGBa:
 				{
-					return TFAbstractModifier::Ptr(new TFSimpleModifier(workCopy, TFSimpleModifier::RGB, true));
+					return typename TFAbstractModifier<dim>::Ptr(
+						new TFSimpleModifier(workCopy, TFSimpleModifier::RGB, true));
 				}
 				case TF::Types::PainterHSV:
 				{
-					return TFAbstractModifier::Ptr(new TFSimpleModifier(workCopy, TFSimpleModifier::HSV, false));
+					return typename TFAbstractModifier<dim>::Ptr(
+						new TFSimpleModifier(workCopy, TFSimpleModifier::HSV, false));
 				}
 				case TF::Types::PainterHSVa:
 				{
-					return TFAbstractModifier::Ptr(new TFSimpleModifier(workCopy, TFSimpleModifier::HSV, true));
+					return typename TFAbstractModifier<dim>::Ptr(
+						new TFSimpleModifier(workCopy, TFSimpleModifier::HSV, true));
 				}
 			}
 		}
@@ -79,34 +86,41 @@ static TFAbstractModifier::Ptr createModifier(Modifier type, TFWorkCopy::Ptr wor
 			{
 				case TF::Types::PainterGrayscale:
 				{
-					return TFAbstractModifier::Ptr(new TFPolygonModifier(workCopy, TFPolygonModifier::Grayscale, false));
+					return typename TFAbstractModifier<dim>::Ptr(
+						new TFPolygonModifier(workCopy, TFPolygonModifier::Grayscale, false));
 				}
 				case TF::Types::PainterGrayscaleAlpha:
 				{
-					return TFAbstractModifier::Ptr(new TFPolygonModifier(workCopy, TFPolygonModifier::Grayscale, true));
+					return typename TFAbstractModifier<dim>::Ptr(
+						new TFPolygonModifier(workCopy, TFPolygonModifier::Grayscale, true));
 				}
 				case TF::Types::PainterRGB:
 				{
-					return TFAbstractModifier::Ptr(new TFPolygonModifier(workCopy, TFPolygonModifier::RGB, false));
+					return typename TFAbstractModifier<dim>::Ptr(
+						new TFPolygonModifier(workCopy, TFPolygonModifier::RGB, false));
 				}
 				case TF::Types::PainterRGBa:
 				{
-					return TFAbstractModifier::Ptr(new TFPolygonModifier(workCopy, TFPolygonModifier::RGB, true));
+					return typename TFAbstractModifier<dim>::Ptr(
+						new TFPolygonModifier(workCopy, TFPolygonModifier::RGB, true));
 				}
 				case TF::Types::PainterHSV:
 				{
-					return TFAbstractModifier::Ptr(new TFPolygonModifier(workCopy, TFPolygonModifier::HSV, false));
+					return typename TFAbstractModifier<dim>::Ptr(
+						new TFPolygonModifier(workCopy, TFPolygonModifier::HSV, false));
 				}
 				case TF::Types::PainterHSVa:
 				{
-					return TFAbstractModifier::Ptr(new TFPolygonModifier(workCopy, TFPolygonModifier::HSV, true));
+					return typename TFAbstractModifier<dim>::Ptr(
+						new TFPolygonModifier(workCopy, TFPolygonModifier::HSV, true));
 				}
 			}
 		}
 	}
 
 	tfAssert(!"Unknown modifier!");
-	return TFAbstractModifier::Ptr(new TFSimpleModifier(workCopy, TFSimpleModifier::RGB, true));	//default
+	return typename TFAbstractModifier<dim>::Ptr(
+		new TFSimpleModifier(workCopy, TFSimpleModifier::RGB, true));	//default
 }
 
 }	//namespace Types

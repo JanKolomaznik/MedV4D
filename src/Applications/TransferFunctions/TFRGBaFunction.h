@@ -7,17 +7,34 @@
 namespace M4D {
 namespace GUI {
 
-class TFRGBaFunction: public TFAbstractFunction{
+template<TF::Size dim>
+class TFRGBaFunction: public TFAbstractFunction<dim>{
 
 public:
 
-	TFRGBaFunction(const TF::Size domain);
-	TFRGBaFunction(TFRGBaFunction &function);
-	~TFRGBaFunction();
+	TFRGBaFunction(const TF::Size domain){
 
-	TFAbstractFunction::Ptr clone();
+		colorMap_ = TF::MultiDColor<dim>::Map::Ptr(new TF::MultiDColor<dim>::Map(domain));
+		domain_ = domain;
+		clear();
+	}
 
-	TF::Color getMappedRGBfColor(const TF::Size value);
+	TFRGBaFunction(TFRGBaFunction<dim> &function){
+
+		operator=(function);
+	}
+
+	~TFRGBaFunction(){}
+
+	TF::Color getMappedRGBfColor(const TF::Size value, const TF::Size dimension){
+
+		return (*colorMap_)[value][dimension];
+	}
+
+	typename TFAbstractFunction<dim>::Ptr clone(){
+
+		return TFAbstractFunction<dim>::Ptr(new TFRGBaFunction<dim>(*this));
+	}
 };
 
 } // namespace GUI

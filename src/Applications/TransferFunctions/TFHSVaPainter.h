@@ -5,8 +5,10 @@
 
 namespace M4D {
 namespace GUI {
+	
+#define TF_HSVPAINTER_DIMENSION 1
 
-class TFHSVaPainter: public TFAbstractPainter{
+class TFHSVaPainter: public TFAbstractPainter<TF_HSVPAINTER_DIMENSION>{
 
 public:
 
@@ -18,7 +20,7 @@ public:
 	void setArea(QRect area);
 	QRect getInputArea();
 
-	QPixmap getView(TFWorkCopy::Ptr workCopy);
+	QPixmap getView(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy);
 
 private:
 
@@ -52,12 +54,12 @@ private:
 	QPixmap viewBottomColorBarBuffer_;
 
 	void updateBackground_();	
-	void updateHistogramView_(TFWorkCopy::Ptr workCopy);
-	void updateHueView_(TFWorkCopy::Ptr workCopy);
-	void updateSaturationView_(TFWorkCopy::Ptr workCopy);
-	void updateValueView_(TFWorkCopy::Ptr workCopy);
-	void updateAlphaView_(TFWorkCopy::Ptr workCopy);
-	void updateBottomColorBarView_(TFWorkCopy::Ptr workCopy);
+	void updateHistogramView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy);
+	void updateHueView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy);
+	void updateSaturationView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy);
+	void updateValueView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy);
+	void updateAlphaView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy);
+	void updateBottomColorBarView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy);
 };
 
 } // namespace GUI

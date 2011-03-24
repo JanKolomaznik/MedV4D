@@ -7,7 +7,9 @@
 namespace M4D {
 namespace GUI {
 
-class TFSimpleModifier: public TFAbstractModifier{
+#define TF_SIMPLEMODIFIER_DIMENSION 1
+
+class TFSimpleModifier: public TFAbstractModifier<TF_SIMPLEMODIFIER_DIMENSION>{
 
 	Q_OBJECT
 
@@ -21,7 +23,7 @@ public:
 		HSV
 	};
 
-	TFSimpleModifier(TFWorkCopy::Ptr workCopy, Mode mode, bool alpha);
+	TFSimpleModifier(TFWorkCopy<TF_SIMPLEMODIFIER_DIMENSION>::Ptr workCopy, Mode mode, bool alpha);
 	~TFSimpleModifier();
 
 	void mousePress(const int x, const int y, Qt::MouseButton button);

@@ -2,32 +2,38 @@
 
 namespace M4D {
 namespace GUI {
-
-TFAbstractModifier::TFAbstractModifier():
+/*
+template<TF::Size dim>
+TFAbstractModifier<dim>::TFAbstractModifier():
 	ignorePoint_(-1, -1),
 	toolsWidget_(NULL),
 	changed_(true){
 }
 
-TFAbstractModifier::~TFAbstractModifier(){}
+template<TF::Size dim>
+TFAbstractModifier<dim>::~TFAbstractModifier(){}
 
-QWidget* TFAbstractModifier::getTools(){
+template<TF::Size dim>
+QWidget* TFAbstractModifier<dim>::getTools(){
 
 	return toolsWidget_;
 }
 
-TFWorkCopy::Ptr TFAbstractModifier::getWorkCopy() const{
+template<TF::Size dim>
+typename TFWorkCopy<dim>::Ptr TFAbstractModifier<dim>::getWorkCopy() const{
 
 	return workCopy_;
 }
 
-void TFAbstractModifier::setInputArea(QRect inputArea){
+template<TF::Size dim>
+void TFAbstractModifier<dim>::setInputArea(QRect inputArea){
 
 	inputArea_ = inputArea;
 	workCopy_->resize(inputArea_.width(), inputArea_.height());
 }
 
-bool TFAbstractModifier::changed(){
+template<TF::Size dim>
+bool TFAbstractModifier<dim>::changed(){
 
 	if(changed_)
 	{
@@ -37,7 +43,8 @@ bool TFAbstractModifier::changed(){
 	return false;
 }
 
-TF::PaintingPoint TFAbstractModifier::getRelativePoint_(const int x, const int y, bool acceptOutOfBounds){	
+template<TF::Size dim>
+TF::PaintingPoint TFAbstractModifier<dim>::getRelativePoint_(const int x, const int y, bool acceptOutOfBounds){	
 
 	int xMax = inputArea_.width() - 1;
 	int yMax = inputArea_.height();
@@ -56,12 +63,14 @@ TF::PaintingPoint TFAbstractModifier::getRelativePoint_(const int x, const int y
 	return corrected;
 }
 
-void TFAbstractModifier::addLine_(TF::PaintingPoint begin, TF::PaintingPoint end){
+template<TF::Size dim>
+void TFAbstractModifier<dim>::addLine_(TF::PaintingPoint begin, TF::PaintingPoint end){
 	
 	addLine_(begin.x, begin.y, end.x, end.y);
 }
 
-void TFAbstractModifier::addLine_(int x1, int y1, int x2, int y2){ // assumes x1<x2, |y2-y1|<|x2-x1|
+template<TF::Size dim>
+void TFAbstractModifier<dim>::addLine_(int x1, int y1, int x2, int y2){ // assumes x1<x2, |y2-y1|<|x2-x1|
 	
 	//tfAssert((x1 < x2) && (abs(y2-y1) < abs(x2-x1)));
 	if(x1==x2 && y1==y2) addPoint_(x1,y1);
@@ -121,6 +130,6 @@ void TFAbstractModifier::addLine_(int x1, int y1, int x2, int y2){ // assumes x1
 		}
     }
 }
-
+*/
 } // namespace GUI
 } // namespace M4D

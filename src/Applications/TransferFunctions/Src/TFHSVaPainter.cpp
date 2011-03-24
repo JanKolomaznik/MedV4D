@@ -67,17 +67,22 @@ void TFHSVaPainter::updateBackground_(){
 	drawer.fillRect(bottomBarArea_, QBrush(background_));
 
 	QColor color;
-	for(int i = 0; i < sideBarArea_.height(); ++i)
+	int x1, y1, x2, y2;
+	for(int i = 0; i < sideBarArea_.height() - 1; ++i)
 	{
-		color.setHsvF(i/(float)sideBarArea_.height(), 1, 1);		
+		x1 = sideBarArea_.x();
+		y1 = sideBarArea_.y() + sideBarArea_.height() - i;
+		x2 = sideBarArea_.x() + sideBarArea_.width();
+		y2 = sideBarArea_.y() + sideBarArea_.height() - i;
+
+		color.setHsvF(i/(float)sideBarArea_.height(), 1, 1);
 
 		drawer.setPen(color);
-		drawer.drawLine(sideBarArea_.x(), sideBarArea_.y() + sideBarArea_.height() - i,
-			sideBarArea_.x() + sideBarArea_.width(), sideBarArea_.y() + sideBarArea_.height() - i);
+		drawer.drawLine(x1, y1,	x2, y2);	
 	}
 }
 
-void TFHSVaPainter::updateHistogramView_(TFWorkCopy::Ptr workCopy){
+void TFHSVaPainter::updateHistogramView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy){
 		
 	viewHistogramBuffer_ = QPixmap(area_.width(), area_.height());
 	viewHistogramBuffer_.fill(noColor_);
@@ -90,15 +95,20 @@ void TFHSVaPainter::updateHistogramView_(TFWorkCopy::Ptr workCopy){
 
 	TF::PaintingPoint origin(inputArea_.x(), inputArea_.y());
 
+	int x1, y1, x2, y2;
 	for(int i = 0; i < inputArea_.width() - 1; ++i)
 	{
-		drawer.setPen(hist_);	
-		drawer.drawLine(origin.x + i, origin.y + (1 - workCopy->getHistogramValue(i))*inputArea_.height(),
-			origin.x + i + 1, origin.y + (1 - workCopy->getHistogramValue(i+1))*inputArea_.height());
+		x1 = origin.x + i;
+		y1 = origin.y + (1 - workCopy->getHistogramValue(i))*inputArea_.height();
+		x2 = origin.x + i + 1;
+		y2 = origin.y + (1 - workCopy->getHistogramValue(i + 1))*inputArea_.height();
+
+		drawer.setPen(hist_);
+		drawer.drawLine(x1, y1,	x2, y2);	
 	}
 }
 
-void TFHSVaPainter::updateHueView_(TFWorkCopy::Ptr workCopy){
+void TFHSVaPainter::updateHueView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy){
 		
 	viewHueBuffer_ = QPixmap(area_.width(), area_.height());
 	viewHueBuffer_.fill(noColor_);
@@ -109,15 +119,20 @@ void TFHSVaPainter::updateHueView_(TFWorkCopy::Ptr workCopy){
 
 	TF::PaintingPoint origin(inputArea_.x(), inputArea_.y());
 
+	int x1, y1, x2, y2;
 	for(int i = 0; i < inputArea_.width() - 1; ++i)
 	{
+		x1 = origin.x + i;
+		y1 = origin.y + (1 - workCopy->getComponent1(i, TF_HSVPAINTER_DIMENSION))*inputArea_.height();
+		x2 = origin.x + i + 1;
+		y2 = origin.y + (1 - workCopy->getComponent1(i + 1, TF_HSVPAINTER_DIMENSION))*inputArea_.height();
+
 		drawer.setPen(hue_);
-		drawer.drawLine(origin.x + i, origin.y + (1 - workCopy->getComponent1(i))*inputArea_.height(),
-			origin.x + i + 1, origin.y + (1 - workCopy->getComponent1(i+1))*inputArea_.height());	
+		drawer.drawLine(x1, y1,	x2, y2);	
 	}
 }
 
-void TFHSVaPainter::updateSaturationView_(TFWorkCopy::Ptr workCopy){
+void TFHSVaPainter::updateSaturationView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy){
 		
 	viewSaturationBuffer_ = QPixmap(area_.width(), area_.height());
 	viewSaturationBuffer_.fill(noColor_);
@@ -128,15 +143,20 @@ void TFHSVaPainter::updateSaturationView_(TFWorkCopy::Ptr workCopy){
 
 	TF::PaintingPoint origin(inputArea_.x(), inputArea_.y());
 
+	int x1, y1, x2, y2;
 	for(int i = 0; i < inputArea_.width() - 1; ++i)
 	{
+		x1 = origin.x + i;
+		y1 = origin.y + (1 - workCopy->getComponent2(i, TF_HSVPAINTER_DIMENSION))*inputArea_.height();
+		x2 = origin.x + i + 1;
+		y2 = origin.y + (1 - workCopy->getComponent2(i + 1, TF_HSVPAINTER_DIMENSION))*inputArea_.height();
+
 		drawer.setPen(saturation_);
-		drawer.drawLine(origin.x + i, origin.y + (1 - workCopy->getComponent2(i))*inputArea_.height(),
-			origin.x + i + 1, origin.y + (1 - workCopy->getComponent2(i+1))*inputArea_.height());	
+		drawer.drawLine(x1, y1,	x2, y2);	
 	}
 }
 
-void TFHSVaPainter::updateValueView_(TFWorkCopy::Ptr workCopy){
+void TFHSVaPainter::updateValueView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy){
 		
 	viewValueBuffer_ = QPixmap(area_.width(), area_.height());
 	viewValueBuffer_.fill(noColor_);
@@ -147,15 +167,20 @@ void TFHSVaPainter::updateValueView_(TFWorkCopy::Ptr workCopy){
 
 	TF::PaintingPoint origin(inputArea_.x(), inputArea_.y());
 
+	int x1, y1, x2, y2;
 	for(int i = 0; i < inputArea_.width() - 1; ++i)
 	{
+		x1 = origin.x + i;
+		y1 = origin.y + (1 - workCopy->getComponent3(i, TF_HSVPAINTER_DIMENSION))*inputArea_.height();
+		x2 = origin.x + i + 1;
+		y2 = origin.y + (1 - workCopy->getComponent3(i + 1, TF_HSVPAINTER_DIMENSION))*inputArea_.height();
+
 		drawer.setPen(value_);
-		drawer.drawLine(origin.x + i, origin.y + (1 - workCopy->getComponent3(i))*inputArea_.height(),
-			origin.x + i + 1, origin.y + (1 - workCopy->getComponent3(i+1))*inputArea_.height());	
+		drawer.drawLine(x1, y1,	x2, y2);	
 	}
 }
 
-void TFHSVaPainter::updateAlphaView_(TFWorkCopy::Ptr workCopy){
+void TFHSVaPainter::updateAlphaView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy){
 		
 	viewAlphaBuffer_ = QPixmap(area_.width(), area_.height());
 	viewAlphaBuffer_.fill(noColor_);
@@ -168,15 +193,20 @@ void TFHSVaPainter::updateAlphaView_(TFWorkCopy::Ptr workCopy){
 
 	TF::PaintingPoint origin(inputArea_.x(), inputArea_.y());
 
+	int x1, y1, x2, y2;
 	for(int i = 0; i < inputArea_.width() - 1; ++i)
 	{
+		x1 = origin.x + i;
+		y1 = origin.y + (1 - workCopy->getAlpha(i, TF_HSVPAINTER_DIMENSION))*inputArea_.height();
+		x2 = origin.x + i + 1;
+		y2 = origin.y + (1 - workCopy->getAlpha(i + 1, TF_HSVPAINTER_DIMENSION))*inputArea_.height();
+
 		drawer.setPen(alpha_);
-		drawer.drawLine(origin.x + i, origin.y + (1 - workCopy->getAlpha(i))*inputArea_.height(),
-			origin.x + i + 1, origin.y + (1 - workCopy->getAlpha(i+1))*inputArea_.height());
+		drawer.drawLine(x1, y1,	x2, y2);	
 	}
 }
 
-void TFHSVaPainter::updateBottomColorBarView_(TFWorkCopy::Ptr workCopy){
+void TFHSVaPainter::updateBottomColorBarView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy){
 		
 	viewBottomColorBarBuffer_ = QPixmap(area_.width(), area_.height());
 	viewBottomColorBarBuffer_.fill(noColor_);
@@ -187,18 +217,23 @@ void TFHSVaPainter::updateBottomColorBarView_(TFWorkCopy::Ptr workCopy){
 
 	TF::Color tfColor;
 	QColor qColor;
+	int x1, y1, x2, y2;
 	for(int i = 0; i < inputArea_.width(); ++i)
 	{
-		tfColor = workCopy->getColor(i);
+		tfColor = workCopy->getColor(i, TF_HSVPAINTER_DIMENSION);
 		qColor.setRgbF(tfColor.component1, tfColor.component2, tfColor.component3, tfColor.alpha);
 		drawer.setPen(qColor);
+		
+		x1 = bottomBarArea_.x() + i + 1;
+		y1 = bottomBarArea_.y();
+		x2 = bottomBarArea_.x() + i + 1;
+		y2 = bottomBarArea_.y() + bottomBarArea_.height() - 1;
 
-		drawer.drawLine(bottomBarArea_.x() + i + 1, bottomBarArea_.y(),
-			bottomBarArea_.x() + i + 1, bottomBarArea_.y() + bottomBarArea_.height() - 1);
+		drawer.drawLine(x1, y1, x2, y2);
 	}
 }
 
-QPixmap TFHSVaPainter::getView(TFWorkCopy::Ptr workCopy){
+QPixmap TFHSVaPainter::getView(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy){
 
 	bool change = false;
 	if(sizeChanged_)
@@ -211,22 +246,22 @@ QPixmap TFHSVaPainter::getView(TFWorkCopy::Ptr workCopy){
 		updateHistogramView_(workCopy);
 		change = true;
 	}
-	if(sizeChanged_ || workCopy->component1Changed())
+	if(sizeChanged_ || workCopy->component1Changed(TF_HSVPAINTER_DIMENSION))
 	{
 		updateHueView_(workCopy);
 		change = true;
 	}
-	if(sizeChanged_ || workCopy->component2Changed())
+	if(sizeChanged_ || workCopy->component2Changed(TF_HSVPAINTER_DIMENSION))
 	{
 		updateSaturationView_(workCopy);
 		change = true;
 	}
-	if(sizeChanged_ || workCopy->component3Changed())
+	if(sizeChanged_ || workCopy->component3Changed(TF_HSVPAINTER_DIMENSION))
 	{
 		updateValueView_(workCopy);
 		change = true;
 	}
-	if(sizeChanged_ || workCopy->alphaChanged())
+	if(sizeChanged_ || workCopy->alphaChanged(TF_HSVPAINTER_DIMENSION))
 	{
 		updateAlphaView_(workCopy);
 		change = true;

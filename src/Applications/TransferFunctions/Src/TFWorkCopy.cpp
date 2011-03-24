@@ -3,62 +3,64 @@
 
 namespace M4D {
 namespace GUI {
-
-TFWorkCopy::TFWorkCopy(TFAbstractFunction::Ptr function):
+/*
+template<TF::Size dim>
+TFWorkCopy<dim>::TFWorkCopy(typename TFAbstractFunction<dim>::Ptr function):
 	data_(function),
 	xSize_(0),
 	ySize_(0),
-	component1Changed_(true),
-	component2Changed_(true),
-	component3Changed_(true),
-	alphaChanged_(true),
 	histogramChanged_(true),
 	histogramEnabled_(false){
 }
 
 //---change---
 
-bool TFWorkCopy::component1Changed(){
+template<TF::Size dim>
+bool TFWorkCopy<dim>::component1Changed(TF::Size dimension){
 
-	if(component1Changed_)
+	if(changes_[dimension - 1].component1)
 	{
-		component1Changed_ = false;
+		changes_[dimension - 1].component1 = false;
 		return true;
 	}
 	return false;
 }
 
-bool TFWorkCopy::component2Changed(){
+template<TF::Size dim>
+bool TFWorkCopy<dim>::component2Changed(TF::Size dimension){
 
-	if(component2Changed_)
+	if(changes_[dimension - 1].component2)
 	{
-		component2Changed_ = false;
+		changes_[dimension - 1].component2 = false;
 		return true;
 	}
 	return false;
 }
 
-bool TFWorkCopy::component3Changed(){
+template<TF::Size dim>
+bool TFWorkCopy<dim>::component3Changed(TF::Size dimension){
 
-	if(component3Changed_)
+	if(changes_[dimension - 1].component3)
 	{
-		component3Changed_ = false;
+		changes_[dimension - 1].component3 = false;
 		return true;
 	}
 	return false;
 }
 
-bool TFWorkCopy::alphaChanged(){
+template<TF::Size dim>
+bool TFWorkCopy<dim>::alphaChanged(TF::Size dimension){
 
-	if(alphaChanged_)
+	if(changes_[dimension - 1].alpha)
 	{
-		alphaChanged_ = false;
+		changes_[dimension - 1].alpha = false;
 		return true;
 	}
 	return false;
 }
 
-bool TFWorkCopy::histogramChanged(){
+template<TF::Size dim>
+bool TFWorkCopy<dim>::histogramChanged(){
 
 	if(histogramChanged_)
 	{
@@ -70,27 +72,31 @@ bool TFWorkCopy::histogramChanged(){
 
 //---histogram---
 
-void TFWorkCopy::setHistogram(const TF::Histogram::Ptr histogram){
+template<TF::Size dim>
+void TFWorkCopy<dim>::setHistogram(const TF::Histogram::Ptr histogram){
 
 	histogram_ = histogram;
 	setDomain(histogram->size());
 	histogramChanged_ = true;
 }
 
-void TFWorkCopy::setHistogramEnabled(bool value){
+template<TF::Size dim>
+void TFWorkCopy<dim>::setHistogramEnabled(bool value){
 
 	if(histogramEnabled_ != value) histogramChanged_ = true;
 	histogramEnabled_ = value;
 }
 
-bool TFWorkCopy::histogramEnabled(){
+template<TF::Size dim>
+bool TFWorkCopy<dim>::histogramEnabled(){
 
 	return histogramEnabled_;
 }
 
 //---getters---
 
-TF::Color TFWorkCopy::getColor(const TF::Size index){
+template<TF::Size dim>
+TF::Color TFWorkCopy<dim>::getColor(const TF::Size index, TF::Size dimension){
 
 	TF::Color result(0,0,0,0);
 	int count = 0;
@@ -103,7 +109,7 @@ TF::Color TFWorkCopy::getColor(const TF::Size index){
 		currIndex = indexBase + i;
 		if(currIndex >= 0 && currIndex < (int)data_->getDomain())
 		{
-			result += data_->getMappedRGBfColor(currIndex);
+			result += data_->getMappedRGBfColor(currIndex)[dimension];
 			++count;
 		}
 	}
@@ -113,7 +119,8 @@ TF::Color TFWorkCopy::getColor(const TF::Size index){
 	return result;
 }
 
-float TFWorkCopy::getComponent1(const TF::Size index){
+template<TF::Size dim>
+float TFWorkCopy<dim>::getComponent1(const TF::Size index, TF::Size dimension){
 
 	float result = 0;
 	int count = 0;
@@ -126,7 +133,7 @@ float TFWorkCopy::getComponent1(const TF::Size index){
 		currIndex = indexBase + i;
 		if(currIndex >= 0 && currIndex < (int)data_->getDomain())
 		{
-			result += ((*data_)[currIndex].component1 - zoom_.yOffset)*zoom_.zoom;
+			result += ((*data_)[currIndex][dimension].component1 - zoom_.yOffset)*zoom_.zoom;
 			++count;
 		}
 	}
@@ -134,7 +141,8 @@ float TFWorkCopy::getComponent1(const TF::Size index){
 	return result/count;
 }
 
-float TFWorkCopy::getComponent2(const TF::Size index){
+template<TF::Size dim>
+float TFWorkCopy<dim>::getComponent2(const TF::Size index, TF::Size dimension){
 
 	float result = 0;
 	int count = 0;
@@ -147,7 +155,7 @@ float TFWorkCopy::getComponent2(const TF::Size index){
 		currIndex = indexBase + i;
 		if(currIndex >= 0 && currIndex < (int)data_->getDomain())
 		{
-			result += ((*data_)[currIndex].component2 - zoom_.yOffset)*zoom_.zoom;
+			result += ((*data_)[currIndex][dimension].component2 - zoom_.yOffset)*zoom_.zoom;
 			++count;
 		}
 	}
@@ -155,7 +163,8 @@ float TFWorkCopy::getComponent2(const TF::Size index){
 	return result/count;
 }
 
-float TFWorkCopy::getComponent3(const TF::Size index){
+template<TF::Size dim>
+float TFWorkCopy<dim>::getComponent3(const TF::Size index, TF::Size dimension){
 
 	float result = 0;
 	int count = 0;
@@ -168,7 +177,7 @@ float TFWorkCopy::getComponent3(const TF::Size index){
 		currIndex = indexBase + i;
 		if(currIndex >= 0 && currIndex < (int)data_->getDomain())
 		{
-			result += ((*data_)[currIndex].component3 - zoom_.yOffset)*zoom_.zoom;
+			result += ((*data_)[currIndex][dimension].component3 - zoom_.yOffset)*zoom_.zoom;
 			++count;
 		}
 	}
@@ -176,7 +185,8 @@ float TFWorkCopy::getComponent3(const TF::Size index){
 	return result/count;
 }
 
-float TFWorkCopy::getAlpha(const TF::Size index){
+template<TF::Size dim>
+float TFWorkCopy<dim>::getAlpha(const TF::Size index, TF::Size dimension){
 
 	float result = 0;
 	int count = 0;
@@ -189,7 +199,7 @@ float TFWorkCopy::getAlpha(const TF::Size index){
 		currIndex = indexBase + i;
 		if(currIndex >= 0 && currIndex < (int)data_->getDomain())
 		{
-			result += ((*data_)[currIndex].alpha - zoom_.yOffset)*zoom_.zoom;
+			result += ((*data_)[currIndex][dimension].alpha - zoom_.yOffset)*zoom_.zoom;
 			++count;
 		}
 	}
@@ -197,7 +207,8 @@ float TFWorkCopy::getAlpha(const TF::Size index){
 	return result/count;
 }
 
-float TFWorkCopy::getHistogramValue(const TF::Size index){
+template<TF::Size dim>
+float TFWorkCopy<dim>::getHistogramValue(const TF::Size index){
 
 	if(!histogramEnabled_ || !histogram_) return -1;
 
@@ -211,7 +222,7 @@ float TFWorkCopy::getHistogramValue(const TF::Size index){
 	{
 		currIndex = indexBase + i;
 		if(currIndex >= 0 && currIndex < (int)data_->getDomain())
-		{
+		{	//TODO log histogram view
 			result += (((*histogram_)[currIndex]/(2.0*histogram_->avarage())) - zoom_.yOffset)*zoom_.zoom;
 			++count;
 		}
@@ -222,7 +233,8 @@ float TFWorkCopy::getHistogramValue(const TF::Size index){
 
 //---setters---
 
-void TFWorkCopy::setComponent1(const TF::Size index, const float value){
+template<TF::Size dim>
+void TFWorkCopy<dim>::setComponent1(const TF::Size index, TF::Size dimension, const float value){
 
 	float correctedValue = value/zoom_.zoom + zoom_.yOffset;
 	if(correctedValue < 0) correctedValue = 0;
@@ -238,13 +250,14 @@ void TFWorkCopy::setComponent1(const TF::Size index, const float value){
 		currIndex = indexBase + i;
 		if(currIndex >= 0 && currIndex < (int)data_->getDomain())
 		{
-			(*data_)[currIndex].component1 = correctedValue;
+			(*data_)[currIndex][dimension].component1 = correctedValue;
 		}
 	}
-	component1Changed_ = true;
+	changes_[dimension - 1].component1 = true;
 }
 
-void TFWorkCopy::setComponent2(const TF::Size index, const float value){
+template<TF::Size dim>
+void TFWorkCopy<dim>::setComponent2(const TF::Size index, TF::Size dimension, const float value){
 
 	float correctedValue = value/zoom_.zoom + zoom_.yOffset;
 	if(correctedValue < 0) correctedValue = 0;
@@ -259,13 +272,14 @@ void TFWorkCopy::setComponent2(const TF::Size index, const float value){
 		currIndex = indexBase + i;
 		if(currIndex >= 0 && currIndex < (int)data_->getDomain())
 		{
-			(*data_)[currIndex].component2 = correctedValue;
+			(*data_)[currIndex][dimension].component2 = correctedValue;
 		}
 	}
-	component2Changed_ = true;
+	changes_[dimension - 1].component2 = true;
 }
 
-void TFWorkCopy::setComponent3(const TF::Size index, const float value){
+template<TF::Size dim>
+void TFWorkCopy<dim>::setComponent3(const TF::Size index, TF::Size dimension, const float value){
 
 	float correctedValue = value/zoom_.zoom + zoom_.yOffset;
 	if(correctedValue < 0) correctedValue = 0;
@@ -280,13 +294,14 @@ void TFWorkCopy::setComponent3(const TF::Size index, const float value){
 		currIndex = indexBase + i;
 		if(currIndex >= 0 && currIndex < (int)data_->getDomain())
 		{
-			(*data_)[currIndex].component3 = correctedValue;
+			(*data_)[currIndex][dimension].component3 = correctedValue;
 		}
 	}
-	component3Changed_ = true;
+	changes_[dimension - 1].component3 = true;
 }
 
-void TFWorkCopy::setAlpha(const TF::Size index, const float value){
+template<TF::Size dim>
+void TFWorkCopy<dim>::setAlpha(const TF::Size index, TF::Size dimension, const float value){
 
 	float correctedValue = value/zoom_.zoom + zoom_.yOffset;
 	if(correctedValue < 0) correctedValue = 0;
@@ -301,15 +316,16 @@ void TFWorkCopy::setAlpha(const TF::Size index, const float value){
 		currIndex = indexBase + i;
 		if(currIndex >= 0 && currIndex < (int)data_->getDomain())
 		{
-			(*data_)[currIndex].alpha = correctedValue;
+			(*data_)[currIndex][dimension].alpha = correctedValue;
 		}
 	}
-	alphaChanged_ = true;
+	changes_[dimension - 1].alpha = true;
 }
 
 //---size---
 
-void TFWorkCopy::resize(const TF::Size xSize, const TF::Size ySize){
+template<TF::Size dim>
+void TFWorkCopy<dim>::resize(const TF::Size xSize, const TF::Size ySize){
 
 	xSize_ = xSize;
 	ySize_ = ySize;	
@@ -318,7 +334,8 @@ void TFWorkCopy::resize(const TF::Size xSize, const TF::Size ySize){
 
 //---zoom---
 
-void TFWorkCopy::zoomIn(const TF::Size stepCount, const int zoomX, const int zoomY){
+template<TF::Size dim>
+void TFWorkCopy<dim>::zoomIn(const TF::Size stepCount, const int zoomX, const int zoomY){
 
 	if(zoom_.zoom == zoom_.max) return;
 
@@ -328,7 +345,8 @@ void TFWorkCopy::zoomIn(const TF::Size stepCount, const int zoomX, const int zoo
 	computeZoom_(nextZoom, zoomX, zoomY);
 }
 
-void TFWorkCopy::zoomOut(const TF::Size stepCount, const int zoomX, const int zoomY){
+template<TF::Size dim>
+void TFWorkCopy<dim>::zoomOut(const TF::Size stepCount, const int zoomX, const int zoomY){
 
 	if(zoom_.zoom == 1) return;
 
@@ -338,21 +356,9 @@ void TFWorkCopy::zoomOut(const TF::Size stepCount, const int zoomX, const int zo
 
 	computeZoom_(nextZoom, zoomX, zoomY);
 }
-/*
-void TFWorkCopy::zoom(const float zoom, const int zoomX, const float zoomY){
 
-	if(zoom == zoom_.zoom && zoomX == zoom_.center.x && zoomY == zoom_.center.y) return;
-
-	float nextZoom = zoom;
-	if(nextZoom < 1) nextZoom = 1;
-	if(nextZoom > zoom_.max) nextZoom = zoom_.max;
-
-	int xCoord = (zoomX-zoom_.xOffset)/zoom_.xRatio;
-	int yCoord = (int)(((zoomY-zoom_.yOffset)*zoom_.zoom)*ySize_);
-	computeZoom_(nextZoom, xCoord, yCoord);
-}
-*/
-void TFWorkCopy::move(int xDirectionIncrement, int yDirectionIncrement){
+template<TF::Size dim>
+void TFWorkCopy<dim>::move(int xDirectionIncrement, int yDirectionIncrement){
 
 	if(zoom_.zoom == 1) return;
 
@@ -362,27 +368,32 @@ void TFWorkCopy::move(int xDirectionIncrement, int yDirectionIncrement){
 	computeZoom_(zoom_.zoom, moveX, moveY);	
 }
 
-float TFWorkCopy::getZoom() const{
+template<TF::Size dim>
+float TFWorkCopy<dim>::getZoom() const{
 
 	return zoom_.zoom;
 }
 
-float TFWorkCopy::getMaxZoom() const{
+template<TF::Size dim>
+float TFWorkCopy<dim>::getMaxZoom() const{
 
 	return zoom_.max;
 }
 
-void TFWorkCopy::setMaxZoom(const float zoom){
+template<TF::Size dim>
+void TFWorkCopy<dim>::setMaxZoom(const float zoom){
 	
 	zoom_.max = zoom;
 }
 
-TF::Point<float, float> TFWorkCopy::getZoomCenter() const{
+template<TF::Size dim>
+TF::Point<float, float> TFWorkCopy<dim>::getZoomCenter() const{
 
 	return zoom_.center;
 }
 
-void TFWorkCopy::computeZoom_(const float nextZoom, const int zoomX, const int zoomY){
+template<TF::Size dim>
+void TFWorkCopy<dim>::computeZoom_(const float nextZoom, const int zoomX, const int zoomY){
 
 	float relativeZoomedRatioX = (data_->getDomain()/zoom_.zoom)/xSize_;
 	float relativeZoomedRatioY = (1/zoom_.zoom)/ySize_;
@@ -413,26 +424,25 @@ void TFWorkCopy::computeZoom_(const float nextZoom, const int zoomX, const int z
 	zoom_.center = TF::Point<float,float>(((zoomedDomain/2.0) + zoom_.xOffset)/data_->getDomain(),
 		1.0/zoom_.zoom/2.0 + zoom_.yOffset);
 	
-	histogramChanged_ = true;
-	component1Changed_ = true;
-	component2Changed_ = true;
-	component3Changed_ = true;
-	alphaChanged_ = true;
+	for(TF::Size i = 0; i < dim; ++i) changes_[i].setAllChanged();
 }
 
 //---update---
 
-TFAbstractFunction::Ptr TFWorkCopy::getFunctionMemento() const{
+template<TF::Size dim>
+typename TFAbstractFunction<dim>::Ptr TFWorkCopy<dim>::getFunctionMemento() const{
 
 	return data_->clone();
 }
 
-TFAbstractFunction::Ptr TFWorkCopy::getFunction() const{
+template<TF::Size dim>
+typename TFAbstractFunction<dim>::Ptr TFWorkCopy<dim>::getFunction() const{
 
 	return data_;
 }
 
-void TFWorkCopy::setDomain(const TF::Size domain){
+template<TF::Size dim>
+void TFWorkCopy<dim>::setDomain(const TF::Size domain){
 	
 	if(domain == data_->getDomain()) return;
 	
@@ -446,9 +456,11 @@ void TFWorkCopy::setDomain(const TF::Size domain){
 	computeZoom_(zoom_.zoom, xSize_/2, ySize_/2);
 }
 
-void TFWorkCopy::update(const TFAbstractFunction::Ptr function){
+template<TF::Size dim>
+void TFWorkCopy<dim>::update(const typename TFAbstractFunction<dim>::Ptr function){
 
 	data_ = function->clone();
+	for(TF::Size i = 0; i < dim; ++i) changes_[i].setAllChanged();
 
 	if(histogram_ && histogram_->size() != data_->getDomain())
 	{
@@ -457,6 +469,6 @@ void TFWorkCopy::update(const TFAbstractFunction::Ptr function){
 
 	computeZoom_(zoom_.zoom, xSize_/2, ySize_/2);
 }
-
+*/
 } // namespace GUI
 } // namespace M4D

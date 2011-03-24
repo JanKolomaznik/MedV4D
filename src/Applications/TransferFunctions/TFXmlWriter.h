@@ -12,13 +12,13 @@ namespace GUI {
 class TFXmlWriter : public QXmlStreamWriter
 {
 public:
-	TFXmlWriter();
-	void write(QIODevice* device, TFAbstractFunction::Ptr data);
+	TFXmlWriter();/*
+	void write(QIODevice* device, TFAbstractFunction<1>::Ptr data);
 	void writeTestData(QIODevice* device);
 
 private:
-	void writeFunction_(TFAbstractFunction::Ptr function);
-	void writePoint_(TF::Color point);
+	void writeFunction_(TFAbstractFunction<1>::Ptr function);
+	void writePoint_(TF::Color point);*/
 };
 
 } // namespace GUI

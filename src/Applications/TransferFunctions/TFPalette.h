@@ -16,6 +16,10 @@
 #include <TFCreator.h>
 #include <TFPaletteButton.h>
 
+#include <TFColor.h>
+#include <TFHistogram.h>
+#include <TFHolderInterface.h>
+
 #include "ui_TFPalette.h"
 
 namespace M4D {
@@ -25,9 +29,6 @@ class TFPalette : public QMainWindow{
 
     Q_OBJECT
 
-	typedef std::map<TF::Size, TFHolder*> HolderMap;
-	typedef HolderMap::iterator HolderMapIt;
-
 public:
 
 	TFPalette(QMainWindow* parent);
@@ -35,10 +36,14 @@ public:
 
 	//void setupDefault();
 
-	void setDomain(TF::Size domain);
+	void setDomain(const TF::Size domain);
 	TF::Size getDomain();
 	
 	M4D::Common::TimeStamp getTimeStamp(/*bool& noFunctionAvailable*/);
+
+	//TF::MultiDColor<dim>::Map::Ptr getColorMap();
+
+	bool setHistogram(TF::Histogram::Ptr histogram, bool adjustDomain = true);
 
 	template<typename BufferIterator>
 	bool applyTransferFunction(BufferIterator begin, BufferIterator end){
@@ -47,23 +52,6 @@ public:
 		if(activeHolder_ < 0) exit(0);
 
 		return palette_.find(activeHolder_)->second->applyTransferFunction<BufferIterator>(begin, end);
-	}
-
-	template<typename HistogramIterator>
-	bool setHistogram(HistogramIterator begin, HistogramIterator end, bool adjustDomain = true){
-
-		histogram_ = TF::Adaptation::computeTFHistogram<HistogramIterator>(begin, end);
-		
-		if(adjustDomain) domain_ = histogram_->size();
-		else if(domain_ != histogram_->size()) return false;
-
-		HolderMapIt beginPalette = palette_.begin();
-		HolderMapIt endPalette = palette_.end();
-		for(HolderMapIt it = beginPalette; it != endPalette; ++it)
-		{
-			it->second->setHistogram(histogram_);
-		}
-		return true;
 	}
 
 private slots:
@@ -81,6 +69,9 @@ protected:
 
 private:	
 
+	typedef std::map<TF::Size, TFHolderInterface*> HolderMap;
+	typedef HolderMap::iterator HolderMapIt;
+
 	class Indexer{
 
 		typedef std::vector<TF::Size> Indexes;
@@ -92,7 +83,7 @@ private:
 		~Indexer();
 
 		TF::Size getIndex();
-		void releaseIndex(TF::Size index);
+		void releaseIndex(const TF::Size index);
 
 	private:
 
@@ -108,13 +99,14 @@ private:
 	TF::Size domain_;
 
 	M4D::Common::TimeStamp lastChange_;
+	bool activeChanged_;
 
 	Indexer indexer_;
 	int activeHolder_;
 	HolderMap palette_;
 
-	void addToPalette_(TFHolder* holder);
-	void removeFromPalette_(TF::Size index);
+	void addToPalette_(TFHolderInterface* holder);
+	void removeFromPalette_(const TF::Size index);
 };
 
 } // namespace GUI

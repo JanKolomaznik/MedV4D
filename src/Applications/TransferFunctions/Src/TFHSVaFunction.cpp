@@ -2,37 +2,46 @@
 
 namespace M4D {
 namespace GUI {
+/*
+template<TF::Size dim>
+TFHSVaFunction<dim>::TFHSVaFunction(const TF::Size domain){
 
-TFHSVaFunction::TFHSVaFunction(const TF::Size domain){
-
-	colorMap_ = TF::ColorMapPtr(new TF::ColorMap(domain));
+	colorMap_ = TF::MultiDColor<dim>::Map::Ptr(new TF::MultiDColor<dim>::Map(domain));
 	domain_ = domain;
 	clear();
 }
 
-TFHSVaFunction::TFHSVaFunction(TFHSVaFunction &function){
+template<TF::Size dim>
+TFHSVaFunction<dim>::TFHSVaFunction(TFHSVaFunction<dim> &function){
 
 	operator=(function);
 }
 
-TFHSVaFunction::~TFHSVaFunction(){}
+template<TF::Size dim>
+TFHSVaFunction<dim>::~TFHSVaFunction(){}
 
-TF::Color TFHSVaFunction::getMappedRGBfColor(const TF::Size value){
+template<TF::Size dim>
+TF::Color TFHSVaFunction<dim>::getMappedRGBfColor(const TF::Size value, const TF::Size dimension){
+
+	TF::Color rgbColor();
 
 	QColor color;
 	color.setHsvF(
-		(*colorMap_)[value].component1,
-		(*colorMap_)[value].component2,
-		(*colorMap_)[value].component3,
-		(*colorMap_)[value].alpha);
+		(*colorMap_)[value][dimension].component1,
+		(*colorMap_)[value][dimension].component2,
+		(*colorMap_)[value][dimension].component3,
+		(*colorMap_)[value][dimension].alpha);
+
+	rgbColor = TF::Color(color.redF(), color.greenF(), color.blueF(), color.alphaF());
 	
-	return TF::Color(color.redF(), color.greenF(), color.blueF(), color.alphaF());
+	return rgbColor;
 }
 
-TFAbstractFunction::Ptr TFHSVaFunction::clone(){
+template<TF::Size dim>
+typename TFAbstractFunction<dim>::Ptr TFHSVaFunction<dim>::clone(){
 
-	return TFAbstractFunction::Ptr(new TFHSVaFunction(*this));
+	return TFAbstractFunction<dim>::Ptr(new TFHSVaFunction<dim>(*this));
 }
-
+*/
 } // namespace GUI
 } // namespace M4D
