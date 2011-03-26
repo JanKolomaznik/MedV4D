@@ -1,9 +1,7 @@
 #ifndef TF_PAINTERS
 #define TF_PAINTERS
 
-#include <TFGrayscaleAlphaPainter.h>
-#include <TFRGBaPainter.h>
-#include <TFHSVaPainter.h>
+#include <TFFunctions.h>
 
 namespace M4D {
 namespace GUI {
@@ -20,66 +18,30 @@ enum Painter{
 	PainterGrayscaleAlpha
 };
 typedef std::vector<Painter> Painters;
-typedef boost::shared_ptr<Painters> PaintersPtr;
 
-static PaintersPtr getAllowedPainters(Function function){
+static Painters getAllowedPainters(Function function){
 
-	Painters* allowed = new Painters();
+	Painters allowed;
 
 	switch(function)
 	{
 		case TF::Types::FunctionRGB:
 		{
-			allowed->push_back(TF::Types::PainterGrayscale);
-			allowed->push_back(TF::Types::PainterGrayscaleAlpha);
-			allowed->push_back(TF::Types::PainterRGB);
-			allowed->push_back(TF::Types::PainterRGBa);
+			allowed.push_back(TF::Types::PainterGrayscale);
+			allowed.push_back(TF::Types::PainterGrayscaleAlpha);
+			allowed.push_back(TF::Types::PainterRGB);
+			allowed.push_back(TF::Types::PainterRGBa);
 			break;
 		}
 		case TF::Types::FunctionHSV:
 		{
-			allowed->push_back(TF::Types::PainterHSV);
-			allowed->push_back(TF::Types::PainterHSVa);
+			allowed.push_back(TF::Types::PainterHSV);
+			allowed.push_back(TF::Types::PainterHSVa);
 			break;
 		}
 	}
 
-	return PaintersPtr(allowed);
-}
-
-template<Size dim>
-static typename TFAbstractPainter<dim>::Ptr createPainter(Painter painter){
-
-	switch(painter)
-	{
-		case TF::Types::PainterGrayscale:
-		{
-			return typename TFAbstractPainter<dim>::Ptr(new TFGrayscaleAlphaPainter(false));
-		}
-		case TF::Types::PainterGrayscaleAlpha:
-		{
-			return typename TFAbstractPainter<dim>::Ptr(new TFGrayscaleAlphaPainter(true));
-		}
-		case TF::Types::PainterRGB:
-		{
-			return typename TFAbstractPainter<dim>::Ptr(new TFRGBaPainter(false));
-		}
-		case TF::Types::PainterRGBa:
-		{
-			return typename TFAbstractPainter<dim>::Ptr(new TFRGBaPainter(true));
-		}
-		case TF::Types::PainterHSV:
-		{
-			return typename TFAbstractPainter<dim>::Ptr(new TFHSVaPainter(false));
-		}
-		case TF::Types::PainterHSVa:
-		{
-			return typename TFAbstractPainter<dim>::Ptr(new TFHSVaPainter(true));
-		}
-	}
-	
-	tfAssert(!"Unknown painter!");
-	return typename TFAbstractPainter<dim>::Ptr(new TFRGBaPainter(true));
+	return allowed;
 }
 
 }	//namespace Types

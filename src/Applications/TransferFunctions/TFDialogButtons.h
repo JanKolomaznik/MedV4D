@@ -6,6 +6,7 @@
 
 #include <TFCommon.h>
 
+#include <TFHolders.h>
 #include <TFFunctions.h>
 #include <TFPainters.h>
 #include <TFModifiers.h>
@@ -13,6 +14,68 @@
 
 namespace M4D {
 namespace GUI {
+
+class TFPredefinedDialogButton: public QRadioButton{
+
+	Q_OBJECT
+
+public:
+
+	TFPredefinedDialogButton(TF::Types::Predefined type, QWidget* parent = 0):
+		QRadioButton(parent),
+		type_(type){	
+
+		bool dialogButtonConnected = QObject::connect( this, SIGNAL(toggled(bool)), this, SLOT(on_toggled(bool)));
+		tfAssert(dialogButtonConnected);
+	}
+	~TFPredefinedDialogButton(){}
+
+signals:
+
+	void Activated(TF::Types::Predefined active);
+
+private slots:
+
+	void on_toggled(bool checked){			
+
+		if(checked) emit Activated(type_);
+	}
+
+private:
+
+	TF::Types::Predefined type_;
+};
+
+class TFHolderDialogButton: public QRadioButton{
+
+	Q_OBJECT
+
+public:
+
+	TFHolderDialogButton(TF::Types::Holder type, QWidget* parent = 0):
+		QRadioButton(parent),
+		type_(type){		
+
+		bool dialogButtonConnected = QObject::connect( this, SIGNAL(toggled(bool)), this, SLOT(on_toggled(bool)));
+		tfAssert(dialogButtonConnected);
+	}
+	~TFHolderDialogButton(){}
+
+signals:
+
+	void Activated(TF::Types::Holder active);
+
+private slots:
+
+	void on_toggled(bool checked){	
+
+		if(checked) emit Activated(type_);
+	}
+
+private:
+
+	TF::Types::Holder type_;
+};
 
 class TFFunctionDialogButton: public QRadioButton{
 
@@ -27,6 +90,7 @@ public:
 		bool dialogButtonConnected = QObject::connect( this, SIGNAL(toggled(bool)), this, SLOT(on_toggled(bool)));
 		tfAssert(dialogButtonConnected);
 	}
+	~TFFunctionDialogButton(){}
 
 signals:
 
@@ -57,6 +121,7 @@ public:
 		bool dialogButtonConnected = QObject::connect( this, SIGNAL(toggled(bool)), this, SLOT(on_toggled(bool)));
 		tfAssert(dialogButtonConnected);
 	}
+	~TFPainterDialogButton(){}
 
 signals:
 
@@ -87,6 +152,7 @@ public:
 		bool dialogButtonConnected = QObject::connect( this, SIGNAL(toggled(bool)), this, SLOT(on_toggled(bool)));
 		tfAssert(dialogButtonConnected);
 	}
+	~TFModifierDialogButton(){}
 
 signals:
 
@@ -102,36 +168,6 @@ private slots:
 private:
 
 	TF::Types::Modifier type_;
-};
-
-class TFPredefinedDialogButton: public QRadioButton{
-
-	Q_OBJECT
-
-public:
-
-	TFPredefinedDialogButton(TF::Types::Predefined type, QWidget* parent = 0):
-		QRadioButton(parent),
-		type_(type){	
-
-		bool dialogButtonConnected = QObject::connect( this, SIGNAL(toggled(bool)), this, SLOT(on_toggled(bool)));
-		tfAssert(dialogButtonConnected);
-	}
-
-signals:
-
-	void Activated(TF::Types::Predefined active);
-
-private slots:
-
-	void on_toggled(bool checked){			
-
-		if(checked) emit Activated(type_);
-	}
-
-private:
-
-	TF::Types::Predefined type_;
 };
 
 } // namespace GUI

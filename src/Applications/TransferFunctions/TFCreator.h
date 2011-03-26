@@ -5,15 +5,21 @@
 #include <QtGui/QVBoxLayout>
 
 #include <TFCommon.h>
-#include <TFHolder.h>
-#include <TFHolderInterface.h>
 
 #include <TFDialogButtons.h>
 
+#include <TFAbstractFunction.h>
+#include <TFAbstractModifier.h>
+#include <TFAbstractPainter.h>
+#include <TFWorkCopy.h>
+
+#include <TFHolders.h>
 #include <TFFunctions.h>
 #include <TFPainters.h>
 #include <TFModifiers.h>
 #include <TFPredefined.h>
+
+#include <TFHolderInterface.h>
 
 #include <ui_TFCreator.h>
 
@@ -26,15 +32,20 @@ class TFCreator: public QDialog{
 
 public:
 
-	static TFHolderInterface* createTransferFunction(QMainWindow* mainWindow, const TF::Size domain);
+	TFCreator(QMainWindow* mainWindow, const TF::Size domain);
+	~TFCreator();
 
-	static TFHolderInterface* loadTransferFunction(QMainWindow* mainWindow, const TF::Size domain);
+	TFHolderInterface* createTransferFunction();
+	TFHolderInterface* loadTransferFunction();
+
+	void setDomain(const TF::Size domain);
 
 private slots:
 
 	void on_nextButton_clicked();
 	void on_backButton_clicked();
 
+	void holderButton_clicked(TF::Types::Holder holder);
 	void predefinedButton_clicked(TF::Types::Predefined predefined);
 	void functionButton_clicked(TF::Types::Function function);
 	void painterButton_clicked(TF::Types::Painter painter);
@@ -42,12 +53,8 @@ private slots:
 
 private:	
 
-	TFCreator(QWidget* parent = 0);
-	~TFCreator();
-
-	TF::Types::Structure getResult();
-
 	enum State{
+		Holder,
 		Predefined,
 		Function,
 		Painter,
@@ -57,24 +64,41 @@ private:
 
 	Ui::TFCreator* ui_;
 
-	QVBoxLayout* predefinedLayout_;
-	QVBoxLayout* functionLayout_;
-	QVBoxLayout* otherLayout_;
+	QVBoxLayout* layout_;
 
 	bool predefinedChoice_;
 	TF::Types::Structure customStructure_;
 	TF::Types::Structure predefinedStructure_;
 
+	bool holderSet_;
 	bool predefinedSet_;
 	bool functionSet_;
 	bool painterSet_;
 	bool modifierSet_;
+	
+	QMainWindow* mainWindow_;
+	TF::Size domain_;
 
+	TF::Types::Structure& getStructure_();
+
+	void setStateHolder_();
 	void setStatePredefined_();
 	void setStateFunction_();
 	void setStatePainter_();
 	void setStateModifier_();	
 
+	void clearLayout_();
+
+	TFHolderInterface* createHolder_();
+
+	template<TF::Size dim>
+	typename TFAbstractFunction<dim>::Ptr createFunction_();
+
+	template<TF::Size dim>
+	typename TFAbstractPainter<dim>::Ptr createPainter_();
+
+	template<TF::Size dim>
+	typename TFAbstractModifier<dim>::Ptr createModifier_(typename TFWorkCopy<dim>::Ptr workCopy);
 };
 
 } // namespace GUI

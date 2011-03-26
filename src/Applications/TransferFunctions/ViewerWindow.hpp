@@ -50,7 +50,7 @@ public slots:
 protected:
 
 	M4D::Imaging::ConnectionTyped< M4D::Imaging::AImage > mProdconn;
-	M4D::GUI::TFPalette *mTransferFunctionEditor;
+	M4D::GUI::TFPalette::Ptr mTransferFunctionEditor;
 
 	Buffer1DPtr buffer_;
 

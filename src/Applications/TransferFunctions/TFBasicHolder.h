@@ -1,5 +1,5 @@
-#ifndef TF_ABSTRACTHOLDER
-#define TF_ABSTRACTHOLDER
+#ifndef TF_BASICHOLDER
+#define TF_BASICHOLDER
 
 #include "common/Types.h"
 
@@ -19,21 +19,17 @@
 #include <TFCommon.h>
 #include <TFXmlWriter.h>
 #include <TFXmlReader.h>
-#include <TFPaletteButton.h>
 
-#include <TFAbstractFunction.h>
-#include <TFAbstractModifier.h>
-#include <TFAbstractPainter.h>
-#include <TFWorkCopy.h>
+#include <TFPredefined.h>
 
 #include <TFHolderInterface.h>
 
-#include <ui_TFHolder.h>
+#include <ui_TFBasicHolder.h>
 
 namespace M4D {
 namespace GUI {
 
-class TFHolder : public QWidget, public TFHolderInterface{
+class TFBasicHolder : public QWidget, public TFHolderInterface{
 
 	Q_OBJECT
 	
@@ -41,16 +37,14 @@ class TFHolder : public QWidget, public TFHolderInterface{
 
 public:
 
-	typedef boost::shared_ptr<TFHolder> Ptr;
+	typedef boost::shared_ptr<TFBasicHolder> Ptr;
 
-	TFHolder(QMainWindow* mainWindow,
+	TFBasicHolder(QMainWindow* mainWindow,
 		TFAbstractPainter<1>::Ptr painter,
 		TFAbstractModifier<1>::Ptr modifier,
-		std::string title);
+		TF::Types::Structure structure);
 
-	~TFHolder();
-	
-	//typename TF::MultiDColor<dim>::Map::Ptr getColorMap();
+	~TFBasicHolder();
 
 	void save();
 	void activate();
@@ -85,14 +79,15 @@ protected slots:
 
 private:
 
-	TFHolder(QMainWindow* mainWindow);
+	TFBasicHolder(QMainWindow* mainWindow);
 
-	Ui::TFHolder* ui_;
+	Ui::TFBasicHolder* ui_;
 	QMainWindow* holder_;
 	QDockWidget* dockHolder_;
 	QDockWidget* dockTools_;
 	
 	std::string title_;
+	TF::Types::Structure structure_;
 
 	TFAbstractModifier<1>::Ptr modifier_;
 	TFAbstractPainter<1>::Ptr painter_;
@@ -128,4 +123,4 @@ private:
 } // namespace GUI
 } // namespace M4D
 
-#endif //TF_ABSTRACTHOLDER
+#endif //TF_BASICHOLDER

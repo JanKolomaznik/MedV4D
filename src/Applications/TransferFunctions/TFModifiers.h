@@ -1,8 +1,7 @@
 #ifndef TF_MODIFIERS
 #define TF_MODIFIERS
 
-#include <TFSimpleModifier.h>
-#include <TFPolygonModifier.h>
+#include <TFPainters.h>
 
 namespace M4D {
 namespace GUI {
@@ -15,11 +14,10 @@ enum Modifier{
 	ModifierPolygon
 };
 typedef std::vector<Modifier> Modifiers;
-typedef boost::shared_ptr<Modifiers> ModifiersPtr;
 
-static ModifiersPtr getAllowedModifiers(Painter painter){
+static Modifiers getAllowedModifiers(Painter painter){
 
-	Modifiers* allowed = new Modifiers();
+	Modifiers allowed;
 
 	switch(painter)
 	{
@@ -30,97 +28,13 @@ static ModifiersPtr getAllowedModifiers(Painter painter){
 		case TF::Types::PainterHSV:	//same as next case
 		case TF::Types::PainterHSVa:
 		{
-			allowed->push_back(TF::Types::ModifierSimple);
-			allowed->push_back(TF::Types::ModifierPolygon);
+			allowed.push_back(TF::Types::ModifierSimple);
+			allowed.push_back(TF::Types::ModifierPolygon);
 			break;
 		}
 	}
 
-	return ModifiersPtr(allowed);
-}
-
-template<Size dim>
-static typename TFAbstractModifier<dim>::Ptr createModifier(Modifier type, typename TFWorkCopy<dim>::Ptr workCopy, Painter painterUsed){
-
-	switch(type)
-	{
-		case TF::Types::ModifierSimple:
-		{
-			switch(painterUsed)
-			{
-				case TF::Types::PainterGrayscale:
-				{
-					return typename TFAbstractModifier<dim>::Ptr(
-						new TFSimpleModifier(workCopy, TFSimpleModifier::Grayscale, false));
-				}
-				case TF::Types::PainterGrayscaleAlpha:
-				{
-					return typename TFAbstractModifier<dim>::Ptr(
-						new TFSimpleModifier(workCopy, TFSimpleModifier::Grayscale, true));
-				}
-				case TF::Types::PainterRGB:
-				{
-					return typename TFAbstractModifier<dim>::Ptr(
-						new TFSimpleModifier(workCopy, TFSimpleModifier::RGB, false));
-				}
-				case TF::Types::PainterRGBa:
-				{
-					return typename TFAbstractModifier<dim>::Ptr(
-						new TFSimpleModifier(workCopy, TFSimpleModifier::RGB, true));
-				}
-				case TF::Types::PainterHSV:
-				{
-					return typename TFAbstractModifier<dim>::Ptr(
-						new TFSimpleModifier(workCopy, TFSimpleModifier::HSV, false));
-				}
-				case TF::Types::PainterHSVa:
-				{
-					return typename TFAbstractModifier<dim>::Ptr(
-						new TFSimpleModifier(workCopy, TFSimpleModifier::HSV, true));
-				}
-			}
-		}
-		case TF::Types::ModifierPolygon:
-		{
-			switch(painterUsed)
-			{
-				case TF::Types::PainterGrayscale:
-				{
-					return typename TFAbstractModifier<dim>::Ptr(
-						new TFPolygonModifier(workCopy, TFPolygonModifier::Grayscale, false));
-				}
-				case TF::Types::PainterGrayscaleAlpha:
-				{
-					return typename TFAbstractModifier<dim>::Ptr(
-						new TFPolygonModifier(workCopy, TFPolygonModifier::Grayscale, true));
-				}
-				case TF::Types::PainterRGB:
-				{
-					return typename TFAbstractModifier<dim>::Ptr(
-						new TFPolygonModifier(workCopy, TFPolygonModifier::RGB, false));
-				}
-				case TF::Types::PainterRGBa:
-				{
-					return typename TFAbstractModifier<dim>::Ptr(
-						new TFPolygonModifier(workCopy, TFPolygonModifier::RGB, true));
-				}
-				case TF::Types::PainterHSV:
-				{
-					return typename TFAbstractModifier<dim>::Ptr(
-						new TFPolygonModifier(workCopy, TFPolygonModifier::HSV, false));
-				}
-				case TF::Types::PainterHSVa:
-				{
-					return typename TFAbstractModifier<dim>::Ptr(
-						new TFPolygonModifier(workCopy, TFPolygonModifier::HSV, true));
-				}
-			}
-		}
-	}
-
-	tfAssert(!"Unknown modifier!");
-	return typename TFAbstractModifier<dim>::Ptr(
-		new TFSimpleModifier(workCopy, TFSimpleModifier::RGB, true));	//default
+	return allowed;
 }
 
 }	//namespace Types

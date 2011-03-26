@@ -1,16 +1,16 @@
-#include <TFHolder.h>
+#include <TFBasicHolder.h>
 
 #include <QtGui/QResizeEvent>
 
 namespace M4D {
 namespace GUI {
 
-TFHolder::TFHolder(QMainWindow* mainWindow,
+TFBasicHolder::TFBasicHolder(QMainWindow* mainWindow,
 				   TFAbstractPainter<1>::Ptr painter,
 				   TFAbstractModifier<1>::Ptr modifier,
-				   std::string title):
+				   TF::Types::Structure structure):
 	holder_(new QMainWindow((QWidget*)mainWindow)),
-	ui_(new Ui::TFHolder),
+	ui_(new Ui::TFBasicHolder),
 	modifier_(modifier),
 	painter_(painter),
 	button_(NULL),
@@ -21,10 +21,12 @@ TFHolder::TFHolder(QMainWindow* mainWindow,
 	dockTools_(NULL),
 	painterLeftTopMargin_(20, 40),
 	painterRightBottomMargin_(20, 10),
-	title_(title){
+	structure_(structure){
 
 	ui_->setupUi(this);
 	holder_->setCentralWidget(this);
+
+	title_ = TF::convert<TF::Types::Predefined, std::string>(structure_.predefined);
 	
 	bool rereshConnected = QObject::connect( &(*modifier_), SIGNAL(RefreshView()), this, SLOT(refresh_view()));
 	tfAssert(rereshConnected);
@@ -38,11 +40,14 @@ TFHolder::TFHolder(QMainWindow* mainWindow,
 		dockTools_->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);	
 		holder_->addDockWidget(Qt::LeftDockWidgetArea, dockTools_);	
 	}
+	
+	show();
+	ui_->activateButton->hide();
 }
 
-TFHolder::TFHolder(QMainWindow* mainWindow):
+TFBasicHolder::TFBasicHolder(QMainWindow* mainWindow):
 	holder_(new QMainWindow((QWidget*)mainWindow)),
-	ui_(new Ui::TFHolder),
+	ui_(new Ui::TFBasicHolder),
 	button_(NULL),
 	blank_(true),
 	active_(false),
@@ -56,39 +61,23 @@ TFHolder::TFHolder(QMainWindow* mainWindow):
 	holder_->setCentralWidget(this);
 }
 
-
-TFHolder::~TFHolder(){
+TFBasicHolder::~TFBasicHolder(){
 
 	//if(ui_) delete ui_;
 }
-/*
 
-TF::MultiDColor<1>::MapPtr TFHolder::getColorMap(){
-
-	TFAbstractFunction::Ptr function = modifier_->getWorkCopy()->getFunction();
-	TF::Size domain = function->getDomain();
-	TF::MultiDColor<dim>::Map::Ptr colorMap(new TF::MultiDColor<dim>::Map(domain, function->getDimension()));
-	for(TF::Size i = 0; i < domain; ++i)
-	{
-		(*colorMap)[i] = function->getMappedRGBfColor(i);
-	}
-
-	return colorMap;
-}
-*/
-
-TFApplyFunctionInterface::Ptr TFHolder::functionToApply_(){
+TFApplyFunctionInterface::Ptr TFBasicHolder::functionToApply_(){
 
 	return modifier_->getWorkCopy()->getFunction();
 }
 
 
-bool TFHolder::changed(){
+bool TFBasicHolder::changed(){
 
 	return modifier_->changed();
 }
 
-void TFHolder::setHistogram(TF::Histogram::Ptr histogram){
+void TFBasicHolder::setHistogram(TF::Histogram::Ptr histogram){
 
 	if(!histogram) return;
 
@@ -97,24 +86,24 @@ void TFHolder::setHistogram(TF::Histogram::Ptr histogram){
 	repaint();
 }
 
-void TFHolder::setDomain(const TF::Size domain){
+void TFBasicHolder::setDomain(const TF::Size domain){
 
 	modifier_->getWorkCopy()->setDomain(domain);
 	repaint();
 }
 
-void TFHolder::setup(const TF::Size index){
+void TFBasicHolder::setup(const TF::Size index){
 
 	index_ = index;
 
 	title_ = title_ + " #" + TF::convert<TF::Size, std::string>(index_ + 1);
 	if(dockHolder_) dockHolder_->setWindowTitle(QString::fromStdString(title_));
 	if(dockTools_) dockTools_->setWindowTitle(QString::fromStdString(title_ + " Tools"));
-
-	show();
+	
+	ui_->activateButton->show();
 }
 
-bool TFHolder::connectToTFPalette(QObject *tfPalette){
+bool TFBasicHolder::connectToTFPalette(QObject *tfPalette){
 		
 	bool activateConnected = QObject::connect( this, SIGNAL(Activate(TF::Size)), tfPalette, SLOT(change_activeHolder(TF::Size)));
 	tfAssert(activateConnected);
@@ -125,7 +114,7 @@ bool TFHolder::connectToTFPalette(QObject *tfPalette){
 	return activateConnected &&	closeConnected;
 }
 
-bool TFHolder::createPaletteButton(QWidget *parent){
+bool TFBasicHolder::createPaletteButton(QWidget *parent){
 
 	button_ = new TFPaletteButton(parent, index_);
 	button_->setup();
@@ -136,43 +125,43 @@ bool TFHolder::createPaletteButton(QWidget *parent){
 	return buttonConnected;
 }
 
-void TFHolder::createDockWidget(QWidget *parent){
+void TFBasicHolder::createDockWidget(QWidget *parent){
 
 	dockHolder_ = new QDockWidget(QString::fromStdString(title_), holder_->parentWidget());	
 	dockHolder_->setWidget(holder_);
 	dockHolder_->setFeatures(QDockWidget::AllDockWidgetFeatures);
 }
 
-TFPaletteButton* TFHolder::getButton() const{
+TFPaletteButton* TFBasicHolder::getButton() const{
 
 	return button_;
 }
 
-QDockWidget* TFHolder::getDockWidget() const{
+QDockWidget* TFBasicHolder::getDockWidget() const{
 
 	return dockHolder_;
 }
 
-TF::Size TFHolder::getIndex(){
+TF::Size TFBasicHolder::getIndex(){
 
 	return index_;
 }
 
-void TFHolder::activate(){
+void TFBasicHolder::activate(){
 
 	ui_->activateButton->setChecked(true);
 	button_->activate();
 	active_ = true;
 }
 
-void TFHolder::deactivate(){
+void TFBasicHolder::deactivate(){
 
 	ui_->activateButton->setChecked(false);
 	button_->deactivate();
 	active_ = false;
 }
 
-void TFHolder::paintEvent(QPaintEvent *e){
+void TFBasicHolder::paintEvent(QPaintEvent *e){
 
 	if(blank_) return;
 	QPainter drawer(this);
@@ -180,28 +169,28 @@ void TFHolder::paintEvent(QPaintEvent *e){
 		painter_->getView(modifier_->getWorkCopy()));
 }
 
-void TFHolder::mousePressEvent(QMouseEvent *e){
+void TFBasicHolder::mousePressEvent(QMouseEvent *e){
 
 	if(blank_) return;
 
 	modifier_->mousePress(e->x(), e->y(), e->button());
 }
 
-void TFHolder::mouseReleaseEvent(QMouseEvent *e){
+void TFBasicHolder::mouseReleaseEvent(QMouseEvent *e){
 
 	if(blank_) return;
 
 	modifier_->mouseRelease(e->x(), e->y());
 }
 
-void TFHolder::mouseMoveEvent(QMouseEvent *e){
+void TFBasicHolder::mouseMoveEvent(QMouseEvent *e){
 
 	if(blank_) return;
 	
 	modifier_->mouseMove(e->x(), e->y());
 }
 
-void TFHolder::wheelEvent(QWheelEvent *e){
+void TFBasicHolder::wheelEvent(QWheelEvent *e){
 
 	if(blank_) return;
 
@@ -211,14 +200,14 @@ void TFHolder::wheelEvent(QWheelEvent *e){
 	modifier_->mouseWheel(numSteps, e->x(), e->y());
 }
 
-void TFHolder::resizeEvent(QResizeEvent *e){
+void TFBasicHolder::resizeEvent(QResizeEvent *e){
 
 	if(blank_) return;
 
 	resizePainter_();
 }
 
-void TFHolder::resizePainter_(){
+void TFBasicHolder::resizePainter_(){
 
 	QRect painterArea(
 		painterLeftTopMargin_.x,
@@ -230,30 +219,30 @@ void TFHolder::resizePainter_(){
 	modifier_->setInputArea(painter_->getInputArea());
 }
 
-void TFHolder::on_closeButton_clicked(){
+void TFBasicHolder::on_closeButton_clicked(){
 
 	emit Close(index_);
 }
 
-void TFHolder::on_saveButton_clicked(){
+void TFBasicHolder::on_saveButton_clicked(){
 
 	if(blank_) return;
 	save();
 }
 
-void TFHolder::on_activateButton_clicked(){
+void TFBasicHolder::on_activateButton_clicked(){
 
 	if(blank_) return;
 	if(!active_) emit Activate(index_);
 	else ui_->activateButton->setChecked(true);
 }
 
-void TFHolder::refresh_view(){
+void TFBasicHolder::refresh_view(){
 
 	repaint();
 }
 
-void TFHolder::save(){
+void TFBasicHolder::save(){
 
 	QString fileName = QFileDialog::getSaveFileName(this,
 		tr("Save Transfer Function"),
@@ -278,14 +267,14 @@ void TFHolder::save(){
 	file.close();
 }
 
-void TFHolder::save_(QFile &file){
+void TFBasicHolder::save_(QFile &file){
 	/*
 	 TFXmlWriter writer;
 	 writer.write(&file, function_);*/
 	 //writer.writeTestData(&file);	//testing
 }
 
-bool TFHolder::load(QFile &file){
+bool TFBasicHolder::load(QFile &file){
 	/*
 	TFXmlReader reader;
 

@@ -7,17 +7,45 @@
 #include <TFHistogram.h>
 #include <TFPaletteButton.h>
 
+#include <TFAbstractFunction.h>
+#include <TFAbstractModifier.h>
+#include <TFAbstractPainter.h>
+#include <TFWorkCopy.h>
+
 #include <TFAdaptation.h>
 
 namespace M4D {
-namespace GUI {
-	
+namespace GUI {	
 
 class TFHolderInterface{
 
 public:
 
 	typedef boost::shared_ptr<TFHolderInterface> Ptr;
+
+	struct Info{
+		std::string holder;
+		std::string predefined;
+		std::string function;
+		std::string painter;
+		std::string modifier;
+
+		Info():
+			holder("Unknown"),
+			predefined("Unknown"),
+			function("Unknown"),
+			painter("Unknown"),
+			modifier("Unknown"){
+		}
+
+		Info(std::string holder, std::string predefined, std::string function, std::string painter, std::string modifier):
+			holder(holder),
+			predefined(predefined),
+			function(function),
+			painter(painter),
+			modifier(modifier){
+		}
+	};
 
 	virtual ~TFHolderInterface(){}
 

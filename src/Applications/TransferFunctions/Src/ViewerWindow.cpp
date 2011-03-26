@@ -5,7 +5,6 @@ ViewerWindow::ViewerWindow():
 	fileLoaded_(false){
 
 	setupUi( this );
-	showMaximized();
 
 	#ifdef WIN32
 		//Reposition console window
@@ -20,12 +19,12 @@ ViewerWindow::ViewerWindow():
 	
 	//---TF Editor---
 
-	mTransferFunctionEditor = new M4D::GUI::TFPalette(this);
+	mTransferFunctionEditor = M4D::GUI::TFPalette::Ptr(new M4D::GUI::TFPalette(this));
 	//mTransferFunctionEditor->setupDefault();	
 
 	QDockWidget* dockWidget = new QDockWidget("Transfer Function Palette", this);
 	
-	dockWidget->setWidget( mTransferFunctionEditor );
+	dockWidget->setWidget( &(*mTransferFunctionEditor) );
 	dockWidget->setFeatures(QDockWidget::AllDockWidgetFeatures);
 	dockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 	
@@ -94,10 +93,18 @@ ViewerWindow::ViewerWindow():
 	{		
 		*it = Buffer1D::ValueType(0,0,0,0);
 	}
+		
+	#ifdef TF_NDEBUG
+		showMaximized();
+	#endif
+	#ifndef TF_NDEBUG
+		show();
+	#endif
 	mViewer->SetTransferFunctionBuffer(buffer_);
 }
 
-ViewerWindow::~ViewerWindow(){}
+ViewerWindow::~ViewerWindow(){
+}
 
 void ViewerWindow::changeViewerType( int aRendererType )
 {

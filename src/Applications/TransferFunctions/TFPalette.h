@@ -31,6 +31,8 @@ class TFPalette : public QMainWindow{
 
 public:
 
+	typedef boost::shared_ptr<TFPalette> Ptr;
+
 	TFPalette(QMainWindow* parent);
     ~TFPalette();
 
@@ -104,6 +106,8 @@ private:
 	Indexer indexer_;
 	int activeHolder_;
 	HolderMap palette_;
+
+	TFCreator creator_;
 
 	void addToPalette_(TFHolderInterface* holder);
 	void removeFromPalette_(const TF::Size index);

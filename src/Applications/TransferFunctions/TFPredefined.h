@@ -1,12 +1,10 @@
 #ifndef TF_PREDEFINED
 #define TF_PREDEFINED
 
+#include <TFHolders.h>
 #include <TFFunctions.h>
 #include <TFPainters.h>
 #include <TFModifiers.h>
-
-#include <TFHolderInterface.h>
-#include <TFHolder.h>
 
 namespace M4D {
 namespace GUI {
@@ -22,27 +20,26 @@ enum Predefined{
 	PredefinedSimpleHSVa
 };
 typedef std::vector<Predefined> PredefinedTypes;
-typedef boost::shared_ptr<PredefinedTypes> PredefinedTypesPtr;
 
-static PredefinedTypesPtr getPredefinedTypes(){
+static PredefinedTypes getPredefinedTypes(){
 
-	PredefinedTypes* all = new PredefinedTypes();
+	PredefinedTypes all;
 
-	all->push_back(PredefinedCustom);
+	all.push_back(PredefinedCustom);
 
-	all->push_back(PredefinedSimpleGrayscaleAlpha);
-	all->push_back(PredefinedSimpleRGBa);
-	all->push_back(PredefinedSimpleHSVa);
-	all->push_back(PredefinedPolygonRGBa);
+	all.push_back(PredefinedSimpleGrayscaleAlpha);
+	all.push_back(PredefinedSimpleRGBa);
+	all.push_back(PredefinedSimpleHSVa);
+	all.push_back(PredefinedPolygonRGBa);
 
-	return PredefinedTypesPtr(all);
+	return all;
 }
 
 struct Structure{
 
 	Predefined predefined;
 
-	Size dimension;
+	Holder holder;
 	Function function;
 	Painter painter;
 	Modifier modifier;
@@ -51,9 +48,9 @@ struct Structure{
 		predefined(PredefinedCustom){
 	}
 
-	Structure(Predefined predefined, Size dimension, Function function, Painter painter, Modifier modifier):
-		dimension(dimension),
+	Structure(Predefined predefined, Holder holder, Function function, Painter painter, Modifier modifier):
 		predefined(predefined),
+		holder(holder),
 		function(function),
 		painter(painter),
 		modifier(modifier){
@@ -66,9 +63,8 @@ static Structure getPredefinedStructure(Predefined predefinedType){
 	{
 		case PredefinedSimpleGrayscaleAlpha:
 		{
-			return Structure(
-				PredefinedSimpleGrayscaleAlpha,
-				1,
+			return Structure(PredefinedSimpleGrayscaleAlpha,
+				HolderBasic,
 				FunctionRGB,
 				PainterGrayscaleAlpha,
 				ModifierSimple);
@@ -76,7 +72,7 @@ static Structure getPredefinedStructure(Predefined predefinedType){
 		case PredefinedSimpleRGBa:
 		{
 			return Structure(PredefinedSimpleRGBa,
-				1,
+				HolderBasic,
 				FunctionRGB,
 				PainterRGBa,
 				ModifierSimple);
@@ -84,7 +80,7 @@ static Structure getPredefinedStructure(Predefined predefinedType){
 		case PredefinedSimpleHSVa:
 		{
 			return Structure(PredefinedSimpleHSVa,
-				1,
+				HolderBasic,
 				FunctionHSV,
 				PainterHSVa,
 				ModifierSimple);
@@ -92,7 +88,7 @@ static Structure getPredefinedStructure(Predefined predefinedType){
 		case PredefinedPolygonRGBa:
 		{
 			return Structure(PredefinedPolygonRGBa,
-				1,
+				HolderBasic,
 				FunctionRGB,
 				PainterRGBa,
 				ModifierPolygon);
@@ -155,36 +151,13 @@ inline Types::Predefined TF::convert<std::string, Types::Predefined>(const std::
 	if(predefined == "Polygon RGBa"){
 		return Types::PredefinedPolygonRGBa;
 	}	
+	if(predefined == "Custom"){
+		return Types::PredefinedCustom;
+	}	
 
 	tfAssert(!"Unknown predefined type!");
 	return Types::PredefinedCustom;
 }
-
-namespace Types{	
-
-static TFHolderInterface* createHolder(QMainWindow* mainWindow, Size domain, Structure structure){
-	
-	switch(structure.function)
-	{
-		case FunctionRGB:	//TODO holder type
-		case FunctionHSV:
-		{
-			TFAbstractFunction<1>::Ptr function = createFunction<1>(structure.function, domain);
-			TFAbstractPainter<1>::Ptr painter = createPainter<1>(structure.painter);
-			TFWorkCopy<1>::Ptr workCopy = TFWorkCopy<1>::Ptr(new TFWorkCopy<1>(function));
-			TFAbstractModifier<1>::Ptr modifier = createModifier<1>(structure.modifier, workCopy, structure.painter);
-			return new TFHolder(mainWindow,
-				painter,
-				modifier,
-				convert<Predefined, std::string>(structure.predefined));
-		}
-	}
-
-	tfAssert(!"Unknown holder");
-	return NULL;
-}
-
-}	//namespace Types
 
 }	//namespace TF
 

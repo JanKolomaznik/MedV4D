@@ -29,27 +29,11 @@ processCommandLine( int argc, char** argv )
 int
 main( int argc, char** argv )
 {
-	//std::ofstream logFile( "Log.txt" );
-        //SET_LOUT( logFile );
-
-        //D_COMMAND( std::ofstream debugFile( "Debug.txt" ); );
-        //SET_DOUT( debugFile );
-
-
 	QApplication app(argc, argv);
 	try {
-		//processCommandLine( argc, argv );
-
 		std::cout << "Show window\n";
-		//ViewerWindow viewer( prodconn );
 		ViewerWindow viewer;
 
-
-		viewer.show();
-		/*if ( !inFilename.empty() ) {
-			viewer.openFile( QString::fromStdString( inFilename ) );
-		}*/
-		//viewer.applyTransferFunction();
 		return app.exec();
 	} catch ( std::exception &e )
 	{

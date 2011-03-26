@@ -1,8 +1,7 @@
 #ifndef TF_FUNCTIONS
 #define TF_FUNCTIONS
 
-#include <TFRGBaFunction.h>
-#include <TFHSVaFunction.h>
+#include <TFHolders.h>
 
 namespace M4D {
 namespace GUI {
@@ -15,34 +14,21 @@ enum Function{
 	FunctionHSV
 };
 typedef std::vector<Function> Functions;
-typedef boost::shared_ptr<Functions> FunctionsPtr;
 
-static FunctionsPtr getAllFunctions(){
+static Functions getAllowedFunctions(Holder holder){
 
-	Functions* all = new Functions();
-	all->push_back(TF::Types::FunctionRGB);
-	all->push_back(TF::Types::FunctionHSV);
+	Functions allowed;
 
-	return FunctionsPtr(all);
-}
-
-template<Size dim>
-static typename TFAbstractFunction<dim>::Ptr createFunction(Function type, const TF::Size domain){
-
-	switch(type)
-	{
-		case TF::Types::FunctionRGB:
+	switch(holder){
+		case Types::HolderBasic:
 		{
-			return typename TFAbstractFunction<dim>::Ptr(new TFRGBaFunction<dim>(domain));
-		}
-		case TF::Types::FunctionHSV:
-		{
-			return typename TFAbstractFunction<dim>::Ptr(new TFHSVaFunction<dim>(domain));
+			allowed.push_back(TF::Types::FunctionRGB);
+			allowed.push_back(TF::Types::FunctionHSV);
+			break;
 		}
 	}
 
-	tfAssert(!"Unknown function");
-	return typename TFAbstractFunction<dim>::Ptr(new TFRGBaFunction<dim>(domain));	//default
+	return allowed;
 }
 
 }	//namespace Types

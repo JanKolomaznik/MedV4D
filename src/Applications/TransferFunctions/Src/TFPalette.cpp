@@ -9,7 +9,8 @@ TFPalette::TFPalette(QMainWindow* parent):
 	mainWindow_(parent),
 	domain_(TFAbstractFunction<1>::defaultDomain),
 	activeHolder_(-1),
-	activeChanged_(false){
+	activeChanged_(false),
+	creator_(parent, domain_){
 
     ui_->setupUi(this);
 	setWindowTitle("Transfer Functions Palette");
@@ -36,10 +37,12 @@ TF::MultiDColor<dim>::Map::Ptr TFPalette::getColorMap(){
 	return palette_.find(activeHolder_)->second->getColorMap();
 }
 */
-void TFPalette::setDomain(TF::Size domain){
+void TFPalette::setDomain(const TF::Size domain){
 
 	if(domain_ == domain) return;
 	domain_ = domain;
+
+	creator_.setDomain(domain_);
 	
 	HolderMapIt beginPalette = palette_.begin();
 	HolderMapIt endPalette = palette_.end();
@@ -53,8 +56,15 @@ bool TFPalette::setHistogram(TF::Histogram::Ptr histogram, bool adjustDomain){
 
 	histogram_ = histogram;
 	
-	if(adjustDomain) domain_ = histogram_->size();
-	else if(domain_ != histogram_->size()) return false;
+	if(adjustDomain)
+	{
+		domain_ = histogram_->size();
+		creator_.setDomain(domain_);
+	}
+	else if(domain_ != histogram_->size())
+	{
+		return false;
+	}
 
 	HolderMapIt beginPalette = palette_.begin();
 	HolderMapIt endPalette = palette_.end();
@@ -156,7 +166,7 @@ void TFPalette::close_triggered(TF::Size index){
 
 void TFPalette::on_actionLoad_triggered(){
 
-	TFHolderInterface* loaded = TFCreator::loadTransferFunction(this, domain_);
+	TFHolderInterface* loaded = creator_.loadTransferFunction();
 
 	if(!loaded) return;
 	
@@ -165,7 +175,7 @@ void TFPalette::on_actionLoad_triggered(){
 
 void TFPalette::on_actionNew_triggered(){
 
-	TFHolderInterface* created = TFCreator::createTransferFunction(this, domain_);
+	TFHolderInterface* created = creator_.createTransferFunction();
 
 	if(!created) return;
 	
