@@ -1,6 +1,12 @@
 #ifndef TF_ABSTRACT_MODIFIER
 #define TF_ABSTRACT_MODIFIER
 
+#include <TFXmlReader.h>
+#include <TFXmlWriter.h>
+#include <QtCore/QString>
+#include <QtGui/QMessageBox>
+#include <QtGui/QFileDialog>
+
 #include <TFCommon.h>
 #include <TFWorkCopy.h>
 
@@ -60,6 +66,17 @@ public:
 	virtual void mouseMove(const int x, const int y){}
 	virtual void mouseWheel(const int steps, const int x, const int y){}
 	virtual void keyPressed(QKeySequence keySequence){}
+
+	virtual void save(TFXmlWriter::Ptr writer){}
+	virtual bool load(TFXmlReader::Ptr reader, bool& sideError){
+
+		#ifndef TF_NDEBUG
+			std::cout << "Loading modifier..." << std::endl;
+		#endif
+
+		sideError = false;
+		return true;
+	}
 /*
 signals:
 

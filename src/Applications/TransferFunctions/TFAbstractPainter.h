@@ -1,7 +1,11 @@
 #ifndef TF_ABSTRACT_PAINTER
 #define TF_ABSTRACT_PAINTER
 
-#include "Imaging/Histogram.h"
+#include <TFXmlReader.h>
+#include <TFXmlWriter.h>
+#include <QtCore/QString>
+#include <QtGui/QMessageBox>
+#include <QtGui/QFileDialog>
 
 #include <TFCommon.h>
 #include <TFWorkCopy.h>
@@ -23,6 +27,17 @@ public:
 	virtual QRect getInputArea() = 0;
 
 	virtual QPixmap getView(typename TFWorkCopy<dim>::Ptr workCopy) = 0;
+
+	virtual void save(TFXmlWriter::Ptr writer){}
+	virtual bool load(TFXmlReader::Ptr reader, bool& sideError){
+
+		#ifndef TF_NDEBUG
+			std::cout << "Loading painter..." << std::endl;
+		#endif
+
+		sideError = false;
+		return true;
+	}
 
 protected:
 

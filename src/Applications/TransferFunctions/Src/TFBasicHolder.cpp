@@ -14,18 +14,17 @@ TFBasicHolder::TFBasicHolder(QMainWindow* mainWindow,
 	modifier_(modifier),
 	painter_(painter),
 	button_(NULL),
-	blank_(false),
 	active_(false),
 	index_(0),
 	dockHolder_(NULL),
 	dockTools_(NULL),
 	painterLeftTopMargin_(20, 40),
-	painterRightBottomMargin_(20, 10),
-	structure_(structure){
+	painterRightBottomMargin_(20, 10){
 
 	ui_->setupUi(this);
 	holder_->setCentralWidget(this);
 
+	structure_ = structure;
 	title_ = TF::convert<TF::Types::Predefined, std::string>(structure_.predefined);
 	
 	bool rereshConnected = QObject::connect( &(*modifier_), SIGNAL(RefreshView()), this, SLOT(refresh_view()));
@@ -43,22 +42,6 @@ TFBasicHolder::TFBasicHolder(QMainWindow* mainWindow,
 	
 	show();
 	ui_->activateButton->hide();
-}
-
-TFBasicHolder::TFBasicHolder(QMainWindow* mainWindow):
-	holder_(new QMainWindow((QWidget*)mainWindow)),
-	ui_(new Ui::TFBasicHolder),
-	button_(NULL),
-	blank_(true),
-	active_(false),
-	index_(0),
-	dockHolder_(NULL),
-	dockTools_(NULL),
-	painterLeftTopMargin_(20, 40),
-	painterRightBottomMargin_(20, 10){
-
-	ui_->setupUi(this);
-	holder_->setCentralWidget(this);
 }
 
 TFBasicHolder::~TFBasicHolder(){
@@ -163,7 +146,6 @@ void TFBasicHolder::deactivate(){
 
 void TFBasicHolder::paintEvent(QPaintEvent *e){
 
-	if(blank_) return;
 	QPainter drawer(this);
 	drawer.drawPixmap(painterLeftTopMargin_.x, painterLeftTopMargin_.y,
 		painter_->getView(modifier_->getWorkCopy()));
@@ -171,28 +153,20 @@ void TFBasicHolder::paintEvent(QPaintEvent *e){
 
 void TFBasicHolder::mousePressEvent(QMouseEvent *e){
 
-	if(blank_) return;
-
 	modifier_->mousePress(e->x(), e->y(), e->button());
 }
 
 void TFBasicHolder::mouseReleaseEvent(QMouseEvent *e){
-
-	if(blank_) return;
 
 	modifier_->mouseRelease(e->x(), e->y());
 }
 
 void TFBasicHolder::mouseMoveEvent(QMouseEvent *e){
 
-	if(blank_) return;
-	
 	modifier_->mouseMove(e->x(), e->y());
 }
 
 void TFBasicHolder::wheelEvent(QWheelEvent *e){
-
-	if(blank_) return;
 
 	int numSteps = e->delta() / 120;
 	if(numSteps == 0) return;
@@ -201,8 +175,6 @@ void TFBasicHolder::wheelEvent(QWheelEvent *e){
 }
 
 void TFBasicHolder::resizeEvent(QResizeEvent *e){
-
-	if(blank_) return;
 
 	resizePainter_();
 }
@@ -226,13 +198,11 @@ void TFBasicHolder::on_closeButton_clicked(){
 
 void TFBasicHolder::on_saveButton_clicked(){
 
-	if(blank_) return;
 	save();
 }
 
 void TFBasicHolder::on_activateButton_clicked(){
 
-	if(blank_) return;
 	if(!active_) emit Activate(index_);
 	else ui_->activateButton->setChecked(true);
 }
@@ -241,56 +211,38 @@ void TFBasicHolder::refresh_view(){
 
 	repaint();
 }
-
-void TFBasicHolder::save(){
-
-	QString fileName = QFileDialog::getSaveFileName(this,
-		tr("Save Transfer Function"),
-		QDir::currentPath(),
-		tr("TF Files (*.tf)"));
-
-	if (fileName.isEmpty()) return;
-
-	QFile file(fileName);
-	if (!file.open(QFile::WriteOnly | QFile::Text))
-	{
-		QMessageBox::warning(this,
-			tr("Transfer Functions"),
-			tr("Cannot write file %1:\n%2.")
-			.arg(fileName)
-			.arg(file.errorString()));
-		return;
-	}
-
-	save_(file);
-
-	file.close();
+	
+void TFBasicHolder::saveData_(TFXmlWriter::Ptr writer){
+		
+	painter_->save(writer);
+	modifier_->save(writer);
+	modifier_->getWorkCopy()->getFunction()->save(writer);
 }
 
-void TFBasicHolder::save_(QFile &file){
-	/*
-	 TFXmlWriter writer;
-	 writer.write(&file, function_);*/
-	 //writer.writeTestData(&file);	//testing
-}
+bool TFBasicHolder::loadData(TFXmlReader::Ptr reader, bool& sideError){	
 
-bool TFBasicHolder::load(QFile &file){
-	/*
-	TFXmlReader reader;
+	#ifndef TF_NDEBUG
+		std::cout << "Loading data..." << std::endl;
+	#endif
 
-	bool error = false;
+	sideError = false;
+	bool error;
 
-	//reader.readTestData(&function_);	//testing
-	reader.read(&file, function_, error);
+	bool painterLoaded = painter_->load(reader, error);
+	sideError = sideError || error;
 
-	if (error || reader.error())
+	bool modifierLoaded = modifier_->load(reader, error);
+	sideError = sideError || error;
+
+	bool functionLoaded = modifier_->getWorkCopy()->getFunction()->load(reader, error);
+	sideError = sideError || error;
+
+	if(painterLoaded && modifierLoaded && functionLoaded)
 	{
-		return false;
+		fileName_ = reader->fileName();
+		return true;
 	}
-
-	modifier_->getWorkCopy()->update(function_);
-	*/
-	return false;	//TODO
+	return false;
 }
 
 } // namespace GUI

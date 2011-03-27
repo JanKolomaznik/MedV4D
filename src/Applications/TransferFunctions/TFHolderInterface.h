@@ -3,6 +3,12 @@
 
 #include <QtGui/QDockWidget>
 
+#include <TFXmlReader.h>
+#include <TFXmlWriter.h>
+#include <QtCore/QString>
+#include <QtGui/QMessageBox>
+#include <QtGui/QFileDialog>
+
 #include <TFCommon.h>
 #include <TFHistogram.h>
 #include <TFPaletteButton.h>
@@ -12,12 +18,14 @@
 #include <TFAbstractPainter.h>
 #include <TFWorkCopy.h>
 
+#include <TFPredefined.h>
+
 #include <TFAdaptation.h>
 
 namespace M4D {
 namespace GUI {	
 
-class TFHolderInterface{
+class TFHolderInterface: public QWidget{
 
 public:
 
@@ -49,7 +57,9 @@ public:
 
 	virtual ~TFHolderInterface(){}
 
-	virtual void save() = 0;
+	void save();
+	virtual bool loadData(TFXmlReader::Ptr reader, bool& sideError) = 0;
+
 	virtual void activate() = 0;
 	virtual void deactivate() = 0;
 
@@ -77,10 +87,15 @@ public:
 	}
 
 protected:
+
+	TF::Types::Structure structure_;
+	QString fileName_;
 	
 	TFHolderInterface(){}
 
 	virtual TFApplyFunctionInterface::Ptr functionToApply_() = 0;
+	
+	virtual void saveData_(TFXmlWriter::Ptr writer) = 0;
 };
 
 } // namespace GUI

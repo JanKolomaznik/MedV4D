@@ -21,13 +21,11 @@ TFPalette::TFPalette(QMainWindow* parent):
 }
 
 TFPalette::~TFPalette(){}
-/*
+
 void TFPalette::setupDefault(){
-	
-	domain_ = TFApplyFunctionInterface::defaultDomain;
-	//newTF_triggered(TF::Types::PredefinedCustom);
+	//default palette functions
 }
-*/
+
 /*
 TF::MultiDColor<dim>::Map::Ptr TFPalette::getColorMap(){
 

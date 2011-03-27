@@ -36,7 +36,7 @@ public:
 	TFPalette(QMainWindow* parent);
     ~TFPalette();
 
-	//void setupDefault();
+	void setupDefault();
 
 	void setDomain(const TF::Size domain);
 	TF::Size getDomain();

@@ -60,26 +60,28 @@ private:
 		Painter,
 		Modifier
 	};
-	State state_;
+	enum Mode{
+		CreateCustom = 0,
+		CreatePredefined = 1,
+		CreateLoaded = 2
+	};
 
 	Ui::TFCreator* ui_;
-
 	QVBoxLayout* layout_;
 
-	bool predefinedChoice_;
-	TF::Types::Structure customStructure_;
-	TF::Types::Structure predefinedStructure_;
+	State state_;
+	Mode mode_;
 
-	bool holderSet_;
+	TF::Types::Structure structure_[3];
+
 	bool predefinedSet_;
+	bool holderSet_;
 	bool functionSet_;
 	bool painterSet_;
 	bool modifierSet_;
 	
 	QMainWindow* mainWindow_;
 	TF::Size domain_;
-
-	TF::Types::Structure& getStructure_();
 
 	void setStateHolder_();
 	void setStatePredefined_();
@@ -88,6 +90,8 @@ private:
 	void setStateModifier_();	
 
 	void clearLayout_();
+
+	TFHolderInterface* load_(TFXmlReader::Ptr reader, bool& sideError);
 
 	TFHolderInterface* createHolder_();
 

@@ -6,8 +6,6 @@
 #include <QtGui/QMainWindow>
 #include <QtGui/QDockWidget>
 
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
 #include <QtGui/QPainter>
 
 #include <QtGui/QMouseEvent>
@@ -17,11 +15,6 @@
 #include <QtCore/QString>
 
 #include <TFCommon.h>
-#include <TFXmlWriter.h>
-#include <TFXmlReader.h>
-
-#include <TFPredefined.h>
-
 #include <TFHolderInterface.h>
 
 #include <ui_TFBasicHolder.h>
@@ -29,11 +22,9 @@
 namespace M4D {
 namespace GUI {
 
-class TFBasicHolder : public QWidget, public TFHolderInterface{
+class TFBasicHolder: public TFHolderInterface{
 
 	Q_OBJECT
-	
-	friend class TFCreator;
 
 public:
 
@@ -46,7 +37,8 @@ public:
 
 	~TFBasicHolder();
 
-	void save();
+	bool loadData(TFXmlReader::Ptr reader, bool& sideError);
+
 	void activate();
 	void deactivate();
 
@@ -79,15 +71,12 @@ protected slots:
 
 private:
 
-	TFBasicHolder(QMainWindow* mainWindow);
-
 	Ui::TFBasicHolder* ui_;
 	QMainWindow* holder_;
 	QDockWidget* dockHolder_;
 	QDockWidget* dockTools_;
 	
 	std::string title_;
-	TF::Types::Structure structure_;
 
 	TFAbstractModifier<1>::Ptr modifier_;
 	TFAbstractPainter<1>::Ptr painter_;
@@ -98,10 +87,11 @@ private:
 	const TF::Point<TF::Size, TF::Size> painterLeftTopMargin_;
 	const TF::Point<TF::Size, TF::Size> painterRightBottomMargin_;
 
-	bool blank_;
 	bool active_;
 
 	TFApplyFunctionInterface::Ptr functionToApply_();
+
+	void saveData_(TFXmlWriter::Ptr writer);
 
 	void paintEvent(QPaintEvent*);
 	void resizeEvent(QResizeEvent*);
@@ -109,9 +99,6 @@ private:
 	void mouseReleaseEvent(QMouseEvent *e);
 	void mouseMoveEvent(QMouseEvent *e);
 	void wheelEvent(QWheelEvent *e);
-
-	bool load(QFile &file);
-	void save_(QFile &file);
 
 	void resizePainter_();
 

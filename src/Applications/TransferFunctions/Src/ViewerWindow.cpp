@@ -20,7 +20,7 @@ ViewerWindow::ViewerWindow():
 	//---TF Editor---
 
 	mTransferFunctionEditor = M4D::GUI::TFPalette::Ptr(new M4D::GUI::TFPalette(this));
-	//mTransferFunctionEditor->setupDefault();	
+	mTransferFunctionEditor->setupDefault();	
 
 	QDockWidget* dockWidget = new QDockWidget("Transfer Function Palette", this);
 	

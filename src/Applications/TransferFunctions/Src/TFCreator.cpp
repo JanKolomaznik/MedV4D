@@ -18,7 +18,7 @@ namespace GUI {
 template<TF::Size dim>
 typename TFAbstractFunction<dim>::Ptr TFCreator::createFunction_(){
 
-	switch(getStructure_().function)
+	switch(structure_[mode_].function)
 	{
 		case TF::Types::FunctionRGB:
 		{
@@ -37,7 +37,7 @@ typename TFAbstractFunction<dim>::Ptr TFCreator::createFunction_(){
 template<TF::Size dim>
 typename TFAbstractPainter<dim>::Ptr TFCreator::createPainter_(){
 
-	switch(getStructure_().painter)
+	switch(structure_[mode_].painter)
 	{
 		case TF::Types::PainterGrayscale:
 		{
@@ -72,11 +72,11 @@ typename TFAbstractPainter<dim>::Ptr TFCreator::createPainter_(){
 template<TF::Size dim>
 typename TFAbstractModifier<dim>::Ptr TFCreator::createModifier_(typename TFWorkCopy<dim>::Ptr workCopy){
 
-	switch(getStructure_().modifier)
+	switch(structure_[mode_].modifier)
 	{
 		case TF::Types::ModifierSimple:
 		{
-			switch(getStructure_().painter)
+			switch(structure_[mode_].painter)
 			{
 				case TF::Types::PainterGrayscale:
 				{
@@ -112,7 +112,7 @@ typename TFAbstractModifier<dim>::Ptr TFCreator::createModifier_(typename TFWork
 		}
 		case TF::Types::ModifierPolygon:
 		{
-			switch(getStructure_().painter)
+			switch(structure_[mode_].painter)
 			{
 				case TF::Types::PainterGrayscale:
 				{
@@ -155,7 +155,7 @@ typename TFAbstractModifier<dim>::Ptr TFCreator::createModifier_(typename TFWork
 
 TFHolderInterface* TFCreator::createHolder_(){
 	
-	switch(getStructure_().holder)
+	switch(structure_[mode_].holder)
 	{
 		case TF::Types::HolderBasic:
 		{
@@ -164,7 +164,7 @@ TFHolderInterface* TFCreator::createHolder_(){
 			TFWorkCopy<1>::Ptr workCopy(new TFWorkCopy<1>(function));
 			TFAbstractModifier<1>::Ptr modifier = createModifier_<1>(workCopy);
 
-			return new TFBasicHolder(mainWindow_, painter, modifier, getStructure_());
+			return new TFBasicHolder(mainWindow_, painter, modifier, structure_[mode_]);
 		}
 	}
 
@@ -216,48 +216,103 @@ TFHolderInterface* TFCreator::createTransferFunction(){
 }
 	
 TFHolderInterface* TFCreator::loadTransferFunction(){
-/*
+
+	Mode memento = mode_;
+	mode_ = CreateLoaded;
+
+	TFHolderInterface* loaded = NULL;
+
 	QString fileName = QFileDialog::getOpenFileName(
-		(QWidget*)mainWindow,
+		(QWidget*)mainWindow_,
 		QObject::tr("Open Transfer Function"),
 		QDir::currentPath(),
 		QObject::tr("TF Files (*.tf *.xml)"));
 
-	if (fileName.isEmpty()) return NULL;
+	QMessageBox errorMessage(QMessageBox::Critical,
+		QObject::tr("Error"),
+		QObject::tr("File %1 is empty").arg(fileName),
+		QMessageBox::Ok,
+		(QWidget*)mainWindow_);
+	errorMessage.setDefaultButton(QMessageBox::Ok);
 
-	TFBasicHolder* loaded = new TFBasicHolder(mainWindow);
-
-	QFile qFile(fileName);
-
-	if (!qFile.open(QFile::ReadOnly | QFile::Text)) {
-		QMessageBox::warning(
-			(QWidget*)mainWindow,
-			QObject::tr("Transfer Functions"),
-			QObject::tr("Cannot read file %1:\n%2.").arg(fileName).arg(qFile.errorString()));
-
-		qFile.close();
-		return NULL;
+	if (fileName.isEmpty())
+	{
+		errorMessage.exec();
+		mode_ = memento;
+		return loaded;
 	}
-	if(!loaded->load(qFile))
+
+	QFile file(fileName);
+
+	if (!file.open(QFile::ReadOnly | QFile::Text))
+	{
+		errorMessage.setText(QObject::tr("Cannot read file %1:\n%2.").arg(fileName).arg(file.errorString()));
+		errorMessage.exec();
+
+		file.close();
+		mode_ = memento;
+		return loaded;
+	}
+
+	TFXmlReader::Ptr reader(new TFXmlReader(&file));
+	bool error;
+	loaded = load_(reader, error);
+
+	if(!loaded)
 	{ 
-		QMessageBox::warning(
-			(QWidget*)mainWindow,
-			QObject::tr("TFXmlReader"),
-			QObject::tr("Parse error in file %1").arg(fileName));
+		errorMessage.setText(QObject::tr("File %1 is corrupted").arg(fileName));
+		errorMessage.exec();
 
-		qFile.close();
-		return NULL;
+		file.close();
+		mode_ = memento;
+		return loaded;
 	}
-	qFile.close();
-*/
-	return NULL;//loaded;
+	else if(error)
+	{
+		QMessageBox::warning((QWidget*)mainWindow_,
+			QObject::tr("Error"),
+			QObject::tr("Error while reading additional data.\nSome settings are set to default."));
+	}
+
+	file.close();
+	mode_ = memento;
+	return loaded;
 }
 
-TF::Types::Structure& TFCreator::getStructure_(){
+TFHolderInterface* TFCreator::load_(TFXmlReader::Ptr reader, bool& sideError){
 
-	if(predefinedChoice_) return predefinedStructure_;
+	#ifndef TF_NDEBUG
+		std::cout << "Loading editor..." << std::endl;
+	#endif
 
-	return customStructure_;
+	TFHolderInterface* loaded = NULL;
+	bool ok = false;
+	if(reader->readElement("Editor"))
+	{		
+		structure_[mode_].predefined = TF::convert<std::string, TF::Types::Predefined>(
+			reader->readAttribute("Predefined"));
+
+		structure_[mode_].holder = TF::convert<std::string, TF::Types::Holder>(
+			reader->readAttribute("Holder"));
+
+		structure_[mode_].function = TF::convert<std::string, TF::Types::Function>(
+			reader->readAttribute("Function"));
+
+		structure_[mode_].painter = TF::convert<std::string, TF::Types::Painter>(
+			reader->readAttribute("Painter"));
+
+		structure_[mode_].modifier = TF::convert<std::string, TF::Types::Modifier>(
+			reader->readAttribute("Modifier"));
+
+		loaded = createHolder_();
+		if(loaded) ok = loaded->loadData(reader, sideError);
+	}
+	if(!ok)
+	{
+		if(loaded) delete loaded;
+		return NULL;
+	}
+	return loaded;
 }
 
 void TFCreator::on_nextButton_clicked(){
@@ -266,7 +321,7 @@ void TFCreator::on_nextButton_clicked(){
 	{
 		case Predefined:
 		{
-			if(predefinedChoice_) accept();
+			if(mode_ == CreatePredefined) accept();
 			else setStateHolder_();
 			break;
 		}
@@ -350,7 +405,7 @@ void TFCreator::setStatePredefined_(){
 	{
 		TFPredefinedDialogButton* type = new TFPredefinedDialogButton(*it);
 		type->setText(QString::fromStdString(TF::convert<TF::Types::Predefined, std::string>(*it)));
-		if(predefinedSet_ && getStructure_().predefined == *it) toActivate = type;
+		if(predefinedSet_ && structure_[mode_].predefined == *it) toActivate = type;
 
 		bool typeButtonConnected = QObject::connect(type, SIGNAL(Activated(TF::Types::Predefined)), this, SLOT(predefinedButton_clicked(TF::Types::Predefined)));
 		tfAssert(typeButtonConnected);
@@ -379,7 +434,7 @@ void TFCreator::setStateHolder_(){
 	{
 		TFHolderDialogButton* type = new TFHolderDialogButton(*it);
 		type->setText(QString::fromStdString(TF::convert<TF::Types::Holder, std::string>(*it)));
-		if(holderSet_ && customStructure_.holder == *it) toActivate = type;
+		if(holderSet_ && structure_[mode_].holder == *it) toActivate = type;
 
 		bool typeButtonConnected = QObject::connect(type, SIGNAL(Activated(TF::Types::Holder)), this, SLOT(holderButton_clicked(TF::Types::Holder)));
 		tfAssert(typeButtonConnected);
@@ -399,7 +454,7 @@ void TFCreator::setStateFunction_(){
 
 	clearLayout_();
 
-	TF::Types::Functions allowedFunctions = TF::Types::getAllowedFunctions(customStructure_.holder);
+	TF::Types::Functions allowedFunctions = TF::Types::getAllowedFunctions(structure_[mode_].holder);
 	
 	TFFunctionDialogButton* toActivate = NULL;
 	TF::Types::Functions::iterator begin = allowedFunctions.begin();
@@ -408,7 +463,7 @@ void TFCreator::setStateFunction_(){
 	{
 		TFFunctionDialogButton* type = new TFFunctionDialogButton(*it);
 		type->setText(QString::fromStdString(TF::convert<TF::Types::Function, std::string>(*it)));
-		if(functionSet_ && customStructure_.function == *it) toActivate = type;
+		if(functionSet_ && structure_[mode_].function == *it) toActivate = type;
 
 		bool typeButtonConnected = QObject::connect( type, SIGNAL(Activated(TF::Types::Function)), this, SLOT(functionButton_clicked(TF::Types::Function)));
 		tfAssert(typeButtonConnected);
@@ -427,7 +482,7 @@ void TFCreator::setStatePainter_(){
 
 	clearLayout_();
 
-	TF::Types::Painters allowedPainters = TF::Types::getAllowedPainters(customStructure_.function);
+	TF::Types::Painters allowedPainters = TF::Types::getAllowedPainters(structure_[mode_].function);
 
 	TFPainterDialogButton* toActivate = NULL;
 	TF::Types::Painters::iterator begin = allowedPainters.begin();
@@ -436,7 +491,7 @@ void TFCreator::setStatePainter_(){
 	{
 		TFPainterDialogButton* type = new TFPainterDialogButton(*it);
 		type->setText(QString::fromStdString(TF::convert<TF::Types::Painter, std::string>(*it)));
-		if(painterSet_ && customStructure_.painter == *it) toActivate = type;
+		if(painterSet_ && structure_[mode_].painter == *it) toActivate = type;
 
 		bool typeButtonConnected = QObject::connect( type, SIGNAL(Activated(TF::Types::Painter)), this, SLOT(painterButton_clicked(TF::Types::Painter)));
 		tfAssert(typeButtonConnected);
@@ -456,7 +511,7 @@ void TFCreator::setStateModifier_(){
 
 	clearLayout_();
 
-	TF::Types::Modifiers allowedModifiers = TF::Types::getAllowedModifiers(customStructure_.painter);
+	TF::Types::Modifiers allowedModifiers = TF::Types::getAllowedModifiers(structure_[mode_].painter);
 
 	TFModifierDialogButton* toActivate = NULL;
 	TF::Types::Modifiers::iterator begin = allowedModifiers.begin();
@@ -465,7 +520,7 @@ void TFCreator::setStateModifier_(){
 	{
 		TFModifierDialogButton* type = new TFModifierDialogButton(*it);
 		type->setText(QString::fromStdString(TF::convert<TF::Types::Modifier, std::string>(*it)));
-		if(modifierSet_ && customStructure_.modifier == *it)  toActivate = type;
+		if(modifierSet_ && structure_[mode_].modifier == *it)  toActivate = type;
 
 		bool typeButtonConnected = QObject::connect( type, SIGNAL(Activated(TF::Types::Modifier)), this, SLOT(modifierButton_clicked(TF::Types::Modifier)));
 		tfAssert(typeButtonConnected);
@@ -484,12 +539,14 @@ void TFCreator::setStateModifier_(){
 void TFCreator::predefinedButton_clicked(TF::Types::Predefined predefined){
 
 	predefinedSet_ = true;
-	predefinedChoice_ = predefined != TF::Types::PredefinedCustom;
+	
+	if(predefined == TF::Types::PredefinedCustom) mode_ = CreateCustom;
+	else mode_ = CreatePredefined;
 
 	ui_->nextButton->setEnabled(true);
-	if(predefinedChoice_) 
+	if( mode_ == CreatePredefined) 
 	{
-		predefinedStructure_ = TF::Types::getPredefinedStructure(predefined);
+		structure_[mode_] = TF::Types::getPredefinedStructure(predefined);
 		ui_->nextButton->setText(QObject::tr("Finish"));
 	}
 	else
@@ -501,7 +558,7 @@ void TFCreator::predefinedButton_clicked(TF::Types::Predefined predefined){
 void TFCreator::holderButton_clicked(TF::Types::Holder holder){
 
 	holderSet_ = true;	
-	if(holder != customStructure_.holder)
+	if(holder != structure_[mode_].holder)
 	{
 		functionSet_ = false;
 		painterSet_ = false;
@@ -510,13 +567,13 @@ void TFCreator::holderButton_clicked(TF::Types::Holder holder){
 
 	ui_->nextButton->setEnabled(true);
 
-	customStructure_.holder = holder;
+	structure_[mode_].holder = holder;
 }
 
 void TFCreator::functionButton_clicked(TF::Types::Function function){
 
 	functionSet_ = true;	
-	if(function != customStructure_.function)
+	if(function != structure_[mode_].function)
 	{
 		painterSet_ = false;
 		modifierSet_ = false;
@@ -524,20 +581,20 @@ void TFCreator::functionButton_clicked(TF::Types::Function function){
 
 	ui_->nextButton->setEnabled(true);
 
-	customStructure_.function = function;
+	structure_[mode_].function = function;
 }
 
 void TFCreator::painterButton_clicked(TF::Types::Painter painter){
 
 	painterSet_ = true;
-	if(painter != customStructure_.painter)
+	if(painter != structure_[mode_].painter)
 	{
 		modifierSet_ = false;
 	}
 	
 	ui_->nextButton->setEnabled(true);
 	
-	customStructure_.painter = painter;
+	structure_[mode_].painter = painter;
 }
 
 void TFCreator::modifierButton_clicked(TF::Types::Modifier modifier){
@@ -546,7 +603,7 @@ void TFCreator::modifierButton_clicked(TF::Types::Modifier modifier){
 
 	ui_->nextButton->setEnabled(true);
 
-	customStructure_.modifier = modifier;
+	structure_[mode_].modifier = modifier;
 }
 //------
 

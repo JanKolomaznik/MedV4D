@@ -3,22 +3,35 @@
 
 #include <QtCore/QXmlStreamWriter>
 #include <QtCore/QString>
+#include <QtCore/QFile>
 
-#include <TFAbstractFunction.h>
+#include <TFCommon.h>
 
 namespace M4D {
 namespace GUI {
 
-class TFXmlWriter : public QXmlStreamWriter
-{
+class TFXmlWriter{
+
 public:
-	TFXmlWriter();/*
-	void write(QIODevice* device, TFAbstractFunction<1>::Ptr data);
-	void writeTestData(QIODevice* device);
+
+	typedef boost::shared_ptr<TFXmlWriter> Ptr;
+
+	TFXmlWriter(QFile* file);
+	~TFXmlWriter();
+
+	void writeDTD(const std::string dtd);
+
+	void writeStartElement(const std::string element);
+	void writeEndElement();
+
+	void writeAttribute(const std::string attribute, const std::string value);
+
+	void finalizeDocument();
 
 private:
-	void writeFunction_(TFAbstractFunction<1>::Ptr function);
-	void writePoint_(TF::Color point);*/
+
+	QXmlStreamWriter qWriter_;
+	TF::Size elementDepth_;
 };
 
 } // namespace GUI

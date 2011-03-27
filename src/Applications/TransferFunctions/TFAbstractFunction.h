@@ -1,6 +1,12 @@
 #ifndef TF_ABSTRACTFUNCTION
 #define TF_ABSTRACTFUNCTION
 
+#include <TFXmlReader.h>
+#include <TFXmlWriter.h>
+#include <QtCore/QString>
+#include <QtGui/QMessageBox>
+#include <QtGui/QFileDialog>
+
 #include <TFCommon.h>
 #include <TFColor.h>
 
@@ -18,7 +24,7 @@ public:
 	virtual TF::Color getMappedRGBfColor(const TF::Size value, const TF::Size dimension) = 0;
 	virtual TF::Size getDomain() const = 0;
 	virtual TF::Size getDimension() const = 0;
- 
+
 protected:
 
 	TFApplyFunctionInterface(){}
@@ -73,8 +79,93 @@ public:
 		if(domain == domain_) return;
 		domain_ = domain;
 
-		const TF::MultiDColor<dim>::Map::Ptr old = colorMap_;
 		TF::MultiDColor<dim>::Map::Ptr resized(new TF::MultiDColor<dim>::Map(domain_));
+		resize_(colorMap_, resized);
+
+		colorMap_ = resized;
+	}
+	
+	void operator=(const TFAbstractFunction<dim> &function){
+		
+		*colorMap_ = *function.colorMap_;
+		domain_ = function.domain_;
+	}
+	 
+	void save(TFXmlWriter::Ptr writer){
+
+		saveSettings_(writer);
+
+		writer->writeStartElement("Function");
+
+			writer->writeAttribute("Domain", TF::convert<TF::Size, std::string>(domain_));
+			writer->writeAttribute("Dimension", TF::convert<TF::Size, std::string>(dim));
+				
+			for(TF::Size i = 0; i < domain_; ++i)
+			{
+				writer->writeStartElement("MultiDColor");
+
+				for(TF::Size j = 1; j <= dim; ++j)
+				{
+					writer->writeStartElement("Color");
+
+						writer->writeAttribute("Component1",
+							TF::convert<float, std::string>((*colorMap_)[i][j].component1));
+						writer->writeAttribute("Component2",
+							TF::convert<float, std::string>((*colorMap_)[i][j].component2));
+						writer->writeAttribute("Component3",
+							TF::convert<float, std::string>((*colorMap_)[i][j].component3));
+						writer->writeAttribute("Alpha",
+							TF::convert<float, std::string>((*colorMap_)[i][j].alpha));
+				
+					writer->writeEndElement();
+				}
+
+				writer->writeEndElement();
+			}
+
+		writer->writeEndElement();
+	}
+
+	virtual bool load(TFXmlReader::Ptr reader, bool& sideError){
+
+		#ifndef TF_NDEBUG
+			std::cout << "Loading function..." << std::endl;
+		#endif
+			
+		sideError = !loadSettings_(reader);
+
+		bool ok = true;
+		if(reader->readElement("Function"))
+		{		
+			TF::Size domain = TF::convert<std::string, TF::Size>(
+				reader->readAttribute("Domain"));
+
+			TF::MultiDColor<dim>::Map::Ptr loaded(new TF::MultiDColor<dim>::Map(domain));			
+			TF::Size i = 0;
+			for(; i < domain; ++i)
+			{
+				if(!loadMultiDColor_(reader, loaded, i)) break;
+			}
+
+			if(i == domain)
+			{
+				ok = true;
+				resize_(loaded, colorMap_);
+			}
+		}
+		return ok;
+	}
+
+protected:
+
+	typename TF::MultiDColor<dim>::Map::Ptr colorMap_;
+	TF::Size domain_;
+
+	TFAbstractFunction(){}
+	virtual ~TFAbstractFunction(){}
+
+	void resize_(const typename TF::MultiDColor<dim>::Map::Ptr old,
+		typename TF::MultiDColor<dim>::Map::Ptr resized){
 
 		int inputSize = old->size();
 		int outputSize = resized->size();
@@ -136,26 +227,48 @@ public:
 				(*resized)[outputIndexer] = computedValue/valueCount;
 			}
 		}
-
-		colorMap_ = resized;
-	}
-	
-	void operator=(const TFAbstractFunction<dim> &function){
-		
-		*colorMap_ = *function.colorMap_;
-		domain_ = function.domain_;
 	}
 
-	//void save();
-	//void load();
+	virtual void saveSettings_(TFXmlWriter::Ptr writer){}
+	virtual bool loadSettings_(TFXmlReader::Ptr reader){ return true; }
 
-protected:
+	bool loadMultiDColor_(TFXmlReader::Ptr reader, typename TF::MultiDColor<dim>::Map::Ptr loaded,
+		TF::Size i){
 
-	typename TF::MultiDColor<dim>::Map::Ptr colorMap_;
-	TF::Size domain_;
+		bool ok = false;
+		if(reader->readElement("MultiDColor"))
+		{			
+			TF::Size j = 1;	
+			for(; j <= dim; ++j)
+			{
+				if(!loadColor_(reader, loaded, i, j)) break;
+			}
+			if(j == dim+1)
+			{
+				ok = true;
+			}
+		}
+		return ok;
+	}
 
-	TFAbstractFunction(){}
-	virtual ~TFAbstractFunction(){}
+	bool loadColor_(TFXmlReader::Ptr reader, typename TF::MultiDColor<dim>::Map::Ptr loaded,
+		TF::Size i, TF::Size j){
+
+		bool ok = false;
+		if(reader->readElement("Color"))
+		{		
+			(*loaded)[i][j].component1 = TF::convert<std::string, float>(
+				reader->readAttribute("Component1"));
+			(*loaded)[i][j].component2 = TF::convert<std::string, float>(
+				reader->readAttribute("Component2"));
+			(*loaded)[i][j].component3 = TF::convert<std::string, float>(
+				reader->readAttribute("Component3"));
+			(*loaded)[i][j].alpha = TF::convert<std::string, float>(
+				reader->readAttribute("Alpha"));
+			ok = true;
+		}
+		return ok;
+	}
 };
 
 } // namespace GUI
