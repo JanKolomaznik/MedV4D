@@ -13,12 +13,12 @@ TFXmlWriter::TFXmlWriter(QFile *file):
 
 TFXmlWriter::~TFXmlWriter(){}
 
-void TFXmlWriter::writeDTD(const std::string attribute){
+void TFXmlWriter::writeDTD(const std::string& attribute){
 
 	qWriter_.writeDTD(QString::fromStdString("<!DOCTYPE " + attribute + ">"));
 }
 
-void TFXmlWriter::writeStartElement(const std::string element){
+void TFXmlWriter::writeStartElement(const std::string& element){
 
 	qWriter_.writeStartElement(QString::fromStdString(element));
 	++elementDepth_;
@@ -30,7 +30,7 @@ void TFXmlWriter::writeEndElement(){
 	--elementDepth_;
 }
 
-void TFXmlWriter::writeAttribute(const std::string attribute, const std::string value){
+void TFXmlWriter::writeAttribute(const std::string& attribute, const std::string& value){
 
 	qWriter_.writeAttribute(QString::fromStdString(attribute), QString::fromStdString(value));
 }

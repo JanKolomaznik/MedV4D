@@ -10,7 +10,7 @@ TFXmlReader::TFXmlReader(QFile *file):
 
 TFXmlReader::~TFXmlReader(){}
 
-bool TFXmlReader::readElement(const std::string element){
+bool TFXmlReader::readElement(const std::string& element){
 
 	while(!qReader_.atEnd())
 	{
@@ -25,7 +25,7 @@ bool TFXmlReader::readElement(const std::string element){
 	return false;
 }
 
-std::string TFXmlReader::readAttribute(const std::string attribute){
+std::string TFXmlReader::readAttribute(const std::string& attribute){
 
 	return qReader_.attributes().value(QString::fromStdString(attribute)).toString().toStdString();
 }

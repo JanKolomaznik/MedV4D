@@ -41,7 +41,7 @@ public:
 	void setDomain(const TF::Size domain);
 	TF::Size getDomain();
 	
-	M4D::Common::TimeStamp getTimeStamp(/*bool& noFunctionAvailable*/);
+	M4D::Common::TimeStamp getTimeStamp();
 
 	//TF::MultiDColor<dim>::Map::Ptr getColorMap();
 

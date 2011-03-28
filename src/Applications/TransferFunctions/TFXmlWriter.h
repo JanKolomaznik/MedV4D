@@ -19,12 +19,12 @@ public:
 	TFXmlWriter(QFile* file);
 	~TFXmlWriter();
 
-	void writeDTD(const std::string dtd);
+	void writeDTD(const std::string& dtd);
 
-	void writeStartElement(const std::string element);
+	void writeStartElement(const std::string& element);
 	void writeEndElement();
 
-	void writeAttribute(const std::string attribute, const std::string value);
+	void writeAttribute(const std::string& attribute, const std::string& value);
 
 	void finalizeDocument();
 

@@ -27,12 +27,14 @@ struct Color{
 		alpha(alpha){
 	}
 	
-	void operator=(const Color& color){
+	Color& operator=(const Color& color){
 
 		component1 = color.component1;
 		component2 = color.component2;
 		component3 = color.component3;
 		alpha = color.alpha;
+
+		return *this;
 	}
 
 	bool operator==(const Color& color){

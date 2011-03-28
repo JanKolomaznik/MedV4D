@@ -78,7 +78,7 @@ TF::Size TFPalette::getDomain(){
 	return domain_;
 }
 
-M4D::Common::TimeStamp TFPalette::getTimeStamp(/*bool& noFunctionAvailable*/){
+M4D::Common::TimeStamp TFPalette::getTimeStamp(){
 
 	if(palette_.empty())
 	{
@@ -156,8 +156,6 @@ void TFPalette::resizeEvent(QResizeEvent* e){
 }
 
 void TFPalette::close_triggered(TF::Size index){
-
-	//if(palette_.size() <= 1) exit(0);
 
 	removeFromPalette_(index);
 }

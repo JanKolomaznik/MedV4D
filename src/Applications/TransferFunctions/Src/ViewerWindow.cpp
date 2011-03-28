@@ -278,6 +278,6 @@ void ViewerWindow::openFile( const QString &aPath )
 	assert(histogramSet);
 
 	mViewer->ZoomFit();
-	updateTransferFunction();
+	applyTransferFunction();
 	mTransFuncTimer.start();
 }

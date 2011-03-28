@@ -79,7 +79,8 @@ void TFBasicHolder::setup(const TF::Size index){
 
 	index_ = index;
 
-	title_ = title_ + " #" + TF::convert<TF::Size, std::string>(index_ + 1);
+	title_ = title_ + TF::convert<TF::Size, std::string>(index_ + 1);
+	setWindowTitle(QString::fromStdString(title_));
 	if(dockHolder_) dockHolder_->setWindowTitle(QString::fromStdString(title_));
 	if(dockTools_) dockTools_->setWindowTitle(QString::fromStdString(title_ + " Tools"));
 	

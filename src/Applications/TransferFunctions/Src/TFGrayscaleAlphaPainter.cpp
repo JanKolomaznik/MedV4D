@@ -12,7 +12,8 @@ TFGrayscaleAlphaPainter::TFGrayscaleAlphaPainter(bool drawAlpha):
 	alpha_(Qt::yellow),
 	hist_(255,140,0,255),
 	noColor_(0,0,0,0),
-	drawAlpha_(drawAlpha){
+	drawAlpha_(drawAlpha),
+	sizeChanged_(true){
 }
 
 TFGrayscaleAlphaPainter::~TFGrayscaleAlphaPainter(){}

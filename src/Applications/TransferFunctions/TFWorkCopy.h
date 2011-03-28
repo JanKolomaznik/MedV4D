@@ -99,20 +99,22 @@ public:
 
 	//---getters---
 	
-	TF::Color getColor(const TF::Size index, const TF::Size dimension){
+	TF::Color getColor(const int index, const TF::Size dimension){
+
+		tfAssert(index >= 0 && index <(int) xSize_);
+
+		float indexBase = index*zoom_.xRatio + zoom_.xOffset;
+		float radius = zoom_.xRatio/2.0;
+		float bottom = indexBase - radius;
+		float top = indexBase + radius;
 
 		TF::Color result(0,0,0,0);
 		int count = 0;
-		int bottom = -zoom_.ratio/2;
-		int top = (zoom_.ratio+1)/2;
-		int indexBase = index*zoom_.xRatio + zoom_.xOffset;
-		int currIndex = indexBase;
 		for(int i = bottom; i < top; ++i)
 		{
-			currIndex = indexBase + i;
-			if(currIndex >= 0 && currIndex < (int)data_->getDomain())
+			if(i >= 0 && i < (int)data_->getDomain())
 			{
-				result += data_->getMappedRGBfColor(currIndex, dimension);
+				result += data_->getMappedRGBfColor(i, dimension);
 				++count;
 			}
 		}
@@ -122,20 +124,22 @@ public:
 		return result;
 	}
 	
-	float getComponent1(const TF::Size index, const TF::Size dimension){
+	float getComponent1(const int index, const TF::Size dimension){
+
+		tfAssert(index >= 0 && index <(int) xSize_);
+
+		float indexBase = index*zoom_.xRatio + zoom_.xOffset;
+		float radius = zoom_.xRatio/2.0;
+		float bottom = indexBase - radius;
+		float top = indexBase + radius;
 
 		float result = 0;
 		int count = 0;
-		int bottom = -zoom_.ratio/2;
-		int top = (zoom_.ratio+1)/2;
-		int indexBase = index*zoom_.xRatio + zoom_.xOffset;
-		int currIndex = indexBase;
 		for(int i = bottom; i < top; ++i)
 		{
-			currIndex = indexBase + i;
-			if(currIndex >= 0 && currIndex < (int)data_->getDomain())
+			if(i >= 0 && i < (int)data_->getDomain())
 			{
-				result += ((*data_)[currIndex][dimension].component1 - zoom_.yOffset)*zoom_.zoom;
+				result += ((*data_)[i][dimension].component1 - zoom_.yOffset)*zoom_.zoom;
 				++count;
 			}
 		}
@@ -143,20 +147,22 @@ public:
 		return result/count;
 	}
 	
-	float getComponent2(const TF::Size index, const TF::Size dimension){
+	float getComponent2(const int index, const TF::Size dimension){
+
+		tfAssert(index >= 0 && index <(int) xSize_);
+
+		float indexBase = index*zoom_.xRatio + zoom_.xOffset;
+		float radius = zoom_.xRatio/2.0;
+		float bottom = indexBase - radius;
+		float top = indexBase + radius;
 
 		float result = 0;
 		int count = 0;
-		int bottom = -zoom_.ratio/2;
-		int top = (zoom_.ratio+1)/2;
-		int indexBase = index*zoom_.xRatio + zoom_.xOffset;
-		int currIndex = indexBase;
 		for(int i = bottom; i < top; ++i)
 		{
-			currIndex = indexBase + i;
-			if(currIndex >= 0 && currIndex < (int)data_->getDomain())
+			if(i >= 0 && i < (int)data_->getDomain())
 			{
-				result += ((*data_)[currIndex][dimension].component2 - zoom_.yOffset)*zoom_.zoom;
+				result += ((*data_)[i][dimension].component2 - zoom_.yOffset)*zoom_.zoom;
 				++count;
 			}
 		}
@@ -164,20 +170,22 @@ public:
 		return result/count;
 	}
 	
-	float getComponent3(const TF::Size index, const TF::Size dimension){
+	float getComponent3(const int index, const TF::Size dimension){
+
+		tfAssert(index >= 0 && index <(int) xSize_);
+
+		float indexBase = index*zoom_.xRatio + zoom_.xOffset;
+		float radius = zoom_.xRatio/2.0;
+		float bottom = indexBase - radius;
+		float top = indexBase + radius;
 
 		float result = 0;
 		int count = 0;
-		int bottom = -zoom_.ratio/2;
-		int top = (zoom_.ratio+1)/2;
-		int indexBase = index*zoom_.xRatio + zoom_.xOffset;
-		int currIndex = indexBase;
 		for(int i = bottom; i < top; ++i)
 		{
-			currIndex = indexBase + i;
-			if(currIndex >= 0 && currIndex < (int)data_->getDomain())
+			if(i >= 0 && i < (int)data_->getDomain())
 			{
-				result += ((*data_)[currIndex][dimension].component3 - zoom_.yOffset)*zoom_.zoom;
+				result += ((*data_)[i][dimension].component3 - zoom_.yOffset)*zoom_.zoom;
 				++count;
 			}
 		}
@@ -185,20 +193,22 @@ public:
 		return result/count;
 	}
 	
-	float getAlpha(const TF::Size index, const TF::Size dimension){
+	float getAlpha(const int index, const TF::Size dimension){
+
+		tfAssert(index >= 0 && index <(int) xSize_);
+
+		float indexBase = index*zoom_.xRatio + zoom_.xOffset;
+		float radius = zoom_.xRatio/2.0;
+		float bottom = indexBase - radius;
+		float top = indexBase + radius;
 
 		float result = 0;
 		int count = 0;
-		int bottom = -zoom_.ratio/2;
-		int top = (zoom_.ratio+1)/2;
-		int indexBase = index*zoom_.xRatio + zoom_.xOffset;
-		int currIndex = indexBase;
 		for(int i = bottom; i < top; ++i)
 		{
-			currIndex = indexBase + i;
-			if(currIndex >= 0 && currIndex < (int)data_->getDomain())
+			if(i >= 0 && i < (int)data_->getDomain())
 			{
-				result += ((*data_)[currIndex][dimension].alpha - zoom_.yOffset)*zoom_.zoom;
+				result += ((*data_)[i][dimension].alpha - zoom_.yOffset)*zoom_.zoom;
 				++count;
 			}
 		}
@@ -206,22 +216,24 @@ public:
 		return result/count;
 	}
 	
-	float getHistogramValue(const TF::Size index){
+	float getHistogramValue(const int index){
+
+		tfAssert(index >= 0 && index <(int) xSize_);
 
 		if(!histogramEnabled_ || !histogram_) return -1;
 
+		float indexBase = index*zoom_.xRatio + zoom_.xOffset;
+		float radius = zoom_.xRatio/2.0;
+		float bottom = indexBase - radius;
+		float top = indexBase + radius;
+
 		float result = 0;
 		int count = 0;
-		int bottom = -zoom_.ratio/2;
-		int top = (zoom_.ratio+1)/2;
-		int indexBase = index*zoom_.xRatio + zoom_.xOffset + 1;
-		int currIndex = indexBase;
 		for(int i = bottom; i < top; ++i)
 		{
-			currIndex = indexBase + i;
-			if(currIndex >= 0 && currIndex < (int)data_->getDomain())
-			{	//TODO log histogram view
-				result += (((*histogram_)[currIndex]/(2.0*histogram_->avarage())) - zoom_.yOffset)*zoom_.zoom;
+			if(i >= 0 && i < (int)data_->getDomain())
+			{
+				result += (histogram_->getRelLogValue(i) - zoom_.yOffset)*zoom_.zoom;
 				++count;
 			}
 		}
@@ -231,86 +243,85 @@ public:
 
 	//---setters---
 	
-	void setComponent1(const TF::Size index, const TF::Size dimension, const float value){
+	void setComponent1(const int index, const TF::Size dimension, const float value){
 
 		float correctedValue = value/zoom_.zoom + zoom_.yOffset;
 		if(correctedValue < 0) correctedValue = 0;
 		if(correctedValue > 1) correctedValue = 1;
 
-		int bottom = -zoom_.ratio/2;
-		int top = (zoom_.ratio+1)/2;
-		int indexBase = index*zoom_.xRatio + zoom_.xOffset;
-		int currIndex = indexBase;
+		float indexBase = index*zoom_.xRatio + zoom_.xOffset;
+		float radius = zoom_.xRatio/2.0;
+		float bottom = indexBase - radius;
+		float top = indexBase + radius;
 
 		for(int i = bottom; i < top; ++i)
 		{
-			currIndex = indexBase + i;
-			if(currIndex >= 0 && currIndex < (int)data_->getDomain())
+			if(i >= 0 && i < (int)data_->getDomain())
 			{
-				(*data_)[currIndex][dimension].component1 = correctedValue;
+				(*data_)[i][dimension].component1 = correctedValue;
 			}
 		}
 		changes_[dimension - 1].component1 = true;
 	}
 	
-	void setComponent2(const TF::Size index, const TF::Size dimension, const float value){
+	void setComponent2(const int index, const TF::Size dimension, const float value){
 
 		float correctedValue = value/zoom_.zoom + zoom_.yOffset;
 		if(correctedValue < 0) correctedValue = 0;
 		if(correctedValue > 1) correctedValue = 1;
 
-		int bottom = -zoom_.ratio/2;
-		int top = (zoom_.ratio+1)/2;
-		int indexBase = index*zoom_.xRatio + zoom_.xOffset;
-		int currIndex = indexBase;
+		float indexBase = index*zoom_.xRatio + zoom_.xOffset;
+		float radius = zoom_.xRatio/2.0;
+		float bottom = indexBase - radius;
+		float top = indexBase + radius;
+
 		for(int i = bottom; i < top; ++i)
 		{
-			currIndex = indexBase + i;
-			if(currIndex >= 0 && currIndex < (int)data_->getDomain())
+			if(i >= 0 && i < (int)data_->getDomain())
 			{
-				(*data_)[currIndex][dimension].component2 = correctedValue;
+				(*data_)[i][dimension].component2 = correctedValue;
 			}
 		}
 		changes_[dimension - 1].component2 = true;
 	}
 	
-	void setComponent3(const TF::Size index, const TF::Size dimension, const float value){
+	void setComponent3(const int index, const TF::Size dimension, const float value){
 
 		float correctedValue = value/zoom_.zoom + zoom_.yOffset;
 		if(correctedValue < 0) correctedValue = 0;
 		if(correctedValue > 1) correctedValue = 1;
 
-		int bottom = -zoom_.ratio/2;
-		int top = (zoom_.ratio+1)/2;
-		int indexBase = index*zoom_.xRatio + zoom_.xOffset;
-		int currIndex = indexBase;
+		float indexBase = index*zoom_.xRatio + zoom_.xOffset;
+		float radius = zoom_.xRatio/2.0;
+		float bottom = indexBase - radius;
+		float top = indexBase + radius;
+
 		for(int i = bottom; i < top; ++i)
 		{
-			currIndex = indexBase + i;
-			if(currIndex >= 0 && currIndex < (int)data_->getDomain())
+			if(i >= 0 && i < (int)data_->getDomain())
 			{
-				(*data_)[currIndex][dimension].component3 = correctedValue;
+				(*data_)[i][dimension].component3 = correctedValue;
 			}
 		}
 		changes_[dimension - 1].component3 = true;
 	}
 	
-	void setAlpha(const TF::Size index, const TF::Size dimension, const float value){
+	void setAlpha(const int index, const TF::Size dimension, const float value){
 
 		float correctedValue = value/zoom_.zoom + zoom_.yOffset;
 		if(correctedValue < 0) correctedValue = 0;
 		if(correctedValue > 1) correctedValue = 1;
 
-		int bottom = -zoom_.ratio/2;
-		int top = (zoom_.ratio+1)/2;
-		int indexBase = index*zoom_.xRatio + zoom_.xOffset;
-		int currIndex = indexBase;
+		float indexBase = index*zoom_.xRatio + zoom_.xOffset;
+		float radius = zoom_.xRatio/2.0;
+		float bottom = indexBase - radius;
+		float top = indexBase + radius;
+
 		for(int i = bottom; i < top; ++i)
 		{
-			currIndex = indexBase + i;
-			if(currIndex >= 0 && currIndex < (int)data_->getDomain())
+			if(i >= 0 && i < (int)data_->getDomain())
 			{
-				(*data_)[currIndex][dimension].alpha = correctedValue;
+				(*data_)[i][dimension].alpha = correctedValue;
 			}
 		}
 		changes_[dimension - 1].alpha = true;
@@ -421,20 +432,18 @@ private:
 	struct ZoomProperties{
 		float zoom;
 		float max;
-		TF::Size xOffset;
+		float xOffset;
 		float yOffset;
 		float xRatio;
-		int ratio;
 		TF::Point<float,float> center;
 
 		ZoomProperties():
-			zoom(1),
-			max(40),
-			xOffset(0),
-			yOffset(0),
-			xRatio(1),
-			ratio(1),
-			center(0,0){
+			zoom(1.0f),
+			max(40.0f),
+			xOffset(0.0f),
+			yOffset(0.0f),
+			xRatio(1.0f),
+			center(0.0f,0.0f){
 		}
 	};
 
@@ -474,22 +483,22 @@ private:
 	void computeZoom_(const float nextZoom, const int zoomX, const int zoomY){
 
 		float relativeZoomedRatioX = (data_->getDomain()/zoom_.zoom)/xSize_;
-		float relativeZoomedRatioY = (1/zoom_.zoom)/ySize_;
+		float relativeZoomedRatioY = (1.0f/zoom_.zoom)/ySize_;
 
-		float xRadius = (int)(data_->getDomain()/nextZoom/2.0f);
-		int xOffesetInc = zoom_.xOffset + (int)(zoomX*relativeZoomedRatioX - xRadius);
+		float xRadius = (data_->getDomain()/nextZoom)/2.0f;
+		float xOffesetInc = zoom_.xOffset + zoomX*relativeZoomedRatioX - xRadius;
 
-		int maxXOffset = (int)(data_->getDomain() - 2*xRadius);
+		float maxXOffset = data_->getDomain() - 2.0f*xRadius;
 		
-		if(xOffesetInc < 0) xOffesetInc = 0;
+		if(xOffesetInc < 0.0f) xOffesetInc = 0.0f;
 		if(xOffesetInc > maxXOffset) xOffesetInc = maxXOffset;
 
-		float yRadius = 1/nextZoom/2.0f;
+		float yRadius = (1.0f/nextZoom)/2.0f;
 		float yOffesetInc = zoom_.yOffset + zoomY*relativeZoomedRatioY - yRadius;
 
-		float maxYOffset = 1 - 2*yRadius;
+		float maxYOffset = 1 - 2.0f*yRadius;
 
-		if(yOffesetInc < 0) yOffesetInc = 0;
+		if(yOffesetInc < 0.0f) yOffesetInc = 0.0f;
 		if(yOffesetInc > maxYOffset) yOffesetInc = maxYOffset;
 
 		float zoomedDomain = data_->getDomain()/nextZoom;
@@ -498,9 +507,8 @@ private:
 		zoom_.xOffset = xOffesetInc;
 		zoom_.yOffset = yOffesetInc;
 		zoom_.xRatio = zoomedDomain/xSize_;
-		zoom_.ratio = (int)(zoom_.xRatio)+1;
-		zoom_.center = TF::Point<float,float>(((zoomedDomain/2.0) + zoom_.xOffset)/data_->getDomain(),
-			1.0/zoom_.zoom/2.0 + zoom_.yOffset);
+		zoom_.center = TF::Point<float,float>(((zoomedDomain/2.0f) + zoom_.xOffset)/data_->getDomain(),
+			(1.0f/zoom_.zoom)/2.0f + zoom_.yOffset);
 		
 		for(TF::Size i = 0; i < dim; ++i) changes_[i].setAllChanged();
 		histogramChanged_ = true;

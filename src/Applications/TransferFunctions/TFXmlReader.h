@@ -19,8 +19,8 @@ public:
 	TFXmlReader(QFile* file);
 	~TFXmlReader();
 
-	bool readElement(const std::string element);
-	std::string readAttribute(const std::string attribute);
+	bool readElement(const std::string& element);
+	std::string readAttribute(const std::string& attribute);
 
 	QString fileName();
 

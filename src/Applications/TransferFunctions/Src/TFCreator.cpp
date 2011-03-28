@@ -276,6 +276,11 @@ TFHolderInterface* TFCreator::loadTransferFunction(){
 
 	file.close();
 	mode_ = memento;
+
+	#ifndef TF_NDEBUG
+		std::cout << "Loading finished." << std::endl;
+	#endif
+
 	return loaded;
 }
 

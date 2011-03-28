@@ -5,7 +5,7 @@ namespace GUI{
 	
 void TFHolderInterface::save(){
 	
-	if(fileName_.isEmpty()) fileName_ = QDir::currentPath();
+	if(fileName_.isEmpty()) fileName_ = QDir::currentPath().append("/").append(windowTitle());
 
 	fileName_ = QFileDialog::getSaveFileName(this,
 		QObject::tr("Save Transfer Function"),
