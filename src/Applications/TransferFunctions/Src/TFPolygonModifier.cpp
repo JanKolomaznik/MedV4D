@@ -12,7 +12,8 @@ TFPolygonModifier::TFPolygonModifier(TFWorkCopy<TF_POLYGONMODIFIER_DIMENSION>::P
 	leftMousePressed_(false),
 	zoomMovement_(false),
 	baseRadius_(50),
-	topRadius_(20){
+	topRadius_(20),
+	histScroll_(false){
 
 	workCopy_ = workCopy;
 
@@ -70,6 +71,13 @@ TFPolygonModifier::TFPolygonModifier(TFWorkCopy<TF_POLYGONMODIFIER_DIMENSION>::P
 }
 
 TFPolygonModifier::~TFPolygonModifier(){}
+	
+bool TFPolygonModifier::load(TFXmlReader::Ptr reader){
+
+	updateZoomTools_();
+	tools_->maxZoomSpin->setValue((int)workCopy_->getMaxZoom());
+	return true;
+}
 
 void TFPolygonModifier::histogram_check(bool enabled){
 
@@ -215,11 +223,29 @@ void TFPolygonModifier::mouseWheel(const int steps, const int x, const int y){
 	TF::PaintingPoint relativePoint = getRelativePoint_(x,y);
 	if(relativePoint == ignorePoint_) return;
 
+	if(histScroll_)
+	{
+		if(steps > 0) workCopy_->increaseHistogramLogBase(2.0*steps);
+		if(steps < 0) workCopy_->decreaseHistogramLogBase(2.0*(-steps));
+		emit RefreshView();
+		return;
+	}
+
 	if(steps > 0) workCopy_->zoomIn(steps, relativePoint.x, relativePoint.y);
 	if(steps < 0) workCopy_->zoomOut(-steps, relativePoint.x, relativePoint.y);
 	
 	updateZoomTools_();
 	emit RefreshView();
+}
+
+void TFPolygonModifier::keyPress(int qtKey){
+
+	if(qtKey == Qt::Key_Control) histScroll_ = true;
+}
+	
+void TFPolygonModifier::keyRelease(int qtKey){
+
+	if(qtKey == Qt::Key_Control) histScroll_ = false;
 }
 
 void TFPolygonModifier::addPolygon_(const TF::PaintingPoint point){

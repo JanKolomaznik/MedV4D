@@ -23,6 +23,7 @@ TFBasicHolder::TFBasicHolder(QMainWindow* mainWindow,
 
 	ui_->setupUi(this);
 	holder_->setCentralWidget(this);
+	setMouseTracking(true);
 
 	structure_ = structure;
 	title_ = TF::convert<TF::Types::Predefined, std::string>(structure_.predefined);
@@ -164,7 +165,22 @@ void TFBasicHolder::mouseReleaseEvent(QMouseEvent *e){
 
 void TFBasicHolder::mouseMoveEvent(QMouseEvent *e){
 
+	setFocus();
 	modifier_->mouseMove(e->x(), e->y());
+}
+
+void TFBasicHolder::keyPressEvent(QKeyEvent *e){
+
+	modifier_->keyPress(e->key());
+
+	QWidget::keyPressEvent(e);
+}
+
+void TFBasicHolder::keyReleaseEvent(QKeyEvent *e){
+
+	modifier_->keyRelease(e->key());
+
+	QWidget::keyReleaseEvent(e);
 }
 
 void TFBasicHolder::wheelEvent(QWheelEvent *e){
@@ -216,34 +232,32 @@ void TFBasicHolder::refresh_view(){
 void TFBasicHolder::saveData_(TFXmlWriter::Ptr writer){
 		
 	painter_->save(writer);
+	modifier_->getWorkCopy()->save(writer);
 	modifier_->save(writer);
+
 	modifier_->getWorkCopy()->getFunction()->save(writer);
 }
 
 bool TFBasicHolder::loadData(TFXmlReader::Ptr reader, bool& sideError){	
 
 	#ifndef TF_NDEBUG
-		std::cout << "Loading data..." << std::endl;
+		std::cout << "Loading data:" << std::endl;
 	#endif
 
-	sideError = false;
 	bool error;
 
-	bool painterLoaded = painter_->load(reader, error);
-	sideError = sideError || error;
-
-	bool modifierLoaded = modifier_->load(reader, error);
-	sideError = sideError || error;
-
+	bool painterLoaded = painter_->load(reader);
+	bool workCopyLoaded = modifier_->getWorkCopy()->load(reader);
+	bool modifierLoaded = modifier_->load(reader);
+	
 	bool functionLoaded = modifier_->getWorkCopy()->getFunction()->load(reader, error);
-	sideError = sideError || error;
+	
+	sideError = error || !painterLoaded || !modifierLoaded || !workCopyLoaded;
 
-	if(painterLoaded && modifierLoaded && functionLoaded)
-	{
-		fileName_ = reader->fileName();
-		return true;
-	}
-	return false;
+	if(!functionLoaded) return false;
+
+	fileName_ = reader->fileName();
+	return true;
 }
 
 } // namespace GUI

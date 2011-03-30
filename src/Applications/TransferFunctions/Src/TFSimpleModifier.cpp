@@ -10,7 +10,8 @@ TFSimpleModifier::TFSimpleModifier(TFWorkCopy<TF_SIMPLEMODIFIER_DIMENSION>::Ptr 
 	activeView_(Active1),
 	inputHelper_(),
 	leftMousePressed_(false),
-	zoomMovement_(false){
+	zoomMovement_(false),
+	histScroll_(false){
 
 	workCopy_ = workCopy;
 
@@ -19,6 +20,10 @@ TFSimpleModifier::TFSimpleModifier(TFWorkCopy<TF_SIMPLEMODIFIER_DIMENSION>::Ptr 
 
 	tools_->maxZoomSpin->setValue((int)workCopy_->getMaxZoom());
 	tools_->ratioValue->setText(QString::number(workCopy_->getZoom()));
+
+	TF::Point<float,float> center = workCopy_->getZoomCenter();
+	tools_->zoomXValue->setText(QString::number(center.x));
+	tools_->zoomYValue->setText(QString::number(center.y));
 
 	bool changeViewConnected = QObject::connect(tools_->activeViewBox, SIGNAL(currentIndexChanged(int)),
 		this, SLOT(activeView_changed(int)));
@@ -61,6 +66,13 @@ TFSimpleModifier::TFSimpleModifier(TFWorkCopy<TF_SIMPLEMODIFIER_DIMENSION>::Ptr 
 }
 
 TFSimpleModifier::~TFSimpleModifier(){}
+	
+bool TFSimpleModifier::load(TFXmlReader::Ptr reader){
+
+	updateZoomTools_();
+	tools_->maxZoomSpin->setValue((int)workCopy_->getMaxZoom());
+	return true;
+}
 
 void TFSimpleModifier::histogram_check(bool enabled){
 
@@ -185,11 +197,29 @@ void TFSimpleModifier::mouseWheel(const int steps, const int x, const int y){
 	TF::PaintingPoint relativePoint = getRelativePoint_(x,y);
 	if(relativePoint == ignorePoint_) return;
 
+	if(histScroll_)
+	{
+		if(steps > 0) workCopy_->increaseHistogramLogBase(2.0*steps);
+		if(steps < 0) workCopy_->decreaseHistogramLogBase(2.0*(-steps));
+		emit RefreshView();
+		return;
+	}
+
 	if(steps > 0) workCopy_->zoomIn(steps, relativePoint.x, relativePoint.y);
 	if(steps < 0) workCopy_->zoomOut(-steps, relativePoint.x, relativePoint.y);
 	
 	updateZoomTools_();
 	emit RefreshView();
+}
+
+void TFSimpleModifier::keyPress(int qtKey){
+
+	if(qtKey == Qt::Key_Control) histScroll_ = true;
+}
+	
+void TFSimpleModifier::keyRelease(int qtKey){
+
+	if(qtKey == Qt::Key_Control) histScroll_ = false;
 }
 
 void TFSimpleModifier::addPoint_(const int x, const int y){

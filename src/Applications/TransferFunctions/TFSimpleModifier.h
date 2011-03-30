@@ -26,10 +26,14 @@ public:
 	TFSimpleModifier(TFWorkCopy<TF_SIMPLEMODIFIER_DIMENSION>::Ptr workCopy, Mode mode, bool alpha);
 	~TFSimpleModifier();
 
+	bool load(TFXmlReader::Ptr reader);
+
 	void mousePress(const int x, const int y, Qt::MouseButton button);
 	void mouseRelease(const int x, const int y);
 	void mouseMove(const int x, const int y);
 	void mouseWheel(const int steps, const int x, const int y);
+	void keyPress(int qtKey);
+	void keyRelease(int qtKey);
 
 private slots:
 
@@ -53,6 +57,7 @@ private:
 	Mode mode_;
 	bool alpha_;
 
+	bool histScroll_;
 	bool leftMousePressed_;
 	TF::PaintingPoint inputHelper_;
 

@@ -8,6 +8,7 @@
 
 #include <QtGui/QPainter>
 
+#include <QtGui/QKeyEvent>
 #include <QtGui/QMouseEvent>
 #include <QtGui/QWheelEvent>
 #include <QtGui/QPaintEvent>
@@ -95,10 +96,14 @@ private:
 
 	void paintEvent(QPaintEvent*);
 	void resizeEvent(QResizeEvent*);
+
 	void mousePressEvent(QMouseEvent *e);
 	void mouseReleaseEvent(QMouseEvent *e);
 	void mouseMoveEvent(QMouseEvent *e);
 	void wheelEvent(QWheelEvent *e);
+
+	void keyPressEvent(QKeyEvent *e);
+	void keyReleaseEvent(QKeyEvent *e);
 
 	void resizePainter_();
 

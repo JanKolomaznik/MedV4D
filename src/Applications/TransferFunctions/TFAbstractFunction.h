@@ -134,7 +134,7 @@ public:
 			
 		sideError = !loadSettings_(reader);
 
-		bool ok = true;
+		bool ok = false;
 		if(reader->readElement("Function"))
 		{		
 			TF::Size domain = TF::convert<std::string, TF::Size>(

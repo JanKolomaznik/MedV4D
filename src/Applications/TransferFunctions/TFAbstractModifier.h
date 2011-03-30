@@ -65,16 +65,16 @@ public:
 	virtual void mouseRelease(const int x, const int y){}
 	virtual void mouseMove(const int x, const int y){}
 	virtual void mouseWheel(const int steps, const int x, const int y){}
-	virtual void keyPressed(QKeySequence keySequence){}
+	virtual void keyPress(int qtKey){}
+	virtual void keyRelease(int qtKey){}
 
 	virtual void save(TFXmlWriter::Ptr writer){}
-	virtual bool load(TFXmlReader::Ptr reader, bool& sideError){
+	virtual bool load(TFXmlReader::Ptr reader){
 
 		#ifndef TF_NDEBUG
 			std::cout << "Loading modifier..." << std::endl;
 		#endif
 
-		sideError = false;
 		return true;
 	}
 /*

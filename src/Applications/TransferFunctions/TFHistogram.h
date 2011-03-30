@@ -3,8 +3,6 @@
 
 #include <TFCommon.h>
 
-#include <cmath>
-
 namespace M4D {
 namespace GUI {	
 namespace TF {
@@ -12,6 +10,7 @@ namespace TF {
 class Histogram{	//TODO vector wrapper w/ maximum
 
 public:
+
 	typedef boost::shared_ptr<Histogram> Ptr;
 
 	typedef std::vector<Size>::const_iterator const_iterator;
@@ -20,11 +19,8 @@ public:
 
 	Histogram():
 		values_(),
-		maxValue_(0),
-		avarageValue_(0),
-		logBase_(20),
-		logMod_(std::log(logBase_)),
-		logMax_(1){
+		maxValue_(0.0f),
+		avarageValue_(0.0f){
 	}
 
 	void add(const Size value){
@@ -34,19 +30,11 @@ public:
 		if(value > maxValue_)
 		{
 			maxValue_ = value;
-			logMax_ = std::log((float)maxValue_)/logMod_;
 		}
 
 		sum_ += value;
 
 		avarageValue_ = sum_/(float)values_.size();
-	}
-
-	void setLogBase(float logBase){
-
-		logBase_ = logBase;
-		logMod_ = std::log(logBase_);
-		logMax_ = std::log((float)maxValue_)/logMod_;
 	}
 
 	Size size(){
@@ -61,12 +49,8 @@ public:
 
 		return avarageValue_;
 	}
-	float logBase(){
 
-		return logBase_;
-	}
-
-	const value_type& operator[](Size index){
+	const value_type& operator[](const Size index){
 
 		tfAssert(index < values_.size());
 		return values_[index];
@@ -79,23 +63,10 @@ public:
 
 		return values_.end();
 	}
-	float getRelativeValue(Size index){
+	float getRelativeValue(const Size index){
 
 		tfAssert(index < values_.size());
 		return maxValue_/values_[index];
-	}
-	float getLogValue(Size index){
-
-		tfAssert(index < values_.size());
-		float value = values_[index];
-		if(value > 0) value = std::log(value)/logMod_;
-
-		return value;
-	}
-	float getRelLogValue(Size index){
-
-		tfAssert(index < values_.size());
-		return getLogValue(index)/logMax_;
 	}
 
 private:
@@ -104,10 +75,6 @@ private:
 	Size maxValue_;
 	Size sum_;
 	float avarageValue_;
-
-	float logBase_;
-	float logMod_;
-	float logMax_;
 };
 
 }

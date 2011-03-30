@@ -29,13 +29,12 @@ public:
 	virtual QPixmap getView(typename TFWorkCopy<dim>::Ptr workCopy) = 0;
 
 	virtual void save(TFXmlWriter::Ptr writer){}
-	virtual bool load(TFXmlReader::Ptr reader, bool& sideError){
+	virtual bool load(TFXmlReader::Ptr reader){
 
 		#ifndef TF_NDEBUG
 			std::cout << "Loading painter..." << std::endl;
 		#endif
 
-		sideError = false;
 		return true;
 	}
 
