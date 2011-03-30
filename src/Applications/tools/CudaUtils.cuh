@@ -142,6 +142,7 @@ CheckCudaErrorState( std::string aErrorMessage )
 #define CheckCudaErrorState( aErrorMessage ) \
 {\
 	cudaError_t err = cudaGetLastError();\
+	D_PRINT( aErrorMessage ); \
 	if( cudaSuccess != err) {\
 		_THROW_ M4D::ErrorHandling::ExceptionBase( TO_STRING( aErrorMessage << " : " << cudaGetErrorString( err) ) );\
 	}\

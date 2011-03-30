@@ -115,17 +115,35 @@ main( int argc, char **argv )
 			}
 			typedef M4D::Imaging::Image< TTYPE, 3 > IMAGE_TYPE;
 			IMAGE_TYPE::Ptr typedImage = IMAGE_TYPE::Cast( image );
-			//M4D::Imaging::Mask3D::Ptr maskImage = ImageFactory::CreateEmptyImageFromExtents< uint8, 3 >( typedImage->GetMinimum(), typedImage->GetMaximum(), typedImage->GetElementExtents() );
+			M4D::Imaging::Mask3D::Ptr maskImage = ImageFactory::CreateEmptyImageFromExtents< uint8, 3 >( typedImage->GetMinimum(), typedImage->GetMaximum(), typedImage->GetElementExtents() );
 			M4D::Imaging::Image< uint32, 3 >::Ptr labelImage = ImageFactory::CreateEmptyImageFromExtents< uint32, 3 >( typedImage->GetMinimum(), typedImage->GetMaximum(), typedImage->GetElementExtents() );
 			
-			/*std::cout << "Finding local minima ..."; std::cout.flush();
+			std::cout << "Finding local minima ..."; std::cout.flush();
 			LocalMinima3D( typedImage->GetRegion(), maskImage->GetRegion(), threshold );
 			std::cout << "Done\n";
 
 			std::cout << "Connected component labeling ..."; std::cout.flush();
 			ConnectedComponentLabeling3D( maskImage->GetRegion(), labelImage->GetRegion() );
-			std::cout << "Done\n";*/
+			std::cout << "Done\n";
 
+			std::cout << "Watershed transformation ..."; std::cout.flush();
+			WatershedTransformation3D( labelImage->GetRegion(), typedImage->GetRegion(), labelImage->GetRegion() );
+			std::cout << "Done\n";
+
+			std::cout << "Saving file '" << outFilename << "' ..."; std::cout.flush();
+			M4D::Imaging::ImageFactory::DumpImage( outFilename, *labelImage );
+			std::cout << "Done\n";
+		);
+	} else if ( operatorName == "WSHED2" || operatorName == "WATERSHED2") {
+		NUMERIC_TYPE_TEMPLATE_SWITCH_MACRO( image->GetElementTypeID(),
+			TTYPE threshold = TypeTraits<TTYPE>::Max;
+			if (thresholdArg.isSet() ) {
+				threshold = TTYPE( thresholdArg.getValue() );
+			}
+			typedef M4D::Imaging::Image< TTYPE, 3 > IMAGE_TYPE;
+			IMAGE_TYPE::Ptr typedImage = IMAGE_TYPE::Cast( image );
+			M4D::Imaging::Image< uint32, 3 >::Ptr labelImage = ImageFactory::CreateEmptyImageFromExtents< uint32, 3 >( typedImage->GetMinimum(), typedImage->GetMaximum(), typedImage->GetElementExtents() );
+			
 			std::cout << "Finding local minima ..."; std::cout.flush();
 			LocalMinimaRegions3D( typedImage->GetRegion(), labelImage->GetRegion(), threshold );
 			std::cout << "Done\n";

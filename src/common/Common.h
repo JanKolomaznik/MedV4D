@@ -81,12 +81,16 @@ AlignedNew( uint32 size )
  * @param ... Templated command. Must contain DIM, which will be replaced by 
  * apropriete value. Example : function_name< DIM >( DIM + 1 )
  **/
-#define DIMENSION_TEMPLATE_SWITCH_MACRO( SWITCH, ... ) \
+#define DIMENSION_TEMPLATE_SWITCH_DEFAULT_MACRO( SWITCH, DEFAULT, ... ) \
 	switch( SWITCH ) {\
 	case 2:{ const unsigned DIM = 2; __VA_ARGS__ ; } break;\
 	case 3:{ const unsigned DIM = 3; __VA_ARGS__ ; } break;\
-	default: ASSERT( false );\
+	default: { DEFAULT; }\
 	}
+
+#define DIMENSION_TEMPLATE_SWITCH_MACRO( SWITCH, ... ) \
+	DIMENSION_TEMPLATE_SWITCH_DEFAULT_MACRO( SWITCH, ASSERT( false ), __VA_ARGS__ )
+
 	//TODO
 	/*case 4:{ const unsigned DIM = 4; __VA_ARGS__ ; } break;\*/
 

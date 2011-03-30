@@ -1,5 +1,7 @@
 #include "CudaUtils.cuh"
 #include "Imaging/ImageRegion.h"
+#include "Imaging/Image.h"
+#include "Imaging/ImageFactory.h"
 
 
 template< typename TElement >
@@ -302,18 +304,22 @@ ConnectedComponentLabeling3DNoAllocation( Buffer3D< uint32 > outBuffer, Buffer1D
 	int3 blockResolution3D = GetBlockResolution( outBuffer.mSize, blockSize3D, make_int3(0,0,0) );
 	dim3 gridSize3D( blockResolution3D.x * blockResolution3D.y, blockResolution3D.z, 1 );
 
+	CheckCudaErrorState( "Before InitLut()" );
 	InitLut<<< gridSize1D, blockSize1D >>>( outBuffer, lut );
 	CheckCudaErrorState( "After InitLut()" );
+	cudaThreadSynchronize();
 	ScanImage<<< gridSize3D, blockSize3D >>>( 
 					outBuffer, 
 					lut,
 					blockResolution3D
 					);
+	cudaThreadSynchronize();
 
 	CheckCudaErrorState( "Before iterations" );
 	cudaMemcpyFromSymbol( &lutUpdated, "lutUpdated", sizeof(int), 0, cudaMemcpyDeviceToHost );
 	while (lutUpdated != 0) {
 		LOG( ">" );
+		CheckCudaErrorState( "Begin iteration" );
                 cudaMemcpyToSymbol( "lutUpdated", &(lutUpdated = 0), sizeof(int), 0, cudaMemcpyHostToDevice );
 
 		UpdateLut<<< gridSize1D, blockSize1D >>>( outBuffer, lut );
@@ -324,7 +330,10 @@ ConnectedComponentLabeling3DNoAllocation( Buffer3D< uint32 > outBuffer, Buffer1D
 					lut,
 					blockResolution3D
 					);
+		cudaThreadSynchronize();
+		CheckCudaErrorState( "cudaMemcpyFromSymbol" );
 		cudaMemcpyFromSymbol( &lutUpdated, "lutUpdated", sizeof(int), 0, cudaMemcpyDeviceToHost );
+		cudaThreadSynchronize();
 		CheckCudaErrorState( "End of iteration" );
 	}
 	cudaThreadSynchronize();
@@ -764,6 +773,112 @@ template< typename RegionType >
 void
 LocalMinimaRegions3D( RegionType input, M4D::Imaging::ImageRegion< uint32, 3 > output, typename RegionType::ElementType aThreshold )
 {
+	M4D::Imaging::Mask3D::Ptr maskImage = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< uint8, 3 >( input.GetMinimum(), input.GetMaximum(), input.GetElementExtents() );
+	
+	M4D::Imaging::MaskRegion3D mask = maskImage->GetRegion();
+	
+	//LocalMinima3D( input, maskImage->GetRegion(), aThreshold );
+
+	{
+		typedef typename RegionType::ElementType TElement;
+		
+		Buffer3D< TElement > inBuffer = CudaBuffer3DFromImageRegionCopy( input );
+		Buffer3D< uint8 > outBuffer = CudaBuffer3DFromImageRegion( mask );
+
+		LocalMinima3DFtor< TElement > filter( aThreshold );
+		//int3 radius = filter.radius;
+
+		dim3 blockSize( 8, 8, 8 );
+		int3 blockResolution = GetBlockResolution( inBuffer.mSize, blockSize, make_int3(0,0,0) );
+		dim3 gridSize( blockResolution.x * blockResolution.y, blockResolution.z, 1 );
+
+		M4D::Common::Clock clock;
+		CheckCudaErrorState( "Before kernel execution" );
+		FilterKernel3D< TElement, uint8, LocalMinima3DFtor< TElement > >
+			<<< gridSize, blockSize >>>( 
+						inBuffer, 
+						outBuffer, 
+						blockResolution,
+						filter
+						);
+		cudaThreadSynchronize();
+		CheckCudaErrorState( "After kernel execution" );
+		D_PRINT( "Computations took " << clock.SecondsPassed() )
+
+		cudaMemcpy(mask.GetPointer(), outBuffer.mData, outBuffer.mLength * sizeof(uint8), cudaMemcpyDeviceToHost );
+		CheckCudaErrorState( "Copy back" );
+		cudaFree( inBuffer.mData );
+		cudaFree( outBuffer.mData );
+		CheckCudaErrorState( "Free memory" );
+	}
+
+
+	{
+		typedef typename RegionType::ElementType TElement;
+		
+		Buffer3D< TElement > inBuffer = CudaBuffer3DFromImageRegionCopy( input );
+		Buffer3D< uint32 > outBuffer = CudaBuffer3DFromImageRegion( output );
+		LocalMinimaRegions3DFtor< TElement > filter( aThreshold );
+
+		dim3 blockSize( 8, 8, 8 );
+		int3 blockResolution = GetBlockResolution( inBuffer.mSize, blockSize, make_int3(0,0,0) );
+		dim3 gridSize( blockResolution.x * blockResolution.y, blockResolution.z, 1 );
+		dim3 blockSize1D( 512 );
+		dim3 gridSize1D( (inBuffer.mLength + 64*blockSize1D.x - 1) / (64*blockSize1D.x) , 64 );
+
+		M4D::Common::Clock clock;
+		CheckCudaErrorState( "Before 'LocalMinimaRegions3D' kernel execution" );
+		FilterKernel3D< TElement, uint32, LocalMinimaRegions3DFtor< TElement > >
+			<<< gridSize, blockSize >>>( 
+						inBuffer, 
+						outBuffer, 
+						blockResolution,
+						filter
+						);
+		cudaThreadSynchronize();
+		CheckCudaErrorState( "After 'LocalMinimaRegions3D' kernel execution" );
+		cudaFree( inBuffer.mData );
+		cudaFree( outBuffer.mData );
+	}
+			
+	//ConnectedComponentLabeling3D( maskImage->GetRegion(), output );
+	{
+		Buffer3D< uint8 > inBuffer = CudaBuffer3DFromImageRegionCopy( mask );
+		Buffer3D< uint32 > outBuffer = CudaBuffer3DFromImageRegion( output );
+
+		dim3 blockSize1D( 512 );
+		dim3 gridSize1D( (inBuffer.mLength + 64*blockSize1D.x - 1) / (64*blockSize1D.x) , 64 );
+		
+		dim3 blockSize3D( 8, 8, 8 );
+		int3 blockResolution3D = GetBlockResolution( inBuffer.mSize, blockSize3D, make_int3(0,0,0) );
+		dim3 gridSize3D( blockResolution3D.x * blockResolution3D.y, blockResolution3D.z, 1 );
+
+		M4D::Common::Clock clock;
+
+		CheckCudaErrorState( "Before execution" );
+		CopyMask<<< gridSize1D, blockSize1D >>>( inBuffer, outBuffer );
+		CheckCudaErrorState( "After CopyMask()" );
+		cudaFree( inBuffer.mData );
+
+		Buffer1D< uint32 > lut = CudaAllocateBuffer<uint32>( outBuffer.mLength ); 
+
+		ConnectedComponentLabeling3DNoAllocation( outBuffer, lut );
+
+		D_PRINT( "Computations took " << clock.SecondsPassed() )
+
+		cudaMemcpy(output.GetPointer(), outBuffer.mData, outBuffer.mLength * sizeof(uint32), cudaMemcpyDeviceToHost );
+		CheckCudaErrorState( "Copy back" );
+		cudaFree( outBuffer.mData );
+		cudaFree( lut.mData );
+
+	}
+
+}
+
+/*template< typename RegionType >
+void
+LocalMinimaRegions3D( RegionType input, M4D::Imaging::ImageRegion< uint32, 3 > output, typename RegionType::ElementType aThreshold )
+{
 	typedef typename RegionType::ElementType TElement;
 	
 	Buffer3D< TElement > inBuffer = CudaBuffer3DFromImageRegionCopy( input );
@@ -779,7 +894,7 @@ LocalMinimaRegions3D( RegionType input, M4D::Imaging::ImageRegion< uint32, 3 > o
 	dim3 gridSize1D( (inBuffer.mLength + 64*blockSize1D.x - 1) / (64*blockSize1D.x) , 64 );
 
 	M4D::Common::Clock clock;
-	CheckCudaErrorState( "Before kernel execution" );
+	CheckCudaErrorState( "Before 'LocalMinimaRegions3D' kernel execution" );
 	FilterKernel3D< TElement, uint32, LocalMinimaRegions3DFtor< TElement > >
 		<<< gridSize, blockSize >>>( 
 					inBuffer, 
@@ -787,8 +902,8 @@ LocalMinimaRegions3D( RegionType input, M4D::Imaging::ImageRegion< uint32, 3 > o
 					blockResolution,
 					filter
 					);
-	CheckCudaErrorState( "After kernel execution" );
 	cudaThreadSynchronize();
+	CheckCudaErrorState( "After 'LocalMinimaRegions3D' kernel execution" );
 
 
 	Buffer1D< uint32 > lut = CudaAllocateBuffer<uint32>( outBuffer.mLength ); 
@@ -809,7 +924,7 @@ LocalMinimaRegions3D( RegionType input, M4D::Imaging::ImageRegion< uint32, 3 > o
 	cudaFree( outBuffer.mData );
 	cudaFree( lut.mData );
 	CheckCudaErrorState( "Free memory" );
-}
+}*/
 
 
 

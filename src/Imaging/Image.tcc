@@ -332,12 +332,17 @@ Image< ElementType, Dim >::SetDirtyBBox(
 {
 	ModificationManager & modManager = _imageData->GetModificationManager();
 	
+	WriterBBoxInterface * wbbox = NULL;
 	DIMENSION_TEMPLATE_SWITCH_MACRO( _sourceDimension, 
 		{	
 			Vector< int32, DIM > pmin = PosInSource< DIM >( min );
 			Vector< int32, DIM > pmax = PosInSource< DIM >( max );
-			return modManager.AddMod( pmin, pmax );
+			/*return modManager.AddMod( pmin, pmax );*/
+			wbbox = &(modManager.AddMod( pmin, pmax ));
 		} );
+
+	ASSERT( wbbox );//TODO prevent warnings
+	return *wbbox;
 }
 
 template< typename ElementType, unsigned Dim >
