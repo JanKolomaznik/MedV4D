@@ -284,6 +284,81 @@ FillSharedMemory3D_8x8x8( TElement data[], uint sidx, TElement *buffer, int3 str
 	data[sIdx.y*syStride + sIdx.z*szStride + sIdx.x] = buffer[ IdxFromCoordStrides( mCoordinates, strides ) ];
 }
 
+template< typename TElement, unsigned tRadius, unsigned syStride, unsigned szStride >
+__device__ inline void
+FillSharedMemory3D_8x8x8test( TElement data[], uint sidx, TElement *buffer, int3 strides, int3 size, int3 blockOrigin, int3 coordinates, int idx )
+{
+	const int cBlockDim = 8;
+
+	data[sidx] = buffer[ idx ];
+	
+	uint3 sIdx;
+	int3 mCoordinates = blockOrigin;
+	switch( threadIdx.z ) {
+	case 0:
+		sIdx.x = threadIdx.x + tRadius;
+		sIdx.y = threadIdx.y + tRadius;
+		sIdx.z = 0;
+		break;
+	case 1:
+		sIdx.x = threadIdx.x + tRadius;
+		sIdx.y = threadIdx.y + tRadius;
+		sIdx.z = cBlockDim + tRadius;
+		break;
+	case 2:
+		sIdx.x = threadIdx.x + tRadius;
+		sIdx.y = 0;
+		sIdx.z = threadIdx.y + tRadius;
+		break;
+	case 3:
+		sIdx.x = threadIdx.x + tRadius;
+		sIdx.y = cBlockDim + tRadius;
+		sIdx.z = threadIdx.y + tRadius;
+		break;
+	case 4:
+		sIdx.x = 0;
+		sIdx.y = threadIdx.y + tRadius;
+		sIdx.z = threadIdx.x + tRadius;
+		break;
+	case 5:
+		sIdx.x = cBlockDim + tRadius;
+		sIdx.y = threadIdx.y + tRadius;
+		sIdx.z = threadIdx.x + tRadius;
+		break;
+	case 6:
+		if ( threadIdx.y < 4 ) {
+			sIdx.x = threadIdx.x + tRadius;
+			sIdx.y = (threadIdx.y & 1)*(cBlockDim + tRadius);
+			sIdx.z = (threadIdx.y >> 1)*(cBlockDim + tRadius);
+		} else {
+			sIdx.x = ((threadIdx.y-4) >> 1)*(cBlockDim + tRadius);
+			sIdx.y = threadIdx.x + tRadius;
+			sIdx.z = (threadIdx.y & 1)*(cBlockDim + tRadius);
+		}
+		break;
+	case 7:
+		if ( threadIdx.y < 4 ) {
+			sIdx.x = (threadIdx.y & 1)*(cBlockDim + tRadius);
+			sIdx.y = ((threadIdx.y) >> 1)*(cBlockDim + tRadius);
+			sIdx.z = threadIdx.x + tRadius;
+		} else {	
+			sIdx.x = threadIdx.x < 4 ? 0 : (cBlockDim + tRadius);
+			sIdx.y = (threadIdx.x >> 1) & 1 ? 0 : (cBlockDim + tRadius);
+			sIdx.z = threadIdx.x & 1 ? 0 : (cBlockDim + tRadius);
+		}
+		break;
+	default:
+		break;
+	}
+	mCoordinates.x += sIdx.x - tRadius;
+	mCoordinates.y += sIdx.y - tRadius;
+	mCoordinates.z += sIdx.z - tRadius;
+	ProjectionToInterval( mCoordinates, make_int3(0,0,0), size );
+	data[sIdx.y*syStride + sIdx.z*szStride + sIdx.x] = buffer[ IdxFromCoordStrides( mCoordinates, strides ) ];
+}
+
+
+
 template< typename TInElement, typename TOutElement, typename TFilter >
 __global__ void 
 FilterKernel3D( Buffer3D< TInElement > inBuffer, Buffer3D< TOutElement > outBuffer, int3 blockResolution, TFilter filter )
@@ -305,75 +380,75 @@ FilterKernel3D( Buffer3D< TInElement > inBuffer, Buffer3D< TOutElement > outBuff
 	bool projected = ProjectionToInterval( coordinates, make_int3(0,0,0), size );
 	int idx = IdxFromCoordStrides( coordinates, inBuffer.mStrides );
 
-	FillSharedMemory3D_8x8x8< TInElement, cRadius, syStride, szStride >( data, sidx, inBuffer.mData, inBuffer.mStrides, size, blockOrigin, coordinates, idx );
+	//FillSharedMemory3D_8x8x8< TInElement, cRadius, syStride, szStride >( data, sidx, inBuffer.mData, inBuffer.mStrides, size, blockOrigin, coordinates, idx );
 	
-	/*uint sidx = (threadIdx.y+radius.y) * syStride + (threadIdx.z+radius.z) * szStride + threadIdx.x + radius.x;
+	//uint sidx = (threadIdx.y+cRadius) * syStride + (threadIdx.z+cRadius) * szStride + threadIdx.x + cRadius;
 	data[sidx] = inBuffer.mData[ idx ];
 	
 	uint3 sIdx;
 	int3 mCoordinates = blockOrigin;
 	switch( threadIdx.z ) {
 	case 0:
-		sIdx.x = threadIdx.x + radius.x;
-		sIdx.y = threadIdx.y + radius.y;
+		sIdx.x = threadIdx.x + cRadius;
+		sIdx.y = threadIdx.y + cRadius;
 		sIdx.z = 0;
 		break;
 	case 1:
-		sIdx.x = threadIdx.x + radius.x;
-		sIdx.y = threadIdx.y + radius.y;
-		sIdx.z = blockDim.z + radius.z;
+		sIdx.x = threadIdx.x + cRadius;
+		sIdx.y = threadIdx.y + cRadius;
+		sIdx.z = blockDim.z + cRadius;
 		break;
 	case 2:
-		sIdx.x = threadIdx.x + radius.x;
+		sIdx.x = threadIdx.x + cRadius;
 		sIdx.y = 0;
-		sIdx.z = threadIdx.y + radius.z;
+		sIdx.z = threadIdx.y + cRadius;
 		break;
 	case 3:
-		sIdx.x = threadIdx.x + radius.x;
-		sIdx.y = blockDim.y + radius.y;
-		sIdx.z = threadIdx.y + radius.z;
+		sIdx.x = threadIdx.x + cRadius;
+		sIdx.y = blockDim.y + cRadius;
+		sIdx.z = threadIdx.y + cRadius;
 		break;
 	case 4:
 		sIdx.x = 0;
-		sIdx.y = threadIdx.y + radius.y;
-		sIdx.z = threadIdx.x + radius.z;
+		sIdx.y = threadIdx.y + cRadius;
+		sIdx.z = threadIdx.x + cRadius;
 		break;
 	case 5:
-		sIdx.x = blockDim.x + radius.x;
-		sIdx.y = threadIdx.y + radius.y;
-		sIdx.z = threadIdx.x + radius.z;
+		sIdx.x = blockDim.x + cRadius;
+		sIdx.y = threadIdx.y + cRadius;
+		sIdx.z = threadIdx.x + cRadius;
 		break;
 	case 6:
 		if ( threadIdx.y < 4 ) {
-			sIdx.x = threadIdx.x + radius.x;
-			sIdx.y = (threadIdx.y & 1)*(blockDim.y + radius.y);
-			sIdx.z = (threadIdx.y >> 1)*(blockDim.z + radius.z);
+			sIdx.x = threadIdx.x + cRadius;
+			sIdx.y = (threadIdx.y & 1)*(blockDim.y + cRadius);
+			sIdx.z = (threadIdx.y >> 1)*(blockDim.z + cRadius);
 		} else {
-			sIdx.x = ((threadIdx.y-4) >> 1)*(blockDim.x + radius.x);
-			sIdx.y = threadIdx.x + radius.x;
-			sIdx.z = (threadIdx.y & 1)*(blockDim.z + radius.z);
+			sIdx.x = ((threadIdx.y-4) >> 1)*(blockDim.x + cRadius);
+			sIdx.y = threadIdx.x + cRadius;
+			sIdx.z = (threadIdx.y & 1)*(blockDim.z + cRadius);
 		}
 		break;
 	case 7:
 		if ( threadIdx.y < 4 ) {
-			sIdx.x = (threadIdx.y & 1)*(blockDim.x + radius.x);
-			sIdx.y = ((threadIdx.y) >> 1)*(blockDim.y + radius.y);
-			sIdx.z = threadIdx.x + radius.z;
+			sIdx.x = (threadIdx.y & 1)*(blockDim.x + cRadius);
+			sIdx.y = ((threadIdx.y) >> 1)*(blockDim.y + cRadius);
+			sIdx.z = threadIdx.x + cRadius;
 		} else {	
-			sIdx.x = threadIdx.x < 4 ? 0 : (blockDim.x + radius.x);
-			sIdx.y = (threadIdx.x >> 1) & 1 ? 0 : (blockDim.y + radius.y);
-			sIdx.z = threadIdx.x & 1 ? 0 : (blockDim.z + radius.z);
+			sIdx.x = threadIdx.x < 4 ? 0 : (blockDim.x + cRadius);
+			sIdx.y = (threadIdx.x >> 1) & 1 ? 0 : (blockDim.y + cRadius);
+			sIdx.z = threadIdx.x & 1 ? 0 : (blockDim.z + cRadius);
 		}
 		break;
 	default:
 		break;
 	}
-	mCoordinates.x += sIdx.x - radius.x;
-	mCoordinates.y += sIdx.y - radius.y;
-	mCoordinates.z += sIdx.z - radius.z;
+	mCoordinates.x += sIdx.x - cRadius;
+	mCoordinates.y += sIdx.y - cRadius;
+	mCoordinates.z += sIdx.z - cRadius;
 	ProjectionToInterval( mCoordinates, make_int3(0,0,0), make_int3( size.x, size.y, size.z ) );
-	data[sIdx.y*syStride + sIdx.z*szStride + sIdx.x] = inBuffer.mData[ mCoordinates.x * strides.x + mCoordinates.y * strides.y + mCoordinates.z * strides.z ];
-	*/
+	data[sIdx.y*syStride + sIdx.z*szStride + sIdx.x] = inBuffer.mData[ IdxFromCoordStrides( mCoordinates, inBuffer.mStrides ) ];
+	
 	__syncthreads();
 
 	if( !projected ) {

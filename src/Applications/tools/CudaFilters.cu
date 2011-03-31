@@ -752,8 +752,12 @@ ConsolidationScanImage( Buffer3D< TElement > inBuffer, Buffer3D< uint32 > buffer
 	int idx1 = IdxFromCoordStrides( coordinates, inBuffer.mStrides );
 	int idx2 = IdxFromCoordStrides( coordinates, buffer.mStrides );
 
-	FillSharedMemory3D_8x8x8< TElement, cRadius, syStride, szStride >( inData, sidx, inBuffer.mData, inBuffer.mStrides, size, blockOrigin, coordinates, idx1 );
-	FillSharedMemory3D_8x8x8< uint32, cRadius, syStride, szStride >( labelData, sidx, buffer.mData, buffer.mStrides, size, blockOrigin, coordinates, idx2 );
+	
+	if ( idx1 >= 110 || idx1 < 0 ) return;
+	FillSharedMemory3D_8x8x8test< TElement, cRadius, syStride, szStride >( inData, sidx, inBuffer.mData, inBuffer.mStrides, size, blockOrigin, coordinates, idx1 );
+	//FillSharedMemory3D_8x8x8test< uint32, cRadius, syStride, szStride >( labelData, sidx, buffer.mData, buffer.mStrides, size, blockOrigin, coordinates, idx2 );
+
+	__syncthreads();
 
 	if( !projected && labelData[sidx] > 0 ) {
 		for ( int i = sidx-1; i <= sidx+1; ++i ) {
@@ -777,6 +781,8 @@ LocalMinimaRegions3D( RegionType input, M4D::Imaging::ImageRegion< uint32, 3 > o
 	
 	M4D::Imaging::MaskRegion3D mask = maskImage->GetRegion();
 	
+	ASSERT( mask.GetSize() == input.GetSize() );
+	ASSERT( output.GetSize() == input.GetSize() );
 	//LocalMinima3D( input, maskImage->GetRegion(), aThreshold );
 
 	{
@@ -813,7 +819,7 @@ LocalMinimaRegions3D( RegionType input, M4D::Imaging::ImageRegion< uint32, 3 > o
 	}
 
 
-	{
+	/*{
 		typedef typename RegionType::ElementType TElement;
 		
 		Buffer3D< TElement > inBuffer = CudaBuffer3DFromImageRegionCopy( input );
@@ -839,7 +845,7 @@ LocalMinimaRegions3D( RegionType input, M4D::Imaging::ImageRegion< uint32, 3 > o
 		CheckCudaErrorState( "After 'LocalMinimaRegions3D' kernel execution" );
 		cudaFree( inBuffer.mData );
 		cudaFree( outBuffer.mData );
-	}
+	}*/
 			
 	//ConnectedComponentLabeling3D( maskImage->GetRegion(), output );
 	{
@@ -864,6 +870,11 @@ LocalMinimaRegions3D( RegionType input, M4D::Imaging::ImageRegion< uint32, 3 > o
 
 		ConnectedComponentLabeling3DNoAllocation( outBuffer, lut );
 
+		CheckCudaErrorState( "Before ConsolidationScanImage()" );
+		ConsolidationScanImage<<< gridSize3D, blockSize3D >>>( inBuffer, outBuffer, lut, blockResolution3D );
+
+		cudaThreadSynchronize();
+		CheckCudaErrorState( "After ConsolidationScanImage()" );
 		D_PRINT( "Computations took " << clock.SecondsPassed() )
 
 		cudaMemcpy(output.GetPointer(), outBuffer.mData, outBuffer.mLength * sizeof(uint32), cudaMemcpyDeviceToHost );
