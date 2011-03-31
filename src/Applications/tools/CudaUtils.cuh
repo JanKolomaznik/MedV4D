@@ -94,8 +94,12 @@ Buffer1D< TElement >
 CudaAllocateBuffer( size_t aLength )
 {
 	TElement *pointer;
-	cudaMalloc( &pointer, aLength * sizeof(TElement) );
-	D_PRINT( "CUDA allocated \t" << aLength * sizeof(TElement) << " bytes\nelement size\t" << sizeof(TElement) << " bytes" );
+	cudaError_t eCode = cudaMalloc( &pointer, aLength * sizeof(TElement) );
+	if ( eCode != cudaSuccess ) {
+		_THROW_ EAllocationFailed( "CUDA allocation failed" );
+	}
+	D_PRINT( "CUDA allocated \t" << aLength * sizeof(TElement) << " bytes\nelement size\t" 
+			<< sizeof(TElement) << " bytes\nfrom address 0x" << std::hex << size_t(pointer) << " to 0x" << size_t(pointer+aLength) << std::dec );
 	return Buffer1D< TElement >( aLength, pointer );
 }
 
@@ -108,7 +112,12 @@ CudaPrepareBuffer( Vector3u aSize )
 	int3 strides = make_int3( 1, size.x, size.x * size.y );
 	size_t length = size.x*size.y*size.z;
 	TElement * dataPointer;
-	cudaMalloc( &dataPointer, length * sizeof(TElement) );
+	cudaError_t eCode = cudaMalloc( &dataPointer, length * sizeof(TElement) );
+	if ( eCode != cudaSuccess ) {
+		_THROW_ EAllocationFailed( "CUDA allocation failed" );
+	}
+	D_PRINT( "CUDA allocated \t" << length * sizeof(TElement) << " bytes\nelement size\t" 
+			<< sizeof(TElement) << " bytes\nfrom address 0x" << std::hex << size_t(dataPointer) << " to 0x" << size_t(dataPointer+length) << std::dec );
 	return Buffer3D< TElement >( size, strides, length, dataPointer );
 }
 
@@ -290,7 +299,7 @@ FillSharedMemory3D_8x8x8test( TElement data[], uint sidx, TElement *buffer, int3
 {
 	const int cBlockDim = 8;
 
-	data[sidx] = buffer[ idx ];
+	data[sidx] = buffer[idx ];
 	
 	uint3 sIdx;
 	int3 mCoordinates = blockOrigin;
