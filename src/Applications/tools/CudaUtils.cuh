@@ -65,6 +65,16 @@ operator+( const uint3 &a, const int3 & b )
 	return make_int3( a.x + b.x, a.y + b.y, a.z + b.z );
 }
 
+inline dim3
+splitCountTo2dGrid( size_t aCount )
+{
+	uint threshold = 1<<15;
+	if( aCount > threshold ) {
+		return dim3( threshold, (aCount + threshold -1)/ threshold, 1 );
+	}
+	return dim3( aCount, 1, 1 );
+}
+
 template< typename TElement >
 struct Buffer1D
 {
@@ -293,80 +303,6 @@ FillSharedMemory3D_8x8x8( TElement data[], uint sidx, TElement *buffer, int3 str
 	data[sIdx.y*syStride + sIdx.z*szStride + sIdx.x] = buffer[ IdxFromCoordStrides( mCoordinates, strides ) ];
 }
 
-template< typename TElement, unsigned tRadius, unsigned syStride, unsigned szStride >
-__device__ inline void
-FillSharedMemory3D_8x8x8test( TElement data[], uint sidx, TElement *buffer, int3 strides, int3 size, int3 blockOrigin, int3 coordinates, int idx )
-{
-	const int cBlockDim = 8;
-
-	data[sidx] = buffer[idx ];
-	
-	uint3 sIdx;
-	int3 mCoordinates = blockOrigin;
-	switch( threadIdx.z ) {
-	case 0:
-		sIdx.x = threadIdx.x + tRadius;
-		sIdx.y = threadIdx.y + tRadius;
-		sIdx.z = 0;
-		break;
-	case 1:
-		sIdx.x = threadIdx.x + tRadius;
-		sIdx.y = threadIdx.y + tRadius;
-		sIdx.z = cBlockDim + tRadius;
-		break;
-	case 2:
-		sIdx.x = threadIdx.x + tRadius;
-		sIdx.y = 0;
-		sIdx.z = threadIdx.y + tRadius;
-		break;
-	case 3:
-		sIdx.x = threadIdx.x + tRadius;
-		sIdx.y = cBlockDim + tRadius;
-		sIdx.z = threadIdx.y + tRadius;
-		break;
-	case 4:
-		sIdx.x = 0;
-		sIdx.y = threadIdx.y + tRadius;
-		sIdx.z = threadIdx.x + tRadius;
-		break;
-	case 5:
-		sIdx.x = cBlockDim + tRadius;
-		sIdx.y = threadIdx.y + tRadius;
-		sIdx.z = threadIdx.x + tRadius;
-		break;
-	case 6:
-		if ( threadIdx.y < 4 ) {
-			sIdx.x = threadIdx.x + tRadius;
-			sIdx.y = (threadIdx.y & 1)*(cBlockDim + tRadius);
-			sIdx.z = (threadIdx.y >> 1)*(cBlockDim + tRadius);
-		} else {
-			sIdx.x = ((threadIdx.y-4) >> 1)*(cBlockDim + tRadius);
-			sIdx.y = threadIdx.x + tRadius;
-			sIdx.z = (threadIdx.y & 1)*(cBlockDim + tRadius);
-		}
-		break;
-	case 7:
-		if ( threadIdx.y < 4 ) {
-			sIdx.x = (threadIdx.y & 1)*(cBlockDim + tRadius);
-			sIdx.y = ((threadIdx.y) >> 1)*(cBlockDim + tRadius);
-			sIdx.z = threadIdx.x + tRadius;
-		} else {	
-			sIdx.x = threadIdx.x < 4 ? 0 : (cBlockDim + tRadius);
-			sIdx.y = (threadIdx.x >> 1) & 1 ? 0 : (cBlockDim + tRadius);
-			sIdx.z = threadIdx.x & 1 ? 0 : (cBlockDim + tRadius);
-		}
-		break;
-	default:
-		break;
-	}
-	mCoordinates.x += sIdx.x - tRadius;
-	mCoordinates.y += sIdx.y - tRadius;
-	mCoordinates.z += sIdx.z - tRadius;
-	ProjectionToInterval( mCoordinates, make_int3(0,0,0), size );
-	data[sIdx.y*syStride + sIdx.z*szStride + sIdx.x] = buffer[ IdxFromCoordStrides( mCoordinates, strides ) ];
-}
-
-
 
 template< typename TInElement, typename TOutElement, typename TFilter >
 __global__ void 
@@ -389,8 +325,9 @@ FilterKernel3D( Buffer3D< TInElement > inBuffer, Buffer3D< TOutElement > outBuff
 	bool projected = ProjectionToInterval( coordinates, make_int3(0,0,0), size );
 	int idx = IdxFromCoordStrides( coordinates, inBuffer.mStrides );
 
-	//FillSharedMemory3D_8x8x8< TInElement, cRadius, syStride, szStride >( data, sidx, inBuffer.mData, inBuffer.mStrides, size, blockOrigin, coordinates, idx );
+	FillSharedMemory3D_8x8x8< TInElement, cRadius, syStride, szStride >( data, sidx, inBuffer.mData, inBuffer.mStrides, size, blockOrigin, coordinates, idx );
 	
+	/*
 	//uint sidx = (threadIdx.y+cRadius) * syStride + (threadIdx.z+cRadius) * szStride + threadIdx.x + cRadius;
 	data[sidx] = inBuffer.mData[ idx ];
 	
@@ -456,13 +393,127 @@ FilterKernel3D( Buffer3D< TInElement > inBuffer, Buffer3D< TOutElement > outBuff
 	mCoordinates.y += sIdx.y - cRadius;
 	mCoordinates.z += sIdx.z - cRadius;
 	ProjectionToInterval( mCoordinates, make_int3(0,0,0), make_int3( size.x, size.y, size.z ) );
-	data[sIdx.y*syStride + sIdx.z*szStride + sIdx.x] = inBuffer.mData[ IdxFromCoordStrides( mCoordinates, inBuffer.mStrides ) ];
+	data[sIdx.y*syStride + sIdx.z*szStride + sIdx.x] = inBuffer.mData[ IdxFromCoordStrides( mCoordinates, inBuffer.mStrides ) ];*/
 	
 	__syncthreads();
 
 	if( !projected ) {
-		outBuffer.mData[idx] = filter( data, sidx, syStride, szStride );
+		outBuffer.mData[idx] = filter( data, sidx, syStride, szStride, idx );
 	}
 }
+
+template< typename TElement, typename TOperator >
+__global__ void
+parallelPrescanKernel( Buffer1D< TElement > inBuffer, Buffer1D< TElement > outBuffer, TOperator op, Buffer1D< TElement > intermediate )
+{
+	extern __shared__ TElement temp[];
+	uint tid = threadIdx.x;
+	uint blkIdx = blockIdx.x + blockIdx.y * gridDim.x;
+	uint blkStart = 2*blockDim.x * blkIdx;
+	uint blkSize = 2*blockDim.x;
+	uint offset = 1;
+
+	uint idx1 = blkStart + 2*tid;
+	uint idx2 = blkStart + 2*tid + 1;
+
+	if( idx2 < inBuffer.mLength ) {
+		temp[ 2*tid ] = inBuffer.mData[ idx1 ];
+		temp[ 2*tid + 1 ] = inBuffer.mData[ idx2 ];
+	} else {
+		if ( idx1 < inBuffer.mLength ) {
+			temp[ 2*tid ] = inBuffer.mData[ idx1 ];
+		} else {
+			temp[ 2*tid ] = TOperator::neutral;
+		}
+		temp[ 2*tid + 1 ] = TOperator::neutral;
+	}
+
+	for (int d = blkSize>>1; d > 0; d >>= 1)                    // build sum in place up the tree  
+	{   
+		__syncthreads();  
+		if (tid < d) {  
+			int ai = offset*(2*tid+1)-1;  
+			int bi = offset*(2*tid+2)-1; 
+			temp[bi] = op( temp[ai], temp[bi] );  
+		}  
+		offset *= 2;
+	}
+	if (tid == 0) { 
+		intermediate.mData[ blkIdx ] = temp[blkSize-1];
+		temp[blkSize-1] = TOperator::neutral;
+	}
+
+	for (int d = 1; d < blkSize; d *= 2) // traverse down tree & build scan  
+	{  
+		offset >>= 1;  
+		__syncthreads();  
+		if (tid < d) {
+			int ai = offset*(2*tid+1)-1;
+			int bi = offset*(2*tid+2)-1;
+			TElement t = temp[ai];  
+			temp[ai] = temp[bi];  
+			temp[bi] = op( t, temp[bi] );
+		}
+	}
+	__syncthreads();
+	if( idx2 < outBuffer.mLength ) {
+		outBuffer.mData[ idx1 ] = temp[ 2*tid ];
+		outBuffer.mData[ idx2 ] = temp[ 2*tid + 1 ];
+	} else {
+		if ( idx1 < outBuffer.mLength ) {
+			outBuffer.mData[ idx1 ] = temp[ 2*tid ];
+		}
+	}
+}
+
+template< typename TElement >
+struct Sum
+{
+	static const int neutral = 0;
+
+	__device__ TElement
+	operator()( TElement a, TElement b )const {
+		return a + b;
+	}
+};
+
+template< typename TElement, typename TOperator >
+__global__ void
+consolidateScan( Buffer1D< TElement > inBuffer, TOperator op, Buffer1D< TElement > intermediate )
+{
+	uint tid = threadIdx.x;
+	uint blkStart = blockDim.x * blockIdx.x;
+	uint idx = blkStart + tid;
+	if ( idx < inBuffer.mLength ) {
+		inBuffer.mData[ idx ] = op( intermediate.mData[ blockIdx.x ], inBuffer.mData[ idx ] );
+	}
+}
+
+template< typename TElement, typename TOperator, size_t tBlockSize >
+void
+parallelScan( Buffer1D< TElement > inBuffer, Buffer1D< TElement > outBuffer, TOperator op )
+{
+	ASSERT( inBuffer.mLength <= outBuffer.mLength );
+
+	Buffer1D< TElement > intermediate = CudaAllocateBuffer<TElement>( inBuffer.mLength / tBlockSize + 1 );
+	uint blockCount = inBuffer.mLength / tBlockSize + 1;
+	dim3 gridSize = splitCountTo2dGrid( blockCount );
+	//D_PRINT( "parallelScan config: gridSize = " << gridSize << "; tBlockSize = " << tBlockSize << "; shared mem = " << tBlockSize * 2 * sizeof( TElement ) );
+	parallelPrescanKernel<<< gridSize, tBlockSize, tBlockSize * 2 * sizeof( TElement ) >>>( inBuffer, outBuffer, op, intermediate );
+	CheckCudaErrorState( "After parallelPrescanKernel" );
+	if ( inBuffer.mLength > tBlockSize ) {
+		parallelScan< TElement, TOperator, tBlockSize >( intermediate, intermediate, op );
+
+		consolidateScan<<< gridSize, 2*tBlockSize >>>( outBuffer, op, intermediate );
+		CheckCudaErrorState( "After consolidateScan" );
+	}
+	cudaThreadSynchronize();
+	cudaFree( intermediate.mData );	
+
+}
+
+
+
+
 
 #endif /*CUDA_UTILS_CUH*/

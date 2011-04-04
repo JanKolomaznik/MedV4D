@@ -1,5 +1,5 @@
-#ifndef SOBEL_H
-#define SOBEL_H
+#ifndef CUDA_FILTERS_H
+#define CUDA_FILTERS_H
 
 #include "Imaging/ImageRegion.h"
 
@@ -29,4 +29,7 @@ WatershedTransformation3D(
 			M4D::Imaging::ImageRegion< TEType, 3 > aInput, 
 			M4D::Imaging::ImageRegion< uint32, 3 > aOutput );
 
-#endif /*SOBEL_H*/
+
+
+
+#endif /*CUDA_FILTERS_H*/

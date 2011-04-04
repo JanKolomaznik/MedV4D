@@ -13,7 +13,7 @@ struct SobelFilter3DFtor
 	{}
 
 	__device__ TElement
-	operator()( TElement data[], uint idx, uint syStride, uint szStride )
+	operator()( TElement data[], uint idx, uint syStride, uint szStride, uint gIdx )
 	{
 		TElement val1 = abs( (2*static_cast<SignedElement>(data[idx+1]) - 2*static_cast<SignedElement>(data[idx-1])) 
 			+ (static_cast<SignedElement>(data[idx+1 + syStride]) - static_cast<SignedElement>(data[idx-1 + syStride]))
@@ -48,7 +48,7 @@ struct LocalMinima3DFtor
 	{}
 
 	__device__ uint8
-	operator()( TElement data[], uint idx, uint syStride, uint szStride )
+	operator()( TElement data[], uint idx, uint syStride, uint szStride, uint gIdx )
 	{
 		TElement value = data[idx];
 		for ( int i = idx-1; i <= idx+1; ++i ) {
@@ -71,7 +71,7 @@ struct LocalMinimaRegions3DFtor
 	{}
 
 	__device__ uint32
-	operator()( TElement data[], uint idx, uint syStride, uint szStride )
+	operator()( TElement data[], uint idx, uint syStride, uint szStride, uint gIdx )
 	{
 		TElement value = data[idx];
 		for ( int i = idx-1; i <= idx+1; ++i ) {
@@ -81,11 +81,11 @@ struct LocalMinimaRegions3DFtor
 				}
 			}
 		}
-		uint blockId = __mul24(blockIdx.y, gridDim.x) + blockIdx.x;
+		/*uint blockId = __mul24(blockIdx.y, gridDim.x) + blockIdx.x;
 		uint32 tid = threadIdx.x + blockDim.x * threadIdx.y + blockDim.x * blockDim.y * threadIdx.z;
-		uint32 ridx = blockId * blockDim.x * blockDim.y + tid;
+		uint32 ridx = blockId * blockDim.x * blockDim.y + tid;*/
 
-		return ( value >= data[idx] && data[idx] < mThreshold ) ? ridx + 1: 0;
+		return ( value >= data[idx] && data[idx] < mThreshold ) ? gIdx + 1: 0;
 	}
 	int3 radius;
 	TElement mThreshold;
@@ -100,7 +100,7 @@ struct RegionBorderDetection3DFtor
 	{}
 
 	__device__ uint8
-	operator()( TElement data[], uint idx, uint syStride, uint szStride )
+	operator()( TElement data[], uint idx, uint syStride, uint szStride, uint gIdx )
 	{
 		TElement val = data[idx];
 		if ( val != data[idx-1] || val != data[idx-syStride] || val != data[idx-szStride] ) {
@@ -190,89 +190,22 @@ ScanImage( Buffer3D< uint32 > buffer, Buffer1D< uint32 > lut, int3 blockResoluti
 {
 	__shared__ uint32 data[MAX_SHARED_MEMORY];
 	
-	int3 radius = make_int3(1,1,1);
-	uint syStride = blockDim.x+2*radius.x;
-	uint szStride = (blockDim.x+2*radius.x) * (blockDim.y+2*radius.y);
+	const int cBlockDim = 8;
+	const int cRadius = 1;
+	const uint syStride = cBlockDim+2*cRadius;
+	const uint szStride = (cBlockDim+2*cRadius) * (cBlockDim+2*cRadius);
 
-	uint3 size = buffer.mSize;
-	int3 strides = buffer.mStrides;
-	uint blockId = __mul24(blockIdx.y, gridDim.x) + blockIdx.x;
-	int3 blockCoordinates = GetBlockCoordinates ( blockResolution, blockId );
+	uint sidx = (threadIdx.y+cRadius) * syStride + (threadIdx.z+cRadius) * szStride + threadIdx.x + cRadius;
+	int3 size = toInt3( buffer.mSize );
+	int3 blockCoordinates = GetBlockCoordinates( blockResolution, __mul24(blockIdx.y, gridDim.x) + blockIdx.x );
 	int3 blockOrigin = GetBlockOrigin( blockDim, blockCoordinates );
-	int3 coordinates = blockOrigin;
-	//uint tid = threadIdx.x + blockDim.x * threadIdx.y + blockDim.x * blockDim.y * threadIdx.z;
-	coordinates.x += threadIdx.x;
-	coordinates.y += threadIdx.y;
-	coordinates.z += threadIdx.z;
-	bool projected = ProjectionToInterval( coordinates, make_int3(0,0,0), make_int3( size.x, size.y, size.z ) );
 	
-	int idx = coordinates.x * strides.x + coordinates.y * strides.y + coordinates.z * strides.z;
-	uint sidx = (threadIdx.y+radius.y) * syStride + (threadIdx.z+radius.z) * szStride + threadIdx.x + radius.x;
-	data[sidx] = buffer.mData[ idx ];
 	
-	uint3 sIdx;
-	int3 mCoordinates = blockOrigin;
-	switch( threadIdx.z ) {
-	case 0:
-		sIdx.x = threadIdx.x + radius.x;
-		sIdx.y = threadIdx.y + radius.y;
-		sIdx.z = 0;
-		break;
-	case 1:
-		sIdx.x = threadIdx.x + radius.x;
-		sIdx.y = threadIdx.y + radius.y;
-		sIdx.z = blockDim.z + radius.z;
-		break;
-	case 2:
-		sIdx.x = threadIdx.x + radius.x;
-		sIdx.y = 0;
-		sIdx.z = threadIdx.y + radius.z;
-		break;
-	case 3:
-		sIdx.x = threadIdx.x + radius.x;
-		sIdx.y = blockDim.y + radius.y;
-		sIdx.z = threadIdx.y + radius.z;
-		break;
-	case 4:
-		sIdx.x = 0;
-		sIdx.y = threadIdx.y + radius.y;
-		sIdx.z = threadIdx.x + radius.z;
-		break;
-	case 5:
-		sIdx.x = blockDim.x + radius.x;
-		sIdx.y = threadIdx.y + radius.y;
-		sIdx.z = threadIdx.x + radius.z;
-		break;
-	case 6:
-		if ( threadIdx.y < 4 ) {
-			sIdx.x = threadIdx.x + radius.x;
-			sIdx.y = (threadIdx.y & 1)*(blockDim.y + radius.y);
-			sIdx.z = (threadIdx.y >> 1)*(blockDim.z + radius.z);
-		} else {
-			sIdx.x = ((threadIdx.y-4) >> 1)*(blockDim.x + radius.x);
-			sIdx.y = threadIdx.x + radius.x;
-			sIdx.z = (threadIdx.y & 1)*(blockDim.z + radius.z);
-		}
-		break;
-	case 7:
-		if ( threadIdx.y < 4 ) {
-			sIdx.x = (threadIdx.y & 1)*(blockDim.x + radius.x);
-			sIdx.y = ((threadIdx.y) >> 1)*(blockDim.y + radius.y);
-			sIdx.z = threadIdx.x + radius.z;
-		} else {	
-			sIdx.x = threadIdx.x < 4 ? 0 : (blockDim.x + radius.x);
-			sIdx.y = (threadIdx.x >> 1) & 1 ? 0 : (blockDim.y + radius.y);
-			sIdx.z = threadIdx.x & 1 ? 0 : (blockDim.z + radius.z);
-		}
-		break;
-	default:
-		break;
-	}
-	mCoordinates.x += sIdx.x - radius.x;
-	mCoordinates.y += sIdx.y - radius.y;
-	mCoordinates.z += sIdx.z - radius.z;
-	ProjectionToInterval( mCoordinates, make_int3(0,0,0), make_int3( size.x, size.y, size.z ) );
-	data[sIdx.y*syStride + sIdx.z*szStride + sIdx.x] = buffer.mData[ mCoordinates.x * strides.x + mCoordinates.y * strides.y + mCoordinates.z * strides.z ];
+	int3 coordinates = blockOrigin + threadIdx;
+	bool projected = ProjectionToInterval( coordinates, make_int3(0,0,0), size );
+	int idx = IdxFromCoordStrides( coordinates, buffer.mStrides );
+
+	FillSharedMemory3D_8x8x8< uint32, cRadius, syStride, szStride >( data, sidx, buffer.mData, buffer.mStrides, size, blockOrigin, coordinates, idx );
 
 	__syncthreads();
 
@@ -287,7 +220,6 @@ ScanImage( Buffer3D< uint32 > buffer, Buffer1D< uint32 > lut, int3 blockResoluti
 		}
 	}
 }
-
 
 void
 ConnectedComponentLabeling3DNoAllocation( Buffer3D< uint32 > outBuffer, Buffer1D< uint32 > lut )
@@ -304,17 +236,16 @@ ConnectedComponentLabeling3DNoAllocation( Buffer3D< uint32 > outBuffer, Buffer1D
 	int3 blockResolution3D = GetBlockResolution( outBuffer.mSize, blockSize3D, make_int3(0,0,0) );
 	dim3 gridSize3D( blockResolution3D.x * blockResolution3D.y, blockResolution3D.z, 1 );
 
+        cudaMemcpyToSymbol( "lutUpdated", &(lutUpdated = 0), sizeof(int), 0, cudaMemcpyHostToDevice );
+
 	CheckCudaErrorState( "Before InitLut()" );
 	InitLut<<< gridSize1D, blockSize1D >>>( outBuffer, lut );
 	CheckCudaErrorState( "After InitLut()" );
-	cudaThreadSynchronize();
 	ScanImage<<< gridSize3D, blockSize3D >>>( 
 					outBuffer, 
 					lut,
 					blockResolution3D
 					);
-	cudaThreadSynchronize();
-
 	CheckCudaErrorState( "Before iterations" );
 	cudaMemcpyFromSymbol( &lutUpdated, "lutUpdated", sizeof(int), 0, cudaMemcpyDeviceToHost );
 	while (lutUpdated != 0) {
@@ -325,17 +256,14 @@ ConnectedComponentLabeling3DNoAllocation( Buffer3D< uint32 > outBuffer, Buffer1D
 		UpdateLut<<< gridSize1D, blockSize1D >>>( outBuffer, lut );
 		UpdateLabels<<< gridSize1D, blockSize1D >>>( outBuffer, lut );
 
-		cudaThreadSynchronize();
+		CheckCudaErrorState( "After LUT and labels update" );
 		ScanImage<<< gridSize3D, blockSize3D >>>( 
 					outBuffer, 
 					lut,
 					blockResolution3D
 					);
 		CheckCudaErrorState( "After ScanImage" );
-		cudaThreadSynchronize();
-		CheckCudaErrorState( "cudaMemcpyFromSymbol" );
 		cudaMemcpyFromSymbol( &lutUpdated, "lutUpdated", sizeof(int), 0, cudaMemcpyDeviceToHost );
-		cudaThreadSynchronize();
 		CheckCudaErrorState( "End of iteration" );
 	}
 	cudaThreadSynchronize();
@@ -774,124 +702,102 @@ ConsolidationScanImage( Buffer3D< TElement > inBuffer, Buffer3D< uint32 > buffer
 	}
 }
 
+__global__ void 
+MarkUsedIds( Buffer3D< uint32 > outBuffer, Buffer1D< uint32 > lut )
+{ 
+	uint blockId = __mul24(blockIdx.y, gridDim.x) + blockIdx.x;
+	int idx = blockId * blockDim.x + threadIdx.x;
+
+	if ( idx < outBuffer.mLength ) {
+		lut.mData[ outBuffer.mData[idx] ] = 1;
+	}
+}
+
+__global__ void 
+UpdateLabelsFromScan( Buffer3D< uint32 > buffer, Buffer1D< uint32 > lut )
+{
+	uint blockId = __mul24(blockIdx.y, gridDim.x) + blockIdx.x;
+	int idx = blockId * blockDim.x + threadIdx.x;
+
+	if ( idx < buffer.mLength ) {
+		uint label = buffer.mData[idx];
+		buffer.mData[idx] = lut.mData[label];
+	}
+}
+
 template< typename RegionType >
 void
 LocalMinimaRegions3D( RegionType input, M4D::Imaging::ImageRegion< uint32, 3 > output, typename RegionType::ElementType aThreshold )
 {
-	M4D::Imaging::Mask3D::Ptr maskImage = M4D::Imaging::ImageFactory::CreateEmptyImageFromExtents< uint8, 3 >( input.GetMinimum(), input.GetMaximum(), input.GetElementExtents() );
+	typedef typename RegionType::ElementType TElement;
 	
-	M4D::Imaging::MaskRegion3D mask = maskImage->GetRegion();
-	
-	ASSERT( mask.GetSize() == input.GetSize() );
 	ASSERT( output.GetSize() == input.GetSize() );
 	//LocalMinima3D( input, maskImage->GetRegion(), aThreshold );
 
-	typedef typename RegionType::ElementType TElement;
-		
+	D_PRINT( "ALLOCATE input buffer" );
 	Buffer3D< TElement > inBuffer = CudaBuffer3DFromImageRegionCopy( input );
+	D_PRINT( "ALLOCATE output buffer" );
 	Buffer3D< uint32 > outBuffer = CudaBuffer3DFromImageRegion( output );
-	/*{
-		
-		Buffer3D< uint8 > outBuffer = CudaBuffer3DFromImageRegion( mask );
+	D_PRINT( "ALLOCATE LUT buffer" );
+	Buffer1D< uint32 > lut = CudaAllocateBuffer<uint32>( outBuffer.mLength +1 ); //+1 is due to shift of labels after parallelScan
 
-		LocalMinima3DFtor< TElement > filter( aThreshold );
-		//int3 radius = filter.radius;
+	LocalMinimaRegions3DFtor< TElement > filter( aThreshold );
 
-		dim3 blockSize( 8, 8, 8 );
-		int3 blockResolution = GetBlockResolution( inBuffer.mSize, blockSize, make_int3(0,0,0) );
-		dim3 gridSize( blockResolution.x * blockResolution.y, blockResolution.z, 1 );
+	dim3 blockSize1D( 512 );
+	dim3 gridSize1D( (inBuffer.mLength + 64*blockSize1D.x - 1) / (64*blockSize1D.x) , 64 );
+	
+	dim3 blockSize3D( 8, 8, 8 );
+	int3 blockResolution3D = GetBlockResolution( inBuffer.mSize, blockSize3D, make_int3(0,0,0) );
+	dim3 gridSize3D( blockResolution3D.x * blockResolution3D.y, blockResolution3D.z, 1 );
 
-		M4D::Common::Clock clock;
-		CheckCudaErrorState( "Before kernel execution" );
-		FilterKernel3D< TElement, uint8, LocalMinima3DFtor< TElement > >
-			<<< gridSize, blockSize >>>( 
-						inBuffer, 
-						outBuffer, 
-						blockResolution,
-						filter
-						);
-		cudaThreadSynchronize();
-		CheckCudaErrorState( "After kernel execution" );
-		D_PRINT( "Computations took " << clock.SecondsPassed() )
-
-		cudaMemcpy(mask.GetPointer(), outBuffer.mData, outBuffer.mLength * sizeof(uint8), cudaMemcpyDeviceToHost );
-		CheckCudaErrorState( "Copy back" );
-		cudaFree( outBuffer.mData );
-		CheckCudaErrorState( "Free memory" );
-	}*/
+	M4D::Common::Clock clock;
+	CheckCudaErrorState( "Before 'LocalMinimaRegions3D' kernel execution" );
+	FilterKernel3D< TElement, uint32, LocalMinimaRegions3DFtor< TElement > >
+		<<< gridSize3D, blockSize3D >>>( 
+					inBuffer, 
+					outBuffer, 
+					blockResolution3D,
+					filter
+					);
+	cudaThreadSynchronize();
+	CheckCudaErrorState( "After 'LocalMinimaRegions3D' kernel execution" );
 
 
-	{
-		//typedef typename RegionType::ElementType TElement;
-		
-		//Buffer3D< TElement > inBuffer = CudaBuffer3DFromImageRegionCopy( input );
-		//Buffer3D< uint32 > outBuffer = CudaBuffer3DFromImageRegion( output );
-		LocalMinimaRegions3DFtor< TElement > filter( aThreshold );
 
-		dim3 blockSize( 8, 8, 8 );
-		int3 blockResolution = GetBlockResolution( inBuffer.mSize, blockSize, make_int3(0,0,0) );
-		dim3 gridSize( blockResolution.x * blockResolution.y, blockResolution.z, 1 );
-		dim3 blockSize1D( 512 );
-		dim3 gridSize1D( (inBuffer.mLength + 64*blockSize1D.x - 1) / (64*blockSize1D.x) , 64 );
 
-		M4D::Common::Clock clock;
-		CheckCudaErrorState( "Before 'LocalMinimaRegions3D' kernel execution" );
-		FilterKernel3D< TElement, uint32, LocalMinimaRegions3DFtor< TElement > >
-			<<< gridSize, blockSize >>>( 
-						inBuffer, 
-						outBuffer, 
-						blockResolution,
-						filter
-						);
-		cudaThreadSynchronize();
-		CheckCudaErrorState( "After 'LocalMinimaRegions3D' kernel execution" );
-		//cudaFree( inBuffer.mData );
-		//cudaFree( outBuffer.mData );
-	}
-			
-	//ConnectedComponentLabeling3D( maskImage->GetRegion(), output );
-	{
-		D_PRINT( "ALLOCATE mask buffer" );
-		//Buffer3D< uint8 > maskBuffer = CudaBuffer3DFromImageRegionCopy( mask );
-		D_PRINT( "ALLOCATE output buffer" );
-		//Buffer3D< uint32 > outBuffer = CudaBuffer3DFromImageRegion( output );
+	cudaThreadSynchronize();
 
-		dim3 blockSize1D( 512 );
-		dim3 gridSize1D( (inBuffer.mLength + 64*blockSize1D.x - 1) / (64*blockSize1D.x) , 64 );
-		
-		dim3 blockSize3D( 8, 8, 8 );
-		int3 blockResolution3D = GetBlockResolution( inBuffer.mSize, blockSize3D, make_int3(0,0,0) );
-		dim3 gridSize3D( blockResolution3D.x * blockResolution3D.y, blockResolution3D.z, 1 );
+	ConnectedComponentLabeling3DNoAllocation( outBuffer, lut );
 
-		M4D::Common::Clock clock;
+	CheckCudaErrorState( "Before ConsolidationScanImage()" );
+	ConsolidationScanImage<<< gridSize3D, blockSize3D >>>( inBuffer, outBuffer, lut, blockResolution3D );
 
-		/*CheckCudaErrorState( "Before execution" );
-		CopyMask<<< gridSize1D, blockSize1D >>>( maskBuffer, outBuffer );
-		CheckCudaErrorState( "After CopyMask()" );
+	cudaThreadSynchronize();
+	CheckCudaErrorState( "After ConsolidationScanImage()" );
 
-		cudaFree( maskBuffer.mData );*/
+	cudaMemset( lut.mData, 0, sizeof( uint32 ) * lut.mLength );
+	MarkUsedIds<<< gridSize1D, blockSize1D >>>( outBuffer, lut );
+	CheckCudaErrorState( "After MarkUsedIds()" );
+	parallelScan< uint32, Sum< uint32 >, 512 >( lut, lut, Sum< uint32 >() );
+	CheckCudaErrorState( "After parallelScan()" );
+	UpdateLabelsFromScan<<< gridSize1D, blockSize1D >>>( outBuffer, lut );
+	CheckCudaErrorState( "After UpdateLabelsFromScan()" );
+	cudaThreadSynchronize();
+	CheckCudaErrorState( "After relabeling" );
 
-		D_PRINT( "ALLOCATE LUT buffer" );
-		Buffer1D< uint32 > lut = CudaAllocateBuffer<uint32>( outBuffer.mLength ); 
+	D_PRINT( "Computations took " << clock.SecondsPassed() )
 
-		ConnectedComponentLabeling3DNoAllocation( outBuffer, lut );
+	cudaMemcpy(output.GetPointer(), outBuffer.mData, outBuffer.mLength * sizeof(uint32), cudaMemcpyDeviceToHost );
+	CheckCudaErrorState( "Copy back" );
 
-		CheckCudaErrorState( "Before ConsolidationScanImage()" );
-		ConsolidationScanImage<<< gridSize3D, blockSize3D >>>( inBuffer, outBuffer, lut, blockResolution3D );
-
-		cudaThreadSynchronize();
-		CheckCudaErrorState( "After ConsolidationScanImage()" );
-		D_PRINT( "Computations took " << clock.SecondsPassed() )
-
-		cudaMemcpy(output.GetPointer(), outBuffer.mData, outBuffer.mLength * sizeof(uint32), cudaMemcpyDeviceToHost );
-		CheckCudaErrorState( "Copy back" );
-		cudaFree( outBuffer.mData );
-		cudaFree( lut.mData );
-
-	}
+	cudaFree( outBuffer.mData );
+	cudaFree( lut.mData );
 	cudaFree( inBuffer.mData );
 
 }
+
+
+
 
 /*template< typename RegionType >
 void
