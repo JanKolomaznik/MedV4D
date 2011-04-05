@@ -163,7 +163,7 @@ void TFPalette::resizeEvent(QResizeEvent* e){
 
 void TFPalette::close_triggered(TF::Size index){
 
-	removeFromPalette_(index);
+	if(palette_.find(index)->second->close()) removeFromPalette_(index);
 }
 
 void TFPalette::on_addButton_clicked(){
@@ -177,7 +177,7 @@ void TFPalette::on_addButton_clicked(){
 
 void TFPalette::on_removeButton_clicked(){
 
-	removeFromPalette_(activeHolder_);
+	close_triggered(activeHolder_);
 }
 
 void TFPalette::change_activeHolder(TF::Size index){

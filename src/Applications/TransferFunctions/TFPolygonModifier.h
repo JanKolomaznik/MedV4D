@@ -2,6 +2,7 @@
 #define TF_POLYGON_MODIFIER
 
 #include <TFAbstractModifier.h>
+
 #include <ui_TFPolygonModifier.h>
 
 namespace M4D {
@@ -47,6 +48,13 @@ private slots:
 
 private:
 
+	enum ScrollMode{
+		ScrollZoom,
+		ScrollHistogram,
+		ScrollBase,
+		ScrollTop
+	};
+
 	enum ActiveView{
 		Active1,
 		Active2,
@@ -65,12 +73,16 @@ private:
 	Mode mode_;
 	bool alpha_;
 
-	bool histScroll_;
+	bool altPressed_;
 	bool leftMousePressed_;
+
+	std::vector<ScrollMode> scrollModes_;
 	TF::PaintingPoint inputHelper_;
 
 	bool zoomMovement_;
 	TF::PaintingPoint zoomMoveHelper_;
+
+	const TF::Size radiusStep_;
 
 	TF::Size baseRadius_;
 	TF::Size topRadius_;

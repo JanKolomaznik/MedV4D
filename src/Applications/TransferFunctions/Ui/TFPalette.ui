@@ -85,6 +85,9 @@
     <property name="text">
      <string>Add</string>
     </property>
+    <property name="shortcut">
+     <string>Alt+A</string>
+    </property>
     <property name="default">
      <bool>false</bool>
     </property>
@@ -100,6 +103,9 @@
     </property>
     <property name="text">
      <string>Remove</string>
+    </property>
+    <property name="shortcut">
+     <string>Alt+R</string>
     </property>
    </widget>
   </widget>

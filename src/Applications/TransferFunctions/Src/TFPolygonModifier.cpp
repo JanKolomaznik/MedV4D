@@ -13,7 +13,8 @@ TFPolygonModifier::TFPolygonModifier(TFWorkCopy<TF_POLYGONMODIFIER_DIMENSION>::P
 	zoomMovement_(false),
 	baseRadius_(50),
 	topRadius_(20),
-	histScroll_(false){
+	radiusStep_(5),
+	altPressed_(false){
 
 	workCopy_ = workCopy;
 
@@ -68,6 +69,8 @@ TFPolygonModifier::TFPolygonModifier(TFWorkCopy<TF_POLYGONMODIFIER_DIMENSION>::P
 		}
 	}
 	if(alpha_) tools_->activeViewBox->addItem(QObject::tr("opacity"));
+
+	scrollModes_.push_back(ScrollZoom);
 }
 
 TFPolygonModifier::~TFPolygonModifier(){}
@@ -223,29 +226,82 @@ void TFPolygonModifier::mouseWheel(const int steps, const int x, const int y){
 	TF::PaintingPoint relativePoint = getRelativePoint_(x,y);
 	if(relativePoint == ignorePoint_) return;
 
-	if(histScroll_)
+	switch(scrollModes_.back())
 	{
-		if(steps > 0) workCopy_->increaseHistogramLogBase(2.0*steps);
-		if(steps < 0) workCopy_->decreaseHistogramLogBase(2.0*(-steps));
-		emit RefreshView();
-		return;
+		case ScrollZoom:
+		{
+			if(steps > 0) workCopy_->zoomIn(steps, relativePoint.x, relativePoint.y);
+			if(steps < 0) workCopy_->zoomOut(-steps, relativePoint.x, relativePoint.y);	
+			updateZoomTools_();
+			emit RefreshView();
+			break;
+		}
+		case ScrollHistogram:
+		{
+			if(steps > 0) workCopy_->increaseHistogramLogBase(steps);
+			if(steps < 0) workCopy_->decreaseHistogramLogBase(-steps);
+			emit RefreshView();
+			break;
+		}
+		case ScrollBase:
+		{
+			tools_->bottomSpin->setValue(tools_->bottomSpin->value() + radiusStep_*steps);	
+			break;
+		}
+		case ScrollTop:
+		{
+			tools_->topSpin->setValue(tools_->topSpin->value() + radiusStep_*steps);	
+			break;
+		}
 	}
-
-	if(steps > 0) workCopy_->zoomIn(steps, relativePoint.x, relativePoint.y);
-	if(steps < 0) workCopy_->zoomOut(-steps, relativePoint.x, relativePoint.y);
-	
-	updateZoomTools_();
-	emit RefreshView();
 }
 
 void TFPolygonModifier::keyPress(int qtKey){
 
-	if(qtKey == Qt::Key_Control) histScroll_ = true;
+	switch(qtKey)
+	{
+		case Qt::Key_Alt:
+		{
+			altPressed_ = true;
+			scrollModes_.push_back(ScrollHistogram);
+			break;
+		}
+		case Qt::Key_B:
+		{
+			if(altPressed_) scrollModes_.push_back(ScrollBase);
+			break;
+		}
+		case Qt::Key_T:
+		{
+			if(altPressed_) scrollModes_.push_back(ScrollTop);
+			break;
+		}
+	}
 }
 	
 void TFPolygonModifier::keyRelease(int qtKey){
 
-	if(qtKey == Qt::Key_Control) histScroll_ = false;
+	switch(qtKey)
+	{
+		case Qt::Key_Alt:
+		{
+			altPressed_ = false;
+			TF::removeAllFromVector<ScrollMode>(scrollModes_, ScrollHistogram);
+			TF::removeAllFromVector<ScrollMode>(scrollModes_, ScrollBase);
+			TF::removeAllFromVector<ScrollMode>(scrollModes_, ScrollTop);
+			break;
+		}
+		case Qt::Key_B:
+		{
+			if(altPressed_) TF::removeAllFromVector<ScrollMode>(scrollModes_, ScrollBase);
+			break;
+		}
+		case Qt::Key_T:
+		{
+			if(altPressed_) TF::removeAllFromVector<ScrollMode>(scrollModes_, ScrollTop);
+			break;
+		}
+	}
 }
 
 void TFPolygonModifier::addPolygon_(const TF::PaintingPoint point){

@@ -239,8 +239,8 @@ void TFSimpleModifier::mouseWheel(const int steps, const int x, const int y){
 
 	if(histScroll_)
 	{
-		if(steps > 0) workCopy_->increaseHistogramLogBase(2.0*steps);
-		if(steps < 0) workCopy_->decreaseHistogramLogBase(2.0*(-steps));
+		if(steps > 0) workCopy_->increaseHistogramLogBase(steps);
+		if(steps < 0) workCopy_->decreaseHistogramLogBase(-steps);
 		emit RefreshView();
 		return;
 	}
@@ -254,12 +254,12 @@ void TFSimpleModifier::mouseWheel(const int steps, const int x, const int y){
 
 void TFSimpleModifier::keyPress(int qtKey){
 
-	if(qtKey == Qt::Key_Control) histScroll_ = true;
+	if(qtKey == Qt::Key_Alt) histScroll_ = true;
 }
 	
 void TFSimpleModifier::keyRelease(int qtKey){
 
-	if(qtKey == Qt::Key_Control) histScroll_ = false;
+	if(qtKey == Qt::Key_Alt) histScroll_ = false;
 }
 
 void TFSimpleModifier::addPoint_(const int x, const int y){

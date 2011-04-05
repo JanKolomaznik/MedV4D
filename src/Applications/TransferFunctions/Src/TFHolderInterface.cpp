@@ -47,6 +47,26 @@ void TFHolderInterface::save(){
 	writer->finalizeDocument();
 
 	file.close();
+
+	saved_ = true;
+}
+
+bool TFHolderInterface::close(){
+
+	if(!saved_)
+	{
+		QMessageBox msgBox;
+		msgBox.setIcon(QMessageBox::Warning);
+		msgBox.setText("Transfer Function has been modified.");
+		msgBox.setInformativeText("Do you want to save your changes?");
+		msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+		msgBox.setDefaultButton(QMessageBox::Save);
+		int ret = msgBox.exec();
+
+		if(ret == QMessageBox::Cancel) return false;
+		if(ret == QMessageBox::Save) save();
+	}
+	return true;
 }
 
 } // namespace GUI

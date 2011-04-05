@@ -176,19 +176,19 @@ public:
 		return histogramEnabled_;
 	}
 
-	void increaseHistogramLogBase(const long double increment = 2.0){
+	void increaseHistogramLogBase(const long double increment = 1.0){
 
 		if(histogram_)
 		{
-			hist_.setLogBase(hist_.logBase()*increment);
+			hist_.setLogBase(hist_.logBase()*(2.0*increment));
 			histogramChanged_ = true;
 		}
 	}
-	void decreaseHistogramLogBase(const long double increment = 2.0){
+	void decreaseHistogramLogBase(const long double increment = 1.0){
 
 		if(histogram_)
 		{
-			hist_.setLogBase(hist_.logBase()/increment);
+			hist_.setLogBase(hist_.logBase()/(2.0*increment));
 			histogramChanged_ = true;
 		}
 	}

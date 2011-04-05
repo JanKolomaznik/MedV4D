@@ -226,6 +226,7 @@ void TFBasicHolder::on_activateButton_clicked(){
 
 void TFBasicHolder::refresh_view(){
 
+	saved_ = false;
 	update();
 }
 	
@@ -257,6 +258,7 @@ bool TFBasicHolder::loadData(TFXmlReader::Ptr reader, bool& sideError){
 	if(!functionLoaded) return false;
 
 	fileName_ = reader->fileName();
+	saved_ = true;
 	return true;
 }
 

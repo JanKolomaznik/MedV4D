@@ -60,6 +60,8 @@ public:
 	void save();
 	virtual bool loadData(TFXmlReader::Ptr reader, bool& sideError) = 0;
 
+	bool close();
+
 	virtual void activate() = 0;
 	virtual void deactivate() = 0;
 
@@ -90,8 +92,9 @@ protected:
 
 	TF::Types::Structure structure_;
 	QString fileName_;
+	bool saved_;
 	
-	TFHolderInterface(){}
+	TFHolderInterface(): saved_(false){}
 
 	virtual TFApplyFunctionInterface::Ptr functionToApply_() = 0;
 	

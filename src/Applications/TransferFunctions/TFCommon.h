@@ -48,6 +48,17 @@ typedef Point<int, int> PaintingPoint;
 
 typedef unsigned long Size;
 
+template<typename ValueType>
+void removeAllFromVector(typename std::vector<ValueType>& from, const ValueType& what){
+
+	typename std::vector<ValueType> cleared;
+	for(typename std::vector<ValueType>::iterator it = from.begin(); it != from.end(); ++it)
+	{
+		if(*it != what) cleared.push_back(*it);
+	}
+	std::swap(from, cleared);
+}
+
 //------------Debug------------------------------------------------------
 
 class TFException : public std::exception
