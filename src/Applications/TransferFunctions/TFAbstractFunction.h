@@ -41,8 +41,6 @@ public:
 	virtual TF::Color getMappedRGBfColor(const TF::Size value, const TF::Size dimension) = 0;
 
 	virtual typename Ptr clone() = 0;
-
-	//TF::Color::MapPtr getColorMap();
 	
 	TF::Size getDimension() const{
 
@@ -139,6 +137,10 @@ public:
 		{		
 			TF::Size domain = TF::convert<std::string, TF::Size>(
 				reader->readAttribute("Domain"));
+			if(domain == 0) return ok;
+			TF::Size dimension = TF::convert<std::string, TF::Size>(
+				reader->readAttribute("Dimension"));
+			if(dimension != dim) return ok;
 
 			TF::MultiDColor<dim>::Map::Ptr loaded(new TF::MultiDColor<dim>::Map(domain));			
 			TF::Size i = 0;

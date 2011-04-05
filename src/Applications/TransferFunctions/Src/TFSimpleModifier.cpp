@@ -3,7 +3,7 @@
 namespace M4D {
 namespace GUI {
 
-TFSimpleModifier::TFSimpleModifier(TFWorkCopy<TF_SIMPLEMODIFIER_DIMENSION>::Ptr workCopy, Mode mode, bool alpha):
+TFSimpleModifier::TFSimpleModifier(WorkCopy::Ptr workCopy, Mode mode, bool alpha):
 	mode_(mode),
 	alpha_(alpha),
 	tools_(new Ui::TFSimpleModifier),
@@ -11,7 +11,8 @@ TFSimpleModifier::TFSimpleModifier(TFWorkCopy<TF_SIMPLEMODIFIER_DIMENSION>::Ptr 
 	inputHelper_(),
 	leftMousePressed_(false),
 	zoomMovement_(false),
-	histScroll_(false){
+	histScroll_(false),
+	zoomDirection_(WorkCopy::ZoomX){
 
 	workCopy_ = workCopy;
 
@@ -19,11 +20,14 @@ TFSimpleModifier::TFSimpleModifier(TFWorkCopy<TF_SIMPLEMODIFIER_DIMENSION>::Ptr 
 	tools_->setupUi(toolsWidget_);
 
 	tools_->maxZoomSpin->setValue((int)workCopy_->getMaxZoom());
-	tools_->ratioValue->setText(QString::number(workCopy_->getZoom()));
+	tools_->zoomXValue->setText(QString::number(workCopy_->getZoomX()));
+	tools_->zoomYValue->setText(QString::number(workCopy_->getZoomY()));
 
 	TF::Point<float,float> center = workCopy_->getZoomCenter();
-	tools_->zoomXValue->setText(QString::number(center.x));
-	tools_->zoomYValue->setText(QString::number(center.y));
+	tools_->centerXValue->setText(QString::number(center.x));
+	tools_->centerYValue->setText(QString::number(center.y));
+
+	tools_->xAxisCheck->setChecked(true);
 
 	bool changeViewConnected = QObject::connect(tools_->activeViewBox, SIGNAL(currentIndexChanged(int)),
 		this, SLOT(activeView_changed(int)));
@@ -35,6 +39,13 @@ TFSimpleModifier::TFSimpleModifier(TFWorkCopy<TF_SIMPLEMODIFIER_DIMENSION>::Ptr 
 	bool maxZoomSpinConnected = QObject::connect( tools_->maxZoomSpin, SIGNAL(valueChanged(int)),
 		this, SLOT(maxZoomSpin_changed(int)));
 	tfAssert(maxZoomSpinConnected);
+
+	bool xAxisCheckConnected = QObject::connect( tools_->xAxisCheck, SIGNAL(toggled(bool)),
+		this, SLOT(xAxis_check(bool)));
+	tfAssert(xAxisCheckConnected);
+	bool yAxisCheckConnected = QObject::connect( tools_->yAxisCheck, SIGNAL(toggled(bool)),
+		this, SLOT(yAxis_check(bool)));
+	tfAssert(yAxisCheckConnected);
 
 	switch(mode_)
 	{
@@ -124,14 +135,43 @@ void TFSimpleModifier::maxZoomSpin_changed(int value){
 	workCopy_->setMaxZoom(value);
 }
 
+void TFSimpleModifier::xAxis_check(bool enabled){
+
+	if(enabled)
+	{
+		if(tools_->yAxisCheck->isChecked()) zoomDirection_ = WorkCopy::ZoomBoth;
+		else zoomDirection_ = WorkCopy::ZoomX;
+	}
+	else
+	{
+		if(tools_->yAxisCheck->isChecked()) zoomDirection_ = WorkCopy::ZoomY;
+		else zoomDirection_ = WorkCopy::ZoomNone;
+	}
+}
+
+void TFSimpleModifier::yAxis_check(bool enabled){
+
+	if(enabled)
+	{
+		if(tools_->xAxisCheck->isChecked()) zoomDirection_ = WorkCopy::ZoomBoth;
+		else zoomDirection_ = WorkCopy::ZoomY;
+	}
+	else
+	{
+		if(tools_->xAxisCheck->isChecked()) zoomDirection_ = WorkCopy::ZoomX;
+		else zoomDirection_ = WorkCopy::ZoomNone;
+	}
+}
+
 void TFSimpleModifier::updateZoomTools_(){
 
-	tools_->ratioValue->setText(QString::number(workCopy_->getZoom()));
+	tools_->zoomXValue->setText(QString::number(workCopy_->getZoomX()));
+	tools_->zoomYValue->setText(QString::number(workCopy_->getZoomY()));
 
 	TF::Point<float,float> center = workCopy_->getZoomCenter();
 
-	tools_->zoomXValue->setText(QString::number(center.x));
-	tools_->zoomYValue->setText(QString::number(center.y));
+	tools_->centerXValue->setText(QString::number(center.x));
+	tools_->centerYValue->setText(QString::number(center.y));
 }
 
 void TFSimpleModifier::mousePress(const int x, const int y, Qt::MouseButton button){
@@ -205,8 +245,8 @@ void TFSimpleModifier::mouseWheel(const int steps, const int x, const int y){
 		return;
 	}
 
-	if(steps > 0) workCopy_->zoomIn(steps, relativePoint.x, relativePoint.y);
-	if(steps < 0) workCopy_->zoomOut(-steps, relativePoint.x, relativePoint.y);
+	if(steps > 0) workCopy_->zoomIn(steps, relativePoint.x, relativePoint.y, zoomDirection_);
+	if(steps < 0) workCopy_->zoomOut(-steps, relativePoint.x, relativePoint.y, zoomDirection_);
 	
 	updateZoomTools_();
 	emit RefreshView();

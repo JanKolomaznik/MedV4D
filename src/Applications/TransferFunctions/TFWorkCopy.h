@@ -16,6 +16,13 @@ class TFWorkCopy{
 public:
 
 	typedef typename boost::shared_ptr<TFWorkCopy<dim>> Ptr;
+
+	enum ZoomDirection{
+		ZoomX,
+		ZoomY,
+		ZoomBoth,
+		ZoomNone
+	};
 	
 	TFWorkCopy(typename TFAbstractFunction<dim>::Ptr function):
 		data_(function),
@@ -31,7 +38,8 @@ public:
 		writer->writeStartElement("WorkCopy");
 				
 			writer->writeAttribute("MaxZoom", TF::convert<float, std::string>(zoom_.max));
-			writer->writeAttribute("Zoom", TF::convert<float, std::string>(zoom_.zoom));
+			writer->writeAttribute("ZoomX", TF::convert<float, std::string>(zoom_.xZoom));
+			writer->writeAttribute("ZoomY", TF::convert<float, std::string>(zoom_.yZoom));
 			writer->writeAttribute("X", TF::convert<float, std::string>(zoom_.center.x));
 			writer->writeAttribute("Y", TF::convert<float, std::string>(zoom_.center.y));
 			writer->writeAttribute("HistLogBase", TF::convert<long double, std::string>(hist_.logBase()));
@@ -49,7 +57,8 @@ public:
 		if(reader->readElement("WorkCopy"))
 		{				
 			float maxZoom = TF::convert<std::string, float>(reader->readAttribute("MaxZoom"));
-			float zoom = TF::convert<std::string, float>(reader->readAttribute("Zoom"));
+			float zoomX = TF::convert<std::string, float>(reader->readAttribute("ZoomX"));
+			float zoomY = TF::convert<std::string, float>(reader->readAttribute("ZoomY"));
 			float x = TF::convert<std::string, float>(reader->readAttribute("X"));
 			float y = TF::convert<std::string, float>(reader->readAttribute("Y"));
 			long double logBase = TF::convert<std::string, long double>(reader->readAttribute("HistLogBase"));
@@ -61,9 +70,14 @@ public:
 			}
 			zoom_.max = maxZoom;
 
-			if(zoom < 1.0f || zoom > maxZoom)
+			if(zoomX < 1.0f || zoomX > maxZoom)
 			{
-				zoom = zoom_.zoom;
+				zoomX = zoom_.xZoom;
+				ok = false;
+			}
+			if(zoomY < 1.0f || zoomY > maxZoom)
+			{
+				zoomY = zoom_.yZoom;
 				ok = false;
 			}
 			if(x < 0.0f || x > 1.0f)
@@ -76,7 +90,8 @@ public:
 				y = zoom_.center.y;
 				ok = false;
 			}
-			computeZoom_(zoom, x, y);
+			computeZoomX_(zoomX, x, y);
+			computeZoomY_(zoomY, x, y);
 
 			if(logBase <= 1.0f)
 			{
@@ -184,7 +199,7 @@ public:
 
 		tfAssert(index >= 0 && index < (int)xSize_);
 
-		float xRatio = data_->getDomain()/(xSize_*zoom_.zoom);
+		float xRatio = data_->getDomain()/(xSize_*zoom_.xZoom);
 		float indexBase = index*xRatio + zoom_.xOffset;
 		float radius = xRatio/2.0;
 		float bottom = indexBase - radius;
@@ -210,7 +225,7 @@ public:
 
 		tfAssert(index >= 0 && index < (int)xSize_);
 
-		float xRatio = data_->getDomain()/(xSize_*zoom_.zoom);
+		float xRatio = data_->getDomain()/(xSize_*zoom_.xZoom);
 		float indexBase = index*xRatio + zoom_.xOffset;
 		float radius = xRatio/2.0;
 		float bottom = indexBase - radius;
@@ -222,7 +237,7 @@ public:
 		{
 			if(i >= 0 && i < (int)data_->getDomain())
 			{
-				result += ((*data_)[i][dimension].component1 - zoom_.yOffset)*zoom_.zoom;
+				result += ((*data_)[i][dimension].component1 - zoom_.yOffset)*zoom_.yZoom;
 				++count;
 			}
 		}
@@ -234,7 +249,7 @@ public:
 
 		tfAssert(index >= 0 && index < (int)xSize_);
 
-		float xRatio = data_->getDomain()/(xSize_*zoom_.zoom);
+		float xRatio = data_->getDomain()/(xSize_*zoom_.xZoom);
 		float indexBase = index*xRatio + zoom_.xOffset;
 		float radius = xRatio/2.0;
 		float bottom = indexBase - radius;
@@ -246,7 +261,7 @@ public:
 		{
 			if(i >= 0 && i < (int)data_->getDomain())
 			{
-				result += ((*data_)[i][dimension].component2 - zoom_.yOffset)*zoom_.zoom;
+				result += ((*data_)[i][dimension].component2 - zoom_.yOffset)*zoom_.yZoom;
 				++count;
 			}
 		}
@@ -258,7 +273,7 @@ public:
 
 		tfAssert(index >= 0 && index < (int)xSize_);
 
-		float xRatio = data_->getDomain()/(xSize_*zoom_.zoom);
+		float xRatio = data_->getDomain()/(xSize_*zoom_.xZoom);
 		float indexBase = index*xRatio + zoom_.xOffset;
 		float radius = xRatio/2.0;
 		float bottom = indexBase - radius;
@@ -270,7 +285,7 @@ public:
 		{
 			if(i >= 0 && i < (int)data_->getDomain())
 			{
-				result += ((*data_)[i][dimension].component3 - zoom_.yOffset)*zoom_.zoom;
+				result += ((*data_)[i][dimension].component3 - zoom_.yOffset)*zoom_.yZoom;
 				++count;
 			}
 		}
@@ -282,7 +297,7 @@ public:
 
 		tfAssert(index >= 0 && index < (int)xSize_);
 
-		float xRatio = data_->getDomain()/(xSize_*zoom_.zoom);
+		float xRatio = data_->getDomain()/(xSize_*zoom_.xZoom);
 		float indexBase = index*xRatio + zoom_.xOffset;
 		float radius = xRatio/2.0;
 		float bottom = indexBase - radius;
@@ -294,7 +309,7 @@ public:
 		{
 			if(i >= 0 && i < (int)data_->getDomain())
 			{
-				result += ((*data_)[i][dimension].alpha - zoom_.yOffset)*zoom_.zoom;
+				result += ((*data_)[i][dimension].alpha - zoom_.yOffset)*zoom_.yZoom;
 				++count;
 			}
 		}
@@ -308,7 +323,7 @@ public:
 
 		if(!histogramEnabled_ || !histogram_) return -1;
 
-		float xRatio = data_->getDomain()/(xSize_*zoom_.zoom);
+		float xRatio = data_->getDomain()/(xSize_*zoom_.xZoom);
 		float indexBase = index*xRatio + zoom_.xOffset;
 		float radius = xRatio/2.0;
 		float bottom = indexBase - radius;
@@ -320,7 +335,7 @@ public:
 		{
 			if(i >= 0 && i < (int)data_->getDomain())
 			{
-				result += (hist_.getExpLogValue((*histogram_)[i]) - zoom_.yOffset)*zoom_.zoom;
+				result += (hist_.getExpLogValue((*histogram_)[i]) - zoom_.yOffset)*zoom_.yZoom;
 				++count;
 			}
 		}
@@ -332,11 +347,11 @@ public:
 	
 	void setComponent1(const int index, const TF::Size dimension, const float value){
 
-		float correctedValue = value/zoom_.zoom + zoom_.yOffset;
+		float correctedValue = value/zoom_.yZoom + zoom_.yOffset;
 		if(correctedValue < 0) correctedValue = 0;
 		if(correctedValue > 1) correctedValue = 1;
 
-		float xRatio = data_->getDomain()/(xSize_*zoom_.zoom);
+		float xRatio = data_->getDomain()/(xSize_*zoom_.xZoom);
 		float indexBase = index*xRatio + zoom_.xOffset;
 		float radius = xRatio/2.0;
 		float bottom = indexBase - radius;
@@ -354,11 +369,11 @@ public:
 	
 	void setComponent2(const int index, const TF::Size dimension, const float value){
 
-		float correctedValue = value/zoom_.zoom + zoom_.yOffset;
+		float correctedValue = value/zoom_.yZoom + zoom_.yOffset;
 		if(correctedValue < 0) correctedValue = 0;
 		if(correctedValue > 1) correctedValue = 1;
 
-		float xRatio = data_->getDomain()/(xSize_*zoom_.zoom);
+		float xRatio = data_->getDomain()/(xSize_*zoom_.xZoom);
 		float indexBase = index*xRatio + zoom_.xOffset;
 		float radius = xRatio/2.0;
 		float bottom = indexBase - radius;
@@ -376,11 +391,11 @@ public:
 	
 	void setComponent3(const int index, const TF::Size dimension, const float value){
 
-		float correctedValue = value/zoom_.zoom + zoom_.yOffset;
+		float correctedValue = value/zoom_.yZoom + zoom_.yOffset;
 		if(correctedValue < 0) correctedValue = 0;
 		if(correctedValue > 1) correctedValue = 1;
 
-		float xRatio = data_->getDomain()/(xSize_*zoom_.zoom);
+		float xRatio = data_->getDomain()/(xSize_*zoom_.xZoom);
 		float indexBase = index*xRatio + zoom_.xOffset;
 		float radius = xRatio/2.0;
 		float bottom = indexBase - radius;
@@ -398,11 +413,11 @@ public:
 	
 	void setAlpha(const int index, const TF::Size dimension, const float value){
 
-		float correctedValue = value/zoom_.zoom + zoom_.yOffset;
+		float correctedValue = value/zoom_.yZoom + zoom_.yOffset;
 		if(correctedValue < 0) correctedValue = 0;
 		if(correctedValue > 1) correctedValue = 1;
 
-		float xRatio = data_->getDomain()/(xSize_*zoom_.zoom);
+		float xRatio = data_->getDomain()/(xSize_*zoom_.xZoom);
 		float indexBase = index*xRatio + zoom_.xOffset;
 		float radius = xRatio/2.0;
 		float bottom = indexBase - radius;
@@ -424,45 +439,87 @@ public:
 
 		xSize_ = xSize;
 		ySize_ = ySize;	
-		computeZoom_(zoom_.zoom, 0.5f, 0.5f);
+		computeZoomX_(zoom_.xZoom, 0.5f, 0.5f);
+		computeZoomY_(zoom_.yZoom, 0.5f, 0.5f);
 	}
 
 	//---zoom---
 	
-	void zoomIn(const TF::Size stepCount, const int zoomX, const int zoomY){
+	void zoomIn(const TF::Size stepCount, const int centerX, const int centerY,
+		const ZoomDirection direction = ZoomX){
 
-		if(zoom_.zoom == zoom_.max) return;
+		if(direction == ZoomNone) return;
 
-		float nextZoom = zoom_.zoom + stepCount;	
-		if(nextZoom > zoom_.max) nextZoom = zoom_.max;
+		float nextZoom;
+		float x = centerX/(float)xSize_;
+		float y = centerY/(float)ySize_;
+		if(direction != ZoomY)
+		{
+			if(zoom_.xZoom == zoom_.max) return;
 
-		computeZoom_(nextZoom, zoomX/(float)xSize_, zoomY/(float)ySize_);
+			nextZoom = zoom_.xZoom + stepCount;
+			if(nextZoom > zoom_.max) nextZoom = zoom_.max;
+			if(nextZoom < 1) nextZoom = 1;
+			if(nextZoom == zoom_.xZoom) return;
+
+			computeZoomX_(nextZoom, x, y);
+		}
+		if(direction != ZoomX)
+		{
+			if(zoom_.yZoom == zoom_.max) return;
+
+			nextZoom = zoom_.yZoom + stepCount;
+			if(nextZoom > zoom_.max) nextZoom = zoom_.max;
+			if(nextZoom < 1) nextZoom = 1;
+			if(nextZoom == zoom_.yZoom) return;
+
+			computeZoomY_(nextZoom, x, y);
+		}
 	}
 	
-	void zoomOut(const TF::Size stepCount, const int zoomX, const int zoomY){
+	void zoomOut(const TF::Size stepCount, const int centerX, const int centerY,
+		const ZoomDirection direction = ZoomX){
 
-		if(zoom_.zoom == 1) return;
+		if(direction == ZoomNone) return;
 
-		float nextZoom = zoom_.zoom - stepCount;
-		if(nextZoom > zoom_.max) nextZoom = zoom_.max;
-		if(nextZoom < 1) nextZoom = 1;
-
-		computeZoom_(nextZoom, zoomX/(float)xSize_, zoomY/(float)ySize_);
+		float nextZoom;
+		float x = centerX/(float)xSize_;
+		float y = centerY/(float)ySize_;
+		if(direction != ZoomY)
+		{
+			nextZoom = zoom_.xZoom - stepCount;
+			if(nextZoom > zoom_.max) nextZoom = zoom_.max;
+			if(nextZoom < 1) nextZoom = 1;
+			if(nextZoom != zoom_.xZoom) computeZoomX_(nextZoom, x, y);
+		}
+		if(direction != ZoomX)
+		{
+			nextZoom = zoom_.yZoom - stepCount;
+			if(nextZoom > zoom_.max) nextZoom = zoom_.max;
+			if(nextZoom < 1) nextZoom = 1;
+			if(nextZoom != zoom_.yZoom) computeZoomY_(nextZoom, x, y);
+		}
 	}
 	
 	void move(int xDirectionIncrement, int yDirectionIncrement){
 
-		if(zoom_.zoom == 1) return;
+		if(zoom_.xZoom == 1 && zoom_.yZoom == 1) return;
 
-		int moveX = xSize_/2 + xDirectionIncrement;
-		int moveY = ySize_/2 + yDirectionIncrement;
+		float x = (xSize_/2.0f + xDirectionIncrement)/(float)xSize_;
+		float y = (ySize_/2.0f + yDirectionIncrement)/(float)ySize_;
 
-		computeZoom_(zoom_.zoom, moveX/(float)xSize_, moveY/(float)ySize_);	
+		computeZoomX_(zoom_.xZoom, x, y);	
+		computeZoomY_(zoom_.yZoom, x, y);	
 	}
 	
-	float getZoom() const{
+	float getZoomX() const{
 
-		return zoom_.zoom;
+		return zoom_.xZoom;
+	}
+	
+	float getZoomY() const{
+
+		return zoom_.yZoom;
 	}
 	
 	float getMaxZoom() const{
@@ -503,7 +560,8 @@ public:
 			histogram_ = TF::Histogram::Ptr();
 		}
 
-		computeZoom_(zoom_.zoom, 0.5f, 0.5f);
+		computeZoomX_(zoom_.xZoom, 0.5f, 0.5f);
+		computeZoomY_(zoom_.yZoom, 0.5f, 0.5f);
 	}
 	
 	void update(const typename TFAbstractFunction<dim>::Ptr function){
@@ -515,7 +573,8 @@ public:
 			data_->resize(histogram_->size());
 		}
 
-		computeZoom_(zoom_.zoom, 0.5f, 0.5f);
+		computeZoomX_(zoom_.xZoom, 0.5f, 0.5f);
+		computeZoomY_(zoom_.yZoom, 0.5f, 0.5f);
 	}
 	
 private:
@@ -554,17 +613,19 @@ private:
 	};
 
 	struct ZoomProperties{
-		float zoom;
-		float max;
 		float xOffset;
+		float xZoom;
 		float yOffset;
+		float yZoom;
+		float max;
 		TF::Point<float,float> center;
 
 		ZoomProperties():
-			zoom(1.0f),
-			max(40.0f),
 			xOffset(0.0f),
+			xZoom(1.0f),
 			yOffset(0.0f),
+			yZoom(1.0f),
+			max(40.0f),
 			center(0.5f,0.5f){
 		}
 	};
@@ -602,33 +663,41 @@ private:
 	bool histogramEnabled_;
 	HistProperties hist_;
 	
-	void computeZoom_(const float nextZoom, const float zoomX, const float zoomY){
+	void computeZoomX_(const float nextZoom, const float centerX, const float centerY){
 
-		float relativeZoomedRatioX = data_->getDomain()/zoom_.zoom;
+		float relativeZoomedRatioX = data_->getDomain()/zoom_.xZoom;
 
 		float xRadius = (data_->getDomain()/nextZoom)/2.0f;
-		float xOffesetInc = zoom_.xOffset + zoomX*relativeZoomedRatioX - xRadius;
+		float xOffesetInc = zoom_.xOffset + centerX*relativeZoomedRatioX - xRadius;
 
 		float maxXOffset = data_->getDomain() - 2.0f*xRadius;		
 		if(xOffesetInc < 0.0f) xOffesetInc = 0.0f;
 		if(xOffesetInc > maxXOffset) xOffesetInc = maxXOffset;
 
-		float relativeZoomedRatioY = 1.0f/zoom_.zoom;
+		zoom_.xOffset = xOffesetInc;
+		zoom_.xZoom = nextZoom;
+
+		zoom_.center.x =(((data_->getDomain()/zoom_.xZoom)/2.0f) + zoom_.xOffset)/data_->getDomain();
+		
+		for(TF::Size i = 0; i < dim; ++i) changes_[i].setAllChanged();
+		histogramChanged_ = true;
+	}
+	
+	void computeZoomY_(const float nextZoom, const float centerX, const float centerY){
+
+		float relativeZoomedRatioY = 1.0f/zoom_.yZoom;
 
 		float yRadius = (1.0f/nextZoom)/2.0f;
-		float yOffesetInc = zoom_.yOffset + zoomY*relativeZoomedRatioY - yRadius;
+		float yOffesetInc = zoom_.yOffset + centerY*relativeZoomedRatioY - yRadius;
 
 		float maxYOffset = 1 - 2.0f*yRadius;
 		if(yOffesetInc < 0.0f) yOffesetInc = 0.0f;
 		if(yOffesetInc > maxYOffset) yOffesetInc = maxYOffset;
 
-		float zoomedDomain = data_->getDomain()/nextZoom;
-
-		zoom_.zoom = nextZoom;
-		zoom_.xOffset = xOffesetInc;
 		zoom_.yOffset = yOffesetInc;
-		zoom_.center = TF::Point<float,float>(((zoomedDomain/2.0f) + zoom_.xOffset)/data_->getDomain(),
-			(1.0f/zoom_.zoom)/2.0f + zoom_.yOffset);
+		zoom_.yZoom = nextZoom;
+
+		zoom_.center.y = (1.0f/zoom_.yZoom)/2.0f + zoom_.yOffset;
 		
 		for(TF::Size i = 0; i < dim; ++i) changes_[i].setAllChanged();
 		histogramChanged_ = true;

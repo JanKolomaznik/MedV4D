@@ -154,7 +154,7 @@ typename TFAbstractModifier<dim>::Ptr TFCreator::createModifier_(typename TFWork
 }
 
 TFHolderInterface* TFCreator::createHolder_(){
-	
+
 	switch(structure_[mode_].holder)
 	{
 		case TF::Types::HolderBasic:
@@ -185,6 +185,8 @@ TFCreator::TFCreator(QMainWindow* mainWindow, const TF::Size domain):
 	functionSet_(false),
 	painterSet_(false),
 	modifierSet_(false){
+		
+	structure_[CreateLoaded].predefined = TF::Types::PredefinedLoad;
 
 	ui_->setupUi(this);
 	ui_->nextButton->setDefault(true);
@@ -211,14 +213,13 @@ TFHolderInterface* TFCreator::createTransferFunction(){
 	exec();
 
 	if(result() == QDialog::Rejected) return NULL;
+	
+	if(mode_ == CreateLoaded) return loadTransferFunction_();
 
 	return createHolder_();	
 }
 	
-TFHolderInterface* TFCreator::loadTransferFunction(){
-
-	Mode memento = mode_;
-	mode_ = CreateLoaded;
+TFHolderInterface* TFCreator::loadTransferFunction_(){
 
 	TFHolderInterface* loaded = NULL;
 
@@ -238,7 +239,6 @@ TFHolderInterface* TFCreator::loadTransferFunction(){
 	if (fileName.isEmpty())
 	{
 		errorMessage.exec();
-		mode_ = memento;
 		return loaded;
 	}
 
@@ -250,13 +250,13 @@ TFHolderInterface* TFCreator::loadTransferFunction(){
 		errorMessage.exec();
 
 		file.close();
-		mode_ = memento;
 		return loaded;
 	}
 
 	TFXmlReader::Ptr reader(new TFXmlReader(&file));
 	bool error;
 	loaded = load_(reader, error);
+	structure_[CreateLoaded].predefined = TF::Types::PredefinedLoad;
 
 	if(!loaded)
 	{ 
@@ -264,7 +264,6 @@ TFHolderInterface* TFCreator::loadTransferFunction(){
 		errorMessage.exec();
 
 		file.close();
-		mode_ = memento;
 		return loaded;
 	}
 	else if(error)
@@ -275,7 +274,6 @@ TFHolderInterface* TFCreator::loadTransferFunction(){
 	}
 
 	file.close();
-	mode_ = memento;
 
 	#ifndef TF_NDEBUG
 		std::cout << "Loading finished." << std::endl;
@@ -326,7 +324,7 @@ void TFCreator::on_nextButton_clicked(){
 	{
 		case Predefined:
 		{
-			if(mode_ == CreatePredefined) accept();
+			if(mode_ != CreateCustom) accept();
 			else setStateHolder_();
 			break;
 		}
@@ -545,19 +543,20 @@ void TFCreator::predefinedButton_clicked(TF::Types::Predefined predefined){
 
 	predefinedSet_ = true;
 	
+	mode_ = CreatePredefined;
 	if(predefined == TF::Types::PredefinedCustom) mode_ = CreateCustom;
-	else mode_ = CreatePredefined;
+	if(predefined == TF::Types::PredefinedLoad) mode_ = CreateLoaded;
 
 	ui_->nextButton->setEnabled(true);
-	if( mode_ == CreatePredefined) 
-	{
-		structure_[mode_] = TF::Types::getPredefinedStructure(predefined);
-		ui_->nextButton->setText(QObject::tr("Finish"));
-	}
-	else
+
+	if(mode_ == CreateCustom) 
 	{
 		ui_->nextButton->setText(QObject::tr("Next"));
+		return;
 	}
+	if( mode_ == CreatePredefined) structure_[mode_] = TF::Types::getPredefinedStructure(predefined);
+
+	ui_->nextButton->setText(QObject::tr("Finish"));
 }
 
 void TFCreator::holderButton_clicked(TF::Types::Holder holder){

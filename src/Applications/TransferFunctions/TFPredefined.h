@@ -14,6 +14,7 @@ namespace Types {
 
 enum Predefined{
 	PredefinedCustom,
+	PredefinedLoad,
 	PredefinedSimpleGrayscaleAlpha,
 	PredefinedSimpleRGBa,
 	PredefinedPolygonRGBa,
@@ -25,6 +26,7 @@ static PredefinedTypes getPredefinedTypes(){
 
 	PredefinedTypes all;
 
+	all.push_back(PredefinedLoad);
 	all.push_back(PredefinedCustom);
 
 	all.push_back(PredefinedSimpleGrayscaleAlpha);
@@ -110,6 +112,14 @@ template<>
 inline std::string convert<Types::Predefined, std::string>(const Types::Predefined &predefined){
 
 	switch(predefined){
+		case Types::PredefinedCustom:
+		{
+			return "Custom";
+		}
+		case Types::PredefinedLoad:
+		{
+			return "Load";
+		}
 		case Types::PredefinedSimpleGrayscaleAlpha:
 		{
 			return "Grayscale-alpha";
@@ -126,10 +136,6 @@ inline std::string convert<Types::Predefined, std::string>(const Types::Predefin
 		{
 			return "Polygon RGBa";
 		}
-		case Types::PredefinedCustom:
-		{
-			return "Custom";
-		}
 	}
 
 	tfAssert(!"Unknown predefined type!");
@@ -139,6 +145,12 @@ inline std::string convert<Types::Predefined, std::string>(const Types::Predefin
 template<>
 inline Types::Predefined TF::convert<std::string, Types::Predefined>(const std::string &predefined){
 
+	if(predefined == "Custom"){
+		return Types::PredefinedCustom;
+	}	
+	if(predefined == "Load"){
+		return Types::PredefinedLoad;
+	}	
 	if(predefined == "Grayscale-alpha"){
 		return Types::PredefinedSimpleGrayscaleAlpha;
 	}
@@ -150,9 +162,6 @@ inline Types::Predefined TF::convert<std::string, Types::Predefined>(const std::
 	}
 	if(predefined == "Polygon RGBa"){
 		return Types::PredefinedPolygonRGBa;
-	}	
-	if(predefined == "Custom"){
-		return Types::PredefinedCustom;
 	}	
 
 	tfAssert(!"Unknown predefined type!");

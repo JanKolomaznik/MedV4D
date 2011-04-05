@@ -226,7 +226,7 @@ void TFBasicHolder::on_activateButton_clicked(){
 
 void TFBasicHolder::refresh_view(){
 
-	repaint();
+	update();
 }
 	
 void TFBasicHolder::saveData_(TFXmlWriter::Ptr writer){

@@ -17,13 +17,15 @@ public:
 
 	typedef boost::shared_ptr<TFSimpleModifier> Ptr;
 
+	typedef TFWorkCopy<TF_SIMPLEMODIFIER_DIMENSION> WorkCopy;
+
 	enum Mode{
 		Grayscale,
 		RGB,
 		HSV
 	};
 
-	TFSimpleModifier(TFWorkCopy<TF_SIMPLEMODIFIER_DIMENSION>::Ptr workCopy, Mode mode, bool alpha);
+	TFSimpleModifier(WorkCopy::Ptr workCopy, Mode mode, bool alpha);
 	~TFSimpleModifier();
 
 	bool load(TFXmlReader::Ptr reader);
@@ -41,6 +43,8 @@ private slots:
 	void histogram_check(bool enabled);
 
 	void maxZoomSpin_changed(int value);
+	void xAxis_check(bool enabled);
+	void yAxis_check(bool enabled);
 
 private:
 
@@ -63,6 +67,7 @@ private:
 
 	bool zoomMovement_;
 	TF::PaintingPoint zoomMoveHelper_;
+	WorkCopy::ZoomDirection zoomDirection_;
 
 	void addPoint_(const int x, const int y);
 

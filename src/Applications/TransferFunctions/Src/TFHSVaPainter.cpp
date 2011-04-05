@@ -12,7 +12,7 @@ TFHSVaPainter::TFHSVaPainter(bool drawAlpha):
 	saturation_(Qt::darkCyan),
 	value_(Qt::lightGray),
 	alpha_(Qt::yellow),
-	hist_(255,140,0,255),
+	hist_(Qt::darkGray),
 	noColor_(0,0,0,0),
 	drawAlpha_(drawAlpha),
 	sizeChanged_(true){
@@ -95,13 +95,12 @@ void TFHSVaPainter::updateHistogramView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Pt
 
 	TF::PaintingPoint origin(inputArea_.x(), inputArea_.y());
 
-	int x1, y1, x2, y2;
-	for(int i = 0; i < inputArea_.width() - 1; ++i)
+	int x1, y1, x2, y2 = origin.y + inputArea_.height();
+	for(int i = 0; i < inputArea_.width(); ++i)
 	{
 		x1 = origin.x + i;
 		y1 = origin.y + (1 - workCopy->getHistogramValue(i))*inputArea_.height();
-		x2 = origin.x + i + 1;
-		y2 = origin.y + (1 - workCopy->getHistogramValue(i + 1))*inputArea_.height();
+		x2 = origin.x + i;
 
 		drawer.setPen(hist_);
 		drawer.drawLine(x1, y1,	x2, y2);	

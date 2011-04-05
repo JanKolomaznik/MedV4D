@@ -18,6 +18,8 @@ TFPalette::TFPalette(QMainWindow* parent):
 	layout_ = new QVBoxLayout;
 	layout_->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
 	ui_->scrollAreaWidget->setLayout(layout_);
+
+	ui_->removeButton->setEnabled(false);
 }
 
 TFPalette::~TFPalette(){}
@@ -111,6 +113,8 @@ void TFPalette::addToPalette_(TFHolderInterface* holder){
 	mainWindow_->addDockWidget(Qt::BottomDockWidgetArea, holder->getDockWidget());	
 	
 	change_activeHolder(addedIndex);
+
+	ui_->removeButton->setEnabled(true);
 }
 
 void TFPalette::removeFromPalette_(const TF::Size index){
@@ -146,13 +150,15 @@ void TFPalette::removeFromPalette_(const TF::Size index){
 	delete toRemoveIt->second;
 	palette_.erase(toRemoveIt);
 	indexer_.releaseIndex(index);
+
+	if(palette_.empty()) ui_->removeButton->setEnabled(false);
 }
 
 void TFPalette::resizeEvent(QResizeEvent* e){
 
 	QMainWindow::resizeEvent(e);
 
-	ui_->scrollArea->setGeometry(ui_->paletteArea->rect());
+	ui_->scrollArea->setGeometry(0, 40, 170, ui_->paletteArea->height() - 40);
 }
 
 void TFPalette::close_triggered(TF::Size index){
@@ -160,22 +166,18 @@ void TFPalette::close_triggered(TF::Size index){
 	removeFromPalette_(index);
 }
 
-void TFPalette::on_actionLoad_triggered(){
-
-	TFHolderInterface* loaded = creator_.loadTransferFunction();
-
-	if(!loaded) return;
-	
-	addToPalette_(loaded);
-}
-
-void TFPalette::on_actionNew_triggered(){
+void TFPalette::on_addButton_clicked(){
 
 	TFHolderInterface* created = creator_.createTransferFunction();
 
 	if(!created) return;
 	
 	addToPalette_(created);
+}
+
+void TFPalette::on_removeButton_clicked(){
+
+	removeFromPalette_(activeHolder_);
 }
 
 void TFPalette::change_activeHolder(TF::Size index){

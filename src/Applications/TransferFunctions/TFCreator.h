@@ -36,7 +36,6 @@ public:
 	~TFCreator();
 
 	TFHolderInterface* createTransferFunction();
-	TFHolderInterface* loadTransferFunction();
 
 	void setDomain(const TF::Size domain);
 
@@ -91,8 +90,8 @@ private:
 
 	void clearLayout_();
 
+	TFHolderInterface* loadTransferFunction_();
 	TFHolderInterface* load_(TFXmlReader::Ptr reader, bool& sideError);
-
 	TFHolderInterface* createHolder_();
 
 	template<TF::Size dim>

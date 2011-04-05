@@ -50,7 +50,7 @@ public:
 	template<typename BufferIterator>
 	bool applyTransferFunction(BufferIterator begin, BufferIterator end){
 
-		if(activeHolder_ < 0) on_actionNew_triggered();
+		if(activeHolder_ < 0) on_addButton_clicked();
 		if(activeHolder_ < 0) exit(0);
 
 		return palette_.find(activeHolder_)->second->applyTransferFunction<BufferIterator>(begin, end);
@@ -60,8 +60,8 @@ private slots:
 
     void close_triggered(TF::Size index);
 
-    void on_actionLoad_triggered();
-	void on_actionNew_triggered();
+	void on_addButton_clicked();
+	void on_removeButton_clicked();
 
 	void change_activeHolder(TF::Size index);
 
