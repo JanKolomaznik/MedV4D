@@ -59,7 +59,7 @@ void TFGrayscaleAlphaPainter::updateBackground_(){
 	drawer.fillRect(bottomBarArea_, QBrush(background_));
 }
 
-void TFGrayscaleAlphaPainter::updateHistogramView_(TFWorkCopy<TF_GRAYSCALEPAINTER_DIMENSION>::Ptr workCopy){
+void TFGrayscaleAlphaPainter::updateHistogramView_(WorkCopy::Ptr workCopy){
 		
 	viewHistogramBuffer_ = QPixmap(area_.width(), area_.height());
 	viewHistogramBuffer_.fill(noColor_);
@@ -85,7 +85,7 @@ void TFGrayscaleAlphaPainter::updateHistogramView_(TFWorkCopy<TF_GRAYSCALEPAINTE
 	}
 }
 
-void TFGrayscaleAlphaPainter::updateGrayView_(TFWorkCopy<TF_GRAYSCALEPAINTER_DIMENSION>::Ptr workCopy){
+void TFGrayscaleAlphaPainter::updateGrayView_(WorkCopy::Ptr workCopy){
 		
 	viewGrayBuffer_ = QPixmap(area_.width(), area_.height());
 	viewGrayBuffer_.fill(noColor_);
@@ -109,7 +109,7 @@ void TFGrayscaleAlphaPainter::updateGrayView_(TFWorkCopy<TF_GRAYSCALEPAINTER_DIM
 	}
 }
 
-void TFGrayscaleAlphaPainter::updateAlphaView_(TFWorkCopy<TF_GRAYSCALEPAINTER_DIMENSION>::Ptr workCopy){
+void TFGrayscaleAlphaPainter::updateAlphaView_(WorkCopy::Ptr workCopy){
 		
 	viewAlphaBuffer_ = QPixmap(area_.width(), area_.height());
 	viewAlphaBuffer_.fill(noColor_);
@@ -135,7 +135,7 @@ void TFGrayscaleAlphaPainter::updateAlphaView_(TFWorkCopy<TF_GRAYSCALEPAINTER_DI
 	}
 }
 
-void TFGrayscaleAlphaPainter::updateBottomColorBarView_(TFWorkCopy<TF_GRAYSCALEPAINTER_DIMENSION>::Ptr workCopy){
+void TFGrayscaleAlphaPainter::updateBottomColorBarView_(WorkCopy::Ptr workCopy){
 		
 	viewBottomColorBarBuffer_ = QPixmap(area_.width(), area_.height());
 	viewBottomColorBarBuffer_.fill(noColor_);
@@ -162,7 +162,7 @@ void TFGrayscaleAlphaPainter::updateBottomColorBarView_(TFWorkCopy<TF_GRAYSCALEP
 	}
 }
 
-QPixmap TFGrayscaleAlphaPainter::getView(TFWorkCopy<TF_GRAYSCALEPAINTER_DIMENSION>::Ptr workCopy){
+QPixmap TFGrayscaleAlphaPainter::getView(WorkCopy::Ptr workCopy){
 
 	bool change = false;
 	if(sizeChanged_)

@@ -3,7 +3,7 @@
 namespace M4D {
 namespace GUI {
 
-TFPolygonModifier::TFPolygonModifier(TFWorkCopy<TF_POLYGONMODIFIER_DIMENSION>::Ptr workCopy,  Mode mode, bool alpha):
+TFPolygonModifier::TFPolygonModifier(WorkCopy::Ptr workCopy,  Mode mode, bool alpha):
 	mode_(mode),
 	alpha_(alpha),
 	tools_(new Ui::TFPolygonModifier),

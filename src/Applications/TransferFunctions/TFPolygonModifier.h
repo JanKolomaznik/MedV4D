@@ -18,13 +18,15 @@ public:
 
 	typedef boost::shared_ptr<TFPolygonModifier> Ptr;
 
+	typedef TFWorkCopy<TF_POLYGONMODIFIER_DIMENSION> WorkCopy;
+
 	enum Mode{
 		Grayscale,
 		RGB,
 		HSV
 	};
 
-	TFPolygonModifier(TFWorkCopy<TF_POLYGONMODIFIER_DIMENSION>::Ptr workCopy, Mode mode, bool alpha);
+	TFPolygonModifier(WorkCopy::Ptr workCopy, Mode mode, bool alpha);
 	~TFPolygonModifier();
 
 	bool load(TFXmlReader::Ptr reader);

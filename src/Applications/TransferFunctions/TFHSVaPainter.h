@@ -14,13 +14,15 @@ public:
 
 	typedef boost::shared_ptr<TFHSVaPainter> Ptr;
 
+	typedef TFWorkCopy<TF_HSVPAINTER_DIMENSION> WorkCopy;
+
 	TFHSVaPainter(bool drawAlpha);
 	~TFHSVaPainter();
 
 	void setArea(QRect area);
 	QRect getInputArea();
 
-	QPixmap getView(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy);
+	QPixmap getView(WorkCopy::Ptr workCopy);
 
 private:
 
@@ -46,6 +48,7 @@ private:
 
 	QPixmap viewBuffer_;
 	QPixmap viewBackgroundBuffer_;
+	QPixmap viewSideBarBuffer_;
 	QPixmap viewHistogramBuffer_;
 	QPixmap viewHueBuffer_;
 	QPixmap viewSaturationBuffer_;
@@ -54,12 +57,13 @@ private:
 	QPixmap viewBottomColorBarBuffer_;
 
 	void updateBackground_();	
-	void updateHistogramView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy);
-	void updateHueView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy);
-	void updateSaturationView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy);
-	void updateValueView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy);
-	void updateAlphaView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy);
-	void updateBottomColorBarView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy);
+	void updateSideBar_(WorkCopy::Ptr workCopy);
+	void updateHistogramView_(WorkCopy::Ptr workCopy);
+	void updateHueView_(WorkCopy::Ptr workCopy);
+	void updateSaturationView_(WorkCopy::Ptr workCopy);
+	void updateValueView_(WorkCopy::Ptr workCopy);
+	void updateAlphaView_(WorkCopy::Ptr workCopy);
+	void updateBottomColorBarView_(WorkCopy::Ptr workCopy);
 };
 
 } // namespace GUI

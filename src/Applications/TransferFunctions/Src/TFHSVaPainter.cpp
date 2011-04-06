@@ -65,24 +65,38 @@ void TFHSVaPainter::updateBackground_(){
 	QPainter drawer(&viewBackgroundBuffer_);
 	drawer.fillRect(backgroundArea_, QBrush(background_));
 	drawer.fillRect(bottomBarArea_, QBrush(background_));
+}
+
+void TFHSVaPainter::updateSideBar_(WorkCopy::Ptr workCopy){
+
+	viewSideBarBuffer_ = QPixmap(area_.width(), area_.height());
+	viewSideBarBuffer_.fill(noColor_);
+
+	QPainter drawer(&viewSideBarBuffer_);
+
+	float zoomedY = 1.0f/workCopy->getZoomY();
+	float stepValue = zoomedY/sideBarArea_.height();
+	float offset = workCopy->getZoomCenter().y - zoomedY/2.0f;
 
 	QColor color;
-	int x1, y1, x2, y2;
+	int x1 = sideBarArea_.x();
+	int x2 = sideBarArea_.x() + sideBarArea_.width();
+	int y1, y2;
+	int yBegin = sideBarArea_.y() + sideBarArea_.height();
+
 	for(int i = 0; i < sideBarArea_.height() - 1; ++i)
 	{
-		x1 = sideBarArea_.x();
-		y1 = sideBarArea_.y() + sideBarArea_.height() - i;
-		x2 = sideBarArea_.x() + sideBarArea_.width();
-		y2 = sideBarArea_.y() + sideBarArea_.height() - i;
+		y1 = yBegin - i;
+		y2 = yBegin - i;
 
-		color.setHsvF(i/(float)sideBarArea_.height(), 1, 1);
+		color.setHsvF(i*stepValue + offset, 1, 1);
 
 		drawer.setPen(color);
 		drawer.drawLine(x1, y1,	x2, y2);	
 	}
 }
 
-void TFHSVaPainter::updateHistogramView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy){
+void TFHSVaPainter::updateHistogramView_(WorkCopy::Ptr workCopy){
 		
 	viewHistogramBuffer_ = QPixmap(area_.width(), area_.height());
 	viewHistogramBuffer_.fill(noColor_);
@@ -107,7 +121,7 @@ void TFHSVaPainter::updateHistogramView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Pt
 	}
 }
 
-void TFHSVaPainter::updateHueView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy){
+void TFHSVaPainter::updateHueView_(WorkCopy::Ptr workCopy){
 		
 	viewHueBuffer_ = QPixmap(area_.width(), area_.height());
 	viewHueBuffer_.fill(noColor_);
@@ -131,7 +145,7 @@ void TFHSVaPainter::updateHueView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr work
 	}
 }
 
-void TFHSVaPainter::updateSaturationView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy){
+void TFHSVaPainter::updateSaturationView_(WorkCopy::Ptr workCopy){
 		
 	viewSaturationBuffer_ = QPixmap(area_.width(), area_.height());
 	viewSaturationBuffer_.fill(noColor_);
@@ -155,7 +169,7 @@ void TFHSVaPainter::updateSaturationView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::P
 	}
 }
 
-void TFHSVaPainter::updateValueView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy){
+void TFHSVaPainter::updateValueView_(WorkCopy::Ptr workCopy){
 		
 	viewValueBuffer_ = QPixmap(area_.width(), area_.height());
 	viewValueBuffer_.fill(noColor_);
@@ -179,7 +193,7 @@ void TFHSVaPainter::updateValueView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr wo
 	}
 }
 
-void TFHSVaPainter::updateAlphaView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy){
+void TFHSVaPainter::updateAlphaView_(WorkCopy::Ptr workCopy){
 		
 	viewAlphaBuffer_ = QPixmap(area_.width(), area_.height());
 	viewAlphaBuffer_.fill(noColor_);
@@ -205,7 +219,7 @@ void TFHSVaPainter::updateAlphaView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr wo
 	}
 }
 
-void TFHSVaPainter::updateBottomColorBarView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy){
+void TFHSVaPainter::updateBottomColorBarView_(WorkCopy::Ptr workCopy){
 		
 	viewBottomColorBarBuffer_ = QPixmap(area_.width(), area_.height());
 	viewBottomColorBarBuffer_.fill(noColor_);
@@ -232,7 +246,7 @@ void TFHSVaPainter::updateBottomColorBarView_(TFWorkCopy<TF_HSVPAINTER_DIMENSION
 	}
 }
 
-QPixmap TFHSVaPainter::getView(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy){
+QPixmap TFHSVaPainter::getView(WorkCopy::Ptr workCopy){
 
 	bool change = false;
 	if(sizeChanged_)
@@ -267,6 +281,7 @@ QPixmap TFHSVaPainter::getView(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy
 	}
 	if(change)
 	{
+		updateSideBar_(workCopy);
 		updateBottomColorBarView_(workCopy);
 
 		viewBuffer_ = QPixmap(area_.width(), area_.height());
@@ -274,6 +289,7 @@ QPixmap TFHSVaPainter::getView(TFWorkCopy<TF_HSVPAINTER_DIMENSION>::Ptr workCopy
 		QPainter drawer(&viewBuffer_);
 
 		drawer.drawPixmap(0, 0, viewBackgroundBuffer_);
+		drawer.drawPixmap(0, 0, viewSideBarBuffer_);
 		drawer.drawPixmap(0, 0, viewHistogramBuffer_);
 		drawer.drawPixmap(0, 0, viewValueBuffer_);
 		drawer.drawPixmap(0, 0, viewSaturationBuffer_);

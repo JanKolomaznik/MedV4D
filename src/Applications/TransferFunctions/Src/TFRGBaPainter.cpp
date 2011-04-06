@@ -61,7 +61,7 @@ void TFRGBaPainter::updateBackground_(){
 	drawer.fillRect(bottomBarArea_, QBrush(background_));
 }
 
-void TFRGBaPainter::updateHistogramView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr workCopy){
+void TFRGBaPainter::updateHistogramView_(WorkCopy::Ptr workCopy){
 		
 	viewHistogramBuffer_ = QPixmap(area_.width(), area_.height());
 	viewHistogramBuffer_.fill(noColor_);
@@ -86,7 +86,7 @@ void TFRGBaPainter::updateHistogramView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Pt
 	}
 }
 
-void TFRGBaPainter::updateRedView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr workCopy){
+void TFRGBaPainter::updateRedView_(WorkCopy::Ptr workCopy){
 		
 	viewRedBuffer_ = QPixmap(area_.width(), area_.height());
 	viewRedBuffer_.fill(noColor_);
@@ -110,7 +110,7 @@ void TFRGBaPainter::updateRedView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr work
 	}
 }
 
-void TFRGBaPainter::updateGreenView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr workCopy){
+void TFRGBaPainter::updateGreenView_(WorkCopy::Ptr workCopy){
 		
 	viewGreenBuffer_ = QPixmap(area_.width(), area_.height());
 	viewGreenBuffer_.fill(noColor_);
@@ -134,7 +134,7 @@ void TFRGBaPainter::updateGreenView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr wo
 	}
 }
 
-void TFRGBaPainter::updateBlueView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr workCopy){
+void TFRGBaPainter::updateBlueView_(WorkCopy::Ptr workCopy){
 		
 	viewBlueBuffer_ = QPixmap(area_.width(), area_.height());
 	viewBlueBuffer_.fill(noColor_);
@@ -158,7 +158,7 @@ void TFRGBaPainter::updateBlueView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr wor
 	}
 }
 
-void TFRGBaPainter::updateAlphaView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr workCopy){
+void TFRGBaPainter::updateAlphaView_(WorkCopy::Ptr workCopy){
 		
 	viewAlphaBuffer_ = QPixmap(area_.width(), area_.height());
 	viewAlphaBuffer_.fill(noColor_);
@@ -184,7 +184,7 @@ void TFRGBaPainter::updateAlphaView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr wo
 	}
 }
 
-void TFRGBaPainter::updateBottomColorBarView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr workCopy){
+void TFRGBaPainter::updateBottomColorBarView_(WorkCopy::Ptr workCopy){
 		
 	viewBottomColorBarBuffer_ = QPixmap(area_.width(), area_.height());
 	viewBottomColorBarBuffer_.fill(noColor_);
@@ -212,7 +212,7 @@ void TFRGBaPainter::updateBottomColorBarView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION
 	}
 }
 
-QPixmap TFRGBaPainter::getView(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr workCopy){
+QPixmap TFRGBaPainter::getView(WorkCopy::Ptr workCopy){
 
 	bool change = false;
 	if(sizeChanged_)

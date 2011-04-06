@@ -15,13 +15,15 @@ public:
 
 	typedef boost::shared_ptr<TFGrayscaleAlphaPainter> Ptr;
 
+	typedef TFWorkCopy<TF_GRAYSCALEPAINTER_DIMENSION> WorkCopy;
+
 	TFGrayscaleAlphaPainter(bool drawAlpha);
 	~TFGrayscaleAlphaPainter();
 
 	void setArea(QRect area);
 	QRect getInputArea();
 
-	QPixmap getView(TFWorkCopy<TF_GRAYSCALEPAINTER_DIMENSION>::Ptr workCopy);
+	QPixmap getView(WorkCopy::Ptr workCopy);
 
 private:
 
@@ -50,9 +52,9 @@ private:
 	QPixmap viewBottomColorBarBuffer_;
 
 	void updateBackground_();	
-	void updateHistogramView_(TFWorkCopy<TF_GRAYSCALEPAINTER_DIMENSION>::Ptr workCopy);
-	void updateGrayView_(TFWorkCopy<TF_GRAYSCALEPAINTER_DIMENSION>::Ptr workCopy);
-	void updateAlphaView_(TFWorkCopy<TF_GRAYSCALEPAINTER_DIMENSION>::Ptr workCopy);
+	void updateHistogramView_(WorkCopy::Ptr workCopy);
+	void updateGrayView_(WorkCopy::Ptr workCopy);
+	void updateAlphaView_(WorkCopy::Ptr workCopy);
 	void updateBottomColorBarView_(TFWorkCopy<TF_GRAYSCALEPAINTER_DIMENSION>::Ptr workCopy);
 };
 

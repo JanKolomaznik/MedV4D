@@ -14,13 +14,15 @@ public:
 
 	typedef boost::shared_ptr<TFRGBaPainter> Ptr;
 
+	typedef TFWorkCopy<TF_RGBPAINTER_DIMENSION> WorkCopy;
+
 	TFRGBaPainter(bool drawAlpha);
 	~TFRGBaPainter();
 
 	void setArea(QRect area);
 	QRect getInputArea();
 
-	QPixmap getView(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr workCopy);
+	QPixmap getView(WorkCopy::Ptr workCopy);
 
 private:
 
@@ -53,12 +55,12 @@ private:
 	QPixmap viewBottomColorBarBuffer_;
 
 	void updateBackground_();	
-	void updateHistogramView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr workCopy);
-	void updateRedView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr workCopy);
-	void updateGreenView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr workCopy);
-	void updateBlueView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr workCopy);
-	void updateAlphaView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr workCopy);
-	void updateBottomColorBarView_(TFWorkCopy<TF_RGBPAINTER_DIMENSION>::Ptr workCopy);
+	void updateHistogramView_(WorkCopy::Ptr workCopy);
+	void updateRedView_(WorkCopy::Ptr workCopy);
+	void updateGreenView_(WorkCopy::Ptr workCopy);
+	void updateBlueView_(WorkCopy::Ptr workCopy);
+	void updateAlphaView_(WorkCopy::Ptr workCopy);
+	void updateBottomColorBarView_(WorkCopy::Ptr workCopy);
 };
 
 } // namespace GUI
