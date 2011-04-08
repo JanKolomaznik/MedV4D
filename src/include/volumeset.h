@@ -2,7 +2,6 @@
 	CVOLUMESET
 ************************************/
 
-#define OPENCL
 //#define MACINTOSH
 
 #include <omp.h>

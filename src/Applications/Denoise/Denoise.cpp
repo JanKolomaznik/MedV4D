@@ -11,6 +11,7 @@
 #include "common/Common.h"
 
 #define ONLY_VIEWER
+#define OPENCL
 
 #include "progress.h"
 #include "globals.h"
