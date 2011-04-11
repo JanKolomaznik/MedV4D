@@ -78,7 +78,7 @@ signals:
 public slots:
 
 	void save();
-	virtual void close();
+	virtual bool close();
 
 protected slots:
 

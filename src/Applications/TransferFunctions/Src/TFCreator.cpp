@@ -4,10 +4,11 @@
 
 #include <TFRGBaFunction.h>
 #include <TFHSVaFunction.h>
-
+/*
 #include <TFGrayscaleAlphaPainter.h>
-#include <TFRGBaPainter.h>
+#include <TFRGBaPainter.h>*/
 #include <TFHSVaPainter.h>
+#include <TFSimplePainter.h>
 
 #include <TFSimpleModifier.h>
 #include <TFPolygonModifier.h>
@@ -42,32 +43,46 @@ typename TFAbstractPainter<dim>::Ptr TFCreator::createPainter_(){
 	{
 		case TF::Types::PainterGrayscale:
 		{
-			return typename TFAbstractPainter<dim>::Ptr(new TFGrayscaleAlphaPainter(false));
+			return typename TFAbstractPainter<dim>::Ptr(
+				new TFSimplePainter(Qt::white)
+			);
 		}
 		case TF::Types::PainterGrayscaleAlpha:
 		{
-			return typename TFAbstractPainter<dim>::Ptr(new TFGrayscaleAlphaPainter(true));
+			return typename TFAbstractPainter<dim>::Ptr(
+				new TFSimplePainter(Qt::white, Qt::yellow)
+			);
 		}
 		case TF::Types::PainterRGB:
 		{
-			return typename TFAbstractPainter<dim>::Ptr(new TFRGBaPainter(false));
+			return typename TFAbstractPainter<dim>::Ptr(
+				new TFSimplePainter(Qt::red, Qt::green, Qt::blue)
+			);
 		}
 		case TF::Types::PainterRGBa:
 		{
-			return typename TFAbstractPainter<dim>::Ptr(new TFRGBaPainter(true));
+			return typename TFAbstractPainter<dim>::Ptr(
+				new TFSimplePainter(Qt::red, Qt::green, Qt::blue, Qt::yellow)
+			);
 		}
 		case TF::Types::PainterHSV:
 		{
-			return typename TFAbstractPainter<dim>::Ptr(new TFHSVaPainter(false));
+			return typename TFAbstractPainter<dim>::Ptr(
+				new TFHSVaPainter(false)
+			);
 		}
 		case TF::Types::PainterHSVa:
 		{
-			return typename TFAbstractPainter<dim>::Ptr(new TFHSVaPainter(true));
+			return typename TFAbstractPainter<dim>::Ptr(
+				new TFHSVaPainter(true)
+			);
 		}
 	}
 	
 	tfAssert(!"Unknown painter!");
-	return typename TFAbstractPainter<dim>::Ptr(new TFRGBaPainter(true));
+	return typename TFAbstractPainter<dim>::Ptr(
+		new TFSimplePainter(Qt::red, Qt::green, Qt::blue, Qt::yellow)
+	);
 }
 
 template<TF::Size dim>

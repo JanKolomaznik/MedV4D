@@ -1,69 +1,32 @@
 #ifndef TF_HSVA_PAINTER
 #define TF_HSVA_PAINTER
 
-#include <TFAbstractPainter.h>
+#include <TFSimplePainter.h>
 
 namespace M4D {
 namespace GUI {
-	
-#define TF_HSVPAINTER_DIMENSION 1
 
-class TFHSVaPainter: public TFAbstractPainter<TF_HSVPAINTER_DIMENSION>{
+class TFHSVaPainter: public TFSimplePainter{
 
 public:
 
 	typedef boost::shared_ptr<TFHSVaPainter> Ptr;
 
-	typedef TFWorkCopy<TF_HSVPAINTER_DIMENSION> WorkCopy;
+	typedef TFSimplePainter::WorkCopy WorkCopy;
 
 	TFHSVaPainter(bool drawAlpha);
 	~TFHSVaPainter();
 
 	void setArea(QRect area);
-	QRect getInputArea();
-
 	QPixmap getView(WorkCopy::Ptr workCopy);
 
 private:
 
-	const TF::Size colorBarSize_;
-	const TF::Size margin_;
-	const TF::Size spacing_;
-
-	const QColor background_;
-	const QColor hue_;
-	const QColor saturation_;
-	const QColor value_;
-	const QColor alpha_;
-	const QColor hist_;
-	const QColor noColor_;
-
-	bool drawAlpha_;
-	bool sizeChanged_;
-
-	QRect inputArea_;
-	QRect backgroundArea_;
-	QRect bottomBarArea_;
 	QRect sideBarArea_;
 
-	QPixmap viewBuffer_;
-	QPixmap viewBackgroundBuffer_;
 	QPixmap viewSideBarBuffer_;
-	QPixmap viewHistogramBuffer_;
-	QPixmap viewHueBuffer_;
-	QPixmap viewSaturationBuffer_;
-	QPixmap viewValueBuffer_;
-	QPixmap viewAlphaBuffer_;
-	QPixmap viewBottomColorBarBuffer_;
 
-	void updateBackground_();	
 	void updateSideBar_(WorkCopy::Ptr workCopy);
-	void updateHistogramView_(WorkCopy::Ptr workCopy);
-	void updateHueView_(WorkCopy::Ptr workCopy);
-	void updateSaturationView_(WorkCopy::Ptr workCopy);
-	void updateValueView_(WorkCopy::Ptr workCopy);
-	void updateAlphaView_(WorkCopy::Ptr workCopy);
-	void updateBottomColorBarView_(WorkCopy::Ptr workCopy);
 };
 
 } // namespace GUI

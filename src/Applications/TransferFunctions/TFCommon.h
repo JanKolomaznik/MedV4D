@@ -51,6 +51,8 @@ typedef Point<int, int> PaintingPoint;
 
 typedef unsigned long Size;
 
+#define TF_DIMENSION_1 1
+
 template<typename ValueType>
 void removeAllFromVector(typename std::vector<ValueType>& from, const ValueType& what){
 

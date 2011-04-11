@@ -209,14 +209,12 @@ void TFPalette::on_removeButton_clicked(){
 
 void TFPalette::closeEvent(QCloseEvent *e){
 	
-	HolderMapIt beginPalette = palette_.begin();
-	HolderMapIt endPalette = palette_.end();
-	for(HolderMapIt it = beginPalette; it != endPalette; ++it)
+	while(!palette_.empty())
 	{
-		it->second.holder->close();
+		if(!palette_.begin()->second.holder->close()) break;
 	}
-
-	e->accept();
+	if(palette_.empty()) e->accept();
+	else e->ignore();
 }
 
 } // namespace GUI

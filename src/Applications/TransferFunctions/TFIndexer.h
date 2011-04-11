@@ -7,9 +7,6 @@ namespace TF {
 
 class Indexer{
 
-	typedef std::vector<TF::Size> Indexes;
-	typedef Indexes::iterator IndexesIt;
-
 public:
 
 	Indexer(): nextIndex_(0){}
@@ -36,8 +33,8 @@ public:
 		{
 			--nextIndex_;
 
-			IndexesIt newBegin = released_.begin();
-			IndexesIt end = released_.end();
+			Indexes::iterator newBegin = released_.begin();
+			Indexes::iterator end = released_.end();
 			while( (newBegin != end) && (*newBegin == (nextIndex_-1)) )
 			{
 				++newBegin;
@@ -48,8 +45,8 @@ public:
 		}
 		else
 		{
-			IndexesIt it = released_.begin();
-			IndexesIt end = released_.end();
+			Indexes::iterator it = released_.begin();
+			Indexes::iterator end = released_.end();
 
 			while( (it != end) && (*it > index) ) ++it;
 			released_.insert(it, index);
@@ -57,6 +54,8 @@ public:
 	}
 
 private:
+
+	typedef std::vector<TF::Size> Indexes;
 
 	TF::Size nextIndex_;
 	Indexes released_;

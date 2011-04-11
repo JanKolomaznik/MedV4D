@@ -1,26 +1,75 @@
-#include "TFRGBaPainter.h"
+#include "TFSimplePainter.h"
 
 namespace M4D {
 namespace GUI {
 
-TFRGBaPainter::TFRGBaPainter(bool drawAlpha):
+TFSimplePainter::TFSimplePainter(const QColor& component1):
 	margin_(5),
 	spacing_(5),
 	colorBarSize_(10),
 	background_(Qt::black),
-	red_(Qt::red),
-	green_(Qt::green),
-	blue_(Qt::blue),
-	alpha_(Qt::yellow),
+	component1_(component1),
 	hist_(Qt::darkGray),
 	noColor_(0,0,0,0),
-	drawAlpha_(drawAlpha),
+	drawAlpha_(false),
+	firstOnly_(true),
 	sizeChanged_(true){
 }
 
-TFRGBaPainter::~TFRGBaPainter(){}
+TFSimplePainter::TFSimplePainter(const QColor& component1,
+								 const QColor& alpha):
+	margin_(5),
+	spacing_(5),
+	colorBarSize_(10),
+	background_(Qt::black),
+	component1_(component1),
+	alpha_(alpha),
+	hist_(Qt::darkGray),
+	noColor_(0,0,0,0),
+	drawAlpha_(true),
+	firstOnly_(true),
+	sizeChanged_(true){
+}
 
-void TFRGBaPainter::setArea(QRect area){
+TFSimplePainter::TFSimplePainter(const QColor& component1,
+								 const QColor& component2,
+								 const QColor& component3):
+	margin_(5),
+	spacing_(5),
+	colorBarSize_(10),
+	background_(Qt::black),
+	component1_(component1),
+	component2_(component2),
+	component3_(component3),
+	hist_(Qt::darkGray),
+	noColor_(0,0,0,0),
+	drawAlpha_(false),
+	firstOnly_(false),
+	sizeChanged_(true){
+}
+
+TFSimplePainter::TFSimplePainter(const QColor& component1,
+								 const QColor& component2,
+								 const QColor& component3,
+								 const QColor& alpha):	
+	margin_(5),
+	spacing_(5),
+	colorBarSize_(10),
+	background_(Qt::black),
+	component1_(component1),
+	component2_(component2),
+	component3_(component3),
+	alpha_(alpha),
+	hist_(Qt::darkGray),
+	noColor_(0,0,0,0),
+	drawAlpha_(true),
+	firstOnly_(false),
+	sizeChanged_(true){
+}
+
+TFSimplePainter::~TFSimplePainter(){}
+
+void TFSimplePainter::setArea(QRect area){
 	
 	area_ = area;
 
@@ -36,7 +85,7 @@ void TFRGBaPainter::setArea(QRect area){
 		backgroundArea_.width() - 2*margin_,
 		backgroundArea_.height() - 2*margin_);
 	
-	bottomBarArea_= QRect(	//+1 in each direction as border
+	bottomBarArea_= QRect(
 		inputArea_.x() - 1,
 		area_.height() - colorBarSize_ - 1,
 		inputArea_.width() + 2,
@@ -45,13 +94,12 @@ void TFRGBaPainter::setArea(QRect area){
 	sizeChanged_ = true;
 }
 
-QRect TFRGBaPainter::getInputArea(){
+QRect TFSimplePainter::getInputArea(){
 
-	return QRect(inputArea_.x(), inputArea_.y(),
-		inputArea_.width(), inputArea_.height());
+	return inputArea_;
 }
 
-void TFRGBaPainter::updateBackground_(){
+void TFSimplePainter::updateBackground_(){
 
 	viewBackgroundBuffer_ = QPixmap(area_.width(), area_.height());
 	viewBackgroundBuffer_.fill(noColor_);
@@ -61,7 +109,7 @@ void TFRGBaPainter::updateBackground_(){
 	drawer.fillRect(bottomBarArea_, QBrush(background_));
 }
 
-void TFRGBaPainter::updateHistogramView_(WorkCopy::Ptr workCopy){
+void TFSimplePainter::updateHistogramView_(WorkCopy::Ptr workCopy){
 		
 	viewHistogramBuffer_ = QPixmap(area_.width(), area_.height());
 	viewHistogramBuffer_.fill(noColor_);
@@ -86,12 +134,12 @@ void TFRGBaPainter::updateHistogramView_(WorkCopy::Ptr workCopy){
 	}
 }
 
-void TFRGBaPainter::updateRedView_(WorkCopy::Ptr workCopy){
+void TFSimplePainter::updateComponent1View_(WorkCopy::Ptr workCopy){
 		
-	viewRedBuffer_ = QPixmap(area_.width(), area_.height());
-	viewRedBuffer_.fill(noColor_);
+	viewComponent1Buffer_ = QPixmap(area_.width(), area_.height());
+	viewComponent1Buffer_.fill(noColor_);
 
-	QPainter drawer(&viewRedBuffer_);
+	QPainter drawer(&viewComponent1Buffer_);
 	drawer.setClipRect(inputArea_.x(), inputArea_.y(),
 		inputArea_.width() + 1, inputArea_.height() + 1);
 
@@ -101,21 +149,21 @@ void TFRGBaPainter::updateRedView_(WorkCopy::Ptr workCopy){
 	for(int i = 0; i < inputArea_.width() - 1; ++i)
 	{
 		x1 = origin.x + i;
-		y1 = origin.y + (1 - workCopy->getComponent1(i, TF_RGBPAINTER_DIMENSION))*inputArea_.height();
+		y1 = origin.y + (1 - workCopy->getComponent1(i, TF_DIMENSION_1))*inputArea_.height();
 		x2 = origin.x + i + 1;
-		y2 = origin.y + (1 - workCopy->getComponent1(i + 1, TF_RGBPAINTER_DIMENSION))*inputArea_.height();
+		y2 = origin.y + (1 - workCopy->getComponent1(i + 1, TF_DIMENSION_1))*inputArea_.height();
 
-		drawer.setPen(red_);
+		drawer.setPen(component1_);
 		drawer.drawLine(x1, y1,	x2, y2);	
 	}
 }
 
-void TFRGBaPainter::updateGreenView_(WorkCopy::Ptr workCopy){
+void TFSimplePainter::updateComponent2View_(WorkCopy::Ptr workCopy){
 		
-	viewGreenBuffer_ = QPixmap(area_.width(), area_.height());
-	viewGreenBuffer_.fill(noColor_);
+	viewComponent2Buffer_ = QPixmap(area_.width(), area_.height());
+	viewComponent2Buffer_.fill(noColor_);
 
-	QPainter drawer(&viewGreenBuffer_);
+	QPainter drawer(&viewComponent2Buffer_);
 	drawer.setClipRect(inputArea_.x(), inputArea_.y(),
 		inputArea_.width() + 1, inputArea_.height() + 1);
 
@@ -125,21 +173,21 @@ void TFRGBaPainter::updateGreenView_(WorkCopy::Ptr workCopy){
 	for(int i = 0; i < inputArea_.width() - 1; ++i)
 	{
 		x1 = origin.x + i;
-		y1 = origin.y + (1 - workCopy->getComponent2(i, TF_RGBPAINTER_DIMENSION))*inputArea_.height();
+		y1 = origin.y + (1 - workCopy->getComponent2(i, TF_DIMENSION_1))*inputArea_.height();
 		x2 = origin.x + i + 1;
-		y2 = origin.y + (1 - workCopy->getComponent2(i + 1, TF_RGBPAINTER_DIMENSION))*inputArea_.height();
+		y2 = origin.y + (1 - workCopy->getComponent2(i + 1, TF_DIMENSION_1))*inputArea_.height();
 
-		drawer.setPen(green_);
+		drawer.setPen(component2_);
 		drawer.drawLine(x1, y1,	x2, y2);	
 	}
 }
 
-void TFRGBaPainter::updateBlueView_(WorkCopy::Ptr workCopy){
+void TFSimplePainter::updateComponent3View_(WorkCopy::Ptr workCopy){
 		
-	viewBlueBuffer_ = QPixmap(area_.width(), area_.height());
-	viewBlueBuffer_.fill(noColor_);
+	viewComponent3Buffer_ = QPixmap(area_.width(), area_.height());
+	viewComponent3Buffer_.fill(noColor_);
 
-	QPainter drawer(&viewBlueBuffer_);
+	QPainter drawer(&viewComponent3Buffer_);
 	drawer.setClipRect(inputArea_.x(), inputArea_.y(),
 		inputArea_.width() + 1, inputArea_.height() + 1);
 
@@ -149,16 +197,16 @@ void TFRGBaPainter::updateBlueView_(WorkCopy::Ptr workCopy){
 	for(int i = 0; i < inputArea_.width() - 1; ++i)
 	{
 		x1 = origin.x + i;
-		y1 = origin.y + (1 - workCopy->getComponent3(i, TF_RGBPAINTER_DIMENSION))*inputArea_.height();
+		y1 = origin.y + (1 - workCopy->getComponent3(i, TF_DIMENSION_1))*inputArea_.height();
 		x2 = origin.x + i + 1;
-		y2 = origin.y + (1 - workCopy->getComponent3(i + 1, TF_RGBPAINTER_DIMENSION))*inputArea_.height();
+		y2 = origin.y + (1 - workCopy->getComponent3(i + 1, TF_DIMENSION_1))*inputArea_.height();
 
-		drawer.setPen(blue_);
+		drawer.setPen(component3_);
 		drawer.drawLine(x1, y1,	x2, y2);	
 	}
 }
 
-void TFRGBaPainter::updateAlphaView_(WorkCopy::Ptr workCopy){
+void TFSimplePainter::updateAlphaView_(WorkCopy::Ptr workCopy){
 		
 	viewAlphaBuffer_ = QPixmap(area_.width(), area_.height());
 	viewAlphaBuffer_.fill(noColor_);
@@ -175,16 +223,16 @@ void TFRGBaPainter::updateAlphaView_(WorkCopy::Ptr workCopy){
 	for(int i = 0; i < inputArea_.width() - 1; ++i)
 	{
 		x1 = origin.x + i;
-		y1 = origin.y + (1 - workCopy->getAlpha(i, TF_RGBPAINTER_DIMENSION))*inputArea_.height();
+		y1 = origin.y + (1 - workCopy->getAlpha(i, TF_DIMENSION_1))*inputArea_.height();
 		x2 = origin.x + i + 1;
-		y2 = origin.y + (1 - workCopy->getAlpha(i + 1, TF_RGBPAINTER_DIMENSION))*inputArea_.height();
+		y2 = origin.y + (1 - workCopy->getAlpha(i + 1, TF_DIMENSION_1))*inputArea_.height();
 
 		drawer.setPen(alpha_);
 		drawer.drawLine(x1, y1,	x2, y2);	
 	}
 }
 
-void TFRGBaPainter::updateBottomColorBarView_(WorkCopy::Ptr workCopy){
+void TFSimplePainter::updateBottomColorBarView_(WorkCopy::Ptr workCopy){
 		
 	viewBottomColorBarBuffer_ = QPixmap(area_.width(), area_.height());
 	viewBottomColorBarBuffer_.fill(noColor_);
@@ -198,7 +246,7 @@ void TFRGBaPainter::updateBottomColorBarView_(WorkCopy::Ptr workCopy){
 	int x1, y1, x2, y2;
 	for(int i = 0; i < inputArea_.width(); ++i)
 	{
-		tfColor = workCopy->getColor(i, TF_RGBPAINTER_DIMENSION);
+		tfColor = workCopy->getColor(i, TF_DIMENSION_1);
 
 		qColor.setRgbF(tfColor.component1, tfColor.component2, tfColor.component3, tfColor.alpha);
 		drawer.setPen(qColor);
@@ -212,38 +260,52 @@ void TFRGBaPainter::updateBottomColorBarView_(WorkCopy::Ptr workCopy){
 	}
 }
 
-QPixmap TFRGBaPainter::getView(WorkCopy::Ptr workCopy){
+QPixmap TFSimplePainter::getView(WorkCopy::Ptr workCopy){
 
 	bool change = false;
 	if(sizeChanged_)
 	{
 		updateBackground_();
-		change = true;
-	}
-	if(sizeChanged_ || workCopy->histogramChanged())
-	{
 		updateHistogramView_(workCopy);
-		change = true;
-	}
-	if(sizeChanged_ || workCopy->component1Changed(TF_RGBPAINTER_DIMENSION))
-	{
-		updateRedView_(workCopy);
-		change = true;
-	}
-	if(sizeChanged_ || workCopy->component2Changed(TF_RGBPAINTER_DIMENSION))
-	{
-		updateGreenView_(workCopy);
-		change = true;
-	}
-	if(sizeChanged_ || workCopy->component3Changed(TF_RGBPAINTER_DIMENSION))
-	{
-		updateBlueView_(workCopy);
-		change = true;
-	}
-	if(sizeChanged_ || workCopy->alphaChanged(TF_RGBPAINTER_DIMENSION))
-	{
+		updateComponent1View_(workCopy);
+		if(!firstOnly_)
+		{
+			updateComponent2View_(workCopy);
+			updateComponent3View_(workCopy);
+		}
 		updateAlphaView_(workCopy);
 		change = true;
+	}
+	else
+	{
+		if(workCopy->histogramChanged())
+		{
+			updateHistogramView_(workCopy);
+			change = true;
+		}
+		if(workCopy->component1Changed(TF_DIMENSION_1))
+		{
+			updateComponent1View_(workCopy);
+			change = true;
+		}
+		if(!firstOnly_)
+		{
+			if(workCopy->component2Changed(TF_DIMENSION_1))
+			{
+				updateComponent2View_(workCopy);
+				change = true;
+			}
+			if(workCopy->component3Changed(TF_DIMENSION_1))
+			{
+				updateComponent3View_(workCopy);
+				change = true;
+			}
+		}
+		if(workCopy->alphaChanged(TF_DIMENSION_1))
+		{
+			updateAlphaView_(workCopy);
+			change = true;
+		}
 	}
 	if(change)
 	{
@@ -255,9 +317,9 @@ QPixmap TFRGBaPainter::getView(WorkCopy::Ptr workCopy){
 
 		drawer.drawPixmap(0, 0, viewBackgroundBuffer_);
 		drawer.drawPixmap(0, 0, viewHistogramBuffer_);
-		drawer.drawPixmap(0, 0, viewBlueBuffer_);
-		drawer.drawPixmap(0, 0, viewGreenBuffer_);
-		drawer.drawPixmap(0, 0, viewRedBuffer_);
+		drawer.drawPixmap(0, 0, viewComponent3Buffer_);
+		drawer.drawPixmap(0, 0, viewComponent2Buffer_);
+		drawer.drawPixmap(0, 0, viewComponent1Buffer_);
 		drawer.drawPixmap(0, 0, viewAlphaBuffer_);
 		drawer.drawPixmap(0, 0, viewBottomColorBarBuffer_);
 	}

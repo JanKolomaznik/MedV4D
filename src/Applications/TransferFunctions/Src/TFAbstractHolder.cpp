@@ -63,7 +63,7 @@ void TFAbstractHolder::save(){
 	saved_ = true;
 }
 
-void TFAbstractHolder::close(){
+bool TFAbstractHolder::close(){
 
 	if(!saved_)
 	{
@@ -75,10 +75,11 @@ void TFAbstractHolder::close(){
 		msgBox.setDefaultButton(QMessageBox::Save);
 		int ret = msgBox.exec();
 
-		if(ret == QMessageBox::Cancel) return;
+		if(ret == QMessageBox::Cancel) return false;
 		if(ret == QMessageBox::Save) save();
 	}
 	emit Close(index_);
+	return true;
 }
 
 TF::Size TFAbstractHolder::getIndex(){

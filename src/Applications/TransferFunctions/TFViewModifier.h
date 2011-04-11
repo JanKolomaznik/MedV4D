@@ -11,8 +11,6 @@
 namespace M4D {
 namespace GUI {
 
-#define TF_DIMENSION_1 1
-
 class TFViewModifier: public TFAbstractModifier<TF_DIMENSION_1>{
 
 	Q_OBJECT

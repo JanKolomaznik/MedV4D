@@ -281,3 +281,9 @@ void ViewerWindow::openFile( const QString &aPath )
 	applyTransferFunction();
 	mTransFuncTimer.start();
 }
+
+void ViewerWindow::closeEvent(QCloseEvent *e){
+
+	if(mTransferFunctionEditor->close()) e->accept();
+	else e->ignore();
+}

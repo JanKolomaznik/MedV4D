@@ -58,6 +58,8 @@ protected:
 	M4D::Common::TimeStamp mLastTimeStamp;
 
 	bool fileLoaded_;
+
+	void closeEvent(QCloseEvent*);
 };
 
 
