@@ -48,16 +48,93 @@ VolumeRenderer::Finalize()
 	//TODO
 }
 
+/*void
+VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool aSetupView )
+{
+	ASSERT( aConfig.imageData != NULL );
+
+	if( aSetupView ) {
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		//Set viewing parameters
+		M4D::SetViewAccordingToCamera( aConfig.camera );
+		glMatrixMode(GL_MODELVIEW);
+	}
+	
+	unsigned sliceCount = aConfig.sampleCount;
+	float renderingSliceThickness = 1.0f;
+
+	glColor3f( 1.0f, 0.0f, 0.0f );
+	M4D::GLDrawBoundingBox( aConfig.imageData->GetMinimum(), aConfig.imageData->GetMaximum() );
+
+	mCgEffect.SetParameter( "gImageData3D", *aConfig.imageData );
+	mCgEffect.SetParameter( "gMappedIntervalBands", aConfig.imageData->GetMappedInterval() );
+	mCgEffect.SetParameter( "gLightPosition", Vector3f( 3000.0f, 3000.0f, -3000.0f ) );
+	mCgEffect.SetParameter( "gLightColor", Vector3f( 1.0f, 1.0f, 1.0f ) );
+	mCgEffect.SetParameter( "gEyePosition", aConfig.camera.GetEyePosition() );
+	mCgEffect.SetParameter( "gRenderingSliceThickness", renderingSliceThickness );
+
+	mCgEffect.SetParameter( "gViewDirection", aConfig.camera.GetTargetDirection() );
+
+	Vector3f tmp = VectorMemberDivision( aConfig.camera.GetTargetDirection(), aConfig.imageData->GetSize() );
+	mCgEffect.SetParameter( "gSliceNormalTexCoords", tmp );
+	mCgEffect.SetTextureParameter( "gNoiseMap", mNoiseMap );
+	mCgEffect.SetParameter( "gNoiseMapSize", Vector2f( 32.0f, 32.0f ) );
+
+
+	std::string techniqueName;
+	switch ( aConfig.colorTransform ) {
+	case ctTransferFunction1D:
+		{
+			mCgEffect.SetTextureParameter( "gTransferFunction1D", aConfig.transferFunction->GetTextureID() );
+			mCgEffect.SetParameter( "gTransferFunction1DInterval", aConfig.transferFunction->GetMappedInterval() );
+
+			if ( aConfig.jitterEnabled ) {
+				if ( aConfig.shadingEnabled ) {
+					techniqueName = "TransferFunction1DShadingJitter_3D";
+				} else {
+					techniqueName = "TransferFunction1DJitter_3D";
+				}
+			} else {
+				if ( aConfig.shadingEnabled ) {
+					techniqueName = "TransferFunction1DShading_3D";
+				} else {
+					techniqueName = "TransferFunction1D_3D";
+				}
+			}
+		}
+		break;
+	case ctMaxIntensityProjection:
+		{
+			mCgEffect.SetParameter( "gWLWindow", aConfig.lutWindow );
+			techniqueName = "WLWindowMIP_3D";
+		}
+		break;
+	default:
+		ASSERT( false );
+	}
+	//D_PRINT(  aConfig.imageData->GetMinimum() << " ----- " << aConfig.imageData->GetMaximum() << "++++" << sliceCount );
+	M4D::SetVolumeTextureCoordinateGeneration( aConfig.imageData->GetMinimum(), aConfig.imageData->GetRealSize() );
+	mCgEffect.ExecuteTechniquePass(
+			techniqueName, 
+			boost::bind( &M4D::GLDrawVolumeSliceCenterSamples, 
+				M4D::BoundingBox3D( aConfig.imageData->GetMinimum(), aConfig.imageData->GetMaximum() ),
+				aConfig.camera,
+				sliceCount,
+				1.0f
+				) 
+			); 
+
+	M4D::DisableVolumeTextureCoordinateGeneration();
+	M4D::CheckForGLError( "OGL error : " );
+}*/
+
 void
 VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool aSetupView )
 {
 	ASSERT( aConfig.imageData != NULL );
 
-	/*aConfig.camera.SetTargetPosition( 0.5f * (aConfig.imageData->GetMaximum() + aConfig.imageData->GetMinimum()) );
-	aConfig.camera.SetFieldOfView( 45.0f );*/
-	//aConfig.camera.SetEyePosition( Vector3f( 0.0f, 0.0f, 750.0f ) );
-	
-	//LOG( aConfig.camera );
+
 	if( aSetupView ) {
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
@@ -131,7 +208,6 @@ VolumeRenderer::Render( VolumeRenderer::RenderingConfiguration & aConfig, bool a
 	M4D::DisableVolumeTextureCoordinateGeneration();
 	M4D::CheckForGLError( "OGL error : " );
 }
-
 
 
 }//Renderer

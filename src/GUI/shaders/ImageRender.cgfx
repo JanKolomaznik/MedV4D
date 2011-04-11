@@ -41,7 +41,7 @@ float2 gMappedIntervalBands;
 float3 gLightPosition;
 float3 gLightColor;
 float3 gEyePosition;
-
+float3 gViewDirection;
 
 sampler3D gMaskData3D;
 

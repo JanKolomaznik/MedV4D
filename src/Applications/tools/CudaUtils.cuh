@@ -65,6 +65,13 @@ operator+( const uint3 &a, const int3 & b )
 	return make_int3( a.x + b.x, a.y + b.y, a.z + b.z );
 }
 
+__host__ inline std::ostream &
+operator<<( std::ostream &stream, const dim3 &v )
+{
+	stream << "[ " << v.x << ", " << v.y << ", " << v.z << " ]";
+	return stream;
+}
+
 inline dim3
 splitCountTo2dGrid( size_t aCount )
 {
@@ -482,10 +489,11 @@ __global__ void
 consolidateScan( Buffer1D< TElement > inBuffer, TOperator op, Buffer1D< TElement > intermediate )
 {
 	uint tid = threadIdx.x;
-	uint blkStart = blockDim.x * blockIdx.x;
+	uint blkIdx = blockIdx.x + blockIdx.y * gridDim.x;
+	uint blkStart = blockDim.x * blkIdx;
 	uint idx = blkStart + tid;
 	if ( idx < inBuffer.mLength ) {
-		inBuffer.mData[ idx ] = op( intermediate.mData[ blockIdx.x ], inBuffer.mData[ idx ] );
+		inBuffer.mData[ idx ] = op( intermediate.mData[ blkIdx >> 1 ], inBuffer.mData[ idx ] );
 	}
 }
 
@@ -498,13 +506,13 @@ parallelScan( Buffer1D< TElement > inBuffer, Buffer1D< TElement > outBuffer, TOp
 	Buffer1D< TElement > intermediate = CudaAllocateBuffer<TElement>( inBuffer.mLength / tBlockSize + 1 );
 	uint blockCount = inBuffer.mLength / tBlockSize + 1;
 	dim3 gridSize = splitCountTo2dGrid( blockCount );
-	//D_PRINT( "parallelScan config: gridSize = " << gridSize << "; tBlockSize = " << tBlockSize << "; shared mem = " << tBlockSize * 2 * sizeof( TElement ) );
+	D_PRINT( "parallelScan config: gridSize = " << gridSize << "; tBlockSize = " << tBlockSize << "; shared mem = " << tBlockSize * 2 * sizeof( TElement ) );
 	parallelPrescanKernel<<< gridSize, tBlockSize, tBlockSize * 2 * sizeof( TElement ) >>>( inBuffer, outBuffer, op, intermediate );
 	CheckCudaErrorState( "After parallelPrescanKernel" );
 	if ( inBuffer.mLength > tBlockSize ) {
 		parallelScan< TElement, TOperator, tBlockSize >( intermediate, intermediate, op );
 
-		consolidateScan<<< gridSize, 2*tBlockSize >>>( outBuffer, op, intermediate );
+		consolidateScan<<< gridSize, tBlockSize >>>( outBuffer, op, intermediate );
 		CheckCudaErrorState( "After consolidateScan" );
 	}
 	cudaThreadSynchronize();
