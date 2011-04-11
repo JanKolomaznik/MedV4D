@@ -1,5 +1,5 @@
-#ifndef TF_DIALOGBUTTONS
-#define TF_DIALOGBUTTONS
+#ifndef TF_CREATORDIALOGBUTTONS
+#define TF_CREATORDIALOGBUTTONS
 
 #include <QtGui/QRadioButton>
 #include <QtGui/QVBoxLayout>
@@ -173,4 +173,4 @@ private:
 } // namespace GUI
 } // namespace M4D
 
-#endif	//TF_DIALOGBUTTONS
+#endif	//TF_CREATORDIALOGBUTTONS

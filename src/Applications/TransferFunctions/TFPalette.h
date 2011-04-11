@@ -16,9 +16,11 @@
 #include <TFCreator.h>
 #include <TFPaletteButton.h>
 
+#include <TFCommon.h>
 #include <TFColor.h>
 #include <TFHistogram.h>
-#include <TFHolderInterface.h>
+#include <TFAbstractHolder.h>
+#include <TFIndexer.h>
 
 #include "ui_TFPalette.h"
 
@@ -50,10 +52,10 @@ public:
 	template<typename BufferIterator>
 	bool applyTransferFunction(BufferIterator begin, BufferIterator end){
 
-		if(activeHolder_ < 0) on_addButton_clicked();
-		if(activeHolder_ < 0) exit(0);
+		if(activeEditor_ < 0) on_addButton_clicked();
+		if(activeEditor_ < 0) exit(0);
 
-		return palette_.find(activeHolder_)->second->applyTransferFunction<BufferIterator>(begin, end);
+		return palette_.find(activeEditor_)->second.holder->applyTransferFunction<BufferIterator>(begin, end);
 	}
 
 private slots:
@@ -68,30 +70,27 @@ private slots:
 protected:
 
 	void resizeEvent(QResizeEvent*);
+	void closeEvent(QCloseEvent *);
 
 private:	
 
-	typedef std::map<TF::Size, TFHolderInterface*> HolderMap;
-	typedef HolderMap::iterator HolderMapIt;
+	struct Editor{
+		TFAbstractHolder* holder;
+		TFPaletteButton* button;
 
-	class Indexer{
+		Editor():
+			holder(NULL),
+			button(NULL){
+		}
 
-		typedef std::vector<TF::Size> Indexes;
-		typedef Indexes::iterator IndexesIt;
-
-	public:
-
-		Indexer();
-		~Indexer();
-
-		TF::Size getIndex();
-		void releaseIndex(const TF::Size index);
-
-	private:
-
-		TF::Size nextIndex_;
-		Indexes released_;
+		Editor(TFAbstractHolder* holder, TFPaletteButton* button):
+			holder(holder),
+			button(button){
+		}
 	};
+
+	typedef std::map<TF::Size, Editor> HolderMap;
+	typedef HolderMap::iterator HolderMapIt;
 
     Ui::TFPalette* ui_;
 	QMainWindow* mainWindow_;
@@ -103,14 +102,16 @@ private:
 	M4D::Common::TimeStamp lastChange_;
 	bool activeChanged_;
 
-	Indexer indexer_;
-	int activeHolder_;
+	TF::Indexer indexer_;
+	int activeEditor_;
 	HolderMap palette_;
 
 	TFCreator creator_;
 
-	void addToPalette_(TFHolderInterface* holder);
+	void addToPalette_(TFAbstractHolder* holder);
 	void removeFromPalette_(const TF::Size index);
+
+	void activateNext_(HolderMapIt it);
 };
 
 } // namespace GUI

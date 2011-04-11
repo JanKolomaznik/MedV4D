@@ -2,8 +2,10 @@
 #define TF_PALETTE_BUTTON
 
 #include <TFCommon.h>
+
 #include <QtGui/QWidget>
 #include <QtGui/QAction>
+#include <QtGui/QPainter>
 
 namespace M4D {
 namespace GUI {
@@ -18,13 +20,14 @@ public:
 	~TFPaletteButton();
 
 	void setup();
+	void setPreview(const QPixmap& preview);
 
 	void activate();
 	void deactivate();
 
 signals:
 
-	void Triggered();
+	void Triggered(TF::Size index);
 
 protected:
 
@@ -34,11 +37,12 @@ protected:
 private:
 
 	TF::Size index_;
+	QPixmap preview_;
+	const TF::Size size_;
+	
 	bool active_;
 
-	const TF::Size size_;
-
-	void drawBorder_(QPainter* drawer, QColor color, int brushWidth);
+	QPixmap activePreview_;
 };
 
 } // namespace GUI

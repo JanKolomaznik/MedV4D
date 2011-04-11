@@ -11,6 +11,7 @@
 
 #include <TFSimpleModifier.h>
 #include <TFPolygonModifier.h>
+#include <TFViewModifier.h>
 
 namespace M4D {
 namespace GUI {
@@ -146,6 +147,10 @@ typename TFAbstractModifier<dim>::Ptr TFCreator::createModifier_(typename TFWork
 				}
 			}
 		}
+		case TF::Types::ModifierView:
+		{
+			return typename TFAbstractModifier<dim>::Ptr(new TFViewModifier(workCopy));
+		}
 	}
 
 	tfAssert(!"Unknown modifier!");
@@ -153,7 +158,7 @@ typename TFAbstractModifier<dim>::Ptr TFCreator::createModifier_(typename TFWork
 		new TFSimpleModifier(workCopy, TFSimpleModifier::RGB, true));	//default
 }
 
-TFHolderInterface* TFCreator::createHolder_(){
+TFAbstractHolder* TFCreator::createHolder_(){
 
 	switch(structure_[mode_].holder)
 	{
@@ -164,7 +169,7 @@ TFHolderInterface* TFCreator::createHolder_(){
 			TFWorkCopy<1>::Ptr workCopy(new TFWorkCopy<1>(function));
 			TFAbstractModifier<1>::Ptr modifier = createModifier_<1>(workCopy);
 
-			return new TFBasicHolder(mainWindow_, painter, modifier, structure_[mode_]);
+			return new TFBasicHolder(painter, modifier, structure_[mode_]);
 		}
 	}
 
@@ -206,7 +211,7 @@ void TFCreator::setDomain(const TF::Size domain){
 	domain_ = domain;
 }
 
-TFHolderInterface* TFCreator::createTransferFunction(){
+TFAbstractHolder* TFCreator::createTransferFunction(){
 
 	setStatePredefined_();
 
@@ -219,9 +224,9 @@ TFHolderInterface* TFCreator::createTransferFunction(){
 	return createHolder_();	
 }
 	
-TFHolderInterface* TFCreator::loadTransferFunction_(){
+TFAbstractHolder* TFCreator::loadTransferFunction_(){
 
-	TFHolderInterface* loaded = NULL;
+	TFAbstractHolder* loaded = NULL;
 
 	QString fileName = QFileDialog::getOpenFileName(
 		(QWidget*)mainWindow_,
@@ -282,13 +287,13 @@ TFHolderInterface* TFCreator::loadTransferFunction_(){
 	return loaded;
 }
 
-TFHolderInterface* TFCreator::load_(TFXmlReader::Ptr reader, bool& sideError){
+TFAbstractHolder* TFCreator::load_(TFXmlReader::Ptr reader, bool& sideError){
 
 	#ifndef TF_NDEBUG
 		std::cout << "Loading editor..." << std::endl;
 	#endif
 
-	TFHolderInterface* loaded = NULL;
+	TFAbstractHolder* loaded = NULL;
 	bool ok = false;
 	if(reader->readElement("Editor"))
 	{		

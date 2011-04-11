@@ -11,7 +11,8 @@ namespace Types {
 
 enum Modifier{
 	ModifierSimple,
-	ModifierPolygon
+	ModifierPolygon,
+	ModifierView
 };
 typedef std::vector<Modifier> Modifiers;
 
@@ -21,15 +22,16 @@ static Modifiers getAllowedModifiers(Painter painter){
 
 	switch(painter)
 	{
-		case TF::Types::PainterGrayscale:	//same as next case
-		case TF::Types::PainterGrayscaleAlpha:	//same as next case
-		case TF::Types::PainterRGB:	//same as next case
-		case TF::Types::PainterRGBa:	//same as next case
-		case TF::Types::PainterHSV:	//same as next case
-		case TF::Types::PainterHSVa:
+		case PainterGrayscale:	//same as next case
+		case PainterGrayscaleAlpha:	//same as next case
+		case PainterRGB:	//same as next case
+		case PainterRGBa:	//same as next case
+		case PainterHSV:	//same as next case
+		case PainterHSVa:
 		{
-			allowed.push_back(TF::Types::ModifierSimple);
-			allowed.push_back(TF::Types::ModifierPolygon);
+			allowed.push_back(ModifierSimple);
+			allowed.push_back(ModifierPolygon);
+			allowed.push_back(ModifierView);
 			break;
 		}
 	}
@@ -52,6 +54,10 @@ inline std::string convert<Types::Modifier, std::string>(const Types::Modifier &
 		{
 			return "Polygon modifier";
 		}
+		case Types::ModifierView:
+		{
+			return "View modifier";
+		}
 	}
 
 	tfAssert(!"Unknown modifier!");
@@ -66,6 +72,9 @@ inline Types::Modifier TF::convert<std::string, Types::Modifier>(const std::stri
 	}
 	if(modifier == "Polygon modifier"){
 		return Types::ModifierPolygon;
+	}
+	if(modifier == "View modifier"){
+		return Types::ModifierView;
 	}
 
 	tfAssert(!"Unknown modifier!");

@@ -1,15 +1,13 @@
 #ifndef TF_SIMPLE_MODIFIER
 #define TF_SIMPLE_MODIFIER
 
-#include <TFAbstractModifier.h>
+#include <TFViewModifier.h>
 #include <ui_TFSimpleModifier.h>
 
 namespace M4D {
 namespace GUI {
 
-#define TF_SIMPLEMODIFIER_DIMENSION 1
-
-class TFSimpleModifier: public TFAbstractModifier<TF_SIMPLEMODIFIER_DIMENSION>{
+class TFSimpleModifier: public TFViewModifier{
 
 	Q_OBJECT
 
@@ -17,7 +15,7 @@ public:
 
 	typedef boost::shared_ptr<TFSimpleModifier> Ptr;
 
-	typedef TFWorkCopy<TF_SIMPLEMODIFIER_DIMENSION> WorkCopy;
+	typedef TFViewModifier::WorkCopy WorkCopy;
 
 	enum Mode{
 		Grayscale,
@@ -28,25 +26,11 @@ public:
 	TFSimpleModifier(WorkCopy::Ptr workCopy, Mode mode, bool alpha);
 	~TFSimpleModifier();
 
-	bool load(TFXmlReader::Ptr reader);
+protected slots:
 
-	void mousePress(const int x, const int y, Qt::MouseButton button);
-	void mouseRelease(const int x, const int y);
-	void mouseMove(const int x, const int y);
-	void mouseWheel(const int steps, const int x, const int y);
-	void keyPress(int qtKey);
-	void keyRelease(int qtKey);
+	virtual void activeView_changed(int index);
 
-private slots:
-
-	void activeView_changed(int index);
-	void histogram_check(bool enabled);
-
-	void maxZoomSpin_changed(int value);
-	void xAxis_check(bool enabled);
-	void yAxis_check(bool enabled);
-
-private:
+protected:
 
 	enum ActiveView{
 		Active1,
@@ -56,22 +40,22 @@ private:
 	};	
 	ActiveView activeView_;
 
-	Ui::TFSimpleModifier* tools_;
+	Ui::TFSimpleModifier* simpleTools_;
+	QWidget* simpleWidget_;
 
 	Mode mode_;
 	bool alpha_;
 
-	bool histScroll_;
 	bool leftMousePressed_;
 	TF::PaintingPoint inputHelper_;
 
-	bool zoomMovement_;
-	TF::PaintingPoint zoomMoveHelper_;
-	WorkCopy::ZoomDirection zoomDirection_;
+	virtual void createTools_();
 
-	void addPoint_(const int x, const int y);
+	virtual void mousePressEvent(QMouseEvent *e);
+	virtual void mouseReleaseEvent(QMouseEvent *e);
+	virtual void mouseMoveEvent(QMouseEvent *e);
 
-	void updateZoomTools_();
+	virtual void addPoint_(const int x, const int y);
 };
 
 } // namespace GUI

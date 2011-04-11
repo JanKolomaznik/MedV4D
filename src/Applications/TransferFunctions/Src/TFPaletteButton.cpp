@@ -1,7 +1,5 @@
 #include "TFPaletteButton.h"
 
-#include <QtGui/QPainter>
-
 namespace M4D {
 namespace GUI {
 
@@ -20,47 +18,59 @@ void TFPaletteButton::setup(){
 	resize(fixedSize);
 	setMinimumSize(fixedSize);
 	setMaximumSize(fixedSize);
+
+	preview_ = QPixmap(fixedSize);
+	preview_.fill(Qt::black);
+
+	QPainter drawer(&preview_);
+
+	drawer.setPen(Qt::white);
+	drawer.drawText(rect(), Qt::AlignCenter,
+		QString::fromStdString(TF::convert<TF::Size, std::string>(index_))
+	);
+	
+	activePreview_ = QPixmap(fixedSize);
+	activePreview_.fill(QColor(0,0,0,0));
+
+	drawer.end();
+	drawer.begin(&activePreview_);	
+
+	drawer.setPen(QPen(Qt::red, 2));
+	drawer.drawLine(0,0, width(), 0);
+	drawer.drawLine(0, height(), width(), height());
+	drawer.drawLine(0, 0, 0, height());
+	drawer.drawLine(width(), 0, width(), height());
+}
+
+void TFPaletteButton::setPreview(const QPixmap& preview){
+
+	preview_ = preview;
 }
 
 void TFPaletteButton::activate(){
 
 	active_ = true;
-	repaint();
+	update();
 }
 
 void TFPaletteButton::deactivate(){
 
 	active_ = false;
-	repaint();
+	update();
 }
 
 void TFPaletteButton::paintEvent(QPaintEvent*){
 
 	QPainter drawer(this);
 
-	drawer.fillRect(rect(), QBrush(Qt::black));
-	drawer.setPen(Qt::white);
-	drawer.drawText(rect(), Qt::AlignCenter, QObject::tr(TF::convert<TF::Size, std::string>(index_).c_str()));
+	drawer.drawPixmap(rect(), preview_);
 
-	if(active_)
-	{
-		drawBorder_(&drawer, Qt::red, 2);
-	}
-}
-
-void TFPaletteButton::drawBorder_(QPainter* drawer, QColor color, int brushWidth){
-	
-	drawer->setPen( QPen(color, brushWidth) );
-
-	drawer->drawLine(0, brushWidth - 1, width(), brushWidth - 1);
-	drawer->drawLine(0, height() - (brushWidth - 1), width(), height() - (brushWidth - 1));
-	drawer->drawLine(brushWidth - 1, 0, brushWidth - 1, height());
-	drawer->drawLine(width() - (brushWidth - 1), 0, width() - (brushWidth - 1), height());
+	if(active_) drawer.drawPixmap(rect(), activePreview_);
 }
 
 void TFPaletteButton::mouseReleaseEvent(QMouseEvent *){
 
-	emit Triggered();
+	if(!active_) emit Triggered(index_);
 }
 
 } // namespace GUI

@@ -16,7 +16,7 @@ static Holders getAllHolders(){
 
 	Holders all;
 	
-	all.push_back(TF::Types::HolderBasic);
+	all.push_back(HolderBasic);
 
 	return all;
 }

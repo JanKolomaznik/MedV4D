@@ -45,7 +45,7 @@ void TFGrayscaleAlphaPainter::setArea(QRect area){
 
 QRect TFGrayscaleAlphaPainter::getInputArea(){
 
-	return QRect(area_.x() + inputArea_.x(), area_.y() + inputArea_.y(),
+	return QRect(inputArea_.x(), inputArea_.y(),
 		inputArea_.width(), inputArea_.height());
 }
 

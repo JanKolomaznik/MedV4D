@@ -43,6 +43,9 @@ struct Point{
 	bool operator==(const Point& point){
 		return (x == point.x) && (y == point.y);
 	}
+	bool operator!=(const Point& point){
+		return !operator==(point);
+	}
 };
 typedef Point<int, int> PaintingPoint;
 

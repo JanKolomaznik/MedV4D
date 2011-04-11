@@ -6,19 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>170</width>
-    <height>210</height>
+    <width>175</width>
+    <height>198</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>170</width>
-    <height>210</height>
+    <width>175</width>
+    <height>198</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>170</width>
+    <width>175</width>
     <height>16777215</height>
    </size>
   </property>
@@ -38,75 +38,116 @@
      <height>16777215</height>
     </size>
    </property>
-   <widget class="QScrollArea" name="scrollArea">
+   <widget class="QWidget" name="paletteLayoutWidget" native="true">
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>40</y>
-      <width>170</width>
-      <height>170</height>
+      <y>0</y>
+      <width>175</width>
+      <height>198</height>
      </rect>
     </property>
-    <property name="minimumSize">
-     <size>
-      <width>0</width>
-      <height>0</height>
-     </size>
-    </property>
-    <property name="maximumSize">
-     <size>
-      <width>16777215</width>
-      <height>16777215</height>
-     </size>
-    </property>
-    <property name="widgetResizable">
-     <bool>true</bool>
-    </property>
-    <widget class="QWidget" name="scrollAreaWidget">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>168</width>
-       <height>168</height>
-      </rect>
+    <layout class="QVBoxLayout" name="paletteLayout">
+     <property name="margin">
+      <number>5</number>
      </property>
-    </widget>
-   </widget>
-   <widget class="QPushButton" name="addButton">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>70</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Add</string>
-    </property>
-    <property name="shortcut">
-     <string>Alt+A</string>
-    </property>
-    <property name="default">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="removeButton">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>10</y>
-      <width>70</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Remove</string>
-    </property>
-    <property name="shortcut">
-     <string>Alt+R</string>
-    </property>
+     <item>
+      <layout class="QHBoxLayout" name="addRemoveLayout">
+       <property name="spacing">
+        <number>6</number>
+       </property>
+       <property name="leftMargin">
+        <number>5</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>5</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QPushButton" name="addButton">
+         <property name="maximumSize">
+          <size>
+           <width>75</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Add</string>
+         </property>
+         <property name="shortcut">
+          <string>Alt+A</string>
+         </property>
+         <property name="default">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="removeButton">
+         <property name="maximumSize">
+          <size>
+           <width>75</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Remove</string>
+         </property>
+         <property name="shortcut">
+          <string>Alt+R</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QScrollArea" name="scrollArea">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="verticalScrollBarPolicy">
+        <enum>Qt::ScrollBarAsNeeded</enum>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+       <property name="widgetResizable">
+        <bool>true</bool>
+       </property>
+       <widget class="QWidget" name="scrollAreaWidget">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>163</width>
+          <height>146</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <action name="actionLoad">

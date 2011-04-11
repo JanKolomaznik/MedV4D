@@ -6,7 +6,7 @@
 
 #include <TFCommon.h>
 
-#include <TFDialogButtons.h>
+#include <TFCreatorDialogButtons.h>
 
 #include <TFAbstractFunction.h>
 #include <TFAbstractModifier.h>
@@ -19,7 +19,7 @@
 #include <TFModifiers.h>
 #include <TFPredefined.h>
 
-#include <TFHolderInterface.h>
+#include <TFAbstractHolder.h>
 
 #include <ui_TFCreator.h>
 
@@ -35,7 +35,7 @@ public:
 	TFCreator(QMainWindow* mainWindow, const TF::Size domain);
 	~TFCreator();
 
-	TFHolderInterface* createTransferFunction();
+	TFAbstractHolder* createTransferFunction();
 
 	void setDomain(const TF::Size domain);
 
@@ -90,9 +90,9 @@ private:
 
 	void clearLayout_();
 
-	TFHolderInterface* loadTransferFunction_();
-	TFHolderInterface* load_(TFXmlReader::Ptr reader, bool& sideError);
-	TFHolderInterface* createHolder_();
+	TFAbstractHolder* loadTransferFunction_();
+	TFAbstractHolder* load_(TFXmlReader::Ptr reader, bool& sideError);
+	TFAbstractHolder* createHolder_();
 
 	template<TF::Size dim>
 	typename TFAbstractFunction<dim>::Ptr createFunction_();

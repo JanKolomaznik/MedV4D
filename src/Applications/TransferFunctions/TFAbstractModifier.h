@@ -3,9 +3,14 @@
 
 #include <TFXmlReader.h>
 #include <TFXmlWriter.h>
+
 #include <QtCore/QString>
 #include <QtGui/QMessageBox>
 #include <QtGui/QFileDialog>
+
+#include <QtGui/QKeyEvent>
+#include <QtGui/QMouseEvent>
+#include <QtGui/QWheelEvent>
 
 #include <TFCommon.h>
 #include <TFWorkCopy.h>
@@ -15,7 +20,7 @@
 namespace M4D {
 namespace GUI {
 
-class RefreshSignal: public QObject{
+class RefreshSignal: public QWidget{
 
 	Q_OBJECT
 
@@ -37,6 +42,7 @@ public:
 
 	QWidget* getTools(){
 
+		if(!toolsWidget_) createTools_();
 		return toolsWidget_;
 	}
 
@@ -61,12 +67,13 @@ public:
 		return false;
 	}
 
-	virtual void mousePress(const int x, const int y, Qt::MouseButton button){}
-	virtual void mouseRelease(const int x, const int y){}
-	virtual void mouseMove(const int x, const int y){}
-	virtual void mouseWheel(const int steps, const int x, const int y){}
-	virtual void keyPress(int qtKey){}
-	virtual void keyRelease(int qtKey){}
+	virtual void mousePressEvent(QMouseEvent *e){}
+	virtual void mouseReleaseEvent(QMouseEvent *e){}
+	virtual void mouseMoveEvent(QMouseEvent *e){}
+	virtual void wheelEvent(QWheelEvent *e){}
+
+	virtual void keyPressEvent(QKeyEvent *e){}
+	virtual void keyReleaseEvent(QKeyEvent *e){}
 
 	virtual void save(TFXmlWriter::Ptr writer){}
 	virtual bool load(TFXmlReader::Ptr reader){
@@ -77,11 +84,7 @@ public:
 
 		return true;
 	}
-/*
-signals:
 
-	void RefreshView();
-*/
 protected:
 
 	QWidget* toolsWidget_;
@@ -99,6 +102,8 @@ protected:
 	}
 
 	virtual ~TFAbstractModifier(){}
+
+	virtual void createTools_() = 0;
 
 	virtual void addPoint_(const int x, const int y) = 0;
 

@@ -8,9 +8,9 @@ TFHSVaPainter::TFHSVaPainter(bool drawAlpha):
 	spacing_(5),
 	colorBarSize_(10),
 	background_(Qt::black),
-	hue_(Qt::darkMagenta),
-	saturation_(Qt::darkCyan),
-	value_(Qt::lightGray),
+	hue_(Qt::magenta),
+	saturation_(Qt::cyan),
+	value_(150,75,0),
 	alpha_(Qt::yellow),
 	hist_(Qt::darkGray),
 	noColor_(0,0,0,0),
@@ -53,7 +53,7 @@ void TFHSVaPainter::setArea(QRect area){
 
 QRect TFHSVaPainter::getInputArea(){
 
-	return QRect(area_.x() + inputArea_.x(), area_.y() + inputArea_.y(),
+	return QRect(inputArea_.x(), inputArea_.y(),
 		inputArea_.width(), inputArea_.height());
 }
 

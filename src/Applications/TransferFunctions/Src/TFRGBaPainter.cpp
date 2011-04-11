@@ -47,7 +47,7 @@ void TFRGBaPainter::setArea(QRect area){
 
 QRect TFRGBaPainter::getInputArea(){
 
-	return QRect(area_.x() + inputArea_.x(), area_.y() + inputArea_.y(),
+	return QRect(inputArea_.x(), inputArea_.y(),
 		inputArea_.width(), inputArea_.height());
 }
 

@@ -7,7 +7,7 @@ namespace M4D {
 namespace GUI {	
 namespace TF {
 
-class Histogram{	//TODO vector wrapper w/ maximum
+class Histogram{
 
 public:
 

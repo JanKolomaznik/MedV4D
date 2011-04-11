@@ -22,8 +22,8 @@ static Functions getAllowedFunctions(Holder holder){
 	switch(holder){
 		case Types::HolderBasic:
 		{
-			allowed.push_back(TF::Types::FunctionRGB);
-			allowed.push_back(TF::Types::FunctionHSV);
+			allowed.push_back(FunctionRGB);
+			allowed.push_back(FunctionHSV);
 			break;
 		}
 	}

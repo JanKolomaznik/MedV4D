@@ -8,7 +8,7 @@ TFPalette::TFPalette(QMainWindow* parent):
 	ui_(new Ui::TFPalette),
 	mainWindow_(parent),
 	domain_(TFAbstractFunction<1>::defaultDomain),
-	activeHolder_(-1),
+	activeEditor_(-1),
 	activeChanged_(false),
 	creator_(parent, domain_){
 
@@ -16,7 +16,7 @@ TFPalette::TFPalette(QMainWindow* parent):
 	setWindowTitle("Transfer Functions Palette");
 
 	layout_ = new QVBoxLayout;
-	layout_->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
+	layout_->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 	ui_->scrollAreaWidget->setLayout(layout_);
 
 	ui_->removeButton->setEnabled(false);
@@ -31,10 +31,10 @@ void TFPalette::setupDefault(){
 /*
 TF::MultiDColor<dim>::Map::Ptr TFPalette::getColorMap(){
 
-	if(activeHolder_ < 0) on_actionNew_triggered();
-	if(activeHolder_ < 0) exit(0);
+	if(activeEditor_ < 0) on_actionNew_triggered();
+	if(activeEditor_ < 0) exit(0);
 
-	return palette_.find(activeHolder_)->second->getColorMap();
+	return palette_.find(activeEditor_)->second.holder->getColorMap();
 }
 */
 void TFPalette::setDomain(const TF::Size domain){
@@ -48,7 +48,7 @@ void TFPalette::setDomain(const TF::Size domain){
 	HolderMapIt endPalette = palette_.end();
 	for(HolderMapIt it = beginPalette; it != endPalette; ++it)
 	{
-		it->second->setDomain(domain_);
+		it->second.holder->setDomain(domain_);
 	}
 }
 
@@ -70,7 +70,7 @@ bool TFPalette::setHistogram(TF::Histogram::Ptr histogram, bool adjustDomain){
 	HolderMapIt endPalette = palette_.end();
 	for(HolderMapIt it = beginPalette; it != endPalette; ++it)
 	{
-		it->second->setHistogram(histogram_);
+		it->second.holder->setHistogram(histogram_);
 	}
 	return true;
 }
@@ -87,30 +87,38 @@ M4D::Common::TimeStamp TFPalette::getTimeStamp(){
 		++lastChange_;
 		return lastChange_;
 	}
-	if(activeChanged_ || palette_.find(activeHolder_)->second->changed()) ++lastChange_;
+	if(activeChanged_ || palette_.find(activeEditor_)->second.holder->changed()) ++lastChange_;
 
 	activeChanged_ = false;
 
 	return lastChange_;
 }
 
-void TFPalette::addToPalette_(TFHolderInterface* holder){
+void TFPalette::addToPalette_(TFAbstractHolder* holder){
 	
 	TF::Size addedIndex = indexer_.getIndex();
 
-	holder->setup(addedIndex);
+	holder->setup(mainWindow_, addedIndex);
 	holder->setHistogram(histogram_);
-	palette_.insert(std::make_pair<TF::Size, TFHolderInterface*>(addedIndex, holder));
-	holder->createPaletteButton(ui_->scrollAreaWidget);
 
-	TFPaletteButton* addedButton = holder->getButton();
-	layout_->addWidget(addedButton);
-	addedButton->show();
+	bool activateConnected = QObject::connect( holder, SIGNAL(Activate(TF::Size)), this, SLOT(change_activeHolder(TF::Size)));
+	tfAssert(activateConnected);
+	bool closeConnected = QObject::connect( holder, SIGNAL(Close(TF::Size)), this, SLOT(close_triggered(TF::Size)));
+	tfAssert(closeConnected);
+	
+	TFPaletteButton* button = new TFPaletteButton(ui_->scrollAreaWidget, addedIndex);
+	button->setup();
+	layout_->addWidget(button);
+	button->show();
 
-	holder->connectToTFPalette(this);
-
-	holder->createDockWidget(mainWindow_);	
-	mainWindow_->addDockWidget(Qt::BottomDockWidgetArea, holder->getDockWidget());	
+	bool buttonConnected = QObject::connect(button, SIGNAL(Triggered(TF::Size)), this, SLOT(change_activeHolder(TF::Size)));
+	tfAssert(buttonConnected);
+	
+	palette_.insert(std::make_pair<TF::Size, Editor>(addedIndex, Editor(holder, button)));
+	
+	QDockWidget* dockHolder = holder->getDockWidget();
+	dockHolder->setFeatures(QDockWidget::AllDockWidgetFeatures);
+	mainWindow_->addDockWidget(Qt::BottomDockWidgetArea, dockHolder);
 	
 	change_activeHolder(addedIndex);
 
@@ -119,56 +127,75 @@ void TFPalette::addToPalette_(TFHolderInterface* holder){
 
 void TFPalette::removeFromPalette_(const TF::Size index){
 
-	bool last = palette_.size() == 1;
-
 	HolderMapIt toRemoveIt = palette_.find(index);
-	mainWindow_->removeDockWidget(toRemoveIt->second->getDockWidget());
+	if(index == activeEditor_) activateNext_(toRemoveIt);
 
-	if(index == activeHolder_)
-	{
-		if(last)
-		{
-			activeHolder_ = -1;
-		}
-		else
-		{
-			HolderMapIt nextActiveIt = toRemoveIt;
-			++nextActiveIt;
-			if(nextActiveIt == palette_.end())
-			{
-				nextActiveIt = toRemoveIt;
-				--nextActiveIt;
-			}
-			TF::Size toActivate = nextActiveIt->second->getIndex();
-			change_activeHolder(toActivate);
-		}
-	}
+	mainWindow_->removeDockWidget(toRemoveIt->second.holder->getDockWidget());
+	delete toRemoveIt->second.holder;
 
-	TFPaletteButton* toRemoveButton = toRemoveIt->second->getButton();
-	layout_->removeWidget(toRemoveButton);
-	delete toRemoveButton;
-	delete toRemoveIt->second;
+	layout_->removeWidget(toRemoveIt->second.button);
+	delete toRemoveIt->second.button;
+
 	palette_.erase(toRemoveIt);
 	indexer_.releaseIndex(index);
 
 	if(palette_.empty()) ui_->removeButton->setEnabled(false);
 }
 
+void TFPalette::activateNext_(HolderMapIt it){
+	
+	if(palette_.size() == 1)
+	{
+		activeEditor_ = -1;
+	}
+	else
+	{
+		HolderMapIt nextActiveIt = it;
+		++nextActiveIt;
+
+		if(nextActiveIt == palette_.end())
+		{
+			nextActiveIt = it;
+			--nextActiveIt;
+		}
+
+		change_activeHolder(nextActiveIt->second.holder->getIndex());
+	}
+}
+
 void TFPalette::resizeEvent(QResizeEvent* e){
 
-	QMainWindow::resizeEvent(e);
-
-	ui_->scrollArea->setGeometry(0, 40, 170, ui_->paletteArea->height() - 40);
+	ui_->paletteLayoutWidget->setGeometry(ui_->paletteArea->geometry());
 }
 
 void TFPalette::close_triggered(TF::Size index){
 
-	if(palette_.find(index)->second->close()) removeFromPalette_(index);
+	removeFromPalette_(index);
+}
+
+void TFPalette::change_activeHolder(TF::Size index){
+
+	if(index == activeEditor_) return;
+
+	Editor active;
+	if(activeEditor_ >= 0)
+	{
+		active = palette_.find(activeEditor_)->second;
+		active.button->deactivate();
+		active.holder->deactivate();
+	}
+
+	activeEditor_ = index;
+	active = palette_.find(activeEditor_)->second;
+	active.button->activate();
+	active.holder->activate();
+
+	activeChanged_ = true;
 }
 
 void TFPalette::on_addButton_clicked(){
 
-	TFHolderInterface* created = creator_.createTransferFunction();
+	TFAbstractHolder* created = creator_.createTransferFunction();
 
 	if(!created) return;
 	
@@ -177,68 +204,20 @@ void TFPalette::on_addButton_clicked(){
 
 void TFPalette::on_removeButton_clicked(){
 
-	close_triggered(activeHolder_);
+	palette_.find(activeEditor_)->second.holder->close();
 }
 
-void TFPalette::change_activeHolder(TF::Size index){
+void TFPalette::closeEvent(QCloseEvent *e){
+	
+	HolderMapIt beginPalette = palette_.begin();
+	HolderMapIt endPalette = palette_.end();
+	for(HolderMapIt it = beginPalette; it != endPalette; ++it)
+	{
+		it->second.holder->close();
+	}
 
-	if(index == activeHolder_) return;
-
-	if(activeHolder_ >= 0) palette_.find(activeHolder_)->second->deactivate();
-
-	activeHolder_ = index;
-	palette_.find(activeHolder_)->second->activate();
-	activeChanged_ = true;
+	e->accept();
 }
-
-//---Indexer---
-
-TFPalette::Indexer::Indexer(): nextIndex_(0){}
-
-TFPalette::Indexer::~Indexer(){}
-
-TF::Size TFPalette::Indexer::getIndex(){
-
-	TF::Size index = nextIndex_;
-	if(!released_.empty())
-	{
-		index = released_[released_.size()-1];
-		released_.pop_back();
-	}
-	else
-	{
-		++nextIndex_;
-	}
-	return index;
-}
-
-void TFPalette::Indexer::releaseIndex(const TF::Size index){
-
-	if(index == (nextIndex_-1))
-	{
-		--nextIndex_;
-
-		IndexesIt newBegin = released_.begin();
-		IndexesIt end = released_.end();
-		while( (newBegin != end) && (*newBegin == (nextIndex_-1)) )
-		{
-			++newBegin;
-			--nextIndex_;
-		}
-		if(newBegin == end) released_.clear();
-		else released_ = Indexes(newBegin, end);
-	}
-	else
-	{
-		IndexesIt it = released_.begin();
-		IndexesIt end = released_.end();
-
-		while( (it != end) && (*it > index) ) ++it;
-		released_.insert(it, index);
-	}
-}
-
-//------
 
 } // namespace GUI
 } // namespace M4D
