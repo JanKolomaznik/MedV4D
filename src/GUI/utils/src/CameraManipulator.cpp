@@ -36,6 +36,7 @@ CameraManipulator::mousePressEvent ( QSize aWinSize, QMouseEvent * event )
 		mInteractionMode = imORBIT_CAMERA;
 		return true;
 	}
+	return false;
 }
 
 bool

@@ -23,7 +23,7 @@ ImageDataRenderer::Initialize()
 	uint8 * buf = new uint8[size*size];
 	srand( (unsigned)time(NULL) );
 	for( int i = 0; i < size*size; ++i ) {
-		buf[i] = 255.0f * rand()/(float)RAND_MAX;
+		buf[i] = static_cast<uint8>( 255.0f * rand()/(float)RAND_MAX );
 	}
 	glGenTextures(1, &mNoiseMap );
 	//glActiveTextureARB(GL_TEXTURE3_ARB);

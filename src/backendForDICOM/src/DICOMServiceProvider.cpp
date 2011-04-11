@@ -195,6 +195,21 @@ DcmProvider::CreateImageFromDICOM( DicomObjSetPtr dicomObjects )
 }
 
 ///////////////////////////////////////////////////////////////////////
+struct DicomObjectComparatorPosition {
+  bool operator() (DicomObj &a, DicomObj &b) 
+  { 
+	  float32 x1, y1, z1;
+	  float32 x2, y2, z2;
+	  //a.GetImagePosition( x1, y1, z1 );
+	  //b.GetImagePosition( x2, y2, z2 );
+	  //return a.OrderInSet() < b.OrderInSet();
+	  a.GetSliceLocation( z1 );
+	  b.GetSliceLocation( z2 );
+	  return z1 < z2;
+  }
+};
+
+
 
 AImageData::APtr
 DcmProvider::CreateImageDataFromDICOM(
@@ -216,7 +231,7 @@ DcmProvider::CreateImageDataFromDICOM(
 	}
 
 	// first we have sort the images into right order !
-	std::sort(dicomObjects->begin(), dicomObjects->end());
+	std::sort(dicomObjects->begin(), dicomObjects->end(), DicomObjectComparatorPosition() );
 
 		D_PRINT( "---- DICOM OBJECT SET size = " << dicomObjects->size() );
 
