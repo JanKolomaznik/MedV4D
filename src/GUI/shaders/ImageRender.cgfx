@@ -343,6 +343,67 @@ fp_SimpleRegionColorMap_3D(
 	return OUT;
 }
 
+/*POINTS
+void gp_GenerateSlice( 
+			AttribArray<float3> position :POSITION,
+			AttribArray<float3> texCoord :TEXCOORD0,
+			uniform float3 aViewDirection 
+			)
+{
+	for( int i = 0; i < position.length; ++i ) 
+	{
+		float3 dir1 = normalize( cross( aViewDirection, aViewDirection.yxz ) );
+		float3 dir2 = normalize( cross( aViewDirection, dir1 ) );
+
+		float3 v1 = position[i] + dir1 * 100;
+		float3 v2 = position[i] + dir2 * 100;
+		
+		//emitVertex( position[i], texCoord[i] );
+		emitVertex( v1 : POSITION, v1 / length( v1 ) );
+		//emitVertex( v2, v2 / length( v2 ) );
+	}
+}*/
+
+float3 average(AttribArray<float3> array)
+{
+  float3 sum = 0;
+  for (int i=0; i<array.length; i++) {
+    sum += array[i];
+  }
+  return sum / array.length;
+}
+
+// Geometry pass-through program for colored triangles
+TRIANGLE LINE_OUT
+void 
+triangle_shrinky(AttribArray<float4> position : POSITION,
+                               AttribArray<float4> color    : COLOR
+)
+{
+  for (int i=0; i<2; i++) {
+    emitVertex(position[i]*0.5 : POSITION,
+               normalize(abs(position[i]))
+		);
+  }
+}
+
+void vertexPassThru
+(
+      float4 position  : POSITION,
+      float4 color     : COLOR0,
+      float3 texCoord     : TEXCOORD0,
+	uniform float4x4 modelViewProj,
+        
+  out float4 oPosition : POSITION,
+  out float4 oColor    : COLOR0,
+  out float3 oTexCoord    : TEXCOORD0
+)
+{
+  oPosition = mul(modelViewProj, position);
+  //oColor    = color;
+	oTexCoord = texCoord;
+}
+
 
 technique WLWindow_3D {
 	pass t0 {
@@ -449,6 +510,10 @@ technique TransferFunction1DShadingJitter_3D {
 									gEyePosition,
 									gSliceNormalTexCoords 
 									);
+		//GeometryProgram = compile latest triangle_shrinky();//gp_GenerateSlice( gViewDirection );
+
+		//VertexProgram=NULL;
+		//VertexProgram = compile latest vertexPassThru(modelViewProj);
 
 		DepthTestEnable = true;
 		DepthMask = true;
@@ -458,6 +523,8 @@ technique TransferFunction1DShadingJitter_3D {
 		DepthFunc = LEqual;
 	}
 }
+
+
 
 
 technique WLWindowMIP_3D  {
@@ -470,6 +537,7 @@ technique WLWindowMIP_3D  {
 									(gMappedIntervalBands[1] - gMappedIntervalBands[0])/ gWLWindow.x 
 									) 
 								);
+		GeometryProgram = compile glslg gp_GenerateSlice( gViewDirection );
 
 		DepthTestEnable = false;
 		DepthMask = true;

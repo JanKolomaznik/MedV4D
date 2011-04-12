@@ -38,6 +38,13 @@ GLDrawVolumeSlices(
 		float		cutPlane = 1.0f
 		);
 
+void
+GLDrawVolumeSliceCenterSamples(
+		BoundingBox3D	bbox,
+		Camera		camera,
+		unsigned 	numberOfSteps,
+		float		cutPlane
+		);
 
 void
 GLDrawVolumeSlice(
