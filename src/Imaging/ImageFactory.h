@@ -82,6 +82,21 @@ public:
 	static AImage::Ptr
 	LoadDumpedImage( std::string filename );
 
+	template< typename ElementType, uint32 Dimension >
+	static void
+	RawDumpImage( std::string filename, const Image< ElementType, Dimension > & image, std::ostream &aHeaderOutput );
+
+	static void
+	RawDumpImage( std::string filename, const AImage & image, std::ostream &aHeaderOutput );
+
+	template< typename ElementType, uint32 Dimension >
+	static void
+	LoadRawDump( std::istream &aInStream, Image< ElementType, Dimension > & image );
+
+	template< typename ElementType, uint32 Dimension >
+	static void
+	LoadRawDump( std::string filename, Image< ElementType, Dimension > & image );
+
 
 	/**
 	 * Create image according to passed information.

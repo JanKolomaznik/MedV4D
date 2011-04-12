@@ -29,6 +29,8 @@ struct TypeTraits
 
 	//static const bool	Signed = false;
 	static const uint16	BitCount = sizeof( Type )*8;
+
+
 	/*static const Type	Max = true;
 	static const Type	Min = false;
 	static const Type	Zero = false;
@@ -40,6 +42,12 @@ struct TypeTraits
 	typedef int8		SuperiorType;
 	typedef int8		SuperiorSignedType;
 	typedef float32		SuperiorFloatType;*/
+	
+	static std::string
+	Typename()
+	{
+		return "Noname assigned";
+	}
 };
 
 template<>
@@ -61,6 +69,12 @@ struct TypeTraits< bool >
 	typedef int8		SuperiorType;
 	typedef int8		SuperiorSignedType;
 	typedef float32		SuperiorFloatType;
+
+	static std::string
+	Typename()
+	{
+		return "bool";
+	}
 };
 
 template<>
@@ -82,6 +96,12 @@ struct TypeTraits< int8 >
 	typedef int16		SuperiorType;
 	typedef int16		SuperiorSignedType;
 	typedef float32		SuperiorFloatType;
+
+	static std::string
+	Typename()
+	{
+		return "int8";
+	}
 };
 
 template<>
@@ -103,6 +123,12 @@ struct TypeTraits< uint8 >
 	typedef uint16		SuperiorType;
 	typedef int16		SuperiorSignedType;
 	typedef float32		SuperiorFloatType;
+
+	static std::string
+	Typename()
+	{
+		return "uint8";
+	}
 };
 
 template<>
@@ -124,6 +150,12 @@ struct TypeTraits< int16 >
 	typedef int32		SuperiorType;
 	typedef int32		SuperiorSignedType;
 	typedef float32		SuperiorFloatType;
+
+	static std::string
+	Typename()
+	{
+		return "int16";
+	}
 };
 
 template<>
@@ -145,6 +177,12 @@ struct TypeTraits< uint16 >
 	typedef uint32		SuperiorType;
 	typedef int32		SuperiorSignedType;
 	typedef float32		SuperiorFloatType;
+
+	static std::string
+	Typename()
+	{
+		return "uint16";
+	}
 };
 
 template<>
@@ -166,6 +204,12 @@ struct TypeTraits< int32 >
 	typedef int64		SuperiorType;
 	typedef int64		SuperiorSignedType;
 	typedef float32		SuperiorFloatType;
+
+	static std::string
+	Typename()
+	{
+		return "int32";
+	}
 };
 
 template<>
@@ -187,6 +231,12 @@ struct TypeTraits< uint32 >
 	typedef uint64		SuperiorType;
 	typedef int64		SuperiorSignedType;
 	typedef float32		SuperiorFloatType;
+
+	static std::string
+	Typename()
+	{
+		return "uint32";
+	}
 };
 
 template<>
@@ -208,6 +258,12 @@ struct TypeTraits< int64 >
 	typedef int64		SuperiorType;
 	typedef float32		SuperiorSignedType;
 	typedef float32		SuperiorFloatType;
+
+	static std::string
+	Typename()
+	{
+		return "int64";
+	}
 };
 
 template<>
@@ -229,6 +285,12 @@ struct TypeTraits< uint64 >
 	typedef uint64		SuperiorType;
 	typedef float32		SuperiorSignedType;
 	typedef float32		SuperiorFloatType;
+
+	static std::string
+	Typename()
+	{
+		return "uint64";
+	}
 };
 
 template<>
@@ -249,6 +311,12 @@ struct TypeTraits< float32 >
 	typedef float64		SuperiorType;
 	typedef float64		SuperiorSignedType;
 	typedef float64		SuperiorFloatType;
+
+	static std::string
+	Typename()
+	{
+		return "float32";
+	}
 };
 
 template<>
@@ -269,6 +337,12 @@ struct TypeTraits< float64 >
 	typedef float64		SuperiorType;
 	typedef float64		SuperiorSignedType;
 	typedef float64		SuperiorFloatType;
+
+	static std::string
+	Typename()
+	{
+		return "float64";
+	}
 };
 
 template< typename NumericType >

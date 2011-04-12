@@ -536,6 +536,66 @@ ImageFactory::DumpImage( std::string filename, const Image< ElementType, Dimensi
 	SerializeImage( output, image );
 }
 
+template< typename ElementType, uint32 Dimension >
+void
+ImageFactory::RawDumpImage( std::string filename, const Image< ElementType, Dimension > & image, std::ostream &aHeaderOutput )
+{
+
+	aHeaderOutput << "Data dimension      : " << Dimension << std::endl;
+	aHeaderOutput << "Element type        : " << TypeTraits<ElementType>::Typename() << " (" << sizeof(ElementType) * 8 << " bits)" << std::endl;
+	aHeaderOutput << "Data size           : " << image.GetSize() << std::endl;
+	aHeaderOutput << "Element extents     : " << image.GetElementExtents() << std::endl;
+
+	std::ofstream f( filename.data(), std::ios_base::binary | std::ios_base::out );
+
+	if ( image.IsDataContinuous() ) {
+		D_PRINT( "Buffered saving of image" );
+		typename Image< ElementType, Dimension >::SizeType size;
+		typename Image< ElementType, Dimension >::PointType strides;
+		ElementType * pointer = image.GetPointer( size,	strides );
+		//TODO check invariants needed for buffered load
+		f.write( reinterpret_cast<char*>(pointer), VectorCoordinateProduct( size ) * sizeof( ElementType ) );
+	} else {
+		D_PRINT( "Slow saving of image" );
+		typename Image< ElementType, Dimension >::Iterator iterator = image.GetIterator();
+		while( !iterator.IsEnd() ) {
+			f.write( reinterpret_cast<char*>( &(*iterator) ), sizeof( ElementType ) );
+			++iterator;
+		}
+	}
+	f.close();
+}
+
+template< typename ElementType, uint32 Dimension >
+void
+ImageFactory::LoadRawDump( std::string filename, Image< ElementType, Dimension > & image )
+{
+	//TODO test for failures
+	std::ifstream f( filename.data(), std::ios_base::binary | std::ios_base::in );
+	ImageFactory::LoadRawDump< ElementType, Dimension >( f, image );
+}
+
+template< typename ElementType, uint32 Dimension >
+void
+ImageFactory::LoadRawDump( std::istream &aInStream, Image< ElementType, Dimension > & image )
+{
+	if ( image.IsDataContinuous() ) {
+		D_PRINT( "Buffered loading of image" );
+		typename Image< ElementType, Dimension >::SizeType size;
+		typename Image< ElementType, Dimension >::PointType strides;
+		ElementType * pointer = image.GetPointer( size,	strides );
+		//TODO check invariants needed for buffered load
+		aInStream.read( reinterpret_cast<char*>(pointer), VectorCoordinateProduct( size ) * sizeof( ElementType ) );
+	} else {
+		D_PRINT( "Slow loading of image" );
+		typename Image< ElementType, Dimension >::Iterator iterator = image.GetIterator();
+		while( !iterator.IsEnd() && !aInStream.eof() ) {
+			aInStream.read( reinterpret_cast<char*>( &(*iterator) ), sizeof( ElementType ) );
+			++iterator;
+		}
+	}
+}
+
 template< typename ElementType, unsigned Dim  >
 void	
 ImageFactory::AssignNewDataToImage( 

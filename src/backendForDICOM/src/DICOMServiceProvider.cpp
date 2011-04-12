@@ -196,7 +196,7 @@ DcmProvider::CreateImageFromDICOM( DicomObjSetPtr dicomObjects )
 
 ///////////////////////////////////////////////////////////////////////
 struct DicomObjectComparatorPosition {
-  bool operator() (DicomObj &a, DicomObj &b) 
+  bool operator() (const DicomObj &a, const DicomObj &b) 
   { 
 	  float32 x1, y1, z1;
 	  float32 x2, y2, z2;

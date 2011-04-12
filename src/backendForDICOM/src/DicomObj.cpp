@@ -264,7 +264,7 @@ DicomObj::FlushIntoArrayNTID( void* dest, int elementTypeID )
 ///////////////////////////////////////////////////////////////////////
 
 void
-DicomObj::GetSliceThickness( float32 &f)
+DicomObj::GetSliceThickness( float32 &f) const
 {
   DcmDataset* dataSet = static_cast<DcmDataset *>(m_dataset);
 
@@ -280,7 +280,7 @@ DicomObj::GetSliceThickness( float32 &f)
 ///////////////////////////////////////////////////////////////////////
 
 void
-DicomObj::GetPixelSpacing( float32 &horizSpacing, float32 &vertSpacing)
+DicomObj::GetPixelSpacing( float32 &horizSpacing, float32 &vertSpacing) const
 {
   DcmDataset* dataSet = static_cast<DcmDataset *>(m_dataset);
 
@@ -299,7 +299,7 @@ DicomObj::GetPixelSpacing( float32 &horizSpacing, float32 &vertSpacing)
 ///////////////////////////////////////////////////////////////////////
 
 void
-DicomObj::GetSliceLocation( float32 &location)
+DicomObj::GetSliceLocation( float32 &location) const
 {
   DcmDataset* dataSet = static_cast<DcmDataset *>(m_dataset);
 
@@ -315,7 +315,7 @@ DicomObj::GetSliceLocation( float32 &location)
 ///////////////////////////////////////////////////////////////////////
 
 void 
-DicomObj::GetImagePosition( float32 &x, float32 &y, float32 &z )
+DicomObj::GetImagePosition( float32 &x, float32 &y, float32 &z ) const
 {
 	DcmDataset* dataSet = static_cast<DcmDataset *>(m_dataset);
 

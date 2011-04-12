@@ -53,7 +53,7 @@ public:
 	 * of files that use (and include) this file to know something about dataSet
 	 * that is defined in DCMTK libraries that are quite bad organized and large.
 	 **/
-	void *m_dataset;
+	mutable void *m_dataset;
 
 	/// support for loading & saving
 	void *m_fileFormat;
@@ -76,16 +76,16 @@ public:
 	IsDataSigned( void) { return m_signed; }
 
 	void 
-	GetSliceThickness( float32 &f);
+	GetSliceThickness( float32 &f) const;
 	
 	void 
-	GetPixelSpacing( float32 &horizSpacing, float32 &vertSpacing);
+	GetPixelSpacing( float32 &horizSpacing, float32 &vertSpacing) const;
 	
 	void 
-	GetSliceLocation( float32 &location);
+	GetSliceLocation( float32 &location) const;
 	
 	void 
-	GetImagePosition( float32 &x, float32 &y, float32 &z );
+	GetImagePosition( float32 &x, float32 &y, float32 &z ) const;
 
 	/// Converts from special dicom data stream
 	/** to steam of normal data types like uint16. See DICOM spec.

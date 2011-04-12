@@ -244,6 +244,12 @@ struct TypeTraits< Vector<NumType, Dim> >
 	typedef Vector< typename TypeTraits< NumType >::SuperiorType, Dim > 		SuperiorType;
 	typedef Vector< typename TypeTraits< NumType >::SuperiorSignedType, Dim >	SuperiorSignedType;
 	typedef Vector< typename TypeTraits< NumType >::SuperiorFloatType, Dim >	SuperiorFloatType;
+
+	static std::string
+	Typename()
+	{
+		return TO_STRING( "Vector : " << Dim << " x " << TypeTraits< NumType >::Typename() );
+	}
 };
 
 

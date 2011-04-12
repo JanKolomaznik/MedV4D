@@ -218,6 +218,12 @@ ImageFactory::DumpImage( std::string filename, const AImage & image )
 {
 	IMAGE_TYPE_TEMPLATE_SWITCH_MACRO( image, ImageFactory::DumpImage< TTYPE, DIM >( filename, static_cast< const Image<TTYPE,DIM> &>(image) ) );	
 }
+
+void
+ImageFactory::RawDumpImage( std::string filename, const AImage & image, std::ostream &aHeaderOutput )
+{
+	IMAGE_TYPE_TEMPLATE_SWITCH_MACRO( image, ImageFactory::RawDumpImage< TTYPE, DIM >( filename, static_cast< const Image<TTYPE,DIM> &>(image), aHeaderOutput ) );	
+}
 /*
 template< typename ElementType, uint32 Dimension >
 void

@@ -34,12 +34,21 @@ main( int argc, char** argv )
 		TCLAP::SwitchArg forceArg("f", "force", "Enables overwriting of already existing files.", false );
 		cmd.add( forceArg );
 
+		TCLAP::SwitchArg rawArg("r", "raw", "Save in raw format", false );
+		cmd.add( rawArg );
+
 		cmd.parse( argc, argv );
 
 		filesystem::path inpath = inDirArg.getValue();
 		filesystem::path outpath = outDirArg.getValue();
 		std::string prefix = prefixArg.getValue();
 		bool force = forceArg.getValue();
+		bool raw = rawArg.getValue();
+
+		std::string suffix = ".dump";
+		if ( raw ) {
+			suffix = ".raw";
+		}
 
 		if ( !filesystem::exists( outpath ) ) {
 			std::cout << "Error : Output directory doesn't exists!!!";
@@ -66,9 +75,9 @@ main( int argc, char** argv )
 			for( size_t j = 0; j < info.size(); ++j ) {
 				std::ostringstream fileNameStream;
 				if( info.size() == 1 ) {
-					fileNameStream << prefix << ".dump";
+					fileNameStream << prefix << suffix;
 				} else {
-					fileNameStream << prefix << j << ".dump";
+					fileNameStream << prefix << j << suffix;
 				}
 				filesystem::path filePath = outpath;
 				filePath /= fileNameStream.str();
@@ -93,7 +102,11 @@ main( int argc, char** argv )
 				M4D::Imaging::AImage::Ptr image = 
 					M4D::Dicom::DcmProvider::CreateImageFromDICOM( dcmSet );
 
-				M4D::Imaging::ImageFactory::DumpImage( filePath.string(), *image );
+				if( raw ) {
+					M4D::Imaging::ImageFactory::RawDumpImage( filePath.string(), *image, std::cout );
+				} else {
+					M4D::Imaging::ImageFactory::DumpImage( filePath.string(), *image );
+				}
 				std::cout << "Done\n";
 			}
 		}
