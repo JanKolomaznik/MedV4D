@@ -117,6 +117,14 @@ ViewerWindow::changeColorMapType( int aColorMap )
 }
 
 void
+ViewerWindow::testSlot()
+{
+	/*QImage image = mViewer->RenderThumbnailImage( QSize( 256, 256 ) );
+	label->setPixmap( QPixmap::fromImage( image ) );*/
+}
+
+
+void
 ViewerWindow::applyTransferFunction()
 {
 	mViewer->SetTransferFunctionBuffer( mTransferFunctionEditor->GetTransferFunctionBuffer() );

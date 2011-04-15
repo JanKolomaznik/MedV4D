@@ -41,6 +41,9 @@ public slots:
 
 	void
 	changeColorMapType( int aColorMap );
+
+	void
+	testSlot();
 protected:
 	M4D::Imaging::ConnectionTyped< M4D::Imaging::AImage > mProdconn;
 	M4D::GUI::TransferFunction1DEditor *mTransferFunctionEditor;

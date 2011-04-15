@@ -75,6 +75,7 @@
    <addaction name="actionUse_Transfer_Function"/>
    <addaction name="separator"/>
    <addaction name="actionFine_Render"/>
+   <addaction name="actionTest"/>
   </widget>
   <action name="actionOpen">
    <property name="text">
@@ -183,6 +184,11 @@
    </property>
    <property name="text">
     <string>Enable Jittering</string>
+   </property>
+  </action>
+  <action name="actionTest">
+   <property name="text">
+    <string>Test</string>
    </property>
   </action>
  </widget>
@@ -316,10 +322,27 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionTest</sender>
+   <signal>triggered()</signal>
+   <receiver>ViewerWindow</receiver>
+   <slot>testSlot()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>459</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>applyTransferFunction()</slot>
   <slot>toggleInteractiveTransferFunction(bool)</slot>
   <slot>openFile()</slot>
+  <slot>testSlot()</slot>
  </slots>
 </ui>

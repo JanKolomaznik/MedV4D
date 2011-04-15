@@ -14,6 +14,13 @@ struct FragmentOutput
 	float4 color : COLOR;
 };
 
+struct VertexOutput
+{
+	float4 position : POSITION;
+	float4 color    : COLOR0;
+	float3 texCoord : TEXCOORD0;
+};
+
 struct Material
 {
 	float3	Ka;
@@ -243,7 +250,7 @@ fp_TransferFunction1DJitter_3D(
 {
 	FragmentOutput OUT;
 
-	float offset = tex2D( gNoiseMap, aWinPos.xy / gNoiseMapSize.xy )*aRenderingSliceThickness*3;
+	float offset = tex2D( gNoiseMap, aWinPos.xy / gNoiseMapSize.xy ).r * aRenderingSliceThickness*3;
 	float3 coordinates = aTexCoord + offset *aSliceNormalTexCoords;
 	float3 position = aTexCoord;
 
@@ -272,7 +279,7 @@ fp_TransferFunction1DShadingJitter_3D(
 {
 	FragmentOutput OUT;
 
-	float offset = tex2D( gNoiseMap, aWinPos.xy / gNoiseMapSize.xy )*aRenderingSliceThickness*3;
+	float offset = tex2D( gNoiseMap, aWinPos.xy / gNoiseMapSize.xy ).r * aRenderingSliceThickness*3;
 	float3 coordinates = aTexCoord + offset *aSliceNormalTexCoords;
 	float3 position = aTexCoord;
 
@@ -343,65 +350,47 @@ fp_SimpleRegionColorMap_3D(
 	return OUT;
 }
 
-/*POINTS
+POINT TRIANGLE_OUT
 void gp_GenerateSlice( 
-			AttribArray<float3> position :POSITION,
+			AttribArray<float4> position :POSITION,
 			AttribArray<float3> texCoord :TEXCOORD0,
 			uniform float3 aViewDirection 
 			)
 {
-	for( int i = 0; i < position.length; ++i ) 
-	{
-		float3 dir1 = normalize( cross( aViewDirection, aViewDirection.yxz ) );
-		float3 dir2 = normalize( cross( aViewDirection, dir1 ) );
+	float3 dir1 = normalize( cross( aViewDirection, aViewDirection.yxz ) );
+	float3 dir2 = normalize( cross( aViewDirection, dir1 ) );
 
-		float3 v1 = position[i] + dir1 * 100;
-		float3 v2 = position[i] + dir2 * 100;
+	float3 v1 = position[0].xyz + dir1 * 100;
+	float3 v2 = position[0].xyz + dir2 * 100;
 		
-		//emitVertex( position[i], texCoord[i] );
-		emitVertex( v1 : POSITION, v1 / length( v1 ) );
-		//emitVertex( v2, v2 / length( v2 ) );
-	}
-}*/
+	/*emitVertex( position[0] : POSITION, texCoord[0] );
+	emitVertex( float4( v1, 1.0f ) : POSITION, texCoord[0] );
+	emitVertex( float4( v2, 1.0f ) : POSITION, texCoord[0] );*/
 
-float3 average(AttribArray<float3> array)
-{
-  float3 sum = 0;
-  for (int i=0; i<array.length; i++) {
-    sum += array[i];
-  }
-  return sum / array.length;
+	emitVertex( (position[0]) : POSITION, texCoord[0] );
+	emitVertex( (position[0] + float4( 300*dir2, 1.0 )) : POSITION, texCoord[1] );
+	emitVertex( (position[0] + float4( 300*dir1, 1.0 )) : POSITION, texCoord[2] );
+	restartStrip();
 }
 
-// Geometry pass-through program for colored triangles
-TRIANGLE LINE_OUT
-void 
-triangle_shrinky(AttribArray<float4> position : POSITION,
-                               AttribArray<float4> color    : COLOR
-)
-{
-  for (int i=0; i<2; i++) {
-    emitVertex(position[i]*0.5 : POSITION,
-               normalize(abs(position[i]))
-		);
-  }
-}
 
-void vertexPassThru
-(
-      float4 position  : POSITION,
-      float4 color     : COLOR0,
-      float3 texCoord     : TEXCOORD0,
-	uniform float4x4 modelViewProj,
-        
-  out float4 oPosition : POSITION,
-  out float4 oColor    : COLOR0,
-  out float3 oTexCoord    : TEXCOORD0
-)
+
+
+
+VertexOutput
+vertexPassThru
+	(
+		float4 position  : POSITION,
+		float4 color     : COLOR0,
+		float3 texCoord  : TEXCOORD0,
+		uniform float4x4 modelViewProj
+	)
 {
-  oPosition = mul(modelViewProj, position);
-  //oColor    = color;
-	oTexCoord = texCoord;
+	VertexOutput result;
+	result.position = mul(modelViewProj, position);
+	result.color    = color;
+	result.texCoord = texCoord;
+	return result;
 }
 
 
@@ -499,7 +488,11 @@ technique TransferFunction1DJitter_3D {
 
 technique TransferFunction1DShadingJitter_3D {
 	pass t0 {
-		FragmentProgram = compile glslf fp_TransferFunction1DShadingJitter_3D( 
+		//VertexProgram = compile gp5vp vertexPassThru(modelViewProj);
+
+		//GeometryProgram = compile gp5gp "-po Vertices=3" /*triangle_shrinky();*/gp_GenerateSlice( gViewDirection );
+
+		FragmentProgram = compile gp5fp fp_TransferFunction1DShadingJitter_3D( 
 									gImageData3D, 
 									gTransferFunction1D, 
 									gTransferFunction1DInterval, 
@@ -510,10 +503,6 @@ technique TransferFunction1DShadingJitter_3D {
 									gEyePosition,
 									gSliceNormalTexCoords 
 									);
-		//GeometryProgram = compile latest triangle_shrinky();//gp_GenerateSlice( gViewDirection );
-
-		//VertexProgram=NULL;
-		//VertexProgram = compile latest vertexPassThru(modelViewProj);
 
 		DepthTestEnable = true;
 		DepthMask = true;
@@ -537,7 +526,7 @@ technique WLWindowMIP_3D  {
 									(gMappedIntervalBands[1] - gMappedIntervalBands[0])/ gWLWindow.x 
 									) 
 								);
-		GeometryProgram = compile glslg gp_GenerateSlice( gViewDirection );
+		//GeometryProgram = compile glslg gp_GenerateSlice( gViewDirection );
 
 		DepthTestEnable = false;
 		DepthMask = true;

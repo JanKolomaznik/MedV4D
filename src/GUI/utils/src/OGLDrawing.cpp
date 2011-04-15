@@ -179,16 +179,16 @@ GLDrawVolumeSliceCenterSamples(
 				);
 
 
-		/*glBegin( GL_TRIANGLES );
-				GLVertexVector( planePoint- Vector3f( 22.0f, 0.0f, 0.0f ) );
+		glBegin( GL_POINTS );
 				GLVertexVector( planePoint );
-				GLVertexVector( planePoint- Vector3f( 0.0f, 0.0f, 22.0f ) );
-		glEnd();*/
-		glBegin( GL_TRIANGLE_FAN );
+				//GLVertexVector( planePoint- Vector3f( 22.0f, 0.0f, 0.0f ) );
+				//GLVertexVector( planePoint- Vector3f( 0.0f, 0.0f, 22.0f ) );
+		glEnd();
+		/*glBegin( GL_TRIANGLE_FAN );
 			for( unsigned j = 0; j < count; ++j ) {
 				GLVertexVector( vertices[ j ] );
 			}
-		glEnd();
+		glEnd();*/
 	}
 
 }

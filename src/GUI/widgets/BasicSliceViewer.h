@@ -187,6 +187,22 @@ public:
 		return mVolumeRenderConfig.jitterEnabled;
 	}
 
+	/**
+	 * Renders current view into provided buffer (24-bit RGB)
+	 * \param aSize Size of desired thumbnail
+	 * \param aBuffer Buffer in which result is written - it must be properly allocated - width * height * 3 bytes
+	 **/
+	void
+	RenderThumbnailToBuffer( QSize aSize, uint8 *aBuffer );
+
+	/**
+	 * Renders current view into QImage
+	 * \param aSize Size of desired thumbnail
+	 * \return Image of provided size with current view rendered into it.
+	 **/
+	QImage
+	RenderThumbnailImage( QSize aSize );
+
 public slots:
 	void
 	SetRendererType( int aRendererType )
@@ -256,6 +272,7 @@ public slots:
 		
 		update();
 	}
+
 signals:
 	void
 	SettingsChanged();
