@@ -22,8 +22,8 @@ public:
 	void setup();
 	void setPreview(const QPixmap& preview);
 
-	void activate();
-	void deactivate();
+	void setActive(const bool active);
+	void setAvailable(const bool available);
 
 signals:
 
@@ -41,8 +41,10 @@ private:
 	const TF::Size size_;
 	
 	bool active_;
+	bool available_;
 
 	QPixmap activePreview_;
+	QPixmap availablePreview_;
 };
 
 } // namespace GUI

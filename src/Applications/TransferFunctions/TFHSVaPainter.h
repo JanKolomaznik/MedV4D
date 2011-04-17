@@ -12,13 +12,17 @@ public:
 
 	typedef boost::shared_ptr<TFHSVaPainter> Ptr;
 
-	typedef TFSimplePainter::WorkCopy WorkCopy;
+	TFHSVaPainter();
+	TFHSVaPainter(
+		const QColor& hue,
+		const QColor& saturation,
+		const QColor& value,
+		const QColor& alpha);
 
-	TFHSVaPainter(bool drawAlpha);
 	~TFHSVaPainter();
 
 	void setArea(QRect area);
-	QPixmap getView(WorkCopy::Ptr workCopy);
+	QPixmap getView(TFWorkCopy::Ptr workCopy);
 
 private:
 
@@ -26,7 +30,7 @@ private:
 
 	QPixmap viewSideBarBuffer_;
 
-	void updateSideBar_(WorkCopy::Ptr workCopy);
+	void updateSideBar_(TFWorkCopy::Ptr workCopy);
 };
 
 } // namespace GUI

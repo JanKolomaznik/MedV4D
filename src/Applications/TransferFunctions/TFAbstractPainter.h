@@ -16,17 +16,16 @@
 namespace M4D {
 namespace GUI {
 
-template<TF::Size dim>
 class TFAbstractPainter{
 
 public:
 
-	typedef typename boost::shared_ptr<TFAbstractPainter<dim>> Ptr;
+	typedef boost::shared_ptr<TFAbstractPainter> Ptr;
 
 	virtual void setArea(QRect area) = 0;
 	virtual QRect getInputArea() = 0;
 
-	virtual QPixmap getView(typename TFWorkCopy<dim>::Ptr workCopy) = 0;
+	virtual QPixmap getView(TFWorkCopy::Ptr workCopy) = 0;
 
 	virtual void save(TFXmlWriter::Ptr writer){}
 	virtual bool load(TFXmlReader::Ptr reader){

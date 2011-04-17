@@ -16,11 +16,10 @@ public:
 
 	typedef boost::shared_ptr<TFPolygonModifier> Ptr;
 
-	typedef TFSimpleModifier::WorkCopy WorkCopy;
+	TFPolygonModifier(
+		TFAbstractFunction<TF_DIMENSION_1>::Ptr function,
+		TFSimplePainter::Ptr painter);
 
-	typedef TFSimpleModifier::Mode Mode;
-
-	TFPolygonModifier(WorkCopy::Ptr workCopy, Mode mode, bool alpha);
 	~TFPolygonModifier();
 
 protected:

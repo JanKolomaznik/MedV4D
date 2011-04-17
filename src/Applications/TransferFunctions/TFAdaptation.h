@@ -15,7 +15,7 @@ template<typename BufferIterator>
 bool applyTransferFunction(
 	BufferIterator begin,
 	BufferIterator end,
-	TFApplyFunctionInterface::Ptr function_){
+	TFFunctionInterface::Const function_){
 
 	typedef typename std::iterator_traits<BufferIterator>::value_type MultiDValueType;
 	typedef typename std::iterator_traits<MultiDValueType::iterator>::value_type OneDValueType;
@@ -24,22 +24,22 @@ bool applyTransferFunction(
 	TF::Color color;
 	for(BufferIterator it = begin; it!=end; ++it)
 	{
-		if(index >= function_->getDomain())
+		if(index >= function_.getDomain())
 		{
 			tfAssert("Wrong buffer size");
 			return false;
 		}
 
-		for(Size i = 1; i <= function_->getDimension(); ++i)
+		for(Size i = 1; i <= function_.getDimension(); ++i)
 		{
-			color = function_->getMappedRGBfColor(index, 1);
+			color = function_.getRGBfColor(i, index);
 			
 			(*it)[i] = OneDValueType(color.component1, color.component2, color.component3, color.alpha);
 		}
 
 		++index;
 	}
-	if(index < function_->getDomain())
+	if(index < function_.getDomain())
 	{
 		tfAssert("Wrong buffer size");
 		return false;
@@ -52,7 +52,7 @@ template<>
 bool applyTransferFunction<TransferFunctionBuffer1D::iterator>(
 	TransferFunctionBuffer1D::iterator begin,
 	TransferFunctionBuffer1D::iterator end,
-	TFApplyFunctionInterface::Ptr function_);
+	TFFunctionInterface::Const function_);
 
 /*
 template<typename HistogramIterator>

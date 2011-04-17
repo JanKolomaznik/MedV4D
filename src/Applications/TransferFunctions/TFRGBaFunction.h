@@ -2,21 +2,22 @@
 #define TF_RGBA_FUNCTION
 
 #include <TFAbstractFunction.h>
-#include <GUI/utils/TransferFunctionBuffer.h>
 
 namespace M4D {
 namespace GUI {
-
+/*
 template<TF::Size dim>
 class TFRGBaFunction: public TFAbstractFunction<dim>{
 
 public:
 
-	TFRGBaFunction(const TF::Size domain){
+	TFRGBaFunction(const TF::Size domain[dim]){
 
-		colorMap_ = TF::MultiDColor<dim>::Map::Ptr(new TF::MultiDColor<dim>::Map(domain));
-		domain_ = domain;
-		clear();
+		for(TF::Size i = 0; i < dim; ++i)
+		{
+			colorMap_[i] = TF::Color::MapPtr(new TF::Color::Map(domain[i]));
+			clear(i);
+		}
 	}
 
 	TFRGBaFunction(TFRGBaFunction<dim> &function){
@@ -26,16 +27,20 @@ public:
 
 	~TFRGBaFunction(){}
 
-	TF::Color getMappedRGBfColor(const TF::Size value, const TF::Size dimension){
+	TF::Color getRGBfColor(const TF::Size index, const TF::Size dimension){
 
-		return (*colorMap_)[value][dimension];
+		return (*colorMap_[dimension])[index];
+	}
+	void setRGBfColor(const TF::Size index, const TF::Size dimension, const TF::Color& value){
+
+		(*colorMap_[dimension])[index] = [value];
 	}
 
-	typename TFAbstractFunction<dim>::Ptr clone(){
+	typename TFFunctionInterface::Ptr clone(){
 
-		return TFAbstractFunction<dim>::Ptr(new TFRGBaFunction<dim>(*this));
+		return TFFunctionInterface::Ptr(new TFRGBaFunction<dim>(*this));
 	}
-};
+};*/
 
 } // namespace GUI
 } // namespace M4D

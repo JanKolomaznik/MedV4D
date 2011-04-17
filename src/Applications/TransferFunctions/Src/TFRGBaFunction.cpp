@@ -21,7 +21,7 @@ template<TF::Size dim>
 TFRGBaFunction<dim>::~TFRGBaFunction(){}
 
 template<TF::Size dim>
-TF::Color TFRGBaFunction<dim>::getMappedRGBfColor(const TF::Size value, const TF::Size dimension){
+TF::Color TFRGBaFunction<dim>::getRGBfColor(const TF::Size value, const TF::Size dimension){
 
 	return (*colorMap_)[value][dimension];
 }

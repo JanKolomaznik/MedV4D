@@ -19,7 +19,7 @@
 #include <TFCommon.h>
 #include <TFColor.h>
 #include <TFHistogram.h>
-#include <TFAbstractHolder.h>
+#include <TFBasicHolder.h>
 #include <TFIndexer.h>
 
 #include "ui_TFPalette.h"
@@ -40,20 +40,23 @@ public:
 
 	void setupDefault();
 
-	void setDomain(const TF::Size domain);
-	TF::Size getDomain();
-	
-	M4D::Common::TimeStamp getTimeStamp();
+	void setDataStructure(const std::vector<TF::Size>& dataStructure);
+	void setHistogram(const TF::Histogram::Ptr histogram);
 
-	//TF::MultiDColor<dim>::Map::Ptr getColorMap();
+	TF::Size getDomain(const TF::Size dimension);	
+	TF::Size getDimension();	
 
-	bool setHistogram(TF::Histogram::Ptr histogram, bool adjustDomain = true);
+	std::vector<TFBasicHolder*> getEditors();	
+	TFFunctionInterface::Const getTransferFunction();
+
+	bool changed();
+	Common::TimeStamp lastPaletteChange();
 
 	template<typename BufferIterator>
 	bool applyTransferFunction(BufferIterator begin, BufferIterator end){
 
-		if(activeEditor_ < 0) on_addButton_clicked();
-		if(activeEditor_ < 0) exit(0);
+		if(activeEditor_ == emptyPalette) on_addButton_clicked();
+		if(activeEditor_ == emptyPalette || activeEditor_ == noFunctionAvailable) return false;
 
 		return palette_.find(activeEditor_)->second.holder->applyTransferFunction<BufferIterator>(begin, end);
 	}
@@ -75,7 +78,7 @@ protected:
 private:	
 
 	struct Editor{
-		TFAbstractHolder* holder;
+		TFBasicHolder* holder;
 		TFPaletteButton* button;
 
 		Editor():
@@ -83,7 +86,7 @@ private:
 			button(NULL){
 		}
 
-		Editor(TFAbstractHolder* holder, TFPaletteButton* button):
+		Editor(TFBasicHolder* holder, TFPaletteButton* button):
 			holder(holder),
 			button(button){
 		}
@@ -92,12 +95,15 @@ private:
 	typedef std::map<TF::Size, Editor> HolderMap;
 	typedef HolderMap::iterator HolderMapIt;
 
+	static const int noFunctionAvailable = -1;
+	static const int emptyPalette = -2;
+
     Ui::TFPalette* ui_;
 	QMainWindow* mainWindow_;
 	QVBoxLayout* layout_;
 
 	TF::Histogram::Ptr histogram_;
-	TF::Size domain_;
+	std::vector<TF::Size> dataStructure_;
 
 	M4D::Common::TimeStamp lastChange_;
 	bool activeChanged_;
@@ -108,10 +114,12 @@ private:
 
 	TFCreator creator_;
 
-	void addToPalette_(TFAbstractHolder* holder);
+	void addToPalette_(TFBasicHolder* holder);
 	void removeFromPalette_(const TF::Size index);
 
 	void activateNext_(HolderMapIt it);
+
+	void changeDomain_(const TF::Size dimension);
 };
 
 } // namespace GUI

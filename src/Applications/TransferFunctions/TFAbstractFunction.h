@@ -13,80 +13,183 @@
 namespace M4D {
 namespace GUI {
 
-class TFApplyFunctionInterface{
+class TFFunctionConstAccesor;
+
+class TFFunctionInterface{
 
 public:
 
-	typedef boost::shared_ptr<TFApplyFunctionInterface> Ptr;
+	typedef boost::shared_ptr<TFFunctionInterface> Ptr;
+	typedef TFFunctionConstAccesor Const;
+
+	virtual ~TFFunctionInterface(){}
 
 	static const TF::Size defaultDomain = 4095;	//TODO ?
+
+	virtual Ptr clone() = 0;
 	
-	virtual TF::Color getMappedRGBfColor(const TF::Size value, const TF::Size dimension) = 0;
-	virtual TF::Size getDomain() const = 0;
-	virtual TF::Size getDimension() const = 0;
+	virtual TF::Color& color(const TF::Size dimension, const TF::Size index) = 0;
+
+	virtual TF::Color getRGBfColor(const TF::Size dimension, const TF::Size index) = 0;
+	virtual void setRGBfColor(const TF::Size dimension, const TF::Size index, const TF::Color& value) = 0;
+
+	virtual TF::Size getDomain(const TF::Size dimension) = 0;
+	virtual TF::Size getDimension() = 0;
+
+	virtual void clear(const TF::Size dimension) = 0;
+	virtual void resize(const std::vector<TF::Size>& dataStructure) = 0;
+
+	virtual void save(TFXmlWriter::Ptr writer) = 0;
+	virtual bool load(TFXmlReader::Ptr reader, bool& sideError) = 0;
 
 protected:
 
-	TFApplyFunctionInterface(){}
-	virtual ~TFApplyFunctionInterface(){}
+	TFFunctionInterface(){}
+};
+
+class TFFunctionConstAccesor{
+
+	friend class TFFunctionInterface;
+
+public:
+
+	const TF::Color nullColor;
+
+	TFFunctionConstAccesor():
+		nullColor(-1,-1,-1,-1),
+		null_(true){
+	}
+
+	TFFunctionConstAccesor(TFFunctionInterface::Ptr function):
+		function_(function),
+		nullColor(-1,-1,-1,-1),
+		null_(false){
+	}
+		
+	TFFunctionConstAccesor(TFFunctionInterface* function):
+		function_(TFFunctionInterface::Ptr(function)),
+		nullColor(-1,-1,-1,-1),
+		null_(false){
+	}
+	~TFFunctionConstAccesor(){}
+
+	void operator=(const TFFunctionConstAccesor &constPtr){
+
+		function_ = constPtr.function_;
+		null_ = constPtr.null_;
+	}
+
+	bool operator==(const int &null){
+
+		return null_;
+	}
+	
+	const TF::Color& color(const TF::Size dimension, const TF::Size index){
+
+		if(null_) return nullColor;
+		return function_->color(dimension, index);
+	}
+
+	TF::Color getRGBfColor(const TF::Size dimension, const TF::Size index){
+
+		if(null_) return nullColor;
+		return function_->getRGBfColor(dimension, index);
+	}
+
+	TF::Size getDomain(const TF::Size dimension){
+
+		if(null_) return 0;
+		return function_->getDomain(dimension);
+	}
+
+	TF::Size getDimension(){
+
+		if(null_) return 0;
+		return function_->getDimension();
+	}
+
+private:
+
+	bool null_;
+	TFFunctionInterface::Ptr function_;
 };
 
 template<TF::Size dim>
-class TFAbstractFunction: public TFApplyFunctionInterface{
+class TFAbstractFunction: public TFFunctionInterface{
 
 public:
 
 	typedef typename boost::shared_ptr<TFAbstractFunction<dim>> Ptr;
-	
-	virtual TF::Color getMappedRGBfColor(const TF::Size value, const TF::Size dimension) = 0;
 
-	virtual typename Ptr clone() = 0;
+	TFAbstractFunction(const std::vector<TF::Size>& domains){
+
+		for(TF::Size i = 0; i < dim; ++i)
+		{
+			if(i < domains.size()) colorMap_[i] = TF::Color::MapPtr(new TF::Color::Map(domains[i]));
+			else colorMap_[i] = TF::Color::MapPtr(new TF::Color::Map(TFFunctionInterface::defaultDomain));
+			clear(i+1);
+		}
+	}
+
+	virtual ~TFAbstractFunction(){}
+
+	TFFunctionInterface::Ptr clone(){
+
+		return TFFunctionInterface::Ptr(new TFAbstractFunction<dim>(*this));
+	}
+
+	TF::Color& color(const TF::Size dimension, const TF::Size index){
+
+		TF::Size innerDimension = dimension - 1;
+
+		return (*colorMap_[innerDimension])[index];
+	}
+
+	virtual TF::Color getRGBfColor(const TF::Size dimension, const TF::Size index){
+
+		return color(dimension, index); 
+	}
+
+	virtual void setRGBfColor(const TF::Size dimension, const TF::Size index, const TF::Color& value){
+
+		color(dimension, index) = value; 
+	}
 	
-	TF::Size getDimension() const{
+	TF::Size getDimension(){
 
 		return dim;
 	}
 	
-	TF::MultiDColor<dim>& operator[](const TF::Size index){
+	TF::Size getDomain(const TF::Size dimension){
 
-		return (*colorMap_)[index];
+		TF::Size innerDimension = dimension - 1;
+
+		return colorMap_[innerDimension]->size();
 	}
-	
-	TF::Size getDomain() const{
 
-		return domain_;
-	}
-	/*
-	TF::MultiDColor<dim>::Map::Ptr getColorMap(){
+	void clear(const TF::Size dimension){
 
-		return colorMap_;
-	}
-	*/	
-	void clear(){
+		TF::Size innerDimension = dimension - 1;
 
-		TF::MultiDColor<dim>::Map::iterator begin = colorMap_->begin();
-		TF::MultiDColor<dim>::Map::iterator end = colorMap_->end();
-		for(TF::MultiDColor<dim>::Map::iterator it = begin; it!=end; ++it)
+		TF::Color::Map::iterator begin = colorMap_[innerDimension]->begin();
+		TF::Color::Map::iterator end = colorMap_[innerDimension]->end();
+		for(TF::Color::Map::iterator it = begin; it!=end; ++it)
 		{
-			*it = TF::MultiDColor<dim>();
+			*it = TF::Color();
  		}
 	}
 	
-	void resize(const TF::Size domain){
+	void resize(const std::vector<TF::Size>& dataStructure){
 		
-		if(domain == domain_) return;
-		domain_ = domain;
+		for(TF::Size i = 0; i < dataStructure.size(); ++i)
+		{
+			if(dataStructure[i] == colorMap_[i]->size()) return;
 
-		TF::MultiDColor<dim>::Map::Ptr resized(new TF::MultiDColor<dim>::Map(domain_));
-		resize_(colorMap_, resized);
+			TF::Color::MapPtr resized(new TF::Color::Map(dataStructure[i]));
+			resize_(colorMap_[i], resized);
 
-		colorMap_ = resized;
-	}
-	
-	void operator=(const TFAbstractFunction<dim> &function){
-		
-		*colorMap_ = *function.colorMap_;
-		domain_ = function.domain_;
+			colorMap_[i] = resized;
+		}
 	}
 	 
 	void save(TFXmlWriter::Ptr writer){
@@ -95,36 +198,36 @@ public:
 
 		writer->writeStartElement("Function");
 
-			writer->writeAttribute("Domain", TF::convert<TF::Size, std::string>(domain_));
-			writer->writeAttribute("Dimension", TF::convert<TF::Size, std::string>(dim));
+			writer->writeAttribute("Dimensions", TF::convert<TF::Size, std::string>(dim));
 				
-			for(TF::Size i = 0; i < domain_; ++i)
+			for(TF::Size i = 0; i < dim; ++i)
 			{
-				writer->writeStartElement("MultiDColor");
+				writer->writeStartElement("Dimension");
+				writer->writeAttribute("Number", TF::convert<TF::Size, std::string>(i));
+				writer->writeAttribute("Domain", TF::convert<TF::Size, std::string>(colorMap_[i]->size()));
 
-				for(TF::Size j = 1; j <= dim; ++j)
+				for(TF::Size j = 0; j < colorMap_[i]->size(); ++j)
 				{
-					writer->writeStartElement("Color");
+						writer->writeStartElement("Color");
 
-						writer->writeAttribute("Component1",
-							TF::convert<float, std::string>((*colorMap_)[i][j].component1));
-						writer->writeAttribute("Component2",
-							TF::convert<float, std::string>((*colorMap_)[i][j].component2));
-						writer->writeAttribute("Component3",
-							TF::convert<float, std::string>((*colorMap_)[i][j].component3));
-						writer->writeAttribute("Alpha",
-							TF::convert<float, std::string>((*colorMap_)[i][j].alpha));
-				
-					writer->writeEndElement();
+							writer->writeAttribute("Component1",
+								TF::convert<float, std::string>((*colorMap_[i])[j].component1));
+							writer->writeAttribute("Component2",
+								TF::convert<float, std::string>((*colorMap_[i])[j].component2));
+							writer->writeAttribute("Component3",
+								TF::convert<float, std::string>((*colorMap_[i])[j].component3));
+							writer->writeAttribute("Alpha",
+								TF::convert<float, std::string>((*colorMap_[i])[j].alpha));
+					
+						writer->writeEndElement();
 				}
-
 				writer->writeEndElement();
 			}
 
 		writer->writeEndElement();
 	}
 
-	virtual bool load(TFXmlReader::Ptr reader, bool& sideError){
+	bool load(TFXmlReader::Ptr reader, bool& sideError){
 
 		#ifndef TF_NDEBUG
 			std::cout << "Loading function..." << std::endl;
@@ -132,42 +235,43 @@ public:
 			
 		sideError = !loadSettings_(reader);
 
-		bool ok = false;
 		if(reader->readElement("Function"))
 		{		
-			TF::Size domain = TF::convert<std::string, TF::Size>(
-				reader->readAttribute("Domain"));
-			if(domain == 0) return ok;
-			TF::Size dimension = TF::convert<std::string, TF::Size>(
-				reader->readAttribute("Dimension"));
-			if(dimension != dim) return ok;
+			TF::Size dimControl = TF::convert<std::string, TF::Size>(
+				reader->readAttribute("Dimensions"));
+			if(dimControl != dim) return false;
 
-			TF::MultiDColor<dim>::Map::Ptr loaded(new TF::MultiDColor<dim>::Map(domain));			
-			TF::Size i = 0;
-			for(; i < domain; ++i)
+			TF::Size dimension;
+			TF::Size domain;
+			for(TF::Size i = 0; i < dim; ++i)
 			{
-				if(!loadMultiDColor_(reader, loaded, i)) break;
-			}
+				dimension = TF::convert<std::string, TF::Size>(
+					reader->readAttribute("Number"));
+				if(dimension != i+1) return false;
+				domain = TF::convert<std::string, TF::Size>(
+					reader->readAttribute("Domain"));
+				if(domain == 0) return false;
 
-			if(i == domain)
-			{
-				ok = true;
-				resize_(loaded, colorMap_);
+				TF::Color::MapPtr loaded(new TF::Color::Map(domain));			
+				TF::Size j = 0;
+				for(; j < domain; ++j)
+				{
+					if(!loadColor_(reader, loaded, j)) break;
+				}
+
+				if(j != domain) return false;
+					
+				resize_(loaded, colorMap_[i]);
 			}
 		}
-		return ok;
+		return true;
 	}
 
 protected:
 
-	typename TF::MultiDColor<dim>::Map::Ptr colorMap_;
-	TF::Size domain_;
+	TF::Color::MapPtr colorMap_[dim];
 
-	TFAbstractFunction(){}
-	virtual ~TFAbstractFunction(){}
-
-	void resize_(const typename TF::MultiDColor<dim>::Map::Ptr old,
-		typename TF::MultiDColor<dim>::Map::Ptr resized){
+	void resize_(const TF::Color::MapPtr old, TF::Color::MapPtr resized){
 
 		int inputSize = old->size();
 		int outputSize = resized->size();
@@ -207,7 +311,7 @@ protected:
 			int inputIndexer = 0;
 			for(int outputIndexer = 0; outputIndexer < outputSize; ++outputIndexer)
 			{
-				TF::MultiDColor<dim> computedValue;
+				TF::Color computedValue;
 				TF::Size valueCount = ratio + (int)correction;
 				for(TF::Size i = 0; i < valueCount; ++i)
 				{
@@ -234,38 +338,18 @@ protected:
 	virtual void saveSettings_(TFXmlWriter::Ptr writer){}
 	virtual bool loadSettings_(TFXmlReader::Ptr reader){ return true; }
 
-	bool loadMultiDColor_(TFXmlReader::Ptr reader, typename TF::MultiDColor<dim>::Map::Ptr loaded,
-		TF::Size i){
-
-		bool ok = false;
-		if(reader->readElement("MultiDColor"))
-		{			
-			TF::Size j = 1;	
-			for(; j <= dim; ++j)
-			{
-				if(!loadColor_(reader, loaded, i, j)) break;
-			}
-			if(j == dim+1)
-			{
-				ok = true;
-			}
-		}
-		return ok;
-	}
-
-	bool loadColor_(TFXmlReader::Ptr reader, typename TF::MultiDColor<dim>::Map::Ptr loaded,
-		TF::Size i, TF::Size j){
+	bool loadColor_(TFXmlReader::Ptr reader, TF::Color::MapPtr loaded, TF::Size index){
 
 		bool ok = false;
 		if(reader->readElement("Color"))
 		{		
-			(*loaded)[i][j].component1 = TF::convert<std::string, float>(
+			(*loaded)[index].component1 = TF::convert<std::string, float>(
 				reader->readAttribute("Component1"));
-			(*loaded)[i][j].component2 = TF::convert<std::string, float>(
+			(*loaded)[index].component2 = TF::convert<std::string, float>(
 				reader->readAttribute("Component2"));
-			(*loaded)[i][j].component3 = TF::convert<std::string, float>(
+			(*loaded)[index].component3 = TF::convert<std::string, float>(
 				reader->readAttribute("Component3"));
-			(*loaded)[i][j].alpha = TF::convert<std::string, float>(
+			(*loaded)[index].alpha = TF::convert<std::string, float>(
 				reader->readAttribute("Alpha"));
 			ok = true;
 		}

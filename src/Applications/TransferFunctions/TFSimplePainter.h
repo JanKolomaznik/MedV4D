@@ -6,26 +6,29 @@
 namespace M4D {
 namespace GUI {
 
-class TFSimplePainter: public TFAbstractPainter<TF_DIMENSION_1>{
+class TFSimplePainter: public TFAbstractPainter{
 
 public:
 
 	typedef boost::shared_ptr<TFSimplePainter> Ptr;
-
-	typedef TFWorkCopy<TF_DIMENSION_1> WorkCopy;
-
-	TFSimplePainter(const QColor& component1);
-	TFSimplePainter(const QColor& component1, const QColor& alpha);
-	TFSimplePainter(const QColor& component1, const QColor& component2, const QColor& component3);
-	TFSimplePainter(const QColor& component1, const QColor& component2, const QColor& component3, const QColor& alpha);	
 	~TFSimplePainter();
+
+	virtual std::vector<std::string> getComponentNames();
 
 	virtual void setArea(QRect area);
 	QRect getInputArea();
 
-	virtual QPixmap getView(WorkCopy::Ptr workCopy);
+	virtual QPixmap getView(TFWorkCopy::Ptr workCopy);
 
 protected:
+
+	TFSimplePainter(
+		const QColor& component1,
+		const QColor& component2,
+		const QColor& component3,
+		const QColor& alpha = QColor(255,165,0));	
+
+	std::vector<std::string> componentNames_;
 
 	const TF::Size colorBarSize_;
 	const TF::Size margin_;
@@ -40,7 +43,6 @@ protected:
 	const QColor noColor_;
 
 	bool drawAlpha_;
-	bool firstOnly_;
 	bool sizeChanged_;
 
 	QRect inputArea_;
@@ -57,12 +59,12 @@ protected:
 	QPixmap viewBottomColorBarBuffer_;
 
 	void updateBackground_();	
-	void updateHistogramView_(WorkCopy::Ptr workCopy);
-	void updateComponent1View_(WorkCopy::Ptr workCopy);
-	void updateComponent2View_(WorkCopy::Ptr workCopy);
-	void updateComponent3View_(WorkCopy::Ptr workCopy);
-	void updateAlphaView_(WorkCopy::Ptr workCopy);
-	void updateBottomColorBarView_(WorkCopy::Ptr workCopy);
+	void updateHistogramView_(TFWorkCopy::Ptr workCopy);
+	void updateComponent1View_(TFWorkCopy::Ptr workCopy);
+	void updateComponent2View_(TFWorkCopy::Ptr workCopy);
+	void updateComponent3View_(TFWorkCopy::Ptr workCopy);
+	void updateAlphaView_(TFWorkCopy::Ptr workCopy);
+	void updateBottomColorBarView_(TFWorkCopy::Ptr workCopy);
 };
 
 } // namespace GUI

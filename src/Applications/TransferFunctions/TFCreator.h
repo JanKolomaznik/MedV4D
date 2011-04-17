@@ -19,12 +19,14 @@
 #include <TFModifiers.h>
 #include <TFPredefined.h>
 
-#include <TFAbstractHolder.h>
+#include <TFBasicHolder.h>
 
 #include <ui_TFCreator.h>
 
 namespace M4D {
 namespace GUI {
+
+class TFPalette;
 
 class TFCreator: public QDialog{
 
@@ -32,18 +34,19 @@ class TFCreator: public QDialog{
 
 public:
 
-	TFCreator(QMainWindow* mainWindow, const TF::Size domain);
+	TFCreator(QMainWindow* mainWindow, TFPalette* palette);
 	~TFCreator();
 
-	TFAbstractHolder* createTransferFunction();
+	TFBasicHolder* createTransferFunction();
 
-	void setDomain(const TF::Size domain);
+	void setDataStructure(const std::vector<TF::Size>& dataStructure);
 
 private slots:
 
 	void on_nextButton_clicked();
 	void on_backButton_clicked();
 
+	void mode_clicked();
 	void holderButton_clicked(TF::Types::Holder holder);
 	void predefinedButton_clicked(TF::Types::Predefined predefined);
 	void functionButton_clicked(TF::Types::Function function);
@@ -53,8 +56,9 @@ private slots:
 private:	
 
 	enum State{
-		Holder,
+		ModeSelection,
 		Predefined,
+		Holder,
 		Function,
 		Painter,
 		Modifier
@@ -67,11 +71,15 @@ private:
 
 	Ui::TFCreator* ui_;
 	QVBoxLayout* layout_;
+	QRadioButton* predefinedRadio_;
+	QRadioButton* customRadio_;
+	QRadioButton* loadRadio_;
 
 	State state_;
 	Mode mode_;
 
 	TF::Types::Structure structure_[3];
+	std::string name_;
 
 	bool predefinedSet_;
 	bool holderSet_;
@@ -80,28 +88,26 @@ private:
 	bool modifierSet_;
 	
 	QMainWindow* mainWindow_;
-	TF::Size domain_;
+	TFPalette* palette_;
+	std::vector<TF::Size> dataStructure_;
 
-	void setStateHolder_();
+	void setStateModeSelection_();
 	void setStatePredefined_();
+	void setStateHolder_();
 	void setStateFunction_();
 	void setStatePainter_();
 	void setStateModifier_();	
 
-	void clearLayout_();
+	void clearLayout_(bool deleteItems = true);
 
-	TFAbstractHolder* loadTransferFunction_();
-	TFAbstractHolder* load_(TFXmlReader::Ptr reader, bool& sideError);
-	TFAbstractHolder* createHolder_();
-
-	template<TF::Size dim>
-	typename TFAbstractFunction<dim>::Ptr createFunction_();
+	TFBasicHolder* loadTransferFunction_();
+	TFBasicHolder* load_(TFXmlReader::Ptr reader, bool& sideError);
+	TFBasicHolder* createHolder_();
 
 	template<TF::Size dim>
-	typename TFAbstractPainter<dim>::Ptr createPainter_();
-
-	template<TF::Size dim>
-	typename TFAbstractModifier<dim>::Ptr createModifier_(typename TFWorkCopy<dim>::Ptr workCopy);
+	typename TFAbstractFunction<dim>* createFunction_();
+	TFAbstractPainter* createPainter_(TFBasicHolder::Attributes& attributes);
+	TFAbstractModifier* createModifier_(TFBasicHolder::Attributes& attributes);
 };
 
 } // namespace GUI

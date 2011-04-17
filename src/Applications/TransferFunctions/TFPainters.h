@@ -10,12 +10,9 @@ namespace TF {
 namespace Types {
 
 enum Painter{
-	PainterRGB,
-	PainterHSV,
-	PainterGrayscale,
-	PainterRGBa,
-	PainterHSVa,
-	PainterGrayscaleAlpha
+	PainterRGBa1D,
+	PainterHSVa1D,
+	PainterGrayscaleAlpha1D
 };
 typedef std::vector<Painter> Painters;
 
@@ -25,18 +22,15 @@ static Painters getAllowedPainters(Function function){
 
 	switch(function)
 	{
-		case TF::Types::FunctionRGB:
+		case TF::Types::FunctionRGBa1D:
 		{
-			allowed.push_back(TF::Types::PainterGrayscale);
-			allowed.push_back(TF::Types::PainterGrayscaleAlpha);
-			allowed.push_back(TF::Types::PainterRGB);
-			allowed.push_back(TF::Types::PainterRGBa);
+			allowed.push_back(TF::Types::PainterGrayscaleAlpha1D);
+			allowed.push_back(TF::Types::PainterRGBa1D);
 			break;
 		}
-		case TF::Types::FunctionHSV:
+		case TF::Types::FunctionHSVa1D:
 		{
-			allowed.push_back(TF::Types::PainterHSV);
-			allowed.push_back(TF::Types::PainterHSVa);
+			allowed.push_back(TF::Types::PainterHSVa1D);
 			break;
 		}
 	}
@@ -51,29 +45,17 @@ template<>
 inline std::string convert<Types::Painter, std::string>(const Types::Painter &painter){
 
 	switch(painter){
-		case Types::PainterGrayscale:
+		case Types::PainterGrayscaleAlpha1D:
 		{
-			return "Grayscale painter";
+			return "Grayscale-alpha 1D painter";
 		}
-		case Types::PainterRGB:
+		case Types::PainterRGBa1D:
 		{
-			return "RGB painter";
+			return "RGBa 1D painter";
 		}
-		case Types::PainterHSV:
+		case Types::PainterHSVa1D:
 		{
-			return "HSV painter";
-		}
-		case Types::PainterGrayscaleAlpha:
-		{
-			return "Grayscale-alpha painter";
-		}
-		case Types::PainterRGBa:
-		{
-			return "RGBa painter";
-		}
-		case Types::PainterHSVa:
-		{
-			return "HSVa painter";
+			return "HSVa 1D painter";
 		}
 	}
 	
@@ -84,26 +66,17 @@ inline std::string convert<Types::Painter, std::string>(const Types::Painter &pa
 template<>
 inline Types::Painter TF::convert<std::string, Types::Painter>(const std::string &painter){
 
-	if(painter == "Grayscale painter"){
-		return Types::PainterGrayscale;
+	if(painter == "Grayscale-alpha 1D painter"){
+		return Types::PainterGrayscaleAlpha1D;
 	}
-	if(painter == "HSV painter"){
-		return Types::PainterRGB;
+	if(painter == "RGBa 1D painter"){
+		return Types::PainterRGBa1D;
 	}
-	if(painter == "HSV painter"){
-		return Types::PainterHSV;
-	}
-	if(painter == "Grayscale-alpha painter"){
-		return Types::PainterGrayscaleAlpha;
-	}
-	if(painter == "RGBa painter"){
-		return Types::PainterRGBa;
-	}
-	if(painter == "HSVa painter"){
-		return Types::PainterHSVa;
+	if(painter == "HSVa 1D painter"){
+		return Types::PainterHSVa1D;
 	}
 	tfAssert(!"Unknown painter!");
-	return Types::PainterRGBa;	//default
+	return Types::PainterRGBa1D;	//default
 }
 
 }	//namespace TF

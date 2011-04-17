@@ -1,7 +1,7 @@
 #ifndef TF_MODIFIERS
 #define TF_MODIFIERS
 
-#include <TFPainters.h>
+#include <TFHolders.h>
 
 namespace M4D {
 namespace GUI {
@@ -10,28 +10,23 @@ namespace TF {
 namespace Types {
 
 enum Modifier{
-	ModifierSimple,
-	ModifierPolygon,
-	ModifierView
+	ModifierSimple1D,
+	ModifierPolygon1D,
+	ModifierComposite1D
 };
 typedef std::vector<Modifier> Modifiers;
 
-static Modifiers getAllowedModifiers(Painter painter){
+static Modifiers getAllowedModifiers(Holder holder){
 
 	Modifiers allowed;
 
-	switch(painter)
+	switch(holder)
 	{
-		case PainterGrayscale:	//same as next case
-		case PainterGrayscaleAlpha:	//same as next case
-		case PainterRGB:	//same as next case
-		case PainterRGBa:	//same as next case
-		case PainterHSV:	//same as next case
-		case PainterHSVa:
+		case HolderBasic:
 		{
-			allowed.push_back(ModifierSimple);
-			allowed.push_back(ModifierPolygon);
-			allowed.push_back(ModifierView);
+			allowed.push_back(ModifierSimple1D);
+			allowed.push_back(ModifierPolygon1D);
+			allowed.push_back(ModifierComposite1D);
 			break;
 		}
 	}
@@ -46,17 +41,17 @@ template<>
 inline std::string convert<Types::Modifier, std::string>(const Types::Modifier &modifier){
 
 	switch(modifier){
-		case Types::ModifierSimple:
+		case Types::ModifierSimple1D:
 		{
-			return "Simple modifier";
+			return "Simple 1D modifier";
 		}
-		case Types::ModifierPolygon:
+		case Types::ModifierPolygon1D:
 		{
-			return "Polygon modifier";
+			return "Polygon 1D modifier";
 		}
-		case Types::ModifierView:
+		case Types::ModifierComposite1D:
 		{
-			return "View modifier";
+			return "Composition 1D";
 		}
 	}
 
@@ -67,18 +62,18 @@ inline std::string convert<Types::Modifier, std::string>(const Types::Modifier &
 template<>
 inline Types::Modifier TF::convert<std::string, Types::Modifier>(const std::string &modifier){
 
-	if(modifier == "Simple modifier"){
-		return Types::ModifierSimple;
+	if(modifier == "Simple 1D modifier"){
+		return Types::ModifierSimple1D;
 	}
-	if(modifier == "Polygon modifier"){
-		return Types::ModifierPolygon;
+	if(modifier == "Polygon 1D modifier"){
+		return Types::ModifierPolygon1D;
 	}
-	if(modifier == "View modifier"){
-		return Types::ModifierView;
+	if(modifier == "Composition 1D"){
+		return Types::ModifierComposite1D;
 	}
 
 	tfAssert(!"Unknown modifier!");
-	return Types::ModifierSimple;	//default
+	return Types::ModifierSimple1D;	//default
 }
 
 }	//namespace TF

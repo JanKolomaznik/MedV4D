@@ -9,19 +9,19 @@ template<>
 bool applyTransferFunction<TransferFunctionBuffer1D::iterator>(
 	TransferFunctionBuffer1D::iterator begin,
 	TransferFunctionBuffer1D::iterator end,
-	TFApplyFunctionInterface::Ptr function_){
+	TFFunctionInterface::Const function_){
 
 	TF::Size index = 0;
 	TF::Color color;
 	for(TransferFunctionBuffer1D::iterator it = begin; it!=end; ++it)
 	{
-		if(index >= function_->getDomain())
+		if(index >= function_.getDomain(TF_DIMENSION_1))
 		{
 			tfAssert("Wrong buffer size");
 			return false;
 		}
 
-		color = function_->getMappedRGBfColor(index, 1);
+		color = function_.getRGBfColor(TF_DIMENSION_1, index);
 
 		*it = TransferFunctionBuffer1D::value_type(
 			color.component1,
@@ -31,7 +31,7 @@ bool applyTransferFunction<TransferFunctionBuffer1D::iterator>(
 
 		++index;
 	}
-	if(index < function_->getDomain())
+	if(index < function_.getDomain(TF_DIMENSION_1))
 	{
 		tfAssert("Wrong buffer size");
 		return false;

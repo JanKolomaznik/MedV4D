@@ -88,11 +88,6 @@ ViewerWindow::ViewerWindow():
 	//---Default buffer---
 
 	buffer_ = Buffer1DPtr(new Buffer1D(4095, Interval(0.0f, 4095.0f)));	
-
-	for(Buffer1D::Iterator it = buffer_->Begin(); it != buffer_->End(); ++it)
-	{		
-		*it = Buffer1D::ValueType(0,0,0,0);
-	}
 		
 	#ifdef TF_NDEBUG
 		showMaximized();
@@ -137,11 +132,11 @@ void ViewerWindow::changeColorMapType( int aColorMap ){
 void ViewerWindow::applyTransferFunction(){
 
 	if(!fileLoaded_) return;
-
-	if(buffer_ && (buffer_->Size() != mTransferFunctionEditor->getDomain()))
+	
+	if(!buffer_ || (buffer_->Size() != mTransferFunctionEditor->getDomain(TF_DIMENSION_1)))
 	{
-		buffer_ = Buffer1DPtr(new Buffer1D(mTransferFunctionEditor->getDomain(),
-			Interval(0.0f, (float)mTransferFunctionEditor->getDomain())));
+		buffer_ = Buffer1DPtr(new Buffer1D(mTransferFunctionEditor->getDomain(TF_DIMENSION_1),
+			Interval(0.0f, (float)mTransferFunctionEditor->getDomain(TF_DIMENSION_1))));
 	}
 	
 	bool tfUsed = mTransferFunctionEditor->applyTransferFunction<Buffer1D::iterator>( buffer_->Begin(), buffer_->End());
@@ -151,12 +146,9 @@ void ViewerWindow::applyTransferFunction(){
 
 void ViewerWindow::updateTransferFunction(){
 
-	const M4D::Common::TimeStamp timestamp = mTransferFunctionEditor->getTimeStamp();
-
-	if (timestamp != mLastTimeStamp )
+	if(mTransferFunctionEditor->changed())
 	{
 		applyTransferFunction();
-		mLastTimeStamp = timestamp;
 	}
 }
 
@@ -273,9 +265,8 @@ void ViewerWindow::openFile( const QString &aPath )
 	{
 		tfHistogram->add(*it);
 	}
-	bool histogramSet = mTransferFunctionEditor->setHistogram(tfHistogram);	
-	
-	assert(histogramSet);
+	mTransferFunctionEditor->setDataStructure(std::vector<M4D::GUI::TF::Size>(1, tfHistogram->size()));
+	mTransferFunctionEditor->setHistogram(tfHistogram);	
 
 	mViewer->ZoomFit();
 	applyTransferFunction();

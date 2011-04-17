@@ -3,8 +3,10 @@
 namespace M4D {
 namespace GUI {
 
-TFPolygonModifier::TFPolygonModifier(WorkCopy::Ptr workCopy,  Mode mode, bool alpha):
-	TFSimpleModifier(workCopy, mode, alpha),
+TFPolygonModifier::TFPolygonModifier(
+		TFAbstractFunction<TF_DIMENSION_1>::Ptr function,
+		TFSimplePainter::Ptr painter):
+	TFSimpleModifier(function, painter),
 	polygonTools_(new Ui::TFPolygonModifier),
 	polygonWidget_(new QWidget),
 	baseRadius_(50),
@@ -31,22 +33,22 @@ void TFPolygonModifier::createTools_(){
     vSeparator->setFrameShape(QFrame::HLine);
     vSeparator->setFrameShadow(QFrame::Sunken);
 
-	QVBoxLayout* vLayout = new QVBoxLayout();
-	vLayout->addItem(centerWidget_(simpleWidget_));
-	vLayout->addWidget(vSeparator);
-	vLayout->addItem(centerWidget_(polygonWidget_));
-
     QFrame* hSeparator = new QFrame();
     hSeparator->setFrameShape(QFrame::VLine);
     hSeparator->setFrameShadow(QFrame::Sunken);
 
 	QHBoxLayout* hLayout = new QHBoxLayout();
-	hLayout->addItem(centerWidget_(viewWidget_));
+	hLayout->addItem(centerWidget_(simpleWidget_));
 	hLayout->addWidget(hSeparator);
-	hLayout->addItem(vLayout);
+	hLayout->addItem(centerWidget_(polygonWidget_));
+
+	QVBoxLayout* vLayout = new QVBoxLayout();
+	vLayout->addItem(hLayout);
+	vLayout->addWidget(vSeparator);
+	vLayout->addItem(centerWidget_(viewWidget_));
 
 	toolsWidget_ = new QWidget();
-	toolsWidget_->setLayout(hLayout);
+	toolsWidget_->setLayout(vLayout);
 }
 
 void TFPolygonModifier::topSpin_changed(int value){
@@ -67,8 +69,8 @@ void TFPolygonModifier::mouseReleaseEvent(QMouseEvent *e){
 	if(relativePoint == ignorePoint_) return;
 
 	if(leftMousePressed_) addPolygon_(relativePoint);
-
 	leftMousePressed_ = false;
+	update();
 
 	TFViewModifier::mouseReleaseEvent(e);
 }
@@ -91,6 +93,7 @@ void TFPolygonModifier::mouseMoveEvent(QMouseEvent *e){
 		{
 			addPoint_(inputHelper_.x + baseRadius_, 0);
 		}
+		update();
 	}
 
 	TFViewModifier::mouseMoveEvent(e);
@@ -118,7 +121,7 @@ void TFPolygonModifier::wheelEvent(QWheelEvent *e){
 		}
 		default:
 		{			
-			TFViewModifier::wheelEvent(e);
+			TFSimpleModifier::wheelEvent(e);
 			break;
 		}
 	}

@@ -2,16 +2,18 @@
 #define TF_VIEW_MODIFIER
 
 #include <TFAbstractModifier.h>
+#include <TFSimplePainter.h>
 
 #include <QtGui/QGridLayout>
 #include <QtGui/QSpacerItem>
 
 #include <ui_TFViewModifier.h>
+#include <ui_TFDimensionZoom.h>
 
 namespace M4D {
 namespace GUI {
 
-class TFViewModifier: public TFAbstractModifier<TF_DIMENSION_1>{
+class TFViewModifier: public TFAbstractModifier{
 
 	Q_OBJECT
 
@@ -19,33 +21,35 @@ public:
 
 	typedef boost::shared_ptr<TFViewModifier> Ptr;
 
-	typedef TFWorkCopy<TF_DIMENSION_1> WorkCopy;
-
-	TFViewModifier(WorkCopy::Ptr workCopy);
 	~TFViewModifier();
 
-	virtual bool load(TFXmlReader::Ptr reader);
+	void setDataStructure(const std::vector<TF::Size>& dataStructure);
+	void setHistogram(const TF::Histogram::Ptr histogram);	
 
 protected slots:
 
 	void histogram_check(bool enabled);
-
 	void maxZoomSpin_changed(int value);
-	void xAxis_check(bool enabled);
-	void yAxis_check(bool enabled);
 
 protected:
 
+	TFViewModifier(TFFunctionInterface::Ptr function, TFAbstractPainter::Ptr painter);
+
 	Ui::TFViewModifier* viewTools_;
+	std::vector<Ui::TFDimensionZoom*> dimensionsUi_;
 	QWidget* viewWidget_;
 
 	bool altPressed_;
 
 	bool zoomMovement_;
 	TF::PaintingPoint zoomMoveHelper_;
-	WorkCopy::ZoomDirection zoomDirection_;
 
 	virtual void createTools_();
+	
+	virtual void computeInput_() = 0;
+	virtual std::vector<int> computeZoomMoveIncrements_(const int moveX, const int moveY) = 0;
+
+	virtual bool loadSettings_(TFXmlReader::Ptr reader);
 
 	virtual void mousePressEvent(QMouseEvent *e);
 	virtual void mouseReleaseEvent(QMouseEvent *e);
@@ -55,11 +59,13 @@ protected:
 	virtual void keyPressEvent(QKeyEvent *e);
 	virtual void keyReleaseEvent(QKeyEvent *e);
 
-	virtual void addPoint_(const int x, const int y){}
+	TF::PaintingPoint getRelativePoint_(const int x, const int y, bool acceptOutOfBounds = false);
 
 	void updateZoomTools_();
 	
-	QGridLayout* centerWidget_(QWidget *widget);
+	QGridLayout* centerWidget_(QWidget *widget,
+		bool top = true, bool bottom = true,
+		bool left = true, bool right = true);
 };
 
 } // namespace GUI

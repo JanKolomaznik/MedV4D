@@ -3,10 +3,26 @@
 namespace M4D {
 namespace GUI {
 
-TFHSVaPainter::TFHSVaPainter(bool drawAlpha):
-	TFSimplePainter(Qt::magenta, Qt::cyan, QColor(150,75,0), Qt::yellow){
+TFHSVaPainter::TFHSVaPainter():
+	TFSimplePainter(Qt::magenta, Qt::cyan, Qt::yellow){
 
-	drawAlpha_ = drawAlpha;
+	componentNames_.push_back("Hue");
+	componentNames_.push_back("Saturation");
+	componentNames_.push_back("Value");
+	componentNames_.push_back("Opacity");
+}
+
+
+TFHSVaPainter::TFHSVaPainter(const QColor& hue,
+							 const QColor& saturation,
+							 const QColor& value,
+							 const QColor& alpha):
+	TFSimplePainter(hue, saturation, value, alpha){
+
+	componentNames_.push_back("Hue");
+	componentNames_.push_back("Saturation");
+	componentNames_.push_back("Value");
+	componentNames_.push_back("Opacity");
 }
 
 TFHSVaPainter::~TFHSVaPainter(){}
@@ -42,16 +58,12 @@ void TFHSVaPainter::setArea(QRect area){
 	sizeChanged_ = true;
 }
 
-void TFHSVaPainter::updateSideBar_(WorkCopy::Ptr workCopy){
+void TFHSVaPainter::updateSideBar_(TFWorkCopy::Ptr workCopy){
 
 	viewSideBarBuffer_ = QPixmap(area_.width(), area_.height());
 	viewSideBarBuffer_.fill(noColor_);
 
 	QPainter drawer(&viewSideBarBuffer_);
-
-	float zoomedY = 1.0f/workCopy->getZoomY();
-	float stepValue = zoomedY/sideBarArea_.height();
-	float offset = workCopy->getZoomCenter().y - zoomedY/2.0f;
 
 	QColor color;
 	int x1 = sideBarArea_.x();
@@ -64,14 +76,14 @@ void TFHSVaPainter::updateSideBar_(WorkCopy::Ptr workCopy){
 		y1 = yBegin - i;
 		y2 = yBegin - i;
 
-		color.setHsvF(i*stepValue + offset, 1, 1);
+		color.setHsvF(i/(float)sideBarArea_.height(), 1, 1);
 
 		drawer.setPen(color);
 		drawer.drawLine(x1, y1,	x2, y2);	
 	}
 }
 
-QPixmap TFHSVaPainter::getView(WorkCopy::Ptr workCopy){
+QPixmap TFHSVaPainter::getView(TFWorkCopy::Ptr workCopy){
 
 	updateSideBar_(workCopy);
 	TFSimplePainter::getView(workCopy);

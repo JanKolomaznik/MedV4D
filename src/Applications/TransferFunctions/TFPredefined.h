@@ -2,9 +2,9 @@
 #define TF_PREDEFINED
 
 #include <TFHolders.h>
+#include <TFModifiers.h>
 #include <TFFunctions.h>
 #include <TFPainters.h>
-#include <TFModifiers.h>
 
 namespace M4D {
 namespace GUI {
@@ -14,11 +14,11 @@ namespace Types {
 
 enum Predefined{
 	PredefinedCustom,
-	PredefinedLoad,
-	PredefinedSimpleGrayscaleAlpha,
-	PredefinedSimpleRGBa,
-	PredefinedPolygonRGBa,
-	PredefinedSimpleHSVa
+	PredefinedGrayscale1D,
+	PredefinedRGBa1D,
+	PredefinedHSVa1D,
+	PredefinedPolygonRGBa1D,
+	PredefinedComposition1D
 };
 typedef std::vector<Predefined> PredefinedTypes;
 
@@ -26,13 +26,11 @@ static PredefinedTypes getPredefinedTypes(){
 
 	PredefinedTypes all;
 
-	all.push_back(PredefinedLoad);
-	all.push_back(PredefinedCustom);
-
-	all.push_back(PredefinedSimpleGrayscaleAlpha);
-	all.push_back(PredefinedSimpleRGBa);
-	all.push_back(PredefinedSimpleHSVa);
-	all.push_back(PredefinedPolygonRGBa);
+	all.push_back(PredefinedGrayscale1D);
+	all.push_back(PredefinedRGBa1D);
+	all.push_back(PredefinedHSVa1D);
+	all.push_back(PredefinedPolygonRGBa1D);
+	all.push_back(PredefinedComposition1D);
 
 	return all;
 }
@@ -50,12 +48,12 @@ struct Structure{
 		predefined(PredefinedCustom){
 	}
 
-	Structure(Predefined predefined, Holder holder, Function function, Painter painter, Modifier modifier):
+	Structure(Predefined predefined, Holder holder, Modifier modifier, Function function, Painter painter):
 		predefined(predefined),
 		holder(holder),
+		modifier(modifier),
 		function(function),
-		painter(painter),
-		modifier(modifier){
+		painter(painter){
 	}
 };
 
@@ -63,41 +61,45 @@ static Structure getPredefinedStructure(Predefined predefinedType){
 
 	switch(predefinedType)
 	{
-		case PredefinedSimpleGrayscaleAlpha:
+		case PredefinedGrayscale1D:
 		{
-			return Structure(PredefinedSimpleGrayscaleAlpha,
+			return Structure(PredefinedGrayscale1D,
 				HolderBasic,
-				FunctionRGB,
-				PainterGrayscaleAlpha,
-				ModifierSimple);
+				ModifierSimple1D,
+				FunctionRGBa1D,
+				PainterGrayscaleAlpha1D);
 		}
-		case PredefinedSimpleRGBa:
+		case PredefinedRGBa1D:
 		{
-			return Structure(PredefinedSimpleRGBa,
+			return Structure(PredefinedRGBa1D,
 				HolderBasic,
-				FunctionRGB,
-				PainterRGBa,
-				ModifierSimple);
+				ModifierSimple1D,
+				FunctionRGBa1D,
+				PainterRGBa1D);
 		}
-		case PredefinedSimpleHSVa:
+		case PredefinedHSVa1D:
 		{
-			return Structure(PredefinedSimpleHSVa,
+			return Structure(PredefinedHSVa1D,
 				HolderBasic,
-				FunctionHSV,
-				PainterHSVa,
-				ModifierSimple);
+				ModifierSimple1D,
+				FunctionHSVa1D,
+				PainterHSVa1D);
 		}
-		case PredefinedPolygonRGBa:
+		case PredefinedPolygonRGBa1D:
 		{
-			return Structure(PredefinedPolygonRGBa,
+			return Structure(PredefinedPolygonRGBa1D,
 				HolderBasic,
-				FunctionRGB,
-				PainterRGBa,
-				ModifierPolygon);
+				ModifierPolygon1D,
+				FunctionRGBa1D,
+				PainterRGBa1D);
 		}
-		case PredefinedCustom:
+		case PredefinedComposition1D:
 		{
-			return Structure();
+			return Structure(PredefinedComposition1D,
+				HolderBasic,
+				ModifierComposite1D,
+				FunctionRGBa1D,
+				PainterRGBa1D);
 		}
 	}
 
@@ -113,28 +115,28 @@ inline std::string convert<Types::Predefined, std::string>(const Types::Predefin
 
 	switch(predefined){
 		case Types::PredefinedCustom:
-		{
+		{			
 			return "Custom";
 		}
-		case Types::PredefinedLoad:
+		case Types::PredefinedGrayscale1D:
 		{
-			return "Load";
+			return "Grayscale-alpha 1D";
 		}
-		case Types::PredefinedSimpleGrayscaleAlpha:
+		case Types::PredefinedRGBa1D:
 		{
-			return "Grayscale-alpha";
+			return "RGBa 1D";
 		}
-		case Types::PredefinedSimpleRGBa:
+		case Types::PredefinedHSVa1D:
 		{
-			return "RGBa";
+			return "HSVa 1D";
 		}
-		case Types::PredefinedSimpleHSVa:
+		case Types::PredefinedPolygonRGBa1D:
 		{
-			return "HSVa";
+			return "Polygon RGBa 1D";
 		}
-		case Types::PredefinedPolygonRGBa:
+		case Types::PredefinedComposition1D:
 		{
-			return "Polygon RGBa";
+			return "Composition 1D";
 		}
 	}
 
@@ -147,21 +149,21 @@ inline Types::Predefined TF::convert<std::string, Types::Predefined>(const std::
 
 	if(predefined == "Custom"){
 		return Types::PredefinedCustom;
+	}
+	if(predefined == "Grayscale-alpha 1D"){
+		return Types::PredefinedGrayscale1D;
+	}
+	if(predefined == "RGBa 1D"){
+		return Types::PredefinedRGBa1D;
+	}
+	if(predefined == "HSVa 1D"){
+		return Types::PredefinedHSVa1D;
+	}
+	if(predefined == "Polygon RGBa 1D"){
+		return Types::PredefinedPolygonRGBa1D;
 	}	
-	if(predefined == "Load"){
-		return Types::PredefinedLoad;
-	}	
-	if(predefined == "Grayscale-alpha"){
-		return Types::PredefinedSimpleGrayscaleAlpha;
-	}
-	if(predefined == "RGBa"){
-		return Types::PredefinedSimpleRGBa;
-	}
-	if(predefined == "HSVa"){
-		return Types::PredefinedSimpleHSVa;
-	}
-	if(predefined == "Polygon RGBa"){
-		return Types::PredefinedPolygonRGBa;
+	if(predefined == "Composition 1D"){
+		return Types::PredefinedComposition1D;
 	}	
 
 	tfAssert(!"Unknown predefined type!");

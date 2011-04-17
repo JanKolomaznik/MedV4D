@@ -1,7 +1,7 @@
 #ifndef TF_FUNCTIONS
 #define TF_FUNCTIONS
 
-#include <TFHolders.h>
+#include <TFModifiers.h>
 
 namespace M4D {
 namespace GUI {
@@ -10,20 +10,23 @@ namespace TF {
 namespace Types {
 
 enum Function{
-	FunctionRGB,
-	FunctionHSV
+	FunctionRGBa1D,
+	FunctionHSVa1D
 };
 typedef std::vector<Function> Functions;
 
-static Functions getAllowedFunctions(Holder holder){
+static Functions getAllowedFunctions(Modifier modifier){
 
 	Functions allowed;
 
-	switch(holder){
-		case Types::HolderBasic:
+	switch(modifier){
+		case ModifierSimple1D:
+		case ModifierPolygon1D:
+		case ModifierComposite1D:
 		{
-			allowed.push_back(FunctionRGB);
-			allowed.push_back(FunctionHSV);
+			//1D
+			allowed.push_back(FunctionRGBa1D);
+			allowed.push_back(FunctionHSVa1D);
 			break;
 		}
 	}
@@ -38,13 +41,13 @@ template<>
 inline std::string convert<Types::Function, std::string>(const Types::Function &function){
 
 	switch(function){
-		case Types::FunctionRGB:
+		case Types::FunctionRGBa1D:
 		{
-			return "RGB function";
+			return "RGBa 1D function";
 		}
-		case Types::FunctionHSV:
+		case Types::FunctionHSVa1D:
 		{
-			return "HSV function";
+			return "HSVa 1D function";
 		}
 	}
 
@@ -55,15 +58,15 @@ inline std::string convert<Types::Function, std::string>(const Types::Function &
 template<>
 inline Types::Function TF::convert<std::string, Types::Function>(const std::string &function){
 
-	if(function == "RGB function"){
-		return Types::FunctionRGB;
+	if(function == "RGB 1D function"){
+		return Types::FunctionRGBa1D;
 	}
-	if(function == "HSV function"){
-		return Types::FunctionHSV;
+	if(function == "HSVa 1D function"){
+		return Types::FunctionHSVa1D;
 	}
 
 	tfAssert(!"Unknown function!");
-	return Types::FunctionRGB;	//default
+	return Types::FunctionRGBa1D;	//default
 }
 
 }	//namespace TF

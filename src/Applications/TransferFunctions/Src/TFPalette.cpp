@@ -7,10 +7,9 @@ TFPalette::TFPalette(QMainWindow* parent):
 	QMainWindow(parent),
 	ui_(new Ui::TFPalette),
 	mainWindow_(parent),
-	domain_(TFAbstractFunction<1>::defaultDomain),
-	activeEditor_(-1),
+	activeEditor_(emptyPalette),
 	activeChanged_(false),
-	creator_(parent, domain_){
+	creator_(parent, this){
 
     ui_->setupUi(this);
 	setWindowTitle("Transfer Functions Palette");
@@ -28,43 +27,72 @@ void TFPalette::setupDefault(){
 	//default palette functions
 }
 
-/*
-TF::MultiDColor<dim>::Map::Ptr TFPalette::getColorMap(){
+void TFPalette::setDataStructure(const std::vector<TF::Size>& dataStructure){
 
-	if(activeEditor_ < 0) on_actionNew_triggered();
-	if(activeEditor_ < 0) exit(0);
+	dataStructure_ = dataStructure;
+	creator_.setDataStructure(dataStructure_);
 
-	return palette_.find(activeEditor_)->second.holder->getColorMap();
-}
-*/
-void TFPalette::setDomain(const TF::Size domain){
+	if(activeEditor_ == emptyPalette) return;
 
-	if(domain_ == domain) return;
-	domain_ = domain;
-
-	creator_.setDomain(domain_);
-	
+	bool findNewActive = (palette_.find(activeEditor_)->second.holder->getDimension() != dataStructure_.size());
 	HolderMapIt beginPalette = palette_.begin();
 	HolderMapIt endPalette = palette_.end();
 	for(HolderMapIt it = beginPalette; it != endPalette; ++it)
 	{
-		it->second.holder->setDomain(domain_);
+		if(it->second.holder->getDimension() != dataStructure_.size())
+		{
+			it->second.holder->setAvailable(false);
+		}
+		else
+		{
+			it->second.holder->setDataStructure(dataStructure_);
+			it->second.holder->setAvailable(true);
+			if(findNewActive)
+			{
+				activeEditor_ = it->first;
+			}
+		}
 	}
+	if(findNewActive) activeEditor_ = noFunctionAvailable;
 }
 
-bool TFPalette::setHistogram(TF::Histogram::Ptr histogram, bool adjustDomain){
+TFFunctionInterface::Const TFPalette::getTransferFunction(){
+
+	if(activeEditor_ == emptyPalette || activeEditor_ == noFunctionAvailable)
+	{
+		return TFFunctionInterface::Const();
+	}
+	
+	return palette_.find(activeEditor_)->second.holder->getFunction();
+}
+	
+TF::Size TFPalette::getDimension(){
+
+	return dataStructure_.size();
+}
+
+TF::Size TFPalette::getDomain(const TF::Size dimension){
+
+	if(dimension > dataStructure_.size() || dimension == 0) return 0;
+	return dataStructure_[dimension-1];
+}
+
+std::vector<TFBasicHolder*> TFPalette::getEditors(){
+
+	std::vector<TFBasicHolder*> editors;
+
+	HolderMapIt beginPalette = palette_.begin();
+	HolderMapIt endPalette = palette_.end();
+	for(HolderMapIt it = beginPalette; it != endPalette; ++it)
+	{
+		editors.push_back(it->second.holder);
+	}
+	return editors;
+}
+
+void TFPalette::setHistogram(const TF::Histogram::Ptr histogram){
 
 	histogram_ = histogram;
-	
-	if(adjustDomain)
-	{
-		domain_ = histogram_->size();
-		creator_.setDomain(domain_);
-	}
-	else if(domain_ != histogram_->size())
-	{
-		return false;
-	}
 
 	HolderMapIt beginPalette = palette_.begin();
 	HolderMapIt endPalette = palette_.end();
@@ -72,29 +100,28 @@ bool TFPalette::setHistogram(TF::Histogram::Ptr histogram, bool adjustDomain){
 	{
 		it->second.holder->setHistogram(histogram_);
 	}
-	return true;
 }
 
-TF::Size TFPalette::getDomain(){
+bool TFPalette::changed(){
 
-	return domain_;
-}
-
-M4D::Common::TimeStamp TFPalette::getTimeStamp(){
-
-	if(palette_.empty())
+	if(activeEditor_ == emptyPalette ||
+		activeEditor_ == noFunctionAvailable ||
+		activeChanged_ ||
+		palette_.find(activeEditor_)->second.holder->changed())
 	{
-		++lastChange_;
-		return lastChange_;
+		activeChanged_ = false;
+		return true;
 	}
-	if(activeChanged_ || palette_.find(activeEditor_)->second.holder->changed()) ++lastChange_;
 
-	activeChanged_ = false;
+	return false;
+}
+	
+M4D::Common::TimeStamp TFPalette::lastPaletteChange(){
 
 	return lastChange_;
 }
 
-void TFPalette::addToPalette_(TFAbstractHolder* holder){
+void TFPalette::addToPalette_(TFBasicHolder* holder){
 	
 	TF::Size addedIndex = indexer_.getIndex();
 
@@ -119,10 +146,18 @@ void TFPalette::addToPalette_(TFAbstractHolder* holder){
 	QDockWidget* dockHolder = holder->getDockWidget();
 	dockHolder->setFeatures(QDockWidget::AllDockWidgetFeatures);
 	mainWindow_->addDockWidget(Qt::BottomDockWidgetArea, dockHolder);
+	dockHolder->setFloating(true);
 	
-	change_activeHolder(addedIndex);
+	bool dimMatch = (holder->getDimension() == dataStructure_.size());
+	if(dimMatch) holder->setDataStructure(dataStructure_);
+	if(dataStructure_.size() == 0 || dimMatch)
+	{
+		holder->setAvailable(true);
+		change_activeHolder(addedIndex);
+	}
 
 	ui_->removeButton->setEnabled(true);
+	++lastChange_;
 }
 
 void TFPalette::removeFromPalette_(const TF::Size index){
@@ -140,26 +175,28 @@ void TFPalette::removeFromPalette_(const TF::Size index){
 	indexer_.releaseIndex(index);
 
 	if(palette_.empty()) ui_->removeButton->setEnabled(false);
+	++lastChange_;
 }
 
 void TFPalette::activateNext_(HolderMapIt it){
 	
 	if(palette_.size() == 1)
 	{
-		activeEditor_ = -1;
+		activeEditor_ = emptyPalette;
 	}
 	else
 	{
-		HolderMapIt nextActiveIt = it;
-		++nextActiveIt;
+		HolderMapIt beginPalette = palette_.begin();
+		HolderMapIt endPalette = palette_.end();
 
-		if(nextActiveIt == palette_.end())
+		HolderMapIt next;
+		for(next = beginPalette; next != endPalette; ++next)
 		{
-			nextActiveIt = it;
-			--nextActiveIt;
+			if(next != it && next->second.holder->getDimension() == dataStructure_.size()) break;
 		}
 
-		change_activeHolder(nextActiveIt->second.holder->getIndex());
+		if(next != endPalette) change_activeHolder(next->second.holder->getIndex());
+		else activeEditor_ = noFunctionAvailable;
 	}
 }
 
@@ -181,21 +218,21 @@ void TFPalette::change_activeHolder(TF::Size index){
 	if(activeEditor_ >= 0)
 	{
 		active = palette_.find(activeEditor_)->second;
-		active.button->deactivate();
-		active.holder->deactivate();
+		active.button->setActive(false);
+		active.holder->setActive(false);
 	}
 
 	activeEditor_ = index;
 	active = palette_.find(activeEditor_)->second;
-	active.button->activate();
-	active.holder->activate();
+	active.button->setActive(true);
+	active.holder->setActive(true);
 
 	activeChanged_ = true;
 }
 
 void TFPalette::on_addButton_clicked(){
 
-	TFAbstractHolder* created = creator_.createTransferFunction();
+	TFBasicHolder* created = creator_.createTransferFunction();
 
 	if(!created) return;
 	

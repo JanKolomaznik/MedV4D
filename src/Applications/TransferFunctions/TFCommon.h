@@ -51,6 +51,20 @@ typedef Point<int, int> PaintingPoint;
 
 typedef unsigned long Size;
 
+struct AreaItem{
+	TF::Size begin;
+	TF::Size size;
+
+	AreaItem():
+		begin(0),
+		size(0){
+	}
+	AreaItem(TF::Size begin, TF::Size size):
+		begin(begin),
+		size(size){
+	}
+};
+
 #define TF_DIMENSION_1 1
 
 template<typename ValueType>

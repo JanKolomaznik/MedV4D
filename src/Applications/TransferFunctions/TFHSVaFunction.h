@@ -2,7 +2,6 @@
 #define TF_HSVA_FUNCTION
 
 #include <TFAbstractFunction.h>
-#include <GUI/utils/TransferFunctionBuffer.h>
 #include <QtGui/QColor>
 
 namespace M4D {
@@ -13,11 +12,8 @@ class TFHSVaFunction: public TFAbstractFunction<dim>{
 
 public:
 
-	TFHSVaFunction(const TF::Size domain){
-
-		colorMap_ = TF::MultiDColor<dim>::Map::Ptr(new TF::MultiDColor<dim>::Map(domain));
-		domain_ = domain;
-		clear();
+	TFHSVaFunction(const std::vector<TF::Size>& domains):
+		typename TFAbstractFunction<dim>(domains){
 	}
 
 	TFHSVaFunction(TFHSVaFunction<dim> &function){
@@ -27,25 +23,29 @@ public:
 
 	~TFHSVaFunction(){}
 
-	TF::Color getMappedRGBfColor(const TF::Size value, const TF::Size dimension){
+	TF::Color getRGBfColor(const TF::Size dimension, const TF::Size index){
 
-		TF::Color rgbColor;
-
+		TF::Size innerDimension = dimension - 1;
 		QColor color;
 		color.setHsvF(
-			(*colorMap_)[value][dimension].component1,
-			(*colorMap_)[value][dimension].component2,
-			(*colorMap_)[value][dimension].component3,
-			(*colorMap_)[value][dimension].alpha);
-
-		rgbColor = TF::Color(color.redF(), color.greenF(), color.blueF(), color.alphaF());
+			(*colorMap_[innerDimension])[index].component1,
+			(*colorMap_[innerDimension])[index].component2,
+			(*colorMap_[innerDimension])[index].component3,
+			(*colorMap_[innerDimension])[index].alpha);
 		
-		return rgbColor;
+		return TF::Color(color.redF(), color.greenF(), color.blueF(), color.alphaF());
 	}
 
-	typename TFAbstractFunction<dim>::Ptr clone(){
+	void setRGBfColor(const TF::Size dimension, const TF::Size index, const TF::Color& value){
+		
+		QColor color;
+		color.setRgbF(value.component1, value.component2, value.component3, value.alpha);
 
-		return TFAbstractFunction<dim>::Ptr(new TFHSVaFunction<dim>(*this));
+		TF::Size innerDimension = dimension - 1;
+		(*colorMap_[innerDimension])[index].component1 = color.hueF();
+		(*colorMap_[innerDimension])[index].component2 = color.saturationF();
+		(*colorMap_[innerDimension])[index].component3 = color.valueF();
+		(*colorMap_[innerDimension])[index].alpha = color.alphaF();
 	}
 };
 

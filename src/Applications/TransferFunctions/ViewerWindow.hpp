@@ -55,7 +55,6 @@ protected:
 	Buffer1DPtr buffer_;
 
 	QTimer	mTransFuncTimer;
-	M4D::Common::TimeStamp mLastTimeStamp;
 
 	bool fileLoaded_;
 

@@ -21,7 +21,7 @@ template<TF::Size dim>
 TFHSVaFunction<dim>::~TFHSVaFunction(){}
 
 template<TF::Size dim>
-TF::Color TFHSVaFunction<dim>::getMappedRGBfColor(const TF::Size value, const TF::Size dimension){
+TF::Color TFHSVaFunction<dim>::getRGBfColor(const TF::Size value, const TF::Size dimension){
 
 	TF::Color rgbColor();
 
