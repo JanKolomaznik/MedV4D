@@ -492,7 +492,7 @@ technique TransferFunction1DShadingJitter_3D {
 
 		//GeometryProgram = compile gp5gp "-po Vertices=3" /*triangle_shrinky();*/gp_GenerateSlice( gViewDirection );
 
-		FragmentProgram = compile gp5fp fp_TransferFunction1DShadingJitter_3D( 
+		FragmentProgram = compile glslf fp_TransferFunction1DShadingJitter_3D( 
 									gImageData3D, 
 									gTransferFunction1D, 
 									gTransferFunction1DInterval, 
